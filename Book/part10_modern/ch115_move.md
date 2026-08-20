@@ -1,5 +1,5 @@
 # 第115章　移动语义与右值引用
-> **[验证环境·实现]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。移动语义本身是 [标准] 定义的语言机制；但「移动后性能提升 X」「NRVO 是否触发」等**实测结论依赖具体编译器与优化级别**（GCC 15.3.0 / `-O2`），不可移植为通用性能定律。断言如「移动比拷贝快」仅在给定类型与编译器下成立，标 `[UNVERIFIED]` 处请以本机复测为准。
+> **[验证环境·实现]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。移动语义本身是 <span class="badge badge-std">标准</span> 定义的语言机制；但「移动后性能提升 X」「NRVO 是否触发」等**实测结论依赖具体编译器与优化级别**（GCC 15.3.0 / `-O2`），不可移植为通用性能定律。断言如「移动比拷贝快」仅在给定类型与编译器下成立，标 `[UNVERIFIED]` 处请以本机复测为准。
 
 > 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：95 分钟 / 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（变量与存储期）、[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)（引用与指针）、[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)（Rule of Three/Five/Zero）、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 扩容）/ 后续：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（完美转发）、[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)（RVO/NRVO）、[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)（cast）/ 难度：★★★★☆
 
@@ -7,24 +7,24 @@
 > 一个即将销毁的临时对象，凭什么还要被"拷贝"一遍？这曾是 C++ 最刺眼的浪费。
 
 ### 0.1 起源（谁·何时·为何）
-C++98 是严格的"值语义"：函数按值返回大对象、把临时对象赋给变量，都会触发一次**深拷贝**。但临时对象（右值）马上就要死了，拷它毫无意义——这成了 `std::vector` 返回、容器插入等场景的性能黑洞。[史] 更早的 `std::auto_ptr` 曾试图用"拷贝即转移所有权"来规避拷贝，却因"拷贝构造竟悄悄把源置空"这种反直觉行为，留下大量悬垂别名 bug——它恰恰暴露了"我们缺一种只针对将亡对象的语义"。[史]
+C++98 是严格的"值语义"：函数按值返回大对象、把临时对象赋给变量，都会触发一次**深拷贝**。但临时对象（右值）马上就要死了，拷它毫无意义——这成了 `std::vector` 返回、容器插入等场景的性能黑洞。<span class="badge badge-history">史</span> 更早的 `std::auto_ptr` 曾试图用"拷贝即转移所有权"来规避拷贝，却因"拷贝构造竟悄悄把源置空"这种反直觉行为，留下大量悬垂别名 bug——它恰恰暴露了"我们缺一种只针对将亡对象的语义"。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- C++98：`auto_ptr` 的"转移语义"雏形，缺陷明显，最终被弃用。[史]
-- **C++11（2011）**：Howard Hinnant 等人推动引入**右值引用（`T&&`）** 与**移动语义**，正式把"将亡值"从语言层面分离出来；`std::move` 与移动构造/赋值成为标准设施。[史]
-- C++17：引入**强制拷贝消除（guaranteed copy elision）**，与移动配合进一步消灭冗余构造。[史]
+- C++98：`auto_ptr` 的"转移语义"雏形，缺陷明显，最终被弃用。<span class="badge badge-history">史</span>
+- **C++11（2011）**：Howard Hinnant 等人推动引入**右值引用（`T&&`）** 与**移动语义**，正式把"将亡值"从语言层面分离出来；`std::move` 与移动构造/赋值成为标准设施。<span class="badge badge-history">史</span>
+- C++17：引入**强制拷贝消除（guaranteed copy elision）**，与移动配合进一步消灭冗余构造。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-移动语义的本质争论是**"移动后源对象算什么状态"**。C++ 选了"移动后处于有效但未指定（valid but unspecified）状态"——既不用像销毁那样禁止再碰，又不必承诺仍是原值，给实现留余地。[评] 这与 Rust 形成对照：Rust 移动后旧绑定直接不可用（编译期禁止访问），更严格但也要靠借用检查器；C++ 把"别再用已移动对象"的责任交还程序员。右值引用的引入还顺手修复了 `auto_ptr` 的老问题：`T&&` 让编译器能区分"我要移动"和"我在拷贝"。[史]
+移动语义的本质争论是**"移动后源对象算什么状态"**。C++ 选了"移动后处于有效但未指定（valid but unspecified）状态"——既不用像销毁那样禁止再碰，又不必承诺仍是原值，给实现留余地。<span class="badge badge-comment">评</span> 这与 Rust 形成对照：Rust 移动后旧绑定直接不可用（编译期禁止访问），更严格但也要靠借用检查器；C++ 把"别再用已移动对象"的责任交还程序员。右值引用的引入还顺手修复了 `auto_ptr` 的老问题：`T&&` 让编译器能区分"我要移动"和"我在拷贝"。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 移动语义定标后，演进集中在"把冗余构造彻底消灭"和"与借用模型对话"两端。
 
-- C++17 引入**强制拷贝消除（guaranteed copy elision）**，把 prvalue 初始化同类型对象时的拷贝/移动从"编译器可做"升级为"语言必须省略"，与移动语义互相补位。[史]
-- [史] 移动语义的普及也倒逼标准库重写：`std::unique_ptr`、`std::string`（SSO）、`std::vector` 纷纷补齐移动构造/赋值，容器扩容与返回大对象从此几乎零拷贝。
-- [评] C++ 始终没走 Rust 那条"移动后旧绑定编译期不可用"的路——它把"别再用已移动对象"的责任交还程序员，换得与四十年存量代码的兼容；这是务实，也是负担。
-- [轶] `std::move` 名字是最广为误解的 API 之一：它什么都不移动，只是 `static_cast<T&&>`，真正干活的是随后的移动构造/赋值；名字是"语义提示"而非"动作"。
-- C++20/23 继续打磨值类别与 `[[nodiscard]]` 等配合，让"误用已移动对象"更易被静态检查捕捉。[史]
+- C++17 引入**强制拷贝消除（guaranteed copy elision）**，把 prvalue 初始化同类型对象时的拷贝/移动从"编译器可做"升级为"语言必须省略"，与移动语义互相补位。<span class="badge badge-history">史</span>
+- <span class="badge badge-history">史</span> 移动语义的普及也倒逼标准库重写：`std::unique_ptr`、`std::string`（SSO）、`std::vector` 纷纷补齐移动构造/赋值，容器扩容与返回大对象从此几乎零拷贝。
+- <span class="badge badge-comment">评</span> C++ 始终没走 Rust 那条"移动后旧绑定编译期不可用"的路——它把"别再用已移动对象"的责任交还程序员，换得与四十年存量代码的兼容；这是务实，也是负担。
+- <span class="badge badge-anecdote">轶</span> `std::move` 名字是最广为误解的 API 之一：它什么都不移动，只是 `static_cast<T&&>`，真正干活的是随后的移动构造/赋值；名字是"语义提示"而非"动作"。
+- C++20/23 继续打磨值类别与 `[[nodiscard]]` 等配合，让"误用已移动对象"更易被静态检查捕捉。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/move_semantics · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0135r1.html
 
@@ -50,7 +50,7 @@ C++98 是严格的"值语义"：函数按值返回大对象、把临时对象赋
 - **Rule of Three/Five/Zero** ⟶ `Book/part04_memory/ch39_raii_rule.md`：移动语义使 Rule of Three 升级为 Rule of Five。
 - **vector 扩容、失效、allocator** ⟶ `Book/part07_stl/ch77_vector.md`：vector 扩容时如何"搬元素"直接取决于元素移动构造是否 `noexcept`（§⑫）。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // ②-1 前置：右值引用绑定到临时（独立可编译）
 #include <iostream>
@@ -66,7 +66,7 @@ int main() {
 }
 ```
 
-> **示例 2** [难度 ★★☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 前置知识
 ```cpp
 // ②-2 前置：移动构造让"返回值"免拷贝（独立可编译，演示思想）
 #include <iostream>
@@ -89,7 +89,7 @@ int main() {
 
 ---
 
-> **示例 3** [难度 ★★★☆☆] [主题：前置知识]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识
 ```cpp
 // ②-3 值类别可用类型特性在编译期识别（独立可编译）
 #include <type_traits>
@@ -119,7 +119,7 @@ int main() {
 - **RVO / NRVO 与拷贝消除** ⟶ `Book/part10_modern/ch117_copy_elision.md`：理解为什么"不要 `return std::move(local)`"——拷贝消除优先于移动（§⑯）。
 - **cast** ⟶ `Book/part03_language/ch27_cast.md`：`std::move` 的本质是 `static_cast<T&&>`，属于 `static_cast` 的合法用法。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：后续依赖]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后续依赖
 ```cpp
 // ③-1 后续：移动 + 完美转发组合（独立可编译，演示）
 #include <iostream>
@@ -140,7 +140,7 @@ int main() {
 }
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：后续依赖]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后续依赖
 ```cpp
 // ③-2 后续：拷贝消除与移动的关系（独立可编译，return 局部触发 NRVO/移动）
 #include <iostream>
@@ -166,7 +166,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
                  ┌─────────────────────────────────────────┐
                  │   表达式的值类别（C++17）                 │
@@ -228,7 +228,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：移动 = 指针转移，而非字节拷贝
 
-> **示例 7** [难度 ★★☆☆☆] [主题：内存图：移动 = 指针转移，而非字节]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：移动 = 指针转移，而非字节
 ```
 移动前：
   Source:  [_data] ──────► [堆: 100万个 int]
@@ -245,7 +245,7 @@ classDiagram
 - `[标准]`：移动语义的核心是**资源所有权的转移**，而非值的复制；移动构造/赋值把源的资源指针"偷"过来并把源置空，使源的析构不会释放已被转移的资源（避免双释放）。
 - `[经验]`：移动的成本是**常数级**（几次指针赋值），与对象大小无关；拷贝的成本是 `O(大小)`（逐字节/逐元素）。对持有堆资源的对象，差距可达数量级。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：内存图：移动 = 指针转移，而非字节]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：移动 = 指针转移，而非字节
 ```cpp
 // ⑦-1 移动窃取指针，拷贝逐元素（独立可编译，演示思想）
 #include <iostream>
@@ -275,7 +275,7 @@ int main() {
 
 移动后，源对象仍然存在（直到其作用域结束），但处于**"有效但未指定（valid but unspecified）"**状态——可以安全析构或赋值，但不可假设其内容。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：生命周期图：移动后源对象的状态]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：移动后源对象的状态
 ```
 时间轴 ──────────────────────────────────────────────►
 
@@ -294,7 +294,7 @@ int main() {
 - `[标准]`：`[lib.types.movedfrom]` 规定被移动后的标准库类型仍可析构、可被赋值、可比较（比较结果未指定）；用户类型应遵守同一约定。
 - `[经验]`：实用准则——移动后把源对象当"空壳"，要么重新赋值再使用，要么不再使用直到析构。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：生命周期图：移动后源对象的状态]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：移动后源对象的状态
 ```cpp
 // ⑧-1 移动后源对象可重新赋值、可安全析构（独立可编译）
 #include <iostream>
@@ -311,7 +311,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：生命周期图：移动后源对象的状态]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：移动后源对象的状态
 ```cpp
 // ⑧-2 移动后源的"内容未指定"（独立可编译，仅展示可析构）
 #include <iostream>
@@ -334,7 +334,7 @@ int main() {
 
 最常见的误解：`std::move(x)` 会"移动 x"。**真相**：它只是把 `x` 强制转换成右值引用类型（`static_cast<T&&>`），真正的移动发生在随后调用的移动构造/赋值里。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：调用栈 / 时序图：std::mov]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：std::mov
 ```
 调用方                       std::move                目标对象
   │                             │                         │
@@ -352,7 +352,7 @@ int main() {
 - `[标准]`：`std::move` 的语义就是 `static_cast<remove_reference_t<T>&&>(t)`（见 §⑬），它**不生成任何运行期代码**（在 `-O2` 下完全消失）。
 - `[经验]`：记住口头禅——"move 不移动，它只是允许移动"。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：调用栈 / 时序图：std::mov]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：std::mov
 ```cpp
 // ⑨-1 演示：std::move 本身不触达任何成员（独立可编译）
 #include <iostream>
@@ -372,7 +372,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★★★☆☆] [主题：调用栈 / 时序图：std::mov]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：std::mov
 ```cpp
 // ⑨-2 对比：不 move 则拷贝（独立可编译）
 #include <iostream>
@@ -421,7 +421,7 @@ int main() {
 - `[实现·GCC15.3.0]` [VERIFIED]：汇编证实移动赋值的代价是 **`delete[]` 旧资源 + 两条 `mov` 窃取指针 + 源置空**（常数级），拷贝赋值则额外含 `call _Znay`（堆分配）+ 元素循环 `O(n)`。对大缓冲区，差距即"分配+复制" vs "两次指针赋值"。
 - `[标准]`：这正是移动语义把"深拷贝"降级为"指针转移"的性能收益来源。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：汇编分析：移动 vs 拷贝]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编分析：移动 vs 拷贝
 ```cpp
 // ⑩-1 被测代码（与上方 asm 对应）：Buf 的移动/拷贝赋值（独立可编译）
 #include <utility>
@@ -462,7 +462,7 @@ int main() {
 - `[标准]`：C++11 起，所有标准库容器/智能指针/字符串都提供了 `noexcept` 移动构造与移动赋值，使它们在容器中存储、作为返回值、跨线程传递时零拷贝。
 - `[经验]`：自己写的资源管理类（RAII）必须提供 `noexcept` 移动，才能享受与标准库同等的性能（见 §⑫）。
 
-> **示例 16** [难度 ★★☆☆☆] [主题：联系：移动语义贯穿整个标准库]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系：移动语义贯穿整个标准库
 ```cpp
 // ⑪-1 unique_ptr 只可移动不可拷贝（独立可编译）
 #include <memory>
@@ -477,7 +477,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：联系：移动语义贯穿整个标准库]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系：移动语义贯穿整个标准库
 ```cpp
 // ⑪-2 string 移动窃取缓冲区（独立可编译）
 #include <string>
@@ -498,7 +498,7 @@ int main() {
 
 `std::vector` 扩容（reallocation）需要把旧元素搬到新内存。它**优先用移动构造**，但前提是移动构造**不抛异常（`noexcept`）**——因为一旦在搬移中途抛异常，vector 无法回滚到旧状态（旧元素已被搬走）。
 
-> **示例 18** [难度 ★★☆☆☆] [主题：移动决定 vector 扩容走"移动]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动决定 vector 扩容走"移动
 ```cpp
 // ⑫-1 noexcept 移动：vector 扩容用移动，O(N) 仅指针搬运（独立可编译）
 #include <vector>
@@ -521,7 +521,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：移动决定 vector 扩容走"移动]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动决定 vector 扩容走"移动
 ```cpp
 // ⑫-2 非 noexcept 移动：vector 退回拷贝（更安全但更慢，独立可编译）
 #include <vector>
@@ -554,7 +554,7 @@ int main() {
 
 ### 13.1 std::move 的本质
 
-> **示例 20** [难度 ★★★☆☆] [主题：的本质]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的本质
 ```cpp
 #include <utility>
 // ⑬-1a libstdc++ 源码摘录（文件：bits/move.h，行号：104）
@@ -569,7 +569,7 @@ int main() { return 0; }
 
 ### 13.2 move_if_noexcept（vector 扩容决策）
 
-> **示例 21** [难度 ★★★☆☆] [主题：ifnoexcept]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · ifnoexcept
 ```cpp
 #include <utility>
 // ⑬-2a libstdc++ 源码摘录（文件：bits/move.h，行号：125）
@@ -584,7 +584,7 @@ int main() { return 0; }
 
 ### 13.3 vector 的移动构造/赋值
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：的移动构造/赋值]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的移动构造/赋值
 ```cpp
 // ⑬-3a libstdc++ 源码摘录（文件：bits/stl_vector.h，行号：615 / 761）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -610,7 +610,7 @@ int main() { return 0; }
 - `[标准]`：移动语义自 C++11 成为核心；C++23 仅做边角完善（如更一致的 `noexcept` 推导）。
 - `[经验]`：现代 C++ 的 RAII + 移动语义组合（见 `Book/part04_memory/ch39_raii_rule.md`）是"零泄漏 + 零拷贝"的工程基石。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：提案背景]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 提案背景
 ```cpp
 // ⑭-1 工业：工厂函数返回大对象，靠移动/拷贝消除免拷贝（独立可编译）
 #include <iostream>
@@ -663,7 +663,7 @@ int main() {
 7. **`std::unique_ptr` 为什么不能拷贝只能移动？**
    → `[标准]` 独占所有权语义：拷贝会导致双释放，故删除拷贝、仅留移动（§⑪）。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 // ⑮-1 面试题实战：vector 扩容的移动/拷贝路径（独立可编译）
 #include <vector>
@@ -691,7 +691,7 @@ int main() {
 ## ⑯ 易错点
 
 1. **`std::move` 具名右值引用却被当右值用**
-> **示例 25** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ❌ 逻辑错误（编译通过，实际拷贝而非移动）
    #include <iostream>
@@ -707,7 +707,7 @@ int main() {
    ✅ 正确：`T x = std::move(r);`（再 move 一次）。
 
 2. **对 `const` 对象 move 退化为拷贝**
-> **示例 26** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ⑯-1 const 对象被 move 实际拷贝（独立可编译，演示）
    #include <iostream>
@@ -721,7 +721,7 @@ int main() {
 ```
 
 3. **`return std::move(local);` 阻碍 RVO**
-> **示例 27** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ⑯-2 错误写法：显式 move 阻止 NRVO（独立可编译，对比）
    #include <iostream>
@@ -733,7 +733,7 @@ int main() {
 ```
 
 4. **移动后继续读源对象**
-> **示例 28** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ⑯-3 错误：移动后使用源对象内容（独立可编译，安全写法对照）
    #include <iostream>
@@ -751,7 +751,7 @@ int main() {
 5. **移动构造未标 `noexcept` 拖慢 vector**
    → 见 §⑫：非 noexcept 移动使 vector 扩容退回拷贝。务必 `= default` 或显式 `noexcept`。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ⑯-4 正确：移动构造/赋值都 noexcept（独立可编译，推荐写法）
 #include <iostream>
@@ -784,7 +784,7 @@ int main() { Holder a; Holder b = std::move(a); std::cout << "ok\n"; return 0; }
 6. **`std::unique_ptr` / `std::thread` 等只移动类型，用 `std::move` 转移所有权**，不要尝试拷贝 `[标准]`。
 7. **容器存大对象时，确保元素可 `noexcept` 移动**，扩容才走移动而非拷贝 `[经验]`。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑰-1 最佳实践：Rule of Five 显式声明（独立可编译）
 #include <iostream>
@@ -805,7 +805,7 @@ public:
 int main() { Buffer a(1), b; b = std::move(a); std::cout << "ok\n"; return 0; }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑰-2 最佳实践：返回局部对象、放入容器都靠移动（独立可编译）
 #include <vector>
@@ -838,7 +838,7 @@ int main() {
 
 ### 18.2 microbenchmark 量级
 
-> **示例 32** [难度 ★★☆☆☆] [主题：量级]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 量级
 ```cpp
 // ⑱-1 量级对照：拷贝 vs 移动一个大对象（独立可编译，计时骨架）
 #include <vector>
@@ -888,7 +888,7 @@ int main() {
 
 请求处理对象（持有连接、缓冲区）在 IO 线程解析后，整体 `std::move` 交给工作线程，避免跨线程拷贝大缓冲。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：工业案例：所有权转移与容器化大对象]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：所有权转移与容器化大对象
 ```cpp
 // ⑲-1 unique_ptr 跨线程/跨作用域转移所有权（独立可编译，模拟逻辑）
 #include <memory>
@@ -916,7 +916,7 @@ int main() {
 
 写缓冲（WAL 段）作为大对象在"生产者"与"刷盘器"之间用移动传递，避免每批数据深拷贝。
 
-> **示例 34** [难度 ★★☆☆☆] [主题：工业案例：所有权转移与容器化大对象]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：所有权转移与容器化大对象
 ```cpp
 // ⑲-2 大对象容器：vector 存可移动 Buffer（独立可编译，模拟逻辑）
 #include <vector>
@@ -945,7 +945,7 @@ int main() {
 
 编译器可在返回处直接构造（NRVO）或隐式移动，使"返回大对象"与"返回 int"成本相当（见 §⑭、§⑯）。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：工业案例：所有权转移与容器化大对象]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：所有权转移与容器化大对象
 ```cpp
 // ⑲-3 工厂返回大对象（独立可编译）
 #include <string>
@@ -970,16 +970,16 @@ int main() { Doc d = load(); std::cout << d.title << "\n"; return 0; }
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：给移动构造标 `noexcept` 让 `vector` 重分配用移动。** 你发现没标就回退拷贝。请说明。
-   - [标准] 容器在重分配时仅当移动构造/赋值对 `is_nothrow_move_constructible` 为真才使用移动，否则回退拷贝。
-   - [引用] ISO/IEC 14882:2023 §[class.copy.ctor] / [meta.unary.prop]（noexcept 移动与 is_nothrow_move_constructible）；cppreference "Move semantics" 词条。
+   - <span class="badge badge-std">标准</span> 容器在重分配时仅当移动构造/赋值对 `is_nothrow_move_constructible` 为真才使用移动，否则回退拷贝。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy.ctor] / [meta.unary.prop]（noexcept 移动与 is_nothrow_move_constructible）；cppreference "Move semantics" 词条。
 
 2. **真实场景：被移动对象须处于“有效但未指定”状态。** 你移动后还用它但保证只析构/赋值。请说明约束。
-   - [标准] 被移动对象应处于有效（可安全析构、可赋值）但未指定状态；不得假设其原值仍在。
-   - [引用] ISO/IEC 14882:2023 §[utility]（被移动对象状态约定）/ 一般库约定；cppreference "Move semantics" 词条。
+   - <span class="badge badge-std">标准</span> 被移动对象应处于有效（可安全析构、可赋值）但未指定状态；不得假设其原值仍在。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[utility]（被移动对象状态约定）/ 一般库约定；cppreference "Move semantics" 词条。
 
 3. **真实场景：返回局部对象可隐式移动（无需 std::move）。** 你多写了 `std::move` 反而阻止 RVO。请说明。
-   - [标准] 返回局部变量或 throw 时，标准允许隐式移动（甚至在某些情况下强制），多余的 `move` 会抑制复制消除。
-   - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（隐式移动与复制消除）；cppreference "Copy elision" 词条。
+   - <span class="badge badge-std">标准</span> 返回局部变量或 throw 时，标准允许隐式移动（甚至在某些情况下强制），多余的 `move` 会抑制复制消除。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy.elision]（隐式移动与复制消除）；cppreference "Copy elision" 词条。
 
 | 语言 | 移动语义 | 说明 |
 |---|---|---|
@@ -996,7 +996,7 @@ int main() { Doc d = load(); std::cout << d.title << "\n"; return 0; }
   3. **规则**：C++ 因历史兼容需保留拷贝语义，`std::move` 是"请求"而非"强制"——源对象仍可访问（虽状态未指定）。
 - `[经验]`：从 Rust 转来的工程师会觉得 C++ 移动"不够安全但有更多控制"；从 Java/C# 转来的会觉得"C++ 终于能避免深拷贝了"。无论背景，都应把"移动后源对象当空壳"刻进肌肉记忆。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：跨语言对比：移动语义]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：移动语义
 ```cpp
 // ⑳-1 跨语言映射：Rust 的 let y = x;（移动）在 C++ 用 std::move 表达（独立可编译）
 #include <iostream>
@@ -1011,7 +1011,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：跨语言对比：移动语义]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：移动语义
 ```cpp
 // ⑳-2 跨语言映射：C++ 的"移动后有效但未指定" vs Rust 的编译期禁止 use-after-move
 // （C++ 无法在编译期阻止，需纪律；独立可编译的"安全用法"示范）
@@ -1037,26 +1037,26 @@ int main() {
 
 ### ㉒.1 历史渊源补强：移动语义的来龙去脉
 
-移动语义的直接源头是 WG21 论文 N1377《A Proposal to Add Move Semantics Support to the C++ Language》（Howard Hinnant、Peter Dimov、Dave Abrahams，2002），它首次系统提出 `T&&`、移动构造/赋值，并明确与转发问题兼容。[史] 同年 Dave Abrahams 的 N1385《The Forwarding Problem: Arguments》把"如何把参数原样转发"单列为独立难题，二者共同催生了 C++11 的移动与转发设施。[史] 更早的 `std::auto_ptr`（C++98）曾用"拷贝即转移所有权"模拟移动，却因拷贝构造悄悄把源置空留下大量悬垂别名 bug，最终在 C++17 被正式弃用——它正是"我们缺一种只针对将亡对象语义"的证据。
+移动语义的直接源头是 WG21 论文 N1377《A Proposal to Add Move Semantics Support to the C++ Language》（Howard Hinnant、Peter Dimov、Dave Abrahams，2002），它首次系统提出 `T&&`、移动构造/赋值，并明确与转发问题兼容。<span class="badge badge-history">史</span> 同年 Dave Abrahams 的 N1385《The Forwarding Problem: Arguments》把"如何把参数原样转发"单列为独立难题，二者共同催生了 C++11 的移动与转发设施。<span class="badge badge-history">史</span> 更早的 `std::auto_ptr`（C++98）曾用"拷贝即转移所有权"模拟移动，却因拷贝构造悄悄把源置空留下大量悬垂别名 bug，最终在 C++17 被正式弃用——它正是"我们缺一种只针对将亡对象语义"的证据。
 
-C++ 没有走 Rust 那条"移动后旧绑定编译期不可用"的路，而是把"别再用已移动对象"的责任交还程序员，换来与四十年存量代码的兼容；这是务实，也是长期负担。[评] `std::move` 是最被误解的名字之一：它只是 `static_cast<T&&>`，什么都不移动，真正的活儿是随后的移动构造/赋值干完的。[轶]
+C++ 没有走 Rust 那条"移动后旧绑定编译期不可用"的路，而是把"别再用已移动对象"的责任交还程序员，换来与四十年存量代码的兼容；这是务实，也是长期负担。<span class="badge badge-comment">评</span> `std::move` 是最被误解的名字之一：它只是 `static_cast<T&&>`，什么都不移动，真正的活儿是随后的移动构造/赋值干完的。<span class="badge badge-anecdote">轶</span>
 
 ### ㉒.2 真实工程坐标：移动语义活在哪些产品里
 
-标准库自身是最广泛的"用户"：`std::vector` 扩容、`std::string`(SSO)、`std::unique_ptr`、`std::future`、`std::async` 全靠移动消除深拷贝。[史] Chromium 的 `scoped_ptr`→`std::unique_ptr` 迁移、LLVM/Clang 的 `Value` 体系、游戏引擎（Unreal、Unity）的资源句柄都依赖移动传递所有权。高频交易与低延迟系统把"返回大对象零拷贝"当作硬指标；移动让 `std::vector` 在容器间转移所有权时几乎零成本，也是序列化框架（Protobuf、FlatBuffers 的 builder）的核心 idiom。
+标准库自身是最广泛的"用户"：`std::vector` 扩容、`std::string`(SSO)、`std::unique_ptr`、`std::future`、`std::async` 全靠移动消除深拷贝。<span class="badge badge-history">史</span> Chromium 的 `scoped_ptr`→`std::unique_ptr` 迁移、LLVM/Clang 的 `Value` 体系、游戏引擎（Unreal、Unity）的资源句柄都依赖移动传递所有权。高频交易与低延迟系统把"返回大对象零拷贝"当作硬指标；移动让 `std::vector` 在容器间转移所有权时几乎零成本，也是序列化框架（Protobuf、FlatBuffers 的 builder）的核心 idiom。
 
 - **零拷贝序列化（Cap'n Proto、FlatBuffers）**：这类框架用移动语义在「消息 builder ↔ 字节流」间转移所有权，避免大消息的深拷贝；移动让跨进程/网络传输的大 payload 几乎零成本。
 - **容器/算法库（Eigen、xtensor）**：表达式模板借移动把「临时矩阵表达式」的求值结果零拷贝移出，保证 `auto` 接收的临时结果不被提前析构——这是数值计算库性能与正确性的双重基石。
 
 ### ㉒.3 生产踩坑：移动的常见误用与陷阱
 
-"移动后状态"是 valid but unspecified：误用已移动对象（再读它的值、再 move 它）是静默 bug 温床；标准只保证可析构/可赋值，不保证值不变。[史] noexcept 陷阱最常见：`std::vector` 扩容若发现移动构造未标 `noexcept`，会经 `std::move_if_noexcept` 退回拷贝以保证强异常安全，移动优化"凭空消失"——这是"为什么没快起来"的头号原因。`return std::move(local)` 是反模式：它把具名对象从 NRVO 候选降级为必须移动，反而阻碍拷贝消除（见 ch117）。[轶] 对 `const` 对象 `std::move` 退化为拷贝；跨 ABI/DLL 边界传递含移动类型的对象时，若两侧标准库实现不一致，移动可能悄悄变成拷贝或链接失败。
+"移动后状态"是 valid but unspecified：误用已移动对象（再读它的值、再 move 它）是静默 bug 温床；标准只保证可析构/可赋值，不保证值不变。<span class="badge badge-history">史</span> noexcept 陷阱最常见：`std::vector` 扩容若发现移动构造未标 `noexcept`，会经 `std::move_if_noexcept` 退回拷贝以保证强异常安全，移动优化"凭空消失"——这是"为什么没快起来"的头号原因。`return std::move(local)` 是反模式：它把具名对象从 NRVO 候选降级为必须移动，反而阻碍拷贝消除（见 ch117）。<span class="badge badge-anecdote">轶</span> 对 `const` 对象 `std::move` 退化为拷贝；跨 ABI/DLL 边界传递含移动类型的对象时，若两侧标准库实现不一致，移动可能悄悄变成拷贝或链接失败。
 
 ### ㉒.4 与标准的互动：移动语义与 C++ 标准的演进
 
-移动语义随 C++11 入标（N1377 系列），与右值引用、完美转发一起构成"零开销所有权转移"三件套；C++17 引入 guaranteed copy elision（P0135）与移动互补，进一步消灭冗余构造。[史] C++20/23 用 `[[nodiscard]]`、更严格的值类别规则让"误用已移动对象"更易被静态检查捕捉；`std::move` 的语义从未改变——它永远是转型而非动作。与 WG21 方向一致：标准持续把"冗余构造"从可选优化升格为语言保证，但"移动后状态责任归程序员"这一取舍至今未变。[评]
+移动语义随 C++11 入标（N1377 系列），与右值引用、完美转发一起构成"零开销所有权转移"三件套；C++17 引入 guaranteed copy elision（P0135）与移动互补，进一步消灭冗余构造。<span class="badge badge-history">史</span> C++20/23 用 `[[nodiscard]]`、更严格的值类别规则让"误用已移动对象"更易被静态检查捕捉；`std::move` 的语义从未改变——它永远是转型而非动作。与 WG21 方向一致：标准持续把"冗余构造"从可选优化升格为语言保证，但"移动后状态责任归程序员"这一取舍至今未变。<span class="badge badge-comment">评</span>
 
-- [史] **隐式移动修订链**：C++23 的 **P2266（Simpler Implicit Move）** 由 Arthur O'Dwyer 提案，历经 **R0 → R1 → R2 → R3（C++23 采纳）**，放宽「隐式移动」规则——在 `return`/`throw` 等场景更激进地把值类别当右值，进一步消灭冗余拷贝；<https://wg21.link/p2266>。
+- <span class="badge badge-history">史</span> **隐式移动修订链**：C++23 的 **P2266（Simpler Implicit Move）** 由 Arthur O'Dwyer 提案，历经 **R0 → R1 → R2 → R3（C++23 采纳）**，放宽「隐式移动」规则——在 `return`/`throw` 等场景更激进地把值类别当右值，进一步消灭冗余拷贝；<https://wg21.link/p2266>。
 
 ### ㉒.5 权威引用
 
@@ -1071,7 +1071,7 @@ C++ 没有走 Rust 那条"移动后旧绑定编译期不可用"的路，而是�
 
 1. 实现一个 `String` 类（动态 `char*` 缓冲），给出完整 Rule of Five（析构、拷贝构造、拷贝赋值、移动构造、移动赋值），全部 `noexcept` 适配移动，并写测试验证移动后源为空。
 
-> **示例 38** [难度 ★★☆☆☆] [主题：练习题]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题
 ```cpp
 // 练习①参考实现：Rule of Five String 类，noexcept 移动
 #include <iostream>
@@ -1131,7 +1131,7 @@ int main() {
 
 ## 附录: Move 语义深度
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录: Move 语义深度]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: Move 语义深度
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1141,7 +1141,7 @@ struct Buffer{int*d;size_t n;explicit Buffer(size_t s):d(new int[s]),n(s){}~Buff
 int main(){Buffer a(10);Buffer b=std::move(a);std::cout<<b.n<<std::endl;return 0;}
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录: Move 语义深度]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1149,7 +1149,7 @@ int main(){Buffer a(10);Buffer b=std::move(a);std::cout<<b.n<<std::endl;return 0
 int main(){std::vector<int> a{1,2,3};auto b=std::move(a);std::cout<<b.size()<<" "<<a.size()<<std::endl;return 0;}
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录: Move 语义深度]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1157,7 +1157,7 @@ int main(){std::vector<int> a{1,2,3};auto b=std::move(a);std::cout<<b.size()<<" 
 int main(){auto p1=std::make_unique<int>(42);auto p2=std::move(p1);std::cout<<*p2<<std::endl;return 0;}
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录: Move 语义深度]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
 ```cpp
 #include <iostream>
 #include <string>
@@ -1165,7 +1165,7 @@ int main(){auto p1=std::make_unique<int>(42);auto p2=std::move(p1);std::cout<<*p
 int main(){std::string s1="hello";std::string s2=std::move(s1);std::cout<<s2<<std::endl;return 0;}
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录: Move 语义深度]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1199,7 +1199,7 @@ int main(){std::cout<<"std::move is a cast to rvalue reference. It does NOT move
 
 ### 测试源码
 
-> **示例 44** [难度 ★★★☆☆] [主题：测试源码]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
 ```cpp
 struct Big { char* data; size_t sz;
     Big(size_t n): data(new char[n]), sz(n) { memset(data, 0, n); }
@@ -1305,7 +1305,7 @@ RVO 不产生函数调用在调用方生成对象。编译器在函数签名层�
 
 `std::unique_ptr` 只能移动、不能拷贝（Rule of Five 中拷贝构造/赋值被 `=delete`）。用 `std::move` 把所有权从解析线程移交到任务队列，零拷贝：
 
-> **示例 45** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <memory>
 #include <vector>
@@ -1320,8 +1320,8 @@ int main() {
 }
 ```
 
-[标准] `unique_ptr` 的移动构造/赋值转移资源所有权（`[unique.ptr]`）；移动后源处于"有效但未指定"状态，本例置空（`[lib.types.movedfrom]`）。
-[引用] libstdc++ `bits/unique_ptr.h` 中拷贝被 `=delete`、仅留 `noexcept` 移动；见 cppreference `std::unique_ptr`：<https://en.cppreference.com/w/cpp/memory/unique_ptr> 与 WG21 N1377（Howard Hinnant，右值引用与移动语义）。
+<span class="badge badge-std">标准</span> `unique_ptr` 的移动构造/赋值转移资源所有权（`[unique.ptr]`）；移动后源处于"有效但未指定"状态，本例置空（`[lib.types.movedfrom]`）。
+<span class="badge badge-ref">引用</span> libstdc++ `bits/unique_ptr.h` 中拷贝被 `=delete`、仅留 `noexcept` 移动；见 cppreference `std::unique_ptr`：<https://en.cppreference.com/w/cpp/memory/unique_ptr> 与 WG21 N1377（Howard Hinnant，右值引用与移动语义）。
 
 </details>
 
@@ -1333,7 +1333,7 @@ int main() {
 
 `std::vector` 扩容前用 `std::move_if_noexcept` 决策：移动构造 `noexcept` 才移动，否则为强异常安全退回拷贝：
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <vector>
 #include <utility>
@@ -1352,8 +1352,8 @@ int main() {
 }
 ```
 
-[标准] `[vector.modifiers]` 通过 `move_if_noexcept` 选择移动或拷贝，保证强异常安全（`[std.forward]`）。
-[引用] libstdc++ `bits/stl_vector.h` 扩容路径调用 `move_if_noexcept`（`bits/move.h:125`）；见 cppreference `std::move_if_noexcept`：<https://en.cppreference.com/w/cpp/utility/move_if_noexcept>。
+<span class="badge badge-std">标准</span> `[vector.modifiers]` 通过 `move_if_noexcept` 选择移动或拷贝，保证强异常安全（`[std.forward]`）。
+<span class="badge badge-ref">引用</span> libstdc++ `bits/stl_vector.h` 扩容路径调用 `move_if_noexcept`（`bits/move.h:125`）；见 cppreference `std::move_if_noexcept`：<https://en.cppreference.com/w/cpp/utility/move_if_noexcept>。
 
 </details>
 
@@ -1365,7 +1365,7 @@ int main() {
 
 直接返回局部对象名字（或 prvalue），让 NRVO/强制消除生效；绝不对局部对象 `std::move`：
 
-> **示例 47** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <string>
 #include <utility>
@@ -1379,8 +1379,8 @@ Config load_config() {
 int main() { Config c = load_config(); (void)c; }
 ```
 
-[标准] `[class.copy.elision]`：返回具名局部对象允许 NRVO；返回 prvalue 自 C++17 起强制消除。对局部对象 `return std::move(x)` 会把 x 变成右值、抑制 NRVO，反而强制一次移动构造（`[expr.return]`）。
-[引用] 见 cppreference「Copy elision」：<https://en.cppreference.com/w/cpp/language/copy_elision> 与 WG21 P0135R1（guaranteed copy elision，Richard Smith）。
+<span class="badge badge-std">标准</span> `[class.copy.elision]`：返回具名局部对象允许 NRVO；返回 prvalue 自 C++17 起强制消除。对局部对象 `return std::move(x)` 会把 x 变成右值、抑制 NRVO，反而强制一次移动构造（`[expr.return]`）。
+<span class="badge badge-ref">引用</span> 见 cppreference「Copy elision」：<https://en.cppreference.com/w/cpp/language/copy_elision> 与 WG21 P0135R1（guaranteed copy elision，Richard Smith）。
 
 </details>
 
@@ -1558,7 +1558,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 48** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <vector>
 #include <string>

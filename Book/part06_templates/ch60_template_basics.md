@@ -1,5 +1,5 @@
 # 第60章　模板基础与实例化（Template Basics & Instantiation）
-> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 [第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
@@ -10,7 +10,7 @@
 > 泛型不是宏，也不是 `void*`——C++ 模板要的是「用类型当参数，生成零开销的专用代码」。
 
 ### 0.1 起源（谁·何时·为何）
-写容器时，C 程序员的老办法要么是 `void*` + 强制转换（不安全），要么是宏（无类型检查、难调试）。Stroustrup 想兼得「类型安全」与「不付运行期代价」，于是借鉴 **Ada 1983 的泛型** 与 **CLU 的参数化类型**（Barbara Liskov 一派），在 C++ 里引入模板。[史] 最初目标很朴素：让 `vector<int>`、`list<double>` 能像手写的专用代码一样高效又安全。
+写容器时，C 程序员的老办法要么是 `void*` + 强制转换（不安全），要么是宏（无类型检查、难调试）。Stroustrup 想兼得「类型安全」与「不付运行期代价」，于是借鉴 **Ada 1983 的泛型** 与 **CLU 的参数化类型**（Barbara Liskov 一派），在 C++ 里引入模板。<span class="badge badge-history">史</span> 最初目标很朴素：让 `vector<int>`、`list<double>` 能像手写的专用代码一样高效又安全。
 
 ### 0.2 关键转折（编年）
 - 1988 前后：Stroustrup 在 ARM 之前就把模板设计进语言。
@@ -18,18 +18,18 @@
 - 1998：C++98 将模板（含特化、偏特化）确立为标准核心。
 
 ### 0.3 设计哲学之争
-模板 vs 宏：宏是文本替换、出错天书；模板是类型感知的代码生成器，错误信息虽也曾「天书」，但至少类型安全。[评] 模板 vs Java/C# 泛型：后者用「类型擦除」保运行时兼容，牺牲了值类型效率；C++ 模板在实例化点生成真实代码，兑现零开销，但代价是**代码膨胀**与更长编译时间。[史]
+模板 vs 宏：宏是文本替换、出错天书；模板是类型感知的代码生成器，错误信息虽也曾「天书」，但至少类型安全。<span class="badge badge-comment">评</span> 模板 vs Java/C# 泛型：后者用「类型擦除」保运行时兼容，牺牲了值类型效率；C++ 模板在实例化点生成真实代码，兑现零开销，但代价是**代码膨胀**与更长编译时间。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++98 把模板确立为核心。模板的「二次生长」是 C++ 史最精彩的副线之一：
 
-- [史] 模板最初只是「类型参数化的容器与算法」（Stepanov 的 STL，1994）。但社区很快发现：模板能在编译期递归实例化，于是 1994–1998 年间，`#include` 技巧与模板递归把 C++ 意外改造成一门「图灵完备的元编程语言」（见 ch68）。
+- <span class="badge badge-history">史</span> 模板最初只是「类型参数化的容器与算法」（Stepanov 的 STL，1994）。但社区很快发现：模板能在编译期递归实例化，于是 1994–1998 年间，`#include` 技巧与模板递归把 C++ 意外改造成一门「图灵完备的元编程语言」（见 ch68）。
 
-- [史] 2003 年前后 Boost 库大量使用模板技巧（如 `boost::mpl`、`boost::type_traits`），倒逼标准在 C++11 把 `type_traits`、可变参数模板正式纳入；模板从「用户的魔法」变成「标准的一等公民」。
+- <span class="badge badge-history">史</span> 2003 年前后 Boost 库大量使用模板技巧（如 `boost::mpl`、`boost::type_traits`），倒逼标准在 C++11 把 `type_traits`、可变参数模板正式纳入；模板从「用户的魔法」变成「标准的一等公民」。
 
-- [史] C++20 的 concepts（ch67）给模板加了「函数式的前置约束」，把过去靠 SFINAE（ch66）与文档约定的隐式要求显式化，模板的错误信息从「几百行实例化回溯」大幅收敛。
+- <span class="badge badge-history">史</span> C++20 的 concepts（ch67）给模板加了「函数式的前置约束」，把过去靠 SFINAE（ch66）与文档约定的隐式要求显式化，模板的错误信息从「几百行实例化回溯」大幅收敛。
 
-- [评] 一条暗线是：每次标准给模板「补语法」，都在回应社区早已在库里玩出的花活——标准库常是「先有 Boost，后有 std」。
+- <span class="badge badge-comment">评</span> 一条暗线是：每次标准给模板「补语法」，都在回应社区早已在库里玩出的花活——标准库常是「先有 Boost，后有 std」。
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/templates ；https://en.wikipedia.org/wiki/Template_metaprogramming
 
@@ -39,20 +39,20 @@
 
 [第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
 
-- 说清「模板」「模板参数」「模板实参」「实例化」四者关系 [标准]
-- 区分隐式实例化 / 显式实例化 / 显式特化 / 显式实例化定义 [标准]
-- 理解两阶段查找（Phase 1 不依赖模板参数 / Phase 2 依赖模板参数）[实现]
-- 能从 mangled 符号反推模板实例化 [平台]
-- 掌握非类型模板参数（NTTP）与模板模板参数的边界 [标准]
+- 说清「模板」「模板参数」「模板实参」「实例化」四者关系 <span class="badge badge-std">标准</span>
+- 区分隐式实例化 / 显式实例化 / 显式特化 / 显式实例化定义 <span class="badge badge-std">标准</span>
+- 理解两阶段查找（Phase 1 不依赖模板参数 / Phase 2 依赖模板参数）<span class="badge badge-impl">实现</span>
+- 能从 mangled 符号反推模板实例化 <span class="badge badge-platform">平台</span>
+- 掌握非类型模板参数（NTTP）与模板模板参数的边界 <span class="badge badge-std">标准</span>
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 
 - **模板名称**：函数模板 / 类模板（基础参数化生成器）
 - **适用场景**：同一算法/数据结构需要对多种类型复用，且要求零抽象开销（对比 `void*`/`any` 的运行期代价）
 - **核心结构**：`template <parameter-list> decl`
-- **一句话定义**：模板是一段「带未定参数的代码蓝图」，编译器在实例化点把它落地为具体实体 [标准]
+- **一句话定义**：模板是一段「带未定参数的代码蓝图」，编译器在实例化点把它落地为具体实体 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★☆☆☆] [主题：本模板模式速查]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本模板模式速查
 ```cpp
 template <typename T>          // 模板参数列表：T 是类型参数
 T max_val(T a, T b) {          // 函数模板
@@ -64,7 +64,7 @@ T max_val(T a, T b) {          // 函数模板
 
 模板参数有三类：
 
-> **示例 2** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // 1) 类型参数
 template <typename T> struct Box { T v; };
@@ -77,9 +77,9 @@ template <typename T, template <typename> class Container>
 struct Holder { Container<T> c; };
 ```
 
-非类型参数的合法类型 [标准]：
+非类型参数的合法类型 <span class="badge badge-std">标准</span>：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 #include <cstddef>
 template <int I>            struct A {};   // 整数
@@ -93,7 +93,7 @@ template <const char* S>    struct G {};   // 字符串字面量地址可作 NTT
 
 ## ④ 实例化机制（实例化点 / 两阶段查找）
 
-> **示例 4** [难度 ★★☆☆☆] [主题：实例化机制]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实例化机制
 ```cpp
 template <typename T>
 void f(T x) {
@@ -105,9 +105,9 @@ void f(T x) {
 }
 ```
 
-实例化点（POI）规则 [标准]：
+实例化点（POI）规则 <span class="badge badge-std">标准</span>：
 
-> **示例 5** [难度 ★★☆☆☆] [主题：实例化机制]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实例化机制
 ```cpp
 template <typename T> void g(T);
 void h() {
@@ -127,7 +127,7 @@ void h() {
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <iostream>
 template <typename T>
@@ -140,7 +140,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 // 类模板最小示例
 #include <iostream>
@@ -152,7 +152,7 @@ struct Pair {
 int main() { Pair<int> p{1, 2}; std::cout << p.bigger() << '\n'; }
 ```
 
-> **示例 8** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <cstddef>
 // NTTP 最小示例：编译期定长数组
@@ -164,15 +164,15 @@ struct Fixed {
 int main() { Fixed<int, 4> f; static_assert(f.size() == 4); }
 ```
 
-## ⑦ 标准规定 [标准]
+## ⑦ 标准规定 <span class="badge badge-std">标准</span>
 
 - 模板是「蓝图」，本身不产生代码；只有实例化才生成实体（[temp]）。
-- 多个翻译单元对同一模板实参各自实例化，链接器通过弱符号（linkonce/comdat）去重 [实现]。
+- 多个翻译单元对同一模板实参各自实例化，链接器通过弱符号（linkonce/comdat）去重 <span class="badge badge-impl">实现</span>。
 - `extern template` 可抑制隐式实例化，强制跨 TU 共享一份定义（见 ⑭）。
 
-## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
+## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-> **示例 9** [难度 ★★★☆☆] [主题：行为差异 [实现][平台]]
+> **示例 9** [难度 ★★★☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // MSVC 老前端（<=19.1x）对两阶段查找不严：dependent name 在定义点即查
 // GCC/Clang 严格：以下在 MSVC 可能误编过，GCC/Clang 必报错
@@ -180,7 +180,7 @@ template <typename T>
 void buggy(T x) { undefined_helper(x); }   // GCC/Clang：dependent，实例化才报；MSVC 可能定义点就报
 ```
 
-> **示例 10** [难度 ★★★★☆] [主题：行为差异 [实现][平台]]
+> **示例 10** [难度 ★★★★☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // Mangling 差异：GCC/Clang 用 Itanium ABI；MSVC 用自己的一套（?max_val@@...）
 // 跨编译器 ABI 不兼容，模板实参不能跨 DLL 边界导出（见 ch47 ABI 节，占位：part05）
@@ -191,7 +191,7 @@ template <typename T> void cross_dll(T);   // 导出模板函数跨 MSVC DLL 易
 
 模板本身**不占运行时内存**。实例化出的每个具体函数/类是独立实体，各自有代码段与（按需）数据段。
 
-> **示例 11** [难度 ★★★★☆] [主题：内存 / 对象模型]
+> **示例 11** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
 ```cpp
 template <typename T> struct S { T x; };
 static_assert(sizeof(S<int>) == sizeof(int));        // 通常 4
@@ -225,9 +225,9 @@ _Z7max_valIdET_S0_S0_:
 
 ### 知识点深挖（模板B）
 
-**B1 实例化类型：隐式 vs 显式 vs 特化 [标准]**（各带可编译示例）
+**B1 实例化类型：隐式 vs 显式 vs 特化 <span class="badge badge-std">标准</span>**（各带可编译示例）
 
-> **示例 12** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void f(T) {}        // 主模板
 // 隐式实例化：调用处触发
@@ -238,22 +238,22 @@ template void f<double>(double);           // 发射 f<double>
 extern template void f<char>(char);        // 不生成，期望别处提供
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 显式特化：为特定实参提供完全不同实现
 template <> void f<const char*>(const char* s) { /* 字符串专用 */ }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <vector>
 // 类模板显式实例化
 template class std::vector<int>;           // 强制实例化整个 vector<int>
 ```
 
-**B2 两阶段查找实战 [实现]**（≥10 例）
+**B2 两阶段查找实战 <span class="badge badge-impl">实现</span>**（≥10 例）
 
-> **示例 15** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 int g(int);                       // 非依赖
 template <typename T>
@@ -265,60 +265,60 @@ namespace N { struct X {}; void g(N::X); }
 void test() { use(N::X{}); }      // 实例化点 ADL 找到 N::g
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void h(T x) { T::static_method(); }  // 依赖，Phase2
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> auto k(T x) -> decltype(x.foo()) { return x.foo(); } // 依赖，SFINAE 友好
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void m() { T::value; }   // 非类型值依赖，Phase2
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void n(T x) { ::g(x); }   // 限定名 :: 不 ADL，Phase1 绑定 ::g
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void p(T x) { g(x); }     // 非限定，ADL 在 Phase2
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 struct B { void f() {} };
 template <typename T> void q(T x) { x.f(); }    // 成员调用依赖，Phase2
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> T r(T a, T b) { return a + b; }  // operator+ 依赖 T，Phase2
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void s(T x) { using U = typename T::type; } // typename 必需：依赖类型
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void t(T x) { T::template rebind<int>::other y; } // template 必需：依赖模板
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> auto u(T x) -> std::enable_if_t<sizeof(T) == 4> { } // 依赖 SFINAE
 ```
 
-**B3 非类型模板参数 NTTP 边界 [标准]**
+**B3 非类型模板参数 NTTP 边界 <span class="badge badge-std">标准</span>**
 
-> **示例 26** [难度 ★★★☆☆] [主题：知识点深挖（模板B）]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <int N> struct Ctx { static constexpr int n = N; };
 Ctx<3> c;                                   // OK：字面量
@@ -328,7 +328,7 @@ int x = 6;
 // Ctx<x> e;                                // 错误：x 非编译期常量
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // C++20 字符串字面量作 NTTP（需 static 存储期）
 template <const char* S> struct Lit {};
@@ -336,28 +336,28 @@ extern const char hello[] = "hi";          // 具链接期地址
 Lit<hello> l;                              // OK（C++20 放宽）
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // auto NTTP（C++17）
 template <auto V> struct Val { static constexpr auto value = V; };
 Val<42> a; Val<'x'> b; Val<3.14> c;        // 整数/字符/浮点均可（浮点 NTTP C++20）
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <std::nullptr_t P> struct Null {};  // nullptr_t 可作 NTTP
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <int(*F)(int)> struct FnPtr { static int call(int x){ return F(x); } };
 int inc(int x){ return x+1; }
 FnPtr<inc> fp;                              // 函数指针作 NTTP
 ```
 
-**B4 模板模板参数 TTP [标准]**
+**B4 模板模板参数 TTP <span class="badge badge-std">标准</span>**
 
-> **示例 31** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <vector>
 template <typename T, template <typename> class C>
@@ -365,34 +365,34 @@ struct Wrap { C<T> v; };
 Wrap<int, std::vector> w;                   // OK（C++17 起不必写 <typename>）
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 带默认参数的 TTP
 template <typename T, template <typename, typename = std::allocator<T>> class C>
 struct Wrap2 { C<T> v; };
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // TTP 匹配时参数列表要兼容
 template <typename T, template <typename U, typename A> class C>
 struct Wrap3 { C<T, std::allocator<T>> v; };
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 变量模板（C++14）
 template <typename T> constexpr T pi = T(3.1415926535897932385L);
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> constexpr bool is_small = sizeof(T) <= 4;
 ```
 
-**B5 错误与正确对照 [经验]**
+**B5 错误与正确对照 <span class="badge badge-exp">经验</span>**
 
-> **示例 36** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：依赖类型名漏 typename
 template <typename T> void bad(T x) { T::iterator i; }   // 报错：依赖名前需 typename
@@ -400,20 +400,20 @@ template <typename T> void bad(T x) { T::iterator i; }   // 报错：依赖名�
 template <typename T> void good(typename T::iterator i) { }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：依赖模板名漏 template
 template <typename T> void bad2(T x) { typename T::template rebind<int>::other y; }
 // 实际缺 template 关键字会报
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 正确：auto 返回类型推导
 template <typename T, typename U> auto add(T a, U b) { return a + b; }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：模板定义与声明参数不一致
 extern template void f<int>(int);          // 声明
@@ -425,7 +425,7 @@ template void f<int>(double);              // 错误：实参类型不匹配
 [第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）—— STL 容器/算法全是模板
 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
 
-> **示例 40** [难度 ★★★☆☆] [主题：中的该模式]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
 // 本节覆盖：① vector 类模板独立实例化 ② std::max 函数模板推导
 //           ③ std::integral_constant 类模板+NTTP ④ std::pair 类模板
@@ -460,7 +460,7 @@ int main() {
 
 ## ⑫ 变体（variant patterns）
 
-> **示例 41** [难度 ★★★★☆] [主题：变体]
+> **示例 41** <span class="badge badge-exp">难度 ★★★★☆</span> · 变体
 ```cpp
 // 本节覆盖：① 变量模板 ② 别名模板 ③ 默认模板参数
 //           ④ 模板参数包 ⑤ 概念约束（C++20）
@@ -499,7 +499,7 @@ int main() {
 
 ## ⑬ 反模式（anti-patterns）
 
-> **示例 42** [难度 ★★★☆☆] [主题：反模式（anti-patterns）]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式合集（保留原 5 条要点，并给出可编译实证）
 //  AP1: 为省类型滥用宏——丢类型安全、参数求值两次
@@ -533,7 +533,7 @@ int main() {
 [第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost 是工业模板库的最大实践场
 [第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— 模板+policy 组合定制组件
 
-> **示例 43** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 // 案例：跨 TU 显式实例化，避免头文件模板在每个 .cpp 重复实例化、缩短编译时间
 // math.h
@@ -545,7 +545,7 @@ template float  dot<float>(const float*, const float*, int);
 template double dot<double>(const double*, const double*, int);
 ```
 
-> **示例 44** [难度 ★★★★☆] [主题：工业案例]
+> **示例 44** <span class="badge badge-exp">难度 ★★★★☆</span> · 工业案例
 ```cpp
 // 工业案例（NTTP 定维 + std::array 定长）
 #include <iostream>
@@ -572,7 +572,7 @@ int main() {
 
 [第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
 
-> **示例 45** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // libstdc++ 的 std::integral_constant 本质（简化）
 template <typename _Tp, _Tp __v>
@@ -583,20 +583,20 @@ struct integral_constant {
 };
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // libstdc++ vector 是类模板，allocator 作为第二参数（默认 std::allocator<T>）
 // 实例化 vector<int> 时，allocator<int> 一并实例化；弱符号去重
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // 实例化弱符号机制：.text$_Z... 段带 linkonce discard，链接器保留一份
 ```
 
 ## ⑯ 易错点
 
-> **示例 48** [难度 ★★★☆☆] [主题：易错点]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点
 ```cpp
 // 易错点合集（保留原 6 条，并给出可编译实证）
 //  1) 模板定义必须对所有实例化可见（通常放头文件）
@@ -623,7 +623,7 @@ int main() {
 
 ## ⑰ FAQ
 
-> **示例 49** [难度 ★★★☆☆] [主题：FAQ 问答]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · FAQ 问答
 ```cpp
 // FAQ 合集（保留原 5 条问答，并给出"宏 vs 模板"可编译实证）
 //  Q：模板和宏有什么区别？
@@ -652,7 +652,7 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 50** [难度 ★★★☆☆] [主题：最佳实践]
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践合集（保留原 5 条，并给出可编译实证）
 //  1) 模板声明与定义同放头文件（或 .ipp 包含）
@@ -687,7 +687,7 @@ int main() {
 [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 实例化成本取决于前端预算
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销须微基准实测
 
-> **示例 51** [难度 ★★★★☆] [主题：性能（编译期 / 运行期）]
+> **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // 性能要点（保留原 3 条）：实例化零运行期开销 / Code bloat / NTTP 编译期求值
 #include <iostream>
@@ -769,16 +769,16 @@ flowchart TD
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：模板在多个翻译单元被实例化导致代码膨胀。** 你担心同一模板在 A、B 两个 `.cpp` 各实例一次。请说明 ODR 的约束与代价。
-   - [标准] 模板实体在每个翻译单元按需要实例化；各处的实例必须拥有相同的定义（token 与含义一致），否则违反 ODR。
-   - [引用] ISO/IEC 14882:2023 §[temp.inst]（模板实例化）/ [basic.def.odr]（模板实体的同一定义要求）；cppreference "Templates" 词条。
+   - <span class="badge badge-std">标准</span> 模板实体在每个翻译单元按需要实例化；各处的实例必须拥有相同的定义（token 与含义一致），否则违反 ODR。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.inst]（模板实例化）/ [basic.def.odr]（模板实体的同一定义要求）；cppreference "Templates" 词条。
 
 2. **真实场景：非类型模板参数类型受限。** 你想把自定义结构体当非类型模板实参，老标准不行、C++20 放松。请说明边界。
-   - [标准] 非类型模板形参的实参须是常量表达式；C++20 起允许更多类型（如带约束的类类型），此前仅限整型/指针/引用/枚举等。
-   - [引用] ISO/IEC 14882:2023 §[temp.param]（非类型模板形参与允许类型）；cppreference "Non-type template parameter" 词条。
+   - <span class="badge badge-std">标准</span> 非类型模板形参的实参须是常量表达式；C++20 起允许更多类型（如带约束的类类型），此前仅限整型/指针/引用/枚举等。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.param]（非类型模板形参与允许类型）；cppreference "Non-type template parameter" 词条。
 
 3. **真实场景：模板定义必须在使用处可见（包含模型）。** 你把模板声明放头、定义放 `.cpp`，链接报 undefined reference。请说明原因。
-   - [标准] C++ 模板采用包含模型：实例化点必须能看到完整定义（通常置于头文件），不存在分离式的模板定义链接。
-   - [引用] ISO/IEC 14882:2023 §[temp]（模板定义须可见）/ [basic.def.odr]；cppreference "Template" 词条。
+   - <span class="badge badge-std">标准</span> C++ 模板采用包含模型：实例化点必须能看到完整定义（通常置于头文件），不存在分离式的模板定义链接。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp]（模板定义须可见）/ [basic.def.odr]；cppreference "Template" 词条。
 
 **练习题**
 
@@ -815,9 +815,9 @@ flowchart TD
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：模板如何从「容器泛型」长成「图灵完备的元语言」
-[史] 模板的思想源头并非 C++ 一家：Ada 1983 的泛型参数化、Barbara Liskov 一脉的 CLU 参数化类型，都是 Stroustrup 设计模板时明确借鉴的对象。模板最早只为解决「容器/算法想同时服务 `int` 与 `double`，又不想退回 `void*` + 强转」——类型安全与零开销必须兼得。1990 年的《带注解的 C++ 参考手册（ARM）》第一次把模板机制写进语言规格，1998 年 C++98 正式把「类模板、函数模板、全特化、偏特化」确立为标准核心。但社区很快发现意外：模板能在编译期靠递归实例化「自己算自己」，1994 年 Erwin Unruh 在委员会会议上用编译器报错信息打印出编译期算出的素数（见 ch68），证明模板是图灵完备的——这把模板从「类型参数化的容器」一路推成一门独立的编译期元语言。
-[轶] 一个常被低估的事实：C++ 模板的「二次生长」几乎是被 Boost 库逼出来的。2000 年代 `boost::mpl`、`boost::type_traits` 大量使用模板技巧，倒逼标准在 C++11 把 `type_traits`、可变参数模板收编——模板从「用户的黑魔法」变成了「标准的一等公民」。
-[评] 模板 vs Java/C# 泛型是理解其历史坐标的关键：后者用类型擦除换运行时兼容，牺牲值类型效率；C++ 模板在实例化点生成真实代码，兑现零开销，代价是代码膨胀（code bloat）与更长的编译时间。这条权衡线贯穿之后所有模板相关章节。
+<span class="badge badge-history">史</span> 模板的思想源头并非 C++ 一家：Ada 1983 的泛型参数化、Barbara Liskov 一脉的 CLU 参数化类型，都是 Stroustrup 设计模板时明确借鉴的对象。模板最早只为解决「容器/算法想同时服务 `int` 与 `double`，又不想退回 `void*` + 强转」——类型安全与零开销必须兼得。1990 年的《带注解的 C++ 参考手册（ARM）》第一次把模板机制写进语言规格，1998 年 C++98 正式把「类模板、函数模板、全特化、偏特化」确立为标准核心。但社区很快发现意外：模板能在编译期靠递归实例化「自己算自己」，1994 年 Erwin Unruh 在委员会会议上用编译器报错信息打印出编译期算出的素数（见 ch68），证明模板是图灵完备的——这把模板从「类型参数化的容器」一路推成一门独立的编译期元语言。
+<span class="badge badge-anecdote">轶</span> 一个常被低估的事实：C++ 模板的「二次生长」几乎是被 Boost 库逼出来的。2000 年代 `boost::mpl`、`boost::type_traits` 大量使用模板技巧，倒逼标准在 C++11 把 `type_traits`、可变参数模板收编——模板从「用户的黑魔法」变成了「标准的一等公民」。
+<span class="badge badge-comment">评</span> 模板 vs Java/C# 泛型是理解其历史坐标的关键：后者用类型擦除换运行时兼容，牺牲值类型效率；C++ 模板在实例化点生成真实代码，兑现零开销，代价是代码膨胀（code bloat）与更长的编译时间。这条权衡线贯穿之后所有模板相关章节。
 
 ### ㉒.2 真实工程坐标：模板活在哪些产品/项目里
 
@@ -825,7 +825,7 @@ flowchart TD
 
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
-| 标准库实现 | libstdc++ / libc++ / MS-STL | `std::vector`/`map`/`function`/`shared_ptr` 全模板；`base::span`/`flat_hash_map`/`SmallVector` 同源 | 一切 C++ 程序地基 | 模板是标准库的建筑材料 [STANDARD] |
+| 标准库实现 | libstdc++ / libc++ / MS-STL | `std::vector`/`map`/`function`/`shared_ptr` 全模板；`base::span`/`flat_hash_map`/`SmallVector` 同源 | 一切 C++ 程序地基 | 模板是标准库的建筑材料 <span class="badge badge-std">STANDARD</span> |
 | 游戏与高频 | Unreal `TArray`/`TMap`、金融 HFT 热路径 | 零开销泛型在类型安全与性能间兼得 | 实时系统 / 延迟敏感 | 模板是零开销抽象的支点 |
 | 嵌入式固件 | MCU 固件、`boost::sml` | 模板做编译期查表/状态机，分支压成编译期常量 | 资源受限设备 | 省 RAM 与分支预测开销 |
 | 计算几何 | CGAL（INRIA） | 点线面/布尔运算/网格生成参数化为「核（Kernel）」；精确 vs 近似算术切换 | CAD/CAM/机器人/GIS | 同一算法两用：精确与近似核 |
@@ -856,7 +856,7 @@ Google规范: 避免>3层模板继承, 用concepts替代SFINAE(C++20)
 LLVM: llvm::cast<T>/ArrayRef<T>模板, ~30%代码是模板
 Eigen: Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> 6模板参数
 
-> **示例 52** [难度 ★★☆☆☆] [主题：附录 E：模板工业]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：模板工业
 ```cpp
 #include <iostream>
 template<typename T> T max(T a,T b){return a>b?a:b;}
@@ -873,7 +873,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 ## 附录 F：模板面试
 
-> **示例 53** [难度 ★★☆☆☆] [主题：附录 F：模板面试]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：模板面试
 ```cpp
 #include <iostream>
 template<typename T> T max(T a,T b){return a>b?a:b;}
@@ -920,7 +920,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 <details><summary>答案与解析</summary>
 
-> **示例 54** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 
@@ -940,11 +940,11 @@ int main() {
 }
 ```
 
-[标准] 默认模板参数只能出现在参数列表**末尾**；比较准则通过函数参数 + 默认实参传入，调用点可整体替换而不改签名。
+<span class="badge badge-std">标准</span> 默认模板参数只能出现在参数列表**末尾**；比较准则通过函数参数 + 默认实参传入，调用点可整体替换而不改签名。
 
 > 注意：C++20 起 `std::clamp` 提供四参重载（`clamp(v, lo, hi, comp)`）。若你的函数也叫 `clamp` 且传入 `std` 里的比较器（如 `std::greater<int>`），实参的 ADL 会把 `std::clamp` 也拉成候选 → 歧义。实战中改用自定义比较器（如上 `Greater`）或改名即可规避——这正是"命名与 std 冲突"的典型陷阱。
 
-[引用] 标准库 `std::clamp` 自 C++17 起提供，并带 `comp` 重载（cppreference "std::clamp"）。其返回值语义为"若 `value` 在 `[lo,hi]` 内返回 `value`，否则返回边界"——与本题一致。ISO/IEC 14882:2023 §[alg.clamp] 规定其行为；WG21 论文 P0297 引入该设施。
+<span class="badge badge-ref">引用</span> 标准库 `std::clamp` 自 C++17 起提供，并带 `comp` 重载（cppreference "std::clamp"）。其返回值语义为"若 `value` 在 `[lo,hi]` 内返回 `value`，否则返回边界"——与本题一致。ISO/IEC 14882:2023 §[alg.clamp] 规定其行为；WG21 论文 P0297 引入该设施。
 
 </details>
 
@@ -954,7 +954,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 55** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 
@@ -974,9 +974,9 @@ int main() {
 }
 ```
 
-[标准] 非类型参数参与类型身份（`Matrix<double,2,3>` 与 `Matrix<double,3,2>` 是不同类型）。维度是编译期常量，`rows()/cols()` 为 `constexpr`，可被 `static_assert`/数组大小直接使用，零运行期开销。
+<span class="badge badge-std">标准</span> 非类型参数参与类型身份（`Matrix<double,2,3>` 与 `Matrix<double,3,2>` 是不同类型）。维度是编译期常量，`rows()/cols()` 为 `constexpr`，可被 `static_assert`/数组大小直接使用，零运行期开销。
 
-[引用] `Eigen::Matrix<double,3,4>` 正是用非类型模板参数固定行列数，使维度成为类型的一部分、编译期阻止维度不匹配的运算（eigen.tuxfamily.org）。`std::array<T,N>` 同样用非类型参数 `N` 固定大小（cppreference "std::array"）。ISO/IEC 14882:2023 §[temp.arg.non-type] 规定非类型模板参数的约束。
+<span class="badge badge-ref">引用</span> `Eigen::Matrix<double,3,4>` 正是用非类型模板参数固定行列数，使维度成为类型的一部分、编译期阻止维度不匹配的运算（eigen.tuxfamily.org）。`std::array<T,N>` 同样用非类型参数 `N` 固定大小（cppreference "std::array"）。ISO/IEC 14882:2023 §[temp.arg.non-type] 规定非类型模板参数的约束。
 
 </details>
 
@@ -986,7 +986,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 56** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1003,9 +1003,9 @@ int main() {
 }
 ```
 
-[标准] 变量模板让"依赖于类型的常量"拥有唯一符号名 `pi<T>`，对所有实例化类型只生成一份；别名模板 `Vec<T>` 是类型别名而非新类型，零开销。
+<span class="badge badge-std">标准</span> 变量模板让"依赖于类型的常量"拥有唯一符号名 `pi<T>`，对所有实例化类型只生成一份；别名模板 `Vec<T>` 是类型别名而非新类型，零开销。
 
-[引用] 标准库 `<numbers>` 自 C++20 起提供变量模板 `std::numbers::pi_v<T>`、`std::numbers::pi`（inline constexpr），正是变量模板的典型用例（cppreference "std::numbers"）。变量模板比"每个类型一个 `constexpr` 全局常量"更省心：符号名唯一、随类型实例化。ISO/IEC 14882:2023 §[temp.var] 规定变量模板。
+<span class="badge badge-ref">引用</span> 标准库 `<numbers>` 自 C++20 起提供变量模板 `std::numbers::pi_v<T>`、`std::numbers::pi`（inline constexpr），正是变量模板的典型用例（cppreference "std::numbers"）。变量模板比"每个类型一个 `constexpr` 全局常量"更省心：符号名唯一、随类型实例化。ISO/IEC 14882:2023 §[temp.var] 规定变量模板。
 
 </details>
 
@@ -1024,7 +1024,7 @@ T clamp_bad(T v, T lo, T hi, Cmp cmp);
 
 **修复**：默认参数必须整体落在参数列表末尾：
 
-> **示例 57** [难度 ★★★☆☆] [主题：演绎 1：默认模板参数的位置约束]
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：默认模板参数的位置约束
 ```cpp
 #include <iostream>
 
@@ -1055,7 +1055,7 @@ Matrix<double, r, c> m;   // 错误：r/c 不是编译期常量
 
 **修复**：用 `constexpr`/字面量：
 
-> **示例 58** [难度 ★★★☆☆] [主题：演绎 2：非类型参数必须是编译期常量]
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：非类型参数必须是编译期常量
 ```cpp
 #include <iostream>
 
@@ -1131,7 +1131,7 @@ template<typename _Tp>
 
 ### D4.4 可编译验证
 
-> **示例 59** [难度 ★★★☆☆] [主题：可编译验证]
+> **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
 ```cpp
 #include <utility>
 #include <type_traits>
@@ -1292,7 +1292,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 60** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <functional>

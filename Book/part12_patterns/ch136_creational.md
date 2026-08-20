@@ -17,23 +17,23 @@
 > 当"到处 new、谁 delete、加一种产品就改一片代码"成为噩梦时，创建型模式把"造对象"关进了笼子。
 
 ### 0.1 起源（谁·何时·为何）
-创建型模式出自 GoF 1994 年那本书（Factory Method、Abstract Factory、Builder、Prototype、Singleton 五员大将）[史]。痛点来自最朴素的 C++ 写法：调用方直接 `#include` 具体类、亲手 `new`，于是耦合、生命周期混乱、扩展性差三件套同时爆发。模式给出的药方是：把"实例化逻辑"从"使用逻辑"中剥离，统一管理谁来造、怎么造、何时造。
+创建型模式出自 GoF 1994 年那本书（Factory Method、Abstract Factory、Builder、Prototype、Singleton 五员大将）<span class="badge badge-history">史</span>。痛点来自最朴素的 C++ 写法：调用方直接 `#include` 具体类、亲手 `new`，于是耦合、生命周期混乱、扩展性差三件套同时爆发。模式给出的药方是：把"实例化逻辑"从"使用逻辑"中剥离，统一管理谁来造、怎么造、何时造。
 
 ### 0.2 关键转折（编年）
-- 1994：GoF 确立五种创建型模式 [史]。
-- 2001：Andrei Alexandrescu《Modern C++ Design》用模板与多态策略把"创建"推到编译期（如可配置的 Singleton 策略）[史]，让创建型模式从运行时走向编译期。
-- 此后：C++11 的智能指针与移动语义，又让"生命周期"这件事被 RAII 自动接管 [史]。
+- 1994：GoF 确立五种创建型模式 <span class="badge badge-history">史</span>。
+- 2001：Andrei Alexandrescu《Modern C++ Design》用模板与多态策略把"创建"推到编译期（如可配置的 Singleton 策略）<span class="badge badge-history">史</span>，让创建型模式从运行时走向编译期。
+- 此后：C++11 的智能指针与移动语义，又让"生命周期"这件事被 RAII 自动接管 <span class="badge badge-history">史</span>。
 
 ### 0.3 设计哲学之争
-创建型模式内部就有路线之争：GoF 的工厂/单例是**运行时**灵活（可配置、可替换）；而 Modern C++ Design 的 Policy-Based 创建是**编译期**定型（零运行时开销、类型安全）[评]。Singleton 更是常年被吐槽"全局状态杀手、测试地狱"[评]——于是有了 Meyers Singleton（magic static，线程安全）这种折中。
+创建型模式内部就有路线之争：GoF 的工厂/单例是**运行时**灵活（可配置、可替换）；而 Modern C++ Design 的 Policy-Based 创建是**编译期**定型（零运行时开销、类型安全）<span class="badge badge-comment">评</span>。Singleton 更是常年被吐槽"全局状态杀手、测试地狱"<span class="badge badge-comment">评</span>——于是有了 Meyers Singleton（magic static，线程安全）这种折中。
 
 ### 0.4 史料补遗与持续编年
 继 1994 年五种创建型模式确立，创建型讨论在 C++11 之后转向"生命周期交给 RAII、装配交给注入"。
 
-- [史] C++11 的智能指针与移动语义让"谁 delete"被 RAII 自动接管，工厂方法的返回值从裸指针进化为 `std::unique_ptr`/`std::shared_ptr`，调用方不再手动管理所有权。
-- [史] 依赖注入（DI）框架在 C++ 落地（如 Boost.DI），把"创建型模式"从手写工厂进一步推向"外部装配"——对象的构造依赖由容器在运行期或编译期注入，单测可换 fake。
-- [评] Singleton 长期被吐槽"全局状态杀手、测试地狱"，现代共识是"能用注入就别用单例"；Meyers Singleton（magic static）只作为"确实需要一个全局且要线程安全"时的折中保留。
-- [轶] Meyers Singleton 依赖的 "magic static" 线程安全，曾是 C++11 之前各大编译器"各搞各的"的灰色地带，直到 C++11 把它写进标准才统一。
+- <span class="badge badge-history">史</span> C++11 的智能指针与移动语义让"谁 delete"被 RAII 自动接管，工厂方法的返回值从裸指针进化为 `std::unique_ptr`/`std::shared_ptr`，调用方不再手动管理所有权。
+- <span class="badge badge-history">史</span> 依赖注入（DI）框架在 C++ 落地（如 Boost.DI），把"创建型模式"从手写工厂进一步推向"外部装配"——对象的构造依赖由容器在运行期或编译期注入，单测可换 fake。
+- <span class="badge badge-comment">评</span> Singleton 长期被吐槽"全局状态杀手、测试地狱"，现代共识是"能用注入就别用单例"；Meyers Singleton（magic static）只作为"确实需要一个全局且要线程安全"时的折中保留。
+- <span class="badge badge-anecdote">轶</span> Meyers Singleton 依赖的 "magic static" 线程安全，曾是 C++11 之前各大编译器"各搞各的"的灰色地带，直到 C++11 把它写进标准才统一。
 
 > 史料来源：
 > - https://en.cppreference.com/w/cpp/memory/unique_ptr
@@ -54,7 +54,7 @@
 
 > 表注（①）：三类痛点分别击中"编译依赖 / 内存安全 / 可维护性"——创建型模式的核心使命就是同时消解这三者，下文 ②–⑲ 逐一给出对应解法（如 ③ 用 `unique_ptr` 根治生命周期混乱）。
 
-> **示例 1** [难度 ★★★☆☆] [主题：概述：创建型模式解决什么]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：创建型模式解决什么
 ```
 ┌──────────────────────── 创建型模式家族 ────────────────────────┐
 │  Factory Method   工厂方法   单产品、单方法创建                  │
@@ -67,11 +67,11 @@
 └────────────────────────────────────────────────────────────┘
 ```
 
-[标准] GoF（Gamma 等，《Design Patterns》，1994）将前五种列为经典创建型模式；现代 C++ 用智能指针、移动语义与模板把它们重新表达，本章逐一给出可编译、可取证的做法。
+<span class="badge badge-std">标准</span> GoF（Gamma 等，《Design Patterns》，1994）将前五种列为经典创建型模式；现代 C++ 用智能指针、移动语义与模板把它们重新表达，本章逐一给出可编译、可取证的做法。
 
 下面先看「硬编码 new」的反面教材，这是所有创建型模式要消灭的对象：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：创建型模式解决什么]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：创建型模式解决什么
 ```cpp
 // ① 反面教材：调用方直接依赖具体类与裸 new
 #include <iostream>
@@ -90,7 +90,7 @@ void business() {
 
 创建型模式的核心思想一句话：**让「创建」这件事本身也成为可替换、可配置、可测试的对象**。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：概述：创建型模式解决什么]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：创建型模式解决什么
 ```cpp
 // ① 配套修正：用简单工厂把“创建”收口到一处，调用方不再 new 具体类
 #include <iostream>
@@ -109,11 +109,11 @@ std::unique_ptr<Connection> makeConnection(const char* kind) {
 
 ## ② 工厂方法 Factory Method [标准/实现]
 
-[标准] 工厂方法定义一个用于创建对象的接口，让子类决定实例化哪一个类。调用方只依赖抽象产品与工厂接口，不依赖具体类。
+<span class="badge badge-std">标准</span> 工厂方法定义一个用于创建对象的接口，让子类决定实例化哪一个类。调用方只依赖抽象产品与工厂接口，不依赖具体类。
 
-[实现] 关键三件套：**抽象产品（Product）**、**具体产品（ConcreteProduct）**、**创建者（Creator）及其工厂方法 `factory()`**。
+<span class="badge badge-impl">实现</span> 关键三件套：**抽象产品（Product）**、**具体产品（ConcreteProduct）**、**创建者（Creator）及其工厂方法 `factory()`**。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：工厂方法 Factory Metho]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工厂方法 Factory Metho
 ```cpp
 // ② 工厂方法：抽象产品 + 创建者
 #include <iostream>
@@ -132,7 +132,7 @@ struct Square : Shape {   // 具体产品 B
 };
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：工厂方法 Factory Metho]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂方法 Factory Metho
 ```cpp
 // ② 创建者：把“new 哪个类”推迟到子类
 struct ShapeFactory {
@@ -163,7 +163,7 @@ void client(const ShapeFactory& f) {
 
 旧式工厂返回裸指针，把释放责任推给调用方，极易泄漏。现代 C++ 用 `std::unique_ptr` 把所有权**随返回值一并转移**，谁拿到谁负责，且不可误拷贝。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：工厂方法现代写法]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂方法现代写法
 ```cpp
 // ③ 现代工厂方法：返回 unique_ptr，所有权清晰转移
 #include <iostream>
@@ -195,7 +195,7 @@ void client(const ShapeFactory& f) {
 
 **源码剖析（libstdc++ `unique_ptr`）**：`std::make_unique` 本质是 `new` + 构造进 `unique_ptr`，其 deleter 默认是 `default_delete`，析构时调用 `delete`。下面截取本机真实 libstdc++ 头中 `unique_ptr` 的主模板定义位置：
 
-> **示例 7** [难度 ★★☆☆☆] [主题：工厂方法现代写法]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂方法现代写法
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：277
@@ -206,15 +206,15 @@ void client(const ShapeFactory& f) {
 //   —— default_delete 在析构中调用 ::delete ptr_
 ```
 
-[实现] 用 `unique_ptr` 返回工厂产品是现代 C++ 的**强制约定**：它把「何时释放」固化进类型系统，编译器在编译期就禁止所有权歧义。
+<span class="badge badge-impl">实现</span> 用 `unique_ptr` 返回工厂产品是现代 C++ 的**强制约定**：它把「何时释放」固化进类型系统，编译器在编译期就禁止所有权歧义。
 
 ---
 
 ## ④ 抽象工厂 Abstract Factory
 
-[标准] 抽象工厂提供创建**一系列相关或相互依赖对象**的接口，而无需指定它们的具体类。它与工厂方法的区别：工厂方法产**单个**产品，抽象工厂产**一族**产品。
+<span class="badge badge-std">标准</span> 抽象工厂提供创建**一系列相关或相互依赖对象**的接口，而无需指定它们的具体类。它与工厂方法的区别：工厂方法产**单个**产品，抽象工厂产**一族**产品。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：抽象工厂 Abstract Fact]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 抽象工厂 Abstract Fact
 ```cpp
 // ④ 抽象工厂：产品族（按钮 + 文本框）
 #include <iostream>
@@ -229,7 +229,7 @@ struct MacButton : Button { void paint() const override { std::cout << "MacButto
 struct MacTextBox : TextBox { void paint() const override { std::cout << "MacTextBox\n"; } };
 ```
 
-> **示例 9** [难度 ★★★★☆] [主题：抽象工厂 Abstract Fact]
+> **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 抽象工厂 Abstract Fact
 ```cpp
 #include <memory>
 // ④ 抽象工厂接口 + 两套具体工厂（保证产品“配套”）
@@ -274,7 +274,7 @@ _ZTV6Window:
     .quad   _ZNK6Window4areaEv
 ```
 
-[实现] 注意：当 `run()` 中 `make("Button")` 的返回类型在编译期可知时，g++ 把虚调用**去虚化**为直接 `call _ZNK6Button4areaEv`——虚表仍保留（RTTI/多态需要），但热路径上无间接跳转，开销趋零。
+<span class="badge badge-impl">实现</span> 注意：当 `run()` 中 `make("Button")` 的返回类型在编译期可知时，g++ 把虚调用**去虚化**为直接 `call _ZNK6Button4areaEv`——虚表仍保留（RTTI/多态需要），但热路径上无间接跳转，开销趋零。
 
 ---
 
@@ -282,7 +282,7 @@ _ZTV6Window:
 
 抽象工厂最常见的工业用途是**平台抽象层（PAL）**：同一套业务逻辑在 Windows / Linux / 嵌入式上跑不同后端，调用方只依赖 `UIFactory` 抽象。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：抽象工厂与平台抽象]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 抽象工厂与平台抽象
 ```cpp
 // ⑤ 平台抽象：用抽象工厂屏蔽 OS 差异
 #include <iostream>
@@ -313,9 +313,9 @@ struct GtkDialogFactory : DialogFactory {
 std::string openOne(const DialogFactory& f) { return f.makeDialog()->pick(); }
 ```
 
-[平台] 在跨平台工程中，抽象工厂常配合**编译期选择**：用宏或构建系统决定注入 `WinDialogFactory` 还是 `GtkDialogFactory`，运行期业务代码完全无 `#ifdef`。这比到处散落 `#ifdef _WIN32` 干净得多。
+<span class="badge badge-platform">平台</span> 在跨平台工程中，抽象工厂常配合**编译期选择**：用宏或构建系统决定注入 `WinDialogFactory` 还是 `GtkDialogFactory`，运行期业务代码完全无 `#ifdef`。这比到处散落 `#ifdef _WIN32` 干净得多。
 
-> **示例 11** [难度 ★★★☆☆] [主题：抽象工厂与平台抽象]
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 抽象工厂与平台抽象
 ```cpp
 // ⑤ 运行期/编译期二选一：构建系统决定工厂实例
 #include <memory>
@@ -335,7 +335,7 @@ std::unique_ptr<DialogFactory> makePlatformFactory() {
 
 当对象需要**多步组装**且字段较多时，Builder 把构造拆成链式 setter，最后 `build()` 返回成品。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：建造者 Builder]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 建造者 Builder
 ```cpp
 // ⑥ 流式 Builder：构造 HTTP 请求
 #include <iostream>
@@ -364,7 +364,7 @@ HttpRequest req = RequestBuilder{}
     .method("POST").url("/api").body("{}").keepAlive(false).build();
 ```
 
-[实现] Builder 通常返回 `*this`（引用）以支持链式；`build()` 把内部累积的状态**移出**，避免拷贝大对象。若成品不可拷贝，让 `build()` 返回 `unique_ptr<HttpRequest>`。
+<span class="badge badge-impl">实现</span> Builder 通常返回 `*this`（引用）以支持链式；`build()` 把内部累积的状态**移出**，避免拷贝大对象。若成品不可拷贝，让 `build()` 返回 `unique_ptr<HttpRequest>`。
 
 ---
 
@@ -372,7 +372,7 @@ HttpRequest req = RequestBuilder{}
 
 所谓 telescoping constructor（ telescoping / 伸缩构造器）是指为了覆盖各种字段组合，写出一长串重载构造函数：
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：建造者避免 telescoping ]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 建造者避免 telescoping
 ```cpp
 // ⑦ 反面：telescoping constructor 爆炸
 #include <string>
@@ -389,7 +389,7 @@ public:
 
 Builder 彻底消除这种爆炸——字段用具名 setter 表达，组合数是线性的，且每个参数都有语义名：
 
-> **示例 14** [难度 ★★☆☆☆] [主题：建造者避免 telescoping ]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 建造者避免 telescoping
 ```cpp
 // ⑦ 正面：用 Builder 替代 telescoping constructor
 #include <string>
@@ -412,15 +412,15 @@ public:
 Pizza p = PizzaBuilder{}.size(12).cheese().bacon(false).build();
 ```
 
-[经验] 经验法则：当构造函数参数 ≥ 4 个，或其中多个有合理默认值，立刻上 Builder，而不是继续加重载。
+<span class="badge badge-exp">经验</span> 经验法则：当构造函数参数 ≥ 4 个，或其中多个有合理默认值，立刻上 Builder，而不是继续加重载。
 
 ---
 
 ## ⑧ 原型 Prototype（clone）
 
-[标准] 原型模式通过**克隆一个已有原型实例**来创建新对象，而不是直接 `new`。适用于：对象构造昂贵（如从磁盘/网络加载配置），或运行时才确定具体类型。
+<span class="badge badge-std">标准</span> 原型模式通过**克隆一个已有原型实例**来创建新对象，而不是直接 `new`。适用于：对象构造昂贵（如从磁盘/网络加载配置），或运行时才确定具体类型。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：原型 Prototype]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原型 Prototype
 ```cpp
 // ⑧ 原型：用 clone() 复制自身
 #include <iostream>
@@ -450,7 +450,7 @@ auto copy1 = proto->clone();   // 克隆
 copy1->print();
 ```
 
-[实现] `clone()` 的惯用法是 `new Derived(*this)` 或 `make_unique<Derived>(*this)`，即**用拷贝构造**生成新对象；返回 `unique_ptr` 把所有权交给调用方。
+<span class="badge badge-impl">实现</span> `clone()` 的惯用法是 `new Derived(*this)` 或 `make_unique<Derived>(*this)`，即**用拷贝构造**生成新对象；返回 `unique_ptr` 把所有权交给调用方。
 
 ---
 
@@ -458,7 +458,7 @@ copy1->print();
 
 原型的 `clone()` 必须明确**拷贝语义**：浅拷贝共享子对象，深拷贝各自独立。C++ 的拷贝构造默认是**逐成员拷贝（memberwise）**，对含裸指针的成员会变成浅拷贝，引发双释放。
 
-> **示例 16** [难度 ★★★☆☆] [主题：原型与拷贝语义（深/浅拷贝）]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 原型与拷贝语义（深/浅拷贝）
 ```cpp
 // ⑨ 浅拷贝陷阱：默认拷贝构造对裸指针是“按位共享”
 #include <cstring>
@@ -475,7 +475,7 @@ struct BadBuffer {
 
 正确做法：实现**深拷贝**的拷贝构造/拷贝赋值（Rule of Three/Five），或改用 `std::vector`/`std::string` 等自带深拷贝的值类型：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：原型与拷贝语义（深/浅拷贝）]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 原型与拷贝语义（深/浅拷贝）
 ```cpp
 // ⑨ 深拷贝：用值类型成员，拷贝自动安全
 #include <string>
@@ -497,15 +497,15 @@ void demo() {
 }
 ```
 
-[经验] 经验：原型 `clone()` 若含资源成员，优先用 `std::vector`/`std::string`/`std::unique_ptr` 等值语义容器，让深拷贝“免费且正确”；绝不要对裸指针依赖默认拷贝。
+<span class="badge badge-exp">经验</span> 经验：原型 `clone()` 若含资源成员，优先用 `std::vector`/`std::string`/`std::unique_ptr` 等值语义容器，让深拷贝“免费且正确”；绝不要对裸指针依赖默认拷贝。
 
 ---
 
 ## ⑩ 单例 Singleton 的经典实现
 
-[标准] 单例保证一个类**仅有一个实例**，并提供全局访问点。最朴素的两种写法：
+<span class="badge badge-std">标准</span> 单例保证一个类**仅有一个实例**，并提供全局访问点。最朴素的两种写法：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：单例 Singleton 的经典实现]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 单例 Singleton 的经典实现
 ```cpp
 // ⑩ 饿汉式（eager）：程序启动即构造，天然线程安全（C++11 起静态初始化有序）
 #include <iostream>
@@ -521,7 +521,7 @@ Config& cfg() {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：单例 Singleton 的经典实现]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 单例 Singleton 的经典实现
 ```cpp
 // ⑩ 经典“懒汉”双检查（C++11 之前的危险写法，仅作反面教材）
 #include <mutex>
@@ -541,7 +541,7 @@ struct Logger {
 // 问题：早期 C++ 中 inst_ 的写与读无内存屏障，可能读到“半成品”指针
 ```
 
-[实现] 注意：⑩ 第二段是**历史反面教材**，现代 C++ 应直接用 ⑪ 的 magic static，不要手写双检查锁。
+<span class="badge badge-impl">实现</span> 注意：⑩ 第二段是**历史反面教材**，现代 C++ 应直接用 ⑪ 的 magic static，不要手写双检查锁。
 
 ---
 
@@ -549,7 +549,7 @@ struct Logger {
 
 C++11 起，函数内的 `static` 局部变量初始化是**线程安全**的（magic static）：标准保证若有多个线程同时首次进入，只有一个线程执行初始化，其余阻塞等待。这让我们用一行代码得到线程安全单例。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：单例的线程安全]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 单例的线程安全
 ```cpp
 // ⑪ Meyers Singleton：一行即得线程安全单例
 #include <iostream>
@@ -573,7 +573,7 @@ struct Logger {
 0000000000000000 b _ZZN6Logger8instanceEvE4inst   ; 静态局部变量 inst
 ```
 
-[标准] C++ 标准 §6.7/4（现 [stmt.dcl]/3）明确规定：同一线程或跨线程，静态局部变量的初始化不并发发生，且若初始化抛异常则视为未完成、下次重试。
+<span class="badge badge-std">标准</span> C++ 标准 §6.7/4（现 [stmt.dcl]/3）明确规定：同一线程或跨线程，静态局部变量的初始化不并发发生，且若初始化抛异常则视为未完成、下次重试。
 
 ---
 
@@ -589,7 +589,7 @@ struct Logger {
 
 > 表注（⑫）：三条指控都源于"全局可变状态"这一根因；现代共识（见 ⑭）是"能用 DI 就别用单例"，Meyers 单例仅作"全进程唯一且生命周期=进程"时的折中。
 
-> **示例 21** [难度 ★★★☆☆] [主题：单例为何是反模式]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 单例为何是反模式
 ```cpp
 // ⑫ 单例让测试变难：依赖被“藏”进全局
 #include <string>
@@ -600,7 +600,7 @@ bool isExpired(int t) { return Clock::now() > t; }  // 无法注入假时间
 // 测试想模拟“未来时间”却做不到 → 只能改全局，破坏隔离
 ```
 
-[经验] 经验法则：90% 的“我需要单例”其实是“我需要全局访问点”。更好的答案见 ⑭：把实例通过参数/构造函数传入（依赖注入），测试时传 mock。
+<span class="badge badge-exp">经验</span> 经验法则：90% 的“我需要单例”其实是“我需要全局访问点”。更好的答案见 ⑭：把实例通过参数/构造函数传入（依赖注入），测试时传 mock。
 
 ---
 
@@ -644,7 +644,7 @@ _ZN6Logger8instanceEv:
 2. 首次构造走 `.L134`：`call __cxa_guard_acquire` 内部通过互斥量加锁，保证恰好一个线程完成 `Logger` 构造；随后 `call __cxa_guard_release` 解锁；`call atexit` 注册 `__tcf_1` 在程序退出时析构该静态实例。
 3. 即：**magic static 的线程安全由编译器插入的 `__cxa_guard_acquire/release` 实现，底层是带锁的**，无需手写双检查。
 
-[实现] 补充：在**单线程且只调用一次**的极端场景（如仅 `main` 调用），g++ `-O2` 可把整个 `instance()` 内联并把 `id()` 常量折叠为 `42`，守卫被完全消除；一旦存在并发调用路径，守卫必然生成（如上所示）。这也是为什么取证示例必须引入 `std::thread`。
+<span class="badge badge-impl">实现</span> 补充：在**单线程且只调用一次**的极端场景（如仅 `main` 调用），g++ `-O2` 可把整个 `instance()` 内联并把 `id()` 常量折叠为 `42`，守卫被完全消除；一旦存在并发调用路径，守卫必然生成（如上所示）。这也是为什么取证示例必须引入 `std::thread`。
 
 ---
 
@@ -652,7 +652,7 @@ _ZN6Logger8instanceEv:
 
 **依赖注入（DI）**：把依赖作为构造/方法参数传入，而不是内部去“全局找”。测试时可传 mock。
 
-> **示例 22** [难度 ★★☆☆☆] [主题：替代单例：依赖注入/服务定位器]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 替代单例：依赖注入/服务定位器
 ```cpp
 // ⑭ 依赖注入：依赖从外部传入，可测试
 #include <iostream>
@@ -678,7 +678,7 @@ void test() {
 
 **服务定位器（Service Locator）**：集中注册、按需取用，比全局单例强在“可替换后端、可测试”，但仍是隐式依赖，慎用。
 
-> **示例 23** [难度 ★★★☆☆] [主题：替代单例：依赖注入/服务定位器]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 替代单例：依赖注入/服务定位器
 ```cpp
 // ⑭ 服务定位器：集中注册，运行期可替换
 #include <memory>
@@ -700,7 +700,7 @@ struct Locator {
 // 注：Locator::reg 自身仍是全局单例，仅作“比裸单例可控”的折中
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：替代单例：依赖注入/服务定位器]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 替代单例：依赖注入/服务定位器
 ```cpp
 // ⑭ 组装根（composition root）：整个程序唯一允许“new/注入”的地方
 #include <memory>
@@ -716,7 +716,7 @@ int main() {
 }
 ```
 
-[经验] 经验：DI 优先于 Service Locator 优先于 Singleton；仅当依赖真正“全进程唯一且生命周期=进程”时才考虑单例。
+<span class="badge badge-exp">经验</span> 经验：DI 优先于 Service Locator 优先于 Singleton；仅当依赖真正“全进程唯一且生命周期=进程”时才考虑单例。
 
 ---
 
@@ -724,7 +724,7 @@ int main() {
 
 对象池复用已分配对象，避免高频 `new`/`delete` 的分配器开销与碎片。适用于：短生命周期、创建昂贵、数量可控的对象（连接、线程、内存块）。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：对象池 Object Pool]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对象池 Object Pool
 ```cpp
 // ⑮ 对象池：复用空闲对象，降低分配频率
 #include <vector>
@@ -758,9 +758,9 @@ public:
 };
 ```
 
-[实现] 真实工程中对象池常配合 `std::pmr::memory_resource` 或 `boost::pool`；池大小需设上限防止无界增长。分配开销对比见 ⑲。
+<span class="badge badge-impl">实现</span> 真实工程中对象池常配合 `std::pmr::memory_resource` 或 `boost::pool`；池大小需设上限防止无界增长。分配开销对比见 ⑲。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：对象池 Object Pool]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对象池 Object Pool
 ```cpp
 // ⑮ 对象池用法示例
 #include <iostream>
@@ -779,7 +779,7 @@ void usePool() {
 
 用 `std::function` 把“构造动作”当值传递，可把工厂表做成运行时数据（map of factories），非常适合命令分发、插件注册。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：工厂与 std::function/]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂与 std::function/
 ```cpp
 // ⑯ 用 std::function 做可注册工厂表
 #include <functional>
@@ -804,7 +804,7 @@ std::unique_ptr<Shape> makeShape(const std::string& k) {
 }
 ```
 
-[实现] `std::function` 有轻微类型擦除开销（一次堆分配或小对象优化）；若追求零开销，见 ⑰ 的编译期分发。
+<span class="badge badge-impl">实现</span> `std::function` 有轻微类型擦除开销（一次堆分配或小对象优化）；若追求零开销，见 ⑰ 的编译期分发。
 
 ---
 
@@ -812,7 +812,7 @@ std::unique_ptr<Shape> makeShape(const std::string& k) {
 
 当产品类型集合在编译期已知，可用 `if constexpr` 或 `std::variant`/`std::tuple` 做**零开销**分发，完全避免虚函数与 `std::function` 的运行时成本。
 
-> **示例 28** [难度 ★★★★☆] [主题：编译期工厂]
+> **示例 28** <span class="badge badge-exp">难度 ★★★★☆</span> · 编译期工厂
 ```cpp
 // ⑰ 编译期工厂：if constexpr 按枚举分发，无虚调用
 #include <iostream>
@@ -837,7 +837,7 @@ void use() {
 }
 ```
 
-> **示例 29** [难度 ★★★☆☆] [主题：编译期工厂]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译期工厂
 ```cpp
 // ⑰ 进阶：typelist + 索引工厂（编译期产品清单）
 #include <memory>
@@ -851,9 +851,9 @@ using Shapes = TypeList<class C, class S>;   // 仅示意：实际用具体类�
 // 典型实现：用 std::get<Idx>(std::tuple<std::unique_ptr<Base>()...>) 在编译期映射
 ```
 
-[实现] `if constexpr` 要求分支条件是编译期常量；若 kind 来自运行期输入，需配合 `switch` + 模板或 ⑯ 的 `std::function` 表。
+<span class="badge badge-impl">实现</span> `if constexpr` 要求分支条件是编译期常量；若 kind 来自运行期输入，需配合 `switch` + 模板或 ⑯ 的 `std::function` 表。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：编译期工厂]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译期工厂
 ```cpp
 // ⑰ 索引工厂：运行期索引 → 编译期类型（std::variant 实现，零分支表）
 #include <variant>
@@ -878,7 +878,7 @@ void drawAt(std::size_t idx) {
 
 CRTP（Curiously Recurring Template Pattern）让基类**静态**知道自己派生的具体类型，于是工厂可返回具体类型而非抽象基类，既保留接口又免去虚函数开销。完整 CRTP 体系见 ch139（模板与泛型模式），此处给出工厂雏形。
 
-> **示例 31** [难度 ★★★★☆] [主题：工厂（预告 ch139）]
+> **示例 31** <span class="badge badge-exp">难度 ★★★★☆</span> · 工厂（预告 ch139）
 ```cpp
 // ⑱ CRTP 工厂雏形：基类用 Derived 类型参数化，make() 返回具体类型
 #include <iostream>
@@ -901,7 +901,7 @@ void use() {
 }
 ```
 
-[实现] CRTP 工厂的核心收益：**编译期多态（静态分派）**，避免 vtable 间接跳转；代价是基类与派生类强耦合，且无法做运行期异构容器（需包一层 `std::unique_ptr<Base>` 或 `std::variant`）。
+<span class="badge badge-impl">实现</span> CRTP 工厂的核心收益：**编译期多态（静态分派）**，避免 vtable 间接跳转；代价是基类与派生类强耦合，且无法做运行期异构容器（需包一层 `std::unique_ptr<Base>` 或 `std::variant`）。
 
 ---
 
@@ -909,7 +909,7 @@ void use() {
 
 创建型模式的核心代价在**内存分配**。用 `std::chrono` 微基准对比「每次 `new`/`delete`」与「对象池/栈复用」。注意：必须防止 -O2 把无副作用的分配**死代码消除（DCE）**，否则测出来是 0。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：性能：工厂分配开销测量]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：工厂分配开销测量
 ```cpp
 // ⑲ 微基准（节选自 Examples/_ch136_bench.cpp，已用编译器屏障防 DCE）
 #include <chrono>
@@ -948,7 +948,7 @@ pool  : 3381600 ns      ; 对象池复用（一次性分配）
 sink  : 50115500 3381600
 ```
 
-[经验] 结论：高频短生命周期对象，**堆分配比复用慢约 15 倍**；当分配成为热点，优先对象池/栈/ arena（`std::pmr`），而非反复 `new`。另外可用 `g++ -time` 或 `hyperfine` 测**编译期**成本——模板/CRTP 工厂会增加实例化负担，需权衡。
+<span class="badge badge-exp">经验</span> 结论：高频短生命周期对象，**堆分配比复用慢约 15 倍**；当分配成为热点，优先对象池/栈/ arena（`std::pmr`），而非反复 `new`。另外可用 `g++ -time` 或 `hyperfine` 测**编译期**成本——模板/CRTP 工厂会增加实例化负担，需权衡。
 
 ---
 
@@ -957,18 +957,18 @@ sink  : 50115500 3381600
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：工厂函数返回 `unique_ptr` 而非裸 `new`。** 你避免调用方忘记释放。请说明。
-   - [标准] `std::unique_ptr` 在类型中编码独占所有权，函数返回它即转移所有权且保证释放。
-   - [引用] ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权）/ [class.dtor]；cppreference "std::unique_ptr" 词条。
+   - <span class="badge badge-std">标准</span> `std::unique_ptr` 在类型中编码独占所有权，函数返回它即转移所有权且保证释放。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权）/ [class.dtor]；cppreference "std::unique_ptr" 词条。
 
 2. **真实场景：单例用函数内 `static` 局部变量（C++11 起线程安全）。** 你手写双检锁结果出 bug。请说明。
-   - [标准] 函数内静态局部变量的初始化自 C++11 起保证线程安全，无需手写双重检查锁定。
-   - [引用] ISO/IEC 14882:2023 §[stmt.dcl]（块作用域静态变量初始化的线程安全）；cppreference "Static local variables" 词条。
+   - <span class="badge badge-std">标准</span> 函数内静态局部变量的初始化自 C++11 起保证线程安全，无需手写双重检查锁定。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stmt.dcl]（块作用域静态变量初始化的线程安全）；cppreference "Static local variables" 词条。
 
 3. **真实场景：原型模式用拷贝构造克隆对象。** 你深拷贝含有资源的对象。请说明拷贝语义。
-   - [标准] 克隆依赖拷贝构造函数/拷贝赋值；含资源的类型须正确实现深拷贝（三五法则）。
-   - [引用] ISO/IEC 14882:2023 §[class.copy.ctor]（拷贝构造）/ [class.copy.assign]；cppreference "Copy constructor" 词条。
+   - <span class="badge badge-std">标准</span> 克隆依赖拷贝构造函数/拷贝赋值；含资源的类型须正确实现深拷贝（三五法则）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy.ctor]（拷贝构造）/ [class.copy.assign]；cppreference "Copy constructor" 词条。
 
-> **示例 33** [难度 ★★★☆☆] [主题：小结：何时用哪种创建型模式]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 小结：何时用哪种创建型模式
 ```
 ┌──────────────────── 创建型模式选型速查 ────────────────────┐
 │ 场景                              → 选用                    │
@@ -986,7 +986,7 @@ sink  : 50115500 3381600
 └──────────────────────────────────────────────────────────┘
 ```
 
-[经验] 总纲：
+<span class="badge badge-exp">经验</span> 总纲：
 1. **所有权优先用 `unique_ptr` 返回**（③），让释放成为类型系统的必然。
 2. **能编译期分发就别运行期虚表**（⑰ vs ④）；虚表并非免费，但在异构运行时容器里无可替代。
 3. **单例是最后手段**（⑪/⑫），能用 DI 就不用全局。
@@ -994,7 +994,7 @@ sink  : 50115500 3381600
 
 创建型模式的终极目标不是“多写几个类”，而是把**变化点（什么被创建、怎么创建）收敛到一处**，让其余代码对构造细节一无所知——这正是现代 C++ 用智能指针 + 模板把它重写得比 GoF 原始版本更安全的根本原因。
 
-> **示例 34** [难度 ★★☆☆☆] [主题：小结：何时用哪种创建型模式]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结：何时用哪种创建型模式
 ```cpp
 // ⑳ 综合示例：类型安全的 Shape 工厂分发（完整可编译）
 #include <iostream>
@@ -1029,7 +1029,7 @@ int main() { auto s = make(K::Circle); s->draw(); }
 |---|---|---|---|---|
 | 跨平台 UI / 渲染 | Abstract Factory 统一产出当前平台实现 / Clang `CompilerInvocation` 用 Builder 拼复杂配置 | 把「平台差异」收敛到工厂 / Builder | 工业级跨平台与编译器 | Builder 拼配置对象避免巨型构造参数 |
 | 游戏资源 | Prototype 克隆模板实例 / Meyers 单例做进程级唯一入口 | 克隆昂贵资源 / 全局唯一配置日志 | 实时游戏资源与日志 | 原型避免重复加载大资源 |
-| 现代 C++ 惯用法 | `std::make_unique` / `emplace` / `std::optional` | 取代手写工厂样板 | 标准库级惯用法 | [STANDARD] C++14/17 起取代裸 `new` 工厂 |
+| 现代 C++ 惯用法 | `std::make_unique` / `emplace` / `std::optional` | 取代手写工厂样板 | 标准库级惯用法 | <span class="badge badge-std">STANDARD</span> C++14/17 起取代裸 `new` 工厂 |
 | 汽车 / 机器人 | ROS 2 `Node` + 中间件用工厂 + DI 构造节点/执行器 | 同一算法绑定不同 DDS（Fast DDS / Cyclone DDS） | 机器人中间件事实标准 | 工厂 + DI 解耦算法与通信后端 |
 | 数据库 | SQLite `sqlite3_open_v2` + VFS 用工厂做可替换存储后端 | 单文件库跨平台零依赖 | 全球部署最广的嵌入式 DB | 见 sqlite.org；VFS 是存储策略维度 |
 
@@ -1065,7 +1065,7 @@ int main() { auto s = make(K::Circle); s->draw(); }
 
 ## 附录: 创建型模式 C++ 实现
 
-> **示例 35** [难度 ★★☆☆☆] [主题：附录: 创建型模式 C++ 实现]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 创建型模式 C++ 实现
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1073,7 +1073,7 @@ class Singleton{static std::unique_ptr<Singleton> inst;Singleton()=default;publi
 int main(){auto&s=Singleton::get();std::cout<<"Singleton OK"<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：附录: 创建型模式 C++ 实现]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 创建型模式 C++ 实现
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1082,7 +1082,7 @@ struct Factory{virtual std::unique_ptr<Product> create()=0;};struct ConcreteFact
 int main(){ConcreteFactory f;auto p=f.create();p->use();return 0;}
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：附录: 创建型模式 C++ 实现]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 创建型模式 C++ 实现
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1090,7 +1090,7 @@ struct Widget{int id;Widget(int i):id(i){}Widget(const Widget&)=delete;Widget(Wi
 int main(){Widget prototype{1};std::cout<<"Prototype pattern: clone from existing object."<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录: 创建型模式 C++ 实现]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 创建型模式 C++ 实现
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1098,7 +1098,7 @@ struct Base{virtual ~Base(){}};template<typename T>struct Holder:Base{T val;Hold
 int main(){std::cout<<"Builder: separate construction from representation. Often fluent API."<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录: 创建型模式 C++ 实现]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 创建型模式 C++ 实现
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Factory Method: defer instantiation to subclass. Abstract Factory: families of related objects."<<std::endl;return 0;}
@@ -1108,7 +1108,7 @@ int main(){std::cout<<"Factory Method: defer instantiation to subclass. Abstract
 
 C++ 标准库本身就是创建型模式的最大用户：
 
-> **示例 40** [难度 ★★☆☆☆] [主题：附录 A：工业中的创建型模式 [F:]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业中的创建型模式 [F:
 ```
 Singleton:     std::cout (Meyer's Singleton, C++11起线程安全)
 Factory:       std::make_unique, std::make_shared (工厂函数, 异常安全)
@@ -1122,7 +1122,7 @@ Prototype:     std::unique_ptr<T> clone() = 0 (多态克隆)
 - Qt: Factory pattern (QPluginLoader → runtime plugin creation)
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 A：工业中的创建型模式 [F:]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业中的创建型模式 [F:
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1136,7 +1136,7 @@ int main() {
 
 ## 附录 B：面试与设计权衡 [J: Learning / H: Design]
 
-> **示例 42** [难度 ★★★☆☆] [主题：附录 B：面试与设计权衡 [J: L]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试与设计权衡 [J: L
 ```
 面试高频:
 Q: C++ 中线程安全的 Singleton 实现？
@@ -1190,7 +1190,7 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 ## 底层视角：工厂/原型的多态代价与 CRTP 替代 [E: Low-level]
 
-[标准] 工厂/抽象工厂/原型模式经虚函数分派（见 ch47：约 1–3 ns + 间接跳转惩罚，每对象 `0x0008` vptr）。原型模式额外一次 `clone()` 虚调用 + 一次 `new`/`0x0010` 堆分配（约 tens of ns）。
+<span class="badge badge-std">标准</span> 工厂/抽象工厂/原型模式经虚函数分派（见 ch47：约 1–3 ns + 间接跳转惩罚，每对象 `0x0008` vptr）。原型模式额外一次 `clone()` 虚调用 + 一次 `new`/`0x0010` 堆分配（约 tens of ns）。
 
 `Singleton` 的 `getInstance()` 若用 `std::call_once` 内部是 `0x0008` 原子标志 + futex（首次 ≈1–5 µs，后续约 1 ns）。`C++17` `if constexpr` 可在编译期选构造分支，省一次 `0x0008` 虚查表；`GCC 13.1.0` `-O2` 对 `final` 工厂可去虚化。
 
@@ -1223,7 +1223,7 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1239,9 +1239,9 @@ std::unique_ptr<Logger> make_logger(const std::string& kind) {
 int main() { if (auto l = make_logger("console")) l->log("hi"); }
 ```
 
-[标准] 工厂把创建封装起来，返回 `unique_ptr` 由调用方独占所有权，无需手动释放；即便创建途中抛异常，已构造部分也能被正确析构（RAII）。
+<span class="badge badge-std">标准</span> 工厂把创建封装起来，返回 `unique_ptr` 由调用方独占所有权，无需手动释放；即便创建途中抛异常，已构造部分也能被正确析构（RAII）。
 
-[引用] 工厂方法见 GoF《Design Patterns》Factory Method；现代 C++ 落地参见 C++ Core Guidelines「I.27 优先使用工厂函数」与 cppreference「`std::unique_ptr` / `std::make_unique`」。
+<span class="badge badge-ref">引用</span> 工厂方法见 GoF《Design Patterns》Factory Method；现代 C++ 落地参见 C++ Core Guidelines「I.27 优先使用工厂函数」与 cppreference「`std::unique_ptr` / `std::make_unique`」。
 
 </details>
 
@@ -1251,7 +1251,7 @@ int main() { if (auto l = make_logger("console")) l->log("hi"); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -1269,9 +1269,9 @@ int main() {
 }
 ```
 
-[标准] Builder 把「多步构造」变成链式调用，必填 / 可选参数一目了然，避免一组签名爆炸的构造函数；返回 `Enemy` 值类型（NRVO）零额外开销。
+<span class="badge badge-std">标准</span> Builder 把「多步构造」变成链式调用，必填 / 可选参数一目了然，避免一组签名爆炸的构造函数；返回 `Enemy` 值类型（NRVO）零额外开销。
 
-[引用] 建造者模式见 GoF《Design Patterns》Builder；链式返回 `*this` 的 fluent API 风格在 Qt、`std::ostream` 等处普遍使用，参见 Google C++ Style Guide 对可读构造的讨论。
+<span class="badge badge-ref">引用</span> 建造者模式见 GoF《Design Patterns》Builder；链式返回 `*this` 的 fluent API 风格在 Qt、`std::ostream` 等处普遍使用，参见 Google C++ Style Guide 对可读构造的讨论。
 
 </details>
 
@@ -1281,7 +1281,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 struct Config { int timeout_ms = 3000; };
@@ -1292,9 +1292,9 @@ int main() {
 }
 ```
 
-[标准] 函数内 `static` 局部由编译器 guard 保证线程安全的一次初始化，且天然规避跨 TU 的静态初始化顺序问题（SOIF）；但它是全局可变状态，测试时难以替换。
+<span class="badge badge-std">标准</span> 函数内 `static` 局部由编译器 guard 保证线程安全的一次初始化，且天然规避跨 TU 的静态初始化顺序问题（SOIF）；但它是全局可变状态，测试时难以替换。
 
-[引用] 单例见 GoF《Design Patterns》Singleton；C++ Core Guidelines 指出单例本质是全局状态、应优先考虑依赖注入（ch141）或 C++17 `inline` 变量（提案 P0607）；Meyers 单例的线程安全初始化见 ISO/IEC 14882:2023 `[basic.stc.static]` 与 `[stmt.dcl]` 常量初始化条款。
+<span class="badge badge-ref">引用</span> 单例见 GoF《Design Patterns》Singleton；C++ Core Guidelines 指出单例本质是全局状态、应优先考虑依赖注入（ch141）或 C++17 `inline` 变量（提案 P0607）；Meyers 单例的线程安全初始化见 ISO/IEC 14882:2023 `[basic.stc.static]` 与 `[stmt.dcl]` 常量初始化条款。
 
 </details>
 
@@ -1464,7 +1464,7 @@ virtual 工厂（6.69 ms）每次迭代执行：①虚函数间接调用 `f->cre
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 

@@ -14,28 +14,28 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C/C++ 是**翻译单元**模型：每个 `.cpp` 独立编译成 `.o`，再链接。文件一多，手工敲 `g++ a.cpp b.cpp ...` 立刻失控——哪改了要重编、谁依赖谁、并行几核，全得人记。[评] 1977 年，贝尔实验室的 Stuart Feldman 发明 **Make**，用 `Makefile` 描述"目标—依赖—命令"，让机器按依赖图增量重编。[史] 这是构建系统的起点：把"重编哪些"从人脑搬进规则文件。
+C/C++ 是**翻译单元**模型：每个 `.cpp` 独立编译成 `.o`，再链接。文件一多，手工敲 `g++ a.cpp b.cpp ...` 立刻失控——哪改了要重编、谁依赖谁、并行几核，全得人记。<span class="badge badge-comment">评</span> 1977 年，贝尔实验室的 Stuart Feldman 发明 **Make**，用 `Makefile` 描述"目标—依赖—命令"，让机器按依赖图增量重编。<span class="badge badge-history">史</span> 这是构建系统的起点：把"重编哪些"从人脑搬进规则文件。
 
 ### 0.2 关键转折（编年）
 
-- **1977**：Make 随 Unix 诞生（Feldman，因此获 2003 年 ACM 软件系统奖）。[史]
-- **2000**：Kitware 公司创立，CMake 由 Bill Hoffman 等开发，初衷是给跨平台项目生成原生构建文件（Makefile / VS / Xcode）。[史]
-- **2000s 中**：Google 的 **Ninja** 作为极致快速的底层构建后端出现，被 CMake 选为生成目标之一。[史]
+- **1977**：Make 随 Unix 诞生（Feldman，因此获 2003 年 ACM 软件系统奖）。<span class="badge badge-history">史</span>
+- **2000**：Kitware 公司创立，CMake 由 Bill Hoffman 等开发，初衷是给跨平台项目生成原生构建文件（Makefile / VS / Xcode）。<span class="badge badge-history">史</span>
+- **2000s 中**：Google 的 **Ninja** 作为极致快速的底层构建后端出现，被 CMake 选为生成目标之一。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-Make 直白却难跨平台、依赖 shell 与文件系统时间戳；CMake 选择"不直接构建，而是生成构建文件"，用一套 `CMakeLists.txt` 适配所有平台，把复杂度收口。[史][评] Ninja 则反向极致：几乎不解释、只忠实执行依赖图，换取最快增量构建。三者的取舍是"可移植性 vs 速度 vs 简单"的三角——CMake + Ninja 组合如今成了工业界甜点。[评] 对比 Rust 的 Cargo"构建即包管理"，C++ 的构建与包管理长期分离，正是其历史包袱。[评]
+Make 直白却难跨平台、依赖 shell 与文件系统时间戳；CMake 选择"不直接构建，而是生成构建文件"，用一套 `CMakeLists.txt` 适配所有平台，把复杂度收口。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> Ninja 则反向极致：几乎不解释、只忠实执行依赖图，换取最快增量构建。三者的取舍是"可移植性 vs 速度 vs 简单"的三角——CMake + Ninja 组合如今成了工业界甜点。<span class="badge badge-comment">评</span> 对比 Rust 的 Cargo"构建即包管理"，C++ 的构建与包管理长期分离，正是其历史包袱。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] CMake 在 2020s 引入 `Presets`（`CMakePresets.json`），把"用哪套编译器/标志/构建目录"标准化为可共享配置，缓解了"每个人机器上都编不过"的经典噩梦。
-- [史] Bazel（Google 开源）以"强约束、可重现、远程缓存"切入超大型单体仓库，成为 CMake 之外最具影响力的声音，但学习曲线陡峭、与既有 C++ 生态磨合成本高。
-- [史] Ninja 因极简依赖图执行成为 CMake 在 CI 与大型项目中的首选后端，Google Chromium 的千万行级构建即依赖 Ninja 的增量速度。
-- [评] C++ 的"构建"与"包管理"长期分离（对比 Cargo），CMake + vcpkg/Conan 的组合正是对这一历史包袱的工业补偿。
+- <span class="badge badge-history">史</span> CMake 在 2020s 引入 `Presets`（`CMakePresets.json`），把"用哪套编译器/标志/构建目录"标准化为可共享配置，缓解了"每个人机器上都编不过"的经典噩梦。
+- <span class="badge badge-history">史</span> Bazel（Google 开源）以"强约束、可重现、远程缓存"切入超大型单体仓库，成为 CMake 之外最具影响力的声音，但学习曲线陡峭、与既有 C++ 生态磨合成本高。
+- <span class="badge badge-history">史</span> Ninja 因极简依赖图执行成为 CMake 在 CI 与大型项目中的首选后端，Google Chromium 的千万行级构建即依赖 Ninja 的增量速度。
+- <span class="badge badge-comment">评</span> C++ 的"构建"与"包管理"长期分离（对比 Cargo），CMake + vcpkg/Conan 的组合正是对这一历史包袱的工业补偿。
 
 > 史料来源：CMake 官网 https://cmake.org/ ；Ninja 构建系统 https://ninja-build.org/
 
-## ① 概述：构建系统解决什么 [标准]
+## ① 概述：构建系统解决什么 <span class="badge badge-std">标准</span>
 
 [第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
 [第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)
@@ -46,7 +46,7 @@ C++ 是**翻译单元（translation unit，TU）**模型：每个 `.cpp` 独立�
 2. **调度执行**——按依赖图顺序调用编译器，并尽可能并行。
 3. **产物管理**——输出可执行文件、静态库（`.a`/`.lib`）、动态库（`.so`/`.dll`）。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 一个最小的、被构建系统反复编译的翻译单元
 // 文件：Examples/_ch12_hello.cpp（仅示意，非取证源）
@@ -60,7 +60,7 @@ int main() {
 - `[标准]`：C++ 标准只规定"一个程序由若干翻译单元链接而成"（[lex.phases]、[basic.link]），**不规定如何驱动编译**——构建系统是工程层。
 - `[经验]`：项目从 1 个文件增长到 1000 个文件时，手工敲 `g++ *.cpp` 会崩溃（重复全量编译、无法增量）；构建系统把"哪些要重编"变成图上问题。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 [标准]]
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 <span class="badge badge-std">标准</span>]
 ```
 ┌──────────────── 构建流水线（单 TU）────────────────┐
 │  foo.cpp ──▶ [预处理] ──▶ [编译] ──▶ foo.o ──┐      │
@@ -71,11 +71,11 @@ int main() {
 └───────────────────────────────────────────────────┘
 ```
 
-## ② Make 基础（规则/目标/变量/自动变量） [标准]
+## ② Make 基础（规则/目标/变量/自动变量） <span class="badge badge-std">标准</span>
 
 Make 是最古老、最通用的构建工具：用户写 `Makefile`，声明**目标（target）: 依赖（prerequisites）** 与生成命令（recipe）。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：基础（规则/目标/变量/自动变量） ]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 基础（规则/目标/变量/自动变量）
 ```cpp
 // ② Make 构建的 C++ 源：foo.cpp
 // 文件：Examples/_ch12_foo.cpp（示意）
@@ -99,11 +99,11 @@ foo.o: foo.cpp        # 头改动时此规则触发重编
 - `[标准]`：Make 本身不在 C++ 标准内，是 POSIX 工具；`$@`/`$<`/`$^` 是**自动变量**——`$@`=目标名，`$<`=首个依赖，`$^`=全部依赖。
 - `[经验]`：手工 Makefile 的致命弱点是**依赖需手写**——头文件改动不会自动让 `.o` 失效，必须 `-MMD` 生成 `.d` 来补全（见 ⑨⑪）。
 
-## ③ Make 模式规则与函数 [标准]
+## ③ Make 模式规则与函数 <span class="badge badge-std">标准</span>
 
 模式规则（pattern rule）用 `%` 通配，避免为每个 `.cpp` 写一条规则；Make 内置函数（`wildcard`/`patsubst`/`addprefix`）做批量推导。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：模式规则与函数 [标准]]
+> **示例 4** [难度 ★☆☆☆☆] [主题：模式规则与函数 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ 多个同构源：calc.cpp / emit.cpp 各自可被同一模式规则处理
 // 文件：Examples/_ch12_calc.cpp（示意）
@@ -124,11 +124,11 @@ app: $(OBJ)
 - `[标准]`：模式规则 `%.o: %.cpp` 是 GNU Make 扩展（POSIX 仅定义后缀规则 `.c.o`）。
 - `[经验]`：`-include $(OBJ:.o=.d)` 把 ⑨ 生成的依赖文件吃进来，实现"头改动即重编"。这是手写 Make 工程化的关键一招。
 
-## ④ Ninja：快在哪（无递归、图依赖、紧凑语法） [标准]
+## ④ Ninja：快在哪（无递归、图依赖、紧凑语法） <span class="badge badge-std">标准</span>
 
 Ninja 设计哲学与 Make 相反：**Ninja 几乎不做决策**，它只执行一个扁平的依赖图；"哪些要重编"由生成器（CMake、Meson）算好写进 `build.ninja`。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：快在哪（无递归、图依赖、紧凑语法） ]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 快在哪（无递归、图依赖、紧凑语法）
 ```
 ┌──────── Make vs Ninja 决策位置 ─────────┐
 │ Make：读 Makefile → 边解析边决策 → 慢   │
@@ -137,7 +137,7 @@ Ninja 设计哲学与 Make 相反：**Ninja 几乎不做决策**，它只执行�
 └────────────────────────────────────────┘
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：快在哪（无递归、图依赖、紧凑语法） ]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 快在哪（无递归、图依赖、紧凑语法）
 ```cpp
 // ④ Ninja 构建的源（与 Make 同一份 C++，构建器不同）
 // 文件：Examples/_ch12_ninja_main.cpp（示意）
@@ -159,11 +159,11 @@ build app: link ninja_main.o
 - `[平台·x86-64]`：Ninja 在 Windows 上用 `build.ninja` 同样工作；CMake 默认生成器在 Windows 常选 Ninja 或 MSBuild。
 - `[经验]`：现代 CMake 配 Ninja 是大型 C++ 项目的黄金组合——配置慢（CMake 算图），构建快（Ninja 跑图）。
 
-## ⑤ CMake 概览（target-based 哲学） [标准]
+## ⑤ CMake 概览（target-based 哲学） <span class="badge badge-std">标准</span>
 
 CMake 不是直接构建器，而是**构建系统生成器**：写一次 `CMakeLists.txt`，可生成 Makefile / Ninja / VS / Xcode 工程。其核心是 **target-based（目标导向）**——一切围绕"目标"（可执行/库）组织，属性挂在目标上而非全局变量。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：概览]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概览
 ```cpp
 // ⑤ CMake 管理的库源：lib.cpp
 // 文件：Examples/_ch12_lib.cpp（示意）
@@ -182,11 +182,11 @@ target_link_libraries(app PRIVATE mylib)   # 依赖关系即依赖图
 - `[标准]`：CMake 目标分三类——`add_executable` / `add_library` / `add_custom_target`；`target_link_libraries` 把依赖写成**有向边**。
 - `[经验]`：老式 `include_directories()`/`add_definitions()` 是**全局污染**（见 ⑱）；现代 CMake 一律用 `target_*` 把属性封在目标内。
 
-## ⑥ CMake 变量/缓存/option [标准]
+## ⑥ CMake 变量/缓存/option <span class="badge badge-std">标准</span>
 
 CMake 有两类"变量"：**普通变量**（函数/目录作用域）与 **缓存变量（cache entry）**（`set(... CACHE ...)`，跨配置持久、可被 `-D` 覆盖）。`option()` 是布尔缓存变量的语法糖。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：变量/缓存/option [标准]]
+> **示例 8** [难度 ★★☆☆☆] [主题：变量/缓存/option <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ 受 CMake option 控制的源：USE_SSE 决定走哪条路径
 // 文件：Examples/_ch12_feature.cpp（示意）
@@ -214,11 +214,11 @@ target_compile_definitions(mylib PRIVATE USE_SSE=$<IF:$<BOOL:${USE_SSE}>,1,0>)
 - `[标准]`：缓存变量写入 `CMakeCache.txt`；命令行 `-DVAR=val` 覆盖之。这区别于普通 `set()` 的临时作用域。
 - `[经验]`：把"用户可调项"做成 `option()`/`CACHE`，把"内部常量"用普通 `set()`——前者进了缓存可被 GUI/CI 改，后者不该暴露。
 
-## ⑦ CMake 生成器表达式与 target_link_libraries [标准]
+## ⑦ CMake 生成器表达式与 target_link_libraries <span class="badge badge-std">标准</span>
 
 **生成器表达式（generator expression）** `$<...>` 在"生成期"才求值，用来表达"按配置/按语言/按条件"的差异。它和 `target_link_libraries` 配合，是 modern CMake 的精华。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：生成器表达式与 targetlink]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生成器表达式与 targetlink
 ```cpp
 // ⑦ 消费者：链接 mylib 后使用其接口
 // 文件：Examples/_ch12_consumer.cpp（示意）
@@ -243,11 +243,11 @@ target_link_libraries(app PRIVATE
 - `[标准]`：生成器表达式在**配置生成阶段**（configure 之后）求值；`$<BUILD_INTERFACE>`/`$<INSTALL_INTERFACE>` 解决"安装后头路径变了"的经典难题（见 ⑧）。
 - `[经验]`：`PUBLIC`/`PRIVATE`/`INTERFACE` 三档传播控制：被依赖方暴露的 include/编译选项，用 `PUBLIC` 自动传给使用者，`PRIVATE` 不外泄——避免全局泄漏。
 
-## ⑧ CMake 安装/导出/包配置 [标准]
+## ⑧ CMake 安装/导出/包配置 <span class="badge badge-std">标准</span>
 
 `install()` 把产物与头拷到前缀目录；`install(EXPORT)` 生成 **目标导出集（`.cmake`）**，让别的工程能 `find_package` 找到你（闭环到 ⑯）。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：安装/导出/包配置 [标准]]
+> **示例 10** [难度 ★★☆☆☆] [主题：安装/导出/包配置 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧ 要被导出的库接口（头与 inline 必须随包分发）
 // 文件：Examples/_ch12_exportif.h（示意）
@@ -276,7 +276,7 @@ install(FILES engine.h DESTINATION include)
 
 `-MMD` 让编译器在编译同时**输出一个 `.d` 依赖文件**，列出本 TU 依赖的所有头。构建系统据它重建依赖图。下面全部为本机 GCC 13.1.0 真实运行结果。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：用 g++]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·GCC15]真实：用 g++
 ```cpp
 // 文件：Examples/_ch12_dep.cpp
 // 行号：1
@@ -304,11 +304,11 @@ _ch12_dep.o: _ch12_dep.cpp _ch12_dep.h
 - `[实现·GCC15]`：`.d` 只有一行，格式 `目标: 依赖列表`。`Makefile`/Ninja 读取它即可知"改 `_ch12_dep.h` → 必须重编 `_ch12_dep.o`"。
 - `[经验]`：没有 `-MMD` 的 Makefile 是"瞎的"——头改动不会触发重编，留下"我明明改了头为什么没生效"的幽灵 bug。凡是手写 Make，必 `-MMD` 并 `-include` 生成的 `.d`。
 
-## ⑩ Bazel 简介（BUILD/action 图） [标准]
+## ⑩ Bazel 简介（BUILD/action 图） <span class="badge badge-std">标准</span>
 
 Bazel（Google）走得更远：**声明式 BUILD 文件 + 内容寻址缓存 + 密封构建（hermetic build）**。每个 `cc_library`/`cc_binary` 是一个 **action**，依赖构成 action 图，输出按内容哈希缓存，可跨机器共享。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：简介（BUILD/action 图）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 简介（BUILD/action 图）
 ```cpp
 // ⑩ Bazel cc_library 的源：server.cc
 // 文件：Examples/_ch12_server.cc（示意）
@@ -334,11 +334,11 @@ cc_binary(
 - `[平台·x86-64]`：Bazel 的"密封构建"要求工具链与头全部声明为依赖，否则跨机器结果漂移——这是它与"信任系统已装好一切"的 Make 的根本哲学差。
 - `[经验]`：超大型单体仓（monorepo）选 Bazel；中小项目 CMake+Ninja 性价比更高。
 
-## ⑪ 头文件依赖与增量构建原理 [标准]
+## ⑪ 头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>
 
 增量构建的正确性 = "**依赖闭包任何一处变化，相关 TU 必须重编**"。头被多个 TU 包含，于是头变了要重编所有包含它的 TU——这正是 `-MMD` 输出 `.d` 的根本动机。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：头文件依赖与增量构建原理 [标准]]
+> **示例 13** [难度 ★★☆☆☆] [主题：头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪ 头依赖示意：config.h 被 a.cpp / b.cpp 同时包含
 // 文件：Examples/_ch12_config.h（示意）
@@ -346,7 +346,7 @@ cc_binary(
 constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：头文件依赖与增量构建原理 [标准]]
+> **示例 14** [难度 ★☆☆☆☆] [主题：头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>]
 ```
 ┌──────── 头依赖传播（增量边界）─────────┐
 │  config.h ──┬──▶ a.cpp ──▶ a.o       │
@@ -360,11 +360,11 @@ constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 - `[实现·GCC15]`：`-MMD`（不含系统头）与 `-MD`（含系统头）差异在于是否把 `/usr/include/...` 也写进 `.d`；工程一般用 `-MMD` 避免系统头抖动触发全量重编。
 - `[经验]`：头文件越大、被包含越广，增量构建越"脆"——这是 Modules（见第118章）与 PCH（见 ⑫）要解决的痛点。
 
-## ⑫ 预编译头 PCH [标准]
+## ⑫ 预编译头 PCH <span class="badge badge-std">标准</span>
 
 **预编译头（Precompiled Header, PCH）** 把"庞大且稳定"的头（如 `<vector>`、Qt、Boost）先编译成二进制缓存，后续 TU 直接复用，省去重复解析。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：预编译头 PCH [标准]]
+> **示例 15** [难度 ★☆☆☆☆] [主题：预编译头 PCH <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ PCH 的"稳定大头"：pch.h（内容很少变动）
 // 文件：Examples/_ch12_pch.h（示意）
@@ -375,7 +375,7 @@ constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 #include <memory>
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：预编译头 PCH [标准]]
+> **示例 16** [难度 ★☆☆☆☆] [主题：预编译头 PCH <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 业务 TU：首行强制包含 PCH（GCC/Clang 用 -include pch.h）
 // 文件：Examples/_ch12_biz.cpp（示意）
@@ -398,7 +398,7 @@ g++ -std=c++23 -include _ch12_pch.h _ch12_biz.cpp -o biz
 
 **Unity build（联合编译/单翻译单元构建）**：把 N 个 `.cpp` 用 `#include` 拼成一个大 TU 编译一次。收益来自**头只解析一遍**（尤其 PCH/大模板头），代价是失去 TU 隔离（见 ⑱ 全局命名冲突）。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：联合编译]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联合编译
 ```cpp
 // 文件：Examples/_ch12_part1.cpp
 // 行号：1
@@ -406,7 +406,7 @@ g++ -std=c++23 -include _ch12_pch.h _ch12_biz.cpp -o biz
 namespace ch12 { int compute_a(int x) { return x + 1; } }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：联合编译]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联合编译
 ```cpp
 // 文件：Examples/_ch12_part2.cpp
 // 行号：1
@@ -414,7 +414,7 @@ namespace ch12 { int compute_a(int x) { return x + 1; } }
 namespace ch12 { int compute_b(int x) { return x * 2; } }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：联合编译]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联合编译
 ```cpp
 // 文件：Examples/_ch12_unity.cpp
 // 行号：1
@@ -434,11 +434,11 @@ Unity：1 个合并 TU 编译       =>  合计  0.54 s
 - `[实现·GCC15]`：差距源于每个独立 TU 都把 `<vector>/<string>/<map>` 与模板**从头解析一遍**；Unity 只解析一遍，30 倍头负担骤降。
 - `[经验]`：Unity 是"编译期提速"利器，但会放大 ⑱ 的全局冲突；落地时给每个 `.cpp` 包一层 `#ifndef UNITY_BUILD` 或命名空间隔离，或仅对稳定子模块启用。
 
-## ⑭ 交叉编译工具链文件 [标准]
+## ⑭ 交叉编译工具链文件 <span class="badge badge-std">标准</span>
 
 **交叉编译（cross-compile）**：在 x86-64 主机上生成 ARM/嵌入式目标代码。CMake 用**工具链文件（toolchain file）** 指定 `CMAKE_CXX_COMPILER`、目标 sysroot、目标 triple。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 [标准]]
+> **示例 20** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ 交叉编译的目标程序：跑在 ARM 板上的控制循环
 // 文件：Examples/_ch12_arm_main.cpp（示意）
@@ -465,7 +465,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 **静态库（`.a`/`.lib`）** = 多个 `.o` 的归档，链接时把用到的目标代码拷进可执行文件；**动态库（`.so`/`.dll`）** = 独立文件，运行时加载、多进程共享。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：静态/动态库链接]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态/动态库链接
 ```cpp
 // 文件：Examples/_ch12_mylib.h
 // 行号：1
@@ -473,7 +473,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 namespace ch12 { int square(int x); int cube(int x); }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：静态/动态库链接]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态/动态库链接
 ```cpp
 // 文件：Examples/_ch12_mylib.cpp
 // 行号：1
@@ -481,7 +481,7 @@ namespace ch12 { int square(int x); int cube(int x); }
 namespace ch12 { int square(int x){return x*x;} int cube(int x){return x*x*x;} }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：静态/动态库链接]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 静态/动态库链接
 ```cpp
 // 文件：Examples/_ch12_use_lib.cpp
 // 行号：1
@@ -509,11 +509,11 @@ g++ -std=c++23 _ch12_use_lib.cpp -L. -lch12 -o _ch12_use_lib_shared.exe
 - `[平台·x86-64]`：Windows 上共享库导出符号需 `__declspec(dllexport)`/`.def`，否则外部看不到 `square`/`cube`；本例函数有定义故可链，但**显式控制可见性**才是工程正解（见 ⑯/⑱）。
 - `[经验]`：静态库体积大、启动快、部署简单；动态库节省内存、可独立升级，但带来"DLL Hell"版本错配。服务端偏动态，嵌入式偏静态。
 
-## ⑯ find_package 与包查找 [标准]
+## ⑯ find_package 与包查找 <span class="badge badge-std">标准</span>
 
 `find_package(Foo)` 让 CMake 定位已安装的第三方库，并导入其**导入目标（imported target）** 如 `Foo::Foo`，从而复用对方的 include/编译选项，无需手写 `-I`/`-L`。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：package 与包查找 [标准]]
+> **示例 24** [难度 ★☆☆☆☆] [主题：package 与包查找 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑯ 使用被 find_package 导入的目标提供的接口
 // 文件：Examples/_ch12_use_fmt.cpp（示意，以 {fmt} 为例）
@@ -535,7 +535,7 @@ target_link_libraries(app PRIVATE fmt::fmt)   # 自动带 include/选项
 
 同一份 C++，**不同优化级别**生成的汇编天差地别——这正是"构建配置（Debug/Release）"影响运行效率的根本。下面为 `_ch12_sum.cpp` 在 GCC 13.1.0 的真实 `-S` 输出。
 
-> **示例 25** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：编译同一程]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实：编译同一程
 ```cpp
 // 文件：Examples/_ch12_sum.cpp
 // 行号：1
@@ -629,11 +629,11 @@ _Z6sum_toi:
 - `[实现·GCC15]`：`-O0` 是**字面循环**（每轮 `add`+自增+比较），`-O2` 把 1..n 求和识别为可拆分公式、用 `lea` 做乘加并展开，循环次数大幅减少（甚至近似 O(1)）。这把"构建配置直接决定性能"坐实。
 - `[经验]`：Debug 用 `-O0 -g` 保可调试性，Release 用 `-O2`（或 `-O3`/`/O2`）换性能；**两者汇编/行为差异是真实存在的**，性能基准务必在 Release 下跑。
 
-## ⑱ 常见陷阱（全局变量污染、目录式 include） [标准]
+## ⑱ 常见陷阱（全局变量污染、目录式 include） <span class="badge badge-std">标准</span>
 
 **陷阱 1：全局 include / 全局变量污染。** 老式 `include_directories(.)` 把当前目录塞进**每个** TU 的搜索路径，任何同名头都可能被误包含；全局 `int g_config;` 在多个 TU 定义触发 ODR 冲突。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：常见陷阱]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑱ ❌ 陷阱：在头里定义非 inline 全局变量 → 多 TU 包含 => 多重定义
 // 文件：Examples/_ch12_bad.h（示意，错误示范）
@@ -641,7 +641,7 @@ _Z6sum_toi:
 int g_counter = 0;                 // ❌ 每个包含此头的 TU 都有一份定义 → link error
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑱ ✅ 正确：用 inline（C++17）或 extern 声明 + 单点定义
 // 文件：Examples/_ch12_good.h（示意，正确示范）
@@ -652,7 +652,7 @@ inline int g_counter = 0;          // ✅ inline 变量：ODR 允许多 TU 同�
 
 **陷阱 2：目录式 include 与模糊匹配。** `include_directories(third_party)` 后 `#include "json.h"` 可能抓到错误的 `json.h`。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：常见陷阱]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑱ ❌ 陷阱：依赖目录式 include 的歧义
 // #include "json.h"   // ❌ 到底是哪个 json.h？项目内还是 third_party 的？
@@ -663,7 +663,7 @@ inline int g_counter = 0;          // ✅ inline 变量：ODR 允许多 TU 同�
 - `[标准]`：C++ 要求**单一定义规则（ODR）**——非 `inline` 的变量/函数在整个程序只能有唯一定义（[basic.def.odr]）。头里写定义破坏 ODR。
 - `[经验]`：用 `target_include_directories(... PRIVATE/INTERFACE)` 替代全局 `include_directories`；头里只放 `inline`/`constexpr`/声明，定义留给单一 `.cpp`。
 
-## ⑲ [经验]选型建议
+## ⑲ <span class="badge badge-exp">经验</span>选型建议
 
 没有"最好"的构建系统，只有"最匹配"的。下表为工程共识（非标准规定）：
 
@@ -675,7 +675,7 @@ inline int g_counter = 0;          // ✅ inline 变量：ODR 允许多 TU 同�
 | 嵌入式 / 交叉编译 | CMake + 工具链文件 | `CMAKE_FIND_ROOT_PATH` 控依赖 |
 | Windows 原生重度 IDE | MSBuild / VS 工程 | 与 Visual Studio 集成最深 |
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：[经验]选型建议]
+> **示例 29** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑲ 选型落地的最小可演进骨架（CMake 起手）
 // 文件：Examples/_ch12_skeleton.cpp（示意）
@@ -691,18 +691,18 @@ int main() { std::printf("chosen build system\n"); return 0; }
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：改了头文件却没触发重编译。** 你修改 `config.h` 后只重编了直接包含它的两个 `.cpp`，第三个含它的目标文件用了旧定义，链接期才暴露不一致。请说明构建系统应如何依据实际包含图重编。
-   - [标准] 翻译单元在翻译阶段 4 把 `#include` 的文本递归并入；头文件是翻译单元的依赖，改动须使其所有使用者重编。
-   - [引用] ISO/IEC 14882:2023 §[lex]（翻译阶段，#include 在阶段 4 文本包含）；cppreference "Phases of translation" 词条。
+   - <span class="badge badge-std">标准</span> 翻译单元在翻译阶段 4 把 `#include` 的文本递归并入；头文件是翻译单元的依赖，改动须使其所有使用者重编。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[lex]（翻译阶段，#include 在阶段 4 文本包含）；cppreference "Phases of translation" 词条。
 
 2. **真实场景：同一头里的非 inline 定义导致 multiple definition。** 你把 `Logger g_log;` 写进头文件被 5 个 `.cpp` 包含，链接报重复符号。请用 ODR 解释并用 `inline`/`extern` 修复。
-   - [标准] 命名空间作用域的变量/函数若非 `inline`，在整个程序中必须恰有一个定义；其余翻译单元应为声明。
-   - [引用] ISO/IEC 14882:2023 §[basic.def.odr]（单一定义规则）；cppreference "One Definition Rule" 词条。
+   - <span class="badge badge-std">标准</span> 命名空间作用域的变量/函数若非 `inline`，在整个程序中必须恰有一个定义；其余翻译单元应为声明。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.def.odr]（单一定义规则）；cppreference "One Definition Rule" 词条。
 
 3. **真实场景：CMake 的 PUBLIC/PRIVATE 标错导致消费方找不到头。** 你把 `target_link_libraries(x PRIVATE yaml)` 写成 PRIVATE，消费 `x` 的目标编译时缺 `yaml-cpp` 头。请从语言依赖传播角度说明 PRIVATE/PUBLIC 的语义。
-   - [标准] 头依赖在语言层由 `#include` 与（C++20）模块导入表达；构建系统只负责把正确的包含路径与链接传给使用者。
-   - [引用] ISO/IEC 14882:2023 §[cpp.include]（源文件包含）；cppreference "Replacing text macros / #include" 词条。
+   - <span class="badge badge-std">标准</span> 头依赖在语言层由 `#include` 与（C++20）模块导入表达；构建系统只负责把正确的包含路径与链接传给使用者。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.include]（源文件包含）；cppreference "Replacing text macros / #include" 词条。
 
-> **示例 30** [难度 ★★★☆☆] [主题：速查表]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```
 ┌────────────── 构建系统速查 ──────────────┐
 │ g++ 选项：                                 │
@@ -742,14 +742,14 @@ int main() { std::printf("chosen build system\n"); return 0; }
 
 ## 补充完整可编译示例（build systems）
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B1 最朴素的单 TU 程序（手工 g++ 即可构建）
 #include <cstdio>
 int main() { std::printf("plain\n"); return 0; }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B2 多 TU：声明放头，定义放 .cpp（构建系统负责链接）
 // 文件：Examples/_ch12_math.h（示意）
@@ -757,7 +757,7 @@ int main() { std::printf("plain\n"); return 0; }
 namespace ch12 { int mul(int, int); }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B3 与 B2 配对的定义 TU
 // 文件：Examples/_ch12_math.cpp（示意）
@@ -765,7 +765,7 @@ namespace ch12 { int mul(int, int); }
 namespace ch12 { int mul(int a, int b) { return a * b; } }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B4 inline 变量：头里安全定义全局状态（ODR 友好）
 // 文件：Examples/_ch12_ivar.h（示意）
@@ -773,7 +773,7 @@ namespace ch12 { int mul(int a, int b) { return a * b; } }
 inline int ch12_registry_version = 2;
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B5 PCH 候选的大头集合（稳定、少变）
 // 文件：Examples/_ch12_stable.h（示意）
@@ -784,7 +784,7 @@ inline int ch12_registry_version = 2;
 #include <functional>
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B6 Unity 守卫：合并编译时跳过匿名命名空间冲突
 // 文件：Examples/_ch12_guarded.cpp（示意）
@@ -794,7 +794,7 @@ namespace { int local_only = 1; }
 int guarded_fn(int x) { return x + 1; }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B7 共享库可见性：用默认隐藏 + 显式导出（避免 DLL Hell）
 // 文件：Examples/_ch12_visibility.cpp（示意，GCC/Clang）
@@ -806,7 +806,7 @@ int guarded_fn(int x) { return x + 1; }
 extern "C" API int public_entry(int x) { return x * x; }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B8 交叉编译目标：避免假设字节序/对齐
 // 文件：Examples/_ch12_portable.cpp（示意）
@@ -816,7 +816,7 @@ uint32_t pack_u16(uint16_t hi, uint16_t lo) {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B9 配置期宏：由 CMake -DUSE_AVX=1 决定开启
 // 文件：Examples/_ch12_cfg.cpp（示意）
@@ -830,7 +830,7 @@ int transform(int x) {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B10 find_package 消费方：仅依赖导入目标
 // 文件：Examples/_ch12_use_zlib.cpp（示意）
@@ -839,7 +839,7 @@ int transform(int x) {
 int zlen(const char* s) { std::printf("%s\n", s); return 0; }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B11 生成器表达式运行期镜像：Debug 多打日志
 // 文件：Examples/_ch12_dbg.cpp（示意）
@@ -854,7 +854,7 @@ int run(int x) {
 }
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B12 完整可链的最小库 + 主程序（验证 ⑮ 的 .a/.so 理论）
 // 文件：Examples/_ch12_lib_oop.h（示意）
@@ -862,7 +862,7 @@ int run(int x) {
 namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // B13 与 B12 配对实现（定义集中，声明在头）
 // 文件：Examples/_ch12_lib_oop.cpp（示意）
@@ -875,7 +875,7 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：构建系统的来龙去脉
-[史] Make 由 Stuart Feldman 于 1977 年在贝尔实验室创造，解决"只重新编译改动过的文件"这一工程痛点，是构建自动化的起点。[史] CMake 由 Kitware 于 2000 年发布，用"生成器"把一份 `CMakeLists.txt` 翻译成 Makefile、Ninja、Visual Studio 等多种后端，解决跨平台工程描述问题。[史] Ninja 由 Evan Martin 于 2010 年在 Google 创建，定位为"被 CMake 等生成器调用的底层快构建器"，强调低开销与正确增量。[史] Bazel 源自 Google 内部 Blaze（约 2003–2006），2015 年开源，强调可重现构建与对庞大单体仓库（monorepo）规模的支撑。[评] 演进主线是：手写 Makefile（易错）→ 高层描述 + 生成器（CMake）→ 极速底层执行（Ninja）→ 大规模可重现（Bazel）。
+<span class="badge badge-history">史</span> Make 由 Stuart Feldman 于 1977 年在贝尔实验室创造，解决"只重新编译改动过的文件"这一工程痛点，是构建自动化的起点。<span class="badge badge-history">史</span> CMake 由 Kitware 于 2000 年发布，用"生成器"把一份 `CMakeLists.txt` 翻译成 Makefile、Ninja、Visual Studio 等多种后端，解决跨平台工程描述问题。<span class="badge badge-history">史</span> Ninja 由 Evan Martin 于 2010 年在 Google 创建，定位为"被 CMake 等生成器调用的底层快构建器"，强调低开销与正确增量。<span class="badge badge-history">史</span> Bazel 源自 Google 内部 Blaze（约 2003–2006），2015 年开源，强调可重现构建与对庞大单体仓库（monorepo）规模的支撑。<span class="badge badge-comment">评</span> 演进主线是：手写 Makefile（易错）→ 高层描述 + 生成器（CMake）→ 极速底层执行（Ninja）→ 大规模可重现（Bazel）。
 
 ### ㉒.2 真实工程坐标：构建系统活在哪些产品/项目里
 
@@ -901,9 +901,9 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 - 递归 Make 的可靠性差：多次 fork、重复解析，大项目既慢又易出错，这也是 Ninja 被发明的直接原因。
 
 ### ㉒.4 与标准的互动：构建系统与 C++ 标准的演进
-[评] 构建系统本身不是 C++ 标准的一部分（标准不规定如何编译工程），但它必须紧跟标准：C++20 Modules 让传统"头文件依赖图"失效，CMake 3.20+ 与 Clang/GCC/MSVC 的模块支持需要构建系统配合（P1103R3 Modules 落地）。[史] `find_package` 的 Config/Module 模式、包导出（PkgConfig）也是围绕"如何让标准库与第三方库可发现"的工程约定，无单一"构建系统提案"，属于工程实践层。
+<span class="badge badge-comment">评</span> 构建系统本身不是 C++ 标准的一部分（标准不规定如何编译工程），但它必须紧跟标准：C++20 Modules 让传统"头文件依赖图"失效，CMake 3.20+ 与 Clang/GCC/MSVC 的模块支持需要构建系统配合（P1103R3 Modules 落地）。<span class="badge badge-history">史</span> `find_package` 的 Config/Module 模式、包导出（PkgConfig）也是围绕"如何让标准库与第三方库可发现"的工程约定，无单一"构建系统提案"，属于工程实践层。
 
-- [史] C++20 **Modules（P1103R3）** 打破了构建系统传统的「头文件依赖图」模型：模块接口单元（BMI）必须先在依赖它的翻译单元之前构建，CMake 3.20+ 因此引入 `CXX_MODULES` 实验支持、`target_sources(... FILE_SET CXX_MODULES)`。这是标准演进倒逼构建系统的真实案例——WG21 给语义，构建系统负责调度。见 [P1103](https://wg21.link/P1103)。
+- <span class="badge badge-history">史</span> C++20 **Modules（P1103R3）** 打破了构建系统传统的「头文件依赖图」模型：模块接口单元（BMI）必须先在依赖它的翻译单元之前构建，CMake 3.20+ 因此引入 `CXX_MODULES` 实验支持、`target_sources(... FILE_SET CXX_MODULES)`。这是标准演进倒逼构建系统的真实案例——WG21 给语义，构建系统负责调度。见 [P1103](https://wg21.link/P1103)。
 
 ### ㉒.5 权威引用
 - https://www.gnu.org/software/make/ ：GNU Make 官方页，证明 Feldman 1977 的 Make 谱系。
@@ -914,7 +914,7 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 
 ## 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
-> **示例 44** [难度 ★★☆☆☆] [主题：附录 A：工业构建系统与标准库 [B]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业构建系统与标准库 [B
 ```
 C++构建系统工业对比:
 CMake: 事实标准(90%+项目), 跨平台, 但语法丑陋
@@ -966,7 +966,7 @@ Google/LLVM CMake规范:
 - target_*命令只影响指定target(不使用全局add_compile_options)
 - PUBLIC/PRIVATE/INTERFACE严格区分
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录 H：CMake最佳实践]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：CMake最佳实践
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Modern CMake=target_* commands, explicit deps, no GLOB"<<std::endl;return 0;}
@@ -980,7 +980,7 @@ int main(){std::cout<<"Modern CMake=target_* commands, explicit deps, no GLOB"<<
 
 ## 附录 I：CMake面试
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录 I：CMake面试]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：CMake面试
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CMake=PUBLIC(传递)/PRIVATE(不传递)/INTERFACE(仅依赖方)"<<std::endl;return 0;}
@@ -1058,22 +1058,22 @@ project(demo)
 add_executable(app main.cpp)      # target 'app' 聚合源/包含/链接
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 int main() { std::cout << "minimal cmake target\n"; }
 ```
 
-[标准] 结论：CMake 的 `add_executable` / `target_link_libraries` 把“源文件、包含目录、链接库”绑定到 target，
+<span class="badge badge-std">标准</span> 结论：CMake 的 `add_executable` / `target_link_libraries` 把“源文件、包含目录、链接库”绑定到 target，
 自动沿 target 传播 `PUBLIC/PRIVATE/INTERFACE` 属性，比手写 Make 变量更不易漏依赖。
 
-[引用] CMake 官方文档《cmake-buildsystem(7)》（https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html）讲 target-based 模型；`target_link_libraries`（https://cmake.org/cmake/help/latest/command/target_link_libraries.html）讲 PUBLIC/PRIVATE/INTERFACE 属性传播。
+<span class="badge badge-ref">引用</span> CMake 官方文档《cmake-buildsystem(7)》（https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html）讲 target-based 模型；`target_link_libraries`（https://cmake.org/cmake/help/latest/command/target_link_libraries.html）讲 PUBLIC/PRIVATE/INTERFACE 属性传播。
 
 ### 练习 2（难度 ★★★）
 
 **真实场景：CI 里的增量构建。** 大型仓库每次提交都要重建，太慢。增量构建依赖"头文件依赖图"：只重编受改动头影响的目标文件。请写程序说明 `g++ -MMD -c` 生成的 `.d` 文件作用，并指出它如何让 `make`/`ninja` 在头文件改动时只重编受影响的源。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1085,16 +1085,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`.d` 把 `#include` 关系写成 Make 规则，`make` include 它后，
+<span class="badge badge-std">标准</span> 结论：`.d` 把 `#include` 关系写成 Make 规则，`make` include 它后，
 任一被列头改动都会触发本 `.o` 重编；无 `.d` 则只能靠手写依赖或全量重编。
 
-[引用] GCC 手册《预处理选项》中的 `-MMD`/`-MP`（https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html）；Ninja 手册（https://ninja-build.org/manual.html）说明构建图如何消费 `.d` 做增量。增量构建是 `make`/`ninja` 的基础能力。
+<span class="badge badge-ref">引用</span> GCC 手册《预处理选项》中的 `-MMD`/`-MP`（https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html）；Ninja 手册（https://ninja-build.org/manual.html）说明构建图如何消费 `.d` 做增量。增量构建是 `make`/`ninja` 的基础能力。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：发布形态选型。** 你要把一个 `square` 工具函数交付出去：做成静态库 `.a` 让调用方程序自包含，或做成动态库 `.so` 便于单独升级。请在单个自包含程序里体现"库函数"的调用形态，并写出分离成静态库的真实命令。
 
-> **示例 49** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 int square(int x) { return x * x; }   // 实际项目中会放进 libmath.a
@@ -1110,9 +1110,9 @@ g++ -std=c++23 main.cpp libmath.a -o app      # 静态：square 代码已并入 
 # 动态：g++ -shared -fPIC math.cpp -o libmath.so; g++ main.cpp -L. -lmath -o app
 ```
 
-[标准] 结论：静态库零运行时依赖、体积大；动态库体积小、可单独升级但需部署 `.so`/`.dll` 并处理好 ABI 兼容。
+<span class="badge badge-std">标准</span> 结论：静态库零运行时依赖、体积大；动态库体积小、可单独升级但需部署 `.so`/`.dll` 并处理好 ABI 兼容。
 
-[引用] GNU `ar` 手册讲静态库归档；CMake 文档 `add_library`（https://cmake.org/cmake/help/latest/command/add_library.html）讲 STATIC/SHARED 目标。动态库分发须保证 ABI 一致（同编译器/标准库/构建档），见 ch13 包管理与 ch18 构建配置。
+<span class="badge badge-ref">引用</span> GNU `ar` 手册讲静态库归档；CMake 文档 `add_library`（https://cmake.org/cmake/help/latest/command/add_library.html）讲 STATIC/SHARED 目标。动态库分发须保证 ABI 一致（同编译器/标准库/构建档），见 ch13 包管理与 ch18 构建配置。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -1144,7 +1144,7 @@ g++ -std=c++23 -x c++-header stdpch.h -o stdpch.h.gch   # 预编译头
 g++ -std=c++23 -include stdpch.h main.cpp -o main        # 复用 gch
 ```
 
-> **示例 50** [难度 ★★☆☆☆] [主题：演绎 2：用 PCH 给巨量 Uni]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：用 PCH 给巨量 Uni
 ```cpp
 #include <iostream>
 #include <vector>

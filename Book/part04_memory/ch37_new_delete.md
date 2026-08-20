@@ -5,10 +5,10 @@
 [第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)
 
 > 层级标记约定（全书统一）
-> - **[标准]** C++ 标准（ISO/IEC 14882）规定的行为，跨平台、跨编译器一致。
-> - **[实现]** 具体标准库实现（libstdc++ / libc++ / MS STL）或编译器（GCC/Clang/MSVC）的源码与行为。
+> - **<span class="badge badge-std">标准</span>** C++ 标准（ISO/IEC 14882）规定的行为，跨平台、跨编译器一致。
+> - **<span class="badge badge-impl">实现</span>** 具体标准库实现（libstdc++ / libc++ / MS STL）或编译器（GCC/Clang/MSVC）的源码与行为。
 > - **[平台·x86-64]** 受操作系统 / ABI / 目标三元组影响的细节（如数组 cookie 布局、对齐分配后端）。
-> - **[经验]** 工程实践、性能权衡与陷阱。
+> - **<span class="badge badge-exp">经验</span>** 工程实践、性能权衡与陷阱。
 >
 > 真实源码均先探测后引用，标注 `路径:行号`；本机缺失的运行时实现文件（如 `new_op.cc`）标注 `[实现-推断]`；操作系统相关细节标注 `[平台-推断]`。
 
@@ -19,24 +19,24 @@
 > C++ 把"分配内存"和"构造对象"焊成一步，又悄悄留了一道可以撬开的缝。
 
 ### 0.1 起源（谁·何时·为何）
-C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造"。Stroustrup 引入 `new` 表达式，把二者合一，并允许重载 `operator new` 作为"分配原语"，使"内存来源"可定制（池、调试、对齐）。[史] 关键洞察是把 **new 表达式**（语言）与 **operator new**（可替换的分配函数）拆成两层——这一点反直觉却关键。[史]
+C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造"。Stroustrup 引入 `new` 表达式，把二者合一，并允许重载 `operator new` 作为"分配原语"，使"内存来源"可定制（池、调试、对齐）。<span class="badge badge-history">史</span> 关键洞察是把 **new 表达式**（语言）与 **operator new**（可替换的分配函数）拆成两层——这一点反直觉却关键。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **C++ 早期**：`::operator new` 与类级 `operator new` 重载成形，配 `nothrow` 版本。[史]
-- **C++11**：对齐感知的 `operator new(std::align_val_t)` 因 SIMD / over-aligned 类型加入。[史]
-- **C++17**：`operator new` 的 `std::nothrow` 与硬件过载细化。[史]
+- **C++ 早期**：`::operator new` 与类级 `operator new` 重载成形，配 `nothrow` 版本。<span class="badge badge-history">史</span>
+- **C++11**：对齐感知的 `operator new(std::align_val_t)` 因 SIMD / over-aligned 类型加入。<span class="badge badge-history">史</span>
+- **C++17**：`operator new` 的 `std::nothrow` 与硬件过载细化。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-委员会坚持"`new` 表达式不可被用户改，但底层 `operator new` 可以"——既保证语法统一，又开放内存策略。[史][评] 这与 C 的 `malloc` 哲学一脉相承却更分层；反对者认为这套分离过于隐晦，催生了 `std::pmr`（C++17）用分配器显式表达。[评]
+委员会坚持"`new` 表达式不可被用户改，但底层 `operator new` 可以"——既保证语法统一，又开放内存策略。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 这与 C 的 `malloc` 哲学一脉相承却更分层；反对者认为这套分离过于隐晦，催生了 `std::pmr`（C++17）用分配器显式表达。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++17 细化 `operator new` 的 `nothrow` 与对齐重载。C++17/20 把"分配"推到运行时多态与编译期两极端。[史]
+0.2 停在 C++17 细化 `operator new` 的 `nothrow` 与对齐重载。C++17/20 把"分配"推到运行时多态与编译期两极端。<span class="badge badge-history">史</span>
 
-- **C++17 `std::pmr`（多态分配器, P0220）**：用 `memory_resource` 运行时多态切换内存来源，将 0.1 那层"可替换的 operator new"升级为"可热插拔的内存策略对象"，告别编译期模板膨胀（见 ch38）。[史]
-- **C++20 `constexpr new` / `constexpr delete`（P0784）**：允许在常量求值中 `new` / `delete` 与构造动态对象，使 `std::vector` / `std::string` 能在编译期使用（见 ch21/28），把"分配原语"第一次带进编译期世界。[史]
-- **C++20 销毁式 delete（destroying delete, P0722）**：`operator delete(void*, size_t, void*)` 可在释放内存前已知对象已析构，省一次虚调用，是分配 / 释放原语的精细优化。[史]
-- **行业落地与争议**：多数应用继续用默认 `::operator new`；定制分配器只在游戏 / 交易 / 嵌入式等热点出现。静态反射（C++26 候选）若暴露"分配的布局元数据"，将让内存分析工具更精确。[史][评]
+- **C++17 `std::pmr`（多态分配器, P0220）**：用 `memory_resource` 运行时多态切换内存来源，将 0.1 那层"可替换的 operator new"升级为"可热插拔的内存策略对象"，告别编译期模板膨胀（见 ch38）。<span class="badge badge-history">史</span>
+- **C++20 `constexpr new` / `constexpr delete`（P0784）**：允许在常量求值中 `new` / `delete` 与构造动态对象，使 `std::vector` / `std::string` 能在编译期使用（见 ch21/28），把"分配原语"第一次带进编译期世界。<span class="badge badge-history">史</span>
+- **C++20 销毁式 delete（destroying delete, P0722）**：`operator delete(void*, size_t, void*)` 可在释放内存前已知对象已析构，省一次虚调用，是分配 / 释放原语的精细优化。<span class="badge badge-history">史</span>
+- **行业落地与争议**：多数应用继续用默认 `::operator new`；定制分配器只在游戏 / 交易 / 嵌入式等热点出现。静态反射（C++26 候选）若暴露"分配的布局元数据"，将让内存分析工具更精确。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/new ｜ https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/allocator
 
@@ -47,13 +47,13 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 
 动态内存管理是 C++ 资源模型的核心支柱。本章聚焦**最底层原语**——`operator new` / `operator delete` 这一族可替换（replaceable）的全局函数，以及 `new` 表达式语法如何调用它们。它向上承接 ch19（存储期）、ch35（堆段布局）、ch36（`malloc`/`free` 后端）、ch38（`std::allocator` 与 `rebind`）、ch28（`launder` 与对象生命期）、ch33（`bad_alloc` 与异常）、ch44（内存池）、ch45（RAII 接管释放）。
 
-[标准] 本章所有语义以 C++17/20 为基准，并标注 C++14（sized deallocation）、C++17（aligned new、launder）、C++20（destroying delete）的增量。
+<span class="badge badge-std">标准</span> 本章所有语义以 C++17/20 为基准，并标注 C++14（sized deallocation）、C++17（aligned new、launder）、C++20（destroying delete）的增量。
 
 ---
 
 ## ② 一个反直觉的分离：`new` 表达式 ≠ `operator new`
 
-[标准] C++ 把"分配内存"和"构造对象"这两件事**刻意拆开**。`new` 表达式 `new T(args)` 在语义上分解为两步：
+<span class="badge badge-std">标准</span> C++ 把"分配内存"和"构造对象"这两件事**刻意拆开**。`new` 表达式 `new T(args)` 在语义上分解为两步：
 
 1. 调用 `operator new(sizeof(T))` 取得原始内存（一个 `void*`）。
 2. 在该内存上**构造** `T` 对象（调用构造函数）。
@@ -65,11 +65,11 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 
 这意味着 `operator new` 本身**完全不知道类型**——它只看到 `size_t` 字节数。类型、构造、析构都是 `new`/`delete` **表达式**的责任，而不是 `operator new` 函数的责任。理解这一点是理解本章一切内容（placement new、类专属重载、对齐 new、destroying delete）的钥匙。
 
-> **[经验]** 初学者最常见的误区是"重载 `operator new` 就能控制构造"。错。`operator new` 只负责拿内存；真正控制"构造什么、怎么构造"的是 placement new 与构造函数。
+> **<span class="badge badge-exp">经验</span>** 初学者最常见的误区是"重载 `operator new` 就能控制构造"。错。`operator new` 只负责拿内存；真正控制"构造什么、怎么构造"的是 placement new 与构造函数。
 
 下面这个程序印证了"表达式"与"函数"的分离：
 
-> **示例 1** [难度 ★★☆☆☆] [主题：一个反直觉的分离：new 表达式 ≠]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 一个反直觉的分离：new 表达式 ≠
 ```cpp
 // 程序 1：分离演示 —— 全局 operator new 只负责拿内存
 #include <new>
@@ -106,7 +106,7 @@ int main() {
 
 编译运行（本机 MinGW GCC 13.1.0）：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：一个反直觉的分离：new 表达式 ≠]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 一个反直觉的分离：new 表达式 ≠
 ```
 [global operator new] 请求 4 字节
 [Widget 构造] v=42 @0x...
@@ -120,7 +120,7 @@ int main() {
 
 ## ③ 全局 `operator new` / `operator delete` 的完整签名族
 
-[标准] `[new.delete.single]` 与 `[new.delete.array]` 规定了一族**可替换（replaceable）**签名，用户可在全局或类作用域内提供自己的定义来覆盖默认实现。下面逐条列出，并对照本机 libstdc++ `<new>` 的真实声明。
+<span class="badge badge-std">标准</span> `[new.delete.single]` 与 `[new.delete.array]` 规定了一族**可替换（replaceable）**签名，用户可在全局或类作用域内提供自己的定义来覆盖默认实现。下面逐条列出，并对照本机 libstdc++ `<new>` 的真实声明。
 
 ### 37.2.1 单对象版本
 
@@ -152,7 +152,7 @@ int main() {
 
 ### 37.2.4 placement 版本（**不可替换**）
 
-> **示例 3** [难度 ★★☆☆☆] [主题：版本（不可替换）]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 版本（不可替换）
 ```cpp
 #include <cstddef>
 void* operator new(std::size_t, void* p) noexcept { return p; }
@@ -161,13 +161,13 @@ void operator delete(void*, void*) noexcept { }
 void operator delete[](void*, void*) noexcept { }
 ```
 
-[标准] placement new/delete 由标准**强制提供且用户不可替换**（"may not be replaced"）。它只返回传入的地址，不做任何分配。
+<span class="badge badge-std">标准</span> placement new/delete 由标准**强制提供且用户不可替换**（"may not be replaced"）。它只返回传入的地址，不做任何分配。
 
 ### 37.2.5 真实源码：libstdc++ `<new>` 的声明
 
 下面直接来自本机文件（已 Read 探测），路径 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new:126-181`：
 
-> **示例 4** [难度 ★★☆☆☆] [主题：真实源码：libstdc++ <ne]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实源码：libstdc++ <ne
 ```cpp
 #include <cstddef>
 // new:126-129 —— 单对象与数组，普通（抛异常）版本
@@ -249,13 +249,13 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 
 ## ④ 默认实现：最终落到 `malloc` / `free`
 
-[标准] `[new.delete.single]/3` 规定：默认 `operator new` 的行为等价于循环调用 `std::malloc`，失败（返回空）时调用 `new_handler`（见 37.5），若 handler 未设置或再次失败则抛 `std::bad_alloc`。`operator delete` 默认等价于 `std::free`。
+<span class="badge badge-std">标准</span> `[new.delete.single]/3` 规定：默认 `operator new` 的行为等价于循环调用 `std::malloc`，失败（返回空）时调用 `new_handler`（见 37.5），若 handler 未设置或再次失败则抛 `std::bad_alloc`。`operator delete` 默认等价于 `std::free`。
 
 `operator new` 的**函数声明**在 `<new>`（上节已读），但**函数体**（调 `malloc` 的循环）在 libstdc++ 运行时源文件 `new_op.cc` 中，该文件被编译进 `libstdc++` 共享库，**不在 `include/` 目录**。以下为 GCC 13 上游 canonical 实现，标注 `[实现-推断]`（与本地 `libstdc++` 行为一致）：
 
 `[实现-推断] libstdc++ src/libstdc++-v3/libsupc++/new_op.cc`（节选，已与本地 `<new>` 声明一致核对）：
 
-> **示例 5** [难度 ★★☆☆☆] [主题：默认实现：最终落到 malloc /]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认实现：最终落到 malloc /
 ```cpp
 #include <cstddef>
 // [实现-推断] new_op.cc（GCC libstdc++ canonical，对应 <new>:126 声明）
@@ -274,7 +274,7 @@ void* operator new(std::size_t sz) {
 }
 ```
 
-关键三点（[标准] + [实现·GCC15]）：
+关键三点（<span class="badge badge-std">标准</span> + [实现·GCC15]）：
 
 1. **`sz == 0` 也返回非空指针**：`new char[0]` 合法，返回可用（可 `delete`）的 1 字节块。`[标准]` 强制。
 2. **循环 + new_handler**：这正是 37.5 要展开的"循环重试"模型。handler 可以"释放一些内存后返回"，于是 `while` 再次 `malloc`——这就是"释放内存后重试"的来源。
@@ -282,7 +282,7 @@ void* operator new(std::size_t sz) {
 
 `operator delete` 对应 `[实现-推断] new_op.cc / del_op.cc`：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：默认实现：最终落到 malloc /]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认实现：最终落到 malloc /
 ```cpp
 // [实现-推断] del_op.cc（对应 <new>:130）
 void operator delete(void* ptr) noexcept {
@@ -290,11 +290,11 @@ void operator delete(void* ptr) noexcept {
 }
 ```
 
-> **[经验]** `new` 只比 `malloc` 多两件事：① `size==0` 归一化为 1；② 失败抛异常而非返空。在 `-fno-exceptions` 或无异常环境中，libstdc++ 会改为调用 `std::terminate()`（因无法抛 `bad_alloc`）。
+> **<span class="badge badge-exp">经验</span>** `new` 只比 `malloc` 多两件事：① `size==0` 归一化为 1；② 失败抛异常而非返空。在 `-fno-exceptions` 或无异常环境中，libstdc++ 会改为调用 `std::terminate()`（因无法抛 `bad_alloc`）。
 
 下面这个程序证明 `new` 得到的指针确实来自 `malloc`（地址空间连续、且可被 `free` 释放）：
 
-> **示例 7** [难度 ★★☆☆☆] [主题：默认实现：最终落到 malloc /]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认实现：最终落到 malloc /
 ```cpp
 // 程序 2：new 与 malloc 同源验证
 #include <new>
@@ -315,11 +315,11 @@ int main() {
 
 ## ⑤ `std::bad_alloc` 与 `std::bad_array_new_length`
 
-[标准] `bad_alloc` 从 `std::exception` 派生，是分配失败抛出的异常类型。`bad_array_new_length` 从 `bad_alloc` 派生，当 `new T[n]` 的 `n` 过大导致长度计算溢出/越界时抛出（C++11 起）。
+<span class="badge badge-std">标准</span> `bad_alloc` 从 `std::exception` 派生，是分配失败抛出的异常类型。`bad_array_new_length` 从 `bad_alloc` 派生，当 `new T[n]` 的 `n` 过大导致长度计算溢出/越界时抛出（C++11 起）。
 
 `C:/.../include/c++/new:55-86` 真实定义：
 
-> **示例 8** [难度 ★★☆☆☆] [主题：std::badalloc 与 st]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::badalloc 与 st
 ```cpp
 // new:55-71 —— bad_alloc
 class bad_alloc : public exception {
@@ -344,11 +344,11 @@ public:
 #endif
 ```
 
-逐行：`bad_alloc` 的 `what()` 返回实现定义的字符串（libstdc++ 返回 `"std::bad_alloc"`）。`bad_array_new_length` 之"被抛出"的时机：[标准] `new T[count]` 当 `count * sizeof(T) + cookie` 溢出 `size_t`，或 `count` 为负数转换等，实现可抛此类型。`__new_allocator::allocate` 在 `n * sizeof(T)` 超过 `size_t(-1)` 时也会主动抛它（见 `new_allocator.h:134-135`）。
+逐行：`bad_alloc` 的 `what()` 返回实现定义的字符串（libstdc++ 返回 `"std::bad_alloc"`）。`bad_array_new_length` 之"被抛出"的时机：<span class="badge badge-std">标准</span> `new T[count]` 当 `count * sizeof(T) + cookie` 溢出 `size_t`，或 `count` 为负数转换等，实现可抛此类型。`__new_allocator::allocate` 在 `n * sizeof(T)` 超过 `size_t(-1)` 时也会主动抛它（见 `new_allocator.h:134-135`）。
 
 程序验证：
 
-> **示例 9** [难度 ★★★☆☆] [主题：std::badalloc 与 st]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::badalloc 与 st
 ```cpp
 // 程序 3：捕获 bad_alloc
 #include <new>
@@ -374,7 +374,7 @@ int main() {
 }
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：std::badalloc 与 st]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::badalloc 与 st
 ```cpp
 // 程序 4：bad_array_new_length（长度溢出）
 #include <new>
@@ -396,17 +396,17 @@ int main() {
 }
 ```
 
-> **[经验]** 在生产代码中，**永远不要吞掉 `bad_alloc` 后继续运行**——内存已耗尽，后续任何分配都会再次失败并导致级联崩溃。正确做法是记录日志、释放可释放的缓存、然后干净退出或抛给顶层处理器。
+> **<span class="badge badge-exp">经验</span>** 在生产代码中，**永远不要吞掉 `bad_alloc` 后继续运行**——内存已耗尽，后续任何分配都会再次失败并导致级联崩溃。正确做法是记录日志、释放可释放的缓存、然后干净退出或抛给顶层处理器。
 
 ---
 
 ## ⑥ `new_handler` 机制：`set_new_handler` / `get_new_handler`
 
-[标准] `[new.handler]` 规定：程序可注册一个"分配失败时被调用的函数"（类型为 `void(*)()`）。`std::set_new_handler(new_handler)` 设置并返回旧 handler；`std::get_new_handler()`（C++11）返回当前 handler 而不修改。
+<span class="badge badge-std">标准</span> `[new.handler]` 规定：程序可注册一个"分配失败时被调用的函数"（类型为 `void(*)()`）。`std::set_new_handler(new_handler)` 设置并返回旧 handler；`std::get_new_handler()`（C++11）返回当前 handler 而不修改。
 
 `C:/.../include/c++/new:103-112` 真实声明：
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：newhandler 机制：setn]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · newhandler 机制：setn
 ```cpp
 // new:103
 typedef void (*new_handler)();
@@ -422,7 +422,7 @@ new_handler set_new_handler(new_handler) throw();
 
 回到 37.3 的 `[实现-推断]` 循环：
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：循环重试模型]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 循环重试模型
 ```
 while ((p = malloc(sz)) == nullptr) {
     handler = get_new_handler();
@@ -438,11 +438,11 @@ handler 是普通函数，它有**三种合法结局**，正好对应三种恢�
 - **抛出 `bad_alloc` 或派生异常**：直接终止分配尝试，异常传播给 `new` 表达式的调用者。
 - **调用 `std::abort()` / `std::terminate()`**：在"内存耗尽=致命"的嵌入式场景，立即终止。
 
-> **[标准]** handler 若返回且未设新 handler，循环会无限重试直到成功或 handler 改为抛/终止——**handler 必须做点什么**（释放/抛/终止），否则死循环。
+> **<span class="badge badge-std">标准</span>** handler 若返回且未设新 handler，循环会无限重试直到成功或 handler 改为抛/终止——**handler 必须做点什么**（释放/抛/终止），否则死循环。
 
 程序 5-7 分别演示三种策略：
 
-> **示例 13** [难度 ★★☆☆☆] [主题：循环重试模型]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 循环重试模型
 ```cpp
 // 程序 5：new_handler 释放缓存后重试（推荐模式）
 #include <new>
@@ -486,7 +486,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★★★☆☆] [主题：循环重试模型]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 循环重试模型
 ```cpp
 // 程序 6：new_handler 直接抛出异常
 #include <new>
@@ -512,7 +512,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★★☆☆] [主题：循环重试模型]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 循环重试模型
 ```cpp
 // 程序 7：new_handler 终止程序（嵌入式/致命策略）
 #include <new>
@@ -535,7 +535,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：循环重试模型]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 循环重试模型
 ```cpp
 // 程序 8：get_new_handler 与 set_new_handler 配合（保存/恢复）
 #include <new>
@@ -557,17 +557,17 @@ int main() {
 }
 ```
 
-> **[经验]** `set_new_handler` 是**进程级全局状态**，多线程下设/取需加锁，且一个线程设的 handler 影响所有线程。C++ 没有"线程局部 new_handler"（虽有提案但未被采纳）。
+> **<span class="badge badge-exp">经验</span>** `set_new_handler` 是**进程级全局状态**，多线程下设/取需加锁，且一个线程设的 handler 影响所有线程。C++ 没有"线程局部 new_handler"（虽有提案但未被采纳）。
 
 ---
 
 ## ⑦ `std::nothrow` 版本：失败返 `nullptr` 而非抛
 
-[标准] `[new.delete.single]/4` 提供 `nothrow` 重载：分配失败时**返回空指针**而不是抛异常。`std::nothrow_t` 是一个空标签类型，`std::nothrow` 是其全局实例。
+<span class="badge badge-std">标准</span> `[new.delete.single]/4` 提供 `nothrow` 重载：分配失败时**返回空指针**而不是抛异常。`std::nothrow_t` 是一个空标签类型，`std::nothrow` 是其全局实例。
 
 `C:/.../include/c++/new:92-99` 真实定义：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：std::nothrow 版本：失败]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::nothrow 版本：失败
 ```cpp
 // new:92-97
 struct nothrow_t {
@@ -583,7 +583,7 @@ extern const nothrow_t nothrow;
 
 `nothrow` 版本的**实现**（`[实现-推断] new_opnt.cc`）本质是 try-catch 包裹普通版本：
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：std::nothrow 版本：失败]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::nothrow 版本：失败
 ```cpp
 #include <cstddef>
 // [实现-推断] new_opnt.cc
@@ -593,9 +593,9 @@ void* operator new(std::size_t sz, const std::nothrow_t&) noexcept {
 }
 ```
 
-> **[标准]** `nothrow` **只影响分配这一步**。对象构造仍可能抛异常——`new(std::nothrow) T(args)` 若构造函数抛异常，内存会被释放，然后异常照常传播。所以 `nothrow` 防护的是"拿不到内存"，不是"构造失败"。
+> **<span class="badge badge-std">标准</span>** `nothrow` **只影响分配这一步**。对象构造仍可能抛异常——`new(std::nothrow) T(args)` 若构造函数抛异常，内存会被释放，然后异常照常传播。所以 `nothrow` 防护的是"拿不到内存"，不是"构造失败"。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：std::nothrow 版本：失败]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::nothrow 版本：失败
 ```cpp
 // 程序 9：nothrow 防御性分配（常用于不能抛异常的底层/驱动代码）
 #include <new>
@@ -623,7 +623,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：std::nothrow 版本：失败]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::nothrow 版本：失败
 ```cpp
 // 程序 10：nothrow 数组版本（new[]）
 #include <new>
@@ -637,17 +637,17 @@ int main() {
 }
 ```
 
-> **[经验]** 在 `-fno-exceptions` 编译模式下，`new` 与 `new(std::nothrow)` **行为相同**（都返空），因为异常机制被禁用。但写 `nothrow` 仍能表达意图且保持可移植。
+> **<span class="badge badge-exp">经验</span>** 在 `-fno-exceptions` 编译模式下，`new` 与 `new(std::nothrow)` **行为相同**（都返空），因为异常机制被禁用。但写 `nothrow` 仍能表达意图且保持可移植。
 
 ---
 
 ## ⑧ placement new：只构造、不分配
 
-[标准] `[new.delete.placement]` placement new 形如 `new(addr) T(args)`，调用的是 `operator new(sizeof(T), addr)`——它**只返回 `addr`**，不分配任何内存。对象的存储由用户预先提供。`new` 表达式随后在该地址上构造 `T`。
+<span class="badge badge-std">标准</span> `[new.delete.placement]` placement new 形如 `new(addr) T(args)`，调用的是 `operator new(sizeof(T), addr)`——它**只返回 `addr`**，不分配任何内存。对象的存储由用户预先提供。`new` 表达式随后在该地址上构造 `T`。
 
 ### 37.7.1 完整语义
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：完整语义]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 完整语义
 ```cpp
 #include <cstddef>
 // 等价于 <new>:174
@@ -664,7 +664,7 @@ void* operator new(std::size_t, void* p) noexcept { return p; }
 
 ### 37.7.2 基础与数组 placement
 
-> **示例 22** [难度 ★★☆☆☆] [主题：基础与数组 placement]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础与数组 placement
 ```cpp
 // 程序 11：基础 placement new（用户缓冲 + 手动析构）
 #include <new>
@@ -686,7 +686,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★★★☆☆] [主题：基础与数组 placement]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 基础与数组 placement
 ```cpp
 // 程序 12：数组 placement new
 #include <new>
@@ -710,7 +710,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：基础与数组 placement]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础与数组 placement
 ```cpp
 // 程序 13：显式析构 + 不能 delete 的警告演示
 #include <new>
@@ -731,7 +731,7 @@ int main() {
 
 placement new 是**自定义内存管理的基础**：你用任意后端（内存池、ring buffer、共享内存、GPU 显存）准备一块存储，再用 placement new 在其上"种"对象。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：与内存池 / ring buffer]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与内存池 / ring buffer
 ```cpp
 // 程序 14：内存池 + placement new（高性能固定大小分配器）
 #include <new>
@@ -799,7 +799,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★★★☆☆] [主题：与内存池 / ring buffer]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与内存池 / ring buffer
 ```cpp
 // 程序 15：ring buffer + placement new（固定容量对象循环复用）
 #include <new>
@@ -825,7 +825,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：与内存池 / ring buffer]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与内存池 / ring buffer
 ```cpp
 // 程序 16：共享内存中的 placement new [平台-推断：POSIX shm]
 // 注意：跨进程共享对象需要类型布局稳定 + 自定义 operator new 转发到 shm。
@@ -847,21 +847,21 @@ int main() {
 }
 ```
 
-> **[经验]** 用 placement new 在栈/全局缓冲上构造对象时，**必须 `alignas(T)` 对齐缓冲**，否则若 `T` 有更强对齐要求会触发 UB（见 37.10）。
+> **<span class="badge badge-exp">经验</span>** 用 placement new 在栈/全局缓冲上构造对象时，**必须 `alignas(T)` 对齐缓冲**，否则若 `T` 有更强对齐要求会触发 UB（见 37.10）。
 
 ---
 
 ## ⑨ 数组 `new` 的 cookie：为何 `delete[]` 不能混用 `delete`
 
-[标准] `new T[n]` 必须记住 `n`，以便 `delete[]` 调用 `n` 次析构函数。实现通常在返回的指针**前面**存放元素个数（称为 **cookie / size prefix / element count**）。`new`/`new[]` 与 `delete`/`delete[]` 必须配对——混用是 **UB**。
+<span class="badge badge-std">标准</span> `new T[n]` 必须记住 `n`，以便 `delete[]` 调用 `n` 次析构函数。实现通常在返回的指针**前面**存放元素个数（称为 **cookie / size prefix / element count**）。`new`/`new[]` 与 `delete`/`delete[]` 必须配对——混用是 **UB**。
 
 ### 37.8.1 cookie 的存在性
 
-[标准] 标准**未规定** cookie 的存在或布局（这是实现细节），但几乎所有主流实现（Itanium C++ ABI、MSVC）对**有非平凡析构函数**的数组都会写 cookie。若元素析构是 trivial，编译器可优化掉 cookie。
+<span class="badge badge-std">标准</span> 标准**未规定** cookie 的存在或布局（这是实现细节），但几乎所有主流实现（Itanium C++ ABI、MSVC）对**有非平凡析构函数**的数组都会写 cookie。若元素析构是 trivial，编译器可优化掉 cookie。
 
 > **[平台·x86-64]** Itanium C++ ABI（GCC/Clang 默认）下，`new T[n]` 在返回指针前 8 字节存元素个数（对 `sizeof(size_t)==8` 的平台）；MSVC 类似但偏移/编码略不同。下面用探测代码演示（依赖实现布局，仅供理解，标注 `[平台-推断]`）。
 
-> **示例 28** [难度 ★★★★★] [主题：的存在性]
+> **示例 28** <span class="badge badge-exp">难度 ★★★★★</span> · 的存在性
 ```cpp
 // 程序 17：观察数组 cookie（读取返回指针前的若干字节）[平台-推断]
 #include <new>
@@ -894,7 +894,7 @@ int main() {
 
 [实现·GCC15] 下面用真实汇编展示 `delete[]` 如何读取 cookie 决定析构次数（`[平台-推断]`：Itanium ABI）。考虑：
 
-> **示例 29** [难度 ★★★★☆] [主题：汇编层面看 cookie 读取]
+> **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编层面看 cookie 读取
 ```cpp
 // 程序 18（源）：编译器为 delete[] 生成的"读 cookie → 循环析构"逻辑示意
 #include <cstddef>
@@ -924,7 +924,7 @@ call   operator delete(void*, size_t)
 
 ### 37.8.3 混用的灾难性后果
 
-> **示例 30** [难度 ★★★☆☆] [主题：混用的灾难性后果]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 混用的灾难性后果
 ```cpp
 // 程序 19：错误示范——混用 delete 与 delete[]（严禁！此处仅说明原理）
 #include <cstdio>
@@ -939,17 +939,17 @@ int main() {
 }
 ```
 
-> **[经验]** 黄金法则：**`new` 配 `delete`，`new[]` 配 `delete[]`**，且类型必须一致。用 `std::vector`/`std::unique_ptr<T[]>`/`std::make_unique<T[]>` 可彻底避免手动配对错误（见 ch45）。
+> **<span class="badge badge-exp">经验</span>** 黄金法则：**`new` 配 `delete`，`new[]` 配 `delete[]`**，且类型必须一致。用 `std::vector`/`std::unique_ptr<T[]>`/`std::make_unique<T[]>` 可彻底避免手动配对错误（见 ch45）。
 
 ---
 
 ## ⑩ 对齐分配：`operator new(size, std::align_val_t)`（C++17）
 
-[标准] `[new.delete.align]` C++17 引入对齐版本的 `operator new`/`delete`。当**类型对齐要求超过默认对齐**（`__STDCPP_DEFAULT_NEW_ALIGNMENT__`）时，`new` 表达式会自动调用对齐版本。典型场景：SIMD 类型（`alignas(32)`/`alignas(64)`）、缓存行对齐。
+<span class="badge badge-std">标准</span> `[new.delete.align]` C++17 引入对齐版本的 `operator new`/`delete`。当**类型对齐要求超过默认对齐**（`__STDCPP_DEFAULT_NEW_ALIGNMENT__`）时，`new` 表达式会自动调用对齐版本。典型场景：SIMD 类型（`alignas(32)`/`alignas(64)`）、缓存行对齐。
 
 ### 37.9.1 为何普通 `malloc` 不够
 
-[标准] 普通 `operator new` 只保证 `alignof(std::max_align_t)` 对齐（本机 16）。`malloc` 同样如此。若你要 `alignas(64)` 的 `std::vector<float>` 做 AVX-512，普通 `new` 返回的地址可能只对齐到 16，访问会**崩溃或严重降速**。对齐 new 让分配器用平台对齐原语：
+<span class="badge badge-std">标准</span> 普通 `operator new` 只保证 `alignof(std::max_align_t)` 对齐（本机 16）。`malloc` 同样如此。若你要 `alignas(64)` 的 `std::vector<float>` 做 AVX-512，普通 `new` 返回的地址可能只对齐到 16，访问会**崩溃或严重降速**。对齐 new 让分配器用平台对齐原语：
 
 - [平台·x86-64] POSIX：`std::aligned_alloc` / `posix_memalign`；Windows/MSVC：`_aligned_malloc` / `_aligned_free`。
 - [实现·GCC15] libstdc++ 对齐 new（`[实现-推断] new_opa.cc`）最终调 `__aligned_alloc` / `aligned_alloc`。
@@ -958,7 +958,7 @@ int main() {
 
 `C:/.../include/c++/bits/new_allocator.h:139-146` 展示了 allocator 如何选择：
 
-> **示例 31** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 过对齐类型自动触发
 ```cpp
 // new_allocator.h:139-146
 #if __cpp_aligned_new
@@ -972,7 +972,7 @@ int main() {
 
 即：allocator 一旦发现 `alignof(T) > 16`，就转发到对齐版 `operator new`。`new` 表达式对过对齐类型同理。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 过对齐类型自动触发
 ```cpp
 // 程序 20：过对齐类型自动触发对齐 new
 #include <new>
@@ -991,7 +991,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 过对齐类型自动触发
 ```cpp
 // 程序 21：显式对齐 new（手动指定对齐值）
 #include <new>
@@ -1007,7 +1007,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 过对齐类型自动触发
 ```cpp
 // 程序 22：缓存行隔离，避免 false sharing [经验]
 #include <new>
@@ -1027,17 +1027,17 @@ int main() {
 }
 ```
 
-> **[经验]** 对齐 new 的释放**必须**用对应对齐的 `operator delete(ptr, align_val_t)`，否则 UB。这就是为什么 RAII 包装（`std::unique_ptr` 的删除器、`std::vector` 的 allocator）必须"记得"原始对齐——手动管理极易出错。
+> **<span class="badge badge-exp">经验</span>** 对齐 new 的释放**必须**用对应对齐的 `operator delete(ptr, align_val_t)`，否则 UB。这就是为什么 RAII 包装（`std::unique_ptr` 的删除器、`std::vector` 的 allocator）必须"记得"原始对齐——手动管理极易出错。
 
 ---
 
 ## ⑪ 类专属重载：`operator new` / `operator delete` 作为成员
 
-[标准] `[class.free]` 若类 `T` 在其作用域内声明了 `operator new`/`operator delete`（成员或友元），则 `new T`/`delete p` **优先使用类专属版本**，而非全局。成员 `operator new` 是**静态成员函数**（不能访问非静态成员）。这一机制支撑：内存统计、调试填充、内存池、防堆分配、工厂模式。
+<span class="badge badge-std">标准</span> `[class.free]` 若类 `T` 在其作用域内声明了 `operator new`/`operator delete`（成员或友元），则 `new T`/`delete p` **优先使用类专属版本**，而非全局。成员 `operator new` 是**静态成员函数**（不能访问非静态成员）。这一机制支撑：内存统计、调试填充、内存池、防堆分配、工厂模式。
 
 ### 37.10.1 基础：统计分配次数
 
-> **示例 35** [难度 ★★☆☆☆] [主题：基础：统计分配次数]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础：统计分配次数
 ```cpp
 // 程序 23：类专属 operator new/delete 统计
 #include <new>
@@ -1078,7 +1078,7 @@ int main() {
 
 ### 37.10.2 防堆分配（private/delete）
 
-> **示例 36** [难度 ★★★☆☆] [主题：防堆分配]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 防堆分配
 ```cpp
 // 程序 24：private operator new 禁止堆分配
 #include <cstdio>
@@ -1102,7 +1102,7 @@ int main() {
 
 ### 37.10.3 调试填充：检测缓冲区溢出
 
-> **示例 37** [难度 ★★★☆☆] [主题：调试填充：检测缓冲区溢出]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试填充：检测缓冲区溢出
 ```cpp
 // 程序 25：调试填充 + 哨兵检测溢出 [经验]
 #include <new>
@@ -1146,7 +1146,7 @@ int main() {
 
 ### 37.10.4 类专属内存池
 
-> **示例 38** [难度 ★★★☆☆] [主题：类专属内存池]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 类专属内存池
 ```cpp
 // 程序 26：类专属池（高频小对象，零锁/低碎片）[经验]
 #include <new>
@@ -1201,7 +1201,7 @@ int main() {
 
 ### 37.10.5 工厂模式：私有构造 + 静态工厂
 
-> **示例 39** [难度 ★★☆☆☆] [主题：工厂模式：私有构造 + 静态工厂]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂模式：私有构造 + 静态工厂
 ```cpp
 // 程序 27：工厂模式控制对象创建路径
 #include <new>
@@ -1233,17 +1233,17 @@ int main() {
 }
 ```
 
-> **[经验]** 类专属 `operator new` **必须是静态的**且通常应声明为 `public`（除非刻意禁止堆分配）。重载 `operator new[]`/`delete[]` 时才影响数组形式。注意：若只重载了单对象版本而用 `new T[n]`，会调用全局数组版本——容易遗漏，建议成对重载。
+> **<span class="badge badge-exp">经验</span>** 类专属 `operator new` **必须是静态的**且通常应声明为 `public`（除非刻意禁止堆分配）。重载 `operator new[]`/`delete[]` 时才影响数组形式。注意：若只重载了单对象版本而用 `new T[n]`，会调用全局数组版本——容易遗漏，建议成对重载。
 
 ---
 
 ## ⑫ `::operator new` 与 `std::allocator::allocate` 的关系（见 ch38）
 
-[标准] `std::allocator<T>::allocate(n)` 的语义就是"分配足以容纳 `n` 个 `T` 的存储"。libstdc++ 里 `std::allocator` 直接以 `__new_allocator` 为基类，其 `allocate` 就是调 `::operator new`。这是 allocator 与底层原语的**唯一接口点**。
+<span class="badge badge-std">标准</span> `std::allocator<T>::allocate(n)` 的语义就是"分配足以容纳 `n` 个 `T` 的存储"。libstdc++ 里 `std::allocator` 直接以 `__new_allocator` 为基类，其 `allocate` 就是调 `::operator new`。这是 allocator 与底层原语的**唯一接口点**。
 
 `C:/.../include/c++/bits/new_allocator.h:121-148` 真实实现（逐行）：
 
-> **示例 40** [难度 ★★☆☆☆] [主题：operator new 与 std]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · operator new 与 std
 ```cpp
 #include <cstddef>
 // new_allocator.h:121-148
@@ -1277,7 +1277,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 - **`:140-145` 对齐分支**：过对齐类型走对齐 new（呼应 37.9）。
 - **`:147` 普通分支**：`_GLIBCXX_OPERATOR_NEW` 在支持 `__builtin_operator_new` 时展开为内建（让编译器知道这是分配函数，可优化），否则为 `::operator new`（`new_allocator.h:111-117`）。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：operator new 与 std]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · operator new 与 std
 ```cpp
 // 程序 28：std::allocator::allocate 底层即 operator new
 #include <memory>
@@ -1295,17 +1295,17 @@ int main() {
 }
 ```
 
-> **[标准]** `std::allocator` 的 `construct`/`destroy` 在 C++20 被弃用（直接由 `std::construct_at`/`std::destroy_at` 取代），但 `allocate`/`deallocate` 仍是核心。详见 ch38。
+> **<span class="badge badge-std">标准</span>** `std::allocator` 的 `construct`/`destroy` 在 C++20 被弃用（直接由 `std::construct_at`/`std::destroy_at` 取代），但 `allocate`/`deallocate` 仍是核心。详见 ch38。
 
 ---
 
 ## ⑬ `std::launder`：构造后取指针（见 ch28）
 
-[标准] `[ptr.launder]` C++17 引入 `std::launder`，是一个"指针优化屏障"。当同一块存储上的对象被**替换**（如 placement new 覆盖旧对象、或在 const/引用对象原址重构造）后，旧指针/引用可能因编译器的"对象身份"假设而失效；`std::launder(p)` 告诉编译器"重新去内存取对象"。
+<span class="badge badge-std">标准</span> `[ptr.launder]` C++17 引入 `std::launder`，是一个"指针优化屏障"。当同一块存储上的对象被**替换**（如 placement new 覆盖旧对象、或在 const/引用对象原址重构造）后，旧指针/引用可能因编译器的"对象身份"假设而失效；`std::launder(p)` 告诉编译器"重新去内存取对象"。
 
 `C:/.../include/c++/new:185-208` 真实定义：
 
-> **示例 42** [难度 ★★★☆☆] [主题：std::launder：构造后取指]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::launder：构造后取指
 ```cpp
 // new:188-194
 #ifdef _GLIBCXX_HAVE_BUILTIN_LAUNDER
@@ -1319,7 +1319,7 @@ int main() {
 
 本机 `c++config.h:852` 定义 `_GLIBCXX_HAVE_BUILTIN_LAUNDER 1`，故 `launder` 走 `__builtin_launder`。
 
-> **示例 43** [难度 ★★☆☆☆] [主题：std::launder：构造后取指]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::launder：构造后取指
 ```cpp
 // 程序 29：std::launder 在 placement new 覆盖 const 对象时的必要用法
 #include <new>
@@ -1346,17 +1346,17 @@ int main() {
 }
 ```
 
-> **[经验]** 在**同一地址重构造对象**（placement new 覆盖）后，所有指向旧对象的指针/引用/名字都需经 `std::launder` 才能安全使用，否则是 UB（严格别名 + 对象生命期规则）。普通"构造一次、使用、析构"流程不需要 `launder`。
+> **<span class="badge badge-exp">经验</span>** 在**同一地址重构造对象**（placement new 覆盖）后，所有指向旧对象的指针/引用/名字都需经 `std::launder` 才能安全使用，否则是 UB（严格别名 + 对象生命期规则）。普通"构造一次、使用、析构"流程不需要 `launder`。
 
 ---
 
 ## ⑭ `std::destroying_delete_t`（C++20）：析构与释放合一
 
-[标准] `[class.free]` C++20 允许类的 `operator delete` 接收 `std::destroying_delete_t` 标签参数；带此标签的 `operator delete` **必须自己调用析构函数**，然后释放内存。这解决了"需要在释放内存前读取对象成员"的场景——普通 `operator delete` 被调用时对象**已经析构**（成员已失效），而 destroying delete 让你在析构前拿到完整对象。
+<span class="badge badge-std">标准</span> `[class.free]` C++20 允许类的 `operator delete` 接收 `std::destroying_delete_t` 标签参数；带此标签的 `operator delete` **必须自己调用析构函数**，然后释放内存。这解决了"需要在释放内存前读取对象成员"的场景——普通 `operator delete` 被调用时对象**已经析构**（成员已失效），而 destroying delete 让你在析构前拿到完整对象。
 
 `C:/.../include/c++/new:218-233` 真实定义：
 
-> **示例 44** [难度 ★★★☆☆] [主题：std::destroyingdel]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::destroyingdel
 ```cpp
 // new:218-233（C++20）
 #if __cplusplus > 201703L
@@ -1374,7 +1374,7 @@ namespace std {
 
 典型用途：**侵入式数据结构**，对象知道自己属于哪个池/分配器，删除时（析构前）可从链表摘除自己，再归还内存给正确的池。
 
-> **示例 45** [难度 ★★☆☆☆] [主题：std::destroyingdel]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::destroyingdel
 ```cpp
 // 程序 30：destroying_delete_t 让 operator delete 先析构再释放
 #include <new>
@@ -1402,17 +1402,17 @@ int main() {
 }
 ```
 
-> **[经验]** destroying delete **不能**与普通 `operator delete` 共存于同一签名族而仅靠标签区分——它要求**没有**非 destroying 的 `operator delete(void*)` 重载（否则歧义）。它专用于"释放逻辑必须看到未析构对象"的高级场景。
+> **<span class="badge badge-exp">经验</span>** destroying delete **不能**与普通 `operator delete` 共存于同一签名族而仅靠标签区分——它要求**没有**非 destroying 的 `operator delete(void*)` 重载（否则歧义）。它专用于"释放逻辑必须看到未析构对象"的高级场景。
 
 ---
 
 ## ⑮ `std::allocator_traits::rebind`：容器类型擦除的关键
 
-[标准] `[allocator.traits]` `allocator_traits<A>::rebind_alloc<U>` 把"分配 `T` 的分配器"转换成"分配 `U` 的分配器"。容器（如 `std::list<T>` 的节点、`std::map` 的树节点）内部需要分配**与 `T` 不同的节点类型**，但用户只提供了 `Allocator<T>`——`rebind` 完成这层转换。
+<span class="badge badge-std">标准</span> `[allocator.traits]` `allocator_traits<A>::rebind_alloc<U>` 把"分配 `T` 的分配器"转换成"分配 `U` 的分配器"。容器（如 `std::list<T>` 的节点、`std::map` 的树节点）内部需要分配**与 `T` 不同的节点类型**，但用户只提供了 `Allocator<T>`——`rebind` 完成这层转换。
 
 libstdc++ 优先用 `A::rebind::other`（C++17 前），否则 `allocator_traits` 合成（C++17 起要求 `rebind_alloc` 存在，`new_allocator.h:75-78` 提供了旧式 `rebind`）：
 
-> **示例 46** [难度 ★★☆☆☆] [主题：std::allocatortrai]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::allocatortrai
 ```cpp
 // new_allocator.h:75-78（C++17 前版本提供 rebind 嵌套结构）
 template<typename _Tp1>
@@ -1420,7 +1420,7 @@ template<typename _Tp1>
     { typedef __new_allocator<_Tp1> other; };
 ```
 
-> **示例 47** [难度 ★★☆☆☆] [主题：std::allocatortrai]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::allocatortrai
 ```cpp
 // 程序 31：allocator_traits::rebind 演示
 #include <memory>
@@ -1447,7 +1447,7 @@ int main() {
 }
 ```
 
-> **[标准]** C++17 起 `std::allocator` 不再有 `rebind` 成员，改由 `allocator_traits` 自动合成；但自定义 allocator 仍可（且常需）提供 `rebind` 以兼容旧代码。`rebind` 是 allocator 模型"类型可重定向"的核心，没有它就没有泛型容器。详见 ch38。
+> **<span class="badge badge-std">标准</span>** C++17 起 `std::allocator` 不再有 `rebind` 成员，改由 `allocator_traits` 自动合成；但自定义 allocator 仍可（且常需）提供 `rebind` 以兼容旧代码。`rebind` 是 allocator 模型"类型可重定向"的核心，没有它就没有泛型容器。详见 ch38。
 
 ---
 
@@ -1465,9 +1465,9 @@ int main() {
 
 ### 37.15.1 `-fsized-deallocation` / `/Zc:sizedDealloc`（C++14 sized delete）
 
-[标准] C++14 允许 `operator delete(void* p, std::size_t sz)`，释放时直接拿到原始大小，**不必**再向分配器查询块大小（glibc 的 `free` 本就要查块头，但 sized 版本可让自定义分配器跳过这步，或用于调试校验）。
+<span class="badge badge-std">标准</span> C++14 允许 `operator delete(void* p, std::size_t sz)`，释放时直接拿到原始大小，**不必**再向分配器查询块大小（glibc 的 `free` 本就要查块头，但 sized 版本可让自定义分配器跳过这步，或用于调试校验）。
 
-> **示例 48** [难度 ★★☆☆☆] [主题：-fsized-deallocati]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · -fsized-deallocati
 ```cpp
 // 程序 32：观察 sized delete（编译需开启 sized deallocation，GCC 默认开）
 #include <new>
@@ -1497,7 +1497,7 @@ int main() {
 - `/Zc:throwingNew`（默认）：假设 `new` 抛异常 → 在 `new` 后不必插入"检查空指针"的代码（因为失败会走异常，不会返回空）。
 - 反之若关闭，编译器会在每次 `new` 后插入 null 检查，可能破坏"new 返回非空"假设的优化。
 
-> **示例 49** [难度 ★★☆☆☆] [主题：/Zc:throwingNew与 -fassume-thro]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · /Zc:throwingNew与 -fassume-thro
 ```cpp
 // 程序 33：throwingNew 影响的代码模式（示意，行为依赖编译器开关）
 #include <new>
@@ -1524,7 +1524,7 @@ int main() {
 
 ## ⑰ 三 STL 对比：libstdc++ vs libc++ vs MS STL
 
-[实现] 三个标准库对"allocator 如何调 operator new"的实现策略不同，直接影响性能与替换行为：
+<span class="badge badge-impl">实现</span> 三个标准库对"allocator 如何调 operator new"的实现策略不同，直接影响性能与替换行为：
 
 | 维度 | libstdc++（GCC） | libc++（Clang） | MS STL（MSVC） |
 |------|------------------|-----------------|----------------|
@@ -1541,7 +1541,7 @@ int main() {
 
 [实现·Clang] libc++ 的 `std::allocator::allocate` 同样直接调用 `::operator new`（C++17 后通过 `__libcpp_allocate` 包装，最终 `::operator new`）。与 libstdc++ 行为一致——替换全局 new 即影响容器。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：++]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++
 ```cpp
 // [实现-推断] libc++ <memory> 简化：
 // pointer allocate(size_type n) {
@@ -1555,11 +1555,11 @@ int main() {
 
 [实现·MSVC] MS STL 的 `std::allocator` 历史上（`operator new[]` 包装）通过数组 new 分配，现代（VS2019+）已改为直接 `::operator new` 以获得与 GCC/Clang 一致的可替换语义（受 LWG 提案影响）。替换全局 `::operator new` 同样影响容器。
 
-> **[经验]** 三者共同结论：**任何用 `std::allocator` 的容器都受全局 `::operator new` 替换影响**。若想自定义分配器而**不**影响全局，必须显式传 `Allocator` 模板参数（见 ch38、ch44）。
+> **<span class="badge badge-exp">经验</span>** 三者共同结论：**任何用 `std::allocator` 的容器都受全局 `::operator new` 替换影响**。若想自定义分配器而**不**影响全局，必须显式传 `Allocator` 模板参数（见 ch38、ch44）。
 
 下面程序在三库下行为一致，但揭示"替换全局 new 即影响容器"这一事实：
 
-> **示例 51** [难度 ★★☆☆☆] [主题：动态内存分配原语：`operator new` / `operator delete`]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 动态内存分配原语：`operator new` / `operator delete`
 ```cpp
 // 程序 34：替换全局 operator new 影响 std::vector（三 STL 通用）
 #include <new>
@@ -1589,7 +1589,7 @@ int main() {
 
 [标准/经验] 以下基准用 `std::chrono` 高频循环测量相对开销（本机 MinGW GCC 13.1.0，`-O2`）。绝对数字随硬件/负载波动，关注**相对量级**（程序 35，chrono 粗粒度）。程序 36 用 RDTSC 直接测每轮分配的 CPU 周期→纳秒（本机 TSC 2.395 GHz 已校准），给出**绝对开销（实测）**。
 
-> **示例 52** [难度 ★★☆☆☆] [主题：真实 microbenchmark]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark
 ```cpp
 // 程序 35：microbenchmark —— new vs malloc / placement vs new / 池 vs 全局
 #include <new>
@@ -1637,7 +1637,7 @@ int main() {
 }
 ```
 
-[实测] 用 RDTSC（程序 36，本机 MinGW GCC 13.1.0 `-O2`，TSC 2.395 GHz）逐轮测量的**真实开销**（完整输出见 `Examples/_ch37_alloc_perf.out`）：
+<span class="badge badge-measured">实测</span> 用 RDTSC（程序 36，本机 MinGW GCC 13.1.0 `-O2`，TSC 2.395 GHz）逐轮测量的**真实开销**（完整输出见 `Examples/_ch37_alloc_perf.out`）：
 
 > 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 操作 | 周期/轮 | 纳秒/轮 | 说明 |
@@ -1728,7 +1728,7 @@ public class Main {
 }
 ```
 
-> **[经验]** C++ 独特之处在于"分配原语（`operator new`）、构造（`new` 表达式）、所有权（RAII）、自定义后端（allocator/pool）"四层**完全解耦且都可替换**。这是性能关键系统（游戏、数据库、OS）选 C++ 的核心原因之一。
+> **<span class="badge badge-exp">经验</span>** C++ 独特之处在于"分配原语（`operator new`）、构造（`new` 表达式）、所有权（RAII）、自定义后端（allocator/pool）"四层**完全解耦且都可替换**。这是性能关键系统（游戏、数据库、OS）选 C++ 的核心原因之一。
 
 ---
 
@@ -1744,7 +1744,7 @@ public class Main {
 6. **glibc `malloc.c`**——`operator new` 最终落点，理解 `free` 查块头（呼应 37.8 cookie 与 37.9 对齐后端 `aligned_alloc`）。
 7. **libstdc++ 运行时 `new_op.cc` 等**（`libstdc++-v3/libsupc++/`）——`[实现-推断]` 编译进 `libstdc++` 共享库，不在 `include/`；GitHub `gcc-mirror/gcc` 可查，对应 37.3 循环实现。
 
-> **[经验]** 阅读时区分**声明（在 `include/`）**与**定义（在运行时库/编译器内建）**。`<new>` 只声明；真正的 `malloc` 循环、`nothrow` 的 try-catch、对齐 new 的 `aligned_alloc` 调用都在 `.cc` 或编译器内置里。
+> **<span class="badge badge-exp">经验</span>** 阅读时区分**声明（在 `include/`）**与**定义（在运行时库/编译器内建）**。`<new>` 只声明；真正的 `malloc` 循环、`nothrow` 的 try-catch、对齐 new 的 `aligned_alloc` 调用都在 `.cc` 或编译器内置里。
 
 ---
 
@@ -1753,20 +1753,20 @@ public class Main {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：`new` 失败到底是抛还是返回 null？** 你在内存紧张路径想用 `nothrow` 版本，却误用了默认 `new` 导致异常传播。请对比两种分配函数。
-   - [标准] 默认 `::operator new` 在分配失败时抛 `std::bad_alloc`；`nothrow` 重载在失败时返回空指针。
-   - [引用] ISO/IEC 14882:2023 §[new.delete.single]（分配函数）；cppreference "operator new" 词条。
+   - <span class="badge badge-std">标准</span> 默认 `::operator new` 在分配失败时抛 `std::bad_alloc`；`nothrow` 重载在失败时返回空指针。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[new.delete.single]（分配函数）；cppreference "operator new" 词条。
 
 2. **真实场景：数组 `new[]` 配 `delete`（非 `delete[]`）是 UB。** 你写 `T* p = new T[10]; delete p;`，少数类型“看起来正常”，但标准是未定义行为。请说明数组形式的对称要求。
-   - [标准] 由数组 `new` 获得的指针必须用数组形式的 `delete[]` 释放；不匹配是未定义行为（可能漏调析构或错算大小）。
-   - [引用] ISO/IEC 14882:2023 §[expr.delete]（delete 表达式与数组形式）；cppreference "delete" 词条。
+   - <span class="badge badge-std">标准</span> 由数组 `new` 获得的指针必须用数组形式的 `delete[]` 释放；不匹配是未定义行为（可能漏调析构或错算大小）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.delete]（delete 表达式与数组形式）；cppreference "delete" 词条。
 
 3. **真实场景：自定义 `operator new` 的对齐不足。** 你为 SIMD 类型重载 `new` 却只保证 `alignof(std::max_align_t)`，分配出的缓冲无法满足 32 字节对齐。请说明对齐分配接口。
-   - [标准] `void* operator new(size_t, std::align_val_t)` 等重载提供带对齐的分配；返回的内存须满足请求的对齐。
-   - [引用] ISO/IEC 14882:2023 §[new.delete.single]（对齐形式的分配函数）；cppreference "operator new" 词条。
+   - <span class="badge badge-std">标准</span> `void* operator new(size_t, std::align_val_t)` 等重载提供带对齐的分配；返回的内存须满足请求的对齐。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[new.delete.single]（对齐形式的分配函数）；cppreference "operator new" 词条。
 
 下面这个程序综合展示：类专属统计 new + 内存池 + 对齐 + nothrow 防御 + placement + `launder`，作为本章的"收口"。
 
-> **示例 53** [难度 ★★☆☆☆] [主题：综合示例：把本章所有机制串起来]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合示例：把本章所有机制串起来
 ```cpp
 // 程序 36：综合示例（统计 + 池 + 对齐 + nothrow + placement + launder）
 #include <new>
@@ -1836,7 +1836,7 @@ int main() {
 | 重构造后取指针 | `std::launder` |
 | 容器底层分配 | `std::allocator::allocate` → `::operator new` |
 
-**常见陷阱（[经验]）**
+**常见陷阱（<span class="badge badge-exp">经验</span>）**
 
 1. **`new`/`delete` 与 `new[]`/`delete[]` 混用** → UB/堆损坏（37.8）。
 2. **对 placement new 得到的指针调 `delete`** → 释放不属于堆的内存（37.7）。
@@ -1853,7 +1853,7 @@ int main() {
 
 > **本章交叉引用**：ch19（动态存储期）· ch35（堆段布局）· ch36（`malloc`/`free` 后端）· ch38（`std::allocator` 与 `allocator_traits`）· ch28（`std::launder` 与对象生命期）· ch33（`std::bad_alloc` 与异常传播）· ch44（内存池实现）· ch45（RAII 与智能指针接管 `new`/`delete`）。
 >
-> **[标准]** 本章所有语义以 ISO/IEC 14882:2017（C++17）及 2020（C++20 增量）为基准；**sized deallocation** 来自 C++14，**aligned new / launder** 来自 C++17，**destroying delete** 来自 C++20。
+> **<span class="badge badge-std">标准</span>** 本章所有语义以 ISO/IEC 14882:2017（C++17）及 2020（C++20 增量）为基准；**sized deallocation** 来自 C++14，**aligned new / launder** 来自 C++17，**destroying delete** 来自 C++20。
 >
 > **行数 / 覆盖回报**（见章末）：本章正文约 1500 行；章节元素 20 项齐全；核心知识点 23 项覆盖；完整可编译程序 36 个（含内存池 placement new、nothrow 防御、数组 cookie 观察、类专属统计、对齐过对齐类型、debug 填充）；真实源码路径：`include/c++/new`（声明）、`include/c++/bits/new_allocator.h`（allocator 调 operator new）、`include/c++/x86_64-w64-mingw32/bits/c++config.h`（宏）；运行时 `.cc` 实现以 `[实现-推断]` 标注；平台相关 cookie 布局以 `[平台-推断]` 标注。
 
@@ -1868,7 +1868,7 @@ int main() {
 
 ## 附录 E：operator new/delete 工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 54** [难度 ★★☆☆☆] [主题：附录 E：operator new/]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：operator new/
 ```cpp
 operator new 的内部实现:
 
@@ -1889,7 +1889,7 @@ GCC (libstdc++):
   替换方式: LD_PRELOAD=/path/to/allocator.so ./app
 ```
 
-> **示例 55** [难度 ★★☆☆☆] [主题：附录 E：operator new/]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：operator new/
 ```cpp
 #include <iostream>
 #include <new>
@@ -1921,7 +1921,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：`new`/`delete` 与 `operator new` 的分离
 
-[史] C++ 在 1985 年诞生时即把 **`new` 表达式**设计为「分配 + 构造」两步，但 Bjarne Stroustrup 刻意把「分配」解耦成可被用户替换的 **`operator new`** 函数——这一设计来自 Simula 67（1967）的对象创建哲学，但 Simula 不允许替换内存后端，C++ 允许。这正是第 ② 节「`new` 表达式 ≠ `operator new`」反直觉分离的源头。[史] 1998 年 C++98 标准化时，把 `operator new`/`delete` 放进 `<new>`，并明确「可替换（replaceable）」全局函数族；**2003 年 C++03 的缺陷报告**澄清了数组 `new[]`/`delete[]` 的 cookie 机制（第 ⑨ 节），而 **C++11（2011）** 引入 `std::align_val_t` 之前的前置讨论，到 **P0035（C++17）** 才正式解决「过对齐类型的 `new` 找不到正确后端」的几十年老问题。[轶] 一个少有人知的史实：早期 C++ 的 `new` 失败默认返回 `nullptr` 还是抛异常，曾在 AT&T 内部有过长争论，最终 C++ 选了抛 `std::bad_alloc`，而 C 的 `malloc` 永远返回空——这是 C/C++ 错误处理哲学分歧的缩影（见 ⑭ 节 `nothrow` 版本作为妥协）。
+<span class="badge badge-history">史</span> C++ 在 1985 年诞生时即把 **`new` 表达式**设计为「分配 + 构造」两步，但 Bjarne Stroustrup 刻意把「分配」解耦成可被用户替换的 **`operator new`** 函数——这一设计来自 Simula 67（1967）的对象创建哲学，但 Simula 不允许替换内存后端，C++ 允许。这正是第 ② 节「`new` 表达式 ≠ `operator new`」反直觉分离的源头。<span class="badge badge-history">史</span> 1998 年 C++98 标准化时，把 `operator new`/`delete` 放进 `<new>`，并明确「可替换（replaceable）」全局函数族；**2003 年 C++03 的缺陷报告**澄清了数组 `new[]`/`delete[]` 的 cookie 机制（第 ⑨ 节），而 **C++11（2011）** 引入 `std::align_val_t` 之前的前置讨论，到 **P0035（C++17）** 才正式解决「过对齐类型的 `new` 找不到正确后端」的几十年老问题。<span class="badge badge-anecdote">轶</span> 一个少有人知的史实：早期 C++ 的 `new` 失败默认返回 `nullptr` 还是抛异常，曾在 AT&T 内部有过长争论，最终 C++ 选了抛 `std::bad_alloc`，而 C 的 `malloc` 永远返回空——这是 C/C++ 错误处理哲学分歧的缩影（见 ⑭ 节 `nothrow` 版本作为妥协）。
 
 ### ㉒.2 真实工程坐标：`new`/`delete` 活在哪些项目里
 
@@ -1949,8 +1949,8 @@ int main() {
 
 ### ㉒.4 与标准的互动：`new`/`delete` 的演进
 
-[史] C++98 确立了可替换的 `operator new`/`delete` 签名族；**C++11 加入 `std::align_val_t` 的提案草案**最终由 **P0035（C++17）** 落地，让过对齐类型（如 `alignas(64)` 的 SIMD 结构）能被正确动态分配，否则对齐被悄悄丢弃。[史] **C++20 的 P0722（destroying delete）** 引入 `std::destroying_delete_t`，允许类在 `operator delete` 里同时做析构与释放（如变长类 `std::vector` 式自管理），避免「先析构再释放」对带尺寸的自定义布局的多余开销（第 ⑭ 节）。[评] WG21 的方向是保留默认 `new` 的简单语义，同时用 `std::pmr` + 作用域分配器（ch38）把「换后端」从「替换全局函数、污染整个程序」变成可组合的局部选择——这对大型多团队代码库是质的改善。
-- [史] `operator new` 相关的修订链还有 **P0722R0→…→P0722R3（C++20，destroying delete）**，让变长类可在 `operator delete` 里同时析构与释放，省去「先析构再释放」的冗余尺寸参数传递；以及 **P0674R0→…→P0674R1（C++20，`make_shared<T[]>`）** 补齐数组的 make 构造。ISO 条款 `[basic.stc.dynamic.deallocation]` 规定释放函数的查找与「sized delete」语义——委员会刻意让「分配/释放后端」保持可替换、可作用域化，而非全局唯一。
+<span class="badge badge-history">史</span> C++98 确立了可替换的 `operator new`/`delete` 签名族；**C++11 加入 `std::align_val_t` 的提案草案**最终由 **P0035（C++17）** 落地，让过对齐类型（如 `alignas(64)` 的 SIMD 结构）能被正确动态分配，否则对齐被悄悄丢弃。<span class="badge badge-history">史</span> **C++20 的 P0722（destroying delete）** 引入 `std::destroying_delete_t`，允许类在 `operator delete` 里同时做析构与释放（如变长类 `std::vector` 式自管理），避免「先析构再释放」对带尺寸的自定义布局的多余开销（第 ⑭ 节）。<span class="badge badge-comment">评</span> WG21 的方向是保留默认 `new` 的简单语义，同时用 `std::pmr` + 作用域分配器（ch38）把「换后端」从「替换全局函数、污染整个程序」变成可组合的局部选择——这对大型多团队代码库是质的改善。
+- <span class="badge badge-history">史</span> `operator new` 相关的修订链还有 **P0722R0→…→P0722R3（C++20，destroying delete）**，让变长类可在 `operator delete` 里同时析构与释放，省去「先析构再释放」的冗余尺寸参数传递；以及 **P0674R0→…→P0674R1（C++20，`make_shared<T[]>`）** 补齐数组的 make 构造。ISO 条款 `[basic.stc.dynamic.deallocation]` 规定释放函数的查找与「sized delete」语义——委员会刻意让「分配/释放后端」保持可替换、可作用域化，而非全局唯一。
 
 ### ㉒.5 权威引用
 
@@ -2010,7 +2010,7 @@ int main() {
 
 类域 `operator new` 优先于全局版本；在其中调用 `std::malloc` 并累计计数，即可观测该类全部分配。
 
-> **示例 56** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -2033,9 +2033,9 @@ int main() {
 }
 ```
 
-[标准] 重载类域 `operator new/delete` 不影响 `sizeof`，仅改变该类的内存来源；`new`/`delete` 必须配对。
+<span class="badge badge-std">标准</span> 重载类域 `operator new/delete` 不影响 `sizeof`，仅改变该类的内存来源；`new`/`delete` 必须配对。
 
-[引用] ISO/IEC 14882:2023 §[class.free]（类专属 operator new/delete）；cppreference "operator new" 与 "operator delete"。真实引擎（Unreal `UObject` 分配器、Unity）即用类级重载做内存审计。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.free]（类专属 operator new/delete）；cppreference "operator new" 与 "operator delete"。真实引擎（Unreal `UObject` 分配器、Unity）即用类级重载做内存审计。
 
 </details>
 
@@ -2047,7 +2047,7 @@ int main() {
 
 placement new 的 `new(p) T(args)` 形式在已存在的内存 `p` 上构造对象，不分配；因此必须手动调用析构函数，且缓冲区需满足对齐与大小。
 
-> **示例 57** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <new>
@@ -2061,9 +2061,9 @@ int main() {
 }
 ```
 
-[标准] placement new 把"内存分配"与"对象构造"解耦，是内存池/定制分配器的核心机制。
+<span class="badge badge-std">标准</span> placement new 把"内存分配"与"对象构造"解耦，是内存池/定制分配器的核心机制。
 
-[引用] ISO/IEC 14882:2023 §[expr.new]/[new.delete.placement]（placement new）；cppreference "placement new"。EASTL 与 Boost.Pool 的对象池均以 placement new 在预分配缓冲上构造对象。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.new]/[new.delete.placement]（placement new）；cppreference "placement new"。EASTL 与 Boost.Pool 的对象池均以 placement new 在预分配缓冲上构造对象。
 
 </details>
 
@@ -2075,7 +2075,7 @@ int main() {
 
 在类域 `operator new` 中优先从空闲链表取块，不足才 `malloc`；`operator delete` 把块挂回空闲链表。这样高频 new/delete 仅在首次触及系统分配器。
 
-> **示例 58** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -2103,9 +2103,9 @@ int main() {
 }
 ```
 
-[标准] 固定大小对象池把分配器开销摊还到首次，并消除碎片；代价是需手动保证对象析构（或池统一回收）。
+<span class="badge badge-std">标准</span> 固定大小对象池把分配器开销摊还到首次，并消除碎片；代价是需手动保证对象析构（或池统一回收）。
 
-[引用] ISO/IEC 14882:2023 §[class.free]；真实库 Boost.Pool（`boost::object_pool`、github.com/boostorg/pool）与 EASTL `fixed_pool` 即用此空闲链表模式；cppreference "operator new"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.free]；真实库 Boost.Pool（`boost::object_pool`、github.com/boostorg/pool）与 EASTL `fixed_pool` 即用此空闲链表模式；cppreference "operator new"。
 
 </details>
 
@@ -2123,7 +2123,7 @@ delete p;          // 错误: 应 delete[] p; 否则 UB(仅释放首元素或破
 
 **修复**：严格配对 `new`/`delete` 与 `new[]`/`delete[]`；更彻底的方案是根本不写裸 `new`，改用容器或智能指针。
 
-> **示例 59** [难度 ★★☆☆☆] [主题：演绎 1：new / delete ]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：new / delete
 ```cpp
 #include <iostream>
 #include <memory>
@@ -2153,7 +2153,7 @@ void on_packet() {
 
 **修复**：用空闲链表对象池复用 Pkt 块，或 placement new 落预分配缓冲；分配次数从"每包一次"降到"池耗尽才一次"。
 
-> **示例 60** [难度 ★★☆☆☆] [主题：演绎 2：高频小对象 → 对象池 /]
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：高频小对象 → 对象池 /
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -2244,7 +2244,7 @@ inline void operator delete  (void*, void*)
 
 ### D4.4 可编译验证
 
-> **示例 61** [难度 ★★☆☆☆] [主题：可编译验证]
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译验证
 ```cpp
 #include <new>
 #include <cstddef>
@@ -2522,7 +2522,7 @@ flowchart TD
 
 ### D5.3 可复现演示
 
-> **示例 62** [难度 ★★☆☆☆] [主题：可复现演示]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <new>

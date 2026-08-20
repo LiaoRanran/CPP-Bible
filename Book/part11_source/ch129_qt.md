@@ -30,7 +30,7 @@
 
 转机分两步：**2008 年 Nokia 以约 1.04 亿欧元（~1.5 亿美元）收购 Trolltech**，要把 Qt 送上手机（Maemo/MeeGo）；更关键的是 **2009 年 Qt 改用 LGPL v2.1**——从此闭源商业软件只要**动态链接**就能合法免费用。这一步直接把 Qt 从"桌面玩具"变成"工业级 GUI 标准件"，汽车座舱、医疗 HMI 这才敢大规模上 Qt。
 
-> **[史]** Nokia 收购额官方为 €104M（2008）。** [轶]** Nokia 时代的"burning platform（燃烧的平台）"备忘录（2011，CEO Stephen Elop）葬送了 MeeGo，Qt 在 Nokia 手里被边缘化，直到 2011 年被卖给 Digia 才喘过气。
+> **<span class="badge badge-history">史</span>** Nokia 收购额官方为 €104M（2008）。** <span class="badge badge-anecdote">轶</span>** Nokia 时代的"burning platform（燃烧的平台）"备忘录（2011，CEO Stephen Elop）葬送了 MeeGo，Qt 在 Nokia 手里被边缘化，直到 2011 年被卖给 Digia 才喘过气。
 
 ### 0.3 设计哲学之争：为什么 C++ 没有反射，Qt 却硬要 moc？
 
@@ -44,9 +44,9 @@
 - **2014** The Qt Company 从 Digia 分拆；Qt 5.7 起开源版**仅 LGPL**，厘清授权。
 - **2020–2021** Qt 6.0/6.2：全面切到 **CMake**、要求 **C++17** 基线、用 **QRhi** 抽象 Vulkan/Metal/D3D 图形栈、清理历史包袱。
 - **2022–2024** Qt 6.4 起逐步补齐与 `std::` 的互操作（`QMetaType` 对 C++20 类型的支持）、Qt 6.5/6.6 强化 Qt Quick 与 WebAssembly 目标；Qt 6.7/6.8 把 C++17 工具链推稳，并巩固其作为车载与嵌入式 HMI 主流方案之一的地位。
-- [史] 2023 年 Qt 调整商业授权（引入 Qt for Small Business 与更细分的许可档），再度引发"开源 vs 商业"的口水战——许可之争从 2000 年的 QPL/GPL 一路吵到今天。
-- [评] Qt 6 的赌注是"图形后端抽象（QRhi）+ CMake + C++17"，把历史包袱一次性清空；代价是 Qt 5 老项目迁移到 6 要改信号槽、字符串与模块结构，社区颇有阵痛。
-- [轶] 尽管 C++26 静态反射（P2996）已在推进，Qt 的 moc 至今仍是"反射"唯一工业级落地——这场"标准慢、moc 快"的对照，短期内看不到终点。
+- <span class="badge badge-history">史</span> 2023 年 Qt 调整商业授权（引入 Qt for Small Business 与更细分的许可档），再度引发"开源 vs 商业"的口水战——许可之争从 2000 年的 QPL/GPL 一路吵到今天。
+- <span class="badge badge-comment">评</span> Qt 6 的赌注是"图形后端抽象（QRhi）+ CMake + C++17"，把历史包袱一次性清空；代价是 Qt 5 老项目迁移到 6 要改信号槽、字符串与模块结构，社区颇有阵痛。
+- <span class="badge badge-anecdote">轶</span> 尽管 C++26 静态反射（P2996）已在推进，Qt 的 moc 至今仍是"反射"唯一工业级落地——这场"标准慢、moc 快"的对照，短期内看不到终点。
 
 > 史料来源：
 > - https://www.qt.io/blog
@@ -61,7 +61,7 @@
 
 Qt 是 Trolltech（现 The Qt Company）推出的跨平台 C++ 应用框架，覆盖 GUI、网络、文件、并发、SQL、OpenGL 等。其最大特色是**在 ISO C++ 之上叠加一层由 moc（元对象编译器）生成的元对象系统**，从而支持信号槽、运行时类型 introspection、动态属性——这些是标准 C++ 没有的。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：Qt 框架]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Qt 框架
 ```cpp
 // ① 最小 QObject 派生类骨架（moc 预处理的输入）
 #include <QObject>
@@ -81,7 +81,7 @@ signals:
 
 Qt 对象模型的核心是 `QObject`：几乎所有 Qt 类都直接或间接继承它。每个 `QObject` 持有指向父对象的指针（用于所有权）与指向 `QMetaObject` 的指针（用于元信息）。`moc` 读取头文件，为每个含 `Q_OBJECT` 的类生成 `moc_*.cpp`，里面定义 `staticMetaObject`、`qt_metacast`、`qt_metacall`、`qt_static_metacall`。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：对象模型]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对象模型
 ```cpp
 // ② QObject 构造接受父对象，建立所有权链
 #include <QObject>
@@ -95,7 +95,7 @@ Node* child = new Node(root);      // child 的 parent = root
 // root 析构时会递归析构 child（见第⑤节）
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：对象模型]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对象模型
 ```cpp
 // ② moc 在头文件里看到的「宏」，预处理后展开为访问元对象的函数声明
 // Q_OBJECT 宏 ≈ 声明：
@@ -138,7 +138,7 @@ Node* child = new Node(root);      // child 的 parent = root
 </svg>
 > **图注（图 ③-1）**：`Sender` 通过 `emit` 触发 `QMetaObject::activate`，由 moc 生成的连接表（`connectionList`）按信号索引取出全部订阅者，逐一调用其槽函数；跨线程 `QueuedConnection` 时参数经 `QMetaCallEvent` 序列化入事件队列，由目标线程事件循环分发。虚线框表示 moc 在**编译期**生成的元数据，运行期不参与类型检查——新式 `connect` 已在编译期校验签名，旧式字符串连接才推迟到运行期。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：信号槽机制]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 信号槽机制
 ```cpp
 // ③ 用户写的头文件（moc 输入）：信号只声明不定义
 #include <QObject>
@@ -151,7 +151,7 @@ public:
 };
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：信号槽机制]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 信号槽机制
 ```cpp
 // ③ 【典型输出】本机 moc.exe（Qt 6.8.3）对上面 Button 的真实产物节选：
 //   文件：Examples/_ch129_moc_button.cpp
@@ -176,7 +176,7 @@ void Button::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
 }
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：信号槽机制]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 信号槽机制
 ```cpp
 // ③ 【上游参考】QMetaObject::activate 是信号分发的真正引擎（遍历连接列表、按线程策略投递/直调）
 // 文件：https://github.com/qt/qtbase/blob/6.8/src/corelib/kernel/qobject.cpp
@@ -192,7 +192,7 @@ void Button::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
 
 `QMetaObject` 是编译期由 moc 写死、运行期只读的**元数据表**（类名、方法、属性、枚举）。它让 Qt 支持反射：`QMetaObject::className()`、`invokeMethod()`、动态属性。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：元对象系统]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 元对象系统
 ```cpp
 // ④ 用 Q_PROPERTY 声明可在运行时读写的属性（moc 生成 property 访问元数据）
 #include <QObject>
@@ -209,7 +209,7 @@ private:
 };
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：元对象系统]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 元对象系统
 ```cpp
 // ④ 运行时内省：无需知道具体类型即可调用方法/读属性
 #include <QMetaObject>
@@ -232,7 +232,7 @@ void dump(QObject* o) {
 
 Qt 用**父子所有权**替代裸 `delete`：把子对象 `new` 出来时把父 `QObject*` 传入构造，`parent` 析构时会递归 `delete` 所有子对象。这避免了手动释放整棵控件树。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：内存管理]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存管理
 ```cpp
 // ⑤ 父子所有权：父析构自动 delete 子
 #include <QObject>
@@ -246,7 +246,7 @@ void scope() {
 }
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：内存管理]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存管理
 ```cpp
 // ⑤ deleteLater：延迟到事件循环空闲时删除（线程安全，避免正在发信号时自杀）
 #include <QObject>
@@ -262,7 +262,7 @@ void async_cleanup(QObject* obj) {
 
 Qt 是**事件驱动**：GUI 主线程跑 `QApplication::exec()`，内部是 `QEventLoop` 不断从事件队列取 `QEvent` 分发。信号槽跨线程投递、定时器、`deleteLater` 都依赖它。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：事件循环（QEventLoop）]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 事件循环（QEventLoop）
 ```cpp
 // ⑥ 主事件循环
 #include <QApplication>
@@ -272,7 +272,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：事件循环（QEventLoop）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 事件循环（QEventLoop）
 ```cpp
 // ⑥ 局部事件循环：在子流程里处理事件而不退出外层循环
 #include <QEventLoop>
@@ -291,7 +291,7 @@ void wait_seconds(int s) {
 
 Qt 线程模型：**`QThread` 是线程控制器，不是线程本体**。正确用法是 `new Worker; worker->moveToThread(thread); thread->start();`，对象活在子线程，靠信号槽跨线程通信（Qt::QueuedConnection 自动经事件队列投递）。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：线程]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程
 ```cpp
 // ⑦ 推荐：moveToThread 把对象搬进子线程
 #include <QThread>
@@ -307,7 +307,7 @@ QObject::connect(t, &QThread::started, w, &Worker::doWork);
 t->start();
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：线程]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程
 ```cpp
 // ⑦ 反模式：继承 QThread 并重写 run()（Qt4 遗物，易踩线程亲和性坑）
 #include <QThread>
@@ -323,7 +323,7 @@ class MyThread : public QThread {
 
 Qt 两套 UI 技术：**Widgets**（C++ 命令式，适合桌面工具/IDE）与 **QML**（声明式 JS 风格，适合触屏/动画/移动端）。两者都基于同一 QObject 元对象系统，可 `QQuickWidget` 嵌入混用。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：Qt 对象模型与信号槽]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Qt 对象模型与信号槽
 ```cpp
 // ⑧ Widgets：C++ 命令式构建界面
 #include <QPushButton>
@@ -334,7 +334,7 @@ void build_ui(QWidget* w) {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：Qt 对象模型与信号槽]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Qt 对象模型与信号槽
 ```cpp
 // ⑧ QML：声明式描述界面（.qml 由 qml 引擎解析，C++ 侧用 QQuickView 加载）
 // 文件：main.qml（非 cpp，此处列以对照）
@@ -349,7 +349,7 @@ void build_ui(QWidget* w) {
 
 Qt 未链接时，用**自包含纯 C++**（观察者模式 + `std::function` 类型擦除）复现「信号持有槽表、emit 即遍历回调」的等价机制，并用真实 g++ 编译取汇编，证明信号槽在机器码层面就是「遍历函数对象数组 + 间接调用」。
 
-> **示例 17** [难度 ★★★☆☆] [主题：[实现·Qt]真实：编译一个手写信号]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·Qt]真实：编译一个手写信号
 ```cpp
 // ⑨ 自包含信号槽等价机制（无 Qt 依赖，可直接编译运行）
 // 文件：Examples/_ch129_signal_slot.cpp
@@ -410,7 +410,7 @@ main:
 
 Qt 自带分层日志 `qDebug()/qInfo()/qWarning()/qCritical()`，可用 `QtMessageHandler` 重定向，或用 `QLoggingCategory` 做模块级开关。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试
 ```cpp
 // ⑩ 日志类别 + 自定义处理器
 #include <QLoggingCategory>
@@ -424,7 +424,7 @@ void f() {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：调试]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 ```cpp
 // ⑩ 在 Qt Creator 中断在信号触发点：本质是断在 moc 生成的 clicked() 实现或槽函数
 // 调试技巧：对跨线程 queued 连接，断点要打在接收者线程的槽实现里，而非 emit 处。
@@ -437,7 +437,7 @@ void f() {
 
 Qt 大量使用**隐式共享（copy-on-write）**：`QString`/`QVector`/`QImage` 等拷贝只复制指针，写时才深拷贝（detach）。信号槽同线程直连近乎免费；跨线程队列需拷贝参数（或 `Qt::DirectConnection` 但破坏线程安全）。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：性能]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能
 ```cpp
 // ⑪ 隐式共享：a=b 只是浅拷贝，只读不 detach
 #include <QString>
@@ -448,7 +448,7 @@ void share() {
 }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：性能]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
 ```cpp
 // ⑪ 跨线程信号传大对象：用 const 引用 + 注册元类型，避免不必要拷贝
 #include <QMetaType>
@@ -463,7 +463,7 @@ Q_DECLARE_METATYPE(Frame)    // 让 Frame 可在信号槽中按值传递
 
 Qt 用抽象类（如 `QFile`、`QThread`、`QProcess`）封装 OS 差异，底层是 `#ifdef Q_OS_WIN` / `Q_OS_MACOS` / `Q_OS_LINUX` 选实现。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 ```cpp
 // ⑫ 平台宏：写少量平台分支而不污染业务
 #include <QSysInfo>
@@ -477,7 +477,7 @@ void log_os() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 ```cpp
 // ⑫ 用 QStandardPaths 取代手写路径，天然跨平台
 #include <QStandardPaths>
@@ -492,7 +492,7 @@ QString cfg = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 
 两个高频坑：**跨线程对象生命周期**与**父子跨线程**。
 
-> **示例 24** [难度 ★★★★☆] [主题：常见陷阱（跨线程信号槽 / 内存）]
+> **示例 24** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见陷阱（跨线程信号槽 / 内存）
 ```cpp
 // ⑬ 陷阱1：把父对象设在不同线程的子对象上 → 运行期警告甚至崩溃
 // QObject: Cannot create children for a parent that is in a different thread
@@ -505,7 +505,7 @@ void trap() {
 }
 ```
 
-> **示例 25** [难度 ★★★★☆] [主题：常见陷阱（跨线程信号槽 / 内存）]
+> **示例 25** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见陷阱（跨线程信号槽 / 内存）
 ```cpp
 // ⑬ 陷阱2：跨线程 queued 连接传非注册元类型 → 运行时「Invalid parameter」
 #include <QMetaType>
@@ -521,7 +521,7 @@ Q_DECLARE_METATYPE(Payload)                 // 必须注册，queued 连接才�
 
 Qt 所有权（父子 `delete`）与标准 C++ RAII（`std::unique_ptr`）是**两套重叠的内存模型**。混用规则：要么全交给 Qt 父子树，要么全用智能指针，切忌两边都管。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：与标准 C++ 关系]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准 C++ 关系
 ```cpp
 // ⑭ 混用：用 unique_ptr 管理非 QObject 的纯标准类型，Qt 管 QObject 树
 #include <memory>
@@ -532,7 +532,7 @@ class View : public QObject { Q_OBJECT
 };   // View 自身由 Qt 父对象管理；buf 随 View 析构由 unique_ptr 释放
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：与标准 C++ 关系]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准 C++ 关系
 ```cpp
 // ⑭ 把 QObject* 交给 unique_ptr 需自定义删除器走 deleteLater（线程安全）
 #include <memory>
@@ -548,7 +548,7 @@ std::unique_ptr<QObject, decltype(deleter)> p(new QObject, deleter);
 
 Qt6（2020）相对 Qt5 的关键变化：移除非必要 QtWidgets 依赖、用 `QString` 内部 UTF-8（不再 UTF-16 双存储）、属性系统重写、信号槽支持 **`QMetaType` 注册类型**、`QList` 回归连续存储。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：演进（Qt6）]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（Qt6）
 ```cpp
 // ⑮ Qt6 中槽参数类型更严格：自定义类型需注册元类型
 #include <QMetaType>
@@ -557,7 +557,7 @@ Q_DECLARE_METATYPE(Point)
 // main 中：qRegisterMetaType<Point>("Point");  // queued 连接前注册
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：演进（Qt6）]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（Qt6）
 ```cpp
 // ⑮ Qt6 属性系统用新宏风格（兼容 Qt5 的 Q_PROPERTY）
 #include <QObject>
@@ -574,14 +574,14 @@ signals: void wChanged(int);
 
 ## ⑯ 最佳实践
 
-> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑯ 用新式函数指针 connect（编译期类型检查，IDE 可跳转）
 #include <QObject>
 QObject::connect(&b, &Button::clicked, &l, &Label::on_clicked);   // 优于 SIGNAL/SLOT 字符串
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑯ 槽用 const 引用接收大对象，避免拷贝
 #include <QString>
@@ -598,7 +598,7 @@ public slots:
 
 想给 Qt 提补丁：克隆 `qtbase`，分支基于 `dev` 或 `6.8`，改动后跑 `qtbase/tests`，commit message 遵循 Qt 约定（`area: summary`），经 Gerrit 评审。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：贡献]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献
 ```cpp
 // ⑰ 贡献规范（示意）：信号命名用过去时、小写开头，便于 on_xxx 槽约定
 signals:
@@ -618,7 +618,7 @@ signals:
 | std::function + 观察者 | 手写 | 需手写 | 无 | 标准库 |
 | libsigc++（GTK） | 模板 | 支持 | 弱 | glibmm |
 
-> **示例 33** [难度 ★★☆☆☆] [主题：跨库对比]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库对比
 ```cpp
 // ⑱ Boost.Signals2：纯模板、无 moc，但编译期更重、无运行时内省
 #include <boost/signals2.hpp>
@@ -634,7 +634,7 @@ sig(42);                       // 等价 emit
 
 本机**未安装 Qt 源码树**，源码阅读走上游；本机可复现部分用 `moc` 产物反推生成逻辑。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑲ 阅读入口：先把你的 .h 跑一遍 moc，对比生成 cpp，立刻看懂元对象机制
 // 命令（本机真实可用）：
@@ -651,18 +651,18 @@ sig(42);                       // 等价 emit
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：QObject 的父子所有权（父析构自动 delete 子）。** 你以为要手动管理。请说明机制属性。
-   - [标准] 对象树/父子所有权是 Qt 的运行时机制（基于构造参数 + 析构遍历），非 C++ 标准特性；对应 RAII 思想。
-   - [引用] ISO/IEC 14882:2023 §[class.dtor]（析构时机）/ [basic.stc]（存储期）/ Qt 文档 "Object Trees & Ownership"；cppreference "RAII" 词条。
+   - <span class="badge badge-std">标准</span> 对象树/父子所有权是 Qt 的运行时机制（基于构造参数 + 析构遍历），非 C++ 标准特性；对应 RAII 思想。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.dtor]（析构时机）/ [basic.stc]（存储期）/ Qt 文档 "Object Trees & Ownership"；cppreference "RAII" 词条。
 
 2. **真实场景：信号槽靠 `moc` 预处理生成代码（`Q_OBJECT`/`signals`/`slots`）。** 你以为这些是关键字。请说明。
-   - [标准] `signals`/`slots` 等是 Qt 宏（预处理阶段展开）；moc 是独立代码生成工具，非标准语言设施。
-   - [引用] ISO/IEC 14882:2023 §[cpp]（宏与预处理阶段）/ Qt moc 文档；cppreference "Replacing text macros" 词条。
+   - <span class="badge badge-std">标准</span> `signals`/`slots` 等是 Qt 宏（预处理阶段展开）；moc 是独立代码生成工具，非标准语言设施。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp]（宏与预处理阶段）/ Qt moc 文档；cppreference "Replacing text macros" 词条。
 
 3. **真实场景：`QObject` 派生类不可拷贝（值语义受限）。** 你写拷贝构造被拒。请说明约束。
-   - [标准] 对象身份/树语义要求类型不可拷贝；拷贝语义由用户定义（三五法则）。
-   - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义）/ Qt 文档 "Object Trees"；cppreference "Rule of three/five" 词条。
+   - <span class="badge badge-std">标准</span> 对象身份/树语义要求类型不可拷贝；拷贝语义由用户定义（三五法则）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy]（拷贝语义）/ Qt 文档 "Object Trees"；cppreference "Rule of three/five" 词条。
 
-> **示例 35** [难度 ★★★☆☆] [主题：速查表]
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```
 ┌───────────────────────┬────────────────────────────────────────────┐
 │ 写法                  │ 等价/说明                                    │
@@ -680,7 +680,7 @@ sig(42);                       // 等价 emit
 └───────────────────────┴────────────────────────────────────────────┘
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 一行最小可运行骨架（概念；需 Qt 链接，本机已装 Qt 头）
 #include <QObject>
@@ -718,7 +718,7 @@ public: void go(){ emit ping(1); }
 
 不装 Qt 也能理解 `connect/emit` 的运行模型——下面用标准库复刻其核心：**一个信号持有若干订阅函数，emit 时依次调用**（这正是 `QMetaObject::activate` 干的活）。
 
-> **示例 37** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：先把
 ```cpp
 // ㉑.2 用标准 C++ 复刻 Qt 信号槽的「解耦」本质（本块可独立编译，GCC 15.3.0 验证）
 #include <functional>
@@ -755,7 +755,7 @@ int main() {
 
 下面才是你在 `qmake`/`CMake` 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
-> **示例 38** [难度 ★★☆☆☆] [主题：㉑.3 真实 Qt API 长什么样]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 Qt API 长什么样
 ```cpp
 // ㉑.3 真实 Qt 6 写法（仅注释演示，需 Qt 链接；本门禁按空块编译通过）：
 //   #include <QCoreApplication>
@@ -789,7 +789,7 @@ int main() {
 
 ## 附录 A：MOC 为什么存在 —— 标准 C++ 尚无法替代 [B: Principle]
 
-> **示例 39** [难度 ★★★☆☆] [主题：附录 A：MOC 为什么存在 —— ]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：MOC 为什么存在 ——
 ```
 Qt 的 Meta-Object Compiler (MOC) 补充了 C++ 缺失的 4 个核心能力:
 
@@ -814,7 +814,7 @@ WG21 进展: P2996R5 (C++26 reflection) 将标准化编译期反射。
    → 但运行时动态调用 (invokeMethod) 仍需要类似 MOC 的方案
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 A：MOC 为什么存在 —— ]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：MOC 为什么存在 ——
 ```cpp
 #include <iostream>
 int main() {
@@ -828,7 +828,7 @@ int main() {
 
 ## 附录 B：工业级 Qt 项目模式 [F: Industry]
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录 B：工业级 Qt 项目模式 []
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业级 Qt 项目模式 [
 ```cpp
 #include <iostream>
 int main() {
@@ -852,7 +852,7 @@ int main() {
 | 内存 | parent-child 树 | unique_ptr/shared_ptr | GUI控件→Qt; 业务逻辑→std::unique_ptr |
 | 线程 | QThread::moveToThread | std::thread + std::async | GUI→Qt; 后端→std::thread |
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 C：Qt vs 标准 C++ ]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：Qt vs 标准 C++
 ```
 选择建议:
 - 纯后端/CLI → 标准 C++ (无 Qt 依赖, 编译更快)
@@ -864,7 +864,7 @@ int main() {
 
 ## 附录 D：面试与 QObject 内存模型 [J: Learning / E: Low-level]
 
-> **示例 43** [难度 ★★☆☆☆] [主题：附录 D：面试与 QObject 内]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与 QObject 内
 ```
 面试高频:
 Q: QObject 的 parent-child 内存模型如何工作？
@@ -1017,7 +1017,7 @@ lea rdx, [rax+0x0020]     ; 参数数组基址
 
 ## 底层视角：moc、元对象与信号槽的间接代价 [E: Low-level]
 
-[标准] `Q_OBJECT` 宏经 moc 生成元对象结构：含指向字符串表与信号槽索引的指针（各 `0x0008`）。`emit signal()` 编译为对 `QMetaObject::activate` 的调用，内部按 `0x0008` 槽索引在 `QObjectPrivate` 的连接链表上遍历——本质是一次虚/间接分派（见 ch47 量级：约 1–3 ns 加间接跳转惩罚）。
+<span class="badge badge-std">标准</span> `Q_OBJECT` 宏经 moc 生成元对象结构：含指向字符串表与信号槽索引的指针（各 `0x0008`）。`emit signal()` 编译为对 `QMetaObject::activate` 的调用，内部按 `0x0008` 槽索引在 `QObjectPrivate` 的连接链表上遍历——本质是一次虚/间接分派（见 ch47 量级：约 1–3 ns 加间接跳转惩罚）。
 
 moc 生成的 `qt_static_metacall` 是一张函数指针表（槽宽 `0x0008`），经 `QMetaObject::Invoke` 间接调用；`Qt 6.6` 改用 `QMetaType` 擦除存储，仍走 `0x0008` 指针间接。`Clang 17`（Qt 官方工具链）对 `final` QObject 可去虚化部分路径。
 
@@ -1035,7 +1035,7 @@ moc 生成的 `qt_static_metacall` 是一张函数指针表（槽宽 `0x0008`）
 
 Qt 的父子所有权 = 父 `QObject` 内部维护一张子对象指针表，析构时遍历这张表逐个 `delete` 子对象（子再递归释放自己的子），最后把自己从父的子表中摘除。下面用裸指针忠实地复刻这一语义（注意：这与第⑤/附录 D 的 `unique_ptr` 树是同一"级联释放"思想，但 Qt 用的是运行期指针而非编译期唯一所有权）：
 
-> **示例 44** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 // 自包含建模 QObject 父子所有权（无 Qt 依赖，可直接编译运行）
 #include <iostream>
@@ -1072,9 +1072,9 @@ int main() {
 
 [实现·GCC15] 上述代码不含任何 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；运行即打印 4 个 `dtor`，证明"删父即删整树"。
 
-[经验] 父子所有权把"释放整棵控件树"简化为"只 delete 根"——这正是 GUI 框架避免泄漏的关键；代价是**一个对象只能有一个父**，切忌同时把同一裸指针交给两处管理（会二次释放）。跨线程对象不能用裸父子树，须改用第⑤节的 `deleteLater`（由目标线程事件循环执行删除）。
+<span class="badge badge-exp">经验</span> 父子所有权把"释放整棵控件树"简化为"只 delete 根"——这正是 GUI 框架避免泄漏的关键；代价是**一个对象只能有一个父**，切忌同时把同一裸指针交给两处管理（会二次释放）。跨线程对象不能用裸父子树，须改用第⑤节的 `deleteLater`（由目标线程事件循环执行删除）。
 
-[引用] Qt 对象树与所有权：`https://doc.qt.io/qt-6/objecttrees.html`（官方，汽车/工业 HMI 必读，讲清 parent 析构级联）。
+<span class="badge badge-ref">引用</span> Qt 对象树与所有权：`https://doc.qt.io/qt-6/objecttrees.html`（官方，汽车/工业 HMI 必读，讲清 parent 析构级联）。
 
 </details>
 
@@ -1086,7 +1086,7 @@ int main() {
 
 Qt 的 `emit clicked(x)` 经 moc 变成 `Button::clicked`，内部调用 `QMetaObject::activate` 遍历连接表、对每个接收者做一次间接调用（见第③⑨节）。下面用 `std::function` 类型擦除复刻"信号持有若干槽、emit 时逐一调用"的本质，**多对多、零耦合**：
 
-> **示例 45** [难度 ★★★☆☆] [主题：练习 2（难度 ★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 // 自包含最小信号/槽（无 Qt 依赖，可直接编译运行）
 #include <iostream>
@@ -1118,9 +1118,9 @@ int main() {
 
 [实现·GCC15] 上述代码不含任何 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；运行输出 `[UI] clicked at 42` 与 `[LOG] persisted 42`，证明一对多分发。
 
-[经验] 看懂这个 20 行例子，就理解了 Qt 信号槽 90% 的运行语义：发送者只持有"可调用对象表"，从不 `#include` 接收者头，**编译期与运行期都解耦**。剩下 10% 是 moc 生成的元数据表 + 跨线程 `QueuedConnection` 排队（见第⑦/⑬节）。注意真实 Qt 信号槽还白送**跨线程投递**与**运行时内省**，这是手写 `std::function` 表没有的。
+<span class="badge badge-exp">经验</span> 看懂这个 20 行例子，就理解了 Qt 信号槽 90% 的运行语义：发送者只持有"可调用对象表"，从不 `#include` 接收者头，**编译期与运行期都解耦**。剩下 10% 是 moc 生成的元数据表 + 跨线程 `QueuedConnection` 排队（见第⑦/⑬节）。注意真实 Qt 信号槽还白送**跨线程投递**与**运行时内省**，这是手写 `std::function` 表没有的。
 
-[引用] Qt 信号槽机制：`https://doc.qt.io/qt-6/signalsandslots.html`（官方，含 `connect`/`emit` 语义）。
+<span class="badge badge-ref">引用</span> Qt 信号槽机制：`https://doc.qt.io/qt-6/signalsandslots.html`（官方，含 `connect`/`emit` 语义）。
 
 </details>
 
@@ -1139,7 +1139,7 @@ C++ 至今（C++23）没有内建反射（见第 0.3 节）。Qt 的解法是在
 
 正是这张元数据表让 `qobject_cast<T*>(o)` 不用 RTTI：它沿 `metaObject()->superClass()` 链做 `inherits` 判断（等价于"o 的元对象链上是否出现过 T 的 staticMetaObject"）。这比 `dynamic_cast` 稳健——`dynamic_cast` 依赖编译器 RTTI，跨 DLL/共享库边界、或关 RTTI 的构建里会失效，而 `qobject_cast` 纯粹基于 moc 生成的元数据，**跨模块、跨线程亲和都可用**。下面用一段自包含代码演示 moc 提供的"沿继承链的类型判定"本质：
 
-> **示例 46** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 // 自包含演示 qobject_cast 的底层机制：沿 meta 链做 inherits 判定（无 Qt 依赖）
 #include <cstdio>
@@ -1172,9 +1172,9 @@ int main() {
 
 [实现·Qt] 上例不含 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；它把"moc 生成的元对象链 + 运行时 inherits 判定"这一 Qt 反射核心代价用 30 行讲清。
 
-[经验] `qobject_cast` 与 `Q_PROPERTY` 之所以"快且稳"，是因为元数据在编译期由 moc 写死、运行期只读——没有运行时类型扫描开销。**改了 `Q_OBJECT` 类后若链接报 `undefined reference to vtable for X`，几乎都是 moc 没重跑或 `moc_*.cpp` 没加入构建**（见第②节）。记住：moc 不只是为了实现信号槽，更是为了给整个 Qt 提供跨模块、可脚本化、可对接 QML 的反射地基。
+<span class="badge badge-exp">经验</span> `qobject_cast` 与 `Q_PROPERTY` 之所以"快且稳"，是因为元数据在编译期由 moc 写死、运行期只读——没有运行时类型扫描开销。**改了 `Q_OBJECT` 类后若链接报 `undefined reference to vtable for X`，几乎都是 moc 没重跑或 `moc_*.cpp` 没加入构建**（见第②节）。记住：moc 不只是为了实现信号槽，更是为了给整个 Qt 提供跨模块、可脚本化、可对接 QML 的反射地基。
 
-[引用] `Q_OBJECT` 宏与元对象系统：`https://doc.qt.io/qt-6/metaobjects.html`；`qobject_cast`：`https://doc.qt.io/qt-6/qobject.html#qobject_cast`（官方）。
+<span class="badge badge-ref">引用</span> `Q_OBJECT` 宏与元对象系统：`https://doc.qt.io/qt-6/metaobjects.html`；`qobject_cast`：`https://doc.qt.io/qt-6/qobject.html#qobject_cast`（官方）。
 
 </details>
 
@@ -1189,7 +1189,7 @@ int main() {
 Qt 的 `QueuedConnection` 本质是把 `emit progress(i)` 打包成事件，投递到接收者所在线程的
 事件循环，从而避免了手写互斥与轮询。下面用标准库复刻这一"跨线程观察"语义：
 
-> **示例 47** [难度 ★★☆☆☆] [主题：练习 4]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1213,8 +1213,8 @@ int main() {
 }
 ```
 
-[标准] `std::atomic` 提供无锁跨线程可见性；Qt 用事件队列替代裸原子，换取"在主线程安全触达 UI 对象"。
-[引用] Qt 线程与事件循环：`https://doc.qt.io/qt-6/threads-qobject.html`（官方，讲清 moveToThread 与 QueuedConnection）。
+<span class="badge badge-std">标准</span> `std::atomic` 提供无锁跨线程可见性；Qt 用事件队列替代裸原子，换取"在主线程安全触达 UI 对象"。
+<span class="badge badge-ref">引用</span> Qt 线程与事件循环：`https://doc.qt.io/qt-6/threads-qobject.html`（官方，讲清 moveToThread 与 QueuedConnection）。
 
 </details>
 
@@ -1229,7 +1229,7 @@ int main() {
 Qt 的父子所有权 = "父 `QObject` 析构时递归 `delete` 所有子对象"。标准 C++ 用 `unique_ptr` 树
 得到等价且零开销的自动释放：
 
-> **示例 48** [难度 ★★☆☆☆] [主题：练习 5（难度 ★★ · 应用导向）]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★ · 应用导向）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1247,9 +1247,9 @@ int main() {
 }
 ```
 
-[标准] `std::unique_ptr` 的析构沿成员递归，是唯一所有权下的零开销 RAII（见 ch41）；Qt 用运行期
+<span class="badge badge-std">标准</span> `std::unique_ptr` 的析构沿成员递归，是唯一所有权下的零开销 RAII（见 ch41）；Qt 用运行期
 父子指针实现同类"级联释放"，但额外支持跨线程 `deleteLater`（事件循环空档才删）。
-[引用] Qt 对象树与所有权：`https://doc.qt.io/qt-6/objecttrees.html`（官方，汽车/工业 HMI 必读）。
+<span class="badge badge-ref">引用</span> Qt 对象树与所有权：`https://doc.qt.io/qt-6/objecttrees.html`（官方，汽车/工业 HMI 必读）。
 
 </details>
 
@@ -1263,7 +1263,7 @@ Qt 5 引入的**新式 `connect(&a,&A::sig,&b,&B::slot)`** 相比旧式 `SIGNAL/
 旧式宏把信号/槽名拼成字符串，匹配推迟到运行期（`QMetaObject::activate` 里按名查找）——拼错
 只在运行期崩。新式 `connect` 用**成员函数指针**做连接目标，编译器在编译期就校验签名一致：
 
-> **示例 49** [难度 ★★★☆☆] [主题：练习 6（难度 ★★ · 设计权衡）]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 6（难度 ★★ · 设计权衡）
 ```cpp
 #include <iostream>
 struct B { void slot(int){ std::cout << "ok\n"; } };
@@ -1275,8 +1275,8 @@ int main() {
 }
 ```
 
-[标准] 成员函数指针携带确切签名，参与重载决议与类型检查；旧式字符串绕过了这一切。
-[引用] 新式 Signal/Slot 语法：`https://doc.qt.io/qt-6/signalsandslots-syntaxes.html`（含新旧对比）。
+<span class="badge badge-std">标准</span> 成员函数指针携带确切签名，参与重载决议与类型检查；旧式字符串绕过了这一切。
+<span class="badge badge-ref">引用</span> 新式 Signal/Slot 语法：`https://doc.qt.io/qt-6/signalsandslots-syntaxes.html`（含新旧对比）。
 
 </details>
 
@@ -1419,7 +1419,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 50** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 

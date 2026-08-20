@@ -12,24 +12,24 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C++98/03 用了近十年，期间工业界被三件事反复刺痛：**内存泄漏与所有权混乱**（裸指针满天飞）、**样板代码爆炸**（写一遍遍的类型声明）、**并发时代缺席**（没有标准线程）。[评] 2003 年后，委员会启动代号 "C++0x" 的大规模修订，本想在 200x 年完成，却因野心过大一拖再拖。[史] Stroustrup 在《C++11 问答》里直言目标：让 C++ 更简单、更安全、更快——尤其是"默认更好用"，而非只为专家服务。[史][评] Boost 社区贡献了大量成熟原型（智能指针、bind、function），直接喂给了标准。
+C++98/03 用了近十年，期间工业界被三件事反复刺痛：**内存泄漏与所有权混乱**（裸指针满天飞）、**样板代码爆炸**（写一遍遍的类型声明）、**并发时代缺席**（没有标准线程）。<span class="badge badge-comment">评</span> 2003 年后，委员会启动代号 "C++0x" 的大规模修订，本想在 200x 年完成，却因野心过大一拖再拖。<span class="badge badge-history">史</span> Stroustrup 在《C++11 问答》里直言目标：让 C++ 更简单、更安全、更快——尤其是"默认更好用"，而非只为专家服务。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> Boost 社区贡献了大量成熟原型（智能指针、bind、function），直接喂给了标准。
 
 ### 0.2 关键转折（编年）
 
-- **2005**：TR1 以 `std::tr1` 提供库扩展（多源自 Boost），为 C++11 探路。[史]
-- **2011**：ISO/IEC 14882:2011（C++11，草案 N3337）发布，一次性引入 `auto`、范围 for、移动语义与右值引用、智能指针、lambda、constexpr、nullptr、强类型枚举、统一初始化、std::thread 等。[史]
-- 移动语义（由 Howard Hinnant 等推动）彻底改写资源管理范式。[史][评]
+- **2005**：TR1 以 `std::tr1` 提供库扩展（多源自 Boost），为 C++11 探路。<span class="badge badge-history">史</span>
+- **2011**：ISO/IEC 14882:2011（C++11，草案 N3337）发布，一次性引入 `auto`、范围 for、移动语义与右值引用、智能指针、lambda、constexpr、nullptr、强类型枚举、统一初始化、std::thread 等。<span class="badge badge-history">史</span>
+- 移动语义（由 Howard Hinnant 等推动）彻底改写资源管理范式。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.3 设计哲学之争
 
-C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派程序员质疑"藏了类型、可读性下降"，但委员会认定：在模板与迭代器时代，显式写出类型既累赘又易错，推导才是趋势。[史][评] 另一条主线是"用库机制替代语言强制"——lambda 让算法真正好用，智能指针把 RAII 推成默认。对比 Rust 后来用所有权类型在编译期杜绝泄漏，C++ 选择"提供工具、由你负责"，延续其不强制的哲学。[评]
+C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派程序员质疑"藏了类型、可读性下降"，但委员会认定：在模板与迭代器时代，显式写出类型既累赘又易错，推导才是趋势。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 另一条主线是"用库机制替代语言强制"——lambda 让算法真正好用，智能指针把 RAII 推成默认。对比 Rust 后来用所有权类型在编译期杜绝泄漏，C++ 选择"提供工具、由你负责"，延续其不强制的哲学。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [轶] 据记载，C++11 因原计划 2010 年发布却拖到 2011，被社区戏称为 "Duke Nukem Forever"（一款跳票十余年的游戏），道尽八年等待的焦灼。
-- [史] 移动语义落地后，标准库容器（`vector`/`string`/`map`）全面获得移动构造与 `emplace*`，返回大对象从深拷贝变为指针窃取，是现代 C++ 性能跃升的基石。
-- [史] 2013 年 Chromium 转向 C++11、Clang 用 C++11 重写，标志工业界正式告别 C++03；Google 内部代码库则到 2020s 才基本完成 C++11→17 迁移。
-- [评] C++11 一次性"还债"过多，致 ABI/行为变更剧烈；后续版本刻意改为"小步快跑"，正是吸取了这次大爆炸的教训。
+- <span class="badge badge-anecdote">轶</span> 据记载，C++11 因原计划 2010 年发布却拖到 2011，被社区戏称为 "Duke Nukem Forever"（一款跳票十余年的游戏），道尽八年等待的焦灼。
+- <span class="badge badge-history">史</span> 移动语义落地后，标准库容器（`vector`/`string`/`map`）全面获得移动构造与 `emplace*`，返回大对象从深拷贝变为指针窃取，是现代 C++ 性能跃升的基石。
+- <span class="badge badge-history">史</span> 2013 年 Chromium 转向 C++11、Clang 用 C++11 重写，标志工业界正式告别 C++03；Google 内部代码库则到 2020s 才基本完成 C++11→17 迁移。
+- <span class="badge badge-comment">评</span> C++11 一次性"还债"过多，致 ABI/行为变更剧烈；后续版本刻意改为"小步快跑"，正是吸取了这次大爆炸的教训。
 
 > 史料来源：GCC 各标准支持进度 https://gcc.gnu.org/projects/cxx-status.html ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
@@ -45,7 +45,7 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 [第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)
 [第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
 ```cpp
 #include <iostream>
 #include <string>
@@ -67,7 +67,7 @@ int main() {
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 #include <iostream>
 #include <vector>
@@ -84,7 +84,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 #include <iostream>
 #include <string>
@@ -105,7 +105,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 4** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -117,7 +117,7 @@ int main() {
 // 输出：5 5
 ```
 
-> **示例 5** [难度 ★★★★☆] [主题：知识图谱（ASCII）]
+> **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱（ASCII）
 ```
 C++11 三大支柱
 ├─ 资源管理革命
@@ -151,7 +151,7 @@ C++11 三大支柱
 
 ## ⑤ Mermaid（移动语义数据流向）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：Mermaid 图解]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Mermaid 图解
 ```cpp
 #include <iostream>
 int main() {
@@ -177,7 +177,7 @@ flowchart LR
 
 ## ⑥ UML（不适用）
 
-> **示例 7** [难度 ★★☆☆☆] [主题：UML 图解]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · UML 图解
 ```cpp
 #include <iostream>
 constexpr int sq(int x) { return x*x; }
@@ -193,7 +193,7 @@ int main() {
 
 ## ⑦ ASCII 内存图（移动 vs 拷贝）
 
-> **示例 8** [难度 ★★☆☆☆] [主题：内存图（移动 vs 拷贝）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图（移动 vs 拷贝）
 ```cpp
 #include <iostream>
 constexpr int fact(int n) { return n<=1?1:n*fact(n-1); }
@@ -207,13 +207,13 @@ int main() {
 ```
 
 拷贝（深拷贝，开销大）：
-> **示例 9** [难度 ★☆☆☆☆] [主题：内存图（移动 vs 拷贝）]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（移动 vs 拷贝）
 ```
 src: [ptr→0x5000 数据]
 dst: [ptr→0x6000 数据副本]   // 新分配+逐字节拷贝
 ```
 移动（窃取指针，O(1)）：
-> **示例 10** [难度 ★☆☆☆☆] [主题：内存图（移动 vs 拷贝）]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（移动 vs 拷贝）
 ```
 src: [ptr→ (置空/null)]
 dst: [ptr→0x5000 数据]       // 直接接管
@@ -221,7 +221,7 @@ dst: [ptr→0x5000 数据]       // 直接接管
 
 ## ⑧ 生命周期
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：生命周期]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期
 ```cpp
 #include <iostream>
 class A { int x; public: A():A(0){} A(int v):x(v){} int get() const { return x; } };
@@ -239,7 +239,7 @@ int main() {
 
 ## ⑨ 调用栈（lambda 闭包）
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：调用栈（lambda 闭包）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（lambda 闭包）
 ```cpp
 #include <iostream>
 class Base { public: virtual void f(){} };
@@ -255,7 +255,7 @@ int main() {
 // 输出：ok
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：调用栈（lambda 闭包）]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（lambda 闭包）
 ```
 调用方 → lambda 闭包对象(含捕获成员) → 调用 operator()
 ```
@@ -263,7 +263,7 @@ int main() {
 
 ## ⑩ 汇编（移动构造省去分配）
 
-> **示例 14** [难度 ★★☆☆☆] [主题：汇编（移动构造省去分配）]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编（移动构造省去分配）
 ```cpp
 #include <iostream>
 #include <thread>
@@ -280,7 +280,7 @@ int main() {
 
 ## ⑪ STL 联系
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：联系]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
 ```cpp
 #include <iostream>
 auto add(int x, int y) -> int { return x+y; }
@@ -298,7 +298,7 @@ int main() {
 
 ## ⑫ 工业案例
 
-> **示例 16** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -317,7 +317,7 @@ int main() {
 
 ## ⑬ 源码分析（libstdc++ 智能指针）
 
-> **示例 17** [难度 ★★★☆☆] [主题：源码分析]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析
 ```cpp
 #include <iostream>
 constexpr long double operator"" _km(long double x){ return x*1000; }
@@ -333,9 +333,9 @@ int main() {
 - `std::shared_ptr` 控制块（引用计数 + 弱计数 + 删除器）用原子操作；`make_shared` 把对象与控制块**一次分配**减少碎片（ch48、ch43）。
 - `std::unique_ptr` 是空类 + 删除器，零开销，可转换为函数指针大小（ch48）。
 
-## ⑭ WG21 提案（关键）[标准]
+## ⑭ WG21 提案（关键）<span class="badge badge-std">标准</span>
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：提案（关键）[标准]]
+> **示例 18** [难度 ★☆☆☆☆] [主题：提案（关键）<span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -366,7 +366,7 @@ int main() {
 
 ## ⑮ 面试题
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 #include <iostream>
 enum class E : unsigned char { A, B };
@@ -386,7 +386,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 #include <iostream>
 #include <array>
@@ -405,7 +405,7 @@ int main() {
 
 ## ⑰ FAQ
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 #include <iostream>
 #include <vector>
@@ -425,7 +425,7 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 22** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 #include <iostream>
 #include <utility>
@@ -447,7 +447,7 @@ int main() {
 
 ## ⑲ 性能分析
 
-> **示例 23** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -471,18 +471,18 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `std::move` 转移大对象避免深拷贝。** 你以为 `move` 会“移动内存”，其实只是转类型。请说明 std::move 的真实语义。
-   - [标准] `std::move` 只是把表达式 `static_cast` 成右值引用，本身不移动任何数据；真正的资源转移由类型的移动构造/赋值完成。
-   - [引用] ISO/IEC 14882:2023 §[utility]（std::move）/ [class.copy.ctor]（移动构造函数）；cppreference "std::move / Move semantics" 词条。
+   - <span class="badge badge-std">标准</span> `std::move` 只是把表达式 `static_cast` 成右值引用，本身不移动任何数据；真正的资源转移由类型的移动构造/赋值完成。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[utility]（std::move）/ [class.copy.ctor]（移动构造函数）；cppreference "std::move / Move semantics" 词条。
 
 2. **真实场景：`auto` 推导引用需要 `auto&` 或 `decltype(auto)`。** 你写 `auto x = get_ref();` 拿到的是副本而非引用。请说明 auto 的推导规则。
-   - [标准] `auto` 按模板实参推导规则工作，默认丢弃顶层 cv 与引用；要保留引用须显式写 `auto&` / `auto&&`。
-   - [引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（auto 类型推导）；cppreference "auto" 词条。
+   - <span class="badge badge-std">标准</span> `auto` 按模板实参推导规则工作，默认丢弃顶层 cv 与引用；要保留引用须显式写 `auto&` / `auto&&`。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.spec.auto]（auto 类型推导）；cppreference "auto" 词条。
 
 3. **真实场景：用 `unique_ptr` 表达独占所有权替代裸指针。** 你担心拷贝导致双重释放。请说明其所有权编码。
-   - [标准] `std::unique_ptr` 在类型中编码独占所有权，不可拷贝、只能移动（转让）；析构时自动释放。
-   - [引用] ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权与不可拷贝）；cppreference "std::unique_ptr" 词条。
+   - <span class="badge badge-std">标准</span> `std::unique_ptr` 在类型中编码独占所有权，不可拷贝、只能移动（转让）；析构时自动释放。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权与不可拷贝）；cppreference "std::unique_ptr" 词条。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // 智能指针数组
 #include <memory>
@@ -499,7 +499,7 @@ std::unique_ptr<int[]> a(new int[3]);
 
 ### ㉒.1 历史渊源补强：C++11 如何"还清 13 年技术债"
 
-[史] C++11（原 C++0x）2011 年 8 月 12 日由 ISO 批准，是 C++ 史上最大的一次修订，几乎重写语言与标准库。其种子是 **2002–2006 年间的关键提案**：右值引用/移动语义（Howard Hinnant 等，**N2118**，2006）、`auto`/`decltype`（N1984/N2343）、lambda（N2550）、`shared_ptr`/`weak_ptr`（源自 Boost，`std::tr1`）。[史] 移动语义（`T&&` + 规则五）是核心：它让"返回值优化不可达"的场景（如容器 `push_back` 大对象、`std::thread` 转移）从深拷贝变为廉价转移，直接催生 `std::move`、`std::unique_ptr`、`std::make_shared`。[轶] `auto` 与 `for(:)` 范围 for 最初被老派担忧"削弱类型可读性"，结果成了现代 C++ 最高频语法；而 `std::regex`、`std::thread` 等库在 C++11 初版质量参差，被戏称"标准库里最该被重写的几块"。[评] C++11 的真正遗产不是单个特性，而是确立了"默认移动、显式控制生存期、用类型系统表达所有权"的现代范式。
+<span class="badge badge-history">史</span> C++11（原 C++0x）2011 年 8 月 12 日由 ISO 批准，是 C++ 史上最大的一次修订，几乎重写语言与标准库。其种子是 **2002–2006 年间的关键提案**：右值引用/移动语义（Howard Hinnant 等，**N2118**，2006）、`auto`/`decltype`（N1984/N2343）、lambda（N2550）、`shared_ptr`/`weak_ptr`（源自 Boost，`std::tr1`）。<span class="badge badge-history">史</span> 移动语义（`T&&` + 规则五）是核心：它让"返回值优化不可达"的场景（如容器 `push_back` 大对象、`std::thread` 转移）从深拷贝变为廉价转移，直接催生 `std::move`、`std::unique_ptr`、`std::make_shared`。<span class="badge badge-anecdote">轶</span> `auto` 与 `for(:)` 范围 for 最初被老派担忧"削弱类型可读性"，结果成了现代 C++ 最高频语法；而 `std::regex`、`std::thread` 等库在 C++11 初版质量参差，被戏称"标准库里最该被重写的几块"。<span class="badge badge-comment">评</span> C++11 的真正遗产不是单个特性，而是确立了"默认移动、显式控制生存期、用类型系统表达所有权"的现代范式。
 
 ### ㉒.2 真实工程坐标：C++11 活在哪
 
@@ -508,7 +508,7 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
 | 基础设施底座 | LLVM/Clang 自 3.x 以 C++11 为自身基线 / Boost·Abseil·fmt 最低 C++11/14 | 现代库最低要求 | 编译 / 基础库生态 | 移动 / 智能指针成标配 |
-| 并发与系统软件 | `std::thread`/`std::atomic`/`std::future`（Chromium / 游戏引擎 / 交易系统） | 跨平台多线程第一次有标准答案 | 工业级并发 | [STANDARD] C++11 并发库 |
+| 并发与系统软件 | `std::thread`/`std::atomic`/`std::future`（Chromium / 游戏引擎 / 交易系统） | 跨平台多线程第一次有标准答案 | 工业级并发 | <span class="badge badge-std">STANDARD</span> C++11 并发库 |
 | 嵌入式与受限 | 移动语义使 `std::vector`/`std::string` 零拷贝转移 | 适合内存受限场景 | 嵌入式 / 受限 | 移动消除深拷贝 |
 | LLVM 自举基线 | LLVM/Clang 自 3.0（2012）以 C++11 自身实现 | 移动语义让 AST/IR 传递更高效 | 编译器级工业软件 | 反向证明 C++11 够支撑编译器 |
 | 游戏主机世代 | PS4 / Xbox One（2013）工具链完整 C++11，CryEngine 移动语义降主机内存压力 | 资源 / 纹理零拷贝转移 | 游戏工业关键节点 | [据记载] C++11 进游戏工业 |
@@ -529,9 +529,9 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 
 ### ㉒.4 与标准的互动：从 N2118 到今天
 
-[史] 右值引用提案 **N2118（2006）** 是 C++11 的基石；最终以 N3337 草案提交 ISO。后续 C++14 补 `make_unique`、C++17 补 `std::string_view`、C++20 补 `std::jthread`，都是对 C++11 初版的"打补丁"——说明标准以增量方式消化一次大改革。[评] 今天回望，C++11 把"RAII + 值语义 + 移动"定为现代 C++ 的不可动摇基线；新项目用 C++17+ 即默认继承这套范式。
+<span class="badge badge-history">史</span> 右值引用提案 **N2118（2006）** 是 C++11 的基石；最终以 N3337 草案提交 ISO。后续 C++14 补 `make_unique`、C++17 补 `std::string_view`、C++20 补 `std::jthread`，都是对 C++11 初版的"打补丁"——说明标准以增量方式消化一次大改革。<span class="badge badge-comment">评</span> 今天回望，C++11 把"RAII + 值语义 + 移动"定为现代 C++ 的不可动摇基线；新项目用 C++17+ 即默认继承这套范式。
 
-- [史] 右值引用/移动语义由 **N2118（2006，Hinnant/Stroustrup/Kozicki）** 提出，后经多轮 N-paper 打磨，最终并入 C++11 工作草案 **N3337**；它在 ISO/IEC 14882 中落地为右值引用（§[dcl.ref]）与移动构造/赋值的特殊规则（§[class.copy]）。委员会设计理由：在「返回值优化不可达」的场景（如 `push_back` 大对象、`std::thread` 转移）提供零开销转移，并支撑 `std::unique_ptr` 这类「唯一所有权」类型——这是 RAII 范式能成立的前提。
+- <span class="badge badge-history">史</span> 右值引用/移动语义由 **N2118（2006，Hinnant/Stroustrup/Kozicki）** 提出，后经多轮 N-paper 打磨，最终并入 C++11 工作草案 **N3337**；它在 ISO/IEC 14882 中落地为右值引用（§[dcl.ref]）与移动构造/赋值的特殊规则（§[class.copy]）。委员会设计理由：在「返回值优化不可达」的场景（如 `push_back` 大对象、`std::thread` 转移）提供零开销转移，并支撑 `std::unique_ptr` 这类「唯一所有权」类型——这是 RAII 范式能成立的前提。
 
 ### ㉒.5 权威引用
 
@@ -543,7 +543,7 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 
 ## 附录: C++11 核心特性速查
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++11 核心特性速查
 ```cpp
 #include <iostream>
 #include <memory>
@@ -552,7 +552,7 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 int main(){std::vector<int>v{1,2,3,4,5};int s=0;for(auto x:v)s+=x;std::cout<<"sum:"<<s<<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++11 核心特性速查
 ```cpp
 #include <memory>
 #include <iostream>
@@ -560,7 +560,7 @@ int main(){std::vector<int>v{1,2,3,4,5};int s=0;for(auto x:v)s+=x;std::cout<<"su
 int main(){auto p=std::make_unique<int>(42);std::cout<<*p<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: C++11 核心特性速查
 ```cpp
 #include <iostream>
 // constexpr 编译期斐波那契
@@ -568,7 +568,7 @@ constexpr int fib(int n){return n<=1?n:fib(n-1)+fib(n-2);}
 int main(){constexpr int f=fib(20);std::cout<<f<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++11 核心特性速查
 ```cpp
 #include <iostream>
 #include <vector>
@@ -580,7 +580,7 @@ int main(){std::vector<Movable> v;v.reserve(10);std::cout<<"noexcept enables mov
 
 > 本附录为量级估算；精确数值与真实汇编见「附录 H：真实基准/汇编证据」（本机 MinGW GCC 13.1.0 -O2 实测）。硬件级延迟（内存屏障、TLS）平台相关，软件无法干净测得，仅给数量级并标注来源。
 
-> **示例 29** [难度 ★★★☆☆] [主题：附录 E：C++11的底层影响 [E]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：C++11的底层影响 [E
 ```
 C++11引入的底层变化:
 1. move语义: 右值引用 → 汇编层面 = 交换 3 个指针(24 字节控制块: start/finish/end_of_storage) vs 深拷贝 N 字节
@@ -604,7 +604,7 @@ C++11引入的底层变化:
 
 ## 附录追加：工业底层与面试
 
-> **示例 30** [难度 ★★☆☆☆] [主题：附录追加：工业底层与面试]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录追加：工业底层与面试
 ```cpp
 // noexcept move 让 vector realloc 时"移动"而非"拷贝"元素(强异常安全)
 #include <iostream>
@@ -647,7 +647,7 @@ noexcept move 为什么重要（机制修正）: vector 扩容/realloc 时——
 unique_ptr: sizeof=8(EBO), dereference=mov 同裸指针, 零开销（见 ch115）。
 
 真实可运行基准（输出实测值，非估算；完整源与汇编见 Examples/_ch04_move_perf.{cpp,asm}）:
-> **示例 31** [难度 ★★☆☆☆] [主题：附录 F：move底层与工业]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：move底层与工业
 ```cpp
 // 编译运行: g++ -O2 -std=c++17 _ch04_move_perf.cpp -o _ch04_move_perf && ./_ch04_move_perf
 #include <iostream>
@@ -684,7 +684,7 @@ noexcept move 为何重要? vector realloc 时允许浅移动而非深拷贝(强
 
 ## 附录 G：C++11面试速查
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录 G：C++11面试速查]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：C++11面试速查
 ```cpp
 #include <iostream>
 #include <memory>
@@ -708,7 +708,7 @@ int main(){auto p=std::make_unique<int>(42);auto f=[](int x){return x*2;};std::c
 
 ### H.1 真实基准输出（MinGW GCC 13.1.0 -O2 x86-64, ~2.4GHz）
 
-> **示例 33** [难度 ★★★☆☆] [主题：真实基准输出]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实基准输出
 ```
 [TSC] 2.395 GHz
 [vector<int>(1M)]  move(含调用开销上界) = 7.87 ns | copy = 706316 ns
@@ -834,7 +834,7 @@ _Z8null_ptrv:
 
 **真实场景：老代码现代化。** 你把一个 C++98 的 `std::vector` 统计循环（手写迭代器 + `NULL` 哨兵）升级到 C++11。请用 `auto`、范围 for、`nullptr` 重写"遍历容器并统计"的逻辑，并说明 `nullptr` 相比 `NULL`/`0` 的类型安全优势（避免重载决议把 `0` 当成 `int`）。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -853,16 +853,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`nullptr` 消除了 `NULL`（常被定义为 `0`）在重载决议中被当作 `int` 的历史陷阱；
+<span class="badge badge-std">标准</span> 结论：`nullptr` 消除了 `NULL`（常被定义为 `0`）在重载决议中被当作 `int` 的历史陷阱；
 `auto` 让迭代器/复杂类型不必写全，`for(auto x : c)` 是最常用的现代遍历形态。
 
-[引用] ISO C++11 §[lex.nullptr] / §[stmt.ranged]；cppreference "nullptr"（https://en.cppreference.com/w/cpp/language/nullptr）与 "范围 for 循环"（https://en.cppreference.com/w/cpp/language/range-for）。`nullptr` 的类型为 `std::nullptr_t`，消除 `NULL`/`0` 的重载歧义。
+<span class="badge badge-ref">引用</span> ISO C++11 §[lex.nullptr] / §[stmt.ranged]；cppreference "nullptr"（https://en.cppreference.com/w/cpp/language/nullptr）与 "范围 for 循环"（https://en.cppreference.com/w/cpp/language/range-for）。`nullptr` 的类型为 `std::nullptr_t`，消除 `NULL`/`0` 的重载歧义。
 
 ### 练习 2（难度 ★★★）
 
 **真实场景：工厂返回独占资源。** 你写一个 `open_connection()` 工厂，返回一条连接/文件句柄；调用方拿到后独占使用、用完即释放，绝不能有两个持有者。请用 `std::unique_ptr` 演示所有权从工厂转移到调用方，并解释为何它能安全替代大多数裸 `new`/`delete`（离开作用域自动释放，无泄漏）。
 
-> **示例 35** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -885,16 +885,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`unique_ptr` 的移动=转移指针+置空源，语义清晰且与裸指针同样快；
+<span class="badge badge-std">标准</span> 结论：`unique_ptr` 的移动=转移指针+置空源，语义清晰且与裸指针同样快；
 配合 `make_unique` 可彻底告别显式 `delete`，是现代 C++ 资源管理默认选择。
 
-[引用] ISO C++11 §[util.smartptr.unique]；cppreference "std::unique_ptr"（https://en.cppreference.com/w/cpp/memory/unique_ptr）与 "std::make_unique"（https://en.cppreference.com/w/cpp/memory/make_unique）。独占所有权模型见 C++ 核心指南 R.20–R.24。
+<span class="badge badge-ref">引用</span> ISO C++11 §[util.smartptr.unique]；cppreference "std::unique_ptr"（https://en.cppreference.com/w/cpp/memory/unique_ptr）与 "std::make_unique"（https://en.cppreference.com/w/cpp/memory/make_unique）。独占所有权模型见 C++ 核心指南 R.20–R.24。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：图像/缓冲解码返回大对象。** 你的解码函数产出一个持有大堆缓冲的 `Buffer`，若按值返回走深拷贝会极慢；应让返回"偷走"内部指针。请为 `Buffer` 实现移动构造/移动赋值，用计数证明移动"偷取指针"而非深拷贝，并说明 `noexcept` 对 `std::vector` 扩容时选择移动还是拷贝的影响。
 
-> **示例 36** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -927,10 +927,10 @@ int main() {
 }
 ```
 
-[标准] 结论：移动把 O(n) 深拷贝降为 O(1) 指针转移；移动构造标 `noexcept` 后，
+<span class="badge badge-std">标准</span> 结论：移动把 O(n) 深拷贝降为 O(1) 指针转移；移动构造标 `noexcept` 后，
 `std::vector` 扩容才会用移动而非拷贝（否则为保证强异常安全会退回拷贝），性能差距显著。
 
-[引用] ISO C++11 §[class.copy.ctor]（移动构造）与 §[expr.move]；cppreference "std::move"（https://en.cppreference.com/w/cpp/utility/move）与 "移动构造函数"（https://en.cppreference.com/w/cpp/language/move_constructor）。`noexcept` 移动对容器扩容的影响见标准库 [vector.capacity] 对重新分配的要求。
+<span class="badge badge-ref">引用</span> ISO C++11 §[class.copy.ctor]（移动构造）与 §[expr.move]；cppreference "std::move"（https://en.cppreference.com/w/cpp/utility/move）与 "移动构造函数"（https://en.cppreference.com/w/cpp/language/move_constructor）。`noexcept` 移动对容器扩容的影响见标准库 [vector.capacity] 对重新分配的要求。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -940,7 +940,7 @@ int main() {
 **选型**：lambda 就地写行为，`std::function` 做类型擦除的统一存储容器。
 **落地**：
 
-> **示例 37** [难度 ★★☆☆☆] [主题：演绎 1：lambda + std:]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：lambda + std:
 ```cpp
 #include <iostream>
 #include <functional>
@@ -969,7 +969,7 @@ int main() {
 **选型**：`shared_ptr` 引用计数共享；但双向引用会形成计数环导致泄漏，用 `weak_ptr` 打破。
 **落地**：
 
-> **示例 38** [难度 ★★☆☆☆] [主题：演绎 2：sharedptr 共享所]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：sharedptr 共享所
 ```cpp
 #include <iostream>
 #include <memory>

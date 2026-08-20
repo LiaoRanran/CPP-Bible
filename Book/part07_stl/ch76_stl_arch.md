@@ -12,25 +12,25 @@
 > 一套"写一次、跑遍所有容器"的算法，曾被视为不切实际的幻想，直到一个人把它变成了标准。
 
 ### 0.1 起源（谁·何时·为何）
-1980 年代末到 1990 年代初，Alexander Stepanov 在泛型编程（generic programming）上的执着是 STL 的真正源头。[史] 他早年在 GE、NYU、AT&T 贝尔实验室兜转，核心问题始终如一：**能不能让 `sort`、`find` 这样的算法只写一遍，却对任意满足"某种访问能力"的数据结构都成立？** 当时的 OO 主流做法是把算法做成容器类的虚函数成员，结果是一份逻辑被复制 N 遍、且无法跨越容器边界组合。1992—1993 年，Stepanov 与 Meng Lee 在惠普（HP）实验室把这套"容器 / 迭代器 / 算法"三件套做成了可运行的库。[史] 他的灵感明显受 Barbara Liskov 在 CLU 语言里提出的迭代器（iterator）概念影响——迭代器正是连接算法与容器的那根"胶水"。[史]
+1980 年代末到 1990 年代初，Alexander Stepanov 在泛型编程（generic programming）上的执着是 STL 的真正源头。<span class="badge badge-history">史</span> 他早年在 GE、NYU、AT&T 贝尔实验室兜转，核心问题始终如一：**能不能让 `sort`、`find` 这样的算法只写一遍，却对任意满足"某种访问能力"的数据结构都成立？** 当时的 OO 主流做法是把算法做成容器类的虚函数成员，结果是一份逻辑被复制 N 遍、且无法跨越容器边界组合。1992—1993 年，Stepanov 与 Meng Lee 在惠普（HP）实验室把这套"容器 / 迭代器 / 算法"三件套做成了可运行的库。<span class="badge badge-history">史</span> 他的灵感明显受 Barbara Liskov 在 CLU 语言里提出的迭代器（iterator）概念影响——迭代器正是连接算法与容器的那根"胶水"。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- 1993 年：Stepanov 在 C++ 标准委员会圣何塞会议上演示 STL，Bjarne Stroustrup 等人当场被"零开销泛型"折服。[史]
-- 1994 年：STL 被正式接纳进 C++ 标准库（即后来的 C++98），核心来自 HP/SGI 实现，包含 `vector/list/map/set`、迭代器与大量算法。[史]
-- 2011→2020：C++11 引入右值引用让容器转移更便宜；C++20 用 Concepts 把"迭代器五类范畴"从文档约定升级成编译器可检查的概念（含 `contiguous_iterator` 与哨兵）。[史]
+- 1993 年：Stepanov 在 C++ 标准委员会圣何塞会议上演示 STL，Bjarne Stroustrup 等人当场被"零开销泛型"折服。<span class="badge badge-history">史</span>
+- 1994 年：STL 被正式接纳进 C++ 标准库（即后来的 C++98），核心来自 HP/SGI 实现，包含 `vector/list/map/set`、迭代器与大量算法。<span class="badge badge-history">史</span>
+- 2011→2020：C++11 引入右值引用让容器转移更便宜；C++20 用 Concepts 把"迭代器五类范畴"从文档约定升级成编译器可检查的概念（含 `contiguous_iterator` 与哨兵）。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-STL 最具颠覆性的一点是**算法与容器解耦**：算法只认迭代器区间 `[first, last)`，不认 `vector` 还是 `list`。[评] 这与当时"算法应是容器成员函数"（传统 OO）截然相反。Stepanov 坚持不用虚函数、不做运行时多态，靠编译期模板实例化换取零开销——代价是报错信息冗长、编译变慢。另一场争论是"值语义优先"：STL 容器默认存值而非引用，简化了所有权，却也逼出了 `move` 语义的后来补丁。[评]
+STL 最具颠覆性的一点是**算法与容器解耦**：算法只认迭代器区间 `[first, last)`，不认 `vector` 还是 `list`。<span class="badge badge-comment">评</span> 这与当时"算法应是容器成员函数"（传统 OO）截然相反。Stepanov 坚持不用虚函数、不做运行时多态，靠编译期模板实例化换取零开销——代价是报错信息冗长、编译变慢。另一场争论是"值语义优先"：STL 容器默认存值而非引用，简化了所有权，却也逼出了 `move` 语义的后来补丁。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++20 用 Concepts 把迭代器五类范畴升级为可检查概念。此后 STL 的"下半场"由范围、值语义包装与现代实现库接力。
 
-- [史] **C++17 收编一批"值语义基石"**：`std::string_view`（非拥有字符视图，源自 GSL）、`std::optional`/`std::variant`（脱胎于 Boost）、`std::filesystem`（基于 Boost.Filesystem v3）一并入标，把原先靠第三方库补位的能力写进正典。
-- [史] **C++20 完成"范围化 + 协作取消"**：`std::ranges` 成为正式标准（⟶ ch90），算法可直接吃单个区间并用 `|` 管道组合；同期 `std::span`、`std::format`、`std::jthread`/`std::stop_token` 入标，容器与并发第一次有了统一的取消语义。
-- [史] **C++23 补强视图与错误模型**：`std::expected`、`std::mdspan`（把 `span` 推广到 N 维）、`views::enumerate`/`views::zip`、`vector`/`string` 的 `append_range` 等入标，把"非拥有视图"思想铺到多维度与集合拼接。
-- [史] **实现从 SGI 走向三足鼎立**：1993 年 HP 授权、SGI 维护的 SGI STL 是事实源头，STLport 做可移植移植；今天生产环境由 GCC 的 libstdc++、Clang 的 libc++、MSVC 的 MS STL 三方实现，ABI 与细节差异（如 `string` 的 SSO 阈值）至今是跨平台话题。
-- [评] STL 的续写主线清晰：把运行时开销与所有权责任持续往**类型系统**里塞——视图不拥有、可选值编码进类型、范围取代裸迭代器对，方向始终如一。
+- <span class="badge badge-history">史</span> **C++17 收编一批"值语义基石"**：`std::string_view`（非拥有字符视图，源自 GSL）、`std::optional`/`std::variant`（脱胎于 Boost）、`std::filesystem`（基于 Boost.Filesystem v3）一并入标，把原先靠第三方库补位的能力写进正典。
+- <span class="badge badge-history">史</span> **C++20 完成"范围化 + 协作取消"**：`std::ranges` 成为正式标准（⟶ ch90），算法可直接吃单个区间并用 `|` 管道组合；同期 `std::span`、`std::format`、`std::jthread`/`std::stop_token` 入标，容器与并发第一次有了统一的取消语义。
+- <span class="badge badge-history">史</span> **C++23 补强视图与错误模型**：`std::expected`、`std::mdspan`（把 `span` 推广到 N 维）、`views::enumerate`/`views::zip`、`vector`/`string` 的 `append_range` 等入标，把"非拥有视图"思想铺到多维度与集合拼接。
+- <span class="badge badge-history">史</span> **实现从 SGI 走向三足鼎立**：1993 年 HP 授权、SGI 维护的 SGI STL 是事实源头，STLport 做可移植移植；今天生产环境由 GCC 的 libstdc++、Clang 的 libc++、MSVC 的 MS STL 三方实现，ABI 与细节差异（如 `string` 的 SSO 阈值）至今是跨平台话题。
+- <span class="badge badge-comment">评</span> STL 的续写主线清晰：把运行时开销与所有权责任持续往**类型系统**里塞——视图不拥有、可选值编码进类型、范围取代裸迭代器对，方向始终如一。
 
 > 史料来源：[cppreference 标准库索引](https://en.cppreference.com/w/cpp/)、[libc++ 官方文档](https://libcxx.llvm.org/)、[MS STL 仓库](https://github.com/microsoft/STL)
 
@@ -69,7 +69,7 @@ STL（Standard Template Library）由**六大组件**构成，迭代器是连接
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
                    ┌──────────── 六大组件 ────────────┐
                    │ 容器 迭代器 算法 仿函数 适配器 分配器 │
@@ -127,7 +127,7 @@ classDiagram
 
 迭代器本质是"指向元素或处于元素间"的抽象。`vector<int>::iterator` 在 libstdc++ 中就是 `int*`（连续迭代器）：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图 / 对象布局]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
 ```
 vector<int> v = {10,20,30}
 内存（连续）:  [ 10 | 20 | 30 | ... ]
@@ -147,7 +147,7 @@ list<int> 迭代器是节点指针（非连续）：
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图
 ```
 迭代器对象创建（通常栈上，或从 begin() 返回）
    │
@@ -160,7 +160,7 @@ list<int> 迭代器是节点指针（非连续）：
 
 ## ⑨ 调用栈 / 时序图：`std::advance(it, n)` 的标签分发
 
-> **示例 4** [难度 ★★★☆☆] [主题：调用栈 / 时序图：std::adv]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：std::adv
 ```
 调用方
   │ std::advance(it, n)
@@ -201,7 +201,7 @@ range-based for 对 `vector` 展开后就是指针比较循环，GCC13 `-O2` 下
 
 场景：把来自不同来源的"事件 timestamp"聚合统计，来源可能是 `vector`（内存）、`deque`（双端）、甚至 `list`（频繁中间插入）。算法代码应**一套通吃**。
 
-> **示例 5** [难度 ★★★☆☆] [主题：工业案例：泛型日志聚合器]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：泛型日志聚合器
 ```cpp
 // 工业案例 C1：跨容器泛型聚合（算法与容器解耦）
 #include <vector>
@@ -235,7 +235,7 @@ int main() {
 
 迭代器五类标签是空结构体，通过继承表达"层次"（`bits/stl_iterator_base_types.h`）：
 
-> **示例 6** [难度 ★★★☆☆] [主题：源码分析（libstdc++ 逐行）]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析（libstdc++ 逐行）
 ```cpp
 // 文件：bits/stl_iterator_base_types.h   行号：93, 96, 99, 103, 107, 111
 //   93:  struct input_iterator_tag { };
@@ -296,7 +296,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 7** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误1：用 input 迭代器做多遍遍历（istream_iterator 只读一遍）
 #include <iterator>
@@ -313,7 +313,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误2：把 vector 迭代器当 list 那样"安全"——扩容后全部失效
 #include <vector>
@@ -328,7 +328,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ✅ 正确：随机访问迭代器支持 it + n（O(1)），list 不支持
 #include <vector>
@@ -369,7 +369,7 @@ int main() {
 5. 不要假设迭代器在容器修改后仍然有效——查 ⑲ 失效表。
 6. 新代码用 C++20 概念（如 `std::forward_iterator`）替代 `enable_if`  SFINAE 约束。
 
-> **示例 10** [难度 ★★★☆☆] [主题：最佳实践]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践 B1：用 C++20 概念约束泛型算法（最弱够用）
 #include <vector>
@@ -420,16 +420,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：算法不依赖具体容器，只吃迭代器区间。** 你给 `std::sort` 传 `vector` 也传 `deque` 的 begin/end。请说明解耦。
-   - [标准] 标准算法以迭代器（或范围）区间工作，与具体容器的存储无关，这是 STL 的泛型基础。
-   - [引用] ISO/IEC 14882:2023 §[algorithms]（算法以迭代器区间操作）；cppreference "Standard library algorithms" 词条。
+   - <span class="badge badge-std">标准</span> 标准算法以迭代器（或范围）区间工作，与具体容器的存储无关，这是 STL 的泛型基础。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[algorithms]（算法以迭代器区间操作）；cppreference "Standard library algorithms" 词条。
 
 2. **真实场景：迭代器失效规则因容器而异。** 你明明在 list 上删元素安全，vector 上就崩。请说明来源。
-   - [标准] 各容器的插入/删除对迭代器有效性的影响由容器要求规定，必须按容器查表。
-   - [引用] ISO/IEC 14882:2023 §[container.reqmts]（容器要求与迭代器失效）；cppreference "Iterator invalidation" 词条。
+   - <span class="badge badge-std">标准</span> 各容器的插入/删除对迭代器有效性的影响由容器要求规定，必须按容器查表。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[container.reqmts]（容器要求与迭代器失效）；cppreference "Iterator invalidation" 词条。
 
 3. **真实场景：迭代器分五类（C++20 用概念）。** 你理解为何 `advance` 对随机迭代器是 O(1)。请说明类别能力。
-   - [标准] 迭代器类别（输入/前向/双向/随机/连续）逐层提供更多操作能力；算法据此分派最优实现。
-   - [引用] ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别与能力）；cppreference "Iterator" 词条。
+   - <span class="badge badge-std">标准</span> 迭代器类别（输入/前向/双向/随机/连续）逐层提供更多操作能力；算法据此分派最优实现。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别与能力）；cppreference "Iterator" 词条。
 
 | 语言 | 迭代器/遍历抽象 | 范畴分层 | 备注 |
 |---|---|---|---|
@@ -449,7 +449,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：STL 的诞生与泛型范式
 
-[史] 1979 年 Alexander Stepanov 在通用电气（GE）开始思考「如何让算法独立于具体容器与数据类型」；1985—1993 年他在惠普（HP）实验室系统提出并实现最初的 STL：容器、迭代器、算法、仿函数四件套，并以模板泛型作为统一抽象层。[史] 1994 年 Stepanov 转往 Silicon Graphics（SGI），将 STL 定型并以自由许可发布「SGI STL」，这成为后来标准库的直接蓝本。[轶] 一个广为流传的轶事是：Stepanov 曾要求一门语言必须能证明「数组下标寻址」与「链表遍历」可被同一套算法统一处理，否则就不够好——这直接催生了迭代器这一中间层。[评] STL 最大的历史贡献不是某个具体容器，而是「算法—迭代器—容器」三层解耦：让 `std::sort` 能作用于任何满足 RandomAccessIterator 的序列，这一设计比多数工业框架早了近十年。
+<span class="badge badge-history">史</span> 1979 年 Alexander Stepanov 在通用电气（GE）开始思考「如何让算法独立于具体容器与数据类型」；1985—1993 年他在惠普（HP）实验室系统提出并实现最初的 STL：容器、迭代器、算法、仿函数四件套，并以模板泛型作为统一抽象层。<span class="badge badge-history">史</span> 1994 年 Stepanov 转往 Silicon Graphics（SGI），将 STL 定型并以自由许可发布「SGI STL」，这成为后来标准库的直接蓝本。<span class="badge badge-anecdote">轶</span> 一个广为流传的轶事是：Stepanov 曾要求一门语言必须能证明「数组下标寻址」与「链表遍历」可被同一套算法统一处理，否则就不够好——这直接催生了迭代器这一中间层。<span class="badge badge-comment">评</span> STL 最大的历史贡献不是某个具体容器，而是「算法—迭代器—容器」三层解耦：让 `std::sort` 能作用于任何满足 RandomAccessIterator 的序列，这一设计比多数工业框架早了近十年。
 
 ### ㉒.2 真实工程坐标：STL 活在哪些产品里
 
@@ -460,11 +460,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：STL 的常见误用与陷阱
 
-[评] 最典型的一类踩坑是迭代器失效：在 `vector` 上 `erase` 后继续使用旧迭代器会导致未定义行为；把 `deque` 当成随机插入廉价结构、`list` 上误用 `operator[]`（O(n)）等认知错误也很常见。另一类是 ABI 与分配器：跨动态库（.so/.dll）传递 STL 容器，在开启不同 `_GLIBCXX_USE_CXX11_ABI` 或混用不同编译器版本时会触发符号不匹配（参见 ch81 的 dual-ABI 实证）。性能陷阱则是「隐形拷贝」——`auto` 误推断、用 `std::function` 擦除、范围 for 的副本，以及 `std::endl` 每次刷新缓冲区。
+<span class="badge badge-comment">评</span> 最典型的一类踩坑是迭代器失效：在 `vector` 上 `erase` 后继续使用旧迭代器会导致未定义行为；把 `deque` 当成随机插入廉价结构、`list` 上误用 `operator[]`（O(n)）等认知错误也很常见。另一类是 ABI 与分配器：跨动态库（.so/.dll）传递 STL 容器，在开启不同 `_GLIBCXX_USE_CXX11_ABI` 或混用不同编译器版本时会触发符号不匹配（参见 ch81 的 dual-ABI 实证）。性能陷阱则是「隐形拷贝」——`auto` 误推断、用 `std::function` 擦除、范围 for 的副本，以及 `std::endl` 每次刷新缓冲区。
 
 ### ㉒.4 与标准的互动：STL 与 C++ 标准的共同演进
 
-[史] STL 于 1998 年随 C++98 正式进入标准，是委员会罕见地「整库采纳」外部设计（Stepanov/SGI）。此后标准持续吸收 STL 风格：`std::span`（C++20）、`std::ranges`（C++20）、`std::pmr` 多态分配器（C++17）都延续「值语义 + 泛型 + 零开销抽象」的信条。C++11 引入的移动语义极大改善了 STL 容器在返回与重排时的性能；近年 WG21 的方向（concepts、ranges、views）本质上是在把 STL 当年的「鸭子类型迭代器」升级为编译期可检查的概念。
+<span class="badge badge-history">史</span> STL 于 1998 年随 C++98 正式进入标准，是委员会罕见地「整库采纳」外部设计（Stepanov/SGI）。此后标准持续吸收 STL 风格：`std::span`（C++20）、`std::ranges`（C++20）、`std::pmr` 多态分配器（C++17）都延续「值语义 + 泛型 + 零开销抽象」的信条。C++11 引入的移动语义极大改善了 STL 容器在返回与重排时的性能；近年 WG21 的方向（concepts、ranges、views）本质上是在把 STL 当年的「鸭子类型迭代器」升级为编译期可检查的概念。
 
 - **WG21 修订链**：STL 风格容器/算法的标准化并非一次性，而是持续演进。以「连续视图」原语为例，`std::span` 经 P0122R0→…→P0122R7（Neil MacIntosh、Stephan T. Lavavej，2018 Jacksonville 采纳，wg21.link/P0122R7）在 C++20 落地；R0 原名 `array_view`，经 LEWG 反馈改名为 `span` 并去掉多维部分，最终 R7 又移除了独立比较运算符（`operator==` 等，理由见 P1085，wg21.link/P1085）。`std::mdspan`（多维视图）则走 P0009R0→…→P0009R15 的长链（受 Sandia Kokkos 项目启发，wg21.link/P0009R15），2015 年首版到 2022 年 R15，最终进入 C++23。
 - **ISO 条款**：STL 容器/迭代器/算法分别落在 ISO/IEC 14882 的「Containers（第 24 章）」「Iterators（第 25 章）」「Algorithms（第 27 章）」与「Ranges（C++20 第 26 章）」。委员会的设计理由（Design Intent）一贯是「零开销抽象 + 值语义 + 泛型」：容器不强制虚函数、算法以迭代器对而非容器为参数，从而让同一套 `sort`/`find` 适用于任何满足概念的序列。
@@ -500,7 +500,7 @@ int main() {
 
 以下为第76章完整可编译示例集（每块独立、自带 `#include` 与 `int main`，经 `g++ -std=c++23 -O2 -Wall -Wextra` 校验）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A1 range-based for 展开（等价于 begin/end + ++ + !=）
 #include <vector>
@@ -513,7 +513,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A2 iterator_traits 萃取范畴并用 type_traits 判断
 #include <vector>
@@ -534,7 +534,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A3 标签分发：手写 advance 选择（示意编译期多态）
 #include <iterator>
@@ -560,7 +560,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A4 std::advance 在不同范畴下的行为（O(1) vs O(n)）
 #include <vector>
@@ -576,7 +576,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A5 std::distance：vector O(1)，list O(n)
 #include <vector>
@@ -592,7 +592,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A6 六组件组合：容器+算法+仿函数+适配器
 #include <vector>
@@ -609,7 +609,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A7 back_inserter 适配器：赋值即 push_back
 #include <vector>
@@ -625,7 +625,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A8 inserter 适配器：插入到指定位置前
 #include <vector>
@@ -643,7 +643,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A9 reverse_iterator 适配器：反向遍历
 #include <vector>
@@ -656,7 +656,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A10 move_iterator（C++11）：移动而非拷贝元素
 #include <vector>
@@ -673,7 +673,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A11 哨兵 C++20：istream_iterator + default_sentinel（读到 EOF 停止）
 #include <iterator>
@@ -689,7 +689,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A12 contiguous_iterator 概念检查（C++20）
 #include <vector>
@@ -705,7 +705,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A13 裸指针即连续迭代器（演示范畴）
 #include <iostream>
@@ -721,7 +721,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A14 仿函数（lambda）作为算法策略
 #include <vector>
@@ -735,7 +735,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A15 transform 用仿函数生成新序列
 #include <vector>
@@ -752,7 +752,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A16 适配器：front_inserter（list 头插，逆序）
 #include <list>
@@ -770,7 +770,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A17 迭代器失效演示：list 插入不影响其它迭代器
 #include <list>
@@ -784,7 +784,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A18 C++20 概念约束：要求 forward_iterator
 #include <vector>
@@ -801,7 +801,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A19 版本宏探测：C++20 contiguous_iterator 可用性
 #include <iterator>
@@ -816,7 +816,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A20 折叠 + 迭代器：求和（演示泛型）
 #include <vector>
@@ -834,7 +834,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A21 自定义输出迭代器（写入 ostream）
 #include <iterator>
@@ -857,7 +857,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A22 streambuf 迭代器：逐字符读取（input 范畴）
 #include <iostream>
@@ -874,7 +874,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A23 用 sentinel 概念检查 istream_iterator 可比较 default_sentinel
 #include <iterator>
@@ -890,7 +890,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A24 泛型 + 适配器统计大于阈值的元素并写入新容器
 #include <vector>
@@ -908,7 +908,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A25 不同容器共用同一算法（解耦验证）
 #include <deque>
@@ -925,7 +925,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A26 迭代器作为"泛型指针"：find 跨容器
 #include <vector>
@@ -941,7 +941,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A27 用户定义字面量计时 + 范畴对比（UDL 带空格写法）
 #include <vector>
@@ -963,7 +963,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A28 反向 + 正向迭代器同时遍历（回文判定）
 #include <vector>
@@ -979,7 +979,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A29 ostream_iterator 写出分隔序列
 #include <vector>
@@ -995,7 +995,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A30 概念约束错误演示（注释）：非迭代器类型不会被接受
 #include <concepts>
@@ -1012,7 +1012,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // A31 工业：泛型日志聚合（复用 C1 思路，自包含）
 #include <vector>
@@ -1044,7 +1044,7 @@ int main() {
 
 ## 附录 F：STL架构工业
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录 F：STL架构工业]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：STL架构工业
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1066,7 +1066,7 @@ int main(){std::vector<int> v{5,3,1,4,2};std::sort(v.begin(),v.end());std::cout<
 
 ## 附录 H：STL容器决策树
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 H：STL容器决策树]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：STL容器决策树
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1110,8 +1110,8 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 ## 相关章节（交叉引用）
 
 - **同模块核心**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— vector 是该架构下连续内存容器的典型实现，迭代器类别为随机访问
-- **同模块核心**：[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)—— deque 的分段缓冲体现同一架构下的另一种迭代器模型
-- **同模块核心**：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)—— list/forward_list 的节点迭代器满足同一套迭代器概念
+- **同模块核心**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)—— deque 的分段缓冲体现同一架构下的另一种迭代器模型
+- **同模块核心**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)—— list/forward_list 的节点迭代器满足同一套迭代器概念
 - **同模块核心**：[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)—— ranges 在该架构之上叠加惰性管道与视图
 - **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— allocator 是 STL 容器的可插拔内存后端，架构依赖它切分内存
 - **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 移动语义是该架构值传递的零拷贝基石
@@ -1129,7 +1129,7 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 
 自定义迭代器把范畴标为 `random_access_iterator_tag`（委托裸指针算术），`my_distance` 的公共壳据 `iterator_traits::iterator_category` 在编译期选 `random_access`（O(1) 相减）或 `input`（O(n) 计数）重载：
 
-> **示例 44** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <iterator>
@@ -1200,11 +1200,11 @@ int main() {
 
 [实现·GCC15] 自定义迭代器正确标注 `random_access_iterator_tag` 并委托裸指针算术；`std::istream_iterator<int>` 的范畴是 `input_iterator_tag`，故同一句 `my_distance` 对缓冲走 O(1)、对输入流走 O(n)。
 
-[经验] 写泛型库时为自定义迭代器**正确标注 category tag** 是关键：算法据标签自动选最优路径，漏标或错标会退化为最慢实现甚至编译失败。
+<span class="badge badge-exp">经验</span> 写泛型库时为自定义迭代器**正确标注 category tag** 是关键：算法据标签自动选最优路径，漏标或错标会退化为最慢实现甚至编译失败。
 
-[标准] `iterator_traits::iterator_category` 决定标签分发；C++20 亦可额外用 `contiguous_iterator` 概念（见 ⑬ / A12）。
+<span class="badge badge-std">标准</span> `iterator_traits::iterator_category` 决定标签分发；C++20 亦可额外用 `contiguous_iterator` 概念（见 ⑬ / A12）。
 
-[引用] cppreference "iterator/iterator_traits"、"iterator/input_iterator_tag" 词条；ISO/IEC 14882:2023 §[iterators]。
+<span class="badge badge-ref">引用</span> cppreference "iterator/iterator_traits"、"iterator/input_iterator_tag" 词条；ISO/IEC 14882:2023 §[iterators]。
 
 </details>
 
@@ -1216,7 +1216,7 @@ int main() {
 
 哨兵类型 `NullSentinel` 只与迭代器做 `==` 比较（遇 `'\0'` 即结束），`my_find` 用 `std::sentinel_for` 约束"结束"，不要求 `end` 与 `first` 同类型——于是 `(It, NullSentinel)` 与 `(It, It)` 都能复用同一算法：
 
-> **示例 45** [难度 ★★★☆☆] [主题：练习 2（难度 ★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -1262,11 +1262,11 @@ int main() {
 
 [实现·GCC15] `NullSentinel::operator==(const char*)` 让 `char* != NullSentinel` 走指针解引用比较；`std::sentinel_for` 概念编译期校验，对 `std::string` 的 `(iterator, iterator)` 同样满足。
 
-[经验] 哨兵把"结束条件"从"另一个迭代器"解耦为"任意可比较类型"，是 ranges 设计的核心红利：无需预知长度即可遍历流、NUL 串、计数区间等。
+<span class="badge badge-exp">经验</span> 哨兵把"结束条件"从"另一个迭代器"解耦为"任意可比较类型"，是 ranges 设计的核心红利：无需预知长度即可遍历流、NUL 串、计数区间等。
 
-[标准] 哨兵来自 Ranges（P0896R4，C++20）；`sentinel_for`/`input_iterator` 为 `std::ranges` 算法的基础（见 ⑭ 提案表）。
+<span class="badge badge-std">标准</span> 哨兵来自 Ranges（P0896R4，C++20）；`sentinel_for`/`input_iterator` 为 `std::ranges` 算法的基础（见 ⑭ 提案表）。
 
-[引用] cppreference "iterator/sentinel_for"、"iterator/default_sentinel_t" 词条；ISO/IEC 14882:2023 §[iterators.sentinel]。
+<span class="badge badge-ref">引用</span> cppreference "iterator/sentinel_for"、"iterator/default_sentinel_t" 词条；ISO/IEC 14882:2023 §[iterators.sentinel]。
 
 </details>
 
@@ -1278,7 +1278,7 @@ int main() {
 
 用 `std::input_iterator`（只读来源）与 `std::output_iterator`（可写目标）约束，使算法对任意满足能力的迭代器都成立；再示范 `std::contiguous_iterator` 分支说明连续内存可批量/SIMD 优化（此处以 `if constexpr` 标注分支，运行时逻辑二者一致，证明概念可静态区分）：
 
-> **示例 46** [难度 ★★★★☆] [主题：练习 3（难度 ★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1316,11 +1316,11 @@ int main() {
 
 [实现·GCC15] `std::input_iterator`/`std::output_iterator`/`std::contiguous_iterator` 均为 C++20 概念；`if constexpr` 使连续/非连续分支在编译期确定，无运行期开销。`std::list` 不满足 `contiguous_iterator`，自动走通用循环。
 
-[经验] 新代码用概念替代 `enable_if` SFINAE（见 ⑱ 最佳实践 6）：约束即文档，违反时诊断更清晰；且"最小接口、最大优化"的设计（见 ⑰ FAQ）需要范畴分层才能既正确又高效。
+<span class="badge badge-exp">经验</span> 新代码用概念替代 `enable_if` SFINAE（见 ⑱ 最佳实践 6）：约束即文档，违反时诊断更清晰；且"最小接口、最大优化"的设计（见 ⑰ FAQ）需要范畴分层才能既正确又高效。
 
-[标准] 迭代器范畴层次 `input < forward < bidirectional < random_access < contiguous`（C++20），算法据所需最弱范畴取舍（见 ① 学习目标 / ⑲ 性能表）。
+<span class="badge badge-std">标准</span> 迭代器范畴层次 `input < forward < bidirectional < random_access < contiguous`（C++20），算法据所需最弱范畴取舍（见 ① 学习目标 / ⑲ 性能表）。
 
-[引用] cppreference "iterator/input_iterator"、"iterator/output_iterator"、"iterator/contiguous_iterator" 词条；ISO/IEC 14882:2023 §[iterators] / §[concepts.iterator]。
+<span class="badge badge-ref">引用</span> cppreference "iterator/input_iterator"、"iterator/output_iterator"、"iterator/contiguous_iterator" 词条；ISO/IEC 14882:2023 §[iterators] / §[concepts.iterator]。
 
 </details>
 
@@ -1665,7 +1665,7 @@ flowchart TD
 
 ### D4.6 第一方可编译验证（traits 提取 + 标签分发）
 
-> **示例 47** [难度 ★★★☆☆] [主题：第一方可编译验证]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 第一方可编译验证
 ```cpp
 #include <iostream>
 #include <iterator>
@@ -1828,7 +1828,7 @@ int main() {
 
 ### D5.3 可复现演示
 
-> **示例 48** [难度 ★★★☆☆] [主题：可复现演示]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <vector>

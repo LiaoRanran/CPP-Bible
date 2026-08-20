@@ -1,7 +1,7 @@
-# 第79章　list / forward_list [标准]
+# 第79章　list / forward_list <span class="badge badge-std">标准</span>
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md) ／ 后续：[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md) ／ 难度：★★★☆☆
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md) ／ 后续：[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md) ／ 难度：★★★☆☆
 
 > 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指缓存与内存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
@@ -11,27 +11,27 @@
 > 链表不是最早的容器，却是 STL 里唯一敢拍胸脯保证"迭代器永不失稳"的那一个。
 
 ### 0.1 起源（谁·何时·为何）
-链表是计算机科学最古老的数据结构之一，但 STL 的 `list`（双向）与 `forward_list`（单向，C++11）把它纳入了"迭代器 + 值语义"的统一框架。[史] 它解决的是 `vector` 的软肋：当你频繁在序列中间插入、删除，又希望**其他元素的引用和迭代器纹丝不动**时，只有节点分散的链表能做到。STL 还给了它一个独门绝技——`splice`，能在 O(1) 内把一段节点从一个链表"搬"到另一个，不拷贝、不分配。[史]
+链表是计算机科学最古老的数据结构之一，但 STL 的 `list`（双向）与 `forward_list`（单向，C++11）把它纳入了"迭代器 + 值语义"的统一框架。<span class="badge badge-history">史</span> 它解决的是 `vector` 的软肋：当你频繁在序列中间插入、删除，又希望**其他元素的引用和迭代器纹丝不动**时，只有节点分散的链表能做到。STL 还给了它一个独门绝技——`splice`，能在 O(1) 内把一段节点从一个链表"搬"到另一个，不拷贝、不分配。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- C++98：`std::list` 标准化，确立节点稳定与 `splice` 语义。[史]
-- C++11：新增 `std::forward_list`，砍掉反向指针以省内存，并刻意不提供 `size()` 的 O(1) 版本（避免为"常数时间 size"付出每个节点的开销），体现"不为不用付费"的哲学。[史]
+- C++98：`std::list` 标准化，确立节点稳定与 `splice` 语义。<span class="badge badge-history">史</span>
+- C++11：新增 `std::forward_list`，砍掉反向指针以省内存，并刻意不提供 `size()` 的 O(1) 版本（避免为"常数时间 size"付出每个节点的开销），体现"不为不用付费"的哲学。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-链表 vs 向量，是 STL 教学里绕不开的战场。[评] 直觉上"中间插入多就该用 list"，但现代硬件让这个故事反转：`list` 节点分散、缓存命中率极低，遍历常常比连续存储的 `vector` 慢一个数量级。[史][评] 因此社区共识是：除非你真的需要"迭代器稳定性"或 O(1) 的 `splice`，否则优先 `vector`。这场"缓存 vs 理论复杂度"的争论，是理解现代 C++ 性能观的活教材。
+链表 vs 向量，是 STL 教学里绕不开的战场。<span class="badge badge-comment">评</span> 直觉上"中间插入多就该用 list"，但现代硬件让这个故事反转：`list` 节点分散、缓存命中率极低，遍历常常比连续存储的 `vector` 慢一个数量级。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 因此社区共识是：除非你真的需要"迭代器稳定性"或 O(1) 的 `splice`，否则优先 `vector`。这场"缓存 vs 理论复杂度"的争论，是理解现代 C++ 性能观的活教材。
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++11 引入 `forward_list` 并刻意不给 O(1) 的 `size()`。链表的"节点稳定"与"无 size"争议是后续主线。
 
-- [史] **`forward_list` 没有 O(1) `size()` 是有意为之**：要常数时间 `size()` 就得给每个节点多存一个计数或维护全局长度，违背"单向、省内存"的设计。`size()` 只能 O(n) 遍历——这是"不为不用的能力付费"哲学的硬体现。
-- [史] **C++20 起链表也补了集合拼接的现代接口**：`list`/`forward_list` 获得 `insert_range`、与 Ranges 协作的 `splice` 重载，拼接仍是 O(1) 节点搬移、不拷贝不分配。
-- [评] **缓存反杀链表的案例被反复引用**：现代硬件下 `list` 节点分散、缓存命中极低，实测遍历常比连续 `vector` 慢一个数量级；社区共识是除非真需要迭代器稳定性或 O(1) `splice`，否则优先 `vector`。
-- [轶] **一个常见误用**：有人用 `list` 做队列以求头删快，却忘了 `deque` 头尾都是 O(1) 且缓存更好——`list` 当队列几乎总是选错容器。
+- <span class="badge badge-history">史</span> **`forward_list` 没有 O(1) `size()` 是有意为之**：要常数时间 `size()` 就得给每个节点多存一个计数或维护全局长度，违背"单向、省内存"的设计。`size()` 只能 O(n) 遍历——这是"不为不用的能力付费"哲学的硬体现。
+- <span class="badge badge-history">史</span> **C++20 起链表也补了集合拼接的现代接口**：`list`/`forward_list` 获得 `insert_range`、与 Ranges 协作的 `splice` 重载，拼接仍是 O(1) 节点搬移、不拷贝不分配。
+- <span class="badge badge-comment">评</span> **缓存反杀链表的案例被反复引用**：现代硬件下 `list` 节点分散、缓存命中极低，实测遍历常比连续 `vector` 慢一个数量级；社区共识是除非真需要迭代器稳定性或 O(1) `splice`，否则优先 `vector`。
+- <span class="badge badge-anecdote">轶</span> **一个常见误用**：有人用 `list` 做队列以求头删快，却忘了 `deque` 头尾都是 O(1) 且缓存更好——`list` 当队列几乎总是选错容器。
 
 > 史料来源：[cppreference std::forward_list](https://en.cppreference.com/w/cpp/container/forward_list)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 `std::list`（双向链表）与 `std::forward_list`（单向链表）是 STL 中**唯一保证迭代器稳定性**的序列容器：
 
@@ -42,7 +42,7 @@
 - `forward_list` 的"反直觉"设计：没有 `size()`（O(n) 才知长度）、没有 `push_back`/`back`，只有 `before_begin()` + `insert_after` / `erase_after`。
 - 缓存不友好导致的遍历慢，以及侵入式链表（`Linux list_head`）思想。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 动机：任意位置 O(1) 插入且不搬移其他元素（完整可编译）
 #include <iostream>
@@ -59,11 +59,11 @@ int main() {
 
 ---
 
-## ② 前置知识 [标准]
+## ② 前置知识 <span class="badge badge-std">标准</span>
 
 | 主题 | 为什么必须 | 链接 |
 |---|---|---|
-| deque 的分段连续与迭代器失效 | list 走另一极端：完全不连续但迭代器稳定 | [第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md) |
+| deque 的分段连续与迭代器失效 | list 走另一极端：完全不连续但迭代器稳定 | [第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md) |
 | 迭代器分类（双向/前向） | list 是双向迭代器，forward_list 是前向迭代器 | [第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md) |
 | 移动语义 | splice 在链表间搬节点、不拷贝 | [第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md) |
 | 算法失效规则 | 理解"为何 list 不能用 std::sort" | [第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md) |
@@ -72,7 +72,7 @@ int main() {
 
 ---
 
-## ③ 后续依赖 [标准]
+## ③ 后续依赖 <span class="badge badge-std">标准</span>
 
 - **容器适配器**：`std::list` 可作为 `stack`/`queue` 底层（但不如 deque 常用，[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）。
 - **算法**：`list` 的 `sort`/`merge`/`unique`/`reverse` 是成员，通用算法版本对链表低效（[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)）。
@@ -80,9 +80,9 @@ int main() {
 
 ---
 
-## ④ 知识图谱（ASCII） [标准]
+## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） [标准]]
+> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
 ```
             std::list<T>                 std::forward_list<T>
    ┌───────────────────────┐      ┌────────────────────────┐
@@ -100,7 +100,7 @@ int main() {
 
 ---
 
-## ⑤ Mermaid：splice 整段搬移（不拷贝元素） [标准]
+## ⑤ Mermaid：splice 整段搬移（不拷贝元素） <span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart LR
@@ -153,7 +153,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：节点布局与环形哨兵 [实现·GCC15]
 
-> **示例 3** [难度 ★★☆☆☆] [主题：内存图：节点布局与环形哨兵 [实现·]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：节点布局与环形哨兵 [实现·
 ```
 std::list<int> 对象
 ┌──────────────────┐
@@ -177,9 +177,9 @@ std::list<int> 对象
 
 ---
 
-## ⑧ 生命周期图：erase 仅孤立一个节点 [标准]
+## ⑧ 生命周期图：erase 仅孤立一个节点 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：生命周期图：erase 仅孤立一个节]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：erase 仅孤立一个节
 ```
   list: [1]─[2]─[3]─[4]
   调用 erase(it指向[2]):
@@ -189,13 +189,13 @@ std::list<int> 对象
     it(指向[2]) 失效；it2(指向[1]/[3]/[4]) 仍有效！
 ```
 
-`[标准]`：`list`/`forward_list` 的 `erase` 只使被删元素的迭代器/引用/指针失效，其余全部稳定。这是与 vector/deque 的根本区别（[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)）。
+`[标准]`：`list`/`forward_list` 的 `erase` 只使被删元素的迭代器/引用/指针失效，其余全部稳定。这是与 vector/deque 的根本区别（[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)）。
 
 ---
 
-## ⑨ 调用栈/时序图：merge 的归并（两有序链表） [标准]
+## ⑨ 调用栈/时序图：merge 的归并（两有序链表） <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：调用栈/时序图：merge 的归并]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈/时序图：merge 的归并
 ```
  listA: 1─3─5─7     listB: 2─4─6
    merge(B)（要求 A、B 已排序）:
@@ -208,7 +208,7 @@ std::list<int> 对象
    结果: 1─2─3─4─5─6─7   (节点指针重接, 零拷贝)
 ```
 
-> **示例 6** [难度 ★★★☆☆] [主题：调用栈/时序图：merge 的归并]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈/时序图：merge 的归并
 ```cpp
 // ⑨ 两个有序 list 归并（完整可编译）
 #include <iostream>
@@ -243,14 +243,14 @@ list 遍历每次迭代都要**通过指针加载下一个节点地址**（一�
 
 ---
 
-## ⑪ STL 联系：与算法、适配器 [标准]
+## ⑪ STL 联系：与算法、适配器 <span class="badge badge-std">标准</span>
 
 - **不能用 `std::sort`**：`std::sort` 需要随机访问迭代器；list/forward_list 没有，必须用成员 `sort()`（`list`）或手动（forward_list 无 sort 成员，需自写或转存）。
 - **`std::remove` 对 list 低效**：通用 `remove` 要交换元素，而 list 有专门的成员 `remove()`（O(1) 拆节点，行号：`1788`）。
 - `list` 可作 `std::queue`/`std::stack` 底层（指定第二模板参数），但默认仍是 deque。
 - `forward_list` 与 `<algorithm>` 的前向迭代器算法（如 `std::find`、`std::for_each`）兼容。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：联系：与算法、适配器 [标准]]
+> **示例 7** [难度 ★☆☆☆☆] [主题：联系：与算法、适配器 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪ list 用成员 sort（不能用 std::sort，完整可编译）
 #include <iostream>
@@ -267,11 +267,11 @@ int main() {
 
 ---
 
-## ⑫ 工业案例：游戏/编辑器的"有序实体链表 + 高频增删" [经验]
+## ⑫ 工业案例：游戏/编辑器的"有序实体链表 + 高频增删" <span class="badge badge-exp">经验</span>
 
 实体（粒子、UI 节点、待渲染对象）常需：频繁在中间插入/删除、迭代器长期持有引用、偶尔整体排序。list 的"迭代器稳定 + O(1) 增删"正合适（注意缓存）。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：工业案例：游戏/编辑器的"有序实体链]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：游戏/编辑器的"有序实体链
 ```cpp
 // ⑫ 工业：持有迭代器的稳定引用，删除其他元素不影响（完整可编译骨架）
 #include <iostream>
@@ -331,7 +331,7 @@ struct _List_node_base {
 
 ---
 
-## ⑭ WG21 提案与标准背景 [标准]
+## ⑭ WG21 提案与标准背景 <span class="badge badge-std">标准</span>
 
 | 提案/条款 | 内容 | 与本草关系 |
 |---|---|---|
@@ -344,7 +344,7 @@ struct _List_node_base {
 
 ---
 
-## ⑮ 面试题 [标准]
+## ⑮ 面试题 <span class="badge badge-std">标准</span>
 
 1. **list 的迭代器为什么稳定？** → 节点在堆上独立分配，增删只改指针、不搬移节点，故其他迭代器指向的节点地址不变。
 2. **为什么 list 不能用 `std::sort`？** → `std::sort` 需随机访问迭代器；list 只有双向迭代器，必须用成员 `list::sort`（归并）。
@@ -354,7 +354,7 @@ struct _List_node_base {
 6. **list 与 vector 遍历谁快？** → vector/deque 快得多（连续预取）；list 缓存不友好。
 7. **哪个容器 erase 后只有被删迭代器失效？** → list / forward_list（其余稳定）。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 [标准]]
+> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑮ 面试题佐证：forward_list 没有 size()，用 distance 求长度（完整可编译）
 #include <iostream>
@@ -370,7 +370,7 @@ int main() {
 
 ---
 
-## ⑯ 易错点 [经验]
+## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 
 - **对 list 用 `std::sort`** → 编译失败（无随机访问）。改用 `l.sort()`。
 - **用 `std::remove` 而非 `list::remove`** → 前者做元素交换、对链表低效且语义不同；用成员 `remove`/`remove_if`。
@@ -378,7 +378,7 @@ int main() {
 - **erase 后继续用旧迭代器** → 只有被删的那个失效，但初学常误以为"全部失效"而过度重建。
 - **大链表高频遍历追求性能** → list 缓存差，考虑 deque/vector 或 SoA 布局。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：易错点 [经验]]
+> **示例 10** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 易错：forward_list 用 before_begin 才能插到首元素前（完整可编译）
 #include <iostream>
@@ -394,7 +394,7 @@ int main() {
 
 ---
 
-## ⑰ FAQ [标准]
+## ⑰ FAQ <span class="badge badge-std">标准</span>
 
 **Q：list 的 `sort` 是什么算法？** A：归并排序（底层 `_M_sort` 递归分割+合并），O(n log n)，稳定。
 
@@ -404,7 +404,7 @@ int main() {
 
 **Q：list 能 `reserve` 吗？** A：不能，链表无连续容量概念（同 deque）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：[标准]]
+> **示例 11** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
 ```cpp
 // ⑰ FAQ 佐证：splice 零拷贝搬移整段（完整可编译）
 #include <iostream>
@@ -422,7 +422,7 @@ int main() {
 
 ---
 
-## ⑱ 最佳实践 [经验]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
 1. 需要**任意位置 O(1) 增删 + 迭代器长期稳定** → `list`（或 `forward_list` 若只需单向）。
 2. 链表间搬移大量数据 → `splice`（O(1)，零拷贝），比"拷进 vector 再拷回"高效得多。
@@ -430,7 +430,7 @@ int main() {
 4. 需要排序的链表 → 用成员 `list::sort`；`forward_list` 无成员 sort，需手动归并或先转 `vector`。
 5. **遍历是热点** → 优先考虑 `vector`/`deque`；list 仅在"增删多+引用稳定+遍历少"时胜出。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 最佳实践：list 的 unique / reverse / remove_if（完整可编译）
 #include <iostream>
@@ -452,7 +452,7 @@ int main() {
 
 ---
 
-## ⑲ 性能分析（复杂度 / 缓存 / ABI） [经验]
+## ⑲ 性能分析（复杂度 / 缓存 / ABI） <span class="badge badge-exp">经验</span>
 
 | 操作 | list | forward_list | vector |
 |---|---|---|---|
@@ -465,7 +465,7 @@ int main() {
 | 每节点内存 | 2 指针 + T | 1 指针 + T | T（连续） |
 | 缓存友好 | **差** | **差** | 好 |
 
-> **示例 13** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲ microbenchmark：list vs vector 遍历速度（量级示意，完整可编译）
 #include <iostream>
@@ -494,21 +494,21 @@ int main() {
 
 ---
 
-## ⑳ 跨语言对比：链表实现 [标准]
+## ⑳ 跨语言对比：链表实现 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：list 任意位置插入 O(1) 且其他迭代器不失效。** 你在中部插入后旧迭代器仍可用。请说明稳定性。
-   - [标准] list（双向链表）的插入/删除只使被操作的迭代器失效，其余迭代器与引用均有效。
-   - [引用] ISO/IEC 14882:2023 §[list]（list 迭代器稳定性）；cppreference "std::list" 词条。
+   - <span class="badge badge-std">标准</span> list（双向链表）的插入/删除只使被操作的迭代器失效，其余迭代器与引用均有效。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list]（list 迭代器稳定性）；cppreference "std::list" 词条。
 
 2. **真实场景：用 `splice` 在 O(1) 内转移节点不拷贝。** 你把一个 list 的节点移到另一个。请说明语义。
-   - [标准] `list::splice` 将节点在链表间转移，常数时间且不调用任何构造/拷贝，源与目标迭代器稳定。
-   - [引用] ISO/IEC 14882:2023 §[list.ops]（splice 操作）；cppreference "std::list::splice" 词条。
+   - <span class="badge badge-std">标准</span> `list::splice` 将节点在链表间转移，常数时间且不调用任何构造/拷贝，源与目标迭代器稳定。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list.ops]（splice 操作）；cppreference "std::list::splice" 词条。
 
 3. **真实场景：list 不支持随机访问（无 `operator[]`）。** 你误用下标编译失败。请说明迭代器类别。
-   - [标准] list 提供双向迭代器，只能逐次前进；下标访问不可用，要取第 n 个须 `std::advance`。
-   - [引用] ISO/IEC 14882:2023 §[list]（双向迭代器，无随机访问）；cppreference "std::list" 词条。
+   - <span class="badge badge-std">标准</span> list 提供双向迭代器，只能逐次前进；下标访问不可用，要取第 n 个须 `std::advance`。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list]（双向迭代器，无随机访问）；cppreference "std::list" 词条。
 
 | 语言/库 | 类型 | 结构 | 迭代器稳定 | 备注 |
 |---|---|---|---|---|
@@ -531,7 +531,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：list / forward_list 与节点式容器
 
-[史] `std::list` 随 C++98 进入标准，是经典的双向链表（侵入式环形哨兵节点），C++11 新增单向链表 `std::forward_list` 以削减每个节点的前驱指针开销。[史] 两者都来自 HP/SGI STL，定位是「任意位置 O(1) 增删且迭代器稳定」，代价是失去连续存储与 O(1) 随机访问。[轶] 一个常被忽视的事实：`list::size()` 在 C++98/03 的旧实现里是 O(n)（因为维护 size 会拖慢 `splice`），C++11 起标准强制要求 O(1)。[评] `list` 的价值不在性能，而在「节点级移动（splice）零拷贝」与「迭代器/引用永不失效」这一稳定性保证。
+<span class="badge badge-history">史</span> `std::list` 随 C++98 进入标准，是经典的双向链表（侵入式环形哨兵节点），C++11 新增单向链表 `std::forward_list` 以削减每个节点的前驱指针开销。<span class="badge badge-history">史</span> 两者都来自 HP/SGI STL，定位是「任意位置 O(1) 增删且迭代器稳定」，代价是失去连续存储与 O(1) 随机访问。<span class="badge badge-anecdote">轶</span> 一个常被忽视的事实：`list::size()` 在 C++98/03 的旧实现里是 O(n)（因为维护 size 会拖慢 `splice`），C++11 起标准强制要求 O(1)。<span class="badge badge-comment">评</span> `list` 的价值不在性能，而在「节点级移动（splice）零拷贝」与「迭代器/引用永不失效」这一稳定性保证。
 
 ### ㉒.2 真实工程坐标：list 活在哪些产品里
 
@@ -542,11 +542,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：list 的常见误用与陷阱
 
-[评] 最大误区是「在性能热点里用 `list` 替代 `vector`」——由于每个节点独立堆分配、指针追逐导致缓存命中率极低，`list` 的遍历与随机访问通常比 `vector` 慢一个数量级（实践中常见 5–10×）。另一坑是误以为 `splice` 是廉价拷贝，其实它是 O(1) 节点重链，但若跨容器 splice 涉及自定义分配器会出问题。还有 `list::sort` 与 `std::sort` 的区别：前者是成员函数（无法用随机访问迭代器）。
+<span class="badge badge-comment">评</span> 最大误区是「在性能热点里用 `list` 替代 `vector`」——由于每个节点独立堆分配、指针追逐导致缓存命中率极低，`list` 的遍历与随机访问通常比 `vector` 慢一个数量级（实践中常见 5–10×）。另一坑是误以为 `splice` 是廉价拷贝，其实它是 O(1) 节点重链，但若跨容器 splice 涉及自定义分配器会出问题。还有 `list::sort` 与 `std::sort` 的区别：前者是成员函数（无法用随机访问迭代器）。
 
 ### ㉒.4 与标准的互动：list 与标准的取舍
 
-[史] `list` 自 C++98 稳定，C++11 增补 `forward_list` 与移动语义；C++20 起 `list` / `forward_list` 部分操作进入 `constexpr`。[评] 近年标准方向明显转向「连续优先」：`std::vector` 配合 `erase` / `remove`、以及 C++23 的 `flat_map` 都在挤压 `list` 的生存空间。WG21 多次讨论是否弃用 `std::list` 的部分用法，目前仍保留，但共识是「非必要不用 list，除非你真的需要 splice 零拷贝或迭代器稳定性」。
+<span class="badge badge-history">史</span> `list` 自 C++98 稳定，C++11 增补 `forward_list` 与移动语义；C++20 起 `list` / `forward_list` 部分操作进入 `constexpr`。<span class="badge badge-comment">评</span> 近年标准方向明显转向「连续优先」：`std::vector` 配合 `erase` / `remove`、以及 C++23 的 `flat_map` 都在挤压 `list` 的生存空间。WG21 多次讨论是否弃用 `std::list` 的部分用法，目前仍保留，但共识是「非必要不用 list，除非你真的需要 splice 零拷贝或迭代器稳定性」。
 
 - **WG21 修订链**：`std::list` 自 N0788（Stepanov 早期 STL 草案）随 C++98 进入标准；C++11 新增 `forward_list`（P0391 等，单链表省一指针）并为其补移动语义；C++20 起 `list`/`forward_list` 的若干操作进入 `constexpr`。值得注意的是，list 的 `splice` 成员（O(1) 节点重链）在标准演进中一直被保留，因为它提供「零拷贝移动子树」的能力，是其他容器无法等价替代的。
 - **ISO 条款**：`std::list` 规定于 ISO/IEC 14882 §24.3.10（`[list]`），`std::forward_list` 于 §24.3.9（`[forwardlist]`）。标准的设计理由是「以缓存不友好为代价，换取迭代器/引用在任何位置插入删除下的稳定性」——委员会刻意把这一权衡写进复杂度条款，让用户为「节点稳定」显式选择 `list` 而非 `vector`。
@@ -558,11 +558,11 @@ int main() {
 - [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 list/forward_list 标准化历史的一手来源
 - [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 list 工业实现参考
 
-## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） [标准]
+## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） <span class="badge badge-std">标准</span>
 
 下面 L1–L35 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L1 基本构造 + 遍历（list）
 #include <iostream>
@@ -575,7 +575,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L2 push_back / push_front
 #include <iostream>
@@ -590,7 +590,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L3 insert 在指定位置
 #include <iostream>
@@ -605,7 +605,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L4 erase 单个元素（其余迭代器稳定）
 #include <iostream>
@@ -620,7 +620,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L5 splice 整段搬移（O(1) 零拷贝）
 #include <iostream>
@@ -634,7 +634,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L6 splice 单个元素
 #include <iostream>
@@ -649,7 +649,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L7 merge 两个有序链表
 #include <iostream>
@@ -663,7 +663,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L8 sort（成员）
 #include <iostream>
@@ -677,7 +677,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L9 reverse
 #include <iostream>
@@ -691,7 +691,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L10 unique（去相邻重复）
 #include <iostream>
@@ -705,7 +705,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L11 remove / remove_if（成员）
 #include <iostream>
@@ -719,7 +719,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L12 front / back / pop
 #include <iostream>
@@ -733,7 +733,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L13 迭代器稳定性：删除中间元素不影响两端引用
 #include <iostream>
@@ -748,7 +748,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L14 双向迭代 rbegin/rend
 #include <iostream>
@@ -761,7 +761,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L15 emplace_back / emplace_front（就地构造）
 #include <iostream>
@@ -776,7 +776,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L16 用 std::next / std::prev 移动迭代器
 #include <iostream>
@@ -789,7 +789,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L17 list 作 LRU 缓存骨架（去尾插头）
 #include <iostream>
@@ -805,7 +805,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L18 与 vector 对比：list 不能随机访问
 #include <iostream>
@@ -822,7 +822,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L19 forward_list 基本 + 单向遍历
 #include <iostream>
@@ -835,7 +835,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L20 forward_list before_begin + insert_after（头插）
 #include <iostream>
@@ -849,7 +849,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L21 forward_list erase_after
 #include <iostream>
@@ -863,7 +863,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L22 forward_list 没有 size()/push_back/back（完整可编译验证）
 #include <iostream>
@@ -878,7 +878,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L23 forward_list 反转（反向拼接）
 #include <iostream>
@@ -892,7 +892,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L24 用 distance 求 forward_list 长度
 #include <iostream>
@@ -905,7 +905,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L25 forward_list 插入到指定值之后
 #include <iostream>
@@ -920,7 +920,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L26 list 与 forward_list 互转（借助迭代器）
 #include <iostream>
@@ -935,7 +935,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L27 list 存自定义类型
 #include <iostream>
@@ -950,7 +950,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L28 list::remove 按值删除全部匹配
 #include <iostream>
@@ -964,7 +964,7 @@ int main() {
 }
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L29 用 std::find 在 list 查找
 #include <iostream>
@@ -978,7 +978,7 @@ int main() {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L30 list 判等 / 比较
 #include <iostream>
@@ -991,7 +991,7 @@ int main() {
 }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L31 list 的 max_size / empty / clear
 #include <iostream>
@@ -1006,7 +1006,7 @@ int main() {
 }
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L32 splice 区间搬移（first,last）
 #include <iostream>
@@ -1022,7 +1022,7 @@ int main() {
 }
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L33 用 list 实现"稳定引用"的事件监听器列表（骨架）
 #include <iostream>
@@ -1039,7 +1039,7 @@ int main() {
 }
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L34 forward_list 构建并遍历求和
 #include <iostream>
@@ -1053,7 +1053,7 @@ int main() {
 }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // L35 list vs forward_list 内存示意：前者每节点多一指针
 #include <iostream>
@@ -1085,7 +1085,7 @@ int main() {
 **源码阅读路线（libstdc++）**
 - `文件：bits/stl_list.h` 行号：`81`（`_List_node_base`：`_M_next`/`_M_prev`/`_M_hook`/`_M_unhook`）、`97`/`100`（`_M_hook`/`_M_unhook`）、`234`（`_List_node` 继承加 value）、`632`（`class list`）、`1612`（splice 整段）、`1788`（remove）、`1848`（merge）。
 - `文件：bits/forward_list.h` 行号：`54`（`_Fwd_list_node_base`）、`431`（`class forward_list`）、`386`（`_M_insert_after`）、`713`（`before_begin`）、`859`（insert_after 系列）。注意：该文件**无 `size()` 成员声明**。
-- 对比阅读：`文件：bits/stl_deque.h`（分段连续）、`文件：bits/stl_vector.h`（连续），见 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)。
+- 对比阅读：`文件：bits/stl_deque.h`（分段连续）、`文件：bits/stl_vector.h`（连续），见 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)。
 
 > 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 ch76(STL 架构)、ch77(vector)、ch78(deque)、ch86(适配器)、ch90(ranges)、ch95(算法概述) 建立正文交叉引用。
 
@@ -1154,7 +1154,7 @@ struct __list_node {
 
 ## 底层视角：节点布局、指针追逐与缓存失效率 [E: Low-level]
 
-[标准] 每个 `std::list` 节点含 `prev` / `next` 两个指针（各 `0x0008`，共 `0x0010`）加 payload；节点由堆分配器另行占用约 `0x0010`（16 字节）簿记，单节点实际占用远超 payload。
+<span class="badge badge-std">标准</span> 每个 `std::list` 节点含 `prev` / `next` 两个指针（各 `0x0008`，共 `0x0010`）加 payload；节点由堆分配器另行占用约 `0x0010`（16 字节）簿记，单节点实际占用远超 payload。
 
 遍历是**指针追逐**：下一节点地址存于当前节点内，CPU 无法预取，每条 `next` 解引用是一次依赖 load。若节点散布于堆，命中 L1（≈1 ns `[微架构·x86-64][UNVERIFIED]`）概率低，常落到 L3（≈12 ns `[微架构·x86-64][UNVERIFIED]`）甚至主存（≈100 ns `[微架构·x86-64][UNVERIFIED]`）；这是 list 远慢于 `vector` 连续访问的硬件根因。
 
@@ -1166,7 +1166,7 @@ struct __list_node {
 
 - **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 节点迭代器满足双向/前向迭代器概念
 - **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— 与 vector 的缓存局部性对比
-- **同模块相邻**：[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)—— 与 deque 的中段插入成本对比
+- **同模块相邻**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)—— 与 deque 的中段插入成本对比
 - **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— 与有序关联容器的接口共性
 - **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 节点经 allocator 分配
 
@@ -1177,7 +1177,7 @@ struct __list_node {
 ### 练习 1（难度 ★★）
 **真实场景：LRU 缓存命中提升——把最近访问的节点 O(1) 搬到表头。** 一个 LRU 用 `list` 维护使用顺序，命中时 `splice` 把节点搬到表头，仅改指针不拷贝值（对比 `vector` 须 O(n) 搬移）。请用 `list::splice` 把第 k 个节点前移到表头。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <list>
@@ -1193,14 +1193,14 @@ int main() {
 }
 ```
 
-[标准] 结论：`std::list` 没有 `operator[]`，取第 k 个必须 `std::advance`（O(k)）；但其节点是独立堆对象，`splice` 可在 O(1) 内把节点在链表间/链内搬迁，迭代器与引用保持有效，这是它相对 `vector` 的核心优势。
+<span class="badge badge-std">标准</span> 结论：`std::list` 没有 `operator[]`，取第 k 个必须 `std::advance`（O(k)）；但其节点是独立堆对象，`splice` 可在 O(1) 内把节点在链表间/链内搬迁，迭代器与引用保持有效，这是它相对 `vector` 的核心优势。
 
-[引用] ISO/IEC 14882:2023 §[list.ops]（`splice` 的 O(1) 节点搬迁语义与迭代器保持有效）；见 cppreference "container/list" 词条；LRU 缓存是 `list` + `map` 的经典用例（本章附录演绎 1）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list.ops]（`splice` 的 O(1) 节点搬迁语义与迭代器保持有效）；见 cppreference "container/list" 词条；LRU 缓存是 `list` + `map` 的经典用例（本章附录演绎 1）。
 
 ### 练习 2（难度 ★★★）
 **真实场景：两个待办链表的区间合并。** 把源链表一个半开区间 `[first,last)` 整体搬到目标链尾（如把"已处理"区间从工作链摘走），验证 splice 区间版同样 O(1) 且源/目标迭代器均不失效。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <list>
@@ -1215,14 +1215,14 @@ int main() {
 }
 ```
 
-[标准] 结论：区间版 `splice(pos, src, first, last)` 把 `[first,last)` 内的节点从 `src` 摘除并接到 `pos` 之前，复杂度 O(1)；被搬移区间内的迭代器、引用、指针在搬移后仍然有效，只是归属到了新链表。
+<span class="badge badge-std">标准</span> 结论：区间版 `splice(pos, src, first, last)` 把 `[first,last)` 内的节点从 `src` 摘除并接到 `pos` 之前，复杂度 O(1)；被搬移区间内的迭代器、引用、指针在搬移后仍然有效，只是归属到了新链表。
 
-[引用] ISO/IEC 14882:2023 §[list.ops]（区间版 `splice` 的 O(1) 复杂度与迭代器有效性保证）；见 cppreference "container/list" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list.ops]（区间版 `splice` 的 O(1) 复杂度与迭代器有效性保证）；见 cppreference "container/list" 词条。
 
 ### 练习 3（难度 ★★★★）
 **真实场景：稳定分区——把奇数 ID 节点搬到另一条链保持原序。** 如把"异常订单"稳定迁到审查链而不破坏相对顺序。请用 `splice` 把原链表中奇数节点稳定搬到另一条链表，全程不拷贝节点值。
 
-> **示例 51** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <list>
@@ -1245,16 +1245,16 @@ int main() {
 }
 ```
 
-[标准] 结论：借助 `splice` 实现稳定分区（`stable_partition` 的链表特化）只需 O(n) 指针操作，且奇数节点的相对顺序被完整保留；若用 `vector` 则需额外缓冲或多次搬移，无法在原地 O(1) 维护节点所有权。
+<span class="badge badge-std">标准</span> 结论：借助 `splice` 实现稳定分区（`stable_partition` 的链表特化）只需 O(n) 指针操作，且奇数节点的相对顺序被完整保留；若用 `vector` 则需额外缓冲或多次搬移，无法在原地 O(1) 维护节点所有权。
 
-[引用] ISO/IEC 14882:2023 §[list.ops]；`std::stable_partition` 对前向迭代器（含 `list`）有链表特化路径，见 cppreference "container/list" 与 "stable_partition" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list.ops]；`std::stable_partition` 对前向迭代器（含 `list`）有链表特化路径，见 cppreference "container/list" 与 "stable_partition" 词条。
 
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 list + map 实现 O(1) 命中提升的 LRU 缓存
 `list` 维护使用顺序（前端=最近使用），`map` 存键到 `list` 迭代器；命中时 `splice` 把节点搬到前端，无需拷贝值。
 
-> **示例 52** [难度 ★★☆☆☆] [主题：演绎 1：用 list + map ]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：用 list + map
 ```cpp
 #include <iostream>
 #include <list>
@@ -1280,7 +1280,7 @@ int main() {
 ### 演绎 2：list 与 vector 删除中间元素时的迭代器失效差异
 `list` 的 `erase` 只使被删节点的迭代器失效，返回下一有效迭代器；`vector` 删除后所有后续迭代器失效（需重新取）。
 
-> **示例 53** [难度 ★★★☆☆] [主题：演绎 2：list 与 vector]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：list 与 vector
 ```cpp
 #include <iostream>
 #include <list>
@@ -1433,7 +1433,7 @@ list 节点不持有数据容器，而是将 `prev`/`next` 指针嵌入节点本
 
 ### D4.7 编译验证
 
-> **示例 54** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <list>
 #include <iostream>
@@ -1617,7 +1617,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 55** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <list>
 #include <vector>

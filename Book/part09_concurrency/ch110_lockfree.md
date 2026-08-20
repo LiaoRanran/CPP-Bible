@@ -11,28 +11,28 @@
 > 锁的麻烦不只是"慢"，而是"持锁的线程一旦被卡住，所有人陪绑"。
 
 ### 0.1 起源（谁·何时·为何）
-互斥量（mutex）让正确性容易保证，但代价是**阻塞**：持锁线程若被操作系统抢占、发生页错误、或遇到优先级反转，所有等待线程全被冻住；更糟的是死锁。在实时系统、高频交易、操作系统内核这类"某个线程卡住也不能让整体停摆"的场景里，这种脆弱不可接受。[史] 早在 1991 年，Maurice Herlihy 就用严格的层级（wait-free ⊃ lock-free ⊃ obstruction-free）定义了"无锁"究竟承诺了什么 progress guarantee，把模糊的"无锁"说法变成了可论证的术语。[史]
+互斥量（mutex）让正确性容易保证，但代价是**阻塞**：持锁线程若被操作系统抢占、发生页错误、或遇到优先级反转，所有等待线程全被冻住；更糟的是死锁。在实时系统、高频交易、操作系统内核这类"某个线程卡住也不能让整体停摆"的场景里，这种脆弱不可接受。<span class="badge badge-history">史</span> 早在 1991 年，Maurice Herlihy 就用严格的层级（wait-free ⊃ lock-free ⊃ obstruction-free）定义了"无锁"究竟承诺了什么 progress guarantee，把模糊的"无锁"说法变成了可论证的术语。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- 平台时代：靠 `InterlockedCompareExchange`（Win32）、`__sync_val_compare_and_swap`（GCC）等平台 CAS 拼无锁结构，无可移植性。[史]
-- **C++11（2011）**：`std::atomic` 与 `compare_exchange_*` 让 CAS 可移植，无锁数据结构第一次能用纯标准写法跨平台实现。[史]
-- C++20：引入 `std::atomic_ref`，给既有对象赋予原子 CAS 能力。[史]
+- 平台时代：靠 `InterlockedCompareExchange`（Win32）、`__sync_val_compare_and_swap`（GCC）等平台 CAS 拼无锁结构，无可移植性。<span class="badge badge-history">史</span>
+- **C++11（2011）**：`std::atomic` 与 `compare_exchange_*` 让 CAS 可移植，无锁数据结构第一次能用纯标准写法跨平台实现。<span class="badge badge-history">史</span>
+- C++20：引入 `std::atomic_ref`，给既有对象赋予原子 CAS 能力。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-核心之争是**要不要给"无锁"一个形式化定义**。C++ 采纳了 Herlihy 的层级：lock-free 只保证"系统内总有某线程在有限步内推进"，并不保证单个线程一定不被饿死；wait-free 才保证每个线程都有界步完成。委员会刻意用术语精确化，避免"无锁=快"的民间误解。[评] 另一条路是硬件事务内存（Intel TSX 等），曾被认为能"自动"解决无锁难题，后因实现复杂与 bug 在多代 CPU 上被削弱或移除，反而印证了标准原子路线的稳健。[史]
+核心之争是**要不要给"无锁"一个形式化定义**。C++ 采纳了 Herlihy 的层级：lock-free 只保证"系统内总有某线程在有限步内推进"，并不保证单个线程一定不被饿死；wait-free 才保证每个线程都有界步完成。委员会刻意用术语精确化，避免"无锁=快"的民间误解。<span class="badge badge-comment">评</span> 另一条路是硬件事务内存（Intel TSX 等），曾被认为能"自动"解决无锁难题，后因实现复杂与 bug 在多代 CPU 上被削弱或移除，反而印证了标准原子路线的稳健。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 无锁编程在有了标准 CAS 之后，真正的进展发生在"硬件辅助"与"工业落地"两条线上。
 
-- C++20 的 `std::atomic_ref` 让对存量类型（无需改成 `std::atomic<T>`）做无锁 CAS 成为可能，降低了改造门槛；同时 `wait/notify` 减少了忙等浪费。[史]
-- [史] Intel TSX（Transactional Synchronization Extensions）曾被视为"自动无锁"的银弹——用硬件事务包住临界区。但 2014 年起的多次 Skylake 微码 erratum 导致 TSX 被厂商禁用乃至在新代 CPU 中移除，无锁社区反而更坚信"显式原子"路线的长期可靠。
-- [评] 无等待（wait-free）算法虽理论最优，但工业界真正大规模落地的多是 lock-free 而非 wait-free：前者够挡住"系统停摆"，后者为个别线程的有界步数付出的工程复杂度常被证明不划算。
-- 无锁容器（队列、栈、SPSC 环形缓冲）在高频交易、游戏引擎、操作系统调度器中已是标配，但"无锁容器"进入标准库至今仍停留在提案阶段，委员会对 ABI 与语义分歧谨慎。[史]
-- [轶] 一个被反复验证的坑：把"无锁"当成"更快"的代名词去优化一段本不热的代码，往往只换来更难调试的并发 bug——Herlihy 的 progress guarantee 从没承诺延迟更低。
+- C++20 的 `std::atomic_ref` 让对存量类型（无需改成 `std::atomic<T>`）做无锁 CAS 成为可能，降低了改造门槛；同时 `wait/notify` 减少了忙等浪费。<span class="badge badge-history">史</span>
+- <span class="badge badge-history">史</span> Intel TSX（Transactional Synchronization Extensions）曾被视为"自动无锁"的银弹——用硬件事务包住临界区。但 2014 年起的多次 Skylake 微码 erratum 导致 TSX 被厂商禁用乃至在新代 CPU 中移除，无锁社区反而更坚信"显式原子"路线的长期可靠。
+- <span class="badge badge-comment">评</span> 无等待（wait-free）算法虽理论最优，但工业界真正大规模落地的多是 lock-free 而非 wait-free：前者够挡住"系统停摆"，后者为个别线程的有界步数付出的工程复杂度常被证明不划算。
+- 无锁容器（队列、栈、SPSC 环形缓冲）在高频交易、游戏引擎、操作系统调度器中已是标配，但"无锁容器"进入标准库至今仍停留在提案阶段，委员会对 ABI 与语义分歧谨慎。<span class="badge badge-history">史</span>
+- <span class="badge badge-anecdote">轶</span> 一个被反复验证的坑：把"无锁"当成"更快"的代名词去优化一段本不热的代码，往往只换来更难调试的并发 bug——Herlihy 的 progress guarantee 从没承诺延迟更低。
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1135r6.html
 
-## ① 概述：无锁编程动机 [标准]
+## ① 概述：无锁编程动机 <span class="badge badge-std">标准</span>
 
 [第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)
 
@@ -40,7 +40,7 @@
 
 无锁数据结构保证：即使某个线程被操作系统任意延迟、挂起甚至被杀，其他线程仍能在有限步骤内推进系统整体进度。它不是"更快"的代名词，而是一种**进度保证（progress guarantee）**。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：无锁编程动机 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：无锁编程动机 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 朴素互斥计数器：正确性易保证，但持锁线程被抢占会拖垮所有写者
 #include <atomic>
@@ -55,11 +55,11 @@ struct MutexCounter {
 - `[标准]`：无锁关注"系统是否前进"，而非"单操作延迟"。
 - `[经验]`：读多写少、临界区极短、且对尾延迟（tail latency）敏感的场景，才值得考虑无锁。
 
-## ② 阻塞 vs 无锁 vs 免等待的定义 [标准]
+## ② 阻塞 vs 无锁 vs 免等待的定义 <span class="badge badge-std">标准</span>
 
 三者是**递进的进度保证**，强度依次增强。关键区别在"最差情况下单个线程能否完成"以及"系统整体是否推进"。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：阻塞 vs 无锁 vs 免等待的定义]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 阻塞 vs 无锁 vs 免等待的定义
 ```cpp
 // ② 阻塞版：持锁期间若线程被抢占，所有竞争者阻塞
 #include <mutex>
@@ -72,7 +72,7 @@ void blocking_add(int x) {
 }
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：阻塞 vs 无锁 vs 免等待的定义]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 阻塞 vs 无锁 vs 免等待的定义
 ```cpp
 // ② 无锁版：用 CAS 循环，任何线程都不会让系统整体停摆
 #include <atomic>
@@ -87,7 +87,7 @@ void lockfree_add(int x) {
 }
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：阻塞 vs 无锁 vs 免等待的定义]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 阻塞 vs 无锁 vs 免等待的定义
 ```cpp
 // ② 免等待版：单次 RMW 必然返回，步数有上限
 #include <atomic>
@@ -106,11 +106,11 @@ void waitfree_add(int x) {
 - `[标准]`：C++ 标准不直接提供"lock-free 数据结构"，只通过 `<atomic>` 提供原子类型与操作原语，由你组合实现 lock-free。
 - `[平台·x86-64]`：x86-64 的 `lock` 前缀指令（如 `lock xadd`、`lock cmpxchg`）是 lock-free 的硬件基石。
 
-## ③ lock-free 的进度保证 [标准]
+## ③ lock-free 的进度保证 <span class="badge badge-std">标准</span>
 
 **lock-free**（无锁）的精确定义：系统的**总操作数**不断增长——即"只要系统整体在跑，就至少有一个操作能在有限步内完成"。注意它**不保证**某个具体线程能完成：一个线程可能反复 CAS 失败（被别人一直抢先），从而"饿死"，但系统没有死锁、没有全体停滞。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：的进度保证 [标准]]
+> **示例 5** [难度 ★★☆☆☆] [主题：的进度保证 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ 典型的 lock-free 模式：CAS 循环，old 自动被刷新为最新值
 #include <atomic>
@@ -129,11 +129,11 @@ void contribute(unsigned long long x) {
 - `[标准]`：lock-free 允许个别线程"活锁式"重试（见 ⑭），但**整体吞吐不为零**。
 - `[经验]`：lock-free 解决"可用性/死锁"问题，不解决"公平性"问题。
 
-## ④ wait-free（免等待） [标准]
+## ④ wait-free（免等待） <span class="badge badge-std">标准</span>
 
 **wait-free** 比 lock-free 更强：每个线程都能在**有限步数内**完成自己的操作，步数上界与竞争者数量无关。它既保证系统前进，也保证**单个线程不被饿死**。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁编程：lock-free / wait-free
 ```cpp
 // ④ wait-free 计数：单一 fetch_add，无循环、无重试
 #include <atomic>
@@ -144,7 +144,7 @@ void waitfree_count() {
 }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁编程：lock-free / wait-free
 ```cpp
 // ④ 注意：并非所有算法都能 wait-free。下面"交换两个原子"在无额外机制时
 //        只能 lock-free（需要 CAS 循环），不是 wait-free
@@ -161,11 +161,11 @@ bool swap_pair(int na, int nb) {
 - `[标准]`：wait-free 是最强保证，但很多真实数据结构（如无锁队列出队回收）难以做到严格 wait-free。
 - `[经验]`：实践里多数"无锁"库其实是 lock-free 而非 wait-free；宣称 wait-free 要提供步数上界证明。
 
-## ⑤ obstruction-free（无障碍 / 无阻碍） [标准]
+## ⑤ obstruction-free（无障碍 / 无阻碍） <span class="badge badge-std">标准</span>
 
 **obstruction-free** 是最弱的保证：在**假设没有其他线程并发运行**的"某一刻"之后，当前线程能在有限步内完成。一旦有竞争者持续访问同一位置，单线程可能永远推进不了——但它**不会死锁**。它是 lock-free 的弱化版。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁编程：lock-free / wait-free
 ```cpp
 // ⑤ obstruction-free：单写者视角下，若无人竞争即可一次成功
 #include <atomic>
@@ -179,7 +179,7 @@ bool try_claim() {
 }
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁编程：lock-free / wait-free
 ```cpp
 // ⑤ 退避后重试：obstruction-free 常见配套——短暂退避降低冲突概率
 #include <atomic>
@@ -198,11 +198,11 @@ void backoff_add(int x) {
 - `[标准]`：obstruction-free ⊆ lock-free ⊆ wait-free（保证强度反向包含）。
 - `[经验]`：obstruction-free 单独使用价值有限，常作为 lock-free 算法的"内核"在非竞争路径上快速成功。
 
-## ⑥ std::atomic::is_always_lock_free / is_lock_free [标准]
+## ⑥ std::atomic::is_always_lock_free / is_lock_free <span class="badge badge-std">标准</span>
 
 `std::atomic<T>::is_always_lock_free` 是**编译期**常量：若为真，该类型在所有平台上都是无锁的（绝不暗中加锁）。`is_lock_free()` 是**运行期**查询：返回当前平台上该具体原子是否无锁（某些类型如大结构体在部分平台会退化为加锁实现）。
 
-> **示例 10** [难度 ★★★☆☆] [主题：alwayslockfree / i]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · alwayslockfree / i
 ```cpp
 // ⑥ 编译期保证：int/指针通常 is_always_lock_free == true
 #include <atomic>
@@ -213,7 +213,7 @@ static_assert(std::atomic<void*>::is_always_lock_free,
               "指针应当总是无锁");
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：alwayslockfree / i]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · alwayslockfree / i
 ```cpp
 // ⑥ 运行期查询：大对象可能退化为加锁实现
 #include <atomic>
@@ -224,7 +224,7 @@ bool check_big() {
 }
 ```
 
-> **示例 12** [难度 ★★★★☆] [主题：alwayslockfree / i]
+> **示例 12** <span class="badge badge-exp">难度 ★★★★☆</span> · alwayslockfree / i
 ```cpp
 // ⑥ 用编译期/运行期双重检查守护关键路径
 #include <atomic>
@@ -237,11 +237,11 @@ static_assert(is_lock_free_v<unsigned long long>);
 - `[实现·GCC15] [VERIFIED]`：在 x86-64 上 `int/long long/指针/stdint` 原子均 `is_always_lock_free == true`；而 `std::atomic<__int128>`（128 位）在本工具链**不是** `is_always_lock_free`（见 ⑰）。
 - `[经验]`：写可移植无锁代码时，用 `static_assert(is_always_lock_free)` 在编译期否决不符合平台，而不是等到运行期才崩。
 
-## ⑦ CAS 循环标准模板 [标准]
+## ⑦ CAS 循环标准模板 <span class="badge badge-std">标准</span>
 
 `compare_exchange_weak/strong` 是无锁算法的核心。语义：**若当前值 == expected，则写入 desired 并返回 true；否则把 expected 刷新为当前实际值并返回 false**。循环时 `expected` 已被硬件更新，无需重新 load。
 
-> **示例 13** [难度 ★★★☆☆] [主题：循环标准模板 [标准]]
+> **示例 13** [难度 ★★★☆☆] [主题：循环标准模板 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 标准 CAS 循环骨架（weak 版，循环内用 weak 更高效）
 #include <atomic>
@@ -253,7 +253,7 @@ bool cas_loop(std::atomic<T>& a, T& expected, T desired) {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：循环标准模板 [标准]]
+> **示例 14** [难度 ★★☆☆☆] [主题：循环标准模板 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 完整模板：读-改-写（RMW）无锁更新
 #include <atomic>
@@ -274,11 +274,11 @@ void rmw(unsigned long long delta) {
 - `[标准]`：失败序必须不比成功序宽松（不能 success=seq_cst 而 failure=relaxed 越界——其实允许 failure 比 success 弱，但 failure 不能用 `release`/`acq_rel`）。
 - `[经验]`：CAS 循环里**永远用 `expected` 的更新值**重算 `desired`，不要重新 `load`，否则会丢失更新。
 
-## ⑧ 无锁栈（push / pop 完整实现） [标准]
+## ⑧ 无锁栈（push / pop 完整实现） <span class="badge badge-std">标准</span>
 
 用"头插法 + CAS 维护栈顶指针"实现无锁栈。push 永不阻塞；pop 在无竞争时也是 lock-free（但回收内存有 ABA 陷阱，见 ⑫/⑬ 与第111章）。
 
-> **示例 15** [难度 ★★★☆☆] [主题：无锁栈]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 无锁栈
 ```cpp
 // ⑧ 节点与 push（头插，CAS 维护 head_）
 #include <atomic>
@@ -299,7 +299,7 @@ struct LockFreeStack {
 };
 ```
 
-> **示例 16** [难度 ★★★☆☆] [主题：无锁栈]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 无锁栈
 ```cpp
 // ⑧ pop（读栈顶并尝试 CAS 摘下；空返回 false）
 template <typename T>
@@ -318,7 +318,7 @@ bool LockFreeStack<T>::pop(T& out) {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：无锁栈]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 无锁栈
 ```cpp
 // ⑧ 使用演示
 #include <cassert>
@@ -333,11 +333,11 @@ void demo() {
 - `[标准]`：push 是 lock-free（系统总在推进）；pop 同理，但**内存回收**需额外机制才安全。
 - `[经验]`：无锁栈的难点从来不是算法本身，而是"如何安全地 delete 被弹出的节点"——这正是第111章（ABA 与回收）的主题。
 
-## ⑨ 无锁队列（Michael-Scott 算法） [标准]
+## ⑨ 无锁队列（Michael-Scott 算法） <span class="badge badge-std">标准</span>
 
 Michael-Scott（MS）队列是经典的无锁 FIFO，支持多生产者多消费者（MPMC）。核心：用**哨兵（dummy）节点**，enqueue 原子地把新节点链到 `tail->next` 并推进 tail；dequeue 原子地推进 head 并取 `head->next` 的数据。
 
-> **示例 18** [难度 ★★★☆☆] [主题：无锁队列]
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 无锁队列
 ```cpp
 // ⑨ 节点 + 构造函数（含哨兵）
 #include <atomic>
@@ -355,7 +355,7 @@ struct MSQueue {
 };
 ```
 
-> **示例 19** [难度 ★★★☆☆] [主题：无锁队列]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 无锁队列
 ```cpp
 #include <utility>
 // ⑨ enqueue：把新节点挂到 tail->next，再推进 tail
@@ -381,7 +381,7 @@ void MSQueue<T>::enqueue(T v) {
 }
 ```
 
-> **示例 20** [难度 ★★★☆☆] [主题：无锁队列]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 无锁队列
 ```cpp
 // ⑨ dequeue：推进 head，取 head->next 数据；空返回 false
 template <typename T>
@@ -411,11 +411,11 @@ bool MSQueue<T>::dequeue(T& out) {
 - `[标准]`：MS 队列是 lock-free（系统级进度），但非 wait-free（某线程可能反复重试）。
 - `[经验]`：MS 队列的 `head`/`tail` 用独立原子避免单一热点；但单生产者场景用 ⑱ 的 SPSC 环形缓冲更快。
 
-## ⑩ 无锁计数器 [标准]
+## ⑩ 无锁计数器 <span class="badge badge-std">标准</span>
 
 计数器是无锁最经典的练兵场。两种实现：CAS 循环（通用但慢）与 `fetch_add`（wait-free、单条指令）。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：无锁计数器 [标准]]
+> **示例 21** [难度 ★★☆☆☆] [主题：无锁计数器 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑩ 实现 A：CAS 循环（lock-free，可移植，但有重试开销）
 #include <atomic>
@@ -428,7 +428,7 @@ void inc_cas() {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：无锁计数器 [标准]]
+> **示例 22** [难度 ★★☆☆☆] [主题：无锁计数器 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑩ 实现 B：fetch_add（wait-free，硬件单指令，首选）
 #include <atomic>
@@ -440,7 +440,7 @@ void inc_fetch() {
 
 下面是无锁计数器的**真实汇编取证**（`-O2`）：当 `fetch_add(1)` 的返回值不被使用时，GCC 直接生成 `lock add` 而非 `lock xadd`——因为结果无需写回寄存器。
 
-> **示例 23** [难度 ★★★☆☆] [主题：无锁计数器 [标准]]
+> **示例 23** [难度 ★★★☆☆] [主题：无锁计数器 <span class="badge badge-std">标准</span>]
 ```cpp
 // 文件：Examples/_ch110_counter.cpp
 // 行号：7（g_counter.fetch_add 所在行；g++.exe -std=c++23 -O2 -S -masm=intel）
@@ -467,7 +467,7 @@ _Z11inc_relaxedv:
 
 无锁算法的灵魂是 CAS。下面是被 ⑪ 取证的源码片段与其在 GCC 15.3.0 `-O2` 下生成的**真实**汇编：`compare_exchange_weak` 编译为 `lock cmpxchg`，且失败时 `jne .L2` 回到循环顶部重试。
 
-> **示例 24** [难度 ★★★☆☆] [主题：[实现·GCC15] 真实汇编：CA]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15] 真实汇编：CA
 ```cpp
 // 文件：Examples/_ch110_cas.cpp
 // 行号：12（head.compare_exchange_weak 所在行；g++.exe -std=c++23 -O2 -S -masm=intel）
@@ -501,11 +501,11 @@ _Z4pushi:
 - `[微架构·x86-64]`：`lock cmpxchg` 锁定**缓存行**（而非整条总线，现代 CPU 用 MESI 协议），多核并发安全。
 - `[经验]`：CAS 循环在高度竞争下会退化成"自旋烧 CPU"——见 ⑭ 活锁与 ⑮ 何时使用。
 
-## ⑫ ABA 问题预告（指第111章） [标准]
+## ⑫ ABA 问题预告（指第111章） <span class="badge badge-std">标准</span>
 
 CAS 只看"值相等"，不看"值的历史"。若某指针 `A` 被弹出、节点被回收、又被分配回同地址 `A` 并压回，CAS 会误以为"没变过"而成功——但中间语义已错。这就是 **ABA 问题**。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：问题预告（指第111章） [标准]]
+> **示例 25** [难度 ★★☆☆☆] [主题：问题预告（指第111章） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ ABA 演示：地址复用导致 CAS 误判
 #include <atomic>
@@ -520,7 +520,7 @@ void danger() {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：问题预告（指第111章） [标准]]
+> **示例 26** [难度 ★★☆☆☆] [主题：问题预告（指第111章） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 缓解思路之一：带标签指针（tagged pointer）——把版本号打包进同一原子
 #include <atomic>
@@ -537,7 +537,7 @@ std::atomic<Tagged> tp{};
 
 多核各持缓存行；当一个核写某变量、另一核频繁读"同一缓存行"的另一个变量时，缓存一致性协议会反复无效化该行——**伪共享（false sharing）**让无锁反而更慢。C++17 提供 `std::hardware_destructive_interference_size`（典型 64）用于按缓存行对齐隔离。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：伪共享与 cache-line pa]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line pa
 ```cpp
 // ⑬ 反例：a、b 常被放入同一 64B 缓存行，跨核写互相 invalidate
 #include <atomic>
@@ -548,7 +548,7 @@ struct Bad {
 };
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：伪共享与 cache-line pa]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line pa
 ```cpp
 // ⑬ 正解：用 interference_size 对齐，把两个原子隔开到不同缓存行
 #include <atomic>
@@ -561,7 +561,7 @@ struct Good {
 static_assert(alignof(Good) >= 64);
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：伪共享与 cache-line pa]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line pa
 ```cpp
 // ⑬ 读取该常量的可移植写法（C++17 起）
 #include <new>
@@ -573,11 +573,11 @@ constexpr std::size_t CACHELINE = std::hardware_destructive_interference_size;
 - `[标准]`：该常量定义在 `<new>`；与之配对的 `hardware_constructive_interference_size` 用于"想共享同一行"的反向优化。
 - `[经验]`：无锁计数器/标志位若被多核分别高频写，务必 padding——否则性能可能比加锁还差（见 ⑯）。
 
-## ⑭ 无锁的陷阱：活锁 / 饥饿 [经验]
+## ⑭ 无锁的陷阱：活锁 / 饥饿 <span class="badge badge-exp">经验</span>
 
 lock-free 保证系统前进，但**不保证公平**。两个线程反复 CAS 互相把对方挤出、谁都完不成，就是**活锁（livelock）**；某线程长期被别人抢先而饿死，是**饥饿（starvation）**。无锁 ≠ 无等待。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：无锁的陷阱：活锁 / 饥饿 [经验]]
+> **示例 30** [难度 ★★☆☆☆] [主题：无锁的陷阱：活锁 / 饥饿 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑭ 活锁倾向：高竞争下两个写者反复失败重试，CPU 空转
 #include <atomic>
@@ -593,7 +593,7 @@ void hot_loop() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：无锁的陷阱：活锁 / 饥饿 [经验]]
+> **示例 31** [难度 ★★☆☆☆] [主题：无锁的陷阱：活锁 / 饥饿 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑭ 缓解：加入指数退避 / yield，降低冲突概率
 #include <atomic>
@@ -614,11 +614,11 @@ void backoff_loop() {
 - `[经验]`：高竞争无锁循环必须**退避**（`_mm_pause` / `yield`），否则退化为活锁，吞吐暴跌。
 - `[经验]`：lock-free 解决"死锁/阻塞"，但把问题转移到"公平性"——对延迟敏感的单操作，wait-free 原语（fetch_add 等）更稳。
 
-## ⑮ 何时用无锁（先基准测试） [经验]
+## ⑮ 何时用无锁（先基准测试） <span class="badge badge-exp">经验</span>
 
 无锁不是银弹。引入前先问：竞争强度？临界区长度？对尾延迟的敏感度？**先用基准测试证明 mutex 真的不够**，再上无锁。
 
-> **示例 32** [难度 ★★★☆☆] [主题：何时用无锁（先基准测试） [经验]]
+> **示例 32** [难度 ★★★☆☆] [主题：何时用无锁（先基准测试） <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 基准测试脚手架：对比 mutex 与 atomic 计数（用 <chrono> 计时）
 #include <atomic>
@@ -645,7 +645,7 @@ double bench(F f, intthreads, int iters) {
 
 定性结论（量级，非固定数字；实测请跑 ⑮ 脚手架）：低竞争时 mutex 胜（无 CAS 重试、缓存友好）；高竞争时 mutex 因阻塞上下文切换而劣，无锁靠自旋胜出；但伪共享会反杀无锁。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：与 mutex 性能对比 [平台·x]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x
 ```
 ┌──────────────────┬───────────────┬───────────────┬──────────────────┐
 │ 场景              │ mutex          │ lock-free      │ 胜者             │
@@ -657,7 +657,7 @@ double bench(F f, intthreads, int iters) {
 └──────────────────┴───────────────┴───────────────┴──────────────────┘
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：与 mutex 性能对比 [平台·x]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x
 ```cpp
 // ⑯ 同等语义下，atomic fetch_add 计数的"无锁"写法
 #include <atomic>
@@ -665,7 +665,7 @@ std::atomic<unsigned long long> atomic_ctr{0};
 void atomic_work(int iters) { for (int i = 0; i < iters; ++i) atomic_ctr.fetch_add(1, std::memory_order_relaxed); }
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：与 mutex 性能对比 [平台·x]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x
 ```cpp
 // ⑯ 同等语义下，mutex 计数的"阻塞"写法（对比用）
 #include <atomic>
@@ -678,11 +678,11 @@ void mutex_work(int iters) { for (int i = 0; i < iters; ++i) { std::lock_guard<s
 - `[平台·x86-64]`：x86-64 上 mutex 无竞争时 `lock cmpxchg` 抢锁成功，几乎零成本；真正贵的是**竞争下的 futex 睡眠/唤醒**。
 - `[经验]`：不要凭直觉选无锁——用 ⑮ 的基准在目标硬件上实测，看尾延迟而非平均吞吐。
 
-## ⑰ 原子宽类型（__int128 双字 CAS） [标准]
+## ⑰ 原子宽类型（__int128 双字 CAS） <span class="badge badge-std">标准</span>
 
 把"指针 + 版本标签"打包成 128 位，用一次双字 CAS 同时更新——这是规避 ABA 的经典技巧。在 x86-64 上这需要 `cmpxchg16b` 指令。
 
-> **示例 36** [难度 ★★☆☆☆] [主题：原子宽类型]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原子宽类型
 ```cpp
 // ⑰ 标签指针：指针与 64 位 tag 打包进 16 字节，一次 CAS 同时校验
 #include <atomic>
@@ -697,7 +697,7 @@ void store_tp(void* p, std::uint64_t t) {
 }
 ```
 
-> **示例 37** [难度 ★★★☆☆] [主题：原子宽类型]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 原子宽类型
 ```cpp
 // 文件：Examples/_ch110_dwcas.cpp
 // 行号：11（g_pair.compare_exchange_weak 所在行；g++.exe -std=c++23 -O2 -mcx16 -S -masm=intel）
@@ -733,11 +733,11 @@ _Z7swap_dwyy:
 - `[标准]`：用 `std::atomic<unsigned __int128>` 表达双字原子是合法 C++，但 `is_always_lock_free` 对其为 **false**——即平台可能暗中加锁。
 - `[经验]`：双字 CAS 的"无锁性"依赖运行时 `lock cmpxchg16b`；若链接到锁版 libatomic，则它**已不再是 lock-free**。需要确定性无锁时，确认目标平台的 `is_lock_free()` 并避免 128 位原子。
 
-## ⑱ 无锁环形缓冲 [标准]
+## ⑱ 无锁环形缓冲 <span class="badge badge-std">标准</span>
 
 **单生产者单消费者（SPSC）** 场景可彻底避免 CAS：生产者只动 `tail`、消费者只动 `head`，二者各写各的缓存行，天然无锁且 wait-free。常见于音频、网络 IO、日志。
 
-> **示例 38** [难度 ★★★☆☆] [主题：无锁环形缓冲 [标准]]
+> **示例 38** [难度 ★★★☆☆] [主题：无锁环形缓冲 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ SPSC 无锁环形缓冲（容量 N 为 2 的幂，用位与代替取模）
 #include <atomic>
@@ -768,7 +768,7 @@ struct SPSCRing {
 };
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：无锁环形缓冲 [标准]]
+> **示例 39** [难度 ★★☆☆☆] [主题：无锁环形缓冲 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ 使用：一个线程 push，另一个线程 pop，无需任何锁
 #include <cassert>
@@ -780,11 +780,11 @@ void consumer() { int x; while (ring.pop(x)) { /* 处理 x */ } }
 - `[标准]`：SPSC 环形缓冲只用 `load/store`（relaxed/acquire/release），是**最强保证**——生产者与消费者各自 wait-free。
 - `[经验]`：多生产者/多消费者请用 ⑨ 的 MS 队列或分段（每个生产者一个 SPSC）结构；不要把单锁 CAS 套在环形缓冲上，那会丢失 SPSC 的全部优势。
 
-## ⑲ 验证手段（模型检测 / TSan） [经验]
+## ⑲ 验证手段（模型检测 / TSan） <span class="badge badge-exp">经验</span>
 
 无锁 bug 极难复现（数据竞争、ABA、内存回收错误只在特定交织下爆发）。靠"跑一跑没崩"验证是**错误**的。正确做法：静态/动态分析工具 + 形式化推理。
 
-> **示例 40** [难度 ★★★★☆] [主题：验证手段（模型检测 / TSan） ]
+> **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 验证手段（模型检测 / TSan）
 ```cpp
 // ⑲ 一个隐藏数据竞争示例（故意错误，供 TSan 抓）：非原子写被并发读
 #include <thread>
@@ -794,7 +794,7 @@ void reader() { volatile int sink = race_var; (void)sink; }
 // 用 TSan 构建：g++ -std=c++23 -fsanitize=thread -O1 -g 后运行，会报告 data race
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：验证手段（模型检测 / TSan） ]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证手段（模型检测 / TSan）
 ```cpp
 // ⑲ 修正：把共享变量改为原子，消除竞争
 #include <atomic>
@@ -806,7 +806,7 @@ void safe_reader() { volatile int sink = safe_var.load(std::memory_order_relaxed
 
 动态检测用 ThreadSanitizer：
 
-> **示例 42** [难度 ★★☆☆☆] [主题：验证手段（模型检测 / TSan） ]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证手段（模型检测 / TSan）
 ```
 # 命令（非本章取证文件；示例源码请放 Examples/ 下再编译）：
 g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_demo
@@ -816,21 +816,21 @@ g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_
 - `[经验]`：TSan 抓数据竞争/未同步访问极佳，但有显著运行开销且需专门构建。
 - `[经验]`：对核心无锁结构，进一步用模型检测（如 CDSChecker、relacy）枚举内存模型下的所有交织；并配合 hazard pointer 正确回收（第111章）。不要依赖"压力测试通过"作为正确性证据。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：`is_lock_free()` 告诉你 atomic 是否真无锁。** 你以为 atomic 一定无锁，其实可能内部用锁。请说明。
-   - [标准] `std::atomic<T>` 可能基于内部锁实现；`is_lock_free()` 报告其是否真正无锁。
-   - [引用] ISO/IEC 14882:2023 §[atomics]（is_lock_free）；cppreference "std::atomic::is_lock_free" 词条。
+   - <span class="badge badge-std">标准</span> `std::atomic<T>` 可能基于内部锁实现；`is_lock_free()` 报告其是否真正无锁。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]（is_lock_free）；cppreference "std::atomic::is_lock_free" 词条。
 
 2. **真实场景：C++20 的 `wait`/`notify` 实现无锁等待。** 你替代忙等轮询。请说明。
-   - [标准] `atomic::wait` 阻塞直到值改变，`notify_one`/`notify_all` 唤醒等待者（C++20 引入）。
-   - [引用] ISO/IEC 14882:2023 §[atomics.wait]（wait/notify）；cppreference "std::atomic::wait" 词条。
+   - <span class="badge badge-std">标准</span> `atomic::wait` 阻塞直到值改变，`notify_one`/`notify_all` 唤醒等待者（C++20 引入）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.wait]（wait/notify）；cppreference "std::atomic::wait" 词条。
 
 3. **真实场景：lock-free 不等于 wait-free（可能饥饿）。** 你理解无锁只保证某线程前进。请说明。
-   - [标准] lock-free 仅保证系统整体有线程前进，不保证单个线程不饥饿；wait-free 才保证每个线程有界完成。
-   - [引用] ISO/IEC 14882:2023 §[atomics]（lock-free 定义）；cppreference "Lock-free programming" 词条。
+   - <span class="badge badge-std">标准</span> lock-free 仅保证系统整体有线程前进，不保证单个线程不饥饿；wait-free 才保证每个线程有界完成。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]（lock-free 定义）；cppreference "Lock-free programming" 词条。
 
 | 术语 | 进度保证 | 单线程最坏 | 硬件原语（x86-64） | 典型陷阱 |
 |---|---|---|---|---|
@@ -840,7 +840,7 @@ g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_
 | wait-free | 每线程有界完成 | 有界步数 | `lock xadd` 等单指令 | 难构造 |
 | 内存回收 | — | — | — | ABA、悬垂指针 |
 
-> **示例 43** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 43** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 一页速记：四类原子操作对应四种保证强度
 #include <atomic>
@@ -863,7 +863,7 @@ void cheat_sheet() {
 
 ### ㉒.1 历史渊源补强：从 CAS 到无锁算法理论
 
-[史] 无锁（lock-free）的概念由 **Maurice Herlihy（1991，论文《Wait-Free Synchronization》）** 奠基——他定义了 wait-free（无等待）、lock-free（无锁）、obstruction-free（无阻碍）的层级，并证明「不同宽度 CAS 能实现的无锁度不同」，即著名的 **Herlihy 共识数（consensus number）** 理论。工程上，x86 的 `lock cmpxchg`（CAS）、`lock xadd`（fetch_add）是构建无锁结构的最小原语；C++11 把它们暴露为 `std::atomic<T>::compare_exchange_*`。[史] **C++17 的 P0024R2（并行算法）** 虽不直接是无锁，但把「可并行归约」纳入标准，与无锁思想同源；**C++20 的 P0020R6（浮点原子）** 让无锁浮点累加成为可能。[轶] 早期无锁代码几乎全用内建或汇编，C++11 之后才第一次可移植；但「可移植」不等于「正确」——无锁仍是并发里最易写错的部分。[评] 无锁的目标是**避免死锁/优先级反转/长临界区阻塞**，但它**不保证低延迟**，且引入 ABA、内存回收（hazard pointer/RCU）等新难题——见第 ⑪/⑫ 章。
+<span class="badge badge-history">史</span> 无锁（lock-free）的概念由 **Maurice Herlihy（1991，论文《Wait-Free Synchronization》）** 奠基——他定义了 wait-free（无等待）、lock-free（无锁）、obstruction-free（无阻碍）的层级，并证明「不同宽度 CAS 能实现的无锁度不同」，即著名的 **Herlihy 共识数（consensus number）** 理论。工程上，x86 的 `lock cmpxchg`（CAS）、`lock xadd`（fetch_add）是构建无锁结构的最小原语；C++11 把它们暴露为 `std::atomic<T>::compare_exchange_*`。<span class="badge badge-history">史</span> **C++17 的 P0024R2（并行算法）** 虽不直接是无锁，但把「可并行归约」纳入标准，与无锁思想同源；**C++20 的 P0020R6（浮点原子）** 让无锁浮点累加成为可能。<span class="badge badge-anecdote">轶</span> 早期无锁代码几乎全用内建或汇编，C++11 之后才第一次可移植；但「可移植」不等于「正确」——无锁仍是并发里最易写错的部分。<span class="badge badge-comment">评</span> 无锁的目标是**避免死锁/优先级反转/长临界区阻塞**，但它**不保证低延迟**，且引入 ABA、内存回收（hazard pointer/RCU）等新难题——见第 ⑪/⑫ 章。
 
 ### ㉒.2 真实工程坐标：无锁活在哪些产品里
 
@@ -891,9 +891,9 @@ void cheat_sheet() {
 
 ### ㉒.4 与标准的互动：无锁与 C++ 标准的演进
 
-[史] 无锁的**底层原语**（`std::atomic`、CAS、`is_lock_free`）随 **C++11** 进入标准，第一次让无锁可移植；**C++17 的 P0558R1** 修正内存模型措辞，是无锁正确性的基础；**C++20** 引入浮点原子（P0020R6）与 `atomic_ref`（P0019）；**C++26 正推进 hazard pointer（P1122/P2530）与 RCU 标准化**，直接回应「无锁内存回收」这一长期痛点。WG21 的方向是：把「无锁 + 安全回收」逐步从「专家手写汇编级技巧」下沉为标准可组合抽象。
+<span class="badge badge-history">史</span> 无锁的**底层原语**（`std::atomic`、CAS、`is_lock_free`）随 **C++11** 进入标准，第一次让无锁可移植；**C++17 的 P0558R1** 修正内存模型措辞，是无锁正确性的基础；**C++20** 引入浮点原子（P0020R6）与 `atomic_ref`（P0019）；**C++26 正推进 hazard pointer（P1122/P2530）与 RCU 标准化**，直接回应「无锁内存回收」这一长期痛点。WG21 的方向是：把「无锁 + 安全回收」逐步从「专家手写汇编级技巧」下沉为标准可组合抽象。
 
-- [史] **无锁安全回收修订链**：RCU 提案 **P1122** 由 Paul E. McKenney 等提案，历经 **R0 → R3 → R4（2021-05-14）** 推进 C++26；Hazard Pointer 提案 **P2530** 最终修订 **R3**，把 Maged Michael 2004 的论文方案沉淀为 `std::hazard_pointer`——二者直接回应「无锁内存安全回收」这一长期痛点；<https://wg21.link/p1122>、<https://wg21.link/p2530>。
+- <span class="badge badge-history">史</span> **无锁安全回收修订链**：RCU 提案 **P1122** 由 Paul E. McKenney 等提案，历经 **R0 → R3 → R4（2021-05-14）** 推进 C++26；Hazard Pointer 提案 **P2530** 最终修订 **R3**，把 Maged Michael 2004 的论文方案沉淀为 `std::hazard_pointer`——二者直接回应「无锁内存安全回收」这一长期痛点；<https://wg21.link/p1122>、<https://wg21.link/p2530>。
 
 ### ㉒.5 权威引用
 
@@ -904,7 +904,7 @@ void cheat_sheet() {
 
 ## 附录 A：工业无锁数据结构 [F: Industry / B: Principle]
 
-> **示例 44** [难度 ★★☆☆☆] [主题：附录 A：工业无锁数据结构 [F: ]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业无锁数据结构 [F:
 ```
 世界级 C++ 项目中的无锁数据结构:
 
@@ -931,7 +931,7 @@ Linux kernel RCU:
 
 ## 附录 B：lock-free vs wait-free 的性能界限 [G: Performance]
 
-> **示例 45** [难度 ★★★☆☆] [主题：附录 B：lock-free vs ]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：lock-free vs
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -996,7 +996,7 @@ _ZL11probe_mutexy:
 
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
-> **示例 46** [难度 ★★★☆☆] [主题：附录 C：面试与设计权衡 [J: L]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：面试与设计权衡 [J: L
 ```
 面试高频:
 Q: 如何判断一个数据结构是否 lock-free？
@@ -1100,7 +1100,7 @@ bq.wait_dequeue(v);
 
 moodycamel 的「单生产者单消费者（SPSC）段」本质是无锁环形缓冲：生产者只动头、消费者只动尾，互不争用。下面落成**本机可编译**的最小范式（N 取 2 的幂，`head_/tail_` 各占独立 cache line 防伪共享）。
 
-> **示例 47** [难度 ★★★☆☆] [主题：自包含可编译：最小 SPSC 无锁环]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自包含可编译：最小 SPSC 无锁环
 ```cpp
 #include <atomic>
 #include <cstddef>
@@ -1177,7 +1177,7 @@ int main() {
 
 生产者与消费者各自只更新自己那一端下标，没有"两个线程同时写同一原子"的争用，因此无需 CAS，用 relaxed 读 + acquire/release 发布即可建立 happens-before：
 
-> **示例 48** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <atomic>
 #include <vector>
@@ -1211,9 +1211,9 @@ int main() {
 }
 ```
 
-[标准] SPSC 中两端下标无共享写，单调计数器用无符号自然回绕；`release` 发布写、`acquire` 读取已发布数据，无需任何 CAS。这是无锁队列最简单的正确形态。
+<span class="badge badge-std">标准</span> SPSC 中两端下标无共享写，单调计数器用无符号自然回绕；`release` 发布写、`acquire` 读取已发布数据，无需任何 CAS。这是无锁队列最简单的正确形态。
 
-[引用] cppreference `std::atomic`：`https://en.cppreference.com/w/cpp/atomic/atomic`。经典并发队列算法见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic`：`https://en.cppreference.com/w/cpp/atomic/atomic`。经典并发队列算法见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
 </details>
 
@@ -1223,7 +1223,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 49** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1236,9 +1236,9 @@ int main() {
 }
 ```
 
-[标准] `is_always_lock_free` 在编译期给出该类型能否无锁；超过目标平台宽 CAS 宽度的对象，`atomic<T>` 退化为内部锁 + memcpy，`is_lock_free()` 返回 false。因此宽对象应改为"原子指针 + 不可变快照"（RCU 式，见 ch112）。
+<span class="badge badge-std">标准</span> `is_always_lock_free` 在编译期给出该类型能否无锁；超过目标平台宽 CAS 宽度的对象，`atomic<T>` 退化为内部锁 + memcpy，`is_lock_free()` 返回 false。因此宽对象应改为"原子指针 + 不可变快照"（RCU 式，见 ch112）。
 
-[引用] cppreference `std::atomic::is_always_lock_free`：`https://en.cppreference.com/w/cpp/atomic/atomic/is_always_lock_free`。宽对象退化的讨论见 ISO §32.5（[atomics]）。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic::is_always_lock_free`：`https://en.cppreference.com/w/cpp/atomic/atomic/is_always_lock_free`。宽对象退化的讨论见 ISO §32.5（[atomics]）。
 
 </details>
 
@@ -1250,7 +1250,7 @@ int main() {
 
 `push` 读当前 head 作 `n->next`，CAS 把 head 从旧值改成 `n`；失败说明被别的线程抢先，重试即可。`pop` 同理取头节点：
 
-> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1274,9 +1274,9 @@ int main() {
 }
 ```
 
-[标准] 每次 CAS 失败都代表"有别的线程成功了"，因此系统整体始终有线程在前进——这是 lock-free；但单个线程可能被无限重试，故不是 wait-free。多线程 `pop` 还须解决节点回收（HP/RCU）与 ABA（tagged pointer）。
+<span class="badge badge-std">标准</span> 每次 CAS 失败都代表"有别的线程成功了"，因此系统整体始终有线程在前进——这是 lock-free；但单个线程可能被无限重试，故不是 wait-free。多线程 `pop` 还须解决节点回收（HP/RCU）与 ABA（tagged pointer）。
 
-[引用] cppreference `std::atomic::compare_exchange_weak`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。Treiber 栈与 lock-free 定义见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic::compare_exchange_weak`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。Treiber 栈与 lock-free 定义见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
 </details>
 
@@ -1384,7 +1384,7 @@ int main() {
 
 ### D4.7 编译验证
 
-> **示例 51** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1565,7 +1565,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 52** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <atomic>
 #include <cassert>

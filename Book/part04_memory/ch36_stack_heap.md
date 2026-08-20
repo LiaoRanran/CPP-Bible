@@ -6,7 +6,7 @@
 
 > 本章定位：内存管理的"地基"章节。栈与堆是进程地址空间中两种根本不同的动态存储区域（与 ch35 地址空间布局、ch19 存储期紧密耦合）。理解二者的结构、分配语义、性能与生命周期差异，是掌握 `new`/`delete`（ch37）、分配器（ch38）、内存池（ch44）、并发与堆竞争（ch61）的前提。
 >
-> 立场分层约定：[标准]=语言/ABI 规范；[实现]=具体库/编译器行为；[平台]=Windows/MinGW 本机实测；[经验]=工程建议。
+> 立场分层约定：<span class="badge badge-std">标准</span>=语言/ABI 规范；<span class="badge badge-impl">实现</span>=具体库/编译器行为；<span class="badge badge-platform">平台</span>=Windows/MinGW 本机实测；<span class="badge badge-exp">经验</span>=工程建议。
 >
 > 编译器事实（本机）：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`，libstdc++ 位于 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。
 
@@ -17,24 +17,24 @@
 > 一块快而小、一块慢而大——栈与堆是编译器与运行时替你做的第一笔资源分配。
 
 ### 0.1 起源（谁·何时·为何）
-栈（stack）源自 Algol 60 的过程调用模型：每次调用压一个"活动记录（栈帧）"，返回即弹——天然匹配嵌套作用域与自动存储期。[史] 堆（heap / free store）则来自需要"存活超过调用"的对象，C 的 `malloc`（1970s）与 C++ 的 `new` 向其申请。[史] 两者并存是"生命周期长短"在内存上的投影。[史][评]
+栈（stack）源自 Algol 60 的过程调用模型：每次调用压一个"活动记录（栈帧）"，返回即弹——天然匹配嵌套作用域与自动存储期。<span class="badge badge-history">史</span> 堆（heap / free store）则来自需要"存活超过调用"的对象，C 的 `malloc`（1970s）与 C++ 的 `new` 向其申请。<span class="badge badge-history">史</span> 两者并存是"生命周期长短"在内存上的投影。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
-- **1970s**：`malloc` / `free` 提供手动堆管理。[史]
-- **1985+**：C++ `new` / `delete` 把分配与构造合一（见 ch37）。[史]
-- **现代**：栈上分配大对象仍可能栈溢出；堆碎片化成为长期工程难题。[史]
+- **1970s**：`malloc` / `free` 提供手动堆管理。<span class="badge badge-history">史</span>
+- **1985+**：C++ `new` / `delete` 把分配与构造合一（见 ch37）。<span class="badge badge-history">史</span>
+- **现代**：栈上分配大对象仍可能栈溢出；堆碎片化成为长期工程难题。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-栈的代价是"大小上限 + 必须 LIFO"，换极致速度；堆灵活却慢且有碎片 / 泄漏风险。[评] C++ 把"用哪块"交给程序员与 RAII（ch39），而非像 GC 语言那样统一托管——这是零开销与可控性的取舍。[史][评]
+栈的代价是"大小上限 + 必须 LIFO"，换极致速度；堆灵活却慢且有碎片 / 泄漏风险。<span class="badge badge-comment">评</span> C++ 把"用哪块"交给程序员与 RAII（ch39），而非像 GC 语言那样统一托管——这是零开销与可控性的取舍。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在"栈溢出 / 堆碎片"成为现代工程难题。C++17/20 把"在栈上做受控分配"与"协程栈"纳入视野。[史]
+0.2 停在"栈溢出 / 堆碎片"成为现代工程难题。C++17/20 把"在栈上做受控分配"与"协程栈"纳入视野。<span class="badge badge-history">史</span>
 
-- **C++17 PMR 的 `monotonic_buffer_resource` 可作"栈式"分配器**：在一块预分配（常来自栈或 arena）缓冲上以指针 bump 方式分配、用完整块一次性释放，是 0.2 "栈快而小"思路在库层的复刻。[史]
-- **C++20 协程的帧管理**：协程把局部状态挂起到"协程帧"（默认在堆上分配，除非编译器能证明生命周期），其分配后端可经 `operator new` 重载定制——把"栈还是堆"的选择第一次交到协程作者手里。[史][评]
-- **`alloca` / VLA 仍是平台扩展而非标准**：C 的变长数组未进 C++，栈上变长分配只能靠 `alloca`（非标准、易溢出），印证 0.3 "把选择权交给程序员"的代价。[史]
-- **行业落地**：游戏引擎与高频交易普遍自写"栈分配器 / 帧分配器"以减少堆碎片与锁竞争，与 ch44 内存池思路同源。[史]
+- **C++17 PMR 的 `monotonic_buffer_resource` 可作"栈式"分配器**：在一块预分配（常来自栈或 arena）缓冲上以指针 bump 方式分配、用完整块一次性释放，是 0.2 "栈快而小"思路在库层的复刻。<span class="badge badge-history">史</span>
+- **C++20 协程的帧管理**：协程把局部状态挂起到"协程帧"（默认在堆上分配，除非编译器能证明生命周期），其分配后端可经 `operator new` 重载定制——把"栈还是堆"的选择第一次交到协程作者手里。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **`alloca` / VLA 仍是平台扩展而非标准**：C 的变长数组未进 C++，栈上变长分配只能靠 `alloca`（非标准、易溢出），印证 0.3 "把选择权交给程序员"的代价。<span class="badge badge-history">史</span>
+- **行业落地**：游戏引擎与高频交易普遍自写"栈分配器 / 帧分配器"以减少堆碎片与锁竞争，与 ch44 内存池思路同源。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource ｜ https://en.cppreference.com/w/cpp/language/coroutines
 
@@ -43,9 +43,9 @@
 [第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
 [第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)
 
-[标准] C++ 标准本身不规定"栈"或"堆"的实现细节——它只定义**存储期**（storage duration，见 ch19）：自动存储期（automatic）、动态存储期（dynamic）、静态存储期（static）、线程存储期（thread）。但在**所有真实实现**中，自动存储期对象几乎总是落在**栈**上，动态存储期对象几乎总是落在**堆**（自由存储区 free store，由 `malloc`/`operator new` 管理的堆）上。
+<span class="badge badge-std">标准</span> C++ 标准本身不规定"栈"或"堆"的实现细节——它只定义**存储期**（storage duration，见 ch19）：自动存储期（automatic）、动态存储期（dynamic）、静态存储期（static）、线程存储期（thread）。但在**所有真实实现**中，自动存储期对象几乎总是落在**栈**上，动态存储期对象几乎总是落在**堆**（自由存储区 free store，由 `malloc`/`operator new` 管理的堆）上。
 
-[经验] 一句话区分：
+<span class="badge badge-exp">经验</span> 一句话区分：
 
 - **栈**：编译器在编译期就安排好大小、函数返回即自动回收、随调用链先进后出（LIFO）。分配只需移动栈指针，O(1) 且无锁。
 - **堆**：运行时按需向操作系统/分配器申请、手动或借 RAII 回收、大小可变、全局共享、需要查找空闲块并可能加锁。
@@ -56,9 +56,9 @@
 
 ## ② 栈帧结构（Stack Frame）
 
-[标准] 每次函数调用，运行时会为其建立一个**栈帧（stack frame / activation record）**。一个典型 x86-64 栈帧（自高地址向低地址）包含：
+<span class="badge badge-std">标准</span> 每次函数调用，运行时会为其建立一个**栈帧（stack frame / activation record）**。一个典型 x86-64 栈帧（自高地址向低地址）包含：
 
-> **示例 1** [难度 ★★★☆☆] [主题：栈帧结构（Stack Frame）]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 栈帧结构（Stack Frame）
 ```
 高地址
 │  ┌─────────────────────────┐
@@ -87,7 +87,7 @@
 - **参数（arguments）**：前 N 个参数走寄存器；超出部分在**调用者栈帧**的参数区（System V 中位于返回地址之上）。
 - **对齐填充（padding）**：为满足 `alignof`，编译器插入空洞。例如栈需 16 字节对齐（System V 要求 `call` 时 `(rsp+8) % 16 == 0`）。
 
-[平台] 注意：本节栈帧图是**跨平台通用结构**，但具体寄存器名、红区大小、参数区位置取决于 ABI（见 §4 与 §20）。
+<span class="badge badge-platform">平台</span> 注意：本节栈帧图是**跨平台通用结构**，但具体寄存器名、红区大小、参数区位置取决于 ABI（见 §4 与 §20）。
 
 ---
 
@@ -97,7 +97,7 @@
 
 **源（节选，完整见 P1）**：
 
-> **示例 2** [难度 ★★★☆☆] [主题：真实汇编：prologue / ep]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实汇编：prologue / ep
 ```cpp
 // P1：观察栈帧与参数落位（配合 §3 汇编阅读）
 #include <cstdio>
@@ -149,13 +149,13 @@ _Z6calleriiii:
 
 [平台-实现] `-O2` 把 `leaf` **内联**进 `caller`，整个函数无需建立栈帧、无需 `call`，直接算完返回。这印证了一个工程事实：**优化后"栈帧"可能根本不存在**（函数被内联、变量留在寄存器）。但递归、取局部变量地址、禁用内联时，栈帧必然存在（见 P1、P8）。
 
-[经验] 调试时若"看不到栈帧"，先怀疑内联（用 `-fno-inline` 或 `[[gnu::noinline]]` 强制保留）。
+<span class="badge badge-exp">经验</span> 调试时若"看不到栈帧"，先怀疑内联（用 `-fno-inline` 或 `[[gnu::noinline]]` 强制保留）。
 
 ---
 
 ## ④ x86-64 System V ABI 栈帧图与调用约定（规范）
 
-[标准] 本节给出 Linux/ELF 平台（x86-64 System V AMD64 ABI）的**权威规范**。它是大多数教材与"教科书调用约定"所指的版本，也是你在本章任务中明确要求讲解的版本。
+<span class="badge badge-std">标准</span> 本节给出 Linux/ELF 平台（x86-64 System V AMD64 ABI）的**权威规范**。它是大多数教材与"教科书调用约定"所指的版本，也是你在本章任务中明确要求讲解的版本。
 
 ### 4.1 寄存器用途（System V）
 
@@ -168,11 +168,11 @@ _Z6calleriiii:
 | 被调用者保存 | RBX, RBP, R12–R15 | callee 若使用，必须保存并恢复 |
 | 栈指针 | RSP | 指向栈顶（最低占用地址） |
 
-[标准] **超过 6 个整型参数时，第 7 个起从右向左压入调用者栈帧的参数区**（位于返回地址之上），由被调用者从栈上读取。
+<span class="badge badge-std">标准</span> **超过 6 个整型参数时，第 7 个起从右向左压入调用者栈帧的参数区**（位于返回地址之上），由被调用者从栈上读取。
 
 ### 4.2 System V 栈帧布局（规范图）
 
-> **示例 3** [难度 ★★☆☆☆] [主题：栈帧布局（规范图）]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈帧布局（规范图）
 ```
 高地址
   调用者栈帧
@@ -201,7 +201,7 @@ _Z6calleriiii:
 
 本机真实汇编证据见 §3 的 `sum6`（`RCX=a, RDX=b, R8=c, R9=d`，第 5/6 参走栈 `40(%rsp)/48(%rsp)`）与 `caller`（参数从 RCX/RDX/R8/R9 溢出到栈）。这正是 Microsoft x64 的特征。
 
-[经验] 写涉及内联汇编、ABI 兼容层（FFI、JIT、hook）的代码时，**永远先确认目标平台的 ABI**，不要假设"x86-64 都用 System V"。跨平台库（如用 `.intel_syntax` 或 `libffi`）尤其要处理这种差异。
+<span class="badge badge-exp">经验</span> 写涉及内联汇编、ABI 兼容层（FFI、JIT、hook）的代码时，**永远先确认目标平台的 ABI**，不要假设"x86-64 都用 System V"。跨平台库（如用 `.intel_syntax` 或 `libffi`）尤其要处理这种差异。
 
 ---
 
@@ -209,7 +209,7 @@ _Z6calleriiii:
 
 [平台-实现] 下面用本机编译的真实汇编展示"寄存器传参 + 超出走栈"。源为 P2（`extern "C"` 避免名字改编，便于阅读）：
 
-> **示例 4** [难度 ★★★☆☆] [主题：寄存器传参与调用约定（实例）]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 寄存器传参与调用约定（实例）
 ```cpp
 // P2：寄存器传参 vs 栈传参（extern "C"，配合 §5 汇编）
 extern "C" long sum6(long a, long b, long c, long d, long e, long f) {
@@ -247,15 +247,15 @@ sum8:
     ret
 ```
 
-[标准] 在 **System V** 下，前 6 个整型参数走 RDI/RSI/RDX/RCX/R8/R9，第 7 个起才走栈；浮点走 XMM0–7。上面本机输出因是 Microsoft x64，前 4 个走 RCX/RDX/R8/R9、第 5 个起走栈——但"**超出寄存器容量后走栈**"这一核心机制两者一致。
+<span class="badge badge-std">标准</span> 在 **System V** 下，前 6 个整型参数走 RDI/RSI/RDX/RCX/R8/R9，第 7 个起才走栈；浮点走 XMM0–7。上面本机输出因是 Microsoft x64，前 4 个走 RCX/RDX/R8/R9、第 5 个起走栈——但"**超出寄存器容量后走栈**"这一核心机制两者一致。
 
-[经验] 参数过多（>4/~6）会从"寄存器传参"退化为"栈传参"，带来额外内存访问开销。热路径函数把参数控制在 4 个以内（Microsoft x64）或 6 个以内（System V）是有意义的（见 §16 microbenchmark）。
+<span class="badge badge-exp">经验</span> 参数过多（>4/~6）会从"寄存器传参"退化为"栈传参"，带来额外内存访问开销。热路径函数把参数控制在 4 个以内（Microsoft x64）或 6 个以内（System V）是有意义的（见 §16 microbenchmark）。
 
 ---
 
 ## ⑥ 调用者保存 vs 被调用者保存寄存器
 
-[标准] 这是 ABI 正确性的关键分工：
+<span class="badge badge-std">标准</span> 这是 ABI 正确性的关键分工：
 
 - **Caller-saved（易失 / volatile）**：`RAX, RCX, RDX, RSI, RDI, R8–R11`（System V）；调用 `call` 前如果还想保留这些值，调用者必须自己 `push` 保存，因为被调用函数**可以随意破坏**它们。
 - **Callee-saved（非易失 / non-volatile）**：`RBX, RBP, R12–R15`（System V）；被调用函数若要用，必须先在 prologue 保存、在 epilogue 恢复，调用者可以假定返回后这些值不变。
@@ -264,7 +264,7 @@ sum8:
 
 P3 演示"被调用者必须保存 callee-saved 寄存器"的语义（用标准属性避免被优化掉）：
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：调用者保存 vs 被调用者保存寄存器]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用者保存 vs 被调用者保存寄存器
 ```cpp
 // P3：callee-saved 语义演示（rbx 须保存恢复）
 #include <cstdio>
@@ -278,19 +278,19 @@ int main() {
 }
 ```
 
-[经验] 手写内联汇编或写 trampoline/FFI 时，违反 caller/callee-saved 约定会产出"只在 -O2 下崩溃"的诡异 bug——因为优化级越高，寄存器分配越激进，破坏 caller-saved 的副作用越容易暴露。
+<span class="badge badge-exp">经验</span> 手写内联汇编或写 trampoline/FFI 时，违反 caller/callee-saved 约定会产出"只在 -O2 下崩溃"的诡异 bug——因为优化级越高，寄存器分配越激进，破坏 caller-saved 的副作用越容易暴露。
 
 ---
 
 ## ⑦ 红区（Red Zone）
 
-[标准] **System V AMD64 ABI 规定**：`RSP` 下方 128 字节（即地址 `[rsp-128, rsp)`）为**红区**。任何函数都可以在**不调整 `RSP`** 的情况下使用这一段内存，前提是它是**叶子函数（不调用其他函数）**——因为没有 `call` 会在此写入返回地址，且**用户态信号/内核不会破坏这片区域**（红区之上的返回地址才是 `call` 写的）。
+<span class="badge badge-std">标准</span> **System V AMD64 ABI 规定**：`RSP` 下方 128 字节（即地址 `[rsp-128, rsp)`）为**红区**。任何函数都可以在**不调整 `RSP`** 的情况下使用这一段内存，前提是它是**叶子函数（不调用其他函数）**——因为没有 `call` 会在此写入返回地址，且**用户态信号/内核不会破坏这片区域**（红区之上的返回地址才是 `call` 写的）。
 
-[标准] 红区的价值：叶子函数的小临时缓冲（如小数组、寄存器溢出槽）可直接用 `rsp` 下方负偏移寻址，**省掉 `sub rsp, N` 这条指令**，提速。
+<span class="badge badge-std">标准</span> 红区的价值：叶子函数的小临时缓冲（如小数组、寄存器溢出槽）可直接用 `rsp` 下方负偏移寻址，**省掉 `sub rsp, N` 这条指令**，提速。
 
 [平台-实现] **本机 Microsoft x64 没有红区**（ABI 不保证 RSP 下方安全，因 Windows 可能在 RSP 下方使用内存，且 `RSP` 下方 32 字节是 shadow space）。所以本机编译的叶子函数仍会 `sub rsp` 或 `push rbp`+对齐（见 §3 的 `pure_leaf`：`pushq %rbp; ...; subq $32,%rsp`，并未利用红区）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：红区（Red Zone）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 红区（Red Zone）
 ```cpp
 // P4：叶子函数局部缓冲（System V 下可落红区；本机 Microsoft x64 走普通栈）
 #include <cstdio>
@@ -305,21 +305,21 @@ int main() {
 int main() { leaf_scratch(); }
 ```
 
-[标准] 内核代码**不能**依赖红区（中断处理可能随时覆盖 RSP 下方），故内核编译用 **`-mno-red-zone`** 禁用。用户态程序默认启用红区（System V）。
+<span class="badge badge-std">标准</span> 内核代码**不能**依赖红区（中断处理可能随时覆盖 RSP 下方），故内核编译用 **`-mno-red-zone`** 禁用。用户态程序默认启用红区（System V）。
 
-[经验] 写信号处理函数、内核模块、裸机固件时，务必确认是否禁用红区；误用红区会导致被信号/中断静默破坏数据。
+<span class="badge badge-exp">经验</span> 写信号处理函数、内核模块、裸机固件时，务必确认是否禁用红区；误用红区会导致被信号/中断静默破坏数据。
 
 ---
 
 ## ⑧ 栈向下增长与栈溢出防护
 
-[标准] 栈通常向**低地址**增长：`push` 使 `RSP` 减小，`pop` 使其增大。堆一般向高地址增长（由 `brk`/`mmap` 推进）。二者相向，中间是空闲区间（见 ch35 地址空间布局）。
+<span class="badge badge-std">标准</span> 栈通常向**低地址**增长：`push` 使 `RSP` 减小，`pop` 使其增大。堆一般向高地址增长（由 `brk`/`mmap` 推进）。二者相向，中间是空闲区间（见 ch35 地址空间布局）。
 
 ### 8.1 栈溢出（Stack Overflow）
 
-[实现] 栈空间有限（Linux 默认 8 MB，Windows 默认 1 MB 线程栈）。递归过深或分配超大栈数组会越过栈边界，触及**保护页（guard page）**或非法地址，触发 `SIGSEGV`（Linux）/ `EXCEPTION_STACK_OVERFLOW`（Windows），进程终止。
+<span class="badge badge-impl">实现</span> 栈空间有限（Linux 默认 8 MB，Windows 默认 1 MB 线程栈）。递归过深或分配超大栈数组会越过栈边界，触及**保护页（guard page）**或非法地址，触发 `SIGSEGV`（Linux）/ `EXCEPTION_STACK_OVERFLOW`（Windows），进程终止。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：栈溢出]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈溢出
 ```cpp
 // P5：无限递归触发栈溢出（SIGSEGV / 栈溢出异常）
 #include <cstdio>
@@ -330,7 +330,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★★★★☆] [主题：栈溢出]
+> **示例 8** <span class="badge badge-exp">难度 ★★★★☆</span> · 栈溢出
 ```cpp
 // P6：超大栈数组越界，触碰 guard page
 #include <cstdio>
@@ -344,13 +344,13 @@ int main() {
 
 ### 8.2 防护机制一：Guard Page（保护页）
 
-[实现] 操作系统在线程栈末尾映射一个**不可访问的 guard page**（页表标记 `PROT_NONE`/PAGE_GUARD）。栈指针一旦越过合法区进入 guard page，MMU 触发页错误 → 内核判定为栈溢出 → 发信号。Guard page 是"最后一道墙"，不是"检测工具"。
+<span class="badge badge-impl">实现</span> 操作系统在线程栈末尾映射一个**不可访问的 guard page**（页表标记 `PROT_NONE`/PAGE_GUARD）。栈指针一旦越过合法区进入 guard page，MMU 触发页错误 → 内核判定为栈溢出 → 发信号。Guard page 是"最后一道墙"，不是"检测工具"。
 
 ### 8.3 防护机制二：`-fstack-protector`（栈 Canary）
 
-[实现] GCC/Clang 支持 `-fstack-protector` / `-fstack-protector-strong` / `-fstack-protector-all`。编译器在返回地址前插入随机 **canary（栈保护气）**，函数返回前检查它是否被改写；若被改写（典型栈缓冲区溢出改写返回地址）则 `__stack_chk_fail` 中止，防止攻击者劫持控制流。
+<span class="badge badge-impl">实现</span> GCC/Clang 支持 `-fstack-protector` / `-fstack-protector-strong` / `-fstack-protector-all`。编译器在返回地址前插入随机 **canary（栈保护气）**，函数返回前检查它是否被改写；若被改写（典型栈缓冲区溢出改写返回地址）则 `__stack_chk_fail` 中止，防止攻击者劫持控制流。
 
-> **示例 9** [难度 ★★★☆☆] [主题：防护机制二：-fstack-prot]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 防护机制二：-fstack-prot
 ```cpp
 // P7：栈缓冲区溢出（开启 -fstack-protector-strong 时会被 canary 捕获）
 #include <cstring>
@@ -377,13 +377,13 @@ g++ -O1 -g -fsanitize=address p6.cpp -o p6_asan
 ./p6_asan     # 报告精确的栈溢出位置
 ```
 
-[经验] 发布构建至少开 `-fstack-protector-strong`；安全敏感组件用 ASan 做 CI 测试；但 canary 只防"改写返回地址"类攻击，不能替代逻辑层边界检查。
+<span class="badge badge-exp">经验</span> 发布构建至少开 `-fstack-protector-strong`；安全敏感组件用 ASan 做 CI 测试；但 canary 只防"改写返回地址"类攻击，不能替代逻辑层边界检查。
 
 ---
 
 ### 8.5 栈大小查询与调整
 
-[实现] 栈空间因平台与线程而异，越界即触发 §8.1 的栈溢出。常见查询与设置方式：
+<span class="badge badge-impl">实现</span> 栈空间因平台与线程而异，越界即触发 §8.1 的栈溢出。常见查询与设置方式：
 
 - **Linux / macOS**：`ulimit -s`（查看/设置主线程栈上限，默认约 8 MB）；pthread 线程用 `pthread_attr_setstacksize`。
 - **Windows**：链接器 `/STACK:reserve[,commit]`（如 `/STACK:2097152` 设 2 MB）；主线程默认 1 MB；`CreateThread` 可指定线程栈大小。
@@ -397,7 +397,7 @@ ulimit -s 16384      # 设为 16 MB（仅对当前 shell 会话有效）
 
 [平台-推断] 下面用 pthread 创建一个**大栈线程**（Linux/macOS 示意；Windows 用 `CreateThread` + `/STACK`）：
 
-> **示例 10** [难度 ★★☆☆☆] [主题：栈大小查询与调整]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈大小查询与调整
 ```cpp
 // 大栈线程示意（Linux/macOS；非 Windows 下用条件编译隔离）
 #include <cstdio>
@@ -419,7 +419,7 @@ int main() {
 #endif
 ```
 
-[经验] 递归算法（DFS、表达式解析、回溯）务必设置深度上限或改写为迭代；需要大临时缓冲优先用堆（`std::vector`）而非栈数组——因为栈大小固定且通常远小于堆。把"栈大小"当作**硬上限**而非可无限增长的空间。
+<span class="badge badge-exp">经验</span> 递归算法（DFS、表达式解析、回溯）务必设置深度上限或改写为迭代；需要大临时缓冲优先用堆（`std::vector`）而非栈数组——因为栈大小固定且通常远小于堆。把"栈大小"当作**硬上限**而非可无限增长的空间。
 
 ---
 
@@ -429,7 +429,7 @@ int main() {
 
 [实现·GCC15] `alloca(size)` 在**当前栈帧**内直接移动 `RSP` 分配内存，函数返回时随栈帧一起自动回收——**不能用 `free`，也不能跨函数返回使用**。它本质是内联的 `sub rsp, size`。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：alloca：栈上动态大小分配]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · alloca：栈上动态大小分配
 ```cpp
 // P8：alloca 在栈上按需分配（Microsoft x64 下由编译器内联 sub rsp）
 #include <cstdio>
@@ -444,15 +444,15 @@ int main() {
 }
 ```
 
-[经验] `alloca` 危险：大小若来自不可信输入，极易栈溢出（§8）。现代 C++ 几乎总能用 `std::vector`/`std::string` 替代；只有在**确定大小很小且极热路径**时才考虑。
+<span class="badge badge-exp">经验</span> `alloca` 危险：大小若来自不可信输入，极易栈溢出（§8）。现代 C++ 几乎总能用 `std::vector`/`std::string` 替代；只有在**确定大小很小且极热路径**时才考虑。
 
 ### 9.2 VLA：C99 特性，C++ 无
 
-[标准] **C99 引入 VLA（可变长数组，`int a[n];`）**，但 **C++（含 C++20）标准从未纳入 VLA**。C++ 中写 `int a[n];`（n 为运行时变量）是**非标准扩展**。
+<span class="badge badge-std">标准</span> **C99 引入 VLA（可变长数组，`int a[n];`）**，但 **C++（含 C++20）标准从未纳入 VLA**。C++ 中写 `int a[n];`（n 为运行时变量）是**非标准扩展**。
 
-[实现] GCC/Clang 作为扩展支持 VLA（即使以 `-std=c++17` 也可能默认开启，可用 `-Wvla` 警告、`-Werror=vla` 禁止）；**MSVC 不支持 VLA**（会报错）。
+<span class="badge badge-impl">实现</span> GCC/Clang 作为扩展支持 VLA（即使以 `-std=c++17` 也可能默认开启，可用 `-Wvla` 警告、`-Werror=vla` 禁止）；**MSVC 不支持 VLA**（会报错）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：特性，C++ 无]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 特性，C++ 无
 ```cpp
 // P9：VLA 是 GCC/Clang 扩展，C++ 标准不支持，MSVC 报错
 //      用 -Wvla 可警告，-Werror=vla 可禁止
@@ -465,17 +465,17 @@ void f(int n) {
 int main() { f(10); }
 ```
 
-[经验] 不要在生产 C++ 中用 VLA；需要"栈上运行时大小数组"请用 `std::vector`（堆）或 `std::array`（编译期大小）。VLA 既不能 `std::move`，也不参与 RAII 析构语义，且可能悄悄消耗栈导致溢出。
+<span class="badge badge-exp">经验</span> 不要在生产 C++ 中用 VLA；需要"栈上运行时大小数组"请用 `std::vector`（堆）或 `std::array`（编译期大小）。VLA 既不能 `std::move`，也不参与 RAII 析构语义，且可能悄悄消耗栈导致溢出。
 
 ---
 
 ## ⑩ 堆分配器语义：`malloc` / `free`
 
-[标准] C 库 `malloc(size)` 向堆请求至少 `size` 字节的、适合任何基本类型对齐（通常 16 B）的未初始化内存，成功返回指针，失败返回 `NULL` 并将 `errno` 置为 `ENOMEM`。`free(ptr)` 释放。配对规则：`malloc`/`calloc`/`realloc` 得到的指针必须交给 `free`，且只能 `free` 一次（double free 是 UB）。
+<span class="badge badge-std">标准</span> C 库 `malloc(size)` 向堆请求至少 `size` 字节的、适合任何基本类型对齐（通常 16 B）的未初始化内存，成功返回指针，失败返回 `NULL` 并将 `errno` 置为 `ENOMEM`。`free(ptr)` 释放。配对规则：`malloc`/`calloc`/`realloc` 得到的指针必须交给 `free`，且只能 `free` 一次（double free 是 UB）。
 
 [实现·GCC15] 在 libstdc++ 的 `<cstdlib>` 中，`malloc`/`free` 是 **C 库函数**，通过 `using ::malloc;` 引入 `std` 命名空间。本机真实声明（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cstdlib`）：
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：堆分配器语义：malloc / fr]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 堆分配器语义：malloc / fr
 ```cpp
 // 真实源码：.../x86_64-w64-mingw32/13.1.0/include/c++/cstdlib
   98  #undef calloc
@@ -489,9 +489,9 @@ int main() { f(10); }
  168  using ::realloc;
 ```
 
-[经验] `size == 0` 时 `malloc(0)` 返回 `NULL` 或一个可 `free` 的最小块（实现定义）；不要依赖其行为。下面 P10 演示基本用法，P11 演示 `malloc(0)` 与 `calloc`/`realloc`。
+<span class="badge badge-exp">经验</span> `size == 0` 时 `malloc(0)` 返回 `NULL` 或一个可 `free` 的最小块（实现定义）；不要依赖其行为。下面 P10 演示基本用法，P11 演示 `malloc(0)` 与 `calloc`/`realloc`。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：堆分配器语义：malloc / fr]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆分配器语义：malloc / fr
 ```cpp
 // P10：malloc/free 基本用法（检查 NULL，避免泄漏）
 #include <cstdlib>
@@ -506,7 +506,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：堆分配器语义：malloc / fr]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆分配器语义：malloc / fr
 ```cpp
 // P11：malloc(0)、calloc（清零）、realloc（扩容）
 #include <cstdlib>
@@ -527,7 +527,7 @@ int main() {
 }
 ```
 
-[标准] `realloc(ptr, 0)` 等价于 `free(ptr)` 或返回可 free 的最小块（实现定义）。`realloc` 失败时返回 `NULL` 且**原块仍有效**——故必须先用临时指针接收，避免 `a = realloc(a, n)` 在失败时丢失原指针（内存泄漏）。
+<span class="badge badge-std">标准</span> `realloc(ptr, 0)` 等价于 `free(ptr)` 或返回可 free 的最小块（实现定义）。`realloc` 失败时返回 `NULL` 且**原块仍有效**——故必须先用临时指针接收，避免 `a = realloc(a, n)` 在失败时丢失原指针（内存泄漏）。
 
 ---
 
@@ -568,7 +568,7 @@ int main() {
 
 P12 用代码观察 chunk 对齐（用户指针前的 size 头）：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：合并（Coalescing）与 tc]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 合并（Coalescing）与 tc
 ```cpp
 // P12：观察 malloc 返回地址的对齐与"块头"存在（实现层观察）
 #include <cstdlib>
@@ -621,7 +621,7 @@ int main() {
 | jemalloc | 高 | 高（细粒度 arena） | **低** | 长生命周期服务、浏览器 |
 | tcmalloc | **最高（小对象）** | 高（thread cache） | 中低 | 高并发后端、Google 系 |
 
-[经验] 选分配器别拍脑袋：用 §16 的 microbenchmark 在你**真实负载**下对比；长生命周期 + 多尺寸混合 → jemalloc（碎片友好）；短生命周期小对象高并发 → tcmalloc。
+<span class="badge badge-exp">经验</span> 选分配器别拍脑袋：用 §16 的 microbenchmark 在你**真实负载**下对比；长生命周期 + 多尺寸混合 → jemalloc（碎片友好）；短生命周期小对象高并发 → tcmalloc。
 
 ---
 
@@ -634,7 +634,7 @@ int main() {
 
 P13 演示**内部碎片**（size class 取整导致浪费）：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：碎片：内部碎片 vs 外部碎片]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 碎片：内部碎片 vs 外部碎片
 ```cpp
 // P13：内部碎片观察（请求大小相近，实际占用随 size class 跳变）
 #include <cstdlib>
@@ -654,7 +654,7 @@ int main() {
 
 P14 演示**外部碎片**（交替分配释放，留下难以利用的空洞）：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：碎片：内部碎片 vs 外部碎片]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 碎片：内部碎片 vs 外部碎片
 ```cpp
 // P14：外部碎片实验（长期运行后大块分配可能失败，尽管总量充足）
 #include <cstdlib>
@@ -677,17 +677,17 @@ int main() {
 }
 ```
 
-[经验] 缓解碎片：用**内存池/固定 size class**（ch44）、对象大小尽量统一、长生命周期与短生命周期对象分池、大对象用独立分配器或 `mmap`。
+<span class="badge badge-exp">经验</span> 缓解碎片：用**内存池/固定 size class**（ch44）、对象大小尽量统一、长生命周期与短生命周期对象分池、大对象用独立分配器或 `mmap`。
 
 ---
 
 ## ⑭ `new`/`delete` 与 `malloc` 的关系（交叉 ch37）
 
-[标准] `new`/`delete` 是 C++ 运算符，语义强于 `malloc`：`new` 做**两件事**——（1）调用 `operator new` 获取原始内存；（2）在得到的内存上**调用构造函数**。同理 `delete` 先**析构**再调 `operator delete` 释放。
+<span class="badge badge-std">标准</span> `new`/`delete` 是 C++ 运算符，语义强于 `malloc`：`new` 做**两件事**——（1）调用 `operator new` 获取原始内存；（2）在得到的内存上**调用构造函数**。同理 `delete` 先**析构**再调 `operator delete` 释放。
 
 [实现·GCC15] 默认的 `::operator new` **底层就是调用 `malloc`**（libstdc++ 实现见 `libstdc++-v3/libsupc++/new_op.cc`；本机仅含头文件，故标注 `[实现-推断]`）。本机 `<new>` 的真实**声明**（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`）：
 
-> **示例 19** [难度 ★★☆☆☆] [主题：new/delete 与 mallo]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · new/delete 与 mallo
 ```cpp
 #include <cstddef>
 // 真实源码：.../include/c++/new  （声明，非定义）
@@ -704,11 +704,11 @@ int main() {
 
 [实现-推断] 默认 `operator new(size_t)` 在 libstdc++ 的 `new_op.cc` 中大体为：循环调用 `malloc(size)`，失败则调用 `std::get_new_handler()` 的 handler，仍失败抛 `std::bad_alloc`。`nothrow` 版本失败返回 `nullptr` 而非抛异常。`operator delete` 调 `free`。
 
-[经验] 因此 **`malloc` 得到的裸内存不能直接 `delete`，`new` 得到的必须 `delete`**（不能 `free`）——混用是 UB。需要"只分配不构造"用 `::operator new`；需要在已分配内存上构造用 **placement new**（见 ch37）。
+<span class="badge badge-exp">经验</span> 因此 **`malloc` 得到的裸内存不能直接 `delete`，`new` 得到的必须 `delete`**（不能 `free`）——混用是 UB。需要"只分配不构造"用 `::operator new`；需要在已分配内存上构造用 **placement new**（见 ch37）。
 
 P15 验证 `new` 调构造、delete 调析构（与 malloc 对比）：
 
-> **示例 20** [难度 ★★☆☆☆] [主题：new/delete 与 mallo]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · new/delete 与 mallo
 ```cpp
 // P15：new 调构造 + delete 调析构；对比 malloc（不调构造）
 #include <new>
@@ -742,7 +742,7 @@ int main() {
 
 [平台-实现] 下面用本机 `g++ 13.1.0` + `<chrono>` 的 microbenchmark，对比"在栈上创建 N 个对象"与"在堆上 new N 个对象"的耗时。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：栈 vs 堆：性能差异]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈 vs 堆：性能差异
 ```cpp
 // P16：栈 vs 堆 分配/释放 microbenchmark（本机 g++ 13.1.0 可编译）
 #include <chrono>
@@ -789,7 +789,7 @@ int main() {
 // 典型量级（本机）：heap 比 stack 慢 1~2 个数量级（几十倍到上百倍）
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：栈 vs 堆：性能差异]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈 vs 堆：性能差异
 ```cpp
 // P17：堆分配计时（多次 malloc/free 的平均延迟，单位 ns 量级观察）
 #include <chrono>
@@ -809,17 +809,17 @@ int main() {
 }
 ```
 
-[经验] 性能热点若反复 `new`/`delete` 小对象，改用：栈对象、对象池（ch44）、`std::vector` 批量预留、`std::make_shared`/`std::make_unique`（减少分配次数）。但**不要为了微优化牺牲正确性**——先 profiler 定位瓶颈。
+<span class="badge badge-exp">经验</span> 性能热点若反复 `new`/`delete` 小对象，改用：栈对象、对象池（ch44）、`std::vector` 批量预留、`std::make_shared`/`std::make_unique`（减少分配次数）。但**不要为了微优化牺牲正确性**——先 profiler 定位瓶颈。
 
 ---
 
 ## ⑯ `std::vector` 等容器的堆使用
 
-[标准] `std::vector<T>` 的**对象本身（控制块：指针/大小/容量）通常在栈或外层对象内**，但**元素数组永远在堆上**（通过分配器，默认 `std::allocator` → `::operator new` → `malloc`）。`std::string`、`std::deque`（分段）、`std::list`、`std::map` 等节点/缓冲也主要在堆。
+<span class="badge badge-std">标准</span> `std::vector<T>` 的**对象本身（控制块：指针/大小/容量）通常在栈或外层对象内**，但**元素数组永远在堆上**（通过分配器，默认 `std::allocator` → `::operator new` → `malloc`）。`std::string`、`std::deque`（分段）、`std::list`、`std::map` 等节点/缓冲也主要在堆。
 
 P18 观察 `vector` 容量增长与堆地址变化（reallocation 时整体搬迁）：
 
-> **示例 23** [难度 ★★☆☆☆] [主题：std::vector 等容器的堆使]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::vector 等容器的堆使
 ```cpp
 // P18：vector 增长触发 realloc（堆上整体搬迁，地址变化）
 #include <vector>
@@ -837,7 +837,7 @@ int main() {
 
 P19 对比"栈上 array"与"堆上 vector"的生命周期边界：
 
-> **示例 24** [难度 ★★☆☆☆] [主题：std::vector 等容器的堆使]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::vector 等容器的堆使
 ```cpp
 // P19：栈 array（固定大小，零分配） vs 堆 vector（动态，需分配）
 #include <array>
@@ -852,17 +852,17 @@ int main() {
 }
 ```
 
-[经验] `reserve()` 预扩容避免反复 realloc（§15 性能）；返回大容器用 `std::move` 或 NRVO 避免深拷贝；小固定尺寸优先 `std::array`（无堆、无分配开销）。
+<span class="badge badge-exp">经验</span> `reserve()` 预扩容避免反复 realloc（§15 性能）；返回大容器用 `std::move` 或 NRVO 避免深拷贝；小固定尺寸优先 `std::array`（无堆、无分配开销）。
 
 ---
 
 ## ⑰ 栈对象 vs 堆对象：生命周期与 RAII
 
-[标准] 栈对象有**自动存储期**：作用域结束（正常或异常）时自动析构——这就是 **RAII（Resource Acquisition Is Initialization）** 的基础（见 ch19 存储期）。堆对象有**动态存储期**：直到显式 `delete` 才析构，忘记 `delete` 即泄漏。
+<span class="badge badge-std">标准</span> 栈对象有**自动存储期**：作用域结束（正常或异常）时自动析构——这就是 **RAII（Resource Acquisition Is Initialization）** 的基础（见 ch19 存储期）。堆对象有**动态存储期**：直到显式 `delete` 才析构，忘记 `delete` 即泄漏。
 
 P20 RAII：栈对象在作用域退出时自动释放（即使中间 return）：
 
-> **示例 25** [难度 ★★☆☆☆] [主题：栈对象 vs 堆对象：生命周期与 R]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈对象 vs 堆对象：生命周期与 R
 ```cpp
 // P20：栈对象 RAII（作用域结束自动析构，无需手动释放）
 #include <cstdio>
@@ -880,7 +880,7 @@ int main() { use(); }
 
 P21 裸 `new` 忘记 `delete` 会泄漏（对比 RAII）：
 
-> **示例 26** [难度 ★★☆☆☆] [主题：栈对象 vs 堆对象：生命周期与 R]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈对象 vs 堆对象：生命周期与 R
 ```cpp
 // P21：裸 new 遗忘 delete = 内存泄漏；应改用智能指针/栈对象
 #include <cstdio>
@@ -895,7 +895,7 @@ int main() { leak(); }
 
 P22 用 `std::unique_ptr` 把堆对象纳入 RAII（推荐做法）：
 
-> **示例 27** [难度 ★★☆☆☆] [主题：栈对象 vs 堆对象：生命周期与 R]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈对象 vs 堆对象：生命周期与 R
 ```cpp
 // P22：unique_ptr 让堆对象获得栈式生命周期（RAII + 零拷贝所有权）
 #include <memory>
@@ -907,19 +907,19 @@ int main() {
 }
 ```
 
-[经验] **默认用栈对象 / `std::unique_ptr` / `std::shared_ptr`**；裸 `new`/`delete` 只在实现底层设施（分配器、容器、池）时出现。RAII 把"释放"从开发者记性转移到作用域，是 C++ 防泄漏的核心武器（ch19、ch44）。
+<span class="badge badge-exp">经验</span> **默认用栈对象 / `std::unique_ptr` / `std::shared_ptr`**；裸 `new`/`delete` 只在实现底层设施（分配器、容器、池）时出现。RAII 把"释放"从开发者记性转移到作用域，是 C++ 防泄漏的核心武器（ch19、ch44）。
 
 ---
 
 ## ⑱ 栈展开（Stack Unwinding，异常时）
 
-[标准] 当异常抛出且未被当前函数捕获，运行时会**沿调用链向上逐层退出栈帧**，对每个已构造的**自动（栈）对象调用析构函数**，直到遇到匹配的 `catch`——这一过程叫 **栈展开（stack unwinding）**。展开保证了 RAII 在异常路径下依然成立（见 ch33 异常）。
+<span class="badge badge-std">标准</span> 当异常抛出且未被当前函数捕获，运行时会**沿调用链向上逐层退出栈帧**，对每个已构造的**自动（栈）对象调用析构函数**，直到遇到匹配的 `catch`——这一过程叫 **栈展开（stack unwinding）**。展开保证了 RAII 在异常路径下依然成立（见 ch33 异常）。
 
-[实现] 展开由**异常表（EH table）/ unwind 信息**驱动（Itanium C++ ABI 的 `_Unwind_*`、Windows 的 SEH）。`-O0` 与 `-O2` 都保留 unwind 信息（除非 `-fno-exceptions`）。
+<span class="badge badge-impl">实现</span> 展开由**异常表（EH table）/ unwind 信息**驱动（Itanium C++ ABI 的 `_Unwind_*`、Windows 的 SEH）。`-O0` 与 `-O2` 都保留 unwind 信息（除非 `-fno-exceptions`）。
 
 P23 栈展开：异常抛出后，已构造的栈对象逆序析构：
 
-> **示例 28** [难度 ★★☆☆☆] [主题：栈展开]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈展开
 ```cpp
 // P23：异常触发栈展开，局部对象逆序析构
 #include <cstdio>
@@ -945,7 +945,7 @@ int main() {
 
 P24 嵌套 try/catch 中展开停在匹配 catch：
 
-> **示例 29** [难度 ★★☆☆☆] [主题：栈展开]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈展开
 ```cpp
 // P24：栈展开在遇到第一个匹配 catch 时停止
 #include <cstdio>
@@ -966,13 +966,13 @@ int main() {
 }
 ```
 
-[经验] 栈展开使"异常安全"成为可能，但前提是资源都用 RAII 管理（§17）。在析构函数中**不要抛异常**（或标记为 `noexcept`），否则在展开途中再抛会导致 `std::terminate`（ch33）。
+<span class="badge badge-exp">经验</span> 栈展开使"异常安全"成为可能，但前提是资源都用 RAII 管理（§17）。在析构函数中**不要抛异常**（或标记为 `noexcept`），否则在展开途中再抛会导致 `std::terminate`（ch33）。
 
 ---
 
 ## ⑲ 三编译器对比：GCC / Clang / MSVC
 
-[实现] 三者对栈/堆相关安全与扩展的处理不同（本机实测项以 GCC 13.1.0 / MinGW 为准；Clang/MSVC 为 `[实现-推断]` 级别文档事实）：
+<span class="badge badge-impl">实现</span> 三者对栈/堆相关安全与扩展的处理不同（本机实测项以 GCC 13.1.0 / MinGW 为准；Clang/MSVC 为 `[实现-推断]` 级别文档事实）：
 
 | 特性 | GCC | Clang | MSVC |
 |------|-----|-------|------|
@@ -996,7 +996,7 @@ cl /EHsc /GS /W4 /RTCs p25.cpp        # /GS 栈 cookie，/RTCs 栈帧检查
 
 P26 用 `[[gnu::noinline]]` 写出三编译器都能编译、验证栈帧存在的程序：
 
-> **示例 30** [难度 ★★☆☆☆] [主题：三编译器对比：GCC / Clang]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三编译器对比：GCC / Clang
 ```cpp
 // P26：跨编译器可编译——验证栈对象地址随递归递减（栈向下增长）
 #include <cstdio>
@@ -1011,7 +1011,7 @@ int main() { rec(0, nullptr); }
 // 输出：每层 local 地址更低 —— 证明栈向下增长
 ```
 
-[经验] 跨平台项目用 `#ifdef _MSC_VER` / `__GNUC__` 区分配套编译选项；不要假设某编译器的栈保护默认开启——在构建系统里**显式**开启。
+<span class="badge badge-exp">经验</span> 跨平台项目用 `#ifdef _MSC_VER` / `__GNUC__` 区分配套编译选项；不要假设某编译器的栈保护默认开启——在构建系统里**显式**开启。
 
 ---
 
@@ -1020,22 +1020,22 @@ int main() { rec(0, nullptr); }
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：返回局部变量的地址导致悬垂。** 你写 `int* f(){ int x; return &x; }`，调用方拿到失效指针。请说明存储期与生命周期的关系。
-   - [标准] 自动存储期对象在其声明的作用域结束时销毁；返回其指针得到悬垂指针，后续访问是 UB。
-   - [引用] ISO/IEC 14882:2023 §[basic.stc.auto]（自动存储期）；cppreference "Storage duration" 词条。
+   - <span class="badge badge-std">标准</span> 自动存储期对象在其声明的作用域结束时销毁；返回其指针得到悬垂指针，后续访问是 UB。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.auto]（自动存储期）；cppreference "Storage duration" 词条。
 
 2. **真实场景：大数组爆栈（stack overflow）。** 你在函数内声明 `char buf[8*1024*1024];`，递归稍深就崩溃。请说明自动变量的大小约束。
-   - [标准] 自动变量的大小受实现定义的限制；超出可用栈空间是未定义行为（典型表现为栈溢出）。
-   - [引用] ISO/IEC 14882:2023 §[basic.stc.auto]（自动存储期与实现限制）；cppreference "Automatic storage duration" 词条。
+   - <span class="badge badge-std">标准</span> 自动变量的大小受实现定义的限制；超出可用栈空间是未定义行为（典型表现为栈溢出）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.auto]（自动存储期与实现限制）；cppreference "Automatic storage duration" 词条。
 
 3. **真实场景：构造中抛异常仍能正确清理已构造成员。** 你在一个聚合构造函数里先成功构造 `std::vector` 成员，随后另一成员构造抛异常，没泄漏。请说明栈展开机制。
-   - [标准] 异常栈展开时，已完整构造的基类和成员子对象会按逆序调用析构函数（RAII 基础）。
-   - [引用] ISO/IEC 14882:2023 §[except.ctor]（栈展开与成员析构）；cppreference "RAII" 词条。
+   - <span class="badge badge-std">标准</span> 异常栈展开时，已完整构造的基类和成员子对象会按逆序调用析构函数（RAII 基础）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[except.ctor]（栈展开与成员析构）；cppreference "RAII" 词条。
 
 [标准/经验] 对比别的语言如何对待"栈 vs 堆"，能反衬 C++ 的设计取舍。
 
 ### 20.1 Rust
 
-[经验] Rust 默认值类型在**栈**；需要堆用显式 `Box<T>`（类似 `std::unique_ptr`）。无 GC，靠**所有权 + 借用检查 + RAII（Drop trait）**在编译期保证无悬垂/无泄漏。逃逸到堆由程序员显式决定。
+<span class="badge badge-exp">经验</span> Rust 默认值类型在**栈**；需要堆用显式 `Box<T>`（类似 `std::unique_ptr`）。无 GC，靠**所有权 + 借用检查 + RAII（Drop trait）**在编译期保证无悬垂/无泄漏。逃逸到堆由程序员显式决定。
 
 ```rust
 // P27（Rust）：栈值 + Box 上堆（无 GC，Drop 即 RAII）
@@ -1049,7 +1049,7 @@ fn main() {
 
 ### 20.2 Go
 
-[经验] Go 的 **goroutine 栈可动态增长**（初始小栈，按需扩容，不像 C++ 线程栈固定易溢出）。**逃逸分析（escape analysis）**决定变量在栈还是堆：若编译器判定其生命周期超出函数，则"逃逸"到堆。
+<span class="badge badge-exp">经验</span> Go 的 **goroutine 栈可动态增长**（初始小栈，按需扩容，不像 C++ 线程栈固定易溢出）。**逃逸分析（escape analysis）**决定变量在栈还是堆：若编译器判定其生命周期超出函数，则"逃逸"到堆。
 
 ```go
 // P28（Go）：逃逸分析决定栈/堆（go build -gcflags="-m" 可见 "escapes to heap")
@@ -1061,7 +1061,7 @@ func main() { fmt.Println(makeSlice()) }
 
 ### 20.3 Java
 
-[经验] Java **几乎所有对象都在堆**（由 GC 管理）；局部变量是引用（在栈），对象实体在堆。HotSpot JIT 可做**逃逸分析 + 标量替换（scalar replacement）**：若对象未逃逸，可拆成标量在栈上分配甚至消除分配。
+<span class="badge badge-exp">经验</span> Java **几乎所有对象都在堆**（由 GC 管理）；局部变量是引用（在栈），对象实体在堆。HotSpot JIT 可做**逃逸分析 + 标量替换（scalar replacement）**：若对象未逃逸，可拆成标量在栈上分配甚至消除分配。
 
 ```java
 // P29（Java）：对象在堆；JIT 逃逸分析可能做标量替换消除分配
@@ -1077,7 +1077,7 @@ public class M {
 
 ### 20.4 C#
 
-[经验] C# 类似 Java：引用类型（class）在堆受 GC 管理；值类型（struct）默认在栈（作为字段时在所属对象内）。同样有逃逸分析优化。
+<span class="badge badge-exp">经验</span> C# 类似 Java：引用类型（class）在堆受 GC 管理；值类型（struct）默认在栈（作为字段时在所属对象内）。同样有逃逸分析优化。
 
 ```csharp
 // P30（C#）：class 在堆，struct 默认在栈
@@ -1091,7 +1091,7 @@ class Prog {
 }
 ```
 
-[经验] 与 C++ 的本质区别：C++ 把"栈还是堆"的**决定权完全交给程序员**（`int x;` 栈，`new int;` 堆），并用 RAII + 智能指针在堆上模拟栈的安全性；而带 GC 的语言把堆管理交给运行时。Go 的"可增长栈 + 逃逸分析"最接近 C++ 的性能模型但省去手动管理。
+<span class="badge badge-exp">经验</span> 与 C++ 的本质区别：C++ 把"栈还是堆"的**决定权完全交给程序员**（`int x;` 栈，`new int;` 堆），并用 RAII + 智能指针在堆上模拟栈的安全性；而带 GC 的语言把堆管理交给运行时。Go 的"可增长栈 + 逃逸分析"最接近 C++ 的性能模型但省去手动管理。
 
 ---
 
@@ -1107,7 +1107,7 @@ class Prog {
 6. **Itanium C++ ABI（归栈展开 / `_Unwind_*`）**：异常时 unwinding 的规范基础（§18，ch33）。
 7. **Aho/Lam/Sethi/Ullman《Compilers: Principles, Techniques, and Tools》**：栈帧布局、调用约定的形式化讲解（§2、§3）。
 
-[经验] 读分配器源码前，先跑通 §16 的 microbenchmark 建立"数量级直觉"，否则容易迷失在宏与位运算里。
+<span class="badge badge-exp">经验</span> 读分配器源码前，先跑通 §16 的 microbenchmark 建立"数量级直觉"，否则容易迷失在宏与位运算里。
 
 ---
 
@@ -1117,7 +1117,7 @@ class Prog {
 
 ### 22.1 ABI 与帧观测（P31–P32）
 
-> **示例 31** [难度 ★★☆☆☆] [主题：与帧观测（P31–P32）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与帧观测（P31–P32）
 ```cpp
 // P31：用 GCC/Clang 内建观察栈帧与返回地址（本机 g++ 支持）
 #include <cstdio>
@@ -1131,7 +1131,7 @@ int main() { probe(0); }
 // 运行可见：每层 frame 地址递减（栈向下增长），ret 指向调用点后一条指令
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：与帧观测（P31–P32）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与帧观测（P31–P32）
 ```cpp
 // P32：递归各层帧地址差（量化本机帧大小，含 16B 对齐填充）
 #include <cstdio>
@@ -1146,11 +1146,11 @@ int main() { int seed; levels(0, &seed); }
 // 本机实测：每层间隔约 64 B（含红区/对齐/保存寄存器开销）
 ```
 
-[经验] `__builtin_frame_address`/`__builtin_return_address` 是调试与 hack（栈回溯、profiler）利器，但属于**编译器扩展**，不可移植到 MSVC（MSVC 用 `RtlCaptureStackBackTrace`）。
+<span class="badge badge-exp">经验</span> `__builtin_frame_address`/`__builtin_return_address` 是调试与 hack（栈回溯、profiler）利器，但属于**编译器扩展**，不可移植到 MSVC（MSVC 用 `RtlCaptureStackBackTrace`）。
 
 ### 22.2 自定义 free-list 与内存池（P33–P34，交叉 ch44）
 
-> **示例 33** [难度 ★★☆☆☆] [主题：自定义 free-list 与内存池]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义 free-list 与内存池
 ```cpp
 // P33：教学用 free-list 分配器（演示 §11 bin/freelist 思想，可编译运行）
 #include <cstdio>
@@ -1173,7 +1173,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：自定义 free-list 与内存池]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义 free-list 与内存池
 ```cpp
 // P34：固定大小内存池（ch44 交叉）：一次 malloc，多次 O(1) 取还，避免碎片
 #include <cstdio>
@@ -1195,11 +1195,11 @@ int main() {
 }
 ```
 
-[经验] 这正是 §13 碎片问题的工程解药：用**固定 size class 的池**把"任意大小堆分配"变成"同尺寸块取还"，消除外部碎片、把分配降为链表操作（见 ch44 内存池深入）。
+<span class="badge badge-exp">经验</span> 这正是 §13 碎片问题的工程解药：用**固定 size class 的池**把"任意大小堆分配"变成"同尺寸块取还"，消除外部碎片、把分配降为链表操作（见 ch44 内存池深入）。
 
 ### 22.3 并发堆竞争（P35，交叉 ch61）
 
-> **示例 35** [难度 ★★☆☆☆] [主题：并发堆竞争（P35，交叉 ch61）]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并发堆竞争（P35，交叉 ch61）
 ```cpp
 // P35：多线程并发 malloc/free 竞争计时（ch61 交叉）
 #include <thread>
@@ -1222,11 +1222,11 @@ int main() {
 // 编译：g++ -std=c++17 -pthread p35.cpp -o p35
 ```
 
-[经验] 此即 ch61 的主题：堆是**全局共享资源**，多线程同时 `malloc` 需arena 锁；高并发下 tcmalloc/jemalloc 的 thread-local 缓存（§12）价值凸显。若你的服务在堆上高频分配，先测并发竞争再选分配器。
+<span class="badge badge-exp">经验</span> 此即 ch61 的主题：堆是**全局共享资源**，多线程同时 `malloc` 需arena 锁；高并发下 tcmalloc/jemalloc 的 thread-local 缓存（§12）价值凸显。若你的服务在堆上高频分配，先测并发竞争再选分配器。
 
 ### 22.4 RAII 计数与对象生命周期（P36）
 
-> **示例 36** [难度 ★★☆☆☆] [主题：计数与对象生命周期（P36）]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 计数与对象生命周期（P36）
 ```cpp
 // P36：栈对象 vs 堆对象 构造/析构次数统计
 #include <cstdio>
@@ -1242,11 +1242,11 @@ int main() {
 // 输出：ctor=3 dtor=2 → 印证"裸 new 不 delete 就漏一个析构"
 ```
 
-[经验] 把"析构次数 == 构造次数"作为泄漏自检的心智模型；用 `std::unique_ptr`/`std::shared_ptr` 让堆对象也满足它（§17、ch19）。
+<span class="badge badge-exp">经验</span> 把"析构次数 == 构造次数"作为泄漏自检的心智模型；用 `std::unique_ptr`/`std::shared_ptr` 让堆对象也满足它（§17、ch19）。
 
 ### 22.5 栈缓冲上的构造与 PMR（P37–P38，交叉 ch38）
 
-> **示例 37** [难度 ★★☆☆☆] [主题：栈缓冲上的构造与 PMR]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈缓冲上的构造与 PMR
 ```cpp
 // P37：在栈缓冲上用 placement new 构造对象数组（不触发堆分配）
 #include <new>
@@ -1261,7 +1261,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：栈缓冲上的构造与 PMR]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈缓冲上的构造与 PMR
 ```cpp
 // P38：C++17 std::pmr 在栈缓冲上分配（演示"分配器后端"概念，ch38 交叉）
 #include <memory_resource>
@@ -1278,11 +1278,11 @@ int main() {
 // 编译：g++ -std=c++17 p38.cpp -o p38
 ```
 
-[经验] PMR 把"对象放哪"与"放什么"解耦：同一个 `std::pmr::vector` 可以后端是栈缓冲、堆、或自定义内存池（ch38 深入）。这正是现代 C++ 对 §10–§12 分配器复杂度的封装答案。
+<span class="badge badge-exp">经验</span> PMR 把"对象放哪"与"放什么"解耦：同一个 `std::pmr::vector` 可以后端是栈缓冲、堆、或自定义内存池（ch38 深入）。这正是现代 C++ 对 §10–§12 分配器复杂度的封装答案。
 
 ### 22.6 对齐分配与 new 失败处理（P39–P42，交叉 ch37）
 
-> **示例 39** [难度 ★★☆☆☆] [主题：对齐分配与 new 失败处理]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐分配与 new 失败处理
 ```cpp
 // P39：对齐分配（缓存行/SIMD 对齐）。标准名 std::aligned_alloc(C++17)；
 //       本机 MinGW 未暴露该名，改用 Windows 的 _aligned_malloc 演示。
@@ -1305,7 +1305,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★★★☆☆] [主题：对齐分配与 new 失败处理]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 对齐分配与 new 失败处理
 ```cpp
 // P40：new 失败时抛 std::bad_alloc（关联 ch37）
 #include <new>
@@ -1323,7 +1323,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：对齐分配与 new 失败处理]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐分配与 new 失败处理
 ```cpp
 // P41：查询实际分配尺寸（Windows CRT _msize；演示"内部碎片"真实开销）
 #include <cstdio>
@@ -1346,7 +1346,7 @@ int main() {
 // 本机：req=1 实际块往往 1（调试堆头另算），体现分配器最小粒度与头开销
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：对齐分配与 new 失败处理]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐分配与 new 失败处理
 ```cpp
 // P42：nothrow new 失败返回 nullptr；普通 new 抛 bad_alloc（ch37 交叉）
 #include <new>
@@ -1361,55 +1361,55 @@ int main() {
 }
 ```
 
-[经验] 对齐分配用于 SIMD、原子变量、缓存行隔离（防止 false sharing，ch61）；`nothrow` new 是"不想抛异常"场景（如嵌入式/底层）的逃生舱，但别因此到处忽略 `nullptr`——多数应用应让异常上浮（P40）。
+<span class="badge badge-exp">经验</span> 对齐分配用于 SIMD、原子变量、缓存行隔离（防止 false sharing，ch61）；`nothrow` new 是"不想抛异常"场景（如嵌入式/底层）的逃生舱，但别因此到处忽略 `nullptr`——多数应用应让异常上浮（P40）。
 
 ### 22.7 扩展程序小结
 
-[平台] 以上 P31–P42 均已在 `g++ 13.1.0` 实测编译通过（P35/P38 需 `-pthread`/`-std=c++17`）。它们与正文 P1–P30 一并构成**共 42 个完整可编译程序**，覆盖：栈帧观测、ABI 传参、红区、栈溢出、alloca/VLA、malloc/free、碎片、new/delete、RAII、栈展开、跨编译器、跨语言、自定义分配器、内存池、并发竞争、PMR、对齐分配、new 失败。
+<span class="badge badge-platform">平台</span> 以上 P31–P42 均已在 `g++ 13.1.0` 实测编译通过（P35/P38 需 `-pthread`/`-std=c++17`）。它们与正文 P1–P30 一并构成**共 42 个完整可编译程序**，覆盖：栈帧观测、ABI 传参、红区、栈溢出、alloca/VLA、malloc/free、碎片、new/delete、RAII、栈展开、跨编译器、跨语言、自定义分配器、内存池、并发竞争、PMR、对齐分配、new 失败。
 
 ---
 
 ## 核心知识点速查（23 项）
 
-下面 23 项即本章"核心知识点"，编号 KP1–KP23，便于检索与对照 [标准]/[实现]/[平台]/[经验] 分层。
+下面 23 项即本章"核心知识点"，编号 KP1–KP23，便于检索与对照 <span class="badge badge-std">标准</span>/<span class="badge badge-impl">实现</span>/<span class="badge badge-platform">平台</span>/<span class="badge badge-exp">经验</span> 分层。
 
 | # | 知识点 | 分层 | 位置 |
 |---|--------|------|------|
-| KP1 | 栈帧组成：返回地址 / 保存寄存器 / 局部变量 / 参数 / 对齐填充 | [标准] | §2 |
-| KP2 | 栈帧从高地址向低地址排布（参数区→返回地址→保存rbp→局部→红区） | [标准] | §2,§4.2 |
+| KP1 | 栈帧组成：返回地址 / 保存寄存器 / 局部变量 / 参数 / 对齐填充 | <span class="badge badge-std">标准</span> | §2 |
+| KP2 | 栈帧从高地址向低地址排布（参数区→返回地址→保存rbp→局部→红区） | <span class="badge badge-std">标准</span> | §2,§4.2 |
 | KP3 | prologue/epilogue 形态：`-O0` 建帧、`-O2` 常内联免帧 | [平台-实现] | §3 |
-| KP4 | System V 寄存器传参：RDI/RSI/RDX/RCX/R8/R9 + XMM0–7 | [标准] | §4.1 |
-| KP5 | 超容参数走栈（第 7+ 个，右→左） | [标准] | §4.1,§5 |
-| KP6 | caller-saved：RAX/RCX/RDX/RSI/RDI/R8–R11（调用前自保） | [标准] | §6 |
-| KP7 | callee-saved：RBX/RBP/R12–R15（被调用者须保存恢复） | [标准] | §6 |
-| KP8 | 红区 128 B：叶子函数免调整使用；内核 `-mno-red-zone` 禁用 | [标准] | §7 |
-| KP9 | 栈向下增长 | [标准] | §8,§19(P26) |
+| KP4 | System V 寄存器传参：RDI/RSI/RDX/RCX/R8/R9 + XMM0–7 | <span class="badge badge-std">标准</span> | §4.1 |
+| KP5 | 超容参数走栈（第 7+ 个，右→左） | <span class="badge badge-std">标准</span> | §4.1,§5 |
+| KP6 | caller-saved：RAX/RCX/RDX/RSI/RDI/R8–R11（调用前自保） | <span class="badge badge-std">标准</span> | §6 |
+| KP7 | callee-saved：RBX/RBP/R12–R15（被调用者须保存恢复） | <span class="badge badge-std">标准</span> | §6 |
+| KP8 | 红区 128 B：叶子函数免调整使用；内核 `-mno-red-zone` 禁用 | <span class="badge badge-std">标准</span> | §7 |
+| KP9 | 栈向下增长 | <span class="badge badge-std">标准</span> | §8,§19(P26) |
 | KP10 | 栈溢出 / guard page / SIGSEGV | [实现·GCC15] | §8.1,§8.2 |
 | KP11 | `-fstack-protector`（canary）防护 | [实现·GCC15] | §8.3 |
 | KP12 | ASan 检测越界 | [实现·GCC15] | §8.4 |
 | KP13 | `alloca`：栈内动态分配，返回即回收，禁 free | [实现·GCC15] | §9.1 |
-| KP14 | VLA：C99 有，C++ 标准无；GCC/Clang 扩展，MSVC 不支持 | [标准]/[实现·GCC15] | §9.2 |
-| KP15 | `malloc`/`free` 语义（对齐、NULL、errno、配对） | [标准] | §10 |
+| KP14 | VLA：C99 有，C++ 标准无；GCC/Clang 扩展，MSVC 不支持 | <span class="badge badge-std">标准</span>/[实现·GCC15] | §9.2 |
+| KP15 | `malloc`/`free` 语义（对齐、NULL、errno、配对） | <span class="badge badge-std">标准</span> | §10 |
 | KP16 | ptmalloc2 arena（主/非主，降锁竞争） | [实现-推断] | §11.1 |
 | KP17 | bin 分类：fastbin/smallbin/unsortedbin/largebin | [实现-推断] | §11.2 |
 | KP18 | chunk 头 size + 标志位（P/M/A：prev_inuse/mmapped/non_main_arena） | [实现-推断] | §11.3 |
 | KP19 | coalescing（合并）与 tcache（每线程免锁缓存） | [实现-推断] | §11.4 |
 | KP20 | jemalloc（arena+run+bin+size class）/ tcmalloc（thread cache + central free list） | [实现-推断] | §12 |
-| KP21 | 内部碎片 / 外部碎片 成因 | [标准]/[实现·GCC15] | §13 |
-| KP22 | `new`/`delete` = 分配+构造 / 析构+释放；默认 `operator new` 调 `malloc` | [标准]/[实现·GCC15] | §14 |
-| KP23 | 栈分配 = `sub rsp`（O(1) 无锁）；堆分配 = 锁+查找（数百 ns）；栈展开保证 RAII | [标准]/[实现·GCC15] | §15,§18 |
+| KP21 | 内部碎片 / 外部碎片 成因 | <span class="badge badge-std">标准</span>/[实现·GCC15] | §13 |
+| KP22 | `new`/`delete` = 分配+构造 / 析构+释放；默认 `operator new` 调 `malloc` | <span class="badge badge-std">标准</span>/[实现·GCC15] | §14 |
+| KP23 | 栈分配 = `sub rsp`（O(1) 无锁）；堆分配 = 锁+查找（数百 ns）；栈展开保证 RAII | <span class="badge badge-std">标准</span>/[实现·GCC15] | §15,§18 |
 
 ---
 
 ## 本章小结
 
-[标准] 栈与堆是 C++ 内存的两大故乡：栈由编译器在编译期布局、随调用自动回收、分配只需移动 `RSP`；堆由运行期分配器管理、需手动或借 RAII 回收、分配涉及查找与锁。
+<span class="badge badge-std">标准</span> 栈与堆是 C++ 内存的两大故乡：栈由编译器在编译期布局、随调用自动回收、分配只需移动 `RSP`；堆由运行期分配器管理、需手动或借 RAII 回收、分配涉及查找与锁。
 
-[实现] 调用约定把前若干参数放入寄存器（System V 6 个 / Microsoft x64 4 个），其余走栈；caller/callee-saved 分工保证寄存器在调用边界正确；红区让叶子函数免调整使用栈下方空间（System V 有，本机 Microsoft x64 无）。
+<span class="badge badge-impl">实现</span> 调用约定把前若干参数放入寄存器（System V 6 个 / Microsoft x64 4 个），其余走栈；caller/callee-saved 分工保证寄存器在调用边界正确；红区让叶子函数免调整使用栈下方空间（System V 有，本机 Microsoft x64 无）。
 
 [实现-推断] 堆分配器（ptmalloc2/jemalloc/tcmalloc）用 arena/bin/chunk/tcache/size-class 在吞吐与碎片间权衡；碎片分内部（对齐/取整浪费）与外部（空洞化）。
 
-[经验] 工程铁律：**默认栈对象 + RAII + 智能指针**；热路径避免反复 `new`/`delete`；跨平台确认 ABI 与安全选项；栈溢出用 guard page + canary + ASan 三层防护。
+<span class="badge badge-exp">经验</span> 工程铁律：**默认栈对象 + RAII + 智能指针**；热路径避免反复 `new`/`delete`；跨平台确认 ABI 与安全选项；栈溢出用 guard page + canary + ASan 三层防护。
 
 **交叉引用**：存储期与自动/动态语义见 ch19；地址空间布局（栈/堆相向增长）见 ch35；`new`/`delete` 完整语义与重载见 ch37；自定义分配器与 `std::allocator` 见 ch38；异常栈展开细节见 ch33；内存池/固定 size class 缓解碎片见 ch44；并发下堆竞争与分配器选型见 ch61；底层 ABI 与平台细节脉络见 ch80。
 
@@ -1428,7 +1428,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：栈与堆的双内存格局从何而来
 
-[史] 「栈式分配」并非 C++ 首创，而是源自 1958–1960 年的 **Algol 60**——它首次把「过程调用 → 进入时压栈分配、退出时整块回收」确立为语言级机制，连 call stack 这个词都来自此；现代 x86 的 `push/pop`、`rsp` 与 red zone 都仍是这一模型的硬件实现。[史] 「堆」作为与栈分离的自由存储，则随 1970 年代 **Unix 的 `malloc`/`free`（源自 `brk`/`sbrk` 系统调用）** 与 C 语言绑定，C++ 的 `new`/`delete` 在 1985 年 C++ 诞生时即被设计为「在堆上分配 + 构造」的双层语法（见 ch37）。[轶] 一个普遍误解是「栈快、堆慢」是语言决定的；其实是 **调用约定（calling convention）** 决定的——`malloc`/`new` 要走通用分配器、维护空闲链表、可能陷入内核，而栈分配只是 `sub rsp, N` 一条指令。System V AMD64 ABI（1999）固化了 `rsp` 向下增长、红区（`-128` 字节）、寄存器传参等规则，C++ 编译器只是忠实地遵守它。
+<span class="badge badge-history">史</span> 「栈式分配」并非 C++ 首创，而是源自 1958–1960 年的 **Algol 60**——它首次把「过程调用 → 进入时压栈分配、退出时整块回收」确立为语言级机制，连 call stack 这个词都来自此；现代 x86 的 `push/pop`、`rsp` 与 red zone 都仍是这一模型的硬件实现。<span class="badge badge-history">史</span> 「堆」作为与栈分离的自由存储，则随 1970 年代 **Unix 的 `malloc`/`free`（源自 `brk`/`sbrk` 系统调用）** 与 C 语言绑定，C++ 的 `new`/`delete` 在 1985 年 C++ 诞生时即被设计为「在堆上分配 + 构造」的双层语法（见 ch37）。<span class="badge badge-anecdote">轶</span> 一个普遍误解是「栈快、堆慢」是语言决定的；其实是 **调用约定（calling convention）** 决定的——`malloc`/`new` 要走通用分配器、维护空闲链表、可能陷入内核，而栈分配只是 `sub rsp, N` 一条指令。System V AMD64 ABI（1999）固化了 `rsp` 向下增长、红区（`-128` 字节）、寄存器传参等规则，C++ 编译器只是忠实地遵守它。
 
 ### ㉒.2 真实工程坐标：栈/堆分配活在哪里
 
@@ -1456,8 +1456,8 @@ int main() {
 
 ### ㉒.4 与标准的互动：分配语义与 WG21 演进
 
-[史] C++ 标准从未规定分配器必须用堆——它只定义 *storage duration*（自动/动态/静态）与 `new`/`delete` 表达式的语义（分配 + 构造 / 析构 + 释放），把「用什么后端」完全交给实现。[评] 标准刻意把堆实现细节（ptmalloc/jemalloc/tcmalloc 之争）挡在语言之外，只通过 **`<new>` 的可替换 `operator new`/`delete`**（见 ch37）给用户留后门。[史] 与栈/堆最相关的标准演进是 **C++11 引入 `std::aligned_storage` / `alignas`** 让程序员显式控制对齐，**C++17 的 P0035** 补齐过对齐动态分配，**C++20 的 `std::pmr`（见 ch38 / ㉒.5 P0220）** 把「换个分配后端」从 hack 变成一等公民——本质都是让「堆的选型」从全局替换升级为可组合、可作用域化的资源对象。[评] WG21 仍在推进 `std::allocator` 的简化与 PMR 生态，方向是既保住「默认零心智负担（堆）」、又给性能敏感代码提供零成本的栈式/池式替代。
-- [史] 把「换堆后端」标准化成修订链：**P0220R0→P0220R1（C++17 采纳 Library Fundamentals TS 的 PMR）**，让 `std::pmr::memory_resource` 从 hack 变成一等公民。ISO 条款 `[basic.stc]` 只定义 *storage duration*（自动/动态/静态/线程局部）的语义，把「分配来自堆还是栈、用哪个分配器」完全交给实现；而可替换的 `operator new`/`delete`（ISO `[basic.stc.dynamic]`）正是标准留给用户的唯一合法后门——这也是 JPL/嵌入式「禁用堆」能在不违反标准的前提下成立的根本原因。
+<span class="badge badge-history">史</span> C++ 标准从未规定分配器必须用堆——它只定义 *storage duration*（自动/动态/静态）与 `new`/`delete` 表达式的语义（分配 + 构造 / 析构 + 释放），把「用什么后端」完全交给实现。<span class="badge badge-comment">评</span> 标准刻意把堆实现细节（ptmalloc/jemalloc/tcmalloc 之争）挡在语言之外，只通过 **`<new>` 的可替换 `operator new`/`delete`**（见 ch37）给用户留后门。<span class="badge badge-history">史</span> 与栈/堆最相关的标准演进是 **C++11 引入 `std::aligned_storage` / `alignas`** 让程序员显式控制对齐，**C++17 的 P0035** 补齐过对齐动态分配，**C++20 的 `std::pmr`（见 ch38 / ㉒.5 P0220）** 把「换个分配后端」从 hack 变成一等公民——本质都是让「堆的选型」从全局替换升级为可组合、可作用域化的资源对象。<span class="badge badge-comment">评</span> WG21 仍在推进 `std::allocator` 的简化与 PMR 生态，方向是既保住「默认零心智负担（堆）」、又给性能敏感代码提供零成本的栈式/池式替代。
+- <span class="badge badge-history">史</span> 把「换堆后端」标准化成修订链：**P0220R0→P0220R1（C++17 采纳 Library Fundamentals TS 的 PMR）**，让 `std::pmr::memory_resource` 从 hack 变成一等公民。ISO 条款 `[basic.stc]` 只定义 *storage duration*（自动/动态/静态/线程局部）的语义，把「分配来自堆还是栈、用哪个分配器」完全交给实现；而可替换的 `operator new`/`delete`（ISO `[basic.stc.dynamic]`）正是标准留给用户的唯一合法后门——这也是 JPL/嵌入式「禁用堆」能在不违反标准的前提下成立的根本原因。
 
 ### ㉒.5 权威引用
 
@@ -1533,7 +1533,7 @@ int main() {
 
 栈对象在离开作用域时自动析构；堆对象脱离创建它的作用域后依然存在，必须 `delete` 或交给智能指针管理，否则泄漏。
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 struct T { ~T() { std::cout << "T destroyed\n"; } };
@@ -1546,9 +1546,9 @@ int main() {
 }
 ```
 
-[标准] 栈对象生命周期由作用域绑定；堆对象生命周期由 `delete` 显式控制，二者本质不同。
+<span class="badge badge-std">标准</span> 栈对象生命周期由作用域绑定；堆对象生命周期由 `delete` 显式控制，二者本质不同。
 
-[引用] ISO/IEC 14882:2023 §[basic.stc.auto]/[basic.stc.dynamic]（自动/动态存储期）；RAII 见 §[class.dtor]；C++ Core Guidelines (isocpp.github.io) R.1–R.5 资源管理规则。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.auto]/[basic.stc.dynamic]（自动/动态存储期）；RAII 见 §[class.dtor]；C++ Core Guidelines (isocpp.github.io) R.1–R.5 资源管理规则。
 
 </details>
 
@@ -1560,7 +1560,7 @@ int main() {
 
 `std::unique_ptr` 在析构时自动释放，异常栈展开时也会调用析构，从而提供异常安全的资源回收。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1572,9 +1572,9 @@ void use() {
 int main() { use(); }
 ```
 
-[标准] RAII 把"资源获取"绑定到对象生命周期，是 C++ 异常安全的基础 idiom。
+<span class="badge badge-std">标准</span> RAII 把"资源获取"绑定到对象生命周期，是 C++ 异常安全的基础 idiom。
 
-[引用] ISO/IEC 14882:2023 §[class.dtor]（析构与栈展开）；C++ Core Guidelines E.18/E.19 与 R.1（"Manage resources automatically using RAII"）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.dtor]（析构与栈展开）；C++ Core Guidelines E.18/E.19 与 R.1（"Manage resources automatically using RAII"）。
 
 </details>
 
@@ -1586,7 +1586,7 @@ int main() { use(); }
 
 栈分配只是指针/栈槽移动（O(1) 指令）；堆分配要进入分配器、搜索空闲链表、可能系统调用，开销高 1~2 个数量级。
 
-> **示例 45** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1605,9 +1605,9 @@ int main() {
 }
 ```
 
-[标准] 高频小对象分配应优先考虑栈、对象池或 `std::pmr`，避免反复进入通用分配器。
+<span class="badge badge-std">标准</span> 高频小对象分配应优先考虑栈、对象池或 `std::pmr`，避免反复进入通用分配器。
 
-[引用] 分配开销属实现层；C++ 标准见 §[expr.new]/[basic.stc.dynamic]；工业对比见 tcmalloc/jemalloc 设计文档（github.com/google/tcmalloc、github.com/jemalloc/jemalloc）与 glibc `malloc` 注释；cppreference "operator new"。
+<span class="badge badge-ref">引用</span> 分配开销属实现层；C++ 标准见 §[expr.new]/[basic.stc.dynamic]；工业对比见 tcmalloc/jemalloc 设计文档（github.com/google/tcmalloc、github.com/jemalloc/jemalloc）与 glibc `malloc` 注释；cppreference "operator new"。
 
 </details>
 
@@ -1631,7 +1631,7 @@ const int& bad() {
 
 **修复**：需要传值就按值返回（拷贝/移动）；需要跨作用域生命周期才用智能指针管理堆对象。
 
-> **示例 46** [难度 ★★☆☆☆] [主题：演绎 1：返回局部变量引用/指针 →]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：返回局部变量引用/指针 →
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1658,7 +1658,7 @@ char buf[n];              // VLA, 非标准且易栈溢出
 
 **修复**：大小运行时确定就用 `std::vector`（或 `std::unique_ptr<T[]>`），在堆上按需分配。
 
-> **示例 47** [难度 ★★☆☆☆] [主题：演绎 2：大小在运行时才确定的缓冲 ]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：大小在运行时才确定的缓冲
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1890,7 +1890,7 @@ flowchart TD
 
 ### D5.3 验证 demo
 
-> **示例 48** [难度 ★★☆☆☆] [主题：验证 demo]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
 ```cpp
 #include <iostream>
 #include <cassert>

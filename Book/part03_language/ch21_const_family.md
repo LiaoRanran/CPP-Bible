@@ -19,25 +19,25 @@
 > 从"只读变量"到"编译期求值"，const 家族是 C++ 把"不变"一步步逼进类型系统的历史。
 
 ### 0.1 起源（谁·何时·为何）
-`const` 来自 1980 年代初 Stroustrup 对 C 的扩展，初衷是给"不应被修改"的对象一道编译期保险，并支持 `const` 成员函数以表达"只读不写"的契约。[史] 但它只是"运行期只读"，并不代表"编译期常量"。`constexpr` 是 C++11 才引入的，目标是把"可在编译期求值"写进声明，让模板元编程从 TMP 黑魔法走向普通函数。[史]
+`const` 来自 1980 年代初 Stroustrup 对 C 的扩展，初衷是给"不应被修改"的对象一道编译期保险，并支持 `const` 成员函数以表达"只读不写"的契约。<span class="badge badge-history">史</span> 但它只是"运行期只读"，并不代表"编译期常量"。`constexpr` 是 C++11 才引入的，目标是把"可在编译期求值"写进声明，让模板元编程从 TMP 黑魔法走向普通函数。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **C++11**：`constexpr` 函数 / 变量登场，但只允许极简的单 `return` 函数体。[史]
-- **C++14**：放宽 `constexpr` 函数体（允许局部变量、循环、分支）。[史]
-- **C++20**：`consteval`（立即函数，必须编译期求值）、`constinit`（强制静态初始化，杜绝"静态初始化顺序灾难"）入标准。[史]
+- **C++11**：`constexpr` 函数 / 变量登场，但只允许极简的单 `return` 函数体。<span class="badge badge-history">史</span>
+- **C++14**：放宽 `constexpr` 函数体（允许局部变量、循环、分支）。<span class="badge badge-history">史</span>
+- **C++20**：`consteval`（立即函数，必须编译期求值）、`constinit`（强制静态初始化，杜绝"静态初始化顺序灾难"）入标准。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-早期"常量表达式"靠 `#define` 宏和枚举 hack，既无类型也不安全；`const` 又太弱（值可能到运行期才知）。[评] 委员会的取舍是：把"编译期性"拆成 `constexpr`（尽量编译期）、`consteval`（强制编译期）、`constinit`（只管初始化时机）三档，互不绑架——比"全有或全无"更精细。[史][评]
+早期"常量表达式"靠 `#define` 宏和枚举 hack，既无类型也不安全；`const` 又太弱（值可能到运行期才知）。<span class="badge badge-comment">评</span> 委员会的取舍是：把"编译期性"拆成 `constexpr`（尽量编译期）、`consteval`（强制编译期）、`constinit`（只管初始化时机）三档，互不绑架——比"全有或全无"更精细。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++20 把"编译期性"拆成 constexpr / consteval / constinit 三档。C++23 起这场"把更多东西搬进编译期"的扩张仍在加速。[史]
+0.2 停在 C++20 把"编译期性"拆成 constexpr / consteval / constinit 三档。C++23 起这场"把更多东西搬进编译期"的扩张仍在加速。<span class="badge badge-history">史</span>
 
-- **C++23 `if consteval`（P1938）**：提供"当前是否在编译期求值"的精确分支，配合 C++20 的 `std::is_constant_evaluated` 让函数按上下文走不同实现，比 `if constexpr` 更贴"求值阶段"语义。[史]
-- **constexpr 标准库持续扩张**：C++20 已让 `std::string` / `std::vector` 等进入编译期；C++23 进一步把 `std::optional` / `std::variant` 等补成 constexpr（P2231），编译期数据结构逐渐可用。[史]
-- **`consteval` 与 `std::source_location`（C++20）结合**：立即函数天然在编译期拿到调用点位置，催生编译期诊断与日志惯用法。[史]
-- **行业争议**：社区长期争论"是否该让所有函数默认 constexpr"，反对者担心编译时间爆炸与 ABI 暴露；委员会维持"显式标注"路线，把激进扩张留给 concepts / 反射等渐进提案。[史][评]
-- **C++26 预览**：静态反射与更多 constexpr 算法进入讨论，继续改写"编译期能做什么"的边界。[评]
+- **C++23 `if consteval`（P1938）**：提供"当前是否在编译期求值"的精确分支，配合 C++20 的 `std::is_constant_evaluated` 让函数按上下文走不同实现，比 `if constexpr` 更贴"求值阶段"语义。<span class="badge badge-history">史</span>
+- **constexpr 标准库持续扩张**：C++20 已让 `std::string` / `std::vector` 等进入编译期；C++23 进一步把 `std::optional` / `std::variant` 等补成 constexpr（P2231），编译期数据结构逐渐可用。<span class="badge badge-history">史</span>
+- **`consteval` 与 `std::source_location`（C++20）结合**：立即函数天然在编译期拿到调用点位置，催生编译期诊断与日志惯用法。<span class="badge badge-history">史</span>
+- **行业争议**：社区长期争论"是否该让所有函数默认 constexpr"，反对者担心编译时间爆炸与 ABI 暴露；委员会维持"显式标注"路线，把激进扩张留给 concepts / 反射等渐进提案。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **C++26 预览**：静态反射与更多 constexpr 算法进入讨论，继续改写"编译期能做什么"的边界。<span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constexpr ｜ https://en.cppreference.com/w/cpp/language/consteval ｜ https://en.cppreference.com/w/cpp/language/constinit
 
@@ -52,7 +52,7 @@
 
 cv 限定符可以叠加、可以出现在类型的不同位置，组合规则如下：
 
-> **示例 1** [难度 ★★☆☆☆] [主题：在类型系统里的位置]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 在类型系统里的位置
 ```
 T                      // 无 cv
 const T                // 顶层 const：T 本身不可改（对对象类型）
@@ -79,7 +79,7 @@ const T* const* const* // 任意叠加，从右向左读
 
 `const` 在推导中**停留在被推导类型的引用/指针所指层**，不自动传到外层：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：与模板实参推导]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与模板实参推导
 ```cpp
 template<typename T>
 void f(T x);          // T 推导时不带顶层 const
@@ -106,7 +106,7 @@ h(cp);                // T = const int（底层 const 进入 T，因为指针所
 
 `const` 成员函数与非 const 成员函数构成**合法重载**，决议依据调用对象的 cv：
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：与重载决议]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与重载决议
 ```cpp
 struct Blob {
     int&       get()       { return x_; }  // #1
@@ -129,7 +129,7 @@ const Blob cb; cb.get();   // 调用 #2（cb 是 const 对象，只能调用 con
 - **物理 const（bitwise const）**：对象每个字节都不变。编译器能检查的只是这个。
 - **逻辑 const（logical const）**：对象的可观察行为不变，但内部缓存、互斥锁、引用计数等"逻辑上不算状态"的成员可以变 → 用 `mutable`。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：成员函数、逻辑 const 与 mu]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 成员函数、逻辑 const 与 mu
 ```cpp
 #include <mutex>
 #include <optional>
@@ -150,14 +150,14 @@ public:
 
 ### 1.5 const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：与对象模型 / .rodata / ]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与对象模型 / .rodata /
 ```cpp
 const int G = 100;          // 通常落 .rodata（只读段，页属性 R）
 int        H = 200;          // 落 .data（RW）
 ```
 
 内存布局（x86-64 ELF）：
-> **示例 6** [难度 ★☆☆☆☆] [主题：与对象模型 / .rodata / ]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与对象模型 / .rodata /
 ```
 0x400000 .text    (R-X)  代码
 0x400500 .rodata  (R--)  G=100  ← 写保护页
@@ -166,7 +166,7 @@ int        H = 200;          // 落 .data（RW）
 ```
 
 `const_cast` 去掉 const 后写**真正的 const 对象**的后果：
-> **示例 7** [难度 ★★☆☆☆] [主题：与对象模型 / .rodata / ]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与对象模型 / .rodata /
 ```cpp
 const int G = 100;
 int* p = const_cast<int*>(&G);
@@ -183,7 +183,7 @@ int* p = const_cast<int*>(&G);
 - 两个线程同时调 const 成员、都触发缓存计算写 `val_`，竞争。
 - `std::atomic` 成员即使是 const 对象也能原子修改（atomic 操作是 const 成员）。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：与并发]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与并发
 ```cpp
 class Counter {
     mutable std::atomic<int> c_{0};
@@ -200,7 +200,7 @@ public:
 - **底层 const 影响 mangling**：`void f(int*)` 与 `void f(const int*)` 是不同函数（类型不同）。
 - **const 成员函数影响 mangling**：`void A::g()` 与 `void A::g() const` 修饰不同（const 版本带 `K` 后缀，Itanium ABI）。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与 ABI / Name Mangl]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ABI / Name Mangl
 ```
 _Z1fPi     void f(int*)
 _Z1fPKi    void f(const int*)     // P Ki = pointer to const int
@@ -219,7 +219,7 @@ _ZNK1A1gEv A::g() const           // K = const member function
 - **核心常量表达式（core constant expression）**：满足 [expr.const] 一长串限制的表达式（不能含未初始化变量、不能 UB、不能调用非 constexpr 函数等）。
 - **potential constant expression**：在合适上下文能成为常量表达式的表达式（如 constexpr 函数调用，取决于实参）。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：三个核心概念]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三个核心概念
 ```cpp
 constexpr int sq(int n) { return n*n; }
 constexpr int a = sq(5);     // sq(5) 是常量表达式 → a 是编译期常量
@@ -253,7 +253,7 @@ int b = sq(r);               // sq(r) 不是常量表达式，但 sq 声明为 c
 
 ### 2.4 constexpr 构造函数与析构
 
-> **示例 11** [难度 ★★☆☆☆] [主题：构造函数与析构]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造函数与析构
 ```cpp
 struct Point {
     int x, y;
@@ -273,7 +273,7 @@ C++20 起，含非平凡析构的类型也能 constexpr（只要析构在编译�
 - 工具：`std::min/max/swap`、`std::bit`、`std::hash`
 - 数值：`std::complex` 部分、`<numbers>` 常量
 
-> **示例 12** [难度 ★★☆☆☆] [主题：与标准库全景（C++23）]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准库全景（C++23）
 ```cpp
 #include <vector>
 constexpr std::vector<int> make() {
@@ -298,7 +298,7 @@ static_assert(make().size() == 5);
 
 `consteval` 函数（immediate function）**每次调用都必须在编译期求值**，不存在运行期实体。与 constexpr 的"可"相对，consteval 是"必须"。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：定义]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 定义
 ```cpp
 consteval int sq(int n) { return n*n; }
 constexpr int a = sq(5);   // OK：编译期
@@ -316,7 +316,7 @@ constexpr int a = sq(5);   // OK：编译期
 
 这是 consteval 最经典的工业应用——在编译期校验字符串字面量的格式/长度/字符集：
 
-> **示例 14** [难度 ★★★☆☆] [主题：编译期字符串类型安全（完整实现）]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译期字符串类型安全（完整实现）
 ```cpp
 // 编译期字符串字面量类型（存指针+大小，size 是模板非类型参数 → 编译期已知）
 template<size_t N>
@@ -348,7 +348,7 @@ consteval fixed_string<strlen_lit("")> check_ident(const char* s) {
 
 ### 3.4 consteval 与 Concepts 配合
 
-> **示例 15** [难度 ★★★☆☆] [主题：与 Concepts 配合]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 Concepts 配合
 ```cpp
 #include <iostream>
 template<typename T>
@@ -366,7 +366,7 @@ consteval auto validate(std::format_string<Args...> fmt) { return fmt; }
 
 C++ 中跨**翻译单元（TU）**的**动态初始化（dynamic initialization）**顺序**未指定**。若 TU A 的全局对象构造依赖 TU B 的全局对象，而 A 先构造，则读到未初始化值：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：机制]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 机制
 ```cpp
 // log.cpp
 Logger& get_logger() { static Logger L; return L; }   // Meyers 单例，首次调用构造
@@ -379,7 +379,7 @@ static Logger& g_log = get_logger();   // 依赖 get_logger，但构造顺序不
 
 `constinit` 要求变量在**常量初始化阶段（constant initialization）**完成——早于所有 dynamic init，顺序无关。它不要求初值是编译期常量（区别于 constexpr），只要求初始化在常量期发生：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：的精确定义]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的精确定义
 ```cpp
 constexpr int f();
 constinit int a = f();        // OK：f() 在常量期求值
@@ -404,7 +404,7 @@ constinit 变量在常量期初始化，main 之前完成，**无并发问题**�
 ## ⑤ 真实 libstdc++ 源码逐行
 
 ### 5.1 `<type_traits>` is_const（偏特化经典）
-> **示例 18** [难度 ★★☆☆☆] [主题：<typetraits> iscon]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <typetraits> iscon
 ```cpp
 template<typename> struct is_const : false_type {};        // 主模板：非 const
 template<typename _Tp> struct is_const<_Tp const> : true_type {};  // const 特化
@@ -412,7 +412,7 @@ template<typename _Tp> struct is_const<_Tp const> : true_type {};  // const 特�
 推导：`is_const<int>` → 主模板 → false；`is_const<const int>` → 匹配 `_Tp const` 特化（`_Tp=int`）→ true。
 
 ### 5.2 `<vector>` constexpr size()（C++20）
-> **示例 19** [难度 ★★☆☆☆] [主题：<vector> constexpr]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <vector> constexpr
 ```cpp
 constexpr size_type size() const noexcept {
     return _M_impl._M_finish - _M_impl._M_start;   // 指针相减，编译期可算
@@ -423,7 +423,7 @@ constexpr size_type size() const noexcept {
 libstdc++ `<format>` 通过 `basic_format_string` 的 consteval 构造遍历格式串，用 `std::__format::__parse` 在编译期校验占位符与参数包类型，不匹配则 `static_assert` 失败。这是 C++20 `<format>` 类型安全的根基。
 
 ### 5.4 `<numbers>`（C++20，constexpr 数学常量）
-> **示例 20** [难度 ★★☆☆☆] [主题：<numbers>]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <numbers>
 ```cpp
 template<typename _Tp> inline constexpr _Tp pi_v = _Tp(3.1415926535897932384626433832795029L);
 ```
@@ -433,7 +433,7 @@ template<typename _Tp> inline constexpr _Tp pi_v = _Tp(3.14159265358979323846264
 
 ## ⑥ 真实可编译完整程序集（32 个）
 
-> **示例 21** [难度 ★★★☆☆] [主题：真实可编译完整程序集（32 个）]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实可编译完整程序集（32 个）
 ```cpp
 #include <cstdint>
 #include <cstddef>
@@ -531,7 +531,7 @@ void log(std::format_string<int,double> fmt, int a, double b){ std::print(fmt, a
 ## ⑦ 真实 benchmark（可复现 microbenchmark）
 
 ### 7.1 constexpr 预计算 vs 运行期初始化
-> **示例 22** [难度 ★★★☆☆] [主题：预计算 vs 运行期初始化]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 预计算 vs 运行期初始化
 ```cpp
 #include <benchmark/benchmark.h>
 #include <cstdint>
@@ -548,7 +548,7 @@ BENCHMARK(BM_ConstexprTable); BENCHMARK(BM_RuntimeTable);
 - 收益倍数：构建开销约 **∞ 倍消除**（运行期从 0 开始，编译期已就绪）；数据进 .rodata 还省私有 RSS（多进程共享只读页）。
 
 ### 7.2 const 提示的循环优化
-> **示例 23** [难度 ★☆☆☆☆] [主题：提示的循环优化]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提示的循环优化
 ```cpp
 int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*a[i]; return s; }
 ```
@@ -659,7 +659,7 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 
 ---
 
-## ⑭ 标准条款逐条（const 族在 ISO 中的精确落点）[标准]
+## ⑭ 标准条款逐条（const 族在 ISO 中的精确落点）<span class="badge badge-std">标准</span>
 
 `const`/`constexpr`/`consteval`/`constinit` 不是"语法糖"，每一条都有标准条款背书。
 
@@ -669,7 +669,7 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 4. **`[expr.consteval]`（consteval 立即函数）**：`consteval` 函数**只能**在编译期调用，其结果必须是常量表达式；任何运行期实参都是硬错误（与 `constexpr` 的"可退化"形成对比）。
 5. **`[basic.start.static]` / `[basic.start.dynamic]`（constinit）**：`constinit` 要求变量拥有**静态初始化**（常量初始化或零初始化），杜绝"静态初始化顺序失败（SOIF）"。它不要求值本身是常量表达式，只要求初始化发生在静态期。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：标准条款逐条]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 标准条款逐条
 ```cpp
 // [dcl.constexpr] 退化示例：constexpr 函数可在运行期调用
 constexpr int f(int x) { return x + 1; }   // x 非常量表达式也可编译
@@ -682,7 +682,7 @@ int b = a + 1;          // 可能 SOIF：a 与 b 谁先初始化未知
 constinit int c = 42;   // 静态初始化，绝无 SOIF
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：标准条款逐条]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 标准条款逐条
 ```cpp
 // [expr.const] 边界：constexpr 函数体内不能含未定义行为，且结果须可求值
 constexpr int div(int x, int y) { return x / y; }   // 函数本身合法
@@ -692,7 +692,7 @@ static_assert(div(10, 2) == 5);                     // 合法：编译期可求�
 
 ---
 
-## ⑮ 内存与对象生命周期视角（const 在存储中的真实归宿）[实现][平台·x86-64]
+## ⑮ 内存与对象生命周期视角（const 在存储中的真实归宿）<span class="badge badge-impl">实现</span>[平台·x86-64]
 
 `const` 不只是"编译期约束"，它直接决定数据放在哪个段。
 
@@ -700,7 +700,7 @@ static_assert(div(10, 2) == 5);                     // 合法：编译期可求�
 2. **`constexpr` → 可能零存储**：纯编译期常量若未被 ODR 使用，编译器完全可以不为它分配任何内存（直接内联进立即数）；只有取地址/绑定到引用时才"物化"为对象（见 ch27 §①.2）。
 3. **`mutable` 突破 const 成员**：`mutable` 成员即使对象被 `const` 限定也可修改，且**不**进入 `.rodata` 共享——常用于缓存/锁字段（见 §⑫ 最佳实践第 8 条）。
 
-> **示例 26** [难度 ★★★★☆] [主题：内存与对象生命周期视角]
+> **示例 26** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存与对象生命周期视角
 ```cpp
 // 顶层 const 全局 → .rodata（只读页）
 const int kGlobal = 100;          // 链接后位于 .rodata
@@ -715,7 +715,7 @@ struct Counter { int n = 0; mutable int cache = -1; };
 const Counter c;                   // c 在 .rodata，但 cache 字段单独可写（布局上与 n 相邻，整体仍 .rodata 则需谨慎）
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：内存与对象生命周期视角]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存与对象生命周期视角
 ```cpp
 // constexpr 变量未被 ODR 使用时零存储
 constexpr int table_size = 256;          // 可能仅在编译期存在
@@ -726,7 +726,7 @@ static_assert(used == 255);
 
 ---
 
-## ⑯ 模板与 const（cv 在模板推导中的精确行为）[标准][实现]
+## ⑯ 模板与 const（cv 在模板推导中的精确行为）<span class="badge badge-std">标准</span><span class="badge badge-impl">实现</span>
 
 模板把 const 的语义复杂度放大，是面试题与实战双重高发区。
 
@@ -735,7 +735,7 @@ static_assert(used == 255);
 3. **非类型模板参数（NTTP）与 cv**：C++20 允许 `template<auto V>` 把 const 值类型作为 NTTP；`template<const int* P>` 要求实参是指向 const 的指针。
 4. **const 成员函数与重载**：`struct S { void f(); void f() const; };` 按对象 cv 限定选择，是"const 正确接口"的核心（见 ch20 §⑪.2）。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：模板与 const]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与 const
 ```cpp
 template<class T> void g(T x) { static_assert(std::is_same_v<T, int>); }  // 顶层 const 被忽略
 g(42);
@@ -752,7 +752,7 @@ s.f();    // 选非 const 重载
 cs.f();   // 选 const 重载
 ```
 
-> **示例 29** [难度 ★★★★☆] [主题：模板与 const]
+> **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 模板与 const
 ```cpp
 // NTTP 与 cv：C++20 允许 const 值类型作为非类型模板参数
 template<const int* P> struct Tag { static constexpr const int* ptr = P; };
@@ -770,7 +770,7 @@ probe(vi);   // T = volatile int（volatile 不被忽略）
 
 ---
 
-## ⑰ 汇编视角（const 族的机器层真相）[实现][平台·x86-64]
+## ⑰ 汇编视角（const 族的机器层真相）<span class="badge badge-impl">实现</span>[平台·x86-64]
 
 [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— const 主要作为优化提示，现代优化器常自行推断
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 只读 .rodata 的缓存/共享特性
@@ -790,7 +790,7 @@ mov  DWORD PTR [rbp-4], 3   ; y 有真实存储
 
 ---
 
-## ⑱ 性能（const 族对运行期成本的真实影响）[经验][实现]
+## ⑱ 性能（const 族对运行期成本的真实影响）<span class="badge badge-exp">经验</span><span class="badge badge-impl">实现</span>
 
 [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— const 的优化收益有限，主价值是契约
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 性能须微基准量化，勿凭印象
@@ -799,7 +799,7 @@ mov  DWORD PTR [rbp-4], 3   ; y 有真实存储
 2. **const 引用延长减少拷贝**：`for (const auto& x : c)` 避免每个元素的拷贝构造，对大对象/非平凡类型显著省时（ch20 §⑩、ch25 §）。
 3. **const 帮助别名分析**：给优化器更多"该内存不会被别名修改"的信息，便于循环不变外提、向量化（ch43 §）。但**过度 const 局部变量无收益**——只在接口边界和真不可变数据使用（§⑫ 第 10 条）。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：性能]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
 ```cpp
 #include <vector>
 // constexpr 编译期折叠：运行期零成本
@@ -814,7 +814,7 @@ for (const auto& b : bigs) use(b);         // 无拷贝，O(1) 引用遍历
 
 ---
 
-## ⑲ 工业案例（const 族在真实项目中的用法与反模式）[经验]
+## ⑲ 工业案例（const 族在真实项目中的用法与反模式）<span class="badge badge-exp">经验</span>
 
 [第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— 工业 const 规范是风格落地样本
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)（编译期计算）—— constinit 根治 static 初始化顺序灾难
@@ -834,7 +834,7 @@ for (const auto& b : bigs) use(b);         // 无拷贝，O(1) 引用遍历
 **反模式 E：用 const_cast 去 const 改对象**
 去 const 后写"真正声明为 const 的对象"是 UB（§⑮.1、ch27 §①.2）——只在与第三方非 const 正确接口互操作时、且确认底层对象本就可写时才用。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 #include <string>
 // 案例 A：const 正确的库接口
@@ -850,7 +850,7 @@ private:
 constinit Registry& g_reg = get_registry();   // 静态初始化，无 SOIF
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 反模式 E 的修正：第三方接口非 const 正确，用 const_cast 仅当底层可写
 struct Legacy { int value; };          // 未标 const，但文档承诺"不修改"
@@ -861,7 +861,7 @@ void observe(const Legacy& l) {
 }
 ```
 
-> **示例 33** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 #include <string_view>
 // 编译期格式校验（consteval 示范，ch65 §⑪ 进阶）
@@ -880,16 +880,16 @@ struct Formatted { static constexpr int len = N; };
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：通信库的协议魔数与编译期查表索引。** 你维护一个串口协议库，需在头文件里把帧魔数 `MAGIC = ipow(2,24) | 0xABCD` 算成编译期常量（供 `static_assert` 校验帧头），又要在运行期用随机种子动态验证报文长度。请写 `constexpr` 函数 `ipow(base, exp)` 计算整数幂，用 `static_assert` 验证 `ipow(2,10)==1024`；再用运行期 `rand()` 实参调用，确认它能退化运行期。
-   - [标准] `constexpr` 函数要求在合法常量表达式上下文中于翻译期求值，否则退化为普通运行期函数调用——这正是编译期查表与运行期校验两用的基础。
-   - [引用] ISO/IEC 14882:2023 §[expr.const]/[dcl.constexpr]（常量表达式与 constexpr 语义）；cppreference "constexpr" 词条详述两阶段求值。
+   - <span class="badge badge-std">标准</span> `constexpr` 函数要求在合法常量表达式上下文中于翻译期求值，否则退化为普通运行期函数调用——这正是编译期查表与运行期校验两用的基础。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.const]/[dcl.constexpr]（常量表达式与 constexpr 语义）；cppreference "constexpr" 词条详述两阶段求值。
 
 2. **真实场景：嵌入式固件启动期的互依赖配置寄存器。** 裸机固件有两个跨翻译单元的全局配置 `a=1`、`b=a+1`，必须在静态初始化阶段就被钉死为常数，否则会踩静态初始化顺序灾难（SOIF）。请用 `constinit` 定义这两个互依赖的全局变量，在两文件分别声明，验证无 SOIF 警告。
-   - [标准] `constinit`(C++20) 约束静态存储期对象的初始化为常量表达式，使其在静态初始化阶段完成，根治跨 TU 初始化顺序不确定。
-   - [引用] ISO/IEC 14882:2023 §[dcl.constinit]（constinit 约束常量初始化）；cppreference "constinit" 词条。
+   - <span class="badge badge-std">标准</span> `constinit`(C++20) 约束静态存储期对象的初始化为常量表达式，使其在静态初始化阶段完成，根治跨 TU 初始化顺序不确定。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.constinit]（constinit 约束常量初始化）；cppreference "constinit" 词条。
 
 3. **真实场景：序列化器的只读 / 可写分流。** 你写一个 `Serializer`，希望对 `const` 对象走"只读序列化"（跳过运行时校验字段），对非 `const` 对象走"带校验序列化"。请给 `struct S { void f(); void f() const; };` 写测试，验证 `S{}` 与 `const S{}` 调用不同重载。
-   - [标准] 成员函数是否为 `const` 参与重载决议；`const` 对象只能调用 `const` 成员函数，非 `const` 对象优先调用非 `const` 版本。
-   - [引用] ISO/IEC 14882:2023 §[over.match.funcs]（const 成员函数参与重载决议）；cppreference "const 成员函数" 说明。
+   - <span class="badge badge-std">标准</span> 成员函数是否为 `const` 参与重载决议；`const` 对象只能调用 `const` 成员函数，非 `const` 对象优先调用非 `const` 版本。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[over.match.funcs]（const 成员函数参与重载决议）；cppreference "const 成员函数" 说明。
 
 **思考题**
 - `constexpr` 与 `consteval` 的本质区别是什么？何时应选 consteval 而非 constexpr？
@@ -905,31 +905,31 @@ struct Formatted { static constexpr int len = N; };
 
 ## 补充分编可编译示例
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -951,7 +951,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：const 家族如何一步步逼进类型系统
-`const` 来自 1980 年代初 Stroustrup 对 C 的扩展，初衷是给"不应被修改"的对象一道编译期保险，并支持 `const` 成员函数表达"只读不写"契约（见 ch21 0.1）。[史] 但它只是运行期只读，不代表编译期常量；`constexpr` 是 C++11 才引入，把"可在编译期求值"写进声明。[史] `consteval`（立即函数，必须编译期求值）与 `constinit`（强制静态初始化、杜绝"静态初始化顺序灾难"）在 C++20 入标准，是 const 族的最后两块拼图（P1073 / P1143）。[史][评] C++23 的 `if consteval`（P1938）提供"当前是否在编译期求值"的精确分支，把"求值阶段"语义进一步坐实。[史]
+`const` 来自 1980 年代初 Stroustrup 对 C 的扩展，初衷是给"不应被修改"的对象一道编译期保险，并支持 `const` 成员函数表达"只读不写"契约（见 ch21 0.1）。<span class="badge badge-history">史</span> 但它只是运行期只读，不代表编译期常量；`constexpr` 是 C++11 才引入，把"可在编译期求值"写进声明。<span class="badge badge-history">史</span> `consteval`（立即函数，必须编译期求值）与 `constinit`（强制静态初始化、杜绝"静态初始化顺序灾难"）在 C++20 入标准，是 const 族的最后两块拼图（P1073 / P1143）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> C++23 的 `if consteval`（P1938）提供"当前是否在编译期求值"的精确分支，把"求值阶段"语义进一步坐实。<span class="badge badge-history">史</span>
 
 ### ㉒.2 真实工程坐标：const 家族活在哪些产品里
 
@@ -963,19 +963,19 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 | 嵌入式与固件 | ROM/flash 常量表、MCU 固件 | `const` 全局表（查表/状态机/协议字段）驻留 ROM；`constinit` 规避 SIOF | 资源受限设备 | `constinit` 防跨 TU 常量被降级为动态初始化 |
 | 游戏与图形 | Unreal `UFUNCTION`/`UPROPERTY`、Unity C++ 插件 | 反射元数据与插件接口 `const&` 传只读数据；`constexpr` 编译期算哈希/枚举字符串化 | 实时渲染/引擎 | 不可变性用于反射与编译期元数据 |
 | 密码学/安全库 | OpenSSL / BoringSSL（`EVP_*`） | 只读入参一律 `const`；constant-time 代码靠 `const` 表达「只读不可变」防重排 | 安全基础设施 | `const-correctness` 是接口契约；参与防侧信道 |
-| 航天软件 | NASA JPL C++ 编码规范 | 「尽量 const」为强制规则：入参默认 `const&`、不变数据默认 `const` | 飞行器控制软件 | 不可变性前置到接口设计 [史] |
+| 航天软件 | NASA JPL C++ 编码规范 | 「尽量 const」为强制规则：入参默认 `const&`、不变数据默认 `const` | 飞行器控制软件 | 不可变性前置到接口设计 <span class="badge badge-history">史</span> |
 
 > **表注（㉒.2）**：上表把「const 家族」拉成「从编译期计算到飞行器接口」的不可变性纪律。标准库用 `constexpr` 把逻辑前移到编译期，嵌入式用 `const`/`constinit` 把常量钉在 ROM 并规避 SIOF，安全库用 `const` 同时做接口契约与防侧信道重排。注意 NASA JPL 一行：它把「尽量 const」写成了飞行器控制软件的强制性规则——不可变性在这里不是风格偏好，而是接口正确性的前置约束。
 
 **一条判读**：用 const 的判据是「这个值/参数会不会变」。编译期可知的常量与 tram 计算 → `constexpr`；只读视图/入参 → `const T&`；跨 TU 的命名空间级常量 → `constinit` 防 SIOF；固定数据表 → `const` 驻 ROM。规则：默认 const，只在确实要修改时才去掉；安全/航天等高风险域把 const 当契约而非建议。
 ### ㉒.3 生产踩坑：const 家族的常见误用
-- **`const` 不是物理不可变**：`const` 只是"通过此表达式不能改"，`const_cast` 去掉的是"编译器视图"，实则修改仍是未定义行为——把 `const` 当成运行时锁是经典误解。[评]
-- **`constexpr` 被逼成运行期**：参数不是编译期常量时 `constexpr` 函数退化成普通函数，误以为"标了就一定零开销"会落空；真正要在编译期强制，需用 `consteval`。[史][评]
-- **`constinit` 误用**：对带动态初始化器的变量误标 `constinit` 会直接 ill-formed（P1143）；而漏标则可能在跨 TU 时悄悄退化为动态初始化，埋下 SIOF 炸弹。[评]
+- **`const` 不是物理不可变**：`const` 只是"通过此表达式不能改"，`const_cast` 去掉的是"编译器视图"，实则修改仍是未定义行为——把 `const` 当成运行时锁是经典误解。<span class="badge badge-comment">评</span>
+- **`constexpr` 被逼成运行期**：参数不是编译期常量时 `constexpr` 函数退化成普通函数，误以为"标了就一定零开销"会落空；真正要在编译期强制，需用 `consteval`。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **`constinit` 误用**：对带动态初始化器的变量误标 `constinit` 会直接 ill-formed（P1143）；而漏标则可能在跨 TU 时悄悄退化为动态初始化，埋下 SIOF 炸弹。<span class="badge badge-comment">评</span>
 - **`const` 成员导致拷贝/移动困难**：`const` 成员让类型失去可赋值性，容器与并发场景下常与 `mutable`/内部 `std::mutex` 纠缠出错。
 
 ### ㉒.4 与标准的互动：const 家族随标准扩张
-`const`/`volatile` 作为 cv 限定符自 C 即存在；`constexpr` 经 C++11（N2235 引入，仅单 return）→ C++14（放宽函数体）→ C++17/20 一路扩张，C++20 引入 `consteval`（P1073）/ `constinit`（P1143）把"编译期性"拆成三档。[史] C++23 又把 `std::optional`/`std::variant` 等补成 `constexpr`（P2231），编译期数据结构逐渐可用；`if consteval`（P1938）补上求值阶段分支。[史] 社区长期争论"是否所有函数默认 constexpr"，委员会维持显式标注路线，把激进扩张留给 concepts/反射（P2996）。[史][评]
+`const`/`volatile` 作为 cv 限定符自 C 即存在；`constexpr` 经 C++11（N2235 引入，仅单 return）→ C++14（放宽函数体）→ C++17/20 一路扩张，C++20 引入 `consteval`（P1073）/ `constinit`（P1143）把"编译期性"拆成三档。<span class="badge badge-history">史</span> C++23 又把 `std::optional`/`std::variant` 等补成 `constexpr`（P2231），编译期数据结构逐渐可用；`if consteval`（P1938）补上求值阶段分支。<span class="badge badge-history">史</span> 社区长期争论"是否所有函数默认 constexpr"，委员会维持显式标注路线，把激进扩张留给 concepts/反射（P2996）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **修订链补强（constexpr → consteval/constinit）**：编译期性关键字自身走过漫长修订——C++11 的 N2235（仅允许单 `return` 的 constexpr 函数）起步，C++14 经 N3652 放宽函数体（允许局部变量与循环），C++17 引入 constexpr lambda（[P0170R1](https://wg21.link/P0170)），再到 C++20 的 `consteval`（[P1073R3](https://wg21.link/P1073)，"立即函数"）与 `constinit`（[P1143R2](https://wg21.link/P1143)，防 SIOF）。标准在 [dcl.constexpr] 写明：`constexpr` 只是"可能被常量求值"，而 `consteval` 才是"必须编译期产生常量"——委员会用三档关键字把"编译期性"的承诺强度显式分级，而非一刀切默认，正是 ch21 0.x 那场"显式标注 vs 默认 constexpr"争论的官方收口。
 
 ### ㉒.5 权威引用
@@ -1005,7 +1005,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 <details><summary>答案与解析</summary>
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <vector>
 struct Buffer {
@@ -1025,9 +1025,9 @@ int main(){
 `mutable` 用于"逻辑 const"：对象对外表现为只读，但内部缓存/计数可改。例如
 `mutable std::size_t cached_hash = 0;` 在 `hash() const` 中惰性计算。
 
-[标准] const 成员函数承诺不修改对象的可观察状态；`mutable` 允许豁免特定子对象。
+<span class="badge badge-std">标准</span> const 成员函数承诺不修改对象的可观察状态；`mutable` 允许豁免特定子对象。
 
-[引用] ISO/IEC 14882:2023 §[dcl.const]/[class.this]（const 成员函数承诺不修改可观察状态，`mutable` 允许豁免特定子对象）；经典应用见 `std::mutex` 在 const 成员中加锁（需 `mutable std::mutex`）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.const]/[class.this]（const 成员函数承诺不修改可观察状态，`mutable` 允许豁免特定子对象）；经典应用见 `std::mutex` 在 const 成员中加锁（需 `mutable std::mutex`）。
 
 </details>
 
@@ -1037,7 +1037,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 40** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <cstdlib>
 constexpr int sq(int x){ return x*x; }
@@ -1052,9 +1052,9 @@ int main(){
 `const` 只保证"不可改"，`constexpr` 保证"值可在编译期确定"。`sq` 因 `constexpr` 两用：
 参数是常量表达式时在编译期算、是运行期值在运行期算。`k` 虽 `const` 但依赖 `rand()`，不是常量表达式。
 
-[标准] `constexpr` 函数/变量要求在合法常量表达式上下文中于翻译期求值；`const` 仅去除了可修改性。
+<span class="badge badge-std">标准</span> `constexpr` 函数/变量要求在合法常量表达式上下文中于翻译期求值；`const` 仅去除了可修改性。
 
-[引用] ISO/IEC 14882:2023 §[expr.const]/[dcl.constexpr]（常量表达式与 constexpr 语义）；cppreference "constexpr" 词条详述两阶段求值。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.const]/[dcl.constexpr]（常量表达式与 constexpr 语义）；cppreference "constexpr" 词条详述两阶段求值。
 
 </details>
 
@@ -1064,7 +1064,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <cstdlib>
 constinit static int g = 42;          // 编译期完成初始化, 零运行时开销, 无 SIOF
@@ -1080,9 +1080,9 @@ int main(){
 - `consteval`：比 `constexpr` 更强——函数**只能**在编译期调用，`cube(rand())` 直接拒绝。
   适合元编程/代码生成（如编译期计算查表）。
 
-[标准] `constinit`(C++20) 约束初始化为常量表达式；`consteval`(C++20) 定义"立即函数"，仅编译期可调用。
+<span class="badge badge-std">标准</span> `constinit`(C++20) 约束初始化为常量表达式；`consteval`(C++20) 定义"立即函数"，仅编译期可调用。
 
-[引用] ISO/IEC 14882:2023 §[dcl.constinit]/[expr.const]（constinit 约束常量初始化、consteval 定义立即函数）；cppreference "constinit"/"consteval" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.constinit]/[expr.const]（constinit 约束常量初始化、consteval 定义立即函数）；cppreference "constinit"/"consteval" 词条。
 
 </details>
 
@@ -1092,7 +1092,7 @@ int main(){
 
 **步骤 1：顶层 const 与底层 const（指针的两种 const）**
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — const 的层]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
 int v = 1;
 const int* p = &v;     // 底层 const: 不能经 p 改 *p, 但 p 可指向别处
@@ -1105,7 +1105,7 @@ const int* const r = &v; // 既不能改指向也不能改所指
 
 **步骤 2：const 成员函数与逻辑 const（mutable）**
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — const 的层]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
 struct Cache {
     mutable std::size_t hits = 0;   // 逻辑 const 豁免: 不影响对外状态
@@ -1118,7 +1118,7 @@ struct Cache {
 
 **步骤 3：constexpr 两用（编译期 + 运行期）**
 
-> **示例 44** [难度 ★★☆☆☆] [主题：附录：用法演绎 — const 的层]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
 constexpr int sq(int x){ return x*x; }
 static_assert(sq(5) == 25);          // 编译期: 不生成任何运行时指令
@@ -1128,7 +1128,7 @@ int y = sq(get_runtime());           // 运行期: 退化为普通调用
 
 **步骤 4：constinit / consteval 消除静态初始化灾难**
 
-> **示例 45** [难度 ★★★☆☆] [主题：附录：用法演绎 — const 的层]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
 constexpr int compute(){ return 42; }       // 编译期可求值的初始化器
 constinit static int G = compute();  // 强制编译期初始化 -> 无 SIOF, 零运行时开销
@@ -1140,7 +1140,7 @@ consteval int tbl(int n){ return n*2; } // 必须编译期: tbl(rand()) 编译�
 它们解决不同问题，别混为一谈。
 
 **工程含义**：API 边界对"不修改的输入"一律加 `const&`/`const*`；需要编译期能力的才上 `constexpr`/`consteval`。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把 ⑭/⑮/⑱ 的 const 族语义浓缩为关系图。
 
@@ -1280,7 +1280,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 

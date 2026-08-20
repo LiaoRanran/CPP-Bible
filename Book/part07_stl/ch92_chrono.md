@@ -15,24 +15,24 @@
 > 在 chrono 之前，C 的时间是一串裸整数——秒和毫秒混在一起，编译器一个都拦不住。
 
 ### 0.1 起源（谁·何时·为何）
-C 的 `time_t` 和 `struct tm` 只能精确到秒、且把"时间间隔"和"时间点"都当整数，程序员常把秒当毫秒、把持续时间加进日历时间，bug 防不胜防。[史] `std::chrono`（C++11，设计主要由 Howard Hinnant 推动，并受 Boost.Chrono 启发）做了关键的事：**把单位变成类型**——`seconds`、`milliseconds`、`hours` 各不相同，编译器禁止它们胡乱相加；同时区分"时钟（clock）""时长（duration）""时间点（time_point）"三种概念。[史]
+C 的 `time_t` 和 `struct tm` 只能精确到秒、且把"时间间隔"和"时间点"都当整数，程序员常把秒当毫秒、把持续时间加进日历时间，bug 防不胜防。<span class="badge badge-history">史</span> `std::chrono`（C++11，设计主要由 Howard Hinnant 推动，并受 Boost.Chrono 启发）做了关键的事：**把单位变成类型**——`seconds`、`milliseconds`、`hours` 各不相同，编译器禁止它们胡乱相加；同时区分"时钟（clock）""时长（duration）""时间点（time_point）"三种概念。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- Boost.Chrono（约 2010）：先行验证"强类型时间单位"的价值。[史]
+- Boost.Chrono（约 2010）：先行验证"强类型时间单位"的价值。<span class="badge badge-history">史</span>
 - C++11：`std::chrono` 标准化，引入 `steady_clock`/`system_clock`/`high_resolution_clock`。
 - 后续：C++20 补 `calendars` 与 `time_zone`（时区与日历运算），让 chrono 从"计时"走向"日期"。
 
 ### 0.3 设计哲学之争
-chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，而是靠编译期类型检查杜绝秒/毫秒混淆。[评] 这与老 C 的"整数即时间"形成鲜明对比，也曾被吐槽"类型名太长、初学门槛高"。[评] 但 `duration_cast` 显式转换的设计，把"隐式丢精度"变成必须承认的取舍，是强类型时间观的胜利。
+chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，而是靠编译期类型检查杜绝秒/毫秒混淆。<span class="badge badge-comment">评</span> 这与老 C 的"整数即时间"形成鲜明对比，也曾被吐槽"类型名太长、初学门槛高"。<span class="badge badge-comment">评</span> 但 `duration_cast` 显式转换的设计，把"隐式丢精度"变成必须承认的取舍，是强类型时间观的胜利。
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++20 引入 `year_month_day`、`time_zone`/`zoned_time`/`tzdb`，让 chrono 从"计时"走向"日期"。clock 选用与格式化是后续支线。
 
-- [史] **`steady_clock` vs `system_clock` 的选用是铁律**：`steady_clock` 单调不减（适合测时长、基准），但不可转换为日历时间；`system_clock` 对应墙钟、可被 NTP 回拨或闰秒跳变，只用于"此刻是几点"。混用会埋下"计时被回拨打断"的 bug。
-- [史] **C++20 的 `std::format` 原生支持 chrono 类型**：`format("{:%Y-%m-%d %H:%M}", tp)` 能直接格式化 `time_point`，替代手写 `strftime`；`std::chrono::parse` 做反向解析。
-- [评] **时区数据库（tzdb）依赖系统或 bundled IANA 数据**：`current_zone()` 需要平台提供时区信息，某些嵌入式/封闭环境缺数据，`zoned_time` 会抛异常——这是 chrono 日历能力落地时最现实的约束。
-- [史] **`file_time_type` 与 filesystem 打通**：`std::filesystem::last_write_time` 返回的就是 `chrono::time_point`，两个库在 C++17/20 后深度耦合（⟶ ch91）。
+- <span class="badge badge-history">史</span> **`steady_clock` vs `system_clock` 的选用是铁律**：`steady_clock` 单调不减（适合测时长、基准），但不可转换为日历时间；`system_clock` 对应墙钟、可被 NTP 回拨或闰秒跳变，只用于"此刻是几点"。混用会埋下"计时被回拨打断"的 bug。
+- <span class="badge badge-history">史</span> **C++20 的 `std::format` 原生支持 chrono 类型**：`format("{:%Y-%m-%d %H:%M}", tp)` 能直接格式化 `time_point`，替代手写 `strftime`；`std::chrono::parse` 做反向解析。
+- <span class="badge badge-comment">评</span> **时区数据库（tzdb）依赖系统或 bundled IANA 数据**：`current_zone()` 需要平台提供时区信息，某些嵌入式/封闭环境缺数据，`zoned_time` 会抛异常——这是 chrono 日历能力落地时最现实的约束。
+- <span class="badge badge-history">史</span> **`file_time_type` 与 filesystem 打通**：`std::filesystem::last_write_time` 返回的就是 `chrono::time_point`，两个库在 C++17/20 后深度耦合（⟶ ch91）。
 
 > 史料来源：[cppreference std::chrono](https://en.cppreference.com/w/cpp/chrono)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
@@ -73,7 +73,7 @@ chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）
 ```
                  ┌──────────────────────────────┐
                  │   std::chrono 命名空间          │
@@ -144,7 +144,7 @@ classDiagram
 
 `duration` 通常只持有一个 `Rep` 成员（`_r`），是**平凡类型（trivial）**，零开销、可直接 memcpy、可放入寄存器。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图：duration<int, ]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：duration<int,
 ```
 duration<int, std::milli> d{1500};   // 表示 1500 毫秒
 内存（32位 Rep 示意）：
@@ -166,7 +166,7 @@ duration<long long, std::nano> big{...};  // 8 字节
 
 ## ⑧ 生命周期图：作用域计时器
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图：作用域计时器]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：作用域计时器
 ```
 构造 ScopeTimer
    │  t0 = steady_clock::now()   ← 记下起点
@@ -187,7 +187,7 @@ duration<long long, std::nano> big{...};  // 8 字节
 
 ## ⑨ 调用栈 / 时序图：`steady_clock::now()` 落到哪
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图：steadycl]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：steadycl
 ```
 调用方              libstdc++           内核 / 硬件
   │ now()            │                  │
@@ -208,7 +208,7 @@ duration<long long, std::nano> big{...};  // 8 字节
 
 `duration` 的 `+`、`-`、`count()` 在 `-O2` 下直接折叠为对整数 `_r` 的运算；跨单位 `duration_cast` 编译为一次整数乘/除（常数折叠）。
 
-> **示例 5** [难度 ★★★★☆] [主题：汇编分析：duration 运算是零]
+> **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编分析：duration 运算是零
 ```cpp
 // ⑩ duration 运算与单位换算（编译期零开销）
 #include <chrono>
@@ -249,7 +249,7 @@ int main() {
 
 真实项目（交易系统、RPC、游戏循环）中时间的两大用途：**测量性能**与**限制等待**。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：工业案例：作用域计时器与超时控制]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：作用域计时器与超时控制
 ```cpp
 // ⑫-1 作用域计时器（RAII）：离开作用域自动输出耗时
 #include <chrono>
@@ -272,7 +272,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：工业案例：作用域计时器与超时控制]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：作用域计时器与超时控制
 ```cpp
 // ⑫-2 超时控制：RPC 调用最多等 200ms
 #include <chrono>
@@ -290,7 +290,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：工业案例：作用域计时器与超时控制]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：作用域计时器与超时控制
 ```cpp
 // ⑫-3 日志时间戳：system_clock 转可读时间（C 接口桥接）
 #include <chrono>
@@ -307,7 +307,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★★★☆☆] [主题：工业案例：作用域计时器与超时控制]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：作用域计时器与超时控制
 ```cpp
 // ⑫-4 帧率控制：游戏/渲染循环固定 16.67ms（60 FPS）
 #include <chrono>
@@ -420,7 +420,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误：用 system_clock 测量时长，且用裸整数秒
 #include <chrono>
@@ -435,7 +435,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ✅ 正确：用 steady_clock + 显式单位转换
 #include <chrono>
@@ -450,7 +450,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误：用 auto 推断 duration 后乘以裸整数，单位被"吃掉"
 #include <chrono>
@@ -464,7 +464,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ✅ 正确：明确目标单位
 #include <chrono>
@@ -478,7 +478,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误：比较不同 clock 的 time_point（编译失败，类型不匹配）
 #include <chrono>
@@ -490,7 +490,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ✅ 正确：比较同 clock 的 time_point，或用 duration 表达相对关系
 #include <chrono>
@@ -527,7 +527,7 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-1 计时惯用法：用 auto 接 now()，用 duration_cast 取单位
 #include <chrono>
@@ -541,7 +541,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★★★☆☆] [主题：最佳实践]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
 ```cpp
 // ⑱-2 用字面量让单位显式
 #include <chrono>
@@ -556,7 +556,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-3 超时类型化：expected 表达"超时失败"（结合第88章）
 #include <chrono>
@@ -570,7 +570,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-4 日志用 system_clock + UTC，避免时区混乱
 #include <chrono>
@@ -593,7 +593,7 @@ int main() {
 
 网络服务常用 `chrono` 实现**令牌桶限流**与**指数退避重试**，二者都是把"时长"作为控制变量。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：补 补充工业案例：令牌桶限流与指数退]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充工业案例：令牌桶限流与指数退
 ```cpp
 // B1 令牌桶限流：定时补充令牌，超出则拒绝（示意 refill 逻辑）
 #include <chrono>
@@ -621,7 +621,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：补 补充工业案例：令牌桶限流与指数退]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充工业案例：令牌桶限流与指数退
 ```cpp
 // B2 指数退避：重试间隔 100ms -> 200ms -> 400ms ...
 #include <chrono>
@@ -649,7 +649,7 @@ int main() {
 
 **microbenchmark（示意，量级取自 x86-64 / 热路径）：**
 
-> **示例 22** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲-1 steady_clock::now() 单次开销量级
 #include <chrono>
@@ -671,7 +671,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
 ```cpp
 // ⑲-2 duration_cast 截断 vs round 的数值差异
 #include <chrono>
@@ -689,7 +689,7 @@ int main() {
 - `[缓存友好性]`：`duration`/`time_point` 是 trivial 小对象（8 字节常见），可整体放入寄存器/缓存行，无指针间接，对缓存极友好。
 - `[汇编]`：`now()` 的关键路径在 libstdc++ 中只是调用 `__steady_clock_now` → `clock_gettime`/QPC；运算本身零开销（见第⑩节）。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲-3 基准开销扣除：先测计时本身的成本
 #include <chrono>
@@ -714,7 +714,7 @@ int main() {
 
 ## ⑲-补 补充完整可编译示例（C1–C14，均为独立程序）
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C1 duration 构造与 count（显式单位）
 #include <chrono>
@@ -726,7 +726,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C2 字面量（函数内 using chrono_literals）
 #include <chrono>
@@ -739,7 +739,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C3 duration_cast 截断（整数 Rep）
 #include <chrono>
@@ -752,7 +752,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C4 floor / round / ceil（C++17，避免静默截断）
 #include <chrono>
@@ -767,7 +767,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C5 time_point 算术：now() + duration
 #include <chrono>
@@ -781,7 +781,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C6 system_clock::now 转 time_t（桥接 C API）
 #include <chrono>
@@ -795,7 +795,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C7 steady_clock 单调验证
 #include <chrono>
@@ -810,7 +810,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C8 system_clock vs steady_clock 的 is_steady 差异
 #include <chrono>
@@ -822,7 +822,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C9 C++20 日历：year_month_day 与 sys_days 互转
 #include <chrono>
@@ -838,7 +838,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C10 日期加减：100 天后是几号
 #include <chrono>
@@ -853,7 +853,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C11 weekday 计算（C++20）
 #include <chrono>
@@ -866,7 +866,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C12 GCC13 实测可用的时区：locate_zone + zoned_time（tzdb 已链接）
 #include <chrono>
@@ -884,7 +884,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C13 clock_cast：file_clock / system_clock 纪元换算（见第91章 file_time_type）
 #include <chrono>
@@ -903,7 +903,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // C14 用 ratio 自定义单位：1 tick = 1/8 秒
 #include <chrono>
@@ -921,7 +921,7 @@ int main() {
 
 单次测量噪声大，工程上需多次采样后取均值/中位数。`duration<double>` 把时长表示为浮点秒，便于做统计聚合（求和、均值），且不受整数截断影响。
 
-> **示例 39** [难度 ★★☆☆☆] [主题：注 浮点 duration 与多次测]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 注 浮点 duration 与多次测
 ```cpp
 // D1 多次测量的浮点平均（微基准统计惯用法）
 #include <chrono>
@@ -953,16 +953,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `duration` 做单位安全的时长算术。** 你避免把毫秒当秒混算。请说明类型安全。
-   - [标准] duration 把“数值 + 单位（period）”编码进类型，跨单位的运算自动按比换算，不丢精度。
-   - [引用] ISO/IEC 14882:2023 §[time.duration]（duration 与单位换算）；cppreference "std::chrono::duration" 词条。
+   - <span class="badge badge-std">标准</span> duration 把“数值 + 单位（period）”编码进类型，跨单位的运算自动按比换算，不丢精度。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.duration]（duration 与单位换算）；cppreference "std::chrono::duration" 词条。
 
 2. **真实场景：`steady_clock` 单调，适合测量间隔。** 你用 `system_clock` 测耗时受 NTP 调校影响。请说明区别。
-   - [标准] `steady_clock` 保证单调不回拨，适合测量经过时间；`system_clock` 可随墙上时钟跳变。
-   - [引用] ISO/IEC 14882:2023 §[time.clock]（steady_clock 与 system_clock）；cppreference "std::chrono::steady_clock" 词条。
+   - <span class="badge badge-std">标准</span> `steady_clock` 保证单调不回拨，适合测量经过时间；`system_clock` 可随墙上时钟跳变。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.clock]（steady_clock 与 system_clock）；cppreference "std::chrono::steady_clock" 词条。
 
 3. **真实场景：用 `time_point` 表示某一时刻并可相减得 duration。** 你做超时判断。请说明。
-   - [标准] time_point 绑定到某 clock，两 time_point 相减得到 duration；与同 clock 比较才有意义。
-   - [引用] ISO/IEC 14882:2023 §[time.point]（time_point 语义）；cppreference "std::chrono::time_point" 词条。
+   - <span class="badge badge-std">标准</span> time_point 绑定到某 clock，两 time_point 相减得到 duration；与同 clock 比较才有意义。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.point]（time_point 语义）；cppreference "std::chrono::time_point" 词条。
 
 > 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 能力 | C++ `<chrono>` | Rust `std::time` | Go `time` | Python `datetime` | Java `java.time` |
@@ -987,7 +987,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：std::chrono 与「类型安全的时钟」
 
-[史] `std::chrono`（C++11）由 Howard Hinnant 主导设计，把「时间」从裸整数（秒/毫秒）提升为带单位的类型：`duration<Rep, Period>` 与 `time_point<Clock, Duration>`，并用编译期 `ratio` 表达单位（如 `milli`）。[史] 它的动机是终结「`int64_t ms` 与 `int64_t us` 混用导致单位错配」的历史事故——chrono 让 `duration_cast` 在编译期显式转换单位，杜绝隐式误用。[轶] 一个有趣事实：`steady_clock` 被强制要求「单调递增、不受系统时间回拨影响」，正是为了对付 NTP 校时导致 `system_clock` 回跳、进而使超时计算为负数的经典 bug。[评] chrono 是「用类型编码单位」的典范，也是 C++ 类型安全哲学在时间维度上的体现。
+<span class="badge badge-history">史</span> `std::chrono`（C++11）由 Howard Hinnant 主导设计，把「时间」从裸整数（秒/毫秒）提升为带单位的类型：`duration<Rep, Period>` 与 `time_point<Clock, Duration>`，并用编译期 `ratio` 表达单位（如 `milli`）。<span class="badge badge-history">史</span> 它的动机是终结「`int64_t ms` 与 `int64_t us` 混用导致单位错配」的历史事故——chrono 让 `duration_cast` 在编译期显式转换单位，杜绝隐式误用。<span class="badge badge-anecdote">轶</span> 一个有趣事实：`steady_clock` 被强制要求「单调递增、不受系统时间回拨影响」，正是为了对付 NTP 校时导致 `system_clock` 回跳、进而使超时计算为负数的经典 bug。<span class="badge badge-comment">评</span> chrono 是「用类型编码单位」的典范，也是 C++ 类型安全哲学在时间维度上的体现。
 
 ### ㉒.2 真实工程坐标：chrono 活在哪些产品里
 
@@ -998,11 +998,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：chrono 的常见误用与陷阱
 
-[评] 最大坑是「用 `system_clock` 做耗时测量」——它会被 NTP/手动校时回拨，导致计时间隔为负或巨大跳变，耗时测量必须用 `steady_clock`。另一坑是「`duration` 的隐式截断」——`milliseconds` 赋给 `seconds` 会编译失败（这是好事），但 `auto` 推断出的具体类型在跨函数传递时易错，应显式写明单位或 `auto` 一致。还有「`time_point` 跨时钟不能相减」——不同 `Clock` 的 `time_point` 相减无定义。
+<span class="badge badge-comment">评</span> 最大坑是「用 `system_clock` 做耗时测量」——它会被 NTP/手动校时回拨，导致计时间隔为负或巨大跳变，耗时测量必须用 `steady_clock`。另一坑是「`duration` 的隐式截断」——`milliseconds` 赋给 `seconds` 会编译失败（这是好事），但 `auto` 推断出的具体类型在跨函数传递时易错，应显式写明单位或 `auto` 一致。还有「`time_point` 跨时钟不能相减」——不同 `Clock` 的 `time_point` 相减无定义。
 
 ### ㉒.4 与标准的互动：chrono 与标准的演进
 
-[史] `std::chrono` 自 C++11 起为核心，C++14 增加字面值 `operator""h/min/s/ms/us/ns`；C++20 大幅扩展——引入日历（`year_month_day` 等）、时区（`zoned_time` / `tai_clock` / `gps_clock`）与 Howard Hinnant 的 `date` 库思路。[评] 近年 WG21 仍在细化时钟与格式化（如 `std::format` 对 chrono 的支持），方向是「让 C++ 的时间/日期处理在编译期类型安全的前提下，达到 Python `datetime` 的易用性与 C 的性能」。
+<span class="badge badge-history">史</span> `std::chrono` 自 C++11 起为核心，C++14 增加字面值 `operator""h/min/s/ms/us/ns`；C++20 大幅扩展——引入日历（`year_month_day` 等）、时区（`zoned_time` / `tai_clock` / `gps_clock`）与 Howard Hinnant 的 `date` 库思路。<span class="badge badge-comment">评</span> 近年 WG21 仍在细化时钟与格式化（如 `std::format` 对 chrono 的支持），方向是「让 C++ 的时间/日期处理在编译期类型安全的前提下，达到 Python `datetime` 的易用性与 C 的性能」。
 
 - **WG21 修订链**：`std::chrono` 由 N2661（Howard Hinnant 等「A Foundation to Sleep On」，C++11 时间工具）引入；C++14 增加字面值 `operator""h/min/s/ms/us/ns`（P0221R1）；C++20 大幅扩展——日历（`year_month_day` 等）、时区（`zoned_time`/`tai_clock`/`gps_clock`）直接源自 Howard Hinnant 的 `date` 库（P0355R7，wg21.link/P0355R7），并由 `std::format` 对 `chrono` 的支持（P1361 系列）补全输出。
 - **ISO 条款**：`<chrono>` 规定于 ISO/IEC 14882 第 30 章（`[time]`）。其设计理由（Design Intent）核心是「**单位即类型**（强类型 `duration<Rep, Period>`），用编译期分数 `Period` 表达秒/毫秒/纳秒，杜绝裸整数单位混用」；并区分 `system_clock`（可校准、用于墙上时间）与 `steady_clock`（单调、用于耗时测量），委员会明确反对用 `system_clock` 测耗时，因 NTP 校时会造成间隔回拨。
@@ -1063,7 +1063,7 @@ int main() {
 ## 相关章节（交叉引用）
 
 - **同模块相邻**：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)—— filesystem 时间戳依赖 chrono
-- **同模块相邻**：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)—— stop_token 的超时基于 chrono 时长
+- **同模块相邻**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)—— stop_token 的超时基于 chrono 时长
 - **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— chrono 是该架构外的标准库组件
 - **跨模块前置**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 可定制 chrono 的内存分配
 
@@ -1077,7 +1077,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <chrono>
@@ -1090,9 +1090,9 @@ int main() {
 }
 ```
 
-[标准] `steady_clock` 是单调时钟（不可能回拨，`is_steady == true`），适合测时长；`duration` 是 `rep + period` 的编译期比例，`duration_cast` 做单位转换（见本章附录 D4 源码）。
+<span class="badge badge-std">标准</span> `steady_clock` 是单调时钟（不可能回拨，`is_steady == true`），适合测时长；`duration` 是 `rep + period` 的编译期比例，`duration_cast` 做单位转换（见本章附录 D4 源码）。
 
-[引用] ISO/IEC 14882:2023 §[time]、§[time.clock]（`steady_clock` 单调语义）与 §[time.duration]（`duration_cast`）；测时长务必用 `steady_clock` 而非 `system_clock`；cppreference "chrono/steady_clock"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time]、§[time.clock]（`steady_clock` 单调语义）与 §[time.duration]（`duration_cast`）；测时长务必用 `steady_clock` 而非 `system_clock`；cppreference "chrono/steady_clock"。
 
 </details>
 
@@ -1102,7 +1102,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <chrono>
@@ -1113,9 +1113,9 @@ int main() {
 }
 ```
 
-[标准] `system_clock` 反映挂钟时间（可被 NTP/用户回拨），适合表示绝对时刻与转 `time_t`；调度"多久后"用 `steady_clock`，调度"几点"用 `system_clock`。
+<span class="badge badge-std">标准</span> `system_clock` 反映挂钟时间（可被 NTP/用户回拨），适合表示绝对时刻与转 `time_t`；调度"多久后"用 `steady_clock`，调度"几点"用 `system_clock`。
 
-[引用] ISO/IEC 14882:2023 §[time.clock]（`system_clock` 与 `to_time_t`/`from_time_t`）；C++20 日历扩展（§[time.cal]）源自 Howard Hinnant 的 date 库（github.com/HowardHinnant/date）；cppreference "chrono/system_clock"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.clock]（`system_clock` 与 `to_time_t`/`from_time_t`）；C++20 日历扩展（§[time.cal]）源自 Howard Hinnant 的 date 库（github.com/HowardHinnant/date）；cppreference "chrono/system_clock"。
 
 </details>
 
@@ -1125,7 +1125,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★★★☆] [主题：练习 3（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <chrono>
@@ -1138,9 +1138,9 @@ int main() {
 }
 ```
 
-[标准] `sleep_until(tp)` 睡到绝对时刻，配合"每次重新计算 `now()+周期`"可消除 `sleep_for` 的调度/执行漂移；`100ms` 是 C++14 起的字面量运算符（`std::chrono_literals`）。
+<span class="badge badge-std">标准</span> `sleep_until(tp)` 睡到绝对时刻，配合"每次重新计算 `now()+周期`"可消除 `sleep_for` 的调度/执行漂移；`100ms` 是 C++14 起的字面量运算符（`std::chrono_literals`）。
 
-[引用] ISO/IEC 14882:2023 §[time.duration]（时长字面量 `100ms`）与 §[thread.this]（`sleep_until`）；消除漂移的定时循环见 cppreference "chrono/operator\"\"ms" 与 "thread/sleep_until"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.duration]（时长字面量 `100ms`）与 §[thread.this]（`sleep_until`）；消除漂移的定时循环见 cppreference "chrono/operator\"\"ms" 与 "thread/sleep_until"。
 
 </details>
 
@@ -1243,7 +1243,7 @@ int main() {
 
 ### D4.7 编译验证
 
-> **示例 43** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <chrono>
 #include <iostream>
@@ -1459,7 +1459,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 44** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <chrono>

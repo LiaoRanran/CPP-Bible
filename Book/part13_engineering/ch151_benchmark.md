@@ -27,21 +27,21 @@
 
 > 紧接 0.2 编年最后一条（2015，Google 开源 Benchmark 库带来统计稳健微基准）。
 
-- [史] **持续基准（continuous benchmarking）** 工具（如 Bencher、CodSpeed）把微基准接进 CI，每次 PR 都与历史基线比对，性能一旦回退即自动标记——"防性能回归"从口号变成流水线的一关。
-- [史] Linux `perf` 与 **火焰图（Flame Graph，Brendan Gregg）** 成为定位微架构瓶颈的日常工具，能把"时间花在哪"从采样数据画成一眼可读的图谱，配合第153章的流水线/分支预测认知使用。
-- [史] Google Benchmark 的 JSON / CSV 输出 + 自定义 `DoNotOptimize` / `ClobberMemory`，让"防死代码消除""防优化器幻觉"在框架层面被固化，正是 0.3"先测再优化"立场的工具化。
-- [评] 性能工程的重心正从"本地跑一次看表"转向"在 CI 里长期盯防回归"——一个数字不可信，一串可对比的数字才可信。
-- [轶] 一句行内警告：有人把基准放进虚拟机跑，结果每次数字差 30%，最后发现是宿主机在后台跑了备份——基准的敌人永远是"看不见的噪声源"。
+- <span class="badge badge-history">史</span> **持续基准（continuous benchmarking）** 工具（如 Bencher、CodSpeed）把微基准接进 CI，每次 PR 都与历史基线比对，性能一旦回退即自动标记——"防性能回归"从口号变成流水线的一关。
+- <span class="badge badge-history">史</span> Linux `perf` 与 **火焰图（Flame Graph，Brendan Gregg）** 成为定位微架构瓶颈的日常工具，能把"时间花在哪"从采样数据画成一眼可读的图谱，配合第153章的流水线/分支预测认知使用。
+- <span class="badge badge-history">史</span> Google Benchmark 的 JSON / CSV 输出 + 自定义 `DoNotOptimize` / `ClobberMemory`，让"防死代码消除""防优化器幻觉"在框架层面被固化，正是 0.3"先测再优化"立场的工具化。
+- <span class="badge badge-comment">评</span> 性能工程的重心正从"本地跑一次看表"转向"在 CI 里长期盯防回归"——一个数字不可信，一串可对比的数字才可信。
+- <span class="badge badge-anecdote">轶</span> 一句行内警告：有人把基准放进虚拟机跑，结果每次数字差 30%，最后发现是宿主机在后台跑了备份——基准的敌人永远是"看不见的噪声源"。
 
 > 史料来源：github.com/google/benchmark、github.com/brendangregg/FlameGraph
 
-## ① 概述：基准测试陷阱 [经验]
+## ① 概述：基准测试陷阱 <span class="badge badge-exp">经验</span>
 
 [第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
 
 基准测试（benchmarking）的目标是用可重复的数字回答"这段代码的真实开销是多少"。但 C++ 基准测试的陷阱远超直觉：**优化器会删除你以为在测的代码**、**时钟分辨率会给你 0**、**缓存预热会在首批样本里污染结果**、**平台/编译器差异会让数字完全不可比**。一条不可信的基准，比没有基准更危险——它会把错误的优化方向"焊死"进代码库。
 
-> **示例 1** [难度 ★★★★☆] [主题：概述：基准测试陷阱 [经验]]
+> **示例 1** [难度 ★★★★☆] [主题：概述：基准测试陷阱 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ① 致命陷阱：结果未"被观察" → 整个循环被死代码消除（DCE）
 // 见 Examples/_ch151_dce_trap.cpp
@@ -79,7 +79,7 @@ call    _ZNSt6chrono3_V212steady_clock3nowEv   ; t1
 
 正确做法是用 `volatile` 汇点强制结果"被观察"（见第③节），本机真实耗时约 `53.661 ms`：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：基准测试陷阱 [经验]]
+> **示例 2** [难度 ★★☆☆☆] [主题：概述：基准测试陷阱 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ①' 正确做法：volatile 汇点防止 DCE
 // 见 Examples/_ch151_dce_good.cpp
@@ -111,7 +111,7 @@ dce_good: elapsed_ms=53.661 sink=4999999950000000
 - **微基准（microbenchmark）**：只测单个函数/单条热路径，隔离一切干扰。优点是快、可重复、定位精准；缺点是脱离了真实上下文（分配、I/O、缓存状态），可能被"过度优化"误导。
 - **宏基准（macrobenchmark）**：测真实工作负载端到端，含建表、拷贝、调度。优点是可代表生产；缺点是慢、噪声大、难归因。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：微基准与宏基准]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 微基准与宏基准
 ```cpp
 // ② 微基准 vs 宏基准：微基准只计累加，宏基准含真实拷贝
 // 见 Examples/_ch151_micro_macro.cpp
@@ -157,7 +157,7 @@ macro: incl_copy_ms=44.735
 2. **编译器屏障** `asm volatile("" ::: "memory")`：阻止编译器跨该行重排/删除，但不生成机器指令，不影响 CPU 乱序。
 3. **`asm volatile` 黑盒**：把变量作为内联汇编的读写操作数，编译器无法证明可折叠。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：防止优化]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 防止优化
 ```cpp
 // ③ 编译器屏障：每次迭代都"可见"，防止循环被优化掉
 // 见 Examples/_ch151_dce_volatile.cpp
@@ -176,7 +176,7 @@ int main() {
 }
 ```
 
-> **示例 5** [难度 ★★★☆☆] [主题：防止优化]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 防止优化
 ```cpp
 // ③' asm volatile 黑盒：阻止单条表达式被常量折叠
 // 见 Examples/_ch151_asm_volatile.cpp
@@ -216,7 +216,7 @@ asm_volatile: s=499500 (loop survived optimization)
 
 `std::chrono` 提供 `system_clock`（可被 NTP 回拨，禁止用于基准）、`steady_clock`（单调不减，基准首选）、`high_resolution_clock`（最高分辨率）。**关键取证**：本机 libstdc++（MinGW GCC 13.1.0）中 `high_resolution_clock::is_steady == 0`，即它**并非** steady——所以基准必须直接用 `steady_clock`，不能想当然用 `high_resolution_clock`。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：高精度计时（真实运行示例）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 高精度计时（真实运行示例）
 ```cpp
 // ④ 高精度计时：steady_clock + duration 多单位换算
 // 见 Examples/_ch151_chrono_timer.cpp
@@ -243,7 +243,7 @@ chrono: acc=19999999900000000 ns=93874600 us=93874.60 ms=93.8746
 
 本机取证 `high_resolution_clock::is_steady`：
 
-> **示例 7** [难度 ★★★☆☆] [主题：高精度计时（真实运行示例）]
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 高精度计时（真实运行示例）
 ```cpp
 // ④' 时钟选择：本机 high_resolution_clock 并非 steady（MinGW 特例）
 // 见 Examples/_ch151_clock_choice.cpp
@@ -264,7 +264,7 @@ clock_choice: high_resolution_clock::is_steady=0
 
 **源码剖析（libstdc++ 真实路径 + 行号）**——`steady_clock` 的"单调性"由 `is_steady` 硬编码为真、`now()` 标 `noexcept`：
 
-> **示例 8** [难度 ★★☆☆☆] [主题：高精度计时（真实运行示例）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 高精度计时（真实运行示例）
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/chrono.h
 // 行号：1276-1287
@@ -287,7 +287,7 @@ clock_choice: high_resolution_clock::is_steady=0
 
 现代 CPU 有分支预测器、μop 缓存、频率调节（DVFS）、TLB——首次执行往往慢且抖。微基准必须**先预热、丢弃首批样本、再取稳定值**。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：预热与稳定]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 预热与稳定
 ```cpp
 // ⑤ 预热与稳定：丢弃 WARMUP 批样本，再取 best
 // 见 Examples/_ch151_warmup.cpp
@@ -338,7 +338,7 @@ warmup: best_ms=6.4412 (after 5 warmup iters)
 
 单次数字无意义，必须用统计量描述分布。均值对离群值敏感，**中位数**更抗尖峰噪声，**标准差/方差**刻画抖动。基准报告应优先报 median + min + max + stddev。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：统计（均值 / 中位数 / 方差）]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 统计（均值 / 中位数 / 方差）
 ```cpp
 // ⑥ 统计：均值 / 中位数 / 方差（离线计算）
 // 见 Examples/_ch151_stats.cpp
@@ -378,7 +378,7 @@ stats: mean=10.0100 median=10.0500 stddev=0.2601 n=10
 
 Google Benchmark 是 C++ 微基准工业标准（本机未安装）。其核心范式是 `BENCHMARK(fn)` + `State` 循环 + `state.SetItemsProcessed`，框架自动做多次迭代、统计、CSV 输出。下面先给自包含等价实现，再给框架「典型输出」。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：用法（上游参考 + 自包含等价）]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用法（上游参考 + 自包含等价）
 ```cpp
 // ⑦ 自包含基准 harness（等价 Google Benchmark 的 State 循环）
 // 见 Examples/_ch151_bench_harness.cpp
@@ -413,7 +413,7 @@ BM_fill:   0.1585 ms/iter  (iters=200)
 
 **上游参考（Google Benchmark 语法，框架运行示意，非本机 g++ 产物）**：
 
-> **示例 12** [难度 ★★☆☆☆] [主题：用法（上游参考 + 自包含等价）]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用法（上游参考 + 自包含等价）
 ```cpp
 // Google Benchmark 上游写法（需在装有 benchmark 库的环境编译，本机未装）
 #include <benchmark/benchmark.h>
@@ -469,7 +469,7 @@ cg_annotate cachegrind.out.<pid>
 
 **自包含等价 g++ 示例**——用顺序 vs 跨步访问近似体现 cache 行为差异：
 
-> **示例 13** [难度 ★★☆☆☆] [主题：外部工具]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 外部工具
 ```cpp
 // ⑧ 自包含等价 cache miss 探针
 // 见 Examples/_ch151_cachegrind_equiv.cpp
@@ -510,7 +510,7 @@ stride1024: ms=0.313 (cache-unfriendly)
 
 同一份源码，优化级别与目标架构直接决定机器码。对 `c[i] = a[i]*b[i] + a[i]` 的 AXPY 核：
 
-> **示例 14** [难度 ★★★☆☆] [主题：编译器优化影响]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译器优化影响
 ```cpp
 // ⑨ 优化级别对照：AXPY 核（汇编见 _ch151_opt_O2.asm / _ch151_opt_O2_O3.asm）
 // 见 Examples/_ch151_opt_O2.cpp
@@ -560,7 +560,7 @@ vmovupd ZMMWORD PTR [rdi+rax], zmm0
 
 内存是当代 CPU 的主要瓶颈。顺序访问命中缓存、跨步/随机访问触发 cache miss，性能可差数个数量级。下面用行主序 vs 列主序遍历 `std::vector<std::vector<int>>` 实测：
 
-> **示例 15** [难度 ★★☆☆☆] [主题：内存带宽与 cache miss]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存带宽与 cache miss
 ```cpp
 // ⑩ 行主序遍历（cache 友好）
 // 见 Examples/_ch151_cache_rowmajor.cpp
@@ -581,7 +581,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：内存带宽与 cache miss]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存带宽与 cache miss
 ```cpp
 // ⑩' 列主序遍历（cache 不友好）
 // 见 Examples/_ch151_cache_colmajor.cpp
@@ -611,7 +611,7 @@ col-major: ms=68.800 s=16000000
 
 列主序慢 **5.2 倍**。顺带测一下顺序写内存带宽（粗估，含分配与写）：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：内存带宽与 cache miss]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存带宽与 cache miss
 ```cpp
 // ⑩'' 内存带宽粗测：顺序写吞吐
 // 见 Examples/_ch151_bandwidth.cpp
@@ -645,7 +645,7 @@ bandwidth: wrote 0.25 GiB in 0.036 s -> 7.02 GiB/s
 
 三者代价差异是 C++ 性能经典议题。同语义 `r += f(i)`（f 为 `x*2`），`-O2` 下：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：虚函数 vs 内联 vs 分支]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 虚函数 vs 内联 vs 分支
 ```cpp
 // ⑪ 虚函数分派（默认 -O2 会被 devirtualize，见下文）
 // 见 Examples/_ch151_virtual.cpp
@@ -665,7 +665,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：虚函数 vs 内联 vs 分支]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 虚函数 vs 内联 vs 分支
 ```cpp
 // ⑪' 内联（非虚 → 可内联展开）
 // 见 Examples/_ch151_inline.cpp
@@ -684,7 +684,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★★☆☆] [主题：虚函数 vs 内联 vs 分支]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 虚函数 vs 内联 vs 分支
 ```cpp
 // ⑪'' 分支（数据相关 if/else）
 // 见 Examples/_ch151_branch.cpp
@@ -766,7 +766,7 @@ virtual(-fno-devirt): ms=228.764 r=1774919424
 
 SIMD 让一条指令并行处理多个数据。但编译器对**浮点规约（reduction）** 很保守——因为浮点加法不满足结合律，矢量化会改变结果，故常被保留为标量。
 
-> **示例 21** [难度 ★★★☆☆] [主题：与向量化]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与向量化
 ```cpp
 // ⑫ 标量求和（对比 SIMD；汇编见 _ch151_simd_scalar.asm）
 // 见 Examples/_ch151_simd_scalar.cpp
@@ -788,7 +788,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：与向量化]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与向量化
 ```cpp
 // ⑫' std::reduce 顺序策略（更易被多累加器展开；汇编见 _ch151_simd.asm）
 // 见 Examples/_ch151_simd.cpp
@@ -810,7 +810,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：与向量化]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与向量化
 ```cpp
 // ⑫'' std::accumulate vs std::reduce 对照
 // 见 Examples/_ch151_reduce_seq.cpp
@@ -852,7 +852,7 @@ accumulate: ms=39.523  reduce: ms=13.450        ; reduce 再快约 3 倍
 
 多线程能提速，但会引入线程创建、同步、伪共享开销。基准必须**只计并行段**，并报告总吞吐。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：多线程基准]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多线程基准
 ```cpp
 // ⑬ 多线程基准：8 线程并行累加，计时含线程开销
 // 见 Examples/_ch151_threads.cpp
@@ -892,7 +892,7 @@ threads: T=8 par_ms=10.420 total=4999999950000000
 
 **反模式 A：测量了"重复代码"而非"被测代码"**——把建表/分配也计入被测段，数字被无关成本主导：
 
-> **示例 25** [难度 ★★☆☆☆] [主题：反模式]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式
 ```cpp
 // ⑭' 反模式：建表计入被测段（数字不可信）
 // 见 Examples/_ch151_redundant.cpp
@@ -919,7 +919,7 @@ redundant: ms=3.517 (含建表开销，数字不可信)
 
 **反模式 B：时钟分辨率不够**——极短操作单次计时，多次得到 0ns：
 
-> **示例 26** [难度 ★★☆☆☆] [主题：反模式]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式
 ```cpp
 // ⑭ 反模式：时钟分辨率地板（单次极短操作常测出 0）
 // 见 Examples/_ch151_clock_res.cpp
@@ -957,7 +957,7 @@ clock_res: zero_ns_samples=2/5 (分辨率地板，需用大循环平均)
 
 同一份代码在不同平台/字长/对齐下，数字与内存布局都不同。先取本机真实事实：
 
-> **示例 27** [难度 ★★☆☆☆] [主题：平台差异 [平台·Linux]]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台差异 [平台·Linux]
 ```cpp
 // ⑮ 平台差异：sizeof / 对齐 / 指针宽度随平台变化
 // 见 Examples/_ch151_platform.cpp
@@ -985,7 +985,7 @@ platform: x86_64
 
 注意 Windows MinGW 上 `sizeof(long)==4`（LP64 的 Linux 是 8）。**伪共享**也是平台级痛点——相邻缓存行的变量被多核争用：
 
-> **示例 28** [难度 ★★★☆☆] [主题：平台差异 [平台·Linux]]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 平台差异 [平台·Linux]
 ```cpp
 // ⑮' 伪共享（false sharing）：相邻缓存行被多核争用
 // 见 Examples/_ch151_false_sharing.cpp
@@ -1027,7 +1027,7 @@ false_sharing(padded):  ms=0.411
 
 单次运行 = 噪声。必须多次运行、去首批、取中位数/最小，并报告离散度。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：结果可信度（多次运行，真实示例）]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结果可信度（多次运行，真实示例）
 ```cpp
 // ⑯ 结果可信度：多次运行取中位数/最小/最大，暴露抖动
 // 见 Examples/_ch151_credibility.cpp
@@ -1061,7 +1061,7 @@ credibility: runs=21 median=24.2958 min=22.7575 max=29.0862 spread=6.3287 ms
 
 离散度 `spread≈6.3ms`（约 ±13%），说明单靠"看一眼"会误判。另一手段是用**大 N 循环**把单次开销摊薄到皮秒级：
 
-> **示例 30** [难度 ★★☆☆☆] [主题：结果可信度（多次运行，真实示例）]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结果可信度（多次运行，真实示例）
 ```cpp
 // ⑯' 重复循环：大 N 摊薄单次时钟开销
 // 见 Examples/_ch151_bench_repeat.cpp
@@ -1092,7 +1092,7 @@ repeat: total_ms=90.861 per_iter_ns=0.4543 s=19999999900000000
 
 经典考题：遍历 `std::vector` 与 `std::list`，谁快？直觉来自缓存局部性。直接用本机 g++ 编译运行：
 
-> **示例 31** [难度 ★★☆☆☆] [主题：真实案例]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例
 ```cpp
 // ⑰ 真实案例：vector 顺序遍历 vs list 顺序遍历
 // 见 Examples/_ch151_vector_list.cpp
@@ -1138,7 +1138,7 @@ list   traverse: ms=123.088
 
 基准应进 CI 做**回归守卫**：把历史基线写入配置，运行时若超阈值则非零退出，阻断合并。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：与 CI 集成]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 CI 集成
 ```cpp
 // ⑱ 与 CI 集成：基准回归自测（退出码非零 = 性能退化超阈值）
 // 见 Examples/_ch151_ci_harness.cpp
@@ -1189,7 +1189,7 @@ bench:
 
 基准产出应导出为可绘图格式（CSV），再交给绘图工具。下面是导出 12 次运行样本的等价示例：
 
-> **示例 33** [难度 ★★☆☆☆] [主题：报告与可视化]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 报告与可视化
 ```cpp
 // ⑲ 报告与可视化：多次运行导出 CSV，便于画图
 // 见 Examples/_ch151_report_csv.cpp
@@ -1251,16 +1251,16 @@ run,ms
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：基准里未用 `std::atomic_thread_fence` 固定顺序，测得数值抖动不可复现。** 你误读加速比。请说明。
-   - [标准] 原子与栅栏约束内存顺序；但绝对毫秒随机器而变，加速比才是可移植信号。
-   - [引用] ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（内存顺序与栅栏）；cppreference "std::atomic_thread_fence" 词条。
+   - <span class="badge badge-std">标准</span> 原子与栅栏约束内存顺序；但绝对毫秒随机器而变，加速比才是可移植信号。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（内存顺序与栅栏）；cppreference "std::atomic_thread_fence" 词条。
 
 2. **真实场景：把未 `volatile` 的循环变量当“会读外部状态”，被优化器删成空循环。** 你基准失真。请说明。
-   - [标准] 抽象机下只受优化影响的可观测行为可被重排/删除；未使用的计算可被消除。
-   - [引用] ISO/IEC 14882:2023 §[intro.abstract]（as-if 规则）/ [basic.lval]（可观测行为）；cppreference "as-if rule" 词条。
+   - <span class="badge badge-std">标准</span> 抽象机下只受优化影响的可观测行为可被重排/删除；未使用的计算可被消除。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.abstract]（as-if 规则）/ [basic.lval]（可观测行为）；cppreference "as-if rule" 词条。
 
 3. **真实场景：用 `std::chrono::steady_clock` 测时区无关单调时长。** 你误用 `system_clock` 被 NTP 跳变污染。请说明。
-   - [标准] `steady_clock` 保证单调（不受系统时间调整影响）；`system_clock` 可跳变。
-   - [引用] ISO/IEC 14882:2023 §[time.clock] / [time.clock.steady]（steady_clock）/ [time.duration]；cppreference "std::chrono::steady_clock" 词条。
+   - <span class="badge badge-std">标准</span> `steady_clock` 保证单调（不受系统时间调整影响）；`system_clock` 可跳变。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.clock] / [time.clock.steady]（steady_clock）/ [time.duration]；cppreference "std::chrono::steady_clock" 词条。
 
 基准测试是一门"先证明你在测真东西"的学科。本章用本机 GCC 13.1.0 真实编译运行，固化了以下可复现结论：
 
@@ -1271,7 +1271,7 @@ run,ms
 - **虚调用需反汇编确认**：`-O2` 对可见类型去虚化、循环无 `call`；`-fno-devirtualize` 才保留 `call [vtable]`，代价约 4~5 倍（第⑪节）。
 - **必须给分布**：单点数字无意义，报告 median+min+max+stddev，并把基准锁进 CI 防回归（第⑯⑱节）。
 
-> **示例 34** [难度 ★★☆☆☆] [主题：小结]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结
 ```cpp
 // ⑳ 收尾自检：一个"诚实基准"的最小骨架（组合本章要点）
 // 见 Examples/_ch151_ci_harness.cpp（复用第⑱节 harness 即合规骨架）
@@ -1401,7 +1401,7 @@ int main() {
 
 ## 补充分编可编译示例
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1421,7 +1421,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：从手算到 Google Benchmark
-[史] 在 `<chrono>`（C++11）之前，C++ 计时靠 `clock()` / `gettimeofday()` / `QueryPerformanceCounter` 等平台 API，写法各异、易错。Google 于 2014 年前后开源 **Google Benchmark**，用 `BENCHMARK` 宏 + 自动多次迭代/统计，把微基准变成可复现的"框架化"活动。[轶] 更早的工业基准文化来自 HPC 与处理器厂商（SPEC CPU、LINPACK），它们早就强调"多次运行取中位数、报告方差"——本章 ⑥ 的统计口径正源于此。[评] 基准从"个人脚本"走向"框架 + 统计"，关键在于消除人因（少跑一次、只看最好值）带来的误导。
+<span class="badge badge-history">史</span> 在 `<chrono>`（C++11）之前，C++ 计时靠 `clock()` / `gettimeofday()` / `QueryPerformanceCounter` 等平台 API，写法各异、易错。Google 于 2014 年前后开源 **Google Benchmark**，用 `BENCHMARK` 宏 + 自动多次迭代/统计，把微基准变成可复现的"框架化"活动。<span class="badge badge-anecdote">轶</span> 更早的工业基准文化来自 HPC 与处理器厂商（SPEC CPU、LINPACK），它们早就强调"多次运行取中位数、报告方差"——本章 ⑥ 的统计口径正源于此。<span class="badge badge-comment">评</span> 基准从"个人脚本"走向"框架 + 统计"，关键在于消除人因（少跑一次、只看最好值）带来的误导。
 
 ### ㉒.2 真实工程坐标：基准活在哪些项目里
 
@@ -1432,7 +1432,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 | 编译器生态 | LLVM / Clang（Google Benchmark 给 IR/codegen 热点做回归基准） | CI 比对历史防回归 | 编译器生态标杆 | 基准进 CI |
 | 浏览器 / JS 引擎 | Chromium / V8（大规模 perf bot 持续跑基准） | 渲染/JS 性能防回归 | 工业级引擎 | perf bot 常态运行 |
 | 低延迟系统 | 高频交易 / 游戏引擎（RDTSC/`std::chrono::steady_clock` 纳秒级） | 对单条指令延迟都敏感 | 低延迟/实时 | 自研纳秒级基准 |
-| 基准库 | Google Benchmark / nanobench（单头）/ nonius / `std::chrono` | 提供基准框架与时钟 | 框架事实标准 | [STANDARD] `std::chrono` 提供时钟但非基准框架 |
+| 基准库 | Google Benchmark / nanobench（单头）/ nonius / `std::chrono` | 提供基准框架与时钟 | 框架事实标准 | <span class="badge badge-std">STANDARD</span> `std::chrono` 提供时钟但非基准框架 |
 | 微架构感知基准 | `likwid` / `perf` / Intel VTune | 把墙上时间拆解到 cache miss / IPC / 分支预测失败 | 性能剖析工业工具 | 避免被 turbo/调度噪声误导 |
 
 > **表注（㉒.2）**：上表前 3 行是「从编译器到低延迟系统的真实基准实践」，后 2 行是「基准库与微架构剖析工具的组合」；`std::chrono` 只提供时钟，统计稳健性与 CI 比对需靠 Google Benchmark/nanobench 这类框架，单靠手算时间差极易被噪声带偏。
@@ -1446,9 +1446,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 - **只测 Debug 或只跑一次**：Debug 构建掩盖优化差异，单次运行被冷启动支配；必须 Release + 多次取中位数。
 
 ### ㉒.4 与标准的互动：std::chrono 与可移植计时
-C++11 引入 `<chrono>` 与 `std::chrono::steady_clock`，给基准提供"不受系统时间回拨影响"的单调时钟，是 Google Benchmark 等框架的计时底座。C++20 进一步细化 `clock` 概念（如 `utc_clock`/`tai_clock`）。[评] 标准给基准的礼物是"可移植的单调时钟"，但能否测得准仍靠 ③⑥⑭ 的工程纪律（防 DCE、预热、多次）。
+C++11 引入 `<chrono>` 与 `std::chrono::steady_clock`，给基准提供"不受系统时间回拨影响"的单调时钟，是 Google Benchmark 等框架的计时底座。C++20 进一步细化 `clock` 概念（如 `utc_clock`/`tai_clock`）。<span class="badge badge-comment">评</span> 标准给基准的礼物是"可移植的单调时钟"，但能否测得准仍靠 ③⑥⑭ 的工程纪律（防 DCE、预热、多次）。
 
-**修订链补强（可移植测量与标准）**：跨平台可移植的高分辨率计时由 `std::chrono`（C++11，[time] 条款）提供，但“稳态时钟”语义由实现定义——`steady_clock` 保证单调，而 `high_resolution_clock` 在部分平台只是 `system_clock` 的别名，这是 [IMPLEMENTATION] 层差异。C++20 引入 `std::chrono::clock_cast`（与 [P0355](https://wg21.link/P0355) 扩展 chrono 相关）与 `utc_clock`/`tai_clock` 等物理量时钟，把“时钟换算”纳入标准。基准方法学上，WG21 不规定 benchmark 框架，但 `constexpr`/`std::chrono` 的演进让编译期与运行期计时统一可用。
+**修订链补强（可移植测量与标准）**：跨平台可移植的高分辨率计时由 `std::chrono`（C++11，[time] 条款）提供，但“稳态时钟”语义由实现定义——`steady_clock` 保证单调，而 `high_resolution_clock` 在部分平台只是 `system_clock` 的别名，这是 <span class="badge badge-impl">IMPLEMENTATION</span> 层差异。C++20 引入 `std::chrono::clock_cast`（与 [P0355](https://wg21.link/P0355) 扩展 chrono 相关）与 `utc_clock`/`tai_clock` 等物理量时钟，把“时钟换算”纳入标准。基准方法学上，WG21 不规定 benchmark 框架，但 `constexpr`/`std::chrono` 的演进让编译期与运行期计时统一可用。
 
 ### ㉒.5 权威引用
 - [WG21 P0355 — Extending <chrono>](https://wg21.link/P0355) — C++20 物理量时钟扩展
@@ -1587,7 +1587,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <chrono>
@@ -1601,9 +1601,9 @@ int main() {
 }
 ```
 
-[标准] 编译器会消除「结果未被观察」的计算；把结果写进 `volatile` 变量（或 `asm volatile("" ::: "memory")` 屏障）强制保留，否则基准测的是空气。
+<span class="badge badge-std">标准</span> 编译器会消除「结果未被观察」的计算；把结果写进 `volatile` 变量（或 `asm volatile("" ::: "memory")` 屏障）强制保留，否则基准测的是空气。
 
-[引用] 防 DCE 与基准陷阱见 ch151 ③（volatile / 编译器屏障 / `asm volatile`）；Google Benchmark（github.com/google/benchmark）内置 `DoNotOptimize` 做同样的事；cppreference「std::chrono」提供高精度计时。
+<span class="badge badge-ref">引用</span> 防 DCE 与基准陷阱见 ch151 ③（volatile / 编译器屏障 / `asm volatile`）；Google Benchmark（github.com/google/benchmark）内置 `DoNotOptimize` 做同样的事；cppreference「std::chrono」提供高精度计时。
 
 </details>
 
@@ -1613,7 +1613,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 37** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1632,9 +1632,9 @@ int main() {
 }
 ```
 
-[标准] `vector` 元素连续存放，遍历时预取命中、少 cache miss；`list` 节点各自 new、指针跳跃、缓存命中率低——即便链表「理论上」少搬移，顺序遍历也远慢于 vector（ch151 ⑰ 有真实数字）。
+<span class="badge badge-std">标准</span> `vector` 元素连续存放，遍历时预取命中、少 cache miss；`list` 节点各自 new、指针跳跃、缓存命中率低——即便链表「理论上」少搬移，顺序遍历也远慢于 vector（ch151 ⑰ 有真实数字）。
 
-[引用] vector/list 遍历基准见 ch151 ⑰；缓存与 cache miss 见 ch151 ⑩ 与 ch143 DOD；`-O2` 优化影响见 ch151 ⑨（用 `g++` 实证）。
+<span class="badge badge-ref">引用</span> vector/list 遍历基准见 ch151 ⑰；缓存与 cache miss 见 ch151 ⑩ 与 ch143 DOD；`-O2` 优化影响见 ch151 ⑨（用 `g++` 实证）。
 
 </details>
 
@@ -1644,7 +1644,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 38** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1658,9 +1658,9 @@ int main() {
 }
 ```
 
-[标准] `alignas(64)` 让两个计数器各占一个 64B 缓存行，消除跨核 invalidate 风暴；否则两个逻辑独立的计数器会因共享缓存行而互相拖慢（详见 ch143 ⑬ 用 `std::chrono` 取证）。
+<span class="badge badge-std">标准</span> `alignas(64)` 让两个计数器各占一个 64B 缓存行，消除跨核 invalidate 风暴；否则两个逻辑独立的计数器会因共享缓存行而互相拖慢（详见 ch143 ⑬ 用 `std::chrono` 取证）。
 
-[引用] False Sharing 与对齐见 ch143 ⑬、ch151 ⑩（内存带宽与 cache miss）；性能剖析工具 `perf` / `valgrind --tool=cachegrind` 见 ch151 ⑧；`alignas` 见 ISO/IEC 14882:2023 与 cppreference。
+<span class="badge badge-ref">引用</span> False Sharing 与对齐见 ch143 ⑬、ch151 ⑩（内存带宽与 cache miss）；性能剖析工具 `perf` / `valgrind --tool=cachegrind` 见 ch151 ⑧；`alignas` 见 ISO/IEC 14882:2023 与 cppreference。
 
 </details>
 

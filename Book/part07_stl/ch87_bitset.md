@@ -13,23 +13,23 @@
 > 当"集合"的元素是 0 到 N-1 的整数，最好的容器不是 set，而是一串位。
 
 ### 0.1 起源（谁·何时·为何）
-很多场景的"集合"元素其实是连续的小整数（标志位、权限、位掩码），用 `set<int>` 既浪费内存又慢。[史] `std::bitset<N>` 在 C++98 提供**编译期定长、每个元素仅占 1 比特**的紧凑位容器，重载了 `& | ^ ~ << >>` 等位运算，让"位操作"第一次有了类型安全与边界意识。[史] 它和饱受争议的 `vector<bool>`（为省空间把每个 bool 压成 1 位）形成鲜明对照。
+很多场景的"集合"元素其实是连续的小整数（标志位、权限、位掩码），用 `set<int>` 既浪费内存又慢。<span class="badge badge-history">史</span> `std::bitset<N>` 在 C++98 提供**编译期定长、每个元素仅占 1 比特**的紧凑位容器，重载了 `& | ^ ~ << >>` 等位运算，让"位操作"第一次有了类型安全与边界意识。<span class="badge badge-history">史</span> 它和饱受争议的 `vector<bool>`（为省空间把每个 bool 压成 1 位）形成鲜明对照。
 
 ### 0.2 关键转折（编年）
-- C++98：`std::bitset` 标准化，作为固定大小位容器。[史]
+- C++98：`std::bitset` 标准化，作为固定大小位容器。<span class="badge badge-history">史</span>
 - 后续：C++11 引入 `std::vector<bool>` 特化的争议持续发酵；`dynamic_bitset` 长期只存在于 Boost，标准至今未收编变长位容器。
 
 ### 0.3 设计哲学之争
-`bitset` vs `vector<bool>` 是 STL 里著名的"好榜样 vs 坏特化"对照：`bitset` 定长、零歧义、运算符齐全；`vector<bool>` 为了压缩却破坏了"容器里每个元素都是独立对象"的不变式，导致 `operator[]` 返回代理引用、不能取地址，踩坑无数。[评][史] 这场争论提醒后人：零开销抽象不能牺牲语义一致性。
+`bitset` vs `vector<bool>` 是 STL 里著名的"好榜样 vs 坏特化"对照：`bitset` 定长、零歧义、运算符齐全；`vector<bool>` 为了压缩却破坏了"容器里每个元素都是独立对象"的不变式，导致 `operator[]` 返回代理引用、不能取地址，踩坑无数。<span class="badge badge-comment">评</span><span class="badge badge-history">史</span> 这场争论提醒后人：零开销抽象不能牺牲语义一致性。
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 `dynamic_bitset` 长期只存在于 Boost、标准至今未收编变长位容器。位操作体系化是后续支线。
 
-- [史] **`std::bitset` 大小写死在类型里**：`N` 是编译期常量，决定对象布局与 ABI；因此无法表示"运行时才知道长度"的位集，这正是 `dynamic_bitset`（Boost 提供、长度在构造时给定）存在的原因。
-- [史] **C++20 引入 `<bit>` 头做整数位操作体系化补全**：`std::popcount`、`std::countl_zero`、`std::bit_cast`、`std::has_single_bit` 等把"数有几个 1""找最高置位"等常用位技巧标准化，与 `bitset` 的位运算互补但不重叠。
-- [评] **`dynamic_bitset` 未入标，是"避免与 Boost 重复、又怕定不下语义"的折中**：它要涉及分配器、增长策略、与 `bitset` 的互操作，委员会迟迟未拍板；今天需要变长位集仍得用 Boost 或自己包 `vector<uint64_t>`。
-- [史] **`std::bitset` 的运算符在 C++ 标准化后几乎未改**：`& | ^ ~ << >>` 与 `test`/`set`/`reset`/`flip` 自 C++98 沿用，稳定即是它的价值。
+- <span class="badge badge-history">史</span> **`std::bitset` 大小写死在类型里**：`N` 是编译期常量，决定对象布局与 ABI；因此无法表示"运行时才知道长度"的位集，这正是 `dynamic_bitset`（Boost 提供、长度在构造时给定）存在的原因。
+- <span class="badge badge-history">史</span> **C++20 引入 `<bit>` 头做整数位操作体系化补全**：`std::popcount`、`std::countl_zero`、`std::bit_cast`、`std::has_single_bit` 等把"数有几个 1""找最高置位"等常用位技巧标准化，与 `bitset` 的位运算互补但不重叠。
+- <span class="badge badge-comment">评</span> **`dynamic_bitset` 未入标，是"避免与 Boost 重复、又怕定不下语义"的折中**：它要涉及分配器、增长策略、与 `bitset` 的互操作，委员会迟迟未拍板；今天需要变长位集仍得用 Boost 或自己包 `vector<uint64_t>`。
+- <span class="badge badge-history">史</span> **`std::bitset` 的运算符在 C++ 标准化后几乎未改**：`& | ^ ~ << >>` 与 `test`/`set`/`reset`/`flip` 自 C++98 沿用，稳定即是它的价值。
 
 > 史料来源：[cppreference std::bitset](https://en.cppreference.com/w/cpp/utility/bitset)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
@@ -68,7 +68,7 @@
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）
 ```
                     ┌──────────────────────────────┐
                     │   std::bitset<N>  (编译期定长) │
@@ -135,7 +135,7 @@ classDiagram
 
 `std::bitset<128>` 在内存中就是**一块连续的 word 数组**，没有虚表、没有指针，大小在编译期完全确定。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图 / 对象布局]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
 ```
 std::bitset<128> b(0);   // sizeof = 128/8 = 16 字节 = 2 个 64 位 word
 ┌──────────────────────────────────────────────────────────┐
@@ -159,7 +159,7 @@ bit 位置与 word 的映射（libstdc++，_S_wordbits = 64）：
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★★☆☆☆] [主题：生命周期图]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图
 ```
 构造 std::bitset<64> b(0xF);          // 单 word，_M_w[0] = 0xF
    │
@@ -251,7 +251,7 @@ sequenceDiagram
 
 **场景**：一个多租户服务器给每个会话签发一组"能力位"（capability），用 `std::bitset<64>` 表示 64 种操作权限。鉴权时做一次 `&` 即可判断是否拥有某权限组合，远快于查表 / 字符串匹配。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 // 工业案例 I1：基于 bitset 的会话权限位掩码
 #include <bitset>
@@ -305,7 +305,7 @@ int main() {
 
 C++20 引入 `<bit>`，提供对**单整型**的位操作；bitset 的很多语义可由它表达。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：<bit> 库与 bitset 的联]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <bit> 库与 bitset 的联
 ```cpp
 // I2 C++20 <bit> 与 bitset 的联系
 #include <bit>
@@ -365,7 +365,7 @@ int main() {
 ## ⑯ 易错点
 
 - **❌ 把运行期变量当 `bitset` 大小**：
-> **示例 6** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
   ```cpp
   // ❌ 错误：N 必须编译期已知
   #include <bitset>
@@ -377,7 +377,7 @@ int main() {
   }
   int main() { return bad(10); }
 ```
-> **示例 7** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
   ```cpp
   // ✅ 正确：用 constexpr / 字面量
   #include <bitset>
@@ -393,7 +393,7 @@ int main() {
 ```
 
 - **❌ 越界访问 bit（无异常，行为未定义/断言）**：
-> **示例 8** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
   ```cpp
   // ❌ 错误：pos >= N 是 UB（调试模式才断言）
   #include <bitset>
@@ -471,7 +471,7 @@ C++23 起大量操作（构造、`set`、`test`、`count` 等）在常量表达�
 
 **microbenchmark（示意量级）**
 
-> **示例 9** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // I3 bitset::count vs 手写逐位 test 循环（示意数量级）
 #include <bitset>
@@ -502,16 +502,16 @@ int main() { return bench(); }
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 bitset 做固定大小的标志位集合。** 你处理协议里的 32 个开关位。请说明约束。
-   - [标准] bitset 大小在编译期固定（模板非类型参数），提供位运算与位测试。
-   - [引用] ISO/IEC 14882:2023 §[template.bitset]（std::bitset）；cppreference "std::bitset" 词条。
+   - <span class="badge badge-std">标准</span> bitset 大小在编译期固定（模板非类型参数），提供位运算与位测试。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[template.bitset]（std::bitset）；cppreference "std::bitset" 词条。
 
 2. **真实场景：bitset 与 vector<bool> 不是一回事。** 你误把 bitset 当动态容器。请说明区别。
-   - [标准] bitset 大小固定、不是容器；`vector<bool>` 是位压缩的动态序列容器，支持 resize。
-   - [引用] ISO/IEC 14882:2023 §[template.bitset] / [vector.bool]（二者差异）；cppreference "std::bitset / std::vector<bool>" 词条。
+   - <span class="badge badge-std">标准</span> bitset 大小固定、不是容器；`vector<bool>` 是位压缩的动态序列容器，支持 resize。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[template.bitset] / [vector.bool]（二者差异）；cppreference "std::bitset / std::vector<bool>" 词条。
 
 3. **真实场景：bitset 可转字符串/无符号整数。** 你做位级序列化。请说明接口。
-   - [标准] bitset 提供 `to_string`/`to_ullong` 等便于与其它表示互转。
-   - [引用] ISO/IEC 14882:2023 §[template.bitset]（to_string/to_ullong）；cppreference "std::bitset" 词条。
+   - <span class="badge badge-std">标准</span> bitset 提供 `to_string`/`to_ullong` 等便于与其它表示互转。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[template.bitset]（to_string/to_ullong）；cppreference "std::bitset" 词条。
 
 
 **跨语言对比：定长位集**
@@ -543,7 +543,7 @@ int main() { return bench(); }
 
 ### ㉒.1 历史渊源补强：std::bitset 与「固定位宽」的极致紧凑
 
-[史] `std::bitset` 随 C++98 进入标准，定位是「编译期已知大小的位集合」，每个 bit 占一比特、用整数数组打包存储，典型应用是权限掩码、标志位、布隆过滤器雏形。[史] 它的设计直接对标 C 的位域（bit-field）与手写的「位运算掩码」，但提供了类型安全与 `.count()` / `.any()` / `.set()` 等便捷接口。[轶] 一个经典对照是 `std::bitset` 与 `std::vector<bool>`：前者大小固定、零堆分配、是真·每比特存储；后者是动态、特化诡异（返回代理引用）。[评] `bitset` 的价值在于「把位运算从裸整数提升到 First-class 容器」，且 ABI 完全确定（N 个比特就是 N 位）。
+<span class="badge badge-history">史</span> `std::bitset` 随 C++98 进入标准，定位是「编译期已知大小的位集合」，每个 bit 占一比特、用整数数组打包存储，典型应用是权限掩码、标志位、布隆过滤器雏形。<span class="badge badge-history">史</span> 它的设计直接对标 C 的位域（bit-field）与手写的「位运算掩码」，但提供了类型安全与 `.count()` / `.any()` / `.set()` 等便捷接口。<span class="badge badge-anecdote">轶</span> 一个经典对照是 `std::bitset` 与 `std::vector<bool>`：前者大小固定、零堆分配、是真·每比特存储；后者是动态、特化诡异（返回代理引用）。<span class="badge badge-comment">评</span> `bitset` 的价值在于「把位运算从裸整数提升到 First-class 容器」，且 ABI 完全确定（N 个比特就是 N 位）。
 
 ### ㉒.2 真实工程坐标：bitset 活在哪些产品里
 
@@ -554,11 +554,11 @@ int main() { return bench(); }
 
 ### ㉒.3 生产踩坑：bitset 的常见误用与陷阱
 
-[评] 最大误区是「把 `bitset` 当动态位集合用」——大小是编译期模板参数 `N`，不能在运行期改变，运行期尺寸请用 `std::vector<bool>`（代价是代理引用语义）。另一坑是「`bitset` 与整数互转的位序」——`to_ulong()` / `to_ullong()` 的低位对应 `bitset[0]`，跨平台/跨语言交换时要小心字节与位序。还有「`bitset<N>` 的 `N` 很大时会爆栈」——它是栈对象且大小固定，超大尺寸应改用堆分配的 `vector<bool>`。
+<span class="badge badge-comment">评</span> 最大误区是「把 `bitset` 当动态位集合用」——大小是编译期模板参数 `N`，不能在运行期改变，运行期尺寸请用 `std::vector<bool>`（代价是代理引用语义）。另一坑是「`bitset` 与整数互转的位序」——`to_ulong()` / `to_ullong()` 的低位对应 `bitset[0]`，跨平台/跨语言交换时要小心字节与位序。还有「`bitset<N>` 的 `N` 很大时会爆栈」——它是栈对象且大小固定，超大尺寸应改用堆分配的 `vector<bool>`。
 
 ### ㉒.4 与标准的互动：bitset 与 <bit> 的演进
 
-[史] `std::bitset` 自 C++98 稳定，C++11 起支持 `constexpr` 位操作；更显著的演进是 C++20 新增 `<bit>` 头（P0553R4），提供 `popcount` / `countl_zero` / `rotl` 等跨所有无符号整数的自由函数，把 `bitset` 的位计数能力下沉到语言层面。[评] 近年 WG21 还在讨论「`std::bitset` 与 `std::vector<bool>` 的统一」以及 `popcount` 的硬件指令映射（如 x86 `POPCNT`），方向是「让位运算既类型安全又零成本」。
+<span class="badge badge-history">史</span> `std::bitset` 自 C++98 稳定，C++11 起支持 `constexpr` 位操作；更显著的演进是 C++20 新增 `<bit>` 头（P0553R4），提供 `popcount` / `countl_zero` / `rotl` 等跨所有无符号整数的自由函数，把 `bitset` 的位计数能力下沉到语言层面。<span class="badge badge-comment">评</span> 近年 WG21 还在讨论「`std::bitset` 与 `std::vector<bool>` 的统一」以及 `popcount` 的硬件指令映射（如 x86 `POPCNT`），方向是「让位运算既类型安全又零成本」。
 
 - **WG21 修订链**：`std::bitset` 自 C++98 稳定；C++11 起支持 `constexpr` 位操作（如 `count()`/`test()` 在编译期可用）。更显著的演进是 C++20 新增 `<bit>` 头（P0553R4，wg21.link/P0553R4），把 `popcount`/`countl_zero`/`rotl` 等下放到「跨所有无符号整数」的自由函数；随后 P0556R3（整数幂2运算）、P1272R4 等持续补全 `<bit>`。
 - **ISO 条款**：`std::bitset<N>` 规定于 ISO/IEC 14882 §22.9（`[template.bitset]`）。其设计理由是「以固定 `N` 个二进制位提供**编译期尺寸确定**的紧凑集合」——与 `std::vector<bool>`（运行期尺寸、代理引用语义）形成对照。标准把 `bitset` 设为聚合/标准布局，使其可直接 `memcpy` 与 C 位域 ABI 对接，满足协议/系统编程对「可预测位布局」的硬需求。
@@ -587,7 +587,7 @@ int main() { return bench(); }
 
 **更多完整可编译示例（每块独立可编译）**
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I1 基础构造与 set/test（已在 §⑫ 展示，这里独立可编译最小版）
 #include <bitset>
@@ -600,7 +600,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I2 位运算 & | ^ ~ （返回新 bitset，不修改自身）
 #include <bitset>
@@ -617,7 +617,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I3 to_string / to_ulong 转换
 #include <bitset>
@@ -630,7 +630,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I4 count 人口计数
 #include <bitset>
@@ -643,7 +643,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I5 flip 与 reset
 #include <bitset>
@@ -659,7 +659,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I6 all / any / none
 #include <bitset>
@@ -675,7 +675,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I7 左右移位 << >>
 #include <bitset>
@@ -689,7 +689,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I8 工业案例精简：能力掩码（与 §⑫ 同思想，独立可编译）
 #include <bitset>
@@ -703,7 +703,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I9 用 constexpr 大小定义 bitset
 #include <bitset>
@@ -718,7 +718,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I10 <bit> 与 bitset 联系（C++20，版本宏保护）
 #include <bit>
@@ -735,7 +735,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I11 自定义位掩码 vs bitset（单 word 性能对比思想）
 #include <bitset>
@@ -750,7 +750,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I12 工业案例：页分配位图（连续 1024 页的分配/释放）
 #include <bitset>
@@ -767,7 +767,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I13 用户定义字面量（UDL）构造标志（注意 operator"" 与后缀间有空格）
 #include <bitset>
@@ -784,7 +784,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I14 set(pos, val) 显式设 0/1
 #include <bitset>
@@ -798,7 +798,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I15 两个 bitset 相等比较
 #include <bitset>
@@ -812,7 +812,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I16 从字符串构造
 #include <bitset>
@@ -825,7 +825,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I17 从 unsigned long long 构造
 #include <bitset>
@@ -837,7 +837,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I18 性能：bitset::count vs 逐位 test（独立可编译，示意）
 #include <bitset>
@@ -853,7 +853,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I19 benchmark 思想：bitset<1<<20> 内存密度 vs vector<char>
 #include <bitset>
@@ -872,7 +872,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I20 命名常量定义权限位（工程推荐写法）
 #include <bitset>
@@ -887,7 +887,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I21 版本宏区分 C++ 版本
 #include <iostream>
@@ -903,7 +903,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I22 折叠表达式 + bitset：批量置位（现代 C++ 组合）
 #include <bitset>
@@ -922,7 +922,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I23 reference 代理：operator[] 返回代理对象
 #include <bitset>
@@ -936,7 +936,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I24 to_string 自定义 0/1 字符
 #include <bitset>
@@ -949,7 +949,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I25 全部置位/复位
 #include <bitset>
@@ -964,7 +964,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I26 size() 是静态成员，编译期确定
 #include <bitset>
@@ -976,7 +976,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I27 std::hash 支持 bitset（需 <functional>，已在 PRELUDE）
 #include <bitset>
@@ -991,7 +991,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I28 判断 2 的幂（count==1）
 #include <bitset>
@@ -1005,7 +1005,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I29 集合差集（^ 异或可得对称差，~ 配合 & 得差集）
 #include <bitset>
@@ -1020,7 +1020,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I30 constexpr bitset（C++23 下可在编译期运算）
 #include <bitset>
@@ -1035,7 +1035,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I31 布隆过滤器简化版：用 bitset 记录哈希位（示意 k=2 个哈希）
 #include <bitset>
@@ -1054,7 +1054,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 更多完]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
 ```cpp
 // I32 to_ulong 溢出捕获
 #include <bitset>
@@ -1125,7 +1125,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <bitset>
@@ -1138,9 +1138,9 @@ int main() {
 }
 ```
 
-[标准] `bitset<N>` 是 N 位固定大小序列，`set`/`test` 带下标边界检查（越界抛 `out_of_range`），`count()` 返回置位个数，`| & ^ ~` 为位级运算。
+<span class="badge badge-std">标准</span> `bitset<N>` 是 N 位固定大小序列，`set`/`test` 带下标边界检查（越界抛 `out_of_range`），`count()` 返回置位个数，`| & ^ ~` 为位级运算。
 
-[引用] ISO/IEC 14882:2023 §[template.bitset]（固定大小位集与位运算成员）；运行时大小位集见 Boost `dynamic_bitset`（boost.org 文档）；cppreference "utility/bitset"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[template.bitset]（固定大小位集与位运算成员）；运行时大小位集见 Boost `dynamic_bitset`（boost.org 文档）；cppreference "utility/bitset"。
 
 </details>
 
@@ -1150,7 +1150,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <bitset>
@@ -1160,9 +1160,9 @@ int main() {
 }
 ```
 
-[标准] `bitset::count()` 返回值为 1 的位数；其实现是否走硬件 `popcnt` 取决于编译旗标与基线 ISA（见本章附录结论 3）。
+<span class="badge badge-std">标准</span> `bitset::count()` 返回值为 1 的位数；其实现是否走硬件 `popcnt` 取决于编译旗标与基线 ISA（见本章附录结论 3）。
 
-[引用] ISO/IEC 14882:2023 §[template.bitset]（成员 `count`）与 §[bit]（`std::popcount`，C++20 `<bit>`）；`count()` 与 `popcount` 同样受 `-mpopcnt` 影响；cppreference "utility/bitset"、"numeric/popcount"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[template.bitset]（成员 `count`）与 §[bit]（`std::popcount`，C++20 `<bit>`）；`count()` 与 `popcount` 同样受 `-mpopcnt` 影响；cppreference "utility/bitset"、"numeric/popcount"。
 
 </details>
 
@@ -1172,7 +1172,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <bitset>
@@ -1184,9 +1184,9 @@ int main() {
 }
 ```
 
-[标准] `to_ulong()`/`to_ullong()` 把位集转整数，位数超出目标类型时抛 `std::overflow_error`；`<bit>` 提供 `popcount`/`rotl`/`has_single_bit` 等可移植位工具。
+<span class="badge badge-std">标准</span> `to_ulong()`/`to_ullong()` 把位集转整数，位数超出目标类型时抛 `std::overflow_error`；`<bit>` 提供 `popcount`/`rotl`/`has_single_bit` 等可移植位工具。
 
-[引用] ISO/IEC 14882:2023 §[template.bitset]（`to_ulong`/`to_ullong` 转换与异常）与 §[bit]（C++20 `<bit>` 工具）；cppreference "utility/bitset"、"bit"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[template.bitset]（`to_ulong`/`to_ullong` 转换与异常）与 §[bit]（C++20 `<bit>` 工具）；cppreference "utility/bitset"、"bit"。
 
 </details>
 
@@ -1283,7 +1283,7 @@ sete   al
 ### D4.1 libstdc++ 真实源码摘录
 
 // 摘自 libstdc++ 15.3.0：bitset:66（word 数计算）
-> **示例 45** [难度 ★☆☆☆☆] [主题：++ 真实源码摘录]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 真实源码摘录
 ```
 #define _GLIBCXX_BITSET_BITS_PER_WORD  (__CHAR_BIT__ * __SIZEOF_LONG__)
 #define _GLIBCXX_BITSET_WORDS(__n) \
@@ -1292,7 +1292,7 @@ sete   al
 ```
 
 // 摘自 libstdc++ 15.3.0：bitset:811（私有继承 _Base_bitset）
-> **示例 46** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
 ```cpp
   template<size_t _Nb>
     class bitset
@@ -1305,7 +1305,7 @@ sete   al
 ```
 
 // 摘自 libstdc++ 15.3.0：bitset:83（word 数组存储与定位）
-> **示例 47** [难度 ★★★☆☆] [主题：++ 真实源码摘录]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++ 真实源码摘录
 ```
   template<size_t _Nw>
     struct _Base_bitset
@@ -1351,7 +1351,7 @@ sete   al
 
 ### D4.4 可编译验证
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：可编译验证]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 可编译验证
 ```cpp
 // D4-demo：验证 bitset 的 set/test/count 基本语义
 #include <bitset>
@@ -1369,7 +1369,7 @@ int main() {
 ```
 
 预期输出：
-> **示例 49** [难度 ★★★★★] [主题：可编译验证]
+> **示例 49** <span class="badge badge-exp">难度 ★★★★★</span> · 可编译验证
 ```
 b = 0000001010
 count = 2
@@ -1534,7 +1534,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 50** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <bitset>
 #include <vector>

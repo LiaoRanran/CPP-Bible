@@ -1,5 +1,5 @@
 # 第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询
-> **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。RTTI（`dynamic_cast` / `typeid` / `std::type_info`）的**运行时布局由 ABI 规定而非 C++ 标准**（[标准] 不规定 vtable 中 RTTI 指针、type_info 对象的具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 `type_info` 结构与 `dynamic_cast` 查找路径均为 **GCC/Itanium ABI 实测**，跨编译器或平台可能存在差异，切勿视作标准保证。
+> **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。RTTI（`dynamic_cast` / `typeid` / `std::type_info`）的**运行时布局由 ABI 规定而非 C++ 标准**（<span class="badge badge-std">标准</span> 不规定 vtable 中 RTTI 指针、type_info 对象的具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 `type_info` 结构与 `dynamic_cast` 查找路径均为 **GCC/Itanium ABI 实测**，跨编译器或平台可能存在差异，切勿视作标准保证。
 
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
 [第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
@@ -9,7 +9,7 @@
 > 类型信息本不该免费——C++ 花了十多年才说服自己：有时候，运行时「认得你是谁」确实值得。
 
 ### 0.1 起源（谁·何时·为何）
-与虚函数不同，运行时类型信息（RTTI，`typeid` 与 `dynamic_cast`）是 C++ 的「后加项」。早期 Stroustrup 刻意不提供它，因为把类型名塞进每个对象会违背「零开销」——你没用 RTTI 也得为它买单。[史] 但随着多重继承（ch50）与复杂层次出现，安全地「向下转型」成了刚需：`dynamic_cast` 能在运行期判断「这个基类指针到底是不是某个派生类」，转错就返回空（指针）或抛异常（引用），比手写 `type` 枚举安全得多。[史] 这些设计在《The Design and Evolution of C++》（D&E）里有详细自述。
+与虚函数不同，运行时类型信息（RTTI，`typeid` 与 `dynamic_cast`）是 C++ 的「后加项」。早期 Stroustrup 刻意不提供它，因为把类型名塞进每个对象会违背「零开销」——你没用 RTTI 也得为它买单。<span class="badge badge-history">史</span> 但随着多重继承（ch50）与复杂层次出现，安全地「向下转型」成了刚需：`dynamic_cast` 能在运行期判断「这个基类指针到底是不是某个派生类」，转错就返回空（指针）或抛异常（引用），比手写 `type` 枚举安全得多。<span class="badge badge-history">史</span> 这些设计在《The Design and Evolution of C++》（D&E）里有详细自述。
 
 ### 0.2 关键转折（编年）
 - 1980s–1990s：类型信息长期是「可选扩展」，并非语言核心。
@@ -17,16 +17,16 @@
 - 2011 起：`noexcept` 等标注让 RTTI 与异常、性能分析能更精确共存。
 
 ### 0.3 设计哲学之争
-RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型」的代码知道类型，破坏封装；很多大型项目（尤其嵌入式、游戏）直接 `-fno-rtti` 关掉它。[评] 支持者则认为，安全向下转型、调试器与序列化框架离开它寸步难行。有意思的是，C++ 的**异常处理**和 RTTI 共享了同一套运行期基础设施——这也是为什么关掉其中一个往往牵连另一个。[史]
+RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型」的代码知道类型，破坏封装；很多大型项目（尤其嵌入式、游戏）直接 `-fno-rtti` 关掉它。<span class="badge badge-comment">评</span> 支持者则认为，安全向下转型、调试器与序列化框架离开它寸步难行。有意思的是，C++ 的**异常处理**和 RTTI 共享了同一套运行期基础设施——这也是为什么关掉其中一个往往牵连另一个。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++98 的 `dynamic_cast`/`typeid`。RTTI 在后续标准里仍有补笔：
 
-- [史] `std::type_info::name()` 的返回在不同实现上天差地别：GCC/Clang 返回 mangled 名（需 `abi::__cxa_demangle` 还原），MSVC 返回较可读名。跨翻译单元时，`typeid` 能否比较取决于 RTTI 信息的「单一定义」——模块化前靠链接器合并弱符号，模块（C++20）则试图让类型信息在模块边界更可控。
+- <span class="badge badge-history">史</span> `std::type_info::name()` 的返回在不同实现上天差地别：GCC/Clang 返回 mangled 名（需 `abi::__cxa_demangle` 还原），MSVC 返回较可读名。跨翻译单元时，`typeid` 能否比较取决于 RTTI 信息的「单一定义」——模块化前靠链接器合并弱符号，模块（C++20）则试图让类型信息在模块边界更可控。
 
-- [史] C++20 的 `std::source_location` 提供「文件/行号/函数名」的编译期自省，常被用作轻量日志与断言的「现代版位置自省」，与 RTTI 互补：前者回答「我在哪被调用」，后者回答「我是什么类型」。
+- <span class="badge badge-history">史</span> C++20 的 `std::source_location` 提供「文件/行号/函数名」的编译期自省，常被用作轻量日志与断言的「现代版位置自省」，与 RTTI 互补：前者回答「我在哪被调用」，后者回答「我是什么类型」。
 
-- [评] 嵌入式与游戏圈长期把 RTTI 当「开销」关掉（`-fno-rtti`），用 `type_index` + 手写枚举代替；但当 `std::any`、`std::function` 等依赖 type_info 时，关掉 RTTI 会连带伤及格标准库功能。
+- <span class="badge badge-comment">评</span> 嵌入式与游戏圈长期把 RTTI 当「开销」关掉（`-fno-rtti`），用 `type_index` + 手写枚举代替；但当 `std::any`、`std::function` 等依赖 type_info 时，关掉 RTTI 会连带伤及格标准库功能。
 
 > 史料来源：https://en.cppreference.com/w/cpp/types/type_info ；https://en.cppreference.com/w/cpp/utility/source_location
 
@@ -50,7 +50,7 @@ RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★★★★] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★★</span> · 知识图谱（ASCII）
 ```
                        ┌──────── C++ 类型查询 ────────┐
                        │                               │
@@ -107,7 +107,7 @@ classDiagram
 
 单继承（x86-64，Itanium ABI，`Base`/`Der` 各含虚函数）：
 
-> **示例 2** [难度 ★★★★☆] [主题：内存图 / vtable 与 typ]
+> **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图 / vtable 与 typ
 ```
         Der 对象（地址 base）
         ┌──────────────────────┐  <- base (offset 0)
@@ -134,7 +134,7 @@ classDiagram
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★★★★☆] [主题：生命周期图]
+> **示例 3** <span class="badge badge-exp">难度 ★★★★☆</span> · 生命周期图
 ```
 编译期：type_info 对象生成于 .rdata，vtable 槽1 固定指向它
 构造对象 d：vptr 指向 Der vtable ⟶ 间接指向 typeinfo(Der)
@@ -146,7 +146,7 @@ classDiagram
 
 ## ⑨ 调用栈 / 时序图
 
-> **示例 4** [难度 ★★★★☆] [主题：调用栈 / 时序图]
+> **示例 4** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈 / 时序图
 ```
 调用点                  vtable/type_info          运行时支持例程
   │                        │                          │
@@ -215,7 +215,7 @@ _Z13down_cast_refRK4Base:
 3. 引用形态：`call __dynamic_cast` 后 `test rax,rax; je .L13; ...; call __cxa_bad_cast`。比对失败经 `__cxa_bad_cast` 抛出 `std::bad_cast`，**不返回**。这就是引用与指针失败语义差异的硬件级原因。
 4. `42` = `'*'`：libstdc++ `type_info::name()` 在返回的 mangled name 前可能带一个 `'*'` 前缀（legacy ABI 标记），真实代码会跳过它。这证明 `.name()` 返回的是 Itanium mangled name（如 `_ZTI3Der` 对应的 `.N3DerE`），需 `__cxa_demangle` 才能读人话。
 
-【立场分层】：[标准] 规定 typeid/dynamic_cast 语义 / [实现] 上 GCC 生成 __dynamic_cast 调用 / [平台·x86-64] 上 MSVC 用 `RTTI Type Descriptor` 等价结构 / [经验] 热路径禁用 RTTI 或换 static 方案。
+【立场分层】：<span class="badge badge-std">标准</span> 规定 typeid/dynamic_cast 语义 / <span class="badge badge-impl">实现</span> 上 GCC 生成 __dynamic_cast 调用 / [平台·x86-64] 上 MSVC 用 `RTTI Type Descriptor` 等价结构 / <span class="badge badge-exp">经验</span> 热路径禁用 RTTI 或换 static 方案。
 
 ## ⑪ STL 联系
 
@@ -232,7 +232,7 @@ _Z13down_cast_refRK4Base:
 > 构建：`g++ -std=c++23 -O2 -Wall case48_dispatcher.cpp -o case48_dispatcher`
 > 文件：`Examples/case48_dispatcher.cpp`
 
-> **示例 5** [难度 ★★☆☆☆] [主题：工业案例 48-A：消息分发器]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-A：消息分发器
 ```cpp
 #include <iostream>
 #include <unordered_map>
@@ -264,7 +264,7 @@ int main() {
 
 ### 工业案例 48-B：错误示范——`-fno-rtti` 下误用 typeid/dynamic_cast
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：工业案例 48-B：错误示范——-f]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-B：错误示范——-f
 ```cpp
 // 编译选项含 -fno-rtti 时，下面全部编译失败
 struct A { virtual ~A() = default; };
@@ -275,7 +275,7 @@ void bad(A* p) {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：工业案例 48-B：错误示范——-f]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-B：错误示范——-f
 ```cpp
 // ✅ 修复：用虚函数做分派，彻底不依赖 RTTI
 struct A { virtual ~A() = default; virtual void dispatch() = 0; };
@@ -285,7 +285,7 @@ void good(A* p) { p->dispatch(); }   // 走虚表，无需 RTTI，体积更小
 
 ### 工业案例 48-C：typeid 静态 vs 动态（核心语义对照）
 
-> **示例 8** [难度 ★★☆☆☆] [主题：工业案例 48-C：typeid 静]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-C：typeid 静
 ```cpp
 // typeid 对非多态取静态类型，对多态对象取动态类型
 #include <typeinfo>
@@ -303,7 +303,7 @@ void demo_c() {
 
 ### 工业案例 48-D：typeid(*p) 空指针抛 std::bad_typeid
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：工业案例 48-D：typeid 空指针抛 std::bad]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-D：typeid 空指针抛 std::bad
 ```cpp
 #include <typeinfo>
 #include <exception>
@@ -316,7 +316,7 @@ void demo_d() {
 
 ### 工业案例 48-E：dynamic_cast 上行转换（编译期确定，零运行期成本）
 
-> **示例 10** [难度 ★★☆☆☆] [主题：工业案例 48-E：dynamicc]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-E：dynamicc
 ```cpp
 struct Base { virtual ~Base() = default; };
 struct Der : Base {};
@@ -328,7 +328,7 @@ void demo_e(Der* d) {
 
 ### 工业案例 48-F：dynamic_cast 引用失败抛 std::bad_cast
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：工业案例 48-F：dynamicc]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-F：dynamicc
 ```cpp
 #include <typeinfo>
 struct Base { virtual ~Base() = default; };
@@ -342,7 +342,7 @@ void demo_f(Base& b) {
 
 ### 工业案例 48-G：dynamic_cast<void*> 取最派生对象地址
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：工业案例 48-G：dynamicc]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-G：dynamicc
 ```cpp
 struct Base { virtual ~Base() = default; };
 struct Der : Base { int extra{}; };
@@ -354,7 +354,7 @@ void demo_g(Der* d) {
 
 ### 工业案例 48-H：type_index + unordered_map 完整可运行分发
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例 48-H：typeinde]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-H：typeinde
 ```cpp
 #include <iostream>
 #include <unordered_map>
@@ -375,7 +375,7 @@ void demo_h() {
 
 ### 工业案例 48-I：std::any 内部依赖 type_info
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例 48-I：std::any]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-I：std::any
 ```cpp
 #include <any>
 #include <iostream>
@@ -388,7 +388,7 @@ void demo_i() {
 
 ### 工业案例 48-J：-fno-rtti 下这些会编译失败（示意）
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：工业案例 48-J：-fno-rtt]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-J：-fno-rtt
 ```cpp
 #include <typeinfo>
 // 编译加 -fno-rtti 时：
@@ -399,7 +399,7 @@ void demo_i() {
 
 ### 工业案例 48-K：type_info::hash_code 作容器 key
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：工业案例 48-K：typeinfo]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-K：typeinfo
 ```cpp
 #include <unordered_set>
 #include <typeinfo>
@@ -413,7 +413,7 @@ void demo_k() {
 
 ### 工业案例 48-L：dynamic_cast 交叉（兄弟）失败返 nullptr
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：工业案例 48-L：dynamicc]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-L：dynamicc
 ```cpp
 struct Root { virtual ~Root() = default; };
 struct L : Root {}; struct R : Root {};
@@ -425,7 +425,7 @@ void demo_l(Root* r) {
 
 ### 工业案例 48-M：typeid 对引用取动态类型
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：工业案例 48-M：typeid 对]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-M：typeid 对
 ```cpp
 #include <typeinfo>
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
@@ -434,7 +434,7 @@ void demo_m(Base& b) { const std::type_info& t = typeid(b); (void)t; } // 动态
 
 ### 工业案例 48-N：typeid 对指针取静态类型（对比 M）
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：工业案例 48-N：typeid 对]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-N：typeid 对
 ```cpp
 #include <typeinfo>
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
@@ -443,7 +443,7 @@ void demo_n(Base* p) { const std::type_info& t = typeid(p); (void)t; } // 静态
 
 ### 工业案例 48-O：手写「类型标签」替代 dynamic_cast（概念演示）
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：工业案例 48-O：手写「类型标签」]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-O：手写「类型标签」
 ```cpp
 struct Base { virtual ~Base() = default; virtual int kind() const = 0; };
 struct Der : Base { int kind() const override { return 1; } };
@@ -452,7 +452,7 @@ Der* manual_down(Base* p) { return p->kind() == 1 ? static_cast<Der*>(p) : nullp
 
 ### 工业案例 48-P：捕获 std::bad_cast（引用形态）
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例 48-P：捕获 std::]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-P：捕获 std::
 ```cpp
 #include <typeinfo>
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
@@ -464,7 +464,7 @@ void demo_p(Base& b) {
 
 ### 工业案例 48-Q：type_info operator==（同类型程序内唯一）
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：工业案例 48-Q：typeinfo]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-Q：typeinfo
 ```cpp
 #include <typeinfo>
 void demo_q() {
@@ -476,7 +476,7 @@ void demo_q() {
 
 ### 工业案例 48-R：模板 + type_traits 编译期替代 RTTI
 
-> **示例 23** [难度 ★★☆☆☆] [主题：工业案例 48-R：模板 + typ]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-R：模板 + typ
 ```cpp
 #include <type_traits>
 template<class T>
@@ -494,7 +494,7 @@ void process(T v) {
 > 行号：约 `class type_info { ... const char* __name; ... };`
 > 提取：`grep -n "__name\|class type_info" <上述路径>`
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：源码剖析 1：typeinfo 对象]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析 1：typeinfo 对象
 ```cpp
 #include <cstddef>
 // libstdc++ <typeinfo>（节选，去注释）
@@ -520,7 +520,7 @@ public:
 > 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（声明 `__dynamic_cast`）
 > 行号：约 `extern "C" void* __dynamic_cast(const void* __src, ...);`
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：源码剖析 1：typeinfo 对象]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析 1：typeinfo 对象
 ```cpp
 // libsupc++ 中 __dynamic_cast 的语义（节选）
 // 入参：__src=源对象指针, __dst_type=目标 type_info,
@@ -600,7 +600,7 @@ extern "C" void* __dynamic_cast(const void* __src,
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
-> **示例 26** [难度 ★★★☆☆] [主题：性能分析]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析
 ```cpp
 #include <benchmark/benchmark.h>
 #include <typeinfo>
@@ -638,16 +638,16 @@ BENCHMARK(BM_typeid_name); BENCHMARK(BM_dyncast_down); BENCHMARK(BM_static_upcas
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：dynamic_cast 向下转型失败返回 null 还是抛异常？** 你区分指针与引用的不同失败语义。请说明。
-   - [标准] 对指针，`dynamic_cast` 失败返回空指针；对引用，失败抛出 `std::bad_cast`。
-   - [引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]（dynamic_cast 的失败语义）；cppreference "dynamic_cast" 词条。
+   - <span class="badge badge-std">标准</span> 对指针，`dynamic_cast` 失败返回空指针；对引用，失败抛出 `std::bad_cast`。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.dynamic.cast]（dynamic_cast 的失败语义）；cppreference "dynamic_cast" 词条。
 
 2. **真实场景：对非多态类型用 dynamic_cast 编译期就被拒。** 你拿到的是普通基类指针，运行时检查不可用。请说明前置条件。
-   - [标准] `dynamic_cast` 的运行时检查要求源表达式指向多态类型（含虚函数）；否则须用 `static_cast`。
-   - [引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]（源须为多态类型）；cppreference "dynamic_cast" 词条。
+   - <span class="badge badge-std">标准</span> `dynamic_cast` 的运行时检查要求源表达式指向多态类型（含虚函数）；否则须用 `static_cast`。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.dynamic.cast]（源须为多态类型）；cppreference "dynamic_cast" 词条。
 
 3. **真实场景：typeid 对多态对象返回动态类型、对静态类型返回静态类型。** 你理解其分支。请说明。
-   - [标准] `typeid` 作用于多态 glvalue 时求动态类型，否则求静态类型。
-   - [引用] ISO/IEC 14882:2023 §[expr.typeid]（typeid 的静态/动态分支）；cppreference "typeid" 词条。
+   - <span class="badge badge-std">标准</span> `typeid` 作用于多态 glvalue 时求动态类型，否则求静态类型。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.typeid]（typeid 的静态/动态分支）；cppreference "typeid" 词条。
 
 【练习题】
 1. 写程序：基类 `Shape` 含虚析构，派生 `Circle`/`Rect`，用 `typeid` + `unordered_map<type_index,handler>` 实现 `draw` 分发器（仿 ⑫-A）。
@@ -712,7 +712,7 @@ BENCHMARK(BM_typeid_name); BENCHMARK(BM_dyncast_down); BENCHMARK(BM_static_upcas
 【真实源码】Itanium ABI §2.9。
 
 【错误示例】
-> **示例 27** [难度 ★☆☆☆☆] [主题：知识点 B1：typeid 运算符语]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：typeid 运算符语
 ```cpp
 // ❌ 以为 typeid 对指针取动态类型
 Base* p = new Der;
@@ -720,7 +720,7 @@ typeid(p);        // 取的是 Base* 的静态类型，不是 Der！应写 typei
 ```
 
 【正确示例】
-> **示例 28** [难度 ★☆☆☆☆] [主题：知识点 B1：typeid 运算符语]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：typeid 运算符语
 ```cpp
 #include <typeinfo>
 // ✅ 取动态类型
@@ -775,7 +775,7 @@ const std::type_info& ti = typeid(*p);   // ti 是 Der 的 type_info
 【真实源码】libsupc++ `dyncast.cc`。
 
 【错误示例】
-> **示例 29** [难度 ★☆☆☆☆] [主题：知识点 B2：dynamiccast]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：dynamiccast
 ```cpp
 // ❌ 对非多态类型用 dynamic_cast
 struct A {}; struct B : A {};
@@ -783,7 +783,7 @@ A a; dynamic_cast<B*>(&a);   // 编译错误：A 非多态（无虚函数）
 ```
 
 【正确示例】
-> **示例 30** [难度 ★☆☆☆☆] [主题：知识点 B2：dynamiccast]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：dynamiccast
 ```cpp
 // ✅ 多态下行，判空
 struct A { virtual ~A()=default; }; struct B : A {};
@@ -840,7 +840,7 @@ if (B* b = dynamic_cast<B*>(p)) { /* 安全使用 b */ }
 【真实源码】GCC 前端 `cp/rtti.cc`（`-fno-rtti` 时跳过生成）。
 
 【错误示例】
-> **示例 31** [难度 ★☆☆☆☆] [主题：知识点 B3：-fno-rtti 的]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B3：-fno-rtti 的
 ```cpp
 // ❌ -fno-rtti 下编译失败
 auto& t = typeid(*polyPtr);        // error: not allowed with -fno-rtti
@@ -848,7 +848,7 @@ auto* d = dynamic_cast<Der*>(p);   // error: likewise
 ```
 
 【正确示例】
-> **示例 32** [难度 ★☆☆☆☆] [主题：知识点 B3：-fno-rtti 的]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B3：-fno-rtti 的
 ```cpp
 // ✅ 禁用 RTTI 后用虚函数替代
 struct Iface { virtual ~Iface()=default; virtual void on_event()=0; };
@@ -902,7 +902,7 @@ void dispatch(Iface* p){ p->on_event(); }   // 走虚表，无 RTTI
 【真实源码】Itanium ABI §2.9；libsupc++ `tinfo.cc`/`class.cc`。
 
 【错误示例】
-> **示例 33** [难度 ★☆☆☆☆] [主题：知识点 B4：typeinfo 对象]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：typeinfo 对象
 ```cpp
 // ❌ 假设跨模块 type_info 一定同一份
 // 插件 .so 与主程序各自生成的 type_info 可能不等价，operator== 误判
@@ -910,7 +910,7 @@ extern "C" void plugin_entry(Base* p){ if (typeid(*p)==typeid(LocalType)) {} }
 ```
 
 【正确示例】
-> **示例 34** [难度 ★☆☆☆☆] [主题：知识点 B4：typeinfo 对象]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：typeinfo 对象
 ```cpp
 #include <typeinfo>
 // ✅ 同链接单元或经虚函数分派，避免跨模块 type_info 比较
@@ -925,7 +925,7 @@ bool ok(Iface* p){ return p->is_local(); }   // 用虚函数而非 typeid 跨边
 
 ## 附录: RTTI 深度
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录: RTTI 深度]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -933,14 +933,14 @@ struct Base{virtual~Base(){}};struct Der:Base{};
 int main(){Base*b=new Der;std::cout<<typeid(*b).name()<<std::endl;delete b;return 0;}
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录: RTTI 深度]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
 ```cpp
 #include <iostream>
 struct A{virtual~A(){}};struct B:A{};
 int main(){A*a=new B;if(dynamic_cast<B*>(a))std::cout<<"is B"<<std::endl;delete a;return 0;}
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录: RTTI 深度]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
 ```cpp
 #include <iostream>
 #include <typeindex>
@@ -950,13 +950,13 @@ int main(){A*a=new B;if(dynamic_cast<B*>(a))std::cout<<"is B"<<std::endl;delete 
 int main(){std::map<std::type_index,std::string> m;m[typeid(int)]="int";m[typeid(double)]="double";std::cout<<m[typeid(int)]<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: RTTI 深度]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
 ```cpp
 #include <iostream>
 int main(){std::cout<<"RTTI overhead: one type_info object per polymorphic class. ~40 bytes each."<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录: RTTI 深度]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
 ```cpp
 #include <iostream>
 #include <memory>
@@ -979,7 +979,7 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ### ㉒.1 历史渊源补强：RTTI 的来龙去脉
 
-[史] RTTI（运行时类型信息）随 **C++ 的虚函数机制** 自然衍生：因为 vtable 已经存在，把它第 0 槽指向 `std::type_info`（第 ⑦ 节），`dynamic_cast`/`typeid` 就能在运行时沿继承链查询类型——这一设计在 **C++ 标准化（C++98, 1998）** 时被正式纳入，目标是为「多态对象的向下转型与类型判别」提供标准、可移植的手段，取代各厂商私有的 `__classid`/`dynamic_cast` 扩展。[轶] 但 RTTI 从出生就伴随争议：它要求二进制携带类型信息、且 `dynamic_cast` 跨继承链查找有运行时成本（第 ⑲ 节），因此 **很多大型项目（Google 的 `-fno-rtti`、LLVM 默认关闭 RTTI）选择禁用它**，改用 `static_cast` + 约定或 CRTP（ch51）的编译期类型判别。[史] `std::type_index`（C++11）把 `type_info` 包装成可放入容器的 `std::hash` 友好类型，是 RTTI 在容器/哈希场景的务实补强。
+<span class="badge badge-history">史</span> RTTI（运行时类型信息）随 **C++ 的虚函数机制** 自然衍生：因为 vtable 已经存在，把它第 0 槽指向 `std::type_info`（第 ⑦ 节），`dynamic_cast`/`typeid` 就能在运行时沿继承链查询类型——这一设计在 **C++ 标准化（C++98, 1998）** 时被正式纳入，目标是为「多态对象的向下转型与类型判别」提供标准、可移植的手段，取代各厂商私有的 `__classid`/`dynamic_cast` 扩展。<span class="badge badge-anecdote">轶</span> 但 RTTI 从出生就伴随争议：它要求二进制携带类型信息、且 `dynamic_cast` 跨继承链查找有运行时成本（第 ⑲ 节），因此 **很多大型项目（Google 的 `-fno-rtti`、LLVM 默认关闭 RTTI）选择禁用它**，改用 `static_cast` + 约定或 CRTP（ch51）的编译期类型判别。<span class="badge badge-history">史</span> `std::type_index`（C++11）把 `type_info` 包装成可放入容器的 `std::hash` 友好类型，是 RTTI 在容器/哈希场景的务实补强。
 
 ### ㉒.2 真实工程坐标：RTTI 活在哪里
 
@@ -1007,8 +1007,8 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ### ㉒.4 与标准的互动：RTTI 与 WG21 演进
 
-[史] RTTI 随 C++98 落地（基于 Itanium C++ ABI 的 vtable type_info 槽）；**C++11 引入 `std::type_index`** 让 `type_info` 可哈希、可存容器。**C++17 的 P0091 一脉** 与库演进让 `std::any`/`std::variant`（ch14）这类「类型擦除容器」有了标准实现，部分替代了「运行时靠 RTTI 判别」的需求。[评] WG21 当前方向是**不强推 RTTI，反而鼓励「编译期类型判别」**：CRTP（ch51）、concepts（ch67）、`std::variant`+`std::visit` 都能在零运行时成本下完成「多态分发」，这正是 LLVM/Chromium 默认关 RTTI 的原因。标准对 RTTI 的态度是「保留作为兜底、但性能敏感代码应逃逸到静态分发」——这与虚函数（ch47）的演进逻辑一致。
-- [史] `std::any`/`std::variant`/`std::optional` 这类「类型擦除容器」经 **P0220R0→P0220R1（C++17，Library Fundamentals TS 采纳）** 标准化，部分替代了「运行时靠 RTTI 判别类型」的需求。ISO 条款 `[expr.dynamic.cast]` 与 `[support.rtti]`（`typeid`/`type_info`）把 RTTI 的语义与失败行为（返回 `nullptr`/`bad_cast`）固化——委员会保留 RTTI 作为兜底，但明确鼓励 concepts（ch67）、CRTP（ch51）、`std::variant`+`std::visit` 在零成本下完成多态分发。
+<span class="badge badge-history">史</span> RTTI 随 C++98 落地（基于 Itanium C++ ABI 的 vtable type_info 槽）；**C++11 引入 `std::type_index`** 让 `type_info` 可哈希、可存容器。**C++17 的 P0091 一脉** 与库演进让 `std::any`/`std::variant`（ch14）这类「类型擦除容器」有了标准实现，部分替代了「运行时靠 RTTI 判别」的需求。<span class="badge badge-comment">评</span> WG21 当前方向是**不强推 RTTI，反而鼓励「编译期类型判别」**：CRTP（ch51）、concepts（ch67）、`std::variant`+`std::visit` 都能在零运行时成本下完成「多态分发」，这正是 LLVM/Chromium 默认关 RTTI 的原因。标准对 RTTI 的态度是「保留作为兜底、但性能敏感代码应逃逸到静态分发」——这与虚函数（ch47）的演进逻辑一致。
+- <span class="badge badge-history">史</span> `std::any`/`std::variant`/`std::optional` 这类「类型擦除容器」经 **P0220R0→P0220R1（C++17，Library Fundamentals TS 采纳）** 标准化，部分替代了「运行时靠 RTTI 判别类型」的需求。ISO 条款 `[expr.dynamic.cast]` 与 `[support.rtti]`（`typeid`/`type_info`）把 RTTI 的语义与失败行为（返回 `nullptr`/`bad_cast`）固化——委员会保留 RTTI 作为兜底，但明确鼓励 concepts（ch67）、CRTP（ch51）、`std::variant`+`std::visit` 在零成本下完成多态分发。
 
 ### ㉒.5 权威引用
 
@@ -1047,7 +1047,7 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ## 底层视角：RTTI 指针、typeinfo 与 dynamic_cast 的指针追逐 [E: Low-level]
 
-[标准] 开启 RTTI 时，vtable 首槽前藏一个 `0x0008` 的 `typeinfo` 指针（指向 `.rodata` 中唯一的 `std::type_info` 对象）。`typeid` 取其地址（`0x0008` 解引用，L1 ≈1 ns）；`dynamic_cast` 沿继承树走 RTTI 链做类型比对，深度 d 即 d 次 `0x0008` 指针追逐（冷路径落 L3 ≈12 ns 或主存 ≈100 ns）。
+<span class="badge badge-std">标准</span> 开启 RTTI 时，vtable 首槽前藏一个 `0x0008` 的 `typeinfo` 指针（指向 `.rodata` 中唯一的 `std::type_info` 对象）。`typeid` 取其地址（`0x0008` 解引用，L1 ≈1 ns）；`dynamic_cast` 沿继承树走 RTTI 链做类型比对，深度 d 即 d 次 `0x0008` 指针追逐（冷路径落 L3 ≈12 ns 或主存 ≈100 ns）。
 
 `-fno-rtti` 省去 `0x0008` typeinfo 指针与 `.rodata` 表，二进制更小但禁 `dynamic_cast`/`typeid`。`GCC 15.3.0` / `Clang 17` 在 `-O2` 下对已知静态类型可把 `dynamic_cast` 优化为直接指针调整（见 ch50 thunk）。`C++98` 起 RTTI 标准，`C++20` `consteval` 可把类型查询压到编译期。
 
@@ -1063,7 +1063,7 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 `dynamic_cast` 在运行时经 vtable 的 `type_info` 检查目标类型是否确实是对象的动态类型（或其派生）。源类型必须**多态**（含虚函数）。
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 struct Base { virtual ~Base() = default; };
@@ -1082,9 +1082,9 @@ int main() {
 }
 ```
 
-[标准] `dynamic_cast` 失败对指针返回 `nullptr`、对引用抛 `std::bad_cast`（维度②前置知识 ch47 虚表槽1=typeinfo）。
+<span class="badge badge-std">标准</span> `dynamic_cast` 失败对指针返回 `nullptr`、对引用抛 `std::bad_cast`（维度②前置知识 ch47 虚表槽1=typeinfo）。
 
-[引用] `dynamic_cast` 是"无法用虚函数表达"时的逃生舱——Qt 的 `qobject_cast` 即其定制版（要求 `Q_OBJECT` 宏、走 moc 元数据而非 vtable，doc.qt.io/qt-6/qobject.html#qobject_cast）。LLVM 的 `dyn_cast<>` 则是编译期模板化的安全下行（llvm.org/docs/ProgrammersManual.html）。ISO/IEC 14882:2023 §[expr.dynamic.cast] 规定其语义与失败返回值。
+<span class="badge badge-ref">引用</span> `dynamic_cast` 是"无法用虚函数表达"时的逃生舱——Qt 的 `qobject_cast` 即其定制版（要求 `Q_OBJECT` 宏、走 moc 元数据而非 vtable，doc.qt.io/qt-6/qobject.html#qobject_cast）。LLVM 的 `dyn_cast<>` 则是编译期模板化的安全下行（llvm.org/docs/ProgrammersManual.html）。ISO/IEC 14882:2023 §[expr.dynamic.cast] 规定其语义与失败返回值。
 
 </details>
 
@@ -1096,7 +1096,7 @@ int main() {
 
 `typeid` 对多态左值/表达式返回动态类型信息（经 vtable 的 `type_info`）；对非多态类型退化为编译期静态类型，无法反映实际派生。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1111,9 +1111,9 @@ int main() {
 }
 ```
 
-[标准] RTTI 成本来自 vtable 中的 `type_info` 指针（维度⑦ ASCII 图）；无虚函数则无 RTTI 数据。
+<span class="badge badge-std">标准</span> RTTI 成本来自 vtable 中的 `type_info` 指针（维度⑦ ASCII 图）；无虚函数则无 RTTI 数据。
 
-[引用] `typeid` 依赖 Itanium C++ ABI 下 vtable 首槽之前的 `type_info` 指针；Itanium C++ ABI 规范定义了 vtable 布局（itanium-cxx-abi.github.io）。Boost.TypeIndex 提供可移植、可读的 `type_name()` 以弥补 `typeid().name()` 的编译器修饰名问题（boost.org/doc/libs）。ISO/IEC 14882:2023 §[expr.typeid] 规定返回静态/动态类型的规则。
+<span class="badge badge-ref">引用</span> `typeid` 依赖 Itanium C++ ABI 下 vtable 首槽之前的 `type_info` 指针；Itanium C++ ABI 规范定义了 vtable 布局（itanium-cxx-abi.github.io）。Boost.TypeIndex 提供可移植、可读的 `type_name()` 以弥补 `typeid().name()` 的编译器修饰名问题（boost.org/doc/libs）。ISO/IEC 14882:2023 §[expr.typeid] 规定返回静态/动态类型的规则。
 
 </details>
 
@@ -1125,7 +1125,7 @@ int main() {
 
 `variant` 把"可能是哪几种类型"编码进类型系统；`visit` 在编译期对每种 alternative 生成分支，无 vtable 查询、无运行时类型检查，且漏处理一种类型会编译失败。
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <variant>
@@ -1144,9 +1144,9 @@ int main() {
 }
 ```
 
-[标准] 类型擦除/visitor（维度⑫/⑬）是 RTTI 的高性能替代；WG21 持续推动 `std::visit` 优化（维度⑭）。
+<span class="badge badge-std">标准</span> 类型擦除/visitor（维度⑫/⑬）是 RTTI 的高性能替代；WG21 持续推动 `std::visit` 优化（维度⑭）。
 
-[引用] `std::variant`/`std::visit` 是"封闭类型集合"分发的现代首选，穷尽性由编译器强制（cppreference "std::visit"）。LLVM 的 `llvm::VariadicVisitor` 与许多 ECS 事件总线采用类似"编译期分派"思路替代 RTTI（llvm.org/docs）。ISO/IEC 14882:2023 §[variant] 与 §[visit] 规定其语义；WG21 论文 P0088 引入 `std::variant`。
+<span class="badge badge-ref">引用</span> `std::variant`/`std::visit` 是"封闭类型集合"分发的现代首选，穷尽性由编译器强制（cppreference "std::visit"）。LLVM 的 `llvm::VariadicVisitor` 与许多 ECS 事件总线采用类似"编译期分派"思路替代 RTTI（llvm.org/docs）。ISO/IEC 14882:2023 §[variant] 与 §[visit] 规定其语义；WG21 论文 P0088 引入 `std::variant`。
 
 </details>
 
@@ -1158,7 +1158,7 @@ int main() {
 
 **常见错误**：用一长串 `if (auto* p = dynamic_cast<X*>(b)) ...` 做类型分支——脆弱（新增类型易漏）、慢（每次走 vtable 查询）。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：演绎 1：用 dynamiccast]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 dynamiccast
 ```cpp
 #include <iostream>
 struct Base { virtual ~Base() = default; };
@@ -1172,7 +1172,7 @@ int main() { X x; handle(&x); }
 
 **修复**：把分支逻辑上提为虚函数（真正多态），或用 `std::variant`+`visit`（见练习3）做编译期分发。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：演绎 1：用 dynamiccast]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 dynamiccast
 ```cpp
 #include <iostream>
 struct Base { virtual ~Base() = default; virtual void handle() = 0; };
@@ -1188,7 +1188,7 @@ int main() { X x; Base* b = &x; b->handle(); }  // 多态分发，无 RTTI
 
 **常见错误**：源类型不含任何虚函数（非多态），`dynamic_cast` 直接编译失败。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：演绎 2：对无虚函数类误用 dyna]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：对无虚函数类误用 dyna
 ```
 // 错误：A 非多态（无虚函数），dynamic_cast 不允许
 struct A {};
@@ -1201,7 +1201,7 @@ int main() {
 
 **修复**：`dynamic_cast` 要求源表达式为多态类型。若确实需要在已知层次内转换且自担保安全，用 `static_cast`（无运行时检查）；否则把基类改为多态（加虚析构）或重构为 `variant`/虚函数层次。
 
-> **示例 46** [难度 ★★☆☆☆] [主题：演绎 2：对无虚函数类误用 dyna]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：对无虚函数类误用 dyna
 ```cpp
 #include <iostream>
 struct A { virtual ~A() = default; };
@@ -1223,7 +1223,7 @@ RTTI 常被说成"黑盒"，但它的实现完全可在汇编里看清：多态 
 
 ### ① 多态 `typeid` —— 读 vtable[-1]
 
-> **示例 47** [难度 ★★★☆☆] [主题：多态 typeid —— 读 vta]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 多态 typeid —— 读 vta
 ```cpp
 const std::type_info& who(Base& b) { return typeid(b); }
 ```
@@ -1239,7 +1239,7 @@ const std::type_info& who(Base& b) { return typeid(b); }
 
 ### ② `dynamic_cast` 下行 —— 尾调 `__dynamic_cast`
 
-> **示例 48** [难度 ★★☆☆☆] [主题：dynamiccast 下行 —— ]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · dynamiccast 下行 ——
 ```cpp
 Derived* down(Base* b) { return dynamic_cast<Derived*>(b); }
 ```
@@ -1260,7 +1260,7 @@ Derived* down(Base* b) { return dynamic_cast<Derived*>(b); }
 
 ### ③ 静态 `typeid` —— 编译期常量，零运行期开销
 
-> **示例 49** [难度 ★★★☆☆] [主题：静态 typeid —— 编译期常量]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 静态 typeid —— 编译期常量
 ```cpp
 const std::type_info& static_who() { return typeid(Derived); }  // 非多态表达式
 ```
@@ -1599,7 +1599,7 @@ flowchart TD
 | `dynamic_cast` 运行时 | `__dynamic_cast` + 三类节点 | 自有 vtable 描述结构 | 自有 RTTI 与 `vfcast`，含 vtordisp |
 | `src2dst` hint | 支持 `>-1/-1/-2/-3` | 不以此接口暴露 | 不以此接口暴露 |
 ### D4.4 可编译 demo：上下行 cast + typeid 比较 + hash_code
-> **示例 50** [难度 ★★★★☆] [主题：可编译 demo：上下行 cast ]
+> **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 可编译 demo：上下行 cast
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1726,7 +1726,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 51** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <typeinfo>

@@ -1,5 +1,5 @@
 # 第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发
-> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 [第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
@@ -12,7 +12,7 @@
 > 「替换失败不算错」——这条看似诡异的规则，意外成了 C++ 在 concepts 之前做「编译期分支」的主引擎。
 
 ### 0.1 起源（谁·何时·为何）
-SFINAE（Substitution Failure Is Not An Error）这条规则最早隐含在 1990 年的 ARM 模板替换语义里，名字则由 David Vandevoorde 与 Nicolai Josuttis 在经典著作中正式概括。[史][轶] 它的本意是「宽容」：模板实参替换若失败，别急着报错，先把它从候选集里悄悄踢走，让别的重载上位。库作者随后发现——这居然是做「按能力选择重载」的完美开关，于是 `enable_if` 式写法流行开来。
+SFINAE（Substitution Failure Is Not An Error）这条规则最早隐含在 1990 年的 ARM 模板替换语义里，名字则由 David Vandevoorde 与 Nicolai Josuttis 在经典著作中正式概括。<span class="badge badge-history">史</span><span class="badge badge-anecdote">轶</span> 它的本意是「宽容」：模板实参替换若失败，别急着报错，先把它从候选集里悄悄踢走，让别的重载上位。库作者随后发现——这居然是做「按能力选择重载」的完美开关，于是 `enable_if` 式写法流行开来。
 
 ### 0.2 关键转折（编年）
 - 1990：ARM 确立替换语义，SFINAE 作为潜规则存在。
@@ -21,40 +21,40 @@ SFINAE（Substitution Failure Is Not An Error）这条规则最早隐含在 1990
 - 2020：concepts 登场，开始替代大批 SFINAE 样板。
 
 ### 0.3 设计哲学之争
-SFINAE 强大却「以副作用闻名」：它把编译器的容错机制逆向工程成编程范式，报错信息极其劝退。[评] concepts 的出现正是为了取代它——用 `requires` 直说「我要什么」，而不是用替换失败来「试探」。[史] 但理解 SFINAE 依旧是读懂旧标准库与老代码的钥匙。
+SFINAE 强大却「以副作用闻名」：它把编译器的容错机制逆向工程成编程范式，报错信息极其劝退。<span class="badge badge-comment">评</span> concepts 的出现正是为了取代它——用 `requires` 直说「我要什么」，而不是用替换失败来「试探」。<span class="badge badge-history">史</span> 但理解 SFINAE 依旧是读懂旧标准库与老代码的钥匙。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 concepts 登场替代大批 SFINAE 样板。SFINAE 在概念时代的「残留价值」：
 
-- [史] SFINAE（Substitution Failure Is Not An Error）自 C++98 起就是模板替换的沉默规则，但「故意触发失败来筛重载」是社区在 2000 年代「玩出来」的技法，`std::enable_if`（C++11）把它变成明文工具。
+- <span class="badge badge-history">史</span> SFINAE（Substitution Failure Is Not An Error）自 C++98 起就是模板替换的沉默规则，但「故意触发失败来筛重载」是社区在 2000 年代「玩出来」的技法，`std::enable_if`（C++11）把它变成明文工具。
 
-- [史] C++20 的 `requires` 表达式与 concepts（ch67）接管了「大部分」SFINAE 场景：约束可读性、报错定位都更好。但 SFINAE 并未退场——细粒度到「某个表达式是否良构」的探测（如「类型 T 有没有 `.size()` 且返回整数」）用 `requires` 也行，但老库的 `enable_if` 写法仍铺天盖地。
+- <span class="badge badge-history">史</span> C++20 的 `requires` 表达式与 concepts（ch67）接管了「大部分」SFINAE 场景：约束可读性、报错定位都更好。但 SFINAE 并未退场——细粒度到「某个表达式是否良构」的探测（如「类型 T 有没有 `.size()` 且返回整数」）用 `requires` 也行，但老库的 `enable_if` 写法仍铺天盖地。
 
-- [评] SFINAE 真正不可替代处，在于它发生在「替换阶段」、能配合偏特化与默认模板参数做「按能力退化」的兜底逻辑；concepts 的「硬约束」反而不好表达「有就用、没有就退化为另一实现」。
+- <span class="badge badge-comment">评</span> SFINAE 真正不可替代处，在于它发生在「替换阶段」、能配合偏特化与默认模板参数做「按能力退化」的兜底逻辑；concepts 的「硬约束」反而不好表达「有就用、没有就退化为另一实现」。
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/sfinae ；https://en.cppreference.com/w/cpp/language/constraints
 
 > 版本：v3.0（2026-07-08）
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
 [第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
 
-- 精确说出 SFINAE 的触发条件：模板实参替换失败发生在「哪一步」、为何「非错误」 [标准]
-- 掌握 `std::enable_if` 的两种惯用法（返回类型孔位 / 默认模板参数孔位）及其优劣 [标准]
-- 能从 mangled 符号反推 SFINAE 为每个类型只实例化「胜出」的那个重载 [平台]
-- 区分 SFINAE 与标签分发 / `if constexpr` / Concepts 的取舍 [标准]
-- 识别「硬错误」与「替换失败」的边界：一旦进入函数体就是硬错误，SFINAE 救不了 [实现]
+- 精确说出 SFINAE 的触发条件：模板实参替换失败发生在「哪一步」、为何「非错误」 <span class="badge badge-std">标准</span>
+- 掌握 `std::enable_if` 的两种惯用法（返回类型孔位 / 默认模板参数孔位）及其优劣 <span class="badge badge-std">标准</span>
+- 能从 mangled 符号反推 SFINAE 为每个类型只实例化「胜出」的那个重载 <span class="badge badge-platform">平台</span>
+- 区分 SFINAE 与标签分发 / `if constexpr` / Concepts 的取舍 <span class="badge badge-std">标准</span>
+- 识别「硬错误」与「替换失败」的边界：一旦进入函数体就是硬错误，SFINAE 救不了 <span class="badge badge-impl">实现</span>
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 
 - **模板名称**：SFINAE（Substitution Failure Is Not An Error）+ `std::enable_if`
 - **适用场景**：同一名字需要提供多份实现，按类型属性（`is_integral` / `is_pointer` / 可调用…）在编译期二选一
 - **核心结构**：`template <typename T, typename = std::enable_if_t<Cond<T>::value, Ret>> Ret f(T)`
-- **一句话定义**：当某个重载的模板实参替换导致非法类型时，编译器不报错，而是静默将该重载从候选集中剔除 [标准]
+- **一句话定义**：当某个重载的模板实参替换导致非法类型时，编译器不报错，而是静默将该重载从候选集中剔除 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★★☆☆] [主题：本模板模式速查]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 本模板模式速查
 ```cpp
 // 最经典的两重载 SFINAE：同名函数按类型属性二选一
 #include <type_traits>
@@ -72,7 +72,7 @@ T sfinae_f(T x) { return x; }
 
 `std::enable_if` 的本质是一个「条件类型开关」：条件为 `true` 时暴露 `type`，为 `false` 时压根**没有** `type` 成员，于是依赖它的替换必然失败。
 
-> **示例 2** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // 手写 enable_if（与标准库 <type_traits> 行 106 的 struct enable_if 同构）
 template <bool B, typename T = void>
@@ -88,7 +88,7 @@ using my_enable_if_t = typename MyEnableIf<B, T>::type;
 
 惯用法一：把 `enable_if` 塞进**返回类型孔位**（C++11 最常用）。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // 惯用法一：返回类型孔位
 template <typename T>
@@ -100,7 +100,7 @@ inc(T x) { return x + 1; }
 
 惯用法二：把 `enable_if` 塞进**默认模板参数孔位**（可叠多个条件，互不挤占返回类型）。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // 惯用法二：默认模板参数孔位（第三个参数作为「孔位」）
 template <typename T,
@@ -111,7 +111,7 @@ void reset_ptr(T p) { *p = {}; }
 
 `void_t` 探测：用空类型把「成员是否存在」转为 SFINAE 信号（标准库 <type_traits> 行 2632）。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // void_t：展开 Ts 若均合法则产生 void；任一成员缺失则替换失败
 template <typename... Ts> using void_t = void;
@@ -124,11 +124,11 @@ struct has_serialize<T, void_t<decltype(std::declval<T>().serialize())>>
     : std::true_type {};
 ```
 
-## ④ 替换失败发生的精确位置（两阶段与「即时替换」）[实现]
+## ④ 替换失败发生的精确位置（两阶段与「即时替换」）<span class="badge badge-impl">实现</span>
 
 SFINAE 只作用在**模板实参替换（substitution）**阶段，且发生在**函数签名**上（返回类型、参数类型、模板参数），**不进入函数体**。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：替换失败发生的精确位置]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 替换失败发生的精确位置
 ```cpp
 template <typename T>
 typename T::type bad(T) { return {}; }   // 返回类型用到 T::type
@@ -141,7 +141,7 @@ struct NoType {};
 
 区分「真 SFINAE」与「硬错误」：
 
-> **示例 7** [难度 ★★☆☆☆] [主题：替换失败发生的精确位置]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 替换失败发生的精确位置
 ```cpp
 template <typename T>
 auto f(T t) -> decltype(t.foo()) { return t.foo(); }   // 签名上的替换失败 → SFINAE
@@ -161,7 +161,7 @@ auto g(T t) { return t.no_such_member(); }             // 函数体内的失败 
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 8** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -183,7 +183,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 // 手写「只允许可调用对象」的包装（检测 operator()）
 #include <type_traits>
@@ -191,7 +191,7 @@ template <typename F, typename = std::enable_if_t<std::is_invocable_v<F, int>>>
 void call_with_int(F f) { f(1); }
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <cstddef>
 // 非类型模板参数 + enable_if：限制 N 必须为偶数
@@ -203,7 +203,7 @@ struct EvenArray { T data[N]; };
 
 ### ⑥ 补充：更多可编译实据
 
-> **示例 11** [难度 ★★★☆☆] [主题：补充：更多可编译实据]
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充：更多可编译实据
 ```cpp
 // 用 enable_if 禁用拷贝构造（只移动类型）
 struct OnlyMove {
@@ -215,7 +215,7 @@ template <typename T, typename = std::enable_if_t<std::is_move_constructible_v<T
 OnlyMove wrap_move(T&&) { return {}; }
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 #include <vector>
 // 探测「是否有 value_type 嵌套类型」（void_t）—— 复用 ③ 的写法跑通
@@ -227,7 +227,7 @@ static_assert(has_value_type<std::vector<int>>::value);
 static_assert(!has_value_type<int>::value);
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 // 尾置返回类型 + decltype 的 SFINAE（C++11 经典双重载）
 template <typename T>
@@ -236,14 +236,14 @@ template <typename T>
 auto negate(T x) -> std::enable_if_t<!std::is_signed_v<T>, T> { return x; }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 // 仅对「可递增」类型启用 pre-increment 包装
 template <typename T, typename = std::enable_if_t<std::is_incrementable_v<T>>>
 void bump(T& x) { ++x; }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 // const char* 不会被整型重载误匹配：字符串字面量类型 const char[N]，不满足 integral
 template <typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
@@ -251,7 +251,7 @@ T read_num(T x) { return x; }
 // read_num("abc") 因类型非 integral → 替换失败，不被接受
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 // detection idiom（std::is_detected 的前身，纯 SFINAE）
 template <typename, template <typename> class, typename = void_t<>>
@@ -260,7 +260,7 @@ template <typename T, template <typename> class Op>
 struct is_detected<T, Op, void_t<Op<T>>> : std::true_type {};
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 #include <string>
 // enable_if 保护类模板，仅允许算术类型
@@ -269,7 +269,7 @@ struct ArithmeticOnly { T v; };
 // ArithmeticOnly<std::string> 替换失败 → 不可实例化
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 #include <string>
 // 返回「不同类型」的两份重载：整型标 "i"，其余标 "other"
@@ -279,7 +279,7 @@ template <typename T, std::enable_if_t<!std::is_integral_v<T>, int> = 0>
 std::string label(T) { return "other"; }
 ```
 
-> **示例 19** [难度 ★★★☆☆] [主题：补充：更多可编译实据]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充：更多可编译实据
 ```cpp
 #include <vector>
 // 探测「是否可下标」operator[]
@@ -290,14 +290,14 @@ struct has_subscript<T, void_t<decltype(std::declval<T>()[0])>> : std::true_type
 static_assert(has_subscript<std::vector<int>>::value);
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 // enable_if 与浮点专用的 halve（C++14 泛型等价手写）
 template <typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 T halve(T x) { return x / 2; }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：补充：更多可编译实据]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 // 兜底重载（else 分支）保证完备，避免调用点硬错误
 template <typename T, std::enable_if_t<std::is_pointer_v<T>, int> = 0>
@@ -306,21 +306,21 @@ template <typename T, std::enable_if_t<!std::is_pointer_v<T>, int> = 0>
 void visit(T) {}
 ```
 
-## ⑦ 标准规定 [标准]
+## ⑦ 标准规定 <span class="badge badge-std">标准</span>
 
 - `std::enable_if` 定义于 `[meta.trans.help]` 21.3.10；`enable_if_t` 为 `_t` 别名模板（<type_traits> 行 2610）。
 - SFINAE 规则定义于 `[temp.deduct]` / `[temp.over]`：仅当**所有**候选都因替换失败被剔除时，才报告「无可行函数」硬错误。
 - `void_t` 定义于 `[meta.trans.help]` 21.3.10（<type_traits> 行 2632），是 C++17 引入的探测工具。
 - `std::is_invocable` 等定义于 `[meta.trans.help]`，用于检测「可否以某实参集调用」。
 
-## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
+## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 - 三编译器对 SFINAE 的核心语义一致（均严格遵循 `[temp.deduct]`）。
 - **报错可读性**：纯 SFINAE 失败时，三者都给出冗长 mangled 错误；Clang 的「substitution failure」注释相对友好，MSVC 旧前端常把签名替换失败与硬错误混报。
 - **默认模板参数孔位的多 enable_if**：MSVC 19.2x 之前对「同一参数位多个 enable_if」的支持有 bug（需拆到不同参数位），GCC/Clang 无此问题。
 - **`void_t` 探测的 SFINAE 方向**：Clang 曾出现过「优先级反转」的边界 bug（已被 WG21 用例覆盖），生产代码建议用偏特化主-from-void 写法（见 ⑬）。
 
-> **示例 22** [难度 ★★☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 22** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // MSVC 19.1x 坑：两个 enable_if 放同一孔位会误报
 // 错误：template <typename T, typename=enable_if_t<C1>, typename=enable_if_t<C2>>
@@ -334,7 +334,7 @@ void signed_int_only(T) {}
 
 SFINAE 是**纯编译期**机制：它不产生任何运行期对象、不占内存。被剔除的重载根本不会实例化，连代码都不发射（见 ⑩ 的 mangled 证据——`!integral` 版本的 `sfinae_f<int>` 不存在）。
 
-> **示例 23** [难度 ★★★★☆] [主题：内存 / 对象模型]
+> **示例 23** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
 ```cpp
 // 被 SFINAE 剔除的重载不会占代码段；这是「零开销抽象」的体现。
 // 标准库 trait 本质是空类，但 std::true_type 的 sizeof 因 libstdc++ 实现而异
@@ -343,7 +343,7 @@ struct empty_trait {};
 static_assert(sizeof(empty_trait) == 1);             // 空类：不携带运行期数据，至少占 1 字节
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） [平台] [VERIFIED]
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） <span class="badge badge-platform">平台</span> [VERIFIED]
 
 编译 `Examples/_asm_tpl_sfinae.cpp`（`-std=c++23 -O2 -masm=intel`）。**结论一**：`-O2` 下 `use_sfinae` 把两个重载的「选择」在编译期完成，运行期只剩常量，分发彻底消失：
 
@@ -392,7 +392,7 @@ _Z8sfinae_fIdLi0EET_S0_:              ; sfinae_f<double>：非 integral 路径�
 - `std::advance` / `std::distance` 用标签分发（非 SFINAE），但 `<iterator>` 的 `enable_if` 孔位用于禁用错误重载。
 - `std::function` 的构造模板用 `enable_if_t<!is_same_v<...>>` 防止与拷贝构造冲突。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：中的该模式]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
 ```cpp
 #include <utility>
 #include <functional>
@@ -403,7 +403,7 @@ Widget(F&& f) : cb_(std::forward<F>(f)) {}
 
 ## ⑫ 变体（variant patterns）
 
-> **示例 25** [难度 ★★☆☆☆] [主题：变体]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
 ```cpp
 // 变体 A：返回类型孔位 + 函数体共用（适合返回类型一致）
 template <typename T, std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
@@ -420,7 +420,7 @@ struct has_value_type<T, void_t<typename T::value_type>> : std::true_type {};
 
 ## ⑬ 反模式（anti-patterns）
 
-> **示例 26** [难度 ★★★☆☆] [主题：反模式（anti-patterns）]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式 1：在函数体内做「条件返回」——这不是 SFINAE，是硬错误
 template <typename T>
@@ -441,7 +441,7 @@ T wrong(T x) {
 - **数值库**：`Vector` 的 `operator*` 仅对「标量」启用，防止与「向量点积」重载冲突。
 - **Eigen/glm**：大量 `enable_if` 限制模板参数必须是某 CRTP 派生类，杜绝误实例化。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 #include <string>
 // 工业：JSON 序列化按成员探测择路
@@ -458,7 +458,7 @@ to_json(const T& v) { return v.to_string(); }
 
 `std::enable_if` 的真实定义（文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`，行号：134 主模板 / 139 `true` 偏特化 / 2838 `enable_if_t`）：
 
-> **示例 28** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // <type_traits> 行 106：主模板 B==false 无 type 成员
 template<bool _Cond, typename _Tp = void> struct enable_if { };
@@ -477,7 +477,7 @@ template<bool _Cond, typename _Tp = void>
 - **`decltype` 中的逗号**：`decltype(a, b)` 是逗号表达式，探测时常用 `decltype(declval<T>().foo(), 0)` 收尾为 `int`。
 - **`std::decay` 漏写**：转发引用 `T&&` 传入 `const int&` 时 `T=int`，`is_same_v<T, int>` 为 `false`；要用 `std::is_same_v<remove_cvref_t<T>, int>`。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 易错：转发引用下 is_same 误判
 template <typename T, std::enable_if_t<std::is_same_v<T, int>, int> = 0>
@@ -497,7 +497,7 @@ void f(T&&) {}            // f(0) 时 T=int → OK；f(ci)（const int&）时 T=
 - 条件尽量合并进单一 `enable_if_t<C1 && C2>`，兼容旧 MSVC。
 - 给 SFINAE 重载加 `static_assert` 或注释说明「互斥且完备」，防止后续维护者误加冲突重载。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践：互斥且完备的一对重载，注释说明分工
 // 整型走 A，非整型（浮点/类）走 B；二者覆盖全集且无交集
@@ -512,7 +512,7 @@ auto dispatch(T) { /* 其余 */ }
 - **运行期**：零开销。被 SFINAE 择中的重载与手写普通函数无异；分发决策 100% 在编译期，运行期无 `if`、无 vtable。
 - **编译期**：SFINAE 增加模板实例数（为每个命中的类型实例化一个胜出重载），略增编译时间与内存；但被剔除的候选**不实例化**，故不会无限膨胀。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // 编译期常量传播：enable_if 条件本身是 constexpr，不会留到运行期
 static_assert(std::is_integral_v<int>);   // true，编译期已知
@@ -523,16 +523,16 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `std::void_t` + 探测成员类型实现“检测惯用法”。** 你想判断类型是否拥有 `serialize` 成员。请说明替换时机。
-   - [标准] `void_t` 惯用法利用替换失败移除候选；探测必须在函数模板的“即时上下文”内失败才属 SFINAE。
-   - [引用] ISO/IEC 14882:2023 §[meta.trans]（void_t）/ [temp.deduct]（即时上下文限制）；cppreference "std::void_t / Detection idiom" 词条。
+   - <span class="badge badge-std">标准</span> `void_t` 惯用法利用替换失败移除候选；探测必须在函数模板的“即时上下文”内失败才属 SFINAE。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[meta.trans]（void_t）/ [temp.deduct]（即时上下文限制）；cppreference "std::void_t / Detection idiom" 词条。
 
 2. **真实场景：替换失败发生在非即时上下文变成硬错误。** 你以为会 SFINAE 却整段编译失败。请说明边界。
-   - [标准] 只有发生在函数类型/模板形参推导的即时上下文中的失败才是 SFINAE；否则是硬错误。
-   - [引用] ISO/IEC 14882:2023 §[temp.deduct]（即时上下文与硬错误之分）；cppreference "SFINAE" 词条。
+   - <span class="badge badge-std">标准</span> 只有发生在函数类型/模板形参推导的即时上下文中的失败才是 SFINAE；否则是硬错误。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.deduct]（即时上下文与硬错误之分）；cppreference "SFINAE" 词条。
 
 3. **真实场景：概念出现后 SFINAE 多用于向后兼容。** 你在新代码里优先用 concept。请说明二者关系。
-   - [标准] C++20 概念以更清晰的错误表达约束；SFINAE 仍保留并常用于需兼容旧标准的代码。
-   - [引用] ISO/IEC 14882:2023 §[temp.constr]（概念与约束）/ [temp.deduct]（SFINAE）；cppreference "Constraints and concepts" 词条。
+   - <span class="badge badge-std">标准</span> C++20 概念以更清晰的错误表达约束；SFINAE 仍保留并常用于需兼容旧标准的代码。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.constr]（概念与约束）/ [temp.deduct]（SFINAE）；cppreference "Constraints and concepts" 词条。
 
 - **练习题 1**：手写 `is_invocable<R, F, Args...>` 的 SFINAE 版（提示：`decltype(declval<F>()(declval<Args>()...))`）。
 - **练习题 2**：用 `void_t` 探测「是否有 `size()` 成员」，写出 `has_size<T>`。
@@ -545,8 +545,8 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：SFINAE 如何被「逆向工程」成编程范式
-[史] SFINAE（Substitution Failure Is Not An Error）这条规则最早隐含在 1990 年 ARM 的模板替换语义里，名字由 David Vandevoorde 与 Nicolai Josuttis 在经典著作中正式概括。它的本意是「宽容」：模板实参替换若失败，别急着报错，先把它从候选集悄悄踢走，让别的重载上位。库作者随后发现——这居然是做「按能力选择重载」的完美开关，于是 `enable_if` 式写法流行开来；Boost.EnableIf 在 2000 年代把它包装成易用工具，C++11 收编 `std::enable_if`。
-[轶] 这条「把编译器的容错机制逆向工程成编程范式」的奇事，是 C++ 社区「在约束匮乏时代自己造工具」的典型缩影，也成就了无数老标准库与老框架的编译期分发逻辑。
+<span class="badge badge-history">史</span> SFINAE（Substitution Failure Is Not An Error）这条规则最早隐含在 1990 年 ARM 的模板替换语义里，名字由 David Vandevoorde 与 Nicolai Josuttis 在经典著作中正式概括。它的本意是「宽容」：模板实参替换若失败，别急着报错，先把它从候选集悄悄踢走，让别的重载上位。库作者随后发现——这居然是做「按能力选择重载」的完美开关，于是 `enable_if` 式写法流行开来；Boost.EnableIf 在 2000 年代把它包装成易用工具，C++11 收编 `std::enable_if`。
+<span class="badge badge-anecdote">轶</span> 这条「把编译器的容错机制逆向工程成编程范式」的奇事，是 C++ 社区「在约束匮乏时代自己造工具」的典型缩影，也成就了无数老标准库与老框架的编译期分发逻辑。
 
 ### ㉒.2 真实工程坐标：SFINAE 活在哪些产品/项目里
 
@@ -555,7 +555,7 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
 | Boost 全家桶 | `Boost.EnableIf`/`TypeTraits`/`Serialization` | SFINAE 做「按类型能力选重载」 | 泛型库工业发源地 | SFINAE 技法诞生地 |
-| 标准库 | `std::enable_if`、`vector`/`shared_ptr`/`iterator_traits` | `enable_if` 驱动数组特化、指针偏特化分支 | 一切 C++ 程序地基 | SFINAE 是标准库分派底层 [STANDARD] |
+| 标准库 | `std::enable_if`、`vector`/`shared_ptr`/`iterator_traits` | `enable_if` 驱动数组特化、指针偏特化分支 | 一切 C++ 程序地基 | SFINAE 是标准库分派底层 <span class="badge badge-std">STANDARD</span> |
 | 序列化/反射 | Cereal、Magic Enum | `void_t` 检测 idiom 判断「T 是否有 serialize 方法」 | 数据基础设施 | 编译期能力探测 |
 | Web/后端 | `nlohmann/json` | `void_t`/SFINAE 探测 ADL 可见 `to_json`/`from_json`，无缝接入 | 服务端序列化 | 经典探测 idiom |
 | 科学可视化 | VTK（Kitware） | SFINAE 为 `vtkDataArray` 子类挑 reader/writer 与管线 | 可视化基础设施 | 免运行期 dynamic_cast |
@@ -581,7 +581,7 @@ SFINAE 自 C++98 起就是模板替换的沉默规则，「故意触发失败来
 
 ## 附录: SFINAE 深度
 
-> **示例 32** [难度 ★★☆☆☆] [主题：附录: SFINAE 深度]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: SFINAE 深度
 ```cpp
 #include <iostream>
 // 经典 SFINAE 探测惯用法：用额外参数 int / ... 做优先级判别。
@@ -594,7 +594,7 @@ struct X{void f(){}};struct Y{};
 int main(){f(X{},0);f(Y{},0);return 0;}
 ```
 
-> **示例 33** [难度 ★★★☆☆] [主题：附录: SFINAE 深度]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: SFINAE 深度
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -603,20 +603,20 @@ template<typename T,std::enable_if_t<!std::is_integral_v<T>,int> = 0>void g(T){s
 int main(){g(1);g(1.0);return 0;}
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录: SFINAE 深度]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: SFINAE 深度
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v.size()<<std::endl;return 0;}
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：附录: SFINAE 深度]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: SFINAE 深度
 ```cpp
 #include <iostream>
 int main(){std::cout<<"SFINAE: Substitution Failure Is Not An Error. Overload resolution ignores invalid specializations."<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★★★☆☆] [主题：附录: SFINAE 深度]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: SFINAE 深度
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -639,7 +639,7 @@ int main(){std::cout<<has_value_type<std::vector<int>>::value<<std::endl;return 
 std::enable_if(C++11-17), std::void_t(C++17), libstdc++内建__is_detected(快10x) [UNVERIFIED]
 C++20 concepts淘汰SFINAE: 快2-5x, 错误从1000行->1行 [UNVERIFIED]
 
-> **示例 37** [难度 ★★★☆☆] [主题：附录 E：SFINAE工业]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：SFINAE工业
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -652,7 +652,7 @@ int main(){f(1);std::cout<<"SFINAE replaced by concepts(C++20)"<<std::endl;retur
 
 ## 附录 F：SFINAE工业淘汰
 
-> **示例 38** [难度 ★★★☆☆] [主题：附录 F：SFINAE工业淘汰]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：SFINAE工业淘汰
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -687,7 +687,7 @@ int main(){f(42);std::cout<<"SFINAE->C++20 concepts: faster compile, better erro
 2. 旧代码: 保留SFINAE作为fallback(用#if __cpp_concepts)
 3. 最难迁移: std::enable_if用于控制多个重载→需重新设计requires clause顺序
 
-> **示例 39** [难度 ★★★☆☆] [主题：迁移策略]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 迁移策略
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -711,7 +711,7 @@ int main(){f(42);return 0;}
 | concepts优势? | 编译2-5x faster, 错误100x shorter [UNVERIFIED] |
 | SFINAE何时还用? | C++14/17兼容代码; 检测非标准特性 |
 
-> **示例 40** [难度 ★★★★☆] [主题：附录 H：SFINAE面试]
+> **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 H：SFINAE面试
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -731,7 +731,7 @@ int main(){f(42);std::cout<<"SFINAE→concepts(C++20): faster compile, better er
 ; 汇编: 同上(zero runtime)，但检查快2-5x(无SFINAE链) [UNVERIFIED]
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录 I：SFINAE底层汇编]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 I：SFINAE底层汇编
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -798,7 +798,7 @@ int main(){f(42);return 0;}
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -815,9 +815,9 @@ load(const T& v) { std::cout << "other:" << v << '\n'; }
 int main() { load(42); load(std::string("hi")); }
 ```
 
-[标准] 两个重载的 SFINAE 条件互补（`arithmetic` vs `!arithmetic`），对每个 `T` 恰好一个启用；`enable_if_t` 把约束失败变成"该重载从候选集静默移除"，而非硬错误。
+<span class="badge badge-std">标准</span> 两个重载的 SFINAE 条件互补（`arithmetic` vs `!arithmetic`），对每个 `T` 恰好一个启用；`enable_if_t` 把约束失败变成"该重载从候选集静默移除"，而非硬错误。
 
-[引用] `std::is_arithmetic`（cppreference "std::is_arithmetic"）是 `<type_traits>` 提供的标量分类 trait。这种 SFINAE 分流正是标准库 `std::advance`/`std::distance` 对迭代器类别做编译期分流的前身手法。ISO/IEC 14882:2023 §[meta.unary.prop] 与 §[temp.deduct] 规定 trait 与 SFINAE 移除规则。
+<span class="badge badge-ref">引用</span> `std::is_arithmetic`（cppreference "std::is_arithmetic"）是 `<type_traits>` 提供的标量分类 trait。这种 SFINAE 分流正是标准库 `std::advance`/`std::distance` 对迭代器类别做编译期分流的前身手法。ISO/IEC 14882:2023 §[meta.unary.prop] 与 §[temp.deduct] 规定 trait 与 SFINAE 移除规则。
 
 </details>
 
@@ -827,7 +827,7 @@ int main() { load(42); load(std::string("hi")); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -846,9 +846,9 @@ int main() {
 }
 ```
 
-[标准] `void_t<decltype(begin()), decltype(end())>` 在两者都合法时为 `void`、特化命中；任一缺失则替换失败、回退主模板——这是"探测成员函数"的标准 SFINAE 手法。
+<span class="badge badge-std">标准</span> `void_t<decltype(begin()), decltype(end())>` 在两者都合法时为 `void`、特化命中；任一缺失则替换失败、回退主模板——这是"探测成员函数"的标准 SFINAE 手法。
 
-[引用] `std::begin`/`std::end` 是所有标准容器的统一可迭代接口（cppreference "std::begin"）。`void_t` 探测惯用法也是标准库 `<experimental/type_traits>` 中 `std::experimental::is_detected` 的检测习惯用法（Detection Idiom）的基础——libstdc++ 用 `__detector` 实现它（见本章附录 D4）。ISO/IEC 14882:2023 §[iterator.range] 与 §[meta.trans.other] 规定相关设施。
+<span class="badge badge-ref">引用</span> `std::begin`/`std::end` 是所有标准容器的统一可迭代接口（cppreference "std::begin"）。`void_t` 探测惯用法也是标准库 `<experimental/type_traits>` 中 `std::experimental::is_detected` 的检测习惯用法（Detection Idiom）的基础——libstdc++ 用 `__detector` 实现它（见本章附录 D4）。ISO/IEC 14882:2023 §[iterator.range] 与 §[meta.trans.other] 规定相关设施。
 
 </details>
 
@@ -858,7 +858,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -871,9 +871,9 @@ template <typename T> void foo(T v) { foo(v, std::bool_constant<std::is_integral
 int main() { foo(1); foo(1.0); }
 ```
 
-[标准] tag dispatch 用空标签类型在编译期选分支，错误信息比 SFINAE 更干净，且不需要 `enable_if`；是 Concepts 之前的标准"编译期重载选择"手法。
+<span class="badge badge-std">标准</span> tag dispatch 用空标签类型在编译期选分支，错误信息比 SFINAE 更干净，且不需要 `enable_if`；是 Concepts 之前的标准"编译期重载选择"手法。
 
-[引用] 标签分发是标准库 `std::advance`（随机/双向/输入迭代器各一个重载 + `std::random_access_iterator_tag` 等标签）的经典手法（cppreference "std::advance"）。它在 C++20 Concepts 之前是"编译期选分支"的主力，错误信息远优于 SFINAE（见 ch70）。ISO/IEC 14882:2023 §[temp.fct] 与迭代器标签体系规定其机制。
+<span class="badge badge-ref">引用</span> 标签分发是标准库 `std::advance`（随机/双向/输入迭代器各一个重载 + `std::random_access_iterator_tag` 等标签）的经典手法（cppreference "std::advance"）。它在 C++20 Concepts 之前是"编译期选分支"的主力，错误信息远优于 SFINAE（见 ch70）。ISO/IEC 14882:2023 §[temp.fct] 与迭代器标签体系规定其机制。
 
 </details>
 
@@ -894,7 +894,7 @@ T get(T v) {
 
 **修复**：把约束放到签名（返回类型/模板参数），使其走 SFINAE；约束命中的分支正常返回：
 
-> **示例 45** [难度 ★★★☆☆] [主题：演绎 1：SFINAE 是"软失败"]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：SFINAE 是"软失败"
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -922,7 +922,7 @@ template <typename T> enable_if_t<is_arithmetic_v<T>, void> load(T); // 复制�
 
 **修复**：条件互补（`arithmetic` vs `!arithmetic`）：
 
-> **示例 46** [难度 ★★★☆☆] [主题：演绎 2：两个条件必须互补，否则全淘]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：两个条件必须互补，否则全淘
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1006,7 +1006,7 @@ template<typename _Default, template<typename...> class _Op,
 
 ### D4.4 可编译验证
 
-> **示例 47** [难度 ★★★☆☆] [主题：可编译验证]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
 ```cpp
 #include <type_traits>
 #include <iostream>
@@ -1216,7 +1216,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 48** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 48** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 

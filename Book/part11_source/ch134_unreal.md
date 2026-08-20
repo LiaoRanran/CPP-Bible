@@ -23,7 +23,7 @@
 
 真正的分水岭在 **2014 年 GDC**。Sweeney 做了一个让整个行业倒吸一口凉气的决定：**把 UE4 免费开放**，只对超过 30 万美元收入的部分收 5% 版税。这等于对着当时 **Unity Pro 每座席 1500 美元** 的收费模式正面开火——一夜之间，独立开发者、学生、甚至影视和汽车团队都能用上工业级引擎。同期推出的 **Blueprint 可视化脚本**，让不会写代码的人也能"连线做游戏"。
 
-> **[史]** UE4 发布前，Epic 的授权模式是"月费 $19 + 5% 版税"；更早的 UE3 则是高额 per-title 许可。** [轶]** Sweeney 后来把同一股"掀桌子"劲头用在了 **Epic v. Apple（2020）** 上——为反对 30% 抽成让《堡垒之夜》被 App Store 下架，官司一路打到最高法院。
+> **<span class="badge badge-history">史</span>** UE4 发布前，Epic 的授权模式是"月费 $19 + 5% 版税"；更早的 UE3 则是高额 per-title 许可。** <span class="badge badge-anecdote">轶</span>** Sweeney 后来把同一股"掀桌子"劲头用在了 **Epic v. Apple（2020）** 上——为反对 30% 抽成让《堡垒之夜》被 App Store 下架，官司一路打到最高法院。
 
 ### 0.3 设计哲学之争：为什么不用裸 C++，而要 UObject/UHT/GC/反射？
 
@@ -31,16 +31,16 @@
 
 Epic 的取舍很清楚：**保留 C++ 的性能和零抽象控制力**（对比 Unity 选 C#/CLR——反射和 GC "白送"，代价是托管开销和 GC 停顿），然后在上面焊一套 `UObject`/`UClass` + `UHT` 生成的元数据层补齐缺失项。**所以"UE C++ = 标准 C++ + 强制对象框架"**——这正是本章反复强调"别把 UObject 当普通栈对象"的历史根源。
 
-> **[轶]** UnrealScript 在 UE4 被**亲手废除**（2014），换成 C++ + Blueprint。Sweeney 的判断是：脚本语言的运行开销 + 与 C++ 互操作的摩擦已不值得保留——当 C++ 工具链和反射系统足够强时，干脆让玩法回到 C++。
+> **<span class="badge badge-anecdote">轶</span>** UnrealScript 在 UE4 被**亲手废除**（2014），换成 C++ + Blueprint。Sweeney 的判断是：脚本语言的运行开销 + 与 C++ 互操作的摩擦已不值得保留——当 C++ 工具链和反射系统足够强时，干脆让玩法回到 C++。
 
 ### 0.4 史料补遗与持续编年（← 本槽位无限追加）
 
 - **2017** 《堡垒之夜》上线，成为全球文化现象，反过来为 UE5 的研发投入了天文数字级别的弹药。
 - **2020 公布 / 2022 正式** UE5：引入 **Nanite**（虚拟几何，免手调 LOD，源自 Brian Karis 等人的实时渲染研究）、**Lumen**（动态全局光照）、Chaos 物理、MetaSounds、Niagara——把顶级工作室才玩得起的实时画质下放。
 - **2022 之后** UE5.1–5.4 持续打磨 Nanite/Lumen 稳定性，把 C++17/20 工具链与更快的 Unreal Header Tool（UHT 重写）推进主线；引擎体量与编译时间仍是团队最大的工程负担。
-- [史] Unreal 自身持续跟进现代 C++：反射/宏代码生成在 UE5.1+ 被重构提速，构建侧逐步接纳标准 C++17/20 特性，而非停留在早期 C++11 习惯。
-- [评] "免费 + 5% 版税"模式延续了 2014 年的掀桌逻辑——小团队零门槛用上工业级引擎；代价是一旦收入超门槛，版税成为显著成本，且引擎升级常伴随破坏性的 API 改动。
-- [轶] Epic v. Apple（2020 起）的 30% 抽成之战，与"免费送引擎"是同一种掀桌精神——Sweeney 把对渠道霸权的反感一路打到了最高法院。
+- <span class="badge badge-history">史</span> Unreal 自身持续跟进现代 C++：反射/宏代码生成在 UE5.1+ 被重构提速，构建侧逐步接纳标准 C++17/20 特性，而非停留在早期 C++11 习惯。
+- <span class="badge badge-comment">评</span> "免费 + 5% 版税"模式延续了 2014 年的掀桌逻辑——小团队零门槛用上工业级引擎；代价是一旦收入超门槛，版税成为显著成本，且引擎升级常伴随破坏性的 API 改动。
+- <span class="badge badge-anecdote">轶</span> Epic v. Apple（2020 起）的 30% 抽成之战，与"免费送引擎"是同一种掀桌精神——Sweeney 把对渠道霸权的反感一路打到了最高法院。
 
 > 史料来源：
 > - https://www.unrealengine.com/en-US/blog
@@ -48,13 +48,13 @@ Epic 的取舍很清楚：**保留 C++ 的性能和零抽象控制力**（对比
 
 **今日坐标（学这个真有用）**：UE 活在《堡垒之夜》、大量 3A 与独立游戏，也广泛用于**汽车 HMI 与座舱仿真、影视虚拟制片**（《曼达洛人》的 LED 虚拟摄影棚 StageCraft 即用 UE 实时渲染背景）、建筑可视化、训练模拟器与数字孪生。它早已不只是"游戏引擎"。
 
-## ① 概述：Unreal Engine C++ 架构 [标准]
+## ① 概述：Unreal Engine C++ 架构 <span class="badge badge-std">标准</span>
 
 [第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)
 
 Unreal Engine（UE）的 C++ 并非「裸标准 C++」——它构建在 **UObject 对象系统** 之上：一套由 UHT 在编译期扫描、运行时由 GC 与反射驱动的对象框架。标准 C++ 提供语言；UE 在其上叠加**元数据、垃圾回收、序列化、蓝图桥接**四大支柱。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：Unreal Engine C]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Unreal Engine C
 ```cpp
 // ① UE 工程的典型最小对象：必须继承 UObject 才获得反射/GC 能力
 //   （UHT 宏在此以空宏模拟，使片段可独立编译）
@@ -74,7 +74,7 @@ public:
 };
 ```
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：Unreal Engine C]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Unreal Engine C
 ```cpp
 // ① 标准 C++ 与 UE 的分层对照（概念图，ASCII 框线）
 // ┌─────────────────────────────────────────────┐
@@ -96,7 +96,7 @@ int layer_count() { return 4; }   // 四层
 
 UE 的每個对象都是 `UObject` 派生实例；每个类型对应一个 **`UClass` 单例**（类元数据），持有属性表、函数表、父类链。`UObject::GetClass()` 是运行期 RTTI 的等价入口。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：对象模型]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对象模型
 ```cpp
 // ② UObject 与 UClass 的核心关系（上游字段简化示意）
 //   UObjectBase 持有 ClassPrivate（指向 UClass*）；UClass 描述类型自身
@@ -106,7 +106,7 @@ struct FMinimalObject {
 };
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：对象模型]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对象模型
 ```cpp
 // ② 等价 UClass 的最小元数据：类型名 + 父类 + 属性表
 #include <string>
@@ -127,7 +127,7 @@ struct FMinimalClass {
 
 下面两处为 **上游 Unreal Engine 源码** 的真实位置（本机未装 UE，仅作权威定位，标注「上游参考」）。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：源码剖析：UObjectBase /]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase /
 ```cpp
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h
 // 行号：73
@@ -142,7 +142,7 @@ struct FMinimalClass {
 //   };
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：源码剖析：UObjectBase /]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase /
 ```cpp
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/UObjectGlobals.cpp
 // 行号：2451
@@ -162,7 +162,7 @@ struct FMinimalClass {
 
 UE 使用 **标记-清扫（mark-sweep）增量 GC**。可达性从「根集合」（如关卡 `World`、显式 `UPROPERTY` 引用）出发，沿 `UObject` 引用图递归标记；未被标记的对象被回收。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：垃圾回收]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 垃圾回收
 ```cpp
 // ④ UPROPERTY 强引用：让 GC 把子对象视为可达，避免误回收
 #define UPROPERTY(...)
@@ -175,7 +175,7 @@ class UWeapon : public UActorStub {
 };
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：垃圾回收]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 垃圾回收
 ```cpp
 // ④ 非 UPROPERTY 裸指针：GC 看不见 -> 悬空风险（见第⑬节陷阱）
 class UBroken : public UActorStub {
@@ -186,11 +186,11 @@ class UBroken : public UActorStub {
 - `[平台·UE5]`：UE5 的 GC 是**增量**的，分摊到多帧，避免大世界单帧卡顿；`UPROPERTY` 是引用图边。
 - `[经验]`：任何指向 `UObject` 的成员指针/句柄，几乎都应标 `UPROPERTY()`，除非你明确用手动生命周期。
 
-## ⑤ 智能指针（TSharedPtr/TWeakPtr/TUniquePtr） [标准]
+## ⑤ 智能指针（TSharedPtr/TWeakPtr/TUniquePtr） <span class="badge badge-std">标准</span>
 
 UE 提供三件套，**不依赖 `std::`**，且能与 UObject GC 共存：
 
-> **示例 9** [难度 ★★★☆☆] [主题：智能指针]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 智能指针
 ```cpp
 // ⑤ TSharedPtr：引用计数（非 GC），用于非 UObject 的资源/工具对象
 #include <memory>
@@ -202,7 +202,7 @@ struct FRenderResource { int Handle = 0; };
 TSharedPtr<FRenderResource> g_Res = std::make_shared<FRenderResource>();
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：智能指针]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 智能指针
 ```cpp
 // ⑤ TWeakPtr：观察而不增加引用计数，典型用于缓存/回调防悬空
 TWeakPtr<FRenderResource> g_Cache = g_Res;
@@ -211,7 +211,7 @@ void UseCache() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：智能指针]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针
 ```cpp
 #include <memory>
 // ⑤ TUniquePtr：独占所有权，禁止拷贝，等价 std::unique_ptr
@@ -226,7 +226,7 @@ TUniquePtr<FRenderResource> g_Owned = std::make_unique<FRenderResource>();
 
 反射靠宏 + UHT 代码生成实现。`UCLASS()` 标记类型可被反射；`UPROPERTY()` 标记字段进入属性表；`UFUNCTION()` 标记方法可被蓝图/网络调用。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：反射与元数据]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反射与元数据
 ```cpp
 // ⑥ 反射三宏的最小可用形态（空宏 shim 使片段可编译）
 #define UCLASS(...)
@@ -247,7 +247,7 @@ public:
 };
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：反射与元数据]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反射与元数据
 ```cpp
 // ⑥ 反射的「等价手写」：把字段登记进属性表，UHT 正是生成此类代码
 #include <string>
@@ -265,11 +265,11 @@ struct PlayerMeta {
 - `[实现·UHT]`：`GENERATED_BODY()` 展开为构造函数钩子与 `StaticClass()` 声明；UHT 生成的 `StaticClass()` 返回指向 `UClass` 单例的引用。
 - `[平台·Linux]`：`UFUNCTION(BlueprintCallable)` 等说明符被编码进 `UFunction` 元数据，供蓝图 VM 调度。
 
-## ⑦ 容器（TArray/FString/TMap） [标准]
+## ⑦ 容器（TArray/FString/TMap） <span class="badge badge-std">标准</span>
 
 UE 自研容器替代 STL，强调**内存可控、序列化友好、调试可视化**：
 
-> **示例 14** [难度 ★★★☆☆] [主题：容器]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 容器
 ```cpp
 // ⑦ TArray：连续存储，接口近似 std::vector，但默认不抛异常、内存策略可调
 #include <vector>
@@ -281,7 +281,7 @@ Scores.push_back(150);
 int32_t top = Scores[0];   // 不越界检查（Shipping）；Development 下可开启
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：容器]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 容器
 ```cpp
 // ⑦ FString：UTF-16 的宽字符串，与 std::string(UTF-8) 不同
 #include <string>
@@ -295,7 +295,7 @@ struct FString {
 FString Name(u"Hero");
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：容器]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 容器
 ```cpp
 // ⑦ TMap：哈希表，Key 需有 GetTypeHash；等价 std::unordered_map
 #include <unordered_map>
@@ -305,7 +305,7 @@ template <typename K, typename V> using TMap = std::unordered_map<K, V>;
 TMap<int32_t, FString> PlayerNames;
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：容器]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 容器
 ```cpp
 // ⑦ FName：全局去重字符串池，比较是 O(1) 指针比较，非字符串比较
 #include <string>
@@ -318,7 +318,7 @@ struct FName {
 - `[标准]`：TArray/TMap 行为与 STL 类似，但**默认不抛异常**，且内建序列化接口，便于网络/存档。
 - `[经验]`：跨模块边界传字符串优先 `FString`；仅内部 ASCII 短串可用 `FName` 省内存。
 
-## ⑧ 与标准 C++ 差异（std::string vs FString） [标准]
+## ⑧ 与标准 C++ 差异（std::string vs FString） <span class="badge badge-std">标准</span>
 
 | 维度 | `std::string` | `FString` |
 |---|---|---|
@@ -327,7 +327,7 @@ struct FName {
 | 异常 | 可抛 `bad_alloc` | 不抛（默认 `MAX` 兜底） |
 | 互操作 | 标准库通用 | 需 `StringCast`/`StringConv` 转换 |
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：与标准 C++ 差异]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准 C++ 差异
 ```cpp
 // ⑧ 编码转换：UTF-8 std::string <-> UTF-16 FString 必须显式转换
 #include <string>
@@ -343,7 +343,7 @@ struct FString8 {
 };
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：与标准 C++ 差异]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准 C++ 差异
 ```cpp
 // ⑧ 标准 C++ 没有「蓝图可见」概念：这是 UE 反射层独有的附加语义
 //   UPROPERTY() 让字段进入反射——std::string 成员不会自动获得该能力
@@ -359,7 +359,7 @@ struct UThing { UPROPERTY() std::string Tag; };  // 仅当类是 UObject 时 Tag
 
 下面用 **GCC 15.3.0** 真实编译 `Examples/_ch134_objsys.cpp`（自包含对象系统 / RTTI 等价），证明 UObject 式反射骨架在标准 C++ 下可编译、并观察其汇编。UE 专属命令 `UHT` 未安装，故取真实汇编为证，标注「典型输出」。
 
-> **示例 20** [难度 ★★★☆☆] [主题：真实取证：编译自包含对象系统取汇编 ]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实取证：编译自包含对象系统取汇编
 ```cpp
 // 文件：Examples/_ch134_objsys.cpp，行号：46（GetClass）/ 52（NewObject）
 // 编译：C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++17 -O2 -S -masm=intel
@@ -415,9 +415,9 @@ _Z9NewObjectPK6FClass:
 - `[实现·Unreal]`：真实汇编显示 `NewObject` 通过**类名长度 + 类型名哈希**做类型分发（等价 UE 按 `UClass` 单例查类型），`MarkReachable` 把对象尾插进 `std::vector`（等价 GC 标记可达集合）。二者均为真实 GCC 产物，证明 UObject 式机制无需 UHT 即可在标准 C++ 落地。
 - `[经验]`：`GetClass()` 在 `-O2` 下被内联进 `main`，故汇编中无独立 `_ZN7FObject9GetClass` 符号——这是优化预期行为，非缺陷。
 
-## ⑩ 调试 [经验]
+## ⑩ 调试 <span class="badge badge-exp">经验</span>
 
-> **示例 21** [难度 ★★☆☆☆] [主题：调试 [经验]]
+> **示例 21** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑩ 用 ensure/check 宏替代裸 assert，能触发编辑器断点与调用栈
 #define check(cond) do { if(!(cond)) __builtin_trap(); } while(0)
@@ -428,7 +428,7 @@ int ComputeDamage(int base) {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：调试 [经验]]
+> **示例 22** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑩ 调试时打印 UObject 信息：GetName/GetClass()->GetName 是常用入口
 #include <string>
@@ -442,9 +442,9 @@ void Dump(const DbgObj& o) {
 - `[经验]`：`check` 用于不可恢复的不变量；`ensure` 用于应恢复的错误（吞掉但上报）。
 - `[平台·Linux]`：在编辑器（Editor）下崩溃会自动弹出**崩溃报告器**与调用栈，比纯控制台友好。
 
-## ⑪ 性能 [经验]
+## ⑪ 性能 <span class="badge badge-exp">经验</span>
 
-> **示例 23** [难度 ★★☆☆☆] [主题：性能 [经验]]
+> **示例 23** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑪ TArray 预分配：避免多次 realloc（与 std::vector::reserve 同义）
 #include <vector>
@@ -454,7 +454,7 @@ Positions.reserve(1024);     // 一次性预留，热路径零分配
 for (int i=0;i<1024;++i) Positions.push_back((float)i);
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：性能 [经验]]
+> **示例 24** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑪ 避免在热循环里创建 FString：用栈缓冲 / 数值直传
 #include <string>
@@ -471,7 +471,7 @@ void BadHotLoop(int n) {
 
 ## ⑫ 跨平台 [平台·Linux]
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：跨平台 [平台·Linux]]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Linux]
 ```cpp
 // ⑫ 平台抽象：用 UE 提供的 typedef 而非原生类型，保证 64 位一致
 #include <cstdint>
@@ -482,7 +482,7 @@ using SIZE_T = std::size_t;
 int32 ReadInput(uint16 DeviceId) { return (int32)DeviceId; }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：跨平台 [平台·Linux]]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Linux]
 ```cpp
 // ⑫ 字节序敏感处用平台无关接口；UE 在 Core 层已封装 FPlatformMisc
 #include <cstdint>
@@ -495,9 +495,9 @@ uint32 HostToNetwork(uint32 v) {
 - `[平台·Linux]`：UE 支持 Win/Mac/Linux/主机/移动；代码应假定 `int32` 等固定宽度，避免 `int` 在平台间宽度漂移。
 - `[经验]`：避免在头文件中写 `#ifdef _WIN32` 散落各处——集中到 `FPlatform*` 抽象。
 
-## ⑬ 常见陷阱（裸指针跨 UObject 边界） [经验]
+## ⑬ 常见陷阱（裸指针跨 UObject 边界） <span class="badge badge-exp">经验</span>
 
-> **示例 27** [难度 ★★☆☆☆] [主题：常见陷阱]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑬ 陷阱1：裸 UObject* 不标 UPROPERTY -> GC 看不见 -> 悬空
 #define UPROPERTY(...)
@@ -507,7 +507,7 @@ class UGameMgr {
 };
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：常见陷阱]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑬ 陷阱2：TSharedPtr 持有 UObject -> 与 GC 双重生命周期冲突
 #include <memory>
@@ -516,7 +516,7 @@ class UBad {
 };
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：常见陷阱]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑬ 陷阱3：在构造函数里访问未初始化的 UPROPERTY（UHT 顺序问题）
 class USafe {
@@ -531,7 +531,7 @@ class USafe {
 
 ## ⑭ 演进（UE5） [平台·UE5]
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：演进（UE5） [平台·UE5]]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（UE5） [平台·UE5]
 ```cpp
 // ⑭ UE5 引入 FSoftObjectPath / 软引用，降低硬引用导致的加载耦合
 #include <string>
@@ -539,7 +539,7 @@ struct FSoftObjectPath { std::string AssetPath; };   // 仅记录路径，不立
 FSoftObjectPath Mesh = FSoftObjectPath{"/Game/Models/Hero.Hero"};
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：演进（UE5） [平台·UE5]]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（UE5） [平台·UE5]
 ```cpp
 // ⑭ UE5 的 Chaos 物理、Nanite、Lumen 都是 C++ 子系统，可经 API 调用
 struct FSubsystemStub { void Tick() {} };
@@ -548,9 +548,9 @@ struct FSubsystemStub { void Tick() {} };
 - `[平台·UE5]`：UE5 把大量原本蓝图侧的逻辑推向 C++ 子系统（如 `GameplayAbilitySystem`），性能与可控性更高。
 - `[经验]`：从 UE4 迁移时，注意 `ConstructHelpers` 在 CDO 外的限制、`World` 分区带来的加载模型变化。
 
-## ⑮ 最佳实践 [经验]
+## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 用 AActor 的 BeginPlay 做初始化，而非构造函数（此时 World/组件就绪）
 struct AActorStub2 { virtual void BeginPlay() {} virtual ~AActorStub2()=default; };
@@ -559,7 +559,7 @@ class AMyActor : public AActorStub2 {
 };
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 用 UPROPERTY(EditAnywhere) 暴露给编辑器，减少硬编码
 #define UPROPERTY(...)
@@ -569,7 +569,7 @@ class USettings {
 };
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 用 const 引用传大对象，避免 UObject 上的不必要拷贝
 #include <vector>
@@ -581,9 +581,9 @@ int Sum(const TArray<int32_t>& xs) { int s=0; for(int x:xs) s+=x; return s; }
 - `[经验]`：逻辑用 `UFUNCTION` 暴露给蓝图前先想清楚边界；过度暴露蓝图会增加耦合与回归面。
 - `[标准]`：遵循 RAII——`TUniquePtr`/`TArray` 已自带；UObject 让 GC 管，你只负责正确标 `UPROPERTY`。
 
-## ⑯ 跨库 [经验]
+## ⑯ 跨库 <span class="badge badge-exp">经验</span>
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：跨库 [经验]]
+> **示例 35** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 引入第三方库（如 rapidjson）时，用模块 Build.cs 的 PublicDependencyModuleNames
 //   而非手动 -I；跨模块符号由 UE 构建系统（UBT）解析
@@ -592,7 +592,7 @@ int Sum(const TArray<int32_t>& xs) { int s=0; for(int x:xs) s+=x; return s; }
 std::string ToStd(const char* u8) { return std::string(u8); }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：跨库 [经验]]
+> **示例 36** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 与标准库共存：UE 容器与 STL 可混用，注意边界转换成本
 #include <vector>
@@ -607,9 +607,9 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 - `[经验]`：第三方库最好包一层 `F`-前缀适配类，避免其头文件宏污染 UE 编译环境。
 - `[平台·Linux]`：UBT 默认禁用 RTTI 与异常（`-fno-rtti -fno-exceptions`），第三方库需匹配编译选项。
 
-## ⑰ 贡献 [经验]
+## ⑰ 贡献 <span class="badge badge-exp">经验</span>
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：贡献 [经验]]
+> **示例 37** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 贡献引擎代码的典型改动点：在 Runtime/CoreUObject 下修改，保持 UHT 宏一致
 //   例：给 UObject 增加一个新的反射说明符，需要同步修改
@@ -619,7 +619,7 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 // 行号：312
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：贡献 [经验]]
+> **示例 38** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 自测：新增类型应满足最小不变量（等价引擎内的 check 断言）
 #define check(c) do{ if(!(c)) __builtin_trap(); }while(0)
@@ -630,7 +630,7 @@ void Validate(const FContrib& c) { check(c.Id >= 0); }
 - `[经验]`：引擎改动需通过 `Automation` 测试与 `UHT` 自检；先在样例模块验证宏展开正确。
 - `[平台·Linux]`：Epic 的贡献流程要求 CLA 签署，且改动须跨 Win/Linux 编译通过。
 
-## ⑱ 与游戏引擎对比 [标准]
+## ⑱ 与游戏引擎对比 <span class="badge badge-std">标准</span>
 
 | 引擎 | 对象系统 | 反射 | GC | 脚本桥 |
 |---|---|---|---|---|
@@ -639,7 +639,7 @@ void Validate(const FContrib& c) { check(c.Id >= 0); }
 | Godot | `Object`/`Ref` | 内建 | 引用计数 | GDScript |
 | CryEngine | `IEntity`/`IComponent` | 有限 | 手动/引用 | Lua |
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：与游戏引擎对比 [标准]]
+> **示例 39** [难度 ★☆☆☆☆] [主题：与游戏引擎对比 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ Unity 用 C# 对象；UE 用 C++ UObject——生命周期模型根本不同
 //   C#：GC 自动；UE：GC + UPROPERTY 显式引用图（开发者参与标注）
@@ -653,9 +653,9 @@ EngineDiff Diffs[4] = {
 - `[标准]`：UE 的反射是**编译期生成 + 运行期元数据**，区别于 C# 的纯运行期反射，性能更可控但需 UHT 预处理。
 - `[经验]`：从 Unity 转 UE，最大心智负担是「把隐式 GC 引用变成显式 `UPROPERTY`」。
 
-## ⑲ 调试/源码阅读 [经验]
+## ⑲ 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：调试/源码阅读 [经验]]
+> **示例 40** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 阅读引擎源码的入口：从 UObject 派生类的构造函数反向追 UClass 构建
 //   上游参考（非本机）：
@@ -665,7 +665,7 @@ EngineDiff Diffs[4] = {
 int ReadEntry() { return 1; }   // 占位：提示读者去上游该位置阅读
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：调试/源码阅读 [经验]]
+> **示例 41** [难度 ★★☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 用条件断点观察 GC：在 MarkReachable 等价函数上断住，查看可达集合增长
 #include <vector>
@@ -676,21 +676,21 @@ void InspectGC(const TArray<void*>& reachables) { (void)reachables; }
 - `[经验]`：UE 源码体量大，优先沿 `UClass`/`UObject`/`FProperty` 三条主线读，别逐文件平推。
 - `[平台·Linux]`：用 IDE 的「转到定义」跳进 `generated.h` 时，实际实现在 `.gen.cpp`，二者由 UHT 配对。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：UObject 反射/GC 由 UHT 生成代码（`UPROPERTY`/`UFUNCTION` 宏）。** 你以为这些是语言特性。请说明。
-   - [标准] 宏与代码生成（UHT）是构建期工具，非 C++ 语言设施；反射是引擎机制。
-   - [引用] ISO/IEC 14882:2023 §[cpp]（宏/预处理）/ Unreal UHT 文档；cppreference "Replacing text macros" 词条。
+   - <span class="badge badge-std">标准</span> 宏与代码生成（UHT）是构建期工具，非 C++ 语言设施；反射是引擎机制。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp]（宏/预处理）/ Unreal UHT 文档；cppreference "Replacing text macros" 词条。
 
 2. **真实场景：`UPROPERTY` 指针被 GC 追踪（避免悬垂）。** 你对比标准智能指针。请说明机制差异。
-   - [标准] 追踪式 GC 是引擎机制；C++ 标准提供 `std::shared_ptr`/`weak_ptr` 引用计数（[util.smartptr]）。
-   - [引用] ISO/IEC 14882:2023 §[util.smartptr.shared] / [weak]（智能指针）/ Unreal GC 文档；cppreference "std::shared_ptr" 词条。
+   - <span class="badge badge-std">标准</span> 追踪式 GC 是引擎机制；C++ 标准提供 `std::shared_ptr`/`weak_ptr` 引用计数（[util.smartptr]）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[util.smartptr.shared] / [weak]（智能指针）/ Unreal GC 文档；cppreference "std::shared_ptr" 词条。
 
 3. **真实场景：值类型 `FVector` 可拷贝，UObject 不可拷贝。** 你设计游戏对象。请说明拷贝语义。
-   - [标准] 拷贝语义由用户定义；值类型默认可拷贝，身份型对象（UObject）应禁用拷贝。
-   - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义与三五法则）/ Unreal 文档；cppreference "Rule of three/five" 词条。
+   - <span class="badge badge-std">标准</span> 拷贝语义由用户定义；值类型默认可拷贝，身份型对象（UObject）应禁用拷贝。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy]（拷贝语义与三五法则）/ Unreal 文档；cppreference "Rule of three/five" 词条。
 
 | 概念 | UE 写法 | 标准 C++ 等价 | 说明 |
 |---|---|---|---|
@@ -705,7 +705,7 @@ void InspectGC(const TArray<void*>& reachables) { (void)reachables; }
 | 弱引用(UObject) | `TWeakObjectPtr` | — | GC 回收自动空 |
 | 软引用 | `FSoftObjectPath` | 路径字符串 | 延迟加载 |
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 42** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 一页速记：UObject 派生类型的最小骨架（空宏 shim 可编译）
 #define UCLASS(...)
@@ -725,7 +725,7 @@ public:
 };
 ```
 
-> **示例 43** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 43** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 选择指南（编译期决策树，ASCII 框线）
 // ┌─ 是否 UObject 派生？ ─┐
@@ -760,7 +760,7 @@ int Decide(bool isUObject) { return isUObject ? 0 : 1; }
 
 不装 UE 也能理解 `UPROPERTY` 与 `UClass` 的运行模型——下面用标准库复刻核心：**每个类有一张属性元数据表，每个对象注册进全局存活表（GC 根集）**。这正是 UE 让编辑器/序列化/网络复制"看见"字段的机制。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：先把
 ```cpp
 // ㉑.2 用标准 C++ 复刻 UE「反射属性表 + GC 托管」的最小模型（本块可独立编译，GCC 15.3.0 验证）
 #include <string>
@@ -802,7 +802,7 @@ int main() {
 
 下面才是你在 UE 编辑器里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入引擎头依赖）。
 
-> **示例 45** [难度 ★★☆☆☆] [主题：㉑.3 真实 UE C++ 长什么样]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 UE C++ 长什么样
 ```cpp
 // ㉑.3 真实 UE C++ 写法（仅注释演示，需 UE + UHT；本门禁按空块编译通过）：
 //   #include "HealthPickup.h"
@@ -906,7 +906,7 @@ int main() {
 - [Epic 开发者门户](https://dev.epicgames.com/)：SDK、源码与社区资源。
 ## 附录 A：Unreal Engine C++ 工业实践 [F: Industry / B: Principle]
 
-> **示例 46** [难度 ★★★☆☆] [主题：附录 A：Unreal Engine]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：Unreal Engine
 ```
 Unreal Engine C++ 的设计哲学与标准 C++ 的差异:
 
@@ -928,7 +928,7 @@ Unreal Engine C++ 的设计哲学与标准 C++ 的差异:
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 47** [难度 ★★☆☆☆] [主题：附录 B：面试 [J: Learni]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learni
 ```
 Unreal C++ 面试高频:
 Q: UObject 为什么需要 BeginPlay/Tick/EndPlay？
@@ -1033,7 +1033,7 @@ call [rcx+0x0018]         ; 反射访问属性
 
 宏在静态初始化期把"类名→工厂"登记进全局表，实现运行期按名构造：
 
-> **示例 48** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <map>
 #include <string>
@@ -1067,9 +1067,9 @@ int main() {
 }
 ```
 
-[标准] `#Name` 字符串化宏把标识符变成类名键；`static` 注册助手在程序启动期执行，对应 UHT 生成的 `StaticClass()` 注册逻辑。
+<span class="badge badge-std">标准</span> `#Name` 字符串化宏把标识符变成类名键；`static` 注册助手在程序启动期执行，对应 UHT 生成的 `StaticClass()` 注册逻辑。
 
-[引用] UE `UClass` / `UObjectBase`（反射元数据，`UObjectGlobals`）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/CoreUObject/UObject/UClass/>；本章 ② 对象模型 / ⑥ 反射与元数据（UCLASS/UPROPERTY/UFUNCTION 宏）。
+<span class="badge badge-ref">引用</span> UE `UClass` / `UObjectBase`（反射元数据，`UObjectGlobals`）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/CoreUObject/UObject/UClass/>；本章 ② 对象模型 / ⑥ 反射与元数据（UCLASS/UPROPERTY/UFUNCTION 宏）。
 
 </details>
 
@@ -1081,7 +1081,7 @@ int main() {
 
 只有被"强引用列表"登记的对象参与可达性；未登记的裸指针目标不可达、被回收：
 
-> **示例 49** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <vector>
 
@@ -1113,9 +1113,9 @@ int main() {
 }
 ```
 
-[标准] 标记-清除分两阶段：从根集深度优先标记可达对象，再回收未标记者；未被 `refs` 登记的指针不构成引用边。
+<span class="badge badge-std">标准</span> 标记-清除分两阶段：从根集深度优先标记可达对象，再回收未标记者；未被 `refs` 登记的指针不构成引用边。
 
-[引用] UE 垃圾回收（GC / 引用图 / `UPROPERTY` 强引用，标记-清除）：<https://docs.unrealengine.com/5.3/en-US/ProgrammingAndScripting/UnrealArchitecture/Objects/Optimizations/GarbageCollection/>；本章 ④ 垃圾回收 / ⑬ 常见陷阱（裸指针跨 UObject 边界）。
+<span class="badge badge-ref">引用</span> UE 垃圾回收（GC / 引用图 / `UPROPERTY` 强引用，标记-清除）：<https://docs.unrealengine.com/5.3/en-US/ProgrammingAndScripting/UnrealArchitecture/Objects/Optimizations/GarbageCollection/>；本章 ④ 垃圾回收 / ⑬ 常见陷阱（裸指针跨 UObject 边界）。
 
 </details>
 
@@ -1127,7 +1127,7 @@ int main() {
 
 Actor 拥有组件生命周期；Tick 向下传播，对应 UE 的组件驱动模型：
 
-> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <vector>
 
@@ -1154,9 +1154,9 @@ int main() {
 }
 ```
 
-[标准] 组合优于继承：`AActor` 通过持有组件列表复用行为；析构顺序保证组件先于/随拥有者释放，避免悬垂。
+<span class="badge badge-std">标准</span> 组合优于继承：`AActor` 通过持有组件列表复用行为；析构顺序保证组件先于/随拥有者释放，避免悬垂。
 
-[引用] UE `AActor` / `UActorComponent`（游戏框架、Tick 传播）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/Engine/GameFramework/AActor/>；本章 ① 概述 / ㉑ 真实工程使用场景。
+<span class="badge badge-ref">引用</span> UE `AActor` / `UActorComponent`（游戏框架、Tick 传播）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/Engine/GameFramework/AActor/>；本章 ① 概述 / ㉑ 真实工程使用场景。
 
 </details>
 
@@ -1320,7 +1320,7 @@ UObject 反射看着「灵活」，但字符串键属性访问的代价是哈希
 
 ### D5.3 可复现 demo
 
-> **示例 51** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 #include <unordered_map>

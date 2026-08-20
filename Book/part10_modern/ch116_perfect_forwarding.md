@@ -13,24 +13,24 @@
 > 一个"万能包装器"想原封不动地把参数传给内部函数——在 C++11 之前，这几乎做不到。
 
 ### 0.1 起源（谁·何时·为何）
-工厂函数与通用包装器（如 `make_shared`、`emplace`）面临一个朴素需求：**把接收到的参数"原样"转交给另一个函数**，保留它是左值还是右值、是否 `const`。C++98 只有一个 `const T&`，它只能绑定并转发"左值视角"，一旦遇到右值（`make_shared(42)` 里的 `42`）就会被迫拷贝或丢失值类别，于是人们只能为每种组合手写大量重载。[史] 这种"转发却丢信息"的尴尬，是模板泛型时代最痛的点之一。
+工厂函数与通用包装器（如 `make_shared`、`emplace`）面临一个朴素需求：**把接收到的参数"原样"转交给另一个函数**，保留它是左值还是右值、是否 `const`。C++98 只有一个 `const T&`，它只能绑定并转发"左值视角"，一旦遇到右值（`make_shared(42)` 里的 `42`）就会被迫拷贝或丢失值类别，于是人们只能为每种组合手写大量重载。<span class="badge badge-history">史</span> 这种"转发却丢信息"的尴尬，是模板泛型时代最痛的点之一。
 
 ### 0.2 关键转折（编年）
-- C++98：靠 `const T&` + 多份重载逼近"转发"，笨重且不全。[史]
-- **C++11（2011）**：引入**万能引用（universal/forwarding reference，`T&&` 在模板推导下）**、**引用折叠规则** 与 `std::forward`，使单份模板即可"完美"转发任意值类别。[史]（"万能引用"一词由 Scott Meyers 在科普中定名。）[轶]
-- C++23：新增 `std::forward_like`，补齐成员子对象转发的边角。[史]
+- C++98：靠 `const T&` + 多份重载逼近"转发"，笨重且不全。<span class="badge badge-history">史</span>
+- **C++11（2011）**：引入**万能引用（universal/forwarding reference，`T&&` 在模板推导下）**、**引用折叠规则** 与 `std::forward`，使单份模板即可"完美"转发任意值类别。<span class="badge badge-history">史</span>（"万能引用"一词由 Scott Meyers 在科普中定名。）<span class="badge badge-anecdote">轶</span>
+- C++23：新增 `std::forward_like`，补齐成员子对象转发的边角。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-完美转发的底层是**引用折叠**这一套规则——`T&&` 在模板推导时对左值塌成 `T&`、对右值塌成 `T&&`。这套"看似巧合"的规则，其实是把"类型推导 + 引用"做成了代数闭包，让 `forward` 能用一对重载 `static_cast` 还原原值类别。[评] 委员会没有另造一套"转发关键字"，而是复用 `static_cast` 语义，保持语言正交；代价是概念门槛高，初学者常被"为什么 `T&&` 有时是右值引用、有时是万能引用"绊倒。[史]
+完美转发的底层是**引用折叠**这一套规则——`T&&` 在模板推导时对左值塌成 `T&`、对右值塌成 `T&&`。这套"看似巧合"的规则，其实是把"类型推导 + 引用"做成了代数闭包，让 `forward` 能用一对重载 `static_cast` 还原原值类别。<span class="badge badge-comment">评</span> 委员会没有另造一套"转发关键字"，而是复用 `static_cast` 语义，保持语言正交；代价是概念门槛高，初学者常被"为什么 `T&&` 有时是右值引用、有时是万能引用"绊倒。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 完美转发的核心（引用折叠 + `std::forward`）自 C++11 定型后，主要是填边角与降门槛。
 
-- C++23 新增 `std::forward_like`，补齐"转发成员子对象"时值类别推导的边角——此前对 `obj.member` 这类成员做完美转发，必须手搓晦涩的 `static_cast`。[史]
-- [史] 概念（Concepts，C++20）让"这个模板接受什么参数"可以声明式表达，间接缓解了完美转发时代码因类型不匹配而触发的一长串 SFINAE 错误噪音。
-- [评] "万能引用"一词由 Scott Meyers 在科普中定名，并非标准术语；标准只说"转发引用（forwarding reference）"——但 `T&&` 在模板参数与非模板场景语义截然不同，仍是初学者最大的绊脚石。
-- [轶] 转发失败的四类经典边角：位域、成员子对象、花括号初始化、`std::initializer_list` 的隐式退化——每一个都曾让资深工程师对着报错发呆。
-- 随着模式匹配等未来特性被讨论，转发与"解构 + 转发"的组合有望进一步简化，但委员会对语法侵入极为谨慎。[史]
+- C++23 新增 `std::forward_like`，补齐"转发成员子对象"时值类别推导的边角——此前对 `obj.member` 这类成员做完美转发，必须手搓晦涩的 `static_cast`。<span class="badge badge-history">史</span>
+- <span class="badge badge-history">史</span> 概念（Concepts，C++20）让"这个模板接受什么参数"可以声明式表达，间接缓解了完美转发时代码因类型不匹配而触发的一长串 SFINAE 错误噪音。
+- <span class="badge badge-comment">评</span> "万能引用"一词由 Scott Meyers 在科普中定名，并非标准术语；标准只说"转发引用（forwarding reference）"——但 `T&&` 在模板参数与非模板场景语义截然不同，仍是初学者最大的绊脚石。
+- <span class="badge badge-anecdote">轶</span> 转发失败的四类经典边角：位域、成员子对象、花括号初始化、`std::initializer_list` 的隐式退化——每一个都曾让资深工程师对着报错发呆。
+- 随着模式匹配等未来特性被讨论，转发与"解构 + 转发"的组合有望进一步简化，但委员会对语法侵入极为谨慎。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/function_template · https://en.cppreference.com/w/cpp/utility/forward
 
@@ -71,7 +71,7 @@
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
                         实参
                           │
@@ -95,7 +95,7 @@
      拷贝 (左值)     移动 (右值)    原位构造 (emplace)
 ```
 
-> **示例 2** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）
 ```cpp
 // ④-a 万能引用 vs 右值引用：推导结果一目了然
 #include <type_traits>
@@ -162,7 +162,7 @@ classDiagram
 
 考虑 `template<class T> void f(T&& x)`，调用 `int a = 1; f(a);` 与 `f(1);`：
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：内存图：引用折叠如何"编码"值类别]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图：引用折叠如何"编码"值类别
 ```
 调用 f(a) —— a 是左值
   T 被推导为 int&  （注意是左值引用！）
@@ -187,7 +187,7 @@ classDiagram
 
 > `[平台·x86-64 Itanium ABI]`：无论 `int&` 还是 `int&&`，在 Itanium C++ ABI 下**传参都走同一个寄存器/栈槽**（引用在位级就是指针）。引用折叠在**编译期**完成，不产生运行期差异。
 
-> **示例 4** [难度 ★★★☆☆] [主题：内存图：引用折叠如何"编码"值类别]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：引用折叠如何"编码"值类别
 ```cpp
 // ⑦-a 引用折叠四条规则：编译期 static_assert 验证
 // 关键：源码中不能直接写 `int& &&`（引用的引用），编译器会报
@@ -209,7 +209,7 @@ int main() {
 
 ## ⑧ 生命周期图：std::move 不延长生命周期
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：生命周期图：std::move 不延]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：std::move 不延
 ```
 t1: Widget w;
 t2: auto&& r = std::move(w);   // r 仍是 w 的别名，w 仍存活
@@ -219,7 +219,7 @@ t4: } // w 析构。r 在 w 之后失效——move 没做任何"接管所有权"
 
 > `[标准]`：`std::move` 只是 `static_cast`，**不转移所有权、不调用析构、不延长生命周期**（见 ch115）。把"移动"误以为 move 做的，是最大误区。`⟶ ch115_move.md`。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：生命周期图：std::move 不延]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：std::move 不延
 ```cpp
 // ⑧-a auto&& 万能引用：range-for 的完美捕获
 #include <utility>
@@ -243,7 +243,7 @@ int main() {
 
 以 `std::vector<Widget>::emplace_back(args...)` 为例：
 
-> **示例 7** [难度 ★★☆☆☆] [主题：调用栈 / 时序图：emplace ]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：emplace
 ```
 调用方                 vector              allocator   construct       Widget
   │                      │                    │           │              │
@@ -256,7 +256,7 @@ int main() {
 
 > `[实现·GCC15]`：`vector.tcc` 中 `emplace_back` 通过 `_Alloc_traits::construct(__p, std::forward<_Args>(__args)...)` 把参数**逐字转发**给 `Widget` 的构造函数，全程不出现 `Widget` 的临时对象。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：调用栈 / 时序图：emplace ]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：emplace
 ```cpp
 // ⑨-a emplace 转发：用构造计数器证明无临时对象
 #include <utility>
@@ -284,7 +284,7 @@ int main() {
 
 下例在 **GCC 15.3.0** `-std=c++23 -O2 -S -masm=intel` 下真实编译（objdump 反汇编；算子标 `[[gnu::noinline]]` 以保留三个独立符号）：
 
-> **示例 9** [难度 ★★★☆☆] [主题：汇编分析：forward 与 move 都"消失"]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：forward 与 move 都"消失"
 ```cpp
 // ⑩-a move/forward 的汇编本质（GCC 15.3.0 -O2 -masm=intel）
 #include <utility>
@@ -331,7 +331,7 @@ int main() {
 
 > `[标准]`：上述均依赖 `std::forward`，见 `[utility.forward]`、`[memory]`、`[tuple.cnstr]`。
 
-> **示例 10** [难度 ★★★☆☆] [主题：联系：谁在靠完美转发]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 联系：谁在靠完美转发
 ```cpp
 // ⑪-a make_unique / make_shared 的转发本质（手写迷你版）
 #include <utility>
@@ -354,7 +354,7 @@ int main() {
 
 **场景**（非 Hello World）：一个网络服务把从 socket 读到的原始字节，连同调用上下文 `Context`、超时、追踪 ID，转发构造出一个 `Request` 对象交给业务 handler。若用拷贝/移动，会多出一次 `Request` 构造成本；用完美转发可在已分配的内存上**原位构造**。
 
-> **示例 11** [难度 ★★★☆☆] [主题：工业案例：RPC 请求体的零拷贝构造]
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：RPC 请求体的零拷贝构造
 ```cpp
 // ⑫-a RPC 请求构造器：把任意实参完美转发给 Request 构造函数
 #include <utility>
@@ -385,7 +385,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★★★☆☆] [主题：工业案例：RPC 请求体的零拷贝构造]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：RPC 请求体的零拷贝构造
 ```cpp
 // ⑫-b 线程任务封装：把 callable 与其参数整体转发进 worker
 #include <utility>
@@ -403,7 +403,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：工业案例：RPC 请求体的零拷贝构造]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：RPC 请求体的零拷贝构造
 ```cpp
 // ⑫-c 工业：序列化器把字段集合完美转发给内部缓冲区构造
 #include <utility>
@@ -430,7 +430,7 @@ int main() {
 
 `[实现·GCC15]` 真实源码来自 `bits/move.h`（GCC 13.1.0）：
 
-> **示例 14** [难度 ★★☆☆☆] [主题：源码分析：libstdc++ 的 s]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：libstdc++ 的 s
 ```cpp
 文件：bits/move.h
 行号：74-78
@@ -440,7 +440,7 @@ int main() {
     { return static_cast<_Tp&&>(__t); }
 ```
 
-> **示例 15** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 s]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 s
 ```cpp
 文件：bits/move.h
 行号：86-94
@@ -454,7 +454,7 @@ int main() {
     }
 ```
 
-> **示例 16** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 s]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 s
 ```cpp
 文件：bits/move.h
 行号：101-105
@@ -470,7 +470,7 @@ int main() {
 - `static_assert(!is_lvalue_reference<_Tp>)` 防止 `forward<X&>(rvalue)`——即禁止把右值当成左值转发（这会静默产生悬垂引用）。
 - `move` 直接 `static_cast` 到 `remove_reference<_Tp>::type&&`，**永远产生右值引用**，无 `static_assert`。
 
-> **示例 17** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 s]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 s
 ```cpp
 // ⑬-a 复刻 libstdc++ 的 forward/move（对照 bits/move.h:74-105）
 #include <type_traits>
@@ -525,7 +525,7 @@ int main() {
 4. **为什么 forward 要两重载？** 因为 `__t` 的形参类型由 `remove_reference<_Tp>::type&` 或 `&&` 决定，靠重载区分调用时 `__t` 本身的值类别，从而安全地还原。
 5. **`forward` 和 `move` 汇编一样吗？** 一样，都是编译期 cast，`-O2` 下零指令（见⑩）。
 
-> **示例 18** [难度 ★★★☆☆] [主题：面试题]
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题
 ```cpp
 // ⑮-a 面试题 1 现场验证：T 的推导结果
 #include <type_traits>
@@ -558,7 +558,7 @@ void wrap(T&& f, Args&&... a) { f(std::forward<Args>(a)...); }
 wrap([](std::vector<int> v){ (void)v; }, {1,2,3});   // 编译失败
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ✅ 修正 A：先命名或显式标注类型
 #include <utility>
@@ -576,7 +576,7 @@ int main() {
 
 **失败场景 B：`0` / `NULL` 转发后变成 `int`**
 
-> **示例 20** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ⑯-b 0/NULL 转发退化成 int（此例可编译，演示语义"失败"）
 #include <utility>
@@ -593,7 +593,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ✅ 修正 B：用 nullptr_t 字面量
 #include <utility>
@@ -615,7 +615,7 @@ void g(int) {} void g(double) {}
 fwd(g);   // 编译失败：重载集不能推导
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ✅ 修正 C：用函数指针 / lambda 包裹，类型明确
 #include <utility>
@@ -641,7 +641,7 @@ int main() {
 
 **Q：forward 与 decay 冲突吗？** `std::thread`/`std::bind` 会先把实参 `decay` 再存储，转发的是 **decay 后的值**，不再保留原始引用类别——所以线程里转发的是副本，不是原对象的引用。`[标准] [thread.thread.constr]`
 
-> **示例 23** [难度 ★★☆☆☆] [主题：FAQ 问答]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 // ⑰-a FAQ：forward 与 decay（线程内是副本，不是引用）
 #include <utility>
@@ -666,7 +666,7 @@ int main() {
 4. **emplace 优先于 push_back**：`v.emplace_back(a, b)` 比 `v.push_back(Widget(a, b))` 少一次移动。`⟶ ch117_copy_elision.md`
 5. **转发接受 `const` 成员时用 C++23 `std::forward_like`**（见⑲）；GCC 13.1 需自备实现。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-a 最佳实践：可变参数转发 + 折叠丢弃
 #include <utility>
@@ -678,7 +678,7 @@ void log_and_forward(Args&&... args) {
 int main() { log_and_forward(1, 2, 3); return 0; }
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-b 最佳实践：多实参转发到成员初始化
 #include <utility>
@@ -703,7 +703,7 @@ int main() {
 - **ABI 稳定性**：`std::forward<T>` 的签名自 C++11 未变，`[abi:itanium]` 下 mangled name 稳定，跨 GCC/Clang/MSVC 二进制兼容。
 - **microbenchmark（示意量级，GCC13.1 -O2）**：
 
-> **示例 26** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲-a emplace 转发 vs push_back 移动：构造次数对比（计数示意）
 #include <utility>
@@ -725,7 +725,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★★☆☆] [主题：性能分析]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析
 ```cpp
 // ⑲-b 版本宏守卫：仅在 C++20+ 使用 concept 增强转发（GCC13 支持）
 #include <utility>
@@ -747,7 +747,7 @@ int main() { int a = 1; checked_forward(a); checked_forward(2); return 0; }
 
 `[实现·GCC15]`：**`std::forward_like` 在 GCC 13.1 的 libstdc++ 中尚不存在**（它随 GCC 14 进入）。下面给出等价手写实现，用于在"通过对象 `obj` 访问其成员 `m` 并把 `m` 转发"时，让 `m` 的值类别跟随 `obj` 的值类别：
 
-> **示例 28** [难度 ★★★★☆] [主题：++23 std::forwardl]
+> **示例 28** <span class="badge badge-exp">难度 ★★★★☆</span> · ++23 std::forwardl
 ```cpp
 // ⑲-c 手写 forward_like（语义等价于 C++23 std::forward_like，P2445）
 #include <utility>
@@ -791,16 +791,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：转发引用 `T&&` 在模板形参中是特殊的。** 你理解它与右值引用不同。请说明。
-   - [标准] 当 `T&&` 中 T 是正在推导的模板形参时，它是转发引用（可为左/右值引用），区别于普通右值引用。
-   - [引用] ISO/IEC 14882:2023 §[temp.deduct.call]（转发引用推导）；cppreference "Forwarding reference" 词条。
+   - <span class="badge badge-std">标准</span> 当 `T&&` 中 T 是正在推导的模板形参时，它是转发引用（可为左/右值引用），区别于普通右值引用。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.deduct.call]（转发引用推导）；cppreference "Forwarding reference" 词条。
 
 2. **真实场景：引用折叠使 `T&& &&` 归约为 `T&&`。** 你理解转发为何成立。请说明规则。
-   - [标准] 引用折叠规则：除 `T& &`→`T&` 外，`&` 与 `&&` 组合时只有 `&`+`&` 得 `&`，其余得 `&&`，使转发可保留值类别。
-   - [引用] ISO/IEC 14882:2023 §[temp.deduct.call]（引用折叠规则）；cppreference "Reference collapsing" 词条。
+   - <span class="badge badge-std">标准</span> 引用折叠规则：除 `T& &`→`T&` 外，`&` 与 `&&` 组合时只有 `&`+`&` 得 `&`，其余得 `&&`，使转发可保留值类别。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.deduct.call]（引用折叠规则）；cppreference "Reference collapsing" 词条。
 
 3. **真实场景：`std::forward<T>` 按推导结果恢复值类别。** 你写工厂 `make_unique` 风格转发。请说明。
-   - [标准] `forward<T>` 当 T 推导为左值引用时返回左值、否则返回右值，从而精确转发。
-   - [引用] ISO/IEC 14882:2023 §[utility]（std::forward）；cppreference "std::forward" 词条。
+   - <span class="badge badge-std">标准</span> `forward<T>` 当 T 推导为左值引用时返回左值、否则返回右值，从而精确转发。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[utility]（std::forward）；cppreference "std::forward" 词条。
 
 | 语言 | 等价机制 | 说明 |
 |---|---|---|
@@ -814,7 +814,7 @@ int main() {
 > `[标准]`：C++ 的完美转发是**唯一**在"零开销"前提下同时保留"移动 vs 拷贝"决策的工业语言机制。Rust 用所有权系统从根本消除了"是否移动"的歧义，但代价是借用检查器；Go/Java 用 GC 与统一引用语义绕过了该问题，却失去了细粒度的值类别控制。
 > `[经验]`：从 Rust 转 C++ 的工程师最容易误解 `std::move`——在 Rust 里 `move` 是所有权转移（运行时可能真的搬数据），而 C++ 的 `std::move` 只是编译期 cast（`⟶ ch115_move.md`）。
 
-> **示例 29** [难度 ★★★☆☆] [主题：跨语言对比]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-a 跨语言对照的 C++ 端：UDL 与转发组合（operator"" _x 带空格写法）
 #include <utility>
@@ -834,7 +834,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★★★☆☆] [主题：跨语言对比]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-b 引用折叠规则验证
 #include <iostream>
@@ -850,7 +850,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：跨语言对比]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-c 变参完美转发 + emplace 等价体
 #include <iostream>
@@ -870,7 +870,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：跨语言对比]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-d 完美转发失败：花括号初始化列表无法推导 T
 #include <iostream>
@@ -883,7 +883,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：跨语言对比]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-e 转发 Lambda 捕获：init-capture + std::forward
 #include <iostream>
@@ -898,7 +898,7 @@ int add(int a, int b) { return a + b; }
 int main() { auto c = wrap_call(add, 3, 4); std::cout << c() << "\n"; return 0; }
 ```
 
-> **示例 34** [难度 ★★★☆☆] [主题：跨语言对比]
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-f 手写 std::forward 等价体（单重载，仅 static_cast）
 #include <iostream>
@@ -912,7 +912,7 @@ template <typename T> void wrap(T&& x) { sink(my_forward<T>(x)); }
 int main() { int n=0; wrap(n); wrap(42); return 0; }
 ```
 
-> **示例 35** [难度 ★★★☆☆] [主题：跨语言对比]
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-g std::forward_like 等价体（C++23 风格，GCC13 手写）
 #include <iostream>
@@ -934,7 +934,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★★★☆☆] [主题：跨语言对比]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-h 完美转发 + noexcept 传播：保留移动构造的异常规格
 #include <iostream>
@@ -951,7 +951,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：跨语言对比]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比
 ```cpp
 // ⑳-i emplace_back 转发链：从 push_back 到 placement new 的值类别保留
 #include <iostream>
@@ -979,9 +979,9 @@ int main() {
 
 ### ㉒.1 历史渊源补强：完美转发的来龙去脉
 
-完美转发的问题根源是 WG21 论文 N1385《The Forwarding Problem: Arguments》（Dave Abrahams，2002），它把"工厂/包装器如何把参数原样转交、保留值类别"单列为独立难题，并给出 rvalue reference 作为解法之一。[史] 其姊妹篇 N1377（Hinnant 等）提出的 `T&&` 与移动语义，正好让"转发引用在模板推导下塌缩为左值/右值引用"成为可能。两者合流，才有了 C++11 的引用折叠 + `std::forward`。"万能引用"一词由 Scott Meyers 在科普中定名，标准只称"forwarding reference"。[轶]
+完美转发的问题根源是 WG21 论文 N1385《The Forwarding Problem: Arguments》（Dave Abrahams，2002），它把"工厂/包装器如何把参数原样转交、保留值类别"单列为独立难题，并给出 rvalue reference 作为解法之一。<span class="badge badge-history">史</span> 其姊妹篇 N1377（Hinnant 等）提出的 `T&&` 与移动语义，正好让"转发引用在模板推导下塌缩为左值/右值引用"成为可能。两者合流，才有了 C++11 的引用折叠 + `std::forward`。"万能引用"一词由 Scott Meyers 在科普中定名，标准只称"forwarding reference"。<span class="badge badge-anecdote">轶</span>
 
-引用折叠把"类型推导 + 引用"做成代数闭包，让 `forward` 能用一对重载 `static_cast` 还原原值类别；委员会没有另造"转发关键字"，而是复用 `static_cast` 语义，保持语言正交。[评]
+引用折叠把"类型推导 + 引用"做成代数闭包，让 `forward` 能用一对重载 `static_cast` 还原原值类别；委员会没有另造"转发关键字"，而是复用 `static_cast` 语义，保持语言正交。<span class="badge badge-comment">评</span>
 
 ### ㉒.2 真实工程坐标：完美转发活在哪些产品里
 
@@ -994,15 +994,15 @@ int main() {
 
 ### ㉒.3 生产踩坑：完美转发的常见误用与陷阱
 
-经典四类失败边角：位域（不能绑引用）、成员子对象（`obj.member` 转发需手搓晦涩转型）、花括号初始化器（被推导为 `std::initializer_list`）、`std::initializer_list` 的隐式退化，每一个都曾让资深工程师对着报错发呆。[史] C++23 新增 `std::forward_like` 才补齐"转发成员子对象"的边角——此前对 `obj.member` 做完美转发必须手写 `static_cast`。
+经典四类失败边角：位域（不能绑引用）、成员子对象（`obj.member` 转发需手搓晦涩转型）、花括号初始化器（被推导为 `std::initializer_list`）、`std::initializer_list` 的隐式退化，每一个都曾让资深工程师对着报错发呆。<span class="badge badge-history">史</span> C++23 新增 `std::forward_like` 才补齐"转发成员子对象"的边角——此前对 `obj.member` 做完美转发必须手写 `static_cast`。
 
-`std::forward` 与 `std::move` 本质都是转型：把 `forward` 用于左值、或把 `move` 用于具名右值引用却当左值用，会丢失值类别导致悄悄退化为拷贝。[评] 概念（Concepts，C++20）让"这个模板接受什么参数"可以声明式表达，间接缓解了完美转发时代码因类型不匹配触发的一长串 SFINAE 噪音。
+`std::forward` 与 `std::move` 本质都是转型：把 `forward` 用于左值、或把 `move` 用于具名右值引用却当左值用，会丢失值类别导致悄悄退化为拷贝。<span class="badge badge-comment">评</span> 概念（Concepts，C++20）让"这个模板接受什么参数"可以声明式表达，间接缓解了完美转发时代码因类型不匹配触发的一长串 SFINAE 噪音。
 
 ### ㉒.4 与标准的互动：完美转发与 C++ 标准的演进
 
-完美转发的机制（引用折叠 + `std::forward`）自 C++11 定型后主要是填边角：C++23 的 `std::forward_like`（P2445 方向）补齐成员子对象转发；Concepts（C++20，P0734）让转发目标的约束可声明式表达。[史] 标准从未另立"转发关键字"，始终复用 `static_cast` 与引用折叠——这条"正交复用"路线被 WG21 视为降低语言复杂度的范本。委员会对"模式匹配接管转发"等更侵入的语法改动极为谨慎，宁可慢也不愿破坏存量模板代码。[评]
+完美转发的机制（引用折叠 + `std::forward`）自 C++11 定型后主要是填边角：C++23 的 `std::forward_like`（P2445 方向）补齐成员子对象转发；Concepts（C++20，P0734）让转发目标的约束可声明式表达。<span class="badge badge-history">史</span> 标准从未另立"转发关键字"，始终复用 `static_cast` 与引用折叠——这条"正交复用"路线被 WG21 视为降低语言复杂度的范本。委员会对"模式匹配接管转发"等更侵入的语法改动极为谨慎，宁可慢也不愿破坏存量模板代码。<span class="badge badge-comment">评</span>
 
-- [史] **转发边角修订链**：**P2445（`std::forward_like`）** 历经 **R0 → R1（C++23 采纳）**，补齐「转发成员子对象」（`obj.member`）这一长期边角；**Concepts（P0734，C++20）** 让转发目标的约束可声明式表达，间接削减完美转发时代码因类型不匹配触发的一长串 SFINAE 噪音；<https://wg21.link/p2445>、<https://wg21.link/p0734>。
+- <span class="badge badge-history">史</span> **转发边角修订链**：**P2445（`std::forward_like`）** 历经 **R0 → R1（C++23 采纳）**，补齐「转发成员子对象」（`obj.member`）这一长期边角；**Concepts（P0734，C++20）** 让转发目标的约束可声明式表达，间接削减完美转发时代码因类型不匹配触发的一长串 SFINAE 噪音；<https://wg21.link/p2445>、<https://wg21.link/p0734>。
 
 ### ㉒.5 权威引用
 
@@ -1030,7 +1030,7 @@ int main() {
 
 ## 附录: 完美转发深度
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录: 完美转发深度]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 完美转发深度
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1038,7 +1038,7 @@ template<typename T>void wrapper(T&&arg){std::cout<<std::forward<T>(arg)<<std::e
 int main(){int x=42;wrapper(x);wrapper(99);return 0;}
 ```
 
-> **示例 39** [难度 ★★★☆☆] [主题：附录: 完美转发深度]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: 完美转发深度
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1048,7 +1048,7 @@ struct S{int a,b;S(int x,int y):a(x),b(y){}};
 int main(){auto p=make<S>(10,20);std::cout<<p->a<<","<<p->b<<std::endl;return 0;}
 ```
 
-> **示例 40** [难度 ★★☆☆☆] [主题：附录: 完美转发深度]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 完美转发深度
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1057,14 +1057,14 @@ template<typename T>void push(std::vector<T>&v,T&&val){v.push_back(std::forward<
 int main(){std::vector<int> v;int x=5;push(v,std::move(x));push(v,10);std::cout<<v[0]<<" "<<v[1]<<std::endl;return 0;}
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录: 完美转发深度]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 完美转发深度
 ```cpp
 #include <iostream>
 #include <utility>
 int main(){std::cout<<"std::forward: conditionally casts to rvalue. Preserves value category of the original argument."<<std::endl;return 0;}
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录: 完美转发深度]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 完美转发深度
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1127,7 +1127,7 @@ int main(){int a=1;g(a);g(2);return 0;}
 
 ### 测试源码（核心）
 
-> **示例 43** [难度 ★★★★☆] [主题：测试源码（核心）]
+> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 测试源码（核心）
 ```cpp
 int g_l = 0, g_r = 0;
 [[gnu::noinline]] void sink_l(S&)  { g_l = 1; }   // 左值接收端
@@ -1190,7 +1190,7 @@ template void fwd_tmpl<S>(S&&);   // 右值实例化
 
 `Args&&...` 万能引用 + `std::forward` 把每个实参按原值类别（左值拷贝、右值移动）转交给 `Request` 构造函数：
 
-> **示例 44** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <utility>
 #include <string>
@@ -1211,8 +1211,8 @@ int main() {
 }
 ```
 
-[标准] 万能引用 `T&&` 在模板推导下经引用折叠还原值类别，`std::forward<T>` 据此选择拷贝或移动（`[temp.deduct.call]`、`[forward]`）。
-[引用] libstdc++ `bits/move.h:74-105` 的 `forward` 双重载；见 cppreference `std::forward`：<https://en.cppreference.com/w/cpp/utility/forward> 与 WG21 N2027（A Proposal to add Perfect Forwarding）。
+<span class="badge badge-std">标准</span> 万能引用 `T&&` 在模板推导下经引用折叠还原值类别，`std::forward<T>` 据此选择拷贝或移动（`[temp.deduct.call]`、`[forward]`）。
+<span class="badge badge-ref">引用</span> libstdc++ `bits/move.h:74-105` 的 `forward` 双重载；见 cppreference `std::forward`：<https://en.cppreference.com/w/cpp/utility/forward> 与 WG21 N2027（A Proposal to add Perfect Forwarding）。
 
 </details>
 
@@ -1224,7 +1224,7 @@ int main() {
 
 把 `F&&` 与 `Args&&...` 都用 `std::forward` 还原后交给 `std::async`：
 
-> **示例 45** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <utility>
 #include <future>
@@ -1237,8 +1237,8 @@ auto post_task(F&& f, Args&&... args) {
 int main() { auto f = post_task(add, 3, 4); (void)f.get(); }
 ```
 
-[标准] `std::async` 内部按 decay 存储，转发保持调用方传入的值类别；`std::forward` 确保右值走移动（`[futures.async]`、`[forward]`）。
-[引用] cppreference `std::async`：<https://en.cppreference.com/w/cpp/thread/async>；Abseil 的 `absl::AnyInvocable` 同样依赖完美转发（<https://abseil.io/docs/cpp/guides/any_invocable>）。
+<span class="badge badge-std">标准</span> `std::async` 内部按 decay 存储，转发保持调用方传入的值类别；`std::forward` 确保右值走移动（`[futures.async]`、`[forward]`）。
+<span class="badge badge-ref">引用</span> cppreference `std::async`：<https://en.cppreference.com/w/cpp/thread/async>；Abseil 的 `absl::AnyInvocable` 同样依赖完美转发（<https://abseil.io/docs/cpp/guides/any_invocable>）。
 
 </details>
 
@@ -1250,7 +1250,7 @@ int main() { auto f = post_task(add, 3, 4); (void)f.get(); }
 
 `int x; probe(x);` 推导 `T = int&`，折叠为 `int&`（左值）；`probe(42);` 推导 `T = int`，为 `int&&`（右值）：
 
-> **示例 46** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <type_traits>
 #include <iostream>
@@ -1262,8 +1262,8 @@ void probe(T&&) {
 int main() { int x = 0; probe(x); probe(42); }
 ```
 
-[标准] 引用折叠：`& && → &`、`&& && → &&`（`[dcl.ref]`）；模板形参 `T&&` 是转发引用，普通函数形参 `void f(Widget&&)` 才是右值引用（`[temp.deduct.call]`）。
-[引用] Scott Meyers《Effective Modern C++》Item 24 称其为"universal reference"；标准术语见 `[temp.deduct.call]`。cppreference「Forwarding references」：<https://en.cppreference.com/w/cpp/language/reference#Forwarding_references>。
+<span class="badge badge-std">标准</span> 引用折叠：`& && → &`、`&& && → &&`（`[dcl.ref]`）；模板形参 `T&&` 是转发引用，普通函数形参 `void f(Widget&&)` 才是右值引用（`[temp.deduct.call]`）。
+<span class="badge badge-ref">引用</span> Scott Meyers《Effective Modern C++》Item 24 称其为"universal reference"；标准术语见 `[temp.deduct.call]`。cppreference「Forwarding references」：<https://en.cppreference.com/w/cpp/language/reference#Forwarding_references>。
 
 </details>
 
@@ -1414,7 +1414,7 @@ flowchart TD
 
 ### D4.4 第一方可编译验证（值类别还原）
 
-> **示例 47** [难度 ★★★☆☆] [主题：第一方可编译验证（值类别还原）]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 第一方可编译验证（值类别还原）
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1549,7 +1549,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 48** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <vector>

@@ -11,35 +11,35 @@
 > 无锁结构最尴尬的时刻：读者手里还捏着节点指针，写者却想把这块内存 `delete` 掉。
 
 ### 0.1 起源（谁·何时·为何）
-无锁（lock-free）数据结构的死穴不是"推进"，而是**安全回收**：因为没有互斥锁来界定"谁还在用这个节点"，写者一旦 `delete` 一个被并发读者持有的指针，就会制造悬垂引用（use-after-free）。早期实用方案只能粗暴延迟——比如给每个线程一个"私有回收列表"，等所有人都越过某个全局 epoch 再释放。[史] 这个"如何安全地延迟释放"问题，长期是手写无锁代码里最易错、最不可移植的部分。
+无锁（lock-free）数据结构的死穴不是"推进"，而是**安全回收**：因为没有互斥锁来界定"谁还在用这个节点"，写者一旦 `delete` 一个被并发读者持有的指针，就会制造悬垂引用（use-after-free）。早期实用方案只能粗暴延迟——比如给每个线程一个"私有回收列表"，等所有人都越过某个全局 epoch 再释放。<span class="badge badge-history">史</span> 这个"如何安全地延迟释放"问题，长期是手写无锁代码里最易错、最不可移植的部分。
 
 ### 0.2 关键转折（编年）
-- **Hazard Pointer**：Maged M. Michael（IBM）在 2004 年的论文中正式提出，用"每个线程声明自己正保护哪个指针"来精确判断某节点当前能否释放，成为工业界（malloc 实现、并发库）的常客。[史]
-- **RCU（Read-Copy-Update）**：源自 DEC/Utah 的研究，由 Paul E. McKenney 等人在 Linux 内核中大规模落地，靠"读者无同步、写者复制并延迟回收"实现极致读性能。[史]
-- 标准化：Hazard Pointer 提案（P1122）被接纳进 **C++26** 工作方向，RCU 相关提案同期推进。[史]
+- **Hazard Pointer**：Maged M. Michael（IBM）在 2004 年的论文中正式提出，用"每个线程声明自己正保护哪个指针"来精确判断某节点当前能否释放，成为工业界（malloc 实现、并发库）的常客。<span class="badge badge-history">史</span>
+- **RCU（Read-Copy-Update）**：源自 DEC/Utah 的研究，由 Paul E. McKenney 等人在 Linux 内核中大规模落地，靠"读者无同步、写者复制并延迟回收"实现极致读性能。<span class="badge badge-history">史</span>
+- 标准化：Hazard Pointer 提案（P1122）被接纳进 **C++26** 工作方向，RCU 相关提案同期推进。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-回收策略的核心取舍是**读侧开销 vs 写侧复杂度**：引用计数（每节点一个原子计数）实现直观，但每次访问都要原子增减，拖累热路径；Hazard Pointer 让读者几乎零开销，代价是每个回收对象要扫描少量"风险指针"；RCU 则把开销彻底推给写者（宽限期等待），换得读者完全无锁。[评] C++ 选择把 Hazard Pointer 标准化为通用设施，而非把某种回收"焊死"在容器里，保留了算法层的灵活。[史]
+回收策略的核心取舍是**读侧开销 vs 写侧复杂度**：引用计数（每节点一个原子计数）实现直观，但每次访问都要原子增减，拖累热路径；Hazard Pointer 让读者几乎零开销，代价是每个回收对象要扫描少量"风险指针"；RCU 则把开销彻底推给写者（宽限期等待），换得读者完全无锁。<span class="badge badge-comment">评</span> C++ 选择把 Hazard Pointer 标准化为通用设施，而非把某种回收"焊死"在容器里，保留了算法层的灵活。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 回收机制从"各厂手写"走向"部分标准化"，RCU 与 Hazard Pointer 走了两条不同的路。
 
-- C++26 方向：Hazard Pointer 以 `std::hazard_pointer`（提案 P1122 系列）进入标准，与 RCU 类设施同期推进，把"安全回收"从库技巧提升为语言工具。[史]
-- [史] RCU 自 Linux 内核大规模落地后，用户态 RCU（Userspace RCU，由 Mathieu Desnoyers 等人开源）让无锁读 + 宽限期回收走出内核，被数据面（DPDK）、并发库广泛采用。
-- [评] 与 Java/Go 的"自动 GC 回收"相比，C++ 的 Hazard Pointer / RCU 把回收时机交给程序员，零运行时扫描开销，但也要求你真正理解"宽限期"——这是对零开销哲学的坚持，而非偷懒。
-- [轶] 一个经典反例：在 RCU 读侧临界区里调用可能睡眠/调度的函数，会无限拉长宽限期，导致写者永远无法回收——内核社区为此定下"RCU 读侧不可阻塞"的铁律。
-- C++23/26 持续讨论把 epoch-based reclamation 也纳入标准视野，进一步降低手写无锁回收的门槛。[史]
+- C++26 方向：Hazard Pointer 以 `std::hazard_pointer`（提案 P1122 系列）进入标准，与 RCU 类设施同期推进，把"安全回收"从库技巧提升为语言工具。<span class="badge badge-history">史</span>
+- <span class="badge badge-history">史</span> RCU 自 Linux 内核大规模落地后，用户态 RCU（Userspace RCU，由 Mathieu Desnoyers 等人开源）让无锁读 + 宽限期回收走出内核，被数据面（DPDK）、并发库广泛采用。
+- <span class="badge badge-comment">评</span> 与 Java/Go 的"自动 GC 回收"相比，C++ 的 Hazard Pointer / RCU 把回收时机交给程序员，零运行时扫描开销，但也要求你真正理解"宽限期"——这是对零开销哲学的坚持，而非偷懒。
+- <span class="badge badge-anecdote">轶</span> 一个经典反例：在 RCU 读侧临界区里调用可能睡眠/调度的函数，会无限拉长宽限期，导致写者永远无法回收——内核社区为此定下"RCU 读侧不可阻塞"的铁律。
+- C++23/26 持续讨论把 epoch-based reclamation 也纳入标准视野，进一步降低手写无锁回收的门槛。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/
 
-## ① 概述：并发内存回收的难题 [标准]
+## ① 概述：并发内存回收的难题 <span class="badge badge-std">标准</span>
 
 [第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)
 [第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)
 
 无锁数据结构（无锁栈/队列/哈希表）的核心矛盾是：**读者正拿着一个节点的指针，写者想把它 `delete`**——没有互斥锁保护"谁还在用"，直接 `delete` 会造成悬垂指针（use-after-free），另一个线程随后解引用即未定义行为。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：并发内存回收的难题 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：并发内存回收的难题 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 经典困境：pop 取出节点后能否立即 delete？
 struct Node { int val; Node* next; };
@@ -55,11 +55,11 @@ Node* pop() {
 - `[标准]`：C++ 内存模型规定，对已销毁对象的任何访问（即使只读）均为未定义行为（`[basic.life]`）。
 - `[经验]`：并发回收不是"要不要 delete"，而是"**何时** delete 才对所有人安全"——这正是 Hazard Pointer 与 RCU 各自回答的问题。
 
-## ② 为什么 delete 在并发下危险 [标准]
+## ② 为什么 delete 在并发下危险 <span class="badge badge-std">标准</span>
 
 `delete` 不是原子操作：它先调用析构函数，再归还内存给分配器；而读者只做了一次原子 `load`。二者之间没有任何 happens-before 关系。
 
-> **示例 2** [难度 ★★★★☆] [主题：为什么 delete 在并发下危险 ]
+> **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 为什么 delete 在并发下危险
 ```cpp
 // ② 读者线程（无锁）
 Node* p = head.load(std::memory_order_relaxed);
@@ -70,7 +70,7 @@ Node* old = head.exchange(next);
 delete old;                // ② 与上面 p->val 并发 -> data race
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：为什么 delete 在并发下危险 ]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为什么 delete 在并发下危险
 ```cpp
 // ② 用 ThreadSanitizer 能抓到的典型 race（伪代码模型）
 // READ of size 4 at 0x... by thread T1 (p->val)
@@ -85,14 +85,14 @@ delete old;                // ② 与上面 p->val 并发 -> data race
 
 Hazard Pointer（HP，Maged Michael, 2004；C++26 已采纳为 `std::hazard_pointer`，见 §⑲）的核心是：**每个读者在解引用共享指针前，先把自己的意图写进一张全局"声明表"**，声明"我正在用这个地址，谁都别动它"。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） [实现]
+> **示例 4** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
 ```cpp
 // ③ 直觉：读者先登记，再解引用
 // 全局声明表：每个线程一个槽，存"我当前保护的对象地址"
 std::atomic<void*> g_hp[N];   // ③ slot i 由线程 i 独占写入
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） [实现]
+> **示例 5** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
 ```cpp
 // ③ 读者协议（伪代码）
 void* protect(atomic<void*>* src, int slot) {
@@ -114,7 +114,7 @@ void* protect(atomic<void*>* src, int slot) {
 
 一个工业级 HP 框架三件套：**HP 数组（读者登记）**、**retired 列表（待回收对象）**、**scan 例程（决定哪些能删）**。
 
-> **示例 6** [难度 ★★★☆☆] [主题：实现：全局 HP 数组 + 回收列表]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 实现：全局 HP 数组 + 回收列表
 ```cpp
 // ④ 头文件骨架（单文件可编译，见 Examples/_ch112_hp.cpp）
 #include <atomic>
@@ -129,7 +129,7 @@ struct Retired { void* ptr; Retired* next; };  // ④ 待回收链表节点
 std::atomic<Retired*> g_retired{nullptr};
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：实现：全局 HP 数组 + 回收列表]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现：全局 HP 数组 + 回收列表
 ```cpp
 // ④ 读者：登记 + 解除登记
 extern "C" void* hp_protect(std::atomic<void*>* src, int slot) {
@@ -145,7 +145,7 @@ extern "C" void hp_clear(int slot) {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：实现：全局 HP 数组 + 回收列表]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现：全局 HP 数组 + 回收列表
 ```cpp
 // ④ 写者：把要删的对象挂入 retired（不直接 delete）
 void retire(void* p) {
@@ -161,7 +161,7 @@ void retire(void* p) {
 
 回收的关键不变量：**若某个 HP 槽里存着 `ptr`，则 `ptr` 此刻正被某读者使用，绝不能删**。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：回收流程（扫描 HP 表） [实现·]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 回收流程（扫描 HP 表） [实现·
 ```cpp
 // ⑤ 回收者：取出 retired 链表，逐个对照所有 HP 槽
 extern "C" void hp_scan_and_reclaim() {
@@ -201,14 +201,14 @@ extern "C" void hp_scan_and_reclaim() {
 - `[实现·GCC15] [VERIFIED]`：扫描用 `acquire` 读 HP 槽，与读者 `seq_cst` 写形成同步，保证看到最新登记。
 - `[经验]`：scan 频率是调参点——每次 retire 后扫一次（简单）或累计到阈值再扫（减少开销）。
 
-## ⑥ HP 性能特征与开销 [经验]
+## ⑥ HP 性能特征与开销 <span class="badge badge-exp">经验</span>
 
 [第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)（基准测试与性能度量）—— HP 开销须可复现基准量化
 [第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)（性能模型与测量方法论）—— 原子写成本对应具体硬件与竞争度
 
 HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次原子写（清除）+ 回收者 O(retired × HP槽) 的扫描**。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：性能特征与开销 [经验]]
+> **示例 10** [难度 ★★☆☆☆] [主题：性能特征与开销 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑥ 开销模型：登记/解除各一次原子操作
 // protect: 1× atomic load + 1× atomic seq_cst store (+ 可能的重试)
@@ -216,7 +216,7 @@ HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次�
 // scan   : retired数 × MAX_HP 次 atomic acquire load
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：性能特征与开销 [经验]]
+> **示例 11** [难度 ★★☆☆☆] [主题：性能特征与开销 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑥ false sharing 缓解：错位到独立缓存行
 alignas(64) std::atomic<void*> g_hp[MAX_HP];  // ⑥ 每槽占满 64B 缓存行
@@ -226,11 +226,11 @@ alignas(64) std::atomic<void*> g_hp[MAX_HP];  // ⑥ 每槽占满 64B 缓存行
 - `[经验]`：HP 适合**读者极多、写者较少**的场景；读者路径只增加一次原子写，远快于互斥锁的 syscall/上下文切换。
 - `[微架构·x86-64]`：`seq_cst` 写编译为 `xchg`（带锁前缀，见 §⑪），本身有开销，但无需 `mfence`，x86 上可接受。
 
-## ⑦ RCU 原理：读侧免锁、写侧复制替换 [标准]
+## ⑦ RCU 原理：读侧免锁、写侧复制替换 <span class="badge badge-std">标准</span>
 
 RCU（Read-Copy-Update，McKenney）走另一条路：**读者完全免锁，只做一次原子指针读；写者不原地改，而是复制一份新对象、改完、再用一次原子写替换指针**。旧对象等"所有正在读的读者都退出了"之后才回收。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：原理：读侧免锁、写侧复制替换 [标准]
+> **示例 12** [难度 ★★☆☆☆] [主题：原理：读侧免锁、写侧复制替换 <span class="badge badge-std">标准</span>
 ```cpp
 // ⑦ 写者：复制-修改-替换（不碰旧对象）
 struct Config { int timeout; int workers; };
@@ -244,7 +244,7 @@ void rcu_update(int t, int w) {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：原理：读侧免锁、写侧复制替换 [标准]
+> **示例 13** [难度 ★★☆☆☆] [主题：原理：读侧免锁、写侧复制替换 <span class="badge badge-std">标准</span>
 ```cpp
 // ⑦ 读者：免锁，仅一次原子 load，绝不阻塞
 Config* rcu_read() {
@@ -255,18 +255,18 @@ Config* rcu_read() {
 - `[标准]`：因为替换是单次原子写，读者 `load` 永远拿到**完整旧对象或完整新对象**，不会看到中间态（`[atomics]`)——这正是 RCU 无需读者锁的根本原因。
 - `[经验]`：RCU 读者路径几乎是零成本（一次 `mov` 加载指针），代价全压在写者与宽限期检测上。
 
-## ⑧ RCU 宽限期(grace period)与 quiescent state [标准]
+## ⑧ RCU 宽限期(grace period)与 quiescent state <span class="badge badge-std">标准</span>
 
 RCU 的灵魂是**宽限期（grace period）**：从"写者替换指针"那一刻起，到"所有在替换前开始的读者都已退出"为止的这段时间。宽限期结束后，旧对象**绝对**无人引用，方可安全 `delete`。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：宽限期(grace period)与]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宽限期(grace period)与
 ```cpp
 // ⑧ quiescent state（静止态）：读者暂时不再持有任何 RCU -protected 指针
 // 典型静止态：线程发生上下文切换 / 进入内核 / 显式调用 rcu_quiesce()
 // 宽限期 = 所有 CPU/线程都至少经过一次静止态
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：宽限期(grace period)与]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宽限期(grace period)与
 ```cpp
 // ⑧ 用户态简化版宽限期等待（轮询所有读者线程已退出临界区）
 // 真实 urcu 用每线程计数器（见 §⑩）；此处仅示意"等所有人退出"
@@ -284,7 +284,7 @@ void synchronize_rcu(std::atomic<int>* readers, int n) {
 
 Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系统 inode、防火墙规则等都用 RCU 让**海量读者零开销并发读，写者偶尔更新**。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：在 Linux 内核的应用 [平台·]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 在 Linux 内核的应用 [平台·
 ```cpp
 // ⑨ Linux 内核 RCU API 示意（kernel 风格，非本机可编译，仅展示模型）
 // rcu_read_lock();        // ⑨ 进入读者临界区（几乎零开销，仅禁止抢占）
@@ -293,7 +293,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 // kfree_rcu(old, rcu);    // ⑨ 在宽限期后自动 kfree
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：在 Linux 内核的应用 [平台·]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 在 Linux 内核的应用 [平台·
 ```cpp
 // ⑨ 经典用法：路由查找（读者路径热，写者路径冷）
 // 读者：rcu_read_lock(); route = rcu_dereference(routing_table); ...; rcu_read_unlock();
@@ -308,7 +308,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 
 用户态没有调度器帮忙，urcu（Userspace RCU 库）用**每线程静态计数器**实现静止态检测：读者进入临界区时本线程计数 +1，离开时 -1；`synchronize_rcu()` 等待每个线程计数归零。
 
-> **示例 18** [难度 ★★☆☆☆] [主题：用户态 RCU(urcu) 简介 []
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用户态 RCU(urcu) 简介 [
 ```cpp
 // ⑩ urcu 读者/写者骨架（语义示意，基于 liburcu API）
 // #include <urcu.h>
@@ -324,7 +324,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 // free(old);                       // ⑩ 安全回收
 ```
 
-> **示例 19** [难度 ★★★☆☆] [主题：用户态 RCU(urcu) 简介 []
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 用户态 RCU(urcu) 简介 [
 ```cpp
 // ⑩ 手动复刻的"每线程计数"版宽限期（单文件可编译模型）
 #include <atomic>
@@ -408,7 +408,7 @@ rcu_update:
 - `[实现·GCC15] [VERIFIED]`：`seq_cst` 的 HP 登记无法用普通 `mov` 表达，必须 `lock xchg` 或 `mfence`；GCC 选 `xchg`（自带锁语义，少一条指令）。`release`/`acquire` 在 x86 上退化为普通 `mov`（x86 强内存模型天生保序）。
 - `[微架构·x86-64]`：上述 `xchg`/`mov` 序列是真实取证结果，非示意；ARM64 上 `seq_cst` 会编译为 `dmb` 而非 `xchg`（`[微架构·ARM] [UNVERIFIED]`：本机无 ARM64 工具链，未复编确认）。
 
-## ⑫ HP vs RCU 对比 [标准]
+## ⑫ HP vs RCU 对比 <span class="badge badge-std">标准</span>
 
 [第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)（ABA 问题与解决）—— HP/RCU 是 ABA 的两种回收级解法
 [第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)（无锁编程 lock-free/wait-free）—— 回收机制决定无锁结构的安全性
@@ -422,7 +422,7 @@ rcu_update:
 | 适用读者数 | 中（受 HP 槽数限制） | 极大（无上限） |
 | 内存 Peak | 较低（立即回收） | 较高（宽限期内双份共存） |
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：对比 [标准]]
+> **示例 20** [难度 ★☆☆☆☆] [主题：对比 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 一句话选型（详见 §⑱）：读者海量、写者稀疏 -> RCU；对象需即时回收 -> HP
 ```
@@ -434,7 +434,7 @@ rcu_update:
 
 quiescent state（静止态）是"本线程此刻不持有任何被保护指针"的声明。检测机制决定 RCU 实现形态。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：检测 [实现·GCC15]]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 检测 [实现·GCC15]
 ```cpp
 // ⑬ QSBR（Quiescent State Based Reclamation）风格：显式声明静止态
 std::atomic<int> qs_counter[N];     // ⑬ 每线程静止态计数
@@ -447,7 +447,7 @@ void my_synchronize_rcu_qsbr() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：检测 [实现·GCC15]]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 检测 [实现·GCC15]
 ```cpp
 // ⑬ 对比：urcu-mb（内存屏障 flavor）用显式 barrier 代替计数
 // rcu_quiescent_state() == 一次轻量内存屏障 + 计数 +1
@@ -456,11 +456,11 @@ void my_synchronize_rcu_qsbr() {
 - `[实现·urcu]`：QSBR 读者路径最轻（仅临界区首尾的计数增减），但要求**每个线程定期调用 `quiesce`**，否则宽限期永不结束——这是 QSBR 的最大约束。
 - `[经验]`：事件循环 / 每请求一帧的程序天然有静止点（每次循环迭代末尾），最适合 QSBR；长计算线程则不合适。
 
-## ⑭ 与 ch111 衔接(ABA 的另一种解法) [标准]
+## ⑭ 与 ch111 衔接(ABA 的另一种解法) <span class="badge badge-std">标准</span>
 
 ch111 讨论的 **ABA 问题**——无锁 CAS 因指针"被换走又换回同一地址"而误判成功——与本章是同一硬币的两面：**HP 和 RCU 都能根治 ABA**。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：与 ch111 衔接]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ch111 衔接
 ```cpp
 // ⑭ ch111 的 ABA 场景（回顾）
 std::atomic<Node*> top;
@@ -471,7 +471,7 @@ std::atomic<Node*> top;
 // ⑭ 用 RCU 根治：写者复制新节点而非复用旧节点，旧 A 在宽限期后才回收
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：与 ch111 衔接]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ch111 衔接
 ```cpp
 // ⑭ HP 防 ABA 的关键：被保护的节点不进入 retired/复用池
 void* top = hp_protect(&stack_top, slot);  // ⑭ 声明保护 A
@@ -481,9 +481,9 @@ void* top = hp_protect(&stack_top, slot);  // ⑭ 声明保护 A
 - `[标准]`：ABA 的"另一种解法"不是加版本号（ch111 的套路），而是**延长节点生命周期**——HP/RCU 让旧节点在被任何人引用期间绝不被回收或复用，从根上消除 ABA。
 - `[经验]`：HP/RCU 比"版本号 + CAS"更通用：版本号只能防同一槽位复用，HP/RCU 防任意形式的内存复用。
 
-## ⑮ 误用案例 [经验]
+## ⑮ 误用案例 <span class="badge badge-exp">经验</span>
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：误用案例 [经验]]
+> **示例 25** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 误用1：登记后忘记 clear -> 该 HP 槽永远"保护"某地址 -> 内存永漏
 void* p = hp_protect(&head, slot);
@@ -491,14 +491,14 @@ use(p);
 // ❌ 漏写 hp_clear(slot);  -> 此后 p 永不回收
 ```
 
-> **示例 26** [难度 ★★★★☆] [主题：误用案例 [经验]]
+> **示例 26** [难度 ★★★★☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 误用2：用普通指针而非原子 load 读共享槽 -> 数据竞争
 // ❌ void* p = src->load(); 写成非原子读（这里其实是原子，但有人误用裸指针拷贝）
 Node* raw = reinterpret_cast<Node*>(const_cast<void*>(g_hp[slot].load()));  // ❌ 漏 memory_order
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：误用案例 [经验]]
+> **示例 27** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 误用3：RCU 写者在宽限期前就 delete 旧对象 -> 读者 UAF
 Config* old = g_config.load(acquire);
@@ -506,7 +506,7 @@ g_config.store(new Config{...}, release);
 delete old;          // ❌ 应 synchronize_rcu() 之后才 delete
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：误用案例 [经验]]
+> **示例 28** [难度 ★★☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 误用4：HP 槽数小于并发读者数 -> 多读者共用一槽 -> 互相覆盖保护
 constexpr int MAX_HP = 8;   // ❌ 若并发读者达 16，槽不够 -> 误回收
@@ -518,7 +518,7 @@ constexpr int MAX_HP = 8;   // ❌ 若并发读者达 16，槽不够 -> 误回�
 
 HP/RCU 无法消除数据竞争检测，**错误实现照样会被 TSan 抓到**；正确实现则 TSan 应静默。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：调试]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 ```cpp
 // ⑯ 编译并运行 TSan（取证命令示范）
 // g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch112_hp.cpp -o _ch112_hp_tsan
@@ -529,7 +529,7 @@ HP/RCU 无法消除数据竞争检测，**错误实现照样会被 TSan 抓到**
 //     Previous write of size 8 at 0x... by thread T2 (delete old)
 ```
 
-> **示例 30** [难度 ★★★☆☆] [主题：调试]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试
 ```cpp
 // ⑯ 用 RAII 让 HP 的 protect/clear 不可能漏（推荐写法）
 struct HazardGuard {
@@ -546,14 +546,14 @@ struct HazardGuard {
 - `[实现·TSan]`：TSan 插桩所有原子/非原子内存访问；HP 用 `seq_cst`/`acquire` 建立的 happens-before 能被 TSan 识别为合法同步，故**正确**实现不报 race。
 - `[经验]`：把 HP/RCU 封装进 RAII / 智能指针后，再交给 TSan 跑压力测试，比人工审查可靠。
 
-## ⑰ 性能基准 [经验]
+## ⑰ 性能基准 <span class="badge badge-exp">经验</span>
 
 [第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)（基准测试与性能度量）—— 量级示意须在本机用 `std::chrono` 实测并标注来源
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 指令成本与吞吐须结合微架构解读
 
 以下为**量级示意**（真实数字依赖硬件/负载，本机 GCC 15.3.0 + x86-64 取证的是指令成本，非吞吐）[UNVERIFIED]。
 
-> **示例 31** [难度 ★★★☆☆] [主题：性能基准 [经验]]
+> **示例 31** [难度 ★★★☆☆] [主题：性能基准 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 读者路径单跳指令成本（来自 §⑪ 真实 asm）
 // HP  读者：lea + mov + xchg(lock) + mov + cmp + ret  ≈ 6 条，含 1 次锁操作
@@ -561,7 +561,7 @@ struct HazardGuard {
 // 互斥锁读者：lock cmpxchg + 可能的 syscall/上下文切换 ≈ 数十~数千 cycles
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：性能基准 [经验]]
+> **示例 32** [难度 ★☆☆☆☆] [主题：性能基准 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 写者路径（宽限期是 RCU 的瓶颈）
 // HP  写者：retire 入链表 O(1)；回收 scan O(retired×MAX_HP)
@@ -571,12 +571,12 @@ struct HazardGuard {
 - `[经验]`：读者 `read:HP ≈ 锁的 1/5~1/10 延迟`；`RCU 读者 ≈ HP 读者的 1/3~1/2`（少一次锁操作）。写者侧 RCU 在宽限期长时反而更慢。
 - `[微架构·x86-64 TSO]`：x86 强内存模型让 `acquire`/`release` 退化为普通 `mov`，HP 与 RCU 在 x86 上的优势主要来自"免 syscall"，弱内存架构（ARM）上差异更明显。
 
-## ⑱ 选型指南 [经验]
+## ⑱ 选型指南 <span class="badge badge-exp">经验</span>
 
 [第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)（无锁编程）—— 先确认是否真需无锁再选回收机制
 [第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)（ABA 问题与解决）—— 选型须评估 ABA 风险等级
 
-> **示例 33** [难度 ★★☆☆☆] [主题：选型指南 [经验]]
+> **示例 33** [难度 ★★☆☆☆] [主题：选型指南 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 决策树（伪代码）
 // if (读者海量 && 写者稀疏 && 可接受宽限期延迟)  -> RCU（urcu / QSBR）
@@ -585,7 +585,7 @@ struct HazardGuard {
 // else                                            -> 先别无锁，锁够用
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：选型指南 [经验]]
+> **示例 34** [难度 ★★☆☆☆] [主题：选型指南 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 典型映射
 // 路由/防火墙规则表：RCU（读极多写极少）
@@ -597,11 +597,11 @@ struct HazardGuard {
 - `[经验]`：无锁回收是"为读多写少极致性能"准备的；多数业务用 `std::mutex` + `shared_mutex` 已经足够且更易正确。
 - `[标准]`：C++26 起优先用标准 `std::hazard_pointer`（§⑲），避免自研原子细节出错。
 
-## ⑲ C++ 标准方向(无内建) [标准]
+## ⑲ C++ 标准方向(无内建) <span class="badge badge-std">标准</span>
 
 C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实现。C++26 已采纳 Hazard Pointer 进入标准库。
 
-> **示例 35** [难度 ★★☆☆☆] [主题：++ 标准方向(无内建) [标准]]
+> **示例 35** [难度 ★★☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑲ C++26 标准 HP 用法（提案 P1122R6，GCC 尚未默认提供，此处展示目标形态）
 // std::hazard_pointer<std::atomic<Node*>> hp;
@@ -610,13 +610,13 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 // // 析构时自动 clear，无需手动 slot
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) [标准]]
+> **示例 36** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑲ RCU 至今未进标准库：因其依赖"宽限期/静止态"这一 OS/运行时概念，
 // ⑲ 标准难以跨平台定义 quiescent state，故由库（urcu）或手写承担
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) [标准]]
+> **示例 37** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑲ 过渡期建议：C++23 工程的稳妥写法
 // - 优先第三方成熟库（liburcu / folio::hazard_pointer）
@@ -626,21 +626,21 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 - `[标准]`：HP 入标准意味着"登记/扫描/回收"语义被规范，避免各实现内存序不一致导致的隐蔽 bug。
 - `[经验]`：在标准 HP 可用前，自研务必严格配对 `protect/clear`（RAII），并把内存序写对（登记 `seq_cst`、读 HP 槽 `acquire`、写 nullptr `release`）。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：无锁读侧安全回收内存（hazard pointer / RCU 思路）。** 你理解语言只给原语、策略在上层。请说明。
-   - [标准] C++ 标准提供原子与内存顺序原语；具体内存回收策略（hazard pointer、RCU）是库/惯用法（hazard pointer 处于 C++26 提案阶段）。
-   - [引用] ISO/IEC 14882:2023 §[atomics]（底层原子原语）；cppreference "RCU / Hazard pointer" 词条。
+   - <span class="badge badge-std">标准</span> C++ 标准提供原子与内存顺序原语；具体内存回收策略（hazard pointer、RCU）是库/惯用法（hazard pointer 处于 C++26 提案阶段）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]（底层原子原语）；cppreference "RCU / Hazard pointer" 词条。
 
 2. **真实场景：`shared_ptr` 控制块的引用计数是原子的。** 你理解其线程安全边界。请说明。
-   - [标准] `shared_ptr` 控制块的引用计数增减是原子的；但多个 shared_ptr 对象本身的并发写仍需外部同步。
-   - [引用] ISO/IEC 14882:2023 §[util.smartptr.shared]（控制块原子计数）；cppreference "std::shared_ptr" 词条。
+   - <span class="badge badge-std">标准</span> `shared_ptr` 控制块的引用计数增减是原子的；但多个 shared_ptr 对象本身的并发写仍需外部同步。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[util.smartptr.shared]（控制块原子计数）；cppreference "std::shared_ptr" 词条。
 
 3. **真实场景：释放侧 store(release) 与读侧 load(acquire) 须配对。** 你保证发布的数据对读者可见。请说明。
-   - [标准] 跨线程传递指针/数据时，发布方用 release、消费方用 acquire 才能建立可见性。
-   - [引用] ISO/IEC 14882:2023 §[atomics.order]（release-acquire 配对）；cppreference "Memory ordering" 词条。
+   - <span class="badge badge-std">标准</span> 跨线程传递指针/数据时，发布方用 release、消费方用 acquire 才能建立可见性。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.order]（release-acquire 配对）；cppreference "Memory ordering" 词条。
 
 | 主题 | 一句话 | 关键原语 |
 |---|---|---|
@@ -656,7 +656,7 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 | 调试 | TSan 抓错误实现 | `-fsanitize=thread` |
 | 标准方向 | HP 进 C++26，RCU 仍靠库 | `std::hazard_pointer` |
 
-> **示例 38** [难度 ★★★☆☆] [主题：速查表 [标准]]
+> **示例 38** [难度 ★★★☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 最小正确 HP 使用范式（RAII，杜绝误用）
 #include <atomic>
@@ -689,7 +689,7 @@ struct Guard { int slot; void* p;
 
 ### ㉒.1 历史渊源补强：从 hazard pointer 到 RCU
 
-[史] **Hazard Pointer** 由 **Maged Michael（2004，IBM，论文《Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects》）** 提出：每个读者把自己的「正在读哪个指针」登记到一张全局 hazard 表，写者回收前先扫表，若有人登记则推迟回收——从而在无锁结构里安全释放内存、规避 ABA 与 UAF。**RCU（Read-Copy-Update）** 的源头更早：由 **Paul E. McKenney（IBM）** 在 1990 年代为 Linux 内核设计，核心思想是「读者无锁、写者拷贝新副本并更新指针、等宽限期（grace period）所有旧读者退出后再回收旧副本」。[史] C++ 标准长期**没有**这两者的标准实现（C++11/14/17 都得手写或用库）；直到 **C++26 推进 hazard pointer 标准化（P1122 / P2530，Maged Michael 本人参与）**，RCU 的标准化探讨也并行推进。[轶] RCU 在 Linux 内核已服役近 20 年，是内核并发读侧无可替代的基石——它把「读侧零开销」做到了极致，代价是写者要等宽限期。[评] hazard pointer 适合「对象粒度回收、读者数有限」，RCU 适合「读极多写极少、读侧要极致便宜」；两者都是「无锁内存安全回收」的主流答案。
+<span class="badge badge-history">史</span> **Hazard Pointer** 由 **Maged Michael（2004，IBM，论文《Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects》）** 提出：每个读者把自己的「正在读哪个指针」登记到一张全局 hazard 表，写者回收前先扫表，若有人登记则推迟回收——从而在无锁结构里安全释放内存、规避 ABA 与 UAF。**RCU（Read-Copy-Update）** 的源头更早：由 **Paul E. McKenney（IBM）** 在 1990 年代为 Linux 内核设计，核心思想是「读者无锁、写者拷贝新副本并更新指针、等宽限期（grace period）所有旧读者退出后再回收旧副本」。<span class="badge badge-history">史</span> C++ 标准长期**没有**这两者的标准实现（C++11/14/17 都得手写或用库）；直到 **C++26 推进 hazard pointer 标准化（P1122 / P2530，Maged Michael 本人参与）**，RCU 的标准化探讨也并行推进。<span class="badge badge-anecdote">轶</span> RCU 在 Linux 内核已服役近 20 年，是内核并发读侧无可替代的基石——它把「读侧零开销」做到了极致，代价是写者要等宽限期。<span class="badge badge-comment">评</span> hazard pointer 适合「对象粒度回收、读者数有限」，RCU 适合「读极多写极少、读侧要极致便宜」；两者都是「无锁内存安全回收」的主流答案。
 
 ### ㉒.2 真实工程坐标：hazard pointer / RCU 活在哪些产品里
 
@@ -717,9 +717,9 @@ struct Guard { int slot; void* p;
 
 ### ㉒.4 与标准的互动：hazard pointer / RCU 与 C++ 标准的演进
 
-[史] C++11 提供了 `std::atomic`（无锁原语）但**无**内存安全回收设施，hazard pointer/RCU 长期只能手写或靠第三方库；**C++26 正推进把 hazard pointer 纳入标准库（P1122/P2530，由 Michael 本人提案）**，提供 `std::hazard_pointer` 与 retire/回收 API，并附带 `std::rcu_domain` 方向的讨论。这是 WG21 对「无锁 + 安全回收」痛点（见第 ⑩/⑪ 章）的正式回应——把过去 20 年内核/工业界的成熟方案沉淀为标准抽象。
+<span class="badge badge-history">史</span> C++11 提供了 `std::atomic`（无锁原语）但**无**内存安全回收设施，hazard pointer/RCU 长期只能手写或靠第三方库；**C++26 正推进把 hazard pointer 纳入标准库（P1122/P2530，由 Michael 本人提案）**，提供 `std::hazard_pointer` 与 retire/回收 API，并附带 `std::rcu_domain` 方向的讨论。这是 WG21 对「无锁 + 安全回收」痛点（见第 ⑩/⑪ 章）的正式回应——把过去 20 年内核/工业界的成熟方案沉淀为标准抽象。
 
-- [史] **标准化修订链**：**P2530（Hazard Pointers）** 最终修订 **R3**、**P1122（RCU）** 最终修订 **R4（2021-05-14）**，均由原作者（Maged Michael / Paul E. McKenney）牵头，目标 C++26；设计理由是把「内核/工业界已服役 20 年的成熟回收方案」沉淀为可移植标准抽象，消除各库重复手写的风险；<https://wg21.link/p2530>、<https://wg21.link/p1122>。
+- <span class="badge badge-history">史</span> **标准化修订链**：**P2530（Hazard Pointers）** 最终修订 **R3**、**P1122（RCU）** 最终修订 **R4（2021-05-14）**，均由原作者（Maged Michael / Paul E. McKenney）牵头，目标 C++26；设计理由是把「内核/工业界已服役 20 年的成熟回收方案」沉淀为可移植标准抽象，消除各库重复手写的风险；<https://wg21.link/p2530>、<https://wg21.link/p1122>。
 
 ### ㉒.5 权威引用
 
@@ -730,7 +730,7 @@ struct Guard { int slot; void* p;
 
 ## 附录 A：工业 RCU/Hazard Pointer [F: Industry / D: stdlib]
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录 A：工业 RCU/Hazard]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业 RCU/Hazard
 ```
 Linux kernel: RCU 的诞生地 (2002, Paul McKenney)。在 Linux 中:
   → rcu_read_lock() / rcu_read_unlock() — zero overhead on reader path
@@ -752,7 +752,7 @@ C++ proposal P0566R3 (2020): hazard pointers 进入 C++26 方向
 
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
-> **示例 40** [难度 ★★☆☆☆] [主题：附录 B：面试与设计 [J: Lea]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与设计 [J: Lea
 ```
 面试高频:
 Q: Hazard Pointer 和 RCU 的根本区别？
@@ -852,7 +852,7 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 
 HP 的核心约定：**读者先登记、再解引用**；**回收者先扫描 HP 表，被任一 HP 引用的节点推迟删除**。这样保证「正在被读的节点」永不被 free，从根上消除 use-after-free 与 ABA。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -879,7 +879,7 @@ int main() {
 
 [Educational Skeleton] 真实 HP 库有每线程多个 HP 槽 + 每线程 retire 列表 + 批量扫描回收（阈值触发），此处简化为单槽演示核心不变式；生产化需补：每线程多槽、retire 列表、阈值批量扫描、多指针注册。本示例省略回收/并发安全，仅展示「登记保护→回收被拒」核心思路，不可直接部署。
 
-[引用] 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004。C++26 标准化提案见 WG21 P1122：`https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1122r4.html`。
+<span class="badge badge-ref">引用</span> 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004。C++26 标准化提案见 WG21 P1122：`https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1122r4.html`。
 
 </details>
 
@@ -891,7 +891,7 @@ int main() {
 
 RCU 读侧几乎零开销（仅标记进入/退出临界区）；写侧「复制-修改-替换」后必须等待**宽限期**（当前所有读者都已离开旧版本临界区）才能安全 free 旧版本。
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <atomic>
 #include <memory>
@@ -915,9 +915,9 @@ int main() {
 }
 ```
 
-[标准] 此处用 `shared_ptr` 引用计数模拟宽限期；真实 RCU（如 Linux 内核）用「静止态检测」而非引用计数，读侧开销更低但回收延迟由 `synchronize_rcu()` 控制。
+<span class="badge badge-std">标准</span> 此处用 `shared_ptr` 引用计数模拟宽限期；真实 RCU（如 Linux 内核）用「静止态检测」而非引用计数，读侧开销更低但回收延迟由 `synchronize_rcu()` 控制。
 
-[引用] Linux 内核 RCU 文档：`https://docs.kernel.org/RCU/`。RCU 形式化语义见 P. E. McKenney 等关于 RCU 的系列论文。
+<span class="badge badge-ref">引用</span> Linux 内核 RCU 文档：`https://docs.kernel.org/RCU/`。RCU 形式化语义见 P. E. McKenney 等关于 RCU 的系列论文。
 
 </details>
 
@@ -929,7 +929,7 @@ int main() {
 
 工业 HP 的回收是**批量**的：retire 列表累积到阈值时，把所有活跃 HP 槽收集成集合，逐个 retired 节点判断是否命中，未命中者删除、命中者保留。
 
-> **示例 43** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <atomic>
 #include <vector>
@@ -969,7 +969,7 @@ int main() {
 
 [Educational Skeleton] 批量扫描把「每次 retire 都全表扫描」的 O(N·H) 摊薄为阈值触发的 O(N+H)，是 HP 可用性的关键工程优化。本示例为单线程教学骨架，省略了真实并发下的 retire 列表生命周期管理与多域隔离，生产化需补这些并过 TSan。
 
-[引用] 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004（批量回收与每线程 retire 列表的设计出处）。
+<span class="badge badge-ref">引用</span> 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004（批量回收与每线程 retire 列表的设计出处）。
 
 </details>
 
@@ -986,7 +986,7 @@ int main() {
 
 **常见错误**：读多写少却选 HP，让每次读都付出 HP 登记的原子写开销。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：演绎 1：HP 还是 RCU？读写比]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：HP 还是 RCU？读写比
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1015,7 +1015,7 @@ int main() {
 
 **常见错误**：不等宽限期，读者仍持旧指针时就释放。
 
-> **示例 45** [难度 ★★★★☆] [主题：演绎 2：RCU 写侧忘记等宽限期就]
+> **示例 45** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：RCU 写侧忘记等宽限期就
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1332,7 +1332,7 @@ flowchart TD
 
 ### D4.6 第一方可编译验证（安全回收 + 等待池）
 
-> **示例 46** [难度 ★★☆☆☆] [主题：第一方可编译验证]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1435,7 +1435,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 47** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <cassert>
 #include <iostream>

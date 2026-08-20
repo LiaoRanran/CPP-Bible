@@ -13,28 +13,28 @@
 > 单核时代人人默认"先写的先被看见"，多核一来，这个默认就破产了。
 
 ### 0.1 起源（谁·何时·为何）
-早年的顺序一致性（sequential consistency）假设很自然：程序按源码顺序执行、内存按写入顺序可见。但编译器为了优化会重排指令，CPU 为了吞吐也会乱序执行与写缓冲，单线程下语义不变，跨线程观察时却会"看到乱序"。[史] C++98/03 对此**只字未提**——它根本没有多线程语义，所有跨线程的可见性约定都靠平台与"运气"。Hans Boehm 等人在 2000 年代反复警告：没有形式化内存模型，C++ 的并发程序在理论上无法保证正确，优化器随时可能"合法地"破坏你的意图。[史]
+早年的顺序一致性（sequential consistency）假设很自然：程序按源码顺序执行、内存按写入顺序可见。但编译器为了优化会重排指令，CPU 为了吞吐也会乱序执行与写缓冲，单线程下语义不变，跨线程观察时却会"看到乱序"。<span class="badge badge-history">史</span> C++98/03 对此**只字未提**——它根本没有多线程语义，所有跨线程的可见性约定都靠平台与"运气"。Hans Boehm 等人在 2000 年代反复警告：没有形式化内存模型，C++ 的并发程序在理论上无法保证正确，优化器随时可能"合法地"破坏你的意图。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- C++98/03：无内存模型，data race 概念不存在。[史]
-- **C++11（2011）**：首次定义内存模型（happens-before、data race 为 UB），并引入 `std::memory_order` 六态（relaxed / consume / acquire / release / acq_rel / seq_cst）。[史]
-- C++17：把 `consume` 降级为"暂不鼓励实现"，因硬件与编译器几乎无法高效且正确地实现它。[史]
+- C++98/03：无内存模型，data race 概念不存在。<span class="badge badge-history">史</span>
+- **C++11（2011）**：首次定义内存模型（happens-before、data race 为 UB），并引入 `std::memory_order` 六态（relaxed / consume / acquire / release / acq_rel / seq_cst）。<span class="badge badge-history">史</span>
+- C++17：把 `consume` 降级为"暂不鼓励实现"，因硬件与编译器几乎无法高效且正确地实现它。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-核心取舍是**默认强序（seq_cst）还是默认松弛**。C++ 选了"最安全的 seq_cst 作为默认值"，宁可多一道全序栅栏，也不让普通程序员在无意识下踩可见性坑——这被批评为"保守但安全"。[评] 同时允许用 acquire/release/relaxed 换取性能，把性能开关交到懂行的人手里。把"数据竞争"定为 UB 而非"实现定义行为"也引发争论：一边认为 UB 能让优化器放开手脚，另一边担心它让并发 bug 更难复现。[史]
+核心取舍是**默认强序（seq_cst）还是默认松弛**。C++ 选了"最安全的 seq_cst 作为默认值"，宁可多一道全序栅栏，也不让普通程序员在无意识下踩可见性坑——这被批评为"保守但安全"。<span class="badge badge-comment">评</span> 同时允许用 acquire/release/relaxed 换取性能，把性能开关交到懂行的人手里。把"数据竞争"定为 UB 而非"实现定义行为"也引发争论：一边认为 UB 能让优化器放开手脚，另一边担心它让并发 bug 更难复现。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 内存序在 C++11 定调后，争议与演进集中在"consume 去留"与"弱内存架构普及"两端。
 
-- C++17 正式把 `memory_order_consume` 降级为"暂不鼓励实现"：几乎没有编译器能高效且正确地实现它，委员会选择务实撤退，把相关语义留作研究。[史]
-- [评] `consume` 的尴尬揭示了 C++ 内存模型的深层难题——数据依赖的传递本应比 acquire/release 更轻，但硬件（尤其 ARM/POWER 的地址/控制依赖）让编译器无法安全优化，最终"理论上最优"败给了"现实可实现"。
-- C++20 的 `std::atomic_ref` 与原子智能指针同样携带内存序参数，弱内存模型下的可见性权衡随异构计算（GPU、专用加速器）重新成为热点。[史]
-- [轶] Intel 的 TSX 事务内存曾被寄望"自动"化解锁与内存序难题，却因 Sky Lake 的 erratum 被多次禁用乃至移除，反而印证了"显式内存序"路线的稳健——语言不替你赌硬件。
-- C++23 起，对更强形式化（如可证明的 happens-before 工具）与教学简化的讨论仍在继续，Hans Boehm 等人关于内存模型的论文仍被反复引用。[史]
+- C++17 正式把 `memory_order_consume` 降级为"暂不鼓励实现"：几乎没有编译器能高效且正确地实现它，委员会选择务实撤退，把相关语义留作研究。<span class="badge badge-history">史</span>
+- <span class="badge badge-comment">评</span> `consume` 的尴尬揭示了 C++ 内存模型的深层难题——数据依赖的传递本应比 acquire/release 更轻，但硬件（尤其 ARM/POWER 的地址/控制依赖）让编译器无法安全优化，最终"理论上最优"败给了"现实可实现"。
+- C++20 的 `std::atomic_ref` 与原子智能指针同样携带内存序参数，弱内存模型下的可见性权衡随异构计算（GPU、专用加速器）重新成为热点。<span class="badge badge-history">史</span>
+- <span class="badge badge-anecdote">轶</span> Intel 的 TSX 事务内存曾被寄望"自动"化解锁与内存序难题，却因 Sky Lake 的 erratum 被多次禁用乃至移除，反而印证了"显式内存序"路线的稳健——语言不替你赌硬件。
+- C++23 起，对更强形式化（如可证明的 happens-before 工具）与教学简化的讨论仍在继续，Hans Boehm 等人关于内存模型的论文仍被反复引用。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/memory_order · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0019r8.html
 
-## ① 概述：内存序解决什么问题 [标准]
+## ① 概述：内存序解决什么问题 <span class="badge badge-std">标准</span>
 
 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
 
@@ -42,14 +42,14 @@
 
 `std::memory_order` 就是用来告诉编译器与硬件：**这次原子操作周围，允许/禁止哪些重排**。它不影响“原子性”，只影响“顺序与同步”。
 
-> **示例 1** [难度 ★★★★☆] [主题：概述：内存序解决什么问题 [标准]]
+> **示例 1** [难度 ★★★★☆] [主题：概述：内存序解决什么问题 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 没有原子性 + 没有内存序：典型数据竞争（UB）
 int shared = 0;
 void bad() { for (int i = 0; i < 1000000; ++i) ++shared; } // 数据竞争
 ```
 
-> **示例 2** [难度 ★★★★☆] [主题：概述：内存序解决什么问题 [标准]]
+> **示例 2** [难度 ★★★★☆] [主题：概述：内存序解决什么问题 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 仅用原子性（默认 seq_cst）消除数据竞争，但不约束“共享数据”的可见顺序
 #include <atomic>
@@ -60,21 +60,21 @@ void good() { for (int i = 0; i < 1000000; ++i) counter.fetch_add(1); }
 - `[标准]`：`memory_order` 是 `std::atomic` 各类操作的第二参数，决定该操作的**排序约束**。
 - `[经验]`：内存序解决的是“我写的数据，对方何时能看到、以什么顺序看到”，而非“写会不会撕裂”。
 
-## ② happens-before 与 sequenced-before 关系 [标准]
+## ② happens-before 与 sequenced-before 关系 <span class="badge badge-std">标准</span>
 
 两个核心关系：
 
 - **sequenced-before**：同一个线程内，按程序顺序，先出现的求值“序前”于后出现的求值。它由单线程程序顺序定义。
 - **happens-before**：sequenced-before 的传递闭包，再加上跨线程由**释放/获取（release/acquire）配对**建立的同步。若 A happens-before B，则 A 的副作用对 B 可见且不被重排。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：与 sequenced-before]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 sequenced-before
 ```cpp
 // ② sequenced-before：线程内 a 的初始化先于 b 的使用
 int a = compute();      // 求值 E1
 int b = a + 1;          // 求值 E2，E1 sequenced-before E2
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：与 sequenced-before]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 sequenced-before
 ```cpp
 // ② 跨线程同步：release 与 acquire 配对，建立 happens-before
 #include <atomic>
@@ -94,11 +94,11 @@ void observer() {
 - `[标准]`：`[intro.races]` 定义 happens-before；sequenced-before 是其在线程内的特例。
 - `[经验]`：判断可见性时问一句“有没有一条 happens-before 链连到这次读取”——没有就别假设能看到。
 
-## ③ memory_order::relaxed 语义 [标准]
+## ③ memory_order::relaxed 语义 <span class="badge badge-std">标准</span>
 
 `relaxed` 只保证**原子性**与**该变量自身的修改序（modification order）**，既不建立跨线程同步，也不约束其他内存的可见顺序。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：order::relaxed 语义 ]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · order::relaxed 语义
 ```cpp
 // ③ relaxed：只保证 fetch_add 整体原子，不保证与其他变量的顺序
 #include <atomic>
@@ -109,7 +109,7 @@ void writer() {
 }
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：order::relaxed 语义 ]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · order::relaxed 语义
 ```cpp
 // ③ 计数器是最适合 relaxed 的场景：只需自增原子，无需同步其他数据
 std::atomic<unsigned long long> hits{0};
@@ -121,12 +121,12 @@ void on_request() {
 - `[标准]`：对同一原子变量的 relaxed 操作仍遵守单一的 modification order，因此不会“丢失”更新。
 - `[经验]`：纯计数、纯标志且无需“携带”其他数据时，relaxed 足够且最快。
 
-## ④ acquire/release 语义与同步关系 [标准]
+## ④ acquire/release 语义与同步关系 <span class="badge badge-std">标准</span>
 
 - **release**（写端）：该操作之前的所有内存写，对随后执行对应 **acquire**（读端）并读到该值的线程**可见**。
 - 二者必须**配对**：release 的写被 acquire 读到 → 建立 synchronizes-with → happens-before。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：语义与同步关系 [标准]]
+> **示例 7** [难度 ★★☆☆☆] [主题：语义与同步关系 <span class="badge badge-std">标准</span>]
 ```cpp
 // ④ release 发布：写数据在先，release 标志在后
 #include <atomic>
@@ -138,7 +138,7 @@ void publish() {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：语义与同步关系 [标准]]
+> **示例 8** [难度 ★★☆☆☆] [主题：语义与同步关系 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <string>
 // ④ acquire 获取：读到指针即获得其构造完成前的全部写
@@ -155,11 +155,11 @@ void take() {
 - `[标准]`：`[atomics.order]` 规定 release 与 acquire 通过同一原子对象的值传递建立 synchronizes-with。
 - `[实现·GCC15]`：在 x86-64 上，release 存储与 acquire 加载都编译为普通 `mov`（见 ⑬），屏障是“免费”的硬件特性。
 
-## ⑤ release/consume（已弃用，说明原因） [标准]
+## ⑤ release/consume（已弃用，说明原因） <span class="badge badge-std">标准</span>
 
 `memory_order::consume` 只同步**数据依赖**链上的对象，理论上比 acquire 更轻（弱内存平台上可省去全屏障）。但它已被**弃用**。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：memory_order：六种内存序]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · memory_order：六种内存序
 ```cpp
 // ⑤ consume 语法（已弃用，仅作历史说明，不要在新代码中使用）
 #include <atomic>
@@ -181,11 +181,11 @@ void consumer_c() {
   3. **极易误用**：非依赖的相邻写不被同步，开发者极易写成 bug。
 - `[经验]`：需要“携带数据”时用 **release/acquire**；不要碰 consume。若追求极致性能且确定平台把 consume 当 acquire，那它毫无收益。
 
-## ⑥ memory_order::acq_rel [标准]
+## ⑥ memory_order::acq_rel <span class="badge badge-std">标准</span>
 
 `acq_rel` 用于**读-改-写（RMW）**操作（如 `compare_exchange`、`fetch_add`）：它同时具有 acquire（读侧）与 release（写侧）语义——对读到的值表现 acquire，对写入的新值表现 release。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：order::acqrel [标准]]
+> **示例 10** [难度 ★★☆☆☆] [主题：order::acqrel <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ acq_rel 用于 RMW：既是读也是写
 #include <atomic>
@@ -196,7 +196,7 @@ void advance() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：order::acqrel [标准]]
+> **示例 11** [难度 ★★☆☆☆] [主题：order::acqrel <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ CAS 分别指定成功/失败内存序：成功走 acq_rel，失败只需 acquire
 std::atomic<int> lock{0};
@@ -211,11 +211,11 @@ void try_lock() {
 - `[标准]`：RMW 不能只取 acquire 或只取 release（它既读又写），因此 `acq_rel` 是 RMW 的“对称”选择。
 - `[经验]`：无锁算法里 CAS 几乎总用 `acq_rel`/`acquire` 组合，这是最稳妥的默认。
 
-## ⑦ seq_cst（默认）与单一总序 [标准]
+## ⑦ seq_cst（默认）与单一总序 <span class="badge badge-std">标准</span>
 
 `memory_order::seq_cst` 是**所有原子操作的默认序**，也是最强序：在 acquire/release 的基础上，额外要求所有线程对同一组 seq_cst 操作观察到**同一个单一全序（single total order）**。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：cst（默认）与单一总序 [标准]]
+> **示例 12** [难度 ★★☆☆☆] [主题：cst（默认）与单一总序 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 不写第二参数即默认 seq_cst
 #include <atomic>
@@ -227,7 +227,7 @@ void f() {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：cst（默认）与单一总序 [标准]]
+> **示例 13** [难度 ★★☆☆☆] [主题：cst（默认）与单一总序 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 两个变量的 seq_cst 操作，所有线程看到一致的全序
 std::atomic<int> a{0}, b{0};
@@ -238,11 +238,11 @@ void t2() { int rb = b.load(std::memory_order_seq_cst); int ra = a.load(std::mem
 - `[标准]`：seq_cst 在 `[atomics.order]` 中要求存在一个所有 seq_cst 操作的总序 S，并且 S 与每个线程的 sequenced-before 及 happens-before 一致。
 - `[经验]`：拿不准用什么序时，用 seq_cst（默认）永远正确；代价是可能多出屏障/更重指令（见 ⑪、⑰）。
 
-## ⑧ 为何 relaxed 不保证跨变量的可见顺序 [标准]
+## ⑧ 为何 relaxed 不保证跨变量的可见顺序 <span class="badge badge-std">标准</span>
 
 relaxed 只约束“单个原子变量自身”的修改序，对**其他内存（含其他原子变量）**的可见顺序**毫无约束**。因此两个线程用 relaxed 各自摆布两个变量，对方可能看到任意交错。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：为何 relaxed 不保证跨变量的]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为何 relaxed 不保证跨变量的
 ```cpp
 // ⑧ 反例：relaxed 不传递“a 先于 b”的顺序
 #include <atomic>
@@ -268,7 +268,7 @@ void thread2() {
 
 无锁栈用原子头指针 `head`；`push` 用 CAS 把新节点挂到表头，`pop` 用 acquire 读头、CAS 把头推进到 `next`。关键：节点内容的“发布”靠 release（push 端），“获取”靠 acquire（pop 端）。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：用 acquire/release ]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 acquire/release
 ```cpp
 // ⑨ 节点与头指针
 #include <atomic>
@@ -279,7 +279,7 @@ struct Node {
 std::atomic<Node*> head{nullptr};
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：用 acquire/release ]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 acquire/release
 ```cpp
 // ⑨ push：relaxed 读旧头 + release 写新头（发布整条已构造链表）
 void push(int v) {
@@ -293,7 +293,7 @@ void push(int v) {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：用 acquire/release ]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 acquire/release
 ```cpp
 // ⑨ pop：acquire 读头并建立同步，保证读到节点及其 next 的已发布内容
 bool pop(int& out) {
@@ -310,7 +310,7 @@ bool pop(int& out) {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：用 acquire/release ]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 acquire/release
 ```cpp
 // ⑨ 完整可编译测试（已用 GCC 15.3.0 -O2 验证通过）
 #include <cstdio>
@@ -331,11 +331,11 @@ int main() {
 - `[实现·GCC15]`：CAS 在 x86 上编译为 `lock cmpxchg`；acquire/release 的“屏障”在 TSO 下是免费的普通 `mov`。
 - `[经验]`：无锁结构难度极高，生产环境优先复用 `std::stack`+mutex，或 `boost::lockfree::stack`；手写仅用于学习底层机制。
 
-## ⑩ Dekker 例子说明 seq_cst 的必要性 [标准]
+## ⑩ Dekker 例子说明 seq_cst 的必要性 <span class="badge badge-std">标准</span>
 
 Dekker 算法用两个标志互相探测，要求对两个变量的写/读在所有线程眼中**顺序一致**。若用 relaxed（甚至单纯的 release/acquire 各管各的），两个线程可能**同时**进入临界区——因为各自都“没看到对方的写”。seq_cst 的单一总序消除了这种歧义。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：例子说明 seqcst 的必要性 []
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例子说明 seqcst 的必要性 [
 ```cpp
 // ⑩ Dekker：两线程互斥，依赖 seq_cst 的全局总序
 #include <atomic>
@@ -354,7 +354,7 @@ void thread_b() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：例子说明 seqcst 的必要性 []
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例子说明 seqcst 的必要性 [
 ```cpp
 // ⑩ 若把 store/load 改成 relaxed，两个线程都可能跳过对方的检查 -> 双重进入（bug）
 void thread_a_bad() {
@@ -370,7 +370,7 @@ void thread_a_bad() {
 
 **真实证据（GCC 15.3.0, x86-64, -O2，已复编确认 `[VERIFIED]`）**：seq_cst **加载**就是普通 `mov`；但 seq_cst **存储**编译为**带锁的 `xchg`**（x86 上 `xchg` 隐含 lock 前缀，提供全序所需的强写）。这与“x86 TSO 下 seq_cst 很便宜”一致——它不需要 `mfence`，但写端仍是一个原子交换。
 
-> **示例 21** [难度 ★★★☆☆] [主题：[实现·GCC15]真实汇编：seq]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：seq
 ```cpp
 // 文件：Examples/_ch108_seqcst.cpp
 // 行号：7
@@ -391,7 +391,7 @@ _Z6writerv:
 	ret
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：[实现·GCC15]真实汇编：seq]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：seq
 ```cpp
 // ⑪ 对比：release 存储在 x86 上连 xchg 都不需要，就是普通 mov（见 ⑬）
 #include <atomic>
@@ -404,11 +404,11 @@ int  get()      { return g.load(std::memory_order_acquire); } // ⑪ 普通 mov
 - `[平台·ARM]`：ARM 是弱内存模型，release 存储需 `dmb`/释放语义指令、seq_cst 还需额外屏障；但本机只有 x86 工具链，未编译 ARM 产物——请勿把下方 x86 片段当作 ARM 证据。
 - `[经验]`：在 x86 上“内存序几乎免费”是 TSO 的红利；换到 ARM/PowerPC，错误放宽内存序会立刻暴露为偶发 bug。
 
-## ⑫ std::atomic_thread_fence 与内存屏障 [标准]
+## ⑫ std::atomic_thread_fence 与内存屏障 <span class="badge badge-std">标准</span>
 
 `std::atomic_thread_fence` 是**独立的内存屏障**，不依附于某次原子操作，而是约束它前后所有原子（及非原子）访问的顺序。常用于用 relaxed 原子 + 显式 fence 配对，替代 release/acquire。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：threadfence 与内存屏障 ]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · threadfence 与内存屏障
 ```cpp
 // ⑫ 用 fence 配对（而非 release/acquire 原子）实现同样同步
 #include <atomic>
@@ -428,7 +428,7 @@ void consumer() {
 }
 ```
 
-> **示例 24** [难度 ★★★☆☆] [主题：threadfence 与内存屏障 ]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · threadfence 与内存屏障
 ```cpp
 // ⑫ fence 也可用于 seq_cst 全序：所有 seq_cst fence 也落入同一总序 S
 std::atomic<bool> go{false};
@@ -459,7 +459,7 @@ _Z8producerv:
 
 x86 采用 **TSO（Total Store Order）** `[微架构·x86-64 TSO]`：写-写、写-读、读-读都不重排（仅允许“读早于写”重排，即 store-buffer 效应），因此 acquire/release 几乎“免费”。ARM/POWER 是**弱内存模型** `[微架构·ARM]`：写可延迟、读可提前、彼此可乱序，必须显式屏障。
 
-> **示例 25** [难度 ★★★☆☆] [主题：硬件映射：x86 TSO vs AR]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 硬件映射：x86 TSO vs AR
 ```cpp
 // ⑬ 同一段 release/acquire 代码，两种硬件命运不同
 #include <atomic>
@@ -485,11 +485,11 @@ _Z7consumev:
 - `[微架构·ARM]` `[UNVERIFIED]`：弱模型必须靠释放/获取语义指令（`ldar`/`stlr`）或 `dmb` 屏障才能等价；同样代码在 ARM 上**绝对不能**假设“mov 就够了”。本机无 ARM 工具链，未附 ARM 汇编，此结论来自 ARM 弱内存模型公开文档，未经本机复编。
 - `[经验]`：在 x86 开发的并发代码，搬到 ARM 服务器/手机上才暴露内存序 bug——这正是必须用正确内存序、并用 TSan/弱平台实测的原因。
 
-## ⑭ 编译器重排与 as-if 规则 [标准]
+## ⑭ 编译器重排与 as-if 规则 <span class="badge badge-std">标准</span>
 
 编译器在**不改变单线程可观察行为**（as-if 规则）的前提下，可自由重排、合并、消除内存访问。它**看不见**其他线程，因此若无内存序标注，你的“先写数据后写标志”可能被重排为“先写标志后写数据”。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：编译器重排与 as-if 规则 [标]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器重排与 as-if 规则 [标
 ```cpp
 // ⑭ 编译器可把 flag 的写提前到 data 之前（单线程语义不变）
 int data = 0;
@@ -500,7 +500,7 @@ void producer() {
 }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：编译器重排与 as-if 规则 [标]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器重排与 as-if 规则 [标
 ```cpp
 // ⑭ 用原子 + release 阻止重排：release 之后的写不能越过它，之前的写对 acquire 方可见
 #include <atomic>
@@ -515,11 +515,11 @@ void producer_fixed() {
 - `[标准]`：as-if 规则是重排的合法性来源；内存序是程序员向编译器“声明”跨线程约束的接口。
 - `[经验]`：别依赖“源码顺序 = 运行顺序”。只有原子操作的内存序参数能约束编译器与 CPU 的重排。
 
-## ⑮ 内存模型对应的 C++ 标准条款([atomics.order]) [标准]
+## ⑮ 内存模型对应的 C++ 标准条款([atomics.order]) <span class="badge badge-std">标准</span>
 
 本章概念在 ISO C++ 标准中的落点：
 
-> **示例 28** [难度 ★★☆☆☆] [主题：内存模型对应的 C++ 标准条款]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存模型对应的 C++ 标准条款
 ```cpp
 // ⑮ memory_order 枚举（节选自 <atomic> 概念，C++11 起）
 enum class memory_order : /* 未指定 */ {
@@ -538,7 +538,7 @@ enum class memory_order : /* 未指定 */ {
 
 经典错误：用 relaxed 原子标志表示“数据已就绪”，但 relaxed **不建立同步**，消费者可能看到 `ready==true` 却读到尚未写入的 `payload`。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：误用案例]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 误用案例
 ```cpp
 // ⑯ 错误：relaxed 标志不携带 payload 的写
 #include <atomic>
@@ -556,7 +556,7 @@ void consumer() {
 }
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：误用案例]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 误用案例
 ```cpp
 // ⑯ 修复：把 relaxed 改成 release/acquire，建立真正的同步
 void producer_ok() {
@@ -573,11 +573,11 @@ void consumer_ok() {
 - `[实现·GCC15]`：该错误示例 `Examples/_ch108_misuse.cpp` 已用 `-O2` 编译通过（语法合法），但它**语义错误**——TSan 才能抓到；这说明“能编译”不等于“正确”。
 - `[经验]`：只要一个原子标志“代表另一块数据已就绪”，就必须用 release/acquire（或 seq_cst），绝不是 relaxed。
 
-## ⑰ 性能：relaxed 最快、seq_cst 最慢 [经验]
+## ⑰ 性能：relaxed 最快、seq_cst 最慢 <span class="badge badge-exp">经验</span>
 
 内存序越强，约束越多，可能产生的屏障/原子指令越重。在 x86 上差别主要体现在**存储端**与 **RMW**：
 
-> **示例 31** [难度 ★★★☆☆] [主题：性能：relaxed 最快、seqc]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能：relaxed 最快、seqc
 ```cpp
 // ⑰ 三种序的“写”代价对比（同一变量）
 #include <atomic>
@@ -603,11 +603,11 @@ _Z3getv:
 - `[实现·GCC15]` `[VERIFIED]`：relaxed 加载/存储是 `mov`；relaxed RMW 需 `lock add`（原子性不免费）；seq_cst 存储是带锁 `xchg`，比单纯 `mov` 多一次锁总线（本机 GCC 15.3.0 复编确认）。
 - `[经验]`：经验法则 **relaxed < acquire/release < acq_rel < seq_cst**。默认用 seq_cst 求正确；确认瓶颈后再按需降级，且每次降级都要有 happens-before 论证支撑。
 
-## ⑱ 与 ch107 衔接（原子操作默认 seq_cst） [标准]
+## ⑱ 与 ch107 衔接（原子操作默认 seq_cst） <span class="badge badge-std">标准</span>
 
 `ch107` 讨论 `std::atomic` 的原子操作；其关键事实是：**所有原子操作若省略内存序参数，默认就是 `memory_order_seq_cst`**。本章正是解释“那个默认参数到底意味着什么”。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：与 ch107 衔接]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ch107 衔接
 ```cpp
 // ⑱ ch107 的默认行为：无第二参数 = seq_cst
 #include <atomic>
@@ -617,7 +617,7 @@ int v = x.load();    // ⑱ == x.load(memory_order_seq_cst)
 (void)v;
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：与 ch107 衔接]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ch107 衔接
 ```cpp
 // ⑱ 因此“裸 atomic 变量”是安全的默认：你已自动获得最强序，只是可能不是最快
 std::atomic<bool> done{false};
@@ -628,30 +628,30 @@ bool is_done() { return done.load(); }      // ⑱ 默认 seq_cst
 - `[标准]`：`<atomic>` 中每个操作的重载版本，无 `memory_order` 形参者等价于传入 `seq_cst`（`[atomics.types.operations]`）。
 - `[经验]`：先写对（用默认 seq_cst），再谈优化（降级内存序）。不要为了“性能”在 ch107 的原子类型上盲目加 relaxed。
 
-## ⑲ 调试技巧 [经验]
+## ⑲ 调试技巧 <span class="badge badge-exp">经验</span>
 
 内存序 bug 是**偶发、不可复现、只在特定硬件/优化级别出现**的硬骨头。以下手段定位它：
 
-> **示例 34** [难度 ★★★★☆] [主题：调试技巧 [经验]]
+> **示例 34** [难度 ★★★★☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 技巧1：用 ThreadSanitizer 编译运行，捕获数据竞争与缺失同步
 //   g++ -std=c++23 -O1 -g -fsanitize=thread _ch108_misuse.cpp -o misuse_tsan
 //   ./misuse_tsan   -> 报告 ready/payload 之间的 race（relaxed 未建立 happens-before）
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：调试技巧 [经验]]
+> **示例 35** [难度 ★★☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 技巧2：把可疑原子全部升回 seq_cst，若 bug 消失则证明是内存序问题
 //   用 sed/宏把 relaxed/acquire/release 统一替换为 memory_order_seq_cst 做对照实验
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：调试技巧 [经验]]
+> **示例 36** [难度 ★☆☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 技巧3：在弱内存平台或 QEMU(ARM) 上复跑；x86 上“好好的”在 ARM 常立刻出错
 //   交叉编译示意：aarch64-linux-gnu-g++ -std=c++23 -O2 -S -masm=intel ...
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：调试技巧 [经验]]
+> **示例 37** [难度 ★★☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 完整可编译的“正确版”对照（release/acquire 修复），供 TSan 验证无 race
 #include <atomic>
@@ -671,21 +671,21 @@ int main() {
 - `[经验]`：内存序问题不要靠“多跑几次看看”，要用 **TSan + 弱平台复现 + 升序对照**三板斧。
 - `[经验]`：把 happens-before 论证写进注释（谁 release、谁 acquire、传递了什么数据），比事后调试便宜百倍。
 
-## ⑳ 速查表（6 种序对照） [标准]
+## ⑳ 速查表（6 种序对照） <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 release/acquire 配对实现无锁同步。** 你一线程 publish 指针(release)，另一线程读(acquire)看到完整数据。请说明机制。
-   - [标准] release 存储与 acquire 加载配对，在它们之间建立 happens-before，使之前的写对读方可见。
-   - [引用] ISO/IEC 14882:2023 §[atomics.order]（release-acquire 同步）；cppreference "std::memory_order" 词条。
+   - <span class="badge badge-std">标准</span> release 存储与 acquire 加载配对，在它们之间建立 happens-before，使之前的写对读方可见。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.order]（release-acquire 同步）；cppreference "std::memory_order" 词条。
 
 2. **真实场景：用 `relaxed` 只保原子性不保顺序。** 你做纯计数器不需要跨变量可见性。请说明边界。
-   - [标准] `memory_order_relaxed` 保证操作原子、不撕裂，但不对其他原子变量建立顺序约束。
-   - [引用] ISO/IEC 14882:2023 §[atomics.order]（relaxed 语义）；cppreference "std::memory_order" 词条。
+   - <span class="badge badge-std">标准</span> `memory_order_relaxed` 保证操作原子、不撕裂，但不对其他原子变量建立顺序约束。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.order]（relaxed 语义）；cppreference "std::memory_order" 词条。
 
 3. **真实场景：`seq_cst` 在所有原子间维持单一全序。** 你需要强一致但接受成本。请说明代价。
-   - [标准] seq_cst 在所有原子操作上维持一个全序，保证最强但通常需要更重的屏障。
-   - [引用] ISO/IEC 14882:2023 §[atomics.order]（seq_cst 全序）；cppreference "std::memory_order" 词条。
+   - <span class="badge badge-std">标准</span> seq_cst 在所有原子操作上维持一个全序，保证最强但通常需要更重的屏障。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.order]（seq_cst 全序）；cppreference "std::memory_order" 词条。
 
 | 内存序 | 原子性 | 同步(跨线程) | 跨变量顺序 | 典型用途 | x86-64 指令(GCC15) |
 |---|---|---|---|---|---|
@@ -696,7 +696,7 @@ int main() {
 | `acq_rel` | 有 | RMW 两侧 | 两侧 | CAS / fetch_* | `lock cmpxchg` / `lock add` |
 | `seq_cst` | 有 | 全同步 | 单一全序 S | 默认、需要全局一致 | 加载 `mov` / 存储 `xchg`(带锁) |
 
-> **示例 38** [难度 ★★☆☆☆] [主题：速查表（6 种序对照） [标准]]
+> **示例 38** [难度 ★★☆☆☆] [主题：速查表（6 种序对照） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 一图流：按“是否需要跨线程同步”选序
 //   只需原子性 ............ relaxed
@@ -714,7 +714,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：内存序从硬件语义到标准契约
 
-[史] C++11 把 **六大内存序（`relaxed`/`consume`(已弃用)/`acquire`/`release`/`acq_rel`/`seq_cst`）** 写进标准，是第一次让「跨线程可见性」在语言层面可表达。其理论根基是 **Lamport 的 happens-before（1978）** 与 **Leslie Lamport 的 sequential consistency（1979）**，并由 **Sarita Adve、Hans Boehm、Mark Batty** 等人把 x86（TSO）、ARM/POWER（弱内存）的差异形式化建模，使同一段 C++ 在不同架构下语义一致。[史] **P0558R1（2017）** 修复了早期内存模型措辞中「准许多余的加宽/窄化、破坏原子性」的漏洞，是后续所有内存序正确性的基础。[轶] `consume` 内存序因几乎无法被编译器安全实现，C++17 起被标记为「弃用/避免使用」，是标准里少见的「承认当初设计坑」案例。[评] 默认 `seq_cst` 有全局总序、最易推理但最贵；`acquire/release` 只保「同步关系」、x86 上免费；`relaxed` 只保原子性不保顺序——选错序是并发 bug 的温床。
+<span class="badge badge-history">史</span> C++11 把 **六大内存序（`relaxed`/`consume`(已弃用)/`acquire`/`release`/`acq_rel`/`seq_cst`）** 写进标准，是第一次让「跨线程可见性」在语言层面可表达。其理论根基是 **Lamport 的 happens-before（1978）** 与 **Leslie Lamport 的 sequential consistency（1979）**，并由 **Sarita Adve、Hans Boehm、Mark Batty** 等人把 x86（TSO）、ARM/POWER（弱内存）的差异形式化建模，使同一段 C++ 在不同架构下语义一致。<span class="badge badge-history">史</span> **P0558R1（2017）** 修复了早期内存模型措辞中「准许多余的加宽/窄化、破坏原子性」的漏洞，是后续所有内存序正确性的基础。<span class="badge badge-anecdote">轶</span> `consume` 内存序因几乎无法被编译器安全实现，C++17 起被标记为「弃用/避免使用」，是标准里少见的「承认当初设计坑」案例。<span class="badge badge-comment">评</span> 默认 `seq_cst` 有全局总序、最易推理但最贵；`acquire/release` 只保「同步关系」、x86 上免费；`relaxed` 只保原子性不保顺序——选错序是并发 bug 的温床。
 
 ### ㉒.2 真实工程坐标：内存序活在哪些产品里
 
@@ -742,9 +742,9 @@ int main() {
 
 ### ㉒.4 与标准的互动：内存序与 C++ 标准的演进
 
-[史] 内存序随 **C++11** 随 `<atomic>` 一起引入；**C++17 的 P0558R1** 修正内存模型措辞（影响所有内存序正确性）；`consume` 在 C++17 起明确「避免使用」。WG21 持续在「强可移植性」与「弱架构上的性能」之间权衡：一方面保留 `seq_cst` 作为安全默认，**C++20 的 P0668（内存模型小修订）** 与后续提案细化了并发条款；另一方面为专家提供 relaxed/acquire/release 以贴近硬件。与 ARM 弱内存、x86 TSO 的共存，是内存序标准设计的长期主题。
+<span class="badge badge-history">史</span> 内存序随 **C++11** 随 `<atomic>` 一起引入；**C++17 的 P0558R1** 修正内存模型措辞（影响所有内存序正确性）；`consume` 在 C++17 起明确「避免使用」。WG21 持续在「强可移植性」与「弱架构上的性能」之间权衡：一方面保留 `seq_cst` 作为安全默认，**C++20 的 P0668（内存模型小修订）** 与后续提案细化了并发条款；另一方面为专家提供 relaxed/acquire/release 以贴近硬件。与 ARM 弱内存、x86 TSO 的共存，是内存序标准设计的长期主题。
 
-- [史] **内存模型修订链**：**P0668（Revising the C++ Memory Model）** 由 O. Lahav 等提案，最终修订 **R5**，其形式化基础来自论文《Repairing Sequential Consistency in C/C++11》（PLDI 2017）；它在 C++20 修正了 sequential consistency 与 release/acquire 的语义，使跨架构的内存序定义可被严格证明——这是委员会「强可移植性 vs 弱架构性能」权衡的形式化收口；<https://wg21.link/p0668>。
+- <span class="badge badge-history">史</span> **内存模型修订链**：**P0668（Revising the C++ Memory Model）** 由 O. Lahav 等提案，最终修订 **R5**，其形式化基础来自论文《Repairing Sequential Consistency in C/C++11》（PLDI 2017）；它在 C++20 修正了 sequential consistency 与 release/acquire 的语义，使跨架构的内存序定义可被严格证明——这是委员会「强可移植性 vs 弱架构性能」权衡的形式化收口；<https://wg21.link/p0668>。
 
 ### ㉒.5 权威引用
 
@@ -755,7 +755,7 @@ int main() {
 
 ## 附录 A：WG21 —— memory_order 的设计哲学 [B: Principle]
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录 A：WG21 —— memor]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 —— memor
 ```
 为什么 C++ 需要 6 种 memory_order，而不是简单的"原子"或"非原子"？
 
@@ -779,7 +779,7 @@ C++20 提案: P0371R1 建议弃用 memory_order_consume，使用 memory_order_ac
 
 > [微架构·ARM] [UNVERIFIED]：附录 A 第 3 点「弱架构省 5-10ns」为微架构经验量级，随 CPU 而变，非本机实测，仅说明「弱内存模型下 relaxed 更便宜」的相对结论。
 
-> **示例 40** [难度 ★★☆☆☆] [主题：附录 B：跨平台成本量化 [E: L]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：跨平台成本量化 [E: L
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -814,7 +814,7 @@ int main() {
 
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录 C：面试 [J: Learni]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learni
 ```
 面试高频:
 Q: 默认的 memory_order 是什么？
@@ -876,7 +876,7 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 - **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
 - **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— 内存序的强弱最终映射到 x86 TSO / ARM 弱内存模型的真实屏障
 - **多线程落地（part07）**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— acquire/release 在线程/异步结果可见性中的用法
-- **协作取消衔接（part07）**：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)—— stop_token 的原子标志依赖内存序保证取消可见
+- **协作取消衔接（part07）**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)—— stop_token 的原子标志依赖内存序保证取消可见
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -903,7 +903,7 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 
 ### 测试源码（节选）
 
-> **示例 42** [难度 ★★★☆☆] [主题：测试源码（节选）]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码（节选）
 ```cpp
 std::atomic<int> g{0};
 [[gnu::noinline]] void store_relaxed() { g.store(1, std::memory_order_relaxed); }
@@ -960,7 +960,7 @@ fadd_seqcst():
 
 release store「之前」的所有写，对读到该值的 acquire load「之后」可见——这是 C++ 内存模型建立跨线程 happens-before 的核心手段。
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <atomic>
 #include <thread>
@@ -983,9 +983,9 @@ int main() {
 }
 ```
 
-[标准] `②` release 与 `③` acquire 读到同一值构成 synchronizes-with，于是 `① happens-before ④`（`[atomics.order]`）。
+<span class="badge badge-std">标准</span> `②` release 与 `③` acquire 读到同一值构成 synchronizes-with，于是 `① happens-before ④`（`[atomics.order]`）。
 
-[引用] cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。经典讲解见 Herb Sutter, *Atomic Weapons: The C++ Memory Model and Modern Hardware*：`https://herbsutter.com/2013/02/11/atomic-weapons-the-c-memory-model-and-modern-hardware/`。
+<span class="badge badge-ref">引用</span> cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。经典讲解见 Herb Sutter, *Atomic Weapons: The C++ Memory Model and Modern Hardware*：`https://herbsutter.com/2013/02/11/atomic-weapons-the-c-memory-model-and-modern-hardware/`。
 
 </details>
 
@@ -997,7 +997,7 @@ int main() {
 
 `relaxed` 只保证单变量的修改顺序（modification order），**不保证跨变量的全局可见顺序**。两个独立标志用 relaxed 时，不同观察者可能看到相反的先后，逻辑上得出矛盾结论。`seq_cst` 为所有 seq_cst 操作建立单一全序，消除此类悖论。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <atomic>
 #include <thread>
@@ -1018,9 +1018,9 @@ int main() {
 }
 ```
 
-[标准] 若把上面全部换成 `relaxed`，`z==0`（两读者互相看不到对方）在标准下是**允许**的结果。
+<span class="badge badge-std">标准</span> 若把上面全部换成 `relaxed`，`z==0`（两读者互相看不到对方）在标准下是**允许**的结果。
 
-[引用] cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。IRIW 与 seq_cst 的全局总序见 ISO §32.4（[atomics.order]）及 P. Sewell 等对 C/C++ 内存模型的形式化研究。
+<span class="badge badge-ref">引用</span> cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。IRIW 与 seq_cst 的全局总序见 ISO §32.4（[atomics.order]）及 P. Sewell 等对 C/C++ 内存模型的形式化研究。
 
 </details>
 
@@ -1032,7 +1032,7 @@ int main() {
 
 `push` 把新节点的初始化（写 `data`/`next`）通过 release CAS 发布；`pop` 用 acquire CAS 读到该指针后，才能安全解引用刚被 push 的节点——release/acquire 配对保证「节点内容写」happens-before「pop 端读」。
 
-> **示例 45** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1061,7 +1061,7 @@ int main() {
 
 [实现·GCC15] 本例单线程演示序标注；真正多线程 `pop` 存在 ABA 与 use-after-free，须配 tagged pointer（ch111）或 HP/RCU（ch112）。
 
-[引用] cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。无锁栈的内存序与回收见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
+<span class="badge badge-ref">引用</span> cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。无锁栈的内存序与回收见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
 </details>
 
@@ -1075,7 +1075,7 @@ int main() {
 
 **常见错误**：图快用 `relaxed` 发布指针。
 
-> **示例 46** [难度 ★★☆☆☆] [主题：演绎 1：发布一个「已就绪的指针」该]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：发布一个「已就绪的指针」该
 ```cpp
 #include <atomic>
 #include <thread>
@@ -1111,7 +1111,7 @@ int main() {
 
 **常见错误**：所有原子操作都用默认 `seq_cst`（最强序），在 ARM 上每次都插 `dmb ish` 全屏障。
 
-> **示例 47** [难度 ★★☆☆☆] [主题：演绎 2：无脑全 seqcst 会付]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：无脑全 seqcst 会付
 ```cpp
 #include <atomic>
 #include <thread>
@@ -1245,7 +1245,7 @@ int main() {
 
 ### D4.6 编译验证
 
-> **示例 48** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1469,7 +1469,7 @@ fetch_add relaxed 与 seq_cst 的热循环核心指令完全相同：`f0 4c 0f c
 
 ### D5.3 可复现 demo
 
-> **示例 49** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <atomic>
 #include <iostream>

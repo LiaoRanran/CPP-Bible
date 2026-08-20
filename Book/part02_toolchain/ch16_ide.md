@@ -14,35 +14,35 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C++ 是编译型 + 强类型 + 多翻译单元语言，工作流天然比脚本语言重：编辑→索引→补全→静态检查→编译→调试→测试。[史][评] 早期程序员只有 `vi` + `make` + `gdb`，补全靠记忆、跳转靠 grep。1990 年代，集成开发环境（IDE）兴起：微软 **Visual C++**（1993 起）把编辑、编译、调试合一；后来 JetBrains **CLion**、Qt **Qt Creator** 针对 C++ 做深度语义理解。[史] 编辑器阵营则守住轻量与可定制（VIM/Emacs），把"智能"交给语言服务器。
+C++ 是编译型 + 强类型 + 多翻译单元语言，工作流天然比脚本语言重：编辑→索引→补全→静态检查→编译→调试→测试。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 早期程序员只有 `vi` + `make` + `gdb`，补全靠记忆、跳转靠 grep。1990 年代，集成开发环境（IDE）兴起：微软 **Visual C++**（1993 起）把编辑、编译、调试合一；后来 JetBrains **CLion**、Qt **Qt Creator** 针对 C++ 做深度语义理解。<span class="badge badge-history">史</span> 编辑器阵营则守住轻量与可定制（VIM/Emacs），把"智能"交给语言服务器。
 
 ### 0.2 关键转折（编年）
 
-- **1993 起**：Visual C++ / Visual Studio 把 C++ 开发集成化。[史]
-- **2015**：微软开源 **Visual Studio Code（VSCode）**，靠 LSP（语言服务器协议）与插件成为跨语言轻量 IDE 霸主。[史]
-- **LSP**（2016 由微软提出）让"编辑器"与"语言智能"解耦——Clangd、ccls 等 C++ 语言服务器由此爆发。[史]
+- **1993 起**：Visual C++ / Visual Studio 把 C++ 开发集成化。<span class="badge badge-history">史</span>
+- **2015**：微软开源 **Visual Studio Code（VSCode）**，靠 LSP（语言服务器协议）与插件成为跨语言轻量 IDE 霸主。<span class="badge badge-history">史</span>
+- **LSP**（2016 由微软提出）让"编辑器"与"语言智能"解耦——Clangd、ccls 等 C++ 语言服务器由此爆发。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-IDE 之争是"重集成 vs 轻可订"。重量级 IDE（CLion/VS）内建索引与重构，开箱即用但资源重；轻编辑器（VIM/Neovim/VSCode）借 LSP 把"智能"外置，灵活却需自配。[史][评] C++ 因模板与宏极难解析，语言服务器质量长期是体验分水岭——Clangd 用 Clang 前端给出近乎编译级的补全，是"复用编译器做 IDE"哲学的胜出。[评]
+IDE 之争是"重集成 vs 轻可订"。重量级 IDE（CLion/VS）内建索引与重构，开箱即用但资源重；轻编辑器（VIM/Neovim/VSCode）借 LSP 把"智能"外置，灵活却需自配。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> C++ 因模板与宏极难解析，语言服务器质量长期是体验分水岭——Clangd 用 Clang 前端给出近乎编译级的补全，是"复用编译器做 IDE"哲学的胜出。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] AI 辅助补全（Copilot 类）重塑了 IDE：从"基于符号的补全"升级为"基于上下文生成整段实现"，VSCode、CLion 均已内建或插件化接入，C++ 因模板/宏难解析而受益尤为明显。
-- [史] 远程开发容器化（Dev Container / 远程 SSH）让"同一份工具链在任何人机器上一致"成为现实，配合 LSP，轻编辑器也能获得接近重量级 IDE 的语义体验。
-- [史] Clangd 借助 Clang 前端给出近乎编译级的补全与诊断，确立了"复用编译器做 IDE 智能"的胜出路线；ccls 则在大代码库索引上表现突出。
-- [评] C++ 的 IDE 体验天堑，根源仍是模板与宏的解析难度——这恰是语言服务器质量成为体验分水岭的深层原因。
+- <span class="badge badge-history">史</span> AI 辅助补全（Copilot 类）重塑了 IDE：从"基于符号的补全"升级为"基于上下文生成整段实现"，VSCode、CLion 均已内建或插件化接入，C++ 因模板/宏难解析而受益尤为明显。
+- <span class="badge badge-history">史</span> 远程开发容器化（Dev Container / 远程 SSH）让"同一份工具链在任何人机器上一致"成为现实，配合 LSP，轻编辑器也能获得接近重量级 IDE 的语义体验。
+- <span class="badge badge-history">史</span> Clangd 借助 Clang 前端给出近乎编译级的补全与诊断，确立了"复用编译器做 IDE 智能"的胜出路线；ccls 则在大代码库索引上表现突出。
+- <span class="badge badge-comment">评</span> C++ 的 IDE 体验天堑，根源仍是模板与宏的解析难度——这恰是语言服务器质量成为体验分水岭的深层原因。
 
 > 史料来源：语言服务器协议 LSP https://microsoft.github.io/language-server-protocol/ ；Clangd https://clangd.llvm.org/
 
-## ① 概述：IDE 在 C++ 工作流中的角色 [标准]
+## ① 概述：IDE 在 C++ 工作流中的角色 <span class="badge badge-std">标准</span>
 
 [第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)
 [第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)
 
 C++ 是**编译型 + 强类型 + 多翻译单元**语言，工作流天然比脚本语言重：编辑 → 索引/补全 → 静态检查 → 编译 → 调试 → 测试。IDE 的价值不是"写代码"，而是把这条链路的**反馈延迟压到最低**——把编译器的报错、clang-tidy 的异味、调试器的状态，直接叠在编辑器里。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：IDE 在 C++ 工作流中的]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：IDE 在 C++ 工作流中的
 ```cpp
 // ① 一个最小可编译单元：IDE 对它的"理解"决定补全/跳转质量
 #include <vector>
@@ -52,7 +52,7 @@ int sum_of(const std::vector<int>& v) {
 }
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：IDE 在 C++ 工作流中的]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：IDE 在 C++ 工作流中的
 ```
 ┌──────────┐  索引   ┌──────────┐  诊断   ┌──────────┐
 │  编辑器   │ ─────▶ │ 语言服务 │ ─────▶ │ 编译/检查 │
@@ -64,11 +64,11 @@ int sum_of(const std::vector<int>& v) {
 - `[标准]`：现代 C++ IDE 的核心是**语言服务器（LSP）**——编辑器与"懂 C++ 的进程"解耦，标准见 Language Server Protocol。
 - `[经验]`：C++ 体验的上限由"索引引擎质量"决定，而非编辑器外壳；同一 clangd 在不同编辑器里体验接近。
 
-## ② VSCode + C++ 扩展（IntelliSense/cpptools） [标准]
+## ② VSCode + C++ 扩展（IntelliSense/cpptools） <span class="badge badge-std">标准</span>
 
 VSCode 本身只是壳，**C/C++ 扩展（ms-vscode.cpptools）** 提供 IntelliSense（基于 EDG 的语义引擎）与调试适配。装好后关键配置在 `.vscode/c_cpp_properties.json`。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：+ C++ 扩展]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · + C++ 扩展
 ```cpp
 // ② IntelliSense 能否补全，取决于它能否看到正确的 include 路径与 -std
 #include <ranges>
@@ -128,7 +128,7 @@ auto evens = std::views::iota(0, 10) | std::views::filter([](int i){ return i%2=
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：调试配置]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试配置
 ```cpp
 // ③ 被调试的程序：在 main 首行断点，观察 v 的内容
 #include <vector>
@@ -146,7 +146,7 @@ int main() {
 
 CLion 用 **Clangd 衍生引擎**做索引，重构（重命名、提取函数、改变量）基于**语义**而非文本正则，跨文件安全。它对 CMake 项目开箱即用。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：IDE 与编辑器：VSCode / CLion / QtCreator / VIM]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · IDE 与编辑器：VSCode / CLion / QtCreator / VIM
 ```cpp
 // ④ 在 CLion 中"提取函数"：选中循环体 → Refactor → Extract Function
 #include <string>
@@ -173,7 +173,7 @@ add_executable(demo main.cpp)
 
 QtCreator 是 Qt 官方 IDE，强项是 **UI 设计器（.ui）+ 信号槽（SIGNAL/SLOT 或 新语法 connect）**。信号槽是 Qt 的元对象系统（moc 预编译）特性。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：IDE 与编辑器：VSCode / CLion / QtCreator / VIM]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · IDE 与编辑器：VSCode / CLion / QtCreator / VIM
 ```cpp
 // ⑤ 新语法 connect：类型安全，编译期检查（推荐，[实现]真实可用需 Qt 头）
 #include <QPushButton>
@@ -184,7 +184,7 @@ void wire(QPushButton* btn) {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：IDE 与编辑器：VSCode / CLion / QtCreator / VIM]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · IDE 与编辑器：VSCode / CLion / QtCreator / VIM
 ```cpp
 // ⑤ 旧语法 connect：运行时按字符串匹配，IDE 补全弱、易在运行期才炸
 // connect(btn, SIGNAL(clicked()), this, SLOT(onClicked()));  // 拼错 SLOT 名编译不报错
@@ -205,7 +205,7 @@ require('lspconfig').clangd.setup{
 }
 ```
 
-> **示例 8** [难度 ★★★☆☆] [主题：[实现·Clang19]]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·Clang19]
 ```cpp
 // ⑥ clangd 读懂编译命令后，才能对模板/Concept 做精确补全
 template <std::integral T>
@@ -231,7 +231,7 @@ T gcd(T a, T b) { while (b) { T t = a % b; a = b; b = t; } return a; }
 ]
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：与 compilecommands.]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 compilecommands.
 ```cpp
 // ⑦ clangd 用上面的 command 解析 app.cpp：include 路径与 -std 完全一致
 #include "mylib/widget.h"      // clangd 知道 -I../include，才找得到
@@ -247,7 +247,7 @@ g++ -std=c++23 -Iinclude -c src/app.cpp -o build/app.o
 - `[实现·Clang19]`：clangd 只认 `compile_commands.json`（或 `compile_flags.txt`）；**没有它，clangd 只能靠 `fallbackFlags` 盲猜**，对条件编译 `#ifdef` 极易误判。
 - `[平台·Windows]`：Windows 上路径分隔符在 JSON 里用 `/` 或转义 `\\` 均可，但 clangd 对 `C:/...` 与 `C:\\...` 解析一致，建议统一用 `/`。
 
-## ⑧ 代码格式化 clang-format [标准]
+## ⑧ 代码格式化 clang-format <span class="badge badge-std">标准</span>
 
 [第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— clang-format 是风格契约的工具化落地
 [第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)（CI/CD 流水线）—— 格式化检查应作为 PR 门禁（--dry-run -Werror）
@@ -263,13 +263,13 @@ BreakBeforeBraces: Allman
 PointerAlignment: Left
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：代码格式化 clang-format]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代码格式化 clang-format
 ```cpp
 // ⑧ 格式前：clang-format 会重排为统一风格
 int  foo(int x,int y){if(x>y)return x;else return y;}
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：代码格式化 clang-format]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代码格式化 clang-format
 ```cpp
 // ⑧ 格式后（典型输出，本机若无 clang-format 亦为确定结果：缩进4、Allman 花括号、空格对齐）
 int foo(int x, int y) {
@@ -290,14 +290,14 @@ int foo(int x, int y) {
 
 `clang-tidy` 是基于 **Clang AST** 的 lint 工具，能抓到 g++ 不报的**语义异味**（悬空、窄化、冗余拷贝）。它同样读 `compile_commands.json`。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：静态检查 clang-tidy [实]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态检查 clang-tidy [实
 ```cpp
 // ⑨ clang-tidy 会报：参数按值传大对象 → 建议 const&（performance-unnecessary-value-param）
 #include <string>
 std::string mirror(std::string s) { return s; }   // 应改为 const std::string&
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：静态检查 clang-tidy [实]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态检查 clang-tidy [实
 ```cpp
 // ⑨ 修复后：按 const 引用传递，消除一次拷贝
 #include <string>
@@ -316,11 +316,11 @@ clang-tidy -p build src/app.cpp --checks='-*,performance-*,modernize-*'
 - `[实现·Clang19]`：clang-tidy 走 **Clang AST**，比基于 token 的 grep 类 lint 准——它能理解"这个形参在函数体里只读"，所以才敢建议 `const&`。
 - `[经验]`：把 clang-tidy 接进 `pre-commit` 或 CI，比在 PR 里人工挑异味稳。CI 上无 clang-tidy 时，至少保留 g++ `-Wall -Wextra -Wconversion` 兜底。
 
-## ⑩ 重构能力对比 [经验]
+## ⑩ 重构能力对比 <span class="badge badge-exp">经验</span>
 
 不同工具的重构**安全级别**不同：语义级（基于 AST）跨文件可靠，文本级（正则）易漏捕获列表/宏。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：重构能力对比 [经验]]
+> **示例 14** [难度 ★☆☆☆☆] [主题：重构能力对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑩ 重命名场景：把 'count' 改为 'total'，语义级工具会同时改 Lambda 捕获
 #include <vector>
@@ -332,7 +332,7 @@ int count_em(const std::vector<int>& v) {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：重构能力对比 [经验]]
+> **示例 15** [难度 ★☆☆☆☆] [主题：重构能力对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑩ 提取函数场景：把内联逻辑抽成独立函数，依赖精确的类型推导
 #include <algorithm>
@@ -357,7 +357,7 @@ double mean(const std::vector<int>& v) {
 
 下面是**真实文件**的前后对比（均经 g++ -std=c++23 编译通过）。重构前的问题：巨型单函数、魔法数 `10`、if/else 两个分支干了同一件事（重复 `s += ...`）。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：[实现·Clang19]真实：一个函]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·Clang19]真实：一个函
 ```cpp
 // 文件：Examples/_ch16_refactor_before.cpp
 // 行号：5
@@ -377,7 +377,7 @@ std::string before(const std::vector<int>& xs) {
 }
 ```
 
-> **示例 17** [难度 ★★★☆☆] [主题：[实现·Clang19]真实：一个函]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·Clang19]真实：一个函
 ```cpp
 // 文件：Examples/_ch16_refactor_after.cpp
 // 行号：9
@@ -405,11 +405,11 @@ std::string after(const std::vector<int>& xs) {
 - `[实现·Clang19]`：以上 `before`/`after` 两个文件均用 `g++ -std=c++23 -Wall -c` 实测可编译（仅 `before` 触发 `-Wsign-compare` 警告，因 `int i < xs.size()` 有符号/无符号比较——这恰好是重构前另一处异味）。
 - `[经验]`：重构的"正确性"不只看编译过，还要**行为等价**；用单元测试（见⑭）锁住输入 `{1,20,3}` 的输出，确保重构没改语义。
 
-## ⑫ 调试器集成 [标准]
+## ⑫ 调试器集成 <span class="badge badge-std">标准</span>
 
 调试器（gdb/lldb）通过 **DAP（Debug Adapter Protocol）** 或 MI 接入 IDE。核心能力：断点、单步、监视变量、调用栈、条件断点。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：调试器集成 [标准]]
+> **示例 18** [难度 ★☆☆☆☆] [主题：调试器集成 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 条件断点示例：只在 i==5 时停（IDE 里右键断点设条件，无需改代码）
 #include <vector>
@@ -422,7 +422,7 @@ int sum_to(std::vector<int>& v) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：调试器集成 [标准]]
+> **示例 19** [难度 ★☆☆☆☆] [主题：调试器集成 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 监视"被优化掉"的变量：务必 -O0 -g，否则看到 <optimized out>
 int obscure(int a, int b) {
@@ -447,7 +447,7 @@ int obscure(int a, int b) {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：远程开发]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 远程开发
 ```cpp
 // ⑬ 远端编译的程序与本地无异，只是 g++ 跑在容器里
 #include <version>
@@ -463,13 +463,13 @@ int main() { return has_print ? 0 : 1; }
 - `[平台·Windows]`：Remote-Container 用 **Docker volume** 挂源码，编译速度接近原生；WSL2 用 9P 文件系统挂载，大项目 I/O 略慢。
 - `[经验]`：CI 与 Dev Container 用**同一基础镜像**，可消灭"在我机器能编"——IDE、本地、CI 三处环境合一。
 
-## ⑭ 单元测试集成 [标准]
+## ⑭ 单元测试集成 <span class="badge badge-std">标准</span>
 
 [第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)（测试策略）—— 测试发现/单跑的底层是编译器把测试编成可执行文件
 
 IDE 把测试框架（GoogleTest / Catch2 / doctest）的**发现与单跑**做成一键。底层仍是编译器把测试编成可执行文件再运行。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：单元测试集成 [标准]]
+> **示例 21** [难度 ★☆☆☆☆] [主题：单元测试集成 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ GoogleTest 风格（需 gtest 头；语义自洽示例）
 #include <gtest/gtest.h>
@@ -480,7 +480,7 @@ TEST(Math, AddPositive) {
 }
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：单元测试集成 [标准]]
+> **示例 22** [难度 ★★★☆☆] [主题：单元测试集成 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ doctest 极简风格：单头文件，IDE 配一个 main 即可
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
@@ -496,7 +496,7 @@ TEST_CASE("refactor equivalence") {
 - `[标准]`：测试框架本质是**带 `main` 的断言库**；IDE 的"测试面板"只是解析其输出（如 gtest 的 `[  PASSED  ]`）做可视化。
 - `[经验]`：把测试接入 IDE 的"运行单个用例"按钮，改完一个函数立刻跑相关用例——反馈环从"分钟级"降到"秒级"。
 
-## ⑮ 代码模板 / snippet [经验]
+## ⑮ 代码模板 / snippet <span class="badge badge-exp">经验</span>
 
 snippet 把**高频样板**缩成几个字符触发。VSCode 的 `*.code-snippets`、CLion 的 Live Templates、VIM 的 UltiSnips 语法不同，但思想一致。
 
@@ -511,7 +511,7 @@ snippet 把**高频样板**缩成几个字符触发。VSCode 的 `*.code-snippet
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：代码模板 / snippet [经验]
+> **示例 23** [难度 ★☆☆☆☆] [主题：代码模板 / snippet <span class="badge badge-exp">经验</span>
 ```cpp
 // ⑮ 展开后实际得到的代码（snippet 产物）
 #include <iostream>
@@ -524,11 +524,11 @@ int main() {
 - `[经验]`：团队统一一份 snippet 库（提交进仓库），新人敲 `ctor`/`guard`/`pimpl` 即得规范样板，比口头约定稳。
 - `[平台·Windows]`：snippet 是**纯文本宏**，不依赖编译；跨编辑器靠各自格式维护，建议源生定义放仓库、各编辑器引用。
 
-## ⑯ 多光标 / 宏 / 批量 [经验]
+## ⑯ 多光标 / 宏 / 批量 <span class="badge badge-exp">经验</span>
 
 批量改名的利器：VSCode/CLion 的**多光标**选中所有同名出现；VIM 的 `qq` 录宏对不规则重复最高效。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：多光标 / 宏 / 批量 [经验]]
+> **示例 24** [难度 ★☆☆☆☆] [主题：多光标 / 宏 / 批量 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <cstddef>
 // ⑯ 场景：给下列 5 个成员统一加 [[nodiscard]]
@@ -541,7 +541,7 @@ struct Config {
 };
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：多光标 / 宏 / 批量 [经验]]
+> **示例 25** [难度 ★☆☆☆☆] [主题：多光标 / 宏 / 批量 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <cstddef>
 // ⑯ 多光标批量加 [[nodiscard]] 后的结果（语义自洽：提示调用方别忽略返回值）
@@ -557,11 +557,11 @@ struct Config {
 - `[经验]`：规则重复的改动（加属性、改前缀）用多光标；**不规则**的（每处文本不同）用 VIM 宏 `qq`…`q` + `@@` 重放。
 - `[实现·Clang19]`：这类改动与编译无关，但配合 clangd 的"重命名"做**语义级**批量，比纯文本多光标更安全。
 
-## ⑰ [经验]选型建议
+## ⑰ <span class="badge badge-exp">经验</span>选型建议
 
 没有"最好"的 IDE，只有"最契合工作流"的。按场景给硬建议：
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：[经验]选型建议]
+> **示例 26** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑰ 用枚举表达选型维度（仅为说明，非运行必需）
 enum class User { Student, GameDev, LibAuthor, Embedded, QtDev };
@@ -587,24 +587,24 @@ const char* advise(User u) {
 - `[经验]`：核心能力（补全/跳转/诊断）来自 **clangd**，与外壳无关；把时间花在"配好 compile_commands.json + clang-tidy"，比换编辑器收益大。
 - `[平台·Windows]`：Windows 上 MinGW 与 MSVC 的 IntelliSense 行为不同，切换工具链要同步改 `compilerPath`/`intelliSenseMode`。
 
-## ⑱ 常见配置坑 [经验]
+## ⑱ 常见配置坑 <span class="badge badge-exp">经验</span>
 
 踩坑集：每个都是"编辑器红、g++ 能编"或"调试看到幽灵值"的真实来源。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：常见配置坑 [经验]]
+> **示例 27** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 坑1：includePath 设了但 -std 没设 → 编辑器把 C++23 特性标红
 #include <print>
 int f() { std::print("hi\n"); return 0; }   // c_cpp_properties 没 c++23 就误报
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：常见配置坑 [经验]]
+> **示例 28** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 坑2：compile_commands.json 路径是构建目录的相对路径，clangd 找不到 include
 // command 里写 "-Ibuild/gen" 但 clangd 工作目录不对 → 全部头找不到（红波浪）
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：常见配置坑 [经验]]
+> **示例 29** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 坑3：-O2 调试，变量被优化，监视窗显示 <optimized out>（见⑫）
 int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
@@ -613,26 +613,26 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 - `[经验]`：编辑器报"找不到头"先看三件事：**includePath / compilerPath / compile_commands.json**，九成问题在此。
 - `[平台·Windows]`：Windows 下 `compile_commands.json` 的 `directory` 若用反斜杠且未转义，clangd 解析失败——统一用 `/`。
 
-## ⑲ 最佳实践 [标准]
+## ⑲ 最佳实践 <span class="badge badge-std">标准</span>
 
 [第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— 工具链把风格写进 CI 而非口头约定
 [第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)（CI/CD 流水线）—— 一切检查（format/tidy/test）进 PR 门禁
 
 把上面零散建议收敛为可执行的清单：
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 [标准]]
+> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑲ 实践1：始终用 compile_commands.json 驱动 clangd（CMake 一行导出）
 // cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 [标准]]
+> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑲ 实践2：保存即格式化 + 提交前 clang-tidy，CI 兜底 -Wall -Wextra -Wconversion
 // g++ -std=c++23 -Wall -Wextra -Wconversion -c app.cpp -o app.o
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 [标准]]
+> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑲ 实践3：调试用 -O0 -g；发布可 -O2 -g 保可调试性
 // g++ -std=c++23 -O0 -g -c app.cpp -o app.o
@@ -641,23 +641,23 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 - `[标准]`：这些实践的底层是**可重复、可机器执行**——不依赖某个人"记得格式化"。
 - `[经验]`：把 `.clang-format`、`compile_flags.txt`/构建脚本、snippet 库全提交进仓库，让"环境"成为代码的一部分。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：IDE 跳转定义跳到错误符号。** 同名宏与函数重载让“转到定义”结果不可信。请说明宏与函数分属不同处理阶段。
-   - [标准] 宏在翻译阶段 4 之前做词法替换，不进入语言作用域体系；函数重载决议发生在后续的语义分析阶段。
-   - [引用] ISO/IEC 14882:2023 §[cpp.replace]（宏替换）；cppreference "Replacing text macros" 词条。
+   - <span class="badge badge-std">标准</span> 宏在翻译阶段 4 之前做词法替换，不进入语言作用域体系；函数重载决议发生在后续的语义分析阶段。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.replace]（宏替换）；cppreference "Replacing text macros" 词条。
 
 2. **真实场景：静态分析误报空指针解引用。** 你确信某路径非空，但分析器报警。请用标准说明解引用空指针的定性。
-   - [标准] 解引用空指针是未定义行为；空指针值不指向任何对象。
-   - [引用] ISO/IEC 14882:2023 §[expr.unary.op]（一元 * 运算符）/ [basic.compound]（空指针值）；cppreference "Null pointer" 词条。
+   - <span class="badge badge-std">标准</span> 解引用空指针是未定义行为；空指针值不指向任何对象。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.unary.op]（一元 * 运算符）/ [basic.compound]（空指针值）；cppreference "Null pointer" 词条。
 
 3. **真实场景：重命名重构漏改了宏参数。** 你把变量 `buf` 改名为 `buffer`，宏 `LOG(buf)` 的实参也被改，但宏体内用 `#buf` 字符串化得到旧名。请说明宏与作用域重构工具的盲区。
-   - [标准] 宏是纯文本替换，其参数在替换列表中被逐字展开（含 `#`/`##` 运算符），不参与语言级作用域重命名。
-   - [引用] ISO/IEC 14882:2023 §[cpp.replace]（宏替换与 #、## 运算符）；cppreference "Replacing text macros" 词条。
+   - <span class="badge badge-std">标准</span> 宏是纯文本替换，其参数在替换列表中被逐字展开（含 `#`/`##` 运算符），不参与语言级作用域重命名。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.replace]（宏替换与 #、## 运算符）；cppreference "Replacing text macros" 词条。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 33** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 一行速记：各工具的核心命令（复制即用）
 // 生成编译数据库: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
@@ -668,7 +668,7 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 // 取真实汇编:     g++ -std=c++23 -O2 -S -masm=intel src/app.cpp -o app.asm
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 34** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 速查：IDE ↔ 引擎 ↔ 协议 映射
 // VSCode   ↔ cpptools/clangd ↔ LSP
@@ -693,7 +693,7 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：IDE 与语言服务的来龙去脉
-[史] Visual Studio 由 Microsoft 于 1997 年以"Visual Studio 97"首次打包发布，整合编辑器、编译器（MSVC）、调试器，是 Windows C++ 开发的事实平台。[史] CLion 由 JetBrains 于 2014 年推出，基于自有 C++ 前端提供跨平台智能索引/重构。[史] Visual Studio Code 由 Microsoft 于 2015 年开源发布，靠 Language Server Protocol（LSP，Microsoft 2016 提出）把"编辑器"与"语言智能"解耦。[史] clangd 是 LLVM 提供的 LSP 实现，吃 `compile_commands.json` 提供补全/诊断。[评] 演进主线：单体 IDE（功能全但重）→ 编辑器 + LSP（轻量、语言智能可插拔）→ 语言服务标准化（clangd/cpptools 共用协议）。
+<span class="badge badge-history">史</span> Visual Studio 由 Microsoft 于 1997 年以"Visual Studio 97"首次打包发布，整合编辑器、编译器（MSVC）、调试器，是 Windows C++ 开发的事实平台。<span class="badge badge-history">史</span> CLion 由 JetBrains 于 2014 年推出，基于自有 C++ 前端提供跨平台智能索引/重构。<span class="badge badge-history">史</span> Visual Studio Code 由 Microsoft 于 2015 年开源发布，靠 Language Server Protocol（LSP，Microsoft 2016 提出）把"编辑器"与"语言智能"解耦。<span class="badge badge-history">史</span> clangd 是 LLVM 提供的 LSP 实现，吃 `compile_commands.json` 提供补全/诊断。<span class="badge badge-comment">评</span> 演进主线：单体 IDE（功能全但重）→ 编辑器 + LSP（轻量、语言智能可插拔）→ 语言服务标准化（clangd/cpptools 共用协议）。
 
 ### ㉒.2 真实工程坐标：IDE 活在哪些产品/项目里
 
@@ -719,9 +719,9 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 - 远程/容器开发漏映射：Remote-SSH 下头文件路径未正确挂载，补全全红，实为路径映射配置缺失。
 
 ### ㉒.4 与标准的互动：IDE 与 C++ 标准的演进
-[评] IDE/语言服务不在 ISO C++ 标准正文，但直接受标准驱动：C++20 Modules 要求 clangd/cpptools 理解模块依赖图才能正确补全；Concepts（C++20）让 IDE 能给出更精确的约束报错。LSP 本身是 Microsoft 主导的开放协议（非 ISO），但已成为多语言共享事实标准；无单独 WG21 提案，属工具生态层。
+<span class="badge badge-comment">评</span> IDE/语言服务不在 ISO C++ 标准正文，但直接受标准驱动：C++20 Modules 要求 clangd/cpptools 理解模块依赖图才能正确补全；Concepts（C++20）让 IDE 能给出更精确的约束报错。LSP 本身是 Microsoft 主导的开放协议（非 ISO），但已成为多语言共享事实标准；无单独 WG21 提案，属工具生态层。
 
-- [史] C++20 **Modules（P1103）** 与 **Concepts（P0734）** 直接改变 IDE 智能：Modules 要求 clangd/cpptools 先构建模块依赖图才能正确补全（传统「扫头文件」失效），Concepts 让 IDE 能给出约束不匹配的精确报错。LSP 本身是 Microsoft 2016 提出的开放协议（非 ISO），但已成为多编辑器共享事实标准——属「标准定语义、工具定体验」。
+- <span class="badge badge-history">史</span> C++20 **Modules（P1103）** 与 **Concepts（P0734）** 直接改变 IDE 智能：Modules 要求 clangd/cpptools 先构建模块依赖图才能正确补全（传统「扫头文件」失效），Concepts 让 IDE 能给出约束不匹配的精确报错。LSP 本身是 Microsoft 2016 提出的开放协议（非 ISO），但已成为多编辑器共享事实标准——属「标准定语义、工具定体验」。
 
 ### ㉒.5 权威引用
 - https://code.visualstudio.com/ ：VS Code 官方站，证明 Microsoft 2015 与 C++ 扩展生态。
@@ -732,32 +732,32 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 
 ## 附录: IDE 实战配置
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录: IDE 实战配置]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: IDE 实战配置
 ```cpp
 #include <iostream>
 int main(){std::cout<<"VSCode: tasks.json + launch.json for build/debug. CMake: cmake -G 'MinGW Makefiles' -B build."<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录: IDE 实战配置]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: IDE 实战配置
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Qt Creator: .pro file or CMakeLists.txt. VS: .sln + .vcxproj. CLion: CMake-only."<<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录: IDE 实战配置]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: IDE 实战配置
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2,3};std::cout<<v[0]<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: IDE 实战配置]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: IDE 实战配置
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Debugger: GDB 'break', 'run', 'bt', 'print'. LLDB: same commands with lldb prefix."<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录: IDE 实战配置]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: IDE 实战配置
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Profiling: VS Diagnostic Tools, PerfView (Windows), Instruments (macOS), perf (Linux)."<<std::endl;return 0;}
@@ -765,7 +765,7 @@ int main(){std::cout<<"Profiling: VS Diagnostic Tools, PerfView (Windows), Instr
 
 ## 附录 A：工业IDE选择与WG21背景 [B: Principle / F: Industry]
 
-> **示例 40** [难度 ★★☆☆☆] [主题：附录 A：工业IDE选择与WG21背]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业IDE选择与WG21背
 ```
 C++ IDE 生态的工业现实:
 
@@ -787,7 +787,7 @@ Meson: 默认生成 compile_commands.json
 
 ## 附录 B：面试与权衡 [J: Learning / H: Design]
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录 B：面试与权衡 [J: Lea]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与权衡 [J: Lea
 ```
 IDE 选型决策:
 - 新手: VS 2022 Community (Windows) / CLion (跨平台, 开箱即用)
@@ -817,7 +817,7 @@ A: 生成 compile_commands.json, IDE 的 clangd 读取后即可精确解析 incl
 | CLion | 自研(clangd-based) | CMake原生 | GDB/LLDB |
 | Qt Creator | clangd | CMake/QMake | GDB/CDB |
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 C：IDE底层与编译器集成 []
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：IDE底层与编译器集成 [
 ```cpp
 #include <iostream>
 int main(){std::cout<<"compile_commands.json=universal bridge between build system and IDE LSP"<<std::endl;return 0;}
@@ -829,7 +829,7 @@ GCC/clangd集成: compile_commands.json→clangd→LSP(汇编级别的token解�
 MSVC实现: VS Intellisense→EDG前端(非clang)→MSVC专用ABI理解
 Clang实现: clangd→AST完整遍历→内存中索引(100MB for LLVM项目)
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 D：IDE编译器实现细节 [C]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：IDE编译器实现细节 [C
 ```cpp
 #include <iostream>
 int main(){std::cout<<"clangd+GCC: compile_commands.json bridges build system to IDE LSP"<<std::endl;std::cout<<"MSVC: EDG frontend for intellisense, not clang-based"<<std::endl;return 0;}
@@ -856,7 +856,7 @@ clangd = Clang前端 + LSP协议 + 索引系统
 | 重构 | 基础(重命名+查找引用) | 完整(提取函数/变量/类) |
 | CMake | compile_commands.json | 原生集成 |
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：+ clangd vs CLion]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · + clangd vs CLion
 ```cpp
 #include <iostream>
 int main(){std::cout<<"clangd=LSP server based on Clang AST, ~100MB index for LLVM project"<<std::endl;return 0;}
@@ -887,7 +887,7 @@ Diagnostics:
 性能数据: clangd索引LLVM项目(~5M lines)约需30s, 内存~100MB
 VS Code+clangd全项目重构(~500ms for rename)
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录 G：clangd配置与性能]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：clangd配置与性能
 ```cpp
 #include <iostream>
 int main(){std::cout<<"clangd=LSP with Clang AST, ~100MB for LLVM index, ~30s cold start"<<std::endl;return 0;}
@@ -895,7 +895,7 @@ int main(){std::cout<<"clangd=LSP with Clang AST, ~100MB for LLVM index, ~30s co
 
 ## 附录 H：IDE面试
 
-> **示例 46** [难度 ★★☆☆☆] [主题：附录 H：IDE面试]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：IDE面试
 ```cpp
 #include <iostream>
 int main(){std::cout<<"compile_commands.json=bridge build->IDE(LSP clangd reads it)"<<std::endl;return 0;}
@@ -952,7 +952,7 @@ call lookup_symbol       ; 递归查找定义
 
 **真实场景：Code Review 自动化。** 你想在 CI 里用 clang-tidy 挡住"按值传参却被当 const 引用用"这类性能反模式，避免每次靠人眼 review。请写一段会触发 `performance-unnecessary-value-param` 的代码，并给出修复版本。
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -963,9 +963,9 @@ std::string mirror_good(const std::string& s) { return s + s; }
 int main() { std::cout << mirror_good("ab") << "\n"; }
 ```
 
-[标准] 结论：clang-tidy 在编译前基于 AST 做语义检查，能抓编译器不报、但影响质量/性能的写法。
+<span class="badge badge-std">标准</span> 结论：clang-tidy 在编译前基于 AST 做语义检查，能抓编译器不报、但影响质量/性能的写法。
 
-[引用] clang-tidy 文档（https://clang.llvm.org/extra/clang-tidy/ ）与具体检查项 `performance-unnecessary-value-param`（https://clang.llvm.org/extra/clang-tidy/checks/performance/unnecessary-value-param.html ）说明其基于 AST 的语义检查。
+<span class="badge badge-ref">引用</span> clang-tidy 文档（https://clang.llvm.org/extra/clang-tidy/ ）与具体检查项 `performance-unnecessary-value-param`（https://clang.llvm.org/extra/clang-tidy/checks/performance/unnecessary-value-param.html ）说明其基于 AST 的语义检查。
 
 ### 练习 2（难度 ★★★）
 
@@ -976,22 +976,22 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
 # 产出 build/compile_commands.json，每行一个 TU 的真实编译命令
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 int main() { std::cout << "compile_commands.json 让 clangd 用真实命令解析本 TU\n"; }
 ```
 
-[标准] 结论：`compile_commands.json` 记录每个源文件的真实 `-I`/`-D`/标准，clangd 据此精确跳转与补全；
+<span class="badge badge-std">标准</span> 结论：`compile_commands.json` 记录每个源文件的真实 `-I`/`-D`/标准，clangd 据此精确跳转与补全；
 手写路径在条件宏/多标准下极易错。
 
-[引用] clangd 文档（https://clangd.llvm.org/ ）说明它依赖编译数据库；CMake 变量 `CMAKE_EXPORT_COMPILE_COMMANDS`（https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html ）讲如何由 CMake 一键生成 `compile_commands.json`。
+<span class="badge badge-ref">引用</span> clangd 文档（https://clangd.llvm.org/ ）说明它依赖编译数据库；CMake 变量 `CMAKE_EXPORT_COMPILE_COMMANDS`（https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html ）讲如何由 CMake 一键生成 `compile_commands.json`。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：提取重复逻辑成 helper。** 你发现多处重复写 `for` 求和，想用 IDE 的 extract-function 抽成 `total()`，又担心正则式替换会改错作用域。请写"重构前（内联重复）"与"重构后（提取 helper）"的对照，说明 IDE 的 extract-function 为何安全（基于 AST 而非文本）。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1004,9 +1004,9 @@ int main() {
 }
 ```
 
-[标准] 结论：基于 AST 的重构能正确处理作用域/重载/模板，比正则替换文本安全；CLion/VSCode+clangd 都提供此类操作。
+<span class="badge badge-std">标准</span> 结论：基于 AST 的重构能正确处理作用域/重载/模板，比正则替换文本安全；CLion/VSCode+clangd 都提供此类操作。
 
-[引用] Language Server Protocol 规范（https://microsoft.github.io/language-server-protocol/ ）定义 rename/refactor 等基于 AST 的操作；clangd（https://clangd.llvm.org/ ）据此提供安全的 extract-function / rename。
+<span class="badge badge-ref">引用</span> Language Server Protocol 规范（https://microsoft.github.io/language-server-protocol/ ）定义 rename/refactor 等基于 AST 的操作；clangd（https://clangd.llvm.org/ ）据此提供安全的 extract-function / rename。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -1024,7 +1024,7 @@ IndentWidth: 4
 ColumnLimit: 100
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：演绎 1：用 .clang-form]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 .clang-form
 ```cpp
 #include <iostream>
 int main() { std::cout << "格式化后 diff 只剩真正逻辑改动\n"; }
@@ -1039,7 +1039,7 @@ int main() { std::cout << "格式化后 diff 只剩真正逻辑改动\n"; }
 **错误**：只在 `.vimrc` 里手写 `set path+=...`，条件宏/三方头解析错乱。
 **修复**：`cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON` 生成数据库，Neovim 的 lspconfig 指向 clangd；
 
-> **示例 51** [难度 ★★☆☆☆] [主题：演绎 2：用 compilecomm]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：用 compilecomm
 ```cpp
 #include <iostream>
 int main() { std::cout << "clangd 用真实编译命令提供补全/诊断/跳转\n"; }

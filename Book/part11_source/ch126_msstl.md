@@ -12,36 +12,36 @@
 > 当 Windows 上的 C++ 需要一个"与 MSVC 同生共死"的标准库时，Microsoft 把它从授权代码变成了开源项目。
 
 ### 0.1 起源（谁·何时·为何）
-Microsoft 的 VC++ 自 1990 年代起就自带一套 C++ 标准库实现，早期根基脱胎于 Stepanov 的 SGI STL 思路 [史]。真正的工程痛点是：标准库必须和编译器（`cl.exe`）、运行时（`vcruntime`/`ucrt`）、异常处理（SEH）、Windows 堆深度咬合——第三方标准库在 Windows 上总是"差点意思"。于是 MS STL 长期作为 MSVC 的封闭组成部分演进，由内部团队（现代负责人如 Stephan T. Lavavej）维护 [史]。
+Microsoft 的 VC++ 自 1990 年代起就自带一套 C++ 标准库实现，早期根基脱胎于 Stepanov 的 SGI STL 思路 <span class="badge badge-history">史</span>。真正的工程痛点是：标准库必须和编译器（`cl.exe`）、运行时（`vcruntime`/`ucrt`）、异常处理（SEH）、Windows 堆深度咬合——第三方标准库在 Windows 上总是"差点意思"。于是 MS STL 长期作为 MSVC 的封闭组成部分演进，由内部团队（现代负责人如 Stephan T. Lavavej）维护 <span class="badge badge-history">史</span>。
 
 ### 0.2 关键转折（编年）
-- 1990s：VC++ 自带 STL，逐步靠拢各代 C++ 标准 [史]。
-- 2019：Microsoft 将 MS STL 在 GitHub 上以 `microsoft/STL` 开源（MIT 许可），结束了它"闭源随 Visual Studio 发布"的历史 [史]。
+- 1990s：VC++ 自带 STL，逐步靠拢各代 C++ 标准 <span class="badge badge-history">史</span>。
+- 2019：Microsoft 将 MS STL 在 GitHub 上以 `microsoft/STL` 开源（MIT 许可），结束了它"闭源随 Visual Studio 发布"的历史 <span class="badge badge-history">史</span>。
 - 近年：以激进的标准符合度追赶（C++20/23 特性快速落地）为标志。
 
 ### 0.3 设计哲学之争
-MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例如直接复用 Windows 堆与 SEH，换来极低集成成本，却也意味着它难以脱离 MSVC 生态独立存在 [评]。开源之后，它与 libstdc++、libc++ 站到了同一条"公开可被审阅"的起跑线，三足鼎立的格局由此更清晰 [评]。
+MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例如直接复用 Windows 堆与 SEH，换来极低集成成本，却也意味着它难以脱离 MSVC 生态独立存在 <span class="badge badge-comment">评</span>。开源之后，它与 libstdc++、libc++ 站到了同一条"公开可被审阅"的起跑线，三足鼎立的格局由此更清晰 <span class="badge badge-comment">评</span>。
 
 ### 0.4 史料补遗与持续编年
 继 2019 年以 `microsoft/STL` 开源，MS STL 把"闭源随 VS 发布"的节奏，换成了"追标准 + 上模块"的双线快跑。
 
-- [史] Visual Studio 17.8（2023）起，MS STL 基本完备支持 C++23：`std::print`、`std::expected`、`std::ranges` 增强、`std::mdspan` 等随 `/std:c++latest` 解锁。
-- [史] MS STL 跟进 C++20 模块：以 `.ifc` 中间格式输出标准库模块（`import std;`），与 MSVC 的 LTCG/PGO 工具链深度咬合，复用 Windows 生态而非另起炉灶。
-- [评] MS STL 的强项是"与 Windows 合一"——并行算法内置 Windows ThreadPool（免 TBB）、`std::filesystem`/`std::thread`/`std::chrono` 直接落 Windows API；代价是几乎只能活在 MSVC 生态。
-- [轶] 开源前修一个 STL bug 要等整年 VS 发布周期的说法并非夸张——正是这种"呼吸不畅"，让 2019 年的 MIT 开源成了社区贡献的分水岭。
+- <span class="badge badge-history">史</span> Visual Studio 17.8（2023）起，MS STL 基本完备支持 C++23：`std::print`、`std::expected`、`std::ranges` 增强、`std::mdspan` 等随 `/std:c++latest` 解锁。
+- <span class="badge badge-history">史</span> MS STL 跟进 C++20 模块：以 `.ifc` 中间格式输出标准库模块（`import std;`），与 MSVC 的 LTCG/PGO 工具链深度咬合，复用 Windows 生态而非另起炉灶。
+- <span class="badge badge-comment">评</span> MS STL 的强项是"与 Windows 合一"——并行算法内置 Windows ThreadPool（免 TBB）、`std::filesystem`/`std::thread`/`std::chrono` 直接落 Windows API；代价是几乎只能活在 MSVC 生态。
+- <span class="badge badge-anecdote">轶</span> 开源前修一个 STL bug 要等整年 VS 发布周期的说法并非夸张——正是这种"呼吸不畅"，让 2019 年的 MIT 开源成了社区贡献的分水岭。
 
 > 史料来源：
 > - https://github.com/microsoft/STL
 > - https://learn.microsoft.com/cpp/standard-library/
 
-## ① 概述：MS STL 是 Microsoft 的 C++ 标准库 [标准]
+## ① 概述：MS STL 是 Microsoft 的 C++ 标准库 <span class="badge badge-std">标准</span>
 
 [第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
 [第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)
 
 MS STL（曾称 *Microsoft Visual C++ Standard Library*）是 MSVC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>`、`<algorithm>` 等全部标准容器/算法/迭代器/本地化/IO/并行。它与 MSVC 工具链（编译器 `cl.exe`、运行时 `vcruntime`、CRT `ucrt`）深度耦合，是 Windows 平台 C++ 事实标准库。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：MS STL 是 Micros]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：MS STL 是 Micros
 ```cpp
 // ① 最小可编译程序：仅依赖 MS STL 的 <vector>
 #include <vector>
@@ -60,7 +60,7 @@ int main() {
 
 MSVC 编译管线分前端 `C1`（C++ 前端，产出 CIL）、后端 `C2`（代码生成，产出 OBJ），标准库在**前端之后的语义期**被包含解析——与 GCC 的 `cc1plus` / `cc1` 分工类似。MS STL 头经 `C1` 预处理+语义分析，模板实例化发生在 `C2` 之前的 IL 阶段。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：架构]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构
 ```cpp
 // ② 概念示意：编译器如何"看到"标准库（MSVC 管线）
 // C1 (前端) -> 解析 #include <vector> 的模板定义
@@ -87,7 +87,7 @@ int f() { std::vector<int> v(3); return (int)v.size(); }
 
 自 2020 年起，MS STL 源码公开于 `microsoft/STL`（MIT 许可）。仓库结构是阅读入口：`stl/inc/` 为公开头，`stl/src/` 为 `.cpp` 实现（如 locale、iostream 的 `cin/cout`），`stl/tests/` 为 conformance 测试。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：开源 STL repo]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 开源 STL repo
 ```cpp
 // ③ 本机没有 MS STL，但可在任意支持 C++17+ 的编译器上编译同样的代码
 #include <vector>
@@ -98,7 +98,7 @@ int use_stl() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：开源 STL repo]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 开源 STL repo
 ```cpp
 // ③ 上游仓库典型结构与对应公开头
 // stl/inc/vector   -> <vector>
@@ -114,7 +114,7 @@ int use_stl() {
 
 下面三处为**上游参考**——行号取自 `microsoft/STL` main 分支，随提交浮动，仅指示位置。
 
-> **示例 5** [难度 ★★★☆☆] [主题：源码剖析]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析
 ```cpp
 // ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/vector
 // 行号：36
@@ -123,7 +123,7 @@ int use_stl() {
 //   class vector { ... };
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：源码剖析]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析
 ```cpp
 // ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/xstring
 // 行号：1860
@@ -132,7 +132,7 @@ int use_stl() {
 //   短串用 _Buf，长串用 _Ptr（与 libstdc++ 同构，见 ⑧）
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：源码剖析]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析
 ```cpp
 // ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/yvals.h
 // 行号：540
@@ -148,7 +148,7 @@ int use_stl() {
 
 MS STL 与 Win32/CRT 天然融合：`<cstdio>` 的 `FILE*` 底层是 `ucrt`；`std::wstring` 直接兼容 `LPCWSTR`；异常展开依赖 `vcruntime` 的 SEH 支持（见 ⑥）；`<windows.h>` 与标准库可共存，但需注意宏冲突（`min/max`/`ERROR`）。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：与 Windows 生态/Win32]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 Windows 生态/Win32
 ```cpp
 // ⑤ wstring 与 Win32 API 互操作（CreateFileW 需要 LPCWSTR）
 #include <string>
@@ -160,7 +160,7 @@ void open_log(const std::wstring& name) {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与 Windows 生态/Win32]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 Windows 生态/Win32
 ```cpp
 // ⑤ 避免 <windows.h> 的 min/max 宏污染标准库（NOMINMAX）
 #define NOMINMAX
@@ -176,7 +176,7 @@ int m(int a, int b) { return std::max(a, b); }  // 用 std::max 而非宏
 
 MSVC 的 C++ 异常在 Windows 上由 **SEH（Structured Exception Handling）** 承载：栈展开经 `vcruntime` 的 `__CxxFrameHandler*`，由编译器为每个 `try` 生成 `FuncInfo` 描述。MinGW-w64（seh 变体）用同一套 Windows SEH 机制，故可在本机用 g++ 真实演示 C++ 异常→SEH 的映射。
 
-> **示例 10** [难度 ★★★★☆] [主题：异常与 SEH [实现·MS STL]
+> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 异常与 SEH [实现·MS STL
 ```cpp
 // ⑥ 用 C++ 异常演示 Windows SEH 机制（真实编译取证见下方汇编）
 #include <stdexcept>
@@ -208,7 +208,7 @@ int main() { return safe_call(10) + safe_call(-3); }
 
 C++17 并行算法（`std::execution::par/unseq`）在 MS STL 的默认后端是 **Intel oneTBB**（旧称 PSTL + ConcRT）。MSVC 链接 `tbb.dll` 获得真并行；不提供时退化为顺序执行。本机用 g++/libstdc++ 仅验证 API 可编译（libstdc++ 无 TBB 时退化为顺序，符号仍实例化）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：并行算法]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 并行算法
 ```cpp
 // ⑦ 并行排序 API（MS STL 后端为 Intel TBB + Concurrency Runtime）
 #include <algorithm>
@@ -225,7 +225,7 @@ int p() {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：并行算法]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 并行算法
 ```cpp
 // ⑦ 真实 g++ 编译后的实例化符号（nm -C _ch126_parallel.o 节选，证明 API 可编译）
 // void std::__introsort_loop<...>(...)   // 顺序回退路径被实例化
@@ -240,7 +240,7 @@ int p() {
 
 MS STL 的 `std::string` 采用 **SSO（Small String Optimization）**：短串存对象内建缓冲，避免堆分配。`basic_string` 用 union `_Bx` 在「内置缓冲 `_Buf`」与「堆指针 `_Ptr`」间二选一（见 ④ `xstring:1860`）。本机用 g++ 编译 `std::string` 可演示同构的 SSO 阈值判定（`15`）。
 
-> **示例 13** [难度 ★★★☆☆] [主题：字符串实现策略 [实现·MS STL]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 字符串实现策略 [实现·MS STL
 ```cpp
 // ⑧ SSO：短串不触发堆分配（本机 g++/libstdc++ 演示同一机制）
 #include <string>
@@ -261,7 +261,7 @@ int main() {
 ; MS STL 同样以 15 字节(x86-64, char) 为 SSO 阈值（见 ④ xstring union）
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：字符串实现策略 [实现·MS STL]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 字符串实现策略 [实现·MS STL
 ```cpp
 // ⑧ SSO 容量探测（实现相关，演示短串存对象内）
 #include <string>
@@ -307,7 +307,7 @@ MSVC 默认开启 C++14 行为，需显式 `/std:c++20` 或 `/std:c++latest` 才
 
 Visual Studio 安装 "C++ 桌面" 工作负载时附带 MS STL 源码（`VC\Tools\MSVC\<ver>\crt\src` 与 include），可在异常/断点处单步进入 `vector`/`string` 模板实现。无需额外符号服务器即可看标准库内部。
 
-> **示例 15** [难度 ★★★☆☆] [主题：调试（Visual Studio） ]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试（Visual Studio）
 ```cpp
 // ⑩ 在 VS 中单步进入 vector::at 的越界检查
 #include <vector>
@@ -328,11 +328,11 @@ int main() { return buggy(); }
 - `[平台·Windows]`：VS 自带源码，比「装 `libstdc++-dev` 才有源码」的 Linux 流程更省心（对比 ⑲）。
 - `[经验]`：开启 `/Zi` + 关闭优化 `/Od` 能让标准库模板函数保持可单步形态。
 
-## ⑪ 性能 [经验]
+## ⑪ 性能 <span class="badge badge-exp">经验</span>
 
 经验规律（非本机基准数字，量级示意）：容器遍历/随机访问被内联为指针算术（见 ⑧ 真实汇编的 `.L3` 循环）；`std::string` 短串零分配（SSO），长串走堆；并行算法仅大数据有收益（见 ⑦）。主要陷阱是「未 reserve」「热循环隐式分配」「按值传大对象」。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：性能 [经验]]
+> **示例 16** [难度 ★☆☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑪ reserve 避免反复扩容（减少 allocate/copy）
 #include <vector>
@@ -344,7 +344,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：性能 [经验]]
+> **示例 17** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑪ noexcept 移动让扩容走移动而非拷贝（basic_string 移动 noexcept）
 #include <vector>
@@ -365,7 +365,7 @@ int main() {
 
 MS STL 的二进制接口由两部分承载：`vcruntime140.dll`（栈展开/SEH/入口，见 ⑥）与 `msvcp140.dll`（标准库少量非模板运行符号，如 `std::locale`、`std::ios_base`）。**同一 `_MSC_VER` 主版本**内 ABI 稳定；跨大版本（如 19.3x → 19.4x）可能不兼容。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：二进制兼容]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二进制兼容
 ```cpp
 // ⑫ 跨 DLL 边界只暴露 C ABI，避免导出 std 符号（见 ⑬⑮）
 extern "C" __declspec(dllexport) int count_chars_c(const char* p) {
@@ -373,7 +373,7 @@ extern "C" __declspec(dllexport) int count_chars_c(const char* p) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：二进制兼容]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二进制兼容
 ```cpp
 // ⑫ _MSC_VER 决定链接的 msvcp140 变体（同主版本方可混链）
 #include <cstdio>
@@ -386,11 +386,11 @@ int main() {
 - `[实现·MSVC]`：`msvcp140.dll` 与 `msvcp140_1.dll`/`msvcp140_2.dll` 分载不同特性；`vcruntime140.dll` 与 `_ATL`/MFC 无关，是纯 C++ 运行底座。
 - `[平台·Windows]`：混合不同 VS 版本编译的 `.obj`/`.lib` 链接 `msvcp140` 时，可能因内联模板布局差异产生 ODR/ABI 错配。
 
-## ⑬ 常见陷阱（DLL 边界传递 STL 对象） [经验]
+## ⑬ 常见陷阱（DLL 边界传递 STL 对象） <span class="badge badge-exp">经验</span>
 
 最致命陷阱：**跨越 DLL 边界传递 `std::string`/`std::vector` 等 STL 对象**，若两侧用不同 MS STL 版本/不同 `_MSC_VER`/不同 CRT（/MD 与 /MT 混用），会因「分配器不同」「内存布局不同」在释放侧崩溃（`_CrtIsValidHeapPointer` 失败）。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：常见陷阱]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑬ 危险：DLL A 用 /MD，EXE 用 /MT（或反之），跨边界传 string
 // DLL:  __declspec(dllexport) std::string make(); // 在 DLL 堆分配
@@ -400,7 +400,7 @@ std::string make();                 // 声明与实现必须同 CRT/同 STL 版�
 int caller() { std::string s = make(); return (int)s.size(); }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱
 ```cpp
 // ⑬ 正确：边界用 C ABI（POD/指针），std 类型留在模块内部
 #include <string>
@@ -416,11 +416,11 @@ extern "C" int make_c(const char* in, char* out, int cap) {
 - `[经验]`：① 全工程统一 `/MD`（或统一 `/MT`）；② 全工程统一 VS 版本；③ 库边界用 C 接口或 COM/句柄，绝不导出 `std` 类型（见 ⑮）。
 - `[平台·Windows]`：`/MD`（动态 CRT）是跨 DLL 共享 `msvcp140` 的前提；`/MT`（静态 CRT）则每个模块自带一份，跨边界传 STL 必崩。
 
-## ⑭ 演进（C++23 支持） [标准]
+## ⑭ 演进（C++23 支持） <span class="badge badge-std">标准</span>
 
 MS STL 在 VS 17.8+ 基本完备支持 C++23：`std::print`/`<print>`、`std::expected`/`<expected>`、`std::ranges` 增强、`std::mdspan`、修复 `std::ranges` 适配。特性由 `yvals.h` 的 `_HAS_CXX23`（见 ④）与 `/std:c++latest` 开启。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：演进（C++23 支持） [标准]]
+> **示例 22** [难度 ★☆☆☆☆] [主题：演进（C++23 支持） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ C++23 <print> 与 <expected>（需 /std:c++latest 开启 _HAS_CXX23）
 #include <print>
@@ -432,7 +432,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：演进（C++23 支持） [标准]]
+> **示例 23** [难度 ★☆☆☆☆] [主题：演进（C++23 支持） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ ranges 在 MS STL 的实现入口（上游参考）
 // 文件：https://github.com/microsoft/STL/blob/main/stl/inc/ranges
@@ -443,11 +443,11 @@ int main() {
 - `[标准]`：C++23 条款规定 `print`/`expected`/`ranges` 行为；MS STL 是达标实现之一（与 libstdc++/libc++ 对照见 ⑱）。
 - `[实现·MSVC]`：`_HAS_CXX23` 由 `/std:c++latest` 隐式置 1；用 `/std:c++20` 则关掉 23 特性，保证 20 行为稳定。
 
-## ⑮ 最佳实践 [经验]
+## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
 跨模块/跨库时，把标准库类型留在模块内部，边界用 C ABI（POD/句柄/字符串）。整工程统一 MSVC 版本、`/MD`、标准等级。第三方库用同工具链源码重编，避免二进制 STL 混链。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 24** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 边界用不透明句柄，MS STL 对象封装在 .cpp 内
 #include <vector>
@@ -460,7 +460,7 @@ extern "C" int  widget_sum(Widget* w) {
 extern "C" void widget_free(Widget* w) { delete w; }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 25** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 统一标准等级 + CRT 的编译指示（CMake/MSBuild 等价）
 // cl /std:c++20 /EHsc /MD /nologo app.cpp
@@ -475,7 +475,7 @@ int main() { std::vector<int> v{1,2,3}; return (int)v.size(); }
 
 同一份标准库**逻辑**跨 MSVC/clang-cl/GCC 可移植，但**二进制**不兼容：MS STL（Windows）、libstdc++（GCC）、libc++（Clang）三者 `std::string`/`std::vector` 布局、名字修饰、分配器均不同。头文件源码级可移植；`.obj`/`.lib` 不可跨编译器链混链。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：跨编译器 [平台·Windows]]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨编译器 [平台·Windows]
 ```cpp
 // ⑯ 跨编译器可移植写法（避免平台特定假设）
 #include <vector>
@@ -487,7 +487,7 @@ int cross(const std::vector<int>& v) {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：跨编译器 [平台·Windows]]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨编译器 [平台·Windows]
 ```cpp
 // ⑯ 统一标准等级命令对照（典型输出，未在本机运行 MSVC）
 // MSVC: cl /std:c++20 /EHsc ...
@@ -515,7 +515,7 @@ int cross(const std::vector<int>& v) {
 #   [PASS] conformance.total
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：贡献 [平台·Windows]]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 贡献 [平台·Windows]
 ```cpp
 // ⑰ 一个可提交的修复示例骨架（在 stl/inc/vector 增加注释/约束）
 #include <vector>
@@ -532,7 +532,7 @@ void my_erase_last(std::vector<_Ty>& v) {
 
 libstdc++（GCC）、libc++（Clang）、MS STL（MSVC）实现同一标准，但策略不同：SSO 阈值、ABI 稳定机制、并行后端、调试源可用性各异。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：跨库对比（三套 STL） [平台·W]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库对比（三套 STL） [平台·W
 ```cpp
 // ⑱ 三套 STL 都能编译的同款代码（可移植性验证）
 #include <vector>
@@ -561,7 +561,7 @@ int demo() {
 
 在 Windows 上读 MS STL 源码最顺手：VS 安装时自带 `VC\Tools\MSVC\<ver>\include`，直接 `Ctrl+点击` 跳进 `vector`。也可在 GitHub 网页读 `microsoft/STL` 的 `stl/inc`。非 Windows 上可用 VS Code + 远程仓库只读浏览。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：调试/源码阅读 [平台·Window]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试/源码阅读 [平台·Window
 ```cpp
 // ⑲ 阅读入口：从顶层头追到实现（与 ③ 同思路）
 #include <vector>
@@ -582,21 +582,21 @@ int read_entry() {
 - `[平台·Windows]`：对比 libstdc++ 需装 `-dev` 才有源码，MS STL 在 VS 工作负载内已含，阅读门槛最低（见 ⑩）。
 - `[经验]`：先读 `stl/inc` 的公开头，再追 `stl/src` 的非模板实现（如 `xlocale.cpp`），最后看 `stl/tests` 学 conformance 用例。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `/std:c++latest` 开启 MSVC STL 的新特性。** 你知道某特性未默认可用。请说明判定方式。
-   - [标准] 实现按特性测试宏逐步支持新特性；以 `__cpp_lib_*` 判定而非假设版本。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ MSVC STL 博客；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 实现按特性测试宏逐步支持新特性；以 `__cpp_lib_*` 判定而非假设版本。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ MSVC STL 博客；cppreference "Feature test macros" 词条。
 
 2. **真实场景：`/permissive-` 让模板两阶段名查找更严格。** 你旧代码在严格模式下报依赖名未 typename。请说明规则。
-   - [标准] 模板的两阶段名查找要求依赖名显式 `typename`/`template`；非依赖名在定义期即查。
-   - [引用] ISO/IEC 14882:2023 §[temp.res]（两阶段查找与依赖名）/ MSVC 文档；cppreference "Dependent names" 词条。
+   - <span class="badge badge-std">标准</span> 模板的两阶段名查找要求依赖名显式 `typename`/`template`；非依赖名在定义期即查。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.res]（两阶段查找与依赖名）/ MSVC 文档；cppreference "Dependent names" 词条。
 
 3. **真实场景：MSVC STL 的 `std::format` 与 libstdc++ 有细微行为差。** 你做跨平台日志格式化。请说明契约。
-   - [标准] `std::format` 的格式化语义由标准规定；实现质量差异属实现层。
-   - [引用] ISO/IEC 14882:2023 §[format]（格式化库语义）/ MSVC STL 博客；cppreference "std::format" 词条。
+   - <span class="badge badge-std">标准</span> `std::format` 的格式化语义由标准规定；实现质量差异属实现层。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[format]（格式化库语义）/ MSVC STL 博客；cppreference "std::format" 词条。
 
 ```text
 ┌─────────────────────────┬──────────────────────────────────────────────┐
@@ -631,7 +631,7 @@ int read_entry() {
 
 ### 补充：完整可编译示例（MS STL 可移植代码）
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S1 最小 vector + 输出（对应 ①）
 #include <vector>
@@ -639,14 +639,14 @@ int read_entry() {
 int main() { std::vector<int> v{1,2,3}; for (int x : v) std::printf("%d", x); return 0; }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S2 打印 MS STL 版本（对应 ⑨⑫，_MSC_VER 由 MSVC 定义）
 #include <cstdio>
 int main() { std::printf("_MSC_VER=%d\n", _MSC_VER); return 0; }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S3 string 与 wstring 互转（对应 ⑤）
 #include <string>
@@ -657,7 +657,7 @@ std::wstring to_w(const std::string& s) {
 int main() { std::wstring w = to_w("hi"); return (int)w.size(); }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S4 SSO 短串不分配（对应 ⑧）
 #include <string>
@@ -670,7 +670,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S5 并行 for_each（对应 ⑦，MS STL 后端 TBB）
 #include <execution>
@@ -684,7 +684,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S6 noexcept 移动静态断言（对应 ⑪）
 #include <string>
@@ -692,7 +692,7 @@ int main() {
 int main() { static_assert(std::is_nothrow_move_constructible<std::string>::value, "!"); return 0; }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S7 C ABI 边界封装（对应 ⑬⑮）
 #include <string>
@@ -701,21 +701,21 @@ extern "C" int len_c(const char* p) { return (int)std::strlen(p); }
 int main() { std::string s = "boundary"; return len_c(s.c_str()); }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S8 reserve 预分配（对应 ⑪）
 #include <vector>
 int main() { std::vector<int> v; v.reserve(8); for (int i=0;i<8;++i) v.push_back(i); return (int)v.size(); }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S9 调试模式单步（对应 ⑩，VS 中步入 vector::at）
 #include <vector>
 int main() { std::vector<int> v{1,2}; return (int)v.at(0); }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S10 C++23 print + expected（对应 ⑭，需 /std:c++latest）
 #include <print>
@@ -723,7 +723,7 @@ int main() { std::vector<int> v{1,2}; return (int)v.at(0); }
 int main() { std::print("ok\n"); std::expected<int,int> e = std::unexpected(1); return e.value_or(0); }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S11 跨平台可移植函数（对应 ⑯）
 #include <vector>
@@ -733,7 +733,7 @@ int cross(const std::vector<int>& v) {
 }
 ```
 
-> **示例 42** [难度 ★★★☆☆] [主题：补充：完整可编译示例]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S12 自定义分配器接入（对应 ⑫，演示 allocator 可替换）
 #include <vector>
@@ -746,7 +746,7 @@ template <class T> struct my_alloc {
 int main() { std::vector<int, my_alloc<int>> v{1,2,3}; return (int)v.size(); }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S13 异常安全 try/catch（对应 ⑥）
 #include <stdexcept>
@@ -754,7 +754,7 @@ int main() { std::vector<int, my_alloc<int>> v{1,2,3}; return (int)v.size(); }
 int main() { try { throw std::runtime_error("x"); } catch (const std::exception& e) { std::printf("%s\n", e.what()); } return 0; }
 ```
 
-> **示例 44** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S14 vector 遍历被内联（对应 ⑧，真实汇编见 Examples/_ch126_vector.asm）
 #include <vector>
@@ -762,7 +762,7 @@ int sum(const std::vector<int>& v) { int s=0; for (int x:v) s+=x; return s; }
 int main() { std::vector<int> v{1,2,3}; return sum(v); }
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S15 不跨 DLL 传 string 的安全封装（对应 ⑬）
 #include <string>
@@ -773,7 +773,7 @@ extern "C" int greet_c(const char* name, char* out, int cap) {
 }
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S16 ranges 管道（对应 ⑭，MS STL 实现于 stl/inc/ranges）
 #include <vector>
@@ -786,7 +786,7 @@ int main() {
 }
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S17 array 对比 vector（无堆分配）
 #include <array>
@@ -794,7 +794,7 @@ int main() {
 int main() { std::array<int,4> a{1,2,3,4}; int s=0; for (int x:a) s+=x; std::printf("%d\n", s); return 0; }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S18 NOMINMAX 避免宏冲突（对应 ⑤）
 #define NOMINMAX
@@ -803,14 +803,14 @@ int main() { std::array<int,4> a{1,2,3,4}; int s=0; for (int x:a) s+=x; std::pri
 int m(int a, int b) { return std::max(a, b); }
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S19 统一 /MD 编译（对应 ⑮，命令示意：cl /MD /std:c++20 /EHsc）
 #include <vector>
 int main() { std::vector<int> v{1}; return (int)v.size(); }
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // S20 阅读入口：顶层头追实现（对应 ⑲）
 #include <vector>
@@ -827,7 +827,7 @@ int read_entry() { std::vector<std::string> v{"x"}; return (int)v.size(); }
 
 | 部署场景 | 默认标准库身份 | 关键事实 / 证据 |
 |---|---|---|
-| 所有 MSVC 编译的 Windows C++ 程序 | MS STL | [史] 随 Visual Studio / Build Tools 一起发布，默认即它 |
+| 所有 MSVC 编译的 Windows C++ 程序 | MS STL | <span class="badge badge-history">史</span> 随 Visual Studio / Build Tools 一起发布，默认即它 |
 | Windows 桌面与 UWP 应用 | MS STL | Office、Visual Studio、大量桌面软件的标准库底座 |
 | 游戏与引擎 | MSVC + MS STL | Unreal / Unity(C++) 在 Windows 上以此构建 |
 | 企业 / 工业软件 | MS STL | .NET 的 C++/CLI 互操作层、各类驱动与后台服务 |
@@ -838,7 +838,7 @@ int read_entry() { std::vector<std::string> v{"x"}; return (int)v.size(); }
 
 MS STL 的一大特色是 Debug 构建下默认开启**迭代器越界检查**（`_ITERATOR_DEBUG_LEVEL`），能抓出悬空/越界。下面用纯标准库复刻这种"访问前先校验"的精神：
 
-> **示例 51** [难度 ★★★☆☆] [主题：㉑.2 标准 C++ 等价实现：用"]
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · ㉑.2 标准 C++ 等价实现：用"
 ```cpp
 // ㉑.2 用标准库复刻 MSSTL「调试期迭代器越界检查」的精神（本块可独立编译，GCC 15.3.0 验证）
 #include <vector>
@@ -870,7 +870,7 @@ int main() {
 
 下面才是你在 Windows 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：㉑.3 真实 MSVC/Window]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 MSVC/Window
 ```cpp
 // ㉑.3 真实 MSVC/Windows 用法（仅注释演示，门禁按空块编译通过）：
 //   // 1) 检测 MSVC 编译器版本
@@ -968,7 +968,7 @@ MS STL 的覆盖由「Windows 生态」定义，凡用 MSVC 编译的本地代�
 
 ## 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
 
-> **示例 53** [难度 ★★☆☆☆] [主题：附录 A：MS STL 工业背景 []
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：MS STL 工业背景 [
 ```
 Microsoft STL 的关键设计决策:
 
@@ -993,7 +993,7 @@ Microsoft STL 的关键设计决策:
 
 ## 附录 E：MS STL工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
-> **示例 54** [难度 ★★☆☆☆] [主题：附录 E：MS STL工业与底层 []
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：MS STL工业与底层 [
 ```
 MS STL设计权衡:
 
@@ -1012,7 +1012,7 @@ MS STL设计权衡:
   parallel algorithms → Windows ThreadPool (无需TBB, 开箱即用)
 ```
 
-> **示例 55** [难度 ★★☆☆☆] [主题：附录 E：MS STL工业与底层 []
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：MS STL工业与底层 [
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1056,7 +1056,7 @@ Q: MS STL调试模式级别? A: _ITERATOR_DEBUG_LEVEL: 0(Release), 1(Debug basic
 Q: 为什么MS STL并行算法不需要TBB? A: 内置Windows ThreadPool, 开箱即用(其他编译器需TBB)
 Q: MS STL何时开源? A: 2017年Apache 2.0, GitHub microsoft/STL
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：附录 F：MS STL面试与工业]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：MS STL面试与工业
 ```cpp
 #include <iostream>
 int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows ThreadPool."<<std::endl;return 0;}
@@ -1091,7 +1091,7 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 
 ## 底层视角：MSVC STL 实现与 SIMD 内部 [E: Low-level]
 
-[标准] MSVC STL（`MSVC 19.3`）容器节点含 `0x0008` 指针（链表/树）或连续 `0x0010` 对齐缓冲（vector）。标准算法用 `_STD` 命名空间与 `<intrin.h>` 内部函数，`-arch:AVX2` 启用 SSE（`0x0010` 宽）/ AVX（`0x0020` 宽）并行比较。
+<span class="badge badge-std">标准</span> MSVC STL（`MSVC 19.3`）容器节点含 `0x0008` 指针（链表/树）或连续 `0x0010` 对齐缓冲（vector）。标准算法用 `_STD` 命名空间与 `<intrin.h>` 内部函数，`-arch:AVX2` 启用 SSE（`0x0010` 宽）/ AVX（`0x0020` 宽）并行比较。
 
 `constexpr` 容器操作（`C++20` 起）于编译期求值，省运行期 `0x0008` 间接。`std::atomic` 用 `lock xadd`（10–20 ns）保证 `0x0040` 缓存行原子。`GCC 13.1.0` / `Clang 17` 的交叉验证可暴露 MSVC 专属行为；缓存行 `0x0040`（64 字节）是 `std::hardware_destructive_interference_size` 的取值（C++17 起）。
 
@@ -1135,7 +1135,7 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 
 `_MSVC_STL_VERSION` 形如 `202206`（年月）的实现专属宏；在非 MS STL 环境下未定义，分支自动跳过，因此跨平台仍可编译：
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <version>
 #if defined(_MSVC_STL_VERSION)
@@ -1148,9 +1148,9 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 int main() { return 0; }
 ```
 
-[标准] 预处理条件编译；实现专属版本宏用于编译期分支。
+<span class="badge badge-std">标准</span> 预处理条件编译；实现专属版本宏用于编译期分支。
 
-[引用] MS STL 仓库 microsoft/STL 的 README 与 `<version>`；cppreference 头文件 `<version>`：<https://en.cppreference.com/w/cpp/header/version>。
+<span class="badge badge-ref">引用</span> MS STL 仓库 microsoft/STL 的 README 与 `<version>`；cppreference 头文件 `<version>`：<https://en.cppreference.com/w/cpp/header/version>。
 
 </details>
 
@@ -1162,7 +1162,7 @@ int main() { return 0; }
 
 MS STL 用 `_HAS_CXX20` 等宏门控标准特性；C++20 开启时用概念约束，关闭时退化为 `typename` 模板——注意退化后浮点不再被概念拦截，需额外 `static_assert`/`requires` 保语义：
 
-> **示例 58** [难度 ★★★☆☆] [主题：练习 2（难度 ★★）]
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <concepts>
 #if defined(_HAS_CXX20) && _HAS_CXX20
@@ -1174,9 +1174,9 @@ T add(T a, T b) { return a + b; }
 int main() { return add(2, 3) == 5 ? 0 : 1; }
 ```
 
-[标准] C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误（更可读的诊断）；特性宏用于条件启用。
+<span class="badge badge-std">标准</span> C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误（更可读的诊断）；特性宏用于条件启用。
 
-[引用] cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>；MS STL 仓库 microsoft/STL 的宏说明。
+<span class="badge badge-ref">引用</span> cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>；MS STL 仓库 microsoft/STL 的宏说明。
 
 </details>
 
@@ -1188,7 +1188,7 @@ int main() { return add(2, 3) == 5 ? 0 : 1; }
 
 `std::array` 自 C++11 起即 constexpr 友好，可在常量表达式上下文构造并下标访问；下列 `static_assert` 在编译期直接求值：
 
-> **示例 59** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
+> **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <array>
 constexpr int lookup() {
@@ -1199,9 +1199,9 @@ static_assert(lookup() == 6);
 int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；`std::array` 为聚合类型、天然 constexpr。
+<span class="badge badge-std">标准</span> `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；`std::array` 为聚合类型、天然 constexpr。
 
-[引用] cppreference `std::array`：<https://en.cppreference.com/w/cpp/container/array>；提案 P1004R2（标准库类型的 constexpr 化）。
+<span class="badge badge-ref">引用</span> cppreference `std::array`：<https://en.cppreference.com/w/cpp/container/array>；提案 P1004R2（标准库类型的 constexpr 化）。
 
 </details>
 

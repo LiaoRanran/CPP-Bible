@@ -16,28 +16,28 @@
 > 当"对象在自己内部 new 依赖"导致测试写不了、实现换不动时，有人决定把依赖从外面递进去。
 
 ### 0.1 起源（谁·何时·为何）
-依赖注入（DI）是**控制反转（IoC）**思想的一种落地，由 Martin Fowler 在 2004 年的文章《Inversion of Control Containers and the Dependency Injection pattern》中明确命名与系统化 [史]。其工程痛点非常具体：一个 `Service` 若在构造函数里直接 `new Database()`，它就永远绑定了某个具体实现，单测无法换 fake、生产无法换实现。DI 主张"依赖由外部创建并传入"，把"怎么用"和"怎么造"解耦。它的根系可追到 GoF 的 Factory/Service Locator，以及 Java Spring（Rod Johnson，约 2002–2004）[史]。
+依赖注入（DI）是**控制反转（IoC）**思想的一种落地，由 Martin Fowler 在 2004 年的文章《Inversion of Control Containers and the Dependency Injection pattern》中明确命名与系统化 <span class="badge badge-history">史</span>。其工程痛点非常具体：一个 `Service` 若在构造函数里直接 `new Database()`，它就永远绑定了某个具体实现，单测无法换 fake、生产无法换实现。DI 主张"依赖由外部创建并传入"，把"怎么用"和"怎么造"解耦。它的根系可追到 GoF 的 Factory/Service Locator，以及 Java Spring（Rod Johnson，约 2002–2004）<span class="badge badge-history">史</span>。
 
 ### 0.2 关键转折（编年）
 
 | 时间 | 事件 | 意义 |
 |---|---|---|
-| 2002–2004 | Java Spring 框架把 DI/IoC 容器做成工业标配 | 容器化装配成为企业级标配 [史] |
-| 2004 | Fowler 正式定义 DI 模式 | 命名与系统化 DI [史] |
-| 2007 | Google Guice 等把"编译期/注解式注入"推向前台 | 注解式注入进入主流 [史] |
+| 2002–2004 | Java Spring 框架把 DI/IoC 容器做成工业标配 | 容器化装配成为企业级标配 <span class="badge badge-history">史</span> |
+| 2004 | Fowler 正式定义 DI 模式 | 命名与系统化 DI <span class="badge badge-history">史</span> |
+| 2007 | Google Guice 等把"编译期/注解式注入"推向前台 | 注解式注入进入主流 <span class="badge badge-history">史</span> |
 
 > 表注：DI 从 Java 企业级容器（Spring）走向"编译期/注解式"框架（Guice），C++ 社区随后在 2010 年代拿出编译期 DI 框架（见 0.4）。
 
 ### 0.3 设计哲学之争
-DI 在 Java 世界靠"运行时反射 + 注解容器"实现，而 C++ 没有原生反射，于是走"构造注入 + 模板"或第三方框架的路 [评]。更深的分歧是 DI vs **Service Locator**：前者依赖显式、可测；后者把查找藏进全局，方便却隐蔽 [评]。C++ 社区近年还出现了编译期 DI（如 Boost.DI），把装配也移到编译期。
+DI 在 Java 世界靠"运行时反射 + 注解容器"实现，而 C++ 没有原生反射，于是走"构造注入 + 模板"或第三方框架的路 <span class="badge badge-comment">评</span>。更深的分歧是 DI vs **Service Locator**：前者依赖显式、可测；后者把查找藏进全局，方便却隐蔽 <span class="badge badge-comment">评</span>。C++ 社区近年还出现了编译期 DI（如 Boost.DI），把装配也移到编译期。
 
 ### 0.4 史料补遗与持续编年
 继 2004 年 Fowler 正式定义 DI、2007 年 Guice 推注解式注入，C++ 社区在 2010 年代拿出了编译期 DI 框架。
 
-- [史] Boost.DI（Kris Jusiak 主导）把"依赖装配"从运行期容器搬到了编译期：用模板推导自动连接接口与实现，装配错误在编译期而非运行期暴露，且不引入运行期反射。
-- [史] C++20 模块（`import`）与 DI 的协作被提上日程：模块减少了头文件反复解析，使"大型对象图在编译期装配"的代价进一步下降，与 constexpr 化的装配逻辑形成合力。
-- [评] C++ 没有原生反射，DI 始终在"构造注入 + 模板"与"第三方框架"之间取舍；编译期 DI 赢了类型安全与零运行开销，却也牺牲了"运行期换实现"的灵活。
-- [轶] Fowler 那篇 DI 文章本来是想澄清 IoC 容器到底是什么，结果意外"发明"了一个被用滥的名词。
+- <span class="badge badge-history">史</span> Boost.DI（Kris Jusiak 主导）把"依赖装配"从运行期容器搬到了编译期：用模板推导自动连接接口与实现，装配错误在编译期而非运行期暴露，且不引入运行期反射。
+- <span class="badge badge-history">史</span> C++20 模块（`import`）与 DI 的协作被提上日程：模块减少了头文件反复解析，使"大型对象图在编译期装配"的代价进一步下降，与 constexpr 化的装配逻辑形成合力。
+- <span class="badge badge-comment">评</span> C++ 没有原生反射，DI 始终在"构造注入 + 模板"与"第三方框架"之间取舍；编译期 DI 赢了类型安全与零运行开销，却也牺牲了"运行期换实现"的灵活。
+- <span class="badge badge-anecdote">轶</span> Fowler 那篇 DI 文章本来是想澄清 IoC 容器到底是什么，结果意外"发明"了一个被用滥的名词。
 
 > 史料来源：
 > - https://boost-ext.github.io/di/
@@ -56,11 +56,11 @@ DI 在 Java 世界靠"运行时反射 + 注解容器"实现，而 C++ 没有原�
 2. **可替换性**：同一份高层逻辑，生产用真实实现、开发用桩实现。
 3. **可维护性**：依赖图集中在外层装配，改动实现不必改遍调用点。
 
-【标准】[标准] DI 不是 ISO C++ 的某个语言特性，而是**设计技法**；其落地依赖 C++ 已有的语言设施：构造函数、引用/指针、模板、抽象基类、`std::unique_ptr`/`std::shared_ptr`、RAII。C++ 没有像 Java Spring 那样的“运行时反射 + 注解”原生 DI，因此工业界多用**构造注入 + 模板**或**第三方框架**实现。
+【标准】<span class="badge badge-std">标准</span> DI 不是 ISO C++ 的某个语言特性，而是**设计技法**；其落地依赖 C++ 已有的语言设施：构造函数、引用/指针、模板、抽象基类、`std::unique_ptr`/`std::shared_ptr`、RAII。C++ 没有像 Java Spring 那样的“运行时反射 + 注解”原生 DI，因此工业界多用**构造注入 + 模板**或**第三方框架**实现。
 
 下面是最简示例：把 `Logger` 注入 `Service`，而非 `Service` 内部 `new Logger`。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：DI 是什么]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：DI 是什么
 ```cpp
 // Examples/_ch141_overview.cpp
 // 依赖注入最小示例：将 Logger 注入 Service，而非在 Service 内部 new Logger。
@@ -86,7 +86,7 @@ int main() {
 
 依赖关系用 ASCII 框线图表示（高层不依赖低层的具体类，只依赖“被注入的端口”）：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：DI 是什么]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：DI 是什么
 ```
 ┌────────────┐       注入        ┌────────────┐
 │  Service   │ ───────────────▶ │  Logger    │
@@ -99,7 +99,7 @@ int main() {
        组装根 (Composition Root)
 ```
 
-[经验] 经验法则：**尽量把 `new` 收敛到少数“组装根”**（如 `main`、容器、工厂），业务类型自己不要 `new` 具体依赖。
+<span class="badge badge-exp">经验</span> 经验法则：**尽量把 `new` 收敛到少数“组装根”**（如 `main`、容器、工厂），业务类型自己不要 `new` 具体依赖。
 
 ---
 
@@ -107,7 +107,7 @@ int main() {
 
 【定义】构造注入（Constructor Injection）：依赖在对象构造期一次性绑定，构造后不可变（常声明为 `const`）。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：构造函数注入]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造函数注入
 ```cpp
 // Examples/_ch141_ctor_inject.cpp
 // 构造函数注入（Constructor Injection）：依赖在构造期一次性绑定，对象不可变（const 成员）。
@@ -132,15 +132,15 @@ int main() {
 
 【为什么设计】构造注入保证对象**构造即完整**、不变量（invariant）从出生就成立，避免“忘记调 setter 导致依赖为空”的运行时错误。
 
-[标准] `explicit` 单参数构造函数防止隐式转换（[class.ctor]），是工业代码对“注入构造”的推荐写法。
+<span class="badge badge-std">标准</span> `explicit` 单参数构造函数防止隐式转换（[class.ctor]），是工业代码对“注入构造”的推荐写法。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：构造函数注入]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造函数注入
 ```cpp
 // 反例：依赖在对象构造后处于“半初始化”状态
 // ❌ 未注入 cfg 时 start() 解引用空引用 → 未定义行为
 ```
 
-[经验] 当依赖是**必需且不可变**时，优先构造注入；当依赖**可选或可热插拔**时，才考虑 setter 注入（见 ③）。
+<span class="badge badge-exp">经验</span> 当依赖是**必需且不可变**时，优先构造注入；当依赖**可选或可热插拔**时，才考虑 setter 注入（见 ③）。
 
 ---
 
@@ -148,7 +148,7 @@ int main() {
 
 【定义】setter 注入（Setter Injection）：对象先以默认/空状态构造，随后通过 setter 在运行时替换依赖。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：注入]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 注入
 ```cpp
 // Examples/_ch141_setter_inject.cpp
 // setter 注入（Setter Injection）：依赖可在对象构造后替换，适合可选/可热插拔依赖。
@@ -179,13 +179,13 @@ int main() {
 
 【权衡】setter 注入灵活，但对象可能在“依赖未注入”时就被使用。因此 setter 注入的依赖通常是**可选/可替换**的；必需依赖仍应走构造注入。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：注入]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 注入
 ```cpp
 // 常见守卫：访问前判空，避免解引用空端口
 // ✅ if (renderer_) renderer_->draw();
 ```
 
-[经验] 游戏/UI 引擎常在运行时切换渲染后端，setter 注入在此类场景比构造注入更自然。
+<span class="badge badge-exp">经验</span> 游戏/UI 引擎常在运行时切换渲染后端，setter 注入在此类场景比构造注入更自然。
 
 ---
 
@@ -193,7 +193,7 @@ int main() {
 
 【定义】模板参数注入：把“依赖类型”作为**模板参数**传入，绑定在编译期完成，零运行时开销。
 
-> **示例 7** [难度 ★★★☆☆] [主题：模板参数注入（编译期绑定）]
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板参数注入（编译期绑定）
 ```cpp
 // Examples/_ch141_template_inject.cpp
 // 模板参数注入（编译期绑定）：依赖类型作为模板参数，零运行时开销，可被内联/去虚化。
@@ -218,14 +218,14 @@ int main() {
 
 【编译器行为】模板注入属于**静态多态（duck typing）**：只要被注入类型提供 `now()`，即可编译；编译器在实例化时就知道具体类型，因此可内联。真实 `-O2` 汇编（`_ch141_template_inject.asm`）中 `s.tick()` 直接常量折叠为 `mov edx, 100`，`m.tick()` 折叠为 `xor edx, edx`（即 0）——`Clock` 对象根本没被构造。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：模板参数注入（编译期绑定）]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模板参数注入（编译期绑定）
 ```cpp
 // 静态多态约束：依赖只需“长得像”，无需继承同一接口
 struct AnotherClock { int now() const { return 7; } };  // 没继承任何基类也能注入
 // Scheduler<AnotherClock> ok;   // ✅ 编译通过
 ```
 
-[标准] 这是“**概念（concepts，C++20）**”天然守护的场景：可用 `template <Clock C>` 约束 `C` 必须提供 `int now() const`，把“鸭子类型”错误提前到编译期（[temp.concept]）。
+<span class="badge badge-std">标准</span> 这是“**概念（concepts，C++20）**”天然守护的场景：可用 `template <Clock C>` 约束 `C` 必须提供 `int now() const`，把“鸭子类型”错误提前到编译期（[temp.concept]）。
 
 ---
 
@@ -233,7 +233,7 @@ struct AnotherClock { int now() const { return 7; } };  // 没继承任何基类
 
 【定义】DI 容器（Container）：一个**组装根**的集中实现——按类型登记“工厂”，在 `resolve()` 时自动创建并装配整张依赖图。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：容器（手写简易）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 容器（手写简易）
 ```cpp
 // Examples/_ch141_container.cpp
 // 手写简易 DI 容器：按类型登记工厂，按需解析（resolve）并自动注入依赖图。
@@ -274,13 +274,13 @@ int main() {
 
 【为什么设计】当依赖图很大时，手写 `new` 链既冗长又易错。容器把“装配逻辑”集中一处，且能在 `registerRepo` 阶段切换实现（测试时换 fake）。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：容器（手写简易）]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 容器（手写简易）
 ```cpp
 // 进阶：带自动按构造签名解析的容器（Boost.DI 思路，见 ⑨）
 // 核心难点是“根据被构造类型的构造函数形参，递归解析其依赖”。
 ```
 
-[经验] 中小项目往往**不需要完整容器**；一个 `make_app()` 自由函数或 `std::unique_ptr` 链就足够。容器在依赖图深、需按配置切换实现的框架级代码里才划算。
+<span class="badge badge-exp">经验</span> 中小项目往往**不需要完整容器**；一个 `make_app()` 自由函数或 `std::unique_ptr` 链就足够。容器在依赖图深、需按配置切换实现的框架级代码里才划算。
 
 ---
 
@@ -288,7 +288,7 @@ int main() {
 
 【定义】接口注入：高层依赖**抽象基类（接口）**而非具体类，运行时通过多态解耦。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：与接口（抽象基类）]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与接口（抽象基类）
 ```cpp
 // Examples/_ch141_interface.cpp
 // DI 与接口（抽象基类）：面向接口编程，运行时多态解耦高层与低层。
@@ -324,7 +324,7 @@ int main() {
 
 【标准】接口即“带纯虚函数的抽象基类”，析构函数必须是 `virtual`（[class.dtor]），否则通过基类指针删除派生对象会**未定义行为**。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：与接口（抽象基类）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与接口（抽象基类）
 ```cpp
 // ❌ 漏写 virtual 析构：delete 基类指针不会调用派生析构
 struct BadIface { /* 无 virtual ~BadIface() */ virtual void f() = 0; };
@@ -338,7 +338,7 @@ struct BadIface { /* 无 virtual ~BadIface() */ virtual void f() = 0; };
 
 【定义】用 `std::unique_ptr` 表达“**依赖所有权随注入转移**”的语义：容器/工厂拥有依赖，注入后独占，无共享、无拷贝。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：与 std::uniqueptr 所]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 std::uniqueptr 所
 ```cpp
 // Examples/_ch141_unique_ptr.cpp
 // DI 与 std::unique_ptr 所有权：容器拥有依赖生命周期，注入后所有权转移，无共享、无拷贝。
@@ -373,7 +373,7 @@ int main() {
 
 【源码剖析】libstdc++ 的 `std::unique_ptr::reset` 是“所有权转移”的核心，注入后容器通过 `reset` 把指针交给 `unique_ptr`：
 
-> **示例 14** [难度 ★★☆☆☆] [主题：与 std::uniqueptr 所]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 std::uniqueptr 所
 ```cpp
 #include <utility>
 // 文件：bits/unique_ptr.h（libstdc++ 13.1.0）
@@ -388,7 +388,7 @@ int main() {
       }
 ```
 
-[标准] `reset` 为 `noexcept`（[unique.ptr.single.modifiers]）；它先 `static_assert` 校验删除器可调用，再调用内部 `_M_t.reset` 释放旧资源。这正是 DI 中“容器把依赖交出去后自己不再持有”的底层机制。
+<span class="badge badge-std">标准</span> `reset` 为 `noexcept`（[unique.ptr.single.modifiers]）；它先 `static_assert` 校验删除器可调用，再调用内部 `_M_t.reset` 释放旧资源。这正是 DI 中“容器把依赖交出去后自己不再持有”的底层机制。
 
 ---
 
@@ -396,7 +396,7 @@ int main() {
 
 【定义】测试用 DI：把真实依赖（DB/网络/时钟）替换成**测试替身（test double / fake / mock）**，使单测无外部副作用、可断言。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：与测试（mock 注入）]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与测试（mock 注入）
 ```cpp
 // Examples/_ch141_mock.cpp
 // DI 与测试：通过注入“假实现”（mock/fake）隔离被测对象，无需真实数据库/网络。
@@ -431,13 +431,13 @@ int main() {
 
 【为什么设计】没有 DI 时，`UserService` 会直接 `new DbUserRepo()`，单测被迫连真实库——慢、不稳定、难造错误路径。DI 让“被测逻辑”与“外部世界”之间有一道可替换的缝。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：与测试（mock 注入）]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与测试（mock 注入）
 ```cpp
 // 用 GoogleTest/gMock 时，mock 同样通过“注入接口实现”接入，本质一致
 // EXPECT_CALL(*mock, name(1)).WillOnce(Return("fake#1"));
 ```
 
-[经验] 每个对外端口（DB、消息总线、时钟、文件系统）都应是接口，便于在测试中换成内存实现（见 ⑲）。
+<span class="badge badge-exp">经验</span> 每个对外端口（DB、消息总线、时钟、文件系统）都应是接口，便于在测试中换成内存实现（见 ⑲）。
 
 ---
 
@@ -447,7 +447,7 @@ int main() {
 
 【上游参考】Boost.DI（`boost::di`）是工业级 C++14 DI 框架，核心 API：
 
-> **示例 17** [难度 ★★★☆☆] [主题：框架对比]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 框架对比
 ```cpp
 // 上游参考（Boost.DI，需 boost 1.80+，本书环境未装 boost，故不在此编译）。
 // 其“自动装配”风格：
@@ -484,7 +484,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：框架对比]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架对比
 ```cpp
 // Examples/_ch141_boost_di_mimic.cpp 完整版（含头文件，已通过 -std=c++23 编译）
 ```
@@ -499,7 +499,7 @@ int main() {
 | Boost.DI | 运行期+元编程 | 低 | 无（靠构造签名） | 自动装配、样板少 |
 | fruit / hyperscan 类 | 运行期 | 低 | 无 | 编译期依赖图校验 |
 
-[经验] 框架的“自动装配”很香，但会隐藏装配顺序与错误；故障排查时“手写 `make_app()`”往往更易读。选型权衡：库代码倾向零依赖的模板/构造注入，应用框架代码才上 DI 容器/框架。
+<span class="badge badge-exp">经验</span> 框架的“自动装配”很香，但会隐藏装配顺序与错误；故障排查时“手写 `make_app()`”往往更易读。选型权衡：库代码倾向零依赖的模板/构造注入，应用框架代码才上 DI 容器/框架。
 
 ---
 
@@ -507,7 +507,7 @@ int main() {
 
 【定义】编译期 DI：用 `if constexpr`（C++17）在编译期根据策略常量选择实现分支，杜绝虚调用与运行时分支。
 
-> **示例 19** [难度 ★★★☆☆] [主题：编译期 DI]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译期 DI
 ```cpp
 // Examples/_ch141_compiletime_select.cpp
 // 编译期 DI：用 if constexpr 在编译期选择实现，避免虚调用与分支开销。
@@ -532,13 +532,13 @@ int main() {
 
 【编译器行为】`Production` 是编译期常量，`if constexpr` 的未选中分支根本不参与实例化，生成代码里只有被选中的后端。真实 `-O2` 汇编（`_ch141_compiletime_select.asm`）中 `dev` 分支直接加载字符串 `"dev"`、`prod` 分支加载 `"prod"`，无任何分支跳转。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：编译期 DI]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译期 DI
 ```cpp
 // 进一步：把开关交给编译宏，做到“同份代码、零成本切换实现”
 // template <int Env = BUILD_ENV> struct Backend { ... };
 ```
 
-[标准] `if constexpr` 属 [stmt.if]；其未取分支中的 `return` 类型可不一致，因为不会被实例化——这是它优于普通 `if` 的关键。
+<span class="badge badge-std">标准</span> `if constexpr` 属 [stmt.if]；其未取分支中的 `return` 类型可不一致，因为不会被实例化——这是它优于普通 `if` 的关键。
 
 ---
 
@@ -546,7 +546,7 @@ int main() {
 
 【定义】单例（Singleton）与 DI 常被混淆。单例把“**如何获取依赖**”和“**全局可见性**”硬编码进依赖自身；DI 把依赖当普通参数传入，单例只在**最外层**持有一份。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：与单例（替代，关联 ch136）]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与单例（替代，关联 ch136）
 ```cpp
 // Examples/_ch141_singleton.cpp
 // DI 替代单例：单例把“如何获取”和“全局可见性”硬编码；DI 把依赖当作普通参数传入。
@@ -568,14 +568,14 @@ int main() {
 
 【为什么设计】单例的全局可变状态是测试地狱之源（测试顺序、并行、状态泄漏）。DI 让“唯一实例”由组装根保证（只 `new` 一次并注入多处），而业务代码**感知不到单例**，从而可测。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：与单例（替代，关联 ch136）]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与单例（替代，关联 ch136）
 ```cpp
 #include <memory>
 // 单例 + DI 的折中：用 shared_ptr 在组装根共享一份，业务方通过构造函数注入拿到
 // auto cfg = std::make_shared<Config>();  A a(cfg); B b(cfg);  // 同一份，但可测
 ```
 
-[经验] 经验上：**能用“注入的共享对象”就不要用“全局单例”**。关联 ch136 对单例模式有专门剖析。
+<span class="badge badge-exp">经验</span> 经验上：**能用“注入的共享对象”就不要用“全局单例”**。关联 ch136 对单例模式有专门剖析。
 
 ---
 
@@ -583,7 +583,7 @@ int main() {
 
 【定义】DI 的生命周期由**所有权语义 + RAII** 保障：依赖资源在拥有者析构时自动释放，无需手动 `dispose()`。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：生命周期管理（RAII）]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期管理（RAII）
 ```cpp
 // Examples/_ch141_raii.cpp
 // DI 生命周期管理（RAII）：依赖资源由拥有者（容器/unique_ptr）在析构时自动释放。
@@ -608,7 +608,7 @@ int main() {
 
 【生命周期图】：
 
-> **示例 24** [难度 ★★☆☆☆] [主题：生命周期管理（RAII）]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期管理（RAII）
 ```
 main ──new Connection──▶ unique_ptr<Connection>
                               │
@@ -617,9 +617,9 @@ main ──new Connection──▶ unique_ptr<Connection>
    main 结束 ▶ Repository 析构 ▶ unique_ptr 析构 ▶ Connection::~Connection()  close()
 ```
 
-[标准] `std::unique_ptr` 的析构在 [unique.ptr.single.dtor] 定义为 `noexcept` 且会调用删除器释放资源。DI 借助这一保证实现“异常安全的一次性清理”。
+<span class="badge badge-std">标准</span> `std::unique_ptr` 的析构在 [unique.ptr.single.dtor] 定义为 `noexcept` 且会调用删除器释放资源。DI 借助这一保证实现“异常安全的一次性清理”。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：生命周期管理（RAII）]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期管理（RAII）
 ```cpp
 // 多依赖时，构造顺序=成员声明顺序，析构顺序相反；RAII 保证逆序安全释放
 ```
@@ -630,7 +630,7 @@ main ──new Connection──▶ unique_ptr<Connection>
 
 【定义】DI 与并发的交点在于：**注入的依赖在多线程下的线程安全边界**必须明确。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：与多线程]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多线程
 ```cpp
 // Examples/_ch141_mt.cpp
 // DI 与多线程：注入的依赖需明确线程安全边界。不可变（const）依赖可安全共享。
@@ -661,13 +661,13 @@ int main() {
 
 【线程安全】注入**无状态、只读**的依赖（如 `Square`）并以 `shared_ptr` 共享，多个工作线程并发调用是安全的（[thread.req.lockable] 层面无数据竞争）。反之，若依赖含可变状态，需在其内部加锁或用无锁结构。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：与多线程]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多线程
 ```cpp
 // 若依赖自身有状态，注入的是“每线程实例”而非共享实例：
 // thread_local Worker tl_worker(make_stateful());
 ```
 
-[经验] 经验上：DI 让“线程安全边界”显式化——无状态依赖可以安全地 `shared_ptr` 广播；有状态依赖应“每线程一份”或内部自保。
+<span class="badge badge-exp">经验</span> 经验上：DI 让“线程安全边界”显式化——无状态依赖可以安全地 `shared_ptr` 广播；有状态依赖应“每线程一份”或内部自保。
 
 ---
 
@@ -677,7 +677,7 @@ int main() {
 - **接口注入**（虚函数）：有 vtable、有间接调用。
 - **模板注入**（静态多态，非虚）：无 vtable、可内联。
 
-> **示例 28** [难度 ★★★★☆] [主题：性能]
+> **示例 28** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能
 ```cpp
 // Examples/_ch141_perf.cpp
 // DI 性能取证：接口注入（虚 / 运行时多态） vs 模板注入（静态多态，无虚调用）。
@@ -744,7 +744,7 @@ _Z11via_virtualRK8IStorage:
 **关键结论（真实、非臆测）：**
 - 模板注入的 `FastStorage` 在目标文件里**没有任何 vtable**（`grep -c _ZTV11FastStorage` 在两版汇编中均为 **0**）；接口注入则必然产出 `_ZTV8IStorage`、`_ZTI8IStorage`（RTTI）。
 - 即便 `-O2` 去虚化了本地可见的接口调用，这种去虚化**不是保证的**：当动态类型在翻译单元外、或关闭 `-fdevirtualize`/关 LTO 时，接口路径仍是间接调用；模板注入则**无论可见性如何都静态绑定**。
-- 因此[经验]：**对热路径、零容忍虚调用的场景（交易撮合、游戏内循环），优先模板/静态多态注入**；对需要运行时可替换、且不热的端口（通知、存储），接口注入的可测试性收益更值钱。
+- 因此<span class="badge badge-exp">经验</span>：**对热路径、零容忍虚调用的场景（交易撮合、游戏内循环），优先模板/静态多态注入**；对需要运行时可替换、且不热的端口（通知、存储），接口注入的可测试性收益更值钱。
 
 ---
 
@@ -752,7 +752,7 @@ _Z11via_virtualRK8IStorage:
 
 【定义】列清常见 DI 反模式，避免“看起来像 DI 实则更糟”。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：反模式]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式
 ```cpp
 // Examples/_ch141_antipattern.cpp
 // DI 反模式：在构造函数里 new 具体依赖、或让依赖自己 new 依赖（service locator 伪装成 DI）。
@@ -793,16 +793,16 @@ int main() {
 | 4 | 为可测暴露全量 setter | 所有依赖都有 `setX` | 破坏"构造即完整"不变量 | 必需依赖走构造注入 |
 | 5 | 循环依赖 | `A→B→A` | 容器解析死循环/栈溢出 | 抽接口或引入中介，而非延迟 `set*` |
 
-> 表注：判定线——凡是"测试时还要去改全局状态"的注入都是假 DI（见示例 30 与 [经验]）。
+> 表注：判定线——凡是"测试时还要去改全局状态"的注入都是假 DI（见示例 30 与 <span class="badge badge-exp">经验</span>）。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：反模式]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式
 ```cpp
 // ❌ Service Locator 反模式（隐式耦合）
 // struct Locator { static ILog& log(); };
 // void f() { Locator::log().w(); }   // 测试无法注入，调用点散落全局
 ```
 
-[经验] 经验上：凡是“测试时还要去改全局状态”的注入，都是假 DI。
+<span class="badge badge-exp">经验</span> 经验上：凡是“测试时还要去改全局状态”的注入，都是假 DI。
 
 ---
 
@@ -810,7 +810,7 @@ int main() {
 
 【定义】DI 与 `constexpr` 结合：编译期策略对象作为常量表达式注入，可进入常量折叠 / 放入 ROM。
 
-> **示例 31** [难度 ★★★☆☆] [主题：与 constexpr]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 constexpr
 ```cpp
 // Examples/_ch141_constexpr.cpp
 // DI 与 constexpr：编译期策略对象可作为常量表达式注入，进入 ROM / 常量折叠。
@@ -831,7 +831,7 @@ int main() {
 
 【标准】模板参数 `P` 的 `factor()` 是 `constexpr` 函数，因此 `compute` 能在编译期求值（[expr.const]），`r1`/`r2` 均为编译期常量，不产生运行时计算。
 
-> **示例 32** [难度 ★★★★☆] [主题：与 constexpr]
+> **示例 32** <span class="badge badge-exp">难度 ★★★★☆</span> · 与 constexpr
 ```cpp
 // constexpr 注入也可用于“编译期配置表”：
 // template <auto Config> struct Engine { static constexpr int max = Config.max_threads; };
@@ -845,7 +845,7 @@ int main() {
 
 【定义】ECS（Entity-Component-System）是 DI 思想在游戏/仿真领域的延伸：**系统（System）依赖组件存储（World）注入**，而非全局单例。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：与 ECS 衔接（预告 ch142）]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ECS 衔接（预告 ch142）
 ```cpp
 // Examples/_ch141_ecs.cpp
 // DI 与 ECS 衔接：系统（System）通过“组件存储（World）”依赖注入，而非全局单例（预告 ch142）。
@@ -875,13 +875,13 @@ int main() {
 
 【为什么设计】传统 OOP 让 `GameObject` 自带行为（继承树爆炸）；ECS 把“数据（Component）”与“行为（System）”分离，System 通过注入的 `World` 读写组件，天然契合 DI 的“依赖外置”。
 
-> **示例 34** [难度 ★★☆☆☆] [主题：与 ECS 衔接（预告 ch142）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ECS 衔接（预告 ch142）
 ```cpp
 // ECS 中 System 常以模板/接口注入多种 Component 视图（只读/可写），与 ④ 模板注入同构
 // class RenderSystem { template<class View> void run(View v); };
 ```
 
-[经验] 经验上：DI 是 ECS 的“装配哲学”前身——预告 ch142 将展开 ECS 的组件存储与系统调度，本章的接口/模板/容器技术可直接复用。
+<span class="badge badge-exp">经验</span> 经验上：DI 是 ECS 的“装配哲学”前身——预告 ch142 将展开 ECS 的组件存储与系统调度，本章的接口/模板/容器技术可直接复用。
 
 ---
 
@@ -889,7 +889,7 @@ int main() {
 
 【定义】工业级案例：交易网关（TradingGateway）注入**行情源**与**风控**，生产用真实实现、单测用 fake，体现 DI 的全部价值。
 
-> **示例 35** [难度 ★★☆☆☆] [主题：真实案例]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例
 ```cpp
 // Examples/_ch141_realcase.cpp
 // 真实案例：交易网关（TradingGateway）注入行情源与风控，单测可换 fake，生产可换真实实现。
@@ -928,13 +928,13 @@ int main() {
 
 【为什么是真实案例】这不是 Hello World：行情源（低延迟网络）、风控（规则引擎）都是“重依赖”。DI 让 `TradingGateway` 的**撮合逻辑**独立于“数据从哪来、风控怎么判”，生产/测试用同一份代码、不同实现。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 // 工厂注入（惰性创建重依赖），完整版见 Examples/_ch141_factory.cpp
 // class Pool { ConnectionFactory& f_; explicit Pool(ConnectionFactory& f):f_(f){} };
 ```
 
-[经验] 经验上：金融/交易系统对“可替换数据源 + 可测”诉求极高，DI 几乎是标配；但热路径上的 `IMarketData::price` 仍建议用模板注入或去虚化（见 ⑭）以压低延迟。
+<span class="badge badge-exp">经验</span> 经验上：金融/交易系统对“可替换数据源 + 可测”诉求极高，DI 几乎是标配；但热路径上的 `IMarketData::price` 仍建议用模板注入或去虚化（见 ⑭）以压低延迟。
 
 ---
 
@@ -942,7 +942,7 @@ int main() {
 
 【定义】把 DI 落到测试工程：采用**端口/适配器（六边形）架构**，外部端口（事件总线、DB、时钟）皆为接口，测试中换内存适配器。
 
-> **示例 37** [难度 ★★☆☆☆] [主题：测试策略]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试策略
 ```cpp
 // Examples/_ch141_test_strategy.cpp
 // 测试策略：用依赖注入实现“端口/适配器（六边形）”架构，测试中用内存适配器替换外部端口。
@@ -983,16 +983,16 @@ int main() {
 | 集成测试 | 注入真实适配器的测试实例（测试用 DB） | 验证端口与真实实现的协作 |
 | 端到端 | 仅最外层 `main`/组装根换实现 | 业务代码零改动 |
 
-> 表注：分层越往下，替换的"接缝"越靠外；测试性不是事后补丁，而是 DI 的一等公民（见 [经验]）。
+> 表注：分层越往下，替换的"接缝"越靠外；测试性不是事后补丁，而是 DI 的一等公民（见 <span class="badge badge-exp">经验</span>）。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：测试策略]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 测试策略
 ```cpp
 // 时钟也要注入，否则“依赖 now() 的逻辑”无法稳定测试：
 // struct IClock { virtual int now() const = 0; };
 // 注入 FakeClock{now()=固定值} → 时间相关断言可复现
 ```
 
-[经验] 经验上：每个“不可控的外部边界”都应是接口；测试性不是事后补丁，而是 DI 的一等公民。
+<span class="badge badge-exp">经验</span> 经验上：每个“不可控的外部边界”都应是接口；测试性不是事后补丁，而是 DI 的一等公民。
 
 ---
 
@@ -1001,16 +1001,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：构造注入 vs 设值注入的选择。** 你设计可测试组件。请说明（属设计原则，无直接标准对应）。
-   - [标准] 无直接 C++ 标准对应；DI 是设计原则，语言层用构造函数/setter + 接口实现。
-   - [引用] M. Fowler《Inversion of Control Containers and the Dependency Injection pattern》/ C++ Core Guidelines（接口隔离）；cppreference 通用。
+   - <span class="badge badge-std">标准</span> 无直接 C++ 标准对应；DI 是设计原则，语言层用构造函数/setter + 接口实现。
+   - <span class="badge badge-ref">引用</span> M. Fowler《Inversion of Control Containers and the Dependency Injection pattern》/ C++ Core Guidelines（接口隔离）；cppreference 通用。
 
 2. **真实场景：用抽象基类（接口）解耦实现。** 你依赖接口而非具体类。请说明。
-   - [标准] 含纯虚函数的类为抽象类，不能实例化，可用于定义接口契约。
-   - [引用] ISO/IEC 14882:2023 §[class.abstract]（抽象类与纯虚函数）；cppreference "abstract class" 词条。
+   - <span class="badge badge-std">标准</span> 含纯虚函数的类为抽象类，不能实例化，可用于定义接口契约。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.abstract]（抽象类与纯虚函数）；cppreference "abstract class" 词条。
 
 3. **真实场景：用工厂 + 智能指针管理依赖生命周期。** 你避免裸指针到处传。请说明。
-   - [标准] RAII + `std::shared_ptr`/`unique_ptr` 管理依赖对象的生命周期。
-   - [引用] ISO/IEC 14882:2023 §[util.smartptr]（智能指针）/ [class.dtor]（RAII）；cppreference "std::shared_ptr" 词条。
+   - <span class="badge badge-std">标准</span> RAII + `std::shared_ptr`/`unique_ptr` 管理依赖对象的生命周期。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[util.smartptr]（智能指针）/ [class.dtor]（RAII）；cppreference "std::shared_ptr" 词条。
 
 【本章要点】依赖注入把"对象怎么用依赖"与"依赖怎么创建/选哪个实现"解耦，核心收益是**可测试、可替换、可维护**。C++ 落地 DI 的四种主力技法：
 
@@ -1031,7 +1031,7 @@ int main() {
 
 【选型速查】
 
-> **示例 39** [难度 ★★☆☆☆] [主题：小结]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结
 ```
 依赖可热插拔？ ──是──▶ setter 注入（③）
       │否
@@ -1045,7 +1045,7 @@ int main() {
 构造注入 + 引用/unique_ptr（②⑫）
 ```
 
-[经验] 最后一句：DI 的尽头是“**组装根**”——把所有 `new` 收敛到一处，业务代码零 `new`、零全局状态，便是工业级 C++ 的可测之道。关联 ch136（单例）、预告 ch142（ECS）可作延伸。
+<span class="badge badge-exp">经验</span> 最后一句：DI 的尽头是“**组装根**”——把所有 `new` 收敛到一处，业务代码零 `new`、零全局状态，便是工业级 C++ 的可测之道。关联 ch136（单例）、预告 ch142（ECS）可作延伸。
 
 ## 联合使用场景
 
@@ -1109,7 +1109,7 @@ int main() {
 
 ## 附录 F：DI工业
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 F：DI工业]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：DI工业
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1160,7 +1160,7 @@ DI 常被误当成"一个 C++ 技巧"，实则是一条源自 1980 年代的软�
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1175,9 +1175,9 @@ struct Handler {
 int main() { Handler h(std::make_unique<MemStorage>()); h.run(); }
 ```
 
-[标准] 构造函数注入把依赖的「创建」与「拥有」分离：依赖由外部提供、`unique_ptr` 表达独占所有权，处理器析构时自动释放，无裸指针泄漏风险。
+<span class="badge badge-std">标准</span> 构造函数注入把依赖的「创建」与「拥有」分离：依赖由外部提供、`unique_ptr` 表达独占所有权，处理器析构时自动释放，无裸指针泄漏风险。
 
-[引用] 依赖注入见 Martin Fowler 的「Inversion of Control Containers and the Dependency Injection pattern」；C++ 落地与所有权规范见 C++ Core Guidelines（Resource management / F 章）与 Boost.DI（boost.org）；ch141 ⑦ 详述 `unique_ptr` 所有权。
+<span class="badge badge-ref">引用</span> 依赖注入见 Martin Fowler 的「Inversion of Control Containers and the Dependency Injection pattern」；C++ 落地与所有权规范见 C++ Core Guidelines（Resource management / F 章）与 Boost.DI（boost.org）；ch141 ⑦ 详述 `unique_ptr` 所有权。
 
 </details>
 
@@ -1187,7 +1187,7 @@ int main() { Handler h(std::make_unique<MemStorage>()); h.run(); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <cassert>
 #include <string>
@@ -1207,9 +1207,9 @@ int main() {
 }
 ```
 
-[标准] 面向接口编程 + 虚函数多态，使替换实现（fake / mock）在编译期类型安全；测试零外部依赖、可重复、秒内完成。
+<span class="badge badge-std">标准</span> 面向接口编程 + 虚函数多态，使替换实现（fake / mock）在编译期类型安全；测试零外部依赖、可重复、秒内完成。
 
-[引用] Mock 与 DI 见 ch150 ④ 与 GoogleTest 官方文档（google.github.io/googletest）；依赖注入容器 Boost.DI（boost.org）可在编译期把 fake 绑进接口；ch141 ⑧ 专讲「DI 与测试（mock 注入）」。
+<span class="badge badge-ref">引用</span> Mock 与 DI 见 ch150 ④ 与 GoogleTest 官方文档（google.github.io/googletest）；依赖注入容器 Boost.DI（boost.org）可在编译期把 fake 绑进接口；ch141 ⑧ 专讲「DI 与测试（mock 注入）」。
 
 </details>
 
@@ -1219,7 +1219,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 struct SysClock { double now() const { return 0.0; } };
@@ -1232,9 +1232,9 @@ struct MovementSystem {
 int main() { MovementSystem<SysClock, Rng> sys; sys.tick(); }
 ```
 
-[标准] 模板参数注入在编译期把依赖「焊死」进系统类型，编译器可内联 `now()` / `next()`，比虚接口少一次间接调用；代价是系统类型随依赖组合翻倍（见 ch140 ⑮）。
+<span class="badge badge-std">标准</span> 模板参数注入在编译期把依赖「焊死」进系统类型，编译器可内联 `now()` / `next()`，比虚接口少一次间接调用；代价是系统类型随依赖组合翻倍（见 ch140 ⑮）。
 
-[引用] 该编译期 DI 思路与 EnTT（skypjack/entt）等 ECS 库的系统设计一致；ch142 ⑰ 给出 ECS 真实库参考，ch141 ④ 讲「模板参数注入（编译期绑定）」。
+<span class="badge badge-ref">引用</span> 该编译期 DI 思路与 EnTT（skypjack/entt）等 ECS 库的系统设计一致；ch142 ⑰ 给出 ECS 真实库参考，ch141 ④ 讲「模板参数注入（编译期绑定）」。
 
 </details>
 
@@ -1254,7 +1254,7 @@ int main() { MovementSystem<SysClock, Rng> sys; sys.tick(); }
 
 可复现基准（自包含、可编译）：
 
-> **示例 44** [难度 ★★★★☆] [主题：真实性能基准：三种依赖注入方式的调用]
+> **示例 44** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实性能基准：三种依赖注入方式的调用
 ```cpp
 // g++ -std=c++23 -O2 ch141_bench.cpp
 #include <chrono>
@@ -1413,7 +1413,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 45** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 45** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 

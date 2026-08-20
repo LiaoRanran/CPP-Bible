@@ -13,27 +13,27 @@
 > "写一遍、对所有容器都成立"——这句话背后的执念，定义了整个 `<algorithm>`。
 
 ### 0.1 起源（谁·何时·为何）
-Stepanov 对 STL 算法最核心的要求有两条：**泛型**（一个 `find` 能搜遍所有容器）与**复杂度保证**（每个算法都写明最坏/平均复杂度）。[史] 这源于他对"算法应独立于数据结构"的信念——只要一个序列满足"能被迭代器走一遍"，`find`/`copy`/`sort` 就该直接可用，无需为每种容器重写。迭代器正是算法与容器之间那层"最低共同分母"的抽象（受 CLU 迭代器启发）。[史]
+Stepanov 对 STL 算法最核心的要求有两条：**泛型**（一个 `find` 能搜遍所有容器）与**复杂度保证**（每个算法都写明最坏/平均复杂度）。<span class="badge badge-history">史</span> 这源于他对"算法应独立于数据结构"的信念——只要一个序列满足"能被迭代器走一遍"，`find`/`copy`/`sort` 就该直接可用，无需为每种容器重写。迭代器正是算法与容器之间那层"最低共同分母"的抽象（受 CLU 迭代器启发）。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- 1994：STL 算法随标准库入标，奠定"区间 `[first,last)` + 迭代器范畴"的范式。[史]
+- 1994：STL 算法随标准库入标，奠定"区间 `[first,last)` + 迭代器范畴"的范式。<span class="badge badge-history">史</span>
 - 后续：C++11 引入 lambda 让谓词更顺手；C++17 加执行策略（`par`/`seq`）做并行；C++20 Ranges 重写成"吃区间"的版本（[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)、Book/part08_algorithms/ch100_ranges_algo.md）。
 
 ### 0.3 设计哲学之争
-STL 算法最大的反直觉之处，是**把算法放在容器之外、做自由函数**，而非容器成员。[评] 同期 OO 思路认为"排序就该是 `container.sort()`"，但 Stepanov 坚持：算法若依赖容器特化就会爆炸式重复，而迭代器解耦后，一套算法覆盖一切。代价是调用略啰嗦、报错晦涩，但换来了无可比拟的可组合性。[评]
+STL 算法最大的反直觉之处，是**把算法放在容器之外、做自由函数**，而非容器成员。<span class="badge badge-comment">评</span> 同期 OO 思路认为"排序就该是 `container.sort()`"，但 Stepanov 坚持：算法若依赖容器特化就会爆炸式重复，而迭代器解耦后，一套算法覆盖一切。代价是调用略啰嗦、报错晦涩，但换来了无可比拟的可组合性。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++17 引入执行策略、C++20 用 Ranges 把算法重写成"吃区间"版本。并行陷阱与 Ranges 取代是后续支线。
 
-- [史] **执行策略（`seq`/`par`/`par_unseq`）来自 Parallelism TS**：C++17 把它并入标准，让 `std::sort(v.begin(),v.end(),std::execution::par)` 一行就能并行；背后是 PSTL（Parallel STL）把算法映射到 Intel TBB 等后端。
-- [评] **并行算法的"正确性陷阱"比性能更危险**：`par` 要求元素访问无数据竞争、迭代器/谓词可重入；一旦并行 lambda 改了共享状态就是 UB。`par_unseq` 还允许向量化，连 `restrict` 式别名假设都更苛刻。
-- [史] **`ranges::` 算法是接口重写而非重实现**：C++20 给每个传统算法配了 `std::ranges::` 版本，接收单范围、支持投影与哨兵；本质是对同一套底层迭代器逻辑的"现代门面"，逐步成为推荐写法。
-- [评] **Ranges 会否"取代"迭代器对接口尚无定论**：传统 `sort(v.begin(),v.end())` 仍完全有效、且错误信息更短；委员会倾向"新旧并存"，让 Ranges 渐进成为默认而非强制替换。
+- <span class="badge badge-history">史</span> **执行策略（`seq`/`par`/`par_unseq`）来自 Parallelism TS**：C++17 把它并入标准，让 `std::sort(v.begin(),v.end(),std::execution::par)` 一行就能并行；背后是 PSTL（Parallel STL）把算法映射到 Intel TBB 等后端。
+- <span class="badge badge-comment">评</span> **并行算法的"正确性陷阱"比性能更危险**：`par` 要求元素访问无数据竞争、迭代器/谓词可重入；一旦并行 lambda 改了共享状态就是 UB。`par_unseq` 还允许向量化，连 `restrict` 式别名假设都更苛刻。
+- <span class="badge badge-history">史</span> **`ranges::` 算法是接口重写而非重实现**：C++20 给每个传统算法配了 `std::ranges::` 版本，接收单范围、支持投影与哨兵；本质是对同一套底层迭代器逻辑的"现代门面"，逐步成为推荐写法。
+- <span class="badge badge-comment">评</span> **Ranges 会否"取代"迭代器对接口尚无定论**：传统 `sort(v.begin(),v.end())` 仍完全有效、且错误信息更短；委员会倾向"新旧并存"，让 Ranges 渐进成为默认而非强制替换。
 
 > 史料来源：[cppreference 执行策略](https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
-## ① 概述：STL 算法设计哲学 [标准]
+## ① 概述：STL 算法设计哲学 <span class="badge badge-std">标准</span>
 
 [第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
 
@@ -43,7 +43,7 @@ STL 算法是一组**与容器解耦**的、以迭代器对 `[first, last)` 为�
 - **零开销抽象** `[标准]`：算法在 `-O2` 下被内联为与手写循环等价的机器码（见第⑤节真实汇编）。
 - **复杂度契约**：每个算法在标准中写明最坏/平均复杂度，使用者可据此推理。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：STL 算法设计哲学 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：STL 算法设计哲学 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 算法与手写循环语义等价：写一个"把偶数翻倍"的需求
 #include <algorithm>
@@ -63,7 +63,7 @@ void double_evens_hand(std::vector<int>& v) {                 // 手写式
 
 STL 算法按"是否改动区间"与"用途"分为六大类。下列每个类别给一个最小可编译示例。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：算法分类]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法分类
 ```cpp
 // ②-A 非修改序列算法：std::find（只读，不改动元素）
 #include <algorithm>
@@ -76,7 +76,7 @@ std::optional<int> try_find(const std::vector<int>& v, int key) {
 }
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：算法分类]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法分类
 ```cpp
 // ②-B 修改序列算法：std::copy（写入输出迭代器）
 #include <algorithm>
@@ -89,7 +89,7 @@ std::vector<int> copy_to_vec(const std::vector<int>& src) {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：算法分类]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法分类
 ```cpp
 // ②-C 排序算法：std::sort（改动且重排）
 #include <algorithm>
@@ -97,7 +97,7 @@ std::vector<int> copy_to_vec(const std::vector<int>& src) {
 void sort_asc(std::vector<int>& v) { std::sort(v.begin(), v.end()); }
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：算法分类]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法分类
 ```cpp
 // ②-D 数值算法：std::accumulate（<numeric>）
 #include <numeric>
@@ -107,7 +107,7 @@ long sum(const std::vector<int>& v) {
 }
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：算法分类]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 算法分类
 ```cpp
 // ②-E 堆算法：std::make_heap / std::pop_heap
 #include <algorithm>
@@ -121,7 +121,7 @@ int pop_max(std::vector<int>& v) {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：算法分类]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法分类
 ```cpp
 // ②-F 集合算法：std::set_union（要求两区间已排序）
 #include <algorithm>
@@ -135,7 +135,7 @@ std::vector<int> union_sorted(const std::vector<int>& a,
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：算法分类]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 算法分类
 ```
 ┌─────────────── 算法六大类（STL）───────────────┐
 │ 非修改   find/count/equal/for_each(read-only)  │
@@ -147,11 +147,11 @@ std::vector<int> union_sorted(const std::vector<int>& a,
 └────────────────────────────────────────────────┘
 ```
 
-## ③ 迭代器类别与算法要求 [标准]
+## ③ 迭代器类别与算法要求 <span class="badge badge-std">标准</span>
 
 算法对迭代器有最低类别要求。迭代器分五档（C++20 起用 `std::contiguous_iterator` 等概念强化）：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：迭代器类别与算法要求 [标准]]
+> **示例 9** [难度 ★☆☆☆☆] [主题：迭代器类别与算法要求 <span class="badge badge-std">标准</span>]
 ```
 input ─→ forward ─→ bidirectional ─→ random_access ─→ contiguous
 （只读一次）  （可重复）   （可双向）       （可+/-n跳）     （连续内存）
@@ -160,7 +160,7 @@ input ─→ forward ─→ bidirectional ─→ random_access ─→ contiguous
 - `std::find` 只需 **input**；`std::reverse` 需 **bidirectional**；`std::sort` 需 **random_access**。
 - `[标准]`：给错类别在编译期（concept）或实例化期报错，而非运行期崩溃。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：迭代器类别与算法要求 [标准]]
+> **示例 10** [难度 ★★☆☆☆] [主题：迭代器类别与算法要求 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③-A 用 C++20 概念显式表达"排序要求随机访问迭代器"
 #include <vector>
@@ -179,7 +179,7 @@ void demo() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：迭代器类别与算法要求 [标准]]
+> **示例 11** [难度 ★★☆☆☆] [主题：迭代器类别与算法要求 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③-B 迭代器 category 标签（traits 历史写法，仍常见于老代码/库）
 #include <iterator>
@@ -190,13 +190,13 @@ static_assert(std::is_same_v<
     std::random_access_iterator_tag>);
 ```
 
-## ④ 复杂度记号与摊销 [标准]
+## ④ 复杂度记号与摊销 <span class="badge badge-std">标准</span>
 
 - `O(1)` `O(log n)` `O(n)` `O(n log n)` `O(n²)` 是渐进上界。
 - **摊销（amortized）**：单次可能贵，但均摊到多次操作是常数。典型：`std::vector::push_back` 扩容时 `O(n)`，但均摊 `O(1)`。
 - `[标准]`：`std::sort` 最坏 `O(n log n)`（内省排序，见第⑤节）；`std::unordered_set::find` 平均 `O(1)`、最坏 `O(n)`（哈希退化）。
 
-> **示例 12** [难度 ★★★☆☆] [主题：复杂度记号与摊销 [标准]]
+> **示例 12** [难度 ★★★☆☆] [主题：复杂度记号与摊销 <span class="badge badge-std">标准</span>]
 ```cpp
 // ④ 用计数直观感受复杂度档次（非基准，仅说明"量级"）
 #include <vector>
@@ -212,11 +212,11 @@ int count_inversions_quadratic(const std::vector<int>& v) {  // O(n^2) 示例
 // 同样任务用 std::sort 只需 O(n log n)，见第②-C / 第⑬节陷阱对比。
 ```
 
-## ⑤ [实现]真实：编译一个算法调用看内联（g++ -O2 -S）
+## ⑤ <span class="badge badge-impl">实现</span>真实：编译一个算法调用看内联（g++ -O2 -S）
 
 取证目标：证明 `std::for_each` + lambda 在 `-O2` 下被完全内联，不产生任何函数调用——零开销抽象不是口号。
 
-> **示例 13** [难度 ★★★☆☆] [主题：[实现]真实：编译一个算法调用看内联]
+> **示例 13** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：编译一个算法调用看内联]
 ```cpp
 #include <vector>
 #include <algorithm>
@@ -256,7 +256,7 @@ _Z14sum_of_squaresRKSt6vectorIiSaIiEE:
 - `[实现·GCC15.3.0]`：循环里只有 `imul`/`add`，**没有任何 `call`**——`std::for_each` 与 lambda 被彻底内联。与手写 `for (int x : v) s += (long)x*x;` 生成的汇编逐条对应。
 - `[标准]`：这正是"零开销抽象"的可验证含义：高层抽象在优化后不残留运行时痕迹。
 
-> **示例 14** [难度 ★★★☆☆] [主题：[实现]真实：编译一个算法调用看内联]
+> **示例 14** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：编译一个算法调用看内联]
 ```cpp
 #include <vector>
 #include <algorithm>
@@ -325,7 +325,7 @@ _Z14square_inplaceRSt6vectorIiSaIiEE:
 
 - `[标准]`：`std::stable_sort` 稳定；`std::sort` **不**保证稳定（实际多为内省排序，相等元素可能换位）。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：稳定性 stable]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 稳定性 stable
 ```cpp
 // ⑥ 稳定性差异：以"值"为键，相等者顺序是否被保留
 #include <algorithm>
@@ -344,7 +344,7 @@ void show_stable() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：稳定性 stable]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性 stable
 ```cpp
 // ⑥-B 非稳定的 std::sort 可能打乱相等元素的原始顺序（不要依赖它）
 #include <algorithm>
@@ -355,12 +355,12 @@ void unstable_demo(std::vector<int>& v) {
 // [经验]：需要保序就显式用 std::stable_sort，不要赌 sort 的实现细节。
 ```
 
-## ⑦ 比较器与谓词 [标准]
+## ⑦ 比较器与谓词 <span class="badge badge-std">标准</span>
 
 - **比较器（Comparator）**：接受两元素返回 `bool` 的可调用对象，约定 `comp(a,b)==true` 表示"a 应排在 b 前"，且必须严格弱序（strict weak ordering）。
 - **谓词（Predicate）**：接受元素返回 `bool`，用于 `find_if`/`count_if`/`remove_if` 等。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：比较器与谓词 [标准]]
+> **示例 17** [难度 ★☆☆☆☆] [主题：比较器与谓词 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦-A 自定义比较器：按绝对值排序（严格弱序：|a|<|b|）
 #include <algorithm>
@@ -373,7 +373,7 @@ void sort_by_abs(std::vector<int>& v) {
 // [标准]：比较器必须满足 非自反/非对称/传递/等价传递，否则 sort 行为未定义。
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：比较器与谓词 [标准]]
+> **示例 18** [难度 ★☆☆☆☆] [主题：比较器与谓词 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦-B 谓词：count_if 统计满足条件的元素
 #include <algorithm>
@@ -384,7 +384,7 @@ long count_div(const std::vector<int>& v, int d) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：比较器与谓词 [标准]]
+> **示例 19** [难度 ★☆☆☆☆] [主题：比较器与谓词 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦-C 函数对象 vs lambda：std::greater<> 是标准提供的比较器
 #include <algorithm>
@@ -395,11 +395,11 @@ void sort_desc_std(std::vector<int>& v) {
 }
 ```
 
-## ⑧ 左值/右值迭代器与移动 [标准]
+## ⑧ 左值/右值迭代器与移动 <span class="badge badge-std">标准</span>
 
 C++11 引入 **move iterator**：解引用返回右值引用，使算法"搬移"而非"拷贝"元素。适用于元素移动成本低、且源不再使用的场景（如 `vector` → `vector` 重排）。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 [标准]]
+> **示例 20** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧-A make_move_iterator：把元素移动进目标，而非拷贝
 #include <algorithm>
@@ -416,7 +416,7 @@ std::vector<std::string> move_all(std::vector<std::string>& src) {
 // [标准]：std::move 是"把迭代器包成 move iterator"，算法内部 *it 得到右值。
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 [标准]]
+> **示例 21** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧-B 用 make_move_iterator 显式驱动算法移动语义
 #include <algorithm>
@@ -432,11 +432,11 @@ void relocate(std::vector<std::string>& from, std::vector<std::string>& to) {
 // [经验]：移动后源元素仍"合法但未指定"，只能析构或重新赋值，不可再读取值。
 ```
 
-## ⑨ 并行执行策略 execution::par [实现]
+## ⑨ 并行执行策略 execution::par <span class="badge badge-impl">实现</span>
 
 C++17 引入执行策略：`seq`/`par`/`par_unseq`/`unseq`。把 `std::execution::par` 作为首参传给算法，请求并行执行。
 
-> **示例 22** [难度 ★★★☆☆] [主题：并行执行策略 execution::]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 并行执行策略 execution::
 ```cpp
 // ⑨-A 并行 for_each（需标准库 PSTL 后端支持）
 #include <algorithm>
@@ -477,7 +477,7 @@ _Z12par_for_eachRSt6vectorIdSaIdEE:
 - `[实现·libstdc++15.3.0]`：上汇编证明——**在此 MinGW GCC 15.3.0 构建上，`execution::par` 没有生成并发代码**，因为 PSTL 后端是串行实现（未配置/未链接 TBB）。要让 `par` 真正多线程，必须链接 Intel TBB（`-ltbb`），且 `par_unseq` 还要求向量化安全。
 - `[经验]`：**不要假设 `par` 一定更快**。小数据量下线程派发开销反而更慢；只有大规模、计算密集的算法才值得并行。
 
-## ⑩ 算法与容器成员函数取舍 [标准]
+## ⑩ 算法与容器成员函数取舍 <span class="badge badge-std">标准</span>
 
 许多容器自带同名成员函数：`std::vector::sort` 不存在（vector 无 sort 成员），但 `std::list::sort`、`std::set::find`、`std::map::find`、`std::unordered_*` 都有成员版本。
 
@@ -487,7 +487,7 @@ _Z12par_for_eachRSt6vectorIdSaIdEE:
 | `list`/`forward_list` 排序 | `std::list::sort` ✅（成员，不搬移节点） | 不要用 `std::sort`（需随机访问） |
 | 关联/无序容器查找 | `std::find` ❌（线性 O(n)） | `c.find()` ✅（O(log n)/O(1)） |
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 [标准]]
+> **示例 23** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑩-A 优先用成员 sort（list 节点不搬移，O(n log n) 且保结构）
 #include <list>
@@ -497,7 +497,7 @@ void list_way(std::list<int>& l) { l.sort(); }          // ✅ 成员
 // void list_wrong(std::list<int>& l){ std::sort(l.begin(), l.end()); } // ❌ 需随机访问
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 [标准]]
+> **示例 24** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑩-B 关联容器用成员 find，复杂度 O(log n) 而非 O(n)
 #include <set>
@@ -510,11 +510,11 @@ bool slow_lookup(const std::set<int>& s, int k) {
 }
 ```
 
-## ⑪ 失效迭代器规则 [标准]
+## ⑪ 失效迭代器规则 <span class="badge badge-std">标准</span>
 
 算法操作会使指向容器的迭代器/引用/指针**失效**，规则由容器决定，不在算法本身。忘记这点是最常见的 UB 来源。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：失效迭代器规则 [标准]]
+> **示例 25** [难度 ★☆☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
 ```
 ┌──── 典型失效规则（算法改写区间时）────┐
 │ vector：插入可能整体失效（扩容）      │
@@ -524,7 +524,7 @@ bool slow_lookup(const std::set<int>& s, int k) {
 └──────────────────────────────────────┘
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：失效迭代器规则 [标准]]
+> **示例 26** [难度 ★★☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪-A 危险：在 vector 上边遍历边用算法插入（可能失效）
 #include <vector>
@@ -536,7 +536,7 @@ void danger(std::vector<int>& v) {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：失效迭代器规则 [标准]]
+> **示例 27** [难度 ★☆☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪-B 正确：erase-remove 惯用法，先用算法分区再用成员 erase
 #include <vector>
@@ -547,7 +547,7 @@ void erase_zero(std::vector<int>& v) {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：失效迭代器规则 [标准]]
+> **示例 28** [难度 ★☆☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪-C list 删除安全：erase 只失效被删迭代器
 #include <list>
@@ -557,11 +557,11 @@ void safe_list_erase(std::list<int>& l) {
 }
 ```
 
-## ⑫ 自定义迭代器适配 [标准]
+## ⑫ 自定义迭代器适配 <span class="badge badge-std">标准</span>
 
 算法不关心容器，只关心迭代器接口。标准提供多种**迭代器适配器**，把"写入目标/输入源"伪装成迭代器：
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 [标准]]
+> **示例 29** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫-A back_inserter：算法写入时自动 push_back
 #include <algorithm>
@@ -576,7 +576,7 @@ std::vector<int> times_two(const std::vector<int>& v) {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 [标准]]
+> **示例 30** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫-B ostream_iterator：把算法输出直接流向 cout
 #include <algorithm>
@@ -589,7 +589,7 @@ void print_all(const std::vector<int>& v) {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：自定义迭代器适配 [标准]]
+> **示例 31** [难度 ★★☆☆☆] [主题：自定义迭代器适配 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫-C 自定义输入迭代器：从生成函数产生序列（简化 legacy-input-iterator）
 #include <iterator>
@@ -611,18 +611,18 @@ struct IntGen {
 // 配合哨兵 [0,10) 即可喂给任意输入迭代器算法：std::accumulate(IntGen{}, IntGen{10}, 0)
 ```
 
-## ⑬ 复杂度陷阱（看似 O(n) 实则 O(n²)）[经验]
+## ⑬ 复杂度陷阱（看似 O(n) 实则 O(n²)）<span class="badge badge-exp">经验</span>
 
 最隐蔽的性能 Bug 来自"算法复杂度误判"。下面三个真实陷阱：
 
-> **示例 32** [难度 ★★☆☆☆] [主题：复杂度陷阱]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 复杂度陷阱
 ```cpp
 // ⑬-A 陷阱：对 std::list 调用 std::sort —— 编译失败（需随机访问）
 // 正确做法见 ⑩-A。若强行"先拷到 vector 排序再拷回"，则是 2*O(n)+O(n log n)，
 // 而 list::sort 是 O(n log n) 且零拷贝，反而更优。
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：复杂度陷阱]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 复杂度陷阱
 ```cpp
 // ⑬-B 陷阱：在 vector 上反复 erase 单个元素 → 每次 O(n)，共 O(n^2)
 #include <vector>
@@ -636,7 +636,7 @@ void slow_erase_evens(std::vector<int>& v) {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：复杂度陷阱]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 复杂度陷阱
 ```cpp
 // ⑬-C 陷阱：用线性查找代替有序查找
 #include <vector>
@@ -648,11 +648,11 @@ bool in_sorted(const std::vector<int>& v, int k) {
 }
 ```
 
-## ⑭ [经验]选型：按数据结构与前提选算法
+## ⑭ <span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法
 
 选算法的优先级：**先利用容器/区间的有序性或哈希性，再考虑通用算法**。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：[经验]选型：按数据结构与前提选算法]
+> **示例 35** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法]
 ```cpp
 // ⑭-A 已排序区间：用二分系列（O(log n) / O(log n)+线性）
 #include <algorithm>
@@ -665,7 +665,7 @@ std::vector<int>::const_iterator lower(const std::vector<int>& v, int k) {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：[经验]选型：按数据结构与前提选算法]
+> **示例 36** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法]
 ```cpp
 // ⑭-B 无序但需去重：先 sort 再 unique（O(n log n)），而非嵌套 find（O(n^2)）
 #include <algorithm>
@@ -677,7 +677,7 @@ void dedupe(std::vector<int>& v) {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：[经验]选型：按数据结构与前提选算法]
+> **示例 37** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法]
 ```cpp
 // ⑭-C 海量数据取 Top-K：partial_sort / nth_element 比全排序省
 #include <algorithm>
@@ -690,11 +690,11 @@ void top_k(std::vector<int>& v, std::size_t k) {
 }
 ```
 
-## ⑮ 与 ranges 衔接（C++20）[标准]
+## ⑮ 与 ranges 衔接（C++20）<span class="badge badge-std">标准</span>
 
 C++20 `std::ranges` 让算法直接吃容器（免写 `begin()/end()`），并支持**惰性视图管道**。`|` 管道是算法组合的现代写法。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：与 ranges 衔接（C++20）]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges 衔接（C++20）
 ```cpp
 // ⑮-A ranges 版：直接传容器，不必 begin/end
 #include <algorithm>
@@ -706,7 +706,7 @@ void r_sort(std::vector<int>& v) {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：与 ranges 衔接（C++20）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges 衔接（C++20）
 ```cpp
 // ⑮-B 视图管道：过滤+变换是惰性的，只遍历一次
 #include <vector>
@@ -720,7 +720,7 @@ void pipe_demo(const std::vector<int>& v) {
 // [标准]：ranges 算法与经典算法语义一致，但接口更安全（禁止迭代器来自不同区间）。
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：与 ranges 衔接（C++20）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges 衔接（C++20）
 ```cpp
 // ⑮-C ranges 版去重惯用法：ranges::unique 返回 [新逻辑尾, 尾)，再配成员 erase
 #include <vector>
@@ -733,15 +733,15 @@ void unique_in_place(std::vector<int>& v) {
 }
 ```
 
-## ⑯ 常见误用 [经验]
+## ⑯ 常见误用 <span class="badge badge-exp">经验</span>
 
-> **示例 41** [难度 ★★☆☆☆] [主题：常见误用 [经验]]
+> **示例 41** [难度 ★★☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯-A ❌ 对 list 用 std::sort（需随机访问，编译期即失败）
 // 正确见 ⑩-A：l.sort();
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：常见误用 [经验]]
+> **示例 42** [难度 ★☆☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯-B ❌ erase 后继续使用失效迭代器
 #include <vector>
@@ -754,7 +754,7 @@ void use_after_erase(std::vector<int>& v) {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：常见误用 [经验]]
+> **示例 43** [难度 ★☆☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯-C ✅ remove_if 的正确配套写法（erase-remove 惯用法）
 #include <vector>
@@ -766,7 +766,7 @@ void keep_positive(std::vector<int>& v) {
 }
 ```
 
-> **示例 44** [难度 ★★☆☆☆] [主题：常见误用 [经验]]
+> **示例 44** [难度 ★★☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯-D ❌ 比较器不满足严格弱序（返回 a<=b 而非 a<b）→ sort 未定义行为
 #include <vector>
@@ -777,7 +777,7 @@ void bad_comparator(std::vector<int>& v) {
 }
 ```
 
-## ⑰ 跨 STL 实现差异 [平台]
+## ⑰ 跨 STL 实现差异 <span class="badge badge-platform">平台</span>
 
 同一算法在不同标准库实现上行为一致（标准保证语义与复杂度），但**常数因子、内存占用、小数据特化**有差异。
 
@@ -787,7 +787,7 @@ void bad_comparator(std::vector<int>& v) {
 | libc++（Clang） | 类似 | 同理 | 符号名不同但算法一致 |
 | MS STL（MSVC） | 类似 | 同理 | `/std:c++20` 起 |
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：跨 STL 实现差异 [平台]]
+> **示例 45** [难度 ★☆☆☆☆] [主题：跨 STL 实现差异 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑰-A 跨实现一致：无论哪套标准库，下列调用语义与复杂度契约相同
 #include <algorithm>
@@ -799,16 +799,16 @@ int median_of_three(std::vector<int>& v) {
 // [平台]：差异仅在"跑多快/占多少临时内存"，不在"对不对"。
 ```
 
-> **示例 46** [难度 ★★☆☆☆] [主题：跨 STL 实现差异 [平台]]
+> **示例 46** [难度 ★★☆☆☆] [主题：跨 STL 实现差异 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑰-B 调试模式差异：libstdc++ 的 _GLIBCXX_DEBUG 会额外检查迭代器失效
 //   编译加 -D_GLIBCXX_DEBUG 可在运行期捕获 ⑪ 节的失效 UB；libc++ 用 _LIBCPP_HARDENING_MODE。
 //   这类检查默认关闭（为性能），发布构建不会暴露问题——务必在 debug 构建验证。
 ```
 
-## ⑱ 最佳实践 [经验]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 47** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱-A 优先算法而非手写循环：可读性 + 易优化 + 易并行（加 execution::par）
 #include <algorithm>
@@ -821,7 +821,7 @@ long sum_par(const std::vector<int>& v) {
 }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 48** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱-B 优先成员函数：关联容器用 find，list 用 sort（见 ⑩）
 #include <unordered_set>
@@ -831,7 +831,7 @@ bool set_member(const std::unordered_set<int>& s, int k) {
 }
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 49** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱-C 用算法返回值驱动后续操作，避免重复遍历
 #include <algorithm>
@@ -844,9 +844,9 @@ std::vector<int> keep_matches(const std::vector<int>& v, int mod) {
 }
 ```
 
-## ⑲ 调试手段 [经验]
+## ⑲ 调试手段 <span class="badge badge-exp">经验</span>
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：调试手段 [经验]]
+> **示例 50** [难度 ★☆☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲-A 用"带追踪的谓词"在 debug 构建打印算法内部行为（仅调试，不参与复杂度）
 #include <algorithm>
@@ -865,14 +865,14 @@ void debug_count_if(const std::vector<int>& v, int d) {
 }
 ```
 
-> **示例 51** [难度 ★★☆☆☆] [主题：调试手段 [经验]]
+> **示例 51** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲-B 用 _GLIBCXX_DEBUG（GCC）在运行期捕获迭代器失效/越界（发布构建移除以保性能）
 //   编译：g++ -D_GLIBCXX_DEBUG -std=c++23 _dbg.cpp -o _dbg
 //   一旦算法操作了失效迭代器，会立即 abort 并给出精确位置——比"偶发崩溃"好定位。
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：调试手段 [经验]]
+> **示例 52** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲-C 用 Compiler Explorer 风格 -S 比对：怀疑某算法没内联时，看汇编有无 call
 //   g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm
@@ -884,18 +884,18 @@ void debug_count_if(const std::vector<int>& v, int d) {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用标准算法替代手写循环以表达意图并支持并行。** 你给 `std::for_each` 传 `execution::par`。请说明算法与迭代器区间的关系。
-   - [标准] 标准算法以迭代器（或范围）区间工作，与容器存储无关；可配执行策略并行化。
-   - [引用] ISO/IEC 14882:2023 §[algorithms]（算法以区间操作）/ [algorithms.parallel]（并行）；cppreference "Standard algorithms" 词条。
+   - <span class="badge badge-std">标准</span> 标准算法以迭代器（或范围）区间工作，与容器存储无关；可配执行策略并行化。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[algorithms]（算法以区间操作）/ [algorithms.parallel]（并行）；cppreference "Standard algorithms" 词条。
 
 2. **真实场景：修改容器后旧迭代器失效，遍历崩溃。** 你在算法回调里插入元素。请说明来源。
-   - [标准] 各容器对插入/删除的迭代器有效性影响由容器要求规定，必须按容器查表。
-   - [引用] ISO/IEC 14882:2023 §[container.reqmts]（迭代器失效规则）；cppreference "Iterator invalidation" 词条。
+   - <span class="badge badge-std">标准</span> 各容器对插入/删除的迭代器有效性影响由容器要求规定，必须按容器查表。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[container.reqmts]（迭代器失效规则）；cppreference "Iterator invalidation" 词条。
 
 3. **真实场景：算法复杂度是契约，可据此选算法。** 你对比 `find`（O(N)）与有序区间二分查找（O(log N)）。请说明保证。
-   - [标准] 标准规定每算法复杂度上界，是实现与调用方都遵守的契约。
-   - [引用] ISO/IEC 14882:2023 §[algorithms]（算法复杂度要求）；cppreference "Algorithm complexity" 词条。
+   - <span class="badge badge-std">标准</span> 标准规定每算法复杂度上界，是实现与调用方都遵守的契约。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[algorithms]（算法复杂度要求）；cppreference "Algorithm complexity" 词条。
 
-> **示例 53** [难度 ★★☆☆☆] [主题：速查表]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```
 ┌── STL 算法速查（复杂度均为最坏，n=|区间|）──────────────┐
 │ find/find_if          O(n)      非修改，线性扫描          │
@@ -919,7 +919,7 @@ void debug_count_if(const std::vector<int>& v, int d) {
 └────────────────────────────────────────────────────────┘
 ```
 
-> **示例 54** [难度 ★★☆☆☆] [主题：速查表]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳-A 一页纸自检：把本章要点串成可编译片段
 #include <algorithm>
@@ -963,7 +963,7 @@ int quickcheck() {
 
 ### ㉒.1 历史渊源补强：算法库的统一抽象
 
-[史] 标准算法库的「迭代器中枢」设计来自 **Stepanov 的 STL（1994 纳入 C++98）**：容器、算法、迭代器三件套使「同一算法作用于不同容器」成为现实。其中**迭代器分类（input/forward/bidirectional/random_access/contiguous）**是算法能「按能力选择最优实现」的关键——`std::advance` 对 random_access 是 O(1)、对 forward 退化为 O(n)。[史] **Musser 的 introsort（1997）** 定义了 `std::sort` 的现代形态。[轶] 早期 C++ 没有算法库时，程序员手写循环隐患极多；STL 用「把循环抽象成 `for_each`/`transform`」第一次让遍历可复用、可优化。[评] 算法总览（本章）的价值在于：它告诉你「有哪些可复用的标准件、各自复杂度」，避免每次都重写且重写错。
+<span class="badge badge-history">史</span> 标准算法库的「迭代器中枢」设计来自 **Stepanov 的 STL（1994 纳入 C++98）**：容器、算法、迭代器三件套使「同一算法作用于不同容器」成为现实。其中**迭代器分类（input/forward/bidirectional/random_access/contiguous）**是算法能「按能力选择最优实现」的关键——`std::advance` 对 random_access 是 O(1)、对 forward 退化为 O(n)。<span class="badge badge-history">史</span> **Musser 的 introsort（1997）** 定义了 `std::sort` 的现代形态。<span class="badge badge-anecdote">轶</span> 早期 C++ 没有算法库时，程序员手写循环隐患极多；STL 用「把循环抽象成 `for_each`/`transform`」第一次让遍历可复用、可优化。<span class="badge badge-comment">评</span> 算法总览（本章）的价值在于：它告诉你「有哪些可复用的标准件、各自复杂度」，避免每次都重写且重写错。
 
 ### ㉒.2 真实工程坐标：算法库活在哪些产品里
 
@@ -991,7 +991,7 @@ int quickcheck() {
 
 ### ㉒.4 与标准的互动：算法库与 C++ 标准的演进
 
-[史] 算法随 **C++98（STL）** 落地；**C++11** 引入 `std::move` 相关的移动感知算法、`std::is_sorted` 等；**C++17** 引入**执行策略并行算法**（P0024R2，`std::execution::par/unseq`）与 `std::clamp`/`std::sample`；**C++20** 用 **Ranges（P0896）** 把大部分算法重做成约束版 `std::ranges::*`；**C++23** 继续补 `std::shift`、`std::ranges::fold_*` 等。算法库演进的主线就是「更清晰的约束 + 更优的并行/向量化 + 更安全的接口」。
+<span class="badge badge-history">史</span> 算法随 **C++98（STL）** 落地；**C++11** 引入 `std::move` 相关的移动感知算法、`std::is_sorted` 等；**C++17** 引入**执行策略并行算法**（P0024R2，`std::execution::par/unseq`）与 `std::clamp`/`std::sample`；**C++20** 用 **Ranges（P0896）** 把大部分算法重做成约束版 `std::ranges::*`；**C++23** 继续补 `std::shift`、`std::ranges::fold_*` 等。算法库演进的主线就是「更清晰的约束 + 更优的并行/向量化 + 更安全的接口」。
 - **修订/采纳**：**P0202（ constexpr 算法，C++20）** 把 `std::sort`、`std::lower_bound`、`std::binary_search`、`std::for_each` 等大批算法标成 `constexpr`，使其可用于编译期查表/编译期校验（[P0202](https://wg21.link/P0202)）；它与 P0024R2 的并行、P0896R4 的 Ranges 化并列，是算法库近几年的三大主线。
 - **ISO 条款**：算法库在 **[algorithms]（Clause 25）**，各算法携带明文的复杂度条款（如 `std::sort` 平均 O(n log n)），这是标准对「可预测性能」的承诺。
 
@@ -1006,7 +1006,7 @@ int quickcheck() {
 
 STL 算法在不同标准库实现中的差异：
 
-> **示例 55** [难度 ★★☆☆☆] [主题：附录 A：工业实现对比 [F: In]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业实现对比 [F: In
 ```
                     libstdc++ (GCC)       libc++ (Clang)         MS STL
 ─────────────────────────────────────────────────────────────────
@@ -1018,7 +1018,7 @@ std::for_each       循环展开 (O2自动)     循环展开 (O3)          自�
 并行算法            Intel TBB 后端        未完全支持             完全支持(C++17)
 ```
 
-> **示例 56** [难度 ★★☆☆☆] [主题：附录 A：工业实现对比 [F: In]
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业实现对比 [F: In
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1034,7 +1034,7 @@ int main() {
 
 ## 附录 B：算法选择决策树 [H: Design]
 
-> **示例 57** [难度 ★★☆☆☆] [主题：附录 B：算法选择决策树 [H: D]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：算法选择决策树 [H: D
 ```
 选择算法的系统决策流程:
 
@@ -1064,7 +1064,7 @@ int main() {
 
 ## 附录 C：并行算法的真实性能 [G: Performance / B: Principle]
 
-> **示例 58** [难度 ★★☆☆☆] [主题：附录 C：并行算法的真实性能 [G:]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：并行算法的真实性能 [G:
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1086,7 +1086,7 @@ int main() {
 
 ## 附录 D：常见错误与面试 [I: Practice / J: Learning]
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：附录 D：常见错误与面试 [I: P]
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：常见错误与面试 [I: P
 ```
 算法使用中的5大错误:
 1. 忘记 include <algorithm> — 编译通过但行为未定义 (ADL 可能拉入错误版本)
@@ -1115,7 +1115,7 @@ A: std::sort 需要随机访问迭代器。list::sort 利用链表特性做归�
 
 - **后续依赖**：[第70章　std::integral_constant 与标签分发（Tag Dispatch）](Book/part06_templates/ch70_tag_dispatch.md)）—— 本章为其前置，建议后续延伸阅读。
 - **后续依赖**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)—— 编号相邻、主题接续。
 - **相邻主题**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— 编号相邻、主题接续。
 - **同模块**：[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)）—— 同模块下的其他主题。
 
@@ -1145,7 +1145,7 @@ A: std::sort 需要随机访问迭代器。list::sort 利用链表特性做归�
 
 <details><summary>答案与解析</summary>
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1160,9 +1160,9 @@ int main() {
 }
 ```
 
-[标准] `std::execution::par` 允许算法将工作分派到多线程；`count_if` 的归约结果由各分块汇总，谓词无副作用故无数据竞争。GCC 在无 TBB 时自动降级为串行，仍可正确编译运行。
+<span class="badge badge-std">标准</span> `std::execution::par` 允许算法将工作分派到多线程；`count_if` 的归约结果由各分块汇总，谓词无副作用故无数据竞争。GCC 在无 TBB 时自动降级为串行，仍可正确编译运行。
 
-[引用] cppreference `std::count_if`：`https://en.cppreference.com/w/cpp/algorithm/count`；并行执行策略总览：`https://en.cppreference.com/w/cpp/algorithm/execution`。C++17 并行算法"元素访问函数不得引发数据竞争"的前置条件见 ISO §25.3.1（[algorithms.parallel]）。
+<span class="badge badge-ref">引用</span> cppreference `std::count_if`：`https://en.cppreference.com/w/cpp/algorithm/count`；并行执行策略总览：`https://en.cppreference.com/w/cpp/algorithm/execution`。C++17 并行算法"元素访问函数不得引发数据竞争"的前置条件见 ISO §25.3.1（[algorithms.parallel]）。
 
 </details>
 
@@ -1172,7 +1172,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1189,9 +1189,9 @@ int main() {
 }
 ```
 
-[标准] 比较器 `comp(a,b)` 返回 true 表示 a 排在 b 前，必须满足严格弱序（非自反、非对称、可传递）。用 `>` 表达「降序先于」仍是合法严格弱序；若误用 `>=` 会破坏非自反性，导致 `std::sort` 出现未定义行为。
+<span class="badge badge-std">标准</span> 比较器 `comp(a,b)` 返回 true 表示 a 排在 b 前，必须满足严格弱序（非自反、非对称、可传递）。用 `>` 表达「降序先于」仍是合法严格弱序；若误用 `>=` 会破坏非自反性，导致 `std::sort` 出现未定义行为。
 
-[引用] cppreference `std::sort`：`https://en.cppreference.com/w/cpp/algorithm/sort`。严格弱序的形式定义与对比较器的要求见 ISO §25.7.2（[alg.sorting]）及 §27.2.1（Compare 概念）。
+<span class="badge badge-ref">引用</span> cppreference `std::sort`：`https://en.cppreference.com/w/cpp/algorithm/sort`。严格弱序的形式定义与对比较器的要求见 ISO §25.7.2（[alg.sorting]）及 §27.2.1（Compare 概念）。
 
 </details>
 
@@ -1201,7 +1201,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 62** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1219,9 +1219,9 @@ int main() {
 }
 ```
 
-[标准] `remove_if` 将保留元素前移、返回新的逻辑尾迭代器；真正删除需 `erase(新尾, end())`。在遍历过程中若修改同一容器导致迭代器/引用/指针失效，则属未定义行为——故「只读遍历」与「删除」须分阶段进行。
+<span class="badge badge-std">标准</span> `remove_if` 将保留元素前移、返回新的逻辑尾迭代器；真正删除需 `erase(新尾, end())`。在遍历过程中若修改同一容器导致迭代器/引用/指针失效，则属未定义行为——故「只读遍历」与「删除」须分阶段进行。
 
-[引用] cppreference `std::remove`：`https://en.cppreference.com/w/cpp/algorithm/remove`；`std::for_each_n`：`https://en.cppreference.com/w/cpp/algorithm/for_each_n`。erase–remove 惯用法见 ISO §27.7.5（[alg.remove]）。
+<span class="badge badge-ref">引用</span> cppreference `std::remove`：`https://en.cppreference.com/w/cpp/algorithm/remove`；`std::for_each_n`：`https://en.cppreference.com/w/cpp/algorithm/for_each_n`。erase–remove 惯用法见 ISO §27.7.5（[alg.remove]）。
 
 </details>
 
@@ -1233,7 +1233,7 @@ int main() {
 
 **常见错误（text）**：
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：演绎 1：已排序区间的查找——二分 ]
+> **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：已排序区间的查找——二分
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1250,7 +1250,7 @@ int main() {
 
 **修复（cpp）**：区间已排序，改用 `std::lower_bound` 二分（O(log n)）。
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：演绎 1：已排序区间的查找——二分 ]
+> **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：已排序区间的查找——二分
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1273,7 +1273,7 @@ int main() {
 
 **常见错误（text）**：
 
-> **示例 65** [难度 ★★★★☆] [主题：演绎 2：并行算法中的数据竞争]
+> **示例 65** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：并行算法中的数据竞争
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1291,7 +1291,7 @@ int main() {
 
 **修复（cpp）**：用 `std::reduce` 做线程安全分区规约。
 
-> **示例 66** [难度 ★★☆☆☆] [主题：演绎 2：并行算法中的数据竞争]
+> **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：并行算法中的数据竞争
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1306,7 +1306,7 @@ int main() {
 ```
 
 **结论**：并行算法要求操作无数据竞争。规约类需求用 `std::reduce`/`std::transform_reduce`（内部做线程安全分区求和），切勿用「共享变量 + `for_each`」的裸写法。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把算法复杂度与选型浓缩为一张分层图。
 
@@ -1333,7 +1333,7 @@ graph LR
 
 `std::sort` 的真实引擎是 **introsort（内省排序）**：
 
-> **示例 67** [难度 ★☆☆☆☆] [主题：一句话结论]
+> **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 一句话结论
 ```
 quicksort 主体  +  median-of-three 选轴  +  小数组插入排序  +  递归深度上限 → 退化时转 heap sort
 ```
@@ -1344,7 +1344,7 @@ quicksort 主体  +  median-of-three 选轴  +  小数组插入排序  +  递归
 
 #### J.2.1 入口 `__sort`（stl_algo.h:1899）
 
-> **示例 68** [难度 ★★★☆☆] [主题：逐段真实源码]
+> **示例 68** <span class="badge badge-exp">难度 ★★★☆☆</span> · 逐段真实源码
 ```cpp
 // bits/stl_algo.h:1899  (GCC 15.3.0, 逐字)
 template<typename _RandomAccessIterator, typename _Compare>
@@ -1368,7 +1368,7 @@ template<typename _RandomAccessIterator, typename _Compare>
 
 #### J.2.2 深度上限 `__lg`（stl_algobase.h:1552）
 
-> **示例 69** [难度 ★★☆☆☆] [主题：逐段真实源码]
+> **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 逐段真实源码
 ```cpp
 // bits/stl_algobase.h:1552  (逐字)
 template<typename _Tp>
@@ -1386,7 +1386,7 @@ template<typename _Tp>
 
 #### J.2.3 小数组阈值（stl_algo.h:1806, 1812）
 
-> **示例 70** [难度 ★★☆☆☆] [主题：逐段真实源码]
+> **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 逐段真实源码
 ```cpp
 // bits/stl_algo.h:1806  (逐字)
 enum { _S_threshold = 16 };
@@ -1410,7 +1410,7 @@ __final_insertion_sort(_RandomAccessIterator __first,
 
 #### J.2.4 主循环 `__introsort_loop`（stl_algo.h:1876）—— 核心
 
-> **示例 71** [难度 ★★★☆☆] [主题：逐段真实源码]
+> **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 逐段真实源码
 ```cpp
 // bits/stl_algo.h:1876  (逐字)
 template<typename _RandomAccessIterator, typename _Size, typename _Compare>
@@ -1442,7 +1442,7 @@ template<typename _RandomAccessIterator, typename _Size, typename _Compare>
 
 #### J.2.5 median-of-three 的落地（stl_algo.h:88, 1851）
 
-> **示例 72** [难度 ★★☆☆☆] [主题：逐段真实源码]
+> **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 逐段真实源码
 ```cpp
 // bits/stl_algo.h:88  __move_median_to_first (逐字)
 void
@@ -1805,7 +1805,7 @@ flowchart TD
 
 ### D4.4 第一方可编译验证（copy 快路径 + 双版本 sort）
 
-> **示例 73** [难度 ★★☆☆☆] [主题：第一方可编译验证]
+> **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1938,7 +1938,7 @@ int main() {
 
 ### D5.3 可复现演示
 
-> **示例 74** [难度 ★★☆☆☆] [主题：可复现演示]
+> **示例 74** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
 ```cpp
 // D5 演示：STL 算法选择的功能验证（不断言时间，仅验证语义正确性）
 #include <iostream>

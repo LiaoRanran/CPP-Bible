@@ -1,5 +1,5 @@
 # 第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）
-> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 [第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)
 [第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
@@ -9,7 +9,7 @@
 > 在 C++11 之前，「任意个数/任意类型」只能靠 C 的 `...` 和 `va_arg` 裸奔——类型不安全得像走钢丝。
 
 ### 0.1 起源（谁·何时·为何）
-C 风格的可变参数是类型安全的黑洞：`printf` 全靠格式串和约定，写错一个 `%` 就未定义行为。[史] C++ 长期没有原生方案，直到 Douglas Gregor 等人提出**可变参数模板**（variadic templates），于 C++11 落地，让「一个模板接受任意个数、任意类型参数」成为语言一等公民。[史] 它用「参数包 + 包展开」取代脆弱的 `va_list`，从根上消灭了那类不安全的临时方案。
+C 风格的可变参数是类型安全的黑洞：`printf` 全靠格式串和约定，写错一个 `%` 就未定义行为。<span class="badge badge-history">史</span> C++ 长期没有原生方案，直到 Douglas Gregor 等人提出**可变参数模板**（variadic templates），于 C++11 落地，让「一个模板接受任意个数、任意类型参数」成为语言一等公民。<span class="badge badge-history">史</span> 它用「参数包 + 包展开」取代脆弱的 `va_list`，从根上消灭了那类不安全的临时方案。
 
 ### 0.2 关键转折（编年）
 - 2006 前后：可变参数模板提案成形。
@@ -17,16 +17,16 @@ C 风格的可变参数是类型安全的黑洞：`printf` 全靠格式串和约
 - 2017：折叠表达式（ch64）补上「对参数包做归约」的语法糖，省掉手写递归基线。
 
 ### 0.3 设计哲学之争
-可变参数模板 vs `va_arg`：前者在编译期就检查每个实参类型，后者把一切推到运行期赌运气。[评] 但代价是「递归 + 包展开」的写法初期很绕，直到 C++17 折叠表达式把它大幅化简——这条渐进优化本身也是 C++ 设计哲学的样本。
+可变参数模板 vs `va_arg`：前者在编译期就检查每个实参类型，后者把一切推到运行期赌运气。<span class="badge badge-comment">评</span> 但代价是「递归 + 包展开」的写法初期很绕，直到 C++17 折叠表达式把它大幅化简——这条渐进优化本身也是 C++ 设计哲学的样本。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++17 折叠表达式补上归约语法糖。可变参数能力的边界仍在扩张：
 
-- [史] 可变参数模板（variadic templates）随 C++11 落地，取代了 C 的 `va_list` 与 2000 年代 Boost.Preprocessor 的宏体操；`std::tuple`、`std::function`、`std::make_shared` 等随即重写得更类型安全。
+- <span class="badge badge-history">史</span> 可变参数模板（variadic templates）随 C++11 落地，取代了 C 的 `va_list` 与 2000 年代 Boost.Preprocessor 的宏体操；`std::tuple`、`std::function`、`std::make_shared` 等随即重写得更类型安全。
 
-- [史] C++17 的折叠表达式（ch64）让「对参数包做 + / && / 逗号 等操作」不再需要递归基线；C++20 进一步把参数包扩展到更多上下文——如 `using` 声明包展开、结构化绑定、以及 lambda 捕获中的包展开，可变参数能力的边界持续扩张。
+- <span class="badge badge-history">史</span> C++17 的折叠表达式（ch64）让「对参数包做 + / && / 逗号 等操作」不再需要递归基线；C++20 进一步把参数包扩展到更多上下文——如 `using` 声明包展开、结构化绑定、以及 lambda 捕获中的包展开，可变参数能力的边界持续扩张。
 
-- [评] 一个被低估的代价：参数包深度与递归实例化深度挂钩，超深展开会撞上编译器的「最大模板实例化深度」限制（各编译器默认值不同，可用 `-ftemplate-depth` 之类调节）。
+- <span class="badge badge-comment">评</span> 一个被低估的代价：参数包深度与递归实例化深度挂钩，超深展开会撞上编译器的「最大模板实例化深度」限制（各编译器默认值不同，可用 `-ftemplate-depth` 之类调节）。
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/parameter_pack ；https://en.cppreference.com/w/cpp/language/fold
 
@@ -37,20 +37,20 @@ C 风格的可变参数是类型安全的黑洞：`printf` 全靠格式串和约
 [第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)
 [第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)
 
-- 说清参数包（parameter pack）、包展开（pack expansion）、`sizeof...` [标准]
-- 掌握递归终止 + 包展开两种展开方式 [标准]
-- 理解包可在哪些上下文展开（调用、初始化、基类列表、using 等）[标准]
-- 从汇编确认递归实例化层级（包展开 = 实例化链）[平台]
-- 区分 C++11 递归写法与 C++17 折叠表达式（ch64）[经验]
+- 说清参数包（parameter pack）、包展开（pack expansion）、`sizeof...` <span class="badge badge-std">标准</span>
+- 掌握递归终止 + 包展开两种展开方式 <span class="badge badge-std">标准</span>
+- 理解包可在哪些上下文展开（调用、初始化、基类列表、using 等）<span class="badge badge-std">标准</span>
+- 从汇编确认递归实例化层级（包展开 = 实例化链）<span class="badge badge-platform">平台</span>
+- 区分 C++11 递归写法与 C++17 折叠表达式（ch64）<span class="badge badge-exp">经验</span>
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 
 - **模板名称**：可变参数模板（variadic template）
 - **适用场景**：需要「任意参数」的设施——`printf` 风格、tuple、完美转发构造、`emplace`、日志
 - **核心结构**：`template <typename... Ts> void f(Ts...);`
-- **一句话定义**：用省略号 `...` 声明「类型 + 值」参数包，在展开位点把包逐元素展开 [标准]
+- **一句话定义**：用省略号 `...` 声明「类型 + 值」参数包，在展开位点把包逐元素展开 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★☆☆☆] [主题：本模板模式速查]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本模板模式速查
 ```cpp
 template <typename... Ts>
 void print_all(Ts... args) {
@@ -62,7 +62,7 @@ void print_all(Ts... args) {
 
 参数包声明与展开：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 template <typename... Ts>        // Ts：类型包
 struct Tuple { };
@@ -73,7 +73,7 @@ void f(Ts... args) {             // args：函数参数包
 }
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 #include <cstddef>
 // sizeof... 取包大小（编译期）
@@ -88,7 +88,7 @@ static_assert(count() == 0);
 [第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)（折叠表达式：C++17 归约替代递归，更优）
 [第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)（偏特化常做递归终止 base case）
 
-> **示例 4** [难度 ★★☆☆☆] [主题：递归展开（C++11 经典写法）]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 递归展开（C++11 经典写法）
 ```cpp
 #include <iostream>
 // 基线（0 参数）
@@ -102,7 +102,7 @@ void print(T first, Rest... rest) {
 }
 ```
 
-> **示例 5** [难度 ★★★☆☆] [主题：递归展开（C++11 经典写法）]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 递归展开（C++11 经典写法）
 ```cpp
 // 编译期求和（递归 + 累加）
 template <typename T>
@@ -125,7 +125,7 @@ static_assert(sum(1, 2, 3, 4) == 10);
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <iostream>
 void print() {}
@@ -137,7 +137,7 @@ void print(T first, Rest... rest) {
 int main() { print(1, 2.5, 'x', "hi"); }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 // 完美转发构造（emplace 基础）
 struct Widget {
@@ -146,7 +146,7 @@ struct Widget {
 };
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <array>
 // 包展开进初始化列表
@@ -156,21 +156,21 @@ auto make_array(Ts... ts) {
 }
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 // sizeof... 编译期
 template <typename... Ts> constexpr auto nargs(Ts...) { return sizeof...(Ts); }
 ```
 
-## ⑦ 标准规定 [标准]
+## ⑦ 标准规定 <span class="badge badge-std">标准</span>
 
 - `Ts...` 是「模板参数包」；`args...` 是「函数参数包」[temp.variadic]。
 - 包展开位点必须明确：`pattern...`，`pattern` 含包名 [temp.variadic]/5。
 - 展开目标：初始化列表、`()` 调用、基类列表、`using` 声明、`{}` 初始化、`return` 等 [temp.variadic]/4。
 
-## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
+## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-> **示例 10** [难度 ★★☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 10** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // 三者均支持可变参数模板（C++11 起）
 // MSVC 旧版（<=19.1x）对「包展开进 lambda 捕获」支持较晚
@@ -181,7 +181,7 @@ template <typename... Ts> auto f(Ts... ts) {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 11** [难度 ★☆☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // 报错可读性：GCC/Clang 展开错误会给出「第 N 个包元素」上下文（见 ch75）
 ```
@@ -190,7 +190,7 @@ template <typename... Ts> auto f(Ts... ts) {
 
 每个展开的实例化是独立函数/类型。递归展开 = 实例化链（见 ⑩）。
 
-> **示例 12** [难度 ★★★★☆] [主题：内存 / 对象模型]
+> **示例 12** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
 ```cpp
 #include <cstddef>
 // make_index_sequence 偏特化 + 包展开生成编译期整数序列
@@ -226,79 +226,79 @@ _Z9print_allIcJEEvT_DpT0_
 
 ### 知识点深挖（模板B）
 
-**B1 包展开位点（≥10 处） [标准]**
+**B1 包展开位点（≥10 处） <span class="badge badge-std">标准</span>**
 
-> **示例 13** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 1) 函数调用参数
 template <typename... Ts> void a(Ts... ts) { g(ts...); }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <vector>
 // 2) 初始化列表
 template <typename... Ts> auto b(Ts... ts) { return std::vector<int>{ static_cast<int>(ts)... }; }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 3) 基类列表
 template <typename... Bases> struct D : Bases... { };
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 4) using 声明
 template <typename... Ts> struct E : Ts... { using Ts::foo...; };
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <array>
 // 5) 花括号初始化（聚合）
 template <typename... Ts> auto c(Ts... ts) { return std::array<int, sizeof...(ts)>{ ts... }; }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 6) 返回语句
 template <typename... Ts> auto d(Ts... ts) { return std::make_tuple(ts...); }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 7) 下标/运算符（配合折叠）
 template <typename... Ts> auto e(Ts... ts) { return (ts + ...); }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 8) 模板参数
 template <typename... Ts> struct F { template <Ts... vals> struct Ctx {}; };
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 9) sizeof... 
 template <typename... Ts> constexpr auto n(Ts...) { return sizeof...(Ts); }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 10) lambda 捕获（C++20 广义捕获展开）
 template <typename... Ts> auto f(Ts... ts) { auto l = [ts...] { return (0 + ... + ts); }; return l(); }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 11) new 初始化列表
 template <typename... Ts> auto g(Ts... ts) { auto p = new int[sizeof...(ts)]{ ts... }; return p; }
 ```
 
-**B2 双层包（内层包） [标准]**
+**B2 双层包（内层包） <span class="badge badge-std">标准</span>**
 
-> **示例 24** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts>
 void outer(Ts... ts) {
@@ -306,7 +306,7 @@ void outer(Ts... ts) {
 }
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <iostream>
 template <typename... Ts>
@@ -315,13 +315,13 @@ void each(Ts... ts) {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename T> void h(T);
 template <typename... Ts> void call_all(Ts... ts) { (h(ts), ...); }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <iostream>
 // 双层：每个元素再展开其成员
@@ -331,16 +331,16 @@ void pairs(Ts... ts) {
 }
 ```
 
-**B3 递归基线设计 [标准]**
+**B3 递归基线设计 <span class="badge badge-std">标准</span>**
 
-> **示例 28** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 基线优先匹配 0 参数
 void rec() {}
 template <typename T, typename... R> void rec(T f, R... r) { rec(r...); }
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 用 if constexpr 替代基线（C++17）
 template <typename T, typename... R>
@@ -350,40 +350,40 @@ void rec2(T f, R... r) {
 }
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 计数基线
 constexpr int cnt() { return 0; }
 template <typename T, typename... R> constexpr int cnt(T, R... r) { return 1 + cnt(r...); }
 ```
 
-**B4 sizeof... 与编译期 [标准]**
+**B4 sizeof... 与编译期 <span class="badge badge-std">标准</span>**
 
-> **示例 31** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> constexpr bool all_int = (std::is_same_v<Ts, int> && ...);
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> constexpr bool none_empty = (!std::is_empty_v<Ts> && ...);
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <cstddef>
 template <typename... Ts> struct Count { static constexpr std::size_t value = sizeof...(Ts); };
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 包中第一个类型
 template <typename First, typename... Rest> struct Front { using type = First; };
 ```
 
-**B5 错误与正确对照 [经验]**
+**B5 错误与正确对照 <span class="badge badge-exp">经验</span>**
 
-> **示例 35** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：包无展开位点
 template <typename... Ts> void bad(Ts... ts) { g(ts); }   // 缺 ... 展开
@@ -391,19 +391,19 @@ template <typename... Ts> void bad(Ts... ts) { g(ts); }   // 缺 ... 展开
 template <typename... Ts> void good(Ts... ts) { g(ts...); }
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：递归无基线 → 无限实例化 / 失败
 // template <typename T, typename... R> void r(T, R... r) { r(r...); }  // 无 0 参基线
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：双层包展开缺括号
 // (f(ts)... ...)   非法；应 (f(ts) , ...)
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 正确：折叠表达式（C++17）替代递归最简洁
 template <typename... Ts> auto add(Ts... ts) { return (0 + ... + ts); }
@@ -414,7 +414,7 @@ template <typename... Ts> auto add(Ts... ts) { return (0 + ... + ts); }
 [第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（emplace 的可变参数完美转发实现）
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（对参数包做类型萃取）
 
-> **示例 39** [难度 ★★★☆☆] [主题：中的该模式]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
 #include <iostream>
 #include <utility>
@@ -440,7 +440,7 @@ int main() {
 
 ## ⑫ 变体（variant patterns）
 
-> **示例 40** [难度 ★★★☆☆] [主题：变体]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
 ```cpp
 #include <iostream>
 #include <utility>
@@ -475,30 +475,30 @@ int main() {
 
 ## ⑬ 反模式（anti-patterns）
 
-> **示例 41** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 #include <cstdio>
 // 反模式1：用 C 风格 va_list 而非可变参数模板——丢类型安全、需格式串
 // printf("%d", x); 不如 print(x, y, z)
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式2：递归无基线导致编译失败或爆栈（编译期无限实例化）
 ```
 
-> **示例 43** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式3：能用折叠表达式（ch64）却用递归，代码长、实例化多
 template <typename... Ts> auto s(Ts... ts) { return (ts + ...); }   // 优于递归
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式4：包展开进宏，可读性灾难
 ```
 
-> **示例 45** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式5：可变参数 + 虚函数（模板不能虚），需类型擦除替代
 ```
@@ -507,7 +507,7 @@ template <typename... Ts> auto s(Ts... ts) { return (ts + ...); }   // 优于递
 
 [第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（日志/格式化库的可变参数转发底座）
 
-> **示例 46** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 #include <utility>
 #include <string>
@@ -517,7 +517,7 @@ template <typename... Ts> std::string format_str(const char* fmt, Ts&&... ts) {
 }
 ```
 
-> **示例 47** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 #include <utility>
 // 案例：日志库
@@ -526,7 +526,7 @@ template <typename... Ts> void log(Level lvl, Ts&&... ts) {
 }
 ```
 
-> **示例 48** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 #include <utility>
 #include <memory>
@@ -536,7 +536,7 @@ template <typename T, typename... Ts> std::unique_ptr<T> make(Ts&&... ts) {
 }
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 // 案例：测试框架 ASSERT 多参数
 template <typename... Ts> void expect_all(bool cond, Ts...);
@@ -544,7 +544,7 @@ template <typename... Ts> void expect_all(bool cond, Ts...);
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-> **示例 50** [难度 ★★☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 #include <utility>
 // libstdc++ std::tuple 用递归继承 + 包展开
@@ -554,7 +554,7 @@ template <typename _Tp, typename... _Rest> class tuple<_Tp, _Rest...> : public t
 };
 ```
 
-> **示例 51** [难度 ★★☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 #include <utility>
 #include <cstddef>
@@ -565,72 +565,72 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 }
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // make_index_sequence 用偏特化 + 包展开生成整数序列
 ```
 
 ## ⑯ 易错点
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 1) 包必须出现在「展开位点」，缺 ... 报错
 ```
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 2) 递归展开必须提供 0 参数基线，否则实例化失败
 ```
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 #include <utility>
 // 3) 引用折叠：Ts&& 是转发引用，需 std::forward<Ts>(ts)... 保持值类别
 ```
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 4) sizeof... 只能用于包，不是 sizeof
 ```
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 5) 双层包展开需用括号分组 pattern
 ```
 
-> **示例 58** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 6) 可变参数不能用于虚函数 / 异常规格
 ```
 
 ## ⑰ FAQ
 
-> **示例 59** [难度 ★★☆☆☆] [主题：FAQ 问答]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 #include <initializer_list>
 // Q：可变参数模板和 std::initializer_list 区别？
 // A：前者保留每个元素类型，后者所有元素同类型 T；前者可异构。
 ```
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：递归展开会爆编译吗？
 // A：包大小固定时实例化数 = 包大小 + 1，可控；但过大仍拖编译。
 ```
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：C++17 折叠表达式能替代递归吗？
 // A：纯归约（求和/与或）可以且更优（见 ch64）。
 ```
 
-> **示例 62** [难度 ★★☆☆☆] [主题：FAQ 问答]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：为什么 emplace 用可变参数？
 // A：把构造实参完美转发给成员 in-place 构造，避免临时对象。
 ```
 
-> **示例 63** [难度 ★★☆☆☆] [主题：FAQ 问答]
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：sizeof... 是运算符吗？
 // A：是，返回包的「元素个数」（编译期常量）。
@@ -638,43 +638,43 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 
 ## ⑱ 最佳实践
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 1) 归约类用折叠表达式（ch64）替代递归
 ```
 
-> **示例 65** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 #include <utility>
 // 2) 转发用 Ts&&... + std::forward<Ts>(ts)...
 ```
 
-> **示例 66** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 3) 递归展开务必写 0 参数基线或用 if constexpr 兜底
 ```
 
-> **示例 67** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 #include <utility>
 // 4) 优先 std::tuple / std::apply 复用标准实现
 ```
 
-> **示例 68** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 68** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 5) 异构参数优先可变参数模板而非 any/void*（保类型安全）
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
 
-> **示例 69** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // 展开纯编译期；选中实现内联后无函数调用（见⑩ 4 次内联自增）
 // 递归展开实例化链 = 包大小+1 份函数；折叠表达式通常单函数 + 展开为加法链
 // fold_sum(1,2,3,4) 在 -O2 直接是常量 10，零运行期计算
 ```
 
-> **示例 70** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // 代价：包越大编译期实例化越多（→ 编译时间）
 ```
@@ -684,16 +684,16 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用转发引用 + 参数包完美转发任意实参。** 你写 `template<class... Ts> void f(Ts&&... ts)` 转发给内部构造。请说明 `std::forward` 的角色。
-   - [标准] 转发引用按实参原始值类别推导；`std::forward` 据此在调用处恢复左/右值性，实现完美转发。
-   - [引用] ISO/IEC 14882:2023 §[utility]（std::forward）/ [temp.deduct.call]（转发引用推导）；cppreference "Perfect forwarding" 词条。
+   - <span class="badge badge-std">标准</span> 转发引用按实参原始值类别推导；`std::forward` 据此在调用处恢复左/右值性，实现完美转发。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[utility]（std::forward）/ [temp.deduct.call]（转发引用推导）；cppreference "Perfect forwarding" 词条。
 
 2. **真实场景：包展开可以出现在很多语法位置。** 你只在调用处展开，其实还能展开进初始化列表、基类列表等。请说明。
-   - [标准] 参数包可在调用实参、初始化器列表、基类说明符、捕获列表等多处按模式展开。
-   - [引用] ISO/IEC 14882:2023 §[temp.variadic]（包展开模式与位置）；cppreference "Parameter pack" 词条。
+   - <span class="badge badge-std">标准</span> 参数包可在调用实参、初始化器列表、基类说明符、捕获列表等多处按模式展开。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.variadic]（包展开模式与位置）；cppreference "Parameter pack" 词条。
 
 3. **真实场景：用 `sizeof...(args)` 在编译期求参数个数。** 你做编译期断言参数非空。请说明语义。
-   - [标准] `sizeof...(包)` 在编译期给出参数包的元素个数（类型为 `std::size_t`）。
-   - [引用] ISO/IEC 14882:2023 §[temp.variadic]（sizeof...）；cppreference "sizeof..." 词条。
+   - <span class="badge badge-std">标准</span> `sizeof...(包)` 在编译期给出参数包的元素个数（类型为 `std::size_t`）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.variadic]（sizeof...）；cppreference "sizeof..." 词条。
 
 **练习题**
 
@@ -721,8 +721,8 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：可变参数模板终结了 `va_list` 的裸奔
-[史] C 风格可变参数是类型安全的黑洞：`printf` 全靠格式串和约定，写错一个 `%` 就未定义行为。C++ 长期没有原生方案，直到 Douglas Gregor、Jaakko Järvi 等人提出**可变参数模板（variadic templates）**，于 C++11 落地，让「一个模板接受任意个数、任意类型参数」成为语言一等公民。提案 N2080 把「参数包 + 包展开」正式写进标准，取代了脆弱的 `va_list` 与 2000 年代 Boost.Preprocessor 的宏体操。
-[评] 它从根上消灭了那类不安全的临时方案，但初期「递归 + 包展开」的写法很绕，直到 C++17 折叠表达式（ch64）把它大幅化简——这条渐进优化本身也是 C++ 设计哲学的样本。
+<span class="badge badge-history">史</span> C 风格可变参数是类型安全的黑洞：`printf` 全靠格式串和约定，写错一个 `%` 就未定义行为。C++ 长期没有原生方案，直到 Douglas Gregor、Jaakko Järvi 等人提出**可变参数模板（variadic templates）**，于 C++11 落地，让「一个模板接受任意个数、任意类型参数」成为语言一等公民。提案 N2080 把「参数包 + 包展开」正式写进标准，取代了脆弱的 `va_list` 与 2000 年代 Boost.Preprocessor 的宏体操。
+<span class="badge badge-comment">评</span> 它从根上消灭了那类不安全的临时方案，但初期「递归 + 包展开」的写法很绕，直到 C++17 折叠表达式（ch64）把它大幅化简——这条渐进优化本身也是 C++ 设计哲学的样本。
 
 ### ㉒.2 真实工程坐标：可变参数模板活在哪些产品/项目里
 
@@ -730,7 +730,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
-| 标准库 | `std::tuple`/`function`/`make_shared`/`thread`/`emplace`、`std::format` | 可变参模板支撑任意参数构造/格式化 | 一切 C++ 程序地基 | 参数包是标准库基础设施 [STANDARD] |
+| 标准库 | `std::tuple`/`function`/`make_shared`/`thread`/`emplace`、`std::format` | 可变参模板支撑任意参数构造/格式化 | 一切 C++ 程序地基 | 参数包是标准库基础设施 <span class="badge badge-std">STANDARD</span> |
 | 日志与序列化 | fmt、spdlog、Cereal | 任意参数格式化/归档，编译期按实参类型选处理路径 | 质量/数据基础设施 | 编译期参数分发 |
 | 游戏引擎/ECS | 实体构造器 | 任意组件组合的实体，运行期类型列表压成编译期参数包 | 实时系统 | 组件组合编译期化 |
 | 自动驾驶/SLAM | Ceres Solver（Google） | `AddResidualBlock` 用变参描述残差对多参数块依赖，自动微分展开包 | Waymo 等标定 | 变参驱动自动微分 |
@@ -757,7 +757,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 
 ## 附录 A：底层与原理 [B: Principle / E: Lowlevel]
 
-> **示例 71** [难度 ★★★☆☆] [主题：附录 A：底层与原理 [B: Pri]
+> **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：底层与原理 [B: Pri
 ```
 WG21可变参数模板提案:
 N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
@@ -791,7 +791,7 @@ N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
 
 ## 附录 F：可变参数工业
 
-> **示例 72** [难度 ★★☆☆☆] [主题：附录 F：可变参数工业]
+> **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：可变参数工业
 ```cpp
 #include <iostream>
 #include <memory>
@@ -834,7 +834,7 @@ C++17折叠表达式: 编译器直接展开, 编译时间基本不随 N 变 (GCC
 | fmt::format | format+args | 编译期类型验证 |
 | std::make_shared | args→constructor | 完美转发+单次分配 |
 
-> **示例 73** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 73** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 #include <iostream>
 #include <memory>
@@ -854,7 +854,7 @@ int main(){auto p=std::make_shared<S>(10,20);std::cout<<p->a<<","<<p->b<<std::en
 | 递归vs折叠? | 折叠编译时间不随N增长; GCC15.3实测 N=100→1.1×, N=1000→95× [UNVERIFIED] |
 | make_shared参数? | 可变参数+完美转发→构造函数 |
 
-> **示例 74** [难度 ★★★☆☆] [主题：附录 H：可变参数面试]
+> **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 H：可变参数面试
 ```cpp
 #include <iostream>
 template<typename...Ts> auto sum(Ts...ts){return (ts+...);}
@@ -873,7 +873,7 @@ int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
 ; 结论: 递归实例化链随 N 线性变长, 折叠编译时间基本恒定
 ```
 
-> **示例 75** [难度 ★★☆☆☆] [主题：附录 I：可变参数性能与汇编]
+> **示例 75** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 I：可变参数性能与汇编
 ```cpp
 #include <iostream>
 template<typename...Ts> auto sum(Ts...ts){return (ts+...);}  // fold(C++17)
@@ -894,7 +894,7 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 - **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)）—— 特化常针对包做递归终止
 - **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 常对包做萃取
 - **跨模块**：[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)—— C++11 引入可变参数模板，是核心语言演进
-- **跨模块**：[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)—— deque 等容器用可变参数包转发
+- **跨模块**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)—— deque 等容器用可变参数包转发
 - **跨模块**：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)—— 完美转发与可变参数包协同
 
 ## 自测练习（Exercises）
@@ -907,7 +907,7 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 
 <details><summary>答案与解析</summary>
 
-> **示例 76** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 76** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 
@@ -921,9 +921,9 @@ void print_all(const T& first, const Ts&... rest) {
 int main() { print_all(1, "two", 3.0, 'x'); std::cout << '\n'; }
 ```
 
-[标准] 每次递归剥掉一个参数，剩余包 `rest...` 逐层变短，直到空包命中 base case；递归深度 = 参数个数，会实例化 N 份函数。
+<span class="badge badge-std">标准</span> 每次递归剥掉一个参数，剩余包 `rest...` 逐层变短，直到空包命中 base case；递归深度 = 参数个数，会实例化 N 份函数。
 
-[引用] 可变参数模板即 `std::tuple`、`std::make_shared`、fmt/absl 格式化库背后的机制；libstdc++ 的 `std::tuple` 用"剥离头部 + 递归继承余下包"在编译期展开（cppreference "std::tuple"）。ISO/IEC 14882:2023 §[temp.variadic] 规定参数包与包展开语法。
+<span class="badge badge-ref">引用</span> 可变参数模板即 `std::tuple`、`std::make_shared`、fmt/absl 格式化库背后的机制；libstdc++ 的 `std::tuple` 用"剥离头部 + 递归继承余下包"在编译期展开（cppreference "std::tuple"）。ISO/IEC 14882:2023 §[temp.variadic] 规定参数包与包展开语法。
 
 </details>
 
@@ -933,7 +933,7 @@ int main() { print_all(1, "two", 3.0, 'x'); std::cout << '\n'; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 77** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 77** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <iostream>
 
@@ -946,9 +946,9 @@ auto sum(const Ts&... xs) { return (xs + ...); }
 int main() { print_all(1, 2, 3); std::cout << sum(1, 2, 3, 4) << '\n'; }
 ```
 
-[标准] fold 只实例化一个函数，编译期展开为线性序列，无递归 N 份实例化的代码膨胀；`(xs + ...)` 为一元左折叠，从首个元素起累加。
+<span class="badge badge-std">标准</span> fold 只实例化一个函数，编译期展开为线性序列，无递归 N 份实例化的代码膨胀；`(xs + ...)` 为一元左折叠，从首个元素起累加。
 
-[引用] 折叠表达式（C++17，P0036）是 foldl/foldr 式的编译期聚合，标准库 `std::min`/`std::max` 的变参重载即借其实现（cppreference "std::min"）。Abseil/fmt 的大量变参工具也依赖 fold（abseil.io/docs）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定折叠表达式语法与求值。
+<span class="badge badge-ref">引用</span> 折叠表达式（C++17，P0036）是 foldl/foldr 式的编译期聚合，标准库 `std::min`/`std::max` 的变参重载即借其实现（cppreference "std::min"）。Abseil/fmt 的大量变参工具也依赖 fold（abseil.io/docs）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定折叠表达式语法与求值。
 
 </details>
 
@@ -958,7 +958,7 @@ int main() { print_all(1, 2, 3); std::cout << sum(1, 2, 3, 4) << '\n'; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 78** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <array>
@@ -978,9 +978,9 @@ int main() {
 }
 ```
 
-[标准] `sizeof...(xs)` 是编译期包大小；`static_cast<T>(xs)...` 是包展开 + 转换，保证所有元素同类型后构造 `std::array`。
+<span class="badge badge-std">标准</span> `sizeof...(xs)` 是编译期包大小；`static_cast<T>(xs)...` 是包展开 + 转换，保证所有元素同类型后构造 `std::array`。
 
-[引用] 这正是 `std::make_array`（C++20，P0357）的思路——从参数包推导 `std::array` 的元素类型与大小（cppreference "std::make_array"）。`std::index_sequence`/`std::make_index_sequence` 则用于"按编译期索引转发元组元素"（cppreference "std::index_sequence"）。ISO/IEC 14882:2023 §[tuple.helper] 与 §[temp.variadic] 规定相关设施。
+<span class="badge badge-ref">引用</span> 这正是 `std::make_array`（C++20，P0357）的思路——从参数包推导 `std::array` 的元素类型与大小（cppreference "std::make_array"）。`std::index_sequence`/`std::make_index_sequence` 则用于"按编译期索引转发元组元素"（cppreference "std::index_sequence"）。ISO/IEC 14882:2023 §[tuple.helper] 与 §[temp.variadic] 规定相关设施。
 
 </details>
 
@@ -1000,7 +1000,7 @@ void print_all(const T& f, const Ts&... r) { std::cout << f; print_all(r...); }
 
 **修复**：补一个无参 base case 收尾：
 
-> **示例 79** [难度 ★★☆☆☆] [主题：演绎 1：递归展开必须有 base ]
+> **示例 79** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：递归展开必须有 base
 ```cpp
 #include <iostream>
 
@@ -1028,7 +1028,7 @@ template <typename F, typename... Ts> void for_each(F f, Ts... xs) { f(xs)...; }
 
 **修复**：用逗号折叠 `(f(xs), ...)`：
 
-> **示例 80** [难度 ★★☆☆☆] [主题：演绎 2：包展开的运算符不能省略]
+> **示例 80** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：包展开的运算符不能省略
 ```cpp
 #include <iostream>
 
@@ -1039,7 +1039,7 @@ int main() { for_each([](auto x) { std::cout << x << ' '; }, 1, 2, 3); std::cout
 ```
 
 **结论**：包展开必须出现在一个"模式"中（运算符、逗号、初始化器）；`(pat, ...)` 是最常用的"对每个元素执行副作用"写法。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把附录 A 底层原理与包展开位置浓缩为一张技术对比图。
 
@@ -1059,7 +1059,7 @@ graph LR
 ### D4.1 libstdc++ 真实源码摘录
 
 // 摘自 libstdc++ 15.3.0：tuple:280（_Tuple_impl 递归继承展开参数包）
-> **示例 81** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
+> **示例 81** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
 ```
   template<size_t _Idx, typename _Head, typename... _Tail>
     struct _Tuple_impl<_Idx, _Head, _Tail...>
@@ -1072,7 +1072,7 @@ graph LR
 ```
 
 // 摘自 libstdc++ 15.3.0：tuple:546（递归基：单元素终止特化）
-> **示例 82** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
+> **示例 82** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
 ```
   template<size_t _Idx, typename _Head>
     struct _Tuple_impl<_Idx, _Head>
@@ -1104,7 +1104,7 @@ graph LR
 
 ### D4.4 可编译验证
 
-> **示例 83** [难度 ★☆☆☆☆] [主题：可编译验证]
+> **示例 83** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 可编译验证
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -1121,7 +1121,7 @@ int main() {
 ```
 
 预期输出：
-> **示例 84** [难度 ★★★★☆] [主题：可编译验证]
+> **示例 84** <span class="badge badge-exp">难度 ★★★★☆</span> · 可编译验证
 ```
 42
 3.14
@@ -1289,7 +1289,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 85** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 85** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <tuple>

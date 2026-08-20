@@ -9,28 +9,28 @@
 > 把"异步回调"改写成"看似同步"的代码，是协程在工程里最值钱的用途。
 
 ### 0.1 起源（谁·何时·为何）
-协程（语言机制）在 C++20 落地后，真正的难题变成"怎么用"：标准只给了 `co_await`/`co_yield` 与 `promise_type`，却**没给**开箱即用的 `std::generator`/`std::task`（C++20 缺失，C++23 才补 `generator`）。[史] 于是"异步 I/O 写成同步风格、用协程消掉回调地狱"这种最广谱的需求，得由每个项目手写返回类型（promise/awaiter 三件套）来实现。本章正是对这一落地缺口的填补。
+协程（语言机制）在 C++20 落地后，真正的难题变成"怎么用"：标准只给了 `co_await`/`co_yield` 与 `promise_type`，却**没给**开箱即用的 `std::generator`/`std::task`（C++20 缺失，C++23 才补 `generator`）。<span class="badge badge-history">史</span> 于是"异步 I/O 写成同步风格、用协程消掉回调地狱"这种最广谱的需求，得由每个项目手写返回类型（promise/awaiter 三件套）来实现。本章正是对这一落地缺口的填补。
 
 ### 0.2 关键转折（编年）
-- C++20：协程语言机制就位，但标准库返回类型几乎空白。[史]
-- C++23：补上 `std::generator`，`std::task` 仍在推进。[史]
-- 工业界（如网络库、游戏引擎）普遍自研 `task`/`future` 协程类型以桥接现有事件循环。[史]
+- C++20：协程语言机制就位，但标准库返回类型几乎空白。<span class="badge badge-history">史</span>
+- C++23：补上 `std::generator`，`std::task` 仍在推进。<span class="badge badge-history">史</span>
+- 工业界（如网络库、游戏引擎）普遍自研 `task`/`future` 协程类型以桥接现有事件循环。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-应用层的核心争论是**"事件循环归谁管"**。协程本身只负责挂起/恢复，至于"恢复时由哪个线程、哪个调度器执行"，标准刻意不规定，留给 `awaiter` 与执行器（executor，仍在标准化中）去决定。[评] 这就形成两种风格：一种把协程接到现有回调/IO 循环（最小侵入），另一种自研整套任务调度（如 `async`/`await` 框架）。C++ 再次选择"给机制不给策略"，把生态系统多样性留给社区，而非像某些语言那样内置单一 runtime。[史]
+应用层的核心争论是**"事件循环归谁管"**。协程本身只负责挂起/恢复，至于"恢复时由哪个线程、哪个调度器执行"，标准刻意不规定，留给 `awaiter` 与执行器（executor，仍在标准化中）去决定。<span class="badge badge-comment">评</span> 这就形成两种风格：一种把协程接到现有回调/IO 循环（最小侵入），另一种自研整套任务调度（如 `async`/`await` 框架）。C++ 再次选择"给机制不给策略"，把生态系统多样性留给社区，而非像某些语言那样内置单一 runtime。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 应用层协程的进展，几乎全围着"谁来管理执行器"与"怎样接进现有事件循环"转。
 
-- C++23 补上 `std::generator`，但 `std::task`（异步任务的协程返回类型）依旧停留在提案，应用层仍靠 Asio、libunifex、cppcoro 等库自研 `task` / `future`。[史]
-- [史] 工业界桥接范式高度务实：网络库（如 Boost.Asio）把协程接到既有 io_context 事件循环，最小侵入地"把回调写成同步风格"；游戏引擎则常自研整套任务调度，把协程帧塞进自己的帧循环。
-- [评] 标准刻意不规定"恢复由哪个线程执行"，把这个策略权留给 `awaiter` 与执行器——好处是生态多样，坏处是"换个项目就要重新学一套 task 模型"。
-- [轶] 一个广为流传的实战教训：协程帧默认在堆上分配，热路径里海量小协程会让分配器压力激增；很多库因此手写"协程帧池"，把零开销哲学又拉回内存管理老问题。
-- C++23/26 持续推进 `std::execution`（发送者/接收者）与协程融合，目标是让"异步管道"不再依赖第三方运行时。[史]
+- C++23 补上 `std::generator`，但 `std::task`（异步任务的协程返回类型）依旧停留在提案，应用层仍靠 Asio、libunifex、cppcoro 等库自研 `task` / `future`。<span class="badge badge-history">史</span>
+- <span class="badge badge-history">史</span> 工业界桥接范式高度务实：网络库（如 Boost.Asio）把协程接到既有 io_context 事件循环，最小侵入地"把回调写成同步风格"；游戏引擎则常自研整套任务调度，把协程帧塞进自己的帧循环。
+- <span class="badge badge-comment">评</span> 标准刻意不规定"恢复由哪个线程执行"，把这个策略权留给 `awaiter` 与执行器——好处是生态多样，坏处是"换个项目就要重新学一套 task 模型"。
+- <span class="badge badge-anecdote">轶</span> 一个广为流传的实战教训：协程帧默认在堆上分配，热路径里海量小协程会让分配器压力激增；很多库因此手写"协程帧池"，把零开销哲学又拉回内存管理老问题。
+- C++23/26 持续推进 `std::execution`（发送者/接收者）与协程融合，目标是让"异步管道"不再依赖第三方运行时。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/coroutines · https://en.cppreference.com/w/cpp/iterator/generator
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 读完本章你应当能够：
 1. 从零实现一个 `generator<T>` 协程返回类型，理解 `promise_type` / `yield_value` / `return_void` 的交互。
@@ -42,7 +42,7 @@
 
 ---
 
-## ② 前置知识 [标准]
+## ② 前置知识 <span class="badge badge-std">标准</span>
 
 - **协程基础**（ch113）：`promise_type`、`coroutine_handle`、`co_await`/`co_yield`/`co_return` 语法。
 - **移动语义**（ch115）：协程帧中 `std::coroutine_handle` 独占所有权，不可拷贝，只可移动。
@@ -54,7 +54,7 @@
 
 ### 3.1 最小实现
 
-> **示例 1** [难度 ★★★☆☆] [主题：最小实现]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最小实现
 ```cpp
 // ③-a 最小 generator<T> —— 支持 co_yield + 范围迭代
 #include <coroutine>
@@ -99,7 +99,7 @@ int main() {
 
 ### 3.2 迭代器适配
 
-> **示例 2** [难度 ★★★☆☆] [主题：迭代器适配]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 迭代器适配
 ```cpp
 // ③-b Generator 迭代器包装——支持 range-for
 #include <coroutine>
@@ -156,7 +156,7 @@ int main() {
 
 ## ④ 内存布局 [实现·GCC15]
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：内存布局 [实现·GCC15]]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局 [实现·GCC15]
 ```cpp
 // ④-a 验证协程句柄大小（仅一个指针）
 #include <coroutine>
@@ -176,9 +176,9 @@ int main() {
 
 ---
 
-## ⑤ co_await 三段式协议 [标准]
+## ⑤ co_await 三段式协议 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★★☆☆☆] [主题：await 三段式协议 [标准]]
+> **示例 4** [难度 ★★☆☆☆] [主题：await 三段式协议 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑤-a 自定义 awaitable：三段式 co_await 协议全流程
 #include <coroutine>
@@ -210,9 +210,9 @@ int main() {
 
 ---
 
-## ⑥ 异步 I/O 仿真 [经验]
+## ⑥ 异步 I/O 仿真 <span class="badge badge-exp">经验</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：异步 I/O 仿真 [经验]]
+> **示例 5** [难度 ★★☆☆☆] [主题：异步 I/O 仿真 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑥-a 用协程消除回调地狱——异步读写的同步写法
 #include <coroutine>
@@ -249,9 +249,9 @@ int main() {
 
 ---
 
-## ⑦ 错误处理与异常 [标准]
+## ⑦ 错误处理与异常 <span class="badge badge-std">标准</span>
 
-> **示例 6** [难度 ★★☆☆☆] [主题：错误处理与异常 [标准]]
+> **示例 6** [难度 ★★☆☆☆] [主题：错误处理与异常 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦-a 协程中异常通过 promise_type::unhandled_exception 传播
 #include <coroutine>
@@ -295,9 +295,9 @@ int main() {
 
 ---
 
-## ⑧ suspend_always vs suspend_never [标准]
+## ⑧ suspend_always vs suspend_never <span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★★☆☆☆] [主题：always vs suspendn]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · always vs suspendn
 ```cpp
 // ⑧-a initial_suspend=suspend_always 表示"创建即挂起"，需手动 resume 才启动
 #include <coroutine>
@@ -333,9 +333,9 @@ int main() {
 
 ---
 
-## ⑨ 协程与多线程 [经验]
+## ⑨ 协程与多线程 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★★☆☆☆] [主题：协程与多线程 [经验]]
+> **示例 8** [难度 ★★☆☆☆] [主题：协程与多线程 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑨-a 协程在不同线程上 resume（每个协程帧本身非线程安全）
 #include <coroutine>
@@ -379,9 +379,9 @@ int main() {
 
 ---
 
-## ⑪ STL 联系 [标准]
+## ⑪ STL 联系 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：联系 [标准]]
+> **示例 9** [难度 ★☆☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪ 协程与 ranges 的组合模式
 #include <iostream>
@@ -398,9 +398,9 @@ int main() {
 }
 ```
 
-## ⑫ 工业案例：异步 HTTP 请求管道 [经验]
+## ⑫ 工业案例：异步 HTTP 请求管道 <span class="badge badge-exp">经验</span>
 
-> **示例 10** [难度 ★★☆☆☆] [主题：工业案例：异步 HTTP 请求管道 ]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：异步 HTTP 请求管道
 ```cpp
 // ⑫ 协程消除回调地狱的简化模型
 #include <coroutine>
@@ -423,7 +423,7 @@ int main() { pipeline(); return 0; }
 
 ## ⑬ 源码分析：GCC coroutine transform [实现·GCC15]
 
-> **示例 11** [难度 ★★☆☆☆] [主题：源码分析：GCC coroutine]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC coroutine
 ```cpp
 // ⑬ GCC 的协程变换在 gcc/cp/coroutines.cc 中完成
 #include <iostream>
@@ -438,9 +438,9 @@ int main() {
 }
 ```
 
-## ⑭ WG21 关键提案 [标准]
+## ⑭ WG21 关键提案 <span class="badge badge-std">标准</span>
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：关键提案 [标准]]
+> **示例 12** [难度 ★☆☆☆☆] [主题：关键提案 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ 协程相关的 5 个核心提案
 #include <iostream>
@@ -454,9 +454,9 @@ int main() {
 }
 ```
 
-## ⑮ 面试题精选 [经验]
+## ⑮ 面试题精选 <span class="badge badge-exp">经验</span>
 
-> **示例 13** [难度 ★★☆☆☆] [主题：面试题精选 [经验]]
+> **示例 13** [难度 ★★☆☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 高频协程面试问题（含答案）
 #include <iostream>
@@ -470,9 +470,9 @@ int main() {
 }
 ```
 
-## ⑯ 易错点与陷阱 [经验]
+## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★★☆☆] [主题：易错点与陷阱 [经验]]
+> **示例 14** [难度 ★★★☆☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 协程中 5 个最常见的 UB/陷阱
 #include <iostream>
@@ -487,9 +487,9 @@ int main() {
 }
 ```
 
-## ⑰ FAQ：协程实战常见问题 [经验]
+## ⑰ FAQ：协程实战常见问题 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★☆☆☆] [主题：协程实战常见问题 [经验]]
+> **示例 15** [难度 ★★☆☆☆] [主题：协程实战常见问题 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 来自真实项目的协程 Q&A
 #include <iostream>
@@ -507,9 +507,9 @@ int main() {
 }
 ```
 
-## ⑱ 最佳实践总结 [经验]
+## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★☆☆☆] [主题：最佳实践总结 [经验]]
+> **示例 16** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 协程使用的 6 条黄金法则
 #include <iostream>
@@ -526,7 +526,7 @@ int main() {
 
 ## ⑲ 性能分析：协程帧开销量化 [平台·x86-64]
 
-> **示例 17** [难度 ★★☆☆☆] [主题：性能分析：协程帧开销量化 [平台·x]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：协程帧开销量化 [平台·x
 ```cpp
 // ⑲ 协程的微基准：帧分配、resume 延迟、vs 函数调用
 #include <iostream>
@@ -546,21 +546,21 @@ int main() {
 }
 ```
 
-## ⑳ 跨语言对比 [经验]
+## ⑳ 跨语言对比 <span class="badge badge-exp">经验</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `co_yield` 写生成器逐个产出元素。** 你避免一次性建大容器。请说明语义。
-   - [标准] `co_yield e` 等价于 `co_await promise.yield_value(e)`，产出值并挂起，下次恢复从挂起点继续。
-   - [引用] ISO/IEC 14882:2023 §[expr.await]（co_yield 语义）/ [dcl.fct.def.coroutine]；cppreference "Coroutines" 词条。
+   - <span class="badge badge-std">标准</span> `co_yield e` 等价于 `co_await promise.yield_value(e)`，产出值并挂起，下次恢复从挂起点继续。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.await]（co_yield 语义）/ [dcl.fct.def.coroutine]；cppreference "Coroutines" 词条。
 
 2. **真实场景：C++23 提供 `std::generator` 标准生成器。** 你不必手写 promise。请说明来源。
-   - [标准] C++23 引入 `<generator>` 库，提供 `std::generator` 简化生成器协程的 promise 与迭代器。
-   - [引用] ISO/IEC 14882:2023 §[coroutine.generator]（std::generator）；cppreference "std::generator" 词条。
+   - <span class="badge badge-std">标准</span> C++23 引入 `<generator>` 库，提供 `std::generator` 简化生成器协程的 promise 与迭代器。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[coroutine.generator]（std::generator）；cppreference "std::generator" 词条。
 
 3. **真实场景：协程挂起恢复由 awaiter 与执行器驱动。** 你接入异步框架。请说明。
-   - [标准] `co_await` 的挂起/恢复完全由 awaiter 的 `await_suspend`/`await_resume` 决定，可由事件循环驱动。
-   - [引用] ISO/IEC 14882:2023 §[expr.await]（await 表达式与 awaiter 控制）；cppreference "Awaitable" 词条。
+   - <span class="badge badge-std">标准</span> `co_await` 的挂起/恢复完全由 awaiter 的 `await_suspend`/`await_resume` 决定，可由事件循环驱动。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.await]（await 表达式与 awaiter 控制）；cppreference "Awaitable" 词条。
 
 | 语言 | 协程模型 | 栈 | 关键差异 |
 |---|---|---|---|
@@ -570,7 +570,7 @@ int main() {
 | Python | `async`/`await` + event loop | 堆 | 单线程异步，基于生成器演化 |
 | C# | `async`/`await` + Task | 堆 | 状态机变换，与 C++ 最接近 |
 
-> **示例 18** [难度 ★★☆☆☆] [主题：跨语言对比 [经验]]
+> **示例 18** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑩-a C++ 无栈协程 vs Go goroutine 的哲学差异
 #include <iostream>
@@ -587,7 +587,7 @@ int main() {
 
 ## 补充完整可编译示例
 
-> **示例 19** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-A Fib 生成器（带 range-for）
 #include <coroutine>
@@ -623,7 +623,7 @@ Gen<int> primes(int n) {
 int main() { for (int p : primes(10)) std::cout << p << " "; std::cout << std::endl; return 0; }
 ```
 
-> **示例 20** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-B co_return 传值（非 yield）
 #include <coroutine>
@@ -651,7 +651,7 @@ Task<int> compute() { co_return 42; }
 int main() { std::cout << compute().get() << std::endl; return 0; }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-C co_await 链式串行异步调用
 #include <coroutine>
@@ -679,7 +679,7 @@ Chain pipeline() {
 int main() { pipeline(); return 0; }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-D 协程帧大小演示——局部变量越多，帧越大
 #include <coroutine>
@@ -702,7 +702,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-E suspend_never Task（自动启动，无需手动 resume）
 #include <coroutine>
@@ -719,7 +719,7 @@ Eager fire_and_forget() { std::cout << "fired!\n"; co_return; }
 int main() { fire_and_forget(); return 0; }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-F 协程句柄的 hash 能力（C++20 起，coroutine_handle 可哈希）
 #include <coroutine>
@@ -732,7 +732,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-G 有限素数生成器 yield + break（co_yield 在循环中）
 #include <coroutine>
@@ -757,7 +757,7 @@ G<int> first_n(int n) { int i=2; while (n-->0) { co_yield i; i+=2; } }
 int main() { auto g = first_n(4); while (g.next()) std::cout << g.get() << " "; std::cout << std::endl; return 0; }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-H 使用 std::generator（C++23，GCC13 未实现，手写等价体）
 #include <iostream>
@@ -768,7 +768,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-I 空协程句柄的安全检查
 #include <coroutine>
@@ -781,7 +781,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-J co_yield 与 co_return 互斥——co_return 后不可再 yield
 #include <coroutine>
@@ -793,7 +793,7 @@ Y2<int> seq(){co_yield 1;co_yield 2;co_return;}
 int main(){auto g=seq();while(g.next())std::cout<<g.get()<<" ";std::cout<<std::endl;return 0;}
 ```
 
-> **示例 29** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-K 无限序列 + 外部终止
 #include <coroutine>
@@ -805,7 +805,7 @@ Inf2<int> nats(){for(int i=0;;++i)co_yield i;}
 int main(){auto g=nats();int s=0;for(int i=0;i<5;++i){g.next();s+=g.get();}std::cout<<"0..4="<<s<<std::endl;return 0;}
 ```
 
-> **示例 30** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-L 协程析构自动清理资源
 #include <coroutine>
@@ -816,7 +816,7 @@ Raii2<int> cd(int n){while(n>=0){co_yield n--;}}
 int main(){{auto g=cd(3);while(g.next())std::cout<<g.get()<<" ";}std::cout<<std::endl;return 0;}
 ```
 
-> **示例 31** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-M co_yield 平方序列
 #include <coroutine>
@@ -827,7 +827,7 @@ Sq<int> squares(int n){for(int i=1;i<=n;++i)co_yield i*i;}
 int main(){auto g=squares(5);while(g.next())std::cout<<g.get()<<" ";std::cout<<std::endl;return 0;}
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-N 协程体内创建 std::vector（验证帧分配）
 #include <coroutine>
@@ -838,7 +838,7 @@ VGen vec_in_coro(){std::vector<int> v(100,7);std::cout<<"vec size="<<v.size()<<s
 int main(){vec_in_coro();return 0;}
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-O await_ready=true 时零挂起——co_await 退化为同步调用
 #include <coroutine>
@@ -849,7 +849,7 @@ AR demo(){auto a=co_await AlwaysReady{};auto b=co_await AlwaysReady{};std::cout<
 int main(){demo();return 0;}
 ```
 
-> **示例 34** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-P 协程中 try-catch 保护 co_yield——异常被 promise_type 捕获
 #include <coroutine>
@@ -860,7 +860,7 @@ Safe2<int> risky(){co_yield 1;throw 0;co_yield 2;}
 int main(){auto g=risky();g.next();std::cout<<g.get()<<std::endl;g.next();return 0;}
 ```
 
-> **示例 35** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-Q 协程嵌套——外层调用内层协程并转发值
 #include <coroutine>
@@ -872,7 +872,7 @@ Nst<int> outer(){co_yield 0;auto s=inner();while(s.next())co_yield s.get();co_yi
 int main(){auto g=outer();while(g.next())std::cout<<g.get()<<" ";std::cout<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-R 两协程 round-robin 交错
 #include <coroutine>
@@ -884,7 +884,7 @@ RR2<int> even(){co_yield 2;co_yield 4;co_yield 6;}
 int main(){auto o=odd(),e=even();bool ro=true,re=true;while(ro||re){if(ro){ro=o.step();if(ro)std::cout<<o.get()<<" ";}if(re){re=e.step();if(re)std::cout<<e.get()<<" ";}}std::cout<<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-S 协程 async 回调模式
 #include <coroutine>
@@ -896,7 +896,7 @@ ATask fetch(AsyncR*r){int v=co_await *r;std::cout<<"got:"<<v<<std::endl;}
 int main(){AsyncR r;fetch(&r);r.v=204;if(r.cb)r.cb();return 0;}
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-T 安全提醒：空句柄调用 resume 是 UB
 #include <coroutine>
@@ -904,7 +904,7 @@ int main(){AsyncR r;fetch(&r);r.v=204;if(r.cb)r.cb();return 0;}
 int main(){std::coroutine_handle<> h;std::cout<<"null addr="<<h.address()<<" done="<<h.done()<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // 补-U 协程零开销小结
 #include <iostream>
@@ -1017,7 +1017,7 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 网络 / 高并发服务器 | Boost.Asio / libuv / Seastar | 把回调地狱改写成顺序风格异步 | 工业级网络栈；微软大量异步栈依赖协程 | [STANDARD] C++20 coroutines；`co_await` 挂起 / 恢复 |
+| 网络 / 高并发服务器 | Boost.Asio / libuv / Seastar | 把回调地狱改写成顺序风格异步 | 工业级网络栈；微软大量异步栈依赖协程 | <span class="badge badge-std">STANDARD</span> C++20 coroutines；`co_await` 挂起 / 恢复 |
 | 游戏引擎 | 脚本 / tick 逻辑 / 惰性生成器序列 | 逐帧产出数据、IO 密集批处理 | 实时游戏主循环 | 协程让生成器式逻辑可读 |
 | 协程原语库 | cppcoro（Lewis Baker） | 第一代工业级 `task`/`generator`/`async_mutex` | 为 `std::generator` 探路 | 比标准库更早实践协程范式 |
 | 分布式存储 / 共识 | TiKV / CockroachDB 客户端 | 跨分片异步读→提交 写成顺序代码 | 分布式数据库客户端 | 复杂故障 / 重试路径可读可测 |
@@ -1040,7 +1040,7 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 - C++20 确定 `co_await`/`co_yield`/`co_return` 与 `std::coroutine_handle`；C++23 补上 `std::generator`、`std::noop_coroutine`、`std::coroutine_traits` 细化，并让 `std::execution`（发送者/接收者，P2300）基于协程思想构建；C++26 继续打磨执行模型。
 - `[评]` 标准演进焦点正从「语法」转向「标准库异步类型 + 执行调度」，目标是让协程真正开箱即用。
 
-- [史] **协程应用修订链**：**P0912** 从 **R0 → R5（Gor Nishanov，C++20）** 合入；**P2168（`std::generator`，C++23）** 由 Lewis Baker / Corentin Jabot 提案补上高层封装；**P2300（`std::execution`）** 推进至 **R10（目标 C++26）**，把 sender/receiver 异步执行模型与协程打通；<https://wg21.link/p0912>、<https://wg21.link/p2168>、<https://wg21.link/p2300>。
+- <span class="badge badge-history">史</span> **协程应用修订链**：**P0912** 从 **R0 → R5（Gor Nishanov，C++20）** 合入；**P2168（`std::generator`，C++23）** 由 Lewis Baker / Corentin Jabot 提案补上高层封装；**P2300（`std::execution`）** 推进至 **R10（目标 C++26）**，把 sender/receiver 异步执行模型与协程打通；<https://wg21.link/p0912>、<https://wg21.link/p2168>、<https://wg21.link/p2300>。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 
@@ -1138,7 +1138,7 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 
 最小生成器：promise 存当前值，`yield_value` 暂存并返回 `suspend_always`（每次产出后挂起），迭代器 `++` 时 `resume()` 恢复协程到下一 `co_yield`：
 
-> **示例 40** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1173,9 +1173,9 @@ int main() {
 }
 ```
 
-[标准] 协程函数由编译器做 **coroutine transform**：把函数体拆成"协程帧（堆上）"+"状态机"，`co_yield`/`co_await` 是恢复点。`initial_suspend` 返回 `suspend_always` 让 `begin()` 时先 `resume()` 才产出首个值。
+<span class="badge badge-std">标准</span> 协程函数由编译器做 **coroutine transform**：把函数体拆成"协程帧（堆上）"+"状态机"，`co_yield`/`co_await` 是恢复点。`initial_suspend` 返回 `suspend_always` 让 `begin()` 时先 `resume()` 才产出首个值。
 
-[引用] ISO/IEC 14882:2023 §9.5.4 [coroutine]；cppreference `std::coroutine_handle`：<https://en.cppreference.com/w/cpp/coroutine/coroutine_handle>。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §9.5.4 [coroutine]；cppreference `std::coroutine_handle`：<https://en.cppreference.com/w/cpp/coroutine/coroutine_handle>。
 
 </details>
 
@@ -1189,7 +1189,7 @@ int main() {
 
 三段职责：**`await_ready`**（是否可跳过挂起，直接取结果）、**`await_suspend`**（挂起后要做什么，可调度恢复或立即 resume）、**`await_resume`**（恢复后 `co_await` 表达式的返回值）。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1223,9 +1223,9 @@ int main() { std::cout << use().get() << '\n'; }   // 43
 
 `await_suspend` 收到协程句柄后立即 `resume()`，协程从挂起点继续算出 `co_return x+1`，`await_resume` 的 `42` 成为 `co_await` 的值。
 
-[标准] `await_suspend` 的返回类型可为 `void`/`bool`/协程句柄；返回 `void` 时语义"挂起后由调用方决定何时 resume"，这里直接 resume 形成同步链。
+<span class="badge badge-std">标准</span> `await_suspend` 的返回类型可为 `void`/`bool`/协程句柄；返回 `void` 时语义"挂起后由调用方决定何时 resume"，这里直接 resume 形成同步链。
 
-[引用] ISO/IEC 14882:2023 §7.6.2.3 [expr.await]；cppreference `co_await`：<https://en.cppreference.com/w/cpp/language/coroutines>。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §7.6.2.3 [expr.await]；cppreference `co_await`：<https://en.cppreference.com/w/cpp/language/coroutines>。
 
 </details>
 
@@ -1239,7 +1239,7 @@ int main() { std::cout << use().get() << '\n'; }   // 43
 
 协程帧分配在**堆上**，每个挂起点只是一次普通函数调用（`resume`），没有内核态线程切换。下面 `iota(100000)` 全程只占一个 OS 线程、一个 C 栈：
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1276,9 +1276,9 @@ int main() {
 
 对比：若改用 10 万个 `std::thread`，每个线程默认栈 1–8 MB → 需 100–800 GB 内存，直接 OOM；且内核调度 10 万上下文切换的开销远超协程的 `resume()` 函数调用。
 
-[标准] 协程把"任务状态"存在堆帧，上下文切换是用户态函数调用；线程把状态存在内核栈，切换需内核介入。故"海量短任务"用协程（如异步 I/O、生成器、流水线），"真并行算量"才用线程。
+<span class="badge badge-std">标准</span> 协程把"任务状态"存在堆帧，上下文切换是用户态函数调用；线程把状态存在内核栈，切换需内核介入。故"海量短任务"用协程（如异步 I/O、生成器、流水线），"真并行算量"才用线程。
 
-[引用] ISO/IEC 14882:2023 §9.5.4 [coroutine]；cppreference 协程：<https://en.cppreference.com/w/cpp/language/coroutines>。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §9.5.4 [coroutine]；cppreference 协程：<https://en.cppreference.com/w/cpp/language/coroutines>。
 
 </details>
 
@@ -1331,7 +1331,7 @@ line_gen read_lines(std::istringstream& in) {
 - 协程帧在堆上，上下文切换是用户态函数调用；线程切换需内核介入——海量轻任务用协程。
 - `co_yield`/`co_await`/`co_return` 是恢复点，由编译器做 coroutine transform 生成状态机。
 - 协程 ≠ 并行：单线程上 N 个协程仍是并发非并行；要真并行需配合线程/执行器。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把协程 transform 与帧结构浓缩为一张状态机恢复点图。
 
@@ -1518,7 +1518,7 @@ flowchart TD
 
 ### D5.3 可复现演示
 
-> **示例 43** [难度 ★★☆☆☆] [主题：可复现演示]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <coroutine>

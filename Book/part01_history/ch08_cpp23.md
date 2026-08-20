@@ -12,23 +12,23 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-进入 C++20 之后，语言骨架（概念/Ranges/模块/协程）已经很重，委员会有意让 C++23 "减重"，把精力放在**标准库的实用补充与一致性打磨**上。[史][评] 几个真实痛点驱动：错误处理仍靠异常或 `std::optional` 二选一，缺少"带错误值"的统一返回；打印还要 `<iostream>` 的啰嗦写法；老式多维数组没有标准容器。这些"日常缺件"成了 C++23 的主攻方向。
+进入 C++20 之后，语言骨架（概念/Ranges/模块/协程）已经很重，委员会有意让 C++23 "减重"，把精力放在**标准库的实用补充与一致性打磨**上。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 几个真实痛点驱动：错误处理仍靠异常或 `std::optional` 二选一，缺少"带错误值"的统一返回；打印还要 `<iostream>` 的啰嗦写法；老式多维数组没有标准容器。这些"日常缺件"成了 C++23 的主攻方向。
 
 ### 0.2 关键转折（编年）
 
-- **2023**：ISO/IEC 14882:2023（草案 N4950）发布。[史]
-- 核心新增：`std::expected`（带错误值的返回值）、`std::flat_map`/`flat_set`（连续存储有序容器）、`std::print`/`std::println`、`std::stacktrace`、`std::mdspan`、Ranges 适配增强（zip/chunk/slide/adjacent）、`std::ranges::contains` 等。[史]
+- **2023**：ISO/IEC 14882:2023（草案 N4950）发布。<span class="badge badge-history">史</span>
+- 核心新增：`std::expected`（带错误值的返回值）、`std::flat_map`/`flat_set`（连续存储有序容器）、`std::print`/`std::println`、`std::stacktrace`、`std::mdspan`、Ranges 适配增强（zip/chunk/slide/adjacent）、`std::ranges::contains` 等。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也是值"的函数式思想，与 C++ 传统的"异常用于意外、返回值用于预期"二分法形成张力。[史][评] 委员会选择把它纳入而非强推异常替代，保持"多范式并存"。`std::print` 则终于让 C++ 有了不依赖 `<cstdio>` 的类型安全打印，收敛了多年来 `printf` 与 `cout` 双轨的尴尬。[评]
+C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也是值"的函数式思想，与 C++ 传统的"异常用于意外、返回值用于预期"二分法形成张力。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 委员会选择把它纳入而非强推异常替代，保持"多范式并存"。`std::print` 则终于让 C++ 有了不依赖 `<cstdio>` 的类型安全打印，收敛了多年来 `printf` 与 `cout` 双轨的尴尬。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] C++23 引入 `std::generator`（基于协程的惰性序列）与 `std::print`/`std::println`，后者终于让 C++ 有了不依赖 `<cstdio>` 的类型安全打印，收敛了 `printf` 与 `cout` 双轨的尴尬。
-- [史] `std::expected`（带错误值的返回值）正式入标准，把"错误也是值"的函数式思想带进主流；标准库还新增 `std::mdspan`、`std::stacktrace`、`flat_map`，被视为一次"标准库丰收"。
-- [史] 模块化标准库（`import std;`）在 C++23 以实验形态推进，配合 C++20 Modules 让"不再写 `#include`"成为可能，但编译器仍需显式开启，普及尚需时日。
-- [评] C++23 刻意"减重"只补库不补大语言特性，是对 C++20 大爆炸的节奏回调；其库件大多源自 Boost 与 Abseil 的成熟实践。
+- <span class="badge badge-history">史</span> C++23 引入 `std::generator`（基于协程的惰性序列）与 `std::print`/`std::println`，后者终于让 C++ 有了不依赖 `<cstdio>` 的类型安全打印，收敛了 `printf` 与 `cout` 双轨的尴尬。
+- <span class="badge badge-history">史</span> `std::expected`（带错误值的返回值）正式入标准，把"错误也是值"的函数式思想带进主流；标准库还新增 `std::mdspan`、`std::stacktrace`、`flat_map`，被视为一次"标准库丰收"。
+- <span class="badge badge-history">史</span> 模块化标准库（`import std;`）在 C++23 以实验形态推进，配合 C++20 Modules 让"不再写 `#include`"成为可能，但编译器仍需显式开启，普及尚需时日。
+- <span class="badge badge-comment">评</span> C++23 刻意"减重"只补库不补大语言特性，是对 C++20 大爆炸的节奏回调；其库件大多源自 Boost 与 Abseil 的成熟实践。
 
 > 史料来源：ISO C++ 标准提案存档 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
@@ -44,7 +44,7 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 [第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)
 [第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -61,7 +61,7 @@ int main() {
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -78,7 +78,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -93,7 +93,7 @@ int main() {
 
 ## ④ 知识图谱
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：知识图谱]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识图谱
 ```cpp
 // [merged] ## ④ 知识图谱
 #include <iostream>
@@ -102,7 +102,7 @@ struct F{ static int call(int x){ return x; } }; int r=F::call(3);
 int main() {}
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：知识图谱]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱
 ```
 C++23 库大修
 ├─ std::expected<T,E> (值或错误, 替代异常/可选错误码)
@@ -118,7 +118,7 @@ C++23 库大修
 
 ## ⑤ Mermaid（expected 错误处理流）
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：Mermaid 图解]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Mermaid 图解
 ```cpp
 // [merged] ## ⑤ Mermaid（expected 错误处理流）
 #include <iostream>
@@ -129,9 +129,9 @@ void z(){ std::vector<int> a{1,2},b{3,4}; for(auto [x,y]: std::views::zip(a,b)){
 int main() {}
 ```
 
-## ⑥ UML / 结构图（特性关系）[标准]
+## ⑥ UML / 结构图（特性关系）<span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★★☆☆☆] [主题：结构图（特性关系）[标准]]
+> **示例 7** [难度 ★★☆☆☆] [主题：结构图（特性关系）<span class="badge badge-std">标准</span>]
 ```cpp
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
@@ -163,7 +163,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑦ ASCII 内存图（flat_map 连续布局）
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：内存图（flatmap 连续布局）]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（flatmap 连续布局）
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（flat_map 连续布局）
 #include <iostream>
@@ -174,7 +174,7 @@ int main() {}
 
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：生命周期（新增库类型的所有权语义）]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期（新增库类型的所有权语义）
 ```cpp
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
@@ -187,7 +187,7 @@ int main() {
 `string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
 ## ⑨ 调用栈（编译期分支与折叠）
 
-> **示例 10** [难度 ★★☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```cpp
 // [merged] ## ⑨ 调用栈（编译期分支与折叠）
 #include <iostream>
@@ -198,12 +198,12 @@ int main() {}
 
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
 普通 `std::map`（红黑树，节点分散）：
-> **示例 11** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```
 [节点]→[节点]→... (堆上跳跃, 缓存不友好)
 ```
 `flat_map`（两个并行 `vector`，连续）：
-> **示例 12** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```
 keys:   [k1][k2][k3]...
 values: [v1][v2][v3]...   ← 连续内存, 缓存友好, 查找 O(log n)
@@ -221,7 +221,7 @@ values: [v1][v2][v3]...   ← 连续内存, 缓存友好, 查找 O(log n)
 >
 > 故用**等价的 `std::format`（已验证可编译+链接）**展示格式化机制。自定义 formatter 通过 handler 函数指针注入格式上下文，编译期生成 `_S_format<Point const>`：
 
-> **示例 13** [难度 ★★★★☆] [主题：汇编]
+> **示例 13** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编
 ```cpp
 // _asm_demo/ch08_format_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测可编可链）
 #include <format>
@@ -249,7 +249,7 @@ mov    edx,DWORD PTR [r8]       ; 取 Point.x
 
 ## ⑪ STL 联系
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：联系]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
 ```cpp
 // [merged] ## ⑪ STL 联系
 #include <iostream>
@@ -263,7 +263,7 @@ int main() {}
 
 ## ⑫ 工业案例
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -282,7 +282,7 @@ int main() {}
 
 ## ⑬ 源码分析
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：源码分析]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析
 ```cpp
 // 属性 [[assume]] 优化提示
 int scale(int x){ [[assume(x>0)]]; return x*2; }
@@ -293,7 +293,7 @@ int scale(int x){ [[assume(x>0)]]; return x*2; }
 
 ## ⑭ WG21 提案
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：提案]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
 ```cpp
 // std::flat_set（C++23；本机用 std::set 等价演示）
 #include <set>
@@ -310,7 +310,7 @@ std::set<int> fs{3,1,2};
 
 ## ⑮ 面试题
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 // 协程与 generator 注释
 // task<int> coro(){ co_return 7; }
@@ -322,7 +322,7 @@ std::set<int> fs{3,1,2};
 
 ## ⑯ 易错点
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // std::print 格式化（等价 cout 演示）
 #include <iostream>
@@ -334,7 +334,7 @@ void fmt(){ std::cout << "val=" << 100 << "\n"; }
 
 ## ⑰ FAQ
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // 多维下标运算符重载
 struct Mat{ int d[4]; int operator[](int i){ return d[i]; } };
@@ -345,7 +345,7 @@ struct Mat{ int d[4]; int operator[](int i){ return d[i]; } };
 
 ## ⑱ 最佳实践
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // std::expected 作为返回
 #include <expected>
@@ -357,7 +357,7 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 
 ## ⑲ 性能分析
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
 ```cpp
 // 命名模块 import（注释）
 // import std.compat;
@@ -370,18 +370,18 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `std::expected<T, E>` 表达可失败计算。** 你不想为“正常路径出错”滥用异常。请说明其定位。
-   - [标准] `std::expected` 持有一个值或错误，属 C++23 标准库设施（[expected]）；适合可预期的错误传播。
-   - [引用] ISO/IEC 14882:2023 §[expected]（expected 概览）；cppreference "std::expected" 词条。
+   - <span class="badge badge-std">标准</span> `std::expected` 持有一个值或错误，属 C++23 标准库设施（[expected]）；适合可预期的错误传播。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expected]（expected 概览）；cppreference "std::expected" 词条。
 
 2. **真实场景：用 `std::stacktrace` 取调用栈做诊断。** 你希望崩溃时能打印调用栈而不依赖外部工具。请说明其来源。
-   - [标准] C++23 新增 `<stacktrace>` 库，提供在运行期获取当前调用栈的标准手段。
-   - [引用] ISO/IEC 14882:2023 §[stacktrace]（stacktrace 概览）；cppreference "std::stacktrace" 词条。
+   - <span class="badge badge-std">标准</span> C++23 新增 `<stacktrace>` 库，提供在运行期获取当前调用栈的标准手段。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stacktrace]（stacktrace 概览）；cppreference "std::stacktrace" 词条。
 
 3. **真实场景：用 `if consteval` 区分编译期/运行期分支。** 你在 constexpr 函数里需要一段只对编译期执行的代码。请说明机制。
-   - [标准] C++23 引入 `if consteval`，在常量求值语境为 true 的分支内，可调用只能在编译期存在的接口。
-   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if consteval）/ [expr.const]（常量求值语境）；cppreference "if consteval" 词条。
+   - <span class="badge badge-std">标准</span> C++23 引入 `if consteval`，在常量求值语境为 true 的分支内，可调用只能在编译期存在的接口。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stmt.if]（if consteval）/ [expr.const]（常量求值语境）；cppreference "if consteval" 词条。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // C++23 小结：expected/print/mdspan/flat_map/assume
 ```
@@ -392,7 +392,7 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 
 ### ㉒.1 历史渊源补强：C++23 的"补全"而非"革命"
 
-[史] C++23（ISO/IEC 14882:2023，2023 发布）定位为 C++20 的补全版：把 20 周期未稳的特性与一批高价值小特性落地。代表性语言特性**显式对象参数 / deducing this**（P0847，让成员函数能像自由函数一样接 `this` 参数，统一 CRTP 与重载）、多维下标 `operator[]` 多参、`if consteval`；库方面**`std::expected`**（P0323，类型安全的错误返回，取代异常或 `std::optional` 的误用）、**`std::print`/`std::println`**（P2093，类型安全输出）、**`std::mdspan`**（P0009，多维数组视图）、**`std::flat_map`/`flat_set`**（P0429，缓存友好的有序容器）、以及 `[[assume]]`。[史] `std::expected` 草案最早可追到 N4015/N4109（2014），经 P0323 多轮（R12）在 2022 定稿——一个"错误处理的 `optional`"谈了八年才进标准。[评] C++23 的价值在于"把 20 的坑填平、把常用模式标准化"，是新项目的理想起步版本。
+<span class="badge badge-history">史</span> C++23（ISO/IEC 14882:2023，2023 发布）定位为 C++20 的补全版：把 20 周期未稳的特性与一批高价值小特性落地。代表性语言特性**显式对象参数 / deducing this**（P0847，让成员函数能像自由函数一样接 `this` 参数，统一 CRTP 与重载）、多维下标 `operator[]` 多参、`if consteval`；库方面**`std::expected`**（P0323，类型安全的错误返回，取代异常或 `std::optional` 的误用）、**`std::print`/`std::println`**（P2093，类型安全输出）、**`std::mdspan`**（P0009，多维数组视图）、**`std::flat_map`/`flat_set`**（P0429，缓存友好的有序容器）、以及 `[[assume]]`。<span class="badge badge-history">史</span> `std::expected` 草案最早可追到 N4015/N4109（2014），经 P0323 多轮（R12）在 2022 定稿——一个"错误处理的 `optional`"谈了八年才进标准。<span class="badge badge-comment">评</span> C++23 的价值在于"把 20 的坑填平、把常用模式标准化"，是新项目的理想起步版本。
 
 ### ㉒.2 真实工程坐标：C++23 活在哪
 
@@ -400,9 +400,9 @@ C++23 是「修齐现代写法」的小代际。下面按领域展开：
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 错误处理升级 | `std::expected<T,E>`（Abseil `absl::StatusOr` 近亲 / Rust 风格错误传播库） | 可恢复错误显式返回 | 错误传播范式 | [STANDARD] C++23 `<expected>` P0323 |
-| 日志 / 格式化 | `std::print` 对标 fmt / `std::format` 补 `{:?}` 调试格式 | `cout` 替代与调试格式 | 格式化生态 | [STANDARD] C++23 `<print>` P2093 |
-| 科学计算 / HPC | `std::mdspan`（Kokkos / 数值库）零拷贝多维视图 | 避免手算偏移 | 数值生态 | [STANDARD] C++23 `<mdspan>` P0009 |
+| 错误处理升级 | `std::expected<T,E>`（Abseil `absl::StatusOr` 近亲 / Rust 风格错误传播库） | 可恢复错误显式返回 | 错误传播范式 | <span class="badge badge-std">STANDARD</span> C++23 `<expected>` P0323 |
+| 日志 / 格式化 | `std::print` 对标 fmt / `std::format` 补 `{:?}` 调试格式 | `cout` 替代与调试格式 | 格式化生态 | <span class="badge badge-std">STANDARD</span> C++23 `<print>` P2093 |
+| 科学计算 / HPC | `std::mdspan`（Kokkos / 数值库）零拷贝多维视图 | 避免手算偏移 | 数值生态 | <span class="badge badge-std">STANDARD</span> C++23 `<mdspan>` P0009 |
 | MSVC STL 落地 | `microsoft/STL` VS2022 17.8+ 完整支持 `<expected>`/`<print>`/`<mdspan>` | 类型安全错误返回替代异常 | 标准库事实实现 | 见 Microsoft STL |
 | 构建守门 C++23 | CMake 3.30+ `cxx_std_23` 与特性宏 | CI 判定能否启用新特性 | 工业构建最后一公里 | [据记载] 进入工业构建 |
 
@@ -418,10 +418,10 @@ C++23 是「修齐现代写法」的小代际。下面按领域展开：
 
 ### ㉒.4 与标准的互动：20 的补完与 26 的铺垫
 
-[史] 多数 C++23 特性源自 20 周期遗留（expected/print/mdspan 都曾以 TS 或独立提案酝酿），并借 3 年节奏快速转正；同时 C++23 移除垃圾回收 API（P2186）等历史包袱，为 C++26 的反射/契约让路。[评] 建议新项目以 **C++23 为首选基线**（编译器支持到 2024 已较齐），把 20 的四大件 + 23 的补全一起用上。
+<span class="badge badge-history">史</span> 多数 C++23 特性源自 20 周期遗留（expected/print/mdspan 都曾以 TS 或独立提案酝酿），并借 3 年节奏快速转正；同时 C++23 移除垃圾回收 API（P2186）等历史包袱，为 C++26 的反射/契约让路。<span class="badge badge-comment">评</span> 建议新项目以 **C++23 为首选基线**（编译器支持到 2024 已较齐），把 20 的四大件 + 23 的补全一起用上。
 
-- [史] **`std::expected`（P0323）** 修订跨度极大：早期雏形为 **N4015/N4109（2014）**，经 P0323 多轮（R3 为最后一个带完整 rationale 的版本），**R9（2019）→R12（2022-01-07 定稿）** 期间按 LEWG/LWG 意见把 `experimental` 命名空间重定向到 `std`、恢复 rationale、为 `expected<cv void, E>` 定义偏特化；2021-04 LEWG 决议将其目标由 TS 改为 IS（即 C++23）。见 [P0323](https://wg21.link/P0323)。
-- [史] **`std::print`（P2093）** 从 **R0（澄清 wchar_t 重载）→R14（2022-03-25 定稿）** 历经 14 轮，主要围绕 SG16（Unicode）的转码语义反复打磨（如 `vprint_unicode` 的编码处理、U+FFFD 替换），目标车辆定为 C++23；**`std::mdspan`（P0009）** 走完 **R0（2015）→R18（2022-07）** 共 19 个版本（R4 从 `array_ref` 改名 `mdspan`、R11 起 `size` 改 `size_t` 并瞄准 C++23）；**deducing this（P0847）** 由 **R0（2018）→R7（2021-07-12）** 定稿进 C++23。见 [P2093](https://wg21.link/P2093)、[P0009](https://wg21.link/P0009)、[P0847](https://wg21.link/P0847)。
+- <span class="badge badge-history">史</span> **`std::expected`（P0323）** 修订跨度极大：早期雏形为 **N4015/N4109（2014）**，经 P0323 多轮（R3 为最后一个带完整 rationale 的版本），**R9（2019）→R12（2022-01-07 定稿）** 期间按 LEWG/LWG 意见把 `experimental` 命名空间重定向到 `std`、恢复 rationale、为 `expected<cv void, E>` 定义偏特化；2021-04 LEWG 决议将其目标由 TS 改为 IS（即 C++23）。见 [P0323](https://wg21.link/P0323)。
+- <span class="badge badge-history">史</span> **`std::print`（P2093）** 从 **R0（澄清 wchar_t 重载）→R14（2022-03-25 定稿）** 历经 14 轮，主要围绕 SG16（Unicode）的转码语义反复打磨（如 `vprint_unicode` 的编码处理、U+FFFD 替换），目标车辆定为 C++23；**`std::mdspan`（P0009）** 走完 **R0（2015）→R18（2022-07）** 共 19 个版本（R4 从 `array_ref` 改名 `mdspan`、R11 起 `size` 改 `size_t` 并瞄准 C++23）；**deducing this（P0847）** 由 **R0（2018）→R7（2021-07-12）** 定稿进 C++23。见 [P2093](https://wg21.link/P2093)、[P0009](https://wg21.link/P0009)、[P0847](https://wg21.link/P0847)。
 
 ### ㉒.5 权威引用
 
@@ -433,7 +433,7 @@ C++23 是「修齐现代写法」的小代际。下面按领域展开：
 
 ## 附录: C++23 关键特性速查
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录: C++23 关键特性速查]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
 ```cpp
 #include <iostream>
 #include <expected>
@@ -443,7 +443,7 @@ std::expected<int,std::string>safe_div(int a,int b){if(b==0)return std::unexpect
 int main(){auto r=safe_div(10,2);std::cout<<(r?r.value():-1)<<std::endl;return 0;}
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录: C++23 关键特性速查]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
 ```cpp
 #include <iostream>
 // C++23: #include <print> + std::print("C++23 print: {} + {} = {}\n",1,2,3);
@@ -451,14 +451,14 @@ int main(){auto r=safe_div(10,2);std::cout<<(r?r.value():-1)<<std::endl;return 0
 int main(){std::cout << "C++23 print: 1 + 2 = 3\n"; return 0;}
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录: C++23 关键特性速查]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
 ```cpp
 #include <iostream>
 #include <ranges>
 int main(){auto v=std::views::iota(1)|std::views::take(5);for(int x:v)std::cout<<x<<" ";std::cout<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录: C++23 关键特性速查]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
 ```cpp
 #include <iostream>
 int main(){int a[3]{1,2,3};for(int i=0;i<3;i++)if(auto j=a[i];j>1)std::cout<<j<<" ";std::cout<<std::endl;return 0;}
@@ -468,7 +468,7 @@ int main(){int a[3]{1,2,3};for(int i=0;i<3;i++)if(auto j=a[i];j>1)std::cout<<j<<
 
 ## 附录 B: C++23 关键特性实战
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录 B: C++23 关键特性实战]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
 ```cpp
 #include <iostream>
 // C++23: #include <print> + std::print("C++23 print: {} + {} = {}\n", 1, 2, 3);
@@ -476,7 +476,7 @@ int main(){int a[3]{1,2,3};for(int i=0;i<3;i++)if(auto j=a[i];j>1)std::cout<<j<<
 int main(){std::cout << "C++23 print: 1 + 2 = 3\n"; return 0;}
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录 B: C++23 关键特性实战]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
 ```cpp
 #include <iostream>
 #include <expected>
@@ -485,14 +485,14 @@ std::expected<int,std::string> safe_div(int a,int b){if(b==0)return std::unexpec
 int main(){auto r=safe_div(10,2);if(r)std::cout<<*r<<std::endl;return 0;}
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：附录 B: C++23 关键特性实战]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
 ```cpp
 #include <iostream>
 #include <ranges>
 int main(){auto sq=std::views::iota(1,6)|std::views::transform([](int x){return x*x;});for(int x:sq)std::cout<<x<<" ";std::cout<<std::endl;return 0;}
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录 B: C++23 关键特性实战]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
 ```cpp
 // 注：演示用 sorted vector + lower_bound 等价 flat_map 查找（免 <flat_map> 依赖，本机 Qt MinGW 13.1 未提供）
 #include <iostream>
@@ -508,7 +508,7 @@ int main(){
 
 ## 附录 C：C++23底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 32** [难度 ★★☆☆☆] [主题：附录 C：C++23底层与工业 [E]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E
 ```
 C++23关键特性底层:
 
@@ -525,7 +525,7 @@ std::print (P2093):
   vs cout: 无locale分配, 无mutex锁, 快5-10x（量级; C++23, 来源 cppreference / fmt-lib 基准）
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：附录 C：C++23底层与工业 [E]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E
 ```cpp
 #include <iostream>
 #include <expected>
@@ -598,7 +598,7 @@ _Z13expected_pathv:
 | map查找 | std::map(红黑树) | std::flat_map(连续vector) | 遍历快 ~252x（见 ch83_map 附录 E） |
 | 输出 | std::cout | std::print | 5-10x faster（量级; C++23, 来源 cppreference） |
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：性能数据]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能数据
 ```cpp
 #include <iostream>
 #include <expected>
@@ -616,7 +616,7 @@ Q: flat_map vs map? A: flat_map=读多写少(Cache友好, 插入O(N)); map=读�
 ## 附录 E：C++23 ranges增强
 
 views::zip: 并行迭代:
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录 E：C++23 ranges增]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C++23 ranges增
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -642,7 +642,7 @@ int main() {
 flat_map底层: std::vector<pair<K,V>> + std::sort → 二分查找O(logN)
 vs std::map(红黑树): flat_map内存连续, Cache友好, 遍历快 ~252x（本机实测, 见 ch83_map 附录 E）
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录 F：C++23 flatmap]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：C++23 flatmap
 ```cpp
 // 注：演示用 sorted vector + lower_bound 等价 flat_map 存储（免 <flat_map> 依赖，本机 Qt MinGW 13.1 未提供）
 #include <iostream>
@@ -677,7 +677,7 @@ int main(){
 
 `std::expected<int, const char*>` 的返回对象（sret 隐藏指针 `rax`）在 `parse_digit` 中布局：
 
-> **示例 37** [难度 ★★★☆☆] [主题：零开销 tagged union]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 零开销 tagged union
 ```cpp
 // _asm_demo/ch08_expected_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测）
 std::expected<int, const char*> parse_digit(const char* s) {
@@ -706,7 +706,7 @@ ret
 
 ### G.2 std::generator：堆分配协程帧
 
-> **示例 38** [难度 ★★★☆☆] [主题：堆分配协程帧]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 堆分配协程帧
 ```cpp
 // _asm_demo/ch08_generator_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测）
 std::generator<int> iota(int n) { for (int i = 0; i < n; ++i) co_yield i; }
@@ -896,7 +896,7 @@ count_even(const std::vector<int>&) @ -O2 (98 B):
 
 C++23 把多个 range 按元素位置绑定成单个"元组视图"，并可直接给迭代标上下标，无需拷贝、无需手写索引：
 
-> **示例 39** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -916,15 +916,15 @@ int main() {
 }
 ```
 
-[标准] `std::views::zip` 返回惰性视图，迭代时产生由各 range 对应元素构成的结构化绑定元组；`std::views::enumerate`（P2164R9，C++23）返回 `(index, value)` 对，替代"手写下标 + 解引用"的老写法。
+<span class="badge badge-std">标准</span> `std::views::zip` 返回惰性视图，迭代时产生由各 range 对应元素构成的结构化绑定元组；`std::views::enumerate`（P2164R9，C++23）返回 `(index, value)` 对，替代"手写下标 + 解引用"的老写法。
 
 [实现·GCC15] 上述程序在 GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下实测可编可链，先输出三行并行采样，再输出带序号的 `sample#0=21 …`。
 
-[经验] zip 是视图（不拥有数据），迭代以最短 range 为准；若三通道长度不一致，多余尾部会被静默截断，生产环境应先用 `std::ranges::equal` 或断言长度一致。enumerate 的下标类型为无符号的 `range_difference_t`，不要与有符号量混算。
+<span class="badge badge-exp">经验</span> zip 是视图（不拥有数据），迭代以最短 range 为准；若三通道长度不一致，多余尾部会被静默截断，生产环境应先用 `std::ranges::equal` 或断言长度一致。enumerate 的下标类型为无符号的 `range_difference_t`，不要与有符号量混算。
 
 [算法] 时间 O(N) 单次遍历、空间 O(1)（仅视图包装，无中间容器）。
 
-[引用] WG21 P2321R2（zip_view 等 ranges 适配）、P2164R9（std::views::enumerate）；cppreference "std::views::zip"（https://en.cppreference.com/w/cpp/ranges/zip_view）、"std::views::enumerate"（https://en.cppreference.com/w/cpp/ranges/enumerate）。
+<span class="badge badge-ref">引用</span> WG21 P2321R2（zip_view 等 ranges 适配）、P2164R9（std::views::enumerate）；cppreference "std::views::zip"（https://en.cppreference.com/w/cpp/ranges/zip_view）、"std::views::enumerate"（https://en.cppreference.com/w/cpp/ranges/enumerate）。
 
 </details>
 
@@ -936,7 +936,7 @@ int main() {
 
 `std::byteswap`（P1272R4，C++23，头 `<bit>`）把一个整数类型的字节序整体反转，且**只对无符号整数有意义**：
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <iostream>
 #include <bit>
@@ -950,15 +950,15 @@ int main() {
 }
 ```
 
-[标准] `std::byteswap<T>` 要求 `T` 为无符号整数或枚举类型；翻转的是"对象表示"的字节顺序，与主机大小端无关（同一调用在任意平台都做纯字节反转）。
+<span class="badge badge-std">标准</span> `std::byteswap<T>` 要求 `T` 为无符号整数或枚举类型；翻转的是"对象表示"的字节顺序，与主机大小端无关（同一调用在任意平台都做纯字节反转）。
 
 [实现·GCC15] 上述程序在 GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下实测可编可链；`<bit>` 自 GCC 12 起提供 `std::byteswap`，C++23 正式纳入。
 
-[经验] 不要对 `int` 等带符号类型用 byteswap——符号位参与反转会得到错误数值；网络解析应统一用 `std::uintN_t`。它与 C 的 `htonl/ntohl` 等价但类型安全、且为 `constexpr`（编译期可求值）。
+<span class="badge badge-exp">经验</span> 不要对 `int` 等带符号类型用 byteswap——符号位参与反转会得到错误数值；网络解析应统一用 `std::uintN_t`。它与 C 的 `htonl/ntohl` 等价但类型安全、且为 `constexpr`（编译期可求值）。
 
 [算法] 复杂度 O(1)，通常编译为单条 `BSWAP` 指令（x86），无循环、无分配。
 
-[引用] WG21 P1272R4（std::byteswap）；cppreference "std::byteswap"（https://en.cppreference.com/w/cpp/numeric/byteswap）。
+<span class="badge badge-ref">引用</span> WG21 P1272R4（std::byteswap）；cppreference "std::byteswap"（https://en.cppreference.com/w/cpp/numeric/byteswap）。
 
 </details>
 
@@ -970,7 +970,7 @@ int main() {
 
 `std::generator<T>`（P2168R5，C++23，头 `<generator>`）基于协程，迭代时才 `co_yield` 出下一个值，零预分配：
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <generator>
@@ -991,15 +991,15 @@ int main() {
 }
 ```
 
-[标准] `std::generator` 满足 `input_range`；其 `begin()` 首次恢复协程、每次 `operator++` 恢复并取下一个 `co_yield` 值，到 `co_return`/结束即 `end()`。`views::take(N)` 把无限生成器裁成有限范围。
+<span class="badge badge-std">标准</span> `std::generator` 满足 `input_range`；其 `begin()` 首次恢复协程、每次 `operator++` 恢复并取下一个 `co_yield` 值，到 `co_return`/结束即 `end()`。`views::take(N)` 把无限生成器裁成有限范围。
 
 [实现·GCC15] 上述程序在 GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下实测可编可链，输出 `0 1 1 2 3 5 8 13 21 34`。注意 `fib()` 须按值返回 `generator`（协程句柄由标准库管理所有权）。
 
-[经验] 生成器每次 `co_yield` 会在堆上分配/复用协程帧（见本章附录 G.2 汇编实证），故高频极小步长循环要权衡；与 `views::take`/`views::filter` 组合可表达"惰性 + 受限"管线，正是 Ranges 与协程协作的范式。
+<span class="badge badge-exp">经验</span> 生成器每次 `co_yield` 会在堆上分配/复用协程帧（见本章附录 G.2 汇编实证），故高频极小步长循环要权衡；与 `views::take`/`views::filter` 组合可表达"惰性 + 受限"管线，正是 Ranges 与协程协作的范式。
 
 [算法] 时间 O(N) 产出 N 项、空间 O(1)（除协程帧）；对比一次性 `vector` 预生成，省去整段存储。
 
-[引用] WG21 P2168R5（std::generator）；cppreference "std::generator"（https://en.cppreference.com/w/cpp/coroutine/generator）。
+<span class="badge badge-ref">引用</span> WG21 P2168R5（std::generator）；cppreference "std::generator"（https://en.cppreference.com/w/cpp/coroutine/generator）。
 
 </details>
 

@@ -14,10 +14,10 @@
 > 前置：ch19（对象/存储期/生命周期）｜后续：ch21（const 引用与生命周期延长·深度版）、ch31（`const_cast` 去 const 后改引用绑定对象）、ch33（悬垂与生命周期）、ch52（多态）、ch115（右值引用/移动语义）、ch116（完美转发/万能引用）、ch77（容器 `operator[]`）、ch89（`reference_wrapper` 体系）、ch94（结构化绑定）、ch157（Compiler Explorer 实战）、ch154（缓存与性能）、智能指针章（所有权）
 >
 > **本章立场分层约定**：全章使用四层标签，请读者随时对照
-> - **[标准]**：ISO C++ 标准的硬性规定，任何合规实现都必须满足，可移植。
-> - **[实现]**：由具体编译器/标准库（GCC/libstdc++、Clang/libc++、MSVC/STL）选择的实现方式，可能随版本变化。
+> - **<span class="badge badge-std">标准</span>**：ISO C++ 标准的硬性规定，任何合规实现都必须满足，可移植。
+> - **<span class="badge badge-impl">实现</span>**：由具体编译器/标准库（GCC/libstdc++、Clang/libc++、MSVC/STL）选择的实现方式，可能随版本变化。
 > - **[平台·Windows]**：受 ABI（System V / Windows x64 / ARM64 AAPCS）、调用约定、目标架构约束。
-> - **[经验]**：工业实践中被广泛验证的设计准则、坑点与反模式。
+> - **<span class="badge badge-exp">经验</span>**：工业实践中被广泛验证的设计准则、坑点与反模式。
 
 ---
 
@@ -26,25 +26,25 @@
 > 一个"不是对象"的东西，却撑起了整个运算符重载——引用，是为运算符而生的。
 
 ### 0.1 起源（谁·何时·为何）
-Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要让 `a + b`、`matrix[i][j]` 这种表达式里的操作数是"可被修改的左值"，且运算符重载函数收到的是一个别名而非副本。[史] 受 Algol 68 的 call-by-reference 启发，他引入了"引用"——语法上像对象，却只是已有对象的别名，没有独立身份、不能为 null、必须绑定。[史] 没有引用，运算符重载就只能用指针 `a->operator+(b)`，既丑又破坏透明性；引用因此是 C++ 运算符重载的"前置科技"。[评]
+Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要让 `a + b`、`matrix[i][j]` 这种表达式里的操作数是"可被修改的左值"，且运算符重载函数收到的是一个别名而非副本。<span class="badge badge-history">史</span> 受 Algol 68 的 call-by-reference 启发，他引入了"引用"——语法上像对象，却只是已有对象的别名，没有独立身份、不能为 null、必须绑定。<span class="badge badge-history">史</span> 没有引用，运算符重载就只能用指针 `a->operator+(b)`，既丑又破坏透明性；引用因此是 C++ 运算符重载的"前置科技"。<span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
-- **1983 年前后**：C++ 命名确立，引用已成语言核心。[史]
-- **C++11**：右值引用（rvalue reference）由 Hinnant、Stroustrup 等人在 2002–2006 年的系列提案中落地，支撑移动语义。[史]
-- **C++11 起**：引用从"仅左值别名"扩展到 `&&`，催生移动语义、转发引用、完美转发（ch115）。[史]
+- **1983 年前后**：C++ 命名确立，引用已成语言核心。<span class="badge badge-history">史</span>
+- **C++11**：右值引用（rvalue reference）由 Hinnant、Stroustrup 等人在 2002–2006 年的系列提案中落地，支撑移动语义。<span class="badge badge-history">史</span>
+- **C++11 起**：引用从"仅左值别名"扩展到 `&&`，催生移动语义、转发引用、完美转发（ch115）。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-引用 vs 指针：引用承诺"必绑定、不可重绑定、不可空"，换来语法透明；指针暴露身份、可空、可重指，换来灵活与 C 兼容。[评] 委员会坚持引用必须初始化且不能 `null`，正是为了把"悬垂 / 空指针"这类 bug 挡在语法之外——代价是引用无法表达"可选"。[史][评]
+引用 vs 指针：引用承诺"必绑定、不可重绑定、不可空"，换来语法透明；指针暴露身份、可空、可重指，换来灵活与 C 兼容。<span class="badge badge-comment">评</span> 委员会坚持引用必须初始化且不能 `null`，正是为了把"悬垂 / 空指针"这类 bug 挡在语法之外——代价是引用无法表达"可选"。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++11 右值引用把引用从"仅左值别名"扩展到 `&&`。此后引用的"值类别 + 生命周期"语义仍在进化。[史]
+0.2 停在 C++11 右值引用把引用从"仅左值别名"扩展到 `&&`。此后引用的"值类别 + 生命周期"语义仍在进化。<span class="badge badge-history">史</span>
 
-- **C++20 概念（Concepts, P0734）让引用约束可写**：`void f(const C& x)` 这类写法配合缩写函数模板普及，引用的"可被绑定类型"第一次能进类型系统表达。[史]
-- **C++23 显式对象形参（deducing this, P0847）统一 `*this`**：成员函数可写成 `void f(this auto&& self)`，用转发引用统一 `*this` 的值类别（左值 / 右值），使"成员上的完美转发"不再靠笨拙的辅助自由函数。[史][评]
-- **"可为空引用"提案（P0298 等）反复被否**：社区多次提议让 `T&` 能表示空，最终都被拒绝——维持"引用必绑定、不可空"的契约，把可选性留给 `std::optional<T>` 与指针。[史][评]
-- **转发引用在泛型库的渗透**：C++14 泛型 lambda + C++20 模板 lambda 让 `auto&&` 转发成为 STL 算法与 `std::ranges` 的默认惯用法，引用与模板推导深度耦合。[史]
-- **轶事**：Stroustrup 在 *The Design and Evolution of C++* 中称引用"本是为运算符重载而生的小特性"，却成了移动语义与完美转发的基础设施——据记载他多次感叹这一"副作用"远超当初设想。[轶]
+- **C++20 概念（Concepts, P0734）让引用约束可写**：`void f(const C& x)` 这类写法配合缩写函数模板普及，引用的"可被绑定类型"第一次能进类型系统表达。<span class="badge badge-history">史</span>
+- **C++23 显式对象形参（deducing this, P0847）统一 `*this`**：成员函数可写成 `void f(this auto&& self)`，用转发引用统一 `*this` 的值类别（左值 / 右值），使"成员上的完美转发"不再靠笨拙的辅助自由函数。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **"可为空引用"提案（P0298 等）反复被否**：社区多次提议让 `T&` 能表示空，最终都被拒绝——维持"引用必绑定、不可空"的契约，把可选性留给 `std::optional<T>` 与指针。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **转发引用在泛型库的渗透**：C++14 泛型 lambda + C++20 模板 lambda 让 `auto&&` 转发成为 STL 算法与 `std::ranges` 的默认惯用法，引用与模板推导深度耦合。<span class="badge badge-history">史</span>
+- **轶事**：Stroustrup 在 *The Design and Evolution of C++* 中称引用"本是为运算符重载而生的小特性"，却成了移动语义与完美转发的基础设施——据记载他多次感叹这一"副作用"远超当初设想。<span class="badge badge-anecdote">轶</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/reference ｜ https://en.cppreference.com/w/cpp/language/constraints ｜ https://en.cppreference.com/w/cpp/language/function
 
@@ -55,12 +55,12 @@ Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要�
 
 本章的核心命题只有一句话：
 
-> **[标准] 引用是既有对象的别名（alias），自身不是对象（not an object）；指针是独立对象，存的是地址。**
-> **[实现] 在主流编译器上，引用参数/返回的底层表示就是指针（传地址）；但标准并不强制，存在虚继承、成员引用等占用存储的例外。**
+> **<span class="badge badge-std">标准</span> 引用是既有对象的别名（alias），自身不是对象（not an object）；指针是独立对象，存的是地址。**
+> **<span class="badge badge-impl">实现</span> 在主流编译器上，引用参数/返回的底层表示就是指针（传地址）；但标准并不强制，存在虚继承、成员引用等占用存储的例外。**
 
 由此引出一组 cascade 的后果，本章逐一"击穿"：
 
-> **示例 1** [难度 ★★☆☆☆] [主题：本章地图（先给结论，再击穿）]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章地图（先给结论，再击穿）
 ```
 引用 T&                                       指针 T*
 ─────────────────────────                     ─────────────────────────
@@ -82,15 +82,15 @@ sizeof(T&) == sizeof(T)                          sizeof(T*) == 8(64位)
 
 ## ② 引用"非对象"的语言层面证明（书的一节 · 含 6 个完整程序）
 
-**[标准]** `[dcl.ref]/1`：*A reference is an alias for an object or a function.* 它不是对象，因此没有"身份（identity）"——`[intro.object]/1` 定义"对象"为"占据存储区域的实体"，而引用可能不占存储。这是本章所有讨论的根基。
+**<span class="badge badge-std">标准</span>** `[dcl.ref]/1`：*A reference is an alias for an object or a function.* 它不是对象，因此没有"身份（identity）"——`[intro.object]/1` 定义"对象"为"占据存储区域的实体"，而引用可能不占存储。这是本章所有讨论的根基。
 
 下面用 6 个互不重叠的程序，从语言层逐条证明"引用不是对象"。
 
 ### 2.1 证明①：引用无身份、不可重绑定
 
-**[标准]** 引用一旦绑定即定型，`r = y;` 是"把 y 的值赋给 r 所指对象"，而非让 r 改指 y。
+**<span class="badge badge-std">标准</span>** 引用一旦绑定即定型，`r = y;` 是"把 y 的值赋给 r 所指对象"，而非让 r 改指 y。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：证明①：引用无身份、不可重绑定]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 证明①：引用无身份、不可重绑定
 ```cpp
 // prog_01_ref_no_identity.cpp  —— 嵌入式场景：配置寄存器别名
 #include <cstdio>
@@ -107,7 +107,7 @@ int main() {
 }
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：证明①：引用无身份、不可重绑定]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 证明①：引用无身份、不可重绑定
 ```cpp
 // prog_02_rebind_needs_pointer.cpp  —— 服务器场景：热切换后端节点
 #include <cstdio>
@@ -131,9 +131,9 @@ int main() {
 
 ### 2.2 证明②：`sizeof(T&)` 取的是"所指对象"大小
 
-**[标准]** `[expr.sizeof]/2`：对引用应用 `sizeof` 时，结果是被引用类型的大小——因为"引用不是对象，没有自己的大小可量"。
+**<span class="badge badge-std">标准</span>** `[expr.sizeof]/2`：对引用应用 `sizeof` 时，结果是被引用类型的大小——因为"引用不是对象，没有自己的大小可量"。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：证明②：sizeof(T&) 取的是]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 证明②：sizeof(T&) 取的是
 ```cpp
 // prog_03_sizeof_reference.cpp  —— 库场景：序列化缓冲区元数据
 #include <cstdio>
@@ -152,9 +152,9 @@ int main() {
 
 ### 2.3 证明③：不能声明"引用数组"（早期即禁止）
 
-**[标准]** `[dcl.array]`：数组元素类型必须完整且非引用、非 void、非函数类型。因此 `T& arr[N]` 非法——引用无身份，无法在连续内存中"排布"一组别名。
+**<span class="badge badge-std">标准</span>** `[dcl.array]`：数组元素类型必须完整且非引用、非 void、非函数类型。因此 `T& arr[N]` 非法——引用无身份，无法在连续内存中"排布"一组别名。
 
-> **示例 5** [难度 ★★★☆☆] [主题：证明③：不能声明"引用数组"]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 证明③：不能声明"引用数组"
 ```cpp
 // prog_04_array_of_refs_illegal.cpp  —— 编译期即报错, 展示替代方案
 #include <functional>
@@ -181,9 +181,9 @@ int main() {
 
 ### 2.4 证明④：不能有"指向引用的指针"，需 typedef
 
-**[标准]** `[dcl.ref]/5`：不允许"reference to reference"直接出现，因此对 `T&` 再取 `&` 形成 `T&*` 是非法的。需要"指向引用的指针"时，只能存"被引用对象的指针"，即 `T*`。
+**<span class="badge badge-std">标准</span>** `[dcl.ref]/5`：不允许"reference to reference"直接出现，因此对 `T&` 再取 `&` 形成 `T&*` 是非法的。需要"指向引用的指针"时，只能存"被引用对象的指针"，即 `T*`。
 
-> **示例 6** [难度 ★★★☆☆] [主题：证明④：不能有"指向引用的指针"，需]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 证明④：不能有"指向引用的指针"，需
 ```cpp
 // prog_05_pointer_to_ref_illegal.cpp
 #include <cstdio>
@@ -207,9 +207,9 @@ int main() {
 
 ### 2.5 证明⑤：不存在"空引用"——但可伪造出 UB
 
-**[标准]** 语言层没有"空引用"类型；`int& r = *static_cast<int*>(nullptr);` **语法合法、编译通过**，但解引用空指针是 **[标准] 未定义行为（UB）**。标准对"引用非空"的保证是**契约而非运行时检查**。
+**<span class="badge badge-std">标准</span>** 语言层没有"空引用"类型；`int& r = *static_cast<int*>(nullptr);` **语法合法、编译通过**，但解引用空指针是 **<span class="badge badge-std">标准</span> 未定义行为（UB）**。标准对"引用非空"的保证是**契约而非运行时检查**。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：证明⑤：不存在"空引用"——但可伪造]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 证明⑤：不存在"空引用"——但可伪造
 ```cpp
 // prog_06_null_reference_ub.cpp  —— 演示"非空引用"只是契约
 #include <cstdio>
@@ -224,7 +224,7 @@ int main() {
 }
 ```
 
-**[经验]** 工业代码中绝不允许用 `int& r = *maybe_null;` 这种"先解引用再当引用"的写法。要表达"可能无对象"，用 `T*`（判空）或 `std::optional<T>` / `std::expected<T,E>`（ch88）。
+**<span class="badge badge-exp">经验</span>** 工业代码中绝不允许用 `int& r = *maybe_null;` 这种"先解引用再当引用"的写法。要表达"可能无对象"，用 `T*`（判空）或 `std::optional<T>` / `std::expected<T,E>`（ch88）。
 
 > **小结（引用非对象的 5+1 条证据）**：无身份/不可重绑（2.1）、`sizeof` 取所指（2.2）、无引用数组（2.3）、无指向引用的指针（2.4）、无空引用（2.5）。再加"无算术"（§⑦）共 6 条。
 
@@ -232,11 +232,11 @@ int main() {
 
 ## ③ 底层实现：引用通常就是指针的 ABI 证据（书的一节 · 含汇编 + 4 个程序）
 
-**[实现]** 在 GCC/Clang/MSVC 上，`T&` 参数与 `T*` 参数在 ABI 层**生成实质上相同的机器码**（都传地址）。但 **[标准]** 从不要求这一点——标准允许编译器把引用完全优化掉（例如局部引用内联后根本不产生任何存储），也允许在虚继承/成员引用场景下让引用占用存储。
+**<span class="badge badge-impl">实现</span>** 在 GCC/Clang/MSVC 上，`T&` 参数与 `T*` 参数在 ABI 层**生成实质上相同的机器码**（都传地址）。但 **<span class="badge badge-std">标准</span>** 从不要求这一点——标准允许编译器把引用完全优化掉（例如局部引用内联后根本不产生任何存储），也允许在虚继承/成员引用场景下让引用占用存储。
 
 ### 3.1 最小对拍：`by_ref` vs `by_ptr`（三编译器）
 
-> **示例 8** [难度 ★★★☆☆] [主题：最小对拍：byref vs bypt]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最小对拍：byref vs bypt
 ```cpp
 // prog_07_asm_pair.cpp  —— 用于 Compiler Explorer (ch157) 对拍
 void by_ref(int& r) { r++; }
@@ -304,7 +304,7 @@ by_ref(int&):
 
 ### 3.3 返回引用同样返回地址（RAX）
 
-> **示例 9** [难度 ★★☆☆☆] [主题：返回引用同样返回地址（RAX）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 返回引用同样返回地址（RAX）
 ```cpp
 // prog_08_return_ref_asm.cpp
 int& first(int& a, int& b) { return a; }   // 返回 a 的地址
@@ -319,9 +319,9 @@ first(int&, int&):
 
 ### 3.4 例外：成员引用 / 虚继承下引用可能占存储
 
-**[实现][平台·Windows]** 当引用作为**类成员**，或处于**虚继承**需要 this 指针调整时，编译器可能为引用分配一个指针大小的存储（否则无法在运行期完成绑定/偏移计算）。这是"引用非对象"规则的现实例外。
+**<span class="badge badge-impl">实现</span>[平台·Windows]** 当引用作为**类成员**，或处于**虚继承**需要 this 指针调整时，编译器可能为引用分配一个指针大小的存储（否则无法在运行期完成绑定/偏移计算）。这是"引用非对象"规则的现实例外。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：例外：成员引用 / 虚继承下引用可能]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例外：成员引用 / 虚继承下引用可能
 ```cpp
 // prog_09_member_ref_occupies_storage.cpp
 #include <cstdio>
@@ -346,7 +346,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：例外：成员引用 / 虚继承下引用可能]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 例外：成员引用 / 虚继承下引用可能
 ```cpp
 // prog_10_virtual_inheritance_ref_storage.cpp  —— 虚继承导致 this 调整
 #include <cstdio>
@@ -365,17 +365,17 @@ int main() {
     return 0;
 }
 ```
-> **[标准]** 虚继承语义使"经基类引用访问共享子对象"必须进行运行期偏移计算，这使引用/成员引用在 ABI 上无法被优化成"零存储别名"。详见 ch54/ch56（虚继承内存布局）。
+> **<span class="badge badge-std">标准</span>** 虚继承语义使"经基类引用访问共享子对象"必须进行运行期偏移计算，这使引用/成员引用在 ABI 上无法被优化成"零存储别名"。详见 ch54/ch56（虚继承内存布局）。
 
 ---
 
 ## ④ const 引用延长临时生命的完整规则（书的一节 · 含 4 个程序）
 
-**[标准]** `[class.temporary]/6`：当 **const 左值引用**或**右值引用**`T&&` **直接绑定**到一个临时对象（prvalue 或临时量）时，该临时对象（及其完整子对象）的生命周期**延长至该引用的生命周期结束**。这是 C++ 中最微妙、也最常被误用的规则之一。
+**<span class="badge badge-std">标准</span>** `[class.temporary]/6`：当 **const 左值引用**或**右值引用**`T&&` **直接绑定**到一个临时对象（prvalue 或临时量）时，该临时对象（及其完整子对象）的生命周期**延长至该引用的生命周期结束**。这是 C++ 中最微妙、也最常被误用的规则之一。
 
 ### 4.1 规则全景（直接绑定 vs 间接绑定）
 
-> **示例 12** [难度 ★★☆☆☆] [主题：规则全景（直接绑定 vs 间接绑定）]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 规则全景（直接绑定 vs 间接绑定）
 ```
 延长成立：  const T& r = prvalue/临时;          // 直接绑定 → 延长
 延长成立：  T&&    r = prvalue/临时;          // 右值引用直接绑定 → 延长 (ch115)
@@ -387,7 +387,7 @@ int main() {
 
 ### 4.2 直接绑定延长（成立）
 
-> **示例 13** [难度 ★★☆☆☆] [主题：直接绑定延长（成立）]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 直接绑定延长（成立）
 ```cpp
 // prog_11_const_ref_extends_prvalue.cpp  —— 库场景：构造临时配置直接读
 #include <string>
@@ -409,7 +409,7 @@ int main() {
 
 ### 4.3 例外②：成员引用不延长
 
-> **示例 14** [难度 ★★☆☆☆] [主题：例外②：成员引用不延长]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例外②：成员引用不延长
 ```cpp
 // prog_12_member_ref_no_extend.cpp  —— 经典悬垂陷阱
 #include <string>
@@ -425,11 +425,11 @@ Holder make() {
 }
 // 调用方拿到 Holder 后访问 r 即 UB
 ```
-> **[标准]** `[class.temporary]/6.2`：临时对象"被绑定到构造函数的引用类型成员"时**不延长**（该例外专为成员引用而设）。ch33 详述其 UB 后果。
+> **<span class="badge badge-std">标准</span>** `[class.temporary]/6.2`：临时对象"被绑定到构造函数的引用类型成员"时**不延长**（该例外专为成员引用而设）。ch33 详述其 UB 后果。
 
 ### 4.4 例外③：绑定到数组元素不延长
 
-> **示例 15** [难度 ★★☆☆☆] [主题：例外③：绑定到数组元素不延长]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例外③：绑定到数组元素不延长
 ```cpp
 // prog_13_array_element_ref_no_extend.cpp
 #include <cstdio>
@@ -445,7 +445,7 @@ int main() {
 
 ### 4.5 例外①：返回 const T& 指向局部临时 = 悬垂
 
-> **示例 16** [难度 ★★☆☆☆] [主题：例外①：返回 const T& 指向]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例外①：返回 const T& 指向
 ```cpp
 // prog_14_return_const_ref_dangles.cpp
 #include <string>
@@ -455,17 +455,17 @@ const std::string& bad() {
 }
 // 调用方: const std::string& s = bad();  // s 悬垂, 任何访问 = UB
 ```
-> **[标准][经验]** 延长规则**仅作用于"引用初始化所在的完整表达式/块作用域"**，绝不通透函数返回。返回引用只在该引用指向"调用方也能触达的长生命对象"（static/全局/堆/入参/容器元素）时安全（§⑥案例 C 扩展）。
+> **<span class="badge badge-std">标准</span><span class="badge badge-exp">经验</span>** 延长规则**仅作用于"引用初始化所在的完整表达式/块作用域"**，绝不通透函数返回。返回引用只在该引用指向"调用方也能触达的长生命对象"（static/全局/堆/入参/容器元素）时安全（§⑥案例 C 扩展）。
 
 ---
 
 ## ⑤ 悬垂引用所有场景完整代码（书的一节 · 含 5 个程序）
 
-**[标准]** 悬垂（dangling）= 引用指向的对象已销毁/移走，但引用仍被使用。与指针悬垂同为 UB（ch33）。下列 5 个场景覆盖 90% 线上事故。
+**<span class="badge badge-std">标准</span>** 悬垂（dangling）= 引用指向的对象已销毁/移走，但引用仍被使用。与指针悬垂同为 UB（ch33）。下列 5 个场景覆盖 90% 线上事故。
 
 ### 5.1 场景 A：返回局部变量引用
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：场景 A：返回局部变量引用]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 场景 A：返回局部变量引用
 ```cpp
 // prog_15_return_local_ref.cpp  —— 服务器场景: 拼装响应头
 #include <string>
@@ -482,7 +482,7 @@ std::string& build_ok(std::string& out) {
 
 ### 5.2 场景 B：range-for 遍历临时（临时在循环前析构）
 
-> **示例 18** [难度 ★★☆☆☆] [主题：场景 B：range-for 遍历临]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景 B：range-for 遍历临
 ```cpp
 // prog_16_range_for_over_temp.cpp  —— 嵌入式场景: 遍历传感器快照
 #include <vector>
@@ -502,11 +502,11 @@ void ok() {
     for (int x : data) std::printf("%d ", x);
 }
 ```
-> **[标准]** 范围 for 的展开为 `auto&& __range = range_expression;`（ch90）。若 `range_expression` 是 prvalue 临时，`__range` 是右值引用**本应延长**——但 `snapshot()` 返回的是**具名返回值经 NRVO 或临时**，此处陷阱在于"返回临时 vector 的快照函数"在某些写法下临时在 for 头部完整表达式结束即析构。规范的安全写法是用具名变量承接。
+> **<span class="badge badge-std">标准</span>** 范围 for 的展开为 `auto&& __range = range_expression;`（ch90）。若 `range_expression` 是 prvalue 临时，`__range` 是右值引用**本应延长**——但 `snapshot()` 返回的是**具名返回值经 NRVO 或临时**，此处陷阱在于"返回临时 vector 的快照函数"在某些写法下临时在 for 头部完整表达式结束即析构。规范的安全写法是用具名变量承接。
 
 ### 5.3 场景 C：三元运算符两边类型不同产生临时
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：场景 C：三元运算符两边类型不同产生]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 场景 C：三元运算符两边类型不同产生
 ```cpp
 // prog_17_ternary_temp.cpp
 #include <cstdio>
@@ -525,7 +525,7 @@ int main() {
 
 ### 5.4 场景 D：`initializer_list` 引用元素生命周期坑
 
-> **示例 20** [难度 ★★☆☆☆] [主题：场景 D：initializerli]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景 D：initializerli
 ```cpp
 // prog_18_init_list_dangle.cpp  —— 用 initializer_list 存"引用"? 危险
 #include <initializer_list>
@@ -545,7 +545,7 @@ void ok_pattern() {
 
 ### 5.5 场景 E：引用绑定到已被 `std::move` 的对象
 
-> **示例 21** [难度 ★★☆☆☆] [主题：场景 E：引用绑定到已被 std::]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景 E：引用绑定到已被 std::
 ```cpp
 // prog_19_ref_to_moved.cpp  —— 库场景: 转移后原引用失效
 #include <string>
@@ -562,7 +562,7 @@ void bad() {
     // std::printf("%s\n", r.c_str());  // 可能打印空
 }
 ```
-> **[经验]** `std::move` 不改引用绑定，只把对象标记为"可被搬空"。对 `move` 后的对象继续经旧引用读写是**逻辑地雷**——基础设施层常因此出现"莫名其妙的空响应"。ch115（移动语义）详述。
+> **<span class="badge badge-exp">经验</span>** `std::move` 不改引用绑定，只把对象标记为"可被搬空"。对 `move` 后的对象继续经旧引用读写是**逻辑地雷**——基础设施层常因此出现"莫名其妙的空响应"。ch115（移动语义）详述。
 
 ---
 
@@ -572,7 +572,7 @@ void bad() {
 
 ### 6.1 主模板逐行拆解（libstdc++ 13 真实源码）
 
-> **示例 22** [难度 ★★★☆☆] [主题：主模板逐行拆解]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 主模板逐行拆解
 ```cpp
 #include <utility>
 // bits/refwrap.h (libstdc++ 13, 节选 + 行号)
@@ -603,7 +603,7 @@ void bad() {
     };
 ```
 
-**逐行语义（[实现] 注释）**：
+**逐行语义（<span class="badge badge-impl">实现</span> 注释）**：
 
 - **①** 继承 `_Reference_wrapper_base<__remove_cv_t<_Tp>>`：该基类用 SFINAE 萃取 `result_type` / `argument_type` / `argument_types`，使 `reference_wrapper<Func>` 能当"可调用对象"传给 `<algorithm>`（如 `std::for_each` 的函子）。
 - **②** **最关键一行**：`reference_wrapper` 内部只有一个 `_Tp*`。它**不是引用**，因此拥有对象身份、可拷贝、可存储——而裸引用不行。这正是它能进 `vector` 的原因。
@@ -615,7 +615,7 @@ void bad() {
 
 ### 6.2 工厂 `ref()` / `cref()`
 
-> **示例 23** [难度 ★★☆☆☆] [主题：工厂 ref() / cref()]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂 ref() / cref()
 ```cpp
 // bits/refwrap.h (libstdc++ 13)
   template<typename _Tp>
@@ -628,13 +628,13 @@ void bad() {
 ```
 > `std::ref(x)` 把 `x` 包成 `reference_wrapper<T>`，用于 `std::bind` / `std::thread` 实现"按引用传递"（否则默认按值拷贝，修改不回传）。注意 `ref` 不提供右值重载，故 `ref(42)` 编译失败——这也是防悬垂的设计。
 
-### 6.3 为什么必须存在（[经验]）
+### 6.3 为什么必须存在（<span class="badge badge-exp">经验</span>）
 
 > **裸引用不能作容器元素**：C++ 容器（如 `vector`）要求元素类型 **可拷贝构造且可赋值（CopyAssignable）**。而 `T&` 一经绑定不可重绑，违反可赋值性 → `vector<int&>` **非法**（编译报错）。`reference_wrapper<T>` 通过"内部存指针 + 可赋值"绕开限制——`refw1 = refw2` 让两者指向同一对象，不违反语言规则。这是它存在的**唯一根本理由**。
 
 ### 6.4 程序：基础用法
 
-> **示例 24** [难度 ★★☆☆☆] [主题：程序：基础用法]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 程序：基础用法
 ```cpp
 // prog_20_refwrap_basic.cpp
 #include <functional>
@@ -657,7 +657,7 @@ int main() {
 
 ### 6.5 程序：容器存"引用"
 
-> **示例 25** [难度 ★★☆☆☆] [主题：程序：容器存"引用"]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 程序：容器存"引用"
 ```cpp
 // prog_21_refwrap_in_vector.cpp  —— 监控一组已存在 socket, 不拥有它们
 #include <vector>
@@ -684,7 +684,7 @@ int main() {
 
 ### 6.6 程序：与 std::bind 配合（按引用传参）
 
-> **示例 26** [难度 ★★☆☆☆] [主题：程序：与 std::bind 配合]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 程序：与 std::bind 配合
 ```cpp
 // prog_22_refwrap_with_bind.cpp  —— 多线程场景: 子线程改主线程变量
 #include <functional>
@@ -705,7 +705,7 @@ int main() {
 
 ### 6.7 程序：reference_wrapper 可调用
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：程序：referencewrappe]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：referencewrappe
 ```cpp
 // prog_23_refwrap_callable.cpp
 #include <functional>
@@ -723,11 +723,11 @@ int main() {
 
 ## ⑦ 真实 microbenchmark：引用 vs 指针 vs 按值（书的一节 · 含 2 个程序 + 数字）
 
-**[实现][经验]** 本节给出可复现的 Google Benchmark 代码与 x86-64 实测量级，证明"引用 ≈ 指针"，并揭示"小对象滥用 const T& 反而更慢"的反直觉事实。
+**<span class="badge badge-impl">实现</span><span class="badge badge-exp">经验</span>** 本节给出可复现的 Google Benchmark 代码与 x86-64 实测量级，证明"引用 ≈ 指针"，并揭示"小对象滥用 const T& 反而更慢"的反直觉事实。
 
 ### 7.1 Google Benchmark 代码
 
-> **示例 28** [难度 ★★☆☆☆] [主题：代码]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代码
 ```cpp
 // prog_24_bench_pass.cpp  —— 编译: g++ -O2 -std=c++20 prog_24_bench_pass.cpp -lbenchmark -lpthread
 #include <benchmark/benchmark.h>
@@ -773,14 +773,14 @@ BENCHMARK(BM_ValueBig);   BENCHMARK(BM_RefBig);   BENCHMARK(BM_PtrBig);
 | `by_const_ref` | ~0.30 ns | ~0.30 ns | 仅传 8B 地址 |
 | `by_ptr` | ~0.30 ns | ~0.30 ns | 与 `by_ref` 不可区分 |
 
-**结论（[标准][经验]）**：
+**结论（<span class="badge badge-std">标准</span><span class="badge badge-exp">经验</span>）**：
 1. **大对象**：`const T&` / `T*` 相比值传递有**数量级**优势（0.3 ns vs 12.4 ns，约 40×）。
 2. **小对象（≤2 机器字）**：`by_value` 反而**略快**（~0.25 vs ~0.30 ns），因为省一次间接寻址且更利于内联。**不要无脑 `const T&`**。
 3. **`by_ref` ≡ `by_ptr`**：数字不可区分，印证 §③ 的汇编结论。
 
 ### 7.3 别名分析与 `__restrict` 的影响
 
-> **示例 29** [难度 ★★☆☆☆] [主题：别名分析与 restrict 的影响]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 别名分析与 restrict 的影响
 ```cpp
 // prog_25_alias_restrict.cpp  —— 演示引用别名限制优化
 #include <cstdio>
@@ -800,17 +800,17 @@ int main() {
     return 0;
 }
 ```
-> **[实现]** 引用别名会限制编译器优化。`__restrict` 是 GCC/Clang 扩展（MSVC 为 `__restrict` / `%restrict`），非标准但工业常用。
+> **<span class="badge badge-impl">实现</span>** 引用别名会限制编译器优化。`__restrict` 是 GCC/Clang 扩展（MSVC 为 `__restrict` / `%restrict`），非标准但工业常用。
 
 ---
 
 ## ⑧ 指针算术与数组衰减、指针比较的 UB 边界（书的一节 · 含 5 个程序）
 
-**[标准]** 指针是对象，故拥有地址算术能力；引用不是地址，故**无算术**。本节覆盖指针算术、数组衰减、比较 UB 边界、`void*` 限制。
+**<span class="badge badge-std">标准</span>** 指针是对象，故拥有地址算术能力；引用不是地址，故**无算术**。本节覆盖指针算术、数组衰减、比较 UB 边界、`void*` 限制。
 
 ### 8.1 指针算术 + 数组衰减
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：指针算术 + 数组衰减]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 指针算术 + 数组衰减
 ```cpp
 // prog_26_ptr_arith_decay.cpp  —— 服务器场景: 协议报文解析
 #include <cstdio>
@@ -828,13 +828,13 @@ int main() {
     return 0;
 }
 ```
-> **[标准]** `[conv.array]`：多数语境下 `T[N]` 衰减为 `T*`（除 `sizeof`、取地址 `&`、绑定到 `T(&)[N]` 引用、`typeid`）。`p + i` 偏移 `i * sizeof(T)` 字节（§③.4 汇编 `add [rdi+rax*4], 1` 即 `*4`）。
+> **<span class="badge badge-std">标准</span>** `[conv.array]`：多数语境下 `T[N]` 衰减为 `T*`（除 `sizeof`、取地址 `&`、绑定到 `T(&)[N]` 引用、`typeid`）。`p + i` 偏移 `i * sizeof(T)` 字节（§③.4 汇编 `add [rdi+rax*4], 1` 即 `*4`）。
 
 ### 8.2 指针比较 UB 边界：超出数组末端的指针比较
 
-**[标准]** `[expr.rel]/3`：比较两个**指向不同数组对象**的指针是**未指定（unspecified）**；但比较指向同一数组（或其一过去末尾一位 `past-the-end`）的指针是良定义的。**比较指向完全不同对象的指针（尤其是越过末尾多位）是 UB 的常见来源**。
+**<span class="badge badge-std">标准</span>** `[expr.rel]/3`：比较两个**指向不同数组对象**的指针是**未指定（unspecified）**；但比较指向同一数组（或其一过去末尾一位 `past-the-end`）的指针是良定义的。**比较指向完全不同对象的指针（尤其是越过末尾多位）是 UB 的常见来源**。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：指针比较 UB 边界：超出数组末端的]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 指针比较 UB 边界：超出数组末端的
 ```cpp
 // prog_27_ptr_compare_ub.cpp
 #include <cstdio>
@@ -853,13 +853,13 @@ int main() {
     return 0;
 }
 ```
-> **[经验]** 永远只对"同一数组内或恰好 past-the-end"的指针做 `< / <= / > / >=`。跨对象指针比较在优化器下可能返回任意结果（尤其 `-fstrict-aliasing`）。
+> **<span class="badge badge-exp">经验</span>** 永远只对"同一数组内或恰好 past-the-end"的指针做 `< / <= / > / >=`。跨对象指针比较在优化器下可能返回任意结果（尤其 `-fstrict-aliasing`）。
 
 ### 8.3 `void*` 的限制与转换
 
-**[标准]** `void*` 是"无类型指针"，可存任意对象地址，但**不能解引用、不能做算术（无 `sizeof`）**，需先转回具体类型。
+**<span class="badge badge-std">标准</span>** `void*` 是"无类型指针"，可存任意对象地址，但**不能解引用、不能做算术（无 `sizeof`）**，需先转回具体类型。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：void 的限制与转换]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · void 的限制与转换
 ```cpp
 // prog_28_void_star.cpp  —— 嵌入式场景: 通用缓冲区句柄
 #include <cstdio>
@@ -878,7 +878,7 @@ int main() {
 
 ### 8.4 指针差 `ptrdiff_t`
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：指针差 ptrdifft]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 指针差 ptrdifft
 ```cpp
 // prog_29_ptrdiff.cpp
 #include <cstdio>
@@ -894,7 +894,7 @@ int main() {
 
 ### 8.5 引用无算术（对比演示）
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：引用无算术（对比演示）]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 引用无算术（对比演示）
 ```cpp
 // prog_30_ref_no_arith.cpp
 int main() {
@@ -912,7 +912,7 @@ int main() {
 
 ## ⑨ 跨编译器对比表：GCC / Clang / MSVC 对引用实现的差异（书的一节）
 
-**[平台·Windows][实现]** 下表汇总三套编译器（配三套 STL）在"引用实现"相关行为上的差异。注意：**语言语义完全一致（[标准]）**，差异集中在诊断严格度、ABI 细节、扩展开关。
+**[平台·Windows]<span class="badge badge-impl">实现</span>** 下表汇总三套编译器（配三套 STL）在"引用实现"相关行为上的差异。注意：**语言语义完全一致（<span class="badge badge-std">标准</span>）**，差异集中在诊断严格度、ABI 细节、扩展开关。
 
 | 维度 | GCC/libstdc++ | Clang/libc++ | MSVC/STL |
 |------|---------------|--------------|----------|
@@ -929,11 +929,11 @@ int main() {
 
 > **[平台·Windows]** MSVC 的 `/Za`（"disable language extensions"）会关闭微软对标准的若干放宽（如某些非常量引用绑定），并启用更严格的 ISO 符合性检查——跨平台库代码建议 CI 中至少一档开启 `/Za` 或 Clang `-pedantic` 验证可移植性。
 >
-> **[经验]** 三编译器对"引用语义"的实现**行为等价**（都传地址），差异只在诊断与扩展。因此"引用 vs 指针"的性能结论跨编译器成立（§⑦）。
+> **<span class="badge badge-exp">经验</span>** 三编译器对"引用语义"的实现**行为等价**（都传地址），差异只在诊断与扩展。因此"引用 vs 指针"的性能结论跨编译器成立（§⑦）。
 
 ### 9.1 跨编译器诊断对比程序
 
-> **示例 35** [难度 ★★★☆☆] [主题：跨编译器诊断对比程序]
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨编译器诊断对比程序
 ```cpp
 // prog_31_cross_compiler_diag.cpp  —— 在三编译器下观察警告差异
 #include <string>
@@ -949,7 +949,7 @@ int main() { (void)bad(); return 0; }
 
 ## ⑩ 与其他语言对比：Rust 借用 / Go / Java / C#（书的一节 · 含程序）
 
-**[经验]** 引用/指针的"安全 vs 灵活"权衡是系统语言设计的核心。对比他山之石，能更深刻理解 C++ 的选择与代价。
+**<span class="badge badge-exp">经验</span>** 引用/指针的"安全 vs 灵活"权衡是系统语言设计的核心。对比他山之石，能更深刻理解 C++ 的选择与代价。
 
 ### 10.1 Rust：借用 + 生命周期标注保证无悬垂
 
@@ -971,7 +971,7 @@ fn main() {
     println!("{}", r);
 }
 ```
-> **[标准] 跨语言**：Rust 用**生命周期参数 `'a`** 把"引用有效范围"编码进类型系统，使悬垂在编译期不可表达。C++ 的 const 引用延长（§④）是"特例豁免"而非通用证明——C++20 的**契约（contracts，P2900）**与静态分析器（Clang `-Wdangling`）正试图补这块短板。
+> **<span class="badge badge-std">标准</span> 跨语言**：Rust 用**生命周期参数 `'a`** 把"引用有效范围"编码进类型系统，使悬垂在编译期不可表达。C++ 的 const 引用延长（§④）是"特例豁免"而非通用证明——C++20 的**契约（contracts，P2900）**与静态分析器（Clang `-Wdangling`）正试图补这块短板。
 
 ### 10.2 Go：只有指针，没有引用
 
@@ -1031,7 +1031,7 @@ public class Main {
 
 ### 案例 A：const T& 只读参数避免大对象拷贝
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：案例 A：const T& 只读参数]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 案例 A：const T& 只读参数
 ```cpp
 // prog_35_server_config_readonly.cpp
 #include <string>
@@ -1053,7 +1053,7 @@ bool is_allowed(const ServerConfig& cfg, const std::string& peer) {
 
 ### 案例 B：operator[] / front() 返回 T&（容器内元素别名）
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：案例 B：operator[] / ]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 案例 B：operator[] /
 ```cpp
 // prog_36_container_returns_ref.cpp  —— ch77 预告
 #include <vector>
@@ -1070,7 +1070,7 @@ int main() {
 
 ### 案例 C：工厂返回引用必须指向长生命对象
 
-> **示例 38** [难度 ★★☆☆☆] [主题：案例 C：工厂返回引用必须指向长生命]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 案例 C：工厂返回引用必须指向长生命
 ```cpp
 // prog_37_factory_safe_ref.cpp
 #include <string>
@@ -1085,7 +1085,7 @@ std::string& registry(const std::string& key) {
 
 ### 案例 D：范围 for 必须 `auto&` 才能就地修改
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：案例 D：范围 for 必须 aut]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 案例 D：范围 for 必须 aut
 ```cpp
 // prog_38_sensor_calibrate.cpp  —— 嵌入式: 就地校准传感器读数
 #include <array>
@@ -1106,7 +1106,7 @@ int main() {
 
 ### 案例 E：多线程按引用传参必须用 reference_wrapper
 
-> **示例 40** [难度 ★★☆☆☆] [主题：案例 E：多线程按引用传参必须用 r]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 案例 E：多线程按引用传参必须用 r
 ```cpp
 // prog_39_thread_by_ref.cpp  —— 对应 §⑥ prog_22 扩展
 #include <thread>
@@ -1127,7 +1127,7 @@ int main() {
 
 ### 案例 F：成员引用导致类不可赋值（Rule of Five 破坏）
 
-> **示例 41** [难度 ★★☆☆☆] [主题：案例 F：成员引用导致类不可赋值]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 案例 F：成员引用导致类不可赋值
 ```cpp
 // prog_40_member_ref_rule_of_five.cpp  —— ch48 预告
 #include <cstdio>
@@ -1151,7 +1151,7 @@ int main() {
 
 ## ⑫ 标准条款与 WG21 提案（内容内化，无独立"推荐阅读"节）
 
-> **[标准]** 以下内容原属"推荐阅读"，现内化进正文，作为本章的法律依据与演进脉络。
+> **<span class="badge badge-std">标准</span>** 以下内容原属"推荐阅读"，现内化进正文，作为本章的法律依据与演进脉络。
 
 - **`[dcl.ref]`（Standard）**：引用声明与语义。"a reference is an alias for an object or function"；引用必须绑定到对象/函数；不可重绑定；不存在"引用数组""指向引用的指针"`int&*`（§② 证明③/④）、"直接引用 to 引用"（须经模板/别名推导触发引用折叠）。
 - **`[class.temporary]`（Standard）**：临时对象生命周期；const 左值引用 / 右值引用直接绑定临时时延长生命（§④）；成员引用、数组元素引用、函数返回引用等例外**不延长**（§④.3–4.5）。
@@ -1175,7 +1175,7 @@ int main() {
 4. **为什么 `vector<int&>` 编译不过？** 容器要求元素可拷贝可赋值；引用不可重绑（不可赋值），违反 **CopyAssignable**（§⑥.3）。用 `reference_wrapper<int>` 替代。
 5. **范围 for 用 `auto&` 为何能改元素？** 底层展开中 `x` 是对 `*__it` 的引用（§⑤.2），修改 `x` 即改容器内元素；`auto` 只改副本。
 6. **返回引用有什么风险？** 指向局部/临时则悬垂（§④/§⑤）；必须指向 static/全局/堆/入参/容器元素等长生命对象（案例 C/E）。
-7. **引用能占内存吗？** 通常编译器不分配独立存储（别名），但 **[实现]** 例外：虚继承中访问虚基类子对象需 this 调整，成员引用在某些 ABI 下占一个指针大小存储（§③.4，ch54）。
+7. **引用能占内存吗？** 通常编译器不分配独立存储（别名），但 **<span class="badge badge-impl">实现</span>** 例外：虚继承中访问虚基类子对象需 this 调整，成员引用在某些 ABI 下占一个指针大小存储（§③.4，ch54）。
 8. **指针和引用作为函数参数，汇编是否相同？** 相同（§③ 三编译器对拍）。差异全在编译期约束。
 9. **`int* p = nullptr; int& r = *p;` 合法吗？** 语法合法、编译通过，但解空指针是 UB——"非空引用"是**契约**而非运行时检查。
 10. **为什么不能 `T& arr[10]`？** 标准禁止"array of references"（无身份、无法连续布局）；用 `tuple<T&,T&>` 或 `reference_wrapper` 数组替代（§②.3）。
@@ -1258,7 +1258,7 @@ int main() {
 
 ---
 
-## ⑲ 综合实战：引用与指针在工业代码中的审计与重构 [经验]
+## ⑲ 综合实战：引用与指针在工业代码中的审计与重构 <span class="badge badge-exp">经验</span>
 
 真实项目里引用/指针的坑集中在"悬垂、所有权模糊、跨 ABI 边界"三点，下面给可落地的审计清单与重构范式。
 
@@ -1269,7 +1269,7 @@ int main() {
 4. 跨 DLL/so 边界的 `T&`/`T*` 是否保证同编译器同 STL 版本（§⑰ 第 9 条）？
 
 **重构范式：观察者指针 → 智能指针**
-> **示例 42** [难度 ★★☆☆☆] [主题：综合实战：引用与指针在工业代码中的审]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：引用与指针在工业代码中的审
 ```cpp
 #include <memory>
 // 反模式：裸指针持有所有权，易漏释放/重复释放
@@ -1282,7 +1282,7 @@ Widget2 w2; int* obs = w2.buf.get();   // obs 明确是观察者，不负责释�
 ```
 
 **重构范式：多返回用结构化绑定（引用实现）**
-> **示例 43** [难度 ★☆☆☆☆] [主题：综合实战：引用与指针在工业代码中的审]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 综合实战：引用与指针在工业代码中的审
 ```cpp
 #include <string>
 #include <map>
@@ -1298,16 +1298,16 @@ auto [it, inserted] = m.try_emplace("k", 1);   // 返回 pair<iterator,bool>
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：重载函数接受引用避免空值。** 你写一个 `parse(const std::string&)` 解析函数，对比传指针 `parse(const std::string*)` 需判空。请说明引用语义（必绑非空、不可重绑）。
-   - [标准] 引用必须绑定到对象且不可重绑；语言层面不存在空引用，消除了指针的判空分支。
-   - [引用] ISO/IEC 14882:2023 §[dcl.ref]（引用声明）；cppreference "Reference" 词条。
+   - <span class="badge badge-std">标准</span> 引用必须绑定到对象且不可重绑；语言层面不存在空引用，消除了指针的判空分支。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.ref]（引用声明）；cppreference "Reference" 词条。
 
 2. **真实场景：范围 for 与引用。** 遍历 `vector<string>` 大对象时，用 `for (auto& s : v)` 避免拷贝。请解释 `auto&` / `const auto&` / `auto` 的语义差异与性能。
-   - [标准] `auto&` 推导为左值引用；`const auto&` 为 const 引用可绑定临时；`auto` 为值拷贝。
-   - [引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（占位类型）；cppreference "range-based for loop" 词条。
+   - <span class="badge badge-std">标准</span> `auto&` 推导为左值引用；`const auto&` 为 const 引用可绑定临时；`auto` 为值拷贝。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.spec.auto]（占位类型）；cppreference "range-based for loop" 词条。
 
 3. **真实场景：返回引用悬空。** 函数返回局部变量的引用 `T& f() { T x; return x; }` 是未定义行为。请用对象生命周期规则说明对象销毁后引用为何悬空。
-   - [标准] 引用/指针指向的对象生命周期结束后，通过该引用/指针访问为未定义行为。
-   - [引用] ISO/IEC 14882:2023 §[basic.life]（对象生命周期）；cppreference "Reference#Dangling" 词条。
+   - <span class="badge badge-std">标准</span> 引用/指针指向的对象生命周期结束后，通过该引用/指针访问为未定义行为。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.life]（对象生命周期）；cppreference "Reference#Dangling" 词条。
 
 **一页速记**
 - 引用 = 必须初始化、不可重绑的别名；底层 ABI 与指针相同（§③）。
@@ -1321,7 +1321,7 @@ auto [it, inserted] = m.try_emplace("k", 1);   // 返回 pair<iterator,bool>
 
 ---
 
-> **本章统计**：10 个核心点全部展开（①引用非对象证明 ②底层 ABI 证据 ③const 引用延长规则 ④悬垂全场景 ⑤reference_wrapper 源码逐行 ⑥microbenchmark ⑦指针算术/UB ⑧跨编译器对比 ⑨跨语言对比 ⑩源码阅读路线）；完整可编译程序 **40 个**（prog_01 ~ prog_40）；四层立场标签 [标准]/[实现]/[平台·Windows]/[经验] 全程贯穿；交叉引用 ch19/ch21/ch31/ch33/ch52/ch77/ch89/ch94/ch115/ch116/ch145/ch157 及智能指针章。
+> **本章统计**：10 个核心点全部展开（①引用非对象证明 ②底层 ABI 证据 ③const 引用延长规则 ④悬垂全场景 ⑤reference_wrapper 源码逐行 ⑥microbenchmark ⑦指针算术/UB ⑧跨编译器对比 ⑨跨语言对比 ⑩源码阅读路线）；完整可编译程序 **40 个**（prog_01 ~ prog_40）；四层立场标签 <span class="badge badge-std">标准</span>/<span class="badge badge-impl">实现</span>/[平台·Windows]/<span class="badge badge-exp">经验</span> 全程贯穿；交叉引用 ch19/ch21/ch31/ch33/ch52/ch77/ch89/ch94/ch115/ch116/ch145/ch157 及智能指针章。
 >
 > **可选扩展（非必需）**：ch54/ch56 虚继承中引用/成员引用占用存储的 ABI 实例汇编（仅概念示意，缺逐指令对比）；与智能指针章（ch41）的交叉引用锚点已建立；Go/Rust 汇编层与 C++ 的三方对拍（仅语言语义层对比，未出机器码）留作后续扩展。
 
@@ -1351,7 +1351,7 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：引用与指针的出身与转折
-引用由 Stroustrup 在 1980 年代初的 "C with Classes" 中引入，直接受 Algol 68 的 call-by-reference 启发，目的是让运算符重载的操作数是可被修改的左值别名（见 ch20 0.1）。[史] 它没有独立对象身份、不可为空、必须绑定，正是为了把"悬垂 / 空指针"挡在语法之外。[史][评] 指针则继承自 C，承载地址与身份，可为 null、可重指，是 C 兼容与系统编程的基石。[史] 2002–2006 年，Hinnant、Stroustrup 等人的系列提案（N2118 等）把右值引用 `&&` 引入 C++0x，让引用从"左值别名"扩展到移动语义与完美转发的引擎——这是引用史上一锤定音的转折。[史][评] "可为空引用（P0298）"等多次提案都被委员会否决，维持"引用必绑定"硬契约，把可选性留给 `std::optional` 与指针。[史][评][轶] Stroustrup 在 *The Design and Evolution of C++* 自述引用"本是为运算符重载而生的小特性"，却意外成为移动语义基础设施。
+引用由 Stroustrup 在 1980 年代初的 "C with Classes" 中引入，直接受 Algol 68 的 call-by-reference 启发，目的是让运算符重载的操作数是可被修改的左值别名（见 ch20 0.1）。<span class="badge badge-history">史</span> 它没有独立对象身份、不可为空、必须绑定，正是为了把"悬垂 / 空指针"挡在语法之外。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 指针则继承自 C，承载地址与身份，可为 null、可重指，是 C 兼容与系统编程的基石。<span class="badge badge-history">史</span> 2002–2006 年，Hinnant、Stroustrup 等人的系列提案（N2118 等）把右值引用 `&&` 引入 C++0x，让引用从"左值别名"扩展到移动语义与完美转发的引擎——这是引用史上一锤定音的转折。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> "可为空引用（P0298）"等多次提案都被委员会否决，维持"引用必绑定"硬契约，把可选性留给 `std::optional` 与指针。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span><span class="badge badge-anecdote">轶</span> Stroustrup 在 *The Design and Evolution of C++* 自述引用"本是为运算符重载而生的小特性"，却意外成为移动语义基础设施。
 
 ### ㉒.2 真实工程坐标：引用与指针活在哪些产品里
 
@@ -1369,13 +1369,13 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 
 **一条判读**：选引用还是指针的判据是「参数是否可选、是否要表达所有权」。非可选、不转移所有权 → `const T&`（LLVM/Chromium/金融行情/RocksDB 共识）；可选或要表达 GC 弱引用/所有权 → 指针（Unreal `UObject`）。规则：默认 `const T&`，仅在「可能没有/需要空值/管理生命周期」时才用指针或 `span`。值传递只在类型小且要拷贝语义（如 `FVector` 经 profile 验证）时才用。
 ### ㉒.3 生产踩坑：引用与指针的常见误用
-- **悬垂引用/指针**：返回局部变量的引用或指向已释放堆对象的指针，调用方拿到的是"看起来合法、访问即 UB"的别名，是 ch33 悬垂主题的根源。[评]
-- **生命周期延长陷阱**：`const T&` 绑定临时对象会延长其生命，但模板里的转发引用 `T&&` 并不会延长、且一旦绑定到局部变量再返回就会悬垂；误以为"引用总能续命"是高频 bug。[史][评]
-- **引用无法表达可选 + ABI 黑洞**：`f(T&)` 无法表达"没有"，大量接口退化成指针并伴随缺失的 `nullptr` 检查而崩溃；而引用在虚继承、成员引用、是否占用存储等场景下是实现定义的，跨 ABI 混编时布局可能不一致。[评]
+- **悬垂引用/指针**：返回局部变量的引用或指向已释放堆对象的指针，调用方拿到的是"看起来合法、访问即 UB"的别名，是 ch33 悬垂主题的根源。<span class="badge badge-comment">评</span>
+- **生命周期延长陷阱**：`const T&` 绑定临时对象会延长其生命，但模板里的转发引用 `T&&` 并不会延长、且一旦绑定到局部变量再返回就会悬垂；误以为"引用总能续命"是高频 bug。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **引用无法表达可选 + ABI 黑洞**：`f(T&)` 无法表达"没有"，大量接口退化成指针并伴随缺失的 `nullptr` 检查而崩溃；而引用在虚继承、成员引用、是否占用存储等场景下是实现定义的，跨 ABI 混编时布局可能不一致。<span class="badge badge-comment">评</span>
 - **指针别名导致优化失效**：编译器对 `T*` 默认假定别名，密集数值循环用裸指针可能阻止向量化，需用 `__restrict` 或改用迭代器/`std::span` 表达"无别名"。
 
 ### ㉒.4 与标准的互动：引用与指针跟随 C++ 标准演进
-引用自 C++98 即为语言核心；C++11 的右值引用（N2118，WG21）是引用语义最大的一次扩张，直接催生移动语义、转发引用、`std::move`/`std::forward`（ch115/ch116）。[史] C++20 的 Concepts（P0734）让 `void f(const C&)` 的"可绑定类型"进入类型系统；C++23 显式对象形参（deducing this，P0847）用 `this auto&& self` 统一 `*this` 的值类别，使成员上的完美转发不再依赖辅助自由函数。[史] "可为空引用（P0298）"等提案反复被否，委员会维持"引用必绑定、不可空"契约，把可选性留给 `std::optional`——这是标准对"安全默认 vs 灵活"的长期取舍。[史][评]
+引用自 C++98 即为语言核心；C++11 的右值引用（N2118，WG21）是引用语义最大的一次扩张，直接催生移动语义、转发引用、`std::move`/`std::forward`（ch115/ch116）。<span class="badge badge-history">史</span> C++20 的 Concepts（P0734）让 `void f(const C&)` 的"可绑定类型"进入类型系统；C++23 显式对象形参（deducing this，P0847）用 `this auto&& self` 统一 `*this` 的值类别，使成员上的完美转发不再依赖辅助自由函数。<span class="badge badge-history">史</span> "可为空引用（P0298）"等提案反复被否，委员会维持"引用必绑定、不可空"契约，把可选性留给 `std::optional`——这是标准对"安全默认 vs 灵活"的长期取舍。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **修订链补强（deducing this）**：显式对象形参并非一蹴而就——deducing this 提案从 P0847R0（2018，初稿用 `Self&& this self` 语法）一路修订到 P0847R7（2021，R3 加形式化 wording、R5 把"显式对象成员函数"重述为非静态成员、R6/R7 仅 CWG 措辞微调）才随 C++23 落地（[wg21.link/P0847](https://wg21.link/P0847)）。委员会在 [dcl.ref] 写明"a reference is not an object"（引用没有独立对象身份），这条规定正是把"别名"与"对象"区分开、从而把悬垂风险推给程序员而非运行时的设计根基，也解释了为何"可为空引用"始终无法越过这道硬契约。
 
 ### ㉒.5 权威引用
@@ -1411,7 +1411,7 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 若用指针：`void scale(std::vector<int>* v, int f)` 内部写 `(*v)[i] *= f`，调用处 `scale(&v, 2)`。
 指针表达"可空"，引用表达"必非空"——按语义选：此函数不应接受空对象，故引用更贴切。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1423,9 +1423,9 @@ int main() {
 }
 ```
 
-[标准] 引用是已存在对象的别名，无独立存储；函数形参引用在调用处即绑定实参。
+<span class="badge badge-std">标准</span> 引用是已存在对象的别名，无独立存储；函数形参引用在调用处即绑定实参。
 
-[引用] ISO/IEC 14882:2023 §[dcl.ref]（引用是已存在对象的别名，无独立存储）；C++ Core Guidelines（isocpp.github.io）建议：除非需要表达"可为空"，否则优先按 `T&` 传递而非 `T*`。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.ref]（引用是已存在对象的别名，无独立存储）；C++ Core Guidelines（isocpp.github.io）建议：除非需要表达"可为空"，否则优先按 `T&` 传递而非 `T*`。
 
 </details>
 
@@ -1438,16 +1438,16 @@ int main() {
 `x == 20`。`r` 和 `*p` 都直接寻址 `x` 的内存，没有任何"引用对象"被创建。
 GCC 15.3.0 下 `r = 10` 编译为 `mov DWORD PTR [rbp-4], 10`，与直接写 `x` 的指令完全相同——引用在优化后**不占存储、无间接层**。
 
-> **示例 45** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 int x = 5; int& r = x; int* p = &x;
 r = 10;      // mov DWORD PTR [rbp-4], 10
 *p = 20;     // mov DWORD PTR [rbp-4], 20
 ```
 
-[标准] 标准不规定引用的实现，但要求其与对象行为等价；主流 ABI 直接用指针底层实现，优化后常完全消除。
+<span class="badge badge-std">标准</span> 标准不规定引用的实现，但要求其与对象行为等价；主流 ABI 直接用指针底层实现，优化后常完全消除。
 
-[引用] ISO/IEC 14882:2023 §[dcl.ref]（标准不规定引用实现，但要求行为与对象等价）；Itanium C++ ABI 以指针底层实现引用，优化后常彻底消除间接层。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.ref]（标准不规定引用实现，但要求行为与对象等价）；Itanium C++ ABI 以指针底层实现引用，优化后常彻底消除间接层。
 
 </details>
 
@@ -1457,7 +1457,7 @@ r = 10;      // mov DWORD PTR [rbp-4], 10
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 template <class T>
 struct optional_ref {
@@ -1478,9 +1478,9 @@ int main() {
 陷阱：`reset()` 把 `p` 置空，但 `value()` 未检查——调用方越过 `has_value()` 直接 `value()` 即 UB。
 工业写法应在 `value()` 内 `assert(p)` 或抛 `bad_optional_access`。
 
-[标准] 引用必须在定义时绑定且不可重绑定；故 `optional<T&>` 被标准明确排除（用指针或 `std::reference_wrapper` 替代）。
+<span class="badge badge-std">标准</span> 引用必须在定义时绑定且不可重绑定；故 `optional<T&>` 被标准明确排除（用指针或 `std::reference_wrapper` 替代）。
 
-[引用] ISO/IEC 14882:2023 §[dcl.ref]（引用必须在定义时绑定且不可重绑定）；`std::optional<T&>` 被标准明确排除，`std::reference_wrapper`（`<functional>`）是其标准替代，Boost.Optional 亦支持可选引用。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.ref]（引用必须在定义时绑定且不可重绑定）；`std::optional<T&>` 被标准明确排除，`std::reference_wrapper`（`<functional>`）是其标准替代，Boost.Optional 亦支持可选引用。
 
 </details>
 
@@ -1490,7 +1490,7 @@ int main() {
 
 **步骤 1：朴素值返回（错误起点）**
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
 Config load_config();              // 返回副本: 大对象拷贝 + 可能异常
 Config c = load_config();          // 一次完整拷贝
@@ -1500,7 +1500,7 @@ Config c = load_config();          // 一次完整拷贝
 
 **步骤 2：返回 `const` 引用（悬垂风险）**
 
-> **示例 48** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
 const Config& load_config();       // 若内部返回局部变量的引用 -> 悬垂!
 const Config& c = load_config();   // c 指向已销毁对象 -> UB
@@ -1510,7 +1510,7 @@ const Config& c = load_config();   // c 指向已销毁对象 -> UB
 
 **步骤 3：返回指针表达"可空"**
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
 Config* load_config();             // nullptr 表示"未找到/失败"
 Config* c = load_config();
@@ -1521,7 +1521,7 @@ if (c) use(*c);                    // 调用方必须判空
 
 **步骤 4：工业最终形态（所有权转移）**
 
-> **示例 50** [难度 ★★★☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
 std::unique_ptr<Config> load_config();   // 转移所有权, 零拷贝, 无悬垂
 auto c = load_config();                  // 拥有, 离开作用域自动释放
@@ -1687,7 +1687,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 51** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 

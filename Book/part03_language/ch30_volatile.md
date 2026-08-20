@@ -1,5 +1,5 @@
 # 第30章 volatile / atomic 与硬件寄存器
-> **[验证环境·平台/ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。C++ 标准层（[标准]）：`volatile` 仅保证「对 volatile 对象的访问不被优化掉、不被与其他 volatile 访问重排」，**不提供**跨线程可见性、不保证原子性、不阻止编译器/CPU 重排；因此 `volatile` **不可用于线程同步**——历史上 MSVC 对其有额外放松（[实现·MSVC]），但 GCC/Clang 不保证，属平台差异（[ABI/平台]）。涉及内存映射 I/O（MMIO）的语义以具体编译器与目标平台为准，跨平台请用 `std::atomic` 或 OS 原语。
+> **[验证环境·平台/ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。C++ 标准层（<span class="badge badge-std">标准</span>）：`volatile` 仅保证「对 volatile 对象的访问不被优化掉、不被与其他 volatile 访问重排」，**不提供**跨线程可见性、不保证原子性、不阻止编译器/CPU 重排；因此 `volatile` **不可用于线程同步**——历史上 MSVC 对其有额外放松（[实现·MSVC]），但 GCC/Clang 不保证，属平台差异（[ABI/平台]）。涉及内存映射 I/O（MMIO）的语义以具体编译器与目标平台为准，跨平台请用 `std::atomic` 或 OS 原语。
 
 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
 
@@ -10,36 +10,36 @@
 > `volatile` 本是为"会变"的硬件而生，却被误当作并发同步——这是 C++ 史上最大的误用之一。
 
 ### 0.1 起源（谁·何时·为何）
-`volatile` 在 C（约 1980 年代）引入，语义是"告诉编译器：这个对象可能被程序之外的力量（硬件寄存器、中断、内存映射 I/O）随时改动，禁止缓存到寄存器、禁止优化掉读写"。[史] 它服务于嵌入式 / MMIO，是"阻止编译器自作聪明"的开关。[史]
+`volatile` 在 C（约 1980 年代）引入，语义是"告诉编译器：这个对象可能被程序之外的力量（硬件寄存器、中断、内存映射 I/O）随时改动，禁止缓存到寄存器、禁止优化掉读写"。<span class="badge badge-history">史</span> 它服务于嵌入式 / MMIO，是"阻止编译器自作聪明"的开关。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **C/C++ 长期**：`volatile` 被错误当作"线程间同步原语"，但标准从未保证跨线程可见性。[史][评]
-- **C++11**：引入 `std::atomic` 与内存模型，正式把"并发同步"从 `volatile` 手里夺走，`volatile` 退回纯 MMIO / 信号处理用途。[史]
+- **C/C++ 长期**：`volatile` 被错误当作"线程间同步原语"，但标准从未保证跨线程可见性。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **C++11**：引入 `std::atomic` 与内存模型，正式把"并发同步"从 `volatile` 手里夺走，`volatile` 退回纯 MMIO / 信号处理用途。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-`volatile` 解决"编译器优化"，不解决"CPU / 缓存一致性"——这两件事被长期混淆。[史][评] 委员会明确：线程同步请用 `atomic` / 互斥；`volatile` 只管"硬件会偷看 / 改写"。这是把"单线程语义"与"并发语义"彻底分开的关键一刀。[史]
+`volatile` 解决"编译器优化"，不解决"CPU / 缓存一致性"——这两件事被长期混淆。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 委员会明确：线程同步请用 `atomic` / 互斥；`volatile` 只管"硬件会偷看 / 改写"。这是把"单线程语义"与"并发语义"彻底分开的关键一刀。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++11 用 `std::atomic` 把并发同步从 `volatile` 手里夺走。但 `volatile` 在 C++20 后仍有现实讨论。[史]
+0.2 停在 C++11 用 `std::atomic` 把并发同步从 `volatile` 手里夺走。但 `volatile` 在 C++20 后仍有现实讨论。<span class="badge badge-history">史</span>
 
-- **C++20 `std::atomic_ref`（P0019）**：允许把"已存在的普通（甚至 `volatile`）对象"临时包成原子引用做并发访问，避免了为线程安全而改类型；它与 0.3 的"`volatile` 不解决原子性"形成互补——`atomic_ref` 才管原子性。[史]
-- **`volatile` 在并发语义上仍是"实现定义"的灰色地带**：MSVC 历史实现中 `volatile` 读 / 写带 acquire/release 语义（被 `/volatile:ms` 默认开启），而 GCC/Clang 严格遵循标准（无跨线程保证），同一段 `volatile` 代码在三家编译器行为不同——这是 0.3 之争的工程余波。[史][评]
-- **MMIO 与信号处理仍是 `volatile` 的正当领地**：嵌入式 / 内核代码中 `volatile` 映射硬件寄存器的用法未被任何新特性替代，`[[indeterminate]]` 等未初始化相关讨论主要服务于安全而非取代它。[史]
-- **行业争议**：社区反复出现"是否该给 `volatile` 加并发语义"的提案，最终都被否，维持"volatile = 硬件可见性，atomic = 线程原子性"的清晰分工。[史][评]
+- **C++20 `std::atomic_ref`（P0019）**：允许把"已存在的普通（甚至 `volatile`）对象"临时包成原子引用做并发访问，避免了为线程安全而改类型；它与 0.3 的"`volatile` 不解决原子性"形成互补——`atomic_ref` 才管原子性。<span class="badge badge-history">史</span>
+- **`volatile` 在并发语义上仍是"实现定义"的灰色地带**：MSVC 历史实现中 `volatile` 读 / 写带 acquire/release 语义（被 `/volatile:ms` 默认开启），而 GCC/Clang 严格遵循标准（无跨线程保证），同一段 `volatile` 代码在三家编译器行为不同——这是 0.3 之争的工程余波。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **MMIO 与信号处理仍是 `volatile` 的正当领地**：嵌入式 / 内核代码中 `volatile` 映射硬件寄存器的用法未被任何新特性替代，`[[indeterminate]]` 等未初始化相关讨论主要服务于安全而非取代它。<span class="badge badge-history">史</span>
+- **行业争议**：社区反复出现"是否该给 `volatile` 加并发语义"的提案，最终都被否，维持"volatile = 硬件可见性，atomic = 线程原子性"的清晰分工。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic_ref ｜ https://en.cppreference.com/w/cpp/language/cv ｜ https://en.cppreference.com/w/cpp/atomic
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 区分 volatile（硬件可见性）与 atomic（多线程原子性）
 2. 理解 volatile 的正确使用场景：MMIO、信号处理、setjmp/longjmp
 3. 掌握 memory-mapped I/O 中 volatile 的必要性
 4. 理解为什么 volatile 不能替代 atomic
 
-## ② volatile 基本语义 [标准]
+## ② volatile 基本语义 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：基本语义 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：基本语义 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 volatile int sensor = 0;
@@ -48,16 +48,16 @@ int main(){sensor=42;std::cout<<sensor<<std::endl;return 0;}
 
 ## ③ MMIO 读写 [平台·x86-64]
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：读写 [平台·x86-64]]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 读写 [平台·x86-64]
 ```cpp
 #include <iostream>
 struct Device{volatile unsigned int status;volatile unsigned int data;};
 int main(){Device dev;dev.status=0;dev.data=42;std::cout<<"MMIO mapped\n";return 0;}
 ```
 
-## ④ volatile 不能替代 atomic [标准]
+## ④ volatile 不能替代 atomic <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★★☆☆☆] [主题：不能替代 atomic [标准]]
+> **示例 3** [难度 ★★☆☆☆] [主题：不能替代 atomic <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -67,7 +67,7 @@ int main(){safe.store(1);std::cout<<safe.load()<<std::endl;return 0;}
 
 ## ⑤ 信号处理中的 volatile [平台·x86-64]
 
-> **示例 4** [难度 ★★☆☆☆] [主题：信号处理中的 volatile [平]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 信号处理中的 volatile [平
 ```cpp
 #include <iostream>
 #include <csignal>
@@ -77,7 +77,7 @@ int main(){flag=1;std::cout<<(int)flag<<std::endl;return 0;}
 
 ## ⑥ setjmp/longjmp 中的 volatile [平台·x86-64]
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：中的 volatile [平台·x8]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 中的 volatile [平台·x8
 ```cpp
 #include <iostream>
 int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\n";return 0;}
@@ -85,7 +85,7 @@ int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\
 
 ## ⑦ 编译器屏障 [实现·GCC15.3.0]
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：编译器屏障 [实现·GCC15.3.]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器屏障 [实现·GCC15.3.
 ```cpp
 #include <iostream>
 int main(){int x=0;asm volatile("":::"memory");x=1;std::cout<<x<<std::endl;return 0;}
@@ -93,32 +93,32 @@ int main(){int x=0;asm volatile("":::"memory");x=1;std::cout<<x<<std::endl;retur
 
 ## ⑧ volatile 指针 [平台·x86-64]
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：指针 [平台·x86-64]]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 指针 [平台·x86-64]
 ```cpp
 #include <iostream>
 int main(){int val=0;volatile int* p=&val;*p=42;std::cout<<val<<std::endl;return 0;}
 ```
 
-## ⑨ volatile 成员函数 [标准]
+## ⑨ volatile 成员函数 <span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：成员函数 [标准]]
+> **示例 8** [难度 ★☆☆☆☆] [主题：成员函数 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 struct Reg{volatile int v;int read()volatile{return v;}void write(int x)volatile{v=x;}};
 int main(){Reg r;r.write(7);std::cout<<r.read()<<std::endl;return 0;}
 ```
 
-## ⑩ volatile 与 const [标准]
+## ⑩ volatile 与 const <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与 const [标准]]
+> **示例 9** [难度 ★☆☆☆☆] [主题：与 const <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 int main(){volatile const int ROM=0xDEAD;std::cout<<"ROM value:"<<ROM<<std::endl;return 0;}
 ```
 
-## ⑪ STL 联系：atomic 与 volatile 的严格分工 [标准]
+## ⑪ STL 联系：atomic 与 volatile 的严格分工 <span class="badge badge-std">标准</span>
 
-> **示例 10** [难度 ★★★★☆] [主题：联系：atomic 与 volati]
+> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 联系：atomic 与 volati
 ```cpp
 // ⑪ volatile 不保证原子性；atomic 不阻止寄存器优化——两者各司其职
 #include <iostream>
@@ -144,9 +144,9 @@ int main() {
 
 - `[标准]`：`std::atomic` 保证原子性和内存序。`volatile` 只保证每次访问都抵达内存。两者正交：嵌入式场景可同时使用 `volatile std::atomic<int>`（MMIO 寄存器的原子访问）。
 
-## ⑫ 工业案例：嵌入式 MMIO 寄存器模板 [经验]
+## ⑫ 工业案例：嵌入式 MMIO 寄存器模板 <span class="badge badge-exp">经验</span>
 
-> **示例 11** [难度 ★★★★☆] [主题：工业案例：嵌入式 MMIO 寄存器模]
+> **示例 11** <span class="badge badge-exp">难度 ★★★★☆</span> · 工业案例：嵌入式 MMIO 寄存器模
 ```cpp
 // ⑫ 实际嵌入式代码中 volatile 的标准写法：reinterpret_cast 到 volatile 结构体
 #include <iostream>
@@ -186,7 +186,7 @@ int main() {
 
 ## ⑬ 源码分析：GCC 内部 volatile 处理 [实现·GCC15.3.0]
 
-> **示例 12** [难度 ★★☆☆☆] [主题：源码分析：GCC 内部 volati]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC 内部 volati
 ```cpp
 // ⑬ GCC/LLVM 编译器内部如何对待 volatile
 #include <iostream>
@@ -208,9 +208,9 @@ int main() {
 
 - `[实现·GCC15.3.0]`：volatile 直接作用于编译器的中间表示（GIMPLE/LLVM-IR），通过 `TREE_SIDE_EFFECTS` / `setVolatile` 标志通知**所有优化 pass** 跳过该访问。这不是"提示"，是硬约束。
 
-## ⑭ WG21 关键提案与演变 [标准]
+## ⑭ WG21 关键提案与演变 <span class="badge badge-std">标准</span>
 
-> **示例 13** [难度 ★★☆☆☆] [主题：关键提案与演变 [标准]]
+> **示例 13** [难度 ★★☆☆☆] [主题：关键提案与演变 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ volatile 的标准化历史中最重要的两个提案
 #include <iostream>
@@ -234,9 +234,9 @@ int main() {
 
 - `[标准]`：P1152 是最具争议的 volatile 提案——嵌入式社区强烈反对完全废弃复合赋值。P2327 是妥协方案：保留 volatile |= 但要求语义正确。反映了 ISO 委员会对嵌入式领域的让步。
 
-## ⑮ 面试题精选 [经验]
+## ⑮ 面试题精选 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★★☆☆] [主题：面试题精选 [经验]]
+> **示例 14** [难度 ★★★☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮ 嵌入式/C++ 后台面试中 volatile 的 5 道高频题
 #include <iostream>
@@ -257,9 +257,9 @@ int main() {
 }
 ```
 
-## ⑯ 易错点与陷阱 [经验]
+## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 [经验]]
+> **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ volatile 的 5 个最常见误用
 #include <iostream>
@@ -294,9 +294,9 @@ int main() {
 }
 ```
 
-## ⑰ FAQ：嵌入式实战常见问题 [经验]
+## ⑰ FAQ：嵌入式实战常见问题 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★★★☆] [主题：嵌入式实战常见问题 [经验]]
+> **示例 16** [难度 ★★★★☆] [主题：嵌入式实战常见问题 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 实际开发中关于 volatile 的高频问答
 #include <iostream>
@@ -324,9 +324,9 @@ int main() {
 }
 ```
 
-## ⑱ 最佳实践总结 [经验]
+## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★★☆☆] [主题：最佳实践总结 [经验]]
+> **示例 17** [难度 ★★★☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ volatile 使用的 6 条黄金法则
 #include <iostream>
@@ -361,7 +361,7 @@ int main() {
 
 ## ⑲ 性能分析：volatile 访问的真实成本 [平台·x86-64]
 
-> **示例 18** [难度 ★★★☆☆] [主题：性能分析：volatile 访问的真]
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析：volatile 访问的真
 ```cpp
 // ⑲ volatile 访问 = 强制穿透缓存层次 → 真实代价取决于内存位置
 #include <iostream>
@@ -411,23 +411,23 @@ int main() {
 
 - `[平台·x86-64]`：volatile 的单次访问成本与普通内存访问相同（～4 cycles L1, ～200 cycles DRAM，典型量级 [UNVERIFIED]）。代价不在单次访问，而在**禁止编译器进行循环优化、寄存器提升、公共子表达式消除**——这是真正的性能差距来源。
 
-## ⑳ 跨语言对比：volatile 语义全景 [经验]
+## ⑳ 跨语言对比：volatile 语义全景 <span class="badge badge-exp">经验</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：内存映射 IO。** 硬件寄存器声明 `volatile uint32_t* reg`。请说明 volatile 阻止编译器优化重读。
-   - [标准] volatile 访问不被编译器优化掉或重排（对抽象机语义而言每次访问都发生），但**不**提供线程间同步/原子性。
-   - [引用] ISO/IEC 14882:2023 §[intro.memory] / [dcl.type.cv]；cppreference "volatile" 词条。
+   - <span class="badge badge-std">标准</span> volatile 访问不被编译器优化掉或重排（对抽象机语义而言每次访问都发生），但**不**提供线程间同步/原子性。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.memory] / [dcl.type.cv]；cppreference "volatile" 词条。
 
 2. **真实场景：signal 与 volatile sig_atomic_t。** 信号处理函数中用 `volatile std::sig_atomic_t` 与主控流通信。请说明其局限。
-   - [标准] `volatile sig_atomic_t` 是对信号安全的有限类型；普通 volatile 不保证多核可见或原子。
-   - [引用] ISO/IEC 14882:2023 §[support.signal]；cppreference "std::sig_atomic_t" 词条。
+   - <span class="badge badge-std">标准</span> `volatile sig_atomic_t` 是对信号安全的有限类型；普通 volatile 不保证多核可见或原子。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[support.signal]；cppreference "std::sig_atomic_t" 词条。
 
 3. **真实场景：volatile 误用于并发。** 开发者用 `volatile bool stop` 做线程停止标志，在 x86 看似工作但在其他架构/优化下失效。请对比 std::atomic。
-   - [标准] 数据竞争中对非 atomic 的并发访问是未定义行为；volatile 不构成同步（无 happens-before）。
-   - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "std::atomic" 词条。
+   - <span class="badge badge-std">标准</span> 数据竞争中对非 atomic 的并发访问是未定义行为；volatile 不构成同步（无 happens-before）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "std::atomic" 词条。
 
-> **示例 19** [难度 ★★★★☆] [主题：跨语言对比：volatile 语义全]
+> **示例 19** <span class="badge badge-exp">难度 ★★★★☆</span> · 跨语言对比：volatile 语义全
 ```cpp
 // ⑳ 各语言中 volatile/并发可见性机制的精确对比
 #include <iostream>
@@ -454,124 +454,124 @@ int main() {
 
 ## 补充完整可编译示例
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 volatile int tick=0;void isr(){tick++;}
 int main(){tick=10;std::cout<<tick<<std::endl;return 0;}
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct UART{volatile unsigned DR;};
 int main(){UART u;u.DR='A';std::cout<<(char)u.DR<<std::endl;return 0;}
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <atomic>
 int main(){std::atomic<int> a{5};volatile int v=5;std::cout<<a.load()<<" "<<v<<std::endl;return 0;}
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile const int ROM=0xDEAD;std::cout<<ROM<<std::endl;return 0;}
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct GPIO{volatile unsigned OUT;volatile unsigned IN;};
 int main(){GPIO g;g.OUT=0xFF;std::cout<<g.OUT<<std::endl;return 0;}
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){int x;volatile int* volatile p=nullptr;(void)x;(void)p;std::cout<<"volatile pointer to volatile data\n";return 0;}
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile bool ready=false;ready=true;std::cout<<ready<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 template<typename T>struct VolatilePtr{T*volatile ptr;};
 int main(){int x=5;VolatilePtr<int> v{&x};std::cout<<*v.ptr<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct Timer{volatile unsigned counter;};Timer t;
 int main(){t.counter=0;while(t.counter<3)t.counter++;std::cout<<t.counter<<std::endl;return 0;}
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile int* p=new volatile int(42);std::cout<<*p<<std::endl;delete p;return 0;}
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile unsigned* reg=(volatile unsigned*)0x1000;(void)reg;std::cout<<"MMIO pattern\n";return 0;}
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile int counter=0;for(int i=0;i<5;++i)counter++;std::cout<<counter<<std::endl;return 0;}
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct HW{volatile unsigned ctrl;volatile unsigned status;};
 int main(){HW h{};h.ctrl=1;std::cout<<h.status<<std::endl;return 0;}
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <atomic>
 int main(){std::atomic<int> a;volatile int v;a.store(1);v=1;std::cout<<a.load()<<" "<<v<<std::endl;return 0;}
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile bool flag=false;flag=true;std::cout<<std::boolalpha<<flag<<std::endl;return 0;}
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){int data=0;volatile int& ref=data;ref=99;std::cout<<data<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct alignas(64) CacheAligned{volatile int val;};
 int main(){CacheAligned c;c.val=7;std::cout<<c.val<<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile const int ROM_DATA=0xBEEF;std::cout<<ROM_DATA<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std::endl;delete[]ptr;return 0;}
@@ -582,7 +582,7 @@ int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：volatile 的正用与误用
-`volatile` 在 C（约 1980 年代）引入，语义是"告诉编译器：此对象可能被程序之外的力量（硬件寄存器、中断、内存映射 I/O）随时改动，禁止缓存到寄存器、禁止优化掉读写"，服务于嵌入式/MMIO（见 ch30 0.1）。[史] 它长期被错误当作"线程间同步原语"，但标准从未保证跨线程可见性。[史][评] C++11 引入 `std::atomic` 与内存模型，正式把并发同步从 `volatile` 手里夺走，`volatile` 退回纯 MMIO/信号处理用途。[史]
+`volatile` 在 C（约 1980 年代）引入，语义是"告诉编译器：此对象可能被程序之外的力量（硬件寄存器、中断、内存映射 I/O）随时改动，禁止缓存到寄存器、禁止优化掉读写"，服务于嵌入式/MMIO（见 ch30 0.1）。<span class="badge badge-history">史</span> 它长期被错误当作"线程间同步原语"，但标准从未保证跨线程可见性。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> C++11 引入 `std::atomic` 与内存模型，正式把并发同步从 `volatile` 手里夺走，`volatile` 退回纯 MMIO/信号处理用途。<span class="badge badge-history">史</span>
 
 ### ㉒.2 真实工程坐标：volatile 活在哪些产品里
 
@@ -591,22 +591,22 @@ int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
 | 嵌入式固件与内核 | Linux 内核、裸机固件、ISR | `volatile` 映射硬件寄存器与 MMIO；ISR 共享标志防被优化 | 资源受限/OS 内核 | `volatile` 的硬件访问刚需 |
-| 信号处理 | `sig_atomic_t` + `volatile` | 信号处理函数与主流程间传递标志 | POSIX 标准认可 | 跨异步控制流的安全标志 [STANDARD] |
-| 编译器差异 | MSVC（`/volatile:ms`）vs GCC/Clang | MSVC 读写为 acquire/release；GCC/Clang 无跨线程保证 | 三家行为不同 | 同段代码语义分裂 [史][评] |
+| 信号处理 | `sig_atomic_t` + `volatile` | 信号处理函数与主流程间传递标志 | POSIX 标准认可 | 跨异步控制流的安全标志 <span class="badge badge-std">STANDARD</span> |
+| 编译器差异 | MSVC（`/volatile:ms`）vs GCC/Clang | MSVC 读写为 acquire/release；GCC/Clang 无跨线程保证 | 三家行为不同 | 同段代码语义分裂 <span class="badge badge-history">史</span><span class="badge badge-comment">评</span> |
 | 实时操作系统 | FreeRTOS / μC/OS、AUTOSAR MCAL | `volatile uint32_t*` 映射 MMIO/任务标志，确保每次访问不消除 | 汽车/嵌入式实时 | MCAL 外设寄存器标 `volatile` |
 | Windows 内核驱动 | WDM / WDK、`ntddk.h` | `volatile` 表达对实现透明的寄存器/共享内存访问，配屏障宏 | 桌面内核驱动 | 未被任何新特性取代的正当领地 |
 
-> **表注（㉒.2）**：上表把「volatile」拉成「硬件与异步控制流里的防优化开关」。它在 Linux 内核/裸机固件里映射 MMIO，在 POSIX 信号处理里配合 `sig_atomic_t` 传标志，在 FreeRTOS/AUTOSAR MCAL 里标外设寄存器，在 WDM/WDK 驱动里表达对实现透明的硬件访问。注意 [史][评] 标的编译器差异一行：MSVC 的 `/volatile:ms` 让 volatile 读写带 acquire/release，而 GCC/Clang 严格遵循标准（无跨线程保证）——同一段 volatile 代码三家语义不同，说明它绝不是可移植的同步原语。
+> **表注（㉒.2）**：上表把「volatile」拉成「硬件与异步控制流里的防优化开关」。它在 Linux 内核/裸机固件里映射 MMIO，在 POSIX 信号处理里配合 `sig_atomic_t` 传标志，在 FreeRTOS/AUTOSAR MCAL 里标外设寄存器，在 WDM/WDK 驱动里表达对实现透明的硬件访问。注意 <span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 标的编译器差异一行：MSVC 的 `/volatile:ms` 让 volatile 读写带 acquire/release，而 GCC/Clang 严格遵循标准（无跨线程保证）——同一段 volatile 代码三家语义不同，说明它绝不是可移植的同步原语。
 
-**一条判读**：用 volatile 的判据是「访问可能被硬件或异步控制流在外部改变，且不能被优化掉」。硬件寄存器/MMIO、ISR 共享标志、信号处理标志、驱动共享内存 → `volatile`；但它**不是**线程同步原语（GCC/Clang 下无跨线程保证，MSVC 有也只是历史实现）。规则：内存映射 I/O 与异步信号/中断用 `volatile`；多线程共享用 `std::atomic`（带明确内存序），绝不用 `volatile` 做锁或标志同步——[STANDARD] 层面 volatile 不提供线程间同步语义。
+**一条判读**：用 volatile 的判据是「访问可能被硬件或异步控制流在外部改变，且不能被优化掉」。硬件寄存器/MMIO、ISR 共享标志、信号处理标志、驱动共享内存 → `volatile`；但它**不是**线程同步原语（GCC/Clang 下无跨线程保证，MSVC 有也只是历史实现）。规则：内存映射 I/O 与异步信号/中断用 `volatile`；多线程共享用 `std::atomic`（带明确内存序），绝不用 `volatile` 做锁或标志同步——<span class="badge badge-std">STANDARD</span> 层面 volatile 不提供线程间同步语义。
 ### ㉒.3 生产踩坑：volatile 的常见误用
-- **把 volatile 当锁/同步**：`volatile` 只解决"编译器优化"，不解决"CPU/缓存一致性"——用 `volatile bool ready` 做线程间标志是经典错误，仍会读到陈旧值或重排，必须用 `std::atomic`。[史][评]
-- **volatile 与原子性的误区**：`volatile int x; x++;` 不是原子的，`volatile` 不提供读-改-写原子性，多核下仍竞争。[评]
-- **跨编译器语义不一致**：依赖 MSVC 的 volatile 获取/释放语义写出"看似线程安全"的代码，移植到 GCC/Clang 后静默失效。[史][评]
-- **被弃用的复合赋值**：C++20 起部分 `volatile` 复合赋值/++/-- 被弃用（P1152），老代码升级编译器会触发弃用警告。[史]
+- **把 volatile 当锁/同步**：`volatile` 只解决"编译器优化"，不解决"CPU/缓存一致性"——用 `volatile bool ready` 做线程间标志是经典错误，仍会读到陈旧值或重排，必须用 `std::atomic`。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **volatile 与原子性的误区**：`volatile int x; x++;` 不是原子的，`volatile` 不提供读-改-写原子性，多核下仍竞争。<span class="badge badge-comment">评</span>
+- **跨编译器语义不一致**：依赖 MSVC 的 volatile 获取/释放语义写出"看似线程安全"的代码，移植到 GCC/Clang 后静默失效。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **被弃用的复合赋值**：C++20 起部分 `volatile` 复合赋值/++/-- 被弃用（P1152），老代码升级编译器会触发弃用警告。<span class="badge badge-history">史</span>
 
 ### ㉒.4 与标准的互动：volatile 在标准中的定位
-`volatile` 作为 cv 限定符自 C 即存在；C++11 用 `std::atomic` 把并发语义明确剥离，`volatile` 退回"硬件可见性"。[史] C++20 的 `std::atomic_ref`（P0019）允许把已存在的对象临时包成原子引用做并发访问，与"volatile 不解决原子性"形成互补；同年 P1152 弃用大多数 `volatile` 操作（仅保留内存可见性相关用法），收敛其语义。[史] 委员会反复否决"给 volatile 加并发语义"的提案，维持"volatile = 硬件可见性、atomic = 线程原子性"的清晰分工——MMIO 与信号处理仍是 `volatile` 未被任何新特性取代的正当领地。[史][评]
+`volatile` 作为 cv 限定符自 C 即存在；C++11 用 `std::atomic` 把并发语义明确剥离，`volatile` 退回"硬件可见性"。<span class="badge badge-history">史</span> C++20 的 `std::atomic_ref`（P0019）允许把已存在的对象临时包成原子引用做并发访问，与"volatile 不解决原子性"形成互补；同年 P1152 弃用大多数 `volatile` 操作（仅保留内存可见性相关用法），收敛其语义。<span class="badge badge-history">史</span> 委员会反复否决"给 volatile 加并发语义"的提案，维持"volatile = 硬件可见性、atomic = 线程原子性"的清晰分工——MMIO 与信号处理仍是 `volatile` 未被任何新特性取代的正当领地。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **修订链补强（atomic_ref / 弃用 volatile）**：`std::atomic_ref` 的修订尤其漫长——提案 [P0019](https://wg21.link/P0019) 从早期版本一路修订到 R8（2018，"Atomic Ref"）随 C++20 落地，允许把既有的非原子对象临时包成原子引用做并发访问，而不必一开始就声明为 `atomic<T>`；与此同时，[P1152](https://wg21.link/P1152) 从 R0 到 R4（"Deprecating volatile"，C++20）弃用了大多数 `volatile` 的复合赋值 / `++` / `--`，仅保留内存可见性相关用法。标准在 [dcl.type.cv] 明确 `volatile` 仅影响"对实现透明的访问"（即阻止编译器优化掉对硬件 / 信号的访问），委员会借此把"线程原子性"彻底划给 `std::atomic`，让 `volatile` 退回其 C 时代的本分——这一分工在 R8 / R4 两轮修订中被固化。
 
 ### ㉒.5 权威引用
@@ -626,7 +626,7 @@ int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std
 | 适用场景 | MMIO, 信号处理, setjmp | 多线程共享状态 |
 | 开销 | 强制内存访问 | 取决于 memory_order |
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录 A: volatile 与 a]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A: volatile 与 a
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -639,7 +639,7 @@ int main(){
 
 ## 附录 B: 真实嵌入式的 MMIO 模式
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 B: 真实嵌入式的 MMIO ]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 真实嵌入式的 MMIO
 ```cpp
 #include <iostream>
 #include <cstdint>
@@ -650,7 +650,7 @@ int main(){std::cout<<"Real embedded: cast memory address to volatile struct*, r
 
 ## 附录 C: volatile 与优化器的交互
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录 C: volatile 与优化]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: volatile 与优化
 ```cpp
 #include <iostream>
 int main(){
@@ -663,7 +663,7 @@ int main(){
 
 ## 附录 D: volatile 汇编证据
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录 D: volatile 汇编证]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: volatile 汇编证
 ```cpp
 // volatile forces memory reload each access
 #include <iostream>
@@ -672,27 +672,27 @@ int main(){g_flag = 1; int local = g_flag; std::cout<<local<<std::endl;return 0;
 // Compiler Explorer with -O2 shows: mov DWORD PTR [g_flag],1; mov eax,DWORD PTR [g_flag]
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 D: volatile 汇编证]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: volatile 汇编证
 ```cpp
 #include <iostream>
 int main(){std::cout<<"volatile vs asm volatile('':::'memory'): volatile = per-variable; asm barrier = full compiler fence."<<std::endl;return 0;}
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 D: volatile 汇编证]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: volatile 汇编证
 ```cpp
 #include <iostream>
 // volatile + const = ROM-mapped data, read-only after init
 int main(){volatile const int ROM=0xBEEF;std::cout<<ROM<<std::endl;return 0;}
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录 D: volatile 汇编证]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: volatile 汇编证
 ```cpp
 #include <iostream>
 struct alignas(64) CacheLine{volatile int val; char pad[60];};
 int main(){CacheLine c{42};std::cout<<c.val<<std::endl;return 0;}
 ```
 
-> **示例 46** [难度 ★★☆☆☆] [主题：附录 D: volatile 汇编证]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: volatile 汇编证
 ```cpp
 #include <iostream>
 int main(){std::cout<<"volatile总结: 用于MMIO/信号/isr。不是同步原语,多线程用atomic!"<<std::endl;return 0;}
@@ -747,7 +747,7 @@ int main(){std::cout<<"volatile总结: 用于MMIO/信号/isr。不是同步原�
 
 MMIO 寄存器是硬件地址，`volatile` 保证每次访问都真正发生（不被缓存到寄存器）：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <cstdint>
@@ -762,7 +762,7 @@ int main() {
 
 [平台·x86-64][③] 在嵌入式/驱动中，MMIO 寄存器必须用 `volatile` 修饰，否则编译器可能认为 `*status` 不变而把轮询优化成死循环或常量。
 
-[引用] ISO/IEC 14882:2023 §[dcl.type.cv]（volatile 语义：每次访问都真正发生）；cppreference "volatile" 词条；嵌入式 MMIO 写法亦见 C++ Core Guidelines（isocpp.github.io）关于硬件寄存器的建议。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.type.cv]（volatile 语义：每次访问都真正发生）；cppreference "volatile" 词条；嵌入式 MMIO 写法亦见 C++ Core Guidelines（isocpp.github.io）关于硬件寄存器的建议。
 
 </details>
 
@@ -774,7 +774,7 @@ int main() {
 
 `sig_atomic_t` 保证读写是原子的；`volatile` 保证不被优化掉：
 
-> **示例 48** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <csignal>
@@ -787,9 +787,9 @@ int main() {
 }
 ```
 
-[标准][⑤] 在信号处理函数中访问非 `volatile sig_atomic_t` 的全局量是未定义行为；`volatile` 确保主循环每次都从内存重新读取 `g_stop`，而不会被寄存器缓存。
+<span class="badge badge-std">标准</span>[⑤] 在信号处理函数中访问非 `volatile sig_atomic_t` 的全局量是未定义行为；`volatile` 确保主循环每次都从内存重新读取 `g_stop`，而不会被寄存器缓存。
 
-[引用] ISO/IEC 14882:2023 §[support.signal]（`volatile std::sig_atomic_t` 是异步信号安全的可见性基元）；cppreference "std::signal" 与 "std::sig_atomic_t" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[support.signal]（`volatile std::sig_atomic_t` 是异步信号安全的可见性基元）；cppreference "std::signal" 与 "std::sig_atomic_t" 词条。
 
 </details>
 
@@ -801,7 +801,7 @@ int main() {
 
 `volatile` 只挡住编译器优化，不挡住 CPU 重排/撕裂读写，多线程 `++` 仍是数据竞争：
 
-> **示例 49** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <thread>
@@ -818,7 +818,7 @@ int main() {
 
 正确版本用 `std::atomic<int>`（或 `fetch_add`）提供原子性与顺序保证：
 
-> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <thread>
@@ -836,7 +836,7 @@ int main() {
 
 [④][⑪] `volatile` 与 `atomic` 职责正交：前者对"编译器"说"别优化这处访问"，后者对"硬件与线程"说"这是原子且有序的"。多线程同步必须用 `atomic`，MMIO/信号用 `volatile`。
 
-[引用] ISO/IEC 14882:2023 §[atomics]/[intro.races]（`std::atomic` 提供原子性与次序保证，避免数据竞争 UB）；cppreference "std::atomic" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]/[intro.races]（`std::atomic` 提供原子性与次序保证，避免数据竞争 UB）；cppreference "std::atomic" 词条。
 
 </details>
 
@@ -848,7 +848,7 @@ int main() {
 
 **常见错误**：以为"线程安全"就够，用 `std::atomic` 访问 MMIO，反而引入不属于硬件语义的原子/屏障，且 `atomic` 在某些模式下的 load/store 序列与硬件预期不符：
 
-> **示例 51** [难度 ★★☆☆☆] [主题：演绎 1：嵌入式 MMIO 为何必须]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：嵌入式 MMIO 为何必须
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -863,7 +863,7 @@ int main() {
 
 **修复**：MMIO 用 `volatile` 限定指针，保证每次访问按序真实发生：
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：演绎 1：嵌入式 MMIO 为何必须]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：嵌入式 MMIO 为何必须
 ```cpp
 #include <iostream>
 #include <cstdint>
@@ -883,7 +883,7 @@ int main() {
 
 **常见错误**：用 `volatile int` 当"线程安全计数器"，以为 `volatile` 足以同步，结果因非原子 `++` 与缺少顺序保证产生数据竞争（UB），计数不准：
 
-> **示例 53** [难度 ★★★★☆] [主题：演绎 2：volatile 不能替代]
+> **示例 53** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：volatile 不能替代
 ```cpp
 #include <iostream>
 #include <thread>
@@ -900,7 +900,7 @@ int main() {
 
 **修复**：用 `std::atomic` 提供原子操作与内存顺序：
 
-> **示例 54** [难度 ★★☆☆☆] [主题：演绎 2：volatile 不能替代]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：volatile 不能替代
 ```cpp
 #include <iostream>
 #include <thread>
@@ -917,7 +917,7 @@ int main() {
 ```
 
 **结论**：`volatile` 阻止的是"编译器优化"，`atomic` 提供的是"机器级原子+顺序"；凡涉及多线程共享可变状态，一律 `std::atomic`，`volatile` 在此场景下是常见误解来源。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把附录 A "volatile 与 atomic 对比" 与 ⑳ 跨语言对比 浓缩为一张能力边界图，直接破除"volatile=线程同步"的常见误解。
 
@@ -1227,7 +1227,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 55** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <atomic>

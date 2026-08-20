@@ -12,23 +12,23 @@
 > 当 C++ 标准库还"瘦得可怜"时，Boost 成了全世界的实验田与候补标准库。
 
 ### 0.1 起源（谁·何时·为何）
-Boost 于 1998–1999 年由一批 C++ 标准委员会成员（如 Beman Dawes、Dave Abrahams 等）发起 [史]，初衷有双重：一是提供一套经过同行评审、可移植、自由许可的高质量库；二是作为"标准库的试验田"——把社区里验证过的设计先放进 Boost，成熟后再提案进 ISO C++。当时的痛点很真实：C++98 刚发布，标准库只有容器、算法、IO 等最基本的东西，字符串处理、智能指针、正则、多线程、数学工具统统缺失。
+Boost 于 1998–1999 年由一批 C++ 标准委员会成员（如 Beman Dawes、Dave Abrahams 等）发起 <span class="badge badge-history">史</span>，初衷有双重：一是提供一套经过同行评审、可移植、自由许可的高质量库；二是作为"标准库的试验田"——把社区里验证过的设计先放进 Boost，成熟后再提案进 ISO C++。当时的痛点很真实：C++98 刚发布，标准库只有容器、算法、IO 等最基本的东西，字符串处理、智能指针、正则、多线程、数学工具统统缺失。
 
 ### 0.2 关键转折（编年）
-- 1998：Boost 正式成形，建立同行评审机制 [史]。
-- 2005：大量 Boost 组件进入 C++ 技术报告 TR1 [史]。
-- 2011：C++11 大规模"吸收"Boost——`shared_ptr`、`unordered_map`、`type_traits`、`regex`、`tuple` 等直接上岸标准库 [史]。
+- 1998：Boost 正式成形，建立同行评审机制 <span class="badge badge-history">史</span>。
+- 2005：大量 Boost 组件进入 C++ 技术报告 TR1 <span class="badge badge-history">史</span>。
+- 2011：C++11 大规模"吸收"Boost——`shared_ptr`、`unordered_map`、`type_traits`、`regex`、`tuple` 等直接上岸标准库 <span class="badge badge-history">史</span>。
 
 ### 0.3 设计哲学之争
-Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头文件文化、重评审"。它与"单一 coherent 的标准库"不同，更像是一个开放集市：任何好设计经评审都能入驻 [评]。代价是体量庞大、编译慢、部分库后来被标准取代而显得冗余——但它作为"标准风向标"的历史角色无可替代 [评]。
+Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头文件文化、重评审"。它与"单一 coherent 的标准库"不同，更像是一个开放集市：任何好设计经评审都能入驻 <span class="badge badge-comment">评</span>。代价是体量庞大、编译慢、部分库后来被标准取代而显得冗余——但它作为"标准风向标"的历史角色无可替代 <span class="badge badge-comment">评</span>。
 
 ### 0.4 史料补遗与持续编年
 继 2011 年"Boost 大礼包"整体上岸 C++11，Boost 的角色从"候补标准库"转向"标准先行试验田 + 长尾补充库"。
 
-- [史] C++11 之后，Boost 仍持续向标准输送设计：`boost::optional`→`std::optional`、`boost::filesystem`→`std::filesystem`、`boost::asio` 的异步模型深刻影响了协程方向；C++20 协程与 `std::ranges` 也吸收了 Boost 的早期探索。
-- [史] Boost 自身近年大改造：彻底转向 CMake、推行模块化（除 header-only 外提供可安装 module）、陆续新增 `JSON`、`URL`、`LEAF`、`StaticString` 等现代组件，同时废弃 `Boost.Signals` 等被标准取代的老库。
-- [评] Boost 的尴尬在于"成功即被超越"——它最好的库往往活成标准，剩下的要么长尾维护、要么被嫌"编译慢、体量大"；它作为"标准风向标"的历史价值仍在。
-- [轶] Boost 的同行评审邮件列表以"挑剔"闻名，确有库因命名风格或异常安全细节被反复打回，这种严审正是其"高质量"口碑的来源。
+- <span class="badge badge-history">史</span> C++11 之后，Boost 仍持续向标准输送设计：`boost::optional`→`std::optional`、`boost::filesystem`→`std::filesystem`、`boost::asio` 的异步模型深刻影响了协程方向；C++20 协程与 `std::ranges` 也吸收了 Boost 的早期探索。
+- <span class="badge badge-history">史</span> Boost 自身近年大改造：彻底转向 CMake、推行模块化（除 header-only 外提供可安装 module）、陆续新增 `JSON`、`URL`、`LEAF`、`StaticString` 等现代组件，同时废弃 `Boost.Signals` 等被标准取代的老库。
+- <span class="badge badge-comment">评</span> Boost 的尴尬在于"成功即被超越"——它最好的库往往活成标准，剩下的要么长尾维护、要么被嫌"编译慢、体量大"；它作为"标准风向标"的历史价值仍在。
+- <span class="badge badge-anecdote">轶</span> Boost 的同行评审邮件列表以"挑剔"闻名，确有库因命名风格或异常安全细节被反复打回，这种严审正是其"高质量"口碑的来源。
 
 > 史料来源：
 > - https://www.boost.org/
@@ -41,7 +41,7 @@ Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头
 
 Boost 是一组经过同行评审、可移植、开源的 C++ 库集合，被称为 C++ 的"事实标准库"。它长期充当**标准库的试验田**：大量组件经提炼后进入 ISO C++ 标准。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：Boost 库集合]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Boost 库集合
 ```cpp
 // ① 最小可感：用 Boost 的 shared_ptr（需先安装 Boost）
 // 编译：g++ -std=c++17 -I C:/boost/include ch128_min.cpp -o min.exe
@@ -57,7 +57,7 @@ int main() {
 - `[标准]`：Boost 不是标准，是**社区事实标准**；进入标准的只剩"标准里的副本"，Boost 版本通常迭代更快。
 - `[经验]`：新项目优先用 `std::` 等价物（shared_ptr/filesystem/optional…），仅当标准缺失或 Boost 有显著增强时才引入 Boost。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：Boost 库集合]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Boost 库集合
 ```cpp
 #include <memory>
 #include <optional>
@@ -68,7 +68,7 @@ int main() {
 //   Boost:   BOOST_FOREACH              ->  C++11: 基于范围的 for
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：概述：Boost 库集合]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Boost 库集合
 ```cpp
 // ① 一个"纯头文件"即可使用的 Boost 组件（无需链接）
 #include <boost/algorithm/string.hpp>
@@ -85,7 +85,7 @@ std::vector<std::string> split_demo(const std::string& s) {
 
 Boost 体量庞大，但工业界最常落地的是五个核心库。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：核心库]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心库
 ```cpp
 // ② SmartPtr：多种智能指针（scoped/intrusive/weak/shared）
 #include <boost/scoped_ptr.hpp>
@@ -94,7 +94,7 @@ Boost 体量庞大，但工业界最常落地的是五个核心库。
 // 说明：scoped_ptr 不可拷贝（作用域独占），intrusive_ptr 计数存在对象内部
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：核心库]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心库
 ```cpp
 // ② Filesystem：跨平台路径与目录操作（C++17 已标准化）
 #include <boost/filesystem.hpp>
@@ -105,7 +105,7 @@ bool exists_demo(const std::string& p) {
 }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：核心库]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心库
 ```cpp
 // ② Asio：跨平台异步 I/O（网络/定时器），思想已影响标准 std::execution/网络 TS
 // 编译：g++ -std=c++17 -I C:/boost/include ch128_asio.cpp -lboost_system -lws2_32 -o asio.exe
@@ -121,7 +121,7 @@ int asio_demo() {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：核心库]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心库
 ```cpp
 // ② Geometry：几何算法（空间索引、距离、面积），Boost.Geometry
 #include <boost/geometry.hpp>
@@ -134,7 +134,7 @@ double dist_demo() {
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：核心库]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心库
 ```cpp
 // ② Beast：基于 Asio 的 HTTP/WebSocket 库（无独立依赖）
 #include <boost/beast.hpp>
@@ -146,7 +146,7 @@ double dist_demo() {
 
 Boost 与标准库是**共生**关系：Boost 先验证，标准后收编。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：与标准库关系]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准库关系
 ```cpp
 // ③ 同一意图的两种写法：Boost 版 vs 标准版
 #include <boost/shared_ptr.hpp>   // 旧代码
@@ -155,7 +155,7 @@ boost::shared_ptr<int> b(new int(1));
 std::shared_ptr<int>   s(new int(1));   // 语义等价，接口近似
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：与标准库关系]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准库关系
 ```cpp
 // ③ Filesystem：Boost 先于标准（2003 起），C++17 收编
 #include <boost/filesystem.hpp>   // boost::filesystem
@@ -165,7 +165,7 @@ namespace fs = std::filesystem;
 std::uintmax_t size_of(const std::string& p){ return fs::file_size(p); }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：与标准库关系]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准库关系
 ```cpp
 // ③ Asio 思想尚未整体进标准，但 P0443 executor / 网络 TS 受其深刻影响
 // 现状：[经验] 网络/异步仍首选 Boost.Asio，标准网络库尚不成熟
@@ -175,7 +175,7 @@ std::uintmax_t size_of(const std::string& p){ return fs::file_size(p); }
 
 Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg 仓库）。
 
-> **示例 12** [难度 ★★★☆☆] [主题：源码剖析]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析
 ```cpp
 // 文件：https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/shared_ptr.hpp
 // 行号：412
@@ -193,7 +193,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // };
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：源码剖析]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析
 ```cpp
 // 文件：https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/detail/shared_count.hpp
 // 行号：168
@@ -213,7 +213,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 - `[实现·GCC15]`：本机 g++ 13.1.0 的 `std::shared_ptr` 实现（libstdc++）采用同一思路（`_Sp_counted_base` 的 `_M_use_count` 用 `__atomic_fetch_add`），与上游 Boost 思路一致。
 - `[平台·Windows]`：控制块通常 16 字节对齐分配（`new Widget` 与计数一起或分离），影响缓存局部性。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：源码剖析]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析
 ```cpp
 // ④ 文件：https://github.com/boostorg/filesystem/blob/develop/include/boost/filesystem/path.hpp
 // 行号：1024
@@ -226,7 +226,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // }
 ```
 
-> **示例 15** [难度 ★★★☆☆] [主题：源码剖析]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析
 ```cpp
 // ④ 文件：https://github.com/boostorg/asio/blob/develop/include/boost/asio/basic_socket.hpp
 // 行号：256
@@ -262,7 +262,7 @@ add_executable(demo main.cpp)
 target_link_libraries(demo PRIVATE Boost::system Boost::filesystem)
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：编译与 B2 / CMake]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译与 B2 / CMake
 ```cpp
 // ⑤ 编译命令（含 -I 路径）示例，标注"典型输出（本机未装 Boost）"
 // g++ -std=c++17 -I C:/boost/include main.cpp -L C:/boost/lib -lboost_system -lboost_filesystem -o app
@@ -276,7 +276,7 @@ target_link_libraries(demo PRIVATE Boost::system Boost::filesystem)
 
 Boost 组件分两类：**纯头文件**（header-only，无需链接）与**需编译库**（含 .cpp，需链接 .lib/.so）。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：头-only vs 需编译]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头-only vs 需编译
 ```cpp
 // ⑥ 头-only 示例：boost::algorithm、boost::lexical_cast、Boost.MPL 等
 #include <boost/lexical_cast.hpp>
@@ -286,7 +286,7 @@ int to_int(const std::string& s) {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：头-only vs 需编译]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 头-only vs 需编译
 ```cpp
 // ⑥ 需编译库示例：Boost.Filesystem / Boost.System / Boost.Asio
 // 这些库含独立 .cpp，必须链接对应二进制，否则报 undefined reference
@@ -299,7 +299,7 @@ int need_link() {
 - `[经验]`：头-only 库零部署成本，适合分发；需编译库体积大、有 ABI 约束，适合集中安装到工具链。
 - `[平台·Windows]`：Windows 下需编译库的文件名带编译器/版本后缀（如 `libboost_filesystem-mgw13-mt-x64-1_83.dll`），混用会 ABI 错配。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：头-only vs 需编译]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头-only vs 需编译
 ```cpp
 // ⑥ 用 BOOST_* 宏控制头-only 行为（部分库可在头-only 与编译型之间切换）
 // 例如 Boost.System：定义 BOOST_SYSTEM_NO_DEPRECATED 可去掉废弃接口
@@ -311,7 +311,7 @@ int need_link() {
 
 Boost 普遍提供**强/基本异常保证**；理解它才能在异常路径下不泄漏资源。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：异常安全]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常安全
 ```cpp
 // ⑦ shared_ptr 构造的异常安全：若第二个 new 抛异常，已分配的会被释放
 #include <boost/shared_ptr.hpp>
@@ -321,7 +321,7 @@ void safe() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：异常安全]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全
 ```cpp
 // ⑦ 文件操作的异常：Boost.Filesystem 抛 boost::filesystem::filesystem_error
 #include <boost/filesystem.hpp>
@@ -338,7 +338,7 @@ void maybe_throw() {
 - `[标准]`：Boost 的异常保证遵循与标准库一致的分级（nothrow / 基本 / 强）。
 - `[经验]`：用 RAII（智能指针、作用域守卫）把"成功/失败"两路径都收敛到析构，避免裸 `new`/裸 `FILE*`。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：异常安全]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全
 ```cpp
 // ⑦ 用 Boost 的 no-throw 变体避免异常（嵌入式/实时场景）
 #include <boost/shared_ptr.hpp>
@@ -352,7 +352,7 @@ void nothrow_demo() {
 
 Boost 是模板元编程（TMP）的巅峰。以 **CRTP** 为例——编译期多态，零虚函数开销，正是 `Boost.Operators`、`Boost.Iterator` 的基石。
 
-> **示例 23** [难度 ★★★★★] [主题：[实现·Boost] 模板元编程大量]
+> **示例 23** <span class="badge badge-exp">难度 ★★★★★</span> · [实现·Boost] 模板元编程大量
 ```cpp
 // ⑧ 文件：Examples/_ch128_crtp.cpp（已用本机 g++ 13.1.0 真实编译取汇编）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch128_crtp.cpp -o Examples/_ch128_crtp.asm
@@ -387,7 +387,7 @@ main:
 - `[实现·GCC15]`：GCC 13 把 `a + b` 内联并常量传播为 `7`，证明 CRTP 是**零成本抽象**——对比虚函数需在运行期查 vtable。
 - `[标准]`：CRTP 是纯语言特性（模板 + 静态多态），归 ISO C++ 范畴，Boost 仅是其最大实践者。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：[实现·Boost] 模板元编程大量]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·Boost] 模板元编程大量
 ```cpp
 // ⑧ Boost.Operators 风格：用 CRTP 自动派生 operator 族（示意）
 #include <boost/operators.hpp>
@@ -401,7 +401,7 @@ struct Point : boost::addable<Point> {
 
 为取证 Boost 解决的机制，下面用**纯标准库**复刻其核心行为，并取真实汇编（不依赖 Boost）。
 
-> **示例 25** [难度 ★★★★☆] [主题：[实现·Boost] 真实：编译对应]
+> **示例 25** <span class="badge badge-exp">难度 ★★★★☆</span> · [实现·Boost] 真实：编译对应
 ```cpp
 // ⑨ 文件：Examples/_ch128_shared_ptr.cpp（自包含引用计数指针，已真实编译）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch128_shared_ptr.cpp -o Examples/_ch128_shared_ptr.asm
@@ -468,7 +468,7 @@ _ZN13my_shared_ptrI6WidgetED1Ev:
 - `[实现·GCC15]`：真实汇编出现 `lock sub`/`lock add`——证明引用计数的线程安全来自 `std::atomic` 的 `lock` 前缀指令（x86 原子 RMW），与 Boost/std 的 `shared_ptr` 实现同构。本机运行 `_ch128_shared_ptr.exe` 退出码为 **44**，与源码 `2 + 42` 一致。
 - `[标准]`：此自包含实现等价于 `std::shared_ptr` 的核心语义；Boost 的 `boost::shared_ptr` 在 C++11 前就提供了同样的原子计数（用 Boost.Atomic 或平台原子）。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：[实现·Boost] 真实：编译对应]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·Boost] 真实：编译对应
 ```cpp
 // ⑨ 另一个机制：ScopeExit（RAII 守卫），对应 Boost.ScopeExit
 // 文件：Examples/_ch128_scope_exit.cpp（已真实编译，无 Boost）
@@ -487,7 +487,7 @@ int main(){ FILE* f=std::fopen("/tmp/x.log","w"); scope_exit g{close_file,(void*
 
 Boost 组件在调试时信息密集但符号长；掌握技巧能省大量时间。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试
 ```cpp
 // ⑩ 用 BOOST_ASSERT / BOOST_ASSERT_MSG 获得带上下文的断言
 #define BOOST_ENABLE_ASSERT_HANDLER
@@ -497,7 +497,7 @@ void check(bool ok) {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试
 ```cpp
 // ⑩ 在 GDB 中查看 shared_ptr 内部：px（裸指针）与 pn（计数）
 // (gdb) p *sp._M_ptr         // libstdc++ 命名；Boost 为 sp.px_
@@ -507,7 +507,7 @@ void check(bool ok) {
 - `[经验]`：Boost 符号经多层模板展开极长（如 `boost::shared_ptr<...>` 的 mangled 名），GDB 用 `set print pretty` 与 `whatis` 化简。
 - `[平台·Windows]`：Windows 下用 `.pdb` + 源码级调试；Boost 发行版常带调试符号变体（如 `libboost_*-gd-*`）。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试
 ```cpp
 // ⑩ 用 boost::core::demangle 在运行时打印类型名（调试反射）
 #include <boost/core/demangle.hpp>
@@ -522,7 +522,7 @@ std::string name_of(const std::type_info& ti){
 
 Boost 的设计哲学是**零成本抽象**，但部分组件有可测量的开销。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：性能]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
 ```cpp
 // ⑪ shared_ptr 的原子计数在多线程下是真实成本（每次拷贝/析构 lock 前缀）
 // 单线程热路径可用 boost::intrusive_ptr 或 unique_ptr 规避原子开销
@@ -530,7 +530,7 @@ Boost 的设计哲学是**零成本抽象**，但部分组件有可测量的开�
 // intrusive_ptr 的计数存于对象自身，且可关闭原子（单线程安全模式）
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：性能]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
 ```cpp
 // ⑪ Asio 的 proactor 模型：每连接开销低，epoll/iocp 驱动，吞吐量高
 // 性能示意（量级，非本机实测）：单线程 io_context 可驱动 10w+ 并发连接
@@ -540,7 +540,7 @@ Boost 的设计哲学是**零成本抽象**，但部分组件有可测量的开�
 - `[经验]`：优先 `unique_ptr`（零原子）；必须共享时才 `shared_ptr`；热路径避免频繁拷贝 `shared_ptr`。
 - `[平台·x86-64]`：x86-64 上 `lock` 前缀原子在争用高时显著拖慢；NUMA 下控制块跨节点更痛。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：性能]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
 ```cpp
 // ⑪ 用 boost::container::small_vector 减少堆分配（小数据栈上内联）
 #include <boost/container/small_vector.hpp>
@@ -555,7 +555,7 @@ boost::container::small_vector<int, 16> hot_path(){
 
 Boost 的核心价值之一是**抹平平台差异**。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 ```cpp
 // ⑫ 路径分隔符：Boost.Filesystem 自动适配（Windows '\\' / Unix '/'）
 #include <boost/filesystem.hpp>
@@ -563,14 +563,14 @@ namespace fs = boost::filesystem;
 fs::path p = fs::path("a") / "b" / "c";  // 跨平台均正确
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：跨平台]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台
 ```cpp
 // ⑫ 线程/同步：Boost.Thread 在 C++11 前提供可移植线程
 #include <boost/thread.hpp>
 void worker(){ boost::thread t([]{ /* ... */ }); t.join(); }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 ```cpp
 // ⑫ 字节序/对齐：Boost.Endian 处理网络字节序，跨架构安全
 #include <boost/endian/arithmetic.hpp>
@@ -582,26 +582,26 @@ boost::endian::big_int32_t net_value = 0x01020304;  // 大端存储，跨机一�
 
 ## ⑬ 常见陷阱（版本 / ABI）
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：常见陷阱（版本 / ABI）]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱（版本 / ABI）
 ```cpp
 // ⑬ ❌ 错误：混链不同 Boost 版本编译的库（ABI 不兼容）
 //    app 用 Boost 1.83 头、却链 Boost 1.75 的 libboost_filesystem
 //    -> 运行期崩溃 / 静默数据错乱
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：常见陷阱（版本 / ABI）]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱（版本 / ABI）
 ```cpp
 // ⑬ ✅ 正确：头版本与链接库版本严格一致；用 find_package 锁定
 // CMake: find_package(Boost 1.83 EXACT REQUIRED COMPONENTS filesystem)
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：常见陷阱（版本 / ABI）]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱（版本 / ABI）
 ```cpp
 // ⑬ ❌ 错误：跨 DLL 边界传递 boost::shared_ptr 却未用同一 CRT/Boost 构建
 //    -> 控制块在一个堆分配、在另一个堆释放 -> 双重释放/崩溃
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：常见陷阱（版本 / ABI）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱（版本 / ABI）
 ```cpp
 // ⑬ ✅ 正确：把 Boost 作为接口边界的"实现细节"封装，边界只暴露 POD/标准类型
 //    或用 BOOST_SYMBOL_EXPORT / 统一编译选项（同 /MD、同 Boost 版本）
@@ -614,7 +614,7 @@ boost::endian::big_int32_t net_value = 0x01020304;  // 大端存储，跨机一�
 
 Boost 正从"单一巨库"走向**模块化**：自 Boost 1.73 起采用模块化的 Git 子仓库（每个库独立 `boostorg/<lib>`）。
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：演进（模块化 Boost）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（模块化 Boost）
 ```cpp
 // ⑭ 现代用法：只取需要的子模块，显式声明依赖（Boost.Deprecated 会被剔除）
 // 例如只要 Asio + System，不拉整个 Boost：
@@ -623,7 +623,7 @@ Boost 正从"单一巨库"走向**模块化**：自 Boost 1.73 起采用模块�
 //   + 依赖的 config / core / preprocessor / assert / throw_exception ...
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：演进（模块化 Boost）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（模块化 Boost）
 ```cpp
 // ⑭ C++20 Modules 对 Boost 的影响：Boost 当前仍以头文件为主，
 //     头-only 库天然适合做成模块接口（减少重编译），但官方 modules 支持尚在试验
@@ -637,21 +637,21 @@ Boost 正从"单一巨库"走向**模块化**：自 Boost 1.73 起采用模块�
 
 ## ⑮ 最佳实践
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑮ 优先用 std:: 等价物，仅在 Boost 有独占能力时引入 Boost
 //   独占能力例：Boost.Asio（异步网络）、Boost.Beast（HTTP/WS）、
 //              Boost.Geometry、Boost.Spirit（解析器 DSL）、Boost.MPL/Fusion
 ```
 
-> **示例 43** [难度 ★★★☆☆] [主题：最佳实践]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
 ```cpp
 // ⑮ 头-only 优先：减少部署与 ABI 风险
 //   可用 header-only 的部分：algorithm / lexical_cast / numeric / type_traits
 //   必须编译的部分：filesystem / system / asio(部分) / regex / thread / date_time
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑮ 用命名空间别名缩短，但别 using namespace boost; 于头文件
 namespace fs = boost::filesystem;     // ✅ 局部别名
@@ -665,7 +665,7 @@ namespace fs = boost::filesystem;     // ✅ 局部别名
 
 Boost 与其他库协作是常态（标准库、OpenSSL、Protobuf 等）。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：跨库]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 ```cpp
 // ⑯ Boost.Asio + OpenSSL：HTTPS/TLS 服务（Beast 的 ssl_stream）
 // 编译：g++ -std=c++17 -I C:/boost/include -I C:/openssl/include \
@@ -676,14 +676,14 @@ Boost 与其他库协作是常态（标准库、OpenSSL、Protobuf 等）。
 // boost::beast::ssl_stream<boost::beast::tcp_stream> 承载 TLS
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：跨库]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 ```cpp
 // ⑯ Boost 与标准容器互操作：Boost.Container 可作为 std 容器的 drop-in 增强
 #include <boost/container/flat_map.hpp>
 boost::container::flat_map<int, int> m;  // 连续存储的 map，缓存更友好
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：跨库]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 ```cpp
 // ⑯ Boost.Serialization 与 Protobuf 取舍：前者 C++ 原生、后者跨语言
 #include <boost/serialization/serialization.hpp>
@@ -694,7 +694,7 @@ boost::container::flat_map<int, int> m;  // 连续存储的 map，缓存更友�
 
 Boost 以**同行评审**著称；贡献需走正式流程。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：贡献]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献
 ```cpp
 // ⑰ 贡献路径（上游参考）：
 //   1) 在 https://github.com/boostorg/<lib> 提 Issue 讨论设计
@@ -703,7 +703,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 //   4) 通过后合入 develop 分支，随发布周期进 master
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：贡献]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献
 ```cpp
 // ⑰ 最小补丁示例：为某算法补充 noexcept/约束（示意）
 // 文件：https://github.com/boostorg/algorithm/blob/develop/include/boost/algorithm/cxx11/all_of.hpp
@@ -745,7 +745,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 - `[标准]`：上表"进入标准"指**接口/语义被标准收编**；Boost 同名组件通常继续维护并提供标准版没有的扩展（如 `boost::filesystem` 的更多路径操作）。
 - `[经验]`：C++17 之后"Boost 必要性"下降，但 Asio / Beast / Geometry / Spirit / MPL 仍是标准洼地。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：与标准对应表]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准对应表
 ```cpp
 // ⑱ 双轨写法：用宏在 Boost 与 std 间切换（便于渐进迁移）
 #if __cplusplus >= 201703L
@@ -761,7 +761,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 深入源码是掌握 Boost 的根本。以下为**上游参考**式阅读入口（本机未装，引用 URL + 行号）。
 
-> **示例 51** [难度 ★★★☆☆] [主题：调试 / 源码阅读]
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试 / 源码阅读
 ```cpp
 // 文件：https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/shared_ptr.hpp
 // 行号：412
@@ -773,7 +773,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 // }   // 构造即把 p 交给控制块 pn 管理
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 #include <cstddef>
 // 文件：https://github.com/boostorg/asio/blob/develop/include/boost/asio/impl/io_context.hpp
@@ -785,7 +785,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 // }
 ```
 
-> **示例 53** [难度 ★★☆☆☆] [主题：调试 / 源码阅读]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑲ 本机可做的源码阅读：用上面真实编译的 _ch128_shared_ptr 对照
 //    在 GDB 下单步，观察 control block 的 strong 计数变化，
@@ -800,16 +800,16 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 Boost.TypeTraits 做编译期判断（C++11 前）。** 你迁移到标准 `<type_traits>`。请说明对应。
-   - [标准] C++11 起标准提供 `<type_traits>` 全套编译期特性，与 Boost.TypeTraits 概念对应。
-   - [引用] ISO/IEC 14882:2023 §[meta]（标准类型特性）/ Boost.TypeTraits 文档；cppreference "Type traits" 词条。
+   - <span class="badge badge-std">标准</span> C++11 起标准提供 `<type_traits>` 全套编译期特性，与 Boost.TypeTraits 概念对应。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[meta]（标准类型特性）/ Boost.TypeTraits 文档；cppreference "Type traits" 词条。
 
 2. **真实场景：用 Boost.MP11 做类型列表元编程。** 你写编译期类型算法。请说明语言支撑。
-   - [标准] 模板与特化（[temp]）是编译期类型计算的语言基础；MP11 建立在此之上。
-   - [引用] ISO/IEC 14882:2023 §[temp]（模板元编程）/ Boost.MP11 文档；cppreference "Template metaprogramming" 词条。
+   - <span class="badge badge-std">标准</span> 模板与特化（[temp]）是编译期类型计算的语言基础；MP11 建立在此之上。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp]（模板元编程）/ Boost.MP11 文档；cppreference "Template metaprogramming" 词条。
 
 3. **真实场景：Boost 版本与 C++ 标准版本要求耦合。** 你升级 Boost 后需更高标准。请说明判定。
-   - [标准] 以特性测试宏与实现支持矩阵判定，而非假设版本。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ Boost 文档；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 以特性测试宏与实现支持矩阵判定，而非假设版本。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ Boost 文档；cppreference "Feature test macros" 词条。
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
@@ -835,7 +835,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
   需编译库：必须 -L <boost>/lib -lboost_<lib> 且版本/ABI 严格匹配
 ```
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 一行判断该不该用 Boost：
 //   标准已有等价物 → 用 std::（shared_ptr/filesystem/optional/format/ranges…）
@@ -858,7 +858,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 | 领域 | 代表 / 能力 | Boost 扮演的角色 | 备注 |
 |---|---|---|---|
-| 标准库的「试验田」 | `std::shared_ptr`←SmartPtr · `std::optional`←Optional · `std::variant`←Variant · `std::filesystem`←Filesystem · `std::regex`←Regex · `std::format` 受 Format/{fmt} 影响 | 接口/语义被标准收编，Boost 是先验验证方 | 见 ⑱ / ㉒.4 提案链路 [史] |
+| 标准库的「试验田」 | `std::shared_ptr`←SmartPtr · `std::optional`←Optional · `std::variant`←Variant · `std::filesystem`←Filesystem · `std::regex`←Regex · `std::format` 受 Format/{fmt} 影响 | 接口/语义被标准收编，Boost 是先验验证方 | 见 ⑱ / ㉒.4 提案链路 <span class="badge badge-history">史</span> |
 | 网络与异步 | Boost.Asio | C++ 标准网络 TS 的源头，广泛用于服务端/中间件 | 标准网络库尚不成熟 |
 | 图与解析 | Boost.Graph · Boost.Spirit | 算法/DSL 领域事实标准 | 标准尚未覆盖 |
 | 下游库的内部依赖 | 大量开源库（含部分标准库实现与工具链） | 内部大量使用 Boost 组件 | 透明依赖，开发者常不自知 |
@@ -869,7 +869,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 最能体现 Boost→标准 传承的，是 **Boost.Optional 进化为 `std::optional`**。下面用纯标准库复刻它的核心：用"可能有值"的类型替代裸指针哨兵：
 
-> **示例 55** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：用
 ```cpp
 // ㉑.2 用标准库 std::optional 复刻 Boost.Optional 的核心思想（本块可独立编译，GCC 15.3.0 验证）
 #include <optional>
@@ -896,7 +896,7 @@ int main() {
 
 下面才是你在 Boost 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：㉑.3 真实 Boost API 长]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 Boost API 长
 ```cpp
 // ㉑.3 真实 Boost 用法（仅注释演示，门禁按空块编译通过）：
 //   #include <boost/asio.hpp>                  // 网络/异步 I/O（标准网络 TS 的源头）
@@ -1002,7 +1002,7 @@ Boost 不是教科书玩具，而是工业软件的隐形底座：
 
 ## 附录 F：Boost生态
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：附录 F：Boost生态]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：Boost生态
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, optional→C++17, Asio→TS"<<std::endl;return 0;}
@@ -1063,7 +1063,7 @@ int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, op
 
 函数模板按实参推导返回类型；`std::optional` 以强类型表达"可能缺失"，替代易错的哨兵值：
 
-> **示例 58** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <optional>
 #include <string_view>
@@ -1078,9 +1078,9 @@ int main() {
 }
 ```
 
-[标准] 函数模板按实参推导；`std::optional` 表达可能缺失的值，编译期强类型安全。
+<span class="badge badge-std">标准</span> 函数模板按实参推导；`std::optional` 表达可能缺失的值，编译期强类型安全。
 
-[引用] Boost.Optional：<https://www.boost.org/doc/libs/release/libs/optional/>；cppreference `std::optional`：<https://en.cppreference.com/w/cpp/utility/optional>。
+<span class="badge badge-ref">引用</span> Boost.Optional：<https://www.boost.org/doc/libs/release/libs/optional/>；cppreference `std::optional`：<https://en.cppreference.com/w/cpp/utility/optional>。
 
 </details>
 
@@ -1092,7 +1092,7 @@ int main() {
 
 C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
-> **示例 59** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <concepts>
 template <std::integral T>
@@ -1100,9 +1100,9 @@ T sample_count(T n) { return n > 0 ? n : 0; }
 int main() { return sample_count(10) == 10 ? 0 : 1; }
 ```
 
-[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+<span class="badge badge-std">标准</span> 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
 
-[引用] Boost.Accumulators：<https://www.boost.org/doc/libs/release/libs/accumulators/>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
+<span class="badge badge-ref">引用</span> Boost.Accumulators：<https://www.boost.org/doc/libs/release/libs/accumulators/>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
 
 </details>
 
@@ -1114,16 +1114,16 @@ int main() { return sample_count(10) == 10 ? 0 : 1; }
 
 `constexpr` 递归函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值：
 
-> **示例 60** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
 static_assert(fact(5) == 120);
 int main() { return fact(5); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+<span class="badge badge-std">标准</span> `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
 
-[引用] Boost.Hana：<https://www.boost.org/doc/libs/release/libs/hana/>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
+<span class="badge badge-ref">引用</span> Boost.Hana：<https://www.boost.org/doc/libs/release/libs/hana/>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
 
 </details>
 
@@ -1144,7 +1144,7 @@ int main() { return fact(5); }
 
 可复现基准（自包含、可编译）：
 
-> **示例 61** [难度 ★★☆☆☆] [主题：真实性能基准：Boost 惯用抽象的]
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实性能基准：Boost 惯用抽象的
 ```cpp
 // g++ -std=c++23 -O2 ch128_bench.cpp
 #include <chrono>

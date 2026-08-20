@@ -8,10 +8,10 @@
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
 
 立场分层约定：
-- **[标准]**　语言/库标准规定（ISO C++、LWG 决议）。
-- **[实现]**　libstdc++ / libc++ / MS STL 的具体代码行为。
+- **<span class="badge badge-std">标准</span>**　语言/库标准规定（ISO C++、LWG 决议）。
+- **<span class="badge badge-impl">实现</span>**　libstdc++ / libc++ / MS STL 的具体代码行为。
 - **[平台·x86-64]**　MinGW GCC 13.1.0、Windows、ABI 相关事实。
-- **[经验]**　工程实践、坑与取舍。
+- **<span class="badge badge-exp">经验</span>**　工程实践、坑与取舍。
 
 环境事实（本机探测）：MinGW **GCC 13.1.0**；libstdc++ 头文件根目录
 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；PMR 在本机可用，`synchronized_pool_resource` 可用（定义 `_GLIBCXX_HAS_GTHREADS`）。
@@ -23,24 +23,24 @@
 > 容器要内存，却不该关心内存从哪来——分配器是把"容器"与"内存策略"解耦的抽象。
 
 ### 0.1 起源（谁·何时·为何）
-STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内存从哪里来"解耦。分配器（allocator）因此诞生——容器模板多一个 `Allocator` 参数，默认 `std::allocator` 只是薄包 `::operator new`。[史] 但原始 STL 分配器接口（rebind、pointer 类型别名）过于复杂，被讥为"默认无意义"。[史][评]
+STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内存从哪里来"解耦。分配器（allocator）因此诞生——容器模板多一个 `Allocator` 参数，默认 `std::allocator` 只是薄包 `::operator new`。<span class="badge badge-history">史</span> 但原始 STL 分配器接口（rebind、pointer 类型别名）过于复杂，被讥为"默认无意义"。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
-- **C++98**：原始 allocator 概念，几乎人人用默认。[史]
-- **C++11**：allocator 被精简（`pointer` / `reference` 等别名大多移除，依赖 `std::allocator_traits` 推导）。[史]
-- **C++17**：`std::pmr`（多态分配器 + 内存资源 `memory_resource`），用运行时多态切换内存池，告别编译期模板爆炸。[史]
+- **C++98**：原始 allocator 概念，几乎人人用默认。<span class="badge badge-history">史</span>
+- **C++11**：allocator 被精简（`pointer` / `reference` 等别名大多移除，依赖 `std::allocator_traits` 推导）。<span class="badge badge-history">史</span>
+- **C++17**：`std::pmr`（多态分配器 + 内存资源 `memory_resource`），用运行时多态切换内存池，告别编译期模板爆炸。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-"编译期分配器"（类型参数，零开销但模板膨胀）vs "运行时分配器"（PMR，灵活但一次间接调用）。[评] 委员会先给前者、再补后者，承认大多数场景默认 allocator 就够，真正需要定制的是少数性能热点。[史][评]
+"编译期分配器"（类型参数，零开销但模板膨胀）vs "运行时分配器"（PMR，灵活但一次间接调用）。<span class="badge badge-comment">评</span> 委员会先给前者、再补后者，承认大多数场景默认 allocator 就够，真正需要定制的是少数性能热点。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++17 用 `std::pmr` 补上运行时多态分配器。此后 PMR 生态与协程内存继续生长。[史]
+0.2 停在 C++17 用 `std::pmr` 补上运行时多态分配器。此后 PMR 生态与协程内存继续生长。<span class="badge badge-history">史</span>
 
-- **C++20 `std::allocator` 成 constexpr**：分配器可在编译期使用，配合 constexpr new（见 ch37）让容器在编译期也能分配，是"分配器可作为编译期积木"的关键一步。[史]
-- **C++23 `std::generator`（P2168）与协程内存**：生成器协程的产出需要分配器参与（其 `promise_type` 可用 `std::allocator_traits`），把 0.1 那句"容器与内存解耦"延伸到惰性序列（见 ch36 协程帧）。[史]
-- **自定义 `memory_resource` 生态**：除标准 `new_delete` / `pool` / `monotonic` 外，社区出现感知 NUMA、对齐、调试记账的自定义资源，印证 0.3 "少数热点才需定制"的判断。[史][评]
-- **行业争议**：PMR 的"一次间接调用 + 类型擦除"被诟病在极热路径拖慢；零开销派仍偏好编译期 `std::allocator` 或手写池（ch44），两派分歧延续 0.3。[史][评]
+- **C++20 `std::allocator` 成 constexpr**：分配器可在编译期使用，配合 constexpr new（见 ch37）让容器在编译期也能分配，是"分配器可作为编译期积木"的关键一步。<span class="badge badge-history">史</span>
+- **C++23 `std::generator`（P2168）与协程内存**：生成器协程的产出需要分配器参与（其 `promise_type` 可用 `std::allocator_traits`），把 0.1 那句"容器与内存解耦"延伸到惰性序列（见 ch36 协程帧）。<span class="badge badge-history">史</span>
+- **自定义 `memory_resource` 生态**：除标准 `new_delete` / `pool` / `monotonic` 外，社区出现感知 NUMA、对齐、调试记账的自定义资源，印证 0.3 "少数热点才需定制"的判断。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **行业争议**：PMR 的"一次间接调用 + 类型擦除"被诟病在极热路径拖慢；零开销派仍偏好编译期 `std::allocator` 或手写池（ch44），两派分歧延续 0.3。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/allocator ｜ https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/iterator/generator
 
@@ -49,9 +49,9 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 [第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)
 [第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
 
-**[标准]**　分配器是标准容器（`vector`/`list`/`map`/…）与底层内存申请/释放之间的**可替换策略对象**。容器向分配器请求「N 个 `T` 对象的原始内存」与「构造/析构对象」，而**不直接**调用 `new`/`delete`。这是「算法与存储解耦」的经典设计。
+**<span class="badge badge-std">标准</span>**　分配器是标准容器（`vector`/`list`/`map`/…）与底层内存申请/释放之间的**可替换策略对象**。容器向分配器请求「N 个 `T` 对象的原始内存」与「构造/析构对象」，而**不直接**调用 `new`/`delete`。这是「算法与存储解耦」的经典设计。
 
-**[经验]**　一句话记忆：**容器管对象生命周期，分配器管内存从哪来。** 没有分配器，你就无法在栈缓冲、共享内存、内存池、GPU 显存上放一个 `std::vector`。
+**<span class="badge badge-exp">经验</span>**　一句话记忆：**容器管对象生命周期，分配器管内存从哪来。** 没有分配器，你就无法在栈缓冲、共享内存、内存池、GPU 显存上放一个 `std::vector`。
 
 本章覆盖的两条主线：
 - **经典分配器模型**（C++98 起，`std::allocator` + C++11 `std::allocator_traits`）。
@@ -63,12 +63,12 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 
 ## ② 设计动机：容器与内存解耦，但「默认无意义」
 
-**[标准]**　`std::allocator<T>` 是「默认分配器」（`[allocator.requirements]`）。任何容器都接收一个 `Allocator` 模板参数，缺省为 `std::allocator<value_type>`。
+**<span class="badge badge-std">标准</span>**　`std::allocator<T>` 是「默认分配器」（`[allocator.requirements]`）。任何容器都接收一个 `Allocator` 模板参数，缺省为 `std::allocator<value_type>`。
 
 **[实现·GCC15]**　libstdc++ 里 `std::allocator<T>` 的基类是 `__new_allocator<T>`，见
 `x86_64-w64-mingw32/bits/c++allocator.h:47`：
 
-> **示例 1** [难度 ★★☆☆☆] [主题：设计动机：容器与内存解耦，但默认无]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 设计动机：容器与内存解耦，但默认无
 ```cpp
 // x86_64-w64-mingw32/bits/c++allocator.h:46-47
 template<typename _Tp>
@@ -77,7 +77,7 @@ template<typename _Tp>
 
 而 `__new_allocator::allocate`（`bits/new_allocator.h:121-148`）最终就是：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：设计动机：容器与内存解耦，但默认无]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 设计动机：容器与内存解耦，但默认无
 ```cpp
 // bits/new_allocator.h:143-147
 std::align_val_t __al = std::align_val_t(alignof(_Tp));
@@ -86,7 +86,7 @@ return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp), __al));
 
 即 `_GLIBCXX_OPERATOR_NEW` 在支持内建时为 `__builtin_operator_new`，否则为 `::operator new`（见 `bits/new_allocator.h:111-117`）。**也就是说 `std::allocator` 默认 100% 等价于全局 `::operator new`。**
 
-**[经验]（Scott Meyers 观点内化）]**　Meyers 在《Effective STL》第 10 条指出：**除非你需要自定义内存来源（共享内存、池、调试统计），否则"默认分配器"对你毫无意义——它只是 `operator new` 的薄包装，没有任何加速。** 真正有价值的是「自定义分配器」与「PMR」。本章第 5、6、10–14 节给出有价值的部分。
+**<span class="badge badge-exp">经验</span>（Scott Meyers 观点内化）]**　Meyers 在《Effective STL》第 10 条指出：**除非你需要自定义内存来源（共享内存、池、调试统计），否则"默认分配器"对你毫无意义——它只是 `operator new` 的薄包装，没有任何加速。** 真正有价值的是「自定义分配器」与「PMR」。本章第 5、6、10–14 节给出有价值的部分。
 
 **结论**：allocator 是一个**扩展点（extension point）**，默认实现只是占位。不要为了用而用。
 
@@ -94,7 +94,7 @@ return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp), __al));
 
 ## ③ 经典 `std::allocator` 接口
 
-**[标准]**　`std::allocator<T>` 必须提供的成员（`[allocator.members]`）：
+**<span class="badge badge-std">标准</span>**　`std::allocator<T>` 必须提供的成员（`[allocator.members]`）：
 
 | 成员 | 含义 | 状态 |
 |------|------|------|
@@ -108,7 +108,7 @@ return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp), __al));
 
 **真实源码（libstdc++ `std::allocator` 主模板，`bits/allocator.h:129-227`）**：
 
-> **示例 3** [难度 ★★★☆☆] [主题：经典 std::allocator ]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 经典 std::allocator
 ```cpp
 #include <cstddef>
 // bits/allocator.h:129-147 —— 主模板只声明类型别名与 rebind，其余继承基类
@@ -134,7 +134,7 @@ template<typename _Tp>
 
 注意 **C++20 起** `std::allocator` 删除了 `pointer`/`rebind` 等成员（`bits/allocator.h:137-147` 被 `#if __cplusplus <= 201703L` 包住），构造/析构 `allocate`/`deallocate` 改为在类内定义并优先走常量求值分支（`bits/allocator.h:186-212`）：
 
-> **示例 4** [难度 ★★★☆☆] [主题：经典 std::allocator ]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 经典 std::allocator
 ```cpp
 #include <cstddef>
 // bits/allocator.h:186-199 (C++20)
@@ -159,7 +159,7 @@ constexpr _Tp* allocate(size_t __n)
 
 程序 1：直接用 `std::allocator` 申请/释放（完整可编译）：
 
-> **示例 5** [难度 ★★☆☆☆] [主题：经典 std::allocator ]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典 std::allocator
 ```cpp
 // 编译: g++ -std=c++17 ch38_p1.cpp -o ch38_p1
 #include <memory>
@@ -183,13 +183,13 @@ int main() {
 
 ## ④ `std::allocator_traits`：最小接口与默认实现
 
-**[标准]**　C++11 引入 `allocator_traits<A>`，它把「容器需要什么」与「分配器提供什么」解耦：**容器永远只通过 `allocator_traits` 访问分配器**，而非直接调用成员。这带来两大好处：
+**<span class="badge badge-std">标准</span>**　C++11 引入 `allocator_traits<A>`，它把「容器需要什么」与「分配器提供什么」解耦：**容器永远只通过 `allocator_traits` 访问分配器**，而非直接调用成员。这带来两大好处：
 1. 老式分配器缺少 `construct`/`destroy`/`pointer` 也能用（traits 提供默认）。
 2. `rebind` 由 traits 统一计算（见 `bits/alloc_traits.h:228`）。
 
 **真实源码（libstdc++ `allocator_traits` 主模板，`bits/alloc_traits.h:105-230`）**：
 
-> **示例 6** [难度 ★★★☆☆] [主题：std::allocatortrai]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
 ```cpp
 // bits/alloc_traits.h:105-117 —— 主模板只取 value_type，其余用「检测或默认」
 struct allocator_traits : __allocator_traits_base
@@ -201,7 +201,7 @@ struct allocator_traits : __allocator_traits_base
 
 传播 traits 与 `is_always_equal` 的「检测或默认」逻辑（`bits/alloc_traits.h:197-225`）：
 
-> **示例 7** [难度 ★★☆☆☆] [主题：std::allocatortrai]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::allocatortrai
 ```cpp
 // bits/alloc_traits.h:197-225
 using propagate_on_container_copy_assignment
@@ -216,7 +216,7 @@ using is_always_equal
 
 `rebind_alloc` 的推导（`bits/alloc_traits.h:227-230`）：
 
-> **示例 8** [难度 ★★★☆☆] [主题：std::allocatortrai]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
 ```cpp
 // bits/alloc_traits.h:227-230
 template<typename _Tp>
@@ -227,7 +227,7 @@ template<typename _Tp>
 
 **`std::allocator<T>` 的 traits 特化**（`bits/alloc_traits.h:428-470`）明确给出传播行为与 `is_always_equal`：
 
-> **示例 9** [难度 ★★★☆☆] [主题：std::allocatortrai]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
 ```cpp
 // bits/alloc_traits.h:455-470
 using propagate_on_container_copy_assignment = false_type;
@@ -238,7 +238,7 @@ template<typename _Up>
   using rebind_alloc = allocator<_Up>;
 ```
 
-**[标准]**　「最小接口」原则：你只要提供 `value_type` + `allocate` + `deallocate`，其余（`construct`/`destroy`/`pointer`/`size_type`/`rebind`/传播 traits）全部由 `allocator_traits` 给默认。
+**<span class="badge badge-std">标准</span>**　「最小接口」原则：你只要提供 `value_type` + `allocate` + `deallocate`，其余（`construct`/`destroy`/`pointer`/`size_type`/`rebind`/传播 traits）全部由 `allocator_traits` 给默认。
 
 **核心知识点 #4（rebind 机制）**：节点型容器（`list`/`map`/`set`）内部节点是 `Node<T>`，不是 `T`。容器需要 `allocator<Node<T>>`，于是 `allocator_traits::rebind_alloc<T>` 把 `allocator<T>` 变成 `allocator<Node<T>>`（`[allocator.traits.types]`）。
 **核心知识点 #5（最小接口）**：见上。
@@ -247,7 +247,7 @@ template<typename _Up>
 
 程序 2：只用「最小接口」写一个分配器（仅 `value_type`/`allocate`/`deallocate`），靠 traits 补全：
 
-> **示例 10** [难度 ★★★☆☆] [主题：std::allocatortrai]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
 ```cpp
 // 编译: g++ -std=c++17 ch38_p2.cpp -o ch38_p2
 #include <memory>
@@ -277,7 +277,7 @@ int main() {
 
 程序 3：直接通过 `allocator_traits` 分配（等价于程序 1 的 traits 用法，独立可编译）：
 
-> **示例 11** [难度 ★★☆☆☆] [主题：std::allocatortrai]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::allocatortrai
 ```cpp
 // 编译: g++ -std=c++17 ch38_p3.cpp -o ch38_p3
 #include <memory>
@@ -298,7 +298,7 @@ int main() {
 
 程序 4：演示传播 traits 的作用（拷贝/移动时分配器是否跟随）：
 
-> **示例 12** [难度 ★★★★☆] [主题：std::allocatortrai]
+> **示例 12** <span class="badge badge-exp">难度 ★★★★☆</span> · std::allocatortrai
 ```cpp
 // 编译: g++ -std=c++17 ch38_p4.cpp -o ch38_p4
 #include <memory>
@@ -333,7 +333,7 @@ int main() {
 
 程序 5：`is_always_equal` 判定演示：
 
-> **示例 13** [难度 ★★★☆☆] [主题：std::allocatortrai]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
 ```cpp
 // 编译: g++ -std=c++17 ch38_p5.cpp -o ch38_p5
 #include <memory>
@@ -349,7 +349,7 @@ int main() {
 
 程序 6：`rebind` 让 `allocator<T>` 变成 `allocator<Node<T>>`（节点容器内部）：
 
-> **示例 14** [难度 ★★★☆☆] [主题：std::allocatortrai]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
 ```cpp
 // 编译: g++ -std=c++17 ch38_p6.cpp -o ch38_p6
 #include <memory>
@@ -370,16 +370,16 @@ int main() {
 
 ## ⑤ 自定义分配器（一）：固定大小池分配器接 `vector`
 
-**[标准]**　只要满足 `Allocator` 要求（见 `ch22`），你就能把它塞进任意标准容器。最有价值的一类是**池分配器**：把大块内存切成固定大小节点，用 free-list 复用，避免反复 `new`/`delete` 的系统调用与碎片。
+**<span class="badge badge-std">标准</span>**　只要满足 `Allocator` 要求（见 `ch22`），你就能把它塞进任意标准容器。最有价值的一类是**池分配器**：把大块内存切成固定大小节点，用 free-list 复用，避免反复 `new`/`delete` 的系统调用与碎片。
 
-**[实现]**　下面 `PoolAllocator<T>` 对「单次 1 个 T」走对象池，`n>1` 回退到 `::operator new`（满足 `vector` 扩容时可能一次性要多块）。容器用 `allocator_traits::rebind_alloc<Node>` 拿到的仍是同一池（共享 `BlockSize`），故节点也走池。
+**<span class="badge badge-impl">实现</span>**　下面 `PoolAllocator<T>` 对「单次 1 个 T」走对象池，`n>1` 回退到 `::operator new`（满足 `vector` 扩容时可能一次性要多块）。容器用 `allocator_traits::rebind_alloc<Node>` 拿到的仍是同一池（共享 `BlockSize`），故节点也走池。
 
 **核心知识点 #8**：自定义分配器接入 `vector` 必须支持 `rebind`（traits 自动重绑定同模板参数）与 `propagate`/`is_always_equal`。
 **核心知识点 #9（固定大小池）**：free-list 头插/头取，销毁时整块释放。
 
 程序 7：可编译的固定大小池分配器（接 `std::vector`）：
 
-> **示例 15** [难度 ★★★☆☆] [主题：自定义分配器（一）：固定大小池分配器]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自定义分配器（一）：固定大小池分配器
 ```cpp
 // 编译: g++ -std=c++17 ch38_p7.cpp -o ch38_p7
 #include <vector>
@@ -442,13 +442,13 @@ int main() {
 
 ## ⑥ 自定义分配器（二）：调试分配器统计
 
-**[经验]**　调试分配器用于统计「分配/释放次数」「峰值字节」「检测泄漏」。这是真实工程中 `std::allocator` 被替换的最常见理由之一。
+**<span class="badge badge-exp">经验</span>**　调试分配器用于统计「分配/释放次数」「峰值字节」「检测泄漏」。这是真实工程中 `std::allocator` 被替换的最常见理由之一。
 
 **核心知识点 #10（调试分配器）**：用静态（或共享）计数器在 `allocate`/`deallocate` 里自增自减。
 
 程序 8：统计分配次数的调试分配器：
 
-> **示例 16** [难度 ★★★☆☆] [主题：自定义分配器（二）：调试分配器统计]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自定义分配器（二）：调试分配器统计
 ```cpp
 // 编译: g++ -std=c++17 ch38_p8.cpp -o ch38_p8
 #include <vector>
@@ -491,18 +491,18 @@ int main() {
 
 ## ⑦ PMR 全景：为何出现
 
-**[标准]**　C++17 引入 `std::pmr`（Polymorphic Allocator，见 `[mem.res]`），核心动机：
+**<span class="badge badge-std">标准</span>**　C++17 引入 `std::pmr`（Polymorphic Allocator，见 `[mem.res]`），核心动机：
 1. **运行时切换分配策略**：经典分配器类型编码在容器的模板参数里（编译期绑定）；PMR 把「分配策略」下推为运行期持有的 `memory_resource*`。
 2. **避免模板参数爆胀**：每个不同分配器类型都会实例化一套容器代码。PMR 让 `pmr::vector<int>` 只有一种类型，资源可换。
 3. **零开销（抽象代价几乎为零）**：`polymorphic_allocator` 只持有一个指针，`allocate` 是一次虚调用（或内联），比经典分配器多一层间接但换来灵活性。
 
-**[实现]**　对照：经典 `vector<T, MyAlloc>` → PMR `pmr::vector<T>`（=`vector<T, polymorphic_allocator<T>>`）。同一 `pmr::vector<int>` 可先挂 `monotonic`，再挂 `pool`，再挂 `new_delete`，**类型不变**。
+**<span class="badge badge-impl">实现</span>**　对照：经典 `vector<T, MyAlloc>` → PMR `pmr::vector<T>`（=`vector<T, polymorphic_allocator<T>>`）。同一 `pmr::vector<int>` 可先挂 `monotonic`，再挂 `pool`，再挂 `new_delete`，**类型不变**。
 
 **核心知识点 #11（PMR 本质）**：模板参数 `Allocator` 替换为 `polymorphic_allocator<T>`，后者持有 `memory_resource*`。
 
 程序 9：同一 `pmr::vector<int>` 在运行时挂两种资源（展示编译期类型不变）：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：全景：为何出现]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全景：为何出现
 ```cpp
 // 编译: g++ -std=c++17 ch38_p9.cpp -o ch38_p9
 #include <memory_resource>
@@ -526,11 +526,11 @@ int main() {
 
 ## ⑧ `std::pmr::memory_resource` 抽象基类
 
-**[标准]**　`memory_resource`（`[mem.res.class]`）是 PMR 的抽象基类，三个纯虚函数决定一切：
+**<span class="badge badge-std">标准</span>**　`memory_resource`（`[mem.res.class]`）是 PMR 的抽象基类，三个纯虚函数决定一切：
 
 **真实源码（libstdc++ `bits/memory_resource.h:56-104`）**：
 
-> **示例 18** [难度 ★★★☆☆] [主题：std::pmr::memoryre]
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::pmr::memoryre
 ```cpp
 #include <cstddef>
 // bits/memory_resource.h:56-104 —— 抽象基类，公有接口调用私有纯虚
@@ -566,7 +566,7 @@ private:
 
 程序 10：自己继承 `memory_resource` 写一个计数资源：
 
-> **示例 19** [难度 ★★☆☆☆] [主题：std::pmr::memoryre]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::memoryre
 ```cpp
 // 编译: g++ -std=c++17 ch38_p10.cpp -o ch38_p10
 #include <memory_resource>
@@ -602,9 +602,9 @@ int main() {
 
 ## ⑨ `std::pmr::polymorphic_allocator`
 
-**[标准]**　`polymorphic_allocator<T>`（`[mem.poly.allocator.class]`）是 PMR 的「分配器外观」——它满足 `Allocator` 要求，但内部只存一个 `memory_resource*`（`_M_resource`）。构造函数若不给资源，取默认资源（`bits/memory_resource.h:121-126`）：
+**<span class="badge badge-std">标准</span>**　`polymorphic_allocator<T>`（`[mem.poly.allocator.class]`）是 PMR 的「分配器外观」——它满足 `Allocator` 要求，但内部只存一个 `memory_resource*`（`_M_resource`）。构造函数若不给资源，取默认资源（`bits/memory_resource.h:121-126`）：
 
-> **示例 20** [难度 ★★☆☆☆] [主题：std::pmr::polymorp]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
 ```cpp
 // bits/memory_resource.h:121-131
 polymorphic_allocator() noexcept
@@ -619,7 +619,7 @@ polymorphic_allocator(memory_resource* __r) noexcept
 
 `allocate` 转调资源（`bits/memory_resource.h:143-152`）：
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：std::pmr::polymorp]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::pmr::polymorp
 ```cpp
 #include <cstddef>
 // bits/memory_resource.h:143-152
@@ -635,7 +635,7 @@ polymorphic_allocator(memory_resource* __r) noexcept
 
 **真实源码（PMR 的 traits 特化，`bits/memory_resource.h:375-419`）**：
 
-> **示例 22** [难度 ★★☆☆☆] [主题：std::pmr::polymorp]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
 ```cpp
 // bits/memory_resource.h:409-419 —— PMR 不传播、非 always_equal
 using propagate_on_container_copy_assignment = false_type;
@@ -647,11 +647,11 @@ select_on_container_copy_construction(const allocator_type&) noexcept
 using is_always_equal = false_type;          // 不同资源实例不等价
 ```
 
-> **[经验]**　这是 PMR 最反直觉之处：`pmr::vector` 拷贝构造时，新容器用的是**默认资源**，而非源容器的资源！因为 `select_on_container_copy_construction` 返回新 `allocator_type()`（取默认资源）。若想保持资源，用 `scoped_allocator_adaptor` 或显式传资源。
+> **<span class="badge badge-exp">经验</span>**　这是 PMR 最反直觉之处：`pmr::vector` 拷贝构造时，新容器用的是**默认资源**，而非源容器的资源！因为 `select_on_container_copy_construction` 返回新 `allocator_type()`（取默认资源）。若想保持资源，用 `scoped_allocator_adaptor` 或显式传资源。
 
 程序 11：`polymorphic_allocator` 基础用法（独立可编译）：
 
-> **示例 23** [难度 ★★☆☆☆] [主题：std::pmr::polymorp]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
 ```cpp
 // 编译: g++ -std=c++17 ch38_p11.cpp -o ch38_p11
 #include <memory_resource>
@@ -669,7 +669,7 @@ int main() {
 
 程序 12：`pmr::string` 别名容器（注意要 `#include <string>`）：
 
-> **示例 24** [难度 ★★☆☆☆] [主题：std::pmr::polymorp]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
 ```cpp
 // 编译: g++ -std=c++17 ch38_p12.cpp -o ch38_p12
 #include <memory_resource>
@@ -689,11 +689,11 @@ int main() {
 
 ## ⑩ 内置资源（一）：`monotonic_buffer_resource`（指针 bump）
 
-**[标准]**　`monotonic_buffer_resource`（`[mem.res.monotonic.buffer]`）**只增不减**：分配时把内部指针向前「撞」（bump），`deallocate` 是空操作，直到资源析构或 `release()` 才一次性归还上游。极快，适合「临时构建」场景（解析请求、序列化、生成临时结构）。
+**<span class="badge badge-std">标准</span>**　`monotonic_buffer_resource`（`[mem.res.monotonic.buffer]`）**只增不减**：分配时把内部指针向前「撞」（bump），`deallocate` 是空操作，直到资源析构或 `release()` 才一次性归还上游。极快，适合「临时构建」场景（解析请求、序列化、生成临时结构）。
 
 **真实源码（libstdc++ `memory_resource:354-411`）—— 核心 bump 逻辑**：
 
-> **示例 25** [难度 ★★☆☆☆] [主题：内置资源（一）：monotonicb]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（一）：monotonicb
 ```cpp
 #include <cstddef>
 // memory_resource:354-373 —— do_allocate 的指针碰撞
@@ -717,7 +717,7 @@ bool do_is_equal(const memory_resource& __other) const noexcept override
 
 缓冲增长参数（`memory_resource:397-398`）：
 
-> **示例 26** [难度 ★★☆☆☆] [主题：内置资源（一）：monotonicb]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（一）：monotonicb
 ```cpp
 #include <cstddef>
 static constexpr size_t _S_init_bufsize = 128 * sizeof(void*);  // 初始 1KB 左右
@@ -726,7 +726,7 @@ static constexpr float  _S_growth_factor = 1.5;                 // 每次 1.5 �
 
 构造器（给出初始栈缓冲，零额外 malloc）（`memory_resource:297-320`）：
 
-> **示例 27** [难度 ★★★☆☆] [主题：内置资源（一）：monotonicb]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内置资源（一）：monotonicb
 ```cpp
 #include <cstddef>
 // memory_resource:297-307 —— 用调用者提供的 buffer 作为初始存储
@@ -770,7 +770,7 @@ _Z13bump_allocateRPcS_y:
 
 程序 13：`monotonic` 基础用法（独立）：
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：实现·GCC 15.3.0：bump]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现·GCC 15.3.0：bump
 ```cpp
 // 编译: g++ -std=c++17 ch38_p13.cpp -o ch38_p13
 #include <memory_resource>
@@ -787,7 +787,7 @@ int main() {
 
 程序 14：`monotonic` + `pmr::vector` 临时构建（经典模式）：
 
-> **示例 29** [难度 ★★☆☆☆] [主题：实现·GCC 15.3.0：bump]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现·GCC 15.3.0：bump
 ```cpp
 // 编译: g++ -std=c++17 ch38_p14.cpp -o ch38_p14
 #include <memory_resource>
@@ -805,7 +805,7 @@ int main() {
 
 程序 15：`monotonic` 模拟「请求解析」临时容器（解析完即弃）：
 
-> **示例 30** [难度 ★★☆☆☆] [主题：实现·GCC 15.3.0：bump]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现·GCC 15.3.0：bump
 ```cpp
 // 编译: g++ -std=c++17 ch38_p15.cpp -o ch38_p15
 #include <memory_resource>
@@ -833,7 +833,7 @@ int main() {
 
 程序 16：`release()` 重置缓冲（可复用同一资源多次）：
 
-> **示例 31** [难度 ★★☆☆☆] [主题：实现·GCC 15.3.0：bump]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现·GCC 15.3.0：bump
 ```cpp
 // 编译: g++ -std=c++17 ch38_p16.cpp -o ch38_p16
 #include <memory_resource>
@@ -860,7 +860,7 @@ int main() {
 
 ## ⑪ 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 
-**[标准]**　池资源（`[mem.res.pool]`）把内存按 **size class**（尺寸档位）分成多个池，每个池用 free-list 管理同尺寸块。优势：
+**<span class="badge badge-std">标准</span>**　池资源（`[mem.res.pool]`）把内存按 **size class**（尺寸档位）分成多个池，每个池用 free-list 管理同尺寸块。优势：
 - 减少 `malloc` 调用次数（批量向上游要大块）。
 - 减少碎片（同尺寸块互换）。
 - `unsynchronized_pool_resource`：**单线程**，无锁，最快。
@@ -868,7 +868,7 @@ int main() {
 
 **真实源码（libstdc++ `memory_resource:221-276` 与 `155-217`）**：
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：内置资源（二）：unsynchron]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：unsynchron
 ```cpp
 #include <cstddef>
 // memory_resource:258-267 —— unsynchronized 的 do_* 直接转私有实现
@@ -880,7 +880,7 @@ bool  do_is_equal(const memory_resource& __other) const noexcept override
 
 `synchronized` 多了一层线程特定池（`memory_resource:203-216`）：
 
-> **示例 33** [难度 ★★☆☆☆] [主题：内置资源（二）：unsynchron]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
 ```cpp
 // memory_resource:212-216
 __pool_resource _M_impl;
@@ -891,7 +891,7 @@ mutable shared_mutex _M_mx;              // 多线程锁
 
 `pool_options`（`memory_resource:94-109`）调优参数：
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：内置资源（二）：unsynchron]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：unsynchron
 ```cpp
 #include <cstddef>
 // memory_resource:94-109
@@ -909,7 +909,7 @@ struct pool_options {
 
 程序 17：`unsynchronized_pool_resource` 基础：
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：内置资源（二）：unsynchron]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：unsynchron
 ```cpp
 // 编译: g++ -std=c++17 ch38_p17.cpp -o ch38_p17
 #include <memory_resource>
@@ -926,7 +926,7 @@ int main() {
 
 程序 18：`synchronized_pool_resource` 多线程（独立可编译）：
 
-> **示例 36** [难度 ★★☆☆☆] [主题：内置资源（二）：unsynchron]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
 ```cpp
 // 编译: g++ -std=c++17 ch38_p18.cpp -o ch38_p18 -pthread
 #include <memory_resource>
@@ -948,7 +948,7 @@ int main() {
 
 程序 19：`pool_options` 调优（限制超大分配直接走上游）：
 
-> **示例 37** [难度 ★★☆☆☆] [主题：内置资源（二）：unsynchron]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
 ```cpp
 // 编译: g++ -std=c++17 ch38_p19.cpp -o ch38_p19
 #include <memory_resource>
@@ -969,7 +969,7 @@ int main() {
 
 程序 20：池资源与 `monotonic` 对比的两种资源接同一类型容器：
 
-> **示例 38** [难度 ★★☆☆☆] [主题：内置资源（二）：unsynchron]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
 ```cpp
 // 编译: g++ -std=c++17 ch38_p20.cpp -o ch38_p20
 #include <memory_resource>
@@ -992,9 +992,9 @@ int main() {
 
 ## ⑫ 全局资源：`get/set_default_resource`、`new_delete_resource`、`null_memory_resource`
 
-**[标准]**　PMR 维护一个**进程级默认资源指针**（见 `memory_resource:75-83`）：
+**<span class="badge badge-std">标准</span>**　PMR 维护一个**进程级默认资源指针**（见 `memory_resource:75-83`）：
 
-> **示例 39** [难度 ★★☆☆☆] [主题：全局资源：get/setdefaul]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
 ```cpp
 // memory_resource:66-83 —— 全局资源相关声明（key function 在库中定义）
 memory_resource* new_delete_resource() noexcept;     // 用 ::operator new/delete
@@ -1011,7 +1011,7 @@ memory_resource* get_default_resource() noexcept;                    // 当前�
 
 程序 21：获取默认资源指针：
 
-> **示例 40** [难度 ★★☆☆☆] [主题：全局资源：get/setdefaul]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
 ```cpp
 // 编译: g++ -std=c++17 ch38_p21.cpp -o ch38_p21
 #include <memory_resource>
@@ -1027,7 +1027,7 @@ int main() {
 
 程序 22：`set_default_resource` 全局切换（影响无参构造的 PMR 容器）：
 
-> **示例 41** [难度 ★★☆☆☆] [主题：全局资源：get/setdefaul]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
 ```cpp
 // 编译: g++ -std=c++17 ch38_p22.cpp -o ch38_p22
 #include <memory_resource>
@@ -1046,7 +1046,7 @@ int main() {
 
 程序 23：`new_delete_resource` vs `null_memory_resource`：
 
-> **示例 42** [难度 ★★☆☆☆] [主题：全局资源：get/setdefaul]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
 ```cpp
 // 编译: g++ -std=c++17 ch38_p23.cpp -o ch38_p23
 #include <memory_resource>
@@ -1071,9 +1071,9 @@ int main() {
 
 ## ⑬ PMR 容器别名与 `allocator_type`
 
-**[标准]**　`<memory_resource>` 为所有标准容器提供了 PMR 别名（`[mem.poly.allocator.aliases]`），例如：
+**<span class="badge badge-std">标准</span>**　`<memory_resource>` 为所有标准容器提供了 PMR 别名（`[mem.poly.allocator.aliases]`），例如：
 
-> **示例 43** [难度 ★★★☆☆] [主题：容器别名与 allocatortyp]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 容器别名与 allocatortyp
 ```cpp
 #include <vector>
 namespace std::pmr {
@@ -1087,7 +1087,7 @@ namespace std::pmr {
 
 程序 24：PMR 各类容器的 `allocator_type` 与默认资源：
 
-> **示例 44** [难度 ★★★☆☆] [主题：容器别名与 allocatortyp]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 容器别名与 allocatortyp
 ```cpp
 // 编译: g++ -std=c++17 ch38_p24.cpp -o ch38_p24
 #include <memory_resource>
@@ -1116,13 +1116,13 @@ int main() {
 
 ## ⑭ `do_is_equal` 的重要性（资源等价）
 
-**[标准]**　`memory_resource::is_equal` 决定「能否用 B 释放 A 分配的内存」（`[mem.res.eq]`）。默认实现是 **指针相等**（`this == &other`），而非「类型相等」或「总是 true」。
+**<span class="badge badge-std">标准</span>**　`memory_resource::is_equal` 决定「能否用 B 释放 A 分配的内存」（`[mem.res.eq]`）。默认实现是 **指针相等**（`this == &other`），而非「类型相等」或「总是 true」。
 
 **为什么必须重写/注意**：若两个不同 `monotonic` 实例（即便类型完全相同）互相 `deallocate`，`do_deallocate` 是空操作 → 内存「看起来释放了，实际没还」。容器内部分配与释放**必须**发生在同一资源实例上。标准容器在析构/扩容时会确认资源等价（通过 `do_is_equal`），不等价则行为未定义。
 
 程序 25：`do_is_equal` 与 `operator==` 行为：
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：doisequal 的重要性]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · doisequal 的重要性
 ```cpp
 // 编译: g++ -std=c++17 ch38_p25.cpp -o ch38_p25
 #include <memory_resource>
@@ -1138,7 +1138,7 @@ int main() {
 
 程序 26：自定义资源必须正确实现 `do_is_equal`（否则跨实例释放出错）：
 
-> **示例 46** [难度 ★★☆☆☆] [主题：doisequal 的重要性]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · doisequal 的重要性
 ```cpp
 // 编译: g++ -std=c++17 ch38_p26.cpp -o ch38_p26
 #include <memory_resource>
@@ -1165,11 +1165,11 @@ int main() {
 
 ## ⑮ Scoped Allocator Model：`scoped_allocator_adaptor`
 
-**[标准]**　嵌套容器（如 `vector<string>`：`string` 内部又用分配器存字符）需要一个机制，把「外层分配器」自动传给「内层容器/元素」。`scoped_allocator_adaptor<Outer, Inner...>`（`[allocator.adaptor]`）实现这一点：外层容器构造元素时，会把内层分配器一并传给元素的构造函数。
+**<span class="badge badge-std">标准</span>**　嵌套容器（如 `vector<string>`：`string` 内部又用分配器存字符）需要一个机制，把「外层分配器」自动传给「内层容器/元素」。`scoped_allocator_adaptor<Outer, Inner...>`（`[allocator.adaptor]`）实现这一点：外层容器构造元素时，会把内层分配器一并传给元素的构造函数。
 
 **真实源码定位（libstdc++ `scoped_allocator:177` 定义 `class scoped_allocator_adaptor`；`:372` `construct`；`:202-227` `_M_construct` 按 `uses_allocator` 协议分派）**：
 
-> **示例 47** [难度 ★★☆☆☆] [主题：scoped_allocator_adaptor]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · scoped_allocator_adaptor
 ```cpp
 #include <utility>
 // scoped_allocator:372-377 —— 构造元素时把「内层分配器」自动下发
@@ -1186,7 +1186,7 @@ construct(_Tp* __p, _Args&&... __args)
 
 程序 27：经典 `scoped_allocator_adaptor` 让 `vector<string>` 的字符也走同一分配器：
 
-> **示例 48** [难度 ★★☆☆☆] [主题：scoped_allocator_adaptor]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · scoped_allocator_adaptor
 ```cpp
 // 编译: g++ -std=c++17 ch38_p27.cpp -o ch38_p27
 #include <vector>
@@ -1209,9 +1209,9 @@ int main() {
 
 程序 28：PMR 嵌套容器（**无需** `scoped_allocator_adaptor`！）
 
-**[经验]**　PMR 的杀手级特性：`polymorphic_allocator<T>` 的拷贝构造函数会**复制 `memory_resource*`**（`bits/memory_resource.h:135-138`），因此 `pmr::vector<string>` 在构造内部 `pmr::string` 元素时，自动把同一个 `resource` 指针下传给元素的 `polymorphic_allocator<char>`。嵌套“免费”共享资源——这正是它比经典分配器（需 `scoped_allocator_adaptor` 手动传递）优雅的地方。
+**<span class="badge badge-exp">经验</span>**　PMR 的杀手级特性：`polymorphic_allocator<T>` 的拷贝构造函数会**复制 `memory_resource*`**（`bits/memory_resource.h:135-138`），因此 `pmr::vector<string>` 在构造内部 `pmr::string` 元素时，自动把同一个 `resource` 指针下传给元素的 `polymorphic_allocator<char>`。嵌套“免费”共享资源——这正是它比经典分配器（需 `scoped_allocator_adaptor` 手动传递）优雅的地方。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：scoped_allocator_adaptor]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · scoped_allocator_adaptor
 ```cpp
 // 编译: g++ -std=c++17 ch38_p28.cpp -o ch38_p28
 #include <memory_resource>
@@ -1235,13 +1235,13 @@ int main() {
 
 ## ⑯ 分配器感知容器
 
-**[标准]**　`vector`/`deque`/`list`/`map`/`unordered_map` 等都满足「分配器感知容器」要求（`[container.alloc.reqmts]`）：持有 `allocator_type`，提供 `get_allocator()`，`allocator_type` 由模板参数决定。
+**<span class="badge badge-std">标准</span>**　`vector`/`deque`/`list`/`map`/`unordered_map` 等都满足「分配器感知容器」要求（`[container.alloc.reqmts]`）：持有 `allocator_type`，提供 `get_allocator()`，`allocator_type` 由模板参数决定。
 
 **核心知识点（分配器感知）**：所有这些容器的第二个（或最后一个）模板参数是 `Allocator`，缺省 `std::allocator<value_type>`；PMR 别名则把该参数固定为 `polymorphic_allocator`。
 
 程序 29：`map` 使用自定义分配器（注意 `A` 必须是模板且提供默认构造，因为 `map` 会把它 `rebind` 到内部节点类型）：
 
-> **示例 50** [难度 ★★★☆☆] [主题：分配器感知容器]
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 分配器感知容器
 ```cpp
 // 编译: g++ -std=c++17 ch38_p29.cpp -o ch38_p29
 #include <map>
@@ -1269,7 +1269,7 @@ int main() {
 
 程序 30：`unordered_map` 使用池资源（PMR）：
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：分配器感知容器]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器感知容器
 ```cpp
 // 编译: g++ -std=c++17 ch38_p30.cpp -o ch38_p30
 #include <memory_resource>
@@ -1287,7 +1287,7 @@ int main() {
 
 程序 31：`list` 使用 `monotonic`（节点全在栈缓冲）：
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：分配器感知容器]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器感知容器
 ```cpp
 // 编译: g++ -std=c++17 ch38_p31.cpp -o ch38_p31
 #include <memory_resource>
@@ -1305,7 +1305,7 @@ int main() {
 
 程序 32：`vector`/`deque` 的 `get_allocator()` 与 `allocator_type` 查询：
 
-> **示例 53** [难度 ★★★☆☆] [主题：分配器感知容器]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 分配器感知容器
 ```cpp
 // 编译: g++ -std=c++17 ch38_p32.cpp -o ch38_p32
 #include <vector>
@@ -1327,7 +1327,7 @@ int main() {
 
 ## ⑰ 三编译器 / 三 STL 实现差异
 
-**[实现]**　libstdc++（GCC）、libc++（LLVM/Clang）、MS STL（MSVC）都满足标准，但在**细节参数**与**编译开关**上不同。下表基于公开事实与标准库源码（libstdc++ 已逐行验证；libc++/MS STL 为[实现-推断] + 已知公开行为）：
+**<span class="badge badge-impl">实现</span>**　libstdc++（GCC）、libc++（LLVM/Clang）、MS STL（MSVC）都满足标准，但在**细节参数**与**编译开关**上不同。下表基于公开事实与标准库源码（libstdc++ 已逐行验证；libc++/MS STL 为[实现-推断] + 已知公开行为）：
 
 | 维度 | libstdc++（GCC 13，本机验证） | libc++（LLVM） | MS STL（MSVC） |
 |------|------------------------------|----------------|----------------|
@@ -1346,7 +1346,7 @@ int main() {
 
 程序 33（差异探测，独立可编译，打印本 STL 的关键宏）：
 
-> **示例 54** [难度 ★★☆☆☆] [主题：三编译器 / 三 STL 实现差异]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三编译器 / 三 STL 实现差异
 ```cpp
 // 编译: g++ -std=c++17 ch38_p33.cpp -o ch38_p33
 #include <version>
@@ -1377,13 +1377,13 @@ int main() {
 
 ## ⑱ 真实 microbenchmark
 
-**[经验]**　以下基准为**量级参考**（本机 MinGW GCC 13.1.0，`-O2`）。PMR `monotonic` 因「零释放、纯 bump」通常比 `new_delete` 快 **数倍**；自定义对象池把 N 次 `operator new` 降到「N/块数 + 1」次，分配数显著减少。
+**<span class="badge badge-exp">经验</span>**　以下基准为**量级参考**（本机 MinGW GCC 13.1.0，`-O2`）。PMR `monotonic` 因「零释放、纯 bump」通常比 `new_delete` 快 **数倍**；自定义对象池把 N 次 `operator new` 降到「N/块数 + 1」次，分配数显著减少。
 
 **[平台·x86-64]**　运行于本机 Windows 11 + MinGW GCC 13.1.0。数值为示意量级，非精确测量（真实测量请用 `std::chrono::high_resolution_clock` 多次取 median）。
 
 程序 34：PMR monotonic vs new_delete 量级对比：
 
-> **示例 55** [难度 ★★☆☆☆] [主题：真实 microbenchmark]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark
 ```cpp
 // 编译: g++ -std=c++17 ch38_p34.cpp -o ch38_p34 -O2
 #include <memory_resource>
@@ -1419,7 +1419,7 @@ int main() {
 
 程序 35：自定义对象池 vs `std::allocator` 的「malloc 调用次数」对比：
 
-> **示例 56** [难度 ★★★★☆] [主题：真实 microbenchmark]
+> **示例 56** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实 microbenchmark
 ```cpp
 // 编译: g++ -std=c++17 ch38_p35.cpp -o ch38_p35 -O2
 #include <vector>
@@ -1482,7 +1482,7 @@ int main() {
 | **Java** | JVM GC（Serial/G1/ZGC 等），`-XX` 选收集器；无 per-collection 分配器 | 无对应；「分配策略」在 GC 层面全局切换。 |
 | **C#** | CLR GC；但 `System.Buffers.ArrayPool<T>`（`ArrayPool.Shared`）是**池化分配器**，类似 PMR 的 `unsynchronized_pool_resource`：租借数组、归还复用、减少 GC 压力 | **最贴近 PMR 理念**：运行时可在 `ArrayPool.Shared` 与自定义池间切换，且是同一 `T[]` 类型，无需改类型参数。 |
 
-**[经验]**　结论：C++ 的分配器是「编译期类型参数 + 运行时 PMR 多态」双轨；Rust `Allocator` trait 是单轨泛型；C# `ArrayPool` 是单轨运行时池；Go/Java 完全交给 GC。需要「确定内存来源 + 极致性能」时，C++/Rust 胜；需要「省心」时 GC 语言胜。
+**<span class="badge badge-exp">经验</span>**　结论：C++ 的分配器是「编译期类型参数 + 运行时 PMR 多态」双轨；Rust `Allocator` trait 是单轨泛型；C# `ArrayPool` 是单轨运行时池；Go/Java 完全交给 GC。需要「确定内存来源 + 极致性能」时，C++/Rust 胜；需要「省心」时 GC 语言胜。
 
 ---
 
@@ -1507,7 +1507,7 @@ int main() {
 - **folly::SysAllocator / folly::SyntheticAllocator**：Facebook 的 jemalloc 封装与测试用分配器，展示了「全局换分配器」的工业做法。
 - **`std::uses_allocator` / `allocator_arg_t`**（`bits/uses_allocator.h`）：Scoped Allocator Model 与 `polymorphic_allocator::construct` 分派（见 `memory_resource.h:211-293`）都依赖它——这是「构造对象时把分配器塞进去」的统一协议。
 
-**实战建议（[经验]）**
+**实战建议（<span class="badge badge-exp">经验</span>）**
 1. 默认就用 `std::allocator`——它够用，别过度设计。
 2. 临时/一次性构建（解析、序列化、测试夹具）用 `monotonic_buffer_resource` + 栈缓冲，几乎零成本。
 3. 高频小对象、单线程：用 `unsynchronized_pool_resource`；多线程：用 `synchronized_pool_resource`。
@@ -1522,25 +1522,25 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：容器拷贝后分配器是否跟着走？** 你给 `std::vector` 配了带状态的池分配器，拷贝构造后发现两个容器共享/不共享池，行为不合预期。请说明传播语义的开关。
-   - [标准] 分配器通过 `propagate_on_container_copy_assignment`/`move_assignment`/`swap` 等类型决定拷贝/移动/交换时是否传播；默认 false。
-   - [引用] ISO/IEC 14882:2023 §[allocator.requirements.general]（分配器要求与传播 traits）；cppreference "Allocator" 词条。
+   - <span class="badge badge-std">标准</span> 分配器通过 `propagate_on_container_copy_assignment`/`move_assignment`/`swap` 等类型决定拷贝/移动/交换时是否传播；默认 false。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[allocator.requirements.general]（分配器要求与传播 traits）；cppreference "Allocator" 词条。
 
 2. **真实场景：手写分配器漏实现 `rebind` 旧接口。** 你按老教程写了 `Alloc::rebind`，但标准容器实际通过 `allocator_traits` 推导。请说明优先接口。
-   - [标准] 现代容器统一经 `std::allocator_traits` 获取 `rebind_alloc` 等；`allocator_traits` 提供默认推导，不必手写 `rebind`。
-   - [引用] ISO/IEC 14882:2023 §[allocator.traits.types]（allocator_traits 与 rebind_alloc）；cppreference "std::allocator_traits" 词条。
+   - <span class="badge badge-std">标准</span> 现代容器统一经 `std::allocator_traits` 获取 `rebind_alloc` 等；`allocator_traits` 提供默认推导，不必手写 `rebind`。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[allocator.traits.types]（allocator_traits 与 rebind_alloc）；cppreference "std::allocator_traits" 词条。
 
 3. **真实场景：`construct`/`destroy` 是否还需自定义？** 你自定义分配器时照搬老式 `construct(ptr, args...)`，其实标准已要求用 `std::allocator_traits::construct`。请说明默认行为。
-   - [标准] `allocator_traits::construct` 默认用 `::new((void*)p) T(args...)` 布置构造；多数分配器无需重载它。
-   - [引用] ISO/IEC 14882:2023 §[allocator.traits.members]（construct/destroy 默认）；cppreference "std::allocator_traits::construct" 词条。
+   - <span class="badge badge-std">标准</span> `allocator_traits::construct` 默认用 `::new((void*)p) T(args...)` 布置构造；多数分配器无需重载它。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[allocator.traits.members]（construct/destroy 默认）；cppreference "std::allocator_traits::construct" 词条。
 
-**选型决策树 [经验]**
+**选型决策树 <span class="badge badge-exp">经验</span>**
 1. 默认容器 → `std::allocator`（程序 1/2/32）。
 2. 解析/序列化/测试夹具等临时构建 → `monotonic_buffer_resource` + 栈缓冲（程序 9/18）。
 3. 高频小对象、单线程 → `unsynchronized_pool_resource`；多线程 → `synchronized_pool_resource`（程序 12/33）。
 4. 想换策略但不想改容器类型 → PMR（`polymorphic_allocator`），而非自定义 `Allocator` 模板（程序 1→30 改造）。
 5. 需全局统计/替换 → 自定义 `Allocator` 派生 `std::allocator`（程序 8），或替换 `new_delete_resource()`。
 
-> **示例 57** [难度 ★★☆☆☆] [主题：综合实战：分配器选型决策树 + 速记]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：分配器选型决策树 + 速记
 ```cpp
 // 决策树落地：临时解析用 monotonic，零释放开销
 std::pmr::monotonic_buffer_resource mr(std::pmr::new_delete_resource());
@@ -1583,7 +1583,7 @@ std::pmr::vector<int> v(&mr);          // 整个 v 的生命周期在 mr 内 bum
   - `bits/memory_resource.h`（memory_resource `:56-104`、polymorphic_allocator `:107-355`、allocate `:143-152`、traits 特化 `:375-501`、propagate false `:409-419`）
   - `memory_resource`（new_delete/null/set/get `:66-83`、pool_options `:94-109`、synchronized `:155-217`、unsynchronized `:221-276`、monotonic bump `:354-373`、growth `:397-398`）
   - `scoped_allocator`（class `:177`、construct `:372`、_M_construct `:202-227`）
-- **立场分层**：[标准]/[实现]/[平台·x86-64]/[经验] 均已标注；缺失细节处显式标 [实现-推断]。
+- **立场分层**：<span class="badge badge-std">标准</span>/<span class="badge badge-impl">实现</span>/[平台·x86-64]/<span class="badge badge-exp">经验</span> 均已标注；缺失细节处显式标 [实现-推断]。
 - **环境校验**：MinGW GCC 13.1.0 上程序 1/9/12/18/33 等已实测可编译运行；`synchronized_pool_resource` 本机可用。
 
 ## 联合使用场景
@@ -1597,7 +1597,7 @@ std::pmr::vector<int> v(&mr);          // 整个 v 的生命周期在 mr 内 bum
 
 ## 附录 E：Allocator工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 58** [难度 ★★☆☆☆] [主题：附录 E：Allocator工业与面]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：Allocator工业与面
 ```
 C++ Allocator的设计初衷 (SGI STL, 1994):
   → 让STL容器可以切换内存来源(共享内存, 内存池, GPU显存)
@@ -1614,7 +1614,7 @@ C++17 PMR (P0220R1) 彻底解决了这个问题:
   - synchronized_pool_resource: 线程安全池 → 多线程程序
 ```
 
-> **示例 59** [难度 ★★☆☆☆] [主题：附录 E：Allocator工业与面]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：Allocator工业与面
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1650,7 +1650,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：C++ 分配器模型的来龙去脉
 
-[史] C++ 的分配器（allocator）概念源自 **Stepanov 设计 STL（1994 年被纳入 C++98）** 时，希望容器与内存后端解耦——这是 STL 区别于当时其他 C++ 容器库（如 NIHCL）的关键设计决策。[轶] 但初版 `std::allocator` 接口（C++98）被普遍认为是失败的：**几乎没人写对自定义分配器**，因为它的接口（含 `rebind`、一堆 `pointer`/`reference` 嵌套类型）过于繁冗，标准库默认实现也只是转发到 `new`/`delete`，所谓「解耦」形同虚设——这正对应第 ② 节「默认无意义」的评价。[史] 真正的转折是 **C++11（2011）引入 `std::allocator_traits`**（第 ④ 节），把「最小接口 + 默认实现」确立为范式，自定义分配器只需提供 `allocate`/`deallocate` 即可；随后 **Library Fundamentals TS 与 P0220（C++17）** 带来 **PMR（`std::pmr`，第 ⑦–⑬ 节）**，用运行时多态的 `memory_resource` 替代编译期模板参数，解决了「不同分配器实例的容器无法互拷」这一老大难。[评] 这一演进路径清晰展示了 C++ 标准「先用模板硬解、再用 trait 收敛、最后用多态对象补灵活性」的典型修正式风格。
+<span class="badge badge-history">史</span> C++ 的分配器（allocator）概念源自 **Stepanov 设计 STL（1994 年被纳入 C++98）** 时，希望容器与内存后端解耦——这是 STL 区别于当时其他 C++ 容器库（如 NIHCL）的关键设计决策。<span class="badge badge-anecdote">轶</span> 但初版 `std::allocator` 接口（C++98）被普遍认为是失败的：**几乎没人写对自定义分配器**，因为它的接口（含 `rebind`、一堆 `pointer`/`reference` 嵌套类型）过于繁冗，标准库默认实现也只是转发到 `new`/`delete`，所谓「解耦」形同虚设——这正对应第 ② 节「默认无意义」的评价。<span class="badge badge-history">史</span> 真正的转折是 **C++11（2011）引入 `std::allocator_traits`**（第 ④ 节），把「最小接口 + 默认实现」确立为范式，自定义分配器只需提供 `allocate`/`deallocate` 即可；随后 **Library Fundamentals TS 与 P0220（C++17）** 带来 **PMR（`std::pmr`，第 ⑦–⑬ 节）**，用运行时多态的 `memory_resource` 替代编译期模板参数，解决了「不同分配器实例的容器无法互拷」这一老大难。<span class="badge badge-comment">评</span> 这一演进路径清晰展示了 C++ 标准「先用模板硬解、再用 trait 收敛、最后用多态对象补灵活性」的典型修正式风格。
 
 ### ㉒.2 真实工程坐标：分配器活在哪些项目里
 
@@ -1678,8 +1678,8 @@ int main() {
 
 ### ㉒.4 与标准的互动：分配器与 PMR 的演进
 
-[史] C++98 的 `std::allocator` 接口繁冗被诟病；**C++11 的 `allocator_traits`（N2982 一脉）** 把必需接口降到最小；**P0220R1（C++17）** 把 Library Fundamentals TS 的 **PMR**（`memory_resource`/`polymorphic_allocator`/各种内置资源）整体采纳，是分配器模型 20 年来最重大的一次升级（见 ㉒.5）。[史] **C++20 的 P0674** 让 `std::make_shared` 支持数组，缓解了「`shared_ptr<T[]>` 无法用 make 构造」的尴尬（见 ch41）。[评] WG21 当前方向是把 `std::allocator` 进一步简化为「薄薄一层」、让 PMR 成为默认推荐路径，并在 constexpr 容器上探索编译期分配——目标始终是「默认零成本、需要时零摩擦切换后端」。
-- [史] 分配器模型的修订链可串为：**N2982 一脉的 `allocator_traits`（C++11）把必需接口压到最小 → P0220R0→P0220R1（C++17，PMR 把运行时多态分配器标准化）**。ISO 条款 `[allocator.requirements]` 与 `[mem.res]`（`memory_resource`/`polymorphic_allocator`）把「分配后端」从编译期模板参数升级为运行时可替换对象——委员会的设计理由是：既保留默认 `new` 的零心智负担，又让大型多团队代码库能按模块/作用域切换后端而不污染全局。
+<span class="badge badge-history">史</span> C++98 的 `std::allocator` 接口繁冗被诟病；**C++11 的 `allocator_traits`（N2982 一脉）** 把必需接口降到最小；**P0220R1（C++17）** 把 Library Fundamentals TS 的 **PMR**（`memory_resource`/`polymorphic_allocator`/各种内置资源）整体采纳，是分配器模型 20 年来最重大的一次升级（见 ㉒.5）。<span class="badge badge-history">史</span> **C++20 的 P0674** 让 `std::make_shared` 支持数组，缓解了「`shared_ptr<T[]>` 无法用 make 构造」的尴尬（见 ch41）。<span class="badge badge-comment">评</span> WG21 当前方向是把 `std::allocator` 进一步简化为「薄薄一层」、让 PMR 成为默认推荐路径，并在 constexpr 容器上探索编译期分配——目标始终是「默认零成本、需要时零摩擦切换后端」。
+- <span class="badge badge-history">史</span> 分配器模型的修订链可串为：**N2982 一脉的 `allocator_traits`（C++11）把必需接口压到最小 → P0220R0→P0220R1（C++17，PMR 把运行时多态分配器标准化）**。ISO 条款 `[allocator.requirements]` 与 `[mem.res]`（`memory_resource`/`polymorphic_allocator`）把「分配后端」从编译期模板参数升级为运行时可替换对象——委员会的设计理由是：既保留默认 `new` 的零心智负担，又让大型多团队代码库能按模块/作用域切换后端而不污染全局。
 
 ### ㉒.5 权威引用
 
@@ -1752,7 +1752,7 @@ int main() {
 
 `monotonic_buffer_resource` 在给定缓冲上单调分配（只增不减，销毁时整体回收）；把它的指针交给 pmr 容器的分配器，容器就在该缓冲上取内存。
 
-> **示例 60** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1768,9 +1768,9 @@ int main() {
 }
 ```
 
-[标准] `std::pmr` 把"分配策略"与"容器"解耦；`monotonic_buffer_resource` 适合请求内临时分配，请求结束一次性回收。
+<span class="badge badge-std">标准</span> `std::pmr` 把"分配策略"与"容器"解耦；`monotonic_buffer_resource` 适合请求内临时分配，请求结束一次性回收。
 
-[引用] ISO/IEC 14882:2017 §[mem.res.monotonic.buffer]（monotonic_buffer_resource）；cppreference "std::pmr::monotonic_buffer_resource"。Chromium/LLVM 用类似栈资源做请求级临时分配。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2017 §[mem.res.monotonic.buffer]（monotonic_buffer_resource）；cppreference "std::pmr::monotonic_buffer_resource"。Chromium/LLVM 用类似栈资源做请求级临时分配。
 
 </details>
 
@@ -1782,7 +1782,7 @@ int main() {
 
 继承 `std::pmr::memory_resource` 并重写 `do_allocate` / `do_deallocate` / `do_is_equal` 三个虚函数；在 `do_allocate` 里累加后委托上游。
 
-> **示例 61** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1810,9 +1810,9 @@ int main() {
 }
 ```
 
-[标准] pmr 资源可任意组合（计数、池化、对齐、调试）；所有 pmr 容器都通过 `polymorphic_allocator` 间接使用资源。
+<span class="badge badge-std">标准</span> pmr 资源可任意组合（计数、池化、对齐、调试）；所有 pmr 容器都通过 `polymorphic_allocator` 间接使用资源。
 
-[引用] ISO/IEC 14882:2017 §[mem.res.class]（memory_resource 虚接口）；cppreference "std::pmr::memory_resource"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2017 §[mem.res.class]（memory_resource 虚接口）；cppreference "std::pmr::memory_resource"。
 
 </details>
 
@@ -1824,7 +1824,7 @@ int main() {
 
 vector 容量不足时扩容会重新分配并搬运元素；`reserve` 一次到位则只分配一次。用计数资源可把这一点量化出来。
 
-> **示例 62** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1850,9 +1850,9 @@ int main() {
 }
 ```
 
-[标准] `reserve` 把分配次数从 O(log n) 降到 1；在已知规模的热点路径上应预先 reserve。
+<span class="badge badge-std">标准</span> `reserve` 把分配次数从 O(log n) 降到 1；在已知规模的热点路径上应预先 reserve。
 
-[引用] ISO/IEC 14882 §[vector.capacity]（reserve）；cppreference "std::vector::reserve"；扩容策略见 §[vector.modifiers]。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882 §[vector.capacity]（reserve）；cppreference "std::vector::reserve"；扩容策略见 §[vector.modifiers]。
 
 </details>
 
@@ -1872,7 +1872,7 @@ void on_request() {
 
 **修复**：为请求准备一块 `monotonic_buffer_resource`，请求内所有临时 pmr 容器都从这块缓冲取内存；请求结束资源析构，一次性整体回收，零逐对象释放。
 
-> **示例 63** [难度 ★★★☆☆] [主题：演绎 1：高频临时容器 → pmr ]
+> **示例 63** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：高频临时容器 → pmr
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1905,7 +1905,7 @@ auto vec = std::make_shared<std::pmr::vector<int>>(&*res);
 
 **修复**：资源生命周期必须 ≥ 所有使用它的 pmr 容器；把资源与容器放在同一作用域，或把资源作为容器的成员/拥有者。
 
-> **示例 64** [难度 ★★★★☆] [主题：演绎 2：pmr 资源的生命周期陷阱]
+> **示例 64** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：pmr 资源的生命周期陷阱
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -2010,7 +2010,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 
 ### D4.4 可编译验证
 
-> **示例 65** [难度 ★★☆☆☆] [主题：可编译验证]
+> **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译验证
 ```cpp
 #include <memory>
 #include <iostream>
@@ -2284,7 +2284,7 @@ flowchart TD
 
 ### D5.3 可复现演示
 
-> **示例 66** [难度 ★★★☆☆] [主题：可复现演示]
+> **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <memory_resource>

@@ -8,27 +8,27 @@
 > 让 `a + b` 对自定义类型也成立，是 C++ 把"抽象"写进符号的野心。
 
 ### 0.1 起源（谁·何时·为何）
-运算符重载源自 Simula 与 ALGOL 68 的"函数即运算符"思想；Stroustrup 在 C++ 引入它，核心动机是让用户定义类型（复数、矩阵、字符串）能用和内置类型一样的 `+`、`==`、下标语法，避免 `a.add(b)` 这种割裂感。[史] 引用（见 ch20）是其前置科技：运算符参数需是别名左值。[史]
+运算符重载源自 Simula 与 ALGOL 68 的"函数即运算符"思想；Stroustrup 在 C++ 引入它，核心动机是让用户定义类型（复数、矩阵、字符串）能用和内置类型一样的 `+`、`==`、下标语法，避免 `a.add(b)` 这种割裂感。<span class="badge badge-history">史</span> 引用（见 ch20）是其前置科技：运算符参数需是别名左值。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **C++ 早期**：`operator+` / `operator[]` / `operator()` 等成形，约定"成员 vs 非成员"的规则。[史]
-- **C++98–11**：`operator->*`、lambda 的 `operator()` 闭包类型、重载决议与模板的交互持续打磨。[史]
+- **C++ 早期**：`operator+` / `operator[]` / `operator()` 等成形，约定"成员 vs 非成员"的规则。<span class="badge badge-history">史</span>
+- **C++98–11**：`operator->*`、lambda 的 `operator()` 闭包类型、重载决议与模板的交互持续打磨。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-委员会设了红线：不能发明新运算符、不能改优先级、不能重载 `.` / `::` / `sizeof` 等少数几个——把"语法自由"锁在"可读性与可预测性"内。[史][评] 关于 `<<` 被挪用做输出流（而非位移），据记载是标准库风格的取舍，成了最受爱戴的"滥用"。[轶]
+委员会设了红线：不能发明新运算符、不能改优先级、不能重载 `.` / `::` / `sizeof` 等少数几个——把"语法自由"锁在"可读性与可预测性"内。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 关于 `<<` 被挪用做输出流（而非位移），据记载是标准库风格的取舍，成了最受爱戴的"滥用"。<span class="badge badge-anecdote">轶</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++98–11 对运算符重载决议与模板交互的打磨。C++20 的"三路比较"大幅减少了手写运算符的数量。[史]
+0.2 停在 C++98–11 对运算符重载决议与模板交互的打磨。C++20 的"三路比较"大幅减少了手写运算符的数量。<span class="badge badge-history">史</span>
 
-- **C++20 `operator<=>` 与 `=default` 比较（P0515/P1185）**：只需写一个 `operator<=>`，编译器自动合成 `==` / `<` / `>` 等全套关系运算符（按"重写规则"），终结了为状态机 / 值类型手写六七个运算符的时代。[史]
-- **C++20 概念约束运算符**：运算符可加 `requires` 子句或概念约束，避免对不适用的类型意外参与重载决议，呼应 0.3 的"可读性与可预测性"红线。[史]
-- **C++23 显式对象形参（deducing this）统一成员 / 非成员运算符定义**：成员运算符可用 `this auto&&` 接 `*this`，让同一份定义既服务左值又服务右值，减少重载对。[史]
-- **行业落地与争议**：`operator<<` 做输出流仍是"最受爱戴的滥用"（见 0.3）；用户定义字面量 `operator""` 在单位库（`std::chrono`、`std::literals`）中普及，但委员会仍坚持"不发明新运算符"的红线。[史][评]
+- **C++20 `operator<=>` 与 `=default` 比较（P0515/P1185）**：只需写一个 `operator<=>`，编译器自动合成 `==` / `<` / `>` 等全套关系运算符（按"重写规则"），终结了为状态机 / 值类型手写六七个运算符的时代。<span class="badge badge-history">史</span>
+- **C++20 概念约束运算符**：运算符可加 `requires` 子句或概念约束，避免对不适用的类型意外参与重载决议，呼应 0.3 的"可读性与可预测性"红线。<span class="badge badge-history">史</span>
+- **C++23 显式对象形参（deducing this）统一成员 / 非成员运算符定义**：成员运算符可用 `this auto&&` 接 `*this`，让同一份定义既服务左值又服务右值，减少重载对。<span class="badge badge-history">史</span>
+- **行业落地与争议**：`operator<<` 做输出流仍是"最受爱戴的滥用"（见 0.3）；用户定义字面量 `operator""` 在单位库（`std::chrono`、`std::literals`）中普及，但委员会仍坚持"不发明新运算符"的红线。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/operators ｜ https://en.cppreference.com/w/cpp/language/operator_comparison ｜ https://en.cppreference.com/w/cpp/language/function
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 掌握算术、比较、自增/自减运算符重载
 2. 区分成员函数 vs 自由函数重载
@@ -36,18 +36,18 @@
 4. 掌握拷贝/移动赋值、类型转换运算符
 5. 理解可重载 vs 不可重载运算符
 
-## ② 加法运算符重载 [标准]
+## ② 加法运算符重载 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：加法运算符重载 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：加法运算符重载 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 struct Vec2{int x,y;Vec2 operator+(const Vec2& o)const{return{x+o.x,y+o.y};}};
 int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0;}
 ```
 
-## ③ 比较运算符 [标准]
+## ③ 比较运算符 <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：比较运算符 [标准]]
+> **示例 2** [难度 ★☆☆☆☆] [主题：比较运算符 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <compare>
@@ -55,27 +55,27 @@ struct Point{int x,y;auto operator<=>(const Point&)const=default;};
 int main(){Point a{1,2},b{1,3};std::cout<<(a<b)<<std::endl;return 0;}
 ```
 
-## ④ 前置/后置自增 [标准]
+## ④ 前置/后置自增 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：前置/后置自增 [标准]]
+> **示例 3** [难度 ★☆☆☆☆] [主题：前置/后置自增 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 struct Counter{int v;Counter&operator++(){++v;return*this;}Counter operator++(int){Counter t=*this;++v;return t;}};
 int main(){Counter c{0};std::cout<<(++c).v<<" "<<(c++).v<<" "<<c.v<<std::endl;return 0;}
 ```
 
-## ⑤ operator<< 输出 [标准]
+## ⑤ operator<< 输出 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：<< 输出 [标准]]
+> **示例 4** [难度 ★☆☆☆☆] [主题：<< 输出 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 struct Vec{int x,y;friend std::ostream&operator<<(std::ostream&os,const Vec&v){return os<<v.x<<","<<v.y;}};
 int main(){Vec v{10,20};std::cout<<v<<std::endl;return 0;}
 ```
 
-## ⑥ 赋值运算符（拷贝/移动）[标准]
+## ⑥ 赋值运算符（拷贝/移动）<span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：赋值运算符（拷贝/移动）[标准]]
+> **示例 5** [难度 ★★☆☆☆] [主题：赋值运算符（拷贝/移动）<span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -84,18 +84,18 @@ struct Buffer{int* d;size_t n;explicit Buffer(size_t s):d(new int[s]),n(s){}~Buf
 int main(){Buffer a(10),b(5);b=std::move(a);std::cout<<b.n<<std::endl;return 0;}
 ```
 
-## ⑦ 类型转换运算符 [标准]
+## ⑦ 类型转换运算符 <span class="badge badge-std">标准</span>
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：类型转换运算符 [标准]]
+> **示例 6** [难度 ★☆☆☆☆] [主题：类型转换运算符 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 struct Rational{int n,d;explicit operator double()const{return(double)n/d;}};
 int main(){Rational r{3,4};std::cout<<(double)r<<std::endl;return 0;}
 ```
 
-## ⑧ 下标运算符 [标准]
+## ⑧ 下标运算符 <span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：下标运算符 [标准]]
+> **示例 7** [难度 ★☆☆☆☆] [主题：下标运算符 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -103,18 +103,18 @@ struct Array{int d[5];int&operator[](size_t i){return d[i];}const int&operator[]
 int main(){Array a{1,2,3,4,5};std::cout<<a[2]<<std::endl;return 0;}
 ```
 
-## ⑨ 函数调用运算符 [标准]
+## ⑨ 函数调用运算符 <span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：函数调用运算符 [标准]]
+> **示例 8** [难度 ★☆☆☆☆] [主题：函数调用运算符 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 struct Adder{int base;int operator()(int x)const{return base+x;}};
 int main(){Adder add5{5};std::cout<<add5(10)<<std::endl;return 0;}
 ```
 
-## ⑩ 不可重载的运算符 [标准]
+## ⑩ 不可重载的运算符 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：不可重载的运算符 [标准]]
+> **示例 9** [难度 ★☆☆☆☆] [主题：不可重载的运算符 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -123,14 +123,14 @@ int main(){std::cout<<"Cannot overload: . .* :: ?: sizeof typeid const_cast stat
 
 ## 补充完整可编译示例
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct CVec{double x,y;};CVec operator*(const CVec&a,double s){return{a.x*s,a.y*s};}
 int main(){CVec c{1,2};auto d=c*2;std::cout<<d.x<<","<<d.y<<std::endl;return 0;}
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -138,41 +138,41 @@ struct String{char*b;String(const char*s):b(strdup(s)){}~String(){free(b);}Strin
 int main(){String s("hello");String t=s;std::cout<<t.b<<std::endl;return 0;}
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator overloading: member vs free function. Free prefer non-member for symmetry.\n";return 0;}
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct Space{int m;bool operator!()const{return m==0;}};
 int main(){Space s{0};std::cout<<!s<<std::endl;return 0;}
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct Vec3{int x,y,z;bool operator==(const Vec3&o)const=default;};
 int main(){Vec3 a{1,2,3},b{1,2,3};std::cout<<(a==b)<<std::endl;return 0;}
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct Logger{Logger&operator<<(const char*s){std::cout<<s;return*this;}};
 int main(){Logger log;log<<"hello "<<"world\n";return 0;}
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct Matrix{int m[2][2];int&operator()(int i,int j){return m[i][j];}};
 int main(){Matrix mat{{{1,2},{3,4}}};std::cout<<mat(0,1)<<std::endl;return 0;}
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <memory>
@@ -180,21 +180,21 @@ struct Ptr{std::unique_ptr<int> p;int&operator*(){return*p;}int*operator->(){ret
 int main(){Ptr ptr{std::make_unique<int>(42)};std::cout<<*ptr<<std::endl;return 0;}
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct Bool{bool v;operator bool()const{return v;}};
 int main(){Bool b{true};if(b)std::cout<<"true\n";return 0;}
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator总结: 保留语义(+==>+), 避免歧义, 成员vs自由选择, <=>统一比较。"<<std::endl;return 0;}
 ```
 
-## ⑪ STL 联系 [标准]
-> **示例 20** [难度 ★☆☆☆☆] [主题：联系 [标准]]
+## ⑪ STL 联系 <span class="badge badge-std">标准</span>
+> **示例 20** [难度 ★☆☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -202,85 +202,85 @@ struct S{int v;bool operator<(const S&o)const{return v<o.v;}};
 int main(){S arr[]{{3},{1},{2}};std::sort(std::begin(arr),std::end(arr));std::cout<<arr[0].v<<std::endl;return 0;}
 ```
 
-## ⑫ 工业案例 [经验]
-> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例 [经验]]
+## ⑫ 工业案例 <span class="badge badge-exp">经验</span>
+> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Eigen: operator+ returns expression template. fmt: operator<<_format for custom types.\n";return 0;}
 ```
 
 ## ⑬ 源码分析 [实现·GCC15.3.0]
-> **示例 22** [难度 ★☆☆☆☆] [主题：源码分析 [实现·GCC15.3.0]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析 [实现·GCC15.3.0
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC resolving operator@: lookup + overload resolution, error messages in cp/call.cc.\n";return 0;}
 ```
 
-## ⑭ WG21 提案 [标准]
-> **示例 23** [难度 ★☆☆☆☆] [主题：提案 [标准]]
+## ⑭ WG21 提案 <span class="badge badge-std">标准</span>
+> **示例 23** [难度 ★☆☆☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P0515: three-way comparison <=>. P1185: defaulted <=> = default.\n";return 0;}
 ```
 
-## ⑮ 面试题 [经验]
-> **示例 24** [难度 ★☆☆☆☆] [主题：面试题 [经验]]
+## ⑮ 面试题 <span class="badge badge-exp">经验</span>
+> **示例 24** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Q: prefix vs postfix ++? A: prefix returns ref, postfix returns copy. Use prefix for perf.\n";return 0;}
 ```
 
-## ⑯ 易错点 [经验]
-> **示例 25** [难度 ★☆☆☆☆] [主题：易错点 [经验]]
+## ⑯ 易错点 <span class="badge badge-exp">经验</span>
+> **示例 25** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Pitfall: operator, overload loses short-circuit; operator&&/|| overload loses short-circuit.\n";return 0;}
 ```
 
-## ⑰ FAQ [经验]
-> **示例 26** [难度 ★☆☆☆☆] [主题：[经验]]
+## ⑰ FAQ <span class="badge badge-exp">经验</span>
+> **示例 26** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Q: Why can't operator<< be a member? A: left operand is std::ostream, not your class.\n";return 0;}
 ```
 
-## ⑱ 最佳实践 [经验]
-> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
+> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Best: use <=> for comparison; non-member for symmetric ops; friend for stream I/O.\n";return 0;}
 ```
 
 ## ⑲ 性能分析 [平台·x86-64]
-> **示例 28** [难度 ★☆☆☆☆] [主题：性能分析 [平台·x86-64]]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析 [平台·x86-64]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator+ temporaries can be avoided with expression templates (Eigen, range-v3).\n";return 0;}
 ```
 
-## ⑳ 跨语言对比 [经验]
+## ⑳ 跨语言对比 <span class="badge badge-exp">经验</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：数值类型 operator+。** 为 `Matrix` 重载 `operator+` 返回新对象（值语义）。请说明成员 vs 非成员。
-   - [标准] 对称运算符（如 +）常定义为非成员以支持左操作数隐式转换；应返回新值而非修改操作数。
-   - [引用] ISO/IEC 14882:2023 §[over.oper]（重载运算符）；cppreference "Operator_overloading" 词条。
+   - <span class="badge badge-std">标准</span> 对称运算符（如 +）常定义为非成员以支持左操作数隐式转换；应返回新值而非修改操作数。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[over.oper]（重载运算符）；cppreference "Operator_overloading" 词条。
 
 2. **真实场景：operator<< 流式输出。** 定义非成员 `operator<<`。请说明为何非成员。
-   - [标准] 左操作数为 `std::ostream` 时只能是非成员重载以允许 `os << obj`。
-   - [引用] ISO/IEC 14882:2023 §[over.oper]；cppreference "Operator_overloading#Stream_extraction/insertion" 词条。
+   - <span class="badge badge-std">标准</span> 左操作数为 `std::ostream` 时只能是非成员重载以允许 `os << obj`。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[over.oper]；cppreference "Operator_overloading#Stream_extraction/insertion" 词条。
 
 3. **真实场景：用户定义字面量。** 为 `Distance` 定义 `_km` 字面量 `operator""_km(long double)`。请用 [over.literal]。
-   - [标准] 字面量运算符以 `_` 前缀命名，使 `1.0_km` 形式可读且可参与编译期计算。
-   - [引用] ISO/IEC 14882:2023 §[over.literal]（字面量运算符）；cppreference "User-defined_literals" 词条。
+   - <span class="badge badge-std">标准</span> 字面量运算符以 `_` 前缀命名，使 `1.0_km` 形式可读且可参与编译期计算。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[over.literal]（字面量运算符）；cppreference "User-defined_literals" 词条。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：跨语言对比 [经验]]
+> **示例 29** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ operator overloading vs Rust std::ops traits vs Python __add__/dunder methods.\n";return 0;}
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 [经验]]
+> **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <=>优先defaulted, 自由函数优于成员。"<<std::endl;return 0;}
@@ -291,7 +291,7 @@ int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：运算符重载的出身与红线
-运算符重载源自 Simula 与 ALGOL 68 的"函数即运算符"思想；Stroustrup 在 C++ 引入它，核心动机是让用户定义类型（复数、矩阵、字符串）能用 `+`、`==`、下标语法，避免 `a.add(b)` 的割裂感（见 ch31 0.1）。[史] 引用（ch20）是其前置科技：运算符参数需是别名左值。[史] 委员会设了红线：不能发明新运算符、不能改优先级、不能重载 `.`/`::`/`sizeof` 等少数几个；`<<` 被挪用做输出流（而非位移）是标准库风格最受爱戴的"滥用"。[史][评][轶]
+运算符重载源自 Simula 与 ALGOL 68 的"函数即运算符"思想；Stroustrup 在 C++ 引入它，核心动机是让用户定义类型（复数、矩阵、字符串）能用 `+`、`==`、下标语法，避免 `a.add(b)` 的割裂感（见 ch31 0.1）。<span class="badge badge-history">史</span> 引用（ch20）是其前置科技：运算符参数需是别名左值。<span class="badge badge-history">史</span> 委员会设了红线：不能发明新运算符、不能改优先级、不能重载 `.`/`::`/`sizeof` 等少数几个；`<<` 被挪用做输出流（而非位移）是标准库风格最受爱戴的"滥用"。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span><span class="badge badge-anecdote">轶</span>
 
 ### ㉒.2 真实工程坐标：运算符重载活在哪些产品里
 
@@ -309,13 +309,13 @@ int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <
 
 **一条判读**：用运算符重载的判据是「该类型在数学或领域上确实有对应运算，且重载后读起来更直观且更安全」。数值/向量/字符串/路径/单位 → 重载让代码贴合直觉（QuantLib/Boost.Units 典范）；但只在语义清晰时重载，绝不重载 `operator,`/`operator&&` 等改变短路/求值顺序语义的运算符（破坏预期）。规则：贴合数学/领域直觉才重载；保持运算符的天然语义与优先级预期，别用它做隐式转换陷阱。
 ### ㉒.3 生产踩坑：运算符重载的常见误用
-- **违反语义直觉**：`operator+` 却改自身、`operator*` 返回引用而非值、破坏交换律/结合律，会让调用方写出隐蔽逻辑错误。[评]
-- **返回局部引用**：`operator+` 返回 `T&` 指向局部临时对象，访问即悬垂 UB；应返回值或 `T&&`（C++11 起可链式返回值）。[史][评]
-- **隐式转换运算符陷阱**：`operator bool()`/`operator T()` 触发意外隐式转换（如 `if (stream)` 之外的场合），应用 `explicit` 限定。[评]
-- **成员 vs 非成员错配**：`operator<<` 必须为非成员（或 friend）才能 `cout << obj` 左操作数为 `ostream`；对称运算符（如 `==`）写成成员会破坏交换律与混合类型。[史][评]
+- **违反语义直觉**：`operator+` 却改自身、`operator*` 返回引用而非值、破坏交换律/结合律，会让调用方写出隐蔽逻辑错误。<span class="badge badge-comment">评</span>
+- **返回局部引用**：`operator+` 返回 `T&` 指向局部临时对象，访问即悬垂 UB；应返回值或 `T&&`（C++11 起可链式返回值）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **隐式转换运算符陷阱**：`operator bool()`/`operator T()` 触发意外隐式转换（如 `if (stream)` 之外的场合），应用 `explicit` 限定。<span class="badge badge-comment">评</span>
+- **成员 vs 非成员错配**：`operator<<` 必须为非成员（或 friend）才能 `cout << obj` 左操作数为 `ostream`；对称运算符（如 `==`）写成成员会破坏交换律与混合类型。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### ㉒.4 与标准的互动：运算符随标准演进
-C++ 早期 `operator+`/`[]`/`()` 等成形并约定"成员 vs 非成员"规则；C++98–11 打磨重载决议与模板交互。[史] C++20 的 `operator<=>`（三路比较，P0515/P1185）只需写一个比较运算符，编译器按"重写规则"自动合成 `==`/`<`/`>` 全套，终结为值类型手写六七个运算符的时代；概念（Concepts）让运算符可加 `requires` 约束，避免对不适用类型意外参与重载；C++23 显式对象形参（P0847）统一成员/非成员运算符定义。[史] 委员会仍坚持"不发明新运算符"的红线。[史][评]
+C++ 早期 `operator+`/`[]`/`()` 等成形并约定"成员 vs 非成员"规则；C++98–11 打磨重载决议与模板交互。<span class="badge badge-history">史</span> C++20 的 `operator<=>`（三路比较，P0515/P1185）只需写一个比较运算符，编译器按"重写规则"自动合成 `==`/`<`/`>` 全套，终结为值类型手写六七个运算符的时代；概念（Concepts）让运算符可加 `requires` 约束，避免对不适用类型意外参与重载；C++23 显式对象形参（P0847）统一成员/非成员运算符定义。<span class="badge badge-history">史</span> 委员会仍坚持"不发明新运算符"的红线。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **修订链补强（重写候选）**：三路比较（P0515R0→R3，C++20，[wg21.link/P0515](https://wg21.link/P0515)）对运算符重载影响深远——标准在 [over.match.oper] 引入"rewrite candidates"（重写候选），当 `a < b` 找不到时，编译器可改写为 `b > a` 或 `(a <=> b) < 0`，令运算符具备对称性；以往对称运算符漏写会破坏交换律的坑（见 ch31 0.x）因此被语言层消解。委员会坚持"不发明新运算符"的红线，但通过"重写规则"让既有运算符获得自动对称，是"最小语法扩张、最大语义收益"的范例。
 
 ### ㉒.5 权威引用
@@ -340,7 +340,7 @@ C++ 早期 `operator+`/`[]`/`()` 等成形并约定"成员 vs 非成员"规则�
 | -> * (解引用) | 成员函数 | 模拟指针行为 |
 | && \|\| , (逻辑/逗号) | 不推荐重载 | 丢失短路求值语义 |
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录 A: 运算符重载速查表]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: 运算符重载速查表
 ```cpp
 #include <iostream>
 struct Complex{double r,i;Complex operator+(double s)const{return{r+s,i};}friend Complex operator+(double s,const Complex&c){return{c.r+s,c.i};}};
@@ -349,7 +349,7 @@ int main(){Complex c{1,2};auto d=c+3.0;auto e=3.0+c;std::cout<<d.r<<","<<e.r<<st
 
 ## 附录 B: <=> 三路比较深度
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录 B: <=> 三路比较深度]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: <=> 三路比较深度
 ```cpp
 #include <iostream>
 #include <compare>
@@ -357,7 +357,7 @@ struct Date{int y,m,d;auto operator<=>(const Date&)const=default;};
 int main(){Date d1{2024,1,1},d2{2025,6,15};auto cmp=d1<=>d2;if(cmp<0)std::cout<<"before\n";return 0;}
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录 B: <=> 三路比较深度]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: <=> 三路比较深度
 ```cpp
 #include <iostream>
 #include <compare>
@@ -367,7 +367,7 @@ int main(){Ord a{10},b{20};std::cout<<(a<b)<<" "<<(a>b)<<std::endl;return 0;}
 
 ## 附录 C: 表达式模板与延迟求值
 
-> **示例 34** [难度 ★★☆☆☆] [主题：附录 C: 表达式模板与延迟求值]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: 表达式模板与延迟求值
 ```cpp
 #include <iostream>
 template<typename L,typename R>struct AddExpr{L l;R r;auto eval()const{return l.eval()+r.eval();}};
@@ -378,7 +378,7 @@ int main(){Vec a{10},b{20};std::cout<<(a+b).eval()<<std::endl;return 0;}
 
 ## 附录 D: 常见错误与修复
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录 D: 常见错误与修复]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: 常见错误与修复
 ```cpp
 #include <iostream>
 int main(){
@@ -390,7 +390,7 @@ int main(){
 }
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：附录 D: 常见错误与修复]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: 常见错误与修复
 ```cpp
 #include <iostream>
 struct SafeAssign{int*v;SafeAssign(int x):v(new int(x)){}~SafeAssign(){delete v;}SafeAssign&operator=(const SafeAssign&o){if(this==&o)return*this;int*t=new int(*o.v);delete v;v=t;return*this;}int get()const{return*v;}};
@@ -399,14 +399,14 @@ int main(){SafeAssign a(10),b(20);a=b;std::cout<<a.get()<<std::endl;return 0;}
 
 ## 附录 E: 自定义迭代器与智能指针
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录 E: 自定义迭代器与智能指针]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
 ```cpp
 #include <iostream>
 struct Range{int lo,hi;struct It{int v;int operator*()const{return v;}It&operator++(){++v;return*this;}bool operator!=(const It&o)const{return v!=o.v;}};It begin()const{return{lo};}It end()const{return{hi};}};
 int main(){Range r{1,5};int s=0;for(int x:r)s+=x;std::cout<<s<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录 E: 自定义迭代器与智能指针]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
 ```cpp
 #include <iostream>
 #include <memory>
@@ -415,14 +415,14 @@ struct Ptr{std::unique_ptr<Res> p;Res&operator*(){return*p;}Res*operator->(){ret
 int main(){Ptr p(99);std::cout<<p->get()<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录 E: 自定义迭代器与智能指针]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
 ```cpp
 #include <iostream>
 struct Mat{int d[2][2];int*operator[](int i){return d[i];}};
 int main(){Mat m{{{1,2},{3,4}}};std::cout<<m[0][1]<<std::endl;return 0;}
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 E: 自定义迭代器与智能指针]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
 ```cpp
 #include <iostream>
 #include <string>
@@ -432,7 +432,7 @@ int main(){Json j{42,"hello"};std::cout<<(int)j<<" "<<(std::string)j<<std::endl;
 
 ## 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
-> **示例 41** [难度 ★★★☆☆] [主题：附录 L：标准库与底层 [D: st]
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 L：标准库与底层 [D: st
 ```
 标准库中的运算符重载:
 - std::complex<T>: operator+,-,*,/ → libstdc++内联展开为2条addps(SIMD)
@@ -470,7 +470,7 @@ WG21从未单独标准化运算符重载——它是C++78(C with Classes)的原�
 ; 结论: operator+=零开销抽象, 编译器内联后与手写相同
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：汇编验证]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编验证
 ```cpp
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -494,7 +494,7 @@ Q: 为什么不要重载operator&&和operator||? A: 它们会失去短路求值(
 
 ## 附录 H：运算符重载面试
 
-> **示例 43** [难度 ★★☆☆☆] [主题：附录 H：运算符重载面试]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：运算符重载面试
 ```cpp
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -522,7 +522,7 @@ operator+的name mangling: GCC: _ZplRK4Vec2S1_ (operator+ for Vec2)
 ; 结论: operator+=零开销抽象, 编译器内联后与手写相同汇编
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 I：运算符ABI]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：运算符ABI
 ```cpp
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -556,7 +556,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 ## 底层视角：运算符成员/非成员、隐式转换与 constexpr [E: Low-level]
 
-[标准] 成员运算符首参为隐式 `this`（`0x0008` 指针）；非成员 `operator@` 须至少一参为用户类型。含隐式转换的运算符（如 `T::operator U()`）每次上下文转换触发一次 `0x0008` 构造/拷贝（约数 ns~数十 ns），是性能陷阱。
+<span class="badge badge-std">标准</span> 成员运算符首参为隐式 `this`（`0x0008` 指针）；非成员 `operator@` 须至少一参为用户类型。含隐式转换的运算符（如 `T::operator U()`）每次上下文转换触发一次 `0x0008` 构造/拷贝（约数 ns~数十 ns），是性能陷阱。
 
 `C++20` `consteval` 运算符可在编译期求值（如 `operator""` 字面量），彻底省运行期 `0x0008` 间接；`C++17` `if constexpr` 按类型静态派发。`GCC 15.3.0` `-O2` 把内联运算符直接展开（≈0.3 ns），未内联的虚运算符走 vtable（见 ch47，约 1–3 ns + 跳转惩罚）。SIMD 不直接适用，但向量化的 `operator+` 可经 `-mavx2`（`0x0020` 宽）并行。
 
@@ -570,7 +570,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 struct Vec2 {
@@ -589,9 +589,9 @@ int main(){
 `operator+` 返回值是必然的：`a+b` 的结果是个临时量，不能返回对局部/参数的引用。
 `operator<<` 返回 `ostream&` 以支持链式 `cout << a << b`。
 
-[标准] 算术运算符通常返回新值（值语义）；流插入运算符返回流引用以支持链式调用。
+<span class="badge badge-std">标准</span> 算术运算符通常返回新值（值语义）；流插入运算符返回流引用以支持链式调用。
 
-[引用] ISO/IEC 14882:2023 §[over.oper]（运算符重载的基本约束：至少一操作数为用户类型）；cppreference "Operators" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[over.oper]（运算符重载的基本约束：至少一操作数为用户类型）；cppreference "Operators" 词条。
 
 </details>
 
@@ -601,7 +601,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <compare>
 struct Point {
@@ -620,9 +620,9 @@ int main(){
 `strong_ordering` 表示"相等可判定且不等时严格有序"（成员须完全有序，含 `int`）。
 若含 `float` 这类只有偏序的类型，需 `partial_ordering` 并谨慎处理 NaN。
 
-[标准] `operator<=>`(C++20) 生成全套比较；`default` 合成逐成员字典序比较。
+<span class="badge badge-std">标准</span> `operator<=>`(C++20) 生成全套比较；`default` 合成逐成员字典序比较。
 
-[引用] ISO/IEC 14882:2023 §[expr.spaceship]/[class.compare.default]（三路比较与默认合成）；cppreference "operator<=>" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.spaceship]/[class.compare.default]（三路比较与默认合成）；cppreference "operator<=>" 词条。
 
 </details>
 
@@ -632,7 +632,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 47** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <utility>
 #include <cstddef>
@@ -658,9 +658,9 @@ struct Matrix {                 // rule of 5
 `std::vector` 扩容时若元素的移动构造**不** `noexcept`，为保证强异常安全它会改用拷贝；
 标 `noexcept` 后扩容走移动（O(1) 指针交换，零元素拷贝）。
 
-[标准] rule of 0/3/5：有自定义析构/拷贝通常需补齐全套；移动操作标 `noexcept` 方能参与 vector 扩容优化。
+<span class="badge badge-std">标准</span> rule of 0/3/5：有自定义析构/拷贝通常需补齐全套；移动操作标 `noexcept` 方能参与 vector 扩容优化。
 
-[引用] ISO/IEC 14882:2023 §[class.copy.ctor]/[class.copy.assign]（拷贝/移动构造与赋值的生成规则）；C++ Core Guidelines（isocpp.github.io）R.32–R.34 关于资源管理的规则。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy.ctor]/[class.copy.assign]（拷贝/移动构造与赋值的生成规则）；C++ Core Guidelines（isocpp.github.io）R.32–R.34 关于资源管理的规则。
 
 </details>
 
@@ -670,7 +670,7 @@ struct Matrix {                 // rule of 5
 
 **步骤 1：朴素裸指针（漏析构 → 泄漏）**
 
-> **示例 48** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 从 rule o]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 从 rule o
 ```cpp
 struct MyString {
     char* data; size_t len;
@@ -683,7 +683,7 @@ struct MyString {
 
 **步骤 2：rule of 3（深拷贝补全）**
 
-> **示例 49** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 从 rule o]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 从 rule o
 ```cpp
 struct MyString {                       // rule of 3: 管理资源的类必须给出三者
     char* data; std::size_t len;
@@ -701,7 +701,7 @@ struct MyString {                       // rule of 3: 管理资源的类必须�
 
 **步骤 3：vector 扩容的性能坑（移动未 noexcept → 退化拷贝）**
 
-> **示例 50** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 从 rule o]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 从 rule o
 ```cpp
 #include <vector>
 #include <cstring>
@@ -722,7 +722,7 @@ int main(){
 
 **步骤 4：rule of 5（加 noexcept 移动）**
 
-> **示例 51** [难度 ★★★☆☆] [主题：附录：用法演绎 — 从 rule o]
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 从 rule o
 ```cpp
 #include <vector>
 #include <cstring>
@@ -1006,7 +1006,7 @@ void operator delete[](void*) _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
 
 ### 可编译实证
 
-> **示例 52** [难度 ★★☆☆☆] [主题：可编译实证]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译实证
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1056,7 +1056,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 53** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 

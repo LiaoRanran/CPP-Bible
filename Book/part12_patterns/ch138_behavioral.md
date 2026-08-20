@@ -19,23 +19,23 @@
 > 当"这条消息该交给谁、按什么规则、花什么代价"成为系统主线时，行为型模式接管了对象间的协作。
 
 ### 0.1 起源（谁·何时·为何）
-行为型模式出自 GoF 1994 年书（Strategy、Observer、Command、Iterator、Template Method、Visitor、Memento、State、Mediator、Chain of Responsibility、Interpreter 等）[史]。它回答的问题是创建型（谁造）、结构型（怎么拼）之外的第三维：对象之间如何协作、职责怎么分、算法怎么在运行时被替换。最常见的痛点——一堆 `if/else` 切换行为、观察者列表手写、`for` 循环遍历写得到处都是——都被这些行为模式收编。
+行为型模式出自 GoF 1994 年书（Strategy、Observer、Command、Iterator、Template Method、Visitor、Memento、State、Mediator、Chain of Responsibility、Interpreter 等）<span class="badge badge-history">史</span>。它回答的问题是创建型（谁造）、结构型（怎么拼）之外的第三维：对象之间如何协作、职责怎么分、算法怎么在运行时被替换。最常见的痛点——一堆 `if/else` 切换行为、观察者列表手写、`for` 循环遍历写得到处都是——都被这些行为模式收编。
 
 ### 0.2 关键转折（编年）
-- 1994：GoF 确立行为型模式家族 [史]。
-- 1998 起：C++ 标准库的 STL 把 **Iterator** 做成了语言级事实标准，成为史上最广泛使用的行为型模式 [史]。
-- 2011：C++11 的 `std::function` 与 lambda 让 Strategy/Command 从"写一堆类"退化成"传一个闭包" [史]。
+- 1994：GoF 确立行为型模式家族 <span class="badge badge-history">史</span>。
+- 1998 起：C++ 标准库的 STL 把 **Iterator** 做成了语言级事实标准，成为史上最广泛使用的行为型模式 <span class="badge badge-history">史</span>。
+- 2011：C++11 的 `std::function` 与 lambda 让 Strategy/Command 从"写一堆类"退化成"传一个闭包" <span class="badge badge-history">史</span>。
 
 ### 0.3 设计哲学之争
-Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"蒸发"——Template Method 变成 CRTP、Strategy 变成模板参数或 `std::function`、Command 变成函数对象 [评]。这带来一个深层争论：模式是"该显式写出来的设计"，还是"该被语言吸收掉的语言特性"？C++ 的答案是两者兼有——能吸收的吸收，吸收不了的（如 Observer 的生命周期）仍需显式模式 [评]。
+Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"蒸发"——Template Method 变成 CRTP、Strategy 变成模板参数或 `std::function`、Command 变成函数对象 <span class="badge badge-comment">评</span>。这带来一个深层争论：模式是"该显式写出来的设计"，还是"该被语言吸收掉的语言特性"？C++ 的答案是两者兼有——能吸收的吸收，吸收不了的（如 Observer 的生命周期）仍需显式模式 <span class="badge badge-comment">评</span>。
 
 ### 0.4 史料补遗与持续编年
 继 2011 年 `std::function`/lambda 把 Strategy/Command 退化成"传闭包"，行为型模式在 C++20/23 协程时代再次被改写。
 
-- [史] C++20 协程（`co_await`/`co_yield`）把"行为编排"从手写状态机/Command 对象，变成可被挂起恢复的顺序代码——async/await 风格直接重塑了 Observer/Command 在服务端与现代框架里的写法。
-- [史] 响应式（reactive）与函数式思潮让 Observer 从"手维护订阅列表"进化为事件流/`std::ranges` 管道；许多旧式行为模式被"数据流 + 算子"重新表达。
-- [评] Stroustrup 的判断依旧成立：能吸收进语言的（Iterator、Strategy、Command）就交给语言，吸收不了的（Observer 的生命周期、跨模块协作）仍需显式模式——两者的边界随标准演进缓慢移动。
-- [轶] Stroustrup 多次表示，STL 的 Iterator 是他最满意的"模式被语言吸收"的例子。
+- <span class="badge badge-history">史</span> C++20 协程（`co_await`/`co_yield`）把"行为编排"从手写状态机/Command 对象，变成可被挂起恢复的顺序代码——async/await 风格直接重塑了 Observer/Command 在服务端与现代框架里的写法。
+- <span class="badge badge-history">史</span> 响应式（reactive）与函数式思潮让 Observer 从"手维护订阅列表"进化为事件流/`std::ranges` 管道；许多旧式行为模式被"数据流 + 算子"重新表达。
+- <span class="badge badge-comment">评</span> Stroustrup 的判断依旧成立：能吸收进语言的（Iterator、Strategy、Command）就交给语言，吸收不了的（Observer 的生命周期、跨模块协作）仍需显式模式——两者的边界随标准演进缓慢移动。
+- <span class="badge badge-anecdote">轶</span> Stroustrup 多次表示，STL 的 Iterator 是他最满意的"模式被语言吸收"的例子。
 
 > 史料来源：
 > - https://en.cppreference.com/w/cpp/language/coroutines
@@ -52,7 +52,7 @@ Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"�
 核心张力只有一条：**把「会变的行为」从「稳定的上下文」中剥离出去**。
 C++ 提供三种等价的剥离机制：
 
-> **示例 1** [难度 ★★★☆☆] [主题：概述：行为型模式解决什么]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：行为型模式解决什么
 ```cpp
 #include <variant>
 #include <functional>
@@ -66,10 +66,10 @@ std::function<double()> area_fn;
 template <typename T> double area_of(const T& s) { return s.area(); }
 ```
 
-[实现] 现代 C++ 的「行为型模式」几乎都能用上述三种机制重写，区别只在**分发发生的时机与代价**，
+<span class="badge badge-impl">实现</span> 现代 C++ 的「行为型模式」几乎都能用上述三种机制重写，区别只在**分发发生的时机与代价**，
 这正是节 ⑲ 用真实汇编取证的主题。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：行为型模式解决什么]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：行为型模式解决什么
 ```cpp
 // 一个统一视角：无论哪种机制，调用方都只看到稳定接口
 #include <iostream>
@@ -88,7 +88,7 @@ int main() {
 
 经典虚接口写法：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：策略 Strategy]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 策略 Strategy
 ```cpp
 #include <iostream>
 #include <memory>
@@ -108,7 +108,7 @@ int main() {
 
 `std::function` 擦除写法（更轻量，无需为每种策略建一个类）：
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：策略 Strategy]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 策略 Strategy
 ```cpp
 #include <functional>
 #include <iostream>
@@ -126,7 +126,7 @@ int main() {
 解剖 `std::function` 的代价：`Examples/_ch138_strategy.cpp:10` 处的 `policy` 成员是一次**类型擦除**，
 内部持有小对象缓冲（SBO）或堆分配 + 函数指针。
 
-> **示例 5** [难度 ★★★☆☆] [主题：策略 Strategy]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 策略 Strategy
 ```cpp
 #include <functional>
 // std::function 的典型成员布局（libstdc++ 简化视角）
@@ -135,7 +135,7 @@ int main() {
 // 调用 operator() 时通过 _M_invoker 间接跳转到被擦除的目标
 ```
 
-[经验] 策略数量少、生命周期短、对热路径敏感时，优先 `if constexpr`（节 ③）；
+<span class="badge badge-exp">经验</span> 策略数量少、生命周期短、对热路径敏感时，优先 `if constexpr`（节 ③）；
 需要运行期热插拔且策略种类多时，`std::function` 比继承更省样板。
 
 ---
@@ -144,7 +144,7 @@ int main() {
 
 当「选哪个策略」在编译期已知，用 `if constexpr` 把分发**彻底消灭在编译期**。
 
-> **示例 6** [难度 ★★★☆☆] [主题：策略与 if constexpr 编]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 策略与 if constexpr 编
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -163,7 +163,7 @@ int main() {
 
 真实取证：节 ⑲ 的 `via_if` 在 `-O2` 下被完全常量折叠进 `main`，生成的机器码里**没有任何分发指令**。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：策略与 if constexpr 编]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 策略与 if constexpr 编
 ```cpp
 // if constexpr 还能配合概念做编译期策略选择
 #include <concepts>
@@ -172,7 +172,7 @@ requires requires(T t){ t.compress(0); }
 int do_codec(T t, int n) { return t.compress(n); }   // 仅接受可压缩类型
 ```
 
-[标准] `if constexpr` 的分支中未选中的 `false` 分支**不会被实例化**，因此可以写对当前类型非法、
+<span class="badge badge-std">标准</span> `if constexpr` 的分支中未选中的 `false` 分支**不会被实例化**，因此可以写对当前类型非法、
 对其他类型合法的代码而不报编译错误——这是它区别于普通 `if` 的本质。
 
 ---
@@ -181,7 +181,7 @@ int do_codec(T t, int n) { return t.compress(n); }   // 仅接受可压缩类型
 
 观察者定义**一对多的依赖**：主题状态变化时，自动通知所有订阅者。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：观察者 Observer]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 观察者 Observer
 ```cpp
 #include <iostream>
 #include <string>
@@ -208,10 +208,10 @@ ASCII 结构图（主题 → 多订阅者）：
                 └──────────┘
 ```
 
-[实现] 真正的 signal/slot（如 Qt 的 `QObject::connect`、Boost.Signals2）在 `Subject` 之上增加了
+<span class="badge badge-impl">实现</span> 真正的 signal/slot（如 Qt 的 `QObject::connect`、Boost.Signals2）在 `Subject` 之上增加了
 连接管理、线程安全与自动断连；其底层仍是「订阅者列表 + 通知遍历」这一骨架。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：观察者 Observer]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 观察者 Observer
 ```cpp
 #include <string>
 // 退化但可用的宏式注册（仅示意工业库的连接表思路）
@@ -224,7 +224,7 @@ ASCII 结构图（主题 → 多订阅者）：
 
 用 `std::function` 取代裸函数指针，订阅者可以是 lambda、成员函数、仿函数：
 
-> **示例 10** [难度 ★★☆☆☆] [主题：观察者与现代实现]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 观察者与现代实现
 ```cpp
 #include <functional>
 #include <iostream>
@@ -246,7 +246,7 @@ int main() {
 
 解耦成员函数订阅（用 `std::bind_front` 或 lambda 捕获 `this`）：
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：观察者与现代实现]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 观察者与现代实现
 ```cpp
 #include <functional>
 #include <iostream>
@@ -257,10 +257,10 @@ struct Receiver {
 // 连接时：sig.connect([this](auto& m){ on_msg(m); });
 ```
 
-[经验] 观察者最易踩的坑是**悬挂订阅**：订阅者已析构但仍在主题列表里。工业做法是用
+<span class="badge badge-exp">经验</span> 观察者最易踩的坑是**悬挂订阅**：订阅者已析构但仍在主题列表里。工业做法是用
 `slot` 句柄（RAII）在析构时自动 `disconnect`，或主题持有 `std::weak_ptr`。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：观察者与现代实现]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 观察者与现代实现
 ```cpp
 #include <memory>
 #include <vector>
@@ -274,7 +274,7 @@ std::vector<std::weak_ptr<void>> safe_slots;
 
 命令模式把**一个请求封装成对象**，从而支持参数化、排队、日志记录与撤销/重做。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：命令 Command]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 命令 Command
 ```cpp
 #include <iostream>
 #include <memory>
@@ -292,7 +292,7 @@ int main() {
 
 宏命令（组合多个命令，本身也是命令）：
 
-> **示例 14** [难度 ★★☆☆☆] [主题：命令 Command]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 命令 Command
 ```cpp
 #include <memory>
 #include <vector>
@@ -303,7 +303,7 @@ struct Macro : Cmd {
 };
 ```
 
-[实现] 撤销栈就是「已执行命令」列表；重做栈是「已撤销命令」列表。两者在每次 `do_`/`undo` 间互换。
+<span class="badge badge-impl">实现</span> 撤销栈就是「已执行命令」列表；重做栈是「已撤销命令」列表。两者在每次 `do_`/`undo` 间互换。
 
 ---
 
@@ -311,7 +311,7 @@ struct Macro : Cmd {
 
 模板方法在基类固定**算法骨架**，把可变步骤声明为虚函数（钩子）留给子类。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：模板方法 Template Meth]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板方法 Template Meth
 ```cpp
 #include <iostream>
 struct Algorithm {
@@ -336,7 +336,7 @@ int main() { Impl{}.run(); }
 
 模板方法 vs 策略：模板方法用**继承**复用骨架（编译期绑定步骤），策略用**组合**替换整体算法（运行期）。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：模板方法 Template Meth]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模板方法 Template Meth
 ```cpp
 // 非虚钩子的「空默认」也是常见形态，子类按需覆写
 virtual void hook() {}   // 默认什么都不做
@@ -348,7 +348,7 @@ virtual void hook() {}   // 默认什么都不做
 
 迭代器是**行为型**家族中标准化程度最高的一员：它把「如何遍历容器」与「遍历后要做什么」解耦。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：迭代器 Iterator]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 迭代器 Iterator
 ```cpp
 #include <iostream>
 #include <vector>
@@ -360,7 +360,7 @@ int main() {
 
 自定义容器只需提供 `begin()/end()` 即可获得标准迭代能力：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：迭代器 Iterator]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 迭代器 Iterator
 ```cpp
 #include <iostream>
 template <typename T, int N>
@@ -374,10 +374,10 @@ struct Arr {
 int main() { Arr<int,3> a{{5,6,7}}; for (auto x : a) std::cout << x << ' '; }
 ```
 
-[标准] 标准库把迭代器分为五类（input/output/forward/bidirectional/random_access，
+<span class="badge badge-std">标准</span> 标准库把迭代器分为五类（input/output/forward/bidirectional/random_access，
 C++20 起增加 contiguous）。算法按所需**最弱类别**选择重载，保证最大通用性。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：迭代器 Iterator]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 迭代器 Iterator
 ```cpp
 // 迭代器标签用于在编译期选择最优算法实现
 std::random_access_iterator_tag  // 支持 += / - / []，可 O(1) 二分
@@ -389,7 +389,7 @@ std::random_access_iterator_tag  // 支持 += / - / []，可 O(1) 二分
 
 范围 `for` 本质是 `begin()/end()` + 迭代器的语法糖，理解它就知道「任何提供 begin/end 的对象都可被遍历」。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：迭代器与范围 for]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 迭代器与范围 for
 ```cpp
 #include <iostream>
 struct Range {
@@ -403,7 +403,7 @@ int main() { for (int x : Range{1,4}) std::cout << x << ' '; }  // 1 2 3
 
 C++20 视图（lazy 组合，零拷贝）：
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：迭代器与范围 for]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 迭代器与范围 for
 ```cpp
 #include <ranges>
 #include <vector>
@@ -415,7 +415,7 @@ int main() {
 }
 ```
 
-[实现] `views::filter` 返回的迭代器在 `operator++` 内部会**跳过不满足谓词的元素**，
+<span class="badge badge-impl">实现</span> `views::filter` 返回的迭代器在 `operator++` 内部会**跳过不满足谓词的元素**，
 逻辑在「移动迭代器」时完成，而非预先生成新容器。
 
 ---
@@ -424,7 +424,7 @@ int main() {
 
 状态模式把**每个状态**建模为对象，使对象在内部状态改变时改变其「看起来」的行为，且无需巨型 `switch`。
 
-> **示例 22** [难度 ★★★☆☆] [主题：状态 State（状态机）]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 状态 State（状态机）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -443,7 +443,7 @@ int main() { Context c{std::make_unique<Off>()}; c.request(); c.request(); }
 
 与「把状态存成 enum + switch」的对比：
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：状态 State（状态机）]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 状态 State（状态机）
 ```cpp
 enum class S { On, Off };
 void handle(S& s) {                 // 平地 switch，新增状态要改所有 case
@@ -454,7 +454,7 @@ void handle(S& s) {                 // 平地 switch，新增状态要改所有 
 }
 ```
 
-[经验] 状态少且迁移简单时用 enum+switch；状态多、迁移复杂、需共享状态数据时用状态对象。
+<span class="badge badge-exp">经验</span> 状态少且迁移简单时用 enum+switch；状态多、迁移复杂、需共享状态数据时用状态对象。
 
 ---
 
@@ -462,7 +462,7 @@ void handle(S& s) {                 // 平地 switch，新增状态要改所有 
 
 工业级状态机常用**跳转表**取代大量状态子类，复杂度为 O(1) 查表，且状态迁移可数据化、可序列化。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：状态机真实实现（表驱动）]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 状态机真实实现（表驱动）
 ```cpp
 #include <iostream>
 enum class S { Idle, Run, Stop };
@@ -494,7 +494,7 @@ Stop   │  Idle   Stop   Idle     │
         （行=当前状态，列=事件，格=下一状态）
 ```
 
-[实现] 复杂系统（协议解析、游戏 AI）常把上表扩展为「动作 + 下一状态」二元组，迁移时顺带执行动作。
+<span class="badge badge-impl">实现</span> 复杂系统（协议解析、游戏 AI）常把上表扩展为「动作 + 下一状态」二元组，迁移时顺带执行动作。
 
 ---
 
@@ -502,7 +502,7 @@ Stop   │  Idle   Stop   Idle     │
 
 责任链让**多个处理器依次尝试**处理请求，直到某个处理器认领它；发送者无需知道谁来处理。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：责任链 Chain of Respo]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 责任链 Chain of Respo
 ```cpp
 #include <iostream>
 #include <memory>
@@ -527,7 +527,7 @@ ASCII 流图：
   request ──▶ [Low] ──(未处理)──▶ [High] ──(未处理)──▶ [终端/默认]
 ```
 
-[经验] 责任链常用于日志分级、HTTP 中间件、UI 事件冒泡。注意：**链过长会退化成线性扫描**，
+<span class="badge badge-exp">经验</span> 责任链常用于日志分级、HTTP 中间件、UI 事件冒泡。注意：**链过长会退化成线性扫描**，
 热点路径上应限制链长或改用表驱动。
 
 ---
@@ -537,7 +537,7 @@ ASCII 流图：
 访问者解决「对一组异构对象施加新操作，却不想修改这些对象的类」。它本质上是**两次动态分发**
 （先按容器类型，再按元素类型）。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：访问者 Visitor]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 访问者 Visitor
 ```cpp
 #include <iostream>
 #include <memory>
@@ -557,7 +557,7 @@ int main() {
 }
 ```
 
-[标准] 访问者的代价是**破坏开闭原则的反向版**：新增元素类型要改所有 `Visitor` 接口；
+<span class="badge badge-std">标准</span> 访问者的代价是**破坏开闭原则的反向版**：新增元素类型要改所有 `Visitor` 接口；
 但它让「新增操作」变得自由。这是经典的「操作易变 vs 类型易变」权衡。
 
 ---
@@ -566,7 +566,7 @@ int main() {
 
 用 `std::variant` + `std::visit` 可实现**无虚函数、无继承**的访问者，分发由 variant 的索引驱动。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：访问者与 std::visit]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 访问者与 std::visit
 ```cpp
 #include <iostream>
 #include <variant>
@@ -582,7 +582,7 @@ int main() {
 
 `std::visit` 的 `operator()` 可写在一处，天然覆盖所有备选项；遗漏任一备选项会**编译失败**，比虚接口更安全。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：访问者与 std::visit]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 访问者与 std::visit
 ```cpp
 // 用泛型 lambda + 编译期 if 也能写访问者
 auto area = [](auto&& x) -> double {
@@ -592,7 +592,7 @@ auto area = [](auto&& x) -> double {
 };
 ```
 
-[实现] 节 ⑲ 取证显示：对只有两个备选项且结果可静态推导的 variant，`std::visit` 在 `-O2` 下
+<span class="badge badge-impl">实现</span> 节 ⑲ 取证显示：对只有两个备选项且结果可静态推导的 variant，`std::visit` 在 `-O2` 下
 被编译成**对判别字节的直接比较与算术**，不产生虚调用。
 
 ---
@@ -601,7 +601,7 @@ auto area = [](auto&& x) -> double {
 
 中介者把一组对象之间**混乱的网状依赖**收敛为「都只依赖中介者」的星型结构，降低耦合。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：中介者 Mediator]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中介者 Mediator
 ```cpp
 #include <functional>
 #include <iostream>
@@ -629,7 +629,7 @@ ASCII 结构（对比无中介者的网状耦合）：
             C──┘                C ─┘
 ```
 
-[经验] 中介者与观察者极易混淆：观察者强调「状态变化通知一对多」，**中介者强调「对象间交互的集中仲裁」**。
+<span class="badge badge-exp">经验</span> 中介者与观察者极易混淆：观察者强调「状态变化通知一对多」，**中介者强调「对象间交互的集中仲裁」**。
 聊天室、航空管制、GUI 组件协调都是典型中介者场景。
 
 ---
@@ -638,7 +638,7 @@ ASCII 结构（对比无中介者的网状耦合）：
 
 备忘录捕获并**外部化对象的内部状态**，以便日后恢复，且不破坏封装（原发器自行提供快照）。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：备忘录 Memento]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 备忘录 Memento
 ```cpp
 #include <iostream>
 #include <string>
@@ -656,10 +656,10 @@ int main() {
 }
 ```
 
-[实现] 工业实现常让 `Memento` 只暴露窄接口给 Caretaker（只能存/取），把读写权留在 Originator，
+<span class="badge badge-impl">实现</span> 工业实现常让 `Memento` 只暴露窄接口给 Caretaker（只能存/取），把读写权留在 Originator，
 从而「外部可见、内部可控」。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：备忘录 Memento]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 备忘录 Memento
 ```cpp
 #include <string>
 // 宽/窄接口划分示意：Memento 对内友元可读写，对外仅可持有
@@ -672,7 +672,7 @@ class Memento { friend class Originator; std::string s; };
 
 解释器为**一种简单文法**定义表示，并给出解释器来解释句子；适合小规模、规则稳定的 DSL。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：解释器 Interpreter]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 解释器 Interpreter
 ```cpp
 #include <iostream>
 #include <memory>
@@ -694,7 +694,7 @@ AST 结构图：
     Num(2) Num(3)   ──▶ eval() = 2 + 3 = 5
 ```
 
-[经验] 解释器模式**不适合复杂文法**——类数量随文法爆炸、递归求值慢。复杂语法请用 parser 生成器
+<span class="badge badge-exp">经验</span> 解释器模式**不适合复杂文法**——类数量随文法爆炸、递归求值慢。复杂语法请用 parser 生成器
 或把语义动作交给访问者（节 ⑬）分离「结构」与「解释」。
 
 ---
@@ -703,7 +703,7 @@ AST 结构图：
 
 把行为型模式与 `constexpr` 结合，可把「运行期才能决定的行为」前移到**编译期**，零运行时分发。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：行为型模式与 constexpr]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为型模式与 constexpr
 ```cpp
 #include <iostream>
 enum class Op { Add, Mul };
@@ -722,7 +722,7 @@ int main() {
 
 命令模式也能 constexpr 化（编译期重放）：
 
-> **示例 34** [难度 ★★☆☆☆] [主题：行为型模式与 constexpr]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为型模式与 constexpr
 ```cpp
 constexpr int replay() {
     int acc = 0;
@@ -733,7 +733,7 @@ constexpr int replay() {
 static_assert(replay() == 10);
 ```
 
-[标准] `constexpr` 行为在编译期求值；若调用参数也是常量，连 `if constexpr` 分发都会被消去，
+<span class="badge badge-std">标准</span> `constexpr` 行为在编译期求值；若调用参数也是常量，连 `if constexpr` 分发都会被消去，
 得到与手写常量完全相同的机器码——这是节 ⑲ 第三个对比项的底层原因。
 
 ---
@@ -749,7 +749,7 @@ g++ -std=c++23 -O2 -S -masm=intel -o Examples/_ch138_variant_opaque.asm Examples
 
 被测三方分发（源码见 `Examples/_ch138_dispatch.cpp`）：
 
-> **示例 35** [难度 ★★★★★] [主题：性能对比：虚函数 vs std::v]
+> **示例 35** <span class="badge badge-exp">难度 ★★★★★</span> · 性能对比：虚函数 vs std::v
 ```cpp
 #include <variant>
 // 文件：Examples/_ch138_dispatch.cpp
@@ -818,7 +818,7 @@ main:
 └───────────────┴──────────────┴──────────────┴──────────────────────────┘
 ```
 
-[经验] 选型铁律：**类型在编译期确定 → `if constexpr`/模板（零成本）；类型运行期确定且集合封闭
+<span class="badge badge-exp">经验</span> 选型铁律：**类型在编译期确定 → `if constexpr`/模板（零成本）；类型运行期确定且集合封闭
 且较小 → `std::variant`（无虚调用、类型安全）；类型运行期确定且集合开放/需跨库扩展 → 虚函数**。
 切勿因为「经典」而一律用虚函数——节 ⑲ 的汇编证明，在封闭集合下虚函数反而是三者中最贵的。
 
@@ -829,16 +829,16 @@ main:
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：观察者用 `std::function` 列表做回调注册。** 你实现事件通知。请说明。
-   - [标准] 回调列表是运行时数据结构；`std::function` 提供类型擦除的可调用包装。
-   - [引用] ISO/IEC 14882:2023 §[func]（std::function）；cppreference "std::function" 词条。
+   - <span class="badge badge-std">标准</span> 回调列表是运行时数据结构；`std::function` 提供类型擦除的可调用包装。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[func]（std::function）；cppreference "std::function" 词条。
 
 2. **真实场景：访问者用“accept 调 visit”实现双分派。** 你给类层次加新操作不改类。请说明。
-   - [标准] C++ 虚函数只提供单分派；访问者用“虚函数 + 重载”两跳模拟双分派。
-   - [引用] ISO/IEC 14882:2023 §[class.virtual]（动态分派）/ [over.match]（重载决议）；cppreference "Visitor pattern" 词条。
+   - <span class="badge badge-std">标准</span> C++ 虚函数只提供单分派；访问者用“虚函数 + 重载”两跳模拟双分派。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.virtual]（动态分派）/ [over.match]（重载决议）；cppreference "Visitor pattern" 词条。
 
 3. **真实场景：状态模式用状态对象切换行为。** 你用多态避免巨型 switch。请说明。
-   - [标准] 状态对象通过虚函数提供不同行为；切换即替换持有的状态对象（多态）。
-   - [引用] ISO/IEC 14882:2023 §[class.virtual]（虚函数多态）/ [util.smartptr]；cppreference "State pattern" 词条。
+   - <span class="badge badge-std">标准</span> 状态对象通过虚函数提供不同行为；切换即替换持有的状态对象（多态）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.virtual]（虚函数多态）/ [util.smartptr]；cppreference "State pattern" 词条。
 
 - 行为型模式的本质，是把「会变的行为」从「稳定的上下文」中剥离，C++ 提供**虚函数 / 类型擦除 / 编译期多态**三条等价路径。
 - 策略、观察者、命令、模板方法、迭代器、状态、责任链、访问者、中介者、备忘录、解释器构成经典 11 式；
@@ -847,7 +847,7 @@ main:
   `if constexpr` 分发被完全消去，而虚函数保留 vtable 间接跳转。
 - 选型先看「分发时机」：编译期已知用模板，运行期封闭用小 variant，运行期开放用虚函数。
 
-[标准] 本章所有示例代码均通过 `g++ -std=c++23 -O2 -Wall -Wextra` 编译，配套 `.asm` 由同一工具链真实生成。
+<span class="badge badge-std">标准</span> 本章所有示例代码均通过 `g++ -std=c++23 -O2 -Wall -Wextra` 编译，配套 `.asm` 由同一工具链真实生成。
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -904,7 +904,7 @@ main:
 
 C++ 的行为型模式实现与其他语言有本质区别——模板和静态多态提供了独特的方案：
 
-> **示例 36** [难度 ★★★★☆] [主题：附录 A：行为型模式在 C++ 中的]
+> **示例 36** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 A：行为型模式在 C++ 中的
 ```
 Observer:    Qt 信号/槽 (MOC元对象) vs 标准C++ (std::function + vector)
 Strategy:    编译期 (Policy-Based, std::unique_ptr custom deleter) vs 运行时 (虚函数)
@@ -918,7 +918,7 @@ Mediator:    Qt QEventLoop / Boost.Asio io_context (事件驱动)
 Memento:     std::any + typeid (类型擦除备份) vs 手写 clone
 ```
 
-> **示例 37** [难度 ★★★☆☆] [主题：附录 A：行为型模式在 C++ 中的]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：行为型模式在 C++ 中的
 ```cpp
 #include <iostream>
 int main() {
@@ -933,7 +933,7 @@ int main() {
 
 ## 附录 B：工业案例 —— Qt / LLVM / Chromium 中的行为型模式 [F: Industry]
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录 B：工业案例 —— Qt / ]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业案例 —— Qt /
 ```
 Qt: Observer = 信号/槽; Command = QAction; State = QStateMachine (SCXML状态机)
     → Qt Creator 的整个 UI 交互层是 Observer 模式的大型实例
@@ -950,7 +950,7 @@ Chromium: Observer = base::ObserverList (线程安全); Task = base::OnceCallbac
 
 ## 附录 C：面试 [J: Learning]
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录 C：面试 [J: Learni]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learni
 ```
 面试高频:
 Q: 行为型模式中最常在 C++ 中见到哪些？
@@ -974,7 +974,7 @@ A: 编译器检查穷举性(忘记处理一个类型=编译错误), 无需 accep
 
 ## 附录 F：行为型模式
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 F：行为型模式]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：行为型模式
 ```cpp
 #include <iostream>
 #include <functional>
@@ -992,7 +992,7 @@ int main(){std::vector<std::function<void(int)>> obs;obs.push_back([](int x){std
 | State | std::variant+visit | 虚函数State | 封闭状态集→variant |
 | Command | lambda(轻量) | Command类(重量) | 简单→lambda |
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 G：行为型模式设计权衡 [H:]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：行为型模式设计权衡 [H:
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual(~5ns/call)"<<std::endl;return 0;}
@@ -1011,7 +1011,7 @@ int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual
 
 ## 底层视角：行为型模式的多态代价与静态替代 [E: Low-level]
 
-[标准] Observer/Strategy/Command/Iterator 等经虚函数分派（见 ch47：约 1–3 ns + 间接跳转惩罚，每对象 `0x0008` vptr）。Command 的 `execute()` 是一次 `0x0008` 虚查表 + 间接调用；Iterator 的 `operator++`/`operator*` 同理，且破坏连续访问的缓存局部性（见 ch79 指针追逐，L3 ≈12 ns）。
+<span class="badge badge-std">标准</span> Observer/Strategy/Command/Iterator 等经虚函数分派（见 ch47：约 1–3 ns + 间接跳转惩罚，每对象 `0x0008` vptr）。Command 的 `execute()` 是一次 `0x0008` 虚查表 + 间接调用；Iterator 的 `operator++`/`operator*` 同理，且破坏连续访问的缓存局部性（见 ch79 指针追逐，L3 ≈12 ns）。
 
 Template Method 把不变骨架放基类、可变步放虚函数，仍走 vtable；可用 `C++17` `if constexpr` 把步选择压到编译期，省 `0x0008` 虚查表。`GCC 13.1.0` `-O2` 对 `final` 叶子类去虚化（`Clang 17` / `MSVC 19.3` 同理）。
 
@@ -1039,7 +1039,7 @@ Template Method 把不变骨架放基类、可变步放虚函数，仍走 vtable
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <functional>
@@ -1054,9 +1054,9 @@ int main() {
 }
 ```
 
-[标准] 策略把「易变算法」参数化；`std::function` 做类型擦除的运行期多态，调用点无需知道具体策略类型，比虚接口更轻量地接入 lambda。
+<span class="badge badge-std">标准</span> 策略把「易变算法」参数化；`std::function` 做类型擦除的运行期多态，调用点无需知道具体策略类型，比虚接口更轻量地接入 lambda。
 
-[引用] 策略模式见 GoF《Design Patterns》Strategy；C++ 落地见 cppreference「`std::function`」，以及 ch138 ③ 关于 `if constexpr` 编译期分发的讨论。
+<span class="badge badge-ref">引用</span> 策略模式见 GoF《Design Patterns》Strategy；C++ 落地见 cppreference「`std::function`」，以及 ch138 ③ 关于 `if constexpr` 编译期分发的讨论。
 
 </details>
 
@@ -1066,7 +1066,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1085,9 +1085,9 @@ int main() {
 }
 ```
 
-[标准] 观察者把「事件源」与「处理逻辑」解耦；订阅用 `std::function` 列表保存，发布时遍历广播，新增响应者无需改动发布方。
+<span class="badge badge-std">标准</span> 观察者把「事件源」与「处理逻辑」解耦；订阅用 `std::function` 列表保存，发布时遍历广播，新增响应者无需改动发布方。
 
-[引用] 观察者模式见 GoF《Design Patterns》Observer；工业实现有 Qt 信号槽（Qt 官方 `doc.qt.io` Signals & Slots）与 Boost.Signals2（boost.org），二者都提供自动断开、线程安全等增强。
+<span class="badge badge-ref">引用</span> 观察者模式见 GoF《Design Patterns》Observer；工业实现有 Qt 信号槽（Qt 官方 `doc.qt.io` Signals & Slots）与 Boost.Signals2（boost.org），二者都提供自动断开、线程安全等增强。
 
 </details>
 
@@ -1097,7 +1097,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 enum class State { idle, patrol, chase };
@@ -1110,9 +1110,9 @@ int main() {
 }
 ```
 
-[标准] 状态机把「状态 + 迁移」显式建模；简单场景可用 `enum` + 函数表（零虚调用），复杂层级可用 `std::variant` + `std::visit` 获得编译期穷尽检查，运行期多态才需虚函数。
+<span class="badge badge-std">标准</span> 状态机把「状态 + 迁移」显式建模；简单场景可用 `enum` + 函数表（零虚调用），复杂层级可用 `std::variant` + `std::visit` 获得编译期穷尽检查，运行期多态才需虚函数。
 
-[引用] 状态模式见 GoF《Design Patterns》State；`std::variant` / `std::visit` 分发见 cppreference，其代价对比见 ch138 ⑲ 的 GCC 实测汇编与 ch138 ⑭。
+<span class="badge badge-ref">引用</span> 状态模式见 GoF《Design Patterns》State；`std::variant` / `std::visit` 分发见 cppreference，其代价对比见 ch138 ⑲ 的 GCC 实测汇编与 ch138 ⑭。
 
 </details>
 
@@ -1134,7 +1134,7 @@ int main() {
 
 可复现基准（自包含、可编译）：
 
-> **示例 45** [难度 ★★☆☆☆] [主题：真实性能基准：行为型模式的分发机制成]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实性能基准：行为型模式的分发机制成
 ```cpp
 // g++ -std=c++23 -O2 ch138_bench.cpp
 #include <chrono>
@@ -1333,7 +1333,7 @@ std::variant visit（21.26 ms）通过 `std::visit` + `operator()` 重载在编�
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 #include <variant>

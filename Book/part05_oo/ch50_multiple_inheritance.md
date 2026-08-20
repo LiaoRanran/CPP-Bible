@@ -12,7 +12,7 @@
 > 一个对象「同时是好几样东西」——这种直觉很自然，实现起来却让委员会吵了几十年。
 
 ### 0.1 起源（谁·何时·为何）
-Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、也是观察者」很常见。Stroustrup 在 C++ 里加入**多重继承**，让一个类能从多个基类派生，从而把多条「is-a」关系同时编码进类型。[史] 典型用途如 UI 框架里「既是一个 Widget 又是一个 Subject」——单继承做不到，组合又太啰嗦。
+Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、也是观察者」很常见。Stroustrup 在 C++ 里加入**多重继承**，让一个类能从多个基类派生，从而把多条「is-a」关系同时编码进类型。<span class="badge badge-history">史</span> 典型用途如 UI 框架里「既是一个 Widget 又是一个 Subject」——单继承做不到，组合又太啰嗦。
 
 ### 0.2 关键转折（编年）
 - 1980 年代：C++ 加入多重继承与虚基类（ch49）以化解菱形冲突。
@@ -20,16 +20,16 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 - 1998：C++98 把 MI 的层次、转换、布局规则标准化。
 
 ### 0.3 设计哲学之争
-多重继承是 C++ 最受攻击的特性之一：批评者说它带来菱形歧义、脆弱语义；支持者（以及 Eiffel、C++ 阵营）认为它比「接口 + 组合」更直接。[史] Java 与 C# 的选择是**砍掉 MI、只留单继承 + 接口**——用一层语法糖回避复杂度。C++ 则坚持「不替你做主」：能力全给，成本明示。
+多重继承是 C++ 最受攻击的特性之一：批评者说它带来菱形歧义、脆弱语义；支持者（以及 Eiffel、C++ 阵营）认为它比「接口 + 组合」更直接。<span class="badge badge-history">史</span> Java 与 C# 的选择是**砍掉 MI、只留单继承 + 接口**——用一层语法糖回避复杂度。C++ 则坚持「不替你做主」：能力全给，成本明示。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++98 的 MI 标准化。多重继承在「多态」家族里的位置此后被持续重新排序：
 
-- [史] 多重继承在「mixin」范式里一度流行：把若干正交能力（如 `Serializable`、`Lockable`）各自做成基类混入，拼出组合类型。但 C++ 没有「接口只含纯虚函数」的专门概念，`interface` 这个词只在 COM 等约定里借用。
+- <span class="badge badge-history">史</span> 多重继承在「mixin」范式里一度流行：把若干正交能力（如 `Serializable`、`Lockable`）各自做成基类混入，拼出组合类型。但 C++ 没有「接口只含纯虚函数」的专门概念，`interface` 这个词只在 COM 等约定里借用。
 
-- [史] `std::variant` + `std::visit`（C++17）提供了一条「不带继承的多态」路径：用 `visit` 的访问者模式替代虚函数分派，既避免虚表开销，也回避多重继承的菱形与 this 调整 thunk。
+- <span class="badge badge-history">史</span> `std::variant` + `std::visit`（C++17）提供了一条「不带继承的多态」路径：用 `visit` 的访问者模式替代虚函数分派，既避免虚表开销，也回避多重继承的菱形与 this 调整 thunk。
 
-- [评] concepts（ch67）进一步削弱了「为复用接口而多重继承」的动机：与其从基类继承一组虚函数，不如用 `requires` 约束「类型只要提供这些操作即可」，把静态多态推到前台。
+- <span class="badge badge-comment">评</span> concepts（ch67）进一步削弱了「为复用接口而多重继承」的动机：与其从基类继承一组虚函数，不如用 `requires` 约束「类型只要提供这些操作即可」，把静态多态推到前台。
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/variant ；https://en.wikipedia.org/wiki/Multiple_inheritance
 
@@ -61,7 +61,7 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★★★☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱（ASCII）
 ```
         [单继承]                      [多重继承]
    Base    Derived              B1      B2
@@ -95,7 +95,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图 / 对象布局
 
-> **示例 2** [难度 ★★★★☆] [主题：内存图 / 对象布局]
+> **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图 / 对象布局
 ```
 x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
@@ -116,7 +116,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★★★☆☆] [主题：生命周期图]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 生命周期图
 ```
 构造顺序：先 B1 子对象（vptr→B1子表），再 B2 子对象（vptr→B2子表），最后 Derived 自身成员。
 析构顺序：逆序。每个基类的虚析构在各自子表的 dtor 槽，B2 侧同样是 thunk（this-=8）。
@@ -124,7 +124,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 ## ⑨ 调用栈 / 时序图
 
-> **示例 4** [难度 ★★★☆☆] [主题：调用栈 / 时序图]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图
 ```
 调用 p->g()（p: B2*, 指向 Derived+8）
 ─────────────────────────────────────────────
@@ -139,7 +139,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 【测试源 `Examples/_asm_mi.cpp`】
 
-> **示例 5** [难度 ★★★★☆] [主题：汇编分析]
+> **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编分析
 ```cpp
 struct B1 { virtual void f(); virtual ~B1(); };
 struct B2 { virtual void g(); virtual ~B2(); };
@@ -229,7 +229,7 @@ _ZThn8_N1D1gEv:                ; thunk（rcx = B2 子对象 = D+8）
 
 【案例 A：日志后端多接口混入】
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 struct IStartable { virtual void start() = 0; };
 struct IStoppable { virtual void stop() = 0; };
@@ -243,7 +243,7 @@ void halt(IStoppable& s){ s.stop(); }            // 传 Service&，this 指向 I
 
 【案例 B：误用导致 this 错位的崩溃】
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 struct A { virtual void fa(); };
 struct B { virtual void fb(); };
@@ -258,7 +258,7 @@ A* pa = &c;                 // pa 指向 C+0（A 子对象）
 
 【增补可编译示例（真实，印证上文各点）】
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例1：三基类布局，第三个基类 vptr 接着排
 struct A { virtual void a(); };
@@ -268,13 +268,13 @@ struct D : A, B, C { void a() override {} void b() override {} void c() override
 // A.vptr@0, B.vptr@8, C.vptr@16（每个含虚函数的基类各一具 vptr）
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例2：static_cast 跨基类自动插入 this 调整
 D d; B* pb = &d; D* pd = static_cast<D*>(pb);   // 编译器插入 pd = (char*)pb - 8
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例3：dynamic_cast 跨不相关基类返回 nullptr
 struct X { virtual ~X() = default; };
@@ -283,14 +283,14 @@ struct Z : X, Y {};
 Z z; Y* py = &z; X* px = dynamic_cast<X*>(py);   // 成功（Z 含两者）
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例4：dynamic_cast 到无继承关系的类 → nullptr
 struct W { virtual ~W() = default; };
 W* pw = dynamic_cast<W*>(py);                     // nullptr（Y 与 W 无关）
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例5：菱形非虚继承 —— 两份爷爷基类子对象
 struct G { int g; virtual ~G() = default; };
@@ -300,7 +300,7 @@ struct Bottom : L, R {};   // 两个 G 子对象：L::G 与 R::G
 Bottom b; b.L::g = 1; b.R::g = 2;   // 两份独立，需消歧
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例6：mixin 接口同时混入两个能力
 struct ILoggable { virtual void log() = 0; };
@@ -311,7 +311,7 @@ struct Entity : ILoggable, ISerializable {
 };
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例7：含虚函数的多基类 + char 成员的对齐
 struct A { virtual void a(); };
@@ -319,7 +319,7 @@ struct B { virtual void b(); };
 struct D : A, B { char c; };   // sizeof=24: A.vptr@0 B.vptr@8 c@16 +7填充
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例8：offsetof 断言第二基类偏移
 #include <cstddef>
@@ -329,7 +329,7 @@ struct D : B1, B2 { int x; };
 static_assert(offsetof(D, x) == 16);   // 两 vptr(16) + x@16
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例9：虚析构链在多重继承下按逆序调用
 struct A { virtual ~A() { /*A*/ } };
@@ -337,7 +337,7 @@ struct B { virtual ~B() { /*B*/ } };
 struct D : A, B { ~D() override { /*D*/ } };  // 析构顺序 D→B→A
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例10：名字歧义用 using 提升并消歧
 struct A { void f(int){} };
@@ -345,7 +345,7 @@ struct B { void f(double){} };
 struct D : A, B { using A::f; using B::f; };   // 两 f 都可见，调用按重载决议
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 // 例11：模板基类多重继承
 template<class T> struct TBase1 { virtual void f1() = 0; };
@@ -355,14 +355,14 @@ struct Impl : TBase1<int>, TBase2<int> {
 };
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 // 例12：CRTP 基类混入多重继承（ch51）
 template<class D> struct CtrpBase { void run(){ static_cast<D*>(this)->step(); } };
 struct Mix : CtrpBase<Mix>, B1 { void step(){} void f() override {} };
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例13：final 阻止进一步重写
 struct A { virtual void f(); };
@@ -370,7 +370,7 @@ struct B : A { void f() final override; };
 // struct C : B { void f() override; };  // ❌ f 已 final
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例14：override 关键字静态检查
 struct A { virtual void f(int); };
@@ -378,7 +378,7 @@ struct B : A { void f(int) override {} };   // 签名一致才允许 override
 // void f(double) override {};            // ❌ 无匹配虚函数，编译失败
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例15：protected 基类成员跨继承可见性
 struct A { protected: int a; };
@@ -386,7 +386,7 @@ struct B { protected: int b; };
 struct D : A, B { int sum() { return a + b; } };   // a、b 均可访问
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例16：虚函数 + 非虚函数共存于多基类
 struct A { virtual void v(); void nv(){} };
@@ -394,13 +394,13 @@ struct B { virtual void w(); };
 struct D : A, B { void v() override {} void w() override {} };
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例17：首基类切片（值语义丢失第二基类）
 D d; A a = d;   // 仅拷贝 A 子对象（B 部分丢失）；故基类析构应 virtual
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例18：placement new 构造多重继承对象
 #include <new>
@@ -408,7 +408,7 @@ alignas(D) char buf[sizeof(D)];
 D* pd = new (buf) D();   // 两 vptr 在构造时分别初始化
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例19：noexcept 析构与多重继承
 struct A { virtual ~A() noexcept = default; };
@@ -416,7 +416,7 @@ struct B { virtual ~B() noexcept = default; };
 struct D : A, B { ~D() noexcept override = default; };
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例20：const 成员函数跨多基类
 struct A { virtual int get() const = 0; };
@@ -424,7 +424,7 @@ struct B { virtual int val() const = 0; };
 struct D : A, B { int g=0,v=0; int get() const override { return g; } int val() const override { return v; } };
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例21：多重继承 + 抽象基类纯虚析构需定义
 struct Iface { virtual ~Iface() = 0; };
@@ -432,7 +432,7 @@ Iface::~Iface() = default;   // 纯虚析构仍需函数体，否则链接失败
 struct C : Iface, B1 { ~C() override {} };
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例22：运行时通过两接口分发
 ILoggable* pl = new Entity(); ISerializable* ps = new Entity();
@@ -469,7 +469,7 @@ Itanium ABI 规定，一个类的 vtable 对象由「主虚拟表（primary vtbl
 
 【反例 1：把基类指针当派生类裸转】
 
-> **示例 30** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 C c; B* pb = &c;
 C* pc = (C*)(void*)pb;          // ❌ this 没调回 C 头，pc 实际指向 C+8
@@ -478,7 +478,7 @@ pc->fa();                        // ❌ 写到错误偏移，UB
 
 【正解】用 `static_cast<C*>(pb)` 或 `dynamic_cast`：
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 C* pc = static_cast<C*>(pb);    // ✅ 编译器插入 this+=8 调整
 pc->fa();                        // ✅ 正确
@@ -486,7 +486,7 @@ pc->fa();                        // ✅ 正确
 
 【反例 2：多重继承 + 重载歧义】
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 struct A { void f(int); };
 struct B { void f(double); };
@@ -496,7 +496,7 @@ D d; d.f(1);                     // ❌ 两个 f 都可见，调用歧义（编�
 
 【正解】显式消歧：
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 d.A::f(1);                       // ✅ 指定 A::f
 d.B::f(1.0);                     // ✅ 指定 B::f
@@ -504,7 +504,7 @@ d.B::f(1.0);                     // ✅ 指定 B::f
 
 【反例 3：误以为 sizeof 是基类之和】
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 struct E : B1, B2 { char c; };
 // sizeof(E) 不是 8+8+1=17，而是 24（两个 vptr@8 + char@16 + 7 填充对齐到 8）
@@ -539,7 +539,7 @@ struct E : B1, B2 { char c; };
 - **时间**：跨第二基类虚调用 = 取 vptr + 取槽 + thunk 调整 + 真身，比单继承多一次 this 调整（通常折进偏移，开销趋近于 0，但间接跳转影响分支预测）。
 - **microbenchmark 思路**：
 
-> **示例 35** [难度 ★★★☆☆] [主题：性能分析]
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析
 ```cpp
 #include <benchmark/benchmark.h>
 struct B1 { virtual int f() = 0; };
@@ -558,16 +558,16 @@ BENCHMARK(BM_SecondBaseVCall);
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：两个基类有同名 `foo()`，调用需 `BaseA::foo()` 消歧。** 你忘了限定直接编译报二义。请说明查找规则。
-   - [标准] 来自不同基类的同名成员经成员名查找构成二义，须用嵌套名限定显式消歧。
-   - [引用] ISO/IEC 14882:2023 §[class.member.lookup]（成员名查找与二义性解析）；cppreference "Multiple inheritance" 词条。
+   - <span class="badge badge-std">标准</span> 来自不同基类的同名成员经成员名查找构成二义，须用嵌套名限定显式消歧。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.member.lookup]（成员名查找与二义性解析）；cppreference "Multiple inheritance" 词条。
 
 2. **真实场景：多接口继承用纯虚函数定义契约。** 你让多个无关接口在一个类汇合。请说明抽象类约束。
-   - [标准] 含未覆盖纯虚函数的类为抽象类，不能实例化；纯虚函数定义接口契约。
-   - [引用] ISO/IEC 14882:2023 §[class.abstract]（抽象类与纯虚函数）；cppreference "abstract class" 词条。
+   - <span class="badge badge-std">标准</span> 含未覆盖纯虚函数的类为抽象类，不能实例化；纯虚函数定义接口契约。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.abstract]（抽象类与纯虚函数）；cppreference "abstract class" 词条。
 
 3. **真实场景：多重继承下 this 按基类不同有不同地址。** 你把同一对象的不同基类指针打印出来不相等。请说明。
-   - [标准] 指向不同基类子对象的指针拥有不同地址（需调整），但都指代同一完整对象。
-   - [引用] ISO/IEC 14882:2023 §[conv.ptr]（基类指针调整）/ [class.derived]（子对象地址）；cppreference "Pointer adjustment" 词条。
+   - <span class="badge badge-std">标准</span> 指向不同基类子对象的指针拥有不同地址（需调整），但都指代同一完整对象。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[conv.ptr]（基类指针调整）/ [class.derived]（子对象地址）；cppreference "Pointer adjustment" 词条。
 
 【练习题】
 1. 画出 `struct D : B1, B2 { int a; double b; };` 在 x64 的精确字节布局（标注每个 vptr/成员偏移与对齐空洞）。
@@ -654,34 +654,34 @@ BENCHMARK(BM_SecondBaseVCall);
 
 ## 附录: 多重继承深度
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 多重继承深度
 ```cpp
 #include <iostream>
 struct A{int a=10;};struct B{int b=20;};struct C:A,B{};
 int main(){C c;std::cout<<c.a<<","<<c.b<<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 多重继承深度
 ```cpp
 #include <iostream>
 struct Printable{virtual void print()=0;};struct Serializable{virtual void save()=0;};struct Doc:Printable,Serializable{void print()override{std::cout<<"doc"<<std::endl;}void save()override{}};
 int main(){Doc d;d.print();return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 多重继承深度
 ```cpp
 #include <iostream>
 int main(){std::cout<<"MI: each base has its own subobject. this pointer adjusts for each base."<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 多重继承深度
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<std::endl;return 0;}
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 多重继承深度
 ```cpp
 #include <iostream>
 struct X{void f(){std::cout<<"X";}};struct Y{void f(){std::cout<<"Y";}};struct Z:X,Y{};
@@ -703,7 +703,7 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 
 ### ㉒.1 历史渊源补强：多重继承的来龙去脉
 
-[史] C++ 自诞生即支持**多重继承（MI）**，源于 Simula/C with Classes 的「一个类可有多个基类」诉求；但 C++ 是少数主流语言坚持 MI 的——Java/C# 选择「单继承 + 接口」正是为了回避 MI 的菱形与布局复杂性（ch49）。[史] MI 在 C++ 里的真实形态由 **Itanium C++ ABI（1990 年代末）** 规定：每个基类可能带来独立 vptr，跨基类转型需要 **this 调整 thunk**（第 ⑩/⑲ 节），这决定了 MI 对象的布局与虚调用成本。多继承 + 虚继承叠加即菱形（ch49）。[轶] 一个史实：早期 C++ 的 MI 曾被批评「过度复杂」，Stroustrup 的回应是「MI 允许 `Interface` + `Implementation` 正交组合，远比单继承 + 接口模拟更诚实」——这一思想体现在 COM/`IUnknown` 等「多接口聚合」工业模式里。
+<span class="badge badge-history">史</span> C++ 自诞生即支持**多重继承（MI）**，源于 Simula/C with Classes 的「一个类可有多个基类」诉求；但 C++ 是少数主流语言坚持 MI 的——Java/C# 选择「单继承 + 接口」正是为了回避 MI 的菱形与布局复杂性（ch49）。<span class="badge badge-history">史</span> MI 在 C++ 里的真实形态由 **Itanium C++ ABI（1990 年代末）** 规定：每个基类可能带来独立 vptr，跨基类转型需要 **this 调整 thunk**（第 ⑩/⑲ 节），这决定了 MI 对象的布局与虚调用成本。多继承 + 虚继承叠加即菱形（ch49）。<span class="badge badge-anecdote">轶</span> 一个史实：早期 C++ 的 MI 曾被批评「过度复杂」，Stroustrup 的回应是「MI 允许 `Interface` + `Implementation` 正交组合，远比单继承 + 接口模拟更诚实」——这一思想体现在 COM/`IUnknown` 等「多接口聚合」工业模式里。
 
 ### ㉒.2 真实工程坐标：多重继承活在哪里
 
@@ -731,8 +731,8 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 
 ### ㉒.4 与标准的互动：多重继承与 WG21 演进
 
-[史] MI 自 C++98 即为语言核心；**Itanium C++ ABI** 规定了其在 GCC/Clang 的具体布局（第 ⑩ 节）。**C++11 的 `override`/`final`** 让 MI 体系里的虚函数重写更安全、可去虚化；但 WG21 **从未简化 MI 本身**——它的复杂度与 ABI 成本被视为「应谨慎使用」的特性。[评] 标准库自身的实践（极少用 MI，仅 `iostream` 一处）与社区共识一致：**优先组合（ch46）与 CRTP（ch51）+ 接口继承**，把 MI 限制在「确实需要 is-a 多个契约」的场景（如 COM 风格接口聚合）。`[[no_unique_address]]`（P0840，C++20，ch52）则为「以成员方式混入空接口」提供零开销替代，进一步降低对 MI 的依赖。整体方向是：**保留 MI 兼容性，但新设计应逃逸到组合/CRTP/概念约束**。
-- [史] 多重继承的修订链：**P0840R0→R1→R2（C++20，`[[no_unique_address]]`）** 为「以成员方式混入空接口」提供零开销替代，进一步降低对 MI 的依赖。ISO 条款 `[class.mi]` 规定 MI 的语义与菱形歧义处理，其对象布局（多个 vptr、thunk 表）由 **Itanium C++ ABI** 规定——委员会保留 MI 兼容性，但标准库自身（仅 `iostream` 一处用 MI+虚继承）与社区共识一致：优先组合（ch46）+ CRTP（ch51）+ 概念约束。
+<span class="badge badge-history">史</span> MI 自 C++98 即为语言核心；**Itanium C++ ABI** 规定了其在 GCC/Clang 的具体布局（第 ⑩ 节）。**C++11 的 `override`/`final`** 让 MI 体系里的虚函数重写更安全、可去虚化；但 WG21 **从未简化 MI 本身**——它的复杂度与 ABI 成本被视为「应谨慎使用」的特性。<span class="badge badge-comment">评</span> 标准库自身的实践（极少用 MI，仅 `iostream` 一处）与社区共识一致：**优先组合（ch46）与 CRTP（ch51）+ 接口继承**，把 MI 限制在「确实需要 is-a 多个契约」的场景（如 COM 风格接口聚合）。`[[no_unique_address]]`（P0840，C++20，ch52）则为「以成员方式混入空接口」提供零开销替代，进一步降低对 MI 的依赖。整体方向是：**保留 MI 兼容性，但新设计应逃逸到组合/CRTP/概念约束**。
+- <span class="badge badge-history">史</span> 多重继承的修订链：**P0840R0→R1→R2（C++20，`[[no_unique_address]]`）** 为「以成员方式混入空接口」提供零开销替代，进一步降低对 MI 的依赖。ISO 条款 `[class.mi]` 规定 MI 的语义与菱形歧义处理，其对象布局（多个 vptr、thunk 表）由 **Itanium C++ ABI** 规定——委员会保留 MI 兼容性，但标准库自身（仅 `iostream` 一处用 MI+虚继承）与社区共识一致：优先组合（ch46）+ CRTP（ch51）+ 概念约束。
 
 ### ㉒.5 权威引用
 
@@ -744,7 +744,7 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 
 ## 附录 F：多重继承工业与面试
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 F：多重继承工业与面试]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：多重继承工业与面试
 ```cpp
 #include <iostream>
 struct A{int a=10; void f(){std::cout<<"A"<<std::endl;}};
@@ -765,7 +765,7 @@ int main(){C c;c.call();std::cout<<c.a<<","<<c.b<<std::endl;return 0;}
 
 ## 附录 H：MI设计选择
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 H：MI设计选择]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：MI设计选择
 ```cpp
 #include <iostream>
 #include <string>
@@ -839,7 +839,7 @@ call [rsi]
 
 ## 底层视角：多 vptr 布局与 this 调整 thunk [E: Low-level]
 
-[实测] 多继承对象含多个 vptr（GCC 15.3.0 / x64 / Itanium ABI 实测验证）。主基类 vptr 恒在偏移 `0x0000`；**当主基类仅含 vptr（无数据成员）时**次级基类 vptr 在 `0x0008`，各基类 vtable 槽宽恒为 `0x0008`（x64 指针宽度）。实测复现：`struct D : B1, B2 { int x; }`（B1 vptr-only）→ B2 子对象 this 调整量 = `0x0008`；若 B1 额外带 `int a`，则 B1 子对象扩到 `0x0010`，B2 vptr 退到 `0x0010`——即**次级 vptr 偏移 = 主基类子对象大小**，不是固定 `0x0008`。经次级基类指针调用虚函数前，this 须回退到对象首部——这就是 thunk：
+<span class="badge badge-measured">实测</span> 多继承对象含多个 vptr（GCC 15.3.0 / x64 / Itanium ABI 实测验证）。主基类 vptr 恒在偏移 `0x0000`；**当主基类仅含 vptr（无数据成员）时**次级基类 vptr 在 `0x0008`，各基类 vtable 槽宽恒为 `0x0008`（x64 指针宽度）。实测复现：`struct D : B1, B2 { int x; }`（B1 vptr-only）→ B2 子对象 this 调整量 = `0x0008`；若 B1 额外带 `int a`，则 B1 子对象扩到 `0x0010`，B2 vptr 退到 `0x0010`——即**次级 vptr 偏移 = 主基类子对象大小**，不是固定 `0x0008`。经次级基类指针调用虚函数前，this 须回退到对象首部——这就是 thunk：
 
 ```text
 mov rax, [rdi+0x0008]   ; 取次级 vptr
@@ -864,7 +864,7 @@ thunk 是一小段 `sub` + `jmp`，成本约 0.3 ns（一次 ALU + 一次跳转�
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 struct A { int a; };
 struct B : A {};
@@ -882,9 +882,9 @@ int main(){
 非虚 MI 下每个派生路径都复制一份基类子对象，`D` 实际含两个 `A`。`&d` 到 `pc` 的转型
 要加上 `B` 子对象的大小偏移——这就是 this 调整（this-adjustment）。
 
-[标准] 非虚 MI 复制每个基类子对象；跨子对象指针转型需偏移调整（thunk）。
+<span class="badge badge-std">标准</span> 非虚 MI 复制每个基类子对象；跨子对象指针转型需偏移调整（thunk）。
 
-[引用] Blink 的 `blink::Node` 通过多重继承组合 `ScriptWrappable` 等能力接口，是 MI 在浏览器引擎的大规模实践场（chromium.googlesource.com/chromium/src/+/main/third_party/blink）。Itanium C++ ABI 规定了非虚 MI 的固定偏移 thunk 布局（itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable-layout）。ISO/IEC 14882:2023 §[class.mi] 规定 MI 语义。
+<span class="badge badge-ref">引用</span> Blink 的 `blink::Node` 通过多重继承组合 `ScriptWrappable` 等能力接口，是 MI 在浏览器引擎的大规模实践场（chromium.googlesource.com/chromium/src/+/main/third_party/blink）。Itanium C++ ABI 规定了非虚 MI 的固定偏移 thunk 布局（itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable-layout）。ISO/IEC 14882:2023 §[class.mi] 规定 MI 语义。
 
 </details>
 
@@ -894,7 +894,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 struct A { int a; };
 struct B : A {};
@@ -911,19 +911,19 @@ int main(){
 消歧义能编译，但语义上"对象只有一个 `a`"的设想被破坏：`d.B::a` 与 `d.C::a` 是两份独立存储。
 若 `A` 代表共享状态（如"身份 ID"），两份就错了。
 
-[标准] 二义性源于重复基类子对象；显式消歧不解决"数据重复"的本质问题。
+<span class="badge badge-std">标准</span> 二义性源于重复基类子对象；显式消歧不解决"数据重复"的本质问题。
 
-[引用] 当基类代表"必须唯一"的共享状态（如对象身份、流缓冲）时，非虚 MI 的两份副本会导致状态分裂——这正是 `std::iostream` 改用虚继承共享 `std::ios_base` 的原因（cppreference "std::ios_base"）。C++ Core Guidelines C.129 建议"用虚继承让基类共享"（isocpp.github.io）。ISO/IEC 14882:2023 §[class.mi] 规定二义性规则。
+<span class="badge badge-ref">引用</span> 当基类代表"必须唯一"的共享状态（如对象身份、流缓冲）时，非虚 MI 的两份副本会导致状态分裂——这正是 `std::iostream` 改用虚继承共享 `std::ios_base` 的原因（cppreference "std::ios_base"）。C++ Core Guidelines C.129 建议"用虚继承让基类共享"（isocpp.github.io）。ISO/IEC 14882:2023 §[class.mi] 规定二义性规则。
 
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-**真实场景：日志/追踪混入必须唯一，但热路径虚调用要快。** `std::iostream` 同时是 `istream` 与 `ostream`，二者共享唯一 `std::ios_base` 状态——这正是 virtual 继承的经典用例。请用 **virtual 继承** 解决二义性：`struct B:virtual A{}; struct C:virtual A{}; struct D:B,C{};` 此时 `d.a` 无歧义（只有一份 `A`）。并指出代价：this 调整 thunk + vbtable 间接访问（见本章「[实现]」汇编）。
+**真实场景：日志/追踪混入必须唯一，但热路径虚调用要快。** `std::iostream` 同时是 `istream` 与 `ostream`，二者共享唯一 `std::ios_base` 状态——这正是 virtual 继承的经典用例。请用 **virtual 继承** 解决二义性：`struct B:virtual A{}; struct C:virtual A{}; struct D:B,C{};` 此时 `d.a` 无歧义（只有一份 `A`）。并指出代价：this 调整 thunk + vbtable 间接访问（见本章「<span class="badge badge-impl">实现</span>」汇编）。
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 struct A { int a; };
 struct B : virtual A {};
@@ -940,9 +940,9 @@ int main(){
 `D*`→`A*` 转型需 this 调整 thunk（`add rcx,[rax-0x18]` 式运行时查表），比非虚 MI 多 1~2 次内存间接。
 适用：当基类代表**必须唯一**的共享状态（如 `std::iostream` 共享 `std::ios_base`）。
 
-[标准] virtual 继承共享单一虚基类子对象，消除二义性；代价是运行期偏移解析与 thunk 开销。
+<span class="badge badge-std">标准</span> virtual 继承共享单一虚基类子对象，消除二义性；代价是运行期偏移解析与 thunk 开销。
 
-[引用] `std::iostream` 经 `std::ios` 虚继承共享单一 `std::ios_base` 流状态，是标准库里 virtual 继承的招牌实例（cppreference "std::basic_ios"）。Itanium C++ ABI 的 `vbase_offset` 条目定义了虚基类运行时偏移的编码（itanium-cxx-abi.github.io）。ISO/IEC 14882:2023 §[class.mi] 与 §[class.virtual] 规定 virtual 继承语义与代价。
+<span class="badge badge-ref">引用</span> `std::iostream` 经 `std::ios` 虚继承共享单一 `std::ios_base` 流状态，是标准库里 virtual 继承的招牌实例（cppreference "std::basic_ios"）。Itanium C++ ABI 的 `vbase_offset` 条目定义了虚基类运行时偏移的编码（itanium-cxx-abi.github.io）。ISO/IEC 14882:2023 §[class.mi] 与 §[class.virtual] 规定 virtual 继承语义与代价。
 
 </details>
 ## [实现·GCC15]真实：MI vtable 汇编与 this 调整 thunk（含 0x 地址）
@@ -1022,7 +1022,7 @@ ret
 
 **步骤 1：非虚 MI 菱形 → 二义性 + 两份基类**
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 菱形继承：要不要]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 菱形继承：要不要
 ```cpp
 struct Object { int id; };
 struct Drawable   : Object {};
@@ -1039,7 +1039,7 @@ int main(){
 
 **步骤 2：显式消歧 → 数据重复（治标不治本）**
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 菱形继承：要不要]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 菱形继承：要不要
 ```cpp
 struct Object { int id; };
 struct Drawable : Object {};
@@ -1055,7 +1055,7 @@ int main(){
 
 **步骤 3：virtual 继承 → 单一基类，但指针调整开销**
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 菱形继承：要不要]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 菱形继承：要不要
 ```cpp
 struct Object { int id; };
 struct Drawable  : virtual Object {};
@@ -1067,7 +1067,7 @@ int main(){
 }
 ```
 
-`virtual` 让 `Object` 成为**虚基类**，整个 `Widget` 只有一份 `id`。代价（见本章「[实现]」汇编）：
+`virtual` 让 `Object` 成为**虚基类**，整个 `Widget` 只有一份 `id`。代价（见本章「<span class="badge badge-impl">实现</span>」汇编）：
 访问 `id` 走 vbtable 间接，`Widget*`→`Object*` 转型需 this 调整 thunk（运行时查偏移），
 比非虚 MI 多 1~2 次内存间接。
 
@@ -1085,7 +1085,7 @@ int main(){
 
 下例验证「virtual 继承让共享基类唯一」：
 
-> **示例 49** [难度 ★★☆☆☆] [主题：补例：自包含可编译验证]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补例：自包含可编译验证
 ```cpp
 #include <iostream>
 
@@ -1101,7 +1101,7 @@ int main(){
 }
 ```
 
-若 `Left`/`Right` 用非虚 `: Base`，`Diamond` 会含两份 `Base`，`d.id` 因歧义无法编译——这正是正文「步骤 4」选择 virtual 的触发条件。代价：访问 `id` 经 vbtable 间接（见「[实现]」汇编），比非虚 MI 多 1~2 次内存间接。
+若 `Left`/`Right` 用非虚 `: Base`，`Diamond` 会含两份 `Base`，`d.id` 因歧义无法编译——这正是正文「步骤 4」选择 virtual 的触发条件。代价：访问 `id` 经 vbtable 间接（见「<span class="badge badge-impl">实现</span>」汇编），比非虚 MI 多 1~2 次内存间接。
 
 ---
 
@@ -1313,7 +1313,7 @@ pr->g();           // 经 R* 调 g：thunk 先把 this 调回 &m，再进 M::g
 
 ### D4.4 可编译 demo：双基类指针值证明 this 调整 + tuple<EBO> sizeof
 
-> **示例 50** [难度 ★★★★★] [主题：可编译 demo：双基类指针值证明 ]
+> **示例 50** <span class="badge badge-exp">难度 ★★★★★</span> · 可编译 demo：双基类指针值证明
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -1465,7 +1465,7 @@ int main() {
 
 ### D5.3 可复现演示
 
-> **示例 51** [难度 ★★☆☆☆] [主题：可复现演示]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <cassert>

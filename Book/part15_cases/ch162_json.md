@@ -14,39 +14,39 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-JSON 脱胎于 JavaScript 的对象字面量。Douglas Crockford 在 2001 年前后将其规范化并命名，初衷极朴素：给浏览器和服务器之间一个轻量、人和机器都好读的数据交换格式。[史] 当时的主流是 XML——冗长、需要专门的解析器（DOM/SAX）、学习曲线陡峭。Ajax 浪潮把"前端异步拿数据"变成常态，XML 的重量级显得越来越不合时宜，JSON 顺势上位。[评]
+JSON 脱胎于 JavaScript 的对象字面量。Douglas Crockford 在 2001 年前后将其规范化并命名，初衷极朴素：给浏览器和服务器之间一个轻量、人和机器都好读的数据交换格式。<span class="badge badge-history">史</span> 当时的主流是 XML——冗长、需要专门的解析器（DOM/SAX）、学习曲线陡峭。Ajax 浪潮把"前端异步拿数据"变成常态，XML 的重量级显得越来越不合时宜，JSON 顺势上位。<span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
 
-- **2001 前后**：Crockford 提出并推广 JSON。[史]
-- **2006**：JSON 成为 RFC 4627 标准；此后十年里它几乎统一了 Web API 的载荷格式。[史]
-- **2011**：腾讯的 Milo Yip 开源 `rapidjson`，以极致性能与 SAX/DOM 双模式成为 C++ 服务端标配。[史]
-- **2013–2015**：`nlohmann/json` 用"长得像 Python 字典"的优雅 API 俘获了大量 C++ 开发者，把"写 JSON 像写代码"变成现实。[史]
-- **2017**：JSON 升级为 RFC 8259（现行标准）。[史]
-- **2019**：Daniel Lemire 的 `simdjson` 用 SIMD 把解析速度推到"以 GB/s 计"，重新定义了"快"的基准。[史]
+- **2001 前后**：Crockford 提出并推广 JSON。<span class="badge badge-history">史</span>
+- **2006**：JSON 成为 RFC 4627 标准；此后十年里它几乎统一了 Web API 的载荷格式。<span class="badge badge-history">史</span>
+- **2011**：腾讯的 Milo Yip 开源 `rapidjson`，以极致性能与 SAX/DOM 双模式成为 C++ 服务端标配。<span class="badge badge-history">史</span>
+- **2013–2015**：`nlohmann/json` 用"长得像 Python 字典"的优雅 API 俘获了大量 C++ 开发者，把"写 JSON 像写代码"变成现实。<span class="badge badge-history">史</span>
+- **2017**：JSON 升级为 RFC 8259（现行标准）。<span class="badge badge-history">史</span>
+- **2019**：Daniel Lemire 的 `simdjson` 用 SIMD 把解析速度推到"以 GB/s 计"，重新定义了"快"的基准。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除（用 `variant`/`any` 装下 6 种动态类型，本章路线）还是代码生成（按 schema 直接映射成你的 `struct`）。前者灵活、运行时通用，后者零反射、类型安全、快。[评] 其二是**解析模型**：DOM（整文档建树，好用但占内存）还是 SAX/流式（边读边回调，省内存但要手写状态机）。`rapidjson` 与 `nlohmann/json` 代表了前者的两极，`simdjson` 与 SAX 接口代表了后者。[史]
+C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除（用 `variant`/`any` 装下 6 种动态类型，本章路线）还是代码生成（按 schema 直接映射成你的 `struct`）。前者灵活、运行时通用，后者零反射、类型安全、快。<span class="badge badge-comment">评</span> 其二是**解析模型**：DOM（整文档建树，好用但占内存）还是 SAX/流式（边读边回调，省内存但要手写状态机）。`rapidjson` 与 `nlohmann/json` 代表了前者的两极，`simdjson` 与 SAX 接口代表了后者。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 紧接 0.2 编年最后一条（2019，simdjson 用 SIMD 把解析推到 GB/s）。
 
-- [史] 截至 C++23，标准库仍没有 `std::json`；但 **静态反射（reflection，P2996 系列）** 提案推进，若落地，代码生成式映射（按 schema 直接映射成你的 `struct`）有望大幅简化，呼应 0.3 的"映射路线"之争。
-- [史] **`boost.json` / `boost.describe`** 把"用宏/反射描述 struct → 自动 (de)serialize"做成可复用设施；与 nlohmann/json 的"运行时 variant 树"形成鲜明对照，是 0.3 两道抉择的工程落地。
-- [史] **JSON Schema 校验**（如 `valijson`、各框架内置）与 **protobuf / FlatBuffers** 在"跨语言强类型载荷"场景上与 JSON 拉锯：前者人类可读、后者零解析、体积小——选型取决于"可读性"还是"性能/带宽"。
-- [评] C++ 面对 JSON 至今没有"官方答案"，反而印证 0.3"映射 vs 生成、DOM vs SAX"的张力：标准库的沉默，把选择权留给了生态。
-- [轶] 性能圈名场面：simdjson 首次发布时，解析速度比当时最快的实现快一个数量级，作者 Lemire 的基准成了所有 JSON 库必过的"对照线"。
+- <span class="badge badge-history">史</span> 截至 C++23，标准库仍没有 `std::json`；但 **静态反射（reflection，P2996 系列）** 提案推进，若落地，代码生成式映射（按 schema 直接映射成你的 `struct`）有望大幅简化，呼应 0.3 的"映射路线"之争。
+- <span class="badge badge-history">史</span> **`boost.json` / `boost.describe`** 把"用宏/反射描述 struct → 自动 (de)serialize"做成可复用设施；与 nlohmann/json 的"运行时 variant 树"形成鲜明对照，是 0.3 两道抉择的工程落地。
+- <span class="badge badge-history">史</span> **JSON Schema 校验**（如 `valijson`、各框架内置）与 **protobuf / FlatBuffers** 在"跨语言强类型载荷"场景上与 JSON 拉锯：前者人类可读、后者零解析、体积小——选型取决于"可读性"还是"性能/带宽"。
+- <span class="badge badge-comment">评</span> C++ 面对 JSON 至今没有"官方答案"，反而印证 0.3"映射 vs 生成、DOM vs SAX"的张力：标准库的沉默，把选择权留给了生态。
+- <span class="badge badge-anecdote">轶</span> 性能圈名场面：simdjson 首次发布时，解析速度比当时最快的实现快一个数量级，作者 Lemire 的基准成了所有 JSON 库必过的"对照线"。
 
 > 史料来源：github.com/tencentrapidjson/rapidjson、github.com/simdjson/simdjson
 
-## ① 概述：JSON 与 C++ 映射 [标准]
+## ① 概述：JSON 与 C++ 映射 <span class="badge badge-std">标准</span>
 
 [第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)
 [第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)
 
-JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量数据交换格式。**[标准]** 严格说 JSON 不是 C++ 标准的一部分——C++ 标准库（至 C++23）并未提供 `std::json`；它由 IETF RFC 8259 规定，各语言自行实现。把一个"文本协议"干净地映射进 C++ 的强类型世界，正是本章要解决的问题。
+JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量数据交换格式。**<span class="badge badge-std">标准</span>** 严格说 JSON 不是 C++ 标准的一部分——C++ 标准库（至 C++23）并未提供 `std::json`；它由 IETF RFC 8259 规定，各语言自行实现。把一个"文本协议"干净地映射进 C++ 的强类型世界，正是本章要解决的问题。
 
 核心矛盾：JSON 是**动态类型**（一个值可以是任意 6 种类型之一），C++ 是**静态类型**（编译期定类型）。解决方案有两条路线：
 
@@ -65,7 +65,7 @@ JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量
           └──────────────────────────────────────────
 ```
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：JSON 与 C++ 映射 []
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：JSON 与 C++ 映射 [
 ```cpp
 // ① JSON 类型到 C++ 类型的标准映射（参考 RFC 8259 §1）
 // null    -> std::nullptr_t
@@ -84,7 +84,7 @@ const char* json_type_name(int idx) {
 
 JSON 值只有 6 种类型，且只有两种**复合类型**（array、object）可以嵌套。这一限制让"递归下降"成为天然合适的解析策略——复合类型在语法上就是自相似的。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：类型]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型
 ```cpp
 // ② 用枚举表达 6 种类型标签（与 std::variant 的 index() 一一对应）
 enum class JsonType : int {
@@ -115,7 +115,7 @@ struct JsonValue {
 
 `std::variant` 是 C++17 引入的"类型安全联合"，比裸 `union` 强在：① 自动析构活跃成员；② 编译期杜绝访问错误活跃类型；③ 自带 `index()` 与 `std::get`/`std::holds_alternative`。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：值表示（std::variant）]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 值表示（std::variant）
 ```cpp
 // ③ 完整的 Value 定义（自包含可编译，Examples/_ch162_variant.cpp 头段）
 // 文件：Examples/_ch162_variant.cpp
@@ -135,7 +135,7 @@ struct JsonValue {
 // 默认构造即 null；赋值为 object 后 index() 变为 5（object 在 variant 中排第 6）
 ```
 
-**为什么不用继承多态？** 一个 `class JsonValue { virtual ... }` 基类 + 6 个派生类也能表达，但会引入：虚表指针（每对象 +8 字节）、堆分配（派生类要 new）、缓存不友好。`std::variant` 把整个值内联存于栈上（小对象零分配），对解析 hot path 更友好。**[经验]** 在 DOM 型 JSON 库里，variant/标记联合几乎总是优于继承多态。
+**为什么不用继承多态？** 一个 `class JsonValue { virtual ... }` 基类 + 6 个派生类也能表达，但会引入：虚表指针（每对象 +8 字节）、堆分配（派生类要 new）、缓存不友好。`std::variant` 把整个值内联存于栈上（小对象零分配），对解析 hot path 更友好。**<span class="badge badge-exp">经验</span>** 在 DOM 型 JSON 库里，variant/标记联合几乎总是优于继承多态。
 
 ## ④ 解析器（手写递归下降，ASCII 画语法）
 
@@ -157,7 +157,7 @@ struct JsonValue {
    parse_pair  parse_elems
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：解析器]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 解析器
 ```cpp
 // ④ 解析器骨架（自包含可编译，Examples/_ch162_json.cpp 的 Parser 类）
 // 文件：Examples/_ch162_json.cpp
@@ -179,13 +179,13 @@ private:
 };
 ```
 
-**[经验]** 递归下降最大的优点是**错误位置天然精确**——解析失败时 `pos_` 就在出错字符处，这正是 ⑭ 错误报告的基础。
+**<span class="badge badge-exp">经验</span>** 递归下降最大的优点是**错误位置天然精确**——解析失败时 `pos_` 就在出错字符处，这正是 ⑭ 错误报告的基础。
 
 ## ⑤ 词法分析（tokenizer）
 
 严格 JSON 解析可以"无 tokenizer"：递归下降直接在字符流上工作（本章主库即如此）。但把"字符流 → token 流"这步显式拆出来，好处是可单独测试、可支持 SAX 模式（⑩）、可在 tokenizer 层做 UTF-8 预校验（⑫）。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：词法分析（tokenizer）]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 词法分析（tokenizer）
 ```cpp
 // ⑤ 一个最小 tokenizer（自包含可编译，Examples/_ch162_tokenizer.cpp）
 // 文件：Examples/_ch162_tokenizer.cpp
@@ -234,7 +234,7 @@ token 数: 9
 
 语法分析消费（字符或 token）流，按文法构建出 `Value` 树。核心难点在两个复合类型：数组与对象。下面给出数组/对象解析的真实可编译实现（节选自主库）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：语法分析（parser）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 语法分析（parser）
 ```cpp
 // ⑥ 数组与对象解析（自包含可编译，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -284,7 +284,7 @@ Value parse_object() {
 
 JSON 字符串里 `"` 和 `\` 必须转义，控制字符必须写成 `\n`/`\t`/... 或 `\uXXXX`。`\uXXXX` 还可能是 UTF-16 代理对（surrogate pair），需要合并成码点再编码成 UTF-8。下面给出转义/反转义的真实实现。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：字符串转义处理]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 字符串转义处理
 ```cpp
 // ⑦ 转义与反转义（自包含可编译，Examples/_ch162_escape.cpp）
 // 文件：Examples/_ch162_escape.cpp
@@ -322,7 +322,7 @@ std::string escape(const std::string& in) {
 
 主库对 `\uXXXX` 的处理（节选，含代理对合并）：
 
-> **示例 8** [难度 ★★☆☆☆] [主题：字符串转义处理]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 字符串转义处理
 ```cpp
 // ⑦（续）\uXXXX → UTF-8（含高/低代理合并，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -347,7 +347,7 @@ return codepoint_to_utf8(cp);                  // 1/2/3/4 字节 UTF-8 编码
 
 序列化是解析的逆过程：把内存 `Value` 树写回文本。两种输出风格——**紧凑**（无空白，省流量）与**美化**（带缩进，便于人读）。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：序列化（writer）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 序列化（writer）
 ```cpp
 // ⑧ 序列化（自包含可编译，Examples/_ch162_writer.cpp）
 // 文件：Examples/_ch162_writer.cpp
@@ -388,7 +388,7 @@ std::string write(const Value& v) {
 
 `nlohmann/json` 是最流行的单头文件 C++ JSON 库（上游：`https://github.com/nlohmann/json`，MIT）。它的 API 极度"点赞"（ergonomic）：
 
-> **示例 10** [难度 ★★☆☆☆] [主题：与 nlohmann/json 对比]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 nlohmann/json 对比
 ```cpp
 // ⑨ 上游参考：nlohmann/json 的惯用法（第三方库 API，本章不编译它）
 // 注意：下面代码依赖第三方库，仅作对比展示，非本章自制实现
@@ -408,7 +408,7 @@ auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（
 | 错误处理 | 抛 `ParseError(pos,msg)` | 抛 `json::parse_error`（含 byte 位置） |
 | 性能 | 见 ⑪（约 5.9 µs/文档） | 同类手写递归下降量级 |
 
-**[经验]** 选自制还是上游？——写业务用 nlohmann 省时间；写需要在二进制体积/延迟上极致控制的组件（嵌入式、高频网关），自制薄解析器更可控。本章的价值在于"懂原理"，而非"重新发明轮子去替代上游"。
+**<span class="badge badge-exp">经验</span>** 选自制还是上游？——写业务用 nlohmann 省时间；写需要在二进制体积/延迟上极致控制的组件（嵌入式、高频网关），自制薄解析器更可控。本章的价值在于"懂原理"，而非"重新发明轮子去替代上游"。
 
 ## ⑩ DOM vs SAX
 
@@ -426,7 +426,7 @@ auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（
    随机访问 ✅   内存 O(n)          流式 ✅      内存 O(1)
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：从零实现 JSON 库]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 从零实现 JSON 库
 ```cpp
 // ⑩ SAX 风格的流式回调骨架（真实可编译片段，仅演示结构）
 #include <string>
@@ -450,7 +450,7 @@ struct Handler {
 
 性能必须**实测**。下面基准用 `std::chrono::high_resolution_clock` 对一个含嵌套对象/数组/字符串/数字/布尔的文档连续解析 N=200000 次，排除 I/O 只测纯 CPU 解析。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：性能]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
 ```cpp
 // ⑪ 基准（自包含可编译，Examples/_ch162_benchmark.cpp）
 // 文件：Examples/_ch162_benchmark.cpp
@@ -482,7 +482,7 @@ double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
 
 JSON 文本本身是 UTF-8（RFC 8259 强制，虽允许只传 ASCII）。两件事：① 解析 `\uXXXX` 时把码点编码成 UTF-8（见 ⑦）；② 解析前应校验输入字节序列是合法 UTF-8，否则后续 `std::string` 里可能混入非法序列，导致输出损坏或安全问题。
 
-> **示例 13** [难度 ★★★☆☆] [主题：处理]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 处理
 ```cpp
 // ⑫ UTF-8 合法性校验（自包含可编译，Examples/_ch162_utf8.cpp）
 // 文件：Examples/_ch162_utf8.cpp
@@ -517,7 +517,7 @@ bool is_valid_utf8(std::string_view s) {
 
 这是全章核心：一个**单文件、零依赖、可直接 `g++` 编译运行**的 mini JSON 库。下面给出最关键的三个片段（完整文件见 `Examples/_ch162_json.cpp`，已在本机验证通过 `-Wall -Wextra` 无警告）。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：真实完整实现]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实完整实现
 ```cpp
 // ⑬-A 值表示（完整文件头段，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -542,7 +542,7 @@ struct Value {
 };
 ```
 
-> **示例 15** [难度 ★★★☆☆] [主题：真实完整实现]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实完整实现
 ```cpp
 // ⑬-B 数字解析（严格，拒绝 1.2.3 / 1e 等非法形式，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -564,7 +564,7 @@ double parse_number() {
 }
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：真实完整实现]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实完整实现
 ```cpp
 // ⑬-C 序列化入口（Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -603,7 +603,7 @@ unicode= 中文
 
 好的解析器失败时要告诉用户"**在哪**、**为什么**"。本章用异常携带偏移位置 `pos_`：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：错误报告（位置/消息）]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误报告（位置/消息）
 ```cpp
 // ⑭ 错误类型（自包含可编译，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -625,13 +625,13 @@ struct ParseError : std::runtime_error {
   '1.2.3' -> pos=3 : 解析完成后仍有尾部多余字符
 ```
 
-**[标准]** 异常是 C++ 惯用的错误传播机制；若库需用于 `-fno-exceptions` 环境（嵌入式/内核），可改成返回 `std::expected<Value, ParseError>`（C++23 `<expected>`），调用方用 `if (auto r = parse(s); r) ...` 处理，零异常开销。
+**<span class="badge badge-std">标准</span>** 异常是 C++ 惯用的错误传播机制；若库需用于 `-fno-exceptions` 环境（嵌入式/内核），可改成返回 `std::expected<Value, ParseError>`（C++23 `<expected>`），调用方用 `if (auto r = parse(s); r) ...` 处理，零异常开销。
 
 ## ⑮ 与 std::format 衔接
 
 C++20 `<format>` 能安全拼字符串，但**不会替你转义 JSON 特殊字符**——把用户输入直接 `format` 进 JSON 等于开放注入漏洞（见 ⑰）。正确做法是：用 `format` 搭骨架，字符串值仍走 `escape_string`。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：与 std::format 衔接]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 std::format 衔接
 ```cpp
 // ⑮ std::format 拼 JSON 骨架（自包含可编译，Examples/_ch162_format.cpp）
 // 文件：Examples/_ch162_format.cpp
@@ -654,7 +654,7 @@ std::string build(int age, double score, const std::string& name) {
 
 解析出 `Object` 后，工程里常想直接拿强类型 `struct`。手写映射直观但重复；可用模板 + 字段描述简化（本章给出手写版，上游库用 `get<T>`）。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：反序列化到 struct]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反序列化到 struct
 ```cpp
 // ⑯ 反序列化到 struct（自包含可编译，Examples/_ch162_deserialize.cpp）
 // 文件：Examples/_ch162_deserialize.cpp
@@ -680,7 +680,7 @@ id=1 name=alice score=9.81
 
 ## ⑰ 反模式（不安全解析）
 
-> **示例 20** [难度 ★★☆☆☆] [主题：反模式（不安全解析）]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（不安全解析）
 ```cpp
 // ⑰ ❌ 反模式：盲目下标访问，越界即未定义行为（Examples/_ch162_antipattern.cpp）
 // 文件：Examples/_ch162_antipattern.cpp
@@ -697,7 +697,7 @@ std::vector<int> unsafe_split(const std::string& s) {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：反模式（不安全解析）]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（不安全解析）
 ```cpp
 // ⑰ ✅ 正确做法：边界检查 + 用本章 Parser 的 fail() 抛精确错误
 Value parse(const std::string_view s) {
@@ -721,7 +721,7 @@ Value parse(const std::string_view s) {
 - **字节序无关**：JSON 文本是字节流（UTF-8），本身不依赖 CPU 字节序，跨平台安全。
 - **`char` 符号性**：`char` 是否有符号由实现定义；处理字节时一律转 `unsigned char` 再比较（本章 `parse_number` 等处已用 `static_cast<unsigned char>`），否则在 `signed char` 平台遇到高位字节会出错。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：平台差异 [平台·x86-64]]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异 [平台·x86-64]
 ```cpp
 // ⑱ 跨平台读文件建议（二进制读入，避免文本模式改写换行）
 #include <fstream>
@@ -737,7 +737,7 @@ std::string read_binary(const char* path) {
 
 下面是一份**服务器配置文件**解析（贴近工程，非 Hello World）。完整文件 `Examples/_ch162_case.cpp`，本机 `g++ -O2` 真实编译运行：
 
-> **示例 23** [难度 ★★★☆☆] [主题：真实案例]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实案例
 ```cpp
 // ⑲ 解析服务器配置（自包含可编译，Examples/_ch162_case.cpp）
 // 文件：Examples/_ch162_case.cpp
@@ -782,16 +782,16 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：解析 JSON 把值统一成 `std::variant`（null/bool/number/string/array/object）。** 你做动态类型值。请说明。
-   - [标准] `std::variant` 是类型安全的可选值（带访问者）；用它表达 JSON 的多态值。
-   - [引用] ISO/IEC 14882:2023 §[variant]（std::variant 与访问者）/ [class.variant]；cppreference "std::variant" 词条。
+   - <span class="badge badge-std">标准</span> `std::variant` 是类型安全的可选值（带访问者）；用它表达 JSON 的多态值。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[variant]（std::variant 与访问者）/ [class.variant]；cppreference "std::variant" 词条。
 
 2. **真实场景：用第三方 JSON 库（如 nlohmann/json）而非手写解析。** 你评估“标准是否有 JSON 类型”。请说明标准化状态。
-   - [标准] 截至 ISO/IEC 14882:2023，**C++ 标准库无官方 JSON 类型**；JSON 属第三方库领域。不可把提案/库写成标准设施。
-   - [引用] ISO/IEC 14882:2023（无 JSON 条款）/ nlohmann/json 文档；cppreference（无 std JSON 词条）。
+   - <span class="badge badge-std">标准</span> 截至 ISO/IEC 14882:2023，**C++ 标准库无官方 JSON 类型**；JSON 属第三方库领域。不可把提案/库写成标准设施。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023（无 JSON 条款）/ nlohmann/json 文档；cppreference（无 std JSON 词条）。
 
 3. **真实场景：用 `std::string_view` 零拷贝访问 JSON 中的字符串片段。** 你避免大字符串拷贝。请说明。
-   - [标准] `std::string_view` 是非拥有的连续字符视图；适合解析期零拷贝切片。
-   - [引用] ISO/IEC 14882:2023 §[string.view]（std::string_view 语义）；cppreference "std::string_view" 词条。
+   - <span class="badge badge-std">标准</span> `std::string_view` 是非拥有的连续字符视图；适合解析期零拷贝切片。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view]（std::string_view 语义）；cppreference "std::string_view" 词条。
 
 从零实现 JSON 库的本质，是把"动态类型的文本协议"干净地装进"静态类型的 `std::variant` 树"：
 
@@ -806,25 +806,25 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 
 ## 补充分编可编译示例
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch162_json."<<std::endl;return 0;}
 ```
-> **示例 25** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch162_json."<<std::endl;return 0;}
 ```
-> **示例 26** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch162_json."<<std::endl;return 0;}
 ```
-> **示例 27** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -836,7 +836,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：JSON 的标准化与 C++ 库之争
-[史] JSON 由 **Douglas Crockford** 在 2001 年规范化，最初在 RFC 4627（2006）成文，最终定稿为 **RFC 8259（2017，ECMA-404 同源）**——它是 IETF/ ECMA 标准，而非 C++ 标准。[史] C++ 侧，**RapidJSON（腾讯，约 2011）** 以"零拷贝、SAX/DOM、极致性能"出圈；**nlohmann/json（2013 起）** 则以"直觉的 STL 式 API（`operator[]`、自动类型）"成为最流行的头文件库。两者代表了"性能优先"与"易用优先"两条路线（见 ⑨⑩）。[评] JSON 在 C++ 里没有标准库实现，生态由社区库填补——这与标准库"不绑定具体数据交换格式"的取向一致。
+<span class="badge badge-history">史</span> JSON 由 **Douglas Crockford** 在 2001 年规范化，最初在 RFC 4627（2006）成文，最终定稿为 **RFC 8259（2017，ECMA-404 同源）**——它是 IETF/ ECMA 标准，而非 C++ 标准。<span class="badge badge-history">史</span> C++ 侧，**RapidJSON（腾讯，约 2011）** 以"零拷贝、SAX/DOM、极致性能"出圈；**nlohmann/json（2013 起）** 则以"直觉的 STL 式 API（`operator[]`、自动类型）"成为最流行的头文件库。两者代表了"性能优先"与"易用优先"两条路线（见 ⑨⑩）。<span class="badge badge-comment">评</span> JSON 在 C++ 里没有标准库实现，生态由社区库填补——这与标准库"不绑定具体数据交换格式"的取向一致。
 
 ### ㉒.2 真实工程坐标：JSON 活在哪些产品里
 
@@ -865,7 +865,7 @@ JSON 是「配置与数据交换的通用语」。下面按领域展开：
 | 拷贝开销 | DOM 式 API 频繁 `operator[]` 返回临时 `Value` | 热路径用 `const` 引用/SAX 避免（见 ⑩⑯） |
 
 ### ㉒.4 与标准的互动：C++ 没有标准 JSON，但有标准积木
-ISO C++ 至今无 `<json>`；JSON 解析器普遍用 **`std::variant`**（C++17，值类型：null/bool/number/string/array/object，见 ③）、`std::string_view`、`std::optional` 等标准件搭建。C++20 `std::format` 也让"对象 → JSON 字符串"的序列化更易复用标准格式化。[评] 标准提供"词汇类型积木"，具体交换格式交给生态——这也是 C++ 标准"克制不膨胀"的一贯取舍。
+ISO C++ 至今无 `<json>`；JSON 解析器普遍用 **`std::variant`**（C++17，值类型：null/bool/number/string/array/object，见 ③）、`std::string_view`、`std::optional` 等标准件搭建。C++20 `std::format` 也让"对象 → JSON 字符串"的序列化更易复用标准格式化。<span class="badge badge-comment">评</span> 标准提供"词汇类型积木"，具体交换格式交给生态——这也是 C++ 标准"克制不膨胀"的一贯取舍。
 
 **修订链补强（JSON 与标准现状）**：截至 C++23，ISO C++ **没有**官方 JSON 类型——JSON 解析完全由第三方库承担（nlohmann/json、RapidJSON、simdjson、Boost.JSON）。WG21 多次讨论“标准 JSON/文本格式”，但委员会立场是“优先把 `std::format`（[P0645](https://wg21.link/P0645)）与 `std::print`（[P2093](https://wg21.link/P2093)，C++23）做扎实，序列化格式留给生态”，避免重蹈早期 `std::iostreams` 设计争议。因此选择 JSON 库时应关注：DOM 还是 SAX、是否零拷贝、异常模型、对 UTF-8 的处理——这些标准都不保证。
 
@@ -887,7 +887,7 @@ ISO C++ 至今无 `<json>`；JSON 解析器普遍用 **`std::variant`**（C++17�
 | Boost.JSON | ~400MB/s | Boost 生态, C++11 | Boost 用户 |
 | yyjson | ~1GB/s | C 库, 极简 API, C89 | 嵌入式, C 项目 |
 
-> **示例 28** [难度 ★★☆☆☆] [主题：附录 A：工业 JSON 库对比与标]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业 JSON 库对比与标
 ```cpp
 #include <iostream>
 int main() {
@@ -902,7 +902,7 @@ int main() {
 
 ## 附录 B：底层实现与面试 [E: Low-level / J: Learning / I: Practice]
 
-> **示例 29** [难度 ★★☆☆☆] [主题：附录 B：底层实现与面试 [E: L]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：底层实现与面试 [E: L
 ```
 JSON Parser 实现的关键决策:
 
@@ -943,7 +943,7 @@ A: 状态机: NORMAL → ESCAPE → UNICODE_4_HEX → 转换码点为 UTF-8 字�
 | 错误处理 | ch88(expected), ch146(error_handling) | parser error = expected<Json,Error> | C++23的expected是最佳错误类型 |
 | 性能优化 | ch151(benchmark), simdjson(ch155 SIMD) | JSON parse = 200MB/s vs 2.5GB/s(SIMD) | 了解simdjson的设计思想 |
 
-> **示例 30** [难度 ★★☆☆☆] [主题：项目学习地图：JSON库 → 全书知]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 项目学习地图：JSON库 → 全书知
 ```cpp
 #include <iostream>
 int main() {
@@ -1000,7 +1000,7 @@ int main() {
 
 `std::variant` 在编译期枚举可能的备选项、运行时记录当前活跃类型，访问前可 `std::holds_alternative` 检查，避免 `void*` 的裸转型与类型错配 UB。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <variant>
 #include <string>
@@ -1024,9 +1024,9 @@ int main() {
 }
 ```
 
-[标准] `std::variant` 是类型安全的 discriminated union（[variant]）；访问非活跃可选项抛 `bad_variant_access`。
+<span class="badge badge-std">标准</span> `std::variant` 是类型安全的 discriminated union（[variant]）；访问非活跃可选项抛 `bad_variant_access`。
 
-[引用] cppreference <https://en.cppreference.com/w/cpp/utility/variant>；nlohmann/json 的 `basic_json` 即基于类似 tagged union <https://github.com/nlohmann/json>。
+<span class="badge badge-ref">引用</span> cppreference <https://en.cppreference.com/w/cpp/utility/variant>；nlohmann/json 的 `basic_json` 即基于类似 tagged union <https://github.com/nlohmann/json>。
 
 </details>
 
@@ -1038,7 +1038,7 @@ int main() {
 
 JSON 字符串的 `\uXXXX` 是 UTF-16 码元；BMP 直接映射，代理对需合成码点再转 UTF-8。UTF-8 按码点长度用 1–4 字节编码，不能把 UTF-16 的 2 字节当 UTF-8 用。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <string>
 #include <iostream>
@@ -1050,9 +1050,9 @@ void append_utf8(std::string& out, unsigned cp) {
 int main() { std::string s; append_utf8(s, 0x4e2d); std::cout << s << '\n'; }  // "中"
 ```
 
-[标准] 字符串是 `char` 序列（[strings]）；字符编码属程序约定，标准不强制 UTF-8，但 UTF-8 是事实标准。
+<span class="badge badge-std">标准</span> 字符串是 `char` 序列（[strings]）；字符编码属程序约定，标准不强制 UTF-8，但 UTF-8 是事实标准。
 
-[引用] RFC 8259（JSON 必须 UTF-8）<https://www.rfc-editor.org/rfc/rfc8259>；UTF-8 编码规则见 <https://en.wikipedia.org/wiki/UTF-8>；rapidjson 转义处理 <https://github.com/Tencent/rapidjson>。
+<span class="badge badge-ref">引用</span> RFC 8259（JSON 必须 UTF-8）<https://www.rfc-editor.org/rfc/rfc8259>；UTF-8 编码规则见 <https://en.wikipedia.org/wiki/UTF-8>；rapidjson 转义处理 <https://github.com/Tencent/rapidjson>。
 
 </details>
 
@@ -1064,7 +1064,7 @@ int main() { std::string s; append_utf8(s, 0x4e2d); std::cout << s << '\n'; }  /
 
 DOM 易用但占内存、需先全量建树；SAX 边解析边回调，内存恒定、可早期剪枝，适合大文件与只取部分字段。下面用 `string_view` 把键名当只读视图传给回调，避免拷贝。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <string_view>
 #include <iostream>
@@ -1081,9 +1081,9 @@ int main() {
 }
 ```
 
-[标准] `std::string_view` 是非拥有只读视图（C++17，[string.view]），零拷贝引用既有缓冲。
+<span class="badge badge-std">标准</span> `std::string_view` 是非拥有只读视图（C++17，[string.view]），零拷贝引用既有缓冲。
 
-[引用] simdjson 的流式/on-demand 解析 <https://github.com/simdjson/simdjson>；SAX vs DOM 对比见 rapidjson 文档 <https://github.com/Tencent/rapidjson>。
+<span class="badge badge-ref">引用</span> simdjson 的流式/on-demand 解析 <https://github.com/simdjson/simdjson>；SAX vs DOM 对比见 rapidjson 文档 <https://github.com/Tencent/rapidjson>。
 
 </details>
 
@@ -1271,7 +1271,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 34** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 #include <cstring>

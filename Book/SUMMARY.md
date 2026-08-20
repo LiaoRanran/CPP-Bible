@@ -90,8 +90,8 @@
 
 - [第76章　STL 架构与迭代器概念](part07_stl/ch76_stl_arch.md)
 - [第77章　vector：扩容、失效、allocator 协作](part07_stl/ch77_vector.md)
-- [第78章　deque 与分段连续 [标准]](part07_stl/ch78_deque.md)
-- [第79章　list / forward_list [标准]](part07_stl/ch79_list.md)
+- [第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](part07_stl/ch78_deque.md)
+- [第79章　list / forward_list <span class="badge badge-std">标准</span>](part07_stl/ch79_list.md)
 - [第80章　array 与固定数组](part07_stl/ch80_array.md)
 - [第81章　std::string 与 SSO 短字符串优化](part07_stl/ch81_string.md)
 - [第82章　span 与裸数组视图](part07_stl/ch82_span.md)
@@ -106,7 +106,7 @@
 - [第91章 文件系统 filesystem](part07_stl/ch91_filesystem.md)
 - [第92章 时间库 chrono](part07_stl/ch92_chrono.md)
 - [第93章　线程与异步：thread / future / async](part07_stl/ch93_thread_async.md)
-- [第94章　stop_token 与协作取消 [标准]](part07_stl/ch94_stop_token.md)
+- [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](part07_stl/ch94_stop_token.md)
 
 ## 第八部分　算法
 

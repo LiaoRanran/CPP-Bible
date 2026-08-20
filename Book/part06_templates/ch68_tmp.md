@@ -1,5 +1,5 @@
 # 第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）
-> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
@@ -10,7 +10,7 @@
 > 谁也没打算让模板会算素数——直到 1994 年某次会议上，编译器报错信息泄露了它的「隐藏人格」。
 
 ### 0.1 起源（谁·何时·为何）
-模板本是为泛型容器设计的，但 1994 年 Erwin Unruh 在 C++ 委员会会议上展示了一段「离谱」代码：它在**编译期**就计算出了素数，结果还被编译器以报错信息的形式打印出来。[史][轶] 这无意间证明——C++ 模板是**图灵完备**的，能在编译期执行任意计算。随后 Boost.MPL（Abrahams、Gurtovoy 等）把这种「编译期编程」体系化为库，模板元编程（TMP）正式成为一门手艺。
+模板本是为泛型容器设计的，但 1994 年 Erwin Unruh 在 C++ 委员会会议上展示了一段「离谱」代码：它在**编译期**就计算出了素数，结果还被编译器以报错信息的形式打印出来。<span class="badge badge-history">史</span><span class="badge badge-anecdote">轶</span> 这无意间证明——C++ 模板是**图灵完备**的，能在编译期执行任意计算。随后 Boost.MPL（Abrahams、Gurtovoy 等）把这种「编译期编程」体系化为库，模板元编程（TMP）正式成为一门手艺。
 
 ### 0.2 关键转折（编年）
 - 1994：Unruh 的素数演示揭示模板的编译期计算能力。
@@ -18,18 +18,18 @@
 - 2011 起：`constexpr`（ch69）提供了更直观的编译期计算替代，TMP 部分退居幕后。
 
 ### 0.3 设计哲学之争
-TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、可读性极差」为代价的——被戏称「图灵焦油坑」。[评] 它逼出了 `constexpr` 与 concepts，等于用自身之痛推动了语言进化。今天 TMP 仍活在标准库深处（如 `tuple`、`integral_constant`），只是新代码更倾向 `constexpr`。
+TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、可读性极差」为代价的——被戏称「图灵焦油坑」。<span class="badge badge-comment">评</span> 它逼出了 `constexpr` 与 concepts，等于用自身之痛推动了语言进化。今天 TMP 仍活在标准库深处（如 `tuple`、`integral_constant`），只是新代码更倾向 `constexpr`。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 `constexpr` 让 TMP 部分退居幕后。TMP 与 constexpr 的分工现状：
 
-- [史] Boost.MPL（Aleksey Gurtovoy & David Abrahams，2000s）把 TMP 系统化成「编译期容器与算法」：`mpl::vector`、`mpl::transform` 等，让元编程第一次有了「库」的样子。但它慢、报错极长。
+- <span class="badge badge-history">史</span> Boost.MPL（Aleksey Gurtovoy & David Abrahams，2000s）把 TMP 系统化成「编译期容器与算法」：`mpl::vector`、`mpl::transform` 等，让元编程第一次有了「库」的样子。但它慢、报错极长。
 
-- [史] 2015 年 Louis Dionne 的 Boost.Hana 试图用 `constexpr` + 异构容器统一「编译期与运行期」：同样一套 `transform`/`filter` 既能吃编译期 tuple 也能吃运行期容器，代表「TMP 向 constexpr 投降并融合」的转向。
+- <span class="badge badge-history">史</span> 2015 年 Louis Dionne 的 Boost.Hana 试图用 `constexpr` + 异构容器统一「编译期与运行期」：同样一套 `transform`/`filter` 既能吃编译期 tuple 也能吃运行期容器，代表「TMP 向 constexpr 投降并融合」的转向。
 
-- [史] C++11 起 `constexpr` 一路放宽（ch69），到 C++20 已能在编译期做相当复杂的计算，纯模板递归元函数逐步被 `constexpr` 函数取代——可读、可调试、报错短。
+- <span class="badge badge-history">史</span> C++11 起 `constexpr` 一路放宽（ch69），到 C++20 已能在编译期做相当复杂的计算，纯模板递归元函数逐步被 `constexpr` 函数取代——可读、可调试、报错短。
 
-- [评] 分工现状：极致类型级计算（type_list、特化分发）仍靠 TMP；值级编译期计算交给 `constexpr`；concepts 负责接口约束。三者是「同一编译期世界」的三块拼图。
+- <span class="badge badge-comment">评</span> 分工现状：极致类型级计算（type_list、特化分发）仍靠 TMP；值级编译期计算交给 `constexpr`；concepts 负责接口约束。三者是「同一编译期世界」的三块拼图。
 
 > 史料来源：https://en.wikipedia.org/wiki/Template_metaprogramming ；https://www.boost.org/ ；https://en.cppreference.com/w/cpp/language/constexpr
 
@@ -55,7 +55,7 @@ TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、�
 | **核心结构** | `template <int/type N> struct X { ... 递归引用 X<N-1> ... };` + `template <> struct X<0> { 基例 };` |
 | **定义** | 利用模板偏特化与实例化点规则，把"计算"编码进类型系统，由编译器在实例化时求值 |
 
-> **示例 1** [难度 ★★★☆☆] [主题：本模板模式速查]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 本模板模式速查
 ```cpp
 // 速查：TMP 三段式 = 主模板（递归）+ 偏特化（基例）+ 调用点（触发实例化）
 template <int N>
@@ -69,7 +69,7 @@ static_assert(Fib<10>::v == 55);                                     // 调用�
 
 **A. 值计算——编译期阶乘（递归 + 偏特化终止）**
 
-> **示例 2** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 template <int N>
 struct Fact { static constexpr int value = N * Fact<N - 1>::value; };
@@ -80,7 +80,7 @@ static_assert(Fact<5>::value == 120);
 
 **B. 值计算——编译期 GCD（欧几里得，递归值）**
 
-> **示例 3** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 template <int A, int B>
 struct Gcd { static constexpr int value = Gcd<B, A % B>::value; };
@@ -91,7 +91,7 @@ static_assert(Gcd<48, 36>::value == 12);
 
 **C. 类型计算——bool 参数分支（`std::conditional` 等价手写）**
 
-> **示例 4** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 template <bool B>
 struct SelectT { using type = int; };          // 主模板：默认分支
@@ -103,7 +103,7 @@ static_assert(sizeof(SelectT<false>::type) == sizeof(double));
 
 **D. 类型计算——类型列表 `at` 索引（递归 + 偏特化）**
 
-> **示例 5** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 #include <cstddef>
 template <typename... Ts> struct TypeList {};
@@ -120,7 +120,7 @@ static_assert(std::is_same_v<At<2, L>::type, char>);
 
 **E. 编译期判定——素数（递归 + 偏特化基例）**
 
-> **示例 6** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 template <int N, int D = N - 1>
 struct IsPrime { static constexpr bool value = (N % D != 0) && IsPrime<N, D - 1>::value; };
@@ -133,7 +133,7 @@ static_assert(!IsPrime<15>::value);
 
 **F. 循环——`std::integer_sequence` 包展开索引**
 
-> **示例 7** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 template <typename T, T... Is>
 void for_each_is(std::integer_sequence<T, Is...>, auto f) {
@@ -152,7 +152,7 @@ for_each_is(std::make_integer_sequence<int, 5>{}, [&](int i){ sum += i; }); // 0
   - 阶段二（实例化时）：依赖名（含模板参数）在实例化上下文查找。
 - **偏特化选择**：编译器在实例化时按**最特化匹配**选主模板或偏特化；无匹配偏特化则退回主模板。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：实例化机制]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实例化机制
 ```cpp
 template <typename T>
 void foo() { T x; bar(x); }  // bar 是依赖调用：阶段二才查找（需 ADL 或可见声明）
@@ -173,7 +173,7 @@ int main() { foo<S>(); }     // POI：此处实例化 foo<S>，bar(S) 可见 -> 
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 9** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <type_traits>
 #include <utility>
@@ -202,19 +202,19 @@ int main() {
 }
 ```
 
-## ⑦ 标准规定 [标准]
+## ⑦ 标准规定 <span class="badge badge-std">标准</span>
 
 - C++ 模板偏特化匹配规则由 `[temp.class.spec]`（偏特化）、`[temp.inst]`（实例化点）、`[temp.res]`（两阶段查找）规定。
 - 部分特化**不参与重载决议**，仅在选择主模板后做"最特化匹配"（`[temp.class.spec.match]`）。
 - 非类型模板参数（NTTP）允许的类别随标准扩展：C++11 仅整数/指针/引用/成员指针；C++20 允许**字面量类型 NTTP**（如 `fixed_string`、结构体），极大增强 TMP 表达力（`[temp.param]`）。
 
-## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
+## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 - **递归深度上限**：GCC 默认 `-ftemplate-depth=900`，Clang 默认 256，MSVC 默认 1024。超深递归报 `template instantiation depth exceeds`。`Fact<2000>` 在 GCC 需 `-ftemplate-depth=2048`。
 - **符号修饰**：GCC/Clang 用 Itanium mangling（`_Z...`），MSVC 用 `@`-风格修饰名（`?Fact@$0?...`）。递归实例化的展开符号在三者都存在，但命名不同。
 - **`integer_sequence` 实现**：三者都基于偏特化增量构造（`integer_sequence<T, Is..., N>` 追加），无运行时代码。
 
-> **示例 10** [难度 ★★★★☆] [主题：行为差异 [实现][平台]]
+> **示例 10** [难度 ★★★★☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // GCC 提高递归深度上限的编译选项（跨平台章节仅供认知，不滥用）
 // g++ -ftemplate-depth=2048 heavy_tmp.cpp
@@ -287,7 +287,7 @@ _ZN3FibILi10EE7computeEv:        ; Fib<10>::compute
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（类型特征 Type Traits）—— STL 用 traits 在 TMP 中萃取/分发类型
 [第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)（SFINAE 与 std::enable_if）—— TMP 谓词经 SFINAE 转为候选筛选
 
-> **示例 11** [难度 ★★★☆☆] [主题：中的该模式]
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
 // 1) std::integral_constant：所有 type_traits 的值计算基石
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits
@@ -317,7 +317,7 @@ struct integer_sequence {};
 
 **变体 A：`if constexpr` 替代偏特化分支（C++17，可读性更优）**
 
-> **示例 12** [难度 ★★★☆☆] [主题：变体]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
 ```cpp
 #include <string>
 template <typename T>
@@ -331,7 +331,7 @@ auto to_json(T v) {
 
 **变体 B：constexpr 函数式 TMP（值计算不必写成类模板）**
 
-> **示例 13** [难度 ★★☆☆☆] [主题：变体]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
 ```cpp
 constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
 static_assert(fact(5) == 120);  // 与 Fact<5>::value 等价，且调试友好
@@ -339,7 +339,7 @@ static_assert(fact(5) == 120);  // 与 Fact<5>::value 等价，且调试友好
 
 **变体 C：类型列表遍历（递归 + 偏特化，配 fold）**
 
-> **示例 14** [难度 ★★★☆☆] [主题：变体]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
 ```cpp
 #include <cstddef>
 template <typename... Ts>
@@ -352,7 +352,7 @@ static_assert(list_size(L{}) == 3);
 
 **变体 D：编译期字符串（C++20 字面量 NTTP）**
 
-> **示例 15** [难度 ★★★☆☆] [主题：变体]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
 ```cpp
 #include <cstddef>
 template <size_t N>
@@ -369,7 +369,7 @@ using T = Tag<"hello">;     // C++20 起合法：编译期吃进字符串字面�
 
 **反模式 1：递归深度失控（编译爆炸）**
 
-> **示例 16** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 template <int N> struct Bad { static constexpr int v = Bad<N+1>::v; }; // 无递减、无基例 -> 无限实例化
 // 编译错误：template instantiation depth exceeds maximum
@@ -377,7 +377,7 @@ template <int N> struct Bad { static constexpr int v = Bad<N+1>::v; }; // 无递
 
 **反模式 2：依赖名缺 `typename`（经典编译错误）**
 
-> **示例 17** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 template <typename T>
 struct Wrapper {
@@ -388,7 +388,7 @@ struct Wrapper {
 
 **反模式 3：实例化点陷阱（POI 可见性）**
 
-> **示例 18** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 template <typename T> void g(T x) { f(x); }  // f 依赖，阶段二查找
 namespace N { struct S {}; void f(S) {} }
@@ -398,7 +398,7 @@ int main() { g(N::S{}); }  // 错误：g<S> 实例化时 f(N::S) 不在 ADL 可�
 
 **反模式 4：TMP 当运行时用（误以为零开销）**
 
-> **示例 19** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 template <int N> struct Fib { static int run() { return Fib<N-1>::run() + Fib<N-2>::run(); } };
 // 这是运行时递归！每个 Fib<N>::run 是真实函数，指数级调用。TMP 零开销仅指 ::value 折叠。
@@ -406,7 +406,7 @@ template <int N> struct Fib { static int run() { return Fib<N-1>::run() + Fib<N-
 
 **反模式 5：偏特化顺序写反（永远命中主模板）**
 
-> **示例 20** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 template <typename T> struct Traits { using type = void; };       // 主
 template <typename T> struct Traits<T*> { using type = T; };      // 偏特化（更特化）
@@ -421,7 +421,7 @@ template <typename T> struct Traits<T*> { using type = int; };    // 重复偏�
 
 **案例 A：编译期单位制检查（防止 米+秒 误加）**
 
-> **示例 21** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 template <int M, int S>            // 米、秒的指数
 struct Unit { static constexpr int meter = M; static constexpr int second = S; };
@@ -434,7 +434,7 @@ static_assert(!AddableUnit<Meter, Second>::value);  // 编译期拒绝 米+秒
 
 **案例 B：编译期状态机（合法转移在编译期校验）**
 
-> **示例 22** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 enum class State { Init, Run, Stop };
 template <State From, State To>
@@ -448,7 +448,7 @@ template <State S> void transition() {
 
 **案例 C：ECS 组件类型列表（编译期遍历注册）**
 
-> **示例 23** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 template <typename... Components>
 struct ComponentList { using types = TypeList<Components...>; };
@@ -460,7 +460,7 @@ static_assert(list_size(typename MyEcs::types{}) == 3);
 
 [第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— STL 的编译期设施在此统一实现
 
-> **示例 24** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // libstdc++ integral_constant：TMP 值计算的元老级实现
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits
@@ -474,7 +474,7 @@ struct integral_constant {
 };
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // libstdc++ conditional：bool 分支的偏特化实现
 // 文件：同上 type_traits，行号：2461（struct conditional）/ 2466（偏特化 false 分支）
@@ -484,7 +484,7 @@ template <typename _Iftrue, typename _Iffalse>
 struct conditional<false, _Iftrue, _Iffalse> { using type = _Iffalse; };
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // libstdc++ integer_sequence：增量偏特化构造索引序列
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/utility.h
@@ -498,7 +498,7 @@ using make_integer_sequence = __make_integer_seq<integer_sequence, _Tp, _Num>;
 
 ## ⑯ 易错点
 
-> **示例 27** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 1) 偏特化必须"更特化"，否则被忽略
 template <typename T> struct X { using t = int; };
@@ -506,14 +506,14 @@ template <typename T> struct X<T*> { using t = T; };   // OK：T* 比 T 更特�
 // template <typename T> struct X<const T> { ... };    // OK：const T 更特化
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 2) 依赖类型名必须 typename，否则编译报错
 template <typename T>
 struct Holder { using inner = typename T::value_type; }; // 必须 typename
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 3) static constexpr 成员若被取地址，仍需类外定义（C++17 起 inline 可免）
 struct C { static constexpr int x = 5; };
@@ -530,14 +530,14 @@ struct C { static constexpr int x = 5; };
 
 ## ⑱ 最佳实践
 
-> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 1) 基例优先写全，避免无限递归
 template <int N> struct F { static constexpr int v = N + F<N-1>::v; };
 template <> struct F<0> { static constexpr int v = 0; };   // 必须有
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 2) C++17+ 分支优先 if constexpr，可读性 > 偏特化
 template <typename T>
@@ -547,7 +547,7 @@ void process(T x) {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 3) 报错友好：用 static_assert 提早失败
 template <typename T>
@@ -568,20 +568,20 @@ void only_int(T) { static_assert(std::is_integral_v<T>, "only integral allowed")
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `if constexpr` 在模板内编译期分支（替代偏特化爆炸）。** 你按类型特性选不同实现。请说明丢弃语义。
-   - [标准] `if constexpr` 在编译期求值，未取分支的语句从不实例化（被丢弃），不产生冗余特化。
-   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if constexpr 丢弃分支）；cppreference "if constexpr" 词条。
+   - <span class="badge badge-std">标准</span> `if constexpr` 在编译期求值，未取分支的语句从不实例化（被丢弃），不产生冗余特化。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stmt.if]（if constexpr 丢弃分支）；cppreference "if constexpr" 词条。
 
 2. **真实场景：模板元编程用特化表达编译期计算。** 你想在类型系统里算一个常量。请说明本质。
-   - [标准] 模板特化（含偏特化与类型成员/值成员）可在编译期表达递推计算，是 TMP 的基础。
-   - [引用] ISO/IEC 14882:2023 §[temp]（模板作为编译期计算机制）；cppreference "Template metaprogramming" 词条。
+   - <span class="badge badge-std">标准</span> 模板特化（含偏特化与类型成员/值成员）可在编译期表达递推计算，是 TMP 的基础。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp]（模板作为编译期计算机制）；cppreference "Template metaprogramming" 词条。
 
 3. **真实场景：模板递归深度超限编译失败。** 你的大数列递归实例化爆了编译器上限。请说明约束。
-   - [标准] 递归模板实例化深度受实现定义的数量限制；超过即编译错误，应改用迭代式/constexpr 计算。
-   - [引用] ISO/IEC 14882:2023 §[implimits]（实现数量限制：递归实例化深度）；cppreference "Implementation limits" 词条。
+   - <span class="badge badge-std">标准</span> 递归模板实例化深度受实现定义的数量限制；超过即编译错误，应改用迭代式/constexpr 计算。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[implimits]（实现数量限制：递归实例化深度）；cppreference "Implementation limits" 词条。
 
 **练习题**
 
-> **示例 33** [难度 ★★★☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // 练习 1：写编译期幂pow<B,E>，static_assert(pow<2,10>::value == 1024);
 template <int B, int E>
@@ -591,7 +591,7 @@ struct Pow<B, 0> { static constexpr int value = 1; };
 static_assert(Pow<2, 10>::value == 1024);
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // 练习 2：写类型列表 Front<Ts...>，取第一个类型
 template <typename T, typename...> struct Front { using type = T; };
@@ -609,7 +609,7 @@ static_assert(std::is_same_v<Front<int, double>::type, int>);
 
 ## 补充分编可编译示例
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -620,8 +620,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：模板元编程是被「意外发现」的图灵完备
-[史] 模板本是为泛型容器设计的，但 1994 年 Erwin Unruh 在 C++ 委员会会议上展示了一段「离谱」代码：它在**编译期**就计算出了素数，结果被编译器以报错信息的形式打印出来，无意间证明 C++ 模板是**图灵完备**的，能在编译期执行任意计算。随后 Boost.MPL（Abrahams、Gurtovoy 等）把这种「编译期编程」体系化为库，模板元编程（TMP）正式成为一门手艺。2000 年代它成了「零开销编译期计算」的唯一手段。
-[评] TMP 极致的零运行期开销，是以「编译期极慢、报错极狠、可读性极差」为代价的，被戏称「图灵焦油坑」。它逼出了 `constexpr` 与 concepts，等于用自身之痛推动了语言进化。
+<span class="badge badge-history">史</span> 模板本是为泛型容器设计的，但 1994 年 Erwin Unruh 在 C++ 委员会会议上展示了一段「离谱」代码：它在**编译期**就计算出了素数，结果被编译器以报错信息的形式打印出来，无意间证明 C++ 模板是**图灵完备**的，能在编译期执行任意计算。随后 Boost.MPL（Abrahams、Gurtovoy 等）把这种「编译期编程」体系化为库，模板元编程（TMP）正式成为一门手艺。2000 年代它成了「零开销编译期计算」的唯一手段。
+<span class="badge badge-comment">评</span> TMP 极致的零运行期开销，是以「编译期极慢、报错极狠、可读性极差」为代价的，被戏称「图灵焦油坑」。它逼出了 `constexpr` 与 concepts，等于用自身之痛推动了语言进化。
 
 ### ㉒.2 真实工程坐标：TMP 活在哪些产品/项目里
 
@@ -629,7 +629,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
-| 标准库深处 | `std::tuple`/`integer_sequence`/`ratio`/`integral_constant`、`chrono::duration` | TMP 产物；编译期单位换算 | 一切 C++ 程序地基 | TMP 是标准库隐藏引擎 [STANDARD] |
+| 标准库深处 | `std::tuple`/`integer_sequence`/`ratio`/`integral_constant`、`chrono::duration` | TMP 产物；编译期单位换算 | 一切 C++ 程序地基 | TMP 是标准库隐藏引擎 <span class="badge badge-std">STANDARD</span> |
 | Boost 元编程库 | Boost.MPL / Boost.Hana | MPL 把元编程做成库；Hana 用 `constexpr`+异构容器统一编译期/运行期 | 元编程基础设施 | TMP → constexpr 融合转向 |
 | 数值/DSP 库 | Blitz++、Eigen（维度推导） | TMP 做编译期维度检查与循环展开 | 数值计算 | 维度编译期验证 |
 | 生物信息 | SeqAn（FU Berlin） | 密集 TMP 元函数表示字母表/序列，类型级状态机与维度检查 | 基因组比对基石 | 运行期分支前移编译期 |
@@ -656,7 +656,7 @@ Boost.MPL（2000s）把 TMP 系统化成「编译期容器与算法」；2015 �
 
 ## 附录 A：原理与工业 [B: Principle / F: Industry / E: Lowlevel]
 
-> **示例 36** [难度 ★★★☆☆] [主题：附录 A：原理与工业 [B: Pri]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：原理与工业 [B: Pri
 ```
 WG21 TMP演化:
 N3291 (C++11): constexpr函数 → 替代部分TMP (循环/条件在编译期)
@@ -728,7 +728,7 @@ P2448R2 (C++23): 放宽constexpr限制 → 允许非constexpr函数在constexpr�
 
 <details><summary>答案与解析</summary>
 
-> **示例 37** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 
@@ -741,9 +741,9 @@ int main() {
 }
 ```
 
-[标准] 元函数是"在类型系统上运行的函数"；递归特化 `Fact<0>` 作为终止条件，`value` 为 `constexpr` 可在编译期使用。
+<span class="badge badge-std">标准</span> 元函数是"在类型系统上运行的函数"；递归特化 `Fact<0>` 作为终止条件，`value` 为 `constexpr` 可在编译期使用。
 
-[引用] 编译期元函数即 TMP 的核心，现代 C++ 多以 `constexpr` 函数替代（见 ch69）。标准库 `std::integer_sequence` 的生成也依赖编译期整数序列元编程（cppreference "std::integer_sequence"）。ISO/IEC 14882:2023 §[temp] 规定模板递归实例化与特化终止。
+<span class="badge badge-ref">引用</span> 编译期元函数即 TMP 的核心，现代 C++ 多以 `constexpr` 函数替代（见 ch69）。标准库 `std::integer_sequence` 的生成也依赖编译期整数序列元编程（cppreference "std::integer_sequence"）。ISO/IEC 14882:2023 §[temp] 规定模板递归实例化与特化终止。
 
 </details>
 
@@ -753,7 +753,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 38** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 
@@ -765,9 +765,9 @@ int main() {
 }
 ```
 
-[标准] `sizeof...(Ts)` 是编译期包大小；`TypeList` 本身不占运行期内存，纯粹在类型系统记录类型集合，是 TMP 的基础构件。
+<span class="badge badge-std">标准</span> `sizeof...(Ts)` 是编译期包大小；`TypeList` 本身不占运行期内存，纯粹在类型系统记录类型集合，是 TMP 的基础构件。
 
-[引用] `TypeList` 是 Andrei Alexandrescu《Modern C++ Design》中 typelist 的雏形，是 policy-based 与编译期分派的基石（Boost.MPL 的 `boost::mpl::vector` 即其扩展，boost.org/doc/libs）。标准库 `std::tuple` 也用类似"参数包类型集合"结构（cppreference "std::tuple"）。ISO/IEC 14882:2023 §[temp.variadic] 规定参数包。
+<span class="badge badge-ref">引用</span> `TypeList` 是 Andrei Alexandrescu《Modern C++ Design》中 typelist 的雏形，是 policy-based 与编译期分派的基石（Boost.MPL 的 `boost::mpl::vector` 即其扩展，boost.org/doc/libs）。标准库 `std::tuple` 也用类似"参数包类型集合"结构（cppreference "std::tuple"）。ISO/IEC 14882:2023 §[temp.variadic] 规定参数包。
 
 </details>
 
@@ -777,7 +777,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 39** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -792,9 +792,9 @@ template <typename T> void process(T v) {
 int main() { int x = 7; process(x); process(&x); }
 ```
 
-[标准] `if constexpr` 在编译期丢弃不采纳的分支，被弃分支**不被实例化**（故 `*v` 在 `T=int` 时不报错）；相比为指针/非指针写两份全特化，单函数即可表达。
+<span class="badge badge-std">标准</span> `if constexpr` 在编译期丢弃不采纳的分支，被弃分支**不被实例化**（故 `*v` 在 `T=int` 时不报错）；相比为指针/非指针写两份全特化，单函数即可表达。
 
-[引用] `if constexpr`（C++17，P0292）让"编译期分支"无需写多份特化，标准库 `std::visit`、`std::apply` 的实现大量使用它（cppreference "if constexpr"）。它取代了 ch66 中 `void_t`/SFINAE 的许多分支探测场景。ISO/IEC 14882:2023 §[stmt.if] 规定 `if constexpr` 的丢弃分支不被实例化。
+<span class="badge badge-ref">引用</span> `if constexpr`（C++17，P0292）让"编译期分支"无需写多份特化，标准库 `std::visit`、`std::apply` 的实现大量使用它（cppreference "if constexpr"）。它取代了 ch66 中 `void_t`/SFINAE 的许多分支探测场景。ISO/IEC 14882:2023 §[stmt.if] 规定 `if constexpr` 的丢弃分支不被实例化。
 
 </details>
 
@@ -813,7 +813,7 @@ template <int N> struct Fact { static constexpr int value = N * Fact<N-1>::value
 
 **修复**：补 `Fact<0>` 全特化终止：
 
-> **示例 40** [难度 ★★★☆☆] [主题：演绎 1：递归元函数必须有终止特化]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：递归元函数必须有终止特化
 ```cpp
 #include <iostream>
 
@@ -838,7 +838,7 @@ if constexpr (is_ptr) ...   // 错误：条件非编译期常量
 
 **修复**：用类型 trait `std::is_pointer_v<T>`（编译期）：
 
-> **示例 41** [难度 ★★★☆☆] [主题：演绎 2：if constexpr ]
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：if constexpr
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -854,7 +854,7 @@ int main() { int x = 7; process(x); process(&x); }
 ```
 
 **结论**：`if constexpr` 的条件必须是编译期常量表达式；被丢弃的分支不被实例化，因此 `*v` 在 `T=int` 时不报错——这是它优于 `#if`/运行时 `if` 的关键。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把正文与附录的 TMP 原理浓缩为一张"编译期计算技术演进与构件"图。
 
@@ -926,7 +926,7 @@ template<typename... _Types>
 
 ### D4.4 可编译验证
 
-> **示例 42** [难度 ★★★☆☆] [主题：可编译验证]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
 ```cpp
 #include <utility>
 #include <tuple>
@@ -1112,7 +1112,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 43** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 

@@ -19,23 +19,23 @@
 > 当工程师终于意识到"真正拖垮程序的不是算法，而是 cache miss"时，设计开始围着数据转。
 
 ### 0.1 起源（谁·何时·为何）
-DOD（Data-Oriented Design，面向数据设计）由游戏与主机开发者推动，Michael Acton（Insomniac Games）是其中最响亮的旗手——他在 2014 年 CppCon 的演讲《Data-Oriented Design and C++》把这套思想带给整个 C++ 社区 [史]。更早的源头是 Noel Llopis 2009 年前后的系列文章，系统论述"为缓存而设计"[史]。痛点来自主机与游戏的硬约束：每秒要处理百万级实体，瓶颈几乎从不是 CPU 算得慢，而是数据没连续摆放、预取器饿死。
+DOD（Data-Oriented Design，面向数据设计）由游戏与主机开发者推动，Michael Acton（Insomniac Games）是其中最响亮的旗手——他在 2014 年 CppCon 的演讲《Data-Oriented Design and C++》把这套思想带给整个 C++ 社区 <span class="badge badge-history">史</span>。更早的源头是 Noel Llopis 2009 年前后的系列文章，系统论述"为缓存而设计"<span class="badge badge-history">史</span>。痛点来自主机与游戏的硬约束：每秒要处理百万级实体，瓶颈几乎从不是 CPU 算得慢，而是数据没连续摆放、预取器饿死。
 
 ### 0.2 关键转折（编年）
-- 2009：Noel Llopis 发文把"Data-Oriented Design"概念化 [史]。
-- 2014：Mike Acton 的 CppCon 演讲让它成为现代 C++ 性能话语的核心词 [史]。
-- 此后：它深刻影响了 Unity DOTS、各种 ECS 与引擎的内存布局决策 [评]。
+- 2009：Noel Llopis 发文把"Data-Oriented Design"概念化 <span class="badge badge-history">史</span>。
+- 2014：Mike Acton 的 CppCon 演讲让它成为现代 C++ 性能话语的核心词 <span class="badge badge-history">史</span>。
+- 此后：它深刻影响了 Unity DOTS、各种 ECS 与引擎的内存布局决策 <span class="badge badge-comment">评</span>。
 
 ### 0.3 设计哲学之争
-DOD 对 OOP 的核心之争是"先想数据还是先想对象"：OOP 先问"有哪些对象、各自有什么行为"，DOD 先问"我要对哪一批数据做哪类批量变换、它们该怎么躺在内存里"[评]。Acton 的判断是"你不是在给对象写方法，你是在为硬件搬运字节"[评]。代价是：对小规模、逻辑复杂的业务，DOD 反而显得过度工程。
+DOD 对 OOP 的核心之争是"先想数据还是先想对象"：OOP 先问"有哪些对象、各自有什么行为"，DOD 先问"我要对哪一批数据做哪类批量变换、它们该怎么躺在内存里"<span class="badge badge-comment">评</span>。Acton 的判断是"你不是在给对象写方法，你是在为硬件搬运字节"<span class="badge badge-comment">评</span>。代价是：对小规模、逻辑复杂的业务，DOD 反而显得过度工程。
 
 ### 0.4 史料补遗与持续编年
 继 2014 年 Mike Acton 的 CppCon 演讲让 DOD 成为现代 C++ 性能话语的核心词，它开始向 SIMD 与非游戏领域渗透。
 
-- [史] DOD 与编译器自动向量化（`-O3 -ffast-math` 暴露的 SIMD）、显式 prefetch、多线程分块深度结合——SoA（Structure-of-Arrays）布局让一条 AVX 指令能吃下 8 个 `float`，成为高性能数值代码的默认起点。
-- [史] DOD 思想溢出游戏：数据库执行引擎（列式存储）、科学计算、物理仿真、金融风控都采用"连续摆数据、批量变换"的思路，与 ClickHouse 的列存、RocksDB 的块布局同源。
-- [评] Acton 的"先想数据再想对象"在大规模、规则简单的数据处理上所向披靡；但对小规模、逻辑复杂的业务，DOD 反而显得过度工程——它从来不是 OOP 的替代品，而是互补的另一极。
-- [轶] Acton 那句"cache miss 才是真敌人"在 CppCon 现场引发长时间掌声，成为 DOD 的"战歌"。
+- <span class="badge badge-history">史</span> DOD 与编译器自动向量化（`-O3 -ffast-math` 暴露的 SIMD）、显式 prefetch、多线程分块深度结合——SoA（Structure-of-Arrays）布局让一条 AVX 指令能吃下 8 个 `float`，成为高性能数值代码的默认起点。
+- <span class="badge badge-history">史</span> DOD 思想溢出游戏：数据库执行引擎（列式存储）、科学计算、物理仿真、金融风控都采用"连续摆数据、批量变换"的思路，与 ClickHouse 的列存、RocksDB 的块布局同源。
+- <span class="badge badge-comment">评</span> Acton 的"先想数据再想对象"在大规模、规则简单的数据处理上所向披靡；但对小规模、逻辑复杂的业务，DOD 反而显得过度工程——它从来不是 OOP 的替代品，而是互补的另一极。
+- <span class="badge badge-anecdote">轶</span> Acton 那句"cache miss 才是真敌人"在 CppCon 现场引发长时间掌声，成为 DOD 的"战歌"。
 
 > 史料来源：
 > - https://www.youtube.com/watch?v=rX0ItVEVjHc （Mike Acton, CppCon 2014）
@@ -50,7 +50,7 @@ DOD 对 OOP 的核心之争是"先想数据还是先想对象"：OOP 先问"有�
 
 传统 OOP 先想“有哪些对象、各自有什么行为”，DOD 先想“我要对哪一批数据做哪一类批量变换”。当数据规模达到百万级、且每帧都要遍历时，布局决定胜负。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：DOD 是什么]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：DOD 是什么
 ```cpp
 // Examples/_ch143_overview.cpp
 #include <vector>
@@ -84,7 +84,7 @@ int main() {
 
 真实运行输出：`px=0.016000`（百万粒子单帧推进，一次连续扫描完成）。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：DOD 是什么]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：DOD 是什么
 ```cpp
 // 片段：从“对象”到“列”——DOD 的思维方式转变
 struct Transform { float x, y, rot; };   // 一列变换数据
@@ -93,7 +93,7 @@ void advance(Transform* t, int n, float dt) {
 }
 ```
 
-> **立场标签 [标准]**：DOD 不是“反 OOP”，而是**在性能敏感的热路径上用数据布局取代对象抽象**。业务对象、UI、脚本层仍可用 OOP；只有“每帧遍历 N 个同质元素”的内核才需要 DOD。
+> **立场标签 <span class="badge badge-std">标准</span>**：DOD 不是“反 OOP”，而是**在性能敏感的热路径上用数据布局取代对象抽象**。业务对象、UI、脚本层仍可用 OOP；只有“每帧遍历 N 个同质元素”的内核才需要 DOD。
 
 ---
 
@@ -101,7 +101,7 @@ void advance(Transform* t, int n, float dt) {
 
 OOP 把“状态 + 行为”绑进对象，常通过基类指针做多态；DOD 把“状态”摊平为连续数组，把“行为”写成自由函数式的批量算法。两者差异集中在三点：**间接层、缓存局部性、指令缓存友好度**。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：与 OOP 对比（缓存/抽象）]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 OOP 对比（缓存/抽象）
 ```cpp
 // Examples/_ch143_oop_vs_dod.cpp
 #include <cstddef>
@@ -134,7 +134,7 @@ void update_dod(GPos* o, int n, float dt) {
 int main() { (void)sizeof(Monster); return 0; }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：与 OOP 对比（缓存/抽象）]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 OOP 对比（缓存/抽象）
 ```cpp
 // 片段：DOD 不排斥“对象”概念，只是把存储翻成列
 struct Monster { float x, y, vx, vy; };
@@ -148,7 +148,7 @@ void update_all(Monster* m, int n, float dt) {
 
 对比要点（后续章节逐一用汇编/计时取证）：
 
-> **示例 5** [难度 ★★★★☆] [主题：与 OOP 对比（缓存/抽象）]
+> **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 与 OOP 对比（缓存/抽象）
 ```
 ┌───────────────────┬─────────────────────────┬─────────────────────────┐
 │ 维度              │ OOP（多态指针数组）      │ DOD（连续数组 + 批处理） │
@@ -166,7 +166,7 @@ void update_all(Monster* m, int n, float dt) {
 
 CPU 从内存取数不是“要 4 字节取 4 字节”，而是按**缓存行（cache line）**成块搬运，典型宽度 **64 字节**。一次 cache miss 的代价（数十到数百周期）远超一次加法。因此 DOD 的第一律是：**让热循环一次缓存行内取到尽可能多“马上要用”的数据**。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：数据局部性]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数据局部性
 ```cpp
 // 片段：一个 Vec3 占 12B，两个对象共 24B，可塞进同一 64B 缓存行
 struct Vec3 { float x, y, z; };   // 12B；两个对象共占 24B < 64B 缓存行
@@ -174,7 +174,7 @@ struct Vec3 { float x, y, z; };   // 12B；两个对象共占 24B < 64B 缓存�
 
 缓存层级（典型桌面）：
 
-> **示例 7** [难度 ★★☆☆☆] [主题：数据局部性]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数据局部性
 ```
 ┌────────────┬───────────┬──────────────┬─────────────┐
 │ 层级       │ 容量      │ 延迟(约)     │ 与 CPU 关系 │
@@ -187,7 +187,7 @@ struct Vec3 { float x, y, z; };   // 12B；两个对象共占 24B < 64B 缓存�
 └────────────┴───────────┴──────────────┴─────────────┘
 ```
 
-> **立场标签 [标准]**：x86/ARM 主流平台的缓存行宽度为 64 字节，这是 DOD 对齐与分块的基本尺度（C++17 起可用 `std::hardware_constructive_interference_size` / `std::hardware_destructive_interference_size` 表达该常量）。
+> **立场标签 <span class="badge badge-std">标准</span>**：x86/ARM 主流平台的缓存行宽度为 64 字节，这是 DOD 对齐与分块的基本尺度（C++17 起可用 `std::hardware_constructive_interference_size` / `std::hardware_destructive_interference_size` 表达该常量）。
 
 ---
 
@@ -196,7 +196,7 @@ struct Vec3 { float x, y, z; };   // 12B；两个对象共占 24B < 64B 缓存�
 - **AoS（Array of Structures）**：`Enemy[N]`，每个元素是完整结构，字段交错。
 - **SoA（Structure of Arrays）**：`hp[N]`、`x[N]`、`y[N]` 各自独立连续。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：[实现·GCC15]]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·GCC15]
 ```cpp
 // Examples/_ch143_aos.cpp
 #include <cstddef>
@@ -220,7 +220,7 @@ float total_hp_aos() {
 }
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：[实现·GCC15]]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·GCC15]
 ```cpp
 // Examples/_ch143_soa.cpp
 #include <cstddef>
@@ -245,7 +245,7 @@ float total_hp_soa() {
 }
 ```
 
-> **示例 10** [难度 ★★★☆☆] [主题：[实现·GCC15]]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]
 ```cpp
 #include <vector>
 // 片段：只更新位置时用 SoA——仅触碰 x/y 两列，hp/kind/alive 完全不进缓存
@@ -316,7 +316,7 @@ _Z8step_soa3SoAif:
 
 本基准只访问 `alive` 与 `hp` 两个字段，验证 **SoA 因缓存密度更高而更快**。计时用 `std::chrono::steady_clock`，结果被消费（`printf` 打印 `c`）以防编译器把循环优化掉。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：结构体数组真实基准]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结构体数组真实基准
 ```cpp
 // Examples/_ch143_bench_aos_soa.cpp
 #include <vector>
@@ -373,7 +373,7 @@ int main() {
 
 本机实测（GCC 13.1.0, `-O2`, 2,000,000 元素 × 50 轮）：
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：结构体数组真实基准]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构体数组真实基准
 ```
 AoS count(alive)+hp : 0.1308 s  (c=66666650)
 SoA count(alive)+hp : 0.1162 s  (c=66666650)
@@ -381,7 +381,7 @@ SoA count(alive)+hp : 0.1162 s  (c=66666650)
 
 SoA 更快约 **11%**，来源是：AoS 每读一个 `alive`（1B）会顺带把整个 16B 结构拉进缓存行，其中大多数字段本次根本不用；SoA 的 `alive` 与 `hp` 两列连续紧凑，同样 64B 缓存行里塞得下更多“有效元素”，cache miss 更少。
 
-> **立场标签 [经验]**：在只碰少数字段的遍历里，SoA 的收益是真实且可复现的；但若是“每字段都碰”的全量更新，二者差距会收敛，此时请改用 AoS 或按冷热分列，别迷信 SoA。
+> **立场标签 <span class="badge badge-exp">经验</span>**：在只碰少数字段的遍历里，SoA 的收益是真实且可复现的；但若是“每字段都碰”的全量更新，二者差距会收敛，此时请改用 AoS 或按冷热分列，别迷信 SoA。
 
 ---
 
@@ -389,7 +389,7 @@ SoA 更快约 **11%**，来源是：AoS 每读一个 `alive`（1B）会顺带把
 
 “热”字段（每帧都访问，如 `active`、`x`、`y`）应与“冷”字段（偶尔访问，如 `inventory`、`name`、`questState`）拆开。冷字段哪怕用指针间接引用也无妨，**只要它不出现在热循环的内存流里**。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：冷热数据分离]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 冷热数据分离
 ```cpp
 // Examples/_ch143_hotcold.cpp
 #include <vector>
@@ -417,7 +417,7 @@ float sum_hot(const EntityHot* e, int n) {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：冷热数据分离]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 冷热数据分离
 ```cpp
 #include <vector>
 // 片段：把 hot 字段聚到结构前面，冷字段后置或外置
@@ -436,7 +436,7 @@ struct Entity {
 
 批处理 = 把“对单个对象的操作”重排成“对同一数组的一次扫描”。这带来两大好处：循环扁平、**编译器更易向量化（SIMD）**。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：批处理与 SIMD 友好]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 批处理与 SIMD 友好
 ```cpp
 // Examples/_ch143_batch.cpp
 #include <vector>
@@ -458,7 +458,7 @@ void update_batch(std::vector<Bullet>& bs, float dt) {
 }
 ```
 
-> **示例 16** [难度 ★★★☆☆] [主题：批处理与 SIMD 友好]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 批处理与 SIMD 友好
 ```cpp
 // Examples/_ch143_simd.cpp
 // ⑦ SIMD 友好：对已对齐、连续的 float 数组做逐元素运算
@@ -493,7 +493,7 @@ void scale(float* __restrict a, const float* __restrict b, int n, float k) {
 
 实体-组件-系统（ECS）是 DOD 最典型的工程化落地：**组件即“列”，实体即“行”，系统即批量算法**。每个系统只遍历它关心的少数几列，天然满足“连续 + 批处理 + 零虚函数”。
 
-> **示例 17** [难度 ★★☆☆☆] [主题：作为 DOD 实践]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 作为 DOD 实践
 ```cpp
 // Examples/_ch143_ecs.cpp
 #include <vector>
@@ -520,7 +520,7 @@ void spawn(float x, float y, float vx, float vy) {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：作为 DOD 实践]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 作为 DOD 实践
 ```cpp
 // 片段：渲染系统只读 Position 一列，与 Velocity 完全解耦
 void sync_render(int n) {
@@ -537,7 +537,7 @@ void sync_render(int n) {
 
 `std::vector` 保证元素**连续**（contiguous），这是 DOD 的基石：连续 → 可预取 → 可向量化 → cache 友好。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：与 std::vector 连续存储]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 std::vector 连续存储
 ```cpp
 // Examples/_ch143_vector_contig.cpp
 #include <vector>
@@ -558,7 +558,7 @@ int main() {
 
 **源码剖析（libstdc++ 真实实现）**：`push_back` 在容量足够时仅构造并前移 `_M_finish`，不重新分配——这正是“连续 + 摊销 O(1) 追加”的保证。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：与 std::vector 连续存储]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 std::vector 连续存储
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_vector.h
 // 行号：1274-1288（GCC 13.1.0 libstdc++）
@@ -585,7 +585,7 @@ int main() {
 
 虚函数靠 vtable 间接跳转：**每次调用都要先解引用对象取 vtable、再解引用取函数地址**，破坏分支预测、浪费指令缓存，且阻止内联与向量化。
 
-> **示例 21** [难度 ★★★★☆] [主题：与避免虚函数（指令缓存）]
+> **示例 21** <span class="badge badge-exp">难度 ★★★★☆</span> · 与避免虚函数（指令缓存）
 ```cpp
 // Examples/_ch143_novirtual.cpp
 // ⑩ 避免虚函数：虚调用经 vtable 间接跳转，破坏分支预测、挤占指令缓存
@@ -635,7 +635,7 @@ _Z10sum_staticRK7Circle2:
 	ret
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：与避免虚函数（指令缓存）]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与避免虚函数（指令缓存）
 ```cpp
 // 片段：用 CRTP 抹除虚函数，仍保留“多态形态”（静态分发）
 template <typename D>
@@ -648,7 +648,7 @@ struct Square : ShapeBase<Square> {
 };
 ```
 
-> **立场标签 [经验]**：热路径上**用 CRTP / 概念重载 / 函数指针表 / 干脆摊平成数据 + 自由函数**替代虚函数；虚函数只留在低频、异构、需要运行时插拔的边界。
+> **立场标签 <span class="badge badge-exp">经验</span>**：热路径上**用 CRTP / 概念重载 / 函数指针表 / 干脆摊平成数据 + 自由函数**替代虚函数；虚函数只留在低频、异构、需要运行时插拔的边界。
 
 ---
 
@@ -656,7 +656,7 @@ struct Square : ShapeBase<Square> {
 
 把查表、配置、常量数组在**编译期**摊开到只读段，运行期零成本查询，且不占任何可变缓存。
 
-> **示例 23** [难度 ★★★☆☆] [主题：与 constexpr/编译期数据]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 constexpr/编译期数据
 ```cpp
 // Examples/_ch143_constexpr.cpp
 // ⑪ 编译期数据：把表摊开在只读段，运行期零成本查询
@@ -679,7 +679,7 @@ int use_table() {
 }
 ```
 
-> **示例 24** [难度 ★★★☆☆] [主题：与 constexpr/编译期数据]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 constexpr/编译期数据
 ```cpp
 // Examples/_ch143_consteval.cpp
 // ⑪ 编译期折叠取证：consteval 使计算在编译期完成，运行期无循环
@@ -705,7 +705,7 @@ _Z11runtime_usev:
 	ret
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：与 constexpr/编译期数据]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 constexpr/编译期数据
 ```cpp
 // 片段：std::array + constexpr 得到编译期定长表（进 .rodata）
 #include <array>
@@ -719,7 +719,7 @@ static_assert(make_tab()[2] == 3);
 
 `alignas` 强制对象落在指定边界（常取缓存行 64B 或 SIMD 寄存器宽 32B），利于：SIMD 对齐加载、避免 false sharing、贴合硬件预取粒度。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：内存对齐]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存对齐
 ```cpp
 // Examples/_ch143_align.cpp
 #include <cstddef>
@@ -747,7 +747,7 @@ int main() {
 
 真实运行输出（GCC 15.3.0）：
 
-> **示例 27** [难度 ★★☆☆☆] [主题：内存对齐]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存对齐
 ```
 Normal  : sizeof=12 alignof=4
 Aligned : sizeof=64 alignof=64
@@ -770,7 +770,7 @@ Aligned : sizeof=64 alignof=64
 	call	__mingw_printf
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：内存对齐]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存对齐
 ```cpp
 // 片段：64B 对齐的 SIMD 缓冲，适配 AVX 对齐加载（vmovaps 要求 32B 对齐）
 alignas(64) float simd_buf[1024];   // 一条缓存行内 16 个 float 对齐打包
@@ -784,7 +784,7 @@ alignas(64) float simd_buf[1024];   // 一条缓存行内 16 个 float 对齐打
 
 **伪共享（false sharing）**：两个线程改写**同一缓存行**上的不同变量，各自让对方的缓存行失效，总线来回颠簸。表面“没竞争同一变量”，实则疯狂抢缓存行。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：与 false sharing]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 false sharing
 ```cpp
 // Examples/_ch143_false_sharing.cpp
 #include <thread>
@@ -831,7 +831,7 @@ int main() {
 
 真实运行输出（双线程，每线程 3e7 次 RMW）：
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：与 false sharing]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 false sharing
 ```
 false-sharing(同线): 0.0452 s  (sum=60000000)
 padded(隔离)      : 0.0149 s  (sum=60000000)
@@ -839,7 +839,7 @@ padded(隔离)      : 0.0149 s  (sum=60000000)
 
 隔离后快约 **3 倍**——缓存行不再反复在双核间弹来弹去。`volatile` 在此是**故意**使用的取证手段（强制真实内存 RMW，避免被常量折叠），生产代码应用 `std::atomic` 或 `alignas` 隔离。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：与 false sharing]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 false sharing
 ```cpp
 // 片段：用硬件干扰尺寸隔离计数器（C++17 标准常量）
 #include <new>
@@ -867,7 +867,7 @@ perf report
 
 典型输出（示意，非本机实测）：
 
-> **示例 32** [难度 ★★☆☆☆] [主题：性能剖析（perf 命令+典型输出）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能剖析（perf 命令+典型输出）
 ```
  Performance counter stats for './your_dod_bench':
 
@@ -879,7 +879,7 @@ perf report
        1.234567890 seconds time elapsed
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：性能剖析（perf 命令+典型输出）]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能剖析（perf 命令+典型输出）
 ```cpp
 // Examples/_ch143_perf.cpp
 #include <cmath>
@@ -890,7 +890,7 @@ void hot_work(float* a, const float* b, int n) {
 }
 ```
 
-> **立场标签 [经验]**：`IPC（每周期指令数）< 1` 而 `cache-misses` 占比高 → 八成是**数据布局问题**，优先改 SoA/对齐/分块，而不是去抠微指令。
+> **立场标签 <span class="badge badge-exp">经验</span>**：`IPC（每周期指令数）< 1` 而 `cache-misses` 占比高 → 八成是**数据布局问题**，优先改 SoA/对齐/分块，而不是去抠微指令。
 
 ---
 
@@ -898,7 +898,7 @@ void hot_work(float* a, const float* b, int n) {
 
 并行化 DOD 数组时，**按连续块切分**（而非按对象随机分配），让每线程只碰自己那块连续内存——既免 false sharing，又利于每核的缓存预取。
 
-> **示例 34** [难度 ★★☆☆☆] [主题：与多线程（分块并行）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多线程（分块并行）
 ```cpp
 // Examples/_ch143_parallel.cpp
 #include <thread>
@@ -920,7 +920,7 @@ void chunked(float* a, const float* b, int n, float k, int threads) {
 }
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：与多线程（分块并行）]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多线程（分块并行）
 ```cpp
 #include <vector>
 // 片段：分块 + 对齐隔离，消灭 false sharing（与 ⑬ 呼应）
@@ -936,7 +936,7 @@ std::vector<Worker> workers(threads);   // 每线程独立缓存行
 
 链表、树等**节点随机散布**的结构是 DOD 天敌：每次 `next` 都是一次不可预测的随机内存访问，硬件预取器完全失效，缓存命中率暴跌。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：反模式（指针追踪/链表）]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（指针追踪/链表）
 ```cpp
 // Examples/_ch143_antipattern.cpp
 // ⑯ 反模式：链表逐节点跳转，内存随机散布，预取器几乎失效
@@ -958,13 +958,13 @@ int sum_array(const int* v, int n) {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：反模式（指针追踪/链表）]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（指针追踪/链表）
 ```cpp
 // 片段：用“索引”代替“指针”，数据仍连续（节点数组 + 自由表）
 int next[1024];   // 图/链表逻辑仍在，但内存连续，遍历连续
 ```
 
-> **立场标签 [经验]**：需要“动态增删 + 遍历”的容器，优先选**连续存储 + 交换删除（swap-and-pop）**或 **slot map / 索引句柄**，而非 `list`/`map` 节点链表。
+> **立场标签 <span class="badge badge-exp">经验</span>**：需要“动态增删 + 遍历”的容器，优先选**连续存储 + 交换删除（swap-and-pop）**或 **slot map / 索引句柄**，而非 `list`/`map` 节点链表。
 
 ---
 
@@ -972,7 +972,7 @@ int next[1024];   // 图/链表逻辑仍在，但内存连续，遍历连续
 
 游戏引擎（Unity DOTS、Unreal 的 Mass Entity、id Tech）与物理引擎普遍以 DOD 为内核：刚体、粒子、骨骼全部按列存、按系统批处理。下面是一段**自包含、可运行**的半隐式欧拉积分，对应“对 N 个刚体做同一积分”的真实物理内核。
 
-> **示例 38** [难度 ★★☆☆☆] [主题：真实案例（游戏引擎/物理，上游参考）]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例（游戏引擎/物理，上游参考）
 ```cpp
 // Examples/_ch143_case.cpp
 #include <vector>
@@ -1015,7 +1015,7 @@ int main() {
 
 真实运行输出：`after step: x0=0.000000 y0=0.000000`（50 万刚体单步积分，一次连续扫描完成）。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：真实案例（游戏引擎/物理，上游参考）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例（游戏引擎/物理，上游参考）
 ```cpp
 // 片段：ECS 化——把“受力”也拆成一列系统，逐列批处理
 void apply_gravity(int n, float dt) {
@@ -1031,7 +1031,7 @@ void apply_gravity(int n, float dt) {
 
 NUMA（非统一内存访问）下，内存被划分到不同 CPU 插槽（node），**访问“远端”内存比“本地”慢数倍**。DOD 的应对：让数据在“将要访问它的线程所在 node”上**首次分配（first-touch）**，并保持连续分块以贴合本地内存。
 
-> **示例 40** [难度 ★★☆☆☆] [主题：与现代硬件（NUMA）]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与现代硬件（NUMA）
 ```cpp
 // Examples/_ch143_numa.cpp
 #include <thread>
@@ -1067,7 +1067,7 @@ int main() {
 
 真实运行输出：`NUMA-local sum = 1000000.0`。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：与现代硬件（NUMA）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与现代硬件（NUMA）
 ```cpp
 // 片段：NUMA 首触分配——在目标线程内首次写入，使页落到本地 node
 alignas(64) float big[1<<20];   // 由绑定到 node0 的线程首次写入 -> 落 node0
@@ -1081,7 +1081,7 @@ alignas(64) float big[1<<20];   // 由绑定到 node0 的线程首次写入 -> �
 
 衡量 DOD 收益要靠**可重复基准**。工业界首选 Google Benchmark（微基准框架），可输出均值/离群/自适应迭代。下面是其**真实 API 骨架**（需链接 `benchmark` 库，非自包含，故标注为上游参考）：
 
-> **示例 42** [难度 ★★☆☆☆] [主题：与 C++ 工具]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 工具
 ```cpp
 // 片段（需链接 Google Benchmark）：真实 API，非本机编译产物
 #include <benchmark/benchmark.h>
@@ -1106,7 +1106,7 @@ BENCHMARK_MAIN();
 
 典型输出（示意，非本机实测）：
 
-> **示例 43** [难度 ★★☆☆☆] [主题：与 C++ 工具]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 工具
 ```
 ------------------------------------------------------------------
 Benchmark                        Time             CPU   Iterations
@@ -1117,7 +1117,7 @@ BM_SoA                        28.7 ns         28.5 ns       2400000
 
 若不想引第三方库，可用 `std::chrono` 自写计时器（如 ⑤ 的写法），关键是**消费结果**避免被优化，并**多轮取中位**。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：与 C++ 工具]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 工具
 ```cpp
 // 片段：零依赖计时器模板
 #include <chrono>
@@ -1129,7 +1129,7 @@ template <class F> double time_it(F f, int reps) {
 }
 ```
 
-> **立场标签 [经验]**：基准里务必用 `benchmark::DoNotOptimize` / 打印结果来“消费”被测值；否则编译器会把整个循环删掉（本章 ⑤/⑬ 的初版就踩过这个坑）。
+> **立场标签 <span class="badge badge-exp">经验</span>**：基准里务必用 `benchmark::DoNotOptimize` / 打印结果来“消费”被测值；否则编译器会把整个循环删掉（本章 ⑤/⑬ 的初版就踩过这个坑）。
 
 ---
 
@@ -1138,20 +1138,20 @@ template <class F> double time_it(F f, int reps) {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：AoS → SoA 提升 SIMD/缓存效率。** 你重构粒子系统。请说明布局保证。
-   - [标准] 成员布局含填充（[class.mem]）；把同字段聚成数组（[dcl.array] 连续）提高打包密度。
-   - [引用] ISO/IEC 14882:2023 §[class.mem]（填充）/ [dcl.array]（连续）；cppreference "Data-oriented design" 词条。
+   - <span class="badge badge-std">标准</span> 成员布局含填充（[class.mem]）；把同字段聚成数组（[dcl.array] 连续）提高打包密度。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.mem]（填充）/ [dcl.array]（连续）；cppreference "Data-oriented design" 词条。
 
 2. **真实场景：用 `alignas` 消除 false sharing。** 你给每线程数据独立缓存行。请说明。
-   - [标准] `alignas` 可要求强于自然对齐的字节对齐（如 64 字节），隔离 false sharing。
-   - [引用] ISO/IEC 14882:2023 §[dcl.align]（alignas）/ [basic.align]；cppreference "alignas" 词条。
+   - <span class="badge badge-std">标准</span> `alignas` 可要求强于自然对齐的字节对齐（如 64 字节），隔离 false sharing。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.align]（alignas）/ [basic.align]；cppreference "alignas" 词条。
 
 3. **真实场景：冷/热数据分离减少缓存占用。** 你重排结构体成员。请说明。
-   - [标准] 语言层只保证成员连续与实现定义填充；冷热分离是工程优化，减少活跃工作集。
-   - [引用] ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
+   - <span class="badge badge-std">标准</span> 语言层只保证成员连续与实现定义填充；冷热分离是工程优化，减少活跃工作集。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
 
 DOD 不是银弹，而是**在“每帧遍历海量同质数据”的热路径上换取缓存与指令效率**的纪律。一页速记：
 
-> **示例 45** [难度 ★★★☆☆] [主题：小结]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 小结
 ```
 ┌───────────────────┬────────────────────────────────────────────┐
 │ 原则              │ 落地手段                                   │
@@ -1166,14 +1166,14 @@ DOD 不是银弹，而是**在“每帧遍历海量同质数据”的热路径�
 └───────────────────┴────────────────────────────────────────────┘
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：小结]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 小结
 ```cpp
 #include <vector>
 // 片段：DOD 处方速记——连续、同质、批处理、零虚函数、对齐、隔离
 struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量化
 ```
 
-> **立场标签 [标准]**：DOD 与 OOP 互补而非互斥——把抽象留在边界，把数据布局压进内核。能用 `std::vector` 连续列表达、能用 `__restrict` 去掉别名、能用 `alignas` 对齐、能用分块并行消除 false sharing 的代码，才是现代 C++ 性能工程的真正基线。
+> **立场标签 <span class="badge badge-std">标准</span>**：DOD 与 OOP 互补而非互斥——把抽象留在边界，把数据布局压进内核。能用 `std::vector` 连续列表达、能用 `__restrict` 去掉别名、能用 `alignas` 对齐、能用分块并行消除 false sharing 的代码，才是现代 C++ 性能工程的真正基线。
 
 **本章取证产物清单**：`Examples/_ch143_*.cpp`（20 个可编译源）+ 配套 `.asm`（`aos_loop`/`soa_loop`/`novirtual`/`constexpr`/`consteval`/`simd`/`simd_O3fm`/`align`），以及 `AoS/SoA`、`false-sharing` 两组 `std::chrono` 真实计时、`align` 的 `sizeof/alignof` 真实输出，主要来自 GCC 13.1.0（`-std=c++23`）；其中 `align` 节取证已统一至 GCC 15.3.0（见 ⑫），`novirtual` 节因示例依赖 13.1.0 代码生成保留为 13.1.0 证据，未编造。
 
@@ -1230,7 +1230,7 @@ DOD（面向数据设计）以「内存布局服务缓存与 SIMD」榨干吞吐
 |---|---|---|---|---|
 | 游戏 / 物理 / 量化 | Unity DOTS / Unreal 批量系统 / Havok / Bullet / HFT·量化 / 科学仿真 / 粒子系统 | 海量同类数据 + 批量处理 靠 DOD 榨缓存 | 吞吐敏感领域标配 | SoA 做 SIMD 友好计算 |
 | 游戏落地 | ECS（第142章） | DOD 在游戏领域的典型落地 | 引擎主流 | ECS 是 DOD 的具象 |
-| 高频金融 | LMAX Disruptor（缓存行填充 + 单写者环形缓冲） | 交易路径延迟压到微秒级 | 低延迟框架沿用其思路 | [轶] DOD 思想压延迟 |
+| 高频金融 | LMAX Disruptor（缓存行填充 + 单写者环形缓冲） | 交易路径延迟压到微秒级 | 低延迟框架沿用其思路 | <span class="badge badge-anecdote">轶</span> DOD 思想压延迟 |
 | 数据库 | RocksDB `BlockBasedTable` + `Arena`（连续块 + 对齐布局） | 减少缓存未命中 | 工业级存储引擎 | 见 rocksdb.org；DOD 在存储的落地 |
 
 > **表注（㉒.2）**：上表前 2 行是「DOD 在游戏/引擎里的主战场」，后 2 行是「在高频金融与存储引擎里用连续布局/对齐/缓存行填充减少未命中」；DOD 的代价是数据布局与访问代码耦合更紧，改结构成本高。
@@ -1332,7 +1332,7 @@ DOD 不是反对 OOP 的教条，而是硬件演化逼出来的方法论——�
 
 使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
 
-> **示例 47** [难度 ★★☆☆☆] [主题：重构建议]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 重构建议
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1341,7 +1341,7 @@ const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
 int main() { std::cout << max_safe(3, 7) << '\n'; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+<span class="badge badge-std">标准</span> 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
 </details>
 
@@ -1350,7 +1350,7 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 DOD 的第一课是把“对象数组（AoS）”重排为“数组的结构（SoA）”，让同类字段在内存中连续，
 遍历时一次性喂饱缓存行。请把学生成绩从 AoS 重构为 SoA，并求平均分。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1371,7 +1371,7 @@ int main() {
 }
 ```
 
-[标准] AoS 遍历某个字段时，相邻元素间隔 = sizeof(Student)，每读一个字段就跨过一个对象大小的空洞；
+<span class="badge badge-std">标准</span> AoS 遍历某个字段时，相邻元素间隔 = sizeof(Student)，每读一个字段就跨过一个对象大小的空洞；
 SoA 把同字段聚在一起，顺序遍历的缓存命中率显著提升（关联 ④ SoA vs AoS）。
 
 ### 练习 2（难度 ★★★）
@@ -1379,7 +1379,7 @@ SoA 把同字段聚在一起，顺序遍历的缓存命中率显著提升（关�
 两个线程各写一个独立计数器，若它们落在同一缓存行（64 B），CPU 会不停地让对方缓存行失效（false sharing），
 吞吐骤降。请用 `alignas(64)` 让每个计数器独占一个缓存行，并用 `alignof` 取证对齐生效。
 
-> **示例 49** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -1401,7 +1401,7 @@ int main() {
 }
 ```
 
-[标准] `alignas(64)` 把字段推到独立缓存行，消除核间无效化风暴；多线程计数/状态标志务必警惕 false sharing
+<span class="badge badge-std">标准</span> `alignas(64)` 把字段推到独立缓存行，消除核间无效化风暴；多线程计数/状态标志务必警惕 false sharing
 （关联 ⑬ false sharing / ⑫ alignas）。`std::uintptr_t` 来自 `<cstdint>`，取地址低 6 位可看是否同缓存行。
 
 ### 练习 3（难度 ★★★★）
@@ -1409,7 +1409,7 @@ int main() {
 在 ECS/物理引擎里，组件以 SoA 存储；对全部实体的同一字段做“批量变换”时，连续内存让编译器更容易自动向量化。
 请对一组成员的 x 坐标统一施加位移（translation），体会 SoA 上“结构化的批处理”为何 SIMD 友好。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1429,7 +1429,7 @@ int main() {
 }
 ```
 
-[标准] SoA 上“对单一字段的循环”是编译器向量化的理想形态：内存连续、步长固定、无别名歧义；
+<span class="badge badge-std">标准</span> SoA 上“对单一字段的循环”是编译器向量化的理想形态：内存连续、步长固定、无别名歧义；
 这正是 DOD 把“数据布局”置于“抽象”之上的原因（关联 ⑦ 批处理与 SIMD 友好 / ⑧ ECS）。
 
 ## 附录：用法演绎（从选型到落地）
@@ -1442,7 +1442,7 @@ int main() {
 **错误**：AoS 下更新 `pos += vel*dt` 每次都要跨 `sizeof(Particle)` 跳跃，缓存行被大量无关字段（life 等）稀释。
 **落地**：
 
-> **示例 51** [难度 ★★☆☆☆] [主题：演绎 1：粒子系统 AoS→SoA—]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：粒子系统 AoS→SoA—
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1471,7 +1471,7 @@ int main() {
 **选型**：实体只是整数 id；每个组件类型是一个 SoA 数组，用 id 索引。
 **落地**：
 
-> **示例 52** [难度 ★★☆☆☆] [主题：演绎 2：ECS 组件存储本质就是 ]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：ECS 组件存储本质就是
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1642,7 +1642,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 53** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1768,7 +1768,7 @@ call    _ZdlPvy
 
 AoS 把每个实体的所有字段连续存放（`struct Particle { float x,y,vx,vy; }; Particle ps[N];`），遍历时即便只用到 `x`，也会把 `y/vx/vy` 一起载入缓存行，浪费带宽、压低命中率。SoA 把同类字段集中存放（`float xs[N], ys[N], ...;`），只遍历 `xs` 时缓存行里全是有效 `x`，缓存利用率最高。当结构体较大、且热点只碰少数字段时，SoA 的缓存友好度显著优于 AoS——这正是 ch143 ⑤ 基准量化出的差距来源。
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1784,9 +1784,9 @@ int main() {
 }
 ```
 
-[标准] 对象布局（layout）由非静态数据成员声明顺序决定；缓存行（典型 64B）是硬件预取与命中率的基本单位，数据布局直接决定两者。
+<span class="badge badge-std">标准</span> 对象布局（layout）由非静态数据成员声明顺序决定；缓存行（典型 64B）是硬件预取与命中率的基本单位，数据布局直接决定两者。
 
-[引用] 数据导向设计（DOD）见 Mike Acton「Data-Oriented Design」演讲与 Unity DOTS 文档（unity.com）；对象布局规则见 ISO/IEC 14882:2023 `[class.mem]` 与 cppreference「Data members」；ch143 ⑤ 给出 AoS/SoA 的真实基准。
+<span class="badge badge-ref">引用</span> 数据导向设计（DOD）见 Mike Acton「Data-Oriented Design」演讲与 Unity DOTS 文档（unity.com）；对象布局规则见 ISO/IEC 14882:2023 `[class.mem]` 与 cppreference「Data members」；ch143 ⑤ 给出 AoS/SoA 的真实基准。
 
 </details>
 
@@ -1798,7 +1798,7 @@ int main() {
 
 把热字段 `hit` 抽成独立数组，冷字段 `Cold` 单独成组，使热路径遍历的数组元素更小、一个缓存行容纳更多热字段：
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1818,9 +1818,9 @@ int main() {
 
 热数组 `hits` 每个元素仅 4B，一个 64B 缓存行装 16 个热字段，命中率与带宽利用率远高于「热冷同体」；若多线程各自遍历不同 `hits` 区间且按缓存行对齐（`alignas(64)`），还能消除 False Sharing（见 ch154）。
 
-[标准] 成员布局影响对象大小与缓存行为；数据导向设计按「访问模式」而非「实体」组织内存。
+<span class="badge badge-std">标准</span> 成员布局影响对象大小与缓存行为；数据导向设计按「访问模式」而非「实体」组织内存。
 
-[引用] 冷热分离与缓存利用率见 Tony Albrecht「Pitfalls of Object-Oriented Programming」（Sony 技术报告）；False Sharing 的 `alignas(64)` 隔离见 ch143 ⑬ 与 ch143 ⑯ 反模式；ISO 对齐规则见 `[expr.align]` 与 cppreference `alignas`。
+<span class="badge badge-ref">引用</span> 冷热分离与缓存利用率见 Tony Albrecht「Pitfalls of Object-Oriented Programming」（Sony 技术报告）；False Sharing 的 `alignas(64)` 隔离见 ch143 ⑬ 与 ch143 ⑯ 反模式；ISO 对齐规则见 `[expr.align]` 与 cppreference `alignas`。
 
 </details>
 

@@ -1028,7 +1028,7 @@ static void BM_DynamicDown(benchmark::State& s){
 BENCHMARK(BM_VirtualCall); BENCHMARK(BM_StaticDown); BENCHMARK(BM_DynamicDown);
 ```
 
-**量级表（每迭代，[实测] 本机 `std::chrono` 1×10⁸ 次）**：
+**量级表（每迭代，<span class="badge badge-measured">实测</span> 本机 `std::chrono` 1×10⁸ 次）**：
 
 | 操作 | 每迭代延迟 | 说明 |
 |------|-----------|------|
@@ -1092,7 +1092,7 @@ static void BM_Reinterpret(benchmark::State& s){
 BENCHMARK(BM_BitCast); BENCHMARK(BM_Memcpy); BENCHMARK(BM_Reinterpret);
 ```
 
-**量级表（每迭代，[实测] 量级，三者在 `-O2` 下均折叠为单条 `mov`，不可区分）**：
+**量级表（每迭代，<span class="badge badge-measured">实测</span> 量级，三者在 `-O2` 下均折叠为单条 `mov`，不可区分）**：
 
 | 方式 | 每迭代 | 说明 |
 |------|--------|------|
@@ -1135,7 +1135,7 @@ main
       └─ 遍历基类链，无匹配 → return nullptr
 ```
 
-### 11.3 汇编示意（[实测] GCC 15.3.0 `-O2`，x86-64 AT&T）
+### 11.3 汇编示意（<span class="badge badge-measured">实测</span> GCC 15.3.0 `-O2`，x86-64 AT&T）
 
 `static_cast` 下行（多继承 this 调整）生成**编译期常数偏移**（本机实测：`Most:Base(vptr-only),Right` → `mov 0x8(%rcx),%rax`，偏移 `0x0008` = `sizeof(Base)`）：
 ```asm
@@ -1753,15 +1753,15 @@ int main() {
 
 1. **真实场景：const_cast 去 const 访问硬件寄存器。** 只读映射寄存器需通过 const 引用读，偶尔写。请说明 const_cast 边界与 UB 条件。
    - <span class="badge badge-std">标准</span> 通过 const_cast 去掉 const 后修改原对象（若其本非 const）合法；若原对象为 const 则行为未定义。
-   - [引用] ISO/IEC 14882:2023 §[expr.const.cast]；cppreference "const_cast" 词条。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.const.cast]；cppreference "const_cast" 词条。
 
 2. **真实场景：dynamic_cast 多态下行。** 从 `Base&` 安全转 `Derived*`。请说明 RTTI 依赖与失败返回。
    - <span class="badge badge-std">标准</span> 对多态类型 `dynamic_cast` 在运行期检查，指针转换失败返回 nullptr，引用转换失败抛 `std::bad_cast`。
-   - [引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]；cppreference "dynamic_cast" 词条。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.dynamic.cast]；cppreference "dynamic_cast" 词条。
 
 3. **真实场景：reinterpret_cast 与序列化。** 将对象字节解释为整数/反向。请警示其实现定义与严格别名风险。
    - <span class="badge badge-std">标准</span> reinterpret_cast 大多为实现定义；跨类型别名受严格别名规则约束。
-   - [引用] ISO/IEC 14882:2023 §[expr.reinterpret.cast] / [basic.lval]（严格别名）；cppreference "reinterpret_cast" 词条。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.reinterpret.cast] / [basic.lval]（严格别名）；cppreference "reinterpret_cast" 词条。
 
 **转型安全审计清单（Code Review 必查）<span class="badge badge-exp">经验</span>**
 1. 任何 C 风格 `(T)expr` 一律标记 `-Wold-style-cast` 报警并消除（见 §⑰ 最佳实践第 12 条）。
@@ -2008,7 +2008,7 @@ double e = static_cast<double>(b); // 7.0, 保真
 
 <span class="badge badge-std">标准</span> `static_cast` 执行良定义的数值转换；窄化转换在列表初始化 `{ }` 中被禁止，但在 `static_cast` 中允许（仅警告）。
 
-[引用] ISO/IEC 14882:2023 §[expr.static.cast]（static_cast 执行良定义数值转换；窄化在列表初始化中禁止、在 static_cast 中允许仅警告）；建议开启 `-Wconversion -Wfloat-conversion`。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.static.cast]（static_cast 执行良定义数值转换；窄化在列表初始化中禁止、在 static_cast 中允许仅警告）；建议开启 `-Wconversion -Wfloat-conversion`。
 
 </details>
 
@@ -2031,7 +2031,7 @@ UB 边界：`reinterpret_cast` 得到的指针只有在"该地址确实存在一
 
 <span class="badge badge-std">标准</span> `reinterpret_cast` 转换指针/整数；其结果的可解引用性受"对象模型 + 严格别名"约束，滥用即 UB。
 
-[引用] ISO/IEC 14882:2023 §[expr.reinterpret.cast]（指针/整数互转，结果可解引用性受对象模型与严格别名约束）；访问位模式应改用 C++20 `std::bit_cast`（§[meta.trans.ptr]）或 `memcpy` 以规避严格别名 UB。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.reinterpret.cast]（指针/整数互转，结果可解引用性受对象模型与严格别名约束）；访问位模式应改用 C++20 `std::bit_cast`（§[meta.trans.ptr]）或 `memcpy` 以规避严格别名 UB。
 
 </details>
 
@@ -2057,7 +2057,7 @@ D1* q = dynamic_cast<D1*>(p); // nullptr: p 并不指向 D1 分支
 
 <span class="badge badge-std">标准</span> `dynamic_cast` 对指针在失败时为 `nullptr`、对引用抛 `std::bad_cast`；跨虚继承布局需 RTTI 路径解析。
 
-[引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]/[class.rtti]（dynamic_cast 指针失败返 nullptr、引用抛 std::bad_cast；依赖 RTTI 与 vtable 路径解析）；cppreference "dynamic_cast" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.dynamic.cast]/[class.rtti]（dynamic_cast 指针失败返 nullptr、引用抛 std::bad_cast；依赖 RTTI 与 vtable 路径解析）；cppreference "dynamic_cast" 词条。
 
 </details>
 

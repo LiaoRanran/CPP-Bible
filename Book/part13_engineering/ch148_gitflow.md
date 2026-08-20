@@ -31,15 +31,15 @@
 
 > 紧接 0.2 编年最后一条（2010，Vincent Driessen 发表 Git Flow）。
 
-- [史] GitHub 随后推广更轻量的 **GitHub Flow**（只有 `main` + 短命分支 + PR），以及 Google 倡导的 **trunk-based development**，两者都主张"小批量、高频合入"，与 0.3 里"分支越久合并越痛"的判断一致。
-- [史] Git 在 2.x 引入 **partial clone / sparse-checkout / blobless clone**，直接缓解超大单仓（monorepo）的克隆成本——Chromium、LLVM 这种数十 GB 仓库也能秒级拿到可工作副本，C++ 大型工程的协作瓶颈被削掉一块。
-- [史] Conventional Commits 与 Semantic Versioning 成为事实约定，提交信息（type(scope): summary）与版本号（MAJOR 才允许破坏性）绑定，让"这次改动是否破坏 ABI"在合并前即可被工具推断。
-- [评] 对构建慢、耦合强的 C++ 项目，trunk-based 比重型 Git Flow 更稳：长期分叉在 C++ 里代价尤其高，因为一次大合并常伴随漫长重编与 ABI 对账。
-- [轶] 社区金句："Git Flow 适合按季度发布的产品，trunk-based 适合按分钟发布的团队"——微服务与 CI 成熟后，越来越多 C++ 团队滑向后者。
+- <span class="badge badge-history">史</span> GitHub 随后推广更轻量的 **GitHub Flow**（只有 `main` + 短命分支 + PR），以及 Google 倡导的 **trunk-based development**，两者都主张"小批量、高频合入"，与 0.3 里"分支越久合并越痛"的判断一致。
+- <span class="badge badge-history">史</span> Git 在 2.x 引入 **partial clone / sparse-checkout / blobless clone**，直接缓解超大单仓（monorepo）的克隆成本——Chromium、LLVM 这种数十 GB 仓库也能秒级拿到可工作副本，C++ 大型工程的协作瓶颈被削掉一块。
+- <span class="badge badge-history">史</span> Conventional Commits 与 Semantic Versioning 成为事实约定，提交信息（type(scope): summary）与版本号（MAJOR 才允许破坏性）绑定，让"这次改动是否破坏 ABI"在合并前即可被工具推断。
+- <span class="badge badge-comment">评</span> 对构建慢、耦合强的 C++ 项目，trunk-based 比重型 Git Flow 更稳：长期分叉在 C++ 里代价尤其高，因为一次大合并常伴随漫长重编与 ABI 对账。
+- <span class="badge badge-anecdote">轶</span> 社区金句："Git Flow 适合按季度发布的产品，trunk-based 适合按分钟发布的团队"——微服务与 CI 成熟后，越来越多 C++ 团队滑向后者。
 
 > 史料来源：github.com/git/git（sparse-checkout/partial clone）、trunkbaseddevelopment.com
 
-## ① 概述：版本控制价值 [经验]
+## ① 概述：版本控制价值 <span class="badge badge-exp">经验</span>
 
 [第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)
 [第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
@@ -55,7 +55,7 @@
 
 > 表注（①）：四维度共同把“协作约定”沉淀为可机械验证的流程；可追溯/可审计是后续 bisect 与 CI 的前提。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：版本控制价值 [经验]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：版本控制价值 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ① 版本可追溯性的最小体现：构建产物自带版本与 commit 标识
 // 见 Examples/_ch148_version_macro.cpp
@@ -77,7 +77,7 @@ int main() {
 
 Git 是**内容寻址文件系统**：每个对象由内容做 SHA-1 得到 40 位哈希，哈希即地址。四类对象：`blob`（文件内容）、`tree`（目录）、`commit`、`tag`。工作流围绕“三区”展开：**工作区 → 暂存区（index）→ 版本库（object store）**。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：基础模型]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础模型
 ```cpp
 // ② Git blob 头的二进制布局（源头自 Git 源码 object.c 的对象写入逻辑）
 // 格式固定为： "<type> <size>\0<content>"
@@ -101,7 +101,7 @@ $ printf 'blob 5\0hello' | sha1sum
 b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：基础模型]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础模型
 ```cpp
 // ②' 用自包含 SHA-1 复现上述哈希（不依赖 OpenSSL），编译运行输出见下方
 // 见 Examples/_ch148_git_object.cpp：sha1("blob 5\0hello")
@@ -136,7 +136,7 @@ $ git cat-file -s bfd1bd5ca13df8f54bb59fc6dae90e210c1b9e35
 
 **源码剖析**：Git 对象头的构造与哈希算法可对照上游源码取证（本机无 git 源码时以 URL 引用，不编造行号）。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：基础模型]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 基础模型
 ```cpp
 // 文件：https://github.com/git/git/blob/master/object.c
 // 行号：约 240（type_from_string / 对象头写入附近）
@@ -159,7 +159,7 @@ $ git cat-file -s bfd1bd5ca13df8f54bb59fc6dae90e210c1b9e35
 | GitHub Flow | 仅 `main` + 短命特性分支 | 持续部署的 Web 服务 | 不适合多版本并行维护 |
 | Trunk-Based | 单 `main` + 极短分支/直接提交 | 高频集成、CI 强 | 对测试与评审要求极高 |
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：分支策略]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分支策略
 ```cpp
 // ③ 用枚举把“策略选择”固化进构建/工具链，避免口头约定漂移
 enum class BranchStrategy { kGitFlow, kGitHubFlow, kTrunkBased };
@@ -174,7 +174,7 @@ const char* to_string(BranchStrategy s) {
 }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：分支策略]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分支策略
 ```cpp
 // ③' 分支命名约定（在 CI 中校验分支名是否符合策略）
 #include <regex>
@@ -190,9 +190,9 @@ bool is_valid_feature_branch(const std::string& name) {
 
 ## ④ 提交原子性
 
-**[经验]** 一个提交应当是一个**逻辑上不可分割的变更单元**：自包含、可独立编译、可独立回退。把“重构 + 新功能 + 格式化”塞进一个提交，会让 `bisect`、`revert`、`code review` 全部失效。
+**<span class="badge badge-exp">经验</span>** 一个提交应当是一个**逻辑上不可分割的变更单元**：自包含、可独立编译、可独立回退。把“重构 + 新功能 + 格式化”塞进一个提交，会让 `bisect`、`revert`、`code review` 全部失效。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：提交原子性]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 提交原子性
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -209,7 +209,7 @@ void fill(Buffer& b, int value, size_t count) {    // 提交 B：只改实现
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：提交原子性]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提交原子性
 ```cpp
 // ④' 用 git 命令把一次大改动按文件/函数逻辑拆分（示意）
 //   git add -p      交互式暂存“此提交的语义块”
@@ -223,7 +223,7 @@ void fill(Buffer& b, int value, size_t count) {    // 提交 B：只改实现
 
 `Conventional Commits`（`[标准]` 参照 conventionalcommits.org）统一格式：`<type>(<scope>): <subject>`，可选 `!` 表示破坏性变更。它让 `git log`、自动生成 CHANGELOG、`semver` 升级都变得可机械处理。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：提交信息规范]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 提交信息规范
 ```cpp
 // ⑤ 解析 Conventional Commits 的提交信息（完整见 Examples/_ch148_conventional_commit.cpp）
 #include <regex>
@@ -279,7 +279,7 @@ $ git log --oneline --graph --decorate -n 8
 * 4795c99 c1: base
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：用 git log --graph ]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 用 git log --graph
 ```cpp
 // ⑥ 通过配置统一团队默认整合方式，避免每个人手滑
 //   git config --add merge.ff false        # 总是产生 merge commit
@@ -291,7 +291,7 @@ const char* integration_policy(bool pull_rebase) {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：用 git log --graph ]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 git log --graph
 ```cpp
 // ⑥' 三路合并的“基准/两边”概念映射到 C++ 差分工具参数
 struct MergeSides { const char* base; const char* ours; const char* theirs; };
@@ -323,7 +323,7 @@ $ git reset --hard 686ee10          # 恢复！
 686ee10
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：变基危险与恢复（reflog）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 变基危险与恢复（reflog）
 ```cpp
 // ⑦ 把 reflog 当作“时光机索引”：解析 reflog 行，定位被丢弃的提交
 #include <string>
@@ -342,7 +342,7 @@ std::string_view extract_ref(const std::string& line) {
 
 标签是发布快照。轻量标签只是指针，附注标签（`-a`）自带作者/说明，发布必须用附注标签。版本号遵循 `[标准]` Semantic Versioning `MAJOR.MINOR.PATCH`。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：与版本号（语义化版本）]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与版本号（语义化版本）
 ```cpp
 // ⑧ 语义化版本宏（完整见 Examples/_ch148_version_macro.cpp）
 #define MAJOR 2
@@ -359,7 +359,7 @@ $ ./_ch148_version_macro
 version=v2.4.1 commit=na
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：与版本号（语义化版本）]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与版本号（语义化版本）
 ```cpp
 // ⑧' 在代码里比较 semver（供工具链判断升级兼容性）
 #include <tuple>
@@ -389,7 +389,7 @@ $ git submodule status
  0b13025a521513b8133a619286ade4ba5319acda libs/mathlib (heads/main)
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：子模块与 monorepo]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 子模块与 monorepo
 ```cpp
 // ⑨ 在宿主项目中直接包含子模块提供的头（子模块即一份 pinned 依赖）
 // #include "libs/mathlib/mathlib.h"
@@ -397,7 +397,7 @@ $ git submodule status
 extern int math_add(int a, int b);   // 来自 libs/mathlib
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：子模块与 monorepo]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 子模块与 monorepo
 ```cpp
 // ⑨' 解析 submodule 状态行的首字符：' '=已同步 '+'=未初始化 '-'=缺
 #include <string_view>
@@ -412,7 +412,7 @@ bool submodule_in_sync(std::string_view status_line) {
 
 钩子是放在 `.git/hooks/` 下的可执行脚本，在特定 Git 动作前后触发。C++ 工程最常用 `pre-commit`（拦住坏提交）与 `commit-msg`（校验提交规范）。
 
-> **示例 17** [难度 ★★☆☆☆] [主题：钩子]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 钩子
 ```cpp
 // ⑩ pre-commit 调用的 C++ 检查器核心（完整见 Examples/_ch148_precommit_lint.cpp）
 // 拒绝：制表符、行尾空白、CRLF。非零退出即阻止提交。
@@ -438,7 +438,7 @@ FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(cpp|h|hpp|
 _ch148_precommit_lint $FILES || { echo "pre-commit: 风格检查未通过" >&2; exit 1; }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：钩子]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 钩子
 ```cpp
 // ⑩' commit-msg 钩子复用 Conventional Commits 解析器（见 Examples/_ch148_conventional_commit.cpp）
 // 拒绝不符合规范的 message：exit 1 即阻止提交，从源头保证日志质量。
@@ -450,7 +450,7 @@ _ch148_precommit_lint $FILES || { echo "pre-commit: 风格检查未通过" >&2; 
 
 `git bisect` 用**二分查找**在 O(log n) 步内定位“首个引入回归的提交”，比人工翻历史快几个数量级。配合 `git bisect run <script>` 可全自动。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：代码归档与 bisect]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代码归档与 bisect
 ```cpp
 // ⑪ 被测程序：answer() 应恒为 42，坏提交把它改成 0（见 Examples/_ch148_bisect_driver.cpp）
 const int ANSWER = 42;
@@ -469,7 +469,7 @@ $ git bisect run ./check.sh
 35a41656ae0f336b3e6031486c3cb1927ec00591 is the first bad commit
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：代码归档与 bisect]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代码归档与 bisect
 ```cpp
 // ⑪' bisect run 的判定脚本本质是一个“黄金测试”：
 //   给定某 commit 的源码能编译且行为正确 -> good(0)，否则 bad(非0)。
@@ -482,7 +482,7 @@ $ git bisect run ./check.sh
 
 冲突发生在“同一文件的同一区域被两边分别修改”。Git 在文件中插入标记：
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：冲突解决]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 冲突解决
 ```cpp
 // ⑫ 冲突时的文件内容（Git 写入的标记）
 <<<<<<< HEAD
@@ -494,7 +494,7 @@ void scheduler::tick() { drain_expired_timers(); }  // 他人的改动
 
 解决即“二选一或融合”，删掉全部标记：
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：冲突解决]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 冲突解决
 ```cpp
 // ⑫' 解决后：融合两边语义
 void scheduler::tick() {
@@ -526,14 +526,14 @@ b.cpp
 # 注：index 仍含 docs/readme.md（被追踪但未检出到工作树）
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：大型仓库]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 大型仓库
 ```cpp
 // ⑬ 部分克隆的参数即“过滤规则”，对应 libgit2/Git 的 filter spec
 enum class CloneFilter { kBlobNone, kTreeNone, kBlobLimit };
 // git clone --filter=blob:none  只下载树与提交，blob 按需懒加载
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：大型仓库]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 大型仓库
 ```cpp
 // ⑬' 稀疏模式下的“路径可见性”查询（概念示意）
 #include <string_view>
@@ -550,7 +550,7 @@ bool is_sparse_visible(std::string_view path, std::string_view pattern) {
 
 不同托管平台在 Git 之上叠加了**协作语义**：Pull/Merge Request、Protected Branch、Required Checks。这些不是 Git 协议本身，而是平台约定。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：平台]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台
 ```cpp
 // ⑭ 平台无关层：用统一抽象封装“创建合并请求”的动作
 struct RemotePlatform { const char* name; const char* mr_endpoint; };
@@ -558,7 +558,7 @@ const RemotePlatform kGitHub = {"github",  "https://api.github.com/repos/<o>/<r>
 const RemotePlatform kGitLab = {"gitlab",  "https://gitlab.com/api/v4/projects/<id>/merge_requests"};
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：平台]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台
 ```cpp
 // ⑭' 读取平台注入的 CI 环境变量（GitHub: GITHUB_REF / GitLab: CI_COMMIT_REF_NAME）
 #include <cstdlib>
@@ -578,7 +578,7 @@ const char* current_branch() {
 
 CI 是 Git 工作流的“自动守门员”：每次 push/PR 触发构建矩阵。本章仅给出触发判定，详细的 CI/CD 流水线设计留待第149章。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：触发（预告 ch149）]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 触发（预告 ch149）
 ```cpp
 // ⑮ 依据分支/标签决定构建目标（逻辑示意，脚本版见 Examples/_ch148_ci_trigger.sh）
 #include <string_view>
@@ -591,7 +591,7 @@ const char* ci_target(std::string_view branch, bool is_tag) {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：触发（预告 ch149）]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 触发（预告 ch149）
 ```cpp
 // ⑮' 构建期把 CI 信息注入版本串，保证“二进制可溯源”
 //   g++ -DGIT_DESCRIBE=\"$(git describe --tags --always)\"
@@ -605,7 +605,7 @@ const char* ci_target(std::string_view branch, bool is_tag) {
 
 发布分支（如 `release/2.4`）从 `main` 切出，只接受热修，禁止新功能混入。发布时打附注标签，标签即不可变发布点。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：发布分支管理]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 发布分支管理
 ```cpp
 // ⑯ 发布头文件自动生成：把 git describe 结果写进版本头
 // 完整见 Examples/_ch148_submodule_version.cpp
@@ -613,7 +613,7 @@ struct Version { int major, minor, patch, distance; char commit[41]; };
 // "v2.4.1-12-gabcdef0" -> major=2 minor=4 patch=1 distance=12 commit=abcdef0
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：发布分支管理]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 发布分支管理
 ```cpp
 // ⑯' 标签校验：发布前确认 HEAD 恰好打在某个附注标签上
 #include <cstdlib>
@@ -650,7 +650,7 @@ Author: FB <f@e.com>
 
 `check.sh` 的本质（C++ 视角）是“黄金测试”：
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 // ⑰ 黄金测试：给定某 commit 的源码，编译运行，断言 answer()==42
 // 见 Examples/_ch148_bisect_driver.cpp
@@ -659,7 +659,7 @@ int answer() { return ANSWER; }
 // check.sh: g++ answer.cpp -o t && ./t | grep -q 42 && exit 0 || exit 1
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 // ⑰' 把本次“坏提交定位”固化为回归测试，防止复发
 //   将该 commit 引入的失败用例加入单元测试集，CI 永久守护。
@@ -673,7 +673,7 @@ int answer() { return ANSWER; }
 
 **反模式一：巨无霸提交**——一次提交包含重构、功能、格式化、依赖升级。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：反模式（大提交/-force）]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（大提交/-force）
 ```cpp
 // ⑱ 反例：一个提交里同时（a）改接口（b）加功能（c）格式化（d）升级依赖
 // ❌ 这种提交无法 bisect、无法 revert、无法 review
@@ -683,7 +683,7 @@ void process(/* 旧签名 */) { /* 旧实现 */ }
 
 **反模式二：强行推送**——`git push --force` 改写已共享历史，会撕裂协作者本地仓库。
 
-> **示例 34** [难度 ★★☆☆☆] [主题：反模式（大提交/-force）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（大提交/-force）
 ```cpp
 // ⑱' 安全替代：--force-with-lease 仅在远端未领先于本地预期时才推送
 //   git push --force-with-lease
@@ -701,7 +701,7 @@ bool try_push_only_if_remote_unchanged(Local expected, Remote actual) {
 
 高频且值得固化为脚本/别名的命令清单（均在本机验证可用）：
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：工具（git 命令取证清单）]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工具（git 命令取证清单）
 ```cpp
 // ⑲ 把常用取证命令收口到一个“工具注册表”，团队统一入口
 #include <initializer_list>
@@ -717,7 +717,7 @@ const GitTool kTools[] = {
 };
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：工具（git 命令取证清单）]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工具（git 命令取证清单）
 ```cpp
 // ⑲' 一键体检：检查当前仓库是否“健康”（示例指标）
 #include <cstdlib>
@@ -744,16 +744,16 @@ git sparse-checkout set <dir># 大仓稀疏检出
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：子模块（submodule）引用的提交未锁定，CI 拉到不同版本编译结果漂移。** 你定位“本地能编远端挂”。请说明（属构建工程）。
-   - [标准] 无直接 C++ 标准对应；版本锁属于依赖管理工程实践，影响可重现构建。
-   - [引用] Git 文档 "Submodules" / C++ Core Guidelines "SF.1"（用工程/构建系统组织代码）；cppreference 通用。
+   - <span class="badge badge-std">标准</span> 无直接 C++ 标准对应；版本锁属于依赖管理工程实践，影响可重现构建。
+   - <span class="badge badge-ref">引用</span> Git 文档 "Submodules" / C++ Core Guidelines "SF.1"（用工程/构建系统组织代码）；cppreference 通用。
 
 2. **真实场景：长生命周期分支合并引发大规模冲突，须重做接口。** 你评估特性开关 vs 长期分支。请说明（属协作工程）。
-   - [标准] 无直接 C++ 标准对应；特性开关（feature flag）可让主干保持可发布，属发布工程。
-   - [引用] M. Fowler《Feature Toggles》/ C++ Core Guidelines "P.8"（不要泄露平台相关细节到接口）；cppreference 通用。
+   - <span class="badge badge-std">标准</span> 无直接 C++ 标准对应；特性开关（feature flag）可让主干保持可发布，属发布工程。
+   - <span class="badge badge-ref">引用</span> M. Fowler《Feature Toggles》/ C++ Core Guidelines "P.8"（不要泄露平台相关细节到接口）；cppreference 通用。
 
 3. **真实场景：提交历史里混入了二进制大文件拖慢 clone。** 你做仓库瘦身决策。请说明（属仓库工程）。
-   - [标准] 无直接 C++ 标准对应；属 VCS 使用规范，与语言无关。
-   - [引用] Git 文档 "git-filter-repo" / Pro Git（仓库维护）；cppreference 通用。
+   - <span class="badge badge-std">标准</span> 无直接 C++ 标准对应；属 VCS 使用规范，与语言无关。
+   - <span class="badge badge-ref">引用</span> Git 文档 "git-filter-repo" / Pro Git（仓库维护）；cppreference 通用。
 
 Git 工作流对 C++ 工程的核心结论：
 
@@ -787,7 +787,7 @@ Git 工作流对 C++ 工程的核心结论：
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：从 BitKeeper 之争到 Git
-[史] 2005 年，因 Linux 内核原先使用的商业版本控制 **BitKeeper** 授权生变，**Linus Torvalds** 用十天写出 Git，目标是"快、分布式、支持巨型历史（内核百万级提交）"。[史] 2008 年 **GitHub** 上线，把 Git 从"命令行工具"变成"基于 Pull Request 的社会化协作平台"，直接催生了现代开源协作模式。[轶] Git 的对象模型（blob/tree/commit 用 SHA-1 寻址）并非 Linus 首创，但"内容寻址 + 不可变历史"被他推向了工程极限，使得 `git bisect` 能在大历史里二分定位首个坏提交（见 ⑰）。
+<span class="badge badge-history">史</span> 2005 年，因 Linux 内核原先使用的商业版本控制 **BitKeeper** 授权生变，**Linus Torvalds** 用十天写出 Git，目标是"快、分布式、支持巨型历史（内核百万级提交）"。<span class="badge badge-history">史</span> 2008 年 **GitHub** 上线，把 Git 从"命令行工具"变成"基于 Pull Request 的社会化协作平台"，直接催生了现代开源协作模式。<span class="badge badge-anecdote">轶</span> Git 的对象模型（blob/tree/commit 用 SHA-1 寻址）并非 Linus 首创，但"内容寻址 + 不可变历史"被他推向了工程极限，使得 `git bisect` 能在大历史里二分定位首个坏提交（见 ⑰）。
 
 ### ㉒.2 真实工程坐标：Git 工作流活在哪些项目里
 
@@ -815,10 +815,10 @@ Git 工作流本质是「分支模型 + 评审合并约定」的组合，随项�
 | 长期分支合并地狱 | 特性分支存活数月，合并冲突爆炸 | 小步合入、频繁 `rebase`/`merge main` |
 | 跨平台行尾（CRLF/LF） | 未配 `.gitattributes * text=auto`，Windows 提交把全文件转 CRLF，制造假 diff 并破坏需精确字节的构建产物 | 统一 LF + `.gitattributes`（C++ 跨平台项目底线） |
 
-> 表注（㉒.3）：四类误用都源于“把本地习惯直接推向共享仓库”——force 改写历史、整仓 clone 浪费带宽、长分支累积冲突、CRLF 制造假 diff；[评] 统一 LF + `.gitattributes` 是 C++ 跨平台项目的底线。
+> 表注（㉒.3）：四类误用都源于“把本地习惯直接推向共享仓库”——force 改写历史、整仓 clone 浪费带宽、长分支累积冲突、CRLF 制造假 diff；<span class="badge badge-comment">评</span> 统一 LF + `.gitattributes` 是 C++ 跨平台项目的底线。
 
 ### ㉒.4 与标准的互动：版本与"标准"工程约定
-Git 本身不在 ISO C++ 标准里，但 C++ 生态的事实工程约定与之深度耦合：**语义化版本（SemVer 2.0.0）** 决定 ABI/API 兼容承诺（见第145章）；**Conventional Commits** 让提交信息可被工具解析、自动生成 changelog 与版本号；`git tag` 与发布分支管理直接对应库的 release 节奏。[评] 版本号不是装饰，而是"我保证不改 ABI"的契约。
+Git 本身不在 ISO C++ 标准里，但 C++ 生态的事实工程约定与之深度耦合：**语义化版本（SemVer 2.0.0）** 决定 ABI/API 兼容承诺（见第145章）；**Conventional Commits** 让提交信息可被工具解析、自动生成 changelog 与版本号；`git tag` 与发布分支管理直接对应库的 release 节奏。<span class="badge badge-comment">评</span> 版本号不是装饰，而是"我保证不改 ABI"的契约。
 
 **修订链补强（工程约定与“标准”）**：Git 本身不入 ISO C++，但 C++ 生态的发布契约高度依赖事实标准：[SemVer 2.0.0](https://semver.org/) 规定 MAJOR.MINOR.PATCH 的 ABI/API 兼容语义；[Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) 让提交信息机器可解析、驱动 changelog 与自动版本号；CMake 的 `find_package`/语义化版本约束、vcpkg/Conan 的版本决议都建立在这套约定之上。C++ 的包管理仍无官方标准，SemVer 因此成为跨编译器/跨平台的底线契约。
 
@@ -842,7 +842,7 @@ Git 本身不在 ISO C++ 标准里，但 C++ 生态的事实工程约定与之�
 | Boost | 模块独立仓库 | 库级别 | `git submodule` | 每个库独立 repo，superproject 聚合 |
 | Qt | 发布分支 | 功能分支 | `git cherry-pick` | 严格 backport 策略，commit 模板 |
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录 A：C++ 大型项目的 Git]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：C++ 大型项目的 Git
 ```cpp
 #include <iostream>
 int main() {
@@ -856,7 +856,7 @@ int main() {
 
 ## 附录 B：C++ 项目 Git 反模式 [H: Design / I: Practice]
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录 B：C++ 项目 Git 反模]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B：C++ 项目 Git 反模
 ```
 反模式1: 提交编译产物（.o, .a, .exe, build/）
   → 解决方案: .gitignore 中明确排除，CMake 使用 out-of-source build
@@ -874,7 +874,7 @@ int main() {
   → 解决方案: Git Flow 模型，release 分支仅从 develop 分出，仅修 bug
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录 B：C++ 项目 Git 反模]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：C++ 项目 Git 反模
 ```cpp
 #include <iostream>
 // C++ 特有的 git 问题：头文件依赖导致冲突放大
@@ -891,7 +891,7 @@ int main() {
 
 ## 附录 C：CMake + Git 集成模式 [F: Industry]
 
-> **示例 40** [难度 ★★☆☆☆] [主题：附录 C：CMake + Git 集]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：CMake + Git 集
 ```cpp
 #include <iostream>
 int main() {
@@ -911,7 +911,7 @@ int main() {
 
 ## 附录 D：Git 与 C++ CI/CD 管道 [B: Principle / H: Design]
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录 D：Git 与 C++ CI/]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：Git 与 C++ CI/
 ```
 标准 C++ 项目的 Git + CI 管道（以 LLVM 为参考）:
 
@@ -932,7 +932,7 @@ post-merge (CI post-submit):
   package + deploy → CPack / Conan upload
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录 D：Git 与 C++ CI/]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：Git 与 C++ CI/
 ```cpp
 #include <iostream>
 int main() {
@@ -949,7 +949,7 @@ int main() {
 
 ## 附录 E：Git与C++标准库/构建系统的集成 [D: stdlib / B: Principle / J: Learning]
 
-> **示例 43** [难度 ★★☆☆☆] [主题：附录 E：Git与C++标准库/构建]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：Git与C++标准库/构建
 ```
 WG21与Git的关系: 无直接关系, 但C++标准库的发布周期与Git工作流强相关
 - libstdc++: GCC仓库子目录, 跟随GCC发布 (git clone gcc.gnu.org/git/gcc.git)
@@ -1064,9 +1064,9 @@ git commit -m "feat(cache): add LRU order cache to cut p99 latency"
 git checkout main && git merge --no-ff feat/order-cache
 ```
 
-[标准] 特性分支隔离未完成工作、主干保持可发布；Conventional Commits 的 `type(scope): description` 让提交可机器解析，「feat」进 minor、「fix」进 patch，自动生成变更日志。
+<span class="badge badge-std">标准</span> 特性分支隔离未完成工作、主干保持可发布；Conventional Commits 的 `type(scope): description` 让提交可机器解析，「feat」进 minor、「fix」进 patch，自动生成变更日志。
 
-[引用] 分支策略见 Git Flow（nvie.com 原始博文）与 GitHub Flow（docs.github.com）；Conventional Commits 规范见 conventionalcommits.org；ch148 ③、⑤ 详述分支策略与提交信息规范。
+<span class="badge badge-ref">引用</span> 分支策略见 Git Flow（nvie.com 原始博文）与 GitHub Flow（docs.github.com）；Conventional Commits 规范见 conventionalcommits.org；ch148 ③、⑤ 详述分支策略与提交信息规范。
 
 </details>
 
@@ -1084,9 +1084,9 @@ git bisect good v1.2          # 已知好的历史标签
 git bisect run ./bench.sh     # 每步自动编译+跑基准，返回 0/1 决定好坏
 ```
 
-[标准] `git bisect` 利用「有序的提交历史 + 可判定好坏的脚本」做对数级二分，把 O(N) 人工排查降到 O(log N)；把基准脚本交给 `bisect run` 可无人值守定位。
+<span class="badge badge-std">标准</span> `git bisect` 利用「有序的提交历史 + 可判定好坏的脚本」做对数级二分，把 O(N) 人工排查降到 O(log N)；把基准脚本交给 `bisect run` 可无人值守定位。
 
-[引用] `git bisect` 见 Git 官方文档（git-scm.com/docs/git-bisect）；ch148 ⑪ 给出 `git bisect` 命令与典型输出；联动见 ch151 基准与 ch149 CI 门禁。
+<span class="badge badge-ref">引用</span> `git bisect` 见 Git 官方文档（git-scm.com/docs/git-bisect）；ch148 ⑪ 给出 `git bisect` 命令与典型输出；联动见 ch151 基准与 ch149 CI 门禁。
 
 </details>
 
@@ -1103,9 +1103,9 @@ cd work
 git sparse-checkout set libs/order services/api
 ```
 
-[标准] `--depth 1` 只取最新提交、省略历史；`--filter` 与 `sparse-checkout` 按需拉取文件/目录，CI 检出从「全量」变为「本次所需」，时间随仓库增长仍接近常数。
+<span class="badge badge-std">标准</span> `--depth 1` 只取最新提交、省略历史；`--filter` 与 `sparse-checkout` 按需拉取文件/目录，CI 检出从「全量」变为「本次所需」，时间随仓库增长仍接近常数。
 
-[引用] shallow clone 与 sparse-checkout 见 Git 官方文档（git-scm.com/docs）；大型仓库实践见 Microsoft（Windows 单体仓库）与 Google 的工程博客；ch148 ⑨、⑬ 详述子模块 / monorepo 与 sparse checkout。
+<span class="badge badge-ref">引用</span> shallow clone 与 sparse-checkout 见 Git 官方文档（git-scm.com/docs）；大型仓库实践见 Microsoft（Windows 单体仓库）与 Google 的工程博客；ch148 ⑨、⑬ 详述子模块 / monorepo 与 sparse checkout。
 
 </details>
 

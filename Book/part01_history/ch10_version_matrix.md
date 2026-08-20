@@ -13,23 +13,23 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-随着 C++ 从 98 一路走到 23/26，特性越积越多，程序员面临一个现实难题：**我的代码在 `-std=c++17` 下能用吗？这个特性哪版才有？迁移会踩什么坑？**[评] 没有一份权威对照，升级就是赌博。于是"版本特性全景表 + 迁移指南"成为每本现代 C++ 书的标配，它把分散在各版标准里的增量，压成一张可一眼扫完的清单。其动机不是学术，而是**降低升级恐惧**。[评]
+随着 C++ 从 98 一路走到 23/26，特性越积越多，程序员面临一个现实难题：**我的代码在 `-std=c++17` 下能用吗？这个特性哪版才有？迁移会踩什么坑？**<span class="badge badge-comment">评</span> 没有一份权威对照，升级就是赌博。于是"版本特性全景表 + 迁移指南"成为每本现代 C++ 书的标配，它把分散在各版标准里的增量，压成一张可一眼扫完的清单。其动机不是学术，而是**降低升级恐惧**。<span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
 
-- 自 **C++98/03** 起步，经 **C++11** 大爆发，到 **C++14/17/20/23** 的三年节奏，再到 **C++26** 草案，每版都需被归档对照。[史]
-- 编译器宏 `__cplusplus` 与各特性测试宏（`__cpp_*`）成为表中"可机检"的锚点。[史]
+- 自 **C++98/03** 起步，经 **C++11** 大爆发，到 **C++14/17/20/23** 的三年节奏，再到 **C++26** 草案，每版都需被归档对照。<span class="badge badge-history">史</span>
+- 编译器宏 `__cplusplus` 与各特性测试宏（`__cpp_*`）成为表中"可机检"的锚点。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-对照表背后藏着一条规矩之争：**标准该不该保证 ABI 稳定**。C++ 长期承诺"源码级兼容"却不承诺"二进制兼容"，于是同一标准版在不同编译器/不同版本间仍可能链不通。[史][评] 这迫使迁移指南必须同时标注"语言特性"与"工具链现实"。对比 Rust 的 Cargo 与语义化版本，C++ 的迁移始终更依赖人手对照——这张表正是对"无中央包管理与 ABI 漂移"的补偿。[评]
+对照表背后藏着一条规矩之争：**标准该不该保证 ABI 稳定**。C++ 长期承诺"源码级兼容"却不承诺"二进制兼容"，于是同一标准版在不同编译器/不同版本间仍可能链不通。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 这迫使迁移指南必须同时标注"语言特性"与"工具链现实"。对比 Rust 的 Cargo 与语义化版本，C++ 的迁移始终更依赖人手对照——这张表正是对"无中央包管理与 ABI 漂移"的补偿。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] `__cpp_*` 特性测试宏随每个新标准持续扩充（如 `__cpp_concepts`、`__cpp_modules`、`__cpp_expected`），成为跨编译器"可机检"地判断某特性是否可用的唯一可靠锚点，取代依赖 `__cplusplus` 的粗略判断。
-- [史] ABI 稳定性争议长期未解：GCC 5.1 把 `std::string` 从 COW 改为 SSO 触发一次破坏性 ABI break（`_GLIBCXX_USE_CXX11_ABI`），提醒业界"源码兼容 ≠ 二进制兼容"。
-- [史] C++26 一旦冻结，本表的"草案"列将转为正式版本号与提案清单；届时只需追加一行并校验三编译器的 `cxx_status` 即可。
-- [评] 对迁移而言，真正的"地图"不是标准文本，而是各编译器官网的 `cxx_status.html` 与特性宏实测——博客与会议 PPT 常滞后甚至夸大。
+- <span class="badge badge-history">史</span> `__cpp_*` 特性测试宏随每个新标准持续扩充（如 `__cpp_concepts`、`__cpp_modules`、`__cpp_expected`），成为跨编译器"可机检"地判断某特性是否可用的唯一可靠锚点，取代依赖 `__cplusplus` 的粗略判断。
+- <span class="badge badge-history">史</span> ABI 稳定性争议长期未解：GCC 5.1 把 `std::string` 从 COW 改为 SSO 触发一次破坏性 ABI break（`_GLIBCXX_USE_CXX11_ABI`），提醒业界"源码兼容 ≠ 二进制兼容"。
+- <span class="badge badge-history">史</span> C++26 一旦冻结，本表的"草案"列将转为正式版本号与提案清单；届时只需追加一行并校验三编译器的 `cxx_status` 即可。
+- <span class="badge badge-comment">评</span> 对迁移而言，真正的"地图"不是标准文本，而是各编译器官网的 `cxx_status.html` 与特性宏实测——博客与会议 PPT 常滞后甚至夸大。
 
 > 史料来源：GCC 特性支持表 https://gcc.gnu.org/projects/cxx-status.html ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
@@ -37,7 +37,7 @@
 
 [第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)
 
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -54,7 +54,7 @@ int main() {
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -70,7 +70,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -86,7 +86,7 @@ int main() {
 
 ## ④ 对照总表
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：对照总表]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对照总表
 ```cpp
 // [merged] ## ④ 对照总表
 #include <iostream>
@@ -111,7 +111,7 @@ int main() {
 
 ## ⑤ 迁移指南
 
-> **示例 5** [难度 ★★☆☆☆] [主题：迁移指南]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 迁移指南
 ```cpp
 // [merged] ## ⑤ 迁移指南
 #include <iostream>
@@ -152,7 +152,7 @@ int main() {
 
 ## ⑥ 编译器支持矩阵（要点，详见 ch11）
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：编译器支持矩阵]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器支持矩阵
 ```cpp
 // [merged] ## ⑥ 编译器支持矩阵（要点，详见 ch11）
 #include <iostream>
@@ -171,7 +171,7 @@ int main() {
 
 ## ⑦ 版本演进 Mermaid
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：版本演进 Mermaid]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本演进 Mermaid
 ```cpp
 // [merged] ## ⑦ 版本演进 Mermaid
 #include <iostream>
@@ -185,7 +185,7 @@ int main() {
 
 ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：生命周期]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期
 ```cpp
 // [merged] ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
 #include <iostream>
@@ -200,7 +200,7 @@ int main() {
 各标准版本的对象生命周期规则见对应章（ch19 存储期、ch39 RAII、ch47 析构）；本章只横向对照版本差异。
 ## ⑨ 调用栈 / ABI（见 ch11、ch47）
 
-> **示例 9** [难度 ★★☆☆☆] [主题：调用栈 / ABI]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / ABI
 ```cpp
 // [merged] ## ⑨ 调用栈 / ABI（见 ch11、ch47）
 #include <iostream>
@@ -225,7 +225,7 @@ flowchart LR
 
 ## ⑩ 自检（每版一条）
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：自检（每版一条）]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自检（每版一条）
 ```cpp
 // 平台宏 _WIN32 / __linux__
 #ifdef _WIN32
@@ -233,7 +233,7 @@ flowchart LR
 #ifdef __linux__
 #endif
 ```
-> **示例 11** [难度 ★☆☆☆☆] [主题：自检（每版一条）]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自检（每版一条）
 ```cpp
 // 检测 64 位平台
 static_assert(sizeof(void*)==8, "64-bit");
@@ -241,7 +241,7 @@ static_assert(sizeof(void*)==8, "64-bit");
 
 ## ⑪ STL 联系（各版标准库演进）
 
-> **示例 12** [难度 ★★☆☆☆] [主题：联系（各版标准库演进）]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系（各版标准库演进）
 ```cpp
 // [merged] ## ⑪ STL 联系（各版标准库演进）
 #include <iostream>
@@ -254,7 +254,7 @@ int main() {
 C++11 起 STL 大幅扩展（智能指针、区间、并发）；C++17/20 加入 `string_view`/`<filesystem>`/Ranges；演进全貌见 ch76–ch110。
 ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // [merged] ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
 #include <iostream>
@@ -268,7 +268,7 @@ int main() {
 GCC/Clang/MSVC 与 libc++/libstdc++/MS STL 对新课标的支持普遍滞后 1–3 年，直接影响代码可移植性与上线节奏。
 ## ⑬ 源码分析（标准文本即规范源码）
 
-> **示例 14** [难度 ★★☆☆☆] [主题：源码分析（标准文本即规范源码）]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（标准文本即规范源码）
 ```cpp
 // [merged] ## ⑬ 源码分析（标准文本即规范源码）
 #include <iostream>
@@ -282,9 +282,9 @@ int main() {
 ```
 
 C++ 标准文本（ISO/IEC 14882）与 WG21 提案、编译器前端实现共同构成「规范级源码」；研读草案比二手博客更可靠。
-## ⑭ WG21 提案背景 [标准]
+## ⑭ WG21 提案背景 <span class="badge badge-std">标准</span>
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：提案背景 [标准]]
+> **示例 15** [难度 ★☆☆☆☆] [主题：提案背景 <span class="badge badge-std">标准</span>]
 ```cpp
 // [merged] ## ⑭ WG21 提案背景 [标准]
 #include <iostream>
@@ -307,7 +307,7 @@ int main() {
 
 ## ⑮ 面试题
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -319,7 +319,7 @@ int main() {
 
 ## ⑯ 易错点（版本混用陷阱）
 
-> **示例 17** [难度 ★★☆☆☆] [主题：易错点（版本混用陷阱）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点（版本混用陷阱）
 ```cpp
 // [merged] ## ⑯ 易错点（版本混用陷阱）
 #include <iostream>
@@ -332,7 +332,7 @@ int main() {}
 混用不同 `-std=` 编译单元可能导致 ODR 违规与 ABI 不一致；NDK/MSVC 对新课标支持常滞后，切勿假设「写 C++20 就能编」。
 ## ⑰ FAQ（迁移必读）
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // [merged] ## ⑰ FAQ（迁移必读）
 #include <iostream>
@@ -346,7 +346,7 @@ int main() {
 - **Q：如何写跨版本代码？** A：用特性测试宏 `__cpp_*` 做条件编译，而非硬编码版本号。
 ## ⑱ 最佳实践（版本治理）
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：最佳实践（版本治理）]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践（版本治理）
 ```cpp
 // 特性宏 __cpp_explicit_this_parameter（C++23 deducing this，GCC 15.3 实测 202110）
 // 注意：标准宏名是 __cpp_explicit_this_parameter，非直觉的 __cpp_deducing_this（后者不存在）
@@ -357,7 +357,7 @@ int main() {
 项目显式固定 `-std=` 与编译器最低版本；用 `__cpp_*` 特性宏隔离新特性；CI 矩阵覆盖目标工具链组合。
 ## ⑲ 性能（标准版本 ≠ 性能）
 
-> **示例 20** [难度 ★★☆☆☆] [主题：性能（标准版本 ≠ 性能）]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（标准版本 ≠ 性能）
 ```cpp
 // 特性宏 __cpp_multidimensional_subscript（C++23）
 #ifdef __cpp_multidimensional_subscript
@@ -372,18 +372,18 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：维护一张“特性 × 编译器版本”可用性表。** 你给团队写内部矩阵供查表。请说明表背后的权威信号来源。
-   - [标准] 查表应以各实现的特性测试宏与 `__cplusplus` 为准；这些由 SD-6 统一定义。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏与版本宏）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 查表应以各实现的特性测试宏与 `__cplusplus` 为准；这些由 SD-6 统一定义。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏与版本宏）；cppreference "Feature test macros" 词条。
 
 2. **真实场景：CI 矩阵按标准版本分别编译。** 你为 C++17/20/23 各建一条流水线。请说明为何要在代码内用宏而非只靠 CI。
-   - [标准] 代码自身应以特性测试宏在编译期选择实现，CI 矩阵只负责验证各版本确实可编。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（编译期特性门控）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 代码自身应以特性测试宏在编译期选择实现，CI 矩阵只负责验证各版本确实可编。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（编译期特性门控）；cppreference "Feature test macros" 词条。
 
 3. **真实场景：用户用老编译器但你用了新特性。** 你需要给出最低版本或降级实现。请说明降级判定。
-   - [标准] 当目标实现未定义对应特性测试宏时，应回退到兼容实现或明确报错“需要 C++XX”。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性宏未定义即视为不支持）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 当目标实现未定义对应特性测试宏时，应回退到兼容实现或明确报错“需要 C++XX”。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性宏未定义即视为不支持）；cppreference "Feature test macros" 词条。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // 编译期 if 检测平台
 #ifdef _WIN32
@@ -399,7 +399,7 @@ const char* plat="other";
 
 ### ㉒.1 历史渊源补强：为什么"C++ 版本选择"成了工程问题
 
-[史] 在 C++98/03 时代，版本选择几乎不存在——大家都写"差不多的 C++"。C++11 之后，每 3 年一版的节奏（见 ch02/ch04）让"该用哪版"成为真实决策：太新则编译器/库不支持，太旧则拿不到 `optional`/`concepts` 等现代便利。[史] 同时，ABI 稳定性承诺只在**同一编译器、同一主版本内**成立，跨大版本（libstdc++ 5→6、MSVC 2015→2019）重编是常态，于是"版本"还牵连"工具链锁定"。[评] 版本矩阵本质上是在"现代特性红利"与"工具链/生态成熟度"之间找一个可落地的交点。
+<span class="badge badge-history">史</span> 在 C++98/03 时代，版本选择几乎不存在——大家都写"差不多的 C++"。C++11 之后，每 3 年一版的节奏（见 ch02/ch04）让"该用哪版"成为真实决策：太新则编译器/库不支持，太旧则拿不到 `optional`/`concepts` 等现代便利。<span class="badge badge-history">史</span> 同时，ABI 稳定性承诺只在**同一编译器、同一主版本内**成立，跨大版本（libstdc++ 5→6、MSVC 2015→2019）重编是常态，于是"版本"还牵连"工具链锁定"。<span class="badge badge-comment">评</span> 版本矩阵本质上是在"现代特性红利"与"工具链/生态成熟度"之间找一个可落地的交点。
 
 ### ㉒.2 真实工程坐标：版本选择如何决定产品形态
 
@@ -425,7 +425,7 @@ const char* plat="other";
 
 ### ㉒.4 与标准的互动：3 年节奏如何重塑选择
 
-[史] WG21 自 2012 年确立的 3 年节奏（ch02）让版本有了可预测的生命周期，配套 **P1000（方向文档）** 与 isocpp 状态页给出每版范围；这使企业能制定"N 版前不采用、N+1 评估、N+2 上线"的策略。[评] 今天最稳妥的默认是 **C++17 底线 + C++20/23 按需采用**，并显式在 `CMakeLists.txt` 用 `target_compile_features(... cxx_std_20)` 锁死。
+<span class="badge badge-history">史</span> WG21 自 2012 年确立的 3 年节奏（ch02）让版本有了可预测的生命周期，配套 **P1000（方向文档）** 与 isocpp 状态页给出每版范围；这使企业能制定"N 版前不采用、N+1 评估、N+2 上线"的策略。<span class="badge badge-comment">评</span> 今天最稳妥的默认是 **C++17 底线 + C++20/23 按需采用**，并显式在 `CMakeLists.txt` 用 `target_compile_features(... cxx_std_20)` 锁死。
 
 **修订链补强（版本节奏与方向文档）**：WG21 的 3 年发布节奏由方向文档 [P1000](https://wg21.link/P1000)（“C++ Committee Direction”）固化，与 isocpp 的 [标准状态页](https://isocpp.org/std/status) 共同给出每版范围。各正式版对应 ISO/IEC 14882 的离散 editions：ISO/IEC 14882:2011（C++11）、:2014（C++14）、:2017（C++17）、:2020（C++20）、:2023（C++23），下一版 C++26 在制定中。委员会的设计立场是“可预测的生命周期”让企业能制定“N 版前不采用、N+1 评估、N+2 上线”的策略，而非被特性红利拖着走。
 
@@ -440,25 +440,25 @@ const char* plat="other";
 
 ## 附录: 版本特性速查
 
-> **示例 22** [难度 ★★★☆☆] [主题：附录: 版本特性速查]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: 版本特性速查
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++11: move,auto,lambda,smart_ptr,constexpr,noexcept,thread\n";return 0;}
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：附录: 版本特性速查]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 版本特性速查
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++17: structured_binding,if_constexpr,optional,variant,string_view,filesystem\n";return 0;}
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：附录: 版本特性速查]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 版本特性速查
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++20: concepts,coroutines,ranges,modules,span,<=>\n";return 0;}
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录: 版本特性速查]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 版本特性速查
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++23: expected,print,flat_map,views::zip,deducing_this\n";return 0;}
@@ -469,13 +469,13 @@ int main(){std::cout<<"C++23: expected,print,flat_map,views::zip,deducing_this\n
 
 ## 附录 B: 版本选择决策树
 
-> **示例 26** [难度 ★★☆☆☆] [主题：附录 B: 版本选择决策树]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: 版本选择决策树
 ```cpp
 #include <iostream>
 int main(){std::cout<<"New project? Start C++17 minimum. Can target C++20? Use concepts/coroutines. Embedded? C++11+ with RTOS."<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录 B: 版本选择决策树]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 版本选择决策树
 ```cpp
 #include <iostream>
 int main(){
@@ -487,13 +487,13 @@ int main(){
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录 B: 版本选择决策树]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 版本选择决策树
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Feature macro names: __cpp_lib_*, __cpp_*. Check with #if. Portable detection without version guessing."<<std::endl;return 0;}
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录 B: 版本选择决策树]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 版本选择决策树
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC 13 C++23 support: ~90%. MSVC 17.8: ~95%. Clang 17: ~85%. Check cppreference for details."<<std::endl;return 0;}
@@ -515,7 +515,7 @@ LTS/企业: C++17 (GCC8/Clang6/MSVC2019, RHEL8)
 嵌入式: C++11/14 (arm-none-eabi-gcc 9+)
 安全关键: C++14 (DO-178C certified compilers)
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：附录 E：版本选择工业与面试]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：版本选择工业与面试
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++11->14=minor, 14->17=productivity, 17->20=paradigm"<<std::endl;return 0;}
@@ -539,7 +539,7 @@ int main(){std::cout<<"C++11->14=minor, 14->17=productivity, 17->20=paradigm"<<s
 | C++14→17 | optional,variant,filesystem | 低(string_view) | 推荐 |
 | C++17→20 | concepts,ranges,coroutines | 中(SFINAE→concepts重写) | 新项目推荐 |
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录 G：版本升级设计权衡 [H: ]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 G：版本升级设计权衡 [H:
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Upgrade decisively: C++17 is the new minimum for new C++ projects."<<std::endl;return 0;}
@@ -572,7 +572,7 @@ WG21 train model每3年1版:
 ; C++17: guaranteed elision=直接构造在返回地址 → cost ~0ns
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：汇编验证]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编验证
 ```cpp
 #include <iostream>
 #include <optional>
@@ -627,7 +627,7 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
 用 SD-6 特性测试宏在预处理期分档，编译器只编译命中的那一档：
 
-> **示例 33** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <expected>
 #include <optional>
@@ -664,11 +664,11 @@ int main() {
 }
 ```
 
-[标准] 特性测试宏是预处理期整数常量；`#if` 分支让"未提供的标准设施"根本不进入编译，避免对不存在符号的硬依赖。
+<span class="badge badge-std">标准</span> 特性测试宏是预处理期整数常量；`#if` 分支让"未提供的标准设施"根本不进入编译，避免对不存在符号的硬依赖。
 
 [实现·GCC15] 在 GCC 15.3.0 `-std=c++23` 下命中 `std::expected` 档；`-std=c++17` 下回落到 `std::optional` 档，证明同一份源码跨版本可用。
 
-[引用] WG21 SD-6《特性测试宏推荐》（`__cpp_lib_expected` / `__cpp_lib_optional`）；cppreference "特性测试"（https://en.cppreference.com/w/cpp/feature_test）、"std::expected"（https://en.cppreference.com/w/cpp/utility/expected/expected）。它直接对应 ④ 对照总表 / ⑤ 迁移指南的"按能力选实现"范式。
+<span class="badge badge-ref">引用</span> WG21 SD-6《特性测试宏推荐》（`__cpp_lib_expected` / `__cpp_lib_optional`）；cppreference "特性测试"（https://en.cppreference.com/w/cpp/feature_test）、"std::expected"（https://en.cppreference.com/w/cpp/utility/expected/expected）。它直接对应 ④ 对照总表 / ⑤ 迁移指南的"按能力选实现"范式。
 
 </details>
 
@@ -680,7 +680,7 @@ int main() {
 
 ① **可能不兼容**：同一类型在不同标准下若落入不同的内联命名空间（如 `std::string` 在旧 ABI 为 `std::string`，新 ABI 为 `std::__cxx11::string`），跨 TU 传递该类型会在链接期报"undefined reference"或运行期静默错配；`noexcept` 规范差异、`std::variant` 等类型的布局变化也会影响跨 TU 的 ODR 一致性。② **通常安全**：纯 C 链接接口、POD 数据、显式 `extern "C"` 函数、以及不跨越标准库类型的控制流——只要两端不交换标准库对象的内存布局即可。③ **工程红线**：同一二进制内只允许"同一条标准库 + 同一 ABI 设置（`_GLIBCXX_USE_CXX11_ABI`）"混链；所谓"语言版本"指的应是 `-std=` 而非 ABI；升级 `-std=` 时若触碰了标准库类型布局变化，必须整库统一重编，而非逐文件半升级。这正是 ⑥ 矩阵里"语言版本 ≠ ABI 版本"那一行的落地含义。
 
-[引用] GCC 文档 "Dual ABI"（https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html）；本章 ⑥ 编译器支持矩阵 / ⑨ 调用栈·ABI。
+<span class="badge badge-ref">引用</span> GCC 文档 "Dual ABI"（https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html）；本章 ⑥ 编译器支持矩阵 / ⑨ 调用栈·ABI。
 
 </details>
 
@@ -692,7 +692,7 @@ int main() {
 
 `std::result_of` → `std::invoke_result`（C++17 引入，语义更清晰、支持成员指针/可调用对象统一）；`std::bind1st` → lambda 或 `std::bind_front`（C++20）：
 
-> **示例 34** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <utility>
 #include <functional>
@@ -708,9 +708,9 @@ int main() {
 }
 ```
 
-[标准] `std::invoke_result_t<F, Args...>` 在编译期推导 `INVOKE` 表达式的结果类型；`std::bind_front` 把前 N 个实参绑定到可调用对象前方。
+<span class="badge badge-std">标准</span> `std::invoke_result_t<F, Args...>` 在编译期推导 `INVOKE` 表达式的结果类型；`std::bind_front` 把前 N 个实参绑定到可调用对象前方。
 
-[引用] ISO C++17 §[meta.trans.other]（`std::invoke_result` 取代 `std::result_of`）；ISO C++20 §[func.bind.front]；cppreference "std::bind_front"（https://en.cppreference.com/w/cpp/utility/functional/bind_front）。这对应 ⑤ 迁移指南里"11/14 → 17 → 20"的每一条具体替换规则。
+<span class="badge badge-ref">引用</span> ISO C++17 §[meta.trans.other]（`std::invoke_result` 取代 `std::result_of`）；ISO C++20 §[func.bind.front]；cppreference "std::bind_front"（https://en.cppreference.com/w/cpp/utility/functional/bind_front）。这对应 ⑤ 迁移指南里"11/14 → 17 → 20"的每一条具体替换规则。
 
 </details>
 

@@ -14,35 +14,35 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-别的生态早有答案：Perl 的 CPAN、Java 的 Maven、Python 的 pip、Node 的 npm。C++ 却长期停留在"下载 zip、把 `.h`/`.lib` 拖进工程、手写 `-I`/`-L`"的史前阶段。[史][评] 痛点极现实：版本错配、ABI 不一致、Debug/Release 混链、传递依赖爆炸。随着 C++ 项目变复杂，社区终于行动——**Conan**（2015 年前后）与微软的 **vcpkg**（2016 年开源）先后登场，把"找库、下库、配路径、解依赖、保证可重现"自动化。[史]
+别的生态早有答案：Perl 的 CPAN、Java 的 Maven、Python 的 pip、Node 的 npm。C++ 却长期停留在"下载 zip、把 `.h`/`.lib` 拖进工程、手写 `-I`/`-L`"的史前阶段。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 痛点极现实：版本错配、ABI 不一致、Debug/Release 混链、传递依赖爆炸。随着 C++ 项目变复杂，社区终于行动——**Conan**（2015 年前后）与微软的 **vcpkg**（2016 年开源）先后登场，把"找库、下库、配路径、解依赖、保证可重现"自动化。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
 
-- **2015 前后**：Conan 发布，采用 Python 配方、支持二进制缓存与多配置（Debug/Release、多编译器）。[史]
-- **2016**：微软开源 **vcpkg**，以 Git 仓库 + 端口（port）模型、与 Visual Studio/CMake 深度集成迅速普及。[史]
-- 二者均补上了 C++ 缺失的"一级包管理"环节。[史]
+- **2015 前后**：Conan 发布，采用 Python 配方、支持二进制缓存与多配置（Debug/Release、多编译器）。<span class="badge badge-history">史</span>
+- **2016**：微软开源 **vcpkg**，以 Git 仓库 + 端口（port）模型、与 Visual Studio/CMake 深度集成迅速普及。<span class="badge badge-history">史</span>
+- 二者均补上了 C++ 缺失的"一级包管理"环节。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-C++ 包管理的根本难点是**二进制兼容性**：同一份源码在不同编译器、不同标准版、不同 ABI 下产出的库不能混链。[史] Conan 走"以二进制缓存 + 配方"路线，强调可重现与跨平台；vcpkg 走"源码即真理、统一 triplet"路线，与微软工具链绑定更紧。[评] 两者都回避了"集中式中央仓强制统一"的 Rust/Cargo 模式——这既是对 C++ 碎片现实的妥协，也保留了灵活性。[评]
+C++ 包管理的根本难点是**二进制兼容性**：同一份源码在不同编译器、不同标准版、不同 ABI 下产出的库不能混链。<span class="badge badge-history">史</span> Conan 走"以二进制缓存 + 配方"路线，强调可重现与跨平台；vcpkg 走"源码即真理、统一 triplet"路线，与微软工具链绑定更紧。<span class="badge badge-comment">评</span> 两者都回避了"集中式中央仓强制统一"的 Rust/Cargo 模式——这既是对 C++ 碎片现实的妥协，也保留了灵活性。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] C++ 包管理的标准化努力持续：WG21 工具组（SG15）推动 `package` 元数据与构建系统协作，但距"Cargo 式中央仓"仍远，反映出碎片生态的惯性。
-- [史] vcpkg 在 2020s 引入 manifests（`vcpkg.json`）与版本约束，朝可重现依赖更进一步；Conan 2.x 重写配方模型，强化了中心缓存与跨配置二进制管理。
-- [史] 二者都与构建系统深度融合：CMake 的 `find_package` 可直接消费 vcpkg/Conan 安装的三方库，使"下库—配路径—解依赖"从手工变为声明式。
-- [评] ABI 仍是绕不开的天花板：同一库需为不同编译器/标准版/Debug-Release 各备一份二进制，这是 C++ 包管理永远比 Rust/Cargo 更重的根因。
+- <span class="badge badge-history">史</span> C++ 包管理的标准化努力持续：WG21 工具组（SG15）推动 `package` 元数据与构建系统协作，但距"Cargo 式中央仓"仍远，反映出碎片生态的惯性。
+- <span class="badge badge-history">史</span> vcpkg 在 2020s 引入 manifests（`vcpkg.json`）与版本约束，朝可重现依赖更进一步；Conan 2.x 重写配方模型，强化了中心缓存与跨配置二进制管理。
+- <span class="badge badge-history">史</span> 二者都与构建系统深度融合：CMake 的 `find_package` 可直接消费 vcpkg/Conan 安装的三方库，使"下库—配路径—解依赖"从手工变为声明式。
+- <span class="badge badge-comment">评</span> ABI 仍是绕不开的天花板：同一库需为不同编译器/标准版/Debug-Release 各备一份二进制，这是 C++ 包管理永远比 Rust/Cargo 更重的根因。
 
 > 史料来源：vcpkg 仓库 https://github.com/microsoft/vcpkg ；Conan 官网 https://conan.io/
 
-## ① 概述：为什么需要包管理 [标准]
+## ① 概述：为什么需要包管理 <span class="badge badge-std">标准</span>
 
 [第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
 [第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](Book/part02_toolchain/ch14_debugging.md)
 
 C++ 长期缺乏官方一级包管理器。传统做法（手动下载 zip、把 `.h`/`.lib` 拖进工程、`-I`/`-L` 手工配路径）在依赖一多即崩溃：版本错配、ABI 不一致、Debug/Release 混链、传递依赖爆炸。包管理器的价值是**把"找库、下库、配路径、解依赖、保证可重现"自动化**。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：为什么需要包管理 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：为什么需要包管理 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 没有包管理时的"祖传"写法：路径硬编码、易碎
 // g++ main.cpp -I/opt/fmt-9.1.0/include -L/opt/fmt-9.1.0/lib -lfmt
@@ -51,7 +51,7 @@ C++ 长期缺乏官方一级包管理器。传统做法（手动下载 zip、把
 int main() { fmt::print("hi\n"); }
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么需要包管理 [标准]]
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么需要包管理 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 有了包管理：依赖声明在 manifest，路径由工具注入
 // 你只写 #include，剩下的交给 vcpkg/Conan + CMake
@@ -66,7 +66,7 @@ int main() { fmt::print("hi\n"); }  // 与上面同，但路径自动解析
 
 vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装配方；**三元组(triplet)**=目标平台/运行时/链接方式（如 `x64-windows`、`x64-linux-dynamic`）；**manifest**=`vcpkg.json` 声明直接依赖。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：模型：端口 / 三元组 / mani]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模型：端口 / 三元组 / mani
 ```cpp
 // ② vcpkg 端口本质：一个目录 + 配方（portfile.cmake 控制下载/构建）
 // 端口目录结构（示意）：
@@ -86,7 +86,7 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 }
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：模型：端口 / 三元组 / mani]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模型：端口 / 三元组 / mani
 ```cpp
 // ② 三元组决定产物形态：静态 vs 动态、CRT 归属
 // 常用 triplet（只列名，不写进 C++）：
@@ -103,7 +103,7 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 
 vcpkg 通过 **toolchain 文件** 把 `CMAKE_TOOLCHAIN_FILE` 指向 `vcpkg.cmake`，后者改写 `find_package`/`find_library` 的搜索路径，使其命中 `installed/<triplet>`。
 
-> **示例 5** [难度 ★★★☆☆] [主题：集成 CMake：findpacka]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 集成 CMake：findpacka
 ```cpp
 // ③ CMake 侧：用法与"普通系统安装"的库毫无区别
 // 文件：Examples/_ch13_CMakeLists.txt，行号：1
@@ -123,7 +123,7 @@ target_link_libraries(app PRIVATE fmt::fmt)
 # -- Configuring done
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：集成 CMake：findpacka]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 集成 CMake：findpacka
 ```cpp
 // ③ find_package 成功后，目标名由包作者定义；用 target 形式链接最稳
 target_link_libraries(app PRIVATE fmt::fmt);   // 含 include + lib + 宏定义
@@ -149,7 +149,7 @@ class MyApp(ConanFile):
         self.folders.build = "build"
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：模型：recipe / 二进制缓存 ]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模型：recipe / 二进制缓存
 ```cpp
 // ④ settings 决定 package_id：任意一项变了 = 不同二进制
 //   os: Windows / Linux / Macos
@@ -189,7 +189,7 @@ class MyApp(ConanFile):
 # build_type=Release
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：与依赖图 [实现·Conan]]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与依赖图 [实现·Conan]
 ```cpp
 // ⑤ 依赖图是 DAG：A 依赖 fmt 与 spdlog，spdlog 又依赖 fmt
 //   myapp
@@ -213,7 +213,7 @@ class MyApp(ConanFile):
 
 Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild。与 vcpkg 的"全局工具链注入"不同，Conan 走 **presets + toolchain** 的双文件模式。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：集成 CMake / MSBuild]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 集成 CMake / MSBuild
 ```cpp
 // ⑥ CMakePresets 里指向 Conan 工具链（现代做法）
 // {
@@ -232,7 +232,7 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 # cmake --build build
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：集成 CMake / MSBuild]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 集成 CMake / MSBuild
 ```cpp
 // ⑥ MSBuild（Visual Studio）走 props 注入而非 toolchain
 // <Import Project="$(SolutionDir)conanbuildinfo.props" />
@@ -242,14 +242,14 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 - `[实现·Conan]`：`CMakeDeps` 生成 `<pkg>-config.cmake` + `<pkg>-targets.cmake`，让 `find_package(fmt)` 命中；`CMakeToolchain` 设置 `CMAKE_PREFIX_PATH` 等。
 - `[经验]`：CMake ≥ 3.23 用 **presets** 串起 Conan，比在 `cmake ..` 命令行堆 `-D` 更干净、可复现。
 
-## ⑦ 源码分发 vs 二进制分发 [标准]
+## ⑦ 源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>
 
 [第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
 [第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
 
 包两种形态：**源码分发**（只发 `.h`/`.cpp`/构建脚本，消费端现编）与**二进制分发**（发 `.lib/.a/.dll/.so` + 头）。C++ 因 ABI 脆弱，**二进制分发必须保证编译器/标准库/flags 全一致**。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：源码分发 vs 二进制分发 [标准]]
+> **示例 11** [难度 ★★☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 头-only 库 = 源码分发的最简形式：无 .lib，编译期实例化
 // 例：自写 span_view（见 ⑨ 的 _ch13_packlib.hpp）
@@ -258,14 +258,14 @@ template <class T> class span_view { /* 全在头里 */ };
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 [标准]]
+> **示例 12** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 二进制分发：头 + 已编译 .a/.lib
 // 头里是声明 + inline 薄包装，实体在 .a 内
 // // fmt/core.h 里大量 inline，但 fmt::vformat 实体在 libfmt.a
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 [标准]]
+> **示例 13** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 二者代价对比（示意）
 //   源码分发：编译慢、但 ABI 无关（随你的编译器走）
@@ -275,23 +275,23 @@ template <class T> class span_view { /* 全在头里 */ };
 - `[标准]`：ISO 不规定分发形态；但模板/inline 必须在调用端可见（ODR），所以模板重的库几乎只能头-only 或伴随源码。
 - `[平台·Windows]`：二进制分发的 ABI 约束由 Itanium C++ ABI（Linux/macOS）与 MSVC ABI（Windows）分别规定，两者**不互操作**。
 
-## ⑧ 版本解析与冲突解决 [标准]
+## ⑧ 版本解析与冲突解决 <span class="badge badge-std">标准</span>
 
 依赖图里同一库出现多版本时，解析器需仲裁。**语义化版本 (SemVer)** 是通用约定：`MAJOR.MINOR.PATCH`，MAJOR 不兼容、MINOR 向后兼容、PATCH 修复。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 [标准]]
+> **示例 14** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧ vcpkg 的版本约束写在 manifest
 // "boost": { "version>=": "1.83" }   // 取 >=1.83 的最小满足，受 baseline 限顶
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 [标准]]
+> **示例 15** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧ Conan 的版本范围
 // requires = "fmt/[>=10.0 <11.0]"   // 闭区间，避免 11 的破坏性变更
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 [标准]]
+> **示例 16** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧ 冲突示例：A 要 fmt/9，B 要 fmt/10
 //   vcpkg：baseline 决定唯一版本，强行统一（可能让 A 用 fmt/10 重编）
@@ -305,7 +305,7 @@ template <class T> class span_view { /* 全在头里 */ };
 
 下面是被包管理器"拉取"后的**真实形态**：一个头-only 包 `_ch13_packlib.hpp`（gsl 风格 `span_view` + fmt 风格 `println`），由一个使用程序 `_ch13_use.cpp` 消费。**本机 vcpkg/Conan 未装**，故直接用 g++ 编译该头库，作为"被包管理的库"的真实 C++ 证据（不编造任何汇编）。
 
-> **示例 17** [难度 ★★★☆☆] [主题：[实现·GCC15]真实示例：用 g]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实示例：用 g
 ```cpp
 // ⑨ 被包管理的头-only 库（供应方视角）
 // 文件：Examples/_ch13_packlib.hpp，行号：1
@@ -328,7 +328,7 @@ inline void println(std::format_string<A...> fmt, A&&... a) {   // fmt 风格
 }
 ```
 
-> **示例 18** [难度 ★★★★☆] [主题：[实现·GCC15]真实示例：用 g]
+> **示例 18** <span class="badge badge-exp">难度 ★★★★☆</span> · [实现·GCC15]真实示例：用 g
 ```cpp
 // ⑨ 消费方：仅 #include 即用——这正是包管理想给你的体验
 // 文件：Examples/_ch13_use.cpp，行号：1
@@ -379,21 +379,21 @@ main:
 
 系统级包管理（apt/dnf/brew）与 C++ 专用（vcpkg/Conan）定位不同：前者管**系统运行时**，后者管**开发期可重现依赖**。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：系统包管理器 apt/brew/vc]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统包管理器 apt/brew/vc
 ```cpp
 // ⑩ apt 装的库是"系统全局一份"，常滞后、且 ABI 绑定系统编译器
 //   sudo apt install libfmt-dev   -> /usr/lib/x86_64-linux-gnu/libfmt.so
 //   你的 gcc 必须与系统 libfmt 的 ABI 匹配，否则链接期/运行期炸
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：系统包管理器 apt/brew/vc]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统包管理器 apt/brew/vc
 ```cpp
 // ⑩ brew 同理（macOS），且同一时刻每个公式基本单版本
 //   brew install fmt   -> /opt/homebrew/lib/libfmt.dylib
 //   多版本并存需 brew 的版本化前缀或自己管理
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：系统包管理器 apt/brew/vc]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统包管理器 apt/brew/vc
 ```cpp
 // ⑩ vcpkg/Conan 的优势：按 triplet/settings 同机多份并存、版本自由、可重现
 //   同一机器可同时有 fmt/9-static、fmt/10-dynamic、fmt/10-Release/Debug
@@ -409,11 +409,11 @@ main:
 - `[平台·Windows]`：系统包管理器把库放进系统路径，与发行版编译器/CRT 强绑定；C++ 项目跨机迁移时这份耦合常常成为"在我机器上能编"的元凶。
 - `[经验]`：CI 与产物分发用 vcpkg/Conan；本地快速试玩可用 apt/brew，但别把后者当可重现来源。
 
-## ⑪ 头-only 库分发约定 [标准]
+## ⑪ 头-only 库分发约定 <span class="badge badge-std">标准</span>
 
 头-only 库（Eigen、fmt 的接口部分、大多数模板库）分发约定相对宽松：**整个库即一个 `.hpp` 集合 + `CMake` 的 `INTERFACE` 库**。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 [标准]]
+> **示例 22** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪ INTERFACE 库：无编译产物，只传播 include 路径与 requirements
 // CMake 中：
@@ -422,7 +422,7 @@ main:
 // target_compile_features(mylib INTERFACE cxx_std_23)
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 [标准]]
+> **示例 23** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪ 头-only 仍需防多次包含：要么 #pragma once，要么传统 include guard
 #pragma once
@@ -432,7 +432,7 @@ main:
 #endif
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 [标准]]
+> **示例 24** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <string>
 // ⑪ 头-only 不意味着零 ABI 关切：若内部用了 std::string 等，
@@ -442,7 +442,7 @@ main:
 - `[标准]`：`INTERFACE` 库是 CMake 概念，非 ISO；但它是头-only 分发的事实标准载体。
 - `[经验]`：头-only 库也建议带 `CMakeLists.txt` 与 `find_package` 支持（写 `xxxConfig.cmake`），这样 vcpkg/Conan 能无缝包装它。
 
-## ⑫ 私有仓库 / 制品库 [经验]
+## ⑫ 私有仓库 / 制品库 <span class="badge badge-exp">经验</span>
 
 公开注册表之外，企业需要**私有制品库**托管自研包与受限第三方包。Conan 用 **Conan Center / Artifactory**，vcpkg 用**自定义注册表 (registry)**。
 
@@ -463,7 +463,7 @@ main:
 // }
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：私有仓库 / 制品库 [经验]]
+> **示例 25** [难度 ★★☆☆☆] [主题：私有仓库 / 制品库 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑫ 私有包与公开包在 recipe/manifest 里写法一致，仅来源不同
 // requires = "mycorp-private-lib/2.3.0"   // Conan 先查私有 remote
@@ -472,7 +472,7 @@ main:
 - `[经验]`：私有库务必打版本、写 recipe、过 CI 自动发布——否则它退化成"又一份要人肉拷的 zip"。
 - `[平台·Windows]`：制品库通常走 HTTPS + token 鉴权；在离线/内网环境需配置镜像与证书。
 
-## ⑬ 可重现构建：锁文件 [标准]
+## ⑬ 可重现构建：锁文件 <span class="badge badge-std">标准</span>
 
 [第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
 
@@ -490,7 +490,7 @@ main:
 // 后续 conan install --lockfile=conan.lock  -> 版本不再漂移
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：可重现构建：锁文件 [标准]]
+> **示例 26** [难度 ★★☆☆☆] [主题：可重现构建：锁文件 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑬ 没有锁文件的后果
 // 今天 fmt 是 10.1.1，明天上游发 10.1.2 修了某 bug 也改了行为
@@ -507,7 +507,7 @@ main:
 
 包管理不只是装库，还要管**许可证 (license)** 与 **ABI 边界**。静态链接 GPL 库可能传染你的分发义务；动态链接通常隔离得更干净（具体以律师意见为准，此处仅工程视角）。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：许可证与 ABI 兼容 [平台·Wi]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Wi
 ```cpp
 // ⑭ 许可证元数据在 manifest/recipe 里声明
 // vcpkg.json:  "license": "MIT"
@@ -515,7 +515,7 @@ main:
 // 工具可据此做合规扫描（如拒绝 GPL 进入闭源产物）
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：许可证与 ABI 兼容 [平台·Wi]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Wi
 ```cpp
 #include <string>
 // ⑭ ABI 边界：跨 .dll/.so 传递 STL 类型需谨慎
@@ -523,7 +523,7 @@ main:
 // 结果：std::string 内部布局/分配器不同 -> 崩溃或静默损坏
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：许可证与 ABI 兼容 [平台·Wi]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Wi
 ```cpp
 // ⑭ 安全跨边界的做法：用 C ABI（POD / 句柄）
 // extern "C" { struct Handle { void* p; }; Handle make(); void free(Handle); }
@@ -533,11 +533,11 @@ main:
 - `[平台·Windows]`：ABI 兼容受 Itanium C++ ABI / MSVC ABI 与 libstdc++/libc++/MS STL 各自版本共同约束；同一编译器同版本才稳。
 - `[经验]`：跨模块传递 C++ STL 对象是大忌；要么静态链接统一一份 STL，要么只过 C ABI。
 
-## ⑮ [经验]选型建议
+## ⑮ <span class="badge badge-exp">经验</span>选型建议
 
 没有"最好"的包管理器，只有"最适合你约束"的。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：[经验]选型建议]
+> **示例 30** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑮ 粗略决策树（工程经验，非标准）
 //   用 MSVC + Windows 产线  -> vcpkg 体验最顺（微软亲儿子）
@@ -545,7 +545,7 @@ main:
 //   只是本地试库、CI 简单        -> apt/brew 也行，但牺牲可重现
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：[经验]选型建议]
+> **示例 31** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑮ 团队已重度 CMake + 多 triplet -> 两者都 OK，看是否要二进制复用
 //   要"编译一次全队复用" -> Conan（binary cache 强）
@@ -555,13 +555,13 @@ main:
 - `[经验]`：一旦选定，**全员统一版本与配置**；混合使用 vcpkg 与 Conan 同一项目会增加复杂度，除非用其一仅做镜像源。
 - `[经验]`：小项目别过度工程——两三个头-only 库用 git submodule 也能活，不必上全套。
 
-## ⑯ 常见陷阱：ABI 不匹配、Debug/Release 混链 [经验]
+## ⑯ 常见陷阱：ABI 不匹配、Debug/Release 混链 <span class="badge badge-exp">经验</span>
 
 [第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
 
 这是 C++ 包管理最高频的"能编过但运行崩"的来源。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 ```cpp
 #include <string>
 // ⑯ 陷阱1：ABI 不匹配
@@ -570,7 +570,7 @@ main:
 //   现象常是"偶发崩溃""未处理异常""堆损坏"
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 ```cpp
 // ⑯ 陷阱2：Debug/Release 混链
 //   MSVC: /MDd (Debug DLL CRT) vs /MD (Release DLL CRT)
@@ -578,14 +578,14 @@ main:
 //   表现：free/delete 时 abort，或 Debug 跑得好好的 Release 崩
 ```
 
-> **示例 34** [难度 ★★★☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 ```cpp
 // ⑯ 陷阱3：静态/动态不一致
 //   fmt 以 static 编进 A，又以 shared 编进 B，符号两份 -> ODR 违例风险
 //   统一：要么全 static，要么全 shared，由 triplet/settings 决定
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 ```cpp
 // ⑯ 陷阱4：忘记导出符号（Windows DLL）
 //   __declspec(dllexport) 漏写 -> 链接方找不到符号
@@ -595,27 +595,27 @@ main:
 - `[经验]`：所有传递依赖的 **compiler + version + build_type + CRT + static/dynamic** 必须全链路一致——这正是包管理器用 `triplet`/`settings`/`package_id` 强制保证的事。
 - `[平台·Windows]`：Windows 上 `/MD` vs `/MT`、Debug/Release CRT 的混链是最经典雷区（MSVC ABI 约束）。
 
-## ⑰ 与构建系统协作 [经验]
+## ⑰ 与构建系统协作 <span class="badge badge-exp">经验</span>
 
 [第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
 
 包管理器不替代 CMake/Ninja/MSBuild，而是**喂给**它们正确的 include/lib/宏。理解这条边界能少踩 80% 的坑。
 
-> **示例 36** [难度 ★★☆☆☆] [主题：与构建系统协作 [经验]]
+> **示例 36** [难度 ★★☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ vcpkg 模式：CMake 启动时读 vcpkg.cmake 工具链
 //   - CMAKE_TOOLCHAIN_FILE 指向 vcpkg.cmake
 //   - find_package 被重定向到 installed/<triplet>
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：与构建系统协作 [经验]]
+> **示例 37** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ Conan 模式：先 conan install 生成集成文件，再让 CMake 读
 //   -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
 //   find_package 命中 CMakeDeps 生成的 *-config.cmake
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：与构建系统协作 [经验]]
+> **示例 38** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 多配置生成器（Visual Studio / Ninja Multi-Config）注意：
 //   不要把一个 Debug 包塞进 Release 配置
@@ -631,14 +631,14 @@ main:
 
 同一份 manifest/recipe 要在 Windows/Linux/macOS 上各自产出正确依赖，差异集中在 **triplet/settings + 编译器 + CRT**。
 
-> **示例 39** [难度 ★★☆☆☆] [主题：跨平台 [平台·Windows]]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台 [平台·Windows]
 ```cpp
 // ⑱ 跨平台 manifest 写法一致，差异由工具按宿主推断
 // vcpkg: 在 Linux 自动 x64-linux，Windows 自动 x64-windows
 //        显式覆盖：--triplet=x64-linux-dynamic
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：跨平台 [平台·Windows]]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
 ```cpp
 // ⑱ Conan profile 显式区分平台
 //   Windows: compiler=msvc, compiler.version=193
@@ -646,7 +646,7 @@ main:
 //   同一 recipe 在两 profile 下解出不同二进制缓存
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：跨平台 [平台·Windows]]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
 ```cpp
 // ⑱ macOS 注意：universal binary / arm64 vs x86_64
 //   arch=x86_64 与 arch=armv8 是不同 package_id
@@ -656,14 +656,14 @@ main:
 - `[平台·Windows]`：三大桌面平台的 C++ ABI 与 CRT 各成体系（MSVC ABI / Linux Itanium / macOS），包管理器的 triplet/settings 正是为把这些差异**显式参数化**。
 - `[经验]`：CI 矩阵应覆盖你承诺的每个 (os, arch, build_type) 组合，否则"跨平台"只是口头承诺。
 
-## ⑲ 最佳实践 [经验]
+## ⑲ 最佳实践 <span class="badge badge-exp">经验</span>
 
 [第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
 [第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
 
 把上面散点收敛成可执行的清单。
 
-> **示例 42** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 42** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 1) 用 manifest 模式（vcpkg.json / conanfile.py），并入库
 // ⑲ 2) 锁文件 + baseline/profile 进版本控制
@@ -672,7 +672,7 @@ main:
 // ⑲ 5) CI 共享 binary cache，加速且可重现
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 43** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 6) 头-only 库也提供 find_package 支持（写 Config.cmake）
 // ⑲ 7) 跨模块只过 C ABI，封死 STL 类型泄露
@@ -689,20 +689,20 @@ main:
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：libstdc++ 新旧 ABI 不兼容。** 你用 `-D_GLIBCXX_USE_CXX11_ABI=0` 编的库，被默认 ABI=1 的程序链接后 `std::string` 传递崩溃。请解释 ABI 边界与标准库的兼容性承诺边界。
-   - [标准] 标准库的实现细节（如 `std::string` 的小字符串缓冲布局）不在标准保证内；跨越 ABI 边界传递标准库类型须两边使用同一实现与同一宏配置。
-   - [引用] ISO/IEC 14882:2023 §[strings]（basic_string）；cppreference "std::string" 词条。
+   - <span class="badge badge-std">标准</span> 标准库的实现细节（如 `std::string` 的小字符串缓冲布局）不在标准保证内；跨越 ABI 边界传递标准库类型须两边使用同一实现与同一宏配置。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[strings]（basic_string）；cppreference "std::string" 词条。
 
 2. **真实场景：header-only 库跨多 TU 实例化一致性。** 你发布的模板库在 A、B 两个翻译单元各自实例化同一模板，优化后内联展开不一致。请用 ODR 说明为何必须“同一定义”。
-   - [标准] 内联函数与模板实体在每个翻译单元中必须拥有相同的定义（token 序列与含义一致），否则违反 ODR。
-   - [引用] ISO/IEC 14882:2023 §[basic.def.odr]（内联/模板实体的同一定义要求）；cppreference "One Definition Rule" 词条。
+   - <span class="badge badge-std">标准</span> 内联函数与模板实体在每个翻译单元中必须拥有相同的定义（token 序列与含义一致），否则违反 ODR。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.def.odr]（内联/模板实体的同一定义要求）；cppreference "One Definition Rule" 词条。
 
 3. **真实场景：用 inline namespace 做 ABI 版本。** 你给 `v2` 名字空间加 `inline`，旧调用点无需改写即可解析到新实现。请说明 inline namespace 的查找规则。
-   - [标准] inline namespace 的成员如同定义在外层命名空间中，无名查找自动向外穿透；可用于 ABI/API 版本分层。
-   - [引用] ISO/IEC 14882:2023 §[namespace.def.inline]（inline namespace）；cppreference "namespace" 词条。
+   - <span class="badge badge-std">标准</span> inline namespace 的成员如同定义在外层命名空间中，无名查找自动向外穿透；可用于 ABI/API 版本分层。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[namespace.def.inline]（inline namespace）；cppreference "namespace" 词条。
 
 把全章浓缩成一张可贴墙的表。
 
-> **示例 44** [难度 ★★★☆☆] [主题：速查表]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```cpp
 // ⑳ vcpkg 速查
 //   声明依赖      : vcpkg.json { "dependencies": ["fmt"] }
@@ -712,7 +712,7 @@ main:
 //   模式          : manifest 模式（推荐）> 古典全局 install
 ```
 
-> **示例 45** [难度 ★★☆☆☆] [主题：速查表]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ Conan 速查
 //   声明依赖      : conanfile.py requires = "fmt/10.1.1"
@@ -722,7 +722,7 @@ main:
 //   生成器        : CMakeDeps + CMakeToolchain
 ```
 
-> **示例 46** [难度 ★★★☆☆] [主题：速查表]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```cpp
 // ⑳ 通用速查
 //   链接姿势      : target_link_libraries(x PRIVATE pkg::pkg)   // 永远用 imported target
@@ -758,7 +758,7 @@ main:
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：C++ 包管理的来龙去脉
-[史] C++ 长期"没有官方包管理器"，依赖系统包管理器（apt/brew）或手写 FetchContent；这与 Go/Rust/Node 出生自带包管理形成鲜明对比。[史] Conan 由 JFrog 于 2016 年发布，主创 Diego Rodríguez-Losada，定位"去中心化、二进制缓存、跨平台"的 C/C++ 包管理器。[史] vcpkg 由 Microsoft 于 2016 年开源，采用"端口（port）+ 三元组（triplet）+ manifest"模型，深度集成 MSVC/CMake。[评] 两者同年出现，反映业界对"二进制分发 + 可重现"的迫切需求；而 C++ 没有统一 ABI 让包管理远比其它语言痛苦（Itanium C++ ABI 仅覆盖 Linux/部分平台）。
+<span class="badge badge-history">史</span> C++ 长期"没有官方包管理器"，依赖系统包管理器（apt/brew）或手写 FetchContent；这与 Go/Rust/Node 出生自带包管理形成鲜明对比。<span class="badge badge-history">史</span> Conan 由 JFrog 于 2016 年发布，主创 Diego Rodríguez-Losada，定位"去中心化、二进制缓存、跨平台"的 C/C++ 包管理器。<span class="badge badge-history">史</span> vcpkg 由 Microsoft 于 2016 年开源，采用"端口（port）+ 三元组（triplet）+ manifest"模型，深度集成 MSVC/CMake。<span class="badge badge-comment">评</span> 两者同年出现，反映业界对"二进制分发 + 可重现"的迫切需求；而 C++ 没有统一 ABI 让包管理远比其它语言痛苦（Itanium C++ ABI 仅覆盖 Linux/部分平台）。
 
 ### ㉒.2 真实工程坐标：包管理活在哪些产品/项目里
 
@@ -784,9 +784,9 @@ main:
 - 头-only 库误用：以为头-only 无 ABI 问题，却因宏定义（如 `NDEBUG`、特性宏）不同产生 ODR 违规。
 
 ### ㉒.4 与标准的互动：包管理与 C++ 标准的演进
-[评] 包管理不属于 ISO C++ 标准范畴，但标准演进会放大其难度：C++20 Modules 要求包管理器能分发模块接口单元（BMI），传统"头文件即接口"模型被打破；标准库本身（如 `std::format` 进标准）也减少了部分第三方依赖需求（fmt 被吸收）。[评] 属工程实践层，无单独 WG21 提案，但 SG15（Tooling）研究包/模块生态，相关讨论见 open-std.org。
+<span class="badge badge-comment">评</span> 包管理不属于 ISO C++ 标准范畴，但标准演进会放大其难度：C++20 Modules 要求包管理器能分发模块接口单元（BMI），传统"头文件即接口"模型被打破；标准库本身（如 `std::format` 进标准）也减少了部分第三方依赖需求（fmt 被吸收）。<span class="badge badge-comment">评</span> 属工程实践层，无单独 WG21 提案，但 SG15（Tooling）研究包/模块生态，相关讨论见 open-std.org。
 
-- [史] 标准演进直接削弱部分第三方依赖：C++20 **`<format>`（P0645）** 进标准后，许多项目从 `{fmt}` 迁到 `std::format`，包管理器里 fmt 依赖随之减少；C++23 的 `<expected>`/`<print>` 同理挤压 `abseil`/`fmt` 的独占场景。包管理本身无 WG21 提案，但 WG21 **SG15（Tooling）** 研究模块/包生态互操作，相关讨论见 [open-std.org](https://www.open-std.org/)。
+- <span class="badge badge-history">史</span> 标准演进直接削弱部分第三方依赖：C++20 **`<format>`（P0645）** 进标准后，许多项目从 `{fmt}` 迁到 `std::format`，包管理器里 fmt 依赖随之减少；C++23 的 `<expected>`/`<print>` 同理挤压 `abseil`/`fmt` 的独占场景。包管理本身无 WG21 提案，但 WG21 **SG15（Tooling）** 研究模块/包生态互操作，相关讨论见 [open-std.org](https://www.open-std.org/)。
 
 ### ㉒.5 权威引用
 - https://conan.io/ ：Conan 官方站，证明 JFrog 2016 与二进制缓存模型。
@@ -797,7 +797,7 @@ main:
 
 ## 附录 E：包管理工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录 E：包管理工业与面试 [B: ]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：包管理工业与面试 [B:
 ```
 C++包管理的三种范式:
 
@@ -817,7 +817,7 @@ CMake FetchContent:
   劣势: 无版本管理, 无二进制缓存
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：附录 E：包管理工业与面试 [B: ]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：包管理工业与面试 [B:
 ```cpp
 #include <iostream>
 int main() {
@@ -847,7 +847,7 @@ int main() {
 | FetchContent | 零外部工具 | 无版本管理 | 小项目/原型 |
 | git submodule | pin精确版本 | 更新繁琐 | 深度集成的依赖 |
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：附录 G: Conan vs vcp]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G: Conan vs vcp
 ```cpp
 #include <iostream>
 int main(){std::cout<<"vcpkg=simple+Windows; Conan=flexible+enterprise; FetchContent=zero-dep"<<std::endl;return 0;}
@@ -878,7 +878,7 @@ target_link_libraries(my_app PRIVATE fmt::fmt spdlog::spdlog)
 
 vcpkg triplet: x64-windows/x64-linux/arm64-android等20+平台
 
-> **示例 50** [难度 ★★☆☆☆] [主题：附录 H：vcpkg manifes]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：vcpkg manifes
 ```cpp
 #include <iostream>
 int main(){std::cout<<"vcpkg=manifest(vcpkg.json)+CMake+triplet=cross-platform C++ package mgr"<<std::endl;return 0;}
@@ -935,7 +935,7 @@ call [rcx]                ; 首次解析后填回 GOT
 
 ## 底层视角：编译旗标、SIMD 与二进制布局 [E: Low-level]
 
-[标准] `-O2` 开启内联与大部分优化，`-O3` 追加循环向量化与过程间分析；`-mavx2` 生成 32 字节（`0x0020`）宽 AVX 指令，`-mavx512f` 生成 64 字节（`0x0040`）宽 AVX-512，吞吐翻倍但需数据 32/64 字节对齐，否则 `vmovdqa` 触发 #GP。
+<span class="badge badge-std">标准</span> `-O2` 开启内联与大部分优化，`-O3` 追加循环向量化与过程间分析；`-mavx2` 生成 32 字节（`0x0020`）宽 AVX 指令，`-mavx512f` 生成 64 字节（`0x0040`）宽 AVX-512，吞吐翻倍但需数据 32/64 字节对齐，否则 `vmovdqa` 触发 #GP。
 
 SSE 寄存器 `0x0010`（16 字节）宽、AVX `0x0020`、AVX-512 `0x0040`；数据类型须 `alignas(0x0020)` / `alignas(0x0040)` 才能安全加载。缓存行 `0x0040`（64 字节）是 false sharing 与预取粒度的基本单位。
 
@@ -983,9 +983,9 @@ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.c
 # vcpkg 把 installed/x64-windows/share/fmt/fmt-config.cmake 暴露给 find_package
 ```
 
-[标准] 结论：manifest 模式把依赖写进版本控制，可复现；toolchain 文件把"包根目录"前置到 CMake 的搜索路径。
+<span class="badge badge-std">标准</span> 结论：manifest 模式把依赖写进版本控制，可复现；toolchain 文件把"包根目录"前置到 CMake 的搜索路径。
 
-[引用] vcpkg 官方文档（https://learn.microsoft.com/en-us/vcpkg/ 、 https://vcpkg.io/ ）讲 manifest 模式（`vcpkg.json`）与 `vcpkg.cmake` toolchain 集成：manifest 把依赖锁定进版本控制，toolchain 文件把包根目录前置到 CMake 搜索路径。
+<span class="badge badge-ref">引用</span> vcpkg 官方文档（https://learn.microsoft.com/en-us/vcpkg/ 、 https://vcpkg.io/ ）讲 manifest 模式（`vcpkg.json`）与 `vcpkg.cmake` toolchain 集成：manifest 把依赖锁定进版本控制，toolchain 文件把包根目录前置到 CMake 搜索路径。
 
 ### 练习 2（难度 ★★★）
 
@@ -999,7 +999,7 @@ CMakeDeps
 CMakeToolchain
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 int main() {
@@ -1008,16 +1008,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`CMakeDeps` 产出 `find_package` 可用的 `*Config.cmake`（提供导入目标），
+<span class="badge badge-std">标准</span> 结论：`CMakeDeps` 产出 `find_package` 可用的 `*Config.cmake`（提供导入目标），
 `CMakeToolchain` 产出工具链文件（设定编译器/标准库/架构），二者解耦"依赖描述"与"工具链"。
 
-[引用] Conan 2 官方文档（https://docs.conan.io/2/ ）中 CMakeDeps 生成器（https://docs.conan.io/2/reference/conanfile/tools/cmake/cmakedeps.html ）产出 `*Config.cmake` 导入目标；CMakeToolchain 生成器（https://docs.conan.io/2/reference/conanfile/tools/cmake/cmaketoolchain.html ）产出工具链文件，二者解耦依赖描述与工具链。
+<span class="badge badge-ref">引用</span> Conan 2 官方文档（https://docs.conan.io/2/ ）中 CMakeDeps 生成器（https://docs.conan.io/2/reference/conanfile/tools/cmake/cmakedeps.html ）产出 `*Config.cmake` 导入目标；CMakeToolchain 生成器（https://docs.conan.io/2/reference/conanfile/tools/cmake/cmaketoolchain.html ）产出工具链文件，二者解耦依赖描述与工具链。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：依赖地狱中的版本统一。** 你的项目里库 A 要 `fmt/9`、库 B 要 `fmt/10`，包管理器必须算出唯一可用版本。请写程序模拟"依赖图解析器"在冲突时如何按"取满足所有约束的最小上界"策略统一版本。
 
-> **示例 52** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -1051,9 +1051,9 @@ int main() {
 }
 ```
 
-[标准] 结论：现代包管理器用有向依赖图 + 版本约束求解统一版本；无法统一时（如要求互斥范围）才报冲突，需人工升级/降级。
+<span class="badge badge-std">标准</span> 结论：现代包管理器用有向依赖图 + 版本约束求解统一版本；无法统一时（如要求互斥范围）才报冲突，需人工升级/降级。
 
-[引用] Conan 2 文档（https://docs.conan.io/2/ ）讲 `requires(version_range)` 的版本约束求解；vcpkg / Conan / Cargo 等均以"满足所有约束的最小上界"策略统一版本，无法统一才报冲突。
+<span class="badge badge-ref">引用</span> Conan 2 文档（https://docs.conan.io/2/ ）讲 `requires(version_range)` 的版本约束求解；vcpkg / Conan / Cargo 等均以"满足所有约束的最小上界"策略统一版本，无法统一才报冲突。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -1079,7 +1079,7 @@ conan install . --output-folder=build --build=missing
 # 已缓存的三元组( gcc 13, Release, x86_64 )直接命中二进制，跳过编译
 ```
 
-> **示例 53** [难度 ★★★☆☆] [主题：演绎 2：Conan 二进制缓存避免]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：Conan 二进制缓存避免
 ```cpp
 #include <iostream>
 int main() { std::cout << "命中二进制缓存，省去源码编译。\n"; }

@@ -12,23 +12,23 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-即便有了 C++11/14，日常代码依旧啰嗦：解包 `pair` 要写 `first/second`、处理"可能有值"得自己用指针或 bool 标记、遍历容器拼字符串得算长度……[评] 委员会在 2017 年把一批"小而高频"的特性打包进标准，目标是**让普通程序员不必再等框架（如 Boost）就能用上现代写法**。[史] 其中 `std::optional`、`std::variant`、`std::string_view`、`std::filesystem` 多源自 Boost 的成熟实践，经标准化后成为人人可用的一等公民。[史]
+即便有了 C++11/14，日常代码依旧啰嗦：解包 `pair` 要写 `first/second`、处理"可能有值"得自己用指针或 bool 标记、遍历容器拼字符串得算长度……<span class="badge badge-comment">评</span> 委员会在 2017 年把一批"小而高频"的特性打包进标准，目标是**让普通程序员不必再等框架（如 Boost）就能用上现代写法**。<span class="badge badge-history">史</span> 其中 `std::optional`、`std::variant`、`std::string_view`、`std::filesystem` 多源自 Boost 的成熟实践，经标准化后成为人人可用的一等公民。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
 
-- **2017**：ISO/IEC 14882:2017（草案 N4659）发布。[史]
-- 关键特性：结构化绑定、`if`/`switch` 带初始化、折叠表达式、`std::string_view`、`std::optional`/`std::variant`/`std::any`、`std::filesystem`、并行算法执行策略、CTAD、`[[nodiscard]]`/`[[maybe_unused]]`、保证的拷贝消除、内联变量。[史]
+- **2017**：ISO/IEC 14882:2017（草案 N4659）发布。<span class="badge badge-history">史</span>
+- 关键特性：结构化绑定、`if`/`switch` 带初始化、折叠表达式、`std::string_view`、`std::optional`/`std::variant`/`std::any`、`std::filesystem`、并行算法执行策略、CTAD、`[[nodiscard]]`/`[[maybe_unused]]`、保证的拷贝消除、内联变量。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区有"用特殊哨兵值"还是"用指针"的多年争论，最终委员会选了类型安全的 `optional`，把"空"变成一等类型。[史][评] 结构化绑定也曾引发"是否破坏封装"的讨论——反对者担心它鼓励盲目拆对象，支持者认为它大幅削减样板；标准最终放行。[评] 至于"保证的拷贝消除"，则是把编译器本就常做的优化**写进标准强制**，体现"把既成事实规范化"的务实路线。[史]
+C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区有"用特殊哨兵值"还是"用指针"的多年争论，最终委员会选了类型安全的 `optional`，把"空"变成一等类型。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 结构化绑定也曾引发"是否破坏封装"的讨论——反对者担心它鼓励盲目拆对象，支持者认为它大幅削减样板；标准最终放行。<span class="badge badge-comment">评</span> 至于"保证的拷贝消除"，则是把编译器本就常做的优化**写进标准强制**，体现"把既成事实规范化"的务实路线。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] `std::filesystem` 因各厂商对符号链接、权限的语义分歧，曾一度被提议从 C++17 抽出、推迟到 C++20 TS，最终仍随 2017 标准定稿，是标准定稿前著名的"赶 deadline"波折。
-- [史] 并行算法执行策略（`std::execution::par`）随 C++17 进入标准库，让 `std::sort`/`std::transform` 等一键并行，但需底层线程库（常为 Intel TBB）支撑，落地依赖厂商实现。
-- [史] `[[nodiscard]]`/`[[maybe_unused]]` 等标准属性逐步统一了 GCC 的 `__attribute__` 与 MSVC 的 `__declspec`，跨编译器写法趋于收敛。
-- [评] C++17 被公认为"新项目最低可接受基线"，它把 Boost 里最常用的 `optional`/`variant`/`string_view` 收编为标准，几乎人人受益、几乎无人反对。
+- <span class="badge badge-history">史</span> `std::filesystem` 因各厂商对符号链接、权限的语义分歧，曾一度被提议从 C++17 抽出、推迟到 C++20 TS，最终仍随 2017 标准定稿，是标准定稿前著名的"赶 deadline"波折。
+- <span class="badge badge-history">史</span> 并行算法执行策略（`std::execution::par`）随 C++17 进入标准库，让 `std::sort`/`std::transform` 等一键并行，但需底层线程库（常为 Intel TBB）支撑，落地依赖厂商实现。
+- <span class="badge badge-history">史</span> `[[nodiscard]]`/`[[maybe_unused]]` 等标准属性逐步统一了 GCC 的 `__attribute__` 与 MSVC 的 `__declspec`，跨编译器写法趋于收敛。
+- <span class="badge badge-comment">评</span> C++17 被公认为"新项目最低可接受基线"，它把 Boost 里最常用的 `optional`/`variant`/`string_view` 收编为标准，几乎人人受益、几乎无人反对。
 
 > 史料来源：ISO C++17 标准 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
@@ -44,7 +44,7 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 [第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)
 [第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)
 
-> **示例 1** [难度 ★★★☆☆] [主题：学习目标]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 学习目标
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -57,7 +57,7 @@ int main() {}
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -73,7 +73,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★★☆☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后续依赖
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -86,7 +86,7 @@ int main() {}
 
 ## ④ 知识图谱
 
-> **示例 4** [难度 ★★☆☆☆] [主题：知识图谱]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱
 ```cpp
 // [merged] ## ④ 知识图谱
 #include <iostream>
@@ -97,7 +97,7 @@ int main() {
 }
 ```
 
-> **示例 5** [难度 ★★★☆☆] [主题：知识图谱]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱
 ```
 C++17 生产力
 ├─ 结构化绑定: auto [a,b] = pair/struct/tuple
@@ -116,7 +116,7 @@ C++17 生产力
 
 ## ⑤ Mermaid（结构化绑定解构）
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：Mermaid 图解]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Mermaid 图解
 ```cpp
 // [merged] ## ⑤ Mermaid（结构化绑定解构）
 #include <iostream>
@@ -127,9 +127,9 @@ int main() {
 }
 ```
 
-## ⑥ UML / 结构图（特性关系）[标准]
+## ⑥ UML / 结构图（特性关系）<span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★★☆☆☆] [主题：结构图（特性关系）[标准]]
+> **示例 7** [难度 ★★☆☆☆] [主题：结构图（特性关系）<span class="badge badge-std">标准</span>]
 ```cpp
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
@@ -159,7 +159,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑦ ASCII 内存图（string_view 不拥有数据）
 
-> **示例 8** [难度 ★★☆☆☆] [主题：内存图]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（string_view 不拥有数据）
 #include <iostream>
@@ -171,7 +171,7 @@ int main() {
 
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：生命周期（新增库类型的所有权语义）]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期（新增库类型的所有权语义）
 ```cpp
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
@@ -187,11 +187,11 @@ int main() {
 `string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
 ## ⑨ 调用栈（编译期分支与折叠）
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```cpp
 auto t=std::make_tuple(1,2); void use_apply(){ std::apply([](auto...x){ ((void)x, ...); }, t); }
 ```
-> **示例 11** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```cpp
 // 并行算法（执行策略）
 #include <algorithm>
@@ -201,7 +201,7 @@ void s(){ std::vector<int> v(4); std::sort(std::execution::par, v.begin(), v.end
 ```
 
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
-> **示例 12** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```
 string_view sv:
 ┌──────────┬──────────┐
@@ -213,7 +213,7 @@ string_view sv:
 
 ## ⑩ 汇编（折叠表达式展开）
 
-> **示例 13** [难度 ★★☆☆☆] [主题：汇编（折叠表达式展开）]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编（折叠表达式展开）
 ```cpp
 // [merged] ## ⑩ 汇编（折叠表达式展开）
 #include <iostream>
@@ -229,7 +229,7 @@ int main() {
 
 ## ⑪ STL 联系
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：联系]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
 ```cpp
 // [merged] ## ⑪ STL 联系
 #include <iostream>
@@ -246,7 +246,7 @@ int main() {}
 
 ## ⑫ 工业案例
 
-> **示例 15** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -261,7 +261,7 @@ int main() {}
 
 ## ⑬ 源码分析
 
-> **示例 16** [难度 ★★☆☆☆] [主题：源码分析]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析
 ```cpp
 // [merged] ## ⑬ 源码分析
 #include <iostream>
@@ -275,7 +275,7 @@ int main() {}
 
 ## ⑭ WG21 提案
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：提案]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
 ```cpp
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
@@ -302,7 +302,7 @@ int main() {}
 
 ## ⑮ 面试题
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -320,7 +320,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 19** [难度 ★★★☆☆] [主题：易错点]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点
 ```cpp
 // [merged] ## ⑯ 易错点
 #include <iostream>
@@ -339,7 +339,7 @@ int main() {
 
 ## ⑰ FAQ
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // 嵌套命名空间别名
 namespace a::b::c { int v=0; }
@@ -350,7 +350,7 @@ namespace a::b::c { int v=0; }
 
 ## ⑱ 最佳实践
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 #include <array>
 std::array<int,2> arr{1,2}; void use_arr(){ auto [x,y]=arr; (void)x;(void)y; }
@@ -361,7 +361,7 @@ std::array<int,2> arr{1,2}; void use_arr(){ auto [x,y]=arr; (void)x;(void)y; }
 
 ## ⑲ 性能分析
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
 ```cpp
 // [[maybe_unused]] 参数
 void log([[maybe_unused]] int verbose){}
@@ -374,18 +374,18 @@ void log([[maybe_unused]] int verbose){}
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `if (auto it = m.find(k); it != m.end())` 缩短作用域。** 你不想让 `it` 泄漏到外层。请说明带初始化器的 if。
-   - [标准] C++17 起 `if`/`switch` 可携带初始化语句，变量的作用域被限制在条件及其分支内。
-   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if 带初始化器）；cppreference "if statement" 词条。
+   - <span class="badge badge-std">标准</span> C++17 起 `if`/`switch` 可携带初始化语句，变量的作用域被限制在条件及其分支内。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stmt.if]（if 带初始化器）；cppreference "if statement" 词条。
 
 2. **真实场景：用结构化绑定遍历 map `auto& [k,v] = *it;`。** 你摆脱冗长的 `it->first/second`。请说明绑定规则。
-   - [标准] 结构化绑定声明可绑定到数组、类类型成员或 tuple-like 类型，按元素引出名字。
-   - [引用] ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定）；cppreference "Structured binding" 词条。
+   - <span class="badge badge-std">标准</span> 结构化绑定声明可绑定到数组、类类型成员或 tuple-like 类型，按元素引出名字。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定）；cppreference "Structured binding" 词条。
 
 3. **真实场景：inline 变量让 `inline const int k = 42;` 可放头文件。** 你不再需要 `.cpp` 里定义一次。请说明 inline 变量的作用。
-   - [标准] C++17 引入 inline 变量，使其可在多个翻译单元拥有同一定义而合法（解决多 TU 单定义）。
-   - [引用] ISO/IEC 14882:2023 §[dcl.inline]（inline 变量）；cppreference "inline" 词条。
+   - <span class="badge badge-std">标准</span> C++17 引入 inline 变量，使其可在多个翻译单元拥有同一定义而合法（解决多 TU 单定义）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.inline]（inline 变量）；cppreference "inline" 词条。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // C++17 小结：结构化绑定/optional/string_view/折叠/if constexpr
 ```
@@ -396,7 +396,7 @@ void log([[maybe_unused]] int verbose){}
 
 ### ㉒.1 历史渊源补强：C++17 把"现代写法"钉死
 
-[史] C++17（ISO/IEC 14882:2017，2017-12 发布）是第一个充分体现"3 年节奏"的大版本，吸纳了多个 TS 的成熟成果：**结构化绑定**（P0217，Jens Maurer）、**`std::string_view`**（P0220，从 Library Fundamentals TS 采纳）、**`if constexpr`**（模板元编程去 SFINAE 化）、**折叠表达式**、**`std::optional`/`variant`/`any`**、**`std::filesystem`**（源自 Boost.Filesystem）、内联变量、以及 `[[nodiscard]]`/`[[maybe_unused]]` 属性。[史] `std::filesystem` 的提案最早可追溯到 2000 年代初的 Boost.Filesystem v1/v2/v3，前后十余年才进标准——是标准"慢"的典型例子。[轶] `std::variant` 的"从未取值访问抛 `bad_variant_access`"语义，曾在 LEWG 引发激烈讨论，最后定下"非异常中立"的访问模型。[评] C++17 是今天公认的"最低现代基线"：它让 `optional`/`string_view`/`if constexpr` 成为日常，几乎所有新库都以 17 起跳。
+<span class="badge badge-history">史</span> C++17（ISO/IEC 14882:2017，2017-12 发布）是第一个充分体现"3 年节奏"的大版本，吸纳了多个 TS 的成熟成果：**结构化绑定**（P0217，Jens Maurer）、**`std::string_view`**（P0220，从 Library Fundamentals TS 采纳）、**`if constexpr`**（模板元编程去 SFINAE 化）、**折叠表达式**、**`std::optional`/`variant`/`any`**、**`std::filesystem`**（源自 Boost.Filesystem）、内联变量、以及 `[[nodiscard]]`/`[[maybe_unused]]` 属性。<span class="badge badge-history">史</span> `std::filesystem` 的提案最早可追溯到 2000 年代初的 Boost.Filesystem v1/v2/v3，前后十余年才进标准——是标准"慢"的典型例子。<span class="badge badge-anecdote">轶</span> `std::variant` 的"从未取值访问抛 `bad_variant_access`"语义，曾在 LEWG 引发激烈讨论，最后定下"非异常中立"的访问模型。<span class="badge badge-comment">评</span> C++17 是今天公认的"最低现代基线"：它让 `optional`/`string_view`/`if constexpr` 成为日常，几乎所有新库都以 17 起跳。
 
 ### ㉒.2 真实工程坐标：C++17 活在哪
 
@@ -404,7 +404,7 @@ C++17 是今天工业界的事实默认基线。下面按领域展开：
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 主流库默认 | LLVM 16+ / Abseil / fmt 9+ / spdlog / Protobuf（以 C++17 最低） | CMake `cxx_std_17` 事实默认 | 库生态共识 | [STANDARD] `string_view`/`optional`/`if constexpr` |
+| 主流库默认 | LLVM 16+ / Abseil / fmt 9+ / spdlog / Protobuf（以 C++17 最低） | CMake `cxx_std_17` 事实默认 | 库生态共识 | <span class="badge badge-std">STANDARD</span> `string_view`/`optional`/`if constexpr` |
 | 服务端 / 云原生 | 微服务 / 数据库（ClickHouse 子集 / TiKV）用 `string_view` 零拷贝 / `optional` 可空 | 网络报文与可空表达 | 云原生服务 | `string_view` 零拷贝处理报文 |
 | 游戏与图形 | Unreal / Unity 工具 / 引擎脚本桥接用 `if constexpr` 编译期分派 | 编译期传感器 / 分支分派 | 实时引擎 | `if constexpr` 去运行期分支 |
 | Chromium 基线 | Chromium 自 2021 要求 C++17，`optional`/`string_view` 广泛用 | 浏览器引擎与网络栈 | 工业级浏览器 | 禁止未支持 17 的编译器 |
@@ -426,10 +426,10 @@ C++17 是今天工业界的事实默认基线。下面按领域展开：
 
 ### ㉒.4 与标准的互动：TS 转正与弃用
 
-[史] C++17 大量特性来自 TS（`string_view`/`optional`/`any` 来自 Library Fundamentals TS，`filesystem` 来自 Filesystem TS），是"解耦模型"首次大规模兑现；同时它**弃用** `std::auto_ptr`、`<codecvt>`、`std::result_of` 等，为 C++20 清理铺路。[评] C++17 与 C++20 的关系，恰如 C++14 与 C++17：小完善 vs 大跨越。理解 17 是理解 20 的前提。
+<span class="badge badge-history">史</span> C++17 大量特性来自 TS（`string_view`/`optional`/`any` 来自 Library Fundamentals TS，`filesystem` 来自 Filesystem TS），是"解耦模型"首次大规模兑现；同时它**弃用** `std::auto_ptr`、`<codecvt>`、`std::result_of` 等，为 C++20 清理铺路。<span class="badge badge-comment">评</span> C++17 与 C++20 的关系，恰如 C++14 与 C++17：小完善 vs 大跨越。理解 17 是理解 20 的前提。
 
-- [史] **结构化绑定**的设计来自 **P0144R2**（Herb Sutter、Stroustrup、Dos Reis），措辞由 **P0217** 经 R0→R3 打磨（Jacksonville 会议定下 `[]` 语法、绑定变量为引用、支持位域、`tuple_size`/`tuple_element` 定制点），R3 于 2016-06-24 定稿并入 C++17。见 [P0144](https://wg21.link/P0144)、[P0217](https://wg21.link/P0217)。
-- [史] **`std::string_view`** 并非独立 P 提案，而是源自 Library Fundamentals TS（TS 19568），由 **P0220R1（2016-03-03，"Adopt Library Fundamentals V1 TS Components for C++17"）** 整体采纳进 C++17，同批进入的还有 `<optional>`/`<any>`/`<memory_resource>`；其非拥有视图的设计动机最早可追到 2013 年前后的 `string_view` 雏形。见 [P0220](https://wg21.link/P0220)。
+- <span class="badge badge-history">史</span> **结构化绑定**的设计来自 **P0144R2**（Herb Sutter、Stroustrup、Dos Reis），措辞由 **P0217** 经 R0→R3 打磨（Jacksonville 会议定下 `[]` 语法、绑定变量为引用、支持位域、`tuple_size`/`tuple_element` 定制点），R3 于 2016-06-24 定稿并入 C++17。见 [P0144](https://wg21.link/P0144)、[P0217](https://wg21.link/P0217)。
+- <span class="badge badge-history">史</span> **`std::string_view`** 并非独立 P 提案，而是源自 Library Fundamentals TS（TS 19568），由 **P0220R1（2016-03-03，"Adopt Library Fundamentals V1 TS Components for C++17"）** 整体采纳进 C++17，同批进入的还有 `<optional>`/`<any>`/`<memory_resource>`；其非拥有视图的设计动机最早可追到 2013 年前后的 `string_view` 雏形。见 [P0220](https://wg21.link/P0220)。
 
 ### ㉒.5 权威引用
 
@@ -441,7 +441,7 @@ C++17 是今天工业界的事实默认基线。下面按领域展开：
 
 ## 附录: C++17 五大特性速查
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录: C++17 五大特性速查]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++17 五大特性速查
 ```cpp
 #include <iostream>
 #include <optional>
@@ -450,7 +450,7 @@ std::optional<int>safe_div(int a,int b){if(b==0)return{};return a/b;}
 int main(){if(auto r=safe_div(10,2))std::cout<<*r<<std::endl;return 0;}
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录: C++17 五大特性速查]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++17 五大特性速查
 ```cpp
 #include <iostream>
 #include <variant>
@@ -458,14 +458,14 @@ int main(){if(auto r=safe_div(10,2))std::cout<<*r<<std::endl;return 0;}
 int main(){std::variant<int,std::string>v="hello";std::cout<<std::get<std::string>(v)<<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录: C++17 五大特性速查]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++17 五大特性速查
 ```cpp
 #include <iostream>
 #include <map>
 int main(){std::map<int,int>m{{1,10},{2,20}};for(auto[k,v]:m)std::cout<<k<<":"<<v<<" ";std::cout<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★★★☆☆] [主题：附录: C++17 五大特性速查]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: C++17 五大特性速查
 ```cpp
 #include <iostream>
 template<typename T>auto print(T t){if constexpr(std::is_integral_v<T>)std::cout<<"int:"<<t;else std::cout<<"other:"<<t;std::cout<<std::endl;}
@@ -476,7 +476,7 @@ int main(){print(42);print("str");return 0;}
 
 ## 附录 B: C++17 更多特性实例
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录 B: C++17 更多特性实例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++17 更多特性实例
 ```cpp
 #include <iostream>
 #include <filesystem>
@@ -484,7 +484,7 @@ namespace fs=std::filesystem;
 int main(){auto p=fs::current_path();std::cout<<p.string()<<std::endl;return 0;}
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录 B: C++17 更多特性实例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++17 更多特性实例
 ```cpp
 #include <iostream>
 #include <any>
@@ -492,7 +492,7 @@ int main(){auto p=fs::current_path();std::cout<<p.string()<<std::endl;return 0;}
 int main(){std::any a=42;a=std::string("hello");std::cout<<std::any_cast<std::string>(a)<<std::endl;return 0;}
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：附录 B: C++17 更多特性实例]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++17 更多特性实例
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -501,7 +501,7 @@ void print(std::string_view sv){std::cout<<sv<<std::endl;}
 int main(){print("hello");std::string s="world";print(s);return 0;}
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录 B: C++17 更多特性实例]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: C++17 更多特性实例
 ```cpp
 #include <iostream>
 template<typename...Ts> auto sum(Ts...ts){return (ts+...);}
@@ -509,7 +509,7 @@ int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
 ```
 ## 附录 C：C++17底层与工业采纳 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 32** [难度 ★★★★☆] [主题：附录 C：C++17底层与工业采纳 ]
+> **示例 32** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：C++17底层与工业采纳
 ```
 C++17关键特性底层分析:
 
@@ -522,7 +522,7 @@ string_view: 零拷贝(指针+长度), ~5× faster than const string&
 filesystem: 跨平台统一, 替代boost::filesystem
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录 C：C++17底层与工业采纳 ]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：C++17底层与工业采纳
 ```cpp
 #include <iostream>
 #include <optional>
@@ -581,7 +581,7 @@ if constexpr(P0292R2): 死分支不编译→编译快2-5x, 二进制减10-30%
 ; string_view:   lea rdi,[str]; mov esi,len; call process (~0ns overhead)
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：汇编验证]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编验证
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -597,7 +597,7 @@ Q: if constexpr vs SFINAE? A: 简单分支→if constexpr; 多重重载→concep
 
 ## 附录 E：C++17面试速查
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录 E：C++17面试速查]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C++17面试速查
 ```cpp
 #include <iostream>
 #include <optional>
@@ -660,7 +660,7 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 
 **真实场景：解析配置/HTTP 头键值对。** 你处理一个 `std::map` 里的配置项（超时、重试次数），`it->first`/`it->second` 写法又长又易错。请用 C++17 结构化绑定遍历并解构 `[key, value]`，说明它如何提升可读性并减少 `it->` 噪音。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <map>
@@ -678,16 +678,16 @@ int main() {
 }
 ```
 
-[标准] 结论：结构化绑定按元素引用/拷贝绑定，避免 `.first/.second` 与冗长的
+<span class="badge badge-std">标准</span> 结论：结构化绑定按元素引用/拷贝绑定，避免 `.first/.second` 与冗长的
 `std::get<0>`；对自定义聚合体也生效，是现代遍历/多返回值的首选语法。
 
-[引用] ISO C++17 §[dcl.struct.bind]；cppreference "结构化绑定"（https://en.cppreference.com/w/cpp/language/structured_binding）。结构化绑定由 WG21 论文 P0217R3 引入。
+<span class="badge badge-ref">引用</span> ISO C++17 §[dcl.struct.bind]；cppreference "结构化绑定"（https://en.cppreference.com/w/cpp/language/structured_binding）。结构化绑定由 WG21 论文 P0217R3 引入。
 
 ### 练习 2（难度 ★★★）
 
 **真实场景：缓存/配置查表可能缺失。** 你写一个 `lookup(key)`：查缓存命中返回结果，未命中不应返回 `-1` 之类魔法值（调用方容易忘判）。请用 `std::optional<T>` 实现一个可能失败的查表，并演示 `value_or` 与 `has_value` 如何强制处理缺失分支。
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <optional>
@@ -708,16 +708,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`optional` 把“无值”编码进类型，调用方被迫处理缺失分支，消除了魔法值
+<span class="badge badge-std">标准</span> 结论：`optional` 把“无值”编码进类型，调用方被迫处理缺失分支，消除了魔法值
 （如 `-1`/`nullptr`）的歧义；但它按值存储 `T`，大对象仍有拷贝成本。
 
-[引用] ISO C++17 §[optional]；cppreference "std::optional"（https://en.cppreference.com/w/cpp/utility/optional）。`optional` 由 WG21 论文 P0220R1（Library Fundamentals v1 入标准）引入。
+<span class="badge badge-ref">引用</span> ISO C++17 §[optional]；cppreference "std::optional"（https://en.cppreference.com/w/cpp/utility/optional）。`optional` 由 WG21 论文 P0220R1（Library Fundamentals v1 入标准）引入。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：类型安全的序列化/JSON 编码。** 你写一个把异构值转成字符串的小编码器，`stringify` 要按类型分支、`sum` 要把任意个指标聚合成总和。请用 `if constexpr` + 折叠表达式实现，并说明二者都在编译期完成、零运行期开销。
 
-> **示例 38** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -744,10 +744,10 @@ int main() {
 }
 ```
 
-[标准] 结论：`if constexpr` 只实例化命中的分支（未命中分支无需合法），取代了大量
+<span class="badge badge-std">标准</span> 结论：`if constexpr` 只实例化命中的分支（未命中分支无需合法），取代了大量
 SFINAE/标签分派样板；折叠表达式把变参递归展开压成一行，二者均零运行期开销。
 
-[引用] ISO C++17 §[stmt.if]（if constexpr）与 §[expr.prim.fold]（折叠表达式）；cppreference "if constexpr"（https://en.cppreference.com/w/cpp/language/if）与 "折叠表达式"（https://en.cppreference.com/w/cpp/language/fold）。二者分别由 WG21 论文 P0292R2 / P0036R0 引入。
+<span class="badge badge-ref">引用</span> ISO C++17 §[stmt.if]（if constexpr）与 §[expr.prim.fold]（折叠表达式）；cppreference "if constexpr"（https://en.cppreference.com/w/cpp/language/if）与 "折叠表达式"（https://en.cppreference.com/w/cpp/language/fold）。二者分别由 WG21 论文 P0292R2 / P0036R0 引入。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -757,7 +757,7 @@ SFINAE/标签分派样板；折叠表达式把变参递归展开压成一行，�
 **选型**：`std::variant` 替代 `union`+tag，`std::visit` 强制穷尽所有可能类型。
 **落地**：
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：演绎 1：std::variant ]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：std::variant
 ```cpp
 #include <iostream>
 #include <variant>
@@ -788,7 +788,7 @@ int main() {
 **错误**：让 `string_view` 指向临时 `std::string`，临时销毁后视图悬垂。
 **落地**：
 
-> **示例 40** [难度 ★★★☆☆] [主题：演绎 2：stringview 零拷]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：stringview 零拷
 ```cpp
 #include <iostream>
 #include <string_view>

@@ -14,24 +14,24 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C++ 的三年节奏意味着：在 C++23 定稿的同时，下一版早已在 WG21 的提案堆里生长。C++26（写作时尚未最终冻结）的驱动力与以往不同——**它想补上 C++ 最后几块公认的短板**：编译期反射几乎为零、契约（contracts）在 C++20 被临门抽掉、并发模型仍缺统一执行器。[史][评] 这些不是凭空想象，而是十年来社区在反射、契约、执行器上的提案反复积淀的结果（如反射 P2996、契约 P2900）。[史]
+C++ 的三年节奏意味着：在 C++23 定稿的同时，下一版早已在 WG21 的提案堆里生长。C++26（写作时尚未最终冻结）的驱动力与以往不同——**它想补上 C++ 最后几块公认的短板**：编译期反射几乎为零、契约（contracts）在 C++20 被临门抽掉、并发模型仍缺统一执行器。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 这些不是凭空想象，而是十年来社区在反射、契约、执行器上的提案反复积淀的结果（如反射 P2996、契约 P2900）。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
 
-- **C++20 时期**：Contracts 原已投票进入标准，却在定稿前被撤回（因语义未定），成为社区著名"煮熟的鸭子飞了"事件。[史]
-- **2020s 中**：静态反射（P2996，David Sankel 等主导）、`std::execution` 发送者/接收者模型、模块化标准库逐步成熟。[史]
-- **预期 2026**：ISO/IEC 14882:2026 发布，收纳上述方向中已稳定者。[史]
+- **C++20 时期**：Contracts 原已投票进入标准，却在定稿前被撤回（因语义未定），成为社区著名"煮熟的鸭子飞了"事件。<span class="badge badge-history">史</span>
+- **2020s 中**：静态反射（P2996，David Sankel 等主导）、`std::execution` 发送者/接收者模型、模块化标准库逐步成熟。<span class="badge badge-history">史</span>
+- **预期 2026**：ISO/IEC 14882:2026 发布，收纳上述方向中已稳定者。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象（能遍历类型成员、生成代码），另一派怕它把 C++ 变成"带编译器的 Lisp"。[评] 契约则纠缠于"前置条件违反该崩溃还是抛异常"——C++20 的抽回正源于此分歧未解。[史] 执行器（sender/receiver）更是在"库实现（如 libunifex）已成熟"与"标准该不该绑定一种并发模型"之间拉锯。[评]
+C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象（能遍历类型成员、生成代码），另一派怕它把 C++ 变成"带编译器的 Lisp"。<span class="badge badge-comment">评</span> 契约则纠缠于"前置条件违反该崩溃还是抛异常"——C++20 的抽回正源于此分歧未解。<span class="badge badge-history">史</span> 执行器（sender/receiver）更是在"库实现（如 libunifex）已成熟"与"标准该不该绑定一种并发模型"之间拉锯。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] 契约（Contracts，P2900）在 C++20 定稿前被临时抽回，成为社区著名的"煮熟的鸭子飞了"事件；C++26 重新推动，焦点仍在"前置条件违反该崩溃还是抛异常"的语义分歧。
-- [史] 静态反射 P2996（David Sankel 等主导，约 500 页规格）目标是在编译期遍历类型成员、生成代码，被认为是 C++26 体量最大、争议也最大的单个提案。
-- [史] `std::execution`（发送者/接收者模型，P2300）试图统一异步编程，已被 libunifex 等库提前验证；其能否在 C++26 完整纳入仍取决于措辞定稿进度。
-- [评] 本章标注 `[实验性]` 正是"持续编年"的意义：待标准最终冻结，此处应回填真实特性清单与投票结果，而非凭草案下结论。
+- <span class="badge badge-history">史</span> 契约（Contracts，P2900）在 C++20 定稿前被临时抽回，成为社区著名的"煮熟的鸭子飞了"事件；C++26 重新推动，焦点仍在"前置条件违反该崩溃还是抛异常"的语义分歧。
+- <span class="badge badge-history">史</span> 静态反射 P2996（David Sankel 等主导，约 500 页规格）目标是在编译期遍历类型成员、生成代码，被认为是 C++26 体量最大、争议也最大的单个提案。
+- <span class="badge badge-history">史</span> `std::execution`（发送者/接收者模型，P2300）试图统一异步编程，已被 libunifex 等库提前验证；其能否在 C++26 完整纳入仍取决于措辞定稿进度。
+- <span class="badge badge-comment">评</span> 本章标注 `[实验性]` 正是"持续编年"的意义：待标准最终冻结，此处应回填真实特性清单与投票结果，而非凭草案下结论。
 
 > 史料来源：提案 P2900（契约） https://wg21.link/P2900 ；提案 P2996（反射） https://wg21.link/P2996
 
@@ -47,7 +47,7 @@ C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象
 [第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)
 [第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)
 
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -62,7 +62,7 @@ int main() {}
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -75,7 +75,7 @@ int main() {}
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★★★☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 后续依赖
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -89,7 +89,7 @@ int main() {}
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识图谱（ASCII）
 ```cpp
 // [merged] ## ④ 知识图谱（ASCII）
 #include <iostream>
@@ -100,7 +100,7 @@ void r9(){ std::vector<int> v{1,2,3}; auto x=v | std::views::take(2); for(int e:
 int main() {}
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
 C++26 (方向)
 ├─ 静态反射: std::meta / 反射运算符 (^^ / [: :] 提案)
@@ -115,7 +115,7 @@ C++26 (方向)
 
 ## ⑤ Mermaid（执行器 Sender 管线）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：Mermaid 图解]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Mermaid 图解
 ```cpp
 // [merged] ## ⑤ Mermaid（执行器 Sender 管线）
 #include <iostream>
@@ -125,9 +125,9 @@ int main() {
 }
 ```
 
-## ⑥ UML / 结构图（C++26 方向性特性）[标准]
+## ⑥ UML / 结构图（C++26 方向性特性）<span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：结构图（C++26 方向性特性）[标]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构图（C++26 方向性特性）[标
 ```cpp
 // [merged] ## ⑥ UML / 结构图（C++26 方向性特性）[标准]
 #include <iostream>
@@ -137,7 +137,7 @@ int main() {}
 C++26（草案）：静态反射、`std::execution` sender/receiver、契约 (contracts)、`std::simd`、扩展 `constexpr`、模式匹配（方向性，可能变动）。
 ## ⑦ ASCII 内存图（C++26 反射与值）
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：内存图（C++26 反射与值）]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（C++26 反射与值）
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（C++26 反射与值）
 #include <iostream>
@@ -148,7 +148,7 @@ int main() {}
 静态反射在编译期暴露类型元数据，不影响运行时对象布局；契约由编译器在前后置条件插入检查，无新内存模型（ch11）。
 ## ⑧ 生命周期（C++26 契约与 constexpr 扩展）
 
-> **示例 9** [难度 ★★☆☆☆] [主题：生命周期]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期
 ```cpp
 // [merged] ## ⑧ 生命周期（C++26 契约与 constexpr 扩展）
 #include <iostream>
@@ -159,7 +159,7 @@ int main() {}
 契约不改变对象生命周期；`constexpr` 扩展到更多库类型，更多计算移至编译期（ch22）。
 ## ⑨ 调用栈（C++26 sender/receiver 执行器）
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：调用栈]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈
 ```cpp
 // std::execution 执行策略改进
 #include <execution>
@@ -167,7 +167,7 @@ int main() {}
 #include <vector>
 void ex9(){ std::vector<int> v(2); std::sort(std::execution::par, v.begin(), v.end()); }
 ```
-> **示例 11** [难度 ★★☆☆☆] [主题：调用栈]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈
 ```cpp
 // 协程推广示意
 // task<int> gen26(){ co_yield 1; co_return 2; }
@@ -186,7 +186,7 @@ flowchart LR
 
 ## ⑩ 汇编（反射编译期生成）
 
-> **示例 12** [难度 ★★★☆☆] [主题：汇编（反射编译期生成）]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编（反射编译期生成）
 ```cpp
 // [merged] ## ⑩ 汇编（反射编译期生成）
 #include <iostream>
@@ -205,7 +205,7 @@ int main() {}
 
 ## ⑪ STL 联系
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：联系]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
 ```cpp
 // [merged] ## ⑪ STL 联系
 #include <iostream>
@@ -221,7 +221,7 @@ int main() {
 
 ## ⑫ 工业案例
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -234,7 +234,7 @@ int main() {}
 
 ## ⑬ 源码分析（方向）
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：源码分析（方向）]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析（方向）
 ```cpp
 // [merged] ## ⑬ 源码分析（方向）
 #include <iostream>
@@ -246,7 +246,7 @@ int main() {}
 
 ## ⑭ WG21 提案（关键，可能变动）
 
-> **示例 16** [难度 ★★☆☆☆] [主题：提案（关键，可能变动）]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 提案（关键，可能变动）
 ```cpp
 // [merged] ## ⑭ WG21 提案（关键，可能变动）
 #include <iostream>
@@ -265,7 +265,7 @@ int main() {
 
 ## ⑮ 面试题
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -280,7 +280,7 @@ int main() {}
 
 ## ⑯ 易错点
 
-> **示例 18** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // [merged] ## ⑯ 易错点
 #include <iostream>
@@ -293,7 +293,7 @@ int main() {}
 
 ## ⑰ FAQ
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // [merged] ## ⑰ FAQ
 #include <iostream>
@@ -310,7 +310,7 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // [merged] ## ⑱ 最佳实践
 #include <iostream>
@@ -325,7 +325,7 @@ int main() {}
 
 ## ⑲ 性能（不适用，方向性）
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：性能（不适用，方向性）]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（不适用，方向性）
 ```cpp
 // C++26 小结：反射/契约/模块化/数据并行（多为提案阶段）
 ```
@@ -335,18 +335,18 @@ int main() {}
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：跟进未冻结的 C++26 提案（如契约/P... 编号）。** 你阅读提案纸但不能把其内容当已定条款引用。请说明稳妥做法。
-   - [标准] 尚未正式发布的特性无最终条款号；应以其提案编号（P-number）与编译器实验 flag 跟踪，并在代码里用特性测试宏门控。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（SD-6 特性测试宏——隔离未冻结特性的唯一可靠依据）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 尚未正式发布的特性无最终条款号；应以其提案编号（P-number）与编译器实验 flag 跟踪，并在代码里用特性测试宏门控。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（SD-6 特性测试宏——隔离未冻结特性的唯一可靠依据）；cppreference "Feature test macros" 词条。
 
 2. **真实场景：在 `-std=c++26` 全面可用前用宏隔离新语法。** 你写兼容层让同一份源码在 C++23 与 26 都能编。请说明原则。
-   - [标准] 用 `__cplusplus` 与特性测试宏在编译期选择实现；未正式落地的特性不得假定存在。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（`__cplusplus` 与特性宏门控）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 用 `__cplusplus` 与特性测试宏在编译期选择实现；未正式落地的特性不得假定存在。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（`__cplusplus` 与特性宏门控）；cppreference "Feature test macros" 词条。
 
 3. **真实场景：评估新特性对现有代码库的迁移成本。** 你维护多标准版本库，需判断何时采用。请说明决策依据。
-   - [标准] 采纳新特性应以特性测试宏与实现支持矩阵为准，而非主观假设“标准已出即全平台可用”。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为支持判定）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 采纳新特性应以特性测试宏与实现支持矩阵为准，而非主观假设“标准已出即全平台可用”。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为支持判定）；cppreference "Feature test macros" 词条。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // 编译器版本探测
 #ifdef __GNUC__
@@ -360,7 +360,7 @@ static_assert(__GNUC__ >= 13, "gcc13+");
 
 ### ㉒.1 历史渊源补强：C++26 的方向性前瞻
 
-[史] C++26（计划 2026 发布）目前仍在 WG21 工作中，已锁定/强预期的方向包括：**静态反射**（P2996，用 `^^` 与 `[: ... :]` 在编译期反射类型，终结"标准无反射"四十年之痛）、**契约/Contracts**（P2900，函数前置/后置条件与断言，C++20 曾短暂引入又移除，如今重新设计回归）、**`std::execution`**（P2300，基于 sender/receiver 的异步执行框架）、以及 **`std::hazard_pointer`/`std::rcu`**（无锁并发原语）、**线性代数 `<linalg>`**、**SIMD `<simd>`** 等库。[史] 契约的曲折最戏剧化：C++20 原已纳入 Contracts（P0542）却在最后阶段被投票移除，P2900 是"吸取教训后"的重新提案。[轶] 反射 P2996 的 `^^` 运算符语法曾被社区戏称"最容易在键盘上找不到的符号"。[评] C++26 的主题是"把长期欠账（反射、契约、并发原语）一次性补齐"，但落地节奏以编译器支持为准，切勿在生产里抢用未就绪特性。
+<span class="badge badge-history">史</span> C++26（计划 2026 发布）目前仍在 WG21 工作中，已锁定/强预期的方向包括：**静态反射**（P2996，用 `^^` 与 `[: ... :]` 在编译期反射类型，终结"标准无反射"四十年之痛）、**契约/Contracts**（P2900，函数前置/后置条件与断言，C++20 曾短暂引入又移除，如今重新设计回归）、**`std::execution`**（P2300，基于 sender/receiver 的异步执行框架）、以及 **`std::hazard_pointer`/`std::rcu`**（无锁并发原语）、**线性代数 `<linalg>`**、**SIMD `<simd>`** 等库。<span class="badge badge-history">史</span> 契约的曲折最戏剧化：C++20 原已纳入 Contracts（P0542）却在最后阶段被投票移除，P2900 是"吸取教训后"的重新提案。<span class="badge badge-anecdote">轶</span> 反射 P2996 的 `^^` 运算符语法曾被社区戏称"最容易在键盘上找不到的符号"。<span class="badge badge-comment">评</span> C++26 的主题是"把长期欠账（反射、契约、并发原语）一次性补齐"，但落地节奏以编译器支持为准，切勿在生产里抢用未就绪特性。
 
 ### ㉒.2 真实工程坐标：C++26 特性提前活在哪些实现里
 
@@ -368,7 +368,7 @@ C++26 的特性已在编译器实验分支提前「活」起来。下面按领�
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 反射预览 | Clang/GCC 实验分支 + `std::meta` 原型（Boost.Describe 近亲 / 序列化 ORM） | 库作者提前试验 | 社区试验田 | [STANDARD] `std::meta` 反射（在审） |
+| 反射预览 | Clang/GCC 实验分支 + `std::meta` 原型（Boost.Describe 近亲 / 序列化 ORM） | 库作者提前试验 | 社区试验田 | <span class="badge badge-std">STANDARD</span> `std::meta` 反射（在审） |
 | `std::execution` | P2300 被 libunifex / stdexec 独立实现验证 | GPU / 网络栈异步管线 | 执行器模型 | P2300 sender/receiver |
 | 契约 | Clang `-fcontracts` 实验 + P2900（航空 / 汽车运行时检查） | 安全关键运行时检查 | 安全攸关试验 | P2900 在审（P0542 曾 withdrawn） |
 | NVIDIA stdexec | 实现 P2300 sender/receiver 参考库（CUDA 异步 / GPU 任务图） | `std::execution` 先在真实硬件验证 | 参考实现坐标 | 见 NVIDIA stdexec |
@@ -386,11 +386,11 @@ C++26 的特性已在编译器实验分支提前「活」起来。下面按领�
 
 ### ㉒.4 与标准的互动：提案在飞行中
 
-[史] C++26 的特性通过 P 编号提案（P2996/P2900/P2300 等）在 WG21 邮件里持续演进，进度可于 `isocpp.org/std/status` 与 `github.com/cplusplus/draft` 跟踪；最终并入工作草案后由 ISO 投票。[评] 对工程师的务实建议：把 C++26 当"前瞻储备"——现在学概念，但生产仍以 C++20/23 为锚。
+<span class="badge badge-history">史</span> C++26 的特性通过 P 编号提案（P2996/P2900/P2300 等）在 WG21 邮件里持续演进，进度可于 `isocpp.org/std/status` 与 `github.com/cplusplus/draft` 跟踪；最终并入工作草案后由 ISO 投票。<span class="badge badge-comment">评</span> 对工程师的务实建议：把 C++26 当"前瞻储备"——现在学概念，但生产仍以 C++20/23 为锚。
 
-- [史] **静态反射（P2996）** 从 **R0（初始，含 `define_class`/`value_of`）→R13（2025-06-20）** 迭代，关键转折包括 R8 把反射运算符由 `^` 改为 `^^`、R10 合并 consteval blocks（P3289）、R13 处理静态匿名联合体成员并规范 `reflect_constant`/`reflect_object`；目标为 C++26。见 [P2996](https://wg21.link/P2996)。
-- [史] **契约（Contracts）** 的曲折：C++20 原纳入 **P0542** 却在最后阶段被投票移除；**P2900** 是吸取教训后的重新提案，经 **R0→R14（2025）** 重构语义模型（audit/ignore/enforce 三模式、中断 handler），目标重回 C++26。见 [P2900](https://wg21.link/P2900)、[P0542](https://wg21.link/P0542)。
-- [史] **`std::execution`（P2300）** 由 **R0（初始）→R10（2024-06-28）** 共 11 版，R4 起将 `typed_sender` 改名为 `sender`、`set_done` 改 `set_stopped`、引入 `completion_signatures`，R9/R10 用成员函数替代 `tag_invoke` 定制并新增 `__cpp_lib_senders` 特性宏——它是 C++26 异步框架的主干。见 [P2300](https://wg21.link/P2300)。
+- <span class="badge badge-history">史</span> **静态反射（P2996）** 从 **R0（初始，含 `define_class`/`value_of`）→R13（2025-06-20）** 迭代，关键转折包括 R8 把反射运算符由 `^` 改为 `^^`、R10 合并 consteval blocks（P3289）、R13 处理静态匿名联合体成员并规范 `reflect_constant`/`reflect_object`；目标为 C++26。见 [P2996](https://wg21.link/P2996)。
+- <span class="badge badge-history">史</span> **契约（Contracts）** 的曲折：C++20 原纳入 **P0542** 却在最后阶段被投票移除；**P2900** 是吸取教训后的重新提案，经 **R0→R14（2025）** 重构语义模型（audit/ignore/enforce 三模式、中断 handler），目标重回 C++26。见 [P2900](https://wg21.link/P2900)、[P0542](https://wg21.link/P0542)。
+- <span class="badge badge-history">史</span> **`std::execution`（P2300）** 由 **R0（初始）→R10（2024-06-28）** 共 11 版，R4 起将 `typed_sender` 改名为 `sender`、`set_done` 改 `set_stopped`、引入 `completion_signatures`，R9/R10 用成员函数替代 `tag_invoke` 定制并新增 `__cpp_lib_senders` 特性宏——它是 C++26 异步框架的主干。见 [P2300](https://wg21.link/P2300)。
 
 ### ㉒.5 权威引用
 
@@ -402,7 +402,7 @@ C++26 的特性已在编译器实验分支提前「活」起来。下面按领�
 
 ## 附录: C++26 方向特性前瞻
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：附录: C++26 方向特性前瞻]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++26 方向特性前瞻
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::execution(P2300), std::simd.\n";return 0;}
@@ -413,7 +413,7 @@ int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::executio
 
 ## 附录 B: C++26 方向深度代码
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
 ```cpp
 #include <iostream>
 #include <cassert>
@@ -421,19 +421,19 @@ int bounded_sqrt(int x){assert(x>=0);int r=0;while(r*r<=x)++r;return r-1;}
 int main(){std::cout<<bounded_sqrt(50)<<std::endl;return 0;}
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2300 sender/receiver: composable async pipeline, replaces future/promise."<<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2996 reflection: enumerate members at compile time, auto-generate JSON/serialization."<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
 ```cpp
 #include <iostream>
 int main(){std::cout<<"std::simd: explicit SIMD vectors without intrinsics, portable across architectures."<<std::endl;return 0;}
@@ -441,7 +441,7 @@ int main(){std::cout<<"std::simd: explicit SIMD vectors without intrinsics, port
 
 ## 附录 C：C++26底层影响与工业前瞻 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 28** [难度 ★★★☆☆] [主题：附录 C：C++26底层影响与工业前]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：C++26底层影响与工业前
 ```
 C++26关键特性及其工程影响:
 
@@ -458,7 +458,7 @@ std::execution (P2300R7):
   LLVM/Chromium可能迁移到标准异步框架
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录 C：C++26底层影响与工业前]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：C++26底层影响与工业前
 ```cpp
 #include <iostream>
 int main() {
@@ -504,7 +504,7 @@ std::execution(P2300): 统一15年分散的异步模型(callback/future/coroutin
 | Reflection | Qt MOC/UE UHT | 编译期零运行时 | 消除预处理器 |
 | std::execution | asio/epoll | 编译期组合 | 统一异步 |
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：工业影响]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业影响
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++26=Contracts+Reflection+std::execution=proof-carrying+zero-preprocessor+unified-async"<<std::endl;return 0;}
@@ -523,7 +523,7 @@ P2300 sender/receiver模型统一了C++的异步编程:
 - receiver: 消费结果(如写回buffer)
 - 组合器: then/upon_error/retry/stop_when
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录 E：C++26 P2300 s]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C++26 P2300 s
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2300 sender/receiver=unified async model, zero-callback overhead"<<std::endl;std::cout<<"Replaces: Boost.Asio callbacks, std::future, coroutine manual scheduling"<<std::endl;return 0;}
@@ -547,7 +547,7 @@ P2300核心优势:
 
 C++20 P0542被拒(continuation过于复杂)。P2900简化: 只保留pre/post/assert + 三级检查(default/audit/axiom)。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录 G：Contracts P29]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：Contracts P29
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2900 contracts=pre/post/assert with default/audit/axiom levels"<<std::endl;return 0;}
@@ -563,7 +563,7 @@ int main(){std::cout<<"P2900 contracts=pre/post/assert with default/audit/axiom 
 
 ### G.1 真机汇编实证（GCC 15.3.0 `-fcontracts`）
 
-> **示例 33** [难度 ★★★☆☆] [主题：真机汇编实证]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真机汇编实证
 ```cpp
 // _asm_demo/ch09_contracts_test.cpp （GCC 15.3.0 -std=c++26 -O2 -fcontracts，实测）
 [[nodiscard]] int clamp(int x, int lo, int hi)
@@ -612,7 +612,7 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 
 C++23 的痛点：每一步都要手动嵌套回调，错误与取消需自建通道，且 `std::future` 是"急切"启动、组合时被迫 `.get()` 串行等待。下面是一段可编译的回调拼接示例（`[实现·GCC15]`）：
 
-> **示例 34** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <functional>
@@ -640,7 +640,7 @@ int main() {
 
 C++26 的方向（P2300）用惰性 sender 把三步声明为一条可组合管线，**不会**像 `std::future` 那样急切执行，错误与停止令牌沿链自动传播（`[假设·C++26][UNVERIFIED]`，GCC15 未实现 `std::execution::just`/`then`）：
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 // [假设·C++26][UNVERIFIED] P2300 std::execution（示意，GCC15 不可编译）
 auto pipeline = std::execution::just(10)
@@ -652,7 +652,7 @@ std::execution::start_detached(pipeline);   // 惰性：仅在此处才真正调
 
 [假设] sender 是惰性值；receiver 消费结果；`then` 等组合器在编译期拼装，编译器可生成无回调直通代码。
 
-[引用] P2300R10 `std::execution`（https://wg21.link/P2300R10）；cppreference "Execution support library"（https://en.cppreference.com/w/cpp/execution）。
+<span class="badge badge-ref">引用</span> P2300R10 `std::execution`（https://wg21.link/P2300R10）；cppreference "Execution support library"（https://en.cppreference.com/w/cpp/execution）。
 
 </details>
 
@@ -664,7 +664,7 @@ std::execution::start_detached(pipeline);   // 惰性：仅在此处才真正调
 
 C++23 用手工 `if/throw` 模拟契约——能编译，但检查是"手写的、可遗漏的"（`[实现·GCC15]`）：
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <iostream>
 #include <stdexcept>
@@ -685,7 +685,7 @@ int main() { std::cout << clamp_cpp23(5, 0, 10) << '\n'; }
 
 C++26 的 Contracts（P2900）把前置/后置写成属性，编译器可据级别插入检查或降级为 `assume`（`[假设·C++26][UNVERIFIED]`，GCC15 仅为实验性 `-fcontracts`）：
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 // [假设·C++26][UNVERIFIED] P2900 Contracts（示意，GCC15 实验性）
 int clamp(int x, int lo, int hi)
@@ -698,7 +698,7 @@ int clamp(int x, int lo, int hi)
 
 [假设] Contracts 分 `default`/`audit`/`axiom` 三级：`default` 在 debug 检查、release 零开销；取代散落的 `assert` 与非标准 `gsl::Expects`。
 
-[引用] P2900R7 Contracts（https://wg21.link/P2900R7）；cppreference "Contract assertions (C++26)"（https://en.cppreference.com/w/cpp/language/attributes/contracts）。
+<span class="badge badge-ref">引用</span> P2900R7 Contracts（https://wg21.link/P2900R7）；cppreference "Contract assertions (C++26)"（https://en.cppreference.com/w/cpp/language/attributes/contracts）。
 
 </details>
 
@@ -710,7 +710,7 @@ int clamp(int x, int lo, int hi)
 
 C++23 的样板：字段名与访问硬编码，新增成员必须同步修改序列化函数（`[实现·GCC15]`）：
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -730,7 +730,7 @@ int main() { Point p{3, 4}; std::cout << fields_cpp23(p) << '\n'; }
 
 C++26 的静态反射（P2996R5）在编译期暴露成员元数据，循环即可生成上述样板（`[假设·C++26][UNVERIFIED]`，`<meta>` 头在 GCC15 不存在）：
 
-> **示例 39** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 // [假设·C++26][UNVERIFIED] P2996R5 静态反射（示意，GCC15 不可编译）
 #include <meta>                        // 尚不存在
@@ -744,7 +744,7 @@ consteval auto field_names() {
 
 [假设] `^T` 取得类型的编译期反射对象，`std::meta::members_of` 枚举成员；取代 Qt MOC / UE UHT 这类预处理器代码生成。
 
-[引用] P2996R5 Static reflection（https://wg21.link/P2996R5）；cppreference "Reflection (C++26)"（https://en.cppreference.com/w/cpp/language/reflection）。
+<span class="badge badge-ref">引用</span> P2996R5 Static reflection（https://wg21.link/P2996R5）；cppreference "Reflection (C++26)"（https://en.cppreference.com/w/cpp/language/reflection）。
 
 </details>
 

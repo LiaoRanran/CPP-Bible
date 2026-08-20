@@ -1,5 +1,5 @@
 # 第69章　编译期计算：constexpr / consteval / constinit
-> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 [第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
 [第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)
@@ -10,7 +10,7 @@
 > 与其用模板天书写编译期计算，不如让普通函数「在编译期也能跑」——`constexpr` 把这扇门打开了。
 
 ### 0.1 起源（谁·何时·为何）
-模板元编程（ch68）虽然能在编译期算东西，但写法反人类。委员会（Gabriel Dos Reis、Bjarne 等推动）于是引入 **constexpr**：声明一个函数「若在常量表达式语境调用，就能在编译期求值」。[史] 这让程序员用**普通函数语法**写编译期逻辑——既能被当运行时函数用，也能被当编译期常量用，一举把 TMP 的「可读性地狱」大幅缓解。
+模板元编程（ch68）虽然能在编译期算东西，但写法反人类。委员会（Gabriel Dos Reis、Bjarne 等推动）于是引入 **constexpr**：声明一个函数「若在常量表达式语境调用，就能在编译期求值」。<span class="badge badge-history">史</span> 这让程序员用**普通函数语法**写编译期逻辑——既能被当运行时函数用，也能被当编译期常量用，一举把 TMP 的「可读性地狱」大幅缓解。
 
 ### 0.2 关键转折（编年）
 - 2011：C++11 引入 `constexpr`，但限制很多（只能单 return、无循环）。
@@ -19,16 +19,16 @@
 - 2020：`consteval`/`constinit` 进一步区分「必须编译期」与「初始化时机」。
 
 ### 0.3 设计哲学之争
-`constexpr` vs TMP：前者用直白语法换可读性，后者用模板换极致通用；二者如今是「新代码用 constexpr，老基础设施留 TMP」的分工。[评] 它也是零开销抽象的延伸——同样的代码，编译期能算就绝不拖到运行期。
+`constexpr` vs TMP：前者用直白语法换可读性，后者用模板换极致通用；二者如今是「新代码用 constexpr，老基础设施留 TMP」的分工。<span class="badge badge-comment">评</span> 它也是零开销抽象的延伸——同样的代码，编译期能算就绝不拖到运行期。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++20 的 `consteval`/`constinit`。`constexpr` 的「攻城」仍在继续：
 
-- [史] `constexpr` 的放宽史是一条「逐步攻城」的线：C++11 函数体只能单 return；C++14 放开局部变量与循环；C++20 让 `constexpr` 虚函数、`std::vector`/`std::string` 的「编译期可销毁」部分开始松动（P1002 等提案允许编译期 `new`/`delete` 被实现内部消化）。
+- <span class="badge badge-history">史</span> `constexpr` 的放宽史是一条「逐步攻城」的线：C++11 函数体只能单 return；C++14 放开局部变量与循环；C++20 让 `constexpr` 虚函数、`std::vector`/`std::string` 的「编译期可销毁」部分开始松动（P1002 等提案允许编译期 `new`/`delete` 被实现内部消化）。
 
-- [史] C++23 进一步把更多标准库类型标成 `constexpr`（`std::optional`、`std::variant`、部分 `<algorithm>`），并引入 `std::is_constant_evaluated()` 让函数「感知自己是否在被编译期求值」，从而写一份代码两用。
+- <span class="badge badge-history">史</span> C++23 进一步把更多标准库类型标成 `constexpr`（`std::optional`、`std::variant`、部分 `<algorithm>`），并引入 `std::is_constant_evaluated()` 让函数「感知自己是否在被编译期求值」，从而写一份代码两用。
 
-- [评] 「标准库常量化」是自觉运动：委员会逐年把容器与算法升级为可用在常量表达式里，目标之一是让 `std::array` 之外也能在编译期构造真正的动态结构——代价是与老 ABI/运行时实现长期并存。
+- <span class="badge badge-comment">评</span> 「标准库常量化」是自觉运动：委员会逐年把容器与算法升级为可用在常量表达式里，目标之一是让 `std::array` 之外也能在编译期构造真正的动态结构——代价是与老 ABI/运行时实现长期并存。
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constexpr ；https://en.wikipedia.org/wiki/C%2B%2B23
 
@@ -56,7 +56,7 @@
 
 ## ③ 核心结构与完整代码实现
 
-> **示例 1** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // 1) constexpr 函数：可编译期也可运行期求值
 constexpr int square(int x) {          // [标准] constexpr 函数
@@ -87,7 +87,7 @@ consteval int pow2(int n) {            // [标准] consteval
 constinit int g_counter = 1;           // [标准] constinit
 ```
 
-> **示例 2** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // constexpr 构造 + 字面类型（literal type）
 struct Point {
@@ -100,7 +100,7 @@ constexpr Point origin{0, 0};
 constexpr int d = origin.manhattan();   // 编译期 = 0
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // constexpr 与 std::array：编译期可索引容器
 #include <array>
@@ -113,7 +113,7 @@ constexpr auto tbl = make_table();          // 编译期生成查找表
 static_assert(tbl[3] == 9);                  // 编译期索引访问
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // std::is_constant_evaluated：区分编译期/运行期路径
 #include <type_traits>
@@ -135,7 +135,7 @@ int runtime = chooses(1);                    // 运行期 = 2
 - **ODR-use 与符号生成**：`constexpr` 函数若**仅被常量表达式调用**（未被取地址、未被运行期 odr-use），编译器**不生成运行期函数实体**；只有被运行期 odr-use 时才生成（见 ⑩ 的 `-O0` 证据）。
 - **两阶段查找依然适用**：`constexpr` 函数模板体内依赖型名字按常规两阶段规则（ch60 ④）。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：实例化机制]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实例化机制
 ```cpp
 // if constexpr 丢弃不成立分支：对 T=std::string 不实例化整型分支
 #include <string>
@@ -151,7 +151,7 @@ static_assert(promote(std::string{"x"}) == std::string{"x"}); // 非整型：原
 - **`constexpr` vs TMP（ch68）**：能用 `constexpr` 函数表达的优先用它（递归 `fact` 比 `Fact<N>` 模板更易读、错误更清楚）；TMP 仍需用于**类型计算**（类型分支、类型列表）。
 - **`constexpr` vs `consteval`**：需要"运行期也能调"用 `constexpr`；需要"强制编译期"用 `consteval`。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：适用场景与选型]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适用场景与选型
 ```cpp
 // 选型对比：同一算法 constexpr 与 consteval 的调用约束
 constexpr int  c_log2(int n) { return n <= 1 ? 0 : 1 + c_log2(n / 2); }
@@ -165,7 +165,7 @@ int ok = c_log2(x);                  // OK 运行期也可（c_log2 非 consteva
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 7** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
 ```cpp
 // 编译：g++ -std=c++23 -O2 constexpr_demo.cpp -o constexpr_demo
 #include <iostream>
@@ -185,7 +185,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 // 编译期斐波那契（替代 ch68 的 Fib<N> 模板元递归）
 constexpr int fib(int n) {
@@ -194,14 +194,14 @@ constexpr int fib(int n) {
 static_assert(fib(10) == 55);         // 编译期 = 55
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
 ```cpp
 // constexpr lambda（C++17）：lambda 默认可 constexpr
 constexpr auto mul = [](int a, int b) { return a * b; };
 static_assert(mul(6, 7) == 42);
 ```
 
-> **示例 10** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <string_view>
 // 编译期 switch 替代：constexpr 函数 + if constexpr 分发
@@ -214,7 +214,7 @@ constexpr const char* name_of() {
 static_assert(name_of<1>() == std::string_view{"one"}); // [实现] C++17 起字符串字面量可 constexpr 比较
 ```
 
-## ⑦ 标准规定 [标准]
+## ⑦ 标准规定 <span class="badge badge-std">标准</span>
 
 - `[dcl.constexpr]`：`constexpr` 说明符声明变量/函数为**常量表达式候选**；`constexpr` 函数体内允许的语句受严格限制（不能有 `asm`、不能调用非 constexpr 函数、不能有未初始化变量等），但可以有 `if`/`for`/`switch`、局部变量、三元运算符。
 - `[dcl.consteval]`（C++20）：`consteval` 函数（立即函数）**每个调用都必须产生常量表达式**，否则程序非良构；立即函数永远不在运行期被求值。
@@ -222,14 +222,14 @@ static_assert(name_of<1>() == std::string_view{"one"}); // [实现] C++17 起字
 - `[expr.const]`：常量表达式求值规则——若子表达式在求值中调用了非 constexpr 函数或产生未定义行为，则不是常量表达式。
 - `[meta.help]`：`std::is_constant_evaluated()` 在**常量表达式求值上下文**返回 `true`，否则 `false`（注意：它只在真正"被常量求值"时为真，不是"是否处于 constexpr 函数内"）。
 
-## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
+## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 - **GCC**：`constexpr` 求值器（"constant expression evaluator"）对递归深度与步数有内部上限（受 `-fconstexpr-depth`/`constexpr 循环上限` 控制，默认约 65536 步）。超界报 `constexpr call overflow` / `exceeded constexpr step limit`。
 - **Clang**：`-fconstexpr-steps` 默认 1048576 步；诊断信息更详细，常给出"constexpr evaluation exceeded step limit"并指向具体步骤。
-- **MSVC**：较旧版本对 `constexpr` 支持滞后（VS2017 起完善），`consteval`/`constinit` 需 VS2019 16.10+；对循环内 `constexpr` 支持较新。**[平台]** 跨编译器项目应将复杂 `constexpr` 控制在一定步数内（< 10000）以保证可移植。
+- **MSVC**：较旧版本对 `constexpr` 支持滞后（VS2017 起完善），`consteval`/`constinit` 需 VS2019 16.10+；对循环内 `constexpr` 支持较新。**<span class="badge badge-platform">平台</span>** 跨编译器项目应将复杂 `constexpr` 控制在一定步数内（< 10000）以保证可移植。
 - **`__builtin_constant_p`**：GCC/Clang 内建，类似 `is_constant_evaluated` 但属编译器扩展；标准代码优先用 `std::is_constant_evaluated()`。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 11** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // 各编译器对 constexpr 步数限制的差异（演示：控制递归深度）
 constexpr int deep(int n) { return n == 0 ? 0 : 1 + deep(n - 1); }
@@ -244,7 +244,7 @@ static_assert(deep(1000) == 1000);     // 万级步数各编译器均可
 - **`consteval` 结果**：立即函数返回值在编译期计算，调用点被替换为常量，不占运行期存储（除非被赋给运行期变量）。
 - **对齐与字面类型**：`constexpr` 变量类型必须是**字面类型**（literal type：含 constexpr 构造、标量、引用、字面类型聚合等）。
 
-> **示例 12** [难度 ★★★★☆] [主题：内存 / 对象模型]
+> **示例 12** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
 ```cpp
 // constinit 避免 SIOF 示例
 // 文件 A.cpp
@@ -275,7 +275,7 @@ _Z13use_constexprv:
     ret
 ```
 
-**结论（[实现]）**：
+**结论（<span class="badge badge-impl">实现</span>）**：
 1. `sq(7)=49`、`fact(5)=120`、`pick<int>()=42`、`ce_pow2(4)=16` 全部**折叠为立即数 `mov DWORD ..., N`**，运行期零计算。
 2. `pick<double>()=2.5` 走 `movsd .LC0[rip]`（常量池中的 `double` 立即数），同样编译期定值。
 3. `g_global`（constinit）只剩一次 `g_global[rip]` 取指——静态初始化已在加载期完成，运行期无初始化开销。
@@ -290,7 +290,7 @@ _Z13use_constexprv:
 - **`std::popcount` / `std::rotl`**（`bit` 头，C++20 constexpr）：位运算包装编译器内建 `__builtin_popcount`，可在编译期求值（见 ⑮）。
 - **`std::string_view` 比较**（`char_traits` constexpr）：C++17 起 `operator==` 为 constexpr，支持 `name_of<1>() == "one"` 这类编译期字符串比较。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：中的该模式]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
 ```cpp
 // 复用 STL constexpr：编译期 popcount
 #include <bit>
@@ -306,7 +306,7 @@ static_assert(m == 0x10u);
 - **constexpr 与 TMP 混合**：`constexpr` 函数内部可调用 TMP 类型萃取（`if constexpr (std::is_pointer_v<T>)`），两范式互补。
 - **`consteval` 链**：`consteval` 函数只能调 `consteval`/`constexpr`（后者在常量上下文）；形成"强制编译期"计算链。
 
-> **示例 14** [难度 ★★★☆☆] [主题：变体]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
 ```cpp
 // constexpr 与 concept 结合（C++20）
 template <std::integral T>
@@ -317,7 +317,7 @@ static_assert(clamp_to(5, 0, 3) == 3);
 static_assert(clamp_to(-1, 0, 3) == 0);
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：变体]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
 ```cpp
 // constexpr 虚函数（C++20）示例
 struct Base { constexpr virtual int f() const { return 1; } };
@@ -326,7 +326,7 @@ constexpr Der d;
 static_assert(d.f() == 2);     // 编译期动态派发（字面类型）
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：变体]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
 ```cpp
 // consteval 强制链：参数列表长度编译期校验
 consteval int sum_ce(int a, int b, int c) { return a + b + c; }
@@ -340,7 +340,7 @@ constexpr int x = sum_ce(1, 2, 3);   // 编译期 = 6，无法运行期调用
 - **过度 constexpr 拖慢编译**：在头文件大量复杂 `constexpr` 递归（万级步数）会显著拉长编译时间，且不跨编译器稳定（⑧）。应控制复杂度或改用运行期 + `if consteval` 双路径。
 - **`if constexpr` 误用于非模板**：`if constexpr` 只能出现在模板内（依赖模板参数），普通函数用普通 `if` 即可，否则编译错误。
 
-> **示例 17** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式：consteval 函数试图运行期调用
 consteval int must_ce(int n) { return n * 2; }
@@ -348,7 +348,7 @@ int runtime_input = 10;
 // int r = must_ce(runtime_input);   // [实现] 编译错误：consteval 必须编译期可求
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式：if constexpr 用在非模板函数
 // int bad(int n) {
@@ -357,7 +357,7 @@ int runtime_input = 10;
 // }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式：复杂 constexpr 递归拖慢编译
 constexpr int heavy(int n) { return n == 0 ? 0 : heavy(n/2) + heavy(n/2) + 1; }
@@ -371,7 +371,7 @@ constexpr int heavy(int n) { return n == 0 ? 0 : heavy(n/2) + heavy(n/2) + 1; }
 - **物理/数学常量**：`std::numbers::pi` 等（ch19 引用）配合 `constexpr` 计算派生常量。
 - **编译期校验**：DSL 解析器用 `consteval` 在编译期校验语法，非法输入直接编译失败。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 // 工业案例：编译期 CRC32 表
 constexpr unsigned crc32_table_entry(unsigned c) {
@@ -386,7 +386,7 @@ static_assert(make_crc_table(0) == 0x00000000u);
 static_assert(make_crc_table(1) == 0x77073096u);
 ```
 
-> **示例 21** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 #include <cstddef>
 // 工业案例：编译期校验字段偏移
@@ -395,7 +395,7 @@ constexpr std::size_t FIELD_LEN = 4;
 static_assert(FIELD_OFF + FIELD_LEN <= 64, "field overflow"); // 编译期越界即失败
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 #include <cstddef>
 // 工业案例：编译期维度检查
@@ -411,7 +411,7 @@ struct Matrix {
 
 **剖析 1：`std::integral_constant` 的 constexpr 值载体**（`<type_traits>`）
 
-> **示例 23** [难度 ★★☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits
 // 行号：93（struct integral_constant）
@@ -425,7 +425,7 @@ struct integral_constant {
 
 **剖析 2：`std::popcount` 的 constexpr 内建包装**（`<bit>`）
 
-> **示例 24** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bit
 // 行号：443（template popcount）
@@ -441,7 +441,7 @@ constexpr _Tp __popcount(_Tp __x) noexcept {
 
 **剖析 3：`std::array::operator[]` 的 constexpr 随机访问**（`<array>`）
 
-> **示例 25** [难度 ★★☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/array
 // 行号：208（operator[] non-const，C++17 起 constexpr）
@@ -459,7 +459,7 @@ constexpr reference operator[](size_type __n) noexcept {
 - `consteval` 不能递归调用非 `consteval`/`constexpr` 的运行期函数（立即函数体必须整体是常量表达式）。
 - `constinit` 变量**不是 const**：可运行期修改，但若在静态初始化后用非常量初始化器重赋值会编译失败——它约束的是"初始化时刻"。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 易错点：constexpr 函数运行期调用 ≠ 编译期
 constexpr int maybe(int x) { return x + 1; }
@@ -467,7 +467,7 @@ int a = maybe(5);              // 运行期调用，普通函数
 constexpr int b = maybe(5);    // 编译期：常量表达式
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 易错点：is_constant_evaluated 在运行期调用为假
 int runtime_call = chooses(1);  // 走 x*2 分支 = 2，不是 1001
@@ -480,7 +480,7 @@ int runtime_call = chooses(1);  // 走 x*2 分支 = 2，不是 1001
 - **Q：为什么 `-O0` 下 `constexpr` 函数也没有符号？** A：因调用点全是常量表达式，`constexpr` 函数在实例化时被常量折叠，不产生运行期 odr-use，故不生成实体（见 ⑩）。
 - **Q：`constinit` 和 `constexpr` 全局变量差在哪？** A：`constexpr` 全局变量同时是 `const`（只读）；`constinit` 只约束初始化必须编译期，变量可运行期写，适合需要静态初始化又需运行期修改的状态（如计数器、配置）。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：FAQ 问答]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 // FAQ 演示：constexpr 隐含 const，constinit 不隐含 const
 constexpr int k = 10;        // 编译期定值 + 只读
@@ -497,7 +497,7 @@ g = 20;                      // OK：g 运行期可写（初始化已在编译�
 - 复杂编译期计算优先 `constexpr` 函数而非 TMP 递归（可读性、错误信息更友好）；类型计算仍用 TMP/Concepts。
 - 控制 `constexpr` 步数（参考 ⑧ 的跨编译器上限），避免编译雪崩。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践：纯函数默认 constexpr
 constexpr int gcd(int a, int b) {
@@ -506,7 +506,7 @@ constexpr int gcd(int a, int b) {
 static_assert(gcd(48, 36) == 12);
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 #include <cstdint>
 #include <string_view>
@@ -526,14 +526,14 @@ consteval std::uint32_t fnv1a(std::string_view s) {
 - **`constinit`**：消除动态初始化阶段的运行期构造，避免 SIOF 且零运行期初始化开销。
 - **对比 TMP**：`constexpr` 函数运行期可复用、调试友好；TMP 只能编译期、错误晦涩但能产出类型。现代 C++ 优先 `constexpr`。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // 性能对比（运行期调用退化普通函数，仍被内联）
 constexpr int add(int a, int b) { return a + b; }
 int use(int x, int y) { return add(x, y); }   // -O2 下与 x+y 等价
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // constexpr 查表 vs 运行期计算
 constexpr int lut(int i) { return i * i * i; }   // 立方表
@@ -545,16 +545,16 @@ int use_lut(int i) { return lut(i); }            // 运行期：普通乘；编�
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：constexpr 函数在非常量语境也能运行期调用。** 你担心性能其实它在运行期也正常。请说明双重身份。
-   - [标准] constexpr 函数在需要常量表达式的语境必须编译期求值；否则可像普通函数运行期调用。
-   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数双重身份）；cppreference "constexpr" 词条。
+   - <span class="badge badge-std">标准</span> constexpr 函数在需要常量表达式的语境必须编译期求值；否则可像普通函数运行期调用。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数双重身份）；cppreference "constexpr" 词条。
 
 2. **真实场景：参与 constexpr 的类型必须是字面类型。** 你给类加 constexpr 构造却报错。请说明前提。
-   - [标准] 要在常量表达式语境构造/使用的类型须是字面类型（满足 constexpr 构造、析构等要求）。
-   - [引用] ISO/IEC 14882:2023 §[basic.types]（字面类型）/ [expr.const]（常量表达式要求）；cppreference "Literal type" 词条。
+   - <span class="badge badge-std">标准</span> 要在常量表达式语境构造/使用的类型须是字面类型（满足 constexpr 构造、析构等要求）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.types]（字面类型）/ [expr.const]（常量表达式要求）；cppreference "Literal type" 词条。
 
 3. **真实场景：`consteval` 强制编译期、杜绝运行期入口。** 你希望某函数根本不在运行期存在。请对比 constexpr。
-   - [标准] consteval 函数只能在编译期被调用、必须产生常量表达式；与 constexpr 不同，不允许运行期调用。
-   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
+   - <span class="badge badge-std">标准</span> consteval 函数只能在编译期被调用、必须产生常量表达式；与 constexpr 不同，不允许运行期调用。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
 
 **练习题**
 1. 用 `constexpr` 函数（非模板）实现编译期 `is_prime(n)`，并用 `static_assert` 验证前 10 个素数。
@@ -575,19 +575,19 @@ int use_lut(int i) { return lut(i); }            // 运行期：普通乘；编�
 
 ## 补充分编可编译示例
 
-> **示例 33** [难度 ★★☆☆☆] [主题：补充分编可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch69_constexpr."<<std::endl;return 0;}
 ```
-> **示例 34** [难度 ★★☆☆☆] [主题：补充分编可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch69_constexpr."<<std::endl;return 0;}
 ```
-> **示例 35** [难度 ★★☆☆☆] [主题：补充分编可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -599,8 +599,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：`constexpr` 如何把 TMP 的「可读地狱」拉回普通函数
-[史] 模板元编程（ch68）虽然能在编译期算东西，但写法反人类。委员会由 Gabriel Dos Reis、Bjarne Stroustrup 等推动，引入 **constexpr**：声明一个函数「若在常量表达式语境调用，就能在编译期求值」，让程序员用**普通函数语法**写编译期逻辑——既当运行时函数用，也当编译期常量用。提案 N2235（Generalized constant expressions）于 C++11 落地，一举把 TMP 的「可读性地狱」大幅缓解。
-[评] 它是零开销抽象的延伸——同样的代码，编译期能算就绝不拖到运行期，但「放宽史」本身也折射出委员会在「能力 vs 复杂度」之间的反复权衡。
+<span class="badge badge-history">史</span> 模板元编程（ch68）虽然能在编译期算东西，但写法反人类。委员会由 Gabriel Dos Reis、Bjarne Stroustrup 等推动，引入 **constexpr**：声明一个函数「若在常量表达式语境调用，就能在编译期求值」，让程序员用**普通函数语法**写编译期逻辑——既当运行时函数用，也当编译期常量用。提案 N2235（Generalized constant expressions）于 C++11 落地，一举把 TMP 的「可读性地狱」大幅缓解。
+<span class="badge badge-comment">评</span> 它是零开销抽象的延伸——同样的代码，编译期能算就绝不拖到运行期，但「放宽史」本身也折射出委员会在「能力 vs 复杂度」之间的反复权衡。
 
 ### ㉒.2 真实工程坐标：`constexpr` 活在哪些产品/项目里
 
@@ -608,11 +608,11 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
-| 标准库 | `std::array`/`integer_sequence`/`char_traits`、`is_constant_evaluated` | 编译期构造/比较；`is_constant_evaluated` 一份代码两用 | 一切 C++ 程序地基 | constexpr 进标准库 [STANDARD] |
+| 标准库 | `std::array`/`integer_sequence`/`char_traits`、`is_constant_evaluated` | 编译期构造/比较；`is_constant_evaluated` 一份代码两用 | 一切 C++ 程序地基 | constexpr 进标准库 <span class="badge badge-std">STANDARD</span> |
 | 游戏/图形引擎 | 查找表/多项式系数/颜色矩阵 | `constexpr` 预计算，省运行期初始化成本 | 实时系统 | 编译期预计算 |
 | 嵌入式固件 | CRC 表、状态机转移表 | `constexpr` + `constinit` 压 RAM，避 SIOF | 资源受限设备 | 运行期零初始化成本 |
 | 嵌入式安全 | BearSSL（IoT/TLS MCU） | `constexpr` 编译期生成 S-box 与查表 | 极小 RAM 固件 | 运行期零初始化 |
-| 航天飞控 | JPL/NASA 编码规范 | `constexpr` 表达物理常量/单位换算，编译期捕获量级错误 | 飞行器控制软件 | 单位错误发射前拦截 [史] |
+| 航天飞控 | JPL/NASA 编码规范 | `constexpr` 表达物理常量/单位换算，编译期捕获量级错误 | 飞行器控制软件 | 单位错误发射前拦截 <span class="badge badge-history">史</span> |
 
 > **表注（㉒.2）**：上表把「`constexpr`」拉成「把运行期计算与初始化前移到编译期」的零成本设施。标准库用它构造 `array`/`integer_sequence` 并靠 `is_constant_evaluated` 让一份代码两用，游戏/图形引擎预计算查找表与颜色矩阵，嵌入式用 `constexpr`+`constinit` 把 CRC 表与状态机压进 ROM、避 SIOF。注意 BearSSL 与 JPL/NASA 两行：前者在极小 RAM 的 MCU 上用 `constexpr` 生成密码学 S-box（运行期零初始化），后者鼓励用 `constexpr` 表达物理常量以在编译期捕获单位/量级错误——`constexpr` 在 IoT 固件与航天飞控里是「省内存」与「防单位 bug」的双重刚需。
 
@@ -646,7 +646,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 | C++23 | constexpr 放宽: 允许 static constexpr 变量 | P2448R2 |
 | C++26 | constexpr 异常 + placement new (方向) | P3068R1 |
 
-> **示例 36** [难度 ★★☆☆☆] [主题：附录 A：WG21 演进全景 [B:]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 演进全景 [B:
 ```cpp
 #include <iostream>
 int main() {
@@ -658,7 +658,7 @@ int main() {
 
 ## 附录 B：工业案例 —— Boost.Hana 与 constexpr 元编程 [F: Industry]
 
-> **示例 37** [难度 ★★★☆☆] [主题：附录 B：工业案例 —— Boost]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：工业案例 —— Boost
 ```cpp
 // Boost.Hana: 将类型作为 constexpr 值操作，消除模板元编程与运行时编程的鸿沟
 #include <iostream>
@@ -676,7 +676,7 @@ int main() {
 
 ## 附录 C：asm 证据 —— constexpr vs runtime [E: Low-level / G: Performance]
 
-> **示例 38** [难度 ★★★★☆] [主题：附录 C：asm 证据 —— con]
+> **示例 38** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：asm 证据 —— con
 ```cpp
 // constexpr 消除的是"编译后的运行时指令"
 constexpr int fib_cx(int n) { return n <= 1 ? n : fib_cx(n-1) + fib_cx(n-2); }
@@ -706,7 +706,7 @@ int main() {
 
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
-> **示例 39** [难度 ★★★☆☆] [主题：附录 D：面试与设计权衡 [H: D]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: D
 ```
 面试高频:
 Q: constexpr vs consteval vs constinit 的区别？
@@ -815,7 +815,7 @@ A: 编译时间显著增加 (模板实例化级), 但生成代码更优 (编译�
 
 **真实场景：编译期固定 LUT 尺寸。** 你的渲染器要用 `std::array` 存一张 25 项的颜色查找表，尺寸由常量 `sq(5)` 决定——必须在编译期确定、零运行期计算。请思考：**constexpr 用于编译期大小**：
 
-> **示例 40** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 constexpr int sq(int n) { return n * n; }
 ```
@@ -826,7 +826,7 @@ constexpr int sq(int n) { return n * n; }
 
 可以。`sq(5)` 是常量表达式，`std::array` 的大小必须是编译期常量。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <array>
@@ -836,9 +836,9 @@ int main() {
     std::cout << a.size() << "\n";    // 25
 }
 ```
-[标准] `constexpr` 函数若实参是常量表达式，其调用结果也是常量表达式，可用于模板实参。
+<span class="badge badge-std">标准</span> `constexpr` 函数若实参是常量表达式，其调用结果也是常量表达式，可用于模板实参。
 
-[引用] `std::array` 的大小必须是编译期常量表达式（cppreference "std::array"），因此 `constexpr` 计算是其自然搭配。标准库 `<numbers>`、`std::integer_sequence` 尺寸也依赖编译期常量。ISO/IEC 14882:2023 §[expr.const] 规定常量表达式的判定。
+<span class="badge badge-ref">引用</span> `std::array` 的大小必须是编译期常量表达式（cppreference "std::array"），因此 `constexpr` 计算是其自然搭配。标准库 `<numbers>`、`std::integer_sequence` 尺寸也依赖编译期常量。ISO/IEC 14882:2023 §[expr.const] 规定常量表达式的判定。
 
 </details>
 
@@ -851,7 +851,7 @@ int main() {
 
 `consteval` 函数**只能**在编译期调用；`constexpr` 在实参是常量表达式时编译期求值，否则退化为运行期。`cube(x)` 因 `x` 非常量表达式而失败。
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 consteval int cube(int n) { return n * n * n; }
@@ -861,9 +861,9 @@ int main() {
     // int x = 5; auto y = cube(x);      // 错误：x 非常量表达式
 }
 ```
-[标准] `consteval` 保证零运行期开销，但禁止任何运行期实参。
+<span class="badge badge-std">标准</span> `consteval` 保证零运行期开销，但禁止任何运行期实参。
 
-[引用] `consteval`（C++20，P1073 "Immediate functions"）保证函数"immediate"、绝不生成运行期代码，常用于编译期字符串/哈希/格式化（cppreference "consteval"）。标准库 `std::source_location` 的构造即 `consteval`（cppreference）。ISO/IEC 14882:2023 §[expr.const] 与 §[dcl.consteval] 规定其语义。
+<span class="badge badge-ref">引用</span> `consteval`（C++20，P1073 "Immediate functions"）保证函数"immediate"、绝不生成运行期代码，常用于编译期字符串/哈希/格式化（cppreference "consteval"）。标准库 `std::source_location` 的构造即 `consteval`（cppreference）。ISO/IEC 14882:2023 §[expr.const] 与 §[dcl.consteval] 规定其语义。
 
 </details>
 
@@ -871,7 +871,7 @@ int main() {
 
 **真实场景：类型擦除回调"get 值或解引用"。** 你的统一访问器 `deref` 对指针类型要"返回解引用结果"、对值类型"原样返回"——两个分支返回类型不同。请思考：**if constexpr 分支消除**：
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 template <class T> auto deref(T v) {
     if constexpr (std::is_pointer_v<T>) return *v;
@@ -885,7 +885,7 @@ template <class T> auto deref(T v) {
 
 `if constexpr` 的**未命中分支不参与语义检查**（不实例化），因此 `return *v`（要求 `T` 可解引用）在 `T=int` 时不会被检查，类型冲突消失。
 
-> **示例 44** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -900,9 +900,9 @@ int main() {
     std::cout << deref(&n) << "\n";    // 7
 }
 ```
-[标准] `if constexpr` 是编译期分支，避免用 SFINAE/tag 表达"类型相关分支"，但要求两分支语法均合法。
+<span class="badge badge-std">标准</span> `if constexpr` 是编译期分支，避免用 SFINAE/tag 表达"类型相关分支"，但要求两分支语法均合法。
 
-[引用] `if constexpr` 的丢弃分支不被实例化，故 `*v` 在 `T=int` 时免检（cppreference "if constexpr"）。这也是 ch68 中 `process` 用法的同款机制，替代了 ch66 的 SFINAE/tag dispatch。ISO/IEC 14882:2023 §[stmt.if] 规定丢弃分支的语义检查豁免。
+<span class="badge badge-ref">引用</span> `if constexpr` 的丢弃分支不被实例化，故 `*v` 在 `T=int` 时免检（cppreference "if constexpr"）。这也是 ch68 中 `process` 用法的同款机制，替代了 ch66 的 SFINAE/tag dispatch。ISO/IEC 14882:2023 §[stmt.if] 规定丢弃分支的语义检查豁免。
 
 </details>
 
@@ -921,7 +921,7 @@ int y = sq(x);     // sq 退化为运行期调用，x 非常量表达式
 
 **修复**：用 `static_assert` 或编译期上下文（数组大小、`std::array`）强制编译期；或改用 `consteval` 杜绝运行期调用。
 
-> **示例 45** [难度 ★★★☆☆] [主题：演绎 1：constexpr 何时真]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：constexpr 何时真
 ```cpp
 #include <iostream>
 #include <array>
@@ -948,7 +948,7 @@ auto deref(T v) { return *v; }
 
 **修复**：`if constexpr` 单函数表达，未命中分支不检查。
 
-> **示例 46** [难度 ★★★☆☆] [主题：演绎 2：用 if constexp]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：用 if constexp
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -964,7 +964,7 @@ int main() { int n = 7; std::cout << deref(&n) << "\n"; }
 
 下例用 `constexpr` 函数把计算搬到的编译期，并用 `static_assert` 固化结果：
 
-> **示例 47** [难度 ★★☆☆☆] [主题：补例：自包含可编译验证]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补例：自包含可编译验证
 ```cpp
 #include <iostream>
 
@@ -981,7 +981,7 @@ int main(){
 ```
 
 `factorial(5)` 在编译期就算出 120（循环体在 `constexpr` 上下文中合法），`static_assert` 可在常量语境使用其结果；若传入运行时变量则退化为运行时计算。这是元编程从 TMP 向 `constexpr` 迁移的典型获益（见正文「结论」）。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把"constexpr 何时真在编译期求值"浓缩为一张求值上下文图。
 
@@ -1062,7 +1062,7 @@ compare(const char_type* __s1, const char_type* __s2, size_t __n)
 
 ### D4.4 可编译验证
 
-> **示例 48** [难度 ★★★☆☆] [主题：可编译验证]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
 ```cpp
 #include <string_view>
 #include <iostream>
@@ -1225,7 +1225,7 @@ flowchart TD
 
 ### D5.3 验证 demo
 
-> **示例 49** [难度 ★★★☆☆] [主题：验证 demo]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 验证 demo
 ```cpp
 #include <iostream>
 #include <cmath>

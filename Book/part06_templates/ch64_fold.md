@@ -1,5 +1,5 @@
 # 第64章　折叠表达式 Fold Expression（C++17）
-> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
@@ -9,7 +9,7 @@
 > 把「把参数包一个个二元合并」从一堆递归样板，压成一行运算符——折叠表达式是语法层面的「减负革命」。
 
 ### 0.1 起源（谁·何时·为何）
-C++11 的可变参数模板虽然解决了「任意参数」，但要对参数包做**归约**（比如求和、逻辑与）还得写「递归基线 + 递归展开」的样板，又臭又长。[史] Andrew Sutton 与 Richard Smith 提出**折叠表达式**，于 C++17 落地：一行 `(... + args)` 就让编译器把参数包按二元运算符折叠起来，零递归、零基线函数。[史]
+C++11 的可变参数模板虽然解决了「任意参数」，但要对参数包做**归约**（比如求和、逻辑与）还得写「递归基线 + 递归展开」的样板，又臭又长。<span class="badge badge-history">史</span> Andrew Sutton 与 Richard Smith 提出**折叠表达式**，于 C++17 落地：一行 `(... + args)` 就让编译器把参数包按二元运算符折叠起来，零递归、零基线函数。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
 - 2014 前后：折叠表达式提案进入委员会视野。
@@ -17,16 +17,16 @@ C++11 的可变参数模板虽然解决了「任意参数」，但要对参数�
 - 此后：它成为「编译期归约」首选写法，取代了大部分手写的递归展开。
 
 ### 0.3 设计哲学之争
-折叠表达式的争议很小，因为它几乎纯增益：更短、更安全、更易内联。[评] 它唯一「代价」是让初学者第一次见到 `(args + ...)` 这种符号时一愣——但相比被它消灭的那几十行递归样板，这笔学费很划算。它也是「零开销抽象」的极佳注脚：语法糖背后是编译器直接生成的紧凑代码。
+折叠表达式的争议很小，因为它几乎纯增益：更短、更安全、更易内联。<span class="badge badge-comment">评</span> 它唯一「代价」是让初学者第一次见到 `(args + ...)` 这种符号时一愣——但相比被它消灭的那几十行递归样板，这笔学费很划算。它也是「零开销抽象」的极佳注脚：语法糖背后是编译器直接生成的紧凑代码。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++17 正式采纳折叠表达式。它的组合套路与空包细节值得补记：
 
-- [史] 折叠表达式随 C++17 引入，提案（P0036）由 Andrew Sutton 等推动，目的是终结「为求和写递归基线」的样板。它一举覆盖了 unary/binary 折叠、以及空包的边界情况。
+- <span class="badge badge-history">史</span> 折叠表达式随 C++17 引入，提案（P0036）由 Andrew Sutton 等推动，目的是终结「为求和写递归基线」的样板。它一举覆盖了 unary/binary 折叠、以及空包的边界情况。
 
-- [史] 空包下的默认值是硬规定死的：逻辑与 `&&` 空包为 `true`、逻辑或 `||` 为 `false`、逗号 `,` 为 `void()`，其余运算符（如 `+`、`*`）的空包**非良构**——除非你写成带初始值的二元折叠 `(init + ... + args)`。这是为了让「空容器求和」不会静默给出垃圾值。
+- <span class="badge badge-history">史</span> 空包下的默认值是硬规定死的：逻辑与 `&&` 空包为 `true`、逻辑或 `||` 为 `false`、逗号 `,` 为 `void()`，其余运算符（如 `+`、`*`）的空包**非良构**——除非你写成带初始值的二元折叠 `(init + ... + args)`。这是为了让「空容器求和」不会静默给出垃圾值。
 
-- [评] 折叠表达式 + `if constexpr`（ch69）+ concepts（ch67）组成了现代「纯编译期循环」三件套：遍历包、按类型分支、用约束筛元素，几乎不需要手写递归模板了。
+- <span class="badge badge-comment">评</span> 折叠表达式 + `if constexpr`（ch69）+ concepts（ch67）组成了现代「纯编译期循环」三件套：遍历包、按类型分支、用约束筛元素，几乎不需要手写递归模板了。
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/fold ；https://en.wikipedia.org/wiki/C%2B%2B17
 
@@ -37,20 +37,20 @@ C++11 的可变参数模板虽然解决了「任意参数」，但要对参数�
 [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
 
-- 区分四种折叠：一元左/右、二元左/右 [标准]
-- 说清空包（empty pack）的处理规则 [标准]
-- 理解折叠的短路语义（逻辑与/或、逗号）[标准]
-- 从汇编确认折叠 = 编译期常量（无运行期循环）[平台]
-- 对比 C++11 递归等价写法，理解实例化收益 [经验]
+- 区分四种折叠：一元左/右、二元左/右 <span class="badge badge-std">标准</span>
+- 说清空包（empty pack）的处理规则 <span class="badge badge-std">标准</span>
+- 理解折叠的短路语义（逻辑与/或、逗号）<span class="badge badge-std">标准</span>
+- 从汇编确认折叠 = 编译期常量（无运行期循环）<span class="badge badge-platform">平台</span>
+- 对比 C++11 递归等价写法，理解实例化收益 <span class="badge badge-exp">经验</span>
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 
 - **模板名称**：折叠表达式（fold expression）
 - **适用场景**：对参数包做归约——求和、乘积、逻辑与/或、逗号序列、字符串拼接
 - **核心结构**：`(init op ... op pack)` 或 `(pack op ...)` 或 `(... op pack)` 等
-- **一句话定义**：把二元运算符「折叠」应用到整个参数包，编译期展开为单条表达式链 [标准]
+- **一句话定义**：把二元运算符「折叠」应用到整个参数包，编译期展开为单条表达式链 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★☆☆☆] [主题：本模板模式速查]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本模板模式速查
 ```cpp
 template <typename... Ts>
 auto sum(Ts... ts) { return (0 + ... + ts); }   // 一元左折叠 + 初值 0
@@ -58,7 +58,7 @@ auto sum(Ts... ts) { return (0 + ... + ts); }   // 一元左折叠 + 初值 0
 
 ## ③ 核心结构与完整代码实现
 
-> **示例 2** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // 一元左折叠（无初值）：((a op b) op c) op d
 template <typename... Ts> auto left(Ts... ts) { return (... + ts); }
@@ -85,9 +85,9 @@ int main() {
 }
 ```
 
-## ④ 空包处理规则 [标准]
+## ④ 空包处理规则 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★★☆☆☆] [主题：空包处理规则 [标准]]
+> **示例 3** [难度 ★★☆☆☆] [主题：空包处理规则 <span class="badge badge-std">标准</span>]
 ```cpp
 // 一元折叠空包：除 &&(true) / ||(false) / 逗号(void()) 外均为错误
 template <typename... Ts> auto and_all(Ts... ts) { return (... && ts); }  // 空包 => true
@@ -110,7 +110,7 @@ template <typename... Ts> auto sum0(Ts... ts) { return (0 + ... + ts); }  // 空
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 4** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
 ```cpp
 #include <iostream>
 #include <string>
@@ -132,15 +132,15 @@ int main() {
 }
 ```
 
-## ⑦ 标准规定 [标准]
+## ⑦ 标准规定 <span class="badge badge-std">标准</span>
 
 - 折叠表达式仅在函数/类模板参数包上合法 [expr.prim.fold]。
 - 一元折叠空包：仅 `&&`(true)、`||`(false)、逗号(void()) 合法，其余 ill-formed。
 - 二元折叠永远合法（初值兜底）[expr.prim.fold]/9。
 
-## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
+## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 5** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 #include <iostream>
 // C++17 起三者均支持折叠表达式
@@ -154,7 +154,7 @@ int main() { p(1, 2, 3); std::cout << "msvc-compatible comma fold ok\n"; }
 
 折叠不产生运行期数据结构，纯编译期展开为运算符链。
 
-> **示例 6** [难度 ★★★★☆] [主题：内存 / 对象模型]
+> **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -185,185 +185,185 @@ _Z8use_foldv:
 
 ### 知识点深挖（模板B）
 
-**B1 四种折叠形态（≥10 例） [标准]**
+**B1 四种折叠形态（≥10 例） <span class="badge badge-std">标准</span>**
 
-> **示例 7** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto a(Ts... ts) { return (... + ts); }      // 一元左
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto b(Ts... ts) { return (ts + ...); }      // 一元右
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto c(Ts... ts) { return (0 + ... + ts); }  // 二元左（初值0）
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto d(Ts... ts) { return (ts + ... + 0); }  // 二元右（初值0）
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto e(Ts... ts) { return (1 * ... * ts); }  // 一元左乘
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto f(Ts... ts) { return (ts * ... * 1); }  // 一元右乘
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto g(Ts... ts) { return (... && ts); }     // 一元左逻辑与
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto h(Ts... ts) { return (ts || ...); }     // 一元右逻辑或
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <string>
 template <typename... Ts> auto i(Ts... ts) { return (std::string{} + ... + ts); } // 二元左串接
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <iostream>
 template <typename... Ts> auto j(Ts... ts) { ( (std::cout << ts), ... ); } // 逗号折叠（序列）
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto k(Ts... ts) { return (std::max({ts...})); } // 折叠 + 初始化列表
 ```
 
-**B2 空包处理（≥10 例） [标准]**
+**B2 空包处理（≥10 例） <span class="badge badge-std">标准</span>**
 
-> **示例 18** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto t_and(Ts... ts) { return (... && ts); }  // 空=>true
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto t_or(Ts... ts)  { return (... || ts); }  // 空=>false
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto t_comma(Ts... ts){ (ts , ...); }        // 空=>void()
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto t_sum(Ts... ts) { return (0 + ... + ts); }  // 空=>0
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto t_mul(Ts... ts) { return (1 * ... * ts); }  // 空=>1
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：一元 + 空包
 // template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }  // 空包 ill-formed
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 用二元折叠避免空包错误
 template <typename... Ts> auto safe(Ts... ts) { return (0 + ... + ts); }  // 永不空错
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto safe_or(Ts... ts) { return (false || ... || ts); }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <typename... Ts> auto safe_and(Ts... ts){ return (true && ... && ts); }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 空包对成员访问：用二元折叠兜底
 template <typename... Ts> auto first_nonzero(Ts... ts) { return (0 + ... + (ts ? ts : 0)); }
 ```
 
-**B3 短路语义（≥10 例） [标准]**
+**B3 短路语义（≥10 例） <span class="badge badge-std">标准</span>**
 
-> **示例 28** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 逻辑与一元左折叠：从左到右短路
 template <typename... Ts> bool all(Ts... ts) { return (... && ts); }
 // all(p1, p2, p3)：p1 假则后续不求值
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 逻辑或一元左折叠：首个真即停
 template <typename... Ts> bool any(Ts... ts) { return (... || ts); }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 短路在包含副作用时可见（不推荐副作用，但语义如此）
 int g();  bool b = (false && g());   // g() 不调用（短路）
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 二元折叠同样短路
 template <typename... Ts> bool all2(Ts... ts) { return (true && ... && ts); }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 逗号折叠不短路（顺序求值全部）
 template <typename... Ts> void seq(Ts... ts) { ( (ts), ... ); }  // 每个都求值
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 短路配合谓词
 template <typename... Ts> bool all_even(Ts... ts) { return (... && (ts % 2 == 0)); }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 短路避免越界
 template <typename... Ts> bool in_range(Ts... ts) { return (... && (ts < 100)); }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 短路在 && 中：首 false 后续 fold 项不实例化求值（运行期）
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 注意：编译期常量折叠下短路被常量传播吃掉的等价结果
 static_assert((false && true) == false);  // 编译期即 false（短路：首 false 后续不求值）
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 折叠 + 短路做「全部满足」断言
 template <typename... Ts> constexpr bool all_ptr(Ts... ts) { return (... && std::is_pointer_v<Ts>); }
 ```
 
-**B4 与递归等价（≥10 例） [经验]**
+**B4 与递归等价（≥10 例） <span class="badge badge-exp">经验</span>**
 
-> **示例 38** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 递归求和（C++11）
 template <typename T> constexpr T rsum(T v){ return v; }
@@ -371,7 +371,7 @@ template <typename T, typename... R> constexpr T rsum(T f, R... r){ return f + r
 // 折叠等价：(0 + ... + ts)
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 递归与（C++11）
 template <typename T> constexpr bool rand(T v){ return v; }
@@ -379,7 +379,7 @@ template <typename T, typename... R> constexpr bool rand(T f, R... r){ return f 
 // 折叠等价：(... && ts)
 ```
 
-> **示例 40** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 递归乘积
 template <typename T> constexpr T rmul(T v){ return v; }
@@ -387,7 +387,7 @@ template <typename T, typename... R> constexpr T rmul(T f, R... r){ return f * r
 // 折叠：(1 * ... * ts)
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 #include <iostream>
 // 递归打印
@@ -395,39 +395,39 @@ template <typename T, typename... R> void rprint(T f, R... r){ std::cout<<f; rpr
 // 折叠：( (std::cout<<ts), ... );
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 折叠免基线、免多份实例化（递归需 N+1 份）
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 性能：折叠通常单函数 + 加法链；递归 N+1 个函数体
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 可读性：折叠一行 vs 递归两函数
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 二义：二者不可混用同名的危险（决议选更匹配）
 ```
 
-> **示例 46** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 编译期：折叠与递归在 constexpr 下都折叠为常量
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 推荐：新代码一律折叠，递归仅用于 C++14 兼容或需要「中间状态」的复杂逻辑
 ```
 
-**B5 错误与正确对照 [经验]**
+**B5 错误与正确对照 <span class="badge badge-exp">经验</span>**
 
-> **示例 48** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：折叠空包无初值且运算符不可空
 template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }  // 空包错
@@ -435,24 +435,24 @@ template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }  // 空包�
 template <typename... Ts> auto ok(Ts... ts) { return (0 + ... + ts); }
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：折叠非二元运算符
 // template <typename... Ts> auto bad(Ts... ts) { return (... = ts); }  // = 不可折叠（需二元左值）
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：在 C++14 用折叠（需 C++17）
 ```
 
-> **示例 51** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 正确：逗号折叠包 void 转换保兼容
 template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：误以为折叠会遍历「引用」修改原值——折叠求值不改原包
 ```
@@ -462,7 +462,7 @@ template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
 [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)（折叠是递归展开的归约替代）
 [第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（完美转发 + 包展开协同）
 
-> **示例 53** [难度 ★★★☆☆] [主题：中的该模式]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
 #include <iostream>
 #include <utility>
@@ -486,7 +486,7 @@ int main() {
 
 ## ⑫ 变体（variant patterns）
 
-> **示例 54** [难度 ★★★☆☆] [主题：变体]
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
 ```cpp
 #include <iostream>
 #include <string>
@@ -521,28 +521,28 @@ int main() {
 
 ## ⑬ 反模式（anti-patterns）
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式1：能用折叠却用递归，实例化多、代码长
 ```
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式2：一元折叠 + 不可空运算符 + 可能空包 → 编译失败
 // 改二元折叠带初值
 ```
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式3：在折叠里放有副作用且依赖短路的表达式，可读性差、易错
 ```
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式4：逗号折叠忘 (void) 转换，旧编译器告警
 ```
 
-> **示例 59** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式5：用折叠替代需要「早退返回」的复杂逻辑——此时 if constexpr 更合适
 ```
@@ -552,7 +552,7 @@ int main() {
 [第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（日志/格式化库以折叠做类型安全归约）
 [第72章　表达式模板 Expression Templates](Book/part06_templates/ch72_expression_templates.md)（表达式模板的编译期归约近亲）
 
-> **示例 60** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 #include <iostream>
 #include <string>
@@ -584,7 +584,7 @@ int main() {
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（traits 组合常借助折叠）
 [第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)（实例化机制基础）
 
-> **示例 61** [难度 ★★★★☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 61** <span class="badge badge-exp">难度 ★★★★☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -603,63 +603,63 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 62** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 1) 一元折叠空包除 &&/||/逗号 外非法 → 加初值
 ```
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 2) 折叠只接受「二元运算符」，= 等不可
 ```
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 3) 仅 C++17 起可用
 ```
 
-> **示例 65** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 4) 折叠不修改原包，是求值不是遍历
 ```
 
-> **示例 66** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 5) 逗号折叠在老 MSVC 需 (void)
 ```
 
-> **示例 67** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // 6) 结果类型由初值/运算符决定，注意提升
 ```
 
 ## ⑰ FAQ
 
-> **示例 68** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：一元 vs 二元折叠选哪个？
 // A：可能空包就用二元（带初值），否则一元更简洁。
 ```
 
-> **示例 69** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 69** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：折叠有短路吗？
 // A：&&/|| 折叠保留短路语义。
 ```
 
-> **示例 70** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 70** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：空包 && 为什么是 true？
 // A：逻辑与的恒等式：无操作数视为「真」（同 std::conjunction 空包为 true）。
 ```
 
-> **示例 71** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 71** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：折叠能替代所有递归吗？
 // A：纯归约可以；需要「携带状态/早退/复杂控制流」的递归仍需保留。
 ```
 
-> **示例 72** [难度 ★★☆☆☆] [主题：FAQ 问答]
+> **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 // Q：折叠性能如何？
 // A：编译期展开，常折叠为常量或加法链，优于递归实例化。
@@ -667,27 +667,27 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 73** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 73** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 1) 归约一律折叠，递归仅 C++14 兼容场景保留
 ```
 
-> **示例 74** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 74** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 2) 可能空包用二元折叠带初值
 ```
 
-> **示例 75** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 75** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 3) 逻辑判断用 && / || 折叠，天然短路
 ```
 
-> **示例 76** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 76** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 4) 需要 void 转换的逗号折叠加 (void)
 ```
 
-> **示例 77** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 77** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 5) traits 组合用折叠最简洁（all_integral 等）
 ```
@@ -697,14 +697,14 @@ int main() {
 [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化与内联对归约的影响）
 [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)（与递归展开编译时间对比）
 
-> **示例 78** [难度 ★★★☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // 折叠完全编译期展开；(0+...+ts) 在 -O2 成单加法链或常量
 // use_fold 实测退化为 mov eax,39（见⑩），零运行期计算
 // 相比递归：单函数体 + 无 N+1 实例化，编译更快、体积更小
 ```
 
-> **示例 79** [难度 ★☆☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 79** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // 代价：展开后加法链长度 = 包大小，巨型包可能指令较长（但通常仍内联优化）
 ```
@@ -714,16 +714,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用一元折叠 `((args + ...))` 求和。** 你担心空包会怎样。请说明边界。
-   - [标准] 一元折叠在包为空时无定义（编译错误），除非用二元折叠提供初始值。
-   - [引用] ISO/IEC 14882:2023 §[expr.prim.fold]（折叠表达式与空包合法性）；cppreference "Fold expression" 词条。
+   - <span class="badge badge-std">标准</span> 一元折叠在包为空时无定义（编译错误），除非用二元折叠提供初始值。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.prim.fold]（折叠表达式与空包合法性）；cppreference "Fold expression" 词条。
 
 2. **真实场景：用二元折叠 `((init + ... + args))` 处理空包。** 你希望即使零实参也返回初始值。请说明语义。
-   - [标准] 二元折叠带初始值，包为空时整个表达式退化为初始值，不报错。
-   - [引用] ISO/IEC 14882:2023 §[expr.prim.fold]（二元折叠）；cppreference "Fold expression" 词条。
+   - <span class="badge badge-std">标准</span> 二元折叠带初始值，包为空时整个表达式退化为初始值，不报错。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.prim.fold]（二元折叠）；cppreference "Fold expression" 词条。
 
 3. **真实场景：用逗号运算符折叠做批量副作用。** 你 `(print(args), ...)` 依次处理。请说明可折叠运算符范围。
-   - [标准] 折叠可施加于几乎所有二元运算符（含逗号、逻辑与或、位运算），由运算符决定语义。
-   - [引用] ISO/IEC 14882:2023 §[expr.prim.fold]（可折叠的运算符）；cppreference "Fold expression" 词条。
+   - <span class="badge badge-std">标准</span> 折叠可施加于几乎所有二元运算符（含逗号、逻辑与或、位运算），由运算符决定语义。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.prim.fold]（可折叠的运算符）；cppreference "Fold expression" 词条。
 
 **练习题**
 
@@ -751,8 +751,8 @@ int main() {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：折叠表达式如何终结「递归基线样板」
-[史] C++11 的可变参数模板解决了「任意参数」，但要对参数包做**归约**（如求和、逻辑与）还得写「递归基线 + 递归展开」的样板。Andrew Sutton 与 Richard Smith 提出**折叠表达式**，提案 N4295（前身为 N4191）于 C++17 落地：一行 `(... + args)` 就让编译器把参数包按二元运算符折叠起来，零递归、零基线函数。目的是终结「为求和写递归基线」的样板，并覆盖一元/二元折叠与空包的边界情形。
-[评] 它几乎纯增益——更短、更安全、更易内联，是「零开销抽象」的极佳注脚：语法糖背后是编译器直接生成的紧凑代码。
+<span class="badge badge-history">史</span> C++11 的可变参数模板解决了「任意参数」，但要对参数包做**归约**（如求和、逻辑与）还得写「递归基线 + 递归展开」的样板。Andrew Sutton 与 Richard Smith 提出**折叠表达式**，提案 N4295（前身为 N4191）于 C++17 落地：一行 `(... + args)` 就让编译器把参数包按二元运算符折叠起来，零递归、零基线函数。目的是终结「为求和写递归基线」的样板，并覆盖一元/二元折叠与空包的边界情形。
+<span class="badge badge-comment">评</span> 它几乎纯增益——更短、更安全、更易内联，是「零开销抽象」的极佳注脚：语法糖背后是编译器直接生成的紧凑代码。
 
 ### ㉒.2 真实工程坐标：折叠表达式活在哪些产品/项目里
 
@@ -760,7 +760,7 @@ int main() {
 
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
-| 标准库与库作者 | `std::integer_sequence`/`apply`/`is_same` | 折叠实现编译期归约与「任一/全部」判断 | 一切 C++ 程序地基 | 折叠是编译期归约语法糖 [STANDARD] |
+| 标准库与库作者 | `std::integer_sequence`/`apply`/`is_same` | 折叠实现编译期归约与「任一/全部」判断 | 一切 C++ 程序地基 | 折叠是编译期归约语法糖 <span class="badge badge-std">STANDARD</span> |
 | 日志/断言框架 | fmt、GSL | 折叠做「参数包全良构/任一满足」编译期检查 | 质量基础设施 | 免手写递归校验 |
 | 数值/SIMD 库 | SIMD 包装库 | 对所有通道同一运算压成一行，配 `if constexpr` 零开销分支 | 数值计算 | 通道级编译期展开 |
 | Web/后端 | `nlohmann/json` | 折叠统一处理 `tuple`/多类型 `to_json`/`from_json` 展开 | 服务端序列化 | 免手写递归的序列化 |
@@ -787,7 +787,7 @@ int main() {
 
 ## 附录 A：WG21 提案 [B: Principle]
 
-> **示例 80** [难度 ★★★☆☆] [主题：附录 A：WG21 提案 [B: P]
+> **示例 80** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：WG21 提案 [B: P
 ```
 折叠表达式 (Fold Expressions) 的标准化历程:
 
@@ -807,7 +807,7 @@ P0036R0 (2015): 进入 C++17 的最终提案
 
 ## 附录 B：工业案例 —— 标准库内部的折叠 [F: Industry / D: stdlib]
 
-> **示例 81** [难度 ★★★☆☆] [主题：附录 B：工业案例 —— 标准库内部]
+> **示例 81** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：工业案例 —— 标准库内部
 ```cpp
 // libstdc++ <type_traits> 中使用折叠表达式实现 conjunction/disjunction
 // template<typename...> struct conjunction : true_type {};
@@ -831,7 +831,7 @@ int main() {
 
 ## 附录 C：折叠表达式的性能 [E: Low-level / G: Performance]
 
-> **示例 82** [难度 ★★★★☆] [主题：附录 C：折叠表达式的性能 [E: ]
+> **示例 82** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：折叠表达式的性能 [E:
 ```cpp
 // 折叠表达式 vs 递归模板 —— 编译期 vs 运行时对比
 // 编译性能:
@@ -855,7 +855,7 @@ int main() {
 
 ## 附录 D：面试与常见错误 [J: Learning / I: Practice]
 
-> **示例 83** [难度 ★☆☆☆☆] [主题：附录 D：面试与常见错误 [J: L]
+> **示例 83** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：面试与常见错误 [J: L
 ```
 面试高频:
 Q: 四种折叠表达式的语法?  (pack op ...) ( ... op pack) (pack op ... op init) (init op ... op pack)
@@ -924,7 +924,7 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 
 <details><summary>答案与解析</summary>
 
-> **示例 84** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 84** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 
@@ -934,9 +934,9 @@ template <typename... Ts> auto product(Ts... xs) { return (xs * ...); }
 int main() { std::cout << sum(1, 2, 3, 4) << ' ' << product(1, 2, 3, 4) << '\n'; }
 ```
 
-[标准] `(xs + ...)` 展开为 `((1+2)+3)+4`（左结合）；`(xs * ...)` 右折叠展开为 `1*(2*(3*4))`。对 `+`/`*` 可交换故结果相同，对 `-`/`/` 方向会影响结果。
+<span class="badge badge-std">标准</span> `(xs + ...)` 展开为 `((1+2)+3)+4`（左结合）；`(xs * ...)` 右折叠展开为 `1*(2*(3*4))`。对 `+`/`*` 可交换故结果相同，对 `-`/`/` 方向会影响结果。
 
-[引用] 折叠表达式（C++17，P0036）让标准库能简洁实现变参 `std::min`/`std::max`（`(xs < ...)` 求最小，cppreference "std::min"）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定折叠方向与求值顺序。
+<span class="badge badge-ref">引用</span> 折叠表达式（C++17，P0036）让标准库能简洁实现变参 `std::min`/`std::max`（`(xs < ...)` 求最小，cppreference "std::min"）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定折叠方向与求值顺序。
 
 </details>
 
@@ -946,7 +946,7 @@ int main() { std::cout << sum(1, 2, 3, 4) << ' ' << product(1, 2, 3, 4) << '\n';
 
 <details><summary>答案与解析</summary>
 
-> **示例 85** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 85** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 
@@ -961,9 +961,9 @@ int main() {
 }
 ```
 
-[标准] `(p(xs) && ...)` 是逻辑与折叠，运行期对每个元素短路求值——首个 `false` 即停；`||` 折叠首个 `true` 即停。
+<span class="badge badge-std">标准</span> `(p(xs) && ...)` 是逻辑与折叠，运行期对每个元素短路求值——首个 `false` 即停；`||` 折叠首个 `true` 即停。
 
-[引用] 逻辑折叠的短路语义与 `std::conjunction`/`std::disjunction`（C++17）一致，但后者在类型层面短路、前者在值层面（cppreference "std::conjunction"）。libstdc++ 的 `__and_`/`__or_` 用包展开 + SFINAE 实现类型短路（见本章附录 D4）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定 `&&`/`||` 折叠的求值与短路。
+<span class="badge badge-ref">引用</span> 逻辑折叠的短路语义与 `std::conjunction`/`std::disjunction`（C++17）一致，但后者在类型层面短路、前者在值层面（cppreference "std::conjunction"）。libstdc++ 的 `__and_`/`__or_` 用包展开 + SFINAE 实现类型短路（见本章附录 D4）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定 `&&`/`||` 折叠的求值与短路。
 
 </details>
 
@@ -973,7 +973,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 86** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 86** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 
@@ -983,9 +983,9 @@ void for_each(F f, Ts... xs) { (f(xs), ...); }
 int main() { for_each([](auto x) { std::cout << x << ' '; }, 1, 2, 3); std::cout << '\n'; }
 ```
 
-[标准] 一元逗号折叠对**空包**有定义值（`void()`），因此 `for_each(f)` 也能编译；而 `&&`/`||` 空包分别为 `true`/`false`。这是 fold expression 与手写递归最大的便利差异之一。
+<span class="badge badge-std">标准</span> 一元逗号折叠对**空包**有定义值（`void()`），因此 `for_each(f)` 也能编译；而 `&&`/`||` 空包分别为 `true`/`false`。这是 fold expression 与手写递归最大的便利差异之一。
 
-[引用] 逗号折叠 `for_each` 是 "对每个元素执行副作用" 的现代惯用法，远比 C++11 递归版简洁（cppreference "Fold expression" 示例）。`std::apply`/`std::invoke` 系列变参工具也基于类似展开（cppreference "std::apply"）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定一元折叠对空包的预定义值。
+<span class="badge badge-ref">引用</span> 逗号折叠 `for_each` 是 "对每个元素执行副作用" 的现代惯用法，远比 C++11 递归版简洁（cppreference "Fold expression" 示例）。`std::apply`/`std::invoke` 系列变参工具也基于类似展开（cppreference "std::apply"）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定一元折叠对空包的预定义值。
 
 </details>
 
@@ -1003,7 +1003,7 @@ auto r = (xs - ...);   // 左折叠 ((1-2)-3) = -4，并非期望的 2
 
 **修复**：对 `+`/`*` 用任意方向都安全；对 `-`/`/` 明确方向或用归约算法：
 
-> **示例 87** [难度 ★★☆☆☆] [主题：演绎 1：折叠方向对 - / / 敏]
+> **示例 87** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：折叠方向对 - / / 敏
 ```cpp
 #include <iostream>
 
@@ -1024,7 +1024,7 @@ int main() {
 
 **修复**：`&&` 空包为 `true`、`||` 空包为 `false`，是标准定义值：
 
-> **示例 88** [难度 ★★★☆☆] [主题：演绎 2：空包的行为差异]
+> **示例 88** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：空包的行为差异
 ```cpp
 #include <iostream>
 
@@ -1039,7 +1039,7 @@ int main() {
 ```
 
 **结论**：逻辑折叠的空包有明确语义（`&&`→`true`，`||`→`false`，逗号→`void()`）；这是 fold 比手写递归更省心之处。
-## 可视化速查图（Mermaid 补充）[标准]
+## 可视化速查图（Mermaid 补充）<span class="badge badge-std">标准</span>
 
 > 把附录 C 性能与折叠方向浓缩为一张分类图。
 
@@ -1116,7 +1116,7 @@ namespace __detail
 
 ### D4.4 可编译验证（用户侧折叠表达式 vs 标准 trait 等价性）
 
-> **示例 89** [难度 ★★★☆☆] [主题：可编译验证]
+> **示例 89** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
 ```cpp
 #include <type_traits>
 #include <iostream>
@@ -1308,7 +1308,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 90** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 90** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 

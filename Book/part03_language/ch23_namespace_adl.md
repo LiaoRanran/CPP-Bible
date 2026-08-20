@@ -8,10 +8,10 @@
 > 前置：ch19（变量/对象/ODR/链接）｜后续：ch21（const 与命名空间作用域）、ch31（`const_cast` 与命名空间可见性）、ch60（模板·ADL 与友元）、ch62（模板元编程中的 ADL）、ch119（模块 Modules 深度版）
 >
 > **本章立场分层约定**：全章使用四层标签
-> - **[标准]**：ISO C++ 标准的硬性规定，任何合规实现都必须满足，可移植。
-> - **[实现]**：由具体编译器/标准库（GCC/libstdc++、Clang/libc++、MSVC/STL）选择的实现方式，可能随版本变化。
+> - **<span class="badge badge-std">标准</span>**：ISO C++ 标准的硬性规定，任何合规实现都必须满足，可移植。
+> - **<span class="badge badge-impl">实现</span>**：由具体编译器/标准库（GCC/libstdc++、Clang/libc++、MSVC/STL）选择的实现方式，可能随版本变化。
 > - **[平台·x86-64]**：受 ABI（System V / Windows x64 / ARM64 AAPCS）、链接模型、目标架构约束。
-> - **[经验]**：工业实践中被广泛验证的设计准则、坑点与反模式。
+> - **<span class="badge badge-exp">经验</span>**：工业实践中被广泛验证的设计准则、坑点与反模式。
 
 ---
 
@@ -20,25 +20,25 @@
 > 当"名字冲突"成为大型 C++ 项目的日常，命名空间是委员会给出的隔离答案；ADL 则是它的隐形副作用。
 
 ### 0.1 起源（谁·何时·为何）
-C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀（如 `std_`、`ios_`）手工避免冲突，极易撞名。[史] 随着 1990 年代库爆炸（标准库、Boost、各家 SDK 同台），名字冲突成了头等痛点。命名空间在 C++98 正式引入，把"作用域盒子"变成语言特性。[史]
+C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀（如 `std_`、`ios_`）手工避免冲突，极易撞名。<span class="badge badge-history">史</span> 随着 1990 年代库爆炸（标准库、Boost、各家 SDK 同台），名字冲突成了头等痛点。命名空间在 C++98 正式引入，把"作用域盒子"变成语言特性。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **C++98**：命名空间、`using` 声明 / 指令、`namespace alias` 落地。[史]
-- **C++11**：引入 `inline namespace`（版本化无痛升级，旧名仍可见）。[史]
-- **C++17 / C++20**：嵌套 `using namespace` 辅助、模块（Modules）从根上减少命名污染。[史]
+- **C++98**：命名空间、`using` 声明 / 指令、`namespace alias` 落地。<span class="badge badge-history">史</span>
+- **C++11**：引入 `inline namespace`（版本化无痛升级，旧名仍可见）。<span class="badge badge-history">史</span>
+- **C++17 / C++20**：嵌套 `using namespace` 辅助、模块（Modules）从根上减少命名污染。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operator<<(cout, x)` 能找到定义在 `std` 里的 `operator<<`，编译器会顺着参数类型悄悄进它的命名空间。[史][评] 这方便了运算符重载，却被诟病"查找不透明"。C++20 的 `std::ranges` 刻意把 `begin` 等放进 `std::ranges` 以规避 ADL 风暴，正体现了对它的爱恨。[史][评]
+ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operator<<(cout, x)` 能找到定义在 `std` 里的 `operator<<`，编译器会顺着参数类型悄悄进它的命名空间。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 这方便了运算符重载，却被诟病"查找不透明"。C++20 的 `std::ranges` 刻意把 `begin` 等放进 `std::ranges` 以规避 ADL 风暴，正体现了对它的爱恨。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++17/20 用嵌套 using 与模块缓解命名污染。ADL 这头"伴生怪物"在 C++20 后反而被标准库刻意规避。[史]
+0.2 停在 C++17/20 用嵌套 using 与模块缓解命名污染。ADL 这头"伴生怪物"在 C++20 后反而被标准库刻意规避。<span class="badge badge-history">史</span>
 
-- **C++20 模块（Modules, P1103）进一步绕开头文件宏污染**：`import std;` 等命名模块不再经文本包含，宏与匿名命名空间不再跨 TU 泄漏，命名空间的"隔离"角色部分被模块接替。[史]
-- **`std::ranges` 用定制点对象（CPO）规避 ADL 风暴（C++20）**：ranges 把 `begin` / `end` 等做成 CPO，只在必要时走 ADL，解决了 0.3 提到的"查找不透明"痛点。[史][评]
-- **inline namespace 成为 ABI 版本控制事实标准**：libstdc++ 用 `__cxx11` inline namespace 区分新旧 ABI（`std::string` 实现切换），Boost 等库沿用此惯用法做无断裂升级。[史]
-- **C++26 静态反射预览**：反射提案将让命名空间、类型元数据可被代码遍历，命名空间从"编译期作用域盒子"变为"可运行时枚举的元数据树"，呼应 0.3 的治理主题。[评]
-- **轶事**：据记载早期委员会曾认真讨论"是否默认开启 ADL"，最终因会破坏所有运算符重载而放弃；ADL 因此成为"无法撤销的历史包袱"。[轶]
+- **C++20 模块（Modules, P1103）进一步绕开头文件宏污染**：`import std;` 等命名模块不再经文本包含，宏与匿名命名空间不再跨 TU 泄漏，命名空间的"隔离"角色部分被模块接替。<span class="badge badge-history">史</span>
+- **`std::ranges` 用定制点对象（CPO）规避 ADL 风暴（C++20）**：ranges 把 `begin` / `end` 等做成 CPO，只在必要时走 ADL，解决了 0.3 提到的"查找不透明"痛点。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **inline namespace 成为 ABI 版本控制事实标准**：libstdc++ 用 `__cxx11` inline namespace 区分新旧 ABI（`std::string` 实现切换），Boost 等库沿用此惯用法做无断裂升级。<span class="badge badge-history">史</span>
+- **C++26 静态反射预览**：反射提案将让命名空间、类型元数据可被代码遍历，命名空间从"编译期作用域盒子"变为"可运行时枚举的元数据树"，呼应 0.3 的治理主题。<span class="badge badge-comment">评</span>
+- **轶事**：据记载早期委员会曾认真讨论"是否默认开启 ADL"，最终因会破坏所有运算符重载而放弃；ADL 因此成为"无法撤销的历史包袱"。<span class="badge badge-anecdote">轶</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/namespace ｜ https://en.cppreference.com/w/cpp/language/lookup ｜ https://en.cppreference.com/w/cpp/language/modules
 
@@ -49,7 +49,7 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 
 本章回答四个互相缠绕的问题：**如何把名字分隔开（namespace）**、**如何让名字进入作用域（using）**、**为什么有些名字不需要 using 也能被找到（ADL）**、**如何用 namespace 管控 ABI（inline namespace）**。四者关系如下：
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：本章地图（先给结论，再击穿）]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 本章地图（先给结论，再击穿）
 ```
 namespace ──隔离名字──▶ 避免全局污染 / ODR 冲突
    │
@@ -71,8 +71,8 @@ ADL (参数依赖查找) ──隐形查找──▶ 根据实参类型反查其
 
 **核心命题（一句话）**：
 
-> **[标准]** `[namespace]/1`：命名空间是具名的作用域，用来把声明分组、防止名字冲突。
-> **[标准]** `[basic.lookup.argdep]`：当函数调用的一个实参类型来自某命名空间时，该命名空间会被自动纳入查找集合——这就是 ADL，它绕过了普通的"先内层后外层"作用域规则。
+> **<span class="badge badge-std">标准</span>** `[namespace]/1`：命名空间是具名的作用域，用来把声明分组、防止名字冲突。
+> **<span class="badge badge-std">标准</span>** `[basic.lookup.argdep]`：当函数调用的一个实参类型来自某命名空间时，该命名空间会被自动纳入查找集合——这就是 ADL，它绕过了普通的"先内层后外层"作用域规则。
 
 ---
 
@@ -80,9 +80,9 @@ ADL (参数依赖查找) ──隐形查找──▶ 根据实参类型反查其
 
 ### 2.1 定义（Definition）
 
-**[标准]** 命名空间是一组具名声明的作用域。`namespace N { ... }` 引入一个命名空间作用域；`N::x` 用限定符访问；`using namespace N;` 或 `using N::x;` 把名字引入当前作用域。
+**<span class="badge badge-std">标准</span>** 命名空间是一组具名声明的作用域。`namespace N { ... }` 引入一个命名空间作用域；`N::x` 用限定符访问；`using namespace N;` 或 `using N::x;` 把名字引入当前作用域。
 
-**[标准]** 命名空间可以：无名字（匿名/unnamed）、内联（`inline namespace`，C++11）、嵌套、取别名（`namespace A = B;`）、扩展（同一名字的 namespace 可跨多 TU 合并，称为"命名空间拼接/extension"）。
+**<span class="badge badge-std">标准</span>** 命名空间可以：无名字（匿名/unnamed）、内联（`inline namespace`，C++11）、嵌套、取别名（`namespace A = B;`）、扩展（同一名字的 namespace 可跨多 TU 合并，称为"命名空间拼接/extension"）。
 
 ### 2.2 历史（History）
 
@@ -97,9 +97,9 @@ ADL (参数依赖查找) ──隐形查找──▶ 根据实参类型反查其
 
 ### 2.3 设计动机（Design Motivation）
 
-**[经验]** C 语言只有单一全局命名空间，大型项目里 `foo_init` / `bar_init` 这类前缀是主流妥协。C++ 早期（带类以前）同样面临全局污染。命名空间让 `A::init()` 与 `B::init()` 共存。
+**<span class="badge badge-exp">经验</span>** C 语言只有单一全局命名空间，大型项目里 `foo_init` / `bar_init` 这类前缀是主流妥协。C++ 早期（带类以前）同样面临全局污染。命名空间让 `A::init()` 与 `B::init()` 共存。
 
-**[标准]** 匿名命名空间的设计动机：**让实体拥有内部链接（internal linkage）**，等价于 `static`，但 `static` 不能用于某些类型（如某些模板、类内成员），匿名命名空间则无此限制（见 §⑤）。
+**<span class="badge badge-std">标准</span>** 匿名命名空间的设计动机：**让实体拥有内部链接（internal linkage）**，等价于 `static`，但 `static` 不能用于某些类型（如某些模板、类内成员），匿名命名空间则无此限制（见 §⑤）。
 
 ---
 
@@ -107,9 +107,9 @@ ADL (参数依赖查找) ──隐形查找──▶ 根据实参类型反查其
 
 ### 3.1 具名命名空间与扩展
 
-**[标准]** 同一命名空间可在多个翻译单元（TU）中被"扩展"——所有同名命名空间的成员在链接时合并。这是 ODR（见 ch19）与命名空间的交汇点。
+**<span class="badge badge-std">标准</span>** 同一命名空间可在多个翻译单元（TU）中被"扩展"——所有同名命名空间的成员在链接时合并。这是 ODR（见 ch19）与命名空间的交汇点。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：具名命名空间与扩展]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 具名命名空间与扩展
 ```cpp
 // prog_01_named_ns_extension.cpp  —— 库场景：分文件扩展同一 namespace
 #include <cstdio>
@@ -129,7 +129,7 @@ int main() {
 
 ### 3.2 嵌套命名空间与 C++17 简写
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：嵌套命名空间与 C++17 简写]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 嵌套命名空间与 C++17 简写
 ```cpp
 // prog_02_nested_ns.cpp  —— 引擎场景：分层 API
 #include <cstdio>
@@ -148,7 +148,7 @@ int main() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：嵌套命名空间与 C++17 简写]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 嵌套命名空间与 C++17 简写
 ```cpp
 // prog_03_nested_cpp17_shorthand.cpp  —— C++17 简写等价形式
 #include <cstdio>
@@ -164,9 +164,9 @@ int main() {
 
 ### 3.3 命名空间别名（alias）
 
-**[经验]** 长命名空间（尤其嵌套深或带版本后缀）应用别名简化；但别名不改变链接名，仅是源码层便利。
+**<span class="badge badge-exp">经验</span>** 长命名空间（尤其嵌套深或带版本后缀）应用别名简化；但别名不改变链接名，仅是源码层便利。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：命名空间别名（alias）]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间别名（alias）
 ```cpp
 // prog_04_ns_alias.cpp  —— 跨平台场景：统一接口名
 #include <cstdio>
@@ -182,9 +182,9 @@ int main() {
 
 ### 3.4 匿名（unnamed）命名空间
 
-**[标准]** `[namespace.unnamed]/1`：匿名命名空间中的每个名字都隐含 `static` 语义，具有**内部链接**，只能在当前 TU 中可见，不会与其他 TU 的同名实体冲突（避免 ODR 违规）。
+**<span class="badge badge-std">标准</span>** `[namespace.unnamed]/1`：匿名命名空间中的每个名字都隐含 `static` 语义，具有**内部链接**，只能在当前 TU 中可见，不会与其他 TU 的同名实体冲突（避免 ODR 违规）。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：匿名（unnamed）命名空间]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 匿名（unnamed）命名空间
 ```cpp
 // prog_05_anonymous_ns.cpp  —— 单 TU 私有实现
 #include <cstdio>
@@ -201,7 +201,7 @@ int main() {
 
 ### 3.5 内联（inline）命名空间——ABI 版本控制（详见 §⑨）
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：内联（inline）命名空间——AB]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联（inline）命名空间——AB
 ```cpp
 // prog_06_inline_ns_intro.cpp  —— 库版本选择
 #include <cstdio>
@@ -232,13 +232,13 @@ int main() {
 | 引入内容 | 单个名字 `x` | 整个命名空间所有名字 |
 | 查找时机 | 名字在声明点即被绑定 | 在"最近公共命名空间"内按需查找（可能二义/隐藏）|
 | 污染风险 | 低（精准）| 高（注入全部名字）|
-| **[经验]** | 头文件中安全 | 头文件中**禁止**（见 §⑮）|
+| **<span class="badge badge-exp">经验</span>** | 头文件中安全 | 头文件中**禁止**（见 §⑮）|
 
-**[标准]** `[namespace.udir]`：using 指令不改变 lookup 的嵌套层级，它只是把 `N` 的名字"临时"提升到当前作用域的**外围**进行查找。
+**<span class="badge badge-std">标准</span>** `[namespace.udir]`：using 指令不改变 lookup 的嵌套层级，它只是把 `N` 的名字"临时"提升到当前作用域的**外围**进行查找。
 
 ### 4.2 using 声明：精准引入
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：声明：精准引入]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 声明：精准引入
 ```cpp
 // prog_07_using_decl.cpp  —— 工程场景：只引入需要的名字
 #include <cstdio>
@@ -256,9 +256,9 @@ int main() {
 
 ### 4.3 using 指令的隐藏陷阱
 
-**[标准]** using 指令引入的名字在遇到局部同名声明时，会被**局部声明隐藏（hide）**，但不会导致错误——这正是"静默污染"的来源。
+**<span class="badge badge-std">标准</span>** using 指令引入的名字在遇到局部同名声明时，会被**局部声明隐藏（hide）**，但不会导致错误——这正是"静默污染"的来源。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：指令的隐藏陷阱]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 指令的隐藏陷阱
 ```cpp
 // prog_08_using_directive_hide.cpp  —— 危险演示：局部变量遮蔽
 #include <cstdio>
@@ -275,7 +275,7 @@ int main() {
 
 ### 4.4 名字冲突与二义性
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：名字冲突与二义性]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 名字冲突与二义性
 ```cpp
 // prog_09_using_ambiguity.cpp  —— 两 namespace 同名 → 二义
 #include <cstdio>
@@ -298,7 +298,7 @@ int main() {
 
 ### 5.1 历史演进
 
-**[标准]** C 用 `static` 给文件作用域函数/变量赋予内部链接。C++ 早期同样支持。但 `static` 的问题：
+**<span class="badge badge-std">标准</span>** C 用 `static` 给文件作用域函数/变量赋予内部链接。C++ 早期同样支持。但 `static` 的问题：
 
 1. `[经验]` `static` 不能用于类作用域以外的某些构造（如模板形参、类内 `static` 成员本就是外部链接）。
 2. `[标准]` 匿名命名空间可包裹**任意**声明（类、模板、typedef），而 `static` 只能作用于变量/函数。
@@ -307,7 +307,7 @@ int main() {
 
 ### 5.2 static 的局限
 
-> **示例 11** [难度 ★★☆☆☆] [主题：的局限]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的局限
 ```cpp
 // prog_10_static_limits.cpp  —— static 不能用于模板类型参数包等
 #include <cstdio>
@@ -325,7 +325,7 @@ int main() {
 
 ### 5.3 等价的两种写法
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：等价的两种写法]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 等价的两种写法
 ```cpp
 // prog_11_anon_vs_static.cpp  —— 等价对比
 #include <cstdio>
@@ -339,7 +339,7 @@ int main() {
 }
 ```
 
-> **[实现]** 在 GCC/Clang/MSVC 上，匿名命名空间里的符号会被赋予一个 TU 唯一的内部名字（mangled 前缀含随机/计数器），链接器视其为局部符号，等价于 `static`。
+> **<span class="badge badge-impl">实现</span>** 在 GCC/Clang/MSVC 上，匿名命名空间里的符号会被赋予一个 TU 唯一的内部名字（mangled 前缀含随机/计数器），链接器视其为局部符号，等价于 `static`。
 
 ---
 
@@ -347,13 +347,13 @@ int main() {
 
 ### 6.1 为什么需要 ADL
 
-**[标准]** 考虑 `std::cout << x;`。运算符 `<<` 本质是函数调用 `operator<<(std::cout, x)`。若 `x` 是你自定义类型 `MyType`（定义在 `namespace my`），`operator<<` 也通常定义在 `namespace my` 中。如果只按普通作用域查找，调用点看不到 `my::operator<<`，必须写 `my::operator<<(std::cout, x)`——极其丑陋。
+**<span class="badge badge-std">标准</span>** 考虑 `std::cout << x;`。运算符 `<<` 本质是函数调用 `operator<<(std::cout, x)`。若 `x` 是你自定义类型 `MyType`（定义在 `namespace my`），`operator<<` 也通常定义在 `namespace my` 中。如果只按普通作用域查找，调用点看不到 `my::operator<<`，必须写 `my::operator<<(std::cout, x)`——极其丑陋。
 
 **ADL 的救赎**：根据实参 `x` 的**类型所属命名空间**自动把 `my` 加入查找集合。这就是 `[basic.lookup.argdep]` 的全部动机。
 
 ### 6.2 关联实体（associated entities）完整算法
 
-**[标准]** `[basic.lookup.argdep]/2-4`：对函数调用 `f(args...)`，对每个实参类型 `T`，计算其**关联命名空间（associated namespaces）**与**关联类（associated classes）**。完整规则如下（工业级归纳）：
+**<span class="badge badge-std">标准</span>** `[basic.lookup.argdep]/2-4`：对函数调用 `f(args...)`，对每个实参类型 `T`，计算其**关联命名空间（associated namespaces）**与**关联类（associated classes）**。完整规则如下（工业级归纳）：
 
 **A. 对基础类型（int/char/pointer/reference 等）**：无关联命名空间、无关联类。
 
@@ -374,11 +374,11 @@ int main() {
 
 **H. 最终查找集合** = { 普通非限定查找已找到的声明 } ∪ { 所有关联命名空间的成员 } ∪ { 所有关联类的成员（含友元）}。
 
-> **[标准]** 关键：关联命名空间的查找**不存在嵌套层级限制**——即便调用点处于深层命名空间，ADL 仍会直捣实参类型所在命名空间，且**与普通查找结果合并**，可能导致"意外重载"（见 §⑧）。
+> **<span class="badge badge-std">标准</span>** 关键：关联命名空间的查找**不存在嵌套层级限制**——即便调用点处于深层命名空间，ADL 仍会直捣实参类型所在命名空间，且**与普通查找结果合并**，可能导致"意外重载"（见 §⑧）。
 
 ### 6.3 算法伪代码（可读版）
 
-> **示例 13** [难度 ★★☆☆☆] [主题：算法伪代码（可读版）]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 算法伪代码（可读版）
 ```
 function associated_entities(T):
     result = {}
@@ -404,7 +404,7 @@ function associated_entities(T):
 
 ### 6.4 程序：直观感受 ADL
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：程序：直观感受 ADL]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：直观感受 ADL
 ```cpp
 // prog_12_adl_basic.cpp  —— ADL 找到用户命名空间的函数
 #include <cstdio>
@@ -420,7 +420,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：程序：直观感受 ADL]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 程序：直观感受 ADL
 ```cpp
 // prog_13_adl_template_arg.cpp  —— 模板实参的命名空间也被纳入
 #include <cstdio>
@@ -445,7 +445,7 @@ int main() {
 
 下面用一个非平凡类型，逐条套用 §6.2 的算法，演示编译器在背后如何计算关联集合。
 
-> **示例 16** [难度 ★★★☆☆] [主题：手算关联实体：完整走查]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 手算关联实体：完整走查
 ```cpp
 // prog_13b_adl_walkthrough.cpp  —— 注释版：手算关联实体
 namespace lib {
@@ -472,13 +472,13 @@ namespace lib {
 5. 嵌套类型 `Inner` → 规则 B 的"嵌套类型"分支 → 关联类 `Handle<Node>::Inner`，其定义 NS 仍是 `lib`。
 6. 合并结果：关联命名空间 `{lib}`，关联类 `{Handle<Node>, Node, Handle<Node>::Inner}`。
 
-> **[标准]** 这正是 `f(h)` 能在 `lib` 中找到 `f` 的原因——即便调用点没写 `using namespace lib;`。ADL 把"实参类型来路"完整反查了一遍。
+> **<span class="badge badge-std">标准</span>** 这正是 `f(h)` 能在 `lib` 中找到 `f` 的原因——即便调用点没写 `using namespace lib;`。ADL 把"实参类型来路"完整反查了一遍。
 
 ### 6.6 程序：基类也进入关联类
 
-**[标准]** 规则 B 明确：关联类含 `T` 的**所有基类**（含间接基类）。派生类实参会使基类所在命名空间的函数被找到。
+**<span class="badge badge-std">标准</span>** 规则 B 明确：关联类含 `T` 的**所有基类**（含间接基类）。派生类实参会使基类所在命名空间的函数被找到。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：程序：基类也进入关联类]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：基类也进入关联类
 ```cpp
 // prog_14b_adl_base_class.cpp  —— 基类命名空间被纳入关联集合
 #include <cstdio>
@@ -512,7 +512,7 @@ int main() {
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/ostream.tcc`）
 > 第 309–311 行，`std` 命名空间内的自由函数模板 `operator<<`：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码：<o]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：<o
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/ostream.tcc:309-311）=====
   template<typename _CharT, typename _Traits>
@@ -531,7 +531,7 @@ int main() {
 
 ### 7.3 完整可编译示例
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 完整可编译示例
 ```cpp
 // prog_14_operator_stream_adl.cpp  —— 自定义类型流式输出
 #include <iostream>
@@ -551,7 +551,7 @@ int main() {
 }
 ```
 
-> **[经验]** `operator<<` / `operator>>` / `swap` / `hash` 等"为已有类型提供操作"的函数，**应定义在参数类型所在的命名空间**，让 ADL 自然生效——这是 C++ 标准库本身遵循的约定（见 §⑧ `std::swap`）。
+> **<span class="badge badge-exp">经验</span>** `operator<<` / `operator>>` / `swap` / `hash` 等"为已有类型提供操作"的函数，**应定义在参数类型所在的命名空间**，让 ADL 自然生效——这是 C++ 标准库本身遵循的约定（见 §⑧ `std::swap`）。
 
 ---
 
@@ -559,9 +559,9 @@ int main() {
 
 ### 8.1 惯用法与异常安全
 
-**[标准]** 泛型代码（如 `std::vector`、`std::pair` 的 `swap` 成员）不应直接调用 `std::swap`，而应写：
+**<span class="badge badge-std">标准</span>** 泛型代码（如 `std::vector`、`std::pair` 的 `swap` 成员）不应直接调用 `std::swap`，而应写：
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：惯用法与异常安全]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法与异常安全
 ```cpp
 using std::swap;     // 把 std::swap 引入当前作用域
 swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则用它
@@ -574,7 +574,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 > **[真实源码]** `std::swap` 主模板位于
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/move.h`，第 225–238 行：
 
-> **示例 21** [难度 ★★★☆☆] [主题：真实 libstdc++ 源码：st]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码：st
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/move.h:225-238）=====
   template<typename _Tp>
@@ -601,7 +601,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 > **[真实源码]** 采用 `using std::swap;` 惯用法的库代码，例如
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/stl_pair.h` 第 325–327 行：
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：st]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：st
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/stl_pair.h:325-327）=====
       _GLIBCXX20_CONSTEXPR void
@@ -620,7 +620,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 
 ### 8.3 完整可编译示例：自定义高效 swap
 
-> **示例 23** [难度 ★★☆☆☆] [主题：完整可编译示例：自定义高效 swap]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可编译示例：自定义高效 swap
 ```cpp
 // prog_15_swap_adl_idiom.cpp  —— 自定义 swap 被 ADL 优先选中
 #include <utility>
@@ -642,7 +642,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：完整可编译示例：自定义高效 swap]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 完整可编译示例：自定义高效 swap
 ```cpp
 // prog_16_swap_fallback.cpp  —— 无可特化时回退 std::swap
 #include <utility>
@@ -664,14 +664,14 @@ int main() {
 
 ### 9.1 原理
 
-**[标准]** `[namespace]/5`：内联命名空间的成员**如同定义在外层命名空间一样**可见。因此 `lib::foo` 默认解析到 `inline namespace v2` 中的 `foo`，而旧版本 `v1` 仍可通过 `lib::v1::foo` 访问。链接层面，符号名包含完整嵌套路径，但内联子空间名被"折叠"进父名（具体看实现），从而实现**同一库新旧 ABI 并存**。
+**<span class="badge badge-std">标准</span>** `[namespace]/5`：内联命名空间的成员**如同定义在外层命名空间一样**可见。因此 `lib::foo` 默认解析到 `inline namespace v2` 中的 `foo`，而旧版本 `v1` 仍可通过 `lib::v1::foo` 访问。链接层面，符号名包含完整嵌套路径，但内联子空间名被"折叠"进父名（具体看实现），从而实现**同一库新旧 ABI 并存**。
 
 ### 9.2 真实 libstdc++ 源码：`__cxx11` 区分新旧 string ABI
 
 > **[真实源码]** 本机探测
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/x86_64-w64-mingw32/bits/c++config.h`，第 371–375 行：
 
-> **示例 25** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码：cx]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：cx
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/c++config.h:371-375）=====
 #if _GLIBCXX_USE_CXX11_ABI
@@ -691,13 +691,13 @@ namespace __gnu_cxx
 // ===============================================================
 ```
 
-含义（**[实现]**）：当 `_GLIBCXX_USE_CXX11_ABI=1`（C++11 新模式）时，`std` 含一个内联命名空间 `__cxx11`。所有容器类型（如 `std::string`）实际定义在 `std::__cxx11` 中。mangled 名因此带 `NSt7__cxx1112basic_stringI...`——这就是 C++11 后 `std::string` 与旧的 `std::string`（COW 实现，位于 `std::__cxx98`）ABI 不兼容、链接时报 `undefined reference to ... __cxx11::basic_string ...` 的根因。
+含义（**<span class="badge badge-impl">实现</span>**）：当 `_GLIBCXX_USE_CXX11_ABI=1`（C++11 新模式）时，`std` 含一个内联命名空间 `__cxx11`。所有容器类型（如 `std::string`）实际定义在 `std::__cxx11` 中。mangled 名因此带 `NSt7__cxx1112basic_stringI...`——这就是 C++11 后 `std::string` 与旧的 `std::string`（COW 实现，位于 `std::__cxx98`）ABI 不兼容、链接时报 `undefined reference to ... __cxx11::basic_string ...` 的根因。
 
 > **[平台·x86-64]** 用 `-D_GLIBCXX_USE_CXX11_ABI=0` 可切换回旧 ABI（兼容老 .so）。这是发行版混合链接时的常见坑。
 
 ### 9.3 程序：直观看 inline namespace 默认可见
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：程序：直观看 inline name]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：直观看 inline name
 ```cpp
 // prog_17_inline_abi_demo.cpp  —— 自造双版本库
 #include <cstdio>
@@ -729,7 +729,7 @@ int main() {
 
 > **[实现-推断]** libc++ 与 MS STL 在本机未安装，无法 Read 真实头文件；上表基于公开实现知识。**严禁编造行号**——如需逐行引用，请在本机安装对应工具链后按 §⑱ 路线重新探测。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：三套 STL 对比：inline n]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三套 STL 对比：inline n
 ```cpp
 // prog_18_three_stl_abi.cpp  —— 探测当前工具链的 inline 命名空间名（GCC）
 #include <string>
@@ -750,13 +750,13 @@ int main() {
 
 ### 11.1 hide-by-name（名字隐藏）规则
 
-**[标准]** ADL 与普通查找的结果**合并**为一个重载集；但若某关联命名空间中声明的函数名，与普通查找已找到的某**声明在同一作用域**中同名且构成隐藏，则按常规隐藏规则处理。
+**<span class="badge badge-std">标准</span>** ADL 与普通查找的结果**合并**为一个重载集；但若某关联命名空间中声明的函数名，与普通查找已找到的某**声明在同一作用域**中同名且构成隐藏，则按常规隐藏规则处理。
 
-**[标准]** 关键陷阱（hide-by-name / "名字隐藏"）：**using 声明 `using N::f;` 若与某可见 `f` 冲突，会触发二义或隐藏，而非合并**——且 ADL 找到的 `f` 与普通 `using` 引入的 `f` 在重载解析阶段才合并。
+**<span class="badge badge-std">标准</span>** 关键陷阱（hide-by-name / "名字隐藏"）：**using 声明 `using N::f;` 若与某可见 `f` 冲突，会触发二义或隐藏，而非合并**——且 ADL 找到的 `f` 与普通 `using` 引入的 `f` 在重载解析阶段才合并。
 
 ### 11.2 名字冲突的经典坑
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：名字冲突的经典坑]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 名字冲突的经典坑
 ```cpp
 // prog_19_adl_hide_by_name.cpp  —— 函数名冲突导致隐藏
 #include <cstdio>
@@ -778,9 +778,9 @@ int main() {
 
 ### 11.3 意外重载（ADL 拉入不想要的函数）
 
-**[标准]** ADL 可能把关联命名空间里"同名但语义不同"的函数拉入重载集，造成出乎意料的调用。
+**<span class="badge badge-std">标准</span>** ADL 可能把关联命名空间里"同名但语义不同"的函数拉入重载集，造成出乎意料的调用。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：意外重载（ADL 拉入不想要的函数）]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 意外重载（ADL 拉入不想要的函数）
 ```cpp
 // prog_20_adl_surprise.cpp  —— ADL 拉入意外重载
 #include <cstdio>
@@ -803,11 +803,11 @@ int main() {
 
 ### 11.4 P0846：显式调用语法修复 `std::vector<int>().size()`
 
-**[标准]** C++17 前，`std::vector<int> v; v.size();` 中 `size()` 是成员函数模板特化，但 `v.` 之后的 `size` 是非限定名，普通查找失败（因为模板特化名不是"模板"），ADL 也找不到（成员函数不参与 ADL）。P0846R4（C++20）引入**显式调用语法**：`v.template size<>()` 不再需要，且允许 `obj.member<>` 直接解析特化成员模板。
+**<span class="badge badge-std">标准</span>** C++17 前，`std::vector<int> v; v.size();` 中 `size()` 是成员函数模板特化，但 `v.` 之后的 `size` 是非限定名，普通查找失败（因为模板特化名不是"模板"），ADL 也找不到（成员函数不参与 ADL）。P0846R4（C++20）引入**显式调用语法**：`v.template size<>()` 不再需要，且允许 `obj.member<>` 直接解析特化成员模板。
 
-**[实现]** GCC/Clang/MSVC 自 2019 起的版本均已实现 P0846。下面用等价的"构造临时对象调用成员函数模板"演示修复前后差异（编译期行为，附注释说明）：
+**<span class="badge badge-impl">实现</span>** GCC/Clang/MSVC 自 2019 起的版本均已实现 P0846。下面用等价的"构造临时对象调用成员函数模板"演示修复前后差异（编译期行为，附注释说明）：
 
-> **示例 30** [难度 ★★☆☆☆] [主题：显式调用语法修复 std::vect]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 显式调用语法修复 std::vect
 ```cpp
 // prog_21_p0846_member_template.cpp  —— 成员函数模板特化调用
 #include <cstdio>
@@ -827,7 +827,7 @@ int main() {
 }
 ```
 
-> **[标准]** P0846 针对的是 `obj.member<>` 中当 `member` 是**成员函数模板**且被特化调用时的查找。它和 ADL 的关系在于：此前 ADL 也会尝试但失败（成员不参与 ADL），P0846 让语法层面可正确解析，避免强制写 `.template`。
+> **<span class="badge badge-std">标准</span>** P0846 针对的是 `obj.member<>` 中当 `member` 是**成员函数模板**且被特化调用时的查找。它和 ADL 的关系在于：此前 ADL 也会尝试但失败（成员不参与 ADL），P0846 让语法层面可正确解析，避免强制写 `.template`。
 
 ---
 
@@ -835,14 +835,14 @@ int main() {
 
 ### 12.1 语法与动机
 
-**[标准]** `[enum.udecl]`：在类/命名空间内写 `using enum E;` 会把枚举 `E` 的所有枚举项**作为名字**引入当前作用域，省去 `E::` 前缀。相当于自动生成一组 `using E::eN;`。
+**<span class="badge badge-std">标准</span>** `[enum.udecl]`：在类/命名空间内写 `using enum E;` 会把枚举 `E` 的所有枚举项**作为名字**引入当前作用域，省去 `E::` 前缀。相当于自动生成一组 `using E::eN;`。
 
 ### 12.2 真实 libstdc++ 源码：`compare` 中的 `using enum`
 
 > **[真实源码]** 本机探测
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/compare`，第 706–708 行（位于 `_Fp_fmt` 作用域内的 `consteval` 函数中，且用宏 `__cpp_using_enum` 守卫）：
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：co]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：co
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, compare:706-708）=====
 #ifdef __cpp_using_enum
@@ -855,7 +855,7 @@ int main() {
 
 ### 12.3 程序：using enum 简化
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：程序：using enum 简化]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：using enum 简化
 ```cpp
 // prog_22_using_enum.cpp  —— C++20 批量引入枚举值
 #include <cstdio>
@@ -878,7 +878,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：程序：using enum 简化]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 程序：using enum 简化
 ```cpp
 // prog_23_using_enum_vs_old.cpp  —— C++17 等价写法（啰嗦）
 #include <cstdio>
@@ -899,7 +899,7 @@ int main() { std::printf("%s\n", old::n(old::A)); return 0; }
 | `using enum`（P1099, C++20）| ≥10.0 | ≥11.0 | ≥19.25 (VS2019 16.5) |
 | `__cpp_using_enum` 宏 | 有 | 有 | 有 |
 
-> **[实现]** 三编译器均完整支持；`prog_22` 可分别在三者下编译验证。
+> **<span class="badge badge-impl">实现</span>** 三编译器均完整支持；`prog_22` 可分别在三者下编译验证。
 
 ---
 
@@ -907,13 +907,13 @@ int main() { std::printf("%s\n", old::n(old::A)); return 0; }
 
 ### 13.1 关系定位
 
-**[标准]** 模块解决的是**物理隔离**（头文件文本被重复解析、宏泄漏、include 顺序污染），而命名空间解决的是**逻辑隔离**（名字冲突）。二者正交，但模块可部分替代命名空间在"防止跨 TU 名字蔓延"上的作用。
+**<span class="badge badge-std">标准</span>** 模块解决的是**物理隔离**（头文件文本被重复解析、宏泄漏、include 顺序污染），而命名空间解决的是**逻辑隔离**（名字冲突）。二者正交，但模块可部分替代命名空间在"防止跨 TU 名字蔓延"上的作用。
 
-**[经验]** 在模块中仍推荐保留命名空间——模块导出名仍可能与其他模块/全局名冲突，命名空间是语言层兜底。
+**<span class="badge badge-exp">经验</span>** 在模块中仍推荐保留命名空间——模块导出名仍可能与其他模块/全局名冲突，命名空间是语言层兜底。
 
 ### 13.2 程序：模块替代头文件文本的命名空间隔离
 
-> **示例 34** [难度 ★★☆☆☆] [主题：程序：模块替代头文件文本的命名空间隔]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 程序：模块替代头文件文本的命名空间隔
 ```cpp
 // prog_24_module_demo.cpp  —— C++20 模块（需 -std=c++20 且编译器支持模块）
 // 真实模块需分文件编译（接口单元 math.cppm + 使用单元 main.cpp），结构示意：
@@ -939,11 +939,11 @@ int main() {
 
 ### 14.1 ODR 与命名空间扩展
 
-**[标准]** `[basic.def.odr]`：命名空间允许跨 TU 扩展，因此同一 `namespace N` 的成员在多个 TU 定义时受 ODR 约束——**非 inline 的函数/变量在多个 TU 定义即违反 ODR**（见 ch19 链接模型）。
+**<span class="badge badge-std">标准</span>** `[basic.def.odr]`：命名空间允许跨 TU 扩展，因此同一 `namespace N` 的成员在多个 TU 定义时受 ODR 约束——**非 inline 的函数/变量在多个 TU 定义即违反 ODR**（见 ch19 链接模型）。
 
 ### 14.2 程序：违反 ODR 的命名空间陷阱
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：程序：违反 ODR 的命名空间陷阱]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：违反 ODR 的命名空间陷阱
 ```cpp
 // prog_25_odr_trap.cpp  —— 头文件中定义非 inline 函数于命名空间 → 多 TU 冲突
 // lib.h:
@@ -972,9 +972,9 @@ int main() { std::printf("%d\n", lib::f()); return 0; }
 
 ### 15.1 `using namespace` 在头文件中的灾难
 
-**[经验]** 头文件里写 `using namespace std;` 会把 `std` 全部名字注入**每一个包含该头文件的 TU**，导致不可控的二义与隐藏。
+**<span class="badge badge-exp">经验</span>** 头文件里写 `using namespace std;` 会把 `std` 全部名字注入**每一个包含该头文件的 TU**，导致不可控的二义与隐藏。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：using namespace 在头]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · using namespace 在头
 ```cpp
 // prog_26_header_pollution_BAD.cpp  —— 反模式（错误示例）
 // ===== bad.h =====
@@ -991,7 +991,7 @@ namespace safe { inline int count(){ return 0; } }
 int main() { std::printf("%d\n", safe::count()); return 0; }
 ```
 
-### 15.2 最佳实践清单（[经验]）
+### 15.2 最佳实践清单（<span class="badge badge-exp">经验</span>）
 
 1. 头文件中**禁止** `using namespace X;`。
 2. 实现文件（.cpp）顶部可用 `using namespace std;` 等，但限定在最小作用域。
@@ -1003,7 +1003,7 @@ int main() { std::printf("%d\n", safe::count()); return 0; }
 
 ### 15.3 程序：作用域受限的 using 指令（正确示例）
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：程序：作用域受限的 using 指令]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：作用域受限的 using 指令
 ```cpp
 // prog_27_scoped_using_OK.cpp  —— 正确：using 指令限制在函数内
 #include <cstdio>
@@ -1017,7 +1017,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：程序：作用域受限的 using 指令]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序：作用域受限的 using 指令
 ```cpp
 // prog_28_best_practice_adl.cpp  —— 正确：ADL 友好 + 精准 using
 #include <utility>
@@ -1048,7 +1048,7 @@ int main() {
 | Python | `package`/`module` + `import` | 无（靠 import）| 无编译期 namespace，靠模块对象属性 |
 | C++ | `namespace` + `using` | **有**（ADL）| 唯一在"运算符/函数调用"中按实参类型隐式反查命名空间的主流语言 |
 
-> **[经验]** ADL 是 C++ 的"双刃剑"：它让运算符重载优雅可用，但也带来 §⑧ 的隐藏陷阱。其他语言多选择"显式 import"以换取可预测性。
+> **<span class="badge badge-exp">经验</span>** ADL 是 C++ 的"双刃剑"：它让运算符重载优雅可用，但也带来 §⑧ 的隐藏陷阱。其他语言多选择"显式 import"以换取可预测性。
 
 ---
 
@@ -1056,11 +1056,11 @@ int main() {
 
 ### 17.1 命题：ADL swap 零开销
 
-**[性能]** ADL 仅是**编译期**的名字查找机制，不产生任何运行时指令差异。直接调用 `net::swap(a,b)` 与经 `using std::swap; swap(a,b)` 由 ADL 选中的 `net::swap`，生成的汇编**完全相同**——都是一次 `net::swap` 调用（或内联展开）。
+**<span class="badge badge-perf">性能</span>** ADL 仅是**编译期**的名字查找机制，不产生任何运行时指令差异。直接调用 `net::swap(a,b)` 与经 `using std::swap; swap(a,b)` 由 ADL 选中的 `net::swap`，生成的汇编**完全相同**——都是一次 `net::swap` 调用（或内联展开）。
 
 ### 17.2 基准程序（可量化对比）
 
-> **示例 39** [难度 ★★☆☆☆] [主题：基准程序（可量化对比）]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准程序（可量化对比）
 ```cpp
 // prog_29_bench_adl_swap.cpp  —— 计时对比（逻辑等价，证明零语义差异）
 #include <utility>
@@ -1087,7 +1087,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★★★☆☆] [主题：基准程序（可量化对比）]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 基准程序（可量化对比）
 ```cpp
 // prog_30_bench_direct_swap.cpp  —— 直接调用（对比组，编译期等价）
 #include <cstdio>
@@ -1110,7 +1110,7 @@ int main() {
 }
 ```
 
-> **[性能]** 在 `-O2` 下两者汇编一致（均内联或同签名调用），耗时应无统计显著差异——这从工程上证明"ADL 惯用法零运行时成本"。若开启 `-S` 查看，二者对应循环体指令序列相同。
+> **<span class="badge badge-perf">性能</span>** 在 `-O2` 下两者汇编一致（均内联或同签名调用），耗时应无统计显著差异——这从工程上证明"ADL 惯用法零运行时成本"。若开启 `-S` 查看，二者对应循环体指令序列相同。
 >
 > **[内存模型/缓存]** 命名空间本身不引入任何运行时内存开销；它纯粹是编译期符号组织。嵌套深度只影响编译期符号表查找，不影响生成的代码或缓存行布局。
 >
@@ -1166,16 +1166,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：swap 的 ADL 定制。** 你为自定义类型 `MyType` 在自身命名空间提供 `swap`，调用 `std::swap(a,b)` 时依赖 ADL 找到它。请用参数依赖查找解释。
-   - [标准] ADL 在通常非限定查找失败或补充时，将实参的关联命名空间与类纳入查找集合。
-   - [引用] ISO/IEC 14882:2023 §[basic.lookup.argdep]（参数依赖查找）；cppreference "Argument-dependent lookup" 词条。
+   - <span class="badge badge-std">标准</span> ADL 在通常非限定查找失败或补充时，将实参的关联命名空间与类纳入查找集合。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.lookup.argdep]（参数依赖查找）；cppreference "Argument-dependent lookup" 词条。
 
 2. **真实场景：内联命名空间做 ABI 版本。** 库用 `inline namespace v2` 暴露新版本同时保留旧符号。请解释 inline namespace 的语义。
-   - [标准] 内联命名空间的名字在外层命名空间内如同直接成员可见，常用于库版本化。
-   - [引用] ISO/IEC 14882:2023 §[namespace.def]（命名空间定义，含 inline）；cppreference "Namespace" 词条。
+   - <span class="badge badge-std">标准</span> 内联命名空间的名字在外层命名空间内如同直接成员可见，常用于库版本化。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[namespace.def]（命名空间定义，含 inline）；cppreference "Namespace" 词条。
 
 3. **真实场景：头文件禁用的 using 指令。** 头文件中 `using namespace std;` 引发名字冲突。请说明为何头文件内禁用 using namespace。
-   - [标准] using-directive 不提升名字优先级，仅将其纳入查找，易与全局或其他命名空间名字发生冲突。
-   - [引用] ISO/IEC 14882:2023 §[namespace.udir]（using 指令）；cppreference "Namespace#Using-directives" 词条。
+   - <span class="badge badge-std">标准</span> using-directive 不提升名字优先级，仅将其纳入查找，易与全局或其他命名空间名字发生冲突。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[namespace.udir]（using 指令）；cppreference "Namespace#Using-directives" 词条。
 
 > 对照圣经 v3 标准，逐条自检。✓ = 已覆盖。
 
@@ -1197,7 +1197,7 @@ int main() {
 | 14 | 性能 | ✓ | §⑰（microbenchmark）|
 | 15 | 复杂度 | ✓ | §⑰.3（查找 O(depth) 编译期）|
 | 16 | 异常安全 | ✓ | §⑧.1（swap 惯用法基础）|
-| 17 | 线程安全 | ✓ | [经验] 命名空间定义本身线程无关；见 ch19 |
+| 17 | 线程安全 | ✓ | <span class="badge badge-exp">经验</span> 命名空间定义本身线程无关；见 ch19 |
 | 18 | 缓存 | ✓ | §⑰（不影响缓存行）|
 | 19 | CPU | ✓ | §⑰（无 CPU 额外代价）|
 | 20 | ABI | ✓ | §⑨/§⑩（inline namespace 版本控制）|
@@ -1209,7 +1209,7 @@ int main() {
 
 ---
 
-> **[标准]/[实现]/[平台·x86-64]/[经验] 立场总览**：本章所有"必须这样"的论断，凡属 `[标准]` 皆可移植；凡属 `[实现]` 以 GCC 15.3.0 / libstdc++ 真实源码为准，Clang/libc++、MSVC/STL 差异已在 §⑩/§⑱ 标注（未探测到真实头文件者明确标注 `[实现-推断]`，未编造任何路径或行号）。
+> **<span class="badge badge-std">标准</span>/<span class="badge badge-impl">实现</span>/[平台·x86-64]/<span class="badge badge-exp">经验</span> 立场总览**：本章所有"必须这样"的论断，凡属 `[标准]` 皆可移植；凡属 `[实现]` 以 GCC 15.3.0 / libstdc++ 真实源码为准，Clang/libc++、MSVC/STL 差异已在 §⑩/§⑱ 标注（未探测到真实头文件者明确标注 `[实现-推断]`，未编造任何路径或行号）。
 
 ## 联合使用场景
 
@@ -1225,7 +1225,7 @@ int main() {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：命名空间与 ADL 的出身
-C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲突；随着 1990 年代库爆炸（标准库、Boost、各家 SDK 同台），名字冲突成了头等痛点，命名空间在 C++98 正式引入（见 ch23 0.1）。[史] ADL（参数依赖查找，Koenig lookup，以 Andrew Koenig 命名）是命名空间的"伴生怪物"：为让 `operator<<(cout, x)` 找到 `std` 里的运算符，编译器会顺着参数类型悄悄进其命名空间。[史][评] C++11 的 `inline namespace` 提供版本化无痛升级，C++20 模块（P1103）从根上减少头文件宏污染。[史]
+C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲突；随着 1990 年代库爆炸（标准库、Boost、各家 SDK 同台），名字冲突成了头等痛点，命名空间在 C++98 正式引入（见 ch23 0.1）。<span class="badge badge-history">史</span> ADL（参数依赖查找，Koenig lookup，以 Andrew Koenig 命名）是命名空间的"伴生怪物"：为让 `operator<<(cout, x)` 找到 `std` 里的运算符，编译器会顺着参数类型悄悄进其命名空间。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> C++11 的 `inline namespace` 提供版本化无痛升级，C++20 模块（P1103）从根上减少头文件宏污染。<span class="badge badge-history">史</span>
 
 ### ㉒.2 真实工程坐标：namespace/ADL 活在哪些产品里
 
@@ -1234,21 +1234,21 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲�
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
 | 标准库与 Boost | `std`、`boost::asio::ip` | `std` 隔离标准；Boost 嵌套命名空间组织巨型库树；`inline namespace` 做 ABI 版本控制 | 一切 C++ 程序地基 | `inline namespace` 是 ABI 版本控制事实标准 |
-| 标准库实现 | libstdc++（`__cxx11`） | `inline namespace` 区分新旧 ABI（`std::string` 实现切换），旧符号旧链接、新符号新链接 | 编译器级基础设施 | 无断裂升级的经典案例 [史] |
+| 标准库实现 | libstdc++（`__cxx11`） | `inline namespace` 区分新旧 ABI（`std::string` 实现切换），旧符号旧链接、新符号新链接 | 编译器级基础设施 | 无断裂升级的经典案例 <span class="badge badge-history">史</span> |
 | 编译器/浏览器 | LLVM（`llvm::`/`clang::`）、Chromium | 匿名命名空间替代文件级 `static`；分层命名空间组织子系统 | 工业级基础设施 | 大型 C++ 项目组织范本 |
 | 浏览器引擎 | WebKit（`WTF::`/`JSC::`） | 分层命名空间隔离 GC/解释器基础设施，边界映射 ABI 与可见性 | JS 引擎内核 | 命名空间边界 = 子系统 ABI 边界 |
 | 量化金融 | QuantLib（`QuantLib::`） | 按 `termstructures`/`pricingengines`/`instruments` 子命名空间组织数千类型 | 金融 C++ 领域 | 命名空间做领域分区范本 |
 
-> **表注（㉒.2）**：上表把「namespace/ADL」拉成「从符号隔离到 ABI 版本控制」的组织工具。Boost 用嵌套命名空间管巨型库树，libstdc++ 用 `__cxx11` inline namespace 做「新旧 string 实现无断裂切换」，WebKit 让命名空间边界直接等于 GC 子系统的 ABI 边界。注意 [史] 标的 libstdc++ 一行：C++11 的 `std::string` 改实现时，正是靠 inline namespace 让老二进制继续链老符号——这是 ABI 版本控制靠语言特性落地的教科书案例。
+> **表注（㉒.2）**：上表把「namespace/ADL」拉成「从符号隔离到 ABI 版本控制」的组织工具。Boost 用嵌套命名空间管巨型库树，libstdc++ 用 `__cxx11` inline namespace 做「新旧 string 实现无断裂切换」，WebKit 让命名空间边界直接等于 GC 子系统的 ABI 边界。注意 <span class="badge badge-history">史</span> 标的 libstdc++ 一行：C++11 的 `std::string` 改实现时，正是靠 inline namespace 让老二进制继续链老符号——这是 ABI 版本控制靠语言特性落地的教科书案例。
 
 **一条判读**：用命名空间的判据是「要隔离符号、控制 ABI 可见性、还是做领域分区」。内部链接细节 → 匿名命名空间（替代 `static`）；库要向后兼容演进 → `inline namespace` 做双轨符号；大型项目按子系统分层（`llvm::`/`WTF::`）；领域模型按子命名空间分区（QuantLib）。规则：永远把东西放进命名空间，别污染全局；跨版本 ABI 用 inline namespace 而非破坏符号。
 ### ㉒.3 生产踩坑：namespace/ADL 的常见误用
-- **ADL 不透明查找引发意外重载**：传入 `std` 类型的参数会悄悄把 `std` 里的 `swap`/`begin` 拉进候选集，自定义同名函数被意外选中或冲突，是模板代码的天坑。[评]
-- **`using namespace std;` 在头文件里**：把整个 `std` 倾泻进全局，造成名字污染与 ODR 冲突，是被无数代码规范明令禁止的反模式。[史][评]
-- **inline namespace 误用破坏 ABI**：把 ABI 敏感类型放进 inline namespace 后改动实现，会静默改变 mangled name 导致老 `.so` 链接不上。[评]
+- **ADL 不透明查找引发意外重载**：传入 `std` 类型的参数会悄悄把 `std` 里的 `swap`/`begin` 拉进候选集，自定义同名函数被意外选中或冲突，是模板代码的天坑。<span class="badge badge-comment">评</span>
+- **`using namespace std;` 在头文件里**：把整个 `std` 倾泻进全局，造成名字污染与 ODR 冲突，是被无数代码规范明令禁止的反模式。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **inline namespace 误用破坏 ABI**：把 ABI 敏感类型放进 inline namespace 后改动实现，会静默改变 mangled name 导致老 `.so` 链接不上。<span class="badge badge-comment">评</span>
 
 ### ㉒.4 与标准的互动：namespace/ADL 与标准演进
-命名空间、`using`、namespace alias 在 C++98 落地，`inline namespace` 入 C++11（N2920 路线）；C++20 模块（P1103）用 `import std;` 取代文本包含，宏与匿名命名空间不再跨 TU 泄漏，部分接替命名空间的隔离角色。[史] `std::ranges` 用定制点对象（CPO）规避 ADL 风暴，只在必要时走 ADL，正是对 ADL"查找不透明"痛点的官方回应；C++26 静态反射（P2996）将把命名空间变成可运行时枚举的元数据树。[史][评][轶] 早期委员会曾认真讨论"是否默认开启 ADL"，最终因会破坏所有运算符重载而放弃，ADL 成为无法撤销的历史包袱。
+命名空间、`using`、namespace alias 在 C++98 落地，`inline namespace` 入 C++11（N2920 路线）；C++20 模块（P1103）用 `import std;` 取代文本包含，宏与匿名命名空间不再跨 TU 泄漏，部分接替命名空间的隔离角色。<span class="badge badge-history">史</span> `std::ranges` 用定制点对象（CPO）规避 ADL 风暴，只在必要时走 ADL，正是对 ADL"查找不透明"痛点的官方回应；C++26 静态反射（P2996）将把命名空间变成可运行时枚举的元数据树。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span><span class="badge badge-anecdote">轶</span> 早期委员会曾认真讨论"是否默认开启 ADL"，最终因会破坏所有运算符重载而放弃，ADL 成为无法撤销的历史包袱。
 - **修订链补强（模块）**：命名空间的部分隔离角色由模块接替——Modules 提案 [P1103](https://wg21.link/P1103) 从 R0 起步，经 R1/R2 的措辞打磨，到 R3（2019）随 C++20 落地。标准在 [module] 把 `import` / `export` 作为一级语言设施，设计目标是"消除文本包含导致的宏泄漏与 ODR 重编译"；但委员会刻意保留命名空间作为 API 组织手段，模块只接管"翻译单元边界"，二者互补而非取代——正回应 ch23 0.x 中"命名空间仍是大型项目组织范本"的判断。
 
 ### ㉒.5 权威引用
@@ -1316,7 +1316,7 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲�
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 namespace ns {
@@ -1329,9 +1329,9 @@ int main() {
 }
 ```
 
-[标准] ADL 在计算函数名候选时，把"实参类型的关联命名空间"也纳入查找域，故无需 `using` 即可找到同命名空间内的 `operator<<`。
+<span class="badge badge-std">标准</span> ADL 在计算函数名候选时，把"实参类型的关联命名空间"也纳入查找域，故无需 `using` 即可找到同命名空间内的 `operator<<`。
 
-[引用] ISO/IEC 14882:2023 §[basic.lookup.argdep]（参数依赖查找）；这也是标准库 `std::ostream` 与用户类型通过 `<<` 协作的基础机制。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.lookup.argdep]（参数依赖查找）；这也是标准库 `std::ostream` 与用户类型通过 `<<` 协作的基础机制。
 
 </details>
 
@@ -1341,7 +1341,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1358,9 +1358,9 @@ int main() {
 }
 ```
 
-[标准] `using std::swap;` 后调用无限定 `swap(a,b)`，编译器先用 ADL 找 `Buffer` 命名空间里的 `swap` 重载（高效、不抛），找不到才退回 `std::swap`。这是异常安全赋值（`copy-and-swap`）的基础。
+<span class="badge badge-std">标准</span> `using std::swap;` 后调用无限定 `swap(a,b)`，编译器先用 ADL 找 `Buffer` 命名空间里的 `swap` 重载（高效、不抛），找不到才退回 `std::swap`。这是异常安全赋值（`copy-and-swap`）的基础。
 
-[引用] ISO/IEC 14882:2023 §[basic.lookup.argdep]（ADL 让无限定 `swap` 选中自定义重载）；该两步惯用法是 C++ 标准库 `std::swap` 文档的推荐写法。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.lookup.argdep]（ADL 让无限定 `swap` 选中自定义重载）；该两步惯用法是 C++ 标准库 `std::swap` 文档的推荐写法。
 
 </details>
 
@@ -1370,7 +1370,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 namespace lib {
@@ -1387,9 +1387,9 @@ int main() {
 }
 ```
 
-[标准] `inline namespace` 的成员可直接通过外层命名空间名访问（名字查找会进入 inline 命名空间），从而在不改调用方代码的情况下切换默认实现版本；旧版放在非 inline 命名空间保留兼容入口。libstdc++ 正是用 `__cxx11` 区分新旧 `std::string` ABI。
+<span class="badge badge-std">标准</span> `inline namespace` 的成员可直接通过外层命名空间名访问（名字查找会进入 inline 命名空间），从而在不改调用方代码的情况下切换默认实现版本；旧版放在非 inline 命名空间保留兼容入口。libstdc++ 正是用 `__cxx11` 区分新旧 `std::string` ABI。
 
-[引用] ISO/IEC 14882:2023 §[namespace.def]/[namespace.udecl]（inline namespace 使成员透出到外层）；libstdc++ 用内联命名空间 `__cxx11` 区分 C++11 前后 `std::string` ABI（见 libstdc++ 源码）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[namespace.def]/[namespace.udecl]（inline namespace 使成员透出到外层）；libstdc++ 用内联命名空间 `__cxx11` 区分 C++11 前后 `std::string` ABI（见 libstdc++ 源码）。
 
 </details>
 
@@ -1406,7 +1406,7 @@ namespace geo { struct Point { int x, y; }; }
 ```
 
 **修复**：
-> **示例 44** [难度 ★★☆☆☆] [主题：演绎 1：自定义类型的流式输出——靠]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：自定义类型的流式输出——靠
 ```cpp
 #include <iostream>
 namespace geo {
@@ -1430,7 +1430,7 @@ Handle& operator=(Handle o) { delete p; p = o.p; o.p = nullptr; return *this; } 
 ```
 
 **修复**：
-> **示例 45** [难度 ★★☆☆☆] [主题：演绎 2：交换语义的异常安全——us]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：交换语义的异常安全——us
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1557,7 +1557,7 @@ ADL 在编译期触发额外的候选集搜索（需检查所有实参的关联�
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 

@@ -7,10 +7,10 @@
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
 
 立场分层约定：
-- **[标准]**　语言/库标准规定（ISO C++、CWG/LWG 决议）。
-- **[实现]**　libstdc++ / libc++ / MS STL 的具体代码行为。
-- **[平台]**　MinGW GCC 15.3.0、Windows、x86-64 ABI（System V / MS）相关事实。
-- **[经验]**　工程实践、坑与取舍。
+- **<span class="badge badge-std">标准</span>**　语言/库标准规定（ISO C++、CWG/LWG 决议）。
+- **<span class="badge badge-impl">实现</span>**　libstdc++ / libc++ / MS STL 的具体代码行为。
+- **<span class="badge badge-platform">平台</span>**　MinGW GCC 15.3.0、Windows、x86-64 ABI（System V / MS）相关事实。
+- **<span class="badge badge-exp">经验</span>**　工程实践、坑与取舍。
 
 环境事实（本机探测）：MinGW **GCC 15.3.0**；libstdc++ 头文件根目录
 `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章所有 `[实现]` 级源码均来自该目录的真实文件，逐行标注路径与行号。libc++、MS STL 不在本机，相关对比以 `[实现-推断]` / `[平台-推断]` 标注。
@@ -20,7 +20,7 @@
 > 把「哪些能碰、哪些不能碰」写进类型系统，再把「是什么」沿着层次传递下去——封装与继承是 C++ 从 Simula 那里继承来的两把钥匙。
 
 ### 0.1 起源（谁·何时·为何）
-信息隐藏的思想先于语言：David Parnas 在 1972 年的经典论文《On the Criteria To Be Used in Decomposing Systems into Modules》里就论证了「模块该靠隐藏内部决策来降低耦合」。[史] Stroustrup 把这个想法接进 C with Classes，用 `private`/`public`（后来加 `protected`）把访问边界编码进类型本身；而继承则直接来自 Simula 67 的「子类」概念——他在仿真里需要让「具体事件」复用「通用事件」的代码与数据。[史] 一句话：封装解决「保护好内部」，继承解决「复用与特化」。
+信息隐藏的思想先于语言：David Parnas 在 1972 年的经典论文《On the Criteria To Be Used in Decomposing Systems into Modules》里就论证了「模块该靠隐藏内部决策来降低耦合」。<span class="badge badge-history">史</span> Stroustrup 把这个想法接进 C with Classes，用 `private`/`public`（后来加 `protected`）把访问边界编码进类型本身；而继承则直接来自 Simula 67 的「子类」概念——他在仿真里需要让「具体事件」复用「通用事件」的代码与数据。<span class="badge badge-history">史</span> 一句话：封装解决「保护好内部」，继承解决「复用与特化」。
 
 ### 0.2 关键转折（编年）
 - 1980 前后：C with Classes 提供单继承与访问控制。
@@ -28,16 +28,16 @@
 - 1998：C++98 把三种继承（public/protected/private）与访问规则写进标准。
 
 ### 0.3 设计哲学之争
-C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**组合优于继承**在工程上的现实价值——能组合就别滥用继承，否则层次一深就成「脆弱基类」。[评] 访问控制也刻意做成「默认不对外」，逼你把接口收紧。这和后来 Java 的 `package-private`、C# 的 `internal` 是同一直觉，但 C++ 把它放在编译期、零运行成本地完成。
+C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**组合优于继承**在工程上的现实价值——能组合就别滥用继承，否则层次一深就成「脆弱基类」。<span class="badge badge-comment">评</span> 访问控制也刻意做成「默认不对外」，逼你把接口收紧。这和后来 Java 的 `package-private`、C# 的 `internal` 是同一直觉，但 C++ 把它放在编译期、零运行成本地完成。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年写到 C++11 的 `final`/`override`。继承的故事在真实工程里还有几笔值得记：
 
-- [史] 切片（slicing）是值语义继承的永恒陷阱：把一个派生类对象按值赋给基类变量，派生部分被「切掉」只留基类子对象。C++ 从 C 的拷贝语义继承了这个行为，标准从未替你拦下它——只能靠「基类删除拷贝、或干脆禁止值语义基类」来规避。
+- <span class="badge badge-history">史</span> 切片（slicing）是值语义继承的永恒陷阱：把一个派生类对象按值赋给基类变量，派生部分被「切掉」只留基类子对象。C++ 从 C 的拷贝语义继承了这个行为，标准从未替你拦下它——只能靠「基类删除拷贝、或干脆禁止值语义基类」来规避。
 
-- [史] C++11 的移动语义与继承交互出微妙问题：编译器不会自动生成把派生类完整移动的「完美」移动构造，若基类只声明了 `=default` 移动，派生类按成员移动时可能悄悄退化为拷贝。委员会后来在 C++ Core Guidelines（Stroustrup 与 Sutter 维护）里用「基类应定义虚析构与合适的拷贝/移动策略」来约束。
+- <span class="badge badge-history">史</span> C++11 的移动语义与继承交互出微妙问题：编译器不会自动生成把派生类完整移动的「完美」移动构造，若基类只声明了 `=default` 移动，派生类按成员移动时可能悄悄退化为拷贝。委员会后来在 C++ Core Guidelines（Stroustrup 与 Sutter 维护）里用「基类应定义虚析构与合适的拷贝/移动策略」来约束。
 
-- [轶] 据记载，许多老代码库把 `override` 当「防御性注释」大规模补丁式地加上，并非因为要改行为，而是为了日后谁改了基类虚签名时，编译器能立刻报错而不是默默生成新重载——这是工程纪律的一次集体补课。
+- <span class="badge badge-anecdote">轶</span> 据记载，许多老代码库把 `override` 当「防御性注释」大规模补丁式地加上，并非因为要改行为，而是为了日后谁改了基类虚签名时，编译器能立刻报错而不是默默生成新重载——这是工程纪律的一次集体补课。
 
 > 史料来源：https://isocpp.github.io/CppCoreGuidelines/ ；https://en.cppreference.com/w/cpp/language/override
 
@@ -48,9 +48,9 @@ C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**�
 [第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
 [第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
 
-**[标准]**　`[class]` / `[class.access]` / `[class.derived]` 把封装与继承定义为「在编译期对名字访问与子类型关系施加约束」的机制。注意关键词是**编译期**——它们不产生任何运行期数据结构（不像虚函数会生成 vtable）。
+**<span class="badge badge-std">标准</span>**　`[class]` / `[class.access]` / `[class.derived]` 把封装与继承定义为「在编译期对名字访问与子类型关系施加约束」的机制。注意关键词是**编译期**——它们不产生任何运行期数据结构（不像虚函数会生成 vtable）。
 
-**[经验]**　本章主线与三大铁律：
+**<span class="badge badge-exp">经验</span>**　本章主线与三大铁律：
 
 1. **封装 = 编译期契约，不是运行期保险箱**。写进 `private` 只是让编译器拒绝越权访问；运行期对象就是一块裸内存，`memcpy` / `offsetof` 照样能碰（`ch45` 第 11 节已铺垫）。
 2. **继承不是复用手段，而是「子类型/is-a」声明**。绝大多数「为了复用而继承」的代码，都应该改成组合（composition）。
@@ -88,11 +88,11 @@ C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**�
 
 ## ② 封装本质：接口与实现分离、不变量责任、编译期契约
 
-**[标准]**　`[class]` 把 `class` 定义为「带有访问控制的数据与函数的集合」，其设计意图是**把「对用户稳定的接口」与「可以随意改动的实现」分开**。标准术语中，类的**不变量（invariant）** 指「任何 public 成员函数返回后都必须为真的条件」。
+**<span class="badge badge-std">标准</span>**　`[class]` 把 `class` 定义为「带有访问控制的数据与函数的集合」，其设计意图是**把「对用户稳定的接口」与「可以随意改动的实现」分开**。标准术语中，类的**不变量（invariant）** 指「任何 public 成员函数返回后都必须为真的条件」。
 
-**[标准]**　关键契约：**不变量只能由类的成员函数（及其友元）维护**。类的责任是：对外暴露的每一个 public 接口，调用前/返回后都不变量必须成立；private 成员是实现细节，可自由重构。
+**<span class="badge badge-std">标准</span>**　关键契约：**不变量只能由类的成员函数（及其友元）维护**。类的责任是：对外暴露的每一个 public 接口，调用前/返回后都不变量必须成立；private 成员是实现细节，可自由重构。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：封装本质：接口与实现分离、不变量责任]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 封装本质：接口与实现分离、不变量责任
 ```cpp
 // [示例 1] 不变量：balance_ 永不为负，由成员函数维护
 #include <cstdio>
@@ -121,7 +121,7 @@ int main() {
 }
 ```
 
-**[经验]**　封装的三层收益：
+**<span class="badge badge-exp">经验</span>**　封装的三层收益：
 
 1. **可改动性**：改 `balance_` 为 `std::atomic<long>` 或分散到两个字段，调用方代码一行都不用动。
 2. **可验证性**：不变量只在 `private`/成员函数边界被破坏点集中，调试时只需审计少数函数。
@@ -133,11 +133,11 @@ int main() {
 
 ## ③ 封装边界真相：private 仅是编译期拒绝越权
 
-**[标准]**　`[class.access]` 明确：访问检查发生在**名字查找与可达性分析**阶段。一旦编译通过，对象就是一块内存。标准**不保证**运行期有任何机制阻止你越过 `private` 读写那块内存——事实上做不到，因为 C++ 必须允许 `memcpy` 这类底层操作。
+**<span class="badge badge-std">标准</span>**　`[class.access]` 明确：访问检查发生在**名字查找与可达性分析**阶段。一旦编译通过，对象就是一块内存。标准**不保证**运行期有任何机制阻止你越过 `private` 读写那块内存——事实上做不到，因为 C++ 必须允许 `memcpy` 这类底层操作。
 
-**[经验]**　「封装是编译期契约而非运行时保险箱」。下面三个例子证明 `private` 在运行期形同虚设。
+**<span class="badge badge-exp">经验</span>**　「封装是编译期契约而非运行时保险箱」。下面三个例子证明 `private` 在运行期形同虚设。
 
-> **示例 2** [难度 ★★★☆☆] [主题：封装边界真相：private 仅是编]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 封装边界真相：private 仅是编
 ```cpp
 // [示例 2] 封装边界真相 ①：offsetof + 指针算术可越过 private
 #include <cstdio>
@@ -161,7 +161,7 @@ int main() {
 }
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：封装边界真相：private 仅是编]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 封装边界真相：private 仅是编
 ```cpp
 // [示例 3] 封装边界真相 ②：memcpy 整块对象内存
 #include <cstdio>
@@ -182,7 +182,7 @@ int main() {
 }
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：封装边界真相：private 仅是编]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 封装边界真相：private 仅是编
 ```cpp
 // [示例 4] 封装边界真相 ③：同布局 struct 强行 reinterpret 读写
 #include <cstdio>
@@ -203,7 +203,7 @@ int main() {
 }
 ```
 
-**[经验]**　示例 4 触及**严格别名规则（strict aliasing，见 `ch42`）的边缘**——`reinterpret_cast` 把 `Pair*` 当 `Raw*` 用是 UB。但示例 2、3 用的 `char*`/`memcpy` 路径是标准明确允许的（对象表示可按 `unsigned char`/`char` 拷）。要点不变：**运行期没有任何「访问锁」**。因此「敏感数据放进 `private` 就安全」是幻觉——真正的安全靠加密、权限、进程隔离，不靠语言访问控制。
+**<span class="badge badge-exp">经验</span>**　示例 4 触及**严格别名规则（strict aliasing，见 `ch42`）的边缘**——`reinterpret_cast` 把 `Pair*` 当 `Raw*` 用是 UB。但示例 2、3 用的 `char*`/`memcpy` 路径是标准明确允许的（对象表示可按 `unsigned char`/`char` 拷）。要点不变：**运行期没有任何「访问锁」**。因此「敏感数据放进 `private` 就安全」是幻觉——真正的安全靠加密、权限、进程隔离，不靠语言访问控制。
 
 **核心知识点 #3**：private 只是**编译期**拒绝越权访问；运行期对象内存可读写（`memcpy`/`offsetof` 仍可触及）——封装是编译期契约而非运行时保险箱。
 
@@ -211,14 +211,14 @@ int main() {
 
 ## ④ 友元：受控破封装，最小化
 
-**[标准]**　`[class.friend]`：`friend` 声明授予特定函数/类/类模板访问本类所有成员（含 private/protected）的特权。**关键限制**：
+**<span class="badge badge-std">标准</span>**　`[class.friend]`：`friend` 声明授予特定函数/类/类模板访问本类所有成员（含 private/protected）的特权。**关键限制**：
 
 - `friend` **不是成员**，没有 `this`，不参与重载解析的名字查找起点（除非显式限定）。
 - `friend` 关系**不可继承**（派生类不自动获得基类的友元权）。
 - `friend` 关系**不可传递**（A 是 B 友、B 是 C 友，不意味着 A 是 C 友）。
 - `friend` 声明可出现在类任意访问区（public/private 不影响其语义）。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：友元：受控破封装，最小化]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元：受控破封装，最小化
 ```cpp
 // [示例 5] 友元函数：受控破封装（不是成员，但能碰 private）
 #include <cstdio>
@@ -237,7 +237,7 @@ int area(const Box& b) {              // 非成员函数，却能访问 private
 int main() { printf("%d\n", area(Box{})); }   // 12
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：友元：受控破封装，最小化]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元：受控破封装，最小化
 ```cpp
 // [示例 6] 友元关系不可继承、不可传递
 #include <cstdio>
@@ -266,7 +266,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：友元：受控破封装，最小化]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元：受控破封装，最小化
 ```cpp
 // [示例 7] 友元最小化：用“具名访问函数”替代盲目 friend class
 #include <cstdio>
@@ -288,7 +288,7 @@ public:
 int main() { Car c; c.rev(); printf("%d\n", c.rpm()); }
 ```
 
-**[经验]**　友元的黄金法则：**能不开友元就不开**。先问三件事——是否可用 public 接口替代？是否可用 `protected` 让派生类访问？是否该把共享逻辑抽成独立函数/类？只有「两个类必须共享彼此私有状态且无法用接口表达」时才用友元，且尽量 `friend` 到**具体函数**而非整个类，缩小破封装面。
+**<span class="badge badge-exp">经验</span>**　友元的黄金法则：**能不开友元就不开**。先问三件事——是否可用 public 接口替代？是否可用 `protected` 让派生类访问？是否该把共享逻辑抽成独立函数/类？只有「两个类必须共享彼此私有状态且无法用接口表达」时才用友元，且尽量 `friend` 到**具体函数**而非整个类，缩小破封装面。
 
 **核心知识点 #4**：友元是**受控破封装**：`friend` 函数/类不是成员、不能继承、不能传递，应当最小化授予。
 
@@ -296,7 +296,7 @@ int main() { Car c; c.rev(); printf("%d\n", c.rpm()); }
 
 ## ⑤ public/private/protected 真实语义
 
-**[标准]**　`[class.access]` 三种访问标号定义「谁能通过成员名访问该成员」：
+**<span class="badge badge-std">标准</span>**　`[class.access]` 三种访问标号定义「谁能通过成员名访问该成员」：
 
 | 标号 | 类内 | 派生类成员/友元 | 类外 |
 |------|------|----------------|------|
@@ -304,11 +304,11 @@ int main() { Car c; c.rev(); printf("%d\n", c.rpm()); }
 | `protected` | ✓ | ✓（仅通过 `this`/派生类对象） | ✗ |
 | `private` | ✓ | ✗ | ✗ |
 
-**[标准]**　所有访问检查都是**编译期**进行的（`[class.access]` 明确「accessibility is checked at compile time」）。它不是运行期能力，不生成任何代码。
+**<span class="badge badge-std">标准</span>**　所有访问检查都是**编译期**进行的（`[class.access]` 明确「accessibility is checked at compile time」）。它不是运行期能力，不生成任何代码。
 
-**[标准]**　`protected` 的**脆弱基类问题（fragile base class）**：派生类依赖基类的 `protected` 名字与布局。一旦基类作者修改 `protected` 成员（改名、改类型、改访问），**所有派生类静默编译失败或行为改变**——因为派生类代码直接吃进了基类的私有实现细节。这与「封装应隐藏实现」自相矛盾，是 `protected` 最大的隐患。
+**<span class="badge badge-std">标准</span>**　`protected` 的**脆弱基类问题（fragile base class）**：派生类依赖基类的 `protected` 名字与布局。一旦基类作者修改 `protected` 成员（改名、改类型、改访问），**所有派生类静默编译失败或行为改变**——因为派生类代码直接吃进了基类的私有实现细节。这与「封装应隐藏实现」自相矛盾，是 `protected` 最大的隐患。
 
-> **示例 8** [难度 ★★★☆☆] [主题：真实语义]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实语义
 ```cpp
 // [示例 8] public/private/protected 编译期语义
 #include <cstdio>
@@ -336,7 +336,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：真实语义]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实语义
 ```cpp
 // [示例 9] 脆弱基类：基类改 protected 布局，派生类静默崩
 #include <cstdio>
@@ -363,7 +363,7 @@ struct Panel : Widget {
 int main() { Panel p; p.dump(); }
 ```
 
-**[经验]**　尽量让基类只暴露 `public` 接口与 `protected` **虚函数**（让派生类定制行为），而非 `protected` **数据成员**。数据成员放 `private`；需要派生类访问的「钩子」才放 `protected`，且优先做成函数/虚函数而非裸字段。
+**<span class="badge badge-exp">经验</span>**　尽量让基类只暴露 `public` 接口与 `protected` **虚函数**（让派生类定制行为），而非 `protected` **数据成员**。数据成员放 `private`；需要派生类访问的「钩子」才放 `protected`，且优先做成函数/虚函数而非裸字段。
 
 **核心知识点 #5**：public/private/protected 都是**编译期**访问控制。
 **核心知识点 #6**：`protected` 有**脆弱基类问题**——基类改动 `protected` 会破坏所有派生类。
@@ -373,14 +373,14 @@ int main() { Panel p; p.dump(); }
 
 ## ⑥ class vs struct 的唯一区别
 
-**[标准]**　`[class.name]` / `[class.access.spec]`：在 C++ 中，`class` 与 `struct` 除**默认访问控制**与**默认继承方式**外**完全等价**（模板参数里写 `class` 与 `typename` 也是等价的，无关本节）。
+**<span class="badge badge-std">标准</span>**　`[class.name]` / `[class.access.spec]`：在 C++ 中，`class` 与 `struct` 除**默认访问控制**与**默认继承方式**外**完全等价**（模板参数里写 `class` 与 `typename` 也是等价的，无关本节）。
 
 | | class | struct |
 |---|---|---|
 | 默认成员访问 | `private` | `public` |
 | 默认继承方式 | `private` | `public` |
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：的唯一区别]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的唯一区别
 ```cpp
 // [示例 10] 默认成员访问区别
 struct S { int x; };       // x 默认 public
@@ -392,7 +392,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：的唯一区别]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的唯一区别
 ```cpp
 // [示例 11] 默认继承方式区别
 struct B { int x; };
@@ -406,7 +406,7 @@ int main() {
 }
 ```
 
-**[经验]**　工程惯例：`struct` 表示「 plain old data / 聚合 / 纯数据载体」（成员默认 public 很自然）；`class` 表示「有不变量的抽象类型」。这只是**约定**，语言层面二者可互换。§示例 11 提醒：用 `class` 做继承时**务必显式写 `: public Base`**，否则默认 private 继承会让子类型关系消失（见第 7 节）。
+**<span class="badge badge-exp">经验</span>**　工程惯例：`struct` 表示「 plain old data / 聚合 / 纯数据载体」（成员默认 public 很自然）；`class` 表示「有不变量的抽象类型」。这只是**约定**，语言层面二者可互换。§示例 11 提醒：用 `class` 做继承时**务必显式写 `: public Base`**，否则默认 private 继承会让子类型关系消失（见第 7 节）。
 
 **核心知识点 #8**：class 与 struct 的**唯一区别**是默认成员访问（`private` vs `public`）和默认继承方式（`private` vs `public`）。
 **核心知识点 #9**：`class` 默认继承为 `private`，故做基类时务必显式写 `: public`。
@@ -415,7 +415,7 @@ int main() {
 
 ## ⑦ 三种继承语义总览
 
-**[标准]**　`[class.derived]`：`class D : <access> B` 的 `<access>` 决定「基类的 public/protected 成员在派生类中**提升/降到**什么访问级别」，以及「`D` 是否构成 `B` 的子类型（是否可做 `B* ← D*` 转换）」。
+**<span class="badge badge-std">标准</span>**　`[class.derived]`：`class D : <access> B` 的 `<access>` 决定「基类的 public/protected 成员在派生类中**提升/降到**什么访问级别」，以及「`D` 是否构成 `B` 的子类型（是否可做 `B* ← D*` 转换）」。
 
 | 继承方式 | 基类 public 成员在 D 中 | 基类 protected 成员在 D 中 | D 是 B 的子类型？ | 典型用途 |
 |---------|------------------------|---------------------------|------------------|---------|
@@ -423,9 +423,9 @@ int main() {
 | `protected` | protected | protected | 否（仅派生可见） | 实现继承，对外部隐藏 |
 | `private` | private | private | 否（外部不可见） | 实现继承，外部完全看不到 |
 
-**[标准]**　要点：**继承方式只影响「基类成员在派生类里的可见性」与「子类型关系是否成立」，不复制任何代码，也不改变基类自身。** 注意 `private` 继承下，连 `D*` 到 `B*` 的隐式转换都消失（除非用显式 `static_cast`）。
+**<span class="badge badge-std">标准</span>**　要点：**继承方式只影响「基类成员在派生类里的可见性」与「子类型关系是否成立」，不复制任何代码，也不改变基类自身。** 注意 `private` 继承下，连 `D*` 到 `B*` 的隐式转换都消失（除非用显式 `static_cast`）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：三种继承语义总览]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三种继承语义总览
 ```cpp
 // [示例 12] public 继承：is-a，子类型关系成立
 #include <cstdio>
@@ -440,7 +440,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：三种继承语义总览]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三种继承语义总览
 ```cpp
 // [示例 13] protected 继承：仅派生链可见，外部看不到 is-a
 #include <cstdio>
@@ -457,7 +457,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：三种继承语义总览]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三种继承语义总览
 ```cpp
 // [示例 14] private 继承：外部完全不可见，少用
 #include <cstdio>
@@ -476,7 +476,7 @@ int main() {
 }
 ```
 
-**[经验]**　`protected`/`private` 继承都表达「实现复用」而非「is-a」。**经验法则**：需要「is-a / 多态」→ `public` 继承；只需要「复用基类代码但对外不想暴露」→ **优先用组合（见第 17 节）**，其次 `private` 继承；`protected` 继承极少用，且几乎总能被组合或 `private` 继承替代。
+**<span class="badge badge-exp">经验</span>**　`protected`/`private` 继承都表达「实现复用」而非「is-a」。**经验法则**：需要「is-a / 多态」→ `public` 继承；只需要「复用基类代码但对外不想暴露」→ **优先用组合（见第 17 节）**，其次 `private` 继承；`protected` 继承极少用，且几乎总能被组合或 `private` 继承替代。
 
 **核心知识点 #10**：public 继承 = is-a、满足 LSP；protected 继承 = 实现继承、仅派生可见；private 继承 = 实现继承、外部不可见，少用。
 
@@ -484,11 +484,11 @@ int main() {
 
 ## ⑧ public 继承与 Liskov 替换原则（LSP）
 
-**[标准]**　`[class.derived]` 中 `public` 继承建立子类型关系（subtype），即在需要 `Base&`/`Base*` 的语境可用 `Derived&`/`Derived*`。但**语言只保证语法可转换**，不保证语义合理——这正是 LSP 的用武之地。
+**<span class="badge badge-std">标准</span>**　`[class.derived]` 中 `public` 继承建立子类型关系（subtype），即在需要 `Base&`/`Base*` 的语境可用 `Derived&`/`Derived*`。但**语言只保证语法可转换**，不保证语义合理——这正是 LSP 的用武之地。
 
 **[标准-经验]**　**Liskov 替换原则（LSP）**：若 `D` 是 `B` 的（public）派生类，则任何用到 `B` 的程序，在把 `B` 替换为 `D` 后，其行为契约（前置条件不强化、后置条件不弱化、不变量保持）必须依然成立。违反 LSP 的 `public` 继承是「语法合法、语义毒药」。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：继承与 Liskov 替换原则]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 继承与 Liskov 替换原则
 ```cpp
 // [示例 15] 满足 LSP 的 public 继承：栈是一种列表（仅收窄，不破坏契约）
 #include <cstdio>
@@ -513,7 +513,7 @@ int main() {
 
 **[标准-经验]**　经典反例：把 `Square` 声明为 `Rectangle` 的 `public` 派生类，看似「正方形是矩形」，实则违反 LSP。`Rectangle` 的契约允许「独立设置宽和高」；`Square` 若遵守该契约就必须允许宽高不等，但正方形不变量要求宽高相等——两者冲突。
 
-> **示例 16** [难度 ★★☆☆☆] [主题：经典 LSP 反例与正确做法]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典 LSP 反例与正确做法
 ```cpp
 // [示例 16] 违反 LSP：Square : Rectangle（错误示范）
 #include <cstdio>
@@ -544,11 +544,11 @@ int main() {
 }
 ```
 
-**[经验]**　`enlarge` 在签名上接受 `Rectangle&`，逻辑上依赖「只改宽不影响高」这一 `Rectangle` 不变量；`Square` 的覆盖破坏了它。这是**误用 public 继承**：`Square` 不能在 `Rectangle` 出现的地方被替换。
+**<span class="badge badge-exp">经验</span>**　`enlarge` 在签名上接受 `Rectangle&`，逻辑上依赖「只改宽不影响高」这一 `Rectangle` 不变量；`Square` 的覆盖破坏了它。这是**误用 public 继承**：`Square` 不能在 `Rectangle` 出现的地方被替换。
 
 **正确做法三选一**：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：经典 LSP 反例与正确做法]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典 LSP 反例与正确做法
 ```cpp
 // [示例 17] 修复 ①：共同抽象基类（都继承 Geometry），而非 Square 继承 Rectangle
 #include <cstdio>
@@ -573,7 +573,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：经典 LSP 反例与正确做法]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 经典 LSP 反例与正确做法
 ```cpp
 // [示例 18] 修复 ②：组合（Square 内部持有 Rectangle 作为实现，而非继承）
 #include <cstdio>
@@ -593,7 +593,7 @@ struct Square {
 int main() { Square s; s.side(4); printf("%d\n", s.area()); }  // 16
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：经典 LSP 反例与正确做法]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 经典 LSP 反例与正确做法
 ```cpp
 // [示例 19] 修复 ③：根本不做继承，直接用独立类型 + 自由函数
 #include <cstdio>
@@ -604,7 +604,7 @@ struct Sqr  { int s=0;       int area() const { return s*s; } };
 int main() { Rect r{3,4}; Sqr s{5}; printf("%d %d\n", r.area(), s.area()); }
 ```
 
-**[经验]**　经验法则：当你想写 `D : public B` 时，先问「`D` 能否在不破坏 `B` 任何契约的前提下替换 `B`？」答不上来就别继承。`Square`/`Rectangle` 教科书式地告诉你：**is-a 要看行为契约，不是看自然语言里的「是」字**。
+**<span class="badge badge-exp">经验</span>**　经验法则：当你想写 `D : public B` 时，先问「`D` 能否在不破坏 `B` 任何契约的前提下替换 `B`？」答不上来就别继承。`Square`/`Rectangle` 教科书式地告诉你：**is-a 要看行为契约，不是看自然语言里的「是」字**。
 
 **核心知识点 #12**：public 继承必须满足 LSP；`Square:Rectangle` 是经典反例（设宽高破坏不变量），正确做法是共同抽象 / 组合 / 独立类型。
 
@@ -612,11 +612,11 @@ int main() { Rect r{3,4}; Sqr s{5}; printf("%d %d\n", r.area(), s.area()); }
 
 ## ⑩ 切片（slicing）完整机制
 
-**[标准]**　`[class.copy.ctor]` / `[dcl.init]`：当把派生类对象**按值**赋给/初始化基类对象时，只拷 `Base` 子对象部分，**派生类独有的成员被丢弃**，这就是**切片（slicing）**。若基类有虚函数，基类子对象里的 vptr 被**基类自己的 vptr** 覆盖，动态多态行为随之丧失。
+**<span class="badge badge-std">标准</span>**　`[class.copy.ctor]` / `[dcl.init]`：当把派生类对象**按值**赋给/初始化基类对象时，只拷 `Base` 子对象部分，**派生类独有的成员被丢弃**，这就是**切片（slicing）**。若基类有虚函数，基类子对象里的 vptr 被**基类自己的 vptr** 覆盖，动态多态行为随之丧失。
 
 **[平台·Itanium C++ ABI]**　对象布局（Itanium ABI，GCC/Clang 一致）：`Derived` 的地址 == 其首基类的地址（单继承、非虚继承时），派生部分紧随基类子对象之后。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：切片（slicing）完整机制]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片（slicing）完整机制
 ```
 对象布局（单继承，无虚继承）：
         +-------------------+
@@ -629,7 +629,7 @@ int main() { Rect r{3,4}; Sqr s{5}; printf("%d %d\n", r.area(), s.area()); }
 Derived d;  Base b = d;   // 只拷贝 Base 子对象（含其 vptr），Derived 部分丢失
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：切片（slicing）完整机制]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片（slicing）完整机制
 ```cpp
 // [示例 20] 切片：派生数据丢失
 #include <cstdio>
@@ -645,7 +645,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：切片（slicing）完整机制]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片（slicing）完整机制
 ```cpp
 // [示例 21] 切片 + 多态丧失：vptr 被基类覆盖
 #include <cstdio>
@@ -668,7 +668,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：切片（slicing）完整机制]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片（slicing）完整机制
 ```cpp
 // [示例 22] std::vector<Base> 存派生会切片
 #include <cstdio>
@@ -684,7 +684,7 @@ int main() {
 }
 ```
 
-**[经验]**　切片的三个高频来源：① 函数按值接收基类参数；② 返回基类值；③ 把派生对象塞进 `vector<Base>` 这类同质容器。第 11 节给出修复。
+**<span class="badge badge-exp">经验</span>**　切片的三个高频来源：① 函数按值接收基类参数；② 返回基类值；③ 把派生对象塞进 `vector<Base>` 这类同质容器。第 11 节给出修复。
 
 **核心知识点 #13**：`Derived d; Base b = d;` 只拷贝 Base 子对象，派生部分丢失。
 **核心知识点 #14**：`std::vector<Base>` 存派生会切片，丢失派生数据与多态。
@@ -693,9 +693,9 @@ int main() {
 
 ## ⑪ 切片修复：引用 / 指针 / unique_ptr<Base>
 
-**[标准]**　`[class.derived]` / `[expr]`：引用和指针**不复制对象**，只绑定/指向原对象，因此不触发切片。智能指针（见 `ch41`）同理——`std::unique_ptr<Base>` 持有的是基类指针，销毁时通过虚析构正确派发到派生析构（前提是基类析构 `virtual`，见 `ch39`/`ch47`）。
+**<span class="badge badge-std">标准</span>**　`[class.derived]` / `[expr]`：引用和指针**不复制对象**，只绑定/指向原对象，因此不触发切片。智能指针（见 `ch41`）同理——`std::unique_ptr<Base>` 持有的是基类指针，销毁时通过虚析构正确派发到派生析构（前提是基类析构 `virtual`，见 `ch39`/`ch47`）。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：切片修复：引用 / 指针 / uni]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片修复：引用 / 指针 / uni
 ```cpp
 // [示例 23] 修复 ①：按引用传参，避免切片与多态丧失
 #include <cstdio>
@@ -708,7 +708,7 @@ void describe(const Base& b) { printf("%s\n", b.who()); }   // 引用：不切�
 int main() { Derived d; describe(d); }                       // Derived
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：切片修复：引用 / 指针 / uni]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片修复：引用 / 指针 / uni
 ```cpp
 // [示例 24] 修复 ②：vector<unique_ptr<Base>>，多态容器不切片
 #include <cstdio>
@@ -727,7 +727,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：切片修复：引用 / 指针 / uni]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片修复：引用 / 指针 / uni
 ```cpp
 // [示例 25] 修复 ③：基类指针 + 显式 new/delete（现代写法优先 unique_ptr）
 #include <cstdio>
@@ -742,7 +742,7 @@ int main() {
 }
 ```
 
-**[经验]**　容器要装异构派生对象，**永远用 `vector<unique_ptr<Base>>`（或 `shared_ptr<Base>`）**，而不是 `vector<Base>`。这是 `ch41` 智能指针与 `ch39` 虚析构 `noexcept` 的直接应用点。
+**<span class="badge badge-exp">经验</span>**　容器要装异构派生对象，**永远用 `vector<unique_ptr<Base>>`（或 `shared_ptr<Base>`）**，而不是 `vector<Base>`。这是 `ch41` 智能指针与 `ch39` 虚析构 `noexcept` 的直接应用点。
 
 **核心知识点 #15**：用引用/指针/`unique_ptr<Base>`（见 `ch41`）避免切片；多态容器用 `vector<unique_ptr<Base>>`。
 
@@ -750,9 +750,9 @@ int main() {
 
 ## ⑫ 构造 / 析构顺序实证
 
-**[标准]**　`[class.base.init]` / `[class.dtor]`：构造顺序——（1）虚基类子对象（最左最深优先，见第 13 节）；（2）**按声明顺序**的直接基类子对象；（3）**按声明顺序**的非静态数据成员；（4）构造函数体。析构顺序**严格相反**。
+**<span class="badge badge-std">标准</span>**　`[class.base.init]` / `[class.dtor]`：构造顺序——（1）虚基类子对象（最左最深优先，见第 13 节）；（2）**按声明顺序**的直接基类子对象；（3）**按声明顺序**的非静态数据成员；（4）构造函数体。析构顺序**严格相反**。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：构造 / 析构顺序实证]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造 / 析构顺序实证
 ```cpp
 // [示例 26] 单继承构造/析构顺序：基类 → 成员 → 派生；析构反序
 #include <cstdio>
@@ -775,7 +775,7 @@ int main() { Derived d; }
 // 输出：Base ctor → Member ctor → Derived ctor → Derived dtor → Member dtor → Base dtor
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：构造 / 析构顺序实证]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造 / 析构顺序实证
 ```cpp
 // [示例 27] 多继承构造顺序：按基类声明序，析构反序
 #include <cstdio>
@@ -791,7 +791,7 @@ int main() { D d; }
 // 输出：B1 ctor → B2 ctor → D ctor → D dtor → B2 dtor → B1 dtor
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：构造 / 析构顺序实证]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造 / 析构顺序实证
 ```cpp
 // [示例 28] 成员按声明序构造（与初始化列表顺序无关）
 #include <cstdio>
@@ -806,9 +806,9 @@ struct C {
 int main() { C c; }                 // a1 ctor → a2 ctor（按声明序）
 ```
 
-**[标准]**　异常安全：`[class.base.init]` 规定，若构造函数在进入函数体前（成员/基类初始化）抛异常，已构造的子对象会**按构造的逆序自动析构**（不需要函数体里的 `try`）。这与 `ch39`/`ch40` 的 RAII 与异常安全一致——`unique_ptr`/`vector` 等成员若在异常前已构造，会自动释放资源。
+**<span class="badge badge-std">标准</span>**　异常安全：`[class.base.init]` 规定，若构造函数在进入函数体前（成员/基类初始化）抛异常，已构造的子对象会**按构造的逆序自动析构**（不需要函数体里的 `try`）。这与 `ch39`/`ch40` 的 RAII 与异常安全一致——`unique_ptr`/`vector` 等成员若在异常前已构造，会自动释放资源。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：构造 / 析构顺序实证]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造 / 析构顺序实证
 ```cpp
 // [示例 29] 构造中抛异常：已构部分自动逆序析构
 #include <cstdio>
@@ -834,9 +834,9 @@ int main() try {
 
 ## ⑬ 多继承与虚基类构造顺序
 
-**[标准]**　`[class.base.init]`：在存在**虚基类（virtual base，见 `ch49`）**时，无论继承路径如何，**虚基类子对象由最派生类（most derived class）直接初始化一次**，且它先于所有非虚基类构造。`[实现-推断]`　Itanium C++ ABI（GCC/Clang 遵循）把虚基类布局放在对象尾部（或独立于主基类链），通过构造期间的「虚基类表（VTT）/构造虚表（ctor vtable）」在中间基类构造函数里把虚基类指针重定向到最派生类提供的实例——这正是为什么中间基类构造时虚基类已存在，但只有最派生类真正「拥有」它。
+**<span class="badge badge-std">标准</span>**　`[class.base.init]`：在存在**虚基类（virtual base，见 `ch49`）**时，无论继承路径如何，**虚基类子对象由最派生类（most derived class）直接初始化一次**，且它先于所有非虚基类构造。`[实现-推断]`　Itanium C++ ABI（GCC/Clang 遵循）把虚基类布局放在对象尾部（或独立于主基类链），通过构造期间的「虚基类表（VTT）/构造虚表（ctor vtable）」在中间基类构造函数里把虚基类指针重定向到最派生类提供的实例——这正是为什么中间基类构造时虚基类已存在，但只有最派生类真正「拥有」它。
 
-> **示例 31** [难度 ★★★☆☆] [主题：多继承与虚基类构造顺序]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 多继承与虚基类构造顺序
 ```cpp
 // [示例 30] 虚基类由最派生类构造一次（详细见 ch49）
 #include <cstdio>
@@ -858,9 +858,9 @@ int main() { D d; }
 
 ## ⑭ 名字隐藏（name hiding）与 `using` 恢复重载
 
-**[标准]**　`[class.member.lookup]`：派生类作用域中的名字会**遮蔽（hide）**基类作用域中**所有同名**名字——注意是「同名即隐藏全部重载」，**不是**重载解析。因此即使参数类型不同，基类同名函数也不可见。
+**<span class="badge badge-std">标准</span>**　`[class.member.lookup]`：派生类作用域中的名字会**遮蔽（hide）**基类作用域中**所有同名**名字——注意是「同名即隐藏全部重载」，**不是**重载解析。因此即使参数类型不同，基类同名函数也不可见。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：名字隐藏（name hiding）与]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 名字隐藏（name hiding）与
 ```cpp
 // [示例 31] 名字隐藏陷阱：基类 f(double) 被派生 f(int) 隐藏
 #include <cstdio>
@@ -879,9 +879,9 @@ int main() {
 }
 ```
 
-**[经验]**　示例 31 是静默 bug：`d.f(1.0)` 本意可能是 `Base::f(double)`，但因为 `Derived::f(int)` 把名字 `f` 整个隐藏，编译器只看到 `Derived::f(int)`，于是 `1.0` 被**截断为 `int 1`** 调用。这是数据精度丢失/语义错误的温床。
+**<span class="badge badge-exp">经验</span>**　示例 31 是静默 bug：`d.f(1.0)` 本意可能是 `Base::f(double)`，但因为 `Derived::f(int)` 把名字 `f` 整个隐藏，编译器只看到 `Derived::f(int)`，于是 `1.0` 被**截断为 `int 1`** 调用。这是数据精度丢失/语义错误的温床。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：名字隐藏（name hiding）与]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 名字隐藏（name hiding）与
 ```cpp
 // [示例 32] 用 using Base::f; 恢复基类重载集
 #include <cstdio>
@@ -903,7 +903,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：名字隐藏（name hiding）与]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 名字隐藏（name hiding）与
 ```cpp
 // [示例 33] 名字隐藏 vs 虚函数覆盖：两者机制不同
 #include <cstdio>
@@ -934,11 +934,11 @@ int main() {
 
 ## ⑮ override / final（C++11）
 
-**[标准]**　`[class.virtual]`（C++11 起）：
+**<span class="badge badge-std">标准</span>**　`[class.virtual]`（C++11 起）：
 - `override`：显式声明「此函数意在覆盖基类虚函数」。若基类中**不存在**可匹配的虚函数，编译器**报错**——把「本想覆盖却因签名写错而悄悄新建重载」的静默 bug 变成编译错误。
 - `final`：① 用于虚函数，禁止**进一步**派生类再覆盖它；② 用于类，禁止该类被继承。`[实现]`　`final` 给编译器一个强提示：该函数不可被进一步覆盖，从而可以**去虚化（devirtualize）**——把虚调用直接替换为静态调用，甚至内联，显著提升性能。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI
 ```cpp
 // [示例 34] override：签名写错会被编译器抓住
 #include <cstdio>
@@ -959,7 +959,7 @@ struct Bad : Base {
 int main() { Good g; const Base& b = g; b.draw(0); }
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI
 ```cpp
 // [示例 35] final：阻止进一步覆盖 + 助编译器去虚化
 #include <cstdio>
@@ -982,7 +982,7 @@ struct X : Sealed {};                          // 编译错误：Sealed 是 fina
 int main() { Mid m; const Base& b = m; printf("%d\n", b.calc()); }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI
 ```cpp
 // [示例 36] final 帮助去虚化（编译器能静态解析）
 #include <cstdio>
@@ -995,7 +995,7 @@ int call(const B& b) { return b.f(); }   // 编译器知道 B::f 不会被覆盖
 int main() { B b; printf("%d\n", call(b)); }
 ```
 
-**[经验]**　现代 C++ 铁律：**每个覆盖基类虚函数的派生函数都写 `override`**；确定不再需要被覆盖的虚函数（或确定不再被继承的类）写 `final`。这两点零开销、纯收益，是 `ch47` 虚函数章节的前提纪律。
+**<span class="badge badge-exp">经验</span>**　现代 C++ 铁律：**每个覆盖基类虚函数的派生函数都写 `override`**；确定不再需要被覆盖的虚函数（或确定不再被继承的类）写 `final`。这两点零开销、纯收益，是 `ch47` 虚函数章节的前提纪律。
 
 **核心知识点 #21**：`override` 显式覆盖、防签名误写；`final` 阻止进一步覆盖并助编译器**去虚化**优化。
 
@@ -1005,7 +1005,7 @@ int main() { B b; printf("%d\n", call(b)); }
 
 **[标准-经验]**　NVI（非虚接口，又称「模板方法模式」的 C++ 实现）：基类暴露一个 **public 非虚** 函数，它在内部做「前置检查 / 锁定 / 度量 / 日志」等公共骨架，再调用一个 **protected 或 private 虚** 函数让派生类定制核心逻辑。这样公共不变式永远被统一执行，派生类无法绕过前置/后置。
 
-> **示例 38** [难度 ★★☆☆☆] [主题：惯用法]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 惯用法
 ```cpp
 // [示例 37] NVI：公有非虚封装 protected 虚，统一前置/后置
 #include <cstdio>
@@ -1037,7 +1037,7 @@ struct MyTask : Task {
 int main() { MyTask t; t.run(); }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：惯用法]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法
 ```cpp
 // [示例 38] 对比「公有虚函数」的缺陷：无法统一前置检查
 #include <cstdio>
@@ -1059,7 +1059,7 @@ struct Sloppy : BadTask {
 int main() { Sloppy s; s.run(); }       // 前置/后置被绕过
 ```
 
-**[经验]**　NVI 的三个硬收益：① **不变量强制**——前置/后置只在基类一处实现，派生类无法遗漏；② **可观测性**——度量、日志、锁统一加在 NVI 壳里，不影响 `doRun` 逻辑；③ **接口稳定**——`run()` 是非虚的，其签名/契约永不随派生变化，符合「接口稳定、实现可替换」的封装理想。代价是多一点间接调用（现代编译器可内联消除）。
+**<span class="badge badge-exp">经验</span>**　NVI 的三个硬收益：① **不变量强制**——前置/后置只在基类一处实现，派生类无法遗漏；② **可观测性**——度量、日志、锁统一加在 NVI 壳里，不影响 `doRun` 逻辑；③ **接口稳定**——`run()` 是非虚的，其签名/契约永不随派生变化，符合「接口稳定、实现可替换」的封装理想。代价是多一点间接调用（现代编译器可内联消除）。
 
 **核心知识点 #22（NVI）**：基类 `public` 非虚调用 `protected/private` 虚（模板方法）；对比「公有虚函数」缺陷——无法统一前置检查/度量/锁。
 
@@ -1069,7 +1069,7 @@ int main() { Sloppy s; s.run(); }       // 前置/后置被绕过
 
 **[标准-经验]**　GoF《Design Patterns》与 C++ Core Guidelines **C.120–C.145** 一致主张：**优先组合（composition / containment）而非继承**，除非你确实需要「is-a / 子类型多态」。原因：继承暴露基类 protected 细节（脆弱基类，见第 5 节）、固化耦合、放大名字隐藏（第 14 节）风险。`protected` 继承尤其暧昧——它既不是 is-a（外部看不到子类型），又暴露了实现，几乎总能用「组合 + 转发」或 `private` 继承替代。
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：组合优于继承：protected 继]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 组合优于继承：protected 继
 ```cpp
 // [示例 39] 组合替代 protected 继承：复用实现但不暴露基类
 #include <cstdio>
@@ -1092,7 +1092,7 @@ struct Component {
 int main() { Component c; c.doThing(); }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：组合优于继承：protected 继]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 组合优于继承：protected 继
 ```cpp
 // [示例 40] 用组合 + 显式接口替代 private 继承（更灵活、可换实现）
 #include <cstdio>
@@ -1109,7 +1109,7 @@ struct Car {
 int main() { Car c; c.drive(); }
 ```
 
-**[经验]**　决策树：`需要多态/模板方法` → `public` 继承 + NVI；`仅需复用代码且对外隐藏` → 优先**组合**，`private` 继承次之（当需访问 `protected` 成员或用 `using` 提升基类接口时）；`protected` 继承 → 几乎不用，先想组合。Core Guidelines **C.145** 专门说：`protected` 继承多用于「把基类作为派生类的实现细节」，而这通常用组合表达得更干净。
+**<span class="badge badge-exp">经验</span>**　决策树：`需要多态/模板方法` → `public` 继承 + NVI；`仅需复用代码且对外隐藏` → 优先**组合**，`private` 继承次之（当需访问 `protected` 成员或用 `using` 提升基类接口时）；`protected` 继承 → 几乎不用，先想组合。Core Guidelines **C.145** 专门说：`protected` 继承多用于「把基类作为派生类的实现细节」，而这通常用组合表达得更干净。
 
 **核心知识点 #23（组合）**：`protected` 继承的替代是**组合优于继承**；`protected` 继承暧昧、暴露实现，优先组合。
 
@@ -1123,7 +1123,7 @@ int main() { Car c; c.drive(); }
 
 文件 `type_traits:1551-1553`（本机路径 `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`）：
 
-> **示例 42** [难度 ★★☆☆☆] [主题：isbaseof —— 派生到基关系]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · isbaseof —— 派生到基关系
 ```cpp
   /// is_base_of
   template<typename _Base, typename _Derived>
@@ -1134,7 +1134,7 @@ int main() { Car c; c.drive(); }
 
 **[实现·libstdc++]**　libstdc++（GCC 15.3.0）直接委托给**编译器内建 `__is_base_of`**（由 GCC 前端在 `[class.derived]` 语义上实现）。`__is_base_of(B, D)` 在 `B` 是 `D` 的基类（含自身、含多继承、含虚基类）时为真。标准变量模板在 `type_traits:3695`：
 
-> **示例 43** [难度 ★★☆☆☆] [主题：isbaseof —— 派生到基关系]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · isbaseof —— 派生到基关系
 ```cpp
   template<typename _Base, typename _Derived>
     inline constexpr bool is_base_of_v = __is_base_of(_Base, _Derived);
@@ -1146,7 +1146,7 @@ int main() { Car c; c.drive(); }
 
 `[实现-推断]`　理解 `__is_base_of` 的机制，可看经典 SFINAE 实现（仅当 `D*` 能 `static_cast` 到 `B*` 时 `test<D>(...)` 才返回 `true_type`）：
 
-> **示例 44** [难度 ★★★☆☆] [主题：手搓版 isbaseof：用 sta]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 手搓版 isbaseof：用 sta
 ```cpp
 // [示例 41] 手搓 is_base_of：派生指针可 static_cast 到基类指针 → 是基类
 #include <type_traits>
@@ -1180,7 +1180,7 @@ int main() {
 
 文件 `type_traits:1564-1602`（GCC 15.3.0 优先用内建）：
 
-> **示例 45** [难度 ★★★☆☆] [主题：isconvertible —— 隐]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · isconvertible —— 隐
 ```cpp
 #if __has_builtin(__is_convertible)
   template<typename _From, typename _To>
@@ -1221,7 +1221,7 @@ int main() {
 
 **[实现·libstdc++]**　解读：当编译器**没有** `__is_convertible` 内建时，libstdc++ 用 SFINAE 试探「`declval<_From>()` 能否传给接收 `_To` 的 `__test_aux`」。`#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"` 很重要：若 `_From`/`_To` 的拷贝构造是 `private`，本应报警，但类型特性探测不该因访问检查失败而误报，故临时关闭该警告。`noexcept` 标记确保探测自身不影响 `is_nothrow_convertible` 推导。
 
-> **示例 46** [难度 ★★☆☆☆] [主题：isconvertible —— 隐]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · isconvertible —— 隐
 ```cpp
 // [示例 42] is_convertible：派生 → 基类可隐式转（is-a 的编译期证据）
 #include <type_traits>
@@ -1240,7 +1240,7 @@ int main() {
 
 文件 `bits/uses_allocator.h:56-70`（本机路径 `.../include/c++/bits/uses_allocator.h`）：
 
-> **示例 47** [难度 ★★★☆☆] [主题：usesallocator.h ——]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · usesallocator.h ——
 ```cpp
   template<typename _Tp, typename _Alloc, typename = __void_t<>>
     struct __uses_allocator_helper
@@ -1265,7 +1265,7 @@ int main() {
 
 文件 `bits/stl_construct.h:105-120`：
 
-> **示例 48** [难度 ★★☆☆☆] [主题：stlconstruct.h —— ]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · stlconstruct.h ——
 ```cpp
 #include <utility>
 #if __cplusplus >= 201103L
@@ -1302,9 +1302,9 @@ int main() {
 | 虚继承布局控制 | 固定 Itanium | 固定 Itanium | `/vd1`（vbptr 在头部）/ `/vd2`（在尾部，兼容 Itanium） |
 | `[[nodiscard]]` 继承接口 | 支持（C++17/20） | 支持 | 支持 |
 
-**[平台]**　`-Wsuggest-override`（GCC/Clang）会在「覆盖虚函数却没写 `override`」时给出提示，把示例 34 的纪律变成编译器助攻。`/Woverloaded-virtual`（MSVC）与 `-Woverloaded-virtual`（GCC/Clang）会在「派生类同名函数隐藏了基类虚函数重载」时告警——直接针对第 14 节名字隐藏陷阱。
+**<span class="badge badge-platform">平台</span>**　`-Wsuggest-override`（GCC/Clang）会在「覆盖虚函数却没写 `override`」时给出提示，把示例 34 的纪律变成编译器助攻。`/Woverloaded-virtual`（MSVC）与 `-Woverloaded-virtual`（GCC/Clang）会在「派生类同名函数隐藏了基类虚函数重载」时告警——直接针对第 14 节名字隐藏陷阱。
 
-> **示例 49** [难度 ★★☆☆☆] [主题：三编译器对比：GCC / LLVM ]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三编译器对比：GCC / LLVM
 ```cpp
 // [示例 43] 触发 -Woverloaded-virtual 的名字隐藏（GCC/Clang 加 -Woverloaded-virtual）
 struct Base {
@@ -1322,7 +1322,7 @@ struct D2 : B2 { void g(int) override {} };   // 安全：虚重载未被隐藏
 // 若 D2 写 void g(int){}（无 override）且 B2 有 g(double)，某些 -Woverloaded-virtual 形态会告警
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：三编译器对比：GCC / LLVM ]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三编译器对比：GCC / LLVM
 ```cpp
 // [示例 44] [[nodiscard]] 标定继承接口，防止忽略返回值
 #include <cstdio>
@@ -1351,20 +1351,20 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `using` 声明把基类 protected 成员改为 public。** 你开放某个受保护接口给外部。请说明作用域引入规则。
-   - [标准] 类内的 using 声明可将基类成员引入派生类作用域，并借此改变其访问级别。
-   - [引用] ISO/IEC 14882:2023 §[class.member.lookup]（成员名查找与 using 引入）/ [namespace.udecl]（using 声明）；cppreference "using declaration" 词条。
+   - <span class="badge badge-std">标准</span> 类内的 using 声明可将基类成员引入派生类作用域，并借此改变其访问级别。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.member.lookup]（成员名查找与 using 引入）/ [namespace.udecl]（using 声明）；cppreference "using declaration" 词条。
 
 2. **真实场景：友元既不传递也不被继承。** 你误以为派生类自动获得基类的友元权限。请说明约束。
-   - [标准] 友元关系既不被继承也不传递；只有声明为友元的函数/类拥有访问权。
-   - [引用] ISO/IEC 14882:2023 §[class.friend]（友元：非继承、非传递）；cppreference "Friend" 词条。
+   - <span class="badge badge-std">标准</span> 友元关系既不被继承也不传递；只有声明为友元的函数/类拥有访问权。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.friend]（友元：非继承、非传递）；cppreference "Friend" 词条。
 
 3. **真实场景：用私有继承表达“由…实现”。** 你不想让外界把派生当作基类（非 IS-A）。请说明继承方式语义。
-   - [标准] 在 private 继承中，基类公有/保护成员在派生类变为 private，表达实现复用而非子类型多态。
-   - [引用] ISO/IEC 14882:2023 §[class.derived]（继承方式：private/protected/public 语义）；cppreference "Inheritance" 词条。
+   - <span class="badge badge-std">标准</span> 在 private 继承中，基类公有/保护成员在派生类变为 private，表达实现复用而非子类型多态。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.derived]（继承方式：private/protected/public 语义）；cppreference "Inheritance" 词条。
 
 下面用可编译小程序实证四个工程关注点。为简洁，计时用 `std::chrono` 的粗粒度演示（生产基准见 Google Benchmark）。
 
-> **示例 51** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
 ```cpp
 // [示例 45] 微基准 ①：切片导致派生数据丢失（正确性，非性能）
 #include <cstdio>
@@ -1380,7 +1380,7 @@ int main() {
 }
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
 ```cpp
 // [示例 46] 微基准 ②：构造/析构顺序日志（运行时可观测）
 #include <cstdio>
@@ -1397,7 +1397,7 @@ struct Derived : Base, Mid { Tracer d{"Derived"}; };
 int main(){ Derived d; }   // +Base +Mid +Derived -Derived -Mid -Base
 ```
 
-> **示例 53** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
 ```cpp
 // [示例 47] 微基准 ③：NVI 前置检查收益（统一度量，派生无法绕过）
 #include <cstdio>
@@ -1421,7 +1421,7 @@ int main(){
 }
 ```
 
-> **示例 54** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
 ```cpp
 // [示例 48] 微基准 ④：漏写 override → 静默错误（基准对照“有 override”）
 #include <cstdio>
@@ -1440,7 +1440,7 @@ int main(){
 }
 ```
 
-**[经验]**　示例 48 是真实事故源头：大型代码库里「想覆盖却没覆盖」每年都会造成生产 bug。`override` 把这类错误从「运行时偶发」前移到「编译期必现」。基准对比很简单——加 `override` 后，示例 48 的 `struct Buggy` 会编译失败，逼你修正签名。
+**<span class="badge badge-exp">经验</span>**　示例 48 是真实事故源头：大型代码库里「想覆盖却没覆盖」每年都会造成生产 bug。`override` 把这类错误从「运行时偶发」前移到「编译期必现」。基准对比很简单——加 `override` 后，示例 48 的 `struct Buggy` 会编译失败，逼你修正签名。
 
 ---
 
@@ -1453,7 +1453,7 @@ int main(){
 | **Rust** | **无继承**；用 `trait` 组合 + 默认静态分发 | 无方法重写；`trait` 默认静态派发，dyn trait 才动态 | 模块级 `pub` 控制；无 `protected`/`friend` | 组合优于继承的极端化 |
 | **Go** | **无继承**；`struct` 嵌入（embedding）实现方法提升 | 嵌入类型方法被提升，可遮蔽 | 标识符首字母大小写控制可见性 | 组合/嵌入 ≈ C++ 组合 |
 
-**[经验]**　关键差异洞察：
+**<span class="badge badge-exp">经验</span>**　关键差异洞察：
 
 - **Java 默认方法虚**：`class D extends B { void f(){} }` 只要签名一致就覆盖，无需 `override` 关键字（Java 5+ 有 `@Override` 注解但非强制）。这与 C++ 的「默认非虚、需 `virtual`+`override`」相反——Java 程序员初学 C++ 常犯「忘了写 `virtual`/`override` 导致不多态」的错（见示例 48）。
 - **C# 显式 `virtual`/`override`/`sealed`**：与 C++ 的 `virtual`/`override`/`final` 几乎一一对应，是最接近 C++ 心智模型的语言。
@@ -1538,7 +1538,7 @@ int main(){
 
 ### ㉒.1 历史渊源补强：封装与继承的来龙去脉
 
-[史] 封装与继承是 **1967 年 Simula 67** 确立的面向对象三大支柱中的两项（与多态并列），C++ 在 1980 年代把它们吸收但做了关键改造：C++ 的 `private`/`protected` 是**编译期访问控制**（第 ③ ⑤ 节），不是运行时强制，这与 Smalltalk 的「运行时消息拦截式封装」哲学不同——Stroustrup 刻意保留「能用 `friend`/指针破封装」的逃生舱，换取零开销（第 ⑪ 节）。[史] C++ 的继承语义（尤其是 **Liskov 替换原则 LSP**，第 ⑧ 节）深受 **Barbara Liskov 1987 年提出、1994 年由 Jeannette Wing 形式化** 的替换原则影响；而 **C++11 引入 `override`/`final`（第 ⑮ 节）** 是对「虚函数重写易写错（签名不符却静默成重载）」这一数十年痛点的标准级修复。[轶] `class` 与 `struct` 唯一区别仅是默认访问权限（第 ⑥ 节），这是 C++ 为兼容 C 的 `struct` 又引入 OOP 的折中——也是为什么 C++ 程序员常争论「该用哪个」。
+<span class="badge badge-history">史</span> 封装与继承是 **1967 年 Simula 67** 确立的面向对象三大支柱中的两项（与多态并列），C++ 在 1980 年代把它们吸收但做了关键改造：C++ 的 `private`/`protected` 是**编译期访问控制**（第 ③ ⑤ 节），不是运行时强制，这与 Smalltalk 的「运行时消息拦截式封装」哲学不同——Stroustrup 刻意保留「能用 `friend`/指针破封装」的逃生舱，换取零开销（第 ⑪ 节）。<span class="badge badge-history">史</span> C++ 的继承语义（尤其是 **Liskov 替换原则 LSP**，第 ⑧ 节）深受 **Barbara Liskov 1987 年提出、1994 年由 Jeannette Wing 形式化** 的替换原则影响；而 **C++11 引入 `override`/`final`（第 ⑮ 节）** 是对「虚函数重写易写错（签名不符却静默成重载）」这一数十年痛点的标准级修复。<span class="badge badge-anecdote">轶</span> `class` 与 `struct` 唯一区别仅是默认访问权限（第 ⑥ 节），这是 C++ 为兼容 C 的 `struct` 又引入 OOP 的折中——也是为什么 C++ 程序员常争论「该用哪个」。
 
 ### ㉒.2 真实工程坐标：封装与继承活在哪里
 
@@ -1566,8 +1566,8 @@ int main(){
 
 ### ㉒.4 与标准的互动：封装/继承与 WG21 演进
 
-[史] C++98 确立访问控制与继承语义；**C++11 的 `override`/`final`（第 ⑮ 节）** 把「虚函数重写的意图」变成编译器可检查的项，并让 `final` 支持去虚化优化（ch47/第 ⑯ 节 NVI 惯用法由此更稳）。[史] **C++17/20 的 concepts（ch67）** 让「对基类施加约束」更优雅，间接改善了「继承 + 泛型」组合的可用性。**P0840 的 `[[no_unique_address]]`（C++20，ch52）** 让空基类在成员位置也能零开销，使「用基类承载策略/tag」的组合模式（Policy-Based Design，ch71）更自由。[评] WG21 方向是**弱化「深继承」鼓励「组合 + 概念约束」**，标准库自身（如 `std::pmr` 用组合而非继承切换后端）就在示范这条路径；`private`/`protected` 的编译期本质预计长期不变，因为运行时强制封装会破坏零开销承诺。
-- [史] 封装/继承的修订链：**P0840R0→R1→R2（C++20，`[[no_unique_address]]`）** 让空基类在成员位置也能零开销，使「用基类承载策略/tag」的组合模式（Policy-Based Design）更自由；C++11 的 `override`/`final`（源自 N3272 一脉）则把虚重写意图变成编译器可检查项。ISO 条款 `[class.access]` 明确 `private`/`protected` 仅为**编译期**拒绝越权——委员会刻意不做运行时强制封装，因为那会破坏零开销承诺；真正的边界在模块/进程/ABI 层。
+<span class="badge badge-history">史</span> C++98 确立访问控制与继承语义；**C++11 的 `override`/`final`（第 ⑮ 节）** 把「虚函数重写的意图」变成编译器可检查的项，并让 `final` 支持去虚化优化（ch47/第 ⑯ 节 NVI 惯用法由此更稳）。<span class="badge badge-history">史</span> **C++17/20 的 concepts（ch67）** 让「对基类施加约束」更优雅，间接改善了「继承 + 泛型」组合的可用性。**P0840 的 `[[no_unique_address]]`（C++20，ch52）** 让空基类在成员位置也能零开销，使「用基类承载策略/tag」的组合模式（Policy-Based Design，ch71）更自由。<span class="badge badge-comment">评</span> WG21 方向是**弱化「深继承」鼓励「组合 + 概念约束」**，标准库自身（如 `std::pmr` 用组合而非继承切换后端）就在示范这条路径；`private`/`protected` 的编译期本质预计长期不变，因为运行时强制封装会破坏零开销承诺。
+- <span class="badge badge-history">史</span> 封装/继承的修订链：**P0840R0→R1→R2（C++20，`[[no_unique_address]]`）** 让空基类在成员位置也能零开销，使「用基类承载策略/tag」的组合模式（Policy-Based Design）更自由；C++11 的 `override`/`final`（源自 N3272 一脉）则把虚重写意图变成编译器可检查项。ISO 条款 `[class.access]` 明确 `private`/`protected` 仅为**编译期**拒绝越权——委员会刻意不做运行时强制封装，因为那会破坏零开销承诺；真正的边界在模块/进程/ABI 层。
 
 ### ㉒.5 权威引用
 
@@ -1579,7 +1579,7 @@ int main(){
 
 ## 附录 F：封装继承工业与面试
 
-> **示例 55** [难度 ★★☆☆☆] [主题：附录 F：封装继承工业与面试]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：封装继承工业与面试
 ```cpp
 #include <iostream>
 struct Base{virtual void f(){std::cout<<"Base"<<std::endl;}};
@@ -1598,7 +1598,7 @@ int main(){Base*b=new Derived;b->f();delete b;return 0;}
 
 ## 附录 H：访问控制面试
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：附录 H：访问控制面试]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：访问控制面试
 ```cpp
 #include <iostream>
 struct B{private:int x=1;protected:int y=2;public:int z=3;};
@@ -1688,7 +1688,7 @@ mov rdx, [rdi+0x0010]     ; 取 Derived 独有成员（偏移 0x0010）
 
 基类对象是派生对象前缀子对象的拷贝；赋值时只复制基类子对象，派生新增成员被丢弃。多态须经由引用或指针（或 `unique_ptr<Base>`）而非值。
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 struct Base { int b = 1; virtual ~Base() = default; };
@@ -1704,9 +1704,9 @@ int main() {
 }
 ```
 
-[标准] 切片是值语义的直接后果；维度⑩说明"引用/指针才多态"，维度⑪给出 `unique_ptr<Base>` 修复。
+<span class="badge badge-std">标准</span> 切片是值语义的直接后果；维度⑩说明"引用/指针才多态"，维度⑪给出 `unique_ptr<Base>` 修复。
 
-[引用] 标准库容器以值语义存储，故"存派生对象"天然触发切片——`std::vector<Base>` 只保留基类子对象（cppreference "std::vector"）。Unreal Engine 的 `UObject` 管理同样以指针（而非值）承载异质派生类型（dev.epicgames.com/documentation）。ISO/IEC 14882:2023 §[class.copy] 规定拷贝语义，切片即派生子对象不在拷贝目标中存在。
+<span class="badge badge-ref">引用</span> 标准库容器以值语义存储，故"存派生对象"天然触发切片——`std::vector<Base>` 只保留基类子对象（cppreference "std::vector"）。Unreal Engine 的 `UObject` 管理同样以指针（而非值）承载异质派生类型（dev.epicgames.com/documentation）。ISO/IEC 14882:2023 §[class.copy] 规定拷贝语义，切片即派生子对象不在拷贝目标中存在。
 
 </details>
 
@@ -1718,7 +1718,7 @@ int main() {
 
 C++ 的名字查找在找到派生类作用域的 `f` 后即停止，不再向基类合并重载集。显式 `using Base::f;` 把基类重载引入派生作用域。
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 struct Base { void f(int) { std::cout << "Base::f(int)\n"; } };
@@ -1733,7 +1733,7 @@ int main() {
 
 **修复**（恢复重载集）：
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 struct Base { void f(int) { std::cout << "Base::f(int)\n"; } };
@@ -1748,9 +1748,9 @@ int main() {
 }
 ```
 
-[标准] 名字隐藏是编译期作用域规则（维度⑬），与虚函数多态无关；忘了 `using` 是经典易错点。
+<span class="badge badge-std">标准</span> 名字隐藏是编译期作用域规则（维度⑬），与虚函数多态无关；忘了 `using` 是经典易错点。
 
-[引用] 名字隐藏在 Qt 的信号/槽与事件体系里尤其致命——派生 `QWidget` 新增同名槽函数可能遮蔽基类重载（doc.qt.io/qt-6/qwidget.html）。C++ 核心指南 C.138 建议"用 `using` 为派生类引入重载以避免隐藏"（isocpp.github.io）。ISO/IEC 14882:2023 §[basic.lookup] 规定名字查找的"先到先停"规则。
+<span class="badge badge-ref">引用</span> 名字隐藏在 Qt 的信号/槽与事件体系里尤其致命——派生 `QWidget` 新增同名槽函数可能遮蔽基类重载（doc.qt.io/qt-6/qwidget.html）。C++ 核心指南 C.138 建议"用 `using` 为派生类引入重载以避免隐藏"（isocpp.github.io）。ISO/IEC 14882:2023 §[basic.lookup] 规定名字查找的"先到先停"规则。
 
 </details>
 
@@ -1762,7 +1762,7 @@ int main() {
 
 NVI 把契约（前置条件、后置条件、不变式、日志）收敛在非虚公共接口，用户无法绕过；派生类仅覆写虚步骤，降低误用面。
 
-> **示例 60** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <cassert>
@@ -1785,9 +1785,9 @@ struct Impl : Algorithm {
 int main() { Impl a; a.run(); }
 ```
 
-[标准] NVI 是维度⑯/⑰的核心惯用法；对比"直接暴露 virtual"更易维护契约，是封装边界（维度③）的工程落地。
+<span class="badge badge-std">标准</span> NVI 是维度⑯/⑰的核心惯用法；对比"直接暴露 virtual"更易维护契约，是封装边界（维度③）的工程落地。
 
-[引用] NVI 是 Herb Sutter 在 *C++ Coding Standards*（条目 39 "Consider making virtual functions nonpublic"）中系统化的惯用法；标准库的 `std::basic_ios::clear`/`std::streambuf::sync` 等也采用"公共非虚 + 受保护虚"的结构。Boost.Serialization 的 `serialize` 归档接口同样依赖基类固定流程包裹派生类型的具体读写（boost.org/doc/libs）。ISO/IEC 14882:2023 §[class.virtual] 规定虚函数与访问控制的交互。
+<span class="badge badge-ref">引用</span> NVI 是 Herb Sutter 在 *C++ Coding Standards*（条目 39 "Consider making virtual functions nonpublic"）中系统化的惯用法；标准库的 `std::basic_ios::clear`/`std::streambuf::sync` 等也采用"公共非虚 + 受保护虚"的结构。Boost.Serialization 的 `serialize` 归档接口同样依赖基类固定流程包裹派生类型的具体读写（boost.org/doc/libs）。ISO/IEC 14882:2023 §[class.virtual] 规定虚函数与访问控制的交互。
 
 </details>
 
@@ -1799,7 +1799,7 @@ int main() { Impl a; a.run(); }
 
 **常见错误**：函数签名返回 `Base`（值），调用方拿到的是切片后的截断对象，丢失派生行为。
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：演绎 1：切片 bug——函数返回基]
+> **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：切片 bug——函数返回基
 ```cpp
 #include <iostream>
 struct Base { int b = 1; virtual ~Base() = default; };
@@ -1814,7 +1814,7 @@ int main() {
 
 **修复**：返回基指针 / `unique_ptr<Base>` / `Base&`，让多态经引用或指针传递。
 
-> **示例 62** [难度 ★★☆☆☆] [主题：演绎 1：切片 bug——函数返回基]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：切片 bug——函数返回基
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1837,7 +1837,7 @@ int main() {
 
 **常见错误**：派生类函数签名写错（如参数类型不符），未用 `override`；编译器将其视为**新函数**而非覆写，调用仍走基类版本——编译通过但行为错误。
 
-> **示例 63** [难度 ★★☆☆☆] [主题：演绎 2：忘记 override 导]
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：忘记 override 导
 ```cpp
 #include <iostream>
 struct Shape { virtual void draw() { std::cout << "Shape\n"; } };
@@ -1852,7 +1852,7 @@ int main() {
 
 **修复**：基类虚函数保持 `virtual`，派生加 `override`（签名不符立即编译错误）；用 `final` 锁死不再被进一步覆盖。
 
-> **示例 64** [难度 ★★★★☆] [主题：演绎 2：忘记 override 导]
+> **示例 64** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：忘记 override 导
 ```cpp
 #include <iostream>
 struct Shape { virtual void draw() = 0; };
@@ -2032,7 +2032,7 @@ flowchart TD
 
 下面的独立程序不测时间，验证的是本章可移植的稳定语义：非虚函数按**静态类型**在编译期绑定，虚函数按**动态类型**在运行期绑定——这正是 3.11× 开销差的语义来源。
 
-> **示例 65** [难度 ★★★★★] [主题：可复现 demo]
+> **示例 65** <span class="badge badge-exp">难度 ★★★★★</span> · 可复现 demo
 ```cpp
 // demo_d5_ch46.cpp
 // g++ -O2 -std=c++23 demo_d5_ch46.cpp && ./a.out

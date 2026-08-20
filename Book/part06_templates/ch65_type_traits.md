@@ -1,5 +1,5 @@
 # 第65章　类型特性 Type Traits —— 编译期类型自省与分发
-> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 [第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
 [第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
@@ -12,7 +12,7 @@
 > 在 concepts 还没出生的年代，C++ 靠「萃取」偷偷给类型贴标签、查属性——类型萃取是编译期自省的祖师爷。
 
 ### 0.1 起源（谁·何时·为何）
-1995 年，Nathan Myers 在《C++ Report》提出 **traits（萃取）** 技术：用模板特化把「类型」映射到「它的属性/关联类型」上，比如「这个迭代器是单向还是随机？」。[史] 在此之前，泛型算法想针对不同迭代器能力走不同实现，只能靠手写分支或宏。Boost.TypeTraits（John Maddock 等）把它体系化，最终 C++11 把一套 `<type_traits>`（如 `is_integral`、`remove_reference`）收编进标准库。[史]
+1995 年，Nathan Myers 在《C++ Report》提出 **traits（萃取）** 技术：用模板特化把「类型」映射到「它的属性/关联类型」上，比如「这个迭代器是单向还是随机？」。<span class="badge badge-history">史</span> 在此之前，泛型算法想针对不同迭代器能力走不同实现，只能靠手写分支或宏。Boost.TypeTraits（John Maddock 等）把它体系化，最终 C++11 把一套 `<type_traits>`（如 `is_integral`、`remove_reference`）收编进标准库。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
 - 1995：Myers 提出 traits 惯用法。
@@ -20,24 +20,24 @@
 - 2011：C++11 正式纳入 `<type_traits>`，并借助 SFINAE（ch66）驱动条件重载。
 
 ### 0.3 设计哲学之争
-类型萃取是「编译期反射」的雏形：它让泛型代码能「询问类型」，却不必等到运行期。[评] 但它依赖大量模板特化与冗长的 `typename` 写法；concepts（ch67）正是为了把这层「绕路自省」换成直白的约束语法而生——萃取没有消失，只是被概念收编为一等公民。
+类型萃取是「编译期反射」的雏形：它让泛型代码能「询问类型」，却不必等到运行期。<span class="badge badge-comment">评</span> 但它依赖大量模板特化与冗长的 `typename` 写法；concepts（ch67）正是为了把这层「绕路自省」换成直白的约束语法而生——萃取没有消失，只是被概念收编为一等公民。
 
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++11 把 `<type_traits>` 收编。自省主线在 concepts 之后继续向前：
 
-- [史] `type_traits` 源自 Boost.TypeTraits（2000s），C++11 正式纳入 `<type_traits>`；`std::is_same`、`std::is_integral`、`std::enable_if` 立刻成为 SFINAE（ch66）的主力工具。
+- <span class="badge badge-history">史</span> `type_traits` 源自 Boost.TypeTraits（2000s），C++11 正式纳入 `<type_traits>`；`std::is_same`、`std::is_integral`、`std::enable_if` 立刻成为 SFINAE（ch66）的主力工具。
 
-- [史] C++17 的 `std::void_t` 技巧让「检测某类型是否拥有某成员」变得一行可达，催生一大批「检测 idiom」；这股风潮最终汇入 concepts（ch67）——`requires` 表达式就是 `void_t` 检测的官方化。
+- <span class="badge badge-history">史</span> C++17 的 `std::void_t` 技巧让「检测某类型是否拥有某成员」变得一行可达，催生一大批「检测 idiom」；这股风潮最终汇入 concepts（ch67）——`requires` 表达式就是 `void_t` 检测的官方化。
 
-- [史] 静态反射（static reflection，提案 P2996 等）正走标准轨道：目标是让 `std::meta::info` 与编译期反射能直接查询类型的成员、属性，把 traits 的「手写特化枚举」升级为「编译期查询」。这被视为自 traits 以来的又一次自省主线跃迁。
+- <span class="badge badge-history">史</span> 静态反射（static reflection，提案 P2996 等）正走标准轨道：目标是让 `std::meta::info` 与编译期反射能直接查询类型的成员、属性，把 traits 的「手写特化枚举」升级为「编译期查询」。这被视为自 traits 以来的又一次自省主线跃迁。
 
-- [评] 主线清晰：手写 traits（C++11）→ `void_t` 检测（C++17）→ concepts（C++20）→ 静态反射（未来）。
+- <span class="badge badge-comment">评</span> 主线清晰：手写 traits（C++11）→ `void_t` 检测（C++17）→ concepts（C++20）→ 静态反射（未来）。
 
 > 史料来源：https://en.cppreference.com/w/cpp/header/type_traits ；https://en.cppreference.com/w/cpp/language/constraints
 
 > 版本：v3.0（2026-07-08）
 
-## ① 本章要击穿的二十个问题 [标准]
+## ① 本章要击穿的二十个问题 <span class="badge badge-std">标准</span>
 
 [第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)
 [第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
@@ -79,13 +79,13 @@ flowchart TD
     Br3 --> R
 ```
 
-## ② 前置与后续依赖（交叉引用网） [标准]
+## ② 前置与后续依赖（交叉引用网） <span class="badge badge-std">标准</span>
 
 - 前置：`ch60_template_basics.md`（模板实例化）、`ch62_specialization.md`（偏特化，trait 的基石）、`ch63_variadic.md`（包展开，用于 `conjunction` 等）。
 - 后续：`ch66_concepts.md`（C++20 概念取代 SFINAE）、`ch68_tmp.md`（模板元编程，trait 是 TMP 的零件）、`ch72_expression_templates.md`。
 - 跨域：`ch14_constexpr.md`（编译期计算）、`ch47_virtual_functions.md`（运行期分发的对照）。
 
-## ③ 核心定义与术语表 [标准]
+## ③ 核心定义与术语表 <span class="badge badge-std">标准</span>
 
 - **Type Trait（类型特性）**：在编译期查询或修改类型属性的模板元程序，结果以 `static constexpr` 成员或类型别名暴露。
 - **`integral_constant<T, v>`**：所有标准 trait 的根基，同时提供 `value`（值）与 `type`（类型）两条通道。
@@ -94,7 +94,7 @@ flowchart TD
 - **标签分发（tag dispatch）**：用空结构体（`input_iterator_tag` 等）作为重载区分维度，把 trait 结果转为类型选路。
 - **`void_t<Ts...>`**：C++17 引入的平凡工具，展开 `Ts` 时若均合法则产生 `void`，用于探测成员是否存在。
 
-> **示例 1** [难度 ★★★☆☆] [主题：核心定义与术语表 [标准]]
+> **示例 1** [难度 ★★★☆☆] [主题：核心定义与术语表 <span class="badge badge-std">标准</span>]
 ```cpp
 // 根基：integral_constant 的完整手写形态（标准库 ~<type_traits> 行 93）
 template <class T, T v>
@@ -109,7 +109,7 @@ using true_type  = integral_constant<bool, true>;
 using false_type = integral_constant<bool, false>;
 ```
 
-## ④ 历史演进与时间线 [标准]
+## ④ 历史演进与时间线 <span class="badge badge-std">标准</span>
 
 - **C++98/03**：无标准 trait；Boost.TypeTraits 提供事实标准，被后续标准吸收。
 - **C++11**：正式引入 `<type_traits>`，含 `is_pointer` / `is_same` / `remove_reference` / `enable_if` / `conditional` 等约 50 个。
@@ -117,7 +117,7 @@ using false_type = integral_constant<bool, false>;
 - **C++17**：引入 `void_t`、`_v` 变量模板（`is_same_v<T,U>`）、`bool_constant`、`conjunction/disjunction/negation` 逻辑运算 trait。
 - **C++20**：引入 `concepts`，`is_same_v<T,U>` 可改写为 `same_as<T,U>`，但 trait 体系保留兼容。
 
-## ⑤ 标准条款对照（ISO/IEC 14882） [标准]
+## ⑤ 标准条款对照（ISO/IEC 14882） <span class="badge badge-std">标准</span>
 
 | 特性 | 标准条款 | 说明 |
 |---|---|---|
@@ -133,14 +133,14 @@ using false_type = integral_constant<bool, false>;
 | `conjunction` | [meta.logical] 21.3.11 | 短路逻辑与 |
 | `is_pointer` | [meta.unary.prop] 21.3.7 | 一元属性 |
 
-## ⑥ GCC / Clang / MSVC 实现差异 [实现]
+## ⑥ GCC / Clang / MSVC 实现差异 <span class="badge badge-impl">实现</span>
 
 - **`is_pointer`**：三编译器均用偏特化手写；libstdc++ 实现与下文本章手写版几乎一致。
 - **`is_base_of` / `is_convertible`**：均依赖编译器内建（`__is_base_of`、`__is_convertible_to`），因为纯库实现无法覆盖 `private` 继承、`using` 注入等边缘情形。
 - **`is_trivially_copyable`**：MSVC 与 GCC/Clang 在个别 POD 类型上结论偶发分歧（历史 ABI 决定）。
 - **`is_complete_type` 类探测**：Clang 的 `__is_complete_type` 比 GCC 的 `__is_array` 系列更全。
 
-> **示例 2** [难度 ★★★☆☆] [主题：实现差异 [实现]]
+> **示例 2** [难度 ★★★☆☆] [主题：实现差异 <span class="badge badge-impl">实现</span>]
 ```cpp
 // MSVC 风格的 is_base_of 必须依赖内建（库实现无法判断 private 继承）
 template <class B, class D>
@@ -151,18 +151,18 @@ struct my_is_base_of {
 };
 ```
 
-## ⑦ 内存布局与对象表示 [实现]
+## ⑦ 内存布局与对象表示 <span class="badge badge-impl">实现</span>
 
 type trait 是**纯编译期**机制：它不产生任何运行期对象、不占内存。`is_pointer<int>::value` 在编译后彻底消失，不存在 `value` 的存储。唯一例外是 `integral_constant` 的 `operator bool()` 可在运行期调用，但其返回值本身就是常量。
 
-> **示例 3** [难度 ★★★★☆] [主题：内存布局与对象表示 [实现]]
+> **示例 3** [难度 ★★★★☆] [主题：内存布局与对象表示 <span class="badge badge-impl">实现</span>]
 ```cpp
 // 编译期常量的"零内存"：sizeof 不计入 trait 实例，因为根本不会实例化
 static_assert(sizeof(std::is_pointer<int*>) == 1, "trait 是空类，size==1（受 EBO 影响）");
 static_assert(std::is_pointer<int*>::value == true,  "编译期常量，无运行期开销");
 ```
 
-## ⑧ 汇编/ABI 层证据（MinGW GCC 15.3.0） [平台] [VERIFIED]
+## ⑧ 汇编/ABI 层证据（MinGW GCC 15.3.0） <span class="badge badge-platform">平台</span> [VERIFIED]
 
 下列汇编由 `Examples/_asm_tpl_traits.cpp` 在 `-std=c++23 -O2 -masm=intel` 下生成。**关键结论**：所有 trait 运算在编译期完成，运行期只剩常量。
 
@@ -179,9 +179,9 @@ _Z10use_traitsv:
 
 **解读**：`int s = ValueV<42>::value; return s + 6;` 中 `ValueV<42>::value` 是 `static constexpr` 常量，`s+6` 在常量传播后直接得到 `48`。汇编里没有 `call`、没有查表、没有 `if`。这就是"零开销抽象"在 trait 上的体现——**类型计算不产生指令**。
 
-## ⑨ 完整可编译示例（最小可运行） [标准]
+## ⑨ 完整可编译示例（最小可运行） <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★★☆☆☆] [主题：完整可编译示例（最小可运行） [标准]
+> **示例 4** [难度 ★★☆☆☆] [主题：完整可编译示例（最小可运行） <span class="badge badge-std">标准</span>
 ```cpp
 // 文件名：trait_min.cpp —— 用 g++ -std=c++23 -O2 trait_min.cpp 直接编译运行
 #include <type_traits>
@@ -196,11 +196,11 @@ int main() {
 }
 ```
 
-## ⑩ 真实业务场景案例 [经验]
+## ⑩ 真实业务场景案例 <span class="badge badge-exp">经验</span>
 
 **场景**：序列化库 `serialize(T)` 需要根据 `T` 是否为基础类型选择快速路径或反射路径。用 trait 在编译期分派，避免运行期 `typeid` 与虚表。
 
-> **示例 5** [难度 ★★★☆☆] [主题：真实业务场景案例 [经验]]
+> **示例 5** [难度 ★★★☆☆] [主题：真实业务场景案例 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <type_traits>
 #include <string>
@@ -223,11 +223,11 @@ void serialize(const T& v) {
 }
 ```
 
-## ⑪ 四种形态（手写 trait 的构造套路） [标准]
+## ⑪ 四种形态（手写 trait 的构造套路） <span class="badge badge-std">标准</span>
 
 **形态 A：布尔 trait（最基础）** —— 用偏特化把"是某类型"分流到 `true_type`。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：四种形态]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 四种形态
 ```cpp
 // 手写 is_pointer：主模板 false，指针偏特化 true
 template <class T> struct my_is_pointer      : false_type {};
@@ -238,7 +238,7 @@ static_assert(!my_is_pointer<int>::value);
 
 **形态 B：值 trait（携带常量）** —— 如 `extent`、`rank` 用递归模板携带数组维度。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：四种形态]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 四种形态
 ```cpp
 #include <cstddef>
 // 手写 rank：数组层数
@@ -251,7 +251,7 @@ static_assert(my_rank<int[10][20][30]>::value == 3);
 
 **形态 C：类型变换 trait** —— `type` 成员暴露新类型，标准库统一用 `_t` 别名简化。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：四种形态]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 四种形态
 ```cpp
 // 手写 remove_const
 template <class T> struct my_remove_const          { using type = T; };
@@ -262,7 +262,7 @@ static_assert(std::is_same_v<my_remove_const_t<const int>, int>);
 
 **形态 D：关系 trait（依赖内建）** —— `is_base_of` 等必须靠编译器内建，不可纯库实现。
 
-> **示例 9** [难度 ★★★☆☆] [主题：四种形态]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 四种形态
 ```cpp
 template <class B, class D>
 struct my_is_base_of {
@@ -273,7 +273,7 @@ static_assert(my_is_base_of<Base, Der>::value);
 static_assert(!my_is_base_of<Der, Base>::value);
 ```
 
-## ⑫ 十大易错点与反模式 [经验]
+## ⑫ 十大易错点与反模式 <span class="badge badge-exp">经验</span>
 
 1. **`typename` 缺失**：`typename T::type` 在依赖类型时必须写 `typename`，否则编译错误。 ✅ 用 `_t` 别名模板规避。
 2. **误用运行期 `if` 替代 `if constexpr`**：`if (trait::value)` 要求两分支都合法，SFINAE 失败。 ✅ 用 `if constexpr`。
@@ -286,7 +286,7 @@ static_assert(!my_is_base_of<Der, Base>::value);
 9. **手写 `is_base_of` 忽略 private 继承**：纯偏特化版对 `private` 继承误报 `false`，必须 `__is_base_of`。
 10. **`conjunction` 当普通 `&&`**：`conjunction<A,B>` 短路（B 在 A 失败时不实例化），普通 `&&` 会强制两遍实例化导致 SFINAE 误伤。
 
-> **示例 10** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 10** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ❌ 反模式：运行期 if 两分支都须合法，下面第二分支对 int 非法 → 硬错
 template <class T>
@@ -305,7 +305,7 @@ void good(T v) {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 11** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // 手写 is_lvalue_reference：主模板 false，左值引用偏特化 true
 template <class T> struct my_is_lvalue_reference       : false_type {};
@@ -315,7 +315,7 @@ static_assert(!my_is_lvalue_reference<int&&>::value);
 static_assert(!my_is_lvalue_reference<int>::value);
 ```
 
-> **示例 12** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 12** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <cstddef>
 // 手写 extent<T,N=0>：非数组为 0；数组第 0 维为元素数
@@ -332,7 +332,7 @@ static_assert(my_extent<int[10][20], 1>::value == 20);
 static_assert(my_extent<int, 0>::value == 0);
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 13** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // void_t 探测 size() 成员存在性
 template <class T, class = void> struct has_size : false_type {};
@@ -343,7 +343,7 @@ static_assert(has_size_v<std::vector<int>>);
 static_assert(!has_size_v<int>);
 ```
 
-> **示例 14** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 14** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // if constexpr + is_integral 分派的 to_string
 #include <string>
@@ -355,7 +355,7 @@ std::string to_string_v3(T v) {
 }
 ```
 
-> **示例 15** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 15** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // conjunction 短路：B 在 A 失败时不被实例化（避免 SFINAE 误伤）
 template <class A, class B>
@@ -368,7 +368,7 @@ using ok_t = my_conjunction<std::is_integral<T>, std::is_pointer<T>>;
 static_assert(!ok_t<int>::value);   // int 是 integral 但非 pointer，短路得 false
 ```
 
-> **示例 16** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 16** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // remove_cv 手写：剥除 const/volatile
 template <class T> struct my_remove_cv                     { using type = T; };
@@ -379,7 +379,7 @@ template <class T> using my_remove_cv_t = typename my_remove_cv<T>::type;
 static_assert(std::is_same_v<my_remove_cv_t<const volatile int>, int>);
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 17** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // add_pointer 手写：加一层指针
 template <class T> struct my_add_pointer { using type = T*; };
@@ -388,7 +388,7 @@ static_assert(std::is_same_v<my_add_pointer_t<int>, int*>);
 static_assert(std::is_same_v<my_add_pointer_t<int*>, int**>);
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 18** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // is_function 手写：用 SFINAE 探测能否声明函数指针
 template <class T> struct my_is_function : false_type {};
@@ -398,7 +398,7 @@ static_assert(my_is_function_v<int(int)>);
 static_assert(!my_is_function_v<int>);
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 19** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <cstddef>
 // is_array 手写：主模板 false，数组偏特化 true
@@ -410,7 +410,7 @@ static_assert(my_is_array_v<int[5]>);
 static_assert(!my_is_array_v<int>);
 ```
 
-> **示例 20** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 20** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // negation 手写：逻辑非
 template <class T> struct my_negation : bool_constant<!T::value> {};
@@ -419,7 +419,7 @@ static_assert(my_negation_v<std::is_pointer<int>>);      // !false = true
 static_assert(!my_negation_v<std::is_pointer<int*>>);    // !true = false
 ```
 
-> **示例 21** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 21** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // 编译期类型分发：根据 is_arithmetic 选不同算法
 template <class T>
@@ -430,14 +430,14 @@ template <class T>
 T clamp(T v, T lo, T hi) { return clamp_impl(v, lo, hi, std::is_arithmetic<T>{}); }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 22** [难度 ★☆☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // rank + extent 组合查询多维数组形状
 static_assert(std::rank_v<int[2][3][4]> == 3);
 static_assert(std::extent_v<int[2][3][4], 2> == 4);
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 23** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // enable_if 作为返回类型的惯用法（C++11 风格）
 template <class T>
@@ -446,14 +446,14 @@ static_assert(make_zero<int>() == 0);
 // 非 integral 类型调用会 SFINAE 剔除，产生"无匹配"而非硬错
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 24** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // bool_constant 简化：避免 integral_constant<bool, X> 冗长
 template <bool B> using my_bool_constant = std::integral_constant<bool, B>;
 static_assert(my_bool_constant<(2 > 1)>::value);
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 25** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // 手写 is_const
 template <class T> struct my_is_const        : false_type {};
@@ -462,7 +462,7 @@ static_assert(my_is_const_v<const int>);
 static_assert(!my_is_const_v<int>);
 ```
 
-> **示例 26** [难度 ★★★☆☆] [主题：十大易错点与反模式 [经验]]
+> **示例 26** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
 ```cpp
 // 用 trait 驱动的编译期断言表（工业库常用）
 template <class T>
@@ -477,7 +477,7 @@ static_assert(std::is_trivially_copyable_v<Pod>);
 
 标准库 `<type_traits>` 中 `is_pointer` 的真实骨架（libstdc++ 摘录，行号指 `_bits/type_traits.h` 区块）：
 
-> **示例 27** [难度 ★★★☆☆] [主题：源码分析 [实现·libstdc++]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析 [实现·libstdc++
 ```cpp
 // libstdc++ 风格（简化，非逐字节）：指针偏特化命中 -> true_type
 template<typename _Tp>
@@ -495,7 +495,7 @@ template<typename _Tp>
 
 **要点**：`is_pointer_v<T>` 只是 `is_pointer<T>::value` 的别名变量模板，`_v` 后缀无新语义，纯粹消减 `::value` 噪音。手写版与标准库版机制完全一致。
 
-## ⑭ WG21 提案背景 [标准]
+## ⑭ WG21 提案背景 <span class="badge badge-std">标准</span>
 
 - **N1429（2003）**：最初的 type traits 提案，后并入 TR1。
 - **N2240 / N2984**：C++11 `<type_traits>` 定型提案。
@@ -503,11 +503,11 @@ template<typename _Tp>
 - **P0006 / P0482**：变量模板 `_v` 与 `bool_constant` 的引入。
 - **P0013**：`conjunction/disjunction/negation` 逻辑运算 trait，解决短路需求。
 
-## ⑮ 跨 GCC / Clang / MSVC 一致性 [平台]
+## ⑮ 跨 GCC / Clang / MSVC 一致性 <span class="badge badge-platform">平台</span>
 
 `type_traits` 属标准强约束区，三编译器结论一致率 >99% [UNVERIFIED]。分歧仅在极少数内建 trait（如 `is_trivially_constructible` 对含 `volatile` 成员的类）。工程建议：跨编译器库用标准 trait 而非编译器内建宏。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：跨 GCC / Clang / MS]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 GCC / Clang / MS
 ```cpp
 // 跨平台写法：优先标准 trait
 #if defined(_MSC_VER)
@@ -516,7 +516,7 @@ template<typename _Tp>
 static_assert(std::is_trivially_copyable_v<int>);  // 三编译器一致 true
 ```
 
-## ⑯ 性能基准（零开销证据） [经验]
+## ⑯ 性能基准（零开销证据） <span class="badge badge-exp">经验</span>
 
 `type_traits` 运算在 `-O2` 下**全部消除**（见 ⑧ 汇编）。对比运行期 `typeid` 分发：
 
@@ -526,7 +526,7 @@ static_assert(std::is_trivially_copyable_v<int>);  // 三编译器一致 true
 | `dynamic_cast`（RTTI） | vtable 查找 + 分支 | 0 | 含 typeinfo |
 | `typeid().name()` | 字符串比较 | 0 | 含 RTTI 段 |
 
-> **示例 29** [难度 ★★★☆☆] [主题：性能基准（零开销证据） [经验]]
+> **示例 29** [难度 ★★★☆☆] [主题：性能基准（零开销证据） <span class="badge badge-exp">经验</span>]
 ```cpp
 // microbenchmark：trait 分派 vs RTTI 分派（10^8 次）
 #include <type_traits>
@@ -544,9 +544,9 @@ int main() {
 }
 ```
 
-## ⑰ 编译期失误排查（trait 不触发） [经验]
+## ⑰ 编译期失误排查（trait 不触发） <span class="badge badge-exp">经验</span>
 
-> **示例 30** [难度 ★★☆☆☆] [主题：编译期失误排查（trait 不触发）]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译期失误排查（trait 不触发）
 ```cpp
 // ❌ 症状：enable_if 版本全部被剔除，无匹配重载
 template <class T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
@@ -559,7 +559,7 @@ void f(T) { }
 static_assert(std::is_integral_v<int>);
 ```
 
-## ⑱ 工业级最佳实践 [经验]
+## ⑱ 工业级最佳实践 <span class="badge badge-exp">经验</span>
 
 1. 优先用 `_v` / `_t` 后缀（C++17 起），减少 `::value` / `typename ::type` 噪音。
 2. 分发首选 `if constexpr`（C++17）或标签，`enable_if` 仅用于重载集区分。
@@ -568,7 +568,7 @@ static_assert(std::is_integral_v<int>);
 5. 跨平台库避免依赖编译器内建宏，统一 `<type_traits>`。
 6. trait 仅用于编译期；运行期分支用 `if constexpr` 而非运行期 `if`。
 
-> **示例 31** [难度 ★★★☆☆] [主题：工业级最佳实践 [经验]]
+> **示例 31** [难度 ★★★☆☆] [主题：工业级最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // 现代写法：void_t 探测成员 has_serialize
 template <class T, class = void>
@@ -583,9 +583,9 @@ static_assert(has_serialize_v<WithSer>);
 static_assert(!has_serialize_v<int>);
 ```
 
-## ⑲ 综合实战：手写 `is_same` + 标签分发 + `conditional` [标准]
+## ⑲ 综合实战：手写 `is_same` + 标签分发 + `conditional` <span class="badge badge-std">标准</span>
 
-> **示例 32** [难度 ★★★☆☆] [主题：综合实战：手写 issame + 标]
+> **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 综合实战：手写 issame + 标
 ```cpp
 #include <type_traits>
 #include <iostream>
@@ -618,21 +618,21 @@ int main() {
 }
 ```
 
-## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节） [标准]
+## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节） <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `std::enable_if_t` 做 SFINAE 分支。** 你想让某重载仅在类型满足谓词时存在。请说明机制。
-   - [标准] `std::enable_if` 在条件为假时无 `::type`，替换失败从而把该候选移出重载集。
-   - [引用] ISO/IEC 14882:2023 §[meta.trans]（enable_if 变换）/ [temp.deduct]（SFINAE）；cppreference "std::enable_if" 词条。
+   - <span class="badge badge-std">标准</span> `std::enable_if` 在条件为假时无 `::type`，替换失败从而把该候选移出重载集。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[meta.trans]（enable_if 变换）/ [temp.deduct]（SFINAE）；cppreference "std::enable_if" 词条。
 
 2. **真实场景：用 `std::decay_t` 模拟按值传参的类型变换。** 你拿到引用类型想退化成值类型。请说明 decay 行为。
-   - [标准] `std::decay` 去除引用与顶层 cv，并把数组/函数退化成指针，等价于按值传参的类型变换。
-   - [引用] ISO/IEC 14882:2023 §[meta.trans.cv] / [meta.trans.ptr]（decay 变换）；cppreference "std::decay" 词条。
+   - <span class="badge badge-std">标准</span> `std::decay` 去除引用与顶层 cv，并把数组/函数退化成指针，等价于按值传参的类型变换。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[meta.trans.cv] / [meta.trans.ptr]（decay 变换）；cppreference "std::decay" 词条。
 
 3. **真实场景：用 `std::is_convertible_v` 判可转换性做约束。** 你检查两个类型能否隐式转换。请说明谓词来源。
-   - [标准] 标准类型特性（[meta]）提供编译期谓词；`is_convertible` 表达“能否隐式转换为目标类型”。
-   - [引用] ISO/IEC 14882:2023 §[meta.rel]（is_convertible 等关系特性）；cppreference "std::is_convertible" 词条。
+   - <span class="badge badge-std">标准</span> 标准类型特性（[meta]）提供编译期谓词；`is_convertible` 表达“能否隐式转换为目标类型”。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[meta.rel]（is_convertible 等关系特性）；cppreference "std::is_convertible" 词条。
 
 **练习题**
 1. 手写 `is_lvalue_reference`（提示：偏特化 `T&`）。
@@ -657,8 +657,8 @@ int main() {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：traits 如何从「属性查表」长成 `<type_traits>`
-[史] 1995 年 Nathan Myers 在《C++ Report》提出 **traits（萃取）**：用模板特化把「类型」映射到「它的属性/关联类型」上，比如「这个迭代器是单向还是随机？」。在此之前，泛型算法想针对不同能力走不同实现只能靠手写分支或宏。Boost.TypeTraits（John Maddock 等）把它体系化，最终 C++11 把一套 `<type_traits>`（`is_integral`、`remove_reference`、`enable_if` 等）收编进标准库。
-[评] traits 是「编译期反射」的雏形，让泛型代码能「询问类型」而不必等到运行期；但它依赖大量模板特化与冗长的 `typename` 写法，concepts（ch67）正是为把这层「绕路自省」换成直白约束语法而生——萃取没有消失，只是被概念收编为一等公民。
+<span class="badge badge-history">史</span> 1995 年 Nathan Myers 在《C++ Report》提出 **traits（萃取）**：用模板特化把「类型」映射到「它的属性/关联类型」上，比如「这个迭代器是单向还是随机？」。在此之前，泛型算法想针对不同能力走不同实现只能靠手写分支或宏。Boost.TypeTraits（John Maddock 等）把它体系化，最终 C++11 把一套 `<type_traits>`（`is_integral`、`remove_reference`、`enable_if` 等）收编进标准库。
+<span class="badge badge-comment">评</span> traits 是「编译期反射」的雏形，让泛型代码能「询问类型」而不必等到运行期；但它依赖大量模板特化与冗长的 `typename` 写法，concepts（ch67）正是为把这层「绕路自省」换成直白约束语法而生——萃取没有消失，只是被概念收编为一等公民。
 
 ### ㉒.2 真实工程坐标：type traits 活在哪些产品/项目里
 
@@ -666,7 +666,7 @@ int main() {
 
 | 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
 | --- | --- | --- | --- | --- |
-| 标准库与泛型库 | `std::vector`/`shared_ptr`/`optional` | `is_nothrow_move_constructible`/`is_array`/`is_trivially_destructible` 编译期选路 | 一切 C++ 程序地基 | traits 是编译期路由底座 [STANDARD] |
+| 标准库与泛型库 | `std::vector`/`shared_ptr`/`optional` | `is_nothrow_move_constructible`/`is_array`/`is_trivially_destructible` 编译期选路 | 一切 C++ 程序地基 | traits 是编译期路由底座 <span class="badge badge-std">STANDARD</span> |
 | 序列化/反射 | Cereal、Magic Enum、Boost.Serialization | traits 探测可序列化/是否枚举/有无特定成员，避免 `typeid` 分支 | 数据基础设施 | 编译期能力探测 |
 | 游戏引擎/ECS | 组件批量拷贝 | `is_trivially_copyable` 决定是否走 `memcpy` 快路径 | 实时系统 | 组件拷贝吞吐优化 |
 | 密码学 | Botan | `is_integral`/`is_trivially_copyable` 按字宽与可平凡拷贝选加解密路径 | 安全基础设施 | 编译期选型免 typeid |
@@ -693,7 +693,7 @@ int main() {
 
 ## 附录: type_traits 深度
 
-> **示例 33** [难度 ★★★☆☆] [主题：附录: typetraits 深度]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: typetraits 深度
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -701,7 +701,7 @@ template<typename T>void check(){std::cout<<std::is_integral_v<T><<" "<<std::is_
 int main(){check<int>();check<double>();return 0;}
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：附录: typetraits 深度]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -709,14 +709,14 @@ template<typename T>std::enable_if_t<std::is_integral_v<T>,T> halve(T x){return 
 int main(){std::cout<<halve(10)<<std::endl;return 0;}
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：附录: typetraits 深度]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
 ```cpp
 #include <iostream>
 #include <type_traits>
 int main(){std::cout<<std::is_same_v<int,int><<" "<<std::is_same_v<int,float><<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：附录: typetraits 深度]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -724,7 +724,7 @@ struct S{int x;};struct T{int x;};
 int main(){std::cout<<std::is_same_v<S,T><<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：附录: typetraits 深度]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -824,7 +824,7 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 
 <details><summary>答案与解析</summary>
 
-> **示例 38** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -839,9 +839,9 @@ int main() {
 }
 ```
 
-[标准] trait 本质是一个继承 `true_type`/`false_type` 的类模板；偏特化 `T*` 命中指针，主模板兜底为非指针。
+<span class="badge badge-std">标准</span> trait 本质是一个继承 `true_type`/`false_type` 的类模板；偏特化 `T*` 命中指针，主模板兜底为非指针。
 
-[引用] 这正是标准库 `std::is_pointer<T>` 的实现思路（cppreference "std::is_pointer"），libstdc++ 用偏特化 `<T*>` 命中指针。ISO/IEC 14882:2023 §[meta.unary.cat] 规定类型分类 trait 的语义。
+<span class="badge badge-ref">引用</span> 这正是标准库 `std::is_pointer<T>` 的实现思路（cppreference "std::is_pointer"），libstdc++ 用偏特化 `<T*>` 命中指针。ISO/IEC 14882:2023 §[meta.unary.cat] 规定类型分类 trait 的语义。
 
 </details>
 
@@ -851,7 +851,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 39** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -868,9 +868,9 @@ to_string(const T& v) { return "other:" + std::string(v); }
 int main() { std::cout << to_string(42) << ' ' << to_string("hi") << '\n'; }
 ```
 
-[标准] 两个重载的 SFINAE 条件互补（`integral` vs `!integral`），对每个 `T` 恰好一个启用，无歧义；`enable_if_t` 把"约束失败"变成"该重载从候选集静默移除"。注意 `int` 是基础类型，ADL 不会因此拉入 `std::to_string`，故与标准库 `to_string` 不冲突。
+<span class="badge badge-std">标准</span> 两个重载的 SFINAE 条件互补（`integral` vs `!integral`），对每个 `T` 恰好一个启用，无歧义；`enable_if_t` 把"约束失败"变成"该重载从候选集静默移除"。注意 `int` 是基础类型，ADL 不会因此拉入 `std::to_string`，故与标准库 `to_string` 不冲突。
 
-[引用] `std::is_integral`/`std::enable_if` 是 `<type_traits>` 的核心（cppreference "std::is_integral"）。这套 SFINAE 分流被标准库 `std::to_string` 重载集、序列化库广泛采用。ISO/IEC 14882:2023 §[meta.unary.prop] 与 §[temp.deduct] 规定 trait 语义与 SFINAE 移除规则。
+<span class="badge badge-ref">引用</span> `std::is_integral`/`std::enable_if` 是 `<type_traits>` 的核心（cppreference "std::is_integral"）。这套 SFINAE 分流被标准库 `std::to_string` 重载集、序列化库广泛采用。ISO/IEC 14882:2023 §[meta.unary.prop] 与 §[temp.deduct] 规定 trait 语义与 SFINAE 移除规则。
 
 </details>
 
@@ -880,7 +880,7 @@ int main() { std::cout << to_string(42) << ' ' << to_string("hi") << '\n'; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 40** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -901,9 +901,9 @@ int main() {
 }
 ```
 
-[标准] `void_t<...>` 永远 `void`；当 `decltype(...)` 内的表达式**合法**时特化生效（命中 `true_type`），否则回退主模板——这是编译期"探测成员/嵌套类型"的标准手段。
+<span class="badge badge-std">标准</span> `void_t<...>` 永远 `void`；当 `decltype(...)` 内的表达式**合法**时特化生效（命中 `true_type`），否则回退主模板——这是编译期"探测成员/嵌套类型"的标准手段。
 
-[引用] `void_t` 探测惯用法（Walter Brown 在 2014 年提出）是编译期反射/特性探测的基石，标准库 `std::void_t`（C++17）即为此而设（cppreference "std::void_t"）。Boost.Serialization 与标准库 `std::ranges` 都用类似手法做能力探测。ISO/IEC 14882:2023 §[meta.trans.other] 规定 `void_t`。
+<span class="badge badge-ref">引用</span> `void_t` 探测惯用法（Walter Brown 在 2014 年提出）是编译期反射/特性探测的基石，标准库 `std::void_t`（C++17）即为此而设（cppreference "std::void_t"）。Boost.Serialization 与标准库 `std::ranges` 都用类似手法做能力探测。ISO/IEC 14882:2023 §[meta.trans.other] 规定 `void_t`。
 
 </details>
 
@@ -923,7 +923,7 @@ to_string(T v);   // 可行，但返回类型冗长
 
 **修复**：用 `enable_if_t` + 默认模板参数，签名更干净且仍走 SFINAE：
 
-> **示例 41** [难度 ★★★☆☆] [主题：演绎 1：enableif 放返回类]
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：enableif 放返回类
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -956,7 +956,7 @@ struct has_serialize<T, std::void_t<decltype(&T::serialize)>> : std::true_type {
 
 **修复**：用表达式 `decltype(std::declval<T>().serialize())` 探测"可调用"：
 
-> **示例 42** [难度 ★★★☆☆] [主题：演绎 2：voidt 探测成员函数 ]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：voidt 探测成员函数
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -985,7 +985,7 @@ int main() {
 ### D4.1 libstdc++ 真实源码摘录
 
 // 摘自 libstdc++ 15.3.0：type_traits:92（integral_constant——所有 trait 基石）
-> **示例 43** [难度 ★★★☆☆] [主题：++ 真实源码摘录]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++ 真实源码摘录
 ```
   template<typename _Tp, _Tp __v>
     struct integral_constant
@@ -1004,7 +1004,7 @@ int main() {
 ```
 
 // 摘自 libstdc++ 15.3.0：type_traits:2458（conditional 编译期三元）
-> **示例 44** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
 ```
   template<bool _Cond, typename _Iftrue, typename _Iffalse>
     struct conditional
@@ -1016,7 +1016,7 @@ int main() {
 ```
 
 // 摘自 libstdc++ 15.3.0：type_traits:132（enable_if SFINAE 开关）
-> **示例 45** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
 ```
   template<bool, typename _Tp = void>
     struct enable_if
@@ -1028,7 +1028,7 @@ int main() {
 ```
 
 // 摘自 libstdc++ 15.3.0：type_traits:1538（is_same 类型相等判定）
-> **示例 46** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
 ```
   template<typename _Tp, typename _Up>
     struct is_same : public false_type { };
@@ -1063,7 +1063,7 @@ int main() {
 
 ### D4.4 可编译验证
 
-> **示例 47** [难度 ★★★☆☆] [主题：可编译验证]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1082,7 +1082,7 @@ int main() {
 ```
 
 预期输出：
-> **示例 48** [难度 ★★★☆☆] [主题：可编译验证]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
 ```
 true
 false
@@ -1330,7 +1330,7 @@ N=1'000'000（拷贝元素），VN=200'000（vector push_back）。`sizeof Trivi
 
 ### D5.3 可复现演示
 
-> **示例 49** [难度 ★★★☆☆] [主题：可复现演示]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <type_traits>

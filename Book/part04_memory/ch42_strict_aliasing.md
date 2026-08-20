@@ -13,24 +13,24 @@
 > 一条"你不能用错类型读内存"的规则，是编译器做激进优化的执照——也是无数诡异 bug 的源头。
 
 ### 0.1 起源（谁·何时·为何）
-别名（aliasing）问题来自 C：同一块内存可以通过不同类型的指针被访问（如 `int*` 与 `float*` 指向同一地址）。[史] 为了优化（寄存器缓存、重排、向量化），编译器需要知道"这两个指针是否可能指向同一对象"。C99 形式化"严格别名规则"：通过不属于该类型的左值访问对象是 UB；C++（[basic.lval]）继承并强化。[史]
+别名（aliasing）问题来自 C：同一块内存可以通过不同类型的指针被访问（如 `int*` 与 `float*` 指向同一地址）。<span class="badge badge-history">史</span> 为了优化（寄存器缓存、重排、向量化），编译器需要知道"这两个指针是否可能指向同一对象"。C99 形式化"严格别名规则"：通过不属于该类型的左值访问对象是 UB；C++（[basic.lval]）继承并强化。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **C99**：严格别名规则以标准条文确立，`-fstrict-aliasing` 成编译器默认优化。[史]
-- **C++（C++98 起沿用，C++20 在 `[basic.lval]` 精炼）**：`char*` / `unsigned char*` / `std::byte*` 被特许可别名任意类型，作为"窥探原始字节"的合法通道。[史]
-- **现代**：`memcpy` / `std::bit_cast` 成为跨类型重解释的安全正道。[史]
+- **C99**：严格别名规则以标准条文确立，`-fstrict-aliasing` 成编译器默认优化。<span class="badge badge-history">史</span>
+- **C++（C++98 起沿用，C++20 在 `[basic.lval]` 精炼）**：`char*` / `unsigned char*` / `std::byte*` 被特许可别名任意类型，作为"窥探原始字节"的合法通道。<span class="badge badge-history">史</span>
+- **现代**：`memcpy` / `std::bit_cast` 成为跨类型重解释的安全正道。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-严格别名把"类型系统"变成"优化许可"——程序员省了标注，编译器赚了自由，代价是"类型双关（type punning）"必须用 `memcpy` 而非 `union` / 强转。[史][评] 它本质上是"信任程序员不会乱别名"换"全体程序更快"的赌注，委员会押注优化收益大于偶发 bug。[评]
+严格别名把"类型系统"变成"优化许可"——程序员省了标注，编译器赚了自由，代价是"类型双关（type punning）"必须用 `memcpy` 而非 `union` / 强转。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 它本质上是"信任程序员不会乱别名"换"全体程序更快"的赌注，委员会押注优化收益大于偶发 bug。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++20 在 `[basic.lval]` 精炼严格别名。此后"安全重解释"与"编译器优化"继续角力。[史]
+0.2 停在 C++20 在 `[basic.lval]` 精炼严格别名。此后"安全重解释"与"编译器优化"继续角力。<span class="badge badge-history">史</span>
 
-- **C++20 `std::bit_cast`（P0476）成为跨类型重解释的安全正道**：对 trivially-copyable 类型做比特级拷贝、可编译期求值，基本取代 `reinterpret_cast` + `union` 做 type punning，呼应 0.3 "用 memcpy 而非强转"的结论。[史]
-- **TBAA（Type-Based Alias Analysis）随优化器进化**：GCC/Clang 的别名分析越来越激进，严格别名驱动的 vectorization / 重排也更易"踩中"隐藏的 UB，使 `-fno-strict-aliasing` 在 Linux 内核等场景成为必要安全阀。[史][评]
-- **`[[noalias]]`（函数参数属性，C++17 起）与 `__restrict`**：给编译器"这两指针不别名"的契约以解锁优化，是 0.3 "信任程序员换全体更快"的可选显式化；但标准层 `[[noalias]]` 语义与编译器支持长期不完全对齐，仍处讨论中。[史][评]
-- **行业现实**：Linux 内核用 `READ_ONCE` / `WRITE_ONCE` 宏配合 `volatile` 规避别名与重排；游戏 / 数值库则用 `memcpy` 双关保 UBSan 干净——印证 0.1 "同一内存多类型访问"的持久张力。[史]
+- **C++20 `std::bit_cast`（P0476）成为跨类型重解释的安全正道**：对 trivially-copyable 类型做比特级拷贝、可编译期求值，基本取代 `reinterpret_cast` + `union` 做 type punning，呼应 0.3 "用 memcpy 而非强转"的结论。<span class="badge badge-history">史</span>
+- **TBAA（Type-Based Alias Analysis）随优化器进化**：GCC/Clang 的别名分析越来越激进，严格别名驱动的 vectorization / 重排也更易"踩中"隐藏的 UB，使 `-fno-strict-aliasing` 在 Linux 内核等场景成为必要安全阀。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **`[[noalias]]`（函数参数属性，C++17 起）与 `__restrict`**：给编译器"这两指针不别名"的契约以解锁优化，是 0.3 "信任程序员换全体更快"的可选显式化；但标准层 `[[noalias]]` 语义与编译器支持长期不完全对齐，仍处讨论中。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **行业现实**：Linux 内核用 `READ_ONCE` / `WRITE_ONCE` 宏配合 `volatile` 规避别名与重排；游戏 / 数值库则用 `memcpy` 双关保 UBSan 干净——印证 0.1 "同一内存多类型访问"的持久张力。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/numeric/bit_cast ｜ https://en.cppreference.com/w/cpp/language/reinterpret_cast ｜ https://en.cppreference.com/w/cpp/language/object
 
@@ -97,7 +97,7 @@
 [第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)
 [第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)
 
-**[标准]** 严格别名规则回答一个根本问题：**当用某种类型的左值（glvalue）去读取一个对象时，这个左值的类型允许是什么？** 如果类型不匹配，标准规定这是**未定义行为（undefined behavior）**，而非"按位重新解释"。
+**<span class="badge badge-std">标准</span>** 严格别名规则回答一个根本问题：**当用某种类型的左值（glvalue）去读取一个对象时，这个左值的类型允许是什么？** 如果类型不匹配，标准规定这是**未定义行为（undefined behavior）**，而非"按位重新解释"。
 
 **[实现·GCC15]** 编译器之所以要这套规则，是为了给优化器一个**全局假设**："两个指向*不同基础类型*的指针，永远不会指向同一块内存。" 有了这个假设，编译器可以：
 
@@ -105,7 +105,7 @@
 - 把循环**重排**、**展开**、**向量化**；
 - 消除"多余的"加载/存储。
 
-**[经验]** 没有这条规则，几乎任何跨类型指针访问都会强制编译器假设"内存可能被别名"，所有优化退化为保守的逐次内存访问，性能会断崖式下跌。所以严格别名**同时是正确性的护城河和性能的来源**。
+**<span class="badge badge-exp">经验</span>** 没有这条规则，几乎任何跨类型指针访问都会强制编译器假设"内存可能被别名"，所有优化退化为保守的逐次内存访问，性能会断崖式下跌。所以严格别名**同时是正确性的护城河和性能的来源**。
 
 > **关键认知**：违反严格别名得到的是 **UB**，不是"编译错误"，也不是"必然崩溃"。它往往表现为**静默的错误结果**——这正是它最危险的地方。
 
@@ -113,7 +113,7 @@
 
 ## ② `[basic.lval]` 精确条款：哪些类型是"合法访问"
 
-**[标准]** C++20 `[basic.lval]/11` 规定，如果程序试图通过以下类型**之外**的 glvalue 访问对象的存储值，则行为未定义。合法类型清单如下（逐条对应标准原文）：
+**<span class="badge badge-std">标准</span>** C++20 `[basic.lval]/11` 规定，如果程序试图通过以下类型**之外**的 glvalue 访问对象的存储值，则行为未定义。合法类型清单如下（逐条对应标准原文）：
 
 1. 对象的**动态类型**（dynamic type）；
 2. 动态类型的 **cv‑限定**版本（如 `const`/`volatile` 修饰）；
@@ -126,7 +126,7 @@
 
 > **`similar`（相似）的精确定义** `[basic.type.qualifier]/2`：两个类型相似，当且仅当它们满足：删除顶层 cv‑限定符后相同。例如 `int` 与 `const int` 相似；`int` 与 `int&` 不相似（引用不是对象类型）；`int` 与 `volatile int` 相似。
 
-**[标准]** 注意：清单第 8 条**只**包含 `char` / `unsigned char` / `std::byte`，**不包含** `signed char`（它与 `char` 是不同类型，除非 `char` 在本平台就是 `signed char`）。也**不包含** `int8_t`（`int8_t` 通常是 `signed char` 的别名，所以可行；但 `uint8_t` 是 `unsigned char` 的别名，可行）。
+**<span class="badge badge-std">标准</span>** 注意：清单第 8 条**只**包含 `char` / `unsigned char` / `std::byte`，**不包含** `signed char`（它与 `char` 是不同类型，除非 `char` 在本平台就是 `signed char`）。也**不包含** `int8_t`（`int8_t` 通常是 `signed char` 的别名，所以可行；但 `uint8_t` 是 `unsigned char` 的别名，可行）。
 
 ---
 
@@ -134,7 +134,7 @@
 
 ### 3.1 通过 `int*` 读 `float` 对象 —— UB
 
-> **示例 1** [难度 ★★☆☆☆] [主题：通过 int 读 float 对象 ]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 通过 int 读 float 对象
 ```cpp
 // 【程序 1】UB：用 int 左值访问 float 对象（违反 [basic.lval]）
 #include <cstdio>
@@ -149,11 +149,11 @@ int main() {
 }
 ```
 
-> **[标准]** `float` 的动态类型是 `float`。通过 `int` 的 glvalue 读取它，而 `int` 既非 `float`、非其 cv 版本、非对应 signed/unsigned（float 无对应整数）、非基类、也非 `char`/`unsigned char`/`std::byte`。因此 **UB**。后果未定义：可能读到错的位、被优化掉、甚至崩溃——但**通常不会崩溃**，而是静默给出错误数字（见第 10 节真实汇编）。
+> **<span class="badge badge-std">标准</span>** `float` 的动态类型是 `float`。通过 `int` 的 glvalue 读取它，而 `int` 既非 `float`、非其 cv 版本、非对应 signed/unsigned（float 无对应整数）、非基类、也非 `char`/`unsigned char`/`std::byte`。因此 **UB**。后果未定义：可能读到错的位、被优化掉、甚至崩溃——但**通常不会崩溃**，而是静默给出错误数字（见第 10 节真实汇编）。
 
 ### 3.2 通过 `char*` 读任意对象字节 —— 合法
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：通过 char 读任意对象字节 ——]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 通过 char 读任意对象字节 ——
 ```cpp
 // 【程序 2】合法：通过 unsigned char* 审视任意对象的字节表示
 #include <cstdio>
@@ -192,13 +192,13 @@ int main() {
 | `std::launder` 配合placement new | ✅ **合法** | 见 ch28，解决"对象表示已变但指针类型未变" |
 | `__attribute__((may_alias))` 类型 | ✅ **合法** | 关闭该类型的严格别名假设（GCC/Clang） |
 
-> **[经验]** 一句话结论：**永远用 `memcpy` 或 `std::bit_cast` 做双关；禁止用 `reinterpret_cast` 去读不兼容类型。**
+> **<span class="badge badge-exp">经验</span>** 一句话结论：**永远用 `memcpy` 或 `std::bit_cast` 做双关；禁止用 `reinterpret_cast` 去读不兼容类型。**
 
 ---
 
 ## ⑤ 合法双关之一：`memcpy`
 
-> **示例 3** [难度 ★★☆☆☆] [主题：合法双关之一：memcpy]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 合法双关之一：memcpy
 ```cpp
 // 【程序 3】memcpy 双关：float <-> uint32_t 的位模式转换（完全合法）
 #include <cstdio>
@@ -232,7 +232,7 @@ int main() {
 
 ## ⑥ 合法双关之二：`std::bit_cast`（C++20）
 
-> **示例 4** [难度 ★★☆☆☆] [主题：合法双关之二：std::bitcas]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 合法双关之二：std::bitcas
 ```cpp
 // 【程序 4】std::bit_cast：编译期也可用的类型双关
 #include <bit>
@@ -259,9 +259,9 @@ int main() {
 
 ## ⑦ 合法双关之三：union 的 common initial sequence 例外
 
-**[标准]** C++ 标准对 union 的类型双关**极其严格**：写入一个成员后读取另一个成员（active member 切换）在 C++ 中是 UB，**唯一例外**是 **common initial sequence（共同初始序列）** 规则 `[class.mem]/26`：若两个标准布局结构体共享相同的初始成员序列，且它们作为某个 union 的成员，则允许通过该 union 的任一成员读取这些共同初始成员。
+**<span class="badge badge-std">标准</span>** C++ 标准对 union 的类型双关**极其严格**：写入一个成员后读取另一个成员（active member 切换）在 C++ 中是 UB，**唯一例外**是 **common initial sequence（共同初始序列）** 规则 `[class.mem]/26`：若两个标准布局结构体共享相同的初始成员序列，且它们作为某个 union 的成员，则允许通过该 union 的任一成员读取这些共同初始成员。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：合法双关之三：union 的 com]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 合法双关之三：union 的 com
 ```cpp
 // 【程序 5】合法：common initial sequence（共同初始序列）读取
 #include <cstdio>
@@ -284,7 +284,7 @@ int main() {
 }
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：合法双关之三：union 的 com]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 合法双关之三：union 的 com
 ```cpp
 // 【程序 6】非法：写入 a.x 后读 b.y（非共同初始序列，UB）
 #include <cstdio>
@@ -311,7 +311,7 @@ int main() {
 
 **[实现·GCC15]** `std::launder`（`[ptr.launder]`，C++17）是"指针洗涤器"：告诉编译器"这块内存里的对象表示可能已经改变，请重新推导其动态类型相关信息"。常见于 placement new 在同一地址构造新对象后（见 ch28 UB 专题）。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：合法双关之四：std::launde]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 合法双关之四：std::launde
 ```cpp
 // 【程序 7】std::launder：placement new 后获取正确指针
 #include <new>
@@ -343,7 +343,7 @@ int main() {
 - **Clang/LLVM**：同样在 `-O2` 及以上默认开启。
 - **MSVC**：**默认关闭**严格别名（历史原因，VB/老代码依赖宽松别名）；实验性开关 `/d2StrictAlias` 可开启（VS2019 16.7+）。
 
-> **[经验]** 因为 MSVC 默认关闭严格别名，**同一段违规代码在 MSVC 下"看似正常"、在 GCC/Clang `-O2` 下"神秘出错"**——这是跨编译器 bug 的经典来源。始终在 GCC/Clang `-O2` 下验证。
+> **<span class="badge badge-exp">经验</span>** 因为 MSVC 默认关闭严格别名，**同一段违规代码在 MSVC 下"看似正常"、在 GCC/Clang `-O2` 下"神秘出错"**——这是跨编译器 bug 的经典来源。始终在 GCC/Clang `-O2` 下验证。
 
 ---
 
@@ -351,7 +351,7 @@ int main() {
 
 下面这个函数，编译器**假定 `p` 与 `q` 不 alias**，于是可以把 `*p`、`*q` 缓存在寄存器：
 
-> **示例 8** [难度 ★★★☆☆] [主题：优化武器化实例：int p + fl]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 优化武器化实例：int p + fl
 ```cpp
 // 【程序 8】优化武器化：int* 与 float* 被假定不 alias
 void f(int* p, float* q, int n) {
@@ -404,7 +404,7 @@ _Z1fPiPfi:
 
 > **[实现·GCC15]** 关键证据：`-fno-strict-aliasing` 版本在循环体里有 `movss xmm0, [rdx]`（重读），而 `-fstrict-aliasing` 版本没有。这说明编译器真的把"p 与 q 指向不同对象"当成了硬假设。
 >
-> **[经验]** 若实际调用 `f(&x, reinterpret_cast<float*>(&x), 4)`（`p`、`q` 指向同一地址，违反规则），`-fstrict-aliasing` 下的结果**是未定义的**——可能 `*q` 一直用寄存器里的旧值，给出错误答案（且不崩溃）。这正是"比崩溃更危险"。
+> **<span class="badge badge-exp">经验</span>** 若实际调用 `f(&x, reinterpret_cast<float*>(&x), 4)`（`p`、`q` 指向同一地址，违反规则），`-fstrict-aliasing` 下的结果**是未定义的**——可能 `*q` 一直用寄存器里的旧值，给出错误答案（且不崩溃）。这正是"比崩溃更危险"。
 
 ---
 
@@ -418,7 +418,7 @@ _Z1fPiPfi:
 | `__restrict__` | GCC / Clang |
 | `restrict` | C 关键字；GCC/Clang 在 C++ 模式下作为扩展支持（需不开启 `-std=c++NN` 严格模式或加 `-fpermissive` 视情况） |
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：restrict / restric]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · restrict / restric
 ```cpp
 // 【程序 9】__restrict 契约：承诺 dest 与 src 不重叠
 void scale(double* __restrict dest,
@@ -429,7 +429,7 @@ void scale(double* __restrict dest,
 }
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：restrict / restric]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · restrict / restric
 ```cpp
 // 【程序 10】违反 restrict 契约 = UB（不要这样做）
 void bad(double* __restrict p, int n) {
@@ -444,7 +444,7 @@ void bad(double* __restrict p, int n) {
 
 **[实现·GCC15]** 自动向量化（`-O3`）需要证明指针不重叠。`__restrict` 提供了这个证明。
 
-> **示例 11** [难度 ★★★☆☆] [主题：restrict 解锁向量化：真实汇]
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · restrict 解锁向量化：真实汇
 ```cpp
 // 【程序 11】数组求和：无 restrict
 void sum_norestrict(double* dest, const double* src, int n) {
@@ -507,11 +507,11 @@ _Z12sum_restrictPdPKdi:
 
 ## ⑬ `[[noalias]]`（C++17 函数参数属性）
 
-**[标准]** C++17 引入属性 `[[noalias]]`，用于函数参数：声明该指针/引用所指向的对象，在函数体内不会被任何其他指针访问（即"该参数是其指向对象的唯一别名"）。作用与 `restrict` 类似，但属于标准属性。
+**<span class="badge badge-std">标准</span>** C++17 引入属性 `[[noalias]]`，用于函数参数：声明该指针/引用所指向的对象，在函数体内不会被任何其他指针访问（即"该参数是其指向对象的唯一别名"）。作用与 `restrict` 类似，但属于标准属性。
 
-> **[实现] 重要修正**：**仅 Clang 真正实现了参数级 `[[noalias]]`**。本机 GCC 13.1.0 会**警告并忽略**该属性（`warning: 'noalias' attribute directive ignored`），即它不据此优化但代码仍编译通过。GCC 提供的是**函数级** `__attribute__((noalias))`，语义不同（表示"该函数不读取/写入全局内存"，并非参数不别名）。MSVC 不支持标准 `[[noalias]]`，等价物是 `__declspec(noalias)`（同样为函数级、全局内存语义）。因此：`[[noalias]]` 参数属性 → **Clang ✅ / GCC ❌（忽略）/ MSVC ❌**。
+> **<span class="badge badge-impl">实现</span> 重要修正**：**仅 Clang 真正实现了参数级 `[[noalias]]`**。本机 GCC 13.1.0 会**警告并忽略**该属性（`warning: 'noalias' attribute directive ignored`），即它不据此优化但代码仍编译通过。GCC 提供的是**函数级** `__attribute__((noalias))`，语义不同（表示"该函数不读取/写入全局内存"，并非参数不别名）。MSVC 不支持标准 `[[noalias]]`，等价物是 `__declspec(noalias)`（同样为函数级、全局内存语义）。因此：`[[noalias]]` 参数属性 → **Clang ✅ / GCC ❌（忽略）/ MSVC ❌**。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：]]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ]
 ```cpp
 // 【程序 13】[[noalias]] 函数参数属性（Clang 支持；GCC 13.x 会警告并忽略，仍编译）
 void transform([[noalias]] int* out,
@@ -528,7 +528,7 @@ void transform([[noalias]] int* out,
 
 **[实现·GCC15]** `__attribute__((__may_alias__))`（GCC/Clang）贴在一个**类型**上，告诉编译器："这个类型的对象可能被其他类型的左值访问，不要对它做严格别名假设。" 与 `[[noalias]]`（函数参数级）不同，`may_alias` 是**类型级**的。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：attribute()：在类型级关闭别名假设]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · attribute()：在类型级关闭别名假设
 ```cpp
 // 【程序 14】__attribute__((may_alias))：类型级关闭严格别名
 typedef int __attribute__((__may_alias__)) int_alias;
@@ -547,7 +547,7 @@ float g(float* q, int_alias* p, int n) {
 > - `<bits/std_function.h>:83`：`union [[gnu::may_alias]] _Any_data`——`std::function` 的内部存储联合，需要确保通过不同成员访问时不触发别名 UB（见第 21 节）。
 > - `<experimental/bits/simd.h>:807-814`：定义 `template<typename _Tp> using __may_alias [[__gnu__::__may_alias__]] = _Tp;`，并在 `:1653` 用 `reinterpret_cast<const __may_alias<_To>&>(__v)` 做类型双关（SIMD 内部需要按字节视角访问）。
 
-> **示例 14** [难度 ★★★☆☆] [主题：attribute()：在类型级关闭别名假设]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · attribute()：在类型级关闭别名假设
 ```cpp
 // 【程序 15】memcpy 风格的双关辅助（libstdc++ simd 思路简化版）
 #include <cstring>
@@ -569,13 +569,13 @@ int main() {
 }
 ```
 
-> **[经验]** 即使有 `may_alias`，也**优先用 `memcpy`/`std::bit_cast`**。`may_alias` 主要用于库作者在内部保证某些 POD 探测/字节访问不被优化破坏。
+> **<span class="badge badge-exp">经验</span>** 即使有 `may_alias`，也**优先用 `memcpy`/`std::bit_cast`**。`may_alias` 主要用于库作者在内部保证某些 POD 探测/字节访问不被优化破坏。
 
 ---
 
 ## ⑮ 优化障碍（compiler barrier）：何时需要阻止重排
 
-**[经验]** 有些场景必须阻止编译器重排/消除内存访问：
+**<span class="badge badge-exp">经验</span>** 有些场景必须阻止编译器重排/消除内存访问：
 
 1. **内存映射 IO（MMIO）**：向硬件寄存器写值，编译器不能把它当"可消除的死存储"或重排顺序；
 2. **信号处理（signal handler）**：主流程与 handler 共享变量，需要 barrier 防止重排；
@@ -584,7 +584,7 @@ int main() {
 
 ### 15.1 `asm volatile("" ::: "memory")`——编译器屏障
 
-> **示例 15** [难度 ★★☆☆☆] [主题：asm volatile——编译器屏障]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · asm volatile——编译器屏障
 ```cpp
 // 【程序 16】asm volatile 编译器屏障（GCC/Clang）
 #include <cstdio>
@@ -614,7 +614,7 @@ int main() {
 
 ### 15.2 `std::atomic_signal_fence(seq_cst)`——标准可移植屏障
 
-> **示例 16** [难度 ★★☆☆☆] [主题：std::atomicsignalf]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::atomicsignalf
 ```cpp
 // 【程序 17】std::atomic_signal_fence：同线程/信号处理器的编译器屏障
 #include <atomic>
@@ -635,11 +635,11 @@ int main() {
 }
 ```
 
-> **[标准]** `std::atomic_signal_fence`（C++11，`[atomics.fences]`）与 `std::atomic_thread_fence` 不同：它**只阻止编译器重排**，对 CPU 执行顺序无约束，专门用于"同一线程内、与信号处理函数之间"的同步。`seq_cst` 提供最强制的编译器屏障。
+> **<span class="badge badge-std">标准</span>** `std::atomic_signal_fence`（C++11，`[atomics.fences]`）与 `std::atomic_thread_fence` 不同：它**只阻止编译器重排**，对 CPU 执行顺序无约束，专门用于"同一线程内、与信号处理函数之间"的同步。`seq_cst` 提供最强制的编译器屏障。
 
 ### 15.3 `volatile` 的语义与局限
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：volatile 的语义与局限]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · volatile 的语义与局限
 ```cpp
 // 【程序 18】volatile：阻止编译器优化访问，但不是同步屏障
 #include <cstdio>
@@ -659,16 +659,16 @@ int main() {
 }
 ```
 
-> **[标准]** `volatile` 的语义（C++ `[dcl.type.cv]`）：每次访问都必须按源码顺序*实际发生*（不能缓存、不能消除）。但：
+> **<span class="badge badge-std">标准</span>** `volatile` 的语义（C++ `[dcl.type.cv]`）：每次访问都必须按源码顺序*实际发生*（不能缓存、不能消除）。但：
 > - 它**不是同步屏障**：不保证跨线程可见性，不阻止 CPU 乱序；
 > - 多个 `volatile` 访问之间，编译器仍可能重排它们与非 `volatile` 访问的相对顺序；
 > - 它**不提供 acquire/release 语义**（见 ch60）。
 >
-> **[经验]** 因此：**`volatile` ≠ 锁 ≠ 原子**。并发请用 `std::atomic`；纯编译器屏障请用 `atomic_signal_fence` 或 `asm volatile("":::"memory")`。
+> **<span class="badge badge-exp">经验</span>** 因此：**`volatile` ≠ 锁 ≠ 原子**。并发请用 `std::atomic`；纯编译器屏障请用 `atomic_signal_fence` 或 `asm volatile("":::"memory")`。
 
 ### 15.4 内存映射 IO 与信号处理实战
 
-> **示例 18** [难度 ★★☆☆☆] [主题：内存映射 IO 与信号处理实战]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存映射 IO 与信号处理实战
 ```cpp
 // 【程序 19】内存映射 IO：写寄存器必须不被优化/重排
 #include <cstdint>
@@ -684,7 +684,7 @@ void wait_ready() {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：内存映射 IO 与信号处理实战]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存映射 IO 与信号处理实战
 ```cpp
 // 【程序 20】信号处理：用 signal_fence 保证顺序（简化示意）
 #include <atomic>
@@ -731,7 +731,7 @@ int main() {
 - 值无法安全缓存在寄存器；
 - 冗余加载/存储增加。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：-fno-strict-aliasi]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · -fno-strict-aliasi
 ```cpp
 // 【程序 21】诊断：用 -Wstrict-aliasing 捕获可疑双关
 // 编译：g++ -O2 -Wstrict-aliasing=2 -c this.cpp
@@ -745,7 +745,7 @@ void suspect(int* pi, float* pf) {
 int main() { std::printf("x\n"); return 0; }
 ```
 
-> **[经验]** 正确做法是**修复代码（改用 memcpy/bit_cast）**，而不是用 `-fno-strict-aliasing` 掩盖 UB。后者是"给整个程序打性能麻醉剂"。
+> **<span class="badge badge-exp">经验</span>** 正确做法是**修复代码（改用 memcpy/bit_cast）**，而不是用 `-fno-strict-aliasing` 掩盖 UB。后者是"给整个程序打性能麻醉剂"。
 
 ---
 
@@ -765,7 +765,7 @@ int main() { std::printf("x\n"); return 0; }
 
 ### 18.1 三编译器开关实验
 
-> **示例 21** [难度 ★★☆☆☆] [主题：三编译器开关实验]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三编译器开关实验
 ```cpp
 // 【程序 22】三编译器编译/诊断开关速查（注释即命令，非单文件编译）
 // GCC  :
@@ -786,19 +786,19 @@ int main() { std::printf("see build commands in comments\n"); return 0; }
 
 **[平台·x86-64]** 本机 GCC 13.1.0，CPU 见 `[平台-推断]`，实测数组求和（2000 万元素 × 30 轮，`-O3 -march=native`）：
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：真实 microbenchmark：]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 microbenchmark：
 ```
 norestrict : 721.0 ms  (sum sample=40.000000)
 restrict   : 702.5 ms  (speedup = 1.03x)
 ```
 
-> **[经验]** 只有 **1.03x**？原因是该循环**内存带宽受限（memory‑bound）**——数据太大，瓶颈在 DRAM 而非 ALU。汇编已经证明结构差异（norestrict 标量 + 运行时重叠检查，restrict 向量化 `addpd`），但**墙钟时间**取决于循环是否 compute‑bound：
+> **<span class="badge badge-exp">经验</span>** 只有 **1.03x**？原因是该循环**内存带宽受限（memory‑bound）**——数据太大，瓶颈在 DRAM 而非 ALU。汇编已经证明结构差异（norestrict 标量 + 运行时重叠检查，restrict 向量化 `addpd`），但**墙钟时间**取决于循环是否 compute‑bound：
 > - **compute‑bound 循环**（如多次乘加、依赖链短）下，`restrict` 的向量化红利可达 **1.5x–4x**（取决于元素大小与 SIMD 宽度）；
 > - **memory‑bound 循环**（如本例）下，红利被带宽掩盖，仅 ~1.03x。
 >
 > 这正是教学要点：**restrict 的价值用汇编看最清楚，用计时看要选对循环类型**。在自己的热点循环上用 `-O3 -S` 检查是否生成 `addpd`/`mulps` 等打包指令，比单纯计时更可靠。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：真实 microbenchmark：]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark：
 ```cpp
 // 【程序 23】compute-bound 友好基准骨架（自行调 N 与迭代次数观察 restrict 红利）
 #include <chrono>
@@ -833,16 +833,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：通过 `int*` 读取 `float` 内存是 UB。** 你想“省一次拷贝”把 `float` 的位重新解释为 `int` 来取符号位，结果被优化器判定恒等。请说明严格别名规则。
-   - [标准] 通过类型不兼容的 glvalue 访问对象通常违反严格别名规则，属于未定义行为；只有少数类型（如 `unsigned char`、`std::byte`、/字符类型）可别名任意对象。
-   - [引用] ISO/IEC 14882:2023 §[basic.lval]（glvalue 访问与别名）/ [intro.object]（对象模型）；cppreference "Strict aliasing" 词条。
+   - <span class="badge badge-std">标准</span> 通过类型不兼容的 glvalue 访问对象通常违反严格别名规则，属于未定义行为；只有少数类型（如 `unsigned char`、`std::byte`、/字符类型）可别名任意对象。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.lval]（glvalue 访问与别名）/ [intro.object]（对象模型）；cppreference "Strict aliasing" 词条。
 
 2. **真实场景：用 `memcpy` 做类型双关才是合法的。** 你改用 `memcpy(&as_int, &f, 4)` 取 `float` 的位模式，编译器接受。请说明合法重解释的途径。
-   - [标准] 通过 `unsigned char`/`std::byte` 可观察对象表示，再用 `memcpy` 将字节重解释为另一类型，是良定义的类型双关方式。
-   - [引用] ISO/IEC 14882:2023 §[basic.types]（对象表示可被 unsigned char 访问）/ [cstring.syn]（memcpy）；cppreference "Type punning" 词条。
+   - <span class="badge badge-std">标准</span> 通过 `unsigned char`/`std::byte` 可观察对象表示，再用 `memcpy` 将字节重解释为另一类型，是良定义的类型双关方式。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.types]（对象表示可被 unsigned char 访问）/ [cstring.syn]（memcpy）；cppreference "Type punning" 词条。
 
 3. **真实场景：复用缓冲后用 `std::launder` 取新对象。** 你在原 `T` 对象所在存储上 `new` 了个新 `T`，旧指针取不到新对象。请说明 `launder` 的作用。
-   - [标准] 当同一存储被复用构造新对象时，指向旧对象的指针/引用须经 `std::launder` 才能合法指代新对象（解决“复用后取址”的别名问题）。
-   - [引用] ISO/IEC 14882:2023 §[ptr.launder]（launder）/ [class.union]（union 活跃成员重解释）；cppreference "std::launder" 词条。
+   - <span class="badge badge-std">标准</span> 当同一存储被复用构造新对象时，指向旧对象的指针/引用须经 `std::launder` 才能合法指代新对象（解决“复用后取址”的别名问题）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[ptr.launder]（launder）/ [class.union]（union 活跃成员重解释）；cppreference "std::launder" 词条。
 
 | 语言 | 严格别名/类型双关语义 | 关键字/机制 |
 |------|----------------------|-------------|
@@ -853,7 +853,7 @@ int main() {
 | **C#** | 托管内存（`unsafe`/`fixed` 下才有指针，但 CLR 仍保守） | `unsafe` + `fixed` |
 | **Go** | `unsafe` 包允许指针转换，但规则类似 C：`unsafe.Pointer` 转换后访问受限制 | `unsafe.Pointer`、`reflect` |
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：跨语言对比：C / Rust / J]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：C / Rust / J
 ```cpp
 // 【程序 24】C 风格（合法）：union 双关 + restrict（对比 C++ 限制，见程序 6）
 #if 0
@@ -871,7 +871,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 #endif
 ```
 
-> **[经验]** Rust 的 `transmute` 虽是 unsafe，但**借用检查器从类型系统层面保证** `&mut T` 与 `&T` 不共存，从而安全地向 LLVM 传递 `noalias` 信息——这是"在 unsafe 边界内保持 safe 保证"的典范，值得 C++ 作者借鉴：`std::bit_cast` 就是 C++ 朝这个方向的演进。
+> **<span class="badge badge-exp">经验</span>** Rust 的 `transmute` 虽是 unsafe，但**借用检查器从类型系统层面保证** `&mut T` 与 `&T` 不共存，从而安全地向 LLVM 传递 `noalias` 信息——这是"在 unsafe 边界内保持 safe 保证"的典范，值得 C++ 作者借鉴：`std::bit_cast` 就是 C++ 朝这个方向的演进。
 
 ---
 
@@ -881,7 +881,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.1 `<bit>` 的 `bit_cast`（`<bit>:78-88`）
 
-> **示例 25** [难度 ★★★☆☆] [主题：<bit> 的 bitcast]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · <bit> 的 bitcast
 ```cpp
 // 路径: .../include/c++/bit
 // 78  template<typename _To, typename _From>
@@ -901,7 +901,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.2 `<cstring>` 的 `memcpy` 声明（`<cstring>:79-80`）
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：<cstring> 的 memcpy]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <cstring> 的 memcpy
 ```cpp
 // 路径: .../include/c++/cstring
 // 79    using ::memcpy;
@@ -912,7 +912,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.3 `<bits/char_traits.h>` 的字节访问（`<bits/char_traits.h>:276, :445`）
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：<bits/chartraits.h]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <bits/chartraits.h
 ```cpp
 // 路径: .../include/c++/bits/char_traits.h
 // 276    __builtin_memcpy(__s1, __s2, __n * sizeof(char_type));   // char_traits<char>::copy
@@ -924,7 +924,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.4 `<bits/std_function.h>` 的 `[[gnu::may_alias]]`（`<bits/std_function.h>:83`）
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：<bits/stdfunction.]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <bits/stdfunction.
 ```cpp
 // 路径: .../include/c++/bits/std_function.h
 // 83    union [[gnu::may_alias]] _Any_data
@@ -939,7 +939,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.5 `<experimental/bits/simd.h>` 的 `__may_alias` 辅助（`:807-814` 与 `:1653`）
 
-> **示例 29** [难度 ★★☆☆☆] [主题：<experimental/bits]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <experimental/bits
 ```cpp
 // 路径: .../include/c++/experimental/bits/simd.h
 // 807  // __may_alias{{{
@@ -953,7 +953,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.6 `<type_traits>` 的 `has_unique_object_representations`（`<type_traits>:3377-3395`）
 
-> **示例 30** [难度 ★★★☆☆] [主题：<typetraits> 的 has]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · <typetraits> 的 has
 ```cpp
 // 路径: .../include/c++/type_traits
 // 3377  #ifdef _GLIBCXX_HAVE_BUILTIN_HAS_UNIQ_OBJ_REP
@@ -971,11 +971,11 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 // 3394      = has_unique_object_representations<_Tp>::value;
 ```
 
-> **[标准]** `has_unique_object_representations`（C++17，`[meta.unary.prop]`）：若类型的每个**对象表示（object representation）**都对应唯一**值表示（value representation）**（即没有"填充位导致同值多表示"），则为 `true`。这与别名/对象表示直接相关——`memcpy` 双关安全的前提是"对象表示可逐字节复制"，而该 trait 用于判断"逐字节比较是否等价于值比较"（见 ch27、ch28）。
+> **<span class="badge badge-std">标准</span>** `has_unique_object_representations`（C++17，`[meta.unary.prop]`）：若类型的每个**对象表示（object representation）**都对应唯一**值表示（value representation）**（即没有"填充位导致同值多表示"），则为 `true`。这与别名/对象表示直接相关——`memcpy` 双关安全的前提是"对象表示可逐字节复制"，而该 trait 用于判断"逐字节比较是否等价于值比较"（见 ch27、ch28）。
 
 ### 21.7 `<new>` 的 `std::launder`（`<new>:189-194`）
 
-> **示例 31** [难度 ★★☆☆☆] [主题：<new> 的 std::laund]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <new> 的 std::laund
 ```cpp
 // 路径: .../include/c++/new
 // 189  #define __cpp_lib_launder 201606L
@@ -992,7 +992,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 22.1 common initial sequence（共同初始序列）
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：严格别名规则（Strict Aliasing）与编译器优化]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 严格别名规则（Strict Aliasing）与编译器优化
 ```cpp
 // 【程序 25】共同初始序列判定（标准布局 + 前缀成员相同）
 #include <cstdio>
@@ -1013,11 +1013,11 @@ int main() {
 }
 ```
 
-> **[标准]** common initial sequence 规则（`[class.mem]/26`）仅在**两个标准布局结构体作为同一 union 的活跃/非活跃成员**时，才允许通过任一成员读取共同前缀。它不泛化为"任意两个相似结构体"。
+> **<span class="badge badge-std">标准</span>** common initial sequence 规则（`[class.mem]/26`）仅在**两个标准布局结构体作为同一 union 的活跃/非活跃成员**时，才允许通过任一成员读取共同前缀。它不泛化为"任意两个相似结构体"。
 
 ### 22.2 similar 类型 / signed‑unsigned 对应类型
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：类型 / signed‑unsign]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型 / signed‑unsign
 ```cpp
 // 【程序 26】similar 类型：cv 限定不影响别名合法性
 #include <cstdio>
@@ -1031,7 +1031,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：类型 / signed‑unsign]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型 / signed‑unsign
 ```cpp
 // 【程序 27】signed/unsigned 对应类型：通过 unsigned 读 signed 合法
 #include <cstdio>
@@ -1044,7 +1044,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：类型 / signed‑unsign]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型 / signed‑unsign
 ```cpp
 // 【程序 28】std::byte 双关（C++17 字节例外）
 #include <cstdio>
@@ -1062,7 +1062,7 @@ int main() {
 
 ### 22.3 派生类基类指针的合法别名
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：派生类基类指针的合法别名]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 派生类基类指针的合法别名
 ```cpp
 // 【程序 29】通过基类指针访问派生对象（合法，[basic.lval] 第 7 条）
 #include <cstdio>
@@ -1083,7 +1083,7 @@ int main() {
 
 ### 22.4 `constexpr` 编译期 bit_cast
 
-> **示例 37** [难度 ★★☆☆☆] [主题：constexpr 编译期 bitc]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · constexpr 编译期 bitc
 ```cpp
 // 【程序 30】编译期类型双关（bit_cast 可在常量表达式中使用）
 #include <bit>
@@ -1103,7 +1103,7 @@ int main() {
 
 ### 22.5 `has_unique_object_representations` 探测
 
-> **示例 38** [难度 ★★☆☆☆] [主题：has_unique_object_representations]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · has_unique_object_representations
 ```cpp
 // 【程序 31】探测对象表示唯一性（与别名/逐字节比较相关）
 #include <type_traits>
@@ -1124,7 +1124,7 @@ int main() {
 
 ## 源码阅读路线
 
-> **[经验]** 想真正吃透严格别名，按以下路线深入：
+> **<span class="badge badge-exp">经验</span>** 想真正吃透严格别名，按以下路线深入：
 
 1. **C++ 标准 `[basic.lval]/11` 与 `[class.mem]/26`（common initial sequence）**：所有规则的源头。
 2. **GCC 实现**：`gcc/tree-ssa-alias.c` 与 `gcc/ipa-pta.c`——`-fstrict-aliasing` 的别名分析核心；`gcc/builtins.cc` 中 `fold_builtin_memcpy` 把小 `memcpy` 优化掉。
@@ -1144,11 +1144,11 @@ int main() {
 
 ### 24.1 TBAA：Clang 如何把严格别名做成"类型树"
 
-**[实现]** LLVM 用 **TBAA（Type-Based Alias Analysis）** 把 `[basic.lval]` 规则编码成一棵"类型树"：每个内存访问节点都带一个 TBAA 类型标签（如 `int`、`float`、`char`）。分析器判定"两个不同标签的访问不可能 alias"，除非其中一个是 `char`/`unsigned char`/`std::byte`（"may-alias-everything" 节点）。Clang **默认开启 TBAA**，等价于 GCC 的 `-fstrict-aliasing`。你可以用 `-fno-strict-aliasing` 或 `-Xclang -fno-strict-aliasing` 关闭它来对照行为。TBAA 是"为什么 `memcpy` 是真双关、而 `reinterpret_cast` 读是 UB"在编译器内部的落地形态。
+**<span class="badge badge-impl">实现</span>** LLVM 用 **TBAA（Type-Based Alias Analysis）** 把 `[basic.lval]` 规则编码成一棵"类型树"：每个内存访问节点都带一个 TBAA 类型标签（如 `int`、`float`、`char`）。分析器判定"两个不同标签的访问不可能 alias"，除非其中一个是 `char`/`unsigned char`/`std::byte`（"may-alias-everything" 节点）。Clang **默认开启 TBAA**，等价于 GCC 的 `-fstrict-aliasing`。你可以用 `-fno-strict-aliasing` 或 `-Xclang -fno-strict-aliasing` 关闭它来对照行为。TBAA 是"为什么 `memcpy` 是真双关、而 `reinterpret_cast` 读是 UB"在编译器内部的落地形态。
 
 ### 24.2 程序 32：`char_traits` 风格字节拷贝（库内部字节访问）
 
-> **示例 39** [难度 ★★★☆☆] [主题：程序 32：chartraits 风]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 程序 32：chartraits 风
 ```cpp
 // 【程序 32】模拟 std::char_traits::copy：用 __builtin_memcpy 做字节级拷贝
 #include <cstring>
@@ -1174,7 +1174,7 @@ int main() {
 
 ### 24.3 程序 33：`may_alias` 修复严格别名违规（库内部用法）
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：程序 33：mayalias 修复严]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序 33：mayalias 修复严
 ```cpp
 // 【程序 33】用 may_alias 类型安全地把 float 当 uint32 探查（GCC/Clang）
 #include <cstdint>
@@ -1194,11 +1194,11 @@ int main() {
 }
 ```
 
-> **[经验]** 即使如此，库作者仍更倾向 `memcpy`/`bit_cast`。`may_alias` 的价值在于"无法改动调用方、又必须保证内部字节访问不被优化破坏"的场景（如 simd、std::function 存储）。
+> **<span class="badge badge-exp">经验</span>** 即使如此，库作者仍更倾向 `memcpy`/`bit_cast`。`may_alias` 的价值在于"无法改动调用方、又必须保证内部字节访问不被优化破坏"的场景（如 simd、std::function 存储）。
 
 ### 24.4 程序 34：严格别名假设自检（诊断小程序）
 
-> **示例 41** [难度 ★★★☆☆] [主题：程序 34：严格别名假设自检]
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 程序 34：严格别名假设自检
 ```cpp
 // 【程序 34】编译两次对照：g++ -O2 -fstrict-aliasing  vs  -fno-strict-aliasing
 // 该函数假设 p、q 不 alias；若调用方让它们重叠，严格别名下结果未定义
@@ -1224,7 +1224,7 @@ int main() {
 
 ### 24.5 程序 35：验证自身 strict-aliasing 行为对照
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：程序 35：验证自身 strict-]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 程序 35：验证自身 strict-
 ```cpp
 // 【程序 35】用 memcpy 把同一段内存同时当 int 与 float 解读（合法对照）
 #include <cstdio>
@@ -1242,7 +1242,7 @@ int main() {
 }
 ```
 
-> **[实现]** 对比程序 34（UB）与程序 35（`memcpy` 合法）：前者依赖编译器假设、结果不可移植；后者在任何 `-O`/开关下行为一致。这张对照表本身就是"为什么严格别名规则存在且必须遵守"的最简证明。
+> **<span class="badge badge-impl">实现</span>** 对比程序 34（UB）与程序 35（`memcpy` 合法）：前者依赖编译器假设、结果不可移植；后者在任何 `-O`/开关下行为一致。这张对照表本身就是"为什么严格别名规则存在且必须遵守"的最简证明。
 
 ---
 
@@ -1252,7 +1252,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：严格别名规则的来龙去脉
 
-[史] 严格别名规则（strict aliasing）写入 C 标准可追溯到 **1989 年的 ANSI C（C89）**，其条款 `[basic.lval]`（第 ② 节）规定「通过不兼容类型的左值访问对象」是未定义行为——这条规则存在的根本理由是 **给编译器自由去做基于类型的优化（TBAA，Type-Based Alias Analysis）**，否则每次 `int*` 与 `float*` 访问都得假设对方可能改了内存、无法缓存到寄存器。[轶] C++ 继承并细化了这条规则；但工业界长期「靠 `memcpy`/union 偷偷双关」的惯性，使得 `-fstrict-aliasing`（第 ⑨ 节）长期是「开了更快但更容易出 UB」的双刃剑——Linux 内核、ACE 等老代码一度被迫用 `-fno-strict-aliasing` 编译（第 ⑰ 节）。[史] 合法的双关手段随标准演进被逐步补齐：**C++11 起 `memcpy` 双关稳定合法（第 ⑤ 节）**；**C++20 的 P0476 引入 `std::bit_cast`（第 ⑥ 节）** 提供编译期、类型安全的位重解释；**`std::launder`（P0137，第 ⑧ 节）** 解决 placement new 后的指针可取性问题。
+<span class="badge badge-history">史</span> 严格别名规则（strict aliasing）写入 C 标准可追溯到 **1989 年的 ANSI C（C89）**，其条款 `[basic.lval]`（第 ② 节）规定「通过不兼容类型的左值访问对象」是未定义行为——这条规则存在的根本理由是 **给编译器自由去做基于类型的优化（TBAA，Type-Based Alias Analysis）**，否则每次 `int*` 与 `float*` 访问都得假设对方可能改了内存、无法缓存到寄存器。<span class="badge badge-anecdote">轶</span> C++ 继承并细化了这条规则；但工业界长期「靠 `memcpy`/union 偷偷双关」的惯性，使得 `-fstrict-aliasing`（第 ⑨ 节）长期是「开了更快但更容易出 UB」的双刃剑——Linux 内核、ACE 等老代码一度被迫用 `-fno-strict-aliasing` 编译（第 ⑰ 节）。<span class="badge badge-history">史</span> 合法的双关手段随标准演进被逐步补齐：**C++11 起 `memcpy` 双关稳定合法（第 ⑤ 节）**；**C++20 的 P0476 引入 `std::bit_cast`（第 ⑥ 节）** 提供编译期、类型安全的位重解释；**`std::launder`（P0137，第 ⑧ 节）** 解决 placement new 后的指针可取性问题。
 
 ### ㉒.2 真实工程坐标：严格别名活在哪些项目里
 
@@ -1280,8 +1280,8 @@ int main() {
 
 ### ㉒.4 与标准的互动：严格别名与 WG21 演进
 
-[史] 严格别名源自 C89，C++ 继承；**C++17 的 `[[nodiscard]]`/`[[maybe_unused]]`** 之外，真正相关的是 **P0476（C++20）的 `std::bit_cast`**——把「字节层面位重解释」从必须手写 `memcpy` 升级为编译期类型安全工具（第 ⑥ 节）；**P0137 的 `std::launder`** 配合 placement new（ch37）闭合了「对象生命周期与指针可取性」的语义漏洞（第 ⑧ 节）。[评] WG21 的方向是：**不废除严格别名**（它是 C/C++ 性能模型的基石），而是提供更多合法、显式的双关通道（`bit_cast`、`launder`、未来的模式匹配/反射），把开发者从「靠 UB 偷偷双关」拉到「用标准设施明示意图」——第 ⑭ 节 `__attribute__((may_alias))` 则是 GCC 在类型级关闭别名假设的安全阀。
-- [史] 合法双关工具的修订链：**P0476R0→R1→R2（C++20，`std::bit_cast`）** 把字节级位重解释升级为编译期类型安全工具；`std::launder` 由 **P0532（C++17）** 收口（与 placement new 协同闭合对象生命周期语义）。ISO 条款 `[basic.lval]` p11 正是严格别名规则本身——委员会保留它的根本理由是「允许 TBAA（基于类型的别名分析）做激进优化」，而非限制程序员；因此标准一边不废除它，一边持续提供 `bit_cast`/`launder` 等合法通道。
+<span class="badge badge-history">史</span> 严格别名源自 C89，C++ 继承；**C++17 的 `[[nodiscard]]`/`[[maybe_unused]]`** 之外，真正相关的是 **P0476（C++20）的 `std::bit_cast`**——把「字节层面位重解释」从必须手写 `memcpy` 升级为编译期类型安全工具（第 ⑥ 节）；**P0137 的 `std::launder`** 配合 placement new（ch37）闭合了「对象生命周期与指针可取性」的语义漏洞（第 ⑧ 节）。<span class="badge badge-comment">评</span> WG21 的方向是：**不废除严格别名**（它是 C/C++ 性能模型的基石），而是提供更多合法、显式的双关通道（`bit_cast`、`launder`、未来的模式匹配/反射），把开发者从「靠 UB 偷偷双关」拉到「用标准设施明示意图」——第 ⑭ 节 `__attribute__((may_alias))` 则是 GCC 在类型级关闭别名假设的安全阀。
+- <span class="badge badge-history">史</span> 合法双关工具的修订链：**P0476R0→R1→R2（C++20，`std::bit_cast`）** 把字节级位重解释升级为编译期类型安全工具；`std::launder` 由 **P0532（C++17）** 收口（与 placement new 协同闭合对象生命周期语义）。ISO 条款 `[basic.lval]` p11 正是严格别名规则本身——委员会保留它的根本理由是「允许 TBAA（基于类型的别名分析）做激进优化」，而非限制程序员；因此标准一边不废除它，一边持续提供 `bit_cast`/`launder` 等合法通道。
 
 ### ㉒.5 权威引用
 
@@ -1331,7 +1331,7 @@ int main() {
 | 34 | 严格别名假设自检 | 诊断小程序 | ✅ |
 | 35 | 验证自身 strict-aliasing | 行为对照 | ✅ |
 
-> **[经验]** 本书立场分层贯穿全章：**[标准]** 给出 `[basic.lval]` 规则与 UB 定义；**[实现]** 给出 GCC/Clang/MSVC 与 libstdc++ 的真实源码与汇编；**[平台·x86-64]** 标注本机 GCC 13.1.0 实测；**[经验]** 给出"优先 `memcpy`/`bit_cast`、慎用 `-fno-strict-aliasing`、三编译器验证"的工程准则。
+> **<span class="badge badge-exp">经验</span>** 本书立场分层贯穿全章：**<span class="badge badge-std">标准</span>** 给出 `[basic.lval]` 规则与 UB 定义；**<span class="badge badge-impl">实现</span>** 给出 GCC/Clang/MSVC 与 libstdc++ 的真实源码与汇编；**[平台·x86-64]** 标注本机 GCC 13.1.0 实测；**<span class="badge badge-exp">经验</span>** 给出"优先 `memcpy`/`bit_cast`、慎用 `-fno-strict-aliasing`、三编译器验证"的工程准则。
 
 ---
 
@@ -1350,7 +1350,7 @@ int main() {
 
 ## 附录 L：工业严格别名规则 [F: Industry / B: Principle / H: Design]
 
-> **示例 43** [难度 ★★★★☆] [主题：附录 L：工业严格别名规则 [F: ]
+> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：工业严格别名规则 [F:
 ```
 为什么存在 strict aliasing? (WG21 + C99 共同决定):
   → 编译器优化: 两个不同类型指针不会指向同一内存 → 可重排读写 → SIMD + 向量化
@@ -1368,7 +1368,7 @@ int main() {
 
 ## 附录 M：面试与工程实践 [J: Learning / I: Practice]
 
-> **示例 44** [难度 ★★★☆☆] [主题：附录 M：面试与工程实践 [J: L]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 M：面试与工程实践 [J: L
 ```
 常见问题与面试:
 Q: 什么是 strict aliasing rule?
@@ -1428,7 +1428,7 @@ A: 几乎从不。唯一安全: 从指向标准布局类型第一个成员的指
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <cstring>
 #include <bit>
@@ -1445,8 +1445,8 @@ int main(){
 严格别名规则：通过与该对象动态类型不"相似"的指针类型写/读内存是 UB。合法重解释只有
 `memcpy` 与 `std::bit_cast`（以及 `char*`/`std::byte*` 字节遍历，见习题 2）。
 
-[标准] 严格别名（[basic.lval]）：仅限动态类型或"相似类型"访问；`memcpy`/`bit_cast` 是豁免通道。
-[引用] ISO/IEC 14882:2023 §[basic.lval]（严格别名：仅动态类型或相似类型可访问对象）；cppreference "Type aliasing" 列出 `memcpy` 与 `std::bit_cast`(C++20) 为合法重解释通道。
+<span class="badge badge-std">标准</span> 严格别名（[basic.lval]）：仅限动态类型或"相似类型"访问；`memcpy`/`bit_cast` 是豁免通道。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.lval]（严格别名：仅动态类型或相似类型可访问对象）；cppreference "Type aliasing" 列出 `memcpy` 与 `std::bit_cast`(C++20) 为合法重解释通道。
 
 </details>
 
@@ -1459,7 +1459,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <cstddef>
 #include <iostream>
@@ -1475,8 +1475,8 @@ void dump_bytes(const T& obj){
 因此用它们遍历对象是合法的；但把对象地址 `reinterpret_cast` 成**其它具体类型**的指针去读就违反严格别名。
 这正是序列化、哈希、内存比较的标准做法。
 
-[标准] `char`/`std::byte` 系列是"通用别名"类型；其余类型间的 reinterpret 跨类型访问触发 UB。
-[引用] ISO/IEC 14882:2023 §[basic.fundamental]（"`std::byte` 用于访问对象存储"）、§[basic.lval]（字符类型可别名任意对象）；cppreference "std::byte" 与 "Type aliasing"。
+<span class="badge badge-std">标准</span> `char`/`std::byte` 系列是"通用别名"类型；其余类型间的 reinterpret 跨类型访问触发 UB。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.fundamental]（"`std::byte` 用于访问对象存储"）、§[basic.lval]（字符类型可别名任意对象）；cppreference "std::byte" 与 "Type aliasing"。
 
 </details>
 
@@ -1490,7 +1490,7 @@ const double* __restrict a, const double* __restrict x, double c)`，说明它�
 
 <details><summary>答案与解析</summary>
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 void axpy(int n, double* __restrict y,
           const double* __restrict a, const double* __restrict x, double c){
@@ -1503,8 +1503,8 @@ void axpy(int n, double* __restrict y,
 `__restrict` 是**程序员对优化器的承诺**（非运行时检查）：承诺这些指针不别名，换来计算器级别的向量化收益。
 见本章「附录 E」真实汇编对比。
 
-[标准] `__restrict` 向编译器声明指针不别名；违反承诺是 UB，但收益是解除向量化阻碍。
-[引用] GCC/Clang 文档 "`__restrict`" 关键字（非标准扩展，承诺指针不别名以解锁向量化）；ISO/IEC 14882:2023 未规定 `__restrict`，相关语义见各实现文档与 §[intro.abstract]（违反别名契约属 UB）。
+<span class="badge badge-std">标准</span> `__restrict` 向编译器声明指针不别名；违反承诺是 UB，但收益是解除向量化阻碍。
+<span class="badge badge-ref">引用</span> GCC/Clang 文档 "`__restrict`" 关键字（非标准扩展，承诺指针不别名以解锁向量化）；ISO/IEC 14882:2023 未规定 `__restrict`，相关语义见各实现文档与 §[intro.abstract]（违反别名契约属 UB）。
 
 </details>
 ## 附录 E：编译实证——`-fstrict-aliasing` 开关如何改变生成码 [C: Compiler / E: Low-level]
@@ -1515,7 +1515,7 @@ void axpy(int n, double* __restrict y,
 
 ### 测试源码
 
-> **示例 48** [难度 ★★★☆☆] [主题：测试源码]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
 ```cpp
 int no_alias(int* pi, float* pf) {
     *pi = 1;          // 写 int
@@ -1582,7 +1582,7 @@ int same_type(int* pi, int* pj) {  // 同类型: 必然可能重叠
 
 **步骤 1：错误——`reinterpret_cast` 跨类型读写（UB）**
 
-> **示例 49** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 严格别名如何悄悄
 ```cpp
 float f = 1.0f;
 int bits = *reinterpret_cast<int*>(&f);   // 违反严格别名 -> UB
@@ -1594,7 +1594,7 @@ int bits = *reinterpret_cast<int*>(&f);   // 违反严格别名 -> UB
 
 **步骤 2：合法——`memcpy` 重解释位模式**
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 严格别名如何悄悄
 ```cpp
 #include <cstring>
 int main(){
@@ -1607,7 +1607,7 @@ int main(){
 
 **步骤 3：优雅——`std::bit_cast`（C++20）**
 
-> **示例 51** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 严格别名如何悄悄
 ```cpp
 int bits = std::bit_cast<int>(1.0f);   // 编译期可求值, 类型安全, 零开销
 ```
@@ -1616,7 +1616,7 @@ int bits = std::bit_cast<int>(1.0f);   // 编译期可求值, 类型安全, 零�
 
 **步骤 4：高级——`__restrict` 解锁向量化（性能反向利用别名假设）**
 
-> **示例 52** [难度 ★★★☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 严格别名如何悄悄
 ```cpp
 void axpy(int n, double* __restrict y, const double* __restrict a,
           const double* __restrict x, double c){
@@ -1791,7 +1791,7 @@ flowchart TD
 
 ### D5.3 验证 demo
 
-> **示例 53** [难度 ★★☆☆☆] [主题：验证 demo]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
 ```cpp
 #include <iostream>
 #include <cassert>

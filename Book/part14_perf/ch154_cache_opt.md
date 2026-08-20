@@ -28,19 +28,19 @@
 
 > 紧接 0.2 编年最后一条（2000s 多核时代，缓存行与 false sharing 成并发关键词）。
 
-- [史] C++17 引入 **`std::hardware_destructive_interference_size`**（与 constructive 配对），把"缓存行多大、该 padding 多少"以标准常量暴露，跨平台写无 false sharing 的结构终于不用手硬编码 64。
-- [史] **面向数据设计（DOD）** 经 Mike Acton（Data-Oriented Design 演讲）、Unity DOTS 等推广，从游戏圈扩散到通用 C++：把数据按"怎么被访问"排布，而非按"怎么被分类"，实测常换来数倍提速，呼应 0.3 之争。
-- [史] 持久内存（PMEM / Intel Optane）与非一致性缓存（NUCA）让"局部性"问题维度更多——"内存在哪""它会不会掉到慢介质"成了缓存优化新课题。
-- [评] 0.3 里"Big-O 说了不算、访存行为说了算"的判断被现实反复验证：同一个算法，行优先 vs 列优先、AoS vs SoA 的差距远大于渐近复杂度的差别。
-- [轶] 行内名言（Acton）："你不是在为对象写代码，你是在为数据在内存里的样子写代码"——把 0.1 的 memory wall 痛点说到了极致。
+- <span class="badge badge-history">史</span> C++17 引入 **`std::hardware_destructive_interference_size`**（与 constructive 配对），把"缓存行多大、该 padding 多少"以标准常量暴露，跨平台写无 false sharing 的结构终于不用手硬编码 64。
+- <span class="badge badge-history">史</span> **面向数据设计（DOD）** 经 Mike Acton（Data-Oriented Design 演讲）、Unity DOTS 等推广，从游戏圈扩散到通用 C++：把数据按"怎么被访问"排布，而非按"怎么被分类"，实测常换来数倍提速，呼应 0.3 之争。
+- <span class="badge badge-history">史</span> 持久内存（PMEM / Intel Optane）与非一致性缓存（NUCA）让"局部性"问题维度更多——"内存在哪""它会不会掉到慢介质"成了缓存优化新课题。
+- <span class="badge badge-comment">评</span> 0.3 里"Big-O 说了不算、访存行为说了算"的判断被现实反复验证：同一个算法，行优先 vs 列优先、AoS vs SoA 的差距远大于渐近复杂度的差别。
+- <span class="badge badge-anecdote">轶</span> 行内名言（Acton）："你不是在为对象写代码，你是在为数据在内存里的样子写代码"——把 0.1 的 memory wall 痛点说到了极致。
 
 > 史料来源：en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size、dataorienteddesign.com
 
-## ① 概述：为什么缓存决定性能，而非 CPU 峰值 [标准]
+## ① 概述：为什么缓存决定性能，而非 CPU 峰值 <span class="badge badge-std">标准</span>
 
 CPU 每个时钟周期能执行数条指令、完成数十次整数运算，但一次主存（DRAM）访问要几百个周期。绝大多数 C++ 性能问题不是"算得慢"，而是"等内存"。优化数据布局、让访问集中在缓存里，往往比换算法带来的收益大一个数量级。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么缓存决定性能，而非 CP]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么缓存决定性能，而非 CP
 ```cpp
 // ① 同样的 O(n) 求和，内存友好与否决定的是"等内存"还是"算数据"
 #include <iostream>
@@ -72,7 +72,7 @@ int main() {
 | L3 | 8–64 MB | ~40 周期 | ~数十–百 GB/s | 多核共享 |
 | DRAM | GB 级 | 200+ 周期 | ~数十 GB/s | 全局 |
 
-> **示例 2** [难度 ★★★☆☆] [主题：内存层级：L1/L2/L3/DDR ]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存层级：L1/L2/L3/DDR
 ```cpp
 // ② 指针追逐（pointer chasing）演示"等内存"：随机跳，缓存几乎全失效
 #include <iostream>
@@ -106,11 +106,11 @@ int main() {
 - `[平台·x86-64]`：把 N 改成 1024（全进 L1）再跑，ns/step 会从"数十 ns"跌到"个位数 ns"——这就是缓存层级差。
 - `[经验]`：指针追逐是"最坏访问模式"，是测真实内存延迟的经典微基准。
 
-## ③ cache line（64 字节）与地址对齐 [标准]
+## ③ cache line（64 字节）与地址对齐 <span class="badge badge-std">标准</span>
 
 缓存以 **cache line** 为最小搬运单位。x86-64 一行 64 字节；一次访存若落在某行，整行被搬入缓存。两块地址差 < 64 且同余 64 即"同一行"。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：与地址对齐]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与地址对齐
 ```cpp
 // ③ 判断两个地址是否落在同一 cache line（64B）
 #include <iostream>
@@ -135,12 +135,12 @@ int main() {
 - `[标准]`：对齐由 `alignas` / `alignof`（C++11）规定；`alignof(T)` 是 `T` 的必对齐值（≤ 由 `std::max_align_t` 给出的最大基本对齐）。
 - `[实现/平台]`：x86-64 cache line 宽度由 CPU 微架构决定，经典 64B；`std::hardware_destructive_interference_size` 即"一行大小"的可移植表达（见 ⑩）。
 
-## ④ 时间局部性与空间局部性 [标准]
+## ④ 时间局部性与空间局部性 <span class="badge badge-std">标准</span>
 
 - **时间局部性**：刚访问的数据很可能马上再访问 → 留在缓存里就快。
 - **空间局部性**：访问地址 A 后，邻接 A 的地址很可能被访问 → 一次搬一行（64B）正好覆盖。
 
-> **示例 4** [难度 ★★★☆☆] [主题：时间局部性与空间局部性 [标准]]
+> **示例 4** [难度 ★★★☆☆] [主题：时间局部性与空间局部性 <span class="badge badge-std">标准</span>]
 ```cpp
 // ④ 空间局部性：顺序访问 vs 大步长访问（后者每行只用一个字，浪费 63 字节）
 #include <iostream>
@@ -168,7 +168,7 @@ int main() {
 
 缓存用 `(地址 >> 6) % 路数` 把主存行映射到少量缓存槽。若多个热点行映射同一槽且数量 > 关联度，会互相"颠簸"（conflict miss / thrashing）。
 
-> **示例 5** [难度 ★★★☆☆] [主题：缓存映射：直接映射 / 组相联 / ]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 缓存映射：直接映射 / 组相联 /
 ```cpp
 // ⑤ 冲突未命中演示：下标间隔 = 关联度×行大小 时反复同槽
 #include <iostream>
@@ -196,7 +196,7 @@ int main() {
 
 硬件预取器会沿顺序访问自动把下一行搬进缓存；对**不规则但可预测**的访问，可用 `__builtin_prefetch(addr, rw, locality)` 手动提前取。
 
-> **示例 6** [难度 ★★★☆☆] [主题：预取：硬件预取器与 builtinp]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 预取：硬件预取器与 builtinp
 ```cpp
 // ⑥ 软件预取：提前 k 步搬数据， hide 延迟（rw=0 读，locality=3 尽量留多级缓存）
 #include <iostream>
@@ -229,7 +229,7 @@ int main() {
 - **写回（write-back）**：写先落缓存，仅当该行被驱逐才写回内存；搭配 **写分配（write-allocate）**：写未命中时先取整行进缓存。这保证"连续写"只在地首/末产生内存流量。
 - 实测：顺序写一行 64B 只要一次缓存写 + 一次最终回写，而非 64 次访存。
 
-> **示例 7** [难度 ★★★☆☆] [主题：行填充与写策略]
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 行填充与写策略
 ```cpp
 // ⑦ 顺序写（write-allocate+write-back）：连续 64B 只触发极少内存事务
 #include <iostream>
@@ -255,7 +255,7 @@ int main() {
 
 两个**本不相关**的变量被不同核频繁写，却恰好落在**同一 cache line**。任一核写入都会让另一核的整行失效（MESI 协议在核间弹来弹去），性能骤降——叫"伪"共享，因为它们逻辑上无共享，却因布局共享了行。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：伪共享（false sharing）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享（false sharing）
 ```
 ⑧ 伪共享内存图（同一 64B 行被两核各写一个字段）
 ┌─────────────────── cache line (64B) ───────────────────┐
@@ -265,7 +265,7 @@ int main() {
    core1 写 b → 需先取回 → core0 副本 INVALID  → 来回弹
 ```
 
-> **示例 9** [难度 ★★★★☆] [主题：伪共享（false sharing）]
+> **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 伪共享（false sharing）
 ```cpp
 // ⑧ 伪共享结构体：a、b 紧挨着，落在同一 64B 行
 #include <iostream>
@@ -302,11 +302,11 @@ int main() {
 - `[实现·GCC15]`：`std::atomic` 的 `fetch_add` 在 x86 编译为 `lock xadd`（或 `lock add`）；`lock` 前缀强制独占该行，是伪共享的"放大器"。
 - `[标准]`：用 `std::memory_order_relaxed` 只去掉排序约束，**不**去掉原子性，故仍会触发行失效——伪共享与内存序无关。
 
-## ⑨ 实测：伪共享前后耗时对比（线程计数器） [经验]
+## ⑨ 实测：伪共享前后耗时对比（线程计数器） <span class="badge badge-exp">经验</span>
 
 同一 benchmark，仅改布局：把 a、b 分到不同 cache line。下面数字为本书在 MinGW GCC 13.1 / -O2 下实测（机器相关，仅作量级参考）：
 
-> **示例 10** [难度 ★★☆☆☆] [主题：实测：伪共享前后耗时对比]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实测：伪共享前后耗时对比
 ```
 FALSE_SHARING bad ≈ 2.9× 于 good（同核数、同迭代）
 即把两个原子计数塞在同一行，耗时约为各自独占一行的 2~4 倍（双核争用越狠越大）
@@ -315,11 +315,11 @@ FALSE_SHARING bad ≈ 2.9× 于 good（同核数、同迭代）
 - `[经验]`：伪共享只在不同核**并发写不同字段**时出现；单核或只读不会。诊断靠 `perf stat -e cache-misses` 飙升或 `false-sharing` 火焰图（见 ⑲）。
 - `[标准]`：消除手段是"让它们不在同一行"——见 ⑩。
 
-## ⑩ 消除伪共享：`alignas(64)` 与 `std::hardware_destructive_interference_size` [标准]
+## ⑩ 消除伪共享：`alignas(64)` 与 `std::hardware_destructive_interference_size` <span class="badge badge-std">标准</span>
 
 两种可移植写法：手写 `alignas(64)`，或用标准常量 `alignas(std::hardware_destructive_interference_size)`（C++17，GCC 13.1 值为 64）。
 
-> **示例 11** [难度 ★★★☆☆] [主题：消除伪共享：alignas(64) ]
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 消除伪共享：alignas(64)
 ```cpp
 // ⑩-A 手写 alignas(64)：每个计数器独占一行
 #include <iostream>
@@ -347,7 +347,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★★★☆☆] [主题：消除伪共享：alignas(64) ]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 消除伪共享：alignas(64)
 ```cpp
 // ⑩-B 用标准常量（可移植，GCC13.1 实际就是 64）
 #include <iostream>
@@ -384,14 +384,14 @@ int main() {
 
 遍历只取 `x` 时，AoS 每读一个 x 还顺带载入 y、z（浪费 2/3 带宽）；SoA 的 x 连续，预取器一路顺风，且天然对齐向量化。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：内存布局与向量化/缓存 [实现·GC]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局与向量化/缓存 [实现·GC
 ```
 ⑪ 布局对比（每个元素 12B）
 AoS: [x y z][x y z][x y z]...   取 x 要跳过 y,z
 SoA: [x x x ...][y y y ...][z z z ...]   取 x 全连续
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：内存布局与向量化/缓存 [实现·GC]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局与向量化/缓存 [实现·GC
 ```cpp
 // ⑪ AoS 定义与遍历
 #include <iostream>
@@ -408,7 +408,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：内存布局与向量化/缓存 [实现·GC]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局与向量化/缓存 [实现·GC
 ```cpp
 // ⑪ SoA 定义与遍历
 #include <iostream>
@@ -433,16 +433,16 @@ int main() {
 - `[实现/GCC13]`：SoA 的 `for(v:soa.x)` 在 `-O3 -mavx2` 下可自动向量化为 `vmovaps/vaddps`；AoS 取单字段则破坏向量宽度（见 ch155 ⑫）。
 - `[经验]`：只读/写其中少数字段 → SoA；需整体移动对象 → AoS。游戏引擎 ECS 即 SoA 思想（见 ⑯）。
 
-## ⑫ 实测：AoS vs SoA 遍历耗时 [经验]
+## ⑫ 实测：AoS vs SoA 遍历耗时 <span class="badge badge-exp">经验</span>
 
 本书实测（MinGW GCC 13.1 / -O2，N=4'000'000 仅累加 x 字段）：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：实测：AoS vs SoA 遍历耗时]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实测：AoS vs SoA 遍历耗时
 ```
 AOS_SOA  aos ≈ 1.8× ~ 2.5× 于 soa（仅取单字段时；字段越多差距越大）
 ```
 
-> **示例 17** [难度 ★★★☆☆] [主题：实测：AoS vs SoA 遍历耗时]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 实测：AoS vs SoA 遍历耗时
 ```cpp
 // ⑫ 同一份数据两种布局计时对比（自包含，可直接跑）
 #include <iostream>
@@ -473,11 +473,11 @@ int main() {
 
 - `[经验]`：差距随"被忽略的字段占比"放大；若遍历用全部字段，两者接近（AoS 反而略优，因对象局部性好）。
 
-## ⑬ 遍历顺序：行优先 vs 列优先（矩阵） [标准]
+## ⑬ 遍历顺序：行优先 vs 列优先（矩阵） <span class="badge badge-std">标准</span>
 
 C/C++ 多维数组按**行优先**（row-major）：`a[i][j]` 中 `j` 连续。嵌套循环若外层 `i`、内层 `j`，访问 `a[i][j]` 是连续的；若内外反转，则步长 = 行宽，每行只取一个字——缓存灾难。
 
-> **示例 18** [难度 ★★★☆☆] [主题：遍历顺序：行优先 vs 列优先]
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 遍历顺序：行优先 vs 列优先
 ```cpp
 // ⑬ 用一维 vector 模拟二维，对比行优先 / 列优先求和
 #include <iostream>
@@ -507,16 +507,16 @@ int main() {
 - `[标准]`：C++ 未规定"行优先"语义，但内建多维数组 `T a[R][C]` 的下标映射 `a[i][j] == *(a + i*C + j)` 由 `[dcl.array]` 给出，天然行优先。
 - `[经验]`：务必"外层行、内层列"；把矩阵存成 `std::vector<std::vector<int>>` 还会因每层独立堆分配进一步碎化（见 ⑭ 反例）。
 
-## ⑭ 实测：行优先 vs 列优先耗时对比 [经验]
+## ⑭ 实测：行优先 vs 列优先耗时对比 <span class="badge badge-exp">经验</span>
 
 本书实测（MinGW GCC 13.1 / -O2，M=4096 整数矩阵）：
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：实测：行优先 vs 列优先耗时对比 ]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实测：行优先 vs 列优先耗时对比
 ```
 ROW_COL  col ≈ 10× ~ 30× 于 row（列优先几乎每访都 cache miss）
 ```
 
-> **示例 20** [难度 ★★★☆☆] [主题：实测：行优先 vs 列优先耗时对比 ]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 实测：行优先 vs 列优先耗时对比
 ```cpp
 // ⑭ 反例：用 vector<vector<int>> 既破坏连续，又叠加列优先 → 双重惩罚
 #include <iostream>
@@ -544,7 +544,7 @@ int main() {
 
 编译器为对齐成员会插填充字节。`struct{char a; int b;}` 在 x64 占 8B（a 后填 3B）。重排"把大对齐/热字段放前、小字段聚堆"可①减体积省缓存；②把会被并发写的字段隔到不同行。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：结构体填充（padding）与字段重]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构体填充（padding）与字段重
 ```cpp
 // ⑮ 字段顺序影响大小与填充
 #include <iostream>
@@ -560,7 +560,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：结构体填充（padding）与字段重]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构体填充（padding）与字段重
 ```cpp
 // ⑮ 热/冷字段分离：只把热字段凑一起，冷字段后置，提升缓存命中
 #include <iostream>
@@ -584,11 +584,11 @@ int main() {
 - `[标准]`：成员布局/对齐/填充由 `[class.mem]` 与 `[basic.align]` 规定；重排必须保持"相同可观测语义"（除 padding 与地址）。
 - `[实现·GCC15]`：GCC 提供 `__attribute__((packed))` 消除填充，但会引发非对齐访问（x86 慢、某些架构直接 SIGBUS），**慎用**。
 
-## ⑯ 数据结构布局：热/冷分离与 ECS 数据导向设计 [经验]
+## ⑯ 数据结构布局：热/冷分离与 ECS 数据导向设计 <span class="badge badge-exp">经验</span>
 
 **数据导向设计（Data-Oriented Design, DOD）**：先想"怎么遍历"，再定"怎么存"，常把对象拆成 SoA。游戏引擎的 ECS（Entity-Component-System）即典型：所有 Position 连续存，System 只扫自己需要的组件数组。
 
-> **示例 23** [难度 ★★★☆☆] [主题：数据结构布局：热/冷分离与 ECS ]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 数据结构布局：热/冷分离与 ECS
 ```cpp
 // ⑯ ECS 风格：组件各自连续，System 只遍历需要的数组
 #include <iostream>
@@ -614,11 +614,11 @@ int main() {
 - `[经验]`：DOD 不是"反对 OOP"，而是把"频繁一起遍历的数据"放到一起；对热点循环收益巨大，对低频逻辑无必要。
 - `[平台·x86-64]`：与 ⑪ SoA 同源——连续即缓存友好、即利于向量化。
 
-## ⑰ 缓存友好算法：分块（cache blocking / tiling） [标准]
+## ⑰ 缓存友好算法：分块（cache blocking / tiling） <span class="badge badge-std">标准</span>
 
 当问题规模超过缓存（如大矩阵乘），把它切成"能放进 L1/L2"的子块，让子块内反复复用、几乎不重复访存。这是把"算法复杂度"与"缓存容量"对齐的经典手法。
 
-> **示例 24** [难度 ★★★☆☆] [主题：缓存友好算法：分块]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 缓存友好算法：分块
 ```cpp
 // ⑰ 分块矩阵乘：把 N×N 切成 B×B 块，块内三循环全在缓存里
 #include <iostream>
@@ -650,7 +650,7 @@ int main() {
 - `std::assume_aligned<N>(p)`（C++20，`<memory>`）：告诉编译器 `p` 至少 N 对齐，解锁更激进的向量化与去别名优化（不改变地址，只给承诺）。
 - non-temporal（`_mm_stream_*`）写：绕过缓存，用于"写一次不再读"的大块，避免污染缓存（需要 `<immintrin.h>`，不属 PRELUDE，故本块仅展示签名，不纳入编译）。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：内存对齐 API：assumeali]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存对齐 API：assumeali
 ```cpp
 // ⑱ std::assume_aligned 让编译器放心向量化（GCC13 / -O3 有效）
 #include <iostream>
@@ -668,7 +668,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：内存对齐 API：assumeali]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存对齐 API：assumeali
 ```cpp
 // ⑱ 用 alignof / alignas 自定义对齐的结构
 #include <iostream>
@@ -692,7 +692,7 @@ int main() {
 - `valgrind --tool=cachegrind ./a`：模拟各级缓存命中率。
 - `std::hardware_destructive_interference_size`：代码层面确认行大小。
 
-> **示例 27** [难度 ★★★☆☆] [主题：工具：perf / cachegri]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工具：perf / cachegri
 ```cpp
 // ⑲ 用标准常量做"缓存感知"分块大小推导
 #include <iostream>
@@ -712,21 +712,21 @@ int main() {
 - `[实现·GCC15]`：GCC/Clang 可用 `-fopt-info-vec` 看哪些循环被向量化；`-fsanitize=address` 抓越界（见 ch155 ⑯ 调试）。
 - `[经验]`：先用工具定位"是哪级缓存、哪个循环"在漏，再动手改布局。
 
-## ⑳ 源码阅读路线（缓存相关实现与标准） [标准]
+## ⑳ 源码阅读路线（缓存相关实现与标准） <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：AoS → SoA 让结构体内同字段连续，提升缓存与 SIMD 效率。** 你重构粒子系统。请说明布局保证。
-   - [标准] 数组成员连续存储；按字段聚合成数组可提升打包密度与缓存命中。
-   - [引用] ISO/IEC 14882:2023 §[dcl.array]（连续存储）/ [class.mem]（填充）；cppreference "Data-oriented design" 词条。
+   - <span class="badge badge-std">标准</span> 数组成员连续存储；按字段聚合成数组可提升打包密度与缓存命中。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.array]（连续存储）/ [class.mem]（填充）；cppreference "Data-oriented design" 词条。
 
 2. **真实场景：用 `alignas(64)` 给每线程热数据独立缓存行，消除 false sharing。** 你多线程计数性能差。请说明。
-   - [标准] `alignas` 可要求强于自然对齐的对齐；与 `hardware_destructive_interference_size` 配合隔离。
-   - [引用] ISO/IEC 14882:2023 §[dcl.align] / [basic.align]（对齐）；cppreference "alignas" 词条。
+   - <span class="badge badge-std">标准</span> `alignas` 可要求强于自然对齐的对齐；与 `hardware_destructive_interference_size` 配合隔离。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.align] / [basic.align]（对齐）；cppreference "alignas" 词条。
 
 3. **真实场景：冷热数据分离缩小活跃工作集。** 你重排成员减少缓存占用。请说明边界。
-   - [标准] 语言只保证成员连续与实现定义填充；冷热分离是工程优化，非语言层保证。
-   - [引用] ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
+   - <span class="badge badge-std">标准</span> 语言只保证成员连续与实现定义填充；冷热分离是工程优化，非语言层保证。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
 
 - `[平台·x86-64]`：libstdc++ `<new>` 中 `hardware_destructive_interference_size` 的定义（GCC 12 由 16 修正为 64）。
 - `[实现·GCC15]`：GCC 预取与对齐优化 passes（`tree-vectorize`、`pass_peephole2`）源码 `gcc/tree-vect-*.cc`。
@@ -738,7 +738,7 @@ int main() {
 
 以下为可直接 `g++ -std=c++23 -O2` 运行的完整程序，覆盖本章核心手法。
 
-> **示例 28** [难度 ★★★☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-A 一维数组 cache 友好归约 + 朴素 vs 分块对比骨架
 #include <iostream>
@@ -758,7 +758,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★★★☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-B 检测两个对象是否同 cache line（可移植）
 #include <iostream>
@@ -778,7 +778,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-C 用 span 表达连续切片，保持缓存友好（不拷贝）
 #include <iostream>
@@ -795,7 +795,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-D 字段重排减 padding：对比两种顺序的体积
 #include <iostream>
@@ -810,7 +810,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-E 顺序写大数组（write-allocate 友好），计时
 #include <iostream>
@@ -828,7 +828,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★★☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-F 软件预取：`__builtin_prefetch` 对顺序访问的加速验证
 #include <iostream>
@@ -851,7 +851,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-G 检测 struct 跨 cache line（std::hardware_constructive_interference_size 使用）
 #include <iostream>
@@ -869,7 +869,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（缓存优化综合）
 ```cpp
 // 补-H 矩阵行优先 vs 列优先：缓存局部性对性能的极端影响
 #include <iostream>
@@ -895,31 +895,31 @@ int main() {
 
 ## 补充分编可编译示例
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch154_cache_opt."<<std::endl;return 0;}
 ```
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch154_cache_opt."<<std::endl;return 0;}
 ```
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch154_cache_opt."<<std::endl;return 0;}
 ```
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch154_cache_opt."<<std::endl;return 0;}
 ```
-> **示例 40** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -938,7 +938,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：缓存与"硬件干扰大小"进标准
-[史] 多级缓存（L1/L2/L3）自 1990 年代成为 CPU 标配，64 字节 cache line 也长期固定；但 C++ 程序员长期只能靠 `alignas(64)` 这类"魔法数"规避伪共享。C++17 引入 **`std::hardware_destructive_interference_size`**（写者间应避免共享的最小字节数）与 **`std::hardware_constructive_interference_size`**（读者间宜共享），把"缓存行大小"变成可移植的标准常量，背后是 Lawrence Crowl 等人的提案工作。[史] 同时，Ulrich Drepper 2007 年的内存论文把"为什么遍历顺序决定性能"讲成工程常识（见第153章 ㉒.1）。[评] 缓存优化本质是把"硅片的事实"翻译成"数据布局"——标准终于给了可移植的表达。
+<span class="badge badge-history">史</span> 多级缓存（L1/L2/L3）自 1990 年代成为 CPU 标配，64 字节 cache line 也长期固定；但 C++ 程序员长期只能靠 `alignas(64)` 这类"魔法数"规避伪共享。C++17 引入 **`std::hardware_destructive_interference_size`**（写者间应避免共享的最小字节数）与 **`std::hardware_constructive_interference_size`**（读者间宜共享），把"缓存行大小"变成可移植的标准常量，背后是 Lawrence Crowl 等人的提案工作。<span class="badge badge-history">史</span> 同时，Ulrich Drepper 2007 年的内存论文把"为什么遍历顺序决定性能"讲成工程常识（见第153章 ㉒.1）。<span class="badge badge-comment">评</span> 缓存优化本质是把"硅片的事实"翻译成"数据布局"——标准终于给了可移植的表达。
 
 ### ㉒.2 真实工程坐标：缓存优化活在哪些项目里
 
@@ -951,9 +951,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 | 数据库 / 列式存储 | cache blocking（分块） | 工作集留 L1/L2，B+ 树 / 列存受益 | 存储引擎 | 分块降未命中 |
 | 浏览器 | Chromium（LinkedList→flat_map、StringPiece 零拷贝） | 减小 cache footprint | 工业级前端 | 工业附录有述 |
 | 缓存意识库 | Eigen aligned allocator / TCMalloc per-thread cache / TBB cache_aligned_allocator | 对齐分配 + 降锁争用 | 工业级库 | 对齐即少未命中 |
-| 伪共享实战 | `std::hardware_destructive_interference_size`（C++17） | 给无锁热点成员加 padding | 标准设施 | [STANDARD] C++17 提供；避免跨核 ping-pong |
+| 伪共享实战 | `std::hardware_destructive_interference_size`（C++17） | 给无锁热点成员加 padding | 标准设施 | <span class="badge badge-std">STANDARD</span> C++17 提供；避免跨核 ping-pong |
 
-> **表注（㉒.2）**：上表前 4 行是「各领域怎么用缓存优化」，后 2 行是「库与标准设施怎么支持」；伪共享的本质是两个核频繁写同一 cache line 的不同字，[STANDARD] `std::hardware_destructive_interference_size` 给出该平台 cache line 大小，用来 padding 隔离。
+> **表注（㉒.2）**：上表前 4 行是「各领域怎么用缓存优化」，后 2 行是「库与标准设施怎么支持」；伪共享的本质是两个核频繁写同一 cache line 的不同字，<span class="badge badge-std">STANDARD</span> `std::hardware_destructive_interference_size` 给出该平台 cache line 大小，用来 padding 隔离。
 
 **一条判读**：缓存优化的前提是先测出「未命中在哪儿」——`perf stat` 的 cache-miss 率比直觉可靠；SoA/分块/对齐都只对「热且规律访问」的数据有效，随机访问的数据布局再怎么调也救不回。
 
@@ -964,9 +964,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 - **忽略遍历顺序**：行优先/列优先写反，矩阵遍历 miss 飙升（见 ⑬⑭）。
 
 ### ㉒.4 与标准的互动：从 alignas 到 interference_size
-C++11 的 `alignas` 让"按 cache line 对齐"合法化；C++17 的 `hardware_destructive/constructive_interference_size` 进一步把"该对齐多少"交给实现定义（典型 64）。`std::assume_aligned`（C++20）则让编译器相信某指针已对齐，从而放开向量化（见 ⑱）。[评] 这些设施把"缓存意识"从魔法数提升为标准可移植代码。
+C++11 的 `alignas` 让"按 cache line 对齐"合法化；C++17 的 `hardware_destructive/constructive_interference_size` 进一步把"该对齐多少"交给实现定义（典型 64）。`std::assume_aligned`（C++20）则让编译器相信某指针已对齐，从而放开向量化（见 ⑱）。<span class="badge badge-comment">评</span> 这些设施把"缓存意识"从魔法数提升为标准可移植代码。
 
-**修订链补强（缓存与标准）**：C++ 抽象机器不建模 cache，但 [P0154](https://wg21.link/P0154)（C++17）首次把“缓存行干扰大小”作为可移植常量暴露（`hardware_destructive_interference_size` 用于避免 false sharing、`hardware_constructive_interference_size` 用于促进 true sharing），实现可在不支持时返回 0 并回退。这是对 [MICROARCHITECTURE] 事实（64B 缓存行是 x86/ARM 主流）的有限标准化。更激进的“缓存感知分配”仍由库（TCMalloc/jemalloc/mimalloc）与 `alignas` 承担，标准未统一。
+**修订链补强（缓存与标准）**：C++ 抽象机器不建模 cache，但 [P0154](https://wg21.link/P0154)（C++17）首次把“缓存行干扰大小”作为可移植常量暴露（`hardware_destructive_interference_size` 用于避免 false sharing、`hardware_constructive_interference_size` 用于促进 true sharing），实现可在不支持时返回 0 并回退。这是对 <span class="badge badge-microarch">MICROARCHITECTURE</span> 事实（64B 缓存行是 x86/ARM 主流）的有限标准化。更激进的“缓存感知分配”仍由库（TCMalloc/jemalloc/mimalloc）与 `alignas` 承担，标准未统一。
 
 ### ㉒.5 权威引用
 - [cppreference: std::hardware_destructive_interference_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size) — 防伪共享的标准常量（C++17）
@@ -980,7 +980,7 @@ C++11 的 `alignas` 让"按 cache line 对齐"合法化；C++17 的 `hardware_de
 Chromium: LinkedList->flat_map(连续内存); StringPiece(零拷贝减少Cache footprint)
 LLVM: SmallVector<T,N>(栈分配<=64B); DenseMap(开放地址+连续, 比链表哈希快3x)
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 E：Cache优化工业]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：Cache优化工业
 ```cpp
 #include <iostream>
 struct alignas(64) CacheFriendly { int data; char pad[60]; };
@@ -1020,7 +1020,7 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 
 ## 附录 H：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
-**[经验]**　缓存优化最大的坑是"凭直觉优化"——不 profile 就改，常常越改越慢。本节从 production 事故与 Code Review 视角总结。
+**<span class="badge badge-exp">经验</span>**　缓存优化最大的坑是"凭直觉优化"——不 profile 就改，常常越改越慢。本节从 production 事故与 Code Review 视角总结。
 
 ### 工业案例：false sharing 的"隐形性能杀手"
 
@@ -1068,7 +1068,7 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 
 两个计数器若同处一个缓存行，任一核写入都会让其他核该行失效（MESI 协议），引发缓存行在核间来回失效。用 `alignas` 到干扰尺寸让它们各占一行即可解耦。
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <atomic>
 #include <new>
@@ -1083,9 +1083,9 @@ int main() {
 }
 ```
 
-[标准] `std::hardware_destructive_interference_size` 定义于 `<new>`（C++17，[support.limits]），是编译器给出的目标行大小，x86-64 通常为 64。
+<span class="badge badge-std">标准</span> `std::hardware_destructive_interference_size` 定义于 `<new>`（C++17，[support.limits]），是编译器给出的目标行大小，x86-64 通常为 64。
 
-[引用] cppreference <https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size>；伪共享原理见 Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>。
+<span class="badge badge-ref">引用</span> cppreference <https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size>；伪共享原理见 Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>。
 
 </details>
 
@@ -1097,7 +1097,7 @@ int main() {
 
 AoS 遍历 `x` 时仍把 `y,z` 一起载入缓存行，浪费带宽；SoA 的 `x` 数组连续紧凑，一次缓存行装入更多有效 `x`。需要全字段时才各有利弊。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1111,9 +1111,9 @@ int main() {
 }
 ```
 
-[标准] 布局影响访存模式，标准不规定缓存行为；这是数据局部性（locality）层面的优化。
+<span class="badge badge-std">标准</span> 布局影响访存模式，标准不规定缓存行为；这是数据局部性（locality）层面的优化。
 
-[引用] 缓存行与空间局部性综述见 Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>；`std::vector` <https://en.cppreference.com/w/cpp/container/vector>。
+<span class="badge badge-ref">引用</span> 缓存行与空间局部性综述见 Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>；`std::vector` <https://en.cppreference.com/w/cpp/container/vector>。
 
 </details>
 
@@ -1125,7 +1125,7 @@ int main() {
 
 直接遍历大矩阵时工作集远超缓存容量，反复驱逐；分块把计算限制在小块内，使块内数据反复命中后再换块，大幅降 miss。块大小 `B` 应使 `B²·sizeof(T)` 约等于目标缓存级容量。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1142,9 +1142,9 @@ int main() {
 }
 ```
 
-[标准] 分块是访存局部性优化，不改语义，只改遍历顺序与缓存命中。
+<span class="badge badge-std">标准</span> 分块是访存局部性优化，不改语义，只改遍历顺序与缓存命中。
 
-[引用] 缓存层级与容量见 Agner Fog *microarchitecture.pdf*；分块（loop tiling）属经典优化，LLVM 循环优化文档 <https://llvm.org/docs/Passes.html>。
+<span class="badge badge-ref">引用</span> 缓存层级与容量见 Agner Fog *microarchitecture.pdf*；分块（loop tiling）属经典优化，LLVM 循环优化文档 <https://llvm.org/docs/Passes.html>。
 
 </details>
 
@@ -1156,7 +1156,7 @@ int main() {
 
 正文 ⑩ 提到该常量"定义于 `<new>`"，但没给真身。其 libstdc++ 15.3.0 定义位于 `bits/.../c++/15.3.0/new`：
 
-> **示例 45** [难度 ★★☆☆☆] [主题：一手源码：hardwareinter]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 一手源码：hardwareinter
 ```cpp
 // <new> (libstdc++ 15.3.0, 行 248–251)
 #ifdef __cpp_lib_hardware_interference_size        // C++ >= 17 && 编译器给出目标行大小
@@ -1167,7 +1167,7 @@ int main() {
 
 - `__GCC_DESTRUCTIVE_SIZE` / `__GCC_CONSTRUCTIVE_SIZE` 是**编译器前端内建常量**（不是库里手写的 `64`），x86-64 上二者均为 `64`；ARM 等架构可能不同。因此"一行大小"的可移植性来自**标准库转发编译器内建**，而非硬编码。
 - 配套的库特性宏在 `x86_64-w64-mingw32/bits/c++config.h:1606`：
-> **示例 46** [难度 ★★☆☆☆] [主题：一手源码：hardwareinter]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 一手源码：hardwareinter
   ```cpp
   /* Define if global objects can be aligned to
      std::hardware_destructive_interference_size. */
@@ -1369,7 +1369,7 @@ flowchart TD
 
 场景 A 的最小可复现版（单线程，无需 `-pthread`，编译 `g++ -O2 -std=c++23`）。完整版（含伪共享场景 B）见库根 `_bench_d5_154_cache.cpp`。
 
-> **示例 47** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 // D5 demo: 顺序 vs 随机遍历的缓存局部性（GCC 15.3.0）
 #include <algorithm>

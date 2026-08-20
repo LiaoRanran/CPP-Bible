@@ -15,24 +15,24 @@
 > 在 filesystem 之前，跨平台操作文件意味着两套代码、两堆 #ifdef。
 
 ### 0.1 起源（谁·何时·为何）
-文件与目录操作长期是 C++ 的"无人区"：POSIX 有 `open/read/dirent.h`，Windows 有 `CreateFile/FindFirstFile`，两套 API 互不兼容，跨平台项目只能自己包一层或堆满 `#ifdef`。[史] Boost.Filesystem（由 Beman Dawes 主导）自 2003 年前后提供了一套可移植的路径、文件、目录抽象，并成为事实标准。[史]
+文件与目录操作长期是 C++ 的"无人区"：POSIX 有 `open/read/dirent.h`，Windows 有 `CreateFile/FindFirstFile`，两套 API 互不兼容，跨平台项目只能自己包一层或堆满 `#ifdef`。<span class="badge badge-history">史</span> Boost.Filesystem（由 Beman Dawes 主导）自 2003 年前后提供了一套可移植的路径、文件、目录抽象，并成为事实标准。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- Boost.Filesystem v1/v2/v3（2003 起）：逐步打磨路径标准化与错误处理语义。[史]
+- Boost.Filesystem v1/v2/v3（2003 起）：逐步打磨路径标准化与错误处理语义。<span class="badge badge-history">史</span>
 - C++17：`std::filesystem` 正式标准化（基于 Boost.Filesystem v3 的设计），统一 `path`、`directory_iterator`、`copy`、`rename` 等。
 - 后续：C++20 起修补若干问题（如 `path::u8string` 的编码语义）。
 
 ### 0.3 设计哲学之争
-`filesystem` 入标最大的争论是**错误处理风格**：是用异常还是 `std::error_code`？最终标准两者都给（`path` 构造等可抛异常，也可传 `error_code` 不抛），把选择权交给调用方。[评] 另一点是"路径到底是字节还是 Unicode"——跨平台编码（UTF-8 vs 原生宽字符）的处理，至今仍是细节争议的源头。[评]
+`filesystem` 入标最大的争论是**错误处理风格**：是用异常还是 `std::error_code`？最终标准两者都给（`path` 构造等可抛异常，也可传 `error_code` 不抛），把选择权交给调用方。<span class="badge badge-comment">评</span> 另一点是"路径到底是字节还是 Unicode"——跨平台编码（UTF-8 vs 原生宽字符）的处理，至今仍是细节争议的源头。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++20 修补 `path::u8string` 等编码语义。原生 API 差异与"文件 IO + 异步"是后续支线。
 
-- [史] **`std::filesystem` 是"元数据库"非"内容库"**：它操作路径、目录、权限、文件状态，底层仍靠操作系统原生 API（POSIX `stat`/`dirent`、Windows `GetFileAttributes`/`FindFirstFile`）；因此符号链接、权限、时间戳语义在不同 OS 上有差异，标准只做"最小公分母"抽象。
-- [史] **符号链接与权限是跨平台坑源**：`equivalent`、`is_symlink`、`permissions` 在 Windows 与 POSIX 行为不同；`copy_options::recursive` 等选项虽统一了接口，但底层限制（如 Windows 软链需特权）仍会冒出来。
-- [评] **"异步文件 IO"至今未进标准**：`filesystem` 全同步；现代高并发框架（如 libuv、Boost.Asio、io_uring）各自做异步文件操作，标准层面尚无统一方案，C++ 提案偶有触及但未落地。
-- [轶] **Beman Dawes 的坚持**：Boost.Filesystem v3 的设计被 C++17 几乎原样采纳，这位也主导了 `boost::shared_ptr` 的元老，是"把 Boost 实战搬进标准"的典型人物。
+- <span class="badge badge-history">史</span> **`std::filesystem` 是"元数据库"非"内容库"**：它操作路径、目录、权限、文件状态，底层仍靠操作系统原生 API（POSIX `stat`/`dirent`、Windows `GetFileAttributes`/`FindFirstFile`）；因此符号链接、权限、时间戳语义在不同 OS 上有差异，标准只做"最小公分母"抽象。
+- <span class="badge badge-history">史</span> **符号链接与权限是跨平台坑源**：`equivalent`、`is_symlink`、`permissions` 在 Windows 与 POSIX 行为不同；`copy_options::recursive` 等选项虽统一了接口，但底层限制（如 Windows 软链需特权）仍会冒出来。
+- <span class="badge badge-comment">评</span> **"异步文件 IO"至今未进标准**：`filesystem` 全同步；现代高并发框架（如 libuv、Boost.Asio、io_uring）各自做异步文件操作，标准层面尚无统一方案，C++ 提案偶有触及但未落地。
+- <span class="badge badge-anecdote">轶</span> **Beman Dawes 的坚持**：Boost.Filesystem v3 的设计被 C++17 几乎原样采纳，这位也主导了 `boost::shared_ptr` 的元老，是"把 Boost 实战搬进标准"的典型人物。
 
 > 史料来源：[cppreference std::filesystem](https://en.cppreference.com/w/cpp/filesystem)、[Boost.Filesystem](https://www.boost.org/doc/libs/release/libs/filesystem/)
 
@@ -73,7 +73,7 @@
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
                           ┌────────────────────────────┐
                           │   std::filesystem 命名空间    │
@@ -159,7 +159,7 @@ classDiagram
 
 `std::filesystem::path` 内部持有一个本机字符串 `_M_pathname`（`value_type` 在 Windows 为 `wchar_t`，POSIX 为 `char`）。其"分解"（`filename()`/`parent_path()` 等）是**惰性计算**的，不缓存，每次返回新 `path`。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图：path 的对象布局]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：path 的对象布局
 ```
 path 对象（64位，POSIX，char 为 value_type）
 ┌─────────────────────────────────────────────┐
@@ -180,7 +180,7 @@ path 对象（64位，POSIX，char 为 value_type）
 
 ## ⑧ 生命周期图：目录遍历
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图：目录遍历]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：目录遍历
 ```
 时间 ───────────────────────────────────────────────►
 
@@ -204,7 +204,7 @@ it 析构：closedir() / FindClose()  ← RAII 保证，即使中途异常也关
 
 ## ⑨ 调用栈 / 时序图：`fs::exists(p)`（无异常版）
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图：fs::exis]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：fs::exis
 ```
 调用方            libstdc++          POSIX 内核
   │  exists(p,ec)    │                  │
@@ -225,7 +225,7 @@ it 析构：closedir() / FindClose()  ← RAII 保证，即使中途异常也关
 
 词法操作（`operator/`、`filename`、`parent_path`）只处理字符串，不进内核。下面看 `operator/=` 的核心：
 
-> **示例 5** [难度 ★★★☆☆] [主题：汇编分析：词法拼接 p / "x" ]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：词法拼接 p / "x"
 ```cpp
 // ⑩ 词法拼接（不访问磁盘）的等价结构
 #include <filesystem>
@@ -275,7 +275,7 @@ libstdc++ 中 `operator/=` 调用 `_M_append`：
 
 真实服务器（如 spdlog / logrotate 类组件）需要：按日期建目录、清理超过 N 天的旧日志、计算占用空间。下面给出一个**自包含、可编译**的骨架（用词法与存在性检查，避免依赖特定磁盘内容）：
 
-> **示例 6** [难度 ★★☆☆☆] [主题：工业案例：日志归档服务的目录滚动与清]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志归档服务的目录滚动与清
 ```cpp
 // ⑫-1 日志归档：按日期子目录存放，并清理超龄日志
 #include <filesystem>
@@ -304,7 +304,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：工业案例：日志归档服务的目录滚动与清]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志归档服务的目录滚动与清
 ```cpp
 // ⑫-2 计算某目录下所有普通文件的总字节数（工业级统计）
 #include <filesystem>
@@ -325,7 +325,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：工业案例：日志归档服务的目录滚动与清]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志归档服务的目录滚动与清
 ```cpp
 // ⑫-3 原子发布：先写临时文件再 rename 覆盖（避免读者看到半成品）
 #include <filesystem>
@@ -353,7 +353,7 @@ int main() {
 
 下面先用一段**可编译**代码验证 `path` 的关键词法 API，再给出真实头文件源码片段（以普通代码块呈现，仅供阅读，不参与编译）。
 
-> **示例 9** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 p]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 p
 ```cpp
 // ⑬-1 path 词法 API 实测（不访问磁盘，纯字符串）
 #include <filesystem>
@@ -438,7 +438,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误：用手动字符串拼接代替 operator/=，漏分隔符且无法跨平台归一
 #include <filesystem>
@@ -451,7 +451,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ✅ 正确：用 operator/= 或 / 进行路径拼接
 #include <filesystem>
@@ -465,7 +465,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误：遍历时持有迭代器副本跨循环复用
 #include <filesystem>
@@ -477,7 +477,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ✅ 正确：需要"再看一遍"就存 path，而不是迭代器
 #include <filesystem>
@@ -490,7 +490,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误：跨文件系统用 rename 期望原子移动
 #include <filesystem>
@@ -504,7 +504,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ✅ 正确：跨设备用 copy + remove，并自知非原子
 #include <filesystem>
@@ -550,7 +550,7 @@ A：`path` → `string()` 在 Windows 上是 UTF-16→UTF-8 的**有损可能**�
 
 ## ⑱ 最佳实践
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-1 统一用 error_code 版做批量遍历，避免单文件错误中断整轮
 #include <filesystem>
@@ -566,7 +566,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-2 用 expected 包装 fs 操作，给业务层一个类型化错误通道（结合第88章）
 #include <filesystem>
@@ -583,7 +583,7 @@ std::expected<fs::file_status, std::error_code> safe_status(const fs::path& p) {
 int main() { return 0; }   // 仅演示编译；使用见正文
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-3 路径归一化：用 lexical_normal 消除 "." 与 ".."（仍不访问磁盘）
 #include <filesystem>
@@ -595,7 +595,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-4 安全创建目录（已存在不报错）
 #include <filesystem>
@@ -617,7 +617,7 @@ int main() {
 
 生产服务常需"热加载配置且不中断连接"。经典模式是：把新配置写到临时文件，校验通过后用 `rename` 原子替换旧文件，并把旧文件先备份以便回滚（若新配置有 bug 可秒级回退）。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：补 补充工业案例：配置热更新与原子回]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充工业案例：配置热更新与原子回
 ```cpp
 // B1 配置热更新：写临时 + 备份旧版 + 原子 rename 替换
 #include <filesystem>
@@ -653,7 +653,7 @@ int main() {
 
 **microbenchmark（示意，量级取自典型 NVMe + 热缓存）：**
 
-> **示例 21** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲-1 词法拼接 vs 系统调用耗时量级对比（示意数字）
 #include <filesystem>
@@ -674,7 +674,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲-2 status 调用计数（示意：N 次 stat 的耗时数量级）
 #include <filesystem>
@@ -696,7 +696,7 @@ int main() {
 
 - `[经验·量级]`：`exists` 在热缓存下约 0.1–0.5 µs/次；冷缓存（首次访问、网络盘）可达数十 µs 到 ms。`directory_entry` 的 `is_regular_file()` 在**遍历时已顺带缓存 status**（libstdc++ 在构造 `directory_entry` 时调用 `symlink_status`），因此遍历中再调 `e.is_regular_file()` 通常**不再**额外 `stat`——这是重要的性能优化点。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
 ```cpp
 // ⑲-3 利用 directory_entry 的缓存 status，避免重复 stat
 #include <filesystem>
@@ -719,7 +719,7 @@ int main() {
 
 ## ⑲-补 补充完整可编译示例（F1–F15，均为独立程序）
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F1 path 多种构造方式（词法）
 #include <filesystem>
@@ -733,7 +733,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F2 取相对路径 relative（词法/语义）
 #include <filesystem>
@@ -748,7 +748,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F3 path 比较运算符（词法，不访问磁盘）
 #include <filesystem>
@@ -761,7 +761,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F4 路径分解：root_name / root_directory / relative_path
 #include <filesystem>
@@ -774,7 +774,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F5 has_extension / has_filename 谓词（词法）
 #include <filesystem>
@@ -787,7 +787,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F6 查询文件类型（语义，需用 error_code 包裹）
 #include <filesystem>
@@ -801,7 +801,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F7 is_regular_file / is_directory 便捷谓词
 #include <filesystem>
@@ -813,7 +813,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F8 读取权限位 perms（语义）
 #include <filesystem>
@@ -828,7 +828,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F9 查询磁盘空间 space（语义，需存在路径）
 #include <filesystem>
@@ -841,7 +841,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F10 temp_directory_path 与 current_path（语义但稳定）
 #include <filesystem>
@@ -854,7 +854,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F11 file_size（语义，需为常规文件；这里仅演示 API，用 exists 保护）
 #include <filesystem>
@@ -870,7 +870,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F12 last_write_time 返回 chrono::file_time_type（见第92章）
 #include <filesystem>
@@ -884,7 +884,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F13 canonical / weakly_canonical 解析 . 与 ..（语义，需存在）
 #include <filesystem>
@@ -898,7 +898,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F14 copy_options 位掩码：跳过已存在 / 递归
 #include <filesystem>
@@ -914,7 +914,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补 补充完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
 ```cpp
 // F15 创建符号链接与硬链接（语义；仅演示 API，用 ec 吞掉错误）
 #include <filesystem>
@@ -933,16 +933,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：递归遍历目录统计文件数。** 你用 `recursive_directory_iterator`。请说明可移植性。
-   - [标准] `<filesystem>` 提供路径与目录迭代抽象，跨平台处理分隔符与编码。
-   - [引用] ISO/IEC 14882:2023 §[fs]（filesystem 库）；cppreference "std::filesystem" 词条。
+   - <span class="badge badge-std">标准</span> `<filesystem>` 提供路径与目录迭代抽象，跨平台处理分隔符与编码。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[fs]（filesystem 库）；cppreference "std::filesystem" 词条。
 
 2. **真实场景：path 自动处理平台分隔符。** 你拼 `"a/b/c"` 在 Windows 也能用。请说明。
-   - [标准] `path` 抽象平台相关分隔符，提供 `preferred_path`/`lexically_normal` 等可移植操作。
-   - [引用] ISO/IEC 14882:2023 §[fs.path]（path 的可移植语义）；cppreference "std::filesystem::path" 词条。
+   - <span class="badge badge-std">标准</span> `path` 抽象平台相关分隔符，提供 `preferred_path`/`lexically_normal` 等可移植操作。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[fs.path]（path 的可移植语义）；cppreference "std::filesystem::path" 词条。
 
 3. **真实场景：每个操作有“异常版”和“error_code& 版”两种接口。** 你不想让文件不存在抛异常。请说明双接口。
-   - [标准] filesystem 函数通常提供抛异常与接收 `error_code&` 两版；后者用错误码表达失败而不抛出。
-   - [引用] ISO/IEC 14882:2023 §[fs]（错误报告的双接口约定）；cppreference "std::filesystem" 词条。
+   - <span class="badge badge-std">标准</span> filesystem 函数通常提供抛异常与接收 `error_code&` 两版；后者用错误码表达失败而不抛出。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[fs]（错误报告的双接口约定）；cppreference "std::filesystem" 词条。
 
 | 能力 | C++ `std::filesystem`（C++17+） | Rust `std::fs` | Go `os`/`path/filepath` | Python `pathlib` / `os` | Java `java.nio.file` |
 |---|---|---|---|---|---|
@@ -966,7 +966,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：std::filesystem 与「跨平台路径」
 
-[史] `std::filesystem`（C++17）源自 Boost.Filesystem，先成为技术规范 ISO/IEC TS 18822:2015，再经 Beman Dawes 的 P0218R1 并入 C++17。[史] 它的动机是终结「每个平台各写一套路径/目录遍历」的混乱——POSIX 的 `opendir` / `stat` 与 Windows 的 `FindFirstFile` / `GetFileAttributes` 被统一为 `std::filesystem::path` 与 `directory_iterator`。[轶] 一个著名插曲：GCC 在 9.1 之前要求显式链接 `-lstdc++fs`，因为 filesystem 是独立的静态库，曾让无数新手在链接期困惑。[评] `filesystem` 是标准库第一次把「OS 文件系统语义」抽象成类型安全的 C++ 接口，且默认不抛异常（`error_code` 重载）让它在系统编程里更可控。
+<span class="badge badge-history">史</span> `std::filesystem`（C++17）源自 Boost.Filesystem，先成为技术规范 ISO/IEC TS 18822:2015，再经 Beman Dawes 的 P0218R1 并入 C++17。<span class="badge badge-history">史</span> 它的动机是终结「每个平台各写一套路径/目录遍历」的混乱——POSIX 的 `opendir` / `stat` 与 Windows 的 `FindFirstFile` / `GetFileAttributes` 被统一为 `std::filesystem::path` 与 `directory_iterator`。<span class="badge badge-anecdote">轶</span> 一个著名插曲：GCC 在 9.1 之前要求显式链接 `-lstdc++fs`，因为 filesystem 是独立的静态库，曾让无数新手在链接期困惑。<span class="badge badge-comment">评</span> `filesystem` 是标准库第一次把「OS 文件系统语义」抽象成类型安全的 C++ 接口，且默认不抛异常（`error_code` 重载）让它在系统编程里更可控。
 
 ### ㉒.2 真实工程坐标：filesystem 活在哪些产品里
 
@@ -977,11 +977,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：filesystem 的常见误用与陷阱
 
-[评] 最大坑是「TOCTOU 竞态」——`exists(p)` 检查后、真正 `open` 前，文件可能被另一线程/进程删除或替换，因此系统代码应优先用 `error_code` 版「尝试即处理」而非「先检查再操作」。另一坑是「原生路径分隔符与可移植性」——硬编码 `/` 或 `\` 会在跨平台时出问题，应始终用 `path` 的 `/` 运算符拼接。还有「符号链接与权限」——`copy` / `remove_all` 对符号链接与权限位的行为需显式指定 `copy_options`，否则可能误删或越权。
+<span class="badge badge-comment">评</span> 最大坑是「TOCTOU 竞态」——`exists(p)` 检查后、真正 `open` 前，文件可能被另一线程/进程删除或替换，因此系统代码应优先用 `error_code` 版「尝试即处理」而非「先检查再操作」。另一坑是「原生路径分隔符与可移植性」——硬编码 `/` 或 `\` 会在跨平台时出问题，应始终用 `path` 的 `/` 运算符拼接。还有「符号链接与权限」——`copy` / `remove_all` 对符号链接与权限位的行为需显式指定 `copy_options`，否则可能误删或越权。
 
 ### ㉒.4 与标准的互动：filesystem 与标准的演进
 
-[史] `std::filesystem` 经 P0218R1 并入 C++17，是「先 TS、再标准」路径的又一成功案例；其设计大量复用 Boost.Filesystem 的十年实战经验。[评] 近年 WG21 在扩展文件系统相关能力（如 `std::filesystem::path` 的更多格式支持、与 `std::io` 提案的衔接），但核心 API 保持稳固。标准的长期立场是「路径是值对象、可拷贝、类型化」——这与早期「路径即字符串」的朴素做法彻底划清界限。
+<span class="badge badge-history">史</span> `std::filesystem` 经 P0218R1 并入 C++17，是「先 TS、再标准」路径的又一成功案例；其设计大量复用 Boost.Filesystem 的十年实战经验。<span class="badge badge-comment">评</span> 近年 WG21 在扩展文件系统相关能力（如 `std::filesystem::path` 的更多格式支持、与 `std::io` 提案的衔接），但核心 API 保持稳固。标准的长期立场是「路径是值对象、可拷贝、类型化」——这与早期「路径即字符串」的朴素做法彻底划清界限。
 
 - **WG21 修订链**：`std::filesystem` 经 ISO/IEC TS 18822:2015（文件系统技术规范，基于 Boost.Filesystem 十年实战）试水，再由 P0218R1（Beman Dawes「Adopt the File System TS for C++17」，wg21.link/P0218R1，2016 Jacksonville）在 C++17 正式并入；其前身可追溯至 N3505（2013）等早期草案。C++20 起部分操作进入 `constexpr`，并与 `std::format`（`path` 格式化）衔接。
 - **ISO 条款**：`<filesystem>` 规定于 ISO/IEC 14882 第 31 章（`[filesystem]`）。标准的设计理由（Design Intent）明确为「路径是**值对象**（value-semantic `path`，可拷贝、可比较、独立于任何 I/O 状态），把『路径表示』与『文件系统操作』分离」——委员会吸取 Boost.Filesystem 经验，刻意避免「路径即字符串」带来的编码/可移植性陷阱，并要求 `file_size()` 等为 O(1)、异常安全契约完备才准入标准。
@@ -1013,7 +1013,7 @@ int main() {
 
 ## 补充分编可编译示例
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1084,7 +1084,7 @@ jne .not_exist
 
 ## 底层视角：系统调用号、stat 结构与路径解析代价 [E: Low-level]
 
-[标准] x86-64 上 `openat` 系统调用号为 `0x0101`（257），`stat` 为 `0x0004`（4）；glibc 包装后进入 `syscall` 指令，一次陷入内核约 0.1–0.5 µs`[微架构·x86-64][UNVERIFIED]`。`struct stat` 的 `off_t` 在 LP64 为 `0x0008` 字节，文件大小以字节计。
+<span class="badge badge-std">标准</span> x86-64 上 `openat` 系统调用号为 `0x0101`（257），`stat` 为 `0x0004`（4）；glibc 包装后进入 `syscall` 指令，一次陷入内核约 0.1–0.5 µs`[微架构·x86-64][UNVERIFIED]`。`struct stat` 的 `off_t` 在 LP64 为 `0x0008` 字节，文件大小以字节计。
 
 路径解析逐分量进行：每个分量一次目录项查找，命中 dentry 缓存（≈1 ns `[微架构·x86-64][UNVERIFIED]`）则快，未命中落到 inode/磁盘（L3 ≈12 ns `[微架构·x86-64][UNVERIFIED]` 或主存 ≈100 ns `[微架构·x86-64][UNVERIFIED]`）。`std::filesystem::path` 在 `C++17` 引入，`C++20` 加 `path::lexically_normal`。
 
@@ -1108,7 +1108,7 @@ jne .not_exist
 
 <details><summary>答案与解析</summary>
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <filesystem>
@@ -1119,9 +1119,9 @@ int main() {
 }
 ```
 
-[标准] `recursive_directory_iterator` 递归枚举目录项；`directory_entry` 缓存了 `file_status`，`is_regular_file()` 不额外 stat。遍历中修改目录结构（删除/改名）会抛 `filesystem_error`。
+<span class="badge badge-std">标准</span> `recursive_directory_iterator` 递归枚举目录项；`directory_entry` 缓存了 `file_status`，`is_regular_file()` 不额外 stat。遍历中修改目录结构（删除/改名）会抛 `filesystem_error`。
 
-[引用] ISO/IEC 14882:2023 §[filesystem]（`recursive_directory_iterator`/`directory_entry`）；遍历中修改目录的坑见 cppreference "filesystem/recursive_directory_iterator"；Boost.Filesystem（boost.org）是其前身。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[filesystem]（`recursive_directory_iterator`/`directory_entry`）；遍历中修改目录的坑见 cppreference "filesystem/recursive_directory_iterator"；Boost.Filesystem（boost.org）是其前身。
 
 </details>
 
@@ -1131,7 +1131,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <filesystem>
@@ -1143,9 +1143,9 @@ int main() {
 }
 ```
 
-[标准] `canonical` 解析所有符号链接与 `.`/`..` 得到绝对规范路径，失败返回空路径并以 `error_code` 报告；`path::string()` 返回原生编码（`wstring` on Windows），`path::u8string()` 返回 UTF-8——混用即乱码。
+<span class="badge badge-std">标准</span> `canonical` 解析所有符号链接与 `.`/`..` 得到绝对规范路径，失败返回空路径并以 `error_code` 报告；`path::string()` 返回原生编码（`wstring` on Windows），`path::u8string()` 返回 UTF-8——混用即乱码。
 
-[引用] ISO/IEC 14882:2023 §[filesystem]（`path` 编码与 `canonical`/`weakly_canonical`）；跨平台编码陷阱见 cppreference "filesystem/path"；C++ Core Guidelines 关于路径处理。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[filesystem]（`path` 编码与 `canonical`/`weakly_canonical`）；跨平台编码陷阱见 cppreference "filesystem/path"；C++ Core Guidelines 关于路径处理。
 
 </details>
 
@@ -1155,7 +1155,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <filesystem>
@@ -1168,9 +1168,9 @@ int main() {
 }
 ```
 
-[标准] `rename` 在同卷/同目录内是原子操作，适合事务性替换；`copy`/`copy_file` 非原子，可能中断留半截文件。所有接口都有异常版与 `error_code` 版双形态。
+<span class="badge badge-std">标准</span> `rename` 在同卷/同目录内是原子操作，适合事务性替换；`copy`/`copy_file` 非原子，可能中断留半截文件。所有接口都有异常版与 `error_code` 版双形态。
 
-[引用] ISO/IEC 14882:2023 §[filesystem]（`rename` 原子性语义与 `error_code` 双形态）；原子替换模式见 cppreference "filesystem/rename"；选择异常 vs error_code 见本章附录决策流。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[filesystem]（`rename` 原子性语义与 `error_code` 双形态）；原子替换模式见 cppreference "filesystem/rename"；选择异常 vs error_code 见本章附录决策流。
 
 </details>
 
@@ -1521,7 +1521,7 @@ flowchart TD
 
 ### D4.5 第一方可编译验证（filesystem）
 
-> **示例 43** [难度 ★★☆☆☆] [主题：第一方可编译验证]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
 ```cpp
 #include <iostream>
 #include <filesystem>
@@ -1626,7 +1626,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 44** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <string>

@@ -18,25 +18,25 @@
 > 一行代码里的"变量"二字，背后藏着 C 继承的存储类战争，与 C++ 多翻译单元逼出的 ODR 难题。
 
 ### 0.1 起源（谁·何时·为何）
-C 的存储类 `auto`/`register`/`static`/`extern` 源自 1970 年代的早期 C（K&R，1978），是为了在只有"栈 / 静态 / 寄存器"三种真实存储的 PDP-11 上，把硬件事实直接暴露给程序员。[史] Stroustrup 在 C with Classes 时期原样照搬，但 C++ 引入了头文件与多 `.cpp` 编译单元，"同一个名字在同一程序里出现多次"从此成为常态——链接（linkage）问题浮出水面。[史] ODR（One Definition Rule，单一定义规则）正是 C++ 为多编译单元世界补的"宪法"：任何可跨单元共享的变量 / 函数只能有一份定义。这是 C 没有的烦恼（C 有宽松的 tentative definition）。[史][评]
+C 的存储类 `auto`/`register`/`static`/`extern` 源自 1970 年代的早期 C（K&R，1978），是为了在只有"栈 / 静态 / 寄存器"三种真实存储的 PDP-11 上，把硬件事实直接暴露给程序员。<span class="badge badge-history">史</span> Stroustrup 在 C with Classes 时期原样照搬，但 C++ 引入了头文件与多 `.cpp` 编译单元，"同一个名字在同一程序里出现多次"从此成为常态——链接（linkage）问题浮出水面。<span class="badge badge-history">史</span> ODR（One Definition Rule，单一定义规则）正是 C++ 为多编译单元世界补的"宪法"：任何可跨单元共享的变量 / 函数只能有一份定义。这是 C 没有的烦恼（C 有宽松的 tentative definition）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
-- **C++98**：首次以标准形式确立 linkage（internal / external）与 ODR 雏形。[史]
-- **C++03 / C++11**：细化 inline 变量、模板实例化、inline namespace 对 ODR 的影响。[史]
-- **C++17**：`inline` 变量正式入标准，允许在头文件里直接定义 inline 全局 / const 变量而免于 ODR 违规——终结了"const 整数必须在 .cpp 里定义一次"的折磨。[史]
+- **C++98**：首次以标准形式确立 linkage（internal / external）与 ODR 雏形。<span class="badge badge-history">史</span>
+- **C++03 / C++11**：细化 inline 变量、模板实例化、inline namespace 对 ODR 的影响。<span class="badge badge-history">史</span>
+- **C++17**：`inline` 变量正式入标准，允许在头文件里直接定义 inline 全局 / const 变量而免于 ODR 违规——终结了"const 整数必须在 .cpp 里定义一次"的折磨。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期），长期饱受诟病；C++ 沿用它，但用 `namespace` / 无名命名空间来解决"文件内私有"。[评] 关于"头文件常量要不要 `extern`"，委员会在 C++17 用 inline 变量一锤定音：宁可让链接器去重，也不让程序员猜谜。[史]
+C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期），长期饱受诟病；C++ 沿用它，但用 `namespace` / 无名命名空间来解决"文件内私有"。<span class="badge badge-comment">评</span> 关于"头文件常量要不要 `extern`"，委员会在 C++17 用 inline 变量一锤定音：宁可让链接器去重，也不让程序员猜谜。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 
-接 0.2 C++17 inline 变量之后，变量 / 链接 / ODR 这条线在 C++20 及以后仍有密集推进；以下条目作为持续编年锚点追加，永不回改 0.1–0.3 的核心事实。[史]
+接 0.2 C++17 inline 变量之后，变量 / 链接 / ODR 这条线在 C++20 及以后仍有密集推进；以下条目作为持续编年锚点追加，永不回改 0.1–0.3 的核心事实。<span class="badge badge-history">史</span>
 
-- **C++20 Modules（P1103）从根上绕开头文件**：模块用编译模型取代文本包含，宏与无名实体不再泄漏到 `import` 方，ODR 的"多 TU 同名"问题被从源头消解；但与头文件混用的遗留 TU 仍走老检查，迁移期呈"双轨"现实。[史][评]
-- **C++20 `constinit` 把初始化时机钉死**：在 static 存储期上强制常量初始化阶段完成（见 ch21），把 0.2 的 inline 变量从"去重"进一步推到"定序"，SOIF 无从发生。[史]
-- **C++23 存储期 / 链接措辞清理（N4885）**：整合 `[basic.stc]` / `[basic.link]`，并固化 `thread_local` 动态初始化线程安全的可见性细节（P0941），跨编译器行为更一致。[史]
-- **编译器落地时间线**：GCC 10 / Clang 10 起支持 Modules，MSVC 在 `/std:c++20` 下全面对齐静态初始化语义；`constinit` 三家均在 C++20 周期内落地。[史]
-- **行业进展与争议**：Chromium、LLVM 等巨型代码库实验性引入模块以缩短构建，但 `import` 与 `#include` 互操作、构建系统适配是主要摩擦点；静态反射（C++26 候选 P2996）将让 inline 变量可被元数据遍历，进一步改写"头文件常量暴露"范式。[史][评]
+- **C++20 Modules（P1103）从根上绕开头文件**：模块用编译模型取代文本包含，宏与无名实体不再泄漏到 `import` 方，ODR 的"多 TU 同名"问题被从源头消解；但与头文件混用的遗留 TU 仍走老检查，迁移期呈"双轨"现实。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **C++20 `constinit` 把初始化时机钉死**：在 static 存储期上强制常量初始化阶段完成（见 ch21），把 0.2 的 inline 变量从"去重"进一步推到"定序"，SOIF 无从发生。<span class="badge badge-history">史</span>
+- **C++23 存储期 / 链接措辞清理（N4885）**：整合 `[basic.stc]` / `[basic.link]`，并固化 `thread_local` 动态初始化线程安全的可见性细节（P0941），跨编译器行为更一致。<span class="badge badge-history">史</span>
+- **编译器落地时间线**：GCC 10 / Clang 10 起支持 Modules，MSVC 在 `/std:c++20` 下全面对齐静态初始化语义；`constinit` 三家均在 C++20 周期内落地。<span class="badge badge-history">史</span>
+- **行业进展与争议**：Chromium、LLVM 等巨型代码库实验性引入模块以缩短构建，但 `import` 与 `#include` 互操作、构建系统适配是主要摩擦点；静态反射（C++26 候选 P2996）将让 inline 变量可被元数据遍历，进一步改写"头文件常量暴露"范式。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/modules ｜ https://en.cppreference.com/w/cpp/language/inline ｜ https://en.cppreference.com/w/cpp/language/storage_duration
 
@@ -85,7 +85,7 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 ### 3.1 三个正交维度
 
-> **示例 1** [难度 ★★☆☆☆] [主题：三个正交维度]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三个正交维度
 ```
                             ┌──────── 变量三大正交属性 ────────┐
                             │                                  │
@@ -103,7 +103,7 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 ### 3.2 关键组合速查
 
-> **示例 2** [难度 ★★☆☆☆] [主题：关键组合速查]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 关键组合速查
 ```
 ├─ 命名空间 static int x;       → static 存储期 + internal 链接
 ├─ int g; (命名空间)            → static 存储期 + external 链接
@@ -155,7 +155,7 @@ flowchart TD
 
 **程序 1：请求处理栈缓冲（服务器场景，离开即回收）**
 
-> **示例 3** [难度 ★★☆☆☆] [主题：——真实栈帧布局图]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——真实栈帧布局图
 ```cpp
 // server_handle.cpp
 #include <cstddef>
@@ -176,7 +176,7 @@ void handle(unsigned long long req_id) {
 
 栈帧布局（`-O0` 下，`rbp` 为帧基址）：
 
-> **示例 4** [难度 ★★☆☆☆] [主题：——真实栈帧布局图]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——真实栈帧布局图
 ```
 调用前:
         ... 调用者栈帧 ...
@@ -194,7 +194,7 @@ foo 栈帧 (rbp 指向旧 rbp 保存处):
 
 **程序 2：automatic 在递归中的栈帧隔离**
 
-> **示例 5** [难度 ★★★☆☆] [主题：——真实栈帧布局图]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · ——真实栈帧布局图
 ```cpp
 // recurse_stack.cpp
 #include <cstdio>
@@ -240,7 +240,7 @@ foo(int):
 
 **程序 3：四大段落位对照（可直接 `objdump -t` 验证）**
 
-> **示例 6** [难度 ★★☆☆☆] [主题：——真实 ELF 段图]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——真实 ELF 段图
 ```cpp
 // segments.cpp
 int   g_init   = 42;          // .data    (非零初值, external 链接)
@@ -254,7 +254,7 @@ int main() { return g_init + g_zero + s_file + C + t; }
 
 ELF 段落位图（x86-64，低→高地址）：
 
-> **示例 7** [难度 ★★☆☆☆] [主题：——真实 ELF 段图]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——真实 ELF 段图
 ```
 高地址 0x7fff...
 ┌─────────────────────────────┐
@@ -282,7 +282,7 @@ ELF 段落位图（x86-64，低→高地址）：
 
 **程序 4：验证 .bss 不占文件空间**
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：——真实 ELF 段图]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ——真实 ELF 段图
 ```cpp
 // bss_size.cpp
 #include <cstdio>
@@ -305,7 +305,7 @@ size bss_size      # .bss 列巨大，但文件 size 远小于 4MiB
 
 **程序 5：thread_local 每线程请求 ID（高并发服务器）**
 
-> **示例 9** [难度 ★★★☆☆] [主题：——每线程一块]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · ——每线程一块
 ```cpp
 // tls_request.cpp
 #include <thread>
@@ -351,7 +351,7 @@ inc():
 
 **程序 6：堆分配由 `new` 转发到 `malloc` 内部**
 
-> **示例 10** [难度 ★★☆☆☆] [主题：——malloc 内部如何落位]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——malloc 内部如何落位
 ```cpp
 // heap_alloc.cpp
 #include <memory>
@@ -385,7 +385,7 @@ void serve() {
 
 **程序 7：三阶段初始化可观察验证**
 
-> **示例 11** [难度 ★★☆☆☆] [主题：生命周期图（三阶段静态初始化）]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图（三阶段静态初始化）
 ```cpp
 // static_phases.cpp
 #include <cstdio>
@@ -420,7 +420,7 @@ int main() {
 
 **程序 8：链接三态对照**
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：链接三态精确语义]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 链接三态精确语义
 ```cpp
 // linkage.cpp
 int g_ext = 1;                 // external：可被其他 TU 引用
@@ -444,7 +444,7 @@ void f() {
 
 **程序 9：匿名命名空间包裹私有类型（static 无法做到）**
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：匿名命名空间演进史]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 匿名命名空间演进史
 ```cpp
 // anon_ns.cpp
 namespace {
@@ -463,7 +463,7 @@ int use() {
 
 **程序 10：C 风格 static 与匿名命名空间等价对照（变量层面）**
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：匿名命名空间演进史]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 匿名命名空间演进史
 ```cpp
 // static_vs_anon.cpp
 static int legacy_counter = 0;     // C 风格 internal 链接
@@ -478,7 +478,7 @@ int bump() { return ++legacy_counter + ++modern_counter; }
 
 **程序 11：inline 变量头文件共享配置（库设计）**
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：头文件 inline 变量——根治 ODR 多定义]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头文件 inline 变量——根治 ODR 多定义
 ```cpp
 // config.hpp  —— 可安全被多个 .cpp #include
 #pragma once
@@ -495,7 +495,7 @@ inline Config g_config;            // C++17 inline：多 TU 定义合并为一�
 
 **程序 12：inline constexpr 头文件常量（对标 `<numbers>`，见 ⑬-C）**
 
-> **示例 16** [难度 ★★☆☆☆] [主题：头文件 inline 变量——根治 ODR 多定义]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 头文件 inline 变量——根治 ODR 多定义
 ```cpp
 // math_const.hpp
 #pragma once
@@ -508,7 +508,7 @@ inline constexpr int    kMax  = 1024;
 
 **程序 13：extern 声明 + 单 TU 定义（C++17 前的旧式替代）**
 
-> **示例 17** [难度 ★★☆☆☆] [主题：头文件 inline 变量——根治 ODR 多定义]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 头文件 inline 变量——根治 ODR 多定义
 ```cpp
 // config.hpp
 extern Config g_config;            // 声明，不定义
@@ -525,7 +525,7 @@ Config g_config{ .http_port = 8080 }; // 唯一定义
 
 **程序 14：extern 跨 TU 共享计数器**
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：跨 TU 引用 extern 真实示]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 TU 引用 extern 真实示
 ```cpp
 // counter.hpp
 #pragma once
@@ -564,7 +564,7 @@ int main() {
 
 **程序 15：inline 变量多定义合法**
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：哪些多重定义合法]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 哪些多重定义合法
 ```cpp
 // shared.hpp
 #pragma once
@@ -575,7 +575,7 @@ inline int g_shared = 42;          // 多 TU 合法
 
 **程序 16：模板静态成员多定义合法（ch60 联动）**
 
-> **示例 20** [难度 ★★☆☆☆] [主题：哪些多重定义合法]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 哪些多重定义合法
 ```cpp
 // tpl_static.cpp
 #include <cstdio>
@@ -606,7 +606,7 @@ int main() {
 
 **程序 17：ODR-use 触发 vs 不触发**
 
-> **示例 21** [难度 ★★☆☆☆] [主题：的精确定义]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的精确定义
 ```cpp
 // odr_use.cpp
 #include <cstdio>
@@ -631,7 +631,7 @@ int main() {
 
 **程序 18：绑定引用迫使 ODR-use**
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：的精确定义]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的精确定义
 ```cpp
 // odr_ref.cpp
 #include <cstdio>
@@ -648,7 +648,7 @@ int main() { observe(); }
 
 **程序 19：类内隐式 inline 成员函数多 TU 安全**
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：类内定义 / static 成员 /]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类内定义 / static 成员 /
 ```cpp
 // widget.hpp
 #pragma once
@@ -663,7 +663,7 @@ inline int make_id() { return 7; } // 显式 inline 函数
 
 **程序 20：C++17 inline static 成员类内直接定义**
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：类内定义 / static 成员 /]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类内定义 / static 成员 /
 ```cpp
 // pool.hpp
 #pragma once
@@ -683,7 +683,7 @@ struct Pool {
 
 **程序 21：SOIF 灾难（依赖跨 TU 全局）**
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：灾难复现]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 灾难复现
 ```cpp
 // file_a.cpp
 #include <cstdio>
@@ -710,7 +710,7 @@ int main() {
 
 **程序 22：Meyers 单例（函数内 static，线程安全）**
 
-> **示例 26** [难度 ★★☆☆☆] [主题：修复 1：Meyers 单例]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 修复 1：Meyers 单例
 ```cpp
 // logger.hpp
 #pragma once
@@ -736,7 +736,7 @@ inline Logger& getLogger() {       // inline 允许头文件定义
 
 **程序 23：constinit 根治安标（ch21 联动）**
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：修复 2：constinit 强制常]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 修复 2：constinit 强制常
 ```cpp
 // constinit_fix.cpp
 constinit int g_threshold = 100;   // 强制 constant-init 阶段完成，早于所有 dynamic-init
@@ -750,7 +750,7 @@ int& threshold() { return g_threshold; } // 任何 TU 任何时刻读取都安�
 
 **程序 24：construct-on-first-use（返回裸指针/引用，适合需显式销毁序的场景）**
 
-> **示例 28** [难度 ★★☆☆☆] [主题：修复 3：construct-on-]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 修复 3：construct-on-
 ```cpp
 // cofu.cpp
 #include <memory>
@@ -821,7 +821,7 @@ getLogger():
 
 **文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（__cxa_guard_acquire 声明），行号：120**
 
-> **示例 29** [难度 ★★☆☆☆] [主题：真实 libstdc++ / lib]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ / lib
 ```cpp
 // libstdc++-v3/libsupc++/guard.h （真实声明）
 namespace __cxxabiv1 {
@@ -834,7 +834,7 @@ namespace __cxxabiv1 {
 
 **文件：`libstdc++-v3/libsupc++/guard.cc`（GCC 15.3.0 源码树，Linux futex 快速路径），行号：~110（__cxa_guard_acquire 实现）**
 
-> **示例 30** [难度 ★★☆☆☆] [主题：真实 libstdc++ / lib]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ / lib
 ```cpp
 // libstdc++-v3/libsupc++/guard.cc （Linux/GLIBC 路径，保留真实结构）
 #include <bits/c++config.h>
@@ -917,7 +917,7 @@ __cxa_guard_abort(__guard* g)
 
 **程序 25：构造抛异常后 guard 允许重试**
 
-> **示例 31** [难度 ★★☆☆☆] [主题：验证 guard 行为（异常路径）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 guard 行为（异常路径）
 ```cpp
 // guard_abort.cpp
 #include <cstdio>
@@ -995,7 +995,7 @@ inc PROC
 
 **文件：`libgcc/emutls.c`（GCC 15.3.0 源码树，TLS 仿真），行号：~110（__emutls_get_address）**
 
-> **示例 32** [难度 ★★☆☆☆] [主题：真实 libgcc emutls.c]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libgcc emutls.c
 ```cpp
 #include <cstdint>
 // libgcc/emutls.c （保留真实结构）
@@ -1059,7 +1059,7 @@ __emutls_get_address(emutls_control *obj)
 
 **程序 26：thread_local 非平凡类型每线程析构**
 
-> **示例 33** [难度 ★★☆☆☆] [主题：local 完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · local 完整可编译示例
 ```cpp
 // tls_tracer.cpp
 #include <cstdio>
@@ -1086,7 +1086,7 @@ int main() {
 
 **程序 27：thread_local 类静态成员（每线程每类一份）**
 
-> **示例 34** [难度 ★★☆☆☆] [主题：local 完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · local 完整可编译示例
 ```cpp
 // tls_member.cpp
 #include <cstdio>
@@ -1104,7 +1104,7 @@ int main() {
 
 **程序 28：线程池场景 TLS 重置（避免复用线程残留）**
 
-> **示例 35** [难度 ★★☆☆☆] [主题：local 完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · local 完整可编译示例
 ```cpp
 // tls_reset.cpp
 #include <thread>
@@ -1142,7 +1142,7 @@ int main() {
 
 **程序 29：全局 vs 函数内 static vs thread_local 访问延迟**
 
-> **示例 36** [难度 ★★☆☆☆] [主题：完整程序]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整程序
 ```cpp
 // bench_storage.cpp
 // 编译: g++ -O2 -std=c++17 bench_storage.cpp -lbenchmark -lpthread -o bench_storage
@@ -1188,7 +1188,7 @@ static void BM_FuncStaticFirstTime(benchmark::State& s) {
 BENCHMARK(BM_FuncStaticFirstTime);
 ```
 
-> `[性能]` `benchmark::DoNotOptimize` 阻止优化器把访问消去（否则 `-O2` 下循环被整个删掉，见 ④-1.1）。**切忌凭直觉报数**，须实测并标注 [示意]/[实测]。
+> `[性能]` `benchmark::DoNotOptimize` 阻止优化器把访问消去（否则 `-O2` 下循环被整个删掉，见 ④-1.1）。**切忌凭直觉报数**，须实测并标注 [示意]/<span class="badge badge-measured">实测</span>。
 
 ### 10.2 量级数字（标注示意/实测）
 
@@ -1211,7 +1211,7 @@ BENCHMARK(BM_FuncStaticFirstTime);
 
 ### 10.4 thread_local 线程创建成本
 
-每新建线程须为本线程分配所有 `thread_local` 副本（native TLS 由运行时预留；emulated TLS 见 ⑨-3 走 `malloc`）。线程频繁创建/销毁 + 大量 `thread_local` → 显著开销。**[经验]** 服务器优先固定大小线程池，避免短命线程放大 TLS 分配成本。
+每新建线程须为本线程分配所有 `thread_local` 副本（native TLS 由运行时预留；emulated TLS 见 ⑨-3 走 `malloc`）。线程频繁创建/销毁 + 大量 `thread_local` → 显著开销。**<span class="badge badge-exp">经验</span>** 服务器优先固定大小线程池，避免短命线程放大 TLS 分配成本。
 
 ### 10.5 缓存友好性
 
@@ -1305,7 +1305,7 @@ static/全局数据常驻 `.data`，多对象共享只读页；dynamic 堆对象
 
 **文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/numbers`（真实结构），行号：132（pi）/ 129（e）**
 
-> **示例 37** [难度 ★★★☆☆] [主题：标准库中的 inline 变量]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 标准库中的 inline 变量
 ```cpp
 // libstdc++-v3/include/std/numbers
 namespace std {
@@ -1323,7 +1323,7 @@ namespace std {
 
 **程序 30：模拟 `std::cout` 的 static 保证（库设计）**
 
-> **示例 38** [难度 ★★☆☆☆] [主题：std::iosbase::Init]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::iosbase::Init
 ```cpp
 // init_guard.cpp
 #include <cstdio>
@@ -1389,7 +1389,7 @@ int main() {
 
 **程序 31：嵌入式 static 配置进 `.data`，启动即用（无堆）**
 
-> **示例 39** [难度 ★★☆☆☆] [主题：嵌入式场景真实示例]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 嵌入式场景真实示例
 ```cpp
 // embedded_config.cpp  (bare-metal / RTOS)
 #include <cstdint>
@@ -1406,7 +1406,7 @@ uint32_t get_tick() { return g_tick_count; }
 
 **程序 32：volatile + static 映射硬件寄存器（ISR 可见）**
 
-> **示例 40** [难度 ★★☆☆☆] [主题：嵌入式场景真实示例]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 嵌入式场景真实示例
 ```cpp
 // embedded_reg.cpp
 #include <cstdint>
@@ -1487,16 +1487,16 @@ void clear_status() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：多 TU 静态库的符号冲突。** 你维护一个跨翻译单元的日志模块，全局 `LogBuffer` 在头文件中定义，多个 `.cpp` 包含后链接报 "multiple definition"。请用 `inline` 变量（C++17）或 `extern` 声明 + 单 TU 定义来解决，并用 ODR 解释为何要求单一定义。
-   - [标准] 内联变量在整个程序中恰有一个定义（ODR-used 时）；普通命名空间作用域变量需恰有一处定义、其余翻译单元为 `extern` 声明。
-   - [引用] ISO/IEC 14882:2023 §[basic.def.odr]（单一定义规则）；cppreference "One Definition Rule" 词条。
+   - <span class="badge badge-std">标准</span> 内联变量在整个程序中恰有一个定义（ODR-used 时）；普通命名空间作用域变量需恰有一处定义、其余翻译单元为 `extern` 声明。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.def.odr]（单一定义规则）；cppreference "One Definition Rule" 词条。
 
 2. **真实场景：嵌入式静态存储期配置表。** 固件里一个 `const` 查找表需放在 flash，且必须在 `main` 之前初始化完成。请用 `constinit`（C++20）约束其常量初始化，对比普通 `const` 全局的初始化时机。
-   - [标准] `constinit` 强制变量进行常量初始化（静态初始化阶段完成），避免跨 TU 动态初始化顺序不确定（SIOF）。
-   - [引用] ISO/IEC 14882:2023 §[dcl.constinit]（constinit 约束常量初始化）；cppreference "constinit" 词条。
+   - <span class="badge badge-std">标准</span> `constinit` 强制变量进行常量初始化（静态初始化阶段完成），避免跨 TU 动态初始化顺序不确定（SIOF）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.constinit]（constinit 约束常量初始化）；cppreference "constinit" 词条。
 
 3. **真实场景：局部静态的单例。** 你需要线程安全的懒汉单例，用函数内 `static` 局部变量。请说明其存储期（静态）与初始化（C++11 起线程安全）语义。
-   - [标准] 函数内静态局部变量的初始化自 C++11 起保证线程安全；其具有静态存储期，生命期贯穿整个程序。
-   - [引用] ISO/IEC 14882:2023 §[stmt.dcl]（块作用域静态变量的初始化）；cppreference "Static local variables" 词条。
+   - <span class="badge badge-std">标准</span> 函数内静态局部变量的初始化自 C++11 起保证线程安全；其具有静态存储期，生命期贯穿整个程序。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stmt.dcl]（块作用域静态变量的初始化）；cppreference "Static local variables" 词条。
 
 `[标准]`/`[实现]` 按以下顺序深入，从本章延伸到工具链源码：
 
@@ -1632,7 +1632,7 @@ void clear_status() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <cstdint>
@@ -1648,9 +1648,9 @@ int main() {
 }
 ```
 
-[标准] 具有静态存储期的变量在 `main` 之前完成初始化（常量初始化或零初始化），其存储不在栈上，故跨调用保持。
+<span class="badge badge-std">标准</span> 具有静态存储期的变量在 `main` 之前完成初始化（常量初始化或零初始化），其存储不在栈上，故跨调用保持。
 
-[引用] ISO/IEC 14882:2023 §[basic.stc.static]（静态存储期）；进一步可参考 cppreference "Storage duration" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.static]（静态存储期）；进一步可参考 cppreference "Storage duration" 词条。
 
 </details>
 
@@ -1660,7 +1660,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 // cfg.h  (被多个 .cpp 包含)
 inline int g_timeout_ms = 3000;          // C++17: inline 变量, 多 TU 合并为一份
@@ -1670,9 +1670,9 @@ namespace {
 }
 ```
 
-[标准] `inline` 变量（C++17 P0607）允许多个翻译单元出现同一实体的定义，链接器合并为单一实例，根治 ODR 多定义；匿名命名空间提供的是**内部链接**（每 TU 独立副本），适合"不希望跨 TU 共享"的常量，但若目标是"全局唯一共享对象"应优先用 `inline`。
+<span class="badge badge-std">标准</span> `inline` 变量（C++17 P0607）允许多个翻译单元出现同一实体的定义，链接器合并为单一实例，根治 ODR 多定义；匿名命名空间提供的是**内部链接**（每 TU 独立副本），适合"不希望跨 TU 共享"的常量，但若目标是"全局唯一共享对象"应优先用 `inline`。
 
-[引用] ISO C++17 内联变量（提案 P0607R0，并入 §[basic.def]/inline）允许多 TU 合并为单一实体；标准库自身即范例——`<numbers>` 以 `inline constexpr` 暴露 π、e 等常量（libstdc++ `<numbers>`）。详见 cppreference "inline" 词条。
+<span class="badge badge-ref">引用</span> ISO C++17 内联变量（提案 P0607R0，并入 §[basic.def]/inline）允许多 TU 合并为单一实体；标准库自身即范例——`<numbers>` 以 `inline constexpr` 暴露 π、e 等常量（libstdc++ `<numbers>`）。详见 cppreference "inline" 词条。
 
 </details>
 
@@ -1682,7 +1682,7 @@ namespace {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 struct Database { int open() const { return 1; } };
@@ -1693,9 +1693,9 @@ Database& get_db() {            // Meyers 单例: 局部 static 延迟到首次�
 int main() { std::cout << get_db().open() << "\n"; }
 ```
 
-[标准] 函数内的 `static` 局部变量初始化受编译器生成的 guard（GCC 为 `__cxa_guard_*`）保护，保证即使多线程首次并发调用也只构造一次，从而彻底规避跨 TU 的静态初始化顺序问题。
+<span class="badge badge-std">标准</span> 函数内的 `static` 局部变量初始化受编译器生成的 guard（GCC 为 `__cxa_guard_*`）保护，保证即使多线程首次并发调用也只构造一次，从而彻底规避跨 TU 的静态初始化顺序问题。
 
-[引用] ISO/IEC 14882:2023 §[basic.start.dynamic]（跨 TU 动态初始化顺序未指定）；Meyers 单例是 C++ Core Guidelines（isocpp.github.io）推荐的延迟初始化惯用法，也是 LLVM/Boost 中注册表初始化的常见写法。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.start.dynamic]（跨 TU 动态初始化顺序未指定）；Meyers 单例是 C++ Core Guidelines（isocpp.github.io）推荐的延迟初始化惯用法，也是 LLVM/Boost 中注册表初始化的常见写法。
 
 </details>
 
@@ -1712,7 +1712,7 @@ int g_timeout_ms = 3000;   // 被 6 个 .cpp 包含 -> 6 份定义 -> 链接报 
 ```
 
 **修复**：
-> **示例 44** [难度 ★☆☆☆☆] [主题：演绎 1：跨翻译单元共享配置——选 ]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：跨翻译单元共享配置——选
 ```cpp
 // cfg.h
 inline int g_timeout_ms = 3000;   // C++17: 多 TU 合并为一份, 链接零错误
@@ -1734,7 +1734,7 @@ Logger g_logger(g_config);  // 若 g_config 尚未初始化 -> 读到垃圾
 ```
 
 **修复**：
-> **示例 45** [难度 ★★☆☆☆] [主题：演绎 2：全局服务的初始化顺序——用]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：全局服务的初始化顺序——用
 ```cpp
 #include <iostream>
 struct Config { int timeout() const { return 3000; } };
@@ -1867,7 +1867,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 

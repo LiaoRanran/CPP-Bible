@@ -12,35 +12,35 @@
 > 求和、内积、前缀和——这些"把一串数折成一个值"的操作，在 STL 里被统一成了泛型算法。
 
 ### 0.1 起源（谁·何时·为何）
-`accumulate`、`inner_product`、`partial_sum`、`adjacent_difference` 等数值算法，本质是把函数式编程里的 **fold / reduce / scan** 思想搬进 C++，且泛型到能对任意类型与二元运算生效（不限于加法）。[史] Stepanov 把它们收进 `<numeric>`，与 `<algorithm>` 并列，强调"数值归约也是算法"，应当享受同样的迭代器解耦与复杂度保证。
+`accumulate`、`inner_product`、`partial_sum`、`adjacent_difference` 等数值算法，本质是把函数式编程里的 **fold / reduce / scan** 思想搬进 C++，且泛型到能对任意类型与二元运算生效（不限于加法）。<span class="badge badge-history">史</span> Stepanov 把它们收进 `<numeric>`，与 `<algorithm>` 并列，强调"数值归约也是算法"，应当享受同样的迭代器解耦与复杂度保证。
 
 ### 0.2 关键转折（编年）
-- C++98：`<numeric>` 算法随 STL 入标，奠定泛型归约基础。[史]
+- C++98：`<numeric>` 算法随 STL 入标，奠定泛型归约基础。<span class="badge badge-history">史</span>
 - C++11 起：lambda 让自定义归约运算更自然；C++17 引入**执行策略**让 `reduce`（有序性更弱的 `accumulate`）可并行，并新增 `transform_reduce`/`inclusive_scan` 等。
 - C++20：Ranges 版数值算法跟进。
 
 ### 0.3 设计哲学之争
-`accumulate` vs `reduce` 的差别很微妙：`accumulate` 严格按顺序折叠（结果可预测），`reduce` 允许重排以并行——这背后是"确定性 vs 性能"的取舍，浮点求和尤其敏感。[评] 另一个立场是"为何数值算法单独成头而非并入 `<algorithm>`"：语义上它们是"带初始值 + 二元运算"的归约，独立成头便于扩展（如后来的并行扫描）。[评]
+`accumulate` vs `reduce` 的差别很微妙：`accumulate` 严格按顺序折叠（结果可预测），`reduce` 允许重排以并行——这背后是"确定性 vs 性能"的取舍，浮点求和尤其敏感。<span class="badge badge-comment">评</span> 另一个立场是"为何数值算法单独成头而非并入 `<algorithm>`"：语义上它们是"带初始值 + 二元运算"的归约，独立成头便于扩展（如后来的并行扫描）。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++17 引入执行策略让 `reduce` 可并行、C++20 跟进 Ranges 数值算法。浮点结合律与并行扫描是后续支线。
 
-- [史] **`reduce` 允许重排，浮点要警惕**：`std::reduce` 不保证结合顺序，多线程分块求和会让浮点结果**不确定**（与 `accumulate` 的顺序折叠不同）——需要确定性时要么用 `accumulate`，要么用 Kahan 补偿求和包装二元运算。
-- [史] **C++17 的并行扫描入标**：`inclusive_scan`/`exclusive_scan`/`transform_inclusive_scan` 把"前缀和"做成标准算法，并可配合执行策略并行；此前前缀和得自己写循环。
-- [评] **数值算法留在 `<numeric>` 而非并入 `<algorithm>` 是刻意**：它们都带"初始值 + 二元运算"的归约语义，独立成头便于扩展（如后来的并行扫描），也避免和查找/排序类算法混为一谈。
-- [轶] **一个历史细节**：`std::accumulate` 的"初始值类型决定结果类型"——用 `int` 初值累加 `vector<long>` 会静默截断，社区常提醒"初值类型要与目标一致"，这是泛型归约的经典坑。
+- <span class="badge badge-history">史</span> **`reduce` 允许重排，浮点要警惕**：`std::reduce` 不保证结合顺序，多线程分块求和会让浮点结果**不确定**（与 `accumulate` 的顺序折叠不同）——需要确定性时要么用 `accumulate`，要么用 Kahan 补偿求和包装二元运算。
+- <span class="badge badge-history">史</span> **C++17 的并行扫描入标**：`inclusive_scan`/`exclusive_scan`/`transform_inclusive_scan` 把"前缀和"做成标准算法，并可配合执行策略并行；此前前缀和得自己写循环。
+- <span class="badge badge-comment">评</span> **数值算法留在 `<numeric>` 而非并入 `<algorithm>` 是刻意**：它们都带"初始值 + 二元运算"的归约语义，独立成头便于扩展（如后来的并行扫描），也避免和查找/排序类算法混为一谈。
+- <span class="badge badge-anecdote">轶</span> **一个历史细节**：`std::accumulate` 的"初始值类型决定结果类型"——用 `int` 初值累加 `vector<long>` 会静默截断，社区常提醒"初值类型要与目标一致"，这是泛型归约的经典坑。
 
 > 史料来源：[cppreference 数值算法](https://en.cppreference.com/w/cpp/algorithm)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
-## ① 概述：数值算法 [标准]
+## ① 概述：数值算法 <span class="badge badge-std">标准</span>
 
 [第100章　Ranges 算法与投影（C++20）](Book/part08_algorithms/ch100_ranges_algo.md)
 [第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)
 
 `<numeric>` 提供一组**归约（reduction）**与**扫描（scan）**算法，以及一组独立的数学工具。它们与 `<algorithm>` 的 `for_each`/`transform` 不同：核心是**把一段输入折叠成一个标量**，或**把前缀状态逐位置展开**。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：数值算法 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：数值算法 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 头文件与最重要的一组接口（C++17 起成熟，C++20/23 扩展）
 #include <numeric>      // accumulate/reduce/inner_product/partial_sum/scan/gcd/lcm/iota/midpoint/lerp
@@ -58,11 +58,11 @@ int main() {
 - `[标准]`：归约语义——`reduce` 对二元运算**只要求可交换+可结合**（顺序未指定）；`accumulate` 严格**从左到右**（`[numeric.ops]`）。这是两者最根本的标准层差异，也是第⑭节浮点坑的根源。
 - `[经验]`：凡"求总和/点积/范数"等可并行折叠的量，优先用 `<numeric>` 而非手写循环——既表达意图，又为并行执行策略（第⑦节）留口子。
 
-## ② accumulate / reduce（[实现]真实：reduce 内联/向量化汇编）[实现]
+## ② accumulate / reduce（<span class="badge badge-impl">实现</span>真实：reduce 内联/向量化汇编）<span class="badge badge-impl">实现</span>
 
 `std::accumulate` 自 C++98 起存在，严格顺序；`std::reduce` 自 C++17 起，允许任意结合顺序，因而可并行。
 
-> **示例 2** [难度 ★★★☆☆] [主题：[实现]真实：reduce 内联/向]
+> **示例 2** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
 ```cpp
 // 文件：Examples/_ch99_accumulate.cpp
 // 行号：10 (reduce_int) / 13 (accum_int) / 18 (reduce_dbl) / 21 (accum_dbl)
@@ -174,7 +174,7 @@ _Z10reduce_dblPKdy:
 
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：[实现]真实：reduce 内联/向]
+> **示例 3** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
 ```cpp
 // ② reduce 与 accumulate 在"整数 + 结合律"下结果一致，但语义不同
 #include <numeric>
@@ -189,7 +189,7 @@ int demo_diff() {
 }
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：[实现]真实：reduce 内联/向]
+> **示例 4** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
 ```cpp
 // ② 初值类型陷阱：用 0（int）会先把元素截断成 int 再累加 -> 溢出/截断
 #include <numeric>
@@ -210,7 +210,7 @@ void init_type_trap() {
 
 `std::inner_product` 是 "点积 + 广义加权累加"：先把两序列对应元素经二元变换相乘，再经另一二元运算累加。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：product]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · product
 ```cpp
 // 文件：Examples/_ch99_inner_product.cpp
 // 行号：9 (dot) / 14 (axpy_reduce)
@@ -236,7 +236,7 @@ int main() {
 }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：product]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · product
 ```cpp
 // ③ 用 inner_product 计算余弦相似度分子（两向量点积）
 #include <numeric>
@@ -247,7 +247,7 @@ double cosine_num(const std::vector<double>& a, const std::vector<double>& b) {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：product]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · product
 ```cpp
 // ③ 与 transform_reduce 的等价写法（见第⑤节）：inner_product 是"二元序列"特例
 #include <numeric>
@@ -265,7 +265,7 @@ double dot_via_tr(const std::vector<double>& a, const std::vector<double>& b) {
 
 "扫描"把**前缀状态**逐位置写出。`partial_sum` 是经典就地流式接口；C++17 起 `inclusive_scan`（含当前）/ `exclusive_scan`（不含当前）/ `transform_exclusive_scan` 提供更规范、可并行的版本。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：sum / inclusivesca]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · sum / inclusivesca
 ```cpp
 // 文件：Examples/_ch99_scan.cpp
 // 行号：9 (demo_partial) / 15 (demo_scan) / 21 (demo_exclusive)
@@ -302,7 +302,7 @@ void demo_exclusive() {
 int main() { demo_partial(); demo_scan(); demo_exclusive(); }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：sum / inclusivesca]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · sum / inclusivesca
 ```cpp
 // ④ exclusive_scan 的初值语义：out[0] = init，out[i] = op(out[i-1], in[i-1])
 #include <numeric>
@@ -321,7 +321,7 @@ void prefix_min_exclusive() {
 - `[标准]`：`inclusive_scan` 每个输出含当前元素；`exclusive_scan` 每个输出**不含**当前元素（即严格前缀）。二者在并行下要求二元运算可结合。
 - `[经验]`：做"前缀和/前缀最值/前缀积"时优先 `inclusive_scan`/`exclusive_scan`（可喂 `execution::par`），`partial_sum` 仅当需流式、单线程、且与旧代码兼容时使用。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：sum / inclusivesca]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · sum / inclusivesca
 ```
 ┌──────────────── 扫描数据流（inclusive）────────────────┐
 │ in :  1   2   3   4   5                                  │
@@ -338,7 +338,7 @@ void prefix_min_exclusive() {
 
 `std::transform_reduce` 是 `reduce` + 元素级变换的组合：先对输入做 unary op，再用 binary op 归约。它是**并行友好**的归约主力（点积、平方和、范数、映射后求和都用它）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：reduce]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · reduce
 ```cpp
 // ⑤ 映射到值后再归约：sum of squares
 #include <numeric>
@@ -352,7 +352,7 @@ double sum_of_squares(const std::vector<double>& a) {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：reduce]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · reduce
 ```cpp
 // ⑤ 双区间版本（a,b 对应元素先 binary op 再 reduce），等价点积
 #include <numeric>
@@ -366,7 +366,7 @@ double dot2(const std::vector<double>& a, const std::vector<double>& b) {
 }
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：reduce]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · reduce
 ```cpp
 // ⑤ 范数（L2）：sqrt(sum x^2)
 #include <numeric>
@@ -384,11 +384,11 @@ double l2_norm(const std::vector<double>& a) {
 - `[标准]`：单区间重载 `transform_reduce(first,last,init,reduce_op,unary_op)`；双区间 `transform_reduce(first1,last1,first2,init,reduce_op,binary_op)`。二元 `reduce_op` 需可交换可结合。
 - `[经验]`：把"映射 + 求和"写成一个 `transform_reduce`，比 `transform` 到临时容器再 `reduce` 少一轮遍历、缓存更友好。
 
-## ⑥ [实现]真实：transform_reduce 编译（可能向量化）[实现]
+## ⑥ <span class="badge badge-impl">实现</span>真实：transform_reduce 编译（可能向量化）<span class="badge badge-impl">实现</span>
 
 用与第②节相同的真实工具链编译 `transform_reduce`，看它到底有没有被向量化。
 
-> **示例 14** [难度 ★★★☆☆] [主题：[实现]真实：transformre]
+> **示例 14** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：transformre]
 ```cpp
 // 文件：Examples/_ch99_transform_reduce.cpp
 // 行号：10 (tr_square) / 17 (tr_mul) / 25 (tr_int)
@@ -550,7 +550,7 @@ _Z9tr_squarePKdy:
 
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：[实现]真实：transformre]
+> **示例 15** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：transformre]
 ```cpp
 // ⑥ 把上面两个编译结果落到"可读结论"：想要 SIMD，需要 -O3 + 合适 ISA + FP 重排许可
 // 本例 tr_square 在 -O2 不向量化，-O3 -mavx2 -ffast-math 才出 vmulpd/vaddpd（见第⑬节）
@@ -561,11 +561,11 @@ inline bool vectorized_only_at_o3() { return true; }   // 占位：结论见汇�
 - `[实现·GCC15.3.0]`：**本机实证**——`transform_reduce` 在 `-O2` 基线目标下是**标量 `mulsd`/`addsd` 循环**，加 `-ffast-math` 仍不向量化；只有在 `-O3 -mavx2 -ffast-math` 时才出现 `vmulpd`/`vaddpd`（256-bit AVX2，每次 4 个 double）。说明"用算法 ≠ 自动 SIMD"，向量化取决于优化级别、目标 ISA 与 FP 重排许可。
 - `[平台·x86-64]`：默认 x86-64 基线仅保证 SSE2；要 AVX2 必须显式 `-mavx2`（或 `-march=native`），否则编译器不敢用更宽向量。
 
-## ⑦ 并行执行策略与数据竞争 [经验]
+## ⑦ 并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>
 
 C++17 引入 `std::execution`：`seq`/`par`/`par_unseq`/`unseq`。归约类算法（reduce/transform_reduce/scan 家族）接受策略参数即可并行化**计算**，但前提是**归约运算可结合+可交换**且**没有数据竞争**。
 
-> **示例 16** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
+> **示例 16** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑦ 正确并行：归约内部无共享写，天然无数据竞争
 #include <numeric>
@@ -576,7 +576,7 @@ double par_sum(const std::vector<double>& a) {
 }
 ```
 
-> **示例 17** [难度 ★★★★☆] [主题：并行执行策略与数据竞争 [经验]]
+> **示例 17** [难度 ★★★★☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑦ 危险并行：在 op 里写共享状态 -> 数据竞争（UB）
 #include <numeric>
@@ -591,7 +591,7 @@ double par_with_race(const std::vector<double>& a, double& side_effect) {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
+> **示例 18** [难度 ★☆☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑦ 安全替代：把副作用移出归约（先算值，再单独处理）
 #include <numeric>
@@ -604,7 +604,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
+> **示例 19** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
 ```
 ┌──────────── 并行归约的线程划分（概念）────────────┐
 │ 输入 [0..N) 被切成块，各线程独立归约出局部和：     │
@@ -621,7 +621,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 
 归约的数值质量取决于**求和顺序**与**量级差异**。`1e15 + 1.0 - 1e15` 在浮点下可能直接得 `0` 而非 `1.0`（大数"吞掉"小数）。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：数值稳定性]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数值稳定性
 ```cpp
 // 文件：Examples/_ch99_stability.cpp
 // 行号：11 (cond_number) / 21 (compensated_pairwise)
@@ -654,7 +654,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：数值稳定性]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值稳定性
 ```cpp
 // ⑧ Kahan 补偿求和：用第二变量记住被舍入掉的部分，显著提升稳定性
 #include <vector>
@@ -671,7 +671,7 @@ double kahan(const std::vector<double>& v) {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：数值稳定性]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值稳定性
 ```cpp
 // ⑧ 朴素 vs 稳定：巨大 + 微小混合时差异明显
 #include <iostream>
@@ -687,11 +687,11 @@ void naive_vs_stable() {
 - `[标准]`：浮点加法**不满足结合律**（IEEE-754 舍入导致），这是第⑭节 `reduce` 不确定性的根因，也是数值稳定性的本质来源。
 - `[经验]`：金融/科学计算求和，优先 Kahan 或先排序；不要依赖 `reduce` 的任意顺序去"恰好"得到精确值。
 
-## ⑨ [经验]并行加速实测（chrono 真实数字）[经验]
+## ⑨ <span class="badge badge-exp">经验</span>并行加速实测（chrono 真实数字）<span class="badge badge-exp">经验</span>
 
 用 `std::chrono` 在本机实测 `execution::seq` 与 `execution::par` 的耗时差。**结论：本 MinGW 无 TBB，`par` 串行回退，ratio≈1。**
 
-> **示例 23** [难度 ★★☆☆☆] [主题：并行加速实测]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并行加速实测
 ```cpp
 // 文件：Examples/_ch99_par_bench.cpp
 // 行号：见 main：hardware_concurrency=32；seq/par 计时与 ratio 见下方真实输出
@@ -754,7 +754,7 @@ ratio(par/seq) = 1.00962  (≈1 表示串行回退)
 
 C++17 起 `<numeric>` 提供 `std::gcd`/`std::lcm`，取代手写的欧几里得/倍数计算，且对符号与零有明确定义。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // 文件：Examples/_ch99_gcd_lcm.cpp
 // 行号：8 (simplify_fraction) / 14 (ring_wrap)
@@ -778,7 +778,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // ⑩ 用 gcd 判断互质（RSA/数论常见）
 #include <numeric>
@@ -788,7 +788,7 @@ void coprime_check() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // ⑩ lcm 对零的定义：lcm(x,0)=0（与数学直觉一致，但注意别意外传 0）
 #include <numeric>
@@ -805,7 +805,7 @@ void lcm_zero() {
 
 `std::iota` 用**连续自增**填充区间，名字源自 APL 的 ⍳。适合快速生成 0..N、步进序列、索引数组。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // 文件：Examples/_ch99_iota.cpp
 // 行号：8 (fill_seq) / 14 (fill_steps)
@@ -830,7 +830,7 @@ void fill_steps() {
 int main() { fill_seq(); fill_steps(); }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // ⑪ 生成下标索引（常用于并行分区 / gather-scatter）
 #include <numeric>
@@ -843,7 +843,7 @@ std::vector<std::size_t> make_index(std::size_t n) {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // ⑪ 生成 0,2,4,6... 步进序列（iota 配合自定义迭代器语义）
 #include <numeric>
@@ -863,7 +863,7 @@ std::vector<int> even_seq(int n) {
 
 C++20 引入 `std::midpoint`（防溢出中点）与 `std::lerp`（线性插值）。两者都处理了边界/精度陷阱。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // 文件：Examples/_ch99_midpoint_lerp.cpp
 // 行号：10 (safe_mid) / 16 (anim)
@@ -888,7 +888,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // ⑫ midpoint 对指针/浮点也安全：浮点中点不会因大数而溢出
 #include <numeric>
@@ -900,7 +900,7 @@ void mid_fp() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：数值算法与并行执行策略]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
 ```cpp
 // ⑫ lerp 在 t=0/t=1 的边界保证：lerp(a,b,0)==a, lerp(a,b,1)==b
 #include <numeric>
@@ -919,7 +919,7 @@ void lerp_edges() {
 
 `<numeric>` 算法本身不"产生" SIMD，但**规整的归约循环 + 合适编译选项**可被自动向量化（第②/⑥节已实证）。衔接要点：循环体无数据依赖、步长固定、运算可重排。
 
-> **示例 33** [难度 ★★★☆☆] [主题：与 SIMD 衔接]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 SIMD 衔接
 ```cpp
 // 文件：Examples/_ch99_simd.cpp
 // 行号：11 (manual_simd_friendly) / 19 (compare_tr)
@@ -948,7 +948,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：与 SIMD 衔接]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 SIMD 衔接
 ```cpp
 // ⑬ 用 execution::par_unseq 显式允许"并行 + 向量化"两个条件
 #include <numeric>
@@ -961,7 +961,7 @@ double par_unseq_sum(const std::vector<double>& a) {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：与 SIMD 衔接]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 SIMD 衔接
 ```cpp
 // ⑬ 对齐 + 避免跨界：若用显式 intrinsic，需 aligned 分配（此处仅示意接口）
 #include <vector>
@@ -980,7 +980,7 @@ void simd_hint() {
 
 `reduce` 的并行/分块把加法**重新结合**，而 IEEE-754 浮点加法不结合，于是结果随策略/线程数/输入顺序**改变**（甚至同机器两次跑都不同）。
 
-> **示例 36** [难度 ★★☆☆☆] [主题：常见坑]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑
 ```cpp
 // 文件：Examples/_ch99_pitfall.cpp
 // 行号：10 (nonassoc) / 18 (fixed_associative)
@@ -1007,7 +1007,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：常见坑]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
 ```cpp
 // ⑭ 同样输入、不同结合顺序，浮点结果可能不同（示意，(1e-8)*N 与 1.0 的相对位置）
 #include <vector>
@@ -1021,7 +1021,7 @@ void reorder_demo() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：常见坑]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
 ```cpp
 // ⑭ 缓解：若必须 FP 归约且要确定性，用 seq + 固定顺序（牺牲并行）
 #include <vector>
@@ -1039,7 +1039,7 @@ double deterministic_fp(const std::vector<double>& v) {
 
 C++20 ranges 把管道（`|`）与算法结合；C++23 更引入 `ranges::fold_left` 等作为 `accumulate` 的现代化替代，并能与 `<numeric>` 的 `reduce` 混用。
 
-> **示例 39** [难度 ★★☆☆☆] [主题：与 ranges]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ranges
 ```cpp
 // 文件：Examples/_ch99_ranges.cpp
 // 行号：9 (rng_sum) / 15 (rng_fold)
@@ -1069,7 +1069,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：与 ranges]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges
 ```cpp
 // ⑮ C++23 ranges::fold_left 处理字符串拼接等二元折叠
 #include <ranges>
@@ -1082,7 +1082,7 @@ std::string join_words(const std::vector<std::string>& ws) {
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：与 ranges]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges
 ```cpp
 // ⑮ iota_view 生成无限/有限步进取前 N：替代手写 iota 填充
 #include <ranges>
@@ -1098,7 +1098,7 @@ std::vector<int> first_n(int n) {
 
 ## ⑯ 最佳实践
 
-> **示例 42** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 文件：Examples/_ch99_best_practice.cpp
 // 行号：11 (safe_mean) / 19 (kahan)
@@ -1134,7 +1134,7 @@ int main() {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑯ 实践3：归约初值用"单位元"——加法的单位元是 0，乘法的单位元是 1
 #include <numeric>
@@ -1146,7 +1146,7 @@ double product_of(const std::vector<double>& v) {
 }
 ```
 
-> **示例 44** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑯ 实践4：单线程小数据用 accumulate/reduce(seq)，少一层策略开销
 #include <numeric>
@@ -1162,7 +1162,7 @@ double small_sum(const std::vector<double>& v) {
 
 不同标准库/PSTL 后端对"并行算法"的实现差异很大，这是工业代码移植时最易踩的坑。
 
-> **示例 45** [难度 ★★☆☆☆] [主题：跨库差异]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库差异
 ```cpp
 // ⑰ 同一份并行代码，三套标准库行为可能不同（伪代码对比，非可编译单文件）
 // libstdc++ (GCC)    : par 需要 TBB 才多线程；否则串行回退（本章已实测）
@@ -1178,7 +1178,7 @@ double cross_lib(const std::vector<double>& a) {
 }
 ```
 
-> **示例 46** [难度 ★★☆☆☆] [主题：跨库差异]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库差异
 ```cpp
 // ⑰ 用宏隔离不同后端的并行开关（工程常见手法）
 #include <numeric>
@@ -1202,7 +1202,7 @@ double portable_sum(const std::vector<double>& a) {
 
 `reduce`/`accumulate` 的浮点结果不仅"不确定"，其**精度**也受顺序影响。理解误差累积是写对数值代码的前提。
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：浮点精度]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 浮点精度
 ```cpp
 // ⑱ 单精度 vs 双精度：归约误差量级不同
 #include <numeric>
@@ -1218,7 +1218,7 @@ void precision_diff() {
 }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：浮点精度]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 浮点精度
 ```cpp
 // ⑱ 用 std::lerp 做定点/归一化的稳定插值，避免手算 a+t*(b-a) 的抵消误差
 #include <numeric>
@@ -1238,7 +1238,7 @@ void stable_interp() {
 
 数值算法难调试，因为"结果只差几个 ULP"看不出。策略：先固定顺序（seq）验证正确性，再比较并行结果是否**近似**一致。
 
-> **示例 49** [难度 ★★☆☆☆] [主题：调试]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 ```cpp
 // 文件：Examples/_ch99_debug.cpp
 // 行号：9 (dump_reduce) / 16 (assert_det)
@@ -1271,7 +1271,7 @@ int main() {
 }
 ```
 
-> **示例 50** [难度 ★★★★☆] [主题：调试]
+> **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 调试
 ```cpp
 // ⑲ 用 sanitizer 抓数据竞争：编译加 -fsanitize=thread 跑并行版
 //   g++ -std=c++23 -O1 -fsanitize=thread _ch99_debug.cpp -o dbg && ./dbg
@@ -1284,7 +1284,7 @@ double tsan_target(const std::vector<double>& a) {
 }
 ```
 
-> **示例 51** [难度 ★★☆☆☆] [主题：调试]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 ```cpp
 // ⑲ 打印归约中间块和，定位"哪一段"贡献异常（调试大数组）
 #include <numeric>
@@ -1309,7 +1309,7 @@ void chunk_trace(const std::vector<double>& a) {
 
 > 此节汇总本章所有独立示例，便于一次性编译校验（路径均位于 `Examples/_ch99_*.cpp`）。
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C1 accumulate / reduce 对比（整数 + 浮点，含初值类型）
 #include <numeric>
@@ -1320,7 +1320,7 @@ long long demo_c1(const std::vector<long long>& v) {
 }
 ```
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C2 inner_product 点积
 #include <numeric>
@@ -1330,7 +1330,7 @@ double demo_c2(const std::vector<double>& a, const std::vector<double>& b) {
 }
 ```
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C3 transform_reduce 平方和
 #include <numeric>
@@ -1342,7 +1342,7 @@ double demo_c3(const std::vector<double>& a) {
 }
 ```
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C4 exclusive_scan 严格前缀
 #include <numeric>
@@ -1354,7 +1354,7 @@ std::vector<int> demo_c4(const std::vector<int>& v) {
 }
 ```
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C5 gcd/lcm
 #include <numeric>
@@ -1362,7 +1362,7 @@ std::vector<int> demo_c4(const std::vector<int>& v) {
 void demo_c5() { std::cout << std::gcd(12,18) << " " << std::lcm(4,6) << "\n"; }
 ```
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C6 iota 索引
 #include <numeric>
@@ -1372,7 +1372,7 @@ std::vector<int> demo_c6(int n) {
 }
 ```
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C7 midpoint/lerp 边界安全
 #include <numeric>
@@ -1385,7 +1385,7 @@ void demo_c7() {
 }
 ```
 
-> **示例 59** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C8 par_unseq 显式 SIMD+并行意图
 #include <numeric>
@@ -1397,7 +1397,7 @@ double demo_c8(const std::vector<double>& a) {
 }
 ```
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C9 ranges::fold_left 替代 accumulate
 #include <ranges>
@@ -1408,7 +1408,7 @@ int demo_c9(const std::vector<int>& v) {
 }
 ```
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
 ```cpp
 // C10 调试：整数 seq/par 必相等
 #include <numeric>
@@ -1426,16 +1426,16 @@ void demo_c10(const std::vector<long long>& v) {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：`reduce` 比 `accumulate` 能并行但结果可能不同。** 你求和浮点得不同顺序。请说明差异。
-   - [标准] `accumulate` 严格按序；`reduce` 允许重排元素（可并行），对浮点/非结合操作结果可能不同。
-   - [引用] ISO/IEC 14882:2023 §[numeric.ops]（accumulate / reduce）；cppreference "std::reduce" 词条。
+   - <span class="badge badge-std">标准</span> `accumulate` 严格按序；`reduce` 允许重排元素（可并行），对浮点/非结合操作结果可能不同。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[numeric.ops]（accumulate / reduce）；cppreference "std::reduce" 词条。
 
 2. **真实场景：用 `transform_reduce` 一步融合“变换+归约”。** 你算向量点积想并行。请说明。
-   - [标准] `transform_reduce` 将逐元素变换与归约合并，可配执行策略并行，且减少临时。
-   - [引用] ISO/IEC 14882:2023 §[numeric.ops]（transform_reduce）；cppreference "std::transform_reduce" 词条。
+   - <span class="badge badge-std">标准</span> `transform_reduce` 将逐元素变换与归约合并，可配执行策略并行，且减少临时。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[numeric.ops]（transform_reduce）；cppreference "std::transform_reduce" 词条。
 
 3. **真实场景：`reduce` 对二元操作要求可结合可交换。** 你用不可交换操作得到错误结果。请说明约束。
-   - [标准] `reduce` 重排元素顺序，故二元操作必须满足结合律与交换律，否则结果不确定。
-   - [引用] ISO/IEC 14882:2023 §[numeric.ops]（reduce 对操作的要求）；cppreference "std::reduce" 词条。
+   - <span class="badge badge-std">标准</span> `reduce` 重排元素顺序，故二元操作必须满足结合律与交换律，否则结果不确定。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[numeric.ops]（reduce 对操作的要求）；cppreference "std::reduce" 词条。
 
 | 算法 | 头文件 | C++ 版本 | 顺序 | 可并行 | 典型用途 |
 |---|---|---|---|---|---|
@@ -1461,7 +1461,7 @@ void demo_c10(const std::vector<long long>& v) {
 
 ### ㉒.1 历史渊源补强：从数值算法到并行归约
 
-[史] `<numeric>` 自 **C++98（STL）** 即存在，初代只有 `accumulate`、`inner_product`、`partial_sum`、`adjacent_difference` 等纯串行归约；其设计源自 Fortran/数值计算传统与 STL 的「迭代器 + 二元操作」范式。**C++11** 引入 `std::iota`（生成递增序列，名字致敬 APL 的 `⍳`）与 `std::gcd`/`std::lcm`（C++17）。[史] **C++17 的 P0024R2（并行算法）** 首次为归约引入 `std::reduce`/`std::transform_reduce`/`std::inclusive_scan`/`std::exclusive_scan`——`reduce` 不要求结合律顺序固定，从而能安全地并行/向量化；而 `accumulate` 因顺序固定（左折叠）**不能**并行。这是数值算法从「串行正确」走向「可并行、可向量化」的转折点。[评] `accumulate` 与 `reduce` 的语义差异（顺序敏感 vs 结合可重排）是本章最易混淆、也最影响性能的点。
+<span class="badge badge-history">史</span> `<numeric>` 自 **C++98（STL）** 即存在，初代只有 `accumulate`、`inner_product`、`partial_sum`、`adjacent_difference` 等纯串行归约；其设计源自 Fortran/数值计算传统与 STL 的「迭代器 + 二元操作」范式。**C++11** 引入 `std::iota`（生成递增序列，名字致敬 APL 的 `⍳`）与 `std::gcd`/`std::lcm`（C++17）。<span class="badge badge-history">史</span> **C++17 的 P0024R2（并行算法）** 首次为归约引入 `std::reduce`/`std::transform_reduce`/`std::inclusive_scan`/`std::exclusive_scan`——`reduce` 不要求结合律顺序固定，从而能安全地并行/向量化；而 `accumulate` 因顺序固定（左折叠）**不能**并行。这是数值算法从「串行正确」走向「可并行、可向量化」的转折点。<span class="badge badge-comment">评</span> `accumulate` 与 `reduce` 的语义差异（顺序敏感 vs 结合可重排）是本章最易混淆、也最影响性能的点。
 
 ### ㉒.2 真实工程坐标：数值算法活在哪些产品里
 
@@ -1489,7 +1489,7 @@ void demo_c10(const std::vector<long long>& v) {
 
 ### ㉒.4 与标准的互动：数值算法与 C++ 标准的演进
 
-[史] 数值算法随 **C++98（STL）** 落地（纯串行）；**C++11** 加 `std::iota`；**C++17** 经 **P0024R2** 引入 `std::reduce`/`transform_reduce`/`*_scan` 并接入执行策略（这是数值算法最大的现代化）；**C++20** 用 Ranges 提供 `ranges::fold_left`/`fold_right`（受 range-v3 启发，P2322R6）统一归约语义；**C++23** 又把 `fold` 家族补全。主线是「串行归约 → 可并行/向量化归约 → 约束化 fold」，WG21 持续在「性能可移植」与「确定性」之间权衡。
+<span class="badge badge-history">史</span> 数值算法随 **C++98（STL）** 落地（纯串行）；**C++11** 加 `std::iota`；**C++17** 经 **P0024R2** 引入 `std::reduce`/`transform_reduce`/`*_scan` 并接入执行策略（这是数值算法最大的现代化）；**C++20** 用 Ranges 提供 `ranges::fold_left`/`fold_right`（受 range-v3 启发，P2322R6）统一归约语义；**C++23** 又把 `fold` 家族补全。主线是「串行归约 → 可并行/向量化归约 → 约束化 fold」，WG21 持续在「性能可移植」与「确定性」之间权衡。
 - **修订/采纳**：**P0202（ constexpr 数值算法，C++20）** 让 `std::accumulate`/`std::reduce` 等可在编译期归约；**P0024R2（C++17）** 引入 `std::reduce`/`transform_reduce`/`*_scan` 并接入执行策略，使归约可并行/向量化；**P2322R6（C++23）** 用 `ranges::fold_*` 统一归约语义（[P0202](https://wg21.link/P0202)）。
 - **ISO 条款与理由**：数值算法在 **[numeric]**；委员会在 `std::reduce` 上刻意不保证运算顺序（与 `std::accumulate` 相反），正是为了换取并行/向量化的自由——代价是浮点结果不确定，标准因此要求用户自行接受容差（见 ch99 正文踩坑）。
 
@@ -1502,7 +1502,7 @@ void demo_c10(const std::vector<long long>& v) {
 
 ## 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 62** [难度 ★★☆☆☆] [主题：附录 E：数值算法底层与工业 [E:]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：数值算法底层与工业 [E:
 ```
 数值算法工业应用:
 
@@ -1520,7 +1520,7 @@ ClickHouse:
   std::inner_product用于buy/sell net position → 热路径, 需inline展开 + SIMD
 ```
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：附录 E：数值算法底层与工业 [E:]
+> **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：数值算法底层与工业 [E:
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1597,7 +1597,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1613,9 +1613,9 @@ int main() {
 }
 ```
 
-[标准] `accumulate(first, last, init, op=plus)` 以 `init` 为初值，对区间元素依次 `op(acc, x)`。初值类型即结果类型；拼接字符串用 `std::string("")` 作初值。
+<span class="badge badge-std">标准</span> `accumulate(first, last, init, op=plus)` 以 `init` 为初值，对区间元素依次 `op(acc, x)`。初值类型即结果类型；拼接字符串用 `std::string("")` 作初值。
 
-[引用] cppreference `std::accumulate`：`https://en.cppreference.com/w/cpp/algorithm/accumulate`。`init` 类型即结果类型的行为见 ISO §27.10.2（[numeric.ops.accumulate]）。
+<span class="badge badge-ref">引用</span> cppreference `std::accumulate`：`https://en.cppreference.com/w/cpp/algorithm/accumulate`。`init` 类型即结果类型的行为见 ISO §27.10.2（[numeric.ops.accumulate]）。
 
 </details>
 
@@ -1625,7 +1625,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 65** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1637,9 +1637,9 @@ int main() {
 }
 ```
 
-[标准] `inner_product` 同时做「乘后加」与「加后乘」两个可定制操作，默认即点积 `Σ a[i]*b[i]`。初值 0 决定结果类型（整数）。注意两区间长度须匹配，否则越界。
+<span class="badge badge-std">标准</span> `inner_product` 同时做「乘后加」与「加后乘」两个可定制操作，默认即点积 `Σ a[i]*b[i]`。初值 0 决定结果类型（整数）。注意两区间长度须匹配，否则越界。
 
-[引用] cppreference `std::inner_product`：`https://en.cppreference.com/w/cpp/algorithm/inner_product`。
+<span class="badge badge-ref">引用</span> cppreference `std::inner_product`：`https://en.cppreference.com/w/cpp/algorithm/inner_product`。
 
 </details>
 
@@ -1649,7 +1649,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 66** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1665,9 +1665,9 @@ int main() {
 }
 ```
 
-[标准] `transform_reduce` 是 `transform` + `reduce` 的融合，支持执行策略实现并行规约；`0.0` 初值确保结果为 `double` 而非被截断为 `int`。相比「先 transform 到中间容器再 accumulate」，它单次遍历且不物化中间序列。
+<span class="badge badge-std">标准</span> `transform_reduce` 是 `transform` + `reduce` 的融合，支持执行策略实现并行规约；`0.0` 初值确保结果为 `double` 而非被截断为 `int`。相比「先 transform 到中间容器再 accumulate」，它单次遍历且不物化中间序列。
 
-[引用] cppreference `std::transform_reduce`：`https://en.cppreference.com/w/cpp/algorithm/transform_reduce`；执行策略：`https://en.cppreference.com/w/cpp/algorithm/execution`。`reduce` 不保证结合顺序，故二元操作必须可交换/结合（见 ISO §25.3.1）。
+<span class="badge badge-ref">引用</span> cppreference `std::transform_reduce`：`https://en.cppreference.com/w/cpp/algorithm/transform_reduce`；执行策略：`https://en.cppreference.com/w/cpp/algorithm/execution`。`reduce` 不保证结合顺序，故二元操作必须可交换/结合（见 ISO §25.3.1）。
 
 </details>
 
@@ -1679,7 +1679,7 @@ int main() {
 
 **常见错误（text）**：
 
-> **示例 67** [难度 ★☆☆☆☆] [主题：演绎 1：并行规约——reduce ]
+> **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：并行规约——reduce
 ```cpp
 // 错误写法（std::accumulate 不接受执行策略，以下为反模式示意，本身不可编译）:
 //   auto s = std::accumulate(std::execution::par, v.begin(), v.end(), 0);
@@ -1687,7 +1687,7 @@ int main() {
 
 **修复（cpp）**：用 `std::reduce`（带执行策略重载）做并行规约。
 
-> **示例 68** [难度 ★☆☆☆☆] [主题：演绎 1：并行规约——reduce ]
+> **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：并行规约——reduce
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1709,7 +1709,7 @@ int main() {
 
 **常见错误（text）**：
 
-> **示例 69** [难度 ★☆☆☆☆] [主题：演绎 2：初值类型决定结果类型]
+> **示例 69** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：初值类型决定结果类型
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1723,7 +1723,7 @@ int main() {
 
 **修复（cpp）**：用 `0.0` 作初值，结果类型即 `double`。
 
-> **示例 70** [难度 ★★☆☆☆] [主题：演绎 2：初值类型决定结果类型]
+> **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：初值类型决定结果类型
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1980,7 +1980,7 @@ flowchart TD
 
 ### D4.5 第一方可编译验证（accumulate / reduce / partial_sum）
 
-> **示例 71** [难度 ★★☆☆☆] [主题：第一方可编译验证]
+> **示例 71** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
 ```cpp
 #include <iostream>
 #include <numeric>
@@ -2107,7 +2107,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 72** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <numeric>

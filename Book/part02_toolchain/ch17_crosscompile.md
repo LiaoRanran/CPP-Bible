@@ -14,35 +14,35 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-嵌入式与移动设备的处理器（ARM、RISC-V、MIPS…）和开发者的电脑（x86-64）不是同一种架构。你没法在 ARM Cortex-M 上装编译器慢慢编，于是必须**在宿主机（host）上生成目标机（target）的代码**——这就是交叉编译。[史][评] 它源自 Unix 时代的多平台移植需求，GNU 工具链从设计之初就用 `--target`/三元组（`arm-none-eabi`、`aarch64-linux-gnu` 等）把"为谁编译"与"在谁上编译"解耦。[史] 对 C++ 而言，挑战还在于标准库与运行时（libstdc++/libc++）也要换成目标平台的版本。
+嵌入式与移动设备的处理器（ARM、RISC-V、MIPS…）和开发者的电脑（x86-64）不是同一种架构。你没法在 ARM Cortex-M 上装编译器慢慢编，于是必须**在宿主机（host）上生成目标机（target）的代码**——这就是交叉编译。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 它源自 Unix 时代的多平台移植需求，GNU 工具链从设计之初就用 `--target`/三元组（`arm-none-eabi`、`aarch64-linux-gnu` 等）把"为谁编译"与"在谁上编译"解耦。<span class="badge badge-history">史</span> 对 C++ 而言，挑战还在于标准库与运行时（libstdc++/libc++）也要换成目标平台的版本。
 
 ### 0.2 关键转折（编年）
 
-- **1980s–**：GNU 工具链（GCC + binutils）天然支持交叉编译，三元组约定成为事实标准。[史]
-- **嵌入式 C++**：委员会曾于 1990s 推出"Embedded C++"（删减异常/RTL 等）子集以适配资源受限设备，虽未成主流但反映真实诉求。[史]
-- **2010s 起**：ARM GCC 工具链、厂商 SDK 把交叉编译做成一键安装，降低门槛。[史]
+- **1980s–**：GNU 工具链（GCC + binutils）天然支持交叉编译，三元组约定成为事实标准。<span class="badge badge-history">史</span>
+- **嵌入式 C++**：委员会曾于 1990s 推出"Embedded C++"（删减异常/RTL 等）子集以适配资源受限设备，虽未成主流但反映真实诉求。<span class="badge badge-history">史</span>
+- **2010s 起**：ARM GCC 工具链、厂商 SDK 把交叉编译做成一键安装，降低门槛。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-嵌入式 C++ 的路线之争长期存在：一派主张"用完整 C++，靠编译器关掉昂贵特性（异常、RTTI）"，另一派（Embedded C++ 支持者）主张"从语言层面裁剪子集"。[史][评] 现实中前者胜出——现代嵌入式多用 `-fno-exceptions`、静态分配等工程手段而非换语言。交叉编译还牵扯 ABI 与浮点约定（soft/hard float），这些"看不见的契约"决定了二进制能否在板子上跑起来。[评]
+嵌入式 C++ 的路线之争长期存在：一派主张"用完整 C++，靠编译器关掉昂贵特性（异常、RTTI）"，另一派（Embedded C++ 支持者）主张"从语言层面裁剪子集"。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 现实中前者胜出——现代嵌入式多用 `-fno-exceptions`、静态分配等工程手段而非换语言。交叉编译还牵扯 ABI 与浮点约定（soft/hard float），这些"看不见的契约"决定了二进制能否在板子上跑起来。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] RISC-V 的崛起带来全新交叉工具链：riscv64-linux-gnu / riscv32-elf 等三元组快速成熟，GCC/Clang 均原生支持，使"为开放指令集交叉编译 C++"成为新主流选项。
-- [史] Zephyr、RT-Thread 等 RTOS 生态把交叉编译做成"选板子即选工具链"，配合 CMake toolchain 文件，开发者几乎不必再手写 `--target` 与 sysroot。
-- [史] C++20/23 的标准库（libstdc++/libc++）持续补齐对裸机/小内存目标的支持，但异常与 RTTI 在 MCU 上仍常被 `-fno-exceptions` 关闭，沿用"完整 C++ + 工程裁剪"的胜出路线。
-- [评] 交叉编译的真正难点不在编译，而在 ABI、浮点约定（soft/hard float）与运行时能否在板子上跑起来——这些"看不见的契约"比指令集本身更易翻车。
+- <span class="badge badge-history">史</span> RISC-V 的崛起带来全新交叉工具链：riscv64-linux-gnu / riscv32-elf 等三元组快速成熟，GCC/Clang 均原生支持，使"为开放指令集交叉编译 C++"成为新主流选项。
+- <span class="badge badge-history">史</span> Zephyr、RT-Thread 等 RTOS 生态把交叉编译做成"选板子即选工具链"，配合 CMake toolchain 文件，开发者几乎不必再手写 `--target` 与 sysroot。
+- <span class="badge badge-history">史</span> C++20/23 的标准库（libstdc++/libc++）持续补齐对裸机/小内存目标的支持，但异常与 RTTI 在 MCU 上仍常被 `-fno-exceptions` 关闭，沿用"完整 C++ + 工程裁剪"的胜出路线。
+- <span class="badge badge-comment">评</span> 交叉编译的真正难点不在编译，而在 ABI、浮点约定（soft/hard float）与运行时能否在板子上跑起来——这些"看不见的契约"比指令集本身更易翻车。
 
 > 史料来源：RISC-V 国际 https://riscv.org/ ；Zephyr 实时操作系统 https://www.zephyrproject.org/
 
-## ① 概述：什么是交叉编译 [标准]
+## ① 概述：什么是交叉编译 <span class="badge badge-std">标准</span>
 
 [第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)
 [第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)
 
 **交叉编译（cross compilation）** = 在**宿主机（host，如 x86-64 Windows）**上编译出运行在**目标机（target，如 ARM Cortex-M）**上的可执行代码。与之相对的是**原生编译（native compilation）**：host == target。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：什么是交叉编译 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：什么是交叉编译 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 一个完全可移植的“Hello 资源占用”目标程序——它不关心谁编译它
 // 文件：Examples/_ch17_hello.cpp（正文示意，不强制运行）
@@ -54,11 +54,11 @@ int add(int a, int b) { return a + b; }   // 同一份源码，x86 或 ARM 都�
 - `[标准]`：ISO C++ 本身不规定“在哪编译、在哪运行”，这是**工具链/ABI 层**问题；语言只要求可移植程序在符合实现的平台给出一致语义。
 - `[经验]`：当你说“arm-none-eabi-g++ 编不过”时，问题几乎从不出在 C++ 标准，而在**目标三件套**（头/库/链接脚本）缺失。
 
-## ② 目标三元组（arch-vendor-os-abi） [平台]
+## ② 目标三元组（arch-vendor-os-abi） <span class="badge badge-platform">平台</span>
 
 **目标三元组（target triple）**形如 `arch-vendor-os-abi`，是工具链定位“为谁生成代码”的字符串。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：目标三元组]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标三元组
 ```cpp
 // ② 三元组拆解（注释示意，非运行代码）
 // arm      - none   - eabi        : GNU Arm Embedded，裸机嵌入式
@@ -68,7 +68,7 @@ int add(int a, int b) { return a + b; }   // 同一份源码，x86 或 ARM 都�
 // riscv32 - unknown - elf        : RISC-V 32 位裸机 ELF
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：目标三元组]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标三元组
 ```cpp
 // ② 用宏确认“编译目标是谁”——同一份源码，不同三元组得到不同 __SIZEOF/宏
 #include <cstdio>
@@ -86,11 +86,11 @@ int main() {
 - `[平台·x86-64]`：本机三元组为 `x86_64-w64-mingw32`；`__x86_64__` 由预处理器定义，可用于条件编译隔离平台代码。
 - `[平台·ARM]`：ARM 裸机定义 `__ARM_ARCH`、`__thumb__`；ARM64 定义 `__aarch64__`。
 
-## ③ sysroot 与库 [标准]
+## ③ sysroot 与库 <span class="badge badge-std">标准</span>
 
 **sysroot** 是交叉工具链的“目标系统根目录”，内含目标专用的头文件与库（如 `sysroot/usr/include`、`sysroot/lib`）。编译器用 `--sysroot=<dir>` 把它当作逻辑 `/`。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：与库 [标准]]
+> **示例 4** [难度 ★☆☆☆☆] [主题：与库 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ 交叉编译时，#include <cstdio> 解析到“目标 sysroot 里的 libc++/libstdc++ 头”
 // 而非宿主机 /usr/include。这正是交叉与原生的根本差异之一。
@@ -98,7 +98,7 @@ int main() {
 int main() { std::printf("built for target\n"); return 0; }
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：与库 [标准]]
+> **示例 5** [难度 ★☆☆☆☆] [主题：与库 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ 指定 sysroot 的编译调用（arm-none-eabi-gcc 本机未装，仅示意）
 // arm-none-eabi-g++ --sysroot=/opt/arm/sysroot -std=c++23 main.cpp -o main.elf
@@ -108,11 +108,11 @@ int main() { std::printf("built for target\n"); return 0; }
 - `[标准]`：`--sysroot` 改变 `#include` 搜索根与链接时 `-l` 的查找根；它**不影响语言语义**，只改变“找到哪套头/库”。
 - `[经验]`：交叉编译报错 `fatal error: cstddef: No such file` 几乎都是 **sysroot/C++ 标准库头没装**或路径错，而非代码错。
 
-## ④ 裸机 vs Linux 目标 [平台]
+## ④ 裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
 
 两类目标差异巨大：`bare-metal`（无 OS，自己写启动/向量表）与 `Linux`（有内核、libc、动态链接器）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：裸机 vs Linux 目标 [平台]
+> **示例 6** [难度 ★★☆☆☆] [主题：裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
 ```cpp
 // ④ 裸机程序：必须自己定义入口，不能有 main 依赖 libc 的初始化
 extern "C" void _start() {              // 复位向量跳到这里
@@ -121,7 +121,7 @@ extern "C" void _start() {              // 复位向量跳到这里
 // 链接：arm-none-eabi-ld -T script.ld -o fw.elf start.o
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：裸机 vs Linux 目标 [平台]
+> **示例 7** [难度 ★☆☆☆☆] [主题：裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
 ```cpp
 // ④ Linux 目标：可以正常用 main + libc + 系统调用
 #include <cstdlib>
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
 
 本机是 x86-64 MinGW-W64，采用 **Microsoft x64 调用约定**（非 System V）：前 4 个整数参数依次进 `RCX, RDX, R8, R9`，第 5、6 个压栈；调用方还需预留 **32 字节 shadow space（影子空间）**。
 
-> **示例 8** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：用本机 g]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实：用本机 g
 ```cpp
 // 文件：Examples/_ch17_callconv.cpp，行号：8（sum6 定义）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch17_callconv.cpp -o Examples/_ch17_callconv.asm
@@ -167,7 +167,7 @@ _Z4sum6llllll:
 
 **GNU Arm Embedded（arm-none-eabi-gcc）**是 Cortex-M/R 裸机的事实标准工具链。它用 **AAPCS（ARM Architecture Procedure Call Standard）**：前 4 个整数参数进 `R0–R3`，第 5 个起压栈；返回 32 位值走 `R0`，64 位走 `R0:R1`。
 
-> **示例 9** [难度 ★★★☆☆] [主题：嵌入式工具链]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 嵌入式工具链
 ```cpp
 // ⑥ 同一 sum6 在 ARM 上的源码——本体与 x86 完全一致（C++ 可移植）
 struct Point { long x, y; };
@@ -192,7 +192,7 @@ Point make_point(long x, long y);
 - `[平台·ARM]`：ARM **AAPCS** 用 `R0–R3` 传前 4 个整数参数，第 5 个起才入栈——这与 x86 的“4 寄存器 + 影子空间”数量巧合相同，但**寄存器名/栈偏移语义不同**。
 - `[经验]`：把参数控制在 4 个以内（或聚合到 ≤16 字节结构）在 ARM 上能显著减少栈 traffic——跨平台优化要同时看两套 ABI。
 
-## ⑦ CMake 交叉编译工具链文件 [标准]
+## ⑦ CMake 交叉编译工具链文件 <span class="badge badge-std">标准</span>
 
 CMake 通过**工具链文件（toolchain file）**把“编译器、系统名、根路径”一次性声明，业务 `CMakeLists.txt` 保持平台无关。
 
@@ -207,7 +207,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 [标准]]
+> **示例 10** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 业务代码完全不感知交叉：CMakeLists 里照常 add_executable
 // CMakeLists.txt 片段（示意）：
@@ -220,11 +220,11 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 - `[标准]`：`CMAKE_SYSTEM_NAME=Generic` 告诉 CMake **不要**执行任何宿主机探测；`FIND_ROOT_PATH_MODE_*` 防止 `find_package` 误用宿主机的库。
 - `[经验]`：工具链文件**只设变量、不做具体编译**，具体 `-mcpu` 等应放进 `CMAKE_<LANG>_FLAGS_INIT`（见示例文件第 15 行）。
 
-## ⑧ newlib / picolibc 对比 [平台]
+## ⑧ newlib / picolibc 对比 <span class="badge badge-platform">平台</span>
 
 裸机没有 glibc（它依赖 Linux 系统调用），于是用 **newlib**（经典）或 **picolibc**（更轻、面向嵌入式）作为 C/C++ 运行时。它们把 `read/write/_sbrk` 等留给用户实现的 **syscall 桩（syscall stubs）**。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：对比 [平台]]
+> **示例 11** [难度 ★★☆☆☆] [主题：对比 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑧ newlib 需要一个 _sbrk 桩来支撑 malloc/自由存储（否则 new 也会失败）
 extern "C" {
@@ -238,7 +238,7 @@ extern "C" {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：对比 [平台]]
+> **示例 12** [难度 ★☆☆☆☆] [主题：对比 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑧ picolibc 更小：可裁剪 printf 浮点支持，适合 32KB RAM 的 MCU
 // 链接时选 picolibc 而非 newlib：-specs=picolibc.specs
@@ -249,11 +249,11 @@ int diag() { return std::snprintf(nullptr, 0, "%d", 42); }  // 尺寸敏感
 - `[平台·ARM]`：newlib 生态成熟、文档多；picolibc 由 Keith Packard 维护，针对 Cortex-M 做了尺寸与启动整合，binary 更小。
 - `[经验]`：若 `new` 抛 `std::bad_alloc` 或 `printf` 打印乱码，先查 **syscall 桩是否齐备**（尤其是 `_sbrk`、`_write`）。
 
-## ⑨ QEMU 用户态模拟运行 [平台]
+## ⑨ QEMU 用户态模拟运行 <span class="badge badge-platform">平台</span>
 
 **QEMU** 能无需真实硬件就跑目标二进制：`qemu-arm` 做用户态模拟（系统调用转译到宿主），`qemu-system-arm` 模拟整块板子。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：用户态模拟运行 [平台]]
+> **示例 13** [难度 ★☆☆☆☆] [主题：用户态模拟运行 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑨ 一个普通的 Linux 目标程序，既能真机跑，也能 qemu 跑
 #include <cstdio>
@@ -272,11 +272,11 @@ int main() {
 - `[平台·ARM]`：`qemu-arm`/`qemu-aarch64` 是**用户态**模拟——只翻译应用与其系统调用，启动极快，适合单元测试。
 - `[经验]`：QEMU 用户态**不能**模拟外设寄存器（`0x40020014` 这类 MMIO 会段错误）；要测裸机外设得用 `qemu-system-arm` + 设备树或 semihosting。
 
-## ⑩ 固件/镜像生成 [平台]
+## ⑩ 固件/镜像生成 <span class="badge badge-platform">平台</span>
 
 裸机最终产物是 **ELF**（含调试信息）与烧录用的 **bin/hex（纯机器码 + 加载地址）**。工具链用 `objcopy` 抽取，用链接脚本定地址。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：固件/镜像生成 [平台]]
+> **示例 14** [难度 ★★☆☆☆] [主题：固件/镜像生成 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑩ 复位向量表：第一项 SP 初值，第二项 Reset_Handler 入口
 // 文件：Examples/_ch17_baremetal.cpp，行号：16（_start）
@@ -300,7 +300,7 @@ extern "C" void _start() {
 
 取第⑤节的 `manhattan(Point)` 与 `make_point`，对比两套 ABI 对同一语义的不同寄存器分配：
 
-> **示例 15** [难度 ★★★☆☆] [主题：[实现·GCC15]对比：x86 与]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]对比：x86 与
 ```cpp
 // 文件：Examples/_ch17_callconv.cpp，行号：13（manhattan）/ 16（make_point）
 struct Point { long x, y; };
@@ -331,11 +331,11 @@ _Z9manhattan5Point:
 - `[实现·GCC15]`：x86 把 16 字节结构塞进**单个 RCX**（高低 32 位各装一个 `long`）；ARM **AAPCS** 则把它拆成 `R0`(x) 与 `R1`(y) 两个寄存器——同一结构体，两套截然不同的参数布局。
 - `[平台·x86-64]` vs `[平台·ARM]`：这就是交叉编译的核心难点——**C++ 语义一致，机器契约不同**，移植时寄存器映射/对齐/调用约定都要重估。
 
-## ⑫ 大小端/对齐差异 [标准]
+## ⑫ 大小端/对齐差异 <span class="badge badge-std">标准</span>
 
 **端序（endianness）**决定多字节数在内存的字节序；**对齐（alignment）**决定对象允许的内存地址模数。二者都会让“同样代码、不同目标”产生不同行为或性能。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：大小端/对齐差异 [标准]]
+> **示例 16** [难度 ★☆☆☆☆] [主题：大小端/对齐差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 端序探测：小端机 0x01020304 在内存为 04 03 02 01
 #include <cstdint>
@@ -345,7 +345,7 @@ bool is_little_endian() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：大小端/对齐差异 [标准]]
+> **示例 17** [难度 ★★☆☆☆] [主题：大小端/对齐差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 对齐：alignas 提升对齐以满足 SIMD 加载要求（如 AVX 需 32 字节）
 #include <cstddef>
@@ -364,11 +364,11 @@ alignas(32) static char dma_buf[128];     // 该数组地址必须是 32 的倍�
 - `[标准]`：C++ 用 `alignas`/`alignof` 表达对齐意图；端序无标准内建，需运行时探测（如上）。
 - `[平台·ARM]`：Cortex-M 传统为**小端**，但支持 Big-Endian（BE-8）配置；未对齐访问在老 ARM 上会 **HardFault**，x86 则多付性能代价即可。
 
-## ⑬ 调试（openocd/gdbserver/J-Link） [平台]
+## ⑬ 调试（openocd/gdbserver/J-Link） <span class="badge badge-platform">平台</span>
 
 嵌入式调试三件套：**调试器硬件（J-Link/ST-Link/OpenOCD 支持的目标）** + **OpenOCD（守护，桥接 USB↔GDB）** + **GDB（含交叉 gdb，如 arm-none-eabi-gdb）**。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试
 ```cpp
 // ⑬ 调试版应保留符号与帧指针，关闭过度优化
 // arm-none-eabi-g++ -std=c++23 -g3 -Og -mcpu=cortex-m4 main.cpp -o fw.elf
@@ -394,7 +394,7 @@ void toggle() { g_dbg ^= 1; }    // 在 GDB 里设断点、watch g_dbg
 
 嵌入式 FLASH 宝贵。核心手段：`-Os`（为尺寸优化）、`-ffunction-sections -fdata-sections`（每函数/变量独立段）、`--gc-sections`（链接期丢弃未引用段）。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：体积优化]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 体积优化
 ```cpp
 // 文件：Examples/_ch17_sizeopt.cpp，行号：7（active，被引用）/ 11（dead，未引用）
 #include <cstdint>
@@ -423,11 +423,11 @@ int unused_var = 99;     // 未引用 -> 期望被 GC
 - `[实现·GCC15]`：`-ffunction-sections` 让每个函数进独立 `.text.<fn>` 段，`--gc-sections` 从入口可达性分析丢弃死段——**这正是嵌入式瘦身的主菜**。
 - `[经验]`：`-Os` 与 `-O2` 在本例 text 差异很小，真正的大头是 **GC 掉死代码/死数据**；模板膨胀时 `-ffunction-sections --gc-sections` 收益惊人。
 
-## ⑮ [经验]嵌入式 C++ 子集（禁用 RTTI/异常/STL 的部分） [经验]
+## ⑮ <span class="badge badge-exp">经验</span>嵌入式 C++ 子集（禁用 RTTI/异常/STL 的部分） <span class="badge badge-exp">经验</span>
 
 资源受限目标常禁用**异常、RTTI、部分 STL**，改用 `-fno-exceptions -fno-rtti -fno-use-cxa-atexit`，并以静态/池化分配替代自由存储。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：嵌入式 C++ 子集]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 嵌入式 C++ 子集
 ```cpp
 // ⑮ 禁用异常后，不能依赖栈展开；用 std::optional / 错误码替代 throw
 #include <cstdint>
@@ -439,7 +439,7 @@ int unused_var = 99;     // 未引用 -> 期望被 GC
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：嵌入式 C++ 子集]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 嵌入式 C++ 子集
 ```cpp
 // ⑮ 禁用 RTTI 后 dynamic_cast/typeid 不可用；用 variant / 显式 tag 分发
 #include <cstdint>
@@ -452,7 +452,7 @@ uint32_t dispatch(const Msg& m) {          // 用 tag 而非 dynamic_cast
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：嵌入式 C++ 子集]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 嵌入式 C++ 子集
 ```cpp
 // ⑮ 用静态缓冲区替代动态 new（避免堆碎片与不可预测延迟）
 #include <cstddef>
@@ -466,22 +466,22 @@ void* operator new(std::size_t n) {        // 极简静态分配器示意
 - `[经验]`：禁用异常能**显著减小二进制并消除栈展开表**，但代价是必须全程用错误码/optional——这是工程权衡，不是“更好”。
 - `[平台·ARM]`：Cortex-M 上未处理异常/中断里的异常会触发 HardFault；裸机工程普遍 `--no-exceptions` 以求确定性。
 
-## ⑯ 常见坑 [经验]
+## ⑯ 常见坑 <span class="badge badge-exp">经验</span>
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
+> **示例 23** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 坑1：FPU 选项与固件不一致 -> 一进浮点就 HardFault
 // 编译用 -mfloat-abi=hard，但启动代码未初始化 FPU（或未设 CP10/CP11）：必崩
 float scale(float x) { return x * 3.14f; }   // 需 FPU 已使能
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
+> **示例 24** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 坑2：链接脚本的 _ebss/_estack 与启动代码符号名对不上 -> 堆栈/堆错位
 extern char _ebss;    // 启动文件里若叫 __bss_end__，这里就链接失败或堆错位
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
+> **示例 25** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 坑3：int 宽度假设。x86/ARM 桌面与 Cortex-M 的 int 都是 32 位，
 // 但指针在 Cortex-M 是 32 位、在 AArch64 是 64 位——把指针存进 int 会截断！
@@ -493,11 +493,11 @@ void good(uintptr_t p) { intptr_t safe = (intptr_t)p; }  // ✅ 用 intptr_t
 - `[经验]`：坑 1、2 是裸机“点灯都点不亮”的头号元凶；坑 3 是**跨位宽移植**（32→64）的经典陷阱，必须用 `intptr_t/uintptr_t`。
 - `[标准]`：`intptr_t/uintptr_t`（`<cstdint>`）保证能完整容纳 `void*`，是跨平台指针↔整数转换的唯一标准手段。
 
-## ⑰ 与主机工具协作（host tool） [平台]
+## ⑰ 与主机工具协作（host tool） <span class="badge badge-platform">平台</span>
 
 交叉构建常需要**主机工具（host tool）**：在宿主机运行、但产出目标数据的程序（如资源编译器、代码生成器、协议打包器）。它们必须用**宿主编译器**编，不能进交叉链路。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：与主机工具协作（host tool）]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与主机工具协作（host tool）
 ```cpp
 // ⑰ 主机工具：把字体/图片编译成 C 数组（在 x86 上跑，产出 .cpp 给目标用）
 // 用宿主 g++ 编译：g++ -std=c++23 gen_font.cpp -o gen_font
@@ -518,9 +518,9 @@ int main() {
 - `[平台]`：错误地把 host tool 交给交叉编译器，会得到**不能在宿主运行**的 ARM 二进制——典型报错 `cannot execute binary file: Exec format error`。
 - `[经验]`：构建系统里 host tool 与 target 必须**两套 toolchain**：host tool 用原生 gcc，target 用 arm-none-eabi-g++。
 
-## ⑱ 最佳实践 [经验]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 27** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 27** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 实践1：平台相关代码集中到 arch_xxx 命名空间 + 编译期分发，避免散落 ifdef
 namespace arch {
@@ -536,7 +536,7 @@ namespace arch {
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 28** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 实践2：对所有外设寄存器用 volatile 且显式宽度，杜绝“优化掉 MMIO”
 #include <cstdint>
@@ -544,7 +544,7 @@ volatile uint32_t& GPIOA_ODR = *reinterpret_cast<uint32_t*>(0x40020014u);
 void set_led(bool on) { if (on) GPIOA_ODR |= (1u<<5); else GPIOA_ODR &= ~(1u<<5); }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 29** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 实践3：用 static_assert 固化跨平台假设，趁早 fail
 static_assert(sizeof(void*) == 4 || sizeof(void*) == 8, "指针宽度假设失效");
@@ -554,7 +554,7 @@ static_assert(alignof(double) <= 8, "double 对齐超预期");
 - `[经验]`：把**所有 `#ifdef 平台`收口到少数 arch 适配层**，业务代码保持纯净——这是跨平台工程可维护性的命脉。
 - `[标准]`：`static_assert` 是编译期契约，跨目标重建时能立刻暴露假设漂移，优于运行时崩溃。
 
-## ⑲ 跨平台构建矩阵 [平台]
+## ⑲ 跨平台构建矩阵 <span class="badge badge-platform">平台</span>
 
 一个代码库常为多目标产出多镜像。下表是本工程实测/规划的交叉构建组合（ARM 行为标注“典型”，本机无交叉链）：
 
@@ -565,7 +565,7 @@ static_assert(alignof(double) <= 8, "double 对齐超预期");
 | ARM64 Linux | `aarch64-linux-gnu` | libstdc++/glibc | `-O2` | ❌ 未装 |
 | RISC-V 32 裸机 | `riscv32-unknown-elf` | newlib | `-Os -gc-sections` | ❌ 未装 |
 
-> **示例 30** [难度 ★★☆☆☆] [主题：跨平台构建矩阵 [平台]]
+> **示例 30** [难度 ★★☆☆☆] [主题：跨平台构建矩阵 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑲ 矩阵里每个目标共享同一份业务逻辑，仅编译标志/标准库不同
 struct Firmware {
@@ -582,23 +582,23 @@ constexpr Firmware kMatrix[] = {
 - `[平台·x86-64]`：本机已用真实 g++ 13.1.0 验证调用约定/对齐/体积数据，是矩阵里**唯一可本机复现**的单元格。
 - `[经验]`：CI 中应把“可本机验证”的目标（如宿主 x86-64 的单元/算法测试）与“仅交叉产出”的目标分开跑，避免交叉链缺失阻塞整个流水线。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：同一 `long` 在 64 位 Linux 与 Windows 宽度不同。** 你把 `sizeof(long)` 的结果序列化进协议，跨平台解析错位。请说明基础类型大小的保证边界。
-   - [标准] 基础类型的大小是实现定义的；`int` 至少 16 位、`long` 至少 32 位，具体宽度由实现决定（LP64 vs LLP64）。
-   - [引用] ISO/IEC 14882:2023 §[basic.fundamental]（基础类型与宽度）；cppreference "Fundamental types" 词条。
+   - <span class="badge badge-std">标准</span> 基础类型的大小是实现定义的；`int` 至少 16 位、`long` 至少 32 位，具体宽度由实现决定（LP64 vs LLP64）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.fundamental]（基础类型与宽度）；cppreference "Fundamental types" 词条。
 
 2. **真实场景：网络字节序解析在大端机“正常”、小端机错乱。** 你直接 `memcpy` 收来的 4 字节到 `uint32_t` 没转字节序。请说明对象表示的端序归属。
-   - [标准] 对象在内存中的字节序（端序）是实现定义的，标准不规定多字节标量的字节排列。
-   - [引用] ISO/IEC 14882:2023 §[basic.types]（对象表示与值表示）；cppreference "Object representation" 词条。
+   - <span class="badge badge-std">标准</span> 对象在内存中的字节序（端序）是实现定义的，标准不规定多字节标量的字节排列。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.types]（对象表示与值表示）；cppreference "Object representation" 词条。
 
 3. **真实场景：目标平台要求 16 字节对齐的 DMA 缓冲。** 你用 `alignas` 声明缓冲，但 `malloc` 返回的普通指针不满足。请说明对齐的查询与指定手段。
-   - [标准] 可用 `alignof` 查询类型对齐、`alignas` 增强声明对齐；实际分配须由支持该对齐的分配器提供。
-   - [引用] ISO/IEC 14882:2023 §[basic.align] / [dcl.align]（对齐与 alignas）；cppreference "alignof / alignas" 词条。
+   - <span class="badge badge-std">标准</span> 可用 `alignof` 查询类型对齐、`alignas` 增强声明对齐；实际分配须由支持该对齐的分配器提供。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.align] / [dcl.align]（对齐与 alignas）；cppreference "alignof / alignas" 词条。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 31** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 三元组 → 工具链前缀 速查（编译时 -target / 工具链文件里设置）
 // x86_64-w64-mingw32     -> x86_64-w64-mingw32-g++   （本机即用）
@@ -640,7 +640,7 @@ constexpr Firmware kMatrix[] = {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：交叉编译的来龙去脉
-[史] 交叉编译源自 GNU Autotools 的 `--host/--build/--target` 三元组约定，解决"在 x86 主机上为 ARM 目标生成代码"的需求，是 Unix 工具链的传统能力。[史] Buildroot 由 Erik Andersen（uClibc 作者）于 2001 年前后发起，用 Makefile 森林一键生成嵌入式 Linux 镜像。[史] Yocto / OpenEmbedded 由 Linux Foundation 于 2010 年整合发布，提供配方（recipe）级别的可定制发行版构建。[史] crosstool-NG 是 crosstool 的社区继任者，用于构建交叉工具链本身。[评] 主线：手工 configure 三元组 → 工具链生成器（crosstool-NG）→ 系统构建框架（Buildroot 轻量 / Yocto 重量），sysroot 是贯穿始终的"目标根文件系统"抽象。
+<span class="badge badge-history">史</span> 交叉编译源自 GNU Autotools 的 `--host/--build/--target` 三元组约定，解决"在 x86 主机上为 ARM 目标生成代码"的需求，是 Unix 工具链的传统能力。<span class="badge badge-history">史</span> Buildroot 由 Erik Andersen（uClibc 作者）于 2001 年前后发起，用 Makefile 森林一键生成嵌入式 Linux 镜像。<span class="badge badge-history">史</span> Yocto / OpenEmbedded 由 Linux Foundation 于 2010 年整合发布，提供配方（recipe）级别的可定制发行版构建。<span class="badge badge-history">史</span> crosstool-NG 是 crosstool 的社区继任者，用于构建交叉工具链本身。<span class="badge badge-comment">评</span> 主线：手工 configure 三元组 → 工具链生成器（crosstool-NG）→ 系统构建框架（Buildroot 轻量 / Yocto 重量），sysroot 是贯穿始终的"目标根文件系统"抽象。
 
 ### ㉒.2 真实工程坐标：交叉编译活在哪些产品/项目里
 
@@ -666,9 +666,9 @@ constexpr Firmware kMatrix[] = {
 - 库版本漂移：目标 sysroot 的 glibc 比主机工具链旧，用到新符号导致"编译过、启动即 SIGSEGV"。
 
 ### ㉒.4 与标准的互动：交叉编译与 C++ 标准的演进
-[评] 交叉编译完全是工具链工程问题，不在 ISO C++ 标准正文；但 C++ 标准保证"源级可移植"，使同一份 C++ 能经不同目标后端编译——模块化（C++20）与 freestanding 子集中对嵌入式 subset 的讨论（WG21 SG14 游戏/嵌入式方向）正与交叉/裸机场景相关。[评] 属工程实践层，无单独"交叉编译提案"，但标准对 freestanding 的界定影响裸机工具链设计。
+<span class="badge badge-comment">评</span> 交叉编译完全是工具链工程问题，不在 ISO C++ 标准正文；但 C++ 标准保证"源级可移植"，使同一份 C++ 能经不同目标后端编译——模块化（C++20）与 freestanding 子集中对嵌入式 subset 的讨论（WG21 SG14 游戏/嵌入式方向）正与交叉/裸机场景相关。<span class="badge badge-comment">评</span> 属工程实践层，无单独"交叉编译提案"，但标准对 freestanding 的界定影响裸机工具链设计。
 
-- [史] 交叉编译本身是工具链问题，不在 ISO 正文；但标准对 **freestanding（独立实现）** 的界定（ISO/IEC 14882 §[compliance]/[intro.compliance]）直接决定裸机/嵌入式工具链能提供哪些标准设施。WG21 **SG14（游戏/嵌入式方向）** 长期推动扩充 freestanding 设施（如 C++23 起纳入更多 `<cmath>`/`<memory>` 子集），使同一份 C++ 能在没有 OS 的目标上编译——这是标准与交叉/裸机场景的真实交汇点。
+- <span class="badge badge-history">史</span> 交叉编译本身是工具链问题，不在 ISO 正文；但标准对 **freestanding（独立实现）** 的界定（ISO/IEC 14882 §[compliance]/[intro.compliance]）直接决定裸机/嵌入式工具链能提供哪些标准设施。WG21 **SG14（游戏/嵌入式方向）** 长期推动扩充 freestanding 设施（如 C++23 起纳入更多 `<cmath>`/`<memory>` 子集），使同一份 C++ 能在没有 OS 的目标上编译——这是标准与交叉/裸机场景的真实交汇点。
 
 ### ㉒.5 权威引用
 - https://buildroot.org/ ：Buildroot 官方站，证明 Erik Andersen 2001 嵌入式镜像构建框架。
@@ -679,32 +679,32 @@ constexpr Firmware kMatrix[] = {
 
 ## 附录: 交叉编译实战
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 交叉编译实战
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Cross-compile: gcc-arm-none-eabi for Cortex-M. aarch64-linux-gnu-gcc for ARM64 Linux."<<std::endl;return 0;}
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 交叉编译实战
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CMake toolchain: set(CMAKE_SYSTEM_NAME Generic); set(CMAKE_C_COMPILER arm-none-eabi-gcc)."<<std::endl;return 0;}
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 交叉编译实战
 ```cpp
 #include <iostream>
 #include <cstdint>
 int main(){uint32_t x=0x12345678;std::cout<<"Endian check: "<<(*(uint8_t*)&x==0x78?"little":"big")<<" endian"<<std::endl;return 0;}
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 交叉编译实战
 ```cpp
 #include <iostream>
 int main(){std::cout<<"QEMU: qemu-arm -L /usr/arm-linux-gnueabi ./app. Docker: FROM arm64v8/ubuntu."<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 交叉编译实战
 ```cpp
 #include <iostream>
 #include <vector>
@@ -713,7 +713,7 @@ int main(){std::vector<int> v(3,7);std::cout<<v.size()<<std::endl;return 0;}
 
 ## 附录 A：工业交叉编译 [B: Principle / F: Industry / H: Design / I: Practice / J: Learning]
 
-> **示例 37** [难度 ★★★☆☆] [主题：附录 A：工业交叉编译 [B: Pr]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业交叉编译 [B: Pr
 ```
 交叉编译工业场景:
 - 嵌入式: arm-none-eabi-gcc (Cortex-M), aarch64-linux-gnu-gcc (ARM64 Linux)
@@ -758,7 +758,7 @@ aarch64-linux-gnu-gcc -std=c++20 --sysroot=/path/to/rpi-rootfs -O2 main.cpp -o a
 
 Android NDK: `clang++ --target=aarch64-linux-android21` → arm64-v8a .so
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录 F：交叉编译工具链细节]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：交叉编译工具链细节
 ```cpp
 #include <iostream>
 int main(){std::cout<<"STM32=arm-none-eabi, RPi=aarch64-linux-gnu, Android=NDK clang"<<std::endl;return 0;}
@@ -780,7 +780,7 @@ set(CMAKE_C_COMPILER arm-none-eabi-gcc)
 set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录 H：CMake交叉编译配置]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：CMake交叉编译配置
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CMake cross: CMAKE_SYSTEM_NAME+compiler+sysroot=3 key settings"<<std::endl;return 0;}
@@ -798,7 +798,7 @@ int main(){std::cout<<"CMake cross: CMAKE_SYSTEM_NAME+compiler+sysroot=3 key set
 嵌入式通常禁用: 异常(-fno-exceptions), RTTI(-fno-rtti), 动态内存(无malloc/new)
 可用的: constexpr, template, static_assert, enum class, [[nodiscard]]
 
-> **示例 40** [难度 ★★☆☆☆] [主题：附录 I：嵌入式C++特性限制]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 I：嵌入式C++特性限制
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Embedded: -fno-exceptions -fno-rtti -fno-rtti. Use constexpr+template+static_assert instead."<<std::endl;return 0;}
@@ -817,7 +817,7 @@ int main(){std::cout<<"Embedded: -fno-exceptions -fno-rtti -fno-rtti. Use conste
 常量放到Flash: const/constexpr变量自动放入.rodata段(Flash)
 避免动态内存: pool allocator替代malloc, stack allocation替代heap
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 J：嵌入式C++性能优化]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 J：嵌入式C++性能优化
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. pool>heap."<<std::endl;return 0;}
@@ -861,7 +861,7 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 **真实场景：CI 矩阵里的目标鉴别。** 你在 CI 里同时给 x86-64 和 ARM64 构建，需要代码能自报架构以选择正确的内联汇编 / intrinsics。请用预定义宏探测本机架构，并说明交叉编译目标三元组 `arch-vendor-os-abi` 各部分对应什么。
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 
@@ -877,15 +877,15 @@ int main() {
 }
 ```
 
-[标准] 结论：三元组精确描述"为哪种 CPU/系统/ABI 生成代码"，是交叉工具链的身份证。
+<span class="badge badge-std">标准</span> 结论：三元组精确描述"为哪种 CPU/系统/ABI 生成代码"，是交叉工具链的身份证。
 
-[引用] 三元组约定来自 GNU `config.sub`（autotools）；GCC 预定义宏手册（https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html ，如 `__x86_64__`/`__aarch64__`）用于探测本机架构。
+<span class="badge badge-ref">引用</span> 三元组约定来自 GNU `config.sub`（autotools）；GCC 预定义宏手册（https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html ，如 `__x86_64__`/`__aarch64__`）用于探测本机架构。
 
 ### 练习 2（难度 ★★★）
 
 **真实场景：固件里的紧凑报文布局。** 你要把一个状态结构体通过 SPI/网络发出去，两端必须用完全一致的字节布局，否则解释错位。请写程序对比默认对齐与 `#pragma pack` 后的大小，说明网络/Flash 二进制布局为何要显式控制对齐。
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -902,9 +902,9 @@ int main() {
 }
 ```
 
-[标准] 结论：默认对齐为访问效率插入 padding；跨设备/落盘二进制需 `#pragma pack` 或 `_Alignas` 固定布局，否则两端解释错位。
+<span class="badge badge-std">标准</span> 结论：默认对齐为访问效率插入 padding；跨设备/落盘二进制需 `#pragma pack` 或 `_Alignas` 固定布局，否则两端解释错位。
 
-[引用] ISO C++ §[basic.align] 与 cppreference 对齐（https://en.cppreference.com/w/cpp/language/object#Alignment ）讲对象对齐；MSVC `#pragma pack`（https://learn.microsoft.com/en-us/cpp/preprocessor/pack ）讲如何显式压缩结构体布局。
+<span class="badge badge-ref">引用</span> ISO C++ §[basic.align] 与 cppreference 对齐（https://en.cppreference.com/w/cpp/language/object#Alignment ）讲对象对齐；MSVC `#pragma pack`（https://learn.microsoft.com/en-us/cpp/preprocessor/pack ）讲如何显式压缩结构体布局。
 
 ### 练习 3（难度 ★★★★）
 
@@ -917,7 +917,7 @@ set(CMAKE_C_COMPILER   arm-linux-gnueabihf-gcc)
 set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 
@@ -930,9 +930,9 @@ int main() {
 }
 ```
 
-[标准] 结论：toolchain 文件把"编译器/系统/根目录(sysroot)"集中配置，使同一份 CMakeLists 既能本机也能交叉构建。
+<span class="badge badge-std">标准</span> 结论：toolchain 文件把"编译器/系统/根目录(sysroot)"集中配置，使同一份 CMakeLists 既能本机也能交叉构建。
 
-[引用] CMake《交叉编译工具链》（https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html ）讲 `CMAKE_SYSTEM_NAME`/编译器前缀/`CMAKE_SYSROOT` 的集中配置；GCC 预定义宏（https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html ，如 `__arm__`）用于区分交叉构建。
+<span class="badge badge-ref">引用</span> CMake《交叉编译工具链》（https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html ）讲 `CMAKE_SYSTEM_NAME`/编译器前缀/`CMAKE_SYSROOT` 的集中配置；GCC 预定义宏（https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html ，如 `__arm__`）用于区分交叉构建。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -948,7 +948,7 @@ arm-linux-gnueabihf-g++ app.cpp -o app_arm
 qemu-arm -L /usr/arm-linux-gnueabihf ./app_arm   # 在 x86 宿主机跑 ARM 二进制
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：演绎 1：用 QEMU 用户态在 x]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 QEMU 用户态在 x
 ```cpp
 #include <iostream>
 int main() { std::cout << "QEMU 用户态冒烟测试通过\n"; }
@@ -967,7 +967,7 @@ int main() { std::cout << "QEMU 用户态冒烟测试通过\n"; }
 set(CMAKE_SYSROOT /opt/arm-sysroot)   # 只搜目标的 include/lib
 ```
 
-> **示例 46** [难度 ★★★☆☆] [主题：演绎 2：sysroot 隔离目标系]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：sysroot 隔离目标系
 ```cpp
 #include <iostream>
 int main() { std::cout << "sysroot 锁定目标头与库，避免宿主污染\n"; }

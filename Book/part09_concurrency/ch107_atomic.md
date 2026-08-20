@@ -16,34 +16,34 @@
 > 在 C++11 之前，标准连"一次不被打断的读或写"都给不出承诺。
 
 ### 0.1 起源（谁·何时·为何）
-C++98/03 的内存模型是**单线程**的：标准根本不讨论多线程，更没有"原子操作"的概念。要写并发程序，程序员只能直接调用平台 API——POSIX 的 `pthread`、Windows 的 `Interlocked*`、或编译器内建（`__sync_*`）。[史] 但底层硬件早就有原子指令（x86 的 `LOCK` 前缀、比较并交换 CAS），只是 C++ 这一层既看不见它，也无法给"跨线程可见性"任何保证。多核普及后，一个线程改了普通变量、另一个线程却看到半截或乱序的值，这类 bug 极其隐蔽。Hans Boehm 等人长期推动：C++ 必须正式定义"什么算数据竞争、原子操作意味着什么"，否则并发程序无从可移植地推理。[史]
+C++98/03 的内存模型是**单线程**的：标准根本不讨论多线程，更没有"原子操作"的概念。要写并发程序，程序员只能直接调用平台 API——POSIX 的 `pthread`、Windows 的 `Interlocked*`、或编译器内建（`__sync_*`）。<span class="badge badge-history">史</span> 但底层硬件早就有原子指令（x86 的 `LOCK` 前缀、比较并交换 CAS），只是 C++ 这一层既看不见它，也无法给"跨线程可见性"任何保证。多核普及后，一个线程改了普通变量、另一个线程却看到半截或乱序的值，这类 bug 极其隐蔽。Hans Boehm 等人长期推动：C++ 必须正式定义"什么算数据竞争、原子操作意味着什么"，否则并发程序无从可移植地推理。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- C++98/03：无并发语义，并发全靠平台库。[史]
-- Boost.Atomic（Helge Bahmann 等）：把原子类型与内存序做成可移植库，成为事实先例。[史]
-- **C++11（2011）**：正式引入 `<atomic>` 与 `std::atomic<T>`，首次定义内存模型；`std::atomic` 的接口大量吸纳自 Boost.Atomic。[史]
+- C++98/03：无并发语义，并发全靠平台库。<span class="badge badge-history">史</span>
+- Boost.Atomic（Helge Bahmann 等）：把原子类型与内存序做成可移植库，成为事实先例。<span class="badge badge-history">史</span>
+- **C++11（2011）**：正式引入 `<atomic>` 与 `std::atomic<T>`，首次定义内存模型；`std::atomic` 的接口大量吸纳自 Boost.Atomic。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-C++ 面临两条路：一是暴露编译器/硬件内建（如 GCC 的 `__atomic`、Windows 的 `Interlocked`），二是把原子做成一个**类型安全的模板** `std::atomic<T>`。委员会选了后者——它把"原子性"绑在**类型**上，编译器能据此禁止对普通 `int` 做无保护并发访问，也避免宏/内建在不同平台语义漂移。[评] 代价是：`std::atomic<T>` 在某些类型上可能悄悄退化成加锁的"原子"（非 lock-free），后来用 `is_always_lock_free` / `is_lock_free()` 来揭示。把"数据竞争"定为**未定义行为（UB）**而非"实现定义"，在当时也颇有争议：它把责任交给了程序员与优化器。[史]
+C++ 面临两条路：一是暴露编译器/硬件内建（如 GCC 的 `__atomic`、Windows 的 `Interlocked`），二是把原子做成一个**类型安全的模板** `std::atomic<T>`。委员会选了后者——它把"原子性"绑在**类型**上，编译器能据此禁止对普通 `int` 做无保护并发访问，也避免宏/内建在不同平台语义漂移。<span class="badge badge-comment">评</span> 代价是：`std::atomic<T>` 在某些类型上可能悄悄退化成加锁的"原子"（非 lock-free），后来用 `is_always_lock_free` / `is_lock_free()` 来揭示。把"数据竞争"定为**未定义行为（UB）**而非"实现定义"，在当时也颇有争议：它把责任交给了程序员与优化器。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 原子类型在 C++11 定型后，仍在"更细的控制"与"更弱的开销"两条线上演进。
 
-- C++20 新增 `std::atomic_ref`，给既有普通对象"套上"原子语义而无需改其类型；同时 `std::atomic<std::shared_ptr<T>>`（提案 P0514）让智能指针也能无锁地共享/读写。[史]
-- C++20 给所有原子加了 `wait` / `notify_one` / `notify_all`（提案 P1135），让"自旋忙等"能换成高效的阻塞等待，无需再手写 `std::mutex` 做事件通知。[史]
-- 同源的 C++20 还引入 `std::latch`、`std::barrier`、`std::counting_semaphore`，把"多线程序幕同步"从手写标志提升为标准化原语。[史]
-- [轶] 一个长期被低估的事实：`std::atomic<T>` 对稍大的结构体（如含两个指针的节点）在多数平台会悄悄退化为加锁实现；`is_lock_free()` / `is_always_lock_free` 正是为暴露这点而生，很多无锁算法上线前都栽在"我以为它无锁"。
-- C++23 起，更多类型被纳入"可平凡原子化"的考量，SIMD 与异质内存的原子访问仍是活跃研究方向。[史]
+- C++20 新增 `std::atomic_ref`，给既有普通对象"套上"原子语义而无需改其类型；同时 `std::atomic<std::shared_ptr<T>>`（提案 P0514）让智能指针也能无锁地共享/读写。<span class="badge badge-history">史</span>
+- C++20 给所有原子加了 `wait` / `notify_one` / `notify_all`（提案 P1135），让"自旋忙等"能换成高效的阻塞等待，无需再手写 `std::mutex` 做事件通知。<span class="badge badge-history">史</span>
+- 同源的 C++20 还引入 `std::latch`、`std::barrier`、`std::counting_semaphore`，把"多线程序幕同步"从手写标志提升为标准化原语。<span class="badge badge-history">史</span>
+- <span class="badge badge-anecdote">轶</span> 一个长期被低估的事实：`std::atomic<T>` 对稍大的结构体（如含两个指针的节点）在多数平台会悄悄退化为加锁实现；`is_lock_free()` / `is_always_lock_free` 正是为暴露这点而生，很多无锁算法上线前都栽在"我以为它无锁"。
+- C++23 起，更多类型被纳入"可平凡原子化"的考量，SIMD 与异质内存的原子访问仍是活跃研究方向。<span class="badge badge-history">史</span>
 
 > 史料来源：https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1135r6.html · https://en.cppreference.com/w/cpp/atomic/atomic
 
-## ① 概述：为什么需要原子操作与 data race [标准]
+## ① 概述：为什么需要原子操作与 data race <span class="badge badge-std">标准</span>
 
 [第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)
 
 多线程同时读写同一普通变量而缺乏同步，即构成**数据竞争（data race）**——这是 C++ 标准中未定义行为（UB），结果不可预测，且会被编译器优化彻底破坏。`std::atomic<T>` 提供**不可分割**的读写与读-改-写（RMW）操作，并附带**内存序（memory order）**约束，使并发访问既安全又可推理。
 
-> **示例 1** [难度 ★★★★☆] [主题：概述：为什么需要原子操作与 data]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 概述：为什么需要原子操作与 data
 ```cpp
 // ① 没有原子保护的计数器：data race（UB）
 #include <thread>
@@ -51,7 +51,7 @@ int bad_counter = 0;                 // 普通 int，多写并发 = data race
 void worker_bad() { for (int i = 0; i < 100000; ++i) ++bad_counter; }
 ```
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：为什么需要原子操作与 data]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：为什么需要原子操作与 data
 ```cpp
 // ① 用原子类型消除 data race
 #include <atomic>
@@ -76,11 +76,11 @@ flowchart LR
     F -->|"获取 观测到"| C
 ```
 
-## ② std::atomic 模板与特化（atomic<int>/bool/指针） [标准]
+## ② std::atomic 模板与特化（atomic<int>/bool/指针） <span class="badge badge-std">标准</span>
 
 `std::atomic<T>` 是模板；标准对常见类型提供特化与完整（fully-specialized）别名，以保证 lock-free 与最优布局：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：模板与特化]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与特化
 ```cpp
 // ② 主模板与标准特化别名
 #include <atomic>
@@ -90,7 +90,7 @@ std::atomic<long long>     a_ll{0};
 std::atomic<unsigned>      a_u{1};
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：模板与特化]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与特化
 ```cpp
 // ② 标准提供的 typedef 别名（与上面等价、可读性更佳）
 #include <atomic>
@@ -100,7 +100,7 @@ std::atomic_bool           ab{false}; // atomic<bool>
 std::atomic_size_t         asz{0};    // atomic<size_t>
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：模板与特化]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与特化
 ```cpp
 // ② 整型原子可做的运算远多于 bool：bool 仅支持 store/load/exchange/test
 #include <atomic>
@@ -116,11 +116,11 @@ int main() {
 - `[标准]`：原子特化均为 **POD-like**，平凡可构造/可析构；`is_trivially_copyable_v<atomic<T>>` 为真。
 - `[经验]`：优先用 `atomic_int` / `atomic_size_t` 等别名，避免与 `volatile int` 混淆（见 ⑮）。
 
-## ③ load/store 的内存可见性 [标准]
+## ③ load/store 的内存可见性 <span class="badge badge-std">标准</span>
 
 `load()` 读、`store()` 写是原子的基本操作。它们都接受 `memory_order` 参数，默认 `memory_order_seq_cst`（顺序一致，最严格也最慢）：
 
-> **示例 6** [难度 ★★☆☆☆] [主题：的内存可见性 [标准]]
+> **示例 6** [难度 ★★☆☆☆] [主题：的内存可见性 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ 默认顺序一致的内存序
 #include <atomic>
@@ -129,7 +129,7 @@ int read_x() { return x.load(); }                 // = load(seq_cst)
 void write_x(int v) { x.store(v); }               // = store(seq_cst, v)
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：的内存可见性 [标准]]
+> **示例 7** [难度 ★★☆☆☆] [主题：的内存可见性 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ 放宽内存序：relaxed 只保证原子性，不保证其他内存的可见顺序
 #include <atomic>
@@ -138,7 +138,7 @@ void inc_relaxed() { c.fetch_add(1, std::memory_order_relaxed); }
 int  read_relaxed() { return c.load(std::memory_order_relaxed); }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：的内存可见性 [标准]]
+> **示例 8** [难度 ★★☆☆☆] [主题：的内存可见性 <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ 生产者-消费者用 acquire/release 配对传递"数据已就绪"信号
 #include <atomic>
@@ -152,11 +152,11 @@ void consumer() { while (!ready.load(std::memory_order_acquire)) ; int v = paylo
 - `[标准]`：`seq_cst` 在所有原子操作间建立单一全序；`acquire`/`release` 仅同步"成对的"同步点。
 - `[微架构·x86-64 TSO]`：在 x86-64 上，acquire/release 常编译为普通 `mov`（不插 fence），只有 RMW 才需 `lock` 前缀——这是 x86 强内存模型（TSO）带来的红利。
 
-## ④ exchange [标准]
+## ④ exchange <span class="badge badge-std">标准</span>
 
 `exchange(desired, order)` 原子地"写入新值并返回旧值"，是一个不可分割的读-改-写，常用于**状态切换 / 所有权转移**：
 
-> **示例 9** [难度 ★★☆☆☆] [主题：[标准]]
+> **示例 9** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
 ```cpp
 // ④ exchange：写入新值、原子返回旧值
 #include <atomic>
@@ -164,7 +164,7 @@ std::atomic<int> flag{0};
 int take_old() { return flag.exchange(1, std::memory_order_acq_rel); }  // 返回 0，留下 1
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：[标准]]
+> **示例 10** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
 ```cpp
 // ④ 用 exchange 实现简单的"一次性触发"哨兵
 #include <atomic>
@@ -172,7 +172,7 @@ std::atomic<bool> fired{false};
 bool try_fire() { return !fired.exchange(true); }   // 仅第一个调用者得到 true
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：[标准]]
+> **示例 11** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
 ```cpp
 // ④ 与 store 的区别：store 丢弃旧值；exchange 暴露旧值
 #include <atomic>
@@ -183,11 +183,11 @@ int old = a.exchange(99);    // old == 7, a 现在为 99
 - `[标准]`：`exchange` 是可移植的 RMW 原语，等价于"非原子的 `tmp=o; o=v; return tmp;`"但不可分割。
 - `[经验]`：需要"读旧值+写新值一气呵成"时，永远用 `exchange`/`fetch_*`，不要用 `load` 后 `store`。
 
-## ⑤ compare_exchange_weak / compare_exchange_strong [标准]
+## ⑤ compare_exchange_weak / compare_exchange_strong <span class="badge badge-std">标准</span>
 
 CAS（Compare-And-Swap）是几乎所有无锁算法的基石：`compare_exchange(expected, desired)` 在 `*this == expected` 时写入 `desired` 并返回 `true`，否则把真实值写回 `expected` 并返回 `false`。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：exchangeweak / com]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exchangeweak / com
 ```cpp
 // ⑤ compare_exchange_strong：成功才替换，失败回写实际值到 expected
 #include <atomic>
@@ -198,7 +198,7 @@ bool set_if(int old_val, int new_val) {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：exchangeweak / com]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exchangeweak / com
 ```cpp
 // ⑤ compare_exchange_weak：可能在无竞争时也虚假失败，必须配合循环
 #include <atomic>
@@ -212,7 +212,7 @@ void add_using_cas(int delta) {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：exchangeweak / com]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exchangeweak / com
 ```cpp
 // ⑤ 两内存序重载：成功用 acq_rel，失败用 relaxed（失败时未改值，弱序即可）
 #include <atomic>
@@ -227,11 +227,11 @@ bool bump() {
 - `[标准]`：`weak` 允许虚假失败（在 LL/SC 架构上更自然），`strong` 不虚假失败但可能更慢。
 - `[经验]`：循环里用 `weak`（重试成本低）；单次尝试用 `strong`。CAS 失败时 `expected` 被改写，务必在循环里复用。
 
-## ⑥ fetch_add 等 RMW 操作 [标准]
+## ⑥ fetch_add 等 RMW 操作 <span class="badge badge-std">标准</span>
 
 读-改-写（Read-Modify-Write）族提供"读旧值 + 写新值"不可分割组合：`fetch_add` / `fetch_sub` / `fetch_and` / `fetch_or` / `fetch_xor`，以及前缀自增 `++`/`--`（对原子整型即 `fetch_add(1)`）：
 
-> **示例 15** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 [标准]]
+> **示例 15** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ fetch_add / fetch_sub：返回旧值
 #include <atomic>
@@ -240,7 +240,7 @@ int prev = c.fetch_add(5);     // prev == 0, c 现在为 5
 int prev2 = c.fetch_sub(2);    // prev2 == 5, c 现在为 3
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 [标准]]
+> **示例 16** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ 位运算 RMW：原子按位与/或/异或
 #include <atomic>
@@ -250,7 +250,7 @@ void set_bit5()   { bits.fetch_or(1u << 5); }
 void flip_bit0()  { bits.fetch_xor(1u); }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 [标准]]
+> **示例 17** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ 前缀 ++/-- 等价于 fetch_add(1)/fetch_sub(1)，但返回的是"新值"
 #include <atomic>
@@ -261,7 +261,7 @@ void demo() {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 [标准]]
+> **示例 18** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ fetch_add 对浮点原子也支持（C++20 起）
 #include <atomic>
@@ -272,11 +272,11 @@ void add_double(double d) { acc.fetch_add(d, std::memory_order_relaxed); }
 - `[标准]`：整型、指针、浮点（C++20）、`shared_ptr`（C++20）原子均提供相应 RMW。
 - `[经验]`：RMW 返回的"旧值"常是构建无锁算法中最有用的中间量（如取出队列头）。
 
-## ⑦ is_lock_free 与对齐要求 [标准]
+## ⑦ is_lock_free 与对齐要求 <span class="badge badge-std">标准</span>
 
 `std::atomic<T>::is_always_lock_free`（静态）和 `is_lock_free()`（运行期）揭示该原子是否真的无锁。硬件原子指令要求对象**自然对齐**：
 
-> **示例 19** [难度 ★★★☆☆] [主题：lockfree 与对齐要求 [标准]
+> **示例 19** [难度 ★★★☆☆] [主题：lockfree 与对齐要求 <span class="badge badge-std">标准</span>
 ```cpp
 // ⑦ 运行期与编译期 lock-free 查询（C++17 起 is_always_lock_free）
 #include <atomic>
@@ -289,7 +289,7 @@ void probe() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：lockfree 与对齐要求 [标准]
+> **示例 20** [难度 ★★☆☆☆] [主题：lockfree 与对齐要求 <span class="badge badge-std">标准</span>
 ```cpp
 // ⑦ 对齐要求：原子对象必须按 T 的自然对齐，否则退化为加锁实现
 #include <atomic>
@@ -298,7 +298,7 @@ struct Aligned { alignas(std::atomic<int>) std::atomic<int> a; };
 static_assert(alignof(std::atomic<int>) == alignof(int), "atomic<int> 对齐 = int");
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：lockfree 与对齐要求 [标准]
+> **示例 21** [难度 ★★☆☆☆] [主题：lockfree 与对齐要求 <span class="badge badge-std">标准</span>
 ```cpp
 // ⑦ 宽类型往往不是 lock-free（64 位平台上一半以上的字宽会加锁）
 #include <atomic>
@@ -312,11 +312,11 @@ void wide() {
 - `[标准]`：`is_always_lock_free` 为真表示**保证**无锁；仅 `is_lock_free()` 为真表示当前平台无锁（但可移植性弱）。
 - `[经验]`：不要对超大结构体用 `atomic<BigStruct>`——它几乎一定加锁（见 ⑯），那还不如直接用 `std::mutex`。
 
-## ⑧ atomic_flag 与无锁自旋 [标准]
+## ⑧ atomic_flag 与无锁自旋 <span class="badge badge-std">标准</span>
 
 `std::atomic_flag` 是最小原子类型：**只有** `test_and_set` 和 `clear`，且**保证 lock-free**。它常被当作无锁自旋锁/Token 的基石。本节附真实汇编。
 
-> **示例 22** [难度 ★★★☆☆] [主题：flag 与无锁自旋 [标准]]
+> **示例 22** [难度 ★★★☆☆] [主题：flag 与无锁自旋 <span class="badge badge-std">标准</span>]
 ```cpp
 // 文件：Examples/_ch107_atomic_flag.cpp
 // 行号：6
@@ -346,11 +346,11 @@ _Z7releasev:
 - `[实现·GCC15] [VERIFIED]`：`test_and_set` 编译为 `xchg al, [f]`——x86 上 `xchg` 对内存操作隐式带 `LOCK` 前缀，是真正原子的自旋测试。
 - `[平台·x86-64]`：`atomic_flag` 占 1 字节、必 lock-free，是构建自旋原语的最小构件。
 
-## ⑨ 原子指针 [标准]
+## ⑨ 原子指针 <span class="badge badge-std">标准</span>
 
 `std::atomic<T*>` 提供原子指针，RMW 以**字节**为单位（受对象大小影响），`fetch_add`/`fetch_sub` 按 `sizeof(T)` 步进，并支持 `+=`/`-=` 与 `++`/`--`：
 
-> **示例 23** [难度 ★★☆☆☆] [主题：原子指针 [标准]]
+> **示例 23** [难度 ★★☆☆☆] [主题：原子指针 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑨ 原子指针：fetch_add 按元素大小步进
 #include <atomic>
@@ -359,7 +359,7 @@ std::atomic<int*> p{arr};
 int* next_slot() { return p.fetch_add(1); }   // 返回旧指针，p 前进一个 int
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：原子指针 [标准]]
+> **示例 24** [难度 ★★☆☆☆] [主题：原子指针 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑨ 原子指针的 += 与后缀 ++
 #include <atomic>
@@ -372,7 +372,7 @@ void advance() {
 }
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：原子指针 [标准]]
+> **示例 25** [难度 ★★☆☆☆] [主题：原子指针 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑨ 用原子指针实现无锁单生产者游标
 #include <atomic>
@@ -390,11 +390,11 @@ Node* pop_one() {
 - `[标准]`：指针原子的 `fetch_add(n)` 等价于 `reinterpret_cast<char*>(p) + n*sizeof(T)`，差异由类型自动处理。
 - `[经验]`：原子指针是写无锁链表/队列的核心，但要警惕 ⑭ 的 ABA 问题。
 
-## ⑩ 原子操作与 data race 的 UB 边界 [标准]
+## ⑩ 原子操作与 data race 的 UB 边界 <span class="badge badge-std">标准</span>
 
 原子对象本身并发访问安全，但**混用原子与非原子视图**越过 UB 边界：
 
-> **示例 26** [难度 ★★☆☆☆] [主题：原子操作与 data race 的 ]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原子操作与 data race 的
 ```cpp
 // ⑩ 合法：所有访问都走原子
 #include <atomic>
@@ -404,7 +404,7 @@ void t1() { x.store(1); }
 void t2() { (void)x.load(); }
 ```
 
-> **示例 27** [难度 ★★★★☆] [主题：原子操作与 data race 的 ]
+> **示例 27** <span class="badge badge-exp">难度 ★★★★☆</span> · 原子操作与 data race 的
 ```cpp
 // ⑩ 非法（UB）：同一对象既以原子又以非原子方式访问且存在并发写
 #include <atomic>
@@ -416,7 +416,7 @@ void ub_alias() {
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：原子操作与 data race 的 ]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原子操作与 data race 的
 ```cpp
 // ⑩ 合法但危险：memory_order_relaxed 仍原子，只是不排序其他内存
 #include <atomic>
@@ -431,7 +431,7 @@ void relaxed_only_count() { c.fetch_add(1, std::memory_order_relaxed); }
 
 这是本章核心证据。`fetch_add(1)` 在 x86 上对应**带 LOCK 前缀的原子 RMW**。`-O0` 生成经典 `lock xadd`；`-O2` 对"加 1"特例优化为更短的 `lock add`，二者都是不可分割的原子指令。
 
-> **示例 29** [难度 ★★★☆☆] [主题：[实现·GCC15]真实汇编：ato]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：ato
 ```cpp
 // 文件：Examples/_ch107_fetch_add.cpp
 // 行号：6
@@ -481,11 +481,11 @@ _Z4readv:
 - `[平台·x86-64]`：`lock` 前缀可修饰 `add`/`xadd`/`cmpxchg` 等，是 x86 原子性的硬件根基；`load` 在 x86 上无需 `lock`（TSO 保证对齐字长的普通读可见最新写）。
 - `[标准]`：mangled 符号 `_Z7add_onev` 即 C++ 名字改编后的 `add_one()`（`7`=名字长度，`v`=无参），证明该函数是普通链接符号，仅指令带 `lock`。
 
-## ⑫ 用 CAS 实现自旋锁 [标准]
+## ⑫ 用 CAS 实现自旋锁 <span class="badge badge-std">标准</span>
 
 CAS 可构造无锁（或自旋）互斥。下面 `spinlock` 用 `atomic<bool>` + `compare_exchange_weak` 实现；成功地把 `false` 改成 `true` 即获得锁。本节附真实汇编。
 
-> **示例 30** [难度 ★★★☆☆] [主题：用 CAS 实现自旋锁 [标准]]
+> **示例 30** [难度 ★★★☆☆] [主题：用 CAS 实现自旋锁 <span class="badge badge-std">标准</span>]
 ```cpp
 // 文件：Examples/_ch107_spinlock.cpp
 // 行号：7
@@ -520,7 +520,7 @@ _Z6unlockv:
 	ret
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：用 CAS 实现自旋锁 [标准]]
+> **示例 31** [难度 ★★☆☆☆] [主题：用 CAS 实现自旋锁 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ RAII 封装自旋锁，避免忘记 unlock
 #include <atomic>
@@ -538,11 +538,11 @@ struct spinlock {
 - `[实现·GCC15] [VERIFIED]`：CAS 自旋编译为 `lock cmpxchg` + `jne` 回跳——这正是无锁栈/队列、引用计数的底层原语。
 - `[经验]`：自旋锁适合**临界区极短**、不希望线程切上下文的场景；临界区长时换 `std::mutex`（会睡眠而非空转）。
 
-## ⑬ 无锁栈雏形（push） [标准]
+## ⑬ 无锁栈雏形（push） <span class="badge badge-std">标准</span>
 
 用 `atomic<Node*>` 头指针 + CAS 即可写出无锁 push：循环读取当前头，构造新节点指向头，再 CAS 把头换成新节点。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：无锁栈雏形（push） [标准]]
+> **示例 32** [难度 ★★☆☆☆] [主题：无锁栈雏形（push） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑬ 无锁栈 push（CAS 循环，注意仍受 ABA 限制，见 ⑭）
 #include <atomic>
@@ -558,7 +558,7 @@ void push(int v) {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：无锁栈雏形（push） [标准]]
+> **示例 33** [难度 ★★☆☆☆] [主题：无锁栈雏形（push） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑬ 配套的（可能不安全的）pop 雏形：演示 CAS 在链表上的用法
 #include <atomic>
@@ -577,11 +577,11 @@ int pop_unsafe() {
 - `[标准]`：此 push 是无锁（lock-free）的——总有线程能推进；但它不是**无等待（wait-free）**。
 - `[经验]`：无锁 ≠ 无 bug。pop 的"读 old->next 再用"在并发下会触发 ⑭ 的 ABA 问题，生产代码请用带标签指针或 hazard pointer。
 
-## ⑭ ABA 问题预告 [标准]
+## ⑭ ABA 问题预告 <span class="badge badge-std">标准</span>
 
 CAS 只比较"值相等"，不感知"中间发生过什么"。若指针 `A→B→A`（被弹出又分配同地址），CAS 误以为无变化而成功，却带着失效的 `next` 链路——这就是 **ABA**。第111章（无锁编程进阶）会给出带**标签指针（tagged pointer）**、`hazard pointer`、RCU 等完整解法。本章先记住结论：
 
-> **示例 34** [难度 ★★☆☆☆] [主题：问题预告 [标准]]
+> **示例 34** [难度 ★★☆☆☆] [主题：问题预告 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ ABA 示意：CAS 无法发现中间被改回"相同值"
 #include <atomic>
@@ -598,11 +598,11 @@ void buggy_pop() {
 - `[标准]`：CAS 语义仅保证"比较-交换"原子，不做"历史变更"追踪。
 - `[经验]`：凡是链表无锁结构，必须正视 ABA；不要以为"用了 atomic 就万事大吉"（详见第111章）。
 
-## ⑮ 与 volatile 的本质区别 [经验]
+## ⑮ 与 volatile 的本质区别 <span class="badge badge-exp">经验</span>
 
 `volatile` 只禁止编译器对该变量的重排/缓存，**不提供原子性、不生成 `lock`、不建立线程间 happens-before**。`volatile++` 在汇编里是普通 `mov/add/mov` 三条指令，可被线程抢占；`atomic++` 是单条 `lock add`。二者不可互换。
 
-> **示例 35** [难度 ★★★☆☆] [主题：与 volatile 的本质区别 []
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 volatile 的本质区别 [
 ```cpp
 // 文件：Examples/_ch107_volatile.cpp
 // 行号：6
@@ -631,11 +631,11 @@ _Z10atomic_incv:
 - `[经验]`：C++ 中 `volatile` **不能**用于线程同步（C++20 起 `volatile` 上的 `++` 已被弃用并告警）。跨线程同步只用 `std::atomic` 或 `std::mutex`。
 - `[标准]`：`volatile` 的语义是"防止编译器优化掉对内存映射 I/O 的访问"，与并发原子性无关。
 
-## ⑯ 常见误用（用 atomic 保护大结构体） [经验]
+## ⑯ 常见误用（用 atomic 保护大结构体） <span class="badge badge-exp">经验</span>
 
 `std::atomic<T>` 要求 `T` 是平凡可拷贝的；试图用原子"保护"大结构体，会得到加锁的、慢的、且易误用的实现——还不如直接 `std::mutex`。
 
-> **示例 36** [难度 ★★☆☆☆] [主题：常见误用]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见误用
 ```cpp
 // ⑯ 误用：把大结构体塞进 atomic（往往加锁，且每次读写都是整块复制）
 #include <atomic>
@@ -644,7 +644,7 @@ std::atomic<Big> shared;                 // 编译可通过，但多为 lock-bas
 void wrong() { Big b = shared.load(); }  // 整块 256 字节原子复制，昂贵
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：常见误用]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见误用
 ```cpp
 // ⑯ 正确：用互斥量保护大结构体，或只原子化其中真正需要同步的字段
 #include <atomic>
@@ -661,7 +661,7 @@ void correct_publish(double r) {
 std::atomic<int> g_ready{0};
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：常见误用]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见误用
 ```cpp
 // ⑯ 另一误用：忘记 compare_exchange 会改写 expected，循环外用旧值
 #include <atomic>
@@ -681,7 +681,7 @@ bool bug_cas() {
 
 两个不同原子变量落在**同一缓存行**时，不同核反复使对方缓存行失效，性能骤降——这叫**伪共享**。用 `alignas(std::hardware_destructive_interference_size)` 把它们隔开。
 
-> **示例 39** [难度 ★★☆☆☆] [主题：性能注意：伪共享与 cache line padding]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能注意：伪共享与 cache line padding
 ```cpp
 // ⑰ 伪共享：相邻两个原子在线程间乒乓，互相 invalid 缓存行
 #include <atomic>
@@ -691,7 +691,7 @@ void writer_a() { for (int i=0;i<1000000;++i) a_shared.fetch_add(1); }
 void writer_b() { for (int i=0;i<1000000;++i) b_shared.fetch_add(1); }
 ```
 
-> **示例 40** [难度 ★★☆☆☆] [主题：性能注意：伪共享与 cache line padding]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能注意：伪共享与 cache line padding
 ```cpp
 // ⑰ 修复：按缓存行大小对齐，避免两个热点落同一行
 #include <atomic>
@@ -706,11 +706,11 @@ Padded g_p;
 - `[平台·x86-64]`：`std::hardware_destructive_interference_size` 通常为 64（典型缓存行）。对齐后 `a` 与 `b` 各占独立缓存行，跨核写不再互相 invalid。
 - `[经验]`：perf 火焰图看到大量 `lock` 指令却逻辑简单时，先怀疑伪共享；padding 是无锁高并发的常见提速点。
 
-## ⑱ 宽原子与 __int128 [标准]
+## ⑱ 宽原子与 __int128 <span class="badge badge-std">标准</span>
 
 128 位整数 `__int128` 可作为 `std::atomic<__int128>` 使用，但在多数 64 位平台**不是 lock-free**（需内部加锁），除非目标支持 `cmpxchg16b` 双字 CAS。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：宽原子与 int128 [标准]]
+> **示例 41** [难度 ★★☆☆☆] [主题：宽原子与 int128 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ 128 位原子：可移植但多数平台非 lock-free
 #include <atomic>
@@ -719,7 +719,7 @@ void set_wide(__int128 v) { wide.store(v, std::memory_order_release); }
 __int128 get_wide() { return wide.load(std::memory_order_acquire); }
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：宽原子与 int128 [标准]]
+> **示例 42** [难度 ★★☆☆☆] [主题：宽原子与 int128 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ 用 128 位原子做"序列号 + 数据"的带标签指针（缓解 ABA，见 ⑭）
 #include <atomic>
@@ -731,7 +731,7 @@ struct TaggedPtr {
 std::atomic<__int128> head_pair{0};   // 把 (ptr,tag) 打包进 128 位一次性 CAS
 ```
 
-> **示例 43** [难度 ★★☆☆☆] [主题：宽原子与 int128 [标准]]
+> **示例 43** [难度 ★★☆☆☆] [主题：宽原子与 int128 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ 检查平台是否 lock-free
 #include <atomic>
@@ -748,7 +748,7 @@ void probe_wide() {
 
 数据竞争难以靠肉眼发现。GCC/Clang 的 **ThreadSanitizer（tsan）** 在运行期插桩检测 data race，是无锁/并发代码的必备验证工具。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：调试/验证手段]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试/验证手段
 ```cpp
 // ⑲ 被测代码：故意的 data race（用于演示 tsan 报告）
 #include <thread>
@@ -761,7 +761,7 @@ int main() {
 }
 ```
 
-> **示例 45** [难度 ★★☆☆☆] [主题：调试/验证手段]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试/验证手段
 ```cpp
 // ⑲ 修复后：用原子，tsan 不再报竞争
 #include <atomic>
@@ -784,23 +784,23 @@ g++ -std=c++23 -O1 -g -fsanitize=thread _ch107_tsan_demo.cpp -o tsan_demo
 - `[平台·GCC13/Clang]`：`-fsanitize=thread` 注入race 检测；建议用 `-O1 -g` 兼顾速度与可读栈。
 - `[经验]`：无锁算法写完**必须**跑 tsan + 压力测试；tsan 不保证发现所有问题，但能抓绝大多数真实 data race。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `std::atomic<int>` 计数避免数据竞争。** 你多线程 `++` 不再丢更新。请说明保证。
-   - [标准] 对原子对象的并发访问不产生数据竞争；RMW 操作整体原子完成。
-   - [引用] ISO/IEC 14882:2023 §[atomics]（原子操作免数据竞争）；cppreference "std::atomic" 词条。
+   - <span class="badge badge-std">标准</span> 对原子对象的并发访问不产生数据竞争；RMW 操作整体原子完成。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]（原子操作免数据竞争）；cppreference "std::atomic" 词条。
 
 2. **真实场景：默认内存顺序是 `seq_cst`，可能比 필요 更慢。** 你确认单变量无需跨变量顺序。请说明默认。
-   - [标准] 未指定 memory_order 时，原子操作按 `memory_order_seq_cst` 执行（全序、最安全但最贵）。
-   - [引用] ISO/IEC 14882:2023 §[atomics.order]（seq_cst 默认）；cppreference "std::memory_order" 词条。
+   - <span class="badge badge-std">标准</span> 未指定 memory_order 时，原子操作按 `memory_order_seq_cst` 执行（全序、最安全但最贵）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.order]（seq_cst 默认）；cppreference "std::memory_order" 词条。
 
 3. **真实场景：`fetch_add` 是原子读-改-写。** 你用它做无锁计数器。请说明。
-   - [标准] fetch_add/exchange 等是原子 RMW；在多线程竞争下结果正确且单一。
-   - [引用] ISO/IEC 14882:2023 §[atomics]（RMW 操作）；cppreference "std::atomic::fetch_add" 词条。
+   - <span class="badge badge-std">标准</span> fetch_add/exchange 等是原子 RMW；在多线程竞争下结果正确且单一。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]（RMW 操作）；cppreference "std::atomic::fetch_add" 词条。
 
-> **示例 46** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 46** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 最小可编译回顾：把本章要点串成一段代码
 #include <atomic>
@@ -835,7 +835,7 @@ void quick() {
 - `[经验]`：能用 `atomic_flag` 就不上互斥；临界区长用 `std::mutex`；写完无锁代码必跑 ThreadSanitizer（见 ⑲）。
 - `[平台·x86-64]`：x86 是强内存模型，`load`/`store` 编译为普通 `mov`，只有 RMW 需要 `lock` 前缀——这是与弱内存架构（ARM）性能差异的根源。
 
-> **示例 47** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 47** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```
 ┌───────────────┬───────────────────────────┬──────────────────────┐
 │ 同步手段       │ 适用场景                   │ 备注                  │
@@ -853,7 +853,7 @@ void quick() {
 
 ### ㉒.1 历史渊源补强：从硬件原子到 C++ 内存模型
 
-[史] C++ 原子（`<atomic>`）随 **C++11** 进入标准，是 C++ 第一次把「原子类型 + 内存序」写进语言——此前多线程 C++ 处于「未定义行为」灰色地带，程序员只能靠编译器内建（`__sync_*`）或平台汇编。[史] 更底层：C++11 的内存模型与原子设计深受 **Hans Boehm、Sarita Adve、Mark Batty（x86/POWER/ARM 弱内存模型的形式化）** 影响，并由 **P0558R1（Fixing the C++ Memory Model，2017）** 修正了一批准许加宽/窄化破坏原子性的措辞缺陷；**C++20 的 P0020R6** 又补上**浮点原子（`atomic<float/double>` 的 `fetch_add` 等）**，服务 HPC 并行浮点累加。[轶] 早期 C++11 还不允许对「普通 `int` 做原子访问」，直到 **C++20 `std::atomic_ref`（P0019）** 才允许把已存在的对象按原子方式访问，而不必把它声明成 `atomic<T>`。[评] 原子是「无锁编程」的地基，但它**不保证无锁**——`is_lock_free()` 可能为 false（如某些平台对大于机器字的类型退化为内部锁）。
+<span class="badge badge-history">史</span> C++ 原子（`<atomic>`）随 **C++11** 进入标准，是 C++ 第一次把「原子类型 + 内存序」写进语言——此前多线程 C++ 处于「未定义行为」灰色地带，程序员只能靠编译器内建（`__sync_*`）或平台汇编。<span class="badge badge-history">史</span> 更底层：C++11 的内存模型与原子设计深受 **Hans Boehm、Sarita Adve、Mark Batty（x86/POWER/ARM 弱内存模型的形式化）** 影响，并由 **P0558R1（Fixing the C++ Memory Model，2017）** 修正了一批准许加宽/窄化破坏原子性的措辞缺陷；**C++20 的 P0020R6** 又补上**浮点原子（`atomic<float/double>` 的 `fetch_add` 等）**，服务 HPC 并行浮点累加。<span class="badge badge-anecdote">轶</span> 早期 C++11 还不允许对「普通 `int` 做原子访问」，直到 **C++20 `std::atomic_ref`（P0019）** 才允许把已存在的对象按原子方式访问，而不必把它声明成 `atomic<T>`。<span class="badge badge-comment">评</span> 原子是「无锁编程」的地基，但它**不保证无锁**——`is_lock_free()` 可能为 false（如某些平台对大于机器字的类型退化为内部锁）。
 
 ### ㉒.2 真实工程坐标：原子活在哪些产品里
 
@@ -881,10 +881,10 @@ void quick() {
 
 ### ㉒.4 与标准的互动：原子与 C++ 标准的演进
 
-[史] 原子随 **C++11** 引入，奠定内存模型；**C++17 的 P0558R1** 修复了内存模型措辞缺陷（影响所有原子操作的正确性基础）；**C++20** 是原子的大年——**P0020R6 引入浮点原子**（`fetch_add` 等，服务 HPC），**P0019 引入 `std::atomic_ref`**（对已存在对象做原子访问）；**C++26** 继续推进 hazard pointer/RCU 标准化（P1122/P2530），其底层亦建立在原子之上。与 WG21 方向一致：把「硬件原子 + 形式化内存模型」持续下沉为标准可移植抽象。
+<span class="badge badge-history">史</span> 原子随 **C++11** 引入，奠定内存模型；**C++17 的 P0558R1** 修复了内存模型措辞缺陷（影响所有原子操作的正确性基础）；**C++20** 是原子的大年——**P0020R6 引入浮点原子**（`fetch_add` 等，服务 HPC），**P0019 引入 `std::atomic_ref`**（对已存在对象做原子访问）；**C++26** 继续推进 hazard pointer/RCU 标准化（P1122/P2530），其底层亦建立在原子之上。与 WG21 方向一致：把「硬件原子 + 形式化内存模型」持续下沉为标准可移植抽象。
 
-- [史] **浮点原子修订链**：**P0020** 历经 **R0（2015-10）→ R3 → R4 → R5 → R6（2017-11-10）**，由 H. Carter Edwards 等提案，最终随 C++20 采纳 `atomic<float/double>`（`fetch_add` 等），服务 HPC 并行浮点累加；可于 <https://wg21.link/p0020> 逐版追溯。
-- [史] **`atomic_ref` 修订链**：**P0019** 从 **R0 → R3 → R7 → R8（2018）** 演进，最终进 C++20，提供对已存在对象做原子访问的能力（特性宏 `__cpp_lib_atomic_ref`=201806L）；<https://wg21.link/p0019>。
+- <span class="badge badge-history">史</span> **浮点原子修订链**：**P0020** 历经 **R0（2015-10）→ R3 → R4 → R5 → R6（2017-11-10）**，由 H. Carter Edwards 等提案，最终随 C++20 采纳 `atomic<float/double>`（`fetch_add` 等），服务 HPC 并行浮点累加；可于 <https://wg21.link/p0020> 逐版追溯。
+- <span class="badge badge-history">史</span> **`atomic_ref` 修订链**：**P0019** 从 **R0 → R3 → R7 → R8（2018）** 演进，最终进 C++20，提供对已存在对象做原子访问的能力（特性宏 `__cpp_lib_atomic_ref`=201806L）；<https://wg21.link/p0019>。
 
 ### ㉒.5 权威引用
 
@@ -905,7 +905,7 @@ atomic 从 TR1 (2005) 到 C++20 的 15 年演化，是并发编程从"平台相�
 | C++20 | atomic_ref<T>, atomic<shared_ptr<T>>, atomic_flag::wait | P0019R8, P1643R1 |
 | C++23 | 无重大 atomic 变更 | — |
 
-> **示例 48** [难度 ★★☆☆☆] [主题：附录 A：WG21 提案与工业实现对]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 提案与工业实现对
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -922,7 +922,7 @@ int main() {
 
 ## 附录 B：底层汇编与性能证据 [E: Low-level / G: Performance]
 
-> **示例 49** [难度 ★★★☆☆] [主题：附录 B：底层汇编与性能证据 [E:]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：底层汇编与性能证据 [E:
 ```cpp
 // GCC -O2 x86-64 atomic 操作的汇编对比
 #include <atomic>
@@ -955,7 +955,7 @@ int main() {
 
 ## 附录 D：面试与设计权衡 [J: Learning / H: Design]
 
-> **示例 50** [难度 ★★★★☆] [主题：附录 D：面试与设计权衡 [J: L]
+> **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：面试与设计权衡 [J: L
 ```
 面试高频:
 Q: std::atomic<int> 一定能做到 lock-free 吗？
@@ -1076,7 +1076,7 @@ A: CAS 是用户态原子操作(~20ns)；mutex 涉及系统调用 + 上下文切
 
 `atomic<T>::fetch_add` 是单条**读-改-写（RMW）**原子操作，中途不可被打断；而 `counter = counter + 1` 展开为「原子 load → 普通加 → 原子 store」三步，两次 RMW 之间可插入其它线程的更新，导致丢失更新。
 
-> **示例 51** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <atomic>
 #include <thread>
@@ -1093,9 +1093,9 @@ int main() {
 }
 ```
 
-[标准] 纯计数无跨变量依赖，用 `memory_order_relaxed` 即可保证原子性与最终一致，且是最快选项（`[atomics.order]`）。
+<span class="badge badge-std">标准</span> 纯计数无跨变量依赖，用 `memory_order_relaxed` 即可保证原子性与最终一致，且是最快选项（`[atomics.order]`）。
 
-[引用] cppreference `std::atomic::fetch_add`：`https://en.cppreference.com/w/cpp/atomic/atomic/fetch_add`。原子操作与内存序规范见 ISO §32.5（[atomics]）。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic::fetch_add`：`https://en.cppreference.com/w/cpp/atomic/atomic/fetch_add`。原子操作与内存序规范见 ISO §32.5（[atomics]）。
 
 </details>
 
@@ -1107,7 +1107,7 @@ int main() {
 
 CAS 循环是实现任意 RMW 的通用范式：读当前值 → 本地算新值 → CAS 提交，失败则用被刷新的期望值重试。`compare_exchange_weak` 允许伪失败但在循环里代价更低。
 
-> **示例 52** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <atomic>
 #include <thread>
@@ -1129,9 +1129,9 @@ int main() {
 }
 ```
 
-[标准] CAS 失败时 `cur` 被写入内存现值，无需手动重载——这是 `compare_exchange` 的关键约定。
+<span class="badge badge-std">标准</span> CAS 失败时 `cur` 被写入内存现值，无需手动重载——这是 `compare_exchange` 的关键约定。
 
-[引用] cppreference `std::atomic::compare_exchange_weak`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。CAS 循环范式见 ISO §32.5（[atomics]）及 M. Herlihy, *Wait-Free Synchronization*, 1991。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic::compare_exchange_weak`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。CAS 循环范式见 ISO §32.5（[atomics]）及 M. Herlihy, *Wait-Free Synchronization*, 1991。
 
 </details>
 
@@ -1143,7 +1143,7 @@ int main() {
 
 `atomic_flag` 是标准保证**无锁**的最小原子类型。`lock` 用 `test_and_set(acquire)` 保证临界区读写不会被重排到加锁之前；`unlock` 用 `clear(release)` 保证临界区写在释放锁前对下一个持有者可见——构成 release/acquire 同步对。
 
-> **示例 53** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <atomic>
 #include <thread>
@@ -1166,9 +1166,9 @@ int main() {
 }
 ```
 
-[经验] 生产环境的自旋锁还应在自旋体内加 `_mm_pause()`/`std::this_thread::yield()` 降低总线争用与功耗；纯 busy-loop 仅用于极短临界区。
+<span class="badge badge-exp">经验</span> 生产环境的自旋锁还应在自旋体内加 `_mm_pause()`/`std::this_thread::yield()` 降低总线争用与功耗；纯 busy-loop 仅用于极短临界区。
 
-[引用] cppreference `std::atomic_flag`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag`；`std::atomic_flag::test_and_set`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag/test_and_set`。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic_flag`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag`；`std::atomic_flag::test_and_set`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag/test_and_set`。
 
 </details>
 
@@ -1186,7 +1186,7 @@ int main() {
 
 **常见错误**：把「读改写」写成两步，误以为 `atomic` 就万事大吉。
 
-> **示例 54** [难度 ★★☆☆☆] [主题：演绎 1：计数器该用 mutex、a]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：计数器该用 mutex、a
 ```cpp
 #include <atomic>
 #include <thread>
@@ -1214,7 +1214,7 @@ int main() {
 
 **常见错误**：直接 `std::atomic<Config>`，以为拿到无锁快照。
 
-> **示例 55** [难度 ★★☆☆☆] [主题：演绎 2：atomic<BigStr]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：atomic<BigStr
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1232,7 +1232,7 @@ int main() {
 
 **修复**：改为**原子指针发布不可变快照**（RCU 式），读侧只读一个 8 字节原子指针：
 
-> **示例 56** [难度 ★★☆☆☆] [主题：演绎 2：atomic<BigStr]
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：atomic<BigStr
 ```cpp
 #include <atomic>
 #include <memory>
@@ -1507,7 +1507,7 @@ flowchart TD
 
 ### D4.8 编译验证
 
-> **示例 57** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1675,7 +1675,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 58** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <thread>

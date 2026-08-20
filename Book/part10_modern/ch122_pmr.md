@@ -15,24 +15,24 @@
 > 同样的 `std::vector`，有人想要全局 `new`、有人想要线程本地 arena——可分配策略却"焊死"在类型里。
 
 ### 0.1 起源（谁·何时·为何）
-C++ 的 Allocator 模型从标准诞生起就把分配器作为**模板参数**（`std::vector<T, Alloc>`），策略在编译期绑定、是类型的一部分。这带来两大痛点：类型因分配器不同而"不兼容"（不同 allocator 的 vector 不能互赋），且难以在**运行期**切换策略。[史] 游戏、高频交易、请求处理这类场景，极度渴望"在热路径上用一块预分配的 arena 零成本分配、请求结束一次性回收"——传统 allocator 模型对此力不从心。早期 C++11 的 `scoped_allocator_adaptor` 等尝试也未根本解决。
+C++ 的 Allocator 模型从标准诞生起就把分配器作为**模板参数**（`std::vector<T, Alloc>`），策略在编译期绑定、是类型的一部分。这带来两大痛点：类型因分配器不同而"不兼容"（不同 allocator 的 vector 不能互赋），且难以在**运行期**切换策略。<span class="badge badge-history">史</span> 游戏、高频交易、请求处理这类场景，极度渴望"在热路径上用一块预分配的 arena 零成本分配、请求结束一次性回收"——传统 allocator 模型对此力不从心。早期 C++11 的 `scoped_allocator_adaptor` 等尝试也未根本解决。
 
 ### 0.2 关键转折（编年）
-- C++11：Allocator 模型定型，但运行期多态分配仍是短板。[史]
-- **C++17（2017）**：引入 **`std::pmr`（Polymorphic Memory Resources）**，用 `memory_resource` 抽象基类把"分配策略"解耦为运行期可换的对象。[史]
-- C++20/23：PMR 与模块化、常量求值等持续磨合。[史]
+- C++11：Allocator 模型定型，但运行期多态分配仍是短板。<span class="badge badge-history">史</span>
+- **C++17（2017）**：引入 **`std::pmr`（Polymorphic Memory Resources）**，用 `memory_resource` 抽象基类把"分配策略"解耦为运行期可换的对象。<span class="badge badge-history">史</span>
+- C++20/23：PMR 与模块化、常量求值等持续磨合。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-PMR 的核心取舍是**编译期分配器（类型参数）vs 运行期多态（值对象）**。委员会没有废弃沿用多年的 Allocator 模型，而是叠加一层 `pmr`：`polymorphic_allocator<T>` 把"指向 `memory_resource` 的指针"作为状态，容器类型因此统一（都是 `pmr::vector<T>`），策略却能在运行期替换。[评] 这等于承认"编译期零开销"与"运行期灵活"都重要，用一层薄薄的间接（虚函数 `do_allocate`）换来了 arena/池/默认分配的自由切换，同时仍保留传统 allocator 给追求极致静态调度的用户。[史]
+PMR 的核心取舍是**编译期分配器（类型参数）vs 运行期多态（值对象）**。委员会没有废弃沿用多年的 Allocator 模型，而是叠加一层 `pmr`：`polymorphic_allocator<T>` 把"指向 `memory_resource` 的指针"作为状态，容器类型因此统一（都是 `pmr::vector<T>`），策略却能在运行期替换。<span class="badge badge-comment">评</span> 这等于承认"编译期零开销"与"运行期灵活"都重要，用一层薄薄的间接（虚函数 `do_allocate`）换来了 arena/池/默认分配的自由切换，同时仍保留传统 allocator 给追求极致静态调度的用户。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 PMR 入标后，价值在工程界被反复验证，也暴露了"默认资源该是谁"的争议。
 
-- [史] `monotonic_buffer_resource`（一次性、不回收的线性 arena）与 `unsynchronized_pool_resource` / `synchronized_pool_resource`（线程本地/全局池）成为"零分配热路径"的常用积木，游戏与高频交易的帧级分配几乎必备。
-- [评] 一个长期争议是"默认 `new` 是否该换成默认 `pmr` 资源"——委员会最终决定不改动全局 `operator new`，只用 `std::pmr::get_default_resource()` 显式切换，避免悄悄改变既有性能画像。
-- C++20/23 里 PMR 与模块化（`import std`）、常量求值继续磨合，`polymorphic_allocator` 在容器类型统一上的优势被标准库自身采纳（如 `std::pmr::vector`）。[史]
-- [轶] 与 jemalloc/tcmalloc 这类"替换全局分配器"的方案相比，PMR 的卖点是"同一进程内并存多种分配策略"而非"全局更快"——你能在一条请求里用 arena、另一条用默认，互不干扰。
-- C++26 讨论把更多容器与算法接入 PMR 友好的构造，进一步降低"运行期换策略"的摩擦。[史]
+- <span class="badge badge-history">史</span> `monotonic_buffer_resource`（一次性、不回收的线性 arena）与 `unsynchronized_pool_resource` / `synchronized_pool_resource`（线程本地/全局池）成为"零分配热路径"的常用积木，游戏与高频交易的帧级分配几乎必备。
+- <span class="badge badge-comment">评</span> 一个长期争议是"默认 `new` 是否该换成默认 `pmr` 资源"——委员会最终决定不改动全局 `operator new`，只用 `std::pmr::get_default_resource()` 显式切换，避免悄悄改变既有性能画像。
+- C++20/23 里 PMR 与模块化（`import std`）、常量求值继续磨合，`polymorphic_allocator` 在容器类型统一上的优势被标准库自身采纳（如 `std::pmr::vector`）。<span class="badge badge-history">史</span>
+- <span class="badge badge-anecdote">轶</span> 与 jemalloc/tcmalloc 这类"替换全局分配器"的方案相比，PMR 的卖点是"同一进程内并存多种分配策略"而非"全局更快"——你能在一条请求里用 arena、另一条用默认，互不干扰。
+- C++26 讨论把更多容器与算法接入 PMR 友好的构造，进一步降低"运行期换策略"的摩擦。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/memory_resource
 
@@ -67,7 +67,7 @@ PMR 入标后，价值在工程界被反复验证，也暴露了"默认资源该
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
                  ┌─────────────────────────────────────────────┐
                  │  std::pmr::memory_resource  (抽象基类)        │
@@ -157,7 +157,7 @@ classDiagram
 
 `[实现·libstdc++]` `monotonic_buffer_resource` 持有一条缓冲链表（`_Chunk* _M_head`），当前指针 `_M_current_buf` 与剩余量 `_M_avail`；分配时仅推进指针，不释放。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图：monotonicbuffe]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：monotonicbuffe
 ```
  初始: upstream 提供 1KB
  ┌──────────────────────────────┐  ← _M_current_buf 指向此处
@@ -180,7 +180,7 @@ classDiagram
 
 ## ⑧ 生命周期图：request-local arena
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图：request-loca]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：request-loca
 ```
  请求到达 ──► 构造 monotonic_buffer_resource(buf) ──► 所有中间容器/对象从此分配
      │                                                        │
@@ -195,7 +195,7 @@ classDiagram
 
 ## ⑨ 调用栈 / 时序图：池资源分配
 
-> **示例 4** [难度 ★★★☆☆] [主题：调用栈 / 时序图：池资源分配]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：池资源分配
 ```
 调用方            polymorphic_allocator    pool_resource         upstream
   │                    │                       │                    │
@@ -467,7 +467,7 @@ struct pool_options {
 
 ## ⑯ 易错点
 
-> **示例 5** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ⑯-1 ❌ 误以为 monotonic_buffer_resource 会逐个析构元素
 #include <memory_resource>
@@ -486,7 +486,7 @@ int main() {
 }
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ⑯-2 ❌ 把 unsynchronized_pool_resource 用于多线程
 #include <memory_resource>
@@ -504,7 +504,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ⑯-3 ✅ 正确：拷贝容器不传播资源
 #include <memory_resource>
@@ -534,7 +534,7 @@ int main() {
 - **Q：如何验证 `new_delete_resource()` 是单例？**
   A：见下例。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：FAQ 问答]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 // ⑰ 验证全局资源为单例
 #include <memory_resource>
@@ -560,7 +560,7 @@ int main() {
 - `[经验]`：容器拷贝不传播资源，若需"子容器跟随父资源"，应显式传同一个 `memory_resource*`。
 - `[经验]`：arena 中只放**平凡析构或析构代价可忽略**的对象；有外部资源的对象用普通分配。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱ set_default_resource 切换全局默认资源（调试/发行）
 #include <memory_resource>
@@ -591,7 +591,7 @@ int main() {
 
 `[经验]` 下面基准对比"100 万元素 push_back"在 `new_delete` 默认资源 vs `unsynchronized_pool_resource` 的耗时。量级为该机器示意（i7-11800H，Release -O2）。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：内存池性能证据]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存池性能证据
 ```cpp
 // ⑲-1 pool vs new：大量小对象分配的耗时对照
 #include <memory_resource>
@@ -644,7 +644,7 @@ int main() {
 
 `[实现]` `monotonic_buffer_resource` 顺序推进指针，使同一请求内的对象**物理相邻**，遍历时 prefetch 友好、false sharing 低（`[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)`）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：缓存友好性]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-a 请求级 arena 的完整请求/释放周期
 #include <memory_resource>
@@ -663,7 +663,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-b counting_resource：统计分配次数与字节数
 #include <memory_resource>
@@ -691,7 +691,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-c unsynchronized_pool_resource 快速分配（单线程安全）
 #include <memory_resource>
@@ -708,7 +708,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：缓存友好性]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-d null_memory_resource：任何分配都抛 std::bad_alloc
 #include <memory_resource>
@@ -724,7 +724,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-e new_delete_resource 作为默认 upstream
 #include <memory_resource>
@@ -738,7 +738,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：缓存友好性]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-f 两层 arena：下层做大缓冲，上层分配池
 #include <memory_resource>
@@ -755,7 +755,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-g scoped_arena RAII 辅助——析构自动 release
 #include <memory_resource>
@@ -776,7 +776,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-h pool_options 调参：largest_required_pool_block
 #include <memory_resource>
@@ -794,7 +794,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-i 用 PMR 的多级上游链（chain of upstreams）
 #include <memory_resource>
@@ -813,7 +813,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-j PMR vector vs 默认 vector：分配器传播对比
 #include <memory_resource>
@@ -830,7 +830,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-k 安全擦除（winking out）：arena 上的敏感数据可整块清零
 #include <memory_resource>
@@ -846,7 +846,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-l PMR 在请求处理中的性能模拟（vs 默认 allocator 思路）
 #include <memory_resource>
@@ -869,7 +869,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：缓存友好性]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-m 标准 vector vs pmr::vector 共存示例
 #include <memory_resource>
@@ -886,7 +886,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-n polymorphic_allocator 与 std::string 组合
 #include <memory_resource>
@@ -902,7 +902,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：缓存友好性]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-o PMR deque：双向队列的 arena 分配
 #include <memory_resource>
@@ -919,7 +919,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：缓存友好性]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
 ```cpp
 // 19-p 对比 idea：同等逻辑下 malloc vs PMR arena 的思考
 #include <memory_resource>
@@ -959,16 +959,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `std::pmr::vector` + `monotonic_buffer_resource` 减动态分配。** 你高频建临时容器。请说明。
-   - [标准] `polymorphic_allocator` 从 `memory_resource` 分配；可把多个容器的分配导向同一缓冲，减少系统调用。
-   - [引用] ISO/IEC 14882:2023 §[mem.res]（memory_resource）/ [allocator.requirements]（pmr 分配器）；cppreference "std::pmr" 词条。
+   - <span class="badge badge-std">标准</span> `polymorphic_allocator` 从 `memory_resource` 分配；可把多个容器的分配导向同一缓冲，减少系统调用。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[mem.res]（memory_resource）/ [allocator.requirements]（pmr 分配器）；cppreference "std::pmr" 词条。
 
 2. **真实场景：`monotonic_buffer_resource` 只增长、析构统一释放。** 你理解中途不回收。请说明。
-   - [标准] 单调缓冲资源在存活期内只分配不回收，所有内存在其销毁时一次性释放；适合短生命周期批量分配。
-   - [引用] ISO/IEC 14882:2023 §[mem.res.monotonic]（monotonic_buffer_resource）；cppreference "std::pmr::monotonic_buffer_resource" 词条。
+   - <span class="badge badge-std">标准</span> 单调缓冲资源在存活期内只分配不回收，所有内存在其销毁时一次性释放；适合短生命周期批量分配。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[mem.res.monotonic]（monotonic_buffer_resource）；cppreference "std::pmr::monotonic_buffer_resource" 词条。
 
 3. **真实场景：默认 pmr 资源是 `new_delete_resource`。** 你不指定资源时的行为。请说明。
-   - [标准] 未设置时，pmr 分配器默认使用 `new_delete_resource`（即走全局 `new`/`delete`）。
-   - [引用] ISO/IEC 14882:2023 §[mem.res]（new_delete_resource 默认）；cppreference "std::pmr::new_delete_resource" 词条。
+   - <span class="badge badge-std">标准</span> 未设置时，pmr 分配器默认使用 `new_delete_resource`（即走全局 `new`/`delete`）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[mem.res]（new_delete_resource 默认）；cppreference "std::pmr::new_delete_resource" 词条。
 
 | 语言/生态 | 等价机制 | 备注 |
 |---|---|---|
@@ -982,7 +982,7 @@ int main() {
 - `[标准]`：C++ 的 `std::pmr` 是**唯一进入 ISO 标准**的多态分配器框架；其余生态多为库或运行时层面实现。
 - `[经验]`：从 Rust/Go 来的工程师会自然寻找 "arena"；PMR 就是 C++ 的答案，且粒度更细（可精确到某个容器而非全局）。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：跨语言对比：Arena / 多态分配]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：Arena / 多态分配
 ```cpp
 // ⑳ 用 PMR 模拟 Rust bumpalo 风格的 arena 计数分配
 #include <memory_resource>
@@ -1021,7 +1021,7 @@ PMR 把「分配策略」从全局 `operator new` 提升为「每个容器可携
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 游戏 / ECS | 每帧分配器 / ECS 批量组件存储 | 运行时切换单调 / 池化 resource | 实时帧内分配密集 | [STANDARD] C++17 PMR；容器接受 `std::pmr::polymorphic_allocator` |
+| 游戏 / ECS | 每帧分配器 / ECS 批量组件存储 | 运行时切换单调 / 池化 resource | 实时帧内分配密集 | <span class="badge badge-std">STANDARD</span> C++17 PMR；容器接受 `std::pmr::polymorphic_allocator` |
 | 内存可观测 | 自定义 `memory_resource` 统计 / 泄漏捕获 | 比全局 `operator new` 替换干净 | 调试与火焰图友好 | 每容器独立 resource，无需全局劫持 |
 | 通用分配器 | tcmalloc / jemalloc / mimalloc | 线程缓存思路同源 | 工业级分配器 | PMR 把选择权交回每个容器 |
 | 音视频 / 实时渲染 | Unity DOTS / Unreal `FMemory` 池 | 每帧分配切到 `monotonic_buffer_resource`，帧末 `release()` | 实时渲染零抖动 | 消除逐对象释放抖动 |
@@ -1045,7 +1045,7 @@ PMR 把「分配策略」从全局 `operator new` 提升为「每个容器可携
 - C++17 确立 `std::pmr`（P0220）；后续标准（C++20/23）持续打磨内存资源类型与 `std::allocator_traits` 的衔接，并让更多类型支持 PMR 风格的定制分配。
 - `[评]` 标准演进方向是把「内存来源」彻底从类型系统里抽离，让分配策略成为一等运行时对象，而非散布在模板参数里的碎片。
 
-- [史] **PMR 修订链**：**P0220（Polymorphic Memory Resources）** 由 Pablo Halpern 提案，最终修订 **R1（C++17 采纳）**，引入 `std::pmr::memory_resource`/`polymorphic_allocator` 与 `std::pmr::string` 等别名；后续 C++20/23 打磨其与 `std::allocator_traits` 的衔接；<https://wg21.link/p0220>。
+- <span class="badge badge-history">史</span> **PMR 修订链**：**P0220（Polymorphic Memory Resources）** 由 Pablo Halpern 提案，最终修订 **R1（C++17 采纳）**，引入 `std::pmr::memory_resource`/`polymorphic_allocator` 与 `std::pmr::string` 等别名；后续 C++20/23 打磨其与 `std::allocator_traits` 的衔接；<https://wg21.link/p0220>。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 
@@ -1072,7 +1072,7 @@ PMR 把「分配策略」从全局 `operator new` 提升为「每个容器可携
 
 ## 附录B: 补充可编译示例
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录B: 补充可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
 ```cpp
 // 补-R pmr 基本 vector 使用
 #include <memory_resource>
@@ -1081,7 +1081,7 @@ PMR 把「分配策略」从全局 `operator new` 提升为「每个容器可携
 int main() { char buf[512]; std::pmr::monotonic_buffer_resource mr(buf,sizeof(buf)); std::pmr::vector<int> v(&mr); v.push_back(42); std::cout<<v[0]<<std::endl; return 0; }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录B: 补充可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
 ```cpp
 // 补-S 确认 pmr 分配器与默认分配器的差异
 #include <memory_resource>
@@ -1089,7 +1089,7 @@ int main() { char buf[512]; std::pmr::monotonic_buffer_resource mr(buf,sizeof(bu
 int main() { auto* def=std::pmr::get_default_resource(); std::cout<<"default resource set? "<<(def!=nullptr)<<std::endl; return 0; }
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：附录B: 补充可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录B: 补充可编译示例
 ```cpp
 // 补-T 极简 counting_resource 复用
 #include <memory_resource>
@@ -1099,7 +1099,7 @@ struct Count:std::pmr::memory_resource{int n=0;void*do_allocate(size_t s,size_t 
 int main(){Count c;std::pmr::vector<int>v(&c);v.push_back(1);std::cout<<"allocs="<<c.n<<std::endl;return 0;}
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录B: 补充可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
 ```cpp
 // 补-U pool_resource 不指定 upstream 时默认用 get_default_resource
 #include <memory_resource>
@@ -1107,7 +1107,7 @@ int main(){Count c;std::pmr::vector<int>v(&c);v.push_back(1);std::cout<<"allocs=
 int main() { std::pmr::synchronized_pool_resource pool; void*p=pool.allocate(64,8); pool.deallocate(p,64,8); std::cout<<"pool default-upstream ok\n"; return 0; }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：附录B: 补充可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录B: 补充可编译示例
 ```cpp
 // 补-V unsynchronized_pool：单线程的快速池
 #include <memory_resource>
@@ -1115,7 +1115,7 @@ int main() { std::pmr::synchronized_pool_resource pool; void*p=pool.allocate(64,
 int main() { std::pmr::unsynchronized_pool_resource pool; void*p=pool.allocate(32,8); pool.deallocate(p,32,8); std::cout<<"unsync pool ok\n"; return 0; }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录B: 补充可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
 ```cpp
 // 补-W pmr::vector vs std::vector 的 sizeof 差异
 #include <memory_resource>
@@ -1124,7 +1124,7 @@ int main() { std::pmr::unsynchronized_pool_resource pool; void*p=pool.allocate(3
 int main() { std::cout<<"std::vector<int>="<<sizeof(std::vector<int>)<<" pmr::vector<int>="<<sizeof(std::pmr::vector<int>)<<std::endl; return 0; }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录B: 补充可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
 ```cpp
 // 补-X PMR 一句话总结
 #include <iostream>
@@ -1133,7 +1133,7 @@ int main() { std::cout<<"PMR: runtime-polymorphic allocators, arena/pool pattern
 
 ## 附录: PMR 深度
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录: PMR 深度]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1142,7 +1142,7 @@ int main() { std::cout<<"PMR: runtime-polymorphic allocators, arena/pool pattern
 int main(){std::array<std::byte,1024> buf;std::pmr::monotonic_buffer_resource pool(buf.data(),buf.size());std::pmr::vector<int> v(&pool);v.push_back(1);v.push_back(2);std::cout<<v[0]<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录: PMR 深度]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1150,14 +1150,14 @@ int main(){std::array<std::byte,1024> buf;std::pmr::monotonic_buffer_resource po
 int main(){std::pmr::unsynchronized_pool_resource pool;std::pmr::vector<int> v(&pool);v.push_back(42);std::cout<<v[0]<<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：附录: PMR 深度]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: PMR 深度
 ```cpp
 #include <iostream>
 #include <memory_resource>
 int main(){std::pmr::monotonic_buffer_resource pool(1024);void*p=pool.allocate(64);pool.deallocate(p,64);std::cout<<"PMR: pluggable allocators without changing container type."<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: PMR 深度]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1165,7 +1165,7 @@ int main(){std::pmr::monotonic_buffer_resource pool(1024);void*p=pool.allocate(6
 int main(){std::pmr::synchronized_pool_resource pool;std::pmr::vector<std::pmr::string> v(&pool);v.emplace_back("hello");std::cout<<v[0]<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录: PMR 深度]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
 ```cpp
 #include <iostream>
 int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in replacement for std::allocator."<<std::endl;return 0;}
@@ -1203,7 +1203,7 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 
 ### 测试源码（节选）
 
-> **示例 40** [难度 ★★★★☆] [主题：测试源码（节选）]
+> **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 测试源码（节选）
 ```cpp
 [[gnu::noinline]] void default_push() {
     std::vector<int> v;
@@ -1286,7 +1286,7 @@ pmr_push():
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <memory_resource>
 #include <vector>
@@ -1304,9 +1304,9 @@ int main() {
 
 对比默认 `std::vector<int>`：前几次 `push_back` 容量 0→1→2→4→8… 每次扩容都 `operator new` + `memcpy` + `operator delete`，且这些分配来自全局堆、带锁竞争。
 
-[标准] `polymorphic_allocator` 是"类型擦除的分配器"，持有 `memory_resource*`；`monotonic_buffer_resource` 是资源的一种，语义"单调、不释放单块、整体一次性回收"。
+<span class="badge badge-std">标准</span> `polymorphic_allocator` 是"类型擦除的分配器"，持有 `memory_resource*`；`monotonic_buffer_resource` 是资源的一种，语义"单调、不释放单块、整体一次性回收"。
 
-[引用] ISO/IEC 14882:2023 §20.4 [mem.res]；cppreference `std::pmr::monotonic_buffer_resource`：<https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource>。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §20.4 [mem.res]；cppreference `std::pmr::monotonic_buffer_resource`：<https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource>。
 
 </details>
 
@@ -1318,7 +1318,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <memory_resource>
 #include <vector>
@@ -1343,9 +1343,9 @@ arena 的"整体回收"是关键：它不追踪每块单独释放，只在 `mono
 - **零释放开销**：N 个对象只需 1 次 arena 析构，而非 N 次 `delete`/`free`。
 - **无锁**：arena 分配不走全局堆，避免多线程 `operator new` 的锁竞争。
 
-[标准] 这正是"请求级 Arena"模式（网络服务器每请求一个 arena，请求结束整体释放），代价是 arena 内的单个对象**不能提前单独释放**（单调资源不回收中间块）。
+<span class="badge badge-std">标准</span> 这正是"请求级 Arena"模式（网络服务器每请求一个 arena，请求结束整体释放），代价是 arena 内的单个对象**不能提前单独释放**（单调资源不回收中间块）。
 
-[引用] ISO/IEC 14882:2023 §20.4 [mem.res]；cppreference `std::pmr::memory_resource`：<https://en.cppreference.com/w/cpp/memory/memory_resource>。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §20.4 [mem.res]；cppreference `std::pmr::memory_resource`：<https://en.cppreference.com/w/cpp/memory/memory_resource>。
 
 </details>
 
@@ -1359,7 +1359,7 @@ arena 的"整体回收"是关键：它不追踪每块单独释放，只在 `mono
 
 `polymorphic_allocator` 在构造嵌套元素时会把**自身的 `memory_resource*` 传给元素**，所以 `pmr::vector<pmr::string>` 的 `string` 元素自动用同一个 arena——这就是"分配器传播"：
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <memory_resource>
 #include <vector>
@@ -1381,9 +1381,9 @@ int main() {
 
 对比默认 `std::vector<std::string>`：外层 `vector` 扩容走全局堆，每个 `string` 的 `push_back`/`emplace` 也各自 `operator new`，N 个 string = N 次独立堆分配，且彼此碎片分散、带锁竞争。pmr 版本则全部落在同一块 arena，分配 O(1)、释放 O(1)、缓存更友好。
 
-[标准] `polymorphic_allocator` 的传播靠 `allocator_traits::construct` 在构造元素时把 `resource()` 透传；嵌套 STL 容器（vector/string/map…）的 `pmr` 别名都遵循此约定，形成"共享 arena 的对象森林"。
+<span class="badge badge-std">标准</span> `polymorphic_allocator` 的传播靠 `allocator_traits::construct` 在构造元素时把 `resource()` 透传；嵌套 STL 容器（vector/string/map…）的 `pmr` 别名都遵循此约定，形成"共享 arena 的对象森林"。
 
-[引用] ISO/IEC 14882:2023 §20.4 [mem.poly.allocator]；cppreference `std::pmr::polymorphic_allocator`：<https://en.cppreference.com/w/cpp/memory/polymorphic_allocator>。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §20.4 [mem.poly.allocator]；cppreference `std::pmr::polymorphic_allocator`：<https://en.cppreference.com/w/cpp/memory/polymorphic_allocator>。
 
 </details>
 
@@ -1397,7 +1397,7 @@ int main() {
 
 **修复（落地）。** 每请求建一个 `monotonic_buffer_resource` arena，所有临时结构放其上，请求末 arena 析构一次性回收：
 
-> **示例 44** [难度 ★★☆☆☆] [主题：演绎 1：每请求海量临时对象 → A]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：每请求海量临时对象 → A
 ```cpp
 #include <memory_resource>
 #include <vector>
@@ -1425,7 +1425,7 @@ int main() { serve(); }
 
 **修复（落地）。** 用 `unsynchronized_pool_resource`（线程内池，按尺寸分桶复用）或 `monotonic_buffer_resource`（若同批同生命周期）：
 
-> **示例 45** [难度 ★★☆☆☆] [主题：演绎 2：高频小对象 → 池资源]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：高频小对象 → 池资源
 ```cpp
 #include <memory_resource>
 #include <vector>
@@ -1767,7 +1767,7 @@ flowchart TD
 
 ### D4.7 第一方可编译验证（PMR 内存资源）
 
-> **示例 46** [难度 ★★☆☆☆] [主题：第一方可编译验证（PMR 内存资源）]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证（PMR 内存资源）
 ```cpp
 #include <iostream>
 #include <memory_resource>
@@ -1905,7 +1905,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 47** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <list>

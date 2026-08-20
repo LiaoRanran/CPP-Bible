@@ -9,28 +9,28 @@
 > 当"返回多个值"和"装下任意类型"成为刚需，元组与类型擦除登场了。
 
 ### 0.1 起源（谁·何时·为何）
-C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或临时结构体，既笨重又破坏可读性。[史] `std::tuple`（C++11，源自 Boost/TR1）提供异构、定长、编译期已知类型的"匿名小结构体"，配合 `std::tie` 与结构化绑定解包，让多返回值优雅落地。[史] `std::any`（C++17，源自 `boost::any`）则走另一条路：用**类型擦除**在运行时装下"任何可拷贝类型"，代价是失去编译期类型信息、访问需 `any_cast`。[史]
+C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或临时结构体，既笨重又破坏可读性。<span class="badge badge-history">史</span> `std::tuple`（C++11，源自 Boost/TR1）提供异构、定长、编译期已知类型的"匿名小结构体"，配合 `std::tie` 与结构化绑定解包，让多返回值优雅落地。<span class="badge badge-history">史</span> `std::any`（C++17，源自 `boost::any`）则走另一条路：用**类型擦除**在运行时装下"任何可拷贝类型"，代价是失去编译期类型信息、访问需 `any_cast`。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- TR1 / Boost：`tuple` 先在 TR1 试水，再随 C++11 标准化。[史]
+- TR1 / Boost：`tuple` 先在 TR1 试水，再随 C++11 标准化。<span class="badge badge-history">史</span>
 - C++17：`std::any` 标准化，补齐"运行时异构容器"一角。
 - C++17 起：结构化绑定让 `tuple` 解包近乎无感。
 
 ### 0.3 设计哲学之争
-`tuple` 与 `any` 代表了两种异构策略：前者是**编译期已知类型**的零开销聚合，后者是**运行时任意类型**的灵活但带擦除成本。[评] 一个经典忠告是"能用 struct/tuple 就别用 any"——`any` 把类型安全检查推迟到运行时，易藏 bug；但当你真要写"通用容器框架"（如脚本接口、插件边界）时，`any` 又不可替代。[评]
+`tuple` 与 `any` 代表了两种异构策略：前者是**编译期已知类型**的零开销聚合，后者是**运行时任意类型**的灵活但带擦除成本。<span class="badge badge-comment">评</span> 一个经典忠告是"能用 struct/tuple 就别用 any"——`any` 把类型安全检查推迟到运行时，易藏 bug；但当你真要写"通用容器框架"（如脚本接口、插件边界）时，`any` 又不可替代。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++17 结构化绑定让 `tuple` 解包近乎无感。pair 渊源与元组工具扩展是后续支线。
 
-- [史] **`pair` 是 `tuple` 的"二元特例"**：`std::pair<A,B>` 早于 `tuple` 存在于 C++98，C++11 的 `std::tuple` 在语义上把它泛化为 N 元；标准甚至提供 `std::tuple_size<pair>`/`std::tuple_element<pair>` 特化，让 `pair` 也能走 tuple 接口。
-- [史] **`std::apply`/`std::make_from_tuple`（C++17）**把元组"拆"成函数参数或构造函数参数：`apply(f, t)` 等价于 `f(get<0>(t), get<1>(t), ...)`，让"异构打包 → 异构展开"闭环。
-- [评] **`any` 的运行时成本决定了它的边界**：`std::any` 用类型擦除装任意可拷贝类型，访问须 `any_cast` 且可能抛 `bad_any_cast`；社区忠告是"能用 struct/tuple 就别用 any"，仅在插件边界、脚本接口等真正需要异构容器时才上 `any`。
-- [史] **`std::function` 与 `std::bind` 同属"类型擦除/适配"家族**：`bind` 在 lambda 普及后使用率下降，但仍是把函数与参数部分绑定成可调用对象的官方手段，与 `tuple` 的参数打包思想呼应。
+- <span class="badge badge-history">史</span> **`pair` 是 `tuple` 的"二元特例"**：`std::pair<A,B>` 早于 `tuple` 存在于 C++98，C++11 的 `std::tuple` 在语义上把它泛化为 N 元；标准甚至提供 `std::tuple_size<pair>`/`std::tuple_element<pair>` 特化，让 `pair` 也能走 tuple 接口。
+- <span class="badge badge-history">史</span> **`std::apply`/`std::make_from_tuple`（C++17）**把元组"拆"成函数参数或构造函数参数：`apply(f, t)` 等价于 `f(get<0>(t), get<1>(t), ...)`，让"异构打包 → 异构展开"闭环。
+- <span class="badge badge-comment">评</span> **`any` 的运行时成本决定了它的边界**：`std::any` 用类型擦除装任意可拷贝类型，访问须 `any_cast` 且可能抛 `bad_any_cast`；社区忠告是"能用 struct/tuple 就别用 any"，仅在插件边界、脚本接口等真正需要异构容器时才上 `any`。
+- <span class="badge badge-history">史</span> **`std::function` 与 `std::bind` 同属"类型擦除/适配"家族**：`bind` 在 lambda 普及后使用率下降，但仍是把函数与参数部分绑定成可调用对象的官方手段，与 `tuple` 的参数打包思想呼应。
 
 > 史料来源：[cppreference std::tuple](https://en.cppreference.com/w/cpp/utility/tuple)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
 [第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)
@@ -62,9 +62,9 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
 - Ranges 算法与投影 ⟶ `Book/part08_algorithms/ch100_ranges_algo.md`（投影 `proj` 与 `apply` 同构）。
 - 完美转发进阶 ⟶ `Book/part10_modern/ch116_perfect_forwarding.md`。
 
-## ④ 知识图谱（ASCII）[标准]
+## ④ 知识图谱（ASCII）<span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）[标准]]
+> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）<span class="badge badge-std">标准</span>]
 ```
                          ┌─────────────────────────────────────────────┐
                          │            值语义异构容器家族                │
@@ -90,7 +90,7 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
                                             └──────────────────────────┘
 ```
 
-## ⑤ 流程图：构造 → 访问 → 类型擦除（Mermaid）[标准]
+## ⑤ 流程图：构造 → 访问 → 类型擦除（Mermaid）<span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart TD
@@ -108,7 +108,7 @@ flowchart TD
     L --> M["any_cast / operator() 经类型检查"]
 ```
 
-## ⑥ UML 类图：any 与 function 的内部结构（Mermaid）[实现]
+## ⑥ UML 类图：any 与 function 的内部结构（Mermaid）<span class="badge badge-impl">实现</span>
 
 ```mermaid
 classDiagram
@@ -146,11 +146,11 @@ classDiagram
     function ..> _Any_data : SBO 或堆指针
 ```
 
-## ⑦ ASCII 内存图 / 对象布局 [实现]
+## ⑦ ASCII 内存图 / 对象布局 <span class="badge badge-impl">实现</span>
 
 **tuple 的递归继承布局**（libstdc++：`tuple<int,double,std::string>` 实际是 `_Tuple_impl<0,int,_Tuple_impl<1,double,_Tuple_impl<2,std::string>>>`）：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 [实现]]
+> **示例 2** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
 ```
 内存（x86-64, 对齐8）:
 std::tuple<int, double, std::string>  (sizeof = 8+8+32 = 48, string 内部含指针+size+容量=24~32)
@@ -171,7 +171,7 @@ std::tuple<int, double, std::string>  (sizeof = 8+8+32 = 48, string 内部含指
 
 **any 的 16 字节布局**（文件：`any`，行号：`83-92`、`360-361`）：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 [实现]]
+> **示例 3** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
 ```
 std::any  (sizeof = 16 在 x86-64)
 ┌─────────────────────────────────────────┐
@@ -185,7 +185,7 @@ SBO 阈值: sizeof(Tp) <= sizeof(_Storage)=8 且 alignof(Tp) <= 8  (行号:96)
 
 **function 的内部**（文件：`bits/std_function.h`，行号：`252-253`、`668`）：
 
-> **示例 4** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 [实现]]
+> **示例 4** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
 ```
 std::function<R(Args)>  (sizeof = 32 在 x86-64: 16B _Any_data + 8B manager + 8B invoker 指针)
 ┌──────────────────────────────────────────────────────────┐
@@ -196,7 +196,7 @@ std::function<R(Args)>  (sizeof = 32 在 x86-64: 16B _Any_data + 8B manager + 8B
 SBO 阈值: sizeof(_Functor) <= _M_max_size(=16) 且 alignof <= 16  (行号:117,124)
 ```
 
-## ⑧ 生命周期图：any / function 的拷贝与擦除 [实现]
+## ⑧ 生命周期图：any / function 的拷贝与擦除 <span class="badge badge-impl">实现</span>
 
 ```mermaid
 sequenceDiagram
@@ -215,7 +215,7 @@ sequenceDiagram
     Note over A,H: 大对象时 buffer 存指针, destroy 调 delete
 ```
 
-## ⑨ 调用栈 / 时序图：std::apply 的展开 [标准]
+## ⑨ 调用栈 / 时序图：std::apply 的展开 <span class="badge badge-std">标准</span>
 
 ```mermaid
 sequenceDiagram
@@ -231,11 +231,11 @@ sequenceDiagram
     Note over C: -O2 下 index_sequence 全折叠，无运行期开销
 ```
 
-## ⑩ 汇编分析（-O2，Intel 语法）[实现]
+## ⑩ 汇编分析（-O2，Intel 语法）<span class="badge badge-impl">实现</span>
 
 **示例 A：`std::make_from_tuple` 在 `-O2` 下被完全内联**（无运行期「逐元素拷贝」）：
 
-> **示例 5** [难度 ★★★★☆] [主题：汇编分析（-O2，Intel 语法）]
+> **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编分析（-O2，Intel 语法）
 ```cpp
 // 文件：Examples/ch89_make_from_tuple_asm.cpp
 // 编译：g++ -std=c++23 -O2 -S -masm=intel ch89_make_from_tuple_asm.cpp -o ch89_make_from_tuple_asm.asm
@@ -258,7 +258,7 @@ _Z6buildv:
 
 **示例 B：`std::function` 的一次调用是一次函数指针间接跳转**（无法内联跨边界）：
 
-> **示例 6** [难度 ★★★☆☆] [主题：汇编分析（-O2，Intel 语法）]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析（-O2，Intel 语法）
 ```cpp
 // 文件：Examples/ch89_function_asm.cpp
 #include <functional>
@@ -277,18 +277,18 @@ int main() { std::function<int(int)> f = [](int a){ return a*2; }; return use(f,
 - `[实现]`：示例 A 中 `make_from_tuple` 的 `index_sequence` 展开在 `-O2` 被完全优化掉；示例 B 中 `function::operator()` 走 `_M_invoker(_M_functor, args...)`（文件：`bits/std_function.h`，行号：`591`），是间接调用，阻碍内联与 devirtualization 之外的优化。
 - `[经验]`：热路径若对象类型在编译期已知，优先用模板参数 / `auto` lambda，把 `std::function` 留给「类型必须在运行期变化」的接口边界。
 
-## ⑪ STL 联系 [标准]
+## ⑪ STL 联系 <span class="badge badge-std">标准</span>
 
 - `tuple` 与 `pair`：`pair<T1,T2>` 本质是 `tuple` 的二元特例；`std::tuple` 提供 `tuple_size<pair>`、`tuple_element`、`get` 对 `pair` 的重载（文件：`tuple`，行号：`2009-2021`），所以 `apply` 也能作用于 `pair`。
 - `tuple_cat` 把多个 tuple-like 拼接成一个新 tuple（文件：`tuple`，行号：`2141`）。
 - `any` 与 `optional`/`variant`（见 ⟶ `Book/part07_stl/ch88_optional_variant.md`）：三者都用「联合 + 标志/类型信息」实现零/低堆分配；但 `any` 擦除**单一任意类型**，`variant` 是**有限类型集合之一**，`optional` 是「有/无」。
 - `function` 与算法：`<algorithm>` 的很多谓词参数本质是 `function`-风格的可调用对象，但算法模板直接收 `auto` 谓词，避免 `function` 的间接调用开销。
 
-## ⑫ 工业案例：配置解析 + RPC 请求派发 [经验]
+## ⑫ 工业案例：配置解析 + RPC 请求派发 <span class="badge badge-exp">经验</span>
 
 **案例 1（配置解析）**：一个服务器从配置文件解析出若干可选/必填字段，用 `tuple` 一次性返回多种类型，用 `optional` 表达可选，用 `any` 承载插件自定义字段。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：工业案例：配置解析 + RPC 请求]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：配置解析 + RPC 请求
 ```cpp
 // 案例1：解析连接配置，返回 (host, port, optional<tls>, any 扩展字段)
 #include <tuple>
@@ -329,7 +329,7 @@ int main() {
 
 **案例 2（RPC 请求派发）**：用 `std::function` 维护「方法名 → 处理器」表，实现轻量分发器；用 `reference_wrapper` 让处理器持有共享会话状态而不拷贝。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：工业案例：配置解析 + RPC 请求]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：配置解析 + RPC 请求
 ```cpp
 // 案例2：RPC 方法派发表
 #include <functional>
@@ -364,13 +364,13 @@ int main() {
 }
 ```
 
-## ⑬ 源码分析（libstdc++）[实现]
+## ⑬ 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 **A. tuple 的递归继承（文件：`tuple`，行号：`259` / `489`）**
 
 libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
-> **示例 9** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 9** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 ```
 文件：tuple
 行号：259   struct _Tuple_impl<size_t _Idx, typename _Head, typename... _Tail>
@@ -385,7 +385,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **B. any 的类型擦除（文件：`any`，行号：`80`/`96`/`360-361`/`370`/`574`/`402`/`608`）**
 
-> **示例 10** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 10** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 ```
 文件：any
 行号：80    class any { ... void(*_M_manager)(_Op,const any*,_Arg*); _Storage _M_storage; };
@@ -401,7 +401,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **C. function 的 SBO + 擦除（文件：`bits/std_function.h`，行号：`117`/`124`/`334`/`591`）**
 
-> **示例 11** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 11** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 ```cpp
 文件：bits/std_function.h
 行号：117   static const size_t _M_max_size  = sizeof(_Nocopy_types);   // x86-64 = 16
@@ -417,7 +417,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **D. bind 与占位符（文件：`functional`，行号：`87`/`266`/`294-311`/`881`）**
 
-> **示例 12** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 12** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 ```
 文件：functional
 行号：87    template<int _Num> struct _Placeholder { };
@@ -428,7 +428,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 `bind` 返回一个 `_Bind` 对象，它把「被绑定函数 + 实参（部分可能是 `_Placeholder<N>`）」存起来；调用时按 `is_placeholder` 判定某实参是「用调用方第 N 个实参替换」还是「用当初绑定的值」。
 
-## ⑭ WG21 提案（编号 + 标题 + 动机）[标准]
+## ⑭ WG21 提案（编号 + 标题 + 动机）<span class="badge badge-std">标准</span>
 
 | 提案 | 标题 | 动机 |
 |---|---|---|
@@ -443,7 +443,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 - `[经验]`：注意 `bind` 早于 lambda（C++03 TR1 时代），而 C++11 之后 lambda 在可读性、可内联性上全面占优——这是「为什么现代弃 bind」的历史根因。
 
-## ⑮ 面试题 [标准]
+## ⑮ 面试题 <span class="badge badge-std">标准</span>
 
 1. `std::tuple<int,double,int>` 调 `std::get<int>(t)` 会怎样？为什么 `get<T>` 要求类型唯一？
    ⟶ 编译失败（`get` 的类型重载在该 tuple 上有二义性）。需改用 `get<0>(t)` 或 `get<2>(t)`。
@@ -458,7 +458,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 6. 结构化绑定对 `std::map<K,V>::value_type`（即 `pair<const K,V>`）的绑定形式？
    ⟶ `for (auto& [k,v] : m)` —— `k` 是 `const K&`，`v` 是 `V&`。
 
-## ⑯ 易错点 [标准]
+## ⑯ 易错点 <span class="badge badge-std">标准</span>
 
 - **`get<T>` 类型歧义**：tuple 含重复类型时 `get<T>` 编译失败（见 ⑮.1）。
 - **`any_cast` 类型不匹配抛异常**：`any_cast<T>`（值/引用版本）在类型不符时抛 `bad_any_cast`；指针版本 `any_cast<T*>(&a)` 返回 `nullptr` 不抛。热路径用指针版本更安全（⟶ ⑰）。
@@ -467,7 +467,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 - **`reference_wrapper` 解引用语义**：`std::ref(x).get()` 取引用；但 `ref(x)` 本身可隐式转 `T&`，多数算法自动解引用，不要多余 `.get()` 也别漏。
 - **`make_from_tuple` 要求参数顺序 == 构造函数形参顺序**：类型不匹配会编译错。
 
-## ⑰ FAQ [标准]
+## ⑰ FAQ <span class="badge badge-std">标准</span>
 
 **Q：`std::any` 能存引用吗？**
 A：不能。`any` 存的是**值**；要「持有引用」请用 `std::reference_wrapper` 或 `any` 存 `reference_wrapper<T>`。
@@ -475,7 +475,7 @@ A：不能。`any` 存的是**值**；要「持有引用」请用 `std::referenc
 **Q：如何避免 `any_cast` 抛异常？**
 A：用指针形式：
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：[标准]]
+> **示例 13** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
 ```cpp
 // 安全 any_cast：类型不符返回 nullptr，不抛
 #include <any>
@@ -496,11 +496,11 @@ A：走堆分配（`_M_functor` 存指针），引用稳定（location-invariant
 **Q：结构化绑定能否 `const`/引用绑定到 tuple？**
 A：可以，`auto&` / `const auto&` 绑定到原 tuple 元素，修改会反映回原 tuple（element 是变量时）。
 
-## ⑱ 最佳实践 [经验]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
 1. **多返回值优先 `tuple` + 结构化绑定**，而非输出参数：
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 14** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ✅ 清晰、值语义、可 std::move
 #include <tuple>
@@ -515,7 +515,7 @@ int main() {
 
 2. **`bind` 默认拷贝实参；需引用时显式 `std::ref`**：
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 15** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ❌ 误：bind 拷贝了 counter，外部看不到自增
 // ✅ 正：用 std::ref 让 bind 持有引用
@@ -532,7 +532,7 @@ int main() {
 
 3. **现代优先 lambda 而非 `bind`**（可读性 + 可内联，见 ⑲/⑳）：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 16** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // bind 写法（旧）
 #include <functional>
@@ -553,13 +553,13 @@ int main() { return b_style() + l_style(); }
 4. **`any` 仅用于「类型确实运行期才知」的边界**；编译期已知类型请用 `variant`/`optional`（⟶ `Book/part07_stl/ch88_optional_variant.md`）。
 5. **`function` 用于接口/回调边界**；热循环内用模板 `auto` 谓词或具体 lambda 类型避免间接调用与分配。
 
-## ⑲ 性能分析 [经验]
+## ⑲ 性能分析 <span class="badge badge-exp">经验</span>
 
 **A. tuple 访问 vs 手写 struct 字段访问**：`-O2` 下 `get<I>` 编译为直接偏移访问，与 struct 字段访问**同速**（tuple 只是「按索引」访问，偏移由编译器在实例化时确定）。微基准量级：两者均为 0 额外开销。
 
 **B. `any` 的 SBO 零分配验证**：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：性能分析 [经验]]
+> **示例 17** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
 ```cpp
 // any 小对象(≤8B) 全息：无堆分配；大对象走堆
 #include <any>
@@ -579,7 +579,7 @@ int main() {
 
 **C. `function` 间接调用开销量级**（示意，x86-64）：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：性能分析 [经验]]
+> **示例 18** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
 ```cpp
 // 调用开销示意：function 比直接 lambda 多一次间接跳转 + 可能的分配
 #include <functional>
@@ -611,7 +611,7 @@ int main() { return bench() > 0 ? 0 : 1; }
 
 **D. `apply`/`make_from_tuple` 编译期展开零开销**：
 
-> **示例 19** [难度 ★★☆☆☆] [主题：性能分析 [经验]]
+> **示例 19** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
 ```cpp
 // apply 在 -O2 下完全内联（见 ⑩ 示例 A 的汇编）
 #include <tuple>
@@ -624,9 +624,9 @@ int main() {
 }
 ```
 
-## ⑲b 补充完整可编译示例（ch89_ex01 – ch89_ex30，每块独立可编译）[标准]
+## ⑲b 补充完整可编译示例（ch89_ex01 – ch89_ex30，每块独立可编译）<span class="badge badge-std">标准</span>
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex01：tuple 构造 + get 索引 + 结构化绑定
 #include <tuple>
@@ -642,7 +642,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex02：tuple 字典序比较
 #include <tuple>
@@ -655,7 +655,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex03：tuple_cat 拼接
 #include <tuple>
@@ -669,7 +669,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex04：tuple_size / tuple_element 编译期查询
 #include <tuple>
@@ -686,7 +686,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex05：tie 解包 + forward_as_tuple（引用 tuple）
 #include <tuple>
@@ -701,7 +701,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex06：apply + 折叠表达式求和
 #include <tuple>
@@ -714,7 +714,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex07：make_from_tuple 构造自定义 struct
 #include <tuple>
@@ -730,7 +730,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex08：index_sequence + 折叠 ((void)x,...) 遍历 tuple
 #include <tuple>
@@ -752,7 +752,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex09：pair piecewise_construct 原地构造（避免临时对象）
 #include <utility>
@@ -771,7 +771,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex10：pair 结构化绑定 + map 遍历
 #include <map>
@@ -784,7 +784,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex11：get<T>（类型唯一）按类型取元素
 #include <tuple>
@@ -807,7 +807,7 @@ int main() {
 // 解决：改用 get<0>(t) / get<2>(t)，或保证类型唯一
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex12：tuple 交换
 #include <tuple>
@@ -821,7 +821,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex13：any 基本用法（类型可改变）
 #include <any>
@@ -837,7 +837,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex14：any_cast 指针版本（不匹配返回 nullptr，不抛）
 #include <any>
@@ -850,7 +850,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex15：any 存自定义类型 + bad_any_cast 捕获
 #include <any>
@@ -871,7 +871,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex16：any reset / 清空
 #include <any>
@@ -884,7 +884,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex17：any 作异构容器（vector<any>）
 #include <any>
@@ -905,7 +905,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex18：function 接收 lambda / 函数指针 / 成员式回调
 #include <functional>
@@ -921,7 +921,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex19：function target() / target_type() 查询真实类型
 #include <functional>
@@ -935,7 +935,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex20：空 function 调用抛 bad_function_call
 #include <functional>
@@ -948,7 +948,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex21：function 递归（斐波那契）
 #include <functional>
@@ -960,7 +960,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex22：vector<function> 回调列表
 #include <functional>
@@ -975,7 +975,7 @@ int main() {
 }
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex23：bind 参数重排（_1,_2 占位符）
 #include <functional>
@@ -989,7 +989,7 @@ int main() {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex24：bind 成员函数（_1 作为 this）
 #include <functional>
@@ -1006,7 +1006,7 @@ int main() {
 }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex25：bind vs lambda（交换参数顺序）
 #include <functional>
@@ -1021,7 +1021,7 @@ int main() {
 }
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex26：reference_wrapper 进 vector（引用而非拷贝）
 #include <functional>
@@ -1036,7 +1036,7 @@ int main() {
 }
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex27：reference_wrapper 配合算法排序（按引用重排）
 #include <functional>
@@ -1052,7 +1052,7 @@ int main() {
 }
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex28：reference_wrapper 配合 bind（避免按值拷贝）
 #include <functional>
@@ -1068,7 +1068,7 @@ int main() {
 }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex29：用户定义字面量（UDL）operator"" _m 配合 tuple 结构化绑定
 #include <tuple>
@@ -1082,7 +1082,7 @@ int main() {
 }
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch89_ex30：constexpr 上下文中的 tuple
 #include <tuple>
@@ -1099,21 +1099,21 @@ int main() {
 }
 ```
 
-## ⑳ 跨语言对比 [标准]
+## ⑳ 跨语言对比 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `std::tie` 解包 `pair`/`tuple` 到已有变量。** 你做多返回值接收。请说明机制。
-   - [标准] `std::tie` 生成 lvalue 引用 tuple，用于把 tuple/pair 元素绑定到现成变量（含结构化绑定替代）。
-   - [引用] ISO/IEC 14882:2023 §[tuple]（std::tie）；cppreference "std::tie" 词条。
+   - <span class="badge badge-std">标准</span> `std::tie` 生成 lvalue 引用 tuple，用于把 tuple/pair 元素绑定到现成变量（含结构化绑定替代）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[tuple]（std::tie）；cppreference "std::tie" 词条。
 
 2. **真实场景：`make_tuple` 按实参推导元素类型。** 你想省去显式写 `tuple<int,string>`。请说明。
-   - [标准] `std::make_tuple` 按实参推导各元素类型（应用 decay，如引用衰减）。
-   - [引用] ISO/IEC 14882:2023 §[tuple]（make_tuple 推导）；cppreference "std::make_tuple" 词条。
+   - <span class="badge badge-std">标准</span> `std::make_tuple` 按实参推导各元素类型（应用 decay，如引用衰减）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[tuple]（make_tuple 推导）；cppreference "std::make_tuple" 词条。
 
 3. **真实场景：用 `get<Index>(t)` 按编译期索引访问。** 你取第 2 个元素。请说明索引性质。
-   - [标准] tuple 元素按编译期常量索引访问；越界索引在编译期即报错。
-   - [引用] ISO/IEC 14882:2023 §[tuple.elem]（get 与索引）；cppreference "std::get" 词条。
+   - <span class="badge badge-std">标准</span> tuple 元素按编译期常量索引访问；越界索引在编译期即报错。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[tuple.elem]（get 与索引）；cppreference "std::get" 词条。
 
 | 能力 | C++ | Rust | Python | C# | Java |
 |---|---|---|---|---|---|
@@ -1135,7 +1135,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：tuple / any 与「异构打包」与「类型擦除」
 
-[史] `std::tuple` 随 C++11 进入标准，源自 Boost.Tuple，提供编译期固定大小的异构元素打包（如 `tuple<int,string,bool>`），并配合 `std::get` / 结构化绑定 / `std::apply` 解包。[史] `std::any`（C++17）则源自 Boost.Any，提供运行期类型擦除的「任意单值容器」，经 Library Fundamentals TS（P0220R1）并入标准。[轶] 一个常被混淆的点：`tuple` 是编译期已知类型集合，零开销；`any` 是运行期单一未知类型，靠 SBO（小对象优化）在栈上存小值、大值才堆分配——两者解决完全不同维度的问题。[评] `tuple` 让「返回多个值」成为一等公民，`any` 则把「动态类型值」安全地塞进容器，避免了 `void*` 的危险擦除。
+<span class="badge badge-history">史</span> `std::tuple` 随 C++11 进入标准，源自 Boost.Tuple，提供编译期固定大小的异构元素打包（如 `tuple<int,string,bool>`），并配合 `std::get` / 结构化绑定 / `std::apply` 解包。<span class="badge badge-history">史</span> `std::any`（C++17）则源自 Boost.Any，提供运行期类型擦除的「任意单值容器」，经 Library Fundamentals TS（P0220R1）并入标准。<span class="badge badge-anecdote">轶</span> 一个常被混淆的点：`tuple` 是编译期已知类型集合，零开销；`any` 是运行期单一未知类型，靠 SBO（小对象优化）在栈上存小值、大值才堆分配——两者解决完全不同维度的问题。<span class="badge badge-comment">评</span> `tuple` 让「返回多个值」成为一等公民，`any` 则把「动态类型值」安全地塞进容器，避免了 `void*` 的危险擦除。
 
 ### ㉒.2 真实工程坐标：tuple/any 活在哪些产品里
 
@@ -1146,11 +1146,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：tuple/any 的常见误用与陷阱
 
-[评] `tuple` 最大坑是「类型位置索引的脆弱性」——`get<0>` 依赖编译期固定顺序，重构时极易弄错；C++17 结构化绑定与 `get<N>` 的类型安全仍是主要救济。`any` 的坑则是「`any_cast` 类型不符抛 `bad_any_cast`」——且 `any` 不是动态类型，必须显式恢复静态类型；SBO 边界之外会堆分配，在实时/无堆环境要谨慎。还有「`any` 拷贝昂贵」——它默认深拷贝持有值，误传大对象会触发堆分配。
+<span class="badge badge-comment">评</span> `tuple` 最大坑是「类型位置索引的脆弱性」——`get<0>` 依赖编译期固定顺序，重构时极易弄错；C++17 结构化绑定与 `get<N>` 的类型安全仍是主要救济。`any` 的坑则是「`any_cast` 类型不符抛 `bad_any_cast`」——且 `any` 不是动态类型，必须显式恢复静态类型；SBO 边界之外会堆分配，在实时/无堆环境要谨慎。还有「`any` 拷贝昂贵」——它默认深拷贝持有值，误传大对象会触发堆分配。
 
 ### ㉒.4 与标准的互动：tuple/any 与标准的演进
 
-[史] `std::tuple` 自 C++11 起即为核心，C++17 的结构化绑定让它「拆包」变得自然；`std::any` 经 P0220R1 在 C++17 并入。[评] 近年 WG21 在反思「`tuple` 的实用性」——它虽强大但冗长，C++20 的 `std::pair` 结构化绑定与概念部分缓解；而 `any` 因与 `std::variant` 的「运行期 vs 编译期」分工被反复讨论。标准方向是「保留 `tuple` 作为编译期异构工具，`any` 作为受控的类型擦除逃生舱」。
+<span class="badge badge-history">史</span> `std::tuple` 自 C++11 起即为核心，C++17 的结构化绑定让它「拆包」变得自然；`std::any` 经 P0220R1 在 C++17 并入。<span class="badge badge-comment">评</span> 近年 WG21 在反思「`tuple` 的实用性」——它虽强大但冗长，C++20 的 `std::pair` 结构化绑定与概念部分缓解；而 `any` 因与 `std::variant` 的「运行期 vs 编译期」分工被反复讨论。标准方向是「保留 `tuple` 作为编译期异构工具，`any` 作为受控的类型擦除逃生舱」。
 
 - **WG21 修订链**：`std::tuple` 由 N2080（Doug Gregor 的「Variadic Templates」相关）随 C++11 引入，C++17 的结构化绑定（P0217R3）让它拆包自然化；`std::any` 经 Library Fundamentals V1 TS（P0220R1，wg21.link/P0220R1）在 C++17 并入。C++20 起二者均进入 `constexpr` 范围（如 `std::make_tuple`/`std::any` 构造的编译期可用性扩展）。
 - **ISO 条款**：`std::tuple` 规定于 ISO/IEC 14882 §22.4.6（`[tuple]`），`std::any` 于 §22.7.4（`[any]`）。设计理由是「`tuple` 用编译期异构索引表达固定结构的多类型聚合（零开销、无堆默认），`any` 则用受控的类型擦除（SBO 小对象优化 + 堆回退）提供运行期持有任意类型的能力」——前者是编译期工具，后者是运行期逃生舱，二者分工明确。
@@ -1254,7 +1254,7 @@ jne .bad_any
 
 <details><summary>答案与解析</summary>
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -1267,9 +1267,9 @@ int main() {
 }
 ```
 
-[标准] `std::tuple` 是异构定长聚合，`std::get<N>` 在编译期完成偏移访问（零运行时索引，见本章附录 ASM 实证）；C++17 结构化绑定 `auto [a,b,c]` 给每个元素独立别名。
+<span class="badge badge-std">标准</span> `std::tuple` 是异构定长聚合，`std::get<N>` 在编译期完成偏移访问（零运行时索引，见本章附录 ASM 实证）；C++17 结构化绑定 `auto [a,b,c]` 给每个元素独立别名。
 
-[引用] ISO/IEC 14882:2023 §[tuple]（`tuple`/`get`/`make_tuple`）与 §[dcl.struct.bind]（结构化绑定）；cppreference "utility/tuple"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[tuple]（`tuple`/`get`/`make_tuple`）与 §[dcl.struct.bind]（结构化绑定）；cppreference "utility/tuple"。
 
 </details>
 
@@ -1279,7 +1279,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -1290,9 +1290,9 @@ int main() {
 }
 ```
 
-[标准] `get<N>` 是编译期偏移访问（与裸 struct 成员访问逐字节相同，见本章附录 ASM 实证）；结构化绑定是编译期别名，无运行时分发开销。注意 libstdc++ 递归继承使"末参在底地址"布局。
+<span class="badge badge-std">标准</span> `get<N>` 是编译期偏移访问（与裸 struct 成员访问逐字节相同，见本章附录 ASM 实证）；结构化绑定是编译期别名，无运行时分发开销。注意 libstdc++ 递归继承使"末参在底地址"布局。
 
-[引用] ISO/IEC 14882:2023 §[tuple] 与 §[dcl.struct.bind]；libstdc++ 的"末参最底地址"布局（与裸聚合相反）见 cppreference "utility/tuple"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[tuple] 与 §[dcl.struct.bind]；libstdc++ 的"末参最底地址"布局（与裸聚合相反）见 cppreference "utility/tuple"。
 
 </details>
 
@@ -1302,7 +1302,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 52** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <any>
@@ -1312,9 +1312,9 @@ int main() {
 }
 ```
 
-[标准] `std::any` 是类型擦除的单值容器；`any_cast<T>` 校验类型并取值，类型不符抛 `std::bad_any_cast`。libstdc++ SBO 缓冲为 16 字节（见本章附录 ASM 实证），超过才堆分配。
+<span class="badge badge-std">标准</span> `std::any` 是类型擦除的单值容器；`any_cast<T>` 校验类型并取值，类型不符抛 `std::bad_any_cast`。libstdc++ SBO 缓冲为 16 字节（见本章附录 ASM 实证），超过才堆分配。
 
-[引用] ISO/IEC 14882:2023 §[any]（`any`/`any_cast`/`bad_any_cast`）；SBO 边界与 `_Manager_internal`/`_Manager_external` 见 cppreference "utility/any"；类型擦除思想可对照 Boost.Any（boost.org）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[any]（`any`/`any_cast`/`bad_any_cast`）；SBO 边界与 `_Manager_internal`/`_Manager_external` 见 cppreference "utility/any"；类型擦除思想可对照 Boost.Any（boost.org）。
 
 </details>
 
@@ -1496,7 +1496,7 @@ use_agg(P const&):                 ; struct P{int a; double b; char c;}
 
 ### D4.7 编译验证
 
-> **示例 53** [难度 ★★★☆☆] [主题：编译验证]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译验证
 ```cpp
 #include <tuple>
 #include <iostream>
@@ -1736,7 +1736,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 54** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <any>
 #include <variant>

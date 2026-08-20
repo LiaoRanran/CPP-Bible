@@ -12,35 +12,35 @@
 > 把"<algorithm> 里上百个函数"串成一张思想地图——这件事，从 STL 诞生那天起就有人在做。
 
 ### 0.1 起源（谁·何时·为何）
-STL 收编的算法并非随意堆砌，而是围绕几条主线组织：**遍历（for_each/copy）、查找（find/lower_bound）、变换（transform）、排序与分区（sort/partition）、归约（accumulate/reduce）、堆与优先队列**。[史] Stepanov 在 1994 年把算法写入标准库时，就强调它们都应带**复杂度保证**并以迭代器范畴分派最优实现（如 `distance` 对随机访问是 O(1)、对单向是 O(n)）。这套"按能力分派"的思想，源自他对泛型与效率同等看重的执念。[史]
+STL 收编的算法并非随意堆砌，而是围绕几条主线组织：**遍历（for_each/copy）、查找（find/lower_bound）、变换（transform）、排序与分区（sort/partition）、归约（accumulate/reduce）、堆与优先队列**。<span class="badge badge-history">史</span> Stepanov 在 1994 年把算法写入标准库时，就强调它们都应带**复杂度保证**并以迭代器范畴分派最优实现（如 `distance` 对随机访问是 O(1)、对单向是 O(n)）。这套"按能力分派"的思想，源自他对泛型与效率同等看重的执念。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- 1994：STL 算法体系随标准库入标，奠定"迭代器范畴驱动分派"的范式。[史]
+- 1994：STL 算法体系随标准库入标，奠定"迭代器范畴驱动分派"的范式。<span class="badge badge-history">史</span>
 - C++11：lambda 让算法谓词表达力大增。
 - C++17：执行策略（`seq`/`par`/`par_unseq`）让同一算法可选并行。
 - C++20：Ranges 重写算法接口，并引入 Concepts 把"迭代器范畴"变成可检查约束。
 
 ### 0.3 设计哲学之争
-算法总览要回答的核心问题是"为何算法是自由函数而非容器成员"——答案仍是解耦：一套算法覆盖所有满足迭代器要求的容器，避免 N×M 的组合爆炸。[评] 另一争论是"算法数量是否过多、是否该更函数式（如管道）"——Ranges 的 `views` 正是朝函数式管道方向的一次回应。[评]
+算法总览要回答的核心问题是"为何算法是自由函数而非容器成员"——答案仍是解耦：一套算法覆盖所有满足迭代器要求的容器，避免 N×M 的组合爆炸。<span class="badge badge-comment">评</span> 另一争论是"算法数量是否过多、是否该更函数式（如管道）"——Ranges 的 `views` 正是朝函数式管道方向的一次回应。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++17 执行策略、C++20 Ranges 重写接口并引入 Concepts 把迭代器范畴变成可检查约束。并行陷阱与模式匹配是后续支线。
 
-- [史] **Parallelism TS 把"并行算法"做成一等公民**：C++17 的执行策略（`seq`/`par`/`par_unseq`）背后是 PSTL 把算法映射到 TBB 等后端，让同一份 `std::for_each` 既能串行也能并行——但要求无数据竞争。
-- [评] **并行执行策略的"假共享"陷阱常被低估**：并行 `for_each` 若每个线程写相邻元素（同一缓存行），会因缓存一致性流量互相拖累，反而比串行慢；正确做法是分块（stride）或让每线程写独立缓冲区。
-- [史] **Concepts 把"迭代器范畴"从文档约定升级为编译器约束**：C++20 起 `random_access_iterator`/`bidirectional_iterator` 等成为概念，算法能静态拒绝不合规类型，报错从"模板深渊"变清晰——STL 自 1994 年的范畴设想终于被机器检查。
-- [评] **"模式匹配 + 算法"仍属理论探索**：C++ 几次提出 `inspect` 式模式匹配，若落地将让"按结构分派"的算法（如 `variant` 访问、递归数据结构遍历）写得更直白，但尚未入标，属于未来方向。
+- <span class="badge badge-history">史</span> **Parallelism TS 把"并行算法"做成一等公民**：C++17 的执行策略（`seq`/`par`/`par_unseq`）背后是 PSTL 把算法映射到 TBB 等后端，让同一份 `std::for_each` 既能串行也能并行——但要求无数据竞争。
+- <span class="badge badge-comment">评</span> **并行执行策略的"假共享"陷阱常被低估**：并行 `for_each` 若每个线程写相邻元素（同一缓存行），会因缓存一致性流量互相拖累，反而比串行慢；正确做法是分块（stride）或让每线程写独立缓冲区。
+- <span class="badge badge-history">史</span> **Concepts 把"迭代器范畴"从文档约定升级为编译器约束**：C++20 起 `random_access_iterator`/`bidirectional_iterator` 等成为概念，算法能静态拒绝不合规类型，报错从"模板深渊"变清晰——STL 自 1994 年的范畴设想终于被机器检查。
+- <span class="badge badge-comment">评</span> **"模式匹配 + 算法"仍属理论探索**：C++ 几次提出 `inspect` 式模式匹配，若落地将让"按结构分派"的算法（如 `variant` 访问、递归数据结构遍历）写得更直白，但尚未入标，属于未来方向。
 
 > 史料来源：[cppreference 执行策略](https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
-## ① 概述：算法思想总览 [标准]
+## ① 概述：算法思想总览 <span class="badge badge-std">标准</span>
 
 [第100章　Ranges 算法与投影（C++20）](Book/part08_algorithms/ch100_ranges_algo.md)
 
 算法 = 在有限步骤内把输入变为输出的确定过程。工业 C++ 工程中，绝大多数"业务逻辑瓶颈"可归结为六类经典思想：**哈希（O(1) 近似随机访问）、图（关系与遍历）、树（有序与平衡）、动态规划（重叠子问题）、贪心（局部最优）、分治/回溯（分解与枚举）**。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：算法思想总览 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：算法思想总览 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 六类思想的"一句话 C++ 形态"
 #include <unordered_map>
@@ -75,13 +75,13 @@ std::function<int(int)> fib = [&](int n){ return n<2?n:fib(n-1)+fib(n-2); }; // 
 └────────────────────────────────────────────┘
 ```
 
-## ② 哈希表原理与冲突（链地址/开放寻址） [标准]
+## ② 哈希表原理与冲突（链地址/开放寻址） <span class="badge badge-std">标准</span>
 
 哈希表用 hash 函数把 key 映射到桶下标。冲突不可避免（鸽巢原理），两类主流解决：
 
 **链地址（separate chaining）**：每个桶挂一条链表。
 
-> **示例 2** [难度 ★★★☆☆] [主题：哈希表原理与冲突（链地址/开放寻址）]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 哈希表原理与冲突（链地址/开放寻址）
 ```cpp
 // ② 链地址：桶数组 + 单向链表
 #include <list>
@@ -108,7 +108,7 @@ struct ChainingHash {
 
 **开放寻址（open addressing）**：所有元素存在桶数组内，冲突时按探测序列找下一个空槽。常见探测：线性 `h+i`、二次 `h+i²`、双重哈希 `h + i·h2(k)`。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：哈希表原理与冲突（链地址/开放寻址）]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 哈希表原理与冲突（链地址/开放寻址）
 ```cpp
 // ② 开放寻址骨架（线性探测）：槽位内联，无链表节点
 #include <cstddef>
@@ -122,11 +122,11 @@ struct OAHash {
 - `[标准]`：链地址在删除上简单（直接删节点），开放寻址需用"墓碑（deleted）"标记避免切断探测链。
 - `[实现·GCC15.3.0]`：libstdc++ 的 `std::unordered_map` 采用链地址 + 单链表（非红黑），平均 O(1)。
 
-## ③ 图（BFS/DFS） [标准]
+## ③ 图（BFS/DFS） <span class="badge badge-std">标准</span>
 
 图用邻接表表达最省内存。BFS（队列，求无权最短路/层序），DFS（栈/递归，求连通分量/拓扑序）。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：图（BFS/DFS） [标准]]
+> **示例 4** [难度 ★☆☆☆☆] [主题：图（BFS/DFS） <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ BFS：队列逐层扩展，首次到达即最短距离
 #include <queue>
@@ -144,7 +144,7 @@ std::vector<int> bfs(int s, const std::vector<std::vector<int>>& adj) {
 }
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：图（BFS/DFS） [标准]]
+> **示例 5** [难度 ★☆☆☆☆] [主题：图（BFS/DFS） <span class="badge badge-std">标准</span>]
 ```cpp
 // ③ DFS：递归深入，标记访问避免回环
 #include <vector>
@@ -160,11 +160,11 @@ void dfs(int u, const std::vector<std::vector<int>>& adj,
 - `[标准]`：BFS 用队列（FIFO），DFS 用栈（隐式递归栈）；二者时间复杂度均为 O(V+E)。
 - `[经验]`：邻接矩阵适合稠密图；邻接表适合稀疏图（工业常态）。
 
-## ④ 最短路径 Dijkstra [标准]
+## ④ 最短路径 Dijkstra <span class="badge badge-std">标准</span>
 
 Dijkstra 在非负权图上求单源最短路，核心是"每次取出当前距离最小的未定节点并松弛邻居"。用 `std::priority_queue`（堆）实现为 O((V+E)logV)。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：最短路径 Dijkstra [标准]]
+> **示例 6** [难度 ★★☆☆☆] [主题：最短路径 Dijkstra <span class="badge badge-std">标准</span>]
 ```cpp
 // ④ Dijkstra：最小堆驱动，距离数组 + 松弛
 #include <queue>
@@ -195,11 +195,11 @@ std::vector<long long> dijkstra(int s,
 - `[标准]`：`dist > d[u]` 跳过是必须的——同一节点可被多次入堆（lazy deletion）。
 - `[经验]`：负权边须用 Bellman-Ford / SPFA；Dijkstra 遇负权失效。
 
-## ⑤ 树（BST/平衡树 AVL/红黑） [标准]
+## ⑤ 树（BST/平衡树 AVL/红黑） <span class="badge badge-std">标准</span>
 
 二叉搜索树（BST）中序有序，但退化为链时 O(n)。平衡树通过旋转维持高度 O(log n)：AVL（严格平衡，查找快、插入慢）、红黑树（近似平衡，插入删除更稳）。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：树（BST/平衡树 AVL/红黑） ]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 树（BST/平衡树 AVL/红黑）
 ```cpp
 // ⑤ BST 插入（递归）：左小右大
 struct BST {
@@ -212,7 +212,7 @@ struct BST {
 };
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：树（BST/平衡树 AVL/红黑） ]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 树（BST/平衡树 AVL/红黑）
 ```cpp
 // ⑤ AVL 平衡因子与旋转（左旋示意）
 struct AVL {
@@ -222,7 +222,7 @@ int height(AVL* t){ return t ? t->h : 0; }
 int bf(AVL* t){ return t ? height(t->l) - height(t->r) : 0; }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：树（BST/平衡树 AVL/红黑） ]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 树（BST/平衡树 AVL/红黑）
 ```cpp
 // ⑤ 红黑树思想：节点着黑/红，5 条性质保证"黑高"平衡
 // STL 关联容器（map/set）即用红黑树实现
@@ -233,11 +233,11 @@ std::map<int, int> rb;   // ⑤ 底层红黑树，查找/插入/删除 O(log n)
 - `[标准]`：`std::map`/`std::set` 为红黑树；`std::unordered_map` 为哈希（见 ②）。
 - `[经验]`：需要"有序遍历 + 区间查询"用 `map`；只需"按键存取"用 `unordered_map` 更快。
 
-## ⑥ 动态规划 DP [标准]
+## ⑥ 动态规划 DP <span class="badge badge-std">标准</span>
 
 DP = 把原问题拆成重叠子问题，用表缓存已解子问题避免重复计算。典型两类：**线性 DP**（背包、LIS）与 **区间/树形 DP**。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：动态规划 DP [标准]]
+> **示例 10** [难度 ★☆☆☆☆] [主题：动态规划 DP <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ 0/1 背包：dp[i][w] = 前 i 件在容量 w 下的最大价值
 #include <vector>
@@ -254,7 +254,7 @@ int knapsack(const std::vector<int>& wt, const std::vector<int>& val, int W) {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：动态规划 DP [标准]]
+> **示例 11** [难度 ★☆☆☆☆] [主题：动态规划 DP <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ 最长递增子序列 LIS：dp[i] = 以 i 结尾的 LIS 长度
 #include <vector>
@@ -272,7 +272,7 @@ int lis(const std::vector<int>& a) {
 }
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：动态规划 DP [标准]]
+> **示例 12** [难度 ★★☆☆☆] [主题：动态规划 DP <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑥ 状态压缩 DP：用整数位表示集合（旅行商 TSP 雏形）
 // dp[mask][u] = 已访问集合 mask、当前在 u 的最小代价
@@ -294,11 +294,11 @@ int tsp(int n, const std::vector<std::vector<int>>& g) {
 - `[标准]`：DP 成立须满足**最优子结构**与**无后效性**。
 - `[经验]`：能用滚动数组/一维把 O(n²) 空间压到 O(n)；背包常省略第一维。
 
-## ⑦ 贪心 [标准]
+## ⑦ 贪心 <span class="badge badge-std">标准</span>
 
 贪心每步取局部最优，若问题具**贪心选择性质 + 最优子结构**则全局最优。典型：区间调度（按结束时间排序）、霍夫曼编码、最小生成树（Kruskal/Prim）。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：贪心 [标准]]
+> **示例 13** [难度 ★☆☆☆☆] [主题：贪心 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 区间调度：最多不重叠区间 = 每次选结束最早的
 #include <vector>
@@ -314,7 +314,7 @@ int max_intervals(std::vector<std::pair<int,int>> iv) {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：贪心 [标准]]
+> **示例 14** [难度 ★★☆☆☆] [主题：贪心 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ Kruskal 思路：边按权升序，并查集避免环
 #include <vector>
@@ -337,11 +337,11 @@ int kruskal(std::vector<std::tuple<int,int,int>> edges, int n) {
 - `[标准]`：贪心正确性须证明；不能凭直觉。反例：0/1 背包不能用贪心（需用 DP，见 ⑥）。
 - `[经验]`：先问"局部最优能否推出全局最优"，否则退回 DP。
 
-## ⑧ [实现]真实：手写开放寻址哈希表编译（取汇编看 probe 循环） [实现·GCC15.3.0]
+## ⑧ <span class="badge badge-impl">实现</span>真实：手写开放寻址哈希表编译（取汇编看 probe 循环） [实现·GCC15.3.0]
 
 下面是被真实编译的源（完整可编译见 `Examples/_ch101_open_addressing.cpp`）。`oah_find` 用线性探测：`for i in [0,cap): idx=(h+i)&(cap-1)`，遇空槽返回、遇同键返回。
 
-> **示例 15** [难度 ★★★☆☆] [主题：[实现]真实：手写开放寻址哈希表编译]
+> **示例 15** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：手写开放寻址哈希表编译]
 ```cpp
 #include <cstddef>
 // 文件：Examples/_ch101_open_addressing.cpp
@@ -384,11 +384,11 @@ static Entry* oah_find(OAHMap* m, int key) {
 - `[实现·GCC15.3.0]`：汇编直接证明线性探测本质——`add rax,1`（步长恒为 1）逐槽试探，`lea rdx,[r8+rdx*4]` 按 `Entry=12` 字节步长寻址，`cmp BYTE PTR 8[rdx],0` 测试 `used` 决定是否继续。冲突时探测退化到 O(cap) 的代价在此循环中可见（循环上界 `h+cap`）。
 - `[平台·x86-64]`：槽地址计算 `idx*12` 由 `lea` 在 2 条指令内完成（`rdx+rdx*2` → `*3`，再 `*4` → `*12`），无乘法指令。
 
-## ⑨ [实现]真实：手写哈希表 vs std::unordered_map 性能（chrono 真实数字） [实现·GCC15.3.0]
+## ⑨ <span class="badge badge-impl">实现</span>真实：手写哈希表 vs std::unordered_map 性能（chrono 真实数字） [实现·GCC15.3.0]
 
 真实基准（源 `Examples/_ch101_bench.cpp`，MinGW GCC 15.3.0，`-O2`，x86-64，N=300000 次插入+查找）：
 
-> **示例 16** [难度 ★★☆☆☆] [主题：[实现]真实：手写哈希表 vs st]
+> **示例 16** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：手写哈希表 vs st]
 ```cpp
 #include <map>
 // 文件：Examples/_ch101_bench.cpp
@@ -417,11 +417,11 @@ speedup(hand/std)=3.01x
 - `[经验]`：该数字**仅代表整型 key + 连续内存 + 无删除**这一特定场景；`std::unordered_map` 胜在通用、稳健、支持任意 key 与删除。生产环境先用 `unordered_map`，仅在 profiling 证明其为瓶颈且 key 简单时自写。
 - `[平台·x86-64]`：绝对毫秒数随 CPU/负载浮动，但"手写连续桶更快"的相对结论稳定可复现。
 
-## ⑩ 分治（与 std::sort 衔接） [标准]
+## ⑩ 分治（与 std::sort 衔接） <span class="badge badge-std">标准</span>
 
 分治 = 分解 → 解决子问题 → 合并。经典：归并排序、快速排序。C++ 的 `std::sort` 是 introsort（快排 + 堆排 + 插入排序混合）。
 
-> **示例 17** [难度 ★★☆☆☆] [主题：分治（与 std::sort 衔接）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分治（与 std::sort 衔接）
 ```cpp
 // ⑩ 归并排序（分治 + 合并）：O(n log n)，稳定
 #include <vector>
@@ -439,7 +439,7 @@ void merge_sort(std::vector<int>& a, int l, int r) {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：分治（与 std::sort 衔接）]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分治（与 std::sort 衔接）
 ```cpp
 // ⑩ 与 STL 衔接：std::sort 即工业级 introsort
 #include <algorithm>
@@ -452,11 +452,11 @@ std::sort(v.begin(), v.end(), std::greater<int>()); // 降序
 - `[标准]`：`std::sort` 平均 O(n log n)，最坏 O(n log n)（introsort 在递归过深时切堆排防退化）。
 - `[经验]`：几乎不要自己写排序；`std::sort` 经过数十年调优，且对小型区间用插入排序。
 
-## ⑪ 回溯 [标准]
+## ⑪ 回溯 <span class="badge badge-std">标准</span>
 
 回溯 = 试探性搜索，走到死路就撤销（undo）并返回上一层。典型：N 皇后、全排列、数独。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：回溯 [标准]]
+> **示例 19** [难度 ★★☆☆☆] [主题：回溯 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪ N 皇后：逐行放皇后，冲突则回溯
 #include <vector>
@@ -474,7 +474,7 @@ void queen(int row, int n, long long cols, long long diag, long long adiag) {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：回溯 [标准]]
+> **示例 20** [难度 ★☆☆☆☆] [主题：回溯 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑪ 全排列：固定前缀，回溯交换
 #include <vector>
@@ -491,11 +491,11 @@ void permute(std::vector<int>& a, int i, std::vector<std::vector<int>>& out) {
 - `[标准]`：回溯是 DFS + 剪枝；状态空间大时需强剪枝否则指数爆炸。
 - `[经验]`：用位运算（如上）把 O(n) 冲突检查压到 O(1)，是回溯提速关键。
 
-## ⑫ 时空权衡 [标准]
+## ⑫ 时空权衡 <span class="badge badge-std">标准</span>
 
 算法选择本质是时间↔空间的交易（space-time tradeoff）：多用内存换更快，或省内存接受更慢。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：时空权衡 [标准]]
+> **示例 21** [难度 ★☆☆☆☆] [主题：时空权衡 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 以空间换时间：前缀和把"区间和"从 O(n) 降到 O(1)
 #include <vector>
@@ -510,7 +510,7 @@ struct PrefixSum {
 };
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：时空权衡 [标准]]
+> **示例 22** [难度 ★☆☆☆☆] [主题：时空权衡 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <vector>
 // ⑫ 以时间换空间：不建索引，每次线性扫描（省内存）
@@ -524,9 +524,9 @@ int range_sum(const std::vector<int>& a, int l, int r) {
 - `[标准]`：没有"最好"算法，只有"在该约束下最合适"——内存紧则用时间换，查询频繁则用空间换。
 - `[经验]`：现代硬件内存带宽常是瓶颈；连续数组（缓存友好）往往比"省内存但跳指针"更快。
 
-## ⑬ [经验]选型：何时用 STL 算法 vs 自写 [经验]
+## ⑬ <span class="badge badge-exp">经验</span>选型：何时用 STL 算法 vs 自写 <span class="badge badge-exp">经验</span>
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：[经验]选型：何时用 STL 算法 ]
+> **示例 23** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：何时用 STL 算法 ]
 ```cpp
 // ⑬ 默认路径：先 STL，再 profile，最后自写
 #include <algorithm>
@@ -542,12 +542,12 @@ std::sort(v.begin(), v.end(), [](int a,int b){ return a > b; });
 - `[经验]`：默认用 STL（`sort`/`find`/`lower_bound`/`priority_queue`/`unordered_map`）。只有当 **profiler 证明其为热点** 且你的数据有特殊性（整型 key、连续内存、无删除）时，才自写（见 ⑨ 的手写哈希表提速 3 倍案例）。
 - `[经验]`：自写意味着你承担正确性与维护成本——先写测试再替换，且保留 STL 版本作对照基准。
 
-## ⑭ 复杂度分析（均摊/最坏） [标准]
+## ⑭ 复杂度分析（均摊/最坏） <span class="badge badge-std">标准</span>
 
 - **最坏**：任何输入下的上界。哈希查找最坏 O(n)（全冲突）；AVL/红黑最坏 O(log n)。
 - **均摊**：一系列操作的平均代价。哈希表扩容（rehash）单次 O(n)，但均摊 O(1)。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：复杂度分析（均摊/最坏） [标准]]
+> **示例 24** [难度 ★☆☆☆☆] [主题：复杂度分析（均摊/最坏） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑭ 均摊分析示例：动态数组 push_back 的均摊 O(1)
 #include <vector>
@@ -560,11 +560,11 @@ for (int i = 0; i < 1000000; ++i) dyn.push_back(i);  // ⑭ 均摊 O(1)/次
 - `[标准]`：大 O 描述的是增长阶，隐藏常数；工程上常数与缓存行为常比阶数更关键（见 ⑨）。
 - `[经验]`：评估算法看"典型输入分布 + 常数因子 + 缓存"，而非只比较大 O 字母。
 
-## ⑮ 与 STL 算法对应（find/sort/heap 对应思想） [标准]
+## ⑮ 与 STL 算法对应（find/sort/heap 对应思想） <span class="badge badge-std">标准</span>
 
 经典思想在 STL 中都有对应设施，理解思想才能用对算法：
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：与 STL 算法对应]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 算法对应
 ```cpp
 // ⑮ 查找思想 -> std::find / std::lower_bound / unordered_map::find
 #include <algorithm>
@@ -574,7 +574,7 @@ auto it = std::find(v.begin(), v.end(), 5);                 // 顺序 O(n)
 auto lb = std::lower_bound(v.begin(), v.end(), 5);          // 有序 O(log n)
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：与 STL 算法对应]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 STL 算法对应
 ```cpp
 // ⑮ 堆思想 -> std::priority_queue / std::make_heap（Dijkstra 用其取最小，见 ④）
 #include <queue>
@@ -584,7 +584,7 @@ minheap.push(3); minheap.push(1); minheap.push(2);
 int top = minheap.top();   // ⑮ = 1，O(log n) 取最小
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：与 STL 算法对应]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 算法对应
 ```cpp
 // ⑮ 图遍历思想 -> 可用 std::queue(BFS) / std::stack(DFS) 表达（见 ③）
 #include <queue>
@@ -594,9 +594,9 @@ std::queue<int> q; q.push(0);    // ⑮ BFS 的天然容器
 - `[标准]`：STL 算法签名统一为 `(first, last, ...)`，区间半开 `[first,last)`。
 - `[经验]`：能用 STL 算法就别手写循环——更易读、更易被编译器优化、更少 bug。
 
-## ⑯ 常见坑 [经验]
+## ⑯ 常见坑 <span class="badge badge-exp">经验</span>
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
+> **示例 28** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 坑1：std::unordered_map 在遍历中误用 operator[]（会插入！）
 #include <unordered_map>
@@ -607,7 +607,7 @@ if (m[1]) { }                 // ⑯ 坑：m[1] 不存在时插入默认 0，污
 if (m.find(1) != m.end()) { }
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：常见坑 [经验]]
+> **示例 29** [难度 ★★☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 坑2：自定义 key 未特化 std::hash / 未定义 operator==
 #include <unordered_map>
@@ -623,9 +623,9 @@ std::unordered_map<Pt, int> pts;   // ⑯ 必须提供 hash + ==，否则编译/
 - `[经验]`：哈希表只读查询用 `find`/`count`，绝不要用 `operator[]`；自定义 key 必须同时提供 `std::hash` 与 `operator==`。
 - `[经验]`：浮点作 key 极易踩坑（精度、NaN）——哈希表 key 优先用整数或可序化类型。
 
-## ⑰ 工程应用案例 [标准]
+## ⑰ 工程应用案例 <span class="badge badge-std">标准</span>
 
-> **示例 30** [难度 ★★★☆☆] [主题：工程应用案例 [标准]]
+> **示例 30** [难度 ★★★☆☆] [主题：工程应用案例 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑰ 案例：LRU 缓存 = 哈希表(定位) + 双向链表(顺序)，O(1) get/put
 #include <unordered_map>
@@ -668,9 +668,9 @@ struct LRU {
 - `[平台·x86-64]`：Python `dict` 3.6+ 改用开放寻址 + 紧凑数组，思想与 ⑧ 手写版同源；Java `HashMap` 在链表过长时树化为红黑树（见 ⑤）。
 - `[经验]`：算法思想跨语言通用；差异在语法糖与运行开销。C++ 的价值是"零开销抽象 + 可控内存布局"。
 
-## ⑲ 最佳实践 [经验]
+## ⑲ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 实践1：为哈希表预设桶数，避免反复 rehash
 #include <unordered_map>
@@ -679,7 +679,7 @@ std::unordered_map<int,int> m;
 m.reserve(1 << 16);     // ⑲ 预分配，INSERT 阶段不扩容
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 实践2：遍历图/树用迭代器或显式栈，避免深递归爆栈
 #include <vector>
@@ -700,7 +700,7 @@ void dfs_iter(int s, const std::vector<std::vector<int>>& adj) {
 
 ## 补充完整可编译示例（算法思想）
 
-> **示例 33** [难度 ★★★☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E1 链地址哈希表完整版（可编译）
 #include <list>
@@ -725,7 +725,7 @@ struct ChainingHash {
 };
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E2 开放寻址完整版（墓碑删除）
 #include <cstddef>
@@ -744,7 +744,7 @@ struct OA2 { Slot2* s; size_t cap;
 };
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E3 BFS 完整可编译（返回到 s 的距离）
 #include <queue>
@@ -758,7 +758,7 @@ std::vector<int> bfs_full(int s, const std::vector<std::vector<int>>& adj) {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E4 DFS 连通分量计数
 #include <vector>
@@ -774,7 +774,7 @@ int components(const std::vector<std::vector<int>>& adj) {
 }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E5 Dijkstra 完整可编译
 #include <queue>
@@ -797,7 +797,7 @@ std::vector<long long> dijkstra_full(int s,
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E6 0/1 背包一维优化（滚动数组）
 #include <vector>
@@ -812,7 +812,7 @@ int knap1d(const std::vector<int>& wt, const std::vector<int>& val, int W) {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E7 区间调度完整版
 #include <vector>
@@ -827,7 +827,7 @@ int schedule_full(std::vector<std::pair<int,int>> iv) {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E8 归并排序完整可编译
 #include <vector>
@@ -844,7 +844,7 @@ void msort(std::vector<int>& a, int l, int r,
 }
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E9 N 皇后计数（位运算剪枝）
 #include <vector>
@@ -863,7 +863,7 @@ long long queen_count(int n) {
 }
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E10 前缀和（空间换时间）
 #include <vector>
@@ -875,7 +875,7 @@ std::vector<long long> build_prefix(const std::vector<int>& a) {
 }
 ```
 
-> **示例 43** [难度 ★★★☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E11 LRU 缓存完整可编译（见 ⑰ 思想）
 #include <unordered_map>
@@ -895,7 +895,7 @@ struct LRU2 {
 };
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E12 动态数组均摊演示（见 ⑭）
 #include <vector>
@@ -907,28 +907,28 @@ long long push_total(int n) {
 }
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
 ```cpp
 // E13 自写哈希表 vs STL 思想对照（main 入口，需链接 ⑧⑨ 源）
 // 见 Examples/_ch101_bench.cpp 的真实 chrono 对比
 int main() { return 0; }
 ```
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：根据迭代器类别选最优算法。** 你对 `list` 用 `sort`（成员函数）而非 `std::sort`。请说明原因。
-   - [标准] `std::sort` 要求随机访问迭代器；`list` 仅双向，须用其成员 `sort` 或先拷到随机访问容器。
-   - [引用] ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别与算法可用性）/ [alg.sort]；cppreference "Iterator" 词条。
+   - <span class="badge badge-std">标准</span> `std::sort` 要求随机访问迭代器；`list` 仅双向，须用其成员 `sort` 或先拷到随机访问容器。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别与算法可用性）/ [alg.sort]；cppreference "Iterator" 词条。
 
 2. **真实场景：稳定算法保持等价元素相对顺序。** 你排序后还想让原顺序可追溯。请说明。
-   - [标准] 标准标注“稳定”的算法（如 stable_sort/stable_partition）保持等价元素原相对顺序。
-   - [引用] ISO/IEC 14882:2023 §[algorithms]（稳定性约定）；cppreference "Algorithm complexity" 词条。
+   - <span class="badge badge-std">标准</span> 标准标注“稳定”的算法（如 stable_sort/stable_partition）保持等价元素原相对顺序。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[algorithms]（稳定性约定）；cppreference "Algorithm complexity" 词条。
 
 3. **真实场景：算法复杂度类别是调用方契约。** 你据此预估最坏耗时。请说明。
-   - [标准] 每算法在标准中规定复杂度上界（如 O(N)、O(N log N)），实现不得超出。
-   - [引用] ISO/IEC 14882:2023 §[algorithms]（复杂度要求）；cppreference "Algorithm complexity" 词条。
+   - <span class="badge badge-std">标准</span> 每算法在标准中规定复杂度上界（如 O(N)、O(N log N)），实现不得超出。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[algorithms]（复杂度要求）；cppreference "Algorithm complexity" 词条。
 
 | 思想 | 典型结构 | 平均 | 最坏 | STL 对应 | 关键坑 |
 |---|---|---|---|---|---|
@@ -954,7 +954,7 @@ int main() { return 0; }
 
 ### ㉒.1 历史渊源补强：从 STL 算法到算法思想工程化
 
-[史] C++ 标准算法库的骨架来自 **Stepanov 与 Lee 的 STL（Standard Template Library，1994 年纳入 C++98 标准）**：把「数据结构（容器）」与「算法」用「迭代器（iterator）」解耦，是泛型编程的奠基之作。其算法设计又源自更早的 **Aho/Hopcroft/Ullman 与 Knuth 的算法经典**（排序、查找、图算法），以及 **David Musser 的 introsort（内省排序，1997）**——它把 quicksort、heapsort、insertion sort 三者在 `std::sort` 里巧妙组合，保证最坏 O(n log n)。[轶] Stepanov 曾讲：STL 的核心洞见是「算法不应关心容器，只关心迭代器概念」——这比面向对象「把方法绑在对象上」更利于组合。[评] 本章讲的「算法思想」（分治、贪心、双指针、滑动窗口、二分）不是学院玩具：它们被 Stepanov 直接编码进 `std::sort`/`std::lower_bound` 等，是标准库性能的根。
+<span class="badge badge-history">史</span> C++ 标准算法库的骨架来自 **Stepanov 与 Lee 的 STL（Standard Template Library，1994 年纳入 C++98 标准）**：把「数据结构（容器）」与「算法」用「迭代器（iterator）」解耦，是泛型编程的奠基之作。其算法设计又源自更早的 **Aho/Hopcroft/Ullman 与 Knuth 的算法经典**（排序、查找、图算法），以及 **David Musser 的 introsort（内省排序，1997）**——它把 quicksort、heapsort、insertion sort 三者在 `std::sort` 里巧妙组合，保证最坏 O(n log n)。<span class="badge badge-anecdote">轶</span> Stepanov 曾讲：STL 的核心洞见是「算法不应关心容器，只关心迭代器概念」——这比面向对象「把方法绑在对象上」更利于组合。<span class="badge badge-comment">评</span> 本章讲的「算法思想」（分治、贪心、双指针、滑动窗口、二分）不是学院玩具：它们被 Stepanov 直接编码进 `std::sort`/`std::lower_bound` 等，是标准库性能的根。
 
 ### ㉒.2 真实工程坐标：算法思想活在哪些产品里
 
@@ -982,7 +982,7 @@ int main() { return 0; }
 
 ### ㉒.4 与标准的互动：算法库与 C++ 标准的演进
 
-[史] STL 算法随 **C++98** 进入标准；**C++11** 引入 `std::move`、`std::is_sorted`、`std::all_of` 等并强化迭代器；**C++17** 增加**并行算法**（`std::execution::par` 执行策略，P0024R2）和 `std::clamp`、`std::sample`；**C++20** 用 **Ranges（P0896）** 重构算法为约束版；**C++23** 又补 `std::ranges::fold_*`、`std::shift`。算法库一直是标准「把经典算法思想工程化、零开销化」的主战场，与 WG21 的「性能可移植、约束清晰」方向完全一致。
+<span class="badge badge-history">史</span> STL 算法随 **C++98** 进入标准；**C++11** 引入 `std::move`、`std::is_sorted`、`std::all_of` 等并强化迭代器；**C++17** 增加**并行算法**（`std::execution::par` 执行策略，P0024R2）和 `std::clamp`、`std::sample`；**C++20** 用 **Ranges（P0896）** 重构算法为约束版；**C++23** 又补 `std::ranges::fold_*`、`std::shift`。算法库一直是标准「把经典算法思想工程化、零开销化」的主战场，与 WG21 的「性能可移植、约束清晰」方向完全一致。
 - **ISO 条款**：算法库整体在 **[algorithms]（C++20 为 Clause 25）**，每类算法有独立的复杂度契约条款（如 `[alg.sorting]`、`[alg.nonmodifying]`）；委员会把「复杂度保证」写进标准，正是算法库「零开销 + 可预测性能」的契约基础。
 - **修订/采纳**：**P0202（ constexpr 化大量 `<algorithm>`，C++20）** 让 `std::sort`/`std::lower_bound`/`std::binary_search` 等能在编译期执行（[P0202](https://wg21.link/P0202)）；并行/向量化执行策略由 **P0024R2（C++17）** 引入——两者分别代表「常量化」与「性能可移植」两条主线。
 
@@ -995,7 +995,7 @@ int main() { return 0; }
 
 ## 附录 A：算法在工业中的应用 [F: Industry / B: Principle]
 
-> **示例 46** [难度 ★★★☆☆] [主题：附录 A：算法在工业中的应用 [F:]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：算法在工业中的应用 [F:
 ```
 工业项目中的算法选择实例:
 
@@ -1014,7 +1014,7 @@ protobuf: varint 编码 = 7-bit 分组 + MSB 标志 (O(1) 编码, O(N) 传输, �
 
 ## 附录 B：面试高频 [J: Learning / I: Practice]
 
-> **示例 47** [难度 ★★★☆☆] [主题：附录 B：面试高频 [J: Lear]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试高频 [J: Lear
 ```
 高频算法题 → C++实现:
 1. LRU Cache → std::list + std::unordered_map (O(1) get/put)
@@ -1124,7 +1124,7 @@ add rdi, 0x0008             ; 收缩左界
 
 开放寻址把所有元素内联在桶数组里，冲突时沿探测序列找下一个空槽；删除用墓碑而非清 `used`，避免切断链：
 
-> **示例 48** [难度 ★★☆☆☆] [主题：真实开源项目参考（可查证链接）]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实开源项目参考（可查证链接）
 ```cpp
 #include <cstddef>
 #include <cstdint>
@@ -1182,13 +1182,13 @@ int main() {
 
 [算法] 探测序列 `idx=(h+i)&(cap-1)` 在 `cap` 为 2 的幂时等价于取模；`i` 逐槽 +1 即线性探测。
 
-[标准] 开放寻址删除必须留墓碑：直接清 `used` 会让 `find` 在遇空槽时提前返回，漏掉墓碑后的同桶键（见 ② 的 `deleted` 标记说明）。
+<span class="badge badge-std">标准</span> 开放寻址删除必须留墓碑：直接清 `used` 会让 `find` 在遇空槽时提前返回，漏掉墓碑后的同桶键（见 ② 的 `deleted` 标记说明）。
 
 [实现·GCC15.3.0] 上述程序在 MinGW GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下干净编译（无警告）；`Slot{key,val,true,false}` 依赖聚合初始化，单测输出 `70 230` 与 `-1 230`。
 
-[经验] 线性探测的"主簇"：连续被占的槽会越长越长，新键一旦落入簇头就要逐槽探测到底，导致聚集成片、平均探测长度随装载因子平方上升——这正是 ⑧ 汇编里 `add rax,1` 逐槽试探的代价来源；改用双重哈希可打散主簇。
+<span class="badge badge-exp">经验</span> 线性探测的"主簇"：连续被占的槽会越长越长，新键一旦落入簇头就要逐槽探测到底，导致聚集成片、平均探测长度随装载因子平方上升——这正是 ⑧ 汇编里 `add rax,1` 逐槽试探的代价来源；改用双重哈希可打散主簇。
 
-[引用] cppreference 散列：<https://en.cppreference.com/w/cpp/utility/hash>；开放寻址原理见 ②、⑧、⑨ 与附录 ⑱（Python `dict` 同为开放寻址）。
+<span class="badge badge-ref">引用</span> cppreference 散列：<https://en.cppreference.com/w/cpp/utility/hash>；开放寻址原理见 ②、⑧、⑨ 与附录 ⑱（Python `dict` 同为开放寻址）。
 
 </details>
 
@@ -1200,7 +1200,7 @@ int main() {
 
 Dijkstra 每次取出当前最近未定节点并松弛邻居；`priority_queue` 配 `greater<>` 当小顶堆：
 
-> **示例 49** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <iostream>
 #include <queue>
@@ -1239,13 +1239,13 @@ int main() {
 
 [算法] 核心不变量：每次 `pop` 出的最小距离节点已确定。松弛即"经 u 到 v 是否更近"。
 
-[标准] 同一节点可被多次入堆（不同距离），`dist > d[u]` 必须跳过——这是 lazy deletion，否则会重复处理（见 ④）。Dijkstra 要求非负权；负权须用 Bellman-Ford。
+<span class="badge badge-std">标准</span> 同一节点可被多次入堆（不同距离），`dist > d[u]` 必须跳过——这是 lazy deletion，否则会重复处理（见 ④）。Dijkstra 要求非负权；负权须用 Bellman-Ford。
 
 [实现·GCC15.3.0] 上述程序在 MinGW GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 干净编译；结构化绑定 `auto [dist,u]` 为 C++17 起特性，输出 `0->0:0 0->1:1 0->2:3 0->3:4`。
 
-[经验] 用 `greater<>` 而非手写比较器即可得小顶堆；时间复杂度 O((V+E)logV)。性能敏感时可用 `decrease-key` 或斐波那契堆，但工程上 lazy deletion 最简单。
+<span class="badge badge-exp">经验</span> 用 `greater<>` 而非手写比较器即可得小顶堆；时间复杂度 O((V+E)logV)。性能敏感时可用 `decrease-key` 或斐波那契堆，但工程上 lazy deletion 最简单。
 
-[引用] cppreference `std::priority_queue`：<https://en.cppreference.com/w/cpp/container/priority_queue>；最短路思想见 ④ 与附录 A（Google Maps）。
+<span class="badge badge-ref">引用</span> cppreference `std::priority_queue`：<https://en.cppreference.com/w/cpp/container/priority_queue>；最短路思想见 ④ 与附录 A（Google Maps）。
 
 </details>
 
@@ -1257,7 +1257,7 @@ int main() {
 
 状态 `dp[w]` = 容量 `w` 下的最大价值；逆序更新保证每件物品至多选一次：
 
-> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1281,13 +1281,13 @@ int main() {
 
 [算法] 递推 `dp[w] = max(dp[w], dp[w-wt[i]] + val[i])` 即"选/不选第 i 件"取优；满足最优子结构 + 无后效性（见 ⑥）。
 
-[标准] 内层必须逆序：`dp[w-wt[i]]` 须取"上一轮（未含第 i 件）"的值；若正序，`dp[w-wt[i]]` 已被本轮更新，会同一件被反复选（变无限背包）。省略第一维是 DP 滚动数组的典型空间优化（见 ⑥ 经验）。
+<span class="badge badge-std">标准</span> 内层必须逆序：`dp[w-wt[i]]` 须取"上一轮（未含第 i 件）"的值；若正序，`dp[w-wt[i]]` 已被本轮更新，会同一件被反复选（变无限背包）。省略第一维是 DP 滚动数组的典型空间优化（见 ⑥ 经验）。
 
 [实现·GCC15.3.0] 上述程序在 MinGW GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 干净编译；输出 `10`（选重量 3+5、价值 4+6）。
 
-[经验] 0/1 背包**不能贪心**：按价值/重量比贪心只对可拆分的"分数背包"成立（见 ⑦ 反例）。当 `W` 很大、物品多时，DP 的 O(nW) 可能过大——此时退而用贪心近似或 meet-in-the-middle。
+<span class="badge badge-exp">经验</span> 0/1 背包**不能贪心**：按价值/重量比贪心只对可拆分的"分数背包"成立（见 ⑦ 反例）。当 `W` 很大、物品多时，DP 的 O(nW) 可能过大——此时退而用贪心近似或 meet-in-the-middle。
 
-[引用] cppreference `std::max`：<https://en.cppreference.com/w/cpp/algorithm/max>；DP 思想与正确性前提见 ⑥、⑭。
+<span class="badge badge-ref">引用</span> cppreference `std::max`：<https://en.cppreference.com/w/cpp/algorithm/max>；DP 思想与正确性前提见 ⑥、⑭。
 
 </details>
 
@@ -1499,7 +1499,7 @@ flowchart TD
 
 ### D4.5 第一方可编译验证（equal / lexicographical_compare）
 
-> **示例 51** [难度 ★★☆☆☆] [主题：第一方可编译验证]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
 ```cpp
 #include <algorithm>
 #include <iostream>
@@ -1609,7 +1609,7 @@ int main() {
 
 ### D5.3 可复现演示
 
-> **示例 52** [难度 ★★★☆☆] [主题：可复现演示]
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <vector>

@@ -11,7 +11,7 @@
 > 代码膨胀取证：`g++ -std=c++23 -O2 -c -o xxx.o xxx.cpp` 后 `nm xxx.o`。
 > 源码参考：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`（libstdc++ 13.1.0）。
 > 全部示例源码见 `Examples/_ch140_*.cpp`，对应 `.asm` 由上述命令真机生成。
-> 立场分层标签：[标准]=语言/库标准语义，[实现·GCC15]=libstdc++/编译器实现，[平台·x86-64]=MinGW-w64/x86-64，[经验]=工程取舍。
+> 立场分层标签：<span class="badge badge-std">标准</span>=语言/库标准语义，[实现·GCC15]=libstdc++/编译器实现，[平台·x86-64]=MinGW-w64/x86-64，<span class="badge badge-exp">经验</span>=工程取舍。
 
 ```ascii
         ┌───────────────────────── Host（宿主类 / 主机） ─────────────────────────┐
@@ -29,28 +29,28 @@
 > 当"一个类要同时可变多个正交维度"把继承层级逼疯时，有人把设计拆成了一盒可插接的策略。
 
 ### 0.1 起源（谁·何时·为何）
-Policy-Based Design 由 Andrei Alexandrescu 在 2001 年的《Modern C++ Design》中系统提出，并配套 **Loki** 库落地 [史]。痛点直指传统继承的死穴：想让一个 Widget 在"内存管理、线程安全、同步策略"等多个维度各自可变，用继承会得到指数级爆炸的子类（MemorySafeThreadSafeWidget…）。Policy-Based Design 把每个维度做成独立的小模板参数（Policy），在编译期像搭积木一样组装。
+Policy-Based Design 由 Andrei Alexandrescu 在 2001 年的《Modern C++ Design》中系统提出，并配套 **Loki** 库落地 <span class="badge badge-history">史</span>。痛点直指传统继承的死穴：想让一个 Widget 在"内存管理、线程安全、同步策略"等多个维度各自可变，用继承会得到指数级爆炸的子类（MemorySafeThreadSafeWidget…）。Policy-Based Design 把每个维度做成独立的小模板参数（Policy），在编译期像搭积木一样组装。
 
 ### 0.2 关键转折（编年）
 
 | 时间 | 事件 | 立场 | 意义 |
 |---|---|---|---|
-| 2001 | Alexandrescu《Modern C++ Design》与 Loki 库，把 Policy-Based Design、编译期多态、Typelist 推上台面 | [史] | Policy-Based Design 正式命名并工程化 |
-| 此后 | 思想深刻影响 C++11：type traits、tuple、可变参数模板皆见「编译期组合」影子 | [史] | 泛型组合思想沉淀进标准库 |
-| 现代 | `std::unique_ptr` 默认删除器、Allocator 概念可视为 Policy 直系后裔 | [评] | 标准库本身就是 Policy 的最大生产部署（见 §⑬） |
+| 2001 | Alexandrescu《Modern C++ Design》与 Loki 库，把 Policy-Based Design、编译期多态、Typelist 推上台面 | <span class="badge badge-history">史</span> | Policy-Based Design 正式命名并工程化 |
+| 此后 | 思想深刻影响 C++11：type traits、tuple、可变参数模板皆见「编译期组合」影子 | <span class="badge badge-history">史</span> | 泛型组合思想沉淀进标准库 |
+| 现代 | `std::unique_ptr` 默认删除器、Allocator 概念可视为 Policy 直系后裔 | <span class="badge badge-comment">评</span> | 标准库本身就是 Policy 的最大生产部署（见 §⑬） |
 
 > 表注（0.2）：Policy-Based Design 走「提出（2001）→ 影响标准（C++11）→ 沉淀进标准库」路径，与 CRTP 的演化（ch139 §0.2）同源。
 
 ### 0.3 设计哲学之争
-Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化：不是 A 继承 B，而是 `Host<A,B,C>` 把 A、B、C 三个策略在编译期拼成新类型 [评]。它与 CRTP 常被混用——基类用 CRTP 反向调用派生，派生用 Policy 决定行为。代价是模板错误极长、编译变慢，且对初学者门槛高 [评]。
+Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化：不是 A 继承 B，而是 `Host<A,B,C>` 把 A、B、C 三个策略在编译期拼成新类型 <span class="badge badge-comment">评</span>。它与 CRTP 常被混用——基类用 CRTP 反向调用派生，派生用 Policy 决定行为。代价是模板错误极长、编译变慢，且对初学者门槛高 <span class="badge badge-comment">评</span>。
 
 ### 0.4 史料补遗与持续编年
 继 2001 年 Alexandrescu 在《Modern C++ Design》中系统提出 Policy-Based Design，它在 C++20 concepts 与 constexpr 时代获得了更可读的写法。
 
-- [史] C++20 `concept` 允许把"策略类须满足的接口"写成约束，Policy 参数不再靠"传进去能编译就行"的默契，而是编译期强制契约——这正是 Policy-Based Design 梦寐以求的"可插拔且可检验"。
-- [史] `constexpr`/`consteval` 让 Policy 的组装与分发可发生在编译期甚至翻译期，配合 `if constexpr` 做策略分支，把"编译期组合"推到 Alexandrescu 当年手写 typelist 才能做到的地步。
-- [评] Policy-Based Design 与 CRTP 常被组合：基类用 CRTP 反向调用派生、宿主用 Policy 决定行为；代价依旧是模板错误极长、编译变慢、对初学者门槛高。
-- [轶] Loki 这个名字取自北欧神话的"诡计之神"，暗合 Alexandrescu 这套"编译期戏法"的气质。
+- <span class="badge badge-history">史</span> C++20 `concept` 允许把"策略类须满足的接口"写成约束，Policy 参数不再靠"传进去能编译就行"的默契，而是编译期强制契约——这正是 Policy-Based Design 梦寐以求的"可插拔且可检验"。
+- <span class="badge badge-history">史</span> `constexpr`/`consteval` 让 Policy 的组装与分发可发生在编译期甚至翻译期，配合 `if constexpr` 做策略分支，把"编译期组合"推到 Alexandrescu 当年手写 typelist 才能做到的地步。
+- <span class="badge badge-comment">评</span> Policy-Based Design 与 CRTP 常被组合：基类用 CRTP 反向调用派生、宿主用 Policy 决定行为；代价依旧是模板错误极长、编译变慢、对初学者门槛高。
+- <span class="badge badge-anecdote">轶</span> Loki 这个名字取自北欧神话的"诡计之神"，暗合 Alexandrescu 这套"编译期戏法"的气质。
 
 > 史料来源：
 > - https://en.cppreference.com/w/cpp/language/constraints
@@ -63,11 +63,11 @@ Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化�
 
 Policy-Based Design（基于策略的设计，也称 policy-based class design）由 Andrei Alexandrescu 在《Modern C++ Design》(2001) 中系统提出。其核心思想是：**把类的行为拆解为一组正交的、可替换的、编译期绑定的"策略（policy）"，宿主类（host）通过模板参数把这些策略组合起来**。每个 policy 是一个只承载"某一维度行为"的迷你类，宿主类负责把各 policy 编排成完整类型。
 
-[标准] 在语言层面，policy 就是普通类模板参数；C++ 标准本身并未定义 "policy" 关键字，policy 是一种**设计惯用法（idiom）**，其全部能力来自模板、特化与（C++11 起）`constexpr`/`concepts`。
+<span class="badge badge-std">标准</span> 在语言层面，policy 就是普通类模板参数；C++ 标准本身并未定义 "policy" 关键字，policy 是一种**设计惯用法（idiom）**，其全部能力来自模板、特化与（C++11 起）`constexpr`/`concepts`。
 
 与传统的"继承 + 虚函数"扩展方式相比，policy 的扩展发生在**编译期**，因此不付出运行期虚表/间接调用代价。下面是最朴素的一种 policy 形态：
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：Policy-Based De]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Policy-Based De
 ```cpp
 // ① 最简 policy：用模板参数选择"校验策略"
 struct AllowNegative { static bool ok(long v) { return true; } };
@@ -82,7 +82,7 @@ struct Amount {
 
 把 `Amount<AllowNegative>` 与 `Amount<NonNegative>` 视为**两个完全不同的类型**：它们不共享基类、不共享虚表，这正是 policy 设计的"正交组合"本质。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：Policy-Based De]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Policy-Based De
 ```cpp
 // ① 两种组装产生两种不同的静态类型
 using A = Amount<AllowNegative>;
@@ -90,7 +90,7 @@ using B = Amount<NonNegative>;
 static_assert(!std::is_same_v<A, B>);  // 编译期即知二者不同
 ```
 
-> [经验] policy 不是万能锤。它适合"行为维度正交、组合数目有限、对性能零容忍"的场景；若组合爆炸（见 ⑮）或需要运行期动态切换，应回到策略模式/虚函数。
+> <span class="badge badge-exp">经验</span> policy 不是万能锤。它适合"行为维度正交、组合数目有限、对性能零容忍"的场景；若组合爆炸（见 ⑮）或需要运行期动态切换，应回到策略模式/虚函数。
 
 ## ② 政策类基本形态
 
@@ -105,14 +105,14 @@ static_assert(!std::is_same_v<A, B>);  // 编译期即知二者不同
 
 > 表注（②）：四种形态可按「有无状态 / 是否双向依赖」正交组合；libstdc++ 的 `_Vector_base<_Tp,_Alloc>` 即模板 policy + 成员组合的工业范例（见 §② 末）。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：政策类基本形态]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策类基本形态
 ```cpp
 // ② 形态一：静态成员函数 policy
 struct LoggingOff { static void log(const char*) {} };
 struct LoggingOn  { static void log(const char* m) { /* 写日志 */ (void)m; } };
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：政策类基本形态]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策类基本形态
 ```cpp
 #include <vector>
 // ② 形态二：嵌套类型 policy（决定存储布局）
@@ -123,7 +123,7 @@ template <typename T>
 struct UseDeque  { using storage = std::deque<T>; };
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：政策类基本形态]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策类基本形态
 ```cpp
 // ② 形态三：带状态的成员 policy（policy 拥有自己的数据）
 template <typename Counter>
@@ -134,7 +134,7 @@ struct WithRefCount {
 struct PlainCounter { int n = 0; };
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：政策类基本形态]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策类基本形态
 ```cpp
 // ② 形态四：模板 policy（接收宿主类型，实现互递归）
 template <typename Host>
@@ -149,7 +149,7 @@ struct Mutator {
 
 policy 的威力来自"多个正交 policy 同时参与"。一个经典例子是 Alexandrescu 的 `SmartPtr`：它由"所有权策略、转换策略、检查策略、存储策略"等多个 policy 模板参数组合而成。下面用一个可编译的最小版演示多政策正交组合。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：多政策组合（模板参数）]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多政策组合（模板参数）
 ```cpp
 // ③ 多政策组合：所有权 + 检查 + 存储
 struct RefCounted {            // 所有权 policy：引用计数
@@ -163,7 +163,7 @@ struct Sole {                  // 所有权 policy：独占
 };
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：多政策组合（模板参数）]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多政策组合（模板参数）
 ```cpp
 // ③ 检查 policy 与存储 policy
 struct Checked  { static void check(int* p) { if (!p) throw "null"; } };
@@ -172,7 +172,7 @@ struct ByValue  { int* p; };
 struct ByRef    { int*& p; };
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：多政策组合（模板参数）]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多政策组合（模板参数）
 ```cpp
 // ③ 宿主：三政策正交组合
 template <typename Ownership, typename Checking, typename Storage>
@@ -186,7 +186,7 @@ public:
 };
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：多政策组合（模板参数）]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多政策组合（模板参数）
 ```cpp
 // ③ 不同的 policy 三元组 => 完全不同的类型与语义
 using RcChecked   = Handle<RefCounted, Checked,   ByValue>;
@@ -194,13 +194,13 @@ using SoleUnchecked= Handle<Sole,      Unchecked, ByValue>;
 static_assert(!std::is_same_v<RcChecked, SoleUnchecked>);
 ```
 
-[经验] 多 policy 组合时，建议**让每个 policy 只负责一个正交维度**，并通过宿主把它们"粘合"起来。把两个维度塞进同一个 policy，会丧失组合自由度。
+<span class="badge badge-exp">经验</span> 多 policy 组合时，建议**让每个 policy 只负责一个正交维度**，并通过宿主把它们"粘合"起来。把两个维度塞进同一个 policy，会丧失组合自由度。
 
 ## ④ 默认政策与缺省模板参数
 
 当大多数用户只关心少数 policy 时，应为不常用的 policy 提供**默认模板参数**，降低使用成本。C++ 允许非尾随的默认参数从某一位置开始向右延伸，但被默认的参数之后的参数也必须全部有默认值。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：默认政策与缺省模板参数]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认政策与缺省模板参数
 ```cpp
 // ④ 为检查/存储 policy 提供默认值，使用方只需指定所有权
 template <typename Ownership,
@@ -215,7 +215,7 @@ public:
 using SafeRc = Handle2<RefCounted>;   // 其余 policy 取默认
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：默认政策与缺省模板参数]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认政策与缺省模板参数
 ```cpp
 // ④ 更常见的写法：Host 提供一个"便利别名"默认全部 policy
 template <typename T, typename Storage = int>
@@ -228,9 +228,9 @@ int use_default() {
 }
 ```
 
-[标准] 缺省模板实参可以依赖前面的模板参数，例如 `template <typename T, typename Alloc = std::allocator<T>>` —— `Alloc` 的默认实参用到了前面的 `T`，这是合法的（[temp.param]）。
+<span class="badge badge-std">标准</span> 缺省模板实参可以依赖前面的模板参数，例如 `template <typename T, typename Alloc = std::allocator<T>>` —— `Alloc` 的默认实参用到了前面的 `T`，这是合法的（[temp.param]）。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：默认政策与缺省模板参数]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认政策与缺省模板参数
 ```cpp
 #include <vector>
 // ④ 默认 policy 也可以依赖宿主类型（member policy 的常见做法）
@@ -245,7 +245,7 @@ struct Container {
 
 当 policy 以**枚举/值**而非类型表达时，可用 `if constexpr` 在编译期消除无关分支，生成无运行期判断的代码。这与"类型 policy"互补：类型 policy 通过不同实例化分发，值 policy 通过 `if constexpr` 分发。
 
-> **示例 14** [难度 ★★★☆☆] [主题：政策选择编译期分发]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策选择编译期分发
 ```cpp
 // ⑤ 值 policy：用枚举在编译期选择后端
 enum class Backend { CPU, GPU };
@@ -260,7 +260,7 @@ void compute() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：政策选择编译期分发]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策选择编译期分发
 ```cpp
 // ⑤ 用法：两个不同实例化 => 两段互不相同的机器码
 void run_both() {
@@ -271,7 +271,7 @@ void run_both() {
 
 [实现·GCC15] `if constexpr` 保证被丢弃的分支**不会被实例化**，因此分支内即使存在对当前类型非法的表达式也不会报错。这是 `if constexpr` 相对运行期 `if` 的本质区别（[stmt.if] §2）。
 
-> **示例 16** [难度 ★★☆☆☆] [主题：政策选择编译期分发]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策选择编译期分发
 ```cpp
 // ⑤ 与类型 policy 配合：先按类型分，再按值细调
 template <typename Precision>
@@ -288,7 +288,7 @@ void kernel() {
 
 traits（特征类）与 policy 关系密切：traits 通常**只读地描述"类型是什么"**，而 policy **主动地定义"行为怎么做"**。二者可组合——用 traits 推导出某个 policy，再交给宿主使用。
 
-> **示例 17** [难度 ★★★☆☆] [主题：政策与 traits]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与 traits
 ```cpp
 // ⑥ traits：描述数值类型的"零值"与"标签"
 template <typename T> struct ZeroTraits;
@@ -296,7 +296,7 @@ template <> struct ZeroTraits<int>     { static constexpr int value = 0; };
 template <> struct ZeroTraits<double>  { static constexpr double value = 0.0; };
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：政策与 traits]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 traits
 ```cpp
 // ⑥ 把 traits 当作"只读 policy"喂给宿主
 template <typename T, typename Z = ZeroTraits<T>>
@@ -306,7 +306,7 @@ struct Scalar {
 };
 ```
 
-> **示例 19** [难度 ★★★☆☆] [主题：政策与 traits]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与 traits
 ```cpp
 // ⑥ traits 推导 policy：根据迭代器类别选择不同拷贝策略
 template <typename It>
@@ -320,13 +320,13 @@ void copy_range(It first, It last) {
 }
 ```
 
-[经验] 经验法则：要"描述类型属性"用 traits，要"注入可替换行为"用 policy。二者并非对立，traits 常作为 policy 的**默认来源**（如 ④ 中 `Alloc = std::allocator<T>` 背后就是 traits 推导）。
+<span class="badge badge-exp">经验</span> 经验法则：要"描述类型属性"用 traits，要"注入可替换行为"用 policy。二者并非对立，traits 常作为 policy 的**默认来源**（如 ④ 中 `Alloc = std::allocator<T>` 背后就是 traits 推导）。
 
 ## ⑦ 政策与 CRTP 结合（关联第139章 CRTP）
 
 CRTP（Curiously Recurring Template Pattern，见第139章）让基类在编译期获知派生类类型；把 CRTP 与 policy 结合，可以让 policy **以静态多态方式回调宿主**，既保留零开销又获得"基类复用代码"的好处。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：政策与 CRTP 结合]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 CRTP 结合
 ```cpp
 // ⑦ CRTP + policy：基类借助派生类型实现静态接口
 template <typename Derived>
@@ -340,7 +340,7 @@ struct IntVal : Comparable<IntVal> {
 };
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：政策与 CRTP 结合]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 CRTP 结合
 ```cpp
 // ⑦ policy 作为 CRTP 基类，宿主继承它，复用实现
 template <typename T, typename Ordering>
@@ -351,7 +351,7 @@ struct Asc  { template <typename U> bool before(U a, U b) const { return a < b; 
 struct Desc { template <typename U> bool before(U a, U b) const { return a > b; } };
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：政策与 CRTP 结合]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 CRTP 结合
 ```cpp
 // ⑦ 组合结果：不同 Ordering policy => 不同排序语义，零虚函数
 template <typename T, typename Ordering>
@@ -366,7 +366,7 @@ bool ordered(T a, T b, const Wrapper<T, Ordering>& w) {
 
 最贴近标准库的 policy 实例是 **`std::vector`/`std::list` 的分配器（Allocator）参数**与 **`std::unique_ptr` 的删除器（Deleter）参数**。二者本质都是 policy：决定"内存如何申请/释放"或"对象如何销毁"。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：政策设计实例：智能指针 / 分配器]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计实例：智能指针 / 分配器
 ```cpp
 #include <cstddef>
 // ⑧ 分配器 policy 的最小化演示（malloc vs operator new）
@@ -380,7 +380,7 @@ struct NewAlloc {
 };
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：政策设计实例：智能指针 / 分配器]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计实例：智能指针 / 分配器
 ```cpp
 #include <cstddef>
 // ⑧ 宿主以 policy 决定底层分配机制
@@ -397,7 +397,7 @@ public:
 };
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：政策设计实例：智能指针 / 分配器]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策设计实例：智能指针 / 分配器
 ```cpp
 // ⑧ 同一宿主、两种分配 policy => 两套独立的机器码（见 ⑮ 代码膨胀）
 int use_podvector() {
@@ -408,13 +408,13 @@ int use_podvector() {
 }
 ```
 
-[标准] 标准库 `std::vector<_Tp, _Alloc>` 的 `_Alloc` 是经 `allocator_traits` 规范化的分配器 policy；`std::unique_ptr<_Tp, _Deleter>` 的 `_Deleter` 是删除器 policy（见 ⑬ 源码剖析）。二者都满足 `std::allocator_traits` / `std::default_delete` 约定的接口契约。
+<span class="badge badge-std">标准</span> 标准库 `std::vector<_Tp, _Alloc>` 的 `_Alloc` 是经 `allocator_traits` 规范化的分配器 policy；`std::unique_ptr<_Tp, _Deleter>` 的 `_Deleter` 是删除器 policy（见 ⑬ 源码剖析）。二者都满足 `std::allocator_traits` / `std::default_delete` 约定的接口契约。
 
 ## ⑨ 政策与编译期约束（concepts）
 
 C++20 `concepts` 可用来**约束 policy 必须提供哪些接口**，把"模板实例化时的丑陋报错"前移到接口声明处，大幅提升可组合性。这是现代 C++ 对 policy 设计最自然的增强。
 
-> **示例 26** [难度 ★★★☆☆] [主题：政策与编译期约束（concepts）]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与编译期约束（concepts）
 ```cpp
 // ⑨ 用 concept 约束 policy 必须提供静态 check(int)
 template <typename P>
@@ -424,7 +424,7 @@ struct R { static void check(int) {} };
 struct Bad {};                 // 不提供 check，不满足 concept
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：政策与编译期约束（concepts）]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与编译期约束（concepts）
 ```cpp
 // ⑨ 只有满足 CheckPolicy 的 policy 才能实例化宿主
 template <CheckPolicy P>
@@ -433,7 +433,7 @@ struct Widget9 {
 };
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：政策与编译期约束（concepts）]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与编译期约束（concepts）
 ```cpp
 // ⑨ 编译期即拦截不合规 policy
 int use_concept() {
@@ -444,13 +444,13 @@ int use_concept() {
 }
 ```
 
-[标准] `CheckPolicy` 这种"对类模板参数施加接口约束"的用法，正是 C++20 [concept] 设计目标之一；它等价于旧式 SFINAE（见 ⑫），但错误信息更可读、可组合。
+<span class="badge badge-std">标准</span> `CheckPolicy` 这种"对类模板参数施加接口约束"的用法，正是 C++20 [concept] 设计目标之一；它等价于旧式 SFINAE（见 ⑫），但错误信息更可读、可组合。
 
 ## ⑩ 政策 vs 策略模式（编译期 vs 运行期）
 
 这是 policy 设计最常被问到的问题。**Policy-Based Design 是编译期组合（静态多态）；策略模式（Strategy Pattern）是运行期组合（动态多态，靠虚函数）。** 二者语义等价，但开销天差地别。下面用同一份逻辑分别给出两种实现，并用 `-O2` 汇编取证。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：政策 vs 策略模式]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策 vs 策略模式
 ```cpp
 // ⑩ 策略模式（运行期）：基类 + 虚函数
 struct Strategy {
@@ -469,7 +469,7 @@ struct StrategyWidget {
 };
 ```
 
-> **示例 30** [难度 ★★★☆☆] [主题：政策 vs 策略模式]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策 vs 策略模式
 ```cpp
 // ⑩ Policy-Based（编译期）：模板参数选择行为
 template <typename CheckingPolicy>
@@ -482,7 +482,7 @@ struct RangeCheck { static void check(int v) { if (v < 0 || v > 100) std::puts("
 struct NoCheck    { static void check(int)   {} };
 ```
 
-> **示例 31** [难度 ★★★★★] [主题：政策 vs 策略模式]
+> **示例 31** <span class="badge badge-exp">难度 ★★★★★</span> · 政策 vs 策略模式
 ```cpp
 // ⑩ 两个待比较的入口函数
 int strategy_demo(int x, const Strategy* s) {
@@ -554,13 +554,13 @@ _Z13strategy_demoiPK8Strategy:          ; strategy_demo(int, Strategy const*)
 
 [平台·x86-64] 在 x86-64 MinGW-w64/GCC13 上：policy 版本把 `check` **整体内联**进调用方，`NoCheck` 甚至被优化成 `mov eax, ecx; ret`（函数体为空）；策略模式版本无论 `Range` 还是 `None` 都必然经过 `call [vtable+offs]` 的**两次内存间接跳转**（取 vptr → 取函数指针 → 调用），并引入 vtable 与 RTTI 数据。
 
-[经验] 当行为在**对象生命周期内不会切换**时，policy（编译期）几乎总是优于策略模式（运行期）；只有需要"同一容器/对象在运行期更换算法"时，才承担虚函数代价。
+<span class="badge badge-exp">经验</span> 当行为在**对象生命周期内不会切换**时，policy（编译期）几乎总是优于策略模式（运行期）；只有需要"同一容器/对象在运行期更换算法"时，才承担虚函数代价。
 
 ## ⑪ 政策与类型列表（typelist）
 
 当 policy 数量很多、且需要在其上做"查找/筛选/转换"时，可以用 **typelist**（编译期类型链表）把 policy 集合当数据来操作。typelist 本身是 policy 的"元容器"。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：政策与类型列表（typelist）]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与类型列表（typelist）
 ```cpp
 // ⑪ typelist：编译期类型链表
 template <typename... Ts> struct TypeList {};
@@ -569,7 +569,7 @@ template <typename H, typename... T>
 struct Front<TypeList<H, T...>> { using type = H; };
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：政策与类型列表（typelist）]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策与类型列表（typelist）
 ```cpp
 // ⑪ 取首个 policy 作为默认
 struct A; struct B;
@@ -577,7 +577,7 @@ using Policies = TypeList<A, B>;
 using DefaultPolicy = Front<Policies>::type;   // == A
 ```
 
-> **示例 34** [难度 ★★★☆☆] [主题：政策与类型列表（typelist）]
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与类型列表（typelist）
 ```cpp
 #include <cstddef>
 // ⑪ 在 typelist 上做"长度"与"索引"元函数
@@ -598,7 +598,7 @@ struct At<TypeList<H, T...>, I> { using type = typename At<TypeList<T...>, I-1>:
 
 在 `concepts` 出现之前，约束 policy 接口靠 **SFINAE**（Substitution Failure Is Not An Error）。它让宿主只在 policy 提供特定成员时才启用某些功能，实现"能力探测（detection idiom）"。
 
-> **示例 35** [难度 ★★☆☆☆] [主题：政策与 SFINAE]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 SFINAE
 ```cpp
 // ⑫ 检测 policy 是否提供静态 foo()
 template <typename T, typename = void>
@@ -607,7 +607,7 @@ template <typename T>
 struct HasFoo<T, std::void_t<decltype(&T::foo)>> : std::true_type {};
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：政策与 SFINAE]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 SFINAE
 ```cpp
 // ⑫ 仅当 policy 有 foo() 时启用增强接口
 template <typename Policy>
@@ -620,7 +620,7 @@ struct WithFoo    { static void foo() {} };
 struct WithoutFoo {};
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：政策与 SFINAE]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策与 SFINAE
 ```cpp
 // ⑫ 用法：能力探测决定接口可用性
 int use_sfinae() {
@@ -630,7 +630,7 @@ int use_sfinae() {
 }
 ```
 
-[标准] `std::void_t` 与 `std::enable_if_t` 是检测 idiom 的标配工具；C++20 起可用 `requires`/concept（见 ⑨）更简洁地表达同一意图，但 SFINAE 在需要"按能力分支"时仍不可替代。
+<span class="badge badge-std">标准</span> `std::void_t` 与 `std::enable_if_t` 是检测 idiom 的标配工具；C++20 起可用 `requires`/concept（见 ⑨）更简洁地表达同一意图，但 SFINAE 在需要"按能力分支"时仍不可替代。
 
 ## ⑬ 政策设计真实案例（Loki / Blaze 上游参考）
 
@@ -643,7 +643,7 @@ int use_sfinae() {
 
 下面以 libstdc++ 13.1.0 的 `std::unique_ptr` 删除器 policy 做**源码剖析**（真实路径与行号）：
 
-> **示例 38** [难度 ★★★☆☆] [主题：政策设计真实案例]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计真实案例
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：288
@@ -654,7 +654,7 @@ int use_sfinae() {
 //     struct _Vector_base { ... };   // _Alloc 即分配器 policy
 ```
 
-> **示例 39** [难度 ★★★☆☆] [主题：政策设计真实案例]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计真实案例
 ```cpp
 // ⑬ 复刻 unique_ptr 的删除器 policy：删除行为是可替换的 policy
 template <typename T, typename Deleter>
@@ -668,7 +668,7 @@ public:
 struct FreeDeleter { void operator()(int* p) const { std::free(p); } };
 ```
 
-> **示例 40** [难度 ★★☆☆☆] [主题：政策设计真实案例]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计真实案例
 ```cpp
 // ⑬ 用法：同一指针类型，不同销毁 policy
 int use_deleter() {
@@ -684,7 +684,7 @@ int use_deleter() {
 
 policy 的选择逻辑本身也能放进 `constexpr` 世界：在编译期根据常量条件选出 policy 对应的计算结果，甚至让 policy 的"装配"发生在 `constexpr` 函数里。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：政策与 constexpr]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 constexpr
 ```cpp
 // ⑭ constexpr policy：编译期根据布尔选择实现
 constexpr int select_impl(bool b, int x) {
@@ -698,7 +698,7 @@ constexpr int run_select() {
 }
 ```
 
-> **示例 42** [难度 ★★★☆☆] [主题：政策与 constexpr]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与 constexpr
 ```cpp
 // ⑭ 用 constexpr 变量模板充当"编译期 policy 开关"
 template <bool UseSIMD>
@@ -711,7 +711,7 @@ struct Algo {
 constexpr int c14 = Algo<true>::step(5) + Algo<false>::step(5);  // 20 + 10
 ```
 
-[标准] `constexpr` 函数内的 `if constexpr` 在编译期求值，被选中分支的结果可作为常量表达式用于数组大小、`static_assert` 等上下文（[expr.const]）。
+<span class="badge badge-std">标准</span> `constexpr` 函数内的 `if constexpr` 在编译期求值，被选中分支的结果可作为常量表达式用于数组大小、`static_assert` 等上下文（[expr.const]）。
 
 ## ⑮ 政策与代码膨胀（模板实例化成本）
 
@@ -719,7 +719,7 @@ constexpr int c14 = Algo<true>::step(5) + Algo<false>::step(5);  // 20 + 10
 
 policy 的代价是**代码膨胀（code bloat）**：每套不同的 policy 组合都会独立实例化一份机器码。多 policy 正交组合时，组合数呈乘法增长。用 `nm` 可以直观看到每种组合生成的符号。
 
-> **示例 43** [难度 ★★★★☆] [主题：政策与代码膨胀（模板实例化成本）]
+> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 政策与代码膨胀（模板实例化成本）
 ```cpp
 // ⑮ N 个二元 policy 组合 => C(N,2) 份独立实例化
 template <typename P1, typename P2>
@@ -748,7 +748,7 @@ template struct Combo<C,D>;
 ; 每个 Combo<X,Y>::f 都是一份独立的机器码（含 .pdata/.xdata）
 ```
 
-> **示例 44** [难度 ★★☆☆☆] [主题：政策与代码膨胀（模板实例化成本）]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与代码膨胀（模板实例化成本）
 ```cpp
 #include <cstddef>
 // ⑮ 缓解手段一：把"稳定逻辑"下沉为非模板自由函数，只模板化薄壳
@@ -757,13 +757,13 @@ template <typename P1, typename P2>
 int combo_thin() { return combo_core(sizeof(P1), sizeof(P2)); }
 ```
 
-[经验] 当 policy 组合数超过数十种时，优先把"与 policy 无关的重逻辑"抽成非模板函数，让模板壳只做编排，**用编译速度/二进制体积换可维护性**。用 `nm | grep` 监控符号增长是有效的工程手段。
+<span class="badge badge-exp">经验</span> 当 policy 组合数超过数十种时，优先把"与 policy 无关的重逻辑"抽成非模板函数，让模板壳只做编排，**用编译速度/二进制体积换可维护性**。用 `nm | grep` 监控符号增长是有效的工程手段。
 
 ## ⑯ 政策与可变参数
 
 C++11 可变参数模板让 policy 集合可以**任意长度**：用 `template <typename... Policies>` 收集一组 policy，再用折叠表达式/`index_sequence` 逐个应用。
 
-> **示例 45** [难度 ★★★☆☆] [主题：政策与可变参数]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与可变参数
 ```cpp
 #include <cstddef>
 // ⑯ 可变参数 policy 集合
@@ -775,7 +775,7 @@ struct P1{}; struct P2{}; struct P3{};
 constexpr std::size_t np = PolicySet<P1, P2, P3>::n;   // 3
 ```
 
-> **示例 46** [难度 ★★☆☆☆] [主题：政策与可变参数]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与可变参数
 ```cpp
 // ⑯ 用折叠表达式让每个 policy 依次"初始化"
 template <typename... Steps>
@@ -789,7 +789,7 @@ struct S2 { void apply() {} };
 struct S3 { void apply() {} };
 ```
 
-> **示例 47** [难度 ★★☆☆☆] [主题：政策与可变参数]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与可变参数
 ```cpp
 #include <cstddef>
 #include <utility>
@@ -802,34 +802,34 @@ struct Bundle {
 };
 ```
 
-[标准] 折叠表达式（[expr.prim.fold]）与 `std::index_sequence`（`<utility>`）是可变参数 policy 的基石；比起 Loki 时代手写的 typelist 递归，现代写法可读性大幅提升。
+<span class="badge badge-std">标准</span> 折叠表达式（[expr.prim.fold]）与 `std::index_sequence`（`<utility>`）是可变参数 policy 的基石；比起 Loki 时代手写的 typelist 递归，现代写法可读性大幅提升。
 
 ## ⑰ 政策设计反模式
 
 错误地使用 policy 会引入维护灾难。以下为常见反模式与修正。
 
-> **示例 48** [难度 ★★☆☆☆] [主题：政策设计反模式]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计反模式
 ```cpp
 // ⑰ 反模式一：policy 之间隐含耦合（顺序敏感却无文档）
 template <typename A, typename B>
 struct Bad { /* A 必须在 B 之前初始化，否则 UB，但接口看不出来 */ };
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：政策设计反模式]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计反模式
 ```cpp
 // ⑰ 反模式二：policy 暴露运行期状态却声称"零开销"
 template <typename P>
 struct Host { P policy; };   // 若 P 有大数据成员，每个宿主实例都背负
 ```
 
-> **示例 50** [难度 ★★☆☆☆] [主题：政策设计反模式]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计反模式
 ```cpp
 // ⑰ 反模式三：组合爆炸且无共享实现
 template <typename X, typename Y, typename Z>
 struct Explode { /* 三层嵌套各 4 选 1 => 64 份实例化 */ };
 ```
 
-> **示例 51** [难度 ★★★☆☆] [主题：政策设计反模式]
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计反模式
 ```cpp
 // ⑰ 修正：用 concept 显式约定 policy 契约，减少隐含耦合
 template <typename P>
@@ -840,7 +840,7 @@ struct GoodPipeline {
 };
 ```
 
-[经验] 反模式的共同特征：**契约不清、耦合隐含、膨胀无界**。对策是（1）用 concept 写明 policy 接口；（2）能静态共享的逻辑下沉为非模板函数；（3）用默认 policy 收敛常用组合。
+<span class="badge badge-exp">经验</span> 反模式的共同特征：**契约不清、耦合隐含、膨胀无界**。对策是（1）用 concept 写明 policy 接口；（2）能静态共享的逻辑下沉为非模板函数；（3）用默认 policy 收敛常用组合。
 
 ## ⑱ 性能：零开销验证（对比手写虚函数版本）
 
@@ -848,7 +848,7 @@ struct GoodPipeline {
 
 policy 设计的口号是"零开销抽象"，但必须用工具验证、不能空口断言。下面把 ⑩ 的结论量化：policy 版 `set` 在 `-O2` 下与"手写内联版本"生成的机器码**逐条相同**，而虚函数版多出 vtable 间接调用与对象布局（vptr）开销。
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：性能：零开销验证]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能：零开销验证
 ```cpp
 // ⑱ 手写（无 policy、无虚函数）基线版本
 struct HandWritten {
@@ -859,7 +859,7 @@ struct HandWritten {
 int hand_demo(int x) { HandWritten w; w.set(x); return w.get(); }
 ```
 
-> **示例 53** [难度 ★★★☆☆] [主题：性能：零开销验证]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能：零开销验证
 ```cpp
 // ⑱ policy 版（RangeCheck 与基线逻辑一致）
 int policy_demo2(int x) { PolicyWidget<RangeCheck> w; w.set(x); return w.get(); }
@@ -910,7 +910,7 @@ C++20 并没有"取代"policy，而是**让 policy 更易写、更易约束**：
 - `if constexpr` 取代部分"枚举 + 特化"式分发（见 ⑤/⑭）；
 - `requires` 表达式让 policy 契约一目了然。
 
-> **示例 54** [难度 ★★★☆☆] [主题：现代 C++ 对政策设计的替代]
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 现代 C++ 对政策设计的替代
 ```cpp
 // ⑲ 现代写法：concept 约束 + if constexpr 分发，取代手工 typelist 特化
 template <typename P>
@@ -927,7 +927,7 @@ void dump(const T& v, P policy) {
 struct JsonPolicy { void to(std::ostream&) const {} };
 ```
 
-> **示例 55** [难度 ★★☆☆☆] [主题：现代 C++ 对政策设计的替代]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 现代 C++ 对政策设计的替代
 ```cpp
 #include <variant>
 // ⑲ 运行时仍需要动态切换时，可把 policy 对象存为 std::variant
@@ -939,23 +939,23 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 }
 ```
 
-[经验] 现代 C++ 的推荐姿势：**能用 `if constexpr` + `concept` 表达的分发改用它们；只有需要"多维度正交组合成新类型"时才保留模板 policy 参数**。"policy 模板参数"与"运行时 variant/虚函数"不是二选一，而是按是否需要编译期新类型来分层选用。
+<span class="badge badge-exp">经验</span> 现代 C++ 的推荐姿势：**能用 `if constexpr` + `concept` 表达的分发改用它们；只有需要"多维度正交组合成新类型"时才保留模板 policy 参数**。"policy 模板参数"与"运行时 variant/虚函数"不是二选一，而是按是否需要编译期新类型来分层选用。
 
 ## ⑳ 小结
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用模板策略组合（如 `SmartPtr<Host, Ownership, Checking>`）。** 你编译期拼装行为。请说明。
-   - [标准] 模板实参即策略，编译期组合不同行为；各策略是独立的类模板实参。
-   - [引用] ISO/IEC 14882:2023 §[temp]（类模板与策略组合）；A. Alexandrescu《Modern C++ Design》（基于策略的设计）。
+   - <span class="badge badge-std">标准</span> 模板实参即策略，编译期组合不同行为；各策略是独立的类模板实参。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp]（类模板与策略组合）；A. Alexandrescu《Modern C++ Design》（基于策略的设计）。
 
 2. **真实场景：标准算法的执行策略（parallel/seq）。** 你给算法选并行策略。请说明。
-   - [标准] 执行策略（[execpol]）是标准提供的“策略”抽象，控制算法并行度。
-   - [引用] ISO/IEC 14882:2023 §[execpol]（执行策略）/ [algorithms.parallel]；cppreference "std::execution" 词条。
+   - <span class="badge badge-std">标准</span> 执行策略（[execpol]）是标准提供的“策略”抽象，控制算法并行度。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[execpol]（执行策略）/ [algorithms.parallel]；cppreference "std::execution" 词条。
 
 3. **真实场景：策略类用空基类（EBO）实现零开销。** 你担心策略对象占空间。请说明。
-   - [标准] 空基类子对象通常不占空间（EBO），使策略组合几乎零开销。
-   - [引用] ISO/IEC 14882:2023 §[class.derived]（空基类优化）；cppreference "Empty base optimization" 词条。
+   - <span class="badge badge-std">标准</span> 空基类子对象通常不占空间（EBO），使策略组合几乎零开销。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.derived]（空基类优化）；cppreference "Empty base optimization" 词条。
 
 - **本质**：Policy-Based Design 把类行为拆解为可替换、正交、编译期绑定的 policy，宿主以模板参数组装，生成全新的静态类型。
 - **与策略模式**：policy 是编译期静态组合（零虚函数开销），策略模式是运行期动态组合（虚表间接调用）——⑩/⑱ 的汇编已实证二者开销差异。
@@ -964,7 +964,7 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 - **现代替代**：concepts + `if constexpr` 接管了大部分"约束与分发"，但"正交组合成新类型"仍是 policy 模板参数的专属领地（⑲）。
 - **工业实证**：标准库 `std::vector` 的分配器、`std::unique_ptr` 的删除器（⑬ 源码剖析）即是 policy 思想的工程落地。
 
-> [标准] 全章汇编/符号证据均由 `g++ -std=c++23 -O2 -S -masm=intel` 与 `nm`（MinGW-w64 GCC 13.1.0, x86-64）真机生成，源码见 `Examples/_ch140_*.cpp` 与对应 `.asm`，未作任何编造。
+> <span class="badge badge-std">标准</span> 全章汇编/符号证据均由 `g++ -std=c++23 -O2 -S -masm=intel` 与 `nm`（MinGW-w64 GCC 13.1.0, x86-64）真机生成，源码见 `Examples/_ch140_*.cpp` 与对应 `.asm`，未作任何编造。
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -982,7 +982,7 @@ Policy（策略）把「可替换的行为维度」做成模板/运行时参数�
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 标准库 | `std::vector` 分配器 / `std::unique_ptr` 删除器 | 把「内存来源/释放方式」做成可替换维度 | 标准库级 policy | [STANDARD] Allocator / Deleter |
+| 标准库 | `std::vector` 分配器 / `std::unique_ptr` 删除器 | 把「内存来源/释放方式」做成可替换维度 | 标准库级 policy | <span class="badge badge-std">STANDARD</span> Allocator / Deleter |
 | 数值 / 通用库 | Eigen（表达式语义/存储布局/标量类型）/ Boost SmartPtr·多 index 容器 | policy 组合可定制行为 | 工业级数值与容器 | policy 是 Eigen 可组合性的根基 |
 | 网络 | Boost.Beast（HTTP/WebSocket 流式vs缓冲/同步vs异步可组合）/ libcurl easy·multi | 传输策略运行期/编译期组合 | 工业级网络库 | 见 boost.org/beast / curl.se |
 | 量化金融 | QuantLib（日计数惯例/日历/随机数生成器 policy） | 同一数学换不同市场规则复用 | 金融工程事实库 | 见 quantlib.org |
@@ -1003,11 +1003,11 @@ Policy（策略）把「可替换的行为维度」做成模板/运行时参数�
 
 | 维度 | 内容 | 立场 | 标准 / 提案坐标 |
 |---|---|---|---|
-| 接口契约化 | C++20 Concepts 让 policy 从「隐性鸭子类型」变「可约束契约」：`template<Policy P> class Host` 直接声明接口，错误前移到约束失败 | [评] | C++20 `[concept]` |
+| 接口契约化 | C++20 Concepts 让 policy 从「隐性鸭子类型」变「可约束契约」：`template<Policy P> class Host` 直接声明接口，错误前移到约束失败 | <span class="badge badge-comment">评</span> | C++20 `[concept]` |
 | 编译期分支分发 | `if constexpr` 可在 policy 基础上做编译期分支，替代部分运行期策略选择 | — | C++17 `if constexpr`（见 §⑤） |
-| 可读/可错平衡 | 标准演进把 policy 的「灵活」与「可读/可错」经 concepts 拉回平衡 | [评] | 泛型库设计分水岭 |
-| 约束语法化 | P0734R0 把对 policy 接口的要求从 SFINAE 黑魔法改为一行 `requires`；`std::invocable`/`std::predicate` 成标准契约 | [评] | WG21 **P0734R0**（C++20，<https://wg21.link/P0734>） |
-| 概念形式化 | 在 `[temp.concept]` 把概念定义为「布尔 constexpr 变量模板」，使隐式契约变显式、可诊断 | [评] | ISO/IEC 14882:2020 |
+| 可读/可错平衡 | 标准演进把 policy 的「灵活」与「可读/可错」经 concepts 拉回平衡 | <span class="badge badge-comment">评</span> | 泛型库设计分水岭 |
+| 约束语法化 | P0734R0 把对 policy 接口的要求从 SFINAE 黑魔法改为一行 `requires`；`std::invocable`/`std::predicate` 成标准契约 | <span class="badge badge-comment">评</span> | WG21 **P0734R0**（C++20，<https://wg21.link/P0734>） |
+| 概念形式化 | 在 `[temp.concept]` 把概念定义为「布尔 constexpr 变量模板」，使隐式契约变显式、可诊断 | <span class="badge badge-comment">评</span> | ISO/IEC 14882:2020 |
 
 > 表注（㉒.4）：policy 与标准的互动主线是「隐性鸭子类型 → 被 Concepts 显式约束」；P0734R0 是这道分水岭的提案坐标，与 CRTP 的 P0847R7（ch139 §㉒.4）并列。
 
@@ -1021,7 +1021,7 @@ Policy（策略）把「可替换的行为维度」做成模板/运行时参数�
 
 Eigen 是 Policy-Based Design 在数值线性代数领域的旗舰实现：
 
-> **示例 56** [难度 ★★★☆☆] [主题：附录 A：工业案例 —— Eigen]
+> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业案例 —— Eigen
 ```cpp
 // Eigen Matrix 接受 6 个 Policy 维度的模板参数
 // template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
@@ -1031,7 +1031,7 @@ Eigen 是 Policy-Based Design 在数值线性代数领域的旗舰实现：
 // - Options: 存储 Policy (ColMajor/RowMajor → 内存访问模式; Aligned → SIMD对齐)
 ```
 
-> **示例 57** [难度 ★★☆☆☆] [主题：附录 A：工业案例 —— Eigen]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业案例 —— Eigen
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1058,7 +1058,7 @@ int main() {
 | 错误信息 | 模板实例化错误 (冗长) | 纯虚函数调用 (运行时崩溃) |
 | WG21 态度 | 无需语言支持 (模板已足够) | 核心语言特性 (virtual/override) |
 
-> **示例 58** [难度 ★★★☆☆] [主题：附录 B：Policy vs 继承 ]
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：Policy vs 继承
 ```cpp
 #include <iostream>
 int main() {
@@ -1072,7 +1072,7 @@ int main() {
 
 ## 附录 C：Policy 的反模式与面试 [I: Practice / J: Learning]
 
-> **示例 59** [难度 ★★★★☆] [主题：附录 C：Policy 的反模式与面]
+> **示例 59** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：Policy 的反模式与面
 ```
 反模式1: Policy 参数超过 5 个 → 将相关 Policy 组合为 Bundle struct
 反模式2: Policy 间隐式依赖 → 使用 C++20 concepts 显式约束
@@ -1131,7 +1131,7 @@ A: 零开销——删除器无 vtable，调用可内联。sizeof 与裸指针相
 
 <details><summary>答案与解析</summary>
 
-> **示例 60** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 struct Unique { template<class T> using ptr = T*; };      // 独占：裸指针语义
@@ -1144,9 +1144,9 @@ struct SmartPtr {
 int main() { SmartPtr<int, Unique, Shared> sp; std::cout << "ok\n"; }
 ```
 
-[标准] policy 类把「正交的横切行为」做成模板参数，编译期组合；不同 policy 生成不同类型实例，零运行期分发开销，但模板实例化数量随组合增长（见 ch140 ⑮ 代码膨胀）。
+<span class="badge badge-std">标准</span> policy 类把「正交的横切行为」做成模板参数，编译期组合；不同 policy 生成不同类型实例，零运行期分发开销，但模板实例化数量随组合增长（见 ch140 ⑮ 代码膨胀）。
 
-[引用] Policy-Based Design 见 Alexandrescu《Modern C++ Design》(2001) 与 Loki 库；C++ 模板参数与默认模板参数见 cppreference；ch140 ②–④ 给出完整形态。
+<span class="badge badge-ref">引用</span> Policy-Based Design 见 Alexandrescu《Modern C++ Design》(2001) 与 Loki 库；C++ 模板参数与默认模板参数见 cppreference；ch140 ②–④ 给出完整形态。
 
 </details>
 
@@ -1156,7 +1156,7 @@ int main() { SmartPtr<int, Unique, Shared> sp; std::cout << "ok\n"; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 61** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 61** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1175,9 +1175,9 @@ int main() {
 }
 ```
 
-[标准] 布局 policy 通过 `if constexpr` 在编译期决定下标公式，运行时无分支；`std::is_same_v` 做编译期类型判别（见 ch140 ⑤）。
+<span class="badge badge-std">标准</span> 布局 policy 通过 `if constexpr` 在编译期决定下标公式，运行时无分支；`std::is_same_v` 做编译期类型判别（见 ch140 ⑤）。
 
-[引用] 该手法即 Eigen 的 `Eigen::StorageOptions`（RowMajor/ColMajor）与 Blaze 的存储 policy；`if constexpr` 见 C++17（P0292）与 cppreference；ch140 ⑧ 给出智能指针 / 分配器的 policy 实例。
+<span class="badge badge-ref">引用</span> 该手法即 Eigen 的 `Eigen::StorageOptions`（RowMajor/ColMajor）与 Blaze 的存储 policy；`if constexpr` 见 C++17（P0292）与 cppreference；ch140 ⑧ 给出智能指针 / 分配器的 policy 实例。
 
 </details>
 
@@ -1187,7 +1187,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 62** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <functional>
@@ -1198,9 +1198,9 @@ void save_rt(std::function<void()> f) { f(); }                 // 运行期策�
 int main() { save<Json>(); save_rt(Bin::write); }
 ```
 
-[标准] 编译期 policy 把 `write` 直接内联进 `save`，无间接调用；运行期 `std::function` 多一次类型擦除调用，但可在运行期换格式。Policy 适合「格式在编译期就定死、且要极致性能」的场景。
+<span class="badge badge-std">标准</span> 编译期 policy 把 `write` 直接内联进 `save`，无间接调用；运行期 `std::function` 多一次类型擦除调用，但可在运行期换格式。Policy 适合「格式在编译期就定死、且要极致性能」的场景。
 
-[引用] policy（编译期）与策略模式（运行期）的对比见 ch140 ⑩；`std::function` 的开销见 cppreference 与 ch138 ⑲ 基准；C++ Core Guidelines 讨论按「是否需要运行期变化」选择静态或动态多态。
+<span class="badge badge-ref">引用</span> policy（编译期）与策略模式（运行期）的对比见 ch140 ⑩；`std::function` 的开销见 cppreference 与 ch138 ⑲ 基准；C++ Core Guidelines 讨论按「是否需要运行期变化」选择静态或动态多态。
 
 </details>
 
@@ -1220,7 +1220,7 @@ int main() { save<Json>(); save_rt(Bin::write); }
 
 可复现基准（自包含、可编译）：
 
-> **示例 63** [难度 ★★★★☆] [主题：真实性能基准：Policy-Base]
+> **示例 63** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实性能基准：Policy-Base
 ```cpp
 // g++ -std=c++23 -O2 ch140_bench.cpp
 #include <chrono>
@@ -1365,7 +1365,7 @@ template / if constexpr 策略在 `-O2` 下被完全内联，循环退化为常�
 
 ### D5.3 可复现 demo
 
-> **示例 64** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 64** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 

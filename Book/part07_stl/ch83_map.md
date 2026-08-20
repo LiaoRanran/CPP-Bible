@@ -7,23 +7,23 @@
 > 一张"按键排序、O(log n) 取物"的字典——红黑树是它沉默而可靠的引擎。
 
 ### 0.1 起源（谁·何时·为何）
-关联容器要解决的是"用键快速找值"，且常常希望结果**有序**（便于范围查询、按序遍历）。[史] STL 选择了**红黑树（red-black tree）**作为 `map`/`multimap` 的底层：一种自平衡二叉搜索树，保证最坏情况下插入、删除、查找都是 O(log n)，且旋转次数有界。[史] Stepanov 一派看重它的"稳定最坏情况"——哈希表最坏会退化成 O(n)，而红黑树不会。
+关联容器要解决的是"用键快速找值"，且常常希望结果**有序**（便于范围查询、按序遍历）。<span class="badge badge-history">史</span> STL 选择了**红黑树（red-black tree）**作为 `map`/`multimap` 的底层：一种自平衡二叉搜索树，保证最坏情况下插入、删除、查找都是 O(log n)，且旋转次数有界。<span class="badge badge-history">史</span> Stepanov 一派看重它的"稳定最坏情况"——哈希表最坏会退化成 O(n)，而红黑树不会。
 
 ### 0.2 关键转折（编年）
-- C++98：`std::map`/`std::multimap` 随 STL 标准化，确立节点稳定（插入/删除不使其他迭代器失效）。[史]
+- C++98：`std::map`/`std::multimap` 随 STL 标准化，确立节点稳定（插入/删除不使其他迭代器失效）。<span class="badge badge-history">史</span>
 - 后续：C++11 引入 `unordered_map`（[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)）作为"无序但平均更快"的对照方案；C++17 补 `try_emplace`/`insert_or_assign` 等更安全的接口。
 
 ### 0.3 设计哲学之争
-有序 vs 无序是 `map` 家族的内部路线之争：红黑树 `map` 提供有序性和稳定复杂度，但每个节点有额外指针与颜色位开销；哈希 `unordered_map` 平均 O(1)，却要设计好哈希函数、且最坏退化。[评] STL 同时提供两者，把选择交给场景——需要有序/范围查询选 `map`，需要极致查找速度且能接受无序选 `unordered_map`。[评]
+有序 vs 无序是 `map` 家族的内部路线之争：红黑树 `map` 提供有序性和稳定复杂度，但每个节点有额外指针与颜色位开销；哈希 `unordered_map` 平均 O(1)，却要设计好哈希函数、且最坏退化。<span class="badge badge-comment">评</span> STL 同时提供两者，把选择交给场景——需要有序/范围查询选 `map`，需要极致查找速度且能接受无序选 `unordered_map`。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++17 给 `map` 补 `try_emplace`/`insert_or_assign`/`extract`/`merge`。红黑树 vs B 树、以及 C++26 有序容器是后续支线。
 
-- [史] **`extract`/`merge`（C++17）让节点"搬家"免拷贝**：可从一棵树把整个节点提取出来再插入另一棵（同比较器），不构造不析构键值——这是红黑树节点结构稳定的直接红利。
-- [评] **工程界普遍转向"连续 + 哈希"挑战红黑树**：Google 的 Abseil 提供 `flat_hash_map`（开放寻址、连续存储，缓存友好、平均更快）与 `btree`（B 树有序、缓存优于红黑树）；它们不是标准，却 reshaped 了"默认该用谁"的共识。
-- [史] **异构查找（heterogeneous lookup）逐步进标准**：C++14 起 `map`/`set` 支持以可比较异类型（如 `string_view` 查 `string` 键）查找，避免构造临时键；C++20 又扩展到 `find`/`contains` 等接口。
-- [评] **C++26 是否引入更多有序容器变体仍悬而未决**：`flat_map`/`flat_set`（连续存储、跳表式有序）提案多次出现，目标是把"有序 + 缓存好"合一，但标准化路径尚在讨论。
+- <span class="badge badge-history">史</span> **`extract`/`merge`（C++17）让节点"搬家"免拷贝**：可从一棵树把整个节点提取出来再插入另一棵（同比较器），不构造不析构键值——这是红黑树节点结构稳定的直接红利。
+- <span class="badge badge-comment">评</span> **工程界普遍转向"连续 + 哈希"挑战红黑树**：Google 的 Abseil 提供 `flat_hash_map`（开放寻址、连续存储，缓存友好、平均更快）与 `btree`（B 树有序、缓存优于红黑树）；它们不是标准，却 reshaped 了"默认该用谁"的共识。
+- <span class="badge badge-history">史</span> **异构查找（heterogeneous lookup）逐步进标准**：C++14 起 `map`/`set` 支持以可比较异类型（如 `string_view` 查 `string` 键）查找，避免构造临时键；C++20 又扩展到 `find`/`contains` 等接口。
+- <span class="badge badge-comment">评</span> **C++26 是否引入更多有序容器变体仍悬而未决**：`flat_map`/`flat_set`（连续存储、跳表式有序）提案多次出现，目标是把"有序 + 缓存好"合一，但标准化路径尚在讨论。
 
 > 史料来源：[cppreference std::map](https://en.cppreference.com/w/cpp/container/map)、[Abseil 官方文档](https://abseil.io/docs/cpp/)
 
@@ -48,7 +48,7 @@
 - **array 与对齐** ⟶ `Book/part07_stl/ch80_array.md`：理解节点中 value 的偏移布局对读汇编有帮助（§⑩）。
 - **optional** ⟶ `Book/part07_stl/ch88_optional_variant.md`：`find` 返回 `end()` 表示"未找到"，相当于用迭代器表达 `optional` 的"无"。
 
-> **示例 1** [难度 ★★★☆☆] [主题：前置知识]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识
 ```cpp
 // ②-1 前置：map 的 value_type 是 pair<const Key, T>（独立可编译）
 #include <map>
@@ -70,7 +70,7 @@ int main() {
 }
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // ②-2 前置：map 是双向迭代器（不能 +n 随机访问）（独立可编译）
 #include <map>
@@ -94,7 +94,7 @@ int main() {
 - **unordered_map / unordered_set** ⟶ `Book/part07_stl/ch85_unordered.md`：哈希版，平均 `O(1)` 但缓存不友好、无序；与 `map` 的取舍见 §⑲。
 - **ranges** ⟶ `Book/part07_stl/ch90_ranges.md`：可用 `std::views::keys` / `std::views::values` 投影 `map` 的键或值（C++20）。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 // ③-1 后续：用 ranges 投影 map 的键/值（C++20，独立可编译）
 #include <map>
@@ -112,7 +112,7 @@ int main() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 // ③-2 后续：map 与 set 同源（set 只存 key，复用 Rb_tree）（独立可编译）
 #include <set>
@@ -131,7 +131,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 5** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
                   ┌─────────────────────────────────────┐
                   │   关联容器（key -> value）            │
@@ -223,7 +223,7 @@ classDiagram
 
 红黑树是一棵**二叉搜索树 + 颜色约束**（确保每个分支黑高相等，树高 ≤ 2·log₂(N+1)）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：内存图：红黑树节点与哨兵头]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：红黑树节点与哨兵头
 ```
 x86-64 下一个 _Rb_tree_node 的内存布局（节点基 + value 联合）：
 ┌──────────────────────────────────────────────────────────────┐
@@ -249,7 +249,7 @@ x86-64 下一个 _Rb_tree_node 的内存布局（节点基 + value 联合）：
 - `[实现·GCC15]`：`_Rb_tree_node_base` 含 `_M_color`(106 行)、`_M_parent`(107)、`_M_left`(108)、`_M_right`(109)；节点本身 `_Rb_tree_node` 在 216 行定义（见 `文件：bits/stl_tree.h`, `行号：101-109, 216`）。
 - `[标准]`：红黑树保证从根到任意叶子的**黑高相同**，从而最坏路径不超过 2·log₂(N+1)，所有操作稳定 `O(log N)`。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：内存图：红黑树节点与哨兵头]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：红黑树节点与哨兵头
 ```cpp
 // ⑦-1 验证 map 节点代价：每个元素一次堆分配（独立可编译，演示元素数->节点数）
 #include <map>
@@ -264,7 +264,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：内存图：红黑树节点与哨兵头]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图：红黑树节点与哨兵头
 ```cpp
 // ⑦-2 中序遍历 = 按键升序（红黑树性质，独立可编译）
 #include <map>
@@ -284,7 +284,7 @@ int main() {
 
 `map` 的优秀特性是**节点稳定**：只要不删除某节点，指向它的引用/指针/迭代器永远有效（即使之后插入/删除了其他元素）。这与 `vector` 的"扩容整体搬迁"形成鲜明对比（⟶ `Book/part07_stl/ch77_vector.md`）。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：生命周期图：节点稳定性]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：节点稳定性
 ```
 时间轴 ──────────────────────────────────────────────►
 
@@ -305,7 +305,7 @@ int main() {
 - `[标准]`：参考文献 `[associative.reqmts]`：`map` 的 `insert`/`emplace` 不使既有迭代器/引用失效；`erase(it)` 仅使 `it` 失效。
 - `[经验]`：这一性质让 `map` 非常适合"长期持有元素引用、偶尔增删"的场景（如配置注册表、对象表）。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：生命周期图：节点稳定性]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：节点稳定性
 ```cpp
 // ⑧-1 节点稳定：插入其他元素后旧引用仍有效（独立可编译）
 #include <map>
@@ -320,7 +320,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：生命周期图：节点稳定性]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：节点稳定性
 ```cpp
 // ⑧-2 迭代器失效：仅被删节点的迭代器失效（独立可编译）
 #include <map>
@@ -342,7 +342,7 @@ int main() {
 
 `map::operator[](k)` 的语义是"找到 k 则返回其 value 的引用，否则**插入** `value_type(k, T())` 并返回"。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：调用栈 / 时序图：operator]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：operator
 ```
 调用方                      map                 _Rb_tree             堆节点
   │                          │                      │                  │
@@ -363,7 +363,7 @@ int main() {
 - `[标准]`：`operator[]` 在缺失键时会**值初始化** `T()`（对 `int` 是 0，对类调用默认构造），这可能产生非预期插入——查找但不想插入请用 `find` / `at`。
 - `[实现·GCC15]`：`operator[]` 内部调用 `lower_bound`（见 `文件：bits/stl_map.h`, `行号：502-507`）。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图：operator]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：operator
 ```cpp
 // ⑨-1 operator[] 会"顺手插入"缺失的键（独立可编译）
 #include <map>
@@ -378,7 +378,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★★★☆☆] [主题：调用栈 / 时序图：operator]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：operator
 ```cpp
 // ⑨-2 只读查找用 find / at，避免意外插入（独立可编译）
 #include <map>
@@ -429,7 +429,7 @@ _Z6lookupRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi:
 - `[实现·GCC15]`：汇编证实节点内 **key 位于偏移 32**（基 32 字节之后），`_M_left` 在 16、`_M_right` 在 24——与 §⑦ 内存图一致；每次循环是一次缓存未命中风险（节点散落堆上）。
 - `[标准]`：`find` 复杂度 `O(log N)`，对应循环最多执行树高（≤ 2·log₂(N+1)）次指针追逐。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：汇编分析：map::find 的树下]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编分析：map::find 的树下
 ```cpp
 // ⑩-1 被测查找的源码（与上方 asm 对应，独立可编译）
 #include <map>
@@ -462,7 +462,7 @@ int main() {
 - `[标准]`：`map` 的 `value_type` 是 `std::pair<const Key, T>`；`multimap` 允许重复 key，因此**没有 `operator[]`**（无法唯一确定返回哪个 value），需用 `equal_range` / `find`。
 - `[实现·GCC15]`：四者（map/multimap/set/multiset）共用同一份 `bits/stl_tree.h` 的 `_Rb_tree` 实现，仅通过 `_Select1st` / 特化区分"存 pair 还是存 key"。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：联系：map 与家族成员]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：map 与家族成员
 ```cpp
 // ⑪-1 map 与 multimap 的差异：multimap 无 operator[]（独立可编译）
 #include <map>          // std::map 与 std::multimap 同在 <map>，无独立 <multimap> 头
@@ -480,7 +480,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：联系：map 与家族成员]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：map 与家族成员
 ```cpp
 // ⑪-2 multimap 的 equal_range 取某个 key 的全部值（独立可编译）
 #include <map>
@@ -505,7 +505,7 @@ int main() {
 
 数据库的聚簇索引本质是"有序映射"。内存中可用 `std::map<RowId, Row>` 表达，支持 `lower_bound` 做"主键 ≥ X 的范围扫描"，且节点稳定（扫描途中可安全增删其他行）。
 
-> **示例 18** [难度 ★★☆☆☆] [主题：工业案例：有序索引、配置注册表、路由]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：有序索引、配置注册表、路由
 ```cpp
 // ⑫-1 数据库范围扫描：lower_bound + 迭代到上界（独立可编译，模拟逻辑）
 #include <map>
@@ -532,7 +532,7 @@ int main() {
 
 配置项以 `std::map<std::string, ConfigValue>` 持有；后台线程可 `insert_or_assign` 热更新某项，前台读取线程持有的引用不失效。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：工业案例：有序索引、配置注册表、路由]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：有序索引、配置注册表、路由
 ```cpp
 // ⑫-2 配置注册表热更新：insert_or_assign 避免整体重建（独立可编译，模拟逻辑）
 #include <map>
@@ -557,7 +557,7 @@ int main() {
 
 路由查找常以目的 IP 为 key 做精确匹配；`map` 的节点稳定性适合频繁增删路由项而不惊动既有迭代器。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：工业案例：有序索引、配置注册表、路由]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：有序索引、配置注册表、路由
 ```cpp
 // ⑫-3 路由表：按 32 位前缀精确查找（独立可编译，模拟逻辑）
 #include <map>
@@ -583,7 +583,7 @@ int main() {
 
 ### 13.1 节点基与颜色
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：节点基与颜色]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 节点基与颜色
 ```cpp
 // ⑬-1a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：99-109）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -599,7 +599,7 @@ int main() { return 0; }
 
 ### 13.2 map 的 operator[] 与 try_emplace
 
-> **示例 22** [难度 ★★☆☆☆] [主题：的 operator[] 与 try]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的 operator[] 与 try
 ```cpp
 #include <utility>
 // ⑬-2a libstdc++ 源码摘录（文件：bits/stl_map.h，行号：502-507 / 721-723 / 966-968）
@@ -625,7 +625,7 @@ int main() { return 0; }
 
 ### 13.3 红黑树的查找核心 `_M_lower_bound`
 
-> **示例 23** [难度 ★★☆☆☆] [主题：红黑树的查找核心 Mlowerbou]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 红黑树的查找核心 Mlowerbou
 ```cpp
 // ⑬-3a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：910 / 1948 / 1980）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -644,7 +644,7 @@ int main() { return 0; }
 
 ### 13.4 节点提取与合并（C++17）
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：节点提取与合并（C++17）]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 节点提取与合并（C++17）
 ```cpp
 // ⑬-4a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：1532-1548 / 1562 / 1584）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -673,7 +673,7 @@ int main() { return 0; }
 - `[标准]`：上述特性均已在 C++17 落地，C++23 仅做边角修复（如节点句柄的异常安全完善）。
 - `[经验]`：任何"可能查不到、查到后未必写"的场景，优先 `try_emplace` 而非 `operator[]` + 赋值，省一次默认构造。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：提案背景]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案背景
 ```cpp
 // ⑭-1 try_emplace 避免"key 已存在时浪费构造 mapped_type"（独立可编译）
 #include <map>
@@ -697,7 +697,7 @@ int main() {
 
 默认 `std::less<Key>` 只接受 `Key` 类型的实参，因此 `m.find("key")` 会**临时构造一个 `std::string` key** 再比较。透明比较器让 `find` 接受 `std::string_view` 等"可比较但不必是 Key"的类型，省去这次分配。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：透明比较器：istransparen]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 透明比较器：istransparen
 ```cpp
 // ⑮-1 透明比较器：用 string_view 查找 string key，零临时分配（独立可编译）
 #include <map>
@@ -722,7 +722,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：透明比较器：istransparen]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 透明比较器：istransparen
 ```cpp
 // ⑮-2 透明比较器同样适用 lower_bound / equal_range（独立可编译）
 #include <map>
@@ -772,7 +772,7 @@ int main() {
 8. **红黑树保证 `O(log N)` 的关键是什么？**
    → 颜色约束使任意分支黑高相等，树高 ≤ 2·log₂(N+1)（§⑦）。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 // ⑯-1 面试题实战：统计各 key 出现次数（map 计数经典题，独立可编译）
 #include <map>
@@ -794,7 +794,7 @@ int main() {
 ## ⑰ 易错点
 
 1. **用 `operator[]` 做只读查找，意外插入键**
-> **示例 29** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ❌ 逻辑错误演示（编译通过）：本想判断是否存在，却插入了键
    #include <map>
@@ -809,7 +809,7 @@ int main() {
    ✅ 正确：用 `find` 或 `count` 判断存在性。
 
 2. **遍历中修改 key** —— key 是 `const`，本身编译期禁止；但若持有 `pair<const K,T>&` 并试图改 key 会编译失败。修改 key 必须 `extract` 后重插。
-> **示例 30** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ✅ 正确：改 key 用 extract + 重插（独立可编译）
    #include <map>
@@ -826,7 +826,7 @@ int main() {
 ```
 
 3. **遍历 `map` 时 `erase(it)` 后继续使用 `it`**
-> **示例 31** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ✅ 正确：erase 返回下一迭代器（C++11 起，独立可编译）
    #include <map>
@@ -846,7 +846,7 @@ int main() {
 
 5. **把 `map` 当 `unordered_map` 用却期望 `O(1)`** —— `map` 是 `O(log N)`，大数据量高频查找应评估 `unordered_map`（§⑲）。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ⑰-1 易错点：find 未判 end 直接解引用（独立可编译，安全写法对照）
 #include <map>
@@ -875,7 +875,7 @@ int main() {
 7. **长期持有元素引用时优先 `map`**（节点稳定）；频繁随机增删+值语义拷贝成本是权衡点。
 8. **`noexcept`/异常安全**：`insert`/`emplace` 在节点分配失败抛 `bad_alloc`；`try_emplace` 强异常安全（key 已存在时不改容器）。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-1 最佳实践：lower_bound + upper_bound 做范围扫描（独立可编译）
 #include <map>
@@ -890,7 +890,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-2 最佳实践：extract + merge 在 map 间零拷贝迁移（独立可编译）
 #include <map>
@@ -929,7 +929,7 @@ int main() {
 
 ### 19.3 microbenchmark 量级（示意）
 
-> **示例 35** [难度 ★★☆☆☆] [主题：量级（示意）]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 量级（示意）
 ```cpp
 // ⑲-1 量级对照：map 单点查找 vs unordered_map vs 排序 vector 二分（独立可编译，计时骨架）
 #include <map>
@@ -989,16 +989,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：`operator[]` 在 key 缺失时悄悄插入默认值。** 你本只想查却意外改了容器。请说明语义。
-   - [标准] `map::operator[]` 在 key 不存在时插入 value-initialized 元素并返回引用；`at()` 则不插入、缺失抛异常。
-   - [引用] ISO/IEC 14882:2023 §[map]（operator[] 插入语义 vs at()）；cppreference "std::map::operator[] / at" 词条。
+   - <span class="badge badge-std">标准</span> `map::operator[]` 在 key 不存在时插入 value-initialized 元素并返回引用；`at()` 则不插入、缺失抛异常。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[map]（operator[] 插入语义 vs at()）；cppreference "std::map::operator[] / at" 词条。
 
 2. **真实场景：map 元素是 `pair<const Key, T>`，key 不可改。** 你想就地改 key 被拒。请说明。
-   - [标准] map 的 value_type 为 `pair<const Key, T>`；key 为 const，须删后插才能“修改”。
-   - [引用] ISO/IEC 14882:2023 §[map]（value_type 与 key 的 const 性）；cppreference "std::map" 词条。
+   - <span class="badge badge-std">标准</span> map 的 value_type 为 `pair<const Key, T>`；key 为 const，须删后插才能“修改”。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[map]（value_type 与 key 的 const 性）；cppreference "std::map" 词条。
 
 3. **真实场景：有序 map 按 key 比较排序，自定义类型需提供 `operator<` 或比较器。** 你插入自定义结构得提供严格弱序。请说明。
-   - [标准] 有序关联容器要求 key 满足严格弱序（默认 `less`）；不满足会导致未定义行为。
-   - [引用] ISO/IEC 14882:2023 §[map]（key 比较要求）；cppreference "std::map" 词条。
+   - <span class="badge badge-std">标准</span> 有序关联容器要求 key 满足严格弱序（默认 `less`）；不满足会导致未定义行为。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[map]（key 比较要求）；cppreference "std::map" 词条。
 
 
 | 语言 | 有序映射 | 底层 | 备注 |
@@ -1013,7 +1013,7 @@ int main() {
 - `[标准]`：C++ `std::map` 与 Java `TreeMap`、C# `SortedDictionary` 同宗（红黑树、有序、稳定迭代器）；Rust 选 **B 树**以换取更好的缓存局部性（节点多叉、高度更低）。
 - `[经验]`：从 Java/Python 转来的工程师需注意：Python `dict` 虽"保序"但按**插入顺序**而非 key 顺序，且没有 `lower_bound` 这类范围能力——这正是 C++ `map` 的价值所在。从 Rust 来的工程师会注意到 `BTreeMap` 读写更连续、缓存更友好。
 
-> **示例 36** [难度 ★★☆☆☆] [主题：跨语言对比：有序映射]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：有序映射
 ```cpp
 // ⑳-1 跨语言映射：Java TreeMap / Rust BTreeMap 的"有序范围"在 C++ 用 equal_range（独立可编译）
 #include <map>
@@ -1029,7 +1029,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：跨语言对比：有序映射]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：有序映射
 ```cpp
 // ⑳-2 跨语言映射：C# SortedDictionary 的"按 key 序遍历"即 C++ 范围 for（独立可编译）
 #include <map>
@@ -1052,7 +1052,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：std::map 与红黑树的胜利
 
-[史] `std::map` / `std::multimap` 随 C++98 进入标准，底层采用红黑树（一种自平衡二叉搜索树），这一选择继承自 HP/SGI STL 的 `_Rb_tree`。[史] 红黑树保证插入/删除/查找最坏 O(log N) 且节点地址稳定（插入不搬移其他节点），这对「需要稳定迭代器且有序遍历」的场景至关重要。[轶] 一个经典对比是：STL 当年在 AVL 树（更严格平衡、查找更快但旋转更贵）与红黑树之间选了后者，因为插入频繁的场景下红黑树的更少旋转更划算。[评] `map` 的「有序 + 稳定节点」特性，使它在需要范围查询与按序遍历时仍不可替代，尽管哈希表更快。
+<span class="badge badge-history">史</span> `std::map` / `std::multimap` 随 C++98 进入标准，底层采用红黑树（一种自平衡二叉搜索树），这一选择继承自 HP/SGI STL 的 `_Rb_tree`。<span class="badge badge-history">史</span> 红黑树保证插入/删除/查找最坏 O(log N) 且节点地址稳定（插入不搬移其他节点），这对「需要稳定迭代器且有序遍历」的场景至关重要。<span class="badge badge-anecdote">轶</span> 一个经典对比是：STL 当年在 AVL 树（更严格平衡、查找更快但旋转更贵）与红黑树之间选了后者，因为插入频繁的场景下红黑树的更少旋转更划算。<span class="badge badge-comment">评</span> `map` 的「有序 + 稳定节点」特性，使它在需要范围查询与按序遍历时仍不可替代，尽管哈希表更快。
 
 ### ㉒.2 真实工程坐标：map 活在哪些产品里
 
@@ -1063,11 +1063,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：map 的常见误用与陷阱
 
-[评] 最大误区是「把 `map` 当哈希表用」——在只需要按 key 查找、不需要有序的场景下，`map` 的 O(log N) 与节点堆分配（每对 kv 一个树节点）显著慢于 `unordered_map` 的平均 O(1)。另一坑是「`operator[]` 会插入」：用 `m[k]` 读取不存在的 key 会默默插入默认值，既可能非本意也可能在 `const` 上下文编译失败（应改用 `at()` 或 `find()`）。还有「遍历中 `erase`」需用返回值续迭代器，否则失效。
+<span class="badge badge-comment">评</span> 最大误区是「把 `map` 当哈希表用」——在只需要按 key 查找、不需要有序的场景下，`map` 的 O(log N) 与节点堆分配（每对 kv 一个树节点）显著慢于 `unordered_map` 的平均 O(1)。另一坑是「`operator[]` 会插入」：用 `m[k]` 读取不存在的 key 会默默插入默认值，既可能非本意也可能在 `const` 上下文编译失败（应改用 `at()` 或 `find()`）。还有「遍历中 `erase`」需用返回值续迭代器，否则失效。
 
 ### ㉒.4 与标准的互动：map 与标准的演进
 
-[史] `std::map` 自 C++98 稳定，C++11 引入 `emplace` / `extract`（节点句柄，可无拷贝地跨容器移动子树）；C++14 增加「透明比较器」`is_transparent`（如 `std::less<>`），允许用异构 key（如 `std::string_view`）查找而不构造临时 `std::string`；C++17 增加 `try_emplace` / `insert_or_assign`。[评] 近年 WG21 推出 `std::flat_map`（C++23），用「两个连续数组 + 排序」在缓存友好度上挑战红黑树 `map`——这是标准对「有序关联容器是否必须树结构」的首次反思。
+<span class="badge badge-history">史</span> `std::map` 自 C++98 稳定，C++11 引入 `emplace` / `extract`（节点句柄，可无拷贝地跨容器移动子树）；C++14 增加「透明比较器」`is_transparent`（如 `std::less<>`），允许用异构 key（如 `std::string_view`）查找而不构造临时 `std::string`；C++17 增加 `try_emplace` / `insert_or_assign`。<span class="badge badge-comment">评</span> 近年 WG21 推出 `std::flat_map`（C++23），用「两个连续数组 + 排序」在缓存友好度上挑战红黑树 `map`——这是标准对「有序关联容器是否必须树结构」的首次反思。
 
 - **WG21 修订链**：`std::map` 自 C++98 稳定；C++11 引入 `emplace`（避免冗余拷贝）与 **节点句柄 `extract`**（P0083R0 系列，可无拷贝地跨 `map` 移动子树）；C++14 的「透明比较器」`std::less<>`（`is_transparent`，N3657）允许用 `std::string_view` 异构查找；C++17 增加 `try_emplace` / `insert_or_assign`（P0084R2）。C++23 的 `std::flat_map`（P0429，wg21.link/P0429）则提供连续数组替代。
 - **ISO 条款**：`std::map` 规定于 ISO/IEC 14882 §24.4.4（`[map]`）。标准选择红黑树（自平衡二叉搜索树）作为底层，明确设计理由是「在 O(log N) 插入/查找的同时，**保证任意位置插入删除都不使其他迭代器失效**」——这一「迭代器稳定性」是 `map` 区别于哈希容器的核心卖点，也是节点句柄 `extract` 能在标准中立法的物理前提。
@@ -1105,13 +1105,13 @@ int main() {
 
 ## 补充分编可编译示例
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch83_map."<<std::endl;return 0;}
 ```
-> **示例 39** [难度 ★★★☆☆] [主题：补充分编可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1157,7 +1157,7 @@ _Z15probe_flat_findRKSt6vectorISt4pairIiiESaIS1_EEi:
 | 遍历 (每元素, steady_clock) | 111ns/elem | 0.44ns/elem | 252x(连续内存碾压) |
 | 内存 (N=1M `pair<int,int>`) | 38.1MB | 7.6MB | 5.0x节省 |
 
-> **示例 40** [难度 ★★★☆☆] [主题：性能数据]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能数据
 ```cpp
 // 附录 E 例：flat_map 读重场景（独立可编译；std::flat_map 即 sorted vector 封装，
 //          本例用 sorted vector + lower_bound 等价演示，免 <flat_map> 依赖）
@@ -1207,7 +1207,7 @@ _Z15probe_umap_findRKSt13unordered_mapIiiSt4hashIiESt8equal_toIiESaISt4pairIKiiE
 	mov	r11, QWORD PTR [rax+rdx*8]      ; 桶数组一次访存
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 H：map vs unorde]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：map vs unorde
 ```cpp
 #include <iostream>
 #include <map>
@@ -1268,7 +1268,7 @@ int main(){std::map<int,int> m{{1,10}};std::unordered_map<int,int> um{{1,10}};st
 - **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 有序关联容器满足双向迭代器
 - **同模块相邻**：[第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)—— set 是其键即值的同质变体
 - **同模块相邻**：[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)—— unordered_map 是其哈希无序版本
-- **同模块相邻**：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)—— list 节点式存储对比
+- **同模块相邻**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)—— list 节点式存储对比
 - **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 红黑树节点经 allocator 分配
 - **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 插入元素依赖移动语义
 
@@ -1279,7 +1279,7 @@ int main(){std::map<int,int> m{{1,10}};std::unordered_map<int,int> um{{1,10}};st
 ### 练习 1（难度 ★★）
 **真实场景：订单簿按价格区间查询——`[price_lo, price_hi]` 闭开区间遍历。** 撮合系统用有序 `map<price,orders>` 取某价位段的全部挂单，`lower_bound`/`upper_bound` 构成闭开区间，O(log n)。
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <map>
@@ -1291,14 +1291,14 @@ int main() {
 }
 ```
 
-[标准] 结论：`std::map` 按 key 有序（默认 `<`），`lower_bound(k)` 返回首个 `>=k` 的迭代器，`upper_bound(k)` 返回首个 `>k` 的，二者构成 `[3,5]` 闭开区间，复杂度 O(log n)。
+<span class="badge badge-std">标准</span> 结论：`std::map` 按 key 有序（默认 `<`），`lower_bound(k)` 返回首个 `>=k` 的迭代器，`upper_bound(k)` 返回首个 `>k` 的，二者构成 `[3,5]` 闭开区间，复杂度 O(log n)。
 
-[引用] ISO/IEC 14882:2023 §[map.ops]（`lower_bound`/`upper_bound` 的 O(log n) 区间查询）；见 cppreference "container/map" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[map.ops]（`lower_bound`/`upper_bound` 的 O(log n) 区间查询）；见 cppreference "container/map" 词条。
 
 ### 练习 2（难度 ★★★）
 **真实场景：配置表读写——`operator[]` 误插入 vs `at` 显式缺键抛异常。** 读配置项时 `[]` 的"缺则插入"副作用会污染配置；请对比 `operator[]`/`at`/`insert_or_assign` 三项语义差异。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <map>
@@ -1311,14 +1311,14 @@ int main() {
 }
 ```
 
-[标准] 结论：读多写少且 key 必存在时用 `at` 显式表达"必须存在"；`operator[]` 的"缺则插入"副作用可能导致意外插入，性能敏感路径应优先 `find`/`insert_or_assign`。
+<span class="badge badge-std">标准</span> 结论：读多写少且 key 必存在时用 `at` 显式表达"必须存在"；`operator[]` 的"缺则插入"副作用可能导致意外插入，性能敏感路径应优先 `find`/`insert_or_assign`。
 
-[引用] ISO/IEC 14882:2023 §[map.access]（`operator[]`/`at` 语义）与 §[map.modifiers]（`insert_or_assign`，C++17）；见 cppreference "container/map"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[map.access]（`operator[]`/`at` 语义）与 §[map.modifiers]（`insert_or_assign`，C++17）；见 cppreference "container/map"。
 
 ### 练习 3（难度 ★★★★）
 **真实场景：跨订单簿迁移大对象节点——不拷贝 key/value。** 把某价位整档从旧簿 `extract` 到新簿，避免大订单向量的拷贝；转移后引用仍有效。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <map>
@@ -1331,16 +1331,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`extract` 返回 `node_type` 句柄，节点从红黑树摘除但不析构；转移后引用/指针仍有效，且避免了对 key/value 的拷贝/移动，适合"重哈希"或跨容器迁移大对象。
+<span class="badge badge-std">标准</span> 结论：`extract` 返回 `node_type` 句柄，节点从红黑树摘除但不析构；转移后引用/指针仍有效，且避免了对 key/value 的拷贝/移动，适合"重哈希"或跨容器迁移大对象。
 
-[引用] ISO/IEC 14882:2023 §[container.node]（节点句柄 `node_type` 与 `extract`/`insert(node_type)`，C++17）与 §[map.modifiers]；见 cppreference "container/map" 的 node extraction 专节。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[container.node]（节点句柄 `node_type` 与 `extract`/`insert(node_type)`，C++17）与 §[map.modifiers]；见 cppreference "container/map" 的 node extraction 专节。
 
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 map 实现区间映射（interval map 简化版）
 以左闭起点为 key，查询时取"第一个大于 x 的起点"的前驱，即得 x 所属区间的值。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：演绎 1：用 map 实现区间映射]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 map 实现区间映射
 ```cpp
 #include <iostream>
 #include <map>
@@ -1359,7 +1359,7 @@ int main() {
 ### 演绎 2：map 的 O(log n) 与缓存局部性代价
 红黑树节点分散在堆上，有序遍历会发生指针跳转，缓存命中率低于连续存储的 unordered 容器。
 
-> **示例 46** [难度 ★★★☆☆] [主题：演绎 2：map 的 O 与缓存局部性代价]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：map 的 O 与缓存局部性代价
 ```cpp
 #include <iostream>
 #include <map>
@@ -1486,7 +1486,7 @@ while (__x != __root && __x->_M_parent->_M_color == _S_red)
 
 ### 4. 第一方可编译验证（观察中序有序）
 
-> **示例 47** [难度 ★★☆☆☆] [主题：第一方可编译验证（观察中序有序）]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证（观察中序有序）
 ```cpp
 #include <map>
 #include <iostream>
@@ -1700,7 +1700,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 48** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <map>

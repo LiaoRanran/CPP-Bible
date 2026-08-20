@@ -22,21 +22,21 @@
 
 > 紧接 0.2 编年最后一条（2011，C++11 移动语义让"按值返回大对象"由慢变快，反模式清单本身在演进）。
 
-- [史] **constexpr / if constexpr / concepts** 把大量"运行期才能发现的错误"与"运行期分支"前移到编译期，旧反模式（如靠宏区分平台、靠运行时 typeid 判断）被语言层面消除，反模式清单因此"瘦身"。
-- [史] **std::string_view / std::span** 让"为避免拷贝而传指针+长度"的丑陋写法退场，无所有权视图成为默认，呼应 0.1 里"不必要的临时对象、按值传大对象"被系统化解。
-- [史] C++20 **协程**带来一类新反模式：隐式堆分配、`co_await` 误用导致的伪异步、生命周期悬挂——旧清单在消除的同时，也在长出新的"坑位"，印证 0.3"反模式是嫌疑名单、不是定罪"的立场。
-- [评] 反模式清单是活文档：语言每加一个特性，既消灭一批旧坑，也埋下一批新坑；真正不变的纪律仍是 0.3"每个结论都靠测量"。
-- [轶] 圈内自嘲：每本《Effective C++》重印，都会因为新标准而划掉几节、补上几节——Meyers 若今天重写，string_view 与 move 能单独占一章。
+- <span class="badge badge-history">史</span> **constexpr / if constexpr / concepts** 把大量"运行期才能发现的错误"与"运行期分支"前移到编译期，旧反模式（如靠宏区分平台、靠运行时 typeid 判断）被语言层面消除，反模式清单因此"瘦身"。
+- <span class="badge badge-history">史</span> **std::string_view / std::span** 让"为避免拷贝而传指针+长度"的丑陋写法退场，无所有权视图成为默认，呼应 0.1 里"不必要的临时对象、按值传大对象"被系统化解。
+- <span class="badge badge-history">史</span> C++20 **协程**带来一类新反模式：隐式堆分配、`co_await` 误用导致的伪异步、生命周期悬挂——旧清单在消除的同时，也在长出新的"坑位"，印证 0.3"反模式是嫌疑名单、不是定罪"的立场。
+- <span class="badge badge-comment">评</span> 反模式清单是活文档：语言每加一个特性，既消灭一批旧坑，也埋下一批新坑；真正不变的纪律仍是 0.3"每个结论都靠测量"。
+- <span class="badge badge-anecdote">轶</span> 圈内自嘲：每本《Effective C++》重印，都会因为新标准而划掉几节、补上几节——Meyers 若今天重写，string_view 与 move 能单独占一章。
 
 > 史料来源：isocpp.org（C++17/20 特性）、github.com/isocpp/CppCoreGuidelines
 
-## ① 学习目标 [经验]
+## ① 学习目标 <span class="badge badge-exp">经验</span>
 
 识别并消除 C++ 中最常见的 13 类性能反模式，每个附 ❌/✅ 对照和可编译示例。
 
-## ② 不必要的堆分配 [经验]
+## ② 不必要的堆分配 <span class="badge badge-exp">经验</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：不必要的堆分配 [经验]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：不必要的堆分配 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -49,9 +49,9 @@ int main() {
 }
 ```
 
-## ③ 隐式拷贝与临时对象 [经验]
+## ③ 隐式拷贝与临时对象 <span class="badge badge-exp">经验</span>
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：隐式拷贝与临时对象 [经验]]
+> **示例 2** [难度 ★☆☆☆☆] [主题：隐式拷贝与临时对象 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <string>
@@ -60,9 +60,9 @@ void sink_ref(const std::string& s){} // ✅ 常量引用
 int main(){ std::string x="hello";sink_ref(x);std::cout<<x<<std::endl;return 0; }
 ```
 
-## ④ std::endl vs `'\n'` [经验]
+## ④ std::endl vs `'\n'` <span class="badge badge-exp">经验</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：std::endl 与换行刷新 [经验]]
+> **示例 3** [难度 ★☆☆☆☆] [主题：std::endl 与换行刷新 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){
@@ -72,9 +72,9 @@ int main(){
 }
 ```
 
-## ⑤ 虚函数间接调用 [经验]
+## ⑤ 虚函数间接调用 <span class="badge badge-exp">经验</span>
 
-> **示例 4** [难度 ★★★★☆] [主题：虚函数间接调用 [经验]]
+> **示例 4** [难度 ★★★★☆] [主题：虚函数间接调用 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 struct Hot{ int f(int x){return x*2;} }; // ✅ 非虚，直接调用
@@ -108,18 +108,18 @@ _Z12compute_areaRK5Shape:
 - 当编译器**无法证明**动态类型时，热路径上会多出一次 **vtable 加载 + 间接跳转**（`jmp rax`）。间接分支无法内联、破坏分支预测、且阻碍后续优化——这就是「虚函数间接调用」的机器级代价。
 - GCC 的推测去虚拟化能消去*已知*派生类型的虚调用，但只对**单实现/可被分析**的场景有效；只要多态集合在编译期不可见（动态库、跨 TU、运行时注册），间接调用就**必须**保留。所以「用 CRTP / 模板策略 / `final` 标注」去虚拟化仍是性能敏感代码的有效手段（见 ch45 对象模型、ch72 表达式模板）。
 
-## ⑥ 异常在热路径 [经验]
+## ⑥ 异常在热路径 <span class="badge badge-exp">经验</span>
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：异常在热路径 [经验]]
+> **示例 5** [难度 ★☆☆☆☆] [主题：异常在热路径 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int div_nothrow(int a,int b){ return b!=0?a/b:0; } // ✅ 不抛异常
 int main(){ std::cout<<div_nothrow(10,2)<<std::endl;return 0; }
 ```
 
-## ⑦ false sharing [经验]
+## ⑦ false sharing <span class="badge badge-exp">经验</span>
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：[经验]]
+> **示例 6** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <new>
@@ -127,9 +127,9 @@ struct alignas(64) Slot { int v; }; // ✅ cache line 隔离
 int main(){ Slot s{}; s.v=42;std::cout<<s.v<<std::endl;return 0; }
 ```
 
-## ⑧ 缓存不友好遍历 [经验]
+## ⑧ 缓存不友好遍历 <span class="badge badge-exp">经验</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：缓存不友好遍历 [经验]]
+> **示例 7** [难度 ★☆☆☆☆] [主题：缓存不友好遍历 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){
@@ -139,9 +139,9 @@ int main(){
 }
 ```
 
-## ⑨ std::regex 构造开销 [经验]
+## ⑨ std::regex 构造开销 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：构造开销 [经验]]
+> **示例 8** [难度 ★☆☆☆☆] [主题：构造开销 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <regex>
@@ -152,9 +152,9 @@ int main(){
 }
 ```
 
-## ⑩ std::function 类型擦除 [经验]
+## ⑩ std::function 类型擦除 <span class="badge badge-exp">经验</span>
 
-> **示例 9** [难度 ★★☆☆☆] [主题：类型擦除 [经验]]
+> **示例 9** [难度 ★★☆☆☆] [主题：类型擦除 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -162,9 +162,9 @@ template<typename F> void call(F&& f){f();} // ✅ 模板，零擦除开销
 int main(){call([]{std::cout<<"zero-erase\n";});return 0;}
 ```
 
-## ⑪ reserve 缺失 [经验]
+## ⑪ reserve 缺失 <span class="badge badge-exp">经验</span>
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：缺失 [经验]]
+> **示例 10** [难度 ★☆☆☆☆] [主题：缺失 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -176,9 +176,9 @@ int main(){
 }
 ```
 
-## ⑫ 移动语义未触发 [经验]
+## ⑫ 移动语义未触发 <span class="badge badge-exp">经验</span>
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：移动语义未触发 [经验]]
+> **示例 11** [难度 ★☆☆☆☆] [主题：移动语义未触发 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -193,9 +193,9 @@ int main(){
 }
 ```
 
-## ⑬ 过度模板实例化 [经验]
+## ⑬ 过度模板实例化 <span class="badge badge-exp">经验</span>
 
-> **示例 12** [难度 ★★★☆☆] [主题：过度模板实例化 [经验]]
+> **示例 12** [难度 ★★★☆☆] [主题：过度模板实例化 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 template<int N> struct Fact{static constexpr int v=N*Fact<N-1>::v;};
@@ -203,9 +203,9 @@ template<> struct Fact<0>{static constexpr int v=1;};
 int main(){ std::cout<<Fact<5>::v<<std::endl;return 0; }
 ```
 
-## ⑭ 分支预测失败 [经验]
+## ⑭ 分支预测失败 <span class="badge badge-exp">经验</span>
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：分支预测失败 [经验]]
+> **示例 13** [难度 ★☆☆☆☆] [主题：分支预测失败 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -213,7 +213,7 @@ int main(){ std::cout<<Fact<5>::v<<std::endl;return 0; }
 int main(){std::vector<int>v(10000);for(int i=0;i<10000;++i)v[i]=i%2;std::sort(v.begin(),v.end());std::cout<<"sorted\n";return 0;}
 ```
 
-## ⑮ 跨语言对比 [经验]
+## ⑮ 跨语言对比 <span class="badge badge-exp">经验</span>
 
 | 语言 | 反模式等价 |
 |---|---|
@@ -222,15 +222,15 @@ int main(){std::vector<int>v(10000);for(int i=0;i<10000;++i)v[i]=i%2;std::sort(v
 | Go | defer 热路径、interface{} boxing、GC pressure |
 | Java | auto-boxing、String concatenation、unnecessary synchronization |
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：跨语言对比 [经验]]
+> **示例 14** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Cross-language: all languages have unique perf pitfalls.\n";return 0;}
 ```
 
-## ⑯ WG21 与标准演进 [标准]
+## ⑯ WG21 与标准演进 <span class="badge badge-std">标准</span>
 
-> **示例 15** [难度 ★★☆☆☆] [主题：与标准演进 [标准]]
+> **示例 15** [难度 ★★☆☆☆] [主题：与标准演进 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑯ 标准中消除性能反模式的关键提案
 #include <iostream>
@@ -247,9 +247,9 @@ int main() {
 }
 ```
 
-## ⑰ FAQ：性能诊断实战 [经验]
+## ⑰ FAQ：性能诊断实战 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★☆☆☆] [主题：性能诊断实战 [经验]]
+> **示例 16** [难度 ★★☆☆☆] [主题：性能诊断实战 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 性能反模式的诊断与修复问答
 #include <iostream>
@@ -269,9 +269,9 @@ int main() {
 }
 ```
 
-## ⑱ 最佳实践总结 [经验]
+## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 [经验]]
+> **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 性能优化的 6 条铁律
 #include <iostream>
@@ -311,9 +311,9 @@ int main() {
 }
 ```
 
-## ⑲ 性能数据参考：反模式代价量化 [经验]
+## ⑲ 性能数据参考：反模式代价量化 <span class="badge badge-exp">经验</span>
 
-> **示例 18** [难度 ★★☆☆☆] [主题：性能数据参考：反模式代价量化 [经验]
+> **示例 18** [难度 ★★☆☆☆] [主题：性能数据参考：反模式代价量化 <span class="badge badge-exp">经验</span>
 ```cpp
 // ⑲ 常见反模式的量化性能数据
 #include <iostream>
@@ -338,25 +338,25 @@ int main() {
 }
 ```
 
-## ⑳ 源码阅读路线 [经验]
+## ⑳ 源码阅读路线 <span class="badge badge-exp">经验</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：在热循环里按值传大结构体（无谓拷贝），你改成 `const&`。** 你定位性能陷阱。请说明。
-   - [标准] 按值传递会触发拷贝构造（可能深拷贝资源）；大对象按 `const` 引用避免拷贝。
-   - [引用] ISO/IEC 14882:2023 §[class.copy.ctor]（拷贝构造）/ [dcl.fct]（传参语义）；cppreference "Argument passing" 词条。
+   - <span class="badge badge-std">标准</span> 按值传递会触发拷贝构造（可能深拷贝资源）；大对象按 `const` 引用避免拷贝。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy.ctor]（拷贝构造）/ [dcl.fct]（传参语义）；cppreference "Argument passing" 词条。
 
 2. **真实场景：误用 `std::endl` 每次强制 flush，拖慢大量输出。** 你改成 `'
 '`。请说明。
-   - [标准] `std::endl` 写入换行并刷新输出流（`flush`）；`'
+   - <span class="badge badge-std">标准</span> `std::endl` 写入换行并刷新输出流（`flush`）；`'
 '` 仅写入换行，批量更优。
-   - [引用] ISO/IEC 14882:2023 §[ostream]（operator<< 与 endl）/ [streambuf]；cppreference "std::endl" 词条。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[ostream]（operator<< 与 endl）/ [streambuf]；cppreference "std::endl" 词条。
 
 3. **真实场景：在循环里反复 `new`/`delete` 造成碎片与系统调用开销，你改为内存池/栈分配。** 你优化分配器。请说明。
-   - [标准] 动态分配（`new`/`delete`）由实现提供，频繁调用有成本；可用定制分配器或 arena 降低。
-   - [引用] ISO/IEC 14882:2023 §[basic.stc.dynamic] / [new.delete]（动态存储）/ [allocator.requirements]（定制分配器）；cppreference。
+   - <span class="badge badge-std">标准</span> 动态分配（`new`/`delete`）由实现提供，频繁调用有成本；可用定制分配器或 arena 降低。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.dynamic] / [new.delete]（动态存储）/ [allocator.requirements]（定制分配器）；cppreference。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：源码阅读路线 [经验]]
+> **示例 19** [难度 ★★☆☆☆] [主题：源码阅读路线 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑳ 学习性能优化的开源项目阅读路线
 #include <iostream>
@@ -382,54 +382,54 @@ int main() {
 
 ## 补充完整可编译示例
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <array>
 int main(){ std::array<int,10> a{}; a[0]=1;std::cout<<a[0]<<std::endl;return 0; }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <cstring>
 int main(){ char buf[128]; std::strcpy(buf,"stack");std::cout<<buf<<std::endl;return 0; }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){ for(int i=0;i<1000;++i); std::cout<<"no std::endl flush\n";return 0; }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 struct Direct{ int val()const{return 42;} };
 int main(){Direct d;std::cout<<d.val()<<std::endl;return 0;}
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int safe_div(int a,int b){if(b==0)return 0;return a/b;}
 int main(){std::cout<<safe_div(10,2)<<std::endl;return 0;}
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <new>
 int main(){std::cout<<"constexpr size="<<std::hardware_destructive_interference_size<<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){int a[4][4];for(int i=0;i<4;++i)for(int j=0;j<4;++j)a[i][j]=i+j;std::cout<<a[0][0]<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <string>
@@ -437,21 +437,21 @@ int simple_match(const std::string& s,const std::string& pat){return s.find(pat)
 int main(){std::cout<<simple_match("hello","ell")<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 void call_lambda(void(*f)()){f();}
 int main(){call_lambda([]{std::cout<<"fnptr\n";});return 0;}
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v;v.reserve(50);for(int i=0;i<50;++i)v.push_back(i);std::cout<<v.size()<<std::endl;return 0;}
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -460,7 +460,7 @@ struct Movable{int* p=nullptr;Movable(int x):p(new int(x)){}~Movable(){delete p;
 int main(){std::vector<Movable> v;v.push_back(Movable{42});std::cout<<v[0].get()<<std::endl;return 0;}
 ```
 
-> **示例 31** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 template<int N>constexpr int fib(){return fib<N-1>()+fib<N-2>();}
@@ -469,19 +469,19 @@ template<> constexpr int fib<1>(){return 1;}
 int main(){std::cout<<fib<10>()<<std::endl;return 0;}
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){int x;std::cin>>x;std::cout<<x*2<<std::endl;return 0;}
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){std::cout<<"branch prediction: [[likely]]/[[unlikely]] hints\n";return 0;}
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -489,14 +489,14 @@ int sum(const std::vector<int>& v){int s=0;for(int x:v)s+=x;return s;}
 int main(){std::vector<int> v{1,2,3,4,5};std::cout<<sum(v)<<std::endl;return 0;}
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int abs_branchless(int x){int m=x>>31;return(x^m)-m;}
 int main(){std::cout<<abs_branchless(-99)<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
@@ -507,7 +507,7 @@ int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：性能反模式被"点名"的由来
-[史] C++ 性能反模式长期散落在 Scott Meyers《Effective STL》《More Effective C++》与各路大会演讲里；现代最系统的汇编是 **C++ Core Guidelines 的 "Per"（Performance）章节**，把"隐式拷贝、虚调用、类型擦除、false sharing"等逐一列为规则并配 clang-tidy 检查。[史] Chandler Carruth（LLVM/Google）在 CppCon 的系列演讲把"为什么 `std::endl` 慢、`std::function` 有代价"讲成可量化常识（见 ④⑩）。[评] 反模式清单是"前人踩坑的复利"——它把个人经验变成团队可执行的纪律。
+<span class="badge badge-history">史</span> C++ 性能反模式长期散落在 Scott Meyers《Effective STL》《More Effective C++》与各路大会演讲里；现代最系统的汇编是 **C++ Core Guidelines 的 "Per"（Performance）章节**，把"隐式拷贝、虚调用、类型擦除、false sharing"等逐一列为规则并配 clang-tidy 检查。<span class="badge badge-history">史</span> Chandler Carruth（LLVM/Google）在 CppCon 的系列演讲把"为什么 `std::endl` 慢、`std::function` 有代价"讲成可量化常识（见 ④⑩）。<span class="badge badge-comment">评</span> 反模式清单是"前人踩坑的复利"——它把个人经验变成团队可执行的纪律。
 
 ### ㉒.2 真实工程坐标：反模式藏在哪些地方
 
@@ -518,7 +518,7 @@ int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 | 大型 C++ 库（普遍） | 热路径隐式拷贝 / `reserve` 缺失 / 虚函数间接 | 反模式高发地 | 几乎每个大库 | 隐式成本最易被忽视 |
 | 游戏 / 引擎 | 每帧预算敏感，ECS/SoA 规避 AoS 缓存反模式 | 反模式直接体现在帧时间 | 实时帧预算 | ECS/SoA 即解药 |
 | 高频交易 | 类型擦除 / 堆分配即禁区 | 反模式清单 = 生存底线 | 低延迟命脉 | 任一堆分配都不可接受 |
-| 标准库实现 | libstdc++ / libc++ 主动规避（如 `std::string` SSO） | 自身维护性能 | 标准库标杆 | [IMPLEMENTATION] SSO 是标准库刻意优化 |
+| 标准库实现 | libstdc++ / libc++ 主动规避（如 `std::string` SSO） | 自身维护性能 | 标准库标杆 | <span class="badge badge-impl">IMPLEMENTATION</span> SSO 是标准库刻意优化 |
 | 真实反模式现场 | `std::endl` 刷缓冲 / `std::string` 拼接临时 / `std::map` 当扁平表 / 异常当控制流 / 虚假共享写原子 | 典型错误集合 | 教学与排查清单 | `endl` 应改 `'\n'`；map 换 flat_map |
 | 基准陷阱 | 没预热 / 被 DCE 优化掉 / 没固定 CPU 频率 / 测调试构建 | 测出假数字 | 基准必避 | 假数字比没数字更害人 |
 
@@ -536,9 +536,9 @@ int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 - **false sharing**：跨线程相邻字段互相 invalidate（见 ⑦，关联第143章）。
 
 ### ㉒.4 与标准的互动：标准特性如何"防"反模式
-C++11 起的标准持续提供反模式的"正解"：`std::move`（避免拷贝）、`emplace_back`（避免临时）、`std::string_view`/`std::span`（零拷贝视图）、`reserve`/`shrink_to_fit`、以及 `constexpr`/内联让编译器能消除间接调用。[评] 反模式多发生在"用了旧习惯、没用新设施"——标准给了解药，缺的是纪律。
+C++11 起的标准持续提供反模式的"正解"：`std::move`（避免拷贝）、`emplace_back`（避免临时）、`std::string_view`/`std::span`（零拷贝视图）、`reserve`/`shrink_to_fit`、以及 `constexpr`/内联让编译器能消除间接调用。<span class="badge badge-comment">评</span> 反模式多发生在"用了旧习惯、没用新设施"——标准给了解药，缺的是纪律。
 
-**修订链补强（反模式与标准保证边界）**：许多“反模式”之所以是反模式，是因为它们踩了 [STANDARD]/[IMPLEMENTATION] 的保证边界：例如 `std::endl` 的“刷新”语义由标准规定（[ostream]/[filebuf]），因此比 `\n'` 多一次 `flush()` 系统调用；`std::map` 的 O(log n) 与节点分配由 [associative.reqmts] 决定，替代为 `std::vector`+二分或 `std::unordered_map` 是 [MICROARCHITECTURE] 层的 cache 友好性选择，标准不保证但经验成立。识别反模式本质是“知道标准保证什么、实现会怎么利用 as-if 规则”。
+**修订链补强（反模式与标准保证边界）**：许多“反模式”之所以是反模式，是因为它们踩了 <span class="badge badge-std">STANDARD</span>/<span class="badge badge-impl">IMPLEMENTATION</span> 的保证边界：例如 `std::endl` 的“刷新”语义由标准规定（[ostream]/[filebuf]），因此比 `\n'` 多一次 `flush()` 系统调用；`std::map` 的 O(log n) 与节点分配由 [associative.reqmts] 决定，替代为 `std::vector`+二分或 `std::unordered_map` 是 <span class="badge badge-microarch">MICROARCHITECTURE</span> 层的 cache 友好性选择，标准不保证但经验成立。识别反模式本质是“知道标准保证什么、实现会怎么利用 as-if 规则”。
 
 ### ㉒.5 权威引用
 - [C++ Core Guidelines — Per（性能规则）](https://isocpp.github.io/CppCoreGuidelines/#S-performance) — 反模式的系统汇编与检查项
@@ -561,13 +561,13 @@ C++11 起的标准持续提供反模式的"正解"：`std::move`（避免拷贝�
 | regex重复编译 | ~1us/次 | static const |
 | std::function hot | 32B erase | template param |
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录: 反模式代价速查与修复]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 反模式代价速查与修复
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Profile first, fix only hot path. 80% of antipatterns are harmless outside critical path.\n";return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: 反模式代价速查与修复]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 反模式代价速查与修复
 ```cpp
 #include <iostream>
 #include <vector>
@@ -624,7 +624,7 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 
 `" " + to_string(i)` 每次都构造临时 `std::string` 并分配；反复拼接触发多次重分配与拷贝。预先 `reserve` 并直接 `+=` 可复用同一缓冲区，避免冗余分配。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <string>
 #include <iostream>
@@ -637,9 +637,9 @@ int main() {
 }
 ```
 
-[标准] `std::string` 的 `operator+` 产生新对象（[string.concat]）；`reserve` 预保留容量（[string.capacity]）。
+<span class="badge badge-std">标准</span> `std::string` 的 `operator+` 产生新对象（[string.concat]）；`reserve` 预保留容量（[string.capacity]）。
 
-[引用] C++ Core Guidelines R.14/K.1（避免不必要分配）；Chromium `base::` 的内存纪律 <https://github.com/chromium/chromium>；Abseil 字符串建议 <https://abseil.io/tips>。
+<span class="badge badge-ref">引用</span> C++ Core Guidelines R.14/K.1（避免不必要分配）；Chromium `base::` 的内存纪律 <https://github.com/chromium/chromium>；Abseil 字符串建议 <https://abseil.io/tips>。
 
 </details>
 
@@ -651,7 +651,7 @@ int main() {
 
 `std::vector` 元素连续，预取器与缓存行高效；`std::list` 节点各自 `new`，遍历是随机访存，几乎每次都 miss。这就是"盲目用链表"反模式。
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <list>
 #include <vector>
@@ -665,9 +665,9 @@ int main() {
 }
 ```
 
-[标准] 容器遍历语义相同，但内存布局影响实测性能；标准不规定节点分配策略。
+<span class="badge badge-std">标准</span> 容器遍历语义相同，但内存布局影响实测性能；标准不规定节点分配策略。
 
-[引用] 缓存友好容器对比见 Abseil `InlinedVector` <https://github.com/abseil/abseil-cpp>；Redis `ziplist`/`listpack` 紧凑编码反例 <https://github.com/redis/redis>。
+<span class="badge badge-ref">引用</span> 缓存友好容器对比见 Abseil `InlinedVector` <https://github.com/abseil/abseil-cpp>；Redis `ziplist`/`listpack` 紧凑编码反例 <https://github.com/redis/redis>。
 
 </details>
 
@@ -679,7 +679,7 @@ int main() {
 
 单实现的虚函数几乎必然是去虚化（devirtualize）的好候选：标 `final` 或改用模板/CRTP 让编译器静态决议，消除 `vcall`，从而允许内联与后续常量传播。
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 struct Base { virtual ~Base() = default; virtual int f(int x) const { return x * 2; } };
@@ -687,9 +687,9 @@ struct Der : Base { int f(int x) const final override { return x * 2; } };  // f
 int main() { Der d; std::cout << d.f(21) << '\n'; }
 ```
 
-[标准] 虚调用经 vtable 间接跳转（[class.virtual]）；`final`/单实现帮助优化器静态决议。`noexcept` 移动同理影响容器选择（见 ch157 练习 3）。
+<span class="badge badge-std">标准</span> 虚调用经 vtable 间接跳转（[class.virtual]）；`final`/单实现帮助优化器静态决议。`noexcept` 移动同理影响容器选择（见 ch157 练习 3）。
 
-[引用] LLVM 去虚化 <https://llvm.org/docs/Passes.html>；对照 ch157 在 <https://godbolt.org/> 查汇编是否仍存在 `call`/vcall；Intel TBB 的静态多态实践 <https://github.com/oneapi-src/oneTBB>。
+<span class="badge badge-ref">引用</span> LLVM 去虚化 <https://llvm.org/docs/Passes.html>；对照 ch157 在 <https://godbolt.org/> 查汇编是否仍存在 `call`/vcall；Intel TBB 的静态多态实践 <https://github.com/oneapi-src/oneTBB>。
 
 </details>
 
@@ -900,7 +900,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 42** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <vector>

@@ -19,24 +19,24 @@
 > 一个在 C 里"沉睡"了三十年的关键字，被 C++11 复活成类型推导的发动机。
 
 ### 0.1 起源（谁·何时·为何）
-`auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"（默认就是栈变量），几乎无人使用，形同废字。[史] C++11 把它"劫持"为重用途：让编译器从初始化器推导变量类型——直接动机是 lambda 闭包类型、模板返回类型等根本无法手写的场景。[史][评] `decltype` 同期引入，用于"问我一个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。[史]
+`auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"（默认就是栈变量），几乎无人使用，形同废字。<span class="badge badge-history">史</span> C++11 把它"劫持"为重用途：让编译器从初始化器推导变量类型——直接动机是 lambda 闭包类型、模板返回类型等根本无法手写的场景。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> `decltype` 同期引入，用于"问我一个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **C++11**：`auto` 变量 + 尾置返回类型 `auto f() -> decltype(...)`；`decltype` 入标准。[史]
-- **C++14**：泛型 lambda（`auto` 参数）、`decltype(auto)` 保留引用性。[史]
-- **C++20**：`auto` 在概念约束 `auto x requires ...`、结构化绑定中进一步深化。[史]
+- **C++11**：`auto` 变量 + 尾置返回类型 `auto f() -> decltype(...)`；`decltype` 入标准。<span class="badge badge-history">史</span>
+- **C++14**：泛型 lambda（`auto` 参数）、`decltype(auto)` 保留引用性。<span class="badge badge-history">史</span>
+- **C++20**：`auto` 在概念约束 `auto x requires ...`、结构化绑定中进一步深化。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委员会判断"几乎没人用 `auto` 当存储类"，风险可忽略，于是重用了这个被遗忘的关键字而非造新词。[史][评] 另一争点是 `auto` 是否应默认带 `const` / 引用——结论是不，保持"按值推导"，`decltype(auto)` 才保留 cv / 引用。[史]
+C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委员会判断"几乎没人用 `auto` 当存储类"，风险可忽略，于是重用了这个被遗忘的关键字而非造新词。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 另一争点是 `auto` 是否应默认带 `const` / 引用——结论是不，保持"按值推导"，`decltype(auto)` 才保留 cv / 引用。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++20 把 `auto` 推进到概念约束与结构化绑定。同年还有两项"auto 作为推导发动机"的关键落子。[史]
+0.2 停在 C++20 把 `auto` 推进到概念约束与结构化绑定。同年还有两项"auto 作为推导发动机"的关键落子。<span class="badge badge-history">史</span>
 
-- **C++20 缩写函数模板（abbreviated function templates, P1141）**：`void f(auto x)` 等价于一个单参数模板，让"泛型函数"不再需要 `template<typename T>` 前缀，并与概念约束 `void f(C auto x)` 直接结合，是 `auto` 从"变量推导"跃迁到"函数签名"的标志。[史]
-- **C++20 模板形参 lambda（`[]<typename T>(T x){...}`）**：lambda 第一次能显式写出模板形参，配合泛型 lambda 补上"需要在闭包内做显式特化 / 重载"的能力。[史]
-- **C++23 显式对象形参（`this auto&& self`）复用转发引用**：成员函数用 `auto&&` 接 `*this`，本质是 0.1 那条"auto 复活为推导发动机"在成员函数上的回响。[史]
-- **行业落地与争议**：`auto` 在范围 for、泛型算法中几乎成为现代 C++ 默认写法，Boost / Ranges 全面采用；但"auto 掩盖真实类型、拖慢可读性"的批评长期存在，Core Guidelines 建议对 `int` 等普通类型显式写出。[史][评]
+- **C++20 缩写函数模板（abbreviated function templates, P1141）**：`void f(auto x)` 等价于一个单参数模板，让"泛型函数"不再需要 `template<typename T>` 前缀，并与概念约束 `void f(C auto x)` 直接结合，是 `auto` 从"变量推导"跃迁到"函数签名"的标志。<span class="badge badge-history">史</span>
+- **C++20 模板形参 lambda（`[]<typename T>(T x){...}`）**：lambda 第一次能显式写出模板形参，配合泛型 lambda 补上"需要在闭包内做显式特化 / 重载"的能力。<span class="badge badge-history">史</span>
+- **C++23 显式对象形参（`this auto&& self`）复用转发引用**：成员函数用 `auto&&` 接 `*this`，本质是 0.1 那条"auto 复活为推导发动机"在成员函数上的回响。<span class="badge badge-history">史</span>
+- **行业落地与争议**：`auto` 在范围 for、泛型算法中几乎成为现代 C++ 默认写法，Boost / Ranges 全面采用；但"auto 掩盖真实类型、拖慢可读性"的批评长期存在，Core Guidelines 建议对 `int` 等普通类型显式写出。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/auto ｜ https://en.cppreference.com/w/cpp/language/lambda ｜ https://en.cppreference.com/w/cpp/language/function
 
@@ -79,7 +79,7 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 
 ## ④ 知识图谱
 
-> **示例 1** [难度 ★★★☆☆] [主题：知识图谱]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱
 ```
                           ┌─ auto 变量 (C++11)
                           ├─ auto& / const auto& / auto&& (引用/转发)
@@ -125,7 +125,7 @@ flowchart TD
 
 ## ⑥ 内存图
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图
 ```
 栈帧 f():
 +-------------------+        +----------------------+
@@ -142,7 +142,7 @@ flowchart TD
    std::forward<decltype(u)>(u)  保持值类别
 ```
 
-内存要点：`auto`（非引用）总是产生**独立对象**，发生拷贝/移动；`auto&`/`auto&&` 只是绑定，不产生新存储。`const auto&` 绑定到临时时会延长该临时量的生命期至引用作用域结束（[标准] 临时量生命期规则）。
+内存要点：`auto`（非引用）总是产生**独立对象**，发生拷贝/移动；`auto&`/`auto&&` 只是绑定，不产生新存储。`const auto&` 绑定到临时时会延长该临时量的生命期至引用作用域结束（<span class="badge badge-std">标准</span> 临时量生命期规则）。
 
 ---
 
@@ -158,7 +158,7 @@ flowchart TD
 
 ## ⑧ 调用栈
 
-> **示例 3** [难度 ★★☆☆☆] [主题：调用栈]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈
 ```
 main()
  └─ make()                 // C++14 auto 返回工厂
@@ -221,7 +221,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.1 `std::declval`（文件 `type_traits`，行 1004-1015）
 
-> **示例 4** [难度 ★★★☆☆] [主题：std::declval]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::declval
 ```cpp
 // type_traits:1004
   /// @cond undocumented
@@ -245,7 +245,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.2 `std::invoke_result`（文件 `type_traits`，行 3283-3297）
 
-> **示例 5** [难度 ★★★☆☆] [主题：std::invokeresult]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::invokeresult
 ```cpp
 // type_traits:3283
   /// std::invoke_result                    // 3283
@@ -273,7 +273,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.3 `std::invoke`（文件 `functional`，行 117-124）
 
-> **示例 6** [难度 ★★★☆☆] [主题：std::invoke]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::invoke
 ```cpp
 #include <utility>
 // functional:117
@@ -294,7 +294,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.4 内部 `__invoke` / `__invoke_impl`（文件 `bits/invoke.h`，行 60-101）
 
-> **示例 7** [难度 ★★★☆☆] [主题：内部 invoke / invoke]
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内部 invoke / invoke
 ```cpp
 #include <utility>
 // bits/invoke.h:60
@@ -347,7 +347,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 | P1141 | 2018 | 缩写函数模板（普通函数 `auto` 参数） | C++20 |
 | P0832 | 2019 | `auto` 在 `new` 表达式中（C++20 放宽） | C++20 |
 
-**[标准]** `auto` 推导规则定义于 `[dcl.spec.auto]`；`decltype` 规则定义于 `[dcl.type.decltype]`；`{}` 特例见 `[dcl.type.auto.deduct]`。
+**<span class="badge badge-std">标准</span>** `auto` 推导规则定义于 `[dcl.spec.auto]`；`decltype` 规则定义于 `[dcl.type.decltype]`；`{}` 特例见 `[dcl.type.auto.deduct]`。
 
 ---
 
@@ -379,7 +379,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 **Q：`auto` 比显式类型慢吗？** A：否。`auto` 纯粹是编译期类型推导，零运行时开销（microbenchmark 见「性能」节）。
 
-**Q：为什么 `auto x = {1,2};` 是 `initializer_list` 而 `auto x = 1;` 是 `int`？** A：`{}` 是 C++ 为统一初始化单独规定的 `auto` 特例（[标准] `[dcl.type.auto.deduct]`），目的是让 `auto` 能自然地持有初始化列表；模板推导刻意不做此推断以保留 `f({...})` 的歧义报错语义。
+**Q：为什么 `auto x = {1,2};` 是 `initializer_list` 而 `auto x = 1;` 是 `int`？** A：`{}` 是 C++ 为统一初始化单独规定的 `auto` 特例（<span class="badge badge-std">标准</span> `[dcl.type.auto.deduct]`），目的是让 `auto` 能自然地持有初始化列表；模板推导刻意不做此推断以保留 `f({...})` 的歧义报错语义。
 
 **Q：`decltype(auto)` 能用于变量吗？** A：可以，`decltype(auto) x = expr;` 让 `x` 的类型精确等于 `decltype(expr)`，常用于「我想原样保留 expr 的值类别/cv/引用」。
 
@@ -405,7 +405,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 18.1 `auto` 变量 vs 显式类型（证明零开销）
 
-> **示例 8** [难度 ★★☆☆☆] [主题：auto 变量 vs 显式类型]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto 变量 vs 显式类型
 ```cpp
 // bm_auto_zero_overhead.cpp  (Google Benchmark)
 #include <benchmark/benchmark.h>
@@ -434,7 +434,7 @@ BENCHMARK(BM_ExplicitVar);
 
 ### 18.2 `decltype(auto)` 转发函数开销
 
-> **示例 9** [难度 ★★★☆☆] [主题：decltype(auto) 转发函]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · decltype(auto) 转发函
 ```cpp
 // bm_decltype_auto_forward.cpp
 #include <benchmark/benchmark.h>
@@ -487,16 +487,16 @@ BENCHMARK(BM_DecltypeAutoForward);
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：模板工厂返回类型推导。** `auto make() { return Widget{}; }` 用 `auto` 返回。请对比 `decltype(auto)` 如何保留引用/值类别。
-   - [标准] `auto` 按值推导会剥离引用与顶层 const；`decltype(auto)` 采用 decltype 规则保留引用类别。
-   - [引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（占位类型）；cppreference "auto" 与 "decltype" 词条。
+   - <span class="badge badge-std">标准</span> `auto` 按值推导会剥离引用与顶层 const；`decltype(auto)` 采用 decltype 规则保留引用类别。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.spec.auto]（占位类型）；cppreference "auto" 与 "decltype" 词条。
 
 2. **真实场景：完美转发中的 decltype。** 泛型代码中 `decltype((x))` 区分左值/右值引用。请解释 `decltype((x))` 与 `decltype(x)` 的区别。
-   - [标准] `decltype((e))` 对左值表达式得 `T&`、对右值表达式得 `T&&`；`decltype(e)` 对变量得其声明类型。
-   - [引用] ISO/IEC 14882:2023 §[dcl.type.decltype]（decltype 说明符）；cppreference "decltype" 词条。
+   - <span class="badge badge-std">标准</span> `decltype((e))` 对左值表达式得 `T&`、对右值表达式得 `T&&`；`decltype(e)` 对变量得其声明类型。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.type.decltype]（decltype 说明符）；cppreference "decltype" 词条。
 
 3. **真实场景：结构化绑定。** `auto [a,b] = std::make_pair(1, 2.0);` 用 `auto` 推导各成员。请说明结构化绑定对 `std::tuple` / `std::map` 迭代的便利。
-   - [标准] 结构化绑定声明将名字绑定到元组/数组/带 public 数据成员的对象的分量。
-   - [引用] ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定声明）；cppreference "Structured binding" 词条。
+   - <span class="badge badge-std">标准</span> 结构化绑定声明将名字绑定到元组/数组/带 public 数据成员的对象的分量。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定声明）；cppreference "Structured binding" 词条。
 
 > libstdc++ 描述基于**真实源码**（见「源码分析」）。libc++ 与 MS STL 为 **[实现-推断]**（本机未安装，按公开知识描述，未编造路径）。
 
@@ -568,21 +568,21 @@ BENCHMARK(BM_DecltypeAutoForward);
 - **工程应用**：`auto sz = v.size();`、`for (auto it = m.begin(); ...)`。
 - **真实源码**：`auto` 为语言特性，标准库无对应源码；编译器前端实现（见阅读路线）。
 - **错误示例**：
-> **示例 10** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 非引用推导规则
   ```cpp
   int a[10]; auto p = a;   // p 是 int*（退化），不是 int(&)[10]
   void f();   auto q = f;   // q 是 void(*)(void)，不是函数类型
   const int c = 1; auto x = c; // x 是 int（顶层 const 丢失）
 ```
 - **正确示例**：
-> **示例 11** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 非引用推导规则
   ```cpp
   int a[10]; auto p = a;          // int*，符合退化预期
   const int c = 1; const auto x = c; // 显式保留 const
 ```
 - **≥10 个例子**：ex01, ex02, ex39, ex26, ex34, ex35, ex36, ex27, ex06, ex37, ex40。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：auto 非引用推导规则]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex01_auto_basic.cpp —— auto 基本推导
 #include <type_traits>
@@ -598,7 +598,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★★★☆☆] [主题：auto 非引用推导规则]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex02_auto_reference_loss.cpp —— auto 丢失引用（陷阱演示）
 #include <type_traits>
@@ -614,7 +614,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：auto 非引用推导规则]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex39_cv_preservation.cpp —— 顶层 cv 丢失 vs 显式保留
 #include <type_traits>
@@ -627,7 +627,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：auto 非引用推导规则]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex26_factory_unique_ptr.cpp —— 工厂返回 auto 接收（工业）
 #include <memory>
@@ -639,7 +639,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★★★☆☆] [主题：auto 非引用推导规则]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex34_type_traits_declval.cpp —— declval 在 traits 中的工业用法
 #include <type_traits>
@@ -658,7 +658,7 @@ static_assert(!has_size<int>::value);
 int main() {}
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：auto 非引用推导规则]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex35_invoke_result_usage.cpp —— 用 invoke_result_t 提取返回类型
 #include <type_traits>
@@ -670,7 +670,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex36_invoke_example.cpp —— std::invoke（真实源码 functional:117）
 #include <functional>
@@ -685,7 +685,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex27_structured_bindings_auto.cpp —— C++17 结构化绑定 + auto
 #include <map>
@@ -697,7 +697,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★★★☆] [主题：auto 非引用推导规则]
+> **示例 20** <span class="badge badge-exp">难度 ★★★★☆</span> · auto 非引用推导规则
 ```cpp
 // ex06_template_brace_fail.cpp —— 模板 T+{} 不推导 initializer_list（对比 auto）
 #include <initializer_list>
@@ -710,7 +710,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：auto 非引用推导规则]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex37_perfect_forward_factory.cpp —— 转发工厂（综合）
 #include <memory>
@@ -722,7 +722,7 @@ auto make_resource(Args&&... a) {        // C++14 auto 返回
 int main() { auto p = make_resource<int>(5); (void)p; }
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：auto 非引用推导规则]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto 非引用推导规则
 ```cpp
 // ex40_common_type_like.cpp —— auto 在泛型算法中的类型推导
 #include <type_traits>
@@ -763,19 +763,19 @@ int main() {
 - **工程应用**：`for (const auto& x : bigVec)` 避免拷贝大对象。
 - **真实源码**：语言特性；无 STL 源码。
 - **错误示例**：
-> **示例 23** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
   ```cpp
   int f(); auto& r = f();   // 错误：不能把非 const 左值引用绑到右值
 ```
 - **正确示例**：
-> **示例 24** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
   ```cpp
   int f(); const auto& r = f();  // OK，延长临时生命期
   auto&& u = f();                 // OK，u 为 int&&
 ```
 - **≥10 个例子**：ex03, ex04, ex21, ex22, ex24, ex38, ex28, ex29, ex30, ex18。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
 ```cpp
 // ex03_const_auto_ref.cpp —— const auto& 避免大对象拷贝
 #include <string>
@@ -789,7 +789,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★★★☆☆] [主题：auto& / const auto]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto
 ```cpp
 // ex04_auto_forwarding_ref.cpp —— auto&& 转发引用
 #include <type_traits>
@@ -802,7 +802,7 @@ void sink(T&& x) {                  // 转发引用
 int main() { int i=0; sink(i); sink(0); }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
 ```cpp
 // ex21_range_for_auto.cpp —— auto 范围 for（值拷贝）
 #include <vector>
@@ -814,7 +814,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
 ```cpp
 // ex22_range_for_auto_ref.cpp —— auto& 范围 for（原地修改）
 #include <vector>
@@ -826,7 +826,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
 ```cpp
 // ex24_vector_bool_autoref_fail.cpp —— vector<bool> proxy 不能绑 auto&
 #include <vector>
@@ -838,7 +838,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
 ```cpp
 // ex38_auto_ref_proxy_range.cpp —— auto&& 遍历 proxy 容器（推荐）
 #include <vector>
@@ -850,7 +850,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：auto& / const auto]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
 ```cpp
 // ex28_generic_lambda_auto.cpp —— C++14 generic lambda（auto 参数）
 #include <iostream>
@@ -860,7 +860,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：auto& / const auto]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto& / const auto
 ```cpp
 // ex29_auto_param_new.cpp —— C++20 普通函数 auto 参数（缩写模板）
 #include <iostream>
@@ -869,7 +869,7 @@ auto twice(auto x) { return x + x; }  // 等价于 template<class T> auto twice(
 int main() { std::cout << twice(3) << twice(std::string{"ab"}); }
 ```
 
-> **示例 33** [难度 ★★★☆☆] [主题：auto& / const auto]
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto
 ```cpp
 // ex30_auto_concept_requires.cpp —— C++20 concepts + auto 参数
 #include <concepts>
@@ -878,7 +878,7 @@ void print(std::integral auto x) { std::cout << x; } // 受约束缩写模板
 int main() { print(42); /* print(3.0); 错误：非 integral */ }
 ```
 
-> **示例 34** [难度 ★★★☆☆] [主题：auto& / const auto]
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto
 ```cpp
 // ex18_abbreviated_concept.cpp —— 缩写函数模板 + 多 auto 参数
 #include <concepts>
@@ -914,13 +914,13 @@ int main() { std::cout << add(2, 3); }
 - **工程应用**：`auto il = {1,2,3};` 极少直接写；陷阱多（见最佳实践 5）。
 - **真实源码**：`<initializer_list>`（libstdc++）定义 `std::initializer_list`（**真实存在**，行略；本书未贴全行，仅说明语义）。
 - **错误示例**：
-> **示例 35** [难度 ★☆☆☆☆] [主题：auto + { } → std::]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto + { } → std::
   ```cpp
   auto x{1,2};   // 错误（C++17 起, direct-init 多元素）
   auto y = {1, 2.0}; // 错误：元素类型不一致
 ```
 - **正确示例**：
-> **示例 36** [难度 ★☆☆☆☆] [主题：auto + { } → std::]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto + { } → std::
   ```cpp
 #include <initializer_list>
 #include <vector>
@@ -929,7 +929,7 @@ int main() { std::cout << add(2, 3); }
 ```
 - **≥10 个例子**：ex05, ex06, ex23(rest), 及下方 ex05。
 
-> **示例 37** [难度 ★★★☆☆] [主题：auto + { } → std::]
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto + { } → std::
 ```cpp
 // ex05_auto_brace_initializer_list.cpp —— auto + {} 特例
 #include <initializer_list>
@@ -973,20 +973,20 @@ int main() {
 - **工程应用**：推导返回类型、写 traits、完美转发返回。
 - **真实源码**：`type_traits:1015` `decltype(__declval<_Tp>(0))`；`type_traits:3286` 继承 `__invoke_result`（均为真实行号）。
 - **错误示例**：
-> **示例 38** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype 两条规则
   ```cpp
   int x; decltype(x) y;   // int（实体规则）
   decltype((x)) z = x;    // int&（值类别规则，见 KP5）
 ```
 - **正确示例**：
-> **示例 39** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype 两条规则
   ```cpp
   int x; decltype(x) a = 0;        // int
   int* p; decltype(*p) b = *p;     // int&（*p 是 lvalue）
 ```
 - **≥10 个例子**：ex07, ex08, ex10, ex09(rest), ex34, ex35, ex11, ex12, ex25, ex13.
 
-> **示例 40** [难度 ★★☆☆☆] [主题：decltype 两条规则]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype 两条规则
 ```cpp
 // ex07_decltype_id_expression.cpp —— 规则1：未加括号 id-expression
 #include <type_traits>
@@ -998,7 +998,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：decltype 两条规则]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype 两条规则
 ```cpp
 // ex08_decltype_lvalue.cpp —— 规则2：左值表达式 -> T&
 #include <type_traits>
@@ -1010,7 +1010,7 @@ int main() {
 }
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：decltype 两条规则]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype 两条规则
 ```cpp
 // ex10_decltype_prvalue_xvalue.cpp —— 规则2：prvalue -> T, xvalue -> T&&
 #include <type_traits>
@@ -1022,7 +1022,7 @@ int main() {
 }
 ```
 
-> **示例 43** [难度 ★★★☆☆] [主题：decltype 两条规则]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · decltype 两条规则
 ```cpp
 // ex13_trailing_return.cpp —— decltype 用于尾置返回类型（依赖参数）
 #include <type_traits>
@@ -1033,7 +1033,7 @@ int main() {
 }
 ```
 
-> **示例 44** [难度 ★★☆☆☆] [主题：decltype 两条规则]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype 两条规则
 ```cpp
 // ex25_forwarding_wrapper_decltype_auto.cpp —— decltype(auto) 转发（见 KP6）
 #include <utility>
@@ -1064,20 +1064,20 @@ int main() { auto l = [](int& x) -> int& { return x; }; int v=1; int& r = call(l
 - **工程应用**：「`decltype((x))` 是引用」是 `decltype(auto)` 返回 `(x)` 产生悬垂引用的根因（见 KP6）。
 - **真实源码**：语言特性；标准库用例见 `type_traits:1015`（`decltype(__declval<_Tp>(0))` 中 `0` 是 prvalue → `T` 而非 `T&`）。
 - **错误示例**：
-> **示例 45** [难度 ★☆☆☆☆] [主题：decltype((x)) 为何是引]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype((x)) 为何是引
   ```cpp
   int x = 0;
   decltype((x)) r = x;   // int&，若误以为 int 会出错
 ```
 - **正确示例**：
-> **示例 46** [难度 ★☆☆☆☆] [主题：decltype((x)) 为何是引]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype((x)) 为何是引
   ```cpp
   int x = 0;
   static_assert(std::is_same_v<decltype((x)), int&>); // 明确认知
 ```
 - **≥10 个例子**：ex09, ex08, ex10, ex25, ex11, ex12, ex13, 面试 Q2/Q4.
 
-> **示例 47** [难度 ★★☆☆☆] [主题：decltype((x)) 为何是引]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype((x)) 为何是引
 ```cpp
 // ex09_decltype_paren_reference.cpp —— 经典面试题：decltype((x)) 是 int&
 #include <type_traits>
@@ -1113,19 +1113,19 @@ int main() {
 - **工程应用**：完美转发包装器（见 ex25）、`operator->*` 等代理。
 - **真实源码**：STL 对应机制为 `invoke_result_t`（functional:109，真实行号）。
 - **错误示例**（悬垂引用）：
-> **示例 48** [难度 ★★☆☆☆] [主题：decltype]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype
   ```cpp
   decltype(auto) bad() { int x = 0; return (x); } // 返回 int& 绑到局部 -> 悬垂!
 ```
 - **正确示例**：
-> **示例 49** [难度 ★☆☆☆☆] [主题：decltype]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype
   ```cpp
   int g = 0;
   decltype(auto) good() { return (g); }   // 返回 int&，合法（g 是静态生命期）
 ```
 - **≥10 个例子**：ex11, ex12, ex25, ex31, 18.2 bench, ex37.
 
-> **示例 50** [难度 ★★☆☆☆] [主题：decltype]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype
 ```cpp
 // ex11_decltype_auto_forward_return.cpp —— 完美转发返回类型
 #include <type_traits>
@@ -1139,7 +1139,7 @@ int main() {
 }
 ```
 
-> **示例 51** [难度 ★★☆☆☆] [主题：decltype]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype
 ```cpp
 // ex12_decltype_auto_dangling.cpp —— 经典坑：decltype(auto) 绑临时悬垂
 #include <iostream>
@@ -1173,20 +1173,20 @@ int main() {
 - **工程应用**：C++11 泛型函数返回依赖类型（见 ex13）。
 - **真实源码**：`std::invoke` 用 `invoke_result_t<...>` 作返回类型（functional:109）。
 - **错误示例**：
-> **示例 52** [难度 ★★☆☆☆] [主题：`auto` 类型推导、`decltype` 与返回类型推导]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `auto` 类型推导、`decltype` 与返回类型推导
   ```cpp
   template<class A,class B>
   decltype(a+b) add(A a,B b); // 错误：a,b 在返回类型处不可见
 ```
 - **正确示例**：
-> **示例 53** [难度 ★★☆☆☆] [主题：`auto` 类型推导、`decltype` 与返回类型推导]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `auto` 类型推导、`decltype` 与返回类型推导
   ```cpp
   template<class A,class B>
   auto add(A a,B b) -> decltype(a+b) { return a+b; } // OK
 ```
 - **≥10 个例子**：ex13, ex37, ex40, ex31.
 
-> **示例 54** [难度 ★★☆☆☆] [主题：`auto` 类型推导、`decltype` 与返回类型推导]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `auto` 类型推导、`decltype` 与返回类型推导
 ```cpp
 // ex13 见 KP4（尾置返回依赖参数类型）。再给一例：
 // ex31_abi_mangling_auto_return.cpp —— ABI：auto 返回 mangling 与手写一致
@@ -1213,19 +1213,19 @@ int main() { static_assert(std::is_same_v<decltype(square(2)), int>); }
 - **工程应用**：工厂、泛型算法（ex37）。
 - **真实源码**：`std::invoke` 返回 `invoke_result_t`（functional:109）即等价机制。
 - **错误示例**（多 return 不一致）：
-> **示例 55** [难度 ★☆☆☆☆] [主题：++14 普通函数 auto 返回]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++14 普通函数 auto 返回
   ```cpp
   auto bad() { if (true) return 1; else return 2.0; } // 错误：int vs double
 ```
 - **正确示例**：
-> **示例 56** [难度 ★☆☆☆☆] [主题：++14 普通函数 auto 返回]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++14 普通函数 auto 返回
   ```cpp
   auto ok() { return 1; }              // int
   auto ok2() { if (true) return 1; else return 2; } // 一致 int
 ```
 - **≥10 个例子**：ex14, ex15, ex16, ex37, ex31, ex11, ex12.
 
-> **示例 57** [难度 ★★☆☆☆] [主题：++14 普通函数 auto 返回]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++14 普通函数 auto 返回
 ```cpp
 // ex14_auto_return_multi.cpp —— 多 return 必须一致
 #include <type_traits>
@@ -1233,7 +1233,7 @@ auto f(bool b) { if (b) return 1; else return 2; } // 都是 int
 int main() { static_assert(std::is_same_v<decltype(f(true)), int>); }
 ```
 
-> **示例 58** [难度 ★★★☆☆] [主题：++14 普通函数 auto 返回]
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++14 普通函数 auto 返回
 ```cpp
 // ex15_auto_return_recursion.cpp —— 递归需先有确定返回类型的 return
 #include <type_traits>
@@ -1245,7 +1245,7 @@ auto fact(int n) -> int { return n <= 1 ? 1 : n * fact(n - 1); }
 int main() { static_assert(std::is_same_v<decltype(fact(5)), int>); }
 ```
 
-> **示例 59** [难度 ★★☆☆☆] [主题：++14 普通函数 auto 返回]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++14 普通函数 auto 返回
 ```cpp
 // ex16_auto_return_constexpr.cpp —— auto 返回 + constexpr
 #include <type_traits>
@@ -1274,19 +1274,19 @@ int main() {
 - **工程应用**：短助手（ex18/ex29/ex30）。
 - **真实源码**：标准库 `<algorithm>` 中大量 `auto` 参数（**[实现-推断]**，未贴具体行）。
 - **错误示例**：
-> **示例 60** [难度 ★☆☆☆☆] [主题：++20 缩写函数模板]
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++20 缩写函数模板
   ```cpp
   // 缩写函数模板不能和同名非模板共存产生歧义（按重载规则）
   void f(int); auto f(auto) { } // 可能重载决议冲突，需谨慎
 ```
 - **正确示例**：
-> **示例 61** [难度 ★★☆☆☆] [主题：++20 缩写函数模板]
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++20 缩写函数模板
   ```cpp
   auto id(auto x) { return x; }  // template<class T> T id(T)
 ```
 - **≥10 个例子**：ex18, ex29, ex30, ex17.
 
-> **示例 62** [难度 ★★★☆☆] [主题：++20 缩写函数模板]
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++20 缩写函数模板
 ```cpp
 // ex17_abbreviated_function_template.cpp —— 缩写函数模板（C++20）
 #include <concepts>
@@ -1317,21 +1317,21 @@ int main() { std::cout << max(3, 7) << max(1.0, 2.0); }
 - **工程应用**：编译期配置、类型分发（ex19/ex20）。
 - **真实源码**：标准库 NTTP 用例见 `<utility>` 的 `integer_sequence`（**[实现-推断]**，未贴行）。
 - **错误示例**：
-> **示例 63** [难度 ★★☆☆☆] [主题：++17 auto 非类型模板参数]
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++17 auto 非类型模板参数
   ```cpp
   template<auto V> struct C {};
   C<5> a; C<'x'> b;  // V 类型不同 -> 两个不同实例化
   // C<5>; C<5.0>;   // int vs double -> 不同实例化（非错误）
 ```
 - **正确示例**：
-> **示例 64** [难度 ★★☆☆☆] [主题：++17 auto 非类型模板参数]
+> **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++17 auto 非类型模板参数
   ```cpp
   template<auto V> struct wrap { static constexpr auto value = V; };
   static_assert(wrap<42>::value == 42);
 ```
 - **≥10 个例子**：ex19, ex20.
 
-> **示例 65** [难度 ★★★☆☆] [主题：++17 auto 非类型模板参数]
+> **示例 65** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++17 auto 非类型模板参数
 ```cpp
 // ex19_auto_nttp.cpp —— C++17 auto 非类型模板参数
 #include <type_traits>
@@ -1344,7 +1344,7 @@ int main() {
 }
 ```
 
-> **示例 66** [难度 ★★★☆☆] [主题：++17 auto 非类型模板参数]
+> **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++17 auto 非类型模板参数
 ```cpp
 // ex20_auto_nttp_different_types.cpp —— 不同类型产生不同实例化
 #include <type_traits>
@@ -1380,7 +1380,7 @@ int main() {
 - **工程应用**：不要以 `auto&` 遍历；算法需特化或避免 proxy。
 - **真实源码**：`<bits/stl_bvector.h>` `vector<bool>::reference`（真实文件，行略）。
 - **错误示例**：
-> **示例 67** [难度 ★☆☆☆☆] [主题：auto 与 proxy 对象]
+> **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 与 proxy 对象
   ```cpp
 #include <vector>
   std::vector<bool> bv(1);
@@ -1388,7 +1388,7 @@ int main() {
   auto x = bv[0]; x = true; // 改的是 proxy 副本，bv[0] 不变！
 ```
 - **正确示例**：
-> **示例 68** [难度 ★☆☆☆☆] [主题：auto 与 proxy 对象]
+> **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 与 proxy 对象
   ```cpp
   auto x = bv[0];        // proxy 值，可读
   // 或用 auto&& 遍历（ex38）
@@ -1396,7 +1396,7 @@ int main() {
 ```
 - **≥10 个例子**：ex23, ex24, ex38, ex21, 面试 Q6, 最佳实践 6.
 
-> **示例 69** [难度 ★★☆☆☆] [主题：auto 与 proxy 对象]
+> **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto 与 proxy 对象
 ```cpp
 // ex23_vector_bool_proxy_trap.cpp —— proxy 陷阱：auto 值修改不回写
 #include <vector>
@@ -1413,7 +1413,7 @@ int main() {
 
 ## 模板参数推导与 `auto` 的交互（横向专题）
 
-**[标准]** 统一结论：除 `{ }` 特例外，`auto` 推导 == 模板参数推导。这一不变量意味着：
+**<span class="badge badge-std">标准</span>** 统一结论：除 `{ }` 特例外，`auto` 推导 == 模板参数推导。这一不变量意味着：
 
 1. `auto x = e;` ≡ `template<class T> void f(T) f(e);`
 2. `auto& x = e;` ≡ `template<class T> void f(T&) f(e);`
@@ -1424,7 +1424,7 @@ int main() {
 **与 ch116（完美转发）交叉**：`auto&&` + `std::forward` = 转发引用惯用法。
 **与 ch26（lambda auto 参数）交叉**：generic lambda 的 `auto` 参数本质是缩写模板（KP9）。
 
-> **示例 70** [难度 ★★★☆☆] [主题：模板参数推导与 auto 的交互]
+> **示例 70** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板参数推导与 auto 的交互
 ```cpp
 // ex32_auto_vs_template_equivalence.cpp —— 证明 auto 与模板同规则
 #include <type_traits>
@@ -1464,7 +1464,7 @@ int main() {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：auto 与 decltype 的复活
-`auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"，几乎无人使用形同废字；C++11 把它"劫持"为类型推导发动机，直接动机是 lambda 闭包类型、模板返回类型无法手写（见 ch22 0.1）。[史][评] `decltype` 同期引入，回答"这个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。[史] C++14 的 `decltype(auto)` 保留引用性，C++20 缩写函数模板（P1141）让 `void f(auto x)` 等价于单参数模板，把 auto 从"变量推导"跃迁到"函数签名"。[史]
+`auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"，几乎无人使用形同废字；C++11 把它"劫持"为类型推导发动机，直接动机是 lambda 闭包类型、模板返回类型无法手写（见 ch22 0.1）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> `decltype` 同期引入，回答"这个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。<span class="badge badge-history">史</span> C++14 的 `decltype(auto)` 保留引用性，C++20 缩写函数模板（P1141）让 `void f(auto x)` 等价于单参数模板，把 auto 从"变量推导"跃迁到"函数签名"。<span class="badge badge-history">史</span>
 
 ### ㉒.2 真实工程坐标：auto/decltype 活在哪些产品里
 
@@ -1474,7 +1474,7 @@ int main() {
 | --- | --- | --- | --- | --- |
 | 标准库与 ranges | `std::ranges`、类型 traits | 算法用 `auto` 参数 + Concept 写泛型回调；`std::invoke_result_t`/`declval` 支撑元编程 | 一切 C++20+ 程序地基 | `auto` + Concept 是泛型回调主流写法 |
 | LLVM/Clang | TableGen、Clang AST | `auto` 接复杂闭包/迭代器；`decltype` 用于 traits 与 SFINAE 分支 | 编译基础设施 | `decltype` 是模板分支的日常工具 |
-| Chromium/Abseil | `base::Callback`、容器遍历 | 范围 for/回调默认 `auto`；`int` 等普通类型仍显式写出 | 工业级基础设施 | Google 风格指南：简单类型不省略 [史][评] |
+| Chromium/Abseil | `base::Callback`、容器遍历 | 范围 for/回调默认 `auto`；`int` 等普通类型仍显式写出 | 工业级基础设施 | Google 风格指南：简单类型不省略 <span class="badge badge-history">史</span><span class="badge badge-comment">评</span> |
 | ML 框架后端 | LibTorch / XLA-HLO / TensorFlow C++ | `auto` 承接 Eigen 表达式模板与 `torch::Tensor`/`StatusOr<T>` 长类型 | 训练/推理基础设施 | 省去超长类型名，保留类型安全 |
 | RPC/消息中间件 | gRPC C++、`protobuf`、Apache Thrift | `auto` 接 `CompletionQueue`/迭代器/桩返回值，`unique_ptr<...>` 交推导 | 分布式系统客户端 | 冗长生成类型交给 `auto` 推导 |
 
@@ -1482,12 +1482,12 @@ int main() {
 
 **一条判读**：用 auto 的判据是「类型名太长或根本写不出，且推导结果显然」。泛型回调/ranges/表达式模板/生成桩代码 → `auto` 提升可读性且不丢类型安全；但 `int`/`double` 这类一眼可读的简单类型，Google 规范仍要求显式写，避免「auto 满天飞」损害可读性。规则：推导能提升可读性且不模糊类型时上 `auto`，否则显式。
 ### ㉒.3 生产踩坑：auto/decltype 的常见误用
-- **auto 掩盖真实类型**：`auto x = {1,2,3}` 推导出 `std::initializer_list` 而非 `std::vector`，与模板 `T` 行为不一致，是经典坑；`auto` 接代理引用（如 `vector<bool>::reference`）会悬垂。[评]
-- **decltype 的两条规则记错**：`decltype((x))` 因是多表达式而推导出引用，是高频面试题也是真实 bug 源；`decltype(auto)` 返回时需警惕悬垂引用。[史][评]
-- **auto 拖慢可读性与重构**：对 `int`、裸指针等普通类型滥用 `auto` 会降低可读性，Core Guidelines 建议显式写出；批量 `auto` 也让 IDE 的"跳转到类型"失效。[评]
+- **auto 掩盖真实类型**：`auto x = {1,2,3}` 推导出 `std::initializer_list` 而非 `std::vector`，与模板 `T` 行为不一致，是经典坑；`auto` 接代理引用（如 `vector<bool>::reference`）会悬垂。<span class="badge badge-comment">评</span>
+- **decltype 的两条规则记错**：`decltype((x))` 因是多表达式而推导出引用，是高频面试题也是真实 bug 源；`decltype(auto)` 返回时需警惕悬垂引用。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **auto 拖慢可读性与重构**：对 `int`、裸指针等普通类型滥用 `auto` 会降低可读性，Core Guidelines 建议显式写出；批量 `auto` 也让 IDE 的"跳转到类型"失效。<span class="badge badge-comment">评</span>
 
 ### ㉒.4 与标准的互动：auto/decltype 随标准扩张
-`auto` 变量 + 尾置返回类型 + `decltype` 在 C++11 落地（N1984 / N2343 路线）；C++14 泛型 lambda 与 `decltype(auto)`；C++20 缩写函数模板（P1141）与模板形参 lambda 让 auto 进入函数签名与闭包模板；C++23 显式对象形参（P0847）复用 `auto&&` 接 `*this`。[史] 委员会当初判断"几乎没人用 auto 当存储类"，风险可忽略才重用了这个被遗忘的关键字，而非造新词——这是标准务实取舍的范例。[史][评]
+`auto` 变量 + 尾置返回类型 + `decltype` 在 C++11 落地（N1984 / N2343 路线）；C++14 泛型 lambda 与 `decltype(auto)`；C++20 缩写函数模板（P1141）与模板形参 lambda 让 auto 进入函数签名与闭包模板；C++23 显式对象形参（P0847）复用 `auto&&` 接 `*this`。<span class="badge badge-history">史</span> 委员会当初判断"几乎没人用 auto 当存储类"，风险可忽略才重用了这个被遗忘的关键字，而非造新词——这是标准务实取舍的范例。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **修订链补强（缩写函数模板）**：`auto` 进入函数签名也几经打磨——缩写函数模板提案 [P1141](https://wg21.link/P1141) 从 R0（在 Concepts 合并后提出"用 `auto` 充当 constrained/普通形参"）到 R2（2018，补上第 1/3/4 部分的形式化 wording、明确与 Concepts 的交互）随 C++20 进入标准。标准在 [dcl.spec.auto] 把 `auto` 形参定义为等价于一个带匿名 `template-parameter` 的模板，委员会特意让"auto 仍是那个被遗忘的关键字、只是复用"，从而把泛型函数声明的语法负担降到最低，呼应 ch22 0.x 的务实取舍。
 
 ### ㉒.5 权威引用
@@ -1531,7 +1531,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 71** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 71** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1544,9 +1544,9 @@ int main() {
 }
 ```
 
-[标准] `auto` 非引用推导产生副本；`auto&` 是元素的左值引用（可修改）；`const auto&` 是常量左值引用（只读、零拷贝）。遍历容器修改元素用 `auto&`。
+<span class="badge badge-std">标准</span> `auto` 非引用推导产生副本；`auto&` 是元素的左值引用（可修改）；`const auto&` 是常量左值引用（只读、零拷贝）。遍历容器修改元素用 `auto&`。
 
-[引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（auto 从初始化器推导；范围 for 用 auto& 避免拷贝）；cppreference "range-based for loop" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.spec.auto]（auto 从初始化器推导；范围 for 用 auto& 避免拷贝）；cppreference "range-based for loop" 词条。
 
 </details>
 
@@ -1556,7 +1556,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 72** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 72** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 int g = 42;
@@ -1570,9 +1570,9 @@ int main() {
 }
 ```
 
-[标准] 裸 `auto` 永远按值返回（丢弃引用性），`decltype(auto)` 用 `decltype` 的规则保留表达式的值类别——`decltype((x))` 对左值 `x` 给出 `T&`。注意三元运算符 `a ? b : c` 会把 `int&` 与 `int` 统一为右值 `int`，故"跟随引用"必须直接 `return (lvalue)` 而非经三元表达式。
+<span class="badge badge-std">标准</span> 裸 `auto` 永远按值返回（丢弃引用性），`decltype(auto)` 用 `decltype` 的规则保留表达式的值类别——`decltype((x))` 对左值 `x` 给出 `T&`。注意三元运算符 `a ? b : c` 会把 `int&` 与 `int` 统一为右值 `int`，故"跟随引用"必须直接 `return (lvalue)` 而非经三元表达式。
 
-[引用] ISO/IEC 14882:2023 §[dcl.type.decltype]（decltype 与 decltype(auto) 保留值类别）；cppreference "decltype" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.type.decltype]（decltype 与 decltype(auto) 保留值类别）；cppreference "decltype" 词条。
 
 </details>
 
@@ -1582,7 +1582,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 73** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1596,9 +1596,9 @@ int main() {
 }
 ```
 
-[标准] `vector<bool>` 是特化，按位压缩存储，其 `operator[]` 返回的是代理引用 `vector<bool>::reference`，不是真正的 `bool&`。需要真实 `bool` 值时用 `bool b = vb[i];` 或遍历用 `auto&&` 避免误用代理的生命周期。
+<span class="badge badge-std">标准</span> `vector<bool>` 是特化，按位压缩存储，其 `operator[]` 返回的是代理引用 `vector<bool>::reference`，不是真正的 `bool&`。需要真实 `bool` 值时用 `bool b = vb[i];` 或遍历用 `auto&&` 避免误用代理的生命周期。
 
-[引用] ISO/IEC 14882:2023 §[class.vector.bool]（vector<bool> 按位特化，operator[] 返回代理引用）；亦见标准库 `std::vector<bool>::reference` 条目（cppreference）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.vector.bool]（vector<bool> 按位特化，operator[] 返回代理引用）；亦见标准库 `std::vector<bool>::reference` 条目（cppreference）。
 
 </details>
 
@@ -1614,7 +1614,7 @@ std::vector<int> get_data();   // 把实现类型钉死, 将来想换成 span �
 ```
 
 **修复**：
-> **示例 74** [难度 ★★☆☆☆] [主题：演绎 1：API 返回类型不确定时—]
+> **示例 74** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：API 返回类型不确定时—
 ```cpp
 #include <vector>
 auto get_data() {                 // C++14 起函数可返回 auto, 类型由 return 推导
@@ -1636,7 +1636,7 @@ template <class T> auto get(T& o) { return o.m; }   // 若 o.m 是 int& 也会�
 ```
 
 **修复**：
-> **示例 75** [难度 ★★★☆☆] [主题：演绎 2：转发函数的返回类型——de]
+> **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：转发函数的返回类型——de
 ```cpp
 #include <iostream>
 struct S { int m = 5; };
@@ -1813,7 +1813,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 76** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 76** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 

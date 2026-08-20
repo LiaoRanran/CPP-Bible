@@ -28,15 +28,15 @@
 
 > 紧接 0.2 编年最后一条（2008–2011，Gerrit / GitHub PR 把重审查变轻量在线工具流）。
 
-- [史] Google 把内部工程实践开源为 **eng-practices**（CL ≤ 500 行、1 名 owner LGTM、强制 clang-format），成为业界 code review 纪律的公开范本，被广泛翻译成多语言。
-- [史] 静态分析（clang-tidy）与多类 Sanitizer（ASan/TSan/UBSan）在 CI 中常态化，使"所有权泄漏""数据竞争""UB"这类 C++ 最该被人眼拦的缺陷先在机器预筛里被挡掉——人工 review 因此聚焦逻辑与设计。
-- [史] 2020 年代，AI 辅助 review（Copilot、各类 PR 机器人）兴起，能在人工评审前自动标出潜在 UB、命名异味、缺失 const，成为"第一道预筛"，但其建议仍需人来裁决，未取代人工判断。
-- [评] 现代团队普遍走向"机器做可机械判断的、人做需判断力的"分工：把 0.3 担心的"重型会议走查"彻底替换为"工具预筛 + 轻量异步 review"。
-- [轶] 一线工程师的吐槽：AI review bot 有时比同事更啰嗦，一条 PR 能收到十五条 "consider using const"——于是有人给 bot 设了"每天最多三条"的配额。
+- <span class="badge badge-history">史</span> Google 把内部工程实践开源为 **eng-practices**（CL ≤ 500 行、1 名 owner LGTM、强制 clang-format），成为业界 code review 纪律的公开范本，被广泛翻译成多语言。
+- <span class="badge badge-history">史</span> 静态分析（clang-tidy）与多类 Sanitizer（ASan/TSan/UBSan）在 CI 中常态化，使"所有权泄漏""数据竞争""UB"这类 C++ 最该被人眼拦的缺陷先在机器预筛里被挡掉——人工 review 因此聚焦逻辑与设计。
+- <span class="badge badge-history">史</span> 2020 年代，AI 辅助 review（Copilot、各类 PR 机器人）兴起，能在人工评审前自动标出潜在 UB、命名异味、缺失 const，成为"第一道预筛"，但其建议仍需人来裁决，未取代人工判断。
+- <span class="badge badge-comment">评</span> 现代团队普遍走向"机器做可机械判断的、人做需判断力的"分工：把 0.3 担心的"重型会议走查"彻底替换为"工具预筛 + 轻量异步 review"。
+- <span class="badge badge-anecdote">轶</span> 一线工程师的吐槽：AI review bot 有时比同事更啰嗦，一条 PR 能收到十五条 "consider using const"——于是有人给 bot 设了"每天最多三条"的配额。
 
 > 史料来源：github.com/google/eng-practices、clang.llvm.org/extra/clang-tidy
 
-## ① 概述：Code Review 价值 [经验]
+## ① 概述：Code Review 价值 <span class="badge badge-exp">经验</span>
 
 [第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)
 [第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
@@ -45,14 +45,14 @@
 
 `[经验]` 一条被反复验证的共识：**C++ 审查的 ROI 高于大多数语言**，因为 C++ 把大量"本该由语言/运行时保证"的安全责任（生命周期、别名、内存）交给了程序员，而这些恰好是 review 最高频能拦下的类别。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：Code Review 价值 ]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Code Review 价值
 ```cpp
 // ❌ 反例：坏名字 + 无注释，reviewer 必须打开实现才能猜语义
 void proc(int a, int b);
 int f(int x);
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：Code Review 价值 ]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Code Review 价值
 ```cpp
 #include <cstddef>
 // ✅ 正例：名字揭示意图与方向，review 一眼看懂契约
@@ -60,7 +60,7 @@ void compress_frame(Frame& dst, const Frame& src);
 std::size_t byte_size(const Buffer& buf);
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：概述：Code Review 价值 ]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Code Review 价值
 ```cpp
 // 稳定的 API 边界：内部可随意重构，reviewer 只需守住接口不变性
 class ConnectionPool {
@@ -73,7 +73,7 @@ public:
 
 `[经验]` 一份可复用的审查清单（checklist）是团队规模化的前提。把"每次都要想"的共性项固化成清单，reviewer 的注意力才能留给真正需要判断力的部分。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：审查清单]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 审查清单
 ```cpp
 // 正确性自查清单（伪代码，落到 PR 模板里）
 //   [ ] 所有分支都有返回值（非空路径）？
@@ -82,7 +82,7 @@ public:
 //   [ ] 资源（new/fd/mutex）是否成对获取释放？
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：审查清单]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 审查清单
 ```cpp
 #include <vector>
 // 可读性自查：函数只做一件事，且名字就是它的说明书
@@ -96,7 +96,7 @@ int bad(const std::vector<int>& a, const std::vector<int>& b) {
 
 下面是一次标准审查的 ASCII 流水线框线图（Bible 允许 ASCII 图）：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：审查清单]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 审查清单
 ```
 ┌─────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌────────┐
 │ 作者自审 │──▶│ 静态分析  │──▶│ 同行评审  │──▶│ CI 门禁   │──▶│ 合入   │
@@ -114,7 +114,7 @@ int bad(const std::vector<int>& a, const std::vector<int>& b) {
 
 `[实现]` 静态分析是"编译器的超集视角"——它读的是同一种 AST，但放宽了"必须能生成代码"的约束，因此可以追踪跨函数的资源流。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：静态分析工具]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态分析工具
 ```cpp
 // clang-tidy 会标记的坏味道：裸 owning 指针 + 未释放
 void bugprone() {
@@ -124,7 +124,7 @@ void bugprone() {
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：静态分析工具]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态分析工具
 ```cpp
 #include <memory>
 // 修复：用 RAII 把资源生命周期交给对象
@@ -140,7 +140,7 @@ void fixed() {
 
 下面每一个示例都对应本机 g++ 13.1.0 的真实警告产物（`Examples/_ch147_*_warn.txt`）。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 ```cpp
 // _ch147_signcmp.cpp —— 有符号/无符号比较
 #include <vector>
@@ -154,7 +154,7 @@ void f(const std::vector<int>& v, int n) {
 // 'int' and 'std::vector<int>::size_type' {aka 'long long unsigned int'} [-Wsign-compare]
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 ```cpp
 // _ch147_format.cpp —— printf 格式串不匹配
 #include <cstdio>
@@ -163,7 +163,7 @@ int main(){ int n = 5; std::printf("%s\n", n); }
 // but argument 2 has type 'int' [-Wformat=]
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 ```cpp
 // _ch147_nodiscard.cpp —— 忽略 [[nodiscard]] 返回值
 #include <cstdio>
@@ -173,7 +173,7 @@ int main(){ important(); std::printf("ignored\n"); }
 // declared with attribute 'nodiscard' [-Wunused-result]
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：编译器警告]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器警告
 ```cpp
 // _ch147_overflow.cpp —— 常量整数溢出（UB）
 #include <cstdio>
@@ -182,7 +182,7 @@ int main(){ const int x = 2000000000 + 2000000000; std::printf("%d\n", x); }
 // results in '-294967296' [-Woverflow]
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 ```cpp
 // _ch147_missing_return.cpp —— 控制流可能无返回值
 int g(bool b) {
@@ -192,7 +192,7 @@ int g(bool b) {
 // 典型输出：warning: control reaches end of non-void function [-Wreturn-type]
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 ```cpp
 // _ch147_narrow.cpp —— 浮点转整数截断（需 -Wconversion）
 #include <cstdio>
@@ -201,7 +201,7 @@ int main(){ double big = 3.9; int y = big; std::printf("%d\n", y); }
 // may change value [-Wfloat-conversion]
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 ```cpp
 // _ch147_dangling.cpp —— 返回指向局部/临时的地址（需 -O2）
 #include <string>
@@ -212,7 +212,7 @@ const std::string& bad() {
 // 典型输出（-O2）：warning: function returns address of local variable [-Wreturn-local-addr]
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 ```cpp
 // 把警告当错误：任何 -Wall -Wextra 警告都让 CI 编译失败
 // 编译命令：g++ -std=c++23 -Wall -Wextra -Werror <src>
@@ -223,7 +223,7 @@ const std::string& bad() {
 
 `[经验]` "能跑"不等于"能维护"。坏味道（code smell）是 review 中高频拦下的"未来缺陷温床"：过长函数、重复代码、神秘数字、大类、特性依恋。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：重构与坏味道（code smell）]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重构与坏味道（code smell）
 ```cpp
 #include <vector>
 // 坏味道：一个函数做太多事（_ch147_refactor.cpp 节选）
@@ -235,7 +235,7 @@ int bad_report(const std::vector<int>& a, const std::vector<int>& b) {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：重构与坏味道（code smell）]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重构与坏味道（code smell）
 ```cpp
 #include <vector>
 // 重构：抽出命名明确的函数，消除重复
@@ -248,7 +248,7 @@ int report_gap(const std::vector<int>& a, const std::vector<int>& b) {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：重构与坏味道（code smell）]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 重构与坏味道（code smell）
 ```cpp
 // 神秘数字 -> 命名常量
 constexpr int kMaxRetries = 3;        // 而非裸写 3
@@ -259,7 +259,7 @@ for (int i = 0; i < kMaxRetries; ++i) try_once();
 
 `[实现]` C++ 的内存模型下，未同步的共享写是数据竞争（data race），属于未定义行为——UB 不会在编译期报错，却会在特定调度下产生"偶发错误"。reviewer 必须盯紧：共享状态是否 `std::mutex`/`std::atomic` 保护，锁的粒度与顺序，以及 `std::shared_ptr` 的引用计数虽原子但**指向的对象**仍需额外同步。
 
-> **示例 20** [难度 ★★★★☆] [主题：并发缺陷审查]
+> **示例 20** <span class="badge badge-exp">难度 ★★★★☆</span> · 并发缺陷审查
 ```cpp
 // 坏味道：数据竞争（_ch147_race.cpp 节选）
 #include <thread>
@@ -268,7 +268,7 @@ void inc(){ for(int i=0;i<100000;++i) ++g; }   // 非原子、非加锁
 // g++ -Wall -Wextra 不报，但运行时结果不确定
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：并发缺陷审查]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并发缺陷审查
 ```cpp
 // 修复：原子变量保护共享计数
 #include <atomic>
@@ -277,7 +277,7 @@ std::atomic<int> g{0};
 void inc(){ for(int i=0;i<100000;++i) ++g; }    // 原子递增，无竞争
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：并发缺陷审查]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并发缺陷审查
 ```cpp
 // 修复（临界区较长时）：互斥锁
 #include <mutex>
@@ -290,21 +290,21 @@ void inc(){ for(int i=0;i<100000;++i){ std::lock_guard lk(m); ++g; } }
 
 `[经验]` C++ 内存安全审查的两条主线：**泄漏**（该释放未释放）与 **UB**（悬垂指针、释放后使用、越界、别名违规）。前者浪费资源，后者直接产生错误结果。优先 `std::unique_ptr`/`std::shared_ptr`/`std::vector` 等 RAII 类型，把"谁负责释放"这一最易出错的问题交给作用域。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：内存安全审查（泄漏/UB）]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存安全审查（泄漏/UB）
 ```cpp
 // 坏味道：裸 owning 指针 + 漏释放（_ch147_leak.cpp 节选）
 int* make() { return new int(1); }
 int main(){ int* p = make(); (void)*p; /* 漏 delete -> 泄漏 */ }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：内存安全审查（泄漏/UB）]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存安全审查（泄漏/UB）
 ```cpp
 // 修复：所有权交给 unique_ptr
 #include <memory>
 std::unique_ptr<int> make() { return std::make_unique<int>(1); }
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：内存安全审查（泄漏/UB）]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存安全审查（泄漏/UB）
 ```cpp
 // 释放后使用（UAF，UB）：_ch147_uaf.cpp 节选
 int* leak_dangling() {
@@ -315,7 +315,7 @@ int* leak_dangling() {
 // returned [-Wreturn-local-addr]
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：内存安全审查（泄漏/UB）]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存安全审查（泄漏/UB）
 ```cpp
 // 越界读取（UB）：_ch147_oob.cpp 节选
 int main(){ int a[3] = {1,2,3}; return a[5]; }  // 越界，运行时未定义
@@ -325,7 +325,7 @@ int main(){ int a[3] = {1,2,3}; return a[5]; }  // 越界，运行时未定义
 
 `[经验]` 已发布的接口是"契约"，reviewer 必须核对改动是否破坏**二进制/源码兼容性**：不要随意改函数签名、不要删公开符号、不要把非虚析构的基类改成被多态删除的对象。ABI 稳定性细节（Pimpl、符号版本化）见第145章（命名与 API 设计）。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：兼容性审查（关联第145章）]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 兼容性审查（关联第145章）
 ```cpp
 // _ch147_api.cpp 节选：稳定导出符号，自 v1 起不变
 #include <cstdint>
@@ -333,7 +333,7 @@ int main(){ int a[3] = {1,2,3}; return a[5]; }  // 越界，运行时未定义
 // 审查红线：compute_v1 的签名/名字/语义不得在三方的依赖者重编译前改变
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：兼容性审查（关联第145章）]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 兼容性审查（关联第145章）
 ```cpp
 #include <cstdint>
 // 破坏兼容的改动（应被 review 拦下）：
@@ -346,7 +346,7 @@ int main(){ int a[3] = {1,2,3}; return a[5]; }  // 越界，运行时未定义
 
 `[经验]` review 不只看"代码对不对"，还要看"有没有证据证明它对"。每个公共函数应至少覆盖：一条正向用例 + 一条边界用例（空输入、最大值、错误码）。测试覆盖的度量与门槛见第150章。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：测试覆盖审查（关联第150章）]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试覆盖审查（关联第150章）
 ```cpp
 // _ch147_test.cpp 节选（GoogleTest 风格伪代码）
 // 审查时核对是否覆盖：空栈 pop、单元素、连续 pop 至空
@@ -354,7 +354,7 @@ struct Stack { int pop(); bool empty() const; };
 // 期望用例：EXPECT_THROW(s.pop(), underflow) 当 empty()；EXPECT_EQ(s.pop(), v)
 ```
 
-> **示例 30** [难度 ★★★☆☆] [主题：测试覆盖审查（关联第150章）]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试覆盖审查（关联第150章）
 ```cpp
 // 审查清单：新增逻辑是否带测试？分支是否都有断言覆盖？
 //   if (x < 0) return error;   // 必须有 x<0 的测试用例
@@ -394,7 +394,7 @@ struct Stack { int pop(); bool empty() const; };
 
 `[实现]` 把审查中能机械判断的项交给 CI，让人聚焦判断力。CI 门禁至少包含：编译（`-Wall -Wextra -Werror`）、静态分析、单元测试、覆盖率门槛。门禁配置与流水线见第149章。
 
-> **示例 31** [难度 ★★★☆☆] [主题：自动化门禁]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自动化门禁
 ```cpp
 // 用编译期断言固化"不可违反"的接口不变量，让门禁替你审查
 template <typename T>
@@ -414,7 +414,7 @@ static_assert(sizeof(void*) == 8, "本 ABI 假设 64 位指针，指针宽度不
 
 `[经验]` 性能坏味道常在 review 中可被"肉眼"发现：意外拷贝大对象、不必要的堆分配、热路径上的虚调用、O(n²) 嵌套。性能回归的基准与剖析见第151章。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：性能回归审查（关联第151章）]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能回归审查（关联第151章）
 ```cpp
 #include <vector>
 #include <string>
@@ -425,7 +425,7 @@ int bad_lookup(std::vector<Record> db, const std::string& k) {  // 整份拷贝
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：性能回归审查（关联第151章）]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能回归审查（关联第151章）
 ```cpp
 #include <vector>
 #include <string>
@@ -436,7 +436,7 @@ int good_lookup(const std::vector<Record>& db, const std::string& k) {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：性能回归审查（关联第151章）]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能回归审查（关联第151章）
 ```cpp
 #include <string>
 // 热路径避免重复分配：提出循环外
@@ -448,7 +448,7 @@ for (const auto& s : names) { buf.clear(); buf += s; sink(buf); }
 
 `[平台]` C++ 原生内存模型使其对内存破坏类漏洞（CWE-120 缓冲区溢出、CWE-416 UAF、CWE-787 越界写）高度敏感。安全审查要对照 OWASP / CWE / CVE 字典，重点查：外部输入是否做边界与字符白名单校验、格式化函数是否匹配、整数是否先校验再用作下标/分配大小。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：安全审查（CVE/OWASP）]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 安全审查（CVE/OWASP）
 ```cpp
 #include <cstdio>
 #include <string>
@@ -459,7 +459,7 @@ void log_user(const std::string& name) {
 // 修复：用iostream/字符串拼接，避免格式串解释；对 name 做长度与字符白名单
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：安全审查（CVE/OWASP）]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 安全审查（CVE/OWASP）
 ```cpp
 #include <span>
 #include <algorithm>
@@ -475,7 +475,7 @@ bool safe_copy(std::span<const char> src, std::span<char> dst) {
 
 `[经验]` 文档与代码不一致比没有文档更危险——它**主动误导**下一个维护者。reviewer 应核对：函数注释描述的语义与实际实现一致、参数名与文档匹配、`[[deprecated]]` 是否有迁移说明、示例仍可编译。
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：文档一致性审查]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 文档一致性审查
 ```cpp
 // 文档/实现不一致（应被 review 拦下）
 // 注释说"返回平方"，实际返回立方
@@ -483,7 +483,7 @@ bool safe_copy(std::span<const char> src, std::span<char> dst) {
 int square(int x) { return x * x * x; }   // 实现与契约矛盾
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：文档一致性审查]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 文档一致性审查
 ```cpp
 // 一致写法：注释即契约，且用类型系统表达
 // 返回 x 与自身的乘积（x*x）
@@ -509,7 +509,7 @@ int square(int x) { return x * x * x; }   // 实现与契约矛盾
 
 `[经验]` 用度量驱动改进，但**拒绝以度量惩罚个人**。常用指标：每千行缺陷密度（defects/KLOC）、审查逗留时长（time-to-first-review）、缺陷逃逸率（发布后缺陷 / 总缺陷）。度量用于发现"流程薄弱点"，而非排名。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：度量（缺陷密度）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 度量（缺陷密度）
 ```cpp
 // 缺陷密度示意计算（审查后统计，非线上逻辑）
 struct Metric { int loc; int defects; };
@@ -519,7 +519,7 @@ double density_per_kloc(const Metric& m) {
 // 例：2000 行发现 4 个缺陷 -> 2.0 defects/KLOC
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：度量（缺陷密度）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 度量（缺陷密度）
 ```cpp
 // 审查逗留时长（小时）示意
 double time_to_review_hours(std::time_t submitted, std::time_t first_comment) {
@@ -533,7 +533,7 @@ double time_to_review_hours(std::time_t submitted, std::time_t first_comment) {
 
 **案例 A：有符号比较（`_ch147_signcmp.cpp`）**
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 #include <vector>
 #include <cstdio>
@@ -543,7 +543,7 @@ void f(const std::vector<int>& v, int n) {
 ```
 
 真实 g++ 警告（节选）：
-> **示例 42** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```
 _ch147_signcmp.cpp:4:11: warning: comparison of integer expressions of
 different signedness: 'int' and 'std::vector<int>::size_type'
@@ -552,7 +552,7 @@ different signedness: 'int' and 'std::vector<int>::size_type'
 
 **案例 B：忽略 `[[nodiscard]]`（`_ch147_nodiscard.cpp`）**
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 #include <cstdio>
 [[nodiscard]] int important() { return 7; }
@@ -560,7 +560,7 @@ int main(){ important(); std::printf("ignored\n"); }
 ```
 
 真实 g++ 警告（节选）：
-> **示例 44** [难度 ★★★☆☆] [主题：真实案例]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实案例
 ```
 _ch147_nodiscard.cpp:3:22: warning: ignoring return value of 'int important()',
 declared with attribute 'nodiscard' [-Wunused-result]
@@ -591,7 +591,7 @@ declared with attribute 'nodiscard' [-Wunused-result]
 
 **源码剖析（libstdc++ 真实路径 + 行号）**
 
-> **示例 45** [难度 ★★☆☆☆] [主题：真实案例]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h
 // 行号：104
@@ -607,7 +607,7 @@ declared with attribute 'nodiscard' [-Wunused-result]
 
 `[经验]` 好的被审查者（author）同样决定 review 质量。提交前先**自审（self-review）**：diff 自己读一遍，把"为什么这样写"写进描述，主动拆分大 PR，对 reviewer 的每条意见先理解再回应（而非立刻反驳）。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：反转：被审查者视角]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反转：被审查者视角
 ```cpp
 // 自审清单（提交前自查，减少 review 往返）
 //   [ ] 编译通过 -Wall -Wextra -Werror？
@@ -618,7 +618,7 @@ bool ready_to_send() {
 }
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：反转：被审查者视角]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反转：被审查者视角
 ```cpp
 // 对审查意见的成熟回应方式：
 //   "有道理，n 确实可能为负，已在 a832c1 加前置校验并补测试。"
@@ -636,16 +636,16 @@ bool ready_to_send() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：审查发现类管理裸资源却未定义拷贝/移动（违反三五法则）。** 你复制后双重释放。请说明。
-   - [标准] 管理资源的类须正确定义析构/拷贝/移动（三五法则）；现代 C++ 推荐“零法则”（用智能指针/容器）。
-   - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义与规则）/ [class.dtor]；cppreference "Rule of three/five/zero" 词条。
+   - <span class="badge badge-std">标准</span> 管理资源的类须正确定义析构/拷贝/移动（三五法则）；现代 C++ 推荐“零法则”（用智能指针/容器）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy]（拷贝语义与规则）/ [class.dtor]；cppreference "Rule of three/five/zero" 词条。
 
 2. **真实场景：审查发现局部变量未初始化就被读取。** 你得到垃圾值。请说明。
-   - [标准] 读取未初始化的非类类型变量是未定义行为；类类型对象有默认初始化路径。
-   - [引用] ISO/IEC 14882:2023 §[dcl.init]（默认初始化与未初始化）/ [basic.indet]（不确定值）；cppreference "Default initialization" 词条。
+   - <span class="badge badge-std">标准</span> 读取未初始化的非类类型变量是未定义行为；类类型对象有默认初始化路径。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.init]（默认初始化与未初始化）/ [basic.indet]（不确定值）；cppreference "Default initialization" 词条。
 
 3. **真实场景：审查发现通过基类指针 `delete` 派生对象但基类无虚析构。** 你运行时未定义行为。请说明。
-   - [标准] 通过基类指针 `delete` 派生对象，若基类析构非虚，则为未定义行为。
-   - [引用] ISO/IEC 14882:2023 §[class.dtor]（虚析构必要性）；cppreference "Virtual destructor" 词条。
+   - <span class="badge badge-std">标准</span> 通过基类指针 `delete` 派生对象，若基类析构非虚，则为未定义行为。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.dtor]（虚析构必要性）；cppreference "Virtual destructor" 词条。
 
 `[经验]` 一句话总纲：**代码审查是 C++ 工程里性价比最高的一道质量闸——它把未定义行为、内存错误、接口破坏、性能回归在合入前拦下，而代价只是一次仔细阅读。** 本章所有机器可验证主张（`-Wsign-compare` 有符号比较警告、`-Wformat=` 格式不匹配、`-Wunused-result` 忽略 `[[nodiscard]]`、`-Woverflow` 常量溢出、`-Wreturn-type` 缺返回值、`-Wreturn-local-addr` 悬垂地址、`-Wfloat-conversion` 浮点截断、RAII 守卫 `call pthread_mutex_lock/unlock` 的汇编实证、`add edx,[rcx+rax*4]` 零拷贝循环实证、libstdc++ `bits/move.h:104` 与 `bits/basic_string.h:85` 真实路径与行号）均已用本机 GCC 13.1.0 真实产物（`Examples/_ch147_*_warn.txt` / `_ch147_*.asm`）佐证，可复现、未编造。ABI 兼容性深化见第145章，提交规范见第148章，CI 门禁见第149章，测试覆盖见第150章，性能回归见第151章。
 
@@ -654,7 +654,7 @@ bool ready_to_send() {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：代码审查从"形式化检视"到 Pull Request
-[史] 现代代码审查的制度源头是 **Michael Fagan** 在 IBM 于 1976 年提出的"形式化检视（Fagan Inspection）"，用分阶段会议把缺陷在编码早期拦下。2000 年后，随分布式版本控制与 GitHub（2008）普及，"异步 Pull Request / Gerrit 评审"取代线下会议，成为工业主流。[史] Google 把"每一行代码至少被另一名工程师 review 并 LGTM"写进工程实践（eng-practices，2010 年代公开），并以可读性（readability）认证保证风格与 API 一致。[评] 审查的核心价值不在"找风格问题"，而在"第二双眼睛发现单作者盲点"：并发缺陷、UB、ABI 破坏、安全漏洞——这些恰恰是静态分析与单测难以全覆盖的。
+<span class="badge badge-history">史</span> 现代代码审查的制度源头是 **Michael Fagan** 在 IBM 于 1976 年提出的"形式化检视（Fagan Inspection）"，用分阶段会议把缺陷在编码早期拦下。2000 年后，随分布式版本控制与 GitHub（2008）普及，"异步 Pull Request / Gerrit 评审"取代线下会议，成为工业主流。<span class="badge badge-history">史</span> Google 把"每一行代码至少被另一名工程师 review 并 LGTM"写进工程实践（eng-practices，2010 年代公开），并以可读性（readability）认证保证风格与 API 一致。<span class="badge badge-comment">评</span> 审查的核心价值不在"找风格问题"，而在"第二双眼睛发现单作者盲点"：并发缺陷、UB、ABI 破坏、安全漏洞——这些恰恰是静态分析与单测难以全覆盖的。
 
 ### ㉒.2 真实工程坐标：审查活在哪些项目里
 
@@ -674,13 +674,13 @@ bool ready_to_send() {
 **一条判读**：审查的强度应与「出错代价」成正比——安全关键/医疗器械必须双人+可追溯（合规要求），普通业务项目强制单人 review 通常已够；把 review 变成纯签字仪式则失去其知识传播价值。
 
 ### ㉒.3 生产踩坑：审查流于形式的陷阱
-- **橡皮图章 LGTM**：只扫一眼就批准，等于没审；[评] 对并发/内存/接口改动必须逐行看，而非看 CI 全绿就放。
+- **橡皮图章 LGTM**：只扫一眼就批准，等于没审；<span class="badge badge-comment">评</span> 对并发/内存/接口改动必须逐行看，而非看 CI 全绿就放。
 - **只审格式不审逻辑**：把 clang-format / clang-tidy 能自动发现的事留给人脑，浪费注意力；应让工具做机械检查，人聚焦语义。
 - **巨型 PR**：单 PR 改动数千行，没人能认真审；拆小、按关注点分 PR 是工业常识。
 - **漏掉安全/UB**：`signed overflow`、`数组越界`、`data race` 这类未定义行为，肉眼极易漏，必须依赖编译器警告（`-Wall -Wextra -Werror`）与 UBSan/ASan 进门禁（见 ②）。
 
 ### ㉒.4 与标准的互动：静态分析成为审查前置
-C++ 标准不直接管审查，但 **C++ Core Guidelines** 的每条规则都可被 `clang-tidy` 的 `cppcoreguidelines-*` 检查项机械执行，使"人工审查"前移为"机器预筛"。现代 CI（见第149章）把 clang-tidy / PVS-Studio / Coverity 结果直接挂到 PR 上，审查者只看工具标红处即可。[评] 工具越强，人工越该聚焦"设计意图与边界条件"，而不是重复机器能做的事。
+C++ 标准不直接管审查，但 **C++ Core Guidelines** 的每条规则都可被 `clang-tidy` 的 `cppcoreguidelines-*` 检查项机械执行，使"人工审查"前移为"机器预筛"。现代 CI（见第149章）把 clang-tidy / PVS-Studio / Coverity 结果直接挂到 PR 上，审查者只看工具标红处即可。<span class="badge badge-comment">评</span> 工具越强，人工越该聚焦"设计意图与边界条件"，而不是重复机器能做的事。
 
 - `[评]` WG21 **P2028R0**（Stability of the C++ ABI，<https://wg21.link/P2028>，SG15）：讨论「如何在演进标准时保持 C++ ABI 稳定」，本质是给「版本/分支策略」定调；它把「ABI 兼容承诺」上升到生态治理层面，直接影响各项目的 release/backport 工作流。
 - `[评]` ISO/IEC 14882 本身不规定构建/审查，但 C++ Core Guidelines 的每一条都对应 `clang-tidy` 的 `cppcoreguidelines-*` 检查项，使「人工审查」可被机器预筛——审查者只需聚焦设计意图与边界条件。
@@ -694,7 +694,7 @@ C++ 标准不直接管审查，但 **C++ Core Guidelines** 的每条规则都可
 
 ## 附录追加：工业底层与面试
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：附录追加：工业底层与面试]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录追加：工业底层与面试
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ch147_code_review.md enhanced"<<"\n";return 0;}
@@ -702,14 +702,14 @@ int main(){std::cout<<"ch147_code_review.md enhanced"<<"\n";return 0;}
 
 ## 附录 E：工业CR标准
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：附录 E：工业CR标准]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：工业CR标准
 ```
 Google: CL<=500行, 1 owner LGTM, clang-format强制
 LLVM: arc diff→review→arc land, clang-format+clang-tidy+lit tests
 Chromium: CQ pre-submit CI(编译+测试), 禁止裸new/异常/RTTI
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：附录 E：工业CR标准]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：工业CR标准
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std::endl;std::cout<<"Google: CL<=500 lines, >500 must split"<<std::endl;return 0;}
@@ -790,7 +790,7 @@ call scan_node           ; 递归访问
 
 ## 底层视角：静态分析、UB 与编译期可捕获缺陷 [E: Low-level]
 
-[标准] `-Wall -Wextra` 由 `GCC 13.1.0` / `Clang 17` 默认开启多数诊断；未初始化、`-Wshadow`、`-Wunused` 在编译期直接拦截，省一次运行期 `0x0008` 级野指针解引用（主存未命中 ≈100 ns）。`Clang-Tidy` 用 AST 匹配捕获 `0x0008` 误用与 `const` 违规。
+<span class="badge badge-std">标准</span> `-Wall -Wextra` 由 `GCC 13.1.0` / `Clang 17` 默认开启多数诊断；未初始化、`-Wshadow`、`-Wunused` 在编译期直接拦截，省一次运行期 `0x0008` 级野指针解引用（主存未命中 ≈100 ns）。`Clang-Tidy` 用 AST 匹配捕获 `0x0008` 误用与 `const` 违规。
 
 UB（数据竞争、越界、空引用）无法靠测试稳定复现：线程竞争落在同一 `0x0040` 缓存行（false sharing）时吞吐骤降；越界写污染相邻 `0x0008` 对象。`C++20` `consteval` / `constexpr` 把越界、除零等推到编译期求值报错，提前消除一类 UB。
 
@@ -806,7 +806,7 @@ SIMD 审查：`-mavx2`（32 字节 `0x0020` 宽）/ `-mavx512f`（64 字节 `0x0
 
 <details><summary>答案与解析</summary>
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 int main() {
@@ -815,9 +815,9 @@ int main() {
 }
 ```
 
-[标准] `-Wall -Wextra` 覆盖大量可疑构造；`-Werror` 把警告转成编译失败，使「带隐患的代码」无法进入主干。`(void)unused;` 是告知编译器「我故意不用」的标准写法，可消除此类告警。
+<span class="badge badge-std">标准</span> `-Wall -Wextra` 覆盖大量可疑构造；`-Werror` 把警告转成编译失败，使「带隐患的代码」无法进入主干。`(void)unused;` 是告知编译器「我故意不用」的标准写法，可消除此类告警。
 
-[引用] GCC/Clang 警告选项见各自官方文档；`clang-tidy` 等静态分析工具见 LLVM 官网（clang.llvm.org/extra/clang-tidy）；C++ Core Guidelines 的「P 性能 / ES 表达式」等章节要求消除未定义与可疑构造；ch147 ④ 用 `g++` 实证 `-Wall -Wextra -Werror`。
+<span class="badge badge-ref">引用</span> GCC/Clang 警告选项见各自官方文档；`clang-tidy` 等静态分析工具见 LLVM 官网（clang.llvm.org/extra/clang-tidy）；C++ Core Guidelines 的「P 性能 / ES 表达式」等章节要求消除未定义与可疑构造；ch147 ④ 用 `g++` 实证 `-Wall -Wextra -Werror`。
 
 </details>
 
@@ -827,7 +827,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 52** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <mutex>
 #include <thread>
@@ -837,9 +837,9 @@ int main() { Counter x; std::thread t1([&]{ for(int i=0;i<1000;++i) x.inc(); });
     std::thread t2([&]{ for(int i=0;i<1000;++i) x.inc(); }); t1.join(); t2.join(); }
 ```
 
-[标准] 无同步的并发写是 data race（UB）；`std::mutex` + `lock_guard` 把临界区互斥化；Clang 的 `-Wthread-safety` 配合 `GUARDED_BY` 注解能在编译期标出「未持锁访问受保护字段」，TSAN 则在运行期侦测竞争。
+<span class="badge badge-std">标准</span> 无同步的并发写是 data race（UB）；`std::mutex` + `lock_guard` 把临界区互斥化；Clang 的 `-Wthread-safety` 配合 `GUARDED_BY` 注解能在编译期标出「未持锁访问受保护字段」，TSAN 则在运行期侦测竞争。
 
-[引用] 并发缺陷审查见 C++ Core Guidelines 的「CP 并发与并行」章节（如 CP.20–CP.22 用锁保护共享数据）；ThreadSanitizer 见 Clang/GCC 官方文档；ch147 ⑥ 专讲并发缺陷审查。
+<span class="badge badge-ref">引用</span> 并发缺陷审查见 C++ Core Guidelines 的「CP 并发与并行」章节（如 CP.20–CP.22 用锁保护共享数据）；ThreadSanitizer 见 Clang/GCC 官方文档；ch147 ⑥ 专讲并发缺陷审查。
 
 </details>
 
@@ -849,7 +849,7 @@ int main() { Counter x; std::thread t1([&]{ for(int i=0;i<1000;++i) x.inc(); });
 
 <details><summary>答案与解析</summary>
 
-> **示例 53** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <cstdio>
 #include <string>
@@ -859,9 +859,9 @@ void send(std::string body, int timeout = 3000) { (void)timeout; std::printf("%s
 int main() { send("hi"); }   // 仍匹配旧单参数重载，仅触发弃用告警；新调用可传 timeout
 ```
 
-[标准] 默认参数让「加参数」成为非破坏性变更，旧调用仍可编译；`[[deprecated]]` 在编译期给出迁移提示而不立即破坏；破坏性改动只能落在 MAJOR 版本（SemVer），保持 ABI/API 契约。
+<span class="badge badge-std">标准</span> 默认参数让「加参数」成为非破坏性变更，旧调用仍可编译；`[[deprecated]]` 在编译期给出迁移提示而不立即破坏；破坏性改动只能落在 MAJOR 版本（SemVer），保持 ABI/API 契约。
 
-[引用] `[[deprecated]]` 见 ISO/IEC 14882:2023 属性规范与 cppreference；API 兼容性审查见 ch147 ⑧ 与 ch145 ⑧（ABI/API 边界）；Semantic Versioning 见 semver.org；ch147 ⑩ 讲提交与版本纪律。
+<span class="badge badge-ref">引用</span> `[[deprecated]]` 见 ISO/IEC 14882:2023 属性规范与 cppreference；API 兼容性审查见 ch147 ⑧ 与 ch145 ⑧（ABI/API 边界）；Semantic Versioning 见 semver.org；ch147 ⑩ 讲提交与版本纪律。
 
 </details>
 

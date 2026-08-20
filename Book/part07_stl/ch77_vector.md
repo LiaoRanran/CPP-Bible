@@ -4,7 +4,7 @@
 > 标准基：ISO/IEC 14882:2023 (C++23)。
 > 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。
 > 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（迭代器与六大组件） · [第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)（new/delete） · [第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)（分配器）。
-> 后续：[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)（分段连续） · [第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)（有序容器对比） · [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)（缓存局部性）。
+> 后续：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)（分段连续） · [第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)（有序容器对比） · [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)（缓存局部性）。
 > 难度：★★★☆☆（理解三指针、扩容摊还与异常安全）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_vector.h`、`bits/vector.tcc`、`bits/allocator.h`、`bits/alloc_traits.h`，逐行标注文件与行号。
 
@@ -12,24 +12,24 @@
 > 一个连续内存里的动态数组，终结了"C 程序员手写 realloc 的恐惧"。
 
 ### 0.1 起源（谁·何时·为何）
-在 STL 之前，C 程序员要一个"会长大"的数组，只能 `malloc` 一块内存、自己记账、在满了时 `realloc` 并把旧指针换成新指针——稍有不慎就是内存泄漏或悬垂指针。[史] Stepanov 把"可动态增长、内存连续"的数组列为 STL 最核心的序列容器，因为连续内存意味着可以和 C 数组无缝互操作、又能被硬件缓存友好地预取。[史] `vector` 因此成了几乎所有 C++ 程序的默认首选容器。
+在 STL 之前，C 程序员要一个"会长大"的数组，只能 `malloc` 一块内存、自己记账、在满了时 `realloc` 并把旧指针换成新指针——稍有不慎就是内存泄漏或悬垂指针。<span class="badge badge-history">史</span> Stepanov 把"可动态增长、内存连续"的数组列为 STL 最核心的序列容器，因为连续内存意味着可以和 C 数组无缝互操作、又能被硬件缓存友好地预取。<span class="badge badge-history">史</span> `vector` 因此成了几乎所有 C++ 程序的默认首选容器。
 
 ### 0.2 关键转折（编年）
 - C++98：标准 `std::vector` 定型，三指针（`start / finish / end_of_storage`）模型确立。
-- C++11：移动语义让 `vector` 整体转移变成 O(1)（不再逐元素拷贝），并禁止 `std::string` 的写时复制（COW），顺带澄清了"连续存储"的语义。[史]
-- C++20：引入 `constexpr` 容器支持，使 `vector` 能在编译期被构造与操作。[史]
+- C++11：移动语义让 `vector` 整体转移变成 O(1)（不再逐元素拷贝），并禁止 `std::string` 的写时复制（COW），顺带澄清了"连续存储"的语义。<span class="badge badge-history">史</span>
+- C++20：引入 `constexpr` 容器支持，使 `vector` 能在编译期被构造与操作。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-`vector` 的连续内存 vs `list` 的节点分散，是 STL 里最经典的取舍之一。[评] 连续内存带来极佳的缓存局部性，遍历飞快；代价是中间插入/删除要搬移大量元素。Stepanov 一派的立场是：**绝大多数场景下遍历远多于插入**，所以默认该选连续存储。这条经验法则后来被无数基准测试反复验证——即便"理论上"该用链表的地方，现实中 `vector` 常常更快。[评]
+`vector` 的连续内存 vs `list` 的节点分散，是 STL 里最经典的取舍之一。<span class="badge badge-comment">评</span> 连续内存带来极佳的缓存局部性，遍历飞快；代价是中间插入/删除要搬移大量元素。Stepanov 一派的立场是：**绝大多数场景下遍历远多于插入**，所以默认该选连续存储。这条经验法则后来被无数基准测试反复验证——即便"理论上"该用链表的地方，现实中 `vector` 常常更快。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++20 给 `vector` 加了编译期 `constexpr` 构造与操作。扩容策略与 `vector<bool>` 则是两条更长的支线。
 
-- [史] **扩容因子之争是各实现私事**：标准只要求"摊还 O(1)"，不规定因子。GCC/libstdc++ 长期采用 2 倍扩容，MSVC/STL 与许多实现倾向约 1.5 倍——1.5 倍能复用更多"已释放但未归还系统"的前面块，2 倍则更简并、更易触发整块重分配。
-- [史] **C++23 给 `vector` 加了集合拼接接口**：`append_range`、`insert_range` 等接受任意可范围化源（不限于同类型迭代器），避免为拼接而临时构造 `vector`；`assign_range` 同理，呼应 Ranges 的"区间优先"。
-- [史] **`vector<bool>` 仍是最受争议的特化**：它把每个 `bool` 压成 1 位以省空间，却破坏了"容器元素独立可寻址"的不变式——`operator[]` 返回代理引用、不能取地址，与 `vector<T>` 的语义鸿沟至今未填。
-- [评] 一个反复被提起的提案是"废弃 `vector<bool>` 特化或改为不特化"，但为兼容海量存量代码，委员会长期选择保留——这是 C++"绝不破坏旧代码"哲学的典型代价。
+- <span class="badge badge-history">史</span> **扩容因子之争是各实现私事**：标准只要求"摊还 O(1)"，不规定因子。GCC/libstdc++ 长期采用 2 倍扩容，MSVC/STL 与许多实现倾向约 1.5 倍——1.5 倍能复用更多"已释放但未归还系统"的前面块，2 倍则更简并、更易触发整块重分配。
+- <span class="badge badge-history">史</span> **C++23 给 `vector` 加了集合拼接接口**：`append_range`、`insert_range` 等接受任意可范围化源（不限于同类型迭代器），避免为拼接而临时构造 `vector`；`assign_range` 同理，呼应 Ranges 的"区间优先"。
+- <span class="badge badge-history">史</span> **`vector<bool>` 仍是最受争议的特化**：它把每个 `bool` 压成 1 位以省空间，却破坏了"容器元素独立可寻址"的不变式——`operator[]` 返回代理引用、不能取地址，与 `vector<T>` 的语义鸿沟至今未填。
+- <span class="badge badge-comment">评</span> 一个反复被提起的提案是"废弃 `vector<bool>` 特化或改为不特化"，但为兼容海量存量代码，委员会长期选择保留——这是 C++"绝不破坏旧代码"哲学的典型代价。
 
 > 史料来源：[cppreference std::vector](https://en.cppreference.com/w/cpp/container/vector)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
@@ -55,13 +55,13 @@
 
 ## ③ 后续依赖
 
-- `deque` 分段连续（头尾插不失效）：[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)。
+- `deque` 分段连续（头尾插不失效）：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)。
 - 缓存与局部性：连续内存为何快，见 [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)。
 - `vector<bool>`  pitfalls 与 `bitset` 替代：[第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)。
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```
             ┌──────────── vector<T> ────────────┐
             │  _Vector_impl (_M_impl)            │
@@ -125,7 +125,7 @@ classDiagram
 
 三指针本身（`_M_start/_M_finish/_M_end_of_storage`）是 `T*`，位于 `vector` 对象内（通常 24 字节：3 指针）。真正元素在**独立堆块**。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图 / 对象布局
 ```
 sizeof(vector<int>) 在 x86-64 通常为 24 字节（3 个指针，无额外开销）
 元素块：capacity 个 T 连续排布，size 个已构造，剩余未构造（raw）
@@ -141,7 +141,7 @@ sizeof(vector<int>) 在 x86-64 通常为 24 字节（3 个指针，无额外开�
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图
 ```
 vector 构造 -> _M_start=_M_finish=_M_end_of_storage=nullptr（空）
   │
@@ -153,7 +153,7 @@ push_back/insert -> 若容量不足先扩容（分配新块+迁移+释放旧块�
 
 ## ⑨ 调用栈 / 时序图：一次触发扩容的 push_back
 
-> **示例 4** [难度 ★★★☆☆] [主题：调用栈 / 时序图：一次触发扩容的 ]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：一次触发扩容的
 ```
 main
  │ v.push_back(e)
@@ -186,7 +186,7 @@ main
 
 ## ⑪ STL 联系
 
-- 与 `deque`：`vector` 中段插入/删除 O(n) 且扩容失效；`deque` 头尾 O(1) 且不整体失效（[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)）。
+- 与 `deque`：`vector` 中段插入/删除 O(n) 且扩容失效；`deque` 头尾 O(1) 且不整体失效（[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)）。
 - 与 `array`：`array` 固定容量、栈/内联、无扩容（[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)）。
 - 与 `unordered_map`：`vector` 适合顺序存储；哈希表适合键值查找（[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)）。
 - 与算法：连续内存使 `sort`/`binary_search` 高效（[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md) §⑲）。
@@ -196,7 +196,7 @@ main
 
 场景：UDP/网关接收线程把入站报文 length 存入 `vector`，每批处理完清空但**不释放容量**（复用），且预先 `reserve` 峰值。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：工业案例：网络包缓冲池]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：网络包缓冲池
 ```cpp
 // 工业案例 C1：批量报文长度缓冲（复用容量，避免反复扩容）
 #include <vector>
@@ -231,7 +231,7 @@ int main() {
 
 三指针与类定义（`bits/stl_vector.h`）：
 
-> **示例 6** [难度 ★★☆☆☆] [主题：源码分析（libstdc++ 逐行）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++ 逐行）
 ```cpp
 #include <utility>
 // 文件：bits/stl_vector.h   行号：94, 95, 96, 423
@@ -299,7 +299,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 7** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误1：保存迭代器/引用后 push_back 触发扩容 -> 失效 UB
 #include <vector>
@@ -314,7 +314,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误2：range-based for 中 erase 不更新迭代器 -> 跳过/越界
 #include <vector>
@@ -331,7 +331,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误3：依赖 vector<bool> 返回 bool&（实为代理）
 #include <vector>
@@ -345,7 +345,7 @@ int main() {
 }
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // ❌ 错误4：在循环条件里反复调用 size() 并 erase 导致逻辑错（虽不 UB 但易错）
 #include <vector>
@@ -388,7 +388,7 @@ RAII 自动释放、知道 `size`、可增长、配合算法与迭代器、异�
 6. 需要按位压缩用 `vector<bool>` 前想清楚代理陷阱；否则用 `std::bitset` 或 `vector<char>`（[第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)）。
 7. 并发：单写多读需外部同步；或分段（`vector` 数组 + 每线程一段）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践 B1：Erase-Remove 惯用法
 #include <vector>
@@ -421,7 +421,7 @@ int main() {
 - `[平台·x86-64]`：连续内存使遍历可向量化（AVX 加载）、缓存预取友好（[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)）。`deque`/`list`/关联容器因分段或跳指针远不如。
 - `[平台·x86-64]`：ABI 稳定——`std::vector` 布局跨 GCC 版本兼容，但跨编译器（libstdc++/libc++/MS STL）不保证二进制兼容。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // 性能 P1：观察 GCC 2× 扩容的 capacity 增长
 #include <vector>
@@ -439,7 +439,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // 性能 P2：microbenchmark 量级（示意）。reserve vs 无 reserve 的耗时差距
 #include <vector>
@@ -470,16 +470,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：push_back 触发重分配，所有迭代器失效。** 你缓存的迭代器在插入后解引用崩溃。请说明规则。
-   - [标准] vector 在容量不足时重分配，届时所有指向元素的引用、指针、迭代器均失效。
-   - [引用] ISO/IEC 14882:2023 §[vector.modifiers]（push_back 与重分配导致失效）；cppreference "std::vector" 词条。
+   - <span class="badge badge-std">标准</span> vector 在容量不足时重分配，届时所有指向元素的引用、指针、迭代器均失效。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[vector.modifiers]（push_back 与重分配导致失效）；cppreference "std::vector" 词条。
 
 2. **真实场景：用 `reserve` 预分配避免反复重分配。** 你已知大致元素数。请说明收益。
-   - [标准] `reserve(n)` 保证容量至少 n，避免插入过程中的多次重分配与元素搬移。
-   - [引用] ISO/IEC 14882:2023 §[vector.capacity]（reserve）；cppreference "std::vector::reserve" 词条。
+   - <span class="badge badge-std">标准</span> `reserve(n)` 保证容量至少 n，避免插入过程中的多次重分配与元素搬移。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[vector.capacity]（reserve）；cppreference "std::vector::reserve" 词条。
 
 3. **真实场景：vector 元素连续，`data()` 可当 C 数组传。** 你给 C API 传底层指针。请说明保证。
-   - [标准] vector 元素连续存储；`data()` 返回指向首元素的指针，可安全当作 C 数组使用。
-   - [引用] ISO/IEC 14882:2023 §[vector.data]（连续存储保证）；cppreference "std::vector::data" 词条。
+   - <span class="badge badge-std">标准</span> vector 元素连续存储；`data()` 返回指向首元素的指针，可安全当作 C 数组使用。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[vector.data]（连续存储保证）；cppreference "std::vector::data" 词条。
 
 | 语言 | 动态数组/向量 | 扩容策略 | 备注 |
 |---|---|---|---|
@@ -499,7 +499,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：vector 与「连续存储」的胜利
 
-[史] `std::vector` 随 C++98 进入标准，其设计直接继承自 Stepanov 在 HP/SGI 的 STL，内核思想与 C 数组一脉相承：元素连续存储、可用指针算术随机访问。[史] 2000 年前后，标准委员会曾就「是否需要 `std::vector` 之外的动态数组」争论，最终保留它与 `std::deque` / `std::list` 的分工。[轶] 一个经典工程轶事是扩容因子之争：微软 STL 早期采用 2 倍扩容，而 GCC/libstdc++ 采用约 1.5 倍（接近黄金比例），原因是 1.5 倍能让旧内存块更快被整体复用、减少碎片。[评] 连续存储带来的缓存局部性是 `vector` 在绝大多数场景下击败 `list` / `deque` 的根本原因，也是它成为「默认容器」的历史正当性。
+<span class="badge badge-history">史</span> `std::vector` 随 C++98 进入标准，其设计直接继承自 Stepanov 在 HP/SGI 的 STL，内核思想与 C 数组一脉相承：元素连续存储、可用指针算术随机访问。<span class="badge badge-history">史</span> 2000 年前后，标准委员会曾就「是否需要 `std::vector` 之外的动态数组」争论，最终保留它与 `std::deque` / `std::list` 的分工。<span class="badge badge-anecdote">轶</span> 一个经典工程轶事是扩容因子之争：微软 STL 早期采用 2 倍扩容，而 GCC/libstdc++ 采用约 1.5 倍（接近黄金比例），原因是 1.5 倍能让旧内存块更快被整体复用、减少碎片。<span class="badge badge-comment">评</span> 连续存储带来的缓存局部性是 `vector` 在绝大多数场景下击败 `list` / `deque` 的根本原因，也是它成为「默认容器」的历史正当性。
 
 ### ㉒.2 真实工程坐标：vector 活在哪些产品里
 
@@ -510,11 +510,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：vector 的常见误用与陷阱
 
-[评] 最典型的是「扩容导致的迭代器/指针/引用失效」：在循环里反复 `push_back` 却保存了指向元素的指针，扩容后全部悬空。其次是「未预分配」放大摊还成本——已知规模时不用 `reserve`，会在百万级插入中出现数十次整体搬迁。还有「`erase` + `remove` 惯用法」用错导致残留元素；以及 `vector<bool>` 特化并非真正的容器（返回代理引用），在需要真实 `bool&` 或跨 ABI 传递时踩坑。
+<span class="badge badge-comment">评</span> 最典型的是「扩容导致的迭代器/指针/引用失效」：在循环里反复 `push_back` 却保存了指向元素的指针，扩容后全部悬空。其次是「未预分配」放大摊还成本——已知规模时不用 `reserve`，会在百万级插入中出现数十次整体搬迁。还有「`erase` + `remove` 惯用法」用错导致残留元素；以及 `vector<bool>` 特化并非真正的容器（返回代理引用），在需要真实 `bool&` 或跨 ABI 传递时踩坑。
 
 ### ㉒.4 与标准的互动：vector 与 C++ 标准的演进
 
-[史] `vector` 自 C++98 起即稳定存在，C++11 引入移动构造与 `emplace_back`，使返回 `vector` 变为廉价（在 NRVO 之外再添移动语义）。C++17 增加 `pmr::vector`（多态分配器）与 `append_range` 等接口；C++20 起 `vector<bool>` 等逐步纳入 `constexpr`。标准委员会的长期立场是「不破坏连续布局」，因此 `vector` 的 ABI 相对稳固，仅 `vector<bool>` 特化因历史包袱被多次讨论是否弃用（目前维持）。
+<span class="badge badge-history">史</span> `vector` 自 C++98 起即稳定存在，C++11 引入移动构造与 `emplace_back`，使返回 `vector` 变为廉价（在 NRVO 之外再添移动语义）。C++17 增加 `pmr::vector`（多态分配器）与 `append_range` 等接口；C++20 起 `vector<bool>` 等逐步纳入 `constexpr`。标准委员会的长期立场是「不破坏连续布局」，因此 `vector` 的 ABI 相对稳固，仅 `vector<bool>` 特化因历史包袱被多次讨论是否弃用（目前维持）。
 
 - **WG21 修订链**：C++23 的 `std::flat_map` / `flat_set`（连续数组 + 排序，缓存友好）源自 P0429R0（Zach Laine，2017）→ 后续修订，最终由 P0429 系列与 P1222（flat_set）在 C++23 落地，并由 P2767R1/R2（Arthur O'Dwyer，wg21.link/P2767R1）纠正在 libc++ 实现中暴露的缺陷；这条链说明标准在反思「红黑树 vs 连续数组」的取舍时，仍以「不破坏 `vector` 连续布局」为底线。
 - **ISO 条款**：`std::vector` 规定于 ISO/IEC 14882 §24.3.11（`[vector]`），并保证元素连续存储（`data()` 与 `&v[0]` 等价于底层数组）——这一连续性保证是 C ABI 互操作与 SIMD 优化的法理基础，也是它与 `deque`/`list` 的根本区别。
@@ -550,7 +550,7 @@ int main() {
 
 以下为第77章完整可编译示例集（每块独立、自带 `#include` 与 `int main`，经 `g++ -std=c++23 -O2 -Wall -Wextra` 校验）。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V1 基础：创建、下标、连续内存
 #include <vector>
@@ -565,7 +565,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V2 三指针语义：size / capacity / empty
 #include <vector>
@@ -580,7 +580,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V3 reserve 预留容量，避免反复扩容
 #include <vector>
@@ -595,7 +595,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V4 扩容观测：GCC 2× 增长 + 失效演示
 #include <vector>
@@ -613,7 +613,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V5 push_back 触发扩容 -> 旧迭代器失效（用 size 验证而非解引用）
 #include <vector>
@@ -627,7 +627,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V6 emplace_back 原地构造（避免临时对象）
 #include <vector>
@@ -641,7 +641,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V7 resize：增大默认构造 / 缩小截断
 #include <vector>
@@ -657,7 +657,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V8 shrink_to_fit：请求收缩（非强制）
 #include <vector>
@@ -671,7 +671,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V9 clear 保留容量
 #include <vector>
@@ -685,7 +685,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V10 insert 中段插入：O(n) 右移
 #include <vector>
@@ -699,7 +699,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V11 erase 删除并返回下一迭代器（安全遍历删除）
 #include <vector>
@@ -712,7 +712,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V12 Erase-Remove 惯用法删除偶数（复用 B1）
 #include <vector>
@@ -727,7 +727,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V13 批量 insert 区间（优于逐次 push_back）
 #include <vector>
@@ -741,7 +741,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V14 data() 取连续裸指针（与 C API 互操作）
 #include <vector>
@@ -755,7 +755,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V15 swap O(1)：只交换三指针
 #include <vector>
@@ -768,7 +768,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V16 移动构造 O(1)：源置空
 #include <vector>
@@ -782,7 +782,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V17 与手写动态数组对比（vector 的 RAII 价值）
 #include <vector>
@@ -798,7 +798,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V18 工业：批量报文缓冲（复用 C1 思路，自包含）
 #include <vector>
@@ -814,7 +814,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V19 工业：二维不规则数据（vector<vector>）慎用扩容
 #include <vector>
@@ -828,7 +828,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V20 vector<bool> 位压缩陷阱：不能取 bool&
 #include <vector>
@@ -842,7 +842,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V21 allocator 协作：allocate / construct / destroy / deallocate 四步分离
 // [标准] C++23 起 std::allocator::construct/destroy 已移除，统一走 allocator_traits
@@ -863,7 +863,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V22 EBO 压缩空分配器：自定义空分配器，rebind 自洽（rebind<T>::other 必须仍是自身）
 // [标准] allocator_traits 要求 rebind_alloc<value_type> 与分配器自身同型（is_same 断言）
@@ -888,7 +888,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V23 异常安全：移动不抛时用移动，否则拷贝（move_if_noexcept 思想）
 #include <vector>
@@ -904,7 +904,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V24 版本宏：C++20 连续迭代器/span 相关能力探测
 #include <vector>
@@ -920,7 +920,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V25 折叠 + vector：批量求和（演示泛型）
 #include <vector>
@@ -935,7 +935,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V26 at() 越界抛异常（边界安全）
 #include <vector>
@@ -949,7 +949,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V27 back/front 访问首尾
 #include <vector>
@@ -961,7 +961,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V28 pop_back 删除尾元素（不收缩容量）
 #include <vector>
@@ -973,7 +973,7 @@ int main() {
 }
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V29 用户定义字面量计时扩容基准（UDL 带空格写法）
 #include <vector>
@@ -992,7 +992,7 @@ int main() {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V30 与 Rust Vec / Go slice 思想对比（描述，非编译）
 #include <iostream>
@@ -1006,7 +1006,7 @@ int main() {
 }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V31 assign 整体赋值（替换内容，保留容量）
 #include <vector>
@@ -1019,7 +1019,7 @@ int main() {
 }
 ```
 
-> **示例 45** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // V32 工业：环形批量处理前先 reserve（避免运行时毛刺）
 #include <vector>
@@ -1080,7 +1080,7 @@ mov [rax], xmm0           ; 写入（0x0010 字节）
 
 ### 测试源码
 
-> **示例 46** [难度 ★★★☆☆] [主题：测试源码]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
 ```cpp
 #include <vector>
 // ① reserve 后 push_back——无分配
@@ -1127,7 +1127,7 @@ GCC 15 看到 `vector<int>` 生存于栈上、`reserve(3)` + 3× `push_back` 写
 
 ### 扩容策略（GCC libstdc++）
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：扩容策略]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩容策略
 ```cpp
 // libstdc++-v3/include/bits/stl_vector.h (简化)
 size_type _M_check_len(size_type __n, const char* __s) const {
@@ -1159,7 +1159,7 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 
 ### 测试源码（核心）
 
-> **示例 48** [难度 ★★★☆☆] [主题：测试源码（核心）]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码（核心）
 ```cpp
 [[gnu::noinline]] void push_no_reserve() {
     std::vector<int> v;
@@ -1196,7 +1196,7 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 ## 相关章节（交叉引用）
 
 - **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 迭代器概念与连续存储的架构背景
-- **同模块相邻**：[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)—— deque 与 vector 的扩容/失效语义对比
+- **同模块相邻**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)—— deque 与 vector 的扩容/失效语义对比
 - **同模块相邻**：[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)—— array 是固定容量连续容器，无扩容
 - **同模块相邻**：[第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)—— span 是 vector 数据的零拷贝只读视图
 - **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 扩容经 allocator 在堆上成长，allocator 决定后端
@@ -1217,15 +1217,15 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 不 reserve（2× 扩容）：容量走 1→2→4→…→1024，元素被**整体拷贝** log2(1000)≈10 次，
 总拷贝 ~1000+500+250+…≈2000 次移动，明显更慢且可能重复构造/析构。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 std::vector<int> a; a.reserve(1000);
 for (int i=0;i<1000;++i) a.push_back(i);   // 0 次重分配
 ```
 
-[标准] `reserve` 改变 `capacity` 不触发元素构造；扩容是"分配新缓冲 + 移动/拷贝 + 释放旧缓冲"。
+<span class="badge badge-std">标准</span> `reserve` 改变 `capacity` 不触发元素构造；扩容是"分配新缓冲 + 移动/拷贝 + 释放旧缓冲"。
 
-[引用] ISO/IEC 14882:2023 §[vector.capacity]（`reserve`/`capacity` 语义）；§[vector.modifiers]（`push_back` 扩容时的迭代器失效规则）；见 cppreference "container/vector" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[vector.capacity]（`reserve`/`capacity` 语义）；§[vector.modifiers]（`push_back` 扩容时的迭代器失效规则）；见 cppreference "container/vector" 词条。
 
 </details>
 
@@ -1235,7 +1235,7 @@ for (int i=0;i<1000;++i) a.push_back(i);   // 0 次重分配
 
 <details><summary>答案与解析</summary>
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 // BUG: 扩容使 it 失效, 行为未定义
 std::vector<int> v{1,2,3};
@@ -1248,9 +1248,9 @@ v.reserve(v.size()*2 + 4);
 
 注：即使 reserve 后地址稳定，逻辑上 `end()` 也变了——索引法最稳妥。
 
-[标准] `push_back` 触发扩容会使所有迭代器/引用/指针失效；未扩容时仅 `end()` 失效。
+<span class="badge badge-std">标准</span> `push_back` 触发扩容会使所有迭代器/引用/指针失效；未扩容时仅 `end()` 失效。
 
-[引用] ISO/IEC 14882:2023 §[container.requirements]（迭代器失效总表）与 §[vector.modifiers]（`push_back` 失效条款）；见 cppreference "container/vector" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[container.requirements]（迭代器失效总表）与 §[vector.modifiers]（`push_back` 失效条款）；见 cppreference "container/vector" 词条。
 
 </details>
 
@@ -1260,7 +1260,7 @@ v.reserve(v.size()*2 + 4);
 
 <details><summary>答案与解析</summary>
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 std::vector<int> v{1,2,3,4,5,6};
 v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x%2==0; }), v.end());
@@ -1271,9 +1271,9 @@ v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x%2==0; }), v.end()
 不能 `auto& b = vb[0];`（编译失败），不能取地址，与"容器存 T 则 `T&` 可绑定"的直觉冲突。
 需要真实 bool 语义时用 `std::vector<char>` 或 `std::bitset`/`dynamic_bitset`。
 
-[标准] `vector<bool>` 是显性特化，元素非独立地址able 对象；属历史设计失误，工业代码慎用。
+<span class="badge badge-std">标准</span> `vector<bool>` 是显性特化，元素非独立地址able 对象；属历史设计失误，工业代码慎用。
 
-[引用] ISO/IEC 14882:2023 §[vector.bool]（位压缩特化与代理引用 `reference`）；需真实 bool 语义时改用 `std::vector<char>` 或 `std::bitset`，见 cppreference "container/vector" 的 `vector<bool>` 专节。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[vector.bool]（位压缩特化与代理引用 `reference`）；需真实 bool 语义时改用 `std::vector<char>` 或 `std::bitset`，见 cppreference "container/vector" 的 `vector<bool>` 专节。
 
 </details>
 
@@ -1283,7 +1283,7 @@ v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x%2==0; }), v.end()
 
 **步骤 1：无 reserve 逐步 `push_back`（最慢）**
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 百万元素构建的性]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 百万元素构建的性
 ```cpp
 std::vector<Rec> v;
 for (auto& r : source) v.push_back(r);   // 容量 1->2->4->...->1048576, 约 20 次重分配 + 整体搬迁
@@ -1293,7 +1293,7 @@ for (auto& r : source) v.push_back(r);   // 容量 1->2->4->...->1048576, 约 20
 
 **步骤 2：先 `reserve` 再 `push_back`（快得多）**
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 百万元素构建的性]
+> **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 百万元素构建的性
 ```cpp
 std::vector<Rec> v; v.reserve(source.size());   // 1 次分配到位
 for (auto& r : source) v.push_back(r);          // 零重分配
@@ -1301,7 +1301,7 @@ for (auto& r : source) v.push_back(r);          // 零重分配
 
 **步骤 3：用 `emplace_back` 避免临时对象（更快）**
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 百万元素构建的性]
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 百万元素构建的性
 ```cpp
 v.reserve(source.size());
 for (auto& r : source) v.emplace_back(r.id, r.name, r.val); // 原地构造, 跳过一次拷贝/移动
@@ -1309,7 +1309,7 @@ for (auto& r : source) v.emplace_back(r.id, r.name, r.val); // 原地构造, 跳
 
 **步骤 4：容量收缩（若之后不再增长）**
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 百万元素构建的性]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 百万元素构建的性
 ```cpp
 v.shrink_to_fit();   // 释放多余 capacity, 降低内存占用(可能触发一次搬迁)
 ```
@@ -1338,7 +1338,7 @@ v.shrink_to_fit();   // 释放多余 capacity, 降低内存占用(可能触发�
 
 扩容容量公式（`bits/stl_vector.h:2202`，`_M_check_len`）：
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：迁移路径的真实源码]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 迁移路径的真实源码
 ```cpp
 // bits/stl_vector.h : 2202-2209  (GCC 15.3.0, 本地实测行号)
 _GLIBCXX20_CONSTEXPR size_type
@@ -1354,7 +1354,7 @@ _M_check_len(size_type __n, const char* __s) const
 
 迁移分支（`bits/vector.tcc:453` 的 `_M_realloc_insert`，`push_back` 满容时进入）：
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：迁移路径的真实源码]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 迁移路径的真实源码
 ```cpp
 // bits/vector.tcc : 461        新容量 = _M_check_len(1u, ...)   → 2×
 // bits/vector.tcc : 491-499    if (_S_use_relocate())          → 平凡可重定位: __relocate_a (memcpy, 不调构造)
@@ -1480,7 +1480,7 @@ _M_reallocate(size_type __n)
 
 ### 4. 第一方可编译验证（观察 2× 倍增）
 
-> **示例 58** [难度 ★★☆☆☆] [主题：第一方可编译验证（观察 2× 倍增）]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证（观察 2× 倍增）
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1667,7 +1667,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 59** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <vector>

@@ -7,24 +7,24 @@
 > 一个"只借不拿"的视图，专治函数签名里 `(T* p, size_t n)` 这对极易出错的孪生兄弟。
 
 ### 0.1 起源（谁·何时·为何）
-在 `span` 之前，想让函数接收一个"数组或 vector 的一段"，标准写法是传 `(指针, 长度)` 两个参数。[史] 麻烦在于：指针和长度分家，长度常被忘传、传错、或与实际缓冲区脱节，引发越界。`std::span` 在 C++20 登场，把 `{指针, 长度}` 打包成一个非拥有（non-owning）的连续视图，进能当数组用、退能包 `array`/`vector`/`string`。[史] 它直接源自 Bjarne Stroustrup 与 Herb Sutter 推动的《C++ 核心指南》配套库 GSL（Guidelines Support Library）中的 `span`，目标是"边界安全"。[史]
+在 `span` 之前，想让函数接收一个"数组或 vector 的一段"，标准写法是传 `(指针, 长度)` 两个参数。<span class="badge badge-history">史</span> 麻烦在于：指针和长度分家，长度常被忘传、传错、或与实际缓冲区脱节，引发越界。`std::span` 在 C++20 登场，把 `{指针, 长度}` 打包成一个非拥有（non-owning）的连续视图，进能当数组用、退能包 `array`/`vector`/`string`。<span class="badge badge-history">史</span> 它直接源自 Bjarne Stroustrup 与 Herb Sutter 推动的《C++ 核心指南》配套库 GSL（Guidelines Support Library）中的 `span`，目标是"边界安全"。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- GSL 阶段：`gsl::span` 作为指南库先行试水，积累了大量使用经验。[史]
+- GSL 阶段：`gsl::span` 作为指南库先行试水，积累了大量使用经验。<span class="badge badge-history">史</span>
 - C++20：`std::span` 标准化，并支持静态 extent（编译期已知长度，可优化）与动态 extent。
 - C++23：进一步打磨（如构造规则、与范围的交互）。
 
 ### 0.3 设计哲学之争
-`span` 引发的核心争论是"视图该不该拥有内存"——`span` 选了**绝不拥有**，因此拷贝极廉价、生命周期责任清晰，代价是你必须保证底层对象活得比 `span` 久。[评] 它与 `string_view` 是"兄弟视图"（一个管字节、一个管字符），与 `vector` 则是"借 vs 拿"的对照。[评] 社区共识：接口参数优先用 `span`/`string_view`，所有权交给调用方，能显著减少悬垂与拷贝。
+`span` 引发的核心争论是"视图该不该拥有内存"——`span` 选了**绝不拥有**，因此拷贝极廉价、生命周期责任清晰，代价是你必须保证底层对象活得比 `span` 久。<span class="badge badge-comment">评</span> 它与 `string_view` 是"兄弟视图"（一个管字节、一个管字符），与 `vector` 则是"借 vs 拿"的对照。<span class="badge badge-comment">评</span> 社区共识：接口参数优先用 `span`/`string_view`，所有权交给调用方，能显著减少悬垂与拷贝。
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++23 继续打磨 `span`（构造规则、与范围交互）。多维视图与和 Ranges 的融合是后续主线。
 
-- [史] **`std::mdspan`（C++23）把 `span` 思想推到 N 维**：`std::mdspan<T, Extents>` 是非拥有的多维数组视图，支持映射策略（如 `layout_left`/`layout_right`/`layout_stride`），用于数值线性代数与 GPU/张量数据，无需拷贝底层缓冲区。
-- [史] **`as_bytes`/`as_writable_bytes`（C++20）放宽字节级视图**：`span` 可安全转成 `span<const std::byte>`，便于序列化与底层 IO；这是"视图借而不拿"在字节层的延伸。
-- [评] **`span` 与 `ranges::view` 是"近亲但不同源"**：`span` 只覆盖连续内存、可随机访问；`ranges` 视图可惰性、可非连续（如 `views::filter`）。两者都贯彻"不拥有"，但 `span` 偏底层字节/元素、`view` 偏算法管道（⟶ ch90）。
-- [史] **C++23 还补了 `span` 构造从 `array`/`initializer_list` 的便捷路径**，与 `std::dynamic_extent` 配合让接口更顺；仍未给 `span` 加"拥有"语义——所有权边界始终清清楚楚。
+- <span class="badge badge-history">史</span> **`std::mdspan`（C++23）把 `span` 思想推到 N 维**：`std::mdspan<T, Extents>` 是非拥有的多维数组视图，支持映射策略（如 `layout_left`/`layout_right`/`layout_stride`），用于数值线性代数与 GPU/张量数据，无需拷贝底层缓冲区。
+- <span class="badge badge-history">史</span> **`as_bytes`/`as_writable_bytes`（C++20）放宽字节级视图**：`span` 可安全转成 `span<const std::byte>`，便于序列化与底层 IO；这是"视图借而不拿"在字节层的延伸。
+- <span class="badge badge-comment">评</span> **`span` 与 `ranges::view` 是"近亲但不同源"**：`span` 只覆盖连续内存、可随机访问；`ranges` 视图可惰性、可非连续（如 `views::filter`）。两者都贯彻"不拥有"，但 `span` 偏底层字节/元素、`view` 偏算法管道（⟶ ch90）。
+- <span class="badge badge-history">史</span> **C++23 还补了 `span` 构造从 `array`/`initializer_list` 的便捷路径**，与 `std::dynamic_extent` 配合让接口更顺；仍未给 `span` 加"拥有"语义——所有权边界始终清清楚楚。
 
 > 史料来源：[cppreference std::span](https://en.cppreference.com/w/cpp/container/span)、[C++23 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B23)
 
@@ -51,7 +51,7 @@
 - **string 与 SSO** ⟶ `Book/part07_stl/ch81_string.md`：`std::string_view` 是 `span` 的"字符特化版"，二者设计同源（见 §⑪）。
 - **optional / expected** ⟶ `Book/part07_stl/ch88_optional_variant.md`：返回"可能缺失的视图"时，用 `std::optional<std::span<const T>>` 表达"无数据"比返回空 `span` 更明确。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // ②-1 前置：span 与三大数据源的关系（独立可编译）
 #include <span>
@@ -72,7 +72,7 @@ int main() {
 }
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
 ```cpp
 // ②-2 前置：span 不改变底层数据的所有权（仍是别人的内存）
 #include <span>
@@ -101,7 +101,7 @@ int main() {
 - **ranges 与 views** ⟶ `Book/part07_stl/ch90_ranges.md`：`std::ranges::subrange` 是 `span` 的"惰性表亲"，`span` 适合**连续**内存，`subrange` 适合任意迭代器对。
 - **STL 算法** ⟶ `Book/part08_algorithms/ch95_algo_overview.md`：几乎所有接受"区间"的算法都可用 `span` 直接喂入（因为 `span` 满足 `contiguous_range`）。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 // ③-1 后续：span 作为算法区间直接喂给 std::ranges（C++20）
 #include <span>
@@ -120,7 +120,7 @@ int main() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 // ③-2 后续：ranges::subrange 与 span 的互转思想（独立可编译）
 #include <span>
@@ -142,7 +142,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 5** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）
 ```
                         ┌─────────────────────────────┐
                         │   连续内存抽象（视图家族）    │
@@ -220,7 +220,7 @@ classDiagram
 
 `std::span` 本身**不持有任何元素**，它只是两个标量：`_M_ptr`（指针）和 `_M_extent`（大小/extent）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：内存图：span 的对象布局]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：span 的对象布局
 ```
 栈上的 span 对象（x86-64，普通对齐）：
 ┌──────────────────────────────────────────────────────────┐
@@ -246,7 +246,7 @@ classDiagram
 - `[实现·GCC15]`：`span` 的 extent 由内部 `struct _ExtentStorage` 保存；当 `Extent == dynamic_extent` 时该结构含一个 `size_t _M_extent_value`（见 `文件：span`, `行号：81-99`）；当 extent 为编译期常量时，该结构为空且 `_M_extent_value` 不参与对象大小。
 - `[标准]`：`sizeof(span<T, dynamic_extent>)` 通常等于 `2 * sizeof(void*)`（指针 + 大小），`sizeof(span<T, N>)` 通常等于 `sizeof(void*)`，因为大小是类型的一部分，不需存储。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：内存图：span 的对象布局]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图：span 的对象布局
 ```cpp
 // ⑦-1 验证 span 的对象大小（独立可编译）
 #include <span>
@@ -260,7 +260,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★★★☆☆] [主题：内存图：span 的对象布局]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：span 的对象布局
 ```cpp
 // ⑦-2 静态 extent 是类型的一部分（长度信息进入类型系统）
 #include <span>
@@ -287,7 +287,7 @@ int main() {
 
 `span` 不拥有底层存储，因此它的有效性与底层存储的生命周期**强绑定**。这是 `span` 最常见的误用来源。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：生命周期图：span 是"借来的引用]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：span 是"借来的引用
 ```
 时间轴 ────────────────────────────────────────────────►
 
@@ -309,7 +309,7 @@ int main() {
 - `[标准]`：`span` 不延长任何人生命周期；从临时 `vector`/`string` 构造 `span` 并外传是经典悬垂错误（见 §⑯）。
 - `[经验]`：函数参数用 `span` 传"调用方保证存活"的缓冲区；不要把它存进成员变量后长期持有。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：生命周期图：span 是"借来的引用]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：span 是"借来的引用
 ```cpp
 // ⑧-1 生命周期：从局部 vector 返回 span 是悬垂（代码可编译，运行期 UB！）
 #include <span>
@@ -327,7 +327,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：生命周期图：span 是"借来的引用]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：span 是"借来的引用
 ```cpp
 // ⑧-2 正确：调用方持有存储，span 仅在本作用域内借用
 #include <span>
@@ -352,7 +352,7 @@ int main() {
 
 `subspan(offset, count)` 并**不拷贝**元素，只是构造一个指向 `data()+offset`、长度为 `count` 的新 `span`。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：调用栈 / 时序图：subspan ]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：subspan
 ```
 调用方                        span 对象                     底层数组
   │                              │                            │
@@ -371,7 +371,7 @@ int main() {
 - `[标准]`：`first(n)`、`last(n)`、`subspan(o, c)` 都返回新 `span`，复杂度 `O(1)`，且断言 `n <= size()` / `o <= size()`（经由 `__glibcxx_assert`，见 `文件：span`, `行号：341-344, 360-363, 373-387`）。
 - `[实现]`：这些函数在 `-O2` 下通常被内联为一条 `lea`（地址计算），无分支、无拷贝。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图：subspan ]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：subspan
 ```cpp
 // ⑨-1 subspan 不拷贝，仅移动指针（独立可编译）
 #include <span>
@@ -388,7 +388,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图：subspan ]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：subspan
 ```cpp
 // ⑨-2 first / last 是 subspan 的便捷包装
 #include <span>
@@ -410,7 +410,7 @@ int main() {
 
 下面用 x86-64（`-std=c++23 -O2 -masm=intel`）观察 `span` 与普通指针+长度访问生成的指令是否等价。
 
-> **示例 15** [难度 ★★★☆☆] [主题：汇编分析：span 的零开销]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：span 的零开销
 ```cpp
 // ⑩-1 被测代码（仅作汇编对照，下方 asm 为其 -O2 产物）
 #include <span>
@@ -453,7 +453,7 @@ _Z7sum_ptrPKiy:
 - `[实现·GCC15]`：`span` 在 `-O2` 下被**完全展开为指针 + 计数器的普通循环**，`first/last/subspan` 生成的是 `lea` 地址计算，没有虚调用、没有堆分配、没有额外间接层。
 - `[标准]`：这正是 `span` 作为"零开销抽象"的体现——它只是把"指针 + 长度"这对本就存在的运行期信息，用类型安全地封装起来。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：汇编分析：span 的零开销]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编分析：span 的零开销
 ```cpp
 // ⑩-2 验证：span 访问不引入边界检查指令（独立可编译，说明零开销）
 #include <span>
@@ -484,7 +484,7 @@ int main() {
 - `[实现]`：GCC 13 **未实现** `<mdspan>`（多维 span），若需多维连续视图，用 `span<T>` + 手动 `offset = i*stride` 计算，或升级编译器；正文不涉及 `#include <mdspan>`。
 - `[经验]`：接口参数优先用 `span`（而非 `vector&` 或裸指针+长度）；返回结果时，若需"返回并转移所有权"用 `vector`，若"返回调用方已有的缓冲区视图"则 `span` 不合适（应用 `vector&` 输出参数或返回值）。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：联系：span 在容器/视图家族中的]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：span 在容器/视图家族中的
 ```cpp
 // ⑪-1 span 与 string_view 的同源对比（独立可编译）
 #include <span>
@@ -501,7 +501,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：联系：span 在容器/视图家族中的]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：span 在容器/视图家族中的
 ```cpp
 // ⑪-2 用 span 取代 (ptr, len) 二参数接口（更安全、更表达化）
 #include <span>
@@ -536,7 +536,7 @@ int main() {
 
 网络层常拿到一整块 `char` 缓冲区，需要按协议帧切片。用 `span<std::byte>` 表达"当前待解析的剩余字节"，逐帧 `subspan` 推进，避免反复传 `offset` 与 `len`。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：工业案例：网络封包解析与行情快照]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：网络封包解析与行情快照
 ```cpp
 // ⑫-1 网络封包：用 span 表达"剩余待解析字节"（独立可编译，模拟逻辑）
 #include <span>
@@ -575,7 +575,7 @@ int main() {
 
 交易所行情常以连续数字数组下发（买价数组、卖量数组）。`span<const double>` 把"价格数组 + 长度"打包给风控/撮合模块，零拷贝。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：工业案例：网络封包解析与行情快照]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：网络封包解析与行情快照
 ```cpp
 // ⑫-2 行情快照：零拷贝把价格数组交给计算模块（独立可编译，模拟逻辑）
 #include <span>
@@ -603,7 +603,7 @@ int main() {
 
 - `[经验]`：工业代码中 `span` 最常见的角色是**函数参数**，向算法层暴露"我给你一块连续内存及其长度"。它几乎从不当作长期存储对象（见 §⑧）。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：工业案例：网络封包解析与行情快照]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：网络封包解析与行情快照
 ```cpp
 // ⑫-3 工业：序列化写入——span 作为"剩余可写缓冲区"视图（独立可编译）
 #include <span>
@@ -639,7 +639,7 @@ int main() {
 
 ### 13.1 extent 的存储策略
 
-> **示例 22** [难度 ★★★☆☆] [主题：的存储策略]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的存储策略
 ```cpp
 #include <cstddef>
 // ⑬-1a libstdc++ 源码摘录（文件：span，行号：81-99）
@@ -658,7 +658,7 @@ int main() { return 0; }
 
 ### 13.2 两个核心成员与构造函数
 
-> **示例 23** [难度 ★★☆☆☆] [主题：两个核心成员与构造函数]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 两个核心成员与构造函数
 ```cpp
 // ⑬-2a libstdc++ 源码摘录（文件：span，行号：153 / 161 / 189 / 212）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -678,7 +678,7 @@ int main() { return 0; }
 
 ### 13.3 访问函数与切片
 
-> **示例 24** [难度 ★★☆☆☆] [主题：访问函数与切片]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 访问函数与切片
 ```cpp
 // ⑬-3a libstdc++ 源码摘录（文件：span，行号：252-253 / 280-283 / 287-288 / 341-344 / 360-363 / 399）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -700,7 +700,7 @@ int main() { return 0; }
 - `[实现]`：`operator[]` 中 `__glibcxx_assert` 在 **NDEBUG 下完全消失**（发布构建零成本），在调试构建下触发断言——这正是 `span` "调试期边界检查、发布期零开销"的设计。
 - `[标准]`：注意 `operator[]` 标注 `const noexcept` 但**不抛异常也不做运行期边界检查**（NDEBUG 时）；越界访问是 UB，调用方负责保证索引合法。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：访问函数与切片]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 访问函数与切片
 ```cpp
 // ⑬-1 对照理解：调试构建下越界会被断言捕获（独立可编译，演示接口）
 #include <span>
@@ -727,7 +727,7 @@ int main() {
 - `[标准]`：`std::span` 在 C++20 成为标准，C++23 仅做边角修复（如 `std::as_bytes`/`std::as_writable_bytes` 的完善、`span` 与范围适配器的兼容性）。
 - `[经验]`：若需兼容 C++17 代码库，可用 `gsl::span`（Guidelines Support Library）作为过渡，接口高度一致。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：提案背景]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案背景
 ```cpp
 // ⑭-1 as_bytes / as_writable_bytes：以字节视角看任意 span（C++20，GCC13 支持）
 #include <span>
@@ -757,7 +757,7 @@ int main() {
    → `[标准]` 不会（NDEBUG 下）。`operator[]` 是 `noexcept` 且靠 `__glibcxx_assert` 仅在调试构建检查；越界是 UB。
 
 4. **下面代码有什么问题？**
-> **示例 27** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
    ```cpp
 #include <vector>
 #include <span>
@@ -777,7 +777,7 @@ int main() {
 8. **`std::span` 能作为 `std::map` 的 key 吗？**
    → 不能（无 `operator<` 且语义是视图，比较无意义）。若需关联容器见 ⟶ `Book/part07_stl/ch83_map.md`。
 
-> **示例 28** [难度 ★★★☆☆] [主题：面试题]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题
 ```cpp
 // ⑮-1 面试题实战：判断 span 是否 contiguous（独立可编译）
 #include <span>
@@ -797,7 +797,7 @@ int main() {
 ## ⑯ 易错点
 
 1. **悬垂 span（从临时对象构造后外传）** —— 见 §⑧。永远确保底层存储活得比 `span` 久。
-> **示例 29** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
    ```cpp
    // ❌ 逻辑错误演示（编译通过，运行期 UB）：从临时 string 取 view 外传
    #include <string>
@@ -810,7 +810,7 @@ int main() {
 ```
 
 2. **把 `span` 存为成员变量后底层被修改/释放** —— `vector` 扩容、`std::string` 的 SSO 迁移都会让已存的 `span` 失效。
-> **示例 30** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
    ```cpp
    // ❌ 逻辑错误演示（编译通过）：扩容使 span 悬垂
    #include <span>
@@ -826,7 +826,7 @@ int main() {
 ```
 
 3. **误以为 `span` 越界会抛异常** —— 它不会（§⑬）。需要安全访问请用 `std::size` 先检查。
-> **示例 31** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ❌ 错误预期：希望 s[100] 抛异常
    #include <span>
@@ -842,7 +842,7 @@ int main() {
 ```
 
 4. **用 `span` 返回函数内新建的数据** —— `span` 不拥有，无法"返回并转移所有权"，应返回 `vector` 或接受 `span` 输出参数。
-> **示例 32** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ✅ 正确：输出参数写入调用方提供的缓冲区
    #include <span>
@@ -860,7 +860,7 @@ int main() {
 ```
 
 5. **混淆 `dynamic_extent` 与 0** —— `dynamic_extent` 是 `static_cast<std::size_t>(-1)`，代表"长度运行期决定"，不是"长度为 0"。
-> **示例 33** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
    ```cpp
    // ✅ 演示 dynamic_extent 的值
    #include <span>
@@ -893,7 +893,7 @@ int main() {
 **Q6：`span` 的迭代器失效规则和 `vector` 一样吗？**
 → 不一样。`span` 本身没有"失效"概念，失效的是**底层存储**。底层的 `vector` 扩容会让所有指向它的 `span` 同时失效（见 §⑧）。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // ⑰-1 FAQ：const 退化的 span 互转（独立可编译）
 #include <span>
@@ -911,7 +911,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // ⑰-2 FAQ：span 与 string_view 互操作（字符特化）
 #include <span>
@@ -939,7 +939,7 @@ int main() {
 6. **跨 ABI / C 接口边界**用 `span` 的 `data()` + `size()` 拆成 `(void*, size_t)`，内部立即重建 `span`。
 7. **`noexcept` 与零开销**：`span` 的访问都是 `noexcept`，可在热路径放心使用。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-1 最佳实践：只读 span 作为万能参数（独立可编译）
 #include <span>
@@ -962,7 +962,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑱-2 最佳实践：跨 C 接口时拆/装 span（独立可编译）
 #include <span>
@@ -1005,7 +1005,7 @@ int main() {
 
 ### 19.3 与 `vector` 传参的对比（microbenchmark 量级）
 
-> **示例 38** [难度 ★★☆☆☆] [主题：与 vector 传参的对比]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 vector 传参的对比
 ```cpp
 // ⑲-1 量级对照：span 传参 vs vector 传值（独立可编译，含示意计时骨架）
 #include <span>
@@ -1061,16 +1061,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：函数参数用 `std::span<const int>` 同时接收数组与 vector。** 你不再为两种容器写重载。请说明视图语义。
-   - [标准] span 是连续序列的轻量非拥有视图（C++20），可从上/数组/vector 构造；不管理生命周期。
-   - [引用] ISO/IEC 14882:2023 §[views.span]（std::span）；cppreference "std::span" 词条。
+   - <span class="badge badge-std">标准</span> span 是连续序列的轻量非拥有视图（C++20），可从上/数组/vector 构造；不管理生命周期。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（std::span）；cppreference "std::span" 词条。
 
 2. **真实场景：span 不拥有数据，原容器提前销毁会悬垂。** 你返回 `make_span(v)` 的 span 后 v 出了作用域。请说明责任。
-   - [标准] span 仅引用底层存储；底层被释放后使用该 span 是未定义行为，生命周期由调用方保证。
-   - [引用] ISO/IEC 14882:2023 §[views.span]（视图的引用语义）/ [basic.life]；cppreference "std::span" 词条。
+   - <span class="badge badge-std">标准</span> span 仅引用底层存储；底层被释放后使用该 span 是未定义行为，生命周期由调用方保证。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（视图的引用语义）/ [basic.life]；cppreference "std::span" 词条。
 
 3. **真实场景：静态 extent 可编译期 `size()`。** 你用 `span<int, 4>` 让大小参与类型。请说明。
-   - [标准] extent 在编译期已知时成为类型一部分（静态 extent），`size()` 为编译期常量。
-   - [引用] ISO/IEC 14882:2023 §[views.span]（静态/动态 extent）；cppreference "std::span" 词条。
+   - <span class="badge badge-std">标准</span> extent 在编译期已知时成为类型一部分（静态 extent），`size()` 为编译期常量。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（静态/动态 extent）；cppreference "std::span" 词条。
 
 | 语言 | 对应抽象 | 说明 |
 |---|---|---|
@@ -1084,7 +1084,7 @@ int main() {
 - `[标准]`：C++ `span` 对标 Rust `&[T]`、C# `Span<T>`、Go `[]T`（核心三者）。**关键差异**：Rust/C# 在类型系统层面阻止 `span` 悬垂（生命周期/`ref struct`），而 C++ `span` 把生命周期责任交给程序员（见 §⑧、§⑯），这是 C++ 零开销权衡的代价。
 - `[经验]`：从 Rust/C# 转来的工程师会自然使用 `span`；但必须习惯"C++ 不会在编译期阻止你持有悬垂视图"，要靠代码审查与 `-DNDEBUG` 之外的 sanitizer（`-fsanitize=address`）兜底。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：跨语言对比：连续视图的语义]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：连续视图的语义
 ```cpp
 // ⑳-1 跨语言映射：Go 式 s[lo:hi] 在 C++ 用 subspan 表达（独立可编译）
 #include <span>
@@ -1100,7 +1100,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★★★☆☆] [主题：跨语言对比：连续视图的语义]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比：连续视图的语义
 ```cpp
 // ⑳-2 跨语言映射：Rust &[T] 的"借用保证"在 C++ 需 manual discipline（独立可编译）
 #include <span>
@@ -1126,7 +1126,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：std::span 与「零成本视图」的标准化
 
-[史] `std::span` 随 C++20 进入标准，核心提案是 Neil MacIntosh 等人的 P0122（span: bounds-safe views for sequences of contiguous objects）。[史] 它的动机是解决长期痛点：函数想接收「数组或 vector 的连续片段」却没有统一、零开销的类型，只能用 `(T*, size_t)` 这对裸指针——既丢长度信息又易越界。[轶] `span` 的动态/静态 Extent 双形态（运行时 `span<T>` 与编译期 `span<T,N>`）是一个精巧折中，静态版本能保留边界信息甚至优化掉 size 存储。[评] `span` 是「借用而非拥有」哲学进入标准库的标志性一步，与 Rust 的切片 `&[T]` 异曲同工。
+<span class="badge badge-history">史</span> `std::span` 随 C++20 进入标准，核心提案是 Neil MacIntosh 等人的 P0122（span: bounds-safe views for sequences of contiguous objects）。<span class="badge badge-history">史</span> 它的动机是解决长期痛点：函数想接收「数组或 vector 的连续片段」却没有统一、零开销的类型，只能用 `(T*, size_t)` 这对裸指针——既丢长度信息又易越界。<span class="badge badge-anecdote">轶</span> `span` 的动态/静态 Extent 双形态（运行时 `span<T>` 与编译期 `span<T,N>`）是一个精巧折中，静态版本能保留边界信息甚至优化掉 size 存储。<span class="badge badge-comment">评</span> `span` 是「借用而非拥有」哲学进入标准库的标志性一步，与 Rust 的切片 `&[T]` 异曲同工。
 
 ### ㉒.2 真实工程坐标：span 活在哪些产品里
 
@@ -1137,11 +1137,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：span 的常见误用与陷阱
 
-[评] 最大的坑是「悬空视图」：span 不拥有数据，若底层容器（如临时 `vector` 或栈数组）先销毁，span 立刻悬空——典型的「返回 `span` 指向局部变量」错误。另一坑是「把 `span` 当容器用」——它没有 `push_back`、不管理生命周期，误用会编译失败或语义错乱。还有 `span` 与 `vector` 混用时的越界边界：动态 `span` 不保留容量信息，下标越界仍是 UB，需配合 `first` / `subspan` 的安全切片。
+<span class="badge badge-comment">评</span> 最大的坑是「悬空视图」：span 不拥有数据，若底层容器（如临时 `vector` 或栈数组）先销毁，span 立刻悬空——典型的「返回 `span` 指向局部变量」错误。另一坑是「把 `span` 当容器用」——它没有 `push_back`、不管理生命周期，误用会编译失败或语义错乱。还有 `span` 与 `vector` 混用时的越界边界：动态 `span` 不保留容量信息，下标越界仍是 UB，需配合 `first` / `subspan` 的安全切片。
 
 ### ㉒.4 与标准的互动：span 与标准的演进
 
-[史] `std::span` 经 P0122R7 在 C++20 落地，填补了标准库长期缺失的「连续视图」原语。[评] 它是 C++20 一系列「视图化」改革（ranges、string_view）的一环，WG21 后续又提出 `std::mdspan`（多维视图，C++23）与 `std::spanstream` 等扩展，方向明确是「用零开销视图取代裸指针 + 长度的传统 C 接口」。同时标准也强调：span 的 ABI 在 C++20 后冻结，避免重蹈字符串 dual-ABI 的覆辙。
+<span class="badge badge-history">史</span> `std::span` 经 P0122R7 在 C++20 落地，填补了标准库长期缺失的「连续视图」原语。<span class="badge badge-comment">评</span> 它是 C++20 一系列「视图化」改革（ranges、string_view）的一环，WG21 后续又提出 `std::mdspan`（多维视图，C++23）与 `std::spanstream` 等扩展，方向明确是「用零开销视图取代裸指针 + 长度的传统 C 接口」。同时标准也强调：span 的 ABI 在 C++20 后冻结，避免重蹈字符串 dual-ABI 的覆辙。
 
 - **WG21 修订链**：`std::span` 经 P0122R0（原名 `array_view`）→…→P0122R7（Neil MacIntosh、Stephan T. Lavavej，wg21.link/P0122R7，2018 Jacksonville 采纳）在 C++20 落地。R0→R7 的关键变更包括：R0 改名 `array_view`→`span` 并移除非连续多维部分；R5 移除 `unique_ptr`/`shared_ptr` 构造与 `length()`；R6/R7 把比较运算符（如 `operator==`）整组删除——删除理由见 P1085（「浅拷贝/浅 const 的视图不应有深比较语义」，wg21.link/P1085）。后续 `std::mdspan`（P0009R15，wg21.link/P0009R15）与 `std::spanstream`（P0448 系列）延续同一视图哲学。
 - **ISO 条款**：`std::span` 规定于 ISO/IEC 14882 §24.7.2（`[views]`/`[span]`）。其设计理由是「作为连续序列的**非拥有**视图，提供 `(pointer, size)` 的零开销、类型安全替代」——标准明确 span 不管理生命周期，且其 ABI 在 C++20 冻结，正是为了避免 `std::string` dual-ABI 那样的历史教训。
@@ -1209,7 +1209,7 @@ int main() {
 ### 练习 1（难度 ★★）
 **真实场景：底层二进制帧解析——同一函数接收栈缓冲/array/vector。** 网络包负载可能是 `uint8_t[]`、定长 `array` 或动态 `vector`，用 `span` 统一接收，避免为每种容器重载。
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <span>
@@ -1227,14 +1227,14 @@ int main() {
 }
 ```
 
-[标准] 结论：`std::span<T>` 是连续序列的视图（指针+长度），可隐式从任意连续容器构造；`span<const T>` 接受只读视图，是"我想读一段连续 int"的标准签名，避免为每种容器重载。
+<span class="badge badge-std">标准</span> 结论：`std::span<T>` 是连续序列的视图（指针+长度），可隐式从任意连续容器构造；`span<const T>` 接受只读视图，是"我想读一段连续 int"的标准签名，避免为每种容器重载。
 
-[引用] ISO/IEC 14882:2023 §[views.span]（`span` 的连续视图与隐式构造）；其零成本布局见本章附录 ASM 实证；cppreference "container/span"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（`span` 的连续视图与隐式构造）；其零成本布局见本章附录 ASM 实证；cppreference "container/span"。
 
 ### 练习 2（难度 ★★★）
 **真实场景：协议分块——不拷贝取载荷子区间。** 从整帧 `span` 切出 payload 段做 CRC 校验，`subspan` 在原缓冲上滑动视图，复杂度 O(1)。
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <span>
@@ -1248,14 +1248,14 @@ int main() {
 }
 ```
 
-[标准] 结论：`std::span` 的 extent 可是编译期常量（静态）或 `dynamic_extent`（运行时）；`subspan/first/last` 在原缓冲区上滑动视图，复杂度 O(1)，适合算法分块。
+<span class="badge badge-std">标准</span> 结论：`std::span` 的 extent 可是编译期常量（静态）或 `dynamic_extent`（运行时）；`subspan/first/last` 在原缓冲区上滑动视图，复杂度 O(1)，适合算法分块。
 
-[引用] ISO/IEC 14882:2023 §[views.span]（`subspan`/`first`/`last` 与原缓冲区上的视图）；见 cppreference "container/span" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（`subspan`/`first`/`last` 与原缓冲区上的视图）；见 cppreference "container/span" 词条。
 
 ### 练习 3（难度 ★★★★）
 **真实场景：图像行视图——把扁平 RGB 缓冲按宽切成逻辑行，无拷贝。** 图像处理把 `vector<byte>` 当二维，按列数出每行 `span`。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <span>
@@ -1271,16 +1271,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`span` 可指向缓冲区的任意偏移，配合"步长"概念能表达二维行视图而无需分配新容器；`at()` 提供有界检查（越界抛 `std::out_of_range`），`operator[]` 无检查更快。
+<span class="badge badge-std">标准</span> 结论：`span` 可指向缓冲区的任意偏移，配合"步长"概念能表达二维行视图而无需分配新容器；`at()` 提供有界检查（越界抛 `std::out_of_range`），`operator[]` 无检查更快。
 
-[引用] ISO/IEC 14882:2023 §[views.span]（`at()`/`operator[]` 的有界/无界差异）；`span` 的"视图"思想源自 GSL/`std::span` 提案（P0122），见 cppreference "container/span"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（`at()`/`operator[]` 的有界/无界差异）；`span` 的"视图"思想源自 GSL/`std::span` 提案（P0122），见 cppreference "container/span"。
 
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：泛型数值累加，接受任意连续容器
 把容器转成 `span<const T>` 后用标准算法累加，签名只依赖连续性。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：演绎 1：泛型数值累加，接受任意连续]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：泛型数值累加，接受任意连续
 ```cpp
 #include <iostream>
 #include <span>
@@ -1300,7 +1300,7 @@ int main() {
 ### 演绎 2：const 正确性——span<const T> 与 span<T>
 只读函数用 `span<const T>`，可接收 `vector<int>` 与 `const vector<int>`；`span<T>` 才能写回。
 
-> **示例 45** [难度 ★★★☆☆] [主题：演绎 2：const 正确性——sp]
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：const 正确性——sp
 ```cpp
 #include <iostream>
 #include <span>
@@ -1444,7 +1444,7 @@ at_span(std::span<int const, N>, unsigned long long):
 
 ### D4.7 编译验证
 
-> **示例 46** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <span>
 #include <array>
@@ -1662,7 +1662,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 47** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <numeric>

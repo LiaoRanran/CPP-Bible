@@ -12,37 +12,37 @@
 > 当"每条原子操作各带一个内存序"还不够细时，程序员需要一个能同时拦住一批操作的"总闸"。
 
 ### 0.1 起源（谁·何时·为何）
-即使有了 `std::atomic` 与 per-operation 内存序，仍有场景需要"把一批写操作一次性地、整体地对其他线程可见"——典型如发布一个初始化完毕的数据结构：你希望所有写都在某个点之前完成并可见，而不是被拆散到各处。硬件层面，StoreLoad 这类跨类型的重排尤其难缠，缓存一致性协议（如 x86 的 MESI/TSO）也决定了不同架构需要不同的屏障原语。[史] 在此之前，程序员只能调用平台屏障：`mfence`/`sfence`/`lfence`（x86）、`sync`（POWER）、`dmb`（ARM）或编译器内建。
+即使有了 `std::atomic` 与 per-operation 内存序，仍有场景需要"把一批写操作一次性地、整体地对其他线程可见"——典型如发布一个初始化完毕的数据结构：你希望所有写都在某个点之前完成并可见，而不是被拆散到各处。硬件层面，StoreLoad 这类跨类型的重排尤其难缠，缓存一致性协议（如 x86 的 MESI/TSO）也决定了不同架构需要不同的屏障原语。<span class="badge badge-history">史</span> 在此之前，程序员只能调用平台屏障：`mfence`/`sfence`/`lfence`（x86）、`sync`（POWER）、`dmb`（ARM）或编译器内建。
 
 ### 0.2 关键转折（编年）
-- 平台时代：屏障散落在 `asm volatile`、编译器内建与 SDK 宏里，可移植性为零。[史]
-- **C++11（2011）**：引入 `std::atomic_thread_fence` 与 `std::atomic_signal_fence`，把"线程间"与"同线程信号/中断"两类屏障统一进标准。[史]
-- C++20：随 `std::atomic_ref` 一起，屏障与原子引用在弱内存模型下配合成为主题。[史]
+- 平台时代：屏障散落在 `asm volatile`、编译器内建与 SDK 宏里，可移植性为零。<span class="badge badge-history">史</span>
+- **C++11（2011）**：引入 `std::atomic_thread_fence` 与 `std::atomic_signal_fence`，把"线程间"与"同线程信号/中断"两类屏障统一进标准。<span class="badge badge-history">史</span>
+- C++20：随 `std::atomic_ref` 一起，屏障与原子引用在弱内存模型下配合成为主题。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-取舍在于**细粒度（每个操作单独标内存序）vs 粗粒度（一道 fence 管一片）**。逐操作标注更精确、理论上更省，但跨多变量时极易写错、难推理；一道线程栅栏常常"更保守却更易懂"，用一点性能换来正确性把握。[评] C++ 同时提供二者，让程序员在"精准"与"省心"之间自选，而非只给一种。另一个争论是 fence 与 atomic 操作之间能否"组合出" acquire/release 语义——标准为此给了精细规则，也成了最难读懂的角落之一。[史]
+取舍在于**细粒度（每个操作单独标内存序）vs 粗粒度（一道 fence 管一片）**。逐操作标注更精确、理论上更省，但跨多变量时极易写错、难推理；一道线程栅栏常常"更保守却更易懂"，用一点性能换来正确性把握。<span class="badge badge-comment">评</span> C++ 同时提供二者，让程序员在"精准"与"省心"之间自选，而非只给一种。另一个争论是 fence 与 atomic 操作之间能否"组合出" acquire/release 语义——标准为此给了精细规则，也成了最难读懂的角落之一。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 屏障语义的"重灾区"从服务器多核转移到了移动与嵌入式，架构差异被进一步放大。
 
-- ARM64、RISC-V 等弱内存架构普及后，`std::atomic_thread_fence` 的 StoreLoad 屏障语义成为移动端、嵌入式端面试与调优的高频考点——同一条 fence 在 x86（TSO，几乎免费）与 ARM（需 `dmb`）代价天差地别。[史]
-- C++20 的 `atomic_ref` 与各类屏障在弱内存模型下被反复讨论，fence 与 per-operation 内存序如何"组合出" acquire/release 仍是标准里最难读懂的角落之一。[史]
-- [评] 一个工程共识是：能用 release/acquire 配对解决的，绝不轻易上全局 `seq_cst` fence——后者在弱内存架构上是昂贵的全屏障，滥用会把无锁代码的性能优势吃光。
-- [轶] GPU 与 CPU 的"一致性"至今没有统一答案：CUDA/ROCm 的"宽松一致性"与 C++ 的模型并不同构，跨设备 fence 仍是系统级难题，远未进入标准视野。
-- C++23/26 持续打磨 fence 与 signal fence 的边界，尤其 `atomic_signal_fence` 在同线程信号处理中的精确语义。[史]
+- ARM64、RISC-V 等弱内存架构普及后，`std::atomic_thread_fence` 的 StoreLoad 屏障语义成为移动端、嵌入式端面试与调优的高频考点——同一条 fence 在 x86（TSO，几乎免费）与 ARM（需 `dmb`）代价天差地别。<span class="badge badge-history">史</span>
+- C++20 的 `atomic_ref` 与各类屏障在弱内存模型下被反复讨论，fence 与 per-operation 内存序如何"组合出" acquire/release 仍是标准里最难读懂的角落之一。<span class="badge badge-history">史</span>
+- <span class="badge badge-comment">评</span> 一个工程共识是：能用 release/acquire 配对解决的，绝不轻易上全局 `seq_cst` fence——后者在弱内存架构上是昂贵的全屏障，滥用会把无锁代码的性能优势吃光。
+- <span class="badge badge-anecdote">轶</span> GPU 与 CPU 的"一致性"至今没有统一答案：CUDA/ROCm 的"宽松一致性"与 C++ 的模型并不同构，跨设备 fence 仍是系统级难题，远未进入标准视野。
+- C++23/26 持续打磨 fence 与 signal fence 的边界，尤其 `atomic_signal_fence` 在同线程信号处理中的精确语义。<span class="badge badge-history">史</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 理解 memory_order 六种选项的语义
 2. 区分 acquire/release/seq_cst/relaxed/consume
 3. 掌握 std::atomic_thread_fence 的使用场景
 4. 理解 StoreLoad/SMP/MESI 等硬件层面的内存序
 
-## ② memory_order 六态 [标准]
+## ② memory_order 六态 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★☆☆☆] [主题：order 六态 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：order 六态 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -50,9 +50,9 @@ enum class MO{relaxed, consume, acquire, release, acq_rel, seq_cst};
 int main(){std::cout<<"memory_order: relaxed<consume<acquire/release<acq_rel<seq_cst (strength)\n";return 0;}
 ```
 
-## ③ relaxed 语义 [标准]
+## ③ relaxed 语义 <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：语义 [标准]]
+> **示例 2** [难度 ★★☆☆☆] [主题：语义 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -60,9 +60,9 @@ std::atomic<int> x(0);
 int main(){x.store(42,std::memory_order_relaxed);std::cout<<x.load(std::memory_order_relaxed)<<std::endl;return 0;}
 ```
 
-## ④ acquire-release 配对 [标准]
+## ④ acquire-release 配对 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★★☆☆☆] [主题：配对 [标准]]
+> **示例 3** [难度 ★★☆☆☆] [主题：配对 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -73,9 +73,9 @@ void consumer(){while(!ready.load(std::memory_order_acquire));std::cout<<data<<s
 int main(){std::thread p(producer),c(consumer);p.join();c.join();return 0;}
 ```
 
-## ⑤ seq_cst 全局序 [标准]
+## ⑤ seq_cst 全局序 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★★☆☆☆] [主题：cst 全局序 [标准]]
+> **示例 4** [难度 ★★☆☆☆] [主题：cst 全局序 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -83,9 +83,9 @@ std::atomic<int> a(0),b(0);
 int main(){a.store(1,std::memory_order_seq_cst);b.store(1,std::memory_order_seq_cst);std::cout<<a.load()+b.load()<<std::endl;return 0;}
 ```
 
-## ⑥ atomic_thread_fence [标准]
+## ⑥ atomic_thread_fence <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：threadfence [标准]]
+> **示例 5** [难度 ★★☆☆☆] [主题：threadfence <span class="badge badge-std">标准</span>]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -95,15 +95,15 @@ int main(){g.store(1,std::memory_order_relaxed);std::atomic_thread_fence(std::me
 
 ## ⑦ 硬件内存模型 [微架构·x86-64 TSO]
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：硬件内存模型 [微架构·x86-64]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 硬件内存模型 [微架构·x86-64
 ```cpp
 #include <iostream>
 int main(){std::cout<<"x86: TSO model. ARM/POWER: weak ordering. x86 seq_cst = mfence, acquire = no-op.\n";return 0;}
 ```
 
-## ⑧ memory_order_consume [标准]
+## ⑧ memory_order_consume <span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★★☆☆☆] [主题：orderconsume [标准]]
+> **示例 7** [难度 ★★☆☆☆] [主题：orderconsume <span class="badge badge-std">标准</span>]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -111,17 +111,17 @@ std::atomic<int*> ptr(nullptr);
 int main(){int v=42;ptr.store(&v,std::memory_order_release);int*p=ptr.load(std::memory_order_consume);std::cout<<*p<<std::endl;return 0;}
 ```
 
-## ⑨ 跨语言对比 [经验]
+## ⑨ 跨语言对比 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★★☆☆☆] [主题：跨语言对比 [经验]]
+> **示例 8** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ memory_order vs Rust Ordering vs C11 memory_order vs Java volatile+VarHandle.\n";return 0;}
 ```
 
-## ⑩ 跨语言对比：内存模型 [经验]
+## ⑩ 跨语言对比：内存模型 <span class="badge badge-exp">经验</span>
 
-> **示例 9** [难度 ★★☆☆☆] [主题：跨语言对比：内存模型 [经验]]
+> **示例 9** [难度 ★★☆☆☆] [主题：跨语言对比：内存模型 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxed/SeqCst): identical semantics.\n";return 0;}
@@ -129,7 +129,7 @@ int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxe
 
 ## 补充完整可编译示例
 
-> **示例 10** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -139,7 +139,7 @@ void inc(){for(int i=0;i<1000;++i)counter.fetch_add(1,std::memory_order_relaxed)
 int main(){std::thread t1(inc),t2(inc);t1.join();t2.join();std::cout<<counter.load()<<std::endl;return 0;}
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -147,7 +147,7 @@ std::atomic<int> flag(0);
 int main(){int expected=0;flag.compare_exchange_strong(expected,1,std::memory_order_acq_rel,std::memory_order_relaxed);std::cout<<flag.load()<<std::endl;return 0;}
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -155,33 +155,33 @@ struct alignas(64) Padded{std::atomic<int> v;};
 int main(){Padded p;p.v.store(7,std::memory_order_relaxed);std::cout<<p.v.load()<<std::endl;return 0;}
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <atomic>
 #include <iostream>
 int main(){std::atomic<int> a;std::cout<<a.is_lock_free()<<std::endl;return 0;}
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <atomic>
 #include <iostream>
 int main(){std::cout<<"Dekker's algorithm needs seq_cst on non-x86 for correctness.\n";return 0;}
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){std::cout<<"StoreLoad barrier = full fence (mfence on x86, dmb on ARM). Most expensive.\n";return 0;}
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){std::cout<<"seqlock pattern: seq_cst for writer counter, acquire for reader consistency.\n";return 0;}
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -189,105 +189,105 @@ std::atomic<int> version(0);int snapshot[2]={0,0};
 int main(){version.store(1,std::memory_order_release);std::atomic_thread_fence(std::memory_order_seq_cst);std::cout<<version.load()<<std::endl;return 0;}
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){std::cout<<"RCU pattern: readers no atomic ops, writers use release fence. Linux kernel classic.\n";return 0;}
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 #include <iostream>
 int main(){std::cout<<"fence总结: seq_cst最安全也最贵, acquire-release足够大多数场景, relaxed仅计数器。"<<std::endl;return 0;}
 ```
 
-## ⑪ STL 联系 [标准]
-> **示例 20** [难度 ★★☆☆☆] [主题：联系 [标准]]
+## ⑪ STL 联系 <span class="badge badge-std">标准</span>
+> **示例 20** [难度 ★★☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 #include <atomic>
 int main(){std::atomic<int> x;x.store(1);std::cout<<x.load()<<std::endl;return 0;}
 ```
 
-## ⑫ 工业案例 [经验]
-> **示例 21** [难度 ★★☆☆☆] [主题：工业案例 [经验]]
+## ⑫ 工业案例 <span class="badge badge-exp">经验</span>
+> **示例 21** [难度 ★★☆☆☆] [主题：工业案例 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Linux RCU (release+consume), Chrome base::AtomicRefCount (relaxed), ClickHouse lock-free queue.\n";return 0;}
 ```
 
 ## ⑬ 源码分析 [实现·GCC15]
-> **示例 22** [难度 ★★☆☆☆] [主题：源码分析 [实现·GCC15]]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析 [实现·GCC15]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC __atomic_store_n maps to lock xchg or mov+mfence depending on order in gcc/builtins.cc.\n";return 0;}
 ```
 
-## ⑭ WG21 提案 [标准]
-> **示例 23** [难度 ★★☆☆☆] [主题：提案 [标准]]
+## ⑭ WG21 提案 <span class="badge badge-std">标准</span>
+> **示例 23** [难度 ★★☆☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P0668: deprecating memory_order_consume. P2892: extending atomic for non-trivial types.\n";return 0;}
 ```
 
-## ⑮ 面试题 [经验]
-> **示例 24** [难度 ★☆☆☆☆] [主题：面试题 [经验]]
+## ⑮ 面试题 <span class="badge badge-exp">经验</span>
+> **示例 24** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Q: acquire vs seq_cst? A: acquire=one-way barrier, seq_cst=global total order, ~10x slower on ARM.\n";return 0;}
 ```
 
-## ⑯ 易错点 [经验]
-> **示例 25** [难度 ★★☆☆☆] [主题：易错点 [经验]]
+## ⑯ 易错点 <span class="badge badge-exp">经验</span>
+> **示例 25** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Pitfall: relaxed on dependent data = UB; forgetting fence in seqlock reader; consume unreliable.\n";return 0;}
 ```
 
-## ⑰ FAQ [经验]
-> **示例 26** [难度 ★★☆☆☆] [主题：[经验]]
+## ⑰ FAQ <span class="badge badge-exp">经验</span>
+> **示例 26** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Q: When to use fence vs atomic operation? A: fence when multiple variables need ordering together.\n";return 0;}
 ```
 
-## ⑱ 最佳实践 [经验]
-> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
+> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Best: start with seq_cst, profile, relax to acquire-release where safe. Never relax unless proven.\n";return 0;}
 ```
 
 ## ⑲ 性能分析 [平台·x86-64]
-> **示例 28** [难度 ★☆☆☆☆] [主题：性能分析 [平台·x86-64]]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析 [平台·x86-64]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Perf: x86 relaxed=acquire=~1ns (free), seq_cst=~10ns (mfence). ARM: acquire=~5ns (dmb ld).\n";return 0;}
 ```
 
-## ⑳ 跨语言对比 [经验]
+## ⑳ 跨语言对比 <span class="badge badge-exp">经验</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `atomic_thread_fence` 在没有原子变量时也强制顺序。** 你同步普通变量与原子。请说明。
-   - [标准] 围栏与原子操作交互，可对周围的内存访问施加跨线程顺序约束（ fences 与原子配对）。
-   - [引用] ISO/IEC 14882:2023 §[atomics.fences]（原子围栏）；cppreference "std::atomic_thread_fence" 词条。
+   - <span class="badge badge-std">标准</span> 围栏与原子操作交互，可对周围的内存访问施加跨线程顺序约束（ fences 与原子配对）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.fences]（原子围栏）；cppreference "std::atomic_thread_fence" 词条。
 
 2. **真实场景：围栏影响其后所有原子访问。** 你不确定围栏范围。请说明。
-   - [标准] 围栏对其前后的原子操作施加顺序约束；与带内存顺序的原子操作组合才建立同步。
-   - [引用] ISO/IEC 14882:2023 §[atomics.fences]（围栏的作用范围）；cppreference "std::atomic_thread_fence" 词条。
+   - <span class="badge badge-std">标准</span> 围栏对其前后的原子操作施加顺序约束；与带内存顺序的原子操作组合才建立同步。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.fences]（围栏的作用范围）；cppreference "std::atomic_thread_fence" 词条。
 
 3. **真实场景：围栏比逐操作 memory_order 更粗粒度。** 你在一处统一排序。请说明取舍。
-   - [标准] 用单独围栏可减少对每个原子操作标注内存顺序的麻烦，但可能施加更广的屏障。
-   - [引用] ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（围栏 vs 操作级顺序）；cppreference "Memory ordering" 词条。
+   - <span class="badge badge-std">标准</span> 用单独围栏可减少对每个原子操作标注内存顺序的麻烦，但可能施加更广的屏障。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（围栏 vs 操作级顺序）；cppreference "Memory ordering" 词条。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：跨语言对比 [经验]]
+> **示例 29** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxed/SeqCst): identical semantics.\n";return 0;}
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 [经验]]
+> **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consume. Profile target arch."<<std::endl;return 0;}
@@ -299,7 +299,7 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 
 ### ㉒.1 历史渊源补强：内存栅栏从硬件屏障到标准设施
 
-[史] `std::atomic_thread_fence` / `std::atomic_signal_fence`（C++11）是「独立内存栅栏」的标准化，对应硬件层的 `mfence`/`sfence`/`lfence`（x86）、`dmb`（ARM）。其语义根基同样来自 **Lamport 的 happens-before（1978）** 与 **Adve/Boehm 的形式化内存模型**；**P0558R1（2017）** 同样修正了栅栏相关措辞，使 `fence(seq_cst)` 与原子操作的同步关系更精确。[史] 历史上，栅栏比原子操作更早存在于**编译器内建**（`__sync_synchronize()`、`__atomic_thread_fence`）与内核（`smp_mb()`）；标准把它们统一进来，让「不伴随具体变量、单独设屏障」成为可移植写法。[轶] `atomic_signal_fence` 特别用于「同一线程内、信号处理函数与主流程之间」的排序，它甚至不生成 CPU 指令、只约束编译器重排——是栅栏家族里最易被误解的一员。[评] 栅栏是「粗粒度屏障」：它能同步**所有**内存，代价也最大；能用 acquire/release 配对解决的，就别用全局 fence。
+<span class="badge badge-history">史</span> `std::atomic_thread_fence` / `std::atomic_signal_fence`（C++11）是「独立内存栅栏」的标准化，对应硬件层的 `mfence`/`sfence`/`lfence`（x86）、`dmb`（ARM）。其语义根基同样来自 **Lamport 的 happens-before（1978）** 与 **Adve/Boehm 的形式化内存模型**；**P0558R1（2017）** 同样修正了栅栏相关措辞，使 `fence(seq_cst)` 与原子操作的同步关系更精确。<span class="badge badge-history">史</span> 历史上，栅栏比原子操作更早存在于**编译器内建**（`__sync_synchronize()`、`__atomic_thread_fence`）与内核（`smp_mb()`）；标准把它们统一进来，让「不伴随具体变量、单独设屏障」成为可移植写法。<span class="badge badge-anecdote">轶</span> `atomic_signal_fence` 特别用于「同一线程内、信号处理函数与主流程之间」的排序，它甚至不生成 CPU 指令、只约束编译器重排——是栅栏家族里最易被误解的一员。<span class="badge badge-comment">评</span> 栅栏是「粗粒度屏障」：它能同步**所有**内存，代价也最大；能用 acquire/release 配对解决的，就别用全局 fence。
 
 ### ㉒.2 真实工程坐标：内存栅栏活在哪些产品里
 
@@ -327,9 +327,9 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 
 ### ㉒.4 与标准的互动：内存栅栏与 C++ 标准的演进
 
-[史] 栅栏随 **C++11** 与 `<atomic>` 一起引入（`atomic_thread_fence`/`atomic_signal_fence`），其语义与六大 `memory_order` 对应；**C++17 的 P0558R1** 修正了栅栏与原子操作交互的措辞，使「fence(seq_cst) 与原子 seq_cst 的总序一致」得以明确。与 WG21 方向一致：在「可移植的全局屏障」与「贴近硬件的细粒度屏障」间提供分层工具。值得注意的是，Rust 的 `std::sync::atomic::fence`、C11 的 `atomic_thread_fence` 与 C++ 的语义高度同源——这是跨语言对弱内存模型的共识方案。
+<span class="badge badge-history">史</span> 栅栏随 **C++11** 与 `<atomic>` 一起引入（`atomic_thread_fence`/`atomic_signal_fence`），其语义与六大 `memory_order` 对应；**C++17 的 P0558R1** 修正了栅栏与原子操作交互的措辞，使「fence(seq_cst) 与原子 seq_cst 的总序一致」得以明确。与 WG21 方向一致：在「可移植的全局屏障」与「贴近硬件的细粒度屏障」间提供分层工具。值得注意的是，Rust 的 `std::sync::atomic::fence`、C11 的 `atomic_thread_fence` 与 C++ 的语义高度同源——这是跨语言对弱内存模型的共识方案。
 
-- [史] **内存模型措辞修订链**：**P0558（Fixing the C++ Memory Model）** 由 H. Boehm 等提案，从 **R0 → R1（2017）**，修正了含 fence 在内的内存模型措辞缺陷，使「`fence(seq_cst)` 与原子 `seq_cst` 共享同一全局总序」得以明确——这是 C++17 起所有 fence/原子同步正确性的基础；<https://wg21.link/p0558>。
+- <span class="badge badge-history">史</span> **内存模型措辞修订链**：**P0558（Fixing the C++ Memory Model）** 由 H. Boehm 等提案，从 **R0 → R1（2017）**，修正了含 fence 在内的内存模型措辞缺陷，使「`fence(seq_cst)` 与原子 `seq_cst` 共享同一全局总序」得以明确——这是 C++17 起所有 fence/原子同步正确性的基础；<https://wg21.link/p0558>。
 
 ### ㉒.5 权威引用
 
@@ -351,7 +351,7 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 | acq_rel | ~1ns (free) | ~10ns | CAS, fetch_add |
 | seq_cst | ~10ns (mfence) | ~20ns (dmb) | Dekker, seqlock writer |
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录 A: 六种 memoryord]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A: 六种 memoryord
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -360,7 +360,7 @@ int main(){std::cout<<"x86 acquire=free (TSO model). ARM acquire=ldar instructio
 
 ## 附录 B: seqlock 完整实现
 
-> **示例 32** [难度 ★★☆☆☆] [主题：附录 B: seqlock 完整实现]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: seqlock 完整实现
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -374,7 +374,7 @@ int main(){SeqLock sl;sl.write(10,20);int a,b;sl.read(a,b);std::cout<<a<<" "<<b<
 
 ## 附录 C: MESI 缓存一致性协议
 
-> **示例 33** [难度 ★★☆☆☆] [主题：附录 C: MESI 缓存一致性协议]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: MESI 缓存一致性协议
 ```cpp
 #include <iostream>
 int main(){
@@ -387,7 +387,7 @@ int main(){
 
 ## 附录 D: 跨平台 memory_order 开销
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录 D: 跨平台 memoryor]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: 跨平台 memoryor
 ```cpp
 #include <iostream>
 int main(){
@@ -399,7 +399,7 @@ int main(){
 }
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：附录 D: 跨平台 memoryor]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: 跨平台 memoryor
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -416,7 +416,7 @@ int main(){
 
 ## 附录 E: Lock-free 栈实战模式
 
-> **示例 36** [难度 ★★★☆☆] [主题：附录 E: Lock-free 栈实]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E: Lock-free 栈实
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -424,20 +424,20 @@ template<typename T>struct LFStack{struct Node{T v;Node*next;};std::atomic<Node*
 int main(){LFStack<int> s;s.push(1);s.push(2);int v;s.pop(v);std::cout<<v<<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录 E: Lock-free 栈实]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: Lock-free 栈实
 ```cpp
 #include <iostream>
 int main(){std::cout<<"LF patterns: CAS loop + acq_rel. Hazard pointers/RCU for safe reclamation beyond fences."<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录 E: Lock-free 栈实]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: Lock-free 栈实
 ```cpp
 #include <atomic>
 #include <iostream>
 int main(){std::atomic<int>x{0};x.store(42,std::memory_order_release);std::atomic_thread_fence(std::memory_order_acquire);std::cout<<x.load()<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录 E: Lock-free 栈实]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: Lock-free 栈实
 ```cpp
 #include <iostream>
 int main(){std::cout<<"fence vs atomic: fence orders ALL subsequent ops, atomic orders just that variable."<<std::endl;return 0;}
@@ -453,7 +453,7 @@ int main(){std::cout<<"fence vs atomic: fence orders ALL subsequent ops, atomic 
 
 ## 附录 F：fence工业与面试
 
-> **示例 40** [难度 ★★★☆☆] [主题：附录 F：fence工业与面试]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：fence工业与面试
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -480,7 +480,7 @@ dmb ishld  ; 只阻止load-load和load-store重排, 不阻止store-store
 ; cost: ~2ns on Cortex-A76
 ```
 
-> **示例 41** [难度 ★★★☆☆] [主题：附录 G：fence设计权衡 [H:]
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 G：fence设计权衡 [H:
 ```cpp
 #include <iostream>
 int main(){std::cout<<"x86 mfence=10ns(seq_cst); ARM dmb=2-5ns(acquire/release)"<<std::endl;return 0;}
@@ -588,7 +588,7 @@ _Z13release_fencev:
 
 独立 fence 把「序」从具体原子操作里剥离出来：release fence 挡住其**前**的写被重排到其后的 relaxed store 之后；acquire fence 挡住其**后**的读被重排到其前的 relaxed load 之前。两者配对等价于 release/acquire 操作序。
 
-> **示例 42** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <atomic>
 #include <thread>
@@ -613,9 +613,9 @@ int main() {
 }
 ```
 
-[标准] fence 与原子操作的组合语义见 `[atomics.fences]`：release fence + 后续 relaxed store，配 acquire fence + 前置 relaxed load，建立 synchronizes-with。
+<span class="badge badge-std">标准</span> fence 与原子操作的组合语义见 `[atomics.fences]`：release fence + 后续 relaxed store，配 acquire fence + 前置 relaxed load，建立 synchronizes-with。
 
-[引用] cppreference `std::atomic_thread_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence`。fence 语义见 ISO §32.6（[atomics.fences]）。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic_thread_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence`。fence 语义见 ISO §32.6（[atomics.fences]）。
 
 </details>
 
@@ -627,7 +627,7 @@ int main() {
 
 操作自带序只作用于**该操作本身**的那一次访问；独立 fence 作用于**当前线程该 fence 前/后的所有原子操作**，粒度更粗、影响更广。当你需要「一批 relaxed 操作整体对外发布一次」时，用一个 release fence 比给每个操作都升级序更省。
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <atomic>
 #include <thread>
@@ -654,9 +654,9 @@ int main() {
 }
 ```
 
-[标准] 单操作有序化：`x.store(v, release)`；批量有序化：一次 `atomic_thread_fence(release)` 覆盖前面所有 relaxed 写——后者是 fence 不可被操作序替代的价值点。
+<span class="badge badge-std">标准</span> 单操作有序化：`x.store(v, release)`；批量有序化：一次 `atomic_thread_fence(release)` 覆盖前面所有 relaxed 写——后者是 fence 不可被操作序替代的价值点。
 
-[引用] cppreference `std::atomic_thread_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence`。关于 fence 与单操作序的对比见 ISO §32.6（[atomics.fences]）。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic_thread_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence`。关于 fence 与单操作序的对比见 ISO §32.6（[atomics.fences]）。
 
 </details>
 
@@ -668,7 +668,7 @@ int main() {
 
 `atomic_signal_fence` 只阻止**编译器**在当前线程内的重排（针对同线程异步信号/中断），不生成任何 CPU 屏障指令，因此零运行时开销；`atomic_thread_fence` 还会生成硬件屏障用于**跨线程/跨核**可见性。信号处理器与被中断代码在同一核同一线程上下文，只需防编译器重排。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <atomic>
 #include <csignal>
@@ -694,7 +694,7 @@ int main() {
 
 [平台·x86-64] 同线程信号/中断场景用 `atomic_signal_fence`（零指令）即可；跨线程一律 `atomic_thread_fence`。误用后者于纯信号场景会白白付出屏障指令开销。
 
-[引用] cppreference `std::atomic_signal_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence`。signal_fence 与 thread_fence 的区别见 ISO §32.6（[atomics.fences]）。
+<span class="badge badge-ref">引用</span> cppreference `std::atomic_signal_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence`。signal_fence 与 thread_fence 的区别见 ISO §32.6（[atomics.fences]）。
 
 </details>
 
@@ -708,7 +708,7 @@ int main() {
 
 **常见错误**：对「单操作即可有序」的场景滥用独立 fence，代码更啰嗦且易漏配对。
 
-> **示例 45** [难度 ★★☆☆☆] [主题：演绎 1：该用独立 fence 还是]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：该用独立 fence 还是
 ```cpp
 #include <atomic>
 #include <thread>
@@ -730,7 +730,7 @@ int main() {
 
 **修复**：单点发布直接让操作自带序，去掉 fence：
 
-> **示例 46** [难度 ★★☆☆☆] [主题：演绎 1：该用独立 fence 还是]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：该用独立 fence 还是
 ```cpp
 #include <atomic>
 #include <thread>
@@ -756,7 +756,7 @@ int main() {
 
 **常见错误**：跨线程用 `atomic_signal_fence`。
 
-> **示例 47** [难度 ★★☆☆☆] [主题：演绎 2：atomicsignalf]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：atomicsignalf
 ```cpp
 #include <atomic>
 #include <thread>
@@ -876,7 +876,7 @@ int main() {
 
 ### D4.9 编译验证（Dekker 风格双线程 + seq_cst fence）
 
-> **示例 48** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1083,7 +1083,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 49** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <thread>

@@ -31,15 +31,15 @@ CI 的核心理念是"让集成失败尽早、自动化、可重复"，反对"�
 
 > 紧接 0.2 编年最后一条（2011/2019，Travis CI、GitHub Actions 把 CI 搬进"配置即代码"云时代）。
 
-- [史] **ccache**（编译产物缓存）与 **sccache** 普及，配合分布式编译（icecream / IncrediBuild），把 C++ 最贵的"重编"从分钟级压到秒级，CI 矩阵在多编译器/多平台下也能在合理时间内跑完。
-- [史] Sanitizer（ASan / UBSan / TSan）与 `-Werror` 一道进入 CI 门禁，使"本机能编过"不再等于"能合入"——C++ 特有的 UB 与数据竞争第一次被卡在流水线里，而非流到 on-call。
-- [史] GitHub Actions 的 `matrix`、自托管 runner、以及 Bazel / Buildbarn 这类可重现构建系统，让 C++ 工程的 CI 从"跑一遍编译+测试"升级为"跨平台、可缓存、可复现"的工程基线。
-- [评] 对 C++，CI 的核心价值不是"自动化"本身，而是把"多编译器 × 多平台 × 多警告等级"的一致性验证从个人自觉变成系统强制——这正是 0.3 立场的工程落地。
-- [轶] 老工程师的教训：曾有人把 CI 缓存配错，每次都命中了三个月前的旧 `.o`，于是"绿色"跑了一整个季度才被发现——缓存化虽快，正确性核验仍是红线。
+- <span class="badge badge-history">史</span> **ccache**（编译产物缓存）与 **sccache** 普及，配合分布式编译（icecream / IncrediBuild），把 C++ 最贵的"重编"从分钟级压到秒级，CI 矩阵在多编译器/多平台下也能在合理时间内跑完。
+- <span class="badge badge-history">史</span> Sanitizer（ASan / UBSan / TSan）与 `-Werror` 一道进入 CI 门禁，使"本机能编过"不再等于"能合入"——C++ 特有的 UB 与数据竞争第一次被卡在流水线里，而非流到 on-call。
+- <span class="badge badge-history">史</span> GitHub Actions 的 `matrix`、自托管 runner、以及 Bazel / Buildbarn 这类可重现构建系统，让 C++ 工程的 CI 从"跑一遍编译+测试"升级为"跨平台、可缓存、可复现"的工程基线。
+- <span class="badge badge-comment">评</span> 对 C++，CI 的核心价值不是"自动化"本身，而是把"多编译器 × 多平台 × 多警告等级"的一致性验证从个人自觉变成系统强制——这正是 0.3 立场的工程落地。
+- <span class="badge badge-anecdote">轶</span> 老工程师的教训：曾有人把 CI 缓存配错，每次都命中了三个月前的旧 `.o`，于是"绿色"跑了一整个季度才被发现——缓存化虽快，正确性核验仍是红线。
 
 > 史料来源：ccache.dev、docs.github.com/en/actions
 
-## ① 概述：CI/CD 是什么 [经验]
+## ① 概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>
 
 [第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
 [第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
@@ -48,7 +48,7 @@ CI（Continuous Integration，持续集成）指开发者频繁把代码合并�
 
 对 C++ 这类“编译慢、链接重、平台耦合强”的工程，CI/CD 的价值更突出：一次本地能过的代码，到了干净环境可能因缺头文件、缺库、ABI 不一致而失败，唯有自动化流水线能复现。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：CI/CD 是什么 [经验]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ① 最小 CI 冒烟程序：构建通过即说明工具链可用
 // 见 Examples/_ch149_hello.cpp
@@ -67,7 +67,7 @@ $ ./_ch149_hello
 CI pipeline: build OK
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：CI/CD 是什么 [经验]]
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ①' 构建信息固化：版本与 commit 由 CI 注入，保证可复现
 // 见 Examples/_ch149_build_info.cpp
@@ -92,7 +92,7 @@ int main() {
 
 CI 的四条铁律可枚举化为代码，避免口头约定漂移：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：持续集成（CI）原则]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 持续集成（CI）原则
 ```cpp
 // ② CI 四项核心原则枚举化
 // 见 Examples/_ch149_principle.cpp
@@ -119,7 +119,7 @@ int main() {
 3. **封闭（Hermetic）**：构建不依赖宿主机随机状态（全局安装、网络可达性）。
 4. **可观测（Observable）**：每一步耗时、失败原因都有日志与指标。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：持续集成（CI）原则]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 持续集成（CI）原则
 ```cpp
 // ②' 封闭构建：固定依赖来源，避免宿主机污染（仅打印声明）
 // 见 Examples/_ch149_hermetic.cpp
@@ -145,7 +145,7 @@ hermetic: pinned deps from mirror, no network to pypi/npm
 
 典型 C++ 流水线由四个阶段串联：**build → test → static → package**。任一阶段失败立即阻断后续，保证“坏提交不向下游蔓延”。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：流水线阶段]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 流水线阶段
 ```
 ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐
 │  push  │──▶│ build  │──▶│  test  │──▶│ static │──▶│package │──▶ artifact
@@ -153,7 +153,7 @@ hermetic: pinned deps from mirror, no network to pypi/npm
               编译+链接    单元测试     静态分析     打包+签名
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：流水线阶段]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 流水线阶段
 ```cpp
 // ③ 流水线阶段枚举 + 调度：build -> test -> static -> package
 // 见 Examples/_ch149_stage.cpp
@@ -200,7 +200,7 @@ jobs:
 
 C++ 编译的最大痛点是“改一行，重编译十万行”。`ccache` 通过**源文件+编译器旗标的内容哈希**做缓存键：命中则直接吐出 `.o`，跳过实际编译。本机未安装 ccache，以下以自包含 FNV-1a 演示“缓存键”的构造原理，并给出 ccache 的真实环境变量（上游参考，非编造输出）。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：构建缓存（ccache 上游参考）]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构建缓存（ccache 上游参考）
 ```cpp
 // ④ 构建缓存键：用 FNV-1a 把 (编译器,平台,标准) 压成稳定哈希
 // 见 Examples/_ch149_cache_key.cpp
@@ -226,7 +226,7 @@ key(gcc,linux,c++17)=514dd85cc5b6f0b0
 
 ccache 真实环境变量（上游文档范式，本机以程序打印其形态）：
 
-> **示例 8** [难度 ★★☆☆☆] [主题：构建缓存（ccache 上游参考）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构建缓存（ccache 上游参考）
 ```cpp
 // ④' ccache 环境变量注入（上游参考 ccache 的 CCACHE_* 系列变量）
 // 见 Examples/_ch149_cache_env.cpp
@@ -248,7 +248,7 @@ int main() {
 
 矩阵（matrix）让同一份代码在“编译器 × 标准 × OS × 架构”的组合上并行验证，尽早暴露平台相关缺陷。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：矩阵构建（多编译器/多平台）[平台·]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·
 ```cpp
 // ⑤ 矩阵构建：探测编译器与 OS，驱动多维度组合
 // 见 Examples/_ch149_matrix.cpp
@@ -270,7 +270,7 @@ int main() {
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：矩阵构建（多编译器/多平台）[平台·]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·
 ```cpp
 // ⑤' 平台门禁：不支持的编译器直接编译失败，矩阵尽早暴露不兼容
 // 见 Examples/_ch149_matrix_guard.cpp
@@ -284,7 +284,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：矩阵构建（多编译器/多平台）[平台·]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·
 ```cpp
 // ⑤'' 分布式编译：把 .o 的编译派发到编译集群（仅打印说明）
 // 见 Examples/_ch149_distcc.cpp
@@ -320,7 +320,7 @@ strategy:
 
 静态分析把第147章“人肉评审”的机械部分交给工具：`clang-tidy`、`cppcheck`、`gcc -Wall -Wextra -Werror`。门禁要求零告警，否则阻断合并。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：静态分析门禁]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 静态分析门禁
 ```cpp
 // ⑥ 故意触发 -Wunused-parameter，演示静态分析门禁产出告警
 // 见 Examples/_ch149_static_warn.cpp
@@ -346,7 +346,7 @@ $ ./w
 compute=42
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：静态分析门禁]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态分析门禁
 ```cpp
 // ⑥' 修复后：去掉未用参数，静态门禁通过
 // 见 Examples/_ch149_static_fix.cpp
@@ -360,7 +360,7 @@ int main() {
 
 **源码剖析**：静态分析器的诊断消费链路可对照上游源码取证（本机无 llvm 源码，以 URL 引用，不编造行号）。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：静态分析门禁]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态分析门禁
 ```cpp
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang-tools-extra/clang-tidy/ClangTidy.cpp
 // 行号：L540
@@ -377,7 +377,7 @@ int main() {
 
 测试门禁要求 `ctest`/`googletest` 全绿，且以**非零退出码**表达失败——CI 据此判定 job 红绿。第150章详述测试分层，本章只关注“门禁如何拦截”。
 
-> **示例 15** [难度 ★★☆☆☆] [主题：测试门禁]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试门禁
 ```cpp
 // ⑦ 零依赖测试桩：测试门禁用退出码表达通过/失败
 // 见 Examples/_ch149_test_harness.cpp
@@ -398,7 +398,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★★★☆☆] [主题：测试门禁]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试门禁
 ```cpp
 // ⑦' 断言宏：门禁中任何 CHECK 失败即非零退出，阻断合并
 // 见 Examples/_ch149_assert_macro.cpp
@@ -438,7 +438,7 @@ test:
 
 覆盖率门禁度量“多少代码被测试执行”，常用 `gcov` + `lcov`。本机未安装 lcov，以下给出真实命令范式与**典型输出**（非本机伪造），并附可编译的被测单元与插桩构建示例。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：覆盖率]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 覆盖率
 ```cpp
 // ⑧ 被测单元：覆盖率门禁度量 gcd/lcm 是否被执行
 // 见 Examples/_ch149_coverage.cpp
@@ -452,7 +452,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：覆盖率]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 覆盖率
 ```cpp
 // ⑧' 覆盖率插桩构建产物：配合 --coverage 旗标生成 .gcno/.gcda
 // 见 Examples/_ch149_gcov_build.cpp
@@ -488,7 +488,7 @@ Overall coverage rate:
 
 通过全部门禁后，源码被打包为**制品（artifact）**：静态库、动态库、头文件包或容器镜像，并附带版本与哈希，供 CD 阶段消费。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：制品与发布]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 制品与发布
 ```cpp
 // ⑨ 制品版本嵌入：发布时用 git describe 注入，保证可追溯
 // 见 Examples/_ch149_version_embed.cpp
@@ -502,7 +502,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：制品与发布]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 制品与发布
 ```cpp
 // ⑨' 制品清单：名称/版本/哈希，发布门禁据此校验完整性
 // 见 Examples/_ch149_package.cpp
@@ -544,7 +544,7 @@ package:
 
 CD 把制品推进到更靠近用户的环境。Delivery = 自动准备好、手动按键发布；Deployment = 自动发布到生产。关键是**部署后健康检查**与**可回滚**。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：持续部署/交付]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 持续部署/交付
 ```cpp
 // ⑩ CD 健康检查：部署后探针，决定流量是否切入
 // 见 Examples/_ch149_health_check.cpp
@@ -557,7 +557,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：持续部署/交付]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 持续部署/交付
 ```cpp
 // ⑩' 部署步骤模拟：拉镜像 + 滚动更新
 // 见 Examples/_ch149_deploy.cpp
@@ -589,7 +589,7 @@ deploy: done
 
 容器把“工具链 + 依赖 + 构建脚本”打包成不可变镜像，从根本上解决“在我机器能编”。本机未安装 Docker，以下给出真实命令范式与**典型输出**（非本机伪造），并附容器内被构建的 C++ 程序。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：容器化构建]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 容器化构建
 ```cpp
 // ⑪ 容器内构建产物：与宿主机工具链解耦
 // 见 Examples/_ch149_container_app.cpp
@@ -632,7 +632,7 @@ ENTRYPOINT ["/usr/local/bin/app"]
 
 两大主流 CI 平台范式相近：YAML 描述 `jobs/stages`，`runner` 拉取代码、执行步骤、上报状态。本机无法运行远程 runner，以下为上游参考范式，并以可编译程序演示“平台宏如何在矩阵中被选用”。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：平台]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台
 ```cpp
 // ⑫ 平台宏：CI 矩阵据此选择工具链与依赖
 // 见 Examples/_ch149_platform_macros.cpp
@@ -687,7 +687,7 @@ build:
 
 密钥（token、签名私钥、镜像仓库密码）**绝不可进源码或日志**。正确做法：CI 平台提供 encrypted secrets，运行时注入为环境变量；程序只读环境变量。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：密钥管理]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 密钥管理
 ```cpp
 // ⑬ 密钥管理：仅从环境变量读取，绝不硬编码进源码
 // 见 Examples/_ch149_secret_env.cpp
@@ -722,7 +722,7 @@ exit=0
 
 性能回归门禁把第151章的基准结果存为基线，每次 CI 跑基准并与基线比较；超出阈值（如 +10%）即判回归、阻断合并。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：性能回归门禁]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能回归门禁
 ```cpp
 // ⑭ 性能基准：统计耗时，作为性能回归门禁基线
 // 见 Examples/_ch149_bench.cpp
@@ -739,7 +739,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：性能回归门禁]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能回归门禁
 ```cpp
 // ⑭' 回归比较：当前耗时超出基线阈值即判定回归
 // 见 Examples/_ch149_regression.cpp
@@ -769,7 +769,7 @@ perf delta=12.5% [REGRESSION]
 
 增量构建只重编“自上次构建以来变化的翻译单元”，是 C++ 提速的核心。CMake/Ninja 依据文件 mtime 与依赖图自动判定；Unity Build 则反向合并 TU 以减少头解析。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：增量构建]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 增量构建
 ```cpp
 // ⑮ 增量构建：依据 mtime 判断源是否变化
 // 见 Examples/_ch149_incremental.cpp
@@ -785,7 +785,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：增量构建]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 增量构建
 ```cpp
 // ⑮' 增量/Unity 构建：合并翻译单元减少头解析开销
 // 见 Examples/_ch149_unity.cpp
@@ -818,7 +818,7 @@ build:     cmake --build build   # 仅重编变化的 TU
 
 矩阵或并行 job 中，一旦某个组合失败应**立即中止**其余作业，节省 runner 时间、加速反馈。本地并行测试运行器同样适用。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：失败快速（fail-fast）]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 失败快速（fail-fast）
 ```cpp
 // ⑯ 失败快速：矩阵任一作业失败立即中止其余作业
 // 见 Examples/_ch149_fail_fast.cpp
@@ -873,7 +873,7 @@ jobs:
         run: cd build && ctest --output-on-failure
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 // ⑰ 真实案例中的被构建程序
 // 见 Examples/_ch149_case_app.cpp
@@ -884,7 +884,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 // ⑰' 构建步骤：展示真实编译旗标
 // 见 Examples/_ch149_case_build.cpp
@@ -913,7 +913,7 @@ built with -std=c++17 -O2 -Wall -Wextra
 
 C++ CI 最常见的反模式是**单翻译单元巨型构建**：所有代码塞进一个 `.cpp`，既无法并行、又几乎零缓存命中、重编极慢。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：反模式]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式
 ```cpp
 // ⑱ 反模式：单翻译单元巨型构建，无法并行、缓存命中低
 // 见 Examples/_ch149_monolith.cpp
@@ -924,7 +924,7 @@ void module_c() {}
 int main() { module_a(); module_b(); module_c(); std::printf("monolith built\n"); return 0; }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：反模式]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式
 ```cpp
 // ⑱' 改进：头/实现分离，支持并行翻译单元与增量缓存
 // 见 Examples/_ch149_modular.cpp
@@ -953,7 +953,7 @@ modular: parallel translation units
 
 CI/CD 的成效看 **DORA 四项指标**：部署频率、变更前置时间、变更失败率（CFR）、服务恢复时间（MTTR）。流水线把每一步耗时与结果写入指标系统，方能持续优化。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：度量（MTTR/部署频率）]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 度量（MTTR/部署频率）
 ```cpp
 // ⑲ 度量：DORA 四项核心指标
 // 见 Examples/_ch149_metrics.cpp
@@ -991,22 +991,22 @@ DORA: freq=10/day mttr=1.5h cfr=8%
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：CI 用特性测试宏而非硬编码版本号判定可用特性。** 你换编译器后误判。请说明。
-   - [标准] 以 `__cpp_lib_*`/`__has_cpp_attribute` 等特性测试宏判定，而非假设编译器版本。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ SD-6；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 以 `__cpp_lib_*`/`__has_cpp_attribute` 等特性测试宏判定，而非假设编译器版本。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ SD-6；cppreference "Feature test macros" 词条。
 
 2. **真实场景：CI 对头文件做独立编译（`-fsyntax-only`）发现未包含依赖。** 你本地能编是因为传递包含。请说明。
-   - [标准] 标准未规定头文件自包含；但可移植头文件应自包含（依赖显式 include）。
-   - [引用] ISO/IEC 14882:2023 §[cpp.include]（头文件包含）/ C++ Core Guidelines "SF.11"（头文件应自包含）；cppreference。
+   - <span class="badge badge-std">标准</span> 标准未规定头文件自包含；但可移植头文件应自包含（依赖显式 include）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.include]（头文件包含）/ C++ Core Guidelines "SF.11"（头文件应自包含）；cppreference。
 
 3. **真实场景：CI 用 `clang-tidy` 抓 `auto` 推导陷阱与悬垂。** 你静态分析补测试盲区。请说明（属工具链）。
-   - [标准] 无直接标准对应；静态分析基于标准语义（生命周期/所有权）做检查。
-   - [引用] Clang-Tidy 文档 / ISO/IEC 14882:2023 §[basic.life]（对象生命周期）；cppreference。
+   - <span class="badge badge-std">标准</span> 无直接标准对应；静态分析基于标准语义（生命周期/所有权）做检查。
+   - <span class="badge badge-ref">引用</span> Clang-Tidy 文档 / ISO/IEC 14882:2023 §[basic.life]（对象生命周期）；cppreference。
 
 CI/CD 对 C++ 不是可选项，而是工程成熟度的分水岭：可复现构建、矩阵验证、静态/测试/覆盖率/性能四道门禁、容器化与密钥隔离，共同把“在我机器能编”升级为“任何时间任何人都能放心发布”。
 
 本章 34 个 C++ 示例全部经本机 `g++.exe 13.1.0`（`-std=c++17 -O2 -Wall -Wextra`）编译运行验证（`ok=34 fail=0`），缓存键、矩阵探测、fail-fast、覆盖率插桩、密钥隔离、性能回归判定等均有真实命令行产物支撑；yaml/dockerfile 为 GitHub Actions / GitLab CI / Docker 上游参考范式，凡无法离线复现者均如实标注“典型输出/上游参考”，未编造任何路径或输出。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：小结]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 小结
 ```cpp
 // ⑳ 小结：本章所有示例经 g++ 13.1.0 验证通过
 // 见 Examples/_ch149_summary.cpp
@@ -1034,7 +1034,7 @@ chapter 149: CI/CD pipeline verified by g++
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：从" Nightly Build "到流水线即代码
-[史] "持续集成（CI）"一词由 **Grady Booch** 在 1991 年提出，但真正落地靠 **极限编程（XP，Kent Beck，1999）** 的"每天多次合入主干并自动化构建测试"。[史] 2011 年 **Travis CI** 把 CI 带入开源（GitHub 一键接入），2019 年 **GitHub Actions** 让"流水线即 YAML"成为默认；自此 CI/CD 从稀缺基建变成每个仓库的标配。[评] CI 的本质不是"跑构建"，而是"把合并风险压缩到小时级"——频率越高，单次合并的爆炸半径越小。
+<span class="badge badge-history">史</span> "持续集成（CI）"一词由 **Grady Booch** 在 1991 年提出，但真正落地靠 **极限编程（XP，Kent Beck，1999）** 的"每天多次合入主干并自动化构建测试"。<span class="badge badge-history">史</span> 2011 年 **Travis CI** 把 CI 带入开源（GitHub 一键接入），2019 年 **GitHub Actions** 让"流水线即 YAML"成为默认；自此 CI/CD 从稀缺基建变成每个仓库的标配。<span class="badge badge-comment">评</span> CI 的本质不是"跑构建"，而是"把合并风险压缩到小时级"——频率越高，单次合并的爆炸半径越小。
 
 ### ㉒.2 真实工程坐标：CI/CD 活在哪些项目里
 
@@ -1059,9 +1059,9 @@ CI/CD 把「编译/测试/静态分析/发布」自动化，是规模化 C++ 的
 - **密钥泄露**：把 token 明文写进 YAML 或日志；必须用平台 secret 管理（见 ⑬）。
 
 ### ㉒.4 与标准的互动：构建系统与 C++ 生态
-CI 本身非 ISO C++ 标准，但它与标准工具链深度绑定：**CMake + CTest** 是 C++ 事实构建/测试标准，CI 直接消费其产物；`ccache` / 分布式编译（`distcc` / **Incredibuild**）缩短矩阵构建；`-Wall -Wextra -Werror` 与 clang-tidy 作为编译期门禁，把第147章的审查前移。[评] 好的 C++ CI = 多编译器矩阵 × 缓存 × 静态分析门禁 × 测试门禁，缺一不可。
+CI 本身非 ISO C++ 标准，但它与标准工具链深度绑定：**CMake + CTest** 是 C++ 事实构建/测试标准，CI 直接消费其产物；`ccache` / 分布式编译（`distcc` / **Incredibuild**）缩短矩阵构建；`-Wall -Wextra -Werror` 与 clang-tidy 作为编译期门禁，把第147章的审查前移。<span class="badge badge-comment">评</span> 好的 C++ CI = 多编译器矩阵 × 缓存 × 静态分析门禁 × 测试门禁，缺一不可。
 
-**修订链补强（CI 与标准/工具链）**：CI 矩阵之所以必须覆盖三大编译器，根本原因是 [IMPLEMENTATION] 层差异：同一 C++17 程序在 libstdc++/libc++/MSVC STL 上行为可能不同（如 `std::string` SSO、异常模型、特性宏支持度）。WG21 的特性测试宏（`__cpp_*`）规范（见 [cppreference: feature test](https://en.cppreference.com/w/cpp/feature_test)）正是为让 CI 与代码用统一宏判断能力，而非嗅探 `__cplusplus`。CMake 的 `CMAKE_CXX_COMPILER_ID`/`target_compile_features` 把“编译器能力”抽象成可声明约束，使 CD 能按工具链锁版。
+**修订链补强（CI 与标准/工具链）**：CI 矩阵之所以必须覆盖三大编译器，根本原因是 <span class="badge badge-impl">IMPLEMENTATION</span> 层差异：同一 C++17 程序在 libstdc++/libc++/MSVC STL 上行为可能不同（如 `std::string` SSO、异常模型、特性宏支持度）。WG21 的特性测试宏（`__cpp_*`）规范（见 [cppreference: feature test](https://en.cppreference.com/w/cpp/feature_test)）正是为让 CI 与代码用统一宏判断能力，而非嗅探 `__cplusplus`。CMake 的 `CMAKE_CXX_COMPILER_ID`/`target_compile_features` 把“编译器能力”抽象成可声明约束，使 CD 能按工具链锁版。
 
 ### ㉒.5 权威引用
 - [cppreference: Feature testing](https://en.cppreference.com/w/cpp/feature_test) — `__cpp_*` 特性宏总入口
@@ -1073,7 +1073,7 @@ CI 本身非 ISO C++ 标准，但它与标准工具链深度绑定：**CMake + C
 
 ## 附录 A：工业 CI/CD 管道 [F: Industry / B: Principle]
 
-> **示例 37** [难度 ★★☆☆☆] [主题：附录 A：工业 CI/CD 管道 []
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业 CI/CD 管道 [
 ```
 C++ 项目 CI/CD 工业实践:
 
@@ -1098,7 +1098,7 @@ C++ 特有的 CI 挑战:
 
 ## 附录 E：CI/CD中的C++标准库与构建工具 [D: stdlib / B: Principle / I: Practice]
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录 E：CI/CD中的C++标准库]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：CI/CD中的C++标准库
 ```
 CI中处理标准库差异:
 - libstdc++版本: GCC 13的libstdc++与GCC 9不兼容(ABI break in GCC 5.1)
@@ -1129,7 +1129,7 @@ CI中处理标准库差异:
 
 ## 附录 F：CI/CD工业
 
-> **示例 39** [难度 ★★☆☆☆] [主题：附录 F：CI/CD工业]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：CI/CD工业
 ```cpp
 #include <iostream>
 int main(){std::cout<<"LLVM:Buildbot+GH Actions(15min pre,2h full);Chromium:LUCI(数千bot);Google:Blaze(50K tests<15min)"<<std::endl;return 0;}
@@ -1189,7 +1189,7 @@ jne .hit                  ; 命中跳过编译
 
 ## 底层视角：构建矩阵、缓存与并行测试的时序 [E: Low-level]
 
-[标准] 构建矩阵跨 `GCC 13.1.0` / `Clang 17` / `MSVC 19.3` 与 `C++17`/`C++20`/`C++23`；`ccache` 以预处理后源码哈希命中复用，省一次重编译（单次编译常耗 0.1–数秒）。`-O2` / `-O3` 在 CI 分别验证正确性与峰值性能。
+<span class="badge badge-std">标准</span> 构建矩阵跨 `GCC 13.1.0` / `Clang 17` / `MSVC 19.3` 与 `C++17`/`C++20`/`C++23`；`ccache` 以预处理后源码哈希命中复用，省一次重编译（单次编译常耗 0.1–数秒）。`-O2` / `-O3` 在 CI 分别验证正确性与峰值性能。
 
 SIMD 旗标 `-mavx2`（32 字节 `0x0020` 宽）/ `-mavx512f`（64 字节 `0x0040` 宽）须与 `alignas` 配套；CI 矩阵缺 `-mavx512f` 时 AVX-512 代码编译降级或失败。`GCC 13.1.0` 的 `-flto` 跨 TU 去虚化（见 ch47）需在 CI 单独 job 验证。
 
@@ -1230,9 +1230,9 @@ jobs:
   static:{ needs: build, steps: [clang-tidy, -Wall -Wextra -Werror] }
 ```
 
-[标准] 流水线把「能最早失败的检查」前置，阶段间用 `needs` 表达依赖；任一阶段红即整条红，避免「构建都过不了还跑去跑测试」的浪费。
+<span class="badge badge-std">标准</span> 流水线把「能最早失败的检查」前置，阶段间用 `needs` 表达依赖；任一阶段红即整条红，避免「构建都过不了还跑去跑测试」的浪费。
 
-[引用] GitHub Actions 语法见 docs.github.com/actions；GitLab CI 见 docs.gitlab.com/ci；ch149 ③ 详述「build/test/static/package」阶段、⑯ 讲 fail-fast、⑫ 讲矩阵构建。
+<span class="badge badge-ref">引用</span> GitHub Actions 语法见 docs.github.com/actions；GitLab CI 见 docs.gitlab.com/ci；ch149 ③ 详述「build/test/static/package」阶段、⑯ 讲 fail-fast、⑫ 讲矩阵构建。
 
 </details>
 
@@ -1249,9 +1249,9 @@ jobs:
 # 3) g++ -Wall -Wextra -Werror ...    # 警告即错误
 ```
 
-[标准] 把测试与静态分析放进「合并前必经」的流程，缺陷在被人工评审前就由机器拦截；门禁是「自动化、可重复、零情绪」的质量底线。
+<span class="badge badge-std">标准</span> 把测试与静态分析放进「合并前必经」的流程，缺陷在被人工评审前就由机器拦截；门禁是「自动化、可重复、零情绪」的质量底线。
 
-[引用] 测试门禁见 ch149 ⑦ 与 ch150 测试金字塔；静态分析门禁见 ch149 ⑥ 与 ch147；Clang/LLVM 工具见 clang.llvm.org。
+<span class="badge badge-ref">引用</span> 测试门禁见 ch149 ⑦ 与 ch150 测试金字塔；静态分析门禁见 ch149 ⑥ 与 ch147；Clang/LLVM 工具见 clang.llvm.org。
 
 </details>
 
@@ -1268,9 +1268,9 @@ jobs:
 # 3) 若 (candidate-baseline)/baseline > 5% 则 exit 1（阻断合并）
 ```
 
-[标准] 性能回归门禁把「性能」也当成可断言的正确性维度；但它必须建立在可信基准之上——单次测量、未预热、被 DCE 优化掉的数字都不该作为阈值依据（见 ch151 ③、⑭ 反模式）。
+<span class="badge badge-std">标准</span> 性能回归门禁把「性能」也当成可断言的正确性维度；但它必须建立在可信基准之上——单次测量、未预热、被 DCE 优化掉的数字都不该作为阈值依据（见 ch151 ③、⑭ 反模式）。
 
-[引用] 性能回归门禁见 ch149 ⑭ 与 ch151 基准测试；Google Benchmark（github.com/google/benchmark）提供稳定计时与多次采样，可作为门禁底座；ch151 ⑱ 专讲「与 CI 集成」。
+<span class="badge badge-ref">引用</span> 性能回归门禁见 ch149 ⑭ 与 ch151 基准测试；Google Benchmark（github.com/google/benchmark）提供稳定计时与多次采样，可作为门禁底座；ch151 ⑱ 专讲「与 CI 集成」。
 
 </details>
 

@@ -1,5 +1,5 @@
 # 第47章 虚函数与虚表（vtable）：动态多态的发动机
-> **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。虚函数表（vtable）的**内存布局由 ABI 规定而非 C++ 标准**（[标准] 不规定具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 vtable 布局与函数指针偏移均为 **GCC/Itanium ABI 实测**，跨编译器或平台（MSVC、不同 ABI）可能存在差异，切勿视作标准保证。
+> **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。虚函数表（vtable）的**内存布局由 ABI 规定而非 C++ 标准**（<span class="badge badge-std">标准</span> 不规定具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 vtable 布局与函数指针偏移均为 **GCC/Itanium ABI 实测**，跨编译器或平台（MSVC、不同 ABI）可能存在差异，切勿视作标准保证。
 
 [第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)
 [第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
@@ -12,24 +12,24 @@
 > 让「同一段代码，运行时选对的那一份」——这是面向对象多态的灵魂，也是 C++ 在性能与灵活性之间打的第一场硬仗。
 
 ### 0.1 起源（谁·何时·为何）
-动态多态的思想来自 Simula 67：一个基类指针指向不同派生对象，调用同名方法时各走各的实现。[史] Stroustrup 在 C with Classes 里要处理「异构对象集合」（比如一堆形状），但 C 没有这种机制，于是他**用手写的函数指针表**模拟虚函数——这就是 vtable 的雏形，每一个「虚」方法对应表里一个槽位。[史] 这让 C++ 在 1980 年代初就有了「运行期根据对象真实类型分派」的能力，而不必像 C 那样靠 `switch(type)` 或 `void*` 强转。
+动态多态的思想来自 Simula 67：一个基类指针指向不同派生对象，调用同名方法时各走各的实现。<span class="badge badge-history">史</span> Stroustrup 在 C with Classes 里要处理「异构对象集合」（比如一堆形状），但 C 没有这种机制，于是他**用手写的函数指针表**模拟虚函数——这就是 vtable 的雏形，每一个「虚」方法对应表里一个槽位。<span class="badge badge-history">史</span> 这让 C++ 在 1980 年代初就有了「运行期根据对象真实类型分派」的能力，而不必像 C 那样靠 `switch(type)` 或 `void*` 强转。
 
 ### 0.2 关键转折（编年）
 - 1983：虚函数机制随 C++ 定名而规范化，编译器自动生成 vptr/vtable。
 - 1998：C++98 固化虚函数语义，并把 `dynamic_cast`/`typeid`（ch48）与 vtable 的负偏移关联起来。
-- 2011：`override`/`final` 进入标准，让「你以为重写了其实没写对」的 bug 在编译期现形。[史]
+- 2011：`override`/`final` 进入标准，让「你以为重写了其实没写对」的 bug 在编译期现形。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反其道而行：**成员函数默认非虚，虚是你显式声明才开启**——因为 vtable 有空间（每对象一个 vptr）也有时间（一次间接跳转）成本，零开销原则要求「不用就不付」。[史] 与此同时，另一条路在悄悄生长：CRTP（ch51）用模板在编译期把分派「算死」，换掉运行时的间接跳转。虚函数 vs 静态多态，是贯穿本书的一条暗线。
+Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反其道而行：**成员函数默认非虚，虚是你显式声明才开启**——因为 vtable 有空间（每对象一个 vptr）也有时间（一次间接跳转）成本，零开销原则要求「不用就不付」。<span class="badge badge-history">史</span> 与此同时，另一条路在悄悄生长：CRTP（ch51）用模板在编译期把分派「算死」，换掉运行时的间接跳转。虚函数 vs 静态多态，是贯穿本书的一条暗线。
 
 ### 0.4 史料补遗与持续编年
 0.2 讲到 C++23 的显式对象形参。虚函数这条线在优化器一侧还有一段隐形历史：
 
-- [史] C++23 的显式对象形参（deducing this）让虚函数也能以「显式对象形参」形式写出，从而被更自然地复用与转发：派生类可以把它作为模板成员拿到，减少过去为「完美转发到基类虚实现」而写的样板。
+- <span class="badge badge-history">史</span> C++23 的显式对象形参（deducing this）让虚函数也能以「显式对象形参」形式写出，从而被更自然地复用与转发：派生类可以把它作为模板成员拿到，减少过去为「完美转发到基类虚实现」而写的样板。
 
-- [史] 去虚化（devirtualization）是编译器优化的一条隐形主线：当编译器能确定对象的动态类型（如直接构造后紧接调用、`final` 类、或 PGO 反馈显示高度集中），它会把虚调用改写成直接调用甚至内联。Clang 的 `-fstrict-vtable-pointers`、GCC 的同类分析都在此列。
+- <span class="badge badge-history">史</span> 去虚化（devirtualization）是编译器优化的一条隐形主线：当编译器能确定对象的动态类型（如直接构造后紧接调用、`final` 类、或 PGO 反馈显示高度集中），它会把虚调用改写成直接调用甚至内联。Clang 的 `-fstrict-vtable-pointers`、GCC 的同类分析都在此列。
 
-- [评] 这解释了为何「premature 虚函数」不一定慢：`final` 标注一个类往往比删掉虚函数更划算——既保留接口，又给优化器放行。
+- <span class="badge badge-comment">评</span> 这解释了为何「premature 虚函数」不一定慢：`final` 标注一个类往往比删掉虚函数更划算——既保留接口，又给优化器放行。
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/virtual ；https://en.wikipedia.org/wiki/C%2B%2B23
 
@@ -53,7 +53,7 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★★★★★] [主题：知识图谱（ASCII）]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★★</span> · 知识图谱（ASCII）
 ```
                     ┌───────────── C++ 多态 ─────────────┐
                     │                                      │
@@ -104,7 +104,7 @@ classDiagram
 
 单继承对象布局（x86-64，Itanium ABI，假设无数据成员仅 vptr）：
 
-> **示例 2** [难度 ★★★★☆] [主题：内存图 / 对象布局]
+> **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图 / 对象布局
 ```
         Derived 对象（地址 base）
         ┌─────────────────────────┐  <- base (offset 0)
@@ -123,7 +123,7 @@ classDiagram
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★★★☆☆] [主题：生命周期图]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 生命周期图
 ```
 构造 Derived d:
   Base 构造体 ──设置 vptr──▶ 指向 Base vtable
@@ -139,7 +139,7 @@ classDiagram
 
 ## ⑨ 调用栈 / 时序图
 
-> **示例 4** [难度 ★★★★★] [主题：调用栈 / 时序图]
+> **示例 4** <span class="badge badge-exp">难度 ★★★★★</span> · 调用栈 / 时序图
 ```
 调用点                 vtable               目标函数
   │                      │                     │
@@ -186,7 +186,7 @@ _ZNK7Derived3fooEv:
 3. 非虚调用 `bar` 被常量折叠为 `mov eax,2; ret`——因为 `bar` 非虚且返回常量，编译器在编译期求值，连函数调用都消除。
 4. 间接 `jmp`（非 `call`）是因为 `call_virtual` 本身是个薄包装，跳转即尾调用；真实多态调用场景多为 `call qword ptr [...]`，多一次返回栈协调，但取指/分派成本性质相同。
 
-【立场分层】：[标准] 规定虚函数/覆盖语义 / [实现] 描述编译器生成的 vtable 与调用指令 / [平台·x86-64] 说明 MSVC 与 Itanium ABI 差异 / [经验] 给出工程取舍（性能热点用 final/CRTP）。
+【立场分层】：<span class="badge badge-std">标准</span> 规定虚函数/覆盖语义 / <span class="badge badge-impl">实现</span> 描述编译器生成的 vtable 与调用指令 / [平台·x86-64] 说明 MSVC 与 Itanium ABI 差异 / <span class="badge badge-exp">经验</span> 给出工程取舍（性能热点用 final/CRTP）。
 
 【构造期 vptr 重写（要点，真实可复现）】
 
@@ -219,7 +219,7 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_ctor_vptr.cpp -o _asm_ctor_vptr.asm
 > 构建：`g++ -std=c++23 -O2 -Wall case47_plugin.cpp -o case47_plugin`
 > 文件：`Examples/case47_plugin.cpp`
 
-> **示例 5** [难度 ★★★★☆] [主题：工业案例 47-A：插件式渲染后端]
+> **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 工业案例 47-A：插件式渲染后端
 ```cpp
 #include <memory>
 #include <iostream>
@@ -261,7 +261,7 @@ int main() {
 
 ### 工业案例 47-B：错误示范——基类非虚析构导致泄漏/UB
 
-> **示例 6** [难度 ★★★☆☆] [主题：工业案例 47-B：错误示范——基类]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-B：错误示范——基类
 ```cpp
 // ❌ 基类析构非虚：delete 基类指针只调 Base 析构，派生部分不释放
 struct BadBase { ~BadBase() {} };                 // 非虚
@@ -273,7 +273,7 @@ int bad() {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：工业案例 47-B：错误示范——基类]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-B：错误示范——基类
 ```cpp
 // ✅ 修复：基类析构加 virtual
 struct GoodBase { virtual ~GoodBase() = default; };
@@ -282,7 +282,7 @@ struct GoodDerived : GoodBase { int* buf = new int[1024]; ~GoodDerived() overrid
 
 ### 工业案例 47-C：同类型对象共享同一份 vtable（vptr 相同）
 
-> **示例 8** [难度 ★★★☆☆] [主题：工业案例 47-C：同类型对象共享同]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-C：同类型对象共享同
 ```cpp
 #include <cstdio>
 struct Base { virtual ~Base() = default; virtual int f() const { return 1; } };
@@ -296,7 +296,7 @@ void demo_c() {
 
 ### 工业案例 47-D：override 误写（签名不匹配导致不是覆盖）
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：工业案例 47-D：override]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-D：override
 ```cpp
 struct Base { virtual int foo(int) const { return 1; } };
 struct Der : Base {
@@ -307,7 +307,7 @@ struct Der : Base {
 
 ### 工业案例 47-E：final 封闭类/方法（去虚化 + 禁继承）
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：工业案例 47-E：final 封闭]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-E：final 封闭
 ```cpp
 struct Base { virtual int f() const { return 1; } };
 struct Leaf final : Base { int f() const override { return 2; } };
@@ -316,7 +316,7 @@ struct Leaf final : Base { int f() const override { return 2; } };
 
 ### 工业案例 47-F：含纯虚函数的类不可实例化
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：工业案例 47-F：含纯虚函数的类不]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-F：含纯虚函数的类不
 ```cpp
 struct Abstract { virtual void f() = 0; virtual ~Abstract() = default; };
 // Abstract a;  // ❌ 编译错误：纯虚类不可实例化
@@ -325,7 +325,7 @@ struct Concrete : Abstract { void f() override {} };
 
 ### 工业案例 47-G：协变返回类型（covariant return）
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：工业案例 47-G：协变返回类型]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-G：协变返回类型
 ```cpp
 struct Base { virtual ~Base() = default; virtual Base* clone() const { return new Base(*this); } };
 struct Der : Base { Der* clone() const override { return new Der(*this); } };  // 返回派生指针
@@ -333,7 +333,7 @@ struct Der : Base { Der* clone() const override { return new Der(*this); } };  /
 
 ### 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
 
-> **示例 13** [难度 ★★★☆☆] [主题：工业案例 47-H：多重继承 thu]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-H：多重继承 thu
 ```cpp
 struct L { virtual int lf() const { return 1; } };
 struct R { virtual int rf() const { return 2; } };
@@ -343,7 +343,7 @@ struct D : L, R { int lf() const override { return 3; } int rf() const override 
 
 ### 工业案例 47-I：切片丢失多态
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例 47-I：切片丢失多态]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-I：切片丢失多态
 ```cpp
 struct Base { virtual int f() const { return 1; } virtual ~Base() = default; };
 struct Der : Base { int f() const override { return 2; } };
@@ -355,7 +355,7 @@ void demo_i() {
 
 ### 工业案例 47-J：虚函数默认参数静态绑定（陷阱）
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：工业案例 47-J：虚函数默认参数静]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-J：虚函数默认参数静
 ```cpp
 struct Base { virtual void f(int x = 1) const { (void)x; } virtual ~Base() = default; };
 struct Der : Base { void f(int x = 2) const override { (void)x; } };
@@ -364,7 +364,7 @@ struct Der : Base { void f(int x = 2) const override { (void)x; } };
 
 ### 工业案例 47-K：构造期调用虚函数不下降到派生
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：工业案例 47-K：构造期调用虚函数]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-K：构造期调用虚函数
 ```cpp
 struct Base { Base() { show(); } virtual void show() const {} virtual ~Base() = default; };
 struct Der : Base { Der() : Base() {} void show() const override {} };  // Base 构造期调 Base::show
@@ -372,7 +372,7 @@ struct Der : Base { Der() : Base() {} void show() const override {} };  // Base 
 
 ### 工业案例 47-L：析构期同理不下降到派生
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：工业案例 47-L：析构期同理不下降]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-L：析构期同理不下降
 ```cpp
 struct Base { virtual ~Base() { cleanup(); } virtual void cleanup() const {} };
 struct Der : Base { void cleanup() const override {} };  // 基类析构时调 Base::cleanup
@@ -380,7 +380,7 @@ struct Der : Base { void cleanup() const override {} };  // 基类析构时调 B
 
 ### 工业案例 47-M：模板成员不可为虚函数
 
-> **示例 18** [难度 ★★☆☆☆] [主题：工业案例 47-M：模板成员不可为虚]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 47-M：模板成员不可为虚
 ```cpp
 struct Base { virtual ~Base() = default; };
 // template<class T> virtual void f(T);  // ❌ 编译错误：模板成员不可为 virtual
@@ -388,7 +388,7 @@ struct Base { virtual ~Base() = default; };
 
 ### 工业案例 47-N：NVI（非虚接口）模式
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：工业案例 47-N：NVI模式]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-N：NVI模式
 ```cpp
 struct Base {
     void run() { do_run(); }            // 公有非虚，稳定接口
@@ -401,7 +401,7 @@ struct Der : Base { void do_run() override {} };
 
 ### 工业案例 47-O：去虚化后虚函数可内联
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：工业案例 47-O：去虚化后虚函数可]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-O：去虚化后虚函数可
 ```cpp
 struct Base { virtual int f() const { return 1; } virtual ~Base() = default; };
 struct Der : Base { int f() const override { return 2; } };
@@ -410,7 +410,7 @@ void demo_o(Der& d) { d.f(); }  // d 静态类型 Der，编译器可能内联 De
 
 ### 工业案例 47-P：接口类（纯虚 + 虚析构）
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例 47-P：接口类]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-P：接口类
 ```cpp
 struct IShape {
     virtual ~IShape() = default;
@@ -421,7 +421,7 @@ struct IShape {
 
 ### 工业案例 47-Q：CRTP 静态替代（对比 ⑲ benchmark）
 
-> **示例 22** [难度 ★★★☆☆] [主题：工业案例 47-Q：CRTP 静态替]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-Q：CRTP 静态替
 ```cpp
 template<class D>
 struct CrtpBase { int f() const { return static_cast<const D*>(this)->f_impl(); } };
@@ -430,7 +430,7 @@ struct CrtpDer : CrtpBase<CrtpDer> { int f_impl() const { return 2; } };  // 无
 
 ### 工业案例 47-R：虚析构确保经基类指针 delete 安全（回顾 ⑫-B）
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：工业案例 47-R：虚析构确保经基类]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-R：虚析构确保经基类
 ```cpp
 struct B { virtual ~B() = default; };
 struct D : B { int* p = new int[8]; ~D() override { delete[] p; } };
@@ -450,7 +450,7 @@ void demo_r() { B* b = new D; delete b; }  // 正确：先 ~D 再 ~B
 
 [标准·Itanium C++ ABI] vtable 结构（单继承，简化）：
 
-> **示例 24** [难度 ★★★☆☆] [主题：源码剖析 1：虚析构与 vtable]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析 1：虚析构与 vtable
 ```
 vtable for C:
   [0]  offset-to-top
@@ -473,7 +473,7 @@ vtable for C:
 > 行号：约 `extern "C" void __cxa_pure_virtual();`
 > 提取：`grep -n "__cxa_pure_virtual" <上述路径>`
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：源码剖析 1：虚析构与 vtable]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析 1：虚析构与 vtable
 ```cpp
 // libstdc++/libsupc++ 中定义：纯虚函数被调用时的终止处理
 extern "C" void __cxa_pure_virtual() { std::terminate(); }
@@ -550,7 +550,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
-> **示例 26** [难度 ★★★☆☆] [主题：性能分析]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析
 ```cpp
 #include <benchmark/benchmark.h>
 struct Base { virtual ~Base()=default; virtual int f() const { return 1; } };
@@ -581,16 +581,16 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：基类析构非虚，通过基类指针 delete 派生对象导致 UB。** 你的析构没被调用、内存泄漏。请说明规则。
-   - [标准] 通过指向基类的指针 `delete` 派生对象时，基类析构函数必须为虚，否则行为未定义。
-   - [引用] ISO/IEC 14882:2023 §[class.dtor]（虚析构的必要性）/ [class.virtual]（动态绑定析构）；cppreference "Virtual destructor" 词条。
+   - <span class="badge badge-std">标准</span> 通过指向基类的指针 `delete` 派生对象时，基类析构函数必须为虚，否则行为未定义。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.dtor]（虚析构的必要性）/ [class.virtual]（动态绑定析构）；cppreference "Virtual destructor" 词条。
 
 2. **真实场景：签名写错导致本想 override 却新建了重载。** 你用 `override` 让编译器替你抓错。请说明说明符作用。
-   - [标准] `override` 说明符要求该函数确实覆盖一个基类虚函数，否则编译期报错。
-   - [引用] ISO/IEC 14882:2023 §[class.virtual]（override 说明符）；cppreference "override" 词条。
+   - <span class="badge badge-std">标准</span> `override` 说明符要求该函数确实覆盖一个基类虚函数，否则编译期报错。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.virtual]（override 说明符）；cppreference "override" 词条。
 
 3. **真实场景：用 `final` 锁死某个虚函数不被进一步覆盖。** 你交付的基类不希望别人改行为。请说明约束。
-   - [标准] `final` 可标在虚函数（或类）上，禁止进一步的派生覆盖。
-   - [引用] ISO/IEC 14882:2023 §[class.virtual]（final 说明符）；cppreference "final" 词条。
+   - <span class="badge badge-std">标准</span> `final` 可标在虚函数（或类）上，禁止进一步的派生覆盖。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.virtual]（final 说明符）；cppreference "final" 词条。
 
 【练习题】
 1. 写一个含 3 层单继承的程序，打印各层构造/析构期 `typeid(*this).name()`，验证 vptr 逐级重写。
@@ -655,7 +655,7 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 【真实源码】Itanium ABI §2.6（见 ⑬）。
 
 【错误示例】
-> **示例 27** [难度 ★☆☆☆☆] [主题：知识点 B1：vtable 布局与覆]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：vtable 布局与覆
 ```cpp
 // ❌ 误以为虚函数数量影响对象大小
 struct Big { virtual void f1(); /*...*/ virtual void f200(); };
@@ -663,7 +663,7 @@ struct Big { virtual void f1(); /*...*/ virtual void f200(); };
 ```
 
 【正确示例】
-> **示例 28** [难度 ★★★☆☆] [主题：知识点 B1：vtable 布局与覆]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B1：vtable 布局与覆
 ```cpp
 // ✅ 覆盖同名同签名虚函数，编译器自动替换 vtable 同槽
 struct Base { virtual int f() { return 1; } };
@@ -724,7 +724,7 @@ struct Der : Base { int f() override { return 2; } };  // 替换 Base::f 的槽
 【真实源码】Clang `CGClass.cpp` `InitializeVTablePointers`。
 
 【错误示例】
-> **示例 29** [难度 ★☆☆☆☆] [主题：知识点 B2：构造期 vptr 重写]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：构造期 vptr 重写
 ```cpp
 // ❌ 期望构造期调派生覆盖版本
 struct Base { Base(){ init(); } virtual void init(){ log("base"); } };
@@ -733,7 +733,7 @@ Der d;  // 打印 "base"，非 "der"
 ```
 
 【正确示例】
-> **示例 30** [难度 ★☆☆☆☆] [主题：知识点 B2：构造期 vptr 重写]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：构造期 vptr 重写
 ```cpp
 // ✅ 构造期不依赖虚分派；初始化逻辑放独立两阶段 init() 由用户显式调用
 struct Base { virtual void init(){ log("base"); } };
@@ -795,7 +795,7 @@ Der d; d.init();  // 显式调用，打印 "der"
 【真实源码】libstdc++ `<exception>` 的 `std::exception::~exception()` 为 virtual。
 
 【错误示例】
-> **示例 31** [难度 ★★★☆☆] [主题：知识点 B3：虚析构必须 virtu]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：虚析构必须 virtu
 ```cpp
 // ❌ 非虚析构基类 + 多态 delete
 struct Shape { ~Shape(){} };                 // 非虚
@@ -804,7 +804,7 @@ Shape* s=new Circle; delete s;               // UB：pts 泄漏
 ```
 
 【正确示例】
-> **示例 32** [难度 ★★☆☆☆] [主题：知识点 B3：虚析构必须 virtu]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点 B3：虚析构必须 virtu
 ```cpp
 // ✅ 虚析构
 struct Shape { virtual ~Shape()=default; };
@@ -872,7 +872,7 @@ _ZThn8_N...+B2::vf:      ; thunk 名含偏移 8
 【真实源码】Itanium ABI §2.6.4（this 调整与 thunk）。
 
 【错误示例】
-> **示例 33** [难度 ★☆☆☆☆] [主题：知识点 B4：多重继承的 this ]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this
 ```cpp
 // ❌ 误把 B2* 当 Derived* 用（this 未调整）
 struct B1 { virtual void f(); }; struct B2 { virtual void g(); };
@@ -882,7 +882,7 @@ D d; B2* p = &d;  // p 指向 d 内 B2 子对象（偏移8），非 d 头
 ```
 
 【正确示例】
-> **示例 34** [难度 ★☆☆☆☆] [主题：知识点 B4：多重继承的 this ]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this
 ```cpp
 // ✅ 用 static_cast/dynamic_cast 正确处理偏移
 B2* p = &d; D* q = static_cast<D*>(p);  // 编译器插入 -8 调整
@@ -942,7 +942,7 @@ B2* p = &d; D* q = static_cast<D*>(p);  // 编译器插入 -8 调整
 【真实源码】LLVM `IPConstantPropagation`/`Inline` 去虚化 pass。
 
 【错误示例】
-> **示例 35** [难度 ★☆☆☆☆] [主题：知识点 B5：动态分派成本与去虚化]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B5：动态分派成本与去虚化
 ```cpp
 // ❌ 未标注 final，热点虚调用无法被编译器去虚化
 struct Node { virtual int cost() const; };
@@ -950,7 +950,7 @@ int total(const Node& n){ return n.cost(); }  // 间接调用，难内联
 ```
 
 【正确示例】
-> **示例 36** [难度 ★☆☆☆☆] [主题：知识点 B5：动态分派成本与去虚化]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B5：动态分派成本与去虚化
 ```cpp
 // ✅ 叶类 final，编译器可去虚化 total() 内调用
 struct Leaf final : Node { int cost() const final; };
@@ -973,28 +973,28 @@ struct Leaf final : Node { int cost() const final; };
 
 ## 附录: 虚函数深度
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录: 虚函数深度]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
 ```cpp
 #include <iostream>
 struct B{virtual void f(){std::cout<<"B";}virtual~B(){}};struct D:B{void f()override{std::cout<<"D";}};
 int main(){B*b=new D;b->f();delete b;std::cout<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: 虚函数深度]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
 ```cpp
 #include <iostream>
 struct A{virtual int val(){return 1;}};struct C:A{int val()final{return 2;}};
 int main(){C c;std::cout<<c.val()<<std::endl;return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录: 虚函数深度]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
 ```cpp
 #include <iostream>
 struct X{int data;virtual~X(){}};
 int main(){X x;std::cout<<sizeof(x)<<" (has vptr + data)"<<std::endl;return 0;}
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录: 虚函数深度]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
 ```cpp
 #include <iostream>
 // virtual 仅能修饰类的非静态成员函数；命名空间/全局作用域的自由函数不能带 virtual
@@ -1002,7 +1002,7 @@ void pure_virtual_demo(){std::cout<<"pure virtual function demo"<<std::endl;}
 int main(){pure_virtual_demo();return 0;}
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录: 虚函数深度]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1026,7 +1026,7 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 
 ### ㉒.1 历史渊源补强：虚函数的来龙去脉
 
-[史] 虚函数机制源自 **Simula 67 的「动态方法分派」**，C++ 在 1980 年代用 **vtable（虚函数表）+ 对象首部隐藏指针** 把它落地为「运行时零额外存储、调用仅多一次间接跳转」的实现——这一布局后来被 **Itanium C++ ABI（1990 年代末）** 标准化（第 ⑩ 节汇编实证）。[轶] Bjarne Stroustrup 在 *Design and Evolution* 中坦言，虚函数曾考虑过「按类收税（每类一份开销）」vs「按对象收税（每对象一个 vptr）」，最终选了后者，因为它对「大多数类无虚函数」的 C++ 程序更省——这是「值语义优先」哲学的延伸。[史] **C++11 引入 `final`/`override`** 让虚重写可被编译器校验，并让 `final` 成为去虚化（devirtualization，第 ⑲ 节）优化的线索；而 **CRTP（ch51）** 作为「编译期静态多态」早在 1990 年代模板成熟后即被广泛使用，用以规避虚调用开销。
+<span class="badge badge-history">史</span> 虚函数机制源自 **Simula 67 的「动态方法分派」**，C++ 在 1980 年代用 **vtable（虚函数表）+ 对象首部隐藏指针** 把它落地为「运行时零额外存储、调用仅多一次间接跳转」的实现——这一布局后来被 **Itanium C++ ABI（1990 年代末）** 标准化（第 ⑩ 节汇编实证）。<span class="badge badge-anecdote">轶</span> Bjarne Stroustrup 在 *Design and Evolution* 中坦言，虚函数曾考虑过「按类收税（每类一份开销）」vs「按对象收税（每对象一个 vptr）」，最终选了后者，因为它对「大多数类无虚函数」的 C++ 程序更省——这是「值语义优先」哲学的延伸。<span class="badge badge-history">史</span> **C++11 引入 `final`/`override`** 让虚重写可被编译器校验，并让 `final` 成为去虚化（devirtualization，第 ⑲ 节）优化的线索；而 **CRTP（ch51）** 作为「编译期静态多态」早在 1990 年代模板成熟后即被广泛使用，用以规避虚调用开销。
 
 ### ㉒.2 真实工程坐标：虚函数活在哪里
 
@@ -1054,8 +1054,8 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 
 ### ㉒.4 与标准的互动：虚函数与 WG21 演进
 
-[史] C++98 固化虚函数与 vtable 语义；**C++11 的 `override`/`final`**（第 ⑮ 节，ch46）让重写可校验，且 `final` 给编译器去虚化依据（第 ⑲ 节）。[史] **WG21 的「去虚化」是优化方向而非语言特性**——Link-Time Optimization（LTO）与 PGO 可把 `final`/单实现类型的虚调用内联掉；同时 **C++20 concepts（ch67）** 与 CRTP（ch51）提供「编译期多态」以在性能关键处替代虚函数。[评] WG21 并未计划改变虚函数这一核心机制（它仍是 C++ 运行时多态的基石），而是围绕它提供「能省则省」的工具：`final` 去虚化、CRTP 静态分派、`std::variant`+`std::visit` 的「封闭多态」替代方案（ch14）。标准的态度是「虚函数该用就用，热路径才需要逃逸到静态分发」。
-- [史] 虚函数机制自 C++98 由 ISO 条款 `[class.virtual]` 固化，vtable 的具体布局由 **Itanium C++ ABI**（GCC/Clang）与 MSVC 各自的 ABI 规定，标准只保证「虚调用分派到最终覆盖」的语义、不规定偏移。WG21 并未改变这一核心，而是围绕它提供 `final` 去虚化（LTO/PGO 可把单实现虚调用内联掉）与 `std::variant`+`std::visit` 的「封闭多态」替代——委员会态度是「虚函数该用就用，热路径才逃逸到静态分发」，而非另起炉灶。
+<span class="badge badge-history">史</span> C++98 固化虚函数与 vtable 语义；**C++11 的 `override`/`final`**（第 ⑮ 节，ch46）让重写可校验，且 `final` 给编译器去虚化依据（第 ⑲ 节）。<span class="badge badge-history">史</span> **WG21 的「去虚化」是优化方向而非语言特性**——Link-Time Optimization（LTO）与 PGO 可把 `final`/单实现类型的虚调用内联掉；同时 **C++20 concepts（ch67）** 与 CRTP（ch51）提供「编译期多态」以在性能关键处替代虚函数。<span class="badge badge-comment">评</span> WG21 并未计划改变虚函数这一核心机制（它仍是 C++ 运行时多态的基石），而是围绕它提供「能省则省」的工具：`final` 去虚化、CRTP 静态分派、`std::variant`+`std::visit` 的「封闭多态」替代方案（ch14）。标准的态度是「虚函数该用就用，热路径才需要逃逸到静态分发」。
+- <span class="badge badge-history">史</span> 虚函数机制自 C++98 由 ISO 条款 `[class.virtual]` 固化，vtable 的具体布局由 **Itanium C++ ABI**（GCC/Clang）与 MSVC 各自的 ABI 规定，标准只保证「虚调用分派到最终覆盖」的语义、不规定偏移。WG21 并未改变这一核心，而是围绕它提供 `final` 去虚化（LTO/PGO 可把单实现虚调用内联掉）与 `std::variant`+`std::visit` 的「封闭多态」替代——委员会态度是「虚函数该用就用，热路径才逃逸到静态分发」，而非另起炉灶。
 
 ### ㉒.5 权威引用
 
@@ -1143,13 +1143,13 @@ call rax                ; 间接跳转，目标运行期才定
 
 去虚化：`GCC 15.3.0` 在 `-O2` 默认开启 `-fdevirtualize`，配合 LTO（`-flto`）或 `final` 可把虚调用改成直接 `call` 并内联；`Clang 17` / `MSVC 19.3` 同理。`C++20` 起 `consteval` 可在编译期彻底消除虚分派路径。
 
-[标准] 虚析构自 `C++98`；`override` / `final` 自 `C++11`；`consteval` 自 `C++20`。
+<span class="badge badge-std">标准</span> 虚析构自 `C++98`；`override` / `final` 自 `C++11`；`consteval` 自 `C++20`。
 
 ## 附录 E：编译实证——虚调用的真实汇编代价 [E: Low-level]
 
 > 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-rtti -fno-exceptions`
 
-> **示例 42** [难度 ★★★★★] [主题：附录 E：编译实证——虚调用的真实汇]
+> **示例 42** <span class="badge badge-exp">难度 ★★★★★</span> · 附录 E：编译实证——虚调用的真实汇
 ```cpp
 struct Base {
     virtual int value() const { return 1; }
@@ -1246,7 +1246,7 @@ call_virtual(int):
 
 ### 测试源码（节选）
 
-> **示例 43** [难度 ★★★★☆] [主题：测试源码（节选）]
+> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 测试源码（节选）
 ```cpp
 struct ShapeV { int k; virtual int area() const = 0; virtual ~ShapeV()=default; };
 struct CircV : ShapeV { int r; int area() const override { return r*r; } };
@@ -1346,7 +1346,7 @@ long c_loop<RectC>(RectC const*, int):
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1365,9 +1365,9 @@ int main(){
 汇编层：调用 `s->area()` 编译为 `mov rax, [rsi]`（取 vtable 指针）→ `call [rax+offset]`（查虚函数槽）。
 本书批 L/ASM 实证记录过 vtable 槽调用 `operator[]` 式的间接跳转。
 
-[标准] 虚函数经 vtable 间接分发；override 必须签名一致（C++11 起建议显式 `override`）。
+<span class="badge badge-std">标准</span> 虚函数经 vtable 间接分发；override 必须签名一致（C++11 起建议显式 `override`）。
 
-[引用] 异质容器 + 基类指针是运行期多态的不可替代场景，Unreal Engine 的 `UObject` 派生体系（Actor、Component）正是以基类指针图管理异构对象（dev.epicgames.com/documentation）。Qt 的 `QObject` 事件分发同样走虚函数（doc.qt.io/qt-6/qobject.html）。ISO/IEC 14882:2023 §[class.virtual] 规定虚函数机制；cppreference "Virtual function" 词条给出 vtable 模型说明。
+<span class="badge badge-ref">引用</span> 异质容器 + 基类指针是运行期多态的不可替代场景，Unreal Engine 的 `UObject` 派生体系（Actor、Component）正是以基类指针图管理异构对象（dev.epicgames.com/documentation）。Qt 的 `QObject` 事件分发同样走虚函数（doc.qt.io/qt-6/qobject.html）。ISO/IEC 14882:2023 §[class.virtual] 规定虚函数机制；cppreference "Virtual function" 词条给出 vtable 模型说明。
 
 </details>
 
@@ -1377,7 +1377,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 struct Base { Base(){ f(); } virtual void f(){ std::cout << "Base::f\n"; } };
@@ -1388,9 +1388,9 @@ int main(){ Der d; }   // 输出 "Base::f", 不是 "Der::f"
 原因：对象在基类构造期间，其动态类型是 `Base`——vtable 指针此刻指向 `Base` 的 vtable，
 派生类子对象尚未构造。标准明确规定构造/析构期间虚调用绑定到当前正在构造的类。
 
-[标准] 在构造/析构函数中，虚函数调用绑定到当前构造/析构的类，不向下分发。
+<span class="badge badge-std">标准</span> 在构造/析构函数中，虚函数调用绑定到当前构造/析构的类，不向下分发。
 
-[引用] C++ Core Guidelines C.82 明确"不要在构造/析构中调用虚函数"（isocpp.github.io）。若需在构造期应用派生配置，常见做法是两阶段构造（先默认构造、再调一个非虚 `init(options)`）或 NVI 工厂函数（参见 ch46）。ISO/IEC 14882:2023 §[class.base.init] 规定构造顺序与虚调用绑定；Meyers《Effective C++》条款 9 详述此坑。
+<span class="badge badge-ref">引用</span> C++ Core Guidelines C.82 明确"不要在构造/析构中调用虚函数"（isocpp.github.io）。若需在构造期应用派生配置，常见做法是两阶段构造（先默认构造、再调一个非虚 `init(options)`）或 NVI 工厂函数（参见 ch46）。ISO/IEC 14882:2023 §[class.base.init] 规定构造顺序与虚调用绑定；Meyers《Effective C++》条款 9 详述此坑。
 
 </details>
 
@@ -1400,7 +1400,7 @@ int main(){ Der d; }   // 输出 "Base::f", 不是 "Der::f"
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 // 动态多态: 运行时异构, 有 vtable + 间接调用开销
 struct Addable { virtual int add(int)=0; };
@@ -1411,9 +1411,9 @@ struct IntA : AddableCrtp<IntA> { int impl(int x){ return x+1; } };
 
 选 CRTP：性能敏感、类型在编译期确定（如数值库 Eigen）；选虚函数：需要运行时多态、异构容器（如插件系统）。
 
-[标准] CRTP 把虚调用转为静态分发（见 ch51 实证）；代价是失去运行时类型擦除能力。
+<span class="badge badge-std">标准</span> CRTP 把虚调用转为静态分发（见 ch51 实证）；代价是失去运行时类型擦除能力。
 
-[引用] Eigen 的 `Eigen::MatrixBase<Derived>` 即 CRTP，使算术表达式在编译期单态化、零虚调用开销（eigen.tuxfamily.org）。标准库 `std::vector<Base*>` 存储异构对象则必须走虚函数（cppreference "std::vector"）。LLVM 的 `Pass` 体系用虚函数支持运行期可插拔的分析/优化 Pass（llvm.org/docs）。ISO/IEC 14882:2023 §[class.virtual] 与 §[temp] 分别规定虚函数与模板机制。
+<span class="badge badge-ref">引用</span> Eigen 的 `Eigen::MatrixBase<Derived>` 即 CRTP，使算术表达式在编译期单态化、零虚调用开销（eigen.tuxfamily.org）。标准库 `std::vector<Base*>` 存储异构对象则必须走虚函数（cppreference "std::vector"）。LLVM 的 `Pass` 体系用虚函数支持运行期可插拔的分析/优化 Pass（llvm.org/docs）。ISO/IEC 14882:2023 §[class.virtual] 与 §[temp] 分别规定虚函数与模板机制。
 
 </details>
 
@@ -1423,7 +1423,7 @@ struct IntA : AddableCrtp<IntA> { int impl(int x){ return x+1; } };
 
 **步骤 1：定义抽象接口（多态基类）**
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 设计一个可扩展的]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 设计一个可扩展的
 ```cpp
 struct Filter {
     virtual ~Filter() = default;
@@ -1434,7 +1434,7 @@ struct Filter {
 
 **步骤 2：派生具体滤镜（override 虚函数）**
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 设计一个可扩展的]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 设计一个可扩展的
 ```cpp
 struct Grayscale : Filter {
     Image apply(const Image& i) const override { /* ... */ return gray; }
@@ -1444,7 +1444,7 @@ struct Grayscale : Filter {
 
 **步骤 3：工厂注册 + 运行时按名创建（多态分发）**
 
-> **示例 49** [难度 ★★★☆☆] [主题：附录：用法演绎 — 设计一个可扩展的]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 设计一个可扩展的
 ```cpp
 std::map<std::string, std::function<std::unique_ptr<Filter>()>> registry;
 registry["grayscale"] = [] { return std::make_unique<Grayscale>(); };
@@ -1455,7 +1455,7 @@ Image out = f->apply(src);              // 经 vtable 分发到正确实现
 
 **步骤 4：对比 CRTP 静态策略（性能优先时）**
 
-> **示例 50** [难度 ★★★★★] [主题：附录：用法演绎 — 设计一个可扩展的]
+> **示例 50** <span class="badge badge-exp">难度 ★★★★★</span> · 附录：用法演绎 — 设计一个可扩展的
 ```cpp
 template <class Impl> struct FilterCrtp {
     Image apply(const Image& i) const { return static_cast<const Impl*>(this)->impl(i); }
@@ -1684,7 +1684,7 @@ OFFSET           TYPE                      VALUE
 
 ### D4.5 第一方可编译验证（type_info 三能力）
 
-> **示例 51** [难度 ★★★★☆] [主题：第一方可编译验证]
+> **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 第一方可编译验证
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1800,7 +1800,7 @@ int main() {
 基准源码见库根 `_bench_d5_47_virt.cpp`。
 ### 下一节 可复现 demo
 
-> **示例 52** [难度 ★★★☆☆] [主题：下一节 可复现 demo]
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 下一节 可复现 demo
 ```cpp
 #include <iostream>
 #include <vector>

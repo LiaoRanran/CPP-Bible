@@ -14,24 +14,24 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stallman 于 1987 年随 GNU 项目发布，初心是"自由软件世界不能没有自己的编译器"。[史] 它长期是 Linux 世界的唯一选择。到 2000 年代，Apple 虽用 GCC，却苦于 GPL 许可与缓慢的 Objective-C 支持；2007 年苹果发起 **Clang/LLVM**，以更宽松的 BSD 许可、更快的编译与友好的报错重构前端。[史] 微软的 MSVC 则随 Visual C++ 一路演进，是 Windows 平台的事实标准。[史] 三者并存，正是"开源自由 / 厂商可控 / 平台绑定"三条路线的现实投影。[评]
+C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stallman 于 1987 年随 GNU 项目发布，初心是"自由软件世界不能没有自己的编译器"。<span class="badge badge-history">史</span> 它长期是 Linux 世界的唯一选择。到 2000 年代，Apple 虽用 GCC，却苦于 GPL 许可与缓慢的 Objective-C 支持；2007 年苹果发起 **Clang/LLVM**，以更宽松的 BSD 许可、更快的编译与友好的报错重构前端。<span class="badge badge-history">史</span> 微软的 MSVC 则随 Visual C++ 一路演进，是 Windows 平台的事实标准。<span class="badge badge-history">史</span> 三者并存，正是"开源自由 / 厂商可控 / 平台绑定"三条路线的现实投影。<span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
 
-- **1987**：GCC 首个版本发布（最初叫 GNU C Compiler）。[史]
-- **2003**：LLVM 项目启动（Chris Lattner 等，源于伊利诺伊大学）；2007 年苹果发起 Clang 作为 LLVM 的 C/C++/Obj-C 前端。[史]
-- **ABI 定型**：Itanium C++ ABI（由 Intel/HP 推动）成为 GNU/Linux 上 C++ 二进制接口的事实上标准，GCC/Clang 据此互通。[史]
+- **1987**：GCC 首个版本发布（最初叫 GNU C Compiler）。<span class="badge badge-history">史</span>
+- **2003**：LLVM 项目启动（Chris Lattner 等，源于伊利诺伊大学）；2007 年苹果发起 Clang 作为 LLVM 的 C/C++/Obj-C 前端。<span class="badge badge-history">史</span>
+- **ABI 定型**：Itanium C++ ABI（由 Intel/HP 推动）成为 GNU/Linux 上 C++ 二进制接口的事实上标准，GCC/Clang 据此互通。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-编译器之争本质是"许可与架构"。GCC 守 GPL、单体前端；Clang 选 BSD、模块化（LLVM 作为可复用后端库），其报错带 caret 提示与修复建议，直接抬高了行业体验水位。[史][评] MSVC 则长期"自家 ABI"（MSVC ABI），与 Itanium 不兼容，导致跨平台库要分别构建。这背后是"平台锁定"与"跨平台自由"的古老张力。[评] LLVM 的中间表示（IR）设计，更让"同一前端支持多后端"成为现代编译器的事实范式。[史]
+编译器之争本质是"许可与架构"。GCC 守 GPL、单体前端；Clang 选 BSD、模块化（LLVM 作为可复用后端库），其报错带 caret 提示与修复建议，直接抬高了行业体验水位。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> MSVC 则长期"自家 ABI"（MSVC ABI），与 Itanium 不兼容，导致跨平台库要分别构建。这背后是"平台锁定"与"跨平台自由"的古老张力。<span class="badge badge-comment">评</span> LLVM 的中间表示（IR）设计，更让"同一前端支持多后端"成为现代编译器的事实范式。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] GCC 与 Clang 在 C++20/23 支持度上长期"你追我赶"：GCC 13 完成 `std::print`/Ranges 大部分、Clang 16 跟上，MSVC 17.8+ 宣布完整 C++23——谁先合入某个特性常成社区头条。
-- [史] MSVC 在 2010s 后逐步靠拢 Clang/LLVM 生态：其实验性 "ClangCL" 后端与对标准更积极的追赶，缓解了长期"自家 ABI、慢半拍"的批评。
-- [史] LLVM 的 IR 设计让同一前端支撑多后端，现已被 AMD ROCm、NVIDIA CUDA 编译器、Apple Metal 着色器管线广泛复用，远超"C++ 编译器"范畴。
-- [评] 三家路线差异仍在：GCC 守 GPL、Clang 守 BSD 模块化、MSVC 守 Windows 绑定——选工具链本质是选许可与生态立场。
+- <span class="badge badge-history">史</span> GCC 与 Clang 在 C++20/23 支持度上长期"你追我赶"：GCC 13 完成 `std::print`/Ranges 大部分、Clang 16 跟上，MSVC 17.8+ 宣布完整 C++23——谁先合入某个特性常成社区头条。
+- <span class="badge badge-history">史</span> MSVC 在 2010s 后逐步靠拢 Clang/LLVM 生态：其实验性 "ClangCL" 后端与对标准更积极的追赶，缓解了长期"自家 ABI、慢半拍"的批评。
+- <span class="badge badge-history">史</span> LLVM 的 IR 设计让同一前端支撑多后端，现已被 AMD ROCm、NVIDIA CUDA 编译器、Apple Metal 着色器管线广泛复用，远超"C++ 编译器"范畴。
+- <span class="badge badge-comment">评</span> 三家路线差异仍在：GCC 守 GPL、Clang 守 BSD 模块化、MSVC 守 Windows 绑定——选工具链本质是选许可与生态立场。
 
 > 史料来源：Clang 官网 https://clang.llvm.org/ ；GCC C++ 状态 https://gcc.gnu.org/projects/cxx-status.html
 
@@ -41,7 +41,7 @@ C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stall
 
 C++ 源码不是机器能直接执行的——它需要被**翻译**为特定 ISA（x86-64 / ARM64 / RISC-V 等）的机器码。编译器承担三件事：① 把文本翻译为语义正确的指令；② 在翻译中做等价变换（优化）以提升速度/减小体积；③ 与操作系统/链接器/运行时协作，产出可加载的二进制。
 
-> **示例 1** [难度 ★★★☆☆] [主题：概述：为什么需要编译器，三巨头格局]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：为什么需要编译器，三巨头格局
 ```cpp
 // ① 同一份 C++ 源码，三种主流编译器都能产出可执行文件
 //   GCC       : g++ main.cpp -o main
@@ -81,7 +81,7 @@ flowchart LR
 
 GCC 采用**分层中间表示（IR）**，把"语言相关"与"目标相关"彻底解耦。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：架构：前端 → 中端 GIMPLE ]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：前端 → 中端 GIMPLE
 ```cpp
 // ② GCC 的语言无关中端示意：中端不关心这是 C++ 还是 Fortran
 // 前端解析为 GENERIC(AST) -> 降级为 GIMPLE(SSA, 三地址码) -> 展开为 RTL(贴近硬件)
@@ -96,7 +96,7 @@ GCC 的关键分层：
 - **RTL（Register Transfer Language）**：比 GIMPLE 更贴近硬件，描述寄存器与机器指令；指令选择、寄存器分配、调度在 RTL 层。
 - **PASS 机制**：每个优化是一个 `pass`，按 `pass_list` 顺序串联；`-fdump-tree-*` / `-fdump-rtl-*` 可逐 PASS 导出中间表示。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：架构：前端 → 中端 GIMPLE ]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：前端 → 中端 GIMPLE
 ```cpp
 // ② 用 -fdump-tree-gimple 可看到 sum 的 GIMPLE 形态（文件 sum.cpp.005t.gimple）
 // 下面仅示意 dump 的内容，非可编译代码
@@ -115,7 +115,7 @@ int sum(int a, int b) { return a + b; }
 
 Clang 是 LLVM 的 C/C++/ObjC 前端；LLVM 是后端基础设施，核心是 **LLVM IR**（一种强类型、SSA 形式的低级虚拟指令集）。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：架构：模块化、libclang、LL]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：模块化、libclang、LL
 ```cpp
 // ③ LLVM IR 是平台无关的低级表示；下列 C++ 在 LLVM 中被翻译为 LLVM IR 而非直接出码
 // 用 clang++ -std=c++23 -emit-llvm -S x.cpp -o x.ll 可见 IR
@@ -130,7 +130,7 @@ Clang/LLVM 的差异化优势：
 - **LLVM IR**：前后端解耦——同一份 IR 可被不同 `Target` 后端（`X86`、`AArch64`、`RISCV`）翻译，易于移植新架构。
 - **PassManager**：基于依赖图的按需调度，而非 GCC 的固定顺序。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：架构：模块化、libclang、LL]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构：模块化、libclang、LL
 ```cpp
 // ③ LLVM 多后端示意：同一 IR，不同 -mtriple 产出不同汇编
 //   clang++ -target x86_64-w64-windows-gnu -emit-llvm ...   -> X86
@@ -139,7 +139,7 @@ Clang/LLVM 的差异化优势：
 int add(int a, int b) { return a + b; }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：架构：模块化、libclang、LL]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：模块化、libclang、LL
 ```cpp
 // ③ 用 libclang 做 AST 遍历（仅示意 API 调用骨架，非完整可编译工程）
 // clang_getCursorKind / clang_visitChildren —— IDE 精确补全即源于此
@@ -153,7 +153,7 @@ int add(int a, int b) { return a + b; }
 
 MSVC 是 Windows 原生工具链，组件与另两家命名完全不同。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：后端、MSBuild]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后端、MSBuild
 ```cpp
 // ④ MSVC 编译命令（cl.exe 一站式完成 编译+汇编+链接）
 //   cl /std:c++20 /EHsc /O2 /Fe:app.exe main.cpp
@@ -168,7 +168,7 @@ MSVC 关键组件：
 - **MSBuild / MSVC STL**：构建系统 `MSBuild`（`.vcxproj`），标准库为 MS-STL（`<yvals.h>` 体系），与 libstdc++/libc++ 实现差异显著。
 - **链接器 link.exe**：处理 COFF/PE；`/DEBUG` 生成 PDB（见 ⑰）。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：后端、MSBuild]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后端、MSBuild
 ```cpp
 // ④ MSVC 的模块支持：用 /interface 编译 .ixx 接口单元
 //   cl /std:c++20 /interface math.ixx /c -> 生成 .ifc(等价 BMI)
@@ -177,7 +177,7 @@ export module math;
 export int square(int x) { return x * x; }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：后端、MSBuild]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后端、MSBuild
 ```cpp
 // ④ MSVC 异常模型：/EHsc 是 C++ 项目的标准选择（同步 C++ 异常）
 //   /EHa 会也捕获异步结构化异常(SEH)，代价更大
@@ -192,7 +192,7 @@ void may_throw(bool b) { if (b) throw 1; }
 
 经典四阶段，GCC/Clang 用 `-E / -S / -c` 分阶段暴露。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：编译流程：预处理 → 编译 → 汇编]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译流程：预处理 → 编译 → 汇编
 ```cpp
 // ⑤ 一个最小 TU，用于演示四阶段
 // 文件：Examples/_ch11_f.cpp（第2行 int f(int)）
@@ -208,7 +208,7 @@ g++ -c  main.s -o main.o      # 3) 汇编：asm -> 可重定位目标文件(.o)
 g++ main.o -o main            # 4) 链接：多 .o + 库 -> 可执行
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：编译流程：预处理 → 编译 → 汇编]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译流程：预处理 → 编译 → 汇编
 ```cpp
 // ⑤ 预处理后可观察：#include <iostream> 会把整个标准库头文本拼入 .i 文件
 // 鸿篇巨制的 .i 正是 Modules(见⑮)要解决的问题
@@ -216,7 +216,7 @@ g++ main.o -o main            # 4) 链接：多 .o + 库 -> 可执行
 std::vector<int> make() { return {1, 2, 3}; }
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：编译流程：预处理 → 编译 → 汇编]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译流程：预处理 → 编译 → 汇编
 ```cpp
 // ⑤ 链接期解析符号：未定义引用(ld: undefined reference) 即"声明有、定义无"
 // 典型：只在头里声明 void foo(); 但没在任何 TU 定义 -> 链接失败
@@ -232,7 +232,7 @@ int use_foo() { foo(); return 0; }   // 若 foo 无定义 -> 链接错误
 
 目标文件是汇编后的二进制容器，不同 OS 用不同格式——这是"同一份 C++ 不能跨 OS 直接跑"的格式层原因。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：目标文件格式：ELF / COFF ]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标文件格式：ELF / COFF
 ```cpp
 // ⑥ 下面代码在三平台产出不同格式目标文件
 //   Linux   : ELF      (.o)         readelf -h a.o
@@ -249,7 +249,7 @@ int g(int x) { return x + 1; }
 | COFF/PE | Windows | `.text/.data/.rdata` | `COFF symtab` | PDB |
 | Mach-O | macOS/iOS | `__TEXT/__DATA` | `LC_SYMTAB` | DWARF(in Mach-O) |
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：目标文件格式：ELF / COFF ]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标文件格式：ELF / COFF
 ```cpp
 // ⑥ 段的意义：下列变量被放入不同段
 int      init_var = 42;     // .data  (已初始化)
@@ -258,7 +258,7 @@ const int k = 7;            // .rodata(只读) / .rdata(Windows)
 char     buf[1024];         // .bss
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：目标文件格式：ELF / COFF ]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标文件格式：ELF / COFF
 ```cpp
 // ⑥ ELF 的 .symtab 里，C++ 名字以 mangled 形式存在（见 ⑦ / ⑧）
 //   readelf -s a.o  -> 看到 _Z1gi 而非 "g(int)"
@@ -272,7 +272,7 @@ int g(int, double) { return 0; }
 
 **名字改编（name mangling）** 是把 C++ 函数签名（作用域、参数类型、const/volatile、模板实参）编码成链接器能容纳的**唯一字符串**的机制。C++ 允许函数重载与命名空间，但链接器只认"扁平名字"，于是编译器把签名压成一段字符串。Itanium C++ ABI（GCC/Clang/ICC 通用）的编码规则：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：++ ABI 与名字改编]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 ```
 _Z  <编码长度+名字>   <参数编码...>
   └ 前缀：_Z = 非限定函数
@@ -280,7 +280,7 @@ _Z  <编码长度+名字>   <参数编码...>
      类型码：i=int, c=char, d=double, l=long, P=pointer, S_=short?, 等
 ```
 
-> **示例 17** [难度 ★★★★☆] [主题：++ ABI 与名字改编]
+> **示例 17** <span class="badge badge-exp">难度 ★★★★☆</span> · ++ ABI 与名字改编
 ```cpp
 // ⑦ 下列声明对应 Itanium mangling（真实符号取自 Examples/_ch11_mangle.cpp）
 int         g(int, double);          // -> _Z1gid
@@ -302,7 +302,7 @@ template<typename T> T id(T);        // -> _Z2idIiET_S0_ (id<int>)
 | `ns::q(int)` | `_ZN2ns1qEi` | `ns::q(int)` |
 | `id<int>(int)` | `_Z2idIiET_S0_` | `int id<int>(int)` |
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：++ ABI 与名字改编]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 ```cpp
 // ⑦ 编码拆解：_Z1ksPil
 //   _Z : 非限定函数
@@ -314,14 +314,14 @@ template<typename T> T id(T);        // -> _Z2idIiET_S0_ (id<int>)
 // 注意顺序：参数按声明顺序，指针先标 P 再标所指类型
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：++ ABI 与名字改编]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 ```cpp
 // ⑦ c++filt 还原命令（本机已装，真实可用）
 //   c++filt _Z1ksPil   ->  k(short, int*, long)
 //   c++filt _ZN2ns1qEi ->  ns::q(int)
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：++ ABI 与名字改编]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ ABI 与名字改编
 ```cpp
 // ⑦ 模板实例化的 mangling 含实参：id<int> -> 在 _Z2id 后追加 <IiE>
 // 这就是为什么同一模板不同实参会得到不同符号、互不冲突
@@ -336,7 +336,7 @@ template int id<int>(int);     // 显式实例化 -> _Z2idIiET_S0_
 
 下面所有汇编均来自本机 **GCC 15.3.0** 真实编译，未做任何改写。
 
-> **示例 21** [难度 ★★★☆☆] [主题：[实现·GCC15.3.0]真实汇编]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15.3.0]真实汇编
 ```cpp
 // 文件：Examples/_ch11_f.cpp
 // 行号：2
@@ -371,7 +371,7 @@ _Z1fi:
 ; 命令：c++filt.exe _ZN2ns1qEi -> 输出 ns::q(int)
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：[实现·GCC15.3.0]真实汇编]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·GCC15.3.0]真实汇编
 ```cpp
 // ⑧ 用 GCC 的 __PRETTY_FUNCTION__ 在运行期拿到 mangled 之外的可读名（非 mangled）
 #include <cstdio>
@@ -379,7 +379,7 @@ int f(int x) { return x + 1; }
 void show() { std::printf("%s\n", __PRETTY_FUNCTION__); }  // 输出: int f(int)
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：[实现·GCC15.3.0]真实汇编]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·GCC15.3.0]真实汇编
 ```cpp
 // ⑧ extern "C" 可关闭 mangling：符号变成裸名 f，便于被 C/其他语言调用
 extern "C" int f_c(int x) { return x + 1; }   // 符号即 "f_c"（无 _Z 前缀）
@@ -392,7 +392,7 @@ extern "C" int f_c(int x) { return x + 1; }   // 符号即 "f_c"（无 _Z 前缀
 
 C++ 异常的实现依赖运行期机制，三大编译器分属两套模型。
 
-> **示例 24** [难度 ★★★☆☆] [主题：异常处理模型：Itanium zer]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 异常处理模型：Itanium zer
 ```cpp
 // ⑨ Itanium 零成本模型（GCC/Clang 在 Linux/macOS 用）：
 //   无异常时不付任何运行时检查代价（"零成本"），异常抛出时才查表(.eh_frame)展开栈
@@ -406,7 +406,7 @@ int risky(bool b) {
 - **Itanium zero-cost（GCC/Clang on ELF/Mach-O）**：正常路径零开销；异常对象通过 `.eh_frame`（DWARF 展开信息）与 `__gxx_personality_v0`  personality routine 做栈展开。`[平台·Itanium ABI]`
 - **Windows SEH（结构化异常）**：Windows 把 C++ 异常建立在一套 OS 级结构化异常（SEH）之上，用 `.pdata`/`.xdata` 描述函数展开信息；MSVC 用 `___CxxFrameHandler3`，MinGW(GCC on Windows) 也适配到 SEH。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：异常处理模型：Itanium zer]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常处理模型：Itanium zer
 ```cpp
 // ⑨ MSVC 异常变体（真实命令，非本机 MSVC 环境，标注"典型输出"）
 //   cl /EHsc main.cpp   -> 同步 C++ 异常（不捕获 SEH）
@@ -414,7 +414,7 @@ int risky(bool b) {
 //   典型输出：/EHa 下 try { *(int*)0 = 0; } catch(...) {} 能吞掉访问违规(AV)
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：异常处理模型：Itanium zer]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常处理模型：Itanium zer
 ```cpp
 // ⑨ 跨模型陷阱：在 MinGW(GCC) 下 throw 与 Windows SEH 是两套体系，
 //   用 -fnon-call-exceptions 才能让某些 async 信号被 C++ 异常捕获
@@ -428,7 +428,7 @@ int risky(bool b) {
 
 vtable（虚函数表）与 RTTI（`typeid`/`dynamic_cast`）是同一套机制的表里两面，都挂在类对象头部的**虚表指针（vptr）** 上。
 
-> **示例 27** [难度 ★★★★☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 27** <span class="badge badge-exp">难度 ★★★★☆</span> · 与 vtable 布局：从真实汇编看
 ```cpp
 // 文件：Examples/_ch11_vtable.cpp
 // 行号：2
@@ -461,7 +461,7 @@ _ZTV5Shape:
 
 源码剖析：`[实现·GCC15]` 真实 vtable 布局为 **[offset-to-top][typeinfo ptr][虚函数指针...]**。第 0 项 `offset-to-top` 用于多继承下把 `Derived*` 调整回 `Base*`；第 1 项指向 `_ZTI5Shape`（RTTI 实体），`typeid(obj)` 即经 vptr 取这一项。`_ZN5ShapeD1Ev` = `Shape::~Shape()` 的 complete destructor 变体。
 
-> **示例 28** [难度 ★★★☆☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 vtable 布局：从真实汇编看
 ```cpp
 // ⑩ 对象内存布局：vptr 在最前（Itanium ABI 单继承）
 //   Shape 对象: [ vptr -> _ZTV5Shape ][ ...派生成员... ]
@@ -472,7 +472,7 @@ struct Circle : Shape {
 // Circle 的 vtable 第4项(_ZNK6Circle4areaEv)覆盖 Shape 的 area，动态分派即"经 vptr 取第4槽"
 ```
 
-> **示例 29** [难度 ★★★☆☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 vtable 布局：从真实汇编看
 ```cpp
 // ⑩ RTTI 在运行期经 vtable 取 typeinfo
 #include <typeinfo>
@@ -482,7 +482,7 @@ void probe(const Shape& s) {
 }
 ```
 
-> **示例 30** [难度 ★★★☆☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 vtable 布局：从真实汇编看
 ```cpp
 // ⑩ 多继承的 offset-to-top 非 0：下面 Derived 的第二基类 Base2 的 vtable 子表 offset-to-top = -8
 struct Base1 { virtual void a(); };
@@ -500,7 +500,7 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 
 **调用约定（calling convention）** 规定：参数怎么传（寄存器/栈）、谁清理栈、返回值放哪。这纯属 `[平台·Windows]` 层约定。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：调用约定：cdecl / stdca]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用约定：cdecl / stdca
 ```cpp
 // ⑪ 32 位 x86 常见调用约定（x86-64 下大多被统一，见下）
 //   cdecl   : 参数右→左压栈, 调用方清栈 (C 默认)
@@ -511,7 +511,7 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 extern "C" int __attribute__((stdcall)) win_api(int, int);
 ```
 
-> **示例 32** [难度 ★★★☆☆] [主题：调用约定：cdecl / stdca]
+> **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用约定：cdecl / stdca
 ```cpp
 // 文件：Examples/_ch11_cconv.cpp
 // 行号：3
@@ -543,14 +543,14 @@ _Z7computellllll:
 
 源码剖析：`[平台·x86-64 Win64 ABI]` 真实汇编证实——第 1~4 参在 `rcx/rdx/r8/r9`，第 5、6 参在栈偏移 `[rsp+40]`、`[rsp+48]`（因返回地址 8 + 32 字节"影子空间(shadow space)"占 40）。这正是 Windows x64 调用约定，与 System V x86-64（Linux）用 6 个寄存器传参不同。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：调用约定：cdecl / stdca]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用约定：cdecl / stdca
 ```cpp
 // ⑪ 成员函数的 thiscall(32位) / this 在 x86-64 走 rcx(第1参)
 struct Widget { int v; int get() const { return v; } };
 // x86-64: Widget::get(Widget const* this) -> this 在 rcx
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：调用约定：cdecl / stdca]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用约定：cdecl / stdca
 ```cpp
 // ⑪ extern "C" 统一 ABI 边界：C 函数无 mangling、用 cdecl，是跨编译器/跨语言的安全接口
 extern "C" void log_event(const char* msg);   // 任何编译器产出的符号都是裸名 log_event
@@ -565,14 +565,14 @@ extern "C" void log_event(const char* msg);   // 任何编译器产出的符号�
 
 内联是把被调函数体直接复制到调用点，是绝大多数优化（常量传播、死代码消除）的前提。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：内联与优化管道]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ inline 提示（非强制）；编译器据成本模型决定是否真内联
 inline int square(int x) { return x * x; }
 int use1(int a) { return square(a) + 1; }   // 很可能被内联
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：内联与优化管道]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ __attribute__((always_inline)) / [[gnu::always_inline]] 强制内联（GCC/Clang）
 //   注意 MSVC 用 __forceinline
@@ -580,7 +580,7 @@ int use1(int a) { return square(a) + 1; }   // 很可能被内联
 int use2(int a) { return triple(a); }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：内联与优化管道]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ 优化级别对照： -O0 不内联、不优化；-O2 开全套；-O3 加向量化/循环展开
 //   g++ -O0 -S x.cpp   -> 直译式汇编，每个语句对应几条指令
@@ -589,14 +589,14 @@ int use2(int a) { return triple(a); }
 int add_one(int x) { return x + 1; }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：内联与优化管道]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ Link-Time Optimization(LTO)：跨 TU 内联，需 -flto 与配套链接
 //   g++ -O2 -flto a.cpp b.cpp -o app   (a/b 间也能内联)
 //   clang++ -O2 -flto=thin ...         (ThinLTO 增量)
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：内联与优化管道]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ 编译器看不到定义时无法内联（跨 TU 默认不内联 -> 用 LTO 或头内 inline）
 // foo 在另一 TU 定义，本 TU 只能 call，无法内联
@@ -613,7 +613,7 @@ int wrap(int x) { return foo(x) * 2; }
 
 三家的 C++23 实现进度不同，选型前必须查官方状态页（非本机工具，给真实 URL + 标注"官方文档"）。
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：标准符合度对比（C++23 支持度）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准符合度对比（C++23 支持度）
 ```cpp
 // ⑬ C++23 特性示例：std::expected（错误处理新范式，三家均已支持）
 #include <expected>
@@ -629,7 +629,7 @@ std::expected<int, const char*> parse(const char* s) {
 - `[标准]` Clang libc++：https://libcxx.llvm.org/Status/Cxx23.html
 - `[标准]` MSVC STL：https://learn.microsoft.com/cpp/visual-cpp-language-conformance
 
-> **示例 41** [难度 ★★☆☆☆] [主题：标准符合度对比（C++23 支持度）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 标准符合度对比（C++23 支持度）
 ```cpp
 // ⑬ C++23 的 if consteval（编译期分支，三家 C++23 模式均支持）
 consteval int compile_time(int x) { return x * 2; }
@@ -639,7 +639,7 @@ int f(int v) {
 }
 ```
 
-> **示例 42** [难度 ★★★☆☆] [主题：标准符合度对比（C++23 支持度）]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 标准符合度对比（C++23 支持度）
 ```cpp
 // ⑬ 三家对"实验性特性"的门控宏不同：
 //   GCC     : __cpp_modules / __cpp_concepts (特性测试宏，ISO 规定)
@@ -657,7 +657,7 @@ int f(int v) {
 
 编译器报错质量直接决定开发体验，这是 Clang 的传统强项。
 
-> **示例 43** [难度 ★★☆☆☆] [主题：诊断与报错质量对比]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ 同一错误在三家中的表现差异（以下为"典型输出"示意，因本机仅装 GCC13）
 //   错误：漏写分号 / 模板实参推导失败 / 类型不匹配
@@ -665,7 +665,7 @@ template<typename T> T max_of(T a, T b) { return a < b ? b : a; }
 auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：诊断与报错质量对比]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ GCC 经典报错（较"朴素"，但 13 已大幅改善）：
 //   error: no matching function for call to 'max_of(int, double)'
@@ -673,7 +673,7 @@ auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 //   （信息正确，但缺"可视化对比箭头"）
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：诊断与报错质量对比]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ Clang 经典报错（带 ~~~ 下划线与"期望/实际"对照）：
 //   note: candidate template ignored: deduced type 'int' for parameter 'T'
@@ -681,7 +681,7 @@ auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 //   （多出代码片段高亮，定位更快）
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：诊断与报错质量对比]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ MSVC 经典报错（编号体系，需查 MSDN）：
 //   error C2782: 'T max_of(T,T)' : template parameter 'T' is ambiguous
@@ -695,7 +695,7 @@ auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 
 Modules（C++20）是 `#include` 的文本包含的语义化替代（详见本书 Modules 章，本处只对比三家工具链支持）。`[标准·modules]`
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：模块（Modules）支持现状]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块（Modules）支持现状
 ```cpp
 // ⑮ GCC 13：用 -fmodules-ts（仍是技术规范 TS 门控）
 //   g++ -std=c++23 -fmodules-ts -c math.ixx -o math.o  生成 BMI(.gcm)
@@ -703,7 +703,7 @@ export module math;
 export int square(int x) { return x * x; }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：模块（Modules）支持现状]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块（Modules）支持现状
 ```cpp
 #include <vector>
 // ⑮ Clang：最成熟，用 -fmodules 或 -std=c++20（含标准库模块 std）
@@ -712,7 +712,7 @@ import std;                       // Clang 的 std 模块较完整
 int use() { std::vector<int> v{1,2,3}; return (int)v.size(); }
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：模块（Modules）支持现状]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块（Modules）支持现状
 ```cpp
 // ⑮ MSVC：用 /std:c++20 + .ixx + /interface
 //   cl /std:c++20 /interface math.ixx /c -> math.ifc
@@ -720,7 +720,7 @@ export module math;
 export int square(int x) { return x * x; }
 ```
 
-> **示例 50** [难度 ★★☆☆☆] [主题：模块（Modules）支持现状]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模块（Modules）支持现状
 ```cpp
 // ⑮ 三家的 BMI 格式互不相通！同一模块无法跨编译器复用 .gcm/.ifc
 //   所以团队必须锁定"单一编译器 + 固定版本"才能做模块迁移
@@ -735,7 +735,7 @@ int main() { return square(7); }
 
 "同一份源码跨平台"靠的是编译器**目标三元组**：`arch-vendor-os-abi`。
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：跨平台与三元组]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台与三元组
 ```cpp
 // ⑯ 指示编译器产出不同平台代码，源码 C++ 不变
 //   x86_64-w64-mingw32   -> Windows x64 (MinGW)
@@ -745,7 +745,7 @@ int main() { return square(7); }
 int portable() { return sizeof(void*) == 8 ? 8 : 4; }   // 64位平台返回8
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：跨平台与三元组]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台与三元组
 ```cpp
 // ⑯ 三元组常经宏暴露给代码，用于条件编译
 //   __x86_64__ / __aarch64__ / __riscv  (GCC/Clang 内置宏)
@@ -757,7 +757,7 @@ static constexpr bool kIsX64 = false;
 #endif
 ```
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：跨平台与三元组]
+> **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台与三元组
 ```cpp
 // ⑯ 交叉编译：在 x64 主机上为 ARM 设备编出镜像
 //   aarch64-linux-gnu-g++ main.cpp -o main_arm   (工具链前缀即三元组前缀)
@@ -772,7 +772,7 @@ int cross() { return 0; }
 
 调试器需要知道"机器码地址 ↔ 源码行 ↔ 变量名"的映射，这就是调试信息格式的差异点。
 
-> **示例 54** [难度 ★★☆☆☆] [主题：调试信息：DWARF vs PDB]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试信息：DWARF vs PDB
 ```cpp
 // ⑰ GCC/Clang 在 ELF/Mach-O 上产出 DWARF（嵌入 .debug_* 段或独立 .dwo）
 //   g++ -g -O2 main.cpp -o main     (-g 开启 DWARF)
@@ -780,7 +780,7 @@ int cross() { return 0; }
 int traced(int x) { return x * x; }   // 断点可停在源码行，变量可见
 ```
 
-> **示例 55** [难度 ★★☆☆☆] [主题：调试信息：DWARF vs PDB]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试信息：DWARF vs PDB
 ```cpp
 // ⑭/⑰ MSVC 产出 PDB（Program Database），由 link.exe /DEBUG 生成
 //   cl /Zi /EHsc main.cpp /link /DEBUG   -> main.exe + main.pdb
@@ -788,7 +788,7 @@ int traced(int x) { return x * x; }   // 断点可停在源码行，变量可见
 int traced2(int x) { return x + 1; }
 ```
 
-> **示例 56** [难度 ★★☆☆☆] [主题：调试信息：DWARF vs PDB]
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试信息：DWARF vs PDB
 ```cpp
 // ⑰ 拆分调试信息（发布时分离，减小二进制）：
 //   GCC : objcopy --only-keep-debug a.out a.debug ; strip a.out
@@ -804,7 +804,7 @@ int release(int x) { return x; }
 
 编译器很少被手写命令直接调用，而是藏在构建系统之下。
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：与构建系统集成]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ Make：手写规则，命令即 g++（最透明，但大项目维护成本高）
 //   %.o: %.cpp
@@ -812,7 +812,7 @@ int release(int x) { return x; }
 int build_make() { return 0; }
 ```
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：与构建系统集成]
+> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ CMake：跨编译器/跨平台生成器（可产 Makefile / Ninja / VS 工程）
 //   cmake_minimum_required(VERSION 3.28)
@@ -823,7 +823,7 @@ int build_make() { return 0; }
 int build_cmake() { return 0; }
 ```
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：与构建系统集成]
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ Bazel / Ninja：Google/Chrome 等超大型项目用，增量编译极快
 //   Ninja 由 CMake 生成 build.ninja，背后仍调用 g++/clang++
@@ -831,7 +831,7 @@ int build_cmake() { return 0; }
 int build_bazel() { return 0; }
 ```
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：与构建系统集成]
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ 模块要求构建系统保证"先编接口单元"的依赖序
 //   CMake 3.28+ 自动识别 export module 单元并排定顺序；
@@ -843,14 +843,14 @@ export int answer() { return 42; }
 - `[经验]`：构建系统选 CMake（跨平台事实标准）、Bazel（超大规模）、MSBuild（纯 Windows/VSS）；核心原则是"编译器可换、构建脚本不变"。
 - `[经验]`：把编译器标志集中在 `CMAKE_CXX_FLAGS`/顶层变量，别散落进每条命令；统一 `-Wall -Wextra` 让警告不被遗漏。
 
-## ⑲ [经验]选型建议
+## ⑲ <span class="badge badge-exp">经验</span>选型建议
 
 [第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)（交叉编译与嵌入式工具链）—— 嵌入式场景编译器选型受目标三元组约束
 [第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)（包管理 vcpkg/Conan）—— 二进制分发的 ABI 一致性取决于编译器锁定
 
 选型没有银弹，按场景决策。
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：[经验]选型建议]
+> **示例 61** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑲ 场景 → 推荐（经验法则，非铁律）
 //   科学计算/超算/Linux 服务   -> GCC（libstdc++，最长历史、最优数值代码）
@@ -860,7 +860,7 @@ export int answer() { return 42; }
 int choose() { return 0; }
 ```
 
-> **示例 62** [难度 ★★☆☆☆] [主题：[经验]选型建议]
+> **示例 62** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑲ 团队工具链统一原则：锁版本！
 //   例：CMakePresets.json 固定 compiler + version，避免"我机器能编"问题
@@ -875,20 +875,20 @@ int choose() { return 0; }
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：跨编译器 ABI 不兼容。** 你用 MSVC 编一个导出 C++ 类的 DLL，消费方用 GCC 链接后崩溃。请用 `extern "C"` 导出稳定 C ABI，并解释为何跨编译器直接传 C++ 类/模板不安全。
-   - [标准] 不同实现之间，C++ 语言的某些构造（如类、模板的 name mangling、异常、RTTI）不保证二进制兼容；`extern "C"` 提供稳定的语言链接。
-   - [引用] ISO/IEC 14882:2023 §[dcl.link]（链接说明符 extern "C"）；cppreference "Language linkage" 词条。
+   - <span class="badge badge-std">标准</span> 不同实现之间，C++ 语言的某些构造（如类、模板的 name mangling、异常、RTTI）不保证二进制兼容；`extern "C"` 提供稳定的语言链接。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.link]（链接说明符 extern "C"）；cppreference "Language linkage" 词条。
 
 2. **真实场景：常量表达式必须在翻译期求值。** 你在 `constexpr` 函数里放了一条只有运行期才有意义的调用，编译期上下文（如数组维度）却要求它的值。请说明编译器何时必须在翻译期求值、何时允许推迟到运行期。
-   - [标准] 当常量表达式语境（如数组边界、模板实参、case 标签）需要值时，`constexpr` 函数必须产生常量表达式；否则它可像普通函数一样在运行期求值。
-   - [引用] ISO/IEC 14882:2023 §[expr.const]（常量表达式）；cppreference "constexpr" 词条。
+   - <span class="badge badge-std">标准</span> 当常量表达式语境（如数组边界、模板实参、case 标签）需要值时，`constexpr` 函数必须产生常量表达式；否则它可像普通函数一样在运行期求值。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.const]（常量表达式）；cppreference "constexpr" 词条。
 
 3. **真实场景：有符号溢出让优化器“删除”你的检查。** 你写 `if (i + 1 > 0)` 防御下溢，开启 `-O2` 后判断被直接消除。请解释根因并给出安全的等价写法。
-   - [标准] 有符号整数溢出是未定义行为；抽象机不约束其后果，优化器可基于“不会发生”的假设重写控制流。
-   - [引用] ISO/IEC 14882:2023 §[intro.abstract]（抽象机与未定义行为）；cppreference "Undefined behavior" 词条。
+   - <span class="badge badge-std">标准</span> 有符号整数溢出是未定义行为；抽象机不约束其后果，优化器可基于“不会发生”的假设重写控制流。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.abstract]（抽象机与未定义行为）；cppreference "Undefined behavior" 词条。
 
 编译器命令与关键差异总览：
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 三巨头最小可用命令速查
 //   GCC     : g++ -std=c++23 -O2 -Wall -Wextra main.cpp -o main
@@ -910,7 +910,7 @@ int main() { return 0; }
 | 内置宏(64) | `__x86_64__` | `__x86_64__` | `_M_X64` |
 | 强制内联 | `[[gnu::always_inline]]` | 同左 | `__forceinline` |
 
-> **示例 64** [难度 ★★☆☆☆] [主题：速查表]
+> **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 取证命令速查（本机 GCC13 + c++filt 已验证可用）
 //   g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm   // 取真实汇编
@@ -937,7 +937,7 @@ int trivia(int x) { return x; }
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：C++ 编译器的来龙去脉
-[史] GCC 由 Richard Stallman（RMS）于 1987 年发布 1.0，是 GNU 工程为摆脱专有编译器而生的自由软件编译器；1999 年 EGCS（Experimental GNU Compiler System）分支合并回主线，催生 GCC 3.x 这一现代 GCC 体系，由 FSF 维护。[史] LLVM 最初是 Chris Lattner 在伊利诺伊大学的博士项目（约 2000 年），Apple 自 2007 年起主导并推出 Clang 前端，以摆脱 GPL 许可束缚并改进诊断体验；Lattner 是核心设计者。[史] MSVC（cl.exe）随 Microsoft Visual C++ 1.0 于 1993 年推出，长期绑定 Windows 生态。[评] 三家驱动动机不同：GCC 求自由与可移植，Clang/LLVM 求模块化与诊断质量，MSVC 求 Windows 平台纵深；标准符合度是它们共同要追的靶子，而 EDG 前端作为商业编译器（如 Intel、NVCC 早期）的高符合度参考实现存在。
+<span class="badge badge-history">史</span> GCC 由 Richard Stallman（RMS）于 1987 年发布 1.0，是 GNU 工程为摆脱专有编译器而生的自由软件编译器；1999 年 EGCS（Experimental GNU Compiler System）分支合并回主线，催生 GCC 3.x 这一现代 GCC 体系，由 FSF 维护。<span class="badge badge-history">史</span> LLVM 最初是 Chris Lattner 在伊利诺伊大学的博士项目（约 2000 年），Apple 自 2007 年起主导并推出 Clang 前端，以摆脱 GPL 许可束缚并改进诊断体验；Lattner 是核心设计者。<span class="badge badge-history">史</span> MSVC（cl.exe）随 Microsoft Visual C++ 1.0 于 1993 年推出，长期绑定 Windows 生态。<span class="badge badge-comment">评</span> 三家驱动动机不同：GCC 求自由与可移植，Clang/LLVM 求模块化与诊断质量，MSVC 求 Windows 平台纵深；标准符合度是它们共同要追的靶子，而 EDG 前端作为商业编译器（如 Intel、NVCC 早期）的高符合度参考实现存在。
 
 ### ㉒.2 真实工程坐标：编译器活在哪些产品/项目里
 
@@ -963,9 +963,9 @@ int trivia(int x) { return x; }
 - 名字改编（name mangling）跨编译器不兼容：GCC 与 MSVC 的 ABI 不同，混链 `.o`/`.obj` 直接崩溃，必须用同一工具链。
 
 ### ㉒.4 与标准的互动：编译器与 C++ 标准的演进
-[史] 编译器符合度由 WG21 发布的"Compiler Support"矩阵跟踪（cppreference 维护各特性对应 GCC/Clang/MSVC 版本）。[史] 标准本身不规定编译器内部结构，但 Modules（C++20）、Concepts（C++20）、Coroutines（C++20）等特性都依赖前端/中端重大改造，三家各自有对应实现跟踪（如 P1103R3 Modules 落地）。[评] 历次标准修订（C++11→C++23）都迫使编译器重构：GCC/Clang 通过阶段式 flag（`-std=c++17` 等）暴露支持度；属"核心语言/库既定条款 + 实现扩展"双重性质，无单一"编译器提案"，但符合度本身是标准落地的硬指标。
+<span class="badge badge-history">史</span> 编译器符合度由 WG21 发布的"Compiler Support"矩阵跟踪（cppreference 维护各特性对应 GCC/Clang/MSVC 版本）。<span class="badge badge-history">史</span> 标准本身不规定编译器内部结构，但 Modules（C++20）、Concepts（C++20）、Coroutines（C++20）等特性都依赖前端/中端重大改造，三家各自有对应实现跟踪（如 P1103R3 Modules 落地）。<span class="badge badge-comment">评</span> 历次标准修订（C++11→C++23）都迫使编译器重构：GCC/Clang 通过阶段式 flag（`-std=c++17` 等）暴露支持度；属"核心语言/库既定条款 + 实现扩展"双重性质，无单一"编译器提案"，但符合度本身是标准落地的硬指标。
 
-- [史] 编译器对 C++20 **Modules（P1103）** 的实现落在 ISO/IEC 14882 的 **§[module]**：它要求前端不再做纯文本 `#include` 展开，而是解析模块接口单元并生成 BMI——这正是三家编译器各自重构构建流水线的原因。设计理由：消除头文件宏污染、缩短巨型工程的编译时间；但 BMI 格式（GCC `.gcm`/Clang `.pcm`/MSVC `.ifc`）互不兼容，是「标准给语义、实现各不相同」的典型。见 [P1103](https://wg21.link/P1103)。
+- <span class="badge badge-history">史</span> 编译器对 C++20 **Modules（P1103）** 的实现落在 ISO/IEC 14882 的 **§[module]**：它要求前端不再做纯文本 `#include` 展开，而是解析模块接口单元并生成 BMI——这正是三家编译器各自重构构建流水线的原因。设计理由：消除头文件宏污染、缩短巨型工程的编译时间；但 BMI 格式（GCC `.gcm`/Clang `.pcm`/MSVC `.ifc`）互不兼容，是「标准给语义、实现各不相同」的典型。见 [P1103](https://wg21.link/P1103)。
 
 ### ㉒.5 权威引用
 - https://gcc.gnu.org/ ：GCC 官方站点，证明 GNU 编译器工程与版本发布脉络。
@@ -976,7 +976,7 @@ int trivia(int x) { return x; }
 
 ## 附录 E：编译器面试与设计 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 65** [难度 ★★☆☆☆] [主题：附录 E：编译器面试与设计 [B: ]
+> **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：编译器面试与设计 [B:
 ```
 C++编译器选择的工业现实:
 
@@ -994,7 +994,7 @@ Chromium: Clang (跨平台统一) + MSVC (Windows兼容性)
   → 每个编译器必须通过完全相同的测试矩阵
 ```
 
-> **示例 66** [难度 ★☆☆☆☆] [主题：附录 E：编译器面试与设计 [B: ]
+> **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：编译器面试与设计 [B:
 ```cpp
 #include <iostream>
 int main() {
@@ -1052,7 +1052,7 @@ int main() {
 
 把「依赖实现定义的位操作」重构为 `<cstdint>` 固定宽度类型 + `std::bit_cast`；把 `-fpermissive` 容忍的含糊构造改为显式 `static_cast`，让 `-Werror` 能上 CI。
 
-## 最佳实践 [经验]
+## 最佳实践 <span class="badge badge-exp">经验</span>
 
 - **把 `-Wall -Wextra` 当默认，而非可选**：警告是编译器替你做的免费代码审查；对警告零容忍（`-Werror`）能在 CI 早期拦下未初始化、签名不匹配等隐患。
 - **ABI 兼容性以「同一编译器＋同版本标准库」为契约**：GCC/Clang/MSVC 三者 ABI 不互操作；混链不同编译器产出的 `.o`/`.a` 会崩溃，跨工具链只走 C 接口或序列化边界。
@@ -1073,7 +1073,7 @@ int main() {
 
 **真实场景：崩溃栈里的 mangled 符号。** 线上 crash 栈只给 `_Z1fi` 这样的符号，你看不出是哪个函数；同时两个不同命名空间的 `f` 不能撞名。请写程序说明：为什么 C++ 需要名字改编（name mangling），以及重载 `f(int)` 与 `f(double)` 在源码里同名、链接时却被编码成不同符号。
 
-> **示例 67** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1091,16 +1091,16 @@ int main() {
 }
 ```
 
-[标准] 结论：名字改编把返回类型、参数类型、命名空间、cv 限定都编码进符号，
+<span class="badge badge-std">标准</span> 结论：名字改编把返回类型、参数类型、命名空间、cv 限定都编码进符号，
 使重载/模板/命名空间在链接期互不冲突；C 语言无此需求，故 `extern "C"` 关闭改编。
 
-[引用] Itanium C++ ABI 名字改编规范（https://itanium-cxx-abi.github.io/cxx-abi/abi.html#mangling）；`c++filt`/`llvm-cxxfilt` 可还原符号。GCC/Clang 遵循 Itanium ABI，MSVC 使用自有修饰方案。
+<span class="badge badge-ref">引用</span> Itanium C++ ABI 名字改编规范（https://itanium-cxx-abi.github.io/cxx-abi/abi.html#mangling）；`c++filt`/`llvm-cxxfilt` 可还原符号。GCC/Clang 遵循 Itanium ABI，MSVC 使用自有修饰方案。
 
 ### 练习 2（难度 ★★★）
 
 **真实场景：给 C 库做 C++ 封装（FFI）。** 老项目是纯 C 静态库 `libold.a`，新模块用 C++ 写，需要调用其中的 `old_init()`；若按 C++ 默认 mangling 去找符号会链接失败。请用 `extern "C"` 对比 C 链接与 C++ 链接，并指出其在混合语言工程中的实际用途（跨语言互操作桥梁）。
 
-> **示例 68** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 
@@ -1116,16 +1116,16 @@ int main() {
 }
 ```
 
-[标准] 结论：ABI 兼容的关键在于链接约定与调用约定一致；`extern "C"` 是 C/C++ 互操作的桥梁，
+<span class="badge badge-std">标准</span> 结论：ABI 兼容的关键在于链接约定与调用约定一致；`extern "C"` 是 C/C++ 互操作的桥梁，
 但 C++ 的异常/类类型不能跨 `extern "C"` 边界安全传递。
 
-[引用] ISO C++ §[dcl.link]（语言链接）；cppreference "语言链接"（https://en.cppreference.com/w/cpp/language/language_linkage）。`extern "C"` 的跨语言互操作约束见 Itanium C++ ABI 与各自平台 ABI 文档。
+<span class="badge badge-ref">引用</span> ISO C++ §[dcl.link]（语言链接）；cppreference "语言链接"（https://en.cppreference.com/w/cpp/language/language_linkage）。`extern "C"` 的跨语言互操作约束见 Itanium C++ ABI 与各自平台 ABI 文档。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：调试宏展开 bug。** 你用 X-Macro / token paste 生成大量样板代码，结果某处展开不符合预期。请用 `#`/`##` 运算符直观展示"预处理阶段就把宏展开/token 拼接"这一事实，并说明后三个阶段（编译→汇编→链接）各自产出什么文件（`g++ -E`/`-S`/`-c`）。
 
-> **示例 69** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 
@@ -1141,10 +1141,10 @@ int main() {
 }
 ```
 
-[标准] 结论：`-E` 展开宏/include，`-S` 出汇编，`-c` 出可重定位目标（含 mangled 符号表），
+<span class="badge badge-std">标准</span> 结论：`-E` 展开宏/include，`-S` 出汇编，`-c` 出可重定位目标（含 mangled 符号表），
 链接器把多个 `.o` 的符号引用解析成定义并排布地址，产出可执行文件。
 
-[引用] GCC 手册《预处理选项》（https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html）讲解 `-E`；cppreference "预处理器"（https://en.cppreference.com/w/cpp/preprocessor）讲解 `#`/`##` 运算符。四阶段流水线（预处理/编译/汇编/链接）的产出文件见 GCC/Clang 文档。
+<span class="badge badge-ref">引用</span> GCC 手册《预处理选项》（https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html）讲解 `-E`；cppreference "预处理器"（https://en.cppreference.com/w/cpp/preprocessor）讲解 `#`/`##` 运算符。四阶段流水线（预处理/编译/汇编/链接）的产出文件见 GCC/Clang 文档。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -1155,7 +1155,7 @@ int main() {
 **错误**：直接按字面搜 `_ZN3Foo3barEi` 在源码里当然搜不到。
 **修复**：`c++filt _ZN3Foo3barEi` → `Foo::bar(int)`；若想内联还原，可用：
 
-> **示例 70** [难度 ★☆☆☆☆] [主题：演绎 1：用 c++filt 还原崩]
+> **示例 70** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 c++filt 还原崩
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1178,7 +1178,7 @@ int main() {
 **错误**：在 C++ 里直接 `void old_init();` 会被 mangling 成 `_Z8old_initv`，与 C 库的 `old_init` 不匹配 → 链接失败。
 **修复**：
 
-> **示例 71** [难度 ★☆☆☆☆] [主题：演绎 2：用 extern "C" ]
+> **示例 71** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：用 extern "C"
 ```cpp
 #include <iostream>
 
@@ -1211,7 +1211,7 @@ int main() {
 
 可复现基准（自包含、可编译）：
 
-> **示例 72** [难度 ★★☆☆☆] [主题：真实性能基准：零成本异常与 RTTI]
+> **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实性能基准：零成本异常与 RTTI
 ```cpp
 // g++ -std=c++23 -O2 ch11_bench.cpp
 #include <chrono>

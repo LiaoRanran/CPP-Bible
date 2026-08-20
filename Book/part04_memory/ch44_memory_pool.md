@@ -4,7 +4,7 @@
 [第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)
 [第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)
 
-> 立场分层说明：本章所有论断按四层标注——**[标准]** 表示 C++ 标准保证；**[实现]** 表示 GCC/libstdc++、LLVM/libc++、MSVC/MS STL 的具体实现行为；**[平台·x86-64]** 表示 Windows/MinGW/Linux/ARM/x86 等平台相关；**[经验]** 表示工程实践与性能经验。
+> 立场分层说明：本章所有论断按四层标注——**<span class="badge badge-std">标准</span>** 表示 C++ 标准保证；**<span class="badge badge-impl">实现</span>** 表示 GCC/libstdc++、LLVM/libc++、MSVC/MS STL 的具体实现行为；**[平台·x86-64]** 表示 Windows/MinGW/Linux/ARM/x86 等平台相关；**<span class="badge badge-exp">经验</span>** 表示工程实践与性能经验。
 >
 > 本机验证环境：MinGW **GCC 13.1.0**，`libstdc++` 头位于 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。
 > 交叉引用：存储期见 ch19，对象对齐见 ch35，堆与分配器见 ch36，operator new/delete 见 ch37，PMR 与标准池见 ch38，RAII 资源生命期见 ch39，缓存友好性见 ch43，并发无锁池见 ch61。
@@ -16,24 +16,24 @@
 > 当 `new` 一次只给一个对象太慢、碎片太多，内存池把"批量批发再零售"变成了工程常识。
 
 ### 0.1 起源（谁·何时·为何）
-通用分配器（见 ch37 / ch38）要应付任意大小、任意时机、线程安全，代价是锁竞争、簿记开销与碎片。[史] 在游戏、嵌入式、高频交易等"同尺寸对象海量分配"场景，每次都找通用分配器极不划算。[史][评] 内存池（memory pool / arena）思想因此出现：预先批发一大块，再自己切成定长小块零售，分配退化为"指针 + 偏移"。[史]
+通用分配器（见 ch37 / ch38）要应付任意大小、任意时机、线程安全，代价是锁竞争、簿记开销与碎片。<span class="badge badge-history">史</span> 在游戏、嵌入式、高频交易等"同尺寸对象海量分配"场景，每次都找通用分配器极不划算。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 内存池（memory pool / arena）思想因此出现：预先批发一大块，再自己切成定长小块零售，分配退化为"指针 + 偏移"。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- **早期 C**：手写 `obstack`、简单 freelist 池。[史]
-- **C++98 起**：标准库与 Boost 提供池分配器（如 `__gnu_cxx::__pool_alloc`，见本章源码）。[史]
-- **C++17**：`std::pmr::memory_resource` / `pool_resource` 把内存池做成标准运行时多态组件。[史]
+- **早期 C**：手写 `obstack`、简单 freelist 池。<span class="badge badge-history">史</span>
+- **C++98 起**：标准库与 Boost 提供池分配器（如 `__gnu_cxx::__pool_alloc`，见本章源码）。<span class="badge badge-history">史</span>
+- **C++17**：`std::pmr::memory_resource` / `pool_resource` 把内存池做成标准运行时多态组件。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-池用"专用性"换"速度 + 无碎片"，代价是失去通用性、且需自己管生命周期（arena 一次性释放是双刃剑）。[评] 委员会把它放在 `std::pmr` 而非改 `new` 语义——又一次"标准给积木，程序员拼策略"。[史][评]
+池用"专用性"换"速度 + 无碎片"，代价是失去通用性、且需自己管生命周期（arena 一次性释放是双刃剑）。<span class="badge badge-comment">评</span> 委员会把它放在 `std::pmr` 而非改 `new` 语义——又一次"标准给积木，程序员拼策略"。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 C++17 把内存池做成标准运行时多态组件（`std::pmr::pool_resource`）。此后池化在"区域分配 / 协程 / 生态"方向继续演进。[史]
+0.2 停在 C++17 把内存池做成标准运行时多态组件（`std::pmr::pool_resource`）。此后池化在"区域分配 / 协程 / 生态"方向继续演进。<span class="badge badge-history">史</span>
 
-- **`std::pmr` 三件套落地**：`synchronized_pool_resource`（线程安全池）/ `unsynchronized_pool_resource`（单线程更快）/ `monotonic_buffer_resource`（只增不释放的 arena）覆盖了 0.1 所述"批发再零售"的主要形态，成为游戏 / 交易的标准积木（见 ch36/38）。[史]
-- **C++20 协程帧的 arena 化**：协程把局部状态挂到堆（或自定义分配器），催生"协程专用池"需求——一次性分配一整块协程帧区域、整体回收，与 0.3 "arena 一次性释放是双刃剑"的判断吻合。[史][评]
-- **第三方分配器生态**：Google `tcmalloc`、Facebook `jemalloc`、Microsoft `mimalloc`、EA `EASTL` 的定长池等，长期是标准 `std::pmr` 之前的工业事实标准，并反向影响 PMR 的接口设计（如 `pool_options`）。[史]
-- **行业争议**：通用分配器的"线程缓存 + 分桶"已足够快，很多场景不必自写池；但极热路径（每秒百万分配）仍靠专用定长池消除锁与碎片，印证 0.3 的"专用性换速度"取舍。[史][评]
+- **`std::pmr` 三件套落地**：`synchronized_pool_resource`（线程安全池）/ `unsynchronized_pool_resource`（单线程更快）/ `monotonic_buffer_resource`（只增不释放的 arena）覆盖了 0.1 所述"批发再零售"的主要形态，成为游戏 / 交易的标准积木（见 ch36/38）。<span class="badge badge-history">史</span>
+- **C++20 协程帧的 arena 化**：协程把局部状态挂到堆（或自定义分配器），催生"协程专用池"需求——一次性分配一整块协程帧区域、整体回收，与 0.3 "arena 一次性释放是双刃剑"的判断吻合。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **第三方分配器生态**：Google `tcmalloc`、Facebook `jemalloc`、Microsoft `mimalloc`、EA `EASTL` 的定长池等，长期是标准 `std::pmr` 之前的工业事实标准，并反向影响 PMR 的接口设计（如 `pool_options`）。<span class="badge badge-history">史</span>
+- **行业争议**：通用分配器的"线程缓存 + 分桶"已足够快，很多场景不必自写池；但极热路径（每秒百万分配）仍靠专用定长池消除锁与碎片，印证 0.3 的"专用性换速度"取舍。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource ｜ https://en.cppreference.com/w/cpp/memory/pool_resource
 
@@ -41,11 +41,11 @@
 
 [第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)
 
-**[标准]** C++ 标准只保证 `::operator new`/`::operator delete`（见 ch37）分配一块" suitably aligned storage for any object type"（[new.delete.single]），并不保证性能、延迟确定性或碎片控制。其语义是"请求—返回"式的通用分配器，要为任意大小、任意生命周期的请求服务。
+**<span class="badge badge-std">标准</span>** C++ 标准只保证 `::operator new`/`::operator delete`（见 ch37）分配一块" suitably aligned storage for any object type"（[new.delete.single]），并不保证性能、延迟确定性或碎片控制。其语义是"请求—返回"式的通用分配器，要为任意大小、任意生命周期的请求服务。
 
 **[实现·GCC15]** `libstdc++` 的 `std::allocator` 直接转发到 `__new_allocator::allocate`，最终调用 `_GLIBCXX_OPERATOR_NEW`（即 `::operator new` 或 `__builtin_operator_new`）：
 
-> **示例 1** [难度 ★★☆☆☆] [主题：为何需要内存池（动机全景）]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为何需要内存池（动机全景）
 ```cpp
 // C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/new_allocator.h:121-148
 _GLIBCXX_NODISCARD _Tp*
@@ -61,7 +61,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 }
 ```
 
-**[经验]** 频繁 `new`/`delete` 在真实系统中带来四类代价，内存池（Memory Pool）正是为消除它们而生：
+**<span class="badge badge-exp">经验</span>** 频繁 `new`/`delete` 在真实系统中带来四类代价，内存池（Memory Pool）正是为消除它们而生：
 
 1. **锁竞争（Lock Contention）**：通用堆分配器（glibc `ptmalloc`、系统 `HeapAlloc`）通常用一个全局互斥保护空闲链表。高并发下线程在分配路径上串行化，吞吐崩溃。
 2. **碎片（Fragmentation）**：
@@ -76,7 +76,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 
 ## ② 内存池分类全景图
 
-**[标准]** C++17 在标准库内提供了 PMR（Polymorphic Allocator，见 ch38）作为可替换分配器的抽象层，但 PMR 只是"接口"，池仍是"实现"。本章从零实现以下池：
+**<span class="badge badge-std">标准</span>** C++17 在标准库内提供了 PMR（Polymorphic Allocator，见 ch38）作为可替换分配器的抽象层，但 PMR 只是"接口"，池仍是"实现"。本章从零实现以下池：
 
 | 池类型 | 关键特征 | 时间复杂度 | 典型用途 |
 |---|---|---|---|
@@ -87,7 +87,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 | 线程局部池（Thread-local） | `thread_local` free list，无锁 | O(1) | 多线程、无锁 |
 | 对象池（Object Pool） | 预构造 N 对象复用 | O(1) | 避免运行时构造/析构、确定性 |
 
-**[经验]** 选型口诀：**固定尺寸用固定块池；同生命周期临时对象用单调池；多线程高频小对象用线程局部池；尺寸多变用分级池；需要复用已构造对象用对象池。**
+**<span class="badge badge-exp">经验</span>** 选型口诀：**固定尺寸用固定块池；同生命周期临时对象用单调池；多线程高频小对象用线程局部池；尺寸多变用分级池；需要复用已构造对象用对象池。**
 
 ---
 
@@ -95,14 +95,14 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 
 **[实现·GCC15]** GCC 扩展提供了一个真实的 free-list 池分配器 `std::pool_allocator`（在 `ext` 命名空间）。完整源码位于：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：gn]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：gn
 ```
 C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/pool_allocator.h
 ```
 
 核心设计（pool_allocator.h:77-118）：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码：gn]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：gn
 ```cpp
 #include <cstddef>
 // ext/pool_allocator.h:77-118  (__gnu_cxx::__pool_alloc_base)
@@ -139,7 +139,7 @@ protected:
 
 分配路径（pool_allocator.h:214-266 节选）：
 
-> **示例 4** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码：gn]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：gn
 ```cpp
 #include <cstddef>
 // ext/pool_allocator.h:246-263
@@ -163,7 +163,7 @@ else
 
 释放路径（pool_allocator.h:268-295 节选）：
 
-> **示例 5** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码：gn]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：gn
 ```cpp
 // ext/pool_allocator.h:285-293
 _Obj* volatile* __free_list = _M_get_free_list(__bytes);
@@ -173,19 +173,19 @@ __q->_M_free_list_link = *__free_list;                  // O(1) 头插
 *__free_list = __q;
 ```
 
-**[经验]** `std::pool_allocator` 的设计与本章从零实现高度一致：分级 free list + 侵入式节点 + 大块直走 `new`。**但它用单全局锁**（`__scoped_lock sentry(_M_get_mutex())`），高并发下仍会锁竞争——这正是 44.9 线程局部池要消除的瓶颈。另注意它受环境变量 `GLIBCXX_FORCE_NEW` 控制（pool_allocator.h:240），设了该变量就全走 `new`，便于排查池相关 bug。
+**<span class="badge badge-exp">经验</span>** `std::pool_allocator` 的设计与本章从零实现高度一致：分级 free list + 侵入式节点 + 大块直走 `new`。**但它用单全局锁**（`__scoped_lock sentry(_M_get_mutex())`），高并发下仍会锁竞争——这正是 44.9 线程局部池要消除的瓶颈。另注意它受环境变量 `GLIBCXX_FORCE_NEW` 控制（pool_allocator.h:240），设了该变量就全走 `new`，便于排查池相关 bug。
 
 ---
 
 ## ④ 固定大小块分配器：侵入式 free list 完整实现
 
-**[标准]** 固定大小块分配器管理一组**等尺寸**块。分配只从空闲链表头取一块，释放只把块头插回链表，二者均 O(1)，且不调用底层 `new`（除非池耗尽需扩容）。
+**<span class="badge badge-std">标准</span>** 固定大小块分配器管理一组**等尺寸**块。分配只从空闲链表头取一块，释放只把块头插回链表，二者均 O(1)，且不调用底层 `new`（除非池耗尽需扩容）。
 
 ### 44.4.1 侵入式（Intrusive）为何省去元数据的本质
 
-**[经验]** "侵入式"指：当一块**空闲**时，我们借用它**自己的内存**存放 `next` 指针；当它**被分配**后，这块内存完全交给用户，不再需要独立的"块头（block header）"记录大小/下一个。对比"外部元数据"方案：
+**<span class="badge badge-exp">经验</span>** "侵入式"指：当一块**空闲**时，我们借用它**自己的内存**存放 `next` 指针；当它**被分配**后，这块内存完全交给用户，不再需要独立的"块头（block header）"记录大小/下一个。对比"外部元数据"方案：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：侵入式（Intrusive）为何省去]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 侵入式（Intrusive）为何省去
 ```
 外部元数据（每块多 16 字节头）：
 [ header | user data ][ header | user data ]...
@@ -200,7 +200,7 @@ __q->_M_free_list_link = *__free_list;                  // O(1) 头插
 
 ### 44.4.2 完整可编译实现（程序 1/≥30）
 
-> **示例 7** [难度 ★★☆☆☆] [主题：完整可编译实现（程序 1/≥30）]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可编译实现（程序 1/≥30）
 ```cpp
 // program_01_fixed_block_pool.cpp  —— 侵入式固定块池（完整可编译）
 // 编译: g++ -std=c++17 -O2 program_01_fixed_block_pool.cpp -o p01
@@ -273,7 +273,7 @@ int main() {
 
 ### 44.4.3 带构造/析构的强类型封装（程序 2/≥30）
 
-> **示例 8** [难度 ★★★☆☆] [主题：带构造/析构的强类型封装]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 带构造/析构的强类型封装
 ```cpp
 // program_02_fixed_pool_typed.cpp —— 在池上做 placement new + 析构
 // 编译: g++ -std=c++17 -O2 program_02_fixed_pool_typed.cpp -o p02
@@ -312,13 +312,13 @@ int main() {
 }
 ```
 
-**[经验]** 与 `std::vector` 预分配对比：`std::vector::reserve(n)` 也是在构造时一次性 `new` 出连续 n 个对象容量的内存（见 ch36），但它**对象尺寸与数量固定、生命周期一同结束、且支持随机下标**。固定块池则是**单对象粒度的借还**，可任意顺序分配/释放单个对象，且可对接 STL 分配器接口。二者共同点：都通过"一次大分配代替多次小分配"消除锁竞争与碎片。
+**<span class="badge badge-exp">经验</span>** 与 `std::vector` 预分配对比：`std::vector::reserve(n)` 也是在构造时一次性 `new` 出连续 n 个对象容量的内存（见 ch36），但它**对象尺寸与数量固定、生命周期一同结束、且支持随机下标**。固定块池则是**单对象粒度的借还**，可任意顺序分配/释放单个对象，且可对接 STL 分配器接口。二者共同点：都通过"一次大分配代替多次小分配"消除锁竞争与碎片。
 
 ---
 
 ## ⑤ 对齐与指针算术（连接 ch35）
 
-**[标准]** [expr.new] 与 [new.delete] 保证 `::operator new` 返回的存储满足 `alignof(std::max_align_t)`（**[平台·x86-64]** x86-64 通常 16）。但当 `alignof(T) > alignof(std::max_align_t)`（如 32/64 字节 SIMD 类型、或自定义 over-aligned 类型），需 `::operator new(size, std::align_val_t)`（见 ch37，`__STDCPP_DEFAULT_NEW_ALIGNMENT__` 阈值）。
+**<span class="badge badge-std">标准</span>** [expr.new] 与 [new.delete] 保证 `::operator new` 返回的存储满足 `alignof(std::max_align_t)`（**[平台·x86-64]** x86-64 通常 16）。但当 `alignof(T) > alignof(std::max_align_t)`（如 32/64 字节 SIMD 类型、或自定义 over-aligned 类型），需 `::operator new(size, std::align_val_t)`（见 ch37，`__STDCPP_DEFAULT_NEW_ALIGNMENT__` 阈值）。
 
 ### 44.5.1 为何未对齐访问是致命的
 
@@ -329,9 +329,9 @@ int main() {
 
 ### 44.5.2 `std::align` 标准对齐工具（程序 3/≥30）
 
-**[标准]** `<memory>` 提供 `void* std::align(std::size_t alignment, std::size_t size, void*& ptr, std::size_t& space)`，在 `[ptr, ptr+space)` 区间内找到满足对齐的地址并前移 `ptr`、缩减 `space`。
+**<span class="badge badge-std">标准</span>** `<memory>` 提供 `void* std::align(std::size_t alignment, std::size_t size, void*& ptr, std::size_t& space)`，在 `[ptr, ptr+space)` 区间内找到满足对齐的地址并前移 `ptr`、缩减 `space`。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：std::align 标准对齐工具]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::align 标准对齐工具
 ```cpp
 // program_03_std_align.cpp —— 用 std::align 在缓冲内对齐
 // 编译: g++ -std=c++17 -O2 program_03_std_align.cpp -o p03
@@ -352,9 +352,9 @@ int main() {
 
 ### 44.5.3 手动指针算术对齐（程序 4/≥30）
 
-**[标准]** 手动向上对齐：`(addr + (a-1)) & ~(a-1)`，依赖 `a` 为 2 的幂。
+**<span class="badge badge-std">标准</span>** 手动向上对齐：`(addr + (a-1)) & ~(a-1)`，依赖 `a` 为 2 的幂。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：手动指针算术对齐（程序 4/≥30）]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 手动指针算术对齐（程序 4/≥30）
 ```cpp
 // program_04_manual_align.cpp —— reinterpret_cast + 指针算术手动对齐
 // 编译: g++ -std=c++17 -O2 program_04_manual_align.cpp -o p04
@@ -377,19 +377,19 @@ int main() {
 }
 ```
 
-**[经验]** 池实现中，`block_size` 一律向上舍入到 `max(alignof(T), alignof(void*))`，保证任意块既是对象对齐、又能放下 `next` 指针。这正是 `pool_allocator.h:82` 中 `_S_align=8` 与 44.4 `round_up(..., alignof(std::max_align_t))` 的动机。
+**<span class="badge badge-exp">经验</span>** 池实现中，`block_size` 一律向上舍入到 `max(alignof(T), alignof(void*))`，保证任意块既是对象对齐、又能放下 `next` 指针。这正是 `pool_allocator.h:82` 中 `_S_align=8` 与 44.4 `round_up(..., alignof(std::max_align_t))` 的动机。
 
 ---
 
 ## ⑥ 位图分配器（Bitmap Allocator）
 
-**[标准]** 位图分配器为固定数量 N 个槽位维护一个 `N` bit 的占用标记数组，每对象 1 bit（0=空闲，1=占用）。分配时扫描首个 0 bit，释放时清对应 bit。
+**<span class="badge badge-std">标准</span>** 位图分配器为固定数量 N 个槽位维护一个 `N` bit 的占用标记数组，每对象 1 bit（0=空闲，1=占用）。分配时扫描首个 0 bit，释放时清对应 bit。
 
-**[经验]** 位图法 cache 友好：整个占用位图很小（N=1024 仅 128 字节），可常驻 L1 cache；且天然支持"按槽索引定位对象地址"（`base + index*size`），无链表遍历。代价是分配可能需扫描（可用 `ffs`/`__builtin_ctzll` 加速到 O(1)）。
+**<span class="badge badge-exp">经验</span>** 位图法 cache 友好：整个占用位图很小（N=1024 仅 128 字节），可常驻 L1 cache；且天然支持"按槽索引定位对象地址"（`base + index*size`），无链表遍历。代价是分配可能需扫描（可用 `ffs`/`__builtin_ctzll` 加速到 O(1)）。
 
 ### 44.6.1 完整可编译实现（程序 5/≥30）
 
-> **示例 11** [难度 ★★☆☆☆] [主题：完整可编译实现（程序 5/≥30）]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可编译实现（程序 5/≥30）
 ```cpp
 // program_05_bitmap_pool.cpp —— 1 bit/对象 的位图池
 // 编译: g++ -std=c++17 -O2 program_05_bitmap_pool.cpp -o p05
@@ -446,19 +446,19 @@ int main() {
 }
 ```
 
-**[经验]** 对比固定块池：位图池无侵入式/链表，靠索引定位，适合**固定数量、需 O(1) 随机定位**的场景（如帧分配器、固定大小组件表）。ch43 缓存友好性也适用——位图本身极小。
+**<span class="badge badge-exp">经验</span>** 对比固定块池：位图池无侵入式/链表，靠索引定位，适合**固定数量、需 O(1) 随机定位**的场景（如帧分配器、固定大小组件表）。ch43 缓存友好性也适用——位图本身极小。
 
 ---
 
 ## ⑦ 单调分配器 / Bump Allocator
 
-**[标准]** 单调分配器维护一个指针（bump pointer）指向缓冲区"已用/未用"分界，分配仅把指针前移并返回旧值；**不提供单独的释放**，整个缓冲区在析构时一次性归还。这与 ch38 的 `std::pmr::monotonic_buffer_resource` 语义一致。
+**<span class="badge badge-std">标准</span>** 单调分配器维护一个指针（bump pointer）指向缓冲区"已用/未用"分界，分配仅把指针前移并返回旧值；**不提供单独的释放**，整个缓冲区在析构时一次性归还。这与 ch38 的 `std::pmr::monotonic_buffer_resource` 语义一致。
 
-**[经验]** 单调分配器是**最快**的分配器（分配 = 一次加法 + 比较），常用于：解析器临时字符串、渲染帧临时对象、以及作为其他池的"上游 chunk 来源"（如 `pool_allocator.h` 的 `_M_allocate_chunk`）。
+**<span class="badge badge-exp">经验</span>** 单调分配器是**最快**的分配器（分配 = 一次加法 + 比较），常用于：解析器临时字符串、渲染帧临时对象、以及作为其他池的"上游 chunk 来源"（如 `pool_allocator.h` 的 `_M_allocate_chunk`）。
 
 ### 44.7.1 完整可编译实现（程序 6/≥30）
 
-> **示例 12** [难度 ★★☆☆☆] [主题：完整可编译实现（程序 6/≥30）]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可编译实现（程序 6/≥30）
 ```cpp
 // program_06_monotonic.cpp —— bump pointer 单调分配器
 // 编译: g++ -std=c++17 -O2 program_06_monotonic.cpp -o p06
@@ -501,19 +501,19 @@ int main() {
 }
 ```
 
-**[实现]** 标准 PMR 等价物（ch38）：`std::pmr::monotonic_buffer_resource` 内部即 bump pointer，且支持"上游资源耗尽时向上游要下一块"。其不释放单个对象，只对 `release()` 整体回卷——与上面实现语义相同。
+**<span class="badge badge-impl">实现</span>** 标准 PMR 等价物（ch38）：`std::pmr::monotonic_buffer_resource` 内部即 bump pointer，且支持"上游资源耗尽时向上游要下一块"。其不释放单个对象，只对 `release()` 整体回卷——与上面实现语义相同。
 
 ---
 
 ## ⑧ 分级空闲列表（Segregated Fits）
 
-**[标准]** 分级空闲列表按**尺寸等级（size class）**把请求分桶：每个桶是一条该尺寸块的 free list。分配时把请求大小向上取整到最近桶，从对应桶取块；桶空则向系统要一大块切分成该尺寸小块补入。这与 tcmalloc 的 `SizeMap`、jemalloc 的 `bin` 思想一致。
+**<span class="badge badge-std">标准</span>** 分级空闲列表按**尺寸等级（size class）**把请求分桶：每个桶是一条该尺寸块的 free list。分配时把请求大小向上取整到最近桶，从对应桶取块；桶空则向系统要一大块切分成该尺寸小块补入。这与 tcmalloc 的 `SizeMap`、jemalloc 的 `bin` 思想一致。
 
-**[经验]** size class 通常按几何级数（如 8/16/32/64/80/96...或干脆 2 的幂）。向上取整带来**内部碎片**（平均约 1/2 桶间距），但消除了**外部碎片**（每桶内块尺寸统一、可任意互换），并让分配近似 O(1)。
+**<span class="badge badge-exp">经验</span>** size class 通常按几何级数（如 8/16/32/64/80/96...或干脆 2 的幂）。向上取整带来**内部碎片**（平均约 1/2 桶间距），但消除了**外部碎片**（每桶内块尺寸统一、可任意互换），并让分配近似 O(1)。
 
 ### 44.8.1 完整可编译实现（程序 7/≥30）
 
-> **示例 13** [难度 ★★★☆☆] [主题：完整可编译实现（程序 7/≥30）]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可编译实现（程序 7/≥30）
 ```cpp
 // program_07_segregated.cpp —— 分级空闲列表分配器
 // 编译: g++ -std=c++17 -O2 program_07_segregated.cpp -o p07
@@ -598,13 +598,13 @@ int main() {
 
 ## ⑨ 线程局部池（Thread-local Pool，无锁）
 
-**[标准]** C++11 起 `thread_local` 存储期（见 ch19）让每个线程拥有独立变量实例。线程局部池为每个线程维护一条独立 free list，线程内分配/释放**完全无锁**。
+**<span class="badge badge-std">标准</span>** C++11 起 `thread_local` 存储期（见 ch19）让每个线程拥有独立变量实例。线程局部池为每个线程维护一条独立 free list，线程内分配/释放**完全无锁**。
 
-**[经验]** 当线程局部 free list 耗尽，才向"全局中心池"批量取一块（batch fetch）；当线程局部列表积累过多空闲块，批量还回全局池（batch return）。这正是 tcmalloc `ThreadCache`/`CentralFreeList` 与 ch38 `std::pmr::unsynchronized_pool_resource` 的核心思路。
+**<span class="badge badge-exp">经验</span>** 当线程局部 free list 耗尽，才向"全局中心池"批量取一块（batch fetch）；当线程局部列表积累过多空闲块，批量还回全局池（batch return）。这正是 tcmalloc `ThreadCache`/`CentralFreeList` 与 ch38 `std::pmr::unsynchronized_pool_resource` 的核心思路。
 
 ### 44.9.1 完整可编译实现（程序 8/≥30）
 
-> **示例 14** [难度 ★★★☆☆] [主题：完整可编译实现（程序 8/≥30）]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可编译实现（程序 8/≥30）
 ```cpp
 // program_08_thread_local.cpp —— thread_local free list + 全局批量取还
 // 编译: g++ -std=c++17 -O2 -pthread program_08_thread_local.cpp -o p08
@@ -679,19 +679,19 @@ int main() {
 }
 ```
 
-**[经验]** 关键工程量：批量取还（batch）把"全局锁竞争"从每次分配降到每 kBatch 次一次，且线程热路径完全无锁。对比 `std::pool_allocator` 的**每分配都加锁**（pool_allocator.h:252 `__scoped_lock sentry`），线程局部池在高并发下可快几个数量级。
+**<span class="badge badge-exp">经验</span>** 关键工程量：批量取还（batch）把"全局锁竞争"从每次分配降到每 kBatch 次一次，且线程热路径完全无锁。对比 `std::pool_allocator` 的**每分配都加锁**（pool_allocator.h:252 `__scoped_lock sentry`），线程局部池在高并发下可快几个数量级。
 
 ---
 
 ## ⑩ 对象池（Object Pool）：预构造复用
 
-**[标准]** 对象池预先构造 N 个对象放入空闲集合，分配时取一个、释放时放回；对象本身已构造好，可避免运行时的构造/析构开销与不确定性。
+**<span class="badge badge-std">标准</span>** 对象池预先构造 N 个对象放入空闲集合，分配时取一个、释放时放回；对象本身已构造好，可避免运行时的构造/析构开销与不确定性。
 
-**[经验]** 适合：连接池、游戏实体、实时系统中"禁止运行时 new"的场景。与固定块池区别：固定块池存的是**原始内存**（按需 placement new），对象池存的是**已构造对象**（复用）。
+**<span class="badge badge-exp">经验</span>** 适合：连接池、游戏实体、实时系统中"禁止运行时 new"的场景。与固定块池区别：固定块池存的是**原始内存**（按需 placement new），对象池存的是**已构造对象**（复用）。
 
 ### 44.10.1 完整可编译实现（程序 9/≥30）
 
-> **示例 15** [难度 ★★★☆☆] [主题：完整可编译实现（程序 9/≥30）]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可编译实现（程序 9/≥30）
 ```cpp
 // program_09_object_pool.cpp —— 预构造 N 个对象复用（无运行时构造）
 // 编译: g++ -std=c++17 -O2 program_09_object_pool.cpp -o p09
@@ -742,7 +742,7 @@ int main() {
 
 ### 44.11.1 完整可编译实现（程序 10/≥30）
 
-> **示例 16** [难度 ★★★★☆] [主题：完整可编译实现（程序 10/≥30）]
+> **示例 16** <span class="badge badge-exp">难度 ★★★★☆</span> · 完整可编译实现（程序 10/≥30）
 ```cpp
 // program_10_embedded_static.cpp —— 编译期固定池，运行期无 new
 // 编译: g++ -std=c++17 -O2 program_10_embedded_static.cpp -o p10
@@ -788,7 +788,7 @@ int main() {
 
 ### 44.12.1 统一对齐固定块池 + 强类型包装（程序 11/≥30）
 
-> **示例 17** [难度 ★★☆☆☆] [主题：统一对齐固定块池 + 强类型包装]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 统一对齐固定块池 + 强类型包装
 ```cpp
 // program_11_combo_fixed.cpp
 // 编译: g++ -std=c++17 -O2 -pthread program_11_combo_fixed.cpp -o p11
@@ -854,7 +854,7 @@ int main() {
 
 ### 44.12.2 分级池 + STL 容器对接（程序 12/≥30）
 
-> **示例 18** [难度 ★★★★☆] [主题：分级池 + STL 容器对接]
+> **示例 18** <span class="badge badge-exp">难度 ★★★★☆</span> · 分级池 + STL 容器对接
 ```cpp
 // program_12_combo_seg_stl.cpp —— 分级池作为 std::list 的分配器
 // 编译: g++ -std=c++17 -O2 program_12_combo_seg_stl.cpp -o p12
@@ -912,7 +912,7 @@ int main() {
 
 ### 44.12.3 线程局部池 + 确定性批量取还（程序 13/≥30）
 
-> **示例 19** [难度 ★★★☆☆] [主题：线程局部池 + 确定性批量取还]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 线程局部池 + 确定性批量取还
 ```cpp
 // program_13_combo_tls.cpp —— 线程局部池（复用 44.9 思路，独立可编译）
 // 编译: g++ -std=c++17 -O2 -pthread program_13_combo_tls.cpp -o p13
@@ -972,13 +972,13 @@ int main() {
 
 ## ⑬ 与 PMR 的关系（连接 ch38）
 
-**[标准]** C++17 PMR 把"分配器"抽象成 `std::pmr::memory_resource` 多态接口（`allocate`/`deallocate`/`do_allocate`），容器通过 `std::pmr::polymorphic_allocator` 使用。内存池可以**实现为 memory_resource**，从而被任意 PMR 容器复用。
+**<span class="badge badge-std">标准</span>** C++17 PMR 把"分配器"抽象成 `std::pmr::memory_resource` 多态接口（`allocate`/`deallocate`/`do_allocate`），容器通过 `std::pmr::polymorphic_allocator` 使用。内存池可以**实现为 memory_resource**，从而被任意 PMR 容器复用。
 
-**[实现]** ch38 已述：`monotonic_buffer_resource`（单调池）、`unsynchronized_pool_resource`/`synchronized_pool_resource`（线程局部/全局池）正是标准库内置的池。本章从零实现的池可直接包成 `memory_resource`。
+**<span class="badge badge-impl">实现</span>** ch38 已述：`monotonic_buffer_resource`（单调池）、`unsynchronized_pool_resource`/`synchronized_pool_resource`（线程局部/全局池）正是标准库内置的池。本章从零实现的池可直接包成 `memory_resource`。
 
 ### 44.13.1 把固定块池包成 memory_resource（程序 14/≥30）
 
-> **示例 20** [难度 ★★☆☆☆] [主题：把固定块池包成 memoryreso]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 把固定块池包成 memoryreso
 ```cpp
 // program_14_pmr_adapter.cpp —— 自定义池接入 PMR
 // 编译: g++ -std=c++17 -O2 program_14_pmr_adapter.cpp -o p14
@@ -1033,14 +1033,14 @@ int main() {
 
 ## ⑭ 三编译器对齐优化提示
 
-**[实现]** 当池分配器返回对齐指针，但编译器静态上无法证明"返回值已对齐"时，可用对齐假设内建提示优化（如向量化 load/store）。
+**<span class="badge badge-impl">实现</span>** 当池分配器返回对齐指针，但编译器静态上无法证明"返回值已对齐"时，可用对齐假设内建提示优化（如向量化 load/store）。
 
 - **GCC/Clang**：`__builtin_assume_aligned(ptr, 32)` 与 `__attribute__((assume_aligned(32)))` 告诉编译器 ptr 至少 32 字节对齐，可消除对齐保护代码并启用更宽向量指令。
 - **MSVC**：底层用 `_aligned_malloc`/`_aligned_free`（配合 `_aligned_malloc` 分配对齐内存，但需用 `_aligned_free` 释放，不能混用 `free`）。
 
 ### 44.14.1 GCC/Clang 对齐假设（程序 15/≥30）
 
-> **示例 21** [难度 ★★★☆☆] [主题：对齐假设（程序 15/≥30）]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 对齐假设（程序 15/≥30）
 ```cpp
 // program_15_assume_aligned.cpp
 // 编译: g++ -std=c++17 -O2 -fstrict-aliasing program_15_assume_aligned.cpp -o p15
@@ -1064,7 +1064,7 @@ int main() {
 
 ### 44.14.2 MSVC `_aligned_malloc`（程序 16/≥30）
 
-> **示例 22** [难度 ★★☆☆☆] [主题：alignedmalloc]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · alignedmalloc
 ```cpp
 // program_16_aligned_malloc.cpp  —— [平台·Windows] MSVC / Windows
 // 编译(MSVC): cl /EHsc /O2 program_16_aligned_malloc.cpp
@@ -1092,17 +1092,17 @@ int main() {
 }
 ```
 
-**[经验]** 在池实现里，若用 `_aligned_malloc` 分配 chunk，则块天然对齐，无需手动 `std::align`；但注意 `_aligned_malloc` 必须用 `_aligned_free` 释放（见 ch37 对齐 new 的对称约束）。
+**<span class="badge badge-exp">经验</span>** 在池实现里，若用 `_aligned_malloc` 分配 chunk，则块天然对齐，无需手动 `std::align`；但注意 `_aligned_malloc` 必须用 `_aligned_free` 释放（见 ch37 对齐 new 的对称约束）。
 
 ---
 
 ## ⑮ 真实 microbenchmark：固定块池 vs new/delete
 
-**[经验]** 以下基准在单线程下对比"固定块池"与裸 `new`/`delete` 的分配/释放延迟。量级结论（本机 GCC 13.1.0, -O2）：**池快 5–50×**，多线程下差距更大（无锁）。
+**<span class="badge badge-exp">经验</span>** 以下基准在单线程下对比"固定块池"与裸 `new`/`delete` 的分配/释放延迟。量级结论（本机 GCC 13.1.0, -O2）：**池快 5–50×**，多线程下差距更大（无锁）。
 
 ### 44.15.1 基准程序（程序 17/≥30）
 
-> **示例 23** [难度 ★★★☆☆] [主题：基准程序（程序 17/≥30）]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 基准程序（程序 17/≥30）
 ```cpp
 // program_17_bench_fixed_vs_new.cpp
 // 编译: g++ -std=c++17 -O2 program_17_bench_fixed_vs_new.cpp -o p17
@@ -1144,7 +1144,7 @@ int main() {
 
 ### 44.16.1 基准程序（程序 18/≥30）
 
-> **示例 24** [难度 ★★☆☆☆] [主题：基准程序（程序 18/≥30）]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准程序（程序 18/≥30）
 ```cpp
 // program_18_bench_seg_vs_malloc.cpp
 // 编译: g++ -std=c++17 -O2 program_18_bench_seg_vs_malloc.cpp -o p18
@@ -1174,7 +1174,7 @@ int main() {
 }
 ```
 
-**[经验]** 分级池对**尺寸多变的小对象**吞吐显著优于 `malloc`，且碎片可控（每桶内块尺寸统一）。`malloc` 在混合尺寸下易产生外部碎片，长时间运行后 RSS 增长明显。
+**<span class="badge badge-exp">经验</span>** 分级池对**尺寸多变的小对象**吞吐显著优于 `malloc`，且碎片可控（每桶内块尺寸统一）。`malloc` 在混合尺寸下易产生外部碎片，长时间运行后 RSS 增长明显。
 
 ---
 
@@ -1182,7 +1182,7 @@ int main() {
 
 ### 44.17.1 扩展性测试（程序 19/≥30）
 
-> **示例 25** [难度 ★★☆☆☆] [主题：扩展性测试（程序 19/≥30）]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 扩展性测试（程序 19/≥30）
 ```cpp
 // program_19_bench_tls_scaling.cpp
 // 编译: g++ -std=c++17 -O2 -pthread program_19_bench_tls_scaling.cpp -o p19
@@ -1220,11 +1220,11 @@ int main() {
 
 ## ⑱ 对象池与确定性（实时/嵌入式）
 
-**[经验]** 在硬实时系统中（汽车、工控、用户嵌入式背景），分配延迟必须可界。固定块/对象/静态池在**初始化阶段一次性分配**，运行期只做指针操作，WCET 可静态分析。禁止在中断服务程序（ISR）或控制环内 `new`。
+**<span class="badge badge-exp">经验</span>** 在硬实时系统中（汽车、工控、用户嵌入式背景），分配延迟必须可界。固定块/对象/静态池在**初始化阶段一次性分配**，运行期只做指针操作，WCET 可静态分析。禁止在中断服务程序（ISR）或控制环内 `new`。
 
 ### 44.18.1 RTOS 风格静态对象池（程序 20/≥30）
 
-> **示例 26** [难度 ★★★☆☆] [主题：风格静态对象池（程序 20/≥30）]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 风格静态对象池（程序 20/≥30）
 ```cpp
 // program_20_rtos_static.cpp —— ISR 安全：运行期零分配
 // 编译: g++ -std=c++17 -O2 program_20_rtos_static.cpp -o p20
@@ -1279,11 +1279,11 @@ int main() {
 8. **Boost.Pool**（`boost/pool/pool.hpp`）：`pool`/`object_pool`/`singleton_pool`。
 9. **librseq**（restartable sequences）：无锁每 CPU 池的底层原语。
 
-**[标准]** `uses_allocator` 协议（uses_allocator.h:66-70）允许容器在构造元素时把分配器"透传"给元素构造（若元素类型有 `allocator_type` 或接受 `allocator_arg_t`）。自定义池若想被 `std::scoped_allocator_adaptor` 嵌套使用，需满足该协议——下面演示。
+**<span class="badge badge-std">标准</span>** `uses_allocator` 协议（uses_allocator.h:66-70）允许容器在构造元素时把分配器"透传"给元素构造（若元素类型有 `allocator_type` 或接受 `allocator_arg_t`）。自定义池若想被 `std::scoped_allocator_adaptor` 嵌套使用，需满足该协议——下面演示。
 
 ### 44.19.1 `uses_allocator` 探测演示（程序 21/≥30）
 
-> **示例 27** [难度 ★★★★☆] [主题：usesallocator 探测演示]
+> **示例 27** <span class="badge badge-exp">难度 ★★★★☆</span> · usesallocator 探测演示
 ```cpp
 // program_21_uses_allocator.cpp
 // 编译: g++ -std=c++17 -O2 program_21_uses_allocator.cpp -o p21
@@ -1312,7 +1312,7 @@ int main() {
 
 ## ⑲ 跨语言对比
 
-**[经验]** 内存池思想跨语言通用，只是接口形态不同：
+**<span class="badge badge-exp">经验</span>** 内存池思想跨语言通用，只是接口形态不同：
 
 | 语言 | 机制 | 与本章对应 |
 |---|---|---|
@@ -1418,22 +1418,22 @@ class Program {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：池分配器减少系统调用与碎片。** 你为高频小对象实现固定块池，覆盖全局 `operator new` 的一类请求。请说明自定义分配函数的接入点。
-   - [标准] 可定义全局 `::operator new`/`::operator delete`，或类特定的 `T::operator new`/`T::operator delete` 来服务分配。
-   - [引用] ISO/IEC 14882:2023 §[new.delete] / [class.free]（类特定释放函数）；cppreference "operator new" 词条。
+   - <span class="badge badge-std">标准</span> 可定义全局 `::operator new`/`::operator delete`，或类特定的 `T::operator new`/`T::operator delete` 来服务分配。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[new.delete] / [class.free]（类特定释放函数）；cppreference "operator new" 词条。
 
 2. **真实场景：池内对象用 placement new 构造、须显式调析构。** 你在预分配缓冲上 `new(buf) T()`，却在回收时误用 `delete p`（会错误释放缓冲）。请说明正确释放。
-   - [标准] placement new 在给定地址构造对象；销毁须显式调用 `~T()`，且不能用 `delete` 释放该地址（缓冲由池管理）。
-   - [引用] ISO/IEC 14882:2023 §[expr.new]（placement new）/ [class.dtor]（显式析构调用）；cppreference "Placement new" 词条。
+   - <span class="badge badge-std">标准</span> placement new 在给定地址构造对象；销毁须显式调用 `~T()`，且不能用 `delete` 释放该地址（缓冲由池管理）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[expr.new]（placement new）/ [class.dtor]（显式析构调用）；cppreference "Placement new" 词条。
 
 3. **真实场景：池中对象存活期受缓冲对齐约束。** 你在 `char pool[]` 上布置对象，某些类型要求 16 字节对齐而数组只保证 1 字节。请说明对齐要求如何满足。
-   - [标准] placement new 要求目标存储满足类型对齐且大小足够；可用 `std::align`/`alignas` 或 `aligned_storage` 保证。
-   - [引用] ISO/IEC 14882:2023 §[basic.align] / [expr.new]（布置构造的对齐前提）；cppreference "Placement new" 词条。
+   - <span class="badge badge-std">标准</span> placement new 要求目标存储满足类型对齐且大小足够；可用 `std::align`/`alignas` 或 `aligned_storage` 保证。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.align] / [expr.new]（布置构造的对齐前提）；cppreference "Placement new" 词条。
 
-**[经验]** 栈式池按 LIFO 释放（适合表达式树、作用域临时对象），区域池（Arena）一次性分配、整体释放——二者均避免逐对象释放开销。
+**<span class="badge badge-exp">经验</span>** 栈式池按 LIFO 释放（适合表达式树、作用域临时对象），区域池（Arena）一次性分配、整体释放——二者均避免逐对象释放开销。
 
 ### 44.21.1 栈式 LIFO 池（程序 26/≥30）
 
-> **示例 28** [难度 ★★☆☆☆] [主题：栈式 LIFO 池]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈式 LIFO 池
 ```cpp
 // program_26_lifo_stack_pool.cpp
 // 编译: g++ -std=c++17 -O2 program_26_lifo_stack_pool.cpp -o p26
@@ -1474,7 +1474,7 @@ int main() {
 
 ### 44.21.2 Arena 区域池（程序 27/≥30）
 
-> **示例 29** [难度 ★★☆☆☆] [主题：区域池（程序 27/≥30）]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 区域池（程序 27/≥30）
 ```cpp
 // program_27_arena.cpp —— Arena：分配只增，析构整体释放（连接 ch39 RAII）
 // 编译: g++ -std=c++17 -O2 program_27_arena.cpp -o p27
@@ -1519,11 +1519,11 @@ int main() {
 
 ## 缓存友好性（连接 ch43）
 
-**[经验]** 池的 cache 友好来自两点：(1) 同类对象聚簇（固定块池把同一尺寸对象放在相邻内存）；(2) 位图/分级元数据极小、常驻缓存。对比通用 `malloc` 把不同寿命对象混在堆里，池显著减少 cache miss。ch43 已详述 false sharing 与预取，池设计时应**避免多线程共享同一缓存行**——线程局部池（44.9）天然规避。
+**<span class="badge badge-exp">经验</span>** 池的 cache 友好来自两点：(1) 同类对象聚簇（固定块池把同一尺寸对象放在相邻内存）；(2) 位图/分级元数据极小、常驻缓存。对比通用 `malloc` 把不同寿命对象混在堆里，池显著减少 cache miss。ch43 已详述 false sharing 与预取，池设计时应**避免多线程共享同一缓存行**——线程局部池（44.9）天然规避。
 
 ### 44.22.1 伪共享规避（程序 28/≥30）
 
-> **示例 30** [难度 ★★★☆☆] [主题：伪共享规避（程序 28/≥30）]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 伪共享规避（程序 28/≥30）
 ```cpp
 // program_28_cache_friendly.cpp —— 每线程池块独立缓存行，避免 false sharing
 // 编译: g++ -std=c++17 -O2 -pthread program_28_cache_friendly.cpp -o p28
@@ -1554,11 +1554,11 @@ int main() {
 
 ## 碎片可视化演示
 
-**[经验]** 直观展示"通用分配"产生外部碎片，而固定块池不产生。
+**<span class="badge badge-exp">经验</span>** 直观展示"通用分配"产生外部碎片，而固定块池不产生。
 
 ### 44.23.1 碎片对比（程序 29/≥30）
 
-> **示例 31** [难度 ★★☆☆☆] [主题：碎片对比（程序 29/≥30）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 碎片对比（程序 29/≥30）
 ```cpp
 // program_29_fragmentation.cpp
 // 编译: g++ -std=c++17 -O2 program_29_fragmentation.cpp -o p29
@@ -1584,11 +1584,11 @@ int main() {
 
 ## 完整工程示例：三套池统一基准与并发测试
 
-**[经验]** 下面给出把"固定块池 / 分级池 / 线程局部池"放进同一基准框架并跑并发压力测试的程序。这是本章的收束示例，综合构造/析构、对齐、线程安全。
+**<span class="badge badge-exp">经验</span>** 下面给出把"固定块池 / 分级池 / 线程局部池"放进同一基准框架并跑并发压力测试的程序。这是本章的收束示例，综合构造/析构、对齐、线程安全。
 
 ### 44.24.1 综合基准（程序 30/≥30）
 
-> **示例 32** [难度 ★★★☆☆] [主题：综合基准（程序 30/≥30）]
+> **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 综合基准（程序 30/≥30）
 ```cpp
 // program_30_final_bench.cpp —— 三池统一并发基准
 // 编译: g++ -std=c++17 -O2 -pthread program_30_final_bench.cpp -o p30
@@ -1686,7 +1686,7 @@ int main(){
 
 ### 44.25.1 对齐尺寸 > 指针尺寸的固定块池（程序 31/≥30）
 
-> **示例 33** [难度 ★★☆☆☆] [主题：对齐尺寸 > 指针尺寸的固定块池]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐尺寸 > 指针尺寸的固定块池
 ```cpp
 // program_31_overaligned.cpp —— 块尺寸必须容纳 next 且对齐 over-aligned 类型
 // 编译: g++ -std=c++17 -O2 program_31_overaligned.cpp -o p31
@@ -1705,7 +1705,7 @@ int main() {
 
 ### 44.25.2 用 `std::pmr::synchronized_pool_resource`（程序 32/≥30）
 
-> **示例 34** [难度 ★★☆☆☆] [主题：用 std::pmr::synchr]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 std::pmr::synchr
 ```cpp
 // program_32_pmr_synchronized.cpp —— 标准库线程安全池（连接 ch38）
 // 编译: g++ -std=c++17 -O2 program_32_pmr_synchronized.cpp -o p32
@@ -1724,7 +1724,7 @@ int main() {
 
 ### 44.25.3 对象池 + 构造复用（程序 33/≥30）
 
-> **示例 35** [难度 ★★☆☆☆] [主题：对象池 + 构造复用]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对象池 + 构造复用
 ```cpp
 // program_33_object_pool_reuse.cpp
 // 编译: g++ -std=c++17 -O2 program_33_object_pool_reuse.cpp -o p33
@@ -1744,7 +1744,7 @@ int main() {
 
 ### 44.25.4 单调池 + 类型化 placement new 区域（程序 34/≥30）
 
-> **示例 36** [难度 ★★★☆☆] [主题：单调池 + 类型化 placemen]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 单调池 + 类型化 placemen
 ```cpp
 // program_34_monotonic_typed.cpp
 // 编译: g++ -std=c++17 -O2 program_34_monotonic_typed.cpp -o p34
@@ -1774,7 +1774,7 @@ int main(){
 
 ### 44.25.5 分级池 size class 对照 tcmalloc（程序 35/≥30）
 
-> **示例 37** [难度 ★★☆☆☆] [主题：分级池 size class 对照 ]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分级池 size class 对照
 ```cpp
 // program_35_sizeclass.cpp —— 展示 size class 几何分级（对照 tcmalloc SizeMap）
 // 编译: g++ -std=c++17 -O2 program_35_sizeclass.cpp -o p35
@@ -1796,7 +1796,7 @@ int main(){
 
 ### 44.25.6 线程局部池无锁路径断言（程序 36/≥30）
 
-> **示例 38** [难度 ★★☆☆☆] [主题：线程局部池无锁路径断言]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程局部池无锁路径断言
 ```cpp
 // program_36_tls_lockfree.cpp —— 演示线程热路径无 mutex（仅批量才锁）
 // 编译: g++ -std=c++17 -O2 -pthread program_36_tls_lockfree.cpp -o p36
@@ -1824,7 +1824,7 @@ int main(){
 
 ### 44.25.7 池容量回退到 ::operator new（程序 37/≥30）
 
-> **示例 39** [难度 ★★☆☆☆] [主题：池容量回退到 ::operator ]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 池容量回退到 ::operator
 ```cpp
 // program_37_fallback.cpp —— 池满时回退系统分配（对照 pool_allocator.h 大块直走 new）
 // 编译: g++ -std=c++17 -O2 program_37_fallback.cpp -o p37
@@ -1847,7 +1847,7 @@ int main(){ SafePool p(sizeof(long),4); void* a=p.alloc(); void* b=p.alloc();
 
 ### 44.25.8 RAII 池资源守卫（程序 38/≥30，连接 ch39）
 
-> **示例 40** [难度 ★★★☆☆] [主题：池资源守卫]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 池资源守卫
 ```cpp
 // program_38_raii_guard.cpp —— 池对象 RAII 守卫，离开作用域自动归还
 // 编译: g++ -std=c++17 -O2 program_38_raii_guard.cpp -o p38
@@ -1875,7 +1875,7 @@ int main(){
 
 ### 44.25.9 位图池批量分配（程序 39/≥30）
 
-> **示例 41** [难度 ★★☆☆☆] [主题：位图池批量分配（程序 39/≥30）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 位图池批量分配（程序 39/≥30）
 ```cpp
 // program_39_bitmap_batch.cpp
 // 编译: g++ -std=c++17 -O2 program_39_bitmap_batch.cpp -o p39
@@ -1909,7 +1909,7 @@ int main(){ BitmapBatch b(sizeof(int),256);
 
 ### 44.25.10 完整 PMR 单调池 + 容器（程序 40/≥30）
 
-> **示例 42** [难度 ★★☆☆☆] [主题：完整 PMR 单调池 + 容器]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整 PMR 单调池 + 容器
 ```cpp
 // program_40_pmr_monotonic.cpp —— monotonic_buffer_resource 实测（连接 ch38/44.7）
 // 编译: g++ -std=c++17 -O2 program_40_pmr_monotonic.cpp -o p40
@@ -1969,7 +1969,7 @@ int main(){
 
 ### ㉒.1 历史渊源补强：内存池的来龙去脉
 
-[史] 内存池（memory pool）并非 C++ 专属，其思想可追溯到 1960 年代 Lisp 的 **cons cell 分配器** 与 1970 年代 Unix `kmem` 内核 slab 雏形；但「固定块池 + 侵入式 free list」的范式由 **1990 年代 Doug Lea 的 `dlmalloc`（1988 起）** 与后来 Solaris 的 **slab allocator（Jeff Bonwick, 1994）** 确立——slab 直接启发了 Linux 的 **SLAB/SLUB**（第 ⑧ 节分级空闲列表的思想源头）。[史] C++ 一侧，标准库的 `__gnu_cxx::__pool_alloc`（第 ③ 节）与 SGI STL 的 `pool_alloc` 把「小块对象专用池」带入容器；而 **C++17 的 PMR（P0220，见 ch38）** 把「可切换的内存资源对象」标准化，等于把内存池从「手写 hack」升级为语言库一等公民。[轶] 一个常被忽略的点：STL 默认 `std::allocator` 在 GCC 里早已用内存池（`__pool_alloc` 的变体）做小块优化，只是对用默认接口的用户透明——所以「用不用池」在很多情况下不是选择题，而是实现替你做了。
+<span class="badge badge-history">史</span> 内存池（memory pool）并非 C++ 专属，其思想可追溯到 1960 年代 Lisp 的 **cons cell 分配器** 与 1970 年代 Unix `kmem` 内核 slab 雏形；但「固定块池 + 侵入式 free list」的范式由 **1990 年代 Doug Lea 的 `dlmalloc`（1988 起）** 与后来 Solaris 的 **slab allocator（Jeff Bonwick, 1994）** 确立——slab 直接启发了 Linux 的 **SLAB/SLUB**（第 ⑧ 节分级空闲列表的思想源头）。<span class="badge badge-history">史</span> C++ 一侧，标准库的 `__gnu_cxx::__pool_alloc`（第 ③ 节）与 SGI STL 的 `pool_alloc` 把「小块对象专用池」带入容器；而 **C++17 的 PMR（P0220，见 ch38）** 把「可切换的内存资源对象」标准化，等于把内存池从「手写 hack」升级为语言库一等公民。<span class="badge badge-anecdote">轶</span> 一个常被忽略的点：STL 默认 `std::allocator` 在 GCC 里早已用内存池（`__pool_alloc` 的变体）做小块优化，只是对用默认接口的用户透明——所以「用不用池」在很多情况下不是选择题，而是实现替你做了。
 
 ### ㉒.2 真实工程坐标：内存池活在哪些项目里
 
@@ -1997,8 +1997,8 @@ int main(){
 
 ### ㉒.4 与标准的互动：内存池与 PMR 的演进
 
-[史] 历史上是各库手写池（dlmalloc、tcmalloc、jemalloc、内核 slab）；**C++17 的 P0220 把 PMR**（`monotonic_buffer_resource`/`pool_resource`/`synchronized_pool_resource`，第 ⑦–⑪ 节）标准化，等于把「内存池」正式纳入标准库分发。**C++20 的 P0674** 让 `make_shared` 支持数组，与池化分配可组合。[评] WG21 的方向是把「换分配后端」从「替换全局 `operator new`（污染全程序、易 ABI 冲突）」升级为「作用域化的 `std::pmr::memory_resource`」——这对大型多团队代码库意味着：A 模块用池、B 模块用默认堆，互不影响、各自可测。内存池这一「最古老的性能优化」终于在标准里有了干净的家。
-- [史] PMR 的修订链为 **P0220R0→P0220R1（C++17）**，把 `monotonic_buffer_resource`/`pool_resource`/`synchronized_pool_resource` 整体标准化。ISO 条款 `[mem.res]` 把「内存资源对象」确立为一等公民，与 `[allocator.requirements]` 并存——委员会的设计意图是让「换分配后端」从「替换全局 `operator new`（污染全程序、易 ABI 冲突）」升级为「作用域化的 `std::pmr::memory_resource`」，使内存池这一最古老的优化在标准里有了干净、可组合的家。
+<span class="badge badge-history">史</span> 历史上是各库手写池（dlmalloc、tcmalloc、jemalloc、内核 slab）；**C++17 的 P0220 把 PMR**（`monotonic_buffer_resource`/`pool_resource`/`synchronized_pool_resource`，第 ⑦–⑪ 节）标准化，等于把「内存池」正式纳入标准库分发。**C++20 的 P0674** 让 `make_shared` 支持数组，与池化分配可组合。<span class="badge badge-comment">评</span> WG21 的方向是把「换分配后端」从「替换全局 `operator new`（污染全程序、易 ABI 冲突）」升级为「作用域化的 `std::pmr::memory_resource`」——这对大型多团队代码库意味着：A 模块用池、B 模块用默认堆，互不影响、各自可测。内存池这一「最古老的性能优化」终于在标准里有了干净的家。
+- <span class="badge badge-history">史</span> PMR 的修订链为 **P0220R0→P0220R1（C++17）**，把 `monotonic_buffer_resource`/`pool_resource`/`synchronized_pool_resource` 整体标准化。ISO 条款 `[mem.res]` 把「内存资源对象」确立为一等公民，与 `[allocator.requirements]` 并存——委员会的设计意图是让「换分配后端」从「替换全局 `operator new`（污染全程序、易 ABI 冲突）」升级为「作用域化的 `std::pmr::memory_resource`」，使内存池这一最古老的优化在标准里有了干净、可组合的家。
 
 ### ㉒.5 权威引用
 
@@ -2010,7 +2010,7 @@ int main(){
 
 ## 附录 F：内存池面试
 
-> **示例 43** [难度 ★★★☆☆] [主题：附录 F：内存池面试]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：内存池面试
 ```cpp
 #include <iostream>
 int main(){
@@ -2097,7 +2097,7 @@ _ZL12probe_mallocy:
         jne     .L28
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 G：内存池汇编（真实产物）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：内存池汇编（真实产物）
 ```cpp
 #include <iostream>
 int main(){
@@ -2146,7 +2146,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <cstddef>
 template <class Block, std::size_t N>
@@ -2162,8 +2162,8 @@ struct FixedPool {
 每次 `new` 要进通用分配器（可能加锁、查找空闲块、系统调用 `sbrk`/`mmap`）。
 固定池的 `alloc`/`dealloc` 只是数组下标操作，**确定性的 O(1)、零系统调用**，适合高频小对象。
 
-[标准] 固定块池用空闲链表消除通用分配器开销；代价是块大小固定、总量预分配。
-[引用] ISO/IEC 14882:2023 §[basic.stc.dynamic]（动态存储分配语义）；cppreference "operator new"；游戏引擎对象池（如 Unity、Unreal `FMemStack`）与 Boost.Pool 均用空闲链表实现固定块池。
+<span class="badge badge-std">标准</span> 固定块池用空闲链表消除通用分配器开销；代价是块大小固定、总量预分配。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.dynamic]（动态存储分配语义）；cppreference "operator new"；游戏引擎对象池（如 Unity、Unreal `FMemStack`）与 Boost.Pool 均用空闲链表实现固定块池。
 
 </details>
 
@@ -2176,7 +2176,7 @@ struct FixedPool {
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <memory_resource>
 #include <vector>
@@ -2194,8 +2194,8 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 把 `do_allocate` 换成你的池后，`vector` 扩容不再触碰系统分配器，延迟确定、可预测——
 这正是嵌入式/实时系统的诉求（见 ch122 pmr 实证）。
 
-[标准] `std::pmr`(C++17) 运行期多态分配器；`memory_resource` 派生即可替换容器内存来源。
-[引用] ISO/IEC 14882:2023 §[mem.res.class]、§[mem.res.pool]（含 `unsynchronized_pool_resource`）；cppreference "std::pmr::memory_resource" 与 "std::pmr::polymorphic_allocator"；LLVM/Chromium 均用 PMR 风格分配器隔离热点内存。
+<span class="badge badge-std">标准</span> `std::pmr`(C++17) 运行期多态分配器；`memory_resource` 派生即可替换容器内存来源。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[mem.res.class]、§[mem.res.pool]（含 `unsynchronized_pool_resource`）；cppreference "std::pmr::memory_resource" 与 "std::pmr::polymorphic_allocator"；LLVM/Chromium 均用 PMR 风格分配器隔离热点内存。
 
 </details>
 
@@ -2209,7 +2209,7 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 
 <details><summary>答案与解析</summary>
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 // 通用分配器: 任意大小混合分配/释放 -> 空闲块被切碎 -> 外部碎片
 // 长期运行后: 总空闲内存足够, 但无单块够大 -> 分配失败 (嵌入式致命)
@@ -2221,8 +2221,8 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 选型：实时/确定性/长生命周期、对象大小固定 → **池**（无外部碎片、延迟确定）；
 通用、大小多变、短生命周期 → 系统分配器（灵活）。可在同一程序按对象类别混用。
 
-[标准] 池消除外部碎片换内部碎片；实时系统优先确定性而非峰值利用率。
-[引用] ISO/IEC 14882:2023 §[basic.stc.dynamic.deallocation]（释放不保证归还 OS）；cppreference "operator delete"；tcmalloc/jemalloc 文档讨论通用分配的碎片与缓存局部性权衡；实时系统（如 AUTOSAR、RTEMS）规范强调确定性分配。
+<span class="badge badge-std">标准</span> 池消除外部碎片换内部碎片；实时系统优先确定性而非峰值利用率。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.dynamic.deallocation]（释放不保证归还 OS）；cppreference "operator delete"；tcmalloc/jemalloc 文档讨论通用分配的碎片与缓存局部性权衡；实时系统（如 AUTOSAR、RTEMS）规范强调确定性分配。
 
 </details>
 
@@ -2232,7 +2232,7 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 
 **步骤 1：裸 new（不确定性延迟 + 碎片）**
 
-> **示例 48** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 实时系统里把 n]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 实时系统里把 n
 ```cpp
 struct Packet { int seq; };
 void use(Packet*);                   // -c 仅编译不链接, 声明即可
@@ -2248,7 +2248,7 @@ void control_loop(){
 
 **步骤 2：固定块池（O(1) 分配 + 零碎片，但有内碎片）**
 
-> **示例 49** [难度 ★★★☆☆] [主题：附录：用法演绎 — 实时系统里把 n]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 实时系统里把 n
 ```cpp
 struct Packet { int seq; };
 template <class T, std::size_t N> struct FixedPool {
@@ -2270,7 +2270,7 @@ void control_loop(){
 
 **步骤 3：接入 STL（pmr）**
 
-> **示例 50** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 实时系统里把 n]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 实时系统里把 n
 ```cpp
 struct Packet { int seq; };
 struct PoolResource : std::pmr::memory_resource {
@@ -2585,7 +2585,7 @@ libstdc++ 提供了一款**生产级**的池分配器 `__gnu_cxx::__pool_alloc`�
 
 ### 可编译实证
 
-> **示例 51** [难度 ★★☆☆☆] [主题：可编译实证]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译实证
 ```cpp
 #include <ext/pool_allocator.h>
 #include <vector>
@@ -2680,7 +2680,7 @@ int main()
 
 ### D5.3 可复现 demo
 
-> **示例 52** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <cassert>

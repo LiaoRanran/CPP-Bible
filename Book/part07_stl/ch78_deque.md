@@ -1,7 +1,7 @@
-# 第78章　deque 与分段连续 [标准]
+# 第78章　deque 与分段连续 <span class="badge badge-std">标准</span>
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md) ／ 后续：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)、[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md) ／ 难度：★★★☆☆
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md) ／ 后续：[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)、[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md) ／ 难度：★★★☆☆
 
 > 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指 x86-64 内存与缓存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
@@ -11,27 +11,27 @@
 > 既要像数组一样随机访问，又要两头都能 O(1) 插入——deque 是为补 vector 的短板而生的"折中艺术品"。
 
 ### 0.1 起源（谁·何时·为何）
-`vector` 在头部插入是 O(n)，因为它要把整段内存往后搬。[史] 很多真实场景（如滑动窗口、双端缓冲、广度优先搜索的队列）偏偏需要高效的**头尾双端操作**。STL 给出的答案不是链表，而是一个更巧妙的结构：deque（double-ended queue）用一组固定大小的内存块（block/chunk），再用一个"中央映射数组"记录这些块的指针。[史] 这样头尾插入只需在边界块里增减，几乎无需搬移整体，同时仍保留近似随机访问的能力。
+`vector` 在头部插入是 O(n)，因为它要把整段内存往后搬。<span class="badge badge-history">史</span> 很多真实场景（如滑动窗口、双端缓冲、广度优先搜索的队列）偏偏需要高效的**头尾双端操作**。STL 给出的答案不是链表，而是一个更巧妙的结构：deque（double-ended queue）用一组固定大小的内存块（block/chunk），再用一个"中央映射数组"记录这些块的指针。<span class="badge badge-history">史</span> 这样头尾插入只需在边界块里增减，几乎无需搬移整体，同时仍保留近似随机访问的能力。
 
 ### 0.2 关键转折（编年）
-- C++98：`std::deque` 随 STL 标准化，默认作为 `stack`/`queue` 的底层容器（见 [第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）。[史]
+- C++98：`std::deque` 随 STL 标准化，默认作为 `stack`/`queue` 的底层容器（见 [第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）。<span class="badge badge-history">史</span>
 - 长期：各实现（libstdc++、libc++、MS STL）在"块大小、映射增长策略"上各有微调，但分段连续的思想一脉相承。
 
 ### 0.3 设计哲学之争
-deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来了双端 O(1)，却牺牲了 `vector` 那种"绝对连续"的缓存纯净度——一次随机访问可能跨越块边界。[评] 与 `list` 比，deque 仍有连续块带来的缓存优势，又不像链表那样每个节点都要单独分配；与 `vector` 比，它多了中央映射这一层间接。[评] STL 设计者的取舍是：用一点间接性，换掉最痛的双端低效。
+deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来了双端 O(1)，却牺牲了 `vector` 那种"绝对连续"的缓存纯净度——一次随机访问可能跨越块边界。<span class="badge badge-comment">评</span> 与 `list` 比，deque 仍有连续块带来的缓存优势，又不像链表那样每个节点都要单独分配；与 `vector` 比，它多了中央映射这一层间接。<span class="badge badge-comment">评</span> STL 设计者的取舍是：用一点间接性，换掉最痛的双端低效。
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++98 标准化 deque 后，各实现长期在块大小、映射增长策略上微调。迭代器失效与"更连续友好"是后续支线。
 
-- [史] **失效规则与 vector 根本不同**：deque 头尾插入/删除不会使已有元素的引用与指针失效，只可能使迭代器失效（因中控 `map` 扩容重映射）；唯独中间插入/删除会使所有迭代器、引用、指针失效。这一规则自 C++98 沿用至今未变。
-- [史] **C++11 起 deque 也吃到移动语义**：`deque` 整体转移从逐节点拷贝变为 O(1) 指针交换；但 C++ 标准从未改变其"分段连续"的底层模型，各库仍用"中控数组 + 固定大小块"。
-- [评] **"更连续友好"未成标准方向**：社区偶有提案让 deque 退化为"少数连续段"以讨好缓存，但会牺牲双端 O(1) 的头插语义，委员会保守未动——deque 的定位始终是"双端快、随机访问够用"。
-- [史] **实现细节成 ABI 话题**：libstdc++ 默认块大小约 512 字节、libc++ 采用不同映射策略，导致同一 `deque` 在两库下内存布局与性能曲线不同，跨编译器共享二进制时需注意。
+- <span class="badge badge-history">史</span> **失效规则与 vector 根本不同**：deque 头尾插入/删除不会使已有元素的引用与指针失效，只可能使迭代器失效（因中控 `map` 扩容重映射）；唯独中间插入/删除会使所有迭代器、引用、指针失效。这一规则自 C++98 沿用至今未变。
+- <span class="badge badge-history">史</span> **C++11 起 deque 也吃到移动语义**：`deque` 整体转移从逐节点拷贝变为 O(1) 指针交换；但 C++ 标准从未改变其"分段连续"的底层模型，各库仍用"中控数组 + 固定大小块"。
+- <span class="badge badge-comment">评</span> **"更连续友好"未成标准方向**：社区偶有提案让 deque 退化为"少数连续段"以讨好缓存，但会牺牲双端 O(1) 的头插语义，委员会保守未动——deque 的定位始终是"双端快、随机访问够用"。
+- <span class="badge badge-history">史</span> **实现细节成 ABI 话题**：libstdc++ 默认块大小约 512 字节、libc++ 采用不同映射策略，导致同一 `deque` 在两库下内存布局与性能曲线不同，跨编译器共享二进制时需注意。
 
 > 史料来源：[cppreference std::deque](https://en.cppreference.com/w/cpp/container/deque)、[libc++ 官方文档](https://libcxx.llvm.org/)
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 `std::deque`（double-ended queue，双端队列）是 STL 中**最被低估**的序列容器：
 
@@ -42,7 +42,7 @@ deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来�
 - 知道为何 `std::stack` / `std::queue` 的**默认底层容器是 deque**。
 - 用 microbenchmark 量化"首尾插入"与 `vector` 的差异，并理解其**缓存局部性的两面性**（段内连续、段间跳跃）。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标 [标准]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 动机：双端队列首尾都能 O(1) 推入（完整可编译）
 #include <iostream>
@@ -59,7 +59,7 @@ int main() {
 
 ---
 
-## ② 前置知识 [标准]
+## ② 前置知识 <span class="badge badge-std">标准</span>
 
 | 主题 | 为什么必须 | 链接 |
 |---|---|---|
@@ -72,18 +72,18 @@ int main() {
 
 ---
 
-## ③ 后续依赖 [标准]
+## ③ 后续依赖 <span class="badge badge-std">标准</span>
 
-- **list / forward_list**：当"任何位置 O(1) 插入/删除 + 迭代器稳定"比"随机访问"更重要时，deque 让位给链表（[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)）。
+- **list / forward_list**：当"任何位置 O(1) 插入/删除 + 迭代器稳定"比"随机访问"更重要时，deque 让位给链表（[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)）。
 - **容器适配器**：`stack`/`queue` 默认底层容器（[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）。
 - **ranges / 算法**：deque 支持随机访问，可直接用于 `std::sort`、`std::ranges::views`（[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)）。
 - **并发**：deque **非线程安全**，并发需外部同步（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。
 
 ---
 
-## ④ 知识图谱（ASCII） [标准]
+## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） [标准]]
+> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
 ```
                   std::deque<T>
         ┌────────────┬────────────┬────────────┐
@@ -105,7 +105,7 @@ int main() {
 
 ---
 
-## ⑤ Mermaid：push_front 触发新 buffer 分配 [标准]
+## ⑤ Mermaid：push_front 触发新 buffer 分配 <span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart TD
@@ -157,7 +157,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：分段连续与四指针 [实现·GCC15]
 
-> **示例 3** [难度 ★★☆☆☆] [主题：内存图：分段连续与四指针 [实现·G]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：分段连续与四指针 [实现·G
 ```
 deque 对象（栈/堆）
 ┌──────────────────────────────────────────────┐
@@ -184,9 +184,9 @@ deque 对象（栈/堆）
 
 ---
 
-## ⑧ 生命周期图：中控扩容不搬运元素 [标准]
+## ⑧ 生命周期图：中控扩容不搬运元素 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：生命周期图：中控扩容不搬运元素 [标]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：中控扩容不搬运元素 [标
 ```
  初始:  map 容量 8, 仅用中间若干槽
  push_front/push_back 反复增长...
@@ -205,7 +205,7 @@ deque 对象（栈/堆）
 
 ## ⑨ 调用栈/时序图：operator[] 的跨段定位 [实现·GCC15]
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：调用栈/时序图：operator[]]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈/时序图：operator[]
 ```
   访问 d[k]
     │
@@ -225,7 +225,7 @@ deque 对象（栈/堆）
   返回 *_M_cur
 ```
 
-> **示例 6** [难度 ★★★★☆] [主题：调用栈/时序图：operator[]]
+> **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈/时序图：operator[]
 ```cpp
 // ⑨ 随机访问跨段：operator[] 直接下标（完整可编译）
 #include <iostream>
@@ -263,13 +263,13 @@ int main() {
 
 ---
 
-## ⑪ STL 联系：deque 与算法/适配器 [标准]
+## ⑪ STL 联系：deque 与算法/适配器 <span class="badge badge-std">标准</span>
 
 - deque 提供**随机访问迭代器** → 可直接 `std::sort(d.begin(), d.end())`、`std::binary_search` 等（这点和 `list` 形成对比：`list` 必须用成员 `sort`，见第79章）。
 - `std::stack<T>` 与 `std::queue<T>` 的**默认底层容器就是 `deque<T>`**（[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)），因为 deque 首尾 O(1) 完美契合栈/队列语义。
 - `std::deque` 满足 *Erasable*/*DefaultInsertable* 等容器要求，可用于大多数接受序列容器的泛型算法。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：联系：deque 与算法/适配器 []
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：deque 与算法/适配器 [
 ```cpp
 // ⑪ deque 可直接用 std::sort（随机访问迭代器，完整可编译）
 #include <iostream>
@@ -286,11 +286,11 @@ int main() {
 
 ---
 
-## ⑫ 工业案例：高吞吐任务队列（生产者-消费者双端缓冲） [经验]
+## ⑫ 工业案例：高吞吐任务队列（生产者-消费者双端缓冲） <span class="badge badge-exp">经验</span>
 
 交易/网络引擎常用 deque 做"工作窃取"或"双端缓冲"：新任务从一端压入，worker 从另一端取；偶发的"插队优先级任务"从同端头插。下面是可运行骨架（真实场景配锁/无锁，见 [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：工业案例：高吞吐任务队列]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：高吞吐任务队列
 ```cpp
 // ⑫ 工业：双端任务缓冲（完整可编译骨架）
 #include <iostream>
@@ -365,7 +365,7 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 
 ---
 
-## ⑭ WG21 提案与标准背景 [标准]
+## ⑭ WG21 提案与标准背景 <span class="badge badge-std">标准</span>
 
 | 提案/条款 | 内容 | 与本草关系 |
 |---|---|---|
@@ -378,7 +378,7 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 
 ---
 
-## ⑮ 面试题 [标准]
+## ⑮ 面试题 <span class="badge badge-std">标准</span>
 
 1. **deque 与 vector 随机访问谁快？** → vector 更快（单次 `lea`）；deque 跨段需除法+取模，但通常被优化为乘逆元，仍多几跳。
 2. **deque 头插为什么是均摊 O(1)？** → 多数情况在当前 buffer 尾段直接构造；仅在 buffer 满时分配新 buffer（O(1) 块分配，均摊）。
@@ -388,7 +388,7 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 6. **deque 的 buffer 大小怎么定？** → 每个 buffer 至少 512 字节（libstdc++），T 小则多装，T 大则每 buffer 一个。
 7. **deque 有 `data()` 返回连续数组吗？** → 没有（不像 vector/array），因为它不是整体连续。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 [标准]]
+> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑮ 面试题佐证：erase 使迭代器失效但元素引用不失效（结构演示，完整可编译）
 #include <iostream>
@@ -404,7 +404,7 @@ int main() {
 
 ---
 
-## ⑯ 易错点 [经验]
+## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 
 - **误以为 deque 整体连续** → 没有 `data()`，不能把 `&d[0]` 当数组首地址传给 C API；段间不连续。
 - **erase/insert 后继续使用旧迭代器** → 迭代器已失效（UB），应接收返回值：`it = d.erase(it)`。
@@ -412,7 +412,7 @@ int main() {
 - **把 deque 当"线程安全队列"** → 不是；需 `mutex`（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。
 - **频繁跨段随机访问热点** → 若访问模式高度随机且跨段多，`vector` 的单一连续访问可能更稳更快。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：易错点 [经验]]
+> **示例 10** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 易错：erase 后旧迭代器失效（用返回值才正确，完整可编译）
 #include <iostream>
@@ -428,7 +428,7 @@ int main() {
 
 ---
 
-## ⑰ FAQ [标准]
+## ⑰ FAQ <span class="badge badge-std">标准</span>
 
 **Q：deque 的 `push_front` 真的总 O(1) 吗？** A：均摊 O(1)。绝大多数在已有 buffer 内完成；仅 buffer 满时分配新 buffer（一次性 O(1) 块），均摊后摊还成本 O(1)。
 
@@ -438,7 +438,7 @@ int main() {
 
 **Q：deque 能用于 `std::vector`-style 的 `data()` 接口吗？** A：不能；它不是连续单块。需要连续内存请用 `vector`/`array`/`span`（[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)、[第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：[标准]]
+> **示例 11** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
 ```cpp
 // ⑰ FAQ 佐证：deque 无 data()，但可正常遍历（完整可编译）
 #include <iostream>
@@ -453,15 +453,15 @@ int main() {
 
 ---
 
-## ⑱ 最佳实践 [经验]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
 1. 需要**首尾都频繁插入删除**时首选 `deque`（而非 `vector` 头插 O(n)）。
-2. 需要**随机访问 + 双端操作**时选 `deque`；若只需头插/任意位置插入且不要随机访问，选 `list`（[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)）。
+2. 需要**随机访问 + 双端操作**时选 `deque`；若只需头插/任意位置插入且不要随机访问，选 `list`（[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)）。
 3. 作栈/队列时直接用 `std::stack`/`std::queue`（默认底层 deque），不要手写。
 4. 迭代器失效后务必用 `erase`/`insert` 的返回值刷新；不要缓存迭代器跨修改使用。
 5. 高频随机访问且不需双端插入 → 仍用 `vector`（更连续、更快、更省内存）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 12** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 最佳实践：deque 作 FIFO 队列（完整可编译）
 #include <iostream>
@@ -480,7 +480,7 @@ int main() {
 
 ---
 
-## ⑲ 性能分析（复杂度 / 缓存 / ABI） [经验]
+## ⑲ 性能分析（复杂度 / 缓存 / ABI） <span class="badge badge-exp">经验</span>
 
 | 操作 | deque | vector | list |
 |---|---|---|---|
@@ -491,7 +491,7 @@ int main() {
 | 中控扩容 | 拷贝 map 指针 O(map) | 整体搬迁 O(n) | 无 |
 | 缓存局部性 | 段内好、段间跳 | 整体好 | 差（节点散列） |
 
-> **示例 13** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲ microbenchmark：push_front 的 deque vs vector（量级示意，完整可编译）
 #include <iostream>
@@ -568,21 +568,21 @@ graph TD
 
 ---
 
-## ⑳ 跨语言对比：双端队列实现 [标准]
+## ⑳ 跨语言对比：双端队列实现 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：deque 首尾插入 O(1) 且大多迭代器不失效。** 你频繁在两端操作。请说明与 vector 的差异。
-   - [标准] deque 支持两端常数时间插入删除，且除被删元素外迭代器通常保持稳定；但不保证连续存储。
-   - [引用] ISO/IEC 14882:2023 §[deque]（deque 要求与失效规则）；cppreference "std::deque" 词条。
+   - <span class="badge badge-std">标准</span> deque 支持两端常数时间插入删除，且除被删元素外迭代器通常保持稳定；但不保证连续存储。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque]（deque 要求与失效规则）；cppreference "std::deque" 词条。
 
 2. **真实场景：deque 元素不连续，不能当 C 数组传。** 你以为能像 vector 一样 `&d[0]` 跨块。请说明。
-   - [标准] deque 由分块存储组成，元素不保证连续；`&d[0]` 只指向首块，不能按连续地址遍历全部。
-   - [引用] ISO/IEC 14882:2023 §[deque]（不连续存储）；cppreference "std::deque" 词条。
+   - <span class="badge badge-std">标准</span> deque 由分块存储组成，元素不保证连续；`&d[0]` 只指向首块，不能按连续地址遍历全部。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque]（不连续存储）；cppreference "std::deque" 词条。
 
 3. **真实场景：deque 中间插入会使迭代器失效。** 你在中部 insert 后缓存失效。请说明。
-   - [标准] deque 在两端之外的插入会使所有迭代器失效（指针/引用通常仍有效），需按容器规则处理。
-   - [引用] ISO/IEC 14882:2023 §[deque]（插入的失效语义）；cppreference "std::deque" 词条。
+   - <span class="badge badge-std">标准</span> deque 在两端之外的插入会使所有迭代器失效（指针/引用通常仍有效），需按容器规则处理。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque]（插入的失效语义）；cppreference "std::deque" 词条。
 
 | 语言/库 | 类型 | 内存模型 | 随机访问 | 备注 |
 |---|---|---|---|---|
@@ -604,7 +604,7 @@ graph TD
 
 ### ㉒.1 历史渊源补强：deque 与「分段连续」的折中
 
-[史] `std::deque`（double-ended queue）随 C++98 进入标准，定位是「两端 O(1) 插入删除 + 随机访问」，代价是放弃真正的连续存储，改用分段（block）缓冲 + 中控指针数组的「分段连续」结构。[史] 这一设计继承自 HP/SGI STL，目标是让 `deque` 在首尾操作上全面胜过 `vector` 而不必整体搬迁。[轶] 有趣的是，STL 的 `stack` / `queue` 默认底层容器就是 `deque`，因为适配器恰好只用到首尾接口。[评] `deque` 的「伪连续」是工程上最经典的时空折中：随机访问仍 O(1)（一次指针间接），但缓存局部性显著弱于 `vector`。
+<span class="badge badge-history">史</span> `std::deque`（double-ended queue）随 C++98 进入标准，定位是「两端 O(1) 插入删除 + 随机访问」，代价是放弃真正的连续存储，改用分段（block）缓冲 + 中控指针数组的「分段连续」结构。<span class="badge badge-history">史</span> 这一设计继承自 HP/SGI STL，目标是让 `deque` 在首尾操作上全面胜过 `vector` 而不必整体搬迁。<span class="badge badge-anecdote">轶</span> 有趣的是，STL 的 `stack` / `queue` 默认底层容器就是 `deque`，因为适配器恰好只用到首尾接口。<span class="badge badge-comment">评</span> `deque` 的「伪连续」是工程上最经典的时空折中：随机访问仍 O(1)（一次指针间接），但缓存局部性显著弱于 `vector`。
 
 ### ㉒.2 真实工程坐标：deque 活在哪些产品里
 
@@ -615,11 +615,11 @@ graph TD
 
 ### ㉒.3 生产踩坑：deque 的常见误用与陷阱
 
-[评] 最大误区是把 `deque` 当成「免扩容的 vector」——它的分段分配器在每次跨块时会分配新 buffer，且中控数组本身也可能重分配，因此「无迭代器失效保证」只覆盖首尾插入，中间插入仍会失效。另一坑是缓存：遍历 `deque` 因跨块跳转，性能常明显低于 `vector`，在热点循环里被实测吊打。还有把指向 `deque` 元素的引用跨线程长期持有，结果某次中间插入使其失效。
+<span class="badge badge-comment">评</span> 最大误区是把 `deque` 当成「免扩容的 vector」——它的分段分配器在每次跨块时会分配新 buffer，且中控数组本身也可能重分配，因此「无迭代器失效保证」只覆盖首尾插入，中间插入仍会失效。另一坑是缓存：遍历 `deque` 因跨块跳转，性能常明显低于 `vector`，在热点循环里被实测吊打。还有把指向 `deque` 元素的引用跨线程长期持有，结果某次中间插入使其失效。
 
 ### ㉒.4 与标准的互动：deque 与标准的稳定
 
-[史] `deque` 自 C++98 几乎未变，标准从未规定其内部必须是「分段连续」，只规定复杂度与接口，因此各实现（libstdc++、libc++、MS STL）布局互不相同，跨 ABI 传递 `deque` 风险更高。[评] C++11 为其补上移动语义与 `emplace`；C++17 增加 `pmr::deque`。近年 WG21 提出的 `std::flat_*` 容器（C++23）反而是在「用连续数组 + 排序」去替代部分 `deque` 的关联场景，侧面说明标准也在反思经典容器的取舍。
+<span class="badge badge-history">史</span> `deque` 自 C++98 几乎未变，标准从未规定其内部必须是「分段连续」，只规定复杂度与接口，因此各实现（libstdc++、libc++、MS STL）布局互不相同，跨 ABI 传递 `deque` 风险更高。<span class="badge badge-comment">评</span> C++11 为其补上移动语义与 `emplace`；C++17 增加 `pmr::deque`。近年 WG21 提出的 `std::flat_*` 容器（C++23）反而是在「用连续数组 + 排序」去替代部分 `deque` 的关联场景，侧面说明标准也在反思经典容器的取舍。
 
 - **WG21 修订链**：`deque` 本身自 C++98 几乎未动，但 WG21 在相关方向上持续打补丁：C++17 引入 `pmr::deque`（多态分配器，对应 `std::polymorphic_allocator`，P0220R1 系列）；C++23 的 `flat_map`/`flat_set`（P0429/P1222，wg21.link/P0429）则明确把「连续数组替代分段结构」作为补充。可见标准对 `deque` 的态度是「维持稳定、不在其内部结构上加 ABI 约束，而用新容器提供替代」。
 - **ISO 条款**：`std::deque` 规定于 ISO/IEC 14882 §24.3.9（`[deque]`）。标准仅要求「在首尾插入/删除为摊还常数、且中间插入会使所有迭代器失效」的复杂度，而**不规定内部必须是分段连续**——因此 libstdc++、libc++、MS STL 各自采用不同的中控块布局，这也是跨 ABI 传递 `deque` 风险更高的法理原因。
@@ -630,11 +630,11 @@ graph TD
 - [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 deque 后续修订的一手来源
 - [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 deque 工业实现参考
 
-## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） [标准]
+## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） <span class="badge badge-std">标准</span>
 
 下面 D1–D34 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D1 基本构造 + 首尾推入 + 遍历
 #include <iostream>
@@ -648,7 +648,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D2 随机访问 operator[] 与 at()
 #include <iostream>
@@ -662,7 +662,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D3 头插大量元素（deque 的强项）
 #include <iostream>
@@ -676,7 +676,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D4 中间插入 insert
 #include <iostream>
@@ -691,7 +691,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D5 删除 erase（用返回值刷新迭代器）
 #include <iostream>
@@ -709,7 +709,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D6 就地构造 emplace_front / emplace_back
 #include <iostream>
@@ -725,7 +725,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D7 弹出 pop_front / pop_back
 #include <iostream>
@@ -739,7 +739,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D8 访问 front / back / at / 下标
 #include <iostream>
@@ -752,7 +752,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D9 resize（扩大填默认值，缩小丢弃）
 #include <iostream>
@@ -767,7 +767,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D10 clear / empty / size
 #include <iostream>
@@ -781,7 +781,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D11 assign（覆盖赋值）
 #include <iostream>
@@ -795,7 +795,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D12 swap 两个 deque
 #include <iostream>
@@ -810,7 +810,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D13 deque 作栈（尾插尾出）
 #include <iostream>
@@ -824,7 +824,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D14 deque 是 std::stack / std::queue 的默认底层（完整可编译）
 #include <iostream>
@@ -840,7 +840,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D15 迭代器失效：erase 后旧迭代器失效（接收返回值）
 #include <iostream>
@@ -854,7 +854,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D16 与 vector 对比：遍历打印
 #include <iostream>
@@ -871,7 +871,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D17 拷贝构造与赋值
 #include <iostream>
@@ -885,7 +885,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D18 范围构造（迭代器区间）
 #include <iostream>
@@ -900,7 +900,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D19 deque 存自定义类型
 #include <iostream>
@@ -916,7 +916,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D20 反向迭代（rbegin/rend）
 #include <iostream>
@@ -929,7 +929,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D21 索引遍历 + size / max_size
 #include <iostream>
@@ -943,7 +943,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D22 push_front 跨多 buffer 仍正常（验证分段）
 #include <iostream>
@@ -957,7 +957,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D23 二维 deque（matrix 风格，段内连续）
 #include <iostream>
@@ -970,7 +970,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D24 用 std::find 查找元素
 #include <iostream>
@@ -984,7 +984,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D25 用 std::sort 排序（deque 支持随机访问）
 #include <iostream>
@@ -1000,7 +1000,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D26 反向 + 旋转等算法
 #include <iostream>
@@ -1015,7 +1015,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D27 比较 deque（== / <）
 #include <iostream>
@@ -1028,7 +1028,7 @@ int main() {
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D28 shrink_to_fit 提示（非绑定）
 #include <iostream>
@@ -1042,7 +1042,7 @@ int main() {
 }
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D29 用 deque 实现滑动窗口最大值骨架
 #include <iostream>
@@ -1064,7 +1064,7 @@ int main() {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D30 与 list 对比：deque 可随机访问，list 不能
 #include <iostream>
@@ -1080,7 +1080,7 @@ int main() {
 }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D31 元素引用在 map 扩容后不失效（结构演示）
 #include <iostream>
@@ -1095,7 +1095,7 @@ int main() {
 }
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D32 用 std::accumulate 求和
 #include <iostream>
@@ -1108,7 +1108,7 @@ int main() {
 }
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D33 首尾交替操作（双端特性综合）
 #include <iostream>
@@ -1125,7 +1125,7 @@ int main() {
 }
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // D34 容量相关：deque 没有 capacity/reserve（完整可编译验证）
 #include <iostream>
@@ -1203,7 +1203,7 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 
 - **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 迭代器概念与分段缓冲架构
 - **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— 与 vector 的连续/分段差异
-- **同模块相邻**：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)—— 与 list 的中段插入成本对比
+- **同模块相邻**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)—— 与 list 的中段插入成本对比
 - **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— 与红黑树容器的接口共性
 - **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 分段缓冲块经 allocator 分配
 
@@ -1220,7 +1220,7 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 `vector::insert(begin())` 要把全部元素后移 → **O(n)**；`deque::push_front` 只填当前头块、
 必要时分配新块 → **摊还 O(1)**。`deque` 天然适合双端队列。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <deque>
 std::deque<int> q;
@@ -1228,9 +1228,9 @@ q.push_back(1); q.push_back(2);   // 入队尾
 int head = q.front(); q.pop_front(); // 出队头 O(1)
 ```
 
-[标准] `deque` 由分段连续缓冲区组成（见 ch78 批 L 实证），头/尾插入均摊 O(1)。
+<span class="badge badge-std">标准</span> `deque` 由分段连续缓冲区组成（见 ch78 批 L 实证），头/尾插入均摊 O(1)。
 
-[引用] ISO/IEC 14882:2023 §[deque] 与 §[deque.modifiers]（`push_front`/`pop_front` 摊还 O(1)）；见 cppreference "container/deque" 词条。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque] 与 §[deque.modifiers]（`push_front`/`pop_front` 摊还 O(1)）；见 cppreference "container/deque" 词条。
 
 </details>
 
@@ -1243,15 +1243,15 @@ int head = q.front(); q.pop_front(); // 出队头 O(1)
 `deque` 用"指针数组(map) + 定长块(512B)"两层结构。`operator[]` 先算块号 `i / 512`（`sar rdx, 0x7` 即 ÷128 元素的移位，取决于元素大小）去 map 查块指针，再算块内偏移 `i % 512`：
 两次内存访问 vs `vector` 一次。故仍是 O(1)，但常数更大、缓存局部性弱于 `vector`。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```
 block = map[ i >> 7 ];        // 第一跳: 取块基址
 elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 ```
 
-[标准] `deque` 随机访问摊还 O(1)，但比 `vector` 多一次间接；无 `data()` 连续视图。
+<span class="badge badge-std">标准</span> `deque` 随机访问摊还 O(1)，但比 `vector` 多一次间接；无 `data()` 连续视图。
 
-[引用] ISO/IEC 14882:2023 §[deque.access]（随机访问仍为 O(1)）；EASTL（Electronic Arts 标准库，github.com/electronicarts/EASTL）同样以分块实现 `deque`，可作工程对照；见 cppreference "container/deque"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque.access]（随机访问仍为 O(1)）；EASTL（Electronic Arts 标准库，github.com/electronicarts/EASTL）同样以分块实现 `deque`，可作工程对照；见 cppreference "container/deque"。
 
 </details>
 
@@ -1261,7 +1261,7 @@ elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 
 <details><summary>答案与解析</summary>
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 // 维护双端队列存"候选最大值下标", 队首为当前窗口最大
 std::deque<int> dq;
@@ -1276,9 +1276,9 @@ for (int i = 0; i < n; ++i) {
 每个元素最多入队、出队各一次 → 均摊 **O(1)/元素**，总 O(n)。
 若用 `vector`：头部 `pop_front` 是 O(n) 拷贝，整体退化到 O(n·k)。
 
-[标准] 单调队列是"双端 + 单调性"的经典技巧；`deque` 的 O(1) 双端弹出是关键。
+<span class="badge badge-std">标准</span> 单调队列是"双端 + 单调性"的经典技巧；`deque` 的 O(1) 双端弹出是关键。
 
-[引用] ISO/IEC 14882:2023 §[deque]（`pop_front`/`push_back` 均为 O(1)）；算法思想见 cppreference "container/deque"；单调队列是《算法竞赛》经典滑动窗口技巧。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque]（`pop_front`/`push_back` 均为 O(1)）；算法思想见 cppreference "container/deque"；单调队列是《算法竞赛》经典滑动窗口技巧。
 
 </details>
 
@@ -1288,7 +1288,7 @@ for (int i = 0; i < n; ++i) {
 
 **步骤 1：若误用 `vector`（头部删除 O(n)）**
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 生产者-消费者双]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 生产者-消费者双
 ```cpp
 std::vector<Task> q;
 q.push_back(t);          // 尾插 O(1)
@@ -1299,7 +1299,7 @@ q.erase(q.begin());      // 头删 O(n): 后续所有元素前移
 
 **步骤 2：改用 `deque`（头尾均摊 O(1)）**
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 生产者-消费者双]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 生产者-消费者双
 ```cpp
 std::deque<Task> q;
 q.push_back(t);          // 尾 O(1)
@@ -1310,7 +1310,7 @@ deque 的块结构让头删只动"头块"，其余块原地不动——无全局
 
 **步骤 3：何时 deque 反而**不如** vector？**
 
-> **示例 53** [难度 ★★★☆☆] [主题：附录：用法演绎 — 生产者-消费者双]
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 生产者-消费者双
 ```cpp
 // 随机访问密集 + 缓存敏感的数值计算:
 for (size_t i=0;i<n;++i) sum += q[i];   // deque 每次访问 2 次间接(map查块+块内)
@@ -1396,7 +1396,7 @@ deque 通过一个指针数组（map）管理多个固定大小的 chunk（缓�
 
 ### D4.6 编译验证
 
-> **示例 54** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <deque>
 #include <iostream>
@@ -1561,7 +1561,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 55** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <deque>
 #include <vector>

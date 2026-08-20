@@ -1,7 +1,7 @@
 # 第93章　线程与异步：thread / future / async
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：180 分钟 ／ 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)、[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) ／ 后续：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) ／ 难度：★★★★☆
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：180 分钟 ／ 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)、[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) ／ 后续：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) ／ 难度：★★★★☆
 
 > 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指 Windows x64 (MinGW, Itanium-ish Win64 ABI)；`[经验]` 为工程共识。所有 libstdc++ 引用均给出 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
@@ -11,28 +11,28 @@
 > C++11 之前，写多线程意味着"要么 pthread，要么 Win32，要么第三方库"——标准对此保持了二十年的沉默。
 
 ### 0.1 起源（谁·何时·为何）
-在 C++11 之前，C++ 标准里**根本没有线程**：POSIX 用 `pthread`，Windows 用 `CreateThread`，代码无法跨平台，异常也难以安全跨线程传播。[史] Boost.Thread（Anthony Williams 等人主导）长期充当事实标准，最终其设计被 C++11 吸收，标准化了 `std::thread`、`std::mutex`、`std::condition_variable`，以及高层封装 `std::async`/`std::future`。[史]
+在 C++11 之前，C++ 标准里**根本没有线程**：POSIX 用 `pthread`，Windows 用 `CreateThread`，代码无法跨平台，异常也难以安全跨线程传播。<span class="badge badge-history">史</span> Boost.Thread（Anthony Williams 等人主导）长期充当事实标准，最终其设计被 C++11 吸收，标准化了 `std::thread`、`std::mutex`、`std::condition_variable`，以及高层封装 `std::async`/`std::future`。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- 多年实践：Boost.Thread 验证了"RAII 锁（`lock_guard`/`unique_lock`）"等惯用法。[史]
+- 多年实践：Boost.Thread 验证了"RAII 锁（`lock_guard`/`unique_lock`）"等惯用法。<span class="badge badge-history">史</span>
 - C++11：`<thread>`/`<mutex>`/`<future>` 标准化，C++ 第一次有了内存模型与"数据竞争即 UB"的正式定义。
-- 后续：C++20 引入 `jthread` 与协作式取消（[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)）。
+- 后续：C++20 引入 `jthread` 与协作式取消（[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)）。
 
 ### 0.3 设计哲学之争
-`std::thread` 的"裸线程"用起来很危险——忘记 `join`/`detach` 就析构会 `std::terminate`。[评] 因此社区更推崇 `std::async` 与"任务而非线程"的高层思维：把工作交出去、用 `future` 取结果，而非手动管线程生命周期。[评] 这场"裸线程 vs 高层任务"的取向，是 C++ 并发设计的主线之一。
+`std::thread` 的"裸线程"用起来很危险——忘记 `join`/`detach` 就析构会 `std::terminate`。<span class="badge badge-comment">评</span> 因此社区更推崇 `std::async` 与"任务而非线程"的高层思维：把工作交出去、用 `future` 取结果，而非手动管线程生命周期。<span class="badge badge-comment">评</span> 这场"裸线程 vs 高层任务"的取向，是 C++ 并发设计的主线之一。
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++20 引入 `jthread` 与协作式取消。内存模型标准化与发送者模型是后续支线。
 
-- [史] **C++11 第一次定义内存模型**：它不只是加了 `<thread>`，更正式规定了"数据竞争即未定义行为"与 happens-before 关系，并引入 `<atomic>`——这让"无锁并发"第一次有语言级契约，而非依赖各平台手册。
-- [史] **P2300（发送者/接收者，sender/receiver）试图统一异步**：由 Google、NVIDIA 等推动，把"可异步计算的工厂"抽象成 sender，配 `scheduler` 决定在哪执行、`receiver` 收结果/错误/取消，目标是让 `async`、Ranges、GPU 任务共用一套执行模型（⟶ ch94）。
-- [评] **`std::async` 的"是否真起线程"长期是坑**：标准允许实现把它当惰性求值、甚至不另起线程（取决于 launch 策略）；想确定的并发语义，很多人转向 `std::thread` 或 executors 生态，P2300 正是想补这块标准化空白。
-- [轶] **Anthony Williams 的 Boost.Thread 几乎是 C++11 线程的母本**：他从 2000 年代初维护 Boost.Thread，其 `future`/`promise`/`lock_guard` 设计被标准几乎照单全收。
+- <span class="badge badge-history">史</span> **C++11 第一次定义内存模型**：它不只是加了 `<thread>`，更正式规定了"数据竞争即未定义行为"与 happens-before 关系，并引入 `<atomic>`——这让"无锁并发"第一次有语言级契约，而非依赖各平台手册。
+- <span class="badge badge-history">史</span> **P2300（发送者/接收者，sender/receiver）试图统一异步**：由 Google、NVIDIA 等推动，把"可异步计算的工厂"抽象成 sender，配 `scheduler` 决定在哪执行、`receiver` 收结果/错误/取消，目标是让 `async`、Ranges、GPU 任务共用一套执行模型（⟶ ch94）。
+- <span class="badge badge-comment">评</span> **`std::async` 的"是否真起线程"长期是坑**：标准允许实现把它当惰性求值、甚至不另起线程（取决于 launch 策略）；想确定的并发语义，很多人转向 `std::thread` 或 executors 生态，P2300 正是想补这块标准化空白。
+- <span class="badge badge-anecdote">轶</span> **Anthony Williams 的 Boost.Thread 几乎是 C++11 线程的母本**：他从 2000 年代初维护 Boost.Thread，其 `future`/`promise`/`lock_guard` 设计被标准几乎照单全收。
 
 > 史料来源：[cppreference 线程支持库](https://en.cppreference.com/w/cpp/thread)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 本章把 C++11 引入、并经 C++20/23 打磨的**线程与异步原语**作为一个有机整体讲透：
 
@@ -44,7 +44,7 @@
 
 学完应能在**不写裸 `pthread`、不直接 `new` 线程、不手动管理 join** 的前提下，用标准库搭出健壮的并发代码，并理解它与 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)（并发内存模型）、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)（原子）、[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)（内存序）的边界关系。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 动机：单线程累加 vs 多线程累加（完整可编译）
 #include <iostream>
@@ -71,7 +71,7 @@ int main() {
 
 ---
 
-## ② 前置知识 [标准]
+## ② 前置知识 <span class="badge badge-std">标准</span>
 
 | 主题 | 为什么必须 | 链接 |
 |---|---|---|
@@ -85,18 +85,18 @@ int main() {
 
 ---
 
-## ③ 后续依赖 [标准]
+## ③ 后续依赖 <span class="badge badge-std">标准</span>
 
-- **协作取消**：第94章 [第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md) 的 `std::jthread` 在 `std::thread` 之上叠加 `stop_token`，其析构自动 `request_stop()` + `join`。
+- **协作取消**：第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md) 的 `std::jthread` 在 `std::thread` 之上叠加 `stop_token`，其析构自动 `request_stop()` + `join`。
 - **互斥与条件变量**：`packaged_task` 常配合 `std::mutex`/`std::condition_variable` 使用，见 [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)。
 - **原子与内存序**：共享状态内部用 `std::call_once` + `std::atomic` 实现结果发布，深入见 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)、[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)。
 - **执行器与线程池**：`std::async` 是"裸"异步；工业线程池见 [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) 与 [第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)。
 
 ---
 
-## ④ 知识图谱（ASCII） [标准]
+## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） [标准]]
+> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
 ```
                          ┌─────────────────────────────┐
                          │    std::thread (C++11)       │
@@ -128,7 +128,7 @@ int main() {
 
 ---
 
-## ⑤ Mermaid：四种异步的创建—消费路径 [标准]
+## ⑤ Mermaid：四种异步的创建—消费路径 <span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart TD
@@ -195,7 +195,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：thread 对象与底层 OS 线程 [实现·GCC15]
 
-> **示例 3** [难度 ★★★★☆] [主题：内存图：thread 对象与底层 O]
+> **示例 3** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图：thread 对象与底层 O
 ```
 栈上的 std::thread 对象 (sizeof ≈ 两个指针)
 ┌──────────────────────────────────────┐
@@ -218,9 +218,9 @@ classDiagram
 
 ---
 
-## ⑧ 生命周期图：future 与共享状态 [标准]
+## ⑧ 生命周期图：future 与共享状态 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★★☆☆☆] [主题：生命周期图：future 与共享状态]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：future 与共享状态
 ```
  producer 线程                共享状态                  consumer 线程
  ────────────               ───────────              ────────────
@@ -239,9 +239,9 @@ classDiagram
 
 ---
 
-## ⑨ 调用栈/时序图：std::async(launch::async) 的一次往返 [标准]
+## ⑨ 调用栈/时序图：std::async(launch::async) 的一次往返 <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：调用栈/时序图：std::async]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈/时序图：std::async
 ```
 main 线程          runtime 线程池/新线程          共享状态
     │                    │                            │
@@ -256,7 +256,7 @@ main 线程          runtime 线程池/新线程          共享状态
     │                    │  在 future 析构时等待        │
 ```
 
-> **示例 6** [难度 ★★★★☆] [主题：调用栈/时序图：std::async]
+> **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈/时序图：std::async
 ```cpp
 // ⑨ async(launch::async) 立即起线程，get() 等待结果（完整可编译）
 #include <iostream>
@@ -302,13 +302,13 @@ _Z16launch_and_countv:
 
 ---
 
-## ⑪ STL 联系：future 在容器/算法/范围中的角色 [标准]
+## ⑪ STL 联系：future 在容器/算法/范围中的角色 <span class="badge badge-std">标准</span>
 
 - `future`/`shared_future` 不能放进 `vector` 直接用（不可拷贝、`future` 不可拷贝只能移动）——用 `std::vector<std::future<int>>` + `std::move`。
 - 常与 `std::ranges` / `std::transform` 配合做"fan-out/fan-in"并行 map（见 ⑫ 工业案例）。
 - `std::future` 的阻塞语义与 `std::condition_variable` 的等待（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）实现原理同源：`future` 的共享状态用 `call_once` + 条件变量实现"就绪通知"。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：联系：future 在容器/算法/范]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：future 在容器/算法/范
 ```cpp
 // ⑪ 把一组 future 收集进 vector 并 wait（完整可编译）
 #include <iostream>
@@ -327,11 +327,11 @@ int main() {
 
 ---
 
-## ⑫ 工业案例：高并发 Web 服务器的"并行请求扇出/归并" [经验]
+## ⑫ 工业案例：高并发 Web 服务器的"并行请求扇出/归并" <span class="badge badge-exp">经验</span>
 
 真实服务器常需把一次外部请求拆成 N 个子任务并发执行（如并行查缓存、DB、远程服务），再合并结果。下面是基于 `std::async` + `std::future` 的**结构骨架**（非 Hello World，可运行、可扩展为真实 handler）。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：工业案例：高并发 Web 服务器的"]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：高并发 Web 服务器的"
 ```cpp
 // ⑫ 工业：一次请求并发调用三个下游服务并归并（完整可编译骨架）
 #include <iostream>
@@ -415,20 +415,20 @@ class _State_baseV2 {
 
 ---
 
-## ⑭ WG21 提案与标准背景 [标准]
+## ⑭ WG21 提案与标准背景 <span class="badge badge-std">标准</span>
 
 | 提案 | 标题 | 与本草关系 |
 |---|---|---|
 | N2249 (2007) | "Proposal for a Threading Library for C++" | C++11 `<thread>`/`<future>` 的雏形 |
 | N2660 | "Standard Library Extensions for Multithreading" | `async`/`future`/`promise` 入标准 |
 | P0443R14 / 后续 | "A Unified Executors Proposal" | 现代执行器（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)），是 `async` 的继任者 |
-| P0660 | "Stop Token and Joining Thread" | 第94章 [第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md) 的 `jthread`/`stop_token` |
+| P0660 | "Stop Token and Joining Thread" | 第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md) 的 `jthread`/`stop_token` |
 
 `[标准]`：`<thread>`/`<future>` 经 C++11 引入，C++14/17/20 主要修缮（如 `std::async` 与 `shared_future` 的细节、C++20 起支持 `std::jthread` 协作取消的并行）。`[经验]`：标准从未提供"强制杀线程"能力——这是刻意的：强制 kill 会跳过析构、破坏锁与 invariant（见第94章 ⑩）。
 
 ---
 
-## ⑮ 面试题 [标准]
+## ⑮ 面试题 <span class="badge badge-std">标准</span>
 
 1. **`std::thread` 析构若仍 `joinable()` 会怎样？** → 调用 `std::terminate()`（C++ 标准规定）。必须 `join()` 或 `detach()`。
 2. **`std::thread` 传参默认按值还是按引用？** → 按值 `decay` 拷贝；想传引用必须 `std::ref(x)`。
@@ -439,7 +439,7 @@ class _State_baseV2 {
 7. **`launch::deferred` 何时执行？** → 在 `get()`/`wait()` 处、在**调用 `get()` 的线程**上同步执行。
 8. **`packaged_task` 与 `async` 区别？** → 前者是"可手动调用的任务对象"（可延迟、可放进队列），后者是"立即/惰性启动的工厂"。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 [标准]]
+> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑮ 面试题佐证：future 第二次 get() 抛 no_state（完整可编译）
 #include <iostream>
@@ -458,7 +458,7 @@ int main() {
 
 ---
 
-## ⑯ 易错点 [经验]
+## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 
 - **忘记 join/detach 任何 thread 直接离开作用域** → `terminate()`。所有示例都已 join。
 - **误以为 `std::thread` 按引用传参** → 默认拷贝；用 `std::ref` 才是引用。
@@ -467,7 +467,7 @@ int main() {
 - **`future` 跨 `get()` 持有共享状态引用却提前析构** → 若仍有线程在写，状态生命周期依赖 `shared_ptr`，一般安全；但 `async` 的 future 析构会阻塞，小心 RAII 作用域。
 - **移动-only 类型（如 `std::unique_ptr`）直接传 thread** → 必须 `std::move`，否则拷贝失败。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：易错点 [经验]]
+> **示例 10** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 易错：deferred 在调用线程同步执行（完整可编译，注意计数线程id）
 #include <iostream>
@@ -487,7 +487,7 @@ int main() {
 
 ---
 
-## ⑰ FAQ [标准]
+## ⑰ FAQ <span class="badge badge-std">标准</span>
 
 **Q：`std::thread` 能返回结果吗？** A：不能。`thread` 只管执行；返回值请用 `future`/`promise` 或 `packaged_task`。
 
@@ -499,7 +499,7 @@ int main() {
 
 **Q：为什么 `future` 不能拷贝？** A：共享状态只有一份结果，"单一消费者"语义保证 `get()` 的一次性；多消费者请用 `shared_future`。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：[标准]]
+> **示例 11** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
 ```cpp
 // ⑰ FAQ 佐证：packaged_task 通过 get_future 取结果（完整可编译）
 #include <iostream>
@@ -515,7 +515,7 @@ int main() {
 
 ---
 
-## ⑱ 最佳实践 [经验]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
 1. 永远**立即**对 `std::thread` 决定 `join()` 或 `detach()`；优先用 RAII 包装（或第94章的 `jthread`）。
 2. 用 `std::async` 表达一次性并行任务时，**必须接收返回的 `future`** 并在合适处 `get()`。
@@ -524,7 +524,7 @@ int main() {
 5. 异常必须经由 `set_exception` 传播，不要在线程函数里吞异常（那会导致 `future.get()` 永远阻塞）。
 6. 真实高并发请用线程池 + 任务队列，而非每任务 `async`。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
+> **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑱ 最佳实践：移动-only 结果经 promise 跨线程传递（完整可编译）
 #include <iostream>
@@ -547,7 +547,7 @@ int main() {
 
 ---
 
-## ⑲ 性能分析（复杂度 / 缓存 / ABI） [经验]
+## ⑲ 性能分析（复杂度 / 缓存 / ABI） <span class="badge badge-exp">经验</span>
 
 **线程创建成本（示意，Win64 / i7 代际量级）**
 
@@ -559,7 +559,7 @@ int main() {
 | `future::get()` 命中已就绪 | ~数十 ns | 仅读 `shared_ptr` + 状态标志 |
 | `future::get()` 阻塞等待 | 取决于子线程 | 条件变量等待（µs 级上下文切换） |
 
-> **示例 13** [难度 ★★☆☆☆] [主题：性能分析]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
 ```cpp
 // ⑲ microbenchmark：线程创建 vs 任务本身（量级示意，完整可编译）
 #include <iostream>
@@ -587,21 +587,21 @@ int main() {
 
 ---
 
-## ⑳ 跨语言对比：线程与异步原语 [标准]
+## ⑳ 跨语言对比：线程与异步原语 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：`std::async` 默认启动策略不确定，可能根本没并行。** 你以为开了线程其实被延迟。请说明。
-   - [标准] 不指定策略时，`async` 的启动策略由实现决定，可能为 `deferred`（调用时才同步执行）。
-   - [引用] ISO/IEC 14882:2023 §[futures.async]（std::async 默认启动策略）；cppreference "std::async" 词条。
+   - <span class="badge badge-std">标准</span> 不指定策略时，`async` 的启动策略由实现决定，可能为 `deferred`（调用时才同步执行）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[futures.async]（std::async 默认启动策略）；cppreference "std::async" 词条。
 
 2. **真实场景：用 `std::launch::async` 强制真并行。** 你明确要求新线程执行任务。请说明。
-   - [标准] 传入 `std::launch::async` 保证任务在新线程异步执行（与 `deferred` 相反）。
-   - [引用] ISO/IEC 14882:2023 §[futures.async]（launch::async 语义）；cppreference "std::async" 词条。
+   - <span class="badge badge-std">标准</span> 传入 `std::launch::async` 保证任务在新线程异步执行（与 `deferred` 相反）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[futures.async]（launch::async 语义）；cppreference "std::async" 词条。
 
 3. **真实场景：由 `async` 返回的 future 析构会等待任务完成。** 你离开作用域卡住了一下。请说明责任。
-   - [标准] 与 `async`（launch::async）关联的 future 析构会阻塞直到共享状态就绪（即 join 任务）。
-   - [引用] ISO/IEC 14882:2023 §[futures.unique.future]（future 析构对 async 任务的等待）；cppreference "std::future::~future" 词条。
+   - <span class="badge badge-std">标准</span> 与 `async`（launch::async）关联的 future 析构会阻塞直到共享状态就绪（即 join 任务）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[futures.unique.future]（future 析构对 async 任务的等待）；cppreference "std::future::~future" 词条。
 
 | 维度 | C++ (`std::thread`/`future`/`async`) | Rust (`std::thread`/`tokio`/`join`) | Go (`goroutine`/`channel`) | Java (`Thread`/`Future`/`CompletableFuture`) |
 |---|---|---|---|---|
@@ -612,7 +612,7 @@ int main() {
 | 强制 kill | **无**（刻意） | **无** | `runtime.Goexit`（协作） | `Thread.stop()` **已废弃（危险）** |
 | 启动成本 | 高（系统调用） | 高（std）/低（tokio） | 极低（goroutine ~2KB 栈） | 高（平台）/低（虚拟线程） |
 
-`[标准]`：C++ 与 Rust 一致地**拒绝"强制杀线程"**，因为跨析构/锁的强制终止不可恢复；Go 用 `context` 做协作取消，Java 历史上有危险的 `Thread.stop()`（现已废弃）。这与第94章 [第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md) 的 `std::jthread` 协作取消模型一脉相承。
+`[标准]`：C++ 与 Rust 一致地**拒绝"强制杀线程"**，因为跨析构/锁的强制终止不可恢复；Go 用 `context` 做协作取消，Java 历史上有危险的 `Thread.stop()`（现已废弃）。这与第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md) 的 `std::jthread` 协作取消模型一脉相承。
 
 `[经验]`：从 Go/Java 来的工程师常期望"取消 = 立刻停"，在 C++ 里要转变为"取消 = 设置标志，由工作线程在检查点自行退出"。
 
@@ -624,7 +624,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：thread / async 与「C++ 的并发元年」
 
-[史] `std::thread` / `std::async` / `std::future` 随 C++11 进入标准，是 C++ 第一次把「多线程」纳入语言标准（此前只能依赖 POSIX pthread 或 Win32 API）。[史] 它们的设计由 Anthony Williams、Howard Hinnant 等推动，把「可 join 的 OS 线程」与「异步结果（`future`）」作为 First-class 类型，结束了各平台各写一套的历史。[轶] 一个著名坑是 `std::thread` 析构时会 `std::terminate` 如果仍 joinable（既没 `join` 也没 `detach`）——这一「严格但易炸」的设计让无数新手在异常路径上翻车。[评] C++11 的线程模型是「显式、值语义、RAII 优先」，与 Java 的托管线程、Go 的 goroutine 形成鲜明对比，也奠定了后续 `jthread` 的改进基础。
+<span class="badge badge-history">史</span> `std::thread` / `std::async` / `std::future` 随 C++11 进入标准，是 C++ 第一次把「多线程」纳入语言标准（此前只能依赖 POSIX pthread 或 Win32 API）。<span class="badge badge-history">史</span> 它们的设计由 Anthony Williams、Howard Hinnant 等推动，把「可 join 的 OS 线程」与「异步结果（`future`）」作为 First-class 类型，结束了各平台各写一套的历史。<span class="badge badge-anecdote">轶</span> 一个著名坑是 `std::thread` 析构时会 `std::terminate` 如果仍 joinable（既没 `join` 也没 `detach`）——这一「严格但易炸」的设计让无数新手在异常路径上翻车。<span class="badge badge-comment">评</span> C++11 的线程模型是「显式、值语义、RAII 优先」，与 Java 的托管线程、Go 的 goroutine 形成鲜明对比，也奠定了后续 `jthread` 的改进基础。
 
 ### ㉒.2 真实工程坐标：thread/async 活在哪些产品里
 
@@ -635,11 +635,11 @@ int main() {
 
 ### ㉒.3 生产踩坑：thread/async 的常见误用与陷阱
 
-[评] 最大坑是「数据竞争与未同步共享状态」——多个线程写同一变量而无 `mutex` / `atomic` 是 UB 的根源，且难以复现。另一坑是「`std::async(launch::async)` 每次都建线程」——在循环里疯狂 `async` 会瞬间耗尽线程/内存，应改用线程池；而默认 `launch::async | launch::deferred` 策略下，若从不取 `future` 则可能永不执行（deferred）。还有「`thread` 忘记 join/detach 导致 terminate」。
+<span class="badge badge-comment">评</span> 最大坑是「数据竞争与未同步共享状态」——多个线程写同一变量而无 `mutex` / `atomic` 是 UB 的根源，且难以复现。另一坑是「`std::async(launch::async)` 每次都建线程」——在循环里疯狂 `async` 会瞬间耗尽线程/内存，应改用线程池；而默认 `launch::async | launch::deferred` 策略下，若从不取 `future` 则可能永不执行（deferred）。还有「`thread` 忘记 join/detach 导致 terminate」。
 
 ### ㉒.4 与标准的互动：thread/async 与标准的演进
 
-[史] `std::thread` 等自 C++11 成为并发基石，C++20 引入 `std::jthread`（自动 join + 协作取消，见 ch94）解决了 `thread` 析构 terminate 的老问题。[评] 近年 WG21 在并行算法（`std::execution::par`）、`std::latch` / `std::barrier`（C++20）、原子与内存序细化上持续扩展，方向是「在保持零开销与显式控制的同时，提供更安全的 RAII 并发原语，减少 terminate/数据竞争类事故」。
+<span class="badge badge-history">史</span> `std::thread` 等自 C++11 成为并发基石，C++20 引入 `std::jthread`（自动 join + 协作取消，见 ch94）解决了 `thread` 析构 terminate 的老问题。<span class="badge badge-comment">评</span> 近年 WG21 在并行算法（`std::execution::par`）、`std::latch` / `std::barrier`（C++20）、原子与内存序细化上持续扩展，方向是「在保持零开销与显式控制的同时，提供更安全的 RAII 并发原语，减少 terminate/数据竞争类事故」。
 
 - **WG21 修订链**：`std::thread`/`async`/`future` 由 N2320（2007，Anthony Williams「Multi-threading Library for Standard C++」）在 C++11 引入；C++17 增加 `std::shared_mutex`（P0156R2，读写锁）；C++20 引入 `std::jthread`（自动 join + 协作取消，见 ch94，对应 P0660）与 `std::latch`/`std::barrier`（P1135R6，同步屏障），并细化 `std::atomic`/`memory_order`。
 - **ISO 条款**：线程与 Futures 规定于 ISO/IEC 14882 第 32 章（`[thread]`）。其设计理由（Design Intent）是「提供**最贴近 OS 的裸线程 + RAII 包装**，把『 Join/Detach 时机』『共享状态所有权（future/promise）』显式交给程序员」——委员会刻意不做自动 join（以免隐式阻塞析构），也因此留下 `std::thread` 析构 `terminate` 的坑，最终由 C++20 的 `std::jthread` 用 RAII 自动 join 修正。
@@ -651,11 +651,11 @@ int main() {
 - [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证线程库标准化历史的一手来源
 - [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 thread/future 工业实现参考
 
-## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） [标准]
+## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） <span class="badge badge-std">标准</span>
 
 下面 E1–E26 每个都是**完整可编译程序**（自带 `#include` 与 `int main`），覆盖本章所有原语，且每个 thread 都已 `join`/`detach` 以确保正常退出。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E1 std::thread 基本构造与 join
 #include <iostream>
@@ -668,7 +668,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E2 多个线程 join 的惯用法（vector<thread>）
 #include <iostream>
@@ -683,7 +683,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E3 detach 后台线程（必须确保被引用对象活得够久）
 #include <iostream>
@@ -698,7 +698,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E4 按值传参（参数被 decay 拷贝进线程）
 #include <iostream>
@@ -713,7 +713,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E5 按引用传参必须用 std::ref
 #include <iostream>
@@ -729,7 +729,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E6 移动-only 对象经 std::move 传入线程
 #include <iostream>
@@ -745,7 +745,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E7 成员函数作为线程入口（this 被拷贝/引用传入）
 #include <iostream>
@@ -761,7 +761,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E8 thread::id 与 hardware_concurrency（不依赖结果，仅演示 API）
 #include <iostream>
@@ -775,7 +775,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E9 简单 RAII 包装：作用域结束自动 join（thread 自身不可拷贝，用移动）
 #include <iostream>
@@ -795,7 +795,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E10 promise 设置值，future 在另一线程读取
 #include <iostream>
@@ -812,7 +812,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E11 promise 传播异常，future.get() 在消费线程重抛
 #include <iostream>
@@ -834,7 +834,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E12 packaged_task：把可调用体封装为"可设置结果的任务"
 #include <iostream>
@@ -852,7 +852,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E13 async(launch::async)：立即并行
 #include <iostream>
@@ -864,7 +864,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E14 async(launch::deferred)：惰性，在 get() 处同步执行
 #include <iostream>
@@ -877,7 +877,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E15 默认 async（async|deferred，由实现选择）
 #include <iostream>
@@ -889,7 +889,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E16 async 组合 policy 的陷阱演示：可能退化成 deferred（严格按标准）
 #include <iostream>
@@ -905,7 +905,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E17 shared_future：结果可被多个消费者读取
 #include <iostream>
@@ -924,7 +924,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E18 future 的 wait / wait_for 超时控制
 #include <iostream>
@@ -943,7 +943,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E19 call_once：只执行一次（多线程竞态安全）
 #include <iostream>
@@ -960,7 +960,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E20 并行 for（fan-out）：用 async 并行处理区间
 #include <iostream>
@@ -990,7 +990,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E21 async 返回移动-only 结果
 #include <iostream>
@@ -1005,7 +1005,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E22 promise 设置异常后再 get 重抛（含 error_code 风格）
 #include <iostream>
@@ -1021,7 +1021,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E23 packaged_task 的可调用体抛出异常也经 future 传播
 #include <iostream>
@@ -1038,7 +1038,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E24 shared_future 的副本语义（拷贝后才共享同一状态）
 #include <iostream>
@@ -1053,7 +1053,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E25 嵌套 async：任务内再发起子任务（完整可编译）
 #include <iostream>
@@ -1068,7 +1068,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录A：30+ 完整可编译示例]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
 ```cpp
 // E26 future::valid() 检查后再 get（避免 no_state）
 #include <iostream>
@@ -1129,7 +1129,7 @@ int main() {
 
 ## 底层视角：原子指令、内存屏障与上下文切换代价 [E: Low-level]
 
-[实测] `std::atomic` 的 `fetch_add` 在 x86-64 编译为 `lock xadd`；`lock` 前缀保证缓存行 `0x0040` 原子性。本机实测（AMD Ryzen 9 7940HX 32 核 / GCC 15.3.0 / Win64 / `std::chrono`，5×10⁷ 次，`_emp_bench/lock_latency.cpp`）：`fetch_add(relaxed)` **≈ 3.5 ns/op**；`std::mutex` 无争用 lock+unlock **≈ 7.6 ns/op**（约为原子操作的 2.2×）；双线程争用下 `fetch_add` 升至 ≈ 9.6 ns/op（缓存一致性流量放大）。`std::thread` 创建+join ≈ 125 µs/线程（clone 系统调用 + 栈分配）。无争用 mutex 与原子差距约 2×；**争用时** mutex 退化为 futex 等待（Linux 下 ≈ 1–5 µs 上下文切换，量级见 `[DOC-REPORT]` 内核文献——本机为 Win32 不编造数值）。
+<span class="badge badge-measured">实测</span> `std::atomic` 的 `fetch_add` 在 x86-64 编译为 `lock xadd`；`lock` 前缀保证缓存行 `0x0040` 原子性。本机实测（AMD Ryzen 9 7940HX 32 核 / GCC 15.3.0 / Win64 / `std::chrono`，5×10⁷ 次，`_emp_bench/lock_latency.cpp`）：`fetch_add(relaxed)` **≈ 3.5 ns/op**；`std::mutex` 无争用 lock+unlock **≈ 7.6 ns/op**（约为原子操作的 2.2×）；双线程争用下 `fetch_add` 升至 ≈ 9.6 ns/op（缓存一致性流量放大）。`std::thread` 创建+join ≈ 125 µs/线程（clone 系统调用 + 栈分配）。无争用 mutex 与原子差距约 2×；**争用时** mutex 退化为 futex 等待（Linux 下 ≈ 1–5 µs 上下文切换，量级见 `[DOC-REPORT]` 内核文献——本机为 Win32 不编造数值）。
 
 ```text
 lock xadd [rdi], eax    ; 原子自增，锁缓存行 0x0040
@@ -1146,7 +1146,7 @@ mfence                  ; 全内存屏障，约 10–20 ns
 
 ### 测试源码
 
-> **示例 40** [难度 ★★★☆☆] [主题：测试源码]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
 ```cpp
 #include <thread>; std::mutex mtx; std::atomic<int> cnt{0}; thread_local int tl=0;
 
@@ -1223,7 +1223,7 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)—— stop_token 为 thread/async 提供协作取消
+- **同模块相邻**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)—— stop_token 为 thread/async 提供协作取消
 - **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 这些并发设施位于 STL 但跨模块
 - **跨模块前置**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）—— 线程同步底层依赖 atomic
 - **跨模块前置**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）—— 内存序决定异步结果的可见性
@@ -1241,7 +1241,7 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <thread>
 #include <vector>
@@ -1257,9 +1257,9 @@ int main(){
 `detach()` 后线程在后台独立运行，若主线程先退出或引用了局部变量 → 悬垂/UB。
 `std::jthread` 析构时**自动 `request_stop()` + `join()`**，杜绝忘记 join 的泄漏。
 
-[标准] `thread` 析构若仍 joinable 则 `std::terminate`；`jthread`(C++20) 自动 join。
+<span class="badge badge-std">标准</span> `thread` 析构若仍 joinable 则 `std::terminate`；`jthread`(C++20) 自动 join。
 
-[引用] ISO/IEC 14882:2023 §[thread.thread]（joinable 析构 terminate 规则）与 §[thread.jthread]（C++20 自动 join 的协作线程）；见 cppreference "thread/thread"、"thread/jthread"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[thread.thread]（joinable 析构 terminate 规则）与 §[thread.jthread]（C++20 自动 join 的协作线程）；见 cppreference "thread/thread"、"thread/jthread"。
 
 </details>
 
@@ -1269,7 +1269,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 void fire_and_forget(){
     std::async(std::launch::async, [](){ heavy_work(); }); // future 是临时对象
@@ -1279,9 +1279,9 @@ void fire_and_forget(){
 `std::async` 的 `future` 析构会等待共享状态就绪（标准规定），所以上面"即发即忘"反而同步了。
 修复：真的想后台跑就用 `std::thread` 或显式 `std::packaged_task` + 长期持有 `future`。
 
-[标准] `async` 返回的 `future` 析构行为：若共享状态未就绪则阻塞（阻塞析构语义）。
+<span class="badge badge-std">标准</span> `async` 返回的 `future` 析构行为：若共享状态未就绪则阻塞（阻塞析构语义）。
 
-[引用] ISO/IEC 14882:2023 §[futures.async]（future 析构的阻塞语义）与 §[futures.unique_future]；见 cppreference "thread/async" 的"Notes"专段。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[futures.async]（future 析构的阻塞语义）与 §[futures.unique_future]；见 cppreference "thread/async" 的"Notes"专段。
 
 </details>
 
@@ -1291,7 +1291,7 @@ void fire_and_forget(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <atomic>
 std::atomic<int> counter{0};                 // 原子 RMW, 无竞争
@@ -1302,9 +1302,9 @@ void worker(){ for(int i=0;i<100000;++i) ++counter; } // 正确累加到 200000
 `atomic` 用 `lock xadd` 单指令完成；比 `mutex` 更轻，但若多个原子变量落在**同一缓存行**（false sharing），
 会因缓存行在核间反复失效而变慢——此时应 padding 隔离（见 ch110/ch111 无锁章节）。
 
-[标准] 数据竞争是 UB；`atomic` 提供无锁 RMW，`mutex` 提供临界区；false sharing 需缓存行对齐。
+<span class="badge badge-std">标准</span> 数据竞争是 UB；`atomic` 提供无锁 RMW，`mutex` 提供临界区；false sharing 需缓存行对齐。
 
-[引用] ISO/IEC 14882:2023 §[atomics]（无锁 RMW 与 `lock xadd`）；false sharing 属硬件缓存行效应，EASTL（github.com/electronicarts/EASTL）文档讨论了无锁容器设计；cppreference "atomic"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]（无锁 RMW 与 `lock xadd`）；false sharing 属硬件缓存行效应，EASTL（github.com/electronicarts/EASTL）文档讨论了无锁容器设计；cppreference "atomic"。
 
 </details>
 
@@ -1314,7 +1314,7 @@ void worker(){ for(int i=0;i<100000;++i) ++counter; } // 正确累加到 200000
 
 **步骤 1：朴素共享计数器（数据竞争 → 错误结果）**
 
-> **示例 44** [难度 ★★★★☆] [主题：附录：用法演绎 — 并行求和的数据竞]
+> **示例 44** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录：用法演绎 — 并行求和的数据竞
 ```cpp
 long counter = 0;
 auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // 读-改-写非原子
@@ -1327,7 +1327,7 @@ t1.join(); t2.join(); t3.join(); t4.join();
 
 **步骤 2：加 `std::mutex`（正确但较重）**
 
-> **示例 45** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 并行求和的数据竞]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 并行求和的数据竞
 ```cpp
 long counter = 0; std::mutex m;
 auto worker = [&](){ for(int i=0;i<50000;++i){ std::lock_guard<std::mutex> lk(m); ++counter; } };
@@ -1336,7 +1336,7 @@ auto worker = [&](){ for(int i=0;i<50000;++i){ std::lock_guard<std::mutex> lk(m)
 
 **步骤 3：改 `std::atomic<int>`（无锁、正确）**
 
-> **示例 46** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 并行求和的数据竞]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 并行求和的数据竞
 ```cpp
 std::atomic<long> counter{0};
 auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // lock xadd 单指令 RMW
@@ -1345,7 +1345,7 @@ auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // lock xadd 单指�
 
 **步骤 4：更好——每个线程私有计数，最后合并（无共享 → 无竞争）**
 
-> **示例 47** [难度 ★★★☆☆] [主题：附录：用法演绎 — 并行求和的数据竞]
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 并行求和的数据竞
 ```cpp
 std::vector<long> local(4, 0);
 std::vector<std::thread> ts;
@@ -1666,7 +1666,7 @@ future/promise/async 的核心是引用计数的共享状态。`_State_baseV2` �
 
 ### D4.9 编译验证
 
-> **示例 48** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <chrono>
 #include <future>
@@ -1880,7 +1880,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 49** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <thread>

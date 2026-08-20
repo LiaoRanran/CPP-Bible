@@ -13,25 +13,25 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C++ 在 1980 年代靠 `cfront` 火遍工业界，但"事实标准"掌握在厂商手里：同一份代码，在 AT&T、Borland、Microsoft、IBM 的编译器上行为各异。[史] Stroustrup 清楚，靠个人权威维护一门被千万人使用的语言不可持续。于是标准化工作先后启动：美国 ANSI 于 **1989 年**组建 X3J16，随后 **ISO 于 1991 年**成立 JTC1/SC22 下的 **WG21**，二者合并协作。[史] 动机很朴素：让语言规格由一份公开文档定义，任何人都能读到、都能参与修订，避免被单一公司绑架。
+C++ 在 1980 年代靠 `cfront` 火遍工业界，但"事实标准"掌握在厂商手里：同一份代码，在 AT&T、Borland、Microsoft、IBM 的编译器上行为各异。<span class="badge badge-history">史</span> Stroustrup 清楚，靠个人权威维护一门被千万人使用的语言不可持续。于是标准化工作先后启动：美国 ANSI 于 **1989 年**组建 X3J16，随后 **ISO 于 1991 年**成立 JTC1/SC22 下的 **WG21**，二者合并协作。<span class="badge badge-history">史</span> 动机很朴素：让语言规格由一份公开文档定义，任何人都能读到、都能参与修订，避免被单一公司绑架。
 
 ### 0.2 关键转折（编年）
 
-- **1990**：Stroustrup 与 Margaret Ellis 合著《The Annotated C++ Reference Manual》(ARM)，为标准化提供权威蓝本。[史]
-- **1998**：首个国际标准 ISO/IEC 14882:1998（C++98）发布，WG21 成为其维护者。[史]
-- **2000s 起**：委员会确立"每约三年一版"的节奏（C++03、C++11、C++14…）。[史]
-- 提案以 **N 编号**（如 N3337）公开存档于 open-std.org，会议记录同样公开。[史]
+- **1990**：Stroustrup 与 Margaret Ellis 合著《The Annotated C++ Reference Manual》(ARM)，为标准化提供权威蓝本。<span class="badge badge-history">史</span>
+- **1998**：首个国际标准 ISO/IEC 14882:1998（C++98）发布，WG21 成为其维护者。<span class="badge badge-history">史</span>
+- **2000s 起**：委员会确立"每约三年一版"的节奏（C++03、C++11、C++14…）。<span class="badge badge-history">史</span>
+- 提案以 **N 编号**（如 N3337）公开存档于 open-std.org，会议记录同样公开。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-WG21 的本质张力是"稳定"与"进步"。一方面，海量存量代码要求向后兼容、不能破坏 ABI；另一方面，现代特性（模块、概念、协程）又亟需引入。[史][评] 委员会由此形成"提案—评审—投票"的公开流程：任何成员（含个人）都可提交提案，经 EWG（语言）/LEWG（库）分组审查、全员投票才能进标准。这比"独裁式"设计更慢，却换来广泛共识与可追溯的历史记录。[评] 批评者[轶] 常说它"过于保守、动作迟缓"——这正是不靠一人拍板的代价。
+WG21 的本质张力是"稳定"与"进步"。一方面，海量存量代码要求向后兼容、不能破坏 ABI；另一方面，现代特性（模块、概念、协程）又亟需引入。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 委员会由此形成"提案—评审—投票"的公开流程：任何成员（含个人）都可提交提案，经 EWG（语言）/LEWG（库）分组审查、全员投票才能进标准。这比"独裁式"设计更慢，却换来广泛共识与可追溯的历史记录。<span class="badge badge-comment">评</span> 批评者<span class="badge badge-anecdote">轶</span> 常说它"过于保守、动作迟缓"——这正是不靠一人拍板的代价。
 
 ### 0.4 史料补遗与持续编年
 
-- [史] 提案编号从早期 `N` 工作草案号过渡到 `Pxxxx` 提案号（`wg21.link/Pxxxx` 可直接定位原文）；2020s 起重大特性几乎都先以 `P` 编号公开评审，例如反射 P2996、契约 P2900。
-- [史] 2023 年 C++23 定稿后，委员会即刻转向 C++26 列车；SG23（安全）、SG21（契约）、SG7（编译期/反射）成为最活跃的研究组，反映"内存安全"与"反射"已成当下主线。
-- [轶] 据记载，WG21 会议常以"周日全体投票"决定特性去留；法国曾对 C++20 Modules 设计投反对票，让发布推迟约三个月，是 ISO 国家体一票影响力的最鲜活案例。
-- [评] 委员会"保守慢热"的代价仍在：concepts 耗时约 15 年才落地，但也正因如此，进标准的特性少有"半成品"。
+- <span class="badge badge-history">史</span> 提案编号从早期 `N` 工作草案号过渡到 `Pxxxx` 提案号（`wg21.link/Pxxxx` 可直接定位原文）；2020s 起重大特性几乎都先以 `P` 编号公开评审，例如反射 P2996、契约 P2900。
+- <span class="badge badge-history">史</span> 2023 年 C++23 定稿后，委员会即刻转向 C++26 列车；SG23（安全）、SG21（契约）、SG7（编译期/反射）成为最活跃的研究组，反映"内存安全"与"反射"已成当下主线。
+- <span class="badge badge-anecdote">轶</span> 据记载，WG21 会议常以"周日全体投票"决定特性去留；法国曾对 C++20 Modules 设计投反对票，让发布推迟约三个月，是 ISO 国家体一票影响力的最鲜活案例。
+- <span class="badge badge-comment">评</span> 委员会"保守慢热"的代价仍在：concepts 耗时约 15 年才落地，但也正因如此，进标准的特性少有"半成品"。
 
 > 史料来源：WG21 提案与会议记录 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
@@ -56,7 +56,7 @@ WG21 = ISO/IEC JTC1/SC22/WG21, 即国际标准化组织/国际电工委员会 �
 
 ## ③ 从提案到标准：6阶段流程
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：从提案到标准：6阶段流程]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 从提案到标准：6阶段流程
 ```
 PxxxxR0 提交 → Study Group 初审(6-12月)
 → EWG/LEWG 审设计(12-24月)
@@ -107,7 +107,7 @@ PxxxxR0 提交 → Study Group 初审(6-12月)
 | P2900R7 | contracts | C++26 | 标准化契约编程 |
 | P2996R5 | reflection | C++26 | ~500页, 最大单个提案 |
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：关键提案与影响]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 关键提案与影响
 ```cpp
 #include <iostream>
 int main() {
@@ -129,8 +129,8 @@ A: 约5年（SG→EWG→CWG→plenary→ISO ballot）。最快的 ~18个月，�
 Q: 哪些公司参与WG21？
 A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代表(ANSI美国, BSI英国等)。
 
-[标准] 所有提案和会议记录在 open-std.org 公开。
-[经验] train model让C++每3年稳定演进，避免了"下一个C++0x"的13年等待。
+<span class="badge badge-std">标准</span> 所有提案和会议记录在 open-std.org 公开。
+<span class="badge badge-exp">经验</span> train model让C++每3年稳定演进，避免了"下一个C++0x"的13年等待。
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -138,7 +138,7 @@ A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代�
 
 ### ㉒.1 历史渊源补强：C++ 怎么变成"委员会驱动"的
 
-[史] 1990 年 ANSI 成立 X3J16 委员会，随后与 ISO 的 **SC22/WG21** 联合，开启了 C++ 的标准化；1998 年发布 C++98，2003 年 C++03 修订（仅技术勘误 + 一个值初始化修复）。[史] 关键转折是 2000 年代初的"C++0x"泥潭：原本预期 2010 年前发布，实际拖到 **2011 年 8 月 12 日** ISO 批准 C++11——这 13 年间隔（见 ch03/ch04）被公认为标准化流程的失败案例。[轶] 为终结"下一个 C++0x"，WG21 自 2012 年起改为"解耦（decoupled）"模型：以独立技术规范（TS，如 Concepts TS、Coroutines TS、Ranges TS、Modules TS）并行孵化，主干按 **3 年固定节奏**（C++14/17/20/23）发布，供应商可先用 `std::experimental` 试用。[评] 3 年节奏是 C++ 现代生命力的根基；但它也带来"特性碎片化"——同一特性在 TS 与正式标准间可能改名（如 Coroutines TS 的 `experimental::coroutine` → C++20 的 `<coroutine>`）。
+<span class="badge badge-history">史</span> 1990 年 ANSI 成立 X3J16 委员会，随后与 ISO 的 **SC22/WG21** 联合，开启了 C++ 的标准化；1998 年发布 C++98，2003 年 C++03 修订（仅技术勘误 + 一个值初始化修复）。<span class="badge badge-history">史</span> 关键转折是 2000 年代初的"C++0x"泥潭：原本预期 2010 年前发布，实际拖到 **2011 年 8 月 12 日** ISO 批准 C++11——这 13 年间隔（见 ch03/ch04）被公认为标准化流程的失败案例。<span class="badge badge-anecdote">轶</span> 为终结"下一个 C++0x"，WG21 自 2012 年起改为"解耦（decoupled）"模型：以独立技术规范（TS，如 Concepts TS、Coroutines TS、Ranges TS、Modules TS）并行孵化，主干按 **3 年固定节奏**（C++14/17/20/23）发布，供应商可先用 `std::experimental` 试用。<span class="badge badge-comment">评</span> 3 年节奏是 C++ 现代生命力的根基；但它也带来"特性碎片化"——同一特性在 TS 与正式标准间可能改名（如 Coroutines TS 的 `experimental::coroutine` → C++20 的 `<coroutine>`）。
 
 ### ㉒.2 真实工程坐标：标准流程对产业的影响
 
@@ -146,7 +146,7 @@ A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代�
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 编译器厂商 | GCC / Clang / MSVC（按 `__cpp_*` 特性宏与 DR 清单实现） | CI 用 `#if __cpp_concepts` 做版本守卫 | 三大主流编译器 | [STANDARD] SD-6 特性测试宏 |
+| 编译器厂商 | GCC / Clang / MSVC（按 `__cpp_*` 特性宏与 DR 清单实现） | CI 用 `#if __cpp_concepts` 做版本守卫 | 三大主流编译器 | <span class="badge badge-std">STANDARD</span> SD-6 特性测试宏 |
 | 提案即路线图 | Google / Meta / NVIDIA / Microsoft 提案（如 `std::format` P0645 / Victor Zverovich） | 产业痛点直接进标准 | 标准驱动产业 | P0645 / `std::expected` P0323 源自产业 |
 | 委员会分工 | EWG（核心语言）/ LWG（库）/ SG1（并发）/ SG16（Unicode） | 分层评审保零运行时依赖加库 | WG21 组织机制 | 分组评审是持续演进前提 |
 | Boost 试验田 | `boost::optional`→`std::optional` / `boost::filesystem`→`std::filesystem` / Networking TS 源自 `boost::asio` | 先产业打磨再进标准 | 标准化前哨 | Boost 缺陷报告常被 LWG 吸收 |
@@ -164,9 +164,9 @@ A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代�
 
 ### ㉒.4 与标准的互动：提案如何变成标准
 
-[史] 一个特性从想法到标准要过六阶段：Initial → Design → Evolution → Candidate → Draft → Final（见 ch02 附录 U 决策流）。提案用 **P 编号**（如 P1103 modules、P0912 coroutines）在 WG21 邮件（mailing）里公开评审；最终并入工作草案（Working Draft），由 ISO 成员国投票。[轶] 法国曾在 C++20 阶段反对 Modules 的导入/导出语法导致短期延迟——这显示"共识驱动"既是质量护栏也是速度代价。[评] 对工程师而言，最实用的互动是读 `isocpp.org/std/status` 与 `github.com/cplusplus/draft` 跟踪进度，而非等标准"落地"再学。
+<span class="badge badge-history">史</span> 一个特性从想法到标准要过六阶段：Initial → Design → Evolution → Candidate → Draft → Final（见 ch02 附录 U 决策流）。提案用 **P 编号**（如 P1103 modules、P0912 coroutines）在 WG21 邮件（mailing）里公开评审；最终并入工作草案（Working Draft），由 ISO 成员国投票。<span class="badge badge-anecdote">轶</span> 法国曾在 C++20 阶段反对 Modules 的导入/导出语法导致短期延迟——这显示"共识驱动"既是质量护栏也是速度代价。<span class="badge badge-comment">评</span> 对工程师而言，最实用的互动是读 `isocpp.org/std/status` 与 `github.com/cplusplus/draft` 跟踪进度，而非等标准"落地"再学。
 
-- [史] WG21 用 **P 编号**（提案，如 P0734 Concepts、P0912 Coroutines）与 **N 编号**（偏信息性/管理性文档）区分文件，所有邮件（mailing）公开于 open-std.org。[史] 提案进入工作草案（Working Draft）后，最终由 ISO 成员国投 **DIS（Draft International Standard）选票** 批准——法国在 C++20 阶段对 Modules 的反对票即走此流程，延迟约数月。[评] 工程师最实用的互动是订阅 `github.com/cplusplus/draft` 跟踪工作草案，而非等 ISO 正式发布再学。
+- <span class="badge badge-history">史</span> WG21 用 **P 编号**（提案，如 P0734 Concepts、P0912 Coroutines）与 **N 编号**（偏信息性/管理性文档）区分文件，所有邮件（mailing）公开于 open-std.org。<span class="badge badge-history">史</span> 提案进入工作草案（Working Draft）后，最终由 ISO 成员国投 **DIS（Draft International Standard）选票** 批准——法国在 C++20 阶段对 Modules 的反对票即走此流程，延迟约数月。<span class="badge badge-comment">评</span> 工程师最实用的互动是订阅 `github.com/cplusplus/draft` 跟踪工作草案，而非等 ISO 正式发布再学。
 
 ### ㉒.5 权威引用
 
@@ -194,7 +194,7 @@ GCC实现: 首个完整C++98(GCC 2.95,1999), 首个完整C++11(GCC 4.8,2013)
 Clang实现: 基于LLVM, 更好的错误信息, GCC ABI兼容
 MSVC实现: VS2022社区版免费, 完整C++23支持(17.8+)
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：编译器实现：GCC/Clang/MS]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器实现：GCC/Clang/MS
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC=GPLv3, Linux default; Clang=Apache2, LLVM native; MSVC=Windows default"<<std::endl;return 0;}
@@ -227,7 +227,7 @@ LTS: C++17(GCC8/Clang6/MSVC2019)
 嵌入式: C++14(arm-none-eabi-gcc 9+)
 安全关键: C++14(DO-178C certified)
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：版本选择决策树]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本选择决策树
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++17=minimum for new projects. C++20=recommended if compiler>=GCC10/Clang10/MSVC2019.16.10"<<std::endl;return 0;}
@@ -239,7 +239,7 @@ Google: 内部C++代码库20亿+行, 每次标准升级需5年规划。C++14→C
 LLVM: 作为C++编译器项目自身, 它最先采用新标准(C++17 in 2019, C++20 in 2023)
 Chromium: 6500万行C++, 版本迁移需1年+数千bot验证
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：++标准的工业影响]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++标准的工业影响
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Google=2B+ lines C++, 5yr per standard upgrade. LLVM=first adopter. Chromium=65M lines."<<std::endl;return 0;}
@@ -273,7 +273,7 @@ P1103R3(modules): Gabriel Dos Reis, 2018.08→C++20(2019). 4年(从2003初始算
 
 C++保护全球万亿行代码的投资。即使auto_ptr有严重缺陷,也保留了3个版本才移除(C++11废弃, C++17移除)。vector<bool>的特化从C++98存在至今(破坏兼容性的成本远超修复收益)
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：向后兼容]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 向后兼容
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ philosophy: zero-overhead, backward compatible, trust the programmer"<<std::endl;return 0;}
@@ -291,7 +291,7 @@ int main(){std::cout<<"C++ philosophy: zero-overhead, backward compatible, trust
 | 最快? | string_view(~18月) |
 | 谁决定方向? | Direction Group(Bjarne)设长期愿景 |
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：附录 J：C++标准化面试高频]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 J：C++标准化面试高频
 ```cpp
 #include <iostream>
 int main(){std::cout<<"WG21=ISO C++ committee, 3 meetings/year, train model every 3 years"<<std::endl;return 0;}
@@ -315,7 +315,7 @@ int main(){std::cout<<"WG21=ISO C++ committee, 3 meetings/year, train model ever
 | Reflection | P2996R5 | ~500页, 编译期类型自省 |
 | std::execution | P2300R7 | 统一异步模型(sender/receiver) |
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：附录 L：C++26展望与面试]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 L：C++26展望与面试
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++26=Contracts(P2900)+Reflection(P2996)+std::execution(P2300)"<<std::endl;return 0;}
@@ -348,7 +348,7 @@ WG21下设多个Study Group(SG), 每个聚焦特定领域:
 | SG21 | Contracts | 契约编程 | P2900(contracts) |
 | SG23 | Safety | 安全 | P3081(safety profiles) |
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：附录 M：WG21 Study Gr]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 M：WG21 Study Gr
 ```cpp
 #include <iostream>
 int main() {
@@ -384,7 +384,7 @@ WG21提案有严格的格式要求:
 | 加拿大 | SCC | 中(Bloomberg Toronto) |
 | 瑞士 | SNV | 低(EDG总部) |
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：附录 O：国家代表与投票权]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 O：国家代表与投票权
 ```cpp
 #include <iostream>
 int main() {
@@ -470,19 +470,19 @@ WG21维护测试套件: https://github.com/cplusplus/CWG. 每个编译器需通�
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：某特性从 TS 进入 IS 后宏名/取值变化。** 你过去依赖的 TS 宏在正式标准里改名。请说明判定实现的可靠手段。
-   - [标准] 实现按 SD-6 暴露特性测试宏（`__cpp_*` / `__cpp_lib_*`），其值表示特性被引入的版本号，是跨编译器判定首选。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（预定义与特性测试宏）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 实现按 SD-6 暴露特性测试宏（`__cpp_*` / `__cpp_lib_*`），其值表示特性被引入的版本号，是跨编译器判定首选。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（预定义与特性测试宏）；cppreference "Feature test macros" 词条。
 
 2. **真实场景：跨 C++17/20/23 维护同一份库头。** 你用 `__cplusplus` 做版本分支选择实现。请说明该宏的取值契约。
-   - [标准] `__cplusplus` 预定义宏的值标识语言版本（如 201703L / 202002L / 202302L），随标准演进单调递增。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（`__cplusplus` 宏）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> `__cplusplus` 预定义宏的值标识语言版本（如 201703L / 202002L / 202302L），随标准演进单调递增。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（`__cplusplus` 宏）；cppreference "Feature test macros" 词条。
 
 3. **真实场景：编译器 A 支持 concepts、编译器 B 还不支持。** 你不能在代码里假定“标准有就一定能用”。请说明正确的守门方式。
-   - [标准] 实现可部分实现新特性；应以特性测试宏与版本宏门控，而非假设所有目标编译器进度一致。
-   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为守门）；cppreference "Feature test macros" 词条。
+   - <span class="badge badge-std">标准</span> 实现可部分实现新特性；应以特性测试宏与版本宏门控，而非假设所有目标编译器进度一致。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为守门）；cppreference "Feature test macros" 词条。
 
-[标准] C++标准化=ISO/WG21, ~400成员, 每3年发布, ~5年从提案到标准。
-[经验] 理解标准化流程有助于预测新特性何时可用, 以及如何参与C++演进。
+<span class="badge badge-std">标准</span> C++标准化=ISO/WG21, ~400成员, 每3年发布, ~5年从提案到标准。
+<span class="badge badge-exp">经验</span> 理解标准化流程有助于预测新特性何时可用, 以及如何参与C++演进。
 
 ## 附录 Q：标准化速查
 
@@ -497,7 +497,7 @@ int main(){std::cout<<"C++ standardization: ISO/WG21, 3-year cadence, 400+ membe
 
 ## 附录 R：C++标准化代码示例
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：附录 R：C++标准化代码示例]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 R：C++标准化代码示例
 ```cpp
 #include <iostream>
 int main() {
@@ -511,7 +511,7 @@ int main() {
 
 ISO/IEC 14882约2200页。stable name: [alg.sort]/1=第25章第7.1节第1段。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：附录 W：ISO标准文档阅读]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 W：ISO标准文档阅读
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ISO 14882: ~2200 pages. Stable names for cross-ref."<<std::endl;return 0;}
@@ -531,7 +531,7 @@ int main(){std::cout<<"ISO 14882: ~2200 pages. Stable names for cross-ref."<<std
 WG21=ISO/IEC JTC1/SC22/WG21 | 3会/年 | 3年/版 | ~5年提案到标准
 ISO ballot=任何国家一票否决 | train model=2012年起每3年一版
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：附录 S：C++标准速查卡]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 S：C++标准速查卡
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++=ISO14882, WG21, 3yr cadence, 400+ members"<<std::endl;return 0;}
@@ -546,7 +546,7 @@ int main(){std::cout<<"C++=ISO14882, WG21, 3yr cadence, 400+ members"<<std::endl
 
 Eric Niebler(range-v3)是独立贡献者成功案例。C++20 ranges的每页spec都有他的贡献。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：附录 T：WG21参与指南]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 T：WG21参与指南
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/SG15 most open."<<std::endl;return 0;}
@@ -585,7 +585,7 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 
 把「硬编码 C++17」`-std=c++17` 升级为 CMake `target_compile_features(... PUBLIC cxx_std_20)` + CI 矩阵双标共存；用 `__cpp_xxx` 守护特性而非 `__cplusplus`；提交《编译器支持状态自评报告》作为升级前 checklist。
 
-## 最佳实践 [经验]
+## 最佳实践 <span class="badge badge-exp">经验</span>
 
 - **追踪特性落地用 `cxx_status` 而非新闻**：GCC/Clang/MSVC 官网的 `cxx_status.html` 是特性支持的唯一真相源；博客与会议 PPT 常滞后或夸大，迁移前先查该表＋编译器版本号。
 - **读提案读 `R0` 与 `Rfinal` 两端**：WG21 提案历次修订会改名、砍特性；只看最新版会错过「为什么被砍」，读首版能理解设计动机与权衡。
@@ -609,7 +609,7 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 
 核心是用特性测试宏 `__cpp_lib_expected` 探测本编译器的标准库是否提供了 `<expected>`，而不是用 `__cplusplus` 粗粒度判断——同一份 C++23 代码在没实现该特性的早期编译器上仍能回退。`<version>` 头集中提供所有 `__cpp_*` 宏。
 
-> **示例 15** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -649,9 +649,9 @@ int main() {
 }
 ```
 
-[标准] 特性测试宏由 WG21 论文 P0941R2 定稿，约定：库特性宏形如 `__cpp_lib_<feature>`，值采用 `YYYYMM` 格式（如 `202211L` 表示 2022-11 纳入），可用 `#if 宏 >= 值` 做精确能力探测。
+<span class="badge badge-std">标准</span> 特性测试宏由 WG21 论文 P0941R2 定稿，约定：库特性宏形如 `__cpp_lib_<feature>`，值采用 `YYYYMM` 格式（如 `202211L` 表示 2022-11 纳入），可用 `#if 宏 >= 值` 做精确能力探测。
 
-[经验] 永远用 `<version>` + `__cpp_*` 守护特性，而非 `__cplusplus`——后者只告诉你是 C++20 还是 C++23，不告诉编译器到底实现了没有（见本章附录 I 工业实战复盘）。`std::expected` 由提案 P0323R12 进入 C++23（IS），但 GCC13 / Clang16 / MSVC17.8 才陆续落地，正是"标准发布 ≠ 编译器支持"的典型案例。
+<span class="badge badge-exp">经验</span> 永远用 `<version>` + `__cpp_*` 守护特性，而非 `__cplusplus`——后者只告诉你是 C++20 还是 C++23，不告诉编译器到底实现了没有（见本章附录 I 工业实战复盘）。`std::expected` 由提案 P0323R12 进入 C++23（IS），但 GCC13 / Clang16 / MSVC17.8 才陆续落地，正是"标准发布 ≠ 编译器支持"的典型案例。
 
 </details>
 
@@ -667,7 +667,7 @@ int main() {
 
 判断"现在能不能用"不能看提案号，要看编译器是否已用特性测试宏暴露该特性。下面以 P2996 反射为例——它仍在 C++26 train 中、尚未成为 IS，因此绝大多数 C++23 编译器没有对应宏：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <iostream>
 #include <version>
@@ -683,9 +683,9 @@ int main() {
 }
 ```
 
-[标准] IS 即 ISO/IEC 14882 正式标准；TS 是 ISO/IEC TS 系列技术规范，二者都由 ISO 出版，但 TS 不具正式标准地位、可独立演进。
+<span class="badge badge-std">标准</span> IS 即 ISO/IEC 14882 正式标准；TS 是 ISO/IEC TS 系列技术规范，二者都由 ISO 出版，但 TS 不具正式标准地位、可独立演进。
 
-[经验] 读提案要读 `R0`（动机）与 `Rfinal`（最终设计）两端（见最佳实践）；讨论特性时引用 `PxxxxRy` 而非"那个反射的东西"，后人可在 `wg21.link/PxxxxRy` 直接定位原文。提案号是永久引用锚点，不是"能不能用"的依据。
+<span class="badge badge-exp">经验</span> 读提案要读 `R0`（动机）与 `Rfinal`（最终设计）两端（见最佳实践）；讨论特性时引用 `PxxxxRy` 而非"那个反射的东西"，后人可在 `wg21.link/PxxxxRy` 直接定位原文。提案号是永久引用锚点，不是"能不能用"的依据。
 
 </details>
 
@@ -703,7 +703,7 @@ C++ 不是由某家厂商说了算，而是 ISO 框架下的公开委员会治�
 
 下面用枚举与简单结构把这三层与提案流向建模出来：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -726,9 +726,9 @@ int main() {
 }
 ```
 
-[标准] WG21 = ISO/IEC JTC1/SC22/WG21；ISO Ballot 阶段各国家体平等投票，反对票触发延迟。
+<span class="badge badge-std">标准</span> WG21 = ISO/IEC JTC1/SC22/WG21；ISO Ballot 阶段各国家体平等投票，反对票触发延迟。
 
-[经验] "一票否决"只发生在最上层的 ISO 国家体投票，不在 WG21 内部——这正是委员会"保守慢热"的制度来源（见本章 §0.3 设计哲学之争）。理解这三层，就能解释为什么好特性常"晚到却更稳"，以及为什么二手博客常夸大进度（提案 ≠ 已进标准）。
+<span class="badge badge-exp">经验</span> "一票否决"只发生在最上层的 ISO 国家体投票，不在 WG21 内部——这正是委员会"保守慢热"的制度来源（见本章 §0.3 设计哲学之争）。理解这三层，就能解释为什么好特性常"晚到却更稳"，以及为什么二手博客常夸大进度（提案 ≠ 已进标准）。
 
 </details>
 

@@ -8,35 +8,35 @@
 > 从"char* 加一把眼泪"到值语义字符串，std::string 的演进史，半部是内存安全的血泪史。
 
 ### 0.1 起源（谁·何时·为何）
-C 的 `char*` / `char[]` 把长度、内存归属、拷贝语义全部推给程序员：缓冲区溢出、忘记 `\0`、深浅拷贝混乱，是无数安全漏洞的温床。[史] 早在 C++ 雏形期，cfront 等实现就自带过 `String` 类；而 STL 把 `basic_string<CharT>` 做成模板，统一了各种字符类型的字符串，并把"值语义 + 自动管理"作为第一原则。[史]
+C 的 `char*` / `char[]` 把长度、内存归属、拷贝语义全部推给程序员：缓冲区溢出、忘记 `\0`、深浅拷贝混乱，是无数安全漏洞的温床。<span class="badge badge-history">史</span> 早在 C++ 雏形期，cfront 等实现就自带过 `String` 类；而 STL 把 `basic_string<CharT>` 做成模板，统一了各种字符类型的字符串，并把"值语义 + 自动管理"作为第一原则。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
-- C++98：`std::string` 标准化，但各厂商实现并不统一——写时复制（COW）一度是主流优化（libstdc++ 老版本即采用）。[史]
-- C++11：标准明确要求连续存储，并事实上**禁止了 COW**，因为多线程下引用计数的原子开销与安全性成了新麻烦。[史]
+- C++98：`std::string` 标准化，但各厂商实现并不统一——写时复制（COW）一度是主流优化（libstdc++ 老版本即采用）。<span class="badge badge-history">史</span>
+- C++11：标准明确要求连续存储，并事实上**禁止了 COW**，因为多线程下引用计数的原子开销与安全性成了新麻烦。<span class="badge badge-history">史</span>
 - C++11 后：引入 SSO（短字符串优化）让短串免堆分配；C++17 补上 `string_view` 作非拥有视图。
 
 ### 0.3 设计哲学之争
-COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎免费，却在多线程与"意外共享"上埋雷；C++11 选择"连续存储 + 禁止 COW + SSO"，用更可预测的局部性换掉隐式共享的玄学。[评] 另一争论是"为何不直接用 `vector<char>`"——`string` 额外保证以 `\0` 结尾、提供 `c_str()` 与 C 互操作，这是它与容器的根本分工。[评]
+COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎免费，却在多线程与"意外共享"上埋雷；C++11 选择"连续存储 + 禁止 COW + SSO"，用更可预测的局部性换掉隐式共享的玄学。<span class="badge badge-comment">评</span> 另一争论是"为何不直接用 `vector<char>`"——`string` 额外保证以 `\0` 结尾、提供 `c_str()` 与 C 互操作，这是它与容器的根本分工。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
 > 0.2 停在 C++17 补上 `string_view` 作非拥有字符视图，且 C++11 已禁止 COW、普及 SSO。SSO 阈值与编码是后续支线。
 
-- [史] **SSO 阈值各实现不同**：典型的短串（约 15–22 字符，含结尾 `\0`）留在对象内栈缓冲、免堆分配；libstdc++、libc++、MS STL 的内部阈值与布局各异，导致"短串是否触发堆分配"在跨库下表现不一。
-- [史] **`std::u8string` 在 C++20 修正语义**：C++20 明确 `std::u8string` 即 `basic_string<char8_t>`，与 UTF-8 字节序列对齐；此前 `char` 既当 ASCII 又当 UTF-8 的模糊一直是编码 bug 温床。
-- [评] **编码处理仍是开放战场**：标准至今未"内建 Unicode 语义"，`string` 仍是字节序列；关于是否引入 `text`/Unicode 感知字符串的提案反复出现却未落地，理由是 Unicode 复杂性远超库能简单封装。
-- [轶] **一个历史趣闻**：COW 被禁的直接推手之一是多线程——引用计数 `string` 在并行下要么付出原子开销、要么悄悄共享引发数据竞争，C++11 干脆用"连续存储 + SSO"换掉这套玄学。
+- <span class="badge badge-history">史</span> **SSO 阈值各实现不同**：典型的短串（约 15–22 字符，含结尾 `\0`）留在对象内栈缓冲、免堆分配；libstdc++、libc++、MS STL 的内部阈值与布局各异，导致"短串是否触发堆分配"在跨库下表现不一。
+- <span class="badge badge-history">史</span> **`std::u8string` 在 C++20 修正语义**：C++20 明确 `std::u8string` 即 `basic_string<char8_t>`，与 UTF-8 字节序列对齐；此前 `char` 既当 ASCII 又当 UTF-8 的模糊一直是编码 bug 温床。
+- <span class="badge badge-comment">评</span> **编码处理仍是开放战场**：标准至今未"内建 Unicode 语义"，`string` 仍是字节序列；关于是否引入 `text`/Unicode 感知字符串的提案反复出现却未落地，理由是 Unicode 复杂性远超库能简单封装。
+- <span class="badge badge-anecdote">轶</span> **一个历史趣闻**：COW 被禁的直接推手之一是多线程——引用计数 `string` 在并行下要么付出原子开销、要么悄悄共享引发数据竞争，C++11 干脆用"连续存储 + SSO"换掉这套玄学。
 
 > 史料来源：[cppreference std::string](https://en.cppreference.com/w/cpp/string/basic_string)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
-## ① 概述：std::string 的设计哲学 [标准]
+## ① 概述：std::string 的设计哲学 <span class="badge badge-std">标准</span>
 
 [第80章　array 与固定数组](Book/part07_stl/ch80_array.md)
 [第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)
 
 `std::string` 是 `std::basic_string<char>` 的特化，承载"值语义优先、零开销抽象、与 C 互操作"三原则。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：std::string 的设计]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：std::string 的设计
 ```cpp
 // ① 最简形态：值语义，拷贝即独立副本
 #include <string>
@@ -61,7 +61,7 @@ flowchart TD
     S -->|"size 大"| LARGE
 ```
 
-## ② 三种存储策略的历史演进 [标准]
+## ② 三种存储策略的历史演进 <span class="badge badge-std">标准</span>
 
 `std::string` 的实现经历过三代：
 
@@ -69,7 +69,7 @@ flowchart TD
 2. **SSO（Small String Optimization，短字符串优化）**：GCC 5.1 起默认，已被所有主流实现采用。
 3. **总是堆指针（无优化）**：少数嵌入式实现。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：三种存储策略的历史演进 [标准]]
+> **示例 2** [难度 ★★☆☆☆] [主题：三种存储策略的历史演进 <span class="badge badge-std">标准</span>]
 ```cpp
 #include <string>
 // ② COW 已被标准禁止：C++11 起要求 string 满足"可装入容器 + 独立拷贝"
@@ -81,11 +81,11 @@ std::string y = x;          // C++11 起：必定深拷贝（独立堆块）
 - `[标准]`：C++11 因"别名安全"与"容器一致性"要求，**禁止 COW**。GCC 5.1（libstdc++ 5）移除了 `std::string` 的 COW。
 - `[经验]`：现代代码不要再假设 `string` 拷贝是廉价的——长串拷贝是 O(n) 堆分配。
 
-## ③ 对象内存布局：std::string 的字节级结构 [实现]
+## ③ 对象内存布局：std::string 的字节级结构 <span class="badge badge-impl">实现</span>
 
 libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 容量"结构。核心类型 `std::__cxx11::basic_string`（新 ABI）：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：对象内存布局：std::string]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对象内存布局：std::string
 ```cpp
 // ③ libstdc++ 概念布局（来自 bits/basic_string.h）
 // struct basic_string {
@@ -104,11 +104,11 @@ libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 
 - `[实现]`：SSO 通过一个**联合体**实现——短串用 `_M_local_buf`，长串用 `_M_allocated_capacity` + 堆指针。两者共享同一段内存，靠 `_M_string_length` 与指针比较区分。
 - `[经验]`：这就是为什么 `sizeof(std::string)` 在 64 位上通常是 **32 字节**（指针 8 + 长度 8 + 联合体 16），而不是"指针大小"。
 
-## ④ SSO 短字符串优化：阈值与内联缓冲 [实现]
+## ④ SSO 短字符串优化：阈值与内联缓冲 <span class="badge badge-impl">实现</span>
 
 SSO 的核心是常数容量内联缓冲，避免短串的堆分配。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：短字符串优化：阈值与内联缓冲 [实现]
+> **示例 4** [难度 ★★☆☆☆] [主题：短字符串优化：阈值与内联缓冲 <span class="badge badge-impl">实现</span>
 ```cpp
 // ④ SSO 容量：libstdc++ 固定 15 字节（char）
 #include <string>
@@ -126,9 +126,9 @@ int main() {
 - `[实现]`：`bits/basic_string.h:213` 定义 `enum { _S_local_capacity = 15 / sizeof(_CharT) }`；`217` 定义 `_M_local_buf[_S_local_capacity + 1]`。对 `char` 而言内联缓冲可容纳 **15 个字符 + 1 个 '\0'**。
 - `[实现-推断]`：MSVC 的 SSO 容量为 **15 字节**，Clang/libc++ 为 **22 字节**（容量因实现而异，但机制相同）。
 
-## ⑤ 构造 / 赋值 / 析构的生命周期 [标准]
+## ⑤ 构造 / 赋值 / 析构的生命周期 <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：构造 / 赋值 / 析构的生命周期 ]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造 / 赋值 / 析构的生命周期
 ```cpp
 #include <utility>
 #include <string>
@@ -144,11 +144,11 @@ void f() {
 - `[标准]`：移动构造为常数时间（窃取指针/内联缓冲），不分配堆。
 - `[经验]`：返回 `std::string` 时直接 `return s;`（NRVO/移动），不要 `return std::move(s);`（阻碍 RVO，见 part10 ch117）。
 
-## ⑥ 小字符串判定：_M_string_length > _S_local_capacity [实现]
+## ⑥ 小字符串判定：_M_string_length > _S_local_capacity <span class="badge badge-impl">实现</span>
 
 SSO 模式的切换靠长度与阈值的比较。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：小字符串判定：Mstringleng]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 小字符串判定：Mstringleng
 ```cpp
 // ⑥ 判定逻辑（libstdc++ 概念）
 // bool is_local() const {
@@ -160,9 +160,9 @@ SSO 模式的切换靠长度与阈值的比较。
 - `[实现]`：`bits/basic_string.h:277` 有 `if (_M_string_length > _S_local_capacity)` 分支，用于在扩容/取数据时决定走堆还是内联。
 - `[平台·x86-64]`：这是 SSO 的"开关"——所有读 `data()` 的操作都要先判断当前是本地还是堆。
 
-## ⑦ 拷贝 / 移动语义与 COW 陷阱 [标准]
+## ⑦ 拷贝 / 移动语义与 COW 陷阱 <span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★★☆☆☆] [主题：拷贝 / 移动语义与 COW 陷阱 ]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 拷贝 / 移动语义与 COW 陷阱
 ```cpp
 // ⑦ 拷贝深、移动浅（窃取）
 #include <string>
@@ -178,9 +178,9 @@ void g() {
 - `[标准]`：C++11 起 `std::string` 的拷贝构造函数必须产生**独立深拷贝**（COW 被禁）。
 - `[经验]`：在热路径上传递 `std::string` 大对象用 `const std::string&` 或 `std::string_view`（见 ⑫），避免无谓深拷贝。
 
-## ⑧ 扩容策略与迭代器失效 [标准]
+## ⑧ 扩容策略与迭代器失效 <span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：扩容策略与迭代器失效 [标准]]
+> **示例 8** [难度 ★☆☆☆☆] [主题：扩容策略与迭代器失效 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧ push_back/append 触发扩容，容量按几何增长（通常 ×2）
 #include <string>
@@ -202,9 +202,9 @@ int main() {
 - `[标准]`：追加导致 `size() > capacity()` 时重新分配，capacity 通常按 ≥1.5 或 2 倍增长。
 - `[标准]`：所有指向 `std::string` 的**迭代器/指针/引用**在导致重新分配的操作后**全部失效**（与 `std::vector` 相同）。
 
-## ⑨ data() / c_str() 与 null 终止 [标准]
+## ⑨ data() / c_str() 与 null 终止 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：str() 与 null 终止 [标]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · str() 与 null 终止 [标
 ```cpp
 // ⑨ c_str() 与 data() 在 C++11 后都返回以 '\0' 结尾的连续缓冲
 #include <string>
@@ -220,9 +220,9 @@ int main() {
 - `[标准]`：C++11 起 `data()` 与 `c_str()` 都返回 null 终止的 `char*`；`operator[]` 允许写 `s[0]`，且 `s[s.size()]` 是合法的 `'\0'`。
 - `[经验]`：不要缓存 `c_str()` 返回的指针跨可能触发重分配的操作——重分配后指针悬空。
 
-## ⑩ 拼接与性能：operator+ vs += vs append [标准]
+## ⑩ 拼接与性能：operator+ vs += vs append <span class="badge badge-std">标准</span>
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：拼接与性能：operator+ vs]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 拼接与性能：operator+ vs
 ```cpp
 // ⑩ 链式 operator+ 产生多次临时；+=/append 就地复用
 #include <string>
@@ -240,9 +240,9 @@ std::string fast(const std::string& a, const std::string& b, const std::string& 
 - `[经验]`：拼接多个串时，**先 `reserve` 再用 `+=`/`append`** 可消除重分配；避免 `a + b + c + d` 长链。
 - `[平台·x86-64]`：`std::string` 的 `+` 无法像表达式模板那样合并（字符串不是数值类型），故链式为 O(n²) 级临时。
 
-## ⑪ 与 char* 互操作及生命周期陷阱 [标准]
+## ⑪ 与 char* 互操作及生命周期陷阱 <span class="badge badge-std">标准</span>
 
-> **示例 11** [难度 ★★☆☆☆] [主题：与 char 互操作及生命周期陷阱 ]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 char 互操作及生命周期陷阱
 ```cpp
 // ⑪ 常见悬空陷阱
 #include <string>
@@ -258,9 +258,9 @@ const char* good() {
 
 - `[经验]`：绝不返回 `c_str()`/`data()` 跨 `std::string` 生命周期。需要返回 C 字符串时用 `std::string` 值返回，由调用方取 `c_str()`。
 
-## ⑫ std::string_view：零拷贝视图（C++17） [标准]
+## ⑫ std::string_view：零拷贝视图（C++17） <span class="badge badge-std">标准</span>
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：view：零拷贝视图（C++17） ]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · view：零拷贝视图（C++17）
 ```cpp
 // ⑫ string_view 不拥有存储，仅指向现有缓冲区
 #include <string_view>
@@ -280,9 +280,9 @@ int main() {
 - `[标准]`：`std::string_view` 是 `basic_string_view<char>`，仅含 `{ptr, size}`，**不分配、不拥有**。
 - `[经验]`：函数参数优先用 `std::string_view`（只读时）；需要修改或长期持有才用 `std::string`。
 
-## ⑬ 编码与 Unicode 注意事项 [经验]
+## ⑬ 编码与 Unicode 注意事项 <span class="badge badge-exp">经验</span>
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：编码与 Unicode 注意事项 []
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编码与 Unicode 注意事项 [
 ```cpp
 // ⑬ std::string 不感知编码，只存字节序列
 #include <string>
@@ -292,11 +292,11 @@ std::string utf8 = "中文";          // 存 UTF-8 字节（6 字节），size()
 
 - `[经验]`：不要对可能含多字节 UTF-8 的字符串用 `s[i]` 当"字符"处理；`size()` 是**字节数**。Windows 宽接口用 `std::wstring`（`wchar_t`，UTF-16）。
 
-## ⑭ std::string 的 ABI 稳定性（libstdc++ 双 ABI） [实现]
+## ⑭ std::string 的 ABI 稳定性（libstdc++ 双 ABI） <span class="badge badge-impl">实现</span>
 
 libstdc++ 存在新旧两套 `std::string` ABI：
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：的 ABI 稳定性]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的 ABI 稳定性
 ```cpp
 #include <string>
 // ⑭ 旧 ABI（pre-GCC5）：COW，符号在 std:: 命名空间
@@ -307,9 +307,9 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 - `[平台·x86-64]`：GCC 5 引入新 ABI 后，`std::string` 符号从 `std::string` 变为 `std::__cxx11::basic_string<char>`。链接第三方库时要注意 ABI 一致（`_GLIBCXX_USE_CXX11_ABI`）。
 
-## ⑮ 真实 libstdc++ 源码逐行：`basic_string.h` 的 SSO 缓冲 [实现]
+## ⑮ 真实 libstdc++ 源码逐行：`basic_string.h` 的 SSO 缓冲 <span class="badge badge-impl">实现</span>
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码逐行：
 ```cpp
 // 文件：bits/basic_string.h （GCC 13.1.0, libstdc++）
 // 行号：213
@@ -324,9 +324,9 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 - `_M_local_buf`：SSO 内联存储，短串直接落在此处，零堆分配。
 - `277` 行的长度比较是"本地 vs 堆"模式的运行时开关。
 
-## ⑯ 真实源码：堆分配路径 `_M_create` / `_M_destroy` [实现]
+## ⑯ 真实源码：堆分配路径 `_M_create` / `_M_destroy` <span class="badge badge-impl">实现</span>
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：真实源码：堆分配路径 Mcreate]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实源码：堆分配路径 Mcreate
 ```cpp
 // 文件：bits/basic_string.h （GCC 13.1.0, libstdc++）
 // 行号：355
@@ -339,9 +339,9 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 - 构造/扩容时若超 SSO 阈值，调用 `_M_create` 经分配器 `allocate` 取得堆块；析构时若 `_M_string_length > _S_local_capacity` 才 `deallocate`。
 - `[实现]`：SSO 模式下析构**不调用释放器**——这是 SSO 性能优势的来源（短串无堆回收开销）。
 
-## ⑰ 真实源码：COW 的废弃（libstdc++ 5.1） [实现]
+## ⑰ 真实源码：COW 的废弃（libstdc++ 5.1） <span class="badge badge-impl">实现</span>
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：真实源码：COW 的废弃]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实源码：COW 的废弃
 ```cpp
 #include <string>
 // 文件：bits/basic_string.h （GCC 13.1.0, libstdc++）
@@ -363,9 +363,9 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 - `[平台·x86-64]`：SSO 容量因实现不同，**不要依赖具体数值**。可移植代码应只假设"短串不分配堆"这一行为。
 - `[平台·x86-64]`：三者都保证 `std::string` 满足连续容器与独立深拷贝，差异仅在内部布局与 SSO 阈值。
 
-## ⑲ microbenchmark：SSO 命中 vs 堆分配 [经验]
+## ⑲ microbenchmark：SSO 命中 vs 堆分配 <span class="badge badge-exp">经验</span>
 
-> **示例 18** [难度 ★★☆☆☆] [主题：命中 vs 堆分配 [经验]]
+> **示例 18** [难度 ★★☆☆☆] [主题：命中 vs 堆分配 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 实测：短串（SSO）构造远快于长串（堆分配）
 #include <string>
@@ -392,7 +392,7 @@ int main() {
 
 ## 补充完整可编译示例（string）
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S1 多种构造
 #include <string>
@@ -402,7 +402,7 @@ std::string s3(5, 'x');           // "xxxxx"
 std::string s4 = std::string("hi") + "!";  // "hi!"
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S2 substr / find
 #include <string>
@@ -416,7 +416,7 @@ int f() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S3 replace / erase / insert
 #include <string>
@@ -429,7 +429,7 @@ int g() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S4 compare / operator< 等
 #include <string>
@@ -439,7 +439,7 @@ bool cmp() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S5 resize / shrink_to_fit
 #include <string>
@@ -451,7 +451,7 @@ void h() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S6 front / back / 遍历
 #include <string>
@@ -462,7 +462,7 @@ int sum_ascii(const std::string& s) {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S7 数字 <-> 字符串
 #include <string>
@@ -475,7 +475,7 @@ int conv() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S8 反向遍历
 #include <string>
@@ -484,7 +484,7 @@ void rev(const std::string& s) {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S9 拼接不同来源并 reserve
 #include <string>
@@ -496,7 +496,7 @@ std::string build() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S10 清空与 empty
 #include <string>
@@ -507,7 +507,7 @@ bool t() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S11 子串查找全部出现
 #include <string>
@@ -521,7 +521,7 @@ std::vector<size_t> all_pos(const std::string& s, const std::string& pat) {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（string）
 ```cpp
 // S12 string 与 string_view 互转（零拷贝切片）
 #include <string>
@@ -538,21 +538,21 @@ int use_sv() {
 }
 ```
 
-## ⑳ 跨语言对比：对象模型哲学 [标准]
+## ⑳ 跨语言对比：对象模型哲学 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：C++11 起 `std::string` 不再允许写时复制（COW）。** 你过去依赖 COW 的库在新标准下行为变了。请说明。
-   - [标准] C++11 起 `basic_string` 必须连续且可独立修改，禁止写时复制；否则破坏 `&s[0]` 的稳定性。
-   - [引用] ISO/IEC 14882:2023 §[strings]（basic_string，C++11 去除 COW）；cppreference "std::string" 词条。
+   - <span class="badge badge-std">标准</span> C++11 起 `basic_string` 必须连续且可独立修改，禁止写时复制；否则破坏 `&s[0]` 的稳定性。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[strings]（basic_string，C++11 去除 COW）；cppreference "std::string" 词条。
 
 2. **真实场景：`data()` 与 `c_str()` 都含 null 结尾（C++11 起）。** 你给 C API 传 `data()` 也能当 C 串。请说明。
-   - [标准] C++11 起 string 连续存储且始终以 null 结尾；`data()` 与 `c_str()` 返回同一含 null 的缓冲区。
-   - [引用] ISO/IEC 14882:2023 §[string.access]（连续 + null 结尾）；cppreference "std::string::data / c_str" 词条。
+   - <span class="badge badge-std">标准</span> C++11 起 string 连续存储且始终以 null 结尾；`data()` 与 `c_str()` 返回同一含 null 的缓冲区。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.access]（连续 + null 结尾）；cppreference "std::string::data / c_str" 词条。
 
 3. **真实场景：小字符串优化（SSO）避免堆分配。** 你理解短字符串存在对象内。请说明条款边界。
-   - [标准] 实现可将短字符串内联存储于对象自身（SSO），避免动态分配——属实现细节，标准不规定阈值。
-   - [引用] ISO/IEC 14882:2023 §[strings]（实现可内联短字符串）；cppreference "Small string optimization" 词条。
+   - <span class="badge badge-std">标准</span> 实现可将短字符串内联存储于对象自身（SSO），避免动态分配——属实现细节，标准不规定阈值。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[strings]（实现可内联短字符串）；cppreference "Small string optimization" 词条。
 
 | 语言 | 字符串类型 | 存储模型 | 拷贝语义 |
 |---|---|---|---|
@@ -571,7 +571,7 @@ int use_sv() {
 
 ### ㉒.1 历史渊源补强：std::string 与 COW/SSO 的世纪之争
 
-[史] `std::basic_string` 随 C++98 进入标准，早期多数实现（如 GCC 4.x 的 libstdc++ COW 实现）采用「写时复制（Copy-On-Write）」以避免深拷贝开销。[史] 但 C++11 标准明确禁止 COW（要求 `data()` 返回可写连续缓冲、且 `c_str()` 与 `data()` 一致），迫使实现转向「短字符串优化（SSO）」：短串直接内联在对象内、不堆分配。[轶] 一个著名事故是 GCC 5.1 的 dual-ABI 切换——旧 COW `std::string` 与新 SSO `std::__cxx11::string` 符号不兼容，导致大量旧库链接失败。[评] SSO 的胜利说明：在现代 CPU 上，「避免堆分配」比「避免拷贝」更划算，这也是 `std::string` 至今仍是性能标杆的原因。
+<span class="badge badge-history">史</span> `std::basic_string` 随 C++98 进入标准，早期多数实现（如 GCC 4.x 的 libstdc++ COW 实现）采用「写时复制（Copy-On-Write）」以避免深拷贝开销。<span class="badge badge-history">史</span> 但 C++11 标准明确禁止 COW（要求 `data()` 返回可写连续缓冲、且 `c_str()` 与 `data()` 一致），迫使实现转向「短字符串优化（SSO）」：短串直接内联在对象内、不堆分配。<span class="badge badge-anecdote">轶</span> 一个著名事故是 GCC 5.1 的 dual-ABI 切换——旧 COW `std::string` 与新 SSO `std::__cxx11::string` 符号不兼容，导致大量旧库链接失败。<span class="badge badge-comment">评</span> SSO 的胜利说明：在现代 CPU 上，「避免堆分配」比「避免拷贝」更划算，这也是 `std::string` 至今仍是性能标杆的原因。
 
 ### ㉒.2 真实工程坐标：string 活在哪些产品里
 
@@ -582,11 +582,11 @@ int use_sv() {
 
 ### ㉒.3 生产踩坑：string 的常见误用与陷阱
 
-[评] 最经典的是「`c_str()` 返回指针的生命周期」：调用 `c_str()` 后若 `string` 被修改/移动/销毁，指针即悬空。其次是「隐式 `std::string` 深拷贝」——在热点里把 `string` 按值传来传去会触发 O(n) 堆分配，应改用 `string_view`（C++17）或 `const string&`、`string&&`。还有「自增拼接 `s += a + b + c`」反复分配，应合并或用 `reserve`。以及双 ABI 混链导致的 `std::__cxx11::basic_string` 符号不匹配。
+<span class="badge badge-comment">评</span> 最经典的是「`c_str()` 返回指针的生命周期」：调用 `c_str()` 后若 `string` 被修改/移动/销毁，指针即悬空。其次是「隐式 `std::string` 深拷贝」——在热点里把 `string` 按值传来传去会触发 O(n) 堆分配，应改用 `string_view`（C++17）或 `const string&`、`string&&`。还有「自增拼接 `s += a + b + c`」反复分配，应合并或用 `reserve`。以及双 ABI 混链导致的 `std::__cxx11::basic_string` 符号不匹配。
 
 ### ㉒.4 与标准的互动：string 与标准的演进
 
-[史] `std::string` 自 C++98 起即为核心，C++11 禁止 COW 并要求连续存储（催生 SSO 普及）；C++17 引入 `std::string_view` 把「只读零拷贝视图」标准化，彻底改变了「用 `const string&` 当接口」的旧习惯；C++20 增加 `starts_with` / `ends_with` 等便捷方法。[评] 标准对 `string` 的演进主线是「减少不必要的堆分配与拷贝」——`string_view` 是这条主线最显著的产物，而 dual-ABI 的教训也让委员会更谨慎地对待字符串的 ABI 稳定性。
+<span class="badge badge-history">史</span> `std::string` 自 C++98 起即为核心，C++11 禁止 COW 并要求连续存储（催生 SSO 普及）；C++17 引入 `std::string_view` 把「只读零拷贝视图」标准化，彻底改变了「用 `const string&` 当接口」的旧习惯；C++20 增加 `starts_with` / `ends_with` 等便捷方法。<span class="badge badge-comment">评</span> 标准对 `string` 的演进主线是「减少不必要的堆分配与拷贝」——`string_view` 是这条主线最显著的产物，而 dual-ABI 的教训也让委员会更谨慎地对待字符串的 ABI 稳定性。
 
 - **WG21 修订链**：`std::string` 自 C++98 即为核心；C++11 的「禁止 COW + 要求连续存储」由 N2668（Howard Hinnant 等）落实，催生 SSO（短字符串优化）普及；C++17 的 `std::string_view`（P0220R1 → N3921，wg21.link 对应 `string_view`）把只读零拷贝视图标准化；C++20 再补 `starts_with`/`ends_with`/`contains`（P0457R2、P1679R1）。可见修订链围绕「少拷贝、多视图」展开。
 - **ISO 条款**：`std::basic_string` 规定于 ISO/IEC 14882 §24.3.2（`[basic.string]`）。C++11 起标准**强约束连续存储**（`&str[0]` 等价于底层数组，可用于 C API），并禁止引用计数的写时复制（COW）——委员会的明确理由是「COW 与多线程安全、与 `&s[0]` 的连续保证相互冲突」，因此宁可放弃 COW 的共享收益也要保证确定性与线程安全。
@@ -600,7 +600,7 @@ int use_sv() {
 
 ## 附录 A: SSO 深度剖析
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录 A: SSO 深度剖析]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A: SSO 深度剖析
 ```cpp
 // SSO-A 验证短字符串在栈上（sizeof(string)内），无堆分配
 #include <iostream>
@@ -608,7 +608,7 @@ int use_sv() {
 int main(){std::string s="hi";std::cout<<"sizeof(string)="<<sizeof(s)<<" s.data() off stack? "<<( (char*)&s==s.data()?"yes(stack)":"no(heap)" )<<std::endl;return 0;}
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：附录 A: SSO 深度剖析]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A: SSO 深度剖析
 ```cpp
 // SSO-B GCC libstdc++ SSO 阈值 ~15 字节（含 '\0'）
 #include <iostream>
@@ -621,14 +621,14 @@ bool sso(const std::string& s){
 int main(){std::string s1(15,'a');std::string s2(16,'a');std::cout<<"15 chars: stack="<<sso(s1)<<" 16 chars: stack="<<sso(s2)<<std::endl;return 0;}
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: SSO 深度剖析
 ```cpp
 // SSO-C 字段布局模拟: union{char local[16];char* heap;} + size + capacity
 #include <iostream>
 int main(){std::cout<<"libstdc++ SSO: 16B local buffer, 8B size, 8B capacity = 32B total\n";return 0;}
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: SSO 深度剖析
 ```cpp
 // SSO-D 移动语义：短串移动后源仍有效（SSO拷贝），长串移动后源空（指针转移）
 #include <iostream>
@@ -639,7 +639,7 @@ int main(){std::string a(20,'x'),b=std::move(a);std::cout<<"b.size="<<b.size()<<
 
 ## 附录 B: 编码与标准库互操作
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 编码与标准库互操作
 ```cpp
 // ENC-A string_view 零拷贝切片
 #include <iostream>
@@ -648,7 +648,7 @@ int main(){std::string a(20,'x'),b=std::move(a);std::cout<<"b.size="<<b.size()<<
 int main(){std::string s="hello world";std::string_view sv(s.data()+6,5);std::cout<<sv<<std::endl;return 0;}
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 编码与标准库互操作
 ```cpp
 // ENC-B c_str() 返回的 C 字符串在 s 修改后失效
 #include <iostream>
@@ -656,7 +656,7 @@ int main(){std::string s="hello world";std::string_view sv(s.data()+6,5);std::co
 int main(){std::string s="hello";const char* p=s.c_str();s+=" world";std::cout<<p<<" (warn: dangling after modification)\n";return 0;}
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 编码与标准库互操作
 ```cpp
 // ENC-C data() 在 C++17 起返回可写 char*
 #include <iostream>
@@ -664,7 +664,7 @@ int main(){std::string s="hello";const char* p=s.c_str();s+=" world";std::cout<<
 int main(){std::string s="abc";s.data()[0]='A';std::cout<<s<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 编码与标准库互操作
 ```cpp
 // ENC-D 从 string_view 构造 string（显式）
 #include <iostream>
@@ -675,21 +675,21 @@ int main(){std::string_view sv="hello";std::string s(sv);std::cout<<s<<std::endl
 
 ## 附录 C: 性能比较
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录 C: 性能比较]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C: 性能比较
 ```cpp
 // PERF-A string vs string_view 传递开销
 #include <iostream>
 int main(){std::cout<<"Pass-by-value string: O(n) copy. Pass string_view: O(1). Use const& or string_view for read-only.\n";return 0;}
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 C: 性能比较]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C: 性能比较
 ```cpp
 // PERF-B sso vs heap 分配速度（示意）
 #include <iostream>
 int main(){std::cout<<"SSO (<16 chars): ~2ns construct. Heap (>16): ~50-100ns malloc. Use short strings for perf.\n";return 0;}
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 C: 性能比较]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C: 性能比较
 ```cpp
 // PERF-C += vs append 性能（append 可配 reserve）
 #include <iostream>
@@ -699,7 +699,7 @@ int main(){std::string s;s.reserve(100);s.append(50,'x');std::cout<<s.size()<<st
 
 ## 附录 E：std::string底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录 E：std::string底层]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：std::string底层
 ```
 SSO (Short String Optimization) 底层:
 
@@ -714,7 +714,7 @@ MS STL: SSO阈值=15字节 → sizeof=32字节(同libstdc++布局)
 - protobuf: std::string用于protoString字段 → 启用SSO减少序列化开销
 ```
 
-> **示例 43** [难度 ★★★☆☆] [主题：附录 E：std::string底层]
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：std::string底层
 ```cpp
 #include <iostream>
 #include <string>
@@ -769,7 +769,7 @@ int main() {
 | 如何检测SSO? | s.data()在&s和&s+1之间→SSO起作用 |
 | SSO什么情况不触发? | COW模式(GCC5.1前), 或显式禁用 |
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：面试]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试
 ```cpp
 #include <iostream>
 #include <string>
@@ -793,7 +793,7 @@ int main() {
 | COW历史? | GCC5.1前COW→ABI break→SSO(现在) |
 | string on stack? | ≤SSO阈值时纯栈分配(零堆) |
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录 G：string面试高频]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：string面试高频
 ```cpp
 #include <iostream>
 #include <string>
@@ -803,7 +803,7 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 ## 相关章节（交叉引用）
 
 - **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— basic_string 是该架构的连续字符容器
-- **同模块相邻**：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)—— list 的节点式存储与 string 连续存储对比
+- **同模块相邻**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)—— list 的节点式存储与 string 连续存储对比
 - **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— map 等关联容器的字符键常用 string
 - **同模块相邻**：[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)—— array 提供定长字符缓冲，与 string 互补
 - **同模块相邻**：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)—— filesystem 路径大量使用 string
@@ -832,7 +832,7 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 
 ### 测试源码（核心）
 
-> **示例 46** [难度 ★★★☆☆] [主题：测试源码（核心）]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码（核心）
 ```cpp
 volatile int g_obs = 0;
 [[gnu::noinline]] void make_short() {                 // 短串 -> SSO
@@ -875,7 +875,7 @@ volatile int g_obs = 0;
 ### 练习 1（难度 ★★）
 **真实场景：HTTP 请求行解析——零拷贝切出 method/path。** 解析 `"GET /index HTTP/1.1"` 时 `string_view::substr` 不分配，避免每请求堆分配（对比 `std::string::substr` 必分配新缓冲）。
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -886,14 +886,14 @@ int main() {
 }
 ```
 
-[标准] 结论：`std::string_view` 只持有指针+长度，`.substr` 仅调整指针与长度，**不分配内存**；适合只读解析。注意它不保证以 `\0` 结尾，不能用 `%s` 或 C 字符串函数直接处理。
+<span class="badge badge-std">标准</span> 结论：`std::string_view` 只持有指针+长度，`.substr` 仅调整指针与长度，**不分配内存**；适合只读解析。注意它不保证以 `\0` 结尾，不能用 `%s` 或 C 字符串函数直接处理。
 
-[引用] ISO/IEC 14882:2023 §[string.view] 与 §[string.view.template]（`substr` 零分配）；见 cppreference "string/basic_string_view" 词条；其布局为 `{len, ptr}` 见本章附录实证。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view] 与 §[string.view.template]（`substr` 零分配）；见 cppreference "string/basic_string_view" 词条；其布局为 `{len, ptr}` 见本章附录实证。
 
 ### 练习 2（难度 ★★★）
 **真实场景：CSV 流式解析——按逗号切字段不拷贝。** 大文件逐行解析时全程 `string_view` 避免 N 次堆分配；字段视图生命周期必须短于拥有数据的 `std::string`。
 
-> **示例 48** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -913,9 +913,9 @@ int main() {
 }
 ```
 
-[标准] 结论：解析文本时若只需"查看"子串，全程用 `string_view` 可避免 N 次堆分配；字段视图的生命周期必须短于拥有数据的 `std::string`，否则悬垂。
+<span class="badge badge-std">标准</span> 结论：解析文本时若只需"查看"子串，全程用 `string_view` 可避免 N 次堆分配；字段视图的生命周期必须短于拥有数据的 `std::string`，否则悬垂。
 
-[引用] ISO/IEC 14882:2023 §[string.view]；字符串解析的零分配惯用法见 C++ Core Guidelines F.42（用 `string_view` 作只读参数）；cppreference "string/basic_string_view"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view]；字符串解析的零分配惯用法见 C++ Core Guidelines F.42（用 `string_view` 作只读参数）；cppreference "string/basic_string_view"。
 
 ### 练习 3（难度 ★★★★）
 **真实场景：返回局部 string 的 view 导致悬垂。** 一个 `trim()` 返回临时 `std::string` 的 view，调用方一用即 UB。请展示错误做法与正确做法（让 owner 生命周期覆盖 view）。
@@ -929,7 +929,7 @@ std::string_view dangling() {
 ```
 
 正确写法：
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -941,16 +941,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`std::string_view` 不拥有数据，它只是"借看"；构造 view 前必须确认被借对象的生命周期覆盖 view 的所有使用点。`std::string` 的 `data()/substr` 返回的 view 同样受此约束。
+<span class="badge badge-std">标准</span> 结论：`std::string_view` 不拥有数据，它只是"借看"；构造 view 前必须确认被借对象的生命周期覆盖 view 的所有使用点。`std::string` 的 `data()/substr` 返回的 view 同样受此约束。
 
-[引用] ISO/IEC 14882:2023 §[string.view]（`string_view` 不拥有存储）；生命周期陷阱见 C++ Core Guidelines F.43（不要返回指向局部变量的引用/视图）；cppreference "string/basic_string_view"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view]（`string_view` 不拥有存储）；生命周期陷阱见 C++ Core Guidelines F.43（不要返回指向局部变量的引用/视图）；cppreference "string/basic_string_view"。
 
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：日志接口统一用 string_view 避免临时 string 分配
 函数参数用 `string_view` 可同时接受字面量、`std::string`、C 字符串，且不发生拷贝。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：演绎 1：日志接口统一用 strin]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：日志接口统一用 strin
 ```cpp
 #include <iostream>
 #include <string>
@@ -966,7 +966,7 @@ int main() {
 ### 演绎 2：string 累积拼接 vs 只读解析的取舍
 需要修改/拥有结果时用 `std::string` 累积；仅需查看时用 `string_view`，二者按所有权边界划分。
 
-> **示例 51** [难度 ★★★☆☆] [主题：演绎 2：string 累积拼接 v]
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：string 累积拼接 v
 ```cpp
 #include <iostream>
 #include <string>
@@ -1074,7 +1074,7 @@ pointer _M_local_data()
 
 ### 4. 第一方可编译验证（观察 SSO 阈值 15）
 
-> **示例 52** [难度 ★★☆☆☆] [主题：第一方可编译验证]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
 ```cpp
 #include <string>
 #include <iostream>
@@ -1275,7 +1275,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 53** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <string>
 #include <vector>

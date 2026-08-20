@@ -218,6 +218,9 @@ EXTRA_CSS = """\
 .md-typeset .badge-history { background: #fce4ec; color: #ad1457; border: 1px solid #f48fb1; }
 .md-typeset .badge-anecdote { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
 .md-typeset .badge-comment { background: #eceff1; color: #455a64; border: 1px solid #b0bec5; }
+.md-typeset .badge-ref { background: #e0f2f1; color: #00695c; border: 1px solid #80cbc4; }
+.md-typeset .badge-measured { background: #dcedc8; color: #33691e; border: 1px solid #aed581; }
+.md-typeset .badge-perf { background: #fbe9e7; color: #bf360c; border: 1px solid #ffab91; }
 
 /* 中文高密度技术文档排版优化：缓解「拥挤感」 */
 .md-typeset {

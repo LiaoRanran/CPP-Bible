@@ -12,24 +12,24 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C++ 的模板虽强，却有两个老大难：报错像"天书"（实例化失败才暴露，信息几屏打不完），以及无法在编译期表达"这个类型必须满足什么"。[评] 同时，迭代器与算法的组合写法繁琐，大型项目仍被"头文件包含地狱"和漫长编译拖慢。Bjarne Stroustrup 长期倡导 **Concepts**（约束模板参数），早在 1990 年代就有论文，却因设计争执数次被拒。[史] C++20 终于把概念、Ranges、Modules、Coroutines 一并纳入，意图是"让模板可读、让编译可控、让异步自然"。[史]
+C++ 的模板虽强，却有两个老大难：报错像"天书"（实例化失败才暴露，信息几屏打不完），以及无法在编译期表达"这个类型必须满足什么"。<span class="badge badge-comment">评</span> 同时，迭代器与算法的组合写法繁琐，大型项目仍被"头文件包含地狱"和漫长编译拖慢。Bjarne Stroustrup 长期倡导 **Concepts**（约束模板参数），早在 1990 年代就有论文，却因设计争执数次被拒。<span class="badge badge-history">史</span> C++20 终于把概念、Ranges、Modules、Coroutines 一并纳入，意图是"让模板可读、让编译可控、让异步自然"。<span class="badge badge-history">史</span>
 
 ### 0.2 关键转折（编年）
 
-- **2000s–2010s**：Concepts 提案多次起伏（早期 `concept` 关键字方案被否决），最终以 `requires` 子句形式定稿。[史]
-- **2017 起**：Ranges（Eric Niebler 主导）、Modules、Coroutines 陆续投票通过。[史]
-- **2020**：ISO/IEC 14882:2020（草案 N4861）发布，含 Concepts、Ranges、Modules、Coroutines、三路比较 `<=>`、日历/时区等。[史]
+- **2000s–2010s**：Concepts 提案多次起伏（早期 `concept` 关键字方案被否决），最终以 `requires` 子句形式定稿。<span class="badge badge-history">史</span>
+- **2017 起**：Ranges（Eric Niebler 主导）、Modules、Coroutines 陆续投票通过。<span class="badge badge-history">史</span>
+- **2020**：ISO/IEC 14882:2020（草案 N4861）发布，含 Concepts、Ranges、Modules、Coroutines、三路比较 `<=>`、日历/时区等。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言，另一派怕它把 C++ 变成另一个 Haskell；最终落地的 Concepts 是"轻量、可选、渐进"的折中——不加约束的旧代码依旧合法。[史][评] Modules 则与"头文件 + 宏"的四十年底蕴正面冲突：它承诺消灭包含膨胀，却要重写整套构建与依赖模型，引来"破坏生态"的担忧。[评] 协程走"无栈、库驱动"路线，与 Go/Java 的"有栈协程"哲学迥异，体现 C++ 对零开销的执念。[史]
+C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言，另一派怕它把 C++ 变成另一个 Haskell；最终落地的 Concepts 是"轻量、可选、渐进"的折中——不加约束的旧代码依旧合法。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> Modules 则与"头文件 + 宏"的四十年底蕴正面冲突：它承诺消灭包含膨胀，却要重写整套构建与依赖模型，引来"破坏生态"的担忧。<span class="badge badge-comment">评</span> 协程走"无栈、库驱动"路线，与 Go/Java 的"有栈协程"哲学迥异，体现 C++ 对零开销的执念。<span class="badge badge-history">史</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] Modules 在三大编译器落地进度不一：GCC 10/11 初步支持、Clang 较早可用、MSVC 因已有模块体系推进较快，但跨编译器共享模块仍受 ABI 制约，工业普及慢于语言落地。
-- [史] Concepts 在 C++20 后迅速渗入标准库：C++23/26 的 `ranges`、`expected` 等均使用概念约束，Ranges 的 `views::filter | views::transform` 写法依赖 Concepts 才能优雅表达。
-- [史] `<=>` 三路比较让类型只需定义一个运算符即自动获得 `==`/`<`/`>` 全套次序，C++23 进一步为标准类型补全默认化，减少了大量样板。
-- [评] C++20 一次立起四根支柱（概念/Ranges/模块/协程），是继 C++11 后又一次"大爆炸"，其落地阵痛（尤其 Modules）预计要延续到 C++26 才被工业完全消化。
+- <span class="badge badge-history">史</span> Modules 在三大编译器落地进度不一：GCC 10/11 初步支持、Clang 较早可用、MSVC 因已有模块体系推进较快，但跨编译器共享模块仍受 ABI 制约，工业普及慢于语言落地。
+- <span class="badge badge-history">史</span> Concepts 在 C++20 后迅速渗入标准库：C++23/26 的 `ranges`、`expected` 等均使用概念约束，Ranges 的 `views::filter | views::transform` 写法依赖 Concepts 才能优雅表达。
+- <span class="badge badge-history">史</span> `<=>` 三路比较让类型只需定义一个运算符即自动获得 `==`/`<`/`>` 全套次序，C++23 进一步为标准类型补全默认化，减少了大量样板。
+- <span class="badge badge-comment">评</span> C++20 一次立起四根支柱（概念/Ranges/模块/协程），是继 C++11 后又一次"大爆炸"，其落地阵痛（尤其 Modules）预计要延续到 C++26 才被工业完全消化。
 
 > 史料来源：Clang C++20 支持进度 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html ；GCC C++ 状态 https://gcc.gnu.org/projects/cxx-status.html
 
@@ -45,7 +45,7 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 [第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)
 [第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)
 
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
 ```cpp
 // 源码剖析：libstdc++ 中 C++20 概念（concepts）约束检查的展开
 // 文件：libstdc++/include/bits/ranges/base.h
@@ -54,7 +54,7 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 auto v = std::views::iota(1, 5);
 void use_view(){ for (int x : v) (void)x; }
 ```
-> **示例 2** [难度 ★★☆☆☆] [主题：学习目标]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
 ```cpp
 // 简单概念
 template<class T> concept Addable = requires(T a,T b){ a+b; };
@@ -65,7 +65,7 @@ template<class T> concept Addable = requires(T a,T b){ a+b; };
 
 ## ② 前置知识
 
-> **示例 3** [难度 ★★★☆☆] [主题：前置知识]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -79,7 +79,7 @@ int main() {}
 
 ## ③ 后续依赖
 
-> **示例 4** [难度 ★★★☆☆] [主题：后续依赖]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 后续依赖
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -94,7 +94,7 @@ int main() {}
 
 ## ④ 知识图谱
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：知识图谱]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识图谱
 ```cpp
 // [merged] ## ④ 知识图谱
 #include <iostream>
@@ -105,7 +105,7 @@ struct Ver { int major; auto operator<=>(const Ver&) const = default; };
 int main() {}
 ```
 
-> **示例 6** [难度 ★★★★☆] [主题：知识图谱]
+> **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱
 ```
 C++20 四大支柱 + 配套
 ├─ Concepts: template<typename T> requires C<T> / T C
@@ -123,7 +123,7 @@ C++20 四大支柱 + 配套
 
 ## ⑤ Mermaid（Ranges 管道）
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：Mermaid 图解]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Mermaid 图解
 ```cpp
 // [merged] ## ⑤ Mermaid（Ranges 管道）
 #include <iostream>
@@ -135,9 +135,9 @@ int main() {
 }
 ```
 
-## ⑥ UML / 结构图（特性关系）[标准]
+## ⑥ UML / 结构图（特性关系）<span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★★★☆☆] [主题：结构图（特性关系）[标准]]
+> **示例 8** [难度 ★★★☆☆] [主题：结构图（特性关系）<span class="badge badge-std">标准</span>]
 ```cpp
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
@@ -168,7 +168,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑦ ASCII 内存图（Modules 编译模型）
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：内存图（Modules 编译模型）]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（Modules 编译模型）
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（Modules 编译模型）
 #include <iostream>
@@ -179,7 +179,7 @@ int main() {}
 
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：生命周期（新增库类型的所有权语义）]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期（新增库类型的所有权语义）
 ```cpp
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
@@ -191,7 +191,7 @@ int main() {}
 `string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
 ## ⑨ 调用栈（编译期分支与折叠）
 
-> **示例 11** [难度 ★★☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```cpp
 // [merged] ## ⑨ 调用栈（编译期分支与折叠）
 #include <iostream>
@@ -203,14 +203,14 @@ int main() {
 
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
 传统头文件：每个 TU 重复解析 `include` 的文本。
-> **示例 12** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```
 TU1.cpp ─┐
 TU2.cpp ─┼─> 全部文本拼入 → 解析(重复)
 TU3.cpp ─┘
 ```
 Modules：编译一次为二进制 BMI，复用：
-> **示例 13** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```
 module M; 编译 → M.pcm/BMI (一次) → 各 TU 直接加载
 ```
@@ -218,7 +218,7 @@ module M; 编译 → M.pcm/BMI (一次) → 各 TU 直接加载
 
 ## ⑩ 汇编（Concepts 不产生运行时开销）
 
-> **示例 14** [难度 ★★☆☆☆] [主题：汇编]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编
 ```cpp
 // [merged] ## ⑩ 汇编（Concepts 不产生运行时开销）
 #include <iostream>
@@ -232,13 +232,13 @@ int main() {}
 
 ## ⑪ STL 联系
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：联系]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
 ```cpp
 // std::ssize 带符号大小
 #include <vector>
 void ss(){ std::vector<int> v{1,2}; auto n=std::ssize(v); (void)n; }
 ```
-> **示例 16** [难度 ★☆☆☆☆] [主题：联系]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
 ```cpp
 // 范围算法 ranges::sort
 #include <ranges>
@@ -252,7 +252,7 @@ void rs(){ std::vector<int> v{3,1,2}; std::ranges::sort(v); }
 
 ## ⑫ 工业案例
 
-> **示例 17** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -269,7 +269,7 @@ int main() {
 
 ## ⑬ 源码分析
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：源码分析]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析
 ```cpp
 // [merged] ## ⑬ 源码分析
 #include <iostream>
@@ -284,7 +284,7 @@ int main() {
 
 ## ⑭ WG21 提案
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：提案]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
 ```cpp
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
@@ -303,7 +303,7 @@ int main() {}
 
 ## ⑮ 面试题
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：面试题]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -321,7 +321,7 @@ int main() {}
 
 ## ⑯ 易错点
 
-> **示例 21** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 // 概念约束返回值
 template<class T> requires std::default_initializable<T> T make(){ return T{}; }
@@ -333,7 +333,7 @@ template<class T> requires std::default_initializable<T> T make(){ return T{}; }
 
 ## ⑰ FAQ
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // 范围 for + 结构化绑定
 #include <map>
@@ -346,7 +346,7 @@ void m(){ std::map<int,std::string> x{{1,"a"}}; for(auto& [k,v]:x){ (void)k;(voi
 
 ## ⑱ 最佳实践
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 auto s2=std::format("{} {:.1f}", 1, 2.5); void use_fmt2(){ (void)s2; }
 ```
@@ -356,7 +356,7 @@ auto s2=std::format("{} {:.1f}", 1, 2.5); void use_fmt2(){ (void)s2; }
 
 ## ⑲ 性能分析
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
 ```cpp
 // 移除 throw() 异常规范（C++20 弃用）
 void legacy() noexcept;
@@ -369,18 +369,18 @@ void legacy() noexcept;
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 concept 约束模板 `template<Incrementable T>` 替代 SFINAE。** 你希望约束失败给出清晰错误。请说明约束的优先级。
-   - [标准] C++20 引入概念与约束；受约束的模板在重载决议中优先于无约束版本，且约束不满足在硬错误前被诊断。
-   - [引用] ISO/IEC 14882:2023 §[temp.constr]（约束与重载决议）/ [concepts]（概念概览）；cppreference "Constraints and concepts" 词条。
+   - <span class="badge badge-std">标准</span> C++20 引入概念与约束；受约束的模板在重载决议中优先于无约束版本，且约束不满足在硬错误前被诊断。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.constr]（约束与重载决议）/ [concepts]（概念概览）；cppreference "Constraints and concepts" 词条。
 
 2. **真实场景：用 `consteval` 强制编译期求值。** 你希望某个函数在运行期根本不存在。请对比 constexpr。
-   - [标准] `consteval` 函数只能在编译期被调用、必须产生常量表达式；比 `constexpr` 更严格（不允许运行期调用）。
-   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
+   - <span class="badge badge-std">标准</span> `consteval` 函数只能在编译期被调用、必须产生常量表达式；比 `constexpr` 更严格（不允许运行期调用）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
 
 3. **真实场景：用模块 `import std;` 替代 `#include <vector>`。** 你希望缩短编译时间。请说明模块与头文件的区别。
-   - [标准] C++20 引入模块；`import` 导入编译期已处理的接口单元，避免头文件的重复文本处理与宏泄漏。
-   - [引用] ISO/IEC 14882:2023 §[module.import]（模块导入）；cppreference "Modules" 词条。
+   - <span class="badge badge-std">标准</span> C++20 引入模块；`import` 导入编译期已处理的接口单元，避免头文件的重复文本处理与宏泄漏。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[module.import]（模块导入）；cppreference "Modules" 词条。
 
-> **示例 25** [难度 ★★★★☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 25** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // C++20 小结：concepts/ranges/<=</format/jthread
 ```
@@ -391,7 +391,7 @@ void legacy() noexcept;
 
 ### ㉒.1 历史渊源补强：C++20 的四驾马车
 
-[史] C++20（ISO/IEC 14882:2020，2020-12 发布）是继 C++11 后又一次"大版本"，主推四大特性，各有明确提案来源：**Concepts**（P0734，给模板加编译期约束，终结 SFINAE 地狱）、**Modules**（P1103，替代文本 `#include` 的头文件模型）、**Coroutines**（P0912，原生 `co_await`/`co_yield`/`co_return`）、**Ranges**（P0896，惰性、可组合的区间算法）。[史] 配套还有**三路比较 `<=>`**（P0515，spaceship operator，自动生成比较运算符）、**`std::format`**（P0645，类型安全的格式化）、**`std::span`**、**`std::jthread`** 等。[轶] Modules 的标准化过程最波折：法国在投票阶段对导入/导出语法有异议导致短期延迟，且至今各编译器对 Modules 的工程支持（`.ixx`/`module;` 分区）仍不统一。[评] C++20 把"模板约束、模块化、异步、区间"一次性交到工程师手里，但四大特性都"刚落地、生态未熟"——2023 年后才逐步可生产使用。
+<span class="badge badge-history">史</span> C++20（ISO/IEC 14882:2020，2020-12 发布）是继 C++11 后又一次"大版本"，主推四大特性，各有明确提案来源：**Concepts**（P0734，给模板加编译期约束，终结 SFINAE 地狱）、**Modules**（P1103，替代文本 `#include` 的头文件模型）、**Coroutines**（P0912，原生 `co_await`/`co_yield`/`co_return`）、**Ranges**（P0896，惰性、可组合的区间算法）。<span class="badge badge-history">史</span> 配套还有**三路比较 `<=>`**（P0515，spaceship operator，自动生成比较运算符）、**`std::format`**（P0645，类型安全的格式化）、**`std::span`**、**`std::jthread`** 等。<span class="badge badge-anecdote">轶</span> Modules 的标准化过程最波折：法国在投票阶段对导入/导出语法有异议导致短期延迟，且至今各编译器对 Modules 的工程支持（`.ixx`/`module;` 分区）仍不统一。<span class="badge badge-comment">评</span> C++20 把"模板约束、模块化、异步、区间"一次性交到工程师手里，但四大特性都"刚落地、生态未熟"——2023 年后才逐步可生产使用。
 
 ### ㉒.2 真实工程坐标：C++20 活在哪
 
@@ -399,9 +399,9 @@ C++20 是「概念 / 范围 / 协程 / 模块」的代际跃迁。下面按领�
 
 | 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| 库作者先行 | Ranges / Concepts / `std::format` 被 fmt / Boost.Ranges 吸收或对齐 | 新范式下沉到库 | 库生态对齐 | [STANDARD] C++20 concepts/ranges/format |
-| 高性能 / 异步 | Coroutines（cppcoro / Folly / Windows 异步栈）/ P2300 `std::execution` | 无栈异步与执行器 | 后端 / 异步工业 | [STANDARD] C++20 coroutines；P2300 在审 |
-| 大型代码库模块化 | Chromium / LLVM 探索 Modules 缩短编译 | 编译期去冗余试验 | 超大型 C++ | [STANDARD] C++20 modules（试验期） |
+| 库作者先行 | Ranges / Concepts / `std::format` 被 fmt / Boost.Ranges 吸收或对齐 | 新范式下沉到库 | 库生态对齐 | <span class="badge badge-std">STANDARD</span> C++20 concepts/ranges/format |
+| 高性能 / 异步 | Coroutines（cppcoro / Folly / Windows 异步栈）/ P2300 `std::execution` | 无栈异步与执行器 | 后端 / 异步工业 | <span class="badge badge-std">STANDARD</span> C++20 coroutines；P2300 在审 |
+| 大型代码库模块化 | Chromium / LLVM 探索 Modules 缩短编译 | 编译期去冗余试验 | 超大型 C++ | <span class="badge badge-std">STANDARD</span> C++20 modules（试验期） |
 | 编译器先实现 | GCC 10（libstdc++）/ Clang 14（libc++）实现 `<coroutine>`/`<ranges>`/`<format>` | 定义特性可用硬门槛 | 标准可用性坐标 | 见 GCC C++20 支持 |
 | 量化 / 异步后台 | HFT / 量化团队 C++20 Coroutines 重写异步行情 / 订单管线 | 回调地狱换无栈 `co_await` | 低延迟工业 | [据记载] P0912「4 亿+设备部署」背景 |
 
@@ -417,10 +417,10 @@ C++20 是「概念 / 范围 / 协程 / 模块」的代际跃迁。下面按领�
 
 ### ㉒.4 与标准的互动：从提案到 IS
 
-[史] 四个大特性各自由独立提案（P0734/P1103/P0912/P0896）经多轮修订并入工作草案；`<=>`: P0515、format: P0645 同期并入。C++20 之后 WG21 继续用 3 年节奏推进 C++23/C++26，并把 Modules/Coroutines 的"生产成熟度"问题交给各编译器厂商在 TS 之外自行打磨。[评] 对工程师而言，C++20 是可"选择性采用"的版本：先用 Concepts+Ranges+format（低风险），Modules/Coroutines 待工具链成熟再上。
+<span class="badge badge-history">史</span> 四个大特性各自由独立提案（P0734/P1103/P0912/P0896）经多轮修订并入工作草案；`<=>`: P0515、format: P0645 同期并入。C++20 之后 WG21 继续用 3 年节奏推进 C++23/C++26，并把 Modules/Coroutines 的"生产成熟度"问题交给各编译器厂商在 TS 之外自行打磨。<span class="badge badge-comment">评</span> 对工程师而言，C++20 是可"选择性采用"的版本：先用 Concepts+Ranges+format（低风险），Modules/Coroutines 待工具链成熟再上。
 
-- [史] **Coroutines（P0912）** 经历 **R0（初始）→R5（2019-02-22 定稿）** 共六轮修订：R1 修正渲染与措辞，R2/R3/R4 更新工作草案编号与编辑指令，R5 合并了 Coroutines Issues #25/#27（P1356）与 #31/#35（P0664R7）的决议，最终把 Coroutines TS 并入 C++20 工作草案——提案明确写道协程「已在 4 亿+ 设备部署、支撑 Azure 云服务」。见 [P0912](https://wg21.link/P0912)。
-- [史] **Concepts（P0734，"Concepts Lite"）** 落在 ISO/IEC 14882 的 **§[temp.concept]**，设计理由是用编译期约束取代 SFINAE 地狱、让模板错误可读；**Modules（P1103）** 落在 **§[module]**，设计理由是替代文本 `#include`、消除宏泄漏并大幅缩短编译时间；**Ranges（P0896）** 落在 **§[ranges]**，设计理由是用惰性、可组合的区间管道替代手写循环与中间容器。三者均经独立提案多轮修订后并入 C++20。见 [P0734](https://wg21.link/P0734)、[P1103](https://wg21.link/P1103)、[P0896](https://wg21.link/P0896)。
+- <span class="badge badge-history">史</span> **Coroutines（P0912）** 经历 **R0（初始）→R5（2019-02-22 定稿）** 共六轮修订：R1 修正渲染与措辞，R2/R3/R4 更新工作草案编号与编辑指令，R5 合并了 Coroutines Issues #25/#27（P1356）与 #31/#35（P0664R7）的决议，最终把 Coroutines TS 并入 C++20 工作草案——提案明确写道协程「已在 4 亿+ 设备部署、支撑 Azure 云服务」。见 [P0912](https://wg21.link/P0912)。
+- <span class="badge badge-history">史</span> **Concepts（P0734，"Concepts Lite"）** 落在 ISO/IEC 14882 的 **§[temp.concept]**，设计理由是用编译期约束取代 SFINAE 地狱、让模板错误可读；**Modules（P1103）** 落在 **§[module]**，设计理由是替代文本 `#include`、消除宏泄漏并大幅缩短编译时间；**Ranges（P0896）** 落在 **§[ranges]**，设计理由是用惰性、可组合的区间管道替代手写循环与中间容器。三者均经独立提案多轮修订后并入 C++20。见 [P0734](https://wg21.link/P0734)、[P1103](https://wg21.link/P1103)、[P0896](https://wg21.link/P0896)。
 
 ### ㉒.5 权威引用
 
@@ -432,7 +432,7 @@ C++20 是「概念 / 范围 / 协程 / 模块」的代际跃迁。下面按领�
 
 ## 附录: C++20 四大特性速查
 
-> **示例 26** [难度 ★★☆☆☆] [主题：附录: C++20 四大特性速查]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: C++20 四大特性速查
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -440,7 +440,7 @@ template<std::integral T>T safe_add(T a,T b){return a+b;}
 int main(){std::cout<<safe_add(10,20)<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录: C++20 四大特性速查]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++20 四大特性速查
 ```cpp
 #include <iostream>
 #include <span>
@@ -448,7 +448,7 @@ void print(std::span<int>s){for(int x:s)std::cout<<x<<" ";}
 int main(){int arr[]{1,2,3,4,5};print(arr);std::cout<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录: C++20 四大特性速查]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++20 四大特性速查
 ```cpp
 #include <iostream>
 #include <compare>
@@ -456,7 +456,7 @@ struct V{int x;auto operator<=>(const V&)const=default;};
 int main(){V a{1},b{2};std::cout<<(a<b)<<std::endl;return 0;}
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录: C++20 四大特性速查]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++20 四大特性速查
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -467,21 +467,21 @@ int main(){auto v=std::views::iota(1,10)|std::views::filter([](int x){return x%2
 
 ## 附录 B: C++20 更多特性实例
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++20 更多特性实例
 ```cpp
 #include <iostream>
 #include <chrono>
 int main(){auto now=std::chrono::system_clock::now();auto t=std::chrono::system_clock::to_time_t(now);std::cout<<"epoch seconds: "<<t<<std::endl;return 0;}
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++20 更多特性实例
 ```cpp
 #include <iostream>
 #include <bit>
 int main(){unsigned x=42;std::cout<<"popcount:"<<std::popcount(x)<<" bit_width:"<<std::bit_width(x)<<std::endl;return 0;}
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++20 更多特性实例
 ```cpp
 #include <iostream>
 #include <source_location>
@@ -489,7 +489,7 @@ void log(std::source_location loc=std::source_location::current()){std::cout<<lo
 int main(){log();return 0;}
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: C++20 更多特性实例
 ```cpp
 #include <iostream>
 #include <version>
@@ -503,7 +503,7 @@ int main(){
 
 ## 附录追加：工业底层与面试
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：附录追加：工业底层与面试]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录追加：工业底层与面试
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ch07_cpp20.md enhanced"<<"\n";return 0;}
@@ -511,7 +511,7 @@ int main(){std::cout<<"ch07_cpp20.md enhanced"<<"\n";return 0;}
 
 ## 附录 D：C++20 Concepts/Ranges底层
 
-> **示例 35** [难度 ★★★☆☆] [主题：附录 D：C++20 Concept]
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：C++20 Concept
 ```
 Concepts: 编译期boolean谓词, 汇编=SFINAE(完全相同mov/call)
 编译时间: 2-5x faster(early rejection); 错误: 500行→1行
@@ -519,7 +519,7 @@ Ranges: views融合为单循环(零临时容器); 汇编=手写for循环
 Coroutines: 堆分配状态机,sizeof~40-200B; co_yield~10ns
 ```
 
-> **示例 36** [难度 ★★★★☆] [主题：附录 D：C++20 Concept]
+> **示例 36** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：C++20 Concept
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -563,7 +563,7 @@ int main(){std::cout<<add(10,20)<<std::endl;std::cout<<"concepts=zero runtime ov
 | 运行时代码 | call [rax] | call [rax] | 完全相同 |
 | 二进制大小 | 1x | 1x | 无差异 |
 
-> **示例 37** [难度 ★★☆☆☆] [主题：性能数据]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能数据
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -578,7 +578,7 @@ Q: concepts支持哪些约束? A: 类型属性(is_integral), 表达式有效性(
 
 ## 附录 E：C++20面试速查
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录 E：C++20面试速查]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：C++20面试速查
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -631,7 +631,7 @@ C++20 的 concepts / ranges / coroutines / modules 在主流工具链与大型�
 
 **真实场景：数值聚合 API 的清晰报错。** 你写一个 `add` 聚合接口供全公司调用，传错类型时旧的 SFINAE 报错没人看得懂。请用 C++20 concepts 定义一个 `Number` 概念并约束 `add` 模板，展示非数值类型调用时被概念明确拒绝、错误信息直指"不满足 Number"。
 
-> **示例 39** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -650,16 +650,16 @@ int main() {
 }
 ```
 
-[标准] 结论：concepts 把模板约束前移到接口声明，错误信息直接指出“不满足哪个概念”，
+<span class="badge badge-std">标准</span> 结论：concepts 把模板约束前移到接口声明，错误信息直接指出“不满足哪个概念”，
 可读性远胜 SFINAE 的一堆替换失败噪声；且概念可组合、可命名复用。
 
-[引用] ISO C++20 §[temp.concept]（概念）；cppreference "约束与概念"（https://en.cppreference.com/w/cpp/language/constraints）。标准库概念见头文件 `<concepts>`，语言概念由 WG21 论文 P0734R0 定稿。
+<span class="badge badge-ref">引用</span> ISO C++20 §[temp.concept]（概念）；cppreference "约束与概念"（https://en.cppreference.com/w/cpp/language/constraints）。标准库概念见头文件 `<concepts>`，语言概念由 WG21 论文 P0734R0 定稿。
 
 ### 练习 2（难度 ★★★）
 
 **真实场景：事件流的惰性处理管道。** 你处理一条日志/指标流，要先"过滤出错误事件"再"转成错误码计数"，但不想为每步生成中间 `vector`。请用 C++20 Ranges 的 `views::filter` + `views::transform` 构建"取偶数再平方"的惰性管道，并说明惰性求值（不生成中间容器）的意义。
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -677,16 +677,16 @@ int main() {
 }
 ```
 
-[标准] 结论：Ranges 管道用 `|` 组合视图，惰性求值避免了每步生成中间容器的内存/时间开销；
+<span class="badge badge-std">标准</span> 结论：Ranges 管道用 `|` 组合视图，惰性求值避免了每步生成中间容器的内存/时间开销；
 视图是轻量非拥有对象，底层数据须存活。
 
-[引用] ISO C++20 §[range] / §[range.adaptors]；cppreference "std::ranges"（https://en.cppreference.com/w/cpp/ranges）与 "std::views::filter"（https://en.cppreference.com/w/cpp/ranges/filter）。Ranges 由 WG21 论文 P0896R4（Ranges）与 P2011R1（视图）引入。
+<span class="badge badge-ref">引用</span> ISO C++20 §[range] / §[range.adaptors]；cppreference "std::ranges"（https://en.cppreference.com/w/cpp/ranges）与 "std::views::filter"（https://en.cppreference.com/w/cpp/ranges/filter）。Ranges 由 WG21 论文 P0896R4（Ranges）与 P2011R1（视图）引入。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：依赖/库版本兼容性比较。** 你的包管理器或构建系统要判断"依赖 A 的版本 ≥ 要求的最低版本"，版本号是 `major.minor.patch` 三元组。请用 C++20 `<=>` 为 `Version` 实现三路比较与 `==`，并说明 `= default` 如何一次性自动派生 `< > <= >=`。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <compare>
@@ -709,10 +709,10 @@ int main() {
 }
 ```
 
-[标准] 结论：`<=> = default` 一行替代手写 6 个比较运算符，且保证一致性（不会出现
+<span class="badge badge-std">标准</span> 结论：`<=> = default` 一行替代手写 6 个比较运算符，且保证一致性（不会出现
 `a<b` 与 `a>b` 同真的矛盾）；返回类型 `strong_ordering`/`partial_ordering` 表达可比性强弱。
 
-[引用] ISO C++20 §[expr.spaceship]；cppreference "operator<=>"（https://en.cppreference.com/w/cpp/language/operator_comparison）与 "默认比较"（https://en.cppreference.com/w/cpp/language/default_comparison）。三路比较由 WG21 论文 P0515R3（<=> 与 <compare>）引入。
+<span class="badge badge-ref">引用</span> ISO C++20 §[expr.spaceship]；cppreference "operator<=>"（https://en.cppreference.com/w/cpp/language/operator_comparison）与 "默认比较"（https://en.cppreference.com/w/cpp/language/default_comparison）。三路比较由 WG21 论文 P0515R3（<=> 与 <compare>）引入。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -722,7 +722,7 @@ int main() {
 **选型**：`std::span<int>` 用“指针+长度”统一接口，零拷贝、不限容器来源。
 **落地**：
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：演绎 1：std::span —— ]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：std::span ——
 ```cpp
 #include <iostream>
 #include <span>
@@ -755,7 +755,7 @@ int main() {
 **选型**：C++20 指派初始化 `{.a=1, .d=1}`，按名初始化、未指派字段值初始化。
 **落地**：
 
-> **示例 43** [难度 ★★☆☆☆] [主题：演绎 2：designated in]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：designated in
 ```cpp
 #include <iostream>
 

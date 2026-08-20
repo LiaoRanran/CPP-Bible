@@ -18,9 +18,9 @@
 
 | 时间 | 里程碑 | 对风格治理的意义 |
 |------|--------|------------------|
-| **1980 年代末** | 《GNU Coding Standards》成文 | 第一次把风格"制度化" [史] |
-| **2008 前后** | Google、Microsoft、LLVM 相继发布大规模风格指南 | 证明"风格无对错，内部一致才是生产力" [史] |
-| **2011** | LLVM 推出 `clang-format` | "人盯人"格式检查变成一键可执行，争论交给机器 [史] |
+| **1980 年代末** | 《GNU Coding Standards》成文 | 第一次把风格"制度化" <span class="badge badge-history">史</span> |
+| **2008 前后** | Google、Microsoft、LLVM 相继发布大规模风格指南 | 证明"风格无对错，内部一致才是生产力" <span class="badge badge-history">史</span> |
+| **2011** | LLVM 推出 `clang-format` | "人盯人"格式检查变成一键可执行，争论交给机器 <span class="badge badge-history">史</span> |
 
 > 表注（0.2）：风格治理的三次跃迁——从"口头约定"到"文档契约"再到"工具强制"，主线是不断把一致性检查从人脑移到机器。
 
@@ -31,15 +31,15 @@
 
 > 紧接 0.2 编年最后一条（2011，clang-format 把格式交给了机器），下面记录近年仍在生长的真实动态。
 
-- [史] 2015 年 CppCon 上 Bjarne Stroustrup 与 Herb Sutter 发布 **C++ Core Guidelines**（GitHub `isocpp/CppCoreGuidelines`），把风格从"排版"推进到"何时用什么特性"的设计准则，至今社区持续维护、逐条增补。
-- [史] clang-tidy 在 2010 年代成熟，其 `modernize-*` / `cppcoreguidelines-*` 检查组把风格审查从"缩进排版"升到"语义级约定"（命名规范、现代写法、所有权），已成为 PR 门禁的常见一层。
-- [史] AddressSanitizer / UndefinedBehaviorSanitizer / ThreadSanitizer 在 Clang 与 GCC 上普及，接进 CI 后让"未定义行为""数据竞争"这类 C++ 最隐蔽的坏味道在合并前就被自动揪出，反过来减轻了人工 review 的风格负担。
-- [评] `.editorconfig` + `.clang-format` 双文件配合，使"跨编辑器、跨 IDE 都一致"几乎零成本；现代团队把格式争议彻底移出 human review，是工程文明的又一次进步。
-- [轶] 社区里流传一句半玩笑：clang-format 第一次统一一个老仓库时会"改写上千行"，于是有人专门在周五下午跑它，免得冲掉别人的 blame。
+- <span class="badge badge-history">史</span> 2015 年 CppCon 上 Bjarne Stroustrup 与 Herb Sutter 发布 **C++ Core Guidelines**（GitHub `isocpp/CppCoreGuidelines`），把风格从"排版"推进到"何时用什么特性"的设计准则，至今社区持续维护、逐条增补。
+- <span class="badge badge-history">史</span> clang-tidy 在 2010 年代成熟，其 `modernize-*` / `cppcoreguidelines-*` 检查组把风格审查从"缩进排版"升到"语义级约定"（命名规范、现代写法、所有权），已成为 PR 门禁的常见一层。
+- <span class="badge badge-history">史</span> AddressSanitizer / UndefinedBehaviorSanitizer / ThreadSanitizer 在 Clang 与 GCC 上普及，接进 CI 后让"未定义行为""数据竞争"这类 C++ 最隐蔽的坏味道在合并前就被自动揪出，反过来减轻了人工 review 的风格负担。
+- <span class="badge badge-comment">评</span> `.editorconfig` + `.clang-format` 双文件配合，使"跨编辑器、跨 IDE 都一致"几乎零成本；现代团队把格式争议彻底移出 human review，是工程文明的又一次进步。
+- <span class="badge badge-anecdote">轶</span> 社区里流传一句半玩笑：clang-format 第一次统一一个老仓库时会"改写上千行"，于是有人专门在周五下午跑它，免得冲掉别人的 blame。
 
 > 史料来源：clang.llvm.org/docs/ClangFormat.html、github.com/isocpp/CppCoreGuidelines
 
-## ① 概述：为什么代码风格重要 [经验]
+## ① 概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>
 
 [第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)
 
@@ -53,9 +53,9 @@
 
 > 表注（①）：三类成本都指向同一根因——"不一致"本身比"某套规则优劣"更伤生产力。
 
-> **[经验]** 一条被反复验证的共识：**风格本身没有绝对对错，但"不一致"几乎总是错**。Google、Microsoft、LLVM 风格彼此冲突，但各自内部高度一致——这正是它们能规模化的根本原因。
+> **<span class="badge badge-exp">经验</span>** 一条被反复验证的共识：**风格本身没有绝对对错，但"不一致"几乎总是错**。Google、Microsoft、LLVM 风格彼此冲突，但各自内部高度一致——这正是它们能规模化的根本原因。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 [经验]]
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ❌ 反例：同一文件里三种命名 + 两种缩进，可读性灾难
 int   userCount;          // 小驼峰
@@ -63,7 +63,7 @@ void Process_Data();      // 大驼峰 + 下划线混杂
 class tcp_server {int Port;};  // 缩进全无
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 [经验]]
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ✅ 正例：统一 snake_case 函数/变量、PascalCase 类型、2 空格缩进
 int user_count = 0;
@@ -80,7 +80,7 @@ class TcpServer { int port_ = 0; };
 - **K&R（1TBS）**：左括号紧接语句行尾，省垂直空间，Linux 内核、Go 默认。
 - **Allman**：左括号独占一行，括号成对对齐，块边界一眼可见，Microsoft/LLVM 常用。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：缩进与括号风格]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缩进与括号风格
 ```cpp
 // K&R / 1TBS：左花括号同行
 void kr_style(int n) {
@@ -92,7 +92,7 @@ void kr_style(int n) {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：缩进与括号风格]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缩进与括号风格
 ```cpp
 // Allman：左花括号独占一行，块边界对齐清晰
 void allman_style(int n)
@@ -108,7 +108,7 @@ void allman_style(int n)
 }
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：缩进与括号风格]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缩进与括号风格
 ```cpp
 // ❌ 反例：同文件混用两种风格，且缩进层级错乱
 void messy(int n){
@@ -133,7 +133,7 @@ void messy(int n){
 | 私有成员变量 | `trailing_underscore_` | `m_port`/`_port` |
 | 命名空间 | 全小写短名 | `MyNamespace` |
 
-> **示例 6** [难度 ★★☆☆☆] [主题：命名一致性（关联 ch145）]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 命名一致性（关联 ch145）
 ```cpp
 // ✅ 一致的命名：类型 PascalCase，变量/函数 snake_case，常量 k 前缀
 class ConnectionPool {
@@ -145,7 +145,7 @@ private:
 };
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：命名一致性（关联 ch145）]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名一致性（关联 ch145）
 ```cpp
 // ❌ 反例：同语义的变量用了三种风格
 int UserCount;        // 大驼峰
@@ -153,7 +153,7 @@ int maxConnect;       // 小驼峰
 int DEFAULT_PORT = 80;// 全小写常量
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：命名一致性（关联 ch145）]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名一致性（关联 ch145）
 ```cpp
 // 命名空间小写短名，避免与类型撞脸
 namespace telemetry {
@@ -167,7 +167,7 @@ namespace telemetry {
 
 头文件必须防止被重复包含，否则会出现重定义错误。两种机制：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：头文件与 include 守卫]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头文件与 include 守卫
 ```cpp
 // 机制 A：传统 ifndef 守卫（可移植、标准 C++）
 #ifndef EXAMPLE_WIDGET_H
@@ -176,7 +176,7 @@ struct Widget { int id; int value; };
 #endif // EXAMPLE_WIDGET_H
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：头文件与 include 守卫]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头文件与 include 守卫
 ```cpp
 // 机制 B：#pragma once（非标准但被所有主流编译器支持，写法更短）
 #pragma once
@@ -192,7 +192,7 @@ g++ -std=c++23 -E Examples/_ch144_guard_main.cpp -o Examples/_ch144_guard.i
 
 展开产物 `Examples/_ch144_guard.i` 中，`Widget` 的定义仅出现一次（`#ifndef _CH144_GUARD_WIDGET_H` 在第二次包含时挡掉了整个结构体）。这证明：守卫的语义是"翻译单元内只展开一次"，而非"整个程序只定义一次"——跨翻译单元的重定义要靠 ODR（单一定义规则）约束，与守卫无关。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：头文件与 include 守卫]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头文件与 include 守卫
 ```cpp
 // _ch144_guard_main.cpp 的要点：两次包含同一头文件仍能编译
 #include "_ch144_guard.h"
@@ -209,7 +209,7 @@ int main() { Widget w{42, 7}; return w.id + w.value; }
 
 命名空间用于避免全局名字冲突，但滥用同样制造问题。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间使用（匿名/内联）
 ```cpp
 // 具名命名空间：隔离模块符号
 namespace net {
@@ -217,7 +217,7 @@ namespace net {
 }
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间使用（匿名/内联）
 ```cpp
 // 匿名命名空间：翻译单元内部的"内部链接"，替代 static
 namespace {
@@ -226,7 +226,7 @@ namespace {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间使用（匿名/内联）
 ```cpp
 // 内联命名空间：让内层符号对外层"透明"，常用于 ABI 版本切换
 inline namespace v2 {
@@ -242,7 +242,7 @@ namespace v1 {
 - 不要用 `using namespace` 于头文件作用域；
 - `using namespace foo;` 在 `.cpp` 文件顶部尚可接受，函数内部局部使用更稳妥。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间使用（匿名/内联）
 ```cpp
 // ❌ 反例：头文件顶层 using namespace，污染所有包含方
 // my_header.h
@@ -255,7 +255,7 @@ using namespace std;   // ❌ 禁止
 
 const 正确性是 C++ 类型系统的核心护栏。`[标准]` const 成员函数保证不修改对象逻辑状态（[class.const]），从而可被 const 对象调用。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：正确性]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 正确性
 ```cpp
 class Account {
     long balance_ = 0;
@@ -269,7 +269,7 @@ public:
 
 `constexpr` 把求值推进到编译期，`[实现·GCC15]` 看汇编证明它真的被折叠：
 
-> **示例 17** [难度 ★★★☆☆] [主题：正确性]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 正确性
 ```cpp
 constexpr int factorial(int n) { return n <= 1 ? 1 : n * factorial(n - 1); }
 static_assert(factorial(5) == 120);
@@ -286,7 +286,7 @@ _Z13use_factorialv:
 
 `mutable` 用于"逻辑 const、物理可变"的字段（如缓存、互斥量）：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：正确性]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 正确性
 ```cpp
 #include <mutex>
 class Cache {
@@ -301,7 +301,7 @@ public:
 };
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：正确性]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 正确性
 ```cpp
 // ❌ 反例：能用 const/constexpr 却不用，丧失接口保证与优化机会
 int square(int x) { return x * x; }   // 应 constexpr
@@ -311,7 +311,7 @@ int square(int x) { return x * x; }   // 应 constexpr
 
 `auto` 不是"懒得写类型"，而是**消除冗余**、避免截断（如 `size()` 返回 `size_t` 赋给 `int` 的警告）。`[实现·GCC15]` 关键结论：**auto 在编译期完成类型推断，零运行时开销**，与手写类型生成相同机器码。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：使用规范]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 使用规范
 ```cpp
 #include <vector>
 long explicit_sum(const std::vector<long>& v) {
@@ -342,7 +342,7 @@ long auto_sum(const std::vector<long>& v) {
 - **不要用 `auto` 做接口返回类型的唯一声明**而失去可读性（除非显然是 `auto` 推导更佳，如 lambda）；
 - 需要值拷贝时用 `auto`，需要引用时用 `auto&`/`const auto&`。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：使用规范]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 使用规范
 ```cpp
 #include <string>
 #include <map>
@@ -351,7 +351,7 @@ std::map<std::string, int> m;
 for (const auto& [key, val] : m) { /* ... */ }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：使用规范]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 使用规范
 ```cpp
 // ❌ 反例：用 auto 触发意外拷贝（应为 const auto&）
 for (auto x : huge_vector) { sum += x; }   // 每个元素都被拷贝
@@ -361,7 +361,7 @@ for (auto x : huge_vector) { sum += x; }   // 每个元素都被拷贝
 
 范围 for（`for (auto& x : container)`）比手写下标/迭代器更安全、更短，且 `[实现·GCC15]` 证实它编译为**与下标、迭代器循环完全相同的机器码**。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：范围 for 优先]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 范围 for 优先
 ```cpp
 #include <vector>
 #include <cstddef>
@@ -386,7 +386,7 @@ void by_range(const std::vector<int>& v, long& acc) {
         jne     .L12
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：范围 for 优先]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 范围 for 优先
 ```cpp
 // ✅ 优先范围 for；需要下标时才回退索引
 for (auto& item : items) process(item);
@@ -400,7 +400,7 @@ for (auto it = v.begin(); it != v.end();) { /* 漏写 ++it → 死循环 */ }
 
 裸 `new`/`delete` 在现代 C++ 中应被智能指针取代。`[标准]` `std::unique_ptr` 表达独占所有权（不可拷贝、可移动），`std::shared_ptr` 表达共享所有权（引用计数）。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：智能指针规范]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针规范
 ```cpp
 #include <memory>
 #include <utility>
@@ -415,7 +415,7 @@ void transfer() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：智能指针规范]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 智能指针规范
 ```cpp
 // shared_ptr：多所有者共享，注意避免循环引用
 #include <memory>
@@ -427,7 +427,7 @@ struct Node {
 
 `Examples/_ch144_smartptr_O2.asm` 证实 `std::move(a)` 仅是一次指针赋值（O(1)），析构在作用域末尾自动释放。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：智能指针规范]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 智能指针规范
 ```cpp
 // ❌ 反例：裸 new 却可能漏 delete（异常路径尤甚）
 Connection* c = new Connection(3);
@@ -443,7 +443,7 @@ delete c;
 
 `[标准]` `std::vector` 在重分配（reallocation）时，只有元素类型的移动构造为 `noexcept` 才会用移动搬迁元素，否则退回拷贝——这是为了保证强异常安全。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常规范（noexcept）
 ```cpp
 #include <vector>
 struct CopyOnly {            // 移动构造非 noexcept → 重分配时拷贝
@@ -462,7 +462,7 @@ struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
 
 `[实现·libstdc++]` 真实源码印证了这一决策（`_GLIBCXX_MAKE_MOVE_IF_NOEXCEPT_ITERATOR` 正是"若移动不抛则移动，否则拷贝"的迭代器包装）：
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常规范（noexcept）
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc
 // 行号：75-91
@@ -477,7 +477,7 @@ struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
 
 `[实现·GCC15]` `Examples/_ch144_noexcept_O2.asm` 中 `fill_copy` 与 `fill_move` 对**平凡类型 `int`** 生成了几乎一致的代码——这恰好说明：对于 trivially-copyable 类型，移动与拷贝在机器层面无差别；`noexcept` 的收益在**非平凡类型（如 `std::string`）**上才体现为"指针交换而非深拷贝"。结论真实、可复现。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常规范（noexcept）
 ```cpp
 #include <vector>
 // ✅ 不抛异常的移动/析构/交换，应一律标 noexcept
@@ -490,7 +490,7 @@ public:
 };
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：异常规范（noexcept）]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常规范（noexcept）
 ```cpp
 // ❌ 反例：移动构造未标 noexcept，vector 重分配将退化成拷贝，拖累性能
 struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noexcept，
@@ -505,7 +505,7 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noex
 
 移动语义让"资源转让"代替"深拷贝"。`[标准]` 右值引用（`T&&`）绑定临时对象，配合 `std::move` 触发移动而非拷贝。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：移动语义规范]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 移动语义规范
 ```cpp
 #include <vector>
 std::vector<int> make_buffer() {
@@ -521,7 +521,7 @@ std::vector<int> consume() {
 
 `Examples/_ch144_move_O2.asm` 显示：`make_buffer` 到 `consume` 中局部变量 `v` 的传递被**保证复制消除**（`consume` 直接复用返回对象的存储，无 memcpy）；只有 `push_back` 触发容量增长时的重分配才会 `call memcpy` 搬迁既有元素——这正说明：**移动针对的是"容器对象本身"，元素级重分配仍可能拷贝，故应善用 `reserve` 预分配**。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：移动语义规范]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 移动语义规范
 ```cpp
 // ❌ 反例：对左值误用 std::move，导致后续误用已移走的对象
 std::string s = "hello";
@@ -529,7 +529,7 @@ std::string t = std::move(s);
 std::cout << s;        // ❌ s 处于有效但未指定状态，读取危险
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：移动语义规范]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 移动语义规范
 ```cpp
 #include <utility>
 #include <vector>
@@ -542,7 +542,7 @@ sink(std::move(local_vec));    // ✅ 明确转让
 
 模板强大但易写出"天书"。`[标准]` C++20 概念（concepts）应优先于 SFINAE 表达约束。
 
-> **示例 35** [难度 ★★☆☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与 SFINAE 可读性
 ```cpp
 // ❌ 反例：旧式 SFINAE，可读性差
 template <typename T, typename = std::void_t<>>
@@ -551,7 +551,7 @@ template <typename T>
 struct has_size<T, std::void_t<decltype(std::declval<T>().size())>> : std::true_type {};
 ```
 
-> **示例 36** [难度 ★★★☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板与 SFINAE 可读性
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -563,14 +563,14 @@ template <HasSize T>
 void report_size(const T& c) { std::cout << c.size(); }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与 SFINAE 可读性
 ```cpp
 // 变参模板：用折叠表达式（C++17）替代递归，更简洁
 template <typename... Ts>
 auto sum_all(Ts... xs) { return (xs + ... + 0); }
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与 SFINAE 可读性
 ```cpp
 // ❌ 反例：模板实参列表与实现纠缠，无文档化注释
 template<template<class,class>class C, class T, class A>
@@ -583,13 +583,13 @@ void f(C<T,A>&){}
 
 注释回答"为什么"，而非复述"做什么"。`[经验]` 好注释解释动机、不变量、陷阱；坏注释只是把代码翻译回中文。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 注释规范（Doxygen）
 ```cpp
 // ❌ 反例：复述代码的废话注释
 i = i + 1;   // 把 i 加 1
 ```
 
-> **示例 40** [难度 ★★★★☆] [主题：注释规范（Doxygen）]
+> **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 注释规范（Doxygen）
 ```cpp
 // ✅ 正例：解释为什么（重要不变量 / 陷阱）
 // 注意：此处必须先加锁再读 hits_，否则与 lookup() 的 const 路径竞争。
@@ -599,7 +599,7 @@ hits_++;
 
 Doxygen 风格注释便于自动生成文档：
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 注释规范（Doxygen）
 ```cpp
 /**
  * @brief 从连接池获取一个空闲连接
@@ -610,7 +610,7 @@ Doxygen 风格注释便于自动生成文档：
 Connection* acquire(int timeout_ms);
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 注释规范（Doxygen）
 ```cpp
 // TODO/FIXME 标记 actionable 项，便于 grep 追踪
 // FIXME: 高并发下 acquire() 可能自旋过久，需引入条件变量（见 ch145）。
@@ -622,7 +622,7 @@ Connection* acquire(int timeout_ms);
 
 C++ 工程普遍遵循"声明在 `.h`、实现在 `.cpp`"的分离，带来编译防火墙与更短依赖链。
 
-> **示例 43** [难度 ★★☆☆☆] [主题：文件组织（声明/实现分离）]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 文件组织（声明/实现分离）
 ```cpp
 // connection.h —— 仅声明，可被多方包含
 #pragma once
@@ -638,7 +638,7 @@ private:
 };
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：文件组织（声明/实现分离）]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 文件组织（声明/实现分离）
 ```cpp
 // connection.cpp —— 实现，翻译单元隔离
 #include "connection.h"
@@ -650,7 +650,7 @@ void Connection::send(const char* buf, int len) { ::send(impl_->fd, buf, len, 0)
 Connection::~Connection() = default;
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：文件组织（声明/实现分离）]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 文件组织（声明/实现分离）
 ```cpp
 // ❌ 反例：模板以外的函数体塞进头文件，导致所有包含方重复编译、耦合膨胀
 // utils.h
@@ -668,19 +668,19 @@ inline void log_time() { /* 大段实现 */ }   // 非模板也应放 .cpp
 
 不同标准引入的特性，取舍依据是"团队工具链版本"与"收益/复杂度比"。`[标准]` 以 C++23 为基线，但应考虑部署目标。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 现代 C++ 特性取舍
 ```cpp
 // C++11：智能指针、范围 for、auto、lambda 已是必用项
 auto f = [](int x) { return x * 2; };
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 现代 C++ 特性取舍
 ```cpp
 // C++14：泛型 lambda、返回值推导
 auto g = [](auto x) { return x + x; };
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 现代 C++ 特性取舍
 ```cpp
 #include <string>
 #include <string_view>
@@ -691,20 +691,20 @@ if (auto [it, ok] = m.try_emplace("k", 1); ok) { /* ... */ }
 std::string_view sv = "zero-copy view";   // ✅ 避免临时 string
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：现代 C++ 特性取舍]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 现代 C++ 特性取舍
 ```cpp
 // C++20：concept、range、三路比较 <=>、modules（渐进引入）
 auto positive = [](std::integral auto x) { return x > 0; };
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 现代 C++ 特性取舍
 ```cpp
 #include <expected>
 // C++23：deducing this、std::expected、flat_map 等
 // auto operator()(this auto& self) { ... }  // 统一值/引用重载
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 现代 C++ 特性取舍
 ```cpp
 // ❌ 反例：为炫技堆叠高级特性，可读性塌方
 auto r = v | std::views::filter([](auto x){return x>0;})
@@ -717,7 +717,7 @@ auto r = v | std::views::filter([](auto x){return x>0;})
 
 跨平台代码必须把 OS/ABI 差异收敛到少量文件，避免 `#ifdef` 在业务逻辑里四处蔓延。`[平台·x86-64/Windows+POSIX]`
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：平台相关代码隔离 [平台·Windo]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台相关代码隔离 [平台·Windo
 ```cpp
 // 所有平台差异收敛到一个编译单元，业务代码不感知
 #if defined(_PLATFORM_WIN)
@@ -735,7 +735,7 @@ int platform_tag() { return static_cast<int>(family()[0]); }
 
 `[实现·GCC15]` 该文件在 Windows 与 POSIX 两种宏定义下均通过 `-Wall -Wextra` 洁净编译（`Examples/_ch144_platform*.o`）；**不定义任何平台宏时 `#error` 直接失败**，证明守卫有效、不会静默编译出错误目标。
 
-> **示例 53** [难度 ★★☆☆☆] [主题：平台相关代码隔离 [平台·Windo]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台相关代码隔离 [平台·Windo
 ```cpp
 #include <memory>
 // 更好的隔离：抽象接口 + 每平台一个 .cpp 实现（编译防火墙）
@@ -800,7 +800,7 @@ PointerAlignment: Left
 
 典型输出（示意）：运行前缩进混乱、括号风格混杂；运行后统一为配置风格。例如：
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：格式化工具]
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 格式化工具
 ```cpp
 // 格式化前（混乱）
 int   x=0;
@@ -831,7 +831,7 @@ void f() {
 | 最大行宽 | 80 | 100+ | 80 |
 | 特性取舍 | 较保守（禁 RTTI/异常） | 较宽松 | 较宽松，重 clang 工具链 |
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：风格文档]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 风格文档
 ```cpp
 // Google 风格示例
 class UrlTable {
@@ -842,7 +842,7 @@ private:
 };
 ```
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：风格文档]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 风格文档
 ```cpp
 // LLVM 风格示例（与 Google 的主要差异在命名大小写）
 class UrlTable {
@@ -863,20 +863,20 @@ private:
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `[[nodiscard]]` 标记“丢弃返回值即错”的函数（如返回错误码）。** 你漏检查返回值导致静默故障。请说明。
-   - [标准] `[[nodiscard]]` 属性要求调用方不丢弃返回值；丢弃会在编译期告警。
-   - [引用] ISO/IEC 14882:2023 §[dcl.attr.nodiscard]（nodiscard 属性）/ C++ Core Guidelines "F.9"；cppreference "attribute:nodiscard" 词条。
+   - <span class="badge badge-std">标准</span> `[[nodiscard]]` 属性要求调用方不丢弃返回值；丢弃会在编译期告警。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.attr.nodiscard]（nodiscard 属性）/ C++ Core Guidelines "F.9"；cppreference "attribute:nodiscard" 词条。
 
 2. **真实场景：`const` 正确性：成员函数不修改对象状态就标 `const`。** 你无法对 const 对象调用本应只读的函数。请说明。
-   - [标准] `const` 成员函数承诺不修改对象的可观察状态（mutable 除外）；这是 cv 限定的一部分。
-   - [引用] ISO/IEC 14882:2023 §[dcl.type.cv]（const 限定）/ [class.this]（this 的 cv）；cppreference "const-correctness" 词条。
+   - <span class="badge badge-std">标准</span> `const` 成员函数承诺不修改对象的可观察状态（mutable 除外）；这是 cv 限定的一部分。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.type.cv]（const 限定）/ [class.this]（this 的 cv）；cppreference "const-correctness" 词条。
 
 3. **真实场景：RAII 让资源（锁/文件/连接）在作用域结束自动释放，避免忘记 cleanup。** 你写异常路径时资源泄漏。请说明。
-   - [标准] 析构函数在作用域正常结束或栈展开时必然调用，是 RAII 与异常安全的基石。
-   - [引用] ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（栈展开与析构）；cppreference "RAII" 词条。
+   - <span class="badge badge-std">标准</span> 析构函数在作用域正常结束或栈展开时必然调用，是 RAII 与异常安全的基石。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（栈展开与析构）；cppreference "RAII" 词条。
 
 代码风格的本质是**一致性工程**。本章取证结论汇总：
 
-> **示例 57** [难度 ★★★★☆] [主题：小结]
+> **示例 57** <span class="badge badge-exp">难度 ★★★★☆</span> · 小结
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ 风格门禁清单（落地即强制执行）                                │
@@ -899,7 +899,7 @@ private:
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：代码风格从 K&R 到 clang-format
-[史] C 风格缩进（K&R 风格）源自 Dennis Ritchie 与 Brian Kernighan 1978 年的《The C Programming Language》；GNU 项目随后制定 GNU Coding Standards，改用全花括号换行（Allman 风格变体）并强制 2 空格缩进、函数名起头。C++ 阵营长期三足鼎立：Google（Google C++ Style Guide，2008 年起，禁 RTTI/异常、强调 const）、LLVM/Clang（LLVM Coding Standards，4 空格、CamelCase 类型名）、Microsoft（Hungarian 风味）。[轶] 2011–2012 年 LLVM 团队（主要作者 Daniel Jasper）推出 `clang-format`，把"风格"从"人工纪律"变成"可机械执行的格式化配置"，并配套 `clang-tidy` 做语义级 lint——这彻底改变了大型 C++ 项目的风格治理方式。[评] 风格之争本质是"可读性与自动化"的权衡：一旦有 clang-format，风格规范的文本描述退居其次，关键是 `.clang-format` 配置文件与 CI 门禁。
+<span class="badge badge-history">史</span> C 风格缩进（K&R 风格）源自 Dennis Ritchie 与 Brian Kernighan 1978 年的《The C Programming Language》；GNU 项目随后制定 GNU Coding Standards，改用全花括号换行（Allman 风格变体）并强制 2 空格缩进、函数名起头。C++ 阵营长期三足鼎立：Google（Google C++ Style Guide，2008 年起，禁 RTTI/异常、强调 const）、LLVM/Clang（LLVM Coding Standards，4 空格、CamelCase 类型名）、Microsoft（Hungarian 风味）。<span class="badge badge-anecdote">轶</span> 2011–2012 年 LLVM 团队（主要作者 Daniel Jasper）推出 `clang-format`，把"风格"从"人工纪律"变成"可机械执行的格式化配置"，并配套 `clang-tidy` 做语义级 lint——这彻底改变了大型 C++ 项目的风格治理方式。<span class="badge badge-comment">评</span> 风格之争本质是"可读性与自动化"的权衡：一旦有 clang-format，风格规范的文本描述退居其次，关键是 `.clang-format` 配置文件与 CI 门禁。
 
 ### ㉒.2 真实工程坐标：风格活在哪些产品里
 
@@ -923,13 +923,13 @@ private:
 | 陷阱 | 后果 | 解法 |
 |------|------|------|
 | **整体 reformat 毁掉 `git blame`** | 一次性全仓库 clang-format 把每行"最后修改者"变成格式化者，历史追溯失效 | 分阶段按目录渐进迁移，或用 `.git-blame-ignore-revs` |
-| **跨平台行尾（CRLF/LF）** | 未配 `.gitattributes` 时 clang-format 改动整文件行尾，触发巨型 diff 甚至破坏字节敏感工具链 [评] | 全库统一 LF（见本项目 CONVENTIONS） |
+| **跨平台行尾（CRLF/LF）** | 未配 `.gitattributes` 时 clang-format 改动整文件行尾，触发巨型 diff 甚至破坏字节敏感工具链 <span class="badge badge-comment">评</span> | 全库统一 LF（见本项目 CONVENTIONS） |
 | **大 PR 夹带格式化** | 审查者被迫在风格噪音中找逻辑 bug | "纯格式化"与"逻辑改动"分两次提交 |
 
 > 表注（㉒.3）：三类陷阱的共同根因是"把格式化当成一次性/顺手动作"；正确做法是把它变成渐进、隔离、工具强制的日常工序。
 
 ### ㉒.4 与标准的互动：风格与 C++ Core Guidelines
-ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bjarne Stroustrup 与 Herb Sutter 主导，2015 起）的 NL（Naming and Layout）、F（Functions）、P（Concurrency）等规则已成事实上的现代 C++ 风格共识，并被 `clang-tidy` 的 `cppcoreguidelines-*` 检查项直接落地。C++11 起的现代特性（`auto`、`range-for`、`nullptr`、`enum class`）也逐步改变了风格规范（例如 Google 早期禁 C++11 特性，后随标准演进放开）。[评] 风格规范的生命力来自"跟随标准演进 + 可被工具强制执行"，纯文档式规范在大型项目里必然 drift。
+ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bjarne Stroustrup 与 Herb Sutter 主导，2015 起）的 NL（Naming and Layout）、F（Functions）、P（Concurrency）等规则已成事实上的现代 C++ 风格共识，并被 `clang-tidy` 的 `cppcoreguidelines-*` 检查项直接落地。C++11 起的现代特性（`auto`、`range-for`、`nullptr`、`enum class`）也逐步改变了风格规范（例如 Google 早期禁 C++11 特性，后随标准演进放开）。<span class="badge badge-comment">评</span> 风格规范的生命力来自"跟随标准演进 + 可被工具强制执行"，纯文档式规范在大型项目里必然 drift。
 
 - `[评]` WG21 **P0645R0→…→P0645R10**（Text Formatting，<https://wg21.link/P0645>，C++20）把 {fmt} 的 `{}-占位` 变成标准 `<format>`，间接统一了「字符串插值该用什么风格」——跨团队一致风格有了语言级抓手，减少各项目自创 printf/sprintf/iostream 混用。
 - `[评]` ISO/IEC 14882:2020 在 `[format]` 规定「格式串为编译期常量时做检查」；委员会理由：把「格式错误」从运行期崩溃提前到编译期，是「风格即契约」在格式化上的落地。
@@ -943,7 +943,7 @@ ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bj
 
 ## 附录 A：工业代码规范对比 [F: Industry / B: Principle]
 
-> **示例 58** [难度 ★★☆☆☆] [主题：附录 A：工业代码规范对比 [F: ]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业代码规范对比 [F:
 ```
 C++ 代码风格——四大工业规范对比:
 
@@ -968,7 +968,7 @@ Qt Coding Style:
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：附录 B：面试 [J: Learni]
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B：面试 [J: Learni
 ```
 Q: clang-format 团队采纳的最佳实践？
 A: .clang-format 文件入 Git; CI pre-commit hook 自动检查; PR 不接受未格式化代码
@@ -990,7 +990,7 @@ A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → �
 
 > 表注（附录 C）：四个阶段串起"自觉 → 文档 → 工具"的演化主线；最后一跳（工具化）是决定性的——一致性不再依赖人的自律，而由 `.clang-format` + PR 门禁保证。
 
-> **[评]** 风格的演化方向是"从人的自觉 → 团队的文档 → 工具的强制"：现代实践的设计目标是让机器承担一致性检查，让人专注逻辑。
+> **<span class="badge badge-comment">评</span>** 风格的演化方向是"从人的自觉 → 团队的文档 → 工具的强制"：现代实践的设计目标是让机器承担一致性检查，让人专注逻辑。
 
 ## 联合使用场景
 
@@ -1040,7 +1040,7 @@ A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → �
 
 <details><summary>答案与解析</summary>
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 // .clang-format （示意，纯配置非 C++）
 // BasedOnStyle: Google
@@ -1050,9 +1050,9 @@ A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → �
 int main() { std::cout << "formatted\n"; }
 ```
 
-[标准] 格式化是纯排版、不改变语义；`clang-format` 把风格固化成文件，任何人 `git diff` 只看逻辑变更，消除无谓争论。
+<span class="badge badge-std">标准</span> 格式化是纯排版、不改变语义；`clang-format` 把风格固化成文件，任何人 `git diff` 只看逻辑变更，消除无谓争论。
 
-[引用] 风格工具见 LLVM/Clang 官方 `clang-format` 文档（clang.llvm.org）；Google C++ Style Guide（google.github.io/styleguide/cppguide.html）的「Formatting」章节给出可量化规则；ch144 ⑱ 详述 `clang-format` 命令与典型输出。
+<span class="badge badge-ref">引用</span> 风格工具见 LLVM/Clang 官方 `clang-format` 文档（clang.llvm.org）；Google C++ Style Guide（google.github.io/styleguide/cppguide.html）的「Formatting」章节给出可量化规则；ch144 ⑱ 详述 `clang-format` 命令与典型输出。
 
 </details>
 
@@ -1062,7 +1062,7 @@ int main() { std::cout << "formatted\n"; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #pragma once
 #include <iostream>
@@ -1070,9 +1070,9 @@ struct Config { int v = 0; };          // 头文件内容，多次 include 也�
 int main() { std::cout << Config{}.v << '\n'; }
 ```
 
-[标准] `#pragma once` 让编译器在翻译单元内只处理该文件一次；传统 `ifndef` 守卫是标准、可移植的方案，但宏名需全局唯一以防冲突。用 `g++ -E` 可见被守卫内容仅出现一次。
+<span class="badge badge-std">标准</span> `#pragma once` 让编译器在翻译单元内只处理该文件一次；传统 `ifndef` 守卫是标准、可移植的方案，但宏名需全局唯一以防冲突。用 `g++ -E` 可见被守卫内容仅出现一次。
 
-[引用] 包含守卫见 cppreference「Replacing text macros」与 GCC/Clang 文档的 `#pragma once`；C++ Core Guidelines 的「SF 源文件与宏」章节讨论头文件组织；ch144 ④ 用 `g++ -E` 实证展开。
+<span class="badge badge-ref">引用</span> 包含守卫见 cppreference「Replacing text macros」与 GCC/Clang 文档的 `#pragma once`；C++ Core Guidelines 的「SF 源文件与宏」章节讨论头文件组织；ch144 ④ 用 `g++ -E` 实证展开。
 
 </details>
 
@@ -1082,7 +1082,7 @@ int main() { std::cout << Config{}.v << '\n'; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 62** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1094,9 +1094,9 @@ struct Box {
 int main() { Box b; std::cout << b.capacity() << '\n'; }
 ```
 
-[标准] `const` 成员函数承诺不修改对象逻辑状态；返回 `const&` 防止调用方改内部；`constexpr` 让值在编译期确定（`const` 只是运行期只读）；`mutable` 仅用于缓存等「逻辑 const 但物理可变」的场景。
+<span class="badge badge-std">标准</span> `const` 成员函数承诺不修改对象逻辑状态；返回 `const&` 防止调用方改内部；`constexpr` 让值在编译期确定（`const` 只是运行期只读）；`mutable` 仅用于缓存等「逻辑 const 但物理可变」的场景。
 
-[引用] const 正确性见 C++ Core Guidelines 的「Con 常量与不可变性」章节（如 Con.1–Con.4）；`constexpr` 见 cppreference 与 C++ 标准 `[dcl.constexpr]`；ch144 ⑥、⑪ 详述 const/constexpr/mutable 规范。
+<span class="badge badge-ref">引用</span> const 正确性见 C++ Core Guidelines 的「Con 常量与不可变性」章节（如 Con.1–Con.4）；`constexpr` 见 cppreference 与 C++ 标准 `[dcl.constexpr]`；ch144 ⑥、⑪ 详述 const/constexpr/mutable 规范。
 
 </details>
 
@@ -1299,7 +1299,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 63** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 63** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 #include <vector>

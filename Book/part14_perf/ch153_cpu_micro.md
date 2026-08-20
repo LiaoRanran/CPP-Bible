@@ -27,15 +27,15 @@
 
 > 紧接 0.2 编年最后一条（2018，Spectre / Meltdown 让微架构细节第一次成为安全议题）。
 
-- [史] Spectre / Meltdown 的**硬件缓解**（如内核页表隔离 KPTI、微码更新）带来可观测的性能回退（部分负载 5%–30%），这让"微架构安全"与"性能"第一次被摆上同一架天平——C++ 程序员也得关心分支预测器如何被训练。
-- [史] SMT（超线程）/ 分支目标缓冲（BTB）/ 返回栈缓冲（RSB）持续演进，同时 ARM 的 big.LITTLE 与 Apple 的 Firestorm/Icestorm 把"同构核心"假设打破，ILP 天花板与调度策略因芯片而异。
-- [史] C++ 内存模型（C++11 起）在 C++20 后配合 `std::atomic_ref`、`std::atomic<T>::wait/notify`，让"哪些重排可接受"的控制更细，程序员得以在顺序语义保护下写出喂得饱乱序执行单元的同步代码。
-- [评] 0.3 的"承认被硬件重排"路线已被安全事件巩固：不是要不要信硬件，而是必须用 `memory_order` 显式框定边界，其余自由交给 OoO 引擎。
-- [轶] 经典教训案例：一个无锁计数器在 Intel 上飞快、在 AMD 上慢一倍，排查半天才发现是 false sharing 撞上了不同的缓存一致性协议——同一段 C++，微架构不同结果迥异。
+- <span class="badge badge-history">史</span> Spectre / Meltdown 的**硬件缓解**（如内核页表隔离 KPTI、微码更新）带来可观测的性能回退（部分负载 5%–30%），这让"微架构安全"与"性能"第一次被摆上同一架天平——C++ 程序员也得关心分支预测器如何被训练。
+- <span class="badge badge-history">史</span> SMT（超线程）/ 分支目标缓冲（BTB）/ 返回栈缓冲（RSB）持续演进，同时 ARM 的 big.LITTLE 与 Apple 的 Firestorm/Icestorm 把"同构核心"假设打破，ILP 天花板与调度策略因芯片而异。
+- <span class="badge badge-history">史</span> C++ 内存模型（C++11 起）在 C++20 后配合 `std::atomic_ref`、`std::atomic<T>::wait/notify`，让"哪些重排可接受"的控制更细，程序员得以在顺序语义保护下写出喂得饱乱序执行单元的同步代码。
+- <span class="badge badge-comment">评</span> 0.3 的"承认被硬件重排"路线已被安全事件巩固：不是要不要信硬件，而是必须用 `memory_order` 显式框定边界，其余自由交给 OoO 引擎。
+- <span class="badge badge-anecdote">轶</span> 经典教训案例：一个无锁计数器在 Intel 上飞快、在 AMD 上慢一倍，排查半天才发现是 false sharing 撞上了不同的缓存一致性协议——同一段 C++，微架构不同结果迥异。
 
 > 史料来源：clang.llvm.org（内存模型/原子）、spectreattack.com
 
-## ① 学习目标 [标准]
+## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
 [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)
@@ -65,7 +65,7 @@
 
 ## ④ 知识图谱（ASCII）[平台·x86-64]
 
-> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）[平台·x86]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）[平台·x86
 ```
                  x86-64 核心(单线程视角)
    ┌──────────────────────────────────────────────────┐
@@ -126,7 +126,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：依赖链 vs 无关链（微架构视角）[平台·x86-64]
 
-> **示例 2** [难度 ★★★☆☆] [主题：内存图：依赖链 vs 无关链]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：依赖链 vs 无关链
 ```
 依赖链 (关键路径=各延迟之和):
   t0: a = a + x0      ┐
@@ -167,7 +167,7 @@ sequenceDiagram
 
 **分支被编译为 `cmov`（无分支）**：当编译器判断「用条件传送比预测更好」时，消除分支。
 
-> **示例 3** [难度 ★★★☆☆] [主题：汇编分析（-O2，Intel 语法）]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析（-O2，Intel 语法）
 ```cpp
 // 文件：Examples/ch153_cmov_asm.cpp  行号：1-50（完整示例）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel ch153_cmov_asm.cpp -o ch153_cmov_asm.asm
@@ -199,17 +199,17 @@ int main() { std::cout << pick(1, 10, 20) << "\n"; return 0; }
 - `[实现·GCC15]`：`[[likely]]`/`__builtin_expect` 不改变「是否分支」，而是生成**偏向热路径的基本块布局**（热路径紧挨、冷路径跳走），减少取指/译码浪费与 I-cache 压力。
 - `[平台·x86-64]`：现代 x86-64 分支误预测惩罚约 **15~20 周期**（[微架构·x86-64][UNVERIFIED]，AMD/Intel 略有差异，深流水线更长）；ARM 通常更短（约 10~15）。
 
-## ⑪ STL 联系 [标准]
+## ⑪ STL 联系 <span class="badge badge-std">标准</span>
 
 - 算法（⟶ `Book/part08_algorithms/ch95_algo_overview.md`）的循环是否「友好」直接受本章影响：随机访问 + 连续内存 + 可向量化 → 高 ILP、少分支；链表/树遍历 → 指针追逐、强依赖、分支多。
 - `std::vector` 顺序遍历（⟶ `Book/part07_stl/ch77_vector.md`）是「流水线/预取友好」的标杆；`std::list` 是反面教材（每节点一次不可预测分支 + 缓存未命中）。
 - `std::sort` 等内部用「三路划分 + 无分支交换」尽量压低分支误预测（⟶ `Book/part08_algorithms/ch96_sorting.md`）。
 
-## ⑫ 工业案例：热点函数去分支与拆依赖链 [经验]
+## ⑫ 工业案例：热点函数去分支与拆依赖链 <span class="badge badge-exp">经验</span>
 
 **案例 1（热路径偏向）**：解析协议时，合法报文占 99.9%，错误包极罕见——把错误分支标 `[[unlikely]]`。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：工业案例：热点函数去分支与拆依赖链 ]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：热点函数去分支与拆依赖链
 ```cpp
 // 案例1：协议解析热路径偏向
 #include <iostream>
@@ -227,7 +227,7 @@ int main() {
 
 **案例 2（拆依赖链加速规约）**：大数组求和从「单累加器串行链」改为「4 路独立累加器」，吃满多个执行端口。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：工业案例：热点函数去分支与拆依赖链 ]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：热点函数去分支与拆依赖链
 ```cpp
 // 案例2：4 路累加拆依赖链（见 ⑲ 实测对比）
 #include <vector>
@@ -255,7 +255,7 @@ int main() {
   - 循环展开、if-conversion（把分支转 `cmov`/无分支）在 `gcc/tree-ssa-ifcombine.cc` 与「模调度/peeling」pass 中。
 - `[平台·x86-64]`：`__builtin_expect(expr, likely)` 是 GCC 扩展，等价于 `[[likely]]` 的底层表达；`[[likely]]` 是标准、可移植写法（推荐）。
 
-## ⑭ WG21 提案（编号 + 标题 + 动机）[标准]
+## ⑭ WG21 提案（编号 + 标题 + 动机）<span class="badge badge-std">标准</span>
 
 | 提案 | 标题 | 动机 |
 |---|---|---|
@@ -265,7 +265,7 @@ int main() {
 
 - `[经验]`：提示**只影响布局与预测偏好**，不会让错误分支变快；更重要的是「减少分支总数」与「让数据可预测」，而非贴满 `[[likely]]`。
 
-## ⑮ 面试题 [标准]
+## ⑮ 面试题 <span class="badge badge-std">标准</span>
 
 1. 分支误预测为什么贵？大概多少周期？
    ⟶ 流水线被清空、前端重取，现代 x86-64 约 15~20 周期。
@@ -278,7 +278,7 @@ int main() {
 5. 链表遍历为何慢于数组顺序遍历？
    ⟶ 节点分散（缓存未命中）+ 每个 `next` 一次不可预测分支 + 强指针依赖，ILP 与预取都无从发挥。
 
-## ⑯ 易错点 [标准]
+## ⑯ 易错点 <span class="badge badge-std">标准</span>
 
 - **盲目贴 `[[likely]]`**：在难以预测或数据均匀的分支上贴提示反而误导预测器，可能更慢。
 - **误以为 `[[likely]]` 消除分支**：它不消除分支，只是改布局；要真正去分支得写**无分支代码**（位运算/`cmov`）。
@@ -287,7 +287,7 @@ int main() {
 - **跨核 TSC 不同步**：在 NUMA/多核上直接比较不同核的 `rdtsc` 无意义。
 - **把 `-O0` 测试结果当真**：未优化代码里分支/依赖结构与 `-O2` 完全不同，测量必须在目标优化级别。
 
-## ⑰ FAQ [标准]
+## ⑰ FAQ <span class="badge badge-std">标准</span>
 
 **Q：什么时候该用无分支代码（branchless）？**
 A：当分支**数据不可预测**且热（误预测成本高）时，用 `cmov`/位运算代替；但若分支高度可预测，`cmov` 反而可能因多算两个分支而增加工作——用测量说话（⟶ ⑲）。
@@ -301,7 +301,7 @@ A：在满足「两个分支都无副作用、可廉价计算」时，`-O2` 常�
 **Q：`rdtsc` 能取代 `steady_clock` 量时间吗？**
 A：不能通用（⟶ `Book/part14_perf/ch152_perf_model.md` ⑰）。只在固定频率、绑核、加 `lfence` 的微架构研究里近似用。
 
-## ⑱ 最佳实践 [经验]
+## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
 1. **先测后改**：用 `steady_clock`（⟶ ch152）量化分支/依赖链的真实成本，再决定去分支或展开。
 2. **减少分支总数**：用查表、无分支算术、批量处理替代逐元素 `if`。
@@ -310,14 +310,14 @@ A：不能通用（⟶ `Book/part14_perf/ch152_perf_model.md` ⑰）。只在固
 5. **让数据可预测**：排序后处理、批处理同类数据，降低误预测率。
 6. **绑核 + 关 SMT + 固定频率** 再测微架构效应，保证可复现。
 
-## ⑲ 性能分析（实测对比）[经验]
+## ⑲ 性能分析（实测对比）<span class="badge badge-exp">经验</span>
 
 - **分支误预测**：排序数据（一次跳转）vs 交替数据（每步可能失败），后者耗时显著更高（量级数倍~数十倍，取决于核心与数据规模）。
 - **依赖链**：单累加器循环吞吐量被加法延迟钉死；4 路累加在 OoO 核心上通常快约 **2~4×**（受执行端口数限制，并非严格 4×）。
 - **无分支 vs 分支**：数据均匀时 `cmov`/位运算可能因「两路都算」而更慢；数据不可预测时更稳更快——**以测量为准**。
 - 以下示例给出可复现的对比骨架（数值为示意量级，实机请自行跑）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：性能分析（实测对比）[经验]]
+> **示例 6** [难度 ★★☆☆☆] [主题：性能分析（实测对比）<span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 实测骨架: 串行依赖 vs 4 路无关链 (示意量级)
 #include <vector>
@@ -342,21 +342,21 @@ int main() {
 }
 ```
 
-## ⑳ 跨语言对比 [标准]
+## ⑳ 跨语言对比 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：分支预测失败拖慢热路径，你用 `[[likely]]`/`[[unlikely]]` 给提示。** 你调关键循环。请说明。
-   - [标准] `[[likely]]`/`[[unlikely]]` 是给实现的分支概率提示，不强制硬件行为，属实现层优化。
-   - [引用] ISO/IEC 14882:2023 §[dcl.attr.likelihood]（likely/unlikely 属性）/ P0479；cppreference "attribute:likely" 词条。
+   - <span class="badge badge-std">标准</span> `[[likely]]`/`[[unlikely]]` 是给实现的分支概率提示，不强制硬件行为，属实现层优化。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.attr.likelihood]（likely/unlikely 属性）/ P0479；cppreference "attribute:likely" 词条。
 
 2. **真实场景：你理解“缓存未命中”比“指令数”更决定延迟”，但它不在语言保证内。** 你做数据布局优化。请说明层级边界。
-   - [标准] 缓存/流水线是硬件微架构层；C++ 只保证抽象机语义与对象内存布局（连续/对齐）。
-   - [引用] ISO/IEC 14882:2023 §[intro.abstract]（抽象机）/ [dcl.array]（连续存储）/ [basic.align]；cppreference。
+   - <span class="badge badge-std">标准</span> 缓存/流水线是硬件微架构层；C++ 只保证抽象机语义与对象内存布局（连续/对齐）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.abstract]（抽象机）/ [dcl.array]（连续存储）/ [basic.align]；cppreference。
 
 3. **真实场景：用 `std::hardware_destructive_interference_size` 对齐避免 false sharing。** 你做无锁并发。请说明。
-   - [标准] 该常量提供“ Destroy 干扰”的硬件缓存行尺寸提示（实现定义），用于 padding 隔离。
-   - [引用] ISO/IEC 14882:2023 §[support.limits]（hardware_*_interference_size）/ P0154；cppreference "std::hardware_destructive_interference_size" 词条。
+   - <span class="badge badge-std">标准</span> 该常量提供“ Destroy 干扰”的硬件缓存行尺寸提示（实现定义），用于 padding 隔离。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[support.limits]（hardware_*_interference_size）/ P0154；cppreference "std::hardware_destructive_interference_size" 词条。
 
 | 能力 | C++ | Rust | C (GCC/Clang) | Go | 汇编/SIMD |
 |---|---|---|---|---|---|
@@ -376,7 +376,7 @@ int main() {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：从"顺序执行"幻象到乱序执行
-[史] 早期处理器（如 8086）是顺序（in-order）执行的；现代 x86（Pentium Pro 1995 起）与 ARM 全走向**乱序执行（OoO）+ 按序退休**，靠寄存器重命名、保留站、重排缓冲把"程序序"与"执行序"解耦。[史] **Agner Fog** 自 1990 年代起持续发布《Instruction Tables》《Microarchitecture》手册，是工程师逆向摸清各代 CPU 流水线/端口/延迟的民间权威；Intel/AMD 的官方优化手册则是另一源头。[史] **Ulrich Drepper** 2007 年在 Red Hat 发表《What Every Programmer Should Know About Memory》，把 cache/TLB/预取的成本模型讲透，是本章 ⑫ 实测的文献根。[评] 微架构知识属于"标准管不到、但性能命门"的地带——C++ 标准只定义抽象机，真正快慢由硅片决定。
+<span class="badge badge-history">史</span> 早期处理器（如 8086）是顺序（in-order）执行的；现代 x86（Pentium Pro 1995 起）与 ARM 全走向**乱序执行（OoO）+ 按序退休**，靠寄存器重命名、保留站、重排缓冲把"程序序"与"执行序"解耦。<span class="badge badge-history">史</span> **Agner Fog** 自 1990 年代起持续发布《Instruction Tables》《Microarchitecture》手册，是工程师逆向摸清各代 CPU 流水线/端口/延迟的民间权威；Intel/AMD 的官方优化手册则是另一源头。<span class="badge badge-history">史</span> **Ulrich Drepper** 2007 年在 Red Hat 发表《What Every Programmer Should Know About Memory》，把 cache/TLB/预取的成本模型讲透，是本章 ⑫ 实测的文献根。<span class="badge badge-comment">评</span> 微架构知识属于"标准管不到、但性能命门"的地带——C++ 标准只定义抽象机，真正快慢由硅片决定。
 
 ### ㉒.2 真实工程坐标：微架构认知活在哪些项目里
 
@@ -402,9 +402,9 @@ int main() {
 - **误以为顺序执行**：按"源码顺序"估算延迟，忽略了 OoO 已把无关链并行——或相反，误以为无关链真并行却撞同一执行端口。
 
 ### ㉒.4 与标准的互动：抽象机 vs 真实硅片
-ISO C++ 只在"抽象机"层面定义语义，对"多少周期"只字不提；C++ 标准里的 `[[likely]]`/`[[unlikely]]`（C++20）与 `#pragma`/`__builtin_expect` 是标准给程序员的少数"可向编译器暗示分支概率"的钩子，间接影响分支布局。[评] 微架构优化是"在标准允许的范围内，迎合具体 CPU"的艺术，换平台常需重调。
+ISO C++ 只在"抽象机"层面定义语义，对"多少周期"只字不提；C++ 标准里的 `[[likely]]`/`[[unlikely]]`（C++20）与 `#pragma`/`__builtin_expect` 是标准给程序员的少数"可向编译器暗示分支概率"的钩子，间接影响分支布局。<span class="badge badge-comment">评</span> 微架构优化是"在标准允许的范围内，迎合具体 CPU"的艺术，换平台常需重调。
 
-**修订链补强（抽象机器 vs 真实流水线）**：C++ 标准定义的是“抽象机器”（[intro.abstract]），对“几条指令、多少 cycle”只字不提——这是 [STANDARD] 故意留白，把 [MICROARCHITECTURE] 决策交给实现。代价是同一段代码在不同 CPU 上 IPC 可能差数倍。WG21 近年通过 `[[likely]]`/`[[unlikely]]`（[P0479](https://wg21.link/P0479)，C++20）与 `std::hardware_interference_size`（[P0154](https://wg21.link/P0154)）给出有限的“向硬件透传意图”的官方通道，但主体优化仍靠编译器优化 pass（`-O2`/`-O3`/PGO/BOLT）与厂商微架构知识。
+**修订链补强（抽象机器 vs 真实流水线）**：C++ 标准定义的是“抽象机器”（[intro.abstract]），对“几条指令、多少 cycle”只字不提——这是 <span class="badge badge-std">STANDARD</span> 故意留白，把 <span class="badge badge-microarch">MICROARCHITECTURE</span> 决策交给实现。代价是同一段代码在不同 CPU 上 IPC 可能差数倍。WG21 近年通过 `[[likely]]`/`[[unlikely]]`（[P0479](https://wg21.link/P0479)，C++20）与 `std::hardware_interference_size`（[P0154](https://wg21.link/P0154)）给出有限的“向硬件透传意图”的官方通道，但主体优化仍靠编译器优化 pass（`-O2`/`-O3`/PGO/BOLT）与厂商微架构知识。
 
 ### ㉒.5 权威引用
 - [WG21 P0479 — [[likely]]/[[unlikely]]](https://wg21.link/P0479) — C++20 分支提示属性
@@ -437,9 +437,9 @@ ISO C++ 只在"抽象机"层面定义语义，对"多少周期"只字不提；C+
 
 > 偏离说明：本章依规将「推荐阅读」替换为「跨语言对比」（⑳）与「源码阅读路线」（附录），符合 CONVENTIONS §2 第 20 条最新要求。
 
-### 补充完整可编译示例（ch153_ex01 – ch153_ex30，每块独立可编译）[标准]
+### 补充完整可编译示例（ch153_ex01 – ch153_ex30，每块独立可编译）<span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex01：[[likely]] 标注热路径
 #include <iostream>
@@ -451,7 +451,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex02：[[unlikely]] 标注冷路径（错误/异常）
 #include <iostream>
@@ -463,7 +463,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex03：__builtin_expect（GCC 扩展，等价 [[likely]]）
 #include <iostream>
@@ -475,7 +475,7 @@ int main() {
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex04：__builtin_expect_with_probability（带概率提示）
 #include <iostream>
@@ -487,7 +487,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex05：分支误预测实测（排序 vs 交替数据）
 #include <vector>
@@ -510,7 +510,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex06：长依赖链（串行累加）吞吐受加法延迟钉死
 #include <vector>
@@ -528,7 +528,7 @@ int main() {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex07：4 路无关累加器（拆依赖链, 提升 ILP）
 #include <vector>
@@ -547,7 +547,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex08：手动循环展开（4 路，等价于 ex07 思路）
 #include <vector>
@@ -566,7 +566,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex09：无分支 abs（位运算消除分支）
 #include <iostream>
@@ -578,7 +578,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex10：条件传送（cmov 风格的 ? : 写法）
 #include <iostream>
@@ -590,7 +590,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex11：__builtin_prefetch（提前取数据, 缓解长延迟加载）
 #include <vector>
@@ -608,7 +608,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex12：函数调用开销测量
 #include <chrono>
@@ -624,7 +624,7 @@ int main() {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex13：分支 vs 无分支 吞吐对比
 #include <vector>
@@ -646,7 +646,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex14：UDL 字面量 operator"" _cyc（带空格写法）
 #include <iostream>
@@ -654,7 +654,7 @@ constexpr long long operator"" _cyc(unsigned long long n) { return static_cast<l
 int main() { auto c = 5_cyc; std::cout << "cycles=" << c << "\n"; return 0; }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex15：特性测试宏 __cplusplus >= 202002L
 #include <iostream>
@@ -668,7 +668,7 @@ int main() {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex16：折叠表达式无返回值聚合 ((s+=xs), ...)
 #include <tuple>
@@ -682,7 +682,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex17：两条独立链（超标量可并行）
 #include <vector>
@@ -700,7 +700,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex18：高延迟依赖链（乘加链）
 #include <vector>
@@ -718,7 +718,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex19：分支 vs cmov 实测
 #include <vector>
@@ -740,7 +740,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex20：alignas(64) 缓存行对齐
 #include <iostream>
@@ -748,7 +748,7 @@ struct alignas(64) CacheLine { long v[8]; };
 int main() { std::cout << "size=" << sizeof(CacheLine) << "\n"; return 0; }
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex21：热路径 [[likely]] 遍历计时（仅演示语法 + 小基准）
 #include <vector>
@@ -766,7 +766,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex22：指针追逐（强内存依赖, 测延迟/ROB 限制）
 #include <vector>
@@ -785,7 +785,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex23：顺序访问 vs 大步长访问（内存级并行/缓存友好性）
 #include <vector>
@@ -807,7 +807,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★★★☆☆] [主题：补充完整可编译示例]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex24：寄存器压力——多个无关累加器
 #include <chrono>
@@ -824,7 +824,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex25：编译期已知分支（if constexpr, 无运行期分支）
 #include <iostream>
@@ -836,7 +836,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex26：8 路无关累加（逼近执行端口数上限）
 #include <vector>
@@ -858,7 +858,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex27：偏斜数据（99.9% 走热路径）遍历计时
 #include <vector>
@@ -876,7 +876,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex28：虚函数调用开销（动态分派 vs 内联）
 #include <chrono>
@@ -894,7 +894,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex29：无分支 min（位运算）对比 ?: min（数据均匀时应测后定）
 #include <iostream>
@@ -907,7 +907,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
 // ch153_ex30：综合——依赖链长度对规约时间的影响（乘加链长度可调）
 #include <vector>
@@ -927,7 +927,7 @@ int main() {
 
 ## 补充分编可编译示例
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 ```cpp
 #include <iostream>
 #include <vector>
@@ -986,7 +986,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 交替 `0/1` 让分支方向频繁翻转，预测器误预测率高；排序后同值成段，预测器几乎全中。现代 CPU 的投机执行与分支目标缓冲（BTB）依赖历史局部性。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <algorithm>
 #include <vector>
@@ -1002,9 +1002,9 @@ int main() {
 }
 ```
 
-[标准] 这属于微架构行为，C++ 标准不规定分支预测；排序改变访存/分支局部性从而改变实测吞吐。
+<span class="badge badge-std">标准</span> 这属于微架构行为，C++ 标准不规定分支预测；排序改变访存/分支局部性从而改变实测吞吐。
 
-[引用] Agner Fog *The microarchitecture of Intel, AMD and VIA CPUs* <https://www.agner.org/optimize/microarchitecture.pdf>；`std::sort` 见 <https://en.cppreference.com/w/cpp/algorithm/sort>。
+<span class="badge badge-ref">引用</span> Agner Fog *The microarchitecture of Intel, AMD and VIA CPUs* <https://www.agner.org/optimize/microarchitecture.pdf>；`std::sort` 见 <https://en.cppreference.com/w/cpp/algorithm/sort>。
 
 </details>
 
@@ -1016,7 +1016,7 @@ int main() {
 
 单条 `a += i` 每轮都依赖上一轮结果，形成串行依赖链，吞吐被单条链的延迟（而非端口数）卡死；拆成两条互不依赖的链后，乱序引擎可让它们重叠执行。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
 ```cpp
 #include <iostream>
 int main() {
@@ -1028,9 +1028,9 @@ int main() {
 }
 ```
 
-[标准] 依赖链是数据依赖导致的串行化，标准不规定，但决定实际 IPC。
+<span class="badge badge-std">标准</span> 依赖链是数据依赖导致的串行化，标准不规定，但决定实际 IPC。
 
-[引用] Agner Fog *Instruction tables* <https://www.agner.org/optimize/instruction_tables.pdf>；LLVM 调度模型文档 <https://llvm.org/docs/CodeGenerator.html>。
+<span class="badge badge-ref">引用</span> Agner Fog *Instruction tables* <https://www.agner.org/optimize/instruction_tables.pdf>；LLVM 调度模型文档 <https://llvm.org/docs/CodeGenerator.html>。
 
 </details>
 
@@ -1042,7 +1042,7 @@ int main() {
 
 把累加结果立刻回读会制造别名/假依赖；乱序引擎靠 store buffer 把写缓冲、靠内存歧义预测判断后续读是否命中未提交写，预测失败时回滚。拆分读写目标可消除该依赖。
 
-> **示例 40** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 int main() {
@@ -1055,9 +1055,9 @@ int main() {
 }
 ```
 
-[标准] 内存模型（`[intro.races]`）只规定可见性/顺序约束，具体如何重叠由微架构实现。
+<span class="badge badge-std">标准</span> 内存模型（`[intro.races]`）只规定可见性/顺序约束，具体如何重叠由微架构实现。
 
-[引用] Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>；`perf` 事件见 <https://man7.org/linux/man-pages/man1/perf.1.html>。
+<span class="badge badge-ref">引用</span> Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>；`perf` 事件见 <https://man7.org/linux/man-pages/man1/perf.1.html>。
 
 </details>
 
@@ -1277,7 +1277,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 41** [难度 ★★☆☆☆] [主题：可复现 demo]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
 ```cpp
 #include <iostream>
 #include <vector>

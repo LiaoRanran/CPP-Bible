@@ -7,7 +7,7 @@
 > 本机未安装 Abseil / Chromium 源码树，源码剖析统一引用上游仓库 URL（见各 `// 文件：`/`// 行号：` 标注，注明「上游参考」），不保证行号与 HEAD 完全一致。
 > 真实取证：第⑥、⑨ 节的 C++ 示例为【自包含】等价实现，已在本机 g++ 13.1.0 真实编译并抓取真实汇编（见「典型输出」）。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：Chromium / Abseil 基础设施]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Chromium / Abseil 基础设施
 ```cpp
 // ① 本章两条主线对应的"最小可用心智模型"
 // Abseil  = Google 开源的 C++ 基础库（容器/字符串/时间/同步），标准库的"预演场"
@@ -21,15 +21,15 @@ struct MentalModel { const char* abseil; const char* chromium_base; };
 > 当 Google 的工程规模大到"标准库不够用、平台差异大到要自己兜底"时，基础设施被写成了两件套。
 
 ### 0.1 起源（谁·何时·为何）
-Chromium 是 Google 2008 年开源的浏览器项目（Chrome 的内核），它本身就需要一套"浏览器级"的底层设施：跨平台线程、任务调度、内存分配、字符串视图 [史]。而 **Abseil** 则是 Google 把内部沉淀多年的基础库（strings、container、time、synchronization 等）在 2019 年开源的产物 [史]。痛点一致：标准库太薄、跨平台 API 太碎、性能关键点（哈希表、字符串）标准给得不够快。Abseil 的策略很特别——它专门去"提前实现"那些正在进入标准的特性。
+Chromium 是 Google 2008 年开源的浏览器项目（Chrome 的内核），它本身就需要一套"浏览器级"的底层设施：跨平台线程、任务调度、内存分配、字符串视图 <span class="badge badge-history">史</span>。而 **Abseil** 则是 Google 把内部沉淀多年的基础库（strings、container、time、synchronization 等）在 2019 年开源的产物 <span class="badge badge-history">史</span>。痛点一致：标准库太薄、跨平台 API 太碎、性能关键点（哈希表、字符串）标准给得不够快。Abseil 的策略很特别——它专门去"提前实现"那些正在进入标准的特性。
 
 ### 0.2 关键转折（编年）
-- 2008：Chromium 开源，其 `base` 库成为工业级 C++ 基础设施范本 [史]。
-- 2019：Abseil 开源，带来 `absl::string_view`、`absl::flat_hash_map`、`absl::Time` 等 [史]。
-- 此后：Abseil 在标准化后逐步"让位"给 `std` 版本（如 `std::string_view`），扮演标准先行者角色 [评]。
+- 2008：Chromium 开源，其 `base` 库成为工业级 C++ 基础设施范本 <span class="badge badge-history">史</span>。
+- 2019：Abseil 开源，带来 `absl::string_view`、`absl::flat_hash_map`、`absl::Time` 等 <span class="badge badge-history">史</span>。
+- 此后：Abseil 在标准化后逐步"让位"给 `std` 版本（如 `std::string_view`），扮演标准先行者角色 <span class="badge badge-comment">评</span>。
 
 ### 0.3 设计哲学之争
-Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而是在标准"慢半拍"处补位——`flat_hash_map` 比 `std::unordered_map` 更快、`string_view` 比裸指针安全且早于标准出现 [评]。Chromium `base` 则更进一步，是"只服务于浏览器"的专用底座，与追求通用的 Abseil 形成层次分工 [评]。
+Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而是在标准"慢半拍"处补位——`flat_hash_map` 比 `std::unordered_map` 更快、`string_view` 比裸指针安全且早于标准出现 <span class="badge badge-comment">评</span>。Chromium `base` 则更进一步，是"只服务于浏览器"的专用底座，与追求通用的 Abseil 形成层次分工 <span class="badge badge-comment">评</span>。
 
 ### 0.4 史料补遗与持续编年
 继 2019 年 Abseil 开源、并长期扮演"标准先行者"，它与 `std` 的关系在 C++20/23 落地后进入了"让位与对齐"的新阶段。
@@ -47,7 +47,7 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 > - https://abseil.io/
 > - https://chromium.googlesource.com/chromium/src/+/main/base/
 
-## ① 概述：Chromium / Abseil 基础设施 [标准]
+## ① 概述：Chromium / Abseil 基础设施 <span class="badge badge-std">标准</span>
 
 [第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)
 [第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)
@@ -57,7 +57,7 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 - **Abseil**：2019 年 Google 开源，把内部 `strings`/`container`/`time`/`synchronization` 等沉淀标准化，许多特性后来进入 C++17/20/23（见第⑱节）。
 - **Chromium `base`**：Chromium 项目的地基，提供 `TaskRunner`/`MessageLoop`/`PartitionAlloc`/`StringPiece` 等，支撑每秒数十亿次回调与多进程沙箱。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：Chromium / Abse]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Chromium / Abse
 ```cpp
 // ① 一个"同时用到两者"的典型工程入口草图（合法 C++，需链接对应库）
 #include "absl/container/flat_hash_map.h"
@@ -74,11 +74,11 @@ int bootstrap() {
 - `[标准]`：Abseil/Chromium 都是**对标准库的补充**，不是替代品；二者都尽量使用标准类型做接口边界。
 - `[经验]`：新项目优先 Abseil（单一头文件 + CMake/Bazel 即可）；要做浏览器/多进程/复杂任务调度才上 Chromium `base`。
 
-## ② Abseil 核心（flat_hash_map / base / strings / 时间） [标准]
+## ② Abseil 核心（flat_hash_map / base / strings / 时间） <span class="badge badge-std">标准</span>
 
 Abseil 四个最常用的子系统：
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：核心]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心
 ```cpp
 // ②-a 容器：flat_hash_map —— 连续内存、开放寻址、无指针跳转
 #include "absl/container/flat_hash_map.h"
@@ -88,7 +88,7 @@ word_count["hello"] = 1;
 auto it = word_count.find("hello");   // 平均 O(1)，缓存命中率高
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：核心]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心
 ```cpp
 // ②-b 字符串：StrCat / StrAppend —— 类型安全、零临时 std::string 拼接
 #include "absl/strings/str_cat.h"
@@ -97,7 +97,7 @@ std::string s = absl::StrCat("x=", 42, " y=", 3.14, " name=", "abc");
 absl::StrAppend(&s, " tail=", true);
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：核心]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心
 ```cpp
 // ②-c 时间：AbslTime / Duration —— 与 <chrono> 互操作，时区处理更全
 #include "absl/time/time.h"
@@ -107,7 +107,7 @@ absl::Time t = absl::Now();
 std::string human = absl::FormatTime(t, absl::UTCTimeZone());
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：核心]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 核心
 ```cpp
 // ②-d 基础工具：optional / any / span / string_view（多数已进标准，见第⑱节）
 #include "absl/types/span.h"
@@ -123,7 +123,7 @@ consume(arr);   // 零拷贝视图
 
 `absl::flat_hash_map` 自身只是薄封装，真正逻辑在 `internal/raw_hash_map.h`。下面逐行对照上游源码（本机未装，引用上游）。
 
-> **示例 7** [难度 ★★★☆☆] [主题：[实现·Abseil]源码剖析：上游]
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·Abseil]源码剖析：上游
 ```cpp
 #include <utility>
 // 文件：https://github.com/abseil/abseil-cpp/blob/master/absl/container/flat_hash_map.h
@@ -142,7 +142,7 @@ consume(arr);   // 零拷贝视图
 //   };
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：[实现·Abseil]源码剖析：上游]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·Abseil]源码剖析：上游
 ```cpp
 // ③ 下游真正干活的是 raw_hash_map（Swiss Table / 开放寻址 + 元数据字节）
 // 文件：https://github.com/abseil/abseil-cpp/blob/master/absl/container/internal/raw_hash_map.h
@@ -156,11 +156,11 @@ consume(arr);   // 零拷贝视图
 - `[平台]`：该 SIMD 路径在 x86-64 用 SSE2、ARM 用 NEON；老架构回退到标量循环，但数据布局不变。
 - `[经验]`：读 Abseil 源码先读 `internal/raw_hash_map.h` 和 `raw_hash_set.h`，`flat_hash_map.h` 几乎只是转调。
 
-## ④ Chromium base 库（string / threading） [标准]
+## ④ Chromium base 库（string / threading） <span class="badge badge-std">标准</span>
 
 Chromium `base` 提供一批"零依赖、跨平台"的原语，最常用的是 `StringPiece` 与线程设施。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：库]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 库
 ```cpp
 // ④-a base::StringPiece：std::string_view 出现前的零拷贝字符串视图
 #include "base/strings/string_piece.h"
@@ -175,7 +175,7 @@ base::StringPiece p("https://example.com");
 log_url(p);
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：库]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 库
 ```cpp
 // ④-b base::Thread：封装一条 OS 线程 + 自带 TaskRunner
 #include "base/threading/thread.h"
@@ -185,7 +185,7 @@ worker.task_runner()->PostTask(        // 往该线程投递任务
     FROM_HERE, base::BindOnce([] { /* 在 io_thread 上执行 */ }));
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：库]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 库
 ```cpp
 // ④-c base::PlatformThread::CurrentId()：拿本线程 ID（跨平台）
 #include "base/threading/platform_thread.h"
@@ -196,11 +196,11 @@ base::PlatformThreadId id = base::PlatformThread::CurrentId();
 - `[标准]`：`base::StringPiece` 与 C++17 `std::string_view` 语义相同；新 Chromium 代码已逐步改用 `std::string_view`。
 - `[经验]`：`base::Thread` 的 `task_runner()` 返回的 `TaskRunner` 保证"任务只在该线程跑"——这是 Chromium 线程安全模型的基石。
 
-## ⑤ 任务系统（TaskRunner / MessageLoop / PostTask） [标准]
+## ⑤ 任务系统（TaskRunner / MessageLoop / PostTask） <span class="badge badge-std">标准</span>
 
 Chromium 的任务系统的三大件：`TaskRunner`（投递入口）、`MessageLoop`（执行循环）、`PostTask`（投递动作）。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：任务系统]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 任务系统
 ```cpp
 // ⑤-a 最简：线程池投递一个一次性任务
 #include "base/task/thread_pool/thread_pool.h"
@@ -210,7 +210,7 @@ base::ThreadPool::PostTask(
     base::BindOnce([] { /* 在池内某线程执行，顺序不保证 */ }));
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：任务系统]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 任务系统
 ```cpp
 // ⑤-b TaskTraits：声明任务的属性（优先级/负载/I/O 倾向）
 #include "base/task/task_traits.h"
@@ -220,7 +220,7 @@ base::ThreadPool::PostTask(
     base::BindOnce([] { /* 可能阻塞，按 I/O 任务调度 */ }));
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：任务系统]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 任务系统
 ```cpp
 // ⑤-c 串行化：同一 SequencedTaskRunner 上的任务按投递顺序执行
 #include "base/task/sequenced_task_runner.h"
@@ -230,7 +230,7 @@ seq->PostTask(FROM_HERE, base::BindOnce([] { /* 第 1 */ }));
 seq->PostTask(FROM_HERE, base::BindOnce([] { /* 第 2，必在第 1 后 */ }));
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：任务系统]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 任务系统
 ```cpp
 // ⑤-d OnceClosure / RepeatingClosure：可移动、可复制的回调类型（base 版 std::function）
 #include "base/functional/callback.h"
@@ -247,7 +247,7 @@ std::move(cb).Run();
 
 Chromium 默认分配器 `PartitionAlloc` 的核心思想：**按大小分桶(bucket)，每个分区独立、bump-pointer 快速分配、附带防越界隔离**。下面用【自包含】等价实现在本机编译取证。
 
-> **示例 16** [难度 ★★★★☆] [主题：内存：PartitionAlloc]
+> **示例 16** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存：PartitionAlloc
 ```cpp
 // ⑥ 自包含分区式分配器等价：bump-pointer arena（PartitionAlloc 单分区的 O(1) 路径）
 // 文件：Examples/_ch130_allocator.cpp，行号：见下方真实编译
@@ -297,11 +297,11 @@ _Z10make_threeR5Arena:
 - `[平台]`：真实 `PartitionAlloc` 还在此基础上加"分区锁 + 页粒度的 GigaCage 隔离 + 双向哨兵"防堆溢出；本例是机制等价，非安全等价。
 - `[经验]`：对比 `new`/`malloc`：热路径上自定义 arena 能把"每对象分配"从数十指令降到 2~3 条。
 
-## ⑦ 与标准关系：Abseil 先于标准的很多特性 [标准]
+## ⑦ 与标准关系：Abseil 先于标准的很多特性 <span class="badge badge-std">标准</span>
 
 Abseil 大量"预览"了后来的标准特性，迁移路径平滑。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：与标准关系：Abseil 先于标准的]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准关系：Abseil 先于标准的
 ```cpp
 // ⑦-a string_view：absl 早于 std 多年
 #include "absl/strings/string_view.h"   // 早于 C++17
@@ -311,7 +311,7 @@ std::string_view b = "hi";              // C++17 同语义
 static_assert(sizeof(a) == sizeof(b), "布局一致");
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：与标准关系：Abseil 先于标准的]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准关系：Abseil 先于标准的
 ```cpp
 // ⑦-b any：类型擦除的任意值容器
 #include "absl/types/any.h"              // 早于 C++17 std::any
@@ -321,7 +321,7 @@ int v = absl::any_cast<int>(box);
 (void)v;
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：与标准关系：Abseil 先于标准的]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准关系：Abseil 先于标准的
 ```cpp
 // ⑦-c optional / variant / string_view 三者都先出现在 absl，后进入标准
 #include "absl/types/optional.h"
@@ -333,7 +333,7 @@ int compute() { return 7; }
 - `[标准]`：Abseil 的 `string_view`/`optional`/`any`/`variant`/`span` 接口与标准版基本同构，大部分可 `typedef` 直替。
 - `[经验]`：若编译器已支持 C++17+，新代码直接用 `std::` 版本，减少依赖；维护老代码时再用 `absl::`。
 
-## ⑧ 构建：GN / Ninja（命令 + 典型输出） [平台]
+## ⑧ 构建：GN / Ninja（命令 + 典型输出） <span class="badge badge-platform">平台</span>
 
 Chromium 用 **GN**（生成构建图）+ **Ninja**（执行）双阶段；Abseil 用 Bazel/CMake，但也能用 GN。
 
@@ -369,7 +369,7 @@ ninja -C out/Default base
 
 下面用【自包含】开放寻址哈希表等价 `flat_hash_map`，在本机 g++ 13.1.0 真实编译，抓取 `find` 的热探测循环汇编。
 
-> **示例 20** [难度 ★★★☆☆] [主题：[实现·Abseil]真实：编译自包]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·Abseil]真实：编译自包
 ```cpp
 // ⑨ 自包含开放寻址哈希表（flat_hash_map 的等价机制：连续数组 + 线性探测）
 // 文件：Examples/_ch130_flat_hash_map.cpp，行号：见下方真实编译
@@ -442,9 +442,9 @@ C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++17 -O2 -masm=intel -S \
 - `[平台]`：本例用 `alignas(64)` 把 `keys_/vals_` 强制按缓存行对齐，消除跨行伪共享；真实 Abseil 用更精细的 group(16 槽) 布局。
 - `[经验]`：开放寻址的代价是**扩容成本高**（需整体重哈希）；`flat_hash_map` 通过"负载因子 < 0.875 + 2 的幂容量 + 增量增长"缓解这个问题。
 
-## ⑩ 调试：日志、符号与 sanitizer [经验]
+## ⑩ 调试：日志、符号与 sanitizer <span class="badge badge-exp">经验</span>
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：调试：日志、符号与 sanitize]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试：日志、符号与 sanitize
 ```cpp
 // ⑩-a Abseil 日志（LOG/CHECK），失败即崩溃并带上下文
 #include "absl/log/log.h"
@@ -455,7 +455,7 @@ void process(int* p) {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：调试：日志、符号与 sanitize]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试：日志、符号与 sanitize
 ```cpp
 // ⑩-b Chromium 侧用 base::debug + DCHECK（仅在调试构建生效）
 #include "base/debug/debugging_buildflags.h"
@@ -465,7 +465,7 @@ void verify(int n) {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：调试：日志、符号与 sanitize]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试：日志、符号与 sanitize
 ```cpp
 // ⑩-c 用 absl::StrCat 拼调试信息，避免 printf 格式串错误
 #include "absl/strings/str_cat.h"
@@ -476,9 +476,9 @@ std::string dbg = absl::StrCat("id=", 7, " state=", "run");
 - `[经验]`：`DCHECK` 是 Chromium 风格的"调试期断言"，生产构建自动剥离——比裸 `assert` 更可控，比注释更可靠。
 - `[平台]`：AddressSanitizer 对 `PartitionAlloc` 有专门支持（`enable_sanitizers`）；查堆问题优先 `asan` + `LSan`。
 
-## ⑪ 性能：flat_hash_map vs std::unordered_map [标准]
+## ⑪ 性能：flat_hash_map vs std::unordered_map <span class="badge badge-std">标准</span>
 
-> **示例 24** [难度 ★★☆☆☆] [主题：性能：flathashmap vs ]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：flathashmap vs
 ```cpp
 // ⑪-a 基准思路：same workload，换容器，比 ns/op
 #include <unordered_map>
@@ -489,7 +489,7 @@ absl::flat_hash_map<std::string, int> fm;
 // 统一插入 1e6 个 key，测总耗时与缓存未命中数
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：性能：flathashmap vs ]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能：flathashmap vs
 ```cpp
 // ⑪-b flat_hash_map 的关键优化：reserve 避免反复扩容重哈希
 absl::flat_hash_map<int, int> m;
@@ -497,7 +497,7 @@ m.reserve(1 << 20);                 // 一次性定容，省掉多次 rehash
 for (int i = 0; i < (1 << 20); ++i) m[i] = i;
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：性能：flathashmap vs ]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：flathashmap vs
 ```cpp
 // ⑪-c 测量缓存行为（perf 思路，非本机运行）
 //   perf stat -e cache-misses,instructions ./bench_flat
@@ -508,9 +508,9 @@ for (int i = 0; i < (1 << 20); ++i) m[i] = i;
 - `[标准]`：标准未规定 `unordered_map` 的内部结构，多数实现是"桶数组 + 链表/指针"，每次探测追指针，缓存不友好。
 - `[经验]`：小数据/`emplace` 频繁/迭代器长期持有的场景，`flat_hash_map` 通常快 2~5 倍；但若需要**稳定迭代器/引用**（见第⑬节），`unordered_map` 更安全。
 
-## ⑫ 跨平台：宏、线程、文件 [平台]
+## ⑫ 跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：跨平台：宏、线程、文件 [平台]]
+> **示例 27** [难度 ★☆☆☆☆] [主题：跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑫-a Chromium 的平台宏（BUILDFLAG），避免手写 #ifdef 散落
 #include "build/build_config.h"
@@ -521,14 +521,14 @@ const char* kSep = "/";
 #endif
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：跨平台：宏、线程、文件 [平台]]
+> **示例 28** [难度 ★★☆☆☆] [主题：跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑫-b 跨平台睡眠/线程
 #include "base/threading/platform_thread.h"
 base::PlatformThread::Sleep(base::Seconds(1));   // Windows/ Linux/ macOS 统一
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：跨平台：宏、线程、文件 [平台]]
+> **示例 29** [难度 ★☆☆☆☆] [主题：跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑫-c Abseil 的跨平台时间/时钟
 #include "absl/time/clock.h"
@@ -538,9 +538,9 @@ absl::Duration elapsed = absl::Now() - start;     // 同一接口，不同 OS �
 - `[平台]`：Chromium 用 `BUILDFLAG(IS_*) ` 而非裸 `#ifdef _WIN32`，把所有平台判断集中到 `build/build_config.h`，可读性与可测性更好。
 - `[经验]`：跨平台代码把"平台差异"收敛到 1~2 个 `.cc` 文件（如 `foo_win.cc`/`foo_posix.cc`），头文件保持平台无关。
 
-## ⑬ 常见陷阱 [经验]
+## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 30** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 30** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑬-a 陷阱1：flat_hash_map 的引用/迭代器在 insert 时可能整体失效
 absl::flat_hash_map<int, int> m;
@@ -549,7 +549,7 @@ m.reserve(1000000);        // 触发重哈希 -> 底层数组搬迁
 ref = 5;                   // ⚠ 悬垂引用！未定义行为
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 31** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑬-b 陷阱2：遍历时 erase 要用返回的新迭代器（两容器规则类似）
 for (auto it = m.begin(); it != m.end(); ) {
@@ -558,7 +558,7 @@ for (auto it = m.begin(); it != m.end(); ) {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑬-c 陷阱3：key 类型必须稳定 hash/eq；用 mutable 字段做 key 会破坏查找
 struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出 bug
@@ -567,9 +567,9 @@ struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出
 - `[经验]`：与 `std::unordered_map`（节点式，引用稳定）相反，`flat_hash_map` 是**值连续存储**，任何可能 rehash 的操作都会让所有引用/迭代器失效。需要稳定句柄时改用 `unordered_map` 或用 `absl::flat_hash_set` 存 `std::unique_ptr<T>`。
 - `[实现·Abseil]`：这也解释了第⑨节汇编里 `used_[]` 与 `keys_/vals_` 分离——重哈希时只搬数据、控制字节可整体重建。
 
-## ⑭ 演进：从内部库到开源标准 [经验]
+## ⑭ 演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 [经验]]
+> **示例 33** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <string>
 // ⑭-a 早期 Google 代码用 base::hash_map（已废弃），后统一到 absl
@@ -577,14 +577,14 @@ struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出
 //   新：absl::flat_hash_map<std::string, int> m;
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 [经验]]
+> **示例 34** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <string_view>
 // ⑭-b Abseil 的 "absl::string_view" 在 C++17 后建议改用 std::string_view
 //   迁移：using string_view = std::string_view;  // 逐步去 absl 依赖
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 [经验]]
+> **示例 35** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑭-c Chromium 正在把 base::Callback 迁移到 base::OnceCallback/RepeatingCallback
 //   旧：base::Callback<void()> cb = base::Bind([]{});  // 已弃用
@@ -594,15 +594,15 @@ struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出
 - `[经验]`：两套库都在"向标准靠拢"——新代码优先标准类型，老代码用别名逐步去依赖，降低长期维护成本。
 - `[标准]`：Abseil 明确表态"特性一旦进标准，就鼓励用户迁移到 std"，库本身定位为"标准前的试验田"。
 
-## ⑮ 最佳实践 [经验]
+## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮-a 用 string_view 做函数参数，避免无谓拷贝
 void handle(absl::string_view text) { (void)text; }   // 接受 string/char*/字面量
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮-b 用 absl::Status 代替异常/错误码混用（Google 统一错误模型）
 #include "absl/status/status.h"
@@ -612,7 +612,7 @@ absl::Status open(const char* path) {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑮-c 任务用 TaskTraits 明确语义，别用默认
 base::ThreadPool::PostTask(
@@ -621,7 +621,7 @@ base::ThreadPool::PostTask(
     base::BindOnce(work));
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <map>
 // ⑮-d 容器选型表（速查，详见第⑳节）
@@ -633,9 +633,9 @@ base::ThreadPool::PostTask(
 - `[经验]`：先想"接口边界用 std，内部热点用 absl"；`absl::Status` + `string_view` + `flat_hash_map` 是 Abseil 的黄金三件套。
 - `[平台]`：Chromium 代码强制 `base::BindOnce` 而非裸 `std::bind`；`OnceClosure` 不可复制，从类型系统杜绝双重执行。
 
-## ⑯ 跨库协作：Abseil × Chromium × 标准 [标准]
+## ⑯ 跨库协作：Abseil × Chromium × 标准 <span class="badge badge-std">标准</span>
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：跨库协作：Abseil × Chro]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chro
 ```cpp
 #include <string_view>
 // ⑯-a Abseil 与 std 互操作：absl 类型大多能直接转 std
@@ -643,7 +643,7 @@ absl::string_view av = "x";
 std::string_view sv = av;            // 隐式可转换（同布局）
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：跨库协作：Abseil × Chro]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chro
 ```cpp
 #include <utility>
 // ⑯-b Chromium base 回调里调用 Abseil 算法
@@ -654,7 +654,7 @@ base::OnceClosure cb = base::BindOnce([] {
 std::move(cb).Run();
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：跨库协作：Abseil × Chro]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chro
 ```cpp
 #include <memory>
 // ⑯-c 在 Abseil 容器中存 std::unique_ptr，兼顾性能与稳定句柄
@@ -665,9 +665,9 @@ widgets.emplace(1, std::make_unique<Widget>());
 - `[标准]`：Abseil 刻意让 `string_view`/`span`/`optional` 与标准版布局兼容，跨库传递零转换开销。
 - `[经验]`：避免在 API 边界用 `absl::flat_hash_map` 当参数类型（暴露实现细节）；边界用 `std::map` 或 `absl::flat_hash_map` 的视图/迭代器更安全。
 
-## ⑰ 贡献：如何向上游提补丁 [经验]
+## ⑰ 贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：贡献：如何向上游提补丁 [经验]]
+> **示例 43** [难度 ★★☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰-a Abseil 补丁示例：给 flat_hash_map 加一个 helper（伪代码草图）
 //   提交前必须过测试 + clang-format + 通过 CI
@@ -677,7 +677,7 @@ widgets.emplace(1, std::make_unique<Widget>());
 //   }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 [经验]]
+> **示例 44** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰-b Chromium 用 Gerrit + tryjob：CL 描述需含 bug 号与测试说明
 //   BUG=123456
@@ -685,7 +685,7 @@ widgets.emplace(1, std::make_unique<Widget>());
 //   （非 C++，是贡献流程约定）
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 [经验]]
+> **示例 45** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰-c 贡献代码必须遵守风格：clang-format + 无裸循环（用 STL 算法）
 #include <algorithm>
@@ -701,7 +701,7 @@ std::vector<int> doubled(const std::vector<int>& v) {
 - `[经验]`：Abseil 走 GitHub PR + Bazel 测试；Chromium 走 `git cl upload` 到 Gerrit，必须 `presubmit` 全绿。两者都要求"每个公共 API 有测试 + 基准"。
 - `[平台]`：Chromium 贡献需签 CLA 并接受 `OWNERS` 审批；改 `base/` 会触发全工程重编，务必本地先跑 `gn check`。
 
-## ⑱ 与 C++ 标准对应：Abseil 特性进标准表 [标准]
+## ⑱ 与 C++ 标准对应：Abseil 特性进标准表 <span class="badge badge-std">标准</span>
 
 | Abseil / Chromium 特性 | 进标准版本 | 标准名 |
 |---|---|---|
@@ -715,7 +715,7 @@ std::vector<int> doubled(const std::vector<int>& v) {
 | `absl::Cleanup` | C++20 | `std::scope_exit`(WG21) |
 | `absl::bind_front` | C++23 | `std::bind_front` |
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：与 C++ 标准对应：Abseil ]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++ 标准对应：Abseil
 ```cpp
 #include <string_view>
 // ⑱-a string_view：absl 与 std 等价
@@ -723,7 +723,7 @@ absl::string_view a = "hi";
 std::string_view b = a;          // 直接构造，零开销
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：与 C++ 标准对应：Abseil ]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++ 标准对应：Abseil
 ```cpp
 #include <span>
 // ⑱-b span：absl 与 std 等价
@@ -734,9 +734,9 @@ std::span<const int> t = s;      // 布局一致，可互转
 - `[标准]`：上表印证"Abseil 是标准的预演场"——先用、再标准化、最后鼓励迁移回 `std`。
 - `[经验]`：新项目直接用 `std::` 版本即可；维护老 Abseil 代码用 `using` 别名逐步替换，避免一次性大改。
 
-## ⑲ 调试 / 源码阅读：怎么读这两套库 [经验]
+## ⑲ 调试 / 源码阅读：怎么读这两套库 <span class="badge badge-exp">经验</span>
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读：怎么读这两套库 ]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读：怎么读这两套库
 ```cpp
 // ⑲-a 读 flat_hash_map：入口看声明，实现跳 internal
 //   1) absl/container/flat_hash_map.h  —— 只看 public 接口
@@ -744,7 +744,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 //   3) absl/container/internal/raw_hash_set.h  —— 底层容器
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：调试 / 源码阅读：怎么读这两套库 ]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读：怎么读这两套库
 ```cpp
 // ⑲-b 读 Chromium 任务系统：从 PostTask 顺藤摸瓜
 //   base/task/thread_pool/thread_pool.h        —— PostTask 入口
@@ -752,7 +752,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 //   base/message_loop/message_loop.cc          —— Run 循环
 ```
 
-> **示例 50** [难度 ★★☆☆☆] [主题：调试 / 源码阅读：怎么读这两套库 ]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读：怎么读这两套库
 ```cpp
 // ⑲-c 用本机等价实现辅助理解（见第⑥/⑨节，自包含、可单步调试）
 //   把上游复杂的 SIMD/锁逻辑替换成最小可运行版本，先懂机制再读优化
@@ -762,23 +762,23 @@ std::span<const int> t = s;      // 布局一致，可互转
 - `[平台]`：Chromium 源码巨大，推荐用 `code search`（`cs.chromium.org`）而非本地 grep；Abseil 体积小，可整库 clone 本地阅读。
 - `[经验]`：源码阅读顺序 = 接口 → 等价精简实现 → 上游优化；不要一上来硬啃 SIMD/锁细节。
 
-## ⑳ 速查表 [标准]
+## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用 `absl::flat_hash_map` 替代 `std::unordered_map`（开放寻址更快）。** 你关心缓存友好。请说明标准对应。
-   - [标准] 标准无序容器要求 [unord.req]（Hash + KeyEqual）；abseil 是独立实现，不强制同接口。
-   - [引用] ISO/IEC 14882:2023 §[unord.req]（无序容器要求）/ Abseil 文档 "flat_hash_map"；cppreference "std::unordered_map" 词条。
+   - <span class="badge badge-std">标准</span> 标准无序容器要求 [unord.req]（Hash + KeyEqual）；abseil 是独立实现，不强制同接口。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[unord.req]（无序容器要求）/ Abseil 文档 "flat_hash_map"；cppreference "std::unordered_map" 词条。
 
 2. **真实场景：用 `absl::string_view` 做零拷贝只读视图（C++17 前）。** 你迁移到标准 `std::string_view`。请说明语义。
-   - [标准] C++17 起标准提供 `std::string_view`：连续字符序列的非拥有视图。
-   - [引用] ISO/IEC 14882:2023 §[string.view]（std::string_view）/ Abseil 文档；cppreference "std::string_view" 词条。
+   - <span class="badge badge-std">标准</span> C++17 起标准提供 `std::string_view`：连续字符序列的非拥有视图。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view]（std::string_view）/ Abseil 文档；cppreference "std::string_view" 词条。
 
 3. **真实场景：`absl::Span` 对应 C++20 `std::span`。** 你统一用视图替代指针+长度。请说明。
-   - [标准] C++20 起标准提供 `std::span`：连续序列的非拥有视图。
-   - [引用] ISO/IEC 14882:2023 §[views.span]（std::span）/ Abseil 文档；cppreference "std::span" 词条。
+   - <span class="badge badge-std">标准</span> C++20 起标准提供 `std::span`：连续序列的非拥有视图。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（std::span）/ Abseil 文档；cppreference "std::span" 词条。
 
-> **示例 51** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 51** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```
 ┌──────────────────────────┬────────────────────────────┬──────────────────────┐
 │ 任务                      │ Abseil / Chromium API       │ 标准等价 / 备注       │
@@ -799,7 +799,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 └──────────────────────────┴────────────────────────────┴──────────────────────┘
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：速查表 [标准]]
+> **示例 52** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 30 秒上手指纹：最小可用代码片段（合法 C++，需对应头文件/链接）
 #include "absl/container/flat_hash_map.h"
@@ -845,7 +845,7 @@ int quickstart() {
 
 不装 Abseil / Chromium 也能理解 `base::RepeatingCallback` 的运行模型——下面用标准库复刻其核心：**一个可多次调用的类型擦除回调**。这正是 `base::RepeatingCallback` 干的事（早期 Chromium 用 `base::Callback`，现已统一为 `RepeatingCallback`/`OnceCallback`）。
 
-> **示例 53** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：先把
 ```cpp
 // ㉑.2 用标准 C++ 复刻 Abseil/Chromium「可重复回调」的本质（本块可独立编译，GCC 15.3.0 验证）
 #include <functional>
@@ -876,7 +876,7 @@ int main() {
 
 下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
-> **示例 54** [难度 ★★☆☆☆] [主题：㉑.3 真实 API 长什么样]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 API 长什么样
 ```cpp
 // ㉑.3 真实 Abseil/Chromium 写法（仅注释演示，需链接 absl / Chromium base；本门禁按空块编译通过）：
 //   #include "absl/container/flat_hash_map.h"
@@ -989,7 +989,7 @@ int main() {
 Chromium: 禁止异常/RTTI/static init; scoped_refptr(侵入式)>unique_ptr>shared_ptr
 Abseil: SwissTable(开放地址, 比unordered_map快3-5x); StatusOr(零开销替代异常)
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：附录 E：Chromium/Abse]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：Chromium/Abse
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<<std::endl;return 0;}
@@ -1055,7 +1055,7 @@ int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<
 
 计数放在对象自身（侵入式），指针只负责增减，不持有计数：
 
-> **示例 56** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <cassert>
 #include <utility>
@@ -1093,11 +1093,11 @@ int main() {
 }
 ```
 
-[标准] 计数内嵌于对象（侵入式）避免额外堆分配；`explicit` 构造防止裸指针隐式转换；拷贝/赋值遵循"先增后减"顺序避免自赋值悬垂。
+<span class="badge badge-std">标准</span> 计数内嵌于对象（侵入式）避免额外堆分配；`explicit` 构造防止裸指针隐式转换；拷贝/赋值遵循"先增后减"顺序避免自赋值悬垂。
 
 [实现·GCC15] 在 GCC 15.3.0 `-O2` 下 `AddRef`/`Release` 被内联，计数增减几乎零开销，对应 ⑥ PartitionAlloc / ⑪ 性能 里"少分配即快"的基调。
 
-[引用] Chromium `base/memory/ref_counted.h`（`scoped_refptr` / `RefCounted`）：<https://chromium.googlesource.com/chromium/src/+/main/base/memory/ref_counted.h>；本章 ④ Chromium base 库。
+<span class="badge badge-ref">引用</span> Chromium `base/memory/ref_counted.h`（`scoped_refptr` / `RefCounted`）：<https://chromium.googlesource.com/chromium/src/+/main/base/memory/ref_counted.h>；本章 ④ Chromium base 库。
 
 </details>
 
@@ -1109,7 +1109,7 @@ int main() {
 
 桶数组连续、探测解决冲突、负载因子触发翻倍 rehash：
 
-> **示例 57** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <cstddef>
 #include <string_view>
@@ -1159,9 +1159,9 @@ int main() {
 }
 ```
 
-[标准] `hash & (size-1)` 要求容量为 2 的幂；`std::string_view` 作键不拷贝，但要求键的生命周期长于表（Abseil 同样要求 `string_view` 不悬垂）。
+<span class="badge badge-std">标准</span> `hash & (size-1)` 要求容量为 2 的幂；`std::string_view` 作键不拷贝，但要求键的生命周期长于表（Abseil 同样要求 `string_view` 不悬垂）。
 
-[引用] Abseil `flat_hash_map`（`swisstable` 开放寻址）：<https://abseil.io/docs/cpp/guides/container；本章 ② Abseil 核心 / ③ 源码剖析 flat_hash_map.h / ⑪ 性能（flat_hash_map vs std::unordered_map）。
+<span class="badge badge-ref">引用</span> Abseil `flat_hash_map`（`swisstable` 开放寻址）：<https://abseil.io/docs/cpp/guides/container；本章 ② Abseil 核心 / ③ 源码剖析 flat_hash_map.h / ⑪ 性能（flat_hash_map vs std::unordered_map）。
 
 </details>
 
@@ -1173,7 +1173,7 @@ int main() {
 
 值/错二选一并显式检查，避免"忽略错误码"这一最大来源：
 
-> **示例 58** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★）
 ```cpp
 #include <string>
 #include <utility>
@@ -1204,9 +1204,9 @@ int main() {
 }
 ```
 
-[标准] 构造歧义靠 `bool` vs `string` 标签区分；`explicit operator bool` 强制在 `if` 中检查，对应 C++23 `std::expected` 的设计意图。
+<span class="badge badge-std">标准</span> 构造歧义靠 `bool` vs `string` 标签区分；`explicit operator bool` 强制在 `if` 中检查，对应 C++23 `std::expected` 的设计意图。
 
-[引用] Abseil `status`（`absl::StatusOr`）：<https://abseil.io/docs/cpp/guides/status>；ISO C++23 §[expected]（同源思想）；本章 ② Abseil 核心 / ⑦ 与标准关系。
+<span class="badge badge-ref">引用</span> Abseil `status`（`absl::StatusOr`）：<https://abseil.io/docs/cpp/guides/status>；ISO C++23 §[expected]（同源思想）；本章 ② Abseil 核心 / ⑦ 与标准关系。
 
 </details>
 
@@ -1385,7 +1385,7 @@ vector+二分只在「写极少读极多且已排序」时划算；通用高频�
 
 ### D5.3 可复现 demo
 
-> **示例 59** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 #include <vector>

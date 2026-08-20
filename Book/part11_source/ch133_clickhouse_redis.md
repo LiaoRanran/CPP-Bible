@@ -11,23 +11,23 @@
 > 一个用 SIMD 把"列"喂给 CPU，一个用单线程把"锁"彻底消灭——两条相反的极致性能路。
 
 ### 0.1 起源（谁·何时·为何）
-**Redis** 由 Salvatore Sanfilippo（antirez）于 2009 年发布 [史]，起因是他运营一个实时访客分析网站时，发现用传统关系库做高并发计数又慢又笨，于是用 C 写了个内存 KV + 单线程事件循环，把"无锁串行"做到极致。**ClickHouse** 则由 Yandex 内部孵化、2016 年开源 [史]，为的是给网页分析（Metrica）做"按列存、批量向量化"的 OLAP，解决行存数据仓库在聚合查询上的缓慢。
+**Redis** 由 Salvatore Sanfilippo（antirez）于 2009 年发布 <span class="badge badge-history">史</span>，起因是他运营一个实时访客分析网站时，发现用传统关系库做高并发计数又慢又笨，于是用 C 写了个内存 KV + 单线程事件循环，把"无锁串行"做到极致。**ClickHouse** 则由 Yandex 内部孵化、2016 年开源 <span class="badge badge-history">史</span>，为的是给网页分析（Metrica）做"按列存、批量向量化"的 OLAP，解决行存数据仓库在聚合查询上的缓慢。
 
 ### 0.2 关键转折（编年）
-- 2009：Redis 1.0 发布，单线程 Reactor 模型成为内存 KV 范本 [史]。
-- 2016：ClickHouse 开源，列存 + 向量化执行进入大众视野 [史]。
-- 此后：Redis 成为缓存/消息中间件事实标准，ClickHouse 成为实时分析新宠 [史]。
+- 2009：Redis 1.0 发布，单线程 Reactor 模型成为内存 KV 范本 <span class="badge badge-history">史</span>。
+- 2016：ClickHouse 开源，列存 + 向量化执行进入大众视野 <span class="badge badge-history">史</span>。
+- 此后：Redis 成为缓存/消息中间件事实标准，ClickHouse 成为实时分析新宠 <span class="badge badge-history">史</span>。
 
 ### 0.3 设计哲学之争
-两者代表了两种"喂数据给硬件"的哲学：ClickHouse 认为瓶颈在"数据布局是否对齐 SIMD 与 cache line"，于是把一整列连续摆放、一次算一批 [评]；Redis 认为瓶颈在"并发竞争"，于是干脆单线程、用 `epoll`/`kqueue` 多路复用，连锁都不要 [评]。一个押注并行硬件，一个押注无竞争串行。
+两者代表了两种"喂数据给硬件"的哲学：ClickHouse 认为瓶颈在"数据布局是否对齐 SIMD 与 cache line"，于是把一整列连续摆放、一次算一批 <span class="badge badge-comment">评</span>；Redis 认为瓶颈在"并发竞争"，于是干脆单线程、用 `epoll`/`kqueue` 多路复用，连锁都不要 <span class="badge badge-comment">评</span>。一个押注并行硬件，一个押注无竞争串行。
 
 ### 0.4 史料补遗与持续编年
 继 2009/2016 年 Redis 与 ClickHouse 先后登场，两者都走到了"版本升级、许可地震、云化"的现代阶段。
 
-- [史] Redis 7（2022）引入 **Functions**（在服务器端持久化 Lua 逻辑）并把多线程 IO（io threads）做稳；2024 年 Redis 把开源许可从纯 BSD 改为 SSPLv1 与 RSALv2 双许可，引发社区对"开源定义"的激烈反弹。
-- [史] 许可地震的直接后果是 **Valkey**——Linux 基金会牵头、AWS/Google 等支持的分叉，承接旧 BSD Redis 的衣钵，成为 Redis 之外的主流选择；ClickHouse 则坚定走开源 + 商业云（ClickHouse Cloud）双轨。
-- [评] Redis 的"单线程 Reactor"神话在多线程 IO 时代被部分打破——它把"网络读写"多线程化、仍保留"命令执行单线程"，是在"无锁简单性"与"多核吞吐"之间的精妙折中。
-- [轶] antirez 曾形容 Redis 是"为乐趣而写"，早期版本以单文件单线程的极简哲学对抗当时笨重的数据库。
+- <span class="badge badge-history">史</span> Redis 7（2022）引入 **Functions**（在服务器端持久化 Lua 逻辑）并把多线程 IO（io threads）做稳；2024 年 Redis 把开源许可从纯 BSD 改为 SSPLv1 与 RSALv2 双许可，引发社区对"开源定义"的激烈反弹。
+- <span class="badge badge-history">史</span> 许可地震的直接后果是 **Valkey**——Linux 基金会牵头、AWS/Google 等支持的分叉，承接旧 BSD Redis 的衣钵，成为 Redis 之外的主流选择；ClickHouse 则坚定走开源 + 商业云（ClickHouse Cloud）双轨。
+- <span class="badge badge-comment">评</span> Redis 的"单线程 Reactor"神话在多线程 IO 时代被部分打破——它把"网络读写"多线程化、仍保留"命令执行单线程"，是在"无锁简单性"与"多核吞吐"之间的精妙折中。
+- <span class="badge badge-anecdote">轶</span> antirez 曾形容 Redis 是"为乐趣而写"，早期版本以单文件单线程的极简哲学对抗当时笨重的数据库。
 
 > 史料来源：
 > - https://redis.io/blog/
@@ -43,7 +43,7 @@ ClickHouse 是**列存 OLAP**数据库，核心卖点是「一整列数据连续
 - ClickHouse：**用 CPU 的 SIMD 并行**，一次算 16/32/64 个浮点，靠「列」对齐硬件 cache line 与向量寄存器。
 - Redis：**用单线程串行消除并发**，一个线程跑完整个事件循环，靠 `ae.c` 把多路 IO 多路复用到一次 `epoll`/`kqueue`。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：ClickHouse/Redis]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：ClickHouse/Redis
 ```cpp
 #include <cstddef>
 // ① ClickHouse 列的直觉：一列 float 是连续数组，而非 (a,b,c) 行的数组
@@ -59,7 +59,7 @@ struct FiredEvent { int fd; int mask; };
 
 行存的痛点是 `struct Row { int id; double price; ... }` 连续存放，算 `SUM(price)` 时要跨 stride 取值，SIMD 无法对齐。ClickHouse 把 `price` 单独抽成一列 `ColumnVector<Float64>`，内存是 `double[1024]`，一次 `vaddps` 就能累加 8 个。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：列存与向量化执行]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 列存与向量化执行
 ```cpp
 #include <cstddef>
 // ② 行存：访问 price 需要 stride = sizeof(Row)，SIMD 难用
@@ -69,7 +69,7 @@ double sum_row(const Row* r, size_t n) {
 }
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：列存与向量化执行]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 列存与向量化执行
 ```cpp
 #include <cstddef>
 // ② 列存：price 连续，编译器直接向量化（见第⑥节真实汇编）
@@ -78,7 +78,7 @@ double sum_col(const double* price, size_t n) {
 }
 ```
 
-> **示例 4** [难度 ★★★☆☆] [主题：列存与向量化执行]
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 列存与向量化执行
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -229,7 +229,7 @@ void ExpressionActions::executeOnColumn(
 
 下面把「③-4 的整列批量」落成**本机可编译**的最小范式（对应 ClickHouse 聚合函数的 `addBatch` 入口），GCC 13.1 `-O3` 会自动向量化。
 
-> **示例 5** [难度 ★★★☆☆] [主题：自包含可编译：向量化入口范式]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自包含可编译：向量化入口范式
 ```cpp
 #include <cstddef>
 // ③ 对应 ClickHouse 聚合函数「向量化入口」：一次处理整列，而非逐行 addOne
@@ -256,7 +256,7 @@ int main() {
 
 Redis 主线程是单线程事件循环：把所有 client 的 fd 注册进多路复用器（`epoll`/`kqueue`/`select`），`aeProcessEvents` 阻塞等待就绪，再串行回调。没有锁、没有线程切换，所以单核也能扛十万 QPS。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：事件循环]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 事件循环
 ```cpp
 // ④ ae.c 的等价核心结构（上游参考：src/ae.h）
 struct aeFileEvent {
@@ -271,7 +271,7 @@ struct aeEventLoop {
 };
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：事件循环]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 事件循环
 ```cpp
 // ④ 单线程主循环（等价 src/ae.c 的 aeMain / aeProcessEvents）
 void aeMain(aeEventLoop* el) {
@@ -283,7 +283,7 @@ void aeMain(aeEventLoop* el) {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：事件循环]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 事件循环
 ```cpp
 // ④ 多路复用器封装：对外的统一接口，底层是 epoll/kqueue/evport/select
 typedef struct aeApiState { int epfd; struct epoll_event* events; } aeApiState;
@@ -364,7 +364,7 @@ typedef struct zskiplistNode {
 
 ClickHouse 用模板把列类型参数化（`ColumnVector<T>`），用 `Arena` 内存池代替反复 `new`；Redis 用 C 写但 C++ 移植（redis-plus-plus）用 `unique_ptr` 管理 `redisContext`。
 
-> **示例 9** [难度 ★★★☆☆] [主题：与 C++ 特性：模板 / 智能指针]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 C++ 特性：模板 / 智能指针
 ```cpp
 // ⑤ ClickHouse 风格：模板列，零运行时开销的类型分发
 template <typename T>
@@ -376,7 +376,7 @@ public:
 };
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：与 C++ 特性：模板 / 智能指针]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++ 特性：模板 / 智能指针
 ```cpp
 #include <cstddef>
 // ⑤ Arena 内存池：bump pointer，O(1) 分配，批量释放（等价 src/Common/Arena.h）
@@ -390,7 +390,7 @@ public:
 };
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：与 C++ 特性：模板 / 智能指针]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 特性：模板 / 智能指针
 ```cpp
 // ⑤ Redis C++ 客户端（redis-plus-plus）用 unique_ptr 持有连接上下文
 #include <memory>
@@ -408,7 +408,7 @@ struct RedisConn {
 
 下面两例自包含、可独立编译（`Examples/_ch133_vectorize.cpp`、`Examples/_ch133_eventloop.cpp`）。用本机 GCC 13.1.0 取**真实汇编**。
 
-> **示例 12** [难度 ★★★★☆] [主题：[实现·GCC15]真实：编译自包含]
+> **示例 12** <span class="badge badge-exp">难度 ★★★★☆</span> · [实现·GCC15]真实：编译自包含
 ```cpp
 // ⑥ 示例 A：列批量相加（ClickHouse 向量化等价）
 // 文件：Examples/_ch133_vectorize.cpp，行号：9（column_add 循环体）
@@ -446,7 +446,7 @@ vmulps   zmm1, zmm5, ZMMWORD PTR [rdx+rax]  ; 16 路并行乘
 vfmadd231ss xmm0, xmm5, DWORD PTR [rdx+rax*4] ; 标量尾巴用 FMA 收尾
 ```
 
-> **示例 13** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：编译自包含]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实：编译自包含
 ```cpp
 // ⑥ 示例 B：单线程事件循环（Redis ae.c 等价）
 // 文件：Examples/_ch133_eventloop.cpp，行号：11（process_events 循环）
@@ -481,7 +481,7 @@ call    rax                 ; 单线程串行分发回调，无锁、无上下�
 
 向量化把「每元素 1 条标量指令」变成「每 16 元素 1 条 packed 指令」，理论上限 16×。实际受限于 cache、分支、依赖链，通常 4×–10×。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：性能：向量化 vs 行存]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能：向量化 vs 行存
 ```cpp
 #include <cstddef>
 // ⑦ 行存求和：编译器难以向量化（stride 不规则）
@@ -490,7 +490,7 @@ double sum_row(const struct Row* r, size_t n) {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：性能：向量化 vs 行存]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能：向量化 vs 行存
 ```cpp
 #include <cstddef>
 // ⑦ 列存求和：连续内存，编译器轻松 emit vaddps
@@ -499,7 +499,7 @@ double sum_col(const double* p, size_t n) {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：性能：向量化 vs 行存]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能：向量化 vs 行存
 ```cpp
 // ⑦ 用 std::accumulate 同样能被向量化（底层仍是连续迭代）
 #include <numeric>
@@ -521,7 +521,7 @@ g++ -std=c++20 -O3 -march=native -fopt-info-vec=vec.log _ch133_vectorize.cpp
 # 典型输出： "...note: loop vectorized" / "...missed: not vectorized: control flow in loop"
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：调试]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 ```cpp
 // ⑧ 用 alignas 强制对齐，帮助编译器生成更优的 aligned load
 #include <cstddef>
@@ -531,7 +531,7 @@ void add_buf(float* out, const float* a, const float* b, size_t n) {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：调试]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 ```cpp
 // ⑧ Redis 调试：在事件循环入口打点，观察单线程是否被某回调阻塞
 void aeProcessEvents(aeEventLoop* el, int flags) {
@@ -547,7 +547,7 @@ void aeProcessEvents(aeEventLoop* el, int flags) {
 
 SIMD 指令集因平台而异：x86 有 SSE/AVX，ARM 有 NEON，POWER 有 AltiVec。ClickHouse 用宏分发到不同实现。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 ```cpp
 // ⑨ ClickHouse 用宏选不同向量化后端（等价 src/Common/.../Vec.h）
 #if defined(__AVX512F__)
@@ -561,7 +561,7 @@ SIMD 指令集因平台而异：x86 有 SSE/AVX，ARM 有 NEON，POWER 有 AltiV
 #endif
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 ```cpp
 // ⑨ 运行时特性探测（避免在不支持 AVX 的机器上 SIGILL）
 #include <cpuid.h>
@@ -572,7 +572,7 @@ bool has_avx2() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 ```cpp
 // ⑨ 跨平台事件多路复用抽象（Redis ae.c 正是这么做的）
 #if defined(__linux__)
@@ -591,7 +591,7 @@ bool has_avx2() {
 
 ## ⑩ 常见陷阱
 
-> **示例 22** [难度 ★★★☆☆] [主题：常见陷阱]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见陷阱
 ```cpp
 #include <cstddef>
 // ⑩ 陷阱1：在向量化循环里放分支，打断了 SIMD
@@ -601,7 +601,7 @@ void bad(float* out, const float* a, size_t n, bool negate) {
 }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：常见陷阱]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
 ```cpp
 #include <cstddef>
 // ⑩ 陷阱2：指针别名（aliasing）阻止向量化
@@ -615,7 +615,7 @@ void good(float* __restrict out, const float* __restrict a,
 }
 ```
 
-> **示例 24** [难度 ★★★★☆] [主题：常见陷阱]
+> **示例 24** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见陷阱
 ```cpp
 // ⑩ 陷阱3：Redis 单线程里跑慢命令（如 KEYS *）阻塞整个实例
 // 等价：在事件循环回调中做 O(N) 全表扫描 -> 所有其他 client 饿死
@@ -624,7 +624,7 @@ void on_command_slow(redisClient* c) {
 }
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：常见陷阱]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见陷阱
 ```cpp
 // ⑩ 陷阱4：在向量化 hot path 用 std::function（间接调用 + 堆分配）
 #include <functional>
@@ -638,7 +638,7 @@ void slow(const std::function<float(float)>& f, float* out, const float* a, size
 
 ## ⑪ 演进
 
-> **示例 26** [难度 ★★★☆☆] [主题：演进]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演进
 ```cpp
 #include <cstddef>
 // ⑪ ClickHouse 早期用 SSE2，后逐步引入 AVX/AVX2/AVX-512；代码靠宏分层
@@ -648,7 +648,7 @@ void scatter_add(float* base, const int* idx, const float* v, size_t n);
 // 特化：Sse2 / Avx2 / Avx512 各一份 kernel
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：演进]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进
 ```cpp
 // ⑪ Redis 事件库早期只支持 select，后加 kqueue/epoll/evport
 // 等价演进：多路复用器可插拔（ae_evport / ae_kqueue / ae_epoll / ae_select）
@@ -656,7 +656,7 @@ struct aeApiState;
 typedef struct aeApiState* (*aeApiCreateFn)(aeEventLoop*);
 ```
 
-> **示例 28** [难度 ★★★☆☆] [主题：演进]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演进
 ```cpp
 #include <cstddef>
 // ⑪ C++ 侧：用 if constexpr 替代宏做编译期后端选择（C++17 起）
@@ -674,7 +674,7 @@ void kernel(T* out, const T* a, const T* b, size_t n) {
 
 ## ⑫ 最佳实践
 
-> **示例 29** [难度 ★★★☆☆] [主题：最佳实践]
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
 ```cpp
 #include <cstddef>
 // ⑫ 列数据用连续 PODArray，绝不存 vector<struct>
@@ -687,7 +687,7 @@ public:
 };
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑫ 事件回调保持极短，慢任务甩给后台线程/异步
 void on_read(redisClient* c) {
@@ -696,7 +696,7 @@ void on_read(redisClient* c) {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -717,7 +717,7 @@ public:
 
 ## ⑬ 与 STL 容器对比
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：与 STL 容器对比]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器对比
 ```cpp
 #include <vector>
 // ⑬ vector<Row> 行存：慢（stride 大，难向量化）
@@ -727,7 +727,7 @@ double s1(const std::vector<Row>& v) {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：与 STL 容器对比]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器对比
 ```cpp
 #include <vector>
 // ⑬ 拆成两个 vector（列式）：快（连续，可向量化）
@@ -736,7 +736,7 @@ double s2(const std::vector<double>& price, const std::vector<int>& id) {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：与 STL 容器对比]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 STL 容器对比
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -751,7 +751,7 @@ public:
 };
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：与 STL 容器对比]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器对比
 ```cpp
 // ⑬ 事件循环用裸数组而非 vector：fd 是整数索引，数组 O(1) 命中
 struct aeEventLoop { aeFileEvent events[AE_SETSIZE]; };
@@ -761,7 +761,7 @@ struct aeEventLoop { aeFileEvent events[AE_SETSIZE]; };
 
 ## ⑭ 跨库
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：跨库]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 ```cpp
 #include <vector>
 // ⑭ ClickHouse 客户端（clickhouse-cpp）用连续 buffer 批量写列
@@ -772,7 +772,7 @@ void send_block(Connection& c, const std::vector<double>& prices) {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：跨库]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 ```cpp
 // ⑭ Redis C++ 客户端（hiredis / redis-plus-plus）单连接串行发命令
 // 等价：pipeline 把多条命令攒一批，减少事件循环往返
@@ -783,7 +783,7 @@ void pipeline(redisContext* c) {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：跨库]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 ```cpp
 // ⑭ 用 C++20 std::span 零拷贝地把列暴露给计算 kernel
 #include <span>
@@ -798,7 +798,7 @@ void compute(std::span<const float> col) {
 
 若向 ClickHouse / Redis 贡献 C++ 代码，向量化 kernel 与事件循环是核心敏感区。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：贡献]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献
 ```cpp
 #include <cstddef>
 // ⑮ ClickHouse 贡献范式：新聚合函数需实现「向量化入口」
@@ -810,7 +810,7 @@ struct AggregateSum {
 };
 ```
 
-> **示例 40** [难度 ★★☆☆☆] [主题：贡献]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 贡献
 ```cpp
 // ⑮ Redis 贡献范式：新命令是事件循环里的一个回调，必须 O(1)/O(log N)
 // 等价：命令处理函数签名固定，单线程内执行
@@ -824,7 +824,7 @@ void mycommandCommand(client* c) {
 
 ## ⑯ 工程应用
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：工程应用]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工程应用
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -842,7 +842,7 @@ public:
 };
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：工程应用]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工程应用
 ```cpp
 #include <map>
 // ⑯ 场景：高并发网关用单线程事件循环复用连接（Redis 模型）
@@ -857,7 +857,7 @@ public:
 };
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：工程应用]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工程应用
 ```cpp
 #include <cstddef>
 // ⑯ 把向量化 kernel 抽成独立函数，方便单测 + profiling
@@ -870,7 +870,7 @@ void batch_scale(float* out, const float* in, float k, size_t n) {
 
 ## ⑰ 性能对比
 
-> **示例 44** [难度 ★★☆☆☆] [主题：性能对比]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能对比
 ```cpp
 // ⑰ 基准：行存 vs 列存 求和（等价 benchmark 骨架）
 #include <chrono>
@@ -885,7 +885,7 @@ double bench(const std::vector<double>& col, int iters) {
 }
 ```
 
-> **示例 45** [难度 ★★☆☆☆] [主题：性能对比]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能对比
 ```cpp
 // ⑰ 用 std::execution::par 并行（注意：这已经是「多核」而非「单线程向量化」）
 #include <execution>
@@ -896,7 +896,7 @@ double par_sum(const std::vector<double>& v) {
 }
 ```
 
-> **示例 46** [难度 ★★☆☆☆] [主题：性能对比]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能对比
 ```cpp
 // ⑰ Redis vs 多线程 KV：单线程无锁，但受单核限制
 // 等价对比：单线程事件循环 QPS 上限 ≈ 单核 IPC / 每条命令周期数
@@ -907,7 +907,7 @@ double par_sum(const std::vector<double>& v) {
 
 ## ⑱ 调试 / 源码阅读
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑱ 读 ClickHouse 源码路径（上游参考）：从 IColumn 入手
 //   src/Columns/IColumn.h        —— 列抽象
@@ -916,7 +916,7 @@ double par_sum(const std::vector<double>& v) {
 // 读法：先跟一个 SELECT 的列如何被切成 Block，再到 executeOnColumn。
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑱ 读 Redis 源码路径（上游参考）：从 aeMain 入手
 //   src/ae.c / src/ae.h          —— 事件循环
@@ -925,7 +925,7 @@ double par_sum(const std::vector<double>& v) {
 // 读法：跟一个 GET 命令从 epoll_wait 就绪到 call 回调再到 addReply。
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：调试 / 源码阅读]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑱ 本地用 perf（Linux）看是否真向量化
 //   perf record ./clickhouse ...
@@ -935,9 +935,9 @@ double par_sum(const std::vector<double>& v) {
 
 - `[平台·Linux]`：源码阅读顺序决定理解速度——**先数据结构（IColumn / aeFileEvent），后控制流（executeOnColumn / aeMain）**。
 
-## ⑲ [经验]选型
+## ⑲ <span class="badge badge-exp">经验</span>选型
 
-> **示例 50** [难度 ★★☆☆☆] [主题：[经验]选型]
+> **示例 50** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
 ```cpp
 // ⑲ 选型决策：用列存向量化还是单线程事件？看瓶颈在哪
 enum class Bottleneck { CPU_COMPUTE, IO_CONCURRENCY, BOTH };
@@ -946,7 +946,7 @@ enum class Bottleneck { CPU_COMPUTE, IO_CONCURRENCY, BOTH };
 // BOTH                           -> 两者组合，或 ClickHouse 多线程分片
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：[经验]选型]
+> **示例 51** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
 ```cpp
 #include <cstddef>
 // ⑲ 不要为「看起来快」盲目上 SIMD：先 profile
@@ -956,7 +956,7 @@ bool should_vectorize(size_t n, bool branchy) {
 }
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：[经验]选型]
+> **示例 52** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
 ```cpp
 // ⑲ 不要为「看起来省事」盲目上多线程：Redis 证明单线程也能极高吞吐
 // 等价：若状态共享简单，单线程事件循环比无锁并发更易写对
@@ -969,18 +969,18 @@ bool should_vectorize(size_t n, bool branchy) {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：ClickHouse 列存 + 向量化执行 vs 行存。** 你设计分析型查询。请说明（属系统架构，无标准对应）。
-   - [标准] 无 C++ 标准对应；列存利用连续内存批处理，语言层只保证数组连续（[dcl.array]）。
-   - [引用] ISO/IEC 14882:2023 §[dcl.array]（连续存储）/ ClickHouse 文档；cppreference "Array" 词条。
+   - <span class="badge badge-std">标准</span> 无 C++ 标准对应；列存利用连续内存批处理，语言层只保证数组连续（[dcl.array]）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.array]（连续存储）/ ClickHouse 文档；cppreference "Array" 词条。
 
 2. **真实场景：Redis 单线程事件循环避免锁竞争。** 你对比 C++ 多线程并发。请说明。
-   - [标准] 单线程模型天然无数据竞争；C++ 多线程需显式同步（[intro.races]）。
-   - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ Redis 文档（event loop）；cppreference "Memory model" 词条。
+   - <span class="badge badge-std">标准</span> 单线程模型天然无数据竞争；C++ 多线程需显式同步（[intro.races]）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ Redis 文档（event loop）；cppreference "Memory model" 词条。
 
 3. **真实场景：用 RESP 协议与 C++ 客户端通信。** 你序列化命令。请说明（属协议设计）。
-   - [标准] 网络序列化格式无标准规定；由协议文档定义，C++ 侧用缓冲/视图处理。
-   - [引用] Redis RESP 协议文档 / ISO/IEC 14882:2023 §[string.view]（零拷贝处理字节）；cppreference。
+   - <span class="badge badge-std">标准</span> 网络序列化格式无标准规定；由协议文档定义，C++ 侧用缓冲/视图处理。
+   - <span class="badge badge-ref">引用</span> Redis RESP 协议文档 / ISO/IEC 14882:2023 §[string.view]（零拷贝处理字节）；cppreference。
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 ```cpp
 // ⑳ ClickHouse 向量化速查
 //   - 数据按列连续存放（ColumnVector<T>），不用 struct-of-row
@@ -989,7 +989,7 @@ bool should_vectorize(size_t n, bool branchy) {
 //   - 上游入口：src/Columns/IColumn.h / ColumnVector.cpp / ExpressionActions.cpp
 ```
 
-> **示例 54** [难度 ★★☆☆☆] [主题：速查表]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ Redis 事件循环速查
 //   - 单线程 aeMain 循环，epoll/kqueue/select 多路复用
@@ -998,7 +998,7 @@ bool should_vectorize(size_t n, bool branchy) {
 //   - 上游入口：src/ae.c / src/ae.h / src/server.c
 ```
 
-> **示例 55** [难度 ★★☆☆☆] [主题：速查表]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 本机可复现实证命令（GCC 13.1.0）
 //   g++ -std=c++20 -O3 -march=native -S -masm=intel \
@@ -1009,7 +1009,7 @@ bool should_vectorize(size_t n, bool branchy) {
 //            call rax（事件循环回调分发）
 ```
 
-> **示例 56** [难度 ★★★☆☆] [主题：速查表]
+> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```cpp
 #include <span>
 // ⑳ C++ 特性映射
@@ -1032,10 +1032,10 @@ bool should_vectorize(size_t n, bool branchy) {
 
 | 系统 | 产业坐标 · 角色 | 代表部署 / 生态 | 角色 · 备注 |
 |---|---|---|---|
-| Redis | 全球头号内存缓存 / 数据结构存储 | 几乎每家互联网公司；`redis-plus-plus` / `hiredis` | 缓存 / 会话 / 排行榜 / 消息队列 [史] |
-| ClickHouse | OLAP 标杆（列存 + 向量化） | 字节 · Cloudflare · Uber；`clickhouse-cpp` | 实时分析 / 日志 / 指标平台 [史] |
-| 组合使用 | Redis 扛在线热点 + ClickHouse 扛离线/近线聚合 | 二者互补分层 | 见"联合使用场景" [史] |
-| C++ 生态 | 标准 C++ 工程直接接入 | `redis-plus-plus` / `hiredis` / `clickhouse-cpp` | 让 C++ 工程落地两大系统 [史] |
+| Redis | 全球头号内存缓存 / 数据结构存储 | 几乎每家互联网公司；`redis-plus-plus` / `hiredis` | 缓存 / 会话 / 排行榜 / 消息队列 <span class="badge badge-history">史</span> |
+| ClickHouse | OLAP 标杆（列存 + 向量化） | 字节 · Cloudflare · Uber；`clickhouse-cpp` | 实时分析 / 日志 / 指标平台 <span class="badge badge-history">史</span> |
+| 组合使用 | Redis 扛在线热点 + ClickHouse 扛离线/近线聚合 | 二者互补分层 | 见"联合使用场景" <span class="badge badge-history">史</span> |
+| C++ 生态 | 标准 C++ 工程直接接入 | `redis-plus-plus` / `hiredis` / `clickhouse-cpp` | 让 C++ 工程落地两大系统 <span class="badge badge-history">史</span> |
 
 > 表注（㉑.1）：据各项目官方博客与公开案例整理，呈现「产业坐标」而非穷举；代表部署随业务变动，以各项目官方披露为准。二者均消费 C++17 `std::string_view`、C++20 `std::span` 这类零成本词汇类型，却都拒绝把核心数据结构交给 `std::vector` / `std::unordered_map`（详见 ㉒.5）。
 
@@ -1043,7 +1043,7 @@ bool should_vectorize(size_t n, bool branchy) {
 
 不装 Redis 也能理解它的 `EXPIRE` 机制——下面用标准库复刻核心：**每个 key 带一个过期时刻，GET 时若已过期则视为 miss**。这正是 Redis 的 TTL 语义基础（真实 Redis 还用惰性删除 + 定期抽样回收）。
 
-> **示例 57** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：先把
 ```cpp
 // ㉑.2 用标准库 std::map + std::chrono 复刻 Redis「带过期的 KV」本质（本块可独立编译，GCC 15.3.0 验证）
 #include <map>
@@ -1088,7 +1088,7 @@ int main() {
 
 下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
-> **示例 58** [难度 ★★☆☆☆] [主题：㉑.3 真实 API 长什么样]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 API 长什么样
 ```cpp
 // ㉑.3 真实 Redis / ClickHouse C++ 客户端写法（仅注释演示，需链接 redis++/hiredis / clickhouse-cpp；本门禁按空块编译通过）：
 //   // ① Redis（redis-plus-plus，基于 hiredis）
@@ -1194,7 +1194,7 @@ int main() {
 
 ## 附录 E：ClickHouse/Redis 底层与设计
 
-> **示例 59** [难度 ★★☆☆☆] [主题：附录 E：ClickHouse/Re]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：ClickHouse/Re
 ```
 ClickHouse: 列存+SIMD向量化, AVX2单核~40GB/s
 Redis: 单线程epoll, 零锁竞争, 100K QPS/core
@@ -1275,7 +1275,7 @@ Q: LSM Tree vs B-tree? A: LSM=写快(顺序)+读慢(多层merge); B-tree=读写�
 
 把主循环写成等长的 4 路累加，编译器（GCC `-O2`）会自动展开为 SIMD 加：
 
-> **示例 60** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <vector>
 #include <numeric>
@@ -1306,11 +1306,11 @@ int main() {
 }
 ```
 
-[标准] 连续内存 + 规整循环是自动向量化的前提；`& ~3` 把迭代次数对齐到 4 的倍数，消除主循环内部的分支。
+<span class="badge badge-std">标准</span> 连续内存 + 规整循环是自动向量化的前提；`& ~3` 把迭代次数对齐到 4 的倍数，消除主循环内部的分支。
 
 [实现·GCC15] 在 GCC 15.3.0 `-O2 -fopt-info-vec` 下主循环被报告为 `loop vectorized`；对应 ⑦ 性能（向量化 vs 行存）与 ⑧ 调试 里"怎么读向量化报告"。
 
-[引用] ClickHouse `ColumnVector<T>::getData` / `ExpressionActions` 向量化调度（本章 ③）；GCC 自动向量化文档（https://gcc.gnu.org/projects/tree-ssa/vectorization.html）。
+<span class="badge badge-ref">引用</span> ClickHouse `ColumnVector<T>::getData` / `ExpressionActions` 向量化调度（本章 ③）；GCC 自动向量化文档（https://gcc.gnu.org/projects/tree-ssa/vectorization.html）。
 
 </details>
 
@@ -1322,7 +1322,7 @@ int main() {
 
 intset 用紧凑数组 + 二分，超阈值/类型不符才升级到哈希表：
 
-> **示例 61** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 61** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <vector>
 #include <cstdint>
@@ -1355,9 +1355,9 @@ int main() {
 }
 ```
 
-[标准] `std::lower_bound` + `std::binary_search` 在有序数组上做 O(log n) 查找；升级阈值 `set-max-intset-entries` 是 Redis 在空间/时间之间权衡的体现。
+<span class="badge badge-std">标准</span> `std::lower_bound` + `std::binary_search` 在有序数组上做 O(log n) 查找；升级阈值 `set-max-intset-entries` 是 Redis 在空间/时间之间权衡的体现。
 
-[引用] Redis `intset.c`（`intset` 编码与升级）：<https://github.com/redis/redis/blob/unstable/src/intset.c>；本章 ④ Redis 事件循环 / 对象编码（`OBJ_ENCODING_*`）。
+<span class="badge badge-ref">引用</span> Redis `intset.c`（`intset` 编码与升级）：<https://github.com/redis/redis/blob/unstable/src/intset.c>；本章 ④ Redis 事件循环 / 对象编码（`OBJ_ENCODING_*`）。
 
 </details>
 
@@ -1369,7 +1369,7 @@ int main() {
 
 2 的幂容量 + 掩码定位 + 单桶增量搬迁，是 Redis 不阻塞事件循环的关键：
 
-> **示例 62** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -1409,9 +1409,9 @@ int main() {
 }
 ```
 
-[标准] `hash & (size-1)` 仅在容量为 2^n 时等价于取模；渐进 rehash 把 O(n) 搬迁摊还到每次操作，避免事件循环长停顿。
+<span class="badge badge-std">标准</span> `hash & (size-1)` 仅在容量为 2^n 时等价于取模；渐进 rehash 把 O(n) 搬迁摊还到每次操作，避免事件循环长停顿。
 
-[引用] Redis `dict.c`（`dictRehash` / `ht[0]`/`ht[1]`）：<https://github.com/redis/redis/blob/unstable/src/dict.c>；本章 ④ Redis 事件循环（ae.c 单线程 Reactor）。
+<span class="badge badge-ref">引用</span> Redis `dict.c`（`dictRehash` / `ht[0]`/`ht[1]`）：<https://github.com/redis/redis/blob/unstable/src/dict.c>；本章 ④ Redis 事件循环（ae.c 单线程 Reactor）。
 
 </details>
 

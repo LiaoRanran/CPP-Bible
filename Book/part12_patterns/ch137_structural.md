@@ -10,23 +10,23 @@
 > 当"两个接口对不上、一个抽象有两个维度在正交变化"时，结构型模式负责把零件焊成机器。
 
 ### 0.1 起源（谁·何时·为何）
-结构型模式同样出自 GoF 1994 年著作（Adapter、Bridge、Composite、Decorator、Facade、Flyweight、Proxy 七种）[史]。它的痛点不是"没有对象"，而是对象"组装"时的七种典型痛苦：接口不兼容要适配、抽象有两个维度要桥接、部分—整体要组合、动态加职责要装饰、子系统太杂乱要外观、细粒度爆炸要享元、访问要受控要代理。GoF 把这套"怎么把类/对象拼成更大结构"的经验固化成词。
+结构型模式同样出自 GoF 1994 年著作（Adapter、Bridge、Composite、Decorator、Facade、Flyweight、Proxy 七种）<span class="badge badge-history">史</span>。它的痛点不是"没有对象"，而是对象"组装"时的七种典型痛苦：接口不兼容要适配、抽象有两个维度要桥接、部分—整体要组合、动态加职责要装饰、子系统太杂乱要外观、细粒度爆炸要享元、访问要受控要代理。GoF 把这套"怎么把类/对象拼成更大结构"的经验固化成词。
 
 ### 0.2 关键转折（编年）
-- 1994：GoF 收录七种结构型模式 [史]。
-- 此后：C++ 的模板、RAII、智能指针让这些模式与原生设施深度融合——例如 `std::shared_ptr` 本身就是 Proxy/Handle-Body 的现代化身 [评]。
-- 现代重写：Decorator 常被 CRTP mixin 取代，Bridge 常被 Policy-Based Design 取代 [评]。
+- 1994：GoF 收录七种结构型模式 <span class="badge badge-history">史</span>。
+- 此后：C++ 的模板、RAII、智能指针让这些模式与原生设施深度融合——例如 `std::shared_ptr` 本身就是 Proxy/Handle-Body 的现代化身 <span class="badge badge-comment">评</span>。
+- 现代重写：Decorator 常被 CRTP mixin 取代，Bridge 常被 Policy-Based Design 取代 <span class="badge badge-comment">评</span>。
 
 ### 0.3 设计哲学之争
-结构型模式的核心张力是"组合 vs 继承"：GoF 一句名言"优先使用对象组合而非类继承"，正是为了躲开继承层级僵化 [评]。在 C++ 里这条更锋利——多继承本就昂贵且易歧义，于是 Bridge/Decorator 用"持有一个指针"替代"继承一个类"，既灵活又零虚表膨胀风险 [评]。
+结构型模式的核心张力是"组合 vs 继承"：GoF 一句名言"优先使用对象组合而非类继承"，正是为了躲开继承层级僵化 <span class="badge badge-comment">评</span>。在 C++ 里这条更锋利——多继承本就昂贵且易歧义，于是 Bridge/Decorator 用"持有一个指针"替代"继承一个类"，既灵活又零虚表膨胀风险 <span class="badge badge-comment">评</span>。
 
 ### 0.4 史料补遗与持续编年
 继 1994 年七种结构型模式确立，现代 C++ 把其中多数从"运行时对象拼装"推向"编译期类型组合"。
 
-- [史] C++20 的 `concept`/约束让 Adapter/Bridge 的"接口契约"能在编译期表达，替代过去靠文档与注释约束的弱约定；`std::function` 与 lambda 把 Proxy/Decorator 的"包装一层"做得更轻。
-- [史] Handle-Body（pImpl） idiom 在二进制稳定场景下愈发重要：把实现细节藏在 `.cpp` 的 `impl` 指针后，是跨动态库保持 ABI 兼容的工业标准手法，正是结构型思想在 ABI 层的落地。
-- [评] "优先组合而非继承"在 C++ 里被强化——多继承昂贵且易歧义，于是 Bridge/Decorator 用"持有指针"替代"继承类"，既灵活又避免虚表膨胀。
-- [轶] Decorator 模式常被误写成 "Decorate" 模式，GoF 原书拼写为 Decorator，至今仍有初学者拼错。
+- <span class="badge badge-history">史</span> C++20 的 `concept`/约束让 Adapter/Bridge 的"接口契约"能在编译期表达，替代过去靠文档与注释约束的弱约定；`std::function` 与 lambda 把 Proxy/Decorator 的"包装一层"做得更轻。
+- <span class="badge badge-history">史</span> Handle-Body（pImpl） idiom 在二进制稳定场景下愈发重要：把实现细节藏在 `.cpp` 的 `impl` 指针后，是跨动态库保持 ABI 兼容的工业标准手法，正是结构型思想在 ABI 层的落地。
+- <span class="badge badge-comment">评</span> "优先组合而非继承"在 C++ 里被强化——多继承昂贵且易歧义，于是 Bridge/Decorator 用"持有指针"替代"继承类"，既灵活又避免虚表膨胀。
+- <span class="badge badge-anecdote">轶</span> Decorator 模式常被误写成 "Decorate" 模式，GoF 原书拼写为 Decorator，至今仍有初学者拼错。
 
 > 史料来源：
 > - https://en.cppreference.com/w/cpp/language/constraints
@@ -50,7 +50,7 @@
 
 **【标准】** `[标准]` GoF《Design Patterns》将以上 7 种列为结构型；C++ 中它们与 RAII、模板、智能指针深度耦合，已远超原书的「纯 OOP」语境。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：结构型模式解决什么]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：结构型模式解决什么
 ```
 ┌──────────────┐   接口适配   ┌──────────────┐
 │  Client      │────────────▶│  Adapter     │
@@ -73,7 +73,7 @@
 
 **【对象适配器】** 用组合持有被适配者，推荐方式（不引入多重继承，耦合更弱）：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：适配器 Adapter（类/对象）]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适配器 Adapter（类/对象）
 ```cpp
 // 文件: Examples/_ch137_adapter.cpp
 // 对象适配器：把 LegacyRectangle 适配成客户期望的 Rectangle 接口
@@ -110,7 +110,7 @@ int main() {
 
 **【类适配器】** 用私有继承复用实现、公有继承目标接口。注意它引入多重继承，**【经验】** 现代 C++ 更偏向对象适配器，因为被适配者可以是运行期注入的任意实例：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：适配器 Adapter（类/对象）]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适配器 Adapter（类/对象）
 ```cpp
 // 文件: Examples/_ch137_adapter_class.cpp
 // 类适配器：用 private 继承复用被适配者实现，public 继承目标接口
@@ -141,7 +141,7 @@ int main() {
 
 **【错误示例】** ❌ 用值语义接收被适配者会发生**对象切片**，适配器内部持有的是拷贝且丢失动态类型：
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：适配器 Adapter（类/对象）]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适配器 Adapter（类/对象）
 ```cpp
 // ❌ 错误：按值持有 Adaptee 会切片，且无法转发到派生实现
 struct BadAdapter : Target {
@@ -153,7 +153,7 @@ struct BadAdapter : Target {
 
 **【正确示例】** ✅ 用引用或指针（智能指针）持有，转发调用，**零拷贝**、保留动态类型：
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：适配器 Adapter（类/对象）]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适配器 Adapter（类/对象）
 ```cpp
 // ✅ 正确：引用/指针持有，仅做转发
 struct GoodAdapter : Target {
@@ -167,7 +167,7 @@ struct GoodAdapter : Target {
 
 **【定义】** C++ 的「适配器」概念被标准库发扬光大：任何提供 `begin()/end()` 的类型都能用于**范围 for**，因此适配一个 C 风格数组只需补上迭代器接口。
 
-> **示例 6** [难度 ★★★☆☆] [主题：适配器与范围 for / 迭代器适配]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 适配器与范围 for / 迭代器适配
 ```cpp
 // 文件: Examples/_ch137_adapter_rangefor.cpp
 // 迭代器适配器：让 C 风格数组支持范围 for（提供 begin/end）
@@ -192,7 +192,7 @@ int main() {
 
 **【标准】** `[标准]` 范围 for 在 `[stmt.ranged]` 中定义为对 `begin/end`（或成员 `begin/end`）的等价展开；这正是「迭代器适配」的合法接口契约。`std::back_inserter`、`std::front_inserter` 也是典型的**输出迭代器适配器**：
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：适配器与范围 for / 迭代器适配]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适配器与范围 for / 迭代器适配
 ```cpp
 // 把「赋值即追加」适配成输出迭代器，使 std::copy 能填满 vector
 #include <algorithm>
@@ -214,7 +214,7 @@ int main() {
 
 **【实现·GCC13】** 运行期桥接经典写法：
 
-> **示例 8** [难度 ★★☆☆☆] [主题：桥接 Bridge（抽象与实现分离）]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 桥接 Bridge（抽象与实现分离）
 ```cpp
 // 文件: Examples/_ch137_bridge.cpp
 // Bridge：抽象（Shape）与实现（Renderer）解耦，运行时通过组合选择实现
@@ -267,7 +267,7 @@ int main() {
 
 **【编译期桥接】** 把实现作为模板实参，分发在编译期完成，**零 vptr、零堆分配、可完全内联**：
 
-> **示例 9** [难度 ★★★★☆] [主题：编译期 vs 运行期]
+> **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 编译期 vs 运行期
 ```cpp
 // 文件: Examples/_ch137_bridge_ct.cpp
 // 编译期桥接：把 Renderer 作为模板实参，分发在编译期完成（无 vptr/堆分配）
@@ -294,7 +294,7 @@ int main() {
 
 **【运行期桥接】** 当实现需按配置/输入在运行期决定时，回到虚函数 + `shared_ptr`：
 
-> **示例 10** [难度 ★★☆☆☆] [主题：编译期 vs 运行期]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译期 vs 运行期
 ```cpp
 // 文件: Examples/_ch137_bridge_rt.cpp
 // 运行期桥接：依据配置在运行时选择实现，抽象与实现两维独立变化
@@ -322,7 +322,7 @@ int main() {
 
 **【定义】** 组合让单个对象和对象容器（「部分—整体」）对客户端**透明**——客户端用同一接口处理叶子与容器。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：组合 Composite]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 组合 Composite
 ```cpp
 // 文件: Examples/_ch137_composite.cpp
 // Composite：叶子节点与容器节点统一接口，客户端无差别对待
@@ -361,7 +361,7 @@ int main() {
 
 **【工业案例】** 文件系统目录树就是天然的组合结构：目录（容器）和文件（叶子）都暴露统一的「列举/大小」接口。下面是贴近真实的目录大小统计骨架（非 Hello World）：
 
-> **示例 12** [难度 ★★☆☆☆] [主题：组合 Composite]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 组合 Composite
 ```cpp
 // 工业版组合：目录(容器)与文件(叶子)统一 size() 接口
 #include <cstdint>
@@ -402,7 +402,7 @@ private:
 
 **【定义】** 组合的核心价值在于「客户端不必知道树深」，递归遍历逻辑集中在容器节点的 `operation()` 内。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：与递归遍历]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与递归遍历
 ```cpp
 // 文件: Examples/_ch137_composite_recursive.cpp
 // Composite 递归遍历：统计整棵树的叶子数量
@@ -448,7 +448,7 @@ int main() {
 
 **【定义】** 装饰器动态地给一个对象添加职责，是「继承为扩展」的**组合替代方案**——避免子类爆炸，且可在运行期任意叠加。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：装饰器 Decorator]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器 Decorator
 ```cpp
 // 文件: Examples/_ch137_decorator.cpp
 // Decorator：用组合而非继承，运行时动态叠加职责
@@ -493,7 +493,7 @@ int main() {
 
 **【实现·GCC13】** 装饰链用 `std::make_unique` 嵌套构造，注意 `std::move` 的所有权转移：
 
-> **示例 15** [难度 ★★☆☆☆] [主题：装饰器 Decorator]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器 Decorator
 ```cpp
 #include <memory>
 // 等价链式构造：由内向外包裹；每层拿到内部 unique_ptr 的所有权
@@ -505,7 +505,7 @@ auto drink = std::make_unique<Sugar>(std::make_unique<Milk>(std::make_unique<Sim
 
 **【定义】** 标准库的**容器适配器（container adapter）** `std::stack` / `std::queue` / `std::priority_queue` 本质上是装饰器：它们在底层序列容器（`vector`/`deque`/`list`）之上「裁剪」出受限接口。
 
-> **示例 16** [难度 ★★☆☆☆] [主题：装饰器与 std::stack/容器]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器与 std::stack/容器
 ```cpp
 // 文件: Examples/_ch137_decorator_stack.cpp
 // 容器适配器 std::stack 本质是一种 Decorator：在底层序列容器上裁剪出栈语义
@@ -526,7 +526,7 @@ int main() {
 
 **【标准】** `[标准]` `[container.adaptors]` 规定 `std::stack` 的底层容器默认 `std::deque`，可替换；这正是「用一个对象包装另一个、改变其暴露的接口形态」的装饰器语义。同理 `std::priority_queue` 在 `std::vector` 上施加堆序约束：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：装饰器与 std::stack/容器]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器与 std::stack/容器
 ```cpp
 // priority_queue 也是装饰器：在随机访问容器上叠加「堆」语义
 #include <queue>
@@ -543,7 +543,7 @@ int main() {
 
 **【定义】** 外观为复杂子系统提供一个**统一、简单的入口**，降低客户端与子系统的耦合。
 
-> **示例 18** [难度 ★★☆☆☆] [主题：外观 Facade]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 外观 Facade
 ```cpp
 // 文件: Examples/_ch137_facade.cpp
 // Facade：为复杂子系统提供统一、简单的入口接口
@@ -573,7 +573,7 @@ int main() {
 
 **【工业案例】** `std::filesystem` 就是文件系统调用的门面：把平台相关的 `CreateFile`/`open`/`stat` 等封装成跨平台接口。客户端写：
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：外观 Facade]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 外观 Facade
 ```cpp
 // std::filesystem 是 OS 文件 API 的门面（跨平台统一）
 #include <filesystem>
@@ -589,7 +589,7 @@ int main() {
 
 **【定义】** 享元通过**共享**大量细粒度对象的「内在状态（intrinsic）」，把内存占用从 O(N) 降到 O(去重后)，仅把「外在状态（extrinsic）」由调用方按次传入。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：享元 Flyweight]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 享元 Flyweight
 ```cpp
 // 文件: Examples/_ch137_flyweight.cpp
 // Flyweight：共享内在状态，外部状态由调用方按次传入
@@ -628,7 +628,7 @@ int main() {
 
 **【经验】** 享元的收益前提：对象数量巨大、内在状态占比高、外在状态可外提。否则共享本身的控制块/哈希表开销反而得不偿失。用代码区分两种状态：
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：享元 Flyweight]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 享元 Flyweight
 ```cpp
 // 享元关键区分：内在状态放进对象，外在状态放进参数
 struct Character {                 // 内在：字体/字号（可共享）
@@ -641,7 +641,7 @@ struct Character {                 // 内在：字体/字号（可共享）
 
 **【定义】** 字符串驻留（string interning）是享元的经典应用：相等的字符串字面量指向**同一份存储**，既省内存又让 `==` 退化为指针比较。
 
-> **示例 22** [难度 ★★☆☆☆] [主题：享元与 string interni]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 享元与 string interni
 ```cpp
 // 文件: Examples/_ch137_flyweight_intern.cpp
 // string interning 思路：相等字符串字面量指向同一份存储
@@ -677,7 +677,7 @@ int main() {
 
 **【定义】** 代理为另一个对象提供**替身**，以控制对真实对象的访问（延迟创建、权限、引用计数、远程调用等）。最日常的代理就是 `std::unique_ptr` / `std::shared_ptr`：它们封装所有权并转发访问。
 
-> **示例 23** [难度 ★★☆☆☆] [主题：代理 Proxy（智能指针即代理）]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理 Proxy（智能指针即代理）
 ```cpp
 // 文件: Examples/_ch137_proxy.cpp
 // Proxy：std::unique_ptr 是最常用的代理——封装所有权并对真实对象转发访问
@@ -698,7 +698,7 @@ int main() {
 
 **【源码剖析·libstdc++】** 代理的「转发」本质是一次指针解引用。`std::unique_ptr<T>::operator->` 在 libstdc++ 中直接返回被管理指针，毫无额外开销：
 
-> **示例 24** [难度 ★★☆☆☆] [主题：代理 Proxy（智能指针即代理）]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理 Proxy（智能指针即代理）
 ```cpp
 // 文件：Examples/_ch137_proxy.cpp
 // 行号：14
@@ -710,7 +710,7 @@ int main() {
 
 **【经验】** 代理与智能指针是「同一枚硬币」：RAII 管理器（`std::lock_guard`、`std::scoped_lock`、`std::fstream`）都可视为对「资源/锁/文件句柄」的代理，构造时获取、析构时释放：
 
-> **示例 25** [难度 ★★☆☆☆] [主题：代理 Proxy（智能指针即代理）]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理 Proxy（智能指针即代理）
 ```cpp
 // std::scoped_lock 是「锁代理」：构造加锁、析构解锁，异常安全
 #include <mutex>
@@ -728,7 +728,7 @@ int main() {
 
 **【定义】** 虚拟代理（Virtual Proxy）把昂贵对象的创建推迟到**首次真正使用**时，构造期几乎零成本，适合大图、远端对象、懒连接等。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：代理与延迟加载]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理与延迟加载
 ```cpp
 // 文件: Examples/_ch137_proxy_lazy.cpp
 // Virtual Proxy：延迟加载昂贵资源，仅在首次使用时创建真实对象
@@ -763,7 +763,7 @@ int main() {
 
 **【经验】** `std::function` 也是一种「调用代理」：它包装任意可调用对象，运行期可替换目标，常用于回调注册：
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：代理与延迟加载]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代理与延迟加载
 ```cpp
 // std::function 是「可调用对象代理」：统一接口、运行期改目标
 #include <functional>
@@ -779,7 +779,7 @@ int main() {
 
 **【定义】** C++ 的杀手锏是 RAII：「资源获取即初始化，释放即析构」。把结构型模式（门面/代理）与 RAII 结合，可在**构造即加锁、析构即解锁**的语义下提供统一接口。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：结构型模式与 RAII 结合]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结构型模式与 RAII 结合
 ```cpp
 // 文件: Examples/_ch137_raii.cpp
 // 结构型模式与 RAII 结合：门面同时充当加锁代理，构造加锁、析构解锁
@@ -815,7 +815,7 @@ int main() {
 
 **【定义】** 用 CRTP（Curiously Recurring Template Pattern）做**编译期装饰**：装饰逻辑作为基类模板，被装饰类型作实参，分发在编译期完成，**零虚函数、可被完全内联**。
 
-> **示例 29** [难度 ★★★★☆] [主题：模板 + 结构型（CRTP 装饰）]
+> **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 模板 + 结构型（CRTP 装饰）
 ```cpp
 // 文件: Examples/_ch137_crtp_decorator.cpp
 // CRTP Decorator：编译期静态组合装饰，零虚函数、可被完全内联
@@ -870,7 +870,7 @@ call    rdx                                  ; 虚分派到 Renderer::render
 
 **【内存图】** Bridge 对象的真实布局：
 
-> **示例 30** [难度 ★★★☆☆] [主题：内存布局：Bridge 双指针开销]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存布局：Bridge 双指针开销
 ```
 Shape 对象:
 ┌──────────────┬─────────────────────────────┐
@@ -885,7 +885,7 @@ Shape 对象:
 
 用 `sizeof` 实测布局（验证「双指针」在对象本身占多大）：
 
-> **示例 31** [难度 ★★☆☆☆] [主题：内存布局：Bridge 双指针开销]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存布局：Bridge 双指针开销
 ```cpp
 // Bridge 抽象侧持智能指针，对象本体即一个 shared_ptr（64 位下通常 16 字节）
 #include <memory>
@@ -908,12 +908,12 @@ int main() {
 
 **【取证·真实运行】** 对 `Examples/_ch137_decorator_bench.cpp`（叠 5 层 `Deco` 装饰 `Impl::f`，循环 1e7 次取均值），在 mingw-w64 GCC 13.1.0 `-O2` 上**实测输出**：
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：性能测量：装饰链调用开销]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能测量：装饰链调用开销
 ```
 5 层装饰开销 ~12.54 ns/调用 (sink=10000005)
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：性能测量：装饰链调用开销]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能测量：装饰链调用开销
 ```cpp
 // 文件: Examples/_ch137_decorator_bench.cpp
 // 装饰链调用开销微基准（std::chrono）：逐层叠加 Decorator 测单次调用延迟
@@ -961,7 +961,7 @@ int main() {
 
 **【定义】** 真实系统很少只用一种模式。下面把 **Composite（文档树）+ Decorator（样式）+ Flyweight（字体）** 组合成一个迷你文本排版内核：字符是叶子、行是容器（Composite），加粗是装饰（Decorator），字体对象在工厂里共享（Flyweight）。
 
-> **示例 34** [难度 ★★☆☆☆] [主题：模式组合实例]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式组合实例
 ```cpp
 // 文件: Examples/_ch137_pattern_combo.cpp
 // 模式组合：Composite(文档树) + Decorator(样式) + Flyweight(字体) 协同
@@ -1033,16 +1033,16 @@ int main() {
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：适配器用私有继承还是组合转发？** 你选错导致接口暴露。请说明。
-   - [标准] 私有继承表达“由…实现”（实现复用，基类公有成员变 private）；组合表达转发且更灵活。
-   - [引用] ISO/IEC 14882:2023 §[class.derived]（继承方式语义）/ [class.member.lookup]；cppreference "Inheritance" 词条。
+   - <span class="badge badge-std">标准</span> 私有继承表达“由…实现”（实现复用，基类公有成员变 private）；组合表达转发且更灵活。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.derived]（继承方式语义）/ [class.member.lookup]；cppreference "Inheritance" 词条。
 
 2. **真实场景：装饰器用组合 + 同一接口逐层包装。** 你动态加功能。请说明。
-   - [标准] 装饰器通过持有同一抽象基类的对象并转发调用实现；接口一致靠继承保证。
-   - [引用] ISO/IEC 14882:2023 §[class.derived]（接口继承）/ [class.member.lookup]（转发）；cppreference "Decorator pattern" 词条。
+   - <span class="badge badge-std">标准</span> 装饰器通过持有同一抽象基类的对象并转发调用实现；接口一致靠继承保证。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.derived]（接口继承）/ [class.member.lookup]（转发）；cppreference "Decorator pattern" 词条。
 
 3. **真实场景：桥接分离抽象与实现（两维独立变化）。** 你避免多重继承组合爆炸。请说明。
-   - [标准] 用指针/引用持有实现对象，抽象与实现各自独立演化，减少继承层级。
-   - [引用] ISO/IEC 14882:2023 §[class.derived]（继承 vs 组合）/ [util.smartptr]（持有实现）；cppreference "Bridge pattern" 词条。
+   - <span class="badge badge-std">标准</span> 用指针/引用持有实现对象，抽象与实现各自独立演化，减少继承层级。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.derived]（继承 vs 组合）/ [util.smartptr]（持有实现）；cppreference "Bridge pattern" 词条。
 
 **【七种模式一句话】**
 
@@ -1062,7 +1062,7 @@ int main() {
 
 **【反模式提醒】** ❌ 不要为「可能以后会扩展」提前套上 Bridge/Decorator——YAGNI；先写最直接的代码，等第二个变化维度真正出现再加模式。
 
-> **示例 35** [难度 ★★☆☆☆] [主题：小结]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结
 ```
 结构型模式选择速查
 ┌───────────────────┬───────────────────────────────┐
@@ -1093,7 +1093,7 @@ int main() {
 
 | 模式 | 代表系统 · 生态（库内） | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
 |---|---|---|---|---|
-| Adapter | STL 迭代器适配器（`reverse_iterator`/`back_inserter`）/ `std::bind` | 适配可调用对象与迭代器 | 标准库内建 | [STANDARD] `<iterator>`/`<functional>` |
+| Adapter | STL 迭代器适配器（`reverse_iterator`/`back_inserter`）/ `std::bind` | 适配可调用对象与迭代器 | 标准库内建 | <span class="badge badge-std">STANDARD</span> `<iterator>`/`<functional>` |
 | Decorator | C++ IO 流（`streambuf` 层层包裹）/ Boost 过滤流 / `std::stack`·`std::queue` 容器适配器 | 层层包裹增行为 | 标准库 + Boost | `streambuf` 是装饰器典范 |
 | Proxy | `std::unique_ptr`/`std::shared_ptr`（拥有资源代理）/ `std::weak_ptr`（弱引用代理） | 资源生命周期代理 | 标准库智能指针 | 代理本质是所有权/访问中介 |
 | Composite | UI 控件树 / DOM / scene graph | 统一叶子与容器节点 | 标准 UI/图形范式 | 递归结构统一处理 |
@@ -1131,7 +1131,7 @@ int main() {
 
 ## 附录: 结构型模式 C++ 实现
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录: 结构型模式 C++ 实现]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 结构型模式 C++ 实现
 ```cpp
 #include <iostream>
 class Adaptee{public:void specific(){std::cout<<"adaptee"<<std::endl;}};
@@ -1140,7 +1140,7 @@ class Adapter:public Target{Adaptee a;public:void request()override{a.specific()
 int main(){Adapter ad;ad.request();return 0;}
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：附录: 结构型模式 C++ 实现]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 结构型模式 C++ 实现
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1150,7 +1150,7 @@ struct Composite:Component{std::vector<std::unique_ptr<Component>> c;void op()ov
 int main(){std::cout<<"Composite: tree structure. Leaf + Composite share interface."<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：附录: 结构型模式 C++ 实现]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 结构型模式 C++ 实现
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1159,13 +1159,13 @@ class Proxy{std::unique_ptr<Real> r;public:void work(){if(!r)r=std::make_unique<
 int main(){Proxy p;p.work();return 0;}
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录: 结构型模式 C++ 实现]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 结构型模式 C++ 实现
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Decorator: wrap objects to add behavior. Bridge: separate interface from implementation."<<std::endl;return 0;}
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录: 结构型模式 C++ 实现]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 结构型模式 C++ 实现
 ```cpp
 #include <iostream>
 class Subsystem{public:void op1(){std::cout<<"op1 ";}void op2(){std::cout<<"op2"<<std::endl;}};
@@ -1175,7 +1175,7 @@ int main(){Facade f;f.simple();return 0;}
 
 ## 附录 A：结构型模式工业实例 [F: Industry / B: Principle]
 
-> **示例 41** [难度 ★★☆☆☆] [主题：附录 A：结构型模式工业实例 [F:]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：结构型模式工业实例 [F:
 ```
 C++ 标准库中的结构型模式:
 
@@ -1197,7 +1197,7 @@ Proxy: std::vector<bool>::reference → 代理 bit 引用 (非 bool&)
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 42** [难度 ★★☆☆☆] [主题：附录 B：面试 [J: Learni]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learni
 ```
 面试高频:
 Q: Adapter vs Decorator vs Proxy 的区别？
@@ -1221,7 +1221,7 @@ A: std::async = Facade for thread creation + future + promise; 和 std::for_each
 
 ## 附录 F：结构型模式
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 F：结构型模式]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：结构型模式
 ```cpp
 #include <iostream>
 #include <stack>
@@ -1239,7 +1239,7 @@ int main(){std::stack<int,std::vector<int>> s;s.push(42);std::cout<<s.top()<<std
 | Proxy | 延迟/远程访问 | 与真实对象不同 | unique_ptr(简单场景) |
 | Facade | 简化复杂系统 | 可能过于简化 | 直接使用子系统 |
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 G：结构型模式设计权衡 [H:]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：结构型模式设计权衡 [H:
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=control access; Facade=simplify"<<std::endl;return 0;}
@@ -1288,7 +1288,7 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 
 ## 底层视角：GoF 模式与虚调用/CRTP 的代价权衡 [E: Low-level]
 
-[标准] 多数结构型模式（Strategy/Decorator/Composite）依赖运行时多态，即经 vtable 间接调用（见 ch47：约 1–3 ns + 间接跳转惩罚，阻碍内联）。每对象常含 `0x0008` vptr，模式嵌套时多基类布局叠加多个 `0x0008`（见 ch50 thunk）。
+<span class="badge badge-std">标准</span> 多数结构型模式（Strategy/Decorator/Composite）依赖运行时多态，即经 vtable 间接调用（见 ch47：约 1–3 ns + 间接跳转惩罚，阻碍内联）。每对象常含 `0x0008` vptr，模式嵌套时多基类布局叠加多个 `0x0008`（见 ch50 thunk）。
 
 性能敏感路径可用 CRTP 在编译期静态绑定：`GCC 13.1.0` `-O2` 把 `static_cast<Derived*>(this)->f()` 内联为直接调用（≈0.3 ns），消除 vtable 与 `0x0008` 间接。`C++20` `consteval` 可进一步把策略选择压到编译期。
 
@@ -1304,7 +1304,7 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -1317,9 +1317,9 @@ struct Adapter : HttpSender {                 // 对象适配器：持有被适�
 int main() { Adapter a; a.send("u", "b"); }
 ```
 
-[标准] 适配器在「不改动双方源码」的前提下转换接口；对象适配器通过成员组合比私有继承更松耦合，易于替换被适配实现。
+<span class="badge badge-std">标准</span> 适配器在「不改动双方源码」的前提下转换接口；对象适配器通过成员组合比私有继承更松耦合，易于替换被适配实现。
 
-[引用] 适配器模式见 GoF《Design Patterns》Adapter；标准库迭代器适配器（`std::back_inserter` 等）即同类思想，见 cppreference「Iterator library」；Boost 亦大量使用适配器。
+<span class="badge badge-ref">引用</span> 适配器模式见 GoF《Design Patterns》Adapter；标准库迭代器适配器（`std::back_inserter` 等）即同类思想，见 cppreference「Iterator library」；Boost 亦大量使用适配器。
 
 </details>
 
@@ -1329,7 +1329,7 @@ int main() { Adapter a; a.send("u", "b"); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1342,9 +1342,9 @@ struct Panel  : Widget { std::vector<std::unique_ptr<Widget>> kids;
 int main() { Panel p; p.add(std::make_unique<Button>()); p.apply_theme(); }
 ```
 
-[标准] 组合让「单个对象」与「对象集合」对待方式一致，递归 `apply_theme` 自然遍历整棵子树；`unique_ptr` 管理子树生命周期。
+<span class="badge badge-std">标准</span> 组合让「单个对象」与「对象集合」对待方式一致，递归 `apply_theme` 自然遍历整棵子树；`unique_ptr` 管理子树生命周期。
 
-[引用] 组合模式见 GoF《Design Patterns》Composite；现代替代见 `std::variant` 与 `std::visit`（cppreference），以及 ch138 ⑭ 关于 variant 分发代价的讨论。
+<span class="badge badge-ref">引用</span> 组合模式见 GoF《Design Patterns》Composite；现代替代见 `std::variant` 与 `std::visit`（cppreference），以及 ch138 ⑭ 关于 variant 分发代价的讨论。
 
 </details>
 
@@ -1354,7 +1354,7 @@ int main() { Panel p; p.add(std::make_unique<Button>()); p.apply_theme(); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 47** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1366,9 +1366,9 @@ struct Border : Image { std::shared_ptr<Image> inner;
 int main() { auto img = std::make_shared<Border>(std::make_shared<Raw>()); img->render(); }
 ```
 
-[标准] 装饰器用「持有同一接口的成员」递归包裹，开闭原则友好；每层多一次虚调用 / 智能指针解引用，装饰链越长开销线性增长（见 ch137 ⑱ 用 `std::chrono` 实测）。
+<span class="badge badge-std">标准</span> 装饰器用「持有同一接口的成员」递归包裹，开闭原则友好；每层多一次虚调用 / 智能指针解引用，装饰链越长开销线性增长（见 ch137 ⑱ 用 `std::chrono` 实测）。
 
-[引用] 装饰器模式见 GoF《Design Patterns》Decorator；标准库 `std::stack` 即容器适配器（adapter）的典型，见 cppreference「Container adaptors」。
+<span class="badge badge-ref">引用</span> 装饰器模式见 GoF《Design Patterns》Decorator；标准库 `std::stack` 即容器适配器（adapter）的典型，见 cppreference「Container adaptors」。
 
 </details>
 
@@ -1536,7 +1536,7 @@ CRTP 装饰器在编译期展开为直接调用链，零运行期开销。但 CR
 
 ### D5.3 可复现 demo
 
-> **示例 48** [难度 ★★★☆☆] [主题：可复现 demo]
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
 ```cpp
 #include <cstdio>
 

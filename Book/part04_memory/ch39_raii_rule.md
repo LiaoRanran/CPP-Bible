@@ -7,10 +7,10 @@
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
 
 立场分层约定：
-- **[标准]**　语言/库标准规定（ISO C++、LWG 决议）。
-- **[实现]**　libstdc++ / libc++ / MS STL 的具体代码行为。
+- **<span class="badge badge-std">标准</span>**　语言/库标准规定（ISO C++、LWG 决议）。
+- **<span class="badge badge-impl">实现</span>**　libstdc++ / libc++ / MS STL 的具体代码行为。
 - **[平台·x86-64]**　MinGW GCC 13.1.0、Windows、ABI 相关事实。
-- **[经验]**　工程实践、坑与取舍。
+- **<span class="badge badge-exp">经验</span>**　工程实践、坑与取舍。
 
 环境事实（本机探测）：MinGW **GCC 13.1.0**；libstdc++ 头文件根目录
 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章所有 `[实现]` 级源码均来自该目录的真实文件，逐行标注路径与行号。libc++、MS STL 不在本机，相关对比以 `[实现-推断]` / `[平台-推断]` 标注。
@@ -22,25 +22,25 @@
 > 把"资源"绑到"对象生命周期"上，是 C++ 在没有 GC 的世界里给自己签的异常安全契约。
 
 ### 0.1 起源（谁·何时·为何）
-RAII（Resource Acquisition Is Initialization）由 Stroustrup 在 1980 年代提出：资源（内存、锁、文件、句柄）在构造函数获取、在析构函数释放，靠作用域退出自动清理。[史] 动机直接来自"异常安全"——C 靠 `goto cleanup` / 手动 `free` 的模式在异常路径下千疮百孔，RAII 用确定性的析构替代它。[史][评]
+RAII（Resource Acquisition Is Initialization）由 Stroustrup 在 1980 年代提出：资源（内存、锁、文件、句柄）在构造函数获取、在析构函数释放，靠作用域退出自动清理。<span class="badge badge-history">史</span> 动机直接来自"异常安全"——C 靠 `goto cleanup` / 手动 `free` 的模式在异常路径下千疮百孔，RAII 用确定性的析构替代它。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
-- **C++ 早期**：析构函数 + 栈展开（stack unwinding）确立，异常抛出时自动析构局部对象。[史]
-- **C++11**：移动语义让 RAII 对象可高效转移所有权（智能指针、容器）。[史]
-- **现代**：Rule of Zero / Three / Five 把"何时手写析构 / 拷贝 / 移动"写成纪律（见本章）。[史]
+- **C++ 早期**：析构函数 + 栈展开（stack unwinding）确立，异常抛出时自动析构局部对象。<span class="badge badge-history">史</span>
+- **C++11**：移动语义让 RAII 对象可高效转移所有权（智能指针、容器）。<span class="badge badge-history">史</span>
+- **现代**：Rule of Zero / Three / Five 把"何时手写析构 / 拷贝 / 移动"写成纪律（见本章）。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
-RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零运行时追踪开销的清理，代价是程序员必须想清所有权。[史][评] 它与零开销原则绑定——析构是编译期确定的调用，不依赖 GC 线程。[评]
+RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零运行时追踪开销的清理，代价是程序员必须想清所有权。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> 它与零开销原则绑定——析构是编译期确定的调用，不依赖 GC 线程。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-0.2 停在 Rule of Zero/Three/Five 把"何时手写"写成纪律。C++17/20 又给了几个 RAII 化的标准件。[史]
+0.2 停在 Rule of Zero/Three/Five 把"何时手写"写成纪律。C++17/20 又给了几个 RAII 化的标准件。<span class="badge badge-history">史</span>
 
-- **C++17 `std::optional` / `std::variant` / `std::any` 减少裸 RAII 需求**：用"带状态的值"替代"用指针表示可能有 / 可能没有"的手工管理，是 Rule of Zero 的延伸（见 ch25）。[史]
-- **C++20 `std::jthread`（P0660）把线程 RAII 化**：构造即启动、析构自动 `join`，并内建 `std::stop_token` 协作取消，比裸 `std::thread` 更符合 RAII 契约（见 ch40）。[史]
-- **scope guard 提案（P0052）仍未进标准**：`std::scope_exit` / `scope_fail` 多次推进但截至 C++23 未采纳，社区以 `gsl::finally` 或自写 RAII 兜底，是 RAII 边界"还差临门一脚"的真实案例。[史][评]
-- **C++23 `std::expected`（P0323）补上"值或错误"的 RAII 型返回**：与异常安全（ch40）互补，让"不抛异常的错误码"也能走确定性析构清理。[史]
-- **轶事**：据记载 RAII 最初只是 Stroustrup 的"栈展开能用来管资源"的朴素观察，未料成了 C++ 区别于 GC 语言的根本标识。[轶]
+- **C++17 `std::optional` / `std::variant` / `std::any` 减少裸 RAII 需求**：用"带状态的值"替代"用指针表示可能有 / 可能没有"的手工管理，是 Rule of Zero 的延伸（见 ch25）。<span class="badge badge-history">史</span>
+- **C++20 `std::jthread`（P0660）把线程 RAII 化**：构造即启动、析构自动 `join`，并内建 `std::stop_token` 协作取消，比裸 `std::thread` 更符合 RAII 契约（见 ch40）。<span class="badge badge-history">史</span>
+- **scope guard 提案（P0052）仍未进标准**：`std::scope_exit` / `scope_fail` 多次推进但截至 C++23 未采纳，社区以 `gsl::finally` 或自写 RAII 兜底，是 RAII 边界"还差临门一脚"的真实案例。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **C++23 `std::expected`（P0323）补上"值或错误"的 RAII 型返回**：与异常安全（ch40）互补，让"不抛异常的错误码"也能走确定性析构清理。<span class="badge badge-history">史</span>
+- **轶事**：据记载 RAII 最初只是 Stroustrup 的"栈展开能用来管资源"的朴素观察，未料成了 C++ 区别于 GC 语言的根本标识。<span class="badge badge-anecdote">轶</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/optional ｜ https://en.cppreference.com/w/cpp/thread/jthread ｜ https://en.cppreference.com/w/cpp/utility/expected
 
@@ -49,9 +49,9 @@ RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零�
 [第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)
 [第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)
 
-**[标准]**　RAII 是 **Resource Acquisition Is Initialization** 的缩写，意为「资源获取即初始化」。其核心约定（`[basic.raii]` 精神，源自 C++98 实践、C++11 起成为库设计基石）：**将资源的生命周期绑定到一个自动存储期（栈上）对象的生命周期——资源在构造函数中获取，在析构函数中释放。**
+**<span class="badge badge-std">标准</span>**　RAII 是 **Resource Acquisition Is Initialization** 的缩写，意为「资源获取即初始化」。其核心约定（`[basic.raii]` 精神，源自 C++98 实践、C++11 起成为库设计基石）：**将资源的生命周期绑定到一个自动存储期（栈上）对象的生命周期——资源在构造函数中获取，在析构函数中释放。**
 
-**[经验]**　一句话记忆：**资源不是「被你释放」，而是「被对象析构时自动释放」。你只负责获取，释放交给析构函数与栈展开。** 这正是 C++ 没有 GC 却能写出「无泄漏、异常安全」代码的根本原因。
+**<span class="badge badge-exp">经验</span>**　一句话记忆：**资源不是「被你释放」，而是「被对象析构时自动释放」。你只负责获取，释放交给析构函数与栈展开。** 这正是 C++ 没有 GC 却能写出「无泄漏、异常安全」代码的根本原因。
 
 RAII 不是语法特性，而是一种**惯用法（idiom）**：任何满足「构造获取、析构释放、对象在栈上」的类型，都是 RAII 类型。标准库里 `std::fstream`、`std::lock_guard`、`std::unique_ptr`、`std::vector`、`std::string` 全是 RAII 类型。
 
@@ -87,11 +87,11 @@ flowchart TD
 
 ## ② RAII 本质：资源获取即初始化，绑定对象生命周期
 
-**[标准]**　[class.dtor] 规定：具有自动存储期的对象在离开其作用域时，析构函数被**隐式调用**（除非作用域通过跳转（如 `goto`/`longjmp`）非正常离开——但这本身是被禁止的未定义行为区）。RAII 正是利用这一保证：只要资源被包进一个栈对象，离开作用域就必然释放。
+**<span class="badge badge-std">标准</span>**　[class.dtor] 规定：具有自动存储期的对象在离开其作用域时，析构函数被**隐式调用**（除非作用域通过跳转（如 `goto`/`longjmp`）非正常离开——但这本身是被禁止的未定义行为区）。RAII 正是利用这一保证：只要资源被包进一个栈对象，离开作用域就必然释放。
 
-**[实现]**　一个最小 RAII 包装器的骨架（下面所有示例的范式）：
+**<span class="badge badge-impl">实现</span>**　一个最小 RAII 包装器的骨架（下面所有示例的范式）：
 
-> **示例 1** [难度 ★★☆☆☆] [主题：本质：资源获取即初始化，绑定对象生命]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本质：资源获取即初始化，绑定对象生命
 ```cpp
 // [示例 1] 最小 RAII 包装器骨架：构造获取、析构释放
 #include <cstdio>
@@ -120,7 +120,7 @@ int main() {
 }
 ```
 
-**[经验]**　RAII 的三个不可妥协要素：
+**<span class="badge badge-exp">经验</span>**　RAII 的三个不可妥协要素：
 1. 资源在构造函数中获取（且失败即抛异常，见第 5 节）。
 2. 资源在析构函数中释放，且析构必须 `noexcept`。
 3. 包装对象必须是**自动存储期**（栈对象），或自身又被更大的 RAII 对象持有（链式 RAII，最终仍挂在栈上）。把 RAII 对象 `new` 出来却忘了 `delete`，等于自废武功。
@@ -131,9 +131,9 @@ int main() {
 
 ## ③ 资源类型全景：不只有内存
 
-**[标准]**　[res.on.functions] 等条款指出，C++ 程序管理的「资源」远不止堆内存。凡是有「获取/归还」语义、且忘记归还会导致泄漏或错误的，都是资源。
+**<span class="badge badge-std">标准</span>**　[res.on.functions] 等条款指出，C++ 程序管理的「资源」远不止堆内存。凡是有「获取/归还」语义、且忘记归还会导致泄漏或错误的，都是资源。
 
-**[经验]**　工程中常见的资源类型全景——每一类都应被一个 RAII 类型接管：
+**<span class="badge badge-exp">经验</span>**　工程中常见的资源类型全景——每一类都应被一个 RAII 类型接管：
 
 | 资源类型 | 获取 API（典型） | 释放 API（典型） | 标准 RAII 类型 |
 |----------|------------------|------------------|----------------|
@@ -149,7 +149,7 @@ int main() {
 
 下面给出几类非内存资源的 RAII 封装示例（均可编译运行，仅做语义演示，平台相关调用以 MinGW/Win32 为准且标注 `[平台·x86-64]`）。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
 ```cpp
 // [示例 2] RAII 封装裸文件句柄 FILE*（与示例 1 等价，含写入）
 #include <cstdio>
@@ -180,7 +180,7 @@ int main() {
 }
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
 ```cpp
 // [示例 3] RAII 封装互斥锁（Win32 CRITICAL_SECTION，[平台] MinGW/Win32）
 #include <windows.h>
@@ -215,7 +215,7 @@ int main() {
 }                          // 离开作用域自动解锁
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
 ```cpp
 // [示例 4] RAII 封装 Win32 套接字（[平台] MinGW/Win32，需链接 -lws2_32）
 #include <winsock2.h>
@@ -245,7 +245,7 @@ public:
 };
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
 ```cpp
 // [示例 5] RAII 封装 GDI 位图句柄（[平台] Win32 GDI）
 #include <windows.h>
@@ -263,7 +263,7 @@ public:
 };
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
 ```cpp
 // [示例 6] RAII 封装 SQLite 数据库连接（需链接 -lsqlite3，[平台] 可用）
 #include <sqlite3.h>
@@ -283,7 +283,7 @@ public:
 };
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
 ```cpp
 // [示例 7] RAII 封装 POSIX 共享内存（[平台] POSIX，MinGW 下可改为 Win32）
 #include <sys/mman.h>
@@ -317,7 +317,7 @@ public:
 };
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
 ```cpp
 // [示例 8] RAII 封装 Windows 内存映射文件 MMIO（[平台] Win32）
 #include <windows.h>
@@ -357,11 +357,11 @@ public:
 
 ## ④ RAII 与栈展开的耦合：异常安全的基石
 
-**[标准]**　[except.ctor] / [except.handle] 规定：当异常被抛出且匹配到 `catch` 时，从抛出点直到 `catch` 之间的所有**已构造、尚未销毁的自动存储期对象**按构造的逆序被自动销毁——这一机制叫**栈展开（stack unwinding）**，已在 `ch36` 详述。RAII 正是搭上栈展开的便车：异常无论在哪抛出，栈上的 RAII 对象析构都会被调用，资源得以释放。
+**<span class="badge badge-std">标准</span>**　[except.ctor] / [except.handle] 规定：当异常被抛出且匹配到 `catch` 时，从抛出点直到 `catch` 之间的所有**已构造、尚未销毁的自动存储期对象**按构造的逆序被自动销毁——这一机制叫**栈展开（stack unwinding）**，已在 `ch36` 详述。RAII 正是搭上栈展开的便车：异常无论在哪抛出，栈上的 RAII 对象析构都会被调用，资源得以释放。
 
-**[经验]**　关键认知：**RAII 保证的是「异常安全（exception safe）」，不是「不抛异常」。异常照样抛、照样传，但资源一定被清掉。** 对比非 RAII 的「手动释放 + goto cleanup」范式，一旦中间有异常（或提前 `return`），清理路径极易被跳过。
+**<span class="badge badge-exp">经验</span>**　关键认知：**RAII 保证的是「异常安全（exception safe）」，不是「不抛异常」。异常照样抛、照样传，但资源一定被清掉。** 对比非 RAII 的「手动释放 + goto cleanup」范式，一旦中间有异常（或提前 `return`），清理路径极易被跳过。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：与栈展开的耦合：异常安全的基石]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与栈展开的耦合：异常安全的基石
 ```cpp
 // [示例 9] 非 RAII 的 C 风格 goto cleanup：易漏释放（异常时更糟）
 #include <cstdio>
@@ -381,7 +381,7 @@ int legacy_open_three_files() {
 // 问题：函数有多个出口，每个出口都要手写对应清理；若业务里抛异常，连 goto 都救不了。
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：与栈展开的耦合：异常安全的基石]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与栈展开的耦合：异常安全的基石
 ```cpp
 // [示例 10] RAII 改写：无论正常返回还是异常，资源必释放
 #include <cstdio>
@@ -407,7 +407,7 @@ void raii_open_three_files() {
 }
 ```
 
-**[实现]**　栈展开由编译器在异常处理表中生成「哪些对象需要析构」的元数据（Itanium C++ ABI 的 LSDA / Win64 的 `eh` 表）。RAII 对象的析构调用**不依赖任何运行时库的人为约定**，是 ABI 保证的确定性行为。
+**<span class="badge badge-impl">实现</span>**　栈展开由编译器在异常处理表中生成「哪些对象需要析构」的元数据（Itanium C++ ABI 的 LSDA / Win64 的 `eh` 表）。RAII 对象的析构调用**不依赖任何运行时库的人为约定**，是 ABI 保证的确定性行为。
 
 **核心知识点 #4**：RAII 借栈展开释放资源；它是「异常安全」而非「不抛异常」。
 **核心知识点 #5**：非 RAII 的手动清理（goto cleanup）在异常路径下必然漏释放。
@@ -416,11 +416,11 @@ void raii_open_three_files() {
 
 ## ⑤ 构造函数失败的处理：已构子对象自动析构
 
-**[标准]**　[except.ctor] 规定：**若构造函数在其成员/基类初始化列表或函数体中抛出异常，则该对象被视为「从未完全构造」，为其已构造完成的子对象（基类+成员，按逆序）自动调用析构函数，然后异常向外传播。** 这意味着：构造函数中途失败，已经获取的资源（在更早构造的成员里）会被对应成员的析构释放——前提是那些成员本身是 RAII 类型。
+**<span class="badge badge-std">标准</span>**　[except.ctor] 规定：**若构造函数在其成员/基类初始化列表或函数体中抛出异常，则该对象被视为「从未完全构造」，为其已构造完成的子对象（基类+成员，按逆序）自动调用析构函数，然后异常向外传播。** 这意味着：构造函数中途失败，已经获取的资源（在更早构造的成员里）会被对应成员的析构释放——前提是那些成员本身是 RAII 类型。
 
-**[经验]**　经典陷阱：**在构造函数体内用裸指针 `new` 后又 `new` 一次失败，第一次 `new` 的指针因尚未交给任何 RAII 成员而泄漏。** 解决之道是「成员即 RAII」：让每个资源从构造起就由一个 RAII 成员持有，而不是在 ctor 体内裸分配。
+**<span class="badge badge-exp">经验</span>**　经典陷阱：**在构造函数体内用裸指针 `new` 后又 `new` 一次失败，第一次 `new` 的指针因尚未交给任何 RAII 成员而泄漏。** 解决之道是「成员即 RAII」：让每个资源从构造起就由一个 RAII 成员持有，而不是在 ctor 体内裸分配。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造函数失败的处理：已构子对象自动析
 ```cpp
 // [示例 11] 构造失败：已构 RAII 子对象自动析构，无泄漏
 #include <cstdio>
@@ -453,7 +453,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造函数失败的处理：已构子对象自动析
 ```cpp
 // [示例 12] 反例：ctor 体内裸 new 导致泄漏
 #include <cstdio>
@@ -471,7 +471,7 @@ struct Leaky {
 };
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造函数失败的处理：已构子对象自动析
 ```cpp
 // [示例 13] 修复：用 unique_ptr 作为成员（见 ch41），ctor 失败也不泄漏
 #include <memory>
@@ -494,11 +494,11 @@ struct Safe {
 
 ## ⑥ 析构函数必须 noexcept：双重异常 → std::terminate
 
-**[标准]**　[except.ctor] 规定：**析构函数默认隐式 `noexcept(true)`**（除非你显式写成 `noexcept(false)` 或它的某个（非析构）基类/成员析构是 potentially-throwing 且该析构未加 `noexcept`）。`[except.terminate]` 进一步规定：**若在栈展开过程中（即已有异常在传播）又抛出一个新异常，且此时需要调用某个析构函数而该析构抛异常，则调用 `std::terminate()`——程序立即终止，不保证任何剩余资源释放。**
+**<span class="badge badge-std">标准</span>**　[except.ctor] 规定：**析构函数默认隐式 `noexcept(true)`**（除非你显式写成 `noexcept(false)` 或它的某个（非析构）基类/成员析构是 potentially-throwing 且该析构未加 `noexcept`）。`[except.terminate]` 进一步规定：**若在栈展开过程中（即已有异常在传播）又抛出一个新异常，且此时需要调用某个析构函数而该析构抛异常，则调用 `std::terminate()`——程序立即终止，不保证任何剩余资源释放。**
 
-**[经验]**　这就是「双重异常（double exception）」死局：已有异常在飞，析构又抛异常，C++ 无法决定先处理哪个，只能 `terminate`。所以：**析构函数永远不能让异常逃出。**
+**<span class="badge badge-exp">经验</span>**　这就是「双重异常（double exception）」死局：已有异常在飞，析构又抛异常，C++ 无法决定先处理哪个，只能 `terminate`。所以：**析构函数永远不能让异常逃出。**
 
-> **示例 14** [难度 ★★☆☆☆] [主题：析构函数必须 noexcept：双重]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 析构函数必须 noexcept：双重
 ```cpp
 // [示例 14] 析构 noexcept(false) + 栈展开中抛异常 → std::terminate（演示）
 #include <stdexcept>
@@ -527,7 +527,7 @@ int main() {
 // 运行结果：程序以 std::terminate 终止（ABRT），输出 reachable 不成立。
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：析构函数必须 noexcept：双重]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 析构函数必须 noexcept：双重
 ```cpp
 // [示例 15] 正确做法：析构吞掉内部异常（或 noexcept），绝不让异常逃出
 #include <stdexcept>
@@ -556,7 +556,7 @@ int main() {
 }
 ```
 
-**[实现]**　在 libstdc++ 中，即便你写了 `~T() noexcept(false)`，当在栈展开期间该析构抛异常，异常传递路径上的 `__cxa_throw`/`__terminate` 会被触发（见 `libsupc++/eh_throw.cc`、`terminate.cc`）。`std::terminate` 默认调用 `std::abort`。
+**<span class="badge badge-impl">实现</span>**　在 libstdc++ 中，即便你写了 `~T() noexcept(false)`，当在栈展开期间该析构抛异常，异常传递路径上的 `__cxa_throw`/`__terminate` 会被触发（见 `libsupc++/eh_throw.cc`、`terminate.cc`）。`std::terminate` 默认调用 `std::abort`。
 
 **核心知识点 #8**：析构默认隐式 `noexcept(true)`。
 **核心知识点 #9**：栈展开中析构再抛异常 → 双重异常 → `std::terminate`，程序崩溃。
@@ -565,11 +565,11 @@ int main() {
 
 ## ⑦ Rule of Three：浅拷贝灾难与 double free
 
-**[标准]**　[class.copy.ctor] / 传统「Rule of Three」实践（C++98 起，已在 C++11 被 Rule of Five 取代但仍是基础）：**若一个类需要自定义析构函数、或自定义拷贝构造函数、或自定义拷贝赋值运算符中的任意一个，那么它大概率需要自定义全部三个。** 原因是：自定义析构通常意味着类持有「需要手动释放」的资源（裸指针），而编译器生成的默认拷贝是**逐成员浅拷贝（memberwise copy）**，会导致两个对象指向同一资源，析构时**双重释放（double free）**。
+**<span class="badge badge-std">标准</span>**　[class.copy.ctor] / 传统「Rule of Three」实践（C++98 起，已在 C++11 被 Rule of Five 取代但仍是基础）：**若一个类需要自定义析构函数、或自定义拷贝构造函数、或自定义拷贝赋值运算符中的任意一个，那么它大概率需要自定义全部三个。** 原因是：自定义析构通常意味着类持有「需要手动释放」的资源（裸指针），而编译器生成的默认拷贝是**逐成员浅拷贝（memberwise copy）**，会导致两个对象指向同一资源，析构时**双重释放（double free）**。
 
-**[经验]**　最经典的 bug：`class String { char* data; ~String(){ delete[] data; } };` 没有自定义拷贝，于是 `String a = ...; String b = a;` 浅拷贝，`b.data == a.data`，离开作用域两个析构都 `delete[]` 同一指针 → double free → UB（通常崩溃）。
+**<span class="badge badge-exp">经验</span>**　最经典的 bug：`class String { char* data; ~String(){ delete[] data; } };` 没有自定义拷贝，于是 `String a = ...; String b = a;` 浅拷贝，`b.data == a.data`，离开作用域两个析构都 `delete[]` 同一指针 → double free → UB（通常崩溃）。
 
-> **示例 16** [难度 ★★☆☆☆] [主题：浅拷贝灾难与 double free]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 浅拷贝灾难与 double free
 ```cpp
 // [示例 16] Rule of Three 缺失：double free 崩溃演示（不可取，仅演示灾难）
 #include <cstring>
@@ -600,9 +600,9 @@ int main() {
 3. 作用域结束，先析构 `b`：`delete[] P`（P 归还堆，可能写入空闲链表元数据）。
 4. 再析构 `a`：`delete[] P` 再次释放同一块 → 堆管理器发现块已被释放 → 通常 `abort`/`SIGABRT`，或静默破坏堆元数据导致后续随机崩溃。这就是未定义行为（UB）。
 
-**[标准]**　Rule of Three 修复：显式定义拷贝构造（深拷贝）+ 拷贝赋值（深拷贝 + 自赋值检查 + 释放旧资源）+ 析构。
+**<span class="badge badge-std">标准</span>**　Rule of Three 修复：显式定义拷贝构造（深拷贝）+ 拷贝赋值（深拷贝 + 自赋值检查 + 释放旧资源）+ 析构。
 
-> **示例 17** [难度 ★★☆☆☆] [主题：浅拷贝灾难与 double free]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 浅拷贝灾难与 double free
 ```cpp
 // [示例 17] Rule of Three 完整修复：深拷贝
 #include <cstring>
@@ -655,11 +655,11 @@ int main() {
 
 ## ⑧ Rule of Five：移动语义与性能
 
-**[标准]**　C++11 引入右值引用与移动语义后，规则扩展为 **Rule of Five**：若类需要管理资源，需定义五个特殊成员函数——**析构函数、拷贝构造、拷贝赋值、移动构造、移动赋值**。新增的两个「移动」用于**窃取（steal）**资源而非复制，把源对象置于「有效但未指定（valid but unspecified）」状态，使源析构安全（无操作）。
+**<span class="badge badge-std">标准</span>**　C++11 引入右值引用与移动语义后，规则扩展为 **Rule of Five**：若类需要管理资源，需定义五个特殊成员函数——**析构函数、拷贝构造、拷贝赋值、移动构造、移动赋值**。新增的两个「移动」用于**窃取（steal）**资源而非复制，把源对象置于「有效但未指定（valid but unspecified）」状态，使源析构安全（无操作）。
 
-**[经验]**　为何有了自定义析构/拷贝就必须考虑移动？因为**若你不定义移动构造/移动赋值，编译器不会生成它们**（当存在用户定义析构/拷贝/赋值中任一个时，移动操作被定义为 `delete`d），于是所有「移动语境」（如 `std::vector` 扩容、`return` 局部对象、`std::move`）**退化为拷贝**——对持有堆内存的类，这意味着昂贵的深拷贝，性能灾难。
+**<span class="badge badge-exp">经验</span>**　为何有了自定义析构/拷贝就必须考虑移动？因为**若你不定义移动构造/移动赋值，编译器不会生成它们**（当存在用户定义析构/拷贝/赋值中任一个时，移动操作被定义为 `delete`d），于是所有「移动语境」（如 `std::vector` 扩容、`return` 局部对象、`std::move`）**退化为拷贝**——对持有堆内存的类，这意味着昂贵的深拷贝，性能灾难。
 
-> **示例 18** [难度 ★★☆☆☆] [主题：移动语义与性能]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动语义与性能
 ```cpp
 // [示例 18] Rule of Five 完整实现（移动窃取资源并置源为空）
 #include <cstring>
@@ -722,7 +722,7 @@ int main() {
 }
 ```
 
-**[标准]**　`noexcept` 对移动很重要：`std::vector` 在扩容时是**强异常安全**：若移动构造可能抛异常，它会改用语义更慢但可回滚的拷贝；若移动构造标记 `noexcept`，它才放心用移动。**所以移动操作应几乎总是 `noexcept`**（`[container.reqmts]` 隐含优化前提）。
+**<span class="badge badge-std">标准</span>**　`noexcept` 对移动很重要：`std::vector` 在扩容时是**强异常安全**：若移动构造可能抛异常，它会改用语义更慢但可回滚的拷贝；若移动构造标记 `noexcept`，它才放心用移动。**所以移动操作应几乎总是 `noexcept`**（`[container.reqmts]` 隐含优化前提）。
 
 **核心知识点 #12**：Rule of Five = 析构+拷贝构造+拷贝赋值+移动构造+移动赋值。
 **核心知识点 #13**：移动 = 窃取资源并置源为空，源析构安全（无操作）。
@@ -732,11 +732,11 @@ int main() {
 
 ## ⑨ Rule of Zero：现代 C++ 的首选
 
-**[标准]**　C++11 后的现代最佳实践是 **Rule of Zero**：**类不应自己管理资源，而是把资源交给已经正确实现五大函数的标准/库类型（`std::unique_ptr`、`std::shared_ptr`、`std::vector`、`std::string`、`std::fstream` 等）。于是类本身不需要写析构、拷贝、移动——编译器生成的默认版本天然正确。**
+**<span class="badge badge-std">标准</span>**　C++11 后的现代最佳实践是 **Rule of Zero**：**类不应自己管理资源，而是把资源交给已经正确实现五大函数的标准/库类型（`std::unique_ptr`、`std::shared_ptr`、`std::vector`、`std::string`、`std::fstream` 等）。于是类本身不需要写析构、拷贝、移动——编译器生成的默认版本天然正确。**
 
-**[实现]**　这些「自带正确语义」的类型本身遵循 Rule of Five：`std::unique_ptr` 不可拷贝、可移动（见第 16 节源码）；`std::shared_ptr` 用引用计数自动管理；`std::vector`/`std::string` 自带深拷贝与移动。你的类只要成员是它们，就自动获得正确语义。
+**<span class="badge badge-impl">实现</span>**　这些「自带正确语义」的类型本身遵循 Rule of Five：`std::unique_ptr` 不可拷贝、可移动（见第 16 节源码）；`std::shared_ptr` 用引用计数自动管理；`std::vector`/`std::string` 自带深拷贝与移动。你的类只要成员是它们，就自动获得正确语义。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：现代 C++ 的首选]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 现代 C++ 的首选
 ```cpp
 // [示例 19] Rule of Zero：用 unique_ptr 管理资源，类不写任何五大函数
 #include <memory>
@@ -768,7 +768,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：现代 C++ 的首选]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 现代 C++ 的首选
 ```cpp
 // [示例 20] Rule of Zero：用 shared_ptr 共享资源
 #include <memory>
@@ -785,7 +785,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：现代 C++ 的首选]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 现代 C++ 的首选
 ```cpp
 // [示例 21] Rule of Zero 改造：把示例 16 的 BadString 改成零规则
 #include <string>
@@ -808,7 +808,7 @@ int main() {
 }
 ```
 
-**[经验]**　经验法则：**能写 Rule of Zero 就绝不手写五大函数。** 手写五大函数只在你要封装一种标准库尚未提供的资源（如示例 3–8 的 Win32 句柄、套接字）时才必要；即便如此，也应尽量让该类「只管一个资源」且「内部用 unique_ptr 的自定义 deleter」来复用标准语义（见第 12 节）。
+**<span class="badge badge-exp">经验</span>**　经验法则：**能写 Rule of Zero 就绝不手写五大函数。** 手写五大函数只在你要封装一种标准库尚未提供的资源（如示例 3–8 的 Win32 句柄、套接字）时才必要；即便如此，也应尽量让该类「只管一个资源」且「内部用 unique_ptr 的自定义 deleter」来复用标准语义（见第 12 节）。
 
 **核心知识点 #15**：Rule of Zero——用 unique_ptr/shared_ptr/vector/string 管资源，类不写五大函数，编译器自动正确。
 **核心知识点 #16**：`std::unique_ptr` 不可拷可移；`std::shared_ptr` 引用计数共享。
@@ -817,12 +817,12 @@ int main() {
 
 ## ⑩ = default 与 = delete：精确控制特殊成员
 
-**[标准]**　C++11 引入 `= default`（要求编译器生成该函数的默认实现）与 `= delete`（删除该函数，禁止其被调用）。对五大函数：
+**<span class="badge badge-std">标准</span>**　C++11 引入 `= default`（要求编译器生成该函数的默认实现）与 `= delete`（删除该函数，禁止其被调用）。对五大函数：
 - `= default` 用于**显式要求编译器生成正确的默认版本**（例如你有自定义析构导致移动被 delete，但仍想保留可移动时，用 `= default` 重新启用移动；前提是所有成员都可移动/拷贝）。
 - `= delete` 用于**禁止拷贝**（独占资源语义，如 `unique_ptr`）、禁止不需要的构造等。
 
-**[实现]**　libstdc++ 的 `unique_ptr` 即在 `bits/unique_ptr.h:522-523` 用 `= delete` 禁用拷贝：
-> **示例 22** [难度 ★☆☆☆☆] [主题：= default 与 = dele]
+**<span class="badge badge-impl">实现</span>**　libstdc++ 的 `unique_ptr` 即在 `bits/unique_ptr.h:522-523` 用 `= delete` 禁用拷贝：
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · = default 与 = dele
 ```cpp
 // bits/unique_ptr.h:521-523
 // Disable copy from lvalue.
@@ -830,7 +830,7 @@ unique_ptr(const unique_ptr&) = delete;
 unique_ptr& operator=(const unique_ptr&) = delete;
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：= default 与 = dele]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · = default 与 = dele
 ```cpp
 // [示例 22] =default 让编译器生成正确的移动（当存在自定义析构时）
 #include <cstdio>
@@ -855,7 +855,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：= default 与 = dele]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · = default 与 = dele
 ```cpp
 // [示例 23] =delete 禁止拷贝，实现独占语义
 #include <cstdio>
@@ -885,11 +885,11 @@ int main() {
 
 ## ⑪ 移动后状态：valid but unspecified
 
-**[标准]**　[lib.types.movedfrom] / [utility.requirements] 规定：被移动后的对象（moved-from）必须处于**「有效但未指定（valid but unspecified）」**状态——即它可以被安全**析构**和**赋值（包括被新值覆盖）**，但标准**不保证**其具体值。例如 `std::vector` 被移动后通常为空，但标准只保证「可析构、可赋值」，不保证「一定为空」（虽然实践中所有实现都是空）。
+**<span class="badge badge-std">标准</span>**　[lib.types.movedfrom] / [utility.requirements] 规定：被移动后的对象（moved-from）必须处于**「有效但未指定（valid but unspecified）」**状态——即它可以被安全**析构**和**赋值（包括被新值覆盖）**，但标准**不保证**其具体值。例如 `std::vector` 被移动后通常为空，但标准只保证「可析构、可赋值」，不保证「一定为空」（虽然实践中所有实现都是空）。
 
-**[经验]**　经典 bug：对移后对象读取值或依赖其状态。`std::move` 本身**不移动任何东西**——它只是把左值转为右值引用，真正的移动发生在接收方的移动构造/赋值里；移后源对象变成「空壳」。
+**<span class="badge badge-exp">经验</span>**　经典 bug：对移后对象读取值或依赖其状态。`std::move` 本身**不移动任何东西**——它只是把左值转为右值引用，真正的移动发生在接收方的移动构造/赋值里；移后源对象变成「空壳」。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：移动后状态：valid but un]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 移动后状态：valid but un
 ```cpp
 // [示例 24] 移动后状态：vector 移后通常为空（valid but unspecified）
 #include <vector>
@@ -906,7 +906,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：移动后状态：valid but un]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动后状态：valid but un
 ```cpp
 // [示例 25] 误用移后对象：经典 bug
 #include <string>
@@ -924,7 +924,7 @@ void buggy() {
 int main() { buggy(); }
 ```
 
-**[经验]**　工程约定：被 `std::move` 之后，源对象「视为已死」，**只允许析构或重新赋值**，绝不再读取其业务值。把这个约定写进代码评审清单。
+**<span class="badge badge-exp">经验</span>**　工程约定：被 `std::move` 之后，源对象「视为已死」，**只允许析构或重新赋值**，绝不再读取其业务值。把这个约定写进代码评审清单。
 
 **核心知识点 #19**：被移动对象必须可安全析构与赋值，但值不保证（valid but unspecified）。
 **核心知识点 #20**：误用移后对象（读取值）是经典 bug；`std::move` 只是类型转换，不真正移动。
@@ -933,14 +933,14 @@ int main() { buggy(); }
 
 ## ⑫ 智能指针预告：unique_ptr / shared_ptr / weak_ptr（见 ch41）
 
-**[标准]**　C++11 在 `<memory>` 提供三种智能指针（完整展开见 `ch41`）：
+**<span class="badge badge-std">标准</span>**　C++11 在 `<memory>` 提供三种智能指针（完整展开见 `ch41`）：
 - `std::unique_ptr<T>`：**独占**所有权，不可拷贝、可移动；析构调 deleter 释放。零开销（见第 16 节源码）。
 - `std::shared_ptr<T>`：**共享**所有权，引用计数；最后一个析构释放（见第 16 节计数源码）。
 - `std::weak_ptr<T>`：不增加计数的弱引用，用于打破循环引用。
 
 这里仅做预告与自定义 deleter 演示，详细语义、原子性、控制块、别名构造留待 `ch41`。
 
-> **示例 27** [难度 ★★☆☆☆] [主题：智能指针预告：uniqueptr /]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：uniqueptr /
 ```cpp
 // [示例 26] 自定义 deleter（带状态的 deleter 对象）
 #include <memory>
@@ -961,7 +961,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：智能指针预告：uniqueptr /]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：uniqueptr /
 ```cpp
 // [示例 27] 自定义 deleter（lambda / 函数指针）
 #include <memory>
@@ -976,7 +976,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：智能指针预告：uniqueptr /]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：uniqueptr /
 ```cpp
 // [示例 28] unique_ptr 管理 FILE*（预告，完整见 ch41）
 #include <memory>
@@ -996,12 +996,12 @@ int main() {
 
 ## ⑬ RAII 锁：lock_guard / scoped_lock / unique_lock
 
-**[标准]**　C++11 `<mutex>` 提供三种 RAII 锁守卫（`ch61` 完整展开并发语义）：
+**<span class="badge badge-std">标准</span>**　C++11 `<mutex>` 提供三种 RAII 锁守卫（`ch61` 完整展开并发语义）：
 - `std::lock_guard<Mutex>`：构造时 `lock()`，析构时 `unlock()`，最简单，不可手动解锁（`[thread.lock.guard]`）。
 - `std::scoped_lock<Mutexes...>`（C++17）：可同时锁多个互斥量并**避免死锁**（内部用 `std::lock` 算法）。
 - `std::unique_lock<Mutex>`：更灵活，可延迟加锁、手动 `lock()`/`unlock()`、可移动、可配合条件变量。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：锁：lockguard / scop]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 锁：lockguard / scop
 ```cpp
 // [示例 29] lock_guard 基本使用
 #include <mutex>
@@ -1022,7 +1022,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：锁：lockguard / scop]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 锁：lockguard / scop
 ```cpp
 // [示例 30] scoped_lock 双锁防死锁（C++17）
 #include <mutex>
@@ -1039,7 +1039,7 @@ void transfer() {
 int main() { transfer(); }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：锁：lockguard / scop]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 锁：lockguard / scop
 ```cpp
 // [示例 31] unique_lock 灵活锁 + 条件变量配合（演示延迟加锁）
 #include <mutex>
@@ -1059,18 +1059,18 @@ int main() {
 }
 ```
 
-**[实现]**　libstdc++ 的 `lock_guard` 源码见第 16 节；其核心就是构造 `lock()`、析构 `unlock()`，且不可拷贝（`bits/std_mutex.h:257-258` `= delete`）。
+**<span class="badge badge-impl">实现</span>**　libstdc++ 的 `lock_guard` 源码见第 16 节；其核心就是构造 `lock()`、析构 `unlock()`，且不可拷贝（`bits/std_mutex.h:257-258` `= delete`）。
 
 ---
 
 ## ⑭ ScopeGuard / ScopeExit 惯用法
 
-**[经验]**　ScopeGuard（作用域守卫）是 RAII 的通用化：当需要在作用域结束时执行任意清理动作（不限于某个资源类型）时使用。**[标准]** 截至 C++23，`std::scope_exit`/`scope_success`/`scope_fail` 仍属 Library Fundamentals TS v3，尚未进入正式标准；它们位于 `<experimental/scope>`、命名空间为 `std::experimental`（本机 MinGW GCC 13.1.0 提供该实验头，`<scope>` 主头并不存在）。工程中通常自实现一个轻量版。语义：
+**<span class="badge badge-exp">经验</span>**　ScopeGuard（作用域守卫）是 RAII 的通用化：当需要在作用域结束时执行任意清理动作（不限于某个资源类型）时使用。**<span class="badge badge-std">标准</span>** 截至 C++23，`std::scope_exit`/`scope_success`/`scope_fail` 仍属 Library Fundamentals TS v3，尚未进入正式标准；它们位于 `<experimental/scope>`、命名空间为 `std::experimental`（本机 MinGW GCC 13.1.0 提供该实验头，`<scope>` 主头并不存在）。工程中通常自实现一个轻量版。语义：
 - **ScopeExit**：无论正常还是异常离开作用域，都执行回调。
 - **ScopeSuccess**：仅正常离开时执行。
 - **ScopeFail**：仅因异常离开时执行。
 
-> **示例 33** [难度 ★★★★☆] [主题：惯用法]
+> **示例 33** <span class="badge badge-exp">难度 ★★★★☆</span> · 惯用法
 ```cpp
 // [示例 32] 自实现 ScopeExit（RAII + 可调用对象）
 #include <utility>
@@ -1110,7 +1110,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：惯用法]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法
 ```cpp
 // [示例 33] ScopeExit 在异常路径下仍清理
 #include <stdexcept>
@@ -1129,8 +1129,8 @@ int main() {
 }
 ```
 
-**[标准]**　TS 版 `scope_exit` 位于 `<experimental/scope>`，命名空间 `std::experimental`（**不是** `std::scope_exit`，也**没有** `<scope>` 主头）：
-> **示例 35** [难度 ★☆☆☆☆] [主题：惯用法]
+**<span class="badge badge-std">标准</span>**　TS 版 `scope_exit` 位于 `<experimental/scope>`，命名空间 `std::experimental`（**不是** `std::scope_exit`，也**没有** `<scope>` 主头）：
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法
 ```cpp
 // [示例 34] Library Fundamentals TS 的 scope_exit（[平台] 本机 MinGW GCC 13.1.0 实测可编译）
 #include <experimental/scope>
@@ -1149,7 +1149,7 @@ int main() {
 
 ## ⑮ 标准库 RAII 类型一览
 
-**[标准]**　C++ 标准库大量使用 RAII。常用清单：
+**<span class="badge badge-std">标准</span>**　C++ 标准库大量使用 RAII。常用清单：
 
 | 类型 | 资源 | 释放点 |
 |------|------|--------|
@@ -1167,7 +1167,7 @@ int main() {
 | `std::iostream` / `std::ostringstream` | 内部缓冲 | 析构刷新 |
 | `std::lock_guard` | — | — |
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：标准库 RAII 类型一览]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准库 RAII 类型一览
 ```cpp
 // [示例 35] std::fstream 的 RAII：析构自动 close
 #include <fstream>
@@ -1187,7 +1187,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：标准库 RAII 类型一览]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 标准库 RAII 类型一览
 ```cpp
 // [示例 36] 多个标准 RAII 类型组合（vector + ofstream + lock_guard）
 #include <vector>
@@ -1220,7 +1220,7 @@ int main() {
 
 **析构函数**（`bits/unique_ptr.h:394-406`）：
 
-> **示例 38** [难度 ★★★☆☆] [主题：uniqueptr 析构与移动]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · uniqueptr 析构与移动
 ```cpp
 #include <utility>
 // bits/unique_ptr.h:394-406
@@ -1248,13 +1248,13 @@ int main() {
 
 **移动构造**（`bits/unique_ptr.h:365-382` 主模板 + 内部 `__uniq_ptr_impl` 移动）：
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · uniqueptr 析构与移动
 ```cpp
 // bits/unique_ptr.h:365-366  —— 主模板移动构造 = default
       /// Move constructor.
       unique_ptr(unique_ptr&&) = default;
 ```
-> **示例 40** [难度 ★★☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · uniqueptr 析构与移动
 ```cpp
 #include <utility>
 // bits/unique_ptr.h:380-382  —— 转换移动构造（从不同 deleters 的 unique_ptr 移动）
@@ -1262,7 +1262,7 @@ int main() {
 	: _M_t(__u.release(), std::forward<_Ep>(__u.get_deleter()))
 	{ }
 ```
-> **示例 41** [难度 ★★☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · uniqueptr 析构与移动
 ```cpp
 #include <utility>
 // bits/unique_ptr.h:183-186  —— 内部 __uniq_ptr_impl 的移动构造（真正的"窃取"）
@@ -1280,7 +1280,7 @@ int main() {
 
 **拷贝被删除**（`bits/unique_ptr.h:521-523`）：
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · uniqueptr 析构与移动
 ```cpp
 // bits/unique_ptr.h:521-523
 // Disable copy from lvalue.
@@ -1291,7 +1291,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 **default_delete**（`bits/unique_ptr.h:74-101`）：
 
-> **示例 43** [难度 ★★★★☆] [主题：uniqueptr 析构与移动]
+> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · uniqueptr 析构与移动
 ```cpp
 // bits/unique_ptr.h:74-101
   template<typename _Tp>
@@ -1314,7 +1314,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 ### 16.2 `lock_guard` 构造/析构（bits/std_mutex.h）
 
-> **示例 44** [难度 ★★★☆☆] [主题：lockguard 构造/析构]
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · lockguard 构造/析构
 ```cpp
 // bits/std_mutex.h:242-262
   template<typename _Mutex>
@@ -1352,7 +1352,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 控制块基类 `_Sp_counted_base`（引用计数核心，`bits/shared_ptr_base.h:125-238`）：
 
-> **示例 45** [难度 ★★☆☆☆] [主题：sharedptr 引用计数管理]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · sharedptr 引用计数管理
 ```cpp
 // bits/shared_ptr_base.h:125-152（节选）
     class _Sp_counted_base
@@ -1379,7 +1379,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 **原子释放路径**（`bits/shared_ptr_base.h:315-344`，原子策略 `_S_atomic` 节选）：
 
-> **示例 46** [难度 ★★★☆☆] [主题：sharedptr 引用计数管理]
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · sharedptr 引用计数管理
 ```cpp
 // bits/shared_ptr_base.h:315-344（节选，省略双字优化分支）
   template<>
@@ -1416,7 +1416,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 `basic_filebuf` 的 `close()`（`bits/fstream.tcc:249-285` 节选）：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：fstream 的 RAII 关闭]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · fstream 的 RAII 关闭
 ```cpp
 // bits/fstream.tcc:249-285（节选）
     close()
@@ -1433,7 +1433,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 ```
 而 `~basic_filebuf` 在 `bits/fstream.tcc:126` 等调用 `this->close()`：
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：fstream 的 RAII 关闭]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · fstream 的 RAII 关闭
 ```cpp
 // bits/fstream.tcc:126（析构路径节选）
       this->close();
@@ -1446,7 +1446,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 ## ⑰ 三编译器 / 三 STL 对比
 
-**[实现]**　libstdc++（GCC，本机确认）、libc++（LLVM/Clang）、MS STL（MSVC）在 RAII 相关类型上的实现差异：
+**<span class="badge badge-impl">实现</span>**　libstdc++（GCC，本机确认）、libc++（LLVM/Clang）、MS STL（MSVC）在 RAII 相关类型上的实现差异：
 
 | 维度 | libstdc++（GCC 13.1.0，本机） | libc++（Clang）`[实现-推断]` | MS STL（MSVC）`[实现-推断]` |
 |------|------------------------------|------------------------------|------------------------------|
@@ -1458,7 +1458,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 | `scope_exit`（TS） | libstdc++ 提供 `<experimental/scope>`（`std::experimental`） | libc++ 未提供该实验头 `[实现-推断]` | MS STL 未提供 `[实现-推断]` |
 | 析构默认 noexcept | 是（[except.ctor]） | 是 | 是 |
 
-**[标准]**　三者在「行为」上必须一致（标准规定），差异只在内部表示与极端边界（如旧 MSVC 的 `= default` 移动 bug）。**对应用层代码，这三者可互换。**
+**<span class="badge badge-std">标准</span>**　三者在「行为」上必须一致（标准规定），差异只在内部表示与极端边界（如旧 MSVC 的 `= default` 移动 bug）。**对应用层代码，这三者可互换。**
 
 **[平台·x86-64]**　本机为 MinGW GCC 13.1.0 + libstdc++，所有 `[实现]` 引用均已逐行验证；libc++/MS STL 无法在本机读取，标注 `[实现-推断]`。
 
@@ -1466,11 +1466,11 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 ## ⑱ microbenchmark：RAII 零开销验证
 
-**[经验]**　RAII 的黄金卖点是「零开销抽象（zero-overhead abstraction）」——RAII 包装在优化编译下**不产生任何运行时成本**。`[basic.raii]` 精神 + 现代编译器内联使 RAII 锁/智能指针编译为与手写 `lock()`/`unlock()` 完全相同的指令。
+**<span class="badge badge-exp">经验</span>**　RAII 的黄金卖点是「零开销抽象（zero-overhead abstraction）」——RAII 包装在优化编译下**不产生任何运行时成本**。`[basic.raii]` 精神 + 现代编译器内联使 RAII 锁/智能指针编译为与手写 `lock()`/`unlock()` 完全相同的指令。
 
 ### 18.1 RAII 锁 vs 手动 lock/unlock
 
-> **示例 49** [难度 ★★☆☆☆] [主题：锁 vs 手动 lock/unloc]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 锁 vs 手动 lock/unloc
 ```cpp
 // [示例 37] microbenchmark：lock_guard vs 手动 unlock（计时对比）
 // 编译：g++ -O2 -std=c++17 bench_lock.cpp -o bench_lock -pthread
@@ -1512,7 +1512,7 @@ int main() {
 
 ### 18.2 unique_ptr vs 手动 new/delete
 
-> **示例 50** [难度 ★★☆☆☆] [主题：ptr vs 手动 new/dele]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ptr vs 手动 new/dele
 ```cpp
 // [示例 38] microbenchmark：unique_ptr 管理 vs 手动 new/delete
 // 编译：g++ -O2 -std=c++17 bench_ptr.cpp -o bench_ptr
@@ -1549,7 +1549,7 @@ int main() {
 
 ### 18.3 Rule of Zero 类 vs 手写五大
 
-> **示例 51** [难度 ★★☆☆☆] [主题：类 vs 手写五大]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类 vs 手写五大
 ```cpp
 // [示例 39] microbenchmark：Rule of Zero（vector 成员） vs 手写五大（裸指针）
 // 编译：g++ -O2 -std=c++17 bench_zero.cpp -o bench_zero
@@ -1583,13 +1583,13 @@ int main() {
 }
 ```
 
-**[经验]**　结论：RAII / 智能指针 / Rule of Zero **没有运行时性能代价**，却换来确定的异常安全与无泄漏。反对「RAII 慢」的说法是错误的一—它来自未开优化或老编译器。
+**<span class="badge badge-exp">经验</span>**　结论：RAII / 智能指针 / Rule of Zero **没有运行时性能代价**，却换来确定的异常安全与无泄漏。反对「RAII 慢」的说法是错误的一—它来自未开优化或老编译器。
 
 ---
 
 ## ⑲ 跨语言对比：资源释放的四种哲学
 
-**[经验]**　不同语言对「资源释放」有不同哲学，理解它们能加深对 RAII 价值的认识。
+**<span class="badge badge-exp">经验</span>**　不同语言对「资源释放」有不同哲学，理解它们能加深对 RAII 价值的认识。
 
 | 语言 | 机制 | 释放时机 | 依赖 GC？ | 无泄漏保证 |
 |------|------|----------|-----------|------------|
@@ -1662,13 +1662,13 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
     f.write("python with\n")
 ```
 
-**[经验]**　RAII 与 Rust `Drop` 是**完全确定性、编译期保证**的；Go/Java/C#/Python 的等价机制是「在块/函数结束时调用一个关闭方法」——确定性但**需手写**（漏写就漏释放），且**对象内存仍靠 GC**（与 C++ 的确定性析构不同）。C++ RAII 的独特优势是：把「资源释放」从「程序员的记忆」变成「类型的契约」。
+**<span class="badge badge-exp">经验</span>**　RAII 与 Rust `Drop` 是**完全确定性、编译期保证**的；Go/Java/C#/Python 的等价机制是「在块/函数结束时调用一个关闭方法」——确定性但**需手写**（漏写就漏释放），且**对象内存仍靠 GC**（与 C++ 的确定性析构不同）。C++ RAII 的独特优势是：把「资源释放」从「程序员的记忆」变成「类型的契约」。
 
 ---
 
 ## 源码阅读路线
 
-**[经验]**　要真正理解 RAII 与智能指针，建议按以下路线读真实源码：
+**<span class="badge badge-exp">经验</span>**　要真正理解 RAII 与智能指针，建议按以下路线读真实源码：
 
 1. **libstdc++ `bits/unique_ptr.h`**（本机 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h`）：读 `default_delete`（`:74-142`）、`__uniq_ptr_impl`（`:147-233`）、主模板 `unique_ptr`（`:276-524`，重点 `:394-406` 析构、`:365-382` 移动、`:521-523` 拷贝 delete）。
 2. **libstdc++ `bits/std_mutex.h`**（`:242-262`）：`lock_guard` 的 lock/unlock/noexcept 三要素。
@@ -1736,16 +1736,16 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：获取资源后抛异常导致泄漏。** 你 `open()` 文件、中间构造抛异常、忘了 `close()`。请用 RAII 把资源绑定到对象生命周期。
-   - [标准] 构造获得资源、析构释放资源；栈展开会调用已构造对象的析构函数，从而自动释放。
-   - [引用] ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（析构与栈展开）；cppreference "RAII" 词条。
+   - <span class="badge badge-std">标准</span> 构造获得资源、析构释放资源；栈展开会调用已构造对象的析构函数，从而自动释放。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（析构与栈展开）；cppreference "RAII" 词条。
 
 2. **真实场景：裸指针成员导致浅拷贝与双重释放。** 你给类加了 `int* p` 成员却没定义拷贝，两个对象析构时两次 `delete p`。请说明拷贝语义规则。
-   - [标准] 用户未声明时编译器合成逐成员拷贝；对裸资源管理成员这会产生别名/双重释放，须自定义拷贝或禁用（“三/五法则”）。
-   - [引用] ISO/IEC 14882:2023 §[class.copy.ctor] / [class.copy.assign]（拷贝构造/赋值）；cppreference "Rule of three/five" 词条。
+   - <span class="badge badge-std">标准</span> 用户未声明时编译器合成逐成员拷贝；对裸资源管理成员这会产生别名/双重释放，须自定义拷贝或禁用（“三/五法则”）。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy.ctor] / [class.copy.assign]（拷贝构造/赋值）；cppreference "Rule of three/five" 词条。
 
 3. **真实场景：析构函数里抛异常导致 `std::terminate`。** 你让析构函数上报错误时抛异常，恰好在栈展开期间又抛，程序直接终止。请说明约束。
-   - [标准] 在栈展开（已存在待处理异常）过程中析构再抛异常，将调用 `std::terminate`；析构函数应吞掉错误而非传播。
-   - [引用] ISO/IEC 14882:2023 §[except.terminate]（terminate 的触发条件）；cppreference "std::terminate" 词条。
+   - <span class="badge badge-std">标准</span> 在栈展开（已存在待处理异常）过程中析构再抛异常，将调用 `std::terminate`；析构函数应吞掉错误而非传播。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[except.terminate]（terminate 的触发条件）；cppreference "std::terminate" 词条。
 
 - **行数**：约 1580 行（markdown 含 44 个代码块）。
 - **章节元素（20 项）**：1 概述 / 2 RAII 本质 / 3 资源全景 / 4 栈展开耦合 / 5 构造失败 / 6 析构 noexcept / 7 Rule of Three / 8 Rule of Five / 9 Rule of Zero / 10 =default/=delete / 11 移动后状态 / 12 智能指针预告 / 13 RAII 锁 / 14 ScopeGuard / 15 标准 RAII 类型 / 16 libstdc++ 源码逐行 / 17 三编译器三 STL 对比 / 18 microbenchmark / 19 跨语言对比 / 20 源码阅读路线。
@@ -1758,7 +1758,7 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
   - `bits/fstream.tcc:126`、`:249-285`（fstream 析构 close）。
 - **未在本机验证、以 `[实现-推断]`/`[平台-推断]` 标注**：libc++、MS STL 内部实现与 LLVM ADT `ScopeExit`、Rust `Drop`、旧 MSVC `= default` 移动 bug。
 
-> 立场分层贯穿全章：**[标准]**（ISO C++ 条款）、**[实现]**（libstdc++ 真实源码）、**[平台·x86-64]**（MinGW GCC 13.1.0 / Win32）、**[经验]**（工程实践与坑）。已删除「推荐阅读」节，相关内容内化进第 20 节源码阅读路线与正文。
+> 立场分层贯穿全章：**<span class="badge badge-std">标准</span>**（ISO C++ 条款）、**<span class="badge badge-impl">实现</span>**（libstdc++ 真实源码）、**[平台·x86-64]**（MinGW GCC 13.1.0 / Win32）、**<span class="badge badge-exp">经验</span>**（工程实践与坑）。已删除「推荐阅读」节，相关内容内化进第 20 节源码阅读路线与正文。
 
 ## 联合使用场景
 
@@ -1770,7 +1770,7 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
 
 ## 附录 F：RAII工业与面试
 
-> **示例 52** [难度 ★★☆☆☆] [主题：附录 F：RAII工业与面试]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：RAII工业与面试
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1793,7 +1793,7 @@ int main(){auto p=std::make_unique<int>(42);std::ifstream f("test.txt");std::cou
 
 通过stack unwind自动释放: unique_ptr, lock_guard, jthread, ifstream。
 
-> **示例 53** [难度 ★★☆☆☆] [主题：附录 H：RAII面试]
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：RAII面试
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1810,7 +1810,7 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ### ㉒.1 历史渊源补强：RAII 的来龙去脉
 
-[史] RAII（Resource Acquisition Is Initialization）由 **Bjarne Stroustrup 在 1980 年代设计 C++ 时** 提出，灵感来自 Simula 的作用域与构造/析构，但关键创新是「把资源生命周期绑定到栈对象生命周期」——这一思想在 1990 年代的 *The C++ Programming Language*（第 2/3 版）中被正式命名为 idiom 并推广。[轶] 有趣的是，RAII 这个缩写并非 Stroustrup 最初命名，而是社区后来归纳；他本人更常用「ctor acquires, dtor releases」。C++ 之所以能靠 RAII 甩掉 `finally`，靠的是 **栈展开（stack unwinding，第 ④ 节）** 与「析构在作用域退出时必然执行」这一由语言保证的契约，而 Java/C# 的 `try-finally` 是「建议而非保证」——这是 C++ 异常安全哲学的根基。[史] **C++11（2011）** 用 `std::unique_ptr`/`shared_ptr` 把 RAII 提升到标准库层，并引入 **Rule of Five（第 ⑧ 节）** 取代 Rule of Three；**C++11 的 `noexcept`（第 ⑥ 节）** 把「析构必须不抛」从惯例变成可被编译器利用的契约。
+<span class="badge badge-history">史</span> RAII（Resource Acquisition Is Initialization）由 **Bjarne Stroustrup 在 1980 年代设计 C++ 时** 提出，灵感来自 Simula 的作用域与构造/析构，但关键创新是「把资源生命周期绑定到栈对象生命周期」——这一思想在 1990 年代的 *The C++ Programming Language*（第 2/3 版）中被正式命名为 idiom 并推广。<span class="badge badge-anecdote">轶</span> 有趣的是，RAII 这个缩写并非 Stroustrup 最初命名，而是社区后来归纳；他本人更常用「ctor acquires, dtor releases」。C++ 之所以能靠 RAII 甩掉 `finally`，靠的是 **栈展开（stack unwinding，第 ④ 节）** 与「析构在作用域退出时必然执行」这一由语言保证的契约，而 Java/C# 的 `try-finally` 是「建议而非保证」——这是 C++ 异常安全哲学的根基。<span class="badge badge-history">史</span> **C++11（2011）** 用 `std::unique_ptr`/`shared_ptr` 把 RAII 提升到标准库层，并引入 **Rule of Five（第 ⑧ 节）** 取代 Rule of Three；**C++11 的 `noexcept`（第 ⑥ 节）** 把「析构必须不抛」从惯例变成可被编译器利用的契约。
 
 ### ㉒.2 真实工程坐标：RAII 活在哪里
 
@@ -1838,8 +1838,8 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ### ㉒.4 与标准的互动：RAII 与三五法则的演进
 
-[史] C++98 确立 RAII 与 Rule of Three（拷贝构造/拷贝赋值/析构三者一致）；**C++11（2011）** 引入移动语义与 `=default`/`=delete`，催生 **Rule of Five（第 ⑧ 节）** 并让 `unique_ptr` 把「唯一所有权」标准化；同年 `noexcept` 让析构不抛成为可优化的契约（第 ⑥ 节）。[史] **C++17 的 P0188** 一脉推动「Rule of Zero」成为首选（第 ⑨ 节）——尽量不手写特殊成员，把资源管理交给标准智能指针/容器，从根上消灭三五法则的出错面。[评] WG21 的方向是继续强化「零手写管理」：用 `std::unique_ptr` + 自定义删除器（ch41）覆盖绝大多数 RAII 场景，并探索 `[[nodiscard]]`、契约（contracts）让资源误用更早被编译器捕获。RAII 作为 C++ 区别于 GC 语言的核心价值，标准几乎每一版都在加固它。
-- [史] 「提交或回滚」RAII 守卫依赖的 `std::uncaught_exceptions()`（返回计数）由 **N4259（C++17 采纳）** 标准化，取代了不可靠的单参 `std::uncaught_exception()`（C++17 起弃用）。ISO 条款 `[class.dtor]` 与 `[except.terminate]` 共同保证「析构在作用域退出必然执行、且栈展开途中抛异常即 `terminate`」——这正是 RAII 能甩掉 `finally` 的契约根基，委员会用语言规则而非库技巧夯实它。
+<span class="badge badge-history">史</span> C++98 确立 RAII 与 Rule of Three（拷贝构造/拷贝赋值/析构三者一致）；**C++11（2011）** 引入移动语义与 `=default`/`=delete`，催生 **Rule of Five（第 ⑧ 节）** 并让 `unique_ptr` 把「唯一所有权」标准化；同年 `noexcept` 让析构不抛成为可优化的契约（第 ⑥ 节）。<span class="badge badge-history">史</span> **C++17 的 P0188** 一脉推动「Rule of Zero」成为首选（第 ⑨ 节）——尽量不手写特殊成员，把资源管理交给标准智能指针/容器，从根上消灭三五法则的出错面。<span class="badge badge-comment">评</span> WG21 的方向是继续强化「零手写管理」：用 `std::unique_ptr` + 自定义删除器（ch41）覆盖绝大多数 RAII 场景，并探索 `[[nodiscard]]`、契约（contracts）让资源误用更早被编译器捕获。RAII 作为 C++ 区别于 GC 语言的核心价值，标准几乎每一版都在加固它。
+- <span class="badge badge-history">史</span> 「提交或回滚」RAII 守卫依赖的 `std::uncaught_exceptions()`（返回计数）由 **N4259（C++17 采纳）** 标准化，取代了不可靠的单参 `std::uncaught_exception()`（C++17 起弃用）。ISO 条款 `[class.dtor]` 与 `[except.terminate]` 共同保证「析构在作用域退出必然执行、且栈展开途中抛异常即 `terminate`」——这正是 RAII 能甩掉 `finally` 的契约根基，委员会用语言规则而非库技巧夯实它。
 
 ### ㉒.5 权威引用
 
@@ -1872,7 +1872,7 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ## 底层视角：栈展开、析构代价与 noexcept [E: Low-level]
 
-[标准] RAII 对象在作用域退出时析构，栈展开由异常机制驱动：每个栈帧的 `0x0008` 返回地址与异常表（`-fexception`，GCC 13.1.0 默认开）决定是否调用析构。`noexcept` 析构让展开路径省去异常检查（≈数 ns~数十 ns）。
+<span class="badge badge-std">标准</span> RAII 对象在作用域退出时析构，栈展开由异常机制驱动：每个栈帧的 `0x0008` 返回地址与异常表（`-fexception`，GCC 13.1.0 默认开）决定是否调用析构。`noexcept` 析构让展开路径省去异常检查（≈数 ns~数十 ns）。
 
 析构若释放堆资源（`delete`，一次 `0x0010` 堆释放，约 tens of ns `[微架构·x86-64][UNVERIFIED]`）须经分配器（见 ch38 工业分配器）。多态 RAII 对象含 `0x0008` vptr，析构经 vtable 虚调用（见 ch47，约 1–3 ns `[微架构·x86-64][UNVERIFIED]` + 跳转惩罚）；`final` 可去虚化。
 
@@ -1908,7 +1908,7 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 <details><summary>答案与解析</summary>
 
-> **示例 54** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <cstdio>
 #include <stdexcept>
@@ -1925,9 +1925,9 @@ void use(){
 
 裸写法：`fopen` 后某步 `throw`，跳过 `fclose` → 句柄泄漏。RAII 把"释放"绑定到作用域退出。
 
-[标准] RAII：资源获取即初始化，释放绑定到对象析构；异常安全的核心是析构兜底。
+<span class="badge badge-std">标准</span> RAII：资源获取即初始化，释放绑定到对象析构；异常安全的核心是析构兜底。
 
-[引用] ISO/IEC 14882:2023 §[class.dtor]（析构与栈展开）；C++ Core Guidelines R.1（"Manage resources automatically using RAII"）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.dtor]（析构与栈展开）；C++ Core Guidelines R.1（"Manage resources automatically using RAII"）。
 
 </details>
 
@@ -1938,7 +1938,7 @@ void use(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 55** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <utility>
 template <class F>
@@ -1956,9 +1956,9 @@ template <class F> ScopeGuard<F> scope_guard(F f){ return ScopeGuard<F>(std::mov
 它提供 **basic 异常安全保证**：即使后续抛异常，已注册的清理仍执行，资源不泄漏。
 `dismiss()` 用于"成功路径上不再需要清理"时取消。
 
-[标准] ScopeGuard 是 RAII 的通用化形态；用 lambda 表达任意清理动作；属 basic 保证。
+<span class="badge badge-std">标准</span> ScopeGuard 是 RAII 的通用化形态；用 lambda 表达任意清理动作；属 basic 保证。
 
-[引用] ScopeGuard 源自 Andrei Alexandrescu 与 Petru Marginean 的经典论文《Generic: Change the Way You Write Exception-Safe Code Forever》(Dr. Dobb's Journal, 2000)；标准依据见 §[class.dtor]；C++ Core Guidelines E.19。
+<span class="badge badge-ref">引用</span> ScopeGuard 源自 Andrei Alexandrescu 与 Petru Marginean 的经典论文《Generic: Change the Way You Write Exception-Safe Code Forever》(Dr. Dobb's Journal, 2000)；标准依据见 §[class.dtor]；C++ Core Guidelines E.19。
 
 </details>
 
@@ -1969,7 +1969,7 @@ template <class F> ScopeGuard<F> scope_guard(F f){ return ScopeGuard<F>(std::mov
 
 <details><summary>答案与解析</summary>
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <utility>
 #include <vector>
@@ -1988,9 +1988,9 @@ struct StrongArray {
 - **strong**：异常后对象**状态完全不变**（事务语义，如 `push_back` 扩容失败回滚）。
 copy-and-swap 把"可能失败的工作"放在临时对象上，最后一步 `swap` 不抛，从而获得强保证。
 
-[标准] 强异常安全 = 失败如未调用；copy-and-swap 经典实现；swap 必须 noexcept。
+<span class="badge badge-std">标准</span> 强异常安全 = 失败如未调用；copy-and-swap 经典实现；swap 必须 noexcept。
 
-[引用] ISO/IEC 14882:2023 §[res.on.exception.handling]（强异常安全保证）与 §[class.copy.assign]；C++ Core Guidelines E.6/E.8；标准库 `std::vector` 的强保证即此模式（§[vector.modifiers]）。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[res.on.exception.handling]（强异常安全保证）与 §[class.copy.assign]；C++ Core Guidelines E.6/E.8；标准库 `std::vector` 的强保证即此模式（§[vector.modifiers]）。
 
 </details>
 
@@ -2000,7 +2000,7 @@ copy-and-swap 把"可能失败的工作"放在临时对象上，最后一步 `sw
 
 **步骤 1：手动资源管理（漏 close 的 N 种路径）**
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 用 RAII 把]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 用 RAII 把
 ```cpp
 #include <cstdio>
 int main(){
@@ -2014,7 +2014,7 @@ int main(){
 
 **步骤 2：RAII 包装（析构兜底）**
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 用 RAII 把]
+> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 用 RAII 把
 ```cpp
 #include <cstdio>
 struct FileGuard {
@@ -2032,7 +2032,7 @@ int main(){
 
 **步骤 3：ScopeGuard 处理非资源清理**
 
-> **示例 59** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 用 RAII 把]
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 用 RAII 把
 ```cpp
 #include <mutex>
 std::mutex m;
@@ -2048,7 +2048,7 @@ int main(){
 
 **步骤 4：借 unique_ptr 自定义 deleter 复用标准设施**
 
-> **示例 60** [难度 ★★★☆☆] [主题：附录：用法演绎 — 用 RAII 把]
+> **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 用 RAII 把
 ```cpp
 #include <cstdio>
 #include <memory>
@@ -2165,7 +2165,7 @@ int main(){
 
 ### D4.8 编译验证
 
-> **示例 61** [难度 ★★☆☆☆] [主题：编译验证]
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
 ```cpp
 #include <memory>
 #include <iostream>
@@ -2433,7 +2433,7 @@ BigData 为 1KB 缓冲（5 个 int 字段 + 1KB `std::vector<char>`），N=500'0
 
 ### D5.3 可复现演示
 
-> **示例 62** [难度 ★★☆☆☆] [主题：可复现演示]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
 ```cpp
 #include <iostream>
 #include <vector>

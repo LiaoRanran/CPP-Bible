@@ -12,23 +12,23 @@
 
 ### 0.1 起源（谁·何时·为何）
 
-C++11 是一次巨型发布，但落地后程序员立刻发现若干"半截特性"：lambda 还不能泛型化、函数返回类型还得写两遍、`constexpr` 函数限制过死、忘了给 `unique_ptr` 配一个 `make_unique`……[评] 这些不是新方向，而是 C++11 自己的"毛刺"。委员会决定在 2014 年做一次"补缺"小版本，不引入范式级新特性，只把 11 的承诺兑现完整。[史] 这也是三年节奏确立后的第一次"中间版"，证明标准流程能稳定产出小而稳的增量。[史][评]
+C++11 是一次巨型发布，但落地后程序员立刻发现若干"半截特性"：lambda 还不能泛型化、函数返回类型还得写两遍、`constexpr` 函数限制过死、忘了给 `unique_ptr` 配一个 `make_unique`……<span class="badge badge-comment">评</span> 这些不是新方向，而是 C++11 自己的"毛刺"。委员会决定在 2014 年做一次"补缺"小版本，不引入范式级新特性，只把 11 的承诺兑现完整。<span class="badge badge-history">史</span> 这也是三年节奏确立后的第一次"中间版"，证明标准流程能稳定产出小而稳的增量。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 ### 0.2 关键转折（编年）
 
-- **2014**：ISO/IEC 14882:2014（草案 N4140）发布。[史]
-- 关键补全：泛型 lambda（`[](auto a, auto b)`）、函数返回类型推导、泛化 `constexpr`（允许局部变量与循环）、变量模板、`std::make_unique`、`[[deprecated]]`、二进制字面量、数字分隔符、泛型 lambda 捕获。[史]
+- **2014**：ISO/IEC 14882:2014（草案 N4140）发布。<span class="badge badge-history">史</span>
+- 关键补全：泛型 lambda（`[](auto a, auto b)`）、函数返回类型推导、泛化 `constexpr`（允许局部变量与循环）、变量模板、`std::make_unique`、`[[deprecated]]`、二进制字面量、数字分隔符、泛型 lambda 捕获。<span class="badge badge-history">史</span>
 
 ### 0.3 设计哲学之争
 
-C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标准应当承认自己的不完美并快速修补**，而非憋大招。[评] 一个具体取舍：为何要有 `make_unique` 却在 11 里缺席？据记载[轶]，委员会当时认为"用户自己能写"，后来承认这是失误，14 才补上——这成了标准库"应为常见模式提供工厂"的范例。数字分隔符（`1'000'000`）则体现了"可读性即正确性"的小哲学。[评]
+C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标准应当承认自己的不完美并快速修补**，而非憋大招。<span class="badge badge-comment">评</span> 一个具体取舍：为何要有 `make_unique` 却在 11 里缺席？据记载<span class="badge badge-anecdote">轶</span>，委员会当时认为"用户自己能写"，后来承认这是失误，14 才补上——这成了标准库"应为常见模式提供工厂"的范例。数字分隔符（`1'000'000`）则体现了"可读性即正确性"的小哲学。<span class="badge badge-comment">评</span>
 
 ### 0.4 史料补遗与持续编年
 
-- [史] 泛型 lambda（`[](auto x)`）在 C++14 落地后，直接催生了 C++17 的折叠表达式与后续模板增强，也是 C++20 Ranges 中高阶组合写法的前置语法。
-- [史] C++14 放宽 `constexpr`（允许局部变量与循环），为 C++17 的 `if constexpr`、C++20 的 `consteval`/`constinit` 铺平了"编译期计算常态化"的道路。
-- [史] `std::make_unique` 补回 C++11 唯一遗漏的工厂函数，Abseil、Qt 5.5、Unreal 4.27 等纷纷以 C++14 为最低基线，使其成为事实上的 LTS 标准。
-- [评] C++14 被戏称"最无聊的版本"，却把 C++11 的棱角磨平，证明了"小版本修边角"节奏的工程价值。
+- <span class="badge badge-history">史</span> 泛型 lambda（`[](auto x)`）在 C++14 落地后，直接催生了 C++17 的折叠表达式与后续模板增强，也是 C++20 Ranges 中高阶组合写法的前置语法。
+- <span class="badge badge-history">史</span> C++14 放宽 `constexpr`（允许局部变量与循环），为 C++17 的 `if constexpr`、C++20 的 `consteval`/`constinit` 铺平了"编译期计算常态化"的道路。
+- <span class="badge badge-history">史</span> `std::make_unique` 补回 C++11 唯一遗漏的工厂函数，Abseil、Qt 5.5、Unreal 4.27 等纷纷以 C++14 为最低基线，使其成为事实上的 LTS 标准。
+- <span class="badge badge-comment">评</span> C++14 被戏称"最无聊的版本"，却把 C++11 的棱角磨平，证明了"小版本修边角"节奏的工程价值。
 
 > 史料来源：C++ 标准状态 https://isocpp.org/std/status ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
@@ -44,7 +44,7 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 [第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)
 [第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -59,7 +59,7 @@ int main() {
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★★★☆☆] [主题：前置知识]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -74,7 +74,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -91,7 +91,7 @@ int main() {
 
 ## ④ 知识图谱
 
-> **示例 4** [难度 ★★☆☆☆] [主题：知识图谱]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱
 ```cpp
 // [merged] ## ④ 知识图谱
 #include <iostream>
@@ -101,7 +101,7 @@ int main() {
 }
 ```
 
-> **示例 5** [难度 ★★★☆☆] [主题：知识图谱]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱
 ```
 C++14 补全
 ├─ 泛型 lambda: [](auto x){...}
@@ -116,7 +116,7 @@ C++14 补全
 
 ## ⑤ Mermaid
 
-> **示例 6** [难度 ★★★☆☆] [主题：Mermaid 图解]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · Mermaid 图解
 ```cpp
 // [merged] ## ⑤ Mermaid
 #include <iostream>
@@ -148,7 +148,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑥ UML / 结构图（C++14 特性关系）
 
-> **示例 7** [难度 ★★☆☆☆] [主题：结构图（C++14 特性关系）]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结构图（C++14 特性关系）
 ```cpp
 // [merged] ## ⑥ UML / 结构图（C++14 特性关系）
 #include <iostream>
@@ -163,7 +163,7 @@ C++14 无新面向对象机制，特性围绕「泛型与编译期」：generic 
 
 ## ⑦ ASCII 内存图（C++14 内存模型沿用 C++11）
 
-> **示例 8** [难度 ★★☆☆☆] [主题：内存图]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（C++14 内存模型沿用 C++11）
 #include <iostream>
@@ -176,7 +176,7 @@ C++14 未改变对象内存布局；放宽 constexpr 使更多计算在编译期
 
 ## ⑧ 生命周期（沿用 C++11 RAII / 移动语义）
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：生命周期]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期
 ```cpp
 // [merged] ## ⑧ 生命周期（沿用 C++11 RAII / 移动语义）
 #include <iostream>
@@ -189,7 +189,7 @@ C++14 无新生命周期语义；generic lambda 的闭包对象生命周期与�
 
 ## ⑨ 调用栈（C++14 特性均编译期，无新运行时调用模型）
 
-> **示例 10** [难度 ★★★☆☆] [主题：调用栈]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈
 ```cpp
 // [merged] ## ⑨ 调用栈（C++14 特性均编译期，无新运行时调用模型）
 #include <iostream>
@@ -203,9 +203,9 @@ int main() {
 
 generic lambda、`decltype(auto)` 仍由模板实例化在编译期生成独立函数体，不改变运行时调用栈（ch22、ch26）。
 
-## ⑩ 汇编（C++14 零新增运行时开销）[标准]
+## ⑩ 汇编（C++14 零新增运行时开销）<span class="badge badge-std">标准</span>
 
-> **示例 11** [难度 ★★☆☆☆] [主题：汇编（C++14 零新增运行时开销）]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编（C++14 零新增运行时开销）
 ```cpp
 // [merged] ## ⑩ 汇编（C++14 零新增运行时开销）[标准]
 #include <iostream>
@@ -219,7 +219,7 @@ C++14 不引入任何运行时机制；generic lambda 编译为独立的模板�
 
 ## ⑪ STL 联系
 
-> **示例 12** [难度 ★★☆☆☆] [主题：联系]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系
 ```cpp
 // [merged] ## ⑪ STL 联系
 #include <iostream>
@@ -234,7 +234,7 @@ int main() {
 
 ## ⑫ 工业案例
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -250,7 +250,7 @@ int main() {
 
 ## ⑬ 源码分析
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：源码分析]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析
 ```cpp
 // 初始化捕获移动语义
 #include <memory>
@@ -258,7 +258,7 @@ int main() {
 #include <utility>
 auto v=std::make_unique<std::vector<int>>(std::vector<int>{1}); auto cap=[p=std::move(v)](){};
 ```
-> **示例 15** [难度 ★★☆☆☆] [主题：源码分析]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析
 ```cpp
 // 变量模板作常量
 #include <type_traits>
@@ -269,7 +269,7 @@ template<class T> constexpr bool is_int_v = std::is_same_v<T,int>; static_assert
 
 ## ⑭ WG21 提案
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：提案]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
 ```cpp
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
@@ -288,7 +288,7 @@ int main() {
 
 ## ⑮ 面试题
 
-> **示例 17** [难度 ★★☆☆☆] [主题：面试题]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试题
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -303,7 +303,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
 // lambda 作为回调类型
 void reg(void(*cb)(int)){ if(cb) cb(0); }
@@ -313,7 +313,7 @@ void reg(void(*cb)(int)){ if(cb) cb(0); }
 
 ## ⑰ FAQ
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：FAQ 问答]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
 // 泛型 lambda 比较
 auto cmp=[](auto a,auto b){ return a<b; }; bool t=cmp(1,2);
@@ -323,7 +323,7 @@ auto cmp=[](auto a,auto b){ return a<b; }; bool t=cmp(1,2);
 
 ## ⑱ 最佳实践
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // 初始化捕获 + 引用
 #include <vector>
@@ -334,7 +334,7 @@ std::vector<int> data{1,2}; auto f=[d=&data](){ return d->size(); };
 
 ## ⑲ 性能（略）
 
-> **示例 21** [难度 ★★☆☆☆] [主题：性能（略）]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（略）
 ```cpp
 // 变量模板与 constexpr if 前置
 #include <type_traits>
@@ -346,18 +346,18 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
 1. **真实场景：用变量模板做维度无关的 `epsilon<T>`。** 你不再为每个类型手写常量。请说明变量模板的引入。
-   - [标准] C++14 引入变量模板，可在命名空间作用域声明带模板形参的变量，供类型相关的常量复用。
-   - [引用] ISO/IEC 14882:2023 §[temp.variab]（变量模板）；cppreference "Variable template" 词条。
+   - <span class="badge badge-std">标准</span> C++14 引入变量模板，可在命名空间作用域声明带模板形参的变量，供类型相关的常量复用。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[temp.variab]（变量模板）；cppreference "Variable template" 词条。
 
 2. **真实场景：用 `[[deprecated("use foo2")]]` 标记废弃 API。** 你想让调用方在编译期收到劝退。请说明属性字符串参数。
-   - [标准] C++14 起 `deprecated` 属性可带字符串实参说明废弃原因；使用该声明会触发实现诊断。
-   - [引用] ISO/IEC 14882:2023 §[dcl.attr.deprecated]（deprecated 属性）；cppreference "Attributes" 词条。
+   - <span class="badge badge-std">标准</span> C++14 起 `deprecated` 属性可带字符串实参说明废弃原因；使用该声明会触发实现诊断。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.attr.deprecated]（deprecated 属性）；cppreference "Attributes" 词条。
 
 3. **真实场景：constexpr 函数里写局部变量和循环（14 已放松）。** 你在 11 里被迫单表达式，现在可写语句。请说明放宽边界。
-   - [标准] C++14 放松 constexpr 函数体限制，允许声明、循环等，但仍必须能在常量表达式语境求值。
-   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数体要求，C++14 起放松）；cppreference "constexpr" 词条。
+   - <span class="badge badge-std">标准</span> C++14 放松 constexpr 函数体限制，允许声明、循环等，但仍必须能在常量表达式语境求值。
+   - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数体要求，C++14 起放松）；cppreference "constexpr" 词条。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
 // C++14 小结：泛型 lambda + 变量模板 + make_unique 三件套
 ```
@@ -368,7 +368,7 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 
 ### ㉒.1 历史渊源补强：C++14 为何是"C++11 的修正式"
 
-[史] C++14（ISO/IEC 14882:2014，2014-12-15 发布）被定位为 C++11 的小幅完善：主要补 11 版遗漏、修缺陷报告（DR），几乎不加"大"特性。[史] 其标志性语言特性来自产业提案：**泛型 lambda**（允许 `auto` 形参）让 `[](auto x){}` 成为可能；**变量模板**（`template<typename T> constexpr T pi = ...`）统一了之前的特化宏技巧；**返回类型推导**（`auto f() { return expr; }`）省去尾置返回类型；还有 `std::make_unique`（Herb Sutter 力推，补 C++11 唯独缺的"unique_ptr 工厂"）。[轶] `std::make_unique` 的缺席曾被认为是 C++11 最尴尬的疏漏——于是它成了 C++14 第一个被通过的标准库提案之一。[评] C++14 的存在证明"3 年小版本"模型有效：它把 11 的锐利棱角磨平，让团队敢于在 2015 年前后全面切到现代 C++。
+<span class="badge badge-history">史</span> C++14（ISO/IEC 14882:2014，2014-12-15 发布）被定位为 C++11 的小幅完善：主要补 11 版遗漏、修缺陷报告（DR），几乎不加"大"特性。<span class="badge badge-history">史</span> 其标志性语言特性来自产业提案：**泛型 lambda**（允许 `auto` 形参）让 `[](auto x){}` 成为可能；**变量模板**（`template<typename T> constexpr T pi = ...`）统一了之前的特化宏技巧；**返回类型推导**（`auto f() { return expr; }`）省去尾置返回类型；还有 `std::make_unique`（Herb Sutter 力推，补 C++11 唯独缺的"unique_ptr 工厂"）。<span class="badge badge-anecdote">轶</span> `std::make_unique` 的缺席曾被认为是 C++11 最尴尬的疏漏——于是它成了 C++14 第一个被通过的标准库提案之一。<span class="badge badge-comment">评</span> C++14 的存在证明"3 年小版本"模型有效：它把 11 的锐利棱角磨平，让团队敢于在 2015 年前后全面切到现代 C++。
 
 ### ㉒.2 真实工程坐标：C++14 活在哪些基线里
 
@@ -394,9 +394,9 @@ C++14 是「现代语法 + 老旧 CI 也能编」的甜点基线。下面按领�
 
 ### ㉒.4 与标准的互动：承上启下
 
-[史] C++14 之后紧接 C++17——后者才引入 `std::optional`/`string_view`/`if constexpr` 等"真正改变写法"的特性。[评] 今天 C++14 已基本退出"推荐基线"：新代码应直接上 C++17/20；但理解 14 能看懂大量存量代码为何用泛型 lambda 而非 C++20 的 template lambda。
+<span class="badge badge-history">史</span> C++14 之后紧接 C++17——后者才引入 `std::optional`/`string_view`/`if constexpr` 等"真正改变写法"的特性。<span class="badge badge-comment">评</span> 今天 C++14 已基本退出"推荐基线"：新代码应直接上 C++17/20；但理解 14 能看懂大量存量代码为何用泛型 lambda 而非 C++20 的 template lambda。
 
-- [史] C++14 的 `std::make_unique` 由微软 STL 团队成员 Stephan T. Lavavej 提案（**N3657**）引入，补回 C++11 遗漏的 `unique_ptr` 工厂；泛型 lambda 与 `auto` 返回类型推导分别落在 §[expr.prim.lambda] 与相关返回类型推导条款。设计理由：把「统一用工厂避免裸 new」的 RAII 纪律写进标准库，消除手写 `new` 的泄漏风险。
+- <span class="badge badge-history">史</span> C++14 的 `std::make_unique` 由微软 STL 团队成员 Stephan T. Lavavej 提案（**N3657**）引入，补回 C++11 遗漏的 `unique_ptr` 工厂；泛型 lambda 与 `auto` 返回类型推导分别落在 §[expr.prim.lambda] 与相关返回类型推导条款。设计理由：把「统一用工厂避免裸 new」的 RAII 纪律写进标准库，消除手写 `new` 的泄漏风险。
 
 ### ㉒.5 权威引用
 
@@ -407,27 +407,27 @@ C++14 是「现代语法 + 老旧 CI 也能编」的甜点基线。下面按领�
 
 ## 附录: C++14 四大改进代码
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：附录: C++14 四大改进代码]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++14 四大改进代码
 ```cpp
 #include <iostream>
 #include <memory>
 int main(){auto p=std::make_unique<int>(100);std::cout<<*p<<std::endl;return 0;}
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：附录: C++14 四大改进代码]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++14 四大改进代码
 ```cpp
 #include <iostream>
 int main(){auto twice=[](auto x){return x+x;};std::cout<<twice(21)<<std::endl;return 0;}
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：附录: C++14 四大改进代码]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: C++14 四大改进代码
 ```cpp
 #include <iostream>
 template<typename T>constexpr T pi=T(3.14159);
 int main(){std::cout<<pi<double><<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录: C++14 四大改进代码]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++14 四大改进代码
 ```cpp
 #include <iostream>
 int main(){int mask=0b1010'1111;std::cout<<std::hex<<mask<<std::endl;return 0;}
@@ -435,7 +435,7 @@ int main(){int mask=0b1010'1111;std::cout<<std::hex<<mask<<std::endl;return 0;}
 
 ## 附录: C++14 深度特性
 
-> **示例 27** [难度 ★★☆☆☆] [主题：附录: C++14 深度特性]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: C++14 深度特性
 ```cpp
 // constexpr 函数放宽（可含 if/for/局部变量）
 #include <iostream>
@@ -443,7 +443,7 @@ constexpr int factorial(int n){int r=1;for(int i=2;i<=n;++i)r*=i;return r;}
 int main(){constexpr int f=factorial(5);std::cout<<f<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：附录: C++14 深度特性]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++14 深度特性
 ```cpp
 // deprecated 属性
 #include <iostream>
@@ -451,14 +451,14 @@ int main(){constexpr int f=factorial(5);std::cout<<f<<std::endl;return 0;}
 int main(){std::cout<<"[[deprecated]] warns at compile time\n";return 0;}
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：附录: C++14 深度特性]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++14 深度特性
 ```cpp
 // return type deduction for all lambdas
 #include <iostream>
 int main(){auto add=[](auto a,auto b){return a+b;};std::cout<<add(1,2)<<" "<<add(1.5,2.5)<<std::endl;return 0;}
 ```
 
-> **示例 30** [难度 ★★☆☆☆] [主题：附录: C++14 深度特性]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: C++14 深度特性
 ```cpp
 // std::integer_sequence (C++14 utility)
 #include <iostream>
@@ -474,7 +474,7 @@ int main(){print(std::make_integer_sequence<int,5>{});return 0;}
 
 C++14 被称为"minor release"——但其中两个特性改变了工业 C++ 的日常写法:
 
-> **示例 31** [难度 ★★☆☆☆] [主题：附录 B：C++14 工业采纳与标准]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：C++14 工业采纳与标准
 ```
 WG21 提案时间线:
 N3652: constexpr 放宽 (局部变量, if, for, 2013) → C++14
@@ -493,7 +493,7 @@ N3649: 泛型 lambda → C++14
 2020: C++17 成为新的"默认"标准，C++14 作为 LTS (长期支持) 基线
 ```
 
-> **示例 32** [难度 ★★★☆☆] [主题：附录 B：C++14 工业采纳与标准]
+> **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：C++14 工业采纳与标准
 ```cpp
 #include <iostream>
 int main() {
@@ -507,7 +507,7 @@ int main() {
 
 ## 附录 B-1：工业案例 —— 谁还在用 C++14 作为基线 [F: Industry]
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：附录 B-1：工业案例 —— 谁还在]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B-1：工业案例 —— 谁还在
 ```
 仍然使用 C++14 作为最低编译器要求的项目:
 - Abseil (Google): LTS release 系列用 C++14 保证最大兼容性
@@ -524,7 +524,7 @@ int main() {
 
 ## 附录 D：面试 [J: Learning]
 
-> **示例 34** [难度 ★★★☆☆] [主题：附录 D：面试 [J: Learni]
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试 [J: Learni
 ```
 面试高频:
 Q: C++14 最大的三个新特性？
@@ -539,7 +539,7 @@ A: 不能用于虚函数, 不能用于递归函数 (除非有明确的返回语�
 
 ## 附录 L：C++14标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
-> **示例 35** [难度 ★★★★☆] [主题：附录 L：C++14标准库与底层 []
+> **示例 35** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：C++14标准库与底层 [
 ```
 C++14标准库变化:
 - std::make_unique: 补齐C++11遗漏, 消除最后一个裸new的理由
@@ -568,7 +568,7 @@ C++14标准库变化:
 
 ## 附录 E：C++14面试
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录 E：C++14面试]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C++14面试
 ```cpp
 #include <iostream>
 #include <memory>
@@ -601,7 +601,7 @@ int main(){auto p=std::make_unique<int>(42);auto l=[](auto x){return x*2;};std::
 
 **真实场景：日志/追踪系统的异构打印。** 你的追踪工具要把 `int`、`double`、临时 `std::string` 混在一起打到日志，但不想为每种类型写重载。请用 C++14 泛型 lambda 实现一个通用打印器，并说明其等价于带模板 `operator()` 的 functor。
 
-> **示例 37** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
 #include <string>
@@ -615,16 +615,16 @@ int main() {
 }
 ```
 
-[标准] 结论：泛型 lambda 的 `auto` 参数被编译器展开为模板化的 `operator()`，
+<span class="badge badge-std">标准</span> 结论：泛型 lambda 的 `auto` 参数被编译器展开为模板化的 `operator()`，
 每种实参类型实例化一份；写法极简但仍是编译期多态、零运行期开销。
 
-[引用] ISO C++14 §[expr.prim.lambda]（泛型 lambda）；cppreference "lambda 表达式"（https://en.cppreference.com/w/cpp/language/lambda）。泛型 lambda 由 WG21 论文 N3649 引入，其闭包类含模板化的 `operator()`。
+<span class="badge badge-ref">引用</span> ISO C++14 §[expr.prim.lambda]（泛型 lambda）；cppreference "lambda 表达式"（https://en.cppreference.com/w/cpp/language/lambda）。泛型 lambda 由 WG21 论文 N3649 引入，其闭包类含模板化的 `operator()`。
 
 ### 练习 2（难度 ★★★）
 
 **真实场景：数值库的多精度 π 常量。** 你写一个几何/物理数值库，坐标计算既可能用 `float` 也可能用 `double`，硬编码 `double` 字面量会丢精度或浪费。请用 C++14 放宽返回类型推导（普通函数可写 `auto` 返回）+ 变量模板，实现一个类型无关的"取中值"和一个编译期常量 `pi<T>`。
 
-> **示例 38** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
 
@@ -640,16 +640,16 @@ int main() {
 }
 ```
 
-[标准] 结论：`auto` 返回类型由 `return` 表达式推导，多条 `return` 须类型一致；
+<span class="badge badge-std">标准</span> 结论：`auto` 返回类型由 `return` 表达式推导，多条 `return` 须类型一致；
 变量模板让“随类型变化的常量”不必再包在类里（旧法需 `struct Pi<T>{ static const ... };`）。
 
-[引用] ISO C++14 §[dcl.spec.auto]（返回类型推导）与 §[temp.variadic]（变量模板）；cppreference "变量模板"（https://en.cppreference.com/w/cpp/language/variable_template）。变量模板由 WG21 论文 N3651 引入。
+<span class="badge badge-ref">引用</span> ISO C++14 §[dcl.spec.auto]（返回类型推导）与 §[temp.variadic]（变量模板）；cppreference "变量模板"（https://en.cppreference.com/w/cpp/language/variable_template）。变量模板由 WG21 论文 N3651 引入。
 
 ### 练习 3（难度 ★★★★）
 
 **真实场景：OS/文件权限位掩码。** 你在写一个系统工具，用位掩码表达"读/写/执行"权限（类比 Linux `chmod` 的 `rwx`）。请用 C++14 的 `std::make_unique`、二进制字面量、数字分隔符，写一个位掩码权限系统，并解释这三项特性各自消除了什么样的样板与易错点。
 
-> **示例 39** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <iostream>
 #include <memory>
@@ -669,10 +669,10 @@ int main() {
 }
 ```
 
-[标准] 结论：`make_unique` 补齐了 C++11 只有 `make_shared` 的缺口，且异常安全（避免
+<span class="badge badge-std">标准</span> 结论：`make_unique` 补齐了 C++11 只有 `make_shared` 的缺口，且异常安全（避免
 `f(new A, g())` 求值顺序泄漏）；二进制字面量让位运算意图直观；数字分隔符纯为可读性，编译期剥离。
 
-[引用] ISO C++14 §[util.smartptr]（make_unique）/ §[lex.ccon]（二进制字面量与数字分隔符 `'`）；cppreference "std::make_unique"（https://en.cppreference.com/w/cpp/memory/make_unique）。二进制字面量（`0b…`）与单引号分隔符由 WG21 论文 N3472 引入。
+<span class="badge badge-ref">引用</span> ISO C++14 §[util.smartptr]（make_unique）/ §[lex.ccon]（二进制字面量与数字分隔符 `'`）；cppreference "std::make_unique"（https://en.cppreference.com/w/cpp/memory/make_unique）。二进制字面量（`0b…`）与单引号分隔符由 WG21 论文 N3472 引入。
 
 ## 附录：用法演绎（从选型到落地）
 
@@ -682,7 +682,7 @@ int main() {
 **选型**：C++14 泛型 lambda 就地写比较，免去为每种类型写 functor。
 **落地**：
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：演绎 1：泛型 lambda 做一次]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：泛型 lambda 做一次
 ```cpp
 #include <iostream>
 #include <vector>
@@ -709,7 +709,7 @@ int main() {
 **选型**：变量模板 `template<class T> constexpr T e = ...;` 按需实例化。
 **落地**：
 
-> **示例 41** [难度 ★★★☆☆] [主题：演绎 2：变量模板集中管理编译期物理]
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：变量模板集中管理编译期物理
 ```cpp
 #include <iostream>
 #include <iomanip>
@@ -745,7 +745,7 @@ int main() {
 
 可复现基准（自包含、可编译）：
 
-> **示例 42** [难度 ★★☆☆☆] [主题：真实性能基准：C++14 抽象的运行]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实性能基准：C++14 抽象的运行
 ```cpp
 // g++ -std=c++23 -O2 ch5_bench.cpp
 #include <chrono>
