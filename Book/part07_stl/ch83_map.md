@@ -132,29 +132,13 @@ int main() {
 ## ④ 知识图谱（ASCII）
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
-                  ┌─────────────────────────────────────┐
-                  │   关联容器（key -> value）            │
-                  └───────────────┬─────────────────────┘
-                                  │
-              ┌───────────────────┴────────────────────┐
-              ▼                                        ▼
-     ┌──────────────────┐                    ┌────────────────────┐
-     │ 有序：红黑树      │                    │ 无序：哈希表         │
-     │ map / multimap   │                    │ unordered_map       │
-     │ set / multiset   │                    │ （见 ch85）         │
-     └────────┬─────────┘                    └────────────────────┘
-              │
-              ▼ 底层
-     ┌──────────────────────────────────────────────────┐
-     │ _Rb_tree<Key, pair<const Key,T>, _Select1st, Cmp> │
-     │  - 每个元素一个节点（堆分配）                       │
-     │  - 节点稳定：插入/删除不动其他节点内存              │
-     │  - 中序遍历 = 按键升序                              │
-     └──────────────────────────────────────────────────┘
-              │
-              ▼ 关键操作
-    insert O(logN) | find O(logN) | erase O(logN) | 迭代器双向
+```mermaid
+flowchart TD
+    A["关联容器（key -> value）"]
+    A --> B["有序：红黑树<br/>map / multimap<br/>set / multiset"]
+    A --> B2["无序：哈希表<br/>unordered_map<br/>（见 ch85）"]
+    B -->|"底层"| C["_Rb_tree<Key, pair<const Key,T>, _Select1st, Cmp><br/>每个元素一个节点（堆分配）<br/>节点稳定：插入/删除不动其他节点内存<br/>中序遍历 = 按键升序"]
+    C -->|"关键操作"| D["insert O(logN) | find O(logN) | erase O(logN) | 迭代器双向"]
 ```
 
 ---
@@ -224,26 +208,15 @@ classDiagram
 红黑树是一棵**二叉搜索树 + 颜色约束**（确保每个分支黑高相等，树高 ≤ 2·log₂(N+1)）。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：红黑树节点与哨兵头
-```
-x86-64 下一个 _Rb_tree_node 的内存布局（节点基 + value 联合）：
-┌──────────────────────────────────────────────────────────────┐
-│ _Rb_tree_node_base（32 字节）：                                │
-│  [0]  _M_color   (bool, 1B, 但对齐到指针槽)                    │
-│  [8]  _M_parent   (指针)                                       │
-│  [16] _M_left     (指针)                                       │
-│  [24] _M_right    (指针)                                       │
-│ _Rb_tree_node（继承 base）：                                    │
-│  [32] _M_storage  (union { value_type _M_value_field; })       │
-│       ↑ pair<const Key, T> 的 key 在 offset 32，value 在 +...  │
-└──────────────────────────────────────────────────────────────┘
-
-树结构示意（key: 1,2,3,4,5；B=黑 R=红）：
-              [2 B]  (根，经 _M_header._M_parent)
-             /       \
-        [1 B]         [4 R]
-                     /     \
-                [3 B]       [5 B]
-（_M_header 哨兵：_M_left 指向最小(1)，_M_right 指向最大(5)，_M_parent=根）
+```mermaid
+flowchart TD
+    %% 注：省略部分细节（内存偏移联合见正文）。红黑树节点布局与树结构示意
+    MEM["x86-64 下一个 _Rb_tree_node 的内存布局（节点基 + value 联合）：<br/>_Rb_tree_node_base（32 字节）：<br/>[0]  _M_color   (bool, 1B, 但对齐到指针槽)<br/>[8]  _M_parent   (指针)<br/>[16] _M_left     (指针)<br/>[24] _M_right    (指针)<br/>_Rb_tree_node（继承 base）：<br/>[32] _M_storage  (union { value_type _M_value_field; })<br/>↑ pair<const Key, T> 的 key 在 offset 32，value 在 +...<br/><br/>树结构示意（key: 1,2,3,4,5；B=黑 R=红）"]
+    MEM --> R2["2 B（根，经 _M_header._M_parent）"]
+    R2 --> L1["1 B"]
+    R2 --> R4["4 R"]
+    R4 --> L3["3 B"]
+    R4 --> R5["5 B"]
 ```
 
 - `[实现·GCC15]`：`_Rb_tree_node_base` 含 `_M_color`(106 行)、`_M_parent`(107)、`_M_left`(108)、`_M_right`(109)；节点本身 `_Rb_tree_node` 在 216 行定义（见 `文件：bits/stl_tree.h`, `行号：101-109, 216`）。
@@ -285,21 +258,17 @@ int main() {
 `map` 的优秀特性是**节点稳定**：只要不删除某节点，指向它的引用/指针/迭代器永远有效（即使之后插入/删除了其他元素）。这与 `vector` 的"扩容整体搬迁"形成鲜明对比（⟶ `Book/part07_stl/ch77_vector.md`）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：节点稳定性
-```
-时间轴 ──────────────────────────────────────────────►
-
-  map<int,int> m;  m.insert({1,10}); m.insert({2,20});
-        │
-        ├─ auto& r = m.at(1);          // r 引用 key=1 的节点
-        │
-        ├─ m.insert({3,30});            // 插入新节点，触发可能的旋转再平衡
-        │        │                      // 但 key=1 的节点内存地址不变！
-        │        └─ r 仍然有效 ✅（节点稳定）
-        │
-        ├─ m.erase(2);                  // 删除 key=2 的节点
-        │        └─ 指向 key=2 的迭代器/引用失效 ❌（其余仍有效）
-        │
-        └─ m.clear();                   // 所有节点释放，所有引用失效
+```mermaid
+flowchart TD
+    %% 注：时间轴为横向，此处以纵向主流程呈现
+    S["map<int,int> m;  m.insert({1,10}); m.insert({2,20});"]
+    S --> A["auto& r = m.at(1);  // r 引用 key=1 的节点"]
+    A --> B["m.insert({3,30});  // 插入新节点，触发可能的旋转再平衡"]
+    B --> B1["但 key=1 的节点内存地址不变！"]
+    B1 --> B2["r 仍然有效 ✅（节点稳定）"]
+    B2 --> C["m.erase(2);  // 删除 key=2 的节点"]
+    C --> C1["指向 key=2 的迭代器/引用失效 ❌（其余仍有效）"]
+    C1 --> D["m.clear();  // 所有节点释放，所有引用失效"]
 ```
 
 - `[标准]`：参考文献 `[associative.reqmts]`：`map` 的 `insert`/`emplace` 不使既有迭代器/引用失效；`erase(it)` 仅使 `it` 失效。
@@ -343,21 +312,21 @@ int main() {
 `map::operator[](k)` 的语义是"找到 k 则返回其 value 的引用，否则**插入** `value_type(k, T())` 并返回"。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：operator
-```
-调用方                      map                 _Rb_tree             堆节点
-  │                          │                      │                  │
-  │ m[k]                     │                      │                  │
-  │─────────────────────────►│                      │                  │
-  │                          │ lower_bound(k)       │                  │
-  │                          │─────────────────────►│ 树下降 O(logN)   │
-  │                          │                      │─────────────────►│ 比较 key
-  │                          │                      │◄─────────────────│ 命中/未命中
-  │                          │◄─────────────────────│ it                │
-  │                          │                      │                  │
-  │        ├─ 命中：返回 it->second 引用            │                  │
-  │        └─ 未命中：insert(value_type(k,T())) ───►│ 新建节点+旋转     │
-  │                          │                      │─────────────────►│ 分配节点
-  │◄─────────────────────────│ 返回引用             │                  │
+```mermaid
+flowchart TD
+    %% 注：原图为 4 列表（调用方/map/_Rb_tree/堆节点）时序图，此处以主流程呈现
+    S["调用方：m[k]"]
+    S --> LB["map：lower_bound(k)"]
+    LB --> DESC["_Rb_tree：树下降 O(logN)"]
+    DESC --> CMP["堆节点：比较 key"]
+    CMP --> HIT{"命中 / 未命中"}
+    HIT -->|"命中"| RET["map：返回 it->second 引用"]
+    HIT -->|"未命中"| INS["map：insert(value_type(k,T()))"]
+    INS --> NEW["_Rb_tree：新建节点+旋转"]
+    NEW --> ALLOC["堆节点：分配节点"]
+    ALLOC --> RET2["map：返回引用"]
+    RET --> END["调用方：返回引用"]
+    RET2 --> END
 ```
 
 - `[标准]`：`operator[]` 在缺失键时会**值初始化** `T()`（对 `int` 是 0，对类调用默认构造），这可能产生非预期插入——查找但不想插入请用 `find` / `at`。

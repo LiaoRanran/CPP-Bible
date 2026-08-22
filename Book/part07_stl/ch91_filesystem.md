@@ -74,25 +74,29 @@
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
-                          ┌────────────────────────────┐
-                          │   std::filesystem 命名空间    │
-                          └───────────────┬──────────────┘
-            ┌──────────────┬──────────────┼───────────────┬──────────────┐
-            │              │              │               │              │
-        [path]     [directory_iterator] [directory_entry] [file_status]  [space_info]
-       词法/拼接      目录遍历(InputIterator)  惰性元数据        type/perms    磁盘用量
-            │              │              │               │              │
-   ┌────────┴───┐   recursive_    symlink_status     copy/remove/    last_write_time
-   │generic_    │   directory_        │              rename/create    ──► chrono::
-   │string      │   iterator          ▼              /copy_file        file_time_type
-   │preferred_  │              file_type枚举        error_code双接口
-   │string      │                                    │
-   └────────┬───┘                          ┌─────────┴──────────┐
-            │                              │ 异常版 / ec版       │
-            ▼                              └─────────┬──────────┘
-   [平台差异层]                                       ▼
-   POSIX stat/dirent ◄──── libstdc++ 实现 ────► WinAPI FindFirstFile/GetFileAttributes
+```mermaid
+flowchart TD
+    %% 注：省略部分细节（原图为多分支知识图谱，仅保留主关系）
+    NS["std::filesystem 命名空间"]
+    NS --> P["path<br/>词法/拼接"]
+    NS --> DI["directory_iterator<br/>目录遍历(InputIterator)"]
+    NS --> DE["directory_entry<br/>惰性元数据"]
+    NS --> FS["file_status<br/>type/perms"]
+    NS --> SI["space_info<br/>磁盘用量"]
+    P --> GS["generic_string / preferred_string"]
+    P --> PL["平台差异层"]
+    DI --> RDI["recursive_directory_iterator"]
+    DE --> SS["symlink_status"]
+    SS --> FT["file_type枚举"]
+    SS --> EC["error_code双接口"]
+    FT --> ECC["异常版 / ec版"]
+    DE --> CR["copy/remove/rename/create"]
+    CR --> EC
+    DE --> LWT["last_write_time"]
+    LWT --> CH["chrono::file_time_type"]
+    PL --> LIB["libstdc++ 实现"]
+    LIB --> POSIX["POSIX stat/dirent"]
+    LIB --> WIN["WinAPI FindFirstFile/GetFileAttributes"]
 ```
 
 ---
@@ -160,17 +164,12 @@ classDiagram
 `std::filesystem::path` 内部持有一个本机字符串 `_M_pathname`（`value_type` 在 Windows 为 `wchar_t`，POSIX 为 `char`）。其"分解"（`filename()`/`parent_path()` 等）是**惰性计算**的，不缓存，每次返回新 `path`。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：path 的对象布局
-```
-path 对象（64位，POSIX，char 为 value_type）
-┌─────────────────────────────────────────────┐
-│ _M_pathname : basic_string<char>            │  典型 24~32 字节（SSO 内联 15 字节）
-│   ├─ ptr  ──► "/var/log/app/server.log"      │  短路径走 SSO，无堆分配
-│   ├─ size = 22                               │
-│   └─ capacity = 22（或 _M_local_buf[15]）     │
-└─────────────────────────────────────────────┘
-
-堆外（长路径时）：
-   _M_pathname.ptr ──► [ / v a r / l o g / . . . \0 ]   ← 单独堆块
+```mermaid
+flowchart TD
+    %% 注：省略部分细节（内存偏移表见正文）。path 对象布局示意（64位，POSIX，char 为 value_type）
+    P["path 对象（64位，POSIX，char 为 value_type）"]
+    P --> M["_M_pathname : basic_string<char><br/>ptr ──► '/var/log/app/server.log'（短路径走 SSO，无堆分配）<br/>size = 22<br/>capacity = 22（或 _M_local_buf[15]）<br/>典型 24~32 字节（SSO 内联 15 字节）"]
+    P --> H["堆外（长路径时）：_M_pathname.ptr ──► [ / v a r / l o g / . . . \0 ] ← 单独堆块"]
 ```
 
 - `[实现·GCC15]`：`path` 在 libstdc++ 中以 `basic_string<value_type>` 存本机序列；`generic_string()` 另开一份转换后的 `std::string`。见 `文件：bits/fs_path.h 行号：476`（无参 `generic_string()` 转 `char`）。
@@ -181,21 +180,17 @@ path 对象（64位，POSIX，char 为 value_type）
 ## ⑧ 生命周期图：目录遍历
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：目录遍历
-```
-时间 ───────────────────────────────────────────────►
-
-directory_iterator it(p);
-   │  构造：opendir(p) / FindFirstFile(p) → 持有 DIR*
-   ▼
-while (it != end) {
-   │  每次 ++it：readdir() / FindNextFile() → 填充 directory_entry
-   │  *it 返回 directory_entry（含 path，元数据惰性）
-   ▼
-   ++it;   ← 推进底层光标
-}
-   │
-   ▼
-it 析构：closedir() / FindClose()  ← RAII 保证，即使中途异常也关闭
+```mermaid
+flowchart TD
+    %% 注：时间轴为横向，此处以纵向主流程呈现
+    A["directory_iterator it(p);"]
+    A --> A1["构造：opendir(p) / FindFirstFile(p) → 持有 DIR*"]
+    A1 --> B["while (it != end)"]
+    B --> B1["每次 ++it：readdir() / FindNextFile() → 填充 directory_entry"]
+    B1 --> B2["*it 返回 directory_entry（含 path，元数据惰性）"]
+    B2 --> B3["++it;  ← 推进底层光标"]
+    B3 --> B
+    B --> C["it 析构：closedir() / FindClose()  ← RAII 保证，即使中途异常也关闭"]
 ```
 
 - `[经验]`：不要在遍历中途持有 `directory_iterator` 跨线程或长期保存——它是单遍（input）迭代器，且句柄有平台限制（一个进程可打开的 `DIR*`/`HANDLE` 数量有限）。
@@ -205,16 +200,25 @@ it 析构：closedir() / FindClose()  ← RAII 保证，即使中途异常也关
 ## ⑨ 调用栈 / 时序图：`fs::exists(p)`（无异常版）
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：fs::exis
-```
-调用方            libstdc++          POSIX 内核
-  │  exists(p,ec)    │                  │
-  │────────────────►│                  │
-  │                 │ status(p,ec)     │
-  │                 │─────────────────►│ stat(p,&st)
-  │                 │◄─────────────────│ 返回 st.st_mode
-  │                 │ 计算 (st.st_mode & S_IFMT)
-  │◄────────────────│                  │
-  │   ec 为空、返回 bool                │
+```mermaid
+flowchart TD
+    %% 注：原图为 3 列表（调用方/libstdc++/POSIX 内核）时序图，此处以主流程呈现
+    subgraph C["调用方"]
+        C0["exists(p,ec)"]
+    end
+    subgraph L["libstdc++"]
+        L0["status(p,ec)"]
+        L1["计算 (st.st_mode & S_IFMT)"]
+    end
+    subgraph K["POSIX 内核"]
+        K0["stat(p,&st)"]
+        K1["返回 st.st_mode"]
+    end
+    C0 --> L0
+    L0 --> K0
+    K0 --> K1
+    K1 --> L1
+    L1 -->|"ec 为空、返回 bool"| C0
 ```
 
 - `[平台·x86-64]`：在 Linux 上 `status` 最终落到 `stat64`/`fstatat64` 系统调用（glibc 封装）；Windows 上落到 `GetFileAttributesW` / `_wstat64`。

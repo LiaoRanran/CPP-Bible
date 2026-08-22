@@ -108,23 +108,16 @@ int main() {
 ## ④ 知识图谱（ASCII）<span class="badge badge-exp">经验</span>
 
 > **示例 3** [难度 ★★★☆☆] [主题：知识图谱（ASCII）<span class="badge badge-exp">经验</span>]
-```
-                      性能工程闭环
-   ┌──────────┐   ┌──────────┐   ┌──────────┐
-   │  建模     │──►│  测量     │──►│  优化     │
-   │ Amdahl   │   │ steady   │   │ -O3/LTO  │
-   │ Gustafson│   │ rdtsc    │   │ SIMD     │
-   │ Roofline │   │ perf     │   │ cache    │
-   └──────────┘   └──────────┘   └────┬─────┘
-        ▲                              │
-        └──────── 再建模（验证假设）────┘
-
-   指标二维：
-   ┌─────────────┐        ┌─────────────┐
-   │ 延迟 Latency │        │ 带宽 Bandwidth│
-   │ 单次操作耗时  │        │ 单位时间吞吐   │
-   │ ns / op      │        │ GB/s         │
-   └─────────────┘        └─────────────┘
+```mermaid
+flowchart LR
+    m["建模: Amdahl / Gustafson / Roofline"]
+    me["测量: steady / rdtsc / perf"]
+    o["优化: -O3/LTO / SIMD / cache"]
+    m --> me --> o
+    o -->|再建模 (验证假设)| m
+    lat["延迟 Latency: 单次操作耗时 / ns per op"]
+    bw["带宽 Bandwidth: 单位时间吞吐 / GB/s"]
+    %% 指标二维：延迟 vs 带宽
 ```
 
 ## ⑤ Mermaid 流程图：基准测量工作流 <span class="badge badge-std">标准</span>
@@ -179,11 +172,16 @@ classDiagram
 ## ⑦ ASCII 内存图：带宽与延迟的硬件来源 [平台·x86-64]
 
 > **示例 4** [难度 ★★☆☆☆] [主题：内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
-```
-CPU ─[L1 1~2ns, ~32KB]─[L2 ~10ns]─[L3 ~30ns]─[主存 ~100ns, 数十GB/s]─[SSD ~100us]
-      ↑ 算力          ↑ 越往外越慢、越宽（带宽高但延迟大）
-      FLOPS         DRAM 带宽 ~50GB/s, 延迟 ~100ns `[微架构·x86-64][UNVERIFIED]`
-                    Roofline 的"屋顶"=算力, "斜坡"=带宽
+```mermaid
+flowchart LR
+    cpu["CPU (算力/FLOPS)"]
+    l1["L1 1~2ns, ~32KB"]
+    l2["L2 ~10ns"]
+    l3["L3 ~30ns"]
+    mem["主存 ~100ns, 数十GB/s (DRAM 带宽 ~50GB/s, 延迟 ~100ns)"]
+    ssd["SSD ~100us"]
+    cpu --> l1 --> l2 --> l3 --> mem --> ssd
+    %% 越往外越慢、越宽 (带宽高但延迟大)；Roofline 的"屋顶"=算力, "斜坡"=带宽 [微架构·x86-64][UNVERIFIED]
 ```
 
 > **示例 5** [难度 ★★☆☆☆] [主题：内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
@@ -211,23 +209,30 @@ int main() {
 ## ⑧ 生命周期图：一次测量的时间线 [实现·GCC15]
 
 > **示例 6** [难度 ★☆☆☆☆] [主题：生命周期图：一次测量的时间线 <span class="badge badge-impl">实现</span>
-```
-t0 ──► [warmup 预热: 填 cache/触发 JIT] ──► t1
-t1 ──► [采样循环 r=1..N: 记录 dt_r] ──► t2
-t2 ──► [统计: 排序 → 中位数 / MAD] ──► 报告
-注意: t0 之前若未预热，前若干次 dt 偏大（cold cache / 页错误）
+```mermaid
+flowchart LR
+    t0["t0"]
+    w["warmup 预热: 填 cache/触发 JIT"]
+    t1["t1"]
+    s["采样循环 r=1..N: 记录 dt_r"]
+    t2["t2"]
+    stat["统计: 排序 → 中位数 / MAD"]
+    rep["报告"]
+    t0 --> w --> t1 --> s --> t2 --> stat --> rep
+    %% 注意: t0 之前若未预热, 前若干次 dt 偏大 (cold cache / 页错误)
 ```
 
 ## ⑨ 调用栈/时序图：steady_clock 的系统路径 [平台·x86-64]
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈/时序图：steadycloc
-```
-应用: steady_clock::now()
-  └─► libc 包装 (clock_gettime CLOCK_MONOTONIC)
-        └─► vDSO / 内核: 读取 TSC 经频率换算
-              └─► 返回纳秒
-成本: [微架构·x86-64][UNVERIFIED] ~20~40 ns/次调用 (x86-64, vDSO 免陷入内核)
-陷阱: 被测量的函数若 < 几十 ns，时钟本身误差就不可忽略
+```mermaid
+flowchart TD
+    app["应用: steady_clock::now()"]
+    libc["libc 包装 (clock_gettime CLOCK_MONOTONIC)"]
+    vdso["vDSO / 内核: 读取 TSC 经频率换算"]
+    ret["返回纳秒"]
+    app --> libc --> vdso --> ret
+    %% 成本: [微架构·x86-64][UNVERIFIED] ~20~40 ns/次调用 (x86-64, vDSO 免陷入内核)；陷阱: 被测量的函数若 < 几十 ns, 时钟本身误差就不可忽略
 ```
 
 ## ⑩ 汇编分析：防止死代码消除（DCE）[实现·GCC15]

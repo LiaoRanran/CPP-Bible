@@ -74,21 +74,20 @@ chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）
-```
-                 ┌──────────────────────────────┐
-                 │   std::chrono 命名空间          │
-                 └──────────────┬───────────────┘
-        ┌──────────────┬────────┴────────┬──────────────┐
-        │              │                 │              │
-   [duration]    [time_point]       [clock 概念]    [ratio]
-   刻度计数      某clock偏移        ┌────┼────┐     编译期有理数
-   Rep+Period    =clock::time_point│    │    │
-        │              │          sys  steady hi_res  │
-        └──────duration_cast──────┘    │    │        │
-                          │            │    │        │
-                     [日历 C++20]   [时区 C++20]      │
-                  year_month_day   time_zone/zoned_time/tzdb
-                  sys_days/local_days
+```mermaid
+flowchart TD
+    %% 注：省略部分细节（原图含 duration_cast 跨箭头与 clock 三分支，仅保留主关系）
+    NS["std::chrono 命名空间"]
+    NS --> D["duration<br/>刻度计数<br/>Rep+Period"]
+    NS --> TP["time_point<br/>某clock偏移<br/>=clock::time_point"]
+    NS --> CK["clock 概念"]
+    NS --> R["ratio<br/>编译期有理数"]
+    D --> DC["duration_cast"]
+    CK --> SYS["sys"]
+    CK --> STE["steady"]
+    CK --> HI["hi_res"]
+    D --> CAL["日历 C++20<br/>year_month_day<br/>sys_days/local_days"]
+    TP --> TZ["时区 C++20<br/>time_zone/zoned_time/tzdb"]
 ```
 
 ---
@@ -145,18 +144,11 @@ classDiagram
 `duration` 通常只持有一个 `Rep` 成员（`_r`），是**平凡类型（trivial）**，零开销、可直接 memcpy、可放入寄存器。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：duration<int,
-```
-duration<int, std::milli> d{1500};   // 表示 1500 毫秒
-内存（32位 Rep 示意）：
-┌──────────────────────────┐
-│ _r : int = 1500          │  4 字节，仅此
-└──────────────────────────┘
-（无 vptr、无堆指针、无单位字段——单位在类型里！）
-
-duration<long long, std::nano> big{...};  // 8 字节
-┌──────────────────────────────────────┐
-│ _r : int64_t                          │  8 字节
-└──────────────────────────────────────┘
+```mermaid
+flowchart TD
+    %% 注：省略部分细节（无 vptr、无堆指针、无单位字段——单位在类型里！）
+    A["duration<int, std::milli> d{1500};  // 表示 1500 毫秒<br/>内存（32位 Rep 示意）：_r : int = 1500  4 字节，仅此"]
+    B["duration<long long, std::nano> big{...};  // 8 字节<br/>_r : int64_t  8 字节"]
 ```
 
 - `[实现·GCC15]`：`duration` 的唯一数据成员 `_r`（见 `文件：bits/chrono.h 行号：523` 的 `class duration`，内部 `Rep __r;`）。单位 `Period` 是空类 `ratio`，不占内存。
@@ -167,18 +159,15 @@ duration<long long, std::nano> big{...};  // 8 字节
 ## ⑧ 生命周期图：作用域计时器
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：作用域计时器
-```
-构造 ScopeTimer
-   │  t0 = steady_clock::now()   ← 记下起点
-   ▼
-执行作用域内语句 ...
-   │
-   ▼
-离开作用域（无论正常/异常）
-   │  t1 = steady_clock::now()
-   │  d  = t1 - t0
-   ▼
-析构输出 d  ← RAII 保证一定记录
+```mermaid
+flowchart TD
+    A["构造 ScopeTimer"]
+    A --> A1["t0 = steady_clock::now()  ← 记下起点"]
+    A1 --> B["执行作用域内语句 ..."]
+    B --> C["离开作用域（无论正常/异常）"]
+    C --> C1["t1 = steady_clock::now()"]
+    C1 --> C2["d = t1 - t0"]
+    C2 --> D["析构输出 d  ← RAII 保证一定记录"]
 ```
 
 - `[经验]`：把计时器做成 RAII 对象（构造记起点、析构记终点并输出），可自动覆盖所有退出路径（包括提前 return 和异常），比手写 `now/now/diff` 更可靠。
@@ -188,15 +177,25 @@ duration<long long, std::nano> big{...};  // 8 字节
 ## ⑨ 调用栈 / 时序图：`steady_clock::now()` 落到哪
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：steadycl
-```
-调用方              libstdc++           内核 / 硬件
-  │ now()            │                  │
-  │────────────────►│                  │
-  │                 │ __steady_clock_now()
-  │                 │─────────────────►│ clock_gettime(CLOCK_MONOTONIC)
-  │                 │◄─────────────────│ 返回 timespec
-  │◄────────────────│ 转 duration       │
-  │   返回 time_point                 │
+```mermaid
+flowchart TD
+    %% 注：原图为 3 列表（调用方/libstdc++/内核 / 硬件）时序图，此处以主流程呈现
+    subgraph C["调用方"]
+        C0["now()"]
+    end
+    subgraph L["libstdc++"]
+        L0["__steady_clock_now()"]
+        L1["转 duration"]
+    end
+    subgraph K["内核 / 硬件"]
+        K0["clock_gettime(CLOCK_MONOTONIC)"]
+        K1["返回 timespec"]
+    end
+    C0 --> L0
+    L0 --> K0
+    K0 --> K1
+    K1 --> L1
+    L1 -->|"返回 time_point"| C0
 ```
 
 - `[平台·x86-64 Linux]`：`steady_clock` 在 glibc 上通常实现为 `clock_gettime(CLOCK_MONOTONIC)`，最终是 `vDSO`/快速系统调用，不陷入内核（约 20–30 ns）。

@@ -206,21 +206,13 @@ int main() {
 }
 ```
 
-```text
-        TCP echo server 状态机（ASCII 框线）
-   ┌─────────┐   bind    ┌─────────┐  listen  ┌─────────┐
-   │ CLOSED  │ ───────►  │ BOUND   │ ──────►  │ LISTEN  │
-   └─────────┘           └─────────┘          └────┬────┘
-                                                    │ accept()
-                                                    ▼
-                                            ┌──────────────┐  recv/send  ┌──────────┐
-                                            │ ESTABLISHED  │ ◄──────────► │ 回显循环 │
-                                            └──────┬───────┘              └──────────┘
-                                                   │ recv==0 (对方关闭)
-                                                   ▼
-                                            ┌─────────┐
-                                            │ CLOSED  │ (closesocket)
-                                            └─────────┘
+```mermaid
+flowchart TD
+  C1["CLOSED"] -->|bind| B["BOUND"]
+  B -->|listen| L["LISTEN"]
+  L -->|accept()| E["ESTABLISHED"]
+  E <-->|recv/send| R["回显循环"]
+  E -->|recv==0 (对方关闭)| C2["CLOSED (closesocket)"]
 ```
 
 ```text

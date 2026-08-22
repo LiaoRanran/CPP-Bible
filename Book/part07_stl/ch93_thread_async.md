@@ -97,31 +97,28 @@ int main() {
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
-```
-                         ┌─────────────────────────────┐
-                         │    std::thread (C++11)       │
-                         │  构造即启动 OS 线程            │
-                         └───────────┬─────────────────┘
-                                     │ 仅负责"执行"
-                                     ▼
-        ┌────────────────────────────────────────────────────────┐
-        │           异步结果 = 共享状态(shared state)              │
-        │  生产者写结果/异常，消费者 future 读                      │
-        ├───────────────┬───────────────┬────────────────────────┤
-        │ std::promise  │ std::packaged_ │ std::async              │
-        │ 手动 set_value│ task(可调用体) │ 工厂：返回 future         │
-        └───────┬───────┴───────┬───────┴───────────┬────────────┘
-                │               │                   │
-                ▼               ▼                   ▼
-        std::future<T>  std::future<R>     ┌──────────────────┐
-        get()一次性       (task.get_future) │ launch::async    │
-                          └──────►           │ launch::deferred│
-                │                            └──────────────────┘
-                ▼
-        std::shared_future<T>  (share()，多消费者)
-                │
-                ▼
-        std::call_once / once_flag  ("只做一次" 原语)
+```mermaid
+flowchart TD
+    thread["std::thread (C++11): 构造即启动 OS 线程"]
+    shared["异步结果 = 共享状态(shared state): 生产者写结果/异常, 消费者 future 读"]
+    promise["std::promise: 手动 set_value"]
+    packaged["std::packaged_task: task(可调用体)"]
+    async["std::async: 工厂, 返回 future"]
+    launch["launch::async / launch::deferred"]
+    futureT["std::future<T>: get()一次性"]
+    futureR["std::future<R>: (task.get_future)"]
+    shared_future["std::shared_future<T>: (share(), 多消费者)"]
+    call_once["std::call_once / once_flag: (只做一次 原语)"]
+    thread -->|仅负责「执行」| shared
+    shared --> promise
+    shared --> packaged
+    shared --> async
+    async --> launch
+    promise --> futureT
+    packaged --> futureR
+    futureR --> launch
+    futureT --> shared_future
+    shared_future --> call_once
 ```
 
 `[经验]`：记忆口诀——**`thread` 管"跑"，`future` 管"拿结果"，`async` 是把两者打包的工厂**。
@@ -196,22 +193,13 @@ classDiagram
 ## ⑦ ASCII 内存图：thread 对象与底层 OS 线程 [实现·GCC15]
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图：thread 对象与底层 O
-```
-栈上的 std::thread 对象 (sizeof ≈ 两个指针)
-┌──────────────────────────────────────┐
-│ std::thread t                         │
-│   _M_id  (thread::id: 内部是 __gthread_t)│   ← 标识/句柄
-│   _M_state (unique_ptr<_State>)       │──┐
-└──────────────────────────────────────┘  │
-                                          ▼
-                              new _State_impl<_Invoker<tuple<...>>>
-                              ┌─────────────────────────────────┐
-                              │ vptr → _State_impl vtable        │
-                              │ 被decay后的实参 tuple (按值拷贝！)│
-                              └─────────────────────────────────┘
-                                          │  (OS 调度)
-                                          ▼
-                              内核线程 / pthread (Win32: CreateThread)
+```mermaid
+flowchart TD
+    t["栈上的 std::thread 对象 (sizeof ≈ 两个指针): std::thread t; _M_id (thread::id: 内部是 __gthread_t) [标识/句柄]; _M_state (unique_ptr<_State>)"]
+    state["new _State_impl<_Invoker<tuple<...>>>: vptr → _State_impl vtable; 被decay后的实参 tuple (按值拷贝！)"]
+    kern["内核线程 / pthread (Win32: CreateThread)"]
+    t -->|_M_state 指向| state
+    state -->|OS 调度| kern
 ```
 
 `[实现·GCC15]`：`std::thread` 构造函数把可调用对象及其实参 `decay` 后**按值拷贝**进 `_State_impl`（文件：`bits/std_thread.h`，行号：`234` 的 `struct _State_impl`；拷贝发生在行号：`164` 的 `new _State_impl<_Wrapper>(...)`）。这就是为什么传引用**不会**被线程看到，必须用 `std::ref`。
@@ -221,18 +209,21 @@ classDiagram
 ## ⑧ 生命周期图：future 与共享状态 <span class="badge badge-std">标准</span>
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：future 与共享状态
-```
- producer 线程                共享状态                  consumer 线程
- ────────────               ───────────              ────────────
- promise/task               _Result (T 或异常)         future.get()
-   │                             │                         │
-   │ set_value(42) ───────────► │ ready=true               │
-   │                             │                         │
-   │ (无引用 t 也行)             │                         │ get() 返回 42
-   │                             │       若 set_exception ─│ get() 抛异常
-   │                             │                         │
- future 析构 ≠ 共享状态析构；      │                         │
- 仅最后一个引用者析构才回收        └─────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph S1 [producer 线程]
+        prod["promise/task"]
+    end
+    subgraph S2 [共享状态]
+        sh["_Result (T 或异常): ready=true"]
+    end
+    subgraph S3 [consumer 线程]
+        cons["future.get()"]
+    end
+    prod -->|set_value(42)| sh
+    sh -->|get() 返回 42| cons
+    sh -.->|若 set_exception / get() 抛异常| cons
+    %% (无引用 t 也行)；future 析构 ≠ 共享状态析构, 仅最后一个引用者析构才回收
 ```
 
 `[标准]`：`future`/`shared_future` 通过 `shared_ptr` 共享状态；`future::get()` 在结果就绪前**阻塞**（deferred 除外，见 ⑯）。`[经验]`：`get()` 调用后 `future` 进入 `valid()==false`，第二次 `get()` 是 UB（`future_errc::no_state`）。
@@ -242,18 +233,22 @@ classDiagram
 ## ⑨ 调用栈/时序图：std::async(launch::async) 的一次往返 <span class="badge badge-std">标准</span>
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈/时序图：std::async
-```
-main 线程          runtime 线程池/新线程          共享状态
-    │                    │                            │
-    │ async(launch::async, F)                         │
-    │───────────────────► 创建 thread, 立即执行 F     │
-    │                    │── 运行 F ─────────────────►│ 写入结果
-    │                    │                            │ ready
-    │ (继续干别的)         │                            │
-    │ future.get() ───────────────────────────────────│ 阻塞直到 ready
-    │◄───────────────────────────────────────────────│ 返回 T
-    │                    │  thread 结束, join 由运行时 │
-    │                    │  在 future 析构时等待        │
+```mermaid
+flowchart LR
+    subgraph S1 [main 线程]
+        main["main 线程"]
+    end
+    subgraph S2 [runtime 线程池/新线程]
+        rt["runtime 线程池/新线程"]
+    end
+    subgraph S3 [共享状态]
+        ss["共享状态"]
+    end
+    main -->|async(launch::async, F): 创建 thread, 立即执行 F| rt
+    rt -->|运行 F: 写入结果| ss
+    main -->|future.get(): 阻塞直到 ready| ss
+    ss -->|返回 T| main
+    %% (继续干别的)；thread 结束, join 由运行时在 future 析构时等待
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈/时序图：std::async

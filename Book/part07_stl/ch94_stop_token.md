@@ -87,23 +87,18 @@ int main() {
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
-```
-                stop_source ──拥有──► _Stop_state (原子位 + 回调链表)
-                     │  request_stop()                │
-                     │                                 │ 拷贝/共享
-                     │                                 ▼
-   jthread 内部持有  │                          stop_token (可拷贝多份)
-                     │                                 │ st.stop_requested()
-                     │                                 │ st 注入线程函数
-                     ▼                                 ▼
-   ┌──────────────────────────────────────────────────────────┐
-   │ jthread 构造: 建 stop_source, 把 get_token() 传给 callable  │
-   │ 析构: request_stop() → 所有 stop_callback 被调用 → join()   │
-   └──────────────────────────────────────────────────────────┘
-                     │
-                     ▼
-              stop_callback(token, cb) 注册到 _Stop_state
-              request_stop 时按注册顺序同步执行 cb（释放锁/唤醒）
+```mermaid
+flowchart TD
+    src["stop_source"]
+    st["_Stop_state (原子位 + 回调链表)"]
+    tok["stop_token (可拷贝多份)"]
+    jt["jthread 构造: 建 stop_source, 把 get_token() 传给 callable; 析构: request_stop() → 所有 stop_callback 被调用 → join()"]
+    cb["stop_callback(token, cb) 注册到 _Stop_state: request_stop 时按注册顺序同步执行 cb (释放锁/唤醒)"]
+    src -->|拥有| st
+    src -->|request_stop()| jt
+    st -->|拷贝/共享| tok
+    st -->|st.stop_requested() / st 注入线程函数| jt
+    jt --> cb
 ```
 
 `[经验]`：记忆——**`stop_source` 是"发令枪"，`stop_token` 是"听令者"，`stop_callback` 是"枪响时的动作"**。
@@ -170,20 +165,20 @@ classDiagram
 ## ⑦ ASCII 内存图：_Stop_state 与回调链表 [实现·GCC15]
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：Stopstate 与回调链
-```
-主线程 / jthread                 _Stop_state (堆)
-┌─────────────────┐            ┌──────────────────────────────────────┐
-│ stop_source      │──shared_ptr─►│ _M_value : atomic<uint32_t>          │
-│  _M_state ───────┐            │   bit0 = stop_possible (可取消?)       │
-└─────────────────┘            │   bit1 = stop_requested (已请求?)      │
-                                │ _M_head : _Stop_cb* ──┐                │
-┌─────────────────┐            │                      ▼                │
-│ stop_token       │──shared_ptr─►│   [cb0] -> [cb1] -> [cb2] -> nullptr │
-│  _M_state ───────┘            │   each: _M_callback + _M_next/_M_prev  │
-└─────────────────┘            └──────────────────────────────────────┘
-  多个 stop_token 可拷贝，均指向同一 _Stop_state
-
-request_stop(): 置 bit1 (release)，然后遍历链表同步调用各 _M_callback
+```mermaid
+flowchart LR
+    subgraph S1 [主线程 / jthread]
+        src["stop_source: _M_state"]
+        tok["stop_token: _M_state"]
+    end
+    subgraph S2 [_Stop_state (堆)]
+        st["_Stop_state (堆): _M_value : atomic<uint32_t>; bit0 = stop_possible (可取消?); bit1 = stop_requested (已请求?); _M_head : _Stop_cb*"]
+        cblist["[cb0] -> [cb1] -> [cb2] -> nullptr: each: _M_callback + _M_next/_M_prev"]
+    end
+    src -->|shared_ptr| st
+    tok -->|shared_ptr| st
+    st --> cblist
+    %% 多个 stop_token 可拷贝, 均指向同一 _Stop_state；request_stop(): 置 bit1 (release), 然后遍历链表同步调用各 _M_callback
 ```
 
 `[实现·GCC15]`：`_Stop_cb` 结构（文件：`stop_token`，行号：`134`），回调链表头 `_M_head`（行号：`237` 的 `while (_M_head)` 遍历）；位定义 `行号：155` `_S_stop_requested_bit = 1`。
@@ -193,16 +188,22 @@ request_stop(): 置 bit1 (release)，然后遍历链表同步调用各 _M_callba
 ## ⑧ 生命周期图：request_stop 与回调执行 <span class="badge badge-std">标准</span>
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：requeststop
-```
- t0: jthread 构造 → 建 stop_source, 注入 stop_token, 工作线程启动
- t1: 工作线程循环检查 stop_requested()（acquire 读原子位）
- t2: 主线程析构 jthread → request_stop()
-       ├─ _M_value 置 stop_requested 位 (release)
-       ├─ 遍历回调链表，同步调用每个 stop_callback::operator()
-       │     (用于 cv.notify_all / 释放外部资源)
-       └─ join() 等待工作线程
- t3: 工作线程在下一个检查点看到 stop_requested()==true → 退出循环
- t4: join 返回，jthread 析构完成
+```mermaid
+flowchart TD
+    t0["t0: jthread 构造 → 建 stop_source, 注入 stop_token, 工作线程启动"]
+    t1["t1: 工作线程循环检查 stop_requested() (acquire 读原子位)"]
+    t2["t2: 主线程析构 jthread → request_stop()"]
+    a1["_M_value 置 stop_requested 位 (release)"]
+    a2["遍历回调链表, 同步调用每个 stop_callback::operator() (用于 cv.notify_all / 释放外部资源)"]
+    a3["join() 等待工作线程"]
+    t3["t3: 工作线程在下一个检查点看到 stop_requested()==true → 退出循环"]
+    t4["t4: join 返回, jthread 析构完成"]
+    t0 --> t1 --> t2
+    t2 --> a1
+    t2 --> a2
+    t2 --> a3
+    a3 --> t3
+    t3 --> t4
 ```
 
 `[标准]`：`request_stop` 是**同步**的——`request_stop()` 返回时已执行完所有已注册回调（文件：`stop_token`，行号：`224` `_M_request_stop`，`257` `__cb->_M_run()`）。
@@ -212,20 +213,25 @@ request_stop(): 置 bit1 (release)，然后遍历链表同步调用各 _M_callba
 ## ⑨ 时序图：stop_callback 在 request_stop 时触发 <span class="badge badge-std">标准</span>
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 时序图：stopcallback 在
-```
-主线程              _Stop_state           工作线程           stop_callback
-  │                    │                     │                    │
-  │ request_stop()     │                     │                    │
-  ├──────────────────► │                     │                    │
-  │                    │ 置 requested 位      │                    │
-  │                    │ 遍历链表             │                    │
-  │                    ├─────────────────────┼──► 调用 operator()  │
-  │                    │                     │   (唤醒 cv_any)     │
-  │                    │◄────────────────────┼──── 返回           │
-  │ join()             │                     │                    │
-  ├───────────────────┼────────────────────►│ 检查点看到停止      │
-  │                    │                     │ 退出循环            │
-  │◄──────────────────┼─────────────────────│ join 返回          │
+```mermaid
+flowchart LR
+    subgraph S1 [主线程]
+        main["主线程"]
+    end
+    subgraph S2 [_Stop_state]
+        st["_Stop_state"]
+    end
+    subgraph S3 [工作线程]
+        wt["工作线程"]
+    end
+    subgraph S4 [stop_callback]
+        cb["stop_callback"]
+    end
+    main -->|request_stop()| st
+    st -->|遍历链表: 调用 operator() (唤醒 cv_any)| cb
+    cb -->|返回| st
+    main -->|join(): 检查点看到停止| wt
+    wt -->|退出循环 / join 返回| main
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 时序图：stopcallback 在

@@ -781,15 +781,12 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 - **跨 ABI / 跨语言边界**：严禁异常逃逸，统一返回码；
 - **永远不要**：空 `catch(...)`、用异常做控制流、`throw()` 动态规范。
 
-```text
-错误通道决策树（ASCII 框线）：
-┌───────────────────────────────┐
-│ 失败能否被调用方就地处理？      │
-└───────────┬───────────────────┘
-            ├── 否，且跨 ABI ──► std::error_code / 返回码（noexcept）
-            ├── 否，可携带原因 ──► std::expected (C++23)
-            ├── 否，"无值"合法 ──► std::optional
-            └── 是，且异常罕见 ──► 异常 + RAII + noexcept 析构
+```mermaid
+flowchart TD
+  Q["失败能否被调用方就地处理?"] --> N1["否，且跨 ABI: std::error_code / 返回码 (noexcept)"]
+  Q --> N2["否，可携带原因: std::expected (C++23)"]
+  Q --> N3["否，'无值'合法: std::optional"]
+  Q --> N4["是，且异常罕见: 异常 + RAII + noexcept 析构"]
 ```
 
 本章全部示例均通过本机 `g++ -std=c++23 -O2 -Wall -Wextra` 真实编译验证（产物见 `Examples/_ch146_*.asm` 与 `_ch146_*_warn.txt`），关键机器码结论取自 g++ 生成的 Intel 语法汇编，未做任何编造。

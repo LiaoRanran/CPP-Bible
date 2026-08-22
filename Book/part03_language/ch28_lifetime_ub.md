@@ -41,13 +41,23 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 **知识图谱（前置→本章→后续）**：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章地图（先给结论，再击穿）
-```
-ch19 存储期 ─┐
-ch20 引用指针 ─┼─► ch28 生命周期与 UB ◄─ ch21 const/写UB ─┐
-ch25 联合 ────┘        │            ┌─────────────────────┘
-                      ├─► ch27/42 严格别名（UB 重灾区）
-                      ├─► ch31/33 异常与 UB（noexcept 穿透）
-                      └─► ch61 并发数据竞争（UB 另一重灾区）
+```mermaid
+flowchart LR
+  C19["ch19 存储期"]
+  C20["ch20 引用指针"]
+  C25["ch25 联合"]
+  C28["ch28 生命周期与 UB"]
+  C21["ch21 const/写UB"]
+  C27["ch27/42 严格别名（UB 重灾区）"]
+  C31["ch31/33 异常与 UB（noexcept 穿透）"]
+  C61["ch61 并发数据竞争（UB 另一重灾区）"]
+  C19 --> C28
+  C20 --> C28
+  C25 --> C28
+  C21 --> C28
+  C28 --> C27
+  C28 --> C31
+  C28 --> C61
 ```
 
 **一句话结论（<span class="badge badge-std">标准</span><span class="badge badge-exp">经验</span>）**：

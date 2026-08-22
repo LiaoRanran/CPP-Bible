@@ -61,14 +61,26 @@ CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期�
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★★★</span> · 知识图谱（ASCII）
-```
-  动态多态（虚函数）              静态多态（CRTP）
-  Base* p ──► vtable              Base<Derived> b
-       │ 间接跳                      │ static_cast<Derived*>(this)
-       ▼                            ▼
-  Derived::f (运行时查表)        Derived::f (编译期直连/内联)
-  成本：vptr + 取表 + 间接跳      成本：0（完全内联）
-  能力：heterogeneous 容器         限制：类型在编译期固定
+```mermaid
+flowchart LR
+  subgraph S1 [动态多态（虚函数）]
+    L1["动态多态（虚函数）"]
+    L2["Base* p ──► vtable"]
+    L3["│ 间接跳"]
+    L4["Derived::f (运行时查表)"]
+    L5["成本：vptr + 取表 + 间接跳"]
+    L6["能力：heterogeneous 容器"]
+  end
+  subgraph S2 [静态多态（CRTP）]
+    R1["静态多态（CRTP）"]
+    R2["Base<Derived> b"]
+    R3["│ static_cast<Derived*>(this)"]
+    R4["Derived::f (编译期直连/内联)"]
+    R5["成本：0（完全内联）"]
+    R6["限制：类型在编译期固定"]
+  end
+  L1 --> L2 --> L3 --> L4 --> L5 --> L6
+  R1 --> R2 --> R3 --> R4 --> R5 --> R6
 ```
 
 ## ⑤ Mermaid 流程图（CRTP 调用解析）

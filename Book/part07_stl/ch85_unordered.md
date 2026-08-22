@@ -68,29 +68,17 @@ libstdc++ 实现采用**开链法（separate chaining）**：一个桶数组（`
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
-                     ┌──────────────────────────────┐
-                     │  Unordered Associative        │
-                     │  (哈希, 无序)                  │
-                     └───────────────┬──────────────┘
-                                     │ 由
-                                     ▼
-                     ┌──────────────────────────────┐
-                     │  _Hashtable (hashtable.h:181) │
-                     │  开链法 separate chaining      │
-                     └───────────────┬──────────────┘
-          ┌──────────────────────────┼──────────────────────────┐
-          ▼                          ▼                          ▼
-   _M_buckets[bc]             _M_before_begin             _M_element_count
-   (桶指针数组)                (链表哨兵)                  (元素总数)
-          │                          │
-          ▼                          ▼
-   bucket[i] ──► node ──► node ──► node   (同一桶的单向链表)
-                                     │
-              ┌──────────────────────┴──────────────────────┐
-              ▼                                             ▼
-    std::unordered_set<K>                        std::unordered_map<K,V>
-    key==value                                    pair<const K,V>
+```mermaid
+flowchart TD
+    A["Unordered Associative<br/>(哈希, 无序)"]
+    A -->|"由"| B["_Hashtable (hashtable.h:181)<br/>开链法 separate chaining"]
+    B --> C["_M_buckets[bc]<br/>(桶指针数组)"]
+    B --> D["_M_before_begin<br/>(链表哨兵)"]
+    B --> E["_M_element_count<br/>(元素总数)"]
+    C --> F["bucket[i] ──► node ──► node ──► node (同一桶的单向链表)"]
+    D --> F
+    F --> G["std::unordered_set<K><br/>key==value"]
+    F --> H["std::unordered_map<K,V><br/>pair<const K,V>"]
 ```
 
 ## ⑤ Mermaid 流程图：一次 `insert` 与可能的重哈希
@@ -175,34 +163,26 @@ x86-64（指针 8B，哈希码 size_t 8B）：
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图
-```
-构造 -> 仅建 _M_before_begin 哨兵, _M_bucket_count=1 (单桶)
-  │
-  insert(k):
-  │   hash -> bucket i
-  │   new node, 头插 _M_buckets[i] 链表
-  │   element_count++
-  │   若 load_factor > max_load_factor -> rehash(新桶数)
-  ▼
-rehash: 分配新桶数组, 遍历所有节点按新 hash 重挂 (节点本身不拷贝, 只改 _M_next)
-  │
-erase(k): 从桶链表摘除节点, delete, element_count-- (不触发 rehash)
-  ▼
-析构: 遍历释放每个节点, 释放桶数组
+```mermaid
+flowchart TD
+    A["构造 -> 仅建 _M_before_begin 哨兵, _M_bucket_count=1 (单桶)"]
+    A --> B["insert(k):<br/>hash -> bucket i<br/>new node, 头插 _M_buckets[i] 链表<br/>element_count++<br/>若 load_factor > max_load_factor -> rehash(新桶数)"]
+    B --> C["rehash: 分配新桶数组, 遍历所有节点按新 hash 重挂 (节点本身不拷贝, 只改 _M_next)"]
+    C --> D["erase(k): 从桶链表摘除节点, delete, element_count-- (不触发 rehash)"]
+    D --> E["析构: 遍历释放每个节点, 释放桶数组"]
 ```
 
 ## ⑨ 调用栈 / 时序图（一次 `unordered_set::find`）
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图
-```
-调用方
-  │ unordered_set::find(k)                 // unordered_set.h: 见 ⑬
-  ▼
-_Hashtable::_M_find_node(bkt, key, code)  // hashtable.h:812
-  │ code = hash(key); bkt = code % bucket_count
-  │ node = _M_buckets[bkt]
-  ▼
-沿 _M_next 遍历桶链表, 用 key_equal 比较, 命中返回
+```mermaid
+flowchart TD
+    A["调用方"]
+    A --> B["unordered_set::find(k)  // unordered_set.h: 见 ⑬"]
+    B --> C["_Hashtable::_M_find_node(bkt, key, code)  // hashtable.h:812"]
+    C --> C1["code = hash(key); bkt = code % bucket_count"]
+    C1 --> C2["node = _M_buckets[bkt]"]
+    C2 --> D["沿 _M_next 遍历桶链表, 用 key_equal 比较, 命中返回"]
 ```
 
 ## ⑩ 汇编分析（Compiler Explorer 风格，标注 -O2）

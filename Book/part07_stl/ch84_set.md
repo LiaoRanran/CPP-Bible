@@ -66,34 +66,15 @@
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
-                         ┌─────────────────────────────┐
-                         │  Associative Container        │
-                         │  (有序，key==value)            │
-                         └───────────────┬───────────────┘
-                                         │ 由
-                                         ▼
-                         ┌─────────────────────────────┐
-                         │  _Rb_tree (bits/stl_tree.h)  │
-                         │  RB-tree, 平衡 O(log n)      │
-                         └───────────────┬───────────────┘
-                  Compare 决定排序        │  节点 = {color,3×ptr} + value
-                         ▼                ▼
-              ┌──────────────┐   ┌──────────────────────────────┐
-              │ std::less<K> │   │ _Rb_tree_node_base            │
-              │ 严格弱序     │   │ { _M_color, _M_parent,        │
-              └──────────────┘   │   _M_left, _M_right }         │
-                                 └──────────────────────────────┘
-                  ┌─────────────────────┴──────────────────────┐
-                  ▼                                            ▼
-        ┌──────────────────┐                        ┌──────────────────┐
-        │  std::set<K>      │                        │ std::multiset<K> │
-        │  键唯一           │                        │  键可重复         │
-        │  insert→pair<it,b>│                        │  insert→iterator  │
-        │  count∈{0,1}      │                        │  count≥0          │
-        └──────────────────┘                        └──────────────────┘
-                  │                                            │
-                  └────────── node_type 提取/merge ─────────────┘
+```mermaid
+flowchart TD
+    A["Associative Container<br/>(有序，key==value)"]
+    A -->|"由"| B["_Rb_tree (bits/stl_tree.h)<br/>RB-tree, 平衡 O(log n)"]
+    B -->|"Compare 决定排序"| C["std::less<K><br/>严格弱序"]
+    B -->|"节点 = {color,3×ptr} + value"| D["_Rb_tree_node_base<br/>{ _M_color, _M_parent, _M_left, _M_right }"]
+    C --> E["std::set<K><br/>键唯一<br/>insert→pair<it,b><br/>count∈{0,1}"]
+    D --> F["std::multiset<K><br/>键可重复<br/>insert→iterator<br/>count≥0"]
+    E -->|"node_type 提取/merge"| F
 ```
 
 ## ⑤ Mermaid 流程图：一次 `insert` 的执行路径
@@ -152,22 +133,13 @@ classDiagram
 `set<int>` 每个节点 = `_Rb_tree_node_base` + `int` 值。x86-64 下（指针 8 字节，对齐 8）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
-```
-_Rb_tree_node_base (32B)         _Rb_tree_node<int> (40B)
-┌──────┬──────┬──────┬──────┐    ┌───────────────────────────────┐
-│color │ pad7 │parent│ left │    │ [node_base 32B] │ int value 4B │
-│1B    │      │ 8B   │ 8B   │    │                │ padv4         │
-├──────┼──────┼──────┼──────┤    └───────────────────────────────┘
-│ right│ 8B   │      │      │
-└──────┴──────┴──────┴──────┘
- 合计 32B 基类 + 值 4B + pad4 = 40B / 节点
-
-一棵含 3 个键 {5,3,8} 的 set<int> 堆布局（示意）：
-Heap:
-  [node 3] color=red   parent→header left→null  right→null    value=3
-  [node 8] color=red   parent→header left→null  right→null    value=8
-  [node 5] color=black parent→header left→node3 right→node8   value=5
-  header : _M_parent→node5, _M_left→min(node3), _M_right→max(node8)
+```mermaid
+flowchart TD
+    %% 注：省略部分细节（内存偏移表见正文）。set<int> 节点布局与堆示意
+    BASE["_Rb_tree_node_base (32B)<br/>color 1B | pad7 | parent 8B | left 8B<br/>right 8B"]
+    NODE["_Rb_tree_node<int> (40B)<br/>[node_base 32B] | int value 4B | padv4<br/>合计 32B 基类 + 值 4B + pad4 = 40B / 节点"]
+    BASE --> NODE
+    HEAP["Heap 示意：3 个键 {5,3,8}<br/>[node3] red parent→header left→null right→null value=3<br/>[node8] red parent→header left→null right→null value=8<br/>[node5] black parent→header left→node3 right→node8 value=5<br/>header: _M_parent→node5, _M_left→min(node3), _M_right→max(node8)"]
 ```
 
 - `[实现·GCC15]`：`set` 对象本体只持有 `_Rb_tree` 成员（`_M_header` 哨兵、比较器、分配器状态），通常 **24~48 字节**（3 指针量级 + 对齐），真正的节点在堆上。
@@ -176,32 +148,30 @@ Heap:
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图
-```
-构造 set ──► 仅建 header 哨兵(黑) ──► insert(k1..kN): 每次 new 一个节点
-   │                                     │
-   │                                     ▼
-   │                                 平衡旋转（仅改指针与颜色，不拷贝值）
-   ▼
-set 析构 ──► _M_erase(begin) 递归 delete 每个节点 ──► 分配器释放
-   │
-   ▼
-extract(node): 仅把节点从树链表摘除并"移交所有权"，**不析构值**，node_type 析构时才析构
+```mermaid
+flowchart TD
+    A["构造 set"]
+    A --> B["仅建 header 哨兵(黑)"]
+    B --> C["insert(k1..kN): 每次 new 一个节点"]
+    C --> D["平衡旋转（仅改指针与颜色，不拷贝值）"]
+    D --> E["set 析构"]
+    E --> F["_M_erase(begin) 递归 delete 每个节点"]
+    F --> G["分配器释放"]
+    G --> H["extract(node): 仅把节点从树链表摘除并「移交所有权」，**不析构值**，node_type 析构时才析构"]
 ```
 
 ## ⑨ 调用栈 / 时序图（一次 `set::insert`）
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图
-```
-调用方
-  │ set<int>::insert(7)                    // stl_set.h:509
-  ▼
-_Rb_tree::_M_insert_unique(7)             // stl_tree.h:1133
-  │ 下降查找插入点 (compare)
-  ▼
-_Rb_tree_insert_and_rebalance(...)        // stl_tree.h:410
-  │ 旋转/染色保持 RB 性质
-  ▼
-返回 pair<iterator,bool>
+```mermaid
+flowchart TD
+    A["调用方"]
+    A --> B["set<int>::insert(7)  // stl_set.h:509"]
+    B --> C["_Rb_tree::_M_insert_unique(7)  // stl_tree.h:1133"]
+    C --> C1["下降查找插入点 (compare)"]
+    C1 --> D["_Rb_tree_insert_and_rebalance(...)  // stl_tree.h:410"]
+    D --> D1["旋转/染色保持 RB 性质"]
+    D1 --> E["返回 pair<iterator,bool>"]
 ```
 
 ## ⑩ 汇编分析（Compiler Explorer 风格，标注 -O2）

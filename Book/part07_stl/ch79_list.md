@@ -83,17 +83,12 @@ int main() {
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
-```
-            std::list<T>                 std::forward_list<T>
-   ┌───────────────────────┐      ┌────────────────────────┐
-   │ 哨兵 head(_List_node)  │      │ 哨兵 _M_head(无 value)  │
-   │  prev◄────────┐        │      │   │                     │
-   └───┬───────────┼────────┘      │   ▼ next               │
-       │ next      │ prev          │ [a]─►[b]─►[c]─►nullptr  │
-       ▼           ▼               └────────────────────────┘
-      [1]◄─►[2]◄─►[3]  (环形：3.next=head, head.prev=3)
-   每个节点: {prev, next, value}
-   forward_list 节点: {next, value}   (省一个指针)
+```mermaid
+flowchart LR
+    L["std::list<T> 哨兵 head(_List_node)"] --> N["[1]◄─►[2]◄─►[3] (环形：3.next=head, head.prev=3)"]
+    L --> Nd["每个节点: {prev, next, value}"]
+    F["std::forward_list<T> 哨兵 _M_head(无 value)"] --> Fa["[a]─►[b]─►[c]─►nullptr"]
+    F --> FN["forward_list 节点: {next, value} (省一个指针)"]
 ```
 
 `[经验]`：list 是**环形双向链表**（头哨兵串成环），forward_list 是**单向不环形**（哨兵在最前，无 value）。
@@ -154,23 +149,16 @@ classDiagram
 ## ⑦ ASCII 内存图：节点布局与环形哨兵 [实现·GCC15]
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：节点布局与环形哨兵 [实现·
-```
-std::list<int> 对象
-┌──────────────────┐
-│ _M_impl._M_node  │ (哨兵头节点, 自身不存 value)
-│   _M_next ─┐      │
-│   _M_prev ─┼─┐    │
-└────────────┼─┼────┘
-             │ │
-   ┌─────────┘ └──────────┐
-   ▼                      ▼
- node[1]:{prev=head,  next=node[2], value=1}
- node[2]:{prev=node[1], next=node[3], value=2}
- node[3]:{prev=node[2], next=head,   value=3}
-            ▲                              │
-            └──────── head._M_prev ────────┘   (环形闭合)
-
-每个节点在堆上独立分配（节点间不连续 -> 缓存不友好）
+```mermaid
+flowchart TD
+    Obj["std::list<int> 对象"] --> S["_M_impl._M_node (哨兵头节点, 自身不存 value)"]
+    S -->|"_M_next"| N1["node[1]: {prev=head, next=node[2], value=1}"]
+    S -->|"_M_prev"| N3["node[3]: {prev=node[2], next=head, value=3}"]
+    N1 -->|"next"| N2["node[2]: {prev=node[1], next=node[3], value=2}"]
+    N2 -->|"next"| N3
+    N1 -.->|"prev=head"| S
+    N3 -.->|"next=head (环形闭合)"| S
+    Nt["每个节点在堆上独立分配（节点间不连续 -> 缓存不友好）"]
 ```
 
 `[实现·GCC15]`：插入即 `node._M_hook(position)`（文件：`bits/stl_list.h`，行号：`97` `_M_hook`、行号：`1997`/`2006` 插入时调用），仅改几个指针，不搬移任何已有节点，因此**迭代器全部保持有效**。
@@ -180,13 +168,13 @@ std::list<int> 对象
 ## ⑧ 生命周期图：erase 仅孤立一个节点 <span class="badge badge-std">标准</span>
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：erase 仅孤立一个节
-```
-  list: [1]─[2]─[3]─[4]
-  调用 erase(it指向[2]):
-    1. [2]._M_unhook()  (行号：100/_M_unhook): 把 [1].next=[3], [3].prev=[1]
-    2. 析构 [2].value，释放 [2] 节点
-  结果: [1]─[3]─[4]
-    it(指向[2]) 失效；it2(指向[1]/[3]/[4]) 仍有效！
+```mermaid
+flowchart TD
+    L["list: [1]─[2]─[3]─[4]"] --> E["调用 erase(it指向[2])"]
+    E --> S1["[2]._M_unhook() (行号：100/_M_unhook): 把 [1].next=[3], [3].prev=[1]"]
+    S1 --> S2["析构 [2].value，释放 [2] 节点"]
+    S2 --> R["结果: [1]─[3]─[4]"]
+    R --> Note["it(指向[2]) 失效；it2(指向[1]/[3]/[4]) 仍有效！"]
 ```
 
 `[标准]`：`list`/`forward_list` 的 `erase` 只使被删元素的迭代器/引用/指针失效，其余全部稳定。这是与 vector/deque 的根本区别（[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)）。
@@ -196,16 +184,15 @@ std::list<int> 对象
 ## ⑨ 调用栈/时序图：merge 的归并（两有序链表） <span class="badge badge-std">标准</span>
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈/时序图：merge 的归并
-```
- listA: 1─3─5─7     listB: 2─4─6
-   merge(B)（要求 A、B 已排序）:
-     pa=1, pb=2
-     1<2 -> 取1, pa=3
-     3>2 -> 从B拆下2挂到A, pb=4
-     3<4 -> 取3, pa=5
-     5>4 -> 拆4, pb=6
-     ...
-   结果: 1─2─3─4─5─6─7   (节点指针重接, 零拷贝)
+```mermaid
+flowchart TD
+    A["listA: 1─3─5─7     listB: 2─4─6"] --> M["merge(B)（要求 A、B 已排序）"]
+    M --> S1["pa=1, pb=2"]
+    S1 --> S2["1<2 -> 取1, pa=3"]
+    S2 --> S3["3>2 -> 从B拆下2挂到A, pb=4"]
+    S3 --> S4["3<4 -> 取3, pa=5"]
+    S4 --> S5["5>4 -> 拆4, pb=6"]
+    S5 --> R["结果: 1─2─3─4─5─6─7 (节点指针重接, 零拷贝)"]
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈/时序图：merge 的归并

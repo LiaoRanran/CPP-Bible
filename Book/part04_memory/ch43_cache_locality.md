@@ -268,27 +268,19 @@ int main() { std::vector<std::int32_t> v(1 << 20, 0); stream_write(v, 7); return
 **转换触发（ASCII 状态机）：**
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存一致性协议
-```
-                 ┌─────────────────────────────────────────────┐
-                 │                                             │
-   PrRd  ──────► │   E ──────PrRd──────► S                    │
-  (独占到共享)    │   ▲                ▲  ▲                   │
-                 │   │ BusRd          /    \ BusRd (他人读)    │
-                 │   │               /      \                  │
-   PrWr  ──────► │   M ◄──PrWr─── S ────────┘                 │
-  (改=Modifed)   │   │ ▲         │                            │
-                 │   │ │BusRdX   │ BusUpgr (他人要写)          │
-                 │   │ │(他人写)  ▼                            │
-   PrRd/PrWr ──► │   I ◄──────────┘  (降级为 Invalid)         │
-   (行无效)       │                                             │
-                 └─────────────────────────────────────────────┘
-
-  事件缩写：
-    PrRd   = 本处理器读
-    PrWr   = 本处理器写
-    BusRd  = 总线收到其他处理器的读（需把行供给出去）
-    BusRdX = 总线收到其他处理器的"读并独占写"（Read-For-Ownership）
-    BusUpgr= 总线收到其他处理器的"升级为写"（Shared→Invalid 他人）
+```mermaid
+flowchart TD
+    E["E (Exclusive 独占)"]
+    M["M (Modified 修改)"]
+    S["S (Shared 共享)"]
+    I["I (Invalid 无效)"]
+    E -->|PrRd (独占到共享)| S
+    S -->|PrWr (改=Modified)| M
+    S -->|BusRd (他人读)| E
+    M -->|BusRdX (他人写)| I
+    S -->|BusUpgr (他人要写)| I
+    I -.->|PrRd/PrWr (行无效, 降级为 Invalid)| E
+    %% 注：省略部分细节（状态机内部双向箭头与总线事务）；事件缩写: PrRd=本处理器读, PrWr=本处理器写, BusRd=总线收到他人读, BusRdX=他人读并独占写(Read-For-Ownership), BusUpgr=总线升级为写(Shared→Invalid 他人)
 ```
 
 关键转换：

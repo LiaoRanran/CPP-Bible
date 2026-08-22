@@ -68,28 +68,28 @@ PMR 入标后，价值在工程界被反复验证，也暴露了"默认资源该
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
-                 ┌─────────────────────────────────────────────┐
-                 │  std::pmr::memory_resource  (抽象基类)        │
-                 │   allocate() / deallocate() / is_equal()     │
-                 │   └─ 虚: do_allocate / do_deallocate /        │
-                 │        do_is_equal                            │
-                 └───────────────┬───────────────────────────────┘
-                                 │ 继承
-        ┌──────────────┬─────────┴──────────┬─────────────────────┐
-        ▼              ▼                     ▼                     ▼
- monotonic_      unsynchronized_       synchronized_        (全局单例)
- buffer_         pool_resource         pool_resource        new_delete_resource
- resource        (单线程池)            (每线程池)            null_memory_resource
-        │                                                         │
-        └──────────── 都持有一个 upstream (memory_resource*) ──────┘
-                                 │
-                                 ▼
-                  std::pmr::polymorphic_allocator<T>
-                   (值类型，持有 memory_resource*，传给容器)
-                                 │
-                                 ▼
-                  std::pmr::vector / string / map / unordered_map ...
+```mermaid
+flowchart TD
+  M["std::pmr::memory_resource (抽象基类) allocate() / deallocate() / is_equal() 虚: do_allocate / do_deallocate / do_is_equal"]
+  MB["monotonic_buffer_resource"]
+  UP["unsynchronized_pool_resource (单线程池)"]
+  SP["synchronized_pool_resource (每线程池)"]
+  ND["(全局单例) new_delete_resource"]
+  NM["(全局单例) null_memory_resource"]
+  UPSTREAM["都持有一个 upstream (memory_resource*)"]
+  PA["std::pmr::polymorphic_allocator<T> (值类型，持有 memory_resource*，传给容器)"]
+  CON["std::pmr::vector / string / map / unordered_map ..."]
+  M --> MB
+  M --> UP
+  M --> SP
+  M --> ND
+  M --> NM
+  MB --> UPSTREAM
+  UP --> UPSTREAM
+  SP --> UPSTREAM
+  ND --> UPSTREAM
+  NM --> UPSTREAM
+  UPSTREAM --> PA --> CON
 ```
 
 ---
@@ -158,20 +158,16 @@ classDiagram
 `[实现·libstdc++]` `monotonic_buffer_resource` 持有一条缓冲链表（`_Chunk* _M_head`），当前指针 `_M_current_buf` 与剩余量 `_M_avail`；分配时仅推进指针，不释放。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：monotonicbuffe
-```
- 初始: upstream 提供 1KB
- ┌──────────────────────────────┐  ← _M_current_buf 指向此处
- │ free: 1024B                   │
- └──────────────────────────────┘
- 分配 64B 后:
- ┌────────┬──────────────────────┐
- │ used64 │ free: 960B            │  ← _M_current_buf += 64; _M_avail -= 64
- └────────┴──────────────────────┘
- 耗尽(需 2KB) → 向 upstream 要新缓冲(1.5x 增长):
- ┌────────┬──────────┬────────────────────────────────┐
- │ chunk0 │ (链向下)  │ chunk1: free 2048B             │
- └────────┴──────────┴────────────────────────────────┘
- release() → 一次性把整条链还给 upstream (do_deallocate 空操作!)
+```mermaid
+flowchart TD
+  I1["初始: upstream 提供 1KB"]
+  B1["free: 1024B ← _M_current_buf 指向此处"]
+  I2["分配 64B 后:"]
+  B2["used64 | free: 960B ← _M_current_buf += 64; _M_avail -= 64"]
+  I3["耗尽(需 2KB) → 向 upstream 要新缓冲(1.5x 增长):"]
+  B3["chunk0 | (链向下) | chunk1: free 2048B"]
+  R["release() → 一次性把整条链还给 upstream (do_deallocate 空操作!)"]
+  I1 --> B1 --> I2 --> B2 --> I3 --> B3 --> R
 ```
 
 - `[实现]`：增长系数 `_S_growth_factor = 1.5`（`文件：memory_resource`，`行号：398`）；初始缓冲 `_S_init_bufsize = 128 * sizeof(void*)`（`文件：memory_resource`，`行号：397`）。
@@ -181,12 +177,20 @@ classDiagram
 ## ⑧ 生命周期图：request-local arena
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：request-loca
-```
- 请求到达 ──► 构造 monotonic_buffer_resource(buf) ──► 所有中间容器/对象从此分配
-     │                                                        │
-     │  (处理过程，零系统调用)                                │
-     ▼                                                        ▼
- 请求结束 ──► mr.release() ──► 一次性归还 ──► 缓冲复用给下一个请求
+```mermaid
+flowchart TD
+  R1["请求到达"]
+  C["构造 monotonic_buffer_resource(buf)"]
+  A["所有中间容器/对象从此分配"]
+  NOTE["(处理过程，零系统调用)"]
+  R2["请求结束"]
+  REL["mr.release()"]
+  G["一次性归还"]
+  REUSE["缓冲复用给下一个请求"]
+  R1 --> C --> A
+  R2 --> REL --> G --> REUSE
+  A --> NOTE
+  NOTE --> REUSE
 ```
 
 `[经验]`：这是"每请求 arena"模式——整个请求生命周期内分配的内存，在请求结束时一次释放，避免逐个 `delete` 的摊销成本（与 Go 的 `sync.Pool` / 游戏引擎 frame allocator 同源）。
@@ -196,21 +200,31 @@ classDiagram
 ## ⑨ 调用栈 / 时序图：池资源分配
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：池资源分配
-```
-调用方            polymorphic_allocator    pool_resource         upstream
-  │                    │                       │                    │
-  │ allocate(40)       │                       │                    │
-  ├───────────────────►│ allocate(40,align)    │                    │
-  │                    ├──────────────────────►│ do_allocate(40)    │
-  │                    │                       │ 命中某 size 池?     │
-  │                    │                       ├── 是: 切一块返回    │
-  │                    │                       └── 否: 向 upstream   │
-  │                    │                       │     申请大块再切分  │
-  │                    │                       ├───────────────────►│ ::operator new
-  │                    │                       │◄───────────────────┤
-  │◄───────────────────┼───────────────────────┤                    │
-  ▼                    ▼                       ▼                    ▼
- 得到指针
+```mermaid
+flowchart LR
+  subgraph C1 [调用方]
+    C1a["allocate(40)"]
+    C1b["得到指针"]
+  end
+  subgraph C2 [polymorphic_allocator]
+    C2a["allocate(40,align)"]
+  end
+  subgraph C3 [pool_resource]
+    C3a["命中某 size 池?"]
+    C3b["是: 切一块返回"]
+    C3c["否: 向 upstream 申请大块再切分"]
+  end
+  subgraph C4 [upstream]
+    C4a["::operator new"]
+  end
+  C1a --> C2a
+  C2a --> C3a
+  C3a --> C3b
+  C3a --> C3c
+  C3c --> C4a
+  C4a --> C3c
+  C3b --> C1b
+  C3c --> C1b
 ```
 
 ---

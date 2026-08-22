@@ -70,20 +70,18 @@ STL（Standard Template Library）由**六大组件**构成，迭代器是连接
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
-                   ┌──────────── 六大组件 ────────────┐
-                   │ 容器 迭代器 算法 仿函数 适配器 分配器 │
-                   └────────────────┬────────────────┘
-                                     │ 迭代器连接
-                  ┌──────────────────┴──────────────────┐
-                  ▼                                      ▼
-           算法: sort(first,last)              容器: vector/list/map
-                  │ 通过迭代器区间操作              │ 提供 begin()/end()
-                  └──────────────►◄───────────────┘
-                                     │
-                       迭代器范畴层次（C++20）
-   input ─► forward ─► bidirectional ─► random_access ─► contiguous
-   (单遍)   (多遍)     (可双向)          (±n O(1))         (连续内存)
+```mermaid
+flowchart TD
+    Root["六大组件: 容器 迭代器 算法 仿函数 适配器 分配器"] -->|迭代器连接| Algo["算法: sort(first,last)"]
+    Root -->|迭代器连接| Cont["容器: vector/list/map"]
+    Algo -->|通过迭代器区间操作| Cont
+    Cont -->|提供 begin()/end()| Algo
+    Root --> Hier["迭代器范畴层次（C++20）"]
+    Hier --> I["input (单遍)"]
+    I --> Fw["forward (多遍)"]
+    Fw --> Bi["bidirectional (可双向)"]
+    Bi --> Ra["random_access (±n O(1))"]
+    Ra --> Co["contiguous (连续内存)"]
 ```
 
 ## ⑤ Mermaid 流程图：算法通过迭代器解耦容器
@@ -128,18 +126,16 @@ classDiagram
 迭代器本质是"指向元素或处于元素间"的抽象。`vector<int>::iterator` 在 libstdc++ 中就是 `int*`（连续迭代器）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
-```
-vector<int> v = {10,20,30}
-内存（连续）:  [ 10 | 20 | 30 | ... ]
-                ▲         ▲        ▲
-                │         │        └─ end()  (越界哨兵)
-         begin()│    it+1 │
-                │         │
-list<int> 迭代器是节点指针（非连续）：
-  nodeA{val=10,next->nodeB}  <- 迭代器存 &nodeA
-  nodeB{val=20,next->nodeC}
-  nodeC{val=30,next->null}
-  迭代器 ++ 走 _M_next 指针，不是 +sizeof，故非 contiguous
+```mermaid
+flowchart TD
+    V["vector<int> v = {10,20,30}"] --> M["内存（连续）: [ 10 | 20 | 30 | ... ]"]
+    M --> B["begin() 指向 10"]
+    M --> It["it+1 指向 20"]
+    M --> E["end() (越界哨兵) 指向 ... 之后"]
+    L["list<int> 迭代器是节点指针（非连续）"] --> NA["nodeA{val=10,next->nodeB} <- 迭代器存 &nodeA"]
+    NA --> NB["nodeB{val=20,next->nodeC}"]
+    NB --> NC["nodeC{val=30,next->null}"]
+    NC --> NX["迭代器 ++ 走 _M_next 指针，不是 +sizeof，故非 contiguous"]
 ```
 
 - `[实现·GCC15]`：`std::vector<T>::iterator` 通常就是 `T*`（见 `stl_iterator_base_types.h:198` 的 `iterator_traits<_Tp*>` 特化，`iterator_concept = contiguous_iterator_tag`，`iterator_category = random_access_iterator_tag`）。
@@ -148,28 +144,21 @@ list<int> 迭代器是节点指针（非连续）：
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图
-```
-迭代器对象创建（通常栈上，或从 begin() 返回）
-   │
-   ▼
-指向容器元素（引用/指针语义）
-   │  ── 容器修改可能使其失效（见 ⑲ 失效总览）
-   ▼
-迭代器析构（无资源，廉价；但指向的元素可能已被容器释放）
+```mermaid
+flowchart TD
+    A["迭代器对象创建（通常栈上，或从 begin() 返回）"] --> B["指向容器元素（引用/指针语义）"]
+    B -->|容器修改可能使其失效（见 ⑲ 失效总览）| C["迭代器析构（无资源，廉价；但指向的元素可能已被容器释放）"]
 ```
 
 ## ⑨ 调用栈 / 时序图：`std::advance(it, n)` 的标签分发
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：std::adv
-```
-调用方
-  │ std::advance(it, n)
-  ▼
-__advance(it, n, iterator_category(it))   // stl_iterator_base_funcs.h:224
-  │ 按标签重载：
-  ├─ input_iterator_tag        -> 循环 ++  (O(n))   :157
-  ├─ bidirectional_iterator_tag-> 先判正负再 ++/--     :168
-  └─ random_access_iterator_tag-> it += n  (O(1))     :184
+```mermaid
+flowchart TD
+    Caller["调用方"] -->|std::advance(it, n)| Adv["__advance(it, n, iterator_category(it)) // stl_iterator_base_funcs.h:224"]
+    Adv -->|按标签重载| I["input_iterator_tag -> 循环 ++ (O(n)) :157"]
+    Adv -->|按标签重载| Bi["bidirectional_iterator_tag -> 先判正负再 ++/-- :168"]
+    Adv -->|按标签重载| Ra["random_access_iterator_tag -> it += n (O(1)) :184"]
 ```
 
 ## ⑩ 汇编分析（Compiler Explorer 风格，标注 -O2）

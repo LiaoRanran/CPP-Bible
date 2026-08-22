@@ -118,14 +118,17 @@ if (!p) { /* 处理内存不足，不抛异常 */ }
 
 空闲块布局（每个子块在空闲时用前 `sizeof(void*)` 字节存 `next` 指针）：
 
-```text
-chunk (8 KiB, 向 ::operator new 申请)
-┌───────────────────────────────────────────────────────────┐
-│ block0 │ block1 │ block2 │ ... │ blockN-1                  │
-└───────────────────────────────────────────────────────────┘
-   ↑free_list_ 指向 block0
-   block0.next ──► block1 ──► block2 ──► ... ──► blockN-1 ──► nullptr
-   分配：head = head->next；  释放：node->next = head; head = node;
+```mermaid
+flowchart LR
+  subgraph CHUNK ["chunk (8 KiB, 向 ::operator new 申请)"]
+    B0["block0"]
+    B1["block1"]
+    B2["block2"]
+    BNM["blockN-1"]
+  end
+  FL["free_list_ 指向 block0"] --> B0
+  B0 --> B1 --> B2 --> BNM --> NULL["nullptr"]
+  %% 分配: head = head->next；释放: node->next = head; head = node；
 ```
 
 `Examples/_ch160_fixedpool.cpp` 是一个自包含、可编译、可运行的实现（节选核心）：

@@ -84,21 +84,17 @@ int main() {
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
-```
-                  std::deque<T>
-        ┌────────────┬────────────┬────────────┐
-        │ map(中控)   │ 迭代器      │ 操作        │
-        │ T** 指针数组│ 四指针游标  │ push_front/ │
-        │            │ cur/first/ │ back/insert/│
-        │            │ last/node  │ erase/[]    │
-        └─────┬──────┴─────┬──────┴─────┬──────┘
-              │            │            │
-              ▼            ▼            ▼
-        ┌──────────┐ ┌──────────┐ ┌──────────────┐
-        │ buffer 0 │ │ buffer 1 │ │ buffer 2 ... │  每块固定大小(默认 512/ sizeof(T))
-        │ [e0..eN] │ │ [e..]    │ │ [e..]        │  段内连续
-        └──────────┘ └──────────┘ └──────────────┘
-        段间通过 map 指针跳转（不连续）
+```mermaid
+flowchart TD
+    D["std::deque<T>"] --> M["map(中控) T** 指针数组"]
+    D --> I["迭代器 四指针游标 cur/first/last/node"]
+    D --> O["操作 push_front/back/insert/erase/[]"]
+    M --> B0["buffer 0 [e0..eN] 每块固定大小(默认 512/ sizeof(T)) 段内连续"]
+    I --> B1["buffer 1 [e..] 段内连续"]
+    O --> B2["buffer 2 ... [e..] 段内连续"]
+    B0 --> Note["段间通过 map 指针跳转（不连续）"]
+    B1 --> Note
+    B2 --> Note
 ```
 
 `[经验]`：deque = "段内 vector + 段间链表指针"，因此兼具"段内缓存友好"和"首尾不搬迁"的优点。
@@ -158,26 +154,30 @@ classDiagram
 ## ⑦ ASCII 内存图：分段连续与四指针 [实现·GCC15]
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：分段连续与四指针 [实现·G
-```
-deque 对象（栈/堆）
-┌──────────────────────────────────────────────┐
-│ _M_map ──────────┬─► ┌─────────────────────┐  │
-│ _M_map_size = 8  │   │ map[0] ─┐            │  │
-│ _M_start(iter)   │   │ map[1] ─┼─► buffer A │  │
-│   _M_node ───────┼───┤ map[2] ─┼─► buffer B │  │
-│   _M_cur  ──► [e3]│   │ map[3] ─┼─► buffer C │  │
-│   _M_first─►[e0] │   │ ...      │            │  │
-│   _M_last ─►[eN] │   └─────────────────────┘  │
-│ _M_finish(iter)  │                            │
-│   _M_node ───────┼──► buffer C               │
-│   _M_cur  ──► [e9]│     [e7][e8][e9][_][_]    │
-│   _M_first─►[e7] │                            │
-│   _M_last ─►[eN] │                            │
-└──────────────────────────────────────────────┘
-  [e0..e2] 在 buffer A 尾段（push_front 向左生长）
-  [e3..e6] 在 buffer B
-  [e7..e9] 在 buffer C（push_back 向右生长）
-  段内连续（cache 友好）；段间经 map 指针跳转
+```mermaid
+flowchart TD
+    Deque["deque 对象（栈/堆）"] --> Map["_M_map (T** 指针数组), _M_map_size = 8"]
+    Deque --> Start["_M_start 迭代器"]
+    Deque --> Finish["_M_finish 迭代器"]
+    Map --> map0["map[0]"]
+    Map --> map1["map[1]"]
+    Map --> map2["map[2]"]
+    Map --> map3["map[3]"]
+    map0 --> BufA["buffer A: [e0..e2] 尾段 push_front 向左生长"]
+    map1 --> BufB["buffer B: [e3..e6]"]
+    map2 --> BufC["buffer C: [e7..e9] push_back 向右生长"]
+    map3 --> BufC
+    Start -->|"_M_node"| map1
+    Start -->|"_M_cur -> [e3]"| BufB
+    Start -->|"_M_first -> [e0]"| BufA
+    Start -->|"_M_last -> [eN]"| BufA
+    Finish -->|"_M_node -> buffer C"| BufC
+    Finish -->|"_M_cur -> [e9]"| BufC
+    Finish -->|"_M_first -> [e7]"| BufC
+    Finish -->|"_M_last -> [eN]"| BufC
+    BufA --> N["段内连续（cache 友好）；段间经 map 指针跳转"]
+    BufB --> N
+    BufC --> N
 ```
 
 `[实现·GCC15]`：迭代器自增（文件：`bits/stl_deque.h`，行号：`192`）：`++_M_cur; if (_M_cur == _M_last) { _M_set_node(_M_node+1); _M_cur = _M_first; }`——跨段时切换到下一 buffer 的 `first`。
@@ -187,16 +187,16 @@ deque 对象（栈/堆）
 ## ⑧ 生命周期图：中控扩容不搬运元素 <span class="badge badge-std">标准</span>
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：中控扩容不搬运元素 [标
-```
- 初始:  map 容量 8, 仅用中间若干槽
- push_front/push_back 反复增长...
- 当 map 前端/后端无空槽时:
-   _M_reallocate_map（行号：2184）
-     ├─ 分配更大的 map（通常 2x 或 +2）
-     ├─ 把旧 map 的指针**拷贝**到新 map 中部
-     ├─ 释放旧 map（buffer 不碰！）
-     └─ 已有的 buffer 与其中元素**原封不动**
- 结果: 元素引用/指针/地址不变；只有 deque 迭代器(含 _M_node 指向旧 map)失效
+```mermaid
+flowchart TD
+    Init["初始: map 容量 8, 仅用中间若干槽"] --> Grow["push_front/push_back 反复增长..."]
+    Grow --> Cond["当 map 前端/后端无空槽时"]
+    Cond --> Re["_M_reallocate_map（行号：2184）"]
+    Re --> A1["分配更大的 map（通常 2x 或 +2）"]
+    Re --> A2["把旧 map 的指针**拷贝**到新 map 中部"]
+    Re --> A3["释放旧 map（buffer 不碰！）"]
+    Re --> A4["已有的 buffer 与其中元素**原封不动**"]
+    Re --> Res["结果: 元素引用/指针/地址不变；只有 deque 迭代器(含 _M_node 指向旧 map)失效"]
 ```
 
 `[标准]`：deque 的插入/删除**不使指向元素的引用与指针失效**（除非删除该元素）；但会**使所有迭代器失效**（因为 `_M_node` 可能指向被换掉的旧 map）。这点是 deque 与 vector 最大的语义差异之一。
@@ -206,23 +206,17 @@ deque 对象（栈/堆）
 ## ⑨ 调用栈/时序图：operator[] 的跨段定位 [实现·GCC15]
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈/时序图：operator[]
-```
-  访问 d[k]
-    │
-    ▼
-  _M_start 迭代器 + k
-    │
-    ▼  operator+=(k)（行号：232）
-  __offset = k + (_M_cur - _M_first)         // 当前 buffer 内偏移 + k
-  if (__offset 在 [0, buffer_size)):
-       _M_cur += k                            // 同段内，直接偏移
-  else:
-       __node_offset = 跨段数(除法)           // offset / buffer_size
-       _M_set_node(_M_node + __node_offset)   // 跳 map
-       _M_cur = _M_first + (offset % buffer_size)  // 段内取模定位
-    │
-    ▼
-  返回 *_M_cur
+```mermaid
+flowchart TD
+    A["访问 d[k]"] --> B["_M_start 迭代器 + k"]
+    B -->|"operator+=(k)（行号：232）"| C["__offset = k + (_M_cur - _M_first) // 当前 buffer 内偏移 + k"]
+    C --> D{"__offset 在 [0, buffer_size)?"}
+    D -->|是| E["_M_cur += k // 同段内，直接偏移"]
+    D -->|否| F["__node_offset = 跨段数(除法) // offset / buffer_size"]
+    F --> G["_M_set_node(_M_node + __node_offset) // 跳 map"]
+    G --> H["_M_cur = _M_first + (offset % buffer_size) // 段内取模定位"]
+    E --> R["返回 *_M_cur"]
+    H --> R
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈/时序图：operator[]

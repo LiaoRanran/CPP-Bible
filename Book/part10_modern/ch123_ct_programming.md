@@ -106,34 +106,34 @@ int main() {
 ## ④ 知识图谱（ASCII）<span class="badge badge-exp">经验</span>
 
 > **示例 3** [难度 ★★★★★] [主题：知识图谱（ASCII）<span class="badge badge-exp">经验</span>]
-```
-                         ┌─────────────────────────────────────────────┐
-                         │          编译期编程 演化主线                    │
-                         └─────────────────────────────────────────────┘
-                                          │
-            ┌───────────── 模板即"元语言" ─────────────┐
-            │                                          │
-       [模板元编程 TMP]                          [模板实例化]
-    递归/特化/分支(编译期)                        (生成运行期代码)
-            │                                          │
-            ├──► 类型计算：type traits / integral_constant
-            ├──► 值计算：   enum/static constexpr 递归
-            │                                          │
-            ▼                                          ▼
-       [constexpr 函数]  C++11→14→17→20 逐步放开语句    [SFINAE]
-       (可在编译期求值，也可运行期)                      (替换失败非错)
-            │                                          │
-            ├──► if constexpr  (C++17) 编译期分支        ├──► enable_if
-            │                                          │
-            ▼                                          ▼
-       [Concepts / requires]  C++20 约束模板参数   [consteval 立即函数] C++20
-       (可读错误 + 接口约束)                        (只能在编译期求值，拒绝运行期)
-            │                                          │
-            └──────────────► [编译期字符串/反射方向 P2996] ◄──┘
-                                       │
-                                       ▼
-                          [编译期多态] vs [运行时多态(虚表)]
-                          (ch51 CRTP)      (ch47 vtable)
+```mermaid
+flowchart TD
+  T["编译期编程 演化主线"]
+  M["模板即「元语言」"]
+  B["[编译期字符串/反射方向 P2996]"]
+  F["[编译期多态] vs [运行时多态(虚表)] (ch51 CRTP) (ch47 vtable)"]
+  subgraph L [模板元编程 TMP 路线]
+    L1["[模板元编程 TMP] 递归/特化/分支(编译期)"]
+    L2["类型计算：type traits / integral_constant"]
+    L3["值计算：enum/static constexpr 递归"]
+    L4["[constexpr 函数] C++11→14→17→20 逐步放开语句 (可在编译期求值，也可运行期)"]
+    L5["if constexpr (C++17) 编译期分支"]
+    L6["[Concepts / requires] C++20 约束模板参数 (可读错误 + 接口约束)"]
+  end
+  subgraph R [模板实例化 路线]
+    R1["[模板实例化] (生成运行期代码)"]
+    R2["[SFINAE] (替换失败非错)"]
+    R3["enable_if"]
+    R4["[consteval 立即函数] C++20 (只能在编译期求值，拒绝运行期)"]
+  end
+  T --> M
+  M --> L1
+  M --> R1
+  L1 --> L2 --> L3 --> L4 --> L5 --> L6
+  R1 --> R2 --> R3 --> R4
+  L6 --> B
+  R4 --> B
+  B --> F
 ```
 
 ## ⑤ Mermaid 流程图：四范式演进时间线 <span class="badge badge-std">标准</span>
@@ -182,18 +182,16 @@ classDiagram
 ## ⑦ ASCII 内存图：编译期值 vs 运行期值 <span class="badge badge-impl">实现</span>
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：编译期值 vs 运行期值 [
-```
-运行期求值（翻译后留在 .text，运行时算）：
-┌────────── stack ──────────┐
-│ int s = sum_to(100);      │  ← 运行时真的循环 100 次
-│   s = 0x13C2 (5050)       │
-└───────────────────────────┘
-
-编译期求值（翻译期已折叠为立即数）：
-┌────────── .rodata/.text ──────┐
-│ mov eax, 5050   ; 常量直接编码 │  ← sum_to(100) 根本没有函数调用
-└───────────────────────────────┘
-      对象不存在于内存，值被烧进指令流
+```mermaid
+flowchart LR
+  C1["运行期求值（翻译后留在 .text，运行时算）"]
+  B1["int s = sum_to(100); s = 0x13C2 (5050) ← 运行时真的循环 100 次"]
+  C2["编译期求值（翻译期已折叠为立即数）"]
+  B2["mov eax, 5050 ; 常量直接编码 ← sum_to(100) 根本没有函数调用"]
+  T["对象不存在于内存，值被烧进指令流"]
+  C1 --> B1
+  C2 --> B2
+  B2 --> T
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：编译期值 vs 运行期值 [
@@ -212,14 +210,22 @@ int main() {
 ## ⑧ 生命周期图：模板实例化与 constexpr 求值 <span class="badge badge-impl">实现</span>
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：模板实例化与 const
-```
-翻译期（编译）                         运行期（执行）
-─────────────────                     ─────────────────
-模板定义 ─解析─► 模板实参 ─实例化─┐
-                                 │   函数体
-constexpr 函数 ──► 是否在常量语境? ─┤   ├─ 是 ─► 编译期求值，结果烧进指令
-                                 │   └─ 否 ─► 退化为普通运行期函数调用
-consteval 函数 ──► 必须常量语境 ────┘         （若传入非常量 → 编译错误）
+```mermaid
+flowchart LR
+  subgraph P1 [翻译期（编译）]
+    TD["模板定义 ─解析─► 模板实参 ─实例化─"]
+    CE["constexpr 函数 ──► 是否在常量语境?"]
+    CV["consteval 函数 ──► 必须常量语境"]
+  end
+  subgraph P2 [运行期（执行）]
+    YES["是 ─► 编译期求值，结果烧进指令"]
+    NO["否 ─► 退化为普通运行期函数调用"]
+    ERR["（若传入非常量 → 编译错误）"]
+  end
+  TD --> CE
+  CE -->|是| YES
+  CE -->|否| NO
+  CV --> ERR
 ```
 
 > `[标准]` `[expr.const]`：`consteval` 函数（立即函数）的每次调用都必须在常量表达式中被求值；`constexpr` 函数则"可被"在常量语境求值，也允许在非常量语境调用。
@@ -227,15 +233,18 @@ consteval 函数 ──► 必须常量语境 ────┘         （若传�
 ## ⑨ 调用栈/时序图：编译期 vs 运行期分派 <span class="badge badge-exp">经验</span>
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈/时序图：编译期 vs 运行期
-```
-编译期分派（constexpr + if constexpr / consteval）：
-  main ──(翻译期已折叠)──► 直接得到结果，无函数调用入栈
-
-运行期分派（虚函数）：
-  main ─► operator[]/call ─► 取 vptr ─► 取 vtable[i] ─► 跳转到派生实现
-         （2 次内存读 + 1 次间接跳转， Branch Predictor 压力）
-
-结论：编译期分派把"跳转"变成"在编译期做的选择"，运行期零成本。
+```mermaid
+flowchart LR
+  CT["编译期分派（constexpr + if constexpr / consteval）"]
+  CTM["main ──(翻译期已折叠)──► 直接得到结果，无函数调用入栈"]
+  RT["运行期分派（虚函数）"]
+  RTM["main ─► operator[]/call ─► 取 vptr ─► 取 vtable[i] ─► 跳转到派生实现"]
+  NOTE["（2 次内存读 + 1 次间接跳转， Branch Predictor 压力）"]
+  CONC["结论：编译期分派把「跳转」变成「在编译期做的选择」，运行期零成本。"]
+  CT --> CTM
+  RT --> RTM --> NOTE
+  CTM --> CONC
+  RTM --> CONC
 ```
 
 ## ⑩ 汇编分析：consteval 折叠为立即数（-O2）[实现·GCC15.3.0] [VERIFIED]

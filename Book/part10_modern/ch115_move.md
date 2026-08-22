@@ -167,27 +167,24 @@ int main() {
 ## ④ 知识图谱（ASCII）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
-                 ┌─────────────────────────────────────────┐
-                 │   表达式的值类别（C++17）                 │
-                 └───────────────────┬─────────────────────┘
-                                     │
-            ┌────────────────────────┼────────────────────────┐
-            ▼                        ▼                        ▼
-      ┌────────────┐          ┌──────────────┐         ┌──────────────┐
-      │ glvalue    │          │ prvalue      │         │ xvalue       │
-      │ (广义左值) │          │ (纯右值)     │         │ (将亡值)     │
-      └─────┬──────┘          └──────┬───────┘         └──────┬───────┘
-            │                        │                        │
-      ┌─────┴─────┐                  │ 合成            ┌───────┴────────┐
-      │ lvalue    │                  │                │ std::move(x)   │
-      │ (有名字/   │                  │                │ 函数返回的 &&   │
-      │  可取地址) │                  │                │ (把对象当右值)  │
-      └───────────┘                  │                └───────┬────────┘
-                                     │                        │
-                                     └───────────┬────────────┘
-                                                 ▼
-                                  绑定到 T&&（右值引用）──► 调用移动构造/赋值
+```mermaid
+flowchart TD
+  T["表达式的值类别（C++17）"]
+  G["glvalue (广义左值)"]
+  P["prvalue (纯右值)"]
+  X["xvalue (将亡值)"]
+  L["lvalue (有名字/可取地址)"]
+  S["合成"]
+  MV["std::move(x) 函数返回的 && (把对象当右值)"]
+  B["绑定到 T&&（右值引用）──► 调用移动构造/赋值"]
+  T --> G
+  T --> P
+  T --> X
+  G --> L
+  P --> S
+  X --> MV
+  S --> B
+  MV --> B
 ```
 
 ---
@@ -229,17 +226,20 @@ classDiagram
 ## ⑦ ASCII 内存图：移动 = 指针转移，而非字节拷贝
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：移动 = 指针转移，而非字节
-```
-移动前：
-  Source:  [_data] ──────► [堆: 100万个 int]
-  Target:  [_data] ──────► nullptr
-
-执行 Target = std::move(Source)（移动赋值）：
-  Source:  [_data] ──────► nullptr          （资源被"偷走"，置空）
-  Target:  [_data] ──────► [堆: 100万个 int]（现在 Target 拥有）
-
-对比拷贝：
-  Target:  [_data] ──────► [堆: 新分配 100万个 int]（逐元素复制，昂贵）
+```mermaid
+flowchart LR
+  subgraph PH1 [移动前]
+    S1["Source: [_data] ──────► [堆: 100万个 int]"]
+    T1["Target: [_data] ──────► nullptr"]
+  end
+  subgraph PH2 [执行 Target = std::move(Source)（移动赋值）]
+    S2["Source: [_data] ──────► nullptr （资源被「偷走」，置空）"]
+    T2["Target: [_data] ──────► [堆: 100万个 int]（现在 Target 拥有）"]
+  end
+  subgraph PH3 [对比拷贝]
+    T3["Target: [_data] ──────► [堆: 新分配 100万个 int]（逐元素复制，昂贵）"]
+  end
+  PH1 --> PH2 --> PH3
 ```
 
 - `[标准]`：移动语义的核心是**资源所有权的转移**，而非值的复制；移动构造/赋值把源的资源指针"偷"过来并把源置空，使源的析构不会释放已被转移的资源（避免双释放）。
@@ -276,19 +276,24 @@ int main() {
 移动后，源对象仍然存在（直到其作用域结束），但处于**"有效但未指定（valid but unspecified）"**状态——可以安全析构或赋值，但不可假设其内容。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：移动后源对象的状态
-```
-时间轴 ──────────────────────────────────────────────►
-
-  Widget a;              // a 拥有资源
-  Widget b = std::move(a);   // 资源转移到 b；a.p = nullptr（"有效但未指定"）
-        │
-        ├─ 使用 b ✅（b 正常拥有资源）
-        ├─ 使用 a？❌ 不要读 a 的内部！只能：
-        │      ├─ 给 a 重新赋值（a = Widget{}）后使用
-        │      └─ 或等 a 析构（析构 delete nullptr，安全）
-        ├─ （错误）对 a 调用需要有效状态的函数
-        │
-        └─ a、b 各自析构，无双释放（因 a.p 已空）
+```mermaid
+flowchart TD
+  T["时间轴 ──►"]
+  A["Widget a; // a 拥有资源"]
+  B["Widget b = std::move(a); // 资源转移到 b；a.p = nullptr（「有效但未指定」）"]
+  UseB["使用 b ✅（b 正常拥有资源）"]
+  UseA["使用 a？❌ 不要读 a 的内部！只能："]
+  ReAssign["给 a 重新赋值（a = Widget{}）后使用"]
+  DtorA["或等 a 析构（析构 delete nullptr，安全）"]
+  Err["（错误）对 a 调用需要有效状态的函数"]
+  DtorBoth["a、b 各自析构，无双释放（因 a.p 已空）"]
+  T --> A --> B
+  B --> UseB
+  B --> UseA
+  B --> Err
+  B --> DtorBoth
+  UseA --> ReAssign
+  UseA --> DtorA
 ```
 
 - `[标准]`：`[lib.types.movedfrom]` 规定被移动后的标准库类型仍可析构、可被赋值、可比较（比较结果未指定）；用户类型应遵守同一约定。
@@ -335,18 +340,25 @@ int main() {
 最常见的误解：`std::move(x)` 会"移动 x"。**真相**：它只是把 `x` 强制转换成右值引用类型（`static_cast<T&&>`），真正的移动发生在随后调用的移动构造/赋值里。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：std::mov
-```
-调用方                       std::move                目标对象
-  │                             │                         │
-  │ std::move(src)              │                         │
-  │────────────────────────────►│                         │
-  │                             │ return static_cast<     │
-  │                             │        T&&>(src);       │  ← 仅转型，无移动！
-  │◄────────────────────────────│ (返回 T&&，xvalue)      │
-  │                                                        │
-  │ Target = 返回值;  ────────────────────────────────────►│
-  │                                                        │ 匹配 T&& 重载
-  │                                                        │ 调用移动构造/赋值（真正移动）
+```mermaid
+flowchart LR
+  subgraph C1 [调用方]
+    C1a["std::move(src)"]
+    C1b["Target = 返回值;"]
+  end
+  subgraph C2 [std::move]
+    C2a["return static_cast<T&&>(src); ← 仅转型，无移动！"]
+    C2b["(返回 T&&，xvalue)"]
+  end
+  subgraph C3 [目标对象]
+    C3a["匹配 T&& 重载"]
+    C3b["调用移动构造/赋值（真正移动）"]
+  end
+  C1a --> C2a
+  C2a --> C2b
+  C2b --> C1a
+  C1b --> C3a
+  C3a --> C3b
 ```
 
 - `[标准]`：`std::move` 的语义就是 `static_cast<remove_reference_t<T>&&>(t)`（见 §⑬），它**不生成任何运行期代码**（在 `-O2` 下完全消失）。

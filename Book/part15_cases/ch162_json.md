@@ -55,14 +55,10 @@ JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量
 | 类型擦除（type-erased） | 用 `std::variant`/`std::any` 把 6 种类型装进一个"值"类型（本章路线） | 灵活、运行时通用；引入类型擦除开销与内联限制 |
 | 代码生成（codegen） | 用 `std::format`/反射把 JSON 直接映射成你定义的 `struct`（见 ⑯） | 零反射、类型安全、快；需 schema 或宏/反射支撑 |
 
-```text
-       JSON 文本                     C++ 内存
-   ┌──────────────┐            ┌────────────────────┐
-   {"a":1,"b":[2]} │  parse     │  variant<null,bool, │
-   └──────────────┘ ─────────► │  double,string,     │
-          ▲                     │  vector,map>        │
-          │  serialize          └────────────────────┘
-          └──────────────────────────────────────────
+```mermaid
+flowchart LR
+  JT["JSON 文本: {'a':1,'b':[2]}"] -->|parse| MEM["C++ 内存: variant<null,bool,double,string,vector,map>"]
+  MEM -->|serialize| JT
 ```
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：JSON 与 C++ 映射 [
@@ -149,12 +145,18 @@ struct JsonValue {
    number:= '-'? digit+ ('.' digit+)? ('e' sign digit+)?
 ```
 
-```text
-         parse_value
-         /   |   |   \      \        \
-    object array string number  true   false  null
-       |      |                         (字面量)
-   parse_pair  parse_elems
+```mermaid
+flowchart TD
+  PV["parse_value"] --> OBJ["object"]
+  PV --> ARR["array"]
+  PV --> STR["string"]
+  PV --> NUM["number"]
+  PV --> TRUE["true"]
+  PV --> FALSE["false"]
+  PV --> NULL["null"]
+  OBJ --> PAIR["parse_pair"]
+  ARR --> ELEM["parse_elems"]
+  %% (字面量)
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 解析器
@@ -417,13 +419,20 @@ auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（
 | DOM（Document Object Model） | 把整个 JSON 读进内存树（本章主库即 DOM） | 可随机访问、可往返修改 | 内存峰值高（整树驻留） |
 | SAX（Simple API for XML 风格） | 边读边回调 `on_object_start`/`on_number`/...，不建树 | 内存 O(1)、可流式处理超大数据 | 不能回头访问、回调状态机复杂 |
 
-```text
-   DOM 模式                         SAX 模式
-   ┌─────────┐  parse              ┌─────────┐  parse
-   │ 整棵树   │ ◄──────            │ 回调     │ on_number(30)
-   │ 驻留内存 │                     │ 不建树   │ on_string("小明")
-   └─────────┘                     └─────────┘
-   随机访问 ✅   内存 O(n)          流式 ✅      内存 O(1)
+```mermaid
+flowchart LR
+  subgraph DOM ["DOM 模式"]
+    D0["整棵树 驻留内存"]
+    D1["随机访问 ✅   内存 O(n)"]
+  end
+  subgraph SAX ["SAX 模式"]
+    S0["回调 不建树"]
+    S1["on_number(30)"]
+    S2["on_string('小明')"]
+    S3["流式 ✅      内存 O(1)"]
+  end
+  P1["parse"] --> DOM
+  P2["parse"] --> SAX
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 从零实现 JSON 库
