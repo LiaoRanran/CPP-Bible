@@ -1,4 +1,5 @@
 # 第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）
+> 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
 [第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)

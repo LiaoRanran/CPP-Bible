@@ -3,7 +3,7 @@
 
 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
 
-> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) / 难度: ★★★☆☆
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) / 难度: ★★★☆☆｜层级：L2 进阶
 
 ## ⓪ 历史动机：`volatile` 与硬件寄存器的来龙去脉
 

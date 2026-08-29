@@ -1,4 +1,5 @@
 # 第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询
+> 层级：L2 进阶
 > **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。RTTI（`dynamic_cast` / `typeid` / `std::type_info`）的**运行时布局由 ABI 规定而非 C++ 标准**（<span class="badge badge-std">标准</span> 不规定 vtable 中 RTTI 指针、type_info 对象的具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 `type_info` 结构与 `dynamic_cast` 查找路径均为 **GCC/Itanium ABI 实测**，跨编译器或平台可能存在差异，切勿视作标准保证。
 
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)

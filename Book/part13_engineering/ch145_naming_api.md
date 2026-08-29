@@ -1,4 +1,5 @@
 # 第145章 命名与 API 设计（C++）
+> 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
 [第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)

@@ -6,7 +6,7 @@
 
 [第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
 
-> 标准基：ISO/IEC 14882:2023（C++23）；核心条款 `[expr.prim.lambda]` / `[expr.prim.lambda.capture]` / `[expr.prim.lambda.closure]`
+> 标准基：ISO/IEC 14882:2023（C++23）；核心条款 `[expr.prim.lambda]` / `[expr.prim.lambda.capture]` / `[expr.prim.lambda.closure]`｜层级：L2 进阶
 > 预计阅读：210 min｜难度：★★★★
 > 前置：ch19（对象/存储期/生命周期）、ch20（引用与指针）、ch21（const 家族 + mutable）、ch22（auto 与泛型参数）、ch59（模板）、ch80（STL 算法中的 lambda）、ch115（右值引用与 move 捕获）、ch116（完美转发）
 > 后续：ch27（可调用对象体系）、ch52（多态回调）、ch115（move 语义）、ch116（完美转发）、ch154（缓存与性能）

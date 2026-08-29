@@ -1,7 +1,7 @@
 # 第76章　STL 架构与迭代器概念
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 迭代器概念与哨兵。
+> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 迭代器概念与哨兵。｜层级：L2 进阶
 > 预计阅读：约 90 分钟（深度版，含源码/汇编/概念映射）。
 > 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（存储期与对象） · [第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)（模板与实例化） · [第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)（C++20 概念）。
 > 后续：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 与三指针） · [第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)（有序容器） · [第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)（哈希容器）。

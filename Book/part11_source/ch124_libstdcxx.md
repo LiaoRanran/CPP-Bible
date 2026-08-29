@@ -1,4 +1,5 @@
 # 第124章　libstdc++ 架构与阅读入口（C++）
+> 层级：L2 进阶
 
 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
 [第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)

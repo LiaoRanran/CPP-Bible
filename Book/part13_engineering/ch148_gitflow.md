@@ -1,4 +1,5 @@
 # 第148章 Git 工作流（C++）
+> 层级：L2 进阶
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
 [第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)

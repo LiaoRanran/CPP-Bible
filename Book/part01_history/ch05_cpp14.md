@@ -4,7 +4,7 @@
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
 [第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)
 
-> 标准基：ISO/IEC 14882:2014（N4140）｜预计阅读：20 min｜前置：ch04｜后续：ch27 lambda、ch48 智能指针、ch69 constexpr、ch63 变参｜难度：★★
+> 标准基：ISO/IEC 14882:2014（N4140）｜预计阅读：20 min｜前置：ch04｜后续：ch27 lambda、ch48 智能指针、ch69 constexpr、ch63 变参｜难度：★★｜层级：L1 入门
 
 ## ⓪ 历史动机：C++14 小幅完善的来龙去脉
 

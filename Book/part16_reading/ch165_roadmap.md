@@ -1,4 +1,5 @@
 # 第165章 C++ 进阶路线图（C++）
+> 层级：L1 入门
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
 [第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)

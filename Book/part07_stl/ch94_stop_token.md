@@ -1,7 +1,7 @@
 # 第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：160 分钟 ／ 前置：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) ／ 后续：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) ／ 难度：★★★★☆
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：160 分钟 ／ 前置：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) ／ 后续：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) ／ 难度：★★★★☆｜层级：L2 进阶
 
 > 立场标签约定同第93章：`[标准]`/`[实现·GCC15]`/`[平台·x86-64]`/`[经验]`。libstdc++ 引用均给 `文件：`+`行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 

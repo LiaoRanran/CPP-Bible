@@ -9,7 +9,7 @@
 [第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
 [第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
 
-> 标准基：ISO/IEC 14882:2023（C++23）为主，C++11 线程安全静态局部初始化 / C++17 inline 变量（P0607）/ C++20 constinit 强制常量初始化 / C++23 措辞清理｜预计阅读：6.0 h｜前置：ch01（C 遗产）、ch10（版本演进）、ch20（引用与指针）、ch31（const_cast）｜后续：ch21（const/constinit 关联本章）、ch32（初始化）、ch33（生命周期/悬垂）、ch35（目标文件段布局）、ch60（模板与 ODR）、ch102（并发与 static 初始化）｜难度：★★★★★
+> 标准基：ISO/IEC 14882:2023（C++23）为主，C++11 线程安全静态局部初始化 / C++17 inline 变量（P0607）/ C++20 constinit 强制常量初始化 / C++23 措辞清理｜预计阅读：6.0 h｜前置：ch01（C 遗产）、ch10（版本演进）、ch20（引用与指针）、ch31（const_cast）｜后续：ch21（const/constinit 关联本章）、ch32（初始化）、ch33（生命周期/悬垂）、ch35（目标文件段布局）、ch60（模板与 ODR）、ch102（并发与 static 初始化）｜难度：★★★★★｜层级：L2 进阶
 
 ---
 

@@ -1,7 +1,7 @@
 # 第77章　vector：扩容、失效、allocator 协作
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)。
+> 标准基：ISO/IEC 14882:2023 (C++23)。｜层级：L2 进阶
 > 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。
 > 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（迭代器与六大组件） · [第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)（new/delete） · [第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)（分配器）。
 > 后续：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)（分段连续） · [第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)（有序容器对比） · [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)（缓存局部性）。

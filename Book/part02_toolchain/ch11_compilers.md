@@ -1,4 +1,5 @@
 # 第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）
+> 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)

@@ -1,4 +1,5 @@
 # 第47章 虚函数与虚表（vtable）：动态多态的发动机
+> 层级：L2 进阶
 > **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。虚函数表（vtable）的**内存布局由 ABI 规定而非 C++ 标准**（<span class="badge badge-std">标准</span> 不规定具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 vtable 布局与函数指针偏移均为 **GCC/Itanium ABI 实测**，跨编译器或平台（MSVC、不同 ABI）可能存在差异，切勿视作标准保证。
 
 [第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)

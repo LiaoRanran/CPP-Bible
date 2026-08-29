@@ -3,7 +3,7 @@
 [第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)
 [第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
 
-> 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台·Windows]` ABI/OS · `[经验]` 工程共识
+> 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台·Windows]` ABI/OS · `[经验]` 工程共识｜层级：L2 进阶
 > 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_mi.cpp` → `_asm_mi.asm`）
 > 前置/后续：⟶ ch19（存储期/ODR）· ch45（对象模型总览）· ch46（封装/继承）· ch47（虚函数/vtable）· ch48（RTTI）· ch49（虚继承）· ch51（CRTP 静态替代）· ch14（去虚化/性能）
 

@@ -333,16 +333,21 @@ def scan_env() -> dict:
 
 
 def scan_chapter_levels() -> dict:
-    """章级 L1/L2/L3 分层覆盖率（P2/T1）。
+    """章级 L1/L2/L3 分层覆盖率（P2 规模化）。
 
-    检测每章头部 meta 行中的 `层级：L1/L2/L3`（与示例级 [难度] 星分离）。
-    为避免与正文里的「缓存层级：L1/L2/L3」「内存层级：L1/L2/L3」混淆，要求
-    `层级：Lx` 必须出现在含 `标准基：`/`预计阅读：` 的同一 meta 行上。
+    检测每章头部区域（前 30 行）内、以 `>` 块注出现的 `层级：L[123]`（与示例级
+    [难度] 星分离）。负回顾排除正文里的「内存层级：L1/L2/L3」「缓存层级：L1/L2/L3」。
+
+    为什么限定前 30 行 + 块注：
+      - ch15_profiling.md:479 `缓存层级：L1→L2→L3` 是正文段落（非块注）→ 排除。
+      - ch154_cache_opt.md:63 `## ② 内存层级：...` 是标题 → 排除。
+      - ch154_cache_opt.md:75 `> **示例 2** ... 内存层级：L1/L2/L3` 虽是块注，但
+        (a) 在 75 行、超出头部区域；(b) 前缀「内存」被负回顾排除 → 排除。
     纯文本块注，三模式天然安全；metrics 借此使 chapter_levels 成为可量化进度。
     """
-    pat = re.compile(r'层级\s*[:：]\s*L([123])')
-    meta_anchor = re.compile(r'标准基\s*[:：]|预计阅读\s*[:：]')
-    files = [p for p in BOOK.rglob("*.md") if "_legacy_" not in str(p)]
+    pat = re.compile(r"(?<!内存)(?<!缓存)层级\s*[:：]\s*L([123])")
+    files = [p for p in BOOK.rglob("*.md")
+             if "_legacy_" not in str(p) and p.stem.startswith("ch")]
     counts = {"L1": 0, "L2": 0, "L3": 0}
     total = 0
     for p in files:
@@ -350,8 +355,10 @@ def scan_chapter_levels() -> dict:
             t = p.read_text(encoding="utf-8", errors="replace")
         except Exception:
             continue
-        for line in t.splitlines():
-            if meta_anchor.search(line) and pat.search(line):
+        for i, line in enumerate(t.splitlines()):
+            if i >= 30:
+                break
+            if line.lstrip().startswith(">") and pat.search(line):
                 total += 1
                 counts["L" + pat.search(line).group(1)] += 1
                 break

@@ -1,7 +1,7 @@
 # 第116章　完美转发与万能引用
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)，引用条款以 N4950 为准
+> 标准基：ISO/IEC 14882:2023 (C++23)，引用条款以 N4950 为准｜层级：L2 进阶
 > 预计阅读：约 75 分钟
 > 前置：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)（移动语义与右值引用）· [第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)（引用本质）· [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)（可变参数模板）
 > 后续：[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)（RVO/NRVO）· [第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)（PMR 与多态分配器）· [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)（并发模型）

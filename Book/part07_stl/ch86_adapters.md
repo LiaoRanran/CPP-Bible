@@ -1,7 +1,7 @@
 # 第86章　容器适配器：stack / queue / priority_queue
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) 为主，标注历史版本处见正文。
+> 标准基：ISO/IEC 14882:2023 (C++23) 为主，标注历史版本处见正文。｜层级：L2 进阶
 > 预计阅读：约 95 分钟（含示例与源码精读）。
 > 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)（deque 分段连续）、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 扩容）
 > 后续：[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)（堆算法）、[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)（值语义包装）、[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（存储期）

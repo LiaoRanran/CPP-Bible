@@ -4,7 +4,7 @@
 [第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)
 [第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
 
-> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：210 min｜难度：★★★★
+> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：210 min｜难度：★★★★｜层级：L2 进阶
 > 前置：ch19（变量/对象/ODR/链接）｜后续：ch21（const 与命名空间作用域）、ch31（`const_cast` 与命名空间可见性）、ch60（模板·ADL 与友元）、ch62（模板元编程中的 ADL）、ch119（模块 Modules 深度版）
 >
 > **本章立场分层约定**：全章使用四层标签

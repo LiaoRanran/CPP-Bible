@@ -4,7 +4,7 @@
 [第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)
 [第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)
 
-> 标准基：ISO/IEC 14882:2026（草案，**特性可能变动**）｜预计阅读：25 min｜前置：ch07、ch67、ch113、ch114｜后续：ch74 反射、ch121 Contracts、ch114 Executor｜难度：★★★★
+> 标准基：ISO/IEC 14882:2026（草案，**特性可能变动**）｜预计阅读：25 min｜前置：ch07、ch67、ch113、ch114｜后续：ch74 反射、ch121 Contracts、ch114 Executor｜难度：★★★★｜层级：L1 入门
 
 > ⚠️ 本章标注 `[实验性]`：C++26 在写作时尚未最终冻结，以下为已投票进入工作草案或高度可能的方向；以最终标准为准。
 

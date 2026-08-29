@@ -1,4 +1,5 @@
 # 第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）
+> 层级：L1 入门
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
 [第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)

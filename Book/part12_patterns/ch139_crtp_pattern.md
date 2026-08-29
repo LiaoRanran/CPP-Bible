@@ -1,4 +1,5 @@
 # 第139章 CRTP 与静态多态（C++）
+> 层级：L2 进阶
 
 [第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
 [第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)

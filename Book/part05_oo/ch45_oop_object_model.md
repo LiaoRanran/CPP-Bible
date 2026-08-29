@@ -1,4 +1,5 @@
 # 第 45 章　C++ 面向对象总览与对象模型基础
+> 层级：L2 进阶
 
 [第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
 [第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)

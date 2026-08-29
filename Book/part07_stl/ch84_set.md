@@ -1,7 +1,7 @@
 # 第84章　set / multiset：红黑树有序集合
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++17/C++20 特性 ⟶ 标注 `[C++17]`/`[C++20]`。
+> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++17/C++20 特性 ⟶ 标注 `[C++17]`/`[C++20]`。｜层级：L2 进阶
 > 预计阅读：约 95 分钟（深度版，含源码/汇编/基准）。
 > 前置：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)（map/multimap 红黑树） · [第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（存储期） · [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（比较器 traits）。
 > 后续：[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)（哈希集合，对比本章） · [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)（缓存与局部性）。

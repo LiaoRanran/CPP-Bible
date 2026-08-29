@@ -1,4 +1,5 @@
 # 第138章 行为型模式（C++）
+> 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
 [第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)

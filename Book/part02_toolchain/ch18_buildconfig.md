@@ -1,4 +1,5 @@
 # 第18章　构建配置：Debug / Release / LTO / PGO（C++）
+> 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
 [第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)

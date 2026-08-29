@@ -4,7 +4,7 @@
 [第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
 [第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)
 
-> 标准基：ISO/IEC 14882:2023（N4950）｜预计阅读：30 min｜前置：ch04–ch07｜后续：ch88 expected、ch82 span、ch131 format、ch90 ranges、ch34 UB｜难度：★★★
+> 标准基：ISO/IEC 14882:2023（N4950）｜预计阅读：30 min｜前置：ch04–ch07｜后续：ch88 expected、ch82 span、ch131 format、ch90 ranges、ch34 UB｜难度：★★★｜层级：L1 入门
 
 ## ⓪ 历史动机：C++23 标准库大修的来龙去脉
 

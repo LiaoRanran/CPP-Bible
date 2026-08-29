@@ -1,7 +1,7 @@
 # 第29章 友元 friend 与访问控制
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-> 标准基: C++23 / GCC 15.3 / 预计阅读: 40min / 前置: [第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md) / 难度: ★★☆☆☆
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 40min / 前置: [第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md) / 难度: ★★☆☆☆｜层级：L2 进阶
 
 ## ⓪ 历史动机：友元与访问控制的来龙去脉
 

@@ -1,4 +1,5 @@
 # 第107章　std::atomic 原子类型（C++11）
+> 层级：L3 专家
 
 [第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)
 [第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)

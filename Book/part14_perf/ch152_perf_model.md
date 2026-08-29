@@ -1,4 +1,5 @@
 # 第152章　性能模型与测量学
+> 层级：L3 专家
 
 [第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)
 [第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)

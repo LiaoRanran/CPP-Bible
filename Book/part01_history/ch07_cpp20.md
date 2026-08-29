@@ -4,7 +4,7 @@
 [第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
 [第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)
 
-> 标准基：ISO/IEC 14882:2020（N4861）｜预计阅读：45 min｜前置：ch04–ch06、ch60 模板、ch63 变参｜后续：ch67 Concepts、ch90/119 Ranges、ch113/120 Coroutines、ch118 Modules、ch21 consteval、ch25 枚举(多种)、ch32 初始化(设计化)｜难度：★★★★
+> 标准基：ISO/IEC 14882:2020（N4861）｜预计阅读：45 min｜前置：ch04–ch06、ch60 模板、ch63 变参｜后续：ch67 Concepts、ch90/119 Ranges、ch113/120 Coroutines、ch118 Modules、ch21 consteval、ch25 枚举(多种)、ch32 初始化(设计化)｜难度：★★★★｜层级：L1 入门
 
 ## ⓪ 历史动机：C++20 量级升级的来龙去脉
 

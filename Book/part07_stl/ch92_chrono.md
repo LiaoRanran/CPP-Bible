@@ -1,7 +1,7 @@
 # 第92章 时间库 chrono
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2011（C++11）引入 `<chrono>`；C++17 增补 `floor/ceil/round`；C++20 大幅扩展日历（`year_month_day`）、时区（`time_zone`/`zoned_time`/`tzdb`）与格式化输出。本章以 C++23 / GCC 13.1.0（MinGW-w64）为验证基。
+> 标准基：ISO/IEC 14882:2011（C++11）引入 `<chrono>`；C++17 增补 `floor/ceil/round`；C++20 大幅扩展日历（`year_month_day`）、时区（`time_zone`/`zoned_time`/`tzdb`）与格式化输出。本章以 C++23 / GCC 13.1.0（MinGW-w64）为验证基。｜层级：L2 进阶
 > 预计阅读：约 90 分钟（深度版，含源码逐行与汇编）。
 > 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（对象生命周期与存储）· [第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)（clock 是空基类，理解 `is_clock` 概念）· [第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)（RAII 计时器）。
 > 后续：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)（`last_write_time` 返回的 `file_time_type` 即 `chrono::time_point`）· [第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)（基准测量的时间学基础）· [第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)（基准方法论）。

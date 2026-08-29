@@ -1,4 +1,5 @@
 # 第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化
+> 层级：L3 专家
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > **标准**：C++20 `[basic.lval]`（p11 "If a program attempts to access the stored value of an object through a glvalue of other than the following types the behavior is undefined..."）

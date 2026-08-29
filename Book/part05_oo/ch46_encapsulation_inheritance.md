@@ -1,4 +1,5 @@
 # 第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI
+> 层级：L2 进阶
 
 [第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)
 [第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
