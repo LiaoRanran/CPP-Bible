@@ -733,6 +733,83 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：把"标准里到底有什么"变成可观测信号。** 新人问你"这台机器上的 C++ 到底实现了哪些 C++23 特性？"你不能靠记忆或二手博客回答。请用 `<version>` 提供的特性测试宏，写一个程序打印若干 `__cpp_*` 宏的值（存在即说明对应提案已被本编译器变成可用 API），并说明为什么这比看 `__cplusplus` 年份更可靠。
+
+<details><summary>答案与解析</summary>
+
+`__cplusplus` 只告诉你是 C++20 还是 C++23 的"年份"，不告诉编译器实际实现了哪些库/语言特性；而 `__cpp_*` 系列宏（集中在 `<version>`）是"能力探测"的权威信号——宏存在且值 ≥ 所需 `YYYYMM` 才表示该特性可用。
+
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <version>   // 集中提供 __cpp_* 特性测试宏
+
+int main() {
+    // 年份宏只说明标准年份，不说明特性是否已实现
+    std::cout << "__cplusplus = " << __cplusplus << "\n";
+
+    // 以下宏存在与否 = 本编译器把对应提案变成可用 API 的证据
+#ifdef __cpp_concepts
+    std::cout << "__cpp_concepts = " << __cpp_concepts << "\n";
+#endif
+#ifdef __cpp_consteval
+    std::cout << "__cpp_consteval = " << __cpp_consteval << "\n";
+#endif
+#ifdef __cpp_lib_ranges
+    std::cout << "__cpp_lib_ranges = " << __cpp_lib_ranges << "\n";
+#endif
+    std::cout << "(宏存在 = 提案已落地；缺失 = 仍处 pre-IS / 未实现)\n";
+}
+```
+
+<span class="badge badge-std">标准</span> 特性测试宏由 P0941R2 定稿，约定库特性宏形如 `__cpp_lib_<feature>`、语言特性宏形如 `__cpp_<feature>`，值取 `YYYYMM`；`<version>` 是统一包含点。
+
+<span class="badge badge-exp">经验</span> 永远用 `<version>` + `__cpp_*` 守护特性而非 `__cplusplus`（与练习 1 同结论，但这里是"自测编译器能力"的通用做法）。这也是 CI 里做"标准特性可达性"检查的基础（见 ch11）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：向同事解释"提案年份 ≠ 标准年份"。** 有人争论"P2996 是 2023 年的提案，那反射 2023 年就能用了吧？"请用一段 `constexpr` 代码把若干特性的「提案年份 / 标准年份 / 当前状态」建模成一张时间线，演示 train model：特性按 3 年一版打包，提案年与进标准年之间常有数年差，且未进 train 的特性处于 pre-IS。
+
+<details><summary>答案与解析</summary>
+
+train model 的核心：WG21 把特性按 3 年一版（C++20 / C++23 / C++26…）打包发布，提案被接受 ≠ 当年进标准；中间还要走 EWG/LEWG→CWG/LWG 措辞定稿、周日全会投票、ISO 国家体批准。因此提案年份与标准年份之间常有数年差，且尚在 train 中的特性是 pre-IS。
+
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <array>
+#include <string_view>
+
+// 提案 -> 标准 的 train model：特性按 3 年一版打包，提案年与标准年常差数年
+struct Feature { std::string_view name; int proposal_year; int std_year; };
+
+constexpr std::array<Feature, 3> timeline = {{
+    {"concepts   (P0734R0)", 2017, 2020},
+    {"expected   (P0323R12)", 2016, 2023},
+    {"reflection (P2996R5)", 2023, 2026},   // 仍在 C++26 train，pre-IS
+}};
+
+int main() {
+    for (const auto& f : timeline) {
+        const char* status = (f.std_year <= 2023) ? "已进 IS" : "仍在 train / pre-IS";
+        std::cout << f.name << ": 提案 " << f.proposal_year
+                  << " -> 标准 " << f.std_year << " (" << status << ")\n";
+    }
+}
+```
+
+<span class="badge badge-std">标准</span> IS = ISO/IEC 14882 正式标准；每 3 年一版 train 由 WG21 全会与 ISO 国家体投票共同决定（见本章 §⑤）。
+
+<span class="badge badge-exp">经验</span> "提案年份 ≠ 标准年份"是二手资讯最常犯的错——讨论特性务必引用 `PxxxxRy` 并区分 R0（动机）与 Rfinal（设计），再看编译器 `__cpp_*` 是否落地（练习 4）。
+
+</details>
+
+
+
 ---
 
 > **权威对照（单一事实来源）**：本章涉及 GCC / Clang / MSVC 的特性支持度、报错差异、ABI 与性能对比，均为写作时点快照。最新、逐项以 feature-test macro 实测的横向对照（含 GCC 15.3.0 精确宏值）见 [编译器版本对照表](../../docs/compiler-matrix.md)。**正文中的三编译器版本号以该表为准**——编译器升级后仅更新 `docs/compiler-matrix.md` 一处，无需改动本章。
