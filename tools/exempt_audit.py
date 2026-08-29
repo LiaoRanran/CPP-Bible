@@ -34,6 +34,10 @@ import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
 DEFAULT_ROOT = os.path.abspath(os.path.join(HERE, "..", "Book"))
 DEFAULT_EXEMPT = os.path.join(HERE, "compile_exempt.json")
 DEFAULT_REPORT = os.path.join(HERE, "exempt_audit_report.json")
@@ -143,8 +147,8 @@ def main() -> int:
 
     gcc = args.gcc
     if not gcc:
-        mingw = r"C:/Qt/Tools/mingw1530_64/bin/g++.EXE"
-        gcc = mingw if os.path.exists(mingw) else (shutil_which())
+        # 路径解析统一走 tools/toolchain.py（唯一事实源 = 仓库根 toolchain.toml）
+        gcc = _resolve_gpp()
     gcc = os.path.normpath(gcc)
     platform = detect_platform()
 
@@ -208,7 +212,7 @@ def main() -> int:
         "by_status": by_status,
         "results": results,
     }
-    with open(args.json, "w", encoding="utf-8") as f:
+    with open(args.json, "w", encoding="utf-8", newline="\n") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     # 输出

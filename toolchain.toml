@@ -1,0 +1,37 @@
+# toolchain.toml — 工具链路径的「唯一事实源」
+#
+# 背景：此前 6 个 tools/*.py 里散落 12 处硬编码 `C:/Qt/Tools/...`，
+# 换机器 / 换 CI 镜像 / Qt 升级即全链崩，且失败信息不指向根因。
+# 现在所有工具统一经 tools/toolchain.py 解析本文件。
+#
+# 用法：换环境时只改这里，不要改任何 tools/*.py。
+# 解析规则：按 prefer 顺序探测，第一个存在即用；全部缺失才回退 PATH。
+
+[compiler]
+# 与书内汇编证据同源的 GCC 15.3.0（mingw1530）优先；1310 为遗留回退。
+prefer = [
+  "C:/Qt/Tools/mingw1530_64/bin/g++.exe",
+  "C:/Qt/Tools/mingw1310_64/bin/g++.exe",
+]
+# 全部 prefer 缺失时，在 PATH 上按这些名字探测
+fallback_names = ["g++", "clang++"]
+
+[binutils]
+cxxfilt_prefer = [
+  "C:/Qt/Tools/mingw1530_64/bin/c++filt.exe",
+  "C:/Qt/Tools/mingw1310_64/bin/c++filt.exe",
+]
+cxxfilt_names = ["c++filt", "x86_64-w64-mingw32-c++filt", "c++filt.exe"]
+
+objdump_prefer = [
+  "C:/Qt/Tools/mingw1530_64/bin/objdump.exe",
+  "C:/Qt/Tools/mingw1310_64/bin/objdump.exe",
+]
+objdump_names = ["objdump", "x86_64-linux-gnu-objdump", "objdump.exe"]
+
+[python]
+# 托管 Python（与 cppbible.py find_managed_python 同源）。
+# 全部缺失时回退到当前解释器 sys.executable，不因缺配置而崩。
+prefer = [
+  "C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe",
+]

@@ -12,7 +12,8 @@ verify_compiler_features.py — P0-2.4 编译器特性支持度探针
 用法:
   python3 tools/verify_compiler_features.py            # 探测 GCC15 并落盘 _cpp_probe_gcc.json
   python3 tools/verify_compiler_features.py --check    # 与 docs/compiler-matrix.md 比对
-  python3 tools/verify_compiler_features.py --gcc "C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+  python3 tools/verify_compiler_features.py --gcc <path>
+      （默认路径来自仓库根 toolchain.toml，见 tools/toolchain.py）
 
 注意: 本机仅装有 GCC 15.3.0（MinGW-w64）。Clang / MSVC 列来自 cppreference 文档
 数据（在矩阵表中明确标注 "doc" 来源），不在本脚本本地验证范围内。
@@ -23,9 +24,17 @@ import re
 import sys
 import json
 import subprocess
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_GCC = "C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+
+# 工具链路径唯一事实源 = 仓库根 toolchain.toml；换机器/CI 只改配置，不改代码。
+_TOOLS_DIR = os.path.join(ROOT, "tools")
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
+DEFAULT_GCC = _resolve_gpp()
 
 # (macro, 人类可读特性, 最低有意义 std)
 FEATURES = [
@@ -121,33 +130,39 @@ def gen_cpp(path):
         lines.append("#endif")
     lines.append("    return 0;")
     lines.append("}")
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines) + "\n")
 
 
 def probe(gcc):
-    cpp = os.path.join(ROOT, "_cpp_probe.cpp")
-    gen_cpp(cpp)
-    exe = os.path.join(ROOT, "_cpp_probe.exe")
-    # 用 c++23 最高标准编译
-    cmd = [gcc, "-std=c++23", "-O0", "-x", "c++", cpp, "-o", exe]
-    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
-    if r.returncode != 0:
-        print("[WARN] compile failed:", file=sys.stderr)
-        print(r.stderr[:2000], file=sys.stderr)
-        # 尝试 c++20
-        cmd2 = [gcc, "-std=c++20", "-O0", "-x", "c++", cpp, "-o", exe]
-        r2 = subprocess.run(cmd2, capture_output=True, text=True, encoding="utf-8")
-        if r2.returncode != 0:
-            return None, r2.stderr[:2000]
-        r = r2
-    out = subprocess.run([exe], capture_output=True, text=True, encoding="utf-8")
-    result = {}
-    for line in out.stdout.splitlines():
-        if "=" in line:
-            k, v = line.split("=", 1)
-            result[k.strip()] = v.strip()
-    return result, None
+    # 探测用的 .cpp / .exe 一律写入临时目录并自动清理。
+    # 此前写仓库根会泄漏 _cpp_probe.exe（未跟踪的 *.exe），
+    # 直接触发 preflight 卫生门禁 untracked_root_artifacts 红。
+    with tempfile.TemporaryDirectory() as td:
+        cpp = os.path.join(td, "_cpp_probe.cpp")
+        gen_cpp(cpp)
+        exe = os.path.join(td, "_cpp_probe.exe")
+        # 用 c++23 最高标准编译
+        cmd = [gcc, "-std=c++23", "-O0", "-x", "c++", cpp, "-o", exe]
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+        if r.returncode != 0:
+            print("[WARN] compile failed:", file=sys.stderr)
+            print(r.stderr[:2000], file=sys.stderr)
+            # 尝试 c++20
+            cmd2 = [gcc, "-std=c++20", "-O0", "-x", "c++", cpp, "-o", exe]
+            r2 = subprocess.run(cmd2, capture_output=True,
+                                text=True, encoding="utf-8")
+            if r2.returncode != 0:
+                return None, r2.stderr[:2000]
+            r = r2
+        out = subprocess.run([exe], capture_output=True,
+                             text=True, encoding="utf-8")
+        result = {}
+        for line in out.stdout.splitlines():
+            if "=" in line:
+                k, v = line.split("=", 1)
+                result[k.strip()] = v.strip()
+        return result, None
 
 
 def main():
@@ -169,7 +184,9 @@ def main():
         structured[macro] = {"feature": feat, "std": std, "gcc_value": val}
 
     out_path = os.path.join(ROOT, "_cpp_probe_gcc.json")
-    with open(out_path, "w", encoding="utf-8") as f:
+    # newline="\n" 必须显式指定：Windows 下默认会写 CRLF，导致每次运行都把
+    # 整个文件重写一遍（316 行伪 diff），污染 git 历史（见 AGENT.md LF 红线）。
+    with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(structured, f, ensure_ascii=False, indent=2)
 
     # 统计

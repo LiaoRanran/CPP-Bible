@@ -110,7 +110,7 @@ def main():
     for fp, c in sorted(changed.items()):
         print(f"{fp}: w1={c['w1']} w2={c['w2']} w3={c['w3']}")
     if args.json:
-        with open(args.json, 'w', encoding='utf-8') as f:
+        with open(args.json, 'w', encoding='utf-8', newline="\n") as f:
             json.dump(changed, f, ensure_ascii=False, indent=2)
 
     if args.check:

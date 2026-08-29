@@ -10,8 +10,8 @@
 运行时扩展：后者保证「能编译」，本工具进一步保证「能链接、能跑、不崩、不泄漏、不竞态」。
 
 关键工程决策：
-  * 工具链：默认用本书规范工具链 GCC 15.3.0
-    (C:/Qt/Tools/mingw1530_64/bin/g++.exe)，回退到 PATH 上的 g++。
+  * 工具链：默认用本书规范工具链 GCC 15.3.0，路径由仓库根 toolchain.toml
+    统一声明（经 tools/toolchain.py 解析），全缺失才回退 PATH 上的 g++。
   * Sanitizer 可用性在启动时探测；本机 MinGW-w64 构建不提供 -lasan/-lubsan/
     -ltsan 运行时，探测失败则跳过 sanitizer 变体并明确提示「需在 Linux/Clang
     上跑 sanitizer CI」（与审计 T2/T4 一致），不误报失败。
@@ -45,7 +45,12 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 BOOK = ROOT / "Book"
 
-GPP_CANON = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
+# 工具链路径唯一事实源 = 仓库根 toolchain.toml；换机器/CI 只改配置，不改代码。
+GPP_CANON = _resolve_gpp()
 
 PRELUDE = """#include <iostream>
 #include <vector>
@@ -183,9 +188,8 @@ SANITIZER_CACHE = {}
 
 
 def find_gpp():
-    if os.path.isfile(GPP_CANON):
-        return GPP_CANON
-    return "g++"
+    """解析 g++：值来自 toolchain.toml（见 tools/toolchain.py）。"""
+    return GPP_CANON or "g++"
 
 
 def sanitizer_available(gpp, kind):
@@ -469,7 +473,7 @@ def main():
     args = ap.parse_args()
 
     gpp = find_gpp()
-    print(f"[*] 工具链: {gpp}  ({'GCC15.3.0 规范链' if gpp==GPP_CANON else 'PATH g++'})")
+    print(f"[*] 工具链: {gpp}  ({'toolchain.toml 规范链' if gpp == GPP_CANON else 'PATH g++'})")
     for kind, _ in [("address,undefined", ""), ("thread", "")]:
         avail = sanitizer_available(gpp, kind)
         print(f"    sanitizer {kind:<16}: {'可用' if avail else '不可用（需 Linux/Clang CI）'}")

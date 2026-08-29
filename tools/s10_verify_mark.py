@@ -168,7 +168,7 @@ def main():
         "proposed_UNVERIFIED": len(to_unver),
         "records": recs,
     }
-    with open(os.path.join(ROOT, "build", "s10_audit.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(ROOT, "build", "s10_audit.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=2)
 
     if args.json:

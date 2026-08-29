@@ -252,7 +252,7 @@ def main():
           f"FORMAT_SKIP={cnt['FORMAT_SKIP']}")
     out = a.out or os.path.join(EX, "_repro_spotcheck.json")
     json.dump({"summary": dict(cnt), "results": results},
-              open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+              open(out, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=2)
     print(f"-> {out}")
 
     # 清理模块 BMI 缓存与残留临时 .o（红线⑦：不污染工作树、不误提交生成物）

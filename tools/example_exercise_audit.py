@@ -145,7 +145,7 @@ def main():
     if args.json:
         out = {"totals": totals, "no_label_chapters": [os.path.relpath(x) for x in no_label_chapters],
                "per_chapter": {os.path.relpath(k): v for k, v in per_ch.items()}}
-        with open(args.json, 'w', encoding='utf-8') as fh:
+        with open(args.json, 'w', encoding='utf-8', newline="\n") as fh:
             json.dump(out, fh, ensure_ascii=False, indent=2)
         print(f"\nJSON 基线: {args.json}")
     return 0

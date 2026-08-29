@@ -35,20 +35,15 @@ def _find_first(candidates):
                 return c
     return None
 
-FILT = _find_first([
-    r"C:/Qt/Tools/mingw1530_64/bin/c++filt.exe",  # 与书内工件同源 GCC15.3.0，优先
-    "c++filt",
-    "x86_64-w64-mingw32-c++filt",
-    r"C:/Qt/Tools/mingw1310_64/bin/c++filt.exe",
-    "c++filt.exe",
-])
-OBJDUMP = _find_first([
-    r"C:/Qt/Tools/mingw1530_64/bin/objdump.exe",  # 与书内工件同源 GCC15.3.0，优先
-    "objdump",
-    "x86_64-linux-gnu-objdump",
-    r"C:/Qt/Tools/mingw1310_64/bin/objdump.exe",
-    "objdump.exe",
-])
+# 路径解析统一走 tools/toolchain.py（唯一事实源 = 仓库根 toolchain.toml）：
+# prefer 绝对路径优先 → 全缺失回退 PATH 名称。换机器只改 toolchain.toml。
+_TOOLS_DIR = os.path.join(ROOT, "tools")
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_cxxfilt, resolve_objdump  # noqa: E402
+
+FILT = resolve_cxxfilt()
+OBJDUMP = resolve_objdump()
 HAVE_FILT = FILT is not None
 
 DEF_RE = re.compile(r"^\s*([A-Za-z_][\w.@$]*):")          # 标号定义(符号不含冒号)
@@ -320,7 +315,7 @@ def main():
         print("RESULT: 0 真过期 — 所有『绑定工件』的真实用户函数均仍定义于对应 GCC15.3.0 工件")
         json.dump({"checked": checked, "out_of_scope": oos,
                    "illustrative_out_of_scope": illustrative, "stale": 0, "detail": []},
-                  open(os.path.join(ROOT, "_book_asm_freshness.json"), "w", encoding="utf-8"),
+                  open(os.path.join(ROOT, "_book_asm_freshness.json"), "w", encoding="utf-8", newline="\n"),
                   ensure_ascii=False, indent=2)
         return 0
     print(f"真·绑定围栏小节数(已比对): {checked}  示意性/out-of-scope 围栏: {oos}  教学标号移出: {illustrative}")
@@ -333,7 +328,7 @@ def main():
     json.dump({"checked": checked, "out_of_scope": oos,
                "illustrative_out_of_scope": illustrative, "stale": len(stale),
                "missing": total, "detail": stale},
-              open(os.path.join(ROOT, "_book_asm_freshness.json"), "w", encoding="utf-8"),
+              open(os.path.join(ROOT, "_book_asm_freshness.json"), "w", encoding="utf-8", newline="\n"),
               ensure_ascii=False, indent=2)
     return 1
 

@@ -148,7 +148,7 @@ def main():
 
     print(f"--- summary: files_with_hits={len(all_hits)} counts={counts}", file=__import__("sys").stderr)
     if args.json:
-        with open(args.json, "w", encoding="utf-8") as f:
+        with open(args.json, "w", encoding="utf-8", newline="\n") as f:
             json.dump(all_hits, f, ensure_ascii=False, indent=2)
 
     if args.check:

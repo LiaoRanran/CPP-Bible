@@ -29,6 +29,12 @@ import tempfile
 from pathlib import Path
 from typing import Iterable, Sequence
 
+# 工具链路径解析：唯一事实源 = 仓库根 toolchain.toml（见 tools/toolchain.py）
+_TOOLS_DIR = str(Path(__file__).resolve().parent)
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
 
 # ---------------------------------------------------------------------------
 # 路径与配置发现
@@ -66,15 +72,12 @@ def find_managed_python() -> str:
 
 
 def find_gcc() -> str:
-    """优先返回 Windows 本机 mingw1530 g++。"""
-    candidates = [
-        Path("C:/Qt/Tools/mingw1530_64/bin/g++.exe"),
-        Path("C:/Qt/Tools/mingw1310_64/bin/g++.exe"),
-    ]
-    for c in candidates:
-        if c.exists():
-            return str(c)
-    return "g++"
+    """解析 g++：唯一事实源为仓库根 toolchain.toml（经 tools/toolchain.py）。
+
+    prefer 列表顺序探测（默认 mingw1530 → mingw1310），全缺失才回退 PATH。
+    换机器 / 换 CI 镜像只需编辑 toolchain.toml，不要改本文件。
+    """
+    return _resolve_gpp()
 
 
 PYTHON_EXE = find_managed_python()

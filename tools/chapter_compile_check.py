@@ -14,7 +14,13 @@ int main(→int __main_(、包进 namespace chk_{stem}_{i}、前置 PRELUDE、
 """
 import pathlib, re, subprocess, sys, tempfile, os
 
-GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+_TOOLS_DIR = str(pathlib.Path(__file__).resolve().parent)
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
+# 工具链路径唯一事实源 = 仓库根 toolchain.toml；换机器/CI 只改配置，不改代码。
+GPP = _resolve_gpp()
 PRELUDE = """#include <iostream>
 #include <vector>
 #include <string>

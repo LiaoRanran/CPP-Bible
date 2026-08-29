@@ -172,7 +172,7 @@ def main():
             "risk_categories": risk_cat,
             "details": main_files,
         }
-        with open(args.json, "w", encoding="utf-8") as f:
+        with open(args.json, "w", encoding="utf-8", newline="\n") as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
         print(f"\nJSON 报告 -> {args.json}")
     return 0

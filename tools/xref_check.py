@@ -173,7 +173,7 @@ def main():
         "outbound": {str(k): sorted(v) for k, v in outbound.items()},
     }
     if args.json:
-        json.dump(report, open(args.json, "w", encoding="utf-8"),
+        json.dump(report, open(args.json, "w", encoding="utf-8", newline="\n"),
                   ensure_ascii=False, indent=1)
         print(f"\nJSON 报告 -> {args.json}")
 

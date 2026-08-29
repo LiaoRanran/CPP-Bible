@@ -168,7 +168,7 @@ def main():
             print(f"  {k:18s}: {cnt[k]}")
     out = os.path.join(EX, "_regen_report.json")
     json.dump({"summary": dict(cnt), "results": results},
-              open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+              open(out, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=2)
     print(f"-> {out}")
     if a.batch:
         print(f"(batch limit {a.batch} not yet applied across multiple runs)")

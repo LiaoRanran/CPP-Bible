@@ -44,20 +44,20 @@ from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
 
 # --- GCC resolution (hardened) -------------------------------------------
+_TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
+
 def resolve_gcc(explicit=None):
     if explicit:
         return os.path.normpath(explicit)
-    # Project standard is GCC 15.3.0 (mingw1530). Prefer it when present so the
-    # syntax gate matches chapter_compile_check.py (also 15.3.0) and the saved
-    # compile_report.json baseline. Fall back to PATH `g++` only if mingw1530
-    # is absent (e.g. a CI runner without the Qt toolchain).
-    mingw1530 = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
-    if os.path.isfile(mingw1530):
-        return mingw1530
-    found = shutil.which('g++')
-    if found:
-        return os.path.normpath(found)
-    return 'g++'
+    # Project standard is GCC 15.3.0 (mingw1530). Path resolution now lives in
+    # tools/toolchain.py (single source of truth = repo-root toolchain.toml):
+    # prefer-list probing -> PATH fallback. To retarget a machine or CI image,
+    # edit toolchain.toml instead of this file.
+    return _resolve_gpp()
 
 
 GCC = resolve_gcc(sys.argv[sys.argv.index('--gcc') + 1]
@@ -280,7 +280,7 @@ def dump_report(total_chapters, passed_chapters, failed_chapters,
         'failures': all_failures,
         'processed_paths': sorted(processed_paths) if processed_paths else [],
     }
-    with open(OUT_JSON, 'w', encoding='utf-8') as f:
+    with open(OUT_JSON, 'w', encoding='utf-8', newline="\n") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
 
@@ -417,7 +417,7 @@ def main():
             'failures': all_failures,
             'processed_paths': sorted(done_paths),
         }
-        with open(OUT_JSON, 'w', encoding='utf-8') as f:
+        with open(OUT_JSON, 'w', encoding='utf-8', newline="\n") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
     print('\n--- Compile Summary ---')

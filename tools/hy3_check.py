@@ -19,8 +19,16 @@ import sys
 import os
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PYTHON = r"C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
-GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+
+# 工具链路径唯一事实源 = 仓库根 toolchain.toml（经 tools/toolchain.py 解析）；
+# 换机器 / 换 CI 镜像只改配置，不要改本文件。
+_TOOLS_DIR = str(ROOT / "tools")
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp, resolve_python as _resolve_python  # noqa: E402
+
+PYTHON = _resolve_python()
+GPP = _resolve_gpp()
 
 def run_tool(script, args=None, timeout=30):
     cmd = [PYTHON, str(ROOT / "tools" / script)]

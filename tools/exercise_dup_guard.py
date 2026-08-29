@@ -125,7 +125,7 @@ def main():
     if not cross:
         print("OK: 未发现跨章克隆的练习代码块。")
         if args.json:
-            with open(args.json, "w", encoding="utf-8") as f:
+            with open(args.json, "w", encoding="utf-8", newline="\n") as f:
                 json.dump({"cross_chapter_dups": {}}, f, ensure_ascii=False, indent=2)
         return 0
 
@@ -137,7 +137,7 @@ def main():
         print(f"  hash={h} 章节数={len(chs)}: {chs}")
         print(f"    样例: {v['norm'][:160]}")
     if args.json:
-        with open(args.json, "w", encoding="utf-8") as f:
+        with open(args.json, "w", encoding="utf-8", newline="\n") as f:
             json.dump({"cross_chapter_dups": report}, f, ensure_ascii=False, indent=2)
     print("\n判定：存在跨章克隆 → 阻断（exit 1）。请改写被克隆的练习为各章自有主题。")
     return 1

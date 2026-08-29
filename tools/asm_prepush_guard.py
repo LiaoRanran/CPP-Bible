@@ -37,18 +37,17 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-GPP_CANON = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
+# 工具链路径唯一事实源 = 仓库根 toolchain.toml；换机器/CI 只改配置，不改代码。
+GPP_CANON = _resolve_gpp()
 
 
 def find_gpp():
-    if os.path.isfile(GPP_CANON):
-        return GPP_CANON
-    for cand in ("g++",):
-        from shutil import which
-        p = which(cand)
-        if p:
-            return p
-    return None
+    """解析 g++：toolchain.toml prefer 顺序探测 → 全缺失回退 PATH。"""
+    return GPP_CANON or None
 
 
 def main():

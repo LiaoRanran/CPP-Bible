@@ -28,7 +28,14 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+
+# 工具链路径唯一事实源 = 仓库根 toolchain.toml；换机器/CI 只改配置，不改代码。
+_TOOLS_DIR = str(ROOT / "tools")
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
+GPP = _resolve_gpp()
 CPP_FENCE = re.compile(r'^\s*```cpp')
 FENCE_END = re.compile(r'^\s*```\s*$')
 H2_RE = re.compile(r'^##\s+(.*)')

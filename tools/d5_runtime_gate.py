@@ -31,10 +31,16 @@ import subprocess
 import tempfile
 
 ROOT = os.getcwd()
-if os.name == "nt":
-    DEFAULT_GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
-else:
-    DEFAULT_GPP = "g++"
+
+# 路径解析统一走 tools/toolchain.py（唯一事实源 = 仓库根 toolchain.toml）：
+# Windows 按 prefer 列表探测；非 Windows 上 Windows 路径不存在，自动回退
+# PATH 上的 g++，与原有平台分支语义等价。
+_TOOLS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+
+DEFAULT_GPP = _resolve_gpp()
 STD = "-std=c++23"
 OPT = "-O2"
 WIN_ONLY = {

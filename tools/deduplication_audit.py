@@ -190,7 +190,7 @@ def main():
                 d['avg_water'] = round(d['water'] / d['chapters'], 2)
             out['per_part'] = {p: d for p, d in sorted(part_data.items())}
         json_path = str(ROOT / 'tools' / 'last_v4_report.json')
-        with open(json_path, 'w', encoding='utf-8') as f:
+        with open(json_path, 'w', encoding='utf-8', newline="\n") as f:
             json.dump(out, f, indent=2, ensure_ascii=False)
         print(json.dumps(out, indent=2, ensure_ascii=False))
         return

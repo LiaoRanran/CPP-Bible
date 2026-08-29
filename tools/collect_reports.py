@@ -91,7 +91,7 @@ def collect(root: str, out: str):
             print(f"  ! 拷贝失败 {rel}: {e}", file=sys.stderr)
 
     index_path = os.path.join(out_abs, "INDEX.json")
-    with open(index_path, "w", encoding="utf-8") as fh:
+    with open(index_path, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(index, fh, ensure_ascii=False, indent=2)
 
     print(f"归集源: {len(candidates)} 个文件")

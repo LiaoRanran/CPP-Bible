@@ -157,7 +157,7 @@ def main():
             print("   ", os.path.relpath(f))
 
     if args.json:
-        with open(args.json, 'w', encoding='utf-8') as fh:
+        with open(args.json, 'w', encoding='utf-8', newline="\n") as fh:
             json.dump(report, fh, ensure_ascii=False, indent=2)
         print(f"\nJSON 报告已写: {args.json}")
     return 0
