@@ -332,6 +332,32 @@ def scan_env() -> dict:
     }
 
 
+def scan_chapter_levels() -> dict:
+    """章级 L1/L2/L3 分层覆盖率（P2/T1）。
+
+    检测每章头部 meta 行中的 `层级：L1/L2/L3`（与示例级 [难度] 星分离）。
+    为避免与正文里的「缓存层级：L1/L2/L3」「内存层级：L1/L2/L3」混淆，要求
+    `层级：Lx` 必须出现在含 `标准基：`/`预计阅读：` 的同一 meta 行上。
+    纯文本块注，三模式天然安全；metrics 借此使 chapter_levels 成为可量化进度。
+    """
+    pat = re.compile(r'层级\s*[:：]\s*L([123])')
+    meta_anchor = re.compile(r'标准基\s*[:：]|预计阅读\s*[:：]')
+    files = [p for p in BOOK.rglob("*.md") if "_legacy_" not in str(p)]
+    counts = {"L1": 0, "L2": 0, "L3": 0}
+    total = 0
+    for p in files:
+        try:
+            t = p.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        for line in t.splitlines():
+            if meta_anchor.search(line) and pat.search(line):
+                total += 1
+                counts["L" + pat.search(line).group(1)] += 1
+                break
+    return {"total": total, "L1": counts["L1"], "L2": counts["L2"], "L3": counts["L3"]}
+
+
 def build() -> dict:
     chapters = scan_chapters()
     asm = scan_asm()
@@ -340,7 +366,7 @@ def build() -> dict:
     return {
         "schema": "cppbible-metrics/1.0",
         "commit": git("rev-parse", "--short", "HEAD"),
-        "chapter_levels": 0,  # 章级 L1/L2/L3 分层尚未实施（现有 8746 颗星只评示例，不评章节）
+        "chapter_levels": scan_chapter_levels()["total"],  # 章级 L1/L2/L3 分层覆盖章数（P2/T1）
         "content": chapters,
         "asm": asm,
         "env": env,

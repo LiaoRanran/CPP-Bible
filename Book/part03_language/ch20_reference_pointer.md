@@ -10,7 +10,7 @@
 
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
 
-> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：180 min｜难度：★★★
+> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：180 min｜难度：★★★｜层级：L2 进阶
 > 前置：ch19（对象/存储期/生命周期）｜后续：ch21（const 引用与生命周期延长·深度版）、ch31（`const_cast` 去 const 后改引用绑定对象）、ch33（悬垂与生命周期）、ch52（多态）、ch115（右值引用/移动语义）、ch116（完美转发/万能引用）、ch77（容器 `operator[]`）、ch89（`reference_wrapper` 体系）、ch94（结构化绑定）、ch157（Compiler Explorer 实战）、ch154（缓存与性能）、智能指针章（所有权）
 >
 > **本章立场分层约定**：全章使用四层标签，请读者随时对照

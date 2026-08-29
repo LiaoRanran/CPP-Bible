@@ -4,7 +4,7 @@
 [第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)
 [第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)
 
-> 标准基：前标准（1972–1985）｜预计阅读：35 min｜前置：无｜后续：ch02 标准化、ch19 变量、ch50 封装｜难度：★
+> 标准基：前标准（1972–1985）｜预计阅读：35 min｜前置：无｜后续：ch02 标准化、ch19 变量、ch50 封装｜难度：★｜层级：L1 入门
 
 ## ⓪ 历史动机：C 语言遗产与 C with Classes 的来龙去脉
 
