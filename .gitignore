@@ -3,6 +3,8 @@ build/
 site_out/
 现代C++终极圣经.pdf
 *.pdf
+# pandoc 导出产物（可由 tools/ 重生成，不入库）
+Book.zip
 
 # 清理战役备份（一次性，可删）
 *.bak
@@ -13,6 +15,7 @@ site_out/
 *.o
 *.obj
 /*.cpp          # 仅根目录：compile_all/chapter_compile_check 漏回根目录的 .cpp（不伤 Examples/ 真实源）
+!_bench_d5_*.cpp   # 例外：库根 D5 基准源码须跟踪（覆盖上面 /*.cpp，修复新建 bench 被静默忽略的脚枪）
 _probe*.cpp
 _tu_*.cpp
 _repro.py
