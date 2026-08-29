@@ -54,8 +54,12 @@ TPL_CIRCLED = re.compile(r"[①-⑳]")
 
 # 难度星分布
 STAR_RE = re.compile(r"★+")
-# 练习标记
-EXERCISE_RE = re.compile(r"\[难度")
+# 练习标记（P3 修正）：原 `\[难度` 统计的是「示例级难度括号标签」旧格式（如
+# `> **示例 18** [难度 ★☆☆☆☆]`），与新 span 徽章体系不一致，且全库 147 章
+# 均已有 `## 自测练习（Exercises）` 下的 `### 练习 N` 真实练习题——旧正则把它们
+# 全数漏计，导致 exercise_zero_chapters/median 严重失真（实测 62/1 实为 0/3）。
+# 现改为统计真实练习题标题 `### 练习`（三模式安全、与 verify_exercises.py 编译节一致）。
+EXERCISE_RE = re.compile(r"^###\s*练习", re.M)
 
 # 教学脚手架 / 文学性 关键词（用于进度看板）
 MARKERS = {
