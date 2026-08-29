@@ -302,6 +302,22 @@ def cmd_preflight(_args: argparse.Namespace) -> int:
         print("  [Assertions] ⚠️  cache missing or FAIL>0; run: cppbible check --stage compile")
         # 断言缓存不阻断预检，仅警告
 
+    # 度量看板：每次推送重新生成 build/metrics.json（单一真相源）并打印 15 条验收看板。
+    # 非阻塞（与 Assertions 同款）：当前 14/15 未达标，若启用 --strict 会阻断全部真实
+    # 工作；待指标接近达标后再于此处加 --strict 升级为 blocking 门禁。
+    print("\n[Metrics]")
+    try:
+        r = run([PYTHON_EXE, "tools/metrics_snapshot.py", "--check"], check=True)
+        if r.stdout:
+            print(r.stdout, end="")
+        print("  ✅ Metrics snapshot OK (build/metrics.json regenerated)")
+    except subprocess.CalledProcessError as e:
+        print("  ⚠️  Metrics snapshot failed to run (non-blocking)")
+        if e.stdout:
+            print(e.stdout, end="")
+        if e.stderr:
+            print(e.stderr[-500:])
+
     for name, cmd in checks:
         print(f"\n[{name}]")
         try:
