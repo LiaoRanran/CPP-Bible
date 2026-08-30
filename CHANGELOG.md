@@ -68,7 +68,7 @@
 
 - **site job「Install MkDocs stack (locked)」必红**：`requirements.lock.txt` 含 uv export 默认注入的 `-e .`（editable），pip 在带 `--hash` 的锁文件中处于哈希校验模式，与 editable 安装不兼容（本地 `pip install --dry-run` 复现同一报错）。修复：改用 `uv export --no-emit-project` 重新导出（site job 仅用独立 tools 脚本与 mkdocs/pagefind CLI，不依赖项目包安装，移除 `-e .` 无副作用）；ci.yml 内生成命令注释同步。
 - **site job「Site front-end health audit」误报（本地复现定位）**：`site_audit.py` 三处误报——(1) `Path(base)/"/绝对路径"` 会丢弃 base 从盘根解析，404.html 的 `/Appendix/ub/` 等 174 个绝对目录链接全部误判缺失；(2) ch61 Mermaid 内联 SVG 文本含字面 `<a href="x">` 被当资源引用；(3) `/.`（主题 logo 根链接）与 `/pagefind/*`（索引产物由检查 6 专责）。修复后本地全站 1595 个资源引用全通过，fixture 自测维持 GOOD=PASS/BAD=FAIL。
-- **epub job「Generate EPUB」步骤 1~3 分钟内被 cancelled（4/4 复现，#373 时代即存在的旧疾，新依赖图将其暴露）**：pandoc 单次处理 6.2MB combined.md + mermaid-filter（Chromium）在 ubuntu runner 上连带 bash 被信号终止，降级逻辑来不及生效。修复：epub 的 mermaid-filter 改为 `CPPBIBLE_EPUB_MERMAID=1` 显式开启、CI 默认关闭（Mermaid 降级为代码块，保证 EPUB 必产出；PDF job 的分卷管线不受影响）。随 `b2a5a02` 远端复验。
+- **epub job「Generate EPUB」步骤被 cancelled → 根因 OOM（WSL 7.4GB 复现实测）**：全书 `combined.md` 已增至 **13MB**（14.7万行→23.7万行时代翻倍），单本 pandoc `--split-level=1` 峰值内存 >7GB，在 CI（7GB runner）与 WSL（7.4GB）上均被 OOM Killer 杀死——runner 检测到 shell 进程消失将步骤误标为 cancelled 而非 failure（4/4 复现、心跳防御无效的原因：整个进程组连心跳 bash 一起被杀）。旧 `book.epub`（6.1MB，8/11）为书体量翻倍前的产物，run #373 起 epub 实际持续失败。修复：`generate_epub.sh` 新增 `--by-part` 分册模式（与 pdf job 对称，复用 `rewrite_links` API 按 part 切分），本地 WSL 16 册全部生成成功（44K-882K/册）；CI 改用分册 + `if: always()` 上传生成日志 artifact；EPUB rights 元数据 CC BY-NC-SA → MIT（与 LICENSE 裁决一致）。随 `b90fa5d` 远端复验。
 
 ### 现状与遗留
 
