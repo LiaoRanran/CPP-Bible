@@ -81,16 +81,34 @@ GCC_EXE = find_gcc()
 # 底层执行 helpers
 # ---------------------------------------------------------------------------
 
+def _child_env() -> dict[str, str]:
+    """子进程环境：强制 stdio 用 UTF-8。
+
+    ``tools/`` 下 70+ 个脚本里只有少数几个做了 ``sys.stdout.reconfigure``，
+    其余在 Windows 中文控制台（GBK）打印 ✅/⟶ 时会抛 UnicodeEncodeError。
+    子进程 stdout 是管道，不受父进程 reconfigure 影响，且它在「写出前」就
+    已经崩了——父进程按 UTF-8 解码救不回来。这里注入 ``PYTHONIOENCODING``
+    一次性覆盖全部子脚本，避免逐个补 reconfigure。
+
+    只设 stdio，不设 ``PYTHONUTF8``：后者会改变 ``open()`` 默认编码与文件
+    系统编码，属于面更大的行为变更，不在本次修复范围内。
+    """
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8:replace"
+    return env
+
+
 def run(cmd: Sequence[str | Path], *, cwd: Path | None = None, check: bool = True, timeout: int | None = None) -> subprocess.CompletedProcess:
     """统一封装 subprocess.run，输出命令本身便于调试。"""
     cmd_str = [str(c) for c in cmd]
     print(f"  $ {' '.join(cmd_str)}", flush=True)
-    # 子进程（tools/*.py 等）统一输出 UTF-8（见 xref_check 等工具的 reconfigure）；
-    # 这里显式按 UTF-8 解码，避免 Windows 中文控制台按 GBK 解码抛
-    # UnicodeDecodeError 把门禁 runner 打崩。
+    # 子进程（tools/*.py 等）统一输出 UTF-8（见 _child_env）；这里显式按
+    # UTF-8 解码，与子进程编码端对齐，避免 Windows 中文控制台下门禁 runner
+    # 因编解码不一致而崩。
     return subprocess.run(cmd_str, cwd=cwd or ROOT, check=check, text=True,
                           encoding="utf-8", errors="replace",
-                          capture_output=True, timeout=timeout)
+                          capture_output=True, timeout=timeout,
+                          env=_child_env())
 
 
 def run_python(script: str | Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:

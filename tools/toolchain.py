@@ -182,19 +182,32 @@ def resolve_objdump() -> str | None:
     return _resolve("objdump_prefer", "objdump_names", "binutils")
 
 
+def _patch_key(path: str) -> tuple[int, int, int]:
+    """从 glob 命中的路径里抽 ``(major, minor, patch)`` 作为数值排序键。
+
+    纯字典序排序会把 ``3.13.12`` 排在 ``3.13.2`` 之前（``'1' < '2'``），
+    与「取最新 patch」的直觉相反；故按数值比较。无法解析时返回 (0,0,0)，
+    使「无版本号」的候选稳定沉底，不喧宾夺主。
+    """
+    m = re.search(r"(\d+)\.(\d+)(?:\.(\d+))?", path)
+    if not m:
+        return (0, 0, 0)
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3) or 0))
+
+
 def resolve_python() -> str:
     """返回托管 Python 路径；全部缺失时回退当前解释器 ``sys.executable``。
 
     ``prefer`` 项支持 glob（如 ``versions/3.13.*/python.exe``），使配置
     对 patch 级目录改名免疫——托管目录名 ``3.13.12`` 但其内二进制实为
     ``3.13.14``，锁死具体 patch 会让「配置路径」不可信；命中多候选时按
-    字典序取第一个，保证确定性。
+    版本号数值排序取**最高 patch**，既确定又符合直觉。
     """
     for p in _CFG.get("python", {}).get("prefer", []):
         if not p:
             continue
         if any(ch in p for ch in "*?["):
-            for hit in sorted(glob.glob(p)):
+            for hit in sorted(glob.glob(p), key=_patch_key, reverse=True):
                 if os.path.isfile(hit):
                     return os.path.normpath(hit)
         elif os.path.isfile(p):
@@ -262,4 +275,12 @@ def _main() -> int:
 
 
 if __name__ == "__main__":
+    # Windows 中文控制台（GBK）无法编码 ✅/⚠：本模块会在结论行打印它们。
+    # 不做兜底时抛出的 UnicodeEncodeError 会以退出码 1 结束，与「检测到
+    # 版本漂移」的退出码相同，极易被误读成自检失败——故先强制 UTF-8 输出。
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
     sys.exit(_main())
