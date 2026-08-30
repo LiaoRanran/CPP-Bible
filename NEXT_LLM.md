@@ -98,7 +98,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | 3 | legacy 审计候选人工复核 | 审计报告 §5.3 | 10 unsafe C / 94 裸 new / 101 reinterpret_cast，分批留档（`audit_cpp_defects.py`） |
 | 4 | 备份第二故障域 | ✅ 已完成 2026-08-30 | 已推 `D:\CPP-Bible-Backup\20260830-201021`（明文副本，恢复演练 PASS），见本节末 |
 | 5 | 站点/PDF/EPUB 本地重建 | 审计报告 §11 | 本机缺 pandoc/xelatex/mkdocs，出版产物走 CI 八 job |
-| 6 | 工具链升级剩余项（Python 收窄/静态检查链/digest/指标事实源/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | 🔶 P0 全完成（Python 收敛 ✅ + ruff 清零并进 CI ✅ + 控制台编码 ✅）；剩 mypy 类型 triage + P1/P2 |
+| 6 | 工具链升级剩余项（Python 收窄/静态检查链/指标事实源/digest/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | 🔶 P0 全完成 + P1 指标事实源完成；剩 mypy 类型 triage、容器 digest、CROSSREF 裁决 |
 
 ---
 
@@ -111,6 +111,8 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` | 全量审计 + 风险清单 + 路线图 | ✅ |
 | `UPGRADE_PLAN_2026-08-30.md` | 升级方案（7 目标 / 阶段 A-D / 关键决策） | ✅ |
 | `TOOLCHAIN_UPGRADE_NEXT.md` | 工具链升级剩余项执行规划（P0-P2 五剩余项 + CROSSREF 裁决策略） | ✅ |
+| `metrics.schema.json` | **指标单一事实源定义**（12 个字段 + 出处 + 可回写字段 + 待校验正则） | ✅ |
+| `tools/gen_metrics.py` | 指标落地校验器：`--check` 校验文档写死数字（CI 硬门禁）/ `--sync` 回写 STATE.json 派生字段 | ✅ |
 | `CONTENT_DEPTH_ROADMAP.md` | **内容深化主线**（五阶：汇编实证矩阵 / 实战项目线 / 陷阱体系 / 人文温度 / 内容形态补全） | ✅ |
 | `docs/references/P1_memory_object_model_checklist.md` | 台阶一 P1 内存/对象模型实证结论清单（强模型定结论，弱模型施工图） | ✅ |
 | `ISSUES.md` | 遗留清单（2026-08-30 口径） | ✅ |

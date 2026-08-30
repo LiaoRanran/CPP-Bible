@@ -13,7 +13,7 @@
 | 1 | Python 版本漂移 | `.venv`=3.14.5、托管解释器实 3.13.14（目录名 3.13.12）、系统 `python`=3.14.5（WindowsApps Store stub） | P0 | ✅ 已落地（`fc784ba`；.venv 重建待后续） |
 | 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | ✅ ruff 清零并进 CI（150 自动 + 99 人工）；🔶 mypy 待装 |
 | 3 | 容器镜像 digest | `ci.yml`/`Dockerfile`/`.devcontainer` 仍用浮动 `gcc:15.3.0` | P1 | ⬜ |
-| 4 | 指标单一事实源 | README/STATE/ISSUES/NEXT_LLM 指标互相冲突（HEAD 自相矛盾） | P1 | ⬜ |
+| 4 | 指标单一事实源 | README 的 cpp 块数 7530（实 7523）、自包含章数 112（实 114）、STATE.json 的 `last_commit` 落后 HEAD 24 个提交 | P1 | ✅ 已落地（`metrics.schema.json` + `tools/gen_metrics.py`，已进 CI quality job） |
 | 5 | CROSSREF 生成器过时 | dry-run 依赖边 732→103（退化 85%），生成器已与正文链接形式脱节 | P2 | 需裁决 |
 
 ---
@@ -99,14 +99,35 @@
 
 ## 4. 指标单一事实源（P1）
 
-**实测冲突实例**：`NEXT_LLM.md` 正文 HEAD=`6d7d6e9` vs 尾注 HEAD=`445eaa5`；`STATE.json` `last_commit`=`4c5cb32` vs 实际 HEAD=`972bbe9`。README/STATE/ISSUES/NEXT_LLM 的章节数/代码块数/HEAD 长期不一致。
+**实测冲突实例**：`NEXT_LLM.md` 正文 HEAD=`6d7d6e9` vs 尾注 HEAD=`445eaa5`；`STATE.json` `last_commit`=`4c5cb32`（2026-08-31 复测时已落后 HEAD **24 个提交**）；README 的 cpp 块数 7530 vs 事实源 7523、自包含章数 112 vs 114。
 
-**行动**：
-1. 建 `metrics.schema.json`：定义唯一指标字段（chapters/fences/main_rate/include_rate/d5_coverage/asm_anchor/HEAD 等）与出处（`build/metrics.json`）。
-2. 生成器产出：README 徽章表、`STATE.json` 顶部数字、`ISSUES.md` 头、`NEXT_LLM.md` 速览表**全部从同一 schema 派生**。
-3. `gen_metrics --check` 进 CI，磁盘与生成结果不一致即 BLOCK（对齐现有 `gen_indexes.py --check` 范式）。
+**已落地（2026-08-31）**：
 
-**验收**：五份文档的 HEAD/章节/代码块数一致；`gen_metrics --check` 进 quality job。
+1. `metrics.schema.json`（库根）：声明 12 个指标字段及其出处——`scan`（Book/
+   实时扫描）/ `compile_report`（`tools/compile_report.json`）/ `git` / `date` /
+   `ratio_pct`（派生百分比）；外加 `sync`（允许回写的机器自有字段）与
+   `checks`（待校验的文档正则 → 期望字段）。
+2. `tools/gen_metrics.py`：`--check` 校验漂移（漂移即报 `文件:行号` 并 exit 1）、
+   `--sync` 回写 `STATE.json` 的 `last_commit`/`last_updated`/`total_chapters`。
+   已进 CI quality job（`continue-on-error: false`）。
+
+**两处与原始方案的有意偏离（记录备查）**：
+
+- **事实取自实时扫描，而非 `build/metrics.json` 快照**。`build/` 未进 git，
+  CI 全新 checkout 时该文件根本不存在；且快照本身会陈旧（其 `commit` 字段
+  落后于 HEAD）。实时扫描才是权威，快照只作缓存与人读。
+- **散文文档只校验、不改写**。原方案要「README 徽章表 / STATE 顶部 /
+  ISSUES 头 / NEXT_LLM 速览表全部由生成器产出」，但这些数字嵌在叙述里，
+  程序改写会破坏语义与语气；且生成器一旦成为唯一写入者，后续人手改动会被
+  静默覆盖。改为：漂移即 BLOCK 并指名行号；只有机器自有的 JSON 字段才
+  `--sync` 自动回写。
+
+**踩过的坑（留给后来者）**：`STATE.json` 是 **CRLF 且无末尾换行**。回写时若
+统一按 LF + 末尾换行写，会产出 669 行的整文件伪 diff，把真正的 2 行变更
+完全淹没。本项目 `core.autocrlf=false`，行尾必须 bytes 级对齐——
+`gen_metrics.py` 里已用 `_write_json()` 保留原行尾与末尾换行有无。
+
+**验收**：`python tools/gen_metrics.py --check` 退出 0；已在 quality job。
 
 ---
 
@@ -136,8 +157,10 @@
 
 ## 6. 分阶段顺序与护栏
 
-**执行顺序**：`1（Python 版本）→ 2（静态检查链）→ 4（指标事实源）→ 3（容器 digest，待有容器环境）→ 5（CROSSREF 裁决）`。
+**执行顺序**：`1（Python 版本）✅ → 2（静态检查链，mypy 除外）✅ → 4（指标事实源）✅ → 3（容器 digest，需容器/registry 环境）→ 5（CROSSREF 裁决，需用户定方向）`。
 理由：1/2 是「P0 且本机即可做」；4 依赖 1 的统一口径；3 需外部环境；5 需用户裁决方向。
+
+**当前剩余（2026-08-31）**：mypy 类型 triage、容器 digest、CROSSREF 裁决三项。
 
 **护栏**（沿用项目红线）：
 
