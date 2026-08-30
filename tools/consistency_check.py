@@ -37,6 +37,8 @@ from pathlib import Path
 EXPECTED_ELEMENTS = [f"{i}" for i in range(1, 21)]  # "1".."20" 匹配 ①②..⑳
 BANNED_HEADINGS = ["推荐阅读", "参考文献", "延伸阅读"]
 STANCE_LABELS = ["[标准]", "[实现]", "[平台]", "[经验]"]
+# 徽章载体（L1 立场层）：badge-std=标准 / impl=实现 / platform=平台 / exp=经验
+STANCE_BADGE_RE = re.compile(r'badge badge-(?:std|impl|platform|exp)["\'>]')
 CROSSREF_RE = re.compile(r"(?:⟶\s*|见\s*|→\s*)(Book/[^\s\)\]>。，；：、》）(（]+)")
 FILE_LINK_RE = re.compile(r"`?(Book/[A-Za-z0-9_/.\-]+\.md)`?")
 ASCII_BOX_RE = re.compile(r"[─│┌┐└┘├┤┬┴┼]")
@@ -118,7 +120,10 @@ def check_chapter(path: Path, root: Path) -> dict:
         rep["info"].append(f"示例数达标: {cpp_blocks}")
 
     # 4. 立场分层标签
-    have_stance = any(lbl in text for lbl in STANCE_LABELS)
+    # 两种合法载体：字面 [标准]/[实现]/[平台]/[经验]，或全库 L1 徽章
+    # <span class="badge badge-std|impl|platform|exp">（2026-08 徽章化迁移后主流，
+    # 9416 标记；站点渲染彩色标签，PDF/EPUB 由 pandoc 降级纯文本）。
+    have_stance = any(lbl in text for lbl in STANCE_LABELS) or STANCE_BADGE_RE.search(text)
     if not have_stance:
         rep["warns"].append("未见立场分层标签[标准]/[实现]/[平台]/[经验]")
     rep["stance"] = have_stance
