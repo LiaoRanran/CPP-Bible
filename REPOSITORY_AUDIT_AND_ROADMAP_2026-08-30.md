@@ -211,7 +211,8 @@ Python 包声明只有下界，没有锁文件；站点、PDF、Node/Chromium �
 - 共 373 次 Actions 运行；最近 15 次中 13 次成功，`#372`、`#373` 失败。
 - 最新 `#373` 的 quality、GCC、Clang、site、PDF、publish-check 和 deploy 作业成功，EPUB 失败，工作流总体失败。
 - `#373` 中 deploy 于 10:08:14Z 完成，而 GCC 编译到 10:38:33Z 才完成；说明部署确实没有等待编译，且在 EPUB 最终失败的工作流中仍发布了 Pages。
-- 本轮已在工作树修改 `.github/workflows/ci.yml`：`site/pdf/epub` 等待 `compile + publish-check`，`deploy` 等待 `site + pdf + epub`。该修复尚未推送，需以新的 Actions 运行验收。
+- **【2026-08-30 修复闭环】**依赖图重构（deploy needs site+pdf+epub；发布链 needs compile）+ 三项根因修复（requirements.lock 的 `-e .` 与 pip 哈希校验不兼容、site_audit 绝对链接误报、epub OOM→--by-part 分册）后，run `33304567016`（`b90fa5d`）实现 **quality / GCC-15 / Clang-19 / publish-check / site / pdf / epub / deploy 八 job 全链路首次真绿**，「发布绕过编译」与「epub 静默失败」两项风险闭环。
+- ~~本轮已在工作树修改 `.github/workflows/ci.yml`：`site/pdf/epub` 等待 `compile + publish-check`，`deploy` 等待 `site + pdf + epub`。该修复尚未推送，需以新的 Actions 运行验收。~~（已推送并验收：见上方修复闭环）
 
 ## 7. 风险清单
 

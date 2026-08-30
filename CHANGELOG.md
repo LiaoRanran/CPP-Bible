@@ -72,6 +72,7 @@
 
 ### 现状与遗留
 
+- **CI 全链路首次真绿（`b90fa5d`，run 33304567016）**：quality / Compile(GCC-15) / Compile(Clang-19) / publish-check / site / pdf / epub / deploy 八 job 全部 success。自 #373 起的「deploy 绕过编译失败发布」P0 风险彻底闭环；epub 自 #373 起的静默失败同步修复。
 - 内容债已清零（55 悬空 + 7 前置 + 30 WARN + D5 口径）+ 事实源冲突已同步；仍遗留：分支保护未启用、断言 55 WARN、ch01/02/08/09/10 cpp 完整化、legacy 候选人工复核、第二故障域备份（需介质），详见审计报告 §7/§8/§10。
 
 ---

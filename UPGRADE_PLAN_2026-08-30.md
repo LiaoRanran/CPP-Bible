@@ -93,13 +93,13 @@
 1. ✅ 新门禁 `cppbible env`（工具链自检，接入 bootstrap）。
 2. ✅ 前端工具 `tools/site_audit.py`（站点产物健康自检，接入 CI site job，含 fixture 自测）。
 3. ✅ 内容债任务单 `docs/references/content_debt_tasklist.md`（55 悬空 + 7 前置 + 30 WARN 明细与执行顺序，作为"接手干活"的落地分析产物）。
-4. 🔄 CI 所述变更经远端 Actions 验收（已推送，run #378 等全链路验证中）。
+4. ✅ CI 所述变更经远端 Actions 验收（`b90fa5d` run 33304567016：quality / GCC-15 / Clang-19 / publish-check / site / pdf / epub / deploy 八 job 全绿，#373 起绕过发布的 P0 风险闭环）。
 
 ### 阶段 B（短期，09-03 ~ 09-30）：债务清零与指标统一【提前推进中】
 1. ✅ 30 WARN 清零（徽章载体误报，修工具）、55+7 引用/拓扑清零并转硬门禁。
 2. ✅ 依赖锁文件（uv.lock + requirements.lock.txt）；D5 口径统一（113/119 → 119/147，标题正则收口）；容器 digest 待钉。
 3. ⬜ legacy 审计候选项分批人工复核（每批提交 + 记录）。
-4. 🔄 工作树按主题拆分提交并推送验收 CI 新依赖图（已完成 4 批提交，全链路 CI 验证中）。
+4. ✅ 工作树按主题拆分提交并推送验收 CI 新依赖图（`b90fa5d` 八 job 全链路真绿，含 epub OOM 根因修复：13MB 单本 pandoc 峰值>7GB → --by-part 分册）。
 出口：门禁全绿且无基线债务；CI 无可复现漂移。
 
 ### 阶段 C（中期，10-01 ~ 11-15）：内容深化与质量收口【经用户裁决：内容优先，UI 延后】

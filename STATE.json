@@ -665,5 +665,5 @@
     "application_layer_app15_chapters": "8/147 (ch79/ch80/ch81/ch82/ch83/ch84/ch85/ch86)",
     "application_layer_app16_chapters": "5/147 (ch132/ch143/ch150/ch163/ch165)"
   },
-  "ci_status": "2026-08-30 升级战役: 工具栈/门禁/前端工具升级 + 内容债清零(55悬空+7前置+30WARN) + D5口径统一(119/147) 已推送(commit 4c5cb32); CI quality/publish-check 绿, 编译链路远端验证中"
+  "ci_status": "2026-08-30 升级战役收官: CI 八 job 全链路首次真绿(run 33304567016, b90fa5d)——quality/GCC-15/Clang-19/publish-check/site/pdf/epub/deploy 全 success; #373 起 deploy 绕过编译发布与 epub OOM 静默失败两项 P0 闭环; 内容债(55悬空+7前置+30WARN+D5口径)清零"
 }
