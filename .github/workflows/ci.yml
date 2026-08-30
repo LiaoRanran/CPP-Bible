@@ -376,7 +376,8 @@ jobs:
 
     - name: Install MkDocs stack (locked)
       # 从 uv 导出的 requirements.lock.txt 安装，保证本地与 CI 依赖一致、可复现
-      # （生成：uv export --extra dev --extra ci --extra pdf -o requirements.lock.txt）
+      # （生成：uv export --no-emit-project --extra dev --extra ci --extra pdf -o requirements.lock.txt
+      #   --no-emit-project 必须保留：pip 哈希校验模式与 `-e .` 不兼容，含 editable 行必装失败）
       run: pip install -r requirements.lock.txt
 
     - name: Rewrite cross-chapter links (site)

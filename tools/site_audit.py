@@ -71,10 +71,32 @@ def audit(site: Path) -> int:
     dir_hrefs = set()
     for p in htmls:
         text = p.read_text(encoding="utf-8", errors="replace")
+        # 剔除内联 SVG（Mermaid 图）：图内文本可含任意字面 `href="x"`，
+        # 非真实资源引用（实测 ch61 mermaid 标签文本误报）。
+        text = re.sub(r"<svg\b.*?</svg>", "", text, flags=re.S)
         base = p.parent.resolve()  # 相对链接以当前 html 所在目录为基准（绝对化，避免 cwd 歧义）
         for m in ASSET_RE.finditer(text):
             res = m.group(1).split("#")[0].split("?")[0]
             if not res:
+                continue
+            # 以 / 开头的站内绝对路径：按站点根解析。
+            # 注意必须先于目录式分支：Path(base) / "/abs" 会丢弃 base 从盘根解析，
+            # 导致 /Appendix/ub/ 这类绝对目录链接永远误判缺失（Windows/Linux 皆然）。
+            if res.startswith("/"):
+                # `/.` 与 `/`：主题 logo/首页 的站点根链接 → 站点根目录必然存在
+                if res.rstrip(".") == "" or res in ("/", "/."):
+                    total_res += 1
+                    continue
+                # /pagefind/*：索引产物由 pagefind 步骤生成，其存在性由检查 6 专责，
+                # 此处跳过以免本地未建索引时误报（CI 中 pagefind 先于本审计运行）。
+                if res.startswith("/pagefind/"):
+                    total_res += 1
+                    continue
+                cand = (site / res.lstrip("/")).resolve()
+                ok = cand.is_dir() if res.endswith("/") else cand.is_file()
+                if not ok:
+                    missing.add(f"{p.relative_to(site).as_posix()} -> {res}")
+                total_res += 1
                 continue
             # 目录式链接（use_directory_urls 生成，如 ../ub01_use_after_free/）→ 目录页，单独放行
             if res.endswith("/"):
@@ -82,13 +104,6 @@ def audit(site: Path) -> int:
                     dir_hrefs.add(res)
                 else:
                     missing.add(f"{p.relative_to(site).as_posix()} -> {res}")
-                continue
-            # 以 / 开头的站内绝对路径：按站点根解析
-            if res.startswith("/"):
-                cand = (site / res.lstrip("/")).resolve()
-                if not cand.exists():
-                    missing.add(f"{p.relative_to(site).as_posix()} -> {res}")
-                total_res += 1
                 continue
             total_res += 1
             cand = (base / res).resolve()

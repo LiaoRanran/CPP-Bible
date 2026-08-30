@@ -29,12 +29,15 @@ if [ "${#missing[@]}" -gt 0 ]; then
   exit 2
 fi
 
+# mermaid-filter 默认关闭：CI 实测（run #373 及 2026-08-30 多轮）pandoc + mermaid-filter
+# 在 ubuntu runner 上于 1~3 分钟内连带 bash 被信号终止（步骤显示 cancelled，降级逻辑
+# 来不及生效），EPUB 从未产出。需要渲染时显式 CPPBIBLE_EPUB_MERMAID=1。
 MERMAID_FILTER=""
-if command -v mermaid-filter >/dev/null 2>&1; then
+if [ "${CPPBIBLE_EPUB_MERMAID:-0}" = "1" ] && command -v mermaid-filter >/dev/null 2>&1; then
   MERMAID_FILTER="--filter mermaid-filter"
   echo "[info] 检测到 mermaid-filter：Mermaid 块将渲染为 SVG 嵌入 EPUB。"
 else
-  echo "[warn] 未检测到 mermaid-filter：Mermaid 块将降级为普通代码块（不阻断）。"
+  echo "[info] mermaid-filter 未启用（CPPBIBLE_EPUB_MERMAID!=1 或未安装）：Mermaid 块为普通代码块。"
 fi
 
 # ---- 1. 链接重写 → combined.md ----
