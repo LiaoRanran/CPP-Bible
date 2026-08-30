@@ -12,11 +12,11 @@
 | 什么项目？ | 《现代 C++ 终极圣经》147 章 C++ 技术书 + Python 质量门禁工具链，仓库 `LiaoRanran/CPP-Bible` |
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
 | 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已首次全链路真绿 |
-| 在飞的活？ | 无——上一批「JSON 台阶二收尾」已提交并推送（`fb329d5`…`972bbe9`，见「已收口批次」） |
-| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`；内容五阶主线见 `CONTENT_DEPTH_ROADMAP.md` |
-| HEAD？ | `972bbe9`（本地 = origin/master，无分叉） |
+| 在飞的活？ | 无——上一批「JSON 台阶二收尾」+ 本会话「工具链升级 P0-1 完成 / P0-2 一半」已提交（`7a48043`→`fc784ba`→`4f62438`，见「已收口批次」） |
+| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`（ruff 剩 99 处手动 + mypy + digest + 指标事实源 + CROSSREF 裁决）；内容五阶主线见 `CONTENT_DEPTH_ROADMAP.md` |
+| HEAD？ | `4f62438`（本地 = origin/master，无分叉） |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
-| Python？ | ⚠ 版本漂移：`.venv`=3.14.5、托管实 3.13.14（配置写 3.13.12）、系统 3.10.11 → 待收窄（工具链规划项 1） |
+| Python？ | ✅ 已收敛：配置 glob 识别托管 3.13.14 + `toolchain.py` 版本自检（漂移即非零退出）；`.venv` 仍 3.14.5 但不影响门禁（门禁改走托管 3.13.14） |
 | 权威文档？ | `STATE.json`（事实源）+ `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` + `UPGRADE_PLAN_2026-08-30.md` + `TOOLCHAIN_UPGRADE_NEXT.md` |
 
 ---
@@ -50,6 +50,12 @@ git status --short
 ---
 
 ## 已收口批次（2026-08-30，勿重做）
+
+### 工具链升级 P0-1 完成 / P0-2 一半 → ✅ 已提交（本会话收尾）
+
+- **P0-1 Python 版本收窄（`fc784ba`）**：`toolchain.toml` 的 `[python].prefer` 改 glob `versions/3.13.*/python.exe`（容忍目录名 3.13.12 但其内二进制实 3.13.14）+ 新增 `expected="3.13"`；`toolchain.py` 加 `resolve_python_version()` 版本自检（漂移即非零退出）；**单一事实源收敛**（`cppbible.py`/`snapshot.py`/`pyproject.toml` 的 4 处 `3.13.12` 硬编码 → 1 处 glob）；新增 `.python-version`=`3.13`。quality 16/16 回归通过。
+- **P0-2 静态检查链一半（`4f62438`）**：`pre-commit` 已装（`uv tool install pre-commit`）；用钉定版本 `ruff==0.6.9`（非最新 0.16.5）对 `tools/` 做安全自动修 150 处（去未用导入/拆一行多导入/去冗余 f 前缀），quality 16/16 + 全量 py_compile 回归通过。
+- **剩余（勿算本次已做）**：ruff 剩 99 处手工（E741×34 / E701×27 / E702×21 / F841×17，均需人工，勿 `--unsafe-fixes` 批量糊）+ mypy 全程未动 + 后续 P1/P2 项。详见 `TOOLCHAIN_UPGRADE_NEXT.md`。
 
 ### JSON 贯穿项目线（台阶二）→ ✅ 已提交并推送
 
@@ -90,7 +96,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | 3 | legacy 审计候选人工复核 | 审计报告 §5.3 | 10 unsafe C / 94 裸 new / 101 reinterpret_cast，分批留档（`audit_cpp_defects.py`） |
 | 4 | 备份第二故障域 | ✅ 已完成 2026-08-30 | 已推 `D:\CPP-Bible-Backup\20260830-201021`（明文副本，恢复演练 PASS），见本节末 |
 | 5 | 站点/PDF/EPUB 本地重建 | 审计报告 §11 | 本机缺 pandoc/xelatex/mkdocs，出版产物走 CI 八 job |
-| 6 | 工具链升级剩余项（Python 收窄/静态检查链/digest/指标事实源/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | P0：Python 版本 + ruff/mypy；P1：digest + 指标；P2：CROSSREF 裁决 |
+| 6 | 工具链升级剩余项（Python 收窄/静态检查链/digest/指标事实源/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | 🔶 部分：P0-1 Python 收敛 ✅（`fc784ba`）+ P0-2 ruff 150 处 ✅（`4f62438`）；剩 ruff 99 处手工 + mypy + P1/P2 |
 
 ---
 
@@ -129,8 +135,8 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 ## 环境要点
 
 - **工具链事实源**：`toolchain.toml`（GCC 15.3.0 已钉）。
-- **本机已装**：GCC 15.3.0、uv、项目 `.venv`。
-- **本机缺失**（依赖 CI）：pandoc、xelatex、mkdocs、ruff、mypy、cmake。
+- **本机已装**：GCC 15.3.0、uv、项目 `.venv`、pre-commit（`uv tool install pre-commit`，隔离）；ruff 可经 `uvx "ruff==0.6.9"` 临时拉取。
+- **本机缺失**（依赖 CI）：pandoc、xelatex、mkdocs、mypy、cmake。
 - **Windows 中文控制台坑已修**：工具已统一 UTF-8 输出（`xref_check.py`、`cppbible.py` 入口）。
 - **行尾约定**：仓库 markdown 为 CRLF，`git config core.autocrlf false`（已设），注入脚本须 bytes 级处理行尾避免整文件伪 diff。
 
@@ -148,6 +154,6 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 
 ---
 
-_重写时间：2026-08-30 深夜 | 覆盖到 JSON 台阶二收尾 + 工具链升级剩余项规划_
-_HEAD：972bbe9 | 本地 = origin/master，无分叉_
+_重写时间：2026-08-30 深夜 | 覆盖到 JSON 台阶二收尾 + 工具链升级 P0-1 完成 / P0-2 一半_
+_HEAD：4f62438（工具链落地后，本地 = origin/master 待 push）_
 _上一版 NEXT_LLM.md（2026-07-17，APP15 阶段）已作废，由本版全面替换_

@@ -10,8 +10,8 @@
 
 | # | 剩余项 | 实测现状 | 优先级 | 状态 |
 |---|---|---|---|---|
-| 1 | Python 版本漂移 | `.venv`=3.14.5、托管解释器实 3.13.14（配置写 3.13.12）、系统 `python`=3.10.11 | P0 | ⬜ |
-| 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | ⬜ |
+| 1 | Python 版本漂移 | `.venv`=3.14.5、托管解释器实 3.13.14（配置写 3.13.12）、系统 `python`=3.10.11 | P0 | ✅ 已落地（`fc784ba`；.venv 重建待后续） |
+| 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | 🔶 部分（`4f62438`；ruff 150/250 已修，剩 99 手动；mypy 待装） |
 | 3 | 容器镜像 digest | `ci.yml`/`Dockerfile`/`.devcontainer` 仍用浮动 `gcc:15.3.0` | P1 | ⬜ |
 | 4 | 指标单一事实源 | README/STATE/ISSUES/NEXT_LLM 指标互相冲突（HEAD 自相矛盾） | P1 | ⬜ |
 | 5 | CROSSREF 生成器过时 | dry-run 依赖边 732→103（退化 85%），生成器已与正文链接形式脱节 | P2 | 需裁决 |
@@ -37,6 +37,15 @@
 
 **验收**：任意环境跑 `python tools/toolchain.py` 报告的 g++/python 版本均与配置一致；版本漂移即非零退出。
 
+**已落地（2026-08-30 深夜，`fc784ba`，quality 16/16 回归通过）**：
+
+1. `toolchain.toml` `[python].prefer` 改为 glob `versions/3.13.*/python.exe`（容忍 patch 级目录改名），新增 `expected = "3.13"`。
+2. `tools/toolchain.py`：`resolve_python()` 支持 glob；新增 `resolve_python_version()` / `expected_python()`；`_main()` 自检打印 `python@ 3.13.14` 并在版本漂移时**非零退出**（对齐 d5_compile_gate 的「漂移即硬失败」范式）。
+3. **单一事实源收敛**：`cppbible.py` 的 `find_managed_python()`、`snapshot.py` 的 `PYTHON` 均委托 `resolve_python()`；删除双份硬编码与 `pyproject.toml` 的死配置 stale 路径。四处 `3.13.12` 硬编码 → 一处 glob。
+4. 新增 `.python-version`（=`3.13`），阻止 `uv sync` 再拉到 3.14。
+
+**未做（留待下一步）**：`.venv` 仍是 3.14.5（门禁已改走 resolve_python → 托管 3.13.14，故不影响门禁）；CI quality job 的解释器对齐（当前 3.11）未动。
+
 ---
 
 ## 2. 静态检查链 ruff/mypy/pre-commit（P0）
@@ -52,6 +61,24 @@
 **验收**：`pre-commit run --all-files` 退出 0；CI quality job 含 ruff/mypy 且失败即红。
 
 **风险**：首跑 ruff 全量可能报大量既有问题，需分两步——先 `--fix` 自动修，剩余 WARN 建 `# noqa` 白名单或降级，切忌一次性大改工具代码。
+
+**已落地（2026-08-30 深夜）**：
+
+1. `pre-commit` 已装（`uv tool install pre-commit` → 4.6.2，隔离于 venv）。
+2. **用钉定版本 ruff v0.6.9**（非最新 0.16.5，避免规则集漂移）对 `tools/` 做安全自动修（仅 `[*]` 标记）：**150 处**（去未用导入 F401 / 拆一行多导入 E401 / 去冗余 f 前缀 F541 等），`4f62438`，quality 16/16 + 全量 py_compile 回归通过。
+
+**剩余 99 处（全需人工审阅，勿用 `--unsafe-fixes` 批量糊）**：
+
+| 规则 | 数量 | 处理方式 |
+|---|---:|---|
+| `E741` ambiguous-variable-name | 34 | 逐个把 `l`/`I`/`O` 改为具名变量（语义保持） |
+| `E701` multiple-statements-on-one-line（冒号） | 27 | 拆分单行 if/for/def 体 |
+| `E702` multiple-statements-on-one-line（分号） | 21 | 拆分 `a;b` 为两行 |
+| `F841` unused-variable（RHS 含调用，需人工确认副作用） | 17 | 逐个删除或改名，确认 RHS 无副作用 |
+
+处理完这 99 处后，`ruff check tools/` 退出 0，才可把 `ruff check tools/` 加入 CI quality job（gcc-only 硬门禁）。
+
+**未做（留待下一步）**：`mypy` 全程未动（需 `uv sync --extra dev` 装依赖 + 类型标注 triage，量大）；CI 未加 ruff/mypy 步骤（需先清零上面 99 处，避免红门禁）。
 
 ---
 
@@ -123,20 +150,25 @@
 
 ## 7. 给下一 Agent 的精确第一步
 
+> 2026-08-30 深夜已落地项 1（Python 收敛）+ 项 2 一半（ruff 150 处安全修复），下面的第一步从「剩余 99 处 + mypy」开始，不再重复已做项。
+
 ```powershell
 cd C:/CodeLearnling/note/note/C++/CPP-Bible
-# 1) 确认接手状态
-python tools/toolchain.py              # 看 g++/python 解析结果与漂移
-.venv/Scripts/python.exe --version     # 应为 3.14.5（需收窄到 3.13）
 
-# 2) Python 版本收窄（项 1）
-#    a. .python-version 或 uv.lock requires-python 收窄到 ==3.13.*
-#    b. 修 toolchain.toml [python].prefer 指向真实 3.13.x（glob 探测）
+# 0) 确认接手状态（现在应报 python@ 3.13.14、无漂移、exit 0）
+python tools/toolchain.py
 
-# 3) 静态检查链落地（项 2）
-uv sync --extra dev                     # 装 ruff/mypy
-.venv/Scripts/pre-commit.exe install
-.venv/Scripts/pre-commit.exe run --all-files   # 首跑，回填 --fix
+# 1) 清完 ruff 剩余 99 处（E741/E701/E702 手动；F841 逐个确认副作用）
+uvx "ruff==0.6.9" check tools/ --statistics      # 应只剩 99 处
+#    逐文件处理，切忌 uvx "ruff==0.6.9" check tools/ --fix --unsafe-fixes 批量糊
+
+# 2) 装 mypy 并做类型标注 triage（量大，建议单独一批）
+uv sync --extra dev                              # 现在会按 .python-version=3.13 重建 .venv
+uvx mypy tools/
+
+# 3) ruff 清零后，才可把 ruff/mypy 接进 CI quality job（硬门禁）
+#    ci.yml quality job 追加（gcc-only）：
+#    ruff check tools/  +  mypy tools/   （continue-on-error: false）
 
 # 4) 回归门禁
 .venv/Scripts/python.exe tools/cppbible.py check --stage quality   # 期望 16/16
