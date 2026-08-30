@@ -281,7 +281,7 @@ def main() -> int:
     warns: list[tuple[str, int, str, str]] = []
     demos: list[tuple[str, int, str, str]] = []
 
-    workers = min(8, (os_cpu := __import__("os").cpu_count() or 4))
+    workers = min(8, __import__("os").cpu_count() or 4)
     with ProcessPoolExecutor(max_workers=workers) as ex:
         for kind, stem, idx, res, detail in ex.map(check_one, jobs):
             stat[kind][res] += 1

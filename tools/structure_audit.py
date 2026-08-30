@@ -69,13 +69,13 @@ def audit_file(fp):
     prev_level = 0
     first_h_seen = False
     h1_count = 0
-    for i, l in enumerate(lines, 1):
-        if l.strip().startswith("```") or l.strip().startswith("~~~"):
+    for i, line in enumerate(lines, 1):
+        if line.strip().startswith("```") or line.strip().startswith("~~~"):
             in_fence = not in_fence
             continue
         if in_fence:
             continue
-        m = H_RE.match(l)
+        m = H_RE.match(line)
         if m:
             lvl = len(m.group(1))
             txt = m.group(2).strip()
@@ -91,15 +91,15 @@ def audit_file(fp):
     n = len(lines)
     j = 0
     while j < n:
-        l = lines[j]
-        if l.strip().startswith("```") or l.strip().startswith("~~~"):
+        line = lines[j]
+        if line.strip().startswith("```") or line.strip().startswith("~~~"):
             in_fence = not in_fence
             j += 1
             continue
         if in_fence:
             j += 1
             continue
-        s = l.rstrip()
+        s = line.rstrip()
         if s.startswith("|") and s.endswith("|"):
             block = []
             k = j

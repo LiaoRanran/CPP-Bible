@@ -80,7 +80,8 @@ def main():
     lines = f04.read_text(encoding='utf-8').splitlines()
     lines, _ = replace_line(lines, 'WG21 提案（关键）', '## ⑭ WG21 提案（关键）[标准]')
     if args.apply:
-        _backup(f04); f04.write_text("\n".join(lines).rstrip()+"\n", encoding='utf-8')
+        _backup(f04)
+        f04.write_text("\n".join(lines).rstrip()+"\n", encoding='utf-8')
     print("  ch04: +[标准] 立场标签")
 
     # ch05：展开 ⑥–⑩
@@ -93,7 +94,8 @@ def main():
         else:
             out.append(ln)
     if args.apply:
-        _backup(f05); f05.write_text("\n".join(out).rstrip()+"\n", encoding='utf-8')
+        _backup(f05)
+        f05.write_text("\n".join(out).rstrip()+"\n", encoding='utf-8')
     print("  ch05: 展开 ⑥⑦⑧⑨⑩")
 
     # ch06/07/08：插 ⑥(后⑤) + ⑧⑨(后⑦)
@@ -101,11 +103,13 @@ def main():
         fp = p01 / name
         lines = fp.read_text(encoding='utf-8').splitlines()
         if already(lines, '## ⑥ UML / 结构图（特性关系）[标准]'):
-            print(f"  {name}: 已补齐，跳过"); continue
+            print(f"  {name}: 已补齐，跳过")
+            continue
         lines, _ = insert_after(lines, '## ⑤ ', DEF_6.splitlines())
         lines, _ = insert_after(lines, '## ⑦ ', DEF_89)
         if args.apply:
-            _backup(fp); fp.write_text("\n".join(lines).rstrip()+"\n", encoding='utf-8')
+            _backup(fp)
+            fp.write_text("\n".join(lines).rstrip()+"\n", encoding='utf-8')
         print(f"  {name}: +⑥ +⑧⑨")
 
     # ch09：插 ⑥⑦⑧⑨(后⑤)
@@ -116,7 +120,8 @@ def main():
     else:
         lines, _ = insert_after(lines, '## ⑤ ', CH09_BLOCK)
         if args.apply:
-            _backup(f09); f09.write_text("\n".join(lines).rstrip()+"\n", encoding='utf-8')
+            _backup(f09)
+            f09.write_text("\n".join(lines).rstrip()+"\n", encoding='utf-8')
         print("  ch09: +⑥⑦⑧⑨")
 
     print("MODE:", "APPLY" if args.apply else "DRY-RUN")

@@ -21,7 +21,8 @@ REPAIR_MAP = {
 fixed = 0
 for root, dirs, files in os.walk('Book'):
     for f in sorted(files):
-        if not f.endswith('.md'): continue
+        if not f.endswith('.md'):
+            continue
         path = os.path.join(root, f)
         text = open(path, encoding='utf-8').read()
         orig = text

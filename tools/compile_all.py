@@ -250,7 +250,7 @@ def collect_changed(book_root, base=None):
         out = subprocess.check_output(
             ["git", "diff", "--name-only", f"{base}..HEAD"],
             text=True, stderr=subprocess.DEVNULL)
-        results |= {l.strip() for l in out.splitlines() if l.strip()}
+        results |= {line.strip() for line in out.splitlines() if line.strip()}
     except Exception:
         pass
     # unstaged + staged worktree edits
@@ -258,7 +258,7 @@ def collect_changed(book_root, base=None):
                   ["git", "diff", "--cached", "--name-only"]):
         try:
             out = subprocess.check_output(extra, text=True, stderr=subprocess.DEVNULL)
-            results |= {l.strip() for l in out.splitlines() if l.strip()}
+            results |= {line.strip() for line in out.splitlines() if line.strip()}
         except Exception:
             pass
     return {p for p in results if p.startswith("Book/") and p.endswith(".md")}

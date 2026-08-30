@@ -46,7 +46,6 @@ def audit(site: Path) -> int:
     # 2. 章节页可达性（从首页/导航抽取）
     print("[2/6] 章节页可达性")
     htmls = list(site.rglob("*.html"))
-    page_set = {p.relative_to(site).as_posix() for p in htmls}
     targets = []
     for m in re.finditer(r'href="([^"#]+\.(?:html|htm))"', index_text):
         href = m.group(1)

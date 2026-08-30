@@ -60,7 +60,8 @@ def audit_file(path):
         if prev is None or row[0] == prev + 1:
             cur.append(row)
         else:
-            groups.append(cur); cur = [row]
+            groups.append(cur)
+            cur = [row]
         prev = row[0]
     if cur:
         groups.append(cur)

@@ -100,9 +100,12 @@ def audit_all():
 
         # Determine highest precision level
         top_level = 'L0'
-        if classified['L3']: top_level = 'L3'
-        elif classified['L2']: top_level = 'L2'
-        elif classified['L1']: top_level = 'L1'
+        if classified['L3']:
+            top_level = 'L3'
+        elif classified['L2']:
+            top_level = 'L2'
+        elif classified['L1']:
+            top_level = 'L1'
 
         total = sum(len(v) for v in classified.values())
         part = ch.parent.name if ch.parent.name.startswith('part') else 'unknown'
@@ -182,8 +185,10 @@ def main():
     per_ch_n = None
     for i, a in enumerate(sys.argv):
         if a == '--per-chapter' and i + 1 < len(sys.argv):
-            try: per_ch_n = int(sys.argv[i + 1])
-            except Exception: pass
+            try:
+                per_ch_n = int(sys.argv[i + 1])
+            except Exception:
+                pass
 
     chapters = audit_all()
     stats = summary(chapters)

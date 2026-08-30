@@ -157,8 +157,7 @@ def main():
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
-    hard_fail = crashed  # 仅 CRASH 判红；TIMEOUT/NO_OUTPUT 为 WARN
-    ok = (crashed == 0)
+    ok = (crashed == 0)  # 仅 CRASH 判红；TIMEOUT/NO_OUTPUT 为 WARN
 
     if args.json:
         print(json.dumps({

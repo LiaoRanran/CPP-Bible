@@ -231,7 +231,7 @@ def extract_blocks(fpath: pathlib.Path) -> list[CppBlock]:
                 h2_index=current_h2_idx,
                 block_index=block_idx,
                 is_shallow=blk_lines < 5,
-                is_self_contained=any('#include' in l for l in buf),
+                is_self_contained=any('#include' in line for line in buf),
             )
             blocks.append(cb)
             block_idx += 1
@@ -292,7 +292,8 @@ def plan_merges(blocks: list[CppBlock], chapter_stem: str) -> list[MergePlan]:
                 if span >= 3:
                     # 跳过纯注释块（所有非空行以 // 开头）
                     merged_raw = "\n".join(sum((gb.lines for gb in gblocks[i:j]), []))
-                    non_empty = [l for l in merged_raw.splitlines() if l.strip() and not l.strip().startswith('//')]
+                    non_empty = [line for line in merged_raw.splitlines()
+                                 if line.strip() and not line.strip().startswith('//')]
                     if len(non_empty) < 2:
                         i = j
                         continue

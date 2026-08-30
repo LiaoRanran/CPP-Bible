@@ -34,19 +34,19 @@ def fix_text(raw):
     prev_blank = False
     counts = {'w1': 0, 'w2': 0, 'w3': 0}
     started = False
-    for l in lines:
-        fm = FENCE_RE.match(l)
+    for line in lines:
+        fm = FENCE_RE.match(line)
         if fm:
             in_fence = not in_fence
             prev_blank = False
             started = True
-            out.append(l)
+            out.append(line)
             continue
         if in_fence:
             prev_blank = False
-            out.append(l)
+            out.append(line)
             continue
-        stripped = l.rstrip()
+        stripped = line.rstrip()
         if stripped == '':
             if not started:
                 continue  # 丢弃文件开头空行
@@ -57,7 +57,7 @@ def fix_text(raw):
             out.append('')
             continue
         # 非空行
-        if l != stripped:
+        if line != stripped:
             counts['w1'] += 1
         prev_blank = False
         started = True

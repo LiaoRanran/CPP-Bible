@@ -216,7 +216,6 @@ def check_against_doc(structured):
             print(f"  [doc-missing] {macro}")
             mism += 1
             continue
-        line = m.group(0)
         # 粗略检查：文档 GCC 列 claim
         # 仅作提示，不强制
     print(f"[check] {mism} macros not found in doc")

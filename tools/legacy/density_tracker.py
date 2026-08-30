@@ -40,9 +40,11 @@ DEPTH = {
 def snapshot():
     chapters = {}
     for r,d,f in os.walk('Book/'):
-        if '_legacy' in r: continue
+        if '_legacy' in r:
+            continue
         for ff in sorted(f):
-            if not ff.endswith('.md'): continue
+            if not ff.endswith('.md'):
+                continue
             path = r+'/'+ff
             text = open(path, encoding='utf-8').read()
             dim = sum(min(sum(1 for kw in kws if re.search(kw, text, re.I)), 3) for kws in DIMENSIONS.values())
@@ -60,14 +62,16 @@ def snapshot():
 
 def main():
     if not os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, 'w', encoding='utf-8') as f: json.dump([], f)
+        with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
+            json.dump([], f)
 
     history = json.load(open(HISTORY_FILE, encoding='utf-8'))
 
     if '--history' not in sys.argv:
         snap = snapshot()
         history.append(snap)
-        with open(HISTORY_FILE, 'w', encoding='utf-8') as f: json.dump(history, f, indent=2)
+        with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
+            json.dump(history, f, indent=2)
         print(f'Snapshot saved: {snap["timestamp"]}')
 
     # Show trend

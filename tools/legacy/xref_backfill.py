@@ -196,7 +196,8 @@ def main():
     elif args.all:
         targets = [info["path"] for info in meta.values()]
     else:
-        print("需指定 --all 或 章路径，或 --list-low"); sys.exit(2)
+        print("需指定 --all 或 章路径，或 --list-low")
+        sys.exit(2)
 
     ok = skip = empty = 0
     for p in targets:

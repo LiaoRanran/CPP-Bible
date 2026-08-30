@@ -170,7 +170,6 @@ def main():
         shutil.rmtree(tmpdir, ignore_errors=True)
 
     # 失败判定：编译失败必算失败；链接失败在 --no-link 下不算。
-    hard_fail = compile_fail + (0 if args.no_link else link_fail)
     passed = (compile_ok == (total - skipped)) and (args.no_link or link_fail == 0)
 
     if args.json:

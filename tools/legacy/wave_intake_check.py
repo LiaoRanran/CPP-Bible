@@ -98,10 +98,10 @@ def cpp_block_index(text, fence_line_1based):
     与 compile_exempt.json 的 block 字段对齐（1-based）。
     """
     cnt = 0
-    for idx, l in enumerate(text.split('\n'), 1):
+    for idx, line in enumerate(text.split('\n'), 1):
         if idx > fence_line_1based:
             break
-        if FENCE_RE.match(l) and l.strip().lstrip('`').strip().startswith('cpp'):
+        if FENCE_RE.match(line) and line.strip().lstrip('`').strip().startswith('cpp'):
             cnt += 1
     return cnt
 
@@ -110,7 +110,7 @@ EXEMPT = load_exempt()
 
 
 def fence_even_ok(text):
-    cnt = sum(1 for l in text.split('\n') if FENCE_RE.match(l))
+    cnt = sum(1 for line in text.split('\n') if FENCE_RE.match(line))
     return cnt % 2 == 0, cnt
 
 
@@ -286,11 +286,13 @@ def main():
         print(f"\n### cpp: {rel}")
         bom, crlf, even, fc, _ = text_health(p)
         if bom:
-            print("  [FAIL] BOM 存在"); fails += 1
+            print("  [FAIL] BOM 存在")
+            fails += 1
         else:
             print("  [OK]   无 BOM")
         if crlf:
-            print("  [FAIL] CRLF 行尾"); fails += 1
+            print("  [FAIL] CRLF 行尾")
+            fails += 1
         else:
             print("  [OK]   LF 行尾")
         if args.no_compile or GPP is None:

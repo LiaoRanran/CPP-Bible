@@ -264,7 +264,6 @@ def process_file(fpath: pathlib.Path, dry_run: bool = True) -> dict:
     i = 0
     while i < len(lines):
         if CPP_FENCE.match(lines[i]):
-            fence_line = lines[i]  # ```cpp
             j = i + 1
             buf = []
             while j < len(lines) and not FENCE_END.match(lines[j]):

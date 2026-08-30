@@ -162,8 +162,8 @@ def inject_one(root: Path, rel: str, intro: str, mermaid: str):
     lines = text.split("\n")
     idx = None
     cnt = 0
-    for i, l in enumerate(lines):
-        if l.startswith("## "):
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
             cnt += 1
             if cnt == 2:
                 idx = i
@@ -171,8 +171,8 @@ def inject_one(root: Path, rel: str, intro: str, mermaid: str):
     block = f"\n{SUBSECTION}\n\n{intro}\n\n```mermaid\n{mermaid}\n```\n"
     if idx is None:
         # 退化：插到「自测练习」之前，或文末
-        for i, l in enumerate(lines):
-            if "自测练习" in l:
+        for i, line in enumerate(lines):
+            if "自测练习" in line:
                 idx = i
                 break
         if idx is None:

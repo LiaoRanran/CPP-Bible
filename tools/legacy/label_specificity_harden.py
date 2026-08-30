@@ -228,8 +228,8 @@ def main():
     ap.add_argument('--root', default='.')
     args = ap.parse_args()
 
-    files = [l.strip() for l in open(args.files, encoding='utf-8')] if args.files \
-        else HIGH_RISK_FILES
+    files = [line.strip() for line in open(args.files, encoding='utf-8')] \
+        if args.files else HIGH_RISK_FILES
 
     total = {'实现': 0, '平台': 0}
     changed_files = 0

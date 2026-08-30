@@ -71,18 +71,25 @@ def protected_spans(text):
         k = e - s
         if k >= 3:                       # ``` 围栏切换
             if state == 0:
-                state = 2; open_start = s
+                state = 2
+                open_start = s
             elif state == 2:
-                spans.append((open_start, e)); state = 0; open_start = None
+                spans.append((open_start, e))
+                state = 0
+                open_start = None
             else:                         # 行内码态内遇围栏：先收行内，再开围栏
                 if open_start is not None:
                     spans.append((open_start, s))
-                state = 2; open_start = s
+                state = 2
+                open_start = s
         else:                             # 单行反引号
             if state == 0:
-                state = 1; open_start = s
+                state = 1
+                open_start = s
             elif state == 1:
-                spans.append((open_start, e)); state = 0; open_start = None
+                spans.append((open_start, e))
+                state = 0
+                open_start = None
             # state==2（围栏内）遇单行反引号：忽略，不切换
     if state != 0 and open_start is not None:
         spans.append((open_start, len(text)))
@@ -161,7 +168,9 @@ def apply_ops(text, ops):
     out = []
     last = 0
     for _, s, e, repl in ops:
-        out.append(text[last:s]); out.append(repl); last = e
+        out.append(text[last:s])
+        out.append(repl)
+        last = e
     out.append(text[last:])
     return ''.join(out)
 

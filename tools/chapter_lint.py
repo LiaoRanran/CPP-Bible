@@ -95,7 +95,6 @@ def parse_chapter(text: str):
     i = 0
     cur_para = []
     cur_start = None
-    in_fence = False
 
     def flush_para():
         nonlocal cur_para, cur_start
@@ -123,7 +122,6 @@ def parse_chapter(text: str):
                 j += 1
             fences.append((i + 1, j + 1, "\n".join(buf)))
             i = j + 1
-            in_fence = False
             continue
         if ln.strip() == "":
             flush_para()
@@ -148,7 +146,7 @@ def lint_chapter(path: Path):
     # 注释-only 块是章节分隔注解，合法；单行合法示例（1 行有效代码）也合法。
     # 仅标记完全无内容的 ```cpp ```，避免把正常短示例误判为注水。
     for (s, e, body) in fences:
-        non_blank = [l for l in body.splitlines() if l.strip()]
+        non_blank = [line for line in body.splitlines() if line.strip()]
         if not non_blank:
             defects.append((s, "EMPTY_CODE", "HIGH",
                             "cpp 块完全为空（无任何内容，应删除或补示例）"))
@@ -173,8 +171,9 @@ def lint_chapter(path: Path):
     # R4 长代码块零注释（≥12 行有效代码却无一行注释，教学手册建议逐行讲）
     for (s, e, body) in fences:
         cl = body.splitlines()
-        code_n = sum(1 for l in cl if l.strip() and not l.strip().startswith("//"))
-        cmt_n = sum(1 for l in cl if COMMENT_RE.match(l))
+        code_n = sum(1 for line in cl
+                     if line.strip() and not line.strip().startswith("//"))
+        cmt_n = sum(1 for line in cl if COMMENT_RE.match(line))
         if code_n >= 12 and cmt_n == 0:
             defects.append((s, "UNCOMMENTED_CODE", "LOW",
                             f"长代码块 {code_n} 行有效代码却 0 注释（教学手册建议逐行讲）"))

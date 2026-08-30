@@ -85,8 +85,9 @@ def audit_region(lines, chapter):
                         f'{chapter}: 附录标题缺 GCC 15.3.0 标签 -> {hdr.strip()[:80]}'))
 
     # 2) blockquote 环境行
-    has_block = any(l.strip().startswith('>') for l in lines)
-    has_sig = any(l.strip().startswith('>') and BLOCKQUOTE_SIG in l for l in lines)
+    has_block = any(line.strip().startswith('>') for line in lines)
+    has_sig = any(line.strip().startswith('>') and BLOCKQUOTE_SIG in line
+                  for line in lines)
     if not has_block:
         issues.append(('ERROR', 'MISSING_BLOCKQUOTE',
                         f'{chapter}: 附录缺 `>` blockquote 环境行'))
@@ -97,8 +98,8 @@ def audit_region(lines, chapter):
 
     # 3) 四段完整性
     present = set()
-    for l in lines:
-        m = SUBSEC_RE.match(l)
+    for line in lines:
+        m = SUBSEC_RE.match(line)
         if m:
             present.add('D5.' + m.group(1))
     for sec in ('D5.1', 'D5.2'):
@@ -106,15 +107,16 @@ def audit_region(lines, chapter):
             issues.append(('ERROR', 'MISSING_SECTION',
                             f'{chapter}: 缺 {sec} 小节（四段结构要求 D5.1-D5.4 齐全）'))
 
-    h3 = [(i, l) for i, l in enumerate(lines) if re.match(r'^###\s+', l)]
+    h3 = [(i, line) for i, line in enumerate(lines)
+          if re.match(r'^###\s+', line)]
 
     def find_sec(headers, semantic_re, std_prefix):
-        for i, l in headers:
-            if semantic_re.search(l):
-                return i, l, True
-        for i, l in headers:
-            if re.match(std_prefix, l):
-                return i, l, False
+        for i, line in headers:
+            if semantic_re.search(line):
+                return i, line, True
+        for i, line in headers:
+            if re.match(std_prefix, line):
+                return i, line, False
         return None, None, False
 
     demo_sem = re.compile(r'可复现\s*(demo|演示)|验证\s*(demo|演示)')
@@ -123,16 +125,16 @@ def audit_region(lines, chapter):
     d54_idx, d54_line, d54_via_sem = find_sec(h3, method_sem, r'^###\s+D5\.4\b')
 
     # D5.3 编号但内容非 demo（如 ch108 把"非显然结论"误标为 D5.3）
-    for i, l in h3:
-        if re.match(r'^###\s+D5\.3\b', l) and not demo_sem.search(l):
+    for i, line in h3:
+        if re.match(r'^###\s+D5\.3\b', line) and not demo_sem.search(line):
             issues.append(('WARN', 'D53_MISLABELED',
                             f'{chapter}: "### D5.3" 段内容非 demo（须为可复现 demo）'
-                            f' -> {l.strip()[:60]}'))
-    for i, l in h3:
-        if re.match(r'^###\s+D5\.4\b', l) and not method_sem.search(l):
+                            f' -> {line.strip()[:60]}'))
+    for i, line in h3:
+        if re.match(r'^###\s+D5\.4\b', line) and not method_sem.search(line):
             issues.append(('WARN', 'D54_MISLABELED',
                             f'{chapter}: "### D5.4" 段内容非方法学注'
-                            f' -> {l.strip()[:60]}'))
+                            f' -> {line.strip()[:60]}'))
 
     if d53_idx is None:
         issues.append(('ERROR', 'MISSING_DEMO',
@@ -153,8 +155,8 @@ def audit_region(lines, chapter):
         sink_hits = []
         in_fence = False
         fence_lang = ''
-        for l in sub:
-            m = FENCE_RE.match(l)
+        for line in sub:
+            m = FENCE_RE.match(line)
             if m:
                 if not in_fence:
                     in_fence = True
@@ -166,8 +168,8 @@ def audit_region(lines, chapter):
                     fence_lang = ''
                 continue
             if in_fence and fence_lang == 'cpp':
-                if SINK_BAD_RE.search(l):
-                    sink_hits.append(l.strip()[:120])
+                if SINK_BAD_RE.search(line):
+                    sink_hits.append(line.strip()[:120])
         if cpp_count != 1:
             issues.append(('ERROR', 'D53_CPP_COUNT',
                             f'{chapter}: D5.3 内 cpp demo 数 = {cpp_count}（约定恰好 1 个）'))
@@ -184,11 +186,11 @@ def audit_region(lines, chapter):
                         f' -> {d54_line.strip()[:60]}'))
 
     # 4) "基准源文件：" 措辞坑（触发 consistency WARN）
-    for i, l in enumerate(lines, 1):
-        if BAD_WORDING_RE.search(l):
+    for i, line in enumerate(lines, 1):
+        if BAD_WORDING_RE.search(line):
             issues.append(('WARN', 'BAD_WORDING',
                             f'{chapter}: 使用"基准源文件："措辞（建议改"基准源码见库根 `xxx.cpp`"）'
-                            f' -> L{i}: {l.strip()[:80]}'))
+                            f' -> L{i}: {line.strip()[:80]}'))
 
     # 5) 引用的 _bench_d5_*.cpp 存在性 + 跟踪状态
     benches = sorted(set(BENCH_RE.findall('\n'.join(lines))))
@@ -219,7 +221,7 @@ def main():
         if '附录 D5：真实基准与性能分析' not in text:
             continue
         lines = text.splitlines()
-        starts = [i for i, l in enumerate(lines) if D5_HEADER_RE.match(l)]
+        starts = [i for i, line in enumerate(lines) if D5_HEADER_RE.match(line)]
         if not starts:
             continue
         chapters_with_d5 += 1

@@ -52,9 +52,11 @@ def main():
         # Find N weakest chapters
         chaps = []
         for r,d,f in os.walk('Book/'):
-            if '_legacy' in r: continue
+            if '_legacy' in r:
+                continue
             for ff in sorted(f):
-                if not ff.endswith('.md'): continue
+                if not ff.endswith('.md'):
+                    continue
                 path = r+'/'+ff
                 weak = suggest_chapter(path)
                 chaps.append((len(weak), path, weak))

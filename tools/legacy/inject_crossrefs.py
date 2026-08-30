@@ -9,7 +9,8 @@ kg = json.load(open('knowledge_graph.json', encoding='utf-8'))
 part_map = {}
 for root, dirs, files in os.walk('Book/'):
     for f in sorted(files):
-        if not f.endswith('.md') or '_legacy' in root: continue
+        if not f.endswith('.md') or '_legacy' in root:
+            continue
         part = os.path.basename(root)
         part_map.setdefault(part, []).append(f)
 
@@ -21,7 +22,8 @@ for p in kg['parts']:
 # For each chapter with 0 cross-refs, add 3-5 ⟶ links in ①学习目标 or ②前置知识 section
 fixed = 0
 for part_dir in sorted(os.listdir('Book/')):
-    if not part_dir.startswith('part') or '_legacy' in part_dir: continue
+    if not part_dir.startswith('part') or '_legacy' in part_dir:
+        continue
     part_path = f'Book/{part_dir}'
     chapters = sorted([c for c in os.listdir(part_path) if c.endswith('.md')])
     

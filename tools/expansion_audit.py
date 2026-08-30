@@ -131,7 +131,6 @@ def collect() -> dict[str, ChapterStats]:
 def score_all(stats: dict[str, ChapterStats]) -> list[ChapterStats]:
     """计算四维得分 + 总分，返回排序列表"""
     all_cs = list(stats.values())
-    n = len(all_cs)
 
     # 归一化辅助
     def norm(val, max_val):

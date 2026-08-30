@@ -215,8 +215,6 @@ def main():
         print('| # | v4 | IND | DEP | WTR% | DUP% | Lines | Chapter |')
         print('|---|----|-----|-----|------|------|-------|---------|')
         for i, c in enumerate(display, 1):
-            ind_bar = '█' * min(c['ind_hits'], 20)
-            dep_bar = '▓' * min(c['dep_hits'] // 3, 16)
             print(f'| {i} | **{c["quality"]}** | {c["ind_hits"]} | {c["dep_hits"]} | '
                   f'{c["water_rate"]:.1f} | {c["dup_rate"]:.0%} | {c["lines"]} | '
                   f'`{c["file"]}` |')

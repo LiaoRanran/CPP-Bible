@@ -71,9 +71,11 @@ def build_graph():
     chapters = set()
 
     for r,d,f in os.walk('Book/'):
-        if '_legacy' in r: continue
+        if '_legacy' in r:
+            continue
         for ff in f:
-            if not ff.endswith('.md'): continue
+            if not ff.endswith('.md'):
+                continue
             path = r+'/'+ff
             text = open(path, encoding='utf-8').read()
             num = get_chapter_num(path)

@@ -220,9 +220,9 @@ def sanitizer_available(gpp, kind):
 
 
 def first_error(stderr, limit=3):
-    lines = [l.strip() for l in stderr.splitlines() if "error:" in l]
+    lines = [line.strip() for line in stderr.splitlines() if "error:" in line]
     if not lines:
-        tail = [l.strip() for l in stderr.splitlines() if l.strip()]
+        tail = [line.strip() for line in stderr.splitlines() if line.strip()]
         return tail[-1] if tail else "link/unknown error"
     return " | ".join(lines[:limit])
 
@@ -395,7 +395,8 @@ def process_block(gpp, rel, idx, code, tmpdir, default_timeout, preamble=""):
         # 仅当编译本身干净（stderr 里无 `error:`）且失败仅源于 std::print 链接
         # 缺口时，才判为工具链限制。若同时存在真实 compile error，必须透传
         # 错误（不能以 print 缺口掩盖真正的书稿 bug）。
-        clean_compile = not any(": error:" in l for l in r.stderr.splitlines())
+        clean_compile = not any(": error:" in line
+                               for line in r.stderr.splitlines())
         if clean_compile and PRINT_LINK_GAP_RE.search(r.stderr):
             rec["classification"] = "skip(toolchain:std-print)"
             rec["compile"] = {"ok": True,
@@ -408,13 +409,13 @@ def process_block(gpp, rel, idx, code, tmpdir, default_timeout, preamble=""):
         # 本块是外部完整示例的 main 切片，其辅助符号定义在同 .cpp 别处。
         # 若失败仅是“未声明符号”（not declared / does not name a type），
         # 且非语法错误，归类为节选性质，不计为书稿 bug。
-        err_lines = [l for l in r.stderr.splitlines() if ": error:" in l]
+        err_lines = [line for line in r.stderr.splitlines() if ": error:" in line]
         # 节选块的缺失符号会级联生成“expected ';'” 等 parse 错误——这些都是
         # 同源未声明符号的副作用，仍属于节选性质。因此只需存在任一未声明符号
         # 错误（而非全都），且块上有 Examples 节选标记，即可归类为节选跳过。
         has_undeclared = any(
-            "was not declared" in l or "does not name a type" in l
-            or "has not been declared" in l for l in err_lines)
+            "was not declared" in line or "does not name a type" in line
+            or "has not been declared" in line for line in err_lines)
         if has_undeclared and EXCERPT_MARKER_RE.search(code):
             rec["classification"] = "skip(excerpt)"
             rec["compile"] = {"ok": True,

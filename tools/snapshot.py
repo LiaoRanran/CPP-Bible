@@ -78,16 +78,19 @@ def compare(s1_name: str, s2_name: str):
     f1 = SNAPDIR / f"{s1_name}.json" if not s1_name.endswith(".json") else SNAPDIR / s1_name
     f2 = SNAPDIR / f"{s2_name}.json" if not s2_name.endswith(".json") else SNAPDIR / s2_name
     if not f1.exists():
-        print(f"  快照 '{s1_name}' 不存在"); return
+        print(f"  快照 '{s1_name}' 不存在")
+        return
     if not f2.exists():
-        print(f"  快照 '{s2_name}' 不存在"); return
+        print(f"  快照 '{s2_name}' 不存在")
+        return
 
     a = json.loads(f1.read_text(encoding="utf-8"))
     b = json.loads(f2.read_text(encoding="utf-8"))
 
     def delta(key, flip=False):
         d = b[key] - a[key]
-        if d == 0: return "—"
+        if d == 0:
+            return "—"
         good = d < 0 if flip else d > 0
         arrow = "↑" if d > 0 else "↓"
         return f"{arrow}{abs(d)} {'✅' if good else '⚠️'}"
@@ -107,7 +110,8 @@ def compare(s1_name: str, s2_name: str):
     b_exp = {c["stem"]: c for c in b["exp_data"]}
     big_deltas = []
     for stem in set(a_exp) & set(b_exp):
-        ac = a_exp[stem]; bc = b_exp[stem]
+        ac = a_exp[stem]
+        bc = b_exp[stem]
         da = bc["scores"]["total"] - ac["scores"]["total"]
         if abs(da) >= 5:
             big_deltas.append((stem, da, ac["scores"]["total"], bc["scores"]["total"]))

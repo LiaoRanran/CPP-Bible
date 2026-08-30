@@ -181,7 +181,6 @@ def check_glossary(root: Path) -> dict:
     if dups:
         rep["errors"].append(f"glossary 重复 id: {dups}")
     # chapter_ref 指向真实文件?
-    book = root / "Book"
     broken = []
     for t in terms:
         ref = t.get("chapter_ref", "")

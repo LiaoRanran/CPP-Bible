@@ -49,7 +49,6 @@ def audit_file(path):
     ex_h3 = 0
     ex_with_ref = 0
     in_exercise = False
-    exercise_blocks_seen = 0
 
     for i, line in enumerate(lines):
         m = FENCE.match(line)
@@ -77,11 +76,9 @@ def audit_file(path):
         if EXERCISE_H2.match(line):
             ex_h2 += 1
             in_exercise = True
-            exercise_blocks_seen = 0
         elif EXERCISE_H3.match(line):
             ex_h3 += 1
             in_exercise = True
-            exercise_blocks_seen = 0
         elif line.startswith('#'):
             in_exercise = False
         if in_exercise:

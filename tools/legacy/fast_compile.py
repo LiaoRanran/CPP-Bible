@@ -64,15 +64,19 @@ def compile_one(args):
     except Exception as e:
         return (chapter, idx, 'error', str(e)[:200])
     finally:
-        try: os.unlink(fpath)
-        except Exception: pass
+        try:
+            os.unlink(fpath)
+        except Exception:
+            pass
 
 def collect_chapters(limit=3):
     items = []
     for r,d,f in os.walk('Book/'):
-        if '_legacy' in r: continue
+        if '_legacy' in r:
+            continue
         for ff in sorted(f):
-            if not ff.endswith('.md'): continue
+            if not ff.endswith('.md'):
+                continue
             path = r+'/'+ff
             text = open(path, encoding='utf-8').read()
             blocks = extract_blocks(text, max_blocks=None if FULL else limit)

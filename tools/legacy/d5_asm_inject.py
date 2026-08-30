@@ -41,8 +41,8 @@ def main():
         return 0
 
     lines = text.split("\n")
-    mi = [i for i, l in enumerate(lines)
-          if l.startswith("###") and a.anchor in l]
+    mi = [i for i, line in enumerate(lines)
+          if line.startswith("###") and a.anchor in line]
     if not mi:
         print(f"[ERR] 找不到含 '{a.anchor}' 的小节: {ch}")
         return 1

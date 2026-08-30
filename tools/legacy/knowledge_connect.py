@@ -55,12 +55,15 @@ def main():
     # Phase 1: Build chapter map (ch_num → {title, path, xrefs})
     chapters = {}
     for r,d,f in os.walk('Book/'):
-        if '_legacy' in r: continue
+        if '_legacy' in r:
+            continue
         for ff in sorted(f):
-            if not ff.endswith('.md'): continue
+            if not ff.endswith('.md'):
+                continue
             path = r+'/'+ff
             m = re.match(r'ch(\d+)', ff)
-            if not m: continue
+            if not m:
+                continue
             num = int(m.group(1))
             text = open(path, encoding='utf-8').read()
             title = text.split('\n')[0].strip('# ').strip()
@@ -86,7 +89,8 @@ def main():
                 if target_num in chapters:
                     resolved.append((target_num, chapters[target_num]['title'][:50]))
         
-        if not resolved: continue
+        if not resolved:
+            continue
         
         # Take top 5 most relevant (closest in number = related topic area)
         resolved.sort(key=lambda x: abs(x[0] - num))

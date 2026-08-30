@@ -215,13 +215,11 @@ def fmt_link(info, num) -> str:
 def generate(root: Path) -> str:
     info, out_edges, in_edges, curated_pre, curated_post, broken, nums = build(root)
 
-    parts = []
     seen = []
     for n in nums:
         pt = info[n]["part"]
         if not seen or seen[-1] != pt:
             seen.append(pt)
-        parts = seen
 
     # Part 总览
     part_map = defaultdict(list)

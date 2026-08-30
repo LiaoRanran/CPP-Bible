@@ -19,7 +19,7 @@ JUNK_RE = re.compile(
 
 def clean_file(path: Path):
     lines = path.read_text(encoding="utf-8").split("\n")
-    h2 = [(i, l) for i, l in enumerate(lines) if l.startswith("## ")]
+    h2 = [(i, line) for i, line in enumerate(lines) if line.startswith("## ")]
     delete = set()
     junk_sections = []
     for k, (i, h) in enumerate(h2):
@@ -30,7 +30,7 @@ def clean_file(path: Path):
             junk_sections.append(h.strip())
     if not delete:
         return None
-    new_lines = [l for j, l in enumerate(lines) if j not in delete]
+    new_lines = [line for j, line in enumerate(lines) if j not in delete]
     # 备份
     bak = path.with_suffix(path.suffix + BAK_SUFFIX)
     if not bak.exists():

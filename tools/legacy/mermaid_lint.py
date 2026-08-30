@@ -134,9 +134,7 @@ def strip_label(line):
 # Per-type validators: append (lineno, code, msg) into errors
 # --------------------------------------------------------------------------
 def check_flowchart(lines, errors):
-    header_ok = False
     subgraph_stack = []
-    in_classdef = False
     for idx, raw in enumerate(lines, start=1):
         line = strip_label(raw)
         s = line.strip()
@@ -150,8 +148,6 @@ def check_flowchart(lines, errors):
                 errors.append((idx, "FLOW_HEADER",
                                f"invalid flowchart/graph header: {s!r} "
                                f"(need a direction token TB/TD/BT/LR/RL)"))
-            else:
-                header_ok = True
             # also check trailing junk like 'flowchart TD A-->B' (header must be its own line)
             rest = re.sub(r"^(flowchart|graph)\s+\w+\s*", "", s, flags=re.I).strip()
             if rest:
@@ -340,7 +336,6 @@ def check_state(lines, errors):
 
 
 def check_timeline(lines, errors):
-    seen_section = False
     for idx, raw in enumerate(lines, start=1):
         line = strip_label(raw)
         s = line.strip()
@@ -351,7 +346,6 @@ def check_timeline(lines, errors):
         if re.match(r"^title\b", s, re.I):
             continue
         if re.match(r"^section\b", s, re.I):
-            seen_section = True
             continue
         # entry:  "label : text" or "label : event1 : event2"
         if re.match(r"^[^:]+:.*$", s):

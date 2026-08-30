@@ -88,7 +88,6 @@ def main():
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
     files = collect(args.paths)
-    total_blocks = 0
     total_changed = 0
     changed_files = []
     for fp in files:
