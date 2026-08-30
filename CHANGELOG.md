@@ -53,9 +53,15 @@
 - **门禁转硬 + 两项健壮性修复**：`dangling_ref_linter` / `prereq_topo_check` 由软转硬；修复 `--json` 输出目录不存在时崩溃（CI 干净 checkout 无 outputs/ 抛 FileNotFoundError，曾致 #375 误红——本地 pass/CI fail 的根因）；已全库排查其余写 JSON 工具均带 mkdir，无同类隐患。
 - 复验：`quality` 16/16、`dangling=0`、`topology=0`、consistency `ERROR=0 / WARN=0`。
 
+### D5 覆盖口径统一（2026-08-30 完成）
+
+- **根因**：`d5_gap_scanner` 用正文「附录 D5」字面量匹配（=113），`metrics_snapshot` 用标题正则 `^#{2,4}\s*D5\b`（=119）；实测 6 章（ch05/ch11/ch15/ch128/ch146/ch151）标题为 `## D5 真实性能基准：…`/`## D5 性能附录：…` 变体，被字面量口径漏判。
+- **修复**：两工具统一为 `^#{2,4}\s*(?:附录\s*)?D5\b` 标题正则（`D5_HEADING_RE`），口径收口为 **119/147（81%）**；该指标在 metrics 中为非阻塞 dashboard，无 CI 影响。
+- 复验：quality 16/16 保持全绿。
+
 ### 现状与遗留
 
-- 上次推送后已推进内容债清零（55 悬空 + 7 前置完成）；`STATE/ISSUES/README` 事实源冲突、D5 覆盖口径（113 vs 119）、分支保护未启用、第二故障域备份等仍为遗留，详见审计报告 §7/§8/§10。
+- 内容债已清零（55 悬空 + 7 前置 + 30 WARN + D5 口径）；仍遗留：`STATE/ISSUES/README` 事实源冲突、分支保护未启用、断言 55 WARN、第二故障域备份（需介质），详见审计报告 §7/§8/§10。
 
 ---
 

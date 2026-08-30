@@ -86,12 +86,19 @@ D5_EXEMPT_STEMS = {
 }
 
 
+# D5 附录检测的权威正则（与 metrics_snapshot.py 统一，2026-08-30 口径收口）：
+# 标题行 `##/###/#### D5...`，兼容「附录 D5」与无「附录」前缀的变体
+# （如 `## D5 真实性能基准：...`、`## D5 性能附录：...`）。
+# 历史口径仅匹配正文「附录 D5」字面量，漏判 6 个标题变体章（113 vs 119）。
+D5_HEADING_RE = re.compile(r"^#{2,4}\s*(?:附录\s*)?D5\b", re.M)
+
+
 def find_d5_chapters():
     """Return set of chapter stems that already have D5 appendix."""
     d5_stems = set()
     for f in sorted(BOOK.rglob("ch*.md")):
         text = f.read_text(encoding="utf-8", errors="replace")
-        if "附录 D5" in text or "Appendix D5" in text:
+        if D5_HEADING_RE.search(text):
             d5_stems.add(f.stem)
     return d5_stems
 

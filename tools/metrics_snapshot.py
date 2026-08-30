@@ -179,7 +179,9 @@ def scan_chapters() -> dict:
             n = len(m.group(0))
             stars[n] = stars.get(n, 0) + 1
 
-        if re.search(r"^#{2,4}\s*D5\b", text, re.M):
+        # D5 覆盖权威口径：与 d5_gap_scanner.D5_HEADING_RE 完全一致
+        # （标题行 `##/###/#### D5...`，兼容「附录 D5」前缀变体，2026-08-30 收口）
+        if re.search(r"^#{2,4}\s*(?:附录\s*)?D5\b", text, re.M):
             d5_chapters += 1
         admonitions += len(re.findall(r"^(?:!!!|\?\?\?)\s", text, re.M))
 

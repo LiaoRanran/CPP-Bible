@@ -140,7 +140,7 @@ Python 包声明只有下界，没有锁文件；站点、PDF、Node/Chromium �
 | 空白 | 修复后 0 缺陷（审计初 11 文件、12 个 W2 连续空行，已 `--apply` 清理） | 硬门禁已通过 |
 | Mermaid | 修复后 511/511 通过（审计初 `ch92_chrono.md:147` 第 4 块无边，已补一条语义边） | 软失败已清零 |
 | 表格 | 154 文件、0 问题 | 通过 |
-| D5 附录 | 113/147，结构 `ERROR=0 / WARN=0` | 通过 |
+| D5 附录 | 119/147（81%，口径已统一：标题正则兼容「附录 D5」变体），结构 `ERROR=0 / WARN=0` | 通过 |
 | ASM 证据 | 485 块，67 已锚定准确、0 漂移、27 空、391 未锚定 | 已绑定证据健康，覆盖率有限 |
 | ASM 新鲜度 | 154 个绑定小节，0 过期 | 通过 |
 | §10 验证标记 | 147/147 章有标记 | 通过 |
@@ -182,7 +182,7 @@ Python 包声明只有下界，没有锁文件；站点、PDF、Node/Chromium �
 - `README.md`、`AGENT.md`、`PROJECT_HANDBOOK.md`、`STATE.json`、`ISSUES.md`、`NEXT_LLM.md` 的阶段、HEAD、章节/代码块/豁免数量互相冲突。
 - `STATE.json` 最后更新时间为 2026-07-17，明显落后于当前 HEAD；`ISSUES.md` 最后更新为 2026-07-09，列出的多项问题已被后续提交改变。
 - `compile_all.py`、`density_audit.py` 曾把 `Book/` 下全部 Markdown 当章节，导致 151 而非 147；`consistency_check.py` 曾把 `assets/history/MANIFEST.md` 当章节。本轮三个工具均已统一过滤规则：只扫描 `chNN_*.md`（跳过 `SUMMARY/GLOSSARY/PREREQUISITES/INDEX/MANIFEST`），章节口径固定为 147。
-- D5 覆盖在 `d5_gap_scanner.py` 中为 113，在 `metrics_snapshot.py` 中为 119，定义未统一。
+- D5 覆盖曾在 `d5_gap_scanner.py` 中为 113、`metrics_snapshot.py` 中为 119（定义未统一）；2026-08-30 已收口：两工具统一按标题正则（兼容「附录 D5」与 `## D5 …` 变体），口径为 **119/147（81%）**。
 - 55 处文本章号引用指向 13 个保留空号；前置元数据只有 41 章可检查，含 6 处拓扑倒置和 1 处悬空前置。
 - `pyproject.toml` 声明 MIT，但仓库没有 `LICENSE` 文件；也没有 `SECURITY.md`、CODEOWNERS 或 Dependabot 配置。
 
