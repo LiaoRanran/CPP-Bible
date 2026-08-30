@@ -1117,6 +1117,93 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你在写一个编辑器，用户操作（输入文字、删除、移动光标）都要支持"撤销/重做"。如果每条操作都硬编码 `if/else` 分支，撤销逻辑会和业务搅在一起。请用命令模式把"操作"封装成可撤销的对象，并说明它相比散落 `if/else` 的优势。
+
+<details><summary>答案与解析</summary>
+
+命令模式（Command）把"一个请求/操作"封装成对象，携带 `execute()` 与 `undo()` 两个对称方法。编辑器把所有用户动作统一成 `Command` 派生类，放进一个历史栈：执行时 `push` 并 `execute()`，撤销时 `pop` 并 `undo()`。这样撤销/重做逻辑集中在命令对象里，业务代码只和"命令栈"打交道，不再到处写 `if/else` 分支。
+
+标准/工程上，命令对象通常是轻量的、可序列化的（便于持久化宏/脚本），且天然支持"宏命令"（一个命令组合多个子命令）。相较"回调 `std::function`"，命令模式多了 `undo` 契约与可组合性；相较"直接修状态"，它把"做什么"与"怎么做"解耦，使操作可被记录、排队、延迟或网络传输。
+
+实现边界：每个命令必须正确实现对称的 `undo()`（例如 `on` 对应 `off`、`set(x)` 对应 `set(prev)`），否则撤销栈会累积错误状态——这是命令模式最常见的 bug 源。当失效：若操作本身不可逆（如已提交的数据库事务），硬做 `undo` 是伪需求，应改用补偿事务或干脆禁止撤销；若只是一次性简单动作，直接用 lambda 回调比重写一整套命令类更轻。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》Command 模式；撤销栈本质是命令对象的 memento/栈组合。
+
+<span class="badge badge-exp">经验</span> 需要撤销/重做/宏/排队 → 命令模式；一次性动作 → lambda 回调即可。命令模式成败在 `undo()` 是否对称正确。
+
+```cpp
+#include <iostream>
+
+struct Command {
+    virtual ~Command() = default;
+    virtual void execute() = 0;
+    virtual void undo() = 0;
+};
+
+struct Light { void on() { std::cout << "light on\n"; } void off() { std::cout << "light off\n"; } };
+
+struct OnCommand : Command {
+    Light& l;
+    explicit OnCommand(Light& l_) : l(l_) {}
+    void execute() override { l.on(); }
+    void undo() override { l.off(); }
+};
+
+int main() {
+    Light light;
+    OnCommand cmd{light};
+    cmd.execute();
+    cmd.undo();
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 你的连接对象有 `Ready/Connecting/Connected/Closed` 多个状态，每种状态下收到同一事件（如 `onData`）的行为完全不同。用 `if(state==X)` 的巨型 switch 既难维护又易漏分支。请用状态模式把"状态相关行为"收进各自的状态类，并说明它相对大 switch 的优势与代价。
+
+<details><summary>答案与解析</summary>
+
+状态模式（State）把"对象在某一状态下的行为"封装成独立的状态类，上下文（Context）持有一个当前状态指针，把所有事件转发给当前状态对象。新增状态时只需加一个状态类，上下文的 `handle()` 永远只有一行转发，不再有跨状态的巨型 `switch`——分支从"过程式平铺"变成"按状态分桶"，符合开闭原则。
+
+工程上，状态模式消除了"状态×事件"矩阵散落在 `if/else` 里的脆弱性：每个状态类自己负责"本状态下合法的事件与到下一状态的迁移"，状态迁移逻辑就近可读。缺点是状态类数量随状态数线性增长，且状态间若需共享上下文数据，要通过 Context 接口获取，耦合点变隐蔽。相比 ch137 的策略/装饰器，状态模式强调的是"行为随内部状态改变而改变"这一特定语义。
+
+实现边界：状态对象应尽量无状态（只放行为、不放数据），共享数据放在 Context，避免状态切换时数据不同步。当失效：若状态极少（2–3 个）且事件简单，一个 `enum` + `switch` 反而更直白；若状态间有大量共享可变数据且迁移复杂，状态模式会让"数据一致性"难以追踪，应考虑显式状态机库（如 Boost.SML，[UNVERIFIED] 其 API 细节请以官方文档为准）。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》State 模式；Boost.SML 为社区状态机实现（具体 API 以官方文档为准，标注 [UNVERIFIED]）。
+
+<span class="badge badge-exp">经验</span> 状态多且行为差异大 → 状态模式；状态少且简单 → enum+switch。状态对象应"只放行为"，共享数据交给 Context。
+
+```cpp
+#include <iostream>
+
+struct State { virtual ~State() = default; virtual const char* name() const = 0; };
+struct Ready : State { const char* name() const override { return "ready"; } };
+struct Running : State { const char* name() const override { return "running"; } };
+
+struct Machine {
+    const State* s = nullptr;
+    void set(const State* next) { s = next; }
+    void print() const { if (s) std::cout << s->name() << "\n"; }
+};
+
+int main() {
+    Ready r; Running run;
+    Machine m;
+    m.set(&r); m.print();
+    m.set(&run); m.print();
+    return 0;
+}
+```
+</details>
+
 ## D5 真实性能基准：行为型模式的分发机制成本（GCC 15.3.0 实测）
 
 **测量方法**：GCC 15.3.0（mingw-w64 x86-64）`-std=c++23 -O2`，预热后计时、5 次运行取中位数；`volatile` 汇聚防死代码消除。单观察者/单命令场景。单线程本机实测，仅作量级参考；**±1.5 ns 内的差异属噪声（循环/代码对齐），不构成结论**。

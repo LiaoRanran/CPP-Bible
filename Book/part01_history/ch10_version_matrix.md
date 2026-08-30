@@ -714,6 +714,65 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：同一份库要喂给不同 `__cplusplus` 年份的工具链。** 你维护的头文件被 C++17 与 C++20 两种编译器消费，需要在源码层面区分"语言年份"以决定是否启用新写法。请用 `__cplusplus` 宏写出能同时编译于两个标准的版本分支，并说明为什么只看编译年份还不够、最好配合特性测试宏。
+
+<details><summary>答案与解析</summary>
+
+`__cplusplus` 是标准年份的"粗粒度"信号（201703L / 202002L / 202302L）；以此分派可以把"仅新版支持"的写法隔离起来。但要精确探测某个库特性，仍应以 `__cpp_*` 特性宏为准（见 ch02 练习）。
+
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <version>
+
+int main() {
+    std::cout << "__cplusplus = " << __cplusplus << '\n';
+#if __cplusplus >= 202002L
+    std::cout << "C++20+ toolchain: concepts/ranges available\n";
+#else
+    std::cout << "older toolchain: keep conservative code\n";
+#endif
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `__cplusplus` 的定义见 ISO C++ §[cpp.predefined]，其值随标准版本单调递增；特性宏 `__cpp_*`/`__cpp_lib_*` 集中来自 `<version>`。
+
+<span class="badge badge-exp">经验</span> 版本年份只说明"标准号"，不保证某特性已被该编译器实现——跨编译器时仍以 `__cpp_*` 守门（如 ch02 练习 1）；迁移指南（本章 ⑤）也据此给出逐条替换规则。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你不知道手上的编译器到底落地了哪些 C++20 库特性。** 同事说"我们用的 GCC 已经支持 C++20 了"，但你要确认像 `std::atomic_ref` 这种库特性是否可用，避免盲目调用导致编译失败。请用 `<version>` 的特性测试宏做"能力自检"，并说明这比"猜编译器版本号"可靠在哪。
+
+<details><summary>答案与解析</summary>
+
+特性测试宏是"能力"而非"年份"：即便编译器声称支持 C++20，某个具体库特性仍可能尚未实现或默认关闭。用 `#ifdef __cpp_lib_*` 才能在代码里精确门控。
+
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <version>
+// 仅当本编译器真正暴露该库特性时才走新路径；否则回退，避免编译失败
+int main() {
+#ifdef __cpp_lib_atomic_ref
+    std::cout << "std::atomic_ref available (lib feature present)\n";
+#else
+    std::cout << "std::atomic_ref NOT exposed by this build\n";
+#endif
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> SD-6（特性测试宏，P0941R2）约定 `__cpp_lib_<feature>` 暴露库特性，值取引入年份月份；`<version>` 统一包含这些宏。
+
+<span class="badge badge-exp">经验</span> CI 矩阵跑"特性可达性自检"比记忆"GCC X / Clang Y"更稳健——同一大版本不同补丁也可能改特性开关，宏是唯一可信信号（见 ch02 练习 4）。
+
+</details>
+
 ---
 
 > **权威对照（单一事实来源）**：本章涉及 GCC / Clang / MSVC 的特性支持度、报错差异、ABI 与性能对比，均为写作时点快照。最新、逐项以 feature-test macro 实测的横向对照（含 GCC 15.3.0 精确宏值）见 [编译器版本对照表](../../docs/compiler-matrix.md)。**正文中的三编译器版本号以该表为准**——编译器升级后仅更新 `docs/compiler-matrix.md` 一处，无需改动本章。

@@ -1205,6 +1205,87 @@ int main() { save<Json>(); save_rt(Bin::write); }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你的数值引擎需要对"算术行为"做多种组合：有些场景用加法、有些用乘法，将来还可能加对数累加。如果用运行时 `if/else` 或 `virtual` 切换，热路径每次都付出分发成本。请用 Policy-Based Design 把"算术策略"做成可编译期组合的 policy，并说明它与 ch139 CRTP 的关系。
+
+<details><summary>答案与解析</summary>
+
+Policy-Based Design 把"一个类里可能变化的一个维度"（这里是算术行为）抽成一个策略类（如 `AddPolicy`/`MulPolicy`），宿主类 `Engine<ArithmeticPolicy>` 用模板实参把它"焊入"。编译后 `ArithmeticPolicy::compute` 被内联进 `run`，生成等价于手写的专属代码，零虚表、零分支——与 CRTP 共享"编译期组合、零开销"的内核，区别是 Policy 强调"多维度正交可组合"，而非单一基类的静态多态。
+
+标准/工程上，policy 通常是**无状态**的空类或纯静态成员类（配合 `[[no_unique_address]]` 甚至不占空间，P0840R2 C++20），宿主在编译期选定后整体特化。相比运行期策略（ch135 练习 5 的 `std::function`/`virtual`），它把"策略选择"从运行期提前到编译期，代价是每套组合生成一份独立类型与代码。Alexandrescu《Modern C++ Design》把这种模式系统化，核心是"用模板把设计决策变成可插拔的 policy"。
+
+实现边界：policy 必须契约清晰（`compute` 签名稳定），否则宿主无法泛化调用。当失效：若策略需在运行期按用户配置切换（如插件），编译期组合不可行，应回退 `std::function`/`virtual` 并承受分发成本；此外 policy 维度过多会引爆组合数（2^n 模板实例化），需控制维度或用类型抹除收敛。
+
+> **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-std">标准</span> `[[no_unique_address]]` 由 P0840R2 进入 C++20（ISO/IEC 14882:2020 [dcl.attr.nouniqueaddr]）；模板实例化与内联属 ISO/IEC 14882 模板章节。
+
+<span class="badge badge-ref">引用</span> Andrei Alexandrescu《Modern C++ Design》(2001) 系统化 Policy-Based Design；ch139 CRTP 为其近亲。
+
+<span class="badge badge-exp">经验</span> 单维度、编译期已知、热路径 → Policy-Based Design 零开销组合；运行期切换 → 回退运行期策略。控制 policy 维度数量防实例化爆炸。
+
+```cpp
+#include <iostream>
+
+struct AddPolicy { static int compute(int a, int b) { return a + b; } };
+struct MulPolicy { static int compute(int a, int b) { return a * b; } };
+
+template <typename ArithmeticPolicy>
+struct Engine {
+    int run(int a, int b) const { return ArithmeticPolicy::compute(a, b); }
+};
+
+int main() {
+    Engine<AddPolicy> e1; Engine<MulPolicy> e2;
+    std::cout << e1.run(2,3) << " " << e2.run(2,3) << "\n";
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 你的引擎不止"算什么"，还要决定"是否加锁"（单线程/多线程）。单一 policy 不够，需要把"算术策略"与"锁策略"两个正交维度同时组合进宿主，且不能退化为多继承泥潭。请用双 policy 组合，并说明 host 类如何引导 policy 协作。
+
+<details><summary>答案与解析</summary>
+
+当变体来自多个**正交维度**时，Policy-Based Design 的真正威力才显现：把"算术"与"并发"各做成一个 policy（`ArithPolicy` + `LockPolicy`），宿主 `Engine<LockPolicy, ArithPolicy>` 在 `run()` 里先 `LockPolicy::guard()` 再加 `ArithPolicy::compute`。两个维度独立演化、自由组合（NoLock×Add、Mutex×Mul…），避免了"为每种 (锁,算法) 组合写一个子类"的指数爆炸——这正是它相对继承的核心优势。
+
+机制上，host 类充当"组装者"：它只依赖各 policy 公布的稳定契约（如 `guard()`/`compute()`），不关心具体实现；所有调用在编译期内联，生成的代码等同于手写 `if (多线程) lock(); return a*b;`。这与 ch141 依赖注入"运行期接线"形成对照：Policy 是**编译期接线**，DI 是**运行期接线**，前者零开销但不可切换，后者可替换但有间接成本。
+
+实现边界：host 必须规定并文档化每个 policy 的契约与默认实参（如 `Engine<NoLock, AddPolicy>`），默认 policy 能显著降低调用方负担。当失效：若两个维度之间需要**通信**（例如锁策略要告诉算术策略"已持锁"以避免重入），纯独立 policy 难以表达，需引入 host 传递的上下文参数或回退更显式的组装；若维度超过 3 个，模板签名可读性骤降，应考虑类型擦除或代码生成。
+
+> **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-std">标准</span> 多模板实参组合属 ISO/IEC 14882 模板机制；无状态 policy 配合 `[[no_unique_address]]`（P0840R2, C++20）可消除空基类开销（[class.layout]）。
+
+<span class="badge badge-ref">引用</span> Alexandrescu《Modern C++ Design》"Orthogonal Design with Policies"；与 ch141 运行期 DI 互为镜像。
+
+<span class="badge badge-exp">经验</span> 多正交维度、编译期组合 → 多 policy 宿主；维度间需通信 → 引入 host 上下文或回退显式组装。默认 policy 降低调用门槛。
+
+```cpp
+#include <iostream>
+
+struct NoLock { static void guard() {} };
+struct AddPolicy { static int compute(int a, int b) { return a + b; } };
+
+template <typename LockPolicy, typename ArithPolicy>
+struct Engine {
+    int run(int a, int b) const {
+        LockPolicy::guard();
+        return ArithPolicy::compute(a, b);
+    }
+};
+
+int main() {
+    Engine<NoLock, AddPolicy> e;
+    std::cout << e.run(4,5) << "\n";
+    return 0;
+}
+```
+</details>
+
 ## D5 真实性能基准：Policy-Based Design 的零开销验证（GCC 15.3.0 实测）
 
 **测量方法**：同 D5 方法学（GCC 15.3.0 `-O2`，预热 + 5 次中位数）。`Engine<AddPolicy>` 编译期组合、`AddPolicy::compute` 完全内联；对照为运行期 `virtual` 分发。各 2000 万次调用取中位数。单线程 x86-64 本机实测，仅作量级参考。

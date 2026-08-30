@@ -2124,6 +2124,84 @@ auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：接管带统计的第三方句柄。** 一个 C 库返回 `File*`，你希望 `unique_ptr` 释放它时顺便做计数。请用**有状态的自定义删除器**（含 `int*` 计数器）写 `unique_ptr<File, Deleter>`，并观察删除器状态对 `unique_ptr` 尺寸的影响。
+
+<details>
+<summary>答案与解析</summary>
+
+`unique_ptr` 的删除器存在**对象内部**（第二模板参数作为成员存储），不像 `shared_ptr` 那样放进控制块（练习 3）。有状态的删除器（本例含 `int* count`）会把 `sizeof(unique_ptr)` 从「一个指针」撑成「指针 + deleter」；而**无捕获 lambda 类型的删除器是空类**，借助空基类优化（EBO）不占额外字节，`sizeof` 仍等于指针大小——这是「用 lambda 当删除器比手写有状态仿函数更省」的经典结论。
+
+标准依据：ISO/IEC 14882:2023 §[unique.ptr.dltr] 规定删除器作为模板参数存储；§[util.smartptr] 系引用 `shared_ptr` 的删除器则在控制块中。释放时机：`reset()`/析构/离开作用域任一时刻触发删除器一次，本例 `released` 精确记录释放次数——把「谁在何时释放」变成可观测信号。
+
+实现与边界：有状态删除器最常用于「归还池、统计、日志」；`reset()` 后 `get()` 为空、删除器不再触发。何时失效：把带状态删除器的 `unique_ptr` 存进容器时按元素移动即可（删除器随对象移动）；跨 ABI 传递自定义删除器类型要保证定义可见。替代方案：无状态统计可改用全局计数器（避免撑大对象）；需要共享删除器语义就用 `shared_ptr`（练习 3 的 FILE* 场景）。
+
+> **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <memory>
+
+struct File { char c = 'x'; };
+
+struct FileDeleter {
+    int* count;                                  // 有状态 deleter
+    void operator()(File* f) const {
+        if (f) { ++*count; delete f; }
+    }
+};
+
+int main() {
+    int released = 0;
+    std::unique_ptr<File, FileDeleter> f(new File, FileDeleter{&released});
+    std::unique_ptr<File> plain(new File);
+    std::cout << "deleter-size " << sizeof(f) << " vs plain " << sizeof(plain) << "\n";
+    std::cout << f->c << plain->c << "\n";
+    f.reset();                                    // 触发 deleter → released==1
+    std::cout << "released=" << released << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[unique.ptr.dltr]：unique_ptr 的删除器作为成员存储，无捕获 lambda 删除器经 EBO 不占字节。
+
+<span class="badge badge-exp">经验</span> `unique_ptr` 删除器三问：要状态吗？（计数/日志/池）→ 有状态会用掉对象空间；能无捕获吗？→ 无捕获 lambda 零开销。跨 `shared_ptr` 的删除器语义差异（练习 3）是面试高频点：一个存在对象里、一个存在控制块里（本章附录『连接池演进』的 deleter 用法一脉相承）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：指向成员但共享整对象生命周期。** `Obj` 里某个 `int v` 要被异步任务持有，任务只需要 `v`，但必须保证 `Obj` 不被提前释放。请用 `shared_ptr` 的**别名构造（aliasing constructor）**让 `shared_ptr<int>` 指向成员、却共享整个对象的控制块。
+
+<details>
+<summary>答案与解析</summary>
+
+别名构造 `shared_ptr<int> member(sp, &sp->v)` 创建的控制块指向 `sp` 的控制块（共享所有权），但 `member` 的 `get()` 是 `&sp->v`——任务拿到的是 `int*`，而引用计数由整对象控制块维系。因此只要 `member` 还活着，`sp` 所拥有的 `Obj` 就不会析构，即使 `sp` 先 `reset()`。这是「只关心子对象、却要保父对象命」的标准答案。
+
+标准依据：ISO/IEC 14882:2023 §[util.smartptr.shared.const] 的别名构造：新 `shared_ptr` 持有不同指针、共享同一控制块；引用计数、弱计数都在控制块上，`use_count` 随之增减。注意「指向成员」与「拥有对象」解耦——释放时只 `delete` 一次（对象所有权在控制块），不会对成员单独释放。
+
+实现与边界：别名构造避免「额外持有一份 `shared_ptr<Obj>` + 记录成员偏移」的繁琐；`member.reset()` 只是减少引用计数，`sp` 是否存活取决于其它引用。何时失效：`&sp->v` 在 `sp` 被 `reset`/悬垂后再取就是悬垂指针——先取地址再构造别名才安全。替代方案：直接持 `shared_ptr<Obj>` + 手动 `.v` 访问语义等价但调用方要处理父对象类型；`weak_ptr`（练习 2）用于「可过期」的回边。
+
+> **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Obj { int v = 0; };
+
+int main() {
+    auto sp = std::make_shared<Obj>();
+    std::shared_ptr<int> member(sp, &sp->v);   // aliasing: 共享控制块, 但指向成员
+    member.reset();
+    std::cout << (sp ? "sp alive\n" : "sp dead\n");
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[util.smartptr.shared.const]：别名构造共享控制块、指向不同对象；所有权由控制块统一管理。
+
+<span class="badge badge-exp">经验</span> 别名构造的适用面：观察者只关心子对象、但必须延长父对象生命（缓存成员、异步取字段）。它与 `weak_ptr`（练习 2）合起来覆盖「共享但可过期」的两半——先取地址再构造别名，别把「取地址」留在可能悬垂的时机（本章附录『连接池演进』的 from_this 取回思路同源）。
+
+</details>
+
 ## 附录：用法演绎 — 连接池资源类：从裸指针演进到 `enable_shared_from_this`
 
 > 场景：重构一个「数据库连接池」老代码，原接口返回裸 `Connection*`（调用方负责 `delete`），频繁出现泄漏与双重释放。下面让**同一个连接池资源类**随步骤推进而演化——先裸指针，再 `unique_ptr` 接管唯一所有权，再 `shared_ptr` 共享，再用 `weak_ptr` 打破循环，最后 `enable_shared_from_this` 从 `this` 安全取回 `shared_ptr`。每一步各解决一类所有权问题。

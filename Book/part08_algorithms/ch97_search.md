@@ -1165,6 +1165,75 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::search`：`https://en.cppreference.com/w/cpp/algorithm/search`；`std::boyer_moore_searcher`：`https://en.cppreference.com/w/cpp/utility/functional/boyer_moore_searcher`。
 
+### 练习 4（难度 ★★）
+
+**真实场景：有序容器的"判存在 + 定位插入点"。** 白名单按 ID 有序存储，服务要"判断某 ID 是否在白名单，不在则插到正确位置"——`std::binary_search` 回答存在性、`std::lower_bound` 返回第一个 ≥ key 的位置，后者正是 `vector::insert` 的插入点。请演示两者的正确搭配，说明为什么这里**不能**用 `std::find`（线性扫描浪费有序性），以及 `binary_search` 只告诉你"有没有"、不给位置。
+
+<details><summary>答案与解析</summary>
+
+`binary_search(first,last,key)` 假定区间已排序，用对数次比较回答 `key` 是否存在；`lower_bound` 返回第一个 `>= key` 的迭代器。二者都对"已排序区间"才有意义，复杂度 O(log n)。组合用法：先 `binary_search` 判存在，再 `lower_bound` 拿插入点 `insert(it, key)`，整个流程 O(log n)。
+
+标准依据：二者同属二分查找族，见 ISO §27.7.3（[alg.binary.search]）；前提是区间已按 `comp` 排序，否则结果未定义。`binary_search` 在语义上等价于 `!comp(key,*it) && !comp(*it,key)` 的探测，但实际由 `lower_bound` 的探测 + 等价性判断实现。
+
+边界条件与失效场景：`binary_search` 判存在时，重复键不影响结论；要"出现次数"须 `lower_bound`/`upper_bound` 配合 `distance`（练习 1）。若区间未排序，二分可能漏查或误判——工程上可在 Debug 模式 `assert(std::is_sorted(...))` 守卫。`lower_bound` 返回 `end()` 表示 key 大于所有元素，此时 `insert` 等价于 `push_back`。
+
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> v{1, 3, 5, 7, 9};
+    bool has = std::binary_search(v.begin(), v.end(), 5);   // 判存在
+    if (!has) {
+        auto it = std::lower_bound(v.begin(), v.end(), 5);  // 第一个 >=5
+        v.insert(it, 5);
+    }
+    auto it = std::lower_bound(v.begin(), v.end(), 6);      // 插入 6
+    v.insert(it, 6);
+    std::cout << "has5=" << has << " -> ";
+    for (int x : v) std::cout << x << ' ';
+    std::cout << '\n';    // 1 3 5 6 7 9
+}
+```
+
+<span class="badge badge-std">标准</span> 二分算法的前提是"已按同一比较器排序"（[alg.binary.search]）；`binary_search` 返回值是 bool、不暴露迭代器，位置信息必须用 `lower_bound`/`upper_bound` 单独取。
+
+<span class="badge badge-exp">经验</span> "判存在"用 `binary_search`、"要位置"用 `lower_bound`——一次二分只干一件事；需要同时拿到区间时 `equal_range` 一次到位（练习 2）。对频繁插入的有序结构，`std::set`/`std::map` 或 `std::flat_map` 常比"vector + 二分插入"更省心。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：日志/时序流里检测"连续 N 次相同值"。** 网关要发现"连续 3 个 500 错误码"并告警——`std::search_n` 正是"查找连续 N 个相等元素"的原语。请在一段错误码序列里定位"连续 3 次 500"的起始位置，说明它与 `std::search`（子序列匹配）的适用差异。
+
+<details><summary>答案与解析</summary>
+
+`search_n(first, last, count, value)` 在区间内查找**连续的 `count` 个等于 `value`** 的子段，返回首个匹配段起点迭代器，未找到返回 `last`。它的内部逐窗比较，最坏 O(n·count)。相比 `search`（匹配整段任意模式），`search_n` 专门表达"连续重复同一元素"，签名更短、意图更清晰。
+
+标准依据：`search_n` 属于"查找"类算法，见 ISO §27.6.6（[alg.search]）；也提供谓词重载 `search_n(first,last,count,value,pred)`。它返回迭代器而非 bool，可与 `distance` 配合得到下标。
+
+边界条件与失效场景：`count==0` 时标准要求返回 `first`；`count` 超过区间长度时返回 `last`。找到的只是"首次出现"的位置，要统计所有连续段须循环推进。若判据不是"相等"而是任意谓词（如"连续 3 个超过阈值"），可用谓词版 `search_n(..., count, value, pred)` 或 `adjacent_find` 变体。
+
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> codes{200, 500, 500, 500, 404, 200};
+    auto it = std::search_n(codes.begin(), codes.end(), 3, 500);
+    if (it != codes.end())
+        std::cout << "3x500 at idx " << (it - codes.begin()) << '\n';   // 1
+    else
+        std::cout << "no run of 3x500\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `search_n` 对"连续相等元素段"返回首个起点；未命中返回 `last`，与 `search`（子序列匹配）在 [alg.search] 同一节规定。
+
+<span class="badge badge-exp">经验</span> 流式检测连续异常码/连续失败计数是 `search_n` 的典型场景；要求"至少 K 次"时可用 `K` 作 count，命中即告警。若数据是流式到达而非一次性区间，改用"滑动窗口 + 计数"状态机更合适。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

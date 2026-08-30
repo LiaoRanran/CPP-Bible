@@ -1612,6 +1612,70 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：大缓冲放哪边。** 一个处理函数需要 100 万整数的临时缓冲；栈空间有限（通常 1~8MB），堆空间大。请分别展示「小数组放栈」与「大/动态数组放堆（由 `unique_ptr` 接管）」两种写法，并解释为什么大对象不应放栈。
+
+<details>
+<summary>答案与解析</summary>
+
+栈是**自动存储期**：函数返回即回收，无需手动释放，但容量受限（x86-64 默认栈约 1~8MB，见练习 1 的地址带直觉）；堆是**动态存储期**：容量受系统内存约束、生命周期可控，但必须配对释放。`std::make_unique<std::vector<int>>(1000000, 0)` 把「100 万 int」交给堆分配，`unique_ptr` 在 `main` 作用域结束时自动 `delete`——既拿到大容量，又不漏释放。
+
+标准依据：ISO/IEC 14882:2023 §[basic.stc.auto]（自动存储期对象在块结束时析构）与 §[basic.stc.dynamic]（动态存储期由 `new`/`delete` 管理）；栈大小不是标准规定而是 ABI/操作系统限制（练习 3 与 ch35 都强调「栈堆相向扩张、大对象别上栈」）。
+
+实现与边界：栈溢出是运行期崩溃（Segment fault / 硬件 fault），编译期查不出；把百万级数组放栈上就是赌「栈足够大」。何时失效：`unique_ptr` 的堆对象若在栈上被拷贝（`auto big2 = big;`）会编译失败（不可拷贝）——这恰是防错设计；需要共享时用 `shared_ptr`（ch41）。替代方案：栈上放 `std::array` 但要大小可控；运行期才知道大小只能用堆 + RAII（`vector`/`unique_ptr`）。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <memory>
+
+int main() {
+    // 栈: 生命周期短、大小可控
+    int small[4] = {1, 2, 3, 4};
+    // 堆: 大数据/动态大小
+    auto big = std::make_unique<std::vector<int>>(1000000, 0);
+    std::cout << small[0] << " " << big->size() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.stc.auto]/§[basic.stc.dynamic]：栈对象自动析构、堆对象由 RAII 管理。
+
+<span class="badge badge-exp">经验</span> 分配策略一句话：**小且编译期可知 → 栈；大或运行期变化 → 堆 + RAII**。栈上塞大数组等于把崩溃概率押给运行时；`unique_ptr`/`vector` 让堆对象也享受 RAII 的「不泄漏」保证（本章附录『返回局部引用』讲的是反方向错误，两题合起来看就是完整的存储期地图）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：递归求和的栈帧开销。** 数值算法里递归是很自然的形式，但每一层递归都要消耗一个栈帧。请写一个递归求 `1+2+...+n` 的函数，说明递归深度与栈空间的关系，以及为什么「尾递归优化」不可依赖。
+
+<details>
+<summary>答案与解析</summary>
+
+每次递归调用会分配一个新的栈帧（保存返回地址、局部变量、callee-saved 寄存器），帧大小取决于函数局部量。`sum_rec(n)` 递归深度为 `n`，栈消耗 ≈ `n × 帧大小`；`n` 到几十万时大概率撑爆默认栈。迭代版本只占一个帧，是根治之道。C++ 标准**不要求**尾递归优化（TCO）——编译器「可能」把尾递归变成循环，也可能不，`-O2` 下 GCC/Clang 常做，但它是实现行为而非语言契约。
+
+标准依据：ISO/IEC 14882:2023 §[expr.call] 定义调用栈语义（未完成调用期间其栈帧存活）；递归深度对栈空间的消耗由「自动存储期」决定（§[basic.stc.auto]）。TCO 属优化器自由裁量，标准无承诺——把正确性押在优化上是未定义行为级别的赌注。
+
+实现与边界：任何递归都可能爆栈，不只尾递归；深递归 + 大局部对象更危险。何时失效：递归深度由输入数据决定（树深度、嵌套 JSON）时，必须设深度上限或转迭代。替代方案：尾递归 → 循环；任意递归 → 显式栈（`std::vector` 存待处理节点，模拟 DFS/BFS，本质把栈从「调用栈」搬进「堆」）。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+long long sum_rec(long long n) { return n <= 0 ? 0 : n + sum_rec(n - 1); }
+
+int main() {
+    std::cout << sum_rec(100) << "\n";   // 5050
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.stc.auto]：自动存储期随调用栈分配/回收；尾递归优化非标准承诺。
+
+<span class="badge badge-exp">经验</span> 递归漂亮但吃栈：深度已知且浅 → 放心用；深度随输入增长 → 先想迭代或显式栈。TCO 是「优化」不是「语义」，`-O0` 下尤其别指望——把深度上限写进不变量，比赌优化器更稳（本章附录『UB 反例库』与 ch43 的显式栈遍历同源）。
+
+</details>
+
 ---
 
 > **UB 实证库**：堆内存（释放后使用 / 双重释放）与栈内存（栈对象越界使用）的**真实 UB 代码 + GCC 警告 + 修复**，见 [附录 UB 反例库](../../Appendix/ub/README.md)（UB-01/02/03）。

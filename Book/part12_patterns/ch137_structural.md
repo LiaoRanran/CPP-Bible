@@ -1373,6 +1373,89 @@ int main() { auto img = std::make_shared<Border>(std::make_shared<Raw>()); img->
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你接手一个老模块，里面大量使用了某个第三方库 `CelsiusSensor::readC()`，但你的新代码统一要求 `ITemperature::readF()` 接口。直接改老库的接口不现实，请用一个"适配器"把二者无缝对接，并说明适配器与"改写老库"的取舍。
+
+<details><summary>答案与解析</summary>
+
+适配器（Adapter）模式的本质是"在不改动原类的前提下，把一个已有接口翻译成客户期望的接口"。这里 `CelsiusSensor` 是遗留/第三方组件（无法或不宜修改），`ITemperature` 是你系统的抽象；`SensorAdapter` 持有对原对象的引用，在 `readF()` 里做单位换算后转发。客户代码只依赖 `ITemperature`，对底层是 Celsius 还是 Fahrenheit 源一无所知。
+
+标准/工程上，适配器的关键约束是"零侵入"：原类一行不改，因此不会引入回归风险；代价是多一层薄转发（一次虚调用 + 单位换算）。这与 ch135 的"模式蒸发"并不矛盾——当第三方接口你压根控制不了时，适配器是无法被语言特性替代的少数场景之一。若你控制得了两端接口，优先让它们直接对齐；只有"接口不可改"时才上适配器。
+
+实现边界：适配器尽量持有"引用或指针"而非拷贝原对象，避免状态割裂（你读到的和单位换算的不是同一个传感器实例）。当失效：若需要的不只是接口翻译，而是行为重塑（例如要缓存、批处理），适配器承担过多逻辑会退化为"伪装成适配器的业务层"，此时应重构为独立的防腐层（ACL）。另外注意单位换算的精度与 NaN/溢出边界。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》Adapter 模式；防腐层（Anti-Corruption Layer）出自《Enterprise Integration Patterns》/ Evans DDD。
+
+<span class="badge badge-exp">经验</span> "接口不可改"是适配器存在的唯一硬理由；能直接对齐接口就不要绕一层。适配器应只做翻译，别把业务逻辑塞进去。
+
+```cpp
+#include <iostream>
+#include <string>
+
+struct CelsiusSensor { double readC() const { return 25.0; } };  // 第三方遗留接口
+struct ITemperature { virtual ~ITemperature() = default; virtual double readF() const = 0; };
+
+struct SensorAdapter : ITemperature {   // 把 Celsius 适配到 ITemperature
+    const CelsiusSensor& s;
+    explicit SensorAdapter(const CelsiusSensor& s_) : s(s_) {}
+    double readF() const override { return s.readC() * 9.0 / 5.0 + 32.0; }
+};
+
+int main() {
+    CelsiusSensor legacy;
+    SensorAdapter adapter{legacy};
+    std::cout << "F=" << adapter.readF() << "\n";
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 你的 `Coffee` 对象需要在不修改 `Simple` 类的情况下，动态叠加"加奶/加糖/加奶泡"等任意组合的功能。继承树每加一种组合就要 new 一个子类（类爆炸）。请用装饰器模式解决，并说明它相对"多层继承"的优势。
+
+<details><summary>答案与解析</summary>
+
+装饰器（Decorator）模式让"功能扩展"与"核心对象"正交：核心 `Simple` 只实现基础行为，每个装饰器（如 `WithMilk`）持有一个被装饰的 `Coffee` 指针，在转发前后插入自己的增强。叠加 `WithMilk(WithSugar(Simple))` 在运行期组合出任意功能栈，而无需为每种组合预定义子类——这正是解决"类爆炸"的标准手法。
+
+对比继承：继承是编译期静态绑定、组合爆炸（m×n 个子类）；装饰器是运行期自由堆叠、每个增强只写一个类。代价是对象图变深、调试时调用链更长，且装饰器与被装饰者必须共享同一抽象基类（`Coffee`），这层抽象是前提。C++ 里装饰器通常用 `std::unique_ptr<Coffee>` 持有内层，RAII 自动管理生命周期，比裸指针安全。
+
+实现边界：装饰器要求"接口稳定且可透明转发"——若每个增强都要新增虚函数（不只是包裹现有方法），装饰器就退化成策略/组合，应重新设计抽象。当失效：若组合数量在编译期就固定且极少，直接写一个具体子类反而更直观；若增强之间需要互相"看见"彼此状态（例如糖要知道奶是否已加），装饰器的单向转发会很难表达，应改用更显式的组装结构。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-std">标准</span> `std::unique_ptr` 由 C++11 引入（ISO/IEC 14882:2011 [unique.ptr]），此处用于持有被装饰对象并保证栈式析构。
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》Decorator 模式。
+
+<span class="badge badge-exp">经验</span> 功能正交且需任意组合 → 装饰器；组合固定且少 → 直接子类。装饰器前提是"共享抽象 + 可透明转发"，否则就是过度抽象。
+
+```cpp
+#include <iostream>
+#include <string>
+#include <memory>
+
+struct Coffee { virtual ~Coffee() = default; virtual double cost() const = 0; virtual std::string desc() const = 0; };
+struct Simple : Coffee { double cost() const override { return 2.0; } std::string desc() const override { return "coffee"; } };
+
+struct WithMilk : Coffee {  // 装饰器：不改原类扩展功能
+    std::unique_ptr<Coffee> c;
+    explicit WithMilk(std::unique_ptr<Coffee> c_) : c(std::move(c_)) {}
+    double cost() const override { return c->cost() + 0.5; }
+    std::string desc() const override { return c->desc() + "+milk"; }
+};
+
+int main() {
+    auto c = std::make_unique<WithMilk>(std::make_unique<Simple>());
+    std::cout << c->desc() << " cost=" << c->cost() << "\n";
+    return 0;
+}
+```
+</details>
+
 ## 附录 J：结构型模式 决策流（D3 维度）
 
 > 以"改变接口或对象结构而不改动行为"为主线，给出适配器 / 装饰器 / 代理 / 桥接 / 组合的选型判据。

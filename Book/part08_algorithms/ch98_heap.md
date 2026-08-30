@@ -1040,6 +1040,78 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::priority_queue`：`https://en.cppreference.com/w/cpp/container/priority_queue`。堆操作的规范与复杂度见 ISO §27.7.3（[alg.heap.operations]）。
 
+### 练习 4（难度 ★★）
+
+**真实场景：构造堆后先验证堆性质再消费。** 外部数据源直接给你一个"声称是堆"的区间，或你手改过堆中元素——消费前用 `std::is_heap` / `std::is_heap_until` 验证"根为最大且逐层有序"这一不变量，是避免 `pop_heap` 结果错乱的防线。请对 `h{9,7,8,3,1,5,6}` 先验证、再 `make_heap` 后复验，并解释 `is_heap_until` 返回什么。
+
+<details><summary>答案与解析</summary>
+
+`is_heap(first,last)` 检查整个区间是否满足最大堆性质（`i` 处元素 ≥ `2i+1`/`2i+2` 子元素）；`is_heap_until` 返回"前缀仍是堆"的最后一个位置——即第一个破坏堆性质的元素下标，全合规时返回 `last`（等于 `size()`）。对空区间和单元素区间二者恒为 true。
+
+标准依据：堆不变量与这些判定算法见 ISO §27.7.4（[alg.heap.operations]），与 `make_heap`/`push_heap`/`pop_heap`/`sort_heap` 同节；所有堆算法默认按 `std::less` 建最大堆，判定算法同样支持自定义比较器版本。
+
+边界条件与失效场景：`is_heap` 为 false 时，对区间调用 `pop_heap` 行为未定义——这就是验证的意义。工程上 Debug 模式可在每次 `push_heap`/`pop_heap` 后 `assert(std::is_heap(...))` 抓逻辑 bug；注意 `is_heap_until` 对"部分合规"输入返回破坏点的下标，可用于定位是哪一次修改破坏了堆。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> h{9, 7, 8, 3, 1, 5, 6};
+    std::cout << "before: " << std::is_heap(h.begin(), h.end()) << '\n';   // 0（不是堆）
+    std::make_heap(h.begin(), h.end());
+    std::cout << "after : " << std::is_heap(h.begin(), h.end()) << '\n';   // 1
+    auto bad = std::is_heap_until(h.begin(), h.end());
+    std::cout << "violation at " << (bad - h.begin())
+              << " (==size 表示全合规)\n";                                  // 7
+}
+```
+
+<span class="badge badge-std">标准</span> 堆算法族 [alg.heap.operations] 规定：对不满足堆性质的区间调用 `pop_heap`/`sort_heap` 行为未定义；`is_heap`/`is_heap_until` 因此是消费前的标准守卫。
+
+<span class="badge badge-exp">经验</span> 堆不变量脆弱——任何直接修改 `vector` 元素（而非经 `push_heap`/`pop_heap`）的操作都可能破坏它。持续维护的堆建议用 `std::priority_queue` 封装，把堆操作收敛到容器适配器内，减少手工触碰底层数组的机会。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：按 deadline 处理任务的优先级调度。** 定时任务系统要"最紧急的 deadline 先执行"，但 `std::priority_queue` 默认是最大堆——把"最小 deadline 优先"映射成比较器要取反（`a.deadline > b.deadline` 表示 a 的优先级更低）。请用自定义比较器构造"最小 deadline 优先"的优先队列，演示 `push`/`top`/`pop` 循环，并说明为什么这个比较器让 `priority_queue` 表现成最小堆。
+
+<details><summary>答案与解析</summary>
+
+`std::priority_queue<T, Container, Compare>` 的第三个模板参数 `Compare` 决定"优先级"：默认 `std::less<T>` 让最大元素在 `top()`（内部是大根堆）。要让"最小 deadline 先出"，比较器须反写为 `a.deadline > b.deadline`——这表示"a 的优先级严格低于 b"，从而 deadline 最小的元素成为"最大"、位于堆顶。
+
+标准依据：`priority_queue` 是容器适配器，底层对 `Container` 调用 `push_heap`/`pop_heap`（见 ISO §27.9.2（[container.adaptors]）与 [alg.heap.operations]）；`top()` 返回堆顶、`pop()` 弹出堆顶。比较器必须满足严格弱序，否则行为未定义。
+
+边界条件与失效场景：同 deadline 的任务顺序不保证（不稳定）；要"相同 deadline 按 id 决胜"需比较器加第二键。若任务带动态优先级（运行中改变 deadline），`priority_queue` 不支持"改键"——此时要自建堆 + 索引，或直接重插。相比手写 `make_heap`，适配器省去 `push_back`/`pop_back` 的配对，是生产首选。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+struct Task { int id; int deadline; };
+struct EarlierDeadline {
+    bool operator()(const Task& a, const Task& b) const {
+        return a.deadline > b.deadline;    // 反写：让最小 deadline 位于堆顶
+    }
+};
+int main() {
+    std::priority_queue<Task, std::vector<Task>, EarlierDeadline> pq;
+    pq.push({1, 50}); pq.push({2, 10}); pq.push({3, 30});
+    while (!pq.empty()) {
+        auto t = pq.top(); pq.pop();
+        std::cout << "task" << t.id << "(dl=" << t.deadline << ") ";
+    }
+    std::cout << '\n';    // task2(dl=10) task3(dl=30) task1(dl=50)
+}
+```
+
+<span class="badge badge-std">标准</span> `priority_queue` 的比较器语义与堆算法一致：`Compare(a,b)` 为 true 表示 a 排在 b 之后；比较器须严格弱序（[alg.sorting] 的 Compare 概念）。
+
+<span class="badge badge-exp">经验</span> "最小堆"的构造口诀是"比较器反写"——`greater` 得升序队列、自定义 `a.key > b.key` 得小顶优先。工程上把比较器做成具名类型而非裸 lambda，便于在 `push` 大量处复用，也避免跨函数签名不一致。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

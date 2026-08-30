@@ -1240,6 +1240,58 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（`at()`/`operator[]` 的有界/无界差异）；`span` 的"视图"思想源自 GSL/`std::span` 提案（P0122），见 cppreference "container/span"。
 
+### 练习 4（难度 ★★）
+
+**真实场景：函数参数要接受「任意连续容器」但拒绝裸 `(T*, n)` 的脆弱配对。** 你希望签名为 `f(std::span<const int>)`，这样既能收 `vector`/`array`/C 数组，又自带长度。请说明 `span` 把"指针+长度"打包成一个零开销对象，并指出为什么不检查越界的 `operator[]` 是 UB。
+
+<details><summary>答案与解析</summary>
+
+`std::span<T>` 本质是一个 `{ptr, size}` 视图，它不拥有内存、构造时不拷贝元素，仅"借用"底层连续区间，因此是零拷贝、零分配的。代价是它与 `string_view` 一样**不拥有**内存、且 `operator[]` 不做边界检查（越界即 UB，和裸指针一致）。安全切片要用 `first(n)`、`last(n)`、`subspan(off, n)` 这些会重新计算长度的成员，而不是手算指针加减。
+
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <span>
+int main() {
+    int a[] = {1,2,3,4,5};
+    std::span<int> s(a);                          // 动态 extent
+    std::cout << s.size() << " " << s.first(3).size() << "\n";  // 5 3
+    // s[10] 是未定义行为; 用 first/last/subspan 做有界切片
+}
+```
+
+<span class="badge badge-std">标准</span> `span` 满足 `ContiguousRange`，`data()`/`size()` 与连续布局保证；`first`/`last`/`subspan` 返回新视图且不越界检查参数（参数越界 UB），语义见 `[views.span]`。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（`span` 构造与子视图）；见 cppreference "span"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：需要"编译期已知长度"的视图来做 SIMD 或避免传 size。** 某些 API 要求长度在类型里（如 `std::span<float, 4>`）。请区分「静态 extent」与「动态 extent」两种 `span`，并用静态 extent 的 `span` 演示编译期长度，以及它如何从 `std::array` 构造。
+
+<details><summary>答案与解析</summary>
+
+`std::span<T>` 的第二个模板参数 `Extent` 决定长度是否编码进类型：`std::span<T>`（动态，`Extent==dynamic_extent`）长度存运行时；`std::span<T, N>`（静态）长度在编译期固定，可推导出 `size()` 为 constexpr，且能直接从 `std::array<T,N>` 构造（长度自动匹配）。静态 extent 的好处是让越界在编译期更易被发现、且无需额外存储 `size`，但对动态来源（如 `vector`）需先保证长度等于 N。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <span>
+#include <array>
+int main() {
+    std::array<int,4> a{10,20,30,40};
+    std::span<int,4> st(a);                  // 静态 extent, 编译期长度
+    std::cout << st.size() << " " << st[2] << "\n";   // 4 30
+}
+```
+
+<span class="badge badge-std">标准</span> `span<T,N>` 的 `size()` 为 constexpr；从 `array`/`T[N]` 构造静态 extent span 时要求长度匹配，否则编译期错误（见 `[views.span.cons]`）。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（静态/动态 extent 与构造）；见 cppreference "span"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：泛型数值累加，接受任意连续容器

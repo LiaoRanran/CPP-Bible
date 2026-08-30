@@ -674,6 +674,63 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO C++14 §[util.smartptr]（make_unique）/ §[lex.ccon]（二进制字面量与数字分隔符 `'`）；cppreference "std::make_unique"（https://en.cppreference.com/w/cpp/memory/make_unique）。二进制字面量（`0b…`）与单引号分隔符由 WG21 论文 N3472 引入。
 
+### 练习 4（难度 ★★）
+
+**真实场景：写一套"对任意数值类型都可用"的工具函数。** 你在 C++11 下只能用模板函数，到 C++14 却可以用"泛型 lambda"在 lambda 层面获得同样的效果，写起来更短。请用 C++14 的 `auto` 形参 lambda 演示一个对任意算术类型都成立的 `square`，并说明它与模板函数的等价关系。
+
+<details><summary>答案与解析</summary>
+
+C++14 允许 lambda 的形参写 `auto`，等价于"写一个单形参模板函数"——编译器为每种实参类型实例化一份函数体。这让"一次性、局部"的泛型代码不再需要单独定义模板。
+
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+int main() {
+    auto square = [](auto x) { return x * x; };   // 泛型 lambda：等价于模板函数
+    std::cout << square(3) << ' ' << square(2.5) << ' ' << square(4L) << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++14 §[expr.prim.lambda] 允许带 `auto` 形参的 lambda（generic lambda），每个 `auto` 形参等价于模板形参；其调用约定与普通函数对象一致，无额外运行期开销。
+
+<span class="badge badge-exp">经验</span> 局部、一次性的泛型逻辑优先用泛型 lambda；但若是跨文件复用或需要特化/重载，仍应写成显式模板函数，以便边界清晰、利于测试与文档化。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：工厂函数返回资源句柄，想避免手写 `new`。** 你在 C++11 已经会用 `std::unique_ptr`，但早期标准库只有 `make_shared`，没有 `make_unique`，导致裸 `new` 偶有泄漏风险。请用 C++14 的 `std::make_unique` 重写一个最小工厂，并指出它与手工 `new` 在异常安全上的差别。
+
+<details><summary>答案与解析</summary>
+
+C++14 补齐了 `std::make_unique`，它用单个表达式同时分配与构造，避免 `f(new T, g())` 这种因求值顺序而可能泄漏的写法，是现代 C++ 默认的资源构造入口。
+
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Widget { int v; explicit Widget(int i) : v(i) {} };
+
+std::unique_ptr<Widget> make_widget(int i) {
+    return std::make_unique<  Widget>(i);   // C++14：无裸 new，异常安全
+}
+
+int main() {
+    auto w = make_widget(42);
+    std::cout << w->v << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++14 §[memory.smartptr] 引入 `std::make_unique<T>(args...)`，返回 `unique_ptr<T>`；它与 `unique_ptr` 一起构成"无裸 `new`"的独占所有权范式。
+
+<span class  badge badge-exp">经验</span> `make_unique` 保证"要么拿到完整对象、要么抛异常"，不会出现"先 `new` 成功、后构造抛异常导致泄漏"的窗口；能用工厂就用工厂，少用裸 `new`。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：泛型 lambda 做一次性通用比较器

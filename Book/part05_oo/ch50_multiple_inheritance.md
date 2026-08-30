@@ -1016,6 +1016,62 @@ ret
 
 **深度补遗（this 调整的内存形态）**：GCC 在 MI 下生成的 `dynamic_cast<B2*>` 读取 vtable 偏移表后做指针算术，等价于手写 `mov rax, [rdi+0x8]`（取 `top_offset`）再 `add rdi, [rax]`；而 thunk 路径为 `sub rdi, 0x10` 后尾跳。二者均在 L1 cache 内完成，故 this 调整本身约 1–2 cycle，瓶颈在 `dynamic_cast` 的 RTTI 字符串比较（`strcmp` of mangled name），可用 `RDTSC` 量化。
 
+### 练习 4（难度 ★★）
+
+**真实场景：你要让一个类同时扮演"可绘制"和"可序列化"两种角色。** 请用多重继承写出：一个 `Shape` 同时继承 `Drawable` 与 `Serializable` 两个纯接口，并以同一对象一次性调用两个接口，演示 MI 对"正交能力组合"的自然表达。
+
+<details><summary>答案与解析</summary>
+
+多重继承天然适合"实现一个对象、扮演多个接口"——只要多个基类是纯接口（无数据/无共享状态），菱形冲突就不易出现。派生类同时满足多个契约，经任一基类指针调用都会在运行时分派到同一对象。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+struct Drawable    { virtual void draw() = 0; virtual ~Drawable() = default; };
+struct Serializable { virtual void save() = 0; virtual ~Serializable() = default; };
+struct Shape : Drawable, Serializable {
+    void draw() override { std::cout << "draw\n"; }
+    void save() override { std::cout << "save\n"; }
+};
+int main() {
+    Shape s;
+    Drawable&    d = s;
+    Serializable& f = s;          // 同一对象，两个接口视图
+    d.draw(); f.save();
+}
+```
+
+<span class="badge badge-std">标准</span> 多重继承的基类子对象模型由 ISO/IEC 14882（C++23）规定；纯接口（纯虚基类）本身无数据，组合多个不产生布局冲突。`static_cast` 在不同基类子对象间转换是良定义的。
+
+<span class="badge badge-exp">经验</span> MI 的黄金用法是"接口组合"（如 `std::iostream`）。但当基类带数据或同名成员时需小心二义（见练习 5）。能用组合/聚合表达时优先组合，MI 留给"对象需要同时是多种事物"的场景。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：两个基类恰好有同名成员 `f`，你既不想二义、又想明确选择其一。** 请写出代码：用 `using` 声明把其中一个基类的 `f` 引入派生类作用域以消除二义，并说明为何这比在每个调用点写 `Base::f` 更整洁。
+
+<details><summary>答案与解析</summary>
+
+当多个基类拥有同名成员时，未加限定的 `d.f()` 会因名字查找找到多个候选而二义。`using Base::f;` 把指定基类的成员带入派生类作用域，派生类自身的名字隐藏了其他基类同名成员，从而消除二义；调用点无需再写冗长限定。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+struct A { void f() { std::cout << "A::f\n"; } };
+struct B { void f() { std::cout << "B::f\n"; } };
+struct C : A, B {
+    using A::f;                   // 引入 A::f，消除二义
+};
+int main() { C c; c.f(); }        // 调用 A::f
+```
+
+<span class="badge badge-std">标准</span> `using` 声明把基类成员名字引入派生类作用域，遵循名字查找的"最近作用域优先"规则（ISO/IEC 14882 §[namespace.udecl] / 类作用域）；它不改变函数本身，只是让名字可被无歧义地找到。
+
+<span class="badge badge-exp">经验</span> `using Base::f;` 与"using 声明式的转发"是消除 MI 同名冲突的惯用法；也可在调用点用 `c.A::f()` 显式消歧。注意 `using` 不像重定义那样新建函数，它只是名字引入，虚函数仍保持多态。
+
+</details>
+
 ## 附录：用法演绎 — 菱形继承：要不要 virtual？
 
 > 场景：设计一个 `Widget` 同时具备 `Drawable` 与 `Clickable`，二者都继承自 `Object`（含 id/refcount）。

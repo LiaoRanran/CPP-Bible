@@ -1178,6 +1178,62 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：递归扫描目录收集所有普通文件。** 你需要把某个目录下（含子目录）的所有文件列出来做批量处理。请用 `std::filesystem::recursive_directory_iterator` 遍历，并区分普通文件与目录，解释它和 `directory_iterator` 的差异。
+
+<details><summary>答案与解析</summary>
+
+`recursive_directory_iterator` 会沿子目录递归深入，而 `directory_iterator` 只枚举单层。两者都产生 `directory_entry`，可用 `is_regular_file()`/`is_directory()` 判别类型；底层走 OS 的目录读取 API，跨平台一致。注意符号链接与权限错误可能抛 `filesystem_error`，生产代码一般用 `error_code` 重载做边界处理。
+
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <filesystem>
+
+int main() {
+    namespace fs = std::filesystem;
+    for (auto const& e : fs::recursive_directory_iterator(".")) {
+        if (e.is_regular_file())
+            std::cout << e.path().filename().string() << '\n';
+    }
+}
+```
+
+<span class="badge badge-std">标准</span> §[fs.rec.dir.itr] 定义递归目录迭代器；条目类型为 `directory_entry`，路径组件访问见 §[fs.path]。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[filesystem]；递归遍历见 cppreference "filesystem/recursive_directory_iterator"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：把文件路径拆成目录、文件名主干和扩展名。** 你拿到 `a/b/c.log.1`，要分别取出目录、文件名（去扩展名）和扩展名，以便做归档重命名。请用 `path` 的 `parent_path()`/`stem()`/`extension()` 完成，说明这些访问是否做文件系统查询。
+
+<details><summary>答案与解析</summary>
+
+`path` 的 `parent_path()`/`filename()`/`stem()`/`extension()` 只是对路径字符串的词法分解，不访问磁盘；真正的存在性/类型查询才需要 `status`。`stem()` 返回去掉最后一个 `.` 之后扩展名的部分（如 `c.log.1` → `c.log`），`extension()` 返回 `.1`。这种纯词法解析让路径拼接与拆分在任何平台都可预测。
+
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <filesystem>
+
+int main() {
+    namespace fs = std::filesystem;
+    fs::path p = "/tmp/data/report.2024.txt";
+    std::cout << p.parent_path() << '\n';   // /tmp/data
+    std::cout << p.stem()       << '\n';    // report.2024
+    std::cout << p.extension()  << '\n';    // .txt
+}
+```
+
+<span class="badge badge-std">标准</span> §[fs.path.decompose] 规定 `parent_path`/`stem`/`extension` 为纯词法操作；磁盘访问由 `status`/`exists` 等负责。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[fs.path]；词条见 cppreference "filesystem/path"。
+
+</details>
+
 ## 附录 J：filesystem 接口决策流（D3 维度）
 
 ```mermaid

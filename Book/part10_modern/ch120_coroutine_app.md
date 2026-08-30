@@ -1282,6 +1282,123 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你的数据流生成器在 `co_yield` 若干值后可能抛异常，但异常无法从协程体内直接"跳"回调用方——调用方拿到的只有协程句柄。请实现一个把协程内异常**捕获进 `std::exception_ptr` 并在迭代器侧重新抛出**的最小生成器，说明为什么需要 `unhandled_exception`。
+
+<details><summary>答案与解析</summary>
+
+协程函数体是"挂起/恢复的状态机"，异常从体内抛出时不会沿着普通调用栈传播——协程框架把它交给 `promise_type::unhandled_exception()` 处理。若该函数留空（或直接 `std::terminate`），协程内异常就被吞掉或直接终止进程；要"传出去"，正确做法是在其中调用 `std::current_exception()` 存进 `std::exception_ptr`。
+
+接收侧（调用方）的职责是**在合适的推进点检查并重新抛出**：本示例放在迭代器 `++`/`begin()` 里，即每次 `resume()` 之后检查 `promise.ep`，非空则 `std::rethrow_exception` 转播——这样 `range-for` 遍历会在抛出的那一点把异常传给调用方，行为与同步遍历完全一致。工程上这是"生成器/协程任务框架"的标配：`unhandled_exception` 决定吞、存还是终止，直接影响异步管道的错误语义。
+
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <coroutine>
+#include <iostream>
+#include <exception>
+struct gen {
+    struct promise_type {
+        int cur = 0;
+        std::exception_ptr ep;
+        gen get_return_object() { return gen(this); }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void unhandled_exception() { ep = std::current_exception(); }   // 捕获协程内异常
+        void return_void() {}
+        auto yield_value(int v) { cur = v; return std::suspend_always{}; }
+    };
+    using handle = std::coroutine_handle<promise_type>;
+    handle h;
+    explicit gen(promise_type* p) : h(handle::from_promise(*p)) {}
+    ~gen() { if (h) h.destroy(); }
+    struct iterator {
+        handle h; bool done = false;
+        int operator*() const { return h.promise().cur; }
+        iterator& operator++() {
+            h.resume();
+            if (h.promise().ep) std::rethrow_exception(h.promise().ep);  // 转播给调用方
+            done = h.done();
+            return *this;
+        }
+        bool operator!=(const iterator&) const { return !done; }
+    };
+    iterator begin() {
+        h.resume();
+        if (h.promise().ep) std::rethrow_exception(h.promise().ep);
+        return {h, h.done()};
+    }
+    iterator end() { return {h, true}; }
+};
+gen failing() {
+    co_yield 1;
+    throw std::runtime_error("boom");
+}
+int main() {
+    try {
+        for (int x : failing()) std::cout << x << ' ';
+    } catch (const std::exception& e) {
+        std::cout << "caught: " << e.what() << '\n';
+    }
+}
+```
+
+<span class="badge badge-std">标准</span> 协程体内异常路由到 `unhandled_exception`（`[dcl.fct.def.coroutine]`）；`std::current_exception`/`rethrow_exception` 让异常跨"挂起/恢复"边界传递（`[propagation]`）。
+<span class="badge badge-exp">经验</span> 三类 `unhandled_exception` 策略各有用途：吞掉（日志化继续）、存起转播（本练习）、`terminate`（契约违反类）。设计协程任务类型时，异常传播路径要写进文档（本章练习 2 的 awaitable 协议同样涉及 resume 后的错误语义）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 事件循环里协程 A 等待完成时要把控制权直接交给协程 B，而不是"resume B 再等它返回"。请用 `await_suspend` 返回 `std::coroutine_handle<>` 实现**对称转移（symmetric transfer）**，并说明它与"嵌套 resume"在栈深度上的差异。
+
+<details><summary>答案与解析</summary>
+
+`await_suspend` 的返回类型决定挂起后的调度语义：返回 `void` 时"挂起，由外部决定何时恢复"；返回 `bool` 时"按条件决定是否立即恢复自己"；返回**协程句柄**时执行**对称转移**——编译器不再向当前 resume 的调用者返回，而是直接恢复被返回的句柄，形成"接力换栈"而非"嵌套调用"。
+
+对称转移的意义在于栈安全：若用"A 的 awaiter 里 resume(B)、B 的 awaiter 里 resume(A)"的嵌套写法，每次切换都让调用栈加深一层，链式切换会爆栈；对称转移是**平级跳转**，每次只占一层栈帧，无论切换多少次深度恒定。这是 cppcoro / folly 等协程框架用句柄返回做任务交接的底层机制。
+
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <coroutine>
+#include <iostream>
+struct symmetric_awaiter {
+    std::coroutine_handle<> next;
+    bool await_ready() const noexcept { return false; }
+    std::coroutine_handle<> await_suspend(std::coroutine_handle<>) noexcept { return next; }  // 对称转移
+    void await_resume() const noexcept {}
+};
+struct task {
+    struct promise_type {
+        task get_return_object() { return task(this); }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void return_void() {}
+        void unhandled_exception() { std::terminate(); }
+    };
+    using handle = std::coroutine_handle<promise_type>;
+    handle h = nullptr;
+    explicit task(promise_type* p) : h(handle::from_promise(*p)) {}
+    ~task() { if (h) h.destroy(); }
+};
+std::coroutine_handle<> g_a = {};
+std::coroutine_handle<> g_b = {};
+task first()  { std::cout << "A1 "; co_await symmetric_awaiter{g_b}; std::cout << "A2\n"; }
+task second() { std::cout << "B1 "; co_await symmetric_awaiter{g_a}; std::cout << "B2\n"; }
+int main() {
+    task t1 = first();
+    task t2 = second();
+    g_a = t1.h;   // second() 的 awaiter 目标是 t1
+    g_b = t2.h;   // first() 的 awaiter 目标是 t2
+    t1.h.resume();   // A1 → 转移到 B1 → 再转移回 A2（平级跳转，栈深恒定）
+}
+```
+
+<span class="badge badge-std">标准</span> `await_suspend` 返回 `coroutine_handle` 时，恢复该句柄并**不返回**给调用者，实现对称转移（`[expr.await]`）。
+<span class="badge badge-exp">经验</span> 对称转移是"回调换栈"与"嵌套 resume"之外的第三态：链式调度任务务必用它避免栈增长；判断依据是 awaiter 是否持有"下一个协程"的句柄（本章练习 2 用 `void` 返回做同步链，本练习用句柄返回做接力链）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：回调地狱 → 协程顺序化

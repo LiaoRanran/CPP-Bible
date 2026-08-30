@@ -897,6 +897,76 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：给新人解释"C++ 为什么能直接吃下整个 C 生态"。** 团队里刚从 Python 转来的同事问：为什么我们能在 C++ 里 `#include` 一份纯 C 的头文件、链接一份 C 的 `.a`，几乎零改动？请用一段既能在 CFront 时代被转译、又能体现"类是对 C struct 的结构化封装"的小程序，说明 C++ 与 C 的兼容边界在哪，并指出至少一处"看似 C、在 C++ 下却会编译失败"的写法。
+
+<details><summary>答案与解析</summary>
+
+C++ 在 1980 年代通过 CFront 把新语法机械展开回 C，因此它刻意保持了与 C 的高度兼容：C 的声明、表达式、控制流在 C++ 里基本都能直接编译，从而旧 C 代码几乎不需改写即可重编为 C++，老程序员也几乎零重学成本。下面用一份"等价展开"演示 class 是怎么落到 C 的 struct + 全局函数上的：
+
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <cstdio>
+
+// C++ 的 class 在 CFront 时代会被展开成“struct + 全局函数”：
+//   struct Stack { int* base; int top; };
+//   void Stack_push(Stack* s, int v){ ... }
+// 下面这段在 C++ 下编译，其结构正对应这种展开。
+struct Stack {
+    int data[16];
+    int top = 0;
+    void push(int v) { if (top < 16) data[top++] = v; }   // 成员函数 → Stack_push(this)
+    int  pop()       { return top ? data[--top] : -1; }
+};
+
+int main() {
+    Stack s;                 // C 中必须写 struct Stack s; C++ 允许省略 struct
+    s.push(7);
+    s.push(8);
+    std::printf("%d %d\n", s.pop(), s.pop());
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++ 标准并不要求"用 C 实现"，但规定的行为与 C 高度对齐（整数模型、结构体布局、调用约定等），因此早期转译前端在标准层面合法；C 语言本体由 ISO/IEC 9899 独立维护，二者共享同一 ABI 基础（Itanium ABI 仅约束 C++ 名字修饰等扩展）。
+
+<span class="badge badge-exp">经验</span> 兼容边界要注意：C 里 `void* p = malloc(n)` 合法，但 C++ 必须 `int* p = (int*)malloc(n)`（不允许隐式 `void*`→`T*`）；C 的 `struct Tag x;` 在 C++ 可写成 `Tag x;`。这些"差一点点"的张力，正是 C++ 背负的历史粗糙——换来的是立刻能用整个 C 生态。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：判断一份代码到底是 C 还是 C++。** 你在做静态分析，需要区分仓库里混杂的 `.h` 到底会被 C 编译器还是 C++ 编译器处理。请写一个最小判别程序：用 `extern "C"` 演示"C 链接"与"C++ 链接"的名字修饰差异，并说明为什么一个 C 库的头文件要写 `#ifdef __cplusplus extern "C" {` 这种守卫。
+
+<details><summary>答案与解析</summary>
+
+C 与 C++ 对同一个函数名的符号修饰（name mangling）不同：C 用简单名字，C++ 为了支持重载会编码参数类型。因此用 C 编译器编译的库，必须用 `extern "C"` 让 C++ 端以 C 的名字规则去 lookup，否则链接会找不到符号。
+
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <cstdio>
+
+extern "C" int add(int a, int b) { return a + b; }   // 以 C 链接导出，符号即 "add"
+
+int main() {
+    // 在 C++ 里也能调用它；若去掉 extern "C"，C++ 侧会按 mangled 名找符号而失败
+    std::printf("add(3,4)=%d\n", add(3, 4));
+
+    // 惯用法：C 头文件里用 __cplusplus 守卫，使同一份头既给 C 也给 C++ 用
+#ifdef __cplusplus
+    // 此时由 C++ 编译器处理，可放心使用 extern "C"
+#endif
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span>`extern "C"` 在 ISO C++ 中指定"语言链接"，保证以 C 的名字修饰与调用约定导出/导入符号；`__cplusplus` 是 C++ 实现预定义的宏，C 编译器里不存在，因此常被用来写兼容守卫。
+
+<span class="badge badge-exp">经验</span> 任何 C 库的头文件公开给 C++ 时都应加 `extern "C"` 守卫，否则在 C++ 工程中 `#include` 会链接失败——这是"标准兼容但工具链差异"的典型坑，也是 C/C++ 互操作的第一课。
+
+</details>
+
 ## 附录 U：从 C 到 C++ 的对象模型演进决策流（D3 维度）
 
 本节把第④节（知识图谱）与第⑥节（C with Classes 早期对象模型）收敛为一条「何时引入哪种抽象」的决策流，覆盖从 C 到 C++ 命名的关键节点。

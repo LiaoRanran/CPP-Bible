@@ -1375,6 +1375,65 @@ int main() {
 
 <span class="badge badge-ref">引用</span> GCC《Debugging Options》（https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html ，`-g` 生成调试信息）；DWARF 调试格式标准（https://dwarfstd.org/ ）定义源码行 / 变量如何映射到机器指令。
 
+### 练习 4（难度 ★★）
+
+**真实场景：数组越界在本地没事、发布后偶发崩溃。** 你怀疑是越界读写，于是挂上 AddressSanitizer（`-fsanitize=address`）抓到了问题。请先用一个"带边界检查"的写法（如 `std::array::at`）演示同样的访问如何能在不靠工具时也更安全，并说明 Sanitizer 与 `at()` 的分工。
+
+<details><summary>答案与解析</summary>
+
+`-fsanitize=address` 在运行期监控每一次内存访问，能抓越界/泄漏/UAF；但"边界自觉"也能在未开 Sanitizer 时兜底。`std::array::at` 在越界时抛异常而非静默越界，是源码层的第一道防线。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <array>
+
+int main() {
+    std::array<int, 3> a{1, 2, 3};
+    try {
+        std::cout << a.at(0) << '\n';   // 越界会抛 std::out_of_range
+        // std::cout << a.at(9) << '\n'; // 运行期异常，优于静默 UB
+    } catch (const std::exception& e) {
+        std::cout << "caught: " << e.what() << '\n';
+    }
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `std::array<T,N>::at` 强制边界检查（§[array.access]），与裸 `[]` 的 UB 不同；Sanitizer 则是编译期插桩的全量监控，二者可分层次使用。
+
+<span class="badge badge-exp">经验</span> Sanitizer 适合 CI 与测试环境做"全量体检"；生产路径里关键索引仍用 `at()` 或显式判断，把越界从"随机崩溃"变成"可处理的错误"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：怀疑有双重释放或泄漏，Sanitizer 一开就报。** 你意识到根因是裸 `new`/`delete` 配对易错。请用 RAII（这里用 `std::unique_ptr`）重写一段本可能泄漏的代码，演示"不靠人工记忆释放"如何根除这类问题，并指出 Sanitizer 能怎样验证它。
+
+<details><summary>答案与解析</summary>
+
+裸 `new/free` 配对一旦在分支里忘记释放就会泄漏；`std::unique_ptr` 把释放绑到析构，Sanitizer 下也能验证"每条路径都配对"。下面用现代写法消除泄漏窗口：
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Node { int v; explicit Node(int i) : v(i) {} };
+
+int main() {
+    auto p = std::make_unique<Node>(7);   // 构造即拥有，析构即释放
+    std::cout << p->v << '\n';
+    return 0;                             // 离开作用域自动 delete，无泄漏
+}
+```
+
+<span class="badge badge-std">标准</span> RAII + 智能指针（C++11）把"释放"绑定到作用域生命周期；`-fsanitize=address,leak` 可对运行期分配做全量追踪，验证无孤儿指针。
+
+<span class="badge badge-exp">经验</span> LeakSanitizer 能抓已泄漏的内存，但最佳解是不产生泄漏——用 `unique_ptr`/`vector` 让释放自动化，工具只作为最后兜底而非依赖。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 ASan 定位“偶发”堆破坏

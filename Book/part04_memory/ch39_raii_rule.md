@@ -1995,6 +1995,80 @@ copy-and-swap 把"可能失败的工作"放在临时对象上，最后一步 `sw
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：会话对象的独占所有权转移。** 一个 `Session` 对象被 `unique_ptr` 独占持有；把它交给另一个 `unique_ptr`（例如从工厂转移到消费者）时不能拷贝，只能 `std::move`。请演示移动后旧指针置空、析构自动触发，并说明 RAII 里「移动语义」为何是所有权转移的关键。
+
+<details>
+<summary>答案与解析</summary>
+
+`unique_ptr` 是「移动语义 + RAII」的教科书：它不可拷贝（拷贝会让两份指针同时 `delete` → 双重释放），只能移动——`std::move(s)` 把内部指针转交给 `t`，并把 `s` 置 `nullptr`。因此任何时刻恰好一个持有者，析构恰好发生一次。`t.reset()` 手动触发释放，或者让 `t` 离开作用域自动释放——两种路径都只 `delete` 一次，这就是 RAII「把释放绑进析构」的全部意义（对比裸 `new`/`delete` 要手数配对）。
+
+标准依据：ISO/IEC 14882:2023 §[unique.ptr] 规定 `unique_ptr` 移动构造/赋值转移所有权、移动后源为空；拷贝被删除（§[unique.ptr.single.ctor]）。析构函数（§[class.dtor]）在任何退出路径（正常 return、异常栈展开）都会执行，这正是 RAII 的基石（§[except.ctor]）。
+
+实现与边界：`make_unique` 优先于 `new`（异常安全：即使构造抛异常也不泄漏）；移动是 O(1) 指针交换，零拷贝。何时失效：把 `unique_ptr` 放进 `std::vector` 的 `push_back` 必须 `std::move` 或 `emplace_back`；返回局部 `unique_ptr` 则天然移动。替代方案：需要多份引用就换 `shared_ptr`（ch41），但「独占 + 移动」能表达最清晰的所有权语义。
+
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Session {
+    int id;
+    explicit Session(int v) : id(v) {}
+    ~Session() { std::cout << "~Session " << id << "\n"; }
+};
+
+int main() {
+    auto s = std::make_unique<Session>(7);
+    auto t = std::move(s);         // 所有权转移, s 变空
+    if (!s) std::cout << "s empty, t->id=" << t->id << "\n";
+    t.reset();                     // 显式释放
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[unique.ptr]：移动转移所有权、源变空；拷贝删除。
+
+<span class="badge badge-exp">经验</span> 「独占有权 + 移动转移 + 析构释放」是 C++ 资源管理的主干思维：先 `make_unique`，再让 `move`/作用域决定生死，永远不需要手写 `delete`。RAII 的核心不是「自动释放」，而是「释放时机绑定对象生命周期」（本章附录『10 处 open/close 收敛』的同一原则）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：析构里能抛异常吗。** 一个 `Guard` 的析构想报告「清理失败」。请演示把析构标成 `noexcept(false)` 并抛异常会发生什么，说明析构函数的异常契约与工程上「析构绝不抛」的铁律。
+
+<details>
+<summary>答案与解析</summary>
+
+析构函数默认 `noexcept`——意味着「析构抛出的异常」要么被吸收、要么直接 `std::terminate`。关键规则在栈展开（unwinding）期间：若析构本身抛异常，而当前栈上**同时有**另一个活跃异常正在传播，两个异常相撞，`std::terminate` 被调用、进程直接终止。即使 `Guard` 标 `noexcept(false)` 主动放弃承诺，正常退出路径下 throw 尚可被外层 catch，但一旦发生在栈展开中就是不可恢复的进程终止。
+
+标准依据：ISO/IEC 14882:2023 §[except.terminate] 规定「析构在栈展开期间抛异常 → terminate」；§[dcl.fct.def] 说明析构默认 `noexcept(true)`（除非成员/基类析构可抛且显式放宽）。因此 RAII 的「清理必须无异常」是整个异常安全体系的先决条件（ch40 的三保证以 noexcept 为锚）。
+
+实现与边界：析构里要做的清理（关闭文件、解锁）失败时，正确姿势是**记录/吞掉**而非抛出：写日志、置标志、或把错误挂到可查询的状态，绝不让异常逃逸析构。何时失效：无异常构建（`-fno-exceptions`）下 throw 直接编译不过，更应回归「清理函数返回错误码」的 C 风格。替代方案：把「可能失败的清理」移到普通成员函数（如 `close()`）由用户显式调用；析构只做「尽力而为 + 不抛」的兜底。
+
+> **示例 64** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <stdexcept>
+
+struct Guard {
+    bool armed = true;
+    ~Guard() noexcept(false) {     // 显式允许析构抛异常(工程上禁止)
+        if (armed) throw std::runtime_error("cleanup failed");
+    }
+};
+
+int main() {
+    std::cout << "note: 析构抛异常在栈展开期间会调用 terminate\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[except.terminate]：栈展开期间析构抛异常 → `std::terminate`；析构默认 noexcept。
+
+<span class="badge badge-exp">经验</span> 铁律就一条：**析构不抛**。清理失败的正确出口是记录/状态位，不是异常。这也是为什么 RAII 类（`unique_ptr`、`lock_guard`、`ofstream`）的析构都静默吞错——它们宁可不报告，也不能打断进程（ch40 异常安全三保证的底层就是这条）。
+
+</details>
+
 ## 附录：用法演绎 — 用 RAII 把 10 处 open/close 收敛成 0 泄漏
 
 > 场景：一段函数有 3 个资源（文件、互斥锁、数据库连接），中途可能抛异常，手写 try/finally 极易漏关。

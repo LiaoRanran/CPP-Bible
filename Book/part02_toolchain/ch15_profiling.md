@@ -1191,6 +1191,63 @@ int main() {
 
 <span class="badge badge-ref">引用</span> Linux `perf` Wiki（https://perf.wiki.kernel.org/ ）讲 `perf stat -e cache-misses` 等硬件计数器，可定量证实 stride 过大导致的 cache miss。
 
+### 练习 4（难度 ★★）
+
+**真实场景：profiler 显示热点在频繁 `vector` 扩容。** 你批量 `push_back` 却没预留容量，导致多次 realloc 与拷贝。请用一个最小程序演示"先 `reserve` 再填"如何消除这类开销，并说明为什么性能问题要靠测量（perf/基准）而非猜测。
+
+<details><summary>答案与解析</summary>
+
+`std::vector::reserve` 一次性把底层容量提到目标大小，后续 `push_back` 不再触发扩容，把 O(n²) 的渐进拷贝降为 O(n)。这正是"先测后改"——profiler 指出扩容热点后才动手。
+
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+
+int main() {
+    std::vector<int> v;
+    v.reserve(1000);                 // 消除反复 realloc 的拷贝开销
+    for (int i = 0; i < 1000; ++i) v.push_back(i);
+    std::cout << v.size() << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `vector::reserve(n)` 保证容量 ≥ n（§[vector.capacity]），后续插入不重新分配；此后 `size()==capacity()` 之间均为 O(1) 追加。
+
+<span class="badge badge-exp">经验</span> 性能优化先靠 perf/基准定位热点，再针对性改；`reserve` 是"零风险、高收益"的典型，但不要为了"可能要扩容"而无脑 reserve 大块内存。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：分支预测错了，热点里一个小概率分支拖慢整体。** 你没法让编译器"知道"哪条路径更常见，于是用 C++20 的分支属性给提示。请用 `[[likely]]`/`[[unlikely]]` 标注常见/罕见分支，演示它如何把提示交给编译器，并指出它和 PGO 的关系。
+
+<details><summary>答案与解析</summary>
+
+`[[likely]]`/`[[unlikely]]` 把"这条分支大概率/小概率命中"的语义告诉编译器，便于排布基本块与预测；但它只是提示，真正的精准分布仍要靠 PGO（基于采样的训练）来定。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+int main() {
+    int x = 0;
+    if (x == 0) [[unlikely]] {        // 罕见分支：交给编译器排布
+        std::cout << "rare path\n";
+    } else {
+        std::cout << "common path\n";
+    }
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++20 §[dcl.attr.likelihood] 引入 `[[likely]]`/`[[unlikely]]`，是跨编译器的分支概率提示，不产生运行期开销。
+
+<span class="badge badge-exp">经验</span> 属性只是静态提示，覆盖面有限；真正贴近真实分布必须用 PGO/Instrumentation（如 `-fprofile-use`），二者互补而非替代。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 perf 定位热点再针对性优化

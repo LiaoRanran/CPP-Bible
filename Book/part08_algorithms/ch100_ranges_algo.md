@@ -1027,6 +1027,72 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::ranges::find`：`https://en.cppreference.com/w/cpp/algorithm/ranges/find`；`std::ranges::borrowed_iterator_t`：`https://en.cppreference.com/w/cpp/ranges/borrowed_iterator`。
 
+### 练习 4（难度 ★★）
+
+**真实场景：按业务字段做"筛选 + 计数"的只读统计。** 运营报表里常要回答"满 25 岁的用户有几个"这类问题——`std::ranges::count_if` 把范围、谓词与投影三个参数一次表达，不需要手写循环。请对一个 `Person` 向量用 `std::ranges::count_if` 配合成员指针投影统计 `age>=25` 的人数，并说明"只计数"与"还要继续处理过滤结果"时应分别选用 `count_if` 还是 `views::filter`。
+
+<details><summary>答案与解析</summary>
+
+`std::ranges::count_if(range, pred, proj)` 在遍历元素时先应用投影 `proj` 得到关键值，再交给谓词判定——`&Person::age` 是成员指针投影，把"按哪个字段统计"从判定逻辑里剥离，谓词只关心年龄数字本身。它不构造中间容器、单次遍历，返回满足条件的元素个数。
+
+标准依据：ranges 算法把投影（projection）统一作为可省略参数加入签名，`count_if` 的非 modifying 语义见 ISO §27.6.5（[alg.count]）的 ranges 版本；投影经 `std::invoke` 求值，其约束建立在 `indirectly_unary_invocable` 等概念上（[alg.req]）。复杂度 O(N)。
+
+边界条件与工程决策：若统计之后还要"拿过滤后的元素继续处理"，应改用 `views::filter(...)` 惰性视图——它不物化且可继续 `|` 管道；若只求个数，`count_if` 更直白、无视图状态。注意投影每次比较都会调用：昂贵投影（如解析字符串）在百万级数据上是热点，此时可先 `transform` 成廉价键再统计。
+
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+struct Person { std::string name; int age; };
+int main() {
+    std::vector<Person> v{{"Bob", 30}, {"Alice", 25}, {"Carol", 35}, {"Dora", 22}};
+    // 第三参数是投影：先取 age 再判 >=25
+    auto n = std::ranges::count_if(v, [](int a){ return a >= 25; }, &Person::age);
+    std::cout << "adults=" << n << '\n';    // 3
+}
+```
+
+<span class="badge badge-std">标准</span> ranges 版算法签名 `count_if(R&&, Pred, Proj)` 中投影默认值是 `std::identity`；成员指针可直接作投影对象。它等价于 `ranges::size(r | views::filter(...))`，但不会为视图分配任何运行时状态。
+
+<span class="badge badge-exp">经验</span> "只看数量"用 `count_if`、"还要继续处理"用 `views::filter`；两者都零中间容器。投影是 ranges 最实用的增益之一，能显著压缩"取成员 + 比较"的样板代码。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：在按字段排序的数组上做"按该字段"的二分查找。** 用户表已按 `age` 排序，产品要快速回答"是否存在 35 岁的用户、第一个 ≥30 岁的用户是谁"——`std::ranges::binary_search` / `std::ranges::lower_bound` 允许直接对投影后的键做二分，无需先构造临时键容器。请对按 `age` 升序排列的 `Person` 向量，用 `ranges::binary_search` 判断 `age==35` 是否存在，并用 `ranges::lower_bound` 找出第一个 `age>=30` 的元素。
+
+<details><summary>答案与解析</summary>
+
+二分的前提是**区间已按比较器/投影有序**。`ranges::lower_bound(range, value, comp, proj)` 返回第一个"投影后不小于 value"的元素迭代器；`ranges::binary_search` 利用同一有序性回答存在性，内部仍是对数次比较。投影在这里的语义是"按 age 二分"，比较的是 age 而非整个 `Person`。
+
+标准依据：`binary_search` 与 `lower_bound` 属于排序区间查找族，见 ISO §27.7.3（[alg.binary.search]），复杂度 O(log N)。ranges 版把"范围 + 投影 + 比较器"合到一个调用里——旧式 `std::lower_bound(first,last,value,comp)` 表达"按成员键查找"必须自定义比较器，ranges 则直接传成员指针。
+
+边界条件与失效场景：若区间并未真的按该投影排序，二分结果**未定义**——排序与查找必须使用同一投影，否则会拿到任意元素。另外 `binary_search` 只回答"存在"，要拿位置或计数须用 `lower_bound`/`upper_bound`（见 ch97）；键有重复时 `lower_bound` 返回第一个副本，`upper_bound` 返回最后一个副本的下一个，`equal_range` 一步取到全区间。
+
+> **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+struct Person { std::string name; int age; };
+int main() {
+    // 已按 age 升序（二分前提）
+    std::vector<Person> v{{"Alice", 25}, {"Bob", 30}, {"Carol", 35}, {"Dora", 40}};
+    bool has = std::ranges::binary_search(v, 35, {}, &Person::age);   // 找 age==35
+    auto it  = std::ranges::lower_bound(v, 30, {}, &Person::age);     // 第一个 age>=30
+    std::cout << "age35? " << (has ? "yes" : "no") << '\n';
+    if (it != v.end()) std::cout << "first>=30: " << it->name << '\n'; // Bob
+}
+```
+
+<span class="badge badge-std">标准</span> ranges 二分算法要求投影后满足"已排序"前提（[alg.binary.search]），`{}` 即默认比较器 `std::ranges::less`；成员指针投影经 `std::invoke` 求值，先于比较器作用于元素。
+
+<span class="badge badge-exp">经验</span> "排序用投影 A、查找用投影 B"是二分最常见的 bug——必须锁定同一投影。工程上可把"键提取函数"提炼为常量，让 `ranges::sort` 与 `ranges::lower_bound` 共享它（DRY），并配合 `assert(std::ranges::is_sorted(...))` 守卫前提。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

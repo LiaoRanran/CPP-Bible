@@ -917,6 +917,57 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你同时提供函数模板和同名的普通函数，调用方传入 `int` 时却走了模板而非预期的非模板版本。** 请写出代码：非模板 `f(int)` 与 `f<T>(T)` 并存，演示对于 `int` 参数，非模板更匹配、被优先选择；对于 `double` 只能走模板。
+
+<details><summary>答案与解析</summary>
+
+重载决议区分"非模板函数"与"函数模板实例"：当两者都能匹配时，非模板函数（更特化）优先；模板仅在没有同样好的非模板候选时才被选用。这是"用户手写特例优先于泛型"的基础语义。
+
+> **示例 77** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename T> void f(T)   { std::cout << "template\n"; }
+void               f(int) { std::cout << "int\n"; }
+int main() {
+    f(42);     // 非模板更匹配 -> int
+    f(3.0);    // 仅模板可匹配 -> template
+}
+```
+
+<span class="badge badge-std">标准</span> 重载决议的"非模板优于模板"规则由 ISO/IEC 14882（C++23）§[over.match.best] 规定；模板还会做偏序（partial ordering）以在多个模板中选出更特化者。
+
+<span class="badge badge-exp">经验</span> 想强制走模板时不要依赖参数推断歧义；想强制走手写版本可用非模板。这条规则是 `std::swap`、`std::begin` 等"用户特例优先"设计的根本——注意它可能让"看似模板更合适"的直觉落空。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你在写一组重载模板，希望指针版本比一般版本更优先。** 请写出代码：`g(T)` 与 `g(T*)` 并存，传入 `int*` 时更特化的 `g(T*)` 被选中，演示模板偏序（partial ordering）如何挑选"更特化"的模板。
+
+<details><summary>答案与解析</summary>
+
+当多个函数模板都能匹配时，编译器做偏序比较：若模板 A 的实参可匹配模板 B、而反之不成立，则 A 更特化、被优先。这里 `T*` 比 `T` 更特化，因此 `g(&x)` 选择指针版本。
+
+> **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename T> void g(T)   { std::cout << "T\n"; }
+template <typename T> void g(T*)  { std::cout << "T*\n"; }
+int main() {
+    int x = 0;
+    g(&x);          // T* 更特化 -> T*
+    g(1);           // 仅 T 可匹配 -> T
+}
+```
+
+<span class="badge badge-std">标准</span> 函数模板偏序（partial ordering）由 ISO/IEC 14882（C++23）§[temp.func.order] 规定：用"合成实参"逐一试探，能唯一更特化者胜出。它是 `std::advance`、`std::distance` 等按迭代器类别分流的底层机制。
+
+<span class="badge badge-exp">经验</span> 偏序只在"多个模板同名"时生效；它和"非模板优先"叠加，构成 C++ 重载解析的两大支柱。写重载时要心里有数：谁更特化、谁优先，避免意料之外的匹配。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：重载决议——模板并非总是优先

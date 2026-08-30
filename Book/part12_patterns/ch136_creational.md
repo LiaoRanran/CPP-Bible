@@ -1299,6 +1299,95 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你有一组派生类（Circle/Square…），需要根据配置文件里的字符串在运行期构造对应对象。直接满屏 `new` 既散落又泄漏风险高。请用工厂函数集中创建，并说明返回 `std::unique_ptr` 而非裸指针的理由。
+
+<details><summary>答案与解析</summary>
+
+工厂方法把"对象创建"收口到一个函数里：调用方只描述"要什么"，工厂决定"怎么造、造哪个派生类"，从而把 `new` 与具体类型从业务代码里隔离。配合 `std::unique_ptr` 返回，所有权从工厂明确转移给调用方，函数返回即确立唯一所有者，几乎杜绝裸指针常见的泄漏与双重释放。
+
+标准上，`std::unique_ptr` 由 C++11 引入（ISO/IEC 14882:2011 [unique.ptr]），是具备独占所有权的零开销智能指针；`std::make_unique` 在 C++14 补入（提案 N3656），把分配与构造合为一步、避免裸 `new`。相比 `std::shared_ptr`，`unique_ptr` 无引用计数、无控制块，析构时直接 `delete`，开销等同手写。
+
+实现边界：工厂内部仍用 `new`/`make_unique` 创建具体类型，但集中在一点便于审计与替换。当失效：若对象需要被多处共享、生命周期跨越多个所有者，独占语义不再合适，应改用 `std::shared_ptr`（带引用计数成本）；若类型在编译期就确定，干脆用模板/CRTP 消除运行期分支。注意工厂返回的 `nullptr`（未知 kind）必须由调用方判空，否则解引用是 UB。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-std">标准</span> `std::unique_ptr` 由 C++11 引入（ISO/IEC 14882:2011 [unique.ptr]）；`std::make_unique` 由 C++14 引入（提案 N3656）。两者均为零运行时开销的所有权工具。
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》Factory Method 模式；cppreference "std::unique_ptr" 词条。
+
+<span class="badge badge-exp">经验</span> 工厂 + `unique_ptr` 是"运行期按名造对象"的标准工业写法；创建点唯一化后，资源释放由 RAII 自动兜底，比手写 `new/delete` 安全得多。
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <string>
+
+struct Shape { virtual ~Shape() = default; virtual double area() const = 0; };
+struct Circle : Shape { double r; explicit Circle(double r_) : r(r_) {} double area() const override { return 3.1415926 * r * r; } };
+struct Square : Shape { double s; explicit Square(double s_) : s(s_) {} double area() const override { return s * s; } };
+
+std::unique_ptr<Shape> make_shape(const std::string& kind, double v) {
+    if (kind == "circle") return std::make_unique<Circle>(v);
+    if (kind == "square") return std::make_unique<Square>(v);
+    return nullptr;
+}
+
+int main() {
+    auto p = make_shape("circle", 2.0);
+    if (p) std::cout << "area=" << p->area() << "\n";
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 你要构造一个 HTTP 请求对象，有 method/url/body/keepAlive 等多个可选字段。队友用" telescoping constructor（叠罗汉式构造函数）"：`Req(a)`、`Req(a,b)`、`Req(a,b,c)`……已写了 9 个重载。请用 Builder 消除这种反模式，并说明它相较直接多参构造的优势。
+
+<details><summary>答案与解析</summary>
+
+telescoping constructor 反模式的问题是：可选参数组合爆炸、调用点可读性差（一堆位置参数谁是谁全靠数）、且无法表达"只设第 1 和第 4 个参数"。Builder 把构造拆成链式 `set` 步骤，每个可选字段独立成方法，最终 `build()` 产出不可变对象，调用点自解释（`method("POST").url("/api").keepAlive(true)`）。
+
+设计上 Builder 属于创建型模式（GoF 将其归为"用另一个对象逐步组装目标对象"），但它不依赖任何语言特性，纯靠返回 `*this` 的流式接口实现。C++ 里 Builder 常配合不可变目标类型：字段在构造完成后不再改动，天然线程安全。相比"先默认构造再 setter 改"，Builder 能在 `build()` 里做整体合法性校验（例如 method 与 body 的约束），避免对象处于半初始化状态。
+
+实现边界：Builder 本身多了一个类型，对只有两三个必填、无可选参数的简单对象属于过度设计。当失效：若对象的必填字段很多且几乎总是全设，直接带命名实参的结构化绑定更轻；C++ 目前没有语言级命名实参（提案 P0632 讨论过但未进标准），Builder 正是弥补这一缺陷的常用手段。另外注意 `build()` 返回时是否需要移动，避免一次多余拷贝（示例中按值返回，编译器通常 RVO 消除）。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-std">标准</span> 复制消除（RVO/NRVO）由 ISO/IEC 14882 规定（[class.copy.elision]），`-std=c++23` 下按值返回局部对象通常零拷贝；C++17 起某些情形为强制省略。
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》Builder 模式；关于命名实参的未采纳提案 P0632R0。
+
+<span class="badge badge-exp">经验</span> 可选字段多 → Builder；字段全必填且少 → 直接构造。Builder 的本质是"弥补 C++ 缺少命名实参"，别在简单对象上为了 pattern 而 pattern。
+
+```cpp
+#include <iostream>
+#include <string>
+
+struct HttpRequest {
+    std::string method, url, body;
+    bool keepAlive = false;
+};
+
+struct RequestBuilder {
+    HttpRequest r;
+    RequestBuilder& method(std::string m) { r.method = std::move(m); return *this; }
+    RequestBuilder& url(std::string u) { r.url = std::move(u); return *this; }
+    RequestBuilder& body(std::string b) { r.body = std::move(b); return *this; }
+    RequestBuilder& keepAlive(bool v) { r.keepAlive = v; return *this; }
+    HttpRequest build() const { return r; }
+};
+
+int main() {
+    auto req = RequestBuilder{}.method("POST").url("/api").body("{}").keepAlive(true).build();
+    std::cout << req.method << " " << req.url << " ka=" << req.keepAlive << "\n";
+    return 0;
+}
+```
+</details>
+
 ## 附录 J：创建型模式 决策流（D3 维度）
 
 > 以"如何隐藏构造细节并灵活创建对象"为主线，给出工厂 / 建造者 / 原型 / 单例的选型判据。

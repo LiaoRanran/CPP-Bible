@@ -1670,6 +1670,69 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::transform_reduce`：`https://en.cppreference.com/w/cpp/algorithm/transform_reduce`；执行策略：`https://en.cppreference.com/w/cpp/algorithm/execution`。`reduce` 不保证结合顺序，故二元操作必须可交换/结合（见 ISO §25.3.1）。
 
+### 练习 4（难度 ★★）
+
+**真实场景：报表的"累计列"与运行总量。** 财务看板要展示"截至每天的累计销售额"，即每个位置 = 前缀和——`std::partial_sum` 就是标准库的"前缀和/前缀操作"原语。请把 `sales{10,20,30,40}` 变换为累计序列 `10 30 60 100`，并说明它与 `std::accumulate`（只出一个最终值）的区别。
+
+<details><summary>答案与解析</summary>
+
+`partial_sum(first,last,out)` 逐个输出前缀和：`out[i] = op(out[i-1], *it)`，默认 `op` 是加法。它把"每步的中间累计值"全部保留到输出区间，而 `accumulate` 只返回最终累加值。二者都要求初值语义一致——`partial_sum` 首个输出直接等于首元素，不额外加初值。
+
+标准依据：`partial_sum` 位于数值算法族，见 ISO §27.10.4（[numeric.ops.partial.sum]）；复杂度 O(n)。它还有 `inclusive_scan`/`exclusive_scan` 等 C++17 并行可执行策略变体，后者适合并行前缀和（ch99 主题里的"并行执行策略"衔接点）。
+
+边界条件与失效场景：输出区间与输入区间重叠时须"就地"——`partial_sum(v.begin(), v.end(), v.begin())` 合法（单遍右写）；但输出到 `v.begin()+1` 这类部分重叠属未定义。累加溢出是常见坑：`int` 前缀和在大数据下会溢出，建议输出到 `long long` 并显式指定类型。浮点前缀和误差随长度累积，金融场景用 `Kahan` 等补偿算法替代。
+
+> **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+int main() {
+    std::vector<int> sales{10, 20, 30, 40};
+    std::vector<int> prefix(sales.size());
+    std::partial_sum(sales.begin(), sales.end(), prefix.begin());
+    for (int x : prefix) std::cout << x << ' ';
+    std::cout << '\n';    // 10 30 60 100
+}
+```
+
+<span class="badge badge-std">标准</span> `partial_sum` 的逐元素递推语义由 [numeric.ops.partial.sum] 规定；就地（`out==first`）合法、部分重叠未定义。
+
+<span class="badge badge-exp">经验</span> "每日累计/运行总和/前缀查询"是 `partial_sum` 的日常场景；数据量大时优先 `std::inclusive_scan(std::execution::par, ...)` 并行化，但要注意规约顺序不定导致浮点结果与串行版本略有差异。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：生成连续编号并用向量化提示归约。** 批处理要"给 1'000'000 条记录打顺序号再求和"——`std::iota` 一次填满连续序列，`std::reduce` 比 `accumulate` 多出执行策略重载，`unseq` 允许编译器做 SIMD 向量化而不开线程。请生成 `1..1e6` 并求和，说明为什么初值用 `0LL`（防 int 溢出、定 long long 结果类型）以及 `reduce` 与 `accumulate` 的语义差异。
+
+<details><summary>答案与解析</summary>
+
+`std::iota(first,last,value)` 用 `value, value+1, ...` 顺序填充区间；`std::reduce` 与 `accumulate` 都做"折叠归约"，但 `reduce` 额外提供执行策略重载，且**不保证结合顺序**——因此二元操作必须是可交换可结合的（加法/乘法 OK，字符串拼接不行）。`unseq`（unsequenced）表示允许向量化、不保证多线程，是"单线程但允许 SIMD"的折中档。
+
+标准依据：`iota` 见 ISO §27.10.9（[numeric.ops.iota]）；`reduce` 见 [alg.reduce]/[numeric.ops.reduce]——其结果类型由 `init` 决定，`0LL` 使结果是 `long long`。执行策略的前置条件要求元素访问不引发数据竞争（§25.3.1）。
+
+边界条件与失效场景：`reduce` 在无 TBB 的 libstdc++ 上 `par` 会回退串行仍正确，但 `par` 需要链接 TBB 才能在真正多线程下运行；`unseq` 则无此依赖。浮点归约顺序不定 → 结果与 `accumulate` 有微小数值差，需要位级一致性的场景（金融对账）应坚持 `accumulate`。`iota` 对 `char` 等会回绕，注意值域。
+
+> **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <execution>
+int main() {
+    std::vector<int> v(1'000'000);
+    std::iota(v.begin(), v.end(), 1);                      // 1..1e6
+    long long s = std::reduce(std::execution::unseq,
+                              v.begin(), v.end(), 0LL);    // 允许 SIMD 的串行归约
+    std::cout << "sum=" << s << '\n';                      // 500000500000
+}
+```
+
+<span class="badge badge-std">标准</span> `reduce` 的初值类型即结果类型，加法归约在 [numeric.ops.reduce] 中要求可结合可交换；`unseq` 策略不引入线程、只允许向量化。
+
+<span class="badge badge-exp">经验</span> "求和/求积"这类可交换归约用 `reduce` 比 `accumulate` 更易并行化；但 `accumulate` 有"确定的从左到右顺序"，语义更可预测。工程选择：需要确定性与位级稳定 → `accumulate`；追求吞吐且可接受微小数值差 → `reduce(par/unseq)`。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

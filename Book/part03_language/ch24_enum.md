@@ -1582,6 +1582,71 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：把枚举序列化进网络/存储。** 一个端口枚举 `enum class Port : unsigned char` 要作为二进制字段写出，scoped enum 不隐式转整型，每次都要手写 `static_cast` 很啰嗦且易错。请用 C++23 的 `std::to_underlying` 取底层值，并验证其返回类型就是底层类型。
+
+<details>
+<summary>答案与解析</summary>
+
+scoped enum（`enum class`）的卖点是类型安全：不允许隐式转成 `int`/`bool`，这杜绝了「颜色被当数字相加」之类的低级错误（练习 1）。但序列化场景恰恰需要拿到底层整型值，`std::to_underlying(e)`（C++23，P1682 系列提案落地）就是为此定制的工具：它等价于 `static_cast<std::underlying_type_t<E>>(e)`，返回类型精确等于枚举的底层类型（本例为 `unsigned char`），代码意图一目了然。
+
+标准依据：ISO/IEC 14882:2023 §[enum.underlying]（底层类型确定 scoped enum 的宽度与 ABI 形态）与 §[utility.underlying]（`std::to_underlying` 返回底层类型）；scoped enum 到整型的转换必须显式，这是 §[conv.prom] 缺失隐式转换的结果。
+
+实现与边界：`to_underlying` 只做「取底」，不做范围校验——如果枚举值不是合法 enumerator，返回的底层值只是存储位模式（可能超出枚举声明值域），消费方要自行约定合法范围。替代方案：C++23 之前只能 `static_cast<unsigned char>(p)`，或重载自定义转换；若需要「位集合」语义则配练习 2 的位掩码运算符重载。
+
+> **示例 61** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <utility>   // std::to_underlying (C++23)
+
+enum class Port : unsigned char { A = 1, B = 2 };
+
+int main() {
+    Port p = Port::B;
+    unsigned char v = std::to_underlying(p);   // C++23: 显式转底层
+    static_assert(std::is_same_v<decltype(std::to_underlying(p)), unsigned char>);
+    std::cout << static_cast<int>(v) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[utility.underlying]：`std::to_underlying` 把枚举转为其底层类型，返回类型同底层类型。
+
+<span class="badge badge-exp">经验</span> 「类型安全」与「要落成整型」是同一枚硬币的两面：对外序列化/存库时用 `to_underlying`，对内计算时保持 `enum class` 直到最后一刻。手写 `static_cast` 会散落各处且难统一加校验，工具函数封装一次即可（本章演绎『选 enum class 还是 unscoped』）。
+
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：布尔开关的强类型标志位。** 一个 `enum class Flag : bool` 表示开关状态，希望防止把 `Flag` 当 `bool` 直接用（`if (f)` 应报错、应显式写 `f == Flag::on`）。请演示 scoped enum 对 `bool` 也禁止隐式转换，写出显式比较的合法版本。
+
+<details>
+<summary>答案与解析</summary>
+
+scoped enum 不提供任何到整型或 `bool` 的隐式转换——即使底层类型就是 `bool`：`if (f)` 会因「`enum class Flag` 不能转换到 `bool`」编译失败，必须写 `f == Flag::on` 这类显式比较。这看似繁琐，实则是强制的意图声明：代码读者一眼看到「这里在比较枚举值」而不是「这里在测布尔」，杜绝了把开关位随手塞进算术表达式。
+
+标准依据：ISO/IEC 14882:2023 §[dcl.enum] 规定 scoped enum 不进行隐式整数/浮点/布尔转换（无隐式 conversion 到 `bool`）；只有显式 `static_cast` 或比较运算符能把它们纳入普通逻辑。反观 unscoped enum 可隐式转 `int`，`if (e)` 也能编译——这正是练习 1 强调的「用 `enum class` 收紧」的另一面。
+
+实现与边界：底层类型选 `bool` 后 `sizeof(Flag)` 通常为 1，与位掩码枚举（练习 2）相比语义单一；注意 `enum class Flag : bool` 不保证体积跨 ABI 一致 [UNVERIFIED]——跨模块交换二进制格式时仍以 `unsigned`/显式宽整型底层类型为稳。替代方案：只需「真/假」语义时直接 `bool` + 明确命名，比枚举更省事。
+
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+```cpp
+#include <iostream>
+enum class Flag : bool { off = false, on = true };
+int main() {
+    Flag f = Flag::on;
+    // if (f) { }            // 错误: scoped enum 不可隐式转 bool
+    if (f == Flag::on) std::cout << "on\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[dcl.enum]：scoped enum 无隐式到整型/`bool` 的转换，比较须显式。
+
+<span class="badge badge-exp">经验</span> 「禁止隐式转换」不是 bug 是特性：它把『这值能不能当 bool/int 用』的决策交还作者，编译期就拦住误用。若频繁需要 `if (f)` 的可读性，考虑重载 `explicit operator bool`——但要小心它同时放开比较路径，别把类型安全又松回去。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：何时选 `enum class` 而非 `unscoped enum`

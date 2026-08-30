@@ -1318,6 +1318,61 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：从异构元组里安全地读出多个字段。** 配置项常以 `std::tuple<int, double, std::string>` 这类异构聚合存储；你希望一次性取出全部字段并就地修改，而不是反复 `get<0>`/`get<1>` 手写。请用结构化绑定（structured bindings）把元组拆成具名变量，并说明它和 `std::get` 的等价性。
+
+<details><summary>答案与解析</summary>
+
+结构化绑定 `auto& [a, b, c] = t;` 在编译期把元组第 N 个元素的引用绑定到 `a/b/c`，语义上等价于 `std::get<N>(t)` 取引用；因为是引用，修改绑定变量会写回元组。它不改变存储布局、零运行时开销，仅是对 `tuple`/`pair`/聚合类型的语法糖，背后仍是 `tuple_size`/`tuple_element`/`get` 三件套。
+
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <tuple>
+
+int main() {
+    std::tuple<int, double, const char*> t{1, 2.5, "hi"};
+    auto& [i, d, s] = t;                 // 结构化绑定解引用 tuple
+    i = 10;                              // 写回元组第 0 个元素
+    std::cout << std::get<0>(t) << ' '   // 10
+              << d << ' ' << s << '\n';  // 2.5 hi
+}
+```
+
+<span class="badge badge-std">标准</span> 结构化绑定对 `tuple` 走 §[tuple] 的 `tuple_size`/`tuple_element`/`get` 协议；对聚合/数组另有对应规则。它只是语法糖，生成的引用与目标类型严格一致。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定声明）；元组元素访问见 §[tuple] 的 `get`；cppreference "tuple"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：把"参数打包成元组"再分发到任意函数。** 你有一个 `std::tuple` 形式的延迟参数包，需要把里面的值原样展开成某函数的实参调用（例如 RPC、测试夹具）。请用 `std::apply` 在编译期把元组展开为函数实参，而不是手写 `get<0>(t), get<1>(t), ...`。
+
+<details><summary>答案与解析</summary>
+
+`std::apply(f, tuple)` 在编译期把元组的每个元素作为实参转发给 `f`，等价于 `f(get<0>(t), get<1>(t), ...)`。它依赖 `tuple` 的大小在编译期已知，因此能精确展开；对空的或巨大的元组都适用，是"把数据当作代码参数"的零开销手法。若要保证转发不丢失值类别，内部本质是 `std::invoke` + `get` + 完美转发。
+
+> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <tuple>
+
+int add(int a, int b, int c) { return a + b + c; }
+
+int main() {
+    auto t = std::make_tuple(1, 2, 3);
+    std::cout << std::apply(add, t) << '\n';   // 1+2+3 = 6
+}
+```
+
+<span class="badge badge-std">标准</span> `std::apply` 在 §[tuple.apply] 定义，要求 `tuple` 元素个数与函数形参匹配；底层是编译期展开转发，不引入任何运行时索引。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[tuple.apply]；展开语义见 cppreference "tuple/apply"。
+
+</details>
+
 ## 附录：GCC 15.3.0 真机实证 — `std::tuple` / 结构化绑定 代价
 
 > 证据：`_asm_demo/ch89_tuple_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**`get<N>` 是编译期偏移访问，零运行时索引计算；结构化绑定与裸 struct 成员访问逐字节相同。**

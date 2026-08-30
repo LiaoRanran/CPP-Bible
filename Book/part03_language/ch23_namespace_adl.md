@@ -1393,6 +1393,77 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：内层模块与主库的同名常量。** 库 `geo` 暴露 `geo::dim = 3`，内部模块 `geo::detail` 也有自己的 `dim = 2`；模块代码里直接写 `dim` 会拿到谁？请用嵌套命名空间演示「内层名字隐藏外层」，并写出如何用 `::` 限定绕回外层/全局作用域。
+
+<details>
+<summary>答案与解析</summary>
+
+名字查找从当前作用域逐层向外：`geo::detail::show()` 内部先查 `detail` 作用域，找到 `detail::dim = 2`，**内层名字隐藏外层同名实体**，直接写 `dim` 即 `2`。想取外层 `geo::dim` 必须显式限定 `geo::dim`；如果外层不是全局，还要用 `::` 从全局起步逐级限定（如 `::geo::dim`），因为非限定查找不会「回退」到已被隐藏的外层名字。
+
+标准依据：ISO/IEC 14882:2023 §[basic.lookup.unqual] 规定非限定名从声明点所在作用域逐层向外查找，遇同名即停（隐藏规则）；限定名 `::geo::dim` 强制从全局命名空间开始查找，绕过隐藏。
+
+实现与边界：这是 C++ 头文件与模块组织的常见摩擦点——内层命名空间里顺手写个与全局同名的 `max`/`size`，就可能悄悄改变调用目标（配合 ADL 更容易出问题）。替代方案：内层命名空间慎用过于通用的名字；确实需要外层实体时用限定名，让读者一眼看清来源。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+namespace geo {
+    int dim = 3;
+    namespace detail {
+        int dim = 2;                 // 内层隐藏外层
+        int show() { return dim; }   // 2
+        int global() { return ::geo::dim; }  // 3
+    }
+}
+int main() {
+    std::cout << geo::detail::show() << " " << geo::detail::global() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.lookup.unqual]：非限定名逐层外查、遇同名即隐藏；限定名从指定命名空间起步。
+
+<span class="badge badge-exp">经验</span> 看到「改名后行为变化」先怀疑隐藏规则；内层命名空间避免与外层/全局撞名的通用短名，或在关键处用限定名自解释。这也解释了为什么 `using namespace std;` + 自定义同名函数会静默改变调用（见练习 1 的 ADL 讨论）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：序列化框架的泛型回调。** 一个泛型 `serialize(x)` 调用点既没 `using` 任何命名空间、也没在全局声明同名函数——为什么对 `ns::Widget` 传参时还能编译通过并选到 `ns::serialize`？请演示 ADL 对**函数模板**同样生效：即使普通查找一无所获，实参的关联命名空间仍会被纳入候选。
+
+<details>
+<summary>答案与解析</summary>
+
+参数依赖查找（ADL，Argument-Dependent Lookup）在「非限定函数调用」时，把实参类型的关联命名空间（及关联类）加入候选查找集。对 `serialize(w)`：普通非限定查找在 `main`→全局作用域里找不到 `serialize`，但实参 `w` 是 `ns::Widget`，其关联命名空间 `ns` 被纳入，于是 `ns::serialize` 进入候选，模板实参推导出 `T = Widget`——所以即使调用点没写 `using` 也能命中。
+
+标准依据：ISO/IEC 14882:2023 §[basic.lookup.argdep]：非限定调用中，除普通查找外还要考虑实参关联命名空间/类中的函数；该规则对函数模板同样适用，模板实参从实参类型推导。ADL 让「类型与其配套操作放同一命名空间」的设计得以成立（本章练习 1 的 `operator<<` 即依赖它）。
+
+实现与边界：ADL 是把双刃剑——候选集合悄悄变大，可能把无关的同名函数拉进来造成重载二义或意外匹配。想**禁止 ADL**，可把调用写成 `(serialize)(w)`（括号内只做普通查找，找不到即报错），或显式限定 `ns::serialize(w)`。替代方案：泛型代码里用 `using` 声明把已知版本引入再调用，兼具可见性与可控性。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+namespace ns {
+    struct Widget { int v = 1; };
+    template <typename T>
+    void serialize(const T&) { std::cout << "ns::serialize\n"; }
+}
+
+int main() {
+    ns::Widget w;
+    serialize(w);   // 普通查找找不到 serialize → ADL 找到 ns::serialize, 推导 T=Widget
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.lookup.argdep]：非限定函数调用把实参关联命名空间/类纳入候选，模板函数也参与推导。
+
+<span class="badge badge-exp">经验</span> ADL 的正确用法是「类型 + 配套操作同命名空间」（`swap`、`<<`、`serialize`），危险用法是「候选集不受控时隐式改变重载决议」；要可控就用限定调用或括号调用。调试「咦它怎么调到了那个函数」时，先检查是不是 ADL 拉进了别的命名空间。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：自定义类型的流式输出——靠 ADL 让 `<<` 被发现

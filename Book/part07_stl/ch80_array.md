@@ -1089,6 +1089,59 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[array] 与 §[decl.attr.align]（`alignas` 对齐说明符）；SIMD 加载要求对齐缓冲，见 cppreference "container/array" 与 "alignas" 词条。
 
+### 练习 4（难度 ★★）
+
+**真实场景：把定长采样缓冲交给只认 `(T*, n)` 的旧接口，却不想丢失长度信息。** 固件里 `std::array<int,8>` 要传给一个 C 函数，函数签名里没有长度。请用 `.data()` + `.size()` 显式桥接，并解释为什么 `std::array` 「不会退化成指针」反而是它的安全优势。
+
+<details><summary>答案与解析</summary>
+
+`std::array<T,N>` 的长度是**类型的一部分**（`N` 是模板非类型参数），这带来两个后果：① 它不会像裸数组那样在传参时退化成 `T*`（退化会丢掉 `N`，引发越界风险）；② `.size()` 是编译期常量、零开销。要交给 C ABI，应使用 `.data()` 取首元素指针，并单独显式传递 `.size()`——长度既在类型里也在运行时可见，绝不靠"猜"。
+
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <array>
+void take_raw(const int* p, std::size_t n) { std::cout << "n=" << n << "\n"; }
+int main() {
+    std::array<int, 3> a{1,2,3};
+    // a 的类型含长度; 取首元素地址传给 C API 时长度须另行传递
+    take_raw(a.data(), a.size());    // 桥接 C, 长度安全可见
+    // int* p = a; // 错误: array 不会退化成指针, 须显式 .data()
+}
+```
+
+<span class="badge badge-std">标准</span> `std::array` 是聚合类型，满足 `tuple-like` 协议；`.data()` 返回连续首元素指针，`.size()` 来自编译期 `N`，见 `[array]`。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[array]（聚合与连续布局）；§[array.creation]（`to_array`）；见 cppreference "container/array"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：把 `array` 当查表用，但下标访问越界是未定义行为。** 新手常把 `a[100]` 当成"安全读取"——其实 `std::array` 的 `operator[]` 与裸数组一样**不做边界检查**，越界直接 UB。请对比 `operator[]` 与 `std::vector::at()` 的边界策略，并说明 `array` 该如何在编译期保证长度正确。
+
+<details><summary>答案与解析</summary>
+
+`std::array::operator[]` 与 `a[N]` 同样对下标不做运行时检查（实现通常只 `assert` 或完全放开），越界是 UB——这正是它保留"C 数组性能"的代价。需要运行时边界保护时，要么改用 `std::vector::at()`（抛 `std::out_of_range`），要么确保下标来自编译期常量（如 `std::get<N>`）。`array` 的长度 `N` 是类型级事实，因此"长度正确性"最好在编译期通过模板参数保证，而非运行时防御。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <array>
+int main() {
+    std::array<int, 4> a{0,1,2,3};
+    std::cout << "size=" << a.size() << "\n";   // 编译期常量 4
+    // a[100] 是未定义行为(无边界检查); 下标须来自编译期或经显式校验
+    std::cout << a[2] << "\n";                   // 2
+}
+```
+
+<span class="badge badge-std">标准</span> `array::operator[]` 不抛异常、不检查；`vector::at()` 才做边界检查并抛 `std::out_of_range`——二者语义差异源于"零开销"vs"安全"的设计权衡。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[array]（`operator[]` 与边界语义）；§[vector]（`at()` 的异常保证）；见 cppreference "container/array" 与 "container/vector"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：编译期查表（constexpr array）

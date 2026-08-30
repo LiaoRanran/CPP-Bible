@@ -1746,6 +1746,78 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：定时器成员的原子自增。** `Timer` 的成员函数里注册一个工作闭包，每触发一次就 `ticks.fetch_add(1)`。请问 `[=]` 捕获的是「成员」还是「对象」？C++20 起该写法会怎样？请写出显式捕获 `this` 的正确版本。
+
+<details>
+<summary>答案与解析</summary>
+
+在成员函数内，lambda 访问 `ticks` 实际上访问的是 `this->ticks`——捕获 `[=]` 时复制的是 **`this` 指针的值**，而不是成员数据的拷贝；闭包持有一个指向 `Timer` 对象的指针，运行期解引用读成员。因此「按值捕获 this」与「按引用捕获成员」在语义上等价：对象若先于闭包销毁，闭包解引用即悬垂（见 ch28）。C++20 起 `[=]` 不再隐式捕获 `this`（该特性被弃用），编译器会报错要求显式写 `[=, this]` 或 `[this]`——这是把模糊语义显式化的好改动。
+
+标准依据：ISO/IEC 14882:2023 §[expr.prim.lambda.capture]：`[this]` 捕获当前对象指针，`[=]` 隐式按值捕获所用实体（C++20 后不含 this）；C++23 起 `[this]` 捕获的 `this` 为 const 指针、`*this` 拷贝需写 `[*this]`。捕获 `this` 后成员读写都经指针解引用，生命周期与对象绑定。
+
+实现与边界：`[this]` 闭包大小等于一个指针，比 `[*this]`（拷贝整个对象）廉价得多，但安全性取决于对象存活期。异步派发（线程池/信号槽）时若无法保证对象存活，优先 `[*this]` 值捕获或 `shared_ptr` + `[self = shared_from_this()]`（见 ch41）。替代方案：只读字段可以直接捕获值本身（`[v = ticks.load()]`），彻底断开对对象的依赖。
+
+> **示例 71** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <atomic>
+
+struct Timer {
+    std::atomic<int> ticks{0};
+    void run() {
+        // [=] 捕获的是 this 指针的值, 不是成员; C++20 起 [=] 不再隐式捕获 this
+        auto worker = [this] { ticks.fetch_add(1); };
+        worker();
+        worker();
+    }
+};
+int main() {
+    Timer t;
+    t.run();
+    std::cout << t.ticks << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[expr.prim.lambda.capture]：`[this]` 按值捕获对象指针，`[=]` 自 C++20 起不隐式捕获 this。
+
+<span class="badge badge-exp">经验</span> 「按值捕获」对成员来说只是「按值捕获指针」——对象死得比闭包早，一切按值捕获都是假的。异步场景记住三选一：显式 `[this]`（保证对象活）、`[*this]`（值拷贝）、`shared_from_this()`（共享所有权）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：递归的数值计算回调。** 你需要一个递归求阶乘的 lambda：递归要调用「它自己」，但 lambda 名字在定义体内尚未存在。请用 `std::function` 自引用捕获写出递归 lambda，并说明为什么裸 `auto` 在这里走不通。
+
+<details>
+<summary>答案与解析</summary>
+
+lambda 的类型是编译器生成的匿名闭包类型，定义完成前该类型不完整，因此「直接自引用」不可行：`auto f = [&f](int n){ return f(n-1); };` 在初始化器中 `f` 尚未声明（作用域外）。绕法之一是先用 `std::function<int(int)>` 声明类型擦除的变量，再让 lambda 按引用捕获它：捕获发生在 lambda 定义点，此时 `fact` 对象已存在，闭包内调用 `fact(n - 1)` 合法。
+
+标准依据：ISO/IEC 14882:2023 §[func.wrap.func]（`std::function` 类型擦除的可调用包装）与 §[expr.prim.lambda]（闭包类型匿名，定义体内无法引用自身）。递归经 `std::function` 的代价是每次调用走虚分派 + 可能堆分配闭包存储，热路径上明显慢于普通递归。
+
+实现与边界：`[&fact]` 按引用捕获使 `fact` 必须活得比闭包久（本例同在 `main` 作用域，安全）；若把闭包存入容器/跨函数传递，引用捕获会悬垂。替代方案：C++23 的 deducing this（P0847 系列提案）允许 lambda 显式接收自身参数做无类型擦除递归，编译器支持度随版本变化 [UNVERIFIED]；更保守的是把递归体写成普通函数或仿函数。
+
+> **示例 72** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <functional>
+
+int main() {
+    std::function<int(int)> fact = [&fact](int n) -> int {
+        return n <= 1 ? 1 : n * fact(n - 1);
+    };
+    std::cout << fact(5) << "\n";   // 120
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[expr.prim.lambda]：闭包类型匿名且定义体内不可自引用；§[func.wrap.func]：`std::function` 提供类型擦除的自引用媒介。
+
+<span class="badge badge-exp">经验</span> 递归 lambda 的「标准答案」是 `std::function` + 引用捕获，但别把它带进热循环（类型擦除开销）；纯计算型递归写成普通函数更清晰。若追求现代写法可考察 deducing this，但要先确认工具链支持（本章附录『回调选型』给出模板回调优先的原则）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：`std::function` vs 模板回调的选型

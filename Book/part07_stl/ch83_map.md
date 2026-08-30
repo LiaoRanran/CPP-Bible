@@ -1304,6 +1304,65 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[container.node]（节点句柄 `node_type` 与 `extract`/`insert(node_type)`，C++17）与 §[map.modifiers]；见 cppreference "container/map" 的 node extraction 专节。
 
+
+### 练习 4（难度 ★★）
+
+**真实场景：你用 `m[key]` 想"读一下配置"，结果键不存在时它却悄悄插入了一个默认值。** 这是 `std::map` 最容易踩的坑：`operator[]` 在键缺席时会**插入**默认构造的值并返回引用，产生意想不到的"写"副作用。请区分 `operator[]`、`at()`、`find()` 的语义，并给出"只读查询"的正确写法。
+
+<details><summary>答案与解析</summary>
+
+`operator[]` 的契约是"若键存在则赋值，不存在则插入默认构造元素再返回引用"——它**一定不抛异常且总会给你一个可写引用**，但代价是可能在你只想"读"时悄悄增加容器大小。`at(key)` 则纯读：键存在返回引用，不存在抛 `std::out_of_range`，不会插入。`find(key)` 返回迭代器，可同时表达"存在/不存在"而不产生副作用。读多写少、且不容忍意外插入时，应优先 `find`/`contains`（C++20）/`at`。
+
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <map>
+#include <string>
+int main() {
+    std::map<std::string,int> m;
+    m["a"] = 1;                  // 插入
+    m["b"];                      // 缺失键 -> 插入默认构造的 int(0), 副作用!
+    std::cout << m.size() << "\n"; // 2
+    // 仅查询请用 find/contains, 避免意外插入
+    std::cout << (m.find("b") != m.end()) << "\n"; // 1
+}
+```
+
+<span class="badge badge-std">标准</span> `operator[]` 对缺失键执行"插入-value_type(key, mapped())"；`at` 不插入、越界抛 `out_of_range`；二者复杂度均摊 O(log n)（红黑树）。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[map.access]（`operator[]` 与 `at` 的语义差异）；§[associative.reqmts]；见 cppreference "container/map"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：用 `std::string` 作 key，但热路径上每次 `find` 都要先构造一个临时 `std::string` 才能查。** 你手上是 `std::string_view` 切片，能否直接用来查 map？请用「透明比较器」（comparator 带 `is_transparent`），实现用 `string_view` 对 `string` 键的异构查找，避免无谓的临时串构造。
+
+<details><summary>答案与解析</summary>
+
+把比较器设为 `std::less<>`（或任何带 `is_transparent` 的类型），容器就以"透明"方式比较——`find` 接受任意能与 key 比较的类型（如 `std::string_view` 对比 `std::string`），不再强制构造 `std::string`。这要求 `key_type` 与查询类型之间定义了 `<`，且无歧义。代价是透明比较器下不能再用 `operator[]`（它依赖可写引用），须改用 `find`/`insert`/`erase`。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <map>
+#include <string_view>
+struct Cmp : std::less<> {};          // 透明比较器 (is_transparent)
+int main() {
+    std::map<std::string,int,Cmp> m;
+    m["hello"] = 1;
+    std::string_view key = "hello";
+    auto it = m.find(key);            // 用 string_view 查 std::string 键, 免构造临时 string
+    std::cout << (it != m.end() ? it->second : -1) << "\n";  // 1
+}
+```
+
+<span class="badge badge-std">标准</span> 透明比较器（C++14）要求 comparator 嵌套 `is_transparent`，使关联容器支持异构查找；否则 `find` 参数必须是 `key_type`。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[associative.reqmts]（透明比较器 `is_transparent`）；见 cppreference "map" 的"异构查找"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 map 实现区间映射（interval map 简化版）

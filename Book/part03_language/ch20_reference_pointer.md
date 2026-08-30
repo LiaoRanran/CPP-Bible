@@ -1484,6 +1484,77 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：数据库行的字段访问器。** 一个表行 `Row` 的字段访问器 `field()` 希望返回成员引用，让调用方直接改写原数据而不是拿拷贝；同一访问器又要能服务只读调用方（`const Row&`）。请写出一对 const/非 const 的 `field()` 重载，并解释「返回引用」与「返回值」在改写语义上的差别。
+
+<details>
+<summary>答案与解析</summary>
+
+返回引用意味着把「被引用对象本身」暴露给调用方：`r.field() = 42` 直接改写 `r.id`，中间没有拷贝；而返回值（按值返回 `int`）只给出一份拷贝，改写它不影响原成员。因此「按引用返回 + 可被修改」常被用作访问器或容器下标，代价是调用方有机会逃逸出指向内部数据的引用/指针——生命周期与封装边界需要设计者把关。
+
+标准依据：引用在语法上隐式解引用，返回引用类型的函数其返回值本身就是被引用对象（ISO/IEC 14882:2023 对象/引用语义）；const 限定成员函数只能对 `const` 对象调用，非 const 版本需要非 const 对象，两个 `field()` 构成合法的重载集，调用方按对象 cv 限定符挑选版本。
+
+实现与边界：写 const/非 const 双版本时要保证语义一致——通常 const 版本返回 `const int&`，非 const 版本返回 `int&`（C++ 允许同一函数名按 cv 限定符重载）。致命错误是「返回局部变量的引用」：`int& bad() { int x = 0; return x; }` 返回悬垂引用（见 ch28）。替代方案：不打算暴露内部布局就返回按值；需要受控访问就用 `optional_ref`（练习 3）这类包装而非裸引用。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+struct Row {
+    int id = 0;
+    int& field() { return id; }
+    const int& field() const { return id; }
+};
+int main() {
+    Row r;
+    r.field() = 42;                 // 修改原成员
+    const Row& cr = r;
+    std::cout << cr.field() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 引用绑定语义：引用是其绑定对象的别名，返回引用即返回对象本身；cv 限定符参与成员函数重载决议。
+
+<span class="badge badge-exp">经验</span> 「返回引用」是容器/访问器的惯用接口（如 `std::vector::operator[]`），但务必确认引用所指的是**长期存活**的对象——成员、全局、静态均可，局部对象绝对不行；拿不准时优先返回值。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：日志接口的参数绑定。** `log(const std::string& msg)` 被调用方传入 `log(std::string("..."))` 这类临时串。请解释「临时对象生命周期延长」规则的适用边界：为什么 `const std::string&` 参数绑定临时量时临时对象能活到函数返回，而把该引用再「传递」给别的引用就失效了？
+
+<details>
+<summary>答案与解析</summary>
+
+临时对象被绑定到引用时，其生命周期会被延长到该引用的生命周期——但**只有绑定到引用初始化器的纯右值**才享受延长，且延长不随引用继续传递：`const std::string& r = std::string("x");` 中临时 `string` 活到 `r` 作用域结束；而 `const std::string& wrap(const std::string& s) { return s; }` 里的 `s` 绑定的是函数参数（临时量在函数调用结束时销毁），返回的引用在函数返回后即悬垂。
+
+标准依据：ISO/IEC 14882:2023 §[class.temporary] 规定「绑定到引用初始化器的临时对象生命周期延长到该引用消亡」，同时明确该延长不适用于「函数参数」「返回值」「容器元素/成员初始化」「new 表达式结果」等场景——因此 `std::string_view` 或引用跨函数传递是悬垂高发区。
+
+实现与边界：延长规则是语言保证，不依赖优化器；但同一临时量若被多个引用绑定，只按「最先绑定的引用」延长。替代方案：跨函数返回数据一律返回值或共享所有权，别返回内部引用（见 ch28 练习 2 的 `string_view` 陷阱）。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+struct Probe {
+    Probe() { std::cout << "ctor\n"; }
+    ~Probe() { std::cout << "dtor\n"; }
+};
+void take(const Probe& p) {
+    (void)p;
+    std::cout << "take\n";
+}
+int main() {
+    take(Probe{});                 // 临时 Probe 延长到 take 返回后
+    std::cout << "after take\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[class.temporary]：临时对象绑定到引用初始化器时生命周期延长，但函数参数、返回值、成员初始化等场景不享受延长。
+
+<span class="badge badge-exp">经验</span> 「const 引用形参能收临时量」≠「能安全地把该引用继续传出去」；延长规则只管第一跳。凡是返回引用或把引用存到比调用更长的作用域，都要重新审视被引对象是否还活着（见本章附录决策流的『返回引用还是指针』分支）。
+
+</details>
+
 ## 附录：用法演绎 — 返回引用还是指针？
 
 > 场景：设计一个配置读取 API，调用方要拿到一个"可能很大、且不应被拷贝"的对象。

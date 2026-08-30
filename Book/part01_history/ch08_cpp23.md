@@ -1003,6 +1003,70 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：错误码与异常你都不想用，想要"要么值要么错"的返回值。** 你的库函数可能成功返回 `int`，也可能返回一段错误描述；抛异常破坏热路径、错误码又容易被漏检查。请用 C++23 的 `std::expected` 建模"计算结果或错误信息共存于返回值"，并说明它相比 `variant<T, E>` 的语义优势。
+
+<details><summary>答案与解析</summary>
+
+`std::expected<T, E>` 把"成功值 T"与"失败值 E"放进同一个返回值，调用方必须显式检查 `has_value()` 或 `operator bool`，比裸错误码更难遗漏，又比异常更适合零开销的热路径。
+
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <expected>
+#include <string>
+#include <string_view>
+
+std::expected<int, std::string> to_int(std::string_view s) {
+    try { return std::stoi(std::string(s)); }
+    catch (...) { return std::unexpected("not an integer"); }
+}
+
+int main() {
+    auto r = to_int("7");
+    std::cout << (r ? std::to_string(*r) : r.error()) << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++23 §[expected] 引入 `std::expected<T, E>`；`operator*` 取出成功值、`error()` 取出失败值，值语义与 `optional` 同源但携带失败原因。
+
+<span class="badge badge-exp">经验</span> 对"失败是正常分支"的批量/数据路径（解析、IO、转换），`expected` 比异常更安全、比错误码更不易漏检；注意它与 `optional` 的区别：前者区分"无效"与"空"，后者只表达"有/无"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：要同时遍历两个等长序列并逐对处理。** 过去你用下标 `for (i...)` 或手写 `std::pair` 循环，下标越界或长度不一都容易出错。请用 C++23 的 `std::views::zip` 把两个范围"按元素配对"遍历，并说明它为什么零拷贝、且比临时 `vector<pair>` 更省。
+
+<details><summary>答案与解析</summary>
+
+`std::views::zip` 在 C++23 提供"多范围按最短长度"的惰性 zip 视图，按引用取元素，不构造任何中间容器——这正是它相比"先拼成 `vector<pair>`"的优势。
+
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+#include <string>
+
+int main() {
+    std::vector<int>      ids{1, 2, 3};
+    std::vector<std::string> names{"a", "b", "c"};
+    for (auto [ id, name] : std::views::zip(ids, names))   // 零拷贝成对遍历
+        std::cout << id << ":" << name << ' ';
+    std::cout << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++23 §[range.zip] 定义 `views::zip`，按最短范围停止；元素是各范围元素的引用元组，不复制底层数据。
+
+<span class="badge badge-exp">经验</span> zip 适合"平行遍历多个数组"的规整场景；若长度不齐，它会按最短者截断，必要时先用 `views::enumerate` 或在业务层校验长度，避免静默丢数据。
+
+</details>
+
 ## 附录 J：C++23 错误处理与库增强决策流（D3 维度）
 
 本节把第⑤节（expected 错误处理流）与第⑭节（WG21 提案）收敛为「失败如何表达、库如何增强」的决策流。

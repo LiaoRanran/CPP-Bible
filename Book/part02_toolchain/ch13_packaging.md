@@ -1056,6 +1056,59 @@ int main() {
 
 <span class="badge badge-ref">引用</span> Conan 2 文档（https://docs.conan.io/2/ ）讲 `requires(version_range)` 的版本约束求解；vcpkg / Conan / Cargo 等均以"满足所有约束的最小上界"策略统一版本，无法统一才报冲突。
 
+### 练习 4（难度 ★★）
+
+**真实场景：你要发布一个 header-only 库，却遇到"多 TU 重复定义"。** 把函数直接塞进头文件，被多个 `.cpp` 包含后链接报 `multiple definition`。请用 `inline` 解决这个 ODR 问题，并说明它对"打包成单头文件库"的意义。
+
+<details><summary>答案与解析</summary>
+
+`inline` 告诉链接器：这个函数允许在多个翻译单元出现同一份定义，由链接器合并。它正是 header-only 库的基础——没有它，头里的非 `inline` 函数会在每个 TU 各有一份，链接冲突。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+inline int add(int a, int b) { return a + b; }   // 头里定义必须 inline
+
+int main() {
+    std::cout << add(2, 3) << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++ `inline` 函数的多个定义在不同 TU 中允许共存（ODR 例外），保证只有一个实体；C++17 起 `inline` 变量同理，适合 header-only 常量与函数。
+
+<span class="badge badge-exp">经验</span> 现代 header-only 库大量依赖 `inline`；但要注意 `inline` 不等于"内联优化"，只是"允许多定义"。真正的性能内联由编译器决定，别有反向期待。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：库的 ABI 变了，但你不想破坏已发布的二进制。** 你发布 `lib_v1` 后被下游链接；若要改内部布局又得保留兼容，常用"命名空间版本化"隔离。请用命名空间把两个版本并存，演示同一进程里同时能用旧版与新版，并说明这在打包/分发中的价值。
+
+<details><summary>答案与解析</summary>
+
+把不同大版本的 API 放进 `namespace v1`/`v2`，可在不破坏既有 ABI 的前提下并存于同一二进制，给下游平滑迁移窗口——这正是许多 C++ 库（如 `boost::` → `std::`）渐进演进的手段之一。
+
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+namespace lib_v1 { int run() { return 1; } }
+namespace lib_v2 { int run() { return 2; } }   // 新版并存，互不冲突
+
+int main() {
+    std::cout << lib_v1::run() << ' ' << lib_v2::run() << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> namespace 是 C++ 的命名隔离机制；它不影响生成的符号布局细节（ABI），但能在源码层把"旧契约"与"新契约"分开，避免头文件冲突。
+
+<span class="badge badge-exp">经验</span> ABI 稳定性承诺（libstdc++/libc++ 各自保证同主版本内兼容）之外，版本化命名空间是发布演进的常见兜底；跨大版本的破坏性改动优先走新命名空间，而非直接覆盖上游。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：vcpkg manifest 模式替代“全局安装”

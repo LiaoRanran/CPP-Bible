@@ -1224,6 +1224,70 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::remove`：`https://en.cppreference.com/w/cpp/algorithm/remove`；`std::for_each_n`：`https://en.cppreference.com/w/cpp/algorithm/for_each_n`。erase–remove 惯用法见 ISO §27.7.5（[alg.remove]）。
 
+### 练习 4（难度 ★★）
+
+**真实场景：上线前对一批配置/请求做"全量/存在性"校验。** 网关发布前要确认"所有请求都满足限流条件、任一请求触发了告警、没有任何请求缺少 traceID"——`std::all_of` / `std::any_of` / `std::none_of` 正是这三个判定的标准表达，且谓词纯读、零副作用。请对一组成绩用三者分别判定"全部 ≥60""存在 ≥90""没有 <60"，说明为什么这三者都是"短路求值 + O(n)"。
+
+<details><summary>答案与解析</summary>
+
+`all_of` 对区间逐元素应用谓词，全部为 true 才返回 true；`any_of` 只要存在一个 true 即返回；`none_of` 要求全部为 false。三者都属于非修改序列操作，谓词必须是纯函数——若谓词有副作用（如修改外部计数器），并行化与短路都可能改变行为，属未定义风险。
+
+标准依据：这三个算法位于非 modifying 序列操作分类，见 ISO §27.6.1（[alg.all_of]）；复杂度 O(n)，且都支持"发现答案即停止"的短路——`all_of` 遇到第一个 false、`any_of` 遇到第一个 true 便返回。`all_of`/`any_of`/`none_of` 的旧式迭代器版本没有执行策略重载——并行需求应改用 ranges 视图分块或 `std::for_each` 自建归约。
+
+边界条件与工程决策：空区间上 `all_of` 返回 true、`none_of` 返回 true、`any_of` 返回 false（全称量词对空集成立）。这与业务直觉"空列表=没校验过"相反，判断空输入是常见失误。谓词代价高时应先 `views::transform` 成布尔位或廉价键再做量词判断，避免每次比较重复计算。
+
+> **示例 75** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> grades{85, 92, 78, 60};
+    bool all_pass  = std::all_of(grades.begin(), grades.end(), [](int g){ return g >= 60; });
+    bool any_top   = std::any_of(grades.begin(), grades.end(), [](int g){ return g >= 90; });
+    bool none_fail = std::none_of(grades.begin(), grades.end(), [](int g){ return g < 60; });
+    std::cout << "all_pass=" << all_pass << " any_top=" << any_top
+              << " none_fail=" << none_fail << '\n';   // 1 1 1
+}
+```
+
+<span class="badge badge-std">标准</span> `all_of`/`any_of`/`none_of` 由 C++11 引入，非修改操作、谓词为纯函数的前置条件见 ISO §25.3.1（[algorithms.parallel]）——配合执行策略时谓词不得引发数据竞争。
+
+<span class="badge badge-exp">经验</span> 三者在语义上互为否定（`none_of` 等价于"不存在 true"），选型看业务语义而不是表达式便利；空区间的真值约定最容易踩坑，建议对空输入单独 assert。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：数据管线里的批量"单元变换"。** 传感器采集到一批华氏温度，要统一换算成摄氏后再入报表——`std::transform` 就是"对区间每个元素做同构变换"的原语，支持就地（输出到自身）与异地（输出到新容器）两种形态。请把 `{32.0, 68.0, 98.6, 212.0}` 华氏换算为摄氏，说明就地变换为什么不会失效（同区间重写安全）、以及它和 `std::ranges::views::transform` 在"何时计算"上的本质区别。
+
+<details><summary>答案与解析</summary>
+
+`std::transform(first, last, out, f)` 逐元素执行 `f` 并把结果写入 `out`，返回值是"最后一个输出位置的后一个迭代器"。当 `out == first` 时是就地变换——由于每个输出位置只被写一次且读取与写入同序推进，不存在迭代器失效问题。复杂度 O(n)，每个元素恰好一次变换函数调用。
+
+标准依据：`transform` 属于修改序列操作，见 ISO §27.7.3（[alg.transform]）；"就地重写安全"由它的单遍顺序保证。注意旧式迭代器版本**没有**执行策略重载（并行化要 `std::for_each` 或 ranges 生态），这是它区别于 `std::for_each` 的地方——前者变换、后者副作用。
+
+边界条件与失效场景：异地变换时 `out` 不能落在 `[first, last)` 内部（与输入区间重叠但不同位）——标准只保证 `out` 与输入区间不重叠或 `out==first` 的情形，否则未定义。真正"惰性"的需求应改用 `views::transform`：它不在创建时计算、遍历时才按需求值，适合链式管道；`std::transform` 立即物化，适合"一步到位"的边界。
+
+> **示例 76** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<double> f{32.0, 68.0, 98.6, 212.0};
+    std::vector<double> c(f.size());
+    std::transform(f.begin(), f.end(), c.begin(),
+                   [](double x){ return (x - 32.0) * 5.0 / 9.0; });   // 异地变换
+    for (double v : c) std::cout << v << ' ';
+    std::cout << '\n';    // 0 20 37 100
+}
+```
+
+<span class="badge badge-std">标准</span> `transform` 要求 `UnaryOperation` 不修改区间元素、且输出区间可写；与输入重叠但不重合时的行为由 [alg.transform] 规定为"需要未重叠或 `first` 就位"。
+
+<span class="badge badge-exp">经验</span> 热路径上选择"立即物化"的 `transform` 还是"惰性"的 `views::transform`，取决于下游是否还要继续过滤/取前 N——链式处理用视图省一次全量分配，单步落库用 `transform` 语义更直白。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

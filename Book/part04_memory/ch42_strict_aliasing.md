@@ -1508,6 +1508,71 @@ void axpy(int n, double* __restrict y,
 <span class="badge badge-ref">引用</span> GCC/Clang 文档 "`__restrict`" 关键字（非标准扩展，承诺指针不别名以解锁向量化）；ISO/IEC 14882:2023 未规定 `__restrict`，相关语义见各实现文档与 §[intro.abstract]（违反别名契约属 UB）。
 
 </details>
+
+### 练习 4（难度 ★★★）
+
+**真实场景：把 float 的位模式转成整数。** 哈希表要对 `float` 键做位级哈希，需要拿到 IEEE-754 的 32 位位模式。请用 `std::memcpy` 把 `float` 的字节拷进 `std::uint32_t`——这是合法的类型双关——并对比「`reinterpret_cast` 后读取」为何是严格别名 UB。
+
+<details>
+<summary>答案与解析</summary>
+
+`memcpy(&bits, &f, sizeof bits)` 把 `f` 的底层字节复制进 `bits` 的对象存储，`bits` 因而获得与 `f` 相同的值表示——这是**合法的**：字节拷贝通过 `char`/`unsigned char` 豁免别名（练习 2），目标对象类型正确、生命周期完整。而 `uint32_t u = *reinterpret_cast<uint32_t*>(&f);` 是在 `float` 对象存储上按 `uint32_t` 左值读取——若编译器应用严格别名优化（`-fstrict-aliasing`），它有权假设两个不兼容类型的指针不指向同一存储，这种读取属未定义行为。
+
+标准依据：ISO/IEC 14882:2023 §[basic.lval] 别名规则列出允许的访问类型，`uint32_t` 访问 `float` 存储不在豁免清单；§[cstring.syn]/[basic.types] 规定 `memcpy` 复制对象表示是明确允许的操作（练习 2 的 `std::byte*` 视角同源）。`std::bit_cast`（练习 5）是现代封装，`memcpy` 是其 constexpr 之前的可移植形态。
+
+实现与边界：`memcpy` 需要两个对象尺寸相同、且源的目标「值表示」合法（对齐已满足时 O(1) 拷贝）；`-O2` 下编译器通常把等尺寸 `memcpy` 优化成一次寄存器移动，零实际开销。何时失效：跨平台不保证 `sizeof(float)==4`（主流平台如此），序列化时建议 `static_assert(sizeof(float)==4)` 兜底。替代方案：只读位模式用 `std::bit_cast`（constexpr 友好）；真要「按位操纵」时用 `std::byte` 数组逐字节处理最无争议。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <cstring>
+#include <cstdint>
+
+int main() {
+    float f = 1.0f;
+    std::uint32_t bits;
+    std::memcpy(&bits, &f, sizeof bits);     // 合法: 逐字节拷贝
+    std::cout << bits << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.lval]：跨不兼容类型的左值访问属严格别名 UB；`memcpy` 的对象表示拷贝合法。
+
+<span class="badge badge-exp">经验</span> 「要看位模式」时唯一可移植的裸写法就是 `memcpy`（或 `bit_cast`）——`reinterpret_cast` 只是「看起来很对」，在 `-O2` + 严格别名下可能被优化器打脸（本章附录 E 的汇编实证：开关一翻，行为即变）。记住：**合法类型双关只有字节拷贝，没有左值重解释**。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：编译期可用的位重解释。** 一个 `constexpr` 函数需要把 `float` 位模式与 `uint32_t` 互转（哈希/编码），`memcpy` 在 constexpr 上下文不可用。请用 C++20 的 `std::bit_cast` 完成位级转换，并说明它与 `memcpy` 的等价性前提。
+
+<details>
+<summary>答案与解析</summary>
+
+`std::bit_cast<T>(x)`（C++20）把一个对象的值表示重解释为目标类型：要求两个类型尺寸相同、都可平凡复制（trivially copyable），实现即「内部一次对象表示拷贝」——与 `memcpy` 语义等价但被声明为 `constexpr`，因此可以出现在常量表达式、`static_assert`、`constexpr` 函数中（`memcpy` 在常量求值中不可用，练习 4 的形态是运行期）。`bit_cast` 的别名安全性：它不创建不兼容类型的左值访问，而是「构造新对象」，从根上规避严格别名问题。
+
+标准依据：ISO/IEC 14882:2023 §[bit.cast]：`std::bit_cast` 要求 `sizeof(T)==sizeof(U)` 且两者可平凡复制，返回值是与 `x` 相同位模式的新 `U`；§[expr.const] 允许其 constexpr 求值。C++23 对平凡可复制检查进一步放宽（条件在实例化点检查）[UNVERIFIED 措辞]——工程上照 `sizeof` + `is_trivially_copyable` 约束写即可。
+
+实现与边界：`bit_cast` 的返回类型带完整值表示，非法位模式（如 NaN 载荷）不会被「解释」而只是搬运；对齐由编译器处理。何时失效：目标类型更大/更小尺寸报编译错误（`static_assert`），要转先得统一尺寸；含指针成员的类型不可平凡复制则无法使用。替代方案：编译期需要就 `bit_cast`，运行期数据流用 `memcpy`（等价），两者混用无差别——统一用 `bit_cast` 最省心。
+
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <bit>
+#include <cstdint>
+
+int main() {
+    float f = 1.0f;
+    std::uint32_t bits = std::bit_cast<std::uint32_t>(f);   // C++20
+    std::cout << bits << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[bit.cast]：`bit_cast` 要求同尺寸 + 可平凡复制，语义等价一次对象表示拷贝。
+
+<span class="badge badge-exp">经验</span> 从 C++20 起，位重解释的「现代答案」就是 `bit_cast`：类型安全（编译期查尺寸）、constexpr、无严格别名雷区；`memcpy` 退居「运行期等价物」。凡是想写 `reinterpret_cast` 做位转换的地方，先想想能不能换 `bit_cast`（本章附录 E 的 `-fstrict-aliasing` 实证就是为什么别硬上左值重解释）。
+
+</details>
 ## 附录 E：编译实证——`-fstrict-aliasing` 开关如何改变生成码 [C: Compiler / E: Low-level]
 
 > `[实测]` 编译：`g++ -std=c++23 -O2 -c ch42_aliasing_test.cpp` + `objdump -d`（GCC 15.3.0 / Win64 ABI，`%rcx`=第1参数、`%rdx`=第2参数）。产物 `_asm_demo/ch42_aliasing_test.cpp`。

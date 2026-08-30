@@ -1680,6 +1680,81 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：多态对象的成员落位审计。** 一个带虚函数的 `Base`/`Derived` 层级，`x`/`y` 成员在内存里的相对偏移是多少？请用指针差测量 `x`/`y` 相对对象首地址的字节偏移，验证「vptr 通常占在对象头」这一布局事实，并说明该布局为何是实现定义的。
+
+<details>
+<summary>答案与解析</summary>
+
+含虚函数的类对象通常以**虚表指针（vptr）开头**：`Base` 布局常为 `[vptr][int x]`，`Derived` 为 `[Base 子对象][int y]`，因此 `x` 的偏移通常为指针宽度（Win64 下 8 字节）、`y` 紧随其后。测量方式不能依赖 `offsetof`（对多态/非标准布局类型是 conditionally-supported，`-Wall` 会告警），改为「成员地址 − 对象首地址」的字节差：`reinterpret_cast<char*>(&d.x) - reinterpret_cast<char*>(&d)`。
+
+标准依据：ISO/IEC 14882:2023 §[class.mem]/§[class.virtual] 只规定成员的相对顺序（声明序）与访问权限不改变布局，但 vptr 位置、填充、继承子对象偏移全属**实现定义**——跨 ABI（Itanium ABI / MS ABI）可不同，因此测量结果只对本工具链成立。这正是「不要序列化含虚函数对象」的原因之一。
+
+实现与边界：读偏移结果若发现 `x` 偏移 8、`sizeof(Base)` 16，那是本机 Itanium ABI 的常见结果 [UNVERIFIED 具体数值]；换个 ABI/对齐设置数字就变。何时失效：把该布局直接 `memcpy`/`fwrite` 出对象（二进制持久化）在 ABI 迁移后必然读错——只能序列化数据成员而非对象整体。替代方案：需要稳定二进制布局时用无虚函数的 POD 结构体 + 手动 tag（见 ch24 枚举状态码）、或明确序列化协议（练习 2 的 padding 管控同理）。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <cstddef>
+
+struct Base { virtual ~Base() = default; int x = 1; };
+struct Derived : Base { int y = 2; };
+
+int main() {
+    Derived d;
+    // x/y 相对对象首地址的字节偏移: 有 vptr 时 x 通常落在 vptr 之后
+    std::ptrdiff_t off_x = reinterpret_cast<char*>(&d.x) - reinterpret_cast<char*>(&d);
+    std::ptrdiff_t off_y = reinterpret_cast<char*>(&d.y) - reinterpret_cast<char*>(&d);
+    std::cout << sizeof(Base) << " " << sizeof(Derived) << "\n";
+    std::cout << "x@+" << off_x << " y@+" << off_y << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[class.virtual]/§[class.mem]：vptr 布局与偏移实现定义；成员按声明序排列、填充由实现决定。
+
+<span class="badge badge-exp">经验</span> 多态对象的二进制布局是「实现定义 + ABI 相关」，测量值仅是本机快照。凡是落盘/上线的结构优先用无虚函数的 POD 聚合（练习 2 用 `offsetof` 与 padding 管控），vptr 只留在进程内生命周期里（本章附录『.bss vs 栈』的 RAM 规划同源）。
+
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：SIMD/硬件对齐要求的字段布局。** 一个结构体需要把某成员按 16 字节对齐（匹配 SSE 数据类型或 DMA 描述符）。请用 `alignas(16)` 声明成员，观察其对结构体对齐与大小的影响，并与「成员按自然对齐」的普通结构对比。
+
+<details>
+<summary>答案与解析</summary>
+
+`alignas(16)` 把声明实体的对齐要求提升到 16 字节：应用到成员 `a` 时，结构体 `Aligned` 的对齐变成所有成员对齐的**最大值**（`alignas(16)` 项主导），编译器会把 `b` 放到下一个 16 字节边界、并把结构体大小补到 16 的倍数。因此 `sizeof(Aligned)` 往往显著大于成员字节和——这是显式对齐的代价，换来的是「成员地址必然 16 字节对齐」，满足 SIMD 加载/`memcpy` 对齐假设。
+
+标准依据：ISO/IEC 14882:2023 §[dcl.align]：`alignas` 可提升实体对齐（`alignof` 查询），最终对齐是各约束取大；§[basic.align] 规定对象地址按对齐值对齐，`alignof(T)` 决定成员的自然对齐。编译器插入填充把成员放到对齐边界并让 `sizeof` 成对齐倍数——这是实现行为，但各主流 ABI 一致。
+
+实现与边界：`alignas` 指定值必须是 2 的幂且不小于自然对齐；比自然对齐小则被忽略。注意练习 2 的「重排成员减 padding」与这里的「`alignas` 主动加 padding」是相反方向的两个旋钮——网络协议头要求**紧凑**，SIMD/原子类型要求**对齐**，按场景选。替代方案：`#pragma pack` 系列可压小（非标准、慎用）；对大型对齐需求更常用「结构体 `alignas(16)` + 成员按需排布」，让编译器算总账。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+```cpp
+#include <iostream>
+#include <cstddef>
+
+struct Packed {
+    char a;
+    int  b;
+};
+struct Aligned {
+    alignas(16) char a;   // 成员 16 字节对齐
+    char b;
+};
+int main() {
+    std::cout << sizeof(Packed) << " " << offsetof(Packed, b) << "\n";
+    std::cout << alignof(Aligned) << " " << sizeof(Aligned) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[dcl.align]/§[basic.align]：`alignas` 提升对齐，`alignof` 查询对齐，填充使地址与大小对齐。
+
+<span class="badge badge-exp">经验</span> 对齐与紧凑是一对矛盾：SIMD 缓冲、原子类型、DMA 描述符要 `alignas` 显式对齐；线上协议头要控 padding（练习 2）。`alignof`/`offsetof` 是排布审计的标准工具，先量后改（本章附录『.bss vs 栈』的地址带直觉）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：嵌入式固件如何规划 RAM（.bss vs 栈）

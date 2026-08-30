@@ -1109,6 +1109,70 @@ std::size_t len(const int* p)
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 一个有容量上限的环形缓冲/消息队列类，其"`size()` 永远不超过 `capacity()`"是不变量。请用 `assert` 在一个最小 `BoundedBuffer` 的**构造后与每个公开操作后**做不变量检查，说明这与 C++26 契约的 class invariant 的对应关系。
+
+<details><summary>答案与解析</summary>
+
+类不变量（class invariant）是"每个公开操作进入/离开时都必须成立"的结构性事实——例如 `size() <= capacity()`、`head != tail` 之类。工程做法是把检查收拢成一个 `check_invariant()` 私有函数，在**构造完成后**与**每个可能改变状态的公开操作结束后**调用；一旦某次操作破坏不变量，断言立刻在出错点爆炸，而不是等错误被下游放大。
+
+这与 C++26 契约（P2900）的 class invariant 机制同构：契约把不变量声明为语言特性、按构建模式统一管控；当下没有该语法时，`assert` + 统一检查点是等价且可移植的替代。注意 trade-off：检查必须能整体关掉（`NDEBUG`），因此**不变量检查里绝不能有副作用**——它只验证事实，不修数据。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <vector>
+#include <cassert>
+#include <iostream>
+class BoundedBuffer {
+    std::vector<int> data_;
+    std::size_t cap_;
+public:
+    explicit BoundedBuffer(std::size_t cap) : cap_(cap) { check_invariant(); }   // 构造后
+    void push(int v) {
+        assert(data_.size() < cap_);   // 前置：还有空间
+        data_.push_back(v);
+        check_invariant();             // 后置/不变量：操作后仍成立
+    }
+    std::size_t size() const { return data_.size(); }
+private:
+    void check_invariant() const { assert(data_.size() <= cap_); }   // 核心不变量
+};
+int main() { BoundedBuffer b(3); b.push(1); b.push(2); b.push(3); std::cout << b.size() << '\n'; }
+```
+
+<span class="badge badge-std">标准</span> 契约三要素中"类不变量"在 P2900 里与 `pre`/`post` 并列；`assert` 是当下等价的实现（release 剔除，`[assertions]`）。
+<span class="badge badge-exp">经验</span> 不变量检查点要放在**所有**公开入口，而不是"顺手"的地方——漏一个入口就等于给破坏不变量留了后门（本章练习 1/2 已确立"前置=调用方 bug、可恢复错误才抛异常"的分界，不变量是第三类：实现自身的正确性约束）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 编解码热路径里你确信 `idx < n` 恒成立（由上层契约保证），希望编译器把这条检查从生成的指令里彻底删掉。请用 C++23 `[[assume]]` 向优化器声明该不变量，并解释它为什么是把双刃剑——前提不成立即触发 UB。
+
+<details><summary>答案与解析</summary>
+
+`[[assume(expr)]]`（P1774R8）是 C++23 属性：它**不生成任何检查指令**，只是告诉优化器"expr 恒为真"，优化器可据此删除冗余分支、做更激进的常量折叠。这与 `assert`（运行期检查，`NDEBUG` 下被剔除但前提违反时仍无 UB，只是检查消失）有本质区别：`assert` 违反是"检查没了"，`[[assume]]` 违反是**未定义行为**——编译器会基于错误假设做任何优化。
+
+因此工程红线是：`[[assume]]` 只能用于**确定成立且你愿意为它承担 UB 后果**的不变量，最好由上层显式契约背书；拿不准就用 `assert` 守住、让优化器自己推断。典型场景是性能热路径里"索引已被检查过/由调用协议保证"的访存。GCC 13 起支持 `[[assume]]`（C++23 模式），与 C++26 契约在"向优化器暴露不变量"这一点上目标一致。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <cstddef>
+#include <iostream>
+// 调用方保证 idx < n（契约）；assume 只向优化器声明，不生成检查
+std::size_t fetch(const int* buf, std::size_t n, std::size_t idx) {
+    [[assume(idx < n)]];
+    return static_cast<std::size_t>(buf[idx]);
+}
+int main() { int a[4] = {10, 20, 30, 40}; std::cout << fetch(a, 4, 2) << '\n'; }
+```
+
+<span class="badge badge-std">标准</span> `[[assume]]` 于 C++23（P1774R8）引入：假设恒真，前提不成立为 UB（`[dcl.attr.assume]`）。
+<span class="badge badge-exp">经验</span> 口诀：`assert` 是"检查 + 可关"，`[[assume]]` 是"声明 + 不可违背"。把 `[[assume]]` 当优化杠杆用、把 `assert` 当正确性守门员用，二者协同（本章练习 3 的 `[[likely]]` 只是影响布局，`assume` 才真正删指令；C++26 契约的 enforce 模式可替代手工 assume）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：安全关键系统 → 契约而非异常

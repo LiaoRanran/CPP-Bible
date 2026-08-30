@@ -1290,6 +1290,73 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::max`：<https://en.cppreference.com/w/cpp/algorithm/max>；DP 思想与正确性前提见 ⑥、⑭。
 
+### 练习 4（难度 ★★）
+
+**真实场景：社交网络/迷宫里的"最短几跳"查询。** 求"从某节点到所有节点的最少中转次数"（如好友亲密度、广播跳数）——BFS 逐层扩展天然给出无权图的最短路径长度。请用邻接表 + `std::queue` 实现 BFS，输出从节点 0 到各点的最短跳数，说明为什么 BFS 先入队的节点距离一定最小、而 DFS 做不到这一点。
+
+<details><summary>答案与解析</summary>
+
+BFS 用队列按"层"推进：从起点出发，每轮从队列取出一个节点，把**首次访问**的邻居入队并记录 `dist = dist[u]+1`。因为所有边权为 1，先被访问的节点层次更浅，距离必然不大于后访问的——`d[v] < 0` 的判重同时起到"visited"与"最短性"双重作用，每个节点恰好入队一次。
+
+标准依据：BFS 最短路径性质是图论经典结论（无权图），不依赖 C++ 标准；工程载体是 `std::queue`（FIFO，见 ISO §27.9.2）与 `vector<vector<int>>` 邻接表。复杂度 O(V+E)，`queue` 操作均摊 O(1)。
+
+边界条件与失效场景：BFS 只对**无权图**给出最短跳数；带权图需 Dijkstra（练习 2）或 SPFA/Bellman-Ford。若起点到某节点不可达，其距离保持 `-1`——业务上要单独处理（如"无关系"）。内存敏感时邻接表可换成 `vector<int>` 平铺 + 偏移索引；稀疏图用邻接表、稠密图用邻接矩阵权衡。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+int main() {
+    std::vector<std::vector<int>> g{{1, 2}, {0, 3}, {0, 3}, {1, 2}};   // 无向图
+    std::vector<int> d(g.size(), -1);                                   // -1 = 未访问
+    std::queue<int> q;
+    d[0] = 0; q.push(0);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (int v : g[u])
+            if (d[v] < 0) { d[v] = d[u] + 1; q.push(v); }               // 首次访问即最短
+    }
+    for (size_t i = 0; i < d.size(); ++i)
+        std::cout << "dist(0->" << i << ")=" << d[i] << ' ';
+    std::cout << '\n';    // dist(0->0)=0 dist(0->1)=1 dist(0->2)=1 dist(0->3)=2
+}
+```
+
+<span class="badge badge-exp">经验</span> "最少步数/最短跳数/最近关系"是无权图上 BFS 的典型信号词；判重与最短性合并成一条 `if (d[v] < 0)` 是教科书写法的工程压缩。DFS 适合"是否存在路径/拓扑/回溯枚举"，BFS 适合"最短层级"——先想清楚目标再选遍历方向。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：指数递归改"记忆化"后秒回。** 斐波那契/爬楼梯/组合数这类"重叠子问题"递归，朴素实现是指数爆炸（fib(40) 约 3.3 亿次调用），DP 的第一档优化就是"记忆化"——把已算子问题的答案存下来复用。请用递归 + memo 表实现 fib(n)，把复杂度从 O(2ⁿ) 降到 O(n)，说明记忆化与"自底向上填表"（递推）的关系。
+
+<details><summary>答案与解析</summary>
+
+朴素递归 `fib(n)=fib(n-1)+fib(n-2)` 会重复计算同一个子问题：`fib(38)` 在 `fib(40)` 的左右分支各算一遍。记忆化在每次递归前查表、算完存表，使每个子问题**恰好计算一次**——调用次数从指数降为线性，空间 O(n)。它与自底向上递推是同一张 DP 表的两种填充方向：记忆化是"自顶向下"惰性填，递推是"自底向上"按序填。
+
+标准依据：DP 的"最优子结构 + 重叠子问题 + 无后效性"三前提（见本章 ⑥ 节），记忆化与滚动数组（练习 3）只是同一思想的空间变体。复杂度由"状态数 × 每状态转移代价"决定，此处为 O(n) × O(1)。
+
+边界条件与失效场景：`n` 大时 fib(n) 超出 64 位——fib(93) 已超 `long long` 上限，需大整数或换模。递归深度受栈限制（`n` 达十万级会栈溢出），此时改迭代递推。记忆化的"查表命中"依赖子问题可判别——状态空间离散、可哈希是前提，连续参数需离散化。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+long long fib(int n, std::vector<long long>& memo) {
+    if (n <= 1) return n;                 // 基准情形
+    if (memo[n] >= 0) return memo[n];     // 命中缓存：不再重复递归
+    return memo[n] = fib(n - 1, memo) + fib(n - 2, memo);   // 算完存表
+}
+int main() {
+    int n = 40;
+    std::vector<long long> memo(n + 1, -1);   // -1 = 未计算
+    std::cout << "fib(" << n << ") = " << fib(n, memo) << '\n';   // 102334155
+}
+```
+
+<span class="badge badge-exp">经验</span> "重叠子问题"是 DP 的信号词——看到指数递归先问"子问题是否重复"，是就记忆化。生产上斐波那契这类单链递推连表都不用，两个滚动变量 O(1) 空间即可；记忆化的价值在状态维度更高（二维 DP 表）时更明显。
+
 </details>
 
 ## 附录 J：算法思想选型决策流（D3 维度）

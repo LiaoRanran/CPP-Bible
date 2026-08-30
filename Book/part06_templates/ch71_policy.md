@@ -825,6 +825,58 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你要写一个容器，既支持堆存储又支持栈存储，且不付出运行期差异成本。** 请写出策略化设计：`Container<Storage>` 以"存储策略"为模板参数，经由基类混入 `get()`，演示"把变化点外提为策略"的零开销组合。
+
+<details><summary>答案与解析</summary>
+
+策略化设计（Policy-Based Design）把"可替换的行为"抽象成模板参数（策略类）。组合多个策略即组合多个能力，编译期确定、可完全内联——这正是 `std::vector` 的分配器、`std::map` 的比较器思路。
+
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+struct HeapStorage  { int* get() { return new int(0); } };
+struct StackStorage { int v = 0; int* get() { return &v; } };
+template <typename Storage>
+struct Container : Storage {
+    void show() { std::cout << *this->get() << "\n"; }
+};
+int main() { Container<StackStorage> c; c.show(); }
+```
+
+<span class="badge badge-std">标准</span> 策略化设计建立在类模板与继承之上（ISO/IEC 14882 §[temp] / §[class.derived]）；空策略借 EBO（见 ch52）混入而不增加对象尺寸。`this->get()` 延迟名字查找以支持依赖基类成员。
+
+<span class="badge badge-exp">经验</span> 策略化设计适合"正交能力组合"（存储/线程/比较）。注意策略间若共享状态需用虚拟继承（菱形时），且策略过多会让类型名冗长——权衡后将真正变化点才做成策略。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你想让一个对象同时携带"线程策略"与"存储策略"两类可替换行为。** 请写出 `Object<Threading>`：以单/多线程策略为模板参数，演示多个策略如何被独立组合，编译期决定同步开销。
+
+<details><summary>答案与解析</summary>
+
+策略可任意组合：把"线程模型"也做成策略，对象即可在"单线程（零锁）"与"多线程（加锁）"之间编译期切换。组合多个策略的本质是"多重基类混入"，每个维度独立、可正交替换。
+
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+struct SingleThreaded { void lock() { std::cout << "no-lock\n"; } };
+struct MultiThreaded  { void lock() { std::cout << "lock\n"; } };
+template <typename Threading>
+struct Object : Threading {
+    void use() { this->lock(); std::cout << "use\n"; }
+};
+int main() { Object<SingleThreaded> a; a.use(); }
+```
+
+<span class="badge badge-std">标准</span> 多重基类混入由 ISO/IEC 14882（C++23）§[class.mi] 规定；策略作为基类时结合 EBO 可零开销。`this->` 前缀用于在依赖基类中查找成员，避免模板二段式名字查找问题。
+
+<span class="badge badge-exp">经验</span> 策略化设计（Andrei Alexandrescu《Modern C++ Design》）是泛型设计的核心模式；把"运行期可配置"改为"编译期可配置"能换取极致内联。注意过多策略会让实例化组合爆炸，应有节制。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：编译期策略替代运行期虚函数

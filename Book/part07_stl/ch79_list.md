@@ -1236,6 +1236,62 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list.ops]；`std::stable_partition` 对前向迭代器（含 `list`）有链表特化路径，见 cppreference "container/list" 与 "stable_partition" 词条。
 
+### 练习 4（难度 ★★）
+
+**真实场景：LRU/任务队列里的节点搬移——要把一个节点从 A 链表搬到 B 链表，却不能有任何元素拷贝/销毁。** 日志聚合器在两条 `list` 之间转移"已处理"节点。请用 `splice` 在 O(1) 内完成搬运，并对比若用 `push_back(x)` 会发生的拷贝开销与迭代器失效。
+
+<details><summary>答案与解析</summary>
+
+`splice` 把节点从一个 list 链接到另一个 list（或本 list 内移动），只改指针、不拷贝也不移动元素本身，因此是 O(1)（仅涉及相邻节点的链接重排）；它也不会使被搬移节点之外的迭代器失效。相比之下，若先 `erase` 再 `push_back` 等价元素，会触发一次析构加一次拷贝构造，且所有迭代器需要重建——对大对象或昂贵拷贝类型是巨大浪费。
+
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <list>
+int main() {
+    std::list<int> a{1,2,3}, b{9,8};
+    auto it = a.begin(); ++it;                       // 指向 2
+    a.splice(it, b,  b.begin());                     // O(1) 把 b 的 9 移到 a 的 it 之前, 不拷贝元素
+    for (int x : a) std::cout << x << " ";           // 1 9 2 3
+    std::cout << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `splice` 是 `list`/`forward_list` 独有的 O(1) 节点转移操作；它仅使指向被转移元素的迭代器/引用保持有效（元素本身未变），复杂度见 `[list.modifiers]`。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list.modifiers]（`splice` 的 O(1) 语义与失效规则）；见 cppreference "container/list"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：边遍历边删除偶数——不能让"还在用的迭代器"失效。** 一个 `list<int>` 里要滤掉所有偶数，但若用「先存下标再删」或「erase 后还用旧迭代器」，在链表上极易出错。请用「erase 返回的下一迭代器」模式安全删除，并说明为什么 list 的迭代器稳定性让其比 vector 更不易踩坑。
+
+<details><summary>答案与解析</summary>
+
+`list` 是节点式容器：删除一个元素只影响该节点本身的前后指针，其他迭代器全部保持有效——这正是它相对 vector 的核心优势（vector 删除中间元素会让后续迭代器全部失效）。标准惯用法是 `it = lst.erase(it)`：erase 返回指向被删元素之后元素的迭代器，循环据此继续，避免悬空。对比 vector 必须用索引或小心重算 `end()`。
+
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <list>
+int main() {
+    std::list<int> l{1,2,3,4};
+    for (auto it = l.begin(); it != l.end(); ) {
+        if (*it % 2 == 0) it = l.erase(it);   // erase 仅使被删元素迭代器失效
+        else ++it;                             // 其余迭代器不受影响
+    }
+    for (int x : l) std::cout << x << " ";     // 1 3
+    std::cout << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `list::erase` 使被删元素的迭代器/引用失效，但**其他**迭代器与引用保持有效；这与 `[container.requirements]` 对节点式容器的约定一致。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[list.modifiers]（`erase` 返回后继迭代器）；§[container.requirements]（节点式容器失效表）；见 cppreference "container/list"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 list + map 实现 O(1) 命中提升的 LRU 缓存

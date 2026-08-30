@@ -1276,6 +1276,60 @@ for (int i = 0; i < n; ++i) {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：双端缓冲区的引用稳定性——在队首插入不能让既有节点的引用失效。** 一个双端任务缓冲 `deque`，多个持有元素引用的消费者在 `push_front` 后仍要安全读取旧元素。请说明 deque 在「两端」插入/删除时，既有元素的引用/指针为何仍然有效，并对比 vector 在后部扩容时引用会失效的差异。
+
+<details><summary>答案与解析</summary>
+
+deque 采用分段连续（chunk/segments）存储：元素是固定大小的块，块之间用中控数组指针连接。因此两端 `push_front`/`push_back`/`pop_front`/`pop_back` 只会影响被插入/删除的那个元素所在的块，既有的其他元素对象在内存中不会搬迁，其引用/指针保持有效；只有被删元素自身的引用才失效。这与 vector 相反：vector 后端扩容会把全部元素整体搬迁到新缓冲，所有引用/指针一并失效。
+
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <deque>
+int main() {
+    std::deque<int> d{10, 20, 30};
+    int& mid = d[ 1];                 // 引用指向既有元素(值 20)
+    d.push_front(5);                 // 前端 O(1) 插入
+    std::cout << "mid still = " << mid << "\n";   // 元素未搬迁, 引用仍有效: 20
+    // 与 vector 不同: vector 扩容会搬迁全部元素, 引用失效
+}
+```
+
+<span class="badge badge-std">标准</span> deque 保证：除被插入/删除的元素外，两端操作的引用与指针保持有效（`[deque.modifiers]` 的失效规则）；随机访问 `operator[]` 仍为 O(1)。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque.modifiers]（两端操作的迭代器/引用失效规则）；§[deque]（分段连续概述）；见 cppreference "container/deque"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：热路径上 deque vs vector 的随机访问取舍。** 既要随机访问（O(1)），又要两端 O(1) 增删。请指出 deque 的 `operator[]` 同样是 O(1)，但为什么在大尺寸、缓存敏感的场景里它比不上 vector 的连续内存。
+
+<details><summary>答案与解析</summary>
+
+两者 `operator[]` 都是 O(1) 随机访问，但成本模型不同：vector 是单一连续缓冲，`[]` 只是一次指针偏移加一次访存，缓存友好；deque 要先算出"第 i 个元素落在哪个块、块内偏移"，存在一次额外的间接寻址（通过中控数组找到对应块），且各块在堆上分散，缓存局部性明显弱于 vector。因此"元素数很少或需要频繁两端增删"用 deque，"纯随机访问且追求极致缓存"用 vector。
+
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <deque>
+#include <vector>
+int main() {
+    std::deque<int> d(1000, 7);
+    std::vector<int> v(1000, 7);
+    // 两者 operator[] 都是 O(1); deque 内部是分块(非单一连续), 缓存局部性弱于 vector
+    std::cout << d[0] << v[0] << "\n";   // 77
+}
+```
+
+<span class="badge badge-std">标准</span> `deque::operator[]` 复杂度 O(1)，但实现上需两次寻址（块表 + 块内偏移），属"逻辑 O(1)、常数更大"，附录 D5 的基准可作量级参考。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[deque]（随机访问与 `operator[]`）；§[container.requirements]（复杂度契约）；见 cppreference "container/deque"。
+
+</details>
+
 ## 附录：用法演绎 — 生产者-消费者双端缓冲的选型
 
 > 场景：一个日志/任务队列，头部被频繁 `pop`、尾部被频繁 `push`，元素生命周期短。

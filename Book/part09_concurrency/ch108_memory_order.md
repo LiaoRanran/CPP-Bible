@@ -1064,6 +1064,85 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。无锁栈的内存序与回收见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
+### 练习 4（难度 ★★★）
+
+**真实场景：纯计数只用 relaxed——它到底"保证"了什么。** 很多人误以为 `relaxed` 会丢更新或乱序导致总数不对；实际上对**单一原子变量**的 `fetch_add`，`relaxed` 依然保证"每个线程的累加都不丢失"——因为 RMW 的原子性独立于内存序。请用 4 个线程各 `fetch_add(relaxed)` 共 200000 次验证总数为 800000，并解释 relaxed 不保证的是什么（跨变量的顺序）。
+
+<details><summary>答案与解析</summary>
+
+`fetch_add` 是原子读-改-写：无论配什么内存序，"读旧值、加一、写回"都在一个不可分割的操作里，两个线程并发 RMW 会依次串行化——所以 N 次 `fetch_add(1)` 的净效果恒为 +N，这是 `total == 800000` 成立的原因。`relaxed` 承诺：单一原子变量的**修改顺序（modification order）**是全体操作的总序，任何线程读到的都是这个总序中的某个快照。
+
+标准依据：原子对象的每个操作都属于其"修改顺序"（见 ISO §32.4.3（[atomics.order]））；RMW 总是读取修改顺序中的上一个值。`relaxed` 不参与跨线程 happens-before、不提供跨变量顺序——它只保证"本变量的单变量一致 + 原子性"。这正是它零额外指令的原因。
+
+边界条件与失效场景：若计数器还要"配合发布其他数据"（如写入 payload 后再递增序号），relaxed 不够——读者可能看到新序号却读到旧 payload，需 release/acquire（练习 1）。纯统计（QPS、命中数）只用 relaxed 完全正确；要"读的时候同时保证其他变量"才升级内存序。别把"原子性"和"内存序"混为一谈。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
+int main() {
+    std::atomic<unsigned long long> total{0};
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 4; ++i)
+        ts.emplace_back([&]{ for (int j = 0; j < 200000; ++j)
+                                total.fetch_add(1, std::memory_order_relaxed); });
+    for (auto& t : ts) t.join();
+    std::cout << "total=" << total.load() << '\n';    // 800000，一个不丢
+    return total.load() == 800000 ? 0 : 1;
+}
+```
+
+<span class="badge badge-std">标准</span> `relaxed` 操作属于修改顺序总序，RMW 读到的必是序列前值（[atomics.order]）；"N 次 fetch_add(1) 恒等于 +N"由 RMW 原子性保证，与内存序选择无关。
+
+<span class="badge badge-exp">经验</span> "只要最终计数正确"就用 relaxed 是 C++ 并发的常识；若反而用了 seq_cst，在 x86 上指令几乎不变、在 ARM 上会无谓付出 `dmb`。性能敏感的计数器先 relaxed，等 profiling 证明需要更强序再升——内存序是约束不是保险。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：流水线 worker 链的"逐级传递"必须靠 happens-before。** A 处理完数据交给 B、B 处理完交给 C——每一级交接都用 release/acquire 配对，同步关系就会**传递**：A 的写对 C 也可见，尽管 A 和 C 之间没有直接同步。请用两个 `stage` 标志实现 A→B→C 三级流水，说明 happens-before 的传递性（transitivity）为什么让 C 必然读到完整数据。
+
+<details><summary>答案与解析</summary>
+
+若线程 B 的 `stage.load(acquire)` 读到线程 A 的 `stage.store(release)` 所写的值，则二者 synchronizes-with，进而 A 在此前的所有写在 B 的 acquire load 之后对 B 可见（happens-before）。由于 happens-before 是**传递关系**：A hb B 且 B hb C 则 A hb C——C 即使从不直接与 A 同步，也能看到 A 的全部写。这就是"链式传递"的机制。
+
+标准依据：synchronizes-with 与 happens-before 的传递性见 ISO §32.4.1.1（[intro.races]）——"若 A 与 B 同步、B 与 C 同步，则 A 先发生于 C"。数据流经中间节点时，中间节点必须"先读再写"形成依赖链，且每一环都正确配对 release/acquire。
+
+边界条件与失效场景：传递链条上任何一环破坏（如 B 用了 relaxed 读 stage、或 B 读完直接拷贝旧值）都会切断同步——C 将看到不完整数据。若链很长，故障定位成本上升：可借助"每级都带版本号"（见 ch111 tagged pointer）把"读到哪一版"显式化。对深度多级流水，C++26 `std::execution` 或显式依赖 DAG 是更可控的替代。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <iostream>
+int main() {
+    std::atomic<int> stage{0};        // 0=未开始, 1=A 完成, 2=B 完成
+    std::atomic<int> payload{0};
+    std::thread tA([&]{
+        payload.store(7, std::memory_order_release);
+        stage.store(1, std::memory_order_release);      // A 发布
+    });
+    std::thread tB([&]{
+        while (stage.load(std::memory_order_acquire) < 1) {}
+        int v = payload.load(std::memory_order_relaxed);   // 必见 7（A hb B）
+        payload.store(v + 1, std::memory_order_release);   // 8，B 再发布
+        stage.store(2, std::memory_order_release);
+    });
+    std::thread tC([&]{
+        while (stage.load(std::memory_order_acquire) < 2) {}
+        std::cout << "final=" << payload.load(std::memory_order_acquire) << '\n';  // 8
+    });
+    tA.join(); tB.join(); tC.join();
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> happens-before 的传递性（A hb B 且 B hb C ⇒ A hb C）是 [intro.races] 的传递闭包定义；每级 release/acquire 配对建立一环 synchronizes-with。
+
+<span class="badge badge-exp">经验</span> 多级流水/生产者链是传递性最典型的工程场景；中间节点务必"先消费再发布"，且内部读 payload 即便用 relaxed 也已安全——因为同步由外层 stage 建立。写成函数/类封装每级交接，比散落的 `while` 循环更不易断链。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

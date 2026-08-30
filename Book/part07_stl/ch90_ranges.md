@@ -1314,6 +1314,71 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：在"不拷贝、不分配"的前提下筛选并转换数据。** 你有一个大 `vector`，只想对偶数求平方并输出，又不想先建一个中间容器。请用 `std::views::filter` + `std::views::transform` 组成惰性管道，说明为什么它没有物化副本。
+
+<details><summary>答案与解析</summary>
+
+`views::filter` 与 `views::transform` 都是"视图"（view）：它们不拥有元素、不复制数据，只持有"底层范围 + 计算规则"。过滤和映射推迟到迭代器解引用那一刻逐元素完成，因此整条管道是 O(n) 单次遍历、零额外内存。惰性意味着不访问的元素根本不会被计算，适合"先筛选后转换"的流式处理；与之对照，`std::copy_if` + 新容器会强制物化。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+
+int main() {
+    std::vector<int> v{1,2,3, 4,5,6};
+    auto even_sq = v
+        | std::views::filter([](int x){ return x % 2 == 0; })
+        | std::views::transform([](int x){ return x * x; });
+    for (int y : even_sq) std::cout << y << ' ';  // 4 16 36
+    std::cout << '\n';
+}
+```
+
+<span class="badge badge-std">标准</span> §[range.adaptors] 定义 `filter` 与 `transform` 等视图；视图满足 `view` 概念（O(1) 构造/拷贝、不持有元素）。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[range.adaptors]；惰性求值见 cppreference "ranges/filter_view" 与 "ranges/transform_view"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：取前 N 个满足条件的元素落盘。** 流式日志里你只要前 3 条匹配的告警，多出的不要，且希望结果落到一个 `vector` 里供后续处理。请用 `views::take` 截断，并用 `std::ranges::copy` 把结果写入容器，说明 `take` 的提前停止语义。
+
+<details><summary>答案与解析</summary>
+
+`views::take(n)` 产生至多 n 个元素的子视图，底层迭代器到达 n 或底层结束时即停——它不会遍历整个范围，因此配合 `ranges::copy` 写入 `vector` 时，只物化真正需要的元素。这正是"惰性 + 提前停止"的价值：数据集很大时，后半部分根本不被访问。注意 `take` 是 O(1) 构造、O(n) 访问，且不改变元素所有权。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+#include <iterator>
+#include <algorithm>   // std::ranges::copy 声明于此（<ranges> 不含算法）
+
+int main() {
+    std::vector<int> v{1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> out;
+    auto r = v
+        | std::views::filter([](int x){ return x % 2; })     // 奇数
+        | std::views::transform([](int x){ return x * x; })  // 平方
+        | std::views::take(3);                               // 只要前 3
+    std::ranges::copy(r, std::back_inserter(out));
+    for (int y : out) std::cout << y << ' ';     // 1 9 25
+    std::cout << '\n';
+}
+```
+
+<span class="badge badge-std">标准</span> §[range.take] 定义 `take` 视图；`ranges::copy` 见 §[alg.copy]，按输入范围逐元素写入输出迭代器。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[range.adaptors]；截断语义见 cppreference "ranges/take_view"。
+
+</details>
+
 ## 附录 D4：std::ranges 视图 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
 
 Ranges 视图的核心工程价值是「零拷贝 + 惰性求值」：视图对象本身不拥有、不复制元素，只持有"底层视图 + 计算规则"；变换与过滤推迟到迭代器解引用/递增的那一刻才逐元素执行。本附录从 libstdc++ 15.3.0 真实源码印证这一模型。

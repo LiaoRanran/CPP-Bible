@@ -878,6 +878,61 @@ int main() { foo(1); foo(1.0); }
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你想让 `f` 只对整型或只对浮点可见，且不匹配其他类型（编译期拒绝）。** 请写出 SFINAE：用 `std::enable_if` 给两个重载分别加"积分/浮点"约束，演示"替换失败不是错误"如何静默淘汰不匹配的重载。
+
+<details><summary>答案与解析</summary>
+
+SFINAE（Substitution Failure Is Not An Error）：模板实参替换若导致无效类型，该候选被静默丢弃而非硬错误。配合 `std::enable_if`，可把"类型不满足"转成"该重载不存在"，从而按类型分流。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+template <typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
+void f(T) { std::cout << "integral\n"; }
+template <typename T, std::enable_if_t<std::is_floating_point_v<T>, int> = 0>
+void f(T) { std::cout << "floating\n"; }
+int main() { f(1); f(1.0); }
+```
+
+<span class="badge badge-std">标准</span> SFINAE 由 ISO/IEC 14882（C++23）§[temp.deduct] 规定：替换期的失败只移除候选。`std::enable_if` 在其 `::type` 不存在时导致替换失败，从而淘汰该模板。
+
+<span class="badge badge-exp">经验</span> SFINAE 擅长"按能力分流"，但错误信息较晦涩。C++20 Concepts（见 ch67）可读性更好；不过理解 SFINAE 仍是读懂标准库与旧代码的前提。注意"硬错误"（如函数体内错误）不会触发 SFINAE。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你想探测某个类型是否"拥有 `size()` 成员"，而不想枚举每种类型。** 请写出 `void_t` 探测惯用法：`HasSize<T>` 主模板为 `false_type`，特化 `HasSize<T, void_t<decltype(declval<T>().size())>>` 为 `true_type`。
+
+<details><summary>答案与解析</summary>
+
+`std::void_t<...>` 把任意一组表达式坍缩成 `void`。若 `decltype(declval<T>().size())` 合法（即 `T` 有 `size()`），特化被启用为 `true_type`；否则特化替换失败、退回主模板 `false_type`——这就是编译期"能力探测"。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <string>
+template <typename T, typename = void>
+struct HasSize : std::false_type {};
+template <typename T>
+struct HasSize<T, std::void_t<decltype(std::declval<T>().size())>>
+    : std::true_type {};
+int main() {
+    std::cout << HasSize<int>::value << " "
+              << HasSize<std::string>::value << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `std::void_t` 由 ISO/IEC 14882（C++23）§[meta.trans.other] 规定；它是 SFINAE 探测的简洁封装，被标准库 `std::is_pointer` 等大量使用。
+
+<span class="badge badge-exp">经验</span> `void_t` 是实现"编译期概念"（concepts 之前）的基石；它能探测成员、嵌套类型、运算符等。一旦 C++20 可用，多数 `void_t` 探测可被 `requires` 表达式替代，但旧代码仍大量存在。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：SFINAE 是"软失败"，体内错误是"硬错误"

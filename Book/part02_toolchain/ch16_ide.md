@@ -1009,6 +1009,61 @@ int main() {
 
 <span class="badge badge-ref">引用</span> Language Server Protocol 规范（https://microsoft.github.io/language-server-protocol/ ）定义 rename/refactor 等基于 AST 的操作；clangd（https://clangd.llvm.org/ ）据此提供安全的 extract-function / rename。
 
+### 练习 4（难度 ★★）
+
+**真实场景：IDE/LSP 要给你"精确跳转与补全"，前提是编译信息真实。** 你写诊断日志想带上"当前文件:行号"，但不想用 `__FILE__`/`__LINE__` 的 C 宏写法。请用 C++20 的 `std::source_location` 取编译期位置信息，并说明它为什么比宏更适合被 IDE/静态分析工具消费。
+
+<details><summary>答案与解析</summary>
+
+`std::source_location` 把"文件/行/列/函数"封装成类型，可作为默认实参在函数签名里传播，比 `__FILE__`/`__LINE__` 更易被工具链与 IDE 解析。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <source_location>
+
+void log(std::source_location loc = std::source_location::current()) {
+    std::cout << loc.file_name() << ':' << loc.line() << '\n';
+}
+
+int main() {
+    log();
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++20 §[support.source] 引入 `std::source_location`，其 `current()` 在调用点求值；它是类型化的，优于预处理宏的字符串/整数碎片。
+
+<span class="badge badge-exp">经验</span> 现代 IDE/clangd 这类工具依赖精确的类型与位置信息；用标准设施（而非宏）表达源码元数据，能让跳转、补全、诊断更可靠。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：IDE 满屏 "unused variable" 警告，但你确实想留着那个变量给调试。** 你不想全局关警告（会漏掉真问题），于是用标准属性只压制这一个。请用 `[[maybe_unused]]` 演示精准抑制，并说明它和 `[[nodiscard]]` 在静态分析里的不同角色。
+
+<details><summary>答案与解析</summary>
+
+`[[maybe_unused]]` 向编译器/IDE 声明"此实体可能不被使用"，只压制该符号的未用告警；与 `[[nodiscard]]`（强制调用方处理返回值）方向相反，二者都是标准属性，跨工具链一致。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+[[maybe_unused]] int debug_probe = 1;
+
+int main() {
+    std::cout << "ok\n";
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++17 §[dcl.attr.unused] 引入 `[[maybe_unused]]`；它作用于变量/函数/类型，是编译期属性而非运行期行为。
+
+<span class="badge badge-exp">经验</span> 精准压制比 `-Wno-*` 全局屏蔽更安全；IDE 与 clang-tidy 都尊重该属性，可避免"为消除警告而删代码"这种破坏性行为。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 .clang-format 统一团队风格

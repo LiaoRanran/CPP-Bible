@@ -1857,6 +1857,75 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：固定大小块的高频复用。** 一个网络服务反复分配/释放同尺寸的 `Packet`（80 字节内）。请用 `std::pmr::unsynchronized_pool_resource` 把这类同尺寸块的分配/释放收敛到池内复用，并说明它与 `monotonic_buffer_resource` 的核心差别。
+
+<details>
+<summary>答案与解析</summary>
+
+`unsynchronized_pool_resource` 按块尺寸分桶（每个尺寸一组空闲块链表），`allocate` 优先复用已释放块，从根资源（默认 new/delete）只做一次性批量申请；`deallocate` 把块挂回桶，不再立刻还给系统。因此「反复分配/释放同尺寸对象」变成常数级操作，且不同尺寸各自成桶、互不干扰——这正是 ch44 固定块池的 PMR 化（本章练习 3 的 reserve 同理：减少系统分配次数）。
+
+标准依据：ISO/IEC 14882:2023 §[mem.res.pool]（`unsynchronized_pool_resource`/`synchronized_pool_resource` 的分桶复用语义）与 §[mem.pol.allocator]（`std::pmr::vector` 经 `polymorphic_allocator` 把分配转发给 resource）。`monotonic_buffer_resource` 只会向上分配（从不回收单个块、直到整体 release），适合一次性临时区；pool 资源支持真正的释放复用。
+
+实现与边界：名字里的 `unsynchronized` 表示**线程不安全**——多线程用同一个池要加锁或换 `synchronized_pool_resource`；池的尺寸桶有上限，超大块仍委托上游。何时失效：跨线程并发分配/释放、或块尺寸分散到几乎没有复用率时，池收益消失。替代方案：单次批量临时区用 `monotonic`（练习 1）；长期同尺寸复用用 pool；进程级跨线程用 synchronized 版本。
+
+> **示例 67** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <memory_resource>
+#include <vector>
+
+int main() {
+    std::pmr::unsynchronized_pool_resource pool;
+    std::pmr::vector<int> v(&pool);
+    for (int i = 0; i < 100; ++i) v.push_back(i);
+    std::cout << v.size() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[mem.res.pool]：pool 资源按尺寸分桶、复用已释放块；`unsynchronized` 不提供线程同步。
+
+<span class="badge badge-exp">经验</span> 「同尺寸高频复用」是池化最优场景：pool 资源把分配降为常数级、把碎片摊到尺寸桶内。三选一：一次性临时区→monotonic（练习 1），长期同尺寸→pool，线程间共享→synchronized pool 或加锁（ch44 的固定块池是手写版对照）。
+
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：resource 与容器谁先销毁。** PMR 容器持有 resource 的指针，resource 在容器销毁前被析构会发生什么？请写出「resource 先创建、容器先析构」的正确顺序，并说明顺序反了的后果。
+
+<details>
+<summary>答案与解析</summary>
+
+`std::pmr::vector` 通过 `polymorphic_allocator` 保存 resource 的**指针**，容器本身不拥有 resource——因此必须保证「使用它的容器先销毁，resource 后销毁」。正确顺序如代码所示：先创建 `mr`，块作用域内创建 `v(&mr)` 并操作，作用域结束 `v` 先析构（归还/释放块到 `mr`），随后 `mr` 析构（释放整块缓冲给上游）。反序则容器析构时访问已销毁的 resource → 悬垂指针 → 未定义行为。
+
+标准依据：ISO/IEC 14882:2023 §[mem.pol.allocator]：`polymorphic_allocator` 存储 `memory_resource*` 而非所有权；§[res.on.aliasing] 类规则要求 resource 存活期覆盖所有使用它的分配器/容器。这是「RAII 所有权」与「观察者引用」的区别：resource 是被观察对象，不是被容器拥有的子对象。
+
+实现与边界：把 `mr` 声明在更大作用域（如成员、`main` 顶层）即可免疫；匿名块内的顺序错误是高频 bug。何时失效：容器作为类成员、resource 也是成员时，析构顺序按成员声明逆序——先声明的后析构，要按「resource 声明在前、容器声明在后」排成员（后声明的先析构）。替代方案：PMR 容器与 resource 同生命周期最省心；`monotonic_buffer_resource` 建议传栈上缓冲（练习 1）时同样遵守此序。
+
+> **示例 68** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+```cpp
+#include <iostream>
+#include <memory_resource>
+#include <vector>
+
+int main() {
+    std::pmr::monotonic_buffer_resource mr;      // ① 先创建 resource
+    {
+        std::pmr::vector<int> v(&mr);            // ② 容器引用 resource
+        for (int i = 0; i < 10; ++i) v.push_back(i);
+        std::cout << v.size() << "\n";           // 容器仍存活, resource 可用
+    }                                            // ③ 容器先析构
+    std::cout << "resource survives container\n"; // ④ resource 最后析构
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[mem.pol.allocator]：容器经指针引用 resource，不拥有它；resource 必须活得比容器长。
+
+<span class="badge badge-exp">经验</span> PMR 的规则一句话：**resource 是观察者引用的被观察对象，先创建、后销毁**。成员场景按声明逆序自动满足「resource 声明在前」；块作用域场景把 resource 放外层。这条与「容器持有 allocator 值」的传统 STL 有区别，迁移时最容易踩（本章附录『pmr 池化降延迟』的临时容器都在同一块作用域，天然安全）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：高频临时容器 → pmr 池化降延迟

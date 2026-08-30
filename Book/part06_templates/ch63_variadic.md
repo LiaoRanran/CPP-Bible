@@ -985,6 +985,59 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你需要一个能接收任意个数、任意类型实参的打印函数。** 请写出递归式变参模板 `print(first, rest...)`：用一个终止重载收尾，逐个打印元素，演示参数包如何逐层展开。
+
+<details><summary>答案与解析</summary>
+
+变参模板把"参数包"作为编译期序列；递归展开时，每次把首元素拆出，剩余包继续递归，直到空包命中终止重载。这是 C++11 风格的经典写法，`sizeof...` 还能在编译期取包大小。
+
+> **示例 86** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+void print() { std::cout << "\n"; }
+template <typename T, typename... Ts>
+void print(T first, Ts... rest) {
+    std::cout << first << " ";
+    print(rest...);
+}
+int main() { print(1, 2.0, "three"); }
+```
+
+<span class="badge badge-std">标准</span> 变参模板由 ISO/IEC 14882（C++23）§[temp.variadic] 规定；`Ts...` 是类型包，`rest...` 是值包，包展开（pack expansion）在编译期实例化各层。
+
+<span class="badge badge-exp">经验</span> 递归展开需明确的终止重载（空包），否则无限实例化。现代代码更常用折叠表达式（见 ch64）替代手写递归——更短、零递归深度。参数包适合"类型/数量都未知"的泛型场景。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你需要一个编译期就知道长度的容器，例如一个 `Count<Ts...>` 或编译期维度查询。** 请写出 `sizeof...` 的用法：统计参数包元素个数，并演示它和 `constexpr` 函数从包取大小。
+
+<details><summary>答案与解析</summary>
+
+`sizeof...(Pack)` 在编译期返回包中的元素个数，结果本身是常量表达式，可用于数组维度、`static_assert`、模板 NTTP 等。`constexpr` 变参函数同样能在编译期累加点滴——二者都让"数量"成为编译期信息。
+
+> **示例 87** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename... Ts>
+struct Count { static const int value = sizeof...(Ts); };
+template <typename... Ts>
+constexpr int count_of() { return sizeof...(Ts); }
+int main() {
+    std::cout << Count<int, double, char>::value << " "
+              << count_of<int, long, float, bool>() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `sizeof...` 由 ISO/IEC 14882（C++23）§[expr.sizeof] 规定，结果为 `std::size_t` 类型的常量表达式；它与普通 `sizeof` 不同，专用于参数包。
+
+<span class="badge badge-exp">经验</span> `sizeof...` 是"编译期计数"的最直接手段，常用于 SFINAE/概念约束（如"至少两个参数"）。它和折叠表达式、`std::tuple` 配合，能在编译期完成大量维度计算。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：递归展开必须有 base case

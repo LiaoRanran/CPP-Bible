@@ -1334,6 +1334,68 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：在取消发生时立即执行一段清理逻辑。** 你持有别人的 `stop_token`，希望在取消信号到达时同步触发回调（而非自己轮询）。请用 `std::stop_callback` 把清理函数注册到 `stop_token` 上，并说明它和轮询 `stop_requested()` 的区别。
+
+<details><summary>答案与解析</summary>
+
+`std::stop_callback(token, fn)` 把 `fn` 注册到 token 关联的停止状态上：一旦 `request_stop()` 被调用，回调立即执行（若已停止则构造时立即执行）。它把"轮询式"的 `while(!stop_requested())` 升级为"事件式"回调，适合需要在取消瞬间立刻释放资源/通知第三方的场景。回调在发出停止信号的线程中同步执行，要注意避免死锁。
+
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <stop_token>
+
+int main() {
+    std::stop_source src;
+    std::stop_token tok = src.get_token();
+    std::stop_callback cb(tok, []{ std::cout << "stop requested\n"; });
+    src.request_stop();                     // 触发已注册回调
+    std::cout << "done\n";
+}
+```
+
+<span class="badge badge-std">标准</span> §[thread.stop.callback] 定义 `stop_callback`；它与 `stop_source`/`stop_token` 共享同一停止状态。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[thread.stoptoken]；事件式取消见 cppreference "stop_callback"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：后台线程长期运行，需要被外部"协作式"中断而不靠粗暴终止。** 你用 `std::jthread` 跑一个循环任务，`jthread` 自带 `stop_token` 与析构自动 join；请用 `stop_token::stop_requested()` 在循环里协作式轮询退出，并从外部 `request_stop()` 广播停止。
+
+<details><summary>答案与解析</summary>
+
+`std::jthread` 与普通 `thread` 不同：它把 `stop_token` 作为首个参数传给可调用对象，并在析构时自动 `request_stop()` + `join()`，避免忘了 join 导致 `terminate`。循环任务应周期性调用 `stop_requested()` 主动让出，而非被强制杀死——这是协作式取消（cooperative cancellation）的核心：只有任务自己检查取消点并安全退出，才能正确释放资源。`sleep_for` 小步休眠能让退出更及时。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <thread>
+#include <stop_token>
+#include <chrono>
+
+int main() {
+    std::jthread worker([](std::stop_token st) {
+        while (!st.stop_requested()) {             // 协作式轮询
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        std::cout << "clean exit\n";
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    worker.request_stop();                          // 通过内部 stop_source 广播
+    // jthread 析构自动 join，无需手动
+}
+```
+
+<span class="badge badge-std">标准</span> §[thread.jthread] 规定 `jthread` 析构时调用 `request_stop()` 并 `join`；`stop_token` 见 §[thread.stoptoken]。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[thread.jthread]；协作取消模式见 cppreference "jthread"。
+
+</details>
+
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — std::stop_token 协作取消
 
 > 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `stop_token`。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。

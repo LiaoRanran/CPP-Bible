@@ -2110,6 +2110,77 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：不期望异常路径的分配。** 一个嵌入式/低延迟函数用 `new` 分配临时缓冲，但不想让 `bad_alloc` 在热路径上抛异常。请用 `new (std::nothrow)` 让失败时返回 `nullptr` 而不是抛异常，并说明这两种失败模型的取舍。
+
+<details>
+<summary>答案与解析</summary>
+
+普通 `new` 分配失败抛 `std::bad_alloc`（§[new.delete.single]），迫使调用方要么被异常打断、要么包 `try/catch`；`new (std::nothrow)` 是标准库提供的放置形式，失败时返回 `nullptr`——把失败降级为「可检查的返回值」。对不启用异常（`-fno-exceptions`）的嵌入式构建，或「失败就跳过本次请求」的逻辑，nothrow 形态更贴合控制流。
+
+标准依据：ISO/IEC 14882:2023 §[new.delete.nothrow]：nothrow 版本的 `operator new` 分配失败调用 new-handler（若有）后返回 `nullptr` 而非抛异常；对应 `delete` 用普通形式即可（`delete` 对 nothrow 分配也合法，§[expr.delete]）。
+
+实现与边界：nothrow 只影响「分配失败」的表现，不影响后续——拿到非空指针后一切照旧；但「返回空指针」也需要你记得检查，忘了检查就是解引用空指针 UB。何时失效：现代容器（`vector`/`make_unique`）内部仍走抛异常路径，nothrow 只管你手写的裸 `new`。替代方案：容器/智能指针一律不用裸 `new`；需要「失败可接受」的分配用 `nothrow` + 显式判空，或用可选容器（`std::optional` 不涉及分配）。
+
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <new>
+
+int main() {
+    int* p = new (std::nothrow) int(42);
+    if (!p) { std::cout << "allocation failed\n"; return 1; }
+    std::cout << *p << "\n";
+    delete p;
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[new.delete.nothrow]：nothrow 分配失败返回 `nullptr`，不抛 `bad_alloc`。
+
+<span class="badge badge-exp">经验</span> 「抛异常 vs 返回 nullptr」是失败模型之争：前者适合「失败即中止本层」，后者适合「失败可旁路」。现代 C++ 里裸 `new` 本应罕见，nothrow 只在无异常构建或热路径兜底时登场；其余情况让 `make_unique`/容器替你处理（本章附录『new/delete 配对』讲的是对称问题：分配与释放配对）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：在原始存储上构造对象数组。** 一块 `unsigned char buf[2 * sizeof(Obj)]` 要在不分配堆的前提下放置两个 `Obj`（对象池/共享内存）。请用 `std::construct_at` 逐个构造、用 `std::destroy_at` 逆序析构，说明为什么不能用「`placement new[]` 一把梭」。
+
+<details>
+<summary>答案与解析</summary>
+
+`construct_at(arr + i, args)` 在第 `i` 个槽位就地构造 `Obj`，`destroy_at(arr + i)` 显式结束其生命周期；循环两个槽位即完成数组的「放置」。这里**绝不建议**用 `new (buf) Obj[2]`：placement new 对数组的重载实现里，编译器可能为每个元素额外存一个「元素计数」头（实现细节），且要求类型可用默认构造——元素非默认构造/布局敏感时直接踩坑，语义不透明。
+
+标准依据：ISO/IEC 14882:2023 §[expr.new] 规定 placement new 只负责「在给定地址构造」，`new[]` 数组形态的布置计数是实现细节（§[class.free]/[new.delete.placement]）；`std::construct_at`/`std::destroy_at`（§[specialized.construct]/[specialized.destroy]）提供显式、可配对的单元素生命周期控制——数组场景「逐元素循环」是标准推荐形态。
+
+实现与边界：`Obj` 有非平凡构造/析构，漏掉任一 `destroy_at` 都是泄漏（或双重析构）；逆序析构符合「后构造先析构」惯例但不是强制的。何时失效：若 `Obj` 平凡析构，`destroy_at` 可省但写了也无害。替代方案：标准容器已做全生命周期管理，手写放置数组只应出现在「共享内存 / 固定存储 / 对象池」——那时 `construct_at`/`destroy_at` 循环是唯一可移植写法（ch28 练习 4 的单对象版同源）。
+
+> **示例 64** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Obj {
+    int id;
+    explicit Obj(int v) : id(v) { std::cout << "ctor " << id << "\n"; }
+    ~Obj() { std::cout << "dtor " << id << "\n"; }
+};
+
+int main() {
+    alignas(Obj) unsigned char buf[2 * sizeof(Obj)];
+    Obj* arr = reinterpret_cast<Obj*>(buf);
+    for (int i = 0; i < 2; ++i) std::construct_at(arr + i, i + 1);
+    for (int i = 1; i >= 0; --i) std::destroy_at(arr + i);
+    std::cout << "done\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[specialized.construct]/§[specialized.destroy]：`construct_at`/`destroy_at` 显式开始/结束对象生命周期。
+
+<span class="badge badge-exp">经验</span> 放置数组用「逐元素 construct/destroy」而非 `placement new[]`：前者可移植、可控制、可审计，后者带着实现细节的数组计数头（本章练习 2 的 placement new 单对象版 + ch44 对象池实践都遵循同一原则）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：new / delete 必须配对，数组用 delete[]

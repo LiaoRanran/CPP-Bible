@@ -1668,6 +1668,73 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你写一个零拷贝的"视图"类型，需要确认"基类子对象与派生对象起始地址重合"这一假设是否总能成立。** 请用代码实证：单继承下派生对象地址是否等于其基类子对象地址；并演示 `static_cast` 在基类/派生间的合法转换，以及为什么 `offsetof` 能探测成员偏移而 `reinterpret_cast` 跨界转换是未定义行为。
+
+<details><summary>答案与解析</summary>
+
+对象模型规定：单继承中，派生类对象与其首个基类子对象（非虚拟）共享同一起始地址；标准只给出最小布局保证——同一对象的不同子对象可以有不同地址，但"基类子对象地址 == 完整对象地址"在单继承下成立。因此 `static_cast<Base*>(derived_ptr)` 是良定义的，且结果与 `&derived` 相同。
+
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <cstddef>
+#include <iostream>
+
+struct B { int b = 1; };
+struct D : B { int d = 2; };
+
+int main() {
+    D d;
+    B* pb = &d;                       // static_cast 合法：基类子对象指针
+    std::cout << "offsetof(D, d) = " << offsetof(D, d) << "\n";
+    std::cout << "基类子对象地址 == 派生对象地址? "
+              << (static_cast<void*>(pb) == static_cast<void*>(&d)) << "\n";
+    std::cout << "pb->b = " << pb->b << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882（C++23）对对象布局仅作最小约束；单继承下派生类对象与其首个非虚拟基类子对象通常拥有相同地址。`offsetof` 是标准提供的、可移植的成员偏移探测手段；`reinterpret_cast` 仅在"指向标准布局对象"或密切相关类型间才有良定义语义。
+
+<span class="badge badge-exp">经验</span> 切勿用 `memcpy`/`reinterpret_cast` 在无关类型间搬运对象——这绕过布局承诺，只有标准布局类型才保证首成员地址重合。需要"基类↔派生"转换时只用 `static_cast`（无运行时检查）或 `dynamic_cast`（带运行时检查，仅多态）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你在 profiling 中发现虚调用比预期慢，想直观区分"虚函数间接分派"与"编译期静态绑定"到底差在哪。** 请写出一段代码：一个有虚函数的类层次，通过基类指针触发动态分派；再说明 vtable 指针如何使多态对象多出一份指针开销，以及哪些手段能让编译器消除这层间接。
+
+<details><summary>答案与解析</summary>
+
+虚函数通过 vtable 间接分派：多态对象携带一个指向 vtable 的指针（vptr），调用先取 vptr 再间接跳转；非虚调用在编译期直接绑定目标。动态分派是语义保证，而 vtable 是典型实现——标准只规定"动态分派"的结果，未规定必须用 vtable。
+
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+struct Animal {
+    virtual const char* sound() const { return "..."; }
+    int id = 0;
+};
+struct Dog : Animal {
+    const char* sound() const override { return "woof"; }
+};
+
+int main() {
+    Dog d;
+    Animal* p = &d;
+    std::cout << p->sound() << "\n";      // 动态分派到 Dog::sound
+    std::cout << "Animal 至少含一个指针大小的额外开销 : "
+              << (sizeof(Animal) >= sizeof(void*)) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> 虚函数与动态分派语义由 ISO/IEC 14882（C++23）规定；标准并未规定 vtable 这一具体机制，但业界实现（GCC/Clang/MSVC）均以 vptr+vtable 实现，因此多态对象至少多出一份指针开销。
+
+<span class="badge badge-exp">经验</span> 间接调用的成本只在"经基类引用/指针调用"时发生；直接以派生静态类型调用则不会动态分派。编译器可在已知静态类型是 final 类、或能证明目标唯一时去虚化（devirtualize）甚至内联。`final` 关键字与"单态热路径"是协助编译器消除间接的常见写法；若不需要运行时多态，可改用 CRTP 或 `std::variant`+`std::visit` 在编译期/运行期之间权衡。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：值语义返回 vs 引用语义返回

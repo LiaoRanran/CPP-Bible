@@ -1267,6 +1267,70 @@ int main() { int x = 0; probe(x); probe(42); }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 一个事件分发器用完美转发把参数递给"处理器注册函数"，有人写 `dispatch(0)` 想把空指针传进去，编译器却报"无法把 int 转成 void*"。请解释为什么 `0`/`NULL` 经转发后不再有"空指针常量"的身份，以及工程上应如何避免。
+
+<details><summary>答案与解析</summary>
+
+完美转发保持实参的**值类别与类型**，但不做任何隐式转换。`0` 的字面类型是 `int`，`NULL` 在多数实现下也是 `0L`/`0`（整型），它们作为模板实参推导出的 `T` 是 `int`/`long`，转发到形参为 `void*` 的函数时**不再是空指针常量**——`[conv.ptr]` 规定只有值为 0 的**整型常量表达式**才是空指针常量，经模板推导后该身份已丢失，于是从"可隐式转指针"变成"类型不匹配"。
+
+这正是 `nullptr` 存在的意义：它是 `std::nullptr_t` 类型、一等公民，可隐式转任意指针类型且永不与整型混淆。工程上对"转发给指针形参"的接口，应要求调用方显式传 `nullptr`，或在内部对整型实参做 `static_cast` 兜底。下面用 `if constexpr` 演示 `0` 与 `nullptr` 在转发中的不同推导结果：
+
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <utility>
+void use(void*) { std::cout << "pointer ok\n"; }
+template <class T>
+void relay(T&& v) {
+    if constexpr (std::is_convertible_v<T, void*>)
+        use(std::forward<T>(v));       // nullptr → 可转 void*，正常分发
+    else
+        std::cout << "not a pointer: T=int\n";   // 0 → T 推导为 int
+}
+int main() {
+    relay(nullptr);
+    relay(0);
+    relay(static_cast<void*>(nullptr));
+}
+```
+
+<span class="badge badge-std">标准</span> 模板实参推导保留字面量类型（`[temp.deduct.call]`）；转发不执行隐式转换，故 `0` 保持 `int`，空指针常量身份失效（`[conv.ptr]`）。
+<span class="badge badge-exp">经验</span> 完美转发不是"万能转换器"——它只还原值类别。泛型接口里要用指针语义时写 `nullptr`，别依赖 `0`/`NULL`（本结论与 ch22 auto/decltype、ch31 重载决议的推导规则同源）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 日志框架把一次调用的参数"整体转发"给多个 sink 处理器，`std::forward` 在第一个 sink 之后突然"丢数据"。请解释为什么同一实参**只能 forward 一次**，并演示右值实参第二次转发时拿到的是已移动的空壳。
+
+<details><summary>答案与解析</summary>
+
+`std::forward<T>` 的行为取决于 `T`：对右值实参，它返回 `T&&`，等价于"承诺这个对象马上要被移动"。若同一个参数被 forward 到多个接收方，第一次 forward 触发移动构造把资源搬走，源对象（仍在栈上存活）只剩下空壳；第二次 forward 依然是右值引用，接收方再移动一次，只能拿到空数据——结果不是"复制两份"，而是"第一份有、第二份空"。
+
+这就是"一次转发"原则：**完美转发保真的是"值类别"，不是"数据副本"**。工程上的应对：要么显式决定"只有一个接收方移动、其余按左值/按值"，要么在转发前先复制，要么改变设计为"调用方提供已构造好的对象"。用 `std::move` 传递参数到内部函数时同样只应消费一次。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <string>
+#include <utility>
+void consume(std::string&& s) { std::cout << "got [" << s << "]\n"; }
+template <class T>
+void forward_twice(T&& v) {
+    consume(std::forward<T>(v));   // 第一次：右值被移动，payload 被掏空
+    consume(std::forward<T>(v));   // 第二次：源已是空壳，输出 got []
+}
+int main() { forward_twice(std::string("payload")); }
+```
+
+<span class="badge badge-std">标准</span> 右值实参经 `std::forward<T>` 还原为 `T&&`（`[forward]`）；移动后源处于"有效但未指定"状态（`[lib.types.movedfrom]`），读其值得到空/任意。
+<span class="badge badge-exp">经验</span> 记住"forward 恰用一次"：多接收方场景要么单一移动者、要么先拷贝。与练习 4 同理，泛型转发的边界是类型与类别，不是数据保鲜（本章附录 J 决策流"误转发局部变量"分支即此坑）。
+
+</details>
+
 ## 附录 J：完美转发 vs 普通转发 选型 决策流（D3 维度）
 
 ```mermaid

@@ -1048,6 +1048,92 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 团队在 GUI 模块争论：按钮点击事件到底该用 GoF 观察者模式（抽象 Subject/Observer 基类）还是直接用 `std::function` 回调列表。请给出一个可操作的选型判据，并用代码对比两种实现的耦合度与替换成本。
+
+<details><summary>答案与解析</summary>
+
+观察者模式的核心价值是"事件源与响应逻辑双向解耦"：按钮（Subject）完全不知道谁是观察者，新增响应只需 `attach`，符合开闭原则。但它的代价是引入一组抽象基类与虚函数表；当事件类型固定、订阅者数量少时，这套层级反而成为认知负担。C++ 自 C++11 起提供的 `std::function` + 容器足以充当"轻量观察者"，把"模式"蒸发成语言特性——这正是 Norvig 关于"表达力更强的语言让许多 GoF 模式消失"的论断在 C++ 上的体现。
+
+标准层面，`std::function` 由 C++11 引入（提案 N1456，并入 ISO/IEC 14882:2011 [func.wrap.func]），是一个类型擦除的可调用包装；它比手写虚接口灵活，但每次调用有轻微的类型擦除开销（一次间接 + 小对象缓冲）。当你需要"同一事件多种异构响应、且响应集合在运行时动态变化"时，观察者抽象（或其 `std::function` 化版本）是合适抽象；当只有一两种固定响应，直接传 `std::function` 参数甚至模板回调更轻。
+
+实现边界：用 `std::function` 列表做观察者时，要处理"观察者析构后如何从列表移除"——裸指针悬空是常见 bug；用 `std::weak_ptr` 或显式 `detach` 句柄管理生命周期。当失效：若事件高频（百万次/秒）且每个观察者都很轻，虚调用 / `std::function` 的类型擦除开销可能成为热点，此时应改用编译期策略（模板注入回调，见 ch139 CRTP）消除运行时分发。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-std">标准</span> `std::function` 由 C++11 引入（提案 N1456，并入 ISO/IEC 14882:2011 [func.wrap.func]）；类型擦除的开销与具体实现相关，属实现质量范畴而非标准强制。
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》(Gamma et al., 1994) Observer 模式；Norvig《Design Patterns in Dynamic Languages》关于"模式在强表达力语言中蒸发"的论述。
+
+<span class="badge badge-exp">经验</span> 选型判据：事件类型固定且订阅者少 → 直接用 `std::function` 回调；需要运行时动态增减异构响应且强调开闭原则 → 观察者抽象；高频热点 → 编译期策略消除分发。不要为"看起来专业"而套模式。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <functional>
+
+// 轻量"观察者"：用 std::function 列表替代抽象基类
+struct Button {
+    std::vector<std::function<void(int)>> handlers;
+    void attach(std::function<void(int)> f) { handlers.push_back(std::move(f)); }
+    void click(int id) const {
+        for (const auto& h : handlers) h(id);   // 类型擦除调用
+    }
+};
+
+int main() {
+    Button b;
+    b.attach([](int id){ std::cout << "observer A: " << id << "\n"; });
+    b.attach([](int id){ std::cout << "observer B: " << id << "\n"; });
+    b.click(7);
+    std::cout << "handlers=" << b.handlers.size() << "\n";
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 新人把观察者/策略当成银弹，到处抽基类，结果类数量爆炸、编译变慢。请用代码证明：当"策略"在编译期已知时，模板参数（静态策略）能让模式"蒸发"，既保留可替换性又零运行时分发开销。
+
+<details><summary>答案与解析</summary>
+
+策略模式的意图是"把可互换的算法家族封装起来，使它们可互相替换"。但当具体用哪个策略在编译期就确定（例如整个模块统一用 `AddPolicy` 或 `MulPolicy`），运行期虚分发纯属浪费——这正是"模式补偿语言缺陷"的反面教材：C++ 的模板能在编译期把策略"焊死"，生成等价于手写的直接代码，零虚表、零间接。
+
+标准上，这属于编译期多态，依赖模板实参推导与内联（ISO/IEC 14882 模板与内联规则）。`[[no_unique_address]]`（P0840R2，C++20）还能让空的策略对象不占空间，进一步消除"为了模式而多一个成员"的代价。相比 ch139 的 CRTP，模板策略更简单，适合"单一策略注入"场景。
+
+实现边界：静态策略失去了运行期切换能力——不能在运行中把 `AddPolicy` 换成 `MulPolicy`。当失效：若策略需在运行期根据用户配置切换（如插件加载不同算法），静态策略不可行，应回退到 `std::function` 或 `virtual` 的运行期分发，并承受相应开销。此外，过多模板策略实例化会拉长编译时间、膨胀二进制（代码段重复），需权衡。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-std">标准</span> `[[no_unique_address]]` 由 P0840R2 进入 C++20（ISO/IEC 14882:2020 [dcl.attr.nouniqueaddr]）；模板实例化与内联属 ISO/IEC 14882 模板章节。
+
+<span class="badge badge-ref">引用</span> GoF《Design Patterns》Strategy 模式；Norvig 关于动态语言中模式蒸发的论述。
+
+<span class="badge badge-exp">经验</span> "模式蒸发"是 C++ 零开销抽象的日常应用：先问"这个变化点在编译期还是运行期确定？"编译期已知就用模板/CRTP 消除分发；运行期才需要才上虚函数/回调。
+
+```cpp
+#include <iostream>
+
+struct AddPolicy { static int op(int a, int b) { return a + b; } };
+struct MulPolicy { static int op(int a, int b) { return a * b; } };
+
+template <typename Policy>
+struct Calculator {
+    [[no_unique_address]] Policy policy;
+    int run(int a, int b) const { return Policy::op(a, b); }  // 编译期绑定，无虚分发
+};
+
+int main() {
+    Calculator<AddPolicy> c1;
+    Calculator<MulPolicy> c2;
+    std::cout << "add=" << c1.run(3, 4) << " mul=" << c2.run(3, 4) << "\n";
+    return 0;
+}
+```
+</details>
+
 ## 附录 J：设计模式总论 决策流（D3 维度）
 
 > 以"遇到可复用设计问题时如何选型"为主线，给出创建型 / 结构型 / 行为型模式的决策流。

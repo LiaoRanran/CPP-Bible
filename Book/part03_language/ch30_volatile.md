@@ -840,6 +840,76 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：读取寄存器镜像到快照。** 一个 `volatile` 状态寄存器 `g_status` 需要「读一次、存成普通变量」交给上层处理（避免上层每次都触发 volatile 读）。直接赋值会逐字段走 volatile 语义；请用 `std::memcpy` 把寄存器值逐字节拷进快照，并处理 `volatile` 指针到 `memcpy` 形参的类型转换。
+
+<details>
+<summary>答案与解析</summary>
+
+`memcpy` 的复制是「逐字节位拷贝」，它不经过 `volatile` 的「每次访问都真实发生」语义——因此把 `volatile` 寄存器的当前值快照出来非常合适：一次 `memcpy` 读出位模式，之后 `snapshot` 就是普通变量，后续读取不依赖寄存器。与直接 `snapshot = g_status;` 的区别在于语义清晰度：前者明说「我要一份位拷贝」，后者仍是 volatile 读（每次都可能重新落内存）。
+
+标准依据：ISO/IEC 14882:2023 §[cstring.syn]/§[basic.types] 规定 `memcpy` 复制对象的底层字节（目标对象获得源对象的值表示）；`volatile`（§[dcl.type.cv]）只管「访问不得优化掉」，不阻止字节拷贝。类型转换注意点：`volatile T*` 不能隐式转 `const void*`（丢 volatile），必须显式 `const_cast` 去掉 volatile 才能通过重载决议。
+
+实现与边界：`memcpy` 需要目标与源都满足对齐/尺寸要求，`sizeof snapshot` 明确写出避免拷多拷少。何时失效：若「快照」用于跨线程同步则不够——`volatile` + `memcpy` 都不提供原子性/顺序（见练习 3），快照只能当「那一刻的位模式」用。替代方案：`std::atomic` 的 `load` 带 `memory_order_relaxed` 可快照且原子；纯位运算用 `std::bit_cast`（ch42）。
+
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <cstdint>
+#include <cstring>
+
+volatile std::uint32_t g_status = 0x1u;   // 模拟硬件寄存器
+
+int main() {
+    std::uint32_t snapshot;
+    // 显式去除 volatile 后逐字节拷贝: 不触发 volatile 语义、不重解释类型
+    std::memcpy(&snapshot, const_cast<const std::uint32_t*>(&g_status), sizeof snapshot);
+    std::cout << snapshot << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.types]：`memcpy` 拷贝对象的底层字节；volatile 到 `const void*` 需显式转换。
+
+<span class="badge badge-exp">经验</span> 「volatile 对象 → 快照」的标准姿势是 `memcpy`（或 `std::bit_cast`），显式 `const_cast` 是编译器的要求而非语义妥协。记住快照无原子性：多读少写的仪表盘 OK，跨线程共享数据仍要 `atomic`（本章附录『MMIO 用 volatile 而非 atomic』的选型树）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：封装 MMIO 寄存器对象的只读查询。** 一个 `volatile Hw` 对象封装硬件状态，`value()` 需要既能服务 `volatile Hw` 也能服务普通 `Hw`。请写出 **volatile 限定的成员函数**，解释它与 const 限定的重载关系。
+
+<details>
+<summary>答案与解析</summary>
+
+成员函数可以被 `volatile` 限定（就像 `const` 限定）：`int value() volatile` 只能在 `volatile` 对象上调用，`int value() const` 只能在 const 对象上调用，二者构成重载。对 MMIO 对象建模时，`volatile Hw` 表示「每次成员访问都要真实落内存」——`value()` 返回寄存器当前值，优化器不得把两次调用合并；而普通 `Hw` 走普通访问。cv 限定的本质是「this 指针的 cv 属性」，`volatile` 版本里 `reg` 的读取自动带 volatile 语义。
+
+标准依据：ISO/IEC 14882:2023 §[class.mfct] 允许成员函数带 cv 限定符（`const`/`volatile`/`const volatile`），限定符参与重载决议；§[dcl.type.cv] 定义 volatile 对象上成员访问的语义。非 volatile 对象调用 `value()` 时选择普通版本——除非该对象被显式声明 `volatile`。
+
+实现与边界：多数类不会同时写 `volatile` 与普通两个版本（普通版本往往就是默认），但硬件封装常「一个对象两种视图」。注意 `volatile` 成员函数体里的每个成员读写都要承受 volatile 语义，能不用就别整类 volatile——通常只在「寄存器描述符」这类薄壳类型上使用。替代方案：把寄存器指针存成 `volatile T*` 成员，方法保持普通成员函数（数据 volatile 而非对象 volatile），更精确、侵入更小。
+
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+struct Hw {
+    int value() volatile { return reg; }        // volatile 版本
+    int value() const { return reg; }           // const 版本
+    int reg = 7;
+};
+
+int main() {
+    volatile Hw h;
+    std::cout << h.value() << "\n";   // 调用 volatile 版本
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[class.mfct]：成员函数可带 const/volatile 限定并参与重载；volatile 对象只能调 volatile 版本。
+
+<span class="badge badge-exp">经验</span> volatile 限定成员函数是「对象级 volatile」的入口，适合寄存器薄壳；但对大而复杂的类，把 volatile 下放到成员数据（`volatile T* reg`）比整对象 volatile 更可控、对普通代码零侵入（本章附录选型树：MMIO→数据 volatile，同步→atomic）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：嵌入式 MMIO 为何必须用 `volatile`（而非 `atomic`）

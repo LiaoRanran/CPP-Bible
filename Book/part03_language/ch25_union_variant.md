@@ -2086,6 +2086,83 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：协议头不同字段复用同一块内存。** 一个报文头的 `type` 区分整数/浮点两种载荷解释，但同一偏移只存一份值；用匿名 union 让 `as_int` 与 `as_float` 共享存储，省内存、零拷贝。请写出匿名 union 并说明「活跃成员切换」由谁负责。
+
+<details>
+<summary>答案与解析</summary>
+
+匿名 union 把多个成员布局到同一块存储：`as_int` 与 `as_float` 起始地址相同、`sizeof` 取最大者。区别只在「当前活跃成员是谁」——这是**程序员责任**：写 `h.as_int = 42` 后 `as_int` 活跃，读 `h.as_float` 属于「读取非活跃成员」，对 float/int 这种普通标量在实践中常常「能跑」，但读到的只是底层位模式重解释，语义上需要你保证匹配（跨类型读非活跃成员对大多数平凡类型是未定义行为，见 ch42 严格别名）。
+
+标准依据：ISO/IEC 14882:2023 §[class.union] 规定 union 同一时刻至多一个成员活跃；匿名 union（§[class.union.anon]）直接嵌入外围作用域，成员可通过外层对象名直接访问。非平凡成员（有构造/析构）必须在 active 切换时显式调用 placement new/析构，否则生命周期不完整——这正是手写 union 的最大坑。
+
+实现与边界：匿名 union 不记录当前类型（无 tag），切错就静默读到错值；调试成本随字段数上升。替代方案：需要类型跟踪就用 `std::variant`（练习 1/2），需要底层复用但可容忍 tag 就用「enum tag + union」的经典组合。匿名 union 最适合「同解释不同视角」的透明别名，而不是「不知道现在是哪种」。
+
+> **示例 83** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+struct Header {
+    int type;
+    union {          // 匿名 union: 两字段共享同一内存
+        int   as_int;
+        float as_float;
+    };
+};
+
+int main() {
+    Header h;
+    h.type = 1;
+    h.as_int = 42;
+    std::cout << h.as_int << "\n";
+    h.as_float = 3.5f;          // 主动切换解释, 由程序员保证一致
+    std::cout << h.as_float << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[class.union]/§[class.union.anon]：union 至多一个活跃成员，匿名 union 成员透出到外层作用域。
+
+<span class="badge badge-exp">经验</span> union 的「省内存」本质是「把类型系统关于当前值种类的知识让渡给程序员」。凡是你无法用不变式证明「此刻活跃成员是 X」，就该换成 `std::variant`——现代代码里手写 union 的第一用途是内存复用，第二用途几乎都是历史包袱（见本章演绎 1）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：在 variant 里就地构造大对象。** 一个 `std::variant<int, std::string>` 需要装入字符串；若先造临时 `std::string` 再拷贝进 variant，会多一次拷贝/可能多一次分配。请用 `emplace` 在 variant 内**直接构造**对象，并演示按索引与按类型两种调用方式。
+
+<details>
+<summary>答案与解析</summary>
+
+`emplace` 是 variant 的就地构造入口：`v.emplace<1>("hello")` 按索引选择 alternative，`v.emplace<std::string>("world")` 按类型选择，实参直接转发给 `std::string` 构造函数——全程没有临时 `string` 产生，符合「值类别转发 + 就地构造」的现代 C++ 惯例（对比 `v = std::string("x")` 的构造+移动两步）。
+
+标准依据：ISO/IEC 14882:2023 §[variant.mod] 规定 `emplace<I>`/`emplace<T>` 先析构当前 active alternative，再在存储上用实参直接构造新类型（若构造抛异常且当前类型不是平凡可复制，variant 会落为 `valueless_by_exception()`，见练习 3）。切换类型后旧值一定消失，`std::get` 只能取到当前活跃者。
+
+实现与边界：`emplace` 比「赋值临时量」省一次移动，但对平凡标量可忽略；对 `std::string`/`vector` 这类有堆缓冲的类型，省一次分配/释放往往有意义。`std::get<I>` 在类型不匹配时抛 `std::bad_variant_access`，配合 `holds_alternative`（练习 1）或 `std::visit`（练习 2）读取更稳。替代方案：类型列表静态可知时，`std::visit` + `overload` 依旧是最可维护的分派方式。
+
+> **示例 84** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+
+int main() {
+    std::variant<int, std::string> v;
+    v.emplace<1>("hello");                      // 按索引 emplace
+    std::cout << std::get<1>(v) << "\n";
+    v.emplace<std::string>("world");            // 按类型 emplace
+    std::cout << std::get<std::string>(v) << "\n";
+    v = 42;                                     // 赋值切换类型
+    std::cout << std::get<int>(v) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[variant.mod]：`emplace` 就地构造并替换 active alternative，实参转发给目标构造函数。
+
+<span class="badge badge-exp">经验</span> 需要「往 variant 里放新值」时优先 `emplace` 而非赋值临时量：语义直白、少一次移动/分配。配合 `in_place_index`/`in_place_type`（构造 variant 自身时）可让「按哪种类型构造」在调用点显式可见（本章演绎『union 手写 vs variant』）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：替代"union + 手写 tag"——用 `std::variant` 消灭活跃成员 UB

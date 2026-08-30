@@ -990,6 +990,56 @@ int main() { for_each([](auto x) { std::cout << x << ' '; }, 1, 2, 3); std::cout
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你想把一堆同类型值一次性求和，又不想写递归或初始化列表。** 请写出折叠表达式 `sum(xs...)`：用二元折叠 `(xs + ...)` 在编译期把整个参数包累加成单表达式，演示其简洁与零开销。
+
+<details><summary>答案与解析</summary>
+
+折叠表达式（C++17）把参数包直接展开为 `(e1 + e2 + ... + en)`，由编译器生成扁平代码，无递归实例化、无额外函数帧。它是变参模板的现代化替代，语义清晰且易被优化。
+
+> **示例 91** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename... Ts>
+auto sum(Ts... xs) { return (xs + ...); }
+int main() { std::cout << sum(1, 2, 3, 4) << "\n"; }   // 10
+```
+
+<span class="badge badge-std">标准</span> 折叠表达式由 ISO/IEC 14882（C++23）§[expr.prim.fold] 规定：支持一元 `(... op pack)` 与二元，`operator` 必须是二元且可结合/可交换（`+`、`&&`、`<<` 等）。
+
+<span class="badge badge-exp">经验</span> 折叠表达式适合"对所有元素做同一二元运算"：求和、拼接、短路逻辑（`&&`/`||`）。空包有明确预定义值（如 `&&` 为 `true`）。它比递归变参更短更安全——优先用它替代手写递归。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你想在一行里对所有参数执行副作用（打印/初始化），或做编译期全真判断。** 请写出：用 `&&` 折叠做"全真"判定，并用逗号折叠触发一系列副作用，演示折叠方向与控制流。
+
+<details><summary>答案与解析</summary>
+
+折叠表达式不止求和：`(... && xs)` 对所有元素做短路"全真"判定；逗号折叠 `(f(xs), ...)` 把每个元素丢进副作用调用。二者都把"逐元素处理"收敛成单表达式，编译期展开、运行期无循环开销。
+
+> **示例 92** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename... Ts>
+bool all_true(Ts... xs) { return (... && xs); }
+template <typename... Ts>
+void ignore(Ts&&...) {}
+int main() {
+    std::cout << all_true(true, 1, 2) << " "      // 1
+              << all_true(true, false) << "\n";    // 0
+    ignore(std::cout << "side-effect ", 42);       // 触发副作用
+}
+```
+
+<span class="badge badge-std">标准</span> 折叠表达式的"空包值"与"展开顺序"由 ISO/IEC 14882（C++23）§[expr.prim.fold] 规定；逗号折叠等价于对包各元素顺序求值，满足从左到右的序列化语义。
+
+<span class="badge badge-exp">经验</span> `(... &&)` 短路特性可在第一个 `false` 处停止，类似 `std::all_of` 但编译期；逗号折叠是"执行多个副作用"的惯用法。注意 `||` 折叠对空包预定义为 `false`，与 `&&` 相反——方向敏感。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：折叠方向对 `-` / `/` 敏感

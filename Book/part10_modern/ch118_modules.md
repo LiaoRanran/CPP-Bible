@@ -883,6 +883,81 @@ export int compute();
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你在模块接口单元里要兼容一个遗留 C 头，头里定义了成百个宏（如 `#define` 版本常量）。用 `#include` 时这些宏会随文本包含污染所有使用方；模块的 global module fragment（`module;` … `#include <legacy.h>` … `export module lib;`）让宏"过而不留"。请用单文件代码模拟这个"宏在模块边界被吸收、不向使用方泄漏"的语义，并解释真实语法。
+
+<details><summary>答案与解析</summary>
+
+模块的 global module fragment 是写在 `export module` 之前的 `module;` 段：其中的 `#include` 仍做文本包含，但**所有宏都局限于该片段**，一旦离开 fragment 进入模块体，宏即不可见；使用方 `import` 模块后更看不到任何来自 fragment 的宏。这就是"预处理阶段隔离"——比 `#pragma once`（只防重复包含）更进一步，从根上消除宏污染。
+
+普通 C++ 无法表达"真模块"，但可以用"包含即 `#undef`"在单文件里模拟同一边界：把 `#define` 产生的宏在边界处清掉，模块对外只导出 `constexpr` 常量。对比实验（注释掉的 `#ifdef` 分支）可直观看到：若不做清理，宏会泄漏到 main 里，这正是文本包含的原始问题。
+
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <cstdint>
+#define LEGACY_MAGIC 0x5A
+// ---- 模拟模块边界：宏在此被吸收，不向使用方泄漏 ----
+#ifdef LEGACY_MAGIC
+#  undef LEGACY_MAGIC
+#endif
+namespace legacy {
+inline constexpr std::uint32_t magic = 0x5A;   // 模块导出常量（对外可见实体）
+}
+int main() {
+    std::cout << std::hex << legacy::magic << '\n';
+#ifdef LEGACY_MAGIC
+    std::cout << "LEGACY_MAGIC leaked\n";      // 真实 #include 下会走到这
+#else
+    std::cout << "LEGACY_MAGIC contained\n";   // 模块边界生效
+#endif
+}
+```
+
+<span class="badge badge-std">标准</span> global module fragment 是 `[module.global.fragment]`：`module;` 声明片段开始，其后 `export module` 结束片段；宏不是模块实体，仅活在预处理器，模块从机制上将其关在片段内。
+<span class="badge badge-exp">经验</span> 把"每个头里有什么宏"当成可观测污染源：迁移到模块时，fragment 内清理遗留宏、模块体只导出类型/常量/函数，使用方从此与宏绝缘（本章附录"演绎 1"的 core.h 案例即此解法）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 你的 SDK 头文件 `core.h` 被 80 个翻译单元 `#include`，改一行就全量重编；而模块只把"导出签名"写进 BMI（Binary Module Interface），未导出实现改动不触发下游重编。请用一段代码把"文本包含模型 vs 模块 BMI 模型"的重编译成本建模成可比较的数值，解释模块为何缩短集成时间。
+
+<details><summary>答案与解析</summary>
+
+`#include` 模型下，头文件正文被逐字复制进每个 TU，任意一行改动都使所有包含者重新解析整份文本——成本约等于"受影响 TU 数 × 每 TU 需重解析行数"。模块模型下，使用方只读**编译好的 BMI**：只有导出实体的签名变化才使 BMI 失效、触发重编；未导出实现（如内部 helper、私有函数）的改动只重编实现单元自己，下游 TU 完全不受影响（练习 2 的封装边界就是前提）。
+
+把两种模型参数化成"受影响 TU 数 × 每 TU 解析行数"做乘法，即可量化差异：头文件模型 = 80 × 5000 行，模块模型 = 1 × 500 行（只重编实现单元）。这正是 CI 里模块化后"改一行从分钟级降到秒级"的机制来源——注意模型里"行数"是语义化估计，真实收益还取决于 BMI 解析速度与分区粒度。
+
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+struct BuildCost {
+    std::string model;
+    int tus;      // 受影响 TU 数
+    int lines;    // 每 TU 需重新解析的行数
+};
+long total_reparse(const std::vector<BuildCost>& jobs) {
+    long sum = 0;
+    for (const auto& j : jobs) sum += static_cast<long>(j.tus) * j.lines;
+    return sum;
+}
+int main() {
+    BuildCost header{"#include 模型", 80, 5000};   // 改 core.h 一行 → 80 TU × 5000 行重解析
+    BuildCost module{"模块模型", 1, 500};          // 未导出实现改动 → BMI 不变，只重编实现单元
+    std::cout << header.model << ": " << total_reparse({header}) << '\n';
+    std::cout << module.model << ": " << total_reparse({module}) << '\n';
+}
+```
+
+<span class="badge badge-std">标准</span> 模块导出实体写入 BMI，未导出实体不进入接口（`[module.interface]`）；BMI 不变则依赖 TU 无需重编译。
+<span class="badge badge-exp">经验</span> "改头文件全量重编"是文本包含的固有成本；模块的增量收益来自 BMI 不变性。划分模块时尽量把易变实现藏进实现单元、把稳定签名留在接口单元，收益最大化（本章附录"演绎 1/2/3"的落地路径）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：头文件包含爆炸 → 模块

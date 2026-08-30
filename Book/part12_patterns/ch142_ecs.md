@@ -1099,6 +1099,86 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你的粒子系统有 10 万个粒子，每个有 x/y/z 坐标，热循环里经常"只处理 x 字段"（例如统一平移）。当前用 `struct Particle{float x,y,z;} vector<Particle>`，遍历 x 时缓存行里 y/z 全是浪费。请用 SoA（Structure of Arrays）重写，并说明它对缓存局部性的改善。
+
+<details><summary>答案与解析</summary>
+
+AoS（Array of Structures）把每个对象的全部字段打包成一条记录，多个对象连续存放；当你只遍历 `x` 时，CPU 每载入一个缓存行（通常 64 字节）就带进来同对象的 y/z，而它们用不到——带宽与缓存被白白消耗。SoA（Structure of Arrays）反过来：把所有对象的 `x` 放进一个 `vector<float>`，`y`、`z` 各放一个，遍历 `x` 时内存是**紧凑同字段连续**，缓存行几乎全是有用数据， prefetch 与预取命中率显著提升。
+
+机制上，这是数据导向设计（Data-Oriented Design, DOD）的核心：优化的单位是"一批数据的访问模式"而非"单个对象的方法"。C++ 里 SoA 通常用并行 `std::vector` 或 `std::pmr::vector` 实现，下标对齐保证 `x[i],y[i],z[i]` 是同一实体。ch142 全章讲的 ECS 本质就是"组件按类型聚簇"的 SoA 思想。注意 SoA 下"访问同一对象的多个字段"会变慢（跨三个数组），是典型取舍。
+
+实现边界：SoA 要求所有数组**下标对齐、等长**，增删实体要同步三个数组（可用 swap-and-pop 或空闲表），否则会出现"幽灵实体"。当失效：若你的热路径总是同时用 x/y/z（如做向量运算），AoS 的字段局部性反而更好，SoA 徒增复杂度；若对象数量很少（几百），缓存效应可忽略，AoS 更直观。另外 SIMD（ch155）天然喜欢 SoA——同字段连续正好对齐向量加载。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-std">标准</span> `std::vector` 连续存储由 ISO/IEC 14882 [vector] 保证；缓存行尺寸（典型 64 字节）属硬件特性，非 C++ 标准规定，具体以 CPU 手册为准 [UNVERIFIED]。
+
+<span class="badge badge-ref">引用</span> Mike Acton《Data-Oriented Design》(CppCon) 强调"以数据访问模式为中心"；ECS 组件聚簇即 SoA 思想。
+
+<span class="badge badge-exp">经验</span> 热路径只碰部分字段、对象海量 → SoA 提升缓存局部性；总是整体用对象 → AoS 更直观；SIMD 偏爱 SoA。
+
+```cpp
+#include <iostream>
+#include <vector>
+
+struct AoS { float x, y, z; };  // 数组 of 结构体：每个对象连续，但遍历单字段跨结构体
+
+struct SoA {  // 结构体 of 数组：同字段连续，遍历 x 时缓存友好
+    std::vector<float> x, y, z;
+};
+
+int main() {
+    SoA soa;
+    soa.x.resize(3); soa.y.resize(3); soa.z.resize(3);
+    for (size_t i = 0; i < soa.x.size(); ++i) soa.x[i] = static_cast<float>(i);
+    float sum = 0.0f;
+    for (float v : soa.x) sum += v;   // 只碰 x 字段，缓存行不浪费
+    std::cout << "sum_x=" << sum << "\n";
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 你要做一个最小 ECS：实体（Entity）只是整数 id，组件（Position）存在独立数组里，且"实体数组"与"组件数组"按下标对齐。请写出不依赖任何第三方库的最小实现，并说明它相对 OOP 继承树的优势。
+
+<details><summary>答案与解析</summary>
+
+ECS 把"对象"拆成三类：Entity（仅一个整数 id，无数据无方法）、Component（纯数据，如 `Position`）、System（处理某类组件的逻辑）。最小实现里，实体就是 `unsigned int`，组件按"与实体数组下标对齐"的 `vector<Position>` 存放——这其实就是练习 4 的 SoA 思想：组件按类型聚簇，而非按对象打包。这样"移动系统"只需遍历 `positions` 数组，缓存友好且天然并行。
+
+机制上，ECS 用"组合代替继承"：一个实体拥有哪些能力，由它携带哪些组件决定，而非由它在继承树中的位置决定。新增能力 = 新增一类组件 + 一个 System，不需要改动任何基类，彻底规避"深继承 + 类爆炸"。ch142 正文强调这是 DOD 在游戏/仿真领域的标准落地。C++ 实现通常用 `vector` + 空闲表（free list）管理实体 id 复用，避免频繁分配。
+
+实现边界：下标对齐要求实体与组件同步增删（删除用 swap-and-pop 或标记 tombstone），否则出现错位。当失效：若你的数据量很小（几十个对象）或关系高度异构（不是"同类对象批量处理"），ECS 的间接与对齐维护纯属 overhead，普通结构体 + 算法更直接；若组件间有大量"按 id 随机查询"，线性数组的 O(n) 查找会成瓶颈，需加稀疏集（sparse set）索引。
+
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-std">标准</span> `std::vector` 连续存储（ISO/IEC 14882 [vector]）；下标对齐访问属算法设计，非标准条款。
+
+<span class="badge badge-ref">引用</span> ECS 源自游戏行业（Unity DOTS、EnTT 等）；"组合优于继承"为 Gamma 与设计原则共识。
+
+<span class="badge badge-exp">经验</span> 海量同类对象、批量系统处理 → ECS（组合替继承、SoA 提缓存）；对象少/高度异构 → 普通结构体更合适。
+
+```cpp
+#include <iostream>
+#include <vector>
+
+using Entity = unsigned int;  // 实体只是整数 id
+
+struct Position { float x, y; };
+
+int main() {
+    std::vector<Entity> entities = {0, 1, 2};
+    std::vector<Position> positions = {{0,0}, {1,1}, {2,2}};  // 与 entities 下标对齐
+    for (size_t i = 0; i < entities.size(); ++i)
+        std::cout << "e" << entities[i] << " at (" << positions[i].x << "," << positions[i].y << ")\n";
+    return 0;
+}
+```
+</details>
+
 ## 附录 J：实体组件系统 ECS 决策流（D3 维度）
 
 > 以"用数据驱动方式管理大量同类对象"为主线，给出 ECS / SoA / 原型 / 并行系统的选型判据。

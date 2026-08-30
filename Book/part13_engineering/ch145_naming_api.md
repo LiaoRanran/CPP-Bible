@@ -1233,6 +1233,79 @@ int main() { assign(UserId{1}, OrderId{2}); }      // 写反类型则编译失�
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：旧接口如何安全退役。** `build_user(name)` 这个命名含糊的老工厂仍被大量调用方依赖（ABI/API 稳定是硬约束，不能删），但你想引导大家改用参数更明确、命名更清晰的 `MakeUser(name, age)`。请用 `[[deprecated]]` 标记旧接口、把警告文案指向新接口，并说明为什么"标记弃用"比"直接删除"在库演进中更安全，以及 `-Werror` 下弃用警告会如何影响 CI。
+
+<details><summary>答案与解析</summary>
+
+> **示例 80** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <string>
+
+[[deprecated("use MakeUser(name, age) instead")]]
+std::string BuildUser(const std::string& name) { return "user:" + name; }
+
+std::string MakeUser(const std::string& name, int age) {
+    return name + " (" + std::to_string(age) + ")";
+}
+
+int main() {
+    std::string s = MakeUser("alice", 30);  // 新接口：命名清晰、参数自解释
+    (void)s;
+    // std::string old = BuildUser("bob");  // 触发 -Wdeprecated-declarations
+}
+```
+
+<span class="badge badge-std">标准</span> `[[deprecated("msg")]]`（`[dcl.attr.deprecated]`）标记实体为弃用；调用方使用该实体时编译器发出 `-Wdeprecated-declarations`（属 `-Wextra` 之外、默认开启的警告组）。可作用于函数、变量、类型与枚举值。
+
+<span class="badge badge-exp">经验</span> 库演进中"删除"会破坏 ABI/API 兼容性、让老客户代码无法编译或链接；`[[deprecated]]` 给调用方一个"可编译但被告知"的过渡期，配合文档与版本号（如 `v2` 再移除）平滑退役。注意：在 `-Werror` 的 CI 里，调用弃用接口会让构建直接失败——所以弃用应只标在"对外"函数上，内部代码先改完再对外发布弃用。也可用 `clang-tidy` 的 `deprecated` 检查集中追踪。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：返回 `const&` 的生命周期陷阱。** `ConfigService::GetOrCreate()` 最初返回 `const std::string&` 指向内部缓存，调用方长期持有该引用；但当缓存因容量/替换被销毁或重建时，引用悬空、读它即 UB。请重写：对外用 `std::shared_ptr<std::string>` 让句柄生命周期独立于缓存，同时为"可能不存在"的配置提供 `std::optional` 查询，并指出返回 `const&` 在哪些场景下仍是合法且高效的正确选择（生命周期由调用方保证）。
+
+<details><summary>答案与解析</summary>
+
+> **示例 81** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <memory>
+#include <optional>
+#include <string>
+#include <unordered_map>
+
+struct ConfigService {
+    std::unordered_map<std::string, std::shared_ptr<std::string>> cache_;
+    // 返回 shared_ptr：句柄生命周期独立于缓存，缓存重建也不悬空
+    std::shared_ptr<std::string> GetOrCreate(const std::string& key) {
+        auto& slot = cache_[key];
+        if (!slot) slot = std::make_shared<std::string>("cfg:" + key);
+        return slot;
+    }
+    // 可能缺失的配置：用 optional 表达"无"，避免返回悬空引用
+    std::optional<std::string> TryGet(const std::string& key) const {
+        auto it = cache_.find(key);
+        if (it == cache_.end()) return std::nullopt;
+        return *it->second;
+    }
+};
+
+int main() {
+    ConfigService svc;
+    auto h = svc.GetOrCreate("timeout");
+    if (auto v = svc.TryGet("missing")) { (void)*v; }
+    (void)h;
+}
+```
+
+<span class="badge badge-std">标准</span> `std::shared_ptr`（`[util.smartptr.shared]`）通过引用计数让多个所有者安全共享对象，句柄销毁才释放资源；`std::optional`（`[optional]`）显式表达"可能有值"，比返回空指针/哨兵更类型安全。两者都避免了"返回指向生命周期不由返回方保证的对象的引用"。
+
+<span class="badge badge-exp">经验</span> 返回 `const&` 并非错误——当调用方承诺"引用存活期间持有者不被销毁"（如返回 `vector` 元素的 `const&` 且 vector 还活着）时，它零拷贝且高效。危险来自"返回方拥有、调用方长期持有"。经验法则：跨接口、生命周期不确定、或结果可能缺失时，优先返回值 / `shared_ptr` / `optional`；仅在"调用方明显持有所有者"的内部热路径用 `const&`。这正是不变量（invariant）与 API 契约要写清的地方。
+
+</details>
+
 ### 补例：命名约定的自验证
 
 下面一段自包含程序演示本章核心命名规则：布尔谓词用 `Is`/`Has` 前缀、获取器用 `GetX`、可失败调用用 `[[nodiscard]]`、修改器 `SetX` 标脏。用 `assert` 在运行期自检命名契约：

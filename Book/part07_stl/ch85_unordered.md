@@ -1281,6 +1281,64 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[unord.req]（`reserve`/`bucket_count`/`load_factor`/`max_load_factor` 与 rehash 的迭代器失效）；见 cppreference "container/unordered_set"。
 
+### 练习 4（难度 ★★）
+
+**真实场景：用自定义结构体作 `unordered_map` 的 key，却编译失败——因为哈希和相等都没定义。** 你有一个 `struct Point`，想直接当 key 用。请说明"自定义 key 必须同时提供哈希函数与相等比较"这一契约，并给出一种写法（特化 `std::hash` 或传入函数对象）。
+
+<details><summary>答案与解析</summary>
+
+`unordered_*` 容器要求 key 满足：① 有哈希函数（默认 `std::hash<Key>`，自定义类型需特化或传入 Hash 模板参数）；② 有等价比较（默认 `std::equal_to`，依赖 `operator==`）。二者必须保持一致——同一个等价类必须映射到同一个桶。常见写法：给 `operator==` 并特化 `std::hash<Point>`，或干脆传入自定义 Hash 函数对象（更易控制质量）。哈希质量直接影响冲突率与退化风险。
+
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <unordered_set>
+#include <string>
+struct StrHash {
+    std::size_t operator()(const std::string& s) const {
+        return std::hash<std::string>{}(s);   // 复用标准哈希
+    }
+};
+int main() {
+    std::unordered_set<std::string, StrHash> us;
+    us.insert("alpha");
+    std::cout << "has alpha=" << (us.find("alpha") != us.end()) << "\n"; // 1
+}
+```
+
+<span class="badge badge-std">标准</span> 无序关联容器要求 `Hash` 与 `Eq` 满足"比较等价 → 哈希相等"；默认 `std::hash` 对内建类型齐全，自定义类型须自行提供（详见 `[unord.req]`）。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[unord.req]（Hash 与 Eq 的一致性契约）；§[hash]（`std::hash` 特化）；见 cppreference "unordered_set"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：插入大量元素时反复 rehash 导致卡顿尖峰。** 你初始化一个百万级 `unordered_map`，性能曲线里出现周期性停顿。请用 `reserve` 预分配桶、用 `bucket_count`/`load_factor` 观察负载，并说明 rehash 为什么会使所有迭代器失效。
+
+<details><summary>答案与解析</summary>
+
+`unordered_*` 在元素数超过 `max_load_factor() * bucket_count()` 时会触发 rehash：分配新桶数组、把每个节点"改挂"到新桶（不搬元素值，只改指针），但桶布局变了，**所有迭代器/引用失效**（仅 `end()` 例外保证稳定）。预先 `reserve(n)` 让桶数一次性到位，避免中途多次 rehash 的尖峰。注意 `bucket_count` 是实际桶数（实现通常取 2 的幂），`load_factor` 为 元素数/桶数。
+
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <unordered_map>
+int main() {
+    std::unordered_map<int,int> m;
+    m.reserve(1024);                         // 预分配桶, 降低 rehash 概率
+    std::cout << "buckets=" << m.bucket_count()
+              << " max_load=" << m.max_load_factor() << "\n";
+    // rehash 会使所有迭代器/引用失效(仅 end 可能例外)
+}
+```
+
+<span class="badge badge-std">标准</span> `reserve` 保证 `bucket_count() >= ceil(n / max_load_factor())`；rehash 的迭代器失效规则见 `[unord.req]`（与有序容器"节点稳定"相反）。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[unord.req]（`reserve`/`rehash`/`bucket_count`）；见 cppreference "unordered_map"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 unordered_map + list 实现 O(1) 查找的 LRU 骨架

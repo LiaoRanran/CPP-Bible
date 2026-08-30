@@ -935,6 +935,66 @@ int main() {
 
 <span class="badge badge-ref">引用</span> CMake《交叉编译工具链》（https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html ）讲 `CMAKE_SYSTEM_NAME`/编译器前缀/`CMAKE_SYSROOT` 的集中配置；GCC 预定义宏（https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html ，如 `__arm__`）用于区分交叉构建。
 
+### 练习 4（难度 ★★）
+
+**真实场景：你交叉编译到 ARM，却把 x86 假设写死在代码里。** 同一个源码要区分目标架构来选择 SIMD/对齐策略。请用预定义宏（`__x86_64__`/`__aarch64__`）做一个可移植的目标探测，并说明为什么交叉编译时"编译机"与"目标机"的宏必须区分清楚。
+
+<details><summary>答案与解析</summary>
+
+交叉编译时，源码里探测的是"目标三元组"而非宿主机的宏；`__x86_64__`/`__aarch64__` 等由交叉工具链按目标定义，让你写一份代码适配多平台。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+int main() {
+#if defined(__x86_64__) || defined(__i386__)
+    std::cout << "target: x86 family\n";
+#elif defined(__aarch64__) || defined(__arm__)
+    std::cout << "target: ARM family\n";
+#else
+    std::cout << "target: other\n";
+#endif
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> 目标相关的预定义宏由编译器按所选目标三元组提供；C++ 标准本身的 `__STDC__`/`__cplusplus` 不区分架构，架构宏属于实现/平台扩展。
+
+<span class="badge badge-exp">经验</span> 交叉编译别用 `uname` 之类的宿主探测当作目标探测；真正要信的是工具链定义的 `__xxx__` 宏，否则在 CI 交叉构建里会 silently 选错路径。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：跨平台二进制要正确处理字节序。** 你做异构通信/文件格式，目标机可能是小端或大端，读写多字节整数必须显式处理。请用 C++20 的 `std::endian` 探测本机的字节序，演示"按字节序决定序列化顺序"的写法，并说明交叉编译下的注意点。
+
+<details><summary>答案与解析</summary>
+
+`std::endian`（C++20, `<bit>`）给出 `native`/`little`/`big` 的编译期常量，让你在序列化/网络协议里按字节序做转换，而不是依赖不可移植的 union 强转。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <bit>
+
+int main() {
+    if (std::endian::native == std::endian::little)
+        std::cout << "little-endian target\n";
+    else if (std::endian::native == std::endian::big)
+        std::cout << "big-endian target\n";
+    else
+        std::cout << "mixed-endian target\n";
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++20 §[support.types] 引入 `std::endian`；它是编译期常量，跨编译器一致，优于手写 `union`/`reinterpret_cast` 探测。
+
+<span class="badge badge-exp">经验</span> 跨架构通信一律用 `std::endian` + `<span>` 显式转换，别假设"目标就是小端"——交叉编译到非 x86 时会立刻出错。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 QEMU 用户态在 x86 上跑 ARM 二进制做冒烟测试

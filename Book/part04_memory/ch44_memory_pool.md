@@ -2227,6 +2227,128 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：池归还时的越界防护。** 一个固定块池允许调用方把任意 `void*` 还回来；若传入的不是本池分配过的块（栈地址、越界地址），池不能盲目接受。请给 `release` 加「指针范围校验」，演示合法归还与非法归还的区别。
+
+<details>
+<summary>答案与解析</summary>
+
+池的 `blocks_` 是一块连续 `std::vector<int>`，块地址落在 `[begin, begin + n*sizeof(int))` 区间内。`release(p)` 先做**范围检查**：把 `p` 转成 `std::uint8_t*`，若落在区间外直接返回 `false`（拒绝归还）——栈上的 `&outside` 因此被拒。落在区间内则换算块索引 `(raw - begin)/sizeof(int)` 并压回空闲栈。这个校验把「池只能接受自己的块」变成不变量，是池实现的第一道防线。
+
+标准依据：ISO/IEC 14882:2023 §[expr.add] 规定指针算术在数组范围内是良定义的（越界比较本身未定义，故用「范围端点比较 + 不越界减法」的写法）；内存所有权规则（§[basic.stc.dynamic]）要求释放只能归还同一次分配——池内校验即是该规则在对象池层面的落地。
+
+实现与边界：范围检查只能证明「指针在池的地址带内」，不能证明「该块当前正被占用」（同一块归还两次仍需另行记录，可用 bitmap/占用标记）。何时失效：若池内存来自 `malloc` 的不同 chunk，仅「范围在 blocks_ 内」仍可能误收块间 gap——更严格做法是维护「已分配集合」。替代方案：pimpl/句柄表（归还索引而非裸指针）从根上杜绝错误指针；代价是多一次映射（ch41 的 deleter 归还与之配套）。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
+class FixedPool {
+public:
+    explicit FixedPool(std::size_t n) : blocks_(n), free_(n) {
+        for (std::size_t i = 0; i < n; ++i) free_[i] = i;
+        top_ = n;
+    }
+    void* acquire() {
+        if (top_ == 0) return nullptr;
+        std::size_t idx = free_[--top_];
+        return static_cast<void*>(&blocks_[idx]);
+    }
+    bool release(void* p) {
+        // 校验指针是否属于本池 (范围检查)
+        auto* raw = static_cast<std::uint8_t*>(p);
+        std::uint8_t* begin = reinterpret_cast<std::uint8_t*>(blocks_.data());
+        if (raw < begin || raw >= begin + blocks_.size() * sizeof(int)) return false;
+        std::size_t idx = static_cast<std::size_t>(raw - begin) / sizeof(int);
+        if (top_ < free_.size()) free_[top_++] = idx;
+        return true;
+    }
+private:
+    std::vector<int> blocks_;
+    std::vector<std::size_t> free_;
+    std::size_t top_ = 0;
+};
+
+int main() {
+    FixedPool pool(8);
+    int* a = static_cast<int*>(pool.acquire());
+    if (a) { *a = 42; std::cout << *a << " " << pool.release(a) << "\n"; }
+    int outside;
+    std::cout << pool.release(&outside) << "\n";   // 范围外 → false
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.stc.dynamic]：释放只对同一次分配有效；池用范围校验落实所有权不变量。
+
+<span class="badge badge-exp">经验</span> 「池只收自己的块」是第一道防弹线：范围校验 + （必要时）占用标记。再往上就是归还句柄/索引，彻底消灭错误指针的可能（本章练习 1/3 的空闲链表同一原则：回收的是「确定性集合内」的块）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：池与智能指针的自动归还。** 从池 `acquire` 出来的对象用完忘记归还，池就慢慢枯竭。请把池的归还动作绑进 `unique_ptr` 的自定义删除器：`acquire` 返回带 deleter 的 `unique_ptr`，析构时自动把块还回池。
+
+<details>
+<summary>答案与解析</summary>
+
+`ObjectPool<T>` 内部用 `std::vector<std::unique_ptr<T>>` 持有空闲对象；`acquire()` 从尾部取走一个、经 `obj.release()` 释放裸指针，再包成 `unique_ptr<T, Deleter>`——Deleter 保存「归还到哪个池」的指针，`operator()` 里调 `pool->reclaim(p)` 把对象放回空闲队列。调用方 `p.reset()` 或离开作用域时，删除器自动触发归还：池的复用 + RAII 的自动释放一次到位。
+
+标准依据：ISO/IEC 14882:2023 §[unique.ptr.dltr] 允许删除器持有状态（这里指向池）；`reset()`/析构调用删除器（§[unique.ptr.single.modifiers]）。设计要点：Deleter 是有状态的，`unique_ptr` 因此比裸指针版大（ch41 练习 4 讨论过有状态 deleter 的尺寸影响），换来「不可能忘还」。
+
+实现与边界：池空时 `acquire` 返回空 `unique_ptr`（调用方要判空）；`reclaim` 会把指针**重新包成池的 `unique_ptr`**，保证同一块永远只有一个智能指针持有。何时失效：对象在归还后又被 `get()` 保存并解引用（悬垂）；要求归还后彻底与池解耦则需释放语义。替代方案：只租借语义可用裸指针 + 显式 `release()` 契约；需要「自动归还不计成本」时本方案的 deleter 是标准答案（EASTL `fixed_pool` 同理）。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <memory>
+#include <vector>
+
+template <typename T>
+class ObjectPool {
+public:
+    explicit ObjectPool(std::size_t n) {
+        for (std::size_t i = 0; i < n; ++i)
+            pool_.push_back(std::unique_ptr<T>(new T));
+    }
+    struct Deleter {
+        ObjectPool* pool = nullptr;
+        void operator()(T* p) const {
+            if (p) pool->reclaim(p);
+        }
+    };
+    std::unique_ptr<T, Deleter> acquire() {
+        if (pool_.empty()) return {nullptr, Deleter{this}};
+        std::unique_ptr<T> obj = std::move(pool_.back());
+        pool_.pop_back();
+        return std::unique_ptr<T, Deleter>(obj.release(), Deleter{this});
+    }
+    std::size_t available() const { return pool_.size(); }
+private:
+    void reclaim(T* p) { pool_.push_back(std::unique_ptr<T>(p)); }
+    std::vector<std::unique_ptr<T>> pool_;
+};
+
+struct Point { int x = 0, y = 0; };
+
+int main() {
+    ObjectPool<Point> pool(4);
+    auto p = pool.acquire();
+    if (p) { p->x = 1; std::cout << p->x << " avail=" << pool.available() << "\n"; }
+    p.reset();                      // 归还池
+    std::cout << "avail=" << pool.available() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[unique.ptr.dltr]：删除器可带状态，reset/析构触发归还。
+
+<span class="badge badge-exp">经验</span> 「池 + 有状态 deleter」是对象池的生产级形态：调用方只见 `unique_ptr`，归还时机完全自动。它把 ch41 的 deleter 机制、ch44 的池复用、RAII 的生命周期绑定三者拧成一根绳（本章附录『实时系统换内存池』的实战目标即此）。
+
+</details>
+
 ## 附录：用法演绎 — 实时系统里把 new 换成内存池
 
 > 场景：嵌入式/实时控制循环中频繁创建销毁小对象，通用 `new/delete` 的延迟不确定且长期运行产生碎片。

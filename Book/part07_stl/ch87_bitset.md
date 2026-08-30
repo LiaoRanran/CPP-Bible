@@ -1191,6 +1191,58 @@ int main() {
 </details>
 
 
+
+### 练习 4（难度 ★★）
+
+**真实场景：位掩码寄存器/权限位管理——用 `std::bitset` 而非裸 `unsigned` 来获得定长、带边界的类型安全。** 嵌入式里用 32 位寄存器掩码，你希望下标访问有类型保护、且有 `count()` 直接数置位个数。请用 `bitset` 的 `set`/`test`/`count` 演示基本位操作，并说明为何它比裸整数更安全。
+
+<details><summary>答案与解析</summary>
+
+`std::bitset<N>` 的长度 `N` 是编译期常量，下标访问 `operator[]` 虽不抛异常（越界仍是 UB，但类型强制了长度上限），且提供 `count()`（统计置位）、`test()`（越界抛 `out_of_range`）、`set`/`reset`/`flip` 等语义化操作——比手写 `1u << n` 与 `&` 更易读、更不易错。它的值是"按需解释的整数位"，与 `<bit>` 中的 `std::popcount` 等可在同一心智模型下配合。
+
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <bitset>
+int main() {
+    std::bitset<8> b("10110011");
+    std::cout << "count=" << b.count() << "\n";    // 5 (置位个数)
+    std::cout << b.test( 0) << " " << b[2] << "\n";   // 1 1
+}
+```
+
+<span class="badge badge-std">标准</span> `bitset<N>` 长度为编译期 `N`；`count()`/`test()`/`all`/`any`/`none` 均为 O(N) 位操作；`test(pos)` 越界抛 `out_of_range`。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[bitset]（`bitset` 操作与 `test`/`count`）；见 cppreference "bitset"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：把权限位 `bitset<64>` 转成整数喂给系统调用（如 `mmap` 的 prot 标志）。** `to_ullong()` 能把位集整体导出成整数，但你担心"位宽超过 64 会编译不过或截断"。请用 `to_ullong` 演示导出，并说明其 64 位上限约束与替代方案。
+
+<details><summary>答案与解析</summary>
+
+`to_ullong()`/`to_ulong()` 把 `bitset` 导出为无符号整数；但 `bitset` 的模板参数 `N` 若大于返回类型宽度（如 `bitset<128>` 调 `to_ullong`），标准规定会抛 `std::overflow_error`——因为搬不进 64 位。因此 64 位以内的位集才适合 `to_ullong`；更宽或需要逐位访问时，应改用 `operator[]` 遍历或 `to_string`。这条约束常被忽略，导致运行期才崩。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <bitset>
+int main() {
+    std::bitset<8> b(0b11111111);
+    unsigned long long v = b.to_ullong();    // 仅当 bit 数 <= 64 可整体取出
+    std::cout << v << "\n";                   // 255
+    // bits>64 的 bitset 不能 to_ullong, 须逐位访问或 to_string
+}
+```
+
+<span class="badge badge-std">标准</span> `to_ullong`/`to_ulong` 在 "值无法表示为对应无符号类型" 时抛 `std::overflow_error`；适用于 `N <= 64`（ullong）或 `N <= 32`（ulong）。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[bitset]（`to_ullong`/`to_ulong` 与 overflow 语义）；见 cppreference "bitset"。
+
+</details>
+
 ## 附录：std::bitset 与 <bit> 工具真机汇编实证（ASM-87-bitset / ASM-87-bit · GCC 15.3.0 / C++26 / -O2）
 
 > 证据：`_asm_demo/ch87_bitset_test.cpp`+`ch87_bitset_test.s`、`_asm_demo/ch87_bit_test.cpp`+`ch87_bit_test.s`（另含 `-mpopcnt` 变体 `ch87_bit_test_popcnt.s`）。

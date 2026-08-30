@@ -1010,6 +1010,62 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你写一个泛型 `max`，想让它既能推导参数类型、又能在必要时显式指定。** 请写出代码：让 `max(3, 7)` 推导 `T=int`；再演示用显式指定 `Wrapper<int>` 把值包进泛型容器，说明"类型参数"如何成为编译期符号。
+
+<details><summary>答案与解析</summary>
+
+模板把"类型"提升为编译期参数：编译器为每次遇到的实参组合生成一份独立实例（`monomorphization`）。`max(3,7)` 触发 `T=int` 的实例化；显式 `Wrapper<int>` 则把类型写死。模板只在边界（实参）做推导，内部代码完全静态。
+
+> **示例 61** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename T> T max(T a, T b) { return a > b ? a : b; }
+template <typename T> struct Wrapper { T v; };
+int main() {
+    std::cout << max(3, 7) << "\n";             // 推导 T = int
+    Wrapper<int> w{42};                          // 显式指定 T = int
+    std::cout << w.v << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> 模板参数推导与实例化由 ISO/IEC 14882（C++23）的 §[temp.deduct] / §[temp.inst] 规定；每个不同的模板实参组合生成独立的特化定义，类型在编译期完全确定。
+
+<span class="badge badge-exp">经验</span> 模板的核心是"类型即参数"——这让泛型算法既零开销又可内联。推导失败（如 `max(3, 3.0)`）会编译报错，此时需显式 `<int>` 或改签名用独立参数。模板把运行时多态搬到了编译期。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你在写高性能数值代码，需要一个编译期长度的点积函数，且希望长度随实参自动推导。** 请写出非类型模板参数（NTTP）版本：`dot(a, b)` 中数组长度 `N` 从实参推导，返回编译期已知的固定维度点积。
+
+<details><summary>答案与解析</summary>
+
+非类型模板参数（NTTP）把"值"也作为编译期参数。以 `const T (&a)[N]` 引用数组，编译器从实参大小推导 `N`，循环边界成为编译期常量，便于展开与边界检查消除。
+
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename T, int N>
+T dot(const T (&a)[N], const T (&b)[N]) {
+    T s{};
+    for (int i = 0; i < N; ++i) s += a[i] * b[i];
+    return s;
+}
+int main() {
+    int  a[]{1, 2, 3};
+    int  b[]{4, 5, 6};
+    std::cout << dot(a, b) << "\n";   // 1*4 + 2*5 + 3*6 = 32
+}
+```
+
+<span class="badge badge-std">标准</span> 非类型模板参数由 ISO/IEC 14882（C++23）§[temp.param] 规定，可绑定到整型、指针、引用、`auto` 等；C++20 起 NTTP 还可接受浮点与类类型（满足 `structural` 约束）。
+
+<span class="badge badge-exp">经验</span> NTTP 适合"维度/对齐/容量是编译期常量"的场景；但它要求调用方的实参大小严格匹配，长于维度的安全由编译器保证。与 `std::span`/`std::array` 相比，原生数组引用能在编译期拿到 `N`。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：默认模板参数的位置约束

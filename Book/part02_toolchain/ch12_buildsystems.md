@@ -1115,6 +1115,60 @@ g++ -std=c++23 main.cpp libmath.a -o app      # 静态：square 代码已并入 
 
 <span class="badge badge-ref">引用</span> GNU `ar` 手册讲静态库归档；CMake 文档 `add_library`（https://cmake.org/cmake/help/latest/command/add_library.html）讲 STATIC/SHARED 目标。动态库分发须保证 ABI 一致（同编译器/标准库/构建档），见 ch13 包管理与 ch18 构建配置。
 
+### 练习 4（难度 ★★）
+
+**真实场景：构建系统要在编译期就拦下"架构不符"的代码。** CMake/Make 只负责驱动编译，真正的"编译期断言"得靠语言本身。请用 `static_assert` 在编译阶段强制平台假设（如指针宽度），演示它如何在构建早期失败、避免问题流入链接与运行期。
+
+<details><summary>答案与解析</summary>
+
+`static_assert` 在翻译期求值断言，条件不满足直接编译失败，是比"运行时 assert"更早、更廉价的守门手段；构建系统配合 `-D` 宏也能把配置信息喂进来。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+static_assert(sizeof(void*) == 8, "this module requires a 64-bit target");
+
+int main() {
+    std::cout << "pointer width OK\n";
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++11 起 `static_assert(cond, msg)` 在编译期检查常量表达式；与构建系统传入的 `-D` 宏结合，可把"目标架构/特性开关"固化为编译期不变量。
+
+<span class="badge badge-exp">经验</span> 凡能在编译期确定的不变量（字长、对齐、特性宏）都用 `static_assert` 锁死；把检查前移，比在 CI 跑一堆脚本更早暴露问题，也更贴近源码。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：同一份源码要按 Debug/Release 走不同实现。** 构建系统（CMake/Make）通过 `-D` 宏切换配置；你要在代码里据此选择日志/断言策略。请用 `#ifdef NDEBUG` 演示"发布版关闭调试输出"，并说明为什么用宏守卫比在运行时 `if` 更优。
+
+<details><summary>答案与解析</summary>
+
+构建系统会以 `NDEBUG`（Release 通常定义）这类宏传递配置；用 `#ifdef` 守卫能在编译期彻底剔除调试分支，不产生任何运行期判断开销，比运行时 `if (debug)` 更干净。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+int main() {
+#ifdef NDEBUG
+    std::cout << "release build (debug logging stripped)\n";
+#else
+    std::cout << "debug build (verbose logging on)\n";
+#endif
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `#ifdef`/`#ifndef` 是 C/C++ 预处理器的条件编译指令；`NDEBUG` 由 C 标准约定用于禁用 `assert`，也被构建系统当作"是否发布"的信号。
+
+<span class="badge badge-exp">经验</span> 构建配置尽量用宏在边界处表达，不要在热路径塞运行时开关；同时记得宏是无类型的文本替换，跨模块共享的开关应在头文件统一声明，避免重复定义。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：把“全局变量污染”的旧 Make 迁移到 target-based CMake

@@ -1193,6 +1193,102 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你有 Circle/Square 等多个形状类，都需要 `draw()` 与 `area()` 接口，但这是游戏高频路径，每帧上百万次调用，虚函数表的间接跳转与去虚拟化失败让你无法接受。请用 CRTP 实现"零开销静态多态"，并说明它与虚函数的本质区别。
+
+<details><summary>答案与解析</summary>
+
+CRTP（Curiously Recurring Template Pattern）让基类模板以"派生类自身"作为模板实参：`ShapeBase<Circle>` 在编译期就知道 `this` 实际是 `Circle`，于是 `draw()` 里 `static_cast<const Derived*>(this)->draw_impl()` 是一次**编译期确定**的调用，编译器可直接内联 `draw_impl`，完全没有虚表、没有运行期分发。这正是"零开销抽象"的范本：你得到了多态的写法，却付出了手写直接调用的代价。
+
+机制上，CRTP 依赖 ISO/IEC 14882 的模板实例化与静态多态（[temp]）：基类的方法通过 `Derived` 类型在实例化时"看见"派生类的成员，调用被解析为静态绑定。相较 `virtual`，它省掉了 vptr 内存、虚调用分支，以及编译器难以去虚拟化时的惩罚；代价是模板为每种派生类生成一份基类代码（代码段膨胀），且派生类之间**类型不同**——`Circle` 与 `Square` 不是同一基类指针族，不能被放进 `std::vector<ShapeBase*>` 这样的同类型容器（需用类型擦除或引用包装）。
+
+实现边界：CRTP 基类只能调用派生类"承诺提供"的接口（如 `draw_impl`），若派生类漏写会在实例化时报硬错误，而非运行期静默。当失效：若你确实需要"异构对象同容器、运行期动态增删"（例如 UI 控件树），静态多态无法满足，应回退 `virtual`；或折中用 `std::variant`/`std::any` 做编译期类型擦除。注意 CRTP 的 `static_cast` 是安全的，因为 `this` 确实指向 `Derived` 子对象。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-std">标准</span> CRTP 由 ISO/IEC 14882 模板机制支撑（[temp] 模板实例化与成员绑定）；属于编译期多态，无对应标准条款编号，是惯用法。
+
+<span class="badge badge-ref">引用</span> Coplien 提出 CRTP；James Coplien《C++ Report》1995；现代应用见 ch139 正文静态多态章节。
+
+<span class="badge badge-exp">经验</span> 热路径 + 同质接口 + 编译期已知类型 → CRTP 消除虚分发；需要异构同容器/运行期多态 → 用 virtual 或 variant。
+
+```cpp
+#include <iostream>
+
+template <typename Derived>
+struct ShapeBase {  // CRTP：基类通过 Derived 在编译期调用派生实现
+    void draw() const { static_cast<const Derived*>(this)->draw_impl(); }
+    double area() const { return static_cast<const Derived*>(this)->area_impl(); }
+};
+
+struct Circle : ShapeBase<Circle> {
+    double r = 1.0;
+    void draw_impl() const { std::cout << "draw circle r=" << r << "\n"; }
+    double area_impl() const { return 3.1415926 * r * r; }
+};
+
+struct Square : ShapeBase<Square> {
+    double s = 2.0;
+    void draw_impl() const { std::cout << "draw square s=" << s << "\n"; }
+    double area_impl() const { return s * s; }
+};
+
+template <typename D>
+void print_area(const ShapeBase<D>& s) { std::cout << "area=" << s.area() << "\n"; }
+
+int main() {
+    Circle c; Square q;
+    c.draw(); q.draw();
+    print_area(c); print_area(q);
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 你有一批业务类（Widget/Timer/Handler）都需要统一的 `name()` 能力，但你不希望每个类重复写一遍，更不想引入公共基类把它们的继承层级搅乱。请用 CRTP 写一个"编译期 Mixin"，把 `name()` 注入到任意派生类。
+
+<details><summary>答案与解析</summary>
+
+Mixin 是"把可复用能力横向拼装进多个无关类"的手法，CRTP 是它在 C++ 里的标准实现：定义一个 `Named<Derived>` 基类，提供统一的 `name()`，内部通过 `static_cast` 调派生类的 `name_impl()`；任何想获得该能力的类只需 `: Named<Self>` 即可，无需共享一个公共祖先。这样既避免了"为复用而强行建基类"导致的层级污染，又保持零运行时开销。
+
+机制上，Mixin 与练习 4 的 CRTP 同源——都是"基类模板以派生类为实参、编译期回调派生实现"。区别在意图：`ShapeBase` 是要"多态接口"，`Named` 是要"能力注入/代码复用"。多个 Mixin 可叠加（`class Widget : Named<Widget>, Serializable<Widget>`），组合出菱形之外更灵活的复用，这正是策略/组件思想的编译期版（与 ch140 Policy-Based Design 一脉相承）。
+
+实现边界：Mixin 越多，类名越长、错误信息越难读（模板实例化链长）。当失效：若注入的能力需要运行期状态或跨 Mixin 共享数据，纯 CRTP 无状态 Mixin 不够，需引入带成员的状态基类或回退组合；另外 Mixin 与虚函数混用时要小心"虚基类 + CRTP"的初始化顺序陷阱。注意 `static_cast<Derived*>` 要求 `Derived` 确实是当前子对象类型，否则是 UB。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-std">标准</span> CRTP Mixin 依赖 ISO/IEC 14882 模板实参与 `static_cast` 向下转型规则（[expr.static.cast]），属编译期复用惯用法。
+
+<span class="badge badge-ref">引用</span> Mixin 概念源自 Lisp/Flavors；C++ CRTP 实现见 ch139 正文；Andrei Alexandrescu《Modern C++ Design》对编译期组装有大量论述。
+
+<span class="badge badge-exp">经验</span> 横向能力复用、又不想建公共基类 → CRTP Mixin；Mixin 叠加要警惕模板诊断噪声与初始化顺序。
+
+```cpp
+#include <iostream>
+#include <string>
+
+template <typename Derived>
+struct Named {  // CRTP mixin：给任意派生类注入 named() 能力
+    std::string name() const {
+        return static_cast<const Derived*>(this)->name_impl();
+    }
+};
+
+struct Widget : Named<Widget> {
+    std::string name_impl() const { return "widget"; }
+};
+
+int main() {
+    Widget w;
+    std::cout << w.name() << "\n";
+    return 0;
+}
+```
+</details>
+
 ## 附录 J：CRTP 与静态多态 决策流（D3 维度）
 
 > 以"用零开销静态多态替代虚函数"为主线，给出 CRTP / Mixin / 标签分发的选型判据。

@@ -1082,6 +1082,56 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你加了 8 核，却只快了 4 倍。** 团队以为"8 核就该快 8 倍"，但实测离线性很远。请用 **Amdahl 强扩展定律** `S = 1 / ((1-p) + p/n)` 算清楚：当串行比例 `p = 10%`、核数 `n = 8` 时理论上限约 `4.7x`（而非 `8x`），并指出"继续堆核"在强扩展下必然收益递减——这正说明性能建模要先算天花板，再谈优化。
+
+<details><summary>答案与解析</summary>
+
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+double amdahl(double p, double n) {        // p=串行比例, n=核数
+    return 1.0 / ((1.0 - p) + p / n);      // 强扩展理论上限
+}
+int main() {
+    double s = amdahl(0.10, 8.0);          // p=10% 串行 -> 上限约 4.7x（非 8x）
+    std::cout << "strong-scaling speedup = " << s << "x\n";
+}
+```
+
+<span class="badge badge-std">标准</span> Amdahl 定律描述"固定问题规模下"的加速上限：串行部分 `p` 永不被并行化，故 `n` 核也不可能超过 `1/p` 倍（本例 `1/0.10 = 10x` 已是理论封顶）。这是解析性能模型，与具体硬件无关。
+
+<span class="badge badge-exp">经验</span> 性能建模的第一步永远是"先算天花板"：若目标加速已被 Amdahl 钉死在 `4.7x`，再怎么调微架构也突破不了，应转而去降低 `p`（把串行区也并行化）或改用 Gustafson 弱扩展（ch152 练习 3）。注意这里的 `4.7x` 是**模型公式的推演值**，不是某次实测——真实硬件还会叠加通信/同步开销，实际只会更低。把"模型上限"误当成"可达性能"是性能工程里最常见的乐观偏差。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：同一个算子，在该机器上是 compute-bound，换台机器变成 memory-bound。** Roofline 模型用「算术强度 AI = FLOPs/Byte」与「机器平衡点 balance = 峰值算力/峰值带宽」比较来定性：AI ≥ balance 受算力限制，否则受带宽限制。请写一个判定函数，并明确标出 `balance` 是**硬件相关、需实测**的量（不可凭空编造某 CPU 的具体数字），说明为什么同一个算法在不同机器上归属不同瓶颈。
+
+<details><summary>答案与解析</summary>
+
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+// Roofline 定性：ai=算术强度(FLOPs/Byte)；balance=机器平衡点=峰值算力/峰值带宽
+// balance 是硬件相关量，必须实测，本处的 10.0 仅作示意 [UNVERIFIED]
+const char* bound_by_roofline(double ai, double balance) {
+    return ai >= balance ? "compute-bound" : "memory-bound";
+}
+int main() {
+    double balance = 10.0;                 // 某机器平衡点示意值 [UNVERIFIED]
+    std::cout << bound_by_roofline(25.0, balance) << '\n';  // 25 >= 10 -> compute-bound
+}
+```
+
+<span class="badge badge-std">标准</span> Roofline（`[性能模型，非 C++ 标准条款]`）由 Williams 等人提出：横轴算术强度、纵轴可达性能，形成"带宽斜坡 + 算力天花板"的折角；算法点落在折角左侧为 bandwidth-bound、右侧为 compute-bound。判定仅依赖两个比值，与具体指令无关。
+
+<span class="badge badge-exp">经验</span> 同一算法在不同机器上归属不同瓶颈，根因是 `balance` 随硬件变化（GPU 的算力/带宽比远高于 CPU）。因此写性能分析**绝不能凭空写死某 CPU 的 FLOPs/Byte 真实数字**——那属于 `[UNVERIFIED]`，必须用 `perf`/官方 datasheet 实测或查证。正确做法是把 `balance` 当参数、让结论随目标机器变化；也只有这样才能解释"为什么在这台机器上该优化有效、换机器却无效"。这是 part14 全篇的红线：可复现的模型与测量可以有，编造的基准数字一律打标或回避。
+
+</details>
+
 ## 附录 J：性能模型决策流（D3 维度）
 
 把性能建模收敛为"能否解析→瓶颈定位→可测性→可移植性→精度需求"五道分流：先判能否用 Roofline 解析刻画，再判瓶颈在算力还是带宽，再看硬件计数器是否可用，再判是否跨平台，最后按精准/量级需求定模型。

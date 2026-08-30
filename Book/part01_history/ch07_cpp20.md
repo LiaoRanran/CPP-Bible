@@ -714,6 +714,69 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO C++20 §[expr.spaceship]；cppreference "operator<=>"（https://en.cppreference.com/w/cpp/language/operator_comparison）与 "默认比较"（https://en.cppreference.com/w/cpp/language/default_comparison）。三路比较由 WG21 论文 P0515R3（<=> 与 <compare>）引入。
 
+### 练习 4（难度 ★★）
+
+**真实场景：函数要处理"一段连续 int"，来源可能是数组、`std::array`、或 `vector`。** 过去你为每种容器各写一份重载，或退而求其次拷贝进 `vector`。请用 C++20 的 `std::span` 写一个统一入口，并说明它为什么"不拥有内存"、以及相比 `const vector<int>&` 的边界优势。
+
+<details><summary>答案与解析</summary>
+
+`std::span<T>` 是连续的、非拥有的视图：它只记录 `{指针, 长度}`，可同时接受原生数组、`std::array` 与 `std::vector` 的连续区间，避免为统一接口而作拷贝。
+
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <span>
+#include <array>
+
+int sum(std::span<const int> s) {
+    int total = 0;
+    for (int x : s) total += x;     // 不拷贝底层数据，只遍历视图
+    return total;
+}
+
+int main() {
+    std::array<int, 3> a{1, 2, 3};
+    int      b[]{4, 5, 6};
+    std::cout << sum(a) << ' ' << sum(b) << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++20 §[views.span] 定义 `span` 为连续序列的轻量视图；但它不拥有内存，调用方必须保证底层容器在其生命周期内有效（否则悬垂）。
+
+<span class="badge badge-exp">经验</span> 只读入参优先用 `span<const T>` 取代 `const vector<T>&` 与裸指针+长度；但别用它保存跨作用域的长期引用，它是"借用"而非"持有"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：对大数组做"筛选后再求和"，过去要写显式循环或临时 `vector`。** 你希望表达成一条惰性流水线，且不在内存里生成中间容器。请用 C++20 Ranges 的 `views::filter` 演示惰性求值，并说明它与手写循环在可读性与开销上的差异。
+
+<details><summary>答案与解析</summary>
+
+C++20 Ranges 用 `|` 把视图组合成惰性管道：每个元素只在被消费时才经过各阶段，不生成中间容器。`views::filter` 仅过滤、不产生新数组。
+
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+
+int main() {
+    std::vector<int> v{1, 2, 3, 4, 5, 6};
+    auto evens = v | std::views::filter([](int x) { return x % 2 == 0; });
+    for (int x : evens) std::cout << x << ' ';   // 惰性：边遍历边过滤
+    std::cout << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++20 §[range] / §[range.adaptors] 规定视图是轻量、非拥有的；`filter` 适配器在迭代时才应用谓词，整体为 O(n) 单次遍历，零额外内存。
+
+<span class="badge badge-exp">经验</span> Ranges 把"数据管线"提升为一等公民，可读性接近声明式；但视图依赖底层数据存活，且复杂组合下编译期错误信息较长，调试时可用 `.begin()/.end()` 单独验证每段。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：std::span —— 统一数组/vector 的非拥有视图

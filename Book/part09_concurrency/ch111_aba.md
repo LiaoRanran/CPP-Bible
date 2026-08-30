@@ -964,6 +964,77 @@ int main() {
 
 <span class="badge badge-ref">引用</span> Intel SDM 中 `cmpxchg16b` 指令说明：`https://www.felixcloutier.com/x86/cmpxchg8b:cmpxchg16b`。宽 CAS 与 tagged pointer 见 ISO §32.5（[atomics]）及 M. M. Michael 的 hazard pointer / lock-free 链表工作。
 
+### 练习 4（难度 ★★★）
+
+**真实场景：版本号也会"回绕"，ABA 防护随之失效。** 32 位版本号理论上 42 亿次才回绕，但超高吞吐（每秒上亿 CAS）下可能几秒就耗尽——回绕后指针值恰好相同、版本又回到原值，CAS 会误成功。请用 `uint32_t` 演示版本号在接近上限时的回绕行为，说明为什么高更新率下必须用 64 位版本或换 hazard pointer（不依赖版本号的"结构性"解法）。
+
+<details><summary>答案与解析</summary>
+
+版本号方案的核心是"指针复用 + 版本不同 ⇒ CAS 拒绝"。但版本号是**有限位宽**的：`uint32_t` 溢出回绕后，如果此刻指针地址恰好也回到旧值（`A→B→A` 且版本也转了一圈），打包值整体等于旧值，CAS 就会误成功——ABA 防护被"计数回绕"击穿。回绕本身不是 bug，真正的 bug 是"回绕窗口内恰好发生地址复用"。
+
+标准依据：回绕是 `uint32_t` 无符号整数的定义行为（模 2³²，见 [basic.fundamental]）；C++ 无符号溢出被标准定义、不构成 UB，但语义上"历史顺序信息"丢失。工程上以"更新率 × 期望生命周期"估算位宽：每秒 10⁸ 次更新下 32 位约 43 秒回绕，64 位则远超任何服务寿命。
+
+边界条件与失效场景：回绕概率虽低，但无锁代码的失败模式是"偶发、难复现、后果严重（use-after-free）"——"足够大"不构成正确性论证。替代方案：64 位版本（指针 + 版本压缩进 64 位见练习 2，或 128 位宽 CAS 见练习 3）；或用 hazard pointer / RCU 这类**不让地址复用发生**的结构性解法（ch112），从根上消灭 ABA 而无需版本号。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <cstdint>
+#include <iostream>
+int main() {
+    std::uint32_t ver = 0xFFFF'FFFE;      // 接近 32 位上限
+    for (int i = 0; i < 4; ++i) {
+        ++ver;
+        std::cout << "ver=" << ver
+                  << " (dec=" << static_cast<std::uint64_t>(ver) << ")\n";
+    }
+    std::cout << "回绕后 ver 从 0 重新计数：高位历史丢失\n";
+}
+```
+
+<span class="badge badge-exp">经验</span> 版本号位宽的选择是"更新率 × 生命周期"的工程估算，不是拍脑袋；无锁代码正确性不能建立在"不可能回绕"上。生产级对策更常是"版本号 + 回收协议双保险"——版本号挡住常见 ABA，HP/RCU 兜底地址复用。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：同样一个 CAS，为什么计数器不怕 ABA、指针怕？** 面试高频题：CAS 用于"无锁计数器"时值先 +1 再 -1 回到原值，CAS 仍成功、结果依然正确；用于"无锁栈指针"时地址复用却致命。请用一段代码对比两种场景，说明 ABA 是否有害取决于"被比较值"是否携带状态语义——计数器的值只是标量，指针却指向已释放/复用对象的身份。
+
+<details><summary>答案与解析</summary>
+
+ABA 的本质是"CAS 比较相等 ⇒ 认为期间无变化"，但"值相等"不等于"状态未变"。对无锁计数器，值 `V` 经过 `V→V+1→V` 后再 CAS `V→V+5`，最终结果就是把当前值 +5——中间发生过什么不影响结果，因为累加运算与历史无关，ABA **无害**。对无锁栈指针，`head` 从 `&n1` 变 `&n2` 再变回 `&n1` 意味着 `n1` 可能已被 pop 端 `delete` 后 `new` 复用——CAS 误以为"还是旧节点"并写入 `n2`，随后解引用已释放的 `n1->next`，use-after-free。
+
+标准依据：`compare_exchange` 只比较"当前值与期望值"的位模式相等，语义上见 ISO §32.5.5（[atomics.types.operations]）——它无从知道指针指向的对象是否已被回收。是否有害由"被比较值所代表的状态语义"决定，语言本身不区分。
+
+边界条件与失效场景：判断"这个 CAS 是否需要防 ABA"看三点：①被比较的是否是指针/索引（身份语义）；②被指对象是否可能被回收后同地址复用（无回收协议就会）；③失败模式是否仅影响性能（计数器）还是破坏内存安全（指针）。无锁栈/队列/链表指针场景一律要 tagged pointer（练习 2/3）或 HP/RCU（ch112）。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <atomic>
+#include <iostream>
+int main() {
+    // 场景 A：无锁计数器 —— 值回到原值，ABA 无害，结果仍正确
+    std::atomic<long> counter{0};
+    long expected = counter.load();
+    counter.fetch_add(1); counter.fetch_sub(1);          // 中间 +1 -1（"值级 ABA"）
+    bool ok_a = counter.compare_exchange_strong(expected, expected + 5);
+    std::cout << "counter CAS: " << (ok_a ? "成功(结果仍正确)" : "失败") << '\n';
+
+    // 场景 B：无锁栈指针 —— 地址复用，CAS 误成功即 use-after-free
+    struct Node { int v; };
+    Node n1{1}, n2{2};
+    std::atomic<Node*> head{&n1};
+    Node* exp = head.load();
+    head.store(&n2); head.store(&n1);                   // A->B->A：地址复用
+    bool ok_b = head.compare_exchange_strong(exp, &n2);
+    std::cout << "stack CAS: " << (ok_b ? "误成功(ABA!)" : "失败") << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> CAS 只做"位模式相等"比较（[atomics.types.operations]），不携带对象生命周期语义；"是否有害"取决于值的角色——标量 vs 指针身份。
+
+<span class="badge badge-exp">经验</span> 给无锁代码做"ABA 风险评估"先问"值变了又变回来，语义还在吗"：计数器在、指针不在。凡是"比较指针/索引后还要解引用"的 CAS，必须配 tagged pointer 或回收协议，这条是教科书级红线。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

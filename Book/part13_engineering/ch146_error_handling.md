@@ -1305,6 +1305,83 @@ int main() { safe(); }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：可恢复错误不想抛异常。** 一个 `parse_int` 在字符串为空或含非数字字符时应当"失败并让调用方决定怎么办"，但你不想为此承担异常展开的开销，也不想用 `bool ok` out-param 把接口搞脏。请用 C++23 的 `std::expected<T, E>` 表达"值或错误二选一"，让调用方必须显式检查；并对比它与返回 `std::error_code&` out-param 两种风格在可读性、零开销、链式传播上的取舍。
+
+<details><summary>答案与解析</summary>
+
+> **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <expected>
+#include <string>
+
+enum class ParseErr { Empty, NotDigit };
+
+std::expected<int, ParseErr> parse_int(std::string const& s) {
+    if (s.empty()) return std::unexpected(ParseErr::Empty);
+    int v = 0;
+    for (char c : s) {
+        if (c < '0' || c > '9') return std::unexpected(ParseErr::NotDigit);
+        v = v * 10 + (c - '0');
+    }
+    return v;  // 成功：隐式转 expected<int,ParseErr>
+}
+
+int main() {
+    auto r = parse_int("123");
+    if (r) { (void)*r; }          // 取值
+    else   { (void)r.error(); }   // 取错误，必须显式处理
+}
+```
+
+<span class="badge badge-std">标准</span> `std::expected<T, E>`（`[expected]`）是 C++23 落地的"值或错误"类型：成功时存 `T`、失败时存 `E`；隐式转换让 `return v;` 与 `return std::unexpected(e);` 都合法；`operator bool()` 强制调用方区分两态，避免 out-param 被忽略。
+
+<span class="badge badge-exp">经验</span> `expected` 适合"调用方会就地处理"的可恢复错误，且无异常路径零运行时开销（无栈展开）。相比之下 `error_code&` out-param 易被漏检（`ok` 不检查也能编译过），但能与 C API 无缝对接；异常适合"错误罕见、调用方不关心、由顶层兜底"的场景。选型的判据是：可恢复且高频 → `expected`/`error_code`；不可恢复/编程错误 → `assert`；边界跨语言 → 返回值。这与 ch146 附录 J 的分流流一致。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：容器 `push_back` 的强异常安全。** 一个手写的 `StrongVec` 在扩容时要分配新缓冲并构造元素；若构造过程中抛异常，旧数据不能被破坏（否则调用方在 catch 后看到的还是合法旧状态）。请实现"先在新缓冲完成所有可能抛异常的工作、最后再 `swap` 提交"的强异常安全保证，说明它相对"基本保证"的代价，并指出为什么 `std::vector` 在移动可能抛异常时会退回拷贝。
+
+<details><summary>答案与解析</summary>
+
+> **示例 65** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <cstddef>
+#include <new>
+#include <utility>
+
+struct StrongVec {
+    int* data_ = nullptr;
+    std::size_t n_ = 0, cap_ = 0;
+    void push_back(int x) {                 // 强异常安全：提交前旧状态完全不变
+        if (n_ == cap_) {
+            std::size_t nc = cap_ ? cap_ * 2 : 1;
+            int* nd = static_cast<int*>(::operator new(nc * sizeof(int)));
+            for (std::size_t i = 0; i < n_; ++i) new (nd + i) int(data_[i]); // 可能抛
+            int* old = data_;
+            data_ = nd; cap_ = nc;          // 仅在所有构造成功后"提交"
+            ::operator delete(old);         // int 平凡，无需逐元素析构
+        }
+        new (data_ + n_) int(x);            // 新元素构造若抛，n_ 未增，状态不变
+        ++n_;
+    }
+    ~StrongVec() {
+        ::operator delete(data_);  // int 平凡，无需逐元素析构
+    }
+};
+
+int main() { StrongVec v; v.push_back(1); v.push_back(2); }
+```
+
+<span class="badge badge-std">标准</span> 异常安全三等级（`[res.on.exception.handling]` 与 C++ Core Guidelines E.1–E.4）：基本保证（操作后对象仍有效、不泄漏）、强保证（成功或回滚到调用前状态）、不抛保证（标 `noexcept`）。本例在"新缓冲全部构造成功"后才替换 `data_/cap_` 并提交，因此抛异常时旧 `n_/data_` 原封不动——即强保证。
+
+<span class="badge badge-exp">经验</span> 强保证的代价是"双缓冲"临时内存与一次额外拷贝；对绝大多数容器这是值得的，因为调用方常依赖"失败即无副作用"。注意 `std::vector` 在重新分配时若元素的移动构造可能抛异常，会放弃移动、改用拷贝——因为从旧缓冲搬一半到新缓冲时若移动抛异常，旧数据已被破坏，无法满足强保证；标 `noexcept` 移动（如 `int`、`std::unique_ptr`）才能让其走廉价移动路径。
+
+</details>
+
 ## 附录 J：错误处理策略选型流（D3 维度）
 
 把第②–⑯节的表征选择收敛为一条分流流：先判是否编程错误（用 assert/contract），再判是否可恢复且由调用方处理（用异常+RAII），再判是否性能敏感或跨 C 边界（用返回值/error_code），否则用 optional/expected 表达"可能无值/可能失败"。

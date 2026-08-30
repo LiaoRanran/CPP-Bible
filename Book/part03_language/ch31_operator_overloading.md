@@ -664,6 +664,83 @@ struct Matrix {                 // rule of 5
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：二维向量的复合赋值与加法。** 物理引擎的 `Vec2` 既要支持 `a + b` 得到新向量、又要支持 `a += b` 就地累加。请用「复合赋值优先」的惯用法：`+=` 返回引用、`+` 复用它，并解释为什么要这样分层。
+
+<details>
+<summary>答案与解析</summary>
+
+复合赋值（`+=`）就地修改并返回 `*this` 的引用，是「修改型」操作的标准形态；二元 `+` 不修改实参，而是构造新对象返回。惯用法是让 `+` 复写 `+=`：`Vec2 operator+(a, b) { Vec2 r = a; r += b; return r; }`——这样只需维护一份「加法逻辑」，`+=` 与 `+` 永远不会语义分叉。这也和标准库一致：`std::string`、`std::vector` 等都有配套的 `+=`/`+`（值语义）。
+
+标准依据：ISO/IEC 14882:2023 §[over.oper] 允许把运算符重载成成员或自由函数；返回类型的约定（`+=` 返回引用、`+` 返回值）是库作者间的惯例，不是语言强制，但遵循惯例才能与「链式调用、`a = b + c`」等通用写法兼容。自由函数 `operator+` 用 friend 定义时靠 ADL 被发现（见 ch23 练习 1）。
+
+实现与边界：`+` 若不复用 `+=` 而各自实现，字段多了极易不一致；若 `+=` 返回值而非引用，`(a += b) += c` 会就地改临时对象而非 `a`，破坏链式语义。注意 `+` 返回的 `Vec2` 是拷贝——对大对象这是代价，可用移动语义缓解（`r` 是局部对象，编译器多半 NRVO/移动）。替代方案：只提供 `+=`（标量/位运算场景），对外 `+` 由调用方组合，减少 API 面。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+struct Vec2 {
+    int x = 0, y = 0;
+    Vec2& operator+=(const Vec2& o) { x += o.x; y += o.y; return *this; }
+    friend Vec2 operator+(const Vec2& a, const Vec2& b) {
+        Vec2 r = a; r += b; return r;
+    }
+};
+
+int main() {
+    Vec2 a{1, 2}, b{3, 4};
+    Vec2 c = a + b;
+    a += b;
+    std::cout << c.x << c.y << a.x << a.y << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[over.oper]：运算符重载可为成员或自由函数，返回类型由惯例约定（`+=`→引用、`+`→值）。
+
+<span class="badge badge-exp">经验</span> 「`+` 委托 `+=`」是一条极佳的一致性铁律：改一处，两运算符同步。同理 `==` 与 `!=`（C++20 由 `==` 自动合成）、`*` 与 `*=` 也按同构组织（本章附录『rule of 3→5』一脉相承的『让默认生成替你工作』哲学）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：迭代器/计数器的自增重载。** 你的 `Counter` 需要同时支持 `++c` 与 `c++`。请分别实现前置/后置自增，解释两者返回类型为何不同，以及「优先用前置」的经验法则。
+
+<details>
+<summary>答案与解析</summary>
+
+前置 `operator++()` 无参数，语义是「自增后返回自身」→ 返回 `Counter&`（引用，零拷贝）；后置 `operator++(int)` 带一个哑元 `int` 参数（仅用于区分签名，无实参语义），语义是「返回自增前的旧值」→ 必须按值返回 `Counter`，内部要**先拷贝旧值再自增**。后置多一次拷贝/构造，对迭代器这类「自增 + 解引用」高频操作，`++it` 比 `it++` 便宜，这是「能前置就前置」的由来。
+
+标准依据：ISO/IEC 14882:2023 §[expr.pre.incr]/§[expr.post.incr] 定义内置自增语义，重载时靠哑元参数区分前后置（后置带 `int`）；§[over.oper] 允许该约定被类类型复用。内置类型 `i++` 与 `++i` 无本质开销差，但对自定义类型（尤其含堆缓冲）差距放大。
+
+实现与边界：后置实现先 `Counter t = *this; ++n; return t;`——若类型不可拷贝则后置无法实现（此时只提供前置）。`operator++(int)` 的参数类型**必须**是 `int`（恰好是内置约定），不能改成别的类型。替代方案：对纯计数器可只提供前置；语义需要「旧值」时用 `(void)++c;` 先自增再取旧值的方式规避后置拷贝（现代代码常见手法）。
+
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+struct Counter {
+    int n = 0;
+    Counter& operator++() { ++n; return *this; }       // 前置: 返回引用
+    Counter  operator++(int) { Counter t = *this; ++n; return t; }  // 后置: 返回值(旧值)
+    int get() const { return n; }
+};
+
+int main() {
+    Counter c;
+    Counter d = c++;        // 后置: d=0, c=1
+    Counter e = ++c;        // 前置: e=2, c=2
+    std::cout << d.get() << c.get() << e.get() << "\n";  // 0 2 2
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[over.oper]：后置自增以哑元 `int` 参数与前置区分，返回旧值需按值。
+
+<span class="badge badge-exp">经验</span> 前置返回引用、后置返回拷贝，是「谁产生开销」的分水岭：热路径遍历一律 `++it`；需要旧值时别靠后置临时，先 `++` 再显式记旧值。这条约定对迭代器、智能指针风格的类型都成立（本章附录『rule of 3→5』的移动语义同源）。
+
+</details>
+
 ## 附录：用法演绎 — 从 rule of 3 到 rule of 5：写一个安全的字符串类
 
 > 场景：自己管理资源（动态数组）时，最容易漏写拷贝/移动导致泄漏或双重释放。逐步推导出健壮版本。

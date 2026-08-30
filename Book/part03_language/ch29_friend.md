@@ -841,6 +841,84 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：流式打印但不想写实现文件。** 你的 `Point` 需要 `std::cout << p`，练习 1 的做法是把 `operator<<` 声明为友元再在外部定义；而把定义**直接放进类内**更紧凑。请写出「类内 friend 定义」，并解释它为什么必须配合 ADL 才能被找到。
+
+<details>
+<summary>答案与解析</summary>
+
+类内 friend 定义把函数体写在类定义里，等价于「在最近外围命名空间定义了一个函数，同时授予其友元权限」：`operator<<` 因此能访问 `p.x`/`p.y` 私有成员，且无需额外声明。但这个函数对**普通名字查找不可见**——只有在实参是 `Point` 时，ADL 才会把它纳入候选集（`std::cout << p` 中 `operator<<` 的实参含 `Point`，其关联作用域是全局命名空间，friend 定义的 `operator<<` 恰好在那里）。
+
+标准依据：ISO/IEC 14882:2023 §[class.friend]：类内 friend 定义把函数放入外围命名空间但只通过 ADL 可见；§[basic.lookup.argdep] 决定该函数何时被找到。若写成外部定义 + 类内 `friend` 声明，则该函数普通查找也可见——两种风格仅差「定义位置」，语义权限一致。
+
+实现与边界：类内 friend 定义适合简短的操作符（`<<`、`==`、`+`）与一次性辅助函数；函数较长时放类内会让头文件臃肿。注意：若你指望「非 ADL 也能找到它」，类内 friend 定义会落空——对不涉及该类型实参的调用必须写外部声明。替代方案：用公开成员函数（如 `print_to`）配合非友元 `operator<<`，牺牲一点直读性换取普通查找可见。
+
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+struct Point {
+    int x, y;
+    friend std::ostream& operator<<(std::ostream& os, const Point& p) {
+        return os << "(" << p.x << "," << p.y << ")";
+    }
+};
+int main() {
+    std::cout << Point{1, 2} << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[class.friend]：类内 friend 定义置于外围命名空间、仅经 ADL 可见。
+
+<span class="badge badge-exp">经验</span> 「类内 friend 定义」是紧凑单文件代码的最爱，但要知道它靠 ADL「隐身寻人」；跨文件使用时读者更容易在头文件里找 `operator<<` 的外部声明。想「显式 + 紧凑」二选一，看函数是类型专属操作符（类内）还是通用工具（外部声明）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：维修工（Mechanic）访问引擎内部。** 一个 `Engine` 类把 `rpm` 藏成私有，唯一被授权读取/调整它的是 `Mechanic` 类（例如诊断工具、测试夹具）。请用**友元类**授权，并说明友元关系的两个不可传递特性。
+
+<details>
+<summary>答案与解析</summary>
+
+`friend class Mechanic;` 把整个 `Mechanic` 类的所有成员函数都提升为 `Engine` 的友元：`rev` 能改私有 `rpm`，`current` 能读它。友元是**单向、不传递、不继承**的：① 单向——`Engine` 是 `Mechanic` 的朋友，不代表 `Mechanic` 是 `Engine` 的朋友（`Engine` 看不到 `Mechanic` 的私有）；② 不传递——`Mechanic` 的朋友 `Tool` 无权访问 `Engine`；③ 不继承——`DerivedEngine : Engine` 的子类不继承父类的友元关系。
+
+标准依据：ISO/IEC 14882:2023 §[class.friend] 明确 friend 声明只授予被指名实体访问权，不向该实体的友元/派生类传播；访问控制（§[class.access]）以此保持「谁授权谁」的清晰边界。友元类授权粒度是整个类——比友元函数（练习 1）粗，也比公开 getter/setter 细。
+
+实现与边界：友元类把「能访问私有」的权利整包发放，最小权限原则下应尽量用友元函数而非友元类；若 `Mechanic` 只有两三个函数需要访问，可改为「仅声明那两个函数为友元」。替代方案：把诊断逻辑做成 `Engine` 的公有 `const` 查询成员 + 非友元的算法层；或引入 PIMPL 隐藏实现，让「内部」只在实现文件里可见。
+
+> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+class Engine {
+    int rpm = 0;
+public:
+    explicit Engine(int r) : rpm(r) {}
+    friend class Mechanic;    // 友元类: 可访问私有
+};
+
+class Mechanic {
+public:
+    void rev(Engine& e, int delta) { e.rpm += delta; }
+    int current(const Engine& e) { return e.rpm; }
+};
+
+int main() {
+    Engine e(1000);
+    Mechanic m;
+    m.rev(e, 500);
+    std::cout << m.current(e) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[class.friend]：friend 不可传递、不可继承、单向授予。
+
+<span class="badge badge-exp">经验</span> 友元类是「整包授权」，友元函数是「单点授权」——能用函数就不用类。授权面越大，将来类内部重构（改名/拆分）越可能被悄悄破坏（编译期才炸）。测试夹具、诊断工具这类「外部但有充分理由看内部」的实体，用友元类尚可接受（本章演绎『friend vs public getter』给出决策路径）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：何时用 `friend` 而非 `public` getter

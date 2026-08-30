@@ -913,6 +913,61 @@ int main() { process(42); process(3.14); }
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你想把一个算法按"策略标签"在编译期分流，而不是运行期 `if`。** 请写出标签分发：定义 `fast`/`safe` 空标签，重载 `copy(int, Tag)`，模板 `do_copy<Mode>` 把标签作为实参转发，演示"类型即分支"。
+
+<details><summary>答案与解析</summary>
+
+标签分发（tag dispatch）用"空结构体"区分策略，借重载决议在编译期选中对应实现。相比运行期 `if`，它零分支、可被内联，是 Concepts 之前编译期分流的经典手法（`std::advance` 即如此）。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+struct fast { };
+struct safe { };
+void copy(int, fast) { std::cout << "fast path\n"; }
+void copy(int, safe) { std::cout << "safe path\n"; }
+template <typename Mode>
+void do_copy(int x) { copy(x, Mode{}); }
+int main() { do_copy<fast>(1); do_copy<safe>(2); }
+```
+
+<span class="badge badge-std">标准</span> 标签分发依赖重载决议与空类（ISO/IEC 14882 §[over.match]）；标签通常从标准概念的迭代器类别（`input_iterator_tag` 等）继承体系获取，使"最派生标签"优先匹配。
+
+<span class="badge badge-exp">经验</span> 标签分发适合"编译期已知策略、零运行期分支"的场景；当策略需要组合或拥有关联状态时，策略化设计（见 ch71）更合适。它比 SFINAE 错误信息友好、比虚函数零开销。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你写一个 `load`，希望按"类型是否平凡"在编译期选不同路径。** 请写出：用 `std::is_trivial` 标签（`true_type`/`false_type`）做转发，演示 traits 与 tag dispatch 的组合。
+
+<details><summary>答案与解析</summary>
+
+把 traits 的 `true_type`/`false_type` 作为标签，可在编译期按"类型性质"分流。`std::is_trivial_v<T>` 在编译期给出布尔，对应两个标签重载，从而把"是否平凡"直接转化为"调用哪个函数"。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <string>
+#include <type_traits>
+template <typename T>
+void load_impl(T, std::true_type)  { std::cout << "trivial\n"; }
+template <typename T>
+void load_impl(T, std::false_type) { std::cout << "non-trivial\n"; }
+template <typename T>
+void load(T v) { load_impl(v, std::is_trivial<T>{}); }
+struct Blob { std::string s; };
+int main() { load(1); load(Blob{}); }
+```
+
+<span class="badge badge-std">标准</span> `std::true_type`/`std::false_type` 由 ISO/IEC 14882（C++23）§[meta.help] 规定；`std::is_trivial_v`（§[meta.unary.prop]）用于编译期性质查询，二者可共同驱动标签重载。
+
+<span class="badge badge-exp">经验</span> traits + tag dispatch 是"按编译期属性分流"的惯用法，常见于标准库拷贝/构造优化（平凡类型走 memcpy）。与 `if constexpr`（ch65）相比，它更显式、更易重载扩展。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：标签分发消除运行期分支

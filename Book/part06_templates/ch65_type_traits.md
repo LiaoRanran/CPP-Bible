@@ -908,6 +908,61 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你写一个泛型函数，希望对"整型"和"浮点型"做完全不同的处理，而不是为每种类型写重载。** 请写出代码：用 `std::is_integral`/`std::is_floating_point` 配合 `if constexpr`，在编译期分流到不同分支，演示类型特性如何驱动编译期分发。
+
+<details><summary>答案与解析</summary>
+
+类型特性（type traits）在编译期回答"这个类型具备什么性质"。`if constexpr` 根据常量布尔丢弃不满足的分支，只实例化通过的分支——这是现代 C++ 取代 SFINAE 的"编译期 if"。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+template <typename T>
+void describe(T) {
+    if constexpr (std::is_integral_v<T>)        std::cout << "integral\n";
+    else if constexpr (std::is_floating_point_v<T>) std::cout << "floating\n";
+    else                                           std::cout << "other\n";
+}
+int main() { describe(1); describe(1.0); describe("s"); }
+```
+
+<span class="badge badge-std">标准</span> `<type_traits>` 由 ISO/IEC 14882（C++23）§[meta] 规定：`std::is_integral_v<T>` 等是编译期常量。`if constexpr` 的未命中分支不被实例化（§[stmt.if]），故即使分支仅对部分类型合法也安全。
+
+<span class="badge badge-exp">经验</span> `if constexpr` + traits 是"编译期分发"的主力，比 SFINAE 可读性高得多。注意 `if constexpr` 的条件必须是编译期恒定的 `bool`，否则退回普通 `if`（分支仍需可实例化）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：标准库没有"是否为指针风格类型"的现成 trait，而你需要一个。** 请写出自定义 trait：主模板 `IsPointerLike` 继承 `false_type`，偏特化 `IsPointerLike<T*>` 继承 `true_type`，并用 `_v` 变量模板简化查询。
+
+<details><summary>答案与解析</summary>
+
+自定义 trait 通常是一个继承自 `true_type`/`false_type` 的类模板，依靠偏特化"按类型结构分流"。这正是 `std::is_pointer` 等标准 trait 的实现手法，把问答搬到编译期、零运行期成本。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+template <typename T> struct IsPointerLike : std::false_type {};
+template <typename T> struct IsPointerLike<T*> : std::true_type {};
+template <typename T>
+inline constexpr bool IsPointerLike_v = IsPointerLike<T>::value;
+int main() {
+    std::cout << IsPointerLike_v<int*> << " "
+              << IsPointerLike_v<int> << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `std::integral_constant`/`true_type`/`false_type` 由 ISO/IEC 14882（C++23）§[meta.help] 规定；偏特化（§[temp.class.spec]）让 `T*` 命中、其余走主模板。
+
+<span class="badge badge-exp">经验</span> 自定义 trait 是模板元编程的基本功，常用于约束与编译期分支。注意这里的 `_v` 变量模板需要 `_v = trait::value`，避免每次写冗长的 `::value` 与 `typename`。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：`enable_if` 放返回类型 vs 模板参数

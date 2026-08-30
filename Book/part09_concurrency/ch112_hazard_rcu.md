@@ -972,6 +972,92 @@ int main() {
 
 <span class="badge badge-ref">引用</span> 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004（批量回收与每线程 retire 列表的设计出处）。
 
+### 练习 4（难度 ★★★）
+
+**真实场景：RCU 写者的"宽限期等待"到底在等什么。** 写者替换指针后不能立刻回收旧版本——必须等"所有读者都已退出旧版本的临界区"，这个等待就叫宽限期（grace period）。真实内核用"静止态检测"，这里用**读者活跃计数**模拟：读者进入临界区 +1、退出 -1，写者轮询计数归零即宽限期结束。请实现"多读者 + 写者等宽限期"，说明为什么在计数非零期间回收旧版本就是 use-after-free。
+
+<details><summary>答案与解析</summary>
+
+RCU 读侧只在进入/退出临界区时各做一个计数操作（真实 RCU 甚至免锁、仅标志）；写者 `copy-update-replace` 后开始等待：只要 `readers != 0`，说明至少一个读者可能还捏着旧版本指针，此刻回收会命中 use-after-free。计数归零表示"所有已进入的读者都已退出"——宽限期结束，旧版本可以安全回收。计数用 `fetch_add(acq_rel)` 标记进出，写者用 `acquire load` 观测。
+
+标准依据：RCU 语义非 C++ 标准库提供（Linux 内核实现见 [https://docs.kernel.org/RCU/](https://docs.kernel.org/RCU/)）；本练习用原子计数在教学上等价于"quiescent state 汇总"。计数法的弱点是"进出竞争窗口"：写者读到 0 的瞬间读者可能刚进入——真实 RCU 用"进入后二次校验 + 静止态定义"消除该窗口。
+
+边界条件与失效场景：计数法下读者必须保证"进入临界区后、退出前只访问快照"，中途不能因阻塞/调度滞留太久导致宽限期无限延长。写者侧若同时多个写者都等宽限期，回收要排入"待回收队列"逐个满足条件。本示例是教学骨架：省略了静止态检测、内存屏障排布与批量回收，生产用 `std::shared_ptr` 原子 free 函数（练习 2）或内核 RCU 原型。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
+int main() {
+    std::atomic<int> readers{0};          // 活跃读者计数（模拟宽限期）
+    std::atomic<int*> g{nullptr};
+    std::atomic<long> hits{0};
+    int a = 1, b = 2;
+    g.store(&a, std::memory_order_release);
+
+    std::vector<std::thread> rts;
+    for (int i = 0; i < 3; ++i)           // 3 个读者
+        rts.emplace_back([&]{
+            for (int j = 0; j < 100000; ++j) {
+                readers.fetch_add(1, std::memory_order_acq_rel);  // 进入临界区
+                int* v = g.load(std::memory_order_acquire);       // 读快照
+                hits.fetch_add(*v, std::memory_order_relaxed);
+                readers.fetch_sub(1, std::memory_order_acq_rel);  // 退出临界区
+            }
+        });
+
+    g.store(&b, std::memory_order_release);   // copy-update-replace
+    while (readers.load(std::memory_order_acquire) != 0) {}   // 等宽限期
+    std::cout << "grace period 结束，旧版本可安全回收; hits="
+              << hits.load() << '\n';
+    for (auto& t : rts) t.join();
+    return 0;
+}
+```
+
+<span class="badge badge-exp">经验</span> RCU 的代价不在读侧（读侧几乎零开销）而在写侧：写者必须等"最慢读者"离开临界区，回收延迟由业务容忍。读多写少（如路由表）选 RCU；读侧无法容忍陈旧读或写频次高，改选 Hazard Pointer（回收及时、上界确定）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：HP 遍历链表，必须先保护"下一步"。** 无锁链表的读者逐节点推进时，写者可能随时删除当前或后继节点——HP 协议要求"**解引用之前**先登记"，所以遍历的正确姿势是：登记当前节点后访问它，拿到 `next` 后**立即登记 next** 再推进。请实现"登记-访问-预登记-推进"的 HP 读侧骨架，说明顺序颠倒（先访问后登记）为什么会让写者有机可乘。
+
+<details><summary>答案与解析</summary>
+
+HP 的不变量是"任何正被解引用的指针，都已在解引用前被某个 HP 槽登记"；回收者扫描 HP 表，命中即推迟删除。遍历链表的危险点是"当前节点 → next 节点"的切换：若先推进 `cur = cur->next` 再登记，此刻 `next` 已被解引用（读 `cur->next` 字段）却未受保护，写者在窗口内删除它即 use-after-free。正确顺序是：访问完当前节点后，**先**把 `next` 登记进 HP 槽，**再**把 `cur` 推进到 `next`——切换瞬间 next 已在保护之下。
+
+标准依据：hazard pointer 的核心规则来自 M. M. Michael 的论文 *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*（ISMM 2004）；C++ 侧无标准库 HP（C++26 提案 P1122 在途），工程实现均遵循"先登记、后解引用"。
+
+边界条件与失效场景：单槽 HP（本示例）只保护一个指针，真实实现每个线程多个槽位；"读 next → 登记 next"之间仍有极小窗口，工业实现用"登记后复验 head"或双重检查收窄。HP 的读侧每次都要原子写 HP 槽，比 RCU 读侧贵——这也是两者选型的核心权衡。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <atomic>
+#include <iostream>
+struct Node { int v; Node* next; };
+std::atomic<Node*> g_hp{nullptr};      // 全局 HP 槽（教学简化单槽）
+
+int main() {
+    Node* n3 = new Node{3, nullptr};
+    Node* n2 = new Node{2, n3};
+    Node* n1 = new Node{1, n2};
+    Node* cur = n1;
+    while (cur) {
+        g_hp.store(cur, std::memory_order_release);   // ① 先登记当前节点
+        std::cout << cur->v << ' ';                   // ② 安全访问（已被保护）
+        cur = cur->next;                              // ③ 读 next（仍未推进）
+        g_hp.store(cur, std::memory_order_release);   // ④ 预登记 next，切换完成
+    }
+    std::cout << '\n';                                // 1 2 3
+    return 0;
+}
+```
+
+<span class="badge badge-exp">经验</span> "先登记、后解引用；预登记 next、再推进"是 HP 遍历的口诀，顺序反了保护就形同虚设。真实多线程下还要处理 head 的登记与 ABA（见 ch111），HP 只解决回收、不自动解决 ABA——两者常配合使用。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

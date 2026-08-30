@@ -1026,6 +1026,64 @@ g++ -std=c++23 -fprofile-use -O2 app.cpp -o app          # 阶段2：按热点�
 
 <span class="badge badge-ref">引用</span> GCC《Optimize Options》（https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html ，`-fprofile-generate`/`-fprofile-use` 两阶段剖面引导优化）说明如何用训练输入重排代码与特化分支。
 
+### 练习 4（难度 ★★）
+
+**真实场景：Debug 版要开断言、Release 版要关断言，但你忘了切。** 你用 `assert()` 做内部检查，却发现 Release 下断言被悄悄剥离、导致"本地好上线崩"。请用 `NDEBUG` 宏演示断言随构建配置自动开关，并说明它和"自己写 if+abort"的区别。
+
+<details><summary>答案与解析</summary>
+
+`assert` 在定义 `NDEBUG`（Release 惯例）时被展开为空，零运行期开销；它是 C/C++ 标准约定的"调试期契约"，比手写 `if(!cond) abort()` 更简洁且可一键全局关闭。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <cassert>
+
+int main() {
+#ifndef NDEBUG
+    std::cout << "debug: assertions active\n";
+#else
+    std::cout << "release: assertions stripped\n";
+#endif
+    assert(1 == 1);            // NDEBUG 下整行消失
+    std::cout << "ok\n";
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `<cassert>` 的 `assert` 行为由 `NDEBUG` 控制（C 标准约定，C++ 沿用）；Release 构建通常由构建系统定义 `NDEBUG` 以去掉开销。
+
+<span class="badge badge-exp">经验</span> 不要把"运行时必须检查"的逻辑放进 `assert`（会被 Release 删掉）；`assert` 只用于"绝不该发生"的内部不变量，业务错误请用返回码/`expected`。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：Release/LTO 下你希望关键计算被编译期折叠。** 你有一些不依赖输入的常量计算，希望它在编译期完成、还能被 LTO 进一步内联。请用 `constexpr` 表达这样的计算，演示它与普通函数无异却更利于优化，并说明它和 PGO 的互补关系。
+
+<details><summary>答案与解析</summary>
+
+`constexpr` 把计算标记为"可在编译期求值"，编译器（尤其开了 LTO 时）可将其折叠为常数，避免运行期开销；PGO 则依据真实运行剖面做过程间优化，二者层次不同、互为补充。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+constexpr int square(int x) { return x * x; }
+
+int main() {
+    constexpr int v = square(9);   // 编译期折叠为 81
+    std::cout << v << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++11 起 `constexpr` 函数可在常量表达式中求值；LTO（链接期优化）可在跨 TU 内联/特化，进一步消除调用开销。
+
+<span class="badge badge-exp">经验</span> 把"输入已知、无副作用"的计算写成 `constexpr`，既利于编译期求值，也给优化器更多余地；但别用它强行替代需要运行时输入的路径——匹配当下需求即可，不做过度设计。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：Debug 用 `_GLIBCXX_ASSERTIONS` 抓越界

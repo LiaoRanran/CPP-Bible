@@ -1401,6 +1401,87 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 连接池里消息对象反复创建/销毁，`monotonic_buffer_resource` 只增不减、无法回收单块，会一直涨。请改用 `std::pmr::unsynchronized_pool_resource` 验证"块可单独释放、地址可复用"，并说明它的线程安全边界。
+
+<details><summary>答案与解析</summary>
+
+`unsynchronized_pool_resource` 把不同大小档位分别管理成空闲链表：`deallocate` 后块回到对应池子，下一次同档位 `allocate` 大概率复用同一地址——这是"池化"区别于"arena 只增不减"的关键。它适合**对象生命周期参差**的场景（每请求新建消息、用完即弃、又频繁新建），内存峰值受池子控制而非随单调资源一路走高。
+
+代价与边界：`unsynchronized_pool_resource` 明确**非线程安全**——多线程共用同一资源需外部加锁，或换成 `synchronized_pool_resource`（内部上锁、换取安全但多一点开销）。这是"性能 vs 线程安全"的典型权衡：单线程热路径用 unsynchronized，跨线程才付锁的代价。默认上游是 `new_delete_resource`，即池子从全局堆拿整块再切分。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <memory_resource>
+#include <iostream>
+int main() {
+    std::pmr::unsynchronized_pool_resource pool;   // 块可回收复用的内存池
+    std::pmr::polymorphic_allocator<int> pa(&pool);
+    int* a = pa.allocate(16);
+    int* b = pa.allocate(16);
+    std::cout << (void*)a << ' ' << (void*)b << '\n';
+    pa.deallocate(a, 16);              // 单块回收，回池待复用
+    int* c = pa.allocate(16);          // 大概率复用 a 那块地址
+    std::cout << (void*)c << '\n';
+    pa.deallocate(b, 16);
+    pa.deallocate(c, 16);
+}
+```
+
+<span class="badge badge-std">标准</span> `pool_resource` 按大小档位池化分配（`[mem.res.pool]`）；`synchronized_pool_resource` 内建同步、`unsynchronized_*` 无（`[mem.res.synopt]`）。
+<span class="badge badge-exp">经验</span> 选型口诀：生命周期"同生共死"用 `monotonic`（练习 1/2 的 arena），"反复创建销毁"用 pool（本练习），"跨线程"才升级 `synchronized`。观察地址复用来验证池化是否生效，别靠猜（本章 D5 基准里 pmr 相对全局 new 的开销差异即来自这些机制）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 你要回答"这个请求到底向堆要了多少次、多少字节"。请继承 `std::pmr::memory_resource` 写一个**计数器资源**：统计 `do_allocate` 次数与累计字节，接到 `pmr::vector` 上实测，并说明自定义资源需要实现的三个接口。
+
+<details><summary>答案与解析</summary>
+
+`std::pmr::memory_resource` 是抽象基类，自定义资源必须重写三个虚函数：`do_allocate(bytes, align)`（分配，可抛 `bad_alloc`）、`do_deallocate(p, bytes, align)`（释放，`noexcept`）、`do_is_equal(other)`（两资源是否等价——同实例即等价，用于容器拷贝时判断能否共享上游）。前两者是数据路径，`do_is_equal` 影响 `polymorphic_allocator` 的相等性与传播。
+
+计数器资源是"先实现、后统计"的通用套路：真实分配仍转交 `::operator new/delete`（带对齐版本），只是外层记账。把它作为上游接进 `pmr::vector`，就能精确回答"向量扩容触发了多少次分配、累计多大"——这对验证 arena/pool 的分配次数（练习 1/2/4 的零次/复用）尤其有用。注意对齐版本的 `operator new` 需要 `<new>` 的 `std::align_val_t`。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <memory_resource>
+#include <vector>
+#include <iostream>
+#include <new>
+// 诊断资源：统计 do_allocate 调用次数与累计字节，真实分配仍走全局 new
+struct CountingResource final : std::pmr::memory_resource {
+    long allocs = 0;
+    std::size_t bytes = 0;
+private:
+    void* do_allocate(std::size_t b, std::size_t align) override {
+        ++allocs;
+        bytes += b;
+        return ::operator new(b, std::align_val_t{align});
+    }
+    void do_deallocate(void* p, std::size_t b, std::size_t align) noexcept override {
+        ::operator delete(p, b, std::align_val_t{align});
+    }
+    bool do_is_equal(const std::pmr::memory_resource& o) const noexcept override {
+        return this == &o;   // 同一实例才等价
+    }
+};
+int main() {
+    CountingResource cnt;
+    {
+        std::pmr::vector<int> v(&cnt);
+        for (int i = 0; i < 1000; ++i) v.push_back(i);
+        std::cout << "allocs=" << cnt.allocs << " bytes=" << cnt.bytes << '\n';
+    }
+}
+```
+
+<span class="badge badge-std">标准</span> 自定义资源接口由 `[mem.res.class]` 定义：`do_allocate` 可抛异常、`do_deallocate` 必须 `noexcept`、`do_is_equal` 判定等价性。
+<span class="badge badge-exp">经验</span> "能数出来"是性能工程的第一步：分配次数/字节数是 arena 与池化收益的直接证据（本章 D5 基准对比 pmr 与全局 new，本练习给你一把自制的"测量探针"）。自定义资源务必正确转发对齐，否则对齐敏感类型（如 over-aligned 结构）会 UB。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：每请求海量临时对象 → Arena

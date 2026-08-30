@@ -1638,6 +1638,72 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：显式管理对象的生命周期。** 一个对象池在 `unsigned char buf[]` 上反复放置/回收 `Point`。C++20 提供 `std::construct_at`/`std::destroy_at` 显式开始/结束生命周期——比裸 `placement new` 更明确。请写出构造—使用—析构的完整流程，并说明省略析构会怎样。
+
+<details>
+<summary>答案与解析</summary>
+
+生命周期（lifetime）在 C++ 里是「从构造完成到析构开始」的一段区间，而 `unsigned char buf[sizeof(Point)]` 只是存储、不是对象。`std::construct_at(ptr, args...)` 在 `ptr` 指向的存储上用 `args` 直接构造一个 `Point` 并返回其指针；`std::destroy_at(p)` 显式调用析构、结束生命周期。两者组合正是对象池/自定义存储复用的标准流程（对比裸 `placement new`：功能等价，但 `construct_at` 意图更清晰、且可在 constexpr 上下文中使用）。
+
+标准依据：ISO/IEC 14882:2023 §[obj.lifetime] 定义生命周期规则：隐式创建/显式构造开始生命周期、析构结束生命周期；§[specialized.construct]/§[specialized.destroy] 规定 `std::construct_at`/`std::destroy_at` 分别等价于 `::new` 放置构造与显式析构调用。对齐要求：存储的对齐必须不小于目标类型（此处 `alignas(Point)` 保证）。
+
+实现与边界：漏掉 `destroy_at` 只对平凡析构类型无害（如 `int`/`Point`），对持有资源的类型（`std::string`、`FILE*`）则泄漏；反之，在 `construct_at` 前对旧对象再次 construct 而没 destroy，是「重开生命周期」的 UB（需要 `launder` 取新指针，见练习 3）。替代方案：标准容器替你管生命周期，手写构造/析构只应出现在池、mmap、共享内存等「自定义存储」场景。
+
+> **示例 73** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Point { int x, y; };
+
+int main() {
+    alignas(Point) unsigned char buf[sizeof(Point)];
+    Point* p = std::construct_at(reinterpret_cast<Point*>(buf), 1, 2);  // C++20
+    std::cout << p->x << p->y << "\n";
+    std::destroy_at(p);   // 显式结束生命周期
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[specialized.construct]/§[specialized.destroy]：`construct_at` 等价放置构造、`destroy_at` 等价显式析构，均不分配存储。
+
+<span class="badge badge-exp">经验</span> 「存储」与「对象」是两个概念：`buf` 永远只是字节，对象生命周期由你显式开启/结束。`construct_at`/`destroy_at` 配对使用是对象池的必修课；`destroy_at` 缺失对非平凡析构类型就是泄漏，审计时先数配对（本章演绎『池中重建』同源）。
+
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：条件判断里隐藏的自增。** 一个查表循环写成 `if (arr[0] == 99 && ++idx == 0) ...`，`idx` 会不会被自增取决于前一个条件。请用 `&&` 的短路求值说明「哪些求值顺序是语言保证的」，并指出为什么依赖「未指定顺序」的表达式（如函数实参求值顺序）是危险的。
+
+<details>
+<summary>答案与解析</summary>
+
+`&&`、`||`、`?:`、`,` 运算符的求值顺序是**语言硬性保证**的：`&&` 左侧先求值，若为 `false` 则右侧**不求值**（短路）。因此 `(arr[0] == 99) && (++idx == 0)` 中 `arr[0]==99` 为假，`++idx` 根本不执行，`idx` 保持 `1`——这段代码对任意编译优化级别结果都确定，因为短路规则是标准的契约而非巧合。
+
+标准依据：ISO/IEC 14882:2023 §[expr.log.and]/§[expr.cond] 规定 `&&`/`||` 的左操作数先求值并短路、`?:` 只求被选中分支、`,` 从左到右求值。反面对照：函数实参的求值顺序**未指定**（不同实参间无先后保证，C++17 只是明确了各实参本身内部顺序），`f(i, i++)` 这类写法在 C++17 下仍是未指定行为，读代码的人无法推断实参值。
+
+实现与边界：短路既是性能优化（跳过昂贵求值）也是安全机制（`p && p->flag` 防空指针）。何时失效：若把条件抽成 `f1(arr, idx) && f2(idx)`，`f2` 是否执行仍由短路决定，但依赖「`f1` 内部改了 `idx`」的推理会让维护者头大。替代方案：有副作用的操作（自增/赋值）不要藏在条件表达式里，先算好再比较，可读性与可审计性同时提升。
+
+> **示例 74** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+```cpp
+#include <iostream>
+
+int main() {
+    int arr[3] = {1, 2, 3};
+    int idx = 1;
+    // 短路求值: 左侧 false → 右侧不求值 → idx 不被改
+    bool found = (arr[0] == 99) && (++idx == 0);
+    std::cout << found << " " << idx << "\n";   // 0 1 (idx 未自增)
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[expr.log.and]：`&&` 左先求值并短路；函数实参间求值顺序未指定。
+
+<span class="badge badge-exp">经验</span> 求值顺序分两种：**保证的**（`&&`/`||`/`?:`/`,`）和**未指定的**（函数实参、多数二元运算的操作数）。凡是「同一表达式里既读又写同一变量且依赖顺序」的写法都该拆开——不是编译器刁难你，是标准根本没承诺（UB 的温床，见本章练习 1 的悬垂同源原则）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：函数返回大对象——优先返回值而非 `const T&`

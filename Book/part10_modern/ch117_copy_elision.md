@@ -1171,7 +1171,72 @@ int main() { bad(); good(); }
 
 </details>
 
----
+### 练习 4（难度 ★★）
+
+**真实场景：** 配置工厂要根据运行时开关"返回两个候选 prvalue 之一"。你担心 `return flag ? A{} : B{}` 这种多路径返回会破坏拷贝消除。请写出用条件表达式返回 prvalue 的写法，并说明它为什么仍受 C++17 强制消除保护。
+
+<details><summary>答案与解析</summary>
+
+C++17 的 guaranteed copy elision 针对"返回表达式是**prvalue**"的情形：只要返回表达式是 prvalue 且类型与被返回函数返回类型相同（忽略 cv），就不调用任何拷贝/移动构造——即使类型不可拷贝/不可移动也合法（`[class.copy.elision]/3`）。条件运算符 `flag ? Config(...) : Config(...)` 的两个操作数都是 `Config` 的 prvalue，条件表达式整体仍是 `Config` 的 prvalue，所以消除照常保证。
+
+这与"返回具名局部对象"的 NRVO 是**两条不同规则**：NRVO 针对 id 表达式、由编译器裁量（不保证）；prvalue 消除是标准强制、必定发生。因此"条件表达式返回两个临时"是既保多路径选择、又保零拷贝的惯用法。用带构造跟踪的类型运行即可验证——输出里不会出现 copy/move：
+
+> **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <string>
+#include <utility>
+struct Config {
+    std::string backend;
+    int shards;
+    Config(std::string b, int s) : backend(std::move(b)), shards(s) {}
+    Config(const Config&) { std::cout << "copy\n"; }
+    Config(Config&&) { std::cout << "move\n"; }
+};
+Config make(bool use_redis) {
+    return use_redis ? Config("redis", 16) : Config("local", 1);   // 两个 prvalue
+}
+int main() { Config c = make(true); (void)c; }
+```
+
+<span class="badge badge-std">标准</span> `[class.copy.elision]/3`：返回表达式为同类型 prvalue 时拷贝/移动被强制省略；条件运算符结果保持 prvalue 性质（`[expr.cond]`）。
+<span class="badge badge-exp">经验</span> 多路径"选一个临时对象返回"优先用条件表达式；若路径是多个**具名**局部变量，则落入 NRVO 范畴（见练习 5），不可依赖保证（本章附录 L 编译实证）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 缓存命中与否决定从两个已构造好的候选对象里返回一个。你发现"先建好两个局部对象再分支返回"时，NRVO 常常不生效、多了一次移动——请解释多返回路径为何削弱 NRVO，并给出工程上的取舍。
+
+<details><summary>答案与解析</summary>
+
+NRVO 的经典形态是"单返回路径 + 具名局部对象"：编译器把局部对象的构造直接落在调用方返回槽。当函数体内出现**多个 `return` 语句、各返回不同具名对象**时，编译器要为每个返回点分别准备"搬运到返回槽"的方案，消除的收益下降、实现复杂度上升——多数实现只在单路径（或可证明等价）时稳定命中。C++20 起（P1825R0）规则放宽为允许"条件性消除"，但**是否真的消除仍取决于优化级别与编译器**，不是标准保证。
+
+工程上的取舍：热路径里如果各分支对象构造成本相近、返回开销（一次移动）可接受，直接 `return a; return b;` 交给编译器即可；若追求确定行为，可显式 `std::move`（此处不像单路径那样抑制消除——多路径本来就不保证 NRVO），或重构为"单返回槽 + 赋值"。写代码时**不要为单路径反模式**（`return std::move(local)`）辩护，却要在多路径场景理性使用移动。
+
+> **示例 68** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <string>
+#include <utility>
+struct Big {
+    std::string payload;
+    explicit Big(const char* s) : payload(s) {}
+    Big(const Big&) = default;
+    Big(Big&&) noexcept = default;
+};
+Big pick(bool fast) {
+    Big a("path-a");
+    Big b("path-b");
+    if (fast) return a;   // 多返回路径：NRVO 不再有单路径那种保证
+    return b;
+}
+int main() { Big x = pick(true); Big y = pick(false); (void)x; (void)y; }
+```
+
+<span class="badge badge-std">标准</span> NRVO 仅"允许"省略（`[class.copy.elision]/1`）；多路径条件性消除由 P1825R0 放宽，是否生效是实现细节、非保证。
+<span class="badge badge-exp">经验</span> 记住两类规则分界：**prvalue 返回 = 强制消除**（练习 4），**具名对象返回 = NRVO 优化**（单路径大概率命中、多路径看编译器）。调试移动次数时用构造跟踪，别靠猜（本章附录 L 提供了单/多路径的实测对照）。
+
+</details>
 
 ## 附录 L：编译实证——强制复制消除的"零调用"证据 [C: Compiler / E: Low-level]
 

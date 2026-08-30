@@ -1699,6 +1699,83 @@ int main() { std::cout << get_db().open() << "\n"; }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：HTTP 服务器的每线程请求统计。** 网关按线程池模型工作，每个工作线程要维护自己的请求计数与延迟累计，互不干扰；若用 `static` 全局，多线程并发累加会引入数据竞争。请用 `thread_local` 让每个线程拥有独立副本，验证线程 A 的修改对线程 B 完全不可见。
+
+<details>
+<summary>答案与解析</summary>
+
+`thread_local` 是第四种存储期（线程存储期，§[basic.stc.thread]）：变量在每个线程里各有一份独立实例，线程创建时初始化（或首次访问时），线程退出时按构造逆序析构。与 `static` 的区别在于「每线程一份」而非「进程一份」，因此多线程各自累加互不竞争，天然规避数据竞争——注意这不等于原子性，线程内多次读写之间若需要顺序保证仍要显式同步。
+
+标准依据：ISO/IEC 14882:2023 规定 `thread_local` 变量具有线程存储期，其初始化与析构以线程生命周期为界；标准同时限定「某线程首次 odr-use 前完成初始化、尚未初始化就被其它线程访问的行为未定义」[UNVERIFIED 措辞]——工程上应避免把 `thread_local` 变量的地址跨线程传递后直接访问。
+
+实现与边界：在 MinGW 等平台经模拟 TLS（`__emutls`）或原生 `%gs`/TLS 块实现，首次访问可能有守卫分支开销；带动态初始化的 `thread_local` 每线程都要跑一次构造，若用 `constinit` 改为常量初始化可消除守卫（本章附录 D5 实测 tls 反而比全局 static 快）。替代方案：需要跨线程聚合统计时才用全局 `std::atomic` + 归并；`thread_local` 只负责「每线程私有」的那一半。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <thread>
+#include <vector>
+
+thread_local int t_counter = 0;
+
+void worker(int id) {
+    for (int i = 0; i < 1000; ++i) ++t_counter;
+    std::cout << "thread " << id << " sees t_counter=" << t_counter << "\n";
+}
+
+int main() {
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 4; ++i) ts.emplace_back(worker, i);
+    for (auto& t : ts) t.join();
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.stc.thread]（线程存储期）：`thread_local` 对象每线程一份，线程结束时析构。
+
+<span class="badge badge-exp">经验</span> 与 `static` 相比，`thread_local` 以「每线程一份」换掉跨线程竞争，是统计计数器/每线程缓存的默认选型；但它不是原子类型，线程内读写仍需按需同步，且动态初始化的 TLS 首访有守卫分支开销（见本章附录 D5）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：固件启动阶段的初始化阶段审计。** 嵌入式诊断想确认「全局变量何时被初始化」：哪些在 `main` 之前由零初始化/常量初始化完成、哪些要等到首次进入函数才初始化。请写一个程序区分三种静态初始化阶段，并说明 `constinit` 为何能把动态初始化「提前」为常量初始化。
+
+<details>
+<summary>答案与解析</summary>
+
+静态存储期对象的初始化分三个阶段：**零初始化**（`static` 无初始化器 → 落 `.bss`，编译期置零）→ **常量初始化**（`constexpr`/字面量初始化器 → 编译期算好，落 `.rodata`/`.data`）→ **动态初始化**（运行期执行初始化器，如调用函数）。前两阶段都在 `main` 之前完成且顺序确定；动态初始化的跨 TU 顺序标准未指定——这正是静态初始化顺序灾难（SOIF）的根源。
+
+标准依据：ISO/IEC 14882:2023 §[basic.start.static]（zero/constant 初始化在 dynamic 之前完成）与 §[basic.start.dynamic]（跨 TU 动态初始化顺序未指定）。函数内 `static` 局部属于动态初始化，但延迟到首次进入该函数，因此天然无跨 TU 顺序问题（对应练习 3 的 Meyers 单例）。
+
+实现与边界：C++20 的 `constinit` 声明把变量钉死在「常量初始化」阶段——若初始化器不是常量表达式则编译失败，从而把动态初始化从该变量身上彻底移除。替代方案：能编译期算完就写 `constexpr`；需要运行期值又要规避 SOIF 就退回函数内 `static`。注意零初始化的 `int` 读到的值确定是 0，而未初始化的自动局部变量读取是 UB，两者不要混淆。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+int g_zeroed;                 // 零初始化: .bss, main 前完成
+constexpr int g_const = 42;   // 常量初始化: 编译期确定
+
+int& get() {
+    static int s = g_zeroed + 1;   // 动态初始化: 首次进入才执行
+    return s;
+}
+
+int main() {
+    std::cout << g_zeroed << " " << g_const << "\n";
+    get() = 7;
+    std::cout << get() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.start.static] / §[basic.start.dynamic]：zero→constant 在 dynamic 之前，dynamic 的跨 TU 顺序未指定。
+
+<span class="badge badge-exp">经验</span> 读「存储期三阶段」能解释一切静态初始化的诡异现象：跨 TU 动态初始化顺序未指定是 SOIF 的根源，`constinit` 是「能常量就不动态」的强制手段；函数内 `static` 则靠延迟初始化绕开顺序问题——三者是同一问题的三种解法（见本章附录 J 决策流）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：跨翻译单元共享配置——选 `inline` 变量还是单例？

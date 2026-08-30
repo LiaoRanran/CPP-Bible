@@ -1091,6 +1091,116 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference 协程帧与 `std::coroutine_handle`：`https://en.cppreference.com/w/cpp/coroutine/coroutine_handle`。协程参数/局部变量生命周期陷阱见 ISO §9.5.5（[dcl.fct.def.coroutine]）及 C++ Core Guidelines CP.51。
 
+### 练习 4（难度 ★★★）
+
+**真实场景：协程里抛异常不能直接炸掉进程。** generator 在生产序列时可能遇到坏数据抛异常——若 `promise_type::unhandled_exception` 不处理，异常会一路传播到 `std::terminate` 杀死整个程序。正确做法是：在 `unhandled_exception` 里用 `std::current_exception()` 捕获存进 `exception_ptr`，让调用者通过 `rethrow_exception` 在**恢复线程上下文**里接住。请实现"协程抛异常 → 调用者捕获"的完整链路。
+
+<details><summary>答案与解析</summary>
+
+协程体内抛出的异常不会走普通栈展开——它由 `promise_type::unhandled_exception()` 接管。默认实现若直接 `std::terminate()` 或什么都不做（异常已被吸收但不记录），调用者无从得知失败。工程惯例是：`eptr = std::current_exception()` 保存，调用者在 `resume()` 之后检查 `eptr` 并用 `std::rethrow_exception` 重新抛出，使异常在"当前线程 + 当前栈"上按普通 C++ 异常传播。
+
+标准依据：协程异常处理机制见 ISO §9.5.4（[expr.await]）与 §9.5.5（[dcl.fct.def.coroutine]）——`unhandled_exception` 被调用即表示协程体有异常未捕获；`current_exception`/`rethrow_exception` 语义见 §31.7（[propagation]）。异常发生时协程仍会到达 final suspend 点，故 `done()` 为 true，但 `eptr` 已记录失败。
+
+边界条件与失效场景：`rethrow_exception` 必须在"协程帧仍存活"时调用（`h.destroy()` 后 eptr 悬空）；若协程被异常终止后还有未完成的清理，需在析构前处理。另一种流派是"异常转换为结果"：`expected<T>`/`optional<T>` 风格把失败编码进返回对象，避免异常开销——在禁异常环境（`-fno-exceptions`）必须用后一种。多协程协作时，`eptr` 的传递要配合完成回调，别让异常在异步边界被吞掉。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <coroutine>
+#include <iostream>
+#include <exception>
+#include <stdexcept>
+struct gen {
+    struct promise_type {
+        int cur = 0;
+        std::exception_ptr eptr;
+        gen get_return_object() { return gen{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(int v) noexcept { cur = v; return {}; }
+        void return_void() noexcept {}
+        void unhandled_exception() { eptr = std::current_exception(); }   // 捕获而非 terminate
+    };
+    std::coroutine_handle<promise_type> h;
+    explicit gen(std::coroutine_handle<promise_type> hh) : h(hh) {}
+    ~gen() { if (h) h.destroy(); }
+    gen(gen&& o) noexcept : h(o.h) { o.h = {}; }
+    bool next() {
+        h.resume();
+        if (h.promise().eptr) std::rethrow_exception(h.promise().eptr);  // 抛给调用者
+        return !h.done();
+    }
+    int value() const { return h.promise().cur; }
+};
+gen seq() {
+    co_yield 1;
+    throw std::runtime_error("boom");       // 协程内抛异常
+    co_yield 2;
+}
+int main() {
+    gen g = seq();
+    try {
+        while (g.next()) std::cout << g.value() << ' ';
+        std::cout << '\n';
+    } catch (const std::exception& e) {
+        std::cout << "caught: " << e.what() << '\n';
+    }
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `unhandled_exception` 在协程体异常未捕获时被调用（[dcl.fct.def.coroutine]）；`current_exception`/`rethrow_exception` 提供跨协程帧的异常搬运（[propagation]）。
+
+<span class="badge badge-exp">经验</span> "不吞异常也不 terminate"是异步代码的底线——用 `exception_ptr` 显式传递失败。吞吐优先或禁异常环境改 `expected` 风格；注意 `rethrow_exception` 的生命周期与协程帧一致，避免悬挂。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：协程算完结果，怎么把值交回给调用者。** `co_return v` 是协程的"返回值"通道——它不直接返回给调用者，而是调用 `promise_type::return_value(v)` 把结果存进 promise，调用者再经句柄取回。请实现一个立即执行的 `task` 协程：`co_return` 计算结果，`get()` 从 promise 读结果，说明 `return_value` 与 `return_void` 的区别以及为什么 `co_return` 后协程仍在 final suspend 挂起。
+
+<details><summary>答案与解析</summary>
+
+`co_return expr` 会使协程调用 `promise.return_value(expr)`（若 promise 定义了它）或 `return_void()`（无参数）。结果存进 promise 的成员，由返回对象 `task` 通过句柄 `h.promise()` 读取——这就是"协程返回值"的完整通路。`initial_suspend` 用 `suspend_never` 让协程体在 `compute(10)` 调用时立即执行完，`co_return` 存好结果后停在 `final_suspend`（`suspend_always`），协程帧保持存活直到 `task` 析构 `destroy()`。
+
+标准依据：`co_return` 到 promise 的映射见 ISO §9.5.5（[dcl.fct.def.coroutine]）：定义了 `return_value` 就用它、否则要求 `return_void`；两者不能同时定义。`initial_suspend`/`final_suspend` 决定协程何时启动/何时可销毁——`suspend_never` 立即启动，`suspend_always` 末尾挂起便于读取结果。
+
+边界条件与失效场景：`task` 不可拷贝（句柄语义），移动后旧对象 `h` 置空避免双 destroy；忘写 `return_void` 或 `return_value` 且出现不匹配的 `co_return` 是编译期错误。若 `co_return` 前协程已异常，走 `unhandled_exception` 而**不**调 `return_value`——读取结果前要检查异常。真正的 `std::future` 式异步 task 还需 `await_suspend` 里的调度器恢复，本示例是同步直通的最小形态。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <coroutine>
+#include <iostream>
+struct task {
+    struct promise_type {
+        int result = 0;
+        task get_return_object() { return task{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_never initial_suspend() noexcept { return {}; }   // 立即执行
+        std::suspend_always final_suspend() noexcept { return {}; }    // 末尾挂起以读结果
+        void return_value(int v) noexcept { result = v; }              // co_return v 落点
+        void unhandled_exception() { std::terminate(); }
+    };
+    std::coroutine_handle<promise_type> h;
+    explicit task(std::coroutine_handle<promise_type> hh) : h(hh) {}
+    ~task() { if (h) h.destroy(); }
+    task(task&& o) noexcept : h(o.h) { o.h = {}; }
+    int get() const { return h.promise().result; }
+};
+task compute(int n) {
+    int s = 0;
+    for (int i = 1; i <= n; ++i) s += i;
+    co_return s;
+}
+int main() {
+    task t = compute(10);
+    std::cout << "sum(1..10)=" << t.get() << '\n';    // 55
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `co_return` 调用 promise 的 `return_value`/`return_void`（[dcl.fct.def.coroutine]），二者互斥；句柄 `h.promise()` 返回 promise 引用供读取结果。
+
+<span class="badge badge-exp">经验</span> `return_value` 存结果、`final_suspend` 保活、析构 `destroy` 收尾——是"协程当函数用"的最小闭环。异步变体把 `initial_suspend` 换 `suspend_always`、在 `await_suspend` 里安排恢复者，即 ch120 的 task 形态。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

@@ -1802,6 +1802,81 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：批量处理时捕获点放在哪。** 一批数据逐条喂给 `risky(i)`（负数抛 `invalid_argument`），`sum` 已累加了几条。请把 `try` 放在循环外观察「异常中断循环」的行为，并说明「捕获点粒度」对部分完成状态的影响。
+
+<details>
+<summary>答案与解析</summary>
+
+异常抛出后，栈展开会**跳过循环剩余迭代**直接跳到最近的匹配 catch：本代码 `try` 包住整个循环，第二个元素 `-1` 抛异常后循环终止，`sum` 停在 1（第一条的值）——这就是「部分完成状态」。想逐条容错就该把 `try/catch` 放进循环体内，失败一条继续下一条；把捕获点放循环外则整批作废。捕获粒度 = 事务边界粒度，这是异常安全设计的第一选择。
+
+标准依据：ISO/IEC 14882:2023 §[except.ctor]/§[except.handle]：异常沿调用栈搜索匹配 handler，栈上的 RAII 对象随展开析构；跳过的代码（循环剩余迭代）不执行。三保证（§[res.on.exception.handling]）在此体现为：basic 保证（对象仍有效）vs 更强的事务语义（练习 3 的 swap 提交）。
+
+实现与边界：`sum` 的「部分累计」对调用方是可见副作用——若这是必须原子的操作，循环内直接失败处理或事务式重试才符合 strong 保证。何时失效：多阶段管线（读→算→写）中途异常，中间产物怎么处理由捕获粒度决定。替代方案：catch 里只做「记录并继续」应把 catch 放循环内；「整体失败」则循环外 + 事务式提交（练习 3 的 KV 模式）。
+
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+
+int risky(int i) {
+    if (i < 0) throw std::invalid_argument("negative");
+    return i * 2;
+}
+
+int main() {
+    std::vector<int> v{1, -1, 3};
+    int sum = 0;
+    try {
+        for (int x : v) sum += risky(x);     // 第二个元素抛异常 → 循环终止
+    } catch (const std::invalid_argument& e) {
+        std::cout << "caught: " << e.what() << " sum=" << sum << "\n";
+    }
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[except.handle]：异常沿栈找 handler，被跳过的代码不执行；部分完成状态由捕获点位置决定。
+
+<span class="badge badge-exp">经验</span> 问自己两句话再放 `try`：这条失败该「整体作废」还是「跳过继续」？整体作废→事务式提交（练习 3），跳过继续→catch 放循环内。别让 catch 和业务逻辑的边界错位，否则半成品状态会悄悄污染后续数据（本章附录『析构抛异常』同样是边界问题）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：noexcept 是接口契约还是装饰。** 你给移动构造、`swap` 标 `noexcept`，希望 `vector` 扩容走移动而非拷贝。请用 `noexcept` 运算符在**编译期**探测一个表达式到底保不保证不抛，理解 noexcept 作为「类型契约」如何影响标准库行为。
+
+<details>
+<summary>答案与解析</summary>
+
+`noexcept(expr)` 运算符在编译期求值：表达式内任何「可能抛」的调用都使结果为 `false`，只有全程保证不抛才为 `true`——本例 `noexcept(no_throw())` 为 `true`、`noexcept(may_throw())` 为 `false`。这个可查询的属性正是标准库选型依据：`std::vector` 扩容时用 `std::move_if_noexcept`，只有元素的移动构造 `noexcept` 才放心移动，否则退回拷贝（保证强异常安全），这也是 ch31 练习 3 强调「移动操作标 noexcept」的底层原因。
+
+标准依据：ISO/IEC 14882:2023 §[expr.unary.noexcept] 定义 `noexcept` 运算符的编译期探测语义；§[dcl.fct.def] 定义 noexcept 说明符（违反即 `std::terminate`，§[except.spec]/[except.terminate]）。一旦标了 noexcept 却抛出，进程直接终止——它不只是性能提示，而是「我承诺不抛」的硬契约。
+
+实现与边界：noexcept 声明若与实际抛出不符，`std::terminate` 代替可预期的处理——所以只对确实不抛的操作声明。何时失效：标了 noexcept 却调用了可能抛的函数（如分配、格式化），既失去优化又引火烧身。替代方案：析构默认 noexcept（ch39 练习 5）；`swap`/移动标 noexcept 是容器优化的前提；不确定时先不标，测量确认再收紧。
+
+> **示例 64** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+void no_throw() noexcept {}
+void may_throw() {}
+
+int main() {
+    // noexcept 运算符: 编译期查询表达式是否保证不抛
+    std::cout << std::boolalpha
+              << noexcept(no_throw()) << " "      // true
+              << noexcept(may_throw()) << "\n";   // false
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[expr.unary.noexcept]：noexcept 运算符编译期探测；违反 noexcept 契约 → `std::terminate`。
+
+<span class="badge badge-exp">经验</span> noexcept 是「契约 + 优化提示」二合一：`vector` 靠 `move_if_noexcept` 读它做决策。标前自问「这条路径真的永不抛吗」——移动/swap/析构通常是，I/O/分配通常是反例（本章附录『析构抛异常』与 ch31 的 rule of 5 形成闭环）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：析构函数抛异常 → std::terminate

@@ -1313,6 +1313,83 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：泛型算法对迭代器类别做零开销分发。** 你写一个 `my_distance`，要对随机访问迭代器走 `b - a`（O(1)），对输入/前向迭代器走逐元素自增（O(n)）。请用 `std::iterator_traits<It>::iterator_category` 配合编译期分发，让"类别决定复杂度"在编译期完成，而不是运行时 if。
+
+<details><summary>答案与解析</summary>
+
+`std::iterator_traits<It>::iterator_category` 给出迭代器类别标签（如 `std::random_access_iterator_tag`）。标准保证随机访问迭代器类别"派生自"更弱的类别，因此可以用 `std::is_base_of`/`if constexpr` 在编译期选择分支：随机访问直接 `b - a` 得到距离（O(1)，并不真的逐元素走一遍），其余类别退化成线性自增。这正是 STL 算法（如 `std::distance`、`std::advance`）的底层分发手法——类别决定复杂度，零运行时开销。
+
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <list>
+#include <iterator>
+#include <type_traits>
+
+template <typename It>
+std::size_t my_distance(It a, It b) {
+    using cat = typename std::iterator_traits<It>::iterator_category;
+    if constexpr (std::is_base_of_v<std::random_access_iterator_tag, cat>) {
+        return static_cast<std::size_t>(b - a);          // 随机访问: O(1)
+    } else {
+        std::size_t n = 0;
+        for (; a != b; ++a) ++n;                         // 其他: O(n)
+        return n;
+    }
+}
+
+int main() {
+    std::vector<int> v{1,2,3, 4,5};
+    std::list<int>   l{1,2,3};
+    std::cout << my_distance(v.begin(), v.end()) << " "
+              << my_distance(l.begin(), l.end()) << "\n"; // 5 3
+}
+```
+
+<span class="badge badge-std">标准</span> 迭代器类别标签（`input_iterator_tag`…`random_access_iterator_tag`，C++20 起另有 `contiguous_iterator_tag`）构成派生层级；`std::iterator_traits` 把"类别"从迭代器类型里萃取出来，是 STL 泛型分发的基石。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别与 `iterator_traits`）；§[iterator.traits]（`iterator_category` 的定义）；见 cppreference "iterator" 词条。
+
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：统一遍历"裸数组 / STL 容器 / 自定义范围"三种不同对象。** 团队代码里既有 C 数组、又有 `std::vector`，你希望一个 `walk` 函数都能处理。请用 `std::begin`/`std::end`（定制点）而非成员 `.begin()`，让裸数组也能被同一套逻辑遍历，并解释为什么标准选"非成员 + ADL"。
+
+<details><summary>答案与解析</summary>
+
+`std::begin(r)`/`std::end(r)` 是"定制点"：对容器它调用成员 `begin()`；对裸数组它退化到指针 `r + N`；对实现了 `begin()/end()` 的自定义类型则通过 ADL 找到对应函数。相比强制要求 `.begin()` 成员，非成员 `std::begin` 既能服务内置数组，又能让第三方类型在不改动自身的情况下接入基于范围的循环与 STL 算法，是"开放扩展"的设计；它也是 range-based for 的底层机制。
+
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 5（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <array>
+
+template <typename R>
+void walk(const R& r) {
+    for (auto it = std::begin(r); it != std::end(r); ++it)
+        std::cout << *it << " ";
+    std::cout << "\n";
+}
+
+int main() {
+    int carr[] = {1, 2, 3};
+    std::vector<int> v{4, 5};
+    walk(carr);   // 裸数组也能被统一遍历
+    walk(v);
+}
+```
+
+<span class="badge badge-std">标准</span> `std::begin`/`std::end` 返回满足 LegacyIterator 的对象；范围-based for 的改写规则正是调用它们；裸数组经 `std::begin` 得到 `T*`（`ContiguousIterator`）。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[iterator.range]（`std::begin`/`std::end`）；§[stmt.ranged]（范围 for 的改写规则）；见 cppreference "begin" 词条。
+
+</details>
+
 ## 附录 J：STL 架构决策流（D3 维度）
 
 ```mermaid

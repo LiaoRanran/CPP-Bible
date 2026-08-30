@@ -2061,6 +2061,78 @@ D1* q = dynamic_cast<D1*>(p); // nullptr: p 并不指向 D1 分支
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：对接只读 C 接口。** 一个 C 库函数签名是 `int c_length(char*)`，实现实际只读 `strlen`；你手里是 `const char*`。请用 `const_cast` 去掉底层 const 完成调用，并说明**何时安全**、何时是未定义行为。
+
+<details>
+<summary>答案与解析</summary>
+
+`const_cast` 只做「去掉/加上 cv 限定」的转换，不改变地址、不产生新对象。它的合法前提是：被转换对象的底层类型**本就不是 const**（只是经 const 路径传递）。本例 `name` 绑定的字符串字面量底层是 `const char[N]`，严格说仍是 const 对象，只读访问是安全的——`strlen` 不写所以不踩 UB；但如果该接口实际会写入，就会在只读段上写、触发崩溃或未定义行为。
+
+标准依据：ISO/IEC 14882:2023 §[expr.const.cast] 规定 `const_cast` 只调整 cv 限定；§[dcl.type.cv] 同时规定「对真正 const 对象写入」是未定义行为——`const_cast` 成功编译 ≠ 写操作合法，能否写取决于底层对象是否为 const。
+
+实现与边界：安全用例：① 对象原本非 const，只是经 const 引用/指针到达（可用 `std::is_const_v<decltype(obj)>` 辅助推理）；② 接口保证不写。危险用例：对字面量、`const` 全局、`const` 成员经 cast 后写——立即 UB。替代方案：接口签名本来就没 const，可在封装层改签名或提供非 const 重载；`const_cast` 是最后手段，不是性能技巧。
+
+> **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <cstring>
+
+// 模拟只读的 C 接口
+int c_length(char* s) { return static_cast<int>(std::strlen(s)); }
+
+int main() {
+    const char* name = "cpp";
+    // 正确场景: 明确知道底层不是 const 对象, 只是经 const 路径传递
+    int n = c_length(const_cast<char*>(name));
+    std::cout << n << "\n";
+
+    // 危险场景(注释说明): 对真正 const 对象写 = UB
+    // const int ci = 5; const_cast<int&>(ci) = 6;  // UB
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[expr.const.cast]/§[dcl.type.cv]：`const_cast` 仅调 cv，写真正 const 对象是 UB。
+
+<span class="badge badge-exp">经验</span> 判读 `const_cast` 是否安全，唯一标准是「底层对象到底是不是 const」。凡是 `strlen` 这类纯读接口，去掉 const 只是类型契约的补丁；凡是可能写的接口，先怀疑接口设计再动手。`const_cast` 出现在生产代码里通常是「被 C 接口逼的」，改签名/加重载才是根治（本章附录『C 风格转换 vs C++ 具名 cast』对照了三种 cast 的适用面）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：类层级里显式上下转型。** 你的对象模型里有 `Base`/`Derived`，运行时拿到 `Base*`，需要转回 `Derived*` 读其特有字段。请比较 `static_cast` 与 `dynamic_cast` 在这一场景的取舍：前者零开销但无检查，后者有 RTTI 检查但更慢。
+
+<details>
+<summary>答案与解析</summary>
+
+`static_cast<Derived*>(b)` 执行编译期已知的指针调整：单继承下基类子对象与派生对象起始地址一致（偏移 0），转换只是类型重标注，零运行期开销。它的前提是「程序员保证 `b` 确实指向 `Derived`」——一旦指向别的类型，读 `back->d` 就是越界/错位读取，属于 UB。`dynamic_cast` 则运行期查 RTTI：不匹配返回 `nullptr`（对指针）或抛 `std::bad_cast`（对引用），安全但每步要查 vtable 路径（见练习 3 的多重/虚继承开销）。
+
+标准依据：ISO/IEC 14882:2023 §[expr.static.cast]（静态向下转型要求目标完整类型、运行时结果由调用方保证）与 §[expr.dynamic.cast]/§[class.rtti]（动态转型依赖 RTTI，失败语义明确）。`static_cast` 向上转换（派生→基）永远合法且最优，向下转换才是有风险区。
+
+实现与边界：向下转型三问：① 有虚函数/RTTI 可用吗？② 转换失败代价多大？③ 类型集合是否静态已知？集合已知且不变量成立 → `static_cast`；运行期可能变体 → `dynamic_cast`。替代方案：避免向下转型的根治法是多态接口/`std::visit`（见 ch25）；必须转时优先 `dynamic_cast` 保安全，或用 `static_cast` + `assert` 双保险。
+
+> **示例 70** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+struct Base { virtual ~Base() = default; int b = 1; };
+struct Derived : Base { int d = 2; };
+
+int main() {
+    Derived d;
+    Base* b = static_cast<Base*>(&d);      // 向上转换: 编译期已知
+    Derived* back = static_cast<Derived*>(b); // 向下: 静态已知布局, 无检查
+    std::cout << b->b << " " << back->d << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[expr.static.cast]：静态向下转型零开销、无检查；§[expr.dynamic.cast]：动态转型依赖 RTTI，失败返回 nullptr/抛 bad_cast。
+
+<span class="badge badge-exp">经验</span> 性能与安全的权衡规则：「能证明不变量就 `static_cast`，证明不了就 `dynamic_cast`」。别在热循环里动态转型（RTTI 查表有成本），也别为了省一次查表把 `dynamic_cast` 换成 `static_cast` 去赌运行期类型——赌输是未定义行为（本章附录『类型双关的正确姿势』强调同类问题）。
+
+</details>
+
 ## 附录：用法演绎 — 类型双关（type punning）的正确与错误姿势
 
 > 场景：网络/序列化中常需查看一个 `float` 的 32 位 IEEE-754 位模式（或反过来构造）。

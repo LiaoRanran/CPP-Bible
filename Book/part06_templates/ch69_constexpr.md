@@ -907,6 +907,61 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你写一个泛型平方函数，希望它既是编译期常量（可用于数组维度）又是运行期函数。** 请写出 `constexpr` 版本 `sq` 与 `if constexpr` 分支，演示 `constexpr` 让同一份代码在编译期/运行期都能求值。
+
+<details><summary>答案与解析</summary>
+
+`constexpr` 函数只要实参是编译期常量，就能在编译期求值；否则退化为普通函数。它把"常量计算"与"运行期逻辑"统一到同一份代码，且返回值可作常量表达式（如数组维度、`static_assert`）。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+constexpr int sq(int x) { return x * x; }
+constexpr int choose(bool b) {
+    if constexpr (true) return 1; else return 0;
+}
+int main() {
+    static_assert(sq(4) == 16);
+    std::cout << sq(5) << " " << choose(false) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `constexpr` 由 ISO/IEC 14882（C++23）§[dcl.constexpr] 规定：函数体须能被常量求值；`if constexpr` 的丢弃分支不被实例化（§[stmt.if]）。
+
+<span class="badge badge-exp">经验</span> `constexpr` 适合"可在编译期算、也可能需要运行中算"的通用逻辑；注意它会限制函数体可用的语句（`asm`、非常量等不可）。需要"强制编译期"时用 `consteval`（C++20）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你需要一个编译期求和 `sum_to(n)`，并且希望它在 `static_assert` 里直接当常量用。** 请写出 `constexpr` 版本：用普通 `for` 循环在编译期累加，并演示结果可作为常量表达式使用。
+
+<details><summary>答案与解析</summary>
+
+C++14 起 `constexpr` 允许循环与局部变量，因此"编译期求和"无需递归元函数即可表达。只要实参是常量，`sum_to(100)` 在编译期就折叠成 `5050`，可直接用于常量上下文。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> ·   练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+constexpr int sum_to(int n) {
+    int s = 0;
+    for (int i = 1; i <= n; ++i) s += i;
+    return s;
+}
+int main() {
+    constexpr int v = sum_to(100);      // 编译期求值 -> 5050
+    std::cout << v << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `constexpr` 函数体中允许循环（C++14 起，ISO/IEC 14882 §[dcl.constexpr]）；常量求值在翻译期完成，结果可用于数组维度、`static_assert`、模板实参等。
+
+<span class="badge badge-exp">经验</span> `constexpr` 循环比 TMP 递归更易读、更易调试；能用 `constexpr` 就别用 TMP 递归。注意 `constexpr` 不等同"一定编译期算"——只有实参为常量时才强制常量求值。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：constexpr 何时真在编译期求值

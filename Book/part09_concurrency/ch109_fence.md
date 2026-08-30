@@ -696,6 +696,93 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::atomic_signal_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence`。signal_fence 与 thread_fence 的区别见 ISO §32.6（[atomics.fences]）。
 
+### 练习 4（难度 ★★★）
+
+**真实场景：给"一批 relaxed 操作"统一上全序。** 当你要的是"所有相关操作存在一个全局一致视角"而非逐对同步时，把每个操作都标 seq_cst 会非常啰嗦——`std::atomic_thread_fence(seq_cst)` 一次给"当前线程 fence 前后的全部原子操作"施加 seq_cst 语义。请用 seq_cst fence + relaxed 操作复现"两个写者、两个读者"的 IRIW 场景，说明为什么 `z >= 1` 必然成立、纯 relaxed 则允许 `z == 0`。
+
+<details><summary>答案与解析</summary>
+
+`seq_cst` fence 与 `seq_cst` 操作一样参与全局单一全序 S：fence 前后的 relaxed 操作被 S 排序，且所有参与 S 的 fence/操作共享同一个全局视角。因此两个读者不可能"各自看到相反顺序"——若 r1 已见 x 而未见 y、r2 已见 y 而未见 x，则矛盾（S 要求一个一致的先后），至少一个读者会看到另一个写者的值，故 `z >= 1`。换成纯 relaxed 无 S，两个读者可以各自"只见自己的写者"，`z == 0` 成为标准允许的结果。
+
+标准依据：seq_cst fence 的语义见 ISO §32.4.2（[atomics.fences]）——它把所有 seq_cst fence 与 seq_cst 原子操作纳入同一总序 S；relaxed 操作本身无 S，但 fence 的排布把它们纳入排序。复杂度与性能：x86-64 上 `mfence` 或 `lock` 前缀承担；ARM 上 `dmb ish` `[微架构·ARM]` `[UNVERIFIED]`。
+
+边界条件与失效场景：seq_cst fence 只保证"fence 参与 S"的操作间全序，不延伸到 fence 外的 relaxed 操作与其它变量的自由重排。性能上 seq_cst 是最贵的序——只有"需要全局一致视角"（IRIW 类悖论）才用；大多数同步用 release/acquire 对就够，不要为"看起来更安全"一律 seq_cst。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <iostream>
+int main() {
+    std::atomic<bool> x{false}, y{false};
+    std::atomic<int> z{0};
+    std::thread wx([&]{ x.store(true, std::memory_order_relaxed);
+                        std::atomic_thread_fence(std::memory_order_seq_cst); });
+    std::thread wy([&]{ y.store(true, std::memory_order_relaxed);
+                        std::atomic_thread_fence(std::memory_order_seq_cst); });
+    std::thread r1([&]{ while (!x.load(std::memory_order_relaxed)) {}
+                        std::atomic_thread_fence(std::memory_order_seq_cst);
+                        if (y.load(std::memory_order_relaxed)) z.fetch_add(1); });
+    std::thread r2([&]{ while (!y.load(std::memory_order_relaxed)) {}
+                        std::atomic_thread_fence(std::memory_order_seq_cst);
+                        if (x.load(std::memory_order_relaxed)) z.fetch_add(1); });
+    wx.join(); wy.join(); r1.join(); r2.join();
+    std::cout << "z=" << z.load() << " (seq_cst fence 保证 >=1)\n";
+    return z.load() >= 1 ? 0 : 1;
+}
+```
+
+<span class="badge badge-std">标准</span> seq_cst fence 纳入全局总序 S（[atomics.fences]），从而消除"各读者看到矛盾顺序"的 IRIW 悖论；`z==0` 在纯 relaxed 下是被标准允许的结果。
+
+<span class="badge badge-exp">经验</span> "多读多写需要一致视角"才付 seq_cst 代价；单一发布-订阅用 release/acquire 足矣。IRIW 在 x86 TSO 上难以复现、在 ARM/POWER 上真实存在，跨平台代码按标准语义写，不要拿 x86 结果当正确性依据。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：把自旋锁写成"fence 版"。** 加锁/解锁各一条原子操作就够，但临界区数据要保证可见性——与其给 `exchange`/`store` 标 acquire/release，不如"锁操作用 relaxed、在临界区两侧放 fence"：`lock` 里 `acquire fence` 挡住临界区读被提前、`unlock` 里 `release fence` 挡住临界区写被推迟。请实现 Fence 版自旋锁并保护共享计数，说明它和"操作自带序"版在语义上等价。
+
+<details><summary>答案与解析</summary>
+
+fence 版自旋锁：`lock()` 用 `locked.exchange(true, relaxed)` 抢锁——exchange 保证互斥（一个线程成功改 true），随后 `acquire fence` 使临界区的读不会被重排到抢锁之前；`unlock()` 先 `release fence` 让临界区写不会移到释放之后，再 `store(false, relaxed)`。release fence 与其后 relaxed store 的组合，配对 acquire fence 与其前 relaxed load 的组合，构成 synchronizes-with——这正是练习 1 的"fence + relaxed"配对的落地。
+
+标准依据：acquire/release fence 与 relaxed 原子操作组合的同步语义见 ISO §32.4.2（[atomics.fences]）。它与"`exchange(acquire)` + `store(release)`"版本逐位等价——只是把序从操作身上挪到了 fence 上，指令层面在 x86-64 上同样收敛为 `lock xchg` + 普通 store。
+
+边界条件与失效场景：fence 的粒度是"线程内 fence 前后的所有操作"，比单操作序更宽——滥用会让本不需同步的操作也被排序，牺牲一点重排自由度。自旋锁本身对单核系统是活锁源（无其他线程释放锁），生产还要加 `yield`/`_mm_pause`；长临界区、进程间、IO 等待场景应换 `std::mutex`。fence 版适合"不想逐操作标注"的批量临界区。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
+struct FenceSpinLock {
+    std::atomic<bool> locked{false};
+    void lock() {
+        while (locked.exchange(true, std::memory_order_relaxed)) {}   // 抢锁（只保证互斥）
+        std::atomic_thread_fence(std::memory_order_acquire);          // 临界区读不提前
+    }
+    void unlock() {
+        std::atomic_thread_fence(std::memory_order_release);          // 临界区写不推迟
+        locked.store(false, std::memory_order_relaxed);
+    }
+};
+int main() {
+    FenceSpinLock sl;
+    int shared = 0;
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 4; ++i)
+        ts.emplace_back([&]{ for (int j = 0; j < 100000; ++j) { sl.lock(); ++shared; sl.unlock(); } });
+    for (auto& t : ts) t.join();
+    std::cout << "shared=" << shared << '\n';          // 400000
+    return shared == 400000 ? 0 : 1;
+}
+```
+
+<span class="badge badge-std">标准</span> release fence + 后续 relaxed store 与 acquire fence + 前置 relaxed load 配对建立 synchronizes-with（[atomics.fences]），与操作自带序版本语义等价。
+
+<span class="badge badge-exp">经验</span> fence 版适合"一批操作一起有序"的临界区，单点同步用操作序更直白；自旋锁只适合极短临界区，且 `exchange(true)` 抢锁已含互斥——fence 只解决数据可见性，别把两者功能搞混。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

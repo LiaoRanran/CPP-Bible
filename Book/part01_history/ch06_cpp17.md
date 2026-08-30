@@ -749,6 +749,70 @@ SFINAE/标签分派样板；折叠表达式把变参递归展开压成一行，�
 
 <span class="badge badge-ref">引用</span> ISO C++17 §[stmt.if]（if constexpr）与 §[expr.prim.fold]（折叠表达式）；cppreference "if constexpr"（https://en.cppreference.com/w/cpp/language/if）与 "折叠表达式"（https://en.cppreference.com/w/cpp/language/fold）。二者分别由 WG21 论文 P0292R2 / P0036R0 引入。
 
+### 练习 4（难度 ★★）
+
+**真实场景：函数可能"没有结果"时，用 `int` 的 `-1` 当哨兵值容易误用。** 你在写一个解析函数，合法输入与"解析失败"都想用一个返回值表达；过去用 `-1` 哨兵，结果调用方忘记检查就把 `-1` 当真实值用了。请用 C++17 的 `std::optional` 把"无值"编码进类型，迫使调用方处理缺失分支。
+
+<details><summary>答案与解析</summary>
+
+`std::optional<T>` 把"可能没有 T"这件事直接写进类型系统：调用方拿到 `optional<T>` 时，必须区分"有值"与"无值"，无法再像哨兵值那样被无意忽略。
+
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <optional>
+#include <string>
+
+std::optional<int> parse(const std::string& s) {
+    try { return std::stoi(s); }          // 成功返回有值
+    catch (...) { return std::nullopt; }  // 失败返回无值
+}
+
+int main() {
+    auto r = parse("42");
+    std::cout << (r.has_value() ? std::to_string(*r) : "none") << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++17 §[optional] 引入 `std::optional<T>`，其 `operator bool`/`has_value()` 显式表达"是否有值"，`_ 未定义` 取值由调用方显式确认，消除哨兵值歧义。
+
+<span class="badge badge-exp">经验</span> 凡是"可能失败且失败是常态"的接口，优先用 `optional`/`expected` 而非特殊哨兵（如 `-1`、`nullptr`）；类型帮你把"必须处理错误"从约定变成强制。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：高频日志/切片不想为 `string` 反复分配内存。** 你的日志函数接收字符串，但调用方既有字面量又有 `std::string`，每次都 `string` 拷贝很浪费。请用 C++17 的 `std::string_view` 写一个零拷贝的日志入口，并说明它与 `const string&` 的关键区别。
+
+<details><summary>答案与解析</summary>
+
+`std::string_view` 是一个"指向字符缓冲区的轻量视图"，不拥有内存，因此传参既不拷贝、也不要求对象必须是 `std::string`——字面量、子串、C 字符串都能直接喂进去。
+
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <string_view>
+#include <string>
+
+void log(std::string_view s) {               // 零拷贝：只存指针+长度
+    std::cout << "[" << s.size() << "] " << s << '\n';
+}
+
+int main() {
+    log("hello");                            // 字面量直接构造，无分配
+    std::string name = "world";
+    log(name);                               // string 也能直接转成 view
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++17 §[string.view] 规定 `string_view` 仅为 `(ptr, size)` 对，构造对字面量/`string`/`char*` 均为 O(1)；它不保证 NUL 结尾，不能当 C 字符串直接传给需要 `\0` 的接口。
+
+<span class="badge badge-exp">经验</span> 函数参数优先用 `string_view` 接收"只读字符串"，避免无谓拷贝；但切勿让它指向临时/已释放内存（悬垂），也不要当成 `string` 去修改或长期保存。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：std::variant + std::visit —— 类型安全的“和类型”

@@ -1239,6 +1239,90 @@ int main() { MovementSystem<SysClock, Rng> sys; sys.tick(); }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你的 `Service` 类内部直接 `new ConsoleLogger()` 来打日志，结果单测时无法替换成假 logger，且 `Service` 与具体日志实现紧耦合。请用构造函数注入（constructor injection）解耦，并说明它相比"内部 new"的可测性收益。
+
+<details><summary>答案与解析</summary>
+
+依赖注入的核心是"对象不自己造依赖，而是由外部把依赖传进来"。构造函数注入把 `Logger` 通过 `std::unique_ptr<Logger>` 在构造时传入 `Service`，`Service` 从此只依赖 `Logger` 抽象，不再知道 `ConsoleLogger` 的存在。这样在单元测试里可以传入一个"内存假 logger"（`MemoryLogger`），验证 `Service` 的行为而不碰真实 I/O、不依赖全局状态——可测性立刻成立。
+
+标准/工程上，注入的抽象通常用接口（纯虚基类）+ `unique_ptr` 表达独占所有权（C++11 [unique.ptr]），调用方（composition root）在程序启动处把具体实现"接线"好。相较"内部 new"，DI 把"创建"与"使用"分离：创建集中在组合根，使用处零耦合、零泄漏（RAII）。Martin Fowler 将 DI 与"控制反转（IoC）"绑定，是现代后端框架的基石。
+
+实现边界：构造函数注入要求依赖在构造时齐备；若依赖是可选的或运行期才确定，应改用 setter 注入或 `std::optional<T>` 持有。当失效：若对象图极简、依赖就一两个且永不替换，注入反而增加样板；若依赖存在循环引用（A 要 B、B 要 A），构造注入会自锁，需改用 lazy/弱引用或重新拆解设计。注意 `unique_ptr` 不可拷贝，传递要用 `std::move`。
+
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
+<span class="badge badge-std">标准</span> `std::unique_ptr` 由 C++11 引入（ISO/IEC 14882:2011 [unique.ptr]），此处用于独占持有注入的依赖并保证 RAII 释放。
+
+<span class="badge badge-ref">引用</span> Martin Fowler《Inversion of Control Containers and the Dependency Injection pattern》(2004)；"组合根（Composition Root）"出自 Mark Seemann《Dependency Injection in .NET》。
+
+<span class="badge badge-exp">经验</span> 对象不应自己 new 依赖；构造注入解耦 + 可测。依赖可选/运行期才定 → 用 setter/optional；循环依赖 → 拆解或 lazy。
+
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Logger { virtual ~Logger() = default; virtual void log(const char* m) const = 0; };
+struct ConsoleLogger : Logger { void log(const char* m) const override { std::cout << m << "\n"; } };
+
+struct Service {  // 构造函数注入：依赖由外部传入，而非内部 new
+    std::unique_ptr<Logger> logger;
+    explicit Service(std::unique_ptr<Logger> l) : logger(std::move(l)) {}
+    void doWork() const { if (logger) logger->log("working"); }
+};
+
+int main() {
+    Service s{std::make_unique<ConsoleLogger>()};
+    s.doWork();
+    return 0;
+}
+```
+</details>
+
+### 练习 5（难度 ★★）
+
+**真实场景：** 你的 `App` 在生产用 `FileStorage`、在测试用 `MemoryStorage`，两者实现同一 `Storage` 接口。请演示：同一个 `App` 类如何通过注入不同实现，在"一行接线"处切换生产/测试环境，而 `App` 代码一行不改。
+
+<details><summary>答案与解析</summary>
+
+这正是 DI 的杀手锏：业务类 `App` 只依赖 `Storage` 抽象，完全不知道背后是文件还是内存。生产环境在组合根注入 `FileStorage`，测试环境注入 `MemoryStorage`，`App` 的 `run()` 逻辑一字不改即可在两种环境下跑——"可替换性"把"环境差异"压缩到一处接线点，而不是散落在业务代码各处 `if (测试) ...`。
+
+机制上，这与 ch140 的编译期 policy 形成对照：policy 在**编译期**把实现焊死（零开销但不可切换），DI 在**运行期**接线（可替换但有一次间接）。当"切换发生在部署/测试边界、且需要真实替换实现"时，运行期 DI 是更自然的选择；当"切换永不发生、且在热路径"时，policy 更优。二者不是竞争而是互补。
+
+实现边界：DI 需要一个"组合根"集中接线，否则依赖会在各处被随意 `new`；组合根通常是 `main()` 附近唯一允许直接 `new` 具体类的地方。当失效：若注入的接口太"宽"（含 `App` 用不到的方法），就违反了接口隔离原则（ISP），应把接口拆细；若依赖对象很重且全局单例，反复注入大对象不如用单例/服务定位器（但要承受全局状态难测的代价）。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
+<span class="badge badge-std">标准</span> 接口隔离与依赖倒置（DIP）属面向对象设计原则（SOLID），C++ 中以纯虚基类表达抽象；`std::make_unique` 由 C++14 引入（提案 N3656）。
+
+<span class="badge badge-ref">引用</span> SOLID 中 DIP/ISP 由 Robert C. Martin 提出；Fowler 依赖注入模式；组合根为 Mark Seemann 术语。
+
+<span class="badge badge-exp">经验</span> "环境差异"压缩到组合根一处接线；DI 与 policy 互补：运行期可替换用 DI，编译期零开销用 policy。
+
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Storage { virtual ~Storage() = default; virtual int get() const = 0; };
+struct FileStorage : Storage { int get() const override { return 1; } };
+struct MemoryStorage : Storage { int get() const override { return 2; } };  // 测试用假实现
+
+struct App {
+    std::unique_ptr<Storage> store;
+    explicit App(std::unique_ptr<Storage> s) : store(std::move(s)) {}
+    int run() const { return store->get(); }
+};
+
+int main() {
+    App prod{std::make_unique<FileStorage>()};
+    App test{std::make_unique<MemoryStorage>()};
+    std::cout << prod.run() << " " << test.run() << "\n";
+    return 0;
+}
+```
+</details>
+
 ## D5 真实性能基准：三种依赖注入方式的调用成本（GCC 15.3.0 实测）
 
 **测量方法**：GCC 15.3.0（mingw-w64 x86-64）`-std=c++23 -O2`，预热后计时、5 次运行取中位数；`volatile` 汇聚防死代码消除。被注入依赖的工作量刻意最小（一次累加），以凸显**注入机制本身**的开销。单线程本机实测，仅作量级参考。

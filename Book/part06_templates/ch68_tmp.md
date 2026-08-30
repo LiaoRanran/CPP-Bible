@@ -799,6 +799,57 @@ int main() { int x = 7; process(x); process(&x); }
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你在编译期就需要一个阶乘值（如数组维度、位运算掩码），不想留到运行期。** 请写出 TMP 递归元函数 `Fact<N>`：主模板 `N * Fact<N-1>::value`，偏特化 `Fact<0>` 为 1，演示"递归模板实例化"如何在编译期计算。
+
+<details><summary>答案与解析</summary>
+
+模板元编程（TMP）把计算搬进类型系统：每个 `Fact<N>` 在编译期递归实例化，最终折叠成常量。偏特化 `Fact<0>` 充当递归终止条件，避免无限实例化——这是编译期递归的"base case"。
+
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+template <unsigned N>
+struct Fact { static const unsigned value = N * Fact<N - 1>::value; };
+template <>
+struct Fact<0> { static const unsigned value = 1; };
+int main() { std::cout << Fact<5>::value << "\n"; }   // 120
+```
+
+<span class="badge badge-std">标准</span> 模板实例化与特化由 ISO/IEC 14882（C++23）§[temp.inst] / §[temp.class.spec] 规定；`static const` 成员在编译期求值，可作常量表达式用于数组维度等。
+
+<span class="badge badge-exp">经验</span> TMP 是"编译期计算"的源头，`std::integral_constant`、类型列表都基于此。现代 C++ 中许多 TMP 已被 `constexpr`（见 ch69）取代，但理解 TMP 仍是读懂标准库实现的前提。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你想在编译期表示"一组类型"并查询它的长度，而不用运行时容器。** 请写出 `TypeList<Ts...>` 元函数 `Length`：偏特化匹配 `TypeList<Ts...>` 取出 `sizeof...(Ts)`，演示"类型列表"这一 TMP 基础数据结构。
+
+<details><summary>答案与解析</summary>
+
+类型列表（type list）是把若干类型打包进一个类模板的惯用法，是 TMP 的"容器"。用偏特化把 `TypeList<Ts...>` 匹配出来，即可在编译期拿到所有元素类型与长度，是许多元编程库（如 typelist、Boost.Mp11）的根基。
+
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+template <typename... Ts> struct TypeList { using type = TypeList; };
+template <typename L> struct Length;
+template <typename... Ts>
+struct Length<TypeList<Ts...>> : std::integral_constant<std::size_t, sizeof...(Ts)> {};
+int main() {
+    std::cout << Length<TypeList<int, double, char>>::type::value << "\n";   // 3
+}
+```
+
+<span class="badge badge-std">标准</span> 变参模板（§[temp.variadic]）与偏特化（§[temp.class.spec]）共同支撑类型列表；`std::integral_constant` 是 TMP 常量的标准载体。
+
+<span class="badge badge-exp">经验</span> TypeList 是"编译期数据结构"的起点：可在其上实现 `Car`、`Cdr`、查找、变换。`std::tuple`、`std::variant` 的底层也是"类型序列"思想。需要编译期类型集合时优先用结构化列表而非宏。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：递归元函数必须有终止特化

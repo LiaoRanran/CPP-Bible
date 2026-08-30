@@ -1240,6 +1240,60 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[multiset]（允许重复 key 的有序容器）；需要"键→频次"且不介意有序时优于 `map<K,int>` 手动计数；见 cppreference "container/set"（`multiset` 专节）。
 
+### 练习 4（难度 ★★）
+
+**真实场景：有序集合里要删除"[low, high) 半开区间的所有键，又不逐个查找。** 日程表里要清掉 9:00–11:00 之间的所有任务。请用 `lower_bound`/`upper_bound` 一次性拿到区间两端迭代器，再整体 `erase`，并解释复杂度。
+
+<details><summary>答案与解析</summary>
+
+`set` 保持有序，因此"按值而非按迭代器"删除一段可以用 `lower_bound(low)`（首个 ≥ low）与 `upper_bound(high)`（首个 > high）拼出半开区间 `[low, high)`，直接 `erase(first, last)` 一次性删除，复杂度是该区间内元素数级 O(k) 加 O(log n) 定位——比"先查再逐个 erase"更清晰且不易错。注意 `erase(iterator)` 与 `erase(range)` 的返回不同。
+
+> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <set>
+int main() {
+    std::set<int> s{1,2,3,4,5,6};
+    // 删除 [3,5): 用 lower_bound/upper_bound 构造半开区间
+    s.erase(s.lower_bound(3), s.upper_bound(5));
+    for (int x : s) std::cout << x << " ";   // 1 2 6
+    std::cout << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `lower_bound`/`upper_bound` 均为 O(log n)；`erase(first, last)` 删除半开区间，复杂度 O(distance+log n)，对有序容器的批量移除是惯用法。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[set]（`lower_bound`/`upper_bound`/`equal_range`）；§[associative.reqmts]；见 cppreference "container/set"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：`multiset` 允许重复键，你要统计"值 2 出现了几次"并安全取出所有副本。** 监控计数里同一指标可能被多次写入。请用 `count` 与 `equal_range` 两种手段实现，并指出 `equal_range` 在"既要数量又要遍历副本"时的优势。
+
+<details><summary>答案与解析</summary>
+
+`count(key)` 直接给出重复计数（O(log n + count)）；`equal_range(key)` 返回 `[first, last)` 的迭代器对，既告诉你有多少重复（distance），又能直接遍历这段——比"先 count 再反复 find"更不易出错，也更高效（一次定位）。对 `multiset`，插入相同键不会覆盖，仅是计数增加，删除也只删一个相等元素。
+
+> **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <set>
+int main() {
+    std::multiset<int> ms{1,2,2,2,3};
+    std::cout << "count(2)=" << ms.count(2) << "\n";   // 3
+    auto [a,b] = ms.equal_range(2);
+    for (auto it = a; it != b; ++it) std::cout << *it << " ";  // 2 2 2
+    std::cout << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `multiset::count` 与 `equal_range` 复杂度均为 O(log n + count)；`equal_range` 返回与 `lower_bound`/`upper_bound` 相同的端点，便于区间遍历。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[multiset]（`count`/`equal_range` 语义）；§[associative.reqmts]；见 cppreference "container/set"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 set 维护任务调度的最近到期时刻

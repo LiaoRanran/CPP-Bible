@@ -1279,6 +1279,79 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::atomic::compare_exchange_weak`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。Treiber 栈与 lock-free 定义见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
+### 练习 4（难度 ★★★）
+
+**真实场景：配置"热更新"的无锁快照读。** 路由表/限流配置需要"读者无锁取当前版本、写者原子替换指针"——这正是把"无锁"用在读多写少快照上的经典形态：`std::atomic<const T*>` 一次 load 拿到完整快照，写者 store 新指针完成发布。请用原子指针实现"快照读 + 原子换版本"，说明为什么 load/store 都要配对 release/acquire、以及删除旧版本为什么必须交给内存回收策略（见 ch112）。
+
+<details><summary>答案与解析</summary>
+
+把整份配置放进不可变对象，用 `std::atomic<const Config*>` 指向它：读者一次 `load(acquire)` 拿快照指针，之后对该对象的全部读都安全（对象不可变、无写者改它）；写者构造新对象后 `store(release)` 发布。acquire/release 配对保证"写者在新对象上的所有初始化"对"读到新指针的读者"可见，读者绝不会看到半初始化的快照。
+
+标准依据：指针原子的操作语义见 ISO §32.5；`const T*` 原子化合法（指针自身可原子，指向对象不变）。这是 RCU 的"读侧免锁"形态（见 ch112），但此代码**没有**解决旧版本回收：`store(&b)` 后 `a` 可能仍有读者在引用，直接 `delete &a` 是 use-after-free——回收必须等所有读者退出临界区（RCU 宽限期 / hazard pointer）。
+
+边界条件与失效场景：若快照对象可变（非 const），读者 load 后又被写者改，就是数据竞争——快照必须是不可变的。多写者交替发布时，"谁最后 store"赢；版本间跳跃（读者可能读旧版）是允许的，业务需容忍短暂陈旧读。追求更短临界区可用 `std::shared_ptr` 的原子 free 函数做自动回收（ch112 练习 2 的形态）。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <atomic>
+#include <iostream>
+struct Config { int rate; int size; };
+int main() {
+    std::atomic<const Config*> g{nullptr};
+    Config a{10, 100}, b{20, 200};
+    g.store(&a, std::memory_order_release);                    // 写者发布初始快照
+    const Config* snap = g.load(std::memory_order_acquire);    // 读者一次拿快照
+    std::cout << "snap rate=" << snap->rate << '\n';           // 10
+    g.store(&b, std::memory_order_release);                    // 原子替换新版本
+    std::cout << "new rate=" << g.load(std::memory_order_acquire)->rate << '\n';  // 20
+}
+```
+
+<span class="badge badge-std">标准</span> 原子指针 load/store 的 acquire/release 配对保证"对象初始化 happens-before 读者解引用"；旧对象回收须另配内存回收协议（RCU/HP，见 ch112）。
+
+<span class="badge badge-exp">经验</span> "不可变快照 + 原子指针 + 回收协议"是读多写少热更新的无锁三件套；只做发布不做回收的代码能跑但会内存泄漏/use-after-free——生产里要么 `std::shared_ptr` 原子 free 函数，要么实现宽限期。写者侧是唯一需要锁/CAS 的慢路径，读者全程无锁。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：多线程各写各的计数器，却被"伪共享"拖慢。** 4 个线程分别 `fetch_add` 各自的原子计数器——若四个计数器挤在同一 cache line（64B），任何线程更新都会使整行失效，其余线程被迫重新同步，性能塌陷。`alignas(std::hardware_destructive_interference_size)` 把每个计数器隔离到独立 cache line。请实现"每线程独立计数器 + 最后求和"，说明伪共享的成因与对齐隔离的原理。
+
+<details><summary>答案与解析</summary>
+
+缓存以 cache line（x86-64 常见 64B）为最小同步单元：两个原子对象若落在同一行，线程 A 写它的对象会让该行"独占失效"，线程 B 即使写另一个对象也要先等该行同步——更新互相串行化，吞吐骤降。`alignas(std::hardware_destructive_interference_size)` 让每个对象占独立一行，写互不干扰。该常量由 C++17 提供、值为"会破坏性共享的邻近字节距离"，通常等于 cache line 大小。
+
+标准依据：`std::hardware_destructive_interference_size` 定义在 `<new>`，见 ISO §19.2（[hardware.interference]）；`alignas` 把对齐提升到该值，使结构体大小向上取整为它的倍数。伪共享本身是硬件行为而非语言语义，但它直接决定无锁原子代码的真实吞吐。
+
+边界条件与失效场景：若仍共用一个原子计数器靠 `fetch_add` 串行化，单变量上 4 线程只会争用同一 cache line——分片计数器以"空间换并发"；代价是读侧要遍历所有分片求和（本例），且内存占用增加。`hardware_destructive_interference_size` 在不可移植平台上可能回退到保守值，跨平台仍需实测。真正的热点在读侧（频繁求和）时，分片不如单 `fetch_add`。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
+struct PaddedCounter {
+    alignas(std::hardware_destructive_interference_size) std::atomic<long> c{0};
+};
+int main() {
+    std::vector<PaddedCounter> per(4);      // 每个计数器独占 cache line
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 4; ++i)
+        ts.emplace_back([&, i]{ for (int j = 0; j < 200000; ++j)
+                                    per[i].c.fetch_add(1, std::memory_order_relaxed); });
+    for (auto& t : ts) t.join();
+    long total = 0;
+    for (auto& p : per) total += p.c.load();   // 读侧汇总
+    std::cout << "total=" << total << '\n';    // 800000
+    return total == 800000 ? 0 : 1;
+}
+```
+
+<span class="badge badge-std">标准</span> `hardware_destructive_interference_size` 由 [hardware.interference] 定义，与 `alignas` 配合可把"每线程数据"隔离出 cache line；分片-汇总模式不依赖任何未定义行为。
+
+<span class="badge badge-exp">经验</span> 分片计数只在"写远多于读且单变量争用成瓶颈"时划算（见 ch107 附录 演绎 1 的选型）；先 benchmark 确认 `fetch_add` 是真热点再分片。若无法用 `alignas`（如对象在堆上连续分配），可手动 pad 结构体到行大小的倍数。
+
 </details>
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — 无锁编程原语

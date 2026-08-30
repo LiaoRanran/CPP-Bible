@@ -852,6 +852,85 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你写 `Vec a,b; auto r = a + b + c;`，朴素实现每步都 new 一个临时数组，开销爆炸。** 请写出表达式模板：用一个 `Add` 结构体惰性持有左右操作数，下标访问时才真正计算，演示"延迟求值"消除临时对象。
+
+<details><summary>答案与解析</summary>
+
+表达式模板（Expression Templates）把 `a + b` 表示成"运算节点"而非立即结果，整个式子是一棵编译期构建的表达式树，直到赋值时才逐元素求值。它把循环融合进单趟，避免了中间临时数组的分配与拷贝。
+
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename L, typename R>
+struct Add {
+    L l; R r;
+    Add(L a, R b) : l(a), r(b) {}
+    int operator[](int i) const { return l[i] + r[i]; }
+    int size() const { return l.size(); }
+};
+struct Vec {
+    int d[3] = {1, 2, 3};
+    int operator[](int i) const { return d[i]; }
+    int size() const { return 3; }
+};
+int main() {
+    Vec a, b;
+    Add<Vec, Vec> e(a, b);
+    std::cout << e[0] << " " << e[1] << "\n";   // 2 4
+}
+```
+
+<span class="badge badge-std">标准</span> 表达式模板建立在类模板、运算符重载与模板参数之上（ISO/IEC 14882 §[temp] / §[over.oper]）；它不改变语言语义，只是把求值推迟到访问时刻。
+
+<span class="badge badge-exp">经验</span> 表达式模板是 Eigen、Blaze 等数值库零拷贝的核心；代价是返回类型复杂（不应被 `auto` 悬垂保存）。C++20 的 `std::ranges` 视图也采用类似的惰性求值思想。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你希望 `c = a + b` 直接把结果写入目标，而不产生任何临时数组。** 请写出 `Vec::operator=` 接受任意表达式节点，逐元素延迟求值，演示整个加法被融合进一次循环、零临时对象。
+
+<details><summary>答案与解析</summary>
+
+让 `Vec` 的赋值运算符接受"任意表达式类型 `E`"，并在内部按索引访问 `x[i]` 赋值。这样 `c = a + b` 不会先生成中间 `Vec`，而是直接把 `a[i]+b[i]` 写入 `c[i]`——循环 fusion，运行期零临时分配。
+
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename L, typename R>
+struct Add {
+    L l; R r;
+    Add(L a, R b) : l(a), r(b) {}
+    int operator[](int i) const { return l[i] + r[i]; }
+    int size() const { return l.size(); }
+};
+struct Vec {
+    int d[3];
+    Vec(int a, int b, int c) : d{a, b, c} {}
+    int operator[](int i) const { return d[i]; }
+    int size() const { return 3; }
+    template <typename E>
+    Vec& operator=(const E& x) {
+        for (int i = 0; i < 3; ++i) d[i] = x[i];
+        return *this;
+    }
+};
+int main() {
+    Vec a(1, 2, 3), b(4, 5, 6);
+    Vec c(0, 0, 0);
+    c = Add<Vec, Vec>{a, b};     // 延迟求值，无临时数组
+    std::cout << c[0] << " " << c[1] << " " << c[2] << "\n";   // 5 7 9
+}
+```
+
+<span class="badge badge-std">标准</span> 模板化的 `operator=` 接受通用表达式类型（§[temp.mem]），配合 `operator[]` 实现惰性访问；赋值发生在运行期循环内，表达式树在编译期静态展开。
+
+<span class="badge badge-exp">经验</span> 表达式模板把"算法"与"数据"分离：表达式只是计算蓝图，赋值时才具体化。注意避免返回 `auto` 引用代理悬垂（见附录）——应以具体类型接收结果，或保证表达式节点生命周期覆盖使用期。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：表达式模板为何快

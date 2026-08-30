@@ -875,6 +875,59 @@ int main() { std::cout << to_string(42) << ' ' << to_string(3.14) << '\n'; }
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你希望一个泛型算法强制要求参数"可相加"，否则在约束处（而非深处）给出清晰报错。** 请写出代码：定义 concept `Addable`，用 `template <Addable T>` 约束 `add`，演示约束失败时编译器报告的"不满足概念"而非晦涩的替换错误。
+
+<details><summary>答案与解析</summary>
+
+Concepts（C++20）把"类型需满足的条件"显式命名，约束写在签名上。不满足约束的重载被直接移除（或报错），错误信息远比 SFINAE 清晰，且约束可组合、可读。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <concepts>
+template <typename T>
+concept Addable = requires(T a, T b) { a + b; };
+template <Addable T>
+T add(T a, T b) { return a + b; }
+int main() { std::cout << add(2, 3) << "\n"; }
+```
+
+<span class="badge badge-std">标准</span> Concepts 由 ISO/IEC 14882（C++23）§[concept] 与 §[temp.constr] 规定；`requires` 表达式描述一组合法操作，约束在重载决议前即生效。
+
+<span class="badge badge-exp">经验</span> 概念优于 SFINAE 的核心价值是"可读 + 好报错"。标准库已提供 `std::integral`、`std::floating_point` 等；自定义概念建议用动词/名词天然命名（如 `Addable`、`Callable`）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你写一个 `twice` 函数，希望它既能作用于整数也能作用于浮点，但拒绝其他类型。** 请写出复合 concept：`Num = integral || floating_point`，用 `template <Num T>` 约束，演示概念的组合（析取/合取）。
+
+<details><summary>答案与解析</summary>
+
+Concepts 可用逻辑运算符自由组合：`||` 表示"满足其一"，`&&` 表示"须同时满足"。组合出的概念仍是概念，可像基本约束一样使用，把复杂条件收敛成名字。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <concepts>
+template <typename T>
+concept Num = std::integral<T> || std::floating_point<T>;
+template <Num T>
+T twice(T x) { return x * 2; }
+int main() {
+    std::cout << twice(21) << " "
+              << twice(1.5) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> 概念的组合由 ISO/IEC 14882（C++23）§[expr.log.and] / §[expr.log.or] 规定：`&&`、`||`、`!` 可在概念定义内组合，结果与基本约束一致参与重载决议。
+
+<span class="badge badge-exp">经验</span> 优先把约束写成命名概念而非内联 `requires`，便于复用与文档化。复杂约束（如"可加且可序"）用 `requires` 块组合；注意概念不支持否定后的重载陷阱（需 `!` 谨慎使用）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：`requires` 表达式的语法细节

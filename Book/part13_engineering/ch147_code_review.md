@@ -866,6 +866,68 @@ int main() { send("hi"); }   // 仍匹配旧单参数重载，仅触发弃用告
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：审查抓到的"布尔形参爆炸"与魔法数字。** 一个 `process(..., bool retry, bool log, bool async, int timeout, int maxRetry)` 共 8 个标志位，调用处 `process(x, true, false, true, 3000, 3)` 完全看不出每个 `true` 的含义，且 `3000`/`3` 是散落的魔法数字。请从审查者角度重构：用命名常量取代魔法数字、用配置结构体取代布尔形参列表，让调用点自文档化。
+
+<details><summary>答案与解析</summary>
+
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <string>
+
+struct RetryConfig {                 // 用配置结构体取代 8 个布尔形参
+    int  max_attempts = 3;           // 具名常量，意图自显
+    int  timeout_ms   = 3000;
+    bool log_each     = false;
+    bool async        = false;
+};
+
+bool do_work(RetryConfig const& cfg) {   // 单参数，调用点可读
+    for (int i = 0; i < cfg.max_attempts; ++i) { (void)i; }
+    return cfg.timeout_ms > 0 && cfg.async;
+}
+
+int main() {
+    RetryConfig c;
+    c.timeout_ms = 5000;                  // 无魔法数字，一眼可知含义
+    (void)do_work(c);
+}
+```
+
+<span class="badge badge-std">标准</span> 没有"标准条款"强制此重构，这是工程可读性规范（C++ Core Guidelines F.1「把有意义的参数分组为结构体」、I.2「避免过长的参数列表」）。`bool` 形参在调用处丢失语义，应使用枚举或结构体成员名承载意图。
+
+<span class="badge badge-exp">经验</span> 审查时这类"布尔爆炸 + 魔法数字"是高频坏味道：它让调用点不可读、易传错序、且无法在不改签名的前提下扩展（加第 9 个选项就要破坏 ABI）。用配置结构体后，新增选项不影响已有调用方，也天然向后兼容。clang-tidy 的 `readability-magic-numbers`、`bugprone-easily-swappable-parameters` 能自动标出这类问题。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：审查抓到的 `string_view` 悬垂。** 一段代码让 `std::string_view` 绑定到一个局部 `std::string` 的悬垂引用，函数返回后 view 指向已释放内存，后续读取是 UB——静态分析器（`-Wdangling-pointer`）或人工审查才能发现。请修复：明确所有权，使 view 的生命周期严格不超过其源，或在需要长期持有时改用 `std::string` 持有。
+
+<details><summary>答案与解析</summary>
+
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <string>
+#include <string_view>
+
+// 反例（绝不要这样写）：string_view 指向临时 string，返回后悬垂 -> UB
+// std::string_view bad() { std::string s = "temporary"; return s; }
+
+int main() {
+    std::string owned = "owned-by-caller";   // 所有者存活于调用方作用域
+    std::string_view v{owned};               // view 寿命 <= owned，安全
+    (void)v;
+}
+```
+
+<span class="badge badge-std">标准</span> `std::string_view`（`[string.view]`）是非拥有、仅观察的视图，不管理生命周期；它只持有指针+长度。一旦被观察对象（这里是局部 `std::string`）销毁，view 即悬垂。修复的根本原则是"视图的寿命不得超过其源对象"，或改用拥有者类型（`std::string`）。
+
+<span class="badge badge-exp">经验</span> 这是 C++17 引入 `string_view` 后最高频的审查陷阱之一：函数返回 `string_view`、或把 view 存进成员而源是临时量，都会在稍后读取时 UB。审查清单应加一条"任何 `string_view`/`span` 都必须能证明源对象寿命覆盖其使用"。GCC 13 的 `-Wdangling-pointer`、Clang 的 `-Wdangling-gsl` 可在编译期抓到明显案例，但跨作用域的间接悬垂仍需人工/TSAN 类工具兜底。
+
+</details>
+
 ## 附录 J：审查管线时序图（D3 维度）
 
 把第②–⑲节的审查流程画成一条端到端时序：作者推送分支后用静态分析与编译器警告预筛，审查者按清单核对的同类缺陷，最后由 CI 门禁（ch149）做硬性收口，才批准合并。

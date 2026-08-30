@@ -1151,6 +1151,65 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你在运行时拿到的基类指针，需要判断它到底指向哪个派生类，以便安全地下转型。** 请用 `dynamic_cast` 演示：指向派生对象的基类指针能成功向下转型；指向基类对象的基类指针转型失败返回 `nullptr`（指针版本），并对比 `typeid` 如何查询静态/动态类型。
+
+<details><summary>答案与解析</summary>
+
+`dynamic_cast` 对多态类型做运行时类型检查：源表达式指向/引用目标类型（或其派生）时成功；失败时指针返回 `nullptr`、引用抛 `std::bad_cast`。它依赖对象的 vtable 类型信息，因此源类型必须是多态的（含虚函数）。`typeid` 对多态对象返回动态类型，对非多态对象返回静态类型。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <typeinfo>
+struct B { virtual ~B() = default; };
+struct D : B { };
+int main() {
+    B b; D d;
+    B* p = &d;
+    if (D* dp = dynamic_cast<D*>(p)) std::cout << "downcast ok\n";
+    B* q = &b;
+    if (!dynamic_cast<D*>(q))       std::cout << "downcast null\n";
+    std::cout << typeid(*p).name() << " vs " << typeid(b).name() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `dynamic_cast` 与 `typeid` 的运行时语义由 ISO/IEC 14882（C++23）的 RTTI 条款规定；二者都要求操作数（或经解引用）是多态类型，否则 `typeid` 返回静态类型，`dynamic_cast` 在编译期即可求值。
+
+<span class="badge badge-exp">经验</span> 优先用 `dynamic_cast` 做"安全下转"，而不是靠 `typeid` 字符串比较；不要用 RTTI 替代良好的多态设计。若目标类型非多态，`dynamic_cast` 仍可编译但只在编译期可判定，引用版本仍可能抛异常——指针版本更安全。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你在多重继承里拿到了一个基类指针，却需要横向拿到它的另一个基类子对象。** 请写出代码：通过 `dynamic_cast` 在多个基类之间做侧向转型（cross-cast），并说明这与普通 `static_cast` 的区别。
+
+<details><summary>答案与解析</summary>
+
+`dynamic_cast` 不仅能向派生类下转，还能在"共享同一对象的不同基类"间做侧向转型——前提是源类型与目的类型都参与同一个多态对象。这在多重继承非常有用：从一个接口拿到对象，再拿到它的另一个接口。`static_cast` 只能做"基类↔派生"的已知层级转换，无法跨兄弟基类。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+struct Base { virtual ~Base() = default; };
+struct Left { virtual ~Left() = default; };
+struct Derived : Base, Left { };
+
+int main() {
+    Derived d;
+    Base* pb = &d;
+    Left* pl = dynamic_cast<Left*>(pb);    // 侧向转型（cross-cast）
+    std::cout << (pl ? "cross-cast ok" : "null") << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> `dynamic_cast` 的侧向与下转型由 ISO/IEC 14882（C++23）规定，其正确性建立在对象携带的类型信息（vtable）之上；对空指针转型返回空指针，引用版本对失败抛 `std::bad_cast`。
+
+<span class="badge badge-exp">经验</span> cross-cast 是 RTTI 的强项，但每处转型都有运行时开销。若类型关系在编译期已知，应优先用 `static_cast`；仅在需要运行时类型探测时用 `dynamic_cast`，并始终处理失败分支（指针判空 / try-catch）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 `dynamic_cast` 做一长串类型分支（过度 RTTI）

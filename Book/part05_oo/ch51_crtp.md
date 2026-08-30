@@ -933,6 +933,65 @@ CRTP 把虚调用变成静态 `static_cast` + 内联，循环中无 `call [vtabl
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你希望一组派生类共享"接口骨架"，但又不想付出虚函数的间接调用开销。** 请用 CRTP 写出：基类 `Base<Derived>` 通过 `static_cast<Derived&>(*this)` 反向调用派生类的 `impl()`，实现编译期静态多态，并说明为何这里没有 vtable。
+
+<details><summary>答案与解析</summary>
+
+CRTP（Curiously Recurring Template Pattern）让基类以"派生类自身"为模板参数，从而在基类内部获得派生类的静态类型。`static_cast` 在编译期就已确定目标类型，调用被直接内联，不产生 vtable 与间接跳转——这是"零开销多态"。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+template <typename Derived>
+struct Base { void interface() { static_cast<Derived&>(*this).impl(); } };
+
+struct D : Base<D> {
+    void impl() { std::cout << "D::impl\n"; }
+};
+int main() {
+    D d;
+    d.interface();                // 编译期静态绑定到 D::impl
+}
+```
+
+<span class="badge badge-std">标准</span> CRTP 借助类模板与派生类作为模板实参，依赖 ISO/IEC 14882（C++23）的模板实例化与 `static_cast` 向下转型规则；不涉及虚函数，因此对象模型层面无任何 vtable 开销。
+
+<span class="badge badge-exp">经验</span> CRTP 适合"编译期已知类型、追求零开销"的场景（如 Eigen、Boost.Operators）。缺点是基类无法以非模板容器异构存储派生类——要异构必须再走类型擦除或虚函数。`static_cast` 在此是编译期安全的，因为 `Derived` 实参受模板约束。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你要在不引入虚函数的情况下，让多个派生类共享一个"会回调派生方法"的通用骨架。** 请用 CRTP 写一个共享方法，演示 `Base<Derived>::foo()` 在编译期分派到不同派生；并对比它和虚函数在容器异构上的区别。
+
+<details><summary>答案与解析</summary>
+
+CRTP 把"分派"从运行期（vtable）搬到了编译期（模板实例化）。每个 `Base<A>`、`Base<B>` 是不同类型，调用 `foo()` 在编译期静态解析到各自派生类；代价是派生类必须各自实例化一份基类代码，且它们无法放进同一 `Base<???>` 容器。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename Derived>
+struct Base {
+    void foo() { static_cast<Derived*>(this)->bar(); }
+};
+struct A : Base<A> { void bar() { std::cout << "A::bar\n"; } };
+struct B : Base<B> { void bar() { std::cout << "B::bar\n"; } };
+
+int main() {
+    A a; B b;
+    a.foo(); b.foo();             // 各自静态分派，无 vtable
+}
+```
+
+<span class="badge badge-std">标准</span> 模板的每个不同实参都会生成独立实例化体（ISO/IEC 14882 §[temp.inst]）；CRTP 正是利用这一点把"虚调用"替换为"编译期已知"的静态调用，符合"零开销抽象"原则。
+
+<span class="badge badge-exp">经验</span> CRTP 与虚函数各有所长：前者零开销、失异构；后者有运行时异构、失内联。需要"同一容器存放不同类型"时用虚函数，需要"极致性能、类型已知"时用 CRTP。二者也可组合（类型擦除）。
+
+</details>
+
 ## 附录：用法演绎 — 把虚函数调用优化成零成本的静态分发
 
 > 场景：数值计算中有一族算子（`Square`/`Cube`/`Scale`），要高频调用 `eval(x)`。虚函数 vs CRTP 实测取舍。

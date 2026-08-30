@@ -1301,6 +1301,59 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[priqueue]；`std::make_heap`/`std::pop_heap`（§[alg.heap]）提供可遍历堆；对更多堆容器见 Boost.Heap（boost.org 文档）。
 
+
+### 练习 4（难度 ★★）
+
+**真实场景：你需要一个"每次取最小"的任务队列，但 `std::priority_queue` 默认是大顶堆。** 调度器要优先处理剩余时间最短的任务。请用「自定义比较器 `std::greater<int>`」把 `priority_queue` 改成小顶堆，并指出其底层容器的要求（须支持 `front`/`push_back`/`pop_back`，故可用 `vector`/`deque`）。
+
+<details><summary>答案与解析</summary>
+
+`std::priority_queue` 是容器适配器：它在底层容器（默认 `std::vector`）之上维护堆序，比较器默认 `std::less` 即"最大值在顶部"。改用 `std::greater<T>`（或自定义 comparator）即得到小顶堆，`top()` 返回最小元素。适配器对底层容器只有最低要求：`back()`、`push_back()`、`pop_back()` 与随机访问（用于 `make_heap` 类操作），因此 `vector`/`deque` 都可用，但 `list` 不行。
+
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+int main() {
+    std::priority_queue<int, std::vector<int>, std::greater<int>> pq;  // 最小堆
+    for (int x : {3,1,2}) pq.push(x);
+    std::cout << "min=" << pq.top() << "\n";  // 1
+}
+```
+
+<span class="badge badge-std">标准</span> 适配器要求底层容器具备 `front`/`push_back`/`pop_back` 且可随机访问；`priority_queue` 的比较器类型须满足 Compare 概念，决定"顶=最大"还是"顶=最小"。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[priqueue]（`priority_queue` 与 comparator）；§[container.adaptors]（适配器对底层容器的要求）；见 cppreference "container/adaptors"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你想把 `std::stack` 的底层从默认 `deque` 换成 `vector`，以便获得连续内存与缓存友好。** 栈/队列本就不是独立容器，而是"限制接口"的适配器。请用 `std::stack<T, std::vector<T>>` 显式指定底层容器，并说明适配器为何只暴露受限接口（无迭代器、无随机访问）。
+
+<details><summary>答案与解析</summary>
+
+`stack`/`queue` 通过第二模板参数选择底层序列容器（默认 `deque`），它们只暴露"栈/队列"所需要的操作：`stack` 暴露 `push`/`pop`/`top`，`queue` 暴露 `push`/`pop`/`front`/`back`。换成 `vector` 底层后，内存连续、可预测；但代价是 `vector` 在中部插入/删除昂贵——不过栈/队列只在端点操作，正好规避。适配器不提供迭代器，因为"只允许端点访问"本就是栈/队列的契约。
+
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <stack>
+#include <vector>
+int main() {
+    std::stack<int, std::vector<int>> st;   // 以 vector 为底层容器
+    st.push(1); st.push(2);
+    std::cout << "top=" << st.top() << "\n";  // 2
+}
+```
+
+<span class="badge badge-std">标准</span> 适配器对底层容器的约束定义在 `[stack.syn]`/`[queue.syn]`：须支持 `back`/`push_back`/`pop_back`（stack）或 `front`/`back`/`push_back`/`pop_front`（queue）；默认底层为 `deque`。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stack] / §[queue]（适配器接口与底层容器约束）；见 cppreference "container/adaptors"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 stack 实现括号匹配（经典栈应用）

@@ -149,6 +149,7 @@ flowchart TD
     %% 注：省略部分细节（无 vptr、无堆指针、无单位字段——单位在类型里！）
     A["duration<int, std::milli> d{1500};  // 表示 1500 毫秒<br/>内存（32位 Rep 示意）：_r : int = 1500  4 字节，仅此"]
     B["duration<long long, std::nano> big{...};  // 8 字节<br/>_r : int64_t  8 字节"]
+    A -->|"更换 Rep / Period"| B
 ```
 
 - `[实现·GCC15]`：`duration` 的唯一数据成员 `_r`（见 `文件：bits/chrono.h 行号：523` 的 `class duration`，内部 `Rep __r;`）。单位 `Period` 是空类 `ratio`，不占内存。
@@ -1140,6 +1141,65 @@ int main() {
 <span class="badge badge-std">标准</span> `sleep_until(tp)` 睡到绝对时刻，配合"每次重新计算 `now()+周期`"可消除 `sleep_for` 的调度/执行漂移；`100ms` 是 C++14 起的字面量运算符（`std::chrono_literals`）。
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.duration]（时长字面量 `100ms`）与 §[thread.this]（`sleep_until`）；消除漂移的定时循环见 cppreference "chrono/operator\"\"ms" 与 "thread/sleep_until"。
+
+</details>
+
+### 练习 4（难度 ★★）
+
+**真实场景：给一段计算计时，确保不受系统时钟回拨影响。** 你要测量函数耗时用于告警阈值，但不想被 `system_clock` 的 NTP 校时干扰。请用 `steady_clock`（单调时钟）配合 `duration_cast` 把时长换算成可读单位，说明为什么选它而非 `system_clock`。
+
+<details><summary>答案与解析</summary>
+
+`steady_clock` 保证单调递增、不受墙钟调整影响，是"测时长"的正确选择；`system_clock` 可被 NTP/手动改时间导致负时长。`duration_cast` 在不同 `ratio`（如纳秒→毫秒）间做整数截断转换，不会丢精度而只做受控取整。把 `time_point` 相减得到 `duration`，再 `duration_cast<milliseconds>` 取整数毫秒。
+
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <chrono>
+
+int main() {
+    using namespace std::chrono;
+    auto t0 = steady_clock::now();
+    volatile int s = 0;
+    for (int i = 0; i < 100000; ++i) s += i;
+    auto t1 = steady_clock::now();
+    auto ms = duration_cast<milliseconds>(t1 - t0);
+    std::cout << "elapsed: " << ms.count() << " ms\n";
+}
+```
+
+<span class="badge badge-std">标准</span> §[time.clock.steady] 规定 `steady_clock` 单调；`duration_cast` 见 §[time.duration.cast]，截断而非四舍五入。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[chrono.syn]、§[time.clock]；见 cppreference "chrono/steady_clock"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：用非标准时间单位做精确记账。** 金融/音频场景需要以"百分秒"(1/100 s)为单位累加时长，同时要能向下取整到毫秒用于展示。请用自定义 `duration` 类型（ratio<1,100>）承接秒级值，并演示 `floor` 的取整语义。
+
+<details><summary>答案与解析</summary>
+
+`duration<Rep, Period>` 把"计数"与"单位"解耦：用 `ratio<1,100>` 即定义 1/100 秒单位。不同单位的 `duration` 之间可隐式/显式换算，`floor<D>(d)` 向负无穷取整到目标单位，适合把高精度时长安全地降精度展示。`seconds` 到 `centi` 属精确放大（1→100），可隐式转换。
+
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <chrono>
+
+int main() {
+    using namespace std::chrono;
+    using centi = duration<long long, std::ratio<1, 100>>;
+    centi c = seconds{2};                  // 2 s == 200 centi（精确放大）
+    std::cout << c.count() << '\n';       // 200
+    auto floor_ms = floor<milliseconds>(c);
+    std::cout << floor_ms.count() << '\n'; // 2000
+}
+```
+
+<span class="badge badge-std">标准</span> §[time.duration] 定义 `duration` 与单位换算规则；`floor` 见 §[time.duration.floor]，向负无穷取整避免越界。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[chrono]；单位换算见 cppreference "chrono/duration"。
 
 </details>
 

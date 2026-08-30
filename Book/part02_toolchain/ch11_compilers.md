@@ -1147,6 +1147,65 @@ int main() {
 
 <span class="badge badge-ref">引用</span> GCC 手册《预处理选项》（https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html）讲解 `-E`；cppreference "预处理器"（https://en.cppreference.com/w/cpp/preprocessor）讲解 `#`/`##` 运算符。四阶段流水线（预处理/编译/汇编/链接）的产出文件见 GCC/Clang 文档。
 
+### 练习 4（难度 ★★）
+
+**真实场景：同一份源码要在 GCC、Clang、MSVC 三套前端下都编过。** 你做跨平台库，需要判断"当前是哪个编译器"来启用各自专属扩展（如 `__attribute__` 或 `#pragma`）。请用预定义宏 `__GNUC__`/`_MSC_VER` 写出一个可移植的"编译器探测"小程序，并说明为什么不能靠猜版本号、要用宏守卫。
+
+<details><summary>答案与解析</summary>
+
+各编译器暴露不同的预定义宏，可在预处理期区分工具链，从而把"平台/编译器相关"的代码隔开。这种守卫比"据发布年份猜"可靠，因为同一大版本的不同补丁也可能改行为。
+
+> **示例 73** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+int main() {
+#if defined(__GNUC__) && !defined(__clang__)
+    std::cout << "GCC " << __GNUC__ << '.' << __GNUC_MINOR__ << '\n';
+#elif defined(__clang__)
+    std::cout << "Clang " << __clang_major__ << '\n';
+#elif defined(_MSC_VER)
+    std::cout << "MSVC " << _MSC_VER << '\n';
+#else
+    std::cout << "unknown compiler\n";
+#endif
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++ 标准只规定语言行为；`__GNUC__`、`_MSC_VER` 等是各实现定义的预定义宏，用于区分工具链（见本章 附录 E 编译器面试）。
+
+<span class="badge badge-exp">经验</span> 跨编译器代码一律用宏守卫隔离差异；但长期目标应是写标准 C++，仅在系统边界（平台 API、内建属性）才碰编译器专属语法，避免被单一工具链锁死。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你要给一个接口打上"别再用"的标记，跨编译器都要生效。** GCC 的 `__attribute__((deprecated))` 和 MSVC 的 `__declspec(deprecated)` 写法不同，但 C++ 标准给出统一属性 `[[deprecated]]`。请用标准属性改写，演示它如何跨编译器一致地给出弃用警告，并说明它对 ABI 稳定性意味着什么。
+
+<details><summary>答案与解析</summary>
+
+C++14 起的标准属性 `[[deprecated("reason")]]` 被所有主流编译器识别，免去了为 GCC/Clang/MSVC 各写一份宏的麻烦；它只影响编译期告警，不改动 ABI。
+
+> **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+[[nodiscard]]            // 标准属性：忽略返回值会告警
+int compute() { return 42; }
+
+int main() {
+    std::cout << compute() << '\n';   // 使用了返回值，无告警
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `[[nodiscard]]`/`[[deprecated]]` 等属性在 ISO C++ §[dcl.attr] 定义，是跨编译器一致的语言特性，优于厂商专属语法。
+
+<span class="badge badge-exp">经验</span> 用标准属性替代 `__attribute__`/`__declspec`，可保持单一代码路径；但弃用只警告、不阻止编译，真正的边界变更仍需配合版本号与文档，以免破坏既有 ABI。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：用 c++filt 还原崩溃栈里的 mangled 符号

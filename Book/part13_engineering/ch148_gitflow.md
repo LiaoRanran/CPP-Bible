@@ -1110,6 +1110,81 @@ git sparse-checkout set libs/order services/api
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：CI 需要按 SemVer 自动决策是否允许 ABI 升级。** release 流水线拿到「旧版本 `1.4.0`、待发布 `2.0.0`」后，要判定这是 MAJOR 升级（允许破坏性/ABI 变更）还是普通升级（必须保持兼容，关联 ch145 兼容性）。请写一个解析 `MAJOR.MINOR.PATCH` 的小工具并实现 `allows_abi_bump` 决策，说明为什么 SemVer 的「MAJOR 才允许破坏性变更」是 gitflow 发布纪律的硬约束。
+
+<details><summary>答案与解析</summary>
+
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <string>
+
+struct SemVer { int major = 0, minor = 0, patch = 0; };
+
+SemVer parse(std::string const& s) {             // 解析 "1.4.0"
+    SemVer v; int* p[3] = {&v.major, &v.minor, &v.patch};
+    std::size_t start = 0, field = 0;
+    for (std::size_t k = 0; k <= s.size(); ++k) {
+        if (k == s.size() || s[k] == '.') {
+            *p[field++] = std::stoi(s.substr(start, k - start));
+            start = k + 1;
+        }
+    }
+    return v;
+}
+
+bool allows_abi_bump(SemVer const& oldv, SemVer const& newv) {
+    return newv.major > oldv.major;   // 仅 MAJOR 升才允许 ABI 破坏性变更
+}
+
+int main() {
+    auto a = parse("1.4.0");
+    auto b = parse("2.0.0");
+    (void)allows_abi_bump(a, b);
+}
+```
+
+<span class="badge badge-std">标准</span> `std::stoi`（`[string.conversions]`）把子串转 `int`；语义化版本（SemVer 2.0.0，semver.org）规定 MAJOR 用于不兼容的 API 变更、MINOR 用于向后兼容的新功能、PATCH 用于向后兼容的修复——这是 gitflow「发布分支 + 打 tag」的版本纪律基础。
+
+<span class="badge badge-exp">经验</span> 把这个判断接进 CI 钩子，可在「待发布版本号 < 旧版本」或「PATCH 升级却改了头文件 ABI」时直接 fail，把版本纪律自动化。注意 SemVer 只管"API/ABI 承诺"，不保证"行为不变"——所以 MINOR 升级仍要跑回归（ch150）与审查（ch147）。手写解析器要小心多余字段/前导零，生产可用 `std::expected` 表达解析失败（见 ch146 练习 4）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：长期特性分支腐烂（long-lived branch rot）。** 一个开发了三个月的特性分支偏离主干数千行，合并时冲突地狱、且无法验证与主干的兼容。请用「特性开关（feature flag）」模式改写：代码始终在主干开发，用运行期开关控制新特性是否启用，使 release 分支只靠配置即可开启/关闭，避免长期分支。实现一个轻量 `FeatureFlags` 注册表并指出它如何让 gitflow 从「多长生命周期分支」走向「主干开发 + 开关」。
+
+<details><summary>答案与解析</summary>
+
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <string>
+#include <string_view>
+#include <unordered_map>
+
+struct FeatureFlags {                        // 特性开关：主干开发 + 运行期 toggle
+    std::unordered_map<std::string, bool> m_;
+    void set(std::string_view k, bool v) { m_[std::string(k)] = v; }
+    bool enabled(std::string_view k) const {
+        auto it = m_.find(std::string(k));
+        return it != m_.end() && it->second;
+    }
+};
+
+int main() {
+    FeatureFlags f;
+    f.set("new-checkout", true);            // release 分支按环境开启，无需另开分支
+    (void)f.enabled("new-checkout");
+}
+```
+
+<span class="badge badge-std">标准</span> 本例用 `std::unordered_map<std::string, bool>`（`[unord.map]`）做开关表；`std::string_view`（`[string.view]`）作键避免无谓拷贝。`enabled` 在「键不存在」时返回 false，保证未配置的开关默认关闭、行为向后兼容。
+
+<span class="badge badge-exp">经验</span> 特性开关把"是否发布某功能"从"分支生命周期"解耦为"配置项"，是 trunk-based development 对抗"分支腐烂"的核心手段（ch148 反模式 示例33/39 讲的正是大分支 / `-force` 类问题）。但要警惕"死开关"堆积——关闭后没人清理的旧 flag 会变成技术债，需要定期审计与移除（`=delete`/编译期 `#if` 比运行期更彻底）。CI 可加检查：未在任何代码路径引用的 flag 报警。
+
+</details>
+
 ## 附录 J：从提交到发布的生命周期时序图（D3 维度）
 
 把第②–⑯节的 Git 工作流画成端到端时序：开发者在特性分支做原子提交，推送后开 PR 触发 CI（ch149），审查者（ch147）批准后合并，最后打 tag 走语义化版本与 CD（ch149⑩）。

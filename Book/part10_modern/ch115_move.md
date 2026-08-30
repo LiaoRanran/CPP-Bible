@@ -1396,6 +1396,84 @@ int main() { Config c = load_config(); (void)c; }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 日志审计模块把一个 `const` 限定的配置对象"移交"进独占任务队列，同事写了 `std::move(const_ref)` 却发现既没快也没变慢——它到底移没移动？请解释 `std::move` 对 `const` 对象为何失效，并演示重载决议如何静默回退到拷贝。
+
+<details><summary>答案与解析</summary>
+
+`std::move(x)` 只是 `static_cast<remove_reference_t<T>&&>(x)`，它**不剥离 const**。对 `const` 左值做 move，得到的是 `const T&&`——而移动构造/赋值形参是 `T&&`（非 const），`const T&&` 无法绑定上去，于是重载决议退而求其次选 `const T&` 拷贝构造。这正是"移了个寂寞"：语义上是右值，实际执行的是拷贝。
+
+从工程视角，这反而是**设计好的护栏**：若类型禁止拷贝（拷贝构造 `=delete`），对 const 对象 move 会直接编译失败，从而暴露"不该转移所有权"的设计问题；若类型可拷贝，则静默降级为拷贝，行为安全但性能意图落空。要"真想转移"，正确做法是把所有权交给非 const 的持有者再 move，而不是对 const 引用做手脚。
+
+下面用可跟踪构造的类型演示这一重载决议过程——`sink(std::move(cref))` 打印的是 copy 而非 move：
+
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <string>
+#include <utility>
+struct Buffer {
+    std::string data;
+    Buffer() = default;
+    Buffer(const Buffer& o) : data(o.data) { std::cout << "copy\n"; }
+    Buffer(Buffer&& o) noexcept : data(std::move(o.data)) { std::cout << "move\n"; }
+};
+void sink(Buffer) {}
+int main() {
+    Buffer src;
+    const Buffer& cref = src;
+    sink(std::move(cref));   // const 右值只能绑定 const& → 打印 copy，而非 move
+}
+```
+
+<span class="badge badge-std">标准</span> `[forward]`：`std::move` 等价 `static_cast<remove_reference_t<T>&&>`，不剥 cv；`const T&&` 不能绑定非 const 右值引用形参（`[dcl.init.ref]`），故落入拷贝。
+<span class="badge badge-exp">经验</span> 别对 const 对象 `std::move`：要么编译失败（move-only 类型）、要么静默拷贝（可拷贝类型）。想转移所有权，先让对象脱离 const 归属（本章练习 1/2 的移交场景）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 手写移动构造/赋值时，既要"转移资源"又要"把源置于可安全复用/析构的状态"，还要防自赋值。请用 `std::exchange` 实现一个 move-only 句柄，一次完成"取走 + 置空"，并说明 moved-from 对象如何被安全地重新赋值。
+
+<details><summary>答案与解析</summary>
+
+移动操作的本质是"资源交接 + 把源置于有效但未指定状态"（`[lib.types.movedfrom]`）。最稳的写法是 `std::exchange(o.owner, {})`：它原子地返回旧值并把源字段清空——比"先拷再清"少一行、也杜绝漏清。移动构造里用它初始化新对象，源立刻成为空壳；移动赋值里用它时还需 `if (this != &o)` 防自赋值（自赋值时 source 与 target 是同一对象，直接 exchange 会把自己清空）。
+
+moved-from 对象的"可复用性"是移动语义的隐含契约：它必须仍可析构、可重新赋值。下面的 `a` 被 move 到 `b` 后成为空壳，随后 `a = Handle("buffer-B")` 直接复用它——这正是容器/队列里"先移出、再回填"惯用法的底层保证。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <string>
+#include <utility>
+struct Handle {
+    std::string owner;
+    explicit Handle(std::string o) : owner(std::move(o)) {}
+    Handle(Handle&& o) noexcept : owner(std::exchange(o.owner, {})) {
+        std::cout << "move ctor; source now empty=" << o.owner.empty() << '\n';
+    }
+    Handle& operator=(Handle&& o) noexcept {
+        if (this != &o) owner = std::exchange(o.owner, {});   // 防自赋值
+        return *this;
+    }
+    Handle(const Handle&) = delete;
+    Handle& operator=(const Handle&) = delete;
+};
+int main() {
+    Handle a("buffer-A");
+    Handle b(std::move(a));
+    std::cout << "b.owner=" << b.owner << '\n';
+    a = Handle("buffer-B");   // 复用已置空的 a
+    std::cout << "a.owner=" << a.owner << '\n';
+}
+```
+
+<span class="badge badge-std">标准</span> `std::exchange` 返回旧值并写入新值（`[utility.exchange]`）；moved-from 对象须保持可析构、可赋值（`[lib.types.movedfrom]`），具体留空即合法的一种实现。
+<span class="badge badge-exp">经验</span> 手写 Rule of Five 时优先让成员自行移动（`= default`）；确需手写时用 `std::exchange` 收拢"取走+置空"，并记得在移动赋值里防自赋值（本章 D5 实测移动 O(1)、拷贝 O(n) 的边界即在此）。
+
+</details>
+
 ## 附录 J：移动语义 vs 拷贝语义 选型 决策流（D3 维度）
 
 ```mermaid

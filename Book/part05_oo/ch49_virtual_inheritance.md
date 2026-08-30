@@ -1132,6 +1132,63 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你写了 `D : L, R`，二者都继承同一个 `Top`，却在访问 `d.t` 时编译失败。** 请用代码演示：不带 `virtual` 的多重继承在菱形结构中会产生**两份** `Top` 子对象，访问 `t` 发生二义；必须用 `L::t`/`R::t` 消歧，但两份状态相互独立。
+
+<details><summary>答案与解析</summary>
+
+非虚拟继承下，派生类为每条继承路径保留独立的基类子对象。菱形（`Top` 被 `L`、`R` 各自继承，再被 `D` 继承）因此产生两个 `Top` 子对象，`d.t` 无法知道指代哪一个，编译器报二义。消歧虽能编译，但两个副本状态各自独立，并非共享。
+
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+struct Top { int t = 0; };
+struct L : Top { };
+struct R : Top { };
+struct D : L, R { };              // 菱形：D 含两个 Top 子对象
+int main() {
+    D d;
+    d.L::t = 1;                   // 必须消歧：指向 L 路径的 Top
+    d.R::t = 2;                   // 指向 R 路径的 Top（独立副本）
+    std::cout << d.L::t << " " << d.R::t << "\n";   // 1 2（两份独立）
+}
+```
+
+<span class="badge badge-std">标准</span> 非虚拟继承的子对象模型由 ISO/IEC 14882（C++23）规定：每条继承路径产生独立子对象。`d.L::t` 的"嵌套名指定符"`L::` 是消除二义的标准手段，但仅选择某一条路径，不合并状态。
+
+<span class="badge badge-exp">经验</span> 菱形且需要"共享同一基类状态"时，应在中间层就用 `virtual` 继承（见练习 5）。若只是想复用接口而非共享状态，可用组合（成员）而非继承，避免意外二义。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：菱形结构中你真正需要的是"共享那一个 `Top`"，而不是两份副本。** 请把中间基类改成 `virtual` 继承，演示 `d.t` 不再二义、所有路径共享同一 `Top` 子对象。
+
+<details><summary>答案与解析</summary>
+
+虚拟继承让"最派生类"直接持有那个被多个中间基类共享的虚基类子对象，从而菱形结构中只有一份。`virtual` 基类由最终派生类初始化，二义随之消失；访问 `t` 无需再消歧。代价是虚拟基类访问通常多一次间接、布局更复杂。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+struct Top { int t = 0; };
+struct L : virtual Top { };
+struct R : virtual Top { };
+struct D : L, R { };              // virtual 继承：共享同一 Top
+int main() {
+    D d;
+    d.t = 7;                      // 无二义：唯一 Top 子对象
+    std::cout << d.t << " " << d.L::t << " " << d.R::t << "\n";   // 7 7 7
+}
+```
+
+<span class="badge badge-std">标准</span> 虚拟基类语义由 ISO/IEC 14882（C++23）规定：虚基类子对象由最派生类统一持有，且在其所有中间基类中共享。`virtual` 仅在"确实需要共享状态"时用，因为它改变布局与构造责任（最派生类负责初始化虚基类）。
+
+<span class="badge badge-exp">经验</span> 虚拟继承是"菱形共享"的解法，但破坏了普通继承的简单布局——能靠组合解决就别用。标准库 `std::iostream` 的 `basic_iostream : basic_istream, basic_ostream` 正是为避免菱形而走虚拟继承的典型例子。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：菱形继承二义性踩坑

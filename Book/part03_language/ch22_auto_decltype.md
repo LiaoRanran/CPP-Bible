@@ -1603,6 +1603,71 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：推导出的类型随「表达式形态」而变。** 你在写通用代码，想知道 `decltype` 到底按什么规则推导：变量、括号表达式、字面量、算术表达式各自得出什么类型？请用 `static_assert` 把 `decltype(a)`、`decltype((a))`、`decltype(1)`、`decltype(a + 1)` 的结果钉死，解释「表达式形态决定值类别」。
+
+<details>
+<summary>答案与解析</summary>
+
+`decltype` 的推导对象是「表达式」，结果由表达式的**形态与值类别**决定，而非单纯的变量类型：`decltype(a)` 对未加括号的名字（id-expression）直接给出其声明类型 `int`；`decltype((a))` 加了一层括号后 `a` 被当作左值表达式，结果加引用成 `int&`；`decltype(1)` 是纯右值字面量 → `int`；`decltype(a + 1)` 也是纯右值 → `int`。规则可概括为「有括号且是左值 → 引用，其余按值」。
+
+标准依据：ISO/IEC 14882:2023 §[dcl.type.decltype]：对非括号 id-expression 给出声明类型；对左值表达式给出 `T&`，对 xvalue 给出 `T&&`，对纯右值给出 `T`。`decltype(auto)`（C++14）把这一规则原样搬到返回类型推导上，从而能精确保留 `int&` 而非剥成 `int`（本章练习 2 的延续）。
+
+实现与边界：容易踩的坑是把 `decltype(a)` 想当然成 `int&`——**不加括号就是声明类型**；需要「左值引用」语义时必须写 `decltype((a))`。替代方案：泛型代码里用 `decltype(expr)` 推导精确类型（如声明同类型变量），或者用 `auto&&`/`std::forward` 保留值类别做完美转发。
+
+> **示例 77** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+#include <type_traits>
+
+int main() {
+    int a = 1;
+    static_assert(std::is_same_v<decltype(a), int>);
+    static_assert(std::is_same_v<decltype((a)), int&>);   // 括号=左值表达式
+    static_assert(std::is_same_v<decltype(1), int>);
+    static_assert(std::is_same_v<decltype(a + 1), int>);
+    std::cout << a + 1 << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[dcl.type.decltype]：id-expression 给声明类型，括号化左值给 `T&`，xvalue 给 `T&&`，纯右值给 `T`。
+
+<span class="badge badge-exp">经验</span> 记忆口诀：「`decltype` 看形态、`auto` 看类型」。返回类型要跟随值类别时用 `decltype(auto)`；普通类型推导用 `auto`。区分 `decltype(a)` 与 `decltype((a))` 之差，是读懂完美转发代码的前提。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：遍历关联容器并就地改写。** 一个 `std::map<int, std::string>` 需要在遍历时把每个 value 追加后缀，又不想复制字符串。请用结构化绑定 `for (auto& [k, v] : m)` 引用绑定成员，解释为什么 `v` 是 `std::string&` 而不是拷贝，并对比 `const auto&` 的只读遍历。
+
+<details>
+<summary>答案与解析</summary>
+
+结构化绑定把数组/聚合/`pair`/`tuple` 的元素按声明顺序绑定到名字，`auto& [k, v]` 等价于「对解引用结果取成员引用」：`m` 的元素类型是 `pair<const int, std::string>`，`auto&` 绑定到该 pair 的引用，`k`/`v` 因此分别是 `const int&` 与 `std::string&`——`v += "!"` 直接改写容器内字符串，零拷贝。写成 `auto [k, v]`（不带 `&`）则会对 pair 做拷贝，浪费且修改不生效。
+
+标准依据：结构化绑定是 C++17 特性（并入 §[dcl.struct.bind]），要求被绑定对象是数组或满足 `std::tuple_size` 协议的类型（`pair`/`tuple`/聚合皆可）；绑定名不是「变量」而是「别名」，不能用于声明新类型或整体取地址。`for (const auto& [k, v] : m)` 则把整个 pair 只读绑定，禁止任何改写。
+
+实现与边界：注意 map 的 key 是 `const`（`pair<const K, V>`），所以 `auto& [k, v]` 的 `k` 天然是 `const int&`，写 `k` 会编译失败——这保护了排序不变量。替代方案：不想暴露 pair 结构就用 `std::map::value_type&` 手动解引用；遍历只读数据时优先 `const auto&`，避免误写。
+
+> **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <map>
+
+int main() {
+    std::map<int, std::string> m{{1, "a"}, {2, "b"}};
+    for (auto& [k, v] : m) v += "!";
+    for (const auto& [k, v] : m) std::cout << k << v << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[dcl.struct.bind]：结构化绑定按成员顺序别名绑定，`auto&` 取引用、`auto` 拷贝。
+
+<span class="badge badge-exp">经验</span> 「要改写容器元素就写 `auto&`/`auto&&`，只读就写 `const auto&`」是遍历铁律；结构化绑定让 `pair`/`tuple` 解包零开销，但记住绑定名是别名，跨作用域保存或取地址前要想清楚它指向哪里（与 ch28 悬垂风险同源）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：API 返回类型不确定时——用 `auto` 隐藏实现类型

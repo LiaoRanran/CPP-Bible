@@ -840,6 +840,60 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你对比两个"看似等价"的结构，却发现一个比另一个小一半。** 请用代码演示：当空类作为**基类**时，派生类尺寸可能因空基类优化（EBO）而不变；但当它作为**成员**时，却至少多占一个字节并触发填充。
+
+<details><summary>答案与解析</summary>
+
+EBO 允许编译器把"空基类子对象"优化为零字节，因为完整对象必须有唯一地址，但空基类子对象可以与第一个非静态数据成员共用地址。而空**成员**无法被优化——它必须拥有自己的存储，且为对齐常带来填充。这正是 `std::vector` 能"免费"携带空分配器的原因。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+struct Empty { };
+struct WithBase      : Empty { int x = 0; };   // 空基类：可被压缩
+struct WithMember    { Empty e; int x = 0; };   // 空成员：至少 1 字节 + 填充
+int main() {
+    std::cout << "WithBase = "    << sizeof(WithBase)   << "\n";   // 典型 4
+    std::cout << "WithMember = "  << sizeof(WithMember) << "\n";   // 典型 8
+}
+```
+
+<span class="badge badge-std">标准</span> 空基类优化由 ISO/IEC 14882（C++23）允许（§[class]）：基类子对象可与同一对象的其他子对象共用地址，只要不违反"对象唯一地址"要求。`[[no_unique_address]]` 进一步把同款优化扩展到数据成员（C++20）。
+
+<span class="badge badge-exp">经验</span> EBO 是标准库基石：`std::vector<Alloc>` 的空分配器不增加容量。`boost::compressed_pair` 即围绕此特性构建。需要"零开销混入"时优先继承而非成员；C++20 起也可对成员用 `[[no_unique_address]]`。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你在写一个通用容器，想让"带状态的策略对象"与"不带状态的策略对象"有完全相同的开销。** 请写出压缩 Pair：把两个类型都作为基类混入，演示当其中一个为空时整体尺寸被优化掉——这正是策略化设计（见 ch71）的底层机制。
+
+<details><summary>答案与解析</summary>
+
+把多个类型作为基类混入（而非成员），可让其中任意空类型被 EBO 压缩。当两个/多个基类之一为空时，整体尺寸可缩减到只剩非空成员。这就是 `std::vector`/`std::tuple` 用空基类混入实现零开销策略组合的原理。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+struct EmptyTag { };
+struct WithData { int v = 5; };
+template <typename T, typename U>
+struct Compressed : T, U { };        // 两个基类，空类型将被压缩
+int main() {
+    Compressed<EmptyTag, WithData> c;
+    std::cout << "compressed size = " << sizeof(c)
+              << " (vs WithData alone = " << sizeof(WithData) << ")\n";
+}
+```
+
+<span class="badge badge-std">标准</span> EBO 对"任何空基类"都可适用（ISO/IEC 14882 §[class]）；当多个基类并存时，只要布局允许，编译器可把多个空基类都优化为零字节。`std::tuple` 正是递归地以空基类混入各元素。
+
+<span class="badge badge-exp">经验</span> 策略化设计（Policy-Based Design）依赖 EBO：`std::vector` 的分配器、`std::map` 的比较器都是无状态策略，经 EBO 混入后零开销。`[[no_unique_address]]` 是 C++20 对"空成员"的等价手段，能在成员位置达成类似压缩。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：空策略类当成员导致尺寸膨胀

@@ -1086,6 +1086,80 @@ int main(){
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：只读数据的指针参数。** 一个只读查询接口 `show()` 接收数据指针，既要防止实现方误改数据、又要允许调用方换个位置再查一次——这正是「底层 const」（指向 const）与「顶层 const」（指针本身 const）的差别。请分别写出 `const int*` 与 `int* const` 两种参数，并指出各自约束的是「指向物」还是「指针本身」。
+
+<details>
+<summary>答案与解析</summary>
+
+`const int* p` 读作「p 是指向 const int 的指针」，const 修饰指向的对象：`*p` 不可写，但 `p` 可以重新指向别的 `int`（不能指向非 const 数据的人直接改写，`*p = 3` 编译失败）。`int* const q` 读作「q 是 const 指针，指向 int」：`q` 本身不可重绑（`q = &b` 编译失败），但 `*q` 可写。这就是「顶层/底层 const」：修饰指针自身是顶层，修饰被指对象是底层。
+
+标准依据：ISO/IEC 14882:2023 §[dcl.type.cv] 用 cv 限定符区分「指向 const 的对象」（底层）与「const 限定的指针变量」（顶层）；两条 const 可以叠加（`const int* const r` 同时约束两者）。函数形参按值传递时顶层 const 不参与签名区分，底层 const 参与——所以 `show(const int*)` 与 `show(int*)` 是不同重载。
+
+实现与边界：读 const 指针参数写 `*p` 是编译期错误而非运行期问题，这是最廉价的防线；若实现方确实需要写，就把参数声明为 `int*` 并靠调用方约定。替代方案：现代代码更多用 `std::span<const int>` 表达「只读区间」，比裸指针更安全（自带长度）。
+
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+void show(const int* p) { std::cout << *p << "\n"; }
+void show_ptr(int* const q) { std::cout << *q << "\n"; }
+int main() {
+    int a = 1, b = 2;
+    const int* p = &a;
+    p = &b;              // 指向 const: 可改指向
+    int* const q = &a;
+    *q = 3;              // 指针 const: 可改指向物
+    show(p);
+    show_ptr(q);
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[dcl.type.cv]：cv 限定符既可约束对象也可约束指针本身，构成顶层/底层 const。
+
+<span class="badge badge-exp">经验</span> 读类型声明从右往左读最不容易错：`int* const q` 先读 `const` 修饰 `q`（指针本身），`const int* p` 先读 `*` 再读 const 修饰 `int`（指向物）。接口参数多用底层 const 表达「只读」，顶层 const 对按值形参基本是注释作用。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：带缓存的只读查询。** 一个 `Cache` 的 `get()` 是逻辑只读查询（不改动对外可见状态），但内部想惰性缓存上次的计算结果；`const Cache` 对象也必须能调用它。请用 `mutable` 让「逻辑 const」成立，并说明 `mutable` 与「位 const」的边界。
+
+<details>
+<summary>答案与解析</summary>
+
+`const` 成员函数意味着「不修改对象的可观察状态」——但「可观察」有两种解读：**位 const**（对象内存一字不动）与**逻辑 const**（对外语义不变，内部缓存等实现细节可变）。`mutable` 成员正是为逻辑 const 服务：`const` 成员函数仍可修改 `mutable` 成员，编译器据此放行；反之，没有 `mutable` 时 `const` 函数内写任何成员都是编译错误。
+
+标准依据：ISO/IEC 14882:2023 §[dcl.type.cv]/[class.mem] 规定 `mutable` 成员不受外层 const 约束，可在 const 成员函数中被修改；它的典型用途是缓存、引用计数、互斥锁等「实现细节但运行期必需可变」的成员。const 对象调用 const 成员函数是该语言最常用的保护机制之一。
+
+实现与边界：`mutable` 不是线程安全的——若 `get()` 被多线程并发调用，`cache_` 的读写仍是数据竞争，需要 `std::mutex` 或 `std::atomic` 兜底（见 ch30：`volatile`/同步职责正交）。替代方案：把缓存移到外部 `std::unordered_map`（线程粒度更大），或用 `const_cast` 在 const 函数内改非 mutable 成员——后者是明确的反模式，能编译但语义存疑，别在生产代码用。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <optional>
+class Cache {
+    int compute() const { return 7; }
+public:
+    int get() const {
+        if (!cache_) cache_ = compute();   // mutable 允许 const 中修改
+        return *cache_;
+    }
+private:
+    mutable std::optional<int> cache_;
+};
+int main() {
+    const Cache c;
+    std::cout << c.get() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[dcl.type.cv]：`mutable` 成员在 const 成员函数中可修改，服务于逻辑 const。
+
+<span class="badge badge-exp">经验</span> `mutable` 只该用于「实现细节的可变」（缓存/锁/审计计数），不用于绕过封装对外暴露修改路径；多线程场景要记得它不提供同步。能用 `const` 表达只读就用 `const`，`mutable` 是给少数诚实需求留的口子（本章附录『const 的层层含义』）。
+
+</details>
+
 ## 附录：用法演绎 — const 的层层含义：从只读变量到编译期常量
 
 > 场景：很多初学者把 `const` 当成"编译器优化开关"，结果在接口设计、API 边界上踩坑。逐层厘清。

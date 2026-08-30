@@ -1083,6 +1083,60 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★★）
+
+**真实场景：你给一个泛型 trait 写了一个"主模板（默认实现）"，但想为 `int` 提供完全不同的行为。** 请写出代码：主模板 `Trait<T>::name()` 返回 "generic"，全特化 `Trait<int>` 返回 "int"，并演示特化如何精确匹配。
+
+<details><summary>答案与解析</summary>
+
+全特化（full specialization）为某个具体模板实参提供独立定义，优先级高于主模板。编译器在实例化时选择与实参最匹配的特化；特化必须保持主模板的接口（成员）一致。
+
+> **示例 84** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename T>
+struct Trait { static const char* name() { return "generic"; } };
+template <>
+struct Trait<int> { static const char* name() { return "int"; } };
+int main() {
+    std::cout << Trait<double>::name() << " "
+              << Trait<int>::name() << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> 类模板全特化由 ISO/IEC 14882（C++23）§[temp.class.spec] 规定：显式特化的实参列表须与主模板形参一一对应；`template <>` 表示"所有参数均已指定"。
+
+<span class="badge badge-exp">经验</span> 全特化适合"某个类型需要彻底改写"的场景；若只改其中部分参数则用偏特化（见练习 5）。注意特化不能出现在命名空间之外，且 STL 的 `std::vector<bool>` 即全/偏特化的经典例子。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你想写一个 `RemovePtr<T>` 把任意指针剥掉一层（`int*`→`int`），同时非指针类型原样保留。** 请写出偏特化：`RemovePtr<T>` 主模板保留原类型，特化 `RemovePtr<T*>` 暴露内层类型，并用别名模板 `RemovePtr_t` 简化访问。
+
+<details><summary>答案与解析</summary>
+
+偏特化（partial specialization）只固定部分模板参数，其余仍由实参推导。它比全特化更灵活，是 traits/类型计算的核心——标准库 `std::remove_pointer`、`std::tuple_element` 等都基于此。
+
+> **示例 85** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+template <typename T> struct RemovePtr      { using type = T; };
+template <typename T> struct RemovePtr<T*> { using type = T; };
+template <typename T> using RemovePtr_t = typename RemovePtr<T>::type;
+int main() {
+    RemovePtr_t<int*> a; (void)a;        // int
+    RemovePtr_t<int>  b; (void)b;        // int
+    std::cout << "ok\n";
+}
+```
+
+<span class="badge badge-std">标准</span> 类模板偏特化由 ISO/IEC 14882（C++23）§[temp.class.spec] 规定；偏序规则同样用于"哪个部分特化更匹配"。`using` 别名模板（C++11）是 `typename X::type` 的去糖语法。
+
+<span class="badge badge-exp">经验</span> 偏特化是类型萃取（type traits）的引擎：`std::remove_pointer`、`std::is_pointer` 等几乎都是偏特化。它把"按类型结构分流"从运行期搬到编译期，是模板元编程的基本功。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：特化签名必须匹配主模板

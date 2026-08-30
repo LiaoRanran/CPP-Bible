@@ -932,6 +932,65 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO C++11 §[class.copy.ctor]（移动构造）与 §[expr.move]；cppreference "std::move"（https://en.cppreference.com/w/cpp/utility/move）与 "移动构造函数"（https://en.cppreference.com/w/cpp/language/move_constructor）。`noexcept` 移动对容器扩容的影响见标准库 [vector.capacity] 对重新分配的要求。
 
+### 练习 4（难度 ★★）
+
+**真实场景：`auto` 推导出的"出乎意料"类型。** 你用 `auto x = {1, 2, 3};` 想得到一个数组，结果 `x.size()` 能调用、却不是 `int[3]`。请用最小程序展示这条规则，并说明 `auto` 对花括号初始化列表的特殊处理，以及工程上应如何避免被误导。
+
+<details><summary>答案与解析</summary>
+
+`auto` 的标准推导规则里，单元素花括号 `{...}` 会被匹配为 `std::initializer_list`，而不是数组或 `std::vector`。这是 C++11 为了支持"统一初始化"而引入的特殊规则，初学者极易踩坑。
+
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <initializer_list>
+
+int main() {
+    auto a = {1, 2, 3};          // a 的类型是 std::initializer_list<int>，不是数组也不是 vector
+    std::cout << a.size() << '\n';   // initializer_list 有 .size()
+    // auto b[]{1,2,3};          // 这才是真正的数组声明，不能用 auto 推断成数组
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++11 §[dcl.type.auto] 规定：当 initializer 是带花括号的初始化列表时，`auto` 推导为 `std::initializer_list`；而 `auto x[] = {...}` 这种"推导成数组"的写法被标准禁止。
+
+<span class="badge badge-exp">经验</span> 想要数组请用 `auto x = std::array<int,3>{1,2,3};` 或显式 `int x[]{1,2,3};`；用 `auto` 接 `{...}` 几乎总是得到一个 `initializer_list`——它只能整体拷贝、不能改大小，别把它当容器用。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：用 lambda 替代手写函数对象做定制排序。** 你有一段 `vector<int>`，需要按"降序且按绝对值"排序，但又不想为一个一次性比较器写一个具名 struct。请用 C++11 的 `auto` + lambda + 算法演示怎么做，并说明 lambda 相比函数对象的收益与代价。
+
+<details><summary>答案与解析</summary>
+
+C++11 的 lambda 能在调用点就地定义可调用对象，配合 `std::sort` 等算法即可零成本地表达"一次性比较器"，免去了 C++98 必须写 functor 类或函数指针的样板。
+
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+int main() {
+    std::vector<int> v{3, -1, 2, -4, 0};
+    // lambda 就地定义比较器：按绝对值降序
+    std::sort(v.begin(), v.end(), [](int a, int b) {
+        return (a < 0 ? -a : a) > (b < 0 ? -b : b);
+    });
+    for (auto x : v) std::cout << x << ' ';   // auto 让迭代变量类型自动推导
+    std::cout << '\n';
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++11 §[expr.prim.lambda] 引入 lambda 表达式；无捕获的 lambda 可隐式转换为函数指针/可调用对象，`std::sort` 以 `O(n log n)` 完成排序，比较器不引入额外运行期负担。
+
+<span class="badge badge-exp">经验</span> lambda 把"行为"和"调用点"放在一起，可读性与维护性远胜 functor；但需要捕获外部变量时要注意按值/按引用（捕获引用时警惕悬垂），复杂逻辑仍可考虑抽成具名函数以便测试。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：lambda + std::function —— 可存储的回调

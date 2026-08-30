@@ -1277,6 +1277,61 @@ v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x%2==0; }), v.end()
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：协议解码缓冲复用——反复改写 vector 内容而非重建。** 网络层每次收到新报文都要把 `vector<uint8_t>` 整体替换成新 payload。直接 `v = other` 会先析构旧元素再移动/拷贝新元素，而 `v.assign(begin, end)` 在「已有容量足够」时直接覆盖已分配缓冲、不重新分配。请对比 `operator=` 与 `assign`，并指出何种场景必须用 `assign` 而不是重新构造。
+
+<details><summary>答案与解析</summary>
+
+`v = other`（拷贝/移动赋值）按容器级规则执行：移动赋值在「源与目标分配器可互换」时通常转移整块缓冲，拷贝赋值则逐个拷贝或先分配新缓冲。而 `v.assign(first, last)` 在「已有容量足够」时直接覆盖已构造元素、不再分配，因此对同一 vector 反复写入定长 payload 时，它比「重建临时 vector 再赋值」更省分配。注意 `assign` 会改变 `size()`，但**不保证** `capacity()` 缩小（`shrink_to_fit` 才显式请求收缩，且允许实现忽略）。
+
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+int main() {
+    std::vector<int> v;
+    v.reserve(8);
+    std::cout << "cap after reserve = " << v.capacity() << "\n";   // 8
+    int buf[] = {1, 2, 3};
+    v.assign(std::begin(buf), std::end(buf));                      // 复用容量, 不分配
+    std::cout << "size = " << v.size()
+              << ", cap = " << v.capacity() << "\n";               // 3, 8
+}
+```
+
+<span class="badge badge-std">标准</span> `assign` 是序列容器共有操作；其复杂度对「输入迭代器」为 O(N)，且使所有引用/指针/迭代器失效（仅 `end` 可能在未重分配时保持）。容量是否缩小由实现决定。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[vector.modifiers]（`assign` 与迭代器失效规则）；§[container.requirements]（序列容器共有语义）；见 cppreference "container/vector" 词条。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：把 vector 的连续内存直接交给 C API（如 POSIX `write`/`memcpy`）零拷贝导出。** 高频行情要把 `vector<double>` 的底缓冲无拷贝地传给 `(const void*, size_t)` 接口。请用 `data()` + `size()` 正确计算字节数，并指出「capacity 与 size 不一致」「`vector<bool>` 绝对不能用」两个陷阱。
+
+<details><summary>答案与解析</summary>
+
+`vector<T>` 的元素在内存中**连续存储**，因此 `v.data()` 给出的指针配上 `v.size() * sizeof(T)` 字节数即可安全交给 C ABI；注意必须用 `size()` 而非 `capacity()`——后者包含未初始化保留空间，传给 C 会读到垃圾。另一陷阱：`std::vector<bool>` 不是「连续 bool 数组」，其 `data()` 不存在（详见本章练习 3），绝不能直接当 `bool*` 用。
+
+> **示例 61** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <cstddef>
+#include <iostream>
+#include <vector>
+void send(const void* p, std::size_t n) { std::cout << "bytes=" << n << "\n"; }
+int main() {
+    std::vector<double> v{1.0, 2.0, 3.0};
+    send(v.data(), v.size() * sizeof(double));   // 用 size(), 非 capacity()
+}
+```
+
+<span class="badge badge-std">标准</span> `data()` 返回指向首元素的 `T*`，连续布局由 [vector.overview] 保证；`size()` 是已构造元素数。C 互操作须严格区分「容量」与「大小」。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[vector]（连续存储保证与 `data()`）；§[vector.bool]（`vector<bool>` 无 `data()`）；见 cppreference "container/vector"。
+
+</details>
+
 ## 附录：用法演绎 — 百万元素构建的性能对决
 
 > 场景：从外部数据源读入 1,000,000 条记录构建一个 `vector`，对比四种写法的耗时差距。

@@ -1275,6 +1275,56 @@ jobs:
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：矩阵构建里的「特性不一致」。** 你的 CI 矩阵要同时跑 GCC/Clang/MSVC 多版本，但某些 C++23 特性并非每个编译器/标准库版本都支持（如 `std::expected`）。请用一个「特性测试宏」让同一份源码在不同编译器上自动选路：支持就走新路径，不支持就走回退，避免矩阵里个别组合编译失败拖垮整条流水线。
+
+<details><summary>答案与解析</summary>
+
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <version>   // C++20 起：集中的标准特性测试宏
+#include <cstdio>
+
+int main() {
+#if defined(__cpp_lib_expected)       // 该编译器/库是否支持 std::expected？
+    std::printf("std::expected available\n");
+#else
+    std::printf("std::expected unavailable, use fallback\n");
+#endif
+}
+```
+
+<span class="badge badge-std">标准</span> `<version>`（`[version.syn]`）集中暴露 `__cpp_lib_*` / `__cpp_*` 特性测试宏；`__cpp_lib_expected` 在 `std::expected` 可用时由标准库定义。这比「猜编译器版本」可靠——直接探测能力而非供应商版本号。
+
+<span class="badge badge-exp">经验</span> 矩阵构建（ch149 ⑨–⑪）里最痛的就是「某组合特性缺失」。用特性测试宏做编译期选路，把「不支持」变成「走回退路径」而非「硬编译失败」，能显著提升流水线韧性与 fail-fast 的可信度。也可配合 `__has_include(<expected>)` 探测头是否存在。注意：探测到缺失后必须有真实回退实现，否则只是把错误推迟到链接/运行期。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：用编译期断言守住 CI 门禁。** 一份会被多个团队复用的库，必须保证「只被 C++23 及以上、且 64 位目标」编译——否则内部内存布局/ABI 假设失效，链接到 32 位就会悄悄错乱。请在库头里用 `static_assert` 把这条契约变成「不满足就编译失败」的硬门禁，说明它如何在 CI 最早阶段（甚至本地构建）就阻断不合规的使用，而不是等到运行期崩溃。
+
+<details><summary>答案与解析</summary>
+
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <version>
+
+static_assert(__cpp_lib_expected >= 202202L,
+              "this library requires a C++23 std::expected (static CI contract)");
+static_assert(sizeof(void*) >= 8,
+              "64-bit target assumed: type layouts / ABI depend on it");
+
+int main() { return 0; }
+```
+
+<span class="badge badge-std">标准</span> `static_assert`（`[dcl.pre]`）是编译期断言，条件为假时诊断失败并输出给定消息；`__cpp_lib_expected`（`[version.syn]`）是标准库特性测试宏，在 `std::expected` 可用时由 `<version>` 定义（值 `202202L`）。用"能力宏"而非"猜编译器版本号"来刻画契约，更精确也更可移植。
+
+<span class="badge badge-exp">经验</span> 把"必须满足的前提"写成 `static_assert` 是廉价且早的 CI 门禁：它就在本地编译时触发，远早于静态分析/测试阶段，避免"在 32 位机器上才暴露的 ABI 错位"这类诡异 bug 进入流水线深处。库作者常把这类断言集中在 `config.hpp` 顶部；与 `-Werror` + 矩阵构建（ch149 ⑨）组合，可在每个目标上一律强制。但断言信息要写清"为什么"，否则失败者只能靠猜——这正是 ch147 审查清单里「契约是否可见」要查的点。注意 `__cplusplus` 宏在各编译器对"未最终定稿标准"的赋值可能落后于正式值（如某版 GCC 的 C++23 仍报 `202100L`），所以契约优先依赖特性测试宏而非版本年份。
+
+</details>
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构），并附 CI 流水线的时间量级（ns/us/ms）以加深工程认知。

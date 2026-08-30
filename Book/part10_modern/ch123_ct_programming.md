@@ -1187,6 +1187,70 @@ int main() { return 0; }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 查表逻辑要求**必须在编译期**完成：表格在运行期生成就失去了意义（例如固定协议的预计算转换表）。请用 `consteval` 写一个立即函数（immediate function）生成平方表，并解释它与 `constexpr` 在"能否回退到运行期"上的区别。
+
+<details><summary>答案与解析</summary>
+
+`consteval`（P1073R3）声明**立即函数**：它的每一次调用**必须**在常量求值中完成，编译器不允许把它降级为运行期函数。这与 `constexpr` 形成对照——`constexpr` 只是"允许编译期求值"，若实参不是常量表达式，调用会悄悄落到运行期。因此凡是"编译期结果会被写进程序语义"的场景（数组大小、模板实参、只读查表），`consteval` 能把"编译期必须成立"这个意图变成硬约束，调用点传入非常量实参直接编译失败。
+
+工程价值在于**尽早失败**：查表/码表写错、或有人试图把它当普通函数传运行期值，编译器当场报错而不是在运行期拿到错误结果。代价是灵活性受限——立即函数不能用于运行期上下文，这正是它与 `constexpr` 的分工。GCC 13 在 `-std=c++23` 下完整支持 `consteval`。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <array>
+#include <iostream>
+// consteval: 必须编译期求值（immediate function），杜绝运行期回退
+consteval std::array<int, 10> make_table() {
+    std::array<int, 10> t{};
+    for (int i = 0; i < 10; ++i) t[i] = i * i;
+    return t;
+}
+constexpr std::array<int, 10> kTable = make_table();   // 编译期完成，只读
+int main() { std::cout << kTable[3] << '\n'; }         // 9
+```
+
+<span class="badge badge-std">标准</span> `consteval` 立即函数：调用必须出现在常量表达式中（`[dcl.constexpr]`、`[expr.const]`）；C++20 引入、C++23 强化为泛型立即函数（P1147R1）。
+<span class="badge badge-exp">经验</span> 编译期结果的"必然性"用 `consteval`、"可能性"用 `constexpr`；`constinit` 还可锁定全局初始化时机。本章决策流里"值计算尽量下沉 constexpr 函数"——更严格时再上 `consteval` 锁死。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 泛型调试/序列化工具要按类型能力**编译期分流**：有 `c_str()` 的当字符串处理、整型的转十进制、其余走兜底。请用 `concept` + `if constexpr` 实现这一分派，并说明为何比"运行时 `typeid` 分支"更优。
+
+<details><summary>答案与解析</summary>
+
+`concept` 表达"类型能力"，`if constexpr` 在**编译期**根据该能力选分支——被否分支的代码不实例化、不出现在产物里。这比运行期 `typeid`/`dynamic_cast` 分支有本质优势：开销为零（分支在编译期消失）、类型安全（没选中的代码即使语法上有问题只要在实例化时不被取用也不会报错）、可组合（概念可叠加）。
+
+实现要点：用 `requires` 表达式定义能力概念（`has_c_str`），在函数体内用 `if constexpr` 按 `std::remove_cvref_t<decltype(v)>` 依次判定；注意判定要基于**去引用/去 cv 后的类型**，否则 `const std::string&` 会命中不了 `std::integral`。这是"编译期分派"的现代形态，取代了传统 SFINAE 那套晦涩的 enable_if 链。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <concepts>
+#include <string>
+#include <type_traits>
+#include <iostream>
+template <typename T>
+concept has_c_str = requires(const T& t) { t.c_str(); };
+std::string to_debug(const auto& v) {
+    using V = std::remove_cvref_t<decltype(v)>;   // 先脱引用脱 cv
+    if constexpr (has_c_str<V>) return std::string("str:") + v.c_str();
+    else if constexpr (std::integral<V>) return std::string("int:") + std::to_string(v);
+    else return std::string("other");
+}
+int main() {
+    std::cout << to_debug(std::string("hi")) << '\n';
+    std::cout << to_debug(42) << '\n';
+}
+```
+
+<span class="badge badge-std">标准</span> `concept` 是编译期谓词（`[temp.concept]`）；`if constexpr` 丢弃未取用分支的实例化（`[stmt.if]`）；`std::remove_cvref_t`（`[meta.trans]`）做类型规整。
+<span class="badge badge-exp">经验</span> 编译期分派的正确姿势是"概念描述能力 + if constexpr 选实现"，替代 90% 的 SFINAE/`enable_if` 手写（本章练习 2 的 `is_container` 是探测 traits，本练习是消费能力；概念 + requires 是 C++20 起推荐的统一入口）。
+
+</details>
+
 ## 附录 J：编译期编程范式决策流（D3 维度）
 
 ```mermaid

@@ -936,6 +936,61 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：函数可能"无结果"——比起返回 `-1` 哨兵或裸指针，你更想要类型安全的"可能有值"。** 查询缓存时要么命中返回一个 `int`，要么未命中。请用 `std::optional` 表达，并用 `value_or` 提供默认值，对比"裸指针/特殊哨兵"在错误处理上的脆弱。
+
+<details><summary>答案与解析</summary>
+
+`std::optional<T>` 把"有/无值"编码进类型系统：未初始化时 `has_value()==false`，访问前必须先检查。相比返回 `T*`（可能空）或哨兵（如 `-1` 对无符号会冲突），`optional` 强制调用方处理"无值"分支，且零堆分配（值内联存储）。`value_or(default)` 是常见惯用法：有值取值、无值取默认，一行表达"回退"。
+
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <optional>
+int main() {
+    std::optional<int> o;
+    std::cout << o.value_or(42) << "\n";   // 无值取默认 42
+    o = 7;
+    std::cout << o.value_or(42) << "\n";   // 有值取 7
+    std::cout << o.has_value() << "\n";     // 1
+}
+```
+
+<span class="badge badge-std">标准</span> `optional` 是 C++17 引入的"可能为空"容器式包装；`value_or`/`value` 提供受控访问，`value()` 在无值时抛 `bad_optional_access`。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[optional]（`optional` 语义与 `value_or`）；见 cppreference "optional"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：一个字段既能是 `int` 也可能是 `std::string`（"可能是几种类型之一"）。** 配置项的值类型不定。请用 `std::variant<int, std::string>` 建模，并用 `std::visit`、`holds_alternative`、`get_if` 安全访问当前活跃类型，并指出访问错误类型的后果。
+
+<details><summary>答案与解析</summary>
+
+`std::variant` 是类型安全的联合体：同一时刻只存一个备选类型。`std::get<T>(v)`/`get_if<T>` 在"当前类型不符"时前者抛 `std::bad_variant_access`、后者返回空指针——比裸 `union` 主动记录 tag 安全得多。`std::visit` 用访问者一次性处理所有可能类型，编译期强制覆盖。错误地 `get<int>` 一个当前为 `string` 的 variant 是未定义行为（调用前应用 `holds_alternative` 或 `get_if` 校验）。
+
+> **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+int main() {
+    std::variant<int, std::string> v = "hi";
+    std::cout << std::holds_alternative<std::string>(v) << "\n"; // 1
+    std::visit([](auto&& x){ std::cout << x << "\n"; }, v);       // hi
+    const std::string* p = std::get_if<std::string>(&v);
+    std::cout << (p ? *p : "?") << "\n";                         // hi
+}
+```
+
+<span class="badge badge-std">标准</span> `variant` 是 C++17 的"带判别式联合"；`std::get`/`get_if` 维持活跃索引检查，`visit` 要求对所有备选类型提供重载。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[variant]（`variant` 访问与 `bad_variant_access`）；见 cppreference "variant"。
+
+</details>
+
 ## 附录：GCC 15.3.0 真机实证 — `std::optional` 布局与访问代价
 
 > 证据：`_asm_demo/ch88_optional_test.cpp`（GCC 15.3.0 `-O2`，链接 exe 后 `objdump -d -M intel -C`）。

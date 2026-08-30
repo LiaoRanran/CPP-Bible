@@ -1792,6 +1792,66 @@ int main() { Impl a; a.run(); }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你把一个 Derived 对象按值传给接收 Base 的函数，却发现派生部分"凭空消失"了。** 请用代码演示对象切片（slicing）：按值传参如何只保留基类子对象、丢失派生数据；并说明为什么通过引用/指针传递才能完整保留对象身份。
+
+<details><summary>答案与解析</summary>
+
+对象切片发生在"派生→基类按值"的隐式转换中：拷贝构造只复制基类子对象，派生类新增的成员被丢弃，且虚函数表也被改成基类版本。切片是静默发生的——编译通过但语义错误，因此按值接收基类往往是设计缺陷。
+
+> **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+struct Base { int x = 1; virtual void tag() const { std::cout << "Base\n"; } };
+struct Derived : Base { int y = 2; void tag() const override { std::cout << "Derived\n"; } };
+
+void use(Base b) { b.tag(); }          // 按值：切片，调用 Base::tag
+int main() {
+    Derived d;
+    use(d);                            // 打印 Base，派生数据 y 已丢失
+    std::cout << "Base size=" << sizeof(Base)
+              << " Derived size=" << sizeof(Derived) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> 派生类到基类的隐式转换（切片）由 ISO/IEC 14882（C++23）允许；拷贝构造函数仅拷贝基类子对象。通过引用或指针传递（`Base&`/`Base*`）不发生切片，因为它们绑定到原对象的基类子对象，保留完整动态类型。
+
+<span class="badge badge-exp">经验</span> 需要"完整保留多态身份"时，永远用引用或智能指针（如 `std::unique_ptr<Base>`）而非按值。切片问题在于它无法发生在运行时边界被察觉——用 `override`、非公开继承、以及值语义 vs 引用语义的明确边界来规避。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你想让一个公开接口稳定、又想强制派生类实现细节可控。** 请用非虚接口（NVI，Non-Virtual Interface）模式：基类公开非虚函数，内部调用受保护的虚函数，使"前置/后置"逻辑集中于基类、可覆写的步骤留给派生类。写出可编译示例。
+
+<details><summary>答案与解析</summary>
+
+NVI 把"对外契约"与"可扩展点"分离：基类公开一个非虚函数作为稳定接口，内部调用受保护的虚函数；派生类只重写虚函数，无法破坏接口的前置/后置约定。这体现了封装——变化被限制在受保护边界内。
+
+> **示例 67** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+class Widget {
+public:
+    void draw() { pre(); do_draw(); post(); }   // NVI：公开非虚，私有/受保护虚
+protected:
+    virtual void do_draw() = 0;
+    virtual void pre()  { std::cout << "setup\n"; }
+    virtual void post() { std::cout << "cleanup\n"; }
+};
+struct Button : Widget {
+    void do_draw() override { std::cout << "Button\n"; }
+};
+int main() { Button b; b.draw(); }
+```
+
+<span class="badge badge-std">标准</span> 虚函数可声明为 `protected` 或 `private`——ISO/IEC 14882（C++23）允许虚,函数拥有任意访问级别，访问控制只影响名字查找与调用，不影响覆盖（override）的合法性。
+
+<span class="badge badge-exp">经验</span> NVI 适合"框架控制流程、用户定制步骤"的场景（模板方法模式）。注意：`final` 也可禁用整个类的进一步派生；NVI 与 `final` 常组合以保证接口契约不被破坏。`override` 关键字则是防止签名漂移的第一道防线。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：切片 bug——函数返回基类值

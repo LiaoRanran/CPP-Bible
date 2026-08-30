@@ -1101,6 +1101,70 @@ int main() { Box b; std::cout << b.capacity() << '\n'; }
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：头文件命名污染与冗余类型签名。** 一个工厂函数 `make_id()` 的返回值常被调用方忽略，埋下"忘记处理错误码"的隐患；同时一段遍历 `std::map<std::string, std::vector<int>>` 的代码写满了 `std::map<...>::const_iterator`，既冗长又难以阅读。请：(1) 给工厂函数加 `[[nodiscard]]` 并说明它何时有用、何时无谓；(2) 用 `auto` + 结构化绑定把遍历改写为基于范围的 for，并说明哪些场景仍应保留显式类型。
+
+<details><summary>答案与解析</summary>
+
+> **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <map>
+#include <string>
+#include <vector>
+
+[[nodiscard]] int make_id() { return 42; }  // 调用方必须消费返回值，否则 -Wunused-result
+
+int main() {
+    std::map<std::string, std::vector<int>> m{{"a", {1, 2, 3}}};
+    for (auto const& [key, vals] : m) {  // 结构化绑定 + auto const&：零拷贝、免迭代器样板
+        (void)key;
+        (void)vals;
+    }
+    int id = make_id();  // 必须接收，否则触发 [[nodiscard]] 警告
+    (void)id;
+}
+```
+
+<span class="badge badge-std">标准</span> `[[nodiscard]]`（`[dcl.attr.nodiscard]`）在返回值是错误码/资源句柄、且忽略它会导致错误时强制调用方处理；结构化绑定（`[dcl.struct.bind]`）与 `auto` 让 range-for 遍历关联容器时无需写冗长的 `value_type::const_iterator`。
+
+<span class="badge badge-exp">经验</span> `[[nodiscard]]` 不要滥用——纯查询（如 `size()`）加它只会产生噪音；仅当"忽略返回值 == 逻辑错误"时才加。显式类型仍有价值：在模板/接口边界、需要明确 ABI 形状或阅读者需要一眼看到元素类型时，写全 `std::vector<int> const&` 比 `auto const&` 更自文档化。clang-tidy 的 `modernize-use-auto`、`bugprone-unused-return-value` 可自动化这类风格检查。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：手写资源管理违反零法则。** 一个 `Buffer` 类用裸指针 `int*` 持有堆数组，手动写析构却忘了写拷贝构造/拷贝赋值，导致按值传参时发生浅拷贝、析构双重释放（double free）；而一旦补上五法则又会陷入大量样板且易错。请用"零法则（Rule of Zero）"重写：用 `std::unique_ptr<int[]>` 托管资源，使类型自动获得正确的移动语义并禁用危险的拷贝，并指出何时反而需要显式"五法则 + `noexcept` 移动"。
+
+<details><summary>答案与解析</summary>
+
+> **示例 65** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <memory>
+#include <utility>
+
+struct Buffer {                 // Rule of Zero：不手写任何特殊成员
+    std::unique_ptr<int[]> data;
+    std::size_t n;
+    explicit Buffer(std::size_t size) : data{std::make_unique<int[]>(size)}, n{size} {}
+    int& operator[](std::size_t i) { return data[i]; }
+};
+
+int main() {
+    Buffer a{8};
+    a[0] = 7;
+    Buffer b = std::move(a);    // unique_ptr 让移动正确，拷贝被自动删除
+    (void)b;
+    (void)a;                    // a 处于"合法但未指定"的空态，仅可析构/重新赋值
+}
+```
+
+<span class="badge badge-std">标准</span> 当类成员是具备正确析构/移动/拷贝语义的管理型对象（如 `std::unique_ptr`、`std::vector`）时，编译器按"零法则"自动合成默认的特殊成员（`[class.copy.ctor]`、`[class.move]`）；`std::unique_ptr` 的删除器删除了拷贝构造/赋值，留下移动构造/赋值，从而天然防住浅拷贝双释放。
+
+<span class="badge badge-exp">经验</span> 优先零法则：把资源塞进标准管理类型，自己类保持"值语义"。仅在必须自定义资源语义（如内部引用计数、需要廉价移动的大对象）时才写"五法则"，且移动操作要标 `noexcept`——否则 `std::vector` 在扩容重分配时会因移动可能抛异常而退回拷贝，丢掉性能。手写析构 + 未写拷贝，是 C++ 里最高频的"双释放"来源之一。
+
+</details>
+
 ## 附录 J：代码风格合规提交决策流（D3 维度）
 
 把第②–⑱节散落的规范收敛成一条"提交前必经"的决策流：任何新代码必须依次通过格式化、静态分析、零警告、const 正确性与命名一致性五道闸门，才进入 ch147 审查。

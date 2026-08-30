@@ -748,6 +748,68 @@ consteval auto field_names() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：函数需要一个"前置条件"但编译器不管。** 你写 `divide(a, b)` 要求 `b != 0`，但 C++ 当前只能在文档里写明、运行时踩到才崩。C++26 的契约（P2900 `[[pre]]`）要把这类约束变成可被编译器/静态分析检查的东西。请用现有语言先演示"等价的手工前置检查"，再说明契约相比手工 `if` 的好处。
+
+<details><summary>答案与解析</summary>
+
+C++26 契约（P2900R7）引入 `[[pre]]`/`[[post]]`/`[[assert:]]`，把"前置/后置条件"从注释升级为一等公民；编译器可在编译期与运行期分别检查。当前标准里你只能用 `if`/断言模拟其语义：
+
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+
+int divide(int a, int b) {
+    // C++26 将是 [[pre: b != 0]]；这里用等价手工检查演示语义
+    if (b == 0) { std::cout << "precondition violated: b!=0\n"; return 0; }
+    return a / b;
+}
+
+int main() {
+    std::cout << divide(10, 2) << '\n';
+    divide(10, 0);
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++26（P2900R7）把契约纳入 §[dcl.contract]，可在编译期（`constant` 求值）与运行期双重保障；当前标准仅支持 `assert`/`if` 这类用户态守卫。
+
+<span class="badge badge-exp">经验</span> 契约的价值是"声明即文档、声明即检查"，避免把约束散落在注释里被遗忘；落地前用 `if`+早返回先保证行为正确，等编译器支持后再迁移到 `[[pre]]` 以提升可维护性。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：给结构体做"自动序列化/打印"，但新成员总要改代码。** C++26 的静态反射（P2996）要在编译期暴露成员清单，自动生成这些样板；当前语言没有它，你只能手写每个字段。请用现有语言演示"手写遍历字段"的痛点，并指出反射将如何消除它。
+
+<details><summary>答案与解析</summary>
+
+没有反射时，序列化/比较/打印每个结构体都要手写访问每个成员；新增字段就得同步改多处。C++26 的 `std::meta`（P2996R5）能在编译期枚举成员，循环生成上述逻辑。当前只能这样手写：
+
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+
+struct Point { int x; int y; };
+
+// 没有反射：每个字段都得手动列出，加字段就要改这里
+void print(const Point& p) {
+    std::cout << "x=" << p.x << " y=" << p.y << '\n';
+}
+
+int main() {
+    print({3, 4});
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> C++26 反射（P2996R5）在编译期提供 `std::meta::members_of` 等接口，可循环生成字段访问；当前标准无对等机制，以上手写是唯一通用方案。
+
+<span class="badge badge-exp">经验</span> 反射成熟前，重复字段访问可抽成宏或代码生成（如 Qt MOC）；真正迁移到反射后，这类"遍历成员"的样板可大幅消失，但需注意反射是编译期特性，运行期不涉及反射开销。
+
+</details>
+
 ## 附录 J：C++26 方向性特性评估决策流（D3 维度）
 
 本节把第⑤节（sender/receiver 执行器）、第⑨节（调用栈）与第⑭节（WG21 提案，可能变动）收敛为「方向性特性如何评估取舍」的决策流。

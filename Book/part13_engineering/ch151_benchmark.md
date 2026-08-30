@@ -1665,6 +1665,77 @@ int main() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你的基准测出来"0 纳秒"，因为编译器把整个循环优化没了。** 一段求和循环被 `-O2` 判定为无副作用、直接删除（Dead Code Elimination），计时自然失真。请用 `volatile` 汇接点（或更正式的 `benchmark::DoNotOptimize`）强制真实计算发生，并用 `std::chrono::steady_clock` 正确计时，说明为什么"防优化"是可信基准的第一前提（关联 ch151 ④、⑤ 防 DCE）。
+
+<details><summary>答案与解析</summary>
+
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <chrono>
+#include <iostream>
+#include <vector>
+
+int main() {
+    std::vector<int> v(1'000'000, 1);
+    volatile long sink = 0;                 // volatile 汇接：阻止编译器删掉循环（防 DCE）
+    auto t0 = std::chrono::steady_clock::now();
+    for (int x : v) sink += x;              // 被计时的真实工作
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << (t1 - t0).count() << ' ' << sink << '\n';  // 用掉 sink，避免被优化
+}
+```
+
+<span class="badge badge-std">标准</span> `std::chrono::steady_clock`（`[time.clock.steady]`）是单调、不受系统时间调整影响的时钟，适合测量时长；`volatile`（`[dcl.type.cv]`）阻止编译器对访问做重排与删除，从而强制循环真正执行。生产基准常用 `benchmark::DoNotOptimize`/`ClobberMemory` 做等价汇接。
+
+<span class="badge badge-exp">经验</span> 防 DCE 是不可信基准的头号元凶：一旦被测代码被删，你量到的只是"什么都不做"的时间。写基准时务必让结果"逃逸"到编译器无法证明无用的地方（`volatile`、写入 `std::cout`、或返回给主程序）。注意：本例只演示"防优化 + 计时"的骨架，真实数字会因机器/编译器而异，切勿把某次运行的绝对值当成结论（见 ch151 ⑨ 优化影响、`[UNVERIFIED]` 的基准数字都需重测）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：单次计时抖动大到无法下结论。** 操作系统的调度、缓存热冷、频率调节让单次测量噪声极大，你无法判断"A 比 B 快 3%"是否可信。请写一个最小基准框架：对同一个被测函数跑 `repeats` 次、取「最小耗时」（抑制偶发毛刺），并对"被测结果"做汇接防止被优化；说明为什么「取最小/中位数」比「取均值」更适合剔除异常值，以及何时该改用 google benchmark 做统计。
+
+<details><summary>答案与解析</summary>
+
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <chrono>
+#include <iostream>
+#include <vector>
+
+template <class F>
+long long time_best_of(int repeats, F&& f) {   // 取多次中最小耗时，抑制调度噪声
+    long long best = -1;
+    for (int r = 0; r < repeats; ++r) {
+        auto t0 = std::chrono::steady_clock::now();
+        long long s = f();                       // 被测工作；结果被使用，防 DCE
+        auto t1 = std::chrono::steady_clock::now();
+        auto d = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
+        if (best < 0 || d < best) best = d;
+        (void)s;
+    }
+    return best;
+}
+
+int main() {
+    std::vector<int> v(1000, 7);
+    auto best = time_best_of(20, [&] {
+        long long s = 0;
+        for (int x : v) s += x;
+        return s;
+    });
+    std::cout << best << '\n';   // 仅打印骨架耗时，具体数值随环境变化 [UNVERIFIED]
+}
+```
+
+<span class="badge badge-std">标准</span> `std::chrono::duration_cast`（`[time.duration.cast]`）把时钟差转换到 `nanoseconds` 量级便于比较；模板 + 通用引用 `F&&`（`[temp.deduct.call]`）让框架接受任意可调用对象。最小耗时近似"无干扰下的真实成本"，是剔除单次毛刺的朴素手段。
+
+<span class="badge badge-exp">经验</span> 单次测量噪声来自 OS 调度、CPU 频率调节、缓存冷启动等，因此「取最小/中位数」比「取均值」更能反映"理想成本"，均值会被偶发长尾拉偏。但手写 harness 仍有缺陷：样本量、预热、CSV 报告、统计置信区间都不到位——生产应直接上 Google Benchmark（github.com/google/benchmark，上游可查证），它内置多次采样、自动取中位数、报告方差，并与 CI 回归门禁（ch149 ⑭、ch151 ⑮/⑱）集成。任何"快了 X%"的结论都必须建立在可复现、多样本的统计之上，单点数字一律视为 `[UNVERIFIED]`。
+
+</details>
+
 ## 附录 J：可信基准六步法（D3 维度）
 
 把第②–⑲节的方法学收敛成一条带反馈环的流程：写基准后依次确认防优化、预热、多次运行三要件，做统计与 DCE 校验，最后出报告并接入 CI 回归（ch149）。任一环缺失都回退补做。

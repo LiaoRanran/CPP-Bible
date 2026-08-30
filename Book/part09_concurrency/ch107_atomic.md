@@ -1171,6 +1171,82 @@ int main() {
 
 <span class="badge badge-ref">引用</span> cppreference `std::atomic_flag`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag`；`std::atomic_flag::test_and_set`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag/test_and_set`。
 
+### 练习 4（难度 ★★★）
+
+**真实场景：指标采集的"取出并清零"必须原子。** 监控系统周期性收集计数器的批次值、随后清零重计——若把"读当前值 + 清零"写成两条语句，两个采集线程可能一个丢批、一个漏数。`std::atomic::exchange(new)` 原子地完成"返回旧值并写入新值"，是"取批并归零"的唯一正确表达。请用 `exchange` 实现周期采集，说明为什么 `load` + `store` 拆开会丢更新。
+
+<details><summary>答案与解析</summary>
+
+`exchange(desired)` 是一个读-改-写（RMW）原子操作：返回**旧值**、写入 `desired`，两者在同一临界点完成。它等价于"`old = load(); store(desired); return old;`"但整段不可被打断——任何别的线程的写入要么发生在 exchange 之前（被计入旧值）、要么之后（留在新计数周期），绝不会丢失。而拆开的 `load()` 与 `store(0)` 之间可能插入另一个线程的 `fetch_add`，导致那次累加既不在本次批次、也不在下个周期。
+
+标准依据：`exchange` 的语义见 ISO §32.5.5（[atomics.types.operations]）；RMW 操作只接受 `memory_order_relaxed`/`consume`/`acquire`/`release`/`acq_rel`/`seq_cst`。对纯计数且无跨变量发布需求，`relaxed` 足够——`exchange` 自身仍保证"取旧写新"的原子性。
+
+边界条件与失效场景：生产线程在 `exchange(0)` 完成瞬间的并发 `fetch_add` 会落到新周期——这是"按周期切分"的语义边界，业务应明确接受。若还需知道"哪一次 `fetch_add` 落在哪个批次"，exchange 满足不了，需 epoch/版本号（见 ch111 tagged pointer 思想）。高频路径上 `exchange` 与 `fetch_add` 同为单条 `lock xchg`/`lock xadd`，无额外代价。
+
+> **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
+int main() {
+    std::atomic<long> counter{0};
+    std::vector<std::thread> ps;
+    for (int i = 0; i < 4; ++i)
+        ps.emplace_back([&]{ for (int j = 0; j < 25000; ++j)
+                                counter.fetch_add(1, std::memory_order_relaxed); });
+    for (auto& t : ps) t.join();
+    // 采集：原子地"取出并清零"——load+store 拆开会丢更新
+    long batch = counter.exchange(0, std::memory_order_relaxed);
+    std::cout << "batch=" << batch << ", now=" << counter.load() << '\n';
+    return batch == 100000 && counter.load() == 0 ? 0 : 1;
+}
+```
+
+<span class="badge badge-std">标准</span> `exchange` 是 RMW 原子操作，返回值与写新值不可分割（[atomics.types.operations]）；"读批 + 清零"语义用 exchange 表达，拆成 `load`+`store` 会引入竞态窗口。
+
+<span class="badge badge-exp">经验</span> 指标采集"取批归零"用 `exchange(0)`；"只读快照"用 `load`；"累加"用 `fetch_add`——三种诉求对应三种原子原语，别混用。多周期时序敏感时把 epoch 与批次值打包成 `uint64_t` 一次 exchange 取回。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：忙等太费，让线程睡到"标志变化"再醒。** 工作线程等待"任务就绪"信号时，`while(!flag.load()){}` 忙等空转烧 CPU；C++20 的 `std::atomic::wait`/`notify_*` 把"阻塞到值变化"做成库原语。请用 `atomic<bool>::wait` 阻塞主线程直至 worker 置位并 `notify_one`，说明 `wait` 的"值比较 + 阻塞"为何是原子判定、以及伪唤醒（spurious wakeup）如何处理。
+
+<details><summary>答案与解析</summary>
+
+`wait(old, order)` 先以 `order` 读值：若等于 `old` 则阻塞，直到被 `notify_one()`/`notify_all()` 唤醒或发生伪唤醒后重新检查——它内部是"读到 old 才睡"的原子判定，`load` 与"决定阻塞"之间没有竞态窗口。生产者 `store(true)` 后 `notify_one()` 把恰好阻塞中的线程唤醒；若通知先于 wait，则 wait 首次读值已 != old、直接不阻塞。
+
+标准依据：`wait`/`notify_one`/`notify_all` 是 C++20 原子类型新增成员（见 ISO §32.5.3），其"公平性不做保证、允许伪唤醒"由实现决定——调用方必须在循环里用 `wait` 或结合 `while` 条件防御伪唤醒。与 `std::condition_variable` 不同，`atomic::wait` 不需要互斥量配套，也没有 `predicate` 重载。
+
+边界条件与失效场景：`wait` 只保证"被通知或伪唤醒时返回"，不保证"值已变化"——正确姿势是 `while (val.load(acquire) != expected) val.wait(expected);` 循环或检查后重试。`notify_one` 只唤醒一个线程；多等待者广播用 `notify_all`。若目标值在阻塞期间变化后又变回 `old`，wait 可能错过通知但仍会在未来被其它通知/伪唤醒唤醒——高频翻转场景慎用。
+
+> **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <atomic>
+#include <thread>
+#include <iostream>
+int main() {
+    std::atomic<bool> ready{false};
+    std::atomic<int> data{0};
+    std::thread worker([&]{
+        data.store(42, std::memory_order_release);
+        ready.store(true, std::memory_order_release);
+        ready.notify_one();                            // 唤醒阻塞中的等待者
+    });
+    // 阻塞直到 ready 变为 true（可配循环防御伪唤醒）
+    while (!ready.load(std::memory_order_acquire))
+        ready.wait(false, std::memory_order_acquire);
+    std::cout << "data=" << data.load(std::memory_order_acquire) << '\n';   // 42
+    worker.join();
+    return 0;
+}
+```
+
+<span class="badge badge-std">标准</span> `atomic::wait(old, order)` 语义是"读值等于 `old` 才阻塞"（[atomics.wait]）；release/acquire 配对让 `data` 的写在 `ready` 通知链上对等待者可见。
+
+<span class="badge badge-exp">经验</span> 单个标志/计数器的等待用 `atomic::wait` 最轻（无锁、无内核对象）；多个条件或多个线程配互斥量的场景仍属 `condition_variable` 的领地。伪唤醒是标准允许行为，工业代码一律 `while` 包裹，别写裸 `if`。
+
 </details>
 
 ## 附录：用法演绎（从选型到落地）

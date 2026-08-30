@@ -1856,6 +1856,81 @@ SOA 把同类字段聚到一起，`x[]` 与 `vx[]` 连续，SIMD 一条指令可
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：日志记录结构的字段排布。** 一个热路径上的记录结构含 `char`/`int`/`char` 混合字段，编译器为了对齐会插入 padding。请把「大字段靠前」的重排手法写出来，对比两种布局的 `sizeof`，并说明**何时不能**重排。
+
+<details>
+<summary>答案与解析</summary>
+
+对齐规则让每个成员落在「其对齐值」的整数倍偏移：`char a; int b; char c;` 中 `b` 需 4 字节对齐，`a` 后空 3 字节，`c` 后整体补到 4 的倍数——`sizeof(Bad)` 常见 12；把 `int` 提到最前（`int b; char a; char c;`）则 `b` 直接落偏移 0，`a`/`c` 贴在后，`sizeof(Good)` 缩到 8。同一批数据更少的字节 = 每缓存行装更多条记录，遍历命中率更高——这是「数据导向」的最小粒度实践。
+
+标准依据：ISO/IEC 14882:2023 §[basic.align]/§[class.mem]：成员按声明序分配偏移、按各自对齐填充，`sizeof` 取对齐倍数（实现定义但主流 ABI 一致）。重排不改变成员语义，只改填充位置；`offsetof` 可验证每个成员的实际偏移。
+
+实现与边界：**二进制格式固定的结构不能重排**——网络协议头、磁盘记录、硬件描述符必须按规范字节序排布（ch35 练习 2 的 padding 管控是另一个方向）。何时失效：成员的填充虽省字节，若访问模式本身是「隔几个字段取一次」，重排收益有限；纯读字段的 struct 可整体只读放 `.rodata`。替代方案：按「从大到小」排成员（int/double 在前、char 在后）是通用启发；要求精确布局用 `alignas`/显式填充（ch35 练习 5）。
+
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <cstddef>
+
+struct Bad {
+    char a;
+    int  b;
+    char c;
+};
+struct Good {
+    int  b;
+    char a;
+    char c;
+};
+int main() {
+    std::cout << sizeof(Bad) << " " << sizeof(Good) << "\n";
+    std::cout << offsetof(Good, b) << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[basic.align]：成员按声明序排布并按对齐填充，`sizeof` 为对齐倍数。
+
+<span class="badge badge-exp">经验</span> 「大字段靠前」是零成本的瘦身手段：同一批记录占更少缓存行。但**受 ABI/协议约束的结构不能乱动**——先看结构是否被 `memcpy`/序列化/`offsetof` 契约锁定，再看性能（本章附录『矩阵遍历』的局部性放大同理）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：遍历 1000 个元素谁更快。** 你要线性遍历一组固定数据求和，`std::vector` 与 `std::list` 谁缓存友好？请写出两者的等规模构造与遍历，从「连续内存 vs 节点分散」解释预取与缓存行命中差异。
+
+<details>
+<summary>答案与解析</summary>
+
+`vector` 的元素在**一块连续内存**中：遍历时按地址递增，硬件预取器能流水线预读后续缓存行，`for (int x : v)` 接近顺序读带宽；`list` 的每个节点是独立 `new` 出来的小块，节点地址散布在堆上，每访问一个都要等新的缓存行/页（即使元素相邻创建，堆分配顺序与地址也不保证线性），cache miss 显著增多。等规模 1000 元素时差距未必夸张，放大到百万级/热循环就是数量级差异——这是「顺序访问连续数组」的经典结论。
+
+标准依据：ISO/IEC 14882:2023 §[vector]（元素连续存储、迭代器随机访问）与 §[list]（双向链表、节点独立分配、迭代器双向）；局部性由存储布局决定而非容器语义——`list` 的 O(1) 插入删除换来的是遍历的缓存代价（ch44 的池化分配能部分缓解节点分散，但地址连续性仍不如 array）。
+
+实现与边界：`list` 的优势只在「中段频繁插入/删除 + 很少遍历」；若数据常被遍历，`vector`/`deque` 是更好基线。何时失效：元素是大对象且需稳定指针时 `list` 才划算；数据量极小（几字节）时差别可忽略。替代方案：需要「可增长 + 连续」用 `vector`（预留 reserve，ch38）；需要双向迭代又不牺牲局部性用 `std::deque`（分段连续）或自定义池化（ch44）。
+
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <list>
+#include <vector>
+
+int main() {
+    std::vector<int> v(1000, 1);
+    std::list<int> l(1000, 1);
+    long long sv = 0, sl = 0;
+    for (int x : v) sv += x;
+    for (int x : l) sl += x;
+    std::cout << sv + sl << "\n";
+}
+```
+
+<span class="badge badge-std">标准</span> ISO/IEC 14882:2023 §[vector]/§[list]：vector 连续存储，list 节点独立分配；局部性由布局决定。
+
+<span class="badge badge-exp">经验</span> 容器选型先问「遍历频率 vs 修改频率」：以遍历为主选连续存储（vector），以中段插入删除为主才考虑 list——`list` 的每个节点都是一次 `new`，缓存局部性天然吃亏（本章附录『矩阵遍历』的 10× 与练习 3 的 SOA 同属「布局决定性能」）。
+
+</details>
+
 ## 附录：用法演绎 — 矩阵遍历：一次 cache 友好的改写带来 10× 加速
 
 > 场景：对一个 4096×4096 的 `int` 矩阵做前缀和/累加，写法不同性能差一个数量级。

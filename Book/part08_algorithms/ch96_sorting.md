@@ -1110,6 +1110,71 @@ int medB = b[b.size()/2];
 
 <span class="badge badge-ref">引用</span> cppreference `std::partial_sort`：`https://en.cppreference.com/w/cpp/algorithm/partial_sort`；`std::nth_element`：`https://en.cppreference.com/w/cpp/algorithm/nth_element`。
 
+### 练习 4（难度 ★★）
+
+**真实场景：通讯录/报表按"复合键"排序——先姓后年龄。** 名单要"姓氏升序，同姓按年龄升序"，这需要自定义比较器表达两级键。请对 `Rec{name, age}` 序列用 `std::sort` 完成该复合排序，说明为什么比较器必须返回"a 应严格先于 b"的严格弱序，且当第一键相等时必须以第二键决胜——漏掉第二键分支会让相等第一键的元素顺序未定义。
+
+<details><summary>答案与解析</summary>
+
+复合键排序的比较器是一个"字典序"函数：先比 `name`，不相等就返回 `name < name`；相等才落到 `age < age`。这样任何两个元素都有唯一的大小判定，且可传递、非自反、非对称——满足严格弱序。`std::sort` 在比较器合法的前提下保证输出按比较器升序。
+
+标准依据：比较器的合法性要求见 ISO §27.2.1（Compare 概念）与 §25.7.2（[alg.sorting]）——`comp(a,b)` 必须定义严格弱序，否则排序结果未定义。`std::sort` 平均复杂度 O(n log n)、不稳定；同键元素相对顺序不保证。
+
+边界条件与失效场景：若比较器只比 `name` 而不处理同名，标准只要求"等价元素任意顺序"，不算 UB——但若第一键相等时返回 `false` 的同时另一方向也返回 `false`（等价），结果虽合法却不满足"同姓按年龄排"的产品需求。真正危险的是写 `>=` 或"返回 true 又返回 true"的非严格弱序，会导致排序产生未定义行为（见练习 2）。
+
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+struct Rec { std::string name; int age; };
+int main() {
+    std::vector<Rec> v{{"Li", 40}, {"Wang", 30}, {"Li", 25}, {"Zhang", 35}};
+    std::sort(v.begin(), v.end(), [](const Rec& a, const Rec& b){
+        if (a.name != b.name) return a.name < b.name;   // 第一键：姓氏升序
+        return a.age < b.age;                           // 第二键：同姓按年龄升序
+    });
+    for (auto& r : v) std::cout << r.name << r.age << ' ';
+    std::cout << '\n';    // Li25 Li40 Wang30 Zhang35
+}
+```
+
+<span class="badge badge-std">标准</span> 比较器若违反严格弱序（如 `>=` 破坏非自反性），`std::sort` 的行为未定义；合法复合键只需保证"第一键相等时第二键比较"这一分支完备即可。
+
+<span class="badge badge-exp">经验</span> 复合键排序是排序算法最常出现的应用；可用 `std::pair`/`std::tuple` 的默认字典序比较器替代手写 lambda，但自定义结构体时手写 lambda 更直观。若需要"同键保持原序"，改用 `std::stable_sort`。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：只需"第 k 小/中位数"，全排序是浪费。** 监控系统要算延迟 P50 中位数、排行榜要取 Top-K——`std::nth_element` 只把第 k 个元素放到最终排序位置、左小右大，复杂度 O(n) 平均，远优于全排序。请用 `nth_element` 求一组延迟数据的"第 k 小"，并说明它与 `std::partial_sort` 的复杂度差异和各自适用场景。
+
+<details><summary>答案与解析</summary>
+
+`nth_element(first, nth, last)` 保证 `nth` 位置上的元素就是"全排序后应位于此"的元素，且 `[first, nth)` 均 ≤ `*nth`、`[nth+1, last)` 均 ≥ `*nth`——两侧内部无序。算法用快速选择（introselect）：快排式划分，只在包含第 k 个元素的那一侧递归，每次划分丢掉一半规模。
+
+标准依据：`nth_element` 见 ISO §27.7.2（[alg.nth.element]），要求比较器为严格弱序；平均 O(n)、最坏 O(n²)（实现用 median-of-medians 或深度守护缓解）。而 `partial_sort` 把前 k 个完整排好、复杂度 O(n log k)。求单个"第 k 小"用 nth_element，求"有序的前 k 名"用 partial_sort。
+
+边界条件与失效场景：`nth_element` 不保证前 k 个有序——若下游期望有序 Top-K 则误用；它也不稳定。中位数这种"单点查询"是它的典型场景；当 k 接近 n 时 nth_element 几乎退化，此时直接 `sort` 或 `partial_sort` 常数更优。重复执行 `nth_element` 也不保持上次划分，每轮都是 O(n)。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> lat{12, 3, 45, 8, 30, 2, 19, 6, 23, 7};
+    auto mid = lat.begin() + lat.size() / 2;      // 第 5 个（0 基）
+    std::nth_element(lat.begin(), mid, lat.end());
+    std::cout << "median=" << *mid << '\n';       // 12
+}
+```
+
+<span class="badge badge-std">标准</span> `nth_element` 平均 O(n)、最坏未指定（典型实现 introselect 带深度守护）；调用后 `[first,nth)` 全 ≤ `*nth` 且 `[nth,last)` 全 ≥ `*nth`，是 [alg.nth.element] 的明确语义。
+
+<span class="badge badge-exp">经验</span> "只要单点"用 `nth_element`、"要有序前 k"用 `partial_sort`、"要全序"用 `sort`——三者复杂度 O(n) / O(n log k) / O(n log n)，选型错误是常见的过度排序。对实时 P50 计算，nth_element 是标准答案。
+
 </details>
 
 ## 附录：用法演绎 — top-k 与中位数的正确打开方式

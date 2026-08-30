@@ -986,6 +986,67 @@ std::vector<int> safe() {
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：** 你的 ETL 管道在构造阶段做了大量"看似执行"的视图操作，有人误以为管道建好数据就算完了。请用一个带 side-effect 的 `transform` 演示 ranges 的**惰性求值**：管道构造时零计算，遍历时才逐元素求值——并解释这对审计/埋点代码意味着什么。
+
+<details><summary>答案与解析</summary>
+
+view 是**惰性**的：`v | views::transform(f)` 只是把"函数 f 与源 v"打包成一个可遍历对象，构造时既不动 v 也不调 f。真正执行发生在迭代器推进（`begin()`/`operator++`）的瞬间——这是 ranges 与"立即物化"容器最本质的差别。对"求值时机敏感"的代码（日志埋点、计数、断言副作用），绝不能假设管道构造时已发生副作用。
+
+惰性带来两个工程推论：一是**性能**——不遍历就不算，`take(3)` 可以让百万元素只处理前几个（练习 1）；二是**时序陷阱**——side-effect 在遍历时逐次发生，顺序、次数都与管道结构严格对应。若需要在构造时"冻结"当前数据，应物化（拷进 `vector`）或保证源在遍历前不被改动。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <vector>
+#include <ranges>
+#include <iostream>
+int main() {
+    std::vector<int> v{1,2,3,4,5,6};
+    auto r = v | std::views::transform([](int x){
+        std::cout << "eval " << x << '\n';   // side-effect：仅遍历时触发
+        return x * 10;
+    });
+    std::cout << "pipeline built, nothing evaluated yet\n";
+    for (int x : r) (void)x;                 // 此刻才开始逐元素求值
+}
+```
+
+<span class="badge badge-std">标准</span> view 满足 `std::ranges::view` 概念（廉价拷贝/无拥有），求值延迟到迭代（`[range.view]`、`[range.adaptors]`）。
+<span class="badge badge-exp">经验</span> 把"管道构造"与"管道求值"当成两个时间点来设计：审计/埋点务必放在遍历侧；热路径性能分析以遍历次数为准（本章附录 D5 实测的"单遍零中间容器"收益正源于此）。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：** 你需要"前 N 个平方数求和"这类**惰性无限序列 + 单遍聚合**：不希望先生成 100 个元素的大容器。请用 `views::iota`（无界）配合 `take`/`transform` 构造流水线，并解释无界 range 与经典算法（如 `std::accumulate`）对接时需要什么桥接。
+
+<details><summary>答案与解析</summary>
+
+`std::views::iota(1)` 产生**无界**序列，迭代器终点是 `unreachable_sentinel_t`（一种"永不相等"的哨兵）。`take(10)` 把无界序列截断为有界视图，`transform` 再映射成平方——整条管道仍是视图，不分配任何容器。这正是"流式处理无限/超大数据"的惯用法：需要多少就算多少。
+
+但经典算法接口是"两个同类型迭代器"（如 `std::accumulate(begin, end, init)`），而无界管道产生的是"迭代器 + 哨兵"的异构对，无法直接喂给它们。桥接手段有两个：一是让源头**有界**（`views::iota(1, 101)` 后 begin/end 同类型）；二是用 `std::views::common` 把 range 归一为 common range——本练习用后一种，保留下无界 iota 的"无限"语义。这也是 C++23 `ranges::fold` 系列存在的动机（更老的 `accumulate` 不认识哨兵）。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <ranges>
+#include <numeric>
+#include <iostream>
+int main() {
+    // 无界 iota → take 截断 → transform 映射；全程惰性、零中间容器
+    auto squares = std::views::iota(1) | std::views::take(10)
+                 | std::views::transform([](int x){ return x * x; });
+    auto c = std::views::common(squares);   // "迭代器+哨兵" → 同类型迭代器对
+    int sum = std::accumulate(c.begin(), c.end(), 0);   // 1^2+...+10^2 = 385
+    std::cout << sum << '\n';
+}
+```
+
+<span class="badge badge-std">标准</span> `iota_view` 无界时以 `unreachable_sentinel_t` 为哨兵（`[range.iota]`）；`views::common` 生成 common range（`[range.common]`）以对接经典双迭代器算法。
+<span class="badge badge-exp">经验</span> 理解"哨兵 ≠ 迭代器"是 ranges 与旧算法共存的钥匙：新代码优先用 `ranges::*` 算法直接吃 range；必须接旧接口时用 `views::common` 或让源有界（本章练习 1/2 的管道同样可扩展为 iota + fold 模式）。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：手写循环 vs Ranges（惰性 + 零中间）

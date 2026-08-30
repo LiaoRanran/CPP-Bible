@@ -1418,6 +1418,61 @@ struct IntA : AddableCrtp<IntA> { int impl(int x){ return x+1; } };
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：你在设计一个克隆接口，希望派生类返回的是"本类型"而非基类。** 请写出代码：基类 `clone()` 返回 `Base*`，派生类覆写时返回 `Derived*`（协变返回类型）；并演示这正是 `override` 允许放宽返回类型为派生指针的原因。
+
+<details><summary>答案与解析</summary>
+
+协变返回类型（covariant return type）规则：覆盖函数的返回类型可以是被覆盖函数返回类型的派生类指针/引用。这让 `clone()` 既能保持多态契约（`Base*`），又让调用方在已知静态类型是 `Derived` 时拿到更精确的类型，无需再向下转型。
+
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+struct B { virtual B* clone() { return new B; } virtual ~B() = default; };
+struct D : B { D* clone() override { return new D; } };
+
+int main() {
+    D d;
+    B* p = d.clone();          // 仍返回 Base*（多态契约）
+    D* q = d.clone();          // 协变：实际返回 D*，无需 dynamic_cast
+    std::cout << (p && q) << "\n";
+    delete p; delete q;
+}
+```
+
+<span class="badge badge-std">标准</span> 协变返回类型由 ISO/IEC 14882（C++23）规定：当覆盖函数的返回类型是基类函数返回类型的派生类（且均为指针或均为引用）时，允许放宽。`override` 要求签名与基类虚函数匹配，协变版本视为匹配。
+
+<span class="badge badge-exp">经验</span> 协变返回非常适合 `clone()`、工厂、`unique_ptr` 变体等场景；注意它只放宽"指针/引用"返回，值返回不适用。配 `final`/`override` 可避免签名漂移导致的意外隐藏。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：你用基类指针 `delete` 一个派生对象，却怀疑派生部分的析构没被调用。** 请写出代码：基类无 `virtual` 析构时 `delete` 经基类指针导致未定义行为；加上 `virtual`（或 `= default`）析构后，派生析构被正确调用。
+
+<details><summary>答案与解析</summary>
+
+析构函数是"构造的逆过程"，但经基类指针 `delete` 时，只有基类析构会被调用——除非基类析构为 `virtual`。因为 `delete` 通过静态类型（基类）决定调用哪个析构；没有虚析构时，派生部分根本不会被销毁，造成资源泄漏与未定义行为。
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+struct B { virtual ~B() { std::cout << "~B\n"; } };
+struct D : B { ~D() override { std::cout << "~D\n"; } };
+
+int main() {
+    B* p = new D;
+    delete p;                  // 虚析构：先 ~D 再 ~B（顺序与构造相反）
+}
+```
+
+<span class="badge badge-std">标准</span> 经基类指针删除对象时，若基类析构非虚且静态类型与动态类型不同，行为是未定义的（ISO/IEC 14882 §[class.dtor]）。把析构声明为 `virtual` 可让 `delete` 通过动态类型选择正确的析构链。
+
+<span class="badge badge-exp">经验</span> 任何"可能被经基类指针删除"的多态基类都必须有虚析构；即便析构体为空，也写成 `virtual ~B() = default;`。反之，非多态基类（仅作值语义聚合）不应无故加虚析构——它会徒增 vtable 指针与语义误导。
+
+</details>
+
 ## 附录：用法演绎 — 设计一个可扩展的插件系统
 
 > 场景：主程序要在**运行时**按名字加载不同算法实现（图像处理滤镜、压缩器等），且易于第三方扩展。

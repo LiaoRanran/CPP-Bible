@@ -946,6 +946,58 @@ int main() {
 
 <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view]（`string_view` 不拥有存储）；生命周期陷阱见 C++ Core Guidelines F.43（不要返回指向局部变量的引用/视图）；cppreference "string/basic_string_view"。
 
+### 练习 4（难度 ★★）
+
+**真实场景：高频构造大量短字符串（如日志 tag、键值），担心堆分配开销。** 你听说 `std::string` 有"短字符串优化"（SSO），想确认短串到底是否走堆。请用一段程序观察：短串的 `data()` 落在对象内联缓冲而非独立堆块，并说明为什么 SSO 能让「<=15 字节的串」零堆分配。
+
+<details><summary>答案与解析</summary>
+
+主流实现（libstdc++/libc++/MSVC）对短字符串采用 SSO：当串长不超过实现定义上限（libstdc++ 为 15 字节）时，字符直接存放在 `std::string` 对象自身的"内联缓冲"里，不单独 `new`；超过阈值才退化到堆分配。SSO 避免了小对象的分配器压力，但对用户透明——无论长短，`data()`/`c_str()` 都能取到以 `\0` 结尾的连续序列。注意阈值属实现细节，**不要**写死成 15。
+
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <string>
+int main() {
+    std::string s = "hi";                  // 短串: SSO, 存于对象内联缓冲, 无独立堆分配
+    std::cout << "size=" << s.size()
+              << " cstr=" << s.c_str() << "\n";   // size=2 hi
+    // 短串容量上限是实现定义(常见 15/22 字节); 不要假设具体值
+}
+```
+
+<span class="badge badge-std">标准</span> C++ 标准并不强制 SSO，但允许 `std::string` 以任何方式满足 `contiguous` 与 `data()` 契约；SSO 是各实现为降低小额分配而采用的成熟优化。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string]（连续存储与 `data()`/`c_str()` 契约）；§[string.require]（不强制存储策略）；见 cppreference "basic_string"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：解析 HTTP 行「METHOD SP PATH SP VERSION」，但又不想为每个切片 new 一个 `std::string` 承担拷贝与分配。** 你只需"只读地"查看某一段。请用 `std::string_view` 做零拷贝前缀/子串提取，并说明它与 `substr()` 的根本区别（指针+长度 vs 新分配）。
+
+<details><summary>答案与解析</summary>
+
+`std::string_view` 只是 `{const char* ptr, size_t len}` 的轻量视图，构造它不会拷贝底层字节，只记录"从哪开始、多长"——这正是它与 `std::string::substr()`（返回新分配的 `string`）的本质区别。`string_view` 适合"只读、临时、不下标嫁接"的场景；代价是它**不拥有**内存，绝不能指向已释放的字符串。需要持久化时再用 `std::string` 拷贝。
+
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <string_view>
+int main() {
+    std::string_view sv = "GET /index.html HTTP/1.1";
+    auto sp = sv.find(' ');
+    std::cout << "method=" << sv.substr(0, sp) << "\n";   // GET (零拷贝视图)
+    // string_view 仅为 {ptr,len}, 不拷贝底层字节; 注意它不拥有内存
+}
+```
+
+<span class="badge badge-std">标准</span> `std::string_view` 是 C++17 引入的只读连续字符序列视图；`substr` 返回仍是 `string_view`（不分配字符串），区别于 `std::string::substr` 的新分配。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view]（`basic_string_view` 构造与 `substr`）；见 cppreference "string_view"。
+
+</details>
+
 ## 附录：用法演绎（从选型到落地）
 
 ### 演绎 1：日志接口统一用 string_view 避免临时 string 分配

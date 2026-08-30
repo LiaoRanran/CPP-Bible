@@ -1303,6 +1303,61 @@ void worker(){ for(int i=0;i<100000;++i) ++counter; } // 正确累加到 200000
 
 </details>
 
+### 练习 4（难度 ★★）
+
+**真实场景：把一个独立任务丢到后台线程，主线程继续干活并在退出前汇合。** 你有一段纯计算想并行，想用最朴素的 `std::thread` 跑起来，但必须保证线程资源在函数返回前被回收。请用 `std::thread` 配合 `.join()` 完成，说明析构前不 join/不 detach 的危害。
+
+<details><summary>答案与解析</summary>
+
+`std::thread` 是"可 join 的句柄"：对象存在时若仍关联运行中的线程且未 `join()`/`detach()`，析构会调用 `std::terminate`。因此要么显式 `join()` 等它结束，要么 `detach()` 让它自管——多数业务场景用 `join()` 更可控。lambda 按值捕获的变量在线程里有独立副本，避免了数据竞争。
+
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+```cpp
+#include <iostream>
+#include <thread>
+
+int main() {
+    int data = 7;
+    std::thread t([data]{ std::cout << "from thread: " << data << '\n'; });
+    t.join();                             // 显式汇合，避免 terminate
+    std::cout << "joined\n";
+}
+```
+
+<span class="badge badge-std">标准</span> §[thread.thread.class]：`joinable()` 为真时析构会 `terminate`；`join()` 阻塞至线程完成。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[thread.thread]；生命周期陷阱见 cppreference "thread/~thread"。
+
+</details>
+
+### 练习 5（难度 ★★★）
+
+**真实场景：异步取一个计算结果，并在需要时阻塞拿到返回值。** 你要并行跑一个耗时函数并在稍后取结果，希望用 `std::future` 解耦"发起"与"取结果"。请用 `std::async` 启动，区分 `launch::async` 与 `launch::deferred` 的执行时机，并说明 `.get()` 的同步语义。
+
+<details><summary>答案与解析</summary>
+
+`std::async(policy, f, args)` 返回一个 `future`：`launch::async` 立刻在新线程执行 `f`；`launch::deferred` 则推迟到调用 `get()`/`wait()` 时，在调用者线程同步执行。`future::get()` 会阻塞直至就绪并返回值（或重抛异常），且只能调用一次。选择 `async` 才能真正并行；`deferred` 适合纯惰性求值、零线程开销的场景。
+
+> **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+```cpp
+#include <iostream>
+#include <future>
+
+int compute(int n) { return n * n; }
+
+int main() {
+    auto f = std::async(std::launch::async, compute, 12);
+    std::cout << f.get() << '\n';          // 在调用点阻塞取值：144
+    // launch::deferred 则会推迟到 get() 才在本线程执行
+}
+```
+
+<span class="badge badge-std">标准</span> §[futures.async] 定义启动策略；`future::get` 见 §[future.get]，调用后 future 变为无效。
+
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[futures]；策略语义见 cppreference "async"。
+
+</details>
+
 ## 附录：用法演绎 — 并行求和的数据竞争现场
 
 > 场景：把 0..N 的求和拆到 4 个线程，最后合并。演示竞争如何产生、如何修。
