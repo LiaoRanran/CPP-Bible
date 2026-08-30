@@ -2035,6 +2035,114 @@ clone(std::shared_ptr<S> const&):
 3. **计数碰撞是隐形瓶颈**：多线程各自持有同一 `shared_ptr` 副本并频繁拷贝/析构时，所有副本共享同一缓存行上的 `_M_use_count`，`lock` 操作相互失效对方缓存行 → 伪共享（false sharing）放大开销。对策：缩小共享范围、用 `weak_ptr` 打破环、或干脆用 `unique_ptr`/裸指针 + 明确所有权。
 4. **`make_shared` 省分配但延长生命周期**：因控制块与对象同块，只要有 `weak_ptr` 存活，`S` 对象内存也无法回收（见 ch42 严格别名与对象生命周期）。
 
+## 附录 D2：GCC 15.3.0 真机汇编实证——`make_shared` 单次分配 vs `shared_ptr(new)` 两次分配（ASM-41-make_shared）[E: Low-level]
+
+> 编译器: GCC 15.3.0 (mingw64, x86-64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
+> 证据: `_asm_demo/ch41_make_shared_test.cpp` → `ch41_make_shared_test.s`
+> 核心结论: **`make_shared<Widget>` 只调用一次 `operator new(0x20=32B)`，把对象与控制块放进同一块堆内存；`shared_ptr<Widget>(new Widget)` 调用两次（对象 `0xc` + 控制块 `0x18`）。** 这是 `make_shared` 省一次堆分配、缓存更友好的机器级证据。
+
+### 测试源码（节选）
+
+> **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-41-make_shared 测试源码
+```cpp
+struct Widget { int a, b, c; explicit Widget(int x) : a(x), b(x+1), c(x+2) {} };
+
+std::shared_ptr<Widget> via_make_shared(int x) { return std::make_shared<Widget>(x); }
+std::shared_ptr<Widget> via_new(int x)         { return std::shared_ptr<Widget>(new Widget(x)); }
+```
+
+### 真实片段（节选）
+
+```asm
+via_make_shared(int):
+    mov    ecx,0x20                 ; ★ 单次分配 32B = 控制块(16) + 对象(12)，对齐后
+    call   operator new             ; —— 仅 1 次堆分配
+    mov    DWORD PTR [rax+0x10],ebx ; 对象 a 写在块内偏移 0x10（块首留给控制块）
+    mov    QWORD PTR [rax],rcx      ; 块首 = _Sp_counted_ptr_inplace 的 vptr
+    mov    QWORD PTR [rax+0x8],rdx  ; 块偏移 0x8 = use_count 初值
+    mov    QWORD PTR [rsi+0x8],rax  ; shared_ptr 控制块指针 = 块首
+    add    rax,0x10
+    mov    QWORD PTR [rsi],rax      ; shared_ptr 对象指针 = 块首 + 0x10
+
+via_new(int):
+    mov    ecx,0xc                  ; ★ 第一次：12B 给对象
+    call   operator new
+    mov    DWORD PTR [rax],ebx       ; 写对象 a/b/c
+    mov    ecx,0x18                 ; ★ 第二次：24B 给控制块 _Sp_counted_ptr<Widget*>
+    call   operator new
+    mov    QWORD PTR [rax+0x10],rdi ; 控制块里保存对象指针（另块）
+```
+
+### 控制块类型对照解读
+
+| 路径 | 控制块类型 | 分配次数 | 总字节 | 对象与控制块 |
+|------|-----------|:---:|:---:|------|
+| `make_shared` | `_Sp_counted_ptr_inplace<Widget,...>` | 1 | 0x20 (32B) | 同一块（对象在 +0x10） |
+| `shared_ptr(new)` | `_Sp_counted_ptr<Widget*,...>` | 2 | 0xc + 0x18 (36B) | 两块独立 |
+
+### 非显然事实与工程警示
+
+1. **`make_shared` 少一次 `operator new`**：不仅省一次分配器调用（几十 ns~µs 级 + 潜在锁），对象与控制块还落在同一块、同一缓存行附近，`use_count` 与对象字段可被同一次访存预热。
+2. **代价是生命周期耦合**：控制块与对象同块，只要有 `weak_ptr` 存活，整块（含对象内存）都无法回收；`shared_ptr<T>(new T)` 则对象可先于控制块释放。大对象 + 长期 `weak_ptr` 场景要掂量。
+3. **`_M_dispose`/`_M_destroy` 佐证**：`make_shared` 路径销毁时 `mov edx,0x20`（一次 `operator delete` 释放整块 32B）；`shared_ptr(new)` 路径对象释放 0xc、控制块释放 0x18——**分两次** `operator delete`（见 `.s` 内 `_Sp_counted_ptr<Widget*>::_M_dispose` 与两条 `_M_destroy`）。
+
+## 附录 D3：GCC 15.3.0 真机汇编实证——`enable_shared_from_this` 的 weak_this 机制（ASM-41-esft）[E: Low-level]
+
+> 编译器: GCC 15.3.0 (mingw64, x86-64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
+> 证据: `_asm_demo/ch41_esft_test.cpp` → `ch41_esft_test.s`
+> 核心结论: **继承 `enable_shared_from_this<T>` 的类多嵌一个 `weak_ptr<T>`（weak_this，16B）；`shared_from_this()` 就是 `weak_this.lock()`**——取控制块、`lock cmpxchg` 原子递增 use_count；若对象从未被 `shared_ptr` 接管，走 `.cold` 冷路径抛 `bad_weak_ptr`。
+
+### 测试源码（节选）
+
+> **示例 76** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-41-esft 测试源码
+```cpp
+struct Plain   { int x; };                                            // 4B 对照组
+struct WithEsft : std::enable_shared_from_this<WithEsft> { int x; };  // 24B
+
+long long sizeof_plain()     { return sizeof(Plain); }    // → 0x4
+long long sizeof_with_esft() { return sizeof(WithEsft); } // → 0x18（+16B weak_ptr）
+
+std::shared_ptr<WithEsft> grab(WithEsft* p) { return p->shared_from_this(); }
+```
+
+### 真实片段（节选）
+
+```asm
+sizeof_plain()      mov eax,0x4   ret           ; Plain = 仅 int x
+sizeof_with_esft()  mov eax,0x18  ret           ; WithEsft = 24B（x + weak_ptr 16B，对齐）
+
+grab(WithEsft*):                  ; rcx=返回值, rdx=p(this)
+    mov   rax,[rdx+0x8]           ; weak_this._M_refcount（控制块指针，对象偏移 +0x8）
+    mov   [rcx+0x8],rax           ; 写回结果 shared_ptr 的控制块
+    test  rax,rax
+    je    .cold                   ; 未初始化（null）→ 抛 bad_weak_ptr
+    lea   r8,[rax+0x8]            ; &use_count
+    mov   eax,[rax+0x8]
+    test  eax,eax
+    je    .cold                   ; use_count==0 → 抛 bad_weak_ptr
+    lea   r9d,[rax+0x1]
+    lock cmpxchg [r8],r9d         ; ★ 原子递增 use_count（CAS 环）
+    jne   .loop
+    mov   rax,[rdx]               ; weak_this._M_ptr（对象指针）→ shared_ptr 对象指针
+    mov   [rcx],rax
+    ret
+.cold:                            ; __cxa_allocate_exception + 构造 bad_weak_ptr + __cxa_throw
+```
+
+### 布局解读
+
+| 偏移 | 成员 | 说明 |
+|------|------|------|
+| 0x0 | `x` | 用户字段 int |
+| 0x8 | weak_this._M_refcount | weak_ptr 的控制块指针（**未初始化时为 null**） |
+| 0x10 | weak_this._M_ptr | weak_ptr 的对象指针 |
+
+### 非显然事实与工程警示
+
+1. **空间代价真实**：`enable_shared_from_this` 让对象从 4B 涨到 24B，本质是把一个 `weak_ptr`（16B）塞进对象。对海量小对象（粒子、事件节点、树节点）这是不可忽视的摊余成本——只加在真正需要 `shared_from_this` 的类上。
+2. **`shared_from_this()` 不是免费的**：它是弱引用升强引用，代价与 `shared_ptr` 拷贝同量级（一次 `lock cmpxchg` 原子 RMW），不适合热循环里反复调用。
+3. **UB 陷阱落在冷路径**：对象被 `shared_ptr` 接管前调用 `shared_from_this()`，读到的控制块指针是 null，走到 `.cold` 抛 `std::bad_weak_ptr`。它属"逻辑错误"，编译器不做静态拦截——这就是"必须先有 shared_ptr 才能 from_this"的机器级依据。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

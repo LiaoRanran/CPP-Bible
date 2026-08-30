@@ -640,7 +640,7 @@
     "density_avg_combined": 25.7,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 53,
+    "assembly_empirical_examples": 57,
     "i_practice_coverage": "63/147",
     "compile_pass_rate": "112/147",
     "d5_coverage": "119/147 (81%, 口径统一 2026-08-30)",

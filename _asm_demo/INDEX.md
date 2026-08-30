@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 53 例，STATE 记录）
+## 一、已覆盖实证（累计 57 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -70,8 +70,12 @@
 | ASM-86-pq | `std::priority_queue` 堆上浮 | ch86 | `ch86_pq_test.cpp/.s` | push=vector::push_back+push_heap 上浮环(`sar`除2+`cmp`+交换)；top=`mov eax,[rbx]`(c.front())；无虚函数零开销 |
 | ASM-86-adapters | `stack`/`queue` 委托适配器 | ch86 | `ch86_adapters_test.cpp/.s` | stack::top=deque::back；queue::front 直接读 deque._M_start 首元素(无函数调用)；全部编译期委托零开销 |
 | ASM-89-any | `std::any` SBO 边界 | ch89 | `ch89_any_test.cpp/.s` | ≤16B 类型 SBO 内联存(零堆)；>16B 走 `_Manager_external`+operator new 堆；any_cast 内联 typeid 比对 |
+| ASM-41-make_shared | `make_shared` 单次分配 | ch41 | `ch41_make_shared_test.cpp/.s` | `via_make_shared` 单次 `operator new(0x20=32B)` 对象+控制块同块(`_Sp_counted_ptr_inplace`)；`via_new` 两次分配(`0xc` 对象 + `0x18` 控制块 `_Sp_counted_ptr<Widget*>`)，合计 36B |
+| ASM-41-esft | `enable_shared_from_this` weak_this | ch41 | `ch41_esft_test.cpp/.s` | 内嵌 weak_ptr 多占 16B(4→24B)；shared_from_this=`[this+8]` 取控制块→空守卫→`lock cmpxchg` 原子递增 use_count→失败 `.cold` 抛 bad_weak_ptr |
+| ASM-50-mi | 多继承多 vptr + 非虚 this 调整 thunk | ch50 | `ch50_mi_layout_test.cpp/.s` | B2 子对象偏移 0x10、sizeof=0x20(尾填复用)；f2 本体读 `[rcx+0x1c]` vs thunk 读 `[rcx+0xc]`(-16 折叠进寻址)；析构 thunk 显式 `sub rcx,0x10` |
+| ASM-47-deleting_dtor | 虚析构 deleting destructor | ch47 | `ch47_deleting_dtor_test.cpp/.s` | `delete Base*`=`mov vptr;jmp [vtable+8]`(D0 槽)；D0=完整析构链(派生 D1 内联基类 D1)+`mov edx,0x10`+`operator delete`；`Derived*` 触发析构 devirtualization |
 
-> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 53）。
+> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 57）。
 
 ---
 

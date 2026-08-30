@@ -1337,6 +1337,64 @@ long c_loop<RectC>(RectC const*, int):
 
 **结论**：虚调用的真实成本不是“一次间跳有多慢”，而是**它把调用目标对优化器隐藏**，使整个调用子树无法被内联、常量传播、向量化或融合——在热循环里这个代价被放大 N 倍。CRTP / 具体类型把类型钉死在编译期，优化器得以看穿边界。本附录与 附录 E（逐指令代价 / 去虚拟化）、ch51 附录 H（单点 CRTP/final 对比）三角互补。
 
+## 附录：GCC 15.3.0 真机汇编实证——虚析构 deleting destructor（ASM-47-deleting_dtor）[E: Low-level]
+
+> 编译器: GCC 15.3.0 (mingw64, x86-64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
+> 证据: `_asm_demo/ch47_deleting_dtor_test.cpp` → `ch47_deleting_dtor_test.s`
+> 核心结论: 有虚析构的类，vtable 前两槽是 complete(D1)/deleting(D0) 析构。**`delete Base*` = `mov vptr; jmp [vtable+8]`（槽 +8 即 D0），D0 = 完整析构链（派生 D1 内联基类 D1）+ `mov edx,0x10` + `operator delete`。** 直接 `delete Derived*` 时 GCC 还能对析构做 devirtualization。
+
+### 测试源码（节选）
+
+> **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-47-deleting_dtor 测试源码
+```cpp
+long long g_calls;
+struct Base    { virtual ~Base();    int b; };
+struct Derived : Base { ~Derived();  int d; };
+Base::~Base()       { g_calls += 1; }
+Derived::~Derived() { g_calls += 2; }
+
+void destroy_base(Base* p)       { delete p; }   // 经基类指针
+void destroy_derived(Derived* p) { delete p; }   // 直接派生指针
+```
+
+### 真实片段（节选）
+
+```asm
+Base::~Base()       ; D1 complete:  add [g_calls],1 ; ret
+Derived::~Derived() ; D1 complete:  add [g_calls],3 ; ret   ; ★ 基类 D1 内联(+1) + 自身(+2)
+
+Base::~Base()       ; D0 deleting: add [g_calls],1 ; mov edx,0x10 ; jmp operator delete
+Derived::~Derived() ; D0 deleting: add [g_calls],3 ; mov edx,0x10 ; jmp operator delete
+
+destroy_base(Base*):
+    test rcx,rcx ; je  done         ; null 守卫
+    mov  rax,[rcx]                  ; 取 vptr
+    jmp  QWORD PTR [rax+0x8]        ; ★ 间接跳 vtable 槽 +8 = deleting destructor (D0)
+
+destroy_derived(Derived*):
+    test rcx,rcx ; je  done
+    mov  rax,[rcx]
+    lea  rdx,[Derived::~Derived() D0]
+    mov  rax,[rax+0x8]
+    cmp  rax,rdx                    ; ★ devirtualization：若是 Derived 自己的 D0
+    jne  L_fallback
+    add  [g_calls],3                ;   则内联 D0 体（析构链 + delete）
+    mov  edx,0x10 ; jmp operator delete
+L_fallback: jmp rax                 ;   否则回退间接跳转
+```
+
+### 解读
+
+- vtable 布局：槽 0 = complete 析构 D1，槽 1（+8）= deleting 析构 D0，槽 2 起才是普通虚函数（对照 ch50 的 `jmp [vtable+0x10]` 的 f2 槽）。
+- D0 职责 = **D1（析构）+ `operator delete(this, sizeof)`**；`mov edx,0x10` 传的就是 `sizeof(Derived)=16`（`int d` 复用 Base 尾填，故两类型同为 16B）。
+- `destroy_base` 经 Base* 看不到具体类型，只能 `jmp [vtable+8]` 间接调用，运行时落到派生 D0；`destroy_derived` 已知精确类型，GCC 用 `cmp vtable_slot == &Derived::D0` 做投机去虚化并保留间接回退。
+
+### 非显然事实与工程警示
+
+1. **`delete` 的“间接”才是虚析构的价值**：无虚析构时 `delete Base*` 直接 `call Base::~Base` + `operator delete(sizeof Base)`——用**错的 size 去 free 派生对象**是未定义行为（堆破坏）。虚析构把“析构 + 正确 size 的 delete”都委托给运行时 vtable，一次间跳换来内存安全。
+2. **D0 与 D1 分离是有原因的**：栈上对象或 `p->~Derived()` 只走 D1（析构不释放）；只有 `delete` 表达式走 D0。编译器需要两个入口，才能让“析构”与“析构+释放”两件事都不多不少。
+3. **析构链是编译期内联的**：本例 `Derived::~Derived()` 的 D1 直接把 `Base::~Base()` 体内联（`g_calls += 1+2`），不是两次间接调用——虚析构只在**释放入口**间接一次，链内仍是静态内联。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

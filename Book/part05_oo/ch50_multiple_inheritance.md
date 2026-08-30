@@ -965,6 +965,69 @@ _ZThn16_N1D1fEv:                       ; this-adjustment thunk（非虚调用入
 
 `dynamic_cast<B2*>(d)` 在 -O2 下被编译为读取 `_ZTV1D+8` 处的 `top_offset` 并做指针算术，而非每次调用都生成 thunk；thunk 仅在**虚调用经 B2 接口**时才介入，故 MI 的虚调用比 SI 多一次 `sub`/`add` 开销（约 1 cycle/调用，可用 `RDTSC` 取证）。这印证「常见陷阱」中"避免对 vtable 偏移做硬假设"——`top_offset` 在 GCC/Clang 下均为 `.quad` 立即数，MSVC 则编码在 `-8(rdi)` 形式的负偏移里。
 
+## [实现·GCC15]真实：多继承多 vptr 与非虚 this 调整 thunk（ASM-50-mi，真机 objdump 实证）[E: Low-level]
+
+> 编译器: GCC 15.3.0 (mingw64, x86-64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
+> 证据: `_asm_demo/ch50_mi_layout_test.cpp` → `ch50_mi_layout_test.s`
+> 核心结论: 多继承对象含**多个 vptr**（每个多态基类一个）；B2 子对象偏移 `0x10`、`sizeof(D)=0x20`（尾填复用）。**对上节 `sub rdi; jmp` 理想化画法的实证修正：GCC -O2 对平凡函数体把 this 调整 -16 折叠进寻址偏移（thunk 读 `[rcx+0xc]` vs 本体读 `[rcx+0x1c]`），只有非平凡路径（析构）才显式 `sub rcx,0x10; jmp`。**
+
+### 测试源码（节选）
+
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-50-mi 测试源码
+```cpp
+struct B1 { int b1; virtual ~B1(){} virtual int f1(){return 1;} };
+struct B2 { int b2; virtual ~B2(){} virtual int f2(){return 2;} };
+struct D : B1, B2 {
+    int d; explicit D(int v):d(v){}
+    int f1() override { return 11; }
+    int f2() override;            // out-of-line key function → 强制生成 vtable+thunk
+};
+int D::f2() { return d + 22; }    // 读取成员 d（经 this），逼出 this 调整
+int call_f2_via_b2(B2* b2) { return b2->f2(); }
+long long b2_offset() { D d(0); return (char*)(B2*)&d - (char*)&d; }  // → 0x10
+long long sizeof_D()   { return sizeof(D); }                          // → 0x20
+```
+
+### 真实片段（节选）
+
+```asm
+D::f2():                          ; 本体，this = D*（基址）
+    mov  eax,DWORD PTR [rcx+0x1c] ; d 在 D 偏移 0x1c（B2 尾填复用）
+    add  eax,0x16
+    ret
+
+non-virtual thunk to D::f2():     ; this = B2*（偏移 +0x10）
+    mov  eax,DWORD PTR [rcx+0xc]  ; ★ 读偏移 0xc：0x1c − 0x10 = 0xc
+    add  eax,0x16                 ; —— -16 调整被折叠进寻址，无单独 sub
+    ret
+
+call_f2_via_b2(B2*):
+    mov  rax,[rcx]                ; 取 B2 子对象 vptr
+    jmp  QWORD PTR [rax+0x10]     ; 间接跳到 vtable f2 槽（= non-virtual thunk）
+
+b2_offset()   mov eax,0x10  ret   ; B2 子对象偏移 = 0x10（16）
+sizeof_D()    mov eax,0x20  ret   ; sizeof(D) = 0x20（32，尾填复用）
+
+non-virtual thunk to D::~D() (deleting):   ; 非平凡路径
+    mov  edx,0x20                 ; 传给 operator delete 的 sizeof(D)=32
+    sub  rcx,0x10                 ; ★ 显式 this 调整：B2*(+16) → D*(0)
+    jmp  operator delete
+```
+
+### 布局解读（Itanium ABI / x64）
+
+| 子对象 | 偏移 | 说明 |
+|--------|:---:|------|
+| B1（vptr + int b1） | 0x00 | 主基类，vptr@0 |
+| B2（vptr + int b2） | 0x10 | 次级基类，vptr@0x10 |
+| d | 0x1c | 复用 B2 尾填 → `sizeof(D)=0x20`，不额外膨胀 |
+
+### 非显然事实与工程警示
+
+1. **thunk 的两种机器形态**：教材常画 `sub rdi,0x10; jmp f`，但 GCC -O2 上，若被调函数体平凡（几条 load），this 调整会被**代数折叠进寻址偏移**（本体 `[rcx+0x1c]` ↔ thunk `[rcx+0xc]`，差正好 16）；只有体复杂、无法折叠时（如析构要做 delete）才显式 `sub rcx,0x10; jmp`。两者语义等价，都是"固定编译期偏移"，与虚继承的运行时查 vbtable 判然有别。
+2. **尾填复用让 MI 未必翻倍**：本例 B1/B2 各 16B，但 `D` 只有 32B——派生新增的 `int d` 塞进了 B2 子对象的尾部填充，没触发第三次膨胀。这颠覆"MI 对象一定 2× 单继承大小"的直觉。
+3. **经次级基类虚调用多一次 this 调整**：经 B2* 调 f2 走 thunk（折叠成偏移后几乎零额外指令），真正更贵的是多一次 vptr 装载 + 间接跳转，且优化器看不到目标而无法内联（与 ch47 附录 E/F 同源）。
+
 ## [实现·GCC15]真实：虚继承的 this 调整 thunk（虚基类 vbtable 运行时寻址）[E: Low-level]
 
 > 编译：`g++ -std=c++26 -O2 ch50_vi_test.cpp -o ch50_vi_test.exe`；反汇编 `objdump -d -M intel -C`（GCC 15.3.0 / Win64 / Itanium ABI）。证据：`_asm_demo/ch50_vi_test.cpp/.s`。对比"非虚 MI"的固定偏移 thunk（见上节 `sub rdi,0x10; jmp f`）。
