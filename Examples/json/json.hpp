@@ -399,7 +399,15 @@ inline void escape_string(const std::string& s, std::string& out) {
     out += '"';
 }
 
-inline void serialize_into(const Value& v, std::string& out) {
+// 序列化：Value → JSON 文本。
+// indent >= 0：多行美化（每层缩进 indent 空格）；indent < 0（默认）：紧凑单行。
+inline void serialize_into(const Value& v, std::string& out, int indent, int level) {
+    auto nl = [&](int lvl) {
+        if (indent >= 0) {
+            out += '\n';
+            out.append(static_cast<std::size_t>(indent) * static_cast<std::size_t>(lvl), ' ');
+        }
+    };
     switch (v.type()) {
         case Value::Type::Null:
             out += "null";
@@ -424,7 +432,6 @@ inline void serialize_into(const Value& v, std::string& out) {
                 if (res.ec == std::errc()) {
                     out.append(buf, res.ptr);
                 } else {
-                    // 非有限值（nan/inf）无合法 JSON 表示，显式拒绝
                     throw parse_error("cannot serialize non-finite number", 0);
                 }
             }
@@ -434,25 +441,33 @@ inline void serialize_into(const Value& v, std::string& out) {
             escape_string(v.as_string(), out);
             break;
         case Value::Type::Array: {
+            const Array& a = v.as_array();
             out += '[';
-            bool first = true;
-            for (const Value& e : v.as_array()) {
-                if (!first) out += ',';
-                first = false;
-                serialize_into(e, out);
+            if (!a.empty()) {
+                for (std::size_t i = 0; i < a.size(); ++i) {
+                    if (i) out += ',';
+                    nl(level + 1);
+                    serialize_into(a[i], out, indent, level + 1);
+                }
+                nl(level);
             }
             out += ']';
             break;
         }
         case Value::Type::Object: {
+            const Object& o = v.as_object();
             out += '{';
-            bool first = true;
-            for (const auto& [k, val] : v.as_object()) {
-                if (!first) out += ',';
-                first = false;
-                escape_string(k, out);
-                out += ':';
-                serialize_into(val, out);
+            if (!o.empty()) {
+                std::size_t i = 0;
+                for (const auto& [k, val] : o) {
+                    if (i++) out += ',';
+                    nl(level + 1);
+                    escape_string(k, out);
+                    out += ':';
+                    if (indent >= 0) out += ' ';
+                    serialize_into(val, out, indent, level + 1);
+                }
+                nl(level);
             }
             out += '}';
             break;
@@ -460,9 +475,9 @@ inline void serialize_into(const Value& v, std::string& out) {
     }
 }
 
-inline std::string serialize(const Value& v) {
+inline std::string serialize(const Value& v, int indent = -1) {
     std::string out;
-    serialize_into(v, out);
+    serialize_into(v, out, indent, 0);
     return out;
 }
 

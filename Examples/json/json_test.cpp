@@ -192,6 +192,27 @@ void test_find() {
     check(v.find("a.b.2.c")->as_string() == "mod", "find then mutate");
 }
 
+void test_pretty() {
+    json::Value v = json::parse("{\"a\":1,\"b\":[true,null],\"c\":{}}");
+    const std::string expected =
+        "{\n"
+        "  \"a\": 1,\n"
+        "  \"b\": [\n"
+        "    true,\n"
+        "    null\n"
+        "  ],\n"
+        "  \"c\": {}\n"
+        "}";
+    check(json::serialize(v, 2) == expected, "pretty indent=2");
+    check(json::serialize(v) == "{\"a\":1,\"b\":[true,null],\"c\":{}}", "compact default");
+    check(json::serialize(json::parse(expected), 2) == expected, "pretty roundtrip");
+    check(json::serialize(json::parse("{\"x\":[1]}"), 4) ==
+              "{\n    \"x\": [\n        1\n    ]\n}",
+          "pretty indent=4");
+    check(json::serialize(json::parse("[]"), 2) == "[]", "pretty empty array inline");
+    check(json::serialize(json::parse("{}"), 2) == "{}", "pretty empty object inline");
+}
+
 int main() {
     test_roundtrip();
     test_access();
@@ -202,6 +223,7 @@ int main() {
     test_error_location();
     test_mutation();
     test_find();
+    test_pretty();
 
     std::printf("json_test: %d passed, %d failed\n", g_pass, g_fail);
     return g_fail == 0 ? 0 : 1;
