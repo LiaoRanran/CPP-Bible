@@ -1,16 +1,24 @@
 # ISSUES — 已知问题跟踪
 
-> 最后更新: 2026-07-09 | 关联: ⟶ TASKS.md ⟶ PROGRESS.md
+> 最后更新: 2026-08-30 | 关联: ⟶ TASKS.md ⟶ PROGRESS.md
+> 状态口径: 2026-08-30 全量审计逐项复核（证据见各条「复核」列）。
 
-| # | 严重度 | 文件/范围 | 问题 | 修复方向 |
-|---|---|---|---|---|
-| 1 | 🔴 P0 | ch121_contracts.md | cpp=21，差9块 | 补充至30cpp |
-| 2 | 🔴 P0 | ch122_pmr.md | 6个编译fail(源码片段+构造语法) | 改text块+修复语法 |
-| 3 | 🟡 P2 | ch120/157/158 | 新写章编译验证未完成 | 跑 chapter_compile_check |
-| 4 | 🟡 P2 | ch43_cache_locality.md | 交叉引用0条 | 添加⟶链接 |
-| 5 | 🟡 P2 | 14/16 part | 交叉引用=0（共~100章） | 逐part回填 |
-| 6 | 🟡 P2 | tools/chapter_compile_check.py | GCC路径硬编码 C:/Qt/Tools/... | 改为配置文件 |
-| 7 | 🟢 P3 | ch118_modules.md | 396行过薄(C++20旗舰特性) | 扩写到900+行 |
-| 8 | 🟢 P3 | ch81_string.md | 471行偏薄 | 扩写到900+行 |
-| 9 | 🟢 P3 | ch01-10(part01) | cpp块为2-3行fragment | agent批量改写为完整程序 |
-| 10 | 🟢 P3 | glossary.json | 112术语未更新(ch120-158新章术语未加入) | 从新章提取术语追加 |
+| # | 严重度 | 文件/范围 | 问题 | 状态 | 复核证据 |
+|---|---|---|---|---|---|
+| 1 | 🔴 P0 | ch121_contracts.md | cpp=21，差9块 | ✅ 已解决 | 实测 cpp=50 块（APP9 习题重写注入） |
+| 2 | 🔴 P0 | ch122_pmr.md | 6个编译fail | ✅ 已解决 | APP9 双门禁 0 fail；cpp=45 块 |
+| 3 | 🟡 P2 | ch120/157/158 | 编译验证未完成 | ✅ 已解决 | compile_gate 0 真实回归，CI 编译链路绿 |
+| 4 | 🟡 P2 | ch43_cache_locality.md | 交叉引用0条 | ✅ 已解决 | crossref_audit 1190 条引用 0 断链、part 覆盖 100%（A1） |
+| 5 | 🟡 P2 | 14/16 part | 交叉引用=0（~100章） | ✅ 已解决 | 同上（A1 全量审计通过） |
+| 6 | 🟡 P2 | tools/chapter_compile_check.py | GCC路径硬编码 | ✅ 已解决 | 工具内已无 `C:/Qt` 等硬编码路径 |
+| 7 | 🟢 P3 | ch118_modules.md | 396行过薄 | ✅ 已解决 | 实测 945 行（APP9） |
+| 8 | 🟢 P3 | ch81_string.md | 471行偏薄 | ✅ 已解决 | 实测 1175 行（APP15） |
+| 9 | 🟢 P3 | ch01-10(part01) | cpp块为2-3行fragment | 🔄 部分遗留 | ch03-07 已重写（APP14）；ch01/02/08/09/10 待批 |
+| 10 | 🟢 P3 | glossary.json | 112术语未更新 | ✅ 已解决 | C1 术语一致性收口，glossary 0 断链 |
+
+## 遗留清单（2026-08-30 口径）
+
+1. **ch01/02/08/09/10 cpp 块完整化**（原 #9 尾巴）：fragment 改完整程序，参照 APP14 模式。
+2. **55 断言 WARN 分类与豁免收敛**（审计报告 §7，阶段 C）。
+3. **legacy 审计候选人工复核**：10 unsafe C / 94 裸 new / 101 reinterpret_cast（分批留档）。
+4. **备份第二故障域**：需用户提供介质/对象存储。

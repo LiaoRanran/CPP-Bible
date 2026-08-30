@@ -3,9 +3,10 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
-  "last_updated": "2026-07-17",
-  "last_commit": "2c2a4c826393a02865b5d58787c33de2084e5c7e",
-  "git_status": "local committed, pushing",
+  "last_updated": "2026-08-30",
+  "last_commit": "4c5cb32",
+  "git_status": "pushed, CI verifying",
+  "fact_source": "build/metrics.json（单一真相源；本文件数字由其派生）",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -636,12 +637,16 @@
     "APP16"
   ],
   "metrics": {
-    "density_avg_combined": 24.9,
+    "density_avg_combined": 25.7,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
     "assembly_empirical_examples": 53,
     "i_practice_coverage": "63/147",
     "compile_pass_rate": "112/147",
+    "d5_coverage": "119/147 (81%, 口径统一 2026-08-30)",
+    "mermaid_blocks": 511,
+    "cpp_blocks": 7530,
+    "total_lines": 236816,
     "application_layer_app1_chapters": "8/147 (ch20/27/41/47/77/78/93/96)",
     "application_layer_app2_chapters": "8/147 (ch21/31/39/42/43/44/50/51)",
     "application_layer_app3_chapters": "5/147 (ch27/41/96/110/133)",
@@ -660,5 +665,5 @@
     "application_layer_app15_chapters": "8/147 (ch79/ch80/ch81/ch82/ch83/ch84/ch85/ch86)",
     "application_layer_app16_chapters": "5/147 (ch132/ch143/ch150/ch163/ch165)"
   },
-  "ci_status": "Pushed Phase APP APP16 (收官 5 章 legacy 半完成态收口 ch132/143/150/163/165); 147/147 习题全部主题对齐; 一致性 100/100; 双门禁 0 fail/0 回归; CI run 29544850038 conclusion=success (compile gate green)"
+  "ci_status": "2026-08-30 升级战役: 工具栈/门禁/前端工具升级 + 内容债清零(55悬空+7前置+30WARN) + D5口径统一(119/147) 已推送(commit 4c5cb32); CI quality/publish-check 绿, 编译链路远端验证中"
 }

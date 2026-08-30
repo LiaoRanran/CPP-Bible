@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml)
 
-> **147 章 · 16 part · 约 14.7 万行 · 6840 个可编译 cpp 代码块**
-> 密度审计 v3 均分 **24.2/30**，浅章（<15 分）**0** 个
+> **147 章 · 16 part · 约 23.7 万行 · 7530 个 cpp 代码块**（数字派生自 `build/metrics.json`）
+> 密度审计 v3 均分 **25.7/30**，浅章（<15 分）**0** 个
 
 一本面向**系统 / 嵌入式 / 高性能**方向的现代 C++ 硬核教程，覆盖 C++11 至 C++26。
 全部示例以**可编译、可运行、不注水**为铁律——每个 cpp 块都是真实代码，关键断言经
@@ -47,9 +47,9 @@
 | 一致性检查 | `python tools/consistency_check.py` | ERROR=0 / WARN=0 |
 | 全量编译 | `python tools/compile_all.py --main-only` | 147 章，112 章自包含通过 |
 | 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（66 设计性豁免块） |
-| 密度审计 v3 | `python tools/density_audit.py --json` | 均分 24.2/30，浅章 0 |
+| 密度审计 v3 | `python tools/density_audit.py --json` | 均分 25.7/30，浅章 0 |
 | 交叉引用 | `python tools/crossref_audit.py` | 0 断链 |
-| D5 性能附录 | `python tools/d5_appendix_audit.py` | 112/147 章（76%），ERROR=0 / WARN=0 |
+| D5 性能附录 | `python tools/d5_gap_scanner.py` | 119/147 章（81%，口径已统一），结构 ERROR=0 / WARN=0 |
 
 > **豁免说明**：`tools/compile_exempt.json` 中的 66 个失败块均为**设计性不可单编**内容
 > （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、
