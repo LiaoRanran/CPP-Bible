@@ -14,7 +14,7 @@
 | 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | ✅ ruff 清零并进 CI（150 自动 + 99 人工）；🔶 mypy 待装 |
 | 3 | 容器镜像 digest | `ci.yml`/`Dockerfile`/`.devcontainer` 仍用浮动 `gcc:15.3.0` | P1 | ⬜ |
 | 4 | 指标单一事实源 | README 的 cpp 块数 7530（实 7523）、自包含章数 112（实 114）、STATE.json 的 `last_commit` 落后 HEAD 24 个提交 | P1 | ✅ 已落地（`metrics.schema.json` + `tools/gen_metrics.py`，已进 CI quality job） |
-| 5 | CROSSREF 生成器过时 | dry-run 依赖边 732→103（退化 85%），生成器已与正文链接形式脱节 | P2 | 需裁决 |
+| 5 | CROSSREF 生成器过时 | dry-run 依赖边 732→103（退化 85%），生成器已与正文链接形式脱节 | P2 | ✅ 已裁决选项 A：CROSSREF.md 头部改「冻结+指向活跃门禁」，删除悬空生成器引用 |
 
 ---
 
@@ -131,36 +131,35 @@
 
 ---
 
-## 5. CROSSREF 生成器过时（P2 · 需裁决）
+## 5. CROSSREF 生成器过时（P2 · 已裁决选项 A）
 
-**实测 dry-run**（`python tools/legacy/gen_crossref.py --root ...` 后 `git restore` 还原）：
+**已落地（2026-08-31）**：按选项 A 处理——改 `CROSSREF.md` 顶部声明为
+「**冻结于 2026-07-11 · 仅供历史参考**」，删除悬空的「由
+`tools/gen_crossref.py` 自动生成」与重生成命令；明确权威交叉引用由
+`tools/crossref_audit.py` 与 `tools/xref_check.py` 两个活跃门禁维护。
+不动 `gen_mkdocs_nav.py` 引用、不删文件、不重写生成器，代价最小，且不
+影响任何现有门禁（它本就不在 CI 扫描范围）。
 
-| 指标 | 旧（2026-07-11 落库） | dry-run 生成 | 结论 |
-|---|---:|---:|---|
-| 依赖边数 | 732 | 103 | **退化 85%** |
-| 文件大小 | 192 KB | 75 KB | 信息大幅缩水 |
-| diff | — | 2654 行（+1213/-1441） | 大 diff |
+**背景（2026-08-30 实测）**：`python tools/legacy/gen_crossref.py --root Book`
+后 `git restore` 还原，dry-run 结果从 732 条依赖边退化到约 103 条（-85%），
+192 KB → 75 KB。根因是 `gen_crossref.py` 只识别旧式 `⟶` 箭头、反引号
+`` `Book/...` `` 与 `前置·后续` 元数据，而当前正文已大量使用 Markdown
+链接 `[第NN章](Book/...)`，后者由活跃门禁抓取。权威数据源早已转移。
 
-**根因**：`gen_crossref.py` 只抽取 3 种形式（`⟶` 箭头 / 反引号 `` `Book/...` `` / `前置·后续` 元数据），而当前章节的交叉引用已大量使用 markdown 链接 `[第NN章](Book/...)`——后者由活跃门禁 `crossref_audit.py`（`FILE_LINK_RE`）与 `xref_check.py` 抓取。**交叉引用的权威数据源早已转移到活跃门禁，`CROSSREF.md` 成了一个生成器过时的冻结产物。**
+**保留的选项 B/C**：作为后续可选工程记录在案；若未来需要一本可重生成的
+交叉引用索引，再评估是否重写生成器以识别 Markdown 链接形式（选项 B），
+或彻底删除 `CROSSREF.md`（选项 C）。
 
-**裁决选项**：
-
-| 选项 | 动作 | 代价 | 建议 |
-|---|---|---|---|
-| A | 改 `CROSSREF.md` 顶部声明：标注「冻结于 2026-07-11；权威交叉引用由 `crossref_audit.py`/`xref_check.py` 维护」，删除悬空的「由 tools/gen_crossref.py 生成」 | 最小、立即消除误导 | ✅ 首选 |
-| B | 重写 `gen_crossref.py` 以匹配 markdown 链接形式，再复活重生成 | 中等工程，需回填 732 边 | 可选后续 |
-| C | 删除 `CROSSREF.md` 并从 `gen_mkdocs_nav.py` 移除引用 | 需验证导航无断链 | 需评估 |
-
-**验收**：消除 `CROSSREF.md` 头部的悬空生成器引用；不阻断任何现有门禁（它本就不在 CI 扫描范围）。
+**验收**：`CROSSREF.md` 头部已无悬空生成器引用；不阻断任何现有门禁。
 
 ---
 
 ## 6. 分阶段顺序与护栏
 
-**执行顺序**：`1（Python 版本）✅ → 2（静态检查链，mypy 除外）✅ → 4（指标事实源）✅ → 3（容器 digest，需容器/registry 环境）→ 5（CROSSREF 裁决，需用户定方向）`。
-理由：1/2 是「P0 且本机即可做」；4 依赖 1 的统一口径；3 需外部环境；5 需用户裁决方向。
+**执行顺序**：`1（Python 版本）✅ → 2（静态检查链，mypy 除外）✅ → 4（指标事实源）✅ → 5（CROSSREF 裁决选项 A）✅ → 3（容器 digest，需容器/registry 环境）`。
+理由：1/2 是「P0 且本机即可做」；4 依赖 1 的统一口径；5 是文档声明级、无风险；3 需外部容器环境且不影响本地门禁。
 
-**当前剩余（2026-08-31）**：mypy 类型 triage、容器 digest、CROSSREF 裁决三项。
+**当前剩余（2026-08-31）**：mypy 类型 triage、容器 digest 两项。
 
 **护栏**（沿用项目红线）：
 
