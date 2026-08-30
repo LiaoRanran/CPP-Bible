@@ -92,6 +92,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | `STATE.json` | 进度状态 + execution_order + metrics（事实源 build/metrics.json 派生） | ✅ |
 | `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` | 全量审计 + 风险清单 + 路线图 | ✅ |
 | `UPGRADE_PLAN_2026-08-30.md` | 升级方案（7 目标 / 阶段 A-D / 关键决策） | ✅ |
+| `CONTENT_DEPTH_ROADMAP.md` | **内容深化主线**（三阶：汇编实证矩阵 / 实战项目线 / 陷阱体系） | ✅ |
 | `ISSUES.md` | 遗留清单（2026-08-30 口径） | ✅ |
 | `docs/references/content_debt_tasklist.md` | 内容债任务单（已清零，留档） | 需要时 |
 | `tools/cppbible.py` | 门禁聚合入口（quality/compile） | ✅ |
