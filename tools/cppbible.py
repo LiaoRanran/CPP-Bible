@@ -92,7 +92,12 @@ def run(cmd: Sequence[str | Path], *, cwd: Path | None = None, check: bool = Tru
     """统一封装 subprocess.run，输出命令本身便于调试。"""
     cmd_str = [str(c) for c in cmd]
     print(f"  $ {' '.join(cmd_str)}", flush=True)
-    return subprocess.run(cmd_str, cwd=cwd or ROOT, check=check, text=True, capture_output=True, timeout=timeout)
+    # 子进程（tools/*.py 等）统一输出 UTF-8（见 xref_check 等工具的 reconfigure）；
+    # 这里显式按 UTF-8 解码，避免 Windows 中文控制台按 GBK 解码抛
+    # UnicodeDecodeError 把门禁 runner 打崩。
+    return subprocess.run(cmd_str, cwd=cwd or ROOT, check=check, text=True,
+                          encoding="utf-8", errors="replace",
+                          capture_output=True, timeout=timeout)
 
 
 def run_python(script: str | Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
@@ -118,6 +123,62 @@ def cmd_version(_args: argparse.Namespace) -> int:
     except Exception as e:
         print(f"  GCC ver   : (无法调用: {e})")
     print(f"  Platform  : {sys.platform}")
+    return 0
+
+
+def cmd_env(_args: argparse.Namespace) -> int:
+    """工具链自检：探测关键可执行文件与版本，缺失/不匹配即非零退出。
+
+    用于 bootstrap 与 CI 的 `self-check`：保证开发/测试/发布环境一致
+    （对应 UPGRADE_PLAN §1.5「dev/test/prod 平滑切换」）。
+    """
+    import shutil
+
+    print("[cppbible] environment self-check")
+    failures = 0
+
+    def probe(label, name, expected=None, prefer=None):
+        nonlocal failures
+        # prefer 优先（toolchain.toml 同款策略）
+        for cand in (prefer or []):
+            if os.path.isfile(cand):
+                print(f"  [OK] {label}: {cand}")
+                return True
+        found = shutil.which(name)
+        if found:
+            ver = ""
+            try:
+                r = subprocess.run([found, "--version"], capture_output=True,
+                                   text=True, encoding="utf-8", errors="replace",
+                                   timeout=10)
+                ver = (r.stdout or r.stderr).splitlines()[0] if (r.stdout or r.stderr) else ""
+            except Exception:
+                pass
+            ok = (expected is None) or (expected in ver)
+            print(f"  [{'OK' if ok else 'MISMATCH'}] {label}: {found} {ver}")
+            if not ok:
+                failures += 1
+            return ok
+        print(f"  [FAIL] {label}: 未找到 {name}")
+        failures += 1
+        return False
+
+    probe("Python", "python", PYTHON_EXE and "3.", prefer=[str(PYTHON_EXE)] if PYTHON_EXE else None)
+    probe("GCC/g++", "g++", "15.3.0", prefer=[str(GCC_EXE)] if GCC_EXE else None)
+    probe("objdump", "objdump")
+    probe("c++filt", "c++filt")
+    probe("uv", "uv")
+    probe("git", "git")
+
+    print(f"  lock file: uv.lock={'存在' if (ROOT/'uv.lock').exists() else '缺失'}; "
+          f"requirements.lock.txt={'存在' if (ROOT/'requirements.lock.txt').exists() else '缺失'}")
+    if not (ROOT / "uv.lock").exists():
+        failures += 1
+
+    if failures:
+        print(f"\n[FAIL] env self-check: {failures} 项异常")
+        return 1
+    print("\n[OK] env self-check: 工具链完备")
     return 0
 
 
@@ -431,6 +492,7 @@ def build_parser() -> argparse.ArgumentParser:
     build_cmd.add_argument("target", choices=["site", "pdf", "epub"])
 
     sub.add_parser("clean", help="clean build artifacts and root leaks")
+    sub.add_parser("env", help="toolchain self-check (bootstrap/CI)")
     sub.add_parser("install-hooks", help="install git pre-push hook")
     sub.add_parser("preflight", help="pre-push local checks")
     sub.add_parser("report", help="summarize build reports")
@@ -465,6 +527,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cmd_build(args)
     if args.command == "clean":
         return cmd_clean(args)
+    if args.command == "env":
+        return cmd_env(args)
     if args.command == "install-hooks":
         return cmd_install_hooks(args)
     if args.command == "preflight":
@@ -481,4 +545,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # Windows 中文控制台（GBK）无法编码 ✅/⟶ 等字符：统一按 UTF-8 输出，
+    # 避免门禁 runner 在打印时抛 UnicodeEncodeError（见审计报告 §5.1）。
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
     sys.exit(main())

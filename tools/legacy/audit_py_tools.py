@@ -16,7 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[2]
 TOOLS = REPO / "tools"
 OUT = REPO / "tools" / "audit_py_tools.json"
 
@@ -111,6 +111,10 @@ def audit_file(path: Path):
 
 def main() -> int:
     py_files = sorted(TOOLS.glob("*.py"))
+    if not py_files:
+        print(f"ERROR: 未在 {TOOLS} 找到 Python 工具", file=sys.stderr)
+        return 2
+
     scanned = 0
     for p in py_files:
         scanned += 1

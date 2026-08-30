@@ -211,7 +211,9 @@ def collect_chapters(book_root):
         if '_legacy' in r:
             continue
         for ff in sorted(f):
-            if ff.endswith('.md'):
+            # 只收集正式章节 chNN_*.md，跳过 SUMMARY/GLOSSARY/PREREQUISITES/
+            # MANIFEST 等索引文件，统一"章节数=147"口径（见审计报告 §5.4）
+            if ff.endswith('.md') and re.match(r'^ch\d+_', ff):
                 paths.append(os.path.join(r, ff))
     return paths
 

@@ -90,7 +90,9 @@ def main():
     for r,d,f in os.walk('Book/'):
         if '_legacy' in r: continue
         for ff in sorted(f):
-            if not ff.endswith('.md'): continue
+            # 只审计正式章节 chNN_*.md，跳过 SUMMARY/GLOSSARY/PREREQUISITES/
+            # MANIFEST 等索引文件，统一"章节数=147"口径（见审计报告 §5.4）
+            if not re.fullmatch(r'ch\d+_.*\.md', ff): continue
             path = r+'/'+ff
             c, dt, dpt, ds, dps, sh, asd = audit_chapter(path)
             total_lines = len(open(path, encoding='utf-8').read().splitlines())

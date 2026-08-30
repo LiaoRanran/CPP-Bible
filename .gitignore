@@ -57,3 +57,6 @@ Thumbs.db
 
 # 本地 Agent / 工具状态（非内容，不入版本库）
 .workbuddy/
+
+# 审计/软门禁临时输出（dangling_ref_linter / prereq_topo_check 等）
+outputs/

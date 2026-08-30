@@ -15,7 +15,7 @@ import sys
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 BOOK = ROOT / "Book"
 
 FN_RE = re.compile(r"ch(\d+)_")
@@ -60,6 +60,10 @@ def collect() -> list[dict]:
 
 def main() -> int:
     rows = collect()
+    if not rows:
+        print(f"ERROR: 未在 {BOOK} 找到章节文件", file=sys.stderr)
+        return 2
+
     errors: list[str] = []
     warns: list[str] = []
 

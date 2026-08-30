@@ -51,7 +51,7 @@ MIN_EXAMPLES = 30
 SKIP_DIRS = {"_legacy_ModernCppBible"}
 
 # 非章节的导航/索引文件（由 gen_indexes.py 生成，无标准章结构，不参与章节门禁）
-SKIP_FILES = {"SUMMARY.md", "GLOSSARY.md", "PREREQUISITES.md", "INDEX.md"}
+SKIP_FILES = {"SUMMARY.md", "GLOSSARY.md", "PREREQUISITES.md", "INDEX.md", "MANIFEST.md"}
 
 
 def find_book_root(explicit: str | None) -> Path:

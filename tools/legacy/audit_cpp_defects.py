@@ -28,7 +28,7 @@ import re
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[2]
 BOOK = REPO / "Book"
 OUT = REPO / "tools" / "audit_cpp_defects.json"
 
@@ -109,6 +109,10 @@ def check_virtual_dtor(code: str):
 
 def main() -> int:
     files = sorted(BOOK.rglob("ch*.md"))
+    if not files:
+        print(f"ERROR: 未在 {BOOK} 找到章节文件", file=sys.stderr)
+        return 2
+
     total = 0
     intent_error = 0
     cats = {
