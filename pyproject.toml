@@ -62,7 +62,7 @@ py-modules = ["tools.cppbible"]
 [tool.cppbible]
 # 工具链配置：可被 tools/cppbible.py 读取
 # Windows 默认使用本机已验证的 MinGW GCC 15.3.0
-python = "C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
+python = "C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.*/python.exe"
 gcc = "C:/Qt/Tools/mingw1530_64/bin/g++.exe"
 clang = "clang++"
 parallel_workers = 8

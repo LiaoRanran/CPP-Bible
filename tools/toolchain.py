@@ -31,9 +31,11 @@
 """
 from __future__ import annotations
 
+import glob
 import os
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -64,8 +66,9 @@ _DEFAULTS: dict[str, dict[str, list[str]]] = {
     },
     "python": {
         "prefer": [
-            r"C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe",
+            r"C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.*/python.exe",
         ],
+        "expected": ["3.13"],
     },
 }
 
@@ -180,11 +183,45 @@ def resolve_objdump() -> str | None:
 
 
 def resolve_python() -> str:
-    """返回托管 Python 路径；全部缺失时回退当前解释器 ``sys.executable``。"""
+    """返回托管 Python 路径；全部缺失时回退当前解释器 ``sys.executable``。
+
+    ``prefer`` 项支持 glob（如 ``versions/3.13.*/python.exe``），使配置
+    对 patch 级目录改名免疫——托管目录名 ``3.13.12`` 但其内二进制实为
+    ``3.13.14``，锁死具体 patch 会让「配置路径」不可信；命中多候选时按
+    字典序取第一个，保证确定性。
+    """
     for p in _CFG.get("python", {}).get("prefer", []):
-        if p and os.path.isfile(p):
+        if not p:
+            continue
+        if any(ch in p for ch in "*?["):
+            for hit in sorted(glob.glob(p)):
+                if os.path.isfile(hit):
+                    return os.path.normpath(hit)
+        elif os.path.isfile(p):
             return os.path.normpath(p)
     return sys.executable
+
+
+def resolve_python_version() -> str | None:
+    """运行已解析 Python 的 ``--version``，返回 ``3.13.14`` 形式的版本串。
+
+    失败（无法执行、超时、正则不匹配）返回 None，绝不抛异常，保证门禁可用。
+    """
+    exe = resolve_python()
+    try:
+        r = subprocess.run(
+            [exe, "--version"], capture_output=True, text=True, timeout=15
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    m = re.search(r"Python\s+(\d+\.\d+(?:\.\d+)?)", r.stdout or r.stderr)
+    return m.group(1) if m else None
+
+
+def expected_python() -> str | None:
+    """读 ``[python].expected``（如 ``3.13``）；缺失返回 None。"""
+    exp = _CFG.get("python", {}).get("expected", [])
+    return exp[0] if exp else None
 
 
 def report() -> dict[str, str | None]:
@@ -206,10 +243,19 @@ def _main() -> int:
     print("  c++filt :", r["cxxfilt"] or "(未找到)")
     print("  objdump :", r["objdump"] or "(未找到)")
     print("  python  :", r["python"])
+    ver = resolve_python_version()
+    exp = expected_python()
+    if ver is not None:
+        print("  python@ :", ver, f"(期望 {exp}.x)" if exp else "")
     missing = [k for k in ("gpp", "cxxfilt", "objdump") if not r[k]]
     if missing:
         print(f"\n[toolchain] ⚠ 以下工具未解析到: {', '.join(missing)}")
         print(f"[toolchain]   请编辑 {CONFIG} 或把对应可执行文件加入 PATH。")
+        return 1
+    if exp and ver is not None and not ver.startswith(exp + "."):
+        print(f"\n[toolchain] ⚠ Python 版本漂移：解析到 {ver}，配置期望 {exp}.x")
+        print(f"[toolchain]   请修正 {CONFIG} 的 [python].prefer / expected，")
+        print(f"[toolchain]   或重装托管解释器（避免 uv 拉到更高版本）。")
         return 1
     print("\n[toolchain] ✅ 全部解析成功")
     return 0

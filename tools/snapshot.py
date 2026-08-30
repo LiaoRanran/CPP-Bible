@@ -12,7 +12,12 @@ import json, pathlib, subprocess, sys, time
 from datetime import datetime
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PYTHON = r"C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
+_TOOLS_DIR = str(pathlib.Path(__file__).resolve().parent)
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_python  # noqa: E402
+
+PYTHON = resolve_python()
 SNAPDIR = ROOT / "build" / "snapshots"
 
 

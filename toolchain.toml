@@ -31,7 +31,12 @@ objdump_names = ["objdump", "x86_64-linux-gnu-objdump", "objdump.exe"]
 
 [python]
 # 托管 Python（与 cppbible.py find_managed_python 同源）。
+# prefer 支持 glob（versions/3.13.*/python.exe）：托管目录名为 3.13.12 但
+# 其内二进制实为 3.13.14，故用 glob 容忍 patch 级改名，配置不锁死具体 patch。
 # 全部缺失时回退到当前解释器 sys.executable，不因缺配置而崩。
 prefer = [
-  "C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe",
+  "C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.*/python.exe",
 ]
+# 门禁期望的主/次版本：resolve_python() 的 self-check 会校验解析结果，
+# 版本漂移（如被 uv 拉到 3.14）即非零退出。
+expected = "3.13"

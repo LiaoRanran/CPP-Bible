@@ -34,6 +34,7 @@ _TOOLS_DIR = str(Path(__file__).resolve().parent)
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+from toolchain import resolve_python as _resolve_python  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -55,20 +56,13 @@ def _win_path_from_posix(path: str | Path) -> str:
 
 
 def find_managed_python() -> str:
-    """优先使用项目记忆中的 managed Python，否则回退 sys.executable。"""
+    """优先 .workbuddy 记忆，否则委托 toolchain.toml 唯一事实源（resolve_python）。"""
     managed = ROOT / ".workbuddy" / "managed_python.txt"
     if managed.exists():
         exe = managed.read_text(encoding="utf-8").strip()
         if Path(exe).exists():
             return exe
-    candidates = [
-        Path("C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"),
-        Path("C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"),
-    ]
-    for c in candidates:
-        if c.exists():
-            return str(c)
-    return sys.executable
+    return _resolve_python()
 
 
 def find_gcc() -> str:
