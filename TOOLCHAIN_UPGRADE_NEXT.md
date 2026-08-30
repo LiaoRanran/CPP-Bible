@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | 1 | Python 版本漂移 | `.venv`=3.14.5、托管解释器实 3.13.14（目录名 3.13.12）、系统 `python`=3.14.5（WindowsApps Store stub） | P0 | ✅ 已落地（`fc784ba`；.venv 重建待后续） |
 | 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | ✅ ruff 清零并进 CI（150 自动 + 99 人工）；🔶 mypy 待装 |
-| 3 | 容器镜像 digest | `ci.yml`/`Dockerfile`/`.devcontainer` 仍用浮动 `gcc:15.3.0` | P1 | ⬜ |
+| 3 | 容器镜像 digest | `ci.yml` compile job 与 `Dockerfile` 用浮动 tag `gcc:15.3.0` | P1 | ✅ 已钉 `sha256:8f59ba4b…`（2026-08-25 快照，多架构 manifest list） |
 | 4 | 指标单一事实源 | README 的 cpp 块数 7530（实 7523）、自包含章数 112（实 114）、STATE.json 的 `last_commit` 落后 HEAD 24 个提交 | P1 | ✅ 已落地（`metrics.schema.json` + `tools/gen_metrics.py`，已进 CI quality job） |
 | 5 | CROSSREF 生成器过时 | dry-run 依赖边 732→103（退化 85%），生成器已与正文链接形式脱节 | P2 | ✅ 已裁决选项 A：CROSSREF.md 头部改「冻结+指向活跃门禁」，删除悬空生成器引用 |
 
@@ -84,16 +84,37 @@
 
 ## 3. 容器镜像 digest 固定（P1）
 
-**实测**：`ci.yml` compile job 的 `container: gcc:15.3.0`（浮动 tag）；`Dockerfile`/`.devcontainer` 未钉 digest；本机无 `docker`。
+**已落地（2026-08-31）**。原状：`ci.yml` compile job 的 `container: gcc:15.3.0`
+（浮动 tag）、`Dockerfile` 同为浮动 tag；`.devcontainer/devcontainer.json`
+不直接引镜像，它 `"dockerfile": "../Dockerfile"`，故改 Dockerfile 即覆盖。
 
-**行动**：
-1. 在能访问 registry 的环境查 `gcc:15.3.0` 的 digest：`docker manifest inspect gcc:15.3.0` 或 `docker pull gcc:15.3.0 && docker images --digests`。
-2. 把 `ci.yml` 的 container 改成 `gcc:15.3.0@sha256:<digest>`；同步 `Dockerfile` 的 `FROM` 与 `.devcontainer` 的 `image`。
-3. digest 值写入文档（本文），供日后审计比对。
+**digest（权威值，取自 Docker Hub 官方 API，2026-08-25 快照）**：
 
-**验收**：CI 无需因「镜像漂移」而红（#280 教训：PPA/容器微版本浮动会在两次运行间换语言前端）。
+```
+sha256:8f59ba4bd41dced92b4ab1c0290ae4a6719d286c936f4d25ff75cb689c7c63fe
+```
 
-**风险**：digest 需联网/装 docker 获取，本机不可得——此项可挂到「有 CI/容器环境时」执行，不阻塞 1/2 项。
+查询方式（**无需本地 docker**，原方案以为必须有）：
+
+```powershell
+Invoke-RestMethod 'https://hub.docker.com/v2/repositories/library/gcc/tags/15.3.0' |
+    Select-Object name, digest, last_updated
+```
+
+该 digest 是**多架构 manifest list**（含 12 个平台镜像），故 `docker pull` 会按
+运行平台自行解析，不会破坏 CI 的 linux/amd64。
+
+**落地写法（两处不同，有意为之）**：
+
+| 位置 | 写法 | 原因 |
+|---|---|---|
+| `.github/workflows/ci.yml` | `container: gcc@sha256:8f59…` | GH Actions 用 `image@sha256:`（digest 替代 tag） |
+| `Dockerfile` | `FROM gcc:15.3.0@sha256:8f59…` | docker 两种都收；保留 tag 便于人读版本 |
+
+**升级流程**：重查上述 API 取新 digest，同步改这两处（注释里已写明互引）。
+
+**验收**：CI 无需因「镜像漂移」而红（#280 教训：PPA/容器微版本浮动会在两次运行间换语言前端）；
+`ci.yml` 已用 PyYAML 校验语法合法。
 
 ---
 
@@ -156,10 +177,10 @@
 
 ## 6. 分阶段顺序与护栏
 
-**执行顺序**：`1（Python 版本）✅ → 2（静态检查链，mypy 除外）✅ → 4（指标事实源）✅ → 5（CROSSREF 裁决选项 A）✅ → 3（容器 digest，需容器/registry 环境）`。
-理由：1/2 是「P0 且本机即可做」；4 依赖 1 的统一口径；5 是文档声明级、无风险；3 需外部容器环境且不影响本地门禁。
+**执行顺序**：`1（Python 版本）✅ → 2（静态检查链，mypy 除外）✅ → 4（指标事实源）✅ → 5（CROSSREF 裁决选项 A）✅ → 3（容器 digest）✅`。
+理由：1/2 是「P0 且本机即可做」；4 依赖 1 的统一口径；5 是文档声明级、无风险；3 只需联网查 registry API，无需本地 docker。
 
-**当前剩余（2026-08-31）**：mypy 类型 triage、容器 digest 两项。
+**当前剩余（2026-08-31）**：仅 **mypy 类型 triage** 一项（需 `uv sync --extra dev` 重建 `.venv`，属本机高风险操作）。
 
 **护栏**（沿用项目红线）：
 

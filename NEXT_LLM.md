@@ -98,7 +98,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | 3 | legacy 审计候选人工复核 | 审计报告 §5.3 | 10 unsafe C / 94 裸 new / 101 reinterpret_cast，分批留档（`audit_cpp_defects.py`） |
 | 4 | 备份第二故障域 | ✅ 已完成 2026-08-30 | 已推 `D:\CPP-Bible-Backup\20260830-201021`（明文副本，恢复演练 PASS），见本节末 |
 | 5 | 站点/PDF/EPUB 本地重建 | 审计报告 §11 | 本机缺 pandoc/xelatex/mkdocs，出版产物走 CI 八 job |
-| 6 | 工具链升级剩余项（Python 收窄/静态检查链/指标事实源/digest/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | 🔶 P0 全完成 + P1 指标事实源完成；剩 mypy 类型 triage、容器 digest、CROSSREF 裁决 |
+| 6 | 工具链升级剩余项（Python 收窄/静态检查链/指标事实源/容器 digest/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | 🔶 P0 全完成 + P1 两项完成 + P2 完成；只剩 mypy 类型 triage |
 
 ---
 
