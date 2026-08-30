@@ -27,6 +27,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Ruff (tools/ 静态检查硬门禁)
+      # P0-2 收口（TOOLCHAIN_UPGRADE_NEXT.md §2）：tools/ 的 ruff 债务已人工清零
+      # （E741×34 / E701×27 / E702×21 / F841×17，逐个确认语义后修改，未用
+      # --unsafe-fixes 批量糊）。此处固化为硬门禁，防止债务再次累积。
+      # 版本钉定 0.6.9（与 .pre-commit-config.yaml 一致）：ruff 规则集会随版本
+      # 漂移，跟随最新版会让「已清零」的基线失效。
+      # mypy 尚未做类型标注 triage，故暂不接入——接入必红，留给下一批。
+      run: |
+        python3 -m pip install --quiet "ruff==0.6.9"
+        ruff check tools/
+      continue-on-error: false
+
     - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)
       # 纯 Python 零依赖，秒级扫描全书标题/表格/正文里 fenced code 之外的
       # 裸反斜杠序列（如 '\n'），这类字符会让 pdf job 的 xelatex 报
