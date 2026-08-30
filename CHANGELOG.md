@@ -49,8 +49,9 @@
 
 - **55 处悬空章号引用全部清零**：ch33→ch28、ch34→ch40、ch54/56→ch49、ch59→ch60、ch73→ch51、ch75→ch67（映射）；ch74/ch114/ch102-105 无对应现章，按语义改写至 ch123/ch113/ch93/ch107。20 章节共 89± 行修改，权威映射见 [docs/references/chapter_mapping.md](docs/references/chapter_mapping.md)。
 - **7 处前置问题清零**：悬空前置 ch114→ch113；6 处历史/导读章前瞻引用列入 `FORWARD_PRE_EXEMPT` 白名单（作者设计意图，逐项注释依据）。
-- **门禁转硬**：`dangling_ref_linter` / `prereq_topo_check` 由软门禁（continue-on-error: true）转硬，新增任何悬空引用/拓扑异常即 CI 判红。
-- 复验：`quality` 16/16、`dangling=0`、`topology=0`、consistency `ERROR=0 / WARN=30`（无新增）。
+- **30 处一致性 WARN 清零（根因为工具误报）**：L1 徽章化迁移后 `consistency_check` 仍只认字面 `[标准]` 括号，对 30 个仅用徽章 span 的章误报；新增 `STANCE_BADGE_RE` 兼容两种载体后 `ERROR=0 / WARN=0`（恢复 100/100 基线）。抽样验证（ch04/ch22/ch60/ch165：徽章 52-99、字面 0）确认为规则过时而非内容缺失。
+- **门禁转硬 + 两项健壮性修复**：`dangling_ref_linter` / `prereq_topo_check` 由软转硬；修复 `--json` 输出目录不存在时崩溃（CI 干净 checkout 无 outputs/ 抛 FileNotFoundError，曾致 #375 误红——本地 pass/CI fail 的根因）；已全库排查其余写 JSON 工具均带 mkdir，无同类隐患。
+- 复验：`quality` 16/16、`dangling=0`、`topology=0`、consistency `ERROR=0 / WARN=0`。
 
 ### 现状与遗留
 
