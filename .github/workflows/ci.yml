@@ -485,19 +485,26 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libdbus-1-3 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libatspi2.0-0 libx11-6 libxcb1 || true
 
     - name: Generate EPUB
-      # 防御性心跳：pandoc 处理 6.2MB combined.md 期间长时间无输出，多次实测步骤在
-      # 运行数十秒后被 runner 标记 cancelled（无 failure 日志可查）。后台运行脚本并
-      # 每 20 秒 echo 心跳，保持步骤输出活跃。
+      # 诊断模式：多轮实测本步骤启动数秒即被标 cancelled（非超时、无 failure 日志）。
+      # bash -x 全追踪 + tee 落盘，配合下方 always() 上传，拿到被杀前最后执行位置。
       run: |
         set -euo pipefail
-        bash tools/generate_epub.sh &
-        BG=$!
-        trap 'kill $BG 2>/dev/null || true' TERM INT
-        while kill -0 $BG 2>/dev/null; do
-          echo "[heartbeat] $(date -u +%T) EPUB generation in progress..."
-          sleep 20
-        done
-        wait $BG
+        pandoc --version | head -2
+        mkdir -p build
+        set +e
+        bash -x tools/generate_epub.sh 2>&1 | tee build/epub_gen.log
+        rc=${PIPESTATUS[0]}
+        echo "generate_epub.sh exit=$rc"
+        exit $rc
+
+    - name: Upload EPUB diagnostic log
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: epub-diag
+        path: build/epub_gen.log
+        retention-days: 7
+        if-no-files-found: ignore
 
     - name: Upload EPUB artifact
       uses: actions/upload-artifact@v7
