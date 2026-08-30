@@ -39,6 +39,17 @@ jobs:
         ruff check tools/
       continue-on-error: false
 
+    - name: Metrics Single-Source-of-Truth Gate (文档数字 vs 事实源)
+      # P1（TOOLCHAIN_UPGRADE_NEXT.md §4）：事实源（Book/ 实时扫描 +
+      # tools/compile_report.json + git）与各文档里的写死数字必须对得上。
+      # 上线时实测已漂移 3 处：README 的 cpp 块 7530（实 7523）、自包含章数
+      # 112（实 114）、STATE.json 的 last_commit 停在 4c5cb32（落后 HEAD
+      # 24 个提交）——这正是「建了事实源但文档仍在手写数字」的典型后果。
+      # 散文文档只校验不改写（数字嵌在叙述里，程序改写会破坏语义），漂移即
+      # BLOCK 并报出 文件:行号；STATE.json 的派生字段用 --sync 回写。
+      run: python3 tools/gen_metrics.py --check
+      continue-on-error: false
+
     - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)
       # 纯 Python 零依赖，秒级扫描全书标题/表格/正文里 fenced code 之外的
       # 裸反斜杠序列（如 '\n'），这类字符会让 pdf job 的 xelatex 报
