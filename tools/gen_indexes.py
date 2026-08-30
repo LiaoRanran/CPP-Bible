@@ -18,7 +18,10 @@ CPP-Bible 索引生成器 (gen_indexes.py)
   python3 tools/gen_indexes.py           # 生成三份索引
   python3 tools/gen_indexes.py --check   # 只校验是否与磁盘一致（CI 可用），不写文件
 """
-import os, re, sys, argparse
+import os
+import re
+import sys
+import argparse
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BOOK = os.path.join(HERE, "Book")

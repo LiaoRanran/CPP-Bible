@@ -6,7 +6,11 @@ Usage: python3 tools/fast_compile.py [N] [--full]
   N: 并行worker数 (default 8)
   --full: 编译所有cpp块（默认每个文件仅前3块）
 """
-import os, re, sys, subprocess, tempfile, shutil
+import os
+import sys
+import subprocess
+import tempfile
+import shutil
 from concurrent.futures import ProcessPoolExecutor
 
 GCC = shutil.which('g++') or shutil.which('g++.exe') or 'g++'
@@ -100,14 +104,14 @@ def main():
                 timeout_n += 1
                 fails.append((chap, idx, 'TIMEOUT'))
 
-    print(f'\n=== Compile Summary ===')
+    print('\n=== Compile Summary ===')
     print(f'Total: {len(items)}')
     print(f'Pass:  {pass_n}  ({100*pass_n/max(len(items),1):.1f}%)')
     print(f'Fail:  {fail_n}  ({100*fail_n/max(len(items),1):.1f}%)')
     print(f'Time:  {timeout_n}')
 
     if fails:
-        print(f'\n=== First 30 failures ===')
+        print('\n=== First 30 failures ===')
         for chap, idx, err in fails[:30]:
             print(f'  {chap} #{idx}: {err[:150]}')
 

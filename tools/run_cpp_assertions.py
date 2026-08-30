@@ -53,7 +53,6 @@ CI 适配说明
 from __future__ import annotations
 import re
 import sys
-import os
 import glob
 import signal
 import subprocess

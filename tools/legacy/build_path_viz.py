@@ -15,7 +15,10 @@
   - 章检索框
   - 画布拖拽平移 + 滚轮缩放
 """
-import os, re, json, sys
+import os
+import re
+import json
+import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import learning_path as lp
 

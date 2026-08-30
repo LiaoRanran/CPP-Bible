@@ -18,8 +18,11 @@ Usage:
   python3 tools/deduplication_audit.py --json               # JSON 文件 + stdout
   python3 tools/deduplication_audit.py --all --per-part     # 全章 + part 汇总
 """
-import os, re, sys, json
-from collections import Counter, defaultdict
+import os
+import re
+import sys
+import json
+from collections import defaultdict
 from pathlib import Path
 
 # =========== 信号库 (v4 原版，不变动) ===========
@@ -209,8 +212,8 @@ def main():
         if not show_all:
             print(f'(showing weakest {display_n})')
         print()
-        print(f'| # | v4 | IND | DEP | WTR% | DUP% | Lines | Chapter |')
-        print(f'|---|----|-----|-----|------|------|-------|---------|')
+        print('| # | v4 | IND | DEP | WTR% | DUP% | Lines | Chapter |')
+        print('|---|----|-----|-----|------|------|-------|---------|')
         for i, c in enumerate(display, 1):
             ind_bar = '█' * min(c['ind_hits'], 20)
             dep_bar = '▓' * min(c['dep_hits'] // 3, 16)
@@ -219,7 +222,7 @@ def main():
                   f'`{c["file"]}` |')
         print()
         print(f'**Total**: {len(chapters)} chapters, v4 avg quality: **{avg:.1f}/30**')
-        print(f'v4: `industry*0.4 + depth*0.4 - water*0.2`')
+        print('v4: `industry*0.4 + depth*0.4 - water*0.2`')
 
         # Deficiency summary: chapters that need the most help
         print()
@@ -234,8 +237,8 @@ def main():
             radar.append((total_gap, ind_gap, dep_gap, c))
         radar.sort(key=lambda x: -x[0])  # largest gap first
 
-        print(f'| Chapter | v4 | IND gap | DEP gap | Recommendation |')
-        print(f'|---------|----|---------|---------|----------------|')
+        print('| Chapter | v4 | IND gap | DEP gap | Recommendation |')
+        print('|---------|----|---------|---------|----------------|')
         for gap, ig, dg, c in radar[:15]:
             rec = ''
             if ig > dg:

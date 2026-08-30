@@ -21,7 +21,6 @@ Mermaid 图注入器（可复用、幂等）
 
 import argparse
 import re
-import sys
 from pathlib import Path
 
 SUBSECTION = "## 架构与流程图示（Mermaid）"

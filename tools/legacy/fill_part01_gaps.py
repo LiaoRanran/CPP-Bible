@@ -6,7 +6,9 @@ fill_part01_gaps.py — 补齐 part01 历史章节缺失的 v3 中间元素（�
 用法：
   python tools/fill_part01_gaps.py --root <CPP-Bible> --apply
 """
-import argparse, re, pathlib, shutil
+import argparse
+import pathlib
+import shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 

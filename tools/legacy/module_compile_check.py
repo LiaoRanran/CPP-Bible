@@ -27,7 +27,13 @@ r"""module_compile_check.py — C++20 Modules 感知编译校验 (L1, 2026-07-14
   python3 tools/module_compile_check.py --json out.json
 退出码：0=所有模块演示可编译 / 1=有不可编译模块 / 2=用法/工具错误
 """
-import os, re, sys, subprocess, json, tempfile, shutil
+import os
+import re
+import sys
+import subprocess
+import json
+import tempfile
+import shutil
 
 GCC = shutil.which('g++') or 'g++'
 MODULE_FLAGS = ['-std=c++23', '-fmodules-ts']

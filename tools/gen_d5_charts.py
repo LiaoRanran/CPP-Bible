@@ -9,7 +9,6 @@
 - 放置位置与 ch151 一致（独立 ## 段，不进入 ### D5.x，故不触发 D5 结构审计）。
 - 落盘一律 LF（write_text newline="\n"），幂等（已注入则跳过）。
 """
-import io
 import os
 import re
 import sys

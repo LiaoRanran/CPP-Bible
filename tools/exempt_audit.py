@@ -246,8 +246,8 @@ def main() -> int:
         print(f"[audit] FAIL: {stale} 个 STALE 豁免 (--strict-stale).")
         return 1
     if stale or by_status.get("UB_FAIL") or by_status.get("UNEXPECTED_FAIL"):
-        print(f"[audit] WARN: 存在 STALE/UB_FAIL/UNEXPECTED_FAIL, 建议复核 "
-              f"(非阻断).")
+        print("[audit] WARN: 存在 STALE/UB_FAIL/UNEXPECTED_FAIL, 建议复核 "
+              "(非阻断).")
         return 0
     print("[audit] PASS: 全部豁免仍有效, 无内容漂移.")
     return 0

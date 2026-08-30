@@ -37,7 +37,13 @@ ch42 unused param 警告、GCC 版本不一致等）。教训写进 MEMORY.md：
   python3 tools/wave_intake_check.py Book/partXX/chNN.md _bench_d5_nn.cpp
   python3 tools/wave_intake_check.py --auto --no-compile   # 只做围栏/LF/BOM
 """
-import re, sys, os, shutil, subprocess, argparse, tempfile, json
+import re
+import sys
+import shutil
+import subprocess
+import argparse
+import tempfile
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -225,15 +231,15 @@ def main():
         else:
             print(f"  [OK]   围栏偶数 ({fc})")
         if bom:
-            print(f"  [FAIL] BOM 存在（须无 BOM UTF-8）")
+            print("  [FAIL] BOM 存在（须无 BOM UTF-8）")
             fails += 1
         else:
-            print(f"  [OK]   无 BOM")
+            print("  [OK]   无 BOM")
         if crlf:
-            print(f"  [FAIL] CRLF 行尾（须 LF）")
+            print("  [FAIL] CRLF 行尾（须 LF）")
             fails += 1
         else:
-            print(f"  [OK]   LF 行尾")
+            print("  [OK]   LF 行尾")
         if args.no_compile or GPP is None:
             continue
         # 提取含 int main 的 cpp demo 编译复验
@@ -267,7 +273,7 @@ def main():
                     print(f"          {e}")
                 fails += 1
         if compiled == 0:
-            print(f"  [INFO] 无含 int main 的 cpp demo 可编译复验")
+            print("  [INFO] 无含 int main 的 cpp demo 可编译复验")
         elif waived:
             print(f"  [INFO] {waived} 个 demo 命中豁免（不计入失败）")
 
@@ -280,13 +286,13 @@ def main():
         print(f"\n### cpp: {rel}")
         bom, crlf, even, fc, _ = text_health(p)
         if bom:
-            print(f"  [FAIL] BOM 存在"); fails += 1
+            print("  [FAIL] BOM 存在"); fails += 1
         else:
-            print(f"  [OK]   无 BOM")
+            print("  [OK]   无 BOM")
         if crlf:
-            print(f"  [FAIL] CRLF 行尾"); fails += 1
+            print("  [FAIL] CRLF 行尾"); fails += 1
         else:
-            print(f"  [OK]   LF 行尾")
+            print("  [OK]   LF 行尾")
         if args.no_compile or GPP is None:
             continue
         code = p.read_text(encoding='utf-8')
@@ -296,9 +302,9 @@ def main():
         ok, err = compile_cpp(code, with_pthread, Path(d))
         shutil.rmtree(d, ignore_errors=True)
         if ok:
-            print(f"  [OK]   编译通过" + (" (+pthread)" if with_pthread else ""))
+            print("  [OK]   编译通过" + (" (+pthread)" if with_pthread else ""))
         else:
-            print(f"  [FAIL] 编译失败:")
+            print("  [FAIL] 编译失败:")
             for e in err:
                 print(f"          {e}")
             fails += 1

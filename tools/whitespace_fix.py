@@ -13,7 +13,11 @@ whitespace_fix.py — 围栏感知的空白符卫生修复（确定性，单文�
   python3 tools/whitespace_fix.py [--root Book] [--dir <d>] [--apply] [--json out.json]
 默认只读（dry-run），打印将变更的文件与计数；--apply 才落盘。
 """
-import os, re, json, argparse, sys
+import os
+import re
+import json
+import argparse
+import sys
 
 FENCE_RE = re.compile(r'^(`{3,}|~{3,})')
 H_RE = re.compile(r'^(#{1,6})\s')

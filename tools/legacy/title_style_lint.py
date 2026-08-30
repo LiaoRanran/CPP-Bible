@@ -43,9 +43,10 @@ P3 治理目标（AI-hype → sober）
   python3 tools/title_style_lint.py --json       # 同时写 build/title_style_lint.json
   python3 tools/title_style_lint.py --porcelain  # 仅 chapter|line|words|heading
 """
-import re, sys, json, argparse
+import re
+import json
+import argparse
 from pathlib import Path
-from collections import defaultdict
 
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / 'Book'

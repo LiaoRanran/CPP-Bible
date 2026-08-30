@@ -13,7 +13,9 @@ normalize_headings.py — 将 CPP-Bible 章节的 H2 小节标题归一化为 �
   python tools/normalize_headings.py --root <CPP-Bible> --apply
   python tools/normalize_headings.py --root <CPP-Bible>           # 试运行（只打印摘要）
 """
-import argparse, re, pathlib, sys
+import argparse
+import re
+import pathlib
 
 CIRCLED = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩',
            '⑪','⑫','⑬','⑭','⑮','⑯','⑰','⑱','⑲','⑳']

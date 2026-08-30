@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """修复ch82-94新章中引用INDEX规划编号但实际文件名不同的断链"""
-import re, os
+import os
 
 REPAIR_MAP = {
     'ch41_allocator.md':          'ch38_allocator.md',

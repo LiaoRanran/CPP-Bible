@@ -23,7 +23,11 @@ CPP-Bible 交叉引用门禁 (xref_check.py)
   python3 tools/xref_check.py --json out.json # 附带写 JSON 报告
   python3 tools/xref_check.py --allow-orphans # 孤儿/孤岛仅 WARN（默认即 WARN）
 """
-import os, re, sys, json, argparse
+import os
+import re
+import sys
+import json
+import argparse
 
 # Windows 中文控制台默认 GBK 无法打印 ⟶/→ 等字符，统一按 UTF-8 输出，避免
 # UnicodeEncodeError 把门禁本身打崩（见审计报告 §5.1/Xref 行）。

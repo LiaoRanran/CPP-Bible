@@ -6,7 +6,8 @@
 #   python tools/mermaid_theme_inject.py --check  <path>    # 仅报告，不写
 #   python tools/mermaid_theme_inject.py --apply  <path>    # 写入（默认 Book/）
 # <path> 可为文件或目录（目录递归 .md）。
-import argparse, os, sys
+import argparse
+import os
 
 FRONTMATTER = """---
 theme: neutral

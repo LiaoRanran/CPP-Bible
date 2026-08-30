@@ -26,7 +26,11 @@
 所有产物都是 GCC 15.3.0 真实生成的机器码，非手写编造；与 asm_prepush_guard 的
 证据库同源（MinGW SEH），可在本地复现。
 """
-import os, re, sys, subprocess, argparse
+import os
+import re
+import sys
+import subprocess
+import argparse
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -137,7 +141,7 @@ def dump_funcs(syms):
 def dump_asm(syms, funcs):
     sel = match_funcs(syms, funcs)
     if not sel:
-        print(f"  [!] 未匹配到函数；可用名见 --list")
+        print("  [!] 未匹配到函数；可用名见 --list")
         return
     for name in sorted(syms):
         if name not in sel:

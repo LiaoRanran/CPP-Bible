@@ -14,7 +14,10 @@ Categories:
 
 Usage: python3 tools/compile_classify.py [path/to/compile_report.json]
 """
-import os, re, sys, json
+import os
+import re
+import sys
+import json
 from collections import Counter, defaultdict
 
 # third-party libs not shipped with MinGW libstdc++

@@ -138,7 +138,7 @@ def main():
             diffs.append(f"  行{ln} {macro}: TRACKER 声称 ❌未支持, 实测 {actual} → 应改 ✅")
         # 🚧 部分支持不强制核对(可能条件编译)
 
-    print(f"\n=== 核对结果 ===")
+    print("\n=== 核对结果 ===")
     print(f"差异(GCC 列过期): {len(diffs)}")
     for d in diffs:
         print(d)

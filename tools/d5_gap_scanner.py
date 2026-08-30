@@ -14,7 +14,9 @@ CI 用途: --ci 模式下，若 gap_count > 阈值或 top-1 chapter signals >= 1
 退出码 1 (BLOCK)。用于监测作者新增性能声明但忘记补 D5。
 """
 
-import os, re, sys, json, argparse
+import re
+import json
+import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -159,7 +161,7 @@ def scan_gaps(part_filter=None):
 def print_report(r, top_n=15):
     """Print human-readable report."""
     print("=" * 72)
-    print(f"D5 覆盖差距扫描  —  缺少 D5 但含有性能信号的章节")
+    print("D5 覆盖差距扫描  —  缺少 D5 但含有性能信号的章节")
     print("=" * 72)
     print(f"  总章节数：{r['total_chapters']}")
     print(f"  已有 D5：{r['d5_present']} 章 ({r['d5_present']/r['total_chapters']*100:.0f}%)")
@@ -178,7 +180,7 @@ def print_report(r, top_n=15):
     print()
     urgent = sum(1 for c in r["top_candidates"] if c["perf_signals"] >= 10)
     high = sum(1 for c in r["top_candidates"] if c["perf_signals"] >= 5)
-    print(f"  优先级: ⚡ 紧急 (>15 信号) / 🔥 高优先 (>10 信号) / 普通 (>5 信号)")
+    print("  优先级: ⚡ 紧急 (>15 信号) / 🔥 高优先 (>10 信号) / 普通 (>5 信号)")
     print(f"  紧急: {sum(1 for c in r['top_candidates'] if c['perf_signals'] >= 15)} 章")
     print(f"  高优先: {urgent} 章 (≥10 信号)")
     print(f"  普通: {high - urgent} 章 (5-9 信号)")
@@ -216,7 +218,7 @@ def main():
         print(f"\n  [INFO] D5 coverage: {r['d5_present']}/{r['total_chapters']} "
               f"({coverage_pct:.0f}%), {r['gap_candidates']} gap candidates, "
               f"top signal={top1}")
-        print(f"         Advisory only — see build/d5_gap_report.json for prioritized list")
+        print("         Advisory only — see build/d5_gap_report.json for prioritized list")
 
 
 if __name__ == "__main__":

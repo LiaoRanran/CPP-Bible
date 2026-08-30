@@ -25,7 +25,7 @@ import re
 import subprocess
 import sys
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -439,7 +439,7 @@ def cmd_auto(chapter: str):
     if not generated:
         return
 
-    print(f"\n── 编译验证 ──")
+    print("\n── 编译验证 ──")
     ok = 0
     fail = 0
     for outpath, p in generated:
@@ -478,7 +478,7 @@ def cmd_batch(pattern: str):
         else:
             print(f"  {fpath.stem}: (无)")
 
-    print(f"\n  逐章运行: python3 tools/expand_assist.py --auto CH")
+    print("\n  逐章运行: python3 tools/expand_assist.py --auto CH")
 
 
 def resolve_chapter(name: str) -> pathlib.Path:

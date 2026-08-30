@@ -8,7 +8,10 @@
 
 快照包含: 门禁分数、扩张审计数据、代码质量指标
 """
-import json, pathlib, subprocess, sys, time
+import json
+import pathlib
+import subprocess
+import sys
 from datetime import datetime
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -110,7 +113,7 @@ def compare(s1_name: str, s2_name: str):
             big_deltas.append((stem, da, ac["scores"]["total"], bc["scores"]["total"]))
     if big_deltas:
         big_deltas.sort(key=lambda x: -abs(x[1]))
-        print(f"  显著变化章 (Δ≥5分):")
+        print("  显著变化章 (Δ≥5分):")
         for stem, da, old, new in big_deltas[:10]:
             arrow = "↑" if da > 0 else "↓"
             tag = "⚠️" if da < -5 else "✅"

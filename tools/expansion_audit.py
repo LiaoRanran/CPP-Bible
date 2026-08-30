@@ -25,8 +25,7 @@ import json
 import pathlib
 import re
 import sys
-from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CPP_FENCE = re.compile(r'^\s*```cpp')
@@ -280,7 +279,7 @@ def print_chapter_detail(cs: ChapterStats):
     print(f"  估算用语: {cs.tilde_claims}  工业引用: {cs.industry_refs}")
     print(f"  交引: {cs.xref_count}  H2: {cs.h2_count}  踩坑: {cs.pitfall_mentions}  汇编: {cs.assembly_mentions}")
     print()
-    print(f"  四维得分 (越高越急需):")
+    print("  四维得分 (越高越急需):")
     print(f"    广度: {cs.score_breadth:.0f}/100  {'⚠️ 缺关联知识' if cs.score_breadth>60 else '✓ 覆盖面够'}")
     print(f"    深度: {cs.score_depth:.0f}/100  {'⚠️ 缺底层分析' if cs.score_depth>60 else '✓ 深度够'}")
     print(f"    样例: {cs.score_example:.0f}/100  {'⚠️ 样例需强化' if cs.score_example>60 else '✓ 样例够'}")
@@ -298,7 +297,7 @@ def print_chapter_detail(cs: ChapterStats):
     if cs.score_experience > 60:
         suggestions.append("补工业踩坑案例(真实issue/bug链接) + 常见错误对比 + 断言验证")
     if suggestions:
-        print(f"  建议扩写方向:")
+        print("  建议扩写方向:")
         for sug in suggestions:
             print(f"    → {sug}")
 

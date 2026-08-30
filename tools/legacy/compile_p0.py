@@ -5,7 +5,8 @@ Compiles only 'int main' blocks (--main-only semantics) and appends a
 result line per file to results_p0.txt immediately, so progress survives
 a killed session.
 """
-import sys, os
+import sys
+import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import compile_all as ca
 

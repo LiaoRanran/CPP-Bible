@@ -23,7 +23,11 @@ verify_asm_evidence.py — 汇编证据「符号真实性」守卫
 
 CI 用法：python3 tools/verify_asm_evidence.py --root Book --examples Examples
 """
-import re, json, pathlib, sys, argparse
+import re
+import json
+import pathlib
+import sys
+import argparse
 
 # Itanium mangled name: _Z 开头，后接编码字符；放宽以覆盖 _ZN/_ZSt/_ZTV 等
 MANGLE = re.compile(r"_Z[0-9A-Za-z_]{3,}")

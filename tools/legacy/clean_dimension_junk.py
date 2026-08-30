@@ -36,7 +36,6 @@ import argparse
 import glob
 import pathlib
 import re
-import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 BOOK = ROOT / "Book"

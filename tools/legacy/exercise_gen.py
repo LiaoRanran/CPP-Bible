@@ -19,7 +19,11 @@ Usage:
   python3 tools/exercise_gen.py --stats                       # 统计覆盖
   python3 tools/exercise_gen.py --inject Book/partXX/chYY.md  # 注入到章末(备份原文件)
 """
-import os, re, sys, json, subprocess, shutil
+import os
+import re
+import sys
+import subprocess
+import shutil
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GPP = shutil.which("g++") or "g++"

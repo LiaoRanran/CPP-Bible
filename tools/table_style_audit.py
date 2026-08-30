@@ -10,7 +10,9 @@
 #   * 跳过 ``` / ~~~ 代码围栏内的"伪表格"（那是代码/ASCII 示意，非 Markdown 表）
 #   * 单元格内的 `\|` 与反引号代码跨 ` `...|...` ` 中的 `|` 视为字面量，不计入列分割
 # 用法: python tools/table_style_audit.py [path]   (默认 Book/)
-import os, re, sys
+import os
+import re
+import sys
 
 PIPE_RE = re.compile(r"^\s*\|.*\|\s*$")
 SEP_CELL_RE = re.compile(r"^:?-+:?$")

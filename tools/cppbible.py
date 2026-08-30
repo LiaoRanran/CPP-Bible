@@ -25,9 +25,8 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Sequence
 
 # 工具链路径解析：唯一事实源 = 仓库根 toolchain.toml（见 tools/toolchain.py）
 _TOOLS_DIR = str(Path(__file__).resolve().parent)
@@ -126,7 +125,6 @@ def cmd_env(_args: argparse.Namespace) -> int:
     用于 bootstrap 与 CI 的 `self-check`：保证开发/测试/发布环境一致
     （对应 UPGRADE_PLAN §1.5「dev/test/prod 平滑切换」）。
     """
-    import shutil
 
     print("[cppbible] environment self-check")
     failures = 0
@@ -241,9 +239,9 @@ def cmd_check(args: argparse.Namespace) -> int:
                 print(e.stderr[-800:])
             failed += 1
 
-    print(f"\n────────────────────────────────────────")
+    print("\n────────────────────────────────────────")
     print(f"  Result: {passed} passed / {failed} failed")
-    print(f"────────────────────────────────────────")
+    print("────────────────────────────────────────")
     return 1 if failed else 0
 
 

@@ -93,7 +93,7 @@ def main():
         moved += 1
 
     print(f"  ✅ 已移动 {moved} 个 → {DEST}")
-    print(f"  恢复命令: 把 build/_root_artifacts/ 下的文件移回项目根目录")
+    print("  恢复命令: 把 build/_root_artifacts/ 下的文件移回项目根目录")
     return 0
 
 

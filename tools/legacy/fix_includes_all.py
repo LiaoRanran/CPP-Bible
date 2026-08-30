@@ -46,7 +46,8 @@ Symbol -> required standard header(s):
   ranges::                   -> <ranges> + <algorithm>
   pair/tuple                 -> <utility>/<tuple>
 """
-import os, re, sys
+import os
+import re
 
 # Ordered list of (compiled-regex, [headers-to-add])
 # Each header added only if absent from the block.

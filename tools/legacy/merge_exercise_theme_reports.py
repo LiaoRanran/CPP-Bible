@@ -38,7 +38,7 @@ def main():
     lines = [
         "# 习题/面试题主题匹配度审计报告",
         "",
-        f"- 生成时间：见文件修改时间",
+        "- 生成时间：见文件修改时间",
         f"- 数据来源：{len(parts)} 个 part 报告",
         f"- 可疑章节总数：{len(all_items)}（MISMATCH {len(mismatch)} / WEAK {len(weak)}）",
         "",

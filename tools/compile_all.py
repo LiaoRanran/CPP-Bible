@@ -39,8 +39,12 @@ Options:
   --base REF     git base ref for --changed (default: origin/master, else HEAD~1)
 """
 
-import os, re, sys, subprocess, tempfile, shutil, json
-from pathlib import Path
+import os
+import re
+import sys
+import subprocess
+import tempfile
+import json
 from concurrent.futures import ProcessPoolExecutor
 
 # --- GCC resolution (hardened) -------------------------------------------

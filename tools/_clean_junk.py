@@ -1,4 +1,5 @@
-import re, shutil
+import re
+import shutil
 from pathlib import Path
 
 ROOT = Path("Book")

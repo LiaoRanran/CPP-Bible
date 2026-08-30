@@ -179,7 +179,7 @@ def main() -> int:
     print("缺陷类别计数:")
     for k, v in summary.items():
         print(f"  {k:22s} {v}")
-    print(f"\n按 part 统计块数:")
+    print("\n按 part 统计块数:")
     for part, d in sorted(by_part.items()):
         print(f"  {part:22s} blocks={d['blocks']:4d} intent_error={d['intent_error']}")
     print(f"\n报告已写入 {OUT}")

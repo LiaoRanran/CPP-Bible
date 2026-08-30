@@ -33,7 +33,12 @@ verify_exercises 保证"能编译"，本工具保证"不被克隆复用"。
   python3 tools/exercise_dup_guard.py                 # 全量扫描 Book/
   python3 tools/exercise_dup_guard.py --json out.json # 输出 JSON 报告
 """
-import re, os, sys, json, hashlib, argparse
+import re
+import os
+import sys
+import json
+import hashlib
+import argparse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BOOK = os.path.join(ROOT, "Book")

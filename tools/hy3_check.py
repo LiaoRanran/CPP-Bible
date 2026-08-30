@@ -95,9 +95,9 @@ def main():
 
         venv_mkdocs = "C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/mkdocs.exe"
         if pathlib.Path(venv_mkdocs).exists():
-            print(f"  ✅ mkdocs-material venv 就绪")
+            print("  ✅ mkdocs-material venv 就绪")
         else:
-            print(f"  ⚠️  mkdocs venv 未找到（站点构建不可用）")
+            print("  ⚠️  mkdocs venv 未找到（站点构建不可用）")
     except Exception as e:
         print(f"  ❌ 环境检测失败: {e}")
         all_ok = False
@@ -135,11 +135,11 @@ def main():
             print(f"  {tag} 编译期 PASS={s_pass} FAIL={s_fail}  |  运行期 PASS={r_pass} FAIL={r_fail}")
             print(f"     期望 FAIL=0  |  DEMO={a['static_demo']}(教学反例)  WARN={a['static_warn']}+{a['runtime_warn']}(隔离伪影)")
         else:
-            print(f"  ⚠️  缓存报告格式异常，请重跑: python3 tools/run_cpp_assertions.py")
+            print("  ⚠️  缓存报告格式异常，请重跑: python3 tools/run_cpp_assertions.py")
             all_ok = False
-        print(f"     重跑完整扫描: python3 tools/run_cpp_assertions.py")
+        print("     重跑完整扫描: python3 tools/run_cpp_assertions.py")
     else:
-        print(f"  ⚠️  缓存报告缺失，运行 python3 tools/run_cpp_assertions.py 生成")
+        print("  ⚠️  缓存报告缺失，运行 python3 tools/run_cpp_assertions.py 生成")
     print()
 
     # ── 4. 交引 ──────────────────────────────────────────
@@ -179,7 +179,7 @@ def main():
                 root_art.append(f)
     root_art_n = len(root_art)
     if bak_count == 0 and probe_count == 0 and root_art_n == 0:
-        print(f"  ✅ .bak=0  临时探针=0  根目录产物=0  工作区干净")
+        print("  ✅ .bak=0  临时探针=0  根目录产物=0  工作区干净")
     else:
         if bak_count:
             print(f"  ⚠️  {bak_count} 个 .bak 残留 → find Book -name '*.bak' -delete")
@@ -189,7 +189,7 @@ def main():
             all_ok = False
         if root_art_n:
             print(f"  ⚠️  {root_art_n} 个编译产物泄漏到根目录（违反「只写 build/」）")
-            print(f"      清理: python3 tools/clean_root_artifacts.py  (移入 build/_root_artifacts/)")
+            print("      清理: python3 tools/clean_root_artifacts.py  (移入 build/_root_artifacts/)")
             had_warn = True
     print()
 
@@ -201,7 +201,7 @@ def main():
         if not (ROOT / fname).exists():
             missing.append(fname)
     if not missing:
-        print(f"  ✅ 6 份核心文档齐全")
+        print("  ✅ 6 份核心文档齐全")
     else:
         all_ok = False
         print(f"  ❌ 缺 {len(missing)} 份: {', '.join(missing)}")

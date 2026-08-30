@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """自动交叉引用注入：为裸章添加⟶链接（基于knowledge_graph依赖拓扑）"""
-import os, re, json
+import os
+import re
+import json
 
 kg = json.load(open('knowledge_graph.json', encoding='utf-8'))
 # Build part → chapter file map

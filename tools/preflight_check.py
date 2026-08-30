@@ -30,7 +30,10 @@ CHECK-1  致命反斜杠：fenced code / inline code / 行内数学 之外的 `\
 
 退出码：0=干净；1=发现致命问题。
 """
-import sys, re, json, pathlib
+import sys
+import re
+import json
+import pathlib
 
 # ---- 正则 ----
 FENCE_RE  = re.compile(r'^\s*(```|~~~)')            # fenced code 起止

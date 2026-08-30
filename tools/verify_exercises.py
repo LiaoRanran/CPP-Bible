@@ -12,7 +12,12 @@ verify_exercises.py — Phase 2 练习闭环验证器
   python3 tools/verify_exercises.py Book/partXX/chYY.md   # 单章
   python3 tools/verify_exercises.py --summary   # 仅打印汇总
 """
-import re, os, sys, subprocess, tempfile, argparse
+import re
+import os
+import sys
+import subprocess
+import tempfile
+import argparse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GPP = "g++"

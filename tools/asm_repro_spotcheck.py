@@ -21,7 +21,14 @@ Examples/*.asm 复现性 spot-check（对抗式审计，非零确认）。
 用法:
   python tools/asm_repro_spotcheck.py --gpp <g++.exe> --examples Examples [--out report.json] [--only 15.3.0|13.1.0|unmarked|all] [--name-substr X]
 """
-import os, re, sys, subprocess, json, glob, difflib, argparse, shutil
+import os
+import re
+import subprocess
+import json
+import glob
+import difflib
+import argparse
+import shutil
 from collections import Counter
 
 CALL_RE = (r'\b(call|callq|jmp|jmpq|je|jne|jg|jl|jge|jle|ja|jb|jae|jbe|'
@@ -229,7 +236,7 @@ def main():
             else:
                 d = list(difflib.unified_diff(sorted(fst), sorted(fa),
                                               "stored", "fresh", lineterm=""))
-                n = sum(1 for x in d if x[:1] in "+-" and not x[:3] in ("+++", "---"))
+                n = sum(1 for x in d if x[:1] in "+-" and x[:3] not in ("+++", "---"))
                 results.append({"name": name, "ver": ver, "status": "DRIFT",
                                 "drift_kind": "LINES",
                                 "ndiff": n, "fresh_syms": len(fs_syms),

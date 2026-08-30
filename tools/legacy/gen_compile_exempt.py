@@ -115,7 +115,7 @@ def main() -> None:
     print(f"生成豁免清单: {args.out}")
     print(f"  豁免块数: {len(exempt)}")
     if unclassified:
-        print(f"  [警告] 未归类块（请人工复核是否为真实 bug，勿直接提交）:")
+        print("  [警告] 未归类块（请人工复核是否为真实 bug，勿直接提交）:")
         for f, blk in unclassified:
             print(f"    {f}#blk{blk}")
     else:

@@ -20,7 +20,6 @@ xref_backfill.py — 交叉引用回填生成器 (Phase 2 / Xref)
   python tools/xref_backfill.py --list-low      # 列出引用<3的章
 """
 import re
-import os
 import sys
 import json
 import shutil

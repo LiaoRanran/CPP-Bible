@@ -255,7 +255,7 @@ def _main() -> int:
     if exp and ver is not None and not ver.startswith(exp + "."):
         print(f"\n[toolchain] ⚠ Python 版本漂移：解析到 {ver}，配置期望 {exp}.x")
         print(f"[toolchain]   请修正 {CONFIG} 的 [python].prefer / expected，")
-        print(f"[toolchain]   或重装托管解释器（避免 uv 拉到更高版本）。")
+        print("[toolchain]   或重装托管解释器（避免 uv 拉到更高版本）。")
         return 1
     print("\n[toolchain] ✅ 全部解析成功")
     return 0

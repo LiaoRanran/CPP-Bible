@@ -22,8 +22,6 @@ import argparse
 import pathlib
 import re
 import subprocess
-import sys
-import time
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
@@ -347,11 +345,11 @@ def process_all(dry_run: bool = True, verify: bool = False,
     print(f"{'─'*60}")
 
     if dry_run:
-        print(f"\n  运行 --apply 落盘: python3 tools/auto_include.py --apply")
+        print("\n  运行 --apply 落盘: python3 tools/auto_include.py --apply")
     else:
-        print(f"\n  已落盘，备份 .auto_include.bak。")
-        print(f"  回滚: git checkout -- Book/")
-        print(f"  验证: python3 tools/auto_include.py --verify")
+        print("\n  已落盘，备份 .auto_include.bak。")
+        print("  回滚: git checkout -- Book/")
+        print("  验证: python3 tools/auto_include.py --verify")
 
     if verify and not dry_run:
         # 编译验证：对修改过的章跑 chapter_compile_check

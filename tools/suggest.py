@@ -5,7 +5,9 @@ Given a chapter, scans its weak dimensions and suggests specific content to add.
 Usage: python3 tools/suggest.py Book/partXX_YY/chZZZ.md
        python3 tools/suggest.py --batch 5   # suggest for 5 weakest chapters"""
 
-import os, re, sys
+import os
+import re
+import sys
 
 DIMENSIONS = {
     'A.基础': [r'定义', r'基本语法', r'使用方式', r'注意事项'],

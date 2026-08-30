@@ -13,7 +13,11 @@ structure_audit.py — 围栏感知的 Markdown 结构缺陷扫描器（只读�
   python3 tools/structure_audit.py [--root Book] [--dir Book/partXX] [--json out.json]
 默认扫描 Book/ 下所有 ch*.md。
 """
-import os, re, json, argparse, sys
+import os
+import re
+import json
+import argparse
+import sys
 
 H_RE = re.compile(r'^(#{1,6})\s+(.*\S)\s*$')
 SEP_RE = re.compile(r'^\[([^\]]+)\]:\s*\S+')

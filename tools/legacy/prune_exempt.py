@@ -14,7 +14,12 @@
 默认 dry-run；加 --write 才真正回写 compile_exempt.json。
 回写前对 compile_exempt.json 做 .bak 备份。
 """
-import json, sys, shutil, argparse, datetime, os
+import json
+import sys
+import shutil
+import argparse
+import datetime
+import os
 
 def load(p):
     with open(p, encoding="utf-8") as f:

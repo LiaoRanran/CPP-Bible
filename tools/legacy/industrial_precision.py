@@ -11,8 +11,9 @@ Phase E 攻击目标：L0/L1 章应升级到 L2/L3。
 Usage:
   python3 tools/industrial_precision.py [--markdown] [--json] [--per-chapter N]
 """
-import re, sys, json
-from collections import defaultdict
+import re
+import sys
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -133,7 +134,7 @@ def fmt_table(chapters, as_md=False):
         rows.append(row)
 
     if as_md:
-        md_header = f'| File | Part | L3 | L2 | L1 | L0 | Total | Top |'
+        md_header = '| File | Part | L3 | L2 | L1 | L0 | Total | Top |'
         md_sep = '|' + '|'.join(['---'] * 8) + '|'
         md_rows = []
         for c in chapters:
@@ -199,11 +200,11 @@ def main():
     print()
     print(f'  总章数:           {stats["total_chapters"]}')
     print(f'  总工业引用数:     {stats["total_refs"]}')
-    print(f'  ──────────────────────────')
+    print('  ──────────────────────────')
     print(f'  L3 行级 (文件+行号): {stats["L3_count"]:>4}  ({stats["L3_pct"]}%)')
     print(f'  L2 文件级:          {stats["L2_count"]:>4}  ({stats["L2_pct"]}%)')
     print(f'  L1 仓库级:          {stats["L1_count"]:>4}  ({stats["L1_pct"]}%)')
-    print(f'  ──────────────────────────')
+    print('  ──────────────────────────')
     print(f'  仅 L0/L1 级章:      {stats["chapters_only_L0_L1"]}  ← Phase E 攻击目标')
     print(f'  零引用章:           {stats["chapters_no_refs"]}')
     print()

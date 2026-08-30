@@ -155,7 +155,7 @@ def main():
           f"{sorted(audit_missing - set(per_missing))}")
 
     if findings:
-        print(f"\n[!] 明细（前 80 条；完整见 --json）:")
+        print("\n[!] 明细（前 80 条；完整见 --json）:")
         for f in findings[:80]:
             print(f"    {f[0]}:{f[1]}  [{f[2]}]  {f[4][:78]}")
         if len(findings) > 80:

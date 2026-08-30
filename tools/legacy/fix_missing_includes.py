@@ -23,7 +23,10 @@ r"""fix_missing_includes.py — 自动补齐 [merged] 块缺失的标准库 incl
 退出码：0=无需修复 / 0=已修复(apply) / 1=检测到可修项(dry-run)
 """
 
-import os, re, sys, json
+import os
+import re
+import sys
+import json
 
 # 符号 -> 头文件。key 是出现在代码里的字面片段，value 是所需 include。
 SYMBOL_HEADER = [

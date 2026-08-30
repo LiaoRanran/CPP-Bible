@@ -28,7 +28,6 @@ CFI/AT&T/SysV），故汇编证据的"真实性"只能在本地（Windows + MinG
   工件"的符号一致性检查（跨平台），本工具补充"工件 vs 源码重编"的真实性检查
   （MinGW-only）。
 """
-import os
 import sys
 import json
 import argparse
@@ -71,7 +70,7 @@ def main():
 
     report_json = args.json or str(HERE / "_prepush_asm_report.json")
 
-    print(f"[*] ASM 预推送守卫")
+    print("[*] ASM 预推送守卫")
     print(f"    工具链: {gpp}")
     print(f"    证据库: {args.examples}")
     print(f"    审计范围: {args.only}" + (f" (过滤: {args.name_substr})" if args.name_substr else ""))

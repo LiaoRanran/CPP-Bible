@@ -12,7 +12,11 @@ int main(→int __main_(、包进 namespace chk_{stem}_{i}、前置 PRELUDE、
 -mfma 编译（后三者为 SIMD 章节示例合法需要的目标标志）。打印每个失败块
 的首条 error。临时文件写到系统 temp。
 """
-import pathlib, re, subprocess, sys, tempfile, os
+import pathlib
+import re
+import subprocess
+import sys
+import tempfile
 
 _TOOLS_DIR = str(pathlib.Path(__file__).resolve().parent)
 if _TOOLS_DIR not in sys.path:

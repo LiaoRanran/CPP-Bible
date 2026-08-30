@@ -3,7 +3,8 @@
 Scans existing ⟶ links, generates "联合使用场景" appendix at chapter end.
 B-phase: turns reference manual into learning system."""
 
-import os, re
+import os
+import re
 
 # Topic-to-scenario mapping based on chapter keywords
 SCENARIOS = {

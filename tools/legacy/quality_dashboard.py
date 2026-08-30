@@ -16,8 +16,6 @@
 import json
 import pathlib
 import subprocess
-import sys
-import time
 from datetime import datetime
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent

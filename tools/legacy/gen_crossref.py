@@ -29,7 +29,6 @@ CROSSREF.md，用于速查：
 
 import argparse
 import re
-import sys
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -345,7 +344,7 @@ def generate(root: Path) -> str:
     L.append("")
     L.append("## 5. 孤立章节与断链\n")
     if isolated:
-        L.append(f"- **孤立章节**（出链=0 且 入链=0）：" + "、".join(f"ch{n:02d}" for n in isolated))
+        L.append("- **孤立章节**（出链=0 且 入链=0）：" + "、".join(f"ch{n:02d}" for n in isolated))
     else:
         L.append("- **孤立章节**：无（每章至少在一侧有连接）")
     L.append("")

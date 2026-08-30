@@ -187,7 +187,7 @@ def main():
             print(f"  注入后零标记  : {manifest['zero_marker_total']}")
             inj = sum(1 for r in recs if r.get("injected"))
             print(f"  本次新注入    : {inj}")
-        print(f"  审计清单      : build/s10_audit.json")
+        print("  审计清单      : build/s10_audit.json")
 
     if args.check:
         remaining = [r for r in recs if not r["already_marked"]]

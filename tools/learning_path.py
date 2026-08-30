@@ -7,7 +7,10 @@ Usage:
   python3 tools/learning_path.py --format dot     # Graphviz源
   python3 tools/learning_path.py --format stats   # 统计
 """
-import os, re, sys, json
+import os
+import re
+import sys
+import json
 from collections import defaultdict, Counter
 
 # 交叉引用模式: ⟶ Book/partXX/chYY_name.md
@@ -92,13 +95,13 @@ def format_stats():
     print(f'Avg deps/chapter: {sum(len(v) for v in g.values())/max(len(chapters),1):.1f}')
 
     # Most depended-on (high indegree = foundational)
-    print(f'\n=== TOP 10 most-depended-on (foundation chapters) ===')
+    print('\n=== TOP 10 most-depended-on (foundation chapters) ===')
     for num, deg in indeg.most_common(10):
         print(f'  ch{num} ({get_topic(num)}): {deg} deps')
 
     # Most dependent-on-others (advanced)
     outdeg = {n: len(d) for n, d in g.items()}
-    print(f'\n=== TOP 10 most-dependent (advanced chapters) ===')
+    print('\n=== TOP 10 most-dependent (advanced chapters) ===')
     for num, deg in sorted(outdeg.items(), key=lambda x: -x[1])[:10]:
         print(f'  ch{num} ({get_topic(num)}): depends on {deg}')
 

@@ -37,7 +37,11 @@ D5 性能附录是本书的"非显然性能真相"载体，全库 57+ 章已铺�
   python3 tools/d5_appendix_audit.py --porcelain     # 仅 issue 行，便于 grep
   python3 tools/d5_appendix_audit.py --json          # 写 build/d5_appendix_audit.json
 """
-import re, sys, json, argparse, subprocess
+import re
+import sys
+import json
+import argparse
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

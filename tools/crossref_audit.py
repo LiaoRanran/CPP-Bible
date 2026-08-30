@@ -18,8 +18,6 @@
 
 import argparse
 import re
-import sys
-from collections import defaultdict
 from pathlib import Path
 
 CROSSREF_RE = re.compile(r"(?:⟶\s*|→\s*)(Book/[^\s\)\]>。，；：、》）(（]+)")

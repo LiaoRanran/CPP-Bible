@@ -15,7 +15,12 @@
 结论语义：若书内展示的某个用户 demo 函数，在当前 gcc15.3.0 工件中
 已无对应定义 -> 书内汇编过期（真漂移）。其余均判为策展/库噪声，不报错。
 """
-import os, re, sys, json, shutil, subprocess
+import os
+import re
+import sys
+import json
+import shutil
+import subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 仓库根（tools/ 的父目录）
 BOOK = os.path.join(ROOT, "Book")

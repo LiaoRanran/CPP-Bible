@@ -11,7 +11,10 @@ Usage: python3 tools/density_audit.py [N] [dim_filter] [part_filter]
        python3 tools/density_audit.py --check [avg_min]  → CI gate mode
                                                         exit 1 if avg < threshold or shallow > 0"""
 
-import os, re, sys, json
+import os
+import re
+import sys
+import json
 from collections import Counter
 
 DIMENSIONS = {

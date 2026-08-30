@@ -116,7 +116,7 @@ def main():
 
     # 输出
     print("=" * 72)
-    print(f"编译器对比提及扫描（同句/同行 >=2 编译器）")
+    print("编译器对比提及扫描（同句/同行 >=2 编译器）")
     print(f"扫描目录: {BOOK}")
     print("=" * 72)
     total = sum(per_chapter.values())
@@ -143,7 +143,7 @@ def main():
     out = {"total": total, "per_chapter": per_chapter, "per_cat": per_cat}
     with open(os.path.join(ROOT, "_compiler_scan.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
-    print(f"\n[已导出] _compiler_scan.json")
+    print("\n[已导出] _compiler_scan.json")
 
 
 if __name__ == "__main__":
