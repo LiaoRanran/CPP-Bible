@@ -9,11 +9,11 @@
 //   part08 移动：构造与 parse 全程 std::move（零深拷贝）
 //   part03 底层：递归下降解析（无第三方依赖）
 //
-// 骨架范围（诚实标注，后续里程碑扩展）：
-//   - 数字统一存 double；序列化时整数回显为整数、浮点用 std::to_chars 最短往返
-//   - 字符串支持全部必要的反向转义；\uXXXX 仅支持 BMP 内、且当前仅编码 ASCII
-//     （非 ASCII 转义抛 parse_error，见 parse_unicode 的诚实标注）
-//   - 提供只读访问 + 构造；可变编辑 / 路径查询 / 错误行号 留待里程碑 2
+// 里程碑（诚实标注，已实现 / 待扩展）：
+//   [M1 ✅] 数字统一存 double；序列化整数回显整数、浮点用 std::to_chars 最短往返
+//   [M2 ✅] 可变编辑（非 const 访问器 + set）+ 点路径查询 find + 错误行号（line/col）
+//   [M3 待] 字符串 \uXXXX 的完整 UTF-8 编码（含代理对）；当前仅 BMP 内 ASCII，非 ASCII 诚实抛错
+//   [M3 待] 数字精度策略（任意精度 / 保留原始字面量）——当前统一 double，极端值有进位
 #include <charconv>
 #include <cstddef>
 #include <cstdio>
@@ -78,24 +78,88 @@ public:
     const Array&       as_array()  const { return std::get<Array>(v_); }
     const Object&      as_object() const { return std::get<Object>(v_); }
 
+    // 可变访问（里程碑 2）：返回引用可就地编辑，类型不符仍抛 bad_variant_access
+    bool&        as_bool()   { return std::get<bool>(v_); }
+    double&      as_number() { return std::get<double>(v_); }
+    std::string& as_string() { return std::get<std::string>(v_); }
+    Array&       as_array()  { return std::get<Array>(v_); }
+    Object&      as_object() { return std::get<Object>(v_); }
+
     // 越界/缺键用 .at() 抛 std::out_of_range，避免静默 UB
-    const Value& at(std::size_t i)      const { return as_array().at(i); }
+    const Value& at(std::size_t i)        const { return as_array().at(i); }
     const Value& at(const std::string& k) const { return as_object().at(k); }
+    Value&       at(std::size_t i)              { return as_array().at(i); }
+    Value&       at(const std::string& k)       { return as_object().at(k); }
     const Value& operator[](std::size_t i)      const { return at(i); }
     const Value& operator[](const std::string& k) const { return at(k); }
+    Value&       operator[](std::size_t i)            { return at(i); }
+    Value&       operator[](const std::string& k)     { return at(k); }
+
+    // 就地改值 / 改类型（可链式）：v.set("x").set(1.5)
+    Value& set(Null)          { v_ = nullptr;              return *this; }
+    Value& set(bool b)        { v_ = b;                    return *this; }
+    Value& set(int i)         { v_ = static_cast<double>(i); return *this; }
+    Value& set(double d)      { v_ = d;                    return *this; }
+    Value& set(std::string s) { v_ = std::move(s);         return *this; }
+    Value& set(const char* s) { v_ = std::string(s);       return *this; }  // 精确匹配，避免 set("x") 误走 set(bool)
+    Value& set(Array a)       { v_ = std::move(a);         return *this; }
+    Value& set(Object o)      { v_ = std::move(o);         return *this; }
+
+    // 点路径查询（里程碑 2）："a.b.0.c"；数组下标用非负整数；层级类型不符返回 nullptr
+    const Value* find(const std::string& path) const {
+        const Value* cur = this;
+        std::size_t start = 0;
+        while (true) {
+            const std::size_t dot = path.find('.', start);
+            const std::string seg =
+                path.substr(start, dot == std::string::npos ? std::string::npos : dot - start);
+            if (seg.empty()) return nullptr;
+            if (const Object* obj = std::get_if<Object>(&cur->v_)) {
+                auto it = obj->find(seg);
+                if (it == obj->end()) return nullptr;
+                cur = &it->second;
+            } else if (const Array* arr = std::get_if<Array>(&cur->v_)) {
+                std::size_t idx = 0;
+                for (char c : seg) {
+                    if (c < '0' || c > '9') return nullptr;
+                    idx = idx * 10 + static_cast<std::size_t>(c - '0');
+                }
+                if (idx >= arr->size()) return nullptr;
+                cur = &(*arr)[idx];
+            } else {
+                return nullptr;
+            }
+            if (dot == std::string::npos) break;
+            start = dot + 1;
+        }
+        return cur;
+    }
+    Value* find(const std::string& path) {
+        return const_cast<Value*>(static_cast<const Value*>(this)->find(path));
+    }
 
 private:
     storage v_;
 };
 
-// 解析错误：携带字节偏移，便于定位（里程碑 2 追加行/列）
+// 解析错误：携带字节偏移 + 行/列（1-based），供报错定位。
+// 双参版本用于非解析阶段（如序列化）抛出的错误，line/col 记为 0。
 class parse_error : public std::runtime_error {
 public:
-    explicit parse_error(std::string msg, std::size_t pos)
-        : std::runtime_error(msg + " at offset " + std::to_string(pos)), pos_(pos) {}
-    std::size_t pos() const noexcept { return pos_; }
+    parse_error(std::string msg, std::size_t pos, std::size_t line, std::size_t col)
+        : std::runtime_error(msg + " at offset " + std::to_string(pos) +
+                             " (line " + std::to_string(line) +
+                             ", col " + std::to_string(col) + ")"),
+          pos_(pos), line_(line), col_(col) {}
+    parse_error(std::string msg, std::size_t pos)
+        : parse_error(std::move(msg), pos, 0, 0) {}
+    std::size_t pos()  const noexcept { return pos_; }
+    std::size_t line() const noexcept { return line_; }
+    std::size_t col()  const noexcept { return col_; }
 private:
     std::size_t pos_;
+    std::size_t line_;
+    std::size_t col_;
 };
 
 // 递归下降解析器：每个非终结符一个方法，按当前字符分派。
@@ -108,13 +172,24 @@ public:
         Value v = parse_value();
         skip_ws();
         if (pos_ != text_.size())
-            throw parse_error("unexpected trailing input", pos_);
+            fail("unexpected trailing input");
         return v;
     }
 
 private:
     std::string text_;
     std::size_t pos_ = 0;
+
+    // 抛错并定位到给定字节偏移 → 行/列（1-based）
+    [[noreturn]] void fail(const std::string& msg, std::size_t pos) {
+        std::size_t line = 1, col = 1;
+        for (std::size_t i = 0; i < pos && i < text_.size(); ++i) {
+            if (text_[i] == '\n') { ++line; col = 1; }
+            else ++col;
+        }
+        throw parse_error(msg, pos, line, col);
+    }
+    [[noreturn]] void fail(const std::string& msg) { fail(msg, pos_); }
 
     char peek() const noexcept { return pos_ < text_.size() ? text_[pos_] : '\0'; }
 
@@ -132,7 +207,7 @@ private:
     }
 
     void expect(char c) {
-        if (!consume(c)) throw parse_error(std::string("expected '") + c + "'", pos_);
+        if (!consume(c)) fail(std::string("expected '") + c + "'");
     }
 
     Value parse_value() {
@@ -159,24 +234,24 @@ private:
         if (peek() == '-') ++pos_;
         if (peek() == '0') ++pos_;
         else if (peek() >= '1' && peek() <= '9') { while (peek() >= '0' && peek() <= '9') ++pos_; }
-        else throw parse_error("invalid number", pos_);
+        else fail("invalid number");
 
         if (peek() == '.') {
             ++pos_;
-            if (peek() < '0' || peek() > '9') throw parse_error("invalid fraction", pos_);
+            if (peek() < '0' || peek() > '9') fail("invalid fraction");
             while (peek() >= '0' && peek() <= '9') ++pos_;
         }
         if (peek() == 'e' || peek() == 'E') {
             ++pos_;
             if (peek() == '+' || peek() == '-') ++pos_;
-            if (peek() < '0' || peek() > '9') throw parse_error("invalid exponent", pos_);
+            if (peek() < '0' || peek() > '9') fail("invalid exponent");
             while (peek() >= '0' && peek() <= '9') ++pos_;
         }
 
         const std::string num = text_.substr(start, pos_ - start);
         char* end = nullptr;
         const double val = std::strtod(num.c_str(), &end);
-        if (end != num.c_str() + num.size()) throw parse_error("invalid number", start);
+        if (end != num.c_str() + num.size()) fail("invalid number", start);
         return Value(val);
     }
 
@@ -186,7 +261,7 @@ private:
         while (true) {
             const char c = peek();
             if (c == '"') { ++pos_; break; }
-            if (c == '\0' || c == '\n' || c == '\r') throw parse_error("unterminated string", pos_);
+            if (c == '\0' || c == '\n' || c == '\r') fail("unterminated string");
             if (c == '\\') { ++pos_; out += parse_escape(); continue; }
             out += c;
             ++pos_;
@@ -206,7 +281,7 @@ private:
             case 'r':  ++pos_; return '\r';
             case 't':  ++pos_; return '\t';
             case 'u':  return parse_unicode();
-            default:   throw parse_error("invalid escape sequence", pos_);
+            default:   fail("invalid escape sequence");
         }
     }
 
@@ -219,14 +294,14 @@ private:
             if (c >= '0' && c <= '9')       d = static_cast<unsigned>(c - '0');
             else if (c >= 'a' && c <= 'f')  d = static_cast<unsigned>(c - 'a' + 10);
             else if (c >= 'A' && c <= 'F')  d = static_cast<unsigned>(c - 'A' + 10);
-            else throw parse_error("bad unicode escape", pos_);
+            else fail("bad unicode escape");
             cp = cp * 16 + d;
             ++pos_;
         }
         // 骨架简化：仅编码 BMP 内的 ASCII code point；非 ASCII \uXXXX 的 UTF-8
         // 编码（含代理对）留待里程碑 3，这里诚实抛错而非静默产出错误字节。
         if (cp < 0x80) return static_cast<char>(cp);
-        throw parse_error("non-ASCII \\uXXXX not yet supported", pos_);
+        fail("non-ASCII \\uXXXX not yet supported");
     }
 
     Value parse_array() {
@@ -250,7 +325,7 @@ private:
         if (consume('}')) return Value(std::move(obj));
         while (true) {
             skip_ws();
-            if (peek() != '"') throw parse_error("object key must be a string", pos_);
+            if (peek() != '"') fail("object key must be a string");
             std::string key = parse_string();
             skip_ws();
             expect(':');

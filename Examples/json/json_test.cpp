@@ -129,6 +129,56 @@ void test_serialize_control() {
 
 }  // namespace
 
+void test_error_location() {
+    // 多行文本：第 3 行第 8 列出现非法字符 '@'
+    try {
+        json::parse("{\n  \"a\": 1,\n  \"b\": @\n}");
+        check(false, "error location: expected throw");
+    } catch (const json::parse_error& e) {
+        check(e.line() == 3, "error line == 3", std::to_string(e.line()));
+        check(e.col() == 8, "error col == 8", std::to_string(e.col()));
+    }
+    try {
+        json::parse("[1,2");
+        check(false, "error location: unclosed expected throw");
+    } catch (const json::parse_error& e) {
+        check(e.line() == 1, "error line == 1", std::to_string(e.line()));
+    }
+}
+
+void test_mutation() {
+    json::Value v = json::parse("{\"a\":1}");
+    v["a"].set(2);
+    check(v["a"].as_number() == 2, "mutate value in place");
+    v["a"].set("hi");
+    check(v["a"].as_string() == "hi", "mutate type in place");
+
+    json::Value arr = json::parse("[1,2]");
+    arr.as_array().push_back(json::Value(3));
+    check(json::serialize(arr) == "[1,2,3]", "array push_back");
+
+    json::Value obj = json::parse("{}");
+    obj.as_object()["new"] = json::Value(true);
+    check(json::serialize(obj) == "{\"new\":true}", "object insert key");
+
+    json::Value s = 1.5;
+    s.set("name").set(0);
+    check(s.as_number() == 0, "set chaining keeps final assign");
+}
+
+void test_find() {
+    json::Value v = json::parse("{\"a\":{\"b\":[10,20,{\"c\":\"hit\"}]}}");
+    check(v.find("a.b.2.c") != nullptr, "find nested path exists");
+    check(v.find("a.b.2.c")->as_string() == "hit", "find nested path value");
+    check(v.find("a.b.1")->as_number() == 20, "find array index");
+    check(v.find("a.b.0") != nullptr, "find array first");
+    check(v.find("x.y") == nullptr, "find missing key -> null");
+    check(v.find("a.b.99") == nullptr, "find out-of-range -> null");
+    check(v.find("a.b.x") == nullptr, "find non-numeric index -> null");
+    if (json::Value* q = v.find("a.b.2.c")) q->set("mod");
+    check(v.find("a.b.2.c")->as_string() == "mod", "find then mutate");
+}
+
 int main() {
     test_roundtrip();
     test_access();
@@ -136,6 +186,9 @@ int main() {
     test_errors();
     test_unicode_ascii();
     test_serialize_control();
+    test_error_location();
+    test_mutation();
+    test_find();
 
     std::printf("json_test: %d passed, %d failed\n", g_pass, g_fail);
     return g_fail == 0 ? 0 : 1;
