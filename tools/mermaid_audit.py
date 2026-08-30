@@ -24,12 +24,11 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from utf8_console import ensure_utf8
+
 # Windows 控制台默认 GBK，打印 ✅/❌ 等非 GBK 字符会抛 UnicodeEncodeError 致进程异常退出。
 # 统一把 stdout 设为 utf-8（Linux 上本就是 utf-8，属幂等）；encoding 失败则降级不致命。
-try:
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore
-except Exception:  # noqa
-    pass  # 安全忽略: stdout 编码重配置不可用则忽略(仅影响显示)
+ensure_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / "Book"

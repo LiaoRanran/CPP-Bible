@@ -29,6 +29,8 @@ import pathlib
 import sys
 import argparse
 
+from utf8_console import ensure_utf8
+
 # Itanium mangled name: _Z 开头，后接编码字符；放宽以覆盖 _ZN/_ZSt/_ZTV 等
 MANGLE = re.compile(r"_Z[0-9A-Za-z_]{3,}")
 # 标准库符号（libstdc++ 等）不会出现在用户 .asm 中，属预期，不判 DRIFT
@@ -67,11 +69,7 @@ def main():
 
     # Windows 控制台（GBK）无法编码 emoji/中文，重导向为 utf-8 容错，避免本地验证崩溃
     # （CI 为 UTF-8 本就无碍；errors='replace' 保证任何环境都能跑完并 exit 0/1）
-    try:
-        if hasattr(sys.stdout, "reconfigure"):
-            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass  # 安全忽略: stdout reconfigure 在部分环境不可用, 失败则维持原编码(仅影响显示)
+    ensure_utf8()
 
     records = []
     summary = {"accurate": 0, "drift": 0, "empty": 0, "unanchored": 0,

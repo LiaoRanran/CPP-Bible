@@ -275,12 +275,12 @@ def _main() -> int:
 
 
 if __name__ == "__main__":
+    # 放在 __main__ 内局部导入：toolchain 会被 cppbible/hy3_check 等反覆导入，
+    # 没必要让它们都背一个只在「当脚本直接运行」时才用得上的依赖。
+    from utf8_console import ensure_utf8
+
     # Windows 中文控制台（GBK）无法编码 ✅/⚠：本模块会在结论行打印它们。
     # 不做兜底时抛出的 UnicodeEncodeError 会以退出码 1 结束，与「检测到
     # 版本漂移」的退出码相同，极易被误读成自检失败——故先强制 UTF-8 输出。
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+    ensure_utf8()
     sys.exit(_main())

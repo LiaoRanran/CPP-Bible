@@ -20,6 +20,8 @@ import re
 import sys
 from pathlib import Path
 
+from utf8_console import ensure_utf8
+
 INDEX_RE = re.compile(r'href="([^"#]+\.html)"')
 ASSET_RE = re.compile(r'(?:src|href)="(?!https?://|#|mailto:|tel:)([^"]+)"')  # 站内资源
 BADGE_RE = re.compile(r'class="[^"]*\bbadge\b[^"]*"')
@@ -166,8 +168,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+    ensure_utf8()
     sys.exit(main())

@@ -26,6 +26,7 @@ _TOOLS_DIR = str(ROOT / "tools")
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from toolchain import resolve_gpp as _resolve_gpp, resolve_python as _resolve_python  # noqa: E402
+from utf8_console import ensure_utf8  # noqa: E402
 
 PYTHON = _resolve_python()
 GPP = _resolve_gpp()
@@ -71,11 +72,7 @@ def parse_assert_cache(text: str) -> dict:
 def main():
     # Windows 控制台(GBK)无法编码 emoji/中文，重导向为 utf-8 容错，避免本地验证崩溃
     # （CI 为 UTF-8 本就无碍；errors='replace' 保证任何环境都能跑完并 exit 0/1）
-    try:
-        if hasattr(sys.stdout, "reconfigure"):
-            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass  # 安全忽略: stdout reconfigure 在部分环境不可用, 失败则维持原编码(仅影响显示)
+    ensure_utf8()
     print()
     print("╔══════════════════════════════════════════════════════════╗")
     print("║  《现代 C++ 终极圣经》 健康检查  (147章 | 7033cpp)    ║")

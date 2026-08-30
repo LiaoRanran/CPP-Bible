@@ -34,6 +34,7 @@ if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
 from toolchain import resolve_python as _resolve_python  # noqa: E402
+from utf8_console import ensure_utf8  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -557,9 +558,5 @@ def main(argv: Sequence[str] | None = None) -> int:
 if __name__ == "__main__":
     # Windows 中文控制台（GBK）无法编码 ✅/⟶ 等字符：统一按 UTF-8 输出，
     # 避免门禁 runner 在打印时抛 UnicodeEncodeError（见审计报告 §5.1）。
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+    ensure_utf8()
     sys.exit(main())

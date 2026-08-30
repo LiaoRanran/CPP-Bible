@@ -48,6 +48,7 @@ COMPILE_REPORT = ROOT / "tools" / "compile_report.json"
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 from metrics_snapshot import build as scan_build  # noqa: E402
+from utf8_console import ensure_utf8  # noqa: E402
 
 
 def _get(obj: Any, dotted: str) -> Any:
@@ -227,9 +228,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+    ensure_utf8()
     sys.exit(main())

@@ -29,13 +29,11 @@ import sys
 import json
 import argparse
 
+from utf8_console import ensure_utf8
+
 # Windows 中文控制台默认 GBK 无法打印 ⟶/→ 等字符，统一按 UTF-8 输出，避免
 # UnicodeEncodeError 把门禁本身打崩（见审计报告 §5.1/Xref 行）。
-try:
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-except Exception:
-    pass
+ensure_utf8()
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BOOK = os.path.join(HERE, "Book")
