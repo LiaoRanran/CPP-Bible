@@ -315,6 +315,17 @@ jobs:
       continue-on-error: true
       run: python3 tools/d5_runtime_gate.py --timeout 30
 
+    - name: JSON Project Gate (贯穿项目线·手写 JSON 库编译+运行门禁)
+      # 台阶二收口：把 Examples/json/ 贯穿项目纳入门禁——编译并运行 json_test.cpp
+      # （84 例自测）与 json_demo.cpp（配置读→查→改→回写），验证 JSON 库「可编译、
+      # 可测、可运行」。未来任何编辑若破坏 JSON 库（类型三元组分流 / Unicode 转义 /
+      # 大整数精度 / 幂等往返），CI 立即变红 BLOCK。编译器路径走 toolchain.toml 唯一
+      # 事实源（Linux runner 回退 PATH g++），与 d5_compile_gate 同平台语义。
+      # 仅 GCC 矩阵跑——与 asm 证据基线同 GCC 前端，避免 Clang 诊断差异致误红。
+      if: matrix.compiler == 'gcc'
+      continue-on-error: false
+      run: python3 tools/json_project_gate.py --check
+
     - name: Compile + Link + Run + Sanitizer (T1-1 运行期门禁)
       # 对自包含 main 块做完整 编译+链接+运行， 并叠加 ASan/UBSan/TSan。
       # 现有 compile_all/compile_gate 仅作 *语法级* 静态检查（-fsyntax-only）；
