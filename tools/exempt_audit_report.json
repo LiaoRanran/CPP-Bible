@@ -1,12 +1,12 @@
 {
-  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.EXE",
+  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.exe",
   "gcc_version": "15.3.0",
   "platform": "windows",
   "flags": "-std=c++23 -O0 -fsyntax-only",
-  "baseline": "_audit_gcc15.json (full main-only, gcc-15.3.0) + T1-1 ch126 link-fail (blocks 21/39 std::print) + T1-1 ch27/ch45 runtime UB + chapter-context 假阳性; ch45#6 log()命名冲突已修复(log_val)，豁免移出",
-  "total": 63,
+  "baseline": "M2 全库铺示例标题(7751)+主题清理(1453)；ch124#4 代码已修复(私有类型static_assert→公开接口)故移出豁免；ch118#42 实测可编译(冗余)移出；其余 61 失败块沿用既有豁免分类(MODULE/MULTI_FILE/POSIX/MSVC/EXT_LIB/CROSS_BLOCK/INTENTIONAL_ERROR)",
+  "total": 61,
   "by_status": {
-    "OK": 63
+    "OK": 61
   },
   "results": [
     {
@@ -380,16 +380,6 @@
       "has_main": true
     },
     {
-      "file": "ch124_libstdcxx.md",
-      "block": 4,
-      "reason": "LIBSTDCPP",
-      "note": "",
-      "status": "OK",
-      "passed": false,
-      "error": "'struct std::_Vector_base<int, std::allocator<int> >::_Vector_impl_data' is inaccessible within this context",
-      "has_main": true
-    },
-    {
       "file": "ch126_msstl.md",
       "block": 19,
       "reason": "MSVC",
@@ -541,9 +531,9 @@
     },
     {
       "file": "ch146_error_handling.md",
-      "block": 57,
+      "block": 58,
       "reason": "CROSS_BLOCK",
-      "note": "符号在前序块定义",
+      "note": "符号在前序块定义(divide_error_code 在 #blk57 定义, 本块调用)",
       "status": "OK",
       "passed": false,
       "error": "'divide_error_code' was not declared in this scope",
@@ -628,16 +618,6 @@
       "passed": false,
       "error": "'g_mtx' was not declared in this scope",
       "has_main": true
-    },
-    {
-      "file": "ch118_modules.md",
-      "block": 42,
-      "reason": "MODULE",
-      "note": "",
-      "status": "OK",
-      "passed": false,
-      "error": "'module' does not name a type",
-      "has_main": false
     }
   ]
 }
