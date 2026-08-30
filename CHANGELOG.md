@@ -45,10 +45,16 @@
 - **前端工具 `tools/site_audit.py`**：站点产物健康自检（首页/章节页可达/静态资源完整性/徽章注入/Mermaid/pagefind），已接入 CI `site` job（构建后、上传前阻断）；附最小 fixture 自测（GOOD=PASS、BAD=FAIL）。
 - **内容债任务单**：[docs/references/content_debt_tasklist.md](docs/references/content_debt_tasklist.md) —— 55 处悬空章号引用（按语义建议映射）、7 处前置问题（6 倒置 + 1 悬空）、30 一致性 WARN 执行顺序。
 
+### 内容债清零（2026-08-30 完成）
+
+- **55 处悬空章号引用全部清零**：ch33→ch28、ch34→ch40、ch54/56→ch49、ch59→ch60、ch73→ch51、ch75→ch67（映射）；ch74/ch114/ch102-105 无对应现章，按语义改写至 ch123/ch113/ch93/ch107。20 章节共 89± 行修改，权威映射见 [docs/references/chapter_mapping.md](docs/references/chapter_mapping.md)。
+- **7 处前置问题清零**：悬空前置 ch114→ch113；6 处历史/导读章前瞻引用列入 `FORWARD_PRE_EXEMPT` 白名单（作者设计意图，逐项注释依据）。
+- **门禁转硬**：`dangling_ref_linter` / `prereq_topo_check` 由软门禁（continue-on-error: true）转硬，新增任何悬空引用/拓扑异常即 CI 判红。
+- 复验：`quality` 16/16、`dangling=0`、`topology=0`、consistency `ERROR=0 / WARN=30`（无新增）。
+
 ### 现状与遗留
 
-- 工作树含约 120 章未提交内容 + 本轮修复，`master` 领先实时远端 `eb89ae9` 7 个提交且无分叉；未启用分支保护。
-- 遗留债务：55 处悬空章号引用、7 处前置关系问题、33→30 一致性 WARN、`STATE/ISSUES/README` 事实源冲突、D5 覆盖口径（113 vs 119）、依赖无锁文件、缺 `LICENSE` 等，详见审计报告 §7/§8/§10。
+- 上次推送后已推进内容债清零（55 悬空 + 7 前置完成）；`STATE/ISSUES/README` 事实源冲突、D5 覆盖口径（113 vs 119）、分支保护未启用、第二故障域备份等仍为遗留，详见审计报告 §7/§8/§10。
 
 ---
 
