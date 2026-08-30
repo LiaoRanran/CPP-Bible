@@ -161,14 +161,18 @@ int main() {}
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈
 ```cpp
-// std::execution 执行策略改进
+// std::execution 执行策略（par 并行；P2300 sender/receiver 见下文 UNVERIFIED 节）
 #include <execution>
 #include <algorithm>
 #include <vector>
-void ex9(){ std::vector<int> v(2); std::sort(std::execution::par, v.begin(), v.end()); }
+#include <cstdio>
+void ex9(){ std::vector<int> v{2,1}; std::sort(std::execution::par, v.begin(), v.end());
+            std::printf("sorted: %d %d\n", v[0], v[1]); }
+int main() { ex9(); return 0; }   // 输出 sorted: 1 2
+
 ```
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈
-```cpp
+```text
 // 协程推广示意
 // task<int> gen26(){ co_yield 1; co_return 2; }
 ```
@@ -326,7 +330,7 @@ int main() {}
 ## ⑲ 性能（不适用，方向性）
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（不适用，方向性）
-```cpp
+```text
 // C++26 小结：反射/契约/模块化/数据并行（多为提案阶段）
 ```
 
@@ -348,10 +352,17 @@ int main() {}
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
-// 编译器版本探测
+// 编译器版本探测（编译期宏 + static_assert，零运行时成本）
+#include <cstdio>
 #ifdef __GNUC__
 static_assert(__GNUC__ >= 13, "gcc13+");
 #endif
+int main() {
+#ifdef __GNUC__
+    std::printf("GCC %d.%d\n", __GNUC__, __GNUC_MINOR__);
+#endif
+    return 0;
+}
 ```
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
@@ -564,7 +575,7 @@ int main(){std::cout<<"P2900 contracts=pre/post/assert with default/audit/axiom 
 ### G.1 真机汇编实证（GCC 15.3.0 `-fcontracts`）
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真机汇编实证
-```cpp
+```text
 // _asm_demo/ch09_contracts_test.cpp （GCC 15.3.0 -std=c++26 -O2 -fcontracts，实测）
 [[nodiscard]] int clamp(int x, int lo, int hi)
     [[pre: lo <= hi]]
@@ -641,7 +652,7 @@ int main() {
 C++26 的方向（P2300）用惰性 sender 把三步声明为一条可组合管线，**不会**像 `std::future` 那样急切执行，错误与停止令牌沿链自动传播（`[假设·C++26][UNVERIFIED]`，GCC15 未实现 `std::execution::just`/`then`）：
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```text
 // [假设·C++26][UNVERIFIED] P2300 std::execution（示意，GCC15 不可编译）
 auto pipeline = std::execution::just(10)
              | std::execution::then([](int raw)   { return raw + 1; })    // 解析
@@ -686,7 +697,7 @@ int main() { std::cout << clamp_cpp23(5, 0, 10) << '\n'; }
 C++26 的 Contracts（P2900）把前置/后置写成属性，编译器可据级别插入检查或降级为 `assume`（`[假设·C++26][UNVERIFIED]`，GCC15 仅为实验性 `-fcontracts`）：
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```text
 // [假设·C++26][UNVERIFIED] P2900 Contracts（示意，GCC15 实验性）
 int clamp(int x, int lo, int hi)
     [[pre: lo <= hi]]                        // 前置条件
@@ -731,7 +742,7 @@ int main() { Point p{3, 4}; std::cout << fields_cpp23(p) << '\n'; }
 C++26 的静态反射（P2996R5）在编译期暴露成员元数据，循环即可生成上述样板（`[假设·C++26][UNVERIFIED]`，`<meta>` 头在 GCC15 不存在）：
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★）
-```cpp
+```text
 // [假设·C++26][UNVERIFIED] P2996R5 静态反射（示意，GCC15 不可编译）
 #include <meta>                        // 尚不存在
 

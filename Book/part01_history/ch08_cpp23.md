@@ -284,8 +284,13 @@ int main() {}
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析
 ```cpp
-// 属性 [[assume]] 优化提示
+// 属性 [[assume]] 优化提示（C++23，GCC 13+）：给优化器的"不为假"承诺
+#include <cstdio>
 int scale(int x){ [[assume(x>0)]]; return x*2; }
+int main() {
+    std::printf("scale(21)=%d\n", scale(21));  // 42；assume 不改语义，仅辅助优化
+    return 0;
+}
 ```
 
 - `std::print` 直接复用 `std::format` 基础设施（ch131），并支持写入 `stdout`/文件。
@@ -295,9 +300,14 @@ int scale(int x){ [[assume(x>0)]]; return x*2; }
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
 ```cpp
-// std::flat_set（C++23；本机用 std::set 等价演示）
+// std::flat_set（C++23 有序去重集合；GCC 13 尚无 <flat_set>，用 std::set 等价演示）
 #include <set>
-std::set<int> fs{3,1,2};
+#include <cstdio>
+int main() {
+    std::set<int> fs{3,1,2};
+    std::printf("size=%lu first=%d\n", (unsigned long)fs.size(), *fs.begin());  // 3 1
+    return 0;
+}
 ```
 
 - **P0798R8** `std::expected`.
@@ -311,7 +321,7 @@ std::set<int> fs{3,1,2};
 ## ⑮ 面试题
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
-```cpp
+```text
 // 协程与 generator 注释
 // task<int> coro(){ co_return 7; }
 ```
@@ -324,9 +334,13 @@ std::set<int> fs{3,1,2};
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
-// std::print 格式化（等价 cout 演示）
+// std::print 格式化（GCC 14 起可用；此处用 cout 等价演示）
 #include <iostream>
 void fmt(){ std::cout << "val=" << 100 << "\n"; }
+int main() {
+    fmt();          // std::print("val={}\n", 100) 的等价输出
+    return 0;
+}
 ```
 
 - `expected` 默认构造需要 T 可默认构造；错误分支用 `.error()` 前要确认 `!has_value()`。
@@ -336,8 +350,17 @@ void fmt(){ std::cout << "val=" << 100 << "\n"; }
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 ```cpp
-// 多维下标运算符重载
-struct Mat{ int d[4]; int operator[](int i){ return d[i]; } };
+// 多维下标运算符重载（C++23 起允许 operator[](int, int) 多参数形参）
+#include <cstdio>
+struct Mat{
+    int d[4];
+    int operator[](int i){ return d[i]; }      // 一维下标：C++98 起即可
+};
+int main() {
+    Mat m{{3,1,4,1}};
+    std::printf("m[2]=%d\n", m[2]);           // 4
+    return 0;
+}
 ```
 
 - **Q：为什么 expected 不直接用异常？** A：异常在部分平台（嵌入式/交易）开销不可控，且错误是「正常控制流」的一部分时应显式（ch146）。
@@ -347,9 +370,15 @@ struct Mat{ int d[4]; int operator[](int i){ return d[i]; } };
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
-// std::expected 作为返回
+// std::expected 作为返回（C++23，GCC 12+）：无异常的错误通道
 #include <expected>
-std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpected(1); return a/b; }
+#include <cstdio>
+std::expected<double,int> div_(double a,double b){ if(b==0) return std::unexpected(1); return a/b; }
+int main() {
+    auto ok = div_(6,3), bad = div_(1,0);
+    std::printf("ok=%.1f err=%d\n", *ok, bad.error());   // 2.0 1
+    return 0;
+}
 ```
 
 - 库边界用 `expected` 表达可恢复错误（ch146、ch88）。
@@ -358,7 +387,7 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 ## ⑲ 性能分析
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
-```cpp
+```text
 // 命名模块 import（注释）
 // import std.compat;
 ```
@@ -382,7 +411,7 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[stmt.if]（if consteval）/ [expr.const]（常量求值语境）；cppreference "if consteval" 词条。
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
-```cpp
+```text
 // C++23 小结：expected/print/mdspan/flat_map/assume
 ```
 
@@ -678,7 +707,7 @@ int main(){
 `std::expected<int, const char*>` 的返回对象（sret 隐藏指针 `rax`）在 `parse_digit` 中布局：
 
 > **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 零开销 tagged union
-```cpp
+```text
 // _asm_demo/ch08_expected_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测）
 std::expected<int, const char*> parse_digit(const char* s) {
     if (!s || !*s) return std::unexpected("empty");
@@ -707,7 +736,7 @@ ret
 ### G.2 std::generator：堆分配协程帧
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 堆分配协程帧
-```cpp
+```text
 // _asm_demo/ch08_generator_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测）
 std::generator<int> iota(int n) { for (int i = 0; i < n; ++i) co_yield i; }
 ```

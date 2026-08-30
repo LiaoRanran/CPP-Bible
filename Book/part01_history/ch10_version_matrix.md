@@ -227,16 +227,27 @@ flowchart LR
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自检（每版一条）
 ```cpp
-// 平台宏 _WIN32 / __linux__
+// 平台宏 _WIN32 / __linux__（编译器预定义，零头文件依赖）
+#include <cstdio>
+int main() {
 #ifdef _WIN32
+    std::printf("_WIN32 defined\n");
 #endif
 #ifdef __linux__
+    std::printf("__linux__ defined\n");
 #endif
+    return 0;
+}
 ```
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自检（每版一条）
 ```cpp
-// 检测 64 位平台
+// 检测 64 位平台（编译期断言，不满足即编译失败）
 static_assert(sizeof(void*)==8, "64-bit");
+#include <cstdio>
+int main() {
+    std::printf("sizeof(void*)=%lu\n", (unsigned long)sizeof(void*));   // 8
+    return 0;
+}
 ```
 
 ## ⑪ STL 联系（各版标准库演进）
@@ -350,8 +361,15 @@ int main() {
 ```cpp
 // 特性宏 __cpp_explicit_this_parameter（C++23 deducing this，GCC 15.3 实测 202110）
 // 注意：标准宏名是 __cpp_explicit_this_parameter，非直觉的 __cpp_deducing_this（后者不存在）
+#include <cstdio>
+int main() {
 #ifdef __cpp_explicit_this_parameter
+    std::printf("deducing this: %ld\n", (long)__cpp_explicit_this_parameter);
+#else
+    std::printf("deducing this: unsupported\n");
 #endif
+    return 0;
+}
 ```
 
 项目显式固定 `-std=` 与编译器最低版本；用 `__cpp_*` 特性宏隔离新特性；CI 矩阵覆盖目标工具链组合。
@@ -359,9 +377,16 @@ int main() {
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（标准版本 ≠ 性能）
 ```cpp
-// 特性宏 __cpp_multidimensional_subscript（C++23）
+// 特性宏 __cpp_multidimensional_subscript（C++23 多维 operator[]）
+#include <cstdio>
+int main() {
 #ifdef __cpp_multidimensional_subscript
+    std::printf("md subscript: %ld\n", (long)__cpp_multidimensional_subscript);
+#else
+    std::printf("md subscript: unsupported\n");
 #endif
+    return 0;
+}
 ```
 
 性能取决于编译器实现与优化等级，与标准版本无直接因果；新特性多为零开销抽象（如 `string_view`、`<ranges>`），见 ch14/ch153。
@@ -385,12 +410,17 @@ int main() {
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
 ```cpp
-// 编译期 if 检测平台
+// 编译期 if 检测平台（#ifdef 分支在预处理期裁剪，无运行时开销）
+#include <cstdio>
+int main() {
 #ifdef _WIN32
-const char* plat="win";
+    const char* plat="win";
 #else
-const char* plat="other";
+    const char* plat="other";
 #endif
+    std::printf("plat=%s\n", plat);
+    return 0;
+}
 ```
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
