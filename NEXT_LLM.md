@@ -92,12 +92,26 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | `STATE.json` | 进度状态 + execution_order + metrics（事实源 build/metrics.json 派生） | ✅ |
 | `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` | 全量审计 + 风险清单 + 路线图 | ✅ |
 | `UPGRADE_PLAN_2026-08-30.md` | 升级方案（7 目标 / 阶段 A-D / 关键决策） | ✅ |
-| `CONTENT_DEPTH_ROADMAP.md` | **内容深化主线**（三阶：汇编实证矩阵 / 实战项目线 / 陷阱体系） | ✅ |
+| `CONTENT_DEPTH_ROADMAP.md` | **内容深化主线**（五阶：汇编实证矩阵 / 实战项目线 / 陷阱体系 / 人文温度 / 内容形态补全） | ✅ |
+| `docs/references/P1_memory_object_model_checklist.md` | 台阶一 P1 内存/对象模型实证结论清单（强模型定结论，弱模型施工图） | ✅ |
 | `ISSUES.md` | 遗留清单（2026-08-30 口径） | ✅ |
 | `docs/references/content_debt_tasklist.md` | 内容债任务单（已清零，留档） | 需要时 |
 | `tools/cppbible.py` | 门禁聚合入口（quality/compile） | ✅ |
 | `tools/consistency_check.py` | 一致性门禁（147 章 ERROR=0 WARN=0） | 参考 |
 | `Book/part*/ch*.md` | 147 章正文 | 按批 |
+
+---
+
+## 外部参考范式手册（台阶五范式来源）
+
+用户此前用其他 Agent 搓成的两份独立手册，位于本机 `docs/references/external/`（已 `.gitignore`，**未随仓库推送**，仅本地作范式参照），**非本书内容、不占章节**：
+
+| 文件 | 是什么 | 对本项目的用途 |
+|------|--------|----------------|
+| `docs/references/external/C语言极致详解手册.md` | C 语言完整手册（逐行注释演示体） | 台阶五子线 C「基础语法逐行演示」的范式 |
+| `docs/references/external/Linux内核极致详细手册.md` | Linux 内核逐行注释版（CFS 调度 / 伙伴系统等真实内核源码精读） | 台阶五子线 D「标准库源码剖析」的范式；系统级视角 |
+
+> 后续接手 Agent 写「逐行演示」「源码剖析」前，先读这两份范文，对齐风格与深度。
 
 ---
 

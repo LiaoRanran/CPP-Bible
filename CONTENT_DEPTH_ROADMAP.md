@@ -50,7 +50,7 @@
 3. 形成"从机器理解 C++"的显性叙事线（每 part 有 3-5 个标杆实证锚点）。
 
 **分阶段**（按"结论最有冲击力"排序）：
-- P1 内存/对象模型：vptr/虚表、多继承、EBO、SSO、`shared_ptr` 原子计数、`make_shared` 单次分配
+- P1 内存/对象模型：vptr/虚表、多继承、EBO、SSO、`shared_ptr` 原子计数、`make_shared` 单次分配（结论清单已落 `docs/references/P1_memory_object_model_checklist.md`：53 例覆盖大半，4 缺口待补）
 - P2 模板零开销：CRTP、表达式模板、`std::forward`、`std::visit`、`std::optional`
 - P3 并发：内存序屏障、无锁 CAS、ABA、fence、原子 RMW
 - P4 现代特性：移动语义、完美转发、RVO、协程帧、`std::ranges` 零成本
@@ -202,7 +202,7 @@
 ## 9. 远期储备（后话，不占当前主线）
 
 - **part0 / 末尾 Rust 章节**：C++ 与 Rust 的对照是极佳的教学切口，但属结构性扩章、工程量与红线影响大，**暂缓**，待五台阶有实质产出后再评估。
-- **C 语言手册**：用户已有《C 语言极致详解手册》（其他 Agent 产出），本台阶子线 C 以它为"逐行演示范式"参照，不重复造轮子。
+- **外部参考范式手册（本机）**：用户用其他 Agent 产出《C 语言极致详解手册》《Linux 内核极致详细手册》，位于本机 `docs/references/external/`（已 `.gitignore`，未随仓库推送）。台阶五子线 C（逐行语法演示）以 C 手册为范式、子线 D（源码剖析）以 Linux 内核手册为范式，不重复造轮子。
 
 ---
 
