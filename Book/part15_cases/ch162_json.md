@@ -978,15 +978,15 @@ int main() {
 
 | `json.hpp` 模块 | 回链章节 | 知识点 |
 |---|---|---|
-| `Value`＝`std::variant<Null,bool,long long,unsigned long long,double,string,Array,Object>`（值语义、无 vptr） | 第88章 `std::optional`/`std::variant` | 类型安全区分联合 |
-| `Array = std::vector<Value>` | 第77章 `std::vector` | 动态数组容器 |
-| `Object = std::map<std::string, Value>` | 第83章 `std::map` | 有序键容器（红黑树） |
-| `parse_error : std::runtime_error`（携带 line/col） | 第146章 错误处理、第40章 异常安全 | 异常层级 + 定位 |
-| 重载构造与 `set` 系列（int/int64/uint64/double/`const char*` 精确匹配） | 第61章 模板/函数重载 | 重载决议、「`set("x")` 误走 `bool`」陷阱 |
-| `parse_string`/`parse_unicode`（UTF-16 代理对 → UTF-8） | 第81章 `std::string`、⑫ UTF-8 | 转义 + 编码 |
+| `Value`＝`std::variant<Null,bool,long long,unsigned long long,double,string,Array,Object>`（值语义、无 vptr） | [第88章](Book/part07_stl/ch88_optional_variant.md) `std::optional`/`std::variant` | 类型安全区分联合 |
+| `Array = std::vector<Value>` | [第77章](Book/part07_stl/ch77_vector.md) `std::vector` | 动态数组容器 |
+| `Object = std::map<std::string, Value>` | [第83章](Book/part07_stl/ch83_map.md) `std::map` | 有序键容器（红黑树） |
+| `parse_error : std::runtime_error`（携带 line/col） | [第146章](Book/part13_engineering/ch146_error_handling.md) 错误处理、[第40章](Book/part04_memory/ch40_exception_safety.md) 异常安全 | 异常层级 + 定位 |
+| 重载构造与 `set` 系列（int/int64/uint64/double/`const char*` 精确匹配） | [第61章](Book/part06_templates/ch61_template_overload.md) 模板/函数重载 | 重载决议、「`set("x")` 误走 `bool`」陷阱 |
+| `parse_string`/`parse_unicode`（UTF-16 代理对 → UTF-8） | [第81章](Book/part07_stl/ch81_string.md) `std::string`、⑫ UTF-8 | 转义 + 编码 |
 | `Parser`（递归下降分派） | ④⑥ 递归下降解析 | 文法直接映射到函数 |
-| 数字三元组分流（`long long`/`unsigned long long`/`double`，>2^53 整数无损、非有限值拒收） | 第88章 variant + 基础类型精度 | 整数精度 vs 浮点近似 |
-| 构造与 `parse` 全程 `std::move`（零深拷贝） | 第115章 移动语义 | 值语义 + NRVO |
+| 数字三元组分流（`long long`/`unsigned long long`/`double`，>2^53 整数无损、非有限值拒收） | [第88章](Book/part07_stl/ch88_optional_variant.md) variant + 基础类型精度 | 整数精度 vs 浮点近似 |
+| 构造与 `parse` 全程 `std::move`（零深拷贝） | [第115章](Book/part10_modern/ch115_move.md) 移动语义 | 值语义 + NRVO |
 | `escape_string`/`serialize_into`（紧凑/美化双模式） | ⑧ 序列化 | 逆过程 + 幂等往返 |
 
 **编译与自测**（本机 `g++` 真实验证，`-std=c++23`）：
