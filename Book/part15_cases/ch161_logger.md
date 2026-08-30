@@ -1499,7 +1499,7 @@ void set_threshold(Logger& log, Level l) { log.set_level(l); }
 |---|---|---|---|
 | 格式化引擎 | ch81(string), ch92(chrono), ch131(fmt) | 字符串拼接 + 时间戳 | fmtlib是C++20 std::format的原型 |
 | 多级日志 | ch24(enum), ch65(type_traits) | enum class + 编译期分发 | enum class保证级别类型安全 |
-| 异步写入 | ch93(thread), ch107(atomic), ch104(mutex) | 后台线程 + 无锁队列 | 日志线程不应阻塞业务线程 |
+| 异步写入 | ch93(thread), ch107(atomic), ch93(mutex) | 后台线程 + 无锁队列 | 日志线程不应阻塞业务线程 |
 | 文件轮转 | ch91(filesystem), ch92(chrono) | 按大小/时间切分日志文件 | std::filesystem跨平台文件操作 |
 | 性能优化 | ch113(coroutine), ch151(benchmark) | 协程异步IO, ns级日志延迟 | 热路径用宏+惰性求值避免不必要格式化 |
 | RAII | ch39(RAII), ch41(unique_ptr) | Logger对象生命周期 | 全局Logger用Meyers Singleton |

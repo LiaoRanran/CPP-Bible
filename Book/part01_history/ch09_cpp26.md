@@ -4,7 +4,7 @@
 [第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)
 [第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)
 
-> 标准基：ISO/IEC 14882:2026（草案，**特性可能变动**）｜预计阅读：25 min｜前置：ch07、ch67、ch113、ch114｜后续：ch74 反射、ch121 Contracts、ch114 Executor｜难度：★★★★｜层级：L1 入门
+> 标准基：ISO/IEC 14882:2026（草案，**特性可能变动**）｜预计阅读：25 min｜前置：ch07、ch67、ch113、ch113｜后续：ch123 反射、ch121 Contracts、ch113 Executor｜难度：★★★★｜层级：L1 入门
 
 > ⚠️ 本章标注 `[实验性]`：C++26 在写作时尚未最终冻结，以下为已投票进入工作草案或高度可能的方向；以最终标准为准。
 
@@ -71,7 +71,7 @@ struct Pt9{ int x; int y; }; Pt9 p9{.x=1,.y=2};
 int main() {}
 ```
 
-- ch67（Concepts，反射的基础）、ch113（协程，与执行器协作）、ch74（反射专章）。
+- ch67（Concepts，反射的基础）、ch113（协程，与执行器协作）、ch123（反射专章）。
 
 ## ③ 后续依赖
 
@@ -85,7 +85,7 @@ template<class T> concept Num9 = std::integral<T> || std::floating_point<T>;
 int main() {}
 ```
 
-- 反射（ch74）、Contracts（ch121）、执行器（ch114）专章详述。
+- 反射（ch123）、Contracts（ch121）、执行器（ch113）专章详述。
 
 ## ④ 知识图谱（ASCII）
 
@@ -195,7 +195,7 @@ auto hex_f=0x1.8p3; void use_hex(){ (void)hex_f; }
 int main() {}
 ```
 
-> 反射把「运行时 typeid 字符串」升级为「编译期可遍历的类型元数据」，用于自动生成序列化/比较/打印代码（ch74）。无运行时开销。
+> 反射把「运行时 typeid 字符串」升级为「编译期可遍历的类型元数据」，用于自动生成序列化/比较/打印代码（ch123）。无运行时开销。
 
 > **真机实测（GCC 15.3.0）**：C++26 反射提案 P2996 **尚未实现**——`<meta>` 头不存在：
 > ```text
@@ -217,7 +217,7 @@ int main() {
 ```
 
 - 模块化标准库让 `import std;` 取代 `#include <vector>` 等，编译更快（ch118）。
-- `std::execution` 统一协程/线程池/IO 的异步组合（ch114、ch163）。
+- `std::execution` 统一协程/线程池/IO 的异步组合（ch113、ch163）。
 
 ## ⑫ 工业案例
 
@@ -241,7 +241,7 @@ int main() {}
 int main() {}
 ```
 
-- 反射提案 `P2996` 用 `std::meta::info` 表示类型信息，`template <meta::info>` 编译期反射（ch74）。
+- 反射提案 `P2996` 用 `std::meta::info` 表示类型信息，`template <meta::info>` 编译期反射（ch123）。
 - Contracts 提案提供 `pre`/`post`/`assert` 子句，编译器可生成运行时检查或静态证明（ch121）。
 
 ## ⑭ WG21 提案（关键，可能变动）
@@ -289,7 +289,7 @@ int main() {}
 ```
 
 - C++26 特性**未冻结**：不要在生产代码依赖 `import std;` 或 Contracts，除非编译器明确支持（ch11 支持矩阵）。
-- `std::execution` 模型学习曲线陡，需理解 Sender/Receiver 惰性（ch114）。
+- `std::execution` 模型学习曲线陡，需理解 Sender/Receiver 惰性（ch113）。
 
 ## ⑰ FAQ
 
@@ -321,7 +321,7 @@ int main() {}
 ```
 
 - 关注方向，但生产以编译器实际支持为准（ch11）。
-- 提前用 Concepts 写好接口，便于未来接反射自动生成（ch67、ch74）。
+- 提前用 Concepts 写好接口，便于未来接反射自动生成（ch67、ch123）。
 
 ## ⑲ 性能（不适用，方向性）
 
@@ -408,7 +408,7 @@ C++26 的特性已在编译器实验分支提前「活」起来。下面按领�
 int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::execution(P2300), std::simd.\n";return 0;}
 ```
 
-1. 跟踪 P2996 提案进展，理解 `std::meta` 用法（ch74）。
+1. 跟踪 P2996 提案进展，理解 `std::meta` 用法（ch123）。
 2. 思考题：若反射普及，`Boost.Serialization` 类库会如何被替代？（ch128、ch162）
 
 ## 附录 B: C++26 方向深度代码

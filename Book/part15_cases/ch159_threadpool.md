@@ -1095,7 +1095,7 @@ int main() {
 
 | 项目组件 | 依赖章节 | 知识点 | 学习建议 |
 |---|---|---|---|
-| 任务队列 | ch93(thread), ch104(mutex), ch105(condition_variable) | 生产者-消费者模型 | 先读ch93理解std::thread, 再读ch104/105理解同步原语 |
+| 任务队列 | ch93(thread), ch93(mutex), ch93(condition_variable) | 生产者-消费者模型 | 先读ch93理解std::thread, 再读ch93/105理解同步原语 |
 | 线程管理 | ch93(thread), ch94(stop_token) | 优雅关闭、RAII线程 | ch94的stop_token是C++20特性, C++17可选atomic<bool>替代 |
 | 任务提交 | ch115(move), ch116(perfect_forwarding) | std::function + 可变参数模板 | 模板的完美转发确保零拷贝任务提交 |
 | 异常安全 | ch39(RAII), ch40(exception_safety) | 析构自动join, 异常不泄漏线程 | 线程池析构函数是RAII的经典示范 |
@@ -1106,9 +1106,9 @@ int main() {
 ```cpp
 #include <iostream>
 int main() {
-    std::cout << "Thread pool = ch93(thread) + ch104(mutex) + ch105(cv)" << std::endl;
+    std::cout << "Thread pool = ch93(thread) + ch93(mutex) + ch93(cv)" << std::endl;
     std::cout << "         + ch115(move) + ch39(RAII) + ch154(cache)" << std::endl;
-    std::cout << "Learn order: ch39→ch93→ch104→ch105→ch115→ch154→build threadpool" << std::endl;
+    std::cout << "Learn order: ch39→ch93→ch93→ch93→ch115→ch154→build threadpool" << std::endl;
     return 0;
 }
 ```

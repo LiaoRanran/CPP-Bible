@@ -65,13 +65,13 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 - **ch19 变量与初始化**：理解左值/右值、初始化器（initializer）概念，是 `auto` 推导的输入。
 - **ch20 引用（lvalue/rvalue reference）**：`auto&` / `auto&&` 直接复用引用类别与转发引用（forwarding reference）语义。
 - **ch21 const/volatile 限定**：`const auto&`、`auto` 丢失顶层 cv 的根源在于「模板推导丢弃顶层 cv」。
-- 辅助：**ch59 模板参数推导**、**ch115 右值引用**、**ch116 完美转发**、**ch26 lambda 中 `auto` 参数**。
+- 辅助：**ch60 模板参数推导**、**ch115 右值引用**、**ch116 完美转发**、**ch26 lambda 中 `auto` 参数**。
 
 ---
 
 ## ③ 后续知识
 
-- **ch59 模板推导**：`auto` 推导 = 模板推导的语法糖，二者规则完全一致（除 `{}` 特例）。
+- **ch60 模板推导**：`auto` 推导 = 模板推导的语法糖，二者规则完全一致（除 `{}` 特例）。
 - **ch115 右值引用 / ch116 完美转发**：`decltype(auto)` 转发工厂、`auto&&` 范围 for 都建立在转发引用之上。
 - **ch26 lambda 中 `auto` 参数**：C++14 generic lambda 本质是带 `auto` 参数的缩写模板；C++20 把 `auto` 参数提到普通函数。
 - **概念（Concepts，ch67）**：C++20 `void f(Integral auto x)` 是缩写函数模板 + 约束的合体。
@@ -1421,7 +1421,7 @@ int main() {
 3. `auto&& x = e;` ≡ `template<class T> void f(T&&) f(e);`（转发引用）
 4. `auto x = {e};` **≠** 模板：`auto` 特例推 `initializer_list`，模板报错。
 
-**与 ch59（模板推导）交叉**：数组退化、函数退化、顶层 cv 丢弃、引用塌缩，全部共享规则。
+**与 ch60（模板推导）交叉**：数组退化、函数退化、顶层 cv 丢弃、引用塌缩，全部共享规则。
 **与 ch116（完美转发）交叉**：`auto&&` + `std::forward` = 转发引用惯用法。
 **与 ch26（lambda auto 参数）交叉**：generic lambda 的 `auto` 参数本质是缩写模板（KP9）。
 
@@ -1445,7 +1445,7 @@ int main() {
 - 与 **ch19（变量）**：`auto` 是变量声明符的占位类型。
 - 与 **ch20（引用）**：`auto&`/`auto&&` 直接复用引用与转发引用语义。
 - 与 **ch21（const）**：`auto` 丢顶层 cv，`const auto&` 保留——理解 cv 是关键。
-- 与 **ch59（模板推导）**：`auto` 推导是模板推导的语法糖（除 `{}`）。
+- 与 **ch60（模板推导）**：`auto` 推导是模板推导的语法糖（除 `{}`）。
 - 与 **ch115（右值引用）/ ch116（完美转发）**：`decltype(auto)` 转发、`auto&&` for 建立在其上。
 - 与 **ch26（lambda 中 auto 参数）**：C++14 generic lambda 与 C++20 缩写函数模板同源。
 

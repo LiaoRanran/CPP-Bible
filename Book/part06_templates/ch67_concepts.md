@@ -48,7 +48,7 @@ concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强�
 - 掌握 `requires` 表达式（简单/类型/复合/嵌套）四类约束的写法与语义 <span class="badge badge-std">标准</span>
 - 区分「`template <C T>`（约束占位）」与「`requires` 子句（尾置约束）」两种施加方式 <span class="badge badge-std">标准</span>
 - 能从 mangled 符号验证：Concepts 与 SFINAE 在 ABI 层**等价**——都只为「胜出候选」发射一份实例化 <span class="badge badge-platform">平台</span>
-- 理解 Concepts 相对 SFINAE 的核心优势：报错可读性（见 ch75）与组合性 <span class="badge badge-std">标准</span>
+- 理解 Concepts 相对 SFINAE 的核心优势：报错可读性（见 ch67）与组合性 <span class="badge badge-std">标准</span>
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 
@@ -129,7 +129,7 @@ T pick(T x) { return x; }          // 约束 B（与 A 互斥且完备）
 // pick(21) 命中 A；pick(2.5) 命中 B；二者覆盖全集且无交集
 ```
 
-与 SFINAE 关键差异：**约束失败的报错位置在「约束处」而非「深层替换处」**，错误信息短而准（对比 ch66 的 SFINAE 报错，见 ch75）。
+与 SFINAE 关键差异：**约束失败的报错位置在「约束处」而非「深层替换处」**，错误信息短而准（对比 ch66 的 SFINAE 报错，见 ch67）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的精确求值时机
 ```cpp
@@ -590,7 +590,7 @@ flowchart TD
 - **练习题 2**：用 concept 给 `std::vector` 风格容器写 `push_back`，约束「可拷贝」。
 - **练习题 3**：定义 `AllSame<Ts...>` concept，要求包内所有类型彼此 `same_as`。
 - **思考题**：比较 `ch66_sfinae.md` 与本章的 `-O0` mangled——为何 `_Z9concept_fIi` 与 `_Z8sfinae_fIi` 的**函数体完全相同**？说明二者 ABI 等价。
-- **源码阅读路线**：`<concepts>` 行号：109（`integral`）、64（`same_as`）；`ch66_sfinae.md`（SFINAE 对照）、`ch62_specialization.md`（偏特化是约束载体）、`ch65_type_traits.md`（trait 是 concept 的底层）、`ch68_tmp.md`（编译期计算）、`ch75_template_diag.md`（约束失败报错对比）。
+- **源码阅读路线**：`<concepts>` 行号：109（`integral`）、64（`same_as`）；`ch66_sfinae.md`（SFINAE 对照）、`ch62_specialization.md`（偏特化是约束载体）、`ch65_type_traits.md`（trait 是 concept 的底层）、`ch68_tmp.md`（编译期计算）、`ch67_template_diag.md`（约束失败报错对比）。
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 

@@ -7,7 +7,7 @@
 [第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
 [第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)
 
-> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：6 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针）、ch21（const 家族）、ch34（异常安全与 valueless）、ch59（模板与 variant）、ch115（右值引用与 visit 完美转发）｜难度：★★★★★｜层级：L2 进阶
+> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：6 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针）、ch21（const 家族）、ch40（异常安全与 valueless）、ch60（模板与 variant）、ch115（右值引用与 visit 完美转发）｜难度：★★★★★｜层级：L2 进阶
 
 本章把 **C 风格 union**、**匿名 union**、**active member 规则与 UB 陷阱**、**C++11 非平凡成员管理**、**placement new 手动管理 active member**，以及现代 C++ 的 **std::variant**（类型安全联合、index/visit/valueless/monostate、递归 variant、std::overload）一次性讲透。所有"推荐阅读"的书籍内容已内化进正文；所有库源码均来自本机真实 libstdc++ 15.3.0，已用本机 GCC 15.3.0 实测并标注路径与行号，**绝无编造**。
 
@@ -263,7 +263,7 @@ int main() {
     a = b;    a.print();
 }
 ```
-> `[实现]` 注意 `Msg` 这种手写版本的析构、拷贝构造、拷贝赋值、移动都必须自己写全（五法则），否则会双重析构或浅拷贝 `std::string`。这正是 `std::variant` 自动替你做的事（见 ch34 异常安全与 valueless）。
+> `[实现]` 注意 `Msg` 这种手写版本的析构、拷贝构造、拷贝赋值、移动都必须自己写全（五法则），否则会双重析构或浅拷贝 `std::string`。这正是 `std::variant` 自动替你做的事（见 ch40 异常安全与 valueless）。
 
 ---
 
@@ -1764,7 +1764,7 @@ int main(){ Token a("x"), b(3.0); a=b; std::printf("ok\n"); }
 
 ---
 
-> 交叉引用：union 的存储与生命周期涉及 **ch19（存储期/链接/ODR）**；cv 与 const 成员访问涉及 **ch21（const 家族）**；valueless 与异常安全保证详细展开在 **ch34（异常安全与 valueless）**；variant 的模板机制（参数包、`_Nth_type`、`_Traits`、CRTP 层）依赖 **ch59（模板与 variant）**；visit 的完美转发（`std::forward`、右值引用、引用折叠）详见 **ch115（右值引用与 visit 完美转发）**。
+> 交叉引用：union 的存储与生命周期涉及 **ch19（存储期/链接/ODR）**；cv 与 const 成员访问涉及 **ch21（const 家族）**；valueless 与异常安全保证详细展开在 **ch40（异常安全与 valueless）**；variant 的模板机制（参数包、`_Nth_type`、`_Traits`、CRTP 层）依赖 **ch60（模板与 variant）**；visit 的完美转发（`std::forward`、右值引用、引用折叠）详见 **ch115（右值引用与 visit 完美转发）**。
 
 ---
 

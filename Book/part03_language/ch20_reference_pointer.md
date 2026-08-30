@@ -11,7 +11,7 @@
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：180 min｜难度：★★★｜层级：L2 进阶
-> 前置：ch19（对象/存储期/生命周期）｜后续：ch21（const 引用与生命周期延长·深度版）、ch31（`const_cast` 去 const 后改引用绑定对象）、ch33（悬垂与生命周期）、ch52（多态）、ch115（右值引用/移动语义）、ch116（完美转发/万能引用）、ch77（容器 `operator[]`）、ch89（`reference_wrapper` 体系）、ch94（结构化绑定）、ch157（Compiler Explorer 实战）、ch154（缓存与性能）、智能指针章（所有权）
+> 前置：ch19（对象/存储期/生命周期）｜后续：ch21（const 引用与生命周期延长·深度版）、ch31（`const_cast` 去 const 后改引用绑定对象）、ch28（悬垂与生命周期）、ch52（多态）、ch115（右值引用/移动语义）、ch116（完美转发/万能引用）、ch77（容器 `operator[]`）、ch89（`reference_wrapper` 体系）、ch94（结构化绑定）、ch157（Compiler Explorer 实战）、ch154（缓存与性能）、智能指针章（所有权）
 >
 > **本章立场分层约定**：全章使用四层标签，请读者随时对照
 > - **<span class="badge badge-std">标准</span>**：ISO C++ 标准的硬性规定，任何合规实现都必须满足，可移植。
@@ -365,7 +365,7 @@ int main() {
     return 0;
 }
 ```
-> **<span class="badge badge-std">标准</span>** 虚继承语义使"经基类引用访问共享子对象"必须进行运行期偏移计算，这使引用/成员引用在 ABI 上无法被优化成"零存储别名"。详见 ch54/ch56（虚继承内存布局）。
+> **<span class="badge badge-std">标准</span>** 虚继承语义使"经基类引用访问共享子对象"必须进行运行期偏移计算，这使引用/成员引用在 ABI 上无法被优化成"零存储别名"。详见 ch49/ch49（虚继承内存布局）。
 
 ---
 
@@ -425,7 +425,7 @@ Holder make() {
 }
 // 调用方拿到 Holder 后访问 r 即 UB
 ```
-> **<span class="badge badge-std">标准</span>** `[class.temporary]/6.2`：临时对象"被绑定到构造函数的引用类型成员"时**不延长**（该例外专为成员引用而设）。ch33 详述其 UB 后果。
+> **<span class="badge badge-std">标准</span>** `[class.temporary]/6.2`：临时对象"被绑定到构造函数的引用类型成员"时**不延长**（该例外专为成员引用而设）。ch28 详述其 UB 后果。
 
 ### 4.4 例外③：绑定到数组元素不延长
 
@@ -461,7 +461,7 @@ const std::string& bad() {
 
 ## ⑤ 悬垂引用所有场景完整代码（书的一节 · 含 5 个程序）
 
-**<span class="badge badge-std">标准</span>** 悬垂（dangling）= 引用指向的对象已销毁/移走，但引用仍被使用。与指针悬垂同为 UB（ch33）。下列 5 个场景覆盖 90% 线上事故。
+**<span class="badge badge-std">标准</span>** 悬垂（dangling）= 引用指向的对象已销毁/移走，但引用仍被使用。与指针悬垂同为 UB（ch28）。下列 5 个场景覆盖 90% 线上事故。
 
 ### 5.1 场景 A：返回局部变量引用
 
@@ -1175,7 +1175,7 @@ int main() {
 4. **为什么 `vector<int&>` 编译不过？** 容器要求元素可拷贝可赋值；引用不可重绑（不可赋值），违反 **CopyAssignable**（§⑥.3）。用 `reference_wrapper<int>` 替代。
 5. **范围 for 用 `auto&` 为何能改元素？** 底层展开中 `x` 是对 `*__it` 的引用（§⑤.2），修改 `x` 即改容器内元素；`auto` 只改副本。
 6. **返回引用有什么风险？** 指向局部/临时则悬垂（§④/§⑤）；必须指向 static/全局/堆/入参/容器元素等长生命对象（案例 C/E）。
-7. **引用能占内存吗？** 通常编译器不分配独立存储（别名），但 **<span class="badge badge-impl">实现</span>** 例外：虚继承中访问虚基类子对象需 this 调整，成员引用在某些 ABI 下占一个指针大小存储（§③.4，ch54）。
+7. **引用能占内存吗？** 通常编译器不分配独立存储（别名），但 **<span class="badge badge-impl">实现</span>** 例外：虚继承中访问虚基类子对象需 this 调整，成员引用在某些 ABI 下占一个指针大小存储（§③.4，ch49）。
 8. **指针和引用作为函数参数，汇编是否相同？** 相同（§③ 三编译器对拍）。差异全在编译期约束。
 9. **`int* p = nullptr; int& r = *p;` 合法吗？** 语法合法、编译通过，但解空指针是 UB——"非空引用"是**契约**而非运行时检查。
 10. **为什么不能 `T& arr[10]`？** 标准禁止"array of references"（无身份、无法连续布局）；用 `tuple<T&,T&>` 或 `reference_wrapper` 数组替代（§②.3）。
@@ -1189,8 +1189,8 @@ int main() {
 ## ⑭ 易错点汇总（必读）
 
 - **解空指针造引用**：`int& r = *static_cast<int*>(nullptr);` 是 UB。"非空引用"是契约非保护（§②.5）。
-- **返回局部变量引用/指针**：函数返回后栈回收，引用/指针悬垂（§⑤.1，ch33）。
-- **误以为引用一定不占存储**：虚继承、成员引用、被取地址（`&r`）等场景可能分配指针大小存储（§③.4，ch54）。
+- **返回局部变量引用/指针**：函数返回后栈回收，引用/指针悬垂（§⑤.1，ch28）。
+- **误以为引用一定不占存储**：虚继承、成员引用、被取地址（`&r`）等场景可能分配指针大小存储（§③.4，ch49）。
 - **const 引用延长生命不穿透返回**：`return const T&` 指向局部临时 → 悬垂；应返回值类型或 `T*`（可空）或 `std::optional<T>`（ch88）。
 - **范围 for 改用 `auto` 而非 `auto&`**：只改副本，原容器不变（§⑪案例 D）。
 - **`vector<bool>` 的 `operator[]` 返回代理对象**而非 `bool&`：经典例外——`reference` 是 `std::vector<bool>::reference` 代理，非真引用（ch77）。
@@ -1242,7 +1242,7 @@ int main() {
 5. **Rust nomicon 生命周期章**（*The Rustonomicon*, "References and Lifetimes"）：对照理解"编译期生命周期证明"如何替代 C++ 的"运行期 UB 契约"（§⑩.1）。
 6. **System V AMD64 ABI 规范 / Microsoft x64 ABI 文档**：核对"引用/指针参数都走指针 ABI（%rdi vs rcx）"的权威依据（§③）。
 7. **WG21 论文 N2118 / P0217R3 / P0135R0 / P2900**：右值引用、结构化绑定、转发引用术语、C++20 契约的演进（§⑫ 已列）。
-8. **后续章节衔接阅读**：ch21（const 引用与生命周期延长·深度版）、ch31（`const_cast` 去 const 后改引用绑定对象）、ch33（悬垂与生命周期）、ch52（多态 `Base&` vs `Base*`）、ch77（容器 `operator[]` 返回 `T&`）、ch89（`reference_wrapper` 体系）、ch94（结构化绑定）、ch115（右值引用/移动语义）、ch116（完美转发/万能引用）、ch145（API 设计）、ch157（Compiler Explorer 实战对拍汇编）。
+8. **后续章节衔接阅读**：ch21（const 引用与生命周期延长·深度版）、ch31（`const_cast` 去 const 后改引用绑定对象）、ch28（悬垂与生命周期）、ch52（多态 `Base&` vs `Base*`）、ch77（容器 `operator[]` 返回 `T&`）、ch89（`reference_wrapper` 体系）、ch94（结构化绑定）、ch115（右值引用/移动语义）、ch116（完美转发/万能引用）、ch145（API 设计）、ch157（Compiler Explorer 实战对拍汇编）。
 
 ---
 
@@ -1263,7 +1263,7 @@ int main() {
 真实项目里引用/指针的坑集中在"悬垂、所有权模糊、跨 ABI 边界"三点，下面给可落地的审计清单与重构范式。
 
 **审计清单（Code Review 必查）**
-1. 函数返回的是 `T&`/`T*` 还是 `T`？返回局部/临时对象的引用/指针一律拒（§④.5、ch33）。
+1. 函数返回的是 `T&`/`T*` 还是 `T`？返回局部/临时对象的引用/指针一律拒（§④.5、ch28）。
 2. 裸 `T*` 是否只表示"观察"？凡涉及释放，是否应改 `unique_ptr`/`shared_ptr`（§⑪ 案例）？
 3. 成员引用是否必要？含成员引用的类不可赋值，是否应改值或指针（§⑪ 案例 F、ch48）？
 4. 跨 DLL/so 边界的 `T&`/`T*` 是否保证同编译器同 STL 版本（§⑰ 第 9 条）？
@@ -1317,13 +1317,13 @@ auto [it, inserted] = m.try_emplace("k", 1);   // 返回 pair<iterator,bool>
 - 跨 ABI 边界传引用/指针须同工具链（§⑰）。
 
 **交叉引用总览**
-`ch19` 存储期与绑定生命 · `ch21` const 引用与 cv · `ch27` const_cast 去 const · `ch31` 异常与引用返回 · `ch33` 悬垂与生命周期 · `ch48/ch49` 多态 `Base&` vs `Base*` · `ch77` 容器 `operator[]` 返回 `T&` · `ch89` reference_wrapper 体系 · `ch94` 结构化绑定 · `ch115` 右值引用/移动 · `ch116` 完美转发 · `ch145` API 设计 · `ch157` Compiler Explorer 对拍汇编。
+`ch19` 存储期与绑定生命 · `ch21` const 引用与 cv · `ch27` const_cast 去 const · `ch31` 异常与引用返回 · `ch28` 悬垂与生命周期 · `ch48/ch49` 多态 `Base&` vs `Base*` · `ch77` 容器 `operator[]` 返回 `T&` · `ch89` reference_wrapper 体系 · `ch94` 结构化绑定 · `ch115` 右值引用/移动 · `ch116` 完美转发 · `ch145` API 设计 · `ch157` Compiler Explorer 对拍汇编。
 
 ---
 
-> **本章统计**：10 个核心点全部展开（①引用非对象证明 ②底层 ABI 证据 ③const 引用延长规则 ④悬垂全场景 ⑤reference_wrapper 源码逐行 ⑥microbenchmark ⑦指针算术/UB ⑧跨编译器对比 ⑨跨语言对比 ⑩源码阅读路线）；完整可编译程序 **40 个**（prog_01 ~ prog_40）；四层立场标签 <span class="badge badge-std">标准</span>/<span class="badge badge-impl">实现</span>/[平台·Windows]/<span class="badge badge-exp">经验</span> 全程贯穿；交叉引用 ch19/ch21/ch31/ch33/ch52/ch77/ch89/ch94/ch115/ch116/ch145/ch157 及智能指针章。
+> **本章统计**：10 个核心点全部展开（①引用非对象证明 ②底层 ABI 证据 ③const 引用延长规则 ④悬垂全场景 ⑤reference_wrapper 源码逐行 ⑥microbenchmark ⑦指针算术/UB ⑧跨编译器对比 ⑨跨语言对比 ⑩源码阅读路线）；完整可编译程序 **40 个**（prog_01 ~ prog_40）；四层立场标签 <span class="badge badge-std">标准</span>/<span class="badge badge-impl">实现</span>/[平台·Windows]/<span class="badge badge-exp">经验</span> 全程贯穿；交叉引用 ch19/ch21/ch31/ch28/ch52/ch77/ch89/ch94/ch115/ch116/ch145/ch157 及智能指针章。
 >
-> **可选扩展（非必需）**：ch54/ch56 虚继承中引用/成员引用占用存储的 ABI 实例汇编（仅概念示意，缺逐指令对比）；与智能指针章（ch41）的交叉引用锚点已建立；Go/Rust 汇编层与 C++ 的三方对拍（仅语言语义层对比，未出机器码）留作后续扩展。
+> **可选扩展（非必需）**：ch49/ch49 虚继承中引用/成员引用占用存储的 ABI 实例汇编（仅概念示意，缺逐指令对比）；与智能指针章（ch41）的交叉引用锚点已建立；Go/Rust 汇编层与 C++ 的三方对拍（仅语言语义层对比，未出机器码）留作后续扩展。
 
 ## 联合使用场景
 
@@ -1369,7 +1369,7 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 
 **一条判读**：选引用还是指针的判据是「参数是否可选、是否要表达所有权」。非可选、不转移所有权 → `const T&`（LLVM/Chromium/金融行情/RocksDB 共识）；可选或要表达 GC 弱引用/所有权 → 指针（Unreal `UObject`）。规则：默认 `const T&`，仅在「可能没有/需要空值/管理生命周期」时才用指针或 `span`。值传递只在类型小且要拷贝语义（如 `FVector` 经 profile 验证）时才用。
 ### ㉒.3 生产踩坑：引用与指针的常见误用
-- **悬垂引用/指针**：返回局部变量的引用或指向已释放堆对象的指针，调用方拿到的是"看起来合法、访问即 UB"的别名，是 ch33 悬垂主题的根源。<span class="badge badge-comment">评</span>
+- **悬垂引用/指针**：返回局部变量的引用或指向已释放堆对象的指针，调用方拿到的是"看起来合法、访问即 UB"的别名，是 ch28 悬垂主题的根源。<span class="badge badge-comment">评</span>
 - **生命周期延长陷阱**：`const T&` 绑定临时对象会延长其生命，但模板里的转发引用 `T&&` 并不会延长、且一旦绑定到局部变量再返回就会悬垂；误以为"引用总能续命"是高频 bug。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **引用无法表达可选 + ABI 黑洞**：`f(T&)` 无法表达"没有"，大量接口退化成指针并伴随缺失的 `nullptr` 检查而崩溃；而引用在虚继承、成员引用、是否占用存储等场景下是实现定义的，跨 ABI 混编时布局可能不一致。<span class="badge badge-comment">评</span>
 - **指针别名导致优化失效**：编译器对 `T*` 默认假定别名，密集数值循环用裸指针可能阻止向量化，需用 `__restrict` 或改用迭代器/`std::span` 表达"无别名"。

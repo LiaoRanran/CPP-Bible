@@ -9,7 +9,7 @@
 [第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
 [第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
 
-> 标准基：ISO/IEC 14882:2023（C++23）为主，C++11 线程安全静态局部初始化 / C++17 inline 变量（P0607）/ C++20 constinit 强制常量初始化 / C++23 措辞清理｜预计阅读：6.0 h｜前置：ch01（C 遗产）、ch10（版本演进）、ch20（引用与指针）、ch31（const_cast）｜后续：ch21（const/constinit 关联本章）、ch32（初始化）、ch33（生命周期/悬垂）、ch35（目标文件段布局）、ch60（模板与 ODR）、ch102（并发与 static 初始化）｜难度：★★★★★｜层级：L2 进阶
+> 标准基：ISO/IEC 14882:2023（C++23）为主，C++11 线程安全静态局部初始化 / C++17 inline 变量（P0607）/ C++20 constinit 强制常量初始化 / C++23 措辞清理｜预计阅读：6.0 h｜前置：ch01（C 遗产）、ch10（版本演进）、ch20（引用与指针）、ch31（const_cast）｜后续：ch21（const/constinit 关联本章）、ch32（初始化）、ch28（生命周期/悬垂）、ch35（目标文件段布局）、ch60（模板与 ODR）、ch93/ch107（并发与 static 初始化）｜难度：★★★★★｜层级：L2 进阶
 
 ---
 
@@ -74,10 +74,10 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 - **ch21（const/constinit）**：`constinit` 在 static 存储期上强制常量初始化阶段，是 SOIF 的根治手段（见 ④-4）。
 - **ch32（初始化）**：列表初始化、constant expression 对 static/thread 初始化的约束。
-- **ch33（生命周期/悬垂）**：返回局部引用/指针的错误本质（storage duration 结束）。
+- **ch28（生命周期/悬垂）**：返回局部引用/指针的错误本质（storage duration 结束）。
 - **ch35（目标文件段布局）**：`.text`/`.data`/`.bss`/`.rodata`/`.tbss` 决定变量的物理落位与链接视图——本章 ③-1 的 ELF 段图在此处被完整解释。
 - **ch60（模板与 ODR）**：模板实体允许"多定义"，由 ODR 合并；`inline` 变量/函数是同一机制（见 ③-3）。
-- **ch102（并发与 static 初始化）**：函数内 `static` 与 `thread_local` 的线程安全性、初始化竞态、销毁顺序、原子性保证。
+- **并发（thread_local 与 static 的线程安全）**：函数内 `static` 与 `thread_local` 的初始化竞态与原子性保证，见 ch93（线程与异步）与 ch107（std::atomic）。
 
 ---
 
@@ -380,7 +380,7 @@ void serve() {
   2. **constant-initialization**：初值是常量表达式 → 编译期定值（落 `.rodata`/直接内联）。
   3. **dynamic-initialization**：其余（如调用运行期函数）按 TU 内顺序、跨 TU 未指定顺序执行。
   - 销毁：main 返回后，按构造逆序通过 `__cxa_atexit` 调用析构。
-- **thread**：每线程独立；线程创建时构造，退出时逆序析构（主线程 TLS 最后销毁，见 ch102）。
+- **thread**：每线程独立；线程创建时构造，退出时逆序析构（主线程 TLS 最后销毁，见 ch93/ch107）。
 - **dynamic**：从 `new`/`malloc` 到 `delete`/智能指针析构（ch48）。
 
 **程序 7：三阶段初始化可观察验证**
@@ -898,7 +898,7 @@ __cxa_guard_abort(__guard* g)
   // ── 构造抛异常：清除"正在初始化"位（不置已初始化）──
   _GLIBCXX_GUARD_CLEAR_AND_RELEASE(g);
   // 唤醒等待者：它们会重新尝试获取初始化权
-  // 若再次抛异常，反复重试（可能导致持续失败，见 ch102）
+  // 若再次抛异常，反复重试（可能导致持续失败，见 ch93/ch107）
 }
 ```
 
@@ -906,12 +906,12 @@ __cxa_guard_abort(__guard* g)
 
 1. `_GLIBCXX_GUARD_TEST(g)`：读守卫字节最低位。已初始化直接返回 0，**无原子开销**（依赖 happens-before：release 的写对后续 acquire 读可见）。
 2. `__guard_mutex`：`__recursive_mutex`，仅"首次初始化"进入，之后所有线程都走快速路径。
-3. **double-checked locking**：加锁后再次 `TEST`，消除"测试-加锁"之间的竞态窗口——这是经典 DCLP 在 C++11 内存模型下正确的关键（C++11 起保证 `static` 局部初始化具备正确同步，ch102）。
+3. **double-checked locking**：加锁后再次 `TEST`，消除"测试-加锁"之间的竞态窗口——这是经典 DCLP 在 C++11 内存模型下正确的关键（C++11 起保证 `static` 局部初始化具备正确同步，ch93/ch107）。
 4. `_GLIBCXX_GUARD_TEST_AND_ACQUIRE`：检测"正在初始化"位。若发现别人在初始化，本线程不抢，转去 futex 等待（非忙等）。
 5. 获得初始化权后 `SET_AND_RELEASE` 标记 in-progress 并**释放互斥**，让其他并发首次调用者能立即进入"等待"分支而非阻塞在互斥上。
-6. `release`/`abort` 都负责唤醒 futex 等待者；`abort` 不置已初始化位，使后续调用可重试——代价是若构造持续抛异常会反复重抛（ch102 详述）。
+6. `release`/`abort` 都负责唤醒 futex 等待者；`abort` 不置已初始化位，使后续调用可重试——代价是若构造持续抛异常会反复重抛（ch93/ch107 详述）。
 
-> `[实现]` 这正是 8.1 汇编里 `call __cxa_guard_acquire` 的落地实现，也是 ch102 并发知识点的来源。**守卫变量通常 1 字节（init 位）+ 额外位（in-progress）**，在 LP64 上常扩为 8 字节以容纳 futex 状态。
+> `[实现]` 这正是 8.1 汇编里 `call __cxa_guard_acquire` 的落地实现，也是 ch93/ch107 并发知识点的来源。**守卫变量通常 1 字节（init 位）+ 额外位（in-progress）**，在 LP64 上常扩为 8 字节以容纳 futex 状态。
 
 ### 8.3 验证 guard 行为（异常路径）
 
@@ -1255,9 +1255,9 @@ static/全局数据常驻 `.data`，多对象共享只读页；dynamic 堆对象
 | 函数内 `static` 线程安全初始化 | `std::sync::OnceLock` / `LazyLock` 等价，编译期保证 |
 | `thread_local!` 宏 | `std::thread_local!` 宏，语义同 C++ `thread_local` |
 | 无 GC，RAII 靠 `Drop` | 无 GC，RAII 靠 `Drop` trait（等价于析构） |
-| 悬垂引用是 UB | 借用检查器**编译期**拒绝悬垂引用（ch33 的悬垂在 Rust 直接编译失败） |
+| 悬垂引用是 UB | 借用检查器**编译期**拒绝悬垂引用（ch28 的悬垂在 Rust 直接编译失败） |
 
-> `[经验]` C++ 的"返回局部引用悬垂"（ch33、⑯ 易错点 1）在 Rust 被所有权系统静态禁止——这是 Rust 最大的安全收益之一，但代价是学习曲线与 `move` 语义。
+> `[经验]` C++ 的"返回局部引用悬垂"（ch28、⑯ 易错点 1）在 Rust 被所有权系统静态禁止——这是 Rust 最大的安全收益之一，但代价是学习曲线与 `move` 语义。
 
 ### 12.2 Go：变量模型与 GC
 
@@ -1365,25 +1365,25 @@ int main() {
 ## ⑮ STL 联系
 
 - `std::vector`/`std::string` **对象本身**存储期取决于声明位置（automatic/static/thread），**元素**恒在堆（dynamic，ch48）。跨存储期移动容器仅移动控制块指针（ch77）。
-- `std::string_view`（ch82）不拥有存储，底层对象存储期**必须**覆盖视图使用期，否则悬垂（ch33 联动）。
-- `std::this_thread` 内部依赖 `thread_local`（⑨）。`std::call_once` 与函数内 `static` 同为"一次性初始化"设施，但 `static` 更轻（无 `once_flag` 对象，ch102）。
+- `std::string_view`（ch82）不拥有存储，底层对象存储期**必须**覆盖视图使用期，否则悬垂（ch28 联动）。
+- `std::this_thread` 内部依赖 `thread_local`（⑨）。`std::call_once` 与函数内 `static` 同为"一次性初始化"设施，但 `static` 更轻（无 `once_flag` 对象，ch93/ch107）。
 - `std::ios_base::Init` 用 static 对象保证 `std::cout` 在首次使用前初始化（⑬-D）。
-- `std::atomic` 在 static 上提供无锁原子（⑩-1），区分"初始化安全"与"访问安全"（ch102）。
+- `std::atomic` 在 static 上提供无锁原子（⑩-1），区分"初始化安全"与"访问安全"（ch93/ch107）。
 
 ---
 
 ## ⑯ 易错点（深度）
 
-1. **返回局部引用/指针 → 悬垂**（ch33）：`int& bad(){ int x=42; return x; }` —— x 离开作用域析构，返回悬垂引用。
-2. **误以为 static 局部多线程不安全** → C++11 起**已线程安全**（但构造抛异常留 guard 异常标志，后续调用反复重抛，ch102）。
+1. **返回局部引用/指针 → 悬垂**（ch28）：`int& bad(){ int x=42; return x; }` —— x 离开作用域析构，返回悬垂引用。
+2. **误以为 static 局部多线程不安全** → C++11 起**已线程安全**（但构造抛异常留 guard 异常标志，后续调用反复重抛，ch93/ch107）。
 3. **头文件定义非 inline 变量** → 每 TU 一份定义，ODR 违规（multiple definition）。修复：inline / extern（⑤-3）。
 4. **头文件定义 `const` 全局却不用 inline** → 命名空间 `const` 默认 internal 链接！各 TU 看到不同地址，二进制膨胀。跨 TU 共享用 `inline const`/`inline constexpr`（ch21）。
 5. **`thread_local` 在线程池复用线程时残留状态** → 线程不退出则 thread_local 不重置，下一请求读到上一次 `g_request_id`（程序 28 已修复：任务入口重置）。
 6. **`static` 成员漏写类外定义** → C++17 前链接错误 `undefined reference to C::x`；C++17 起 `inline static` 类内定义规避。
 7. **依赖跨 TU 全局初始化顺序（SOIF）** → 未定义行为，仅在特定链接顺序/优化级"偶发"，极难调试（⑦-1）。
 8. **`const_cast` 去掉真正 const 对象的 const 后写** → 若对象在 `.rodata`（真 const），写入触发 SIGSEGV（UB，ch31）。
-9. **误把 static 变量当线程安全共享** → 函数内 static **初始化**线程安全，**读写**不保证；多线程度量计数器需 `std::atomic` 或锁（ch102）。
-10. **TLS 析构顺序依赖** → 主线程 TLS 在所有其他线程退出后销毁，若主线程 TLS 析构依赖已退出的工作线程 TLS 状态 → UB（ch102）。
+9. **误把 static 变量当线程安全共享** → 函数内 static **初始化**线程安全，**读写**不保证；多线程度量计数器需 `std::atomic` 或锁（ch93/ch107）。
+10. **TLS 析构顺序依赖** → 主线程 TLS 在所有其他线程退出后销毁，若主线程 TLS 析构依赖已退出的工作线程 TLS 状态 → UB（ch93/ch107）。
 
 ### 16.1 嵌入式场景真实示例
 
@@ -1429,11 +1429,11 @@ void clear_status() {
 2. **函数内 static vs 命名空间 static 语义差异？** 函数内：`static` 修饰**存储期**+延迟初始化（线程安全）。命名空间：`static` 修饰**链接**（internal）。
 3. **`extern` 作用？** 声明 external 链接名字，引用别处定义；不加 `extern` 的命名空间 `int x;` 是定义，重复则 ODR 违规。
 4. **为何头文件写 `int g;` 会链接错误？** 每 TU 产生 external 定义，违反 ODR → `multiple definition`。改 `inline`（C++17）或 `extern`+单 TU 定义。
-5. **函数内 static 初始化线程安全？** C++11 起**是**（`__cxa_guard`，见 ⑧）。构造抛异常留异常标志，下次重试可能反复失败（ch102）。
+5. **函数内 static 初始化线程安全？** C++11 起**是**（`__cxa_guard`，见 ⑧）。构造抛异常留异常标志，下次重试可能反复失败（ch93/ch107）。
 6. **thread_local 初始化线程安全？** C++20 起明确为是；每线程首次访问构造副本（`[basic.stc.thread]`）。
 7. **作用域与生命周期一定相同？** 否。函数内 `static T s;` 作用域仅函数内，生命周期整个程序（④）。
 8. **inline 变量与 inline 函数机制一样？** 一样：都允许多定义、ODR 合并；`constexpr` 隐式 inline（⑥）。
-9. **返回值 vs 返回局部引用？** 返回局部引用/指针 → 悬垂 UB（ch33）。应返回值（RVO/NRVO）或智能指针。
+9. **返回值 vs 返回局部引用？** 返回局部引用/指针 → 悬垂 UB（ch28）。应返回值（RVO/NRVO）或智能指针。
 10. **static 成员如何在类外定义？** 类内 `static int x;`，类外单 TU `int C::x=0;`；C++17 起 `inline static int x=0;` 类内直接定义。
 11. **SOIF 是什么？三种修复？** 跨 TU dynamic-init 顺序未指定 → 依赖未初始化对象。修复：① 函数内 static ② constinit ③ 同 TU 按序（⑦）。
 12. **`const` 全局在 `.rodata`，`static const` 呢？** 仍有 static 存储期，通常也落 `.rodata`（无 external 链接）。区别是链接非落位（ch21）。
@@ -1455,9 +1455,9 @@ void clear_status() {
 3. **进程级单例用函数内 static（Meyers）**，非 `new`+裸指针——线程安全、延迟、自动销毁（⑦-2）。
 4. **跨 TU 初始化依赖 → `constinit` 或函数内 static**，根治 SOIF（⑦-3/7.4）。
 5. **每线程状态用 `thread_local`**，无锁并发；线程池场景**任务入口重置**（⑨-4）。
-6. **多线程序列化访问的 static → `std::atomic` 或互斥**，区分"初始化安全"与"访问安全"（ch102）。
+6. **多线程序列化访问的 static → `std::atomic` 或互斥**，区分"初始化安全"与"访问安全"（ch93/ch107）。
 7. **类静态成员优先 `inline static`**（C++17）类内定义，避免漏写类外定义。
-8. **不返回局部引用/指针**；需延寿用返回值（RVO）或智能指针（ch33、ch48）。
+8. **不返回局部引用/指针**；需延寿用返回值（RVO）或智能指针（ch28、ch41）。
 9. **嵌入式/ISR**：`constinit`/`constexpr` 全局保证 main 前就绪，ISR 安全（16.1）。
 10. **库头文件**：暴露常量用 `inline constexpr`，暴露配置对象用 `inline`，避免 ODR 雷（⑬-C）。
 
@@ -1475,7 +1475,7 @@ void clear_status() {
 - **Q：`constexpr` 与 `inline` 变量关系？** A：`constexpr` 变量**隐式 inline**；但 `inline` 不一定 `constexpr`（初值可运行期）（⑥）。
 - **Q：如何确认变量落在哪个段？** A：`nm`/`objdump -t` 看符号段（`.data`/`.bss`/`.rodata`/`*TLS*`），或打印地址区间比较（④、ch35）。
 - **Q：类内 static 成员能 thread_local？** A：能（`static thread_local int x;`），每线程每类一份。
-- **Q：为何多线程计数器用 static 要 `std::atomic`？** A：`++s_hits` 在 static 上非原子（读-改-写），多写者竞争 → 数据竞争（ch102）。
+- **Q：为何多线程计数器用 static 要 `std::atomic`？** A：`++s_hits` 在 static 上非原子（读-改-写），多写者竞争 → 数据竞争（ch93/ch107）。
 - **Q：`constinit` 与本章关系？** A：强制变量在**常量初始化阶段**完成（static 期最早子阶段），是 SOIF 根治（⑦-3）。
 - **Q：动态库 static 何时构造/析构？** A：随 `dlopen`/`dlclose`；多次 `dlopen` 产生多个独立实例，易致"重复初始化"错觉。
 - **Q：如何避免全局变量？** A：依赖注入、函数内 static（延迟单例）、状态放对象成员（RAII，ch47）；仅真正进程级共享且需早初始化时用 static/inline。

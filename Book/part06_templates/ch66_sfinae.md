@@ -158,7 +158,7 @@ auto g(T t) { return t.no_such_member(); }             // 函数体内的失败 
 | 按类型属性给同名函数分多份实现 | `enable_if` 返回类型孔位 | `if constexpr` 单函数内分支（C++17 更可读） |
 | 探测成员/类型别名是否存在 | `void_t` + 偏特化 | Concepts（C++20 更直白） |
 | 构造/析构不能返回类型时做条件 | 默认模板参数孔位 | 标签分发 |
-| 要求清晰的错误信息 | Concepts + `requires` | 纯 SFINAE 报错极晦涩（见 ch75） |
+| 要求清晰的错误信息 | Concepts + `requires` | 纯 SFINAE 报错极晦涩（见 ch67） |
 
 ## ⑥ 完整可运行示例（最小）
 
@@ -539,7 +539,7 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 - **练习题 2**：用 `void_t` 探测「是否有 `size()` 成员」，写出 `has_size<T>`。
 - **练习题 3**：给 `std::vector` 风格容器加 `push_back`，仅对「可拷贝」类型启用（用 `enable_if`）。
 - **思考题**：SFINAE 与 Concepts 在 ABI 层是否等价？参见 ch67 的 mangled 对比——二者都只为「胜出候选」发射一份实例化。
-- **源码阅读路线**：`type_traits` 行号：106（`enable_if`）、2610（`enable_if_t`）、2632（`void_t`）；`ch62_specialization.md`（偏特化是 SFINAE 的载体）、`ch65_type_traits.md`（trait 是条件源）、`ch67_concepts.md`（C++20 替代）、`ch75_template_diag.md`（SFINAE 报错可读性）。
+- **源码阅读路线**：`type_traits` 行号：106（`enable_if`）、2610（`enable_if_t`）、2632（`void_t`）；`ch62_specialization.md`（偏特化是 SFINAE 的载体）、`ch65_type_traits.md`（trait 是条件源）、`ch67_concepts.md`（C++20 替代）、`ch67_template_diag.md`（SFINAE 报错可读性）。
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 

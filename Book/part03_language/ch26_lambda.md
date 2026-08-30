@@ -8,7 +8,7 @@
 
 > 标准基：ISO/IEC 14882:2023（C++23）；核心条款 `[expr.prim.lambda]` / `[expr.prim.lambda.capture]` / `[expr.prim.lambda.closure]`｜层级：L2 进阶
 > 预计阅读：210 min｜难度：★★★★
-> 前置：ch19（对象/存储期/生命周期）、ch20（引用与指针）、ch21（const 家族 + mutable）、ch22（auto 与泛型参数）、ch59（模板）、ch80（STL 算法中的 lambda）、ch115（右值引用与 move 捕获）、ch116（完美转发）
+> 前置：ch19（对象/存储期/生命周期）、ch20（引用与指针）、ch21（const 家族 + mutable）、ch22（auto 与泛型参数）、ch60（模板）、ch80（STL 算法中的 lambda）、ch115（右值引用与 move 捕获）、ch116（完美转发）
 > 后续：ch27（可调用对象体系）、ch52（多态回调）、ch115（move 语义）、ch116（完美转发）、ch154（缓存与性能）
 >
 > **本章立场分层约定**（全章严格使用四层标签，请读者随时对照）
@@ -458,7 +458,7 @@ int main() {
     return 0;
 }
 ```
-> 泛型 lambda 与 ch22（`auto` 参数）和 ch59（模板）深度关联：lambda 内部 `auto` 形参就是模板形参的语法糖。
+> 泛型 lambda 与 ch22（`auto` 参数）和 ch60（模板）深度关联：lambda 内部 `auto` 形参就是模板形参的语法糖。
 
 ---
 
@@ -1410,7 +1410,7 @@ noexcept(_Handler<_Functor>::template _S_nothrow_init<_Functor>())
 - **ch20（引用与指针）**：`[&x]` 捕获本质是存指针；无捕获 lambda 转函数指针（⑭）的 ABI。
 - **ch21（const 家族 + mutable）**：无 `mutable` 时 `operator() const` 为何不能改按值捕获（④）。
 - **ch22（auto 与泛型参数）**：泛型 lambda 的 `auto` 形参即隐式模板形参（⑥⑫）。
-- **ch59（模板）**：模板 lambda（⑦）、`if constexpr` 分派、Y 组合子（⑯）。
+- **ch60（模板）**：模板 lambda（⑦）、`if constexpr` 分派、Y 组合子（⑯）。
 - **ch80（STL 算法中的 lambda）**：`std::sort`/`std::for_each`/`std::find_if` 等谓词 lambda（⑭ prog_35、⑰）。
 - **ch115（右值引用与 move 捕获）**：init-capture 的 `[x = std::move(y)]`（⑧ prog_21/23）。
 - **ch116（完美转发）**：`std::forward` 在 `std::function` 构造与 `_M_create` 中的使用（⑳ 第 154/162 行）。
@@ -1439,7 +1439,7 @@ std::function（类型擦除）      ~430 ms                   8.1×
 > - **真实 microbenchmark**：std::function ≈ 8.1× 慢，已贴数据。
 > - **三 STL 对比**：libstdc++（已验证 32B / 16B SBO）vs libc++（版本相关）vs MS STL（版本相关），诚实区分已验证与实现定义。
 > - **跨语言**：Rust（Fn/FnMut/FnOnce 三 trait + 真实定义）、C#（委托/表达式树）、Java（invokedynamic）、Python（单表达式）、Go（逃逸分析）。
-> - **交叉引用**：ch19 / ch20 / ch21 / ch22 / ch59 / ch80 / ch115 / ch116 已建立链接。
+> - **交叉引用**：ch19 / ch20 / ch21 / ch22 / ch60 / ch80 / ch115 / ch116 已建立链接。
 
 ## 联合使用场景
 
@@ -1560,7 +1560,7 @@ C++ 在 STL 时代靠"函数对象（functor）"传逻辑——要传一段回�
 
 **一条判读**：用 lambda 的判据是「有一段一次性/局部逻辑要当参数传，且需要捕获上下文」。算法回调、task/事件、测试体、行为树分支全用 lambda 消除 functor 样板。规则：局部、一次性、要捕获 → lambda；要复用、要命名、要特化 → 仍写具名函数/可调用类。警惕过度捕获（悬垂引用、大对象拷贝）与 `auto` 参数 lambda 仅在 C++14+ 通用 lambda 可用。
 ### ㉒.3 生产踩坑：lambda 的常见误用
-- **悬垂捕获**：lambda 按引用 `[&]` 捕获局部变量后异步执行/返回，被捕获对象已析构，访问即 UB——现代 C++ 最高频错误之一（见 ch26 0.4 / ch33）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **悬垂捕获**：lambda 按引用 `[&]` 捕获局部变量后异步执行/返回，被捕获对象已析构，访问即 UB——现代 C++ 最高频错误之一（见 ch26 0.4 / ch28）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **`std::function` 类型擦除开销**：把 lambda 装进 `std::function` 有 SBO 与间接调用成本（本章实测约 8×），热路径应传模板参数或泛型 lambda 而非 `std::function`。<span class="badge badge-comment">评</span>
 - **泛型 lambda 的 `auto` 参数被推导为值**：忘了 `auto&&`/`const auto&` 导致多余拷贝或切片，尤其在范围算法里。<span class="badge badge-comment">评</span>
 - **`mutable` 与按值捕获的可变性误用**：按值捕获的变量默认 const，需要修改必须 `mutable`，否则编译失败或逻辑错误。<span class="badge badge-comment">评</span>

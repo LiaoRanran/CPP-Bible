@@ -1013,7 +1013,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 f
 |---|---|---|---|
 | 固定大小分配 | ch37(new_delete), ch38(allocator) | operator new/delete 重载 | 先理解ch37的内存分配原语 |
 | 链表管理 | ch35(memory_layout), ch36(stack_heap) | 自由链表, 栈vs堆 | ch35/36建立内存模型直觉 |
-| 多线程安全 | ch107(atomic), ch104(mutex) | 原子操作 + 锁分段 | 简单用mutex, 高性能用lock-free |
+| 多线程安全 | ch107(atomic), ch93(mutex) | 原子操作 + 锁分段 | 简单用mutex, 高性能用lock-free |
 | RAII封装 | ch39(RAII), ch41(unique_ptr) | 自动回收, 无泄漏 | RAII保证池的生命周期安全 |
 | PMR集成 | ch38(allocator), ch122(pmr) | std::pmr接口 | C++17的pmr让自定义分配器插拔式替换 |
 | 性能测试 | ch151(benchmark), ch157(compiler_explorer) | malloc vs pool 延迟对比 | malloc≈50ns、pool≈5ns 仅为量级示意 [UNVERIFIED]（方向约 10× 更快） |

@@ -5,7 +5,7 @@
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台]` ABI/OS · `[经验]` 工程共识｜层级：L2 进阶
 > 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_crtp.cpp` → `_asm_crtp.asm`）
-> 前置/后续：⟶ ch47（虚函数/动态多态）· ch50（多重继承 this 调整）· ch62（特化）· ch67（Concepts）· ch69（constexpr）· ch73（CRTP 进阶）
+> 前置/后续：⟶ ch47（虚函数/动态多态）· ch50（多重继承 this 调整）· ch62（特化）· ch67（Concepts）· ch69（constexpr）· ch51（CRTP 进阶）
 
 ## ⓪ 历史动机：CRTP 的来龙去脉
 
@@ -52,11 +52,11 @@ CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期�
 - **ch50** 多重继承：CRTP 常用来替代「接口多重继承 + 虚函数」的混入需求。
 - **ch62** 类模板特化：CRTP 本质是类模板的一种惯用法，依赖模板实例化。
 
-## ③ 后续依赖 ⟶ ch67(Concepts 约束 Derived) · ch69(constexpr 计算) · ch73(CRTP 进阶/奇异递归) · ch14(去虚化对比)
+## ③ 后续依赖 ⟶ ch67(Concepts 约束 Derived) · ch69(constexpr 计算) · ch51(CRTP 进阶/奇异递归) · ch14(去虚化对比)
 
 - **Concepts（ch67）** 可给 CRTP 基类加 `requires` 约束派生类必须提供 `impl()`。
 - **constexpr（ch69）** 让 CRTP 的静态分发在编译期求值，进一步零开销。
-- **CRTP 进阶（ch73）** 覆盖 mixin 链、operator 注入、策略组合。
+- **CRTP 进阶（ch51）** 覆盖 mixin 链、operator 注入、策略组合。
 
 ## ④ 知识图谱（ASCII）
 
@@ -446,7 +446,7 @@ public:
 
 - CRTP 非标准特性，是语言惯用法（idiom），不需要提案支持。
 - 相关：P0847（deducing `this`，C++23）可替代部分 CRTP 场景（把 `this` 作为模板/auto 参数，实现静态多态而无需继承）。
-- P2985（静态反射）将让 CRTP 注入的接口在编译期可枚举（ch74）。
+- P2985（静态反射）将让 CRTP 注入的接口在编译期可枚举（ch123）。
 
 ## ⑮ 面试题（≥10）
 
@@ -673,7 +673,7 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 2. 非内联 `interface()` 在 50 个派生类下生成 50 份符号（二进制增大）。
 3. 缓解：把通用逻辑抽成 `namespace detail { inline int common(...) }` 自由函数。
 4. 头文件膨胀：CRTP 基类模板全在头文件，编译时间随派生类数上升。
-5. `extern template class Base<Vec3>;` 可强制只在一处实例化（ch69/ch75）。
+5. `extern template class Base<Vec3>;` 可强制只在一处实例化（ch69/ch67）。
 6. LTO 下重复实例可被合并（COMDAT），但链接时间增加。
 7. Concepts（ch67）约束失败时报错更早，减少无效实例化展开。
 8. `[[noinline]]` 可强制 CRTP 接口成独立函数，权衡内联收益与体积。
@@ -687,7 +687,7 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 3. 无法 heterogeneous 容器（⑯ 反例3）。
 4. 菱形 CRTP 名字冲突（ch50 B3）。
 5. 基类有虚函数会引入 vptr，失去零开销优势。
-6. CRTP 链过深（A<B<C<D>>）编译错误信息难读（ch75 模板诊断）。
+6. CRTP 链过深（A<B<C<D>>）编译错误信息难读（ch67 模板诊断）。
 7. `shared_from_this()` 在 `enable_shared_from_this` 对象未由 `shared_ptr` 管理时抛异常（⑱ 第6条）。
 8. 误用 `reinterpret_cast` 替代 static_cast → UB。
 9. 派生类与基类循环依赖导致 ODR 违规（不同 TU 不同选项）。

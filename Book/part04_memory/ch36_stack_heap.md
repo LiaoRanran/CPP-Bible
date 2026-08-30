@@ -914,7 +914,7 @@ int main() {
 
 ## ⑱ 栈展开（Stack Unwinding，异常时）
 
-<span class="badge badge-std">标准</span> 当异常抛出且未被当前函数捕获，运行时会**沿调用链向上逐层退出栈帧**，对每个已构造的**自动（栈）对象调用析构函数**，直到遇到匹配的 `catch`——这一过程叫 **栈展开（stack unwinding）**。展开保证了 RAII 在异常路径下依然成立（见 ch33 异常）。
+<span class="badge badge-std">标准</span> 当异常抛出且未被当前函数捕获，运行时会**沿调用链向上逐层退出栈帧**，对每个已构造的**自动（栈）对象调用析构函数**，直到遇到匹配的 `catch`——这一过程叫 **栈展开（stack unwinding）**。展开保证了 RAII 在异常路径下依然成立（见 ch28 异常）。
 
 <span class="badge badge-impl">实现</span> 展开由**异常表（EH table）/ unwind 信息**驱动（Itanium C++ ABI 的 `_Unwind_*`、Windows 的 SEH）。`-O0` 与 `-O2` 都保留 unwind 信息（除非 `-fno-exceptions`）。
 
@@ -967,7 +967,7 @@ int main() {
 }
 ```
 
-<span class="badge badge-exp">经验</span> 栈展开使"异常安全"成为可能，但前提是资源都用 RAII 管理（§17）。在析构函数中**不要抛异常**（或标记为 `noexcept`），否则在展开途中再抛会导致 `std::terminate`（ch33）。
+<span class="badge badge-exp">经验</span> 栈展开使"异常安全"成为可能，但前提是资源都用 RAII 管理（§17）。在析构函数中**不要抛异常**（或标记为 `noexcept`），否则在展开途中再抛会导致 `std::terminate`（ch28）。
 
 ---
 
@@ -1105,7 +1105,7 @@ class Prog {
 3. **jemalloc 源码**（github.com/jemalloc/jemalloc）：`arena.c`/`tcache.c`/`bin.c`，理解 run + size class（§12）。
 4. **tcmalloc 源码**（github.com/google/tcmalloc）：`thread_cache.cc`/`central_freelist.cc`/`page_heap.cc`（§12）。
 5. **libstdc++ `libsupc++/new_op.cc`**：默认 `operator new` 调 `malloc` 的实证（§14，本机仅含头文件，标注 `[实现-推断]`）。
-6. **Itanium C++ ABI（归栈展开 / `_Unwind_*`）**：异常时 unwinding 的规范基础（§18，ch33）。
+6. **Itanium C++ ABI（归栈展开 / `_Unwind_*`）**：异常时 unwinding 的规范基础（§18，ch28）。
 7. **Aho/Lam/Sethi/Ullman《Compilers: Principles, Techniques, and Tools》**：栈帧布局、调用约定的形式化讲解（§2、§3）。
 
 <span class="badge badge-exp">经验</span> 读分配器源码前，先跑通 §16 的 microbenchmark 建立"数量级直觉"，否则容易迷失在宏与位运算里。
@@ -1412,7 +1412,7 @@ int main() {
 
 <span class="badge badge-exp">经验</span> 工程铁律：**默认栈对象 + RAII + 智能指针**；热路径避免反复 `new`/`delete`；跨平台确认 ABI 与安全选项；栈溢出用 guard page + canary + ASan 三层防护。
 
-**交叉引用**：存储期与自动/动态语义见 ch19；地址空间布局（栈/堆相向增长）见 ch35；`new`/`delete` 完整语义与重载见 ch37；自定义分配器与 `std::allocator` 见 ch38；异常栈展开细节见 ch33；内存池/固定 size class 缓解碎片见 ch44；并发下堆竞争与分配器选型见 ch61；底层 ABI 与平台细节脉络见 ch80。
+**交叉引用**：存储期与自动/动态语义见 ch19；地址空间布局（栈/堆相向增长）见 ch35；`new`/`delete` 完整语义与重载见 ch37；自定义分配器与 `std::allocator` 见 ch38；异常栈展开细节见 ch28；内存池/固定 size class 缓解碎片见 ch44；并发下堆竞争与分配器选型见 ch61；底层 ABI 与平台细节脉络见 ch80。
 
 ## 联合使用场景
 

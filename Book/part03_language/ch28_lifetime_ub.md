@@ -1,7 +1,7 @@
 # 第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：7 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针悬垂）、ch21（const/volatile 与写 UB）、ch25（联合 active member UB）、ch27（reinterpret_cast 与严格别名）、ch31（异常与 UB）、ch33（异常安全）、ch42（严格别名与优化）、ch61（并发数据竞争）｜后续：ch42（严格别名）、ch61（数据竞争）｜难度：★★★★★｜层级：L2 进阶
+> 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：7 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针悬垂）、ch21（const/volatile 与写 UB）、ch25（联合 active member UB）、ch27（reinterpret_cast 与严格别名）、ch31（异常与 UB）、ch28（异常安全）、ch42（严格别名与优化）、ch61（并发数据竞争）｜后续：ch42（严格别名）、ch61（数据竞争）｜难度：★★★★★｜层级：L2 进阶
 > 立场分层约定：`[标准]`＝ISO 条文语义；`[实现]`＝编译器/标准库源码行为；`[平台]`＝OS/ABI/硬件（x86-64 / ARM / ELF / PE）；`[经验]`＝工程落地的铁律。四层不得混淆。
 
 本章把"对象生命周期"与"未定义行为（Undefined Behavior, UB）"在**对象模型、存储期、临时对象、悬垂、UB 分类、编译器优化武器化、真实标准库源码、三编译器差异、Sanitizer 检测、constexpr、生命周期安全、跨语言**十二个维度讲透。所有"推荐阅读"的书籍内容已内化进正文（见 §⑳ 源码阅读路线），本章不再单列推荐阅读。
@@ -1413,7 +1413,7 @@ int main() {
 5. **提案 P1174（静态生命周期安全）** 与 **P0532（严格别名改进讨论）**：
    - 理解 C++ 标准化层面如何用静态分析补生命周期漏洞（§⑱）。
 
-`[标准]` 交叉阅读：ch19（存储期/ODR）、ch20（引用与指针悬垂）、ch21（const 与写 UB，prog_33）、ch25（联合 active member 的"重解释"类 UB）、ch27（reinterpret_cast 与严格别名，prog_27/31/42）、ch31（异常与 UB，prog_35）、ch33（异常安全与资源 UB）、ch42（严格别名与优化，深层展开 `-fstrict-aliasing`）、ch61（并发数据竞争，prog_25/45）。
+`[标准]` 交叉阅读：ch19（存储期/ODR）、ch20（引用与指针悬垂）、ch21（const 与写 UB，prog_33）、ch25（联合 active member 的"重解释"类 UB）、ch27（reinterpret_cast 与严格别名，prog_27/31/42）、ch31（异常与 UB，prog_35）、ch28（异常安全与资源 UB）、ch42（严格别名与优化，深层展开 `-fstrict-aliasing`）、ch61（并发数据竞争，prog_25/45）。
 
 ---
 
@@ -1462,7 +1462,7 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 
 **一条判读**：看待生命周期/UB 的判据是「它既是编译器的优化许可，也是生产事故源」。写代码 → 严守对象生命周期（RAII、智能指针、不返回局部引用）；查问题 → ASan/UBSan/TSAN 进 CI（Chrome/LLVM 标配）；并发 → 数据竞争是 UB，发布前 TSAN 必跑。规则：绝不依赖 UB 行为；sanitizer 不是可选项而是发布门禁；生命周期错误在存储/浏览器里等于安全漏洞与数据损坏。
 ### ㉒.3 生产踩坑：生命周期/UB 的常见误用
-- **悬垂引用/指针**：返回局部变量引用、迭代器/指针失效（容器扩容、erase）、`std::string` 的 `c_str()` 跨修改使用——访问即 UB，是最常被 UB 优化"武器化"的坑（见 ch33）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
+- **悬垂引用/指针**：返回局部变量引用、迭代器/指针失效（容器扩容、erase）、`std::string` 的 `c_str()` 跨修改使用——访问即 UB，是最常被 UB 优化"武器化"的坑（见 ch28）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **对象生存期与 placement new**：在同一存储上 `placement new` 重建对象必须显式调旧析构，重建后用 `std::launder`（C++17）取回指针，否则优化器"证明"指针仍指向旧对象而错乱。<span class="badge badge-comment">评</span>
 - **有符号溢出与未初始化读取**：靠"溢出回绕"做算法、读未初始化变量，在开启优化后行为完全不可预测。<span class="badge badge-comment">评</span>
 - **UB 被优化删除安全检查**：经典案例——空指针检查因"前面已解引用，故指针非空"被优化删掉，导致本应防御的代码失效。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>

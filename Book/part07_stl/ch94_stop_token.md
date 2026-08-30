@@ -1191,7 +1191,7 @@ int main() {
 - `文件：stop_token` 行号：`54`（class stop_token）、`72`/`79`（stop_possible/stop_requested）、`134`（`_Stop_cb`）、`155`（`_S_stop_requested_bit`）、`167`/`175`（`_M_stop_possible`/`_M_stop_requested`）、`224`（`_M_request_stop`，回调遍历 `237`/`257`）、`281`（`_M_register_callback`，`288` 已停止则立即执行）、`480`（class stop_source）、`535`（`request_stop`）、`574`（class stop_callback）、`585`/`610`（构造/`~stop_callback`）。
 - `文件：thread` 行号：`134`（class jthread）、`156`（~jthread 自动 request_stop+join）、`225`（`get_stop_token`）、`230`（`request_stop`）、`241`（`_S_create` 注入 stop_token 的 `if constexpr`）。
 
-> 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与第93章、part09 的 ch102/ch103/ch105/ch107/ch108/ch114 建立正文交叉引用。
+> 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与第93章、part09 的 ch107/ch108/ch110/ch113 建立正文交叉引用。
 
 ## 联合使用场景
 

@@ -1095,7 +1095,7 @@ int main() {
 - `文件：future` 行号：`149`（launch 枚举）、`203`（async 声明）、`325`（`_State_baseV2`）、`605`（`_M_shared_state`）、`738`/``824``（`_M_get_result`/`get`）、`598`（`_M_complete_async` 析构阻塞）。
 - `文件：future` 行号：`428`（`call_once` 保证结果只设置一次）。
 
-> 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 part09 的 ch102/ch103/ch104/ch105/ch107/ch108/ch110/ch114 及第94章建立正文交叉引用。
+> 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 part09 的 ch107/ch108/ch109/ch110/ch111/ch112/ch113 及第94章建立正文交叉引用。
 
 ## 联合使用场景
 

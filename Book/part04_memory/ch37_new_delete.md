@@ -46,7 +46,7 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 [第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
 [第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)
 
-动态内存管理是 C++ 资源模型的核心支柱。本章聚焦**最底层原语**——`operator new` / `operator delete` 这一族可替换（replaceable）的全局函数，以及 `new` 表达式语法如何调用它们。它向上承接 ch19（存储期）、ch35（堆段布局）、ch36（`malloc`/`free` 后端）、ch38（`std::allocator` 与 `rebind`）、ch28（`launder` 与对象生命期）、ch33（`bad_alloc` 与异常）、ch44（内存池）、ch45（RAII 接管释放）。
+动态内存管理是 C++ 资源模型的核心支柱。本章聚焦**最底层原语**——`operator new` / `operator delete` 这一族可替换（replaceable）的全局函数，以及 `new` 表达式语法如何调用它们。它向上承接 ch19（存储期）、ch35（堆段布局）、ch36（`malloc`/`free` 后端）、ch38（`std::allocator` 与 `rebind`）、ch28（`launder` 与对象生命期）、ch28（`bad_alloc` 与异常）、ch44（内存池）、ch45（RAII 接管释放）。
 
 <span class="badge badge-std">标准</span> 本章所有语义以 C++17/20 为基准，并标注 C++14（sized deallocation）、C++17（aligned new、launder）、C++20（destroying delete）的增量。
 
@@ -1852,7 +1852,7 @@ int main() {
 
 ---
 
-> **本章交叉引用**：ch19（动态存储期）· ch35（堆段布局）· ch36（`malloc`/`free` 后端）· ch38（`std::allocator` 与 `allocator_traits`）· ch28（`std::launder` 与对象生命期）· ch33（`std::bad_alloc` 与异常传播）· ch44（内存池实现）· ch45（RAII 与智能指针接管 `new`/`delete`）。
+> **本章交叉引用**：ch19（动态存储期）· ch35（堆段布局）· ch36（`malloc`/`free` 后端）· ch38（`std::allocator` 与 `allocator_traits`）· ch28（`std::launder` 与对象生命期）· ch28（`std::bad_alloc` 与异常传播）· ch44（内存池实现）· ch45（RAII 与智能指针接管 `new`/`delete`）。
 >
 > **<span class="badge badge-std">标准</span>** 本章所有语义以 ISO/IEC 14882:2017（C++17）及 2020（C++20 增量）为基准；**sized deallocation** 来自 C++14，**aligned new / launder** 来自 C++17，**destroying delete** 来自 C++20。
 >
