@@ -112,12 +112,25 @@ void test_errors() {
     check_throw("[1] [2]", "two roots");
 }
 
-void test_unicode_ascii() {
-    // \uXXXX 仅支持 ASCII（骨架诚实标注）；验证 \u0041 == 'A'
-    json::Value v = json::parse("\"\\u0041\"");
-    check(v.as_string() == "A", "unicode escape ASCII 'A'");
-    // 非 ASCII \uXXXX 应诚实抛错（未静默产出错误字节）
-    check_throw("\"\\u00e9\"", "non-ASCII unicode throws (honest)");
+void test_unicode() {
+    // BMP 内非 ASCII：U+00E9 é → UTF-8 C3 A9
+    check(json::parse("\"\\u00e9\"").as_string() == "\xC3\xA9", "unicode BMP é");
+    // CJK：U+4F60 你 / U+597D 好
+    check(json::parse("\"\\u4f60\\u597d\"").as_string() == "\xE4\xBD\xA0\xE5\xA5\xBD",
+          "unicode CJK 你好");
+    // UTF-16 代理对：U+1F600 😀 → UTF-8 F0 9F 98 80
+    check(json::parse("\"\\ud83d\\ude00\"").as_string() == "\xF0\x9F\x98\x80",
+          "unicode surrogate pair 😀");
+    // ASCII 仍正常
+    check(json::parse("\"\\u0041\"").as_string() == "A", "unicode ASCII A");
+    // 原始 UTF-8 直接往返（无需转义，逐字节保留）
+    check(json::serialize(json::parse("\"\xE4\xBD\xA0\xE5\xA5\xBD\"")) ==
+              "\"\xE4\xBD\xA0\xE5\xA5\xBD\"",
+          "raw UTF-8 roundtrip");
+    // 非法代理（诚实抛错，不静默产出错误字节）
+    check_throw("\"\\ud800\"", "unpaired high surrogate");
+    check_throw("\"\\udc00\"", "unpaired low surrogate");
+    check_throw("\"\\ud800\\u0041\"", "high surrogate + non-low surrogate");
 }
 
 void test_serialize_control() {
@@ -184,7 +197,7 @@ int main() {
     test_access();
     test_type_mismatch();
     test_errors();
-    test_unicode_ascii();
+    test_unicode();
     test_serialize_control();
     test_error_location();
     test_mutation();

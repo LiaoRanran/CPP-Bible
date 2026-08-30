@@ -12,8 +12,8 @@
 // 里程碑（诚实标注，已实现 / 待扩展）：
 //   [M1 ✅] 数字统一存 double；序列化整数回显整数、浮点用 std::to_chars 最短往返
 //   [M2 ✅] 可变编辑（非 const 访问器 + set）+ 点路径查询 find + 错误行号（line/col）
-//   [M3 待] 字符串 \uXXXX 的完整 UTF-8 编码（含代理对）；当前仅 BMP 内 ASCII，非 ASCII 诚实抛错
-//   [M3 待] 数字精度策略（任意精度 / 保留原始字面量）——当前统一 double，极端值有进位
+//   [M3 ✅] 字符串 \uXXXX 完整 UTF-8 编码（含 UTF-16 代理对，如 \ud83d\ude00 → 😀）
+//   [M4 待] 数字精度策略（任意精度 / 保留原始字面量）——当前统一 double，极端值有进位
 #include <charconv>
 #include <cstddef>
 #include <cstdio>
@@ -191,6 +191,25 @@ private:
     }
     [[noreturn]] void fail(const std::string& msg) { fail(msg, pos_); }
 
+    // Unicode code point → UTF-8 字节序列（1~4 字节），按标准编码规则
+    static void append_utf8(unsigned cp, std::string& out) {
+        if (cp < 0x80) {
+            out += static_cast<char>(cp);
+        } else if (cp < 0x800) {
+            out += static_cast<char>(0xC0 | (cp >> 6));
+            out += static_cast<char>(0x80 | (cp & 0x3F));
+        } else if (cp < 0x10000) {
+            out += static_cast<char>(0xE0 | (cp >> 12));
+            out += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
+            out += static_cast<char>(0x80 | (cp & 0x3F));
+        } else {
+            out += static_cast<char>(0xF0 | (cp >> 18));
+            out += static_cast<char>(0x80 | ((cp >> 12) & 0x3F));
+            out += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
+            out += static_cast<char>(0x80 | (cp & 0x3F));
+        }
+    }
+
     char peek() const noexcept { return pos_ < text_.size() ? text_[pos_] : '\0'; }
 
     void skip_ws() noexcept {
@@ -269,39 +288,56 @@ private:
         return out;  // 由调用方 move 进 Value（NRVO 免拷贝）
     }
 
-    char parse_escape() {
+    std::string parse_escape() {
         const char c = peek();
         switch (c) {
-            case '"':  ++pos_; return '"';
-            case '\\': ++pos_; return '\\';
-            case '/':  ++pos_; return '/';
-            case 'b':  ++pos_; return '\b';
-            case 'f':  ++pos_; return '\f';
-            case 'n':  ++pos_; return '\n';
-            case 'r':  ++pos_; return '\r';
-            case 't':  ++pos_; return '\t';
+            case '"':  ++pos_; return "\"";
+            case '\\': ++pos_; return "\\";
+            case '/':  ++pos_; return "/";
+            case 'b':  ++pos_; return "\b";
+            case 'f':  ++pos_; return "\f";
+            case 'n':  ++pos_; return "\n";
+            case 'r':  ++pos_; return "\r";
+            case 't':  ++pos_; return "\t";
             case 'u':  return parse_unicode();
             default:   fail("invalid escape sequence");
         }
     }
 
-    char parse_unicode() {
-        ++pos_;  // 跳过 'u'
+    // 解析 \uXXXX（含 UTF-16 代理对），编码为 UTF-8 字节串返回
+    std::string parse_unicode() {
+        ++pos_;                       // 跳过 'u'
+        unsigned cp = parse_hex4();
+        if (cp >= 0xD800 && cp <= 0xDBFF) {   // 高代理：须紧跟 \uXXXX 低代理
+            if (peek() == '\\' && pos_ + 1 < text_.size() && text_[pos_ + 1] == 'u') {
+                pos_ += 2;
+                const unsigned lo = parse_hex4();
+                if (lo < 0xDC00 || lo > 0xDFFF) fail("invalid low surrogate");
+                cp = 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00);
+            } else {
+                fail("unpaired high surrogate");
+            }
+        } else if (cp >= 0xDC00 && cp <= 0xDFFF) {   // 低代理单独出现：非法
+            fail("unpaired low surrogate");
+        }
+        std::string out;
+        append_utf8(cp, out);
+        return out;
+    }
+
+    unsigned parse_hex4() {
         unsigned cp = 0;
         for (int i = 0; i < 4; ++i) {
             const char c = peek();
-            unsigned d = 0;
-            if (c >= '0' && c <= '9')       d = static_cast<unsigned>(c - '0');
-            else if (c >= 'a' && c <= 'f')  d = static_cast<unsigned>(c - 'a' + 10);
-            else if (c >= 'A' && c <= 'F')  d = static_cast<unsigned>(c - 'A' + 10);
+            unsigned d;
+            if (c >= '0' && c <= '9')      d = static_cast<unsigned>(c - '0');
+            else if (c >= 'a' && c <= 'f') d = static_cast<unsigned>(c - 'a' + 10);
+            else if (c >= 'A' && c <= 'F') d = static_cast<unsigned>(c - 'A' + 10);
             else fail("bad unicode escape");
             cp = cp * 16 + d;
             ++pos_;
         }
-        // 骨架简化：仅编码 BMP 内的 ASCII code point；非 ASCII \uXXXX 的 UTF-8
-        // 编码（含代理对）留待里程碑 3，这里诚实抛错而非静默产出错误字节。
-        if (cp < 0x80) return static_cast<char>(cp);
-        fail("non-ASCII \\uXXXX not yet supported");
+        return cp;
     }
 
     Value parse_array() {
