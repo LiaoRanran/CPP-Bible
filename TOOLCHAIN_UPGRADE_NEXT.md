@@ -78,7 +78,20 @@
 
 全程未用 `--unsafe-fixes`。清零后 `ruff check tools/` = `All checks passed`，并已加入 `ci.yml` quality job（钉定 `ruff==0.6.9`，`continue-on-error: false`）。
 
-**未做（留待下一步）**：`mypy` 全程未动（需 `uv sync --extra dev` 装依赖 + 类型标注 triage，量大）。CI **只加了 ruff，未加 mypy**——现在加 mypy 必红。
+**mypy 进展（2026-08-31）**：已用 `uvx mypy tools/` 完成首次全量评估——
+**无需 `uv sync --extra dev` 重建 `.venv`**（`uvx` 跑在隔离环境），绕开了
+本机高风险操作。实测 **58 错 / 21 文件**（检查 107 个源文件）。
+
+按错误码分布：`var-annotated` 16 / `union-attr` 13 / `attr-defined` 11 /
+`list-item` 8 / `assignment` 7 / 其余 3 类共 3。
+
+已顺带修掉一类：`sys.stdout.reconfigure` 的 9 处 `attr-defined`，做法是收敛为
+共享 helper `tools/utf8_console.py` 的 `ensure_utf8()`（见 §2 末）。mypy 由
+67 降到 58。
+
+**未做（留待下一步）**：剩余 58 错的类型 triage。其中 `var-annotated`（16）是
+纯注解、零运行时风险，建议先清；`union-attr`（13）需补 None 判断，可能暴露
+真实隐患，需逐个确认。CI **只加了 ruff，未加 mypy**——现在加 mypy 必红。
 
 ---
 
