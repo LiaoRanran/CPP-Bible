@@ -1,7 +1,7 @@
 # NEXT_LLM.md — 项目接手入口（2026-08-30 快照，零上下文即可接手）
 
 > **本文件是唯一权威接手入口。** 读完就能开始干活。不需要读 AGENT.md / HANDOVER.md / START_HERE.md。
-> 上一版（2026-07-17，停在 APP15）已过时作废，本版覆盖到 2026-08-30 升级战役收官。
+> 上一版（2026-07-17，停在 APP15）已过时作废，本版覆盖到 2026-08-30 深夜——JSON 台阶二收尾 + 工具链升级剩余项规划。
 
 ---
 
@@ -12,12 +12,12 @@
 | 什么项目？ | 《现代 C++ 终极圣经》147 章 C++ 技术书 + Python 质量门禁工具链，仓库 `LiaoRanran/CPP-Bible` |
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
 | 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已首次全链路真绿 |
-| 在飞的活？ | 无——上一批 ch01/08/09/10 完整化已提交并推送（见「已收口批次」） |
-| 剩余待办？ | 见「遗留清单」：55 断言 WARN 分类、legacy 审计人工复核（异盘备份已落 D:\） |
-| HEAD？ | `6d7d6e9`（本地 = origin/master，无分叉） |
+| 在飞的活？ | 无——上一批「JSON 台阶二收尾」已提交并推送（`fb329d5`…`972bbe9`，见「已收口批次」） |
+| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`；内容五阶主线见 `CONTENT_DEPTH_ROADMAP.md` |
+| HEAD？ | `972bbe9`（本地 = origin/master，无分叉） |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
-| Python？ | 项目 `.venv/Scripts/python.exe`（uv 管理）；门禁内部调 `C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe` |
-| 权威文档？ | `STATE.json`（事实源）+ `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` + `UPGRADE_PLAN_2026-08-30.md` |
+| Python？ | ⚠ 版本漂移：`.venv`=3.14.5、托管实 3.13.14（配置写 3.13.12）、系统 3.10.11 → 待收窄（工具链规划项 1） |
+| 权威文档？ | `STATE.json`（事实源）+ `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` + `UPGRADE_PLAN_2026-08-30.md` + `TOOLCHAIN_UPGRADE_NEXT.md` |
 
 ---
 
@@ -51,6 +51,15 @@ git status --short
 
 ## 已收口批次（2026-08-30，勿重做）
 
+### JSON 贯穿项目线（台阶二）→ ✅ 已提交并推送
+
+- **范围**：台阶二「贯穿全书实战项目线」首个项目 = 手写 JSON 库（`Examples/json/`），里程碑 M1–M4 全部完成。
+- **已完成**：
+  - 骨架 + 46 例自测 → 错误行号/可变编辑/点路径（62 例）→ UTF-8 完整转义含代理对（68 例）→ 美化序列化 + demo → 数字三元组分流 int64/uint64/double（84 例，大整数无损）。
+  - ch162 正文「项目实战回链」：模块↔章节映射表 + 可导航链接。
+  - **门禁纳入 CI**：`tools/json_project_gate.py` + `ci.yml` compile job 新增 JSON Project Gate（gcc-only 硬门禁），本地 GCC15.3 实测 2/2。
+- **提交**：`fb329d5`(P1 内存实证) → `d295733`…`7263d27`(JSON M1–M4) → `502387d`(回链) → `4b04439`(门禁入 CI) → `972bbe9`(回链可导航化)。
+
 ### ch01/02/08/09/10 cpp 块完整化 → ✅ 已提交并推送
 
 - **目标**：把 part01 历史章的 2-3 行 fragment 示例，升级为「含 `int main()` + 显式 `#include`」的自包含可编译程序；不可编译的示意块（如 C++26 反射/契约语法）改为 ` ```text ` 围栏。
@@ -81,6 +90,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | 3 | legacy 审计候选人工复核 | 审计报告 §5.3 | 10 unsafe C / 94 裸 new / 101 reinterpret_cast，分批留档（`audit_cpp_defects.py`） |
 | 4 | 备份第二故障域 | ✅ 已完成 2026-08-30 | 已推 `D:\CPP-Bible-Backup\20260830-201021`（明文副本，恢复演练 PASS），见本节末 |
 | 5 | 站点/PDF/EPUB 本地重建 | 审计报告 §11 | 本机缺 pandoc/xelatex/mkdocs，出版产物走 CI 八 job |
+| 6 | 工具链升级剩余项（Python 收窄/静态检查链/digest/指标事实源/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | P0：Python 版本 + ruff/mypy；P1：digest + 指标；P2：CROSSREF 裁决 |
 
 ---
 
@@ -92,6 +102,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | `STATE.json` | 进度状态 + execution_order + metrics（事实源 build/metrics.json 派生） | ✅ |
 | `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` | 全量审计 + 风险清单 + 路线图 | ✅ |
 | `UPGRADE_PLAN_2026-08-30.md` | 升级方案（7 目标 / 阶段 A-D / 关键决策） | ✅ |
+| `TOOLCHAIN_UPGRADE_NEXT.md` | 工具链升级剩余项执行规划（P0-P2 五剩余项 + CROSSREF 裁决策略） | ✅ |
 | `CONTENT_DEPTH_ROADMAP.md` | **内容深化主线**（五阶：汇编实证矩阵 / 实战项目线 / 陷阱体系 / 人文温度 / 内容形态补全） | ✅ |
 | `docs/references/P1_memory_object_model_checklist.md` | 台阶一 P1 内存/对象模型实证结论清单（强模型定结论，弱模型施工图） | ✅ |
 | `ISSUES.md` | 遗留清单（2026-08-30 口径） | ✅ |
@@ -137,6 +148,6 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 
 ---
 
-_重写时间：2026-08-30 | 覆盖到升级战役收官（CI 八 job 真绿，b90fa5d）_
-_HEAD：445eaa5 | 本地 = origin/master，无分叉_
+_重写时间：2026-08-30 深夜 | 覆盖到 JSON 台阶二收尾 + 工具链升级剩余项规划_
+_HEAD：972bbe9 | 本地 = origin/master，无分叉_
 _上一版 NEXT_LLM.md（2026-07-17，APP15 阶段）已作废，由本版全面替换_
