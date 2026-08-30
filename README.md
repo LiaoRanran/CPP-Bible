@@ -77,4 +77,4 @@ bash tools/generate_pdf.sh --by-part
 
 ## 许可
 
-CC BY-NC-SA 4.0
+[MIT](LICENSE) —— 内容与示例代码均以 MIT 许可发布。

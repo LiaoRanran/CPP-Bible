@@ -4,6 +4,54 @@
 
 ---
 
+## [Unreleased] - 2026-08-30
+
+全量仓库审计 + 治理加固里程碑。交付 `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` 与仓库外备份，并修复一批门禁/工具缺陷。全部改动仍在本机工作树，未提交、未推送远端。
+
+### 备份与恢复验证
+
+- 仓库外全量备份至 `C:\RepositoryBackups\CPP-Bible\20260830-090558`（工作树 tar.zst + Git bundle + SHA-256）。
+- 验证通过：归档与 bundle SHA-256 复算一致、全量恢复文件/目录差异 0、恢复仓库 `git fsck` 退出 0、`git bundle verify` 通过、ACL 已隔离（关闭继承）。
+- 已知残留：备份与源同机同盘（`C:`），第二故障域需加密外置介质/对象存储。
+
+### 质量与工具修复
+
+- **章节口径统一（P0）**：`compile_all.py`、`density_audit.py` 曾把 `Book/` 下全部 Markdown 当章节（151），`consistency_check.py` 把 `assets/history/MANIFEST.md` 当章节；三工具统一只扫描 `chNN_*.md`，章节数固定 147。密度审计修正为 147 章均分 25.7/30，一致性 WARN 33→30（索引文件不再计数）。
+- **legacy 审计工具修复（P1）**：`audit_py_tools.py` / `audit_cpp_defects.py` / `chapter_number_audit.py` 根路径改为按 `__file__` 推导，输出写入正确目录；扫描集合为空时退出码 2（原静默假绿 0）。已在任意 cwd 与空仓库副本验证。
+- **Windows 中文控制台编码修复**：`xref_check.py` 打印 `⟶` 抛 `UnicodeEncodeError`、`cppbible.py` 按 GBK 解码子进程 UTF-8 输出导致日志线程崩溃——均已统一为 UTF-8 输出/解码。Linux CI 无影响；本机 quality 现可完整复现跑通。
+- **内容修复**：清理 11 个章节 12 处 W2 连续空行（`whitespace_fix --apply`）；修复 `ch92_chrono.md:147` 无连线的 Mermaid 图块（补语义边）；`fix_ch36.py` 语法错误修正（仅 `py_compile` 验证，未执行）。
+- **CI 发布依赖图（工作树，待远端验收）**：`site/pdf/epub` 由 `needs: quality` 改为 `needs: [compile, publish-check]`；`deploy` 由 `needs: site` 改为 `needs: [site, pdf, epub]`。依据：GitHub Actions `#373` 实测 deploy 于 10:08 完成而 GCC 编译 10:38 才完成，且 EPUB 失败仍发布，证明原依赖可绕过编译。
+
+### 门禁复验结果
+
+- `cppbible.py check --stage quality`：16/16 全绿（审计初 15/16）。
+- `cppbible.py check --stage compile`：5/5 全绿（Compile All / Compile Gate / Exempt Audit / D5 Compile Gate / Assertions）。
+- Mermaid 静态校验 511/511（审计初 1 处错误）。
+
+### 升级与优化（阶段 A：工具链 · 合规 · 规范 · 环境）
+
+- 新增《[UPGRADE_PLAN_2026-08-30.md](UPGRADE_PLAN_2026-08-30.md)》全面升级方案：7 目标现状-差距-行动矩阵、ABCD 四阶段、资源需求清单。
+- **许可（已裁决 MIT）**：新增 `LICENSE`（MIT）；README 许可行由 CC BY-NC-SA 修正为 MIT，消除与 pyproject 的冲突。
+- **依赖锁定（已选 uv）**：生成 `uv.lock`（解析 45 包）；`tools/bootstrap.ps1` 改 uv 优先（回退 pip）；新增 `.env.example` 与 `SECURITY.md`。
+- **CI 工具链升级**：全部 actions 升级到最新主版本（checkout/setup-python@v7、upload-artifact@v7、upload-pages-artifact@v5、deploy-pages@v5），消除 Node20 弃用告警。
+- **规范流程**：新增 `.github/PULL_REQUEST_TEMPLATE.md`（含门禁自检清单）与 `.github/ISSUE_TEMPLATE/`（bug / 内容勘误）；新增 `.pre-commit-config.yaml`（trailing-whitespace、ruff、mypy）。
+- 用户裁决：UI 深度「先搞内容」，阶段 C 调整为内容深化与质量收口。
+
+### 工具栈升级 + 门禁 + 前端工具（2026-08-30 追加）
+
+- **依赖锁定（uv）**：全部依赖升级到最新并写入 `uv.lock`（mkdocs-material 9.7.7、ruff 0.16.5、mypy 2.3.1、mkdocs-mermaid2-plugin 1.2.3、pagefind 1.5.2、pypandoc 1.17）；导出 `requirements.lock.txt`（hash 校验），CI `site` job 改为锁定安装。
+- **CI actions 再升级**：site/pdf/epub/publish-check/deploy 等全部升级到最新主版本（checkout/setup-python@v7、upload-artifact@v7、upload-pages-artifact@v5、deploy-pages@v5）。
+- **新门禁 `cppbible env`**：工具链自检（Python/GCC 15.3.0/objdump/c++filt/uv/git + 锁文件存在性），缺失或版本不符即非零；已接入 bootstrap 第 4 步。
+- **前端工具 `tools/site_audit.py`**：站点产物健康自检（首页/章节页可达/静态资源完整性/徽章注入/Mermaid/pagefind），已接入 CI `site` job（构建后、上传前阻断）；附最小 fixture 自测（GOOD=PASS、BAD=FAIL）。
+- **内容债任务单**：[docs/references/content_debt_tasklist.md](docs/references/content_debt_tasklist.md) —— 55 处悬空章号引用（按语义建议映射）、7 处前置问题（6 倒置 + 1 悬空）、30 一致性 WARN 执行顺序。
+
+### 现状与遗留
+
+- 工作树含约 120 章未提交内容 + 本轮修复，`master` 领先实时远端 `eb89ae9` 7 个提交且无分叉；未启用分支保护。
+- 遗留债务：55 处悬空章号引用、7 处前置关系问题、33→30 一致性 WARN、`STATE/ISSUES/README` 事实源冲突、D5 覆盖口径（113 vs 119）、依赖无锁文件、缺 `LICENSE` 等，详见审计报告 §7/§8/§10。
+
+---
+
 ## [1.1.0] - 2026-07-15
 
 第三阶段"质量收尾 + 高含金量升级"首个发布。在 1.0.0 全绿基线上，追加实测/工程价值内容，并修复一处编译器特性支持的事实性错误。
