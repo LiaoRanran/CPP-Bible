@@ -970,21 +970,22 @@ int main() {
 
 | 文件 | 作用 | 里程碑状态 |
 |---|---|---|
-| `Examples/json/json.hpp` | 单头主库：`Value` + `Parser` + `serialize` | M1–M3 ✅ / M4 待 |
-| `Examples/json/json_test.cpp` | 74 例自测（类型/解析/转义/错误定位/美化/往返） | — |
+| `Examples/json/json.hpp` | 单头主库：`Value` + `Parser` + `serialize` | M1–M4 ✅ |
+| `Examples/json/json_test.cpp` | 84 例自测（类型/解析/转义/错误定位/数字精度/美化/往返） | — |
 | `Examples/json/json_demo.cpp` | 用法演示：配置读 → 查 → 改 → 紧凑/美化双格式回写 | — |
 
 **模块 ↔ 章节映射**（`json.hpp` 内每个模块都能回指书中的具体章节）：
 
 | `json.hpp` 模块 | 回链章节 | 知识点 |
 |---|---|---|
-| `Value`＝`std::variant<Null,bool,double,string,Array,Object>`（值语义、无 vptr） | 第88章 `std::optional`/`std::variant` | 类型安全区分联合 |
+| `Value`＝`std::variant<Null,bool,long long,unsigned long long,double,string,Array,Object>`（值语义、无 vptr） | 第88章 `std::optional`/`std::variant` | 类型安全区分联合 |
 | `Array = std::vector<Value>` | 第77章 `std::vector` | 动态数组容器 |
 | `Object = std::map<std::string, Value>` | 第83章 `std::map` | 有序键容器（红黑树） |
 | `parse_error : std::runtime_error`（携带 line/col） | 第146章 错误处理、第40章 异常安全 | 异常层级 + 定位 |
-| 8 个重载构造 + `set(const char*)` 精确匹配重载 | 第61章 模板/函数重载 | 重载决议、「`set("x")` 误走 `bool`」陷阱 |
+| 重载构造与 `set` 系列（int/int64/uint64/double/`const char*` 精确匹配） | 第61章 模板/函数重载 | 重载决议、「`set("x")` 误走 `bool`」陷阱 |
 | `parse_string`/`parse_unicode`（UTF-16 代理对 → UTF-8） | 第81章 `std::string`、⑫ UTF-8 | 转义 + 编码 |
-| `Parser`（递归下降 + `strtod`/`to_chars` 解析数字） | ④⑥ 递归下降解析 | 文法直接映射到函数 |
+| `Parser`（递归下降分派） | ④⑥ 递归下降解析 | 文法直接映射到函数 |
+| 数字三元组分流（`long long`/`unsigned long long`/`double`，>2^53 整数无损、非有限值拒收） | 第88章 variant + 基础类型精度 | 整数精度 vs 浮点近似 |
 | 构造与 `parse` 全程 `std::move`（零深拷贝） | 第115章 移动语义 | 值语义 + NRVO |
 | `escape_string`/`serialize_into`（紧凑/美化双模式） | ⑧ 序列化 | 逆过程 + 幂等往返 |
 
@@ -993,13 +994,13 @@ int main() {
 ```bash
 cd Examples/json
 g++ -std=c++23 -O2 -Wall -Wextra -o json_test.exe json_test.cpp
-./json_test.exe        # 期望输出 "json_test: 74 passed, 0 failed"
+./json_test.exe        # 期望输出 "json_test: 84 passed, 0 failed"
 
 g++ -std=c++23 -O2 -Wall -Wextra -o json_demo.exe json_demo.cpp
 ./json_demo.exe        # 打印 dark_mode、server 列表，以及紧凑/美化两种回写
 ```
 
-**与本章其他实现的关系**：⑬ 的 mini JSON 是**教学用单文件最小实现**（便于一眼看全貌）；本节分散的 `Examples/_ch162_*.cpp` 是**逐知识点拆解**的示例；而 `Examples/json/json.hpp` 是贯穿项目线的**正式版**——在 mini 基础上补齐了错误行号（M2）、点路径查询 `find`（M2）、可变编辑 `set`（M2）、完整 UTF-8 代理对转义（M3）、美化序列化（M3）。三者同源于 ③④⑥⑦⑧⑭ 的同一套文法：读 mini 懂原理，读 `_ch162_*` 看拆解，读 `json.hpp` 掌握工程化整合。
+**与本章其他实现的关系**：⑬ 的 mini JSON 是**教学用单文件最小实现**（便于一眼看全貌）；本节分散的 `Examples/_ch162_*.cpp` 是**逐知识点拆解**的示例；而 `Examples/json/json.hpp` 是贯穿项目线的**正式版**——在 mini 基础上补齐了错误行号（M2）、点路径查询 `find`（M2）、可变编辑 `set`（M2）、完整 UTF-8 代理对转义（M3）、美化序列化（M3）、整数/浮点三元组数字精度（M4）。三者同源于 ③④⑥⑦⑧⑭ 的同一套文法：读 mini 懂原理，读 `_ch162_*` 看拆解，读 `json.hpp` 掌握工程化整合。
 
 ## 相关章节（交叉引用）
 

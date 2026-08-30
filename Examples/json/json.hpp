@@ -10,11 +10,13 @@
 //   part03 底层：递归下降解析（无第三方依赖）
 //
 // 里程碑（诚实标注，已实现 / 待扩展）：
-//   [M1 ✅] 数字统一存 double；序列化整数回显整数、浮点用 std::to_chars 最短往返
-//   [M2 ✅] 可变编辑（非 const 访问器 + set）+ 点路径查询 find + 错误行号（line/col）
+//   [M1 ✅] 数字按 int64/uint64/double 三元组存储（对齐 nlohmann/json），整数无损
+//   [M2 ✅] 可变编辑（set）+ 点路径查询 find + 错误行号（line/col）
 //   [M3 ✅] 字符串 \uXXXX 完整 UTF-8 编码（含 UTF-16 代理对，如 \ud83d\ude00 → 😀）
-//   [M4 待] 数字精度策略（任意精度 / 保留原始字面量）——当前统一 double，极端值有进位
+//   [M4 ✅] 大整数精确往返（int64/uint64 全域无损）；浮点仍 double，非有限值诚实拒收
+#include <cerrno>
 #include <charconv>
+#include <cmath>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -38,19 +40,25 @@ using Object = std::map<std::string, Value>;
 // 比继承 + vtable 更省空间（无 vptr），访问代价是编译期已知的 get<N>。
 class Value {
 public:
-    using storage = std::variant<Null, bool, double, std::string, Array, Object>;
+    // 数字三元组（里程碑 4，对齐 nlohmann/json）：
+    //   long long          有符号整数（|v| <= 2^63-1）
+    //   unsigned long long 无符号整数（2^63..2^64-1，如超大 ID/时间戳）
+    //   double             带小数/指数的浮点；纯整数字面量不落 double，避免 2^53 精度墙
+    using storage = std::variant<Null, bool, long long, unsigned long long, double,
+                                 std::string, Array, Object>;
 
     Value() = default;
-    Value(Null)              : v_(nullptr) {}
-    Value(bool b)            : v_(b) {}
-    Value(int i)             : v_(static_cast<double>(i)) {}
-    Value(unsigned int i)    : v_(static_cast<double>(i)) {}
-    Value(long long i)       : v_(static_cast<double>(i)) {}
-    Value(double d)          : v_(d) {}
-    Value(std::string s)     : v_(std::move(s)) {}
-    Value(const char* s)     : v_(std::string(s)) {}
-    Value(Array a)           : v_(std::move(a)) {}
-    Value(Object o)          : v_(std::move(o)) {}
+    Value(Null)                : v_(nullptr) {}
+    Value(bool b)              : v_(b) {}
+    Value(int i)               : v_(static_cast<long long>(i)) {}
+    Value(unsigned int i)      : v_(static_cast<unsigned long long>(i)) {}
+    Value(long long i)         : v_(i) {}
+    Value(unsigned long long u) : v_(u) {}
+    Value(double d)            : v_(d) {}
+    Value(std::string s)       : v_(std::move(s)) {}
+    Value(const char* s)       : v_(std::string(s)) {}
+    Value(Array a)             : v_(std::move(a)) {}
+    Value(Object o)            : v_(std::move(o)) {}
 
     enum class Type { Null, Bool, Number, String, Array, Object };
 
@@ -58,9 +66,11 @@ public:
         switch (v_.index()) {
             case 0:  return Type::Null;
             case 1:  return Type::Bool;
-            case 2:  return Type::Number;
-            case 3:  return Type::String;
-            case 4:  return Type::Array;
+            case 2:
+            case 3:
+            case 4:  return Type::Number;   // int64 / uint64 / double 皆映射为 Number
+            case 5:  return Type::String;
+            case 6:  return Type::Array;
             default: return Type::Object;
         }
     }
@@ -73,14 +83,27 @@ public:
 
     // 类型不匹配时抛出 std::bad_variant_access（源自 std::get）
     bool               as_bool()   const { return std::get<bool>(v_); }
-    double             as_number() const { return std::get<double>(v_); }
     const std::string& as_string() const { return std::get<std::string>(v_); }
     const Array&       as_array()  const { return std::get<Array>(v_); }
     const Object&      as_object() const { return std::get<Object>(v_); }
 
+    // as_number()：数字统一近似为 double。int64/uint64 超出 2^53 时会丢精度，
+    // 精确值请用 as_int()/as_uint()/as_float()。
+    double as_number() const {
+        if (const auto p = std::get_if<long long>(&v_))          return static_cast<double>(*p);
+        if (const auto p = std::get_if<unsigned long long>(&v_)) return static_cast<double>(*p);
+        return std::get<double>(v_);
+    }
+    // 数字精确访问（序列化 / 精确读取用）
+    bool               is_integer()  const noexcept { return std::holds_alternative<long long>(v_); }
+    bool               is_uinteger() const noexcept { return std::holds_alternative<unsigned long long>(v_); }
+    bool               is_float()    const noexcept { return std::holds_alternative<double>(v_); }
+    long long          as_int()      const { return std::get<long long>(v_); }
+    unsigned long long as_uint()     const { return std::get<unsigned long long>(v_); }
+    double             as_float()    const { return std::get<double>(v_); }
+
     // 可变访问（里程碑 2）：返回引用可就地编辑，类型不符仍抛 bad_variant_access
     bool&        as_bool()   { return std::get<bool>(v_); }
-    double&      as_number() { return std::get<double>(v_); }
     std::string& as_string() { return std::get<std::string>(v_); }
     Array&       as_array()  { return std::get<Array>(v_); }
     Object&      as_object() { return std::get<Object>(v_); }
@@ -96,14 +119,16 @@ public:
     Value&       operator[](const std::string& k)     { return at(k); }
 
     // 就地改值 / 改类型（可链式）：v.set("x").set(1.5)
-    Value& set(Null)          { v_ = nullptr;              return *this; }
-    Value& set(bool b)        { v_ = b;                    return *this; }
-    Value& set(int i)         { v_ = static_cast<double>(i); return *this; }
-    Value& set(double d)      { v_ = d;                    return *this; }
-    Value& set(std::string s) { v_ = std::move(s);         return *this; }
-    Value& set(const char* s) { v_ = std::string(s);       return *this; }  // 精确匹配，避免 set("x") 误走 set(bool)
-    Value& set(Array a)       { v_ = std::move(a);         return *this; }
-    Value& set(Object o)      { v_ = std::move(o);         return *this; }
+    Value& set(Null)                { v_ = nullptr;                     return *this; }
+    Value& set(bool b)              { v_ = b;                           return *this; }
+    Value& set(int i)               { v_ = static_cast<long long>(i);   return *this; }
+    Value& set(long long i)         { v_ = i;                           return *this; }
+    Value& set(unsigned long long u) { v_ = u;                          return *this; }
+    Value& set(double d)            { v_ = d;                           return *this; }
+    Value& set(std::string s)       { v_ = std::move(s);                return *this; }
+    Value& set(const char* s)       { v_ = std::string(s);              return *this; }  // 精确匹配，避免 set("x") 误走 set(bool)
+    Value& set(Array a)             { v_ = std::move(a);                return *this; }
+    Value& set(Object o)            { v_ = std::move(o);                return *this; }
 
     // 点路径查询（里程碑 2）："a.b.0.c"；数组下标用非负整数；层级类型不符返回 nullptr
     const Value* find(const std::string& path) const {
@@ -268,9 +293,24 @@ private:
         }
 
         const std::string num = text_.substr(start, pos_ - start);
+        // 纯整数（无 '.'/'e'/'E'）：走 int64/uint64 精确通道（里程碑 4），避免 2^53 精度墙
+        if (num.find_first_of(".eE") == std::string::npos) {
+            char* end = nullptr;
+            errno = 0;
+            const long long i = std::strtoll(num.c_str(), &end, 10);
+            if (end == num.c_str() + num.size() && errno != ERANGE)
+                return Value(i);
+            errno = 0;
+            const unsigned long long u = std::strtoull(num.c_str(), &end, 10);
+            if (end == num.c_str() + num.size() && errno != ERANGE)
+                return Value(u);
+            fail("integer out of range", start);   // 超过 uint64 上限，诚实拒收
+        }
+        // 浮点（含小数或指数）：strtod + 非有限值拒收（JSON 不允许 NaN/Infinity）
         char* end = nullptr;
         const double val = std::strtod(num.c_str(), &end);
         if (end != num.c_str() + num.size()) fail("invalid number", start);
+        if (!std::isfinite(val)) fail("number out of range", start);
         return Value(val);
     }
 
@@ -416,23 +456,31 @@ inline void serialize_into(const Value& v, std::string& out, int indent, int lev
             out += v.as_bool() ? "true" : "false";
             break;
         case Value::Type::Number: {
-            const double d = v.as_number();
-            // 无损整数（long long 范围内）按整数回显，如 1e3 -> 1000
-            if (d >= static_cast<double>(std::numeric_limits<long long>::min()) &&
-                d <= static_cast<double>(std::numeric_limits<long long>::max()) &&
-                d == static_cast<double>(static_cast<long long>(d))) {
-                char buf[32];
-                std::snprintf(buf, sizeof buf, "%lld", static_cast<long long>(d));
+            char buf[48];
+            if (v.is_integer()) {
+                std::snprintf(buf, sizeof buf, "%lld", static_cast<long long>(v.as_int()));
+                out += buf;
+            } else if (v.is_uinteger()) {
+                std::snprintf(buf, sizeof buf, "%llu",
+                              static_cast<unsigned long long>(v.as_uint()));
                 out += buf;
             } else {
-                // std::to_chars 最短往返表示：3.14 -> "3.14"，而非 %.17g 的
-                // "3.1400000000000001"。对齐值语义（parse(serialize(x)) == x）。
-                char buf[40];
-                auto res = std::to_chars(buf, buf + sizeof buf, d);
-                if (res.ec == std::errc()) {
-                    out.append(buf, res.ptr);
+                const double d = v.as_float();
+                // 无损整数（long long 范围内）按整数回显，如 1e3 -> 1000
+                if (d >= static_cast<double>(std::numeric_limits<long long>::min()) &&
+                    d <= static_cast<double>(std::numeric_limits<long long>::max()) &&
+                    d == static_cast<double>(static_cast<long long>(d))) {
+                    std::snprintf(buf, sizeof buf, "%lld", static_cast<long long>(d));
+                    out += buf;
                 } else {
-                    throw parse_error("cannot serialize non-finite number", 0);
+                    // std::to_chars 最短往返表示：3.14 -> "3.14"，而非 %.17g 的
+                    // "3.1400000000000001"。对齐值语义（parse(serialize(x)) == x）。
+                    auto res = std::to_chars(buf, buf + sizeof buf, d);
+                    if (res.ec == std::errc()) {
+                        out.append(buf, res.ptr);
+                    } else {
+                        throw parse_error("cannot serialize non-finite number", 0);
+                    }
                 }
             }
             break;

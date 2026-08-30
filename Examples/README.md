@@ -25,7 +25,7 @@ g++ -std=c++23 -O2 -Wall -o example_xxx.exe example_xxx.cpp
 ```bash
 cd json
 g++ -std=c++23 -O2 -Wall -Wextra -o json_test.exe json_test.cpp
-./json_test.exe          # 期望输出 "json_test: 74 passed, 0 failed"
+./json_test.exe          # 期望输出 "json_test: 84 passed, 0 failed"
 
 # 用法演示（配置读 → 查 → 改 → 紧凑/美化回写）
 g++ -std=c++23 -O2 -Wall -Wextra -o json_demo.exe json_demo.cpp

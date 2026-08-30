@@ -213,6 +213,33 @@ void test_pretty() {
     check(json::serialize(json::parse("{}"), 2) == "{}", "pretty empty object inline");
 }
 
+void test_number_precision() {
+    // 大整数（> 2^53）精确往返：旧 double 通道会丢精度，int64/uint64 通道无损
+    check(round_trip("9007199254740993") == "9007199254740993",
+          "int64 > 2^53 roundtrip", round_trip("9007199254740993"));
+    check(round_trip("9223372036854775807") == "9223372036854775807",
+          "int64 max roundtrip");
+    check(round_trip("-9223372036854775808") == "-9223372036854775808",
+          "int64 min roundtrip");
+    check(round_trip("18446744073709551615") == "18446744073709551615",
+          "uint64 max roundtrip");
+
+    // 类型分流：整数 → is_integer，浮点 → is_float；精确读取走 as_int/as_uint
+    json::Value i = json::parse("42");
+    check(i.is_integer() && i.as_int() == 42, "integer typed as int64");
+    json::Value u = json::parse("18446744073709551615");
+    check(u.is_uinteger() && u.as_uint() == 18446744073709551615ULL, "uint64 typed precisely");
+    json::Value f = json::parse("3.14");
+    check(f.is_float() && f.as_float() == 3.14, "float typed");
+
+    // 指数/小数仍走 double 通道，序列化按整数归一化（1e3 -> 1000）
+    check(round_trip("1e3") == "1000", "exponent -> double -> 1000");
+
+    // 越界与溢出诚实拒收
+    check_throw("18446744073709551616", "beyond uint64 rejected");
+    check_throw("1e999", "overflow double -> inf rejected");
+}
+
 int main() {
     test_roundtrip();
     test_access();
@@ -224,6 +251,7 @@ int main() {
     test_mutation();
     test_find();
     test_pretty();
+    test_number_precision();
 
     std::printf("json_test: %d passed, %d failed\n", g_pass, g_fail);
     return g_fail == 0 ? 0 : 1;
