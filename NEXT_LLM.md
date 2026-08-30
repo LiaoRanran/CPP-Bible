@@ -12,9 +12,9 @@
 | 什么项目？ | 《现代 C++ 终极圣经》147 章 C++ 技术书 + Python 质量门禁工具链，仓库 `LiaoRanran/CPP-Bible` |
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
 | 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已首次全链路真绿 |
-| 在飞的活？ | 无——上一批「JSON 台阶二收尾」+ 本会话「工具链升级 P0-1 完成 / P0-2 一半」已提交（`7a48043`→`fc784ba`→`4f62438`，见「已收口批次」） |
-| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`（ruff 剩 99 处手动 + mypy + digest + 指标事实源 + CROSSREF 裁决）；内容五阶主线见 `CONTENT_DEPTH_ROADMAP.md` |
-| HEAD？ | `4f62438`（本地 = origin/master，无分叉） |
+| 在飞的活？ | 无——工具链升级 P0-1 / P0-2 已收口（ruff 债务人工清零 + 接入 CI 硬门禁 + 控制台编码修复），见「已收口批次」 |
+| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`（mypy 类型 triage + 容器 digest + 指标事实源 + CROSSREF 裁决）；内容五阶主线见 `CONTENT_DEPTH_ROADMAP.md` |
+| HEAD？ | **一律以 `git rev-parse HEAD` 为准**——本文件不复制哈希。写死的哈希在提交那一刻就已过期，这正是「指标单一事实源」待办项要根治的反例 |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
 | Python？ | ✅ 已收敛：配置 glob 识别托管 3.13.14 + `toolchain.py` 版本自检（漂移即非零退出）；`.venv` 仍 3.14.5 但不影响门禁（门禁改走托管 3.13.14） |
 | 权威文档？ | `STATE.json`（事实源）+ `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` + `UPGRADE_PLAN_2026-08-30.md` + `TOOLCHAIN_UPGRADE_NEXT.md` |
@@ -51,11 +51,13 @@ git status --short
 
 ## 已收口批次（2026-08-30，勿重做）
 
-### 工具链升级 P0-1 完成 / P0-2 一半 → ✅ 已提交（本会话收尾）
+### 工具链升级 P0-1 / P0-2 完成 → ✅ 已提交
 
 - **P0-1 Python 版本收窄（`fc784ba`）**：`toolchain.toml` 的 `[python].prefer` 改 glob `versions/3.13.*/python.exe`（容忍目录名 3.13.12 但其内二进制实 3.13.14）+ 新增 `expected="3.13"`；`toolchain.py` 加 `resolve_python_version()` 版本自检（漂移即非零退出）；**单一事实源收敛**（`cppbible.py`/`snapshot.py`/`pyproject.toml` 的 4 处 `3.13.12` 硬编码 → 1 处 glob）；新增 `.python-version`=`3.13`。quality 16/16 回归通过。
-- **P0-2 静态检查链一半（`4f62438`）**：`pre-commit` 已装（`uv tool install pre-commit`）；用钉定版本 `ruff==0.6.9`（非最新 0.16.5）对 `tools/` 做安全自动修 150 处（去未用导入/拆一行多导入/去冗余 f 前缀），quality 16/16 + 全量 py_compile 回归通过。
-- **剩余（勿算本次已做）**：ruff 剩 99 处手工（E741×34 / E701×27 / E702×21 / F841×17，均需人工，勿 `--unsafe-fixes` 批量糊）+ mypy 全程未动 + 后续 P1/P2 项。详见 `TOOLCHAIN_UPGRADE_NEXT.md`。
+  - 后续修订：`resolve_python()` 的 glob 候选排序由字典序改为**版本号数值排序取最高 patch**（字典序会把 `3.13.12` 排在 `3.13.2` 之前）。
+- **P0-2 静态检查链完成**：`pre-commit` 已装（`uv tool install pre-commit`）；用钉定版本 `ruff==0.6.9`（非最新 0.16.5，避免规则集漂移）对 `tools/` 做安全自动修 150 处（`4f62438`），随后**人工清零剩余 99 处**（E741×34 变量改名 / E701×27 + E702×21 拆行 / F841×17 删死变量，逐个确认语义），并接入 `ci.yml` quality job 硬门禁。`ruff check tools/` 现为 `All checks passed`。
+- **Windows 控制台编码坑修复**：`toolchain.py` 入口 reconfigure + `cppbible.py` `run()` 对**所有子进程**注入 `PYTHONIOENCODING=utf-8:replace`。**修复前，默认 GBK 控制台下 quality 实为 15/16 exit=1**（`d5_appendix_audit.py` 打印 ✅ 抛 `UnicodeEncodeError`）——上一版记录的「16/16」只在 UTF-8 环境下成立；修复后默认控制台即 16/16 exit=0，结论不再依赖环境。
+- **剩余（勿算本次已做）**：mypy 全程未动（需 `uv sync --extra dev` 装依赖 + 类型标注 triage，量大）+ 后续 P1/P2 项。详见 `TOOLCHAIN_UPGRADE_NEXT.md`。
 
 ### JSON 贯穿项目线（台阶二）→ ✅ 已提交并推送
 
@@ -96,7 +98,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | 3 | legacy 审计候选人工复核 | 审计报告 §5.3 | 10 unsafe C / 94 裸 new / 101 reinterpret_cast，分批留档（`audit_cpp_defects.py`） |
 | 4 | 备份第二故障域 | ✅ 已完成 2026-08-30 | 已推 `D:\CPP-Bible-Backup\20260830-201021`（明文副本，恢复演练 PASS），见本节末 |
 | 5 | 站点/PDF/EPUB 本地重建 | 审计报告 §11 | 本机缺 pandoc/xelatex/mkdocs，出版产物走 CI 八 job |
-| 6 | 工具链升级剩余项（Python 收窄/静态检查链/digest/指标事实源/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | 🔶 部分：P0-1 Python 收敛 ✅（`fc784ba`）+ P0-2 ruff 150 处 ✅（`4f62438`）；剩 ruff 99 处手工 + mypy + P1/P2 |
+| 6 | 工具链升级剩余项（Python 收窄/静态检查链/digest/指标事实源/CROSSREF 裁决） | `TOOLCHAIN_UPGRADE_NEXT.md` | 🔶 P0 全完成（Python 收敛 ✅ + ruff 清零并进 CI ✅ + 控制台编码 ✅）；剩 mypy 类型 triage + P1/P2 |
 
 ---
 
@@ -137,7 +139,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 - **工具链事实源**：`toolchain.toml`（GCC 15.3.0 已钉）。
 - **本机已装**：GCC 15.3.0、uv、项目 `.venv`、pre-commit（`uv tool install pre-commit`，隔离）；ruff 可经 `uvx "ruff==0.6.9"` 临时拉取。
 - **本机缺失**（依赖 CI）：pandoc、xelatex、mkdocs、mypy、cmake。
-- **Windows 中文控制台坑已修**：工具已统一 UTF-8 输出（`xref_check.py`、`cppbible.py` 入口）。
+- **Windows 中文控制台坑已修（两处，缺一不可）**：①`cppbible.py` 入口 reconfigure 自身 stdout；②其 `run()` 对**所有子进程**注入 `PYTHONIOENCODING=utf-8:replace`。只做①时子进程（如 `d5_appendix_audit.py` 打印 ✅）仍会在 GBK 控制台抛 `UnicodeEncodeError`——这正是「quality 16/16」一度只在 UTF-8 环境下成立的原因。`toolchain.py` 自带 reconfigure 可单独跑；其余 `tools/*.py` 若单独直接运行仍有此坑，需要时 `chcp 65001` 或设 `PYTHONIOENCODING=utf-8`。
 - **行尾约定**：仓库 markdown 为 CRLF，`git config core.autocrlf false`（已设），注入脚本须 bytes 级处理行尾避免整文件伪 diff。
 
 ---
@@ -154,6 +156,6 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 
 ---
 
-_重写时间：2026-08-30 深夜 | 覆盖到 JSON 台阶二收尾 + 工具链升级 P0-1 完成 / P0-2 一半_
-_HEAD：4f62438（工具链落地后，本地 = origin/master 待 push）_
-_上一版 NEXT_LLM.md（2026-07-17，APP15 阶段）已作废，由本版全面替换_
+_更新时间：2026-08-31 | 覆盖到 JSON 台阶二收尾 + 工具链升级 P0-1/P0-2 完成（ruff 清零 + CI 硬门禁 + 控制台编码修复）_
+_HEAD：不写死——一律以 `git rev-parse HEAD` 与 `git status -sb` 为准（写死的哈希在提交那一刻即过期）_
+_历史：2026-07-17 版（APP15 阶段）已作废；2026-08-30 深夜版停在「P0-2 一半」，其 HEAD 尾注当时已落后一个提交，且 push 状态标反_

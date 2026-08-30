@@ -10,8 +10,8 @@
 
 | # | 剩余项 | 实测现状 | 优先级 | 状态 |
 |---|---|---|---|---|
-| 1 | Python 版本漂移 | `.venv`=3.14.5、托管解释器实 3.13.14（配置写 3.13.12）、系统 `python`=3.10.11 | P0 | ✅ 已落地（`fc784ba`；.venv 重建待后续） |
-| 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | 🔶 部分（`4f62438`；ruff 150/250 已修，剩 99 手动；mypy 待装） |
+| 1 | Python 版本漂移 | `.venv`=3.14.5、托管解释器实 3.13.14（目录名 3.13.12）、系统 `python`=3.14.5（WindowsApps Store stub） | P0 | ✅ 已落地（`fc784ba`；.venv 重建待后续） |
+| 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | ✅ ruff 清零并进 CI（150 自动 + 99 人工）；🔶 mypy 待装 |
 | 3 | 容器镜像 digest | `ci.yml`/`Dockerfile`/`.devcontainer` 仍用浮动 `gcc:15.3.0` | P1 | ⬜ |
 | 4 | 指标单一事实源 | README/STATE/ISSUES/NEXT_LLM 指标互相冲突（HEAD 自相矛盾） | P1 | ⬜ |
 | 5 | CROSSREF 生成器过时 | dry-run 依赖边 732→103（退化 85%），生成器已与正文链接形式脱节 | P2 | 需裁决 |
@@ -67,18 +67,18 @@
 1. `pre-commit` 已装（`uv tool install pre-commit` → 4.6.2，隔离于 venv）。
 2. **用钉定版本 ruff v0.6.9**（非最新 0.16.5，避免规则集漂移）对 `tools/` 做安全自动修（仅 `[*]` 标记）：**150 处**（去未用导入 F401 / 拆一行多导入 E401 / 去冗余 f 前缀 F541 等），`4f62438`，quality 16/16 + 全量 py_compile 回归通过。
 
-**剩余 99 处（全需人工审阅，勿用 `--unsafe-fixes` 批量糊）**：
+**剩余 99 处 → ✅ 已人工清零（2026-08-31）**：
 
-| 规则 | 数量 | 处理方式 |
+| 规则 | 数量 | 实际处理 |
 |---|---:|---|
-| `E741` ambiguous-variable-name | 34 | 逐个把 `l`/`I`/`O` 改为具名变量（语义保持） |
-| `E701` multiple-statements-on-one-line（冒号） | 27 | 拆分单行 if/for/def 体 |
-| `E702` multiple-statements-on-one-line（分号） | 21 | 拆分 `a;b` 为两行 |
-| `F841` unused-variable（RHS 含调用，需人工确认副作用） | 17 | 逐个删除或改名，确认 RHS 无副作用 |
+| `E741` ambiguous-variable-name | 34 | `l` → `line`（确认无同名遮蔽、无字符串字面量误伤后再改） |
+| `E701` multiple-statements-on-one-line（冒号） | 27 | 拆分单行 `if ...: continue` / `try: ...` 体 |
+| `E702` multiple-statements-on-one-line（分号） | 21 | 拆分 `a; b` 为两行 |
+| `F841` unused-variable | 17 | 确认 RHS 无副作用后删除；**唯一例外**：`run_cpp_assertions.py` 的 `workers = min(8, (os_cpu := __import__("os").cpu_count() or 4))` 只摘除 walrus 目标 `os_cpu`、**保留 `cpu_count()` 调用本身** |
 
-处理完这 99 处后，`ruff check tools/` 退出 0，才可把 `ruff check tools/` 加入 CI quality job（gcc-only 硬门禁）。
+全程未用 `--unsafe-fixes`。清零后 `ruff check tools/` = `All checks passed`，并已加入 `ci.yml` quality job（钉定 `ruff==0.6.9`，`continue-on-error: false`）。
 
-**未做（留待下一步）**：`mypy` 全程未动（需 `uv sync --extra dev` 装依赖 + 类型标注 triage，量大）；CI 未加 ruff/mypy 步骤（需先清零上面 99 处，避免红门禁）。
+**未做（留待下一步）**：`mypy` 全程未动（需 `uv sync --extra dev` 装依赖 + 类型标注 triage，量大）。CI **只加了 ruff，未加 mypy**——现在加 mypy 必红。
 
 ---
 
@@ -150,26 +150,25 @@
 
 ## 7. 给下一 Agent 的精确第一步
 
-> 2026-08-30 深夜已落地项 1（Python 收敛）+ 项 2 一半（ruff 150 处安全修复），下面的第一步从「剩余 99 处 + mypy」开始，不再重复已做项。
+> 2026-08-31 已落地：项 1（Python 收敛）+ 项 2 完整（ruff 清零并进 CI）。下面的第一步从「mypy 类型 triage」开始，不再重复已做项。
 
 ```powershell
 cd C:/CodeLearnling/note/note/C++/CPP-Bible
 
-# 0) 确认接手状态（现在应报 python@ 3.13.14、无漂移、exit 0）
+# 0) 确认接手状态（默认 GBK 控制台也应 exit 0；应报 python@ 3.13.14 且无漂移）
 python tools/toolchain.py
 
-# 1) 清完 ruff 剩余 99 处（E741/E701/E702 手动；F841 逐个确认副作用）
-uvx "ruff==0.6.9" check tools/ --statistics      # 应只剩 99 处
-#    逐文件处理，切忌 uvx "ruff==0.6.9" check tools/ --fix --unsafe-fixes 批量糊
+# 1) 确认 ruff 仍为零（CI 已硬门禁，本地也别让它红）
+uvx "ruff==0.6.9" check tools/                   # 期望 All checks passed
 
 # 2) 装 mypy 并做类型标注 triage（量大，建议单独一批）
-uv sync --extra dev                              # 现在会按 .python-version=3.13 重建 .venv
+uv sync --extra dev                              # 注意：会按 .python-version=3.13 重建 .venv
 uvx mypy tools/
+#   逐文件补标注，切忌在 pyproject 里加 ignore 换绿
 
-# 3) ruff 清零后，才可把 ruff/mypy 接进 CI quality job（硬门禁）
-#    ci.yml quality job 追加（gcc-only）：
-#    ruff check tools/  +  mypy tools/   （continue-on-error: false）
+# 3) mypy 清零后，才把 mypy 追加进 ci.yml quality job（continue-on-error: false）
+#    ruff 已于 2026-08-31 先行接入（钉定 0.6.9）
 
-# 4) 回归门禁
-.venv/Scripts/python.exe tools/cppbible.py check --stage quality   # 期望 16/16
+# 4) 回归门禁（默认控制台即 16/16，无需再设 PYTHONIOENCODING）
+.venv/Scripts/python.exe tools/cppbible.py check --stage quality
 ```
