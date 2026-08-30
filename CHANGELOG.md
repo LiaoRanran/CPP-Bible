@@ -64,6 +64,12 @@
 - **STATE/ISSUES/README 三文件接入单一事实源**：README 头部数字更新为 metrics 派生值（23.7 万行 / 7530 cpp / 密度 25.7 / D5 119）；STATE.json 刷新 last_commit=4c5cb32、density 24.9→25.7、新增 d5_coverage/mermaid/cpp/lines 指标与 `fact_source` 声明；ISSUES.md 10 项逐条复核——9 项已解决（附证据：ch121 cpp=50、ch122 cpp=45 双门禁 0 fail、ch118 945 行、ch81 1175 行、crossref 0 断链、GCC 硬编码已清），仅 #9 部分遗留（ch01/02/08/09/10 fragment 待批），并新增 2026-08-30 口径遗留清单。
 - **UPGRADE_PLAN 状态同步**：D5 口径统一、deploy 依赖解锁两项 P1 标记完成；阶段 A+ CI 远端验收标记进行中。
 
+### CI site/epub 失败修复（2026-08-30）
+
+- **site job「Install MkDocs stack (locked)」必红**：`requirements.lock.txt` 含 uv export 默认注入的 `-e .`（editable），pip 在带 `--hash` 的锁文件中处于哈希校验模式，与 editable 安装不兼容（本地 `pip install --dry-run` 复现同一报错）。修复：改用 `uv export --no-emit-project` 重新导出（site job 仅用独立 tools 脚本与 mkdocs/pagefind CLI，不依赖项目包安装，移除 `-e .` 无副作用）；ci.yml 内生成命令注释同步。
+- **site job「Site front-end health audit」误报（本地复现定位）**：`site_audit.py` 三处误报——(1) `Path(base)/"/绝对路径"` 会丢弃 base 从盘根解析，404.html 的 `/Appendix/ub/` 等 174 个绝对目录链接全部误判缺失；(2) ch61 Mermaid 内联 SVG 文本含字面 `<a href="x">` 被当资源引用；(3) `/.`（主题 logo 根链接）与 `/pagefind/*`（索引产物由检查 6 专责）。修复后本地全站 1595 个资源引用全通过，fixture 自测维持 GOOD=PASS/BAD=FAIL。
+- **epub job「Generate EPUB」步骤 1~3 分钟内被 cancelled（4/4 复现，#373 时代即存在的旧疾，新依赖图将其暴露）**：pandoc 单次处理 6.2MB combined.md + mermaid-filter（Chromium）在 ubuntu runner 上连带 bash 被信号终止，降级逻辑来不及生效。修复：epub 的 mermaid-filter 改为 `CPPBIBLE_EPUB_MERMAID=1` 显式开启、CI 默认关闭（Mermaid 降级为代码块，保证 EPUB 必产出；PDF job 的分卷管线不受影响）。随 `b2a5a02` 远端复验。
+
 ### 现状与遗留
 
 - 内容债已清零（55 悬空 + 7 前置 + 30 WARN + D5 口径）+ 事实源冲突已同步；仍遗留：分支保护未启用、断言 55 WARN、ch01/02/08/09/10 cpp 完整化、legacy 候选人工复核、第二故障域备份（需介质），详见审计报告 §7/§8/§10。
