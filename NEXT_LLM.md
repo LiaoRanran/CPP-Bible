@@ -12,9 +12,9 @@
 | 什么项目？ | 《现代 C++ 终极圣经》147 章 C++ 技术书 + Python 质量门禁工具链，仓库 `LiaoRanran/CPP-Bible` |
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
 | 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已首次全链路真绿 |
-| 在飞的活？ | **ch01/08/09/10 cpp 块完整化**（fragment→自包含可编译程序），已在工作树，门禁已过，**未提交** |
-| 剩余待办？ | 见「遗留清单」：55 断言 WARN 分类、legacy 审计人工复核、备份第二故障域 |
-| HEAD？ | `445eaa5`（本地 = origin/master，无分叉） |
+| 在飞的活？ | 无——上一批 ch01/08/09/10 完整化已提交并推送（见「已收口批次」） |
+| 剩余待办？ | 见「遗留清单」：55 断言 WARN 分类、legacy 审计人工复核（异盘备份已落 D:\） |
+| HEAD？ | `6d7d6e9`（本地 = origin/master，无分叉） |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
 | Python？ | 项目 `.venv/Scripts/python.exe`（uv 管理）；门禁内部调 `C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe` |
 | 权威文档？ | `STATE.json`（事实源）+ `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` + `UPGRADE_PLAN_2026-08-30.md` |
@@ -49,16 +49,16 @@ git status --short
 
 ---
 
-## 当前在飞的活（上一个会话未完成，接手即续）
+## 已收口批次（2026-08-30，勿重做）
 
-### 遗留项 #1：ch01/02/08/09/10 cpp 块完整化
+### ch01/02/08/09/10 cpp 块完整化 → ✅ 已提交并推送
 
 - **目标**：把 part01 历史章的 2-3 行 fragment 示例，升级为「含 `int main()` + 显式 `#include`」的自包含可编译程序；不可编译的示意块（如 C++26 反射/契约语法）改为 ` ```text ` 围栏。
-- **已完成（工作树未提交）**：ch01_c_history、ch08_cpp23、ch09_cpp26、ch10_version_matrix（`+332/-52`）。
+- **已完成并推送**：ch01/08/09/10（`+332/-52`）→ 提交 `7e99ea9` + `b1bd202` + `6d7d6e9`。
 - **已验证**：ch02_standardization 实测已完整（18 cpp 块 19 main），无需处理。
-- **收口方式**：过双门禁后按主题拆分提交（见下）。
+- 门禁：quality 16/16、compile 5/5 双绿，CI 八 job 已触发。
 
-### 收口提交方案（本地提交，push 前须确认）
+### 已执行提交（留档，勿重跑）
 
 ```powershell
 # 内容提交（4 章）
@@ -76,10 +76,10 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 
 | # | 事项 | 入口 | 说明 |
 |---|------|------|------|
-| 1 | ch01/08/09/10 完整化收口 | 本文件「在飞的活」 | 工作树已改，过门禁即可提交 |
+| 1 | ch01/08/09/10 完整化收口 | ✅ 已完成 | 已推送 `7e99ea9` + `b1bd202` + `6d7d6e9` |
 | 2 | 55 断言 WARN 分类与豁免收敛 | 审计报告 §5.2 / §8.3 | 阶段 C；`run_cpp_assertions.py` 输出 WARN 分「隔离伪影/故意演示/真实缺陷」 |
 | 3 | legacy 审计候选人工复核 | 审计报告 §5.3 | 10 unsafe C / 94 裸 new / 101 reinterpret_cast，分批留档（`audit_cpp_defects.py`） |
-| 4 | 备份第二故障域 | 审计报告 §2 | 需用户提供加密外置介质/对象存储（约 100 MiB） |
+| 4 | 备份第二故障域 | ✅ 已完成 2026-08-30 | 已推 `D:\CPP-Bible-Backup\20260830-201021`（明文副本，恢复演练 PASS），见本节末 |
 | 5 | 站点/PDF/EPUB 本地重建 | 审计报告 §11 | 本机缺 pandoc/xelatex/mkdocs，出版产物走 CI 八 job |
 
 ---
