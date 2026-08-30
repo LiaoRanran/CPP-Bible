@@ -1,0 +1,42 @@
+{
+  "schema": "cppbible-metrics-schema/1.0",
+  "purpose": "定义唯一指标字段及其出处，供 tools/gen_metrics.py 派生与校验各文档中的写死数字。",
+  "principle": "事实源 = 磁盘（Book/ 正文实时扫描 + tools/compile_report.json + git），build/metrics.json 仅是快照而非权威。散文文档一律只校验、不自动改写；机器自有的 JSON 字段才允许 --sync 回写。",
+
+  "sources": {
+    "scan": "tools/metrics_snapshot.py 的 build()，实时扫描 Book/**/*.md",
+    "compile_report": "tools/compile_report.json，编译门禁产物（已 git 跟踪）",
+    "git": "git rev-parse",
+    "date": "本地日期",
+    "ratio_pct": "由已声明字段计算的百分比（依赖字段需先声明）"
+  },
+
+  "fields": {
+    "commit":                  {"from": "git",     "cmd": "rev-parse --short HEAD"},
+    "date":                    {"from": "date",    "fmt": "%Y-%m-%d"},
+    "chapters":                {"from": "scan",    "path": "content.files.chapters"},
+    "md_total":                {"from": "scan",    "path": "content.files.md_total"},
+    "lines":                   {"from": "scan",    "path": "content.lines"},
+    "cpp_blocks":              {"from": "scan",    "path": "content.blocks.cpp"},
+    "d5_coverage":             {"from": "scan",    "path": "content.d5_coverage"},
+    "exercise_total":          {"from": "scan",    "path": "content.exercises.total"},
+    "verified":                {"from": "scan",    "path": "content.verification.verified"},
+    "compile_total_chapters":  {"from": "compile_report", "path": "total_chapters"},
+    "compile_passed_chapters": {"from": "compile_report", "path": "passed_chapters"},
+    "d5_pct":                  {"from": "ratio_pct", "num": "d5_coverage", "den": "chapters"}
+  },
+
+  "sync": [
+    {"file": "STATE.json", "json_path": "last_commit",    "field": "commit"},
+    {"file": "STATE.json", "json_path": "last_updated",   "field": "date"},
+    {"file": "STATE.json", "json_path": "total_chapters", "field": "chapters"}
+  ],
+
+  "checks": [
+    {"file": "README.md",   "regex": "(\\d+)\\s*章 ·",                            "expect": ["chapters"]},
+    {"file": "README.md",   "regex": "(\\d+)\\s*个 cpp 代码块",                   "expect": ["cpp_blocks"]},
+    {"file": "README.md",   "regex": "(\\d+)\\s*章，(\\d+)\\s*章自包含通过",        "expect": ["compile_total_chapters", "compile_passed_chapters"]},
+    {"file": "README.md",   "regex": "(\\d+)/(\\d+)\\s*章（(\\d+)%",               "expect": ["d5_coverage", "chapters", "d5_pct"]},
+    {"file": "NEXT_LLM.md", "regex": "(\\d+)\\s*章 C\\+\\+ 技术书",                "expect": ["chapters"]}
+  ]
+}
