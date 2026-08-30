@@ -115,7 +115,9 @@ def main():
             "inverted": [{"file": f, "self": s, "pre": c} for f, s, c in inverted],
             "dangling_pre": [{"file": f, "self": s, "pre": c} for f, s, c in dangling_pre],
         }
-        Path(args.json).write_text(
+        out = Path(args.json)
+        out.parent.mkdir(parents=True, exist_ok=True)  # CI 干净 checkout 无 outputs/，需自建
+        out.write_text(
             json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"\n[+] JSON 写入: {args.json}")
 
