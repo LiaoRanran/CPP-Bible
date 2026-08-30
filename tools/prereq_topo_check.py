@@ -35,6 +35,18 @@ CHNUM = re.compile(r"ch(\d+)")
 SKIP_FILES = {"SUMMARY.md", "PREREQUISITES.md", "GLOSSARY.md",
               "INDEX.md", "README.md", "changelog.md"}
 
+# 前瞻导读豁免（file, self, pre）：历史/演进导读章会"提及未来主题"作为路径预告，
+# 属作者设计意图，非依赖矛盾。逐项记录依据（见 docs/references/chapter_mapping.md §3）。
+# 判定优先级高于倒置/悬空检测；新增项必须带依据注释，禁止盲目扩大。
+FORWARD_PRE_EXEMPT = {
+    ("ch07_cpp20.md", 7, 60),   # 导读：模板基础（本章提及 ch60 模板背景）
+    ("ch07_cpp20.md", 7, 63),   # 导读：变参模板（本章提及）
+    ("ch09_cpp26.md", 9, 67),   # 导读：Concepts（C++26 反射基础）
+    ("ch09_cpp26.md", 9, 113),  # 导读：协程（与执行器协作）
+    ("ch19_variables.md", 19, 20),  # 语言章导读：引用与指针（前后衔接）
+    ("ch19_variables.md", 19, 31),  # 语言章导读：const_cast（本章提及）
+}
+
 
 def valid_from_disk(book: Path) -> set:
     s = set()
@@ -76,6 +88,9 @@ def main():
         checked += 1
         for c in pres:
             if c == self_n:
+                continue
+            # 前瞻导读白名单：命中即跳过（见 FORWARD_PRE_EXEMPT 依据）
+            if (ch.name, self_n, c) in FORWARD_PRE_EXEMPT:
                 continue
             if c not in valid:
                 dangling_pre.append((ch.name, self_n, c))

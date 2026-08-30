@@ -131,21 +131,21 @@ jobs:
       run: python3 tools/book_asm_freshness.py
       continue-on-error: false
 
-    - name: Dangling Chapter-Ref Lint (T1-2 悬空章节引用软门禁)
+    - name: Dangling Chapter-Ref Lint (T1-2 悬空章节引用门禁)
       # 扫描全书正文对「第N章 / chN」的引用，核对编号是否落在有效章节集合内。
-      # 设计性「删章留空、不重排」导致 18 个编号空缺被正文引用 → 已知债务，
-      # 存于 tools/ci_baseline.json 作为基线；增量回归（新增悬空引用）即判红。
+      # 2026-08-30 已清零 55 处悬空引用（映射见 docs/references/chapter_mapping.md），
+      # 由软门禁转硬：任何新增悬空引用即判红 BLOCK。
       # 与 crossref_audit（part 级覆盖）/ xref_check（链接目标存在性）互补：
       # 本门禁看的是 *编号* 层面的悬空，与链接路径解耦。
       run: python3 tools/dangling_ref_linter.py --json outputs/t1_2_dangling.json
-      continue-on-error: true   # 软门禁：基线已知债务不阻断，仅报告
+      continue-on-error: false   # 硬门禁（2026-08-30 债务清零后转硬）
 
-    - name: Prerequisite Topology Check (T1-3 前置依赖拓扑软门禁)
+    - name: Prerequisite Topology Check (T1-3 前置依赖拓扑门禁)
       # 校验各章 `前置：` 元数据：前置编号 > 自身编号（拓扑倒置）或指向不存在
-      # 的章节（悬空前置）。当前已知：6 处倒置 + 1 处悬空前置，存于基线；
-      # 增量回归即判红。
+      # 的章节（悬空前置）。2026-08-30 已清零（6 处前瞻导读列入 FORWARD_PRE_EXEMPT
+      # 白名单，悬空前置映射至现章），由软门禁转硬：新增异常即判红 BLOCK。
       run: python3 tools/prereq_topo_check.py --json outputs/t1_3_topo.json
-      continue-on-error: true   # 软门禁
+      continue-on-error: false   # 硬门禁（2026-08-30 债务清零后转硬）
 
     - name: Structure Defect Gate (S1 标题层级 / S5 参差表格 门禁)
       # E6 收口（bf7a914）的结构缺陷扫描器常驻化：标题层级越级 / 参差表格一旦被
