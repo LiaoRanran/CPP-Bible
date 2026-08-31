@@ -11,9 +11,9 @@
 |------|------|
 | 什么项目？ | 《现代 C++ 终极圣经》147 章 C++ 技术书 + Python 质量门禁工具链，仓库 `LiaoRanran/CPP-Bible` |
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
-| 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已首次全链路真绿 |
-| 在飞的活？ | 无——交叉引用结构性硬伤已根治（链接门禁入 CI）+ ch28 元数据已修；见「已收口批次（2026-08-31）」 |
-| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`（mypy 类型 triage 等）；内容侧**优先审 8 个 UNVERIFIED 章**（ch02/05/16/132/148/149/150/165），见下文健康度评估；标题全角/半角空格不统一（低优先） |
+| 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已全链路真绿 |
+| 在飞的活？ | 内容侧「学习目标→问题驱动论证」打磨进行中——已收口 **25 章**（历史9 + OO6 + STL/现代10），见「已收口批次（2026-09-01）」；下一批模板板块 ch60-72 等 |
+| 剩余待办？ | 继续按 `template_audit.py` 排名打磨剩余「学习目标/思考题」空泛章；工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`（mypy 类型 triage 等）；内容侧**优先审 8 个 UNVERIFIED 章**（ch02/05/16/132/148/149/150/165），见下文健康度评估；ch163 网络章是否补 POSIX 对照（低优先） |
 | HEAD？ | **一律以 `git rev-parse HEAD` 为准**——本文件不复制哈希。写死的哈希在提交那一刻就已过期，这正是「指标单一事实源」待办项要根治的反例 |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
 | Python？ | ✅ 已收敛：配置 glob 识别托管 3.13.14 + `toolchain.py` 版本自检（漂移即非零退出）；`.venv` 仍 3.14.5 但不影响门禁（门禁改走托管 3.13.14） |
@@ -53,6 +53,25 @@ ruff、quality 门禁；并打印接手简报（事实快照 + 剩余待办 + �
 1. **先读 STATE.json 的 `last_commit`/`git_status` 与 `ISSUES.md` 遗留清单**，不要信 HANDOVER.md / START_HERE.md / .workbuddy/memory/MEMORY.md 的旧数字（均停留在 07 月）。
 2. **核心门禁是 `tools/cppbible.py check --stage quality|compile`**，它聚合了 consistency/crossref/density/D5/ASM/whitespace 等 16 项 + compile/gate/exempt/D5-gate/assertions 5 项。单独跑 `tools/consistency_check.py` 已不足够。
 3. **不注水红线仍在**：147 章上限锁定、不增章、不批量附录、汇编必须 GCC15.3 真机 objdump、不可用特性诚实标注。
+
+---
+
+## 已收口批次（2026-09-01，勿重做）
+
+### 内容打磨：学习目标 → 问题驱动论证（25 章，分 4 批提交，勿重做）
+
+- **范式**：把「① 学习目标」纯罗列清单改写为「① 我们真正要回答的问题 <span class="badge badge-std">标准</span>」论证式导读——每个问题**先立判断再给论据**，逐条回指正文节号（⑦⑧⑨⑩⑬⑮等，均核证属实），保留前向导航链接与示例代码；章节回指错误已修正（如 ch80 ⑨ 实为"调用栈/时序图"而非"栈布局"）。
+- **批次**：
+  - `fd6897a` ch121 试点 → `bc4fd45` 历史 9 章（ch01, ch04–ch10）→ `e2ffc76` OO 6 章（ch47–52）→ `dc8ed07` STL/现代 4 章（ch80/82/83/115）→ `65b3bf1` STL 容器 4 章（ch77/84/85/86）。
+- **内容准确性修正（禁虚构红线）**：ch85 原声称「C++20 透明哈希」——透明哈希对 unordered 容器**并未进入标准库**（`std::hash` 非 transparent），已改为诚实表述；ch83 消除反引号内 `Book/` 前缀引用。
+- **门禁**：每批本地 preflight 均 7/7 通过；CI 最近 4 run（10dc21e/dc8ed07/e2ffc76/65b3bf1）**全绿**。
+- **下一批**：模板板块 ch60–72（13 章「学习目标/思考题」）→ STL 剩余 ch76/78/79/87/89–94 → 现代 ch116/120/122/123 → 语言 ch22/24/29/30/32 → 性能 ch152/153/158。
+
+### ch157 断言过强修复 → ✅ 已提交并全绿
+
+- **现象**：CI Assertion Claims 门禁失败，`assert(s > -1.0 && s < 1.0)` 数学不成立——`s` 是 1000 个 `sin·cos` 之和，理论范围 ±500，实测 sum=353.8 必炸。
+- **修复**：改为按 `M` 推导的真实上界 `±(M/2+1)` 并加 `std::isfinite`，本地 GCC 15.3 复现并修复，Assertion Claims 门禁通过。
+- **提交**：`10dc21e`，CI 九 job（含 pdf/epub/site/deploy）全绿。
 
 ---
 
@@ -195,6 +214,6 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 
 ---
 
-_更新时间：2026-08-31 | 覆盖到交叉引用结构性硬伤根治（链接门禁入 CI）+ ch28 元数据修复 + 全书健康度评估落档_<br/>_上一收口：JSON 台阶二收尾 + 工具链升级 P0-1/P0-2 完成（ruff 清零 + CI 硬门禁 + 控制台编码修复）_
+_更新时间：2026-09-01 | 覆盖到学习目标→问题驱动论证 25 章收口（历史9+OO6+STL/现代10）+ ch157 断言过强修复_<br/>_上一收口：交叉引用结构性硬伤根治（链接门禁入 CI）+ ch28 元数据修复 + 全书健康度评估落档_
 _HEAD：不写死——一律以 `git rev-parse HEAD` 与 `git status -sb` 为准（写死的哈希在提交那一刻即过期）_
 _历史：2026-07-17 版（APP15 阶段）已作废；2026-08-30 深夜版停在「P0-2 一半」，其 HEAD 尾注当时已落后一个提交，且 push 状态标反_
