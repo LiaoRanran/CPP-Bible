@@ -4,6 +4,17 @@
 
 ---
 
+## [Unreleased] - 2026-08-31
+
+全量「类比（analogy）」补写收官里程碑。将 analogy 教学标记从 75/147 补齐至 147/147，写作质量三件套（one_liner / pitfall / analogy）全部满标。
+
+### 类比补写（part06→16 再 part01→05，共 72 章）
+- 每章在「史料来源」锚点后注入 `!!! note "类比：…"`，含 2 个独立映射（类比 / 好比 / 类似于）+ `> 失效边界` 引用块，遵循 `docs/content_writing_analysis.md` §7 rubric。
+- 逐档提交并推送，每档 `cppbible.py check --stage quality` 16/16 全绿、`whitespace_fix.py --apply` 零缺陷：
+  part13(`92d7f13`) / part14(`fc42b92`) / part15(`d17900a`) / part16(`68061b5`) / part01(`6e0990a`) / part02(`f911423`) / part03(`33b79c5`) / part04(`bc70270`) / part05(`9035522`)。
+
+---
+
 ## [Unreleased] - 2026-08-30
 
 全量仓库审计 + 治理加固里程碑。交付 `REPOSITORY_AUDIT_AND_ROADMAP_2026-08-30.md` 与仓库外备份，并修复一批门禁/工具缺陷。已分主题提交并推送远端（至 `4c5cb32`），CI 远端验收中。
