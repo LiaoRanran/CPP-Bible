@@ -45,6 +45,8 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 > 表注（0.4）：四条补遗按证据性质分列——`[史]` 可查证事实、`[评]` 价值判断、`[轶]` 命名趣闻，便于快速区分史料类型。
 
 > 史料来源：
+
+> **一句话结论**：Chromium/Abseil 展示了超大规模 C++ 的基座：Abseil 把 Google 的内部实践标准化，阅读它能学到工业级基础设施如何取舍。
 > - https://abseil.io/
 > - https://chromium.googlesource.com/chromium/src/+/main/base/
 

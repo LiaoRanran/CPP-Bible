@@ -33,6 +33,8 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 
 > 史料来源：GCC 各标准支持进度 https://gcc.gnu.org/projects/cxx-status.html ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
+> **一句话结论**：C++11 是一次「还技术债」式大爆发：移动语义改写资源管理，auto/lambda/智能指针把样板与裸指针赶下桌，并首次把并发带进标准。
+
 ### 0.5 历史影像（真实照片，自由许可）
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。

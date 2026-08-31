@@ -34,6 +34,8 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 
 > 史料来源：[cppreference Ranges](https://en.cppreference.com/w/cpp/ranges)、[range-v3 仓库](https://github.com/ericniebler/range-v3)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
+> **一句话结论**：Ranges 算法让算法直接吃区间、内置投影、可串 views 管道，表达力与组合性压倒了一点简洁性；代价是冗长的类型名和调试时看不见的中间态。
+
 !!! note "类比：Ranges 算法 = 把「一对迭代器」升级成「整段水管」"
     Ranges 算法可以**类比**为把老的"两根筷子夹区间"（begin/end 迭代器对）换成"一整段水管"：你直接把容器这截水管接进算法，还可在入口装一个"投影滤芯"（按某字段比较），甚至串成 `views` 管道逐段加工。更**好比**乐高水管：每段（filter/transform）卡在一起，数据从源头流到末端一次性成型。
 

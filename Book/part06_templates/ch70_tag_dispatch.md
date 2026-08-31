@@ -34,6 +34,8 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 
 > 史料来源：https://en.cppreference.com/w/cpp/iterator/iterator_tags ；https://en.cppreference.com/w/cpp/algorithm
 
+> **一句话结论**：标签分发用空类型标签与重载决议在编译期选对实现，是 Concepts/SFINAE 之前最直白的「按类型能力分派」手法，标准库迭代器范畴即此。
+
 !!! note "类比：标签分发 = 让类型自带身份证去挂号"
     标签分发可以**类比**为医院分诊：每种迭代器自带一张"身份证"（`input_iterator_tag`/`random_access_iterator_tag`…），挂号处（重载决议）按身份证在编译期把它分到 O(1) 或 O(n) 的诊室，全程无运行期 `if`。更**好比**快递按"易碎/普通"标签在分拣线早期就选好不同传送带。
 

@@ -54,6 +54,8 @@ Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化�
 - <span class="badge badge-anecdote">轶</span> Loki 这个名字取自北欧神话的"诡计之神"，暗合 Alexandrescu 这套"编译期戏法"的气质。
 
 > 史料来源：
+
+> **一句话结论**：Policy-Based Design 把行为拆成可正交组合的模板策略参数，让用户像搭积木拼出定制类，灵活性来自编译期组合而非运行期虚函数。
 > - https://en.cppreference.com/w/cpp/language/constraints
 > - https://en.cppreference.com/w/cpp/language/if
 

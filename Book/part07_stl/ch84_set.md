@@ -32,6 +32,8 @@
 
 > 史料来源：[cppreference std::set](https://en.cppreference.com/w/cpp/container/set)、[Abseil 官方文档](https://abseil.io/docs/cpp/)
 
+> **一句话结论**：set/multiset 是有序唯一或可取重复的集合，红黑树保证中序即排序；需要「自动去重加范围遍历」时用它，纯查找才考虑哈希版。
+
 ## ① 学习目标
 
 `std::set` 与 `std::multiset` 是基于**红黑树（Red-Black Tree，RB-tree）**的有序关联容器，二者只在"键是否允许重复"上不同：

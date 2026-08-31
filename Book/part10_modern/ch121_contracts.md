@@ -28,6 +28,8 @@
 
 > 史料来源：https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2900r6.html
 
+> **一句话结论**：Contracts 把前置/后置/断言条件写成语言级契约，违规时可由实现选择响应——是 C++26 对「接口约束可执行化」的补齐（进行中）。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 解释契约编程的三段式：precondition / postcondition / assertion

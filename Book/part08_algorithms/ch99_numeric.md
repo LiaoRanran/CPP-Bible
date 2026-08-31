@@ -34,6 +34,8 @@
 
 > 史料来源：[cppreference 数值算法](https://en.cppreference.com/w/cpp/algorithm)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
+> **一句话结论**：数值算法（accumulate/reduce/scan）把 fold/reduce 思想泛型化：accumulate 保顺序确定性，reduce 放开重排换并行——浮点求和因此可能改变末位结果。
+
 !!! note "类比：reduce = 把一串数「折」成一个值的流水线"
     数值归约可以**类比**为一条折叠流水线：把一串数依次喂进同一个"合并口"（二元运算），最后只剩一个汇总值——就像把一摞纸逐张叠成一沓。更**好比**工厂的并线装配：`accumulate` 严格按来料顺序叠（结果可预测），`reduce` 允许把流水线切成几段并行叠、再合并（更快，但浮点求和可能因结合律改变结果）。
 

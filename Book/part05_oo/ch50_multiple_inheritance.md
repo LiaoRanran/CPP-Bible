@@ -33,6 +33,8 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/variant ；https://en.wikipedia.org/wiki/Multiple_inheritance
 
+> **一句话结论**：多重继承把多个基类拼进一个对象，带来灵活也带来名字冲突与布局复杂度；C++ 用「基类子对象」与 this 指针调整处理，远非简单叠加。
+
 ---
 
 ## ① 学习目标

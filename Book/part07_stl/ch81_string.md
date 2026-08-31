@@ -30,6 +30,8 @@ COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎�
 
 > 史料来源：[cppreference std::string](https://en.cppreference.com/w/cpp/string/basic_string)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
+> **一句话结论**：std::string 是带 SSO 优化、连续存储的特殊 vector；小字符串走栈上 SSO 免分配，大字符串才上堆——理解它能避开拷贝与迭代器失效坑。
+
 ## ① 概述：std::string 的设计哲学 <span class="badge badge-std">标准</span>
 
 [第80章　array 与固定数组](Book/part07_stl/ch80_array.md)

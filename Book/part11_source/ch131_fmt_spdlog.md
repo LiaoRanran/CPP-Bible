@@ -32,6 +32,8 @@ fmt 对 `iostream`/`printf` 之争的答案是"类型安全 + 性能好 + 语法
 > 表注（0.4）：四条补遗按证据性质分列——`[史]` 可查证事实、`[评]` 价值判断、`[轶]` 跨语言借鉴趣闻。
 
 > 史料来源：
+
+> **一句话结论**：fmt/spdlog 用编译期格式串检查与零拷贝格式化重写了「打印」，是「小而美、性能与类型安全兼得」的库设计范例。
 > - https://github.com/fmtlib/fmt
 > - https://en.cppreference.com/w/cpp/utility/format/format
 

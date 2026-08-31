@@ -37,6 +37,8 @@
 
 > 史料来源：Compiler Explorer https://godbolt.org/ ；火焰图方法论 https://www.brendangregg.com/flamegraphs.html
 
+> **一句话结论**：性能分析的全部理由是「把直觉换成数字」：perf 采样零侵入、VTune 深入微架构、Compiler Explorer 直接对照源码↔汇编；共同哲学是先测量、后优化。
+
 ## ① 概述：为什么性能分析
 
 [第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](Book/part02_toolchain/ch14_debugging.md)

@@ -30,6 +30,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic_ref ｜ https://en.cppreference.com/w/cpp/language/cv ｜ https://en.cppreference.com/w/cpp/atomic
 
+> **一句话结论**：volatile 只告诉编译器「别优化掉这次读写」（为内存映射 IO），它不提供原子性也不防重排——多线程要用 atomic，二者职责不同。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 区分 volatile（硬件可见性）与 atomic（多线程原子性）

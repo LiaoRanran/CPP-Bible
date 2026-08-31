@@ -36,6 +36,8 @@ Make 直白却难跨平台、依赖 shell 与文件系统时间戳；CMake 选�
 
 > 史料来源：CMake 官网 https://cmake.org/ ；Ninja 构建系统 https://ninja-build.org/
 
+> **一句话结论**：构建系统是被工程规模逼出来的：Make 用规则文件描述依赖图，CMake 不直接构建而是生成构建文件以跨平台，Ninja 只忠实执行依赖图换速度——CMake+Ninja 成了工业甜点。
+
 ## ① 概述：构建系统解决什么 <span class="badge badge-std">标准</span>
 
 [第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)

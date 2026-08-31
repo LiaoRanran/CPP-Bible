@@ -33,6 +33,8 @@
 
 > 史料来源：[cppreference std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map)、[Abseil 官方文档](https://abseil.io/docs/cpp/)
 
+> **一句话结论**：unordered_map/set 用哈希桶把均摊查找压到 O(1)，rehash 会批量迁移并失效迭代器；散列质量与负载因子决定其真实表现。
+
 ## ① 学习目标
 
 `std::unordered_set` 与 `std::unordered_map` 是基于**哈希表**的无序关联容器：

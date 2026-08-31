@@ -36,6 +36,8 @@ C++ 包管理的根本难点是**二进制兼容性**：同一份源码在不同
 
 > 史料来源：vcpkg 仓库 https://github.com/microsoft/vcpkg ；Conan 官网 https://conan.io/
 
+> **一句话结论**：C++ 在依赖管理上缺席了四十年，Conan/vcpkg 才把「找库、下库、解依赖、可重现」自动化；根本难点是二进制兼容——同一源码在不同编译器/ABI 下不能混链。
+
 ## ① 概述：为什么需要包管理 <span class="badge badge-std">标准</span>
 
 [第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)

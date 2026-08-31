@@ -28,6 +28,8 @@ C 数组有两个老毛病：一是作为参数时会悄悄**退化为指针**�
 
 > 史料来源：[cppreference std::array](https://en.cppreference.com/w/cpp/container/array)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
+> **一句话结论**：std::array 是「带大小的定长数组」，把 C 数组包进值语义容器，零开销、可拷贝、有迭代器——固定长度集合的默认选择。
+
 ## ① 学习目标
 
 `std::array<T, N>` 是 C++11 引入、把**固定长度 C 数组**包装成**值语义聚合类型**的安全容器。本章结束后，你应当能够：

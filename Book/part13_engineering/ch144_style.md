@@ -40,6 +40,8 @@
 
 > 史料来源：clang.llvm.org/docs/ClangFormat.html、github.com/isocpp/CppCoreGuidelines
 
+> **一句话结论**：代码风格与规范的本质是「降低集体认知成本」：命名、格式、约束的整齐划一比个人偏好更重要，工具（clang-format）应替人执行。
+
 ## ① 概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>
 
 [第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)

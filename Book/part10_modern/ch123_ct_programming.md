@@ -31,6 +31,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constraints · https://en.cppreference.com/w/cpp/keyword/consteval
 
+> **一句话结论**：编译期编程范式总览：模板元编程、constexpr、Concepts 三条路线都能在编译期算东西，现代偏好 constexpr/Concepts 因可读可诊断。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)

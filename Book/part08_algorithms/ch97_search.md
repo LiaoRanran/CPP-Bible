@@ -35,6 +35,8 @@
 
 > 史料来源：[cppreference std::lower_bound](https://en.cppreference.com/w/cpp/algorithm/lower_bound)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
+> **一句话结论**：有序区间上二分查找（lower_bound/upper_bound/equal_range）把查找从 O(n) 砍到 O(log n)，但前提是序列已排序；哈希则走另一条平均 O(1) 的路线。
+
 !!! note "类比：二分查找 = 在排好序的字典里「每次砍掉一半」"
     二分查找可以**类比**为查字典：你不必从第一页翻，直接翻到中间，看目标在左半还是右半，再把那一半当作新字典继续砍——每次排除一半，log₂N 步到手。STL 的 `lower_bound` 等就是"经过千锤百炼、不会数错页"的标准化翻法。更**好比**猜数字游戏里"大了/小了"的二分逼近。
 

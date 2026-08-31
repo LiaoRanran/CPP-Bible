@@ -36,6 +36,8 @@ C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stall
 
 > 史料来源：Clang 官网 https://clang.llvm.org/ ；GCC C++ 状态 https://gcc.gnu.org/projects/cxx-status.html
 
+> **一句话结论**：GCC/Clang/MSVC 是「开源自由 / 厂商可控 / 平台绑定」三条技术路线的投影，Itanium 与 MSVC 两套 ABI 不兼容是跨平台库必须分别构建的根源。
+
 ## ① 概述：为什么需要编译器，三巨头格局
 
 [第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)

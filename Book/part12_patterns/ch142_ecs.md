@@ -41,6 +41,8 @@ ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语
 - <span class="badge badge-anecdote">轶</span> Scott Bilas 在 2002 年 GDC 讲 Dungeon Siege 架构时，台下不少人才第一次意识到"继承树可能是个错误"。
 
 > 史料来源：
+
+> **一句话结论**：ECS 用「实体等于 ID、组件等于数据、系统等于算法」把面向对象换成数据导向布局，换取缓存友好与并行友好——是游戏/仿真对 OOP 的务实反叛。
 > - https://unity.com/features/dots
 > - https://github.com/skypjack/entt
 

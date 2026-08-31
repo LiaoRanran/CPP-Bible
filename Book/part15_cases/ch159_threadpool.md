@@ -52,6 +52,8 @@
 
 > 史料来源：open-std.org/jtc1/sc22/wg21/docs/papers（P2300）、github.com/facebook/folly
 
+> **一句话结论**：从零实现线程池：任务队列加工作者线程加条件变量，把「频繁建线程」的昂贵变成「复用固定池」——理解它能避开竞态与虚假唤醒。
+
 ## ① 概述：线程池解决什么（频繁创建线程开销）<span class="badge badge-exp">经验</span>
 
 [第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)

@@ -28,6 +28,8 @@ C++ 的 `private` / `public` 访问控制继承自 Simula 67 的"数据隐藏"�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/friend ｜ https://en.cppreference.com/w/cpp/language/operators ｜ https://en.cppreference.com/w/cpp/language/lookup
 
+> **一句话结论**：friend 是「单向、不继承、不传递」的访问授权，它打破封装只为少数特定函数/类开后门，而非把大门打开。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 理解 friend 打破封装的目的与代价

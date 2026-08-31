@@ -33,6 +33,8 @@ libc++ 的核心取舍是"现代化优先、许可友好、模块化"。它不�
 - <span class="badge badge-anecdote">轶</span> 移植到 libc++ 的开发者常踩的暗坑是：GNU 专属宏（如 `__GLIBCXX__`）在 libc++ 下根本不存在，靠它做版本分支的代码会静默走到错误路径。
 
 > 史料来源：
+
+> **一句话结论**：libc++ 以模块化、对标准前沿的快速跟进著称，其实现常比规范更早落地新特性——读它能看到「标准还在讨论时库已怎么写」。
 > - https://libcxx.llvm.org/
 > - https://github.com/llvm/llvm-project/releases
 

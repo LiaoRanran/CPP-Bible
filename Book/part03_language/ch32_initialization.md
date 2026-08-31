@@ -29,6 +29,8 @@ C 的初始化靠 `=`、`()`（构造）、aggregate 大括号 `{ }`，各自规
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/list_initialization ｜ https://en.cppreference.com/w/cpp/language/aggregate_initialization ｜ https://en.cppreference.com/w/cpp/language/initialization
 
+> **一句话结论**：C++ 有十余种初始化语法，列表初始化（{}）统一了「不被收窄、不丢精度、禁止窄化」的语义，是现代初始化的首选。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 掌握 C++ 的 6 种初始化语法

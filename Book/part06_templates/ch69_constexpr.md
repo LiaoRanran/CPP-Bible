@@ -33,6 +33,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constexpr ；https://en.wikipedia.org/wiki/C%2B%2B23
 
+> **一句话结论**：constexpr/consteval/constinit 把计算从运行期搬进编译期：constexpr 允许、consteval 强制、constinit 保证静态初始化，让常量与元编程合一。
+
 !!! note "类比：constexpr = 一份编译期运行两用的函数"
     `constexpr` 可以**类比**为一个"双面函数"：用常量实参调用时，编译器在编译期就把结果算成立即数；用变量调用时，它又老老实实当普通函数跑。更**好比**一份菜谱，既能提前做好罐头（编译期），也能现场现做（运行期）。
 

@@ -34,6 +34,8 @@
 
 > 史料来源：github.com/isocpp/CppCoreGuidelines、open-std.org/jtc1/sc22/wg21/docs/papers
 
+> **一句话结论**：命名与 API 设计是「写给人类读的接口」：好名字承载不变量与所有权，API 的形状决定调用方能否用对——这是库的第一道用户体验。
+
 ## ① 概述：好命名的价值 <span class="badge badge-exp">经验</span>
 
 [第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)

@@ -30,6 +30,8 @@
 
 > 史料来源：isocpp.org（C++17/20 特性）、github.com/isocpp/CppCoreGuidelines
 
+> **一句话结论**：性能反模式与陷阱：过早优化、测了噪声、忽视分配与拷贝、误信微基准——先测量再优化、避免凭感觉是铁律。
+
 ## ① 学习目标 <span class="badge badge-exp">经验</span>
 
 识别并消除 C++ 中最常见的 13 类性能反模式，每个附 ❌/✅ 对照和可编译示例。

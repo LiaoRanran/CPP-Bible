@@ -33,6 +33,8 @@ STL 早已有了 `deque`、`vector`、`list`，但很多算法只想要"后进�
 
 > 史料来源：[cppreference std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue)、[C++11 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B11)
 
+> **一句话结论**：栈/队列/优先队列是容器适配器：在 deque 等底层上套受限接口，分别暴露 LIFO / FIFO / 按优先级出队——组合而非继承。
+
 ## ① 学习目标
 
 学完本章你应当能够：

@@ -35,6 +35,8 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 
 > 史料来源：GDB 官网 https://www.sourceware.org/gdb/ ；Google Sanitizers Wiki https://github.com/google/sanitizers
 
+> **一句话结论**：调试器（GDB/LLDB）是「事后查」，Sanitizer 是「事前埋点」把检查编译进程序、精准到行，Valgrind 则不改程序做运行时插桩——共识是「用工具把人的失误挡在发布前」。
+
 ## ① 概述：调试的目标与分层 <span class="badge badge-std">标准</span>
 
 [第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)

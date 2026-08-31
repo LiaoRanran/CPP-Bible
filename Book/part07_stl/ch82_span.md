@@ -28,6 +28,8 @@
 
 > 史料来源：[cppreference std::span](https://en.cppreference.com/w/cpp/container/span)、[C++23 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B23)
 
+> **一句话结论**：span 是无所有权的轻量连续视图 (指针, 长度)，零拷贝地引用一段数组或容器——取代裸 T* 加 size，既安全又灵活。
+
 ## ① 学习目标
 
 `std::span<T, Extent>` 是 C++20 引入（在 C++23 中继续打磨）的**非拥有（non-owning）连续对象视图**。本章结束后，你应当能够：

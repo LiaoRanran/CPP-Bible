@@ -33,6 +33,8 @@
 
 > 史料来源：[cppreference std::bitset](https://en.cppreference.com/w/cpp/utility/bitset)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
+> **一句话结论**：bitset 把 N 个布尔压成整字、用位运算做集合与掩码，是固定位宽下最省内存、最快的位级集合工具；动态位宽用 vector<bool>。
+
 ## ① 学习目标
 
 1. 理解 `std::bitset<N>` 的**编译期定长**本质：`N` 必须是编译期常量，决定对象大小与 ABI。

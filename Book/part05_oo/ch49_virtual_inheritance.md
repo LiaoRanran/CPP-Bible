@@ -31,6 +31,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/derived_class ；https://en.wikipedia.org/wiki/Virtual_inheritance
 
+> **一句话结论**：虚继承让共享的虚基类在派生对象里只有一份实例，代价是更复杂的对象布局与间接访问——只为消除菱形继承的「两份基类」歧义。
+
 > 元数据：标准基 C++98（虚继承核心）/C++11（继承构造函数） · 预计阅读 110 min · 前置 ch47(vtable/this调整/thunk) · ch46(继承与切片) · ch45(对象模型) · ch48(type_info 层次) · 后续 ch50(CRTP 替代) · ch14(布局与缓存) · 难度 高级
 
 ## ① 学习目标

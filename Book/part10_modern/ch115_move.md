@@ -28,6 +28,8 @@ C++98 是严格的"值语义"：函数按值返回大对象、把临时对象赋
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/move_semantics · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0135r1.html
 
+> **一句话结论**：移动语义让「资源所有权转移」取代深拷贝，把昂贵的复制变成指针交接，是 C++11 性能与 RAII 现代化的地基。
+
 ## ① 学习目标
 
 移动语义（move semantics）与右值引用（`T&&`）是 C++11 最重要的性能革命。本章结束后，你应当能够：

@@ -36,6 +36,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/coroutines · https://en.cppreference.com/w/cpp/iterator/generator · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2168r4.html
 
+> **一句话结论**：C++20 无栈协程在 co_await 处把进度存进堆上协程帧、让出控制权，把回调金字塔拍平成「表面同步」的写法；但挂起点必须显式，且标准只给机制不给 generator/task。
+
 !!! note "类比：协程 = 能「暂停存档、稍后接着玩」的函数"
     协程可以**类比**为一个能中途存档的函数：普通函数一旦返回就"失忆"，协程在 `co_await` 处把当前进度存进堆上的"存档点"（协程帧），让出控制权，等异步结果好了再从存档点续上——表面像同步写、底层是异步跑，把层层嵌套的"回调金字塔"拍平。更**好于**去餐厅点单：你（调用者）下单后去干别的，菜好了（await 完成）服务员再把你叫回来继续，而不是站在柜台干等。
 

@@ -36,6 +36,8 @@ C++ 标准刻意不规定段布局（那是 OS / ABI 的事），只谈"对象�
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/launder ｜ https://en.cppreference.com/w/cpp/language/object ｜ https://en.cppreference.com/w/cpp/types/hardware_interference_size
 
+> **一句话结论**：程序内存分代码/数据/堆/栈/映射区，理解这张布局图是排查段错误、栈溢出与全局初始化顺序问题的地基。
+
 ## ① 概览：进程虚拟地址空间
 
 [第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)

@@ -42,6 +42,8 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/namespace ｜ https://en.cppreference.com/w/cpp/language/lookup ｜ https://en.cppreference.com/w/cpp/language/modules
 
+> **一句话结论**：命名空间把名字装进独立作用域防撞车，ADL 又让「运算符参数所在命名空间」自动参与查找——隔离与隐形查找是一对共生又易误用的机制。
+
 ## ① 本章地图（先给结论，再击穿）
 
 [第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)

@@ -30,6 +30,8 @@ Ranges 入标后，演进是"补适配器"与"打通协程/并行"两路并进�
 
 > 史料来源：https://en.cppreference.com/w/cpp/ranges · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0896r4.html
 
+> **一句话结论**：Ranges 深入：算法吃区间、views 惰性组合、actions 即时、投影与管道让数据变换像搭水管——表达力来自组合，复杂度交给编译器。
+
 ## ① 概述：Ranges 解决了什么 <span class="badge badge-std">标准</span>
 
 [第118章　Modules 模块（C++20）](Book/part10_modern/ch118_modules.md)

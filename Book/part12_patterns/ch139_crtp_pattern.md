@@ -42,6 +42,8 @@ CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为
 - <span class="badge badge-anecdote">轶</span> Coplien 当年命名 "Curiously Recurring" 时，大概也没料到这个"奇怪"的套路会成为现代 C++ 的基石之一。
 
 > 史料来源：
+
+> **一句话结论**：CRTP 模式用「派生类作基类模板参数」在编译期实现静态多态与接口混入，免虚函数开销即获可复用的方法模板——是 C++ 独占的手法。
 > - https://en.cppreference.com/w/cpp/language/crtp
 > - https://en.cppreference.com/w/cpp/language/constraints
 

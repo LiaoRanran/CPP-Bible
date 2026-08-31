@@ -41,6 +41,8 @@ DI 在 Java 世界靠"运行时反射 + 注解容器"实现，而 C++ 没有原�
 - <span class="badge badge-anecdote">轶</span> Fowler 那篇 DI 文章本来是想澄清 IoC 容器到底是什么，结果意外"发明"了一个被用滥的名词。
 
 > 史料来源：
+
+> **一句话结论**：依赖注入在 C++ 里用「构造函数注入或模板参数注入」把依赖从硬编码改为可替换，提升可测性与解耦，代价是类型与装配复杂度。
 > - https://boost-ext.github.io/di/
 > - https://martinfowler.com/articles/injection.html
 

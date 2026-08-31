@@ -40,6 +40,8 @@
 
 > 史料来源：github.com/git/git（sparse-checkout/partial clone）、trunkbaseddevelopment.com
 
+> **一句话结论**：Git 工作流为 C++ 这类编译型项目提供「特性分支加保护主干加标签发布」的协作骨架，分支策略要匹配发布节奏与团队规模。
+
 ## ① 概述：版本控制价值 <span class="badge badge-exp">经验</span>
 
 [第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)

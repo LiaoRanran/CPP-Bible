@@ -39,6 +39,8 @@ Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"�
 - <span class="badge badge-anecdote">轶</span> Stroustrup 多次表示，STL 的 Iterator 是他最满意的"模式被语言吸收"的例子。
 
 > 史料来源：
+
+> **一句话结论**：行为型模式（策略/观察者/命令等）关注对象间的职责与通信，C++ 用函数对象、lambda 与 std::function 把「行为即数据」表达得格外自然。
 > - https://en.cppreference.com/w/cpp/language/coroutines
 > - https://en.cppreference.com/w/cpp/algorithm/ranges
 

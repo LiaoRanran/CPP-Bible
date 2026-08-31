@@ -32,6 +32,8 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 
 > 史料来源：ISO C++ 标准提案存档 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
+> **一句话结论**：C++23 刻意「减重」只补库不补大语言特性：expected 把「错误也是值」带进主流，print/stacktrace/mdspan 多为 Boost/Abseil 成熟实践的入库。
+
 ### 0.5 历史影像（真实照片，自由许可）
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。

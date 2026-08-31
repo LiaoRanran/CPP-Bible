@@ -32,6 +32,8 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 
 > 史料来源：ISO C++17 标准 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
+> **一句话结论**：C++17 是「减痛苦」的一版：把 optional/variant/string_view/filesystem/结构化绑定等高频缺件收编为标准，几乎人人受益、无人反对。
+
 ### 0.5 历史影像（真实照片，自由许可）
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。

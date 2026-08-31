@@ -28,6 +28,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/operators ｜ https://en.cppreference.com/w/cpp/language/operator_comparison ｜ https://en.cppreference.com/w/cpp/language/function
 
+> **一句话结论**：运算符重载是把自定义类型接进语言内置语法的桥梁，铁律是「保持语义直觉、不颠覆优先级」——重载成反直觉行为比不重载更糟。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 掌握算术、比较、自增/自减运算符重载

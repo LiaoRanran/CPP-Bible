@@ -32,6 +32,8 @@ Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头
 - <span class="badge badge-anecdote">轶</span> Boost 的同行评审邮件列表以"挑剔"闻名，确有库因命名风格或异常安全细节被反复打回，这种严审正是其"高质量"口碑的来源。
 
 > 史料来源：
+
+> **一句话结论**：Boost 是标准库的「试验田」：大量进入标准的特性（smart_ptr、variant、asio）都源自 Boost——读 Boost 等于读 C++ 演化的预演。
 > - https://www.boost.org/
 > - https://www.boost.org/doc/libs/
 

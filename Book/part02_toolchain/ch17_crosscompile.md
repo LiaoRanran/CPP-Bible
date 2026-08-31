@@ -36,6 +36,8 @@
 
 > 史料来源：RISC-V 国际 https://riscv.org/ ；Zephyr 实时操作系统 https://www.zephyrproject.org/
 
+> **一句话结论**：交叉编译在宿主机上为不同架构的目标机生成代码，靠三元组把「为谁编」与「在哪编」解耦；现代嵌入式多用「完整 C++ + 关异常/RTTI」而非裁剪子集。
+
 ## ① 概述：什么是交叉编译 <span class="badge badge-std">标准</span>
 
 [第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)

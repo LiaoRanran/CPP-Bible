@@ -30,6 +30,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/coroutines · https://en.cppreference.com/w/cpp/iterator/generator
 
+> **一句话结论**：协程应用模式：用 co_await 把异步回调拍平成「看似同步」的写法，生成器、任务、异步流是三类典型范式，底层靠协程帧挂起恢复。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 读完本章你应当能够：

@@ -34,6 +34,8 @@ STL 最具颠覆性的一点是**算法与容器解耦**：算法只认迭代器
 
 > 史料来源：[cppreference 标准库索引](https://en.cppreference.com/w/cpp/)、[libc++ 官方文档](https://libcxx.llvm.org/)、[MS STL 仓库](https://github.com/microsoft/STL)
 
+> **一句话结论**：STL 架构三层正交：容器管存储、算法管操作、迭代器做黏合，外加分配器与仿函数——用最少抽象积木拼出最大组合性，是泛型库设计范本。
+
 ## ① 学习目标
 
 STL（Standard Template Library）由**六大组件**构成，迭代器是连接算法与容器的"胶水"：

@@ -31,6 +31,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/copy_elision · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0135r1.html
 
+> **一句话结论**：RVO/NRVO 与 mandatory elision 让编译器直接在被调处构造返回值、彻底跳过拷贝或移动——这是语言层面保证的零开销，而非优化技巧。
+
 ## ① 概述：拷贝消除（copy elision）是什么
 
 [第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)

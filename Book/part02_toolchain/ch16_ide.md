@@ -36,6 +36,8 @@ IDE 之争是"重集成 vs 轻可订"。重量级 IDE（CLion/VS）内建索引�
 
 > 史料来源：语言服务器协议 LSP https://microsoft.github.io/language-server-protocol/ ；Clangd https://clangd.llvm.org/
 
+> **一句话结论**：IDE 之争是「重集成 vs 轻可订」：CLion/VS 开箱即用但重，VIM/VSCode 借 LSP 把智能外置；C++ 因模板宏难解析，Clangd 复用编译器前端的补全质量成了体验分水岭。
+
 ## ① 概述：IDE 在 C++ 工作流中的角色 <span class="badge badge-std">标准</span>
 
 [第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)

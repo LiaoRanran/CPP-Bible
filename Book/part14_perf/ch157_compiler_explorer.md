@@ -30,6 +30,8 @@ Compiler Explorer 背后是一种"去神秘化"的立场：编译器输出不是
 
 > 史料来源：godbolt.org、github.com/compiler-explorer/compiler-explorer
 
+> **一句话结论**：Compiler Explorer 把「源码 ↔ 汇编」并排对照，是把性能与正确性争论变成实证的利器——调模板和向量化时尤其离不开它。
+
 ## ① Compiler Explorer 核心工作流 <span class="badge badge-exp">经验</span>
 
 > **示例 1** [难度 ★★☆☆☆] [主题：核心工作流 <span class="badge badge-exp">经验</span>]

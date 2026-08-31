@@ -35,6 +35,8 @@
 
 > 史料来源：clang.llvm.org（内存模型/原子）、spectreattack.com
 
+> **一句话结论**：CPU 微架构（流水线 / 分支预测 / 乱序执行）决定了一段代码真实的快慢：理解它才知道为什么某些「显然更快」的写法反而更慢。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)

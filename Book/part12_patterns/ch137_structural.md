@@ -30,6 +30,8 @@
 - <span class="badge badge-anecdote">轶</span> Decorator 模式常被误写成 "Decorate" 模式，GoF 原书拼写为 Decorator，至今仍有初学者拼错。
 
 > 史料来源：
+
+> **一句话结论**：结构型模式（适配器/桥接/装饰/代理等）关注「对象如何组合成更大结构」，在 C++ 里常能借模板与 RAII 把运行期间接变成编译期组合。
 > - https://en.cppreference.com/w/cpp/language/constraints
 > - https://en.cppreference.com/w/cpp/language/pimpl
 

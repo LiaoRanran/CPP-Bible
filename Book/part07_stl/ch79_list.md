@@ -31,6 +31,8 @@
 
 > 史料来源：[cppreference std::forward_list](https://en.cppreference.com/w/cpp/container/forward_list)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
+> **一句话结论**：list/forward_list 用双向/单向链表换任意位置 O(1) 插入删除，代价是放弃随机访问、每节点额外指针与缓存不友好——别拿它当 vector 用。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 `std::list`（双向链表）与 `std::forward_list`（单向链表）是 STL 中**唯一保证迭代器稳定性**的序列容器：

@@ -41,6 +41,8 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/auto ｜ https://en.cppreference.com/w/cpp/language/lambda ｜ https://en.cppreference.com/w/cpp/language/function
 
+> **一句话结论**：auto 把「写类型」交给编译器从初始化式反推，decltype 则精确到「保留引用与 cv 的声明类型」——前者为省力、后者为保真。
+
 ## ① 学习目标
 
 [第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)

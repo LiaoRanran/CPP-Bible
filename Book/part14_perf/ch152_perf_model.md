@@ -36,6 +36,8 @@
 
 > 史料来源：software.intel.com/content/www/us/en/develop/tools/oneapi/components/advisor.html、github.com/llvm/llvm-project（llvm-mca）
 
+> **一句话结论**：性能模型与测量学：在动手优化前先建立「瓶颈在哪」的量化假设，因为直觉在分层存储与乱序执行面前几乎总是错。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)

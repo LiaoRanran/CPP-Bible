@@ -42,6 +42,8 @@ C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除
 
 > 史料来源：github.com/tencentrapidjson/rapidjson、github.com/simdjson/simdjson
 
+> **一句话结论**：从零实现 JSON 库：递归下降解析器、DOM 与流式两种模型、与 std::variant/string_view 的配合，是「小而完整」的解析器工程范本。
+
 ## ① 概述：JSON 与 C++ 映射 <span class="badge badge-std">标准</span>
 
 [第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)

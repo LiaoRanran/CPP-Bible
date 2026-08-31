@@ -40,6 +40,8 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/enum ｜ https://en.cppreference.com/w/cpp/language/using_enum ｜ https://en.cppreference.com/w/cpp/utility/format
 
+> **一句话结论**：enum class 用强作用域与固定底层类型堵住 C 枚举的隐式转换与名字泄漏，位掩码则用「零开销的或运算集合」表达多选标志。
+
 ## ① 章节摘要（Chapter Summary）
 
 [第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)

@@ -37,6 +37,8 @@ concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constraints ；https://en.wikipedia.org/wiki/C%2B%2B20
 
+> **一句话结论**：Concepts 把「模板参数必须满足什么」写成可检查、可读、可诊断的约束，终结了 SFINAE 时代天书般的报错，是 C++20 模板可用性的分水岭。
+
 !!! note "类比：concepts = 把隐式要求写成显式招聘启事"
     concept 可以**类比**为一张写在模板参数位上的"招聘启事"：明确写清"我要什么样的类型"，不满足的直接在门口被拒、报错只说"不满足某 concept"。更**好比**把 SFINAE（ch66）那种"偷偷试探"升级为"明文面试"——可读性从天书变人话。
 

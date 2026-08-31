@@ -39,6 +39,8 @@ DOD 对 OOP 的核心之争是"先想数据还是先想对象"：OOP 先问"有�
 - <span class="badge badge-anecdote">轶</span> Acton 那句"cache miss 才是真敌人"在 CppCon 现场引发长时间掌声，成为 DOD 的"战歌"。
 
 > 史料来源：
+
+> **一句话结论**：面向数据设计（DOD）先问「数据怎么被批量处理」再定结构，用 SoA 与连续数组换缓存命中，是「为变换而非为对象」建模的硬件友好哲学。
 > - https://www.youtube.com/watch?v=rX0ItVEVjHc （Mike Acton, CppCon 2014）
 > - https://en.cppreference.com/w/cpp/language/array
 

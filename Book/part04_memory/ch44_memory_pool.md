@@ -38,6 +38,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource ｜ https://en.cppreference.com/w/cpp/memory/pool_resource
 
+> **一句话结论**：内存池用「批量申请加固定切分」把频繁的小块分配从系统调用换成指针算术，用空间局部性换时间、用确定性换碎片风险。
+
 ## ① 为何需要内存池（动机全景）
 
 [第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)

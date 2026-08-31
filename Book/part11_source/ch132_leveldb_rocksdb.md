@@ -38,6 +38,8 @@ LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compac
 > 表注（0.4）：四条补遗按证据性质分列——`[史]` 可查证事实、`[评]` 工程权衡判断、`[轶]` 命名趣闻。
 
 > 史料来源：
+
+> **一句话结论**：LevelDB/RocksDB 用 LSM-Tree 与分层 compaction 把随机写变成顺序写，是理解现代 KV 存储内核的绝佳源码。
 > - https://github.com/facebook/rocksdb
 > - https://github.com/google/leveldb
 

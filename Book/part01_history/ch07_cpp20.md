@@ -33,6 +33,8 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 
 > 史料来源：Clang C++20 支持进度 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html ；GCC C++ 状态 https://gcc.gnu.org/projects/cxx-status.html
 
+> **一句话结论**：C++20 一次立起四根支柱——Concepts 让模板可读、Ranges 让算法可组合、Modules 消灭包含膨胀、Coroutines 拍平异步；是自 C++11 后最大换血。
+
 ### 0.5 历史影像（真实照片，自由许可）
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。

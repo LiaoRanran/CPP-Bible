@@ -34,6 +34,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/templates ；https://en.wikipedia.org/wiki/Template_metaprogramming
 
+> **一句话结论**：模板把类型与值当参数延迟到实例化，是 C++ 泛型与零开销抽象的根；实例化发生在编译期，错误信息也因此在那一层爆发。
+
 !!! note "类比：模板 = 按需刻章的模具"
     模板可以**类比**为一把模具（cookie cutter）：模具本身不是饼干，塞进面团（类型 `T`）才压出具体饼干（实例化）。更**好比**一台按需刻章的机器——你给图纸（模板），它按类型现场刻出专用函数。
 

@@ -31,6 +31,8 @@
 - <span class="badge badge-anecdote">轶</span> antirez 曾形容 Redis 是"为乐趣而写"，早期版本以单文件单线程的极简哲学对抗当时笨重的数据库。
 
 > 史料来源：
+
+> **一句话结论**：ClickHouse/Redis 的实现精读：列式向量化执行与单线程事件循环，分别展示了「分析型」与「缓存型」系统极致的工程取向。
 > - https://redis.io/blog/
 > - https://clickhouse.com/blog
 

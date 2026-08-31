@@ -37,6 +37,8 @@
 - <span class="badge badge-anecdote">轶</span> GoF 书名里的 "Gang of Four" 本是对四位作者的戏称，后来竟成了正式代称。
 
 > 史料来源：
+
+> **一句话结论**：设计模式在 C++ 里的落点：模板加多态让「接口与实现分离」既可在运行期（虚函数）也可在编译期（CRTP）达成，语言特性本就是模式的温床。
 > - https://en.wikipedia.org/wiki/Design_Patterns
 > - https://wiki.c2.com/?AntiPattern
 

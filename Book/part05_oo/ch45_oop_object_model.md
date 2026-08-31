@@ -43,6 +43,8 @@ C++ 在对象模型上做了两个反潮流的选择：其一是**值语义优�
 
 > 史料来源：https://en.cppreference.com/w/cpp/compiler_support ；https://itanium-cxx-abi.github.io/cxx-abi/ ；https://en.wikipedia.org/wiki/C%2B%2B23
 
+> **一句话结论**：C++ 面向对象的总览与对象模型——对象是「数据加（若有虚函数时的）vptr」的内存布局，理解 vptr/vtable 才看得懂多态、继承与切片的内存代价。
+
 ---
 
 ## ① 概述：C++ OOP 哲学——值语义优先、零开销、多范式

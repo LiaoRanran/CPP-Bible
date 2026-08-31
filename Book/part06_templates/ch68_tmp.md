@@ -34,6 +34,8 @@ TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、�
 
 > 史料来源：https://en.wikipedia.org/wiki/Template_metaprogramming ；https://www.boost.org/ ；https://en.cppreference.com/w/cpp/language/constexpr
 
+> **一句话结论**：模板元编程用递归实例化与偏特化在编译期做图灵完备的计算，能在类型层完成分支、循环与数值运算——强大，但编译期成本与可读性都是硬伤。
+
 !!! note "类比：TMP = 在类型系统里搭的积木计算机"
     模板元编程可以**类比**为一台把所有计算"刻进类型"的计算机：递归实例化像函数调用栈，偏特化像 `switch` 基例，编译器在编译期就把结果算成常量。更**好比**用乐高按规则搭出答案，而不是运行时一步步算。
 

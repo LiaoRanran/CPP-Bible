@@ -34,6 +34,8 @@ LLVM 对 GCC 的核心之争是"模块化/库化 vs 单体"。LLVM 以 MIT 类�
 - <span class="badge badge-anecdote">轶</span> 因为 LLVM IR 太好用，社区确有不少人拿它当"通用汇编"写 DSL 编译器，已远超 Lattner 当年"虚拟机"的本意。
 
 > 史料来源：
+
+> **一句话结论**：LLVM/Clang 的 C++ 代码本身是研究编译器前端的活教材：它既是工具链也是被研究对象的范例，模块化设计值得借鉴。
 > - https://llvm.org/docs/
 > - https://mlir.llvm.org/
 

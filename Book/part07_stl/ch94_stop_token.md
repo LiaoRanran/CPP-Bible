@@ -31,6 +31,8 @@ C++11 的 `std::thread` 没有安全取消手段：你既不能从外部强行 `
 
 > 史料来源：[cppreference std::stop_token](https://en.cppreference.com/w/cpp/thread/stop_token)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
+> **一句话结论**：stop_token 与 jthread 把「协作式取消」做成一等公民，让可中断的异步任务不必自己手搓 atomic 标志——这是 C++20 对线程生命周期的标准答案。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 C++20 引入的**协作取消（cooperative cancellation）**三件套：

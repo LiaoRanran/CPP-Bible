@@ -32,6 +32,8 @@ MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例�
 - <span class="badge badge-anecdote">轶</span> 开源前修一个 STL bug 要等整年 VS 发布周期的说法并非夸张——正是这种"呼吸不畅"，让 2019 年的 MIT 开源成了社区贡献的分水岭。
 
 > 史料来源：
+
+> **一句话结论**：MS STL 背靠 Visual C++ 与 Windows 生态，在 ABI 稳定与诊断体验上取舍明确；读它有助于理解 Windows 平台 C++ 的务实工程选择。
 > - https://github.com/microsoft/STL
 > - https://learn.microsoft.com/cpp/standard-library/
 

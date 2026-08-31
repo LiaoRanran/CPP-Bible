@@ -35,6 +35,8 @@ SIMD（单指令多数据）的动机来自"对一大堆数据做同一件事"�
 
 > 史料来源：developer.arm.com/Architectures/Scalable%20Vector%20Extension、open-std.org/jtc1/sc22/wg21/docs/papers
 
+> **一句话结论**：SIMD/AVX 向量化让一条指令并行处理多个数据，是数值与媒体计算的暴力加速器；用 intrinsics 或自动向量化把热点循环的吞吐翻倍。
+
 ## ① 概述：SIMD 是什么 <span class="badge badge-std">标准</span>
 
 [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)

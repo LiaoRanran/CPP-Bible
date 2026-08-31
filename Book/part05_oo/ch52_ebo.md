@@ -32,6 +32,8 @@ EBO 体现 C++ 对「大小即性能」的执念：在密集容器、嵌入式�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/attributes/no_unique_address ；https://en.cppreference.com/w/cpp/language/ebo
 
+> **一句话结论**：空基类优化让空类基类不占空间、size 归零——它是 std::pair、compressed_pair 等「零开销封装」得以成立的内存布局魔法。
+
 ---
 
 ## ① 学习目标

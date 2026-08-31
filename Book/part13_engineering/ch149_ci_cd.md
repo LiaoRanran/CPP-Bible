@@ -40,6 +40,8 @@ CI 的核心理念是"让集成失败尽早、自动化、可重复"，反对"�
 
 > 史料来源：ccache.dev、docs.github.com/en/actions
 
+> **一句话结论**：CI/CD 把编译、静态检查、测试、打包自动化成门禁，对 C++ 尤为重要——长编译与多平台让「每次提交都能构建通过」价值倍增。
+
 ## ① 概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>
 
 [第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)

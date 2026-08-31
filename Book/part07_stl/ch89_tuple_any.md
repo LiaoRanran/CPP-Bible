@@ -30,6 +30,8 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
 
 > 史料来源：[cppreference std::tuple](https://en.cppreference.com/w/cpp/utility/tuple)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
+> **一句话结论**：tuple 把异构定长数据打包、any 把类型擦除到运行时容器、pair 是二元特例——它们是泛型代码里传递「一组值」的轻量载体。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)

@@ -32,6 +32,8 @@
 
 > 史料来源：[cppreference 线程支持库](https://en.cppreference.com/w/cpp/thread)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
+> **一句话结论**：thread 给原生线程、async 把任务丢进线程池并返回 future，二者都直面「共享状态加数据竞争」——异步不等于无锁。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 本章把 C++11 引入、并经 C++20/23 打磨的**线程与异步原语**作为一个有机整体讲透：

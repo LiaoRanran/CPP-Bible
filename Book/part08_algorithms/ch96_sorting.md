@@ -33,6 +33,8 @@
 
 > 史料来源：[cppreference std::sort](https://en.cppreference.com/w/cpp/algorithm/sort)、[Boost.Sort](https://www.boost.org/doc/libs/release/libs/sort/)
 
+> **一句话结论**：std::sort 用 introsort（快排打主力、递归过深切堆排兜底、小区间换插入）把「平均快」和「最坏稳」焊在一起，但默认不保证相等元素顺序——要保序用 stable_sort。
+
 !!! note "类比：introsort = 一名「见势不妙就换招」的拳手"
     introsort 可以**类比**为一名混合拳手：平时用快排重拳速攻（平均极快），一旦察觉递归过深像要被拖入垃圾时间（退化风险），立刻切到堆排兜底保证不输（O(n log n) 最坏），末尾小残局再用插入排序补刀省开销。更**好比**一辆平时飙高速、检测到失控风险就自动降档的安全车。
 

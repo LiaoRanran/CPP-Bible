@@ -27,6 +27,8 @@
 
 > 史料来源：[cppreference std::map](https://en.cppreference.com/w/cpp/container/map)、[Abseil 官方文档](https://abseil.io/docs/cpp/)
 
+> **一句话结论**：map/set 底层红黑树保序，让「有序遍历加按 key O(log n) 操作」恒定成立，插入删除以不失效其他迭代器为代价换来节点式灵活性。
+
 ## ① 学习目标
 
 `std::map<Key, T>` 与 `std::multimap<Key, T>` 是基于**红黑树（red-black tree）**的有序关联容器。本章结束后，你应当能够：

@@ -35,6 +35,8 @@
 
 > 史料来源：ISO C 标准委员会 https://www.open-std.org/jtc1/sc22/wg14/ ；C 与 C++ 互操作对照 https://en.cppreference.com/w/cpp/language/extern_c
 
+> **一句话结论**：C++ 脱胎于 C with Classes：Stroustrup 要把 Simula 的「对象抽象」缝进 C 的「零开销速度」，靠零开销原则与 C 兼容赢下了存量程序员。
+
 ### 0.5 历史影像（真实照片，自由许可）
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范；非公有领域者已按许可要求标注作者与许可。

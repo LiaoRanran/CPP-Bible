@@ -37,6 +37,8 @@
 
 > 史料来源：en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size、dataorienteddesign.com
 
+> **一句话结论**：缓存优化与数据局部性是性能杠杆里性价比最高的一根：连续访问、减少指针跳转、避免伪共享，往往比算法改进更立竿见影。
+
 ## ① 概述：为什么缓存决定性能，而非 CPU 峰值 <span class="badge badge-std">标准</span>
 
 CPU 每个时钟周期能执行数条指令、完成数十次整数运算，但一次主存（DRAM）访问要几百个周期。绝大多数 C++ 性能问题不是"算得慢"，而是"等内存"。优化数据布局、让访问集中在缓存里，往往比换算法带来的收益大一个数量级。

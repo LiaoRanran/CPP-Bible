@@ -33,6 +33,8 @@
 
 > 史料来源：llvm.org/docs/MLGO.html、gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
+> **一句话结论**：编译器优化（O2/O3/Ofast/LTO/PGO）里，PGO 用真实运行剖面喂给优化器，常比盲目升 O3 带来更稳的收益——但 Ofast 可能牺牲严格语义。
+
 ## ① 概述：编译器优化层级 <span class="badge badge-std">标准</span>
 
 [第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)

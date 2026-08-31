@@ -30,6 +30,8 @@ Modules 入标只是起点，真正的硬仗是"工具链落地"与"生态迁移
 
 > 史料来源：https://en.cppreference.com/w/cpp/module · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1103r3.pdf
 
+> **一句话结论**：Modules 用「模块接口单元」取代文本包含的宏式 #include，消灭包含膨胀与 ODR 重编译，是 C++20 对构建提速与封装的头号重构。
+
 ## ① 概述：Modules 要解决什么 <span class="badge badge-std">标准</span>
 
 [第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)

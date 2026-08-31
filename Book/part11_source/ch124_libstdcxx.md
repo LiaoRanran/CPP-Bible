@@ -32,6 +32,8 @@ libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）
 - <span class="badge badge-anecdote">轶</span> 社区常吐槽：libstdc++ 的 `<chrono>` 时区数据库需另行下载一份 IANA 数据，最小容器若漏打包，`std::chrono::zoned_time` 会"看着在、用就抛"，成了发行版打包的经典坑。
 
 > 史料来源：
+
+> **一句话结论**：读 libstdc++ 源码的入口：从 <vector> 追到 bits/stl_vector.h 与分配器，理解标准库如何把「规范」落成「可读的实现」，是吃透 STL 的必经路。
 > - https://gcc.gnu.org/projects/cxx-status.html
 > - https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html
 

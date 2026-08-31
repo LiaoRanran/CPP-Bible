@@ -36,6 +36,8 @@
 
 > 史料来源：LLVM 后端优化（ThinLTO/BOLT） https://llvm.org/ ；GCC 优化选项 https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
+> **一句话结论**：构建配置是给编译器的需求单：Debug 留符号关优化、Release 开优化剔符号；LTO/PGO 把优化推到全程序与真实热点，而 C++ 把「调多少」的选择权完全交给用户。
+
 ## ① 概述：构建配置维度
 
 [第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)

@@ -34,6 +34,8 @@ C 时代只有两种 primitive：返回码与全局 `errno`（1970s）。`[史]`
 
 > 史料来源：open-std.org/jtc1/sc22/wg21/docs/papers、github.com/isocpp/CppCoreGuidelines
 
+> **一句话结论**：错误处理三选一（异常 / 错误码 / 可选值）各有适用域：异常适合不可恢复、错误码适合底层可控、optional 适合「可能没有」；混用比单选更危险。
+
 ## ① 概述：错误处理策略 <span class="badge badge-exp">经验</span>
 
 [第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)

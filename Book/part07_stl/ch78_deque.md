@@ -31,6 +31,8 @@ deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来�
 
 > 史料来源：[cppreference std::deque](https://en.cppreference.com/w/cpp/container/deque)、[libc++ 官方文档](https://libcxx.llvm.org/)
 
+> **一句话结论**：deque 用分段连续加中控数组实现两头 O(1) 插入且下标 O(1)，代价是单次访问多一次间接与较差的局部性。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 `std::deque`（double-ended queue，双端队列）是 STL 中**最被低估**的序列容器：

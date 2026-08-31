@@ -107,6 +107,8 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/shared_ptr ｜ https://en.cppreference.com/w/cpp/memory/out_ptr ｜ https://en.cppreference.com/w/cpp/memory/unique_ptr
 
+> **一句话结论**：unique_ptr 独占、shared_ptr 引用计数共享、weak_ptr 打破循环——智能指针把 RAII 套到堆对象上，基本消除了裸指针所有权混乱。
+
 ## ① 动机与全景：为何需要智能指针
 
 [第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)

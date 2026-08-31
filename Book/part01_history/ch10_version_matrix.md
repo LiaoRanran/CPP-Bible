@@ -33,6 +33,8 @@
 
 > 史料来源：GCC 特性支持表 https://gcc.gnu.org/projects/cxx-status.html ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
+> **一句话结论**：版本特性对照表与迁移指南是升级编译器前唯一敢信赖的地图：它同时标注「语言特性」与「工具链/ABI 现实」，因为 C++ 只保源码兼容、不保二进制兼容。
+
 ## ① 学习目标
 
 [第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)

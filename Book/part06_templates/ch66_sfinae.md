@@ -35,6 +35,8 @@ SFINAE 强大却「以副作用闻名」：它把编译器的容错机制逆向�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/sfinae ；https://en.cppreference.com/w/cpp/language/constraints
 
+> **一句话结论**：SFINAE 让「替换失败不是错误」成为编译期条件分支的开关，用 std::enable_if 等按类型能力启用或禁用重载——优雅但报错晦涩，后被 Concepts 收编。
+
 !!! note "类比：SFINAE = 不报警的拒客门卫"
     SFINAE 可以**类比**为一位门卫：候选模板在"替换实参"时发现不合规，他不会拉警报（报错），只是悄悄把这位候选从名单里划掉，让别的重载上位——"替换失败不算错"。更**好比**多家餐厅里某家"坐不下你"，你转去下一家，全程无故障。
 

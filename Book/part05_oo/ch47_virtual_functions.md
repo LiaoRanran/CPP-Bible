@@ -34,6 +34,8 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/virtual ；https://en.wikipedia.org/wiki/C%2B%2B23
 
+> **一句话结论**：虚函数靠每个对象隐藏的 vptr 指向一张 vtable 实现动态分派，调用成本是一次间接跳转——它是运行时多态的发动机，也是内联失效的源头。
+
 > 元数据：标准基 C++98（核心）/C++11（override/final）/C++20（更优去虚化） · 预计阅读 120 min · 前置 ch19(存储期)/ch35(.rodata)/ch39(析构noexcept)/ch45(对象模型)/ch46(继承) · 后续 ch48(RTTI)/ch49(虚继承)/ch50(CRTP/EBO)/ch14(性能) · 难度 高级
 
 ## ① 学习目标

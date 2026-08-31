@@ -44,6 +44,8 @@
 
 > 史料来源：open-std.org/jtc1/sc22/wg21/docs/papers（modules/reflection）、gcc.gnu.org/projects/cxx-modules.html
 
+> **一句话结论**：从零实现你的框架：把前述并发/内存/解析等能力收口成一致的抽象层，是检验「是否真懂 C++ 工程」的综合练习。
+
 ## ① 概述：从零写框架的意义 <span class="badge badge-exp">经验</span>
 
 [第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)

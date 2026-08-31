@@ -45,6 +45,8 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 
 > 史料来源：open-std.org/jtc1/sc22/wg21/docs/papers（Networking）、github.com/axboe/liburing（io_uring）
 
+> **一句话结论**：从零实现网络编程：socket、I/O 多路复用（epoll/io_uring）与缓冲管理，揭示「高并发服务」底层无非是事件循环加非阻塞 I/O。
+
 ## ① 概述：C++ 网络编程 <span class="badge badge-std">标准</span>
 
 [第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)

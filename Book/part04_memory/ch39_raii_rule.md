@@ -45,6 +45,8 @@ RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零�
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/optional ｜ https://en.cppreference.com/w/cpp/thread/jthread ｜ https://en.cppreference.com/w/cpp/utility/expected
 
+> **一句话结论**：RAII 用「对象生命周期绑定资源」把释放写进析构，Rule of Zero/Three/Five 则是据此决定该手写哪些特殊成员函数的经验法则。
+
 ## ① 概述：RAII 是什么，为何是 C++ 的脊梁
 
 [第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)

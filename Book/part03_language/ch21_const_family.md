@@ -41,6 +41,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constexpr ｜ https://en.cppreference.com/w/cpp/language/consteval ｜ https://en.cppreference.com/w/cpp/language/constinit
 
+> **一句话结论**：const 只承诺「运行期不可改」，constexpr 进一步承诺「编译期可算」，consteval 强制编译期、constinit 保证静态初始化无顺序问题——四级强度对应四级保证。
+
 ## ① const 的精确语义与 cv 限定符全规则
 
 [第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)

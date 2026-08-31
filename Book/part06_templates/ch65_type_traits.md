@@ -36,6 +36,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/header/type_traits ；https://en.cppreference.com/w/cpp/language/constraints
 
+> **一句话结论**：Type Traits 在编译期自省类型属性并据以分发，是 SFINAE/Concepts 之前就存在的「类型反射」基础设施，也是标准库自适应实现的内核。
+
 !!! note "类比：traits = 类型的海关查验官"
     类型特性（type traits）可以**类比**为一位海关官员：它检查类型的"护照"（有没有 `.size()`？是不是整型？），然后盖 `true_type`/`false_type` 的章，供重载决议据此分流。更**好比**给每个类型建了一张"属性档案卡"，编译期随查随用。
 

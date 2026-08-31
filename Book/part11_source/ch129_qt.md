@@ -50,6 +50,8 @@
 - <span class="badge badge-anecdote">轶</span> 尽管 C++26 静态反射（P2996）已在推进，Qt 的 moc 至今仍是"反射"唯一工业级落地——这场"标准慢、moc 快"的对照，短期内看不到终点。
 
 > 史料来源：
+
+> **一句话结论**：Qt 用 moc 预处理器与信号槽机制在 C++ 上加了一层对象模型，理解它与纯 C++ 的边界，是维护 Qt 代码不踩坑的前提。
 > - https://www.qt.io/blog
 > - https://wiki.qt.io/
 

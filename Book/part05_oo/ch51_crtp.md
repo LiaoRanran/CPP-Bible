@@ -33,6 +33,8 @@ CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/crtp ；https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
 
+> **一句话结论**：CRTP 用「派生类作为基类模板参数」在编译期把静态多态织进类型系统，免虚函数开销即获得「编译期虚函数」式的接口复用。
+
 ---
 
 ## ① 学习目标

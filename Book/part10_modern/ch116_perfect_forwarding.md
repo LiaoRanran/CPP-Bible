@@ -34,6 +34,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/function_template · https://en.cppreference.com/w/cpp/utility/forward
 
+> **一句话结论**：完美转发用万能引用加 std::forward 把实参的值类别（左值或右值）原样透传给下一层，是写泛型包装函数不丢信息的关键。
+
 ## ① 学习目标
 
 读完本章你应当能够：

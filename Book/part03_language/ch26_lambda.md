@@ -48,6 +48,8 @@ lambda 本质仍是"语法糖 + 闭包类"，委员会坚持零开销：不捕�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/lambda ｜ https://en.cppreference.com/w/cpp/language/function ｜ https://en.cppreference.com/w/cpp/language/constraints
 
+> **一句话结论**：lambda 是「带捕获的匿名闭包对象」，编译器为其生成唯一的 functor 类型；捕获方式（值/引用/初始化）决定闭包持有的是副本还是别名。
+
 ## ① 本章地图（先给结论，再击穿）
 
 [第25章　union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)

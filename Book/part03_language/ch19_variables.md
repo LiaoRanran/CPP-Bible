@@ -40,6 +40,8 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/modules ｜ https://en.cppreference.com/w/cpp/language/inline ｜ https://en.cppreference.com/w/cpp/language/storage_duration
 
+> **一句话结论**：变量是「名字 → 存储 + 类型 + 生命周期」的三元组：存储期决定生死、链接决定跨单元可见范围，而 ODR 规定同一实体在整个程序里只能有一份定义。
+
 ## ① 本章要击穿的十个问题
 
 [第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)

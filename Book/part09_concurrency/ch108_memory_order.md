@@ -35,6 +35,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/memory_order · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0019r8.html
 
+> **一句话结论**：多核下「先写的先被看见」不再成立，memory_order 用 seq_cst（默认、全序最稳）/acquire-release/relaxed 给跨线程可见性定规矩——用 relaxed 省栅栏就得自己承担乱序风险。
+
 !!! note "类比：内存序 = 给跨线程的「谁先被看见」定规矩"
     `std::memory_order` 可以**类比**为邮局寄信的"投递时效等级"：默认 seq_cst 是"挂号全序信"（所有人看到的顺序都一致、最稳但最慢），relaxed 是"平邮"（只保证信本身送到，不保证和你其他信的顺序），acquire/release 则是"发货单—签收单"配对（发布者之前的写对获取者可见）。更**好于**多核世界里"先写的先被看见"这个单核直觉的破产：必须显式约定。
 

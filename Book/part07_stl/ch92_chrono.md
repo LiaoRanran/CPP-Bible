@@ -36,6 +36,8 @@ chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，
 
 > 史料来源：[cppreference std::chrono](https://en.cppreference.com/w/cpp/chrono)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
+> **一句话结论**：chrono 用「时间点 / 时长 / 时钟」三件套把时间类型化，编译期区分秒与毫秒、系统时钟与稳定时钟，杜绝裸整型计时的单位混乱。
+
 ## ① 学习目标
 
 学完本章你应能：

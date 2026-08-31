@@ -36,6 +36,8 @@
 
 > 史料来源：github.com/google/benchmark、github.com/brendangregg/FlameGraph
 
+> **一句话结论**：基准测试与性能度量讲究「先有可比环境、再谈数字」：固定频率、隔离噪声、多次取稳，否则微基准的结论会骗人。
+
 ## ① 概述：基准测试陷阱 <span class="badge badge-exp">经验</span>
 
 [第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)

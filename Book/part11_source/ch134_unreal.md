@@ -44,6 +44,8 @@ Epic 的取舍很清楚：**保留 C++ 的性能和零抽象控制力**（对比
 - <span class="badge badge-anecdote">轶</span> Epic v. Apple（2020 起）的 30% 抽成之战，与"免费送引擎"是同一种掀桌精神——Sweeney 把对渠道霸权的反感一路打到了最高法院。
 
 > 史料来源：
+
+> **一句话结论**：Unreal Engine 的 C++ 架构用 UObject/反射/GC 在原生 C++ 上自建一套运行时，理解它才能驾驭游戏引擎而非被其对象模型拖累。
 > - https://www.unrealengine.com/en-US/blog
 > - https://www.epicgames.com/site/en-US/news
 

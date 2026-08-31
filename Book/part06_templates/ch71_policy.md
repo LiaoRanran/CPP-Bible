@@ -32,6 +32,8 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/shared_ptr ；https://en.cppreference.com/w/cpp/language/constraints
 
+> **一句话结论**：Policy-Based Design 把行为拆成可正交组合的模板策略参数，让用户像搭积木一样拼出定制类——灵活性来自编译期组合而非运行期虚函数。
+
 !!! note "类比：策略类 = 可插拔的行为积木"
     策略设计可以**类比**为一套乐高式的行为积木：把"线程安全""内存分配""删除器"等拆成独立策略类，宿主模板像插槽一样把它们拼装成定制类型。更**好比**点菜——选不同"配菜"（策略）组合出你想要的那个变体，编译期就定好，运行期零间接调用。
 

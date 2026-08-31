@@ -30,6 +30,8 @@
 
 > 史料来源：[cppreference std::expected](https://en.cppreference.com/w/cpp/utility/expected)、[C++23 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B23)
 
+> **一句话结论**：optional 用「有或没有」替代空指针与哨兵值，variant 用判别式联合替代裸 union——两者都把「可能缺席或多种可能」建模进类型，逼调用方处理。
+
 ## ① 概述：为什么需要可空与可辨别联合 <span class="badge badge-std">标准</span>
 
 [第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)

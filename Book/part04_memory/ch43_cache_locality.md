@@ -47,6 +47,8 @@ C++ 不替你做数据布局优化，但给你"控制布局"的全部权力（�
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/assume_aligned ｜ https://en.cppreference.com/w/cpp/language/attributes ｜ https://en.cppreference.com/w/cpp/types/hardware_interference_size
 
+> **一句话结论**：CPU 缓存比内存快百倍，「数据局部性」（连续访问、少指针跳转）往往比算法微优化更能决定实测性能。
+
 ## ① 存储层次与延迟量级（内存墙）
 
 [第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化](Book/part04_memory/ch42_strict_aliasing.md)

@@ -40,6 +40,8 @@ xUnit 的核心取舍是"隔离 + 断言 + 可重复"：每个测试独立、快
 
 > 史料来源：github.com/doctest/doctest、llvm.org/docs/LibFuzzer.html
 
+> **一句话结论**：测试策略分层：单元测试护单元、集成测试护协作、模糊测试护边界；C++ 还需兼顾 ABI 与未定义行为，测试要覆盖编译期与运行期。
+
 ## ① 概述：测试金字塔 <span class="badge badge-exp">经验</span>
 
 [第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)

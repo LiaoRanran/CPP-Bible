@@ -33,6 +33,8 @@
 
 > 史料来源：[cppreference std::vector](https://en.cppreference.com/w/cpp/container/vector)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
+> **一句话结论**：vector 是连续内存动态数组，「倍增加搬移」换摊还 O(1) push_back，reserve/capacity 是避免反复搬迁与控制迭代器失效的关键旋钮。
+
 ## ① 学习目标
 
 `std::vector<T>` 是**连续内存、动态数组**容器，以**三指针模型**管理：`_M_start`（首）、`_M_finish`（末后元素）、`_M_end_of_storage`（容量末）。本章目标：

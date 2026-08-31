@@ -30,6 +30,8 @@ Ranges 最核心的立场是**"算法应操作区间而非迭代器对"**，并�
 
 > 史料来源：[range-v3 仓库](https://github.com/ericniebler/range-v3)、[cppreference Ranges](https://en.cppreference.com/w/cpp/ranges)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
+> **一句话结论**：Ranges 把「一对迭代器」升级为整段可组合的水管，views 惰性、可投影、可管道串联，让算法表达力与组合性压倒一点简洁性。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 [第89章　tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)

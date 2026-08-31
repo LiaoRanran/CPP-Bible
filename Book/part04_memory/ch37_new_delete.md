@@ -41,6 +41,8 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/new ｜ https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/allocator
 
+> **一句话结论**：operator new/delete 是「分配原始内存 + 调构造/析构」的底层原语，可全局或类局部重载，是定制内存策略与定位 new 的入口。
+
 ## ① 本章在全书中的位置
 
 [第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)

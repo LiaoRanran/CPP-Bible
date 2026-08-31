@@ -37,6 +37,8 @@
 
 > 史料来源：github.com/google/eng-practices、clang.llvm.org/extra/clang-tidy
 
+> **一句话结论**：代码审查是团队的质量闸门与知识扩散器：查的是正确性、可维护性与设计，而非挑风格——用清单化降低主观摩擦。
+
 ## ① 概述：Code Review 价值 <span class="badge badge-exp">经验</span>
 
 [第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)

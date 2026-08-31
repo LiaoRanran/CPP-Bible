@@ -36,6 +36,8 @@
 
 > 史料来源：[cppreference std::filesystem](https://en.cppreference.com/w/cpp/filesystem)、[Boost.Filesystem](https://www.boost.org/doc/libs/release/libs/filesystem/)
 
+> **一句话结论**：std::filesystem 把路径、目录遍历、文件属性等操作系统差异收进标准，跨平台文件操作不再依赖系统 API 与宏。
+
 ## ① 学习目标
 
 学完本章你应能：

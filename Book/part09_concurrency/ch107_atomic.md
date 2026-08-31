@@ -38,6 +38,8 @@ C++ 面临两条路：一是暴露编译器/硬件内建（如 GCC 的 `__atomic
 
 > 史料来源：https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1135r6.html · https://en.cppreference.com/w/cpp/atomic/atomic
 
+> **一句话结论**：std::atomic<T> 把原子性绑在类型上，编译器据此禁止对普通变量做无保护并发访问；但大类型可能悄悄退化成加锁的「伪原子」（is_lock_free() 可能返回 false）。
+
 !!! note "类比：std::atomic = 给变量装了「不可分割」的保护罩"
     `std::atomic<T>` 可以**类比**为给一个变量套上"一次读写不可被拆断"的保护罩：别的线程要么看到改之前的整值，要么看到改之后的整值，绝不会看到半截。更**好比**一个"只进不退"的保险箱——编译器禁止对普通 `int` 做无保护并发访问，逼你走这道安全门。
 
