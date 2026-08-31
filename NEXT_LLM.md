@@ -21,22 +21,29 @@
 
 ---
 
-## 启动序列（4 步确认现状）
+## 启动序列（1 条命令确认现状）
+
+**接手第一步只跑这一条**：
 
 ```powershell
 cd C:/CodeLearnling/note/note/C++/CPP-Bible
+python tools/handover_check.py            # 约 2 分钟；加 --quick 只要几秒
+```
 
-# 1. 确认 HEAD 与远程一致（应无 ahead/behind）
-git status -sb ; git log --oneline -3
+它会一次性核对「接手文档里的声称是否与实际情况一致」。**这一步不是可选
+的**——2026-08-31 实测，本文件当时三处声称与实际不符：`quality 16/16`
+在默认控制台实为 15/16；`HEAD` 尾注记错且 push 状态记反；系统 python
+版本记 3.10.11 而实测 3.14.5。直接信文档就会在错误的前提上开工。
 
-# 2. 看工作树（应只有 ch01/08/09/10 + 编译报告产物未提交）
-git status --short
+覆盖项：git 同步（ahead / behind / 脏文件）、文档写死数字 vs 事实源、
+ruff、quality 门禁；并打印接手简报（事实快照 + 剩余待办 + 已知陷阱）。
+退出 0 = 现状可信；非 0 = 先处理再干活。
 
-# 3. 跑质量门禁（期望 16/16）
-.venv/Scripts/python.exe tools/cppbible.py check --stage quality
+需要更细控制时再单独跑：
 
-# 4. 跑编译门禁（期望 5/5，全量约 3-5 分钟）
-.venv/Scripts/python.exe tools/cppbible.py check --stage compile
+```powershell
+.venv/Scripts/python.exe tools/cppbible.py check --stage quality   # 期望 16/16
+.venv/Scripts/python.exe tools/cppbible.py check --stage compile   # 期望 5/5，3-5 分钟
 ```
 
 ---
@@ -113,6 +120,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | `TOOLCHAIN_UPGRADE_NEXT.md` | 工具链升级剩余项执行规划（P0-P2 五剩余项 + CROSSREF 裁决策略） | ✅ |
 | `metrics.schema.json` | **指标单一事实源定义**（12 个字段 + 出处 + 可回写字段 + 待校验正则） | ✅ |
 | `tools/gen_metrics.py` | 指标落地校验器：`--check` 校验文档写死数字（CI 硬门禁）/ `--sync` 回写 STATE.json 派生字段 | ✅ |
+| `tools/handover_check.py` | **接手自检（接手第一步就跑它）**：一条命令核对 git 同步 + 文档数字 vs 事实源 + ruff + quality，并打印接手简报 | ✅ |
 | `CONTENT_DEPTH_ROADMAP.md` | **内容深化主线**（五阶：汇编实证矩阵 / 实战项目线 / 陷阱体系 / 人文温度 / 内容形态补全） | ✅ |
 | `docs/references/P1_memory_object_model_checklist.md` | 台阶一 P1 内存/对象模型实证结论清单（强模型定结论，弱模型施工图） | ✅ |
 | `ISSUES.md` | 遗留清单（2026-08-30 口径） | ✅ |
