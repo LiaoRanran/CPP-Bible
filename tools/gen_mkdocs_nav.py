@@ -140,9 +140,18 @@ theme:
     - navigation.tracking
     - navigation.top
     - navigation.indexes
+    - navigation.sections
+    - navigation.path
+    - navigation.footer
     - toc.follow
+    - toc.integrate
+    - content.action.edit
     - content.code.copy
     - content.code.annotate
+    - content.code.select
+    - content.tooltips
+    - search.suggest
+    - search.highlight
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -195,8 +204,16 @@ extra_css:
 
 
 EXTRA_CSS = """\
-/* CPP-Bible 层级徽章（[标准]/[实现]/[经验]/[ABI]/[平台]/[微架构]/[史]/[轶]/[评]）
-   在 site 渲染为彩色标签；PDF/EPUB 走 pandoc 时 span 降级为纯文本，不崩。 */
+/* ============================================================================
+   CPP-Bible 站点自定义样式（extra.css）
+   由 tools/gen_mkdocs_nav.py 注入 build/site/docs/assets/extra.css。
+   分区：0 层级徽章 / 1 排版 / 2 代码块 / 3 标注块(admonition) /
+        4 表格 / 5 定义列表 / 6 任务列表 / 7 引用与脚注 / 8 行内元素 /
+        9 TOC 与导航 / 10 搜索 / 11 Mermaid / 12 打印与响应式
+   ========================================================================== */
+
+/* ---------- 0. 层级徽章（[标准]/[实现]/[经验]/[ABI]/[平台]/[微架构]/[史]/[轶]/[评]） ---------- */
+/*   在 site 渲染为彩色标签；PDF/EPUB 走 pandoc 时 span 降级为纯文本，不崩。 */
 .md-typeset .badge {
   display: inline-block;
   padding: 0.02em 0.55em;
@@ -222,9 +239,11 @@ EXTRA_CSS = """\
 .md-typeset .badge-measured { background: #dcedc8; color: #33691e; border: 1px solid #aed581; }
 .md-typeset .badge-perf { background: #fbe9e7; color: #bf360c; border: 1px solid #ffab91; }
 
-/* 中文高密度技术文档排版优化：缓解「拥挤感」 */
+/* ---------- 1. 中文高密度技术文档排版优化：缓解「拥挤感」 ---------- */
 .md-typeset {
   line-height: 1.8;
+  font-feature-settings: "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
 }
 .md-typeset p {
   margin: 0.9em 0;
@@ -235,23 +254,366 @@ EXTRA_CSS = """\
 .md-typeset li + li {
   margin-top: 0.35em;
 }
-.md-typeset pre {
-  margin: 1.1em 0;
-  line-height: 1.55;
-}
-.md-typeset table:not([class]) {
-  margin: 1.1em 0;
-}
+.md-typeset h1 { letter-spacing: 0.01em; }
 .md-typeset h2, .md-typeset h3 {
   margin-top: 1.7em;
   margin-bottom: 0.6em;
+  font-weight: 700;
 }
-.md-typeset blockquote {
-  margin: 1em 0;
+.md-typeset h4, .md-typeset h5, .md-typeset h6 {
+  margin-top: 1.3em;
+  margin-bottom: 0.4em;
+  font-weight: 600;
+}
+.md-typeset hr {
+  margin: 2em 0;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
 .md-typeset img {
   margin: 1em auto;
   border-radius: 4px;
+  max-width: 100%;
+  height: auto;
+}
+.md-typeset a {
+  text-decoration: none;
+}
+.md-typeset a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 2. 代码块增强 ---------- */
+.md-typeset pre {
+  margin: 1.1em 0;
+  line-height: 1.55;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+}
+.md-typeset pre > code {
+  display: block;
+  padding: 0.9em 1.1em;
+  font-size: 0.82rem;
+}
+.md-typeset .highlight pre,
+.md-typeset pre code {
+  tab-size: 4;
+}
+/* 行内代码 */
+.md-typeset code {
+  background-color: rgba(135, 131, 120, 0.15);
+  padding: 0.12em 0.35em;
+  border-radius: 3px;
+  font-size: 0.86em;
+  word-break: break-word;
+}
+.md-typeset a > code {
+  color: inherit;
+}
+/* 代码注解高亮（content.code.annotate：#!python ...） */
+.md-typeset .highlight .linenodiv,
+.md-typeset .highlight .hll {
+  background-color: rgba(255, 235, 59, 0.18);
+  display: block;
+  margin: 0 -1.1em;
+  padding: 0 1.1em;
+}
+/* 复制按钮 */
+.md-typeset .md-clipboard {
+  color: var(--md-default-fg-color--light);
+  transition: color 0.2s;
+}
+.md-typeset .md-clipboard:hover {
+  color: var(--md-accent-fg-color);
+}
+/* 代码字体回退：优先等宽且支持连字 */
+.md-typeset pre code,
+.md-typeset code {
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Source Code Pro",
+    "DejaVu Sans Mono", "Sarasa Mono SC", "Noto Sans Mono CJK SC", monospace;
+}
+
+/* ---------- 3. 标注块(admonition) 配色与强调 ---------- */
+.md-typeset .admonition {
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.md-typeset .admonition-title {
+  font-weight: 700;
+}
+.md-typeset .admonition.note { border-left: 4px solid #448aff; }
+.md-typeset .admonition.info { border-left: 4px solid #00b8d4; }
+.md-typeset .admonition.success { border-left: 4px solid #00c853; }
+.md-typeset .admonition.tip { border-left: 4px solid #00bfa5; }
+.md-typeset .admonition.warning { border-left: 4px solid #ff9100; }
+.md-typeset .admonition.danger { border-left: 4px solid #ff1744; }
+.md-typeset .admonition.bug { border-left: 4px solid #f50057; }
+.md-typeset .admonition.example { border-left: 4px solid #7c4dff; }
+.md-typeset .admonition.quote { border-left: 4px solid #9e9e9e; }
+/* 「类比：…」标注块在导航中更醒目 */
+.md-typeset .admonition.note .admonition-title::before {
+  margin-right: 0.4em;
+}
+/* 标注块内代码块去掉外阴影，避免嵌套过深 */
+.md-typeset .admonition pre {
+  box-shadow: none;
+}
+
+/* ---------- 4. 表格：斑马纹 + 粘性表头 ---------- */
+.md-typeset table:not([class]) {
+  margin: 1.1em 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+}
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  padding: 0.55em 0.9em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.md-typeset table:not([class]) th {
+  background: var(--md-primary-fg-color, #3f51b5);
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  position: sticky;
+  top: 0;
+}
+.md-typeset table:not([class]) tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.025);
+}
+.md-typeset table:not([class]) tr:hover td {
+  background: rgba(66, 165, 245, 0.08);
+}
+
+/* ---------- 5. 定义列表 ---------- */
+.md-typeset dl {
+  margin: 1em 0;
+}
+.md-typeset dl dt {
+  font-weight: 700;
+  margin-top: 0.6em;
+}
+.md-typeset dl dd {
+  margin: 0 0 0.6em 1.4em;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ---------- 6. 任务列表（GFM checkbox） ---------- */
+.md-typeset li.task-list-item {
+  list-style: none;
+}
+.md-typeset li.task-list-item::before {
+  content: "";
+}
+.md-typeset input[type="checkbox"] {
+  margin: 0 0.4em 0 -1.4em;
+  vertical-align: middle;
+}
+
+/* ---------- 7. 引用与脚注 ---------- */
+.md-typeset blockquote {
+  margin: 1em 0;
+  padding: 0.4em 1em;
+  border-left: 4px solid #90caf9;
+  background: #f5f9ff;
+  color: var(--md-default-fg-color--light);
+  border-radius: 0 4px 4px 0;
+}
+.md-typeset blockquote p {
+  margin: 0.4em 0;
+}
+.md-typeset .footnote {
+  font-size: 0.85em;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .footnote-ref {
+  font-size: 0.8em;
+}
+
+/* ---------- 8. 行内元素：kbd / abbr / mark / 键位 ---------- */
+.md-typeset kbd {
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  font-size: 0.78em;
+  font-family: var(--md-code-font-family, monospace);
+  color: #fff;
+  background: #455a64;
+  border-radius: 4px;
+  box-shadow: 0 2px 0 #263238;
+  margin: 0 0.15em;
+}
+.md-typeset abbr[title] {
+  text-decoration: underline dotted;
+  cursor: help;
+}
+.md-typeset mark {
+  background: #fff59d;
+  padding: 0 0.15em;
+  border-radius: 2px;
+}
+.md-typeset .keys {
+  color: var(--md-accent-fg-color);
+  font-weight: 600;
+}
+
+/* ---------- 9. TOC 与侧边导航 ---------- */
+.md-typeset .toc a {
+  transition: color 0.15s;
+}
+.md-nav__link--active,
+.md-nav__link--active:hover {
+  color: var(--md-accent-fg-color);
+  font-weight: 600;
+}
+.md-sidebar--secondary .md-nav__link {
+  font-size: 0.82rem;
+}
+/* 当前阅读位置高亮 */
+.md-nav__item .md-nav__link--active::before {
+  content: "\\2022";
+  margin-right: 0.3em;
+  color: var(--md-accent-fg-color);
+}
+
+/* ---------- 10. 搜索结果 ---------- */
+.md-search__input {
+  border-radius: 4px;
+}
+.md-search-result__article {
+  border-radius: 4px;
+  padding: 0.4em 0.8em;
+}
+.md-search-result__article--document {
+  border-left: 3px solid var(--md-accent-fg-color);
+}
+.md-search-result__title {
+  font-weight: 600;
+}
+.md-search-result em {
+  background: #fff59d;
+  font-style: normal;
+  padding: 0 0.1em;
+}
+
+/* ---------- 11. Mermaid 容器 ---------- */
+.md-typeset .mermaid {
+  margin: 1.2em auto;
+  padding: 1em;
+  background: #fafafa;
+  border: 1px solid #eeeeee;
+  border-radius: 6px;
+  text-align: center;
+  overflow-x: auto;
+}
+.md-typeset .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- 12. 打印与响应式 ---------- */
+@media print {
+  .md-typeset a {
+    text-decoration: none;
+  }
+  .md-typeset .badge {
+    border: 1px solid #999;
+    color: #000 !important;
+    background: #f0f0f0 !important;
+  }
+  .md-typeset pre,
+  .md-typeset table:not([class]) {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  .md-typeset .admonition {
+    border-left-width: 3px;
+    page-break-inside: avoid;
+  }
+  .md-typeset h2, .md-typeset h3 {
+    page-break-after: avoid;
+  }
+}
+@media (max-width: 768px) {
+  .md-typeset {
+    line-height: 1.7;
+  }
+  .md-typeset table:not([class]) th,
+  .md-typeset table:not([class]) td {
+    padding: 0.4em 0.6em;
+  }
+  .md-typeset pre > code {
+    font-size: 0.78rem;
+  }
+}
+/* 滚动条细窄化（WebKit/旧 Edge） */
+.md-typeset pre::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.md-typeset pre::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+::selection {
+  background: rgba(66, 165, 245, 0.25);
+}
+
+/* ---------- 13. 补充：折叠 / 选项卡 / 行内标注 / 可访问性 ---------- */
+/* 折叠块（pymdownx.details） */
+.md-typeset details {
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  padding: 0 1em;
+}
+.md-typeset details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.5em 0;
+}
+/* 选项卡（pymdownx.tabbed） */
+.md-typeset .tabbed-set {
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+.md-typeset .tabbed-labels > label {
+  font-size: 0.84rem;
+}
+/* 行内标注（content.code.annotate 的 #! 注释高亮） */
+.md-typeset .highlight .cp,
+.md-typeset .highlight .c1 {
+  font-style: italic;
+  opacity: 0.85;
+}
+/* 「编辑此页」按钮间距（content.action.edit） */
+.md-content__edit {
+  font-size: 0.8rem;
+}
+/* 焦点可见性（可访问性） */
+.md-typeset a:focus-visible,
+.md-typeset button:focus-visible,
+.md-typeset input:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+/* 尊重「减少动画」系统偏好 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* 顶部阅读进度条 */
+.md-typeset .progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: var(--md-accent-fg-color);
+  z-index: 9999;
 }
 """
 
