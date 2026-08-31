@@ -44,35 +44,21 @@
 
 > **一句话结论**：性能模型与测量学：在动手优化前先建立「瓶颈在哪」的量化假设，因为直觉在分层存储与乱序执行面前几乎总是错。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
+[第151章　基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)
+[第157章 Compiler Explorer 实战](../part14_perf/ch157_compiler_explorer.md)
 
-性能工程的第一原则：**先建模，再测量，最后优化。** 本章目标是建立从"感觉快"到"证明快"的方法论闭环：
+性能工程常被当成"把代码改快"的手艺，但**它真正的本质是"先建模，再测量，最后优化"的方法论闭环**——直觉在分层存储与乱序执行面前几乎总是错的，你得先有一张"瓶颈在哪"的量化地图（Amdahl / Roofline），再用正确的测量确认"现实离天花板多远"，否则只是盲目地加速错误方向。本章不重复"怎么给函数计时"的入门句，而要带着这五笔账往下读：
 
-- 用 **Amdahl / Gustafson 定律** 估算并行化上限与"扩大问题规模"的收益。
-- 用 **Roofline 模型** 判断瓶颈在算力（compute-bound）还是带宽（memory-bound）。
-- 区分 **延迟（latency）vs 带宽（bandwidth）** 两类指标。
-- 掌握测量工具链：`std::chrono::steady_clock`、`rdtsc`、`perf`，理解各自精度与陷阱。
-- 理解 **统计意义**：单次测量无意义，需多次取中位数 / 截断均值，量化方差。
-- 识别 **microbenchmark 陷阱**：死代码消除（DCE）、cache 预热、时钟分辨率、上下文抖动。
-- 了解工业级基准框架（Google Benchmark）与剖析工作流（perf / VTune / Instruments）。
+1. **为什么"先建模再测量"是第一原则？Amdahl / Gustafson 定律给出的上限差在哪？** Amdahl 假设串行比例固定，`S = 1/((1-f)+f/p)`——哪怕串行部分只剩 5%，100 核也封顶约 16.8×；Gustafson 换"固定时间、可放大问题"，有效加速才可能趋近核数。二者结论相反，因为它问了不同的题。本章 ⑫ 工业案例用可编译公式量化两条定律，⑮ 面试题点破"Amdahl 上限不可突破、Gustafson 因放大问题而更乐观"。
+2. **怎么判断瓶颈在"算力"还是"带宽"？Roofline 模型怎么用？** 实际可达 FLOPS = min(峰值算力, 算术强度 × 带宽)——算力是屋顶、带宽是斜坡；算术强度低（每读几个元素只做一次运算）时被带宽卡住，加算力没用，该减内存访问。本章 ⑫（Roofline 可编译量化）+ ⑦ 内存图给出 L1≈1ns→主存≈100ns 的带宽延迟来源，⑲ 把"低算术强度 → 优化方向是减少内存访问"落到真实数组拷贝。
+3. **microbenchmark 怎么测才不算"测了个寂寞"？经典陷阱有哪些？** 最经典的是**死代码消除（DCE）**：被测结果没被"使用"，`-O2` 下整个循环被删掉，测出 0 ns（汇编里 `work` 的循环体根本没生成，只剩两次 `steady_clock::now` 相减）。对策是 `volatile` 接收或内联汇编 `black_box`。本章 ⑩ 汇编分析用 GCC 真实反汇编演示"被优化掉的错误示范"与"正确示范"。
+4. **测量用哪个时钟、怎么保证统计有意义？** 基准测量一律 `steady_clock`（单调、不受 NTP 回拨影响；`system_clock` 会因时间调整产生"负耗时"），它在 Win 上落 `QueryPerformanceCounter`、Linux 落 `clock_gettime(CLOCK_MONOTONIC)`。单次测量无意义：要先 warmup 剔除冷启动、多次采样取**中位数 + MAD** 而非平均值，被测函数太短时时钟开销（`now()` 自身约 25ns）会掩盖信号。本章 ⑬ steady_clock 源码分析 + ⑯ 易错点（未预热、函数过短）+ ⑱ 最佳实践（中位数/MAD、warmup/time/中位数框架）给出全套做法。
+5. **代价与工具的边界在哪？模型和测量会骗人吗？** 模型没撒谎、是输入画像不全——Amdahl 算出 50× 真上 64 核只有 8×，因串行那 2% 被 IO 放大了。绝对延迟/带宽数字（L1≈1ns、主存≈100ns）强依赖具体 CPU 型号/频率、编译器与其优化标志，跨架构不可直接比。工业级做法是 Google Benchmark（自动 warmup、置信区间）+ `perf`/VTune/Instruments 下钻到 CPI/缓存未命中；标准只定义时钟接口、不定义"怎么正确测"。本章 ⓪ 历史动机 + ⑭ WG21 提案与工具 + ⑯ 易错点给出代价与适用边界。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
-```cpp
-// C1 最小可测：用 steady_clock 测一个函数耗时（纳秒）
-#include <iostream>
-#include <chrono>
-static long long work(long long n) { long long s = 0; for (long long i = 0; i < n; ++i) s += i; return s; }
-int main() {
-    auto t0 = std::chrono::steady_clock::now();
-    volatile long long sink = work(1'000'000);     // volatile 防止被优化掉
-    auto t1 = std::chrono::steady_clock::now();
-    auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
-    std::cout << "work took " << ns << " ns  sink=" << sink << "\n";
-    return 0;
-}
-```
+---
 
 ## ② 前置知识 <span class="badge badge-std">标准</span>
 
