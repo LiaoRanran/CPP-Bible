@@ -1173,6 +1173,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch31_operator.cpp` 真实生成（节选热函数 `operator+` / `operator+=`）。二元 `+`（`_ZpLR3VecRKS_`）与就地 `+=`（`_ZplRK3VecS1_`）都先 `movupd` 加载两个向量、再 `addpd` 四路 double 相加、最后 `addsd` 处理第 3 个 double——两条路径都是 9 条指令、结构完全对称，没有任何虚调用或运行时分发，即 D5.2「运算符重载是零成本抽象（二者差约 1%）」的证据。
 
 ```asm
+; 节选自 Examples/_ch31_operator_overloading_a1.asm
 ; operator+：返回新对象（二元 +）
 ;   _ZpLR3VecRKS_ (节选)
         movupd  xmm1, XMMWORD PTR [rdx]

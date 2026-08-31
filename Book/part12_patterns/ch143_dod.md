@@ -635,6 +635,7 @@ _Z11sum_virtualRK5Shape:
 `sum_static`（无虚函数）整段内联，无 vtable 访问：
 
 ```asm
+; 节选自 Examples/_ch143_dod_a1.asm
 _Z10sum_staticRK7Circle2:
 	movss	xmm0, DWORD PTR .LC0[rip]
 	movss	xmm1, DWORD PTR [rcx]
@@ -1714,6 +1715,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_143_dod.cpp` 真实生成（节选自 ParticlesSoA::~ParticlesSoA()）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
 
 ```asm
+; 节选自 Examples/_ch143_dod_a2.asm
 ; ParticlesSoA::~ParticlesSoA()  (104 条指令)
 push    rbx
 sub    rsp, 32

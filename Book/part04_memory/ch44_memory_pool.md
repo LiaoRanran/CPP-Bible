@@ -2874,6 +2874,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_44_mempool.cpp` 真实生成（节选热函数 `_ZN4PoolD1Ev`，即 `Pool` 析构函数）。它证实 D5.2 第 2 条的「代价」面：free-list 池**直到析构才把内存归还 OS**——析构时逐块 `call free`，并 `jmp operator delete` 释放内部 `blocks` 向量。与之相对，`pool.alloc()` 只是「弹出单链表头」（2~3 条指令，已内联进 `main`），这才是 3.01× 的来源。
 
 ```asm
+; 节选自 Examples/_ch44_memory_pool_a1.asm
 ; ===== _ZN4PoolD1Ev()  —  GCC 15.3.0 -O2 -masm=intel (节选) =====
         mov     rbx, QWORD PTR 8[rcx]   ; blocks._M_start（批量 malloc 的指针数组）
         mov     rsi, QWORD PTR 16[rcx]  ; blocks._M_finish

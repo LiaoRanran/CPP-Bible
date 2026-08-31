@@ -278,6 +278,7 @@ void add_arrays(float* __restrict a, float* __restrict b,
 ```
 
 ```asm
+; 节选自 Examples/_ch155_simd_a1.asm
 ; 关键证据：自动向量化后的主循环（-O3 -mavx2），每轮 32 字节 = 8 个 float
 _Z10add_arraysPfS_S_i:
 	test	r9d, r9d
@@ -432,6 +433,7 @@ void soa_scale(float* __restrict x, float* __restrict y,
 真实汇编对比（`-O3 -mavx2`，节选）：
 
 ```asm
+; 节选自 Examples/_ch155_simd_a2.asm
 ; 关键证据：SoA 干净向量化（每轮 8 个 float，无跨步）
 _Z9soa_scalePfS_S_if:
 	vbroadcastss	ymm0, xmm2          ; s 广播到 8 lane
@@ -447,6 +449,7 @@ _Z9soa_scalePfS_S_if:
 ```
 
 ```asm
+; 节选自 Examples/_ch155_simd_a3.asm
 ; 关键证据：AoS 也会被向量化，但按 8 个 Vec3=96 字节整块读改写，存在 lane 浪费
 _Z9aos_scaleP4Vec3if:
 	vbroadcastss	ymm0, xmm2
@@ -527,6 +530,7 @@ void add_dependent(float* a, int n) {
 ```
 
 ```asm
+; 节选自 Examples/_ch155_simd_a4.asm
 ; 关键证据：-O3 -mavx2 下依旧标量（vaddss = scalar single），因为依赖链无法并行
 _Z13add_dependentPfi:
 	cmp	edx, 1

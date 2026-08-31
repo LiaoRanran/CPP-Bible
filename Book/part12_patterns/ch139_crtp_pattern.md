@@ -227,6 +227,7 @@ _Z9process_cRK7ShapeCI7CircleCE:
 **虚函数版本 `process_v` 的 -O2 汇编（g++ 做了「投机去虚拟化」：快路径内联，慢路径 `call rax`）：**
 
 ```asm
+; 节选自 Examples/_ch139_crtp_pattern_a1.asm
 _Z9process_vRK6ShapeV:
         sub     rsp, 40
         lea     rdx, _ZNK7CircleV4areaEv[rip]
@@ -251,6 +252,7 @@ _Z9process_vRK6ShapeV:
 **强制不去虚拟化（`-fno-devirtualize -fno-ipa-vrp`）后的真实虚表调用：**
 
 ```asm
+; 节选自 Examples/_ch139_crtp_pattern_a2.asm
 _Z9process_vRK6ShapeV:
         sub     rsp, 40
         mov     rax, QWORD PTR [rcx]        ; 取 vptr

@@ -1008,9 +1008,9 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 | ch69 constexpr | CORE→K5 | if constexpr 扩展 ch69 的编译期能力。 |
 | ch07 C++20 | CORE→K10 | ch06 打底后 ch07 引入 concepts/ranges。 |
 
-## 附录 D5：真实基准与性能分析 — C++17 std::string_view：免拷贝分词 vs std::string::substr (GCC 13.1.0)
+## 附录 D5：真实基准与性能分析 — C++17 std::string_view：免拷贝分词 vs std::string::substr（GCC 15.3.0）
 
-> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 13.1.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，10 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化在"按空格切分长字符串"这一典型文本解析场景中，`std::string::substr`（每次深拷贝 token）与 `std::string_view`（零拷贝视图）的开销差距。**绝对毫秒随机器而变，加速比才是可移植信号。**
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，10 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化在"按空格切分长字符串"这一典型文本解析场景中，`std::string::substr`（每次深拷贝 token）与 `std::string_view`（零拷贝视图）的开销差距。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
 ### D5.1 基准结果
 
@@ -1018,12 +1018,12 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 | 场景 | 耗时 | 相对（substr = 1.00×） |
 |---|---|---|
-| `std::string::substr` 逐 token 深拷贝 | 10.51 ms | 基准 1.00× |
-| `std::string_view` 零拷贝引用 | 1.67 ms | **0.159×**（即 6.28× faster） |
+| `std::string::substr` 逐 token 深拷贝 | 9.579 ms | 基准 1.00× |
+| `std::string_view` 零拷贝引用 | 1.569 ms | **0.164×**（即 6.11× faster） |
 
 ### D5.2 非显然结论
 
-1. **`string_view` 比 `substr` 快 6.28×。** 根因：substr 每切出一个 token 都构造一个 `std::string`（堆分配 + 字符复制），150k token = 150k 次分配；`string_view` 只是 `(data 指针, 长度)` 两个机器字的轻量视图，零分配零拷贝、O(1) 创建。
+1. **`string_view` 比 `substr` 快 6.11×。** 根因：substr 每切出一个 token 都构造一个 `std::string`（堆分配 + 字符复制），150k token = 150k 次分配；`string_view` 只是 `(data 指针, 长度)` 两个机器字的轻量视图，零分配零拷贝、O(1) 创建。
 2. **差距不在"扫描"而在"提取"。** 两种实现的 `find(' ')` 扫描代价完全相同；差异完全来自提取 token 时的分配/拷贝——且 token 越长、数量越多，substr 的分配开销越主导。本基准把 token 设为 64B 正是放大该效应，使 6× 差距显形；若 token 仅 1~2 字符，差距会收敛到接近 1×。
 3. **陷阱：`string_view` 只借用、绝不拥有内存。** 若底层 `std::string` 在 view 仍被使用之前被释放或修改，view 即成悬空/失效视图，且编译器无法静态捕获。用 `string_view` 优化时必须保证底层缓冲的生命周期覆盖 view 的全部使用期（详见 ch28 生命周期与 UB）。
 
@@ -1044,8 +1044,8 @@ int main() {
     std::string_view b(h.data(), 5);
     assert(a == b);                 // 内容等价
     assert(a.size() == 5 && b.size() == 5);
-    std::cout << "substr  : " << a << "\n";
-    std::cout << "view    : " << b << "\n";
+    std::cout << "substr  : " << a << std::endl;
+    std::cout << "view    : " << b << std::endl;
     // 关键差异：a 拥有独立堆内存，b 仅借用 h 的缓冲
     assert(a.data() != h.data());  // substr 是独立副本
     return 0;

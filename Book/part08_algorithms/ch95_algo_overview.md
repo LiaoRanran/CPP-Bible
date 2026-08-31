@@ -275,6 +275,7 @@ void square_inplace(std::vector<int>& v) {
 ```
 
 ```asm
+; 节选自 Examples/_ch95_algo_overview_a1.asm
 ; 关键证据：square_inplace 循环体 = mov / imul / store，纯内联
 ; 关键证据：GCC 15.3.0 把 square_inplace 自动向量化为 SSE2（movdqu/pmuludq），
 ;          仅尾部 0~3 个元素走标量 imul 收尾；全程无任何 call（lambda 被内联）

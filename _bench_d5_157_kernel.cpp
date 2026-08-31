@@ -1,4 +1,4 @@
-// _bench_d5_157_kernel.cpp — 编译器优化对内核算子的影响：-O0 vs -O2 (GCC 13.1.0 MinGW)
+// _bench_d5_157_kernel.cpp — 编译器优化对内核算子的影响：-O0 vs -O2 (GCC 15.3.0 MinGW)
 // 复现：分别用 `g++ -O0 -std=c++20` 与 `g++ -O2 -std=c++20` 编译并运行，取两者耗时比。
 #include <iostream>
 #include <vector>

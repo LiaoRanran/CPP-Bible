@@ -1,4 +1,4 @@
-// _bench_d5_152_clock.cpp — 性能测量学：steady_clock 分辨率与单次计时开销 (GCC 13.1.0 MinGW)
+// _bench_d5_152_clock.cpp — 性能测量学：steady_clock 分辨率与单次计时开销 (GCC 15.3.0 MinGW)
 // 复现旗标：g++ -O2 -std=c++20 -Wall -Wextra
 // 说明：分辨率 = 连续两次读取之间能观测到的最小非零间隔；它决定了"可测量的最小耗时"。
 //       单次计时对 = 一次 now() 起点 + 一次 now() 终点，其固有开销≈2×分辨率。

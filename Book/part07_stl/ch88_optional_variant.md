@@ -136,6 +136,7 @@ int use_optional() {
 ```
 
 ```asm
+; 节选自 Examples/_ch88_optional_variant_a1.asm
 ; 关键证据：-O2 下 use_optionalv 完全折叠，无任何堆分配
 _Z12use_optionalv:
 .LFB394:

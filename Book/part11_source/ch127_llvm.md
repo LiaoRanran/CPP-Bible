@@ -298,6 +298,7 @@ int use_noinline() { return add_noinline(3, 4); }       // noinline：保留真�
 ```
 
 ```asm
+; 节选自 Examples/_ch127_llvm_a1.asm
 ; 真实取证 A：use_noinline @ -O0 —— 保留真实 call（行号 14 的 add_noinline 仍被调用）
 _Z12use_noinlinev:
 	.seh_endprologue
@@ -307,6 +308,7 @@ _Z12use_noinlinev:
 ```
 
 ```asm
+; 节选自 Examples/_ch127_llvm_a2.asm
 ; 真实取证 B：use_inlined @ -O2 —— 循环被完全展开并折叠为常量（行号 9）
 _Z11use_inlinedv:
 	.seh_endprologue

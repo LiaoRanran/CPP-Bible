@@ -1668,6 +1668,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_78_deque.cpp` 真实生成（节选热函数 `_M_initialize_map` / `_M_reallocate_map`，二者都在 deque 构造与 `push_back` 的计时路径内）。D5.2 把遍历/随机访问 2.2–2.4× 的劣势归因为「二级间接 + 块边界分支」，把 `push_back` 仅 1.21× 归因为「切新块而不搬旧元素」。下面两段正是这两条结论的机器码根源：deque 的存储不是一块连续数组，而是一张「中央 map 指针数组 + 若干 512B 离散块」。
 
 ```asm
+; 节选自 Examples/_ch78_deque_a1.asm
 ; _M_initialize_map：deque 构造时搭建「二级间接」存储骨架
 ;   _ZNSt11_Deque_baseIiSaIiEE17_M_initialize_mapEy  (节选)
         mov     eax, 8

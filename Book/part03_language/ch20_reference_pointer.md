@@ -1796,6 +1796,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch20_passval.cpp` 真实生成（节选），可本地复现。关键结论：**`by_value` 与 `by_cref` 的函数体在 `-O2` 下逐条相同**——二者内部都只是对 `b.a[8]` 求和的 8 指令循环。6.3× 的差距**不在函数体内，而在调用点**：`by_value(Big)` 要求调用点在栈上构造 64 字节形参副本（每轮 `vmovdqu`/`mov` 复制 8 个 double），`by_cref(const Big&)` 只压一个 8 字节指针。
 
 ```asm
+; 节选自 Examples/_ch20_reference_pointer_a1.asm
 ; by_value(Big b) 与 by_cref(const Big&) 在 -O2 下生成完全相同的循环体：
 ;   _Z8by_value3Big  /  _Z7by_crefRK3Big  (各 8 条指令)
         pxor    xmm0, xmm0

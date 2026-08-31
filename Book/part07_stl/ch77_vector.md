@@ -1105,6 +1105,7 @@ void observe_capacity_after_push(std::vector<int>& v) {
 
 **① reserve 后 push_back —— 被完全优化消除**
 ```asm
+; 节选自 Examples/_ch77_vector_a1.asm
 <_Z18push_after_reservev>:
     ret                    ; 整个函数被优化为一条 ret！
 ```
@@ -1114,6 +1115,7 @@ GCC 15 看到 `vector<int>` 生存于栈上、`reserve(3)` + 3× `push_back` 写
 
 **② 无 reserve 的 push_back —— hot/cold 双路径**
 ```asm
+; 节选自 Examples/_ch77_vector_a2.asm
 <_Z27observe_capacity_after_pushRSt6vectorIiSaIiEE>:
     push %rsi; push %rbx; sub $0x38,%rsp
     mov 0x10(%rcx),%r10          ; &end_ptr

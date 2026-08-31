@@ -169,6 +169,7 @@ int use_virtual(VBase& b) { return b.impl() + 1; }
 【1）CRTP 版本 —— 完全内联，无 vtable、无 call】
 
 ```asm
+; 节选自 Examples/_ch51_crtp_a1.asm
 _Z8use_crtpR4Vec3:
         mov     eax, DWORD PTR [rcx]       ; 读 b.v
         lea     eax, 1[rax+rax*2]          ; v*3 + 1（接口+1 已内联）
@@ -180,6 +181,7 @@ _Z8use_crtpR4Vec3:
 【2）虚函数版本 —— 保留 vtable 取指 + 投机去虚化】
 
 ```asm
+; 节选自 Examples/_ch51_crtp_a2.asm
 _Z11use_virtualR5VBase:
         sub     rsp, 40                    ; 栈帧（CRTP 版本没有）
         lea     rdx, _ZN5VVec34implEv[rip]
@@ -809,6 +811,7 @@ void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
 
 **① CRTP 调用（编译期多态）—— 1 指令, 3 字节**
 ```asm
+; 节选自 Examples/_ch51_crtp_a3.asm
 <_Z13crtp_dispatchR7DogCRTP>:
     addl    $0x1,(%rcx)       ; 直接 +1 到 age 字段（CRTP 被完全内联）
     ret                       ; 零间接调用!
@@ -816,6 +819,7 @@ void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
 
 **② 虚函数调用（动态多态）—— 2 指令, 6 字节**
 ```asm
+; 节选自 Examples/_ch51_crtp_a4.asm
 <_Z13virt_dispatchP10AnimalVirt>:
     mov     (%rcx),%rax       ; 加载 vptr → vtable 指针
     rex.W jmp *(%rax)          ; 间跳 vtable[0] → speak()
@@ -824,6 +828,7 @@ void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
 
 **③ final 类去虚拟化 —— 1 指令, 4 字节**
 ```asm
+; 节选自 Examples/_ch51_crtp_a5.asm
 <_Z10final_callP8DogFinal>:
     addl    $0x2,0x8(%rcx)    ; 直接操作 age 字段（偏移 8B = 跳过 vptr）
     ret

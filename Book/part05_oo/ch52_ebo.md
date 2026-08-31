@@ -168,6 +168,7 @@ int read_member(AsMember* p) { return p->x; }
 【1）EBO：x 在偏移 0（空基类未占空间）】
 
 ```asm
+; 节选自 Examples/_ch52_ebo_a1.asm
 _Z12read_derivedP7Derived:
         mov     eax, DWORD PTR [rcx]   ; x @ offset 0
         ret
@@ -176,6 +177,7 @@ _Z12read_derivedP7Derived:
 【2）作成员：x 在偏移 4（Empty 占位 1B + 3 填充）】
 
 ```asm
+; 节选自 Examples/_ch52_ebo_a2.asm
 _Z11read_memberP8AsMember:
         mov     eax, DWORD PTR 4[rcx]  ; x @ offset 4
         ret

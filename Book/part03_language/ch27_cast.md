@@ -1886,6 +1886,7 @@ int       implicit_int_from_double(double d)    { return d; }
 #### ① `static_cast<int>(double)` —— 浮点→整型
 
 ```asm
+; 节选自 Examples/_ch27_cast_a1.asm
 _Z25static_cast_double_to_intd:        ; 函数入口
 .LFB19:
     .seh_endprologue
@@ -1898,6 +1899,7 @@ _Z25static_cast_double_to_intd:        ; 函数入口
 #### ② `const_cast<int*>(const int*)` —— 移除 const
 
 ```asm
+; 节选自 Examples/_ch27_cast_a2.asm
 _Z17const_cast_removePKi:
 .LFB20:
     .seh_endprologue
@@ -1910,6 +1912,7 @@ _Z17const_cast_removePKi:
 #### ③ `reinterpret_cast<uintptr_t>(void*)` —— 指针→整数
 
 ```asm
+; 节选自 Examples/_ch27_cast_a3.asm
 _Z27reinterpret_cast_ptr_to_intPv:
 .LFB21:
     .seh_endprologue
@@ -1922,6 +1925,7 @@ _Z27reinterpret_cast_ptr_to_intPv:
 #### ④ `static_cast<void*>(int*)` —— 指针→void*
 
 ```asm
+; 节选自 Examples/_ch27_cast_a4.asm
 _Z19static_cast_to_voidPi:
 .LFB31:
     .seh_endprologue
@@ -1934,6 +1938,7 @@ _Z19static_cast_to_voidPi:
 #### ⑤ `dynamic_cast<Derived*>(Base*)` —— 唯一有运行时成本的 cast
 
 ```asm
+; 节选自 Examples/_ch27_cast_a5.asm
 _Z17dynamic_cast_downP4Base:
 .LFB26:
     .seh_endprologue
@@ -1953,6 +1958,7 @@ _Z17dynamic_cast_downP4Base:
 #### ⑥ 隐式 `double→int` 转换（对照）—— 编译器一视同仁
 
 ```asm
+; 节选自 Examples/_ch27_cast_a6.asm
 _Z24implicit_int_from_doubled:
 .LFB29:
     .seh_endprologue

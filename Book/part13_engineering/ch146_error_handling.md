@@ -980,6 +980,7 @@ int main(){
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_146_error.cpp` 真实生成（节选自 compute_ex(int) [clone .cold], compute_ex(int), compute_ec(int, int&)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
 
 ```asm
+; 节选自 Examples/_ch146_error_handling_a1.asm
 ; compute_ex(int) [clone .cold]  (16 条指令)
 mov    ecx, 16
 call    __cxa_allocate_exception

@@ -126,6 +126,7 @@ int use_ranges() {
 ```
 
 ```asm
+; 节选自 Examples/_ch119_ranges_deep_a1.asm
 ; 关键证据（GCC 15.3.0 -O2 -masm=intel）：filter 与 transform 融合为单遍遍历
 _Z10use_rangesv:
 	push	rbx

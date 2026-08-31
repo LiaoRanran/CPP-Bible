@@ -166,6 +166,7 @@ int read_x(D* p) { return p->x; }
 【1）B2 子对象地址 = 偏移 8】
 
 ```asm
+; 节选自 Examples/_ch50_multiple_inheritance_a1.asm
 _Z5as_b2R1D:
         lea     rax, 8[rcx]      ; &d 的 B2 子对象在 +8
         ret
@@ -174,6 +175,7 @@ _Z5as_b2R1D:
 【2）x 在偏移 16】
 
 ```asm
+; 节选自 Examples/_ch50_multiple_inheritance_a2.asm
 _Z6read_xP1D:
         mov     eax, DWORD PTR 16[rcx]   ; x @ offset16
         ret
@@ -182,6 +184,7 @@ _Z6read_xP1D:
 【3）经 B2* 的虚调用分派（通用 vtable 取指 + 尾跳）】
 
 ```asm
+; 节选自 Examples/_ch50_multiple_inheritance_a3.asm
 _Z9call_b2_gP2B2:
         mov     rax, QWORD PTR [rcx]     ; 取 B2.vptr
         rex.W jmp       QWORD PTR [rax]  ; 跳到 g 槽（thunk）
@@ -190,6 +193,7 @@ _Z9call_b2_gP2B2:
 【4）vtable `_ZTV1D` 二进制布局（两套主表拼接）】
 
 ```asm
+; 节选自 Examples/_ch50_multiple_inheritance_a4.asm
 _ZTV1D:
         .quad   0                ; +0  B1 组: top_offset = 0（B1 在 D 头）
         .quad   _ZTI1D           ; +8  B1 组: &typeid(D)
@@ -209,6 +213,7 @@ _ZTV1D:
 【5）this 调整 thunk —— -O0（经典形态）】
 
 ```asm
+; 节选自 Examples/_ch50_multiple_inheritance_a5.asm
 _ZThn8_N1D1gEv:
         sub     rcx, 8          ; this 从 B2 子对象(-8)调回 D 头
         jmp     .LTHUNK0        ; 跳转 D::g 真身
@@ -217,6 +222,7 @@ _ZThn8_N1D1gEv:
 【6）this 调整 thunk —— -O2（GCC 把 -8 折进立即数偏移）】
 
 ```asm
+; 节选自 Examples/_ch50_multiple_inheritance_a6.asm
 _ZN1D1gEv:                     ; D::g 真身（rcx = D 头）
         mov     DWORD PTR 16[rcx], 9   ; x @16
         ret

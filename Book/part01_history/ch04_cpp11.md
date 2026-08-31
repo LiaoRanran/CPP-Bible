@@ -1173,9 +1173,9 @@ flowchart TD
 | ch05 C++14 | CORE→K11 | ch05 的泛型 lambda 建立在 ch04 lambda 之上。 |
 | ch60 模板基础 | CORE→K6 | variadic 模板是 ch60 基础能力的扩展。 |
 
-## 附录 D5：真实基准与性能分析 — C++11 移动语义：拷贝构造 vs 移动构造 (GCC 13.1.0)
+## 附录 D5：真实基准与性能分析 — C++11 移动语义：拷贝构造 vs 移动构造（GCC 15.3.0）
 
-> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 13.1.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实微秒，量化 `vector<string>` 在「拷贝构造（深拷贝）」与「移动构造（仅搬指针）」两种语义下的开销差距，并给出非显然根因。**绝对微秒随机器而变，加速比才是可移植信号。**
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实微秒，量化 `vector<string>` 在「拷贝构造（深拷贝）」与「移动构造（仅搬指针）」两种语义下的开销差距，并给出非显然根因。**绝对微秒随机器而变，加速比才是可移植信号。**
 
 ### D5.1 基准结果
 
@@ -1183,12 +1183,12 @@ flowchart TD
 
 | 场景 | 耗时 | 相对（拷贝 = 1.00×） |
 |---|---|---|
-| `vector<string>` 拷贝构造（逐元素深拷贝 200k×64B） | 33493.6 µs | 基准 1.00× |
-| `vector<string>` 移动构造（仅搬 3 个内部指针） | 0.1 µs | **~3.0×10⁻⁶×**（≈ 334936× faster） |
+| `vector<string>` 拷贝构造（逐元素深拷贝 200k×64B） | 23880.9 µs | 基准 1.00× |
+| `vector<string>` 移动构造（仅搬 3 个内部指针） | 0.1 µs | **~4.2×10⁻⁶×**（≈ 238809× faster） |
 
 ### D5.2 非显然结论
 
-1. **移动构造令 `vector<string>` 的"复制"从 O(N·L) 深拷贝骤降为 O(1) 指针窃取。** 根因：拷贝必须逐元素克隆每个 `std::string`（各自堆分配 + 字符复制），而移动只交换容器内部的 `start / finish / end_of_storage` 三指针——旧容器被置空、新容器直接接管缓冲区，零元素级操作。实测比拷贝构造快约 3.3×10⁵×。
+1. **移动构造令 `vector<string>` 的"复制"从 O(N·L) 深拷贝骤降为 O(1) 指针窃取。** 根因：拷贝必须逐元素克隆每个 `std::string`（各自堆分配 + 字符复制），而移动只交换容器内部的 `start / finish / end_of_storage` 三指针——旧容器被置空、新容器直接接管缓冲区，零元素级操作。实测比拷贝构造快约 2.4×10⁵×。
 2. **移动"近乎免费"并非因为元素变少，而是根本不发生元素级工作。** 原 vector 的 200k 个 string 内存在移动后归新 vector 所有，全程零拷贝。这正是 C++11 把"资源所有权转移"而非"值复制"作为默认语义升级的核心收益，也是 `emplace*` / 返回值优化能消除中间副本的同一机理。
 3. **陷阱：移动语义的收益前提是类型真的可移动且不被拷贝绑定。** 若元素类型未实现移动（如含 `const` 成员、或被 `std::array` 这类定长聚合），或移动对象被 `const&` 捕获，`std::move` 会悄悄退化为拷贝——此时性能回落到拷贝水平，且毫无编译告警。务必用 `noexcept` 移动构造保住强异常安全下的移动路径。
 
@@ -1227,8 +1227,8 @@ int main() {
         assert(dst.size() == N && src.empty());
     }
     long long allocs_move = g_allocs;
-    std::cout << "allocs (copy) = " << allocs_copy << "\n";
-    std::cout << "allocs (move) = " << allocs_move << "\n";
+    std::cout << "allocs (copy) = " << allocs_copy << std::endl;
+    std::cout << "allocs (move) = " << allocs_move << std::endl;
     assert(allocs_move < allocs_copy);   // 移动路径分配远少于拷贝
     return 0;
 }

@@ -1959,6 +1959,7 @@ make_data(int,int,int):
 
 **`unique_ptr_factory`** — 必须分配因为返回指针给调用方：
 ```asm
+; 节选自 Examples/_ch41_smart_pointers_a1.asm
 unique_ptr_factory(int,int,int):
     pushq   %rbp
     movl    $12, %ecx                   ; sizeof(Data) = 12

@@ -122,6 +122,7 @@ int caller(int a, int b, int c, int d) {
 **`-O0` 下 `caller` 的真实 prologue / epilogue**（来自本机 `g++ -O0 -S`）：
 
 ```asm
+; 节选自 Examples/_ch36_stack_heap_a1.asm
 _Z6calleriiii:
     pushq   %rbp            ; 保存调用者 rbp（建立帧指针）
     movq    %rsp, %rbp      ; rbp = 当前栈顶，作为帧基址
@@ -146,6 +147,7 @@ _Z6calleriiii:
 **`-O2` 下 `caller` 的真实输出**：
 
 ```asm
+; 节选自 Examples/_ch36_stack_heap_a2.asm
 _Z6calleriiii:
     addl    %edx, %ecx
     addl    %r9d, %r8d

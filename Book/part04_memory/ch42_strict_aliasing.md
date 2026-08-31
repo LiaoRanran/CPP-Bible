@@ -374,6 +374,7 @@ void f(int* p, float* q, int n) {
 **`-O2 -fstrict-aliasing`（默认）**——把 `*p`、`*q` **各加载一次并缓存在寄存器**，循环体内仅做浮点加法，*不再从内存重读*：
 
 ```asm
+; 节选自 Examples/_ch42_strict_aliasing_a1.asm
 _Z1fPiPfi:
         test    r8d, r8d
         jle     .L1
@@ -394,6 +395,7 @@ _Z1fPiPfi:
 **`-O2 -fno-strict-aliasing`**——编译器*不敢假设*，必须**每次迭代都重新从内存读取 `*q`**：
 
 ```asm
+; 节选自 Examples/_ch42_strict_aliasing_a2.asm
 _Z1fPiPfi:
         test    r8d, r8d
         jle     .L1
@@ -469,6 +471,7 @@ void sum_restrict(double* __restrict dest, const double* __restrict src, int n) 
 **`sum_norestrict`（无 restrict）**——编译器**插入运行时重叠检测** `cmp rcx, rax; jne .L11`，并回退到**标量** `movsd`/`addsd` 循环（因为它担心 `dest == src+1` 这类重叠）：
 
 ```asm
+; 节选自 Examples/_ch42_strict_aliasing_a3.asm
 _Z14sum_norestrictPdPKdi:
         test    r8d, r8d
         jle     .L1
@@ -489,6 +492,7 @@ _Z14sum_norestrictPdPKdi:
 **`sum_restrict`（有 restrict）**——**无重叠检查，直接向量化**为 `addpd`（一次处理 2 个 `double`）：
 
 ```asm
+; 节选自 Examples/_ch42_strict_aliasing_a4.asm
 _Z12sum_restrictPdPKdi:
         test    r8d, r8d
         jle     .L12

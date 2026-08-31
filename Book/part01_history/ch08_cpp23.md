@@ -1231,9 +1231,9 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 | ch118 modules | CORE→K7 | import std 依赖 ch118 的模块机制。 |
 | ch09 C++26 | CORE→K9 | ch08 库的完善在 ch09 继续（contracts 等）。 |
 
-## 附录 D5：真实基准与性能分析 — C++23 ranges 抽象代价：views::filter 惰性管线 vs 手写循环 (GCC 13.1.0)
+## 附录 D5：真实基准与性能分析 — C++23 ranges 抽象代价：views::filter 惰性管线 vs 手写循环（GCC 15.3.0）
 
-> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 13.1.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，30 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化"零成本抽象"在 C++20 ranges 惰性视图上的真实代价。**绝对毫秒随机器而变，加速比才是可移植信号。**
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，30 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化"零成本抽象"在 C++20 ranges 惰性视图上的真实代价。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
 ### D5.1 基准结果
 
@@ -1241,12 +1241,12 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 | 场景 | 耗时 | 相对（manual = 1.00×） |
 |---|---|---|
-| 手写循环（if 过滤 + 求和） | 2.09 ms | 基准 1.00× |
-| `std::views::filter` 惰性管线 | 3.78 ms | **1.81×**（慢） |
+| 手写循环（if 过滤 + 求和） | 1.798 ms | 基准 1.00× |
+| `std::views::filter` 惰性管线 | 3.431 ms | **1.91×**（慢） |
 
 ### D5.2 非显然结论
 
-1. **`std::views::filter` 在此场景比手写循环慢 1.81×。** 非显然：C++ 的"零成本抽象"并非免费——惰性视图每层都引入一个迭代器适配器，每个元素都要经过 filter 迭代器的 `operator++` 与谓词调用，无法像手写循环那样被化简成简单的标量累加。
+1. **`std::views::filter` 在此场景比手写循环慢 1.91×。** 非显然：C++ 的"零成本抽象"并非免费——惰性视图每层都引入一个迭代器适配器，每个元素都要经过 filter 迭代器的 `operator++` 与谓词调用，无法像手写循环那样被化简成简单的标量累加。
 2. **根因：抽象代价来自模板实例化与每元素间接。** `bench_ranges` 实例化 `std::ranges::filter_view` 及其整套迭代器模板，其反汇编体量明显长于 `bench_manual`；`-O2` 未能把"过滤 + 求和"完全化简成与手写循环等价的标量循环，每次迭代仍携带视图/迭代器状态与谓词调用。
 3. **权衡：ranges 换来可读性、可组合性与管道复用，代价是约 1.8× 运行时开销。** 对热点路径应权衡（必要时回退手写循环或预分配）；非热点用 ranges 提升表达力完全值得。
 
@@ -1269,7 +1269,7 @@ int main() {
     long long r = 0;
     for (int x : even) r += x;                    // ranges 过滤求和
     assert(m == r);                               // 两种手法求和一致
-    std::cout << "sum(even) = " << r << "\n";
+    std::cout << "sum(even) = " << r << std::endl;
     return 0;
 }
 ```

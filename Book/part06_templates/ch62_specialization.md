@@ -1531,6 +1531,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch62_spec_branch.cpp` 真实生成（节选 `run_ifelse_chain`）。`run_ifelse_chain` 对随机洗排的 `tag` 做 `test r8d,r8d; je` / `cmp r8d,1; je` **条件分支**（33 条指令）；随机 tag 使分支预测器无法学习 → 高 misprediction。而 `if constexpr` 路径 `run_constexpr_route<Tag>` 在编译期消除所有分支、单态化为直线代码并内联进 `main`，无独立符号。10.4× 差距主要来自分支预测失败惩罚（见 D5.2.1/2.2）。
 
 ```asm
+; 节选自 Examples/_ch62_specialization_a1.asm
 ; run_ifelse_chain：运行期条件分支（随机 tag → 高 misprediction）
 ;   _Z16run_ifelse_chainRKSt6vectorIiSaIiEES3_  (节选)
         mov     r9, QWORD PTR [rcx]

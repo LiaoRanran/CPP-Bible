@@ -1900,6 +1900,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_86_adapters.cpp` 真实生成（节选 `deque<int>` 的 `_M_initialize_map` 与 `_M_push_back_aux`）。D5.2 的 headline 结论 #1（`stack<vector>` 比 `stack<deque>` 快 1.40×，根因是 deque 的"一级间接寻址 + 块边界分支"）可由这两段直接看出：`deque` 不是一块连续内存，而是"中央映射数组 + 多块 512 字节定长块"的两层结构——初始化时先 `call _Znwy` 分配映射数组，再循环 `call _Znwy` 分配每个块并把块指针写回映射数组；尾端跨块时 `_M_push_back_aux` 还要再 `call _Znwy` 开新块。于是每次 `push_back` 都要先经映射数组取出块指针、再落到块内元素（两级寻址），还多了"当前块是否已满"的分支；`vector` 则是一次连续分配 + 容量内纯顺序写入（一条 `mov`），无映射数组、无逐块 `operator new`，自然更快。
 
 ```asm
+; 节选自 Examples/_ch86_adapters_a1.asm
 ; deque 构造：中央映射数组 + 多块定长块（两层结构，关键路径）
 ;   _ZNSt11_Deque_baseIiSaIiEE17_M_initialize_mapEy  (节选)
   lea     rcx, 0[0+rbx*8]             ; rcx = 映射数组字节数（块数 × 8 字节指针）

@@ -1629,6 +1629,7 @@ int call_noexcept(int x, int y) { return noexcept_add(x, y); }
 
 **调用者 `call_noexcept`（noexcept 路径）—— 1 指令, 4 字节**
 ```asm
+; 节选自 Examples/_ch40_exception_safety_a1.asm
 <_Z13call_noexceptii>:
     lea     (%rcx,%rdx,1),%eax   ; a + b 直接计算
     ret                            ; 无 unwind 表/栈帧/分支
@@ -1637,6 +1638,7 @@ int call_noexcept(int x, int y) { return noexcept_add(x, y); }
 
 **调用者 `call_may_throw`（可能抛异常）—— 6 指令 + cold 段**
 ```asm
+; 节选自 Examples/_ch40_exception_safety_a2.asm
 <_Z14call_may_throwii>:
     sub     $0x28,%rsp            ; 为 LSDA 预留栈帧！(even on happy path)
     mov     %ecx,%eax
@@ -1650,12 +1652,14 @@ int call_noexcept(int x, int y) { return noexcept_add(x, y); }
 ```
 .cold 段（抛异常路径）：
 ```asm
+; 节选自 Examples/_ch40_exception_safety_a3.asm
 <_Z14call_may_throwii.cold>:
     call    <_Z13may_throw_divii.part.0> ; 异常抛出函数
 ```
 
 **noexcept_add 本体 —— 1 指令**
 ```asm
+; 节选自 Examples/_ch40_exception_safety_a4.asm
 <_Z12noexcept_addii>:
     lea     (%rcx,%rdx,1),%eax   ; 与 call_noexcept 完全一致
     ret

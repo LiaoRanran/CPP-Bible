@@ -456,6 +456,7 @@ _Z10scalar_sumPKll:
 ```
 
 ```asm
+; 节选自 Examples/_ch15_profiling_a1.asm
 ; 行号：63（_Z12four_acc_sumPKll）
 ; four_acc_sum：被向量化（SSE2），一次处理 4 个 32 位元素
 _Z12four_acc_sumPKll:

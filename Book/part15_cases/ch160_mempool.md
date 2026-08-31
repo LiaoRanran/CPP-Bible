@@ -1422,6 +1422,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch160_mempool.cpp` 真实生成（节选自 Pool::~Pool()）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
 
 ```asm
+; 节选自 Examples/_ch160_mempool_a1.asm
 ; Pool::~Pool()  (30 条指令)
 push    rdi
 push    rsi

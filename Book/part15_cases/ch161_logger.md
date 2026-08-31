@@ -1970,6 +1970,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch161_logger.cpp` 真实生成（节选自 strat_async(int), strat_async(int)::{lambda()#1}::operator()() const, fmt_ostringstream(int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
 
 ```asm
+; 节选自 Examples/_ch161_logger_a1.asm
 ; strat_async(int)  (525 条指令)
 push    r15
 push    r14

@@ -1842,6 +1842,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_48_rtti.cpp` 真实生成（节选自 Derived::op(int) const, Other::op(int) const, Other::~Other()）。D5.2 指出虚派发近乎免费、而 dynamic_cast/typeid 带运行期开销。下方为 GCC 15.3.0 -O2 下两个虚函数本体的真实产物。
 
 ```asm
+; 节选自 Examples/_ch48_rtti_a1.asm
 ; Derived::op(int) const  (2 条指令)
 lea    eax, 1[rdx]
 ret

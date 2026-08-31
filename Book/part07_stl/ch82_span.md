@@ -402,6 +402,7 @@ int sum_ptr(const int* p, std::size_t n) {
 ```
 
 ```asm
+; 节选自 Examples/_ch82_span_a1.asm
 ; GCC 15.3.0 (MinGW-w64 x86-64) -O2 -masm=intel ；两函数生成几乎相同循环
 _Z8sum_spanSt4spanIKiLy18446744073709551615EE:
         mov     rdx, QWORD PTR [rdi+8]   ; 取 extent（span 第二成员）

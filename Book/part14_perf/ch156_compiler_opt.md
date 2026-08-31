@@ -267,6 +267,7 @@ int main(int argc, char**) { return compute(argc); }
 ```
 
 ```asm
+; 节选自 Examples/_ch156_compiler_opt_a1.asm
 ; ===== 无 LTO：compute 是外部符号，main 用 jmp 尾调用（仍是独立函数）=====
 0000000140002660 <main>:
    140002660: 53                    push   rbx
@@ -284,6 +285,7 @@ int main(int argc, char**) { return compute(argc); }
 ```
 
 ```asm
+; 节选自 Examples/_ch156_compiler_opt_a2.asm
 ; ===== 有 LTO：compute 被整程序优化内联进 main，call 消失，无 _Z7computei 符号 =====
 0000000140002650 <main>:
    140002650: 53                    push   rbx

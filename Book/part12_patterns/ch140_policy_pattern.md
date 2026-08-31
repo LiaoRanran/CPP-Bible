@@ -746,6 +746,7 @@ template struct Combo<C,D>;
 **真实取证**（命令：`g++ -std=c++23 -O2 -c -o _ch140_code_bloat.o _ch140_code_bloat.cpp` 后 `nm _ch140_code_bloat.o`）：
 
 ```asm
+; 节选自 Examples/_ch140_policy_pattern_a1.asm
 ; === 6 种组合各自生成独立的 .text 段符号（代码膨胀实证）===
 0000000000000000 t .text$_ZN5ComboI1A1BE1fEv
 0000000000000000 t .text$_ZN5ComboI1A1CE1fEv

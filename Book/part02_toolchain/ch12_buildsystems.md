@@ -568,6 +568,7 @@ g++ -std=c++23 -O2 -S -masm=intel _ch12_sum.cpp -o _ch12_sum_O2.asm
 `-O0`（逐语句、保留栈帧、字面循环，本机实录）：
 
 ```asm
+; 节选自 Examples/_ch12_buildsystems_a1.asm
 _Z6sum_toi:
 	push	rbp
 	.seh_pushreg	rbp
@@ -600,6 +601,7 @@ _Z6sum_toi:
 `-O2`（识别累加模式、拆成奇偶、几乎无循环，本机实录）：
 
 ```asm
+; 节选自 Examples/_ch12_buildsystems_a2.asm
 _Z6sum_toi:
 	.seh_endprologue
 	test	ecx, ecx
