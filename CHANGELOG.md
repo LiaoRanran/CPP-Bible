@@ -22,6 +22,8 @@
 - **内容修复**：清理 11 个章节 12 处 W2 连续空行（`whitespace_fix --apply`）；修复 `ch92_chrono.md:147` 无连线的 Mermaid 图块（补语义边）；`fix_ch36.py` 语法错误修正（仅 `py_compile` 验证，未执行）。
 - **CI 发布依赖图（工作树，待远端验收）**：`site/pdf/epub` 由 `needs: quality` 改为 `needs: [compile, publish-check]`；`deploy` 由 `needs: site` 改为 `needs: [site, pdf, epub]`。依据：GitHub Actions `#373` 实测 deploy 于 10:08 完成而 GCC 编译 10:38 才完成，且 EPUB 失败仍发布，证明原依赖可绕过编译。
 
+- **度量指标口径修正（15 条验收标准 · 教学标记）**：`tools/metrics_snapshot.py` 原用 `text.count(单一字面量)` 按「总出现次数」对目标，导致两类失真：①只认一种写法（如只数「一句话结论」，漏掉「一句话总结」等别名）；②按总次数而非「章覆盖」计（一章写 10 处陷阱就顶 10 章，147 目标会在 15 章即「达标」，掩盖其余章无内容）。现改为每标记 `(多写法正则, 每章门槛)` 结构，新增「达标章数」口径（`teaching_markers_chapters`）作为看板真正度量：`one_liner/pitfall` 目标 147=全章覆盖、每章 ≥1；`analogy` 目标 147=每章 ≥2。修正后实测：`pitfall 147/147`（每章都讲坑）、`one_liner 16/147`（仅 16 章有结论标签，真实缺口）、`analogy 1/147`（近乎无类比，最强短板）。`build/metrics.json`（gitignored）由 `main()` 自动再生。
+
 ### 门禁复验结果
 
 - `cppbible.py check --stage quality`：16/16 全绿（审计初 15/16）。

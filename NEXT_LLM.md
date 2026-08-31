@@ -150,6 +150,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 - **本机已装**：GCC 15.3.0、uv、项目 `.venv`、pre-commit（`uv tool install pre-commit`，隔离）；ruff 可经 `uvx "ruff==0.6.9"` 临时拉取。
 - **本机缺失**（依赖 CI）：pandoc、xelatex、mkdocs、mypy、cmake。
 - **Windows 中文控制台坑已修（两处，缺一不可）**：①`cppbible.py` 入口 reconfigure 自身 stdout；②其 `run()` 对**所有子进程**注入 `PYTHONIOENCODING=utf-8:replace`。只做①时子进程（如 `d5_appendix_audit.py` 打印 ✅）仍会在 GBK 控制台抛 `UnicodeEncodeError`——这正是「quality 16/16」一度只在 UTF-8 环境下成立的原因。`toolchain.py` 自带 reconfigure 可单独跑；其余 `tools/*.py` 若单独直接运行仍有此坑，需要时 `chcp 65001` 或设 `PYTHONIOENCODING=utf-8`。
+- **验收看板口径（2026-08-31 修正）**：`tools/metrics_snapshot.py --check` 的 `one_liner/pitfall/analogy` 三项按「达标章数」计（非总出现次数），且支持多写法别名——`pitfall` 含 陷阱/误区/踩坑/反模式，`one_liner` 须带结论后缀（避免误中表头 `| 一句话 |`）。最新值见 `build/metrics.json`（`git status` 不可见，因 `build/` 被 ignore）。
 - **行尾约定**：仓库 markdown 为 CRLF，`git config core.autocrlf false`（已设），注入脚本须 bytes 级处理行尾避免整文件伪 diff。
 
 ---

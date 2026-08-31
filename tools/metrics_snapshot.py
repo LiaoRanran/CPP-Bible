@@ -63,19 +63,33 @@ STAR_RE = re.compile(r"★+")
 EXERCISE_RE = re.compile(r"^###\s*练习", re.M)
 
 # 教学脚手架 / 文学性 关键词（用于进度看板）
+#
+# 2026-08-31 修订：原实现是 `text.count(单一字面量)` 后按「总出现次数」对目标
+# （one_liner/pitfall=147、analogy=294）。两个问题：
+#   1. 只认一种写法 → 正文用「一句话总结」「陷阱」等别名时全部漏检；
+#   2. 按总次数而非章覆盖计 → 一章写 10 处陷阱就顶 10 章，147 的目标会在
+#      15 章就「达标」，掩盖其余 132 章完全没有的事实。
+# 现改为：每个标记 = (多写法正则列表, 每章门槛)；统计时同时记「原始出现次数」
+# （沿用旧字段名 teaching_markers，保留历史可比性）与「达到门槛的章数」
+# （teaching_markers_chapters，即 15 条验收标准真正要测的量）。
 MARKERS = {
-    "one_liner": "一句话结论",
-    "analogy": "类比",
-    "pitfall": "常见误区",
-    "progressive": "循序渐进",
-    "people": "人物",
-    "anecdote": "[轶]",
-    "history": "[史]",
-    "commentary": "[评]",
-    "prereq": "前置知识",
-    "intuition": "直觉",
-    "summary": "小结",
+    # 一句话结论：必须带结论性后缀，避免误中「用一句话说」等行文或表格「| 一句话 |」
+    "one_liner":   (["一句话(?:结论|总结|概括|速记|[:：])"], 1),
+    # 类比：每章 ≥2 才计；类比/比喻/打个比方/好比/就像是/类似于 均算
+    "analogy":     (["类比", "比喻", "打个比方", "好比", "就像是", "类似于"], 2),
+    # 常见误区：别名纳入（误区/陷阱/踩坑/反模式），标题性用法占比最高
+    "pitfall":     (["常见误区", "误区", "陷阱", "踩坑", "反模式"], 1),
+    "progressive": (["循序渐进"], 1),
+    "people":      (["人物", "人物小传", r"\[人\]"], 1),
+    "anecdote":    ([r"\[轶\]", "轶事", "轶闻"], 1),
+    "history":     ([r"\[史\]"], 1),
+    "commentary":  ([r"\[评\]"], 1),
+    "prereq":      (["前置知识", "前置依赖", "先修"], 1),
+    "intuition":   (["直觉", "直觉上", "直观理解"], 1),
+    "summary":     (["小结", "本章小结"], 1),
 }
+# 仅 one_liner / analogy / pitfall 三项进入「15 条验收标准」看板（见 TARGETS）。
+
 VERIFY_MARKERS = {
     "verified": "[VERIFIED]",
     "unverified": "[UNVERIFIED]",
@@ -85,9 +99,9 @@ VERIFY_MARKERS = {
 # 「极致打磨」15 条验收标准（name, 目标, 方向 min/max, 说明）
 TARGETS = [
     ("chapter_levels", 147, "min", "章级 L1/L2/L3 分层（当前未实施）"),
-    ("one_liner", 147, "min", "一句话结论"),
-    ("analogy", 294, "min", "类比（每章 ≥2，须带失效边界）"),
-    ("pitfall", 147, "min", "常见误区"),
+    ("one_liner", 147, "min", "一句话结论（章覆盖：≥1/章）"),
+    ("analogy", 147, "min", "类比（章覆盖：≥2/章，须带失效边界）"),
+    ("pitfall", 147, "min", "常见误区（章覆盖：≥1/章，含陷阱/踩坑/反模式）"),
     ("exercise_zero_chapters", 0, "max", "零练习章节数"),
     ("exercise_median", 5, "min", "每章练习数中位数"),
     ("asm_anchor_rate", 0.60, "min", "ASM 证据可机校锚定率"),
@@ -120,7 +134,8 @@ def scan_chapters() -> dict:
     fences: dict[str, int] = {}
     cpp_total = cpp_main = cpp_include = 0
     stars: dict[int, int] = {}
-    markers = {k: 0 for k in MARKERS}
+    markers = {k: 0 for k in MARKERS}            # 原始出现次数（历史可比）
+    marker_chapters = {k: 0 for k in MARKERS}    # 达到每章门槛的章数
     verify = {k: 0 for k in VERIFY_MARKERS}
     d5_chapters = 0
     admonitions = 0
@@ -170,9 +185,15 @@ def scan_chapters() -> dict:
                                             text, re.M)]
         per_file_headings[p.name] = hs
 
-        # —— 各类标记 ——
-        for key, word in MARKERS.items():
-            markers[key] += text.count(word)
+        # —— 各类标记（多写法 + 章覆盖）——
+        # 用 re.findall 而非 text.count：写法已是正则（含字符组 [:：] 等）。
+        # 章覆盖仅统计正文章节（CH_NUM_RE），排除 part 级索引等非章节 md。
+        is_chapter = bool(CH_NUM_RE.match(p.name))
+        for key, (patterns, thr) in MARKERS.items():
+            cnt = sum(len(re.findall(pat, text)) for pat in patterns)
+            markers[key] += cnt
+            if is_chapter and cnt >= thr:
+                marker_chapters[key] += 1
         for key, word in VERIFY_MARKERS.items():
             verify[key] += text.count(word)
 
@@ -232,6 +253,7 @@ def scan_chapters() -> dict:
             "median_heading_share": round(statistics.median(shares), 4) if shares else 0,
         },
         "teaching_markers": markers,
+        "teaching_markers_chapters": marker_chapters,
         "verification": verify,
         "d5_coverage": d5_chapters,
         "admonitions": admonitions,
@@ -384,9 +406,9 @@ def build() -> dict:
         "content": chapters,
         "asm": asm,
         "env": env,
-        "one_liner": chapters["teaching_markers"]["one_liner"],
-        "analogy": chapters["teaching_markers"]["analogy"],
-        "pitfall": chapters["teaching_markers"]["pitfall"],
+        "one_liner": chapters["teaching_markers_chapters"]["one_liner"],
+        "analogy": chapters["teaching_markers_chapters"]["analogy"],
+        "pitfall": chapters["teaching_markers_chapters"]["pitfall"],
     }
 
 
