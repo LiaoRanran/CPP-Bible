@@ -48,6 +48,12 @@ Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/reference ｜ https://en.cppreference.com/w/cpp/language/constraints ｜ https://en.cppreference.com/w/cpp/language/function
 
+!!! note "类比：引用 = 别名而非对象"
+    引用可以**类比**为「别名而非对象」——语法上像对象，实则只是已有对象的另一个名字，没有独立身份、不能空、必须绑定；它**好比**给变量贴的第二张标签，撕不掉也改不了指向。指针更**好比**写着地址的纸条——可为空、可改指、灵活但可能写错门牌。
+    换个角度：引用是为运算符重载而生的「前置科技」，也**类似于**给 `+` 操作数一个可修改的左值身份——没有引用，`a.operator+(b)` 既丑又破坏透明性。
+
+    > 失效边界：引用「不可空、不可重绑定」换来语法透明，却也意味着它无法表达「可选」——想要「可能没有」得退回指针或 optional；且引用绑定后的生命周期若比被引用对象长，悬垂引用的 UB 比空指针更隐蔽，因为语法上看不出「可能失效」。
+
 ## ① 本章地图（先给结论，再击穿）
 
 [第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)

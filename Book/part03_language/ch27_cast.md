@@ -43,6 +43,12 @@ C 的强制类型转换 `(T)expr` 脱胎于 1972 年 Dennis Ritchie 设计的 C 
 - **行业落地**：金融 / 游戏等底层库仍大量用 `reinterpret_cast` 做网络字节序与序列化，但新代码优先 `std::bit_cast` 以过 UBSan；`-Werror=unsafe-buffer-usage` 等安全补丁继续收紧裸 cast 边界。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/numeric/bit_cast ｜ https://en.cppreference.com/w/cpp/language/explicit_cast ｜ https://en.cppreference.com/w/cpp/types/start_lifetime_as
+
+!!! note "类比：四种命名 cast = 拆开 (T)x 的语义黑洞"
+    四种命名 cast 可以**类比**为把 C 的 `(T)x` 这个「语义黑洞」拆开——C 一个括号把摘 const、比特重解释、继承下行三种本应分家的操作塞一起，重构时 grep 都定位不出危险转换；C++ 把它们拆成 static / const / reinterpret / dynamic_cast，把「我在做什么」从「括号里的沉默」变成「写在脸上的意图」。
+    换个角度：dynamic_cast 为安全引入运行时开销与 RTTI 依赖，也被诟病，催生 variant / visit 等「编译期多态」替代，也**类似于**用「查类型标签」换「运行时查表 + 异常 / 空」的代价。
+
+    > 失效边界：named cast 只让「危险显形」，并不消除危险本身——const_cast 摘 const 后写只读对象仍是 UB，reinterpret_cast 跨类型比特重解释踩严格别名雷区；C++20 的 std::bit_cast / start_lifetime_as 才提供不踩 UB 的替代，但 trivially-copyable 等前提限制其通用性。
 >
 > **闭环**：本节抛出「语义黑洞」之问 → 正文 ②–⑩ 逐层击穿四种 cast 的语义 / 机制 / 边界 → ㉒ 收束到真实产业坐标与标准演进，形成「抛问题 → 解问题 → 收束」的完整回路。
 

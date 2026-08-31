@@ -43,6 +43,12 @@ union 用"内存复用"换安全；variant 用"一点控制块开销"换"永远�
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/variant ｜ https://en.cppreference.com/w/cpp/utility/expected ｜ https://en.cppreference.com/w/cpp/utility/optional
 
+!!! note "类比：union→variant = 省内存赌注被类型安全还债"
+    union → variant 可以**类比**为「省内存的古老赌注」被「类型安全的现代还债」取代——union 让多成员共用一块存储省内存，代价是「读非活跃成员」是 UB，全靠人记当前装的是谁；std::variant 用一点控制块开销换「永远知道装的是谁」，像给联合体配了本登记册。
+    换个角度：variant 的 visit 仍比裸 union + switch 多一层间接，是性能敏感路径的常见权衡，也**类似于**为安全买的「小幅保费」——游戏 / 嵌入式常保留裸 union 换零开销。
+
+    > 失效边界：union 用「内存复用」换安全、variant 用「开销」换安全，二者都非免费；variant 的 `valueless_by_exception` 状态（异常传播中类型损坏）是裸 union 没有的新边界；模式匹配（inspect / P1371）仍只是提案，当前 visit 仍需手写 `std::overload` 样板。
+
 ## ① 概述：从 union 到 variant 的演进
 
 [第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)

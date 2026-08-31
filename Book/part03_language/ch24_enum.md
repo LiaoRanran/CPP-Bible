@@ -40,6 +40,12 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/enum ｜ https://en.cppreference.com/w/cpp/language/using_enum ｜ https://en.cppreference.com/w/cpp/utility/format
 
+!!! note "类比：enum class = 给弱枚举重武装成的强类型"
+    enum class 可以**类比**为给 C 的「弱类型整数别名」重新武装成的强类型——C 的 enum 只是整数语法糖，会隐式转 int、不同枚举可混比；enum class 关掉隐式转换、限定作用域，像给每个枚举值发了「只认自己种类」的身份证。
+    换个角度：位掩码（flags）场景仍偏爱 unscoped enum 的隐式 OR，于是 `enum class + operator|` 重载成现代写法，也**类似于**既想要强类型的门禁、又想在内部开个后门做位运算。
+
+    > 失效边界：enum class 是「为不让 C 程序员觉得被冒犯」的妥协——旧代码照旧能编译，新代码才享安全；标准未给枚举自动 formatter，打印枚举名需手写 `std::formatter` 定制点；反射（C++26 候选）才把枚举名 / 值变可遍历数据，此前只能靠 magic_enum 这类 trick。
+
 > **一句话结论**：enum class 用强作用域与固定底层类型堵住 C 枚举的隐式转换与名字泄漏，位掩码则用「零开销的或运算集合」表达多选标志。
 
 ## ① 章节摘要（Chapter Summary）

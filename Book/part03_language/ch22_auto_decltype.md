@@ -41,6 +41,12 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/auto ｜ https://en.cppreference.com/w/cpp/language/lambda ｜ https://en.cppreference.com/w/cpp/language/function
 
+!!! note "类比：auto = 沉睡三十年的废字复活成推导发动机"
+    auto 的「复活」可以**类比**为一个在 C 里沉睡三十年的废字被 C++11 劫持成类型推导发动机——原本只表示「栈变量」几乎无人用，复活后让编译器从初始化器推导类型，专解 lambda 闭包类型、模板返回类型等手写不出的场景。decltype 更**好比**一面镜子——「问一个表达式的类型是什么」，服务于泛型库。
+    换个角度：C++20 缩写函数模板 `void f(auto x)` 让 auto 从「变量推导」跃迁到「函数签名」，也**类似于**把「泛型」从 template 前缀缩写成一个词，与概念约束 `void f(C auto x)` 直接结合。
+
+    > 失效边界：auto 按值推导、不默认带 const / 引用，掩盖真实类型会拖慢可读性（Core Guidelines 建议对 int 等普通类型显式写出）；`decltype(auto)` 才保留 cv / 引用，用错会悄悄改变「返回的是副本还是引用」这一关键语义。
+
 > **一句话结论**：auto 把「写类型」交给编译器从初始化式反推，decltype 则精确到「保留引用与 cv 的声明类型」——前者为省力、后者为保真。
 
 ## ① 学习目标

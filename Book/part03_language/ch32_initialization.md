@@ -29,6 +29,12 @@ C 的初始化靠 `=`、`()`（构造）、aggregate 大括号 `{ }`，各自规
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/list_initialization ｜ https://en.cppreference.com/w/cpp/language/aggregate_initialization ｜ https://en.cppreference.com/w/cpp/language/initialization
 
+!!! note "类比：列表初始化 = 十余种初始化语法的大一统尝试"
+    列表初始化（{}）可以**类比**为给 C++ 十余种初始化语法的大一统尝试——C 的 =/()/{} 各自规则不一，C++ 又叠加构造函数导致「同意图多写法且语义不同」的经典坑（如 `Widget w();` 被解析成函数声明）；{} 意图一套通吃并默认禁止窄化转换。
+    换个角度：指定初始化器（C++20 designated initializers）有节制地吸收 C 特性，也**类似于**给聚合初始化加了「按名赋值」的安全带——顺序须与声明一致，避免错位。
+
+    > 失效边界：统一初始化想消灭「歧义 + 窄化」，但 std::initializer_list 重载的存在让 {} 有时「抢走」其他构造函数反而制造新坑（最恼人 parse 余波）；Google / LLVM 等规范因此对列表初始化作差异化约束，委员会在「统一」与「精确」间反复权衡，并非 {} 永远最优。
+
 > **一句话结论**：C++ 有十余种初始化语法，列表初始化（{}）统一了「不被收窄、不丢精度、禁止窄化」的语义，是现代初始化的首选。
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>

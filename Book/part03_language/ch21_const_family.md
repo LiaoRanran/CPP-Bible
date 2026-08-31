@@ -41,6 +41,12 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constexpr ｜ https://en.cppreference.com/w/cpp/language/consteval ｜ https://en.cppreference.com/w/cpp/language/constinit
 
+!!! note "类比：const 家族 = 把「不变」逼进类型系统的阶梯"
+    const 家族可以**类比**为把「不变」一步步逼进类型系统的阶梯——const 只是「运行期只读」的保险，constexpr 是「尽量编译期求值」，consteval 是「必须编译期」，constinit 只管「初始化时机」。这**类似于**给「常量性」分了三档精度，互不绑架，比「全有或全无」更精细。
+    换个角度：constexpr 把模板元编程从 TMP 黑魔法变成普通函数，也**类似于**把「只能在编译期念的咒语」翻译成人话——写个普通函数加个词就能在编译期跑。
+
+    > 失效边界：const 不等于「编译期常量」（值可能运行期才知），constexpr 也不保证一定在编译期（若参数是运行期值就退化成普通函数）；社区曾争论「是否默认所有函数 constexpr」，反对者担心编译时间爆炸与 ABI 暴露，故委员会维持显式标注路线。
+
 > **一句话结论**：const 只承诺「运行期不可改」，constexpr 进一步承诺「编译期可算」，consteval 强制编译期、constinit 保证静态初始化无顺序问题——四级强度对应四级保证。
 
 ## ① const 的精确语义与 cv 限定符全规则

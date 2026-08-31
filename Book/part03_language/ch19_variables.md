@@ -40,6 +40,12 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/modules ｜ https://en.cppreference.com/w/cpp/language/inline ｜ https://en.cppreference.com/w/cpp/language/storage_duration
 
+!!! note "类比：ODR = 多编译单元世界的宪法"
+    ODR（单一定义规则）可以**类比**为 C++ 写给「多编译单元世界」的宪法——同一个可跨单元共享的名字（变量 / 函数）只能有一份定义，否则链接器无从裁决；C 靠宽松的 tentative definition 糊弄，C++ 用 ODR 立规矩。inline 变量更**好比**把「去重」交给链接器——宁可允许写多次，也让你在头文件里直接定义而不违规。
+    换个角度：C 的 `static` 一词身兼数职（文件隐藏 + 静态存储期）也**类似于**一把瑞士军刀当锤子使——能用但别扭，C++ 用 namespace / 无名命名空间拆开职责。
+
+    > 失效边界：ODR 只管「跨单元同名定义」，管不了「同一个 bug 写了两份不同实现」——内容不同的两份定义仍算违规；Modules（C++20）从根上绕开头文件文本包含，但 `import` 与 `#include` 混用期呈双轨，ODR 检查仍是混合 TU 的必需。
+
 > **一句话结论**：变量是「名字 → 存储 + 类型 + 生命周期」的三元组：存储期决定生死、链接决定跨单元可见范围，而 ODR 规定同一实体在整个程序里只能有一份定义。
 
 ## ① 本章要击穿的十个问题

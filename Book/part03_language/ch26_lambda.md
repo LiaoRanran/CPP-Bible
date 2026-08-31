@@ -48,6 +48,12 @@ lambda 本质仍是"语法糖 + 闭包类"，委员会坚持零开销：不捕�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/lambda ｜ https://en.cppreference.com/w/cpp/language/function ｜ https://en.cppreference.com/w/cpp/language/constraints
 
+!!! note "类比：lambda = 编译器替你生成的仿函数类"
+    lambda 可以**类比**为「编译器替你生成的仿函数类（闭包类型）」——STL 算法时代要传逻辑得先写个带 operator() 的类，冗长且隔断思维；lambda 让你当场写、当场抓变量，终结了硬凑回调的黑暗时代。它**好比**把「函数对象」从手搓类降级成一行语法糖。
+    换个角度：委员会坚持不捕获的 lambda 可隐式转函数指针以保持与 C 回调兼容，也**类似于**「零开销优先」原则在语法层的兑现——能用 C 接口的地方绝不偷偷加成本。
+
+    > 失效边界：lambda 本质仍是「语法糖 + 闭包类」，捕获默认需显式（安全优先，争论后定为不默认按引用）；std::function 用类型擦除接 lambda 会付出 ≈8× 慢的代价与堆分配，热路径应优先模板 / 泛型而非 std::function；捕获生命周期（引用捕获的悬垂）是比普通引用更隐蔽的坑。
+
 > **一句话结论**：lambda 是「带捕获的匿名闭包对象」，编译器为其生成唯一的 functor 类型；捕获方式（值/引用/初始化）决定闭包持有的是副本还是别名。
 
 ## ① 本章地图（先给结论，再击穿）

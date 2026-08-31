@@ -34,6 +34,12 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/object ｜ https://isocpp.github.io/CppCoreGuidelines/ ｜ https://en.cppreference.com/w/cpp/
 
+!!! note "类比：UB = 把优化权交给编译器的历史契约"
+    未定义行为（UB）可以**类比**为 C/C++ 把优化权交给编译器的历史契约——C 为贴近硬件刻意留大量「实现定义 / 未定义」行为，目的是让编译器自由映射到不同硬件而不必守卫每条边界；「越界即失去保障」像签了份「出事概不负责」的免责协议。
+    换个角度：零开销原则与「安全默认」的根本冲突，也**类似于**给 UB 一个确定结果（如抛异常）会强加运行时检查、拖慢所有程序——于是委员会选择「信任程序员 + 把优化权留给编译器」，UB 成了编译器激进优化的武器（死代码消除、循环不变外提）。
+
+    > 失效边界：UB 被「武器化」的经典案例（空指针检查被优化删除、UB 循环变无限循环）多次登上安全公告，证明「信任程序员」的代价真实存在；C++23 起的 Safety 工作组探索 Profiles（bounds / type / init safety）试图在不破坏零开销前提下收窄 UB 面，但目前仍是可选子集而非默认。
+
 ## ① 本章地图（先给结论，再击穿）
 
 [第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)

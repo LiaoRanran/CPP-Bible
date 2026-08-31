@@ -42,6 +42,12 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/namespace ｜ https://en.cppreference.com/w/cpp/language/lookup ｜ https://en.cppreference.com/w/cpp/language/modules
 
+!!! note "类比：命名空间 = 给名字冲突上的作用域盒子"
+    命名空间可以**类比**为给名字冲突上的「作用域盒子」——早期靠 `prefix_` 手工避撞极易撞名，C++98 把它变成语言特性。ADL（参数依赖查找）更**好比**命名空间的「隐形副作用」——为让 `operator<<(cout,x)` 找到 std 里的重载，编译器顺着参数类型悄悄进它的命名空间。
+    换个角度：inline namespace 成 ABI 版本控制事实标准（libstdc++ 用 `__cxx11` 区分新旧 ABI），也**类似于**给同一名字套上「可见的旧壳 + 实际的新核」，实现无断裂升级。
+
+    > 失效边界：ADL 方便运算符重载却被诟病「查找不透明」——`std::ranges` 刻意用定制点对象（CPO）规避 ADL 风暴；ADL 是「无法撤销的历史包袱」（委员会曾认真讨论默认开启又放弃），模块（C++20）虽绕开头文件宏污染，但混用期命名隔离仍呈双轨。
+
 > **一句话结论**：命名空间把名字装进独立作用域防撞车，ADL 又让「运算符参数所在命名空间」自动参与查找——隔离与隐形查找是一对共生又易误用的机制。
 
 ## ① 本章地图（先给结论，再击穿）

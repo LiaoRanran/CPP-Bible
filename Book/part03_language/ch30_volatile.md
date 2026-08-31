@@ -30,6 +30,12 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic_ref ｜ https://en.cppreference.com/w/cpp/language/cv ｜ https://en.cppreference.com/w/cpp/atomic
 
+!!! note "类比：volatile = 给编译器的「别优化这次读写」便签"
+    volatile 可以**类比**为给编译器的一道「别优化掉这次读写」的开关——它本为硬件寄存器 / 中断 / MMIO 而生，告诉编译器这对象可能被外部力量随时改，禁止缓存到寄存器。它**好比**贴了张「此处有人会偷偷改，别自作聪明」的便签。
+    换个角度：volatile 被长期误当线程同步原语，C++11 用 std::atomic 把并发同步从它手里夺走，也**类似于**「把单线程语义与并发语义彻底分家的那关键一刀」——volatile 退回纯 MMIO / 信号处理。
+
+    > 失效边界：volatile 只解决「编译器优化」、不解决「CPU / 缓存一致性」——它不提供原子性、不防重排、不保证跨线程可见性；MSVC 历史实现对 volatile 带 acquire / release 语义而 GCC / Clang 严格遵循标准（无保证），同一段代码三家行为不同，是平台差异的灰色地带。
+
 > **一句话结论**：volatile 只告诉编译器「别优化掉这次读写」（为内存映射 IO），它不提供原子性也不防重排——多线程要用 atomic，二者职责不同。
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>
