@@ -56,6 +56,11 @@ Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化�
 > 史料来源：
 
 > **一句话结论**：Policy-Based Design 把行为拆成可正交组合的模板策略参数，让用户像搭积木拼出定制类，灵活性来自编译期组合而非运行期虚函数。
+
+!!! note "类比：policy-based design = 可换刀头的瑞士军刀"
+    policy-based design 可以**类比**为「把可替换的行为拆成独立模板参数」：就像模块化插座——引擎主体不变，换不同 policy 插片就换一种行为。它更**好比**可换刀头的瑞士军刀。
+
+    > 失效边界：policy 会组合爆炸——N 个 policy 各 M 选项会生出 N×M 种类型；policy 间若有隐含依赖，会编译出极难懂的错误。
 > - https://en.cppreference.com/w/cpp/language/constraints
 > - https://en.cppreference.com/w/cpp/language/if
 

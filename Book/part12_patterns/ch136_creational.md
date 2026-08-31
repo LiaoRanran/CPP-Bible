@@ -37,6 +37,11 @@
 - <span class="badge badge-anecdote">轶</span> Meyers Singleton 依赖的 "magic static" 线程安全，曾是 C++11 之前各大编译器"各搞各的"的灰色地带，直到 C++11 把它写进标准才统一。
 
 > 史料来源：
+
+!!! note "类比：创建型模式 = 专门的工厂厨房"
+    创建型模式可以**类比**为「把生对象这件事专业化」：你不再自己 `new`，而是告诉工厂要什么、由它替你造。它更**好比**点餐窗口——隔离了后厨的复杂度。
+
+    > 失效边界：工厂/建造者不是免费午餐，多一层抽象就多一份间接性；当对象构造本就很简単时，直接构造比套工厂更清晰。
 > - https://en.cppreference.com/w/cpp/memory/unique_ptr
 > - https://boost-ext.github.io/di/
 
