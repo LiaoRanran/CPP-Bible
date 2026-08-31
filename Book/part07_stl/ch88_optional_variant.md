@@ -32,6 +32,11 @@
 
 > **一句话结论**：optional 用「有或没有」替代空指针与哨兵值，variant 用判别式联合替代裸 union——两者都把「可能缺席或多种可能」建模进类型，逼调用方处理。
 
+!!! note "类比：optional = 「也许有货」的盒子，variant = 带标签的联合体"
+    `optional` 可以**类比**为一个「也许有货」的盒子：有值或无值，代替用空指针/哨兵值。而 `variant` 更**好比**一个贴了标签的联合体——它始终记得自己此刻装的是哪种类型。
+
+    > 失效边界：`optional` 不是指针，`*opt` 在空时行为未定义，须先用 `has_value()`/`if(opt)`；`variant` 不是任意类型大杂烩，访问错误类型会抛 `bad_variant_access`，而非静默返回。
+
 ## ① 概述：为什么需要可空与可辨别联合 <span class="badge badge-std">标准</span>
 
 [第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)

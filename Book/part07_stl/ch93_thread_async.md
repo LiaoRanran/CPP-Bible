@@ -34,6 +34,11 @@
 
 > **一句话结论**：thread 给原生线程、async 把任务丢进线程池并返回 future，二者都直面「共享状态加数据竞争」——异步不等于无锁。
 
+!!! note "类比：async/future = 餐厅取餐呼叫器，thread = 雇的工人"
+    `std::async` + `future` 可以**类比**为点餐后拿到的取餐呼叫器：你先去干别的，号响了再来取。`std::thread` 更**好比**直接雇一个工人去干活。
+
+    > 失效边界：`future` 的共享状态若没人 `get()`，析构时会阻塞等待结果（潜在死锁风险）；`async` 默认 `launch::async|deferred` 可能「惰性同步执行」——想要真并行必须显式写 `launch::async`。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 本章把 C++11 引入、并经 C++20/23 打磨的**线程与异步原语**作为一个有机整体讲透：
