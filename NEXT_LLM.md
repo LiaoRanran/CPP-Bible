@@ -12,8 +12,8 @@
 | 什么项目？ | 《现代 C++ 终极圣经》147 章 C++ 技术书 + Python 质量门禁工具链，仓库 `LiaoRanran/CPP-Bible` |
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
 | 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已首次全链路真绿 |
-| 在飞的活？ | 无——工具链升级 P0-1 / P0-2 已收口（ruff 债务人工清零 + 接入 CI 硬门禁 + 控制台编码修复），见「已收口批次」 |
-| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`（mypy 类型 triage + 容器 digest + 指标事实源 + CROSSREF 裁决）；内容五阶主线见 `CONTENT_DEPTH_ROADMAP.md` |
+| 在飞的活？ | 无——交叉引用结构性硬伤已根治（链接门禁入 CI）+ ch28 元数据已修；见「已收口批次（2026-08-31）」 |
+| 剩余待办？ | 工具链升级剩余项见 `TOOLCHAIN_UPGRADE_NEXT.md`（mypy 类型 triage 等）；内容侧**优先审 8 个 UNVERIFIED 章**（ch02/05/16/132/148/149/150/165），见下文健康度评估；标题全角/半角空格不统一（低优先） |
 | HEAD？ | **一律以 `git rev-parse HEAD` 为准**——本文件不复制哈希。写死的哈希在提交那一刻就已过期，这正是「指标单一事实源」待办项要根治的反例 |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
 | Python？ | ✅ 已收敛：配置 glob 识别托管 3.13.14 + `toolchain.py` 版本自检（漂移即非零退出）；`.venv` 仍 3.14.5 但不影响门禁（门禁改走托管 3.13.14） |
@@ -53,6 +53,33 @@ ruff、quality 门禁；并打印接手简报（事实快照 + 剩余待办 + �
 1. **先读 STATE.json 的 `last_commit`/`git_status` 与 `ISSUES.md` 遗留清单**，不要信 HANDOVER.md / START_HERE.md / .workbuddy/memory/MEMORY.md 的旧数字（均停留在 07 月）。
 2. **核心门禁是 `tools/cppbible.py check --stage quality|compile`**，它聚合了 consistency/crossref/density/D5/ASM/whitespace 等 16 项 + compile/gate/exempt/D5-gate/assertions 5 项。单独跑 `tools/consistency_check.py` 已不足够。
 3. **不注水红线仍在**：147 章上限锁定、不增章、不批量附录、汇编必须 GCC15.3 真机 objdump、不可用特性诚实标注。
+
+---
+
+## 已收口批次（2026-08-31，勿重做）
+
+### 交叉引用 Book/ 前缀结构性硬伤 → ✅ 已提交并已验证（模板级顽疾，根治+防复发）
+
+- **现象（外部审计完整复核，全量 2941 条链接）**：SUMMARY.md 总目录 147/147 全有效；**147 章正文的 markdown 链接失效率 100%**——正文一律写成 `](Book/partXX/chYY.md)` 根相对路径，而章文件已在 `Book/` 内，任何标准相对渲染器（GitHub 预览/编辑器/mdBook）按当前文件目录解析 → 路径翻倍一层 → 一律 404。根因单一：SUMMARY 由 `gen_indexes.py` 生成、本就是相对路径，而正文引用是手写 `Book/` 前缀，两套路径规则从未对齐，且无链接可达性卡口。
+- **掺假对照（值得警惕）**：zip 内 147 章元数据全部落在 2026-08-31 09:27–18:54（GitHub Actions 流水线全书级重跑）。重跑后 `Book/` bug **一字未变、100% 保留**——证明 (a) 质量门禁从未检查内部跳转链接可达性；且更可能 (b) `Book/` 前缀写在生成模板/prompt 里，每次重新生成都会原样复现。**只重跑没用，必须改模板/加卡口，否则 bug 随每次自动更新永久续命。** 区别在于：shared_from_this()/无锁栈 pop 两处此前的语义修正，重跑后依然保持修好状态 → 流水线不是暴力覆盖重写，不会把改好的改坏。
+- **修复**：新增 `tools/fix_book_links.py`（字节级幂等修复器，`--check`/`--apply`），把 `](Book/` 改写为以当前章为基准的 `](../partXX/chYY.md)` 源相对路径，共修 **2628 处 / 147 章**。**字节级外科替换是硬要求**——仓库 markdown 为 CRLF（`core.autocrlf false`），文本模式 read/write 往返会把全文件行尾改坏（首轮因此产生 23.8 万行伪 diff 已回滚；字节级后净变更 = 链接量 2458/2431 行）。
+- **协调式配套（防发布/审计口径退化）**：
+  - `tools/rewrite_links.py` 支持源相对 `../partNN/` 形态（C），PDF 合并单文件归一化回 `Book/` 目标再映射 `#chNN` 锚点；site（174 文件/4772 重写/自检通过）+ pdf（3004 重写/147 H1 锚点/自检通过）双模式回归通过。pdf 仅 4 处 `../../docs/…`+`../../Appendix/…` 预存 warning（zip 范围外、非本次引入）。
+  - `tools/crossref_audit.py` 新增 `REL_LINK_RE` 计数源相对链接（**按 Book 根解析**：`../` 恒指 Book 以便 `(ch.parent.parent / r)`），避免覆盖率口径缩水；修复后断链 0、part 覆盖率 100%。
+  - `tools/cppbible.py` + `ci.yml`（quality job 新步骤）+ `pyproject.toml:quality_gates` 新增 **「Book Link Integrity」门禁**（`fix_book_links.py --check`），任何重新引入的 `](Book/…)` 即 BLOCK → 防模板/手写续命复现。
+- **回归已验证**：`fix_book_links --check`（0 残留）、`xref_check` RESULT: **PASS**（2778 内部链接 / 0 断裂 / 0 孤儿 / 0 孤岛）、`crossref_audit` 断链 0、`gen_indexes --check` PASS。
+- **提交**：`b9ffeaf`（fix(links)，153 文件 +2609/-2431）。
+
+### 语义级元数据 + legacy 清理 + 全书健康度评估 → ✅ 已提交
+
+- **ch28 元数据自引用（孤例，脚本难抓、靠逐字读原文才发现）**：前置字段原写 `ch31（异常与 UB）、ch28（异常安全）`——把自己列为自己的前置章；"异常安全"实为第 40 章；ch31 实为运算符重载、"异常与 UB"对不上 SUMMARY。修正为 `ch40（异常安全）`、删 ch31 条目。全套前置自引用扫描确认仅此一处。提交 `b6e921b`。
+- **legacy 清理**：`_legacy_ModernCppBible/` 在当前 repo 工作树中**根本不存在**（git 无跟踪），zip 快照里的空壳在当前版本已无，无需清理。
+- **全书健康度评估（外部 441 样本分层编译 + 全量扫描，结论需记录）**：
+  - **内容底子好，不是空壳灌水**：441 个自包含代码块 GCC -std=c++23 编译净结果 **0 处真实编译错误**（12 处失败逐一查因皆假阳性：4 缺第三方头、2 Windows 专属、1 `import std;` 生态、5 是多块拆讲只取一块的脚本误判）。此前两处语义 bug（ch41 shared_from_this 版本限定、ch110 无锁栈 pop ABA 注释）已修且本次重跑未回退。
+  - **标注体系是真货**：badge-std/history/comment/exp 四层标注 148 文件全在用，设计完整执行到位。147 章字符数 3w–11.2w（均值 6.3w），最短章集中在"版本历史"等天然短主题，分布合理无糊弄。
+  - **验证体系初具雏形**：74/147 章带显式 `[VERIFIED]/[UNVERIFIED]` 标记（65 已验证 / 8 未验证）。**下一步优先审 8 个 UNVERIFIED**：ch02（标准化组织）、ch05（C++14）、ch16（IDE）、ch132（LevelDB/RocksDB）、ch148（Git 工作流）、ch149（CI/CD）、ch150（测试策略）、ch165（进阶路线图）。
+  - **待定项**：ch163 网络编程整章仅 Winsock2、无 POSIX socket——若目标读者含 Linux 开发者，需评估补 POSIX 对照版。
+- **低优先级外观项**（未处理）：章节标题 `第01章　`（全角空格×103）vs `第 22 章 `（半角×44）不统一。
 
 ---
 
@@ -126,6 +153,7 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | `ISSUES.md` | 遗留清单（2026-08-30 口径） | ✅ |
 | `docs/references/content_debt_tasklist.md` | 内容债任务单（已清零，留档） | 需要时 |
 | `tools/cppbible.py` | 门禁聚合入口（quality/compile） | ✅ |
+| `tools/fix_book_links.py` | 正文跨章链接前缀修复器（`Book/`→源相对，字节级）；`--check` 即 CI「Book Link Integrity」卡口 | ✅ |
 | `tools/consistency_check.py` | 一致性门禁（147 章 ERROR=0 WARN=0） | 参考 |
 | `Book/part*/ch*.md` | 147 章正文 | 按批 |
 
@@ -167,6 +195,6 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 
 ---
 
-_更新时间：2026-08-31 | 覆盖到 JSON 台阶二收尾 + 工具链升级 P0-1/P0-2 完成（ruff 清零 + CI 硬门禁 + 控制台编码修复）_
+_更新时间：2026-08-31 | 覆盖到交叉引用结构性硬伤根治（链接门禁入 CI）+ ch28 元数据修复 + 全书健康度评估落档_<br/>_上一收口：JSON 台阶二收尾 + 工具链升级 P0-1/P0-2 完成（ruff 清零 + CI 硬门禁 + 控制台编码修复）_
 _HEAD：不写死——一律以 `git rev-parse HEAD` 与 `git status -sb` 为准（写死的哈希在提交那一刻即过期）_
 _历史：2026-07-17 版（APP15 阶段）已作废；2026-08-30 深夜版停在「P0-2 一半」，其 HEAD 尾注当时已落后一个提交，且 push 状态标反_
