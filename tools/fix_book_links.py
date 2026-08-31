@@ -142,7 +142,7 @@ def main() -> int:
         print(f"[links] ✅ 已改写 {done} 处链接为源相对路径（{files} 文件）。")
         return 0
 
-    print(f"[links] ⚠ 使用 --apply 落盘改写（可 git revert 回滚）。")
+    print("[links] ⚠ 使用 --apply 落盘改写（可 git revert 回滚）。")
     return 1
 
 
