@@ -50,8 +50,14 @@ DEFAULT_PART_TITLES = {
 
 
 def parse_part_titles() -> dict:
-    """从 INDEX.md 解析 {part序号: 中文标题}。序号 1..16 对应 partNN 目录。"""
-    titles = {}
+    """从 INDEX.md 解析 {part序号: 中文标题}。序号 1..16 对应 partNN 目录。
+
+    INDEX.md 未给出的序号回落到 DEFAULT_PART_TITLES：本站点的 INDEX.md 是
+    「项目文档索引」而非章节总目，不含 `## Part N:` 行，若不回落则解析结果为空，
+    build_part_table 会把欢迎页 part 表的「主题」列全部渲染成空白
+    （build_nav 另有兜底，故只有欢迎页受影响）。
+    """
+    titles = dict(DEFAULT_PART_TITLES)
     if INDEX_MD.exists():
         text = INDEX_MD.read_text(encoding="utf-8", errors="replace")
         for m in PART_TITLE_RE.finditer(text):
