@@ -30,6 +30,11 @@
 
 > **一句话结论**：Contracts 把前置/后置/断言条件写成语言级契约，违规时可由实现选择响应——是 C++26 对「接口约束可执行化」的补齐（进行中）。
 
+!!! note "类比：contracts = 函数门口的安检门"
+    C++26 `contracts` 可以**类比**为「函数门口的安检门」：进门前查前置条件，出门后查后置条件。它更**好比**「合同」——一旦违约就立刻喊停（violation handler）。
+
+    > 失效边界：契约是声明式约束，默认可被编译器忽略（取决于构建配置，如 `ignore` 模式）；它不是异常机制的替身，violation 默认 `terminate`，不能「捕获后继续」。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 解释契约编程的三段式：precondition / postcondition / assertion

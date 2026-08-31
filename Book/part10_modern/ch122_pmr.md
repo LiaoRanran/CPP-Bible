@@ -36,6 +36,11 @@ PMR 入标后，价值在工程界被反复验证，也暴露了"默认资源该
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/memory_resource
 
+!!! note "类比：pmr = 可换芯的笔"
+    `std::pmr` 可以**类比**为「可换芯的笔」：同一支笔（你的容器）可以装不同芯（memory_resource），从栈缓冲区或内存池里取内存。它更**好比**「带插口的电源」——插到不同插座就从不同来源取电。
+
+    > 失效边界：pmr 把「用哪个分配器」变成运行期可换的对象，不同于模板分配器（编译期定死）；若忘记给容器传 `&resource`，就会悄悄退回默认全局 `new`，池化收益归零。
+
 ## ① 学习目标
 
 - 掌握 `std::pmr::memory_resource` 抽象基类的三段式虚接口（`do_allocate` / `do_deallocate` / `do_is_equal`）与 `[标准]` C++17 规定。
