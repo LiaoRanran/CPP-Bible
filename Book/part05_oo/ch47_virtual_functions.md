@@ -34,6 +34,12 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/virtual ；https://en.wikipedia.org/wiki/C%2B%2B23
 
+!!! note "类比：vtable = 给每个类发的方法电话本"
+    虚函数与 vtable 可以**类比**为「给每个类发一张『方法电话本』」——对象里藏一个 vptr 指向这张表，调用虚方法时翻表找到正确实现，于是「同一段代码运行时选对的那一份」。它**好比**餐厅总机：你拨同一个号，总机按你所在分店转给对应厨师。
+    换个角度：C++ 默认成员函数非虚、虚要显式声明，也**类似于**「查表是要花钱的，不用就不付」——vtable 有空间（每对象 vptr）也有时间（一次间接跳转）成本，零开销原则要求 opt-in。
+
+    > 失效边界：虚拟分派是一次间接跳转，也是内联失效的源头；去虚化（devirtualization）只在编译器能确定动态类型时改写直接调用，虚调用仍难被内联；跨编译器 vtable 布局由 ABI 规定（GCC / Itanium vs MSVC 独立），依赖具体偏移不可移植；dynamic_cast / typeid 也绑在 vtable 上。
+
 > **一句话结论**：虚函数靠每个对象隐藏的 vptr 指向一张 vtable 实现动态分派，调用成本是一次间接跳转——它是运行时多态的发动机，也是内联失效的源头。
 
 > 元数据：标准基 C++98（核心）/C++11（override/final）/C++20（更优去虚化） · 预计阅读 120 min · 前置 ch19(存储期)/ch35(.rodata)/ch39(析构noexcept)/ch45(对象模型)/ch46(继承) · 后续 ch48(RTTI)/ch49(虚继承)/ch50(CRTP/EBO)/ch14(性能) · 难度 高级

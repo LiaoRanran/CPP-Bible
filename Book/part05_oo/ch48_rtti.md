@@ -31,6 +31,12 @@ RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型
 
 > 史料来源：https://en.cppreference.com/w/cpp/types/type_info ；https://en.cppreference.com/w/cpp/utility/source_location
 
+!!! note "类比：RTTI = 迟到十多年的运行时认人能力"
+    RTTI 可以**类比**为「迟到十多年的『运行时认人』能力」——早期 Stroustrup 刻意不加（怕每个对象塞类型信息违背零开销），等层次变复杂才用 typeid / dynamic_cast 安全向下转型。它**好比**给对象发身份证：转错类型就返回空（指针）或抛异常（引用），比手写 type 枚举安全。
+    换个角度：异常与 RTTI 共享同一套运行期基础设施，也**类似于**两套功能共用一台发电机——所以关掉一个（如 -fno-rtti）往往牵连另一个（异常）。
+
+    > 失效边界：RTTI 不是免费午餐——二进制变大、可能泄露「不该知道的类型」破坏封装；嵌入式 / 游戏常 -fno-rtti 关掉它，改用 type_index + 手写枚举；但 std::any / std::function 依赖 type_info，关掉会伤及格标准库；跨编译器 type_info::name() 返回天差地别（mangled vs 可读），跨 TU 比较靠链接器合并弱符号。
+
 > 元数据：标准基 C++98（typeid/dynamic_cast 核心）/C++11（noexcept 标注）/C++17（不改动语义） · 预计阅读 100 min · 前置 ch47(vtable 槽1 存 typeinfo) · ch45(对象模型/布局) · ch28(未定义行为/对象生命周期) · 后续 ch49(虚继承影响 RTTI 目标类型) · ch50(CRTP 静态替代) · ch14(去虚化与性能) · 难度 中级
 
 ## ① 学习目标
