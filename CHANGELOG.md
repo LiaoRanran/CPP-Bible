@@ -4,6 +4,32 @@
 
 ---
 
+## [Unreleased] - 2026-09-01
+
+内容侧「学习目标 → 问题驱动论证」打磨专项 **60 章全面收官**；本轮另修掉两处真实缺陷（站点欢迎页 part 表标题全空、README 数字与事实源漂移）。
+
+### 内容打磨：① 学习目标 → ① 我们真正要回答的问题（60 章收官）
+
+- **范式**：把「① 学习目标」的纯罗列清单，改写为「① 我们真正要回答的问题」论证式导读——每条先立判断再给论据，逐条回指正文节号（均核证属实），保留前向导航链接与示例代码。
+- **批次（10 批）**：`fd6897a` ch121 试点 → `bc4fd45` 历史 9 章 → `e2ffc76` OO 6 章 → `dc8ed07` STL/现代 4 章 → `65b3bf1` STL 容器 4 章 → `f80c7cd` 模板 12 章 → `5cf5362` STL 板块 10 章 → `957870a` 语言 5 章 → `008c265` 现代 4 章 → `c246651` 性能 3 章 → `c53848b` 收尾 ch31（运算符重载）+ ch109（内存屏障与 fence）。
+- **收尾两章的六问**（回指节号逐条核证）：ch31 讲成员/非成员的两条硬判据、`operator<<` 为何不能是成员、前后置 `++` 的哑元与拷贝代价、C++20 `<=>` 与 rewrite candidates、不该重载的运算符与零开销实证（附录 I ABI）、隐式转换与自赋值两类高发缺陷；ch109 讲 fence 与逐操作 `memory_order` 的判据、栅栏必须成对且位置夹准、「x86 上 fence 免费」的陷阱（附录 J 真机：`acq/rel/acq_rel` 编译为空、`seq_cst` 落 `lock or` 而非 `mfence`）、附录 D5 实测的非显然结论（`relaxed store + fence(seq_cst)` 8.2× 比 `seq_cst store` 17.3× 便宜约一半）、`consume` 与 `signal_fence` 两个边角、滥用 `seq_cst` 的代价由弱内存架构付。
+- **内容准确性修正（禁虚构红线）**：ch85 原声称「C++20 透明哈希」——透明哈希对 unordered 容器并未进入标准库，已改诚实表述；ch83 消除反引号内 `Book/` 前缀；ch80 的 ⑨ 节回指由错误的「栈布局」修正为「调用栈/时序图」；ch76:1311 过时回指「见 ① 学习目标」随改名同步更新。
+
+### 缺陷修复（本轮）
+
+- **站点欢迎页 part 表标题全空（`d0d5dda`）**：`DEFAULT_PART_TITLES`（16 条中文 part 标题）注释写明「INDEX.md 未提供 `## Part N:` 时启用」，但 `parse_part_titles()` 从不回落它——兜底是定义了却没接上的死代码。本站点的 `INDEX.md` 是项目文档索引而非章节总目，通篇无 `Part` 字样，故解析恒为空。因 `build_nav()` 自带兜底而 `build_part_table()` 没有，只有欢迎页退化成空白列。改根因：`parse_part_titles()` 以该字典为初值、INDEX.md 解析结果覆盖其上。重生成后日志 `part 16`、16 行标题全部填充。
+- **README 数字漂移**：`README:5` 写死 `7531` 个 cpp 块，事实源实测 `7525`（CI 硬门禁 `gen_metrics.py --check` 项），已回填。
+
+### 门禁复验
+
+- `cppbible.py check --stage quality`：**17/17** 全绿。
+- `consistency_check.py`：147 章 ERROR=0 WARN=0（100/100）。
+- `gen_metrics.py --check`：文档数字与事实源全部一致。
+- `ruff 0.6.9 check tools/`：All checks passed。
+- 推送 preflight：**7/7** 通过（`65b3bf1..d0d5dda master -> master`）。
+
+---
+
 ## [Unreleased] - 2026-08-31
 
 全量「类比（analogy）」补写收官里程碑。将 analogy 教学标记从 75/147 补齐至 147/147，写作质量三件套（one_liner / pitfall / analogy）全部满标。
