@@ -42,6 +42,12 @@ C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除
 
 > 史料来源：github.com/tencentrapidjson/rapidjson、github.com/simdjson/simdjson
 
+!!! note "类比：JSON = 人机能读的名片"
+    JSON 可以**类比**为「人类和机器都能读的名片格式」——XML 像要用三行标签写一个布尔值的公文，JSON 像一张一眼看懂的便签；它本质是 JS 对象字面量的规范化。DOM vs SAX 解析更**好比**整本打印 vs 边读边播报——DOM 建整棵树好用但占内存，SAX 边读边回调省内存但你要自己写状态机。
+    换个角度：类型擦除（variant 树）vs 代码生成（按 schema 映射 struct）也**类似于**万能收纳箱 vs 定制分隔盒——前者装啥都行但找东西靠运行时，后者一目了然却要先量好尺寸。
+
+    > 失效边界：类型擦除灵活但失去编译期类型安全，代码生成快且安全但要写 schema；C++ 至今无 std::json，标准库的沉默把「映射 vs 生成、DOM vs SAX」的选择权留给生态，没有免费正确答案。
+
 > **一句话结论**：从零实现 JSON 库：递归下降解析器、DOM 与流式两种模型、与 std::variant/string_view 的配合，是「小而完整」的解析器工程范本。
 
 ## ① 概述：JSON 与 C++ 映射 <span class="badge badge-std">标准</span>
