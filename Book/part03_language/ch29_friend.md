@@ -36,12 +36,18 @@ C++ 的 `private` / `public` 访问控制继承自 Simula 67 的"数据隐藏"�
 
 > **一句话结论**：friend 是「单向、不继承、不传递」的访问授权，它打破封装只为少数特定函数/类开后门，而非把大门打开。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-1. 理解 friend 打破封装的目的与代价
-2. 掌握 friend 函数、friend 类、friend 成员函数三种形式
-3. 理解 friend 的"单向、不可传递、不可继承"三原则
-4. 区分友元与 public/private/protected 的访问控制边界
+[第21章　const / constexpr / consteval / constinit 深度详解](../part03_language/ch21_const_family.md)
+[第31章　运算符重载](../part03_language/ch31_operator_overloading.md)
+
+`friend` 常被当成"暴力砸开封装的大门、破坏封装的罪魁祸首"，但**它真正的本质是"每一位被声明的函数/类是类主动授予的、一次性、绕开访问控制的编译期通行证"**——它不是打破封装，而是由类**显式指定**谁能看私有区。真正该担心的不是 friend 本身，而是偏离了"朋友是谁、有没有第二道门"这一问题。本章不重复"friend 能访问私有成员"这句入门话，而要带着下面这五笔账往下读：
+
+1. **`friend` 到底有哪几种形态、各自解决的"访问需求"是什么？** 友元函数（单一操作，如 `operator<<` 访问 `Point` 私有坐标）、友元类（成组交互，如 `QueryExecutor` 访问多个成员）、友元成员函数（只开放某个具体成员函数）——三种形态按访问面大小取舍。本章 ②③④ 各用示例讲清，⑰ FAQ 给出"单一操作用 friend function、复杂交互用 friend class"的选型判据。
+2. **为什么 `friend` 是"单向、不可传递、不可继承"的？这三条约束各拦下哪种封装泄漏？** 单向：A 授信 B，不代表 B 授信 A；不可传递：B 是 A 的友元、C 是 B 的友元，C 仍碰不到 A（示例 4）；不可继承：Derived 不会继承 Base 的好友关系（示例 5）。三条合起来保证"通行证只发给指定的人，且不随风扩散"。本章 ⑤⑥ 就是这三条原则的活教材。
+3. **模板友元怎么写才不会"一给给一窝、或者恰好没给到"？** 对类模板 `Box<T>`，可把函数模板声明成友元让每个实例化共享；但要注意 friend 声明不等于函数定义、模板形参的匹配语法易错（⑯ 易错点）。还须注意泛型场景下的批量授权方向——P2893 正提议 `friend Ts...;` 以解决"把模板参数包全 declare 为友元"，目前仍是 C++26 方向、未进标准。本章 ⑦ 给出模板友元正确姿势，⑭ 讲清这份提案边界。
+4. **`operator<<` 为什么"必须"是 friend？STL 和工业代码里 friend 的招牌用途有哪些？** 左操作数是 `ostream`，无法写成被打印类型的成员函数，而唯一能访问其私有成员的方式就是友元；因此串行化/日志输出几乎必用 friend（⑧⑪）。工业上另一个招牌是"工厂模式 + 私有构造函数"——用 `friend class ConnectionFactory` 确保对象只能经指定工厂创建（⑫）。测试场景则借 friend 做白盒：Google Test 的 `FRIEND_TEST` 宏就是在类里自动生成 friend 声明（⑩）。
+5. **friend 会不会让代码变慢？用 friend 的代价与边界判据到底是什么？** friend 是**纯编译期访问控制**：GCC `-O2` 下 friend 直接访问与 public 访问生成完全相同的汇编（`mov eax,[rdi]`），零间接调用、零运行时代码（⑲ 性能）；编译期访问检查也就 O(1) 量级、可忽略（⑰）。真正的代价在**维护契约**：friend 声明是类对外 API 的一部分、应保持稳定，且最小 friend 原则要求"能 friend 函数就别 friend 类"，同时避免 A friend B、B friend A 这类令封装完全失效的循环依赖（⑱ 最佳实践）。
 
 ## ② 友元函数 <span class="badge badge-std">标准</span>
 

@@ -38,12 +38,19 @@
 
 > **一句话结论**：volatile 只告诉编译器「别优化掉这次读写」（为内存映射 IO），它不提供原子性也不防重排——多线程要用 atomic，二者职责不同。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-1. 区分 volatile（硬件可见性）与 atomic（多线程原子性）
-2. 理解 volatile 的正确使用场景：MMIO、信号处理、setjmp/longjmp
-3. 掌握 memory-mapped I/O 中 volatile 的必要性
-4. 理解为什么 volatile 不能替代 atomic
+[第19章　变量、存储期、链接与 ODR](../part03_language/ch19_variables.md)
+[第27章　显式转型四兄弟与隐式转换](../part03_language/ch27_cast.md)
+[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)
+
+`volatile` 常被初学者当成"多线程防优化、let 变量不被打架"的万金油，但**它真正的本质是"告诉编译器：这个对象的每次访问都必须真正抵达内存，不许缓存、不许合并、不许乱序重排"——只保访问不删减，绝不保原子性**。正因如此它才是硬件内存映射（MMIO）与信号处理的正确工具，却在多线程上是彻头彻尾的错误选择。本章不重复"volatile 告诉编译器别优化"这句入门话，而要带着下面这五笔账往下读：
+
+1. **volatile 到底"保证"了什么？它和 `std::atomic` 的分工边界在哪？** volatile 只保证"每次访问都落到真实内存"，不保证原子性；`++volatile_counter` 仍是"读-改-写"三步、多线程下照样 data race。反之 `std::atomic` 保证原子性与内存序，却不阻止编译器合并相邻访问。二者完全正交——嵌入式里 MMIO 原子访问甚至会用 `volatile std::atomic<int>`（⑪）。本章 ② 基本语义 + ④ 不能替代 atomic + ⑪ 分工，把这条边界画死。
+2. **硬件寄存器（MMIO）为什么离了 volatile 会坏？标准写法是什么？** 自从映射寄存器可能因两次读取被优化合并、或在 `if` 里被当成不变值缓存，外设读写就会失效；所以要用 `volatile` 结构体指针 + `reinterpret_cast` 把寄存器映射到固定地址，并保证每次读都打到硬件。本章 ③ MMIO 读写 + ⑫ 嵌入式 MMIO 寄存器模板给出从结构体到连接器脚本的完整套路，⑨ volatile 成员函数/⑩ const volatile 讲清只读硬件的写法。
+3. **信号处理和 `setjmp/longjmp` 为什么必须用 volatile？** 信号处理器可能随时打断主流程改写标志，普通变量可能被优化进寄存器导致主循环看不见新值，所以信号标志必须是 `volatile sig_atomic_t`——这是 volatile 少有的多控制流合法用途；`setjmp/longjmp` 则要求跨跳转保留的局部变量声明为 volatile，防止回退后读到被缓存的老值（⑥）。本章 ⑤ 信号处理 + ⑥ 讲全这两个场景。
+4. **`volatile` 指针、"编译器屏障"、"volatile 成员函数"到底是同一种机制还是三件事？** `volatile int* p`（所指物 volatile）与 `int* volatile p`（指针本身 volatile）是两个不同语义（⑧）；`asm volatile ("" ::: "memory")` 这条 volatile asm 是显式编译器屏障、阻止乱序（⑦）；`volatile` 成员函数让调用限定为 volatile 对象、方法与数据访问同步（⑨）。判定三者，你就分清了"对象落内存 / 指针不可变 / 优化屏障"三个维度。
+5. **用 volatile 的代价有多大？标准正在怎么"收紧"它、边界判据是什么？** volatile 访问强制穿透缓存层次，真实开销取决于内存位置（⑲ 性能），远非零成本。标准侧也在收窄：P1152（C++20）废弃 volatile 复合赋值、P1382 引入 `std::volatile_load/store`、P2327 又在为嵌入式妥协——反映"嵌入式要 MMIO、并发交给 atomic"的取向（⑭）。判据：硬件可见/信号跳转用 volatile，多线程共享用 `std::atomic`，绝不`const_cast` 掉 volatile 再访问（⑯ 易错点、⑱ 最佳实践）。
 
 ## ② volatile 基本语义 <span class="badge badge-std">标准</span>
 

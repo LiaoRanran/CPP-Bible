@@ -49,22 +49,19 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 
 > **一句话结论**：auto 把「写类型」交给编译器从初始化式反推，decltype 则精确到「保留引用与 cv 的声明类型」——前者为省力、后者为保真。
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第21章　const / constexpr / consteval / constinit 深度详解](../part03_language/ch21_const_family.md)
 [第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](../part03_language/ch23_namespace_adl.md)
 
-学完本章你能：
+`auto` 常被当成"懒得写类型的偷懒符号"，但**它真正的本质是"让编译器替你做模板参数推导，只是把模板形式缩写成了声明形式"**——`auto x = init;` 与 `template<class T> void f(T)` 对同一初始化器推导出同一个 `T`。理解了这一点，你就不会再问"auto 到底是什么类型"，而会问"这一步步推导下去会漏掉什么"。本章不重复"auto 是让编译器推导类型"这句入门话，而要带着下面这六笔账往下读：
 
-1. 精确复述 `auto` 变量推导与函数模板参数推导的**同构规则**，并解释数组/函数退化。
-2. 区分 `auto` / `auto&` / `const auto&` / `auto&&` 各自的引用与转发语义。
-3. 解释为何 `auto x = {1,2,3}` 推导出 `std::initializer_list`，而模板 `T` 不会。
-4. 默写 `decltype` 的两条规则，并答对 `decltype((x))` 为何是引用的经典面试题。
-5. 用 `decltype(auto)` 实现完美转发返回类型，并规避悬垂引用陷阱。
-6. 掌握尾置返回类型、C++14 函数 `auto` 返回、C++20 缩写函数模板、C++17 `auto` 非类型模板参数。
-7. 读懂 libstdc++ 中 `declval` / `invoke_result` / `std::invoke` 的真实实现。
-8. 在 GCC / Clang / MSVC 与 libstdc++ / libc++ / MS STL 之间做横向对比。
-9. 用 microbenchmark 证明 `auto` 零开销，并识别 `vector<bool>` proxy 等真实陷阱。
+1. **`auto` 与模板参数推导到底"同构"到什么程度、什么时候开始分道扬镳？** `auto x = init;` 在绝大多数情形下与 `template<class T> void f(T)` 推导结果相同（含数组/函数退化、丢顶层 cv）；唯一的分裂点是 `{ }`——`auto x = {1,2,3}` 推导出 `std::initializer_list`，而模板 `T` 却拒绝从 `{ }` 推导（保留 `f({...})` 的歧义报错语义）。这是"同构、但有一个例外"的全章主线。本章 ⑤ 流程图的判定树把这条主线画全，⑬ WG21 把 `{}` 特例的标准出处（`[dcl.type.auto.deduct]`）钉死。
+2. **`auto` 到底会"漏掉"什么：引用、顶层 cv，还是被 `{}` 悄悄换成列表？** `auto x = ref;` 拷贝出独立对象而非绑定引用；`const int c=1; auto x=c;` 推导成 `int`（丢顶层 cv）；`auto x = {..}` 直接变 `initializer_list` 引发意外堆分配。这三处"丢/换"是 `auto` 最易踩的雷。本章 ⑮ 易错点把 8 条坑逐条列全，⑥ 内存图画出非引用 `auto` 总是产生独立对象的本质。
+3. **`decltype` 的两条规则，为什么 `decltype((x))` 就地变引用？** `decltype` 对裸 id-expression 取实体的真实类型（含引用与 cv），而对 `(x)` 这类"带括号的左值表达式"按表达式对左值走 `T&`。这不只是刁钻面试题，而是库代码"取一个不求值表达式类型"的基础。本章核心知识点里的「decltype 两条规则」「decltype((x)) 为何是引用」两节把规则讲透，⑭ 面试题 2-4 给出经典问法。
+4. **`decltype(auto)` 是"先 decltype 后 auto"的合成体，凭什么能保住引用、又为何会悬垂？** `decltype(auto) x = expr;` 让 `x` 的类型精确等于 `decltype(expr)`，从而能原样保留值类别/cv/引用；但代价是——若 `expr` 是 `(x)` 这类引用表达式，`decltype(auto)` 会绑定到悬垂并带出悬垂引用（⑮ 易错点 5 与 ⑭ 面试题 4 就是这一个坑）。转发零开销，风险也在转发来的引用上。
+5. **这些机制在 libstdc++ 里到底怎么被藏起来用？** `std::declval` 用 `decltype(__declval<_Tp>(0))` 取一个"永远不求值"的右值引用类型（`type_traits:1014-1015`）；`std::invoke_result` 基于 `decltype` 加 SFINAE 实现（`type_traits:3283-3297`）。读懂这两处，你就看得见"标准库本身就是 decltype 最真实的用户"。本章 ⑫ 源码分析逐行解读。
+6. **"auto 零开销"是真便宜还是白说的？有哪些场景是编译过了却错了？** GCC `-O2` 下 `auto x = compute()` 与显式类型的汇编逐字节一致，转发用 `decltype(auto)` 同样零成本（⑨ 汇编）；microbenchmark 佐证（⑱ 性能）。但 `vector<bool>` 的 proxy 语义会让 `auto&` 遍历直接编译失败、`auto x=v[i]` 改的是副本——这是工业代码里"编译能过但行为不对"的最常见源头。判据：需要引用就显式写 `auto&`/`auto&&`，需要列表就显式写 `std::vector<T> x{..}`，别让 `auto` 替你"猜"（⑰ 最佳实践）。
 
 ---
 
