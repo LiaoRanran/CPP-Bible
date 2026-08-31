@@ -34,6 +34,11 @@ STL 算法最大的反直觉之处，是**把算法放在容器之外、做自�
 
 > 史料来源：[cppreference 执行策略](https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
+!!! note "类比：STL 算法 = 一把「认接口不认对象」的万能扳手"
+    STL 算法可以**类比**为一把只认"接口形状"（迭代器）的万能扳手：不管你拧的是水管（vector）还是异形螺丝（list），只要都长了"能被顺序拨动的头"，同一把扳手照拧不误——这就是"写一遍、对所有容器都成立"。更**好比**一个只认"插头标准"的充电器：它不在乎插的是什么电器，只要符合接口就能工作。
+
+    > 失效边界：扳手能拧的前提是"接口真的兼容"——把随机访问算法（如 `sort`）喂给只有单向迭代器的 `list`，扳手就卡住（编译失败或不满足前提）。迭代器"最低共同分母"意味着算法只能用最弱那档能力，复杂度也被迭代器范畴锁定。
+
 ## ① 概述：STL 算法设计哲学 <span class="badge badge-std">标准</span>
 
 [第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)

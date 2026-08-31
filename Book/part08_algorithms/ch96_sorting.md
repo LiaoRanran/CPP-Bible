@@ -33,6 +33,11 @@
 
 > 史料来源：[cppreference std::sort](https://en.cppreference.com/w/cpp/algorithm/sort)、[Boost.Sort](https://www.boost.org/doc/libs/release/libs/sort/)
 
+!!! note "类比：introsort = 一名「见势不妙就换招」的拳手"
+    introsort 可以**类比**为一名混合拳手：平时用快排重拳速攻（平均极快），一旦察觉递归过深像要被拖入垃圾时间（退化风险），立刻切到堆排兜底保证不输（O(n log n) 最坏），末尾小残局再用插入排序补刀省开销。更**好比**一辆平时飙高速、检测到失控风险就自动降档的安全车。
+
+    > 失效边界：这套"混合"只在"能判断递归深度、能切堆排"时成立；若你手写朴素快排、或数据被恶意构造为几乎有序，没有 introsort 兜底就会真退化成 O(n²)。`std::sort` 不保证稳定序——要保序得换 `stable_sort`，这是另一个开关。
+
 ## ① 概述：排序在 `<algorithm>` 中的位置 <span class="badge badge-std">标准</span>
 
 [第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)

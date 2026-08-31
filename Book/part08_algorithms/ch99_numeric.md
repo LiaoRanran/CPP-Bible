@@ -34,6 +34,11 @@
 
 > 史料来源：[cppreference 数值算法](https://en.cppreference.com/w/cpp/algorithm)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
+!!! note "类比：reduce = 把一串数「折」成一个值的流水线"
+    数值归约可以**类比**为一条折叠流水线：把一串数依次喂进同一个"合并口"（二元运算），最后只剩一个汇总值——就像把一摞纸逐张叠成一沓。更**好比**工厂的并线装配：`accumulate` 严格按来料顺序叠（结果可预测），`reduce` 允许把流水线切成几段并行叠、再合并（更快，但浮点求和可能因结合律改变结果）。
+
+    > 失效边界：并行的 `reduce` 之所以快，是因为它放弃了"顺序保证"——对浮点这类不满足严格结合律的运算，并行重排可能改变末位结果，确定性需求下必须退回 `accumulate`。此外 `reduce` 要求运算可交换/可结合，否则并行合并会得到错误答案。
+
 ## ① 概述：数值算法 <span class="badge badge-std">标准</span>
 
 [第100章　Ranges 算法与投影（C++20）](Book/part08_algorithms/ch100_ranges_algo.md)

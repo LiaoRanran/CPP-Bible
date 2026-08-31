@@ -33,6 +33,11 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1135r6.html
 
+!!! note "类比：无锁 = 「谁卡住都不连累大家」的协作台"
+    无锁编程可以**类比**为一张协作台：用 mutex 时像只有一把钥匙，持钥人去喝咖啡所有人干等；无锁则用 CAS 让"总有人能往前走"——即便某个线程被抢占，别的线程仍能推进（lock-free），wait-free 更保证每个人都能在有限步内办完。更**好于**把"无锁"误当"快"的民间传说：它承诺的是 progress guarantee（系统级前进），不是单线程更快。
+
+    > 失效边界：lock-free 只保证"系统里总有某线程在前进"，不保证"你这个线程不会被饿死"——wait-free 才保证每个人有界步完成。CAS 本身有 ABA 陷阱（见 ch111），且无锁代码极难写对、极难调试（失败重试的时序不可复现）。硬件事务内存（TSX）曾想"自动"解决，却因实现复杂在多代 CPU 上被削弱。
+
 ## ① 概述：无锁编程动机 <span class="badge badge-std">标准</span>
 
 [第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)

@@ -34,6 +34,11 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange
 
+!!! note "类比：ABA = 一个人「整容回原样」骗过门禁"
+    ABA 可以**类比**为门禁只认工牌号不认人：员工 A 出门，门禁记下"A 在场"；A 其实离开了、工牌被复用给新员工（仍是 A 号）再进门，门禁 CAS 比对"A==A"以为"什么都没发生"，却不知中间换人了。更**好于**无锁栈里：T1 记下栈顶 A 被抢占，T2 弹出 A、释放、再 push 同内存的新节点（值仍是 A 的地址），T1 恢复后 CAS 成功却操作在已释放/复用内存上。
+
+    > 失效边界：CAS 只比较"位模式是否还是那个值"，它天生不知道"这个值曾经离开过"。给指针加版本号（tagged pointer）让"回来的 A"在值上不再等于"原 A"，或用 Hazard Pointer/RCU 安全回收（ch112）确保释放期间无人持有——C++ 不自动防御 ABA，需算法层自行解决。
+
 ## ① 概述：什么是 ABA 问题 <span class="badge badge-std">标准</span>
 
 [第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)

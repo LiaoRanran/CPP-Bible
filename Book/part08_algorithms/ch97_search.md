@@ -35,6 +35,11 @@
 
 > 史料来源：[cppreference std::lower_bound](https://en.cppreference.com/w/cpp/algorithm/lower_bound)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
+!!! note "类比：二分查找 = 在排好序的字典里「每次砍掉一半」"
+    二分查找可以**类比**为查字典：你不必从第一页翻，直接翻到中间，看目标在左半还是右半，再把那一半当作新字典继续砍——每次排除一半，log₂N 步到手。STL 的 `lower_bound` 等就是"经过千锤百炼、不会数错页"的标准化翻法。更**好比**猜数字游戏里"大了/小了"的二分逼近。
+
+    > 失效边界：二分的前提是"序列已经有序"——对无序区间二分，砍掉的不是一半正确性，而是全部正确性。`lower_bound` 返回第一个 ≥ 目标的位置，若你期望"是否等于"却误用，会得到"找到了但其实是插入点"的诡异结果。哈希查找（平均 O(1)）走完全不同路线，无序也能快。
+
 ## ① 概述：查找算法的分类与定位 <span class="badge badge-std">标准</span>
 
 [第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)

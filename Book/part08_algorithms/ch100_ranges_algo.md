@@ -34,6 +34,11 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 
 > 史料来源：[cppreference Ranges](https://en.cppreference.com/w/cpp/ranges)、[range-v3 仓库](https://github.com/ericniebler/range-v3)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
+!!! note "类比：Ranges 算法 = 把「一对迭代器」升级成「整段水管」"
+    Ranges 算法可以**类比**为把老的"两根筷子夹区间"（begin/end 迭代器对）换成"一整段水管"：你直接把容器这截水管接进算法，还可在入口装一个"投影滤芯"（按某字段比较），甚至串成 `views` 管道逐段加工。更**好比**乐高水管：每段（filter/transform）卡在一起，数据从源头流到末端一次性成型。
+
+    > 失效边界：惰性 `views` 是"用到才算"，debug 时你看不到中间态、管道里流动的是什么只有到了终点才实例化——这比老算法更难单步观察。且 Ranges 类型名极长、报错嵌套更深；投影若引用了悬垂临时量（如 `&T::x` 配临时对象）会指向已死内存。
+
 ## ① 概述：C++20 Ranges <span class="badge badge-std">标准</span>
 
 [第101章　哈希、图、树、DP、贪心（算法思想）](Book/part08_algorithms/ch101_algo_theory.md)

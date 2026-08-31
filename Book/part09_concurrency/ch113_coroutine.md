@@ -36,6 +36,11 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/coroutines · https://en.cppreference.com/w/cpp/iterator/generator · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2168r4.html
 
+!!! note "类比：协程 = 能「暂停存档、稍后接着玩」的函数"
+    协程可以**类比**为一个能中途存档的函数：普通函数一旦返回就"失忆"，协程在 `co_await` 处把当前进度存进堆上的"存档点"（协程帧），让出控制权，等异步结果好了再从存档点续上——表面像同步写、底层是异步跑，把层层嵌套的"回调金字塔"拍平。更**好于**去餐厅点单：你（调用者）下单后去干别的，菜好了（await 完成）服务员再把你叫回来继续，而不是站在柜台干等。
+
+    > 失效边界：C++20 选了"无栈"——挂起时只存局部状态、句柄只有指针大小，代价是"挂起点必须显式写在 co_await 处"，不能像栈式协程那样在函数任意深处随意挂起。且标准**只给语言机制、不给 `std::generator`/`std::task`**（C++23 才补 `generator`），返回类型要自己手写，否则连最简单的惰性序列都得从零造轮子。
+
 ## ① 概述：C++20 coroutine 是什么（无栈协程） <span class="badge badge-std">标准</span>
 
 [第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)

@@ -35,6 +35,11 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/memory_order · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0019r8.html
 
+!!! note "类比：内存序 = 给跨线程的「谁先被看见」定规矩"
+    `std::memory_order` 可以**类比**为邮局寄信的"投递时效等级"：默认 seq_cst 是"挂号全序信"（所有人看到的顺序都一致、最稳但最慢），relaxed 是"平邮"（只保证信本身送到，不保证和你其他信的顺序），acquire/release 则是"发货单—签收单"配对（发布者之前的写对获取者可见）。更**好于**多核世界里"先写的先被看见"这个单核直觉的破产：必须显式约定。
+
+    > 失效边界：选 relaxed 省了栅栏，但"你的写"和"别人的读"之间不再有可见性保证——一个线程 relaxed 写、另一个 relaxed 读，可能读到陈旧值或乱序可见。把 data race 定为 UB 意味着：一旦没用对内存序又发生竞争，优化器可"合法地"破坏你的意图，调试几乎不可复现。
+
 ## ① 概述：内存序解决什么问题 <span class="badge badge-std">标准</span>
 
 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)

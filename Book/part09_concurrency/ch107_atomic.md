@@ -38,6 +38,11 @@ C++ 面临两条路：一是暴露编译器/硬件内建（如 GCC 的 `__atomic
 
 > 史料来源：https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1135r6.html · https://en.cppreference.com/w/cpp/atomic/atomic
 
+!!! note "类比：std::atomic = 给变量装了「不可分割」的保护罩"
+    `std::atomic<T>` 可以**类比**为给一个变量套上"一次读写不可被拆断"的保护罩：别的线程要么看到改之前的整值，要么看到改之后的整值，绝不会看到半截。更**好比**一个"只进不退"的保险箱——编译器禁止对普通 `int` 做无保护并发访问，逼你走这道安全门。
+
+    > 失效边界：保护罩不一定"无锁"——对某些大类型，`std::atomic<T>` 会悄悄退化为内部加锁的"伪原子"，`is_lock_free()` 可能返回 false。原子性只保证"单次读写不被撕裂"，不保证"多步操作的整体性"；`a++; b++` 两步之间仍可被别的线程插空，要整体原子得用 CAS 或把数据打包。
+
 ## ① 概述：为什么需要原子操作与 data race <span class="badge badge-std">标准</span>
 
 [第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)

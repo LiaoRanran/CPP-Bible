@@ -33,6 +33,11 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/
 
+!!! note "类比：安全回收 = 拆房子前先确认「没人还在屋里」"
+    并发内存回收可以**类比**为拆楼：无锁结构最怕"读者还捏着节点指针，写者却把内存 delete 了"的悬垂引用。Hazard Pointer 像每位工人上岗前举牌"我正占着这间屋"——写者回收前先扫一遍所有牌子，确认没人占才拆；RCU 则像"先盖好新房、让所有人慢慢搬完，过了宽限期再拆旧房"。更**好比**引用计数（每节点原子计数）是最直白但热路径要每次增减的方案。
+
+    > 失效边界：引用计数实现直观却每次访问都原子增减，拖慢热路径；Hazard Pointer 让读者几乎零开销，但回收时要扫描少量风险指针、且需正确的宽限期判断；RCU 把开销推给写者（宽限期等待），读者完全无锁但写放大。C++26 才把 Hazard Pointer 标准化，此前是库技巧——选错策略会在并发下制造 use-after-free。
+
 ## ① 概述：并发内存回收的难题 <span class="badge badge-std">标准</span>
 
 [第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)

@@ -33,6 +33,11 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence
 
+!!! note "类比：fence = 给一批操作装的总闸"
+    `std::atomic_thread_fence` 可以**类比**为一条横跨多股车道的总闸：它不像"每个原子操作自带内存序"那样逐个贴标签，而是一次性拦住一批写操作，强制它们在此之前整体对其他线程可见。更**好比**仓库的"统一发货时刻"：所有备货（写）必须在打铃前完成并上架，而不是零零散散地被看到。
+
+    > 失效边界：总闸"更保守却更易懂"，代价是可能拦过多、拖慢不该同步的操作；而逐操作标注更精准却极易写错。fence 与 atomic 操作之间能否"组合出" acquire/release 语义有精细规则，用错就既没拿到性能也没拿到正确性。同一道 fence 在 x86(TSO，几乎免费) 与 ARM(需 `dmb`) 代价天差地别。
+
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
 1. 理解 memory_order 六种选项的语义
