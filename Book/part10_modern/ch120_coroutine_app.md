@@ -37,15 +37,19 @@
 
     > 失效边界：协程不是语法糖魔法，需要 `promise`/`awaiter` 支撑类型；`co_await` 的对象必须实现 awaiter 协议，否则编译失败；每次挂起都有协程帧分配的运行时开销。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-读完本章你应当能够：
-1. 从零实现一个 `generator<T>` 协程返回类型，理解 `promise_type` / `yield_value` / `return_void` 的交互。
-2. 区分 `co_await`（挂起等结果）、`co_yield`（产出值并挂起）、`co_return`（结束协程）。
-3. 用协程消除回调地狱，将异步 I/O 写成同步风格。
-4. 解释无栈协程的内存布局——**栈帧在堆上**，协程句柄是指针大小的（≈`sizeof(void*)`）。
-5. 使用 `suspend_always`/`suspend_never` 控制协程的"启动即挂起"还是"启动即运行"。
-6. 理解 `co_await` 的 `await_ready()`/`await_suspend()`/`await_resume()` 三段式协议。
+[第113章　协程 coroutine：promise / awaiter（C++20）](../part09_concurrency/ch113_coroutine.md)
+[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)
+
+协程应用常被当成"用 `co_await` 写同步风格代码"的新语法，但**它真正的本质是"语言只给了机制、没给策略"**——C++20 把 `co_await`/`co_yield` 与 `promise_type` 定下来，却**没给**开箱即用的 `std::generator`/`std::task`，应用层的返回值类型几乎全靠每个项目手写（或自研 task 库）。本章不重复"`co_await` 是什么"的入门句，而要带着这六笔账往下读：
+
+1. **`promise_type` 一个返回类型怎么就能让函数变成协程？生 generator 三件套怎么配合？** 关键是把"产出值、挂起、结束"三件事对应到 `promise_type` 的 `yield_value`/`initial_suspend`/`return_void`；`get_return_object` 用 `coroutine_handle::from_promise` 拿到句柄对外暴露。本章 ③ 从零实现 `generator<T>`（GCC15 可编译）把最小实现与迭代器包装全部走通。
+2. **`co_await` 的三段式协议到底是什么？挂起/恢复由谁控制？** `await_ready()` 决定"挂了没"，`await_suspend(handle)` 决定"挂起后干什么"（甚至可以马上 `resume()`），`await_resume()` 带回结果。改 `await_ready()` 的返回就能让协程"启动即运行"或"启动即挂起"。本章 ⑤ 三段式协议用自定义 awaitable 逐段打印流程，⑧ suspend_always vs suspend_never 对比两种启动策略。
+3. **无栈协程的内存到底长什么样？句柄为什么只有指针大小？** 栈帧整体在**堆上**分配，协程句柄只是一个 `coroutine_handle`（≈`sizeof(void*)`），独占不可拷贝、只能移动。局部变量被编译器"提升"进堆分配的帧结构。本章 ④ 内存布局用 GCC15 实测句柄大小，⑬ GCC coroutine transform 展示编译器如何把 `co_await` 变成状态机、把帧变量提升到堆上。
+4. **怎么用协程把异步回调拍平成同步风格？异常怎么穿过协程帧？** `co_await` 一个"本身就挂起、恢复后再取值"的 awaiter，就能把异步读写的回调链消掉；协程抛出的异常由 `promise_type::unhandled_exception` 抓到并存进 `std::exception_ptr`，由外层 `resume` 统一 `rethrow_exception`。本章 ⑥ 异步 I/O 仿真与 ⑫ 异步 HTTP 请求管道演示消除回调地狱，⑦ 错误处理走通异常传播。
+5. **协程不是线程，那它和线程怎么协作？代价边界在哪？** 协程帧本身**非线程安全**——同一帧在多个线程上并发 `resume` 是错的；但协程可在不同线程间迁移恢复（"恢复线程"由 awaiter/执行器决定，标准不规定）。量化成本：帧 48–56B、create+1step+destroy 约 56ns、resume+yield 约 4.4ns/步，明显轻于线程上下文切换（本章概数约 14μs）。本章 ⑨ 协程与多线程、⑲ 协程帧开销量化给出实测。
+6. **手写 generator 还是等标准库？易错判据是什么？** C++23 才补上 `std::generator`，GCC13 的 libstdc++ **尚未实现**它（P2502）；`co_await` 不能在构造函数里用。协程引用捕获易悬垂、忘调 `handle.destroy()` 会按次泄漏、`resume()` 前必须查 `done()`、异常处 `noexcept` 上下文会 `std::terminate`。本章 ⑯ 易错点列五个最常见 UB/陷阱、⑱ 最佳实践总结六条黄金法则、⑰ FAQ 给出判据与成本对比。
 
 ---
 

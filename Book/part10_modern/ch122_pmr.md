@@ -41,13 +41,19 @@ PMR 入标后，价值在工程界被反复验证，也暴露了"默认资源该
 
     > 失效边界：pmr 把「用哪个分配器」变成运行期可换的对象，不同于模板分配器（编译期定死）；若忘记给容器传 `&resource`，就会悄悄退回默认全局 `new`，池化收益归零。
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-- 掌握 `std::pmr::memory_resource` 抽象基类的三段式虚接口（`do_allocate` / `do_deallocate` / `do_is_equal`）与 `[标准]` C++17 规定。
-- 理解 `std::pmr::polymorphic_allocator<T>` 如何把"运行期可换的分配策略"塞进一个**值类型分配器**里，从而让 `std::vector`/`std::string` 等容器在保持 `Allocator` 模型的同时切换底层资源。
-- 区分四种标准资源：`monotonic_buffer_resource`、`unsynchronized_pool_resource`、`synchronized_pool_resource`、`new_delete_resource` / `null_memory_resource` 的语义与适用场景。
-- 读懂 libstdc++ `bits/memory_resource.h` 的关键实现行（传播策略、`allocate` 溢出检查、单调缓冲的指针推进）。
-- 能用 PMR 写出**零分配热路径**（request-local arena）、能给出内存池性能证据、能与 jemalloc/tcmalloc 设计思想对照。
+[第38章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)
+[第37章　动态内存分配原语：operator new / operator delete](../part04_memory/ch37_new_delete.md)
+[第47章　虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
+
+PMR 常被当成"另一种分配器"来用，但**它真正的本质是"把分配策略从编译期焊死的类型参数，解放成运行期可换的对象"**——传统 allocator 是模板参数、是类型的一部分，不同分配器的 vector 互不兼容也无法在运行期切换；`std::pmr`（C++17）用一层 `memory_resource` 抽象基类把策略下沉到运行期，容器类型因此统一（都是 `pmr::vector<T>`）。本章不重复"分配器模板参数怎么传"的入门句，而要带着这五笔账往下读：
+
+1. **`memory_resource` 凭什么能把"分配策略"做成运行期对象？** 关键在于抽象基类的**三段式虚接口** `do_allocate`/`do_deallocate`/`do_is_equal` 与公开的薄转发 `allocate`/`deallocate`/`is_equal`；`allocate` 的第一个参数是**字节数**（默认对齐 `alignof(max_align_t)`），比 Allocator 接口的"元素个数"更底层的一层。本章 ⑬ 源码分析按 `bits/memory_resource.h` 行号逐行解剖这套三层转发。
+2. **`polymorphic_allocator<T>` 怎么把运行期策略塞进一个值类型分配器，还让容器保持 Allocator 模型？** 它只是一个持有 `memory_resource*` 的状态对象，靠 `allocate`/`deallocate` 委托给资源完成分配；**赋值/移动/交换容器时资源不传播**（`propagate_on_container_copy_assignment = false_type`），保证"同一资源语义稳定、避免意外共享"。本章 ⑬ 的 `allocate` 溢出检查（`n*sizeof(T)` 回绕防护）与 ⑲ 分配器传播策略把这一点讲透。
+3. **四种标准资源各管什么？判据怎么定？** `monotonic_buffer_resource`（线性 arena、一次性、`release()` 整体归还）、`unsynchronized_pool_resource`（单线程池）、`synchronized_pool_resource`（线程本地/全局池）、`new_delete_resource`/`null_memory_resource`（进程级单例）。monotonic 的分配只是 `std::align` + 指针推进、释放是**空操作**，增长系数 1.5。本章 ⑦ ASCII 内存图 + ③ 用缓冲链与单例验证讲清四种资源的语义与适用边界。
+4. **怎么从汇编确认"零分配热路径"真的零系统调用？** `-O2` 下 `monotonic_buffer_resource` 的 `do_allocate` 被内联成"取默认资源"（仅构造时一次 `get_default_resource`）+ 纯指针算术，缓冲不够才走 `operator new`；相比 `new int[10]` 每次都落 `_Znay`，arena 把 N 次系统分配折叠为 1 次上游分配 + N 次指针加法。本章 ⑩ 汇编分析用 GCC 15.3.0 真实反汇编对照两种路径。
+5. **用 PMR 要付什么代价？易错判据与性能边界在哪？** 常见陷阱：误以为 arena 会逐个析构元素（其实元素析构由容器负责，`release()` 只还缓冲）、把 `unsynchronized_pool_resource` 用于多线程引发 data race、以及**忘传 `&resource` 时静默退回默认 `new`**。量级上池资源通常比默认 `new` 快 2–5×；但它与 jemalloc/tcmalloc 是**互补**而非替代——可在 PMR 的 upstream 链上挂 jemalloc 兼得两者。本章 ⑯ 易错点、⑰ FAQ、⑱ 最佳实践、⑫ 工业案例（请求级 arena）给出完整判据与边界。
 
 ---
 

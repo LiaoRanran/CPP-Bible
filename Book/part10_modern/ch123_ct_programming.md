@@ -38,39 +38,20 @@
 
     > 失效边界：`constexpr` 是「可以在编译期算」而非「一定在编译期算」；能否真正编译期求值取决于输入是否为常量表达式，否则会静默退到运行期执行，并非编译失败。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
+[第69章　constexpr：真正的编译期常量](../part06_templates/ch69_constexpr.md)
 [第122章　PMR 与多态分配器](../part10_modern/ch122_pmr.md)
 
-"编译期编程"（Compile-Time Programming，CTP）是指**把计算、类型推导与分支决策尽量前移到翻译阶段**的范式。它的发展是一条从"模板元编程（TMP）→ constexpr 函数 → Concepts 约束 → consteval 立即函数"的渐进演化线，目标始终如一：用零（或近乎零）运行期开销换取类型安全、可优化与可证明的正确性。
+编译期编程（CTP）常被当成"一种把代码算得更快的高级技巧"，但**它真正的本质是一条从"类型递归黑魔法"到"可读的函数式代码"的演化线**——从模板元编程（TMP，1995 年被发现模板实例化本身是图灵完备的编译期计算）到 `constexpr`、再到 Concepts 与 `consteval`，目标始终一致：把计算、类型推导与分支决策尽量前移到翻译阶段，用零（或近乎零）运行期开销换类型安全与可优化。本章不重复"什么叫常量表达式"的入门句，而要带着这六笔账往下读：
 
-本章学完后你应当能够：
-
-- 用一句话区分 **TMP / constexpr / consteval / Concepts** 四者的能力边界与适用场景。
-- 读懂 `std::integral_constant`、type traits、`enable_if`、Concepts 在 libstdc++ 中的真实实现骨架。
-- 在真实工程中用 `if constexpr` / 标签分发 / concepts 替代脆弱的 SFINAE。
-- 用 `consteval` + 编译期字符串哈希实现"字符串→整数"的 switch 分派（HTTP 路由、协议解析等）。
-- 理解编译期计算的**收益与代价**：运行期更快，但翻译时间更长、二进制可能变大。
-- 把 C++ 的 CTP 与 **Rust 的 const generics**、**Zig 的 comptime** 做对比，理解各自取舍。
-
-> `[立场]` 本节是导学，立场标签仅用于标注后续每个论断的来源层级。
-
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
-```cpp
-// C1 编译期求和：constexpr 让求和发生在翻译期，static_assert 在编译期验证
-#include <iostream>
-constexpr int sum_to(int n) {
-    int s = 0;
-    for (int i = 1; i <= n; ++i) s += i;   // C++14 起 constexpr 允许循环
-    return s;
-}
-static_assert(sum_to(100) == 5050);         // 编译期断言：若错，编译失败
-int main() {
-    constexpr int v = sum_to(10);           // 翻译期折叠为常量 55
-    std::cout << v << "\n";                  // 运行期只打印常量
-    return 0;
-}
-```
+1. **TMP / constexpr / Concepts / consteval 四者的能力边界到底怎么划？** 纯类型计算（typelist、类型映射）仍靠 TMP；值计算优先 `constexpr`（C++14 起可放循环）；约束用 Concepts 而非 SFINAE；强制编译期求值、拒绝运行期退化用 `consteval`。判据一句话：类型干活靠 TMP、值干活靠 constexpr、声明约束靠 Concepts、强制编译期靠 consteval。本章 ⓪ 历史动机 + ① 用一句话概括四条路线的能力与适用。
+2. **`consteval` 怎么做到"编译期算完，运行期啥也不剩"？有汇编证据吗？** `consteval`（立即函数）的调用在常量语境必须产出常量表达式，`-O2` 下 `factorial(5)` 直接折叠为立即数 `120`，`_Z4fact` 根本**不发射任何符号**、main 里只剩 `operator<<(int)`——编译期计算"消灭"了运行期代码。本章 ⑩ 汇编分析（GCC 15.3.0 真机）给出这条关键证据。
+3. **`type_traits` 作为"CTP 的标准库"，真实实现骨架长什么样？** `integral_constant` 是所有布尔 traits 的基类，`true_type`/`false_type` 是它两个特化别名；`enable_if` 是 SFINAE 开关，`_Cond` 为假时整个模板被静默移出重载集；`is_integral` 走"主模板=假、各整型偏特化=真"的经典 TMP 分支；`conditional` 把三元搬进类型系统。本章 ⑬ 源码分析按 GCC 15.3.0 的 `type_traits`/`concepts` 行号逐条给出，并演示 Concepts `integral` 直接复用 `is_integral_v`——"Concepts 不是另起炉灶，而是给 traits 加语法糖 + 约束语义"。
+4. **怎么用编译期技术做真实的协议分派？收益在哪？** 用 `consteval` + FNV-1a 对方法名字符串做编译期哈希，得到编译期 `unsigned long long` 常量，再用 `switch(hash(method))` 在热路径分派——字面量被折叠成整数比较、零扫描、可做 jump table。本章 ⑫ 工业案例（内网 RPC/HTTP 网关的 GET/POST/…分派）给出完整可编译方案。
+5. **"编译期快"是免费的午餐吗？代价与边界在哪？** 不是。`constexpr` 是"可以"而非"必须"在编译期求值，被运行期实参调用就退化；**同一 constexpr 被 N 个不同常量实参调用会生成 N 份代码（代码膨胀）**，重度 TMP 曾让单 TU 编译耗时数分钟。`if constexpr` 的两个分支必须都能实例化（即使不执行），`consteval` 只能吃编译期常量、碰运行期值即编译失败。本章 ⑯ 易错点 + ⑲ 性能分析（运行期快、翻译期慢的代价）给出完整判据。
+6. **C++ 的 CTP 演进方向是什么？怎么评价其取舍？** C++20 的 `consteval`/`std::is_constant_evaluated()`（P0595/P0633）把"这段必须编译期跑"变成语言保证，标准库持续 constexpr 化（`array`、`<algorithm>`、C++23 的 `vector`/`string` 部分可 constexpr）；横向对比 Rust const generics、Zig comptime 是"编译期计算一等公民"，C++ 是负重前行、渐进改良而非另起炉灶。静态反射（P2996）与元类是 C++26 及以后的头号期待。本章 ㉒ 历史纵深 + ⑳ 跨语言对比 + ⑭ WG21 提案给出演化全景与评价。
 
 ## ② 前置知识 <span class="badge badge-std">标准</span>
 
