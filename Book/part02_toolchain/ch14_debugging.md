@@ -35,6 +35,12 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 
 > 史料来源：GDB 官网 https://www.sourceware.org/gdb/ ；Google Sanitizers Wiki https://github.com/google/sanitizers
 
+!!! note "类比：消毒器 = 菜里埋温度计"
+    调试器与消毒器可以**类比**为「程序眼睛的进化」——GDB / LLDB 是「事后查」（暂停、单步、看变量），Sanitizer 是「事前埋点」（把检查编译进程序、精准到行），Valgrind 是「不改程序、运行时插桩」。Sanitizer 更**好比**在每道菜里埋个温度计——出锅即报哪行烫嘴，比等客人吃完送医（崩溃后 core dump）早得多。
+    换个角度：ASan 的诞生由 Google 大规模代码库内存 bug 之害驱动，也**类似于**用工具把人的失误挡在发布前——性价比最高的一层防线。
+
+    > 失效边界：Sanitizer 非万能——需重编且带来少量性能 / 内存开销，本机 MinGW 13.1.0 甚至未随附 libasan 导致链接失败；Valgrind 通用但慢十倍以上；它们抓「已知模式」的缺陷，拦不住「需求本身就错了」，且都依赖正确编译选项与可用运行时。
+
 > **一句话结论**：调试器（GDB/LLDB）是「事后查」，Sanitizer 是「事前埋点」把检查编译进程序、精准到行，Valgrind 则不改程序做运行时插桩——共识是「用工具把人的失误挡在发布前」。
 
 ## ① 概述：调试的目标与分层 <span class="badge badge-std">标准</span>

@@ -36,6 +36,12 @@ IDE 之争是"重集成 vs 轻可订"。重量级 IDE（CLion/VS）内建索引�
 
 > 史料来源：语言服务器协议 LSP https://microsoft.github.io/language-server-protocol/ ；Clangd https://clangd.llvm.org/
 
+!!! note "类比：IDE 之争 = 重集成 vs 轻可订"
+    IDE 之争可以**类比**为「重集成 vs 轻可订」——CLion / VS 内建索引与重构、开箱即用但资源重；VIM / VSCode 借 LSP 把「智能」外置、灵活却需自配。LSP 更**好比**把「语言大脑」做成可插拔的 USB 设备——编辑器是壳，Clangd 才是懂 C++ 的那颗芯。
+    换个角度：C++ 因模板与宏极难解析，语言服务器质量长期是体验分水岭——Clangd 复用 Clang 前端给出近乎编译级的补全，是「复用编译器做 IDE」哲学的胜出，也**类似于**让编辑器的补全从「查字典」升级成「问作者」。
+
+    > 失效边界：AI 补全（Copilot 类）从符号补全升级为整段生成，但「生成得漂不漂亮」仍受模板 / 宏解析难度制约；远程开发 + LSP 让轻编辑器逼近重 IDE，却也把工具链一致性责任推给 Dev Container——C++ 的 IDE 天堑根源仍是模板宏解析，并非换个前端就能根除。
+
 > **一句话结论**：IDE 之争是「重集成 vs 轻可订」：CLion/VS 开箱即用但重，VIM/VSCode 借 LSP 把智能外置；C++ 因模板宏难解析，Clangd 复用编译器前端的补全质量成了体验分水岭。
 
 ## ① 概述：IDE 在 C++ 工作流中的角色 <span class="badge badge-std">标准</span>
