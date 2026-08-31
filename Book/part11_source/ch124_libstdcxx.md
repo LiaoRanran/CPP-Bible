@@ -34,6 +34,11 @@ libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）
 > 史料来源：
 
 > **一句话结论**：读 libstdc++ 源码的入口：从 <vector> 追到 bits/stl_vector.h 与分配器，理解标准库如何把「规范」落成「可读的实现」，是吃透 STL 的必经路。
+
+!!! note "类比：libstdc++ = 同一菜谱的另一家厨房"
+    `libstdc++` 可以**类比**为「C++ 标准」这道菜谱在 GCC 家开的厨房：标准只定接口与可观察行为，具体做法各家自定。它更**好比**同一本教科书的不同出版社版本——你拿到的「书」内容一致，但纸张装订（内存布局）不同。
+
+    > 失效边界：标准不规定内部数据结构，所以不同实现的内存布局不同；跨实现的 ABI 互不兼容，混链两个标准库实现会静默崩溃。
 > - https://gcc.gnu.org/projects/cxx-status.html
 > - https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html
 

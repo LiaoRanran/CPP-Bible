@@ -34,6 +34,11 @@ MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例�
 > 史料来源：
 
 > **一句话结论**：MS STL 背靠 Visual C++ 与 Windows 生态，在 ABI 稳定与诊断体验上取舍明确；读它有助于理解 Windows 平台 C++ 的务实工程选择。
+
+!!! note "类比：MS STL = Windows 原装厨房"
+    MS STL 可以**类比**为微软家（MSVC）的原装厨房，深度绑定 Windows 生态。它更**好比**「某品牌整机自带的专属配件」——离开该平台就配不上。
+
+    > 失效边界：各家实现的扩展宏（`_MSC_VER`/`__GLIBCXX__`）不可移植；`std::` 之外的 `_STD` 与内部符号无稳定性承诺，依赖它们会锁死平台。
 > - https://github.com/microsoft/STL
 > - https://learn.microsoft.com/cpp/standard-library/
 

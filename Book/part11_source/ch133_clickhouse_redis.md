@@ -33,6 +33,11 @@
 > 史料来源：
 
 > **一句话结论**：ClickHouse/Redis 的实现精读：列式向量化执行与单线程事件循环，分别展示了「分析型」与「缓存型」系统极致的工程取向。
+
+!!! note "类比：Redis/ClickHouse = 内存记事本 vs 列式货架"
+    `Redis` 可以**类比**为「内存里的超速记事本」：一切都在 RAM，KV 极快但容量受内存上限。`ClickHouse` 更**好比**「列式仓库的巨型货架」——按列存储，聚合扫描极快。
+
+    > 失效边界：Redis 持久化是异步的，宕机可能丢最近写入；ClickHouse 擅聚合分析却不擅单行点更新，别当 OLTP 数据库用。
 > - https://redis.io/blog/
 > - https://clickhouse.com/blog
 

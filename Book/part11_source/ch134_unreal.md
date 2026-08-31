@@ -46,6 +46,11 @@ Epic 的取舍很清楚：**保留 C++ 的性能和零抽象控制力**（对比
 > 史料来源：
 
 > **一句话结论**：Unreal Engine 的 C++ 架构用 UObject/反射/GC 在原生 C++ 上自建一套运行时，理解它才能驾驭游戏引擎而非被其对象模型拖累。
+
+!!! note "类比：Unreal = 带反射的 C++ 方言"
+    `Unreal` 可以**类比**为「在 C++ 之上搭的实时舞台」：UPROPERTY/UCLASS 等宏让编辑器能 introspect 你的类型。它更**好比**「带垃圾回收与反射的 C++ 方言」。
+
+    > 失效边界：引擎宏与反射靠构建期生成代码；直接用 new/delete 管理引擎对象会破坏其生命周期与 GC 模型，导致悬空或泄漏。
 > - https://www.unrealengine.com/en-US/blog
 > - https://www.epicgames.com/site/en-US/news
 

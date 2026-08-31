@@ -34,6 +34,11 @@ Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头
 > 史料来源：
 
 > **一句话结论**：Boost 是标准库的「试验田」：大量进入标准的特性（smart_ptr、variant、asio）都源自 Boost——读 Boost 等于读 C++ 演化的预演。
+
+!!! note "类比：Boost = 标准库的设计草稿本"
+    `Boost` 可以**类比**为一所大学实验室：很多 Boost 库「毕业」成了标准库组件（`smart_ptr`→`unique_ptr` 等）。它更**好比**「标准正式收录前的预印本」。
+
+    > 失效边界：Boost 不等于 std；同名组件接口可能已分化（如 Boost.Filesystem 与 std::filesystem 的细节差异），直接搬代码会编译失败。
 > - https://www.boost.org/
 > - https://www.boost.org/doc/libs/
 

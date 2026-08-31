@@ -34,6 +34,11 @@ fmt 对 `iostream`/`printf` 之争的答案是"类型安全 + 性能好 + 语法
 > 史料来源：
 
 > **一句话结论**：fmt/spdlog 用编译期格式串检查与零拷贝格式化重写了「打印」，是「小而美、性能与类型安全兼得」的库设计范例。
+
+!!! note "类比：{fmt}/spdlog = 类型安全的格式化接班人"
+    `{fmt}` 可以**类比**为「带类型检查的 printf 接班人」：不用 %s/%d 也能正确格式化任意类型。而 `spdlog` 更**好比**「带分级的日志广播站」——按级别把消息发往不同目的地。
+
+    > 失效边界：运行期 format 字符串若写错类型，仍可能在运行期而非编译期报错；spdlog 异步模式若没正确 flush/shutdown，会静默丢日志。
 > - https://github.com/fmtlib/fmt
 > - https://en.cppreference.com/w/cpp/utility/format/format
 

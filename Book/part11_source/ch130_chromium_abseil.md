@@ -47,6 +47,11 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 > 史料来源：
 
 > **一句话结论**：Chromium/Abseil 展示了超大规模 C++ 的基座：Abseil 把 Google 的内部实践标准化，阅读它能学到工业级基础设施如何取舍。
+
+!!! note "类比：Abseil = 谷歌厨房的公开版"
+    `Abseil` 可以**类比**为谷歌把自家生产经验（string_view、flat_hash_map）对外开源的基础库。它更**好比**「标准库的平行补充包」——填补标准尚未覆盖的实用件。
+
+    > 失效边界：absl 类型与 std 同名类型（如 absl::string_view 与 std::string_view）虽可转化却非同一类型；跨 API 边界传参需显式转换，否则类型不匹配。
 > - https://abseil.io/
 > - https://chromium.googlesource.com/chromium/src/+/main/base/
 

@@ -40,6 +40,11 @@ LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compac
 > 史料来源：
 
 > **一句话结论**：LevelDB/RocksDB 用 LSM-Tree 与分层 compaction 把随机写变成顺序写，是理解现代 KV 存储内核的绝佳源码。
+
+!!! note "类比：LevelDB/RocksDB = 分层归档文件柜"
+    `LevelDB` 可以**类比**为一个分层归档的文件柜：写先落内存(memtable)再刷成有序层，读要合并多层视图。`RocksDB` 更**好比**「为 SSD 与高并发调过音的升级柜」。
+
+    > 失效边界：LSM 树有显著读放大/写放大，点查可能要翻多层；compaction 是后台负担，突发写入会把延迟抖到用户侧。
 > - https://github.com/facebook/rocksdb
 > - https://github.com/google/leveldb
 
