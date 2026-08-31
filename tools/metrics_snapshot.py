@@ -38,6 +38,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from utf8_console import ensure_utf8
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 BOOK = ROOT / "Book"
@@ -451,6 +453,9 @@ def render_check(m: dict, strict: bool) -> int:
 
 
 def main() -> int:
+    # 本脚本会打印中文表头与 █/░ 进度条，GBK 控制台下会抛 UnicodeEncodeError
+    # 而中断（--check 看板必然走到）。先重配 stdio 再干活。
+    ensure_utf8()
     ap = argparse.ArgumentParser(description="项目度量单一真相源")
     ap.add_argument("--out", default=str(DEFAULT_OUT),
                     help=f"输出路径（默认 {DEFAULT_OUT}）")
