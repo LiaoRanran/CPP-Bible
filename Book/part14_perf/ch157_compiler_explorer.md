@@ -30,6 +30,12 @@ Compiler Explorer 背后是一种"去神秘化"的立场：编译器输出不是
 
 > 史料来源：godbolt.org、github.com/compiler-explorer/compiler-explorer
 
+!!! note "类比：Compiler Explorer = 汇编显微镜"
+    Compiler Explorer 可以**类比**为程序的「汇编显微镜」——贴段代码立刻看见编译器把它变成了什么指令，把「我以为会优化掉」的争论变成「贴个 godbolt 看看」的实证。
+    换个角度：它也**类似于**把黑盒的编译器输出做成「默认权利」——新人和资深者第一次站在同一信息面上，源码与汇编并排对照。
+
+    > 失效边界：godbolt 看的是特定编译器 / 版本 / 标志下的输出，不等于你生产环境的工具链；同一源码在 -O0 与 -O2 下天差地别，用它验证优化时必须固定编译选项，否则「看见的汇编」和「跑的代码」不是一回事。
+
 > **一句话结论**：Compiler Explorer 把「源码 ↔ 汇编」并排对照，是把性能与正确性争论变成实证的利器——调模板和向量化时尤其离不开它。
 
 ## ① Compiler Explorer 核心工作流 <span class="badge badge-exp">经验</span>

@@ -36,6 +36,12 @@
 
 > 史料来源：software.intel.com/content/www/us/en/develop/tools/oneapi/components/advisor.html、github.com/llvm/llvm-project（llvm-mca）
 
+!!! note "类比：性能模型 = 优化前的地图"
+    性能模型可以**类比**为「优化前的地图」——动手前先有「瓶颈在哪」的量化假设，否则像没地图就猛踩油门。Amdahl / Roofline 更**好比**天花板高度标线，告诉你再怎么优化也超不过那条线。
+    换个角度：测量驱动优化也**类似于**体检——先抽血化验（profile）再开药，而不是凭「我觉得哪虚」乱补。
+
+    > 失效边界：模型与测量都有前提——Amdahl 假设串行比例固定，但真实负载里串行部分常被 IO 放大（圈内笑谈 50× 算成 8×）；Roofline 的绝对数字强依赖具体 CPU，跨架构不可直接比；模型没撒谎，是输入画像不全。
+
 > **一句话结论**：性能模型与测量学：在动手优化前先建立「瓶颈在哪」的量化假设，因为直觉在分层存储与乱序执行面前几乎总是错。
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>

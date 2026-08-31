@@ -35,6 +35,12 @@ SIMD（单指令多数据）的动机来自"对一大堆数据做同一件事"�
 
 > 史料来源：developer.arm.com/Architectures/Scalable%20Vector%20Extension、open-std.org/jtc1/sc22/wg21/docs/papers
 
+!!! note "类比：SIMD = 一趟拉多人的公交车"
+    SIMD 可以**类比**为一辆能同时载 8 人的公交车——一次发车顶标量 8 趟；AVX 把「一趟拉几个」从 2 扩到 16（512 位），一条加法同时落在 16 个 float 上。
+    换个角度：编译器自动向量化也**类似于**自动挡——默认帮你并行，热点确认后再用 intrinsic 手动降档精修（像手动挡榨性能）。
+
+    > 失效边界：向量化不是白嫖——数据必须对齐、循环须可向量化（有依赖 / 分支就退化为标量）；AVX-512 喂不满时会降频，反而可能不如 AVX2；写死 -march 宽度在异构云环境会被调度到不支持的核而退化。
+
 > **一句话结论**：SIMD/AVX 向量化让一条指令并行处理多个数据，是数值与媒体计算的暴力加速器；用 intrinsics 或自动向量化把热点循环的吞吐翻倍。
 
 ## ① 概述：SIMD 是什么 <span class="badge badge-std">标准</span>

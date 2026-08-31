@@ -33,6 +33,12 @@
 
 > 史料来源：llvm.org/docs/MLGO.html、gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
+!!! note "类比：编译器优化 = 更懂微架构的重写编辑"
+    编译器优化可以**类比**为一位比你更懂微架构的「重写编辑」——你写散文（源码），它重写成更紧凑的指令流；-O0 是初稿直发，-O3 是大改，-Ofast 是允许「适度夸张」（放松 IEEE）的润色。
+    换个角度：PGO / LTO 也**类似于**给编辑看真实读者反馈（运行剖面）——它才知道哪段被反复调用、该内联，比盲目升 O3 更稳。
+
+    > 失效边界：「编译器比你强」有前提——它只在 profiling 锁定的热点上才值得手工 intrinsic / 汇编；-Ofast 放松 IEEE 会让浮点结果不再严格可比（有人提速 15% 却和科学参考实现对不上被迫回退）；-march=native 牺牲二进制通用性，CI 常需同时产通用版与原生版。
+
 > **一句话结论**：编译器优化（O2/O3/Ofast/LTO/PGO）里，PGO 用真实运行剖面喂给优化器，常比盲目升 O3 带来更稳的收益——但 Ofast 可能牺牲严格语义。
 
 ## ① 概述：编译器优化层级 <span class="badge badge-std">标准</span>
