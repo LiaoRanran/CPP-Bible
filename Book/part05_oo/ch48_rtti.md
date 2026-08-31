@@ -39,17 +39,20 @@ RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型
 
 > 元数据：标准基 C++98（typeid/dynamic_cast 核心）/C++11（noexcept 标注）/C++17（不改动语义） · 预计阅读 100 min · 前置 ch47(vtable 槽1 存 typeinfo) · ch45(对象模型/布局) · ch28(未定义行为/对象生命周期) · 后续 ch49(虚继承影响 RTTI 目标类型) · ch50(CRTP 静态替代) · ch14(去虚化与性能) · 难度 中级
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
 [第49章 虚继承与菱形继承：共享虚基类](../part05_oo/ch49_virtual_inheritance.md)
 
-- 说清 RTTI 由哪两个运算符提供、它们依赖 vtable 何处信息
-- 从真实 x86-64 汇编解释 `typeid(b).name()` 与 `dynamic_cast` 的全部指令与运行期成本
-- 区分 `dynamic_cast` 的四种形态（上行/下行/交叉/空指针）与各自的失败语义
-- 论证 `-fno-rtti` 的收益与代价，并能在真实工程里正确禁用
-- 讲透 `std::type_info` 在 libstdc++ 中的对象布局与 `__dynamic_cast` 的分派逻辑
-- 对照 libstdc++/libc++/MS STL 的 typeinfo 实现与 Itanium ABI 类型层次
+RTTI（运行时类型信息）是大多数 C++ 程序员"知道它贵、却不知道贵在哪"的一环。本章不是教你背 `dynamic_cast` 的用法，而要把这五笔账算清：
+
+1. **`typeid` 和 `dynamic_cast` 到底是谁，数据从哪来？** 它不是编译器魔法凭空变出来的，而是挂在 vtable 上一个**负偏移槽位** 的 `type_info` 指针。看懂这一处（ch47 之后顺着 vtable 往下读），你就明白为什么 RTTI 只对有 vtable 的多态类型可用。本章 ⑦ 的 ASCII 内存图直接画 `vtable ↔ type_info` 的关系。
+2. **一次 `typeid`/`dynamic_cast` 真实的花费是多少指令？** 不是"性能差点"能带过的——动态 downcast 要做**继承树遍历**。本章 ⑩ 用 MinGW GCC 15.3 反汇编给你看 `typeid(b).name()` 与 `dynamic_cast` 的全部指令与运行期成本，你会第一次"看见"这个开销而不是听说。
+3. **`dynamic_cast` 的四种下场，失败时各自怎么办？** 上行（无需运行期检查）、下行（要查）、交叉（要跨分支）、空指针/引用抛 `std::bad_cast`——四条路径的失败语义完全不同，用错一条就是静默空指针或异常。本章 ⑯ 会把四种形态列成一张对照表。
+4. **`-fno-rtti` 是省了一点空间，还是重建了世界观？** 关掉 RTTI 确实省了 typeinfo 段，但代价是**所有依赖它的功能（`typeid`/`dynamic_cast`/异常的类型匹配）一起失效**。这笔账在"极致省字节"的嵌入式与"追求编译期确定"两种场景下结论相反。本章 ⑱ 会教你在真实工程里该什么时候、怎么安全地禁。
+5. **libstdc++/libc++/MS STL 的 `type_info` 为什么长得不一样？** 这是 ABI 契约问题——`__dynamic_cast` 的分派算法、typeinfo 布局在 Itanium 与 MSVC 下差异明显，跨编译器链接同一份动态多态代码可能直接崩。本章 ⑬ 对照三套实现。
+
+带着这几笔账往下读，每一节都会回到它们：⑮ 面试题把这五笔账转成高频追问，⑲ 性能分析量化 RTTI 在真实负载里的占比，⑪ STL 联系告诉你标准库自己在哪些角落用了它。
 
 ## ② 前置知识 ⟶ ch47(虚表槽1=typeinfo) · ch45(对象模型) · ch28(UB)
 

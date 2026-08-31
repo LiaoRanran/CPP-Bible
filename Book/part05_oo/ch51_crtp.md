@@ -43,16 +43,20 @@ CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期�
 
 ---
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)
 [第52章　空基类优化 EBO（Empty Base Optimization）](../part05_oo/ch52_ebo.md)
 
-- 用一句话说清 CRTP 的本质：**基类是模板，以派生类为模板实参，借 `static_cast<Derived*>` 把动态多态搬进编译期**。
-- 能从汇编证明 CRTP 调用**零运行时开销**（无 vtable、无 this 调整 thunk、可完全内联）。
-- 对比 CRTP 与虚函数（ch47）在对象大小、分派成本、heterogeneous 能力上的取舍。
-- 读懂标准库/框架中的 CRTP：`std::enable_shared_from_this`、`std::iterator`（历史）、`boost::operators`、Eigen。
-- 掌握 CRTP 的陷阱：代码膨胀、无法 heterogeneous 容器、菱形 CRTP、访问派生成员顺序。
+CRTP 被吹成"C++ 终极模板黑魔法"，但它一点都不玄——它只是借**基类是模板**这一招，把"运行时多态"提前搬进"编译期"。本章不教你背 `: public Base<T>` 的写法，而要把这五笔账算清：
+
+1. **CRTP 的本质一句话是什么？** **基类是模板，以派生类自己为模板实参**，在基类内部通过 `static_cast<Derived*>(this)` 拿到真实派生类的成员。念出这句话，你就拿到了整个模式的地图——它借此把本该在 vtable 上完成的调用，变成**编译期就已确定**的函数调用。本章 ⑦ 的布局图会告诉你它为什么**不占任何运行时存储**。
+2. **为什么 CRTP 是"零开销"的？这是营销话术还是可证明事实？** 可证明。CRTP 没有 vptr、没有 vtable、没有 this-adjustment thunk，编译器**可以完全内联**。本章 ⑩ 用 MinGW GCC 15.3 反汇编对比 CRTP 与虚函数（ch47）：同一条逻辑，CRTP 版本直接内联成几条 mov/add，虚版本保留 call 间接跳转。差距在汇编上肉眼可见。
+3. **CRTP 免费吗？它把什么"贵"的钱省了，又把什么"债"留下了？** 分派开销归零，但**静态多态牺牲了运行时多态能力**：你没法把不同派生类放到同一个 `std::vector`（heterogeneous）容器里，必须用变体/类型擦除另想办法。同时模板实例化会带来**代码膨胀**，深继承层次下易踩菱形 CRTP 与访问顺序陷阱。本章 ⑱ 会把你欠下的债一笔笔说清楚。
+4. **先读哪些真实代码最能学会 CRTP？** 标准库里到处是：`std::enable_shared_from_this`、历史版 `std::iterator`、`boost::operators`、Eigen 的矩阵层。它们不是教学玩具，是生产级用法。本章 ⑬ 源码分析带你读其中两个。
+5. **CRTP 与虚函数到底怎么选？** 不是"CRTP 更高级所以更好"，而是**看你是不是需要运行时多态**：需要 heterogeneous 容器 / 跨 ABI 接口就选虚函数，纯模板、要极致性能和零开销就选 CRTP。本章 ⑪ STL 联系和 ⑲ 性能分析给你判定依据。
+
+带着这几笔账往下读，每一节都会回到它们：⑮ 面试题把"为什么不用虚函数"翻成高频追问，⑯ 易错点列出 CRTP 最常见的翻车（访问派生成员顺序、菱形 CRTP），⑱ 最佳实践收束成一张选型表。
 
 ## ② 前置知识 ⟶ ch47 · ch50 · ch62
 
