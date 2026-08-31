@@ -40,12 +40,19 @@
 
     > 失效边界：总闸"更保守却更易懂"，代价是可能拦过多、拖慢不该同步的操作；而逐操作标注更精准却极易写错。fence 与 atomic 操作之间能否"组合出" acquire/release 语义有精细规则，用错就既没拿到性能也没拿到正确性。同一道 fence 在 x86(TSO，几乎免费) 与 ARM(需 `dmb`) 代价天差地别。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-1. 理解 memory_order 六种选项的语义
-2. 区分 acquire/release/seq_cst/relaxed/consume
-3. 掌握 std::atomic_thread_fence 的使用场景
-4. 理解 StoreLoad/SMP/MESI 等硬件层面的内存序
+[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)
+[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)
+
+内存屏障常被当成"比 `memory_order` 更强的一档开关"，但**它真正的本质是"一个不绑定具体变量、只对位置负责的同步点"**——per-operation 内存序回答的是"这个变量怎么同步"，fence 回答的是"在这个位置上，哪些操作不许越过我"。本章不重复"六种内存序分别是什么"（那是 ch108 的账），而要带着下面这六笔账往下读：
+
+1. **fence 与逐操作 `memory_order` 是不是一回事？判据到底是什么？** 不是一回事：`memory_order` 只约束它所标注的那一个变量，fence 则对**一片**操作建立同步点，且不绑定任何变量。判据是"要同步的是一个变量，还是一组成片的代码边界"——单变量同步用它自己的 `memory_order`；CAS 发布路径、锁的获取/释放、seqlock 读写端、UMA 下设备-主机可见性这类"成片边界"，用一道 fence 一次讲清（⑥、⑰ FAQ、㉒.2"一条判读"）。两者不能混用错配。其标准地基是 **C++17 的 P0558R1**：它修正了 fence 与原子操作交互的措辞，使"`fence(seq_cst)` 与原子 `seq_cst` 共享同一全局总序"得以明确（㉒.4）。
+2. **fence 要怎么配对才算真的建立了同步？单边加一道行不行？** 不行——栅栏必须成对：写端 `store(relaxed)` 后接 `fence(release)`，必须配上读端 `load(relaxed)` 前接 `fence(acquire)`，同步才成立；只在一侧加等于没同步。位置同样要夹准：写端夹在"受保护的写"与"发布标志"之间，读端夹在"读标志"与"用数据"之间，放错位置就是并发 bug 高发区（㉒.3 的两条坑、④、附录 B seqlock 读写端各两道 acquire fence 的样板）。
+3. **x86 上 fence "看起来免费"——这个结论可以依赖吗？** 不可以。附录 J 的 GCC 15.3.0 真机实证：`acquire`/`release`/`acq_rel` 三种 fence 在 x86-64 TSO 下**全部编译为空函数**（只剩一条 `ret`），因为 TSO 本就禁止 load-load / store-store / load-store 三类重排，GCC 只插编译器级屏障即可；但同一条 fence 落到 ARM/ARM64 要变成 `dmb ish` / `dmb ishld` / `dmb ishst`（该 ARM 结论 [UNVERIFIED]，本机无 ARM 工具链，附录 J 事实 4）。所以"x86 上 fence 免费"是陷阱：烧到 ARM 目标必须按 `dmb` 语义重新核算。附带一条非显然事实——**`seq_cst` fence 在 GCC 下生成的是 `lock or QWORD PTR [rsp],0x0`，不是 `mfence`**：借 `lock` 前缀的隐式全屏障拿到与 `mfence` 等价的单一总序，是长期稳定的"锁或零"手法（附录 J 事实 1，与附录 H 的 GCC 13.1.0 跨主版本一致）。
+4. **fence 的真实成本到底多大？** 附录 D5 给的是本机实测（Ryzen 9 7940HX / GCC 15.3.0 / `-O2` / ×1 亿次 store / 5 轮取中位）：以 relaxed store 21.364 ms 为 1.00×，则 `+fence(release)` 42.659 ms（≈2.0×）、`+fence(acquire)` 42.660 ms（≈2.0×）、**`+fence(seq_cst)` 350.074 ms（8.2×）**，而 **`seq_cst` store 本身 369.184 ms（≈17.3×）**。→ 这里藏着一条非显然结论：**在"一次 store + 全序"这个场景里，relaxed store 配一道 `fence(seq_cst)` 比直接写 `seq_cst` store 便宜约一半**——前者只付一次全屏障，后者把每一次 store 都变成带锁的 `xchg`。注意附录 A/D/F 里那些 ~1ns / ~10ns / ~20ns 是 [UNVERIFIED] 的微架构经验量级，只能看排序，不能当指标（附录 D5、⑲）。
+5. **`memory_order_consume` 与 `atomic_signal_fence` 这两个"边角"该怎么对待？** consume 已被 **P0668 提议废弃**，且主流实现普遍直接把它当 acquire 处理，不要依赖它（⑧、⑭ WG21、⑯ 易错点"consume unreliable"）。`atomic_signal_fence` 则**只约束编译器重排、不生成任何 CPU 指令**，只服务于同一线程内信号处理函数与主流程之间的可见性；要跨核顺序就必须用 `atomic_thread_fence`（㉒.3 的误用坑、附录 J 事实 3）。这是栅栏家族里最易被误解的一对。
+6. **"能用 release/acquire 就别上 `seq_cst` fence"是工程共识，代价究竟由谁付？** 由**弱内存架构**付：`fence(seq_cst)` 在 ARM/POWER 上是重量级 `dmb`，热点路径上只需 acquire/release 却全用 seq_cst，会把无锁代码的性能优势吃光；x86 上也并不便宜（附录 G：`mfence` 约 10 ns @Skylake、约 33 ns @Zen2）。正确路线是 ⑱ 最佳实践那条顺序——**从 `seq_cst` 起步保证正确 → profile → 在证明安全的地方才放宽到 acquire/release**，绝不反向先省后补。而"证明"要落在可核对的样板上：㉒.3 的配对规则、附录 B 的 seqlock、附录 E 的无锁栈（⑱、㉒.1、㉒.3、附录 B/E）。
 
 ## ② memory_order 六态 <span class="badge badge-std">标准</span>
 

@@ -1308,7 +1308,7 @@ int main() {
 
 <span class="badge badge-exp">经验</span> 新代码用概念替代 `enable_if` SFINAE（见 ⑱ 最佳实践 6）：约束即文档，违反时诊断更清晰；且"最小接口、最大优化"的设计（见 ⑰ FAQ）需要范畴分层才能既正确又高效。
 
-<span class="badge badge-std">标准</span> 迭代器范畴层次 `input < forward < bidirectional < random_access < contiguous`（C++20），算法据所需最弱范畴取舍（见 ① 学习目标 / ⑲ 性能表）。
+<span class="badge badge-std">标准</span> 迭代器范畴层次 `input < forward < bidirectional < random_access < contiguous`（C++20），算法据所需最弱范畴取舍（见 ① 我们真正要回答的问题 / ⑲ 性能表）。
 
 <span class="badge badge-ref">引用</span> cppreference "iterator/input_iterator"、"iterator/output_iterator"、"iterator/contiguous_iterator" 词条；ISO/IEC 14882:2023 §[iterators] / §[concepts.iterator]。
 
