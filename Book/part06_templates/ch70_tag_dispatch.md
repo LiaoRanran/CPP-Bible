@@ -43,16 +43,18 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 
 > 立场标签：`[标准]`=标准条文，`[实现]`=编译器实现行为，`[平台]`=平台/ABI 相关，`[经验]`=工程经验。
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)
 [第71章　策略设计 Policy-Based Design](../part06_templates/ch71_policy.md)
 
-- 理解**标签分发（tag dispatch）**的本质：用一个**类型**（空 struct 或 `integral_constant<bool,B>::type`）作为"编译期路由键"，让重载决议在编译期选定实现分支。
-- 掌握 `std::true_type`/`std::false_type`（即 `integral_constant<bool,true/false>::type`）作为布尔标签的用法，以及 `std::is_integral<T>::type` 这类"类型性质 → 标签"的衔接。
-- 理解**迭代器标签层级**（`input → forward → bidirectional → random_access`）的继承链如何使 `advance`/`distance` 等算法按最强能力调度（随机迭代器走 O(1)，输入迭代器走 O(n)）。
-- 通过真实汇编确认：标签分发在 `-O2` 下被**完全折叠为单条路径的常量**（无运行期分支）；`-O0` 下标签类型被编码进 mangled 名字，每个标签组合生成独立实例化。
-- 区分标签分发与 `if constexpr`（ch69）/Concepts（ch67）：标签分发是"重载决议 + 空标签类型"的 C++11 老范式，兼容老标准且不要求编译器支持 Concepts。
+标签分发（tag dispatch）常被当成"用空 struct 骗重载决议的小技巧"，但**它真正的本质是"用类型当编译期路由键"**——把"这个类型该走哪条路"编码成一个空标签类型，让重载决议在编译期替你选好分支。它是 C++11 时代最优雅的编译期分发范式，也是理解 `std::advance` 等算法如何"按能力调度"的钥匙。本章要带着这五笔账往下读：
+
+1. **标签分发的本质到底是什么？"编译期路由键"怎么工作？** 用一个**类型**（空 struct 或 `integral_constant<bool,B>::type`）作为路由键，重载决议按"哪个重载的标签参数更匹配"在编译期选定实现分支——运行期零分支。这个"类型即开关"的模型，是它区别于运行期 `if` 的根本。本章 ② 速查 + ③ 核心结构把机制讲清。
+2. **`std::true_type`/`std::false_type` 作为布尔标签怎么用？** 它们就是 `integral_constant<bool,true/false>::type`——把"编译期布尔值"变成"可参与重载决议的类型"。`std::is_integral<T>::type` 这类"类型性质 → 标签"的衔接，让 trait 结果能直接驱动标签分发。本章 ③ 核心结构 + ⑥ 完整示例给出这套衔接。
+3. **迭代器标签层级（input → forward → bidirectional → random_access）的继承链，怎么让算法按最强能力调度？** `std::advance`/`std::distance` 接收迭代器标签，靠继承链让随机访问迭代器走 O(1)、输入迭代器走 O(n)——同一个算法，按迭代器能力自动选最优实现。这条继承链是标签分发在标准库中最经典的应用。本章 ⑪ STL 模式 + ⑥ 完整示例把它拆开。
+4. **怎么从汇编确认"标签分发被完全折叠为单条路径"？** -O2 下标签分发只剩选中的那条路径，无运行期分支；-O0 下标签类型被编码进 mangled 名字，每个标签组合生成独立实例化。看符号与汇编能确认"编译期路由真的发生了"。本章 ⑩ 汇编/符号证据用 GCC 15.3 真实输出演示。
+5. **标签分发 vs `if constexpr`（ch69）/ Concepts（ch67），怎么选？** 标签分发是"重载决议 + 空标签类型"的 C++11 老范式，**兼容老标准**、不要求 Concepts；`if constexpr` 在函数体内做分支、更直白；Concepts 是 C++20 的声明式约束。三者能力重叠，选择取决于你的标准版本与可读性偏好。本章 ⑤ 适用场景 + ⑪ STL 模式给出判据。
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 

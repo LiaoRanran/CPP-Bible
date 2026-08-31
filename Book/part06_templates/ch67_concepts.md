@@ -46,16 +46,18 @@ concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强�
 
 > 版本：v3.0（2026-07-08）
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)
 [第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
 
-- 说清 `concept` 是什么：一个「编译期布尔谓词」，可被命名、组合、复用 <span class="badge badge-std">标准</span>
-- 掌握 `requires` 表达式（简单/类型/复合/嵌套）四类约束的写法与语义 <span class="badge badge-std">标准</span>
-- 区分「`template <C T>`（约束占位）」与「`requires` 子句（尾置约束）」两种施加方式 <span class="badge badge-std">标准</span>
-- 能从 mangled 符号验证：Concepts 与 SFINAE 在 ABI 层**等价**——都只为「胜出候选」发射一份实例化 <span class="badge badge-platform">平台</span>
-- 理解 Concepts 相对 SFINAE 的核心优势：报错可读性（见 ch67）与组合性 <span class="badge badge-std">标准</span>
+Concepts 常被当成"给模板加类型检查的语法糖"，但**它真正的价值是"把约束变成可命名、可组合、可复用的第一等公民"**——SFINAE 能做的事它几乎都能做，但 SFINAE 的报错是"天书"，Concepts 的报错是"人话"。这个"可读性"差异，才是 Concepts 存在的理由。本章要带着这五笔账往下读：
+
+1. **`concept` 到底是什么？一个"编译期布尔谓词"意味着什么？** 它就是一个能在编译期求值的布尔表达式，但被**命名**后就能像类型一样复用、组合（`std::integral`、`std::ranges::range` 都是这么拼出来的）。"可命名、可组合、可复用"三词是它相对裸 SFINAE 的起点。本章 ② 速查 + ③ 核心结构先把概念定义讲清。
+2. **`requires` 表达式的四类约束（简单/类型/复合/嵌套）各怎么写、各管什么？** 简单要求验证表达式合法；类型要求验证类型存在；复合要求验证表达式+返回类型约束；嵌套要求把另一个 requires 表达式嵌进来。四类覆盖了"这个类型能不能用"的方方面面。本章 ③ 核心结构 + ④ requires 的精确求值时机把四类拆开。
+3. **「`template <C T>`（约束占位）」和「`requires` 子句（尾置约束）」两种施加方式差在哪？** 前者把约束写进模板参数列表（`template <std::integral T>`），后者用尾置 `requires` 子句（`template <typename T> requires std::integral<T>`）。两者语义等价、写法与可读性不同，混用时要清楚各自的位置。本章 ③ + ⑦ 标准把两种方式并排对比。
+4. **从 mangled 符号怎么验证"Concepts 与 SFINAE 在 ABI 层等价"？** 两者最终都只对"约束满足的候选"发射实例化——看符号表，同一个类型在 Concepts 和 SFINAE 下生成的实例化符号**完全一致**，证明 Concepts 不是新的运行机制，而是同一套编译期分发的更友好外壳。本章 ⑩ 汇编/符号证据用 GCC 15.3 真实符号验证这份等价。
+5. **Concepts 相对 SFINAE 的核心优势，为什么是"报错可读性"与"组合性"？** 约束失败时 Concepts 直接告诉你"`T` 不满足 `std::integral`"而不是一屏模板展开；约束还能用 `&&`/`||` 组合、用 `requires` 嵌套，把复杂条件拆成可读的命名块。这两点让模板库的维护体验质变。本章 ④ + ⑪ STL 模式给出这份对比。
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 

@@ -44,16 +44,18 @@ SFINAE 强大却「以副作用闻名」：它把编译器的容错机制逆向�
 
 > 版本：v3.0（2026-07-08）
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
 [第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)
 
-- 精确说出 SFINAE 的触发条件：模板实参替换失败发生在「哪一步」、为何「非错误」 <span class="badge badge-std">标准</span>
-- 掌握 `std::enable_if` 的两种惯用法（返回类型孔位 / 默认模板参数孔位）及其优劣 <span class="badge badge-std">标准</span>
-- 能从 mangled 符号反推 SFINAE 为每个类型只实例化「胜出」的那个重载 <span class="badge badge-platform">平台</span>
-- 区分 SFINAE 与标签分发 / `if constexpr` / Concepts 的取舍 <span class="badge badge-std">标准</span>
-- 识别「硬错误」与「替换失败」的边界：一旦进入函数体就是硬错误，SFINAE 救不了 <span class="badge badge-impl">实现</span>
+SFINAE 常被当成"让模板自动挑重载的黑科技"，但**它的本质是一条"替换失败不算错"的规则**——编译器在替换模板实参时，某一步失败了就安静地放弃这份候选，而不是报错。这条"安静放弃"的规则，正是 C++ 能在编译期做"类型分发"的根基。本章要带着这五笔账往下读：
+
+1. **SFINAE 的触发条件到底是什么？"替换失败"发生在哪一步、为什么"非错误"？** 关键在"替换"（substitution）而非"实例化"（instantiation）：替换发生在模板实参填入声明时，失败即放弃该候选；一旦进入函数体/类体（实例化），失败就是硬错误。这个"哪一步"的边界是 SFINAE 全部语义的开关。本章 ④ 替换失败发生的精确位置专门拆解。
+2. **`std::enable_if` 的两种惯用法（返回类型孔位 / 默认模板参数孔位），优劣各是什么？** 返回类型孔位把条件塞进 `-> typename std::enable_if<...>::type`，默认模板参数孔位把条件塞进 `template <..., typename = std::enable_if_t<...>>`。前者更早触发、后者写法更干净，但各有坑（如默认模板参数孔位在重载决议中的行为差异）。本章 ③ 核心结构把两种并排对比。
+3. **从 mangled 符号怎么反推"SFINAE 只为胜出者实例化"？** 对每个实参类型，SFINAE 只让"条件成立的那份重载"存活，因此符号表里每个类型只有一份实例化——看符号能确认"这份类型到底走了哪个重载、其他候选是否被安静丢弃"。本章 ⑩ 汇编/符号证据用 GCC 15.3 真实符号演示。
+4. **SFINAE vs 标签分发 / `if constexpr` / Concepts，四者怎么取舍？** SFINAE 是 C++11 老范式、写法繁琐；标签分发靠重载决议选分支；`if constexpr` 在函数体内做编译期分支；Concepts 是 C++20 的声明式约束。四者能力重叠但适用场景不同。本章 ⑤ 适用场景 + ⑪ STL 模式给出选择判据。
+5. **「硬错误」与「替换失败」的边界在哪？为什么"进了函数体 SFINAE 就救不了"？** 替换只覆盖声明部分；一旦替换成功、进入函数体实例化，函数体里的任何错误都是硬错误——SFINAE 不会帮你"跳过"函数体里的坏代码。这条边界是 SFINAE 新手最常见的翻车点。本章 ④ + ⑧ 编译器差异把边界讲死。
 
 ## ② 本模板模式速查（名称 / 适用场景 / 核心结构 / 定义）
 
