@@ -1,7 +1,7 @@
 # 第79章　list / forward_list <span class="badge badge-std">标准</span>
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md) ／ 后续：[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md) ／ 难度：★★★☆☆｜层级：L2 进阶
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)、[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md) ／ 后续：[第86章　容器适配器：stack / queue / priority_queue](../part07_stl/ch86_adapters.md)、[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md) ／ 难度：★★★☆☆｜层级：L2 进阶
 
 > 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指缓存与内存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
@@ -70,10 +70,10 @@ int main() {
 
 | 主题 | 为什么必须 | 链接 |
 |---|---|---|
-| deque 的分段连续与迭代器失效 | list 走另一极端：完全不连续但迭代器稳定 | [第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md) |
-| 迭代器分类（双向/前向） | list 是双向迭代器，forward_list 是前向迭代器 | [第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md) |
-| 移动语义 | splice 在链表间搬节点、不拷贝 | [第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md) |
-| 算法失效规则 | 理解"为何 list 不能用 std::sort" | [第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md) |
+| deque 的分段连续与迭代器失效 | list 走另一极端：完全不连续但迭代器稳定 | [第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md) |
+| 迭代器分类（双向/前向） | list 是双向迭代器，forward_list 是前向迭代器 | [第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md) |
+| 移动语义 | splice 在链表间搬节点、不拷贝 | [第115章　移动语义与右值引用](../part10_modern/ch115_move.md) |
+| 算法失效规则 | 理解"为何 list 不能用 std::sort" | [第95章　STL 算法分类与复杂度（C++）](../part08_algorithms/ch95_algo_overview.md) |
 
 `[标准]`：`<list>`（C++98）、`<forward_list>`（C++11，`[forwardlist]` 条款）。`list` 满足 *BidirectionalIterator*；`forward_list` 满足 *ForwardIterator*。
 
@@ -81,9 +81,9 @@ int main() {
 
 ## ③ 后续依赖 <span class="badge badge-std">标准</span>
 
-- **容器适配器**：`std::list` 可作为 `stack`/`queue` 底层（但不如 deque 常用，[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）。
-- **算法**：`list` 的 `sort`/`merge`/`unique`/`reverse` 是成员，通用算法版本对链表低效（[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)）。
-- **侵入式链表**：Linux `list_head`、Boost.Intrusive 思想是本节的延伸（[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md) 中可见侵入式用法）。
+- **容器适配器**：`std::list` 可作为 `stack`/`queue` 底层（但不如 deque 常用，[第86章　容器适配器：stack / queue / priority_queue](../part07_stl/ch86_adapters.md)）。
+- **算法**：`list` 的 `sort`/`merge`/`unique`/`reverse` 是成员，通用算法版本对链表低效（[第95章　STL 算法分类与复杂度（C++）](../part08_algorithms/ch95_algo_overview.md)）。
+- **侵入式链表**：Linux `list_head`、Boost.Intrusive 思想是本节的延伸（[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md) 中可见侵入式用法）。
 
 ---
 
@@ -184,7 +184,7 @@ flowchart TD
     R --> Note["it(指向[2]) 失效；it2(指向[1]/[3]/[4]) 仍有效！"]
 ```
 
-`[标准]`：`list`/`forward_list` 的 `erase` 只使被删元素的迭代器/引用/指针失效，其余全部稳定。这是与 vector/deque 的根本区别（[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)）。
+`[标准]`：`list`/`forward_list` 的 `erase` 只使被删元素的迭代器/引用/指针失效，其余全部稳定。这是与 vector/deque 的根本区别（[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)）。
 
 ---
 
@@ -281,7 +281,7 @@ int main() {
 }
 ```
 
-`[经验]`：若实体数量巨大且遍历是热点，list 的缓存不友好会拖慢；此时可用"索引+vector+空闲链表"或 ECS（[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）。list 适合"增删多、遍历少、需稳定引用"的场景。
+`[经验]`：若实体数量巨大且遍历是热点，list 的缓存不友好会拖慢；此时可用"索引+vector+空闲链表"或 ECS（[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）。list 适合"增删多、遍历少、需稳定引用"的场景。
 
 ---
 
@@ -1079,7 +1079,7 @@ int main() {
 **源码阅读路线（libstdc++）**
 - `文件：bits/stl_list.h` 行号：`81`（`_List_node_base`：`_M_next`/`_M_prev`/`_M_hook`/`_M_unhook`）、`97`/`100`（`_M_hook`/`_M_unhook`）、`234`（`_List_node` 继承加 value）、`632`（`class list`）、`1612`（splice 整段）、`1788`（remove）、`1848`（merge）。
 - `文件：bits/forward_list.h` 行号：`54`（`_Fwd_list_node_base`）、`431`（`class forward_list`）、`386`（`_M_insert_after`）、`713`（`before_begin`）、`859`（insert_after 系列）。注意：该文件**无 `size()` 成员声明**。
-- 对比阅读：`文件：bits/stl_deque.h`（分段连续）、`文件：bits/stl_vector.h`（连续），见 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)。
+- 对比阅读：`文件：bits/stl_deque.h`（分段连续）、`文件：bits/stl_vector.h`（连续），见 [第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)。
 
 > 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 ch76(STL 架构)、ch77(vector)、ch78(deque)、ch86(适配器)、ch90(ranges)、ch95(算法概述) 建立正文交叉引用。
 
@@ -1087,11 +1087,11 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第78章](Book/part07_stl/ch78_deque.md) | 性能基准/回归检测 | 本章提供概念，第78章提供实现 |
-| [第78章](Book/part07_stl/ch78_deque.md) | 数据处理管道/排行榜 | 本章提供概念，第78章提供实现 |
-| [第78章](Book/part07_stl/ch78_deque.md) | 数据局部性/缓存友好设计 | 本章提供概念，第78章提供实现 |
-| [第76章](Book/part07_stl/ch76_stl_arch.md) | 内存管理/PMR定制 | 本章提供概念，第76章提供实现 |
-| [第86章](Book/part07_stl/ch86_adapters.md) | 文本处理/协议解析 | 本章提供概念，第86章提供实现 |
+| [第78章](../part07_stl/ch78_deque.md) | 性能基准/回归检测 | 本章提供概念，第78章提供实现 |
+| [第78章](../part07_stl/ch78_deque.md) | 数据处理管道/排行榜 | 本章提供概念，第78章提供实现 |
+| [第78章](../part07_stl/ch78_deque.md) | 数据局部性/缓存友好设计 | 本章提供概念，第78章提供实现 |
+| [第76章](../part07_stl/ch76_stl_arch.md) | 内存管理/PMR定制 | 本章提供概念，第76章提供实现 |
+| [第86章](../part07_stl/ch86_adapters.md) | 文本处理/协议解析 | 本章提供概念，第86章提供实现 |
 
 ## 附录 B：std::list 底层实现与性能深度 [E: Low-level / B: Principle]
 
@@ -1158,11 +1158,11 @@ struct __list_node {
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 节点迭代器满足双向/前向迭代器概念
-- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— 与 vector 的缓存局部性对比
-- **同模块相邻**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)—— 与 deque 的中段插入成本对比
-- **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— 与有序关联容器的接口共性
-- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 节点经 allocator 分配
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— 节点迭代器满足双向/前向迭代器概念
+- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)—— 与 vector 的缓存局部性对比
+- **同模块相邻**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)—— 与 deque 的中段插入成本对比
+- **同模块相邻**：[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)）—— 与有序关联容器的接口共性
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)模型与 PMR）—— 节点经 allocator 分配
 
 ## 自测练习（Exercises）
 

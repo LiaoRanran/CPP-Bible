@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)
-[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)
+[第122章　PMR 与多态分配器](../part10_modern/ch122_pmr.md)
+[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)
 
 > 老兵标准：**Allocator 是 C++ 标准库里最被低估、也最被误解的扩展点。**
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
@@ -53,8 +53,8 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 
 ## ① 概述：分配器是什么，为何存在
 
-[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)
-[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
+[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)
+[第 39 章　RAII 与 Rule of Zero/Three/Five](../part04_memory/ch39_raii_rule.md)
 
 **<span class="badge badge-std">标准</span>**　分配器是标准容器（`vector`/`list`/`map`/…）与底层内存申请/释放之间的**可替换策略对象**。容器向分配器请求「N 个 `T` 对象的原始内存」与「构造/析构对象」，而**不直接**调用 `new`/`delete`。这是「算法与存储解耦」的经典设计。
 
@@ -1597,10 +1597,10 @@ std::pmr::vector<int> v(&mr);          // 整个 v 的生命周期在 mr 内 bum
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第37章](Book/part04_memory/ch37_new_delete.md) | 键值查找/缓存 | 本章提供概念，第37章提供实现 |
-| [第39章](Book/part04_memory/ch39_raii_rule.md) | 多态插件/框架扩展 | 本章提供概念，第39章提供实现 |
-| [第122章](Book/part10_modern/ch122_pmr.md) | 泛型库/编译期计算 | 本章提供概念，第122章提供实现 |
-| [第160章](Book/part15_cases/ch160_mempool.md) | 高性能容器/零拷贝传输 | 本章提供概念，第160章提供实现 |
+| [第37章](../part04_memory/ch37_new_delete.md) | 键值查找/缓存 | 本章提供概念，第37章提供实现 |
+| [第39章](../part04_memory/ch39_raii_rule.md) | 多态插件/框架扩展 | 本章提供概念，第39章提供实现 |
+| [第122章](../part10_modern/ch122_pmr.md) | 泛型库/编译期计算 | 本章提供概念，第122章提供实现 |
+| [第160章](../part15_cases/ch160_mempool.md) | 高性能容器/零拷贝传输 | 本章提供概念，第160章提供实现 |
 
 ## 附录 E：Allocator工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 
@@ -1707,16 +1707,16 @@ int main() {
 - 自定义 allocator 必须满足 Allocator 完备性要求（`rebind` / `propagate_on_container_copy`）；pmr 比旧 allocator 模型更不易写错（本手册 ch38 实测 malloc 45.5ns）。
 - 跨容器共用 allocator 实例需其 propagate 语义明确。
 
-> 交叉引用：pmr 见 [ch122](Book/part10_modern/ch122_pmr.md)；池见 [ch44](Book/part04_memory/ch44_memory_pool.md)。
+> 交叉引用：pmr 见 [ch122](../part10_modern/ch122_pmr.md)；池见 [ch44](../part04_memory/ch44_memory_pool.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)—— allocator 在堆上切分内存。
-- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— allocate/deallocate 与 operator new 的关系。
-- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 容器可携自定义 allocator 影响控制块分配。
-- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)—— pmr 的 monotonic_buffer_resource 等即池化资源。
-- **前置基础**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— allocator 是 STL 容器的可插拔内存后端。
-- **前置基础**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— vector 的扩容与 allocator 协作。
+- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](../part04_memory/ch36_stack_heap.md)—— allocator 在堆上切分内存。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)—— allocate/deallocate 与 operator new 的关系。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](../part04_memory/ch41_smart_pointers.md)—— 容器可携自定义 allocator 影响控制块分配。
+- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](../part04_memory/ch44_memory_pool.md)—— pmr 的 monotonic_buffer_resource 等即池化资源。
+- **前置基础**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— allocator 是 STL 容器的可插拔内存后端。
+- **前置基础**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)—— vector 的扩容与 allocator 协作。
 
 ## 工业实现参考：真实通用分配器 [B: Principle]
 

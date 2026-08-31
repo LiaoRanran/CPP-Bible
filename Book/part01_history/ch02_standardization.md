@@ -2,8 +2,8 @@
 > 层级：L1 入门
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)
-[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)
+[第03章　C++98 / C++03：奠基时代](../part01_history/ch03_cpp98_03.md)
+[第10章　版本特性全景对照表与迁移指南](../part01_history/ch10_version_matrix.md)
 
 > 元数据：C++标准由 ISO/IEC JTC1/SC22/WG21 维护，每3年发布1版。
 > 立场：`[标准]`/`[提案]`/`[经验]`。
@@ -571,12 +571,12 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)—— 编号相邻、主题接续。
-- **相邻主题**：[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)—— 编号相邻、主题接续。
-- **同模块**：[第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)—— 同模块下的其他主题。
-- **版本特性**：[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)—— 本章 §④ 仅概述各版本演进脉络，本章给出逐特性的横向对照、取舍与迁移指引，是版本历史的深化入口。
-- **编译器实现**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)—— 延伸本章 附录⑩ 编译器对标准的支持差异，落到具体工具链实现。
+- **后续依赖**：[第01章　C 语言遗产与 C with Classes](../part01_history/ch01_c_history.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第03章　C++98 / C++03：奠基时代](../part01_history/ch03_cpp98_03.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第04章　C++11：现代 C++ 革命](../part01_history/ch04_cpp11.md)—— 编号相邻、主题接续。
+- **同模块**：[第05章　C++14：小幅完善](../part01_history/ch05_cpp14.md)—— 同模块下的其他主题。
+- **版本特性**：[第10章　版本特性全景对照表与迁移指南](../part01_history/ch10_version_matrix.md)—— 本章 §④ 仅概述各版本演进脉络，本章给出逐特性的横向对照、取舍与迁移指引，是版本历史的深化入口。
+- **编译器实现**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)—— 延伸本章 附录⑩ 编译器对标准的支持差异，落到具体工具链实现。
 
 ## 附录 X：工业实战复盘（I.实战）[I: Practice]
 

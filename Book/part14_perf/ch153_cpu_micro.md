@@ -1,7 +1,7 @@
 # 第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行
 
-[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)
-[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
+[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)
+[第152章　性能模型与测量学](../part14_perf/ch152_perf_model.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
@@ -45,8 +45,8 @@
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
-[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
-[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)
+[第152章　性能模型与测量学](../part14_perf/ch152_perf_model.md)
+[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)
 
 读完本章你能独立回答：
 
@@ -948,10 +948,10 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第154章](Book/part14_perf/ch154_cache_opt.md) | 无锁队列/计数器 | 本章提供概念，第154章提供实现 |
-| [第152章](Book/part14_perf/ch152_perf_model.md) | 向量化计算/图像处理 | 本章提供概念，第152章提供实现 |
-| [第152章](Book/part14_perf/ch152_perf_model.md) | 数据处理管道/排行榜 | 本章提供概念，第152章提供实现 |
-| [第154章](Book/part14_perf/ch154_cache_opt.md) | 计时器/性能测量 | 本章提供概念，第154章提供实现 |
+| [第154章](../part14_perf/ch154_cache_opt.md) | 无锁队列/计数器 | 本章提供概念，第154章提供实现 |
+| [第152章](../part14_perf/ch152_perf_model.md) | 向量化计算/图像处理 | 本章提供概念，第152章提供实现 |
+| [第152章](../part14_perf/ch152_perf_model.md) | 数据处理管道/排行榜 | 本章提供概念，第152章提供实现 |
+| [第154章](../part14_perf/ch154_cache_opt.md) | 计时器/性能测量 | 本章提供概念，第154章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -973,16 +973,16 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 - 依赖链长度决定吞吐下限；false sharing（伪共享）让多核反而更慢，需用 `alignas(64)` cache line 对齐。
 - 分支预测失败代价高，热路径用分支预测提示或表驱动消除分支；V8 与 LLVM 都依赖配置文件引导优化（PGO）缓解。
 
-> 交叉引用：性能模型见 [ch152](Book/part14_perf/ch152_perf_model.md)；基准见 [ch151](Book/part13_engineering/ch151_benchmark.md)。
+> 交叉引用：性能模型见 [ch152](../part14_perf/ch152_perf_model.md)；基准见 [ch151](../part13_engineering/ch151_benchmark.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part14 性能工程）**：[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
-- **同模块兄弟（part14 性能工程）**：[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)）
-- **同模块兄弟（part14 性能工程）**：[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)）
-- **同模块兄弟（part14 性能工程）**：[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)）
-- **同模块兄弟（part14 性能工程）**：[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
-- **同模块兄弟（part14 性能工程）**：[第158章 性能反模式与陷阱](Book/part14_perf/ch158_perf_antipatterns.md)
+- **同模块兄弟（part14 性能工程）**：[第152章　性能模型与测量学](../part14_perf/ch152_perf_model.md)
+- **同模块兄弟（part14 性能工程）**：[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第155章　SIMD / AVX 向量化（C++/硬件）](../part14_perf/ch155_simd.md)）
+- **同模块兄弟（part14 性能工程）**：[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第157章 Compiler Explorer 实战](../part14_perf/ch157_compiler_explorer.md)
+- **同模块兄弟（part14 性能工程）**：[第158章 性能反模式与陷阱](../part14_perf/ch158_perf_antipatterns.md)
 
 ## 自测练习（Exercises）
 

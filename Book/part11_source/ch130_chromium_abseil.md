@@ -2,7 +2,7 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`-std=c++17 -O2 -masm=intel -S`）。
 > 本机未安装 Abseil / Chromium 源码树，源码剖析统一引用上游仓库 URL（见各 `// 文件：`/`// 行号：` 标注，注明「上游参考」），不保证行号与 HEAD 完全一致。
@@ -57,8 +57,8 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 
 ## ① 概述：Chromium / Abseil 基础设施 <span class="badge badge-std">标准</span>
 
-[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)
-[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)
+[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)
+[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)
 
 工业级 C++ 工程的共同痛点是：标准库太薄、平台差异太大、性能与可维护性难兼得。Abseil 与 Chromium `base` 分别是两套久经实战的基础设施：
 
@@ -830,9 +830,9 @@ int quickstart() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第129章](Book/part11_source/ch129_qt.md) | 键值查找/缓存 | 本章提供概念，第129章提供实现 |
-| [第131章](Book/part11_source/ch131_fmt_spdlog.md) | 独占所有权/工厂模式 | 本章提供概念，第131章提供实现 |
-| [第77章](Book/part07_stl/ch77_vector.md) | 索引查找/路由表 | 本章提供概念，第77章提供实现 |
+| [第129章](../part11_source/ch129_qt.md) | 键值查找/缓存 | 本章提供概念，第129章提供实现 |
+| [第131章](../part11_source/ch131_fmt_spdlog.md) | 独占所有权/工厂模式 | 本章提供概念，第131章提供实现 |
+| [第77章](../part07_stl/ch77_vector.md) | 索引查找/路由表 | 本章提供概念，第77章提供实现 |
 
 ## ㉑ 真实工程使用场景：把 Abseil / Chromium 基建接到你的工程
 
@@ -1012,16 +1012,16 @@ int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
-- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
-- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
-- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
-- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
-- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
-- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
-- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
-- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
-- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）
 
 ## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

@@ -2,8 +2,8 @@
 > 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)
-[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
+[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)
+[第157章 Compiler Explorer 实战](../part14_perf/ch157_compiler_explorer.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2`）。
 > 本章所有 `text` 数值均来自本机真实编译运行（`g++ -std=c++23 -O2`）；`asm` 来自 `g++ -std=c++23 -O2 -S -masm=intel` 的真实产物。
@@ -47,8 +47,8 @@
 
 ## ① 概述：为什么性能分析
 
-[第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](Book/part02_toolchain/ch14_debugging.md)
-[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)
+[第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](../part02_toolchain/ch14_debugging.md)
+[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](../part02_toolchain/ch16_ide.md)
 
 没有测量就没有优化。经验直觉常错：你觉得慢的那行，火焰图里可能只占 0.3%；真正的热点藏在缓存未命中与分支预测失败里。性能分析（Profiling）把"感觉慢"变成"数字在哪慢"。
 
@@ -1091,16 +1091,16 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第14章](Book/part02_toolchain/ch14_debugging.md) | 键值查找/缓存 | 本章提供概念，第14章提供实现 |
-| [第16章](Book/part02_toolchain/ch16_ide.md) | 配置解析/API响应 | 本章提供概念，第16章提供实现 |
-| [第151章](Book/part13_engineering/ch151_benchmark.md) | 泛型库/编译期计算 | 本章提供概念，第151章提供实现 |
-| [第157章](Book/part14_perf/ch157_compiler_explorer.md) | 日志格式化/序列化 | 本章提供概念，第157章提供实现 |
+| [第14章](../part02_toolchain/ch14_debugging.md) | 键值查找/缓存 | 本章提供概念，第14章提供实现 |
+| [第16章](../part02_toolchain/ch16_ide.md) | 配置解析/API响应 | 本章提供概念，第16章提供实现 |
+| [第151章](../part13_engineering/ch151_benchmark.md) | 泛型库/编译期计算 | 本章提供概念，第151章提供实现 |
+| [第157章](../part14_perf/ch157_compiler_explorer.md) | 日志格式化/序列化 | 本章提供概念，第157章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)）—— 编号相邻、主题接续。
-- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
+- **相邻主题**：[第13章　包管理：vcpkg / Conan（C++）](../part02_toolchain/ch13_packaging.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第17章　交叉编译与嵌入式工具链（C++）](../part02_toolchain/ch17_crosscompile.md)）—— 编号相邻、主题接续。
+- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1116,7 +1116,7 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 **最佳实践**：采样型 profiler（`perf`/`pprof`）开销低但分辨率受采样频率限制；插桩型（XRay/tracing）精确但引入固定开销。热路径先用 `perf` 粗定位，再 `XRay` 细追。
 
-> 交叉引用：基准方法见 [ch151](Book/part13_engineering/ch151_benchmark.md)；编译器优化见 [ch156](Book/part14_perf/ch156_compiler_opt.md)。
+> 交叉引用：基准方法见 [ch151](../part13_engineering/ch151_benchmark.md)；编译器优化见 [ch156](../part14_perf/ch156_compiler_opt.md)。
 
 ## 叙事补遗 [J: Learning]
 
@@ -1400,9 +1400,9 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 汇编对比验证优化是否生效（第⑪节与 ch156 衔接） |
-| ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](Book/part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译旗标汇编码（第⑦节外推） |
-| ch158 性能反模式 | [Book/part14_perf/ch158_perf_antipatterns.md](Book/part14_perf/ch158_perf_antipatterns.md) | 规避微基准陷阱/温度计效应（第⑯节与 ch158 衔接） |
-| ch151 基准 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | Google Benchmark 接入基准体系（第⑧节外推） |
-| ch152 性能模型 | [Book/part14_perf/ch152_perf_model.md](Book/part14_perf/ch152_perf_model.md) | 微架构瓶颈对应性能模型（第⑩节与 ch152 衔接） |
-| ch153 CPU 微架构 | [Book/part14_perf/ch153_cpu_micro.md](Book/part14_perf/ch153_cpu_micro.md) | 硬件计数器解释 CPU 行为（第③节与 ch153 衔接） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | 汇编对比验证优化是否生效（第⑪节与 ch156 衔接） |
+| ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](../part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译旗标汇编码（第⑦节外推） |
+| ch158 性能反模式 | [Book/part14_perf/ch158_perf_antipatterns.md](../part14_perf/ch158_perf_antipatterns.md) | 规避微基准陷阱/温度计效应（第⑯节与 ch158 衔接） |
+| ch151 基准 | [Book/part13_engineering/ch151_benchmark.md](../part13_engineering/ch151_benchmark.md) | Google Benchmark 接入基准体系（第⑧节外推） |
+| ch152 性能模型 | [Book/part14_perf/ch152_perf_model.md](../part14_perf/ch152_perf_model.md) | 微架构瓶颈对应性能模型（第⑩节与 ch152 衔接） |
+| ch153 CPU 微架构 | [Book/part14_perf/ch153_cpu_micro.md](../part14_perf/ch153_cpu_micro.md) | 硬件计数器解释 CPU 行为（第③节与 ch153 衔接） |

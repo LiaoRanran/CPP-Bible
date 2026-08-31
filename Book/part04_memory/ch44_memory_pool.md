@@ -2,8 +2,8 @@
 > 层级：L3 专家
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)
-[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)
+[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)
+[第122章　PMR 与多态分配器](../part10_modern/ch122_pmr.md)
 
 > 立场分层说明：本章所有论断按四层标注——**<span class="badge badge-std">标准</span>** 表示 C++ 标准保证；**<span class="badge badge-impl">实现</span>** 表示 GCC/libstdc++、LLVM/libc++、MSVC/MS STL 的具体实现行为；**[平台·x86-64]** 表示 Windows/MinGW/Linux/ARM/x86 等平台相关；**<span class="badge badge-exp">经验</span>** 表示工程实践与性能经验。
 >
@@ -48,7 +48,7 @@
 
 ## ① 为何需要内存池（动机全景）
 
-[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)
+[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)
 
 **<span class="badge badge-std">标准</span>** C++ 标准只保证 `::operator new`/`::operator delete`（见 ch37）分配一块" suitably aligned storage for any object type"（[new.delete.single]），并不保证性能、延迟确定性或碎片控制。其语义是"请求—返回"式的通用分配器，要为任意大小、任意生命周期的请求服务。
 
@@ -1968,9 +1968,9 @@ int main(){
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第43章](Book/part04_memory/ch43_cache_locality.md) | 键值查找/缓存 | 本章提供概念，第43章提供实现 |
-| [第122章](Book/part10_modern/ch122_pmr.md) | 泛型库/编译期计算 | 本章提供概念，第122章提供实现 |
-| [第160章](Book/part15_cases/ch160_mempool.md) | 资源管理/事务回滚 | 本章提供概念，第160章提供实现 |
+| [第43章](../part04_memory/ch43_cache_locality.md) | 键值查找/缓存 | 本章提供概念，第43章提供实现 |
+| [第122章](../part10_modern/ch122_pmr.md) | 泛型库/编译期计算 | 本章提供概念，第122章提供实现 |
+| [第160章](../part15_cases/ch160_mempool.md) | 资源管理/事务回滚 | 本章提供概念，第160章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -2119,12 +2119,12 @@ int main(){
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— 池用 placement new 替代通用 new。
-- **同模块接续**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)—— pmr 资源可封装内存池。
-- **同模块接续**：[第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化](Book/part04_memory/ch42_strict_aliasing.md)—— 池内对象类型双关的 aliasing 边界。
-- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 池分配对象配智能指针管理所有权。
-- **相邻主题**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 池化对象的内存布局。
-- **相邻主题**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 池常作为类内封装资源。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)—— 池用 placement new 替代通用 new。
+- **同模块接续**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)—— pmr 资源可封装内存池。
+- **同模块接续**：[第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化](../part04_memory/ch42_strict_aliasing.md)—— 池内对象类型双关的 aliasing 边界。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](../part04_memory/ch41_smart_pointers.md)—— 池分配对象配智能指针管理所有权。
+- **相邻主题**：[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)—— 池化对象的内存布局。
+- **相邻主题**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)—— 池常作为类内封装资源。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

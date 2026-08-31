@@ -2,9 +2,9 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)
+[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)
 
-[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)
+[第147章 代码审查（C++）](../part13_engineering/ch147_code_review.md)
 
 > **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证，示例源码位于 `Examples/_ch144_*.cpp`，对应汇编/预处理产物位于 `Examples/_ch144_*_O2.asm` 与 `Examples/_ch144_guard.i`。编译命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`，全部示例均通过 `-Wall -Wextra` 警告零洁净（warnings clean）验证；关键机器码结论直接引用 g++ 生成的 Intel 语法汇编，绝不编造。源码剖析（第⑩节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/bits/vector.tcc`，行号取自实际文件。立场分层标签：`[标准]`=ISO C++，`[实现·Clang19]`=编译器/标准库实现，`[平台·Windows]`=OS/ABI，`[经验]`=工程共识。
 
@@ -50,7 +50,7 @@
 
 ## ① 概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>
 
-[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)
+[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)
 
 代码风格不是"美观问题"，而是**工程经济学**问题。风格统一的代码降低三类成本：
 
@@ -260,7 +260,7 @@ using namespace std;   // ❌ 禁止
 
 ## ⑥ const 正确性（const/constexpr/mutable）
 
-[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)（const/constexpr/mutable 家族）—— 三个 const 语义来源与取舍
+[第21章　const / constexpr / consteval / constinit 深度详解](../part03_language/ch21_const_family.md)（const/constexpr/mutable 家族）—— 三个 const 语义来源与取舍
 
 const 正确性是 C++ 类型系统的核心护栏。`[标准]` const 成员函数保证不修改对象逻辑状态（[class.const]），从而可被 const 对象调用。
 
@@ -510,7 +510,7 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noex
 
 ## ⑪ 移动语义规范
 
-[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)（移动语义与完美转发）—— 保证复制消除与 `reserve` 预分配的工程细节
+[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)（移动语义与完美转发）—— 保证复制消除与 `reserve` 预分配的工程细节
 
 移动语义让"资源转让"代替"深拷贝"。`[标准]` 右值引用（`T&&`）绑定临时对象，配合 `std::move` 触发移动而非拷贝。
 
@@ -673,7 +673,7 @@ inline void log_time() { /* 大段实现 */ }   // 非模板也应放 .cpp
 
 ## ⑮ 现代 C++ 特性取舍（C++11/14/17/20/23）
 
-[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)（Concepts 与 requires）—— C++20 约束优先于 SFINAE 的特性取舍
+[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)（Concepts 与 requires）—— C++20 约束优先于 SFINAE 的特性取舍
 
 不同标准引入的特性，取舍依据是"团队工具链版本"与"收益/复杂度比"。`[标准]` 以 C++23 为基线，但应考虑部署目标。
 
@@ -760,8 +760,8 @@ public:
 
 ## ⑰ 静态分析集成（clang-tidy 上游参考）
 
-[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)（CI/CD 流水线）—— clang-tidy 检查应作为 PR 门禁强制
-[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)（代码审查）—— 静态分析覆盖不了的风格由人工 review 兜底
+[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)（CI/CD 流水线）—— clang-tidy 检查应作为 PR 门禁强制
+[第147章 代码审查（C++）](../part13_engineering/ch147_code_review.md)（代码审查）—— 静态分析覆盖不了的风格由人工 review 兜底
 
 静态分析把风格与缺陷检查前置到提交前。`[实现·Clang-Tidy]`（上游 LLVM 工具，非本机 g++ 工具链，此处给出命令与典型输出形态，供本地化落地）。
 
@@ -1005,22 +1005,22 @@ A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → �
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第145章](Book/part13_engineering/ch145_naming_api.md) | 键值查找/缓存 | 本章提供概念，第145章提供实现 |
-| [第145章](Book/part13_engineering/ch145_naming_api.md) | 独占所有权/工厂模式 | 本章提供概念，第145章提供实现 |
-| [第147章](Book/part13_engineering/ch147_code_review.md) | STL算法回调/异步任务 | 本章提供概念，第147章提供实现 |
+| [第145章](../part13_engineering/ch145_naming_api.md) | 键值查找/缓存 | 本章提供概念，第145章提供实现 |
+| [第145章](../part13_engineering/ch145_naming_api.md) | 独占所有权/工厂模式 | 本章提供概念，第145章提供实现 |
+| [第147章](../part13_engineering/ch147_code_review.md) | STL算法回调/异步任务 | 本章提供概念，第147章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
-- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
-- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
-- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
-- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
-- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
-- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
-- **跨模块延伸（part15 案例）**：[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)）—— 日志库是代码风格落地的大型工业样本
-- **跨模块延伸（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）—— DOD 数据布局也受风格与可读性约束
-- **跨模块延伸（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）—— ECS 实体命名同样依赖清晰风格
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](../part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](../part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)）
+- **跨模块延伸（part15 案例）**：[第161章 从零实现日志库（C++）](../part15_cases/ch161_logger.md)）—— 日志库是代码风格落地的大型工业样本
+- **跨模块延伸（part12 模式）**：[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)）—— DOD 数据布局也受风格与可读性约束
+- **跨模块延伸（part12 模式）**：[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）—— ECS 实体命名同样依赖清晰风格
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1270,13 +1270,13 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch145 命名与 API 设计 | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | §③ 命名一致性约束风格落地 |
-| ch146 错误处理 | [Book/part13_engineering/ch146_error_handling.md](Book/part13_engineering/ch146_error_handling.md) | §⑩ 异常规范 noexcept 纳入风格 |
-| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑫ 自动化门禁承接风格工具链 |
-| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑫ 风格检查进 CI 门禁 |
-| ch21 const 家族 | [Book/part03_language/ch21_const_family.md](Book/part03_language/ch21_const_family.md) | const/constexpr 理论根基 |
-| ch115 移动语义 | [Book/part10_modern/ch115_move.md](Book/part10_modern/ch115_move.md) | §⑪ 移动语义规范 |
-| ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | -Wall -Wextra 警告取证 |
+| ch145 命名与 API 设计 | [Book/part13_engineering/ch145_naming_api.md](../part13_engineering/ch145_naming_api.md) | §③ 命名一致性约束风格落地 |
+| ch146 错误处理 | [Book/part13_engineering/ch146_error_handling.md](../part13_engineering/ch146_error_handling.md) | §⑩ 异常规范 noexcept 纳入风格 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](../part13_engineering/ch147_code_review.md) | §⑫ 自动化门禁承接风格工具链 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | §⑫ 风格检查进 CI 门禁 |
+| ch21 const 家族 | [Book/part03_language/ch21_const_family.md](../part03_language/ch21_const_family.md) | const/constexpr 理论根基 |
+| ch115 移动语义 | [Book/part10_modern/ch115_move.md](../part10_modern/ch115_move.md) | §⑪ 移动语义规范 |
+| ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | -Wall -Wextra 警告取证 |
 
 ## 附录 D5：真实基准与性能分析 — 大尺寸元素 range-for — auto（值拷贝）vs const auto& vs auto&& vs 索引访问（GCC 15.3.0）
 

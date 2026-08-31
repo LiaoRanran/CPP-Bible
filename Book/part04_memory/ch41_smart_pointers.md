@@ -117,8 +117,8 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 
 ## ① 动机与全景：为何需要智能指针
 
-[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)
-[第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化](Book/part04_memory/ch42_strict_aliasing.md)
+[第 40 章　异常安全（Exception Safety）](../part04_memory/ch40_exception_safety.md)
+[第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化](../part04_memory/ch42_strict_aliasing.md)
 
 <span class="badge badge-std">标准</span> C++ 没有垃圾回收。裸 `new`/`delete`（ch37）把"分配"与"释放"分离到两处，一旦中间抛出异常、提前 `return`、或分支遗漏，就会泄漏。智能指针把"释放"绑定到对象析构（RAII，见 ch39），由作用域 / 所有权自动触发。
 
@@ -1881,18 +1881,18 @@ call    _Znwy                   ; operator new(24): 单次分配
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第40章](Book/part04_memory/ch40_exception_safety.md) | 键值查找/缓存 | 本章提供概念，第40章提供实现 |
-| [第42章](Book/part04_memory/ch42_strict_aliasing.md) | 独占所有权/工厂模式 | 本章提供概念，第42章提供实现 |
+| [第40章](../part04_memory/ch40_exception_safety.md) | 键值查找/缓存 | 本章提供概念，第40章提供实现 |
+| [第42章](../part04_memory/ch42_strict_aliasing.md) | 独占所有权/工厂模式 | 本章提供概念，第42章提供实现 |
 
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)—— 智能指针是 RAII 的核心范式。
-- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— 控制块与对象经 new/delete 落地。
-- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 堆上资源在地址空间中的视图。
-- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)—— 默认堆持有 vs 栈句柄的权衡。
-- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)—— 池 + 智能指针组合降低分配抖动。
-- **相邻主题**：[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)—— 控制块布局影响缓存命中。
+- **同模块接续**：[第 39 章　RAII 与 Rule of Zero/Three/Five](../part04_memory/ch39_raii_rule.md)—— 智能指针是 RAII 的核心范式。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)—— 控制块与对象经 new/delete 落地。
+- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](../part04_memory/ch35_memory_layout.md)—— 堆上资源在地址空间中的视图。
+- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](../part04_memory/ch36_stack_heap.md)—— 默认堆持有 vs 栈句柄的权衡。
+- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](../part04_memory/ch44_memory_pool.md)—— 池 + 智能指针组合降低分配抖动。
+- **相邻主题**：[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)—— 控制块布局影响缓存命中。
 
 ## 附录 C：编译实证——`unique_ptr` 的零开销证明 [E: Low-level]
 

@@ -2,9 +2,9 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)
-[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)
-[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)
+[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)
+[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)
+[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)
 
 > **真实工具链**：MinGW GCC 13.1.0（`x86_64-posix-seh-rev1, Built by MinGW-Builds project`）；取证命令 `g++ -std=c++23 -O2 -S -masm=intel -o xxx.asm xxx.cpp`。
 > **取证产物路径**：`C:/CodeLearnling/note/note/C++/CPP-Bible/Examples/_ch135_*.cpp` 与 `_ch135_*.asm`（含 `_ch135_virtual_dispatch.asm`、`_ch135_vcall_impl.asm`）。
@@ -49,7 +49,7 @@
 
 ## ① 概述：什么是设计模式 <span class="badge badge-std">标准</span>
 
-[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)
+[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)
 
 设计模式（Design Pattern）是对**在特定上下文中反复出现的设计问题**的、可复用的解决方案描述。它不偏向任何语言，但 C++ 因同时具备「零开销抽象」与「值/引用双语义」，成为模式表达力最强的语言之一。
 
@@ -881,10 +881,10 @@ int main(){std::unique_ptr<int> p(new int(42));std::cout<<*p<<std::endl;std::cou
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第136章](Book/part12_patterns/ch136_creational.md) | 键值查找/缓存 | 本章提供概念，第136章提供实现 |
-| [第136章](Book/part12_patterns/ch136_creational.md) | 独占所有权/工厂模式 | 本章提供概念，第136章提供实现 |
-| [第137章](Book/part12_patterns/ch137_structural.md) | 多态插件/框架扩展 | 本章提供概念，第137章提供实现 |
-| [第138章](Book/part12_patterns/ch138_behavioral.md) | 泛型库/编译期计算 | 本章提供概念，第138章提供实现 |
+| [第136章](../part12_patterns/ch136_creational.md) | 键值查找/缓存 | 本章提供概念，第136章提供实现 |
+| [第136章](../part12_patterns/ch136_creational.md) | 独占所有权/工厂模式 | 本章提供概念，第136章提供实现 |
+| [第137章](../part12_patterns/ch137_structural.md) | 多态插件/框架扩展 | 本章提供概念，第137章提供实现 |
+| [第138章](../part12_patterns/ch138_behavioral.md) | 泛型库/编译期计算 | 本章提供概念，第138章提供实现 |
 
 ## 附录 G：面试
 
@@ -901,21 +901,21 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 - 观察者模式易致生命周期问题（被观察者持有失效观察者），用 `weak_ptr` 或自动断开连接。
 - 避免过度解耦导致调试困难；事件流应有明确所有权。
 
-> 交叉引用：结构型模式见 [ch137](Book/part12_patterns/ch137_structural.md)；接口见 [ch45](Book/part05_oo/ch45_oop_object_model.md)。
+> 交叉引用：结构型模式见 [ch137](../part12_patterns/ch137_structural.md)；接口见 [ch45](../part05_oo/ch45_oop_object_model.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
-- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
-- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
-- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
-- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
-- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
-- **跨模块延伸（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）—— Qt 对象模型是信号槽模式的大型工业实现
-- **跨模块延伸（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）—— Unreal 大量使用设计模式组织引擎架构
-- **跨模块延伸（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）—— ClickHouse/Redis 架构是模式落地范本
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)）
+- **跨模块延伸（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）—— Qt 对象模型是信号槽模式的大型工业实现
+- **跨模块延伸（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）—— Unreal 大量使用设计模式组织引擎架构
+- **跨模块延伸（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）—— ClickHouse/Redis 架构是模式落地范本
 
 ## 附录 H（工业级设计模式实战）
 

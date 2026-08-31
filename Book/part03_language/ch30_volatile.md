@@ -1,9 +1,9 @@
 # 第30章 volatile / atomic 与硬件寄存器
 > **[验证环境·平台/ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。C++ 标准层（<span class="badge badge-std">标准</span>）：`volatile` 仅保证「对 volatile 对象的访问不被优化掉、不被与其他 volatile 访问重排」，**不提供**跨线程可见性、不保证原子性、不阻止编译器/CPU 重排；因此 `volatile` **不可用于线程同步**——历史上 MSVC 对其有额外放松（[实现·MSVC]），但 GCC/Clang 不保证，属平台差异（[ABI/平台]）。涉及内存映射 I/O（MMIO）的语义以具体编译器与目标平台为准，跨平台请用 `std::atomic` 或 OS 原语。
 
-[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
+[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)
 
-> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) / 难度: ★★★☆☆｜层级：L2 进阶
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / [第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md) / 难度: ★★★☆☆｜层级：L2 进阶
 
 ## ⓪ 历史动机：`volatile` 与硬件寄存器的来龙去脉
 
@@ -710,19 +710,19 @@ int main(){std::cout<<"volatile总结: 用于MMIO/信号/isr。不是同步原�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第107章](Book/part09_concurrency/ch107_atomic.md) | 键值查找/缓存 | 本章提供概念，第107章提供实现 |
+| [第107章](../part09_concurrency/ch107_atomic.md) | 键值查找/缓存 | 本章提供概念，第107章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— volatile 硬件映射的存储期与变量章直接承接
-- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— volatile 与 const/转型协同（volatile 指针转换）
-- **同模块接续**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— volatile 不保证线程安全，误用即 UB 高发区
-- **同模块接续**：[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)—— volatile 变量的初始化语义由初始化章约束
-- **同模块接续**：[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)—— 友元与 volatile 硬件寄存器访问交互
-- **跨模块**：[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)）—— 交叉编译/嵌入式工具链决定 volatile 内存映射的有效性
-- **跨模块**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）—— std::atomic 是 volatile 的多线程正确替代
-- **跨模块**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）—— memory_order 替代 volatile 提供真实同步语义
-- **跨模块**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)—— 内存屏障/fence 替代 volatile 的顺序保证
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)）—— volatile 硬件映射的存储期与变量章直接承接
+- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](../part03_language/ch27_cast.md)—— volatile 与 const/转型协同（volatile 指针转换）
+- **同模块接续**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](../part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— volatile 不保证线程安全，误用即 UB 高发区
+- **同模块接续**：[第32章 初始化与列表初始化](../part03_language/ch32_initialization.md)—— volatile 变量的初始化语义由初始化章约束
+- **同模块接续**：[第29章 友元 friend 与访问控制](../part03_language/ch29_friend.md)—— 友元与 volatile 硬件寄存器访问交互
+- **跨模块**：[第17章　交叉编译与嵌入式工具链（C++）](../part02_toolchain/ch17_crosscompile.md)）—— 交叉编译/嵌入式工具链决定 volatile 内存映射的有效性
+- **跨模块**：[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)）—— std::atomic 是 volatile 的多线程正确替代
+- **跨模块**：[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)）—— memory_order 替代 volatile 提供真实同步语义
+- **跨模块**：[第109章 内存屏障与 fence](../part09_concurrency/ch109_fence.md)—— 内存屏障/fence 替代 volatile 的顺序保证
 
 ## 真实开源项目参考（可查证链接）
 
@@ -741,7 +741,7 @@ int main(){std::cout<<"volatile总结: 用于MMIO/信号/isr。不是同步原�
 - C++ 中 `volatile` 不保证线程间可见性也不防数据竞争；多线程同步必须用 `std::atomic`。
 - `volatile` 仅用于 `SIGNAL` / `setjmp` / MMIO 等特例，误用于并发是常见 UB 来源。
 
-> 交叉引用：原子与内存序见 [ch108](Book/part09_concurrency/ch108_memory_order.md)；内存模型见 [ch109](Book/part09_concurrency/ch109_fence.md)。
+> 交叉引用：原子与内存序见 [ch108](../part09_concurrency/ch108_memory_order.md)；内存模型见 [ch109](../part09_concurrency/ch109_fence.md)。
 
 ## 自测练习（Exercises）
 

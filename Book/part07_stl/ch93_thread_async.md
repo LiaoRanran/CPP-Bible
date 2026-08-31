@@ -1,7 +1,7 @@
 # 第93章　线程与异步：thread / future / async
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：180 分钟 ／ 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)、[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) ／ 后续：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) ／ 难度：★★★★☆｜层级：L2 进阶
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：180 分钟 ／ 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)、[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)、[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md) ／ 后续：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)、[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)、[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md) ／ 难度：★★★★☆｜层级：L2 进阶
 
 > 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指 Windows x64 (MinGW, Itanium-ish Win64 ABI)；`[经验]` 为工程共识。所有 libstdc++ 引用均给出 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
@@ -16,7 +16,7 @@
 ### 0.2 关键转折（编年）
 - 多年实践：Boost.Thread 验证了"RAII 锁（`lock_guard`/`unique_lock`）"等惯用法。<span class="badge badge-history">史</span>
 - C++11：`<thread>`/`<mutex>`/`<future>` 标准化，C++ 第一次有了内存模型与"数据竞争即 UB"的正式定义。
-- 后续：C++20 引入 `jthread` 与协作式取消（[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)）。
+- 后续：C++20 引入 `jthread` 与协作式取消（[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)）。
 
 ### 0.3 设计哲学之争
 `std::thread` 的"裸线程"用起来很危险——忘记 `join`/`detach` 就析构会 `std::terminate`。<span class="badge badge-comment">评</span> 因此社区更推崇 `std::async` 与"任务而非线程"的高层思维：把工作交出去、用 `future` 取结果，而非手动管线程生命周期。<span class="badge badge-comment">评</span> 这场"裸线程 vs 高层任务"的取向，是 C++ 并发设计的主线之一。
@@ -49,7 +49,7 @@
 - `std::shared_future`、异常如何跨线程经共享状态传播、`future::get()` 一次性的语义。
 - `std::call_once` / `std::once_flag`：线程安全的"只做一次"。
 
-学完应能在**不写裸 `pthread`、不直接 `new` 线程、不手动管理 join** 的前提下，用标准库搭出健壮的并发代码，并理解它与 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)（并发内存模型）、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)（原子）、[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)（内存序）的边界关系。
+学完应能在**不写裸 `pthread`、不直接 `new` 线程、不手动管理 join** 的前提下，用标准库搭出健壮的并发代码，并理解它与 [第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)（并发内存模型）、[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)（原子）、[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)（内存序）的边界关系。
 
 > **示例 1** [难度 ★★☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
 ```cpp
@@ -82,11 +82,11 @@ int main() {
 
 | 主题 | 为什么必须 | 链接 |
 |---|---|---|
-| 存储期与 ODR | 线程函数捕获引用时，被引用对象的生命周期必须跨过 `join` | [第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md) |
-| 移动语义 / `std::move` | `promise`、`packaged_task`、`unique_ptr` 只能移动，必须 `std::move` 进线程 | [第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md) |
-| 可变参数模板 / 完美转发 | `std::thread` 构造函数用 `decay` + 包展开把参数**拷贝**进线程 | [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md) |
-| 并发内存模型（happens-before） | 共享状态、join 都建立 happens-before；裸共享变量需原子/互斥 | [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) |
-| 异常安全 | `future::get()` 会把子线程异常重新抛出到调用线程 | [第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md) |
+| 存储期与 ODR | 线程函数捕获引用时，被引用对象的生命周期必须跨过 `join` | [第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md) |
+| 移动语义 / `std::move` | `promise`、`packaged_task`、`unique_ptr` 只能移动，必须 `std::move` 进线程 | [第115章　移动语义与右值引用](../part10_modern/ch115_move.md) |
+| 可变参数模板 / 完美转发 | `std::thread` 构造函数用 `decay` + 包展开把参数**拷贝**进线程 | [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md) |
+| 并发内存模型（happens-before） | 共享状态、join 都建立 happens-before；裸共享变量需原子/互斥 | [第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md) |
+| 异常安全 | `future::get()` 会把子线程异常重新抛出到调用线程 | [第 40 章　异常安全（Exception Safety）](../part04_memory/ch40_exception_safety.md) |
 
 `[标准]`：`<thread>`、`<future>` 自 C++11 起即为标准库组件；`std::async`、`std::future`、`std::promise`、`std::packaged_task` 同属 `[thread.req]`、`[futures]` 条款。
 
@@ -94,10 +94,10 @@ int main() {
 
 ## ③ 后续依赖 <span class="badge badge-std">标准</span>
 
-- **协作取消**：第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md) 的 `std::jthread` 在 `std::thread` 之上叠加 `stop_token`，其析构自动 `request_stop()` + `join`。
-- **互斥与条件变量**：`packaged_task` 常配合 `std::mutex`/`std::condition_variable` 使用，见 [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)。
-- **原子与内存序**：共享状态内部用 `std::call_once` + `std::atomic` 实现结果发布，深入见 [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)、[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)。
-- **执行器与线程池**：`std::async` 是"裸"异步；工业线程池见 [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) 与 [第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)。
+- **协作取消**：第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md) 的 `std::jthread` 在 `std::thread` 之上叠加 `stop_token`，其析构自动 `request_stop()` + `join`。
+- **互斥与条件变量**：`packaged_task` 常配合 `std::mutex`/`std::condition_variable` 使用，见 [第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)、[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)。
+- **原子与内存序**：共享状态内部用 `std::call_once` + `std::atomic` 实现结果发布，深入见 [第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)、[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)。
+- **执行器与线程池**：`std::async` 是"裸"异步；工业线程池见 [第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md) 与 [第159章 从零实现线程池（C++）](../part15_cases/ch159_threadpool.md)。
 
 ---
 
@@ -308,7 +308,7 @@ _Z16launch_and_countv:
 
 - `future`/`shared_future` 不能放进 `vector` 直接用（不可拷贝、`future` 不可拷贝只能移动）——用 `std::vector<std::future<int>>` + `std::move`。
 - 常与 `std::ranges` / `std::transform` 配合做"fan-out/fan-in"并行 map（见 ⑫ 工业案例）。
-- `std::future` 的阻塞语义与 `std::condition_variable` 的等待（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）实现原理同源：`future` 的共享状态用 `call_once` + 条件变量实现"就绪通知"。
+- `std::future` 的阻塞语义与 `std::condition_variable` 的等待（[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)）实现原理同源：`future` 的共享状态用 `call_once` + 条件变量实现"就绪通知"。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：future 在容器/算法/范
 ```cpp
@@ -375,7 +375,7 @@ int main() {
 }
 ```
 
-`[经验]`：生产环境**不要**每请求 `std::async`（线程创建昂贵，且无上限）。应配合线程池（[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。`std::async` 在此是"表达意图"的清晰手段，适合中低并发。
+`[经验]`：生产环境**不要**每请求 `std::async`（线程创建昂贵，且无上限）。应配合线程池（[第159章 从零实现线程池（C++）](../part15_cases/ch159_threadpool.md)、[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)）。`std::async` 在此是"表达意图"的清晰手段，适合中低并发。
 
 ---
 
@@ -423,8 +423,8 @@ class _State_baseV2 {
 |---|---|---|
 | N2249 (2007) | "Proposal for a Threading Library for C++" | C++11 `<thread>`/`<future>` 的雏形 |
 | N2660 | "Standard Library Extensions for Multithreading" | `async`/`future`/`promise` 入标准 |
-| P0443R14 / 后续 | "A Unified Executors Proposal" | 现代执行器（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)），是 `async` 的继任者 |
-| P0660 | "Stop Token and Joining Thread" | 第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md) 的 `jthread`/`stop_token` |
+| P0443R14 / 后续 | "A Unified Executors Proposal" | 现代执行器（[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)），是 `async` 的继任者 |
+| P0660 | "Stop Token and Joining Thread" | 第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md) 的 `jthread`/`stop_token` |
 
 `[标准]`：`<thread>`/`<future>` 经 C++11 引入，C++14/17/20 主要修缮（如 `std::async` 与 `shared_future` 的细节、C++20 起支持 `std::jthread` 协作取消的并行）。`[经验]`：标准从未提供"强制杀线程"能力——这是刻意的：强制 kill 会跳过析构、破坏锁与 invariant（见第94章 ⑩）。
 
@@ -583,9 +583,9 @@ int main() {
 }
 ```
 
-`[经验]`：**结论不是"多线程更快"，而是"并行只在任务足够重、或 I/O 密集（等待期间让出 CPU）时才划算"**。纯计算且 K 小，线程开销可能超过收益——这正是线程池/执行器（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）存在的理由。
+`[经验]`：**结论不是"多线程更快"，而是"并行只在任务足够重、或 I/O 密集（等待期间让出 CPU）时才划算"**。纯计算且 K 小，线程开销可能超过收益——这正是线程池/执行器（[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)）存在的理由。
 
-`[平台·x86-64]`：`future` 的共享状态是堆分配对象，`shared_ptr` 控制块含原子引用计数，跨线程传递存在**伪共享/缓存行跳动**风险；高频 `get()` 短任务场景应考虑无锁通道（[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）。
+`[平台·x86-64]`：`future` 的共享状态是堆分配对象，`shared_ptr` 控制块含原子引用计数，跨线程传递存在**伪共享/缓存行跳动**风险；高频 `get()` 短任务场景应考虑无锁通道（[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)）。
 
 ---
 
@@ -614,7 +614,7 @@ int main() {
 | 强制 kill | **无**（刻意） | **无** | `runtime.Goexit`（协作） | `Thread.stop()` **已废弃（危险）** |
 | 启动成本 | 高（系统调用） | 高（std）/低（tokio） | 极低（goroutine ~2KB 栈） | 高（平台）/低（虚拟线程） |
 
-`[标准]`：C++ 与 Rust 一致地**拒绝"强制杀线程"**，因为跨析构/锁的强制终止不可恢复；Go 用 `context` 做协作取消，Java 历史上有危险的 `Thread.stop()`（现已废弃）。这与第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md) 的 `std::jthread` 协作取消模型一脉相承。
+`[标准]`：C++ 与 Rust 一致地**拒绝"强制杀线程"**，因为跨析构/锁的强制终止不可恢复；Go 用 `context` 做协作取消，Java 历史上有危险的 `Thread.stop()`（现已废弃）。这与第94章 [第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md) 的 `std::jthread` 协作取消模型一脉相承。
 
 `[经验]`：从 Go/Java 来的工程师常期望"取消 = 立刻停"，在 C++ 里要转变为"取消 = 设置标志，由工作线程在检查点自行退出"。
 
@@ -1108,11 +1108,11 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第93章](Book/part07_stl/ch93_thread_async.md) | 键值查找/缓存 | 本章提供概念，第93章提供实现 |
-| [第93章](Book/part07_stl/ch93_thread_async.md) | 独占所有权/工厂模式 | 本章提供概念，第93章提供实现 |
-| [第93章](Book/part07_stl/ch93_thread_async.md) | 无锁队列/计数器 | 本章提供概念，第93章提供实现 |
-| [第93章](Book/part07_stl/ch93_thread_async.md) | STL算法回调/异步任务 | 本章提供概念，第93章提供实现 |
-| [第93章](Book/part07_stl/ch93_thread_async.md) | 泛型库/编译期计算 | 本章提供概念，第93章提供实现 |
+| [第93章](../part07_stl/ch93_thread_async.md) | 键值查找/缓存 | 本章提供概念，第93章提供实现 |
+| [第93章](../part07_stl/ch93_thread_async.md) | 独占所有权/工厂模式 | 本章提供概念，第93章提供实现 |
+| [第93章](../part07_stl/ch93_thread_async.md) | 无锁队列/计数器 | 本章提供概念，第93章提供实现 |
+| [第93章](../part07_stl/ch93_thread_async.md) | STL算法回调/异步任务 | 本章提供概念，第93章提供实现 |
+| [第93章](../part07_stl/ch93_thread_async.md) | 泛型库/编译期计算 | 本章提供概念，第93章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1127,7 +1127,7 @@ int main() {
 - `std::async` 默认策略可能新开线程（`launch::async`）或延迟（`deferred`），务必显式指定 `launch::async`。
 - 共享状态生命周期需覆盖 `future`；`get()` 只能调用一次；优先 `folly::Future::then` 或 `std::async` + `wait_for` 避免阻塞。
 
-> 交叉引用：停止令牌见 [ch94](Book/part07_stl/ch94_stop_token.md)；原子见 [ch108](Book/part09_concurrency/ch108_memory_order.md)。
+> 交叉引用：停止令牌见 [ch94](../part07_stl/ch94_stop_token.md)；原子见 [ch108](../part09_concurrency/ch108_memory_order.md)。
 
 ## 底层视角：原子指令、内存屏障与上下文切换代价 [E: Low-level]
 
@@ -1225,13 +1225,13 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)—— stop_token 为 thread/async 提供协作取消
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 这些并发设施位于 STL 但跨模块
-- **跨模块前置**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）—— 线程同步底层依赖 atomic
-- **跨模块前置**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）—— 内存序决定异步结果的可见性
-- **跨模块前置**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）—— 无锁数据结构是线程/异步的高性能近亲
-- **相邻主题**：[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)）—— 异步回调的异常安全需谨慎
-- **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— future 的移动依赖移动语义
+- **同模块相邻**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)—— stop_token 为 thread/async 提供协作取消
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— 这些并发设施位于 STL 但跨模块
+- **跨模块前置**：[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)）—— 线程同步底层依赖 atomic
+- **跨模块前置**：[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)）—— 内存序决定异步结果的可见性
+- **跨模块前置**：[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)）—— 无锁数据结构是线程/异步的高性能近亲
+- **相邻主题**：[第 40 章　异常安全（Exception Safety）](../part04_memory/ch40_exception_safety.md)）—— 异步回调的异常安全需谨慎
+- **相邻主题**：[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)—— future 的移动依赖移动语义
 
 ## 自测练习（Exercises）
 

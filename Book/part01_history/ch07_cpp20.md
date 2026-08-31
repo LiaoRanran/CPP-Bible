@@ -1,8 +1,8 @@
 # 第07章　C++20：量级升级
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
-[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)
+[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)
+[第119章　Ranges 深入（C++20）](../part10_modern/ch119_ranges_deep.md)
 
 > 标准基：ISO/IEC 14882:2020（N4861）｜预计阅读：45 min｜前置：ch04–ch06、ch60 模板、ch63 变参｜后续：ch67 Concepts、ch90/119 Ranges、ch113/120 Coroutines、ch118 Modules、ch21 consteval、ch25 枚举(多种)、ch32 初始化(设计化)｜难度：★★★★｜层级：L1 入门
 
@@ -50,8 +50,8 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 
 ## ① 学习目标
 
-[第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)
-[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)
+[第06章　C++17：生产力跃升](../part01_history/ch06_cpp17.md)
+[第08章　C++23：标准库大修](../part01_history/ch08_cpp23.md)
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
 ```cpp
@@ -546,10 +546,10 @@ int main(){std::cout<<add(10,20)<<std::endl;std::cout<<"concepts=zero runtime ov
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第6章](Book/part01_history/ch06_cpp17.md) | 键值查找/缓存 | 本章提供概念，第6章提供实现 |
-| [第8章](Book/part01_history/ch08_cpp23.md) | STL算法回调/异步任务 | 本章提供概念，第8章提供实现 |
-| [第67章](Book/part06_templates/ch67_concepts.md) | 泛型库/编译期计算 | 本章提供概念，第67章提供实现 |
-| [第119章](Book/part10_modern/ch119_ranges_deep.md) | 日志格式化/序列化 | 本章提供概念，第119章提供实现 |
+| [第6章](../part01_history/ch06_cpp17.md) | 键值查找/缓存 | 本章提供概念，第6章提供实现 |
+| [第8章](../part01_history/ch08_cpp23.md) | STL算法回调/异步任务 | 本章提供概念，第8章提供实现 |
+| [第67章](../part06_templates/ch67_concepts.md) | 泛型库/编译期计算 | 本章提供概念，第67章提供实现 |
+| [第119章](../part10_modern/ch119_ranges_deep.md) | 日志格式化/序列化 | 本章提供概念，第119章提供实现 |
 
 ## 附录 L：C++20 Concepts底层汇编与面试
 
@@ -604,10 +604,10 @@ int main(){std::cout<<add(10,20)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)—— 编号相邻、主题接续。
-- **相邻主题**：[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)—— 编号相邻、主题接续。
-- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
+- **后续依赖**：[第10章　版本特性全景对照表与迁移指南](../part01_history/ch10_version_matrix.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第05章　C++14：小幅完善](../part01_history/ch05_cpp14.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第09章　C++26：已确定特性与方向](../part01_history/ch09_cpp26.md)—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](../part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 附录 G：C++20 工业实践与深度
 

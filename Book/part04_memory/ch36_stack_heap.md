@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
-[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
+[第 35 章  C++ 程序的内存模型与操作系统视角](../part04_memory/ch35_memory_layout.md)
+[第 39 章　RAII 与 Rule of Zero/Three/Five](../part04_memory/ch39_raii_rule.md)
 
 > 本章定位：内存管理的"地基"章节。栈与堆是进程地址空间中两种根本不同的动态存储区域（与 ch35 地址空间布局、ch19 存储期紧密耦合）。理解二者的结构、分配语义、性能与生命周期差异，是掌握 `new`/`delete`（ch37）、分配器（ch38）、内存池（ch44）、并发与堆竞争（ch61）的前提。
 >
@@ -47,8 +47,8 @@
 
 ## ① 导言：两块内存，两种哲学
 
-[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
-[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)
+[第 35 章  C++ 程序的内存模型与操作系统视角](../part04_memory/ch35_memory_layout.md)
+[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)
 
 <span class="badge badge-std">标准</span> C++ 标准本身不规定"栈"或"堆"的实现细节——它只定义**存储期**（storage duration，见 ch19）：自动存储期（automatic）、动态存储期（dynamic）、静态存储期（static）、线程存储期（thread）。但在**所有真实实现**中，自动存储期对象几乎总是落在**栈**上，动态存储期对象几乎总是落在**堆**（自由存储区 free store，由 `malloc`/`operator new` 管理的堆）上。
 
@@ -1426,10 +1426,10 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第35章](Book/part04_memory/ch35_memory_layout.md) | 键值查找/缓存 | 本章提供概念，第35章提供实现 |
-| [第35章](Book/part04_memory/ch35_memory_layout.md) | 独占所有权/工厂模式 | 本章提供概念，第35章提供实现 |
-| [第37章](Book/part04_memory/ch37_new_delete.md) | 高性能容器/零拷贝传输 | 本章提供概念，第37章提供实现 |
-| [第39章](Book/part04_memory/ch39_raii_rule.md) | 资源管理/事务回滚 | 本章提供概念，第39章提供实现 |
+| [第35章](../part04_memory/ch35_memory_layout.md) | 键值查找/缓存 | 本章提供概念，第35章提供实现 |
+| [第35章](../part04_memory/ch35_memory_layout.md) | 独占所有权/工厂模式 | 本章提供概念，第35章提供实现 |
+| [第37章](../part04_memory/ch37_new_delete.md) | 高性能容器/零拷贝传输 | 本章提供概念，第37章提供实现 |
+| [第39章](../part04_memory/ch39_raii_rule.md) | 资源管理/事务回滚 | 本章提供概念，第39章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1495,15 +1495,15 @@ int main() {
 - 栈溢出（stack overflow）不抛异常直接 SIGSEGV；递归过深或大局部数组应移堆或调大栈（`ulimit -s`）。
 - 自定义分配器须满足 16B 对齐与异常安全；Boost/Folly/Chromium 的分配器均在接口层保证这两点，LLVM 的 `BumpPtrAllocator` 则不负责析构。
 
-> 交叉引用：分配器模型见 [ch38](Book/part04_memory/ch38_allocator.md)；缓存局部性见 [ch43](Book/part04_memory/ch43_cache_locality.md)。
+> 交叉引用：分配器模型见 [ch38](../part04_memory/ch38_allocator.md)；缓存局部性见 [ch43](../part04_memory/ch43_cache_locality.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 地址空间划分决定栈底与堆起点。
-- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— new 从堆取内存，是栈溢出时的逃生通道。
-- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 智能指针默认堆分配，选栈还是堆的封装决策。
-- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)—— 实时场景用池替代通用堆，规避碎片与不确定延迟。
-- **前置基础**：[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)—— 堆对象访问模式决定缓存命中率。
+- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](../part04_memory/ch35_memory_layout.md)—— 地址空间划分决定栈底与堆起点。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)—— new 从堆取内存，是栈溢出时的逃生通道。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](../part04_memory/ch41_smart_pointers.md)—— 智能指针默认堆分配，选栈还是堆的封装决策。
+- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](../part04_memory/ch44_memory_pool.md)—— 实时场景用池替代通用堆，规避碎片与不确定延迟。
+- **前置基础**：[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)—— 堆对象访问模式决定缓存命中率。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

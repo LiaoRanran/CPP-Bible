@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)
-[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
+[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)
+[第96章　排序：sort / stable_sort / partial_sort（C++）](../part08_algorithms/ch96_sorting.md)
 
 > 元数据：标准基 C++11/14/17 · 预计阅读 45min · 前置 第118章 Modules（仅文字提及，无交叉引用）· 难度 ★★★★
 > 取证说明：本章 `leveldb::` / `rocksdb::` 片段为**上游源码摘录**（LevelDB / RocksDB 本机未安装），无本机编译器取证，行内标注「上游参考」。含 `int main` 的**纯 C++ 示意块**以 MinGW GCC 15.3.0（`-std=c++23 -O0`）验证可编译运行。
@@ -50,8 +50,8 @@ LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compac
 
 ## ① 概述：LSM-Tree 存储引擎 <span class="badge badge-std">标准</span>
 
-[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)
-[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)
+[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)
+[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)
 
 LSM-Tree（Log-Structured Merge-Tree）把**随机写**转化为**顺序写**：所有写入先进内存表（MemTable），写满后刷成有序的不可变文件（SSTable），后台合并（Compaction）回收空间并维持读性能。LevelDB / RocksDB 是工业级 LSM 引擎，被 TiKV、Kafka、Rockset、MongoDB（WiredTiger 同源思想）等广泛使用。
 
@@ -1078,10 +1078,10 @@ bool healthy = imm <= 2 && !pending_compaction && live_data_mb < capacity_mb * 0
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第131章](Book/part11_source/ch131_fmt_spdlog.md) | 键值查找/缓存 | 本章提供概念，第131章提供实现 |
-| [第133章](Book/part11_source/ch133_clickhouse_redis.md) | 独占所有权/工厂模式 | 本章提供概念，第133章提供实现 |
-| [第96章](Book/part08_algorithms/ch96_sorting.md) | 无锁队列/计数器 | 本章提供概念，第96章提供实现 |
-| [第83章](Book/part07_stl/ch83_map.md) | 日志格式化/序列化 | 本章提供概念，第83章提供实现 |
+| [第131章](../part11_source/ch131_fmt_spdlog.md) | 键值查找/缓存 | 本章提供概念，第131章提供实现 |
+| [第133章](../part11_source/ch133_clickhouse_redis.md) | 独占所有权/工厂模式 | 本章提供概念，第133章提供实现 |
+| [第96章](../part08_algorithms/ch96_sorting.md) | 无锁队列/计数器 | 本章提供概念，第96章提供实现 |
+| [第83章](../part07_stl/ch83_map.md) | 日志格式化/序列化 | 本章提供概念，第83章提供实现 |
 
 ## ㉑ 真实工程使用场景：把 LevelDB / RocksDB 接到你的工程
 
@@ -1289,16 +1289,16 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
-- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
-- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
-- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
-- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
-- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
-- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
-- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
-- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
-- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](../part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）
 
 ## 附录 G（LSM-Tree 与 SSTable）
 

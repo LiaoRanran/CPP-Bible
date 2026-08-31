@@ -22,6 +22,9 @@ from pathlib import Path
 
 CROSSREF_RE = re.compile(r"(?:⟶\s*|→\s*)(Book/[^\s\)\]>。，；：、》）(（]+)")
 FILE_LINK_RE = re.compile(r"`?(Book/[A-Za-z0-9_/.\-]+\.md)`?")
+# 源相对链接形态（tools/fix_book_links.py 改写后）：`](../partNN/chYY.md)`。
+# rewrite_links/xref_check 已原生兼容；crossref 在此计数并校验，避免覆盖率口径缩水。
+REL_LINK_RE = re.compile(r"\]\(\.\./(part\d+[A-Za-z0-9_]*/ch\d+[A-Za-z0-9_]*\.md)(#[-\w]+)?\)")
 
 
 def find_book_root():
@@ -54,13 +57,21 @@ def audit(root: Path):
 
         for ch in chapters:
             text = ch.read_text(encoding="utf-8")
+            # 根相对引用（Book/...）+ 源相对引用（../part...）
             refs = set(FILE_LINK_RE.findall(text)) | set(CROSSREF_RE.findall(text))
-            part_refs += len(refs)
+            rel_refs = set(m.group(1) for m in REL_LINK_RE.finditer(text))
+            part_refs += len(refs) + len(rel_refs)
 
             for r in refs:
                 r_clean = r.strip("`").replace("\\", "/")
                 if not (root / r_clean).exists():
                     part_broken.append((ch.name, r_clean))
+            for r in rel_refs:
+                # ../partNN/chYY.md：先回到 Book 根，再进 partNN/（章文件均在
+                # Book/<part>/<ch>.md 一层深，故 ../ 恒指 Book 根）。
+                cand = (ch.parent.parent / r).resolve()
+                if not cand.exists():
+                    part_broken.append((ch.name, r))
 
         part_stats[part_dir.name] = {
             "chapters": len(chapters),

@@ -1,8 +1,8 @@
 # 第04章　C++11：现代 C++ 革命
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)
-[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
+[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)
 
 > 标准基：ISO/IEC 14882:2011（C++11，最终草案 N3337）｜预计阅读：50 min｜前置：ch01–ch03｜后续：ch21/22/27/31/48/69/93/107/115/116 等几乎全部现代章节｜难度：★★★｜层级：L1 入门
 
@@ -50,8 +50,8 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 
 ## ① 学习目标
 
-[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)
-[第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)
+[第03章　C++98 / C++03：奠基时代](../part01_history/ch03_cpp98_03.md)
+[第05章　C++14：小幅完善](../part01_history/ch05_cpp14.md)
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
 ```cpp
@@ -685,10 +685,10 @@ noexcept move 为何重要? vector realloc 时允许浅移动而非深拷贝(强
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第3章](Book/part01_history/ch03_cpp98_03.md) | 键值查找/缓存 | 本章提供概念，第3章提供实现 |
-| [第5章](Book/part01_history/ch05_cpp14.md) | 独占所有权/工厂模式 | 本章提供概念，第5章提供实现 |
-| [第63章](Book/part06_templates/ch63_variadic.md) | 无锁队列/计数器 | 本章提供概念，第63章提供实现 |
-| [第115章](Book/part10_modern/ch115_move.md) | STL算法回调/异步任务 | 本章提供概念，第115章提供实现 |
+| [第3章](../part01_history/ch03_cpp98_03.md) | 键值查找/缓存 | 本章提供概念，第3章提供实现 |
+| [第5章](../part01_history/ch05_cpp14.md) | 独占所有权/工厂模式 | 本章提供概念，第5章提供实现 |
+| [第63章](../part06_templates/ch63_variadic.md) | 无锁队列/计数器 | 本章提供概念，第63章提供实现 |
+| [第115章](../part10_modern/ch115_move.md) | STL算法回调/异步任务 | 本章提供概念，第115章提供实现 |
 
 ## 附录 G：C++11面试速查
 
@@ -791,14 +791,14 @@ _Z8null_ptrv:
 - C++11 移动语义打破了 C++03 的拷贝习惯；老代码 `std::vector` 按值返回依赖移动而非 RVO。
 - 混用 C++03/11 ABI 库会链接失败；迁移需统一工具链标准版本。
 
-> 交叉引用：C++23 见 [ch08](Book/part01_history/ch08_cpp23.md)；移动语义见 [ch115](Book/part10_modern/ch115_move.md)。
+> 交叉引用：C++23 见 [ch08](../part01_history/ch08_cpp23.md)；移动语义见 [ch115](../part10_modern/ch115_move.md)。
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第02章　标准化组织、WG21 与提案流程](Book/part01_history/ch02_standardization.md)—— 编号相邻、主题接续。
-- **相邻主题**：[第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)—— 编号相邻、主题接续。
-- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
+- **后续依赖**：[第10章　版本特性全景对照表与迁移指南](../part01_history/ch10_version_matrix.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第02章　标准化组织、WG21 与提案流程](../part01_history/ch02_standardization.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第06章　C++17：生产力跃升](../part01_history/ch06_cpp17.md)—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](../part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 附录 I（工业级 C++11 实战）
 

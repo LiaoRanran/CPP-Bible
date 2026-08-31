@@ -2,8 +2,8 @@
 > 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
-[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
+[第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)
+[第157章 Compiler Explorer 实战](../part14_perf/ch157_compiler_explorer.md)
 
 > 真实取证工具链：MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/bin/g++.exe`，`-std=c++23 -O2 -S -masm=intel`）、`c++filt.exe`。
 > 源码与汇编产物位于 `Examples/_ch11_*.cpp` / `Examples/_ch11_*.asm`。
@@ -46,7 +46,7 @@ C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stall
 
 ## ① 概述：为什么需要编译器，三巨头格局
 
-[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
+[第12章　构建系统：Make / Ninja / CMake（C++）](../part02_toolchain/ch12_buildsystems.md)
 
 C++ 源码不是机器能直接执行的——它需要被**翻译**为特定 ISA（x86-64 / ARM64 / RISC-V 等）的机器码。编译器承担三件事：① 把文本翻译为语义正确的指令；② 在翻译中做等价变换（优化）以提升速度/减小体积；③ 与操作系统/链接器/运行时协作，产出可加载的二进制。
 
@@ -504,8 +504,8 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 
 ## ⑪ 调用约定：cdecl / stdcall / thiscall / fastcall / Win64
 
-[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)（虚函数与 vtable）—— thiscall 把 `this` 藏于 `ecx`，vtable 调用依赖调用约定
-[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 调用约定决定寄存器分配，影响优化形态
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)（虚函数与 vtable）—— thiscall 把 `this` 藏于 `ecx`，vtable 调用依赖调用约定
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— 调用约定决定寄存器分配，影响优化形态
 
 **调用约定（calling convention）** 规定：参数怎么传（寄存器/栈）、谁清理栈、返回值放哪。这纯属 `[平台·Windows]` 层约定。
 
@@ -570,7 +570,7 @@ extern "C" void log_event(const char* msg);   // 任何编译器产出的符号�
 
 ## ⑫ 内联与优化管道
 
-[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 内联启发式与 `-O2/-O3` 优化等级在此展开
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— 内联启发式与 `-O2/-O3` 优化等级在此展开
 
 内联是把被调函数体直接复制到调用点，是绝大多数优化（常量传播、死代码消除）的前提。
 
@@ -618,7 +618,7 @@ int wrap(int x) { return foo(x) * 2; }
 
 ## ⑬ 标准符合度对比（C++23 支持度）
 
-[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)（C++26 已确定特性与方向）—— 标准演进方向影响长期选型
+[第09章　C++26：已确定特性与方向](../part01_history/ch09_cpp26.md)（C++26 已确定特性与方向）—— 标准演进方向影响长期选型
 
 三家的 C++23 实现进度不同，选型前必须查官方状态页（非本机工具，给真实 URL + 标注"官方文档"）。
 
@@ -854,8 +854,8 @@ export int answer() { return 42; }
 
 ## ⑲ <span class="badge badge-exp">经验</span>选型建议
 
-[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)（交叉编译与嵌入式工具链）—— 嵌入式场景编译器选型受目标三元组约束
-[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)（包管理 vcpkg/Conan）—— 二进制分发的 ABI 一致性取决于编译器锁定
+[第17章　交叉编译与嵌入式工具链（C++）](../part02_toolchain/ch17_crosscompile.md)（交叉编译与嵌入式工具链）—— 嵌入式场景编译器选型受目标三元组约束
+[第13章　包管理：vcpkg / Conan（C++）](../part02_toolchain/ch13_packaging.md)（包管理 vcpkg/Conan）—— 二进制分发的 ABI 一致性取决于编译器锁定
 
 选型没有银弹，按场景决策。
 
@@ -937,9 +937,9 @@ int trivia(int x) { return x; }
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第12章](Book/part02_toolchain/ch12_buildsystems.md) | 配置解析/API响应 | 本章提供概念，第12章提供实现 |
-| [第69章](Book/part06_templates/ch69_constexpr.md) | 泛型库/编译期计算 | 本章提供概念，第69章提供实现 |
-| [第157章](Book/part14_perf/ch157_compiler_explorer.md) | 错误恢复/不可恢复错误 | 本章提供概念，第157章提供实现 |
+| [第12章](../part02_toolchain/ch12_buildsystems.md) | 配置解析/API响应 | 本章提供概念，第12章提供实现 |
+| [第69章](../part06_templates/ch69_constexpr.md) | 泛型库/编译期计算 | 本章提供概念，第69章提供实现 |
+| [第157章](../part14_perf/ch157_compiler_explorer.md) | 错误恢复/不可恢复错误 | 本章提供概念，第157章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1026,12 +1026,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)—— 编号相邻、主题接续。
-- **相邻主题**：[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)—— 编号相邻、主题接续。
-- **相邻主题**：[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)）—— 编号相邻、主题接续。
-- **同模块**：[第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](Book/part02_toolchain/ch14_debugging.md)）—— 同模块下的其他主题。
+- **后续依赖**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](../part02_toolchain/ch16_ide.md)）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第17章　交叉编译与嵌入式工具链（C++）](../part02_toolchain/ch17_crosscompile.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第10章　版本特性全景对照表与迁移指南](../part01_history/ch10_version_matrix.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第09章　C++26：已确定特性与方向](../part01_history/ch09_cpp26.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第13章　包管理：vcpkg / Conan（C++）](../part02_toolchain/ch13_packaging.md)）—— 编号相邻、主题接续。
+- **同模块**：[第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](../part02_toolchain/ch14_debugging.md)）—— 同模块下的其他主题。
 
 ## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
@@ -1401,10 +1401,10 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | CMake 调用编译器完成编译（第⑱节与 ch12 ⑮/⑰衔接） |
-| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | vcpkg/Conan 拉取的库经编译器编译（第⑰节） |
-| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | DWARF 调试信息供 GDB/LLDB 使用（第⑰节与 ch14 ⑫衔接） |
-| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 优化管道与 -O2/-O3 实证对照（第⑫节） |
-| ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](Book/part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译器汇编码（第⑬节外推） |
-| ch118 模块 | [Book/part10_modern/ch118_modules.md](Book/part10_modern/ch118_modules.md) | C++20 Modules 编译模型（第⑮节） |
-| ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](Book/part02_toolchain/ch17_crosscompile.md) | 三元组决定目标架构（第⑯节与 ch17 ②衔接） |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](../part02_toolchain/ch12_buildsystems.md) | CMake 调用编译器完成编译（第⑱节与 ch12 ⑮/⑰衔接） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](../part02_toolchain/ch13_packaging.md) | vcpkg/Conan 拉取的库经编译器编译（第⑰节） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | DWARF 调试信息供 GDB/LLDB 使用（第⑰节与 ch14 ⑫衔接） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | 优化管道与 -O2/-O3 实证对照（第⑫节） |
+| ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](../part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译器汇编码（第⑬节外推） |
+| ch118 模块 | [Book/part10_modern/ch118_modules.md](../part10_modern/ch118_modules.md) | C++20 Modules 编译模型（第⑮节） |
+| ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](../part02_toolchain/ch17_crosscompile.md) | 三元组决定目标架构（第⑯节与 ch17 ②衔接） |

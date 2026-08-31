@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)
-[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)
+[第95章　STL 算法分类与复杂度（C++）](../part08_algorithms/ch95_algo_overview.md)
+[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)
 
 > 真实编译器取证：MinGW **GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）。
 > 头文件根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；数值算法位于 `<numeric>`（与 `<algorithm>` 的并行 PSTL 胶水层 `pstl/glue_numeric_defs.h`）。
@@ -43,8 +43,8 @@
 
 ## ① 概述：数值算法 <span class="badge badge-std">标准</span>
 
-[第100章　Ranges 算法与投影（C++20）](Book/part08_algorithms/ch100_ranges_algo.md)
-[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)
+[第100章　Ranges 算法与投影（C++20）](../part08_algorithms/ch100_ranges_algo.md)
+[第98章　堆算法 heap（C++）](../part08_algorithms/ch98_heap.md)
 
 `<numeric>` 提供一组**归约（reduction）**与**扫描（scan）**算法，以及一组独立的数学工具。它们与 `<algorithm>` 的 `for_each`/`transform` 不同：核心是**把一段输入折叠成一个标量**，或**把前缀状态逐位置展开**。
 
@@ -1557,16 +1557,16 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第100章](Book/part08_algorithms/ch100_ranges_algo.md) | 性能基准/回归检测 | 本章提供概念，第100章提供实现 |
-| [第98章](Book/part08_algorithms/ch98_heap.md) | 向量化计算/图像处理 | 本章提供概念，第98章提供实现 |
-| [第95章](Book/part08_algorithms/ch95_algo_overview.md) | 数据处理管道/排行榜 | 本章提供概念，第95章提供实现 |
-| [第151章](Book/part13_engineering/ch151_benchmark.md) | 数据局部性/缓存友好设计 | 本章提供概念，第151章提供实现 |
+| [第100章](../part08_algorithms/ch100_ranges_algo.md) | 性能基准/回归检测 | 本章提供概念，第100章提供实现 |
+| [第98章](../part08_algorithms/ch98_heap.md) | 向量化计算/图像处理 | 本章提供概念，第98章提供实现 |
+| [第95章](../part08_algorithms/ch95_algo_overview.md) | 数据处理管道/排行榜 | 本章提供概念，第95章提供实现 |
+| [第151章](../part13_engineering/ch151_benchmark.md) | 数据局部性/缓存友好设计 | 本章提供概念，第151章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：[第97章　查找与二分（C++）](Book/part08_algorithms/ch97_search.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第101章　哈希、图、树、DP、贪心（算法思想）](Book/part08_algorithms/ch101_algo_theory.md)）—— 编号相邻、主题接续。
-- **同模块**：[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)）—— 同模块下的其他主题。
+- **相邻主题**：[第97章　查找与二分（C++）](../part08_algorithms/ch97_search.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第101章　哈希、图、树、DP、贪心（算法思想）](../part08_algorithms/ch101_algo_theory.md)）—— 编号相邻、主题接续。
+- **同模块**：[第96章　排序：sort / stable_sort / partial_sort（C++）](../part08_algorithms/ch96_sorting.md)）—— 同模块下的其他主题。
 
 ## 附录 G：工业数值计算生态
 

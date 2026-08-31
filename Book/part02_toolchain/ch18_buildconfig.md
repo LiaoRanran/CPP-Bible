@@ -2,8 +2,8 @@
 > 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
-[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
+[第12章　构建系统：Make / Ninja / CMake（C++）](../part02_toolchain/ch12_buildsystems.md)
+[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`，x86-64，AT&T 汇编经 `objdump -d` 反汇编，Intel 关键字见 `-masm=intel`）。
 > 取证源：`Examples/_ch18_opt.cpp`、`Examples/_ch18_stack.cpp`、`Examples/_ch18_lib.cpp`、`Examples/_ch18_main.cpp`、`Examples/_ch18_pgo.cpp`、`Examples/_ch18_mylib.cpp`（均在本机真实编译、真实反汇编，汇编片段逐字取自产物，绝不编造）。
@@ -46,7 +46,7 @@
 
 ## ① 概述：构建配置维度
 
-[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)
+[第17章　交叉编译与嵌入式工具链（C++）](../part02_toolchain/ch17_crosscompile.md)
 
 构建配置决定**同一份源码**生成的可执行文件在体积、速度、可调试性、安全性上的差异。它不是语言特性，而是"编译器 + 链接器 + 库 + 标志"的组合。
 
@@ -896,9 +896,9 @@ int main(){std::cout<<"Ninja: faster than make. cmake -G Ninja -B build. CCache:
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第17章](Book/part02_toolchain/ch17_crosscompile.md) | 键值查找/缓存 | 本章提供概念，第17章提供实现 |
-| [第12章](Book/part02_toolchain/ch12_buildsystems.md) | 配置解析/API响应 | 本章提供概念，第12章提供实现 |
-| [第149章](Book/part13_engineering/ch149_ci_cd.md) | 泛型库/编译期计算 | 本章提供概念，第149章提供实现 |
+| [第17章](../part02_toolchain/ch17_crosscompile.md) | 键值查找/缓存 | 本章提供概念，第17章提供实现 |
+| [第12章](../part02_toolchain/ch12_buildsystems.md) | 配置解析/API响应 | 本章提供概念，第12章提供实现 |
+| [第149章](../part13_engineering/ch149_ci_cd.md) | 泛型库/编译期计算 | 本章提供概念，第149章提供实现 |
 
 ## 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
 
@@ -942,11 +942,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 编号相邻、主题接续。
-- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
+- **后续依赖**：[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](../part02_toolchain/ch16_ide.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](../part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 编号相邻、主题接续。
+- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
 
 ## 底层视角：编译旗标、SIMD 与二进制对齐 [E: Low-level]
 
@@ -1246,12 +1246,12 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | 优化级别即编译器旗标（第③节与 ch11 ⑫衔接） |
-| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | 构建系统注入配置档（第⑰节与 ch12 衔接） |
-| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 发布配置接入持续集成（第⑰节外推） |
-| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | LTO/PGO 优化实证对照（第⑥⑦节与 ch156 衔接） |
-| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | -g/strip 影响调试体验（第⑩节与 ch14 ⑫衔接） |
-| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | 链接方式影响包二进制分发（第⑪节与 ch13 衔接） |
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](../part02_toolchain/ch11_compilers.md) | 优化级别即编译器旗标（第③节与 ch11 ⑫衔接） |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](../part02_toolchain/ch12_buildsystems.md) | 构建系统注入配置档（第⑰节与 ch12 衔接） |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | 发布配置接入持续集成（第⑰节外推） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | LTO/PGO 优化实证对照（第⑥⑦节与 ch156 衔接） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | -g/strip 影响调试体验（第⑩节与 ch14 ⑫衔接） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](../part02_toolchain/ch13_packaging.md) | 链接方式影响包二进制分发（第⑪节与 ch13 衔接） |
 
 ## 附录 D5：真实基准与性能分析 — 构建配置 Debug/Release 的运行期代价（GCC 15.3.0）
 

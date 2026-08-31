@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
-[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)
+[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)
 
 ## ⓪ 历史动机：模板重载与偏序的来龙去脉
 
@@ -42,8 +42,8 @@
 
 ## ① 学习目标
 
-[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)
-[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)
+[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)
+[第62章　类模板特化与偏特化（Class Template Specialization）](../part06_templates/ch62_specialization.md)
 
 - 复述重载决议的 3 阶段：候选集 → 可行集 → 最佳匹配 <span class="badge badge-std">标准</span>
 - 说清「非模板函数 > 更特化的模板 > 更泛化的模板」的优先权 <span class="badge badge-std">标准</span>
@@ -394,8 +394,8 @@ void bad(){ int x; k(x); }   // 注意：k(T) 对 int 完全匹配，k(const T&)
 
 ## ⑪ STL 中的该模式
 
-[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)（SFINAE 与 std::enable_if）—— STL 用 SFINAE 在重载集中剔除失败候选
-[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)（Concepts 与 requires）—— C++20 起 STL 以 concepts 重写重载约束
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)（SFINAE 与 std::enable_if）—— STL 用 SFINAE 在重载集中剔除失败候选
+[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)（Concepts 与 requires）—— C++20 起 STL 以 concepts 重写重载约束
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
 ```cpp
@@ -482,8 +482,8 @@ void f(int);  void f(double);  f(1.0f);  // float->int 与 float->double 谁优�
 
 ## ⑭ 工业案例
 
-[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost 大量依赖模板重载做编译期分发
-[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— policy 与重载协同定制行为
+[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)（Boost 库生态）—— Boost 大量依赖模板重载做编译期分发
+[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— policy 与重载协同定制行为
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
@@ -510,7 +510,7 @@ int main() {
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— STL 重载候选在此统一实现
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— STL 重载候选在此统一实现
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
@@ -623,8 +623,8 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 
 ## ⑲ 性能（编译期 / 运行期）
 
-[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 重载候选的实例化与偏序比较带来编译期成本
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销需微基准实测
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— 重载候选的实例化与偏序比较带来编译期成本
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销需微基准实测
 
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
@@ -742,19 +742,19 @@ P2593R0 (C++23): explicit object parameter (deducing this) → 简化CRTP重载
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第60章](Book/part06_templates/ch60_template_basics.md) | 模板约束/类型安全API | 本章提供概念，第60章提供实现 |
-| [第62章](Book/part06_templates/ch62_specialization.md) | STL算法回调/异步任务 | 本章提供概念，第62章提供实现 |
-| [第66章](Book/part06_templates/ch66_sfinae.md) | 泛型库/编译期计算 | 本章提供概念，第66章提供实现 |
-| [第67章](Book/part06_templates/ch67_concepts.md) | 静态多态/编译期接口 | 本章提供概念，第67章提供实现 |
+| [第60章](../part06_templates/ch60_template_basics.md) | 模板约束/类型安全API | 本章提供概念，第60章提供实现 |
+| [第62章](../part06_templates/ch62_specialization.md) | STL算法回调/异步任务 | 本章提供概念，第62章提供实现 |
+| [第66章](../part06_templates/ch66_sfinae.md) | 泛型库/编译期计算 | 本章提供概念，第66章提供实现 |
+| [第67章](../part06_templates/ch67_concepts.md) | 静态多态/编译期接口 | 本章提供概念，第67章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 模板基础定义实例化，重载决议在其上选择候选
-- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)）—— 全特化/偏特化是重载决议的最终落点
-- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)—— SFINAE 是重载决议中剔除失败候选的核心机制
-- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— concepts 以更清晰的约束重写重载决议
-- **同模块接续**：[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)）—— 折叠表达式参与包展开相关的重载
-- **跨模块**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— ADL 在模板重载决议中决定候选函数集合
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— 模板基础定义实例化，重载决议在其上选择候选
+- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](../part06_templates/ch62_specialization.md)）—— 全特化/偏特化是重载决议的最终落点
+- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)—— SFINAE 是重载决议中剔除失败候选的核心机制
+- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)—— concepts 以更清晰的约束重写重载决议
+- **同模块接续**：[第64章　折叠表达式 Fold Expression（C++17）](../part06_templates/ch64_fold.md)）—— 折叠表达式参与包展开相关的重载
+- **跨模块**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](../part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— ADL 在模板重载决议中决定候选函数集合
 
 ## 附录 G（工业级模板重载决议实战）
 
@@ -1332,7 +1332,7 @@ int main() {
 
 ### D5.4 方法学注
 
-基准源码见库根 `_bench_d5_ch61_overload_dispatch.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch61_overload_dispatch.cpp -o _bench_d5_ch61.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~4.3x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。函数指针表的间接调用开销在所有 x86-64 实现中均存在（call 寄存器地址），跨实现同量级。`op_add/op_mul/op_xor` 标 `static inline` 但经函数指针调用时编译器无法跨间接边界内联——这正是间接调用的固有代价。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+基准源码见库根 `_bench_d5_ch61_overload_dispatch.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch61_overload_dispatch.cpp -o _bench_d5_ch61.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~4.3x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。函数指针表的间接调用开销在所有 x86-64 实现中均存在（call 寄存器地址），跨实现同量级。`op_add/op_mul/op_xor` 标 `static inline` 但经函数指针调用时编译器无法跨间接边界内联——这正是间接调用的固有代价。运行期微架构深潜见 [ch153 CPU 微基准](../part14_perf/ch153_cpu_micro.md)。
 
 | 关联章 | 路径 | 关系 |
 | --- | --- | --- |

@@ -1,9 +1,9 @@
 # 第124章　libstdc++ 架构与阅读入口（C++）
 > 层级：L2 进阶
 
-[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
-[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
-[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
+[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)
+[第 39 章　RAII 与 Rule of Zero/Three/Five](../part04_memory/ch39_raii_rule.md)
 
 > 真实工具链：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章所有「文件：/行号：」均取自本机该目录真实文件（用 Read/Grep 取真实行号，未编造）。
@@ -44,7 +44,7 @@ libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）
 
 ## ① 概述：libstdc++ 是 GCC 的 C++ 标准库 <span class="badge badge-std">标准</span>
 
-[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
+[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)
 
 libstdc++（全称 *The GNU C++ Library*）是 GCC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>` 等标准容器/算法/迭代器/本地化/IO。它与 `libgcc`（底层运行时）协同：标准库负责 C++ 抽象，运行时负责异常、RTTI、`new` 等。每个 GCC 版本绑定一个 libstdc++ 版本（GCC 13.1.0 → libstdc++ 13）。
 
@@ -1068,27 +1068,27 @@ A: inline namespace (__cxx11) 版本隔离，新旧 ABI 通过 __cxx11::string v
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第125章](Book/part11_source/ch125_libcxx.md) | 泛型库/编译期计算 | 本章提供概念，第125章提供实现 |
-| [第125章](Book/part11_source/ch125_libcxx.md) | 资源管理/事务回滚 | 本章提供概念，第125章提供实现 |
-| [第77章](Book/part07_stl/ch77_vector.md) | 数据处理管道/排行榜 | 本章提供概念，第77章提供实现 |
-| [第39章](Book/part04_memory/ch39_raii_rule.md) | 共享所有权/图结构 | 本章提供概念，第39章提供实现 |
+| [第125章](../part11_source/ch125_libcxx.md) | 泛型库/编译期计算 | 本章提供概念，第125章提供实现 |
+| [第125章](../part11_source/ch125_libcxx.md) | 资源管理/事务回滚 | 本章提供概念，第125章提供实现 |
+| [第77章](../part07_stl/ch77_vector.md) | 数据处理管道/排行榜 | 本章提供概念，第77章提供实现 |
+| [第39章](../part04_memory/ch39_raii_rule.md) | 共享所有权/图结构 | 本章提供概念，第39章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
-- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
-- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
-- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
-- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
-- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
-- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
-- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
-- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
-- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
-- **跨模块延伸（part07 STL）**：[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)—— STL 哈希容器开链实现的源码落点
-- **跨模块延伸（part07 STL）**：[第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)—— 编译期定长位集的源码落点
-- **跨模块延伸（part10 现代）**：[第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)—— 编译期编程范式是阅读 STL 源码的元编程底座
-- **跨模块延伸（part10 现代）**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 多态分配器是 STL 容器内存后端的现代实现
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](../part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）
+- **跨模块延伸（part07 STL）**：[第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)—— STL 哈希容器开链实现的源码落点
+- **跨模块延伸（part07 STL）**：[第87章　bitset：编译期定长位集](../part07_stl/ch87_bitset.md)—— 编译期定长位集的源码落点
+- **跨模块延伸（part10 现代）**：[第123章　Compile-Time 编程范式总览](../part10_modern/ch123_ct_programming.md)—— 编译期编程范式是阅读 STL 源码的元编程底座
+- **跨模块延伸（part10 现代）**：[第122章　PMR 与多态分配器](../part10_modern/ch122_pmr.md)—— PMR 多态分配器是 STL 容器内存后端的现代实现
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1099,9 +1099,9 @@ A: inline namespace (__cxx11) 版本隔离，新旧 ABI 通过 __cxx11::string v
 - **Boost（标准库提案的试验田）**：[boostorg · boost](https://github.com/boostorg) —— `smart_ptr`→`std::shared_ptr`、`any`→`std::any`、`optional`→`std::optional`、`filesystem`→`std::filesystem` 皆源自 Boost，是「④ 演进路线」的活证据。
 - **Chromium `base::` 库（去 STL 依赖的工业实践）**：[chromium/chromium · base](https://github.com/chromium/chromium/tree/main/base) —— 在部分场景用 `base::span`/`base::flat_map` 替代 `std::span`/`std::map` 以控二进制体积，对应「⑤ 体积与编译时长」的极端工程取舍。
 
-**最佳实践**：跨动态库边界传递 `std::string`/`std::vector` 必须保证两侧同一 libstdc++ ABI 版本（用 `-D_GLIBCXX_USE_CXX11_ABI=1` 统一），否则 old/new ABI 混链导致 `std::string` 内存布局不兼容而崩；定位符号用 [ch157](Book/part14_perf/ch157_compiler_explorer.md) 的汇编取证。
+**最佳实践**：跨动态库边界传递 `std::string`/`std::vector` 必须保证两侧同一 libstdc++ ABI 版本（用 `-D_GLIBCXX_USE_CXX11_ABI=1` 统一），否则 old/new ABI 混链导致 `std::string` 内存布局不兼容而崩；定位符号用 [ch157](../part14_perf/ch157_compiler_explorer.md) 的汇编取证。
 
-> 交叉引用：字符串实现见 [ch81](Book/part07_stl/ch81_string.md)；容器见 [ch77](Book/part07_stl/ch77_vector.md)。
+> 交叉引用：字符串实现见 [ch81](../part07_stl/ch81_string.md)；容器见 [ch77](../part07_stl/ch77_vector.md)。
 
 ## 附录 G（libstdc++ 向量内部布局）
 

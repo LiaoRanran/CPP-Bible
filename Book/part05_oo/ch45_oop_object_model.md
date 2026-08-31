@@ -1,8 +1,8 @@
 # 第 45 章　C++ 面向对象总览与对象模型基础
 > 层级：L2 进阶
 
-[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
-[第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
+[第52章　空基类优化 EBO（Empty Base Optimization）](../part05_oo/ch52_ebo.md)
 
 > 老兵标准：**不懂对象模型，就永远在用「猜」的方式写 C++。** 封装、继承、多态三大支柱背后，是一套关于「对象在内存里究竟长什么样」的精确规则。
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
@@ -55,7 +55,7 @@ C++ 在对象模型上做了两个反潮流的选择：其一是**值语义优�
 
 ## ① 概述：C++ OOP 哲学——值语义优先、零开销、多范式
 
-[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)
+[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)
 
 **<span class="badge badge-std">标准</span>**　C++ 是一门**多范式（multi-paradigm）**语言：过程式、面向对象、泛型、函数式、元编程并存。它**不强制**你使用继承或运行时多态——这与 Java/C# 的「一切皆对象、一切皆引用」有本质区别。`[intro.object]` 把「对象」定义为「存储区域中能保存值的一段」，并不要求它属于某个类。
 
@@ -1423,9 +1423,9 @@ EBO 派生（核心知识点 #12）
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第46章](Book/part05_oo/ch46_encapsulation_inheritance.md) | 多态插件/框架扩展 | 本章提供概念，第46章提供实现 |
-| [第47章](Book/part05_oo/ch47_virtual_functions.md) | 泛型库/编译期计算 | 本章提供概念，第47章提供实现 |
-| [第52章](Book/part05_oo/ch52_ebo.md) | 资源管理/事务回滚 | 本章提供概念，第52章提供实现 |
+| [第46章](../part05_oo/ch46_encapsulation_inheritance.md) | 多态插件/框架扩展 | 本章提供概念，第46章提供实现 |
+| [第47章](../part05_oo/ch47_virtual_functions.md) | 泛型库/编译期计算 | 本章提供概念，第47章提供实现 |
+| [第52章](../part05_oo/ch52_ebo.md) | 资源管理/事务回滚 | 本章提供概念，第52章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1559,18 +1559,18 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 - 虚函数热循环不比直接调用慢（vtable 提升+BTB 命中，本手册 ch45 实测 virtual≈1.7ns）；仅异构分发重取 vtable 才 ~13.8ns。
 - 失去内联 + 异构分发才是虚函数真实成本，不要一概认为"虚函数慢 4ns"。
 
-> 交叉引用：虚函数汇编见 [ch47](Book/part05_oo/ch47_virtual_functions.md)；RTTI 见 [ch48](Book/part05_oo/ch48_rtti.md)。
+> 交叉引用：虚函数汇编见 [ch47](../part05_oo/ch47_virtual_functions.md)；RTTI 见 [ch48](../part05_oo/ch48_rtti.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 封装/继承的对象内存布局是对象模型的直接体现，本章给出布局基线
-- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚函数表(vtable)指针是对象模型的核心成员，本章解释其偏移
-- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)—— 虚继承在对象模型中引入虚基类表指针(vbptr)，布局最复杂
-- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 多重继承的对象模型含多个基类子对象与 this 调整
-- **同模块接续**：[第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)）—— EBO 是对象模型层面的布局优化，空基类不占空间
-- **跨模块**：[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)—— 缓存局部性受对象布局与访问模式影响
-- **跨模块**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)从零实现）—— 内存池常按对象模型定制分配
-- **跨模块**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）—— Qt 对象模型（元对象系统）建立在 C++ 对象模型之上
+- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)—— 封装/继承的对象内存布局是对象模型的直接体现，本章给出布局基线
+- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚函数表(vtable)指针是对象模型的核心成员，本章解释其偏移
+- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](../part05_oo/ch49_virtual_inheritance.md)—— 虚继承在对象模型中引入虚基类表指针(vbptr)，布局最复杂
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)）—— 多重继承的对象模型含多个基类子对象与 this 调整
+- **同模块接续**：[第52章　空基类优化 EBO（Empty Base Optimization）](../part05_oo/ch52_ebo.md)）—— EBO 是对象模型层面的布局优化，空基类不占空间
+- **跨模块**：[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)—— 缓存局部性受对象布局与访问模式影响
+- **跨模块**：[第 44 章 内存池（Memory Pool）从零实现](../part04_memory/ch44_memory_pool.md)从零实现）—— 内存池常按对象模型定制分配
+- **跨模块**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）—— Qt 对象模型（元对象系统）建立在 C++ 对象模型之上
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1992,7 +1992,7 @@ int main() {
 
 ### D5.4 方法学注
 
-基准源码见库根 `_bench_d5_ch45_final_devirt.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch45_final_devirt.cpp -o _bench_d5_ch45.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~8.9x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。关键防优化：`make_virtual()` 标 `[[gnu::noinline]]` 阻止编译器去虚化 virtual 路径，使两条路径的差距反映真实的 vtable 间接开销。若编译器成功去虚化（如对象类型在调用点可见），差距会显著缩小——这也是生产代码中虚函数开销方差大的根源。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+基准源码见库根 `_bench_d5_ch45_final_devirt.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch45_final_devirt.cpp -o _bench_d5_ch45.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~8.9x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。关键防优化：`make_virtual()` 标 `[[gnu::noinline]]` 阻止编译器去虚化 virtual 路径，使两条路径的差距反映真实的 vtable 间接开销。若编译器成功去虚化（如对象类型在调用点可见），差距会显著缩小——这也是生产代码中虚函数开销方差大的根源。运行期微架构深潜见 [ch153 CPU 微基准](../part14_perf/ch153_cpu_micro.md)。
 
 | 关联章 | 路径 | 关系 |
 | --- | --- | --- |

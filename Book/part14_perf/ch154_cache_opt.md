@@ -1,7 +1,7 @@
 # 第154章　缓存优化与数据局部性（C++/硬件）
 > 层级：L3 专家
 
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2`）。
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
@@ -741,7 +741,7 @@ int main() {
 - `[实现·GCC15]`：GCC 预取与对齐优化 passes（`tree-vectorize`、`pass_peephole2`）源码 `gcc/tree-vect-*.cc`。
 - `[标准]`：ISO `[support.limits]`（interference size）、`[class.mem]`（布局/对齐）、`[basic.align]`。
 - `[经验]`：阅读游戏引擎（如 EnTT 的 ECS、Godot 的 `LocalVector`）如何按 SoA/DOD 组织数据；读 `folly::AtomicStruct` 等如何用 alignas 消除伪共享。
-- 衔接：[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)（SoA 与向量化）、[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（布局对优化的影响）。
+- 衔接：[第155章　SIMD / AVX 向量化（C++/硬件）](../part14_perf/ch155_simd.md)（SoA 与向量化）、[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（布局对优化的影响）。
 
 ## 补充完整可编译示例（缓存优化综合）
 
@@ -939,8 +939,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第153章](Book/part14_perf/ch153_cpu_micro.md) | 无锁队列/计数器 | 本章提供概念，第153章提供实现 |
-| [第156章](Book/part14_perf/ch156_compiler_opt.md) | 多线程服务器 | 本章提供概念，第156章提供实现 |
+| [第153章](../part14_perf/ch153_cpu_micro.md) | 无锁队列/计数器 | 本章提供概念，第153章提供实现 |
+| [第156章](../part14_perf/ch156_compiler_opt.md) | 多线程服务器 | 本章提供概念，第156章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1006,14 +1006,14 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part14 性能工程）**：[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
-- **同模块兄弟（part14 性能工程）**：[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
-- **同模块兄弟（part14 性能工程）**：[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)）
-- **同模块兄弟（part14 性能工程）**：[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)）
-- **同模块兄弟（part14 性能工程）**：[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
-- **同模块兄弟（part14 性能工程）**：[第158章 性能反模式与陷阱](Book/part14_perf/ch158_perf_antipatterns.md)
-- **跨模块延伸**：[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)
-- **跨模块延伸**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
+- **同模块兄弟（part14 性能工程）**：[第152章　性能模型与测量学](../part14_perf/ch152_perf_model.md)
+- **同模块兄弟（part14 性能工程）**：[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)
+- **同模块兄弟（part14 性能工程）**：[第155章　SIMD / AVX 向量化（C++/硬件）](../part14_perf/ch155_simd.md)）
+- **同模块兄弟（part14 性能工程）**：[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第157章 Compiler Explorer 实战](../part14_perf/ch157_compiler_explorer.md)
+- **同模块兄弟（part14 性能工程）**：[第158章 性能反模式与陷阱](../part14_perf/ch158_perf_antipatterns.md)
+- **跨模块延伸**：[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)
+- **跨模块延伸**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
 
 ## 附录 G：工业缓存优化实例
 

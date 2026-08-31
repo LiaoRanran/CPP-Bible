@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)
-[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
+[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
 
 ## ⓪ 历史动机：模板特化的来龙去脉
 
@@ -42,8 +42,8 @@
 
 ## ① 学习目标
 
-[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
-[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
+[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)
 
 - 区分主模板 / 全特化 / 偏特化 <span class="badge badge-std">标准</span>
 - 掌握偏序（哪份特化更特化）决定实例化选中谁 <span class="badge badge-std">标准</span>
@@ -493,7 +493,7 @@ template <> struct D<void> { };
 
 ## ⑪ STL 中的该模式
 
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
 ```cpp
@@ -575,7 +575,7 @@ template <typename T> struct B<T*> { };   // 若想只针对 int*，应写全特
 
 ## ⑭ 工业案例
 
-[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)
+[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
@@ -600,7 +600,7 @@ int main() {
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
@@ -714,7 +714,7 @@ int main() {
 
 ## ⑲ 性能（编译期 / 运行期）
 
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)
 
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
@@ -760,7 +760,7 @@ int main() {
 
 **设计动机**：模板特化的本质是"按类型在编译期选择实现"。它把运行期本要做的 `if (type==X)` 分发前移到编译期，换取零运行期分支与每类型最优代码。这与 ⑮ `libstdc++ is_pointer` 偏序比较、⑮ `vector<bool>` 位压缩完全一致：标准库自身就是用特化把"通用正确"与"特定高效"统一起来的范例。
 
-**方法学注**：比值是可移植证据，绝对值随 CPU/编译器波动；本基准在 MinGW GCC 15.3.0 x64 `-O2` 取得。ostringstream 的 9.9× 主要来自其格式化状态机开销，在任意合规实现上同量级；variant vs any 的 7.3× 来自 RTTI 校验，libstdc++/libc++ 均如此。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)；编译期成本见 [ch156 编译器优化](Book/part14_perf/ch156_compiler_opt.md)。
+**方法学注**：比值是可移植证据，绝对值随 CPU/编译器波动；本基准在 MinGW GCC 15.3.0 x64 `-O2` 取得。ostringstream 的 9.9× 主要来自其格式化状态机开销，在任意合规实现上同量级；variant vs any 的 7.3× 来自 RTTI 校验，libstdc++/libc++ 均如此。运行期微架构深潜见 [ch153 CPU 微基准](../part14_perf/ch153_cpu_micro.md)；编译期成本见 [ch156 编译器优化](../part14_perf/ch156_compiler_opt.md)。
 
 ### ⑲.2 选型流（何时用特化 / 偏特化 / 运行期分发）
 
@@ -775,7 +775,7 @@ flowchart TD
     C --> H["忌: 为微小差异<br/>深嵌套偏特化→特化地狱"]
 ```
 
-> 交叉引用：零开销与单态化见 [ch60 模板基础](Book/part06_templates/ch60_template_basics.md)；类型擦除代价对照 [ch26 lambda](Book/part03_language/ch26_lambda.md)（std::function ≈ 8×）/ [ch45 对象模型](Book/part05_oo/ch45_oop_object_model.md)（虚函数 vtable）；concepts 压平特化树见 [ch61 模板重载](Book/part06_templates/ch61_template_overload.md)、[ch69 constexpr](Book/part06_templates/ch69_constexpr.md)。
+> 交叉引用：零开销与单态化见 [ch60 模板基础](../part06_templates/ch60_template_basics.md)；类型擦除代价对照 [ch26 lambda](../part03_language/ch26_lambda.md)（std::function ≈ 8×）/ [ch45 对象模型](../part05_oo/ch45_oop_object_model.md)（虚函数 vtable）；concepts 压平特化树见 [ch61 模板重载](../part06_templates/ch61_template_overload.md)、[ch69 constexpr](../part06_templates/ch69_constexpr.md)。
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
@@ -818,10 +818,10 @@ flowchart TD
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第61章](Book/part06_templates/ch61_template_overload.md) | 泛型库/编译期计算 | 本章提供概念，第61章提供实现 |
-| [第63章](Book/part06_templates/ch63_variadic.md) | 内存管理/PMR定制 | 本章提供概念，第63章提供实现 |
-| [第60章](Book/part06_templates/ch60_template_basics.md) | 文本处理/协议解析 | 本章提供概念，第60章提供实现 |
-| [第68章](Book/part06_templates/ch68_tmp.md) | 模板约束/类型安全API | 本章提供概念，第68章提供实现 |
+| [第61章](../part06_templates/ch61_template_overload.md) | 泛型库/编译期计算 | 本章提供概念，第61章提供实现 |
+| [第63章](../part06_templates/ch63_variadic.md) | 内存管理/PMR定制 | 本章提供概念，第63章提供实现 |
+| [第60章](../part06_templates/ch60_template_basics.md) | 文本处理/协议解析 | 本章提供概念，第60章提供实现 |
+| [第68章](../part06_templates/ch68_tmp.md) | 模板约束/类型安全API | 本章提供概念，第68章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -958,7 +958,7 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 - 特化 `std::hash<T>` 必须把特化写在**命名空间 `std` 内**（或 ADL 能找到的关联命名空间），否则不生效且无报错。
 - 偏特化顺序错误会导致 `ambiguous` 或落到主模板；用 `if constexpr` / concepts 往往比层层偏特化更可读。
 
-> 交叉引用：特化与 `type_traits` 联动见 [ch65](Book/part06_templates/ch65_type_traits.md)；与 SFINAE 选拔见 [ch66](Book/part06_templates/ch66_sfinae.md)。
+> 交叉引用：特化与 `type_traits` 联动见 [ch65](../part06_templates/ch65_type_traits.md)；与 SFINAE 选拔见 [ch66](../part06_templates/ch66_sfinae.md)。
 
 ## 附录 I：模板特化工业实践 [F: Industry / B: Principle]
 
@@ -973,11 +973,11 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 特化是模板实例化的分支终点
-- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— 重载决议在特化与基模板间选择
-- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 可变参数模板常配合特化递归展开
-- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— TMP 以特化实现编译期分支
-- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 大量使用特化萃取类型
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— 特化是模板实例化的分支终点
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)）—— 重载决议在特化与基模板间选择
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)）—— 可变参数模板常配合特化递归展开
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)）—— TMP 以特化实现编译期分支
+- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— type_traits 大量使用特化萃取类型
 
 ## 自测练习（Exercises）
 
@@ -1517,7 +1517,7 @@ int main() {
 
 ### D5.4 方法学注
 
-基准源码见库根 `_bench_d5_ch62_spec_branch.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch62_spec_branch.cpp -o _bench_d5_ch62.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~10.4x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。关键公平性：tag 数组经 `std::mt19937(42)` 随机洗排，使 if/else 链的分支不可预测（misprediction 率约 67%），放大分支预测惩罚；constexpr 路径按 tag 预分区到 3 个 batch（一次性 setup，不计入计时），总迭代 = N。分支预测惩罚高度依赖 CPU 微架构（Zen4 流水线 19 级，misprediction ~16 周期），跨代际 CPU 比值会有波动，但『编译期路由消除分支 >> 运行期分支』的方向不变。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+基准源码见库根 `_bench_d5_ch62_spec_branch.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch62_spec_branch.cpp -o _bench_d5_ch62.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~10.4x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。关键公平性：tag 数组经 `std::mt19937(42)` 随机洗排，使 if/else 链的分支不可预测（misprediction 率约 67%），放大分支预测惩罚；constexpr 路径按 tag 预分区到 3 个 batch（一次性 setup，不计入计时），总迭代 = N。分支预测惩罚高度依赖 CPU 微架构（Zen4 流水线 19 级，misprediction ~16 周期），跨代际 CPU 比值会有波动，但『编译期路由消除分支 >> 运行期分支』的方向不变。运行期微架构深潜见 [ch153 CPU 微基准](../part14_perf/ch153_cpu_micro.md)。
 
 | 关联章 | 路径 | 关系 |
 | --- | --- | --- |

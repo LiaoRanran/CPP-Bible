@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
-[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)
+[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)
 
 > 真实工具链：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`-std=c++23 -O2 -S -masm=intel`）。
 > MS STL 本机未安装，故源码行号剖析一律引用上游 GitHub `microsoft/STL`（`https://github.com/microsoft/STL/...`）并标注「上游参考」——行号随提交浮动，以 main 分支为准。
@@ -44,8 +44,8 @@ MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例�
 
 ## ① 概述：MS STL 是 Microsoft 的 C++ 标准库 <span class="badge badge-std">标准</span>
 
-[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
-[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)
+[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)
+[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)
 
 MS STL（曾称 *Microsoft Visual C++ Standard Library*）是 MSVC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>`、`<algorithm>` 等全部标准容器/算法/迭代器/本地化/IO/并行。它与 MSVC 工具链（编译器 `cl.exe`、运行时 `vcruntime`、CRT `ucrt`）深度耦合，是 Windows 平台 C++ 事实标准库。
 
@@ -1053,10 +1053,10 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第125章](Book/part11_source/ch125_libcxx.md) | 泛型库/编译期计算 | 本章提供概念，第125章提供实现 |
-| [第125章](Book/part11_source/ch125_libcxx.md) | 日志格式化/序列化 | 本章提供概念，第125章提供实现 |
-| [第127章](Book/part11_source/ch127_llvm.md) | 多线程服务器 | 本章提供概念，第127章提供实现 |
-| [第124章](Book/part11_source/ch124_libstdcxx.md) | 错误恢复/不可恢复错误 | 本章提供概念，第124章提供实现 |
+| [第125章](../part11_source/ch125_libcxx.md) | 泛型库/编译期计算 | 本章提供概念，第125章提供实现 |
+| [第125章](../part11_source/ch125_libcxx.md) | 日志格式化/序列化 | 本章提供概念，第125章提供实现 |
+| [第127章](../part11_source/ch127_llvm.md) | 多线程服务器 | 本章提供概念，第127章提供实现 |
+| [第124章](../part11_source/ch124_libstdcxx.md) | 错误恢复/不可恢复错误 | 本章提供概念，第124章提供实现 |
 
 ## 附录 F：MS STL面试与工业
 
@@ -1072,17 +1072,17 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
-- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
-- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
-- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
-- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
-- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
-- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
-- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
-- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
-- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
-- **跨模块延伸（part10 现代）**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 多态分配器是 MS STL 容器内存后端
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](../part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）
+- **跨模块延伸（part10 现代）**：[第122章　PMR 与多态分配器](../part10_modern/ch122_pmr.md)—— PMR 多态分配器是 MS STL 容器内存后端
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1093,9 +1093,9 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 - **Boost（标准库提案试验田）**：[boostorg · boost](https://github.com/boostorg) —— `unordered`/`filesystem`/`process` 等源自 Boost，MSVC STL 的 `<format>`/`<print>` 等特性进度常参考 Boost 实现，对应「③ 演进路线」。
 - **Chromium `base::` 去 STL 依赖**：[chromium/chromium · base](https://github.com/chromium/chromium/tree/main/base) —— 在二进制体积敏感处用 `base::span`/`base::flat_map` 替代 `std::span`/`std::map`，对应「④ 体积与编译时长」的极端工程实践（与 MSVC STL 的 `/permissive-` 模式形成对照）。
 
-**最佳实践**：跨 MSVC/gcc/clang 动态库边界传递 STL 容器必须保证同一标准库实现与版本（`_ITERATOR_DEBUG_LEVEL` 在 Debug/Release 不一致会导致链接错误），定位符号用 [ch157](Book/part14_perf/ch157_compiler_explorer.md) 的汇编取证。
+**最佳实践**：跨 MSVC/gcc/clang 动态库边界传递 STL 容器必须保证同一标准库实现与版本（`_ITERATOR_DEBUG_LEVEL` 在 Debug/Release 不一致会导致链接错误），定位符号用 [ch157](../part14_perf/ch157_compiler_explorer.md) 的汇编取证。
 
-> 交叉引用：libstdc++ 内幕见 [ch124](Book/part11_source/ch124_libstdcxx.md)；字符串实现见 [ch81](Book/part07_stl/ch81_string.md)。
+> 交叉引用：libstdc++ 内幕见 [ch124](../part11_source/ch124_libstdcxx.md)；字符串实现见 [ch81](../part07_stl/ch81_string.md)。
 
 ## 底层视角：MSVC STL 实现与 SIMD 内部 [E: Low-level]
 

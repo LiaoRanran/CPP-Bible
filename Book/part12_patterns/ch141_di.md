@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)
-[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
+[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)
+[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)
 
 > **取证说明（真实工具链，非臆测）**
 > - 编译器：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
@@ -53,8 +53,8 @@ DI 在 Java 世界靠"运行时反射 + 注解容器"实现，而 C++ 没有原�
 
 ## ① 概述：DI 是什么
 
-[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)
-[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)
+[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)
+[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)
 
 【定义】依赖注入（Dependency Injection，DI）是一种**控制反转（IoC）**风格的对象组装技术：对象所需的“依赖”由**外部**创建并传入，而非对象自己在内部 `new` 出来。
 
@@ -1059,10 +1059,10 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第140章](Book/part12_patterns/ch140_policy_pattern.md) | 键值查找/缓存 | 本章提供概念，第140章提供实现 |
-| [第142章](Book/part12_patterns/ch142_ecs.md) | 独占所有权/工厂模式 | 本章提供概念，第142章提供实现 |
-| [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 多态插件/框架扩展 | 本章提供概念，第135章提供实现 |
-| [第45章](Book/part05_oo/ch45_oop_object_model.md) | 泛型库/编译期计算 | 本章提供概念，第45章提供实现 |
+| [第140章](../part12_patterns/ch140_policy_pattern.md) | 键值查找/缓存 | 本章提供概念，第140章提供实现 |
+| [第142章](../part12_patterns/ch142_ecs.md) | 独占所有权/工厂模式 | 本章提供概念，第142章提供实现 |
+| [第135章](../part12_patterns/ch135_patterns_intro.md) | 多态插件/框架扩展 | 本章提供概念，第135章提供实现 |
+| [第45章](../part05_oo/ch45_oop_object_model.md) | 泛型库/编译期计算 | 本章提供概念，第45章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1148,15 +1148,15 @@ DI 常被误当成"一个 C++ 技巧"，实则是一条源自 1980 年代的软�
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
-- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
-- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
-- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
-- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
-- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
-- **跨模块延伸（part15 案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）—— 依赖注入在迷你框架中组合各模块
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)）
+- **跨模块延伸（part15 案例）**：[第164章 从零实现迷你框架（C++）](../part15_cases/ch164_framework.md)）—— 依赖注入在迷你框架中组合各模块
 
 ## 自测练习（Exercises）
 

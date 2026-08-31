@@ -2,8 +2,8 @@
 > 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
-[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)
+[第30章 volatile / atomic 与硬件寄存器](../part03_language/ch30_volatile.md)
 
 > 真实编译器取证：本机 MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`g++ --version` → `g++.exe ... 13.1.0`）。
 > 交叉工具链（arm-none-eabi-gcc 等）本机大概率未安装，故以**本机 g++ 编译同一程序**展示 x86-64 真实汇编作为硬证据，ARM 侧给出明确标注的「典型输出」（AAPCS，未在本机执行）。
@@ -46,8 +46,8 @@
 
 ## ① 概述：什么是交叉编译 <span class="badge badge-std">标准</span>
 
-[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)
-[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)
+[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](../part02_toolchain/ch16_ide.md)
+[第18章　构建配置：Debug / Release / LTO / PGO（C++）](../part02_toolchain/ch18_buildconfig.md)
 
 **交叉编译（cross compilation）** = 在**宿主机（host，如 x86-64 Windows）**上编译出运行在**目标机（target，如 ARM Cortex-M）**上的可执行代码。与之相对的是**原生编译（native compilation）**：host == target。
 
@@ -746,10 +746,10 @@ A: 编译器需要目标平台的标准库头文件和二进制 → --sysroot=/p
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第16章](Book/part02_toolchain/ch16_ide.md) | 日志格式化/序列化 | 本章提供概念，第16章提供实现 |
-| [第18章](Book/part02_toolchain/ch18_buildconfig.md) | 错误恢复/不可恢复错误 | 本章提供概念，第18章提供实现 |
-| [第11章](Book/part02_toolchain/ch11_compilers.md) | 向量化计算/图像处理 | 本章提供概念，第11章提供实现 |
-| [第30章](Book/part03_language/ch30_volatile.md) | 动态数组/缓冲区 | 本章提供概念，第30章提供实现 |
+| [第16章](../part02_toolchain/ch16_ide.md) | 日志格式化/序列化 | 本章提供概念，第16章提供实现 |
+| [第18章](../part02_toolchain/ch18_buildconfig.md) | 错误恢复/不可恢复错误 | 本章提供概念，第18章提供实现 |
+| [第11章](../part02_toolchain/ch11_compilers.md) | 向量化计算/图像处理 | 本章提供概念，第11章提供实现 |
+| [第30章](../part03_language/ch30_volatile.md) | 动态数组/缓冲区 | 本章提供概念，第30章提供实现 |
 
 ## 附录 F：交叉编译工具链细节
 
@@ -843,9 +843,9 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 编号相邻、主题接续。
-- **同模块**：[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)）—— 同模块下的其他主题。
+- **相邻主题**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](../part02_toolchain/ch15_profiling.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)）—— 编号相邻、主题接续。
+- **同模块**：[第12章　构建系统：Make / Ninja / CMake（C++）](../part02_toolchain/ch12_buildsystems.md)）—— 同模块下的其他主题。
 
 ## 附录 G：工业交叉编译生态
 
@@ -1147,9 +1147,9 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | 交叉工具链本质是目标平台的编译器（第⑥节与 ch11 衔接） |
-| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | CMake toolchain 文件由构建系统读取（第⑦节与 ch12 ⑭衔接） |
-| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | -Os 与目标配置协同（第⑭节与 ch18 衔接） |
-| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 嵌入式子集约束优化空间（第⑮节与 ch156 衔接） |
-| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | 交叉调试经 gdbserver/openocd（第⑬节与 ch14 衔接） |
-| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | 目标 sysroot 内库由包管理提供（第③节与 ch13 衔接） |
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](../part02_toolchain/ch11_compilers.md) | 交叉工具链本质是目标平台的编译器（第⑥节与 ch11 衔接） |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](../part02_toolchain/ch12_buildsystems.md) | CMake toolchain 文件由构建系统读取（第⑦节与 ch12 ⑭衔接） |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](../part02_toolchain/ch18_buildconfig.md) | -Os 与目标配置协同（第⑭节与 ch18 衔接） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | 嵌入式子集约束优化空间（第⑮节与 ch156 衔接） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | 交叉调试经 gdbserver/openocd（第⑬节与 ch14 衔接） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](../part02_toolchain/ch13_packaging.md) | 目标 sysroot 内库由包管理提供（第③节与 ch13 衔接） |

@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)
-[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)
+[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)
+[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)
 
 > **取证说明（本章所有汇编与计时均来自真实工具链，未编造）**
 > - 编译器：`C:/Qt/Tools/mingw1310_64/bin/g++.exe`（MinGW-Builds x86-64, GCC 13.1.0）
@@ -51,7 +51,7 @@ DOD 对 OOP 的核心之争是"先想数据还是先想对象"：OOP 先问"有�
 
 ## ① 概述：DOD 是什么（Data-Oriented Design）
 
-[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)
+[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)
 
 面向数据设计（DOD）是一种以**数据的存储布局与访问模式**为先、以**算法对内存的遍历方式**为中心的软件设计范式。它的核心信条是：
 **缓存与预取器不关心你的“对象”长什么样，只关心你一次取了哪些字节、是否连续、是否可预测。**
@@ -1190,22 +1190,22 @@ struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第142章](Book/part12_patterns/ch142_ecs.md) | 键值查找/缓存 | 本章提供概念，第142章提供实现 |
-| [第142章](Book/part12_patterns/ch142_ecs.md) | 独占所有权/工厂模式 | 本章提供概念，第142章提供实现 |
-| [第154章](Book/part14_perf/ch154_cache_opt.md) | 无锁队列/计数器 | 本章提供概念，第154章提供实现 |
+| [第142章](../part12_patterns/ch142_ecs.md) | 键值查找/缓存 | 本章提供概念，第142章提供实现 |
+| [第142章](../part12_patterns/ch142_ecs.md) | 独占所有权/工厂模式 | 本章提供概念，第142章提供实现 |
+| [第154章](../part14_perf/ch154_cache_opt.md) | 无锁队列/计数器 | 本章提供概念，第154章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
-- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
-- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
-- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
-- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
-- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
-- **跨模块延伸（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）—— 代码风格与规范约束数据布局可读性
-- **跨模块延伸（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）—— 命名与 API 设计影响 DOD 结构暴露面
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）
+- **跨模块延伸（part13 工程）**：[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)）—— 代码风格与规范约束数据布局可读性
+- **跨模块延伸（part13 工程）**：[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)）—— 命名与 API 设计影响 DOD 结构暴露面
 
 ### 最佳实践（速记 · DOD 面向数据设计）
 

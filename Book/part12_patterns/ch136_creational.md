@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
+[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)
 
 > **取证说明（v3 门禁）**：本章所有关键结论均由本机 g++ 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）真实产物佐证，源码与汇编落在 `Examples/_ch136_*.cpp/.asm`，未做任何汇编/路径编造。
 > - ⑬ 的 Meyers Singleton 线程安全：用 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch136_meyers_guard.cpp`，在产物 `_ch136_meyers_guard.asm` 中确认插入了 `__cxa_guard_acquire` / `__cxa_guard_release`（守卫变量 `_ZGVZN6Logger8instanceEvE4inst`），即「带锁」的 magic static。
@@ -47,8 +47,8 @@
 
 ## ① 概述：创建型模式解决什么
 
-[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)
-[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)
+[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)
+[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)
 
 创建型模式（Creational Patterns）关注「对象如何被创建、由谁创建、何时创建」，目标是把**实例化逻辑**与**使用逻辑**解耦，使系统不依赖于具体类的构造细节。在 C++ 中，原始手段就是到处 `new`/`delete`，这会带来三类典型痛点：
 
@@ -1164,22 +1164,22 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 键值查找/缓存 | 本章提供概念，第135章提供实现 |
-| [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 独占所有权/工厂模式 | 本章提供概念，第135章提供实现 |
-| [第137章](Book/part12_patterns/ch137_structural.md) | STL算法回调/异步任务 | 本章提供概念，第137章提供实现 |
-| [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 多态插件/框架扩展 | 本章提供概念，第116章提供实现 |
+| [第135章](../part12_patterns/ch135_patterns_intro.md) | 键值查找/缓存 | 本章提供概念，第135章提供实现 |
+| [第135章](../part12_patterns/ch135_patterns_intro.md) | 独占所有权/工厂模式 | 本章提供概念，第135章提供实现 |
+| [第137章](../part12_patterns/ch137_structural.md) | STL算法回调/异步任务 | 本章提供概念，第137章提供实现 |
+| [第116章](../part10_modern/ch116_perfect_forwarding.md) | 多态插件/框架扩展 | 本章提供概念，第116章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
-- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
-- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
-- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
-- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
-- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
-- **跨模块延伸（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）—— Unreal 的创建逻辑是创建型模式的工业场
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)）
+- **跨模块延伸（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）—— Unreal 的创建逻辑是创建型模式的工业场
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1192,7 +1192,7 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 **最佳实践**：工厂方法优先返回 `std::unique_ptr<T>`（所有权转移清晰）；单例用 `inline variable` + `Meyers singleton`（`static T& instance()`）避免 SIOF（静态初始化顺序失败），禁用在 DCLP（双检锁）因 CPU 重排非原子；`std::make_shared` 一次分配优于裸 `new` + `shared_ptr` 构造。
 
-> 交叉引用：结构型模式见 [ch137](Book/part12_patterns/ch137_structural.md)；CRTP 静态替代见 [ch139](Book/part12_patterns/ch139_crtp_pattern.md)。
+> 交叉引用：结构型模式见 [ch137](../part12_patterns/ch137_structural.md)；CRTP 静态替代见 [ch139](../part12_patterns/ch139_crtp_pattern.md)。
 
 ## 底层视角：工厂/原型的多态代价与 CRTP 替代 [E: Low-level]
 

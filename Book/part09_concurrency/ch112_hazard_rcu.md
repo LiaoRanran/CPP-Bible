@@ -1,8 +1,8 @@
 # 第112章　Hazard Pointer 与 RCU（C++11/实践）
 > 层级：L3 专家
 
-[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)
-[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)
+[第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)
+[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 取证源：`Examples/_ch112_hp.cpp`、`Examples/_ch112_rcu.cpp`；汇编产物 `Examples/_ch112_hp_O2.asm` / `_O0.asm`、`Examples/_ch112_rcu_O2.asm` / `_O0.asm`。
@@ -42,8 +42,8 @@
 
 ## ① 概述：并发内存回收的难题 <span class="badge badge-std">标准</span>
 
-[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)
-[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)
+[第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)
+[第113章　协程 coroutine：promise / awaiter（C++20）](../part09_concurrency/ch113_coroutine.md)
 
 无锁数据结构（无锁栈/队列/哈希表）的核心矛盾是：**读者正拿着一个节点的指针，写者想把它 `delete`**——没有互斥锁保护"谁还在用"，直接 `delete` 会造成悬垂指针（use-after-free），另一个线程随后解引用即未定义行为。
 
@@ -211,8 +211,8 @@ extern "C" void hp_scan_and_reclaim() {
 
 ## ⑥ HP 性能特征与开销 <span class="badge badge-exp">经验</span>
 
-[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)（基准测试与性能度量）—— HP 开销须可复现基准量化
-[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)（性能模型与测量方法论）—— 原子写成本对应具体硬件与竞争度
+[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)（基准测试与性能度量）—— HP 开销须可复现基准量化
+[第152章　性能模型与测量学](../part14_perf/ch152_perf_model.md)（性能模型与测量方法论）—— 原子写成本对应具体硬件与竞争度
 
 HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次原子写（清除）+ 回收者 O(retired × HP槽) 的扫描**。
 
@@ -418,8 +418,8 @@ rcu_update:
 
 ## ⑫ HP vs RCU 对比 <span class="badge badge-std">标准</span>
 
-[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)（ABA 问题与解决）—— HP/RCU 是 ABA 的两种回收级解法
-[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)（无锁编程 lock-free/wait-free）—— 回收机制决定无锁结构的安全性
+[第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)（ABA 问题与解决）—— HP/RCU 是 ABA 的两种回收级解法
+[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)（无锁编程 lock-free/wait-free）—— 回收机制决定无锁结构的安全性
 
 | 维度 | Hazard Pointer | RCU |
 |---|---|---|
@@ -556,8 +556,8 @@ struct HazardGuard {
 
 ## ⑰ 性能基准 <span class="badge badge-exp">经验</span>
 
-[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)（基准测试与性能度量）—— 量级示意须在本机用 `std::chrono` 实测并标注来源
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 指令成本与吞吐须结合微架构解读
+[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)（基准测试与性能度量）—— 量级示意须在本机用 `std::chrono` 实测并标注来源
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 指令成本与吞吐须结合微架构解读
 
 以下为**量级示意**（真实数字依赖硬件/负载，本机 GCC 15.3.0 + x86-64 取证的是指令成本，非吞吐）[UNVERIFIED]。
 
@@ -581,8 +581,8 @@ struct HazardGuard {
 
 ## ⑱ 选型指南 <span class="badge badge-exp">经验</span>
 
-[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)（无锁编程）—— 先确认是否真需无锁再选回收机制
-[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)（ABA 问题与解决）—— 选型须评估 ABA 风险等级
+[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)（无锁编程）—— 先确认是否真需无锁再选回收机制
+[第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)（ABA 问题与解决）—— 选型须评估 ABA 风险等级
 
 > **示例 33** [难度 ★★☆☆☆] [主题：选型指南 <span class="badge badge-exp">经验</span>]
 ```cpp
@@ -782,10 +782,10 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第111章](Book/part09_concurrency/ch111_aba.md) | 无锁队列/计数器 | 本章提供概念，第111章提供实现 |
-| [第111章](Book/part09_concurrency/ch111_aba.md) | 泛型库/编译期计算 | 本章提供概念，第111章提供实现 |
-| [第113章](Book/part09_concurrency/ch113_coroutine.md) | 资源管理/事务回滚 | 本章提供概念，第113章提供实现 |
-| [第110章](Book/part09_concurrency/ch110_lockfree.md) | 线程安全数据结构 | 本章提供概念，第110章提供实现 |
+| [第111章](../part09_concurrency/ch111_aba.md) | 无锁队列/计数器 | 本章提供概念，第111章提供实现 |
+| [第111章](../part09_concurrency/ch111_aba.md) | 泛型库/编译期计算 | 本章提供概念，第111章提供实现 |
+| [第113章](../part09_concurrency/ch113_coroutine.md) | 资源管理/事务回滚 | 本章提供概念，第113章提供实现 |
+| [第110章](../part09_concurrency/ch110_lockfree.md) | 线程安全数据结构 | 本章提供概念，第110章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -807,18 +807,18 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 - hazard pointer 需先"发布"指针再解引用，否则回收者可能误删仍在用的节点。
 - RCU 宽限期（grace period）必须覆盖所有读者，宽限期估算过早会回收活节点；Folly 与 Linux 都用显式宽限期屏障。
 
-> 交叉引用：无锁原子原语见 [ch110](Book/part09_concurrency/ch110_lockfree.md)；内存序见 [ch108](Book/part09_concurrency/ch108_memory_order.md)。
+> 交叉引用：无锁原子原语见 [ch110](../part09_concurrency/ch110_lockfree.md)；内存序见 [ch108](../part09_concurrency/ch108_memory_order.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）
-- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）
-- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
-- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）
-- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)）
-- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
-- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— RCU / Hazard Pointer 的发布-订阅依赖原子可见性
-- **无锁衔接（part09）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）—— Hazard Pointer 是无锁编程的安全内存回收机制
+- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)）
+- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)）
+- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](../part09_concurrency/ch109_fence.md)
+- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)）
+- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)）
+- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](../part09_concurrency/ch113_coroutine.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](../part03_language/ch30_volatile.md)—— RCU / Hazard Pointer 的发布-订阅依赖原子可见性
+- **无锁衔接（part09）**：[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)）—— Hazard Pointer 是无锁编程的安全内存回收机制
 
 ## 附录 C：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

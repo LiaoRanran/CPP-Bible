@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)
-[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
+[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)
+[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)
 
 > **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）真实产物佐证，示例源码位于 `Examples/_ch147_*.cpp`，对应警告产物位于 `Examples/_ch147_*_warn.txt`，对应汇编产物位于 `Examples/_ch147_*.asm`。编译与取证命令统一为：
 > - 警告取证：`g++ -std=c++23 -Wall -Wextra -c <src> -o <tmp>.o`（部分示例追加 `-O2` / `-Wconversion` / `-Wdangling-reference` 以触发特定警告）；
@@ -47,8 +47,8 @@
 
 ## ① 概述：Code Review 价值 <span class="badge badge-exp">经验</span>
 
-[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)
-[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
+[第146章 错误处理（C++）](../part13_engineering/ch146_error_handling.md)
+[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)
 
 代码审查（Code Review，CR）不是"找茬仪式"，而是**把缺陷消灭在合入之前的最后一道、也是最便宜的一道闸门**。大量工业数据（如 Google 工程实践、Microsoft 内部研究）表明：缺陷在需求/设计阶段被发现并修复的成本，远低于上线后由用户触发、再由 on-call 回溯修复的成本。C++ 尤其如此——它的未定义行为（UB）不会在编译期报错，却可能在 Release 构建里"安静地"生成错误结果。
 
@@ -736,20 +736,20 @@ int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第146章](Book/part13_engineering/ch146_error_handling.md) | 独占所有权/工厂模式 | 本章提供概念，第146章提供实现 |
-| [第148章](Book/part13_engineering/ch148_gitflow.md) | 无锁队列/计数器 | 本章提供概念，第148章提供实现 |
-| [第144章](Book/part13_engineering/ch144_style.md) | 多态插件/框架扩展 | 本章提供概念，第144章提供实现 |
-| [第150章](Book/part13_engineering/ch150_testing.md) | 泛型库/编译期计算 | 本章提供概念，第150章提供实现 |
+| [第146章](../part13_engineering/ch146_error_handling.md) | 独占所有权/工厂模式 | 本章提供概念，第146章提供实现 |
+| [第148章](../part13_engineering/ch148_gitflow.md) | 无锁队列/计数器 | 本章提供概念，第148章提供实现 |
+| [第144章](../part13_engineering/ch144_style.md) | 多态插件/框架扩展 | 本章提供概念，第144章提供实现 |
+| [第150章](../part13_engineering/ch150_testing.md) | 泛型库/编译期计算 | 本章提供概念，第150章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
-- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
-- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
-- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
-- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
-- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
-- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](../part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)）
 
 ## 真实开源项目参考（可查证链接）
 
@@ -764,7 +764,7 @@ int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std
 
 **审查工具链实证（DEP 信号）**：栈溢出哨兵常以 `0xDEADBEEF` 标记；`-Wall -Wextra -Werror` 在 GCC 13.1.0 下把本机实测的 8 类警告（见 ⑱）转为编译失败；`C++23` 的 `static_assert` 让接口不变量在编译期即被门禁固化；`clang-tidy` 单 TU 扫描约 300ms 可嵌入 pre-commit。
 
-**最佳实践**：跨动态库传递 ABI 边界前，先过 `clang-tidy`（所有权/线程安全）+ TSan（CI，数据竞争）+ perf（性能回归）三道自动闸，再进入人工 review——人工只审「必须改」的正确性/安全项。命名与 API 契约见 [ch145](Book/part13_engineering/ch145_naming_api.md)，CI 门禁配置见 [ch149](Book/part13_engineering/ch149_ci_cd.md)，提交规范见 [ch148](Book/part13_engineering/ch148_gitflow.md)。
+**最佳实践**：跨动态库传递 ABI 边界前，先过 `clang-tidy`（所有权/线程安全）+ TSan（CI，数据竞争）+ perf（性能回归）三道自动闸，再进入人工 review——人工只审「必须改」的正确性/安全项。命名与 API 契约见 [ch145](../part13_engineering/ch145_naming_api.md)，CI 门禁配置见 [ch149](../part13_engineering/ch149_ci_cd.md)，提交规范见 [ch148](../part13_engineering/ch148_gitflow.md)。
 
 ## 附录 G（评审量化与静态分析）
 
@@ -1024,13 +1024,13 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | §⑧ API 兼容性审查 |
-| ch148 Git 工作流 | [Book/part13_engineering/ch148_gitflow.md](Book/part13_engineering/ch148_gitflow.md) | §⑩ 提交信息规范 |
-| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑫ 自动化门禁 |
-| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | §⑨ 测试覆盖审查 |
-| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑬ 性能回归审查 |
-| ch107 原子操作 | [Book/part09_concurrency/ch107_atomic.md](Book/part09_concurrency/ch107_atomic.md) | §⑥ 并发缺陷审查 |
-| ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | §④ 编译器警告实证 |
+| ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](../part13_engineering/ch145_naming_api.md) | §⑧ API 兼容性审查 |
+| ch148 Git 工作流 | [Book/part13_engineering/ch148_gitflow.md](../part13_engineering/ch148_gitflow.md) | §⑩ 提交信息规范 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | §⑫ 自动化门禁 |
+| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](../part13_engineering/ch150_testing.md) | §⑨ 测试覆盖审查 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](../part13_engineering/ch151_benchmark.md) | §⑬ 性能回归审查 |
+| ch107 原子操作 | [Book/part09_concurrency/ch107_atomic.md](../part09_concurrency/ch107_atomic.md) | §⑥ 并发缺陷审查 |
+| ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | §④ 编译器警告实证 |
 
 ## 附录 U：代码审查深度与检查单决策流（D3 维度）
 

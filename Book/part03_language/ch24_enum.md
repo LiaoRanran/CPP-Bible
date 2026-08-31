@@ -2,10 +2,10 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
 
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
-[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
+[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](../part03_language/ch20_reference_pointer.md)
 
 > 标准版本：C++98 / C++11 / C++23 / C++26（预览）
 > 立场分层约定：**<span class="badge badge-std">标准</span>** = 语言标准规定；**<span class="badge badge-impl">实现</span>** = 特定标准库/编译器实现；**[平台·x86-64]** = 操作系统/ABI/硬件；**<span class="badge badge-exp">经验</span>** = 工程实践建议。
@@ -50,8 +50,8 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 
 ## ① 章节摘要（Chapter Summary）
 
-[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)
-[第25章　union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)
+[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](../part03_language/ch23_namespace_adl.md)
+[第25章　union 与 std::variant 深度详解](../part03_language/ch25_union_variant.md)
 
 枚举（enumeration）是 C++ 用来表示**离散命名常量集合**的值类型。它既是贴近硬件的“整型的强命名包装”，又是现代 C++ 类型安全体系的重要一环。
 
@@ -1349,11 +1349,11 @@ int main() { (void)g_min_level; }
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第23章](Book/part03_language/ch23_namespace_adl.md) | 日志格式化/序列化 | 本章提供概念，第23章提供实现 |
-| [第25章](Book/part03_language/ch25_union_variant.md) | 泛型库/编译期计算 | 本章提供概念，第25章提供实现 |
-| [第20章](Book/part03_language/ch20_reference_pointer.md) | 性能基准/回归检测 | 本章提供概念，第20章提供实现 |
-| [第65章](Book/part06_templates/ch65_type_traits.md) | 文本处理/协议解析 | 本章提供概念，第65章提供实现 |
-| [第65章](Book/part06_templates/ch65_type_traits.md) | 高性能容器/零拷贝传输 | 本章提供概念，第65章提供实现 |
+| [第23章](../part03_language/ch23_namespace_adl.md) | 日志格式化/序列化 | 本章提供概念，第23章提供实现 |
+| [第25章](../part03_language/ch25_union_variant.md) | 泛型库/编译期计算 | 本章提供概念，第25章提供实现 |
+| [第20章](../part03_language/ch20_reference_pointer.md) | 性能基准/回归检测 | 本章提供概念，第20章提供实现 |
+| [第65章](../part06_templates/ch65_type_traits.md) | 文本处理/协议解析 | 本章提供概念，第65章提供实现 |
+| [第65章](../part06_templates/ch65_type_traits.md) | 高性能容器/零拷贝传输 | 本章提供概念，第65章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1451,12 +1451,12 @@ int main(){Color c=Color::Red;std::cout<<static_cast<int>(c)<<","<<sizeof(c)<<st
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)—— enum 的底层类型与 auto 推导、类型关系紧密
-- **同模块接续**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— enum class 置于命名空间实现作用域隔离
-- **同模块接续**：[第25章　union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)—— std::variant 常作为枚举标志组合的类型安全替代
-- **同模块接续**：[第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](Book/part03_language/ch26_lambda.md)—— lambda 状态机常以 enum 表示状态，配合模式匹配
-- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 枚举对象占用的存储与对象表示由存储期决定
-- **跨模块**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— std::underlying_type 萃取枚举底层类型，是 type_traits 的典型应用
+- **同模块接续**：[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](../part03_language/ch22_auto_decltype.md)—— enum 的底层类型与 auto 推导、类型关系紧密
+- **同模块接续**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](../part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— enum class 置于命名空间实现作用域隔离
+- **同模块接续**：[第25章　union 与 std::variant 深度详解](../part03_language/ch25_union_variant.md)—— std::variant 常作为枚举标志组合的类型安全替代
+- **同模块接续**：[第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](../part03_language/ch26_lambda.md)—— lambda 状态机常以 enum 表示状态，配合模式匹配
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)）—— 枚举对象占用的存储与对象表示由存储期决定
+- **跨模块**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— std::underlying_type 萃取枚举底层类型，是 type_traits 的典型应用
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

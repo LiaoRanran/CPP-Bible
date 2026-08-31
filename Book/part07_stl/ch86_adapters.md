@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) 为主，标注历史版本处见正文。｜层级：L2 进阶
 > 预计阅读：约 95 分钟（含示例与源码精读）。
-> 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)（deque 分段连续）、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 扩容）
-> 后续：[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)（堆算法）、[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)（值语义包装）、[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（存储期）
+> 前置：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）、[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)（deque 分段连续）、[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)（vector 扩容）
+> 后续：[第98章　堆算法 heap（C++）](../part08_algorithms/ch98_heap.md)（堆算法）、[第88章　optional / expected / variant：可空与可辨别联合](../part07_stl/ch88_optional_variant.md)（值语义包装）、[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)（存储期）
 > 难度：★★☆（概念简单，但"适配器=受控接口包装"的设计意图与底层约束是高频面试陷阱）
 
 ---
@@ -17,7 +17,7 @@ STL 早已有了 `deque`、`vector`、`list`，但很多算法只想要"后进�
 
 ### 0.2 关键转折（编年）
 - C++98：`stack`/`queue`/`priority_queue` 随 STL 标准化，确立"默认底层 + 受控接口"的设计。<span class="badge badge-history">史</span>
-- 后续：C++11 起 `priority_queue` 背后的堆算法（[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)）与移动语义逐步打磨。
+- 后续：C++11 起 `priority_queue` 背后的堆算法（[第98章　堆算法 heap（C++）](../part08_algorithms/ch98_heap.md)）与移动语义逐步打磨。
 
 ### 0.3 设计哲学之争
 适配器的哲学是 **"用组合限制能力，而非新增能力"**：它刻意把随机访问藏起来，逼你在正确的抽象上编程。<span class="badge badge-comment">评</span> 一个经典争论是"为何不直接用 `deque`"——答案是接口即文档：`stack` 的签名就在告诉你"这里只需要 LIFO 语义"。<span class="badge badge-comment">评</span> 这与 STL 整体"用类型表达意图"的取向完全一致。
@@ -1207,8 +1207,8 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第77章](Book/part07_stl/ch77_vector.md) | 键值查找/缓存 | 本章提供概念，第77章提供实现 |
-| [第19章](Book/part03_language/ch19_variables.md) | 独占所有权/工厂模式 | 本章提供概念，第19章提供实现 |
+| [第77章](../part07_stl/ch77_vector.md) | 键值查找/缓存 | 本章提供概念，第77章提供实现 |
+| [第19章](../part03_language/ch19_variables.md) | 独占所有权/工厂模式 | 本章提供概念，第19章提供实现 |
 
 
 ## 真实开源项目参考（可查证链接）
@@ -1229,14 +1229,14 @@ int main() {
 - **Eigen（gitlab.com/libeigen/eigen）**：`std::reverse_iterator` 适配器用于矩阵行/列遍历，思想与「迭代器适配器」一致。
 - **Google Benchmark（github.com/google/benchmark）**：`benchmark::DoNotOptimize` 配合适配器做零开销遍历基准。
 
-> 交叉引用：容器见 [ch83](Book/part07_stl/ch83_map.md)；算法见 [ch76](Book/part07_stl/ch76_stl_arch.md)。
+> 交叉引用：容器见 [ch83](../part07_stl/ch83_map.md)；算法见 [ch76](../part07_stl/ch76_stl_arch.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 适配器构建于序列容器之上，复用该架构
-- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— stack 默认基于 deque/vector
-- **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— priority_queue 底层常用 vector + 堆算法
-- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 底层容器经 allocator 分配
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— 适配器构建于序列容器之上，复用该架构
+- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)—— stack 默认基于 deque/vector
+- **同模块相邻**：[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)）—— priority_queue 底层常用 vector + 堆算法
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)模型与 PMR）—— 底层容器经 allocator 分配
 
 ## 自测练习（Exercises）
 

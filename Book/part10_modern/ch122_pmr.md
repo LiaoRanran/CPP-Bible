@@ -4,8 +4,8 @@
 > 标准基：ISO/IEC 14882:2023 (C++23)。`std::pmr`（Polymorphic Memory Resources）家族于 **C++17** 引入（N4713 §23.12），本章以 C++23 视角重写并补 libstdc++ 源码。｜层级：L2 进阶
 > 编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -Wall -Wextra`）。
 > 预计阅读：约 95 分钟。
-> 前置：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)、[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)、[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)、[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
-> 后续：[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)、[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)、[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)、[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)
+> 前置：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)、[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)、[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)、[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
+> 后续：[第121章 Contracts 契约（方向，C++26）](../part10_modern/ch121_contracts.md)、[第 44 章 内存池（Memory Pool）从零实现](../part04_memory/ch44_memory_pool.md)、[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)、[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)
 > 难度：★★★☆☆
 > 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-ming32/13.1.0/include/c++/13.1.0/`（libstdc++ 13.1.0）；本章 `[实现]` 级源码取自 `bits/memory_resource.h` 与 `memory_resource`（顶层头），逐行标注 `文件：`+`行号：`。
 
@@ -51,22 +51,22 @@ PMR 入标后，价值在工程界被反复验证，也暴露了"默认资源该
 
 ---
 
-## ② 前置知识 [第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)
+## ② 前置知识 [第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)
 
 `[标准]` PMR 是 **Allocator 模型（C++11 起）** 的"运行期多态"叠加层。阅读本章前需理解：
 
-- **分配器模型**：`Allocator` 概念要求 `allocate(n)` / `deallocate(p,n)` / `value_type` / `rebind` / `propagate_on_container_*`（`[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)`）。
-- **operator new/delete**：`memory_resource::do_allocate` 的"默认实现"最终落到 `::operator new`（`[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)`、`[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)`）。
-- **虚函数分派**：`memory_resource` 用虚函数实现运行期多态，理解 vtable 有助于预测调用成本（`[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)`）。
-- **内存池/对象池**：pool resource 本质是"库内置的内存池"，与手写 arena 思想同源（`[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)`）。
+- **分配器模型**：`Allocator` 概念要求 `allocate(n)` / `deallocate(p,n)` / `value_type` / `rebind` / `propagate_on_container_*`（`[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)`）。
+- **operator new/delete**：`memory_resource::do_allocate` 的"默认实现"最终落到 `::operator new`（`[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)`、`[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)`）。
+- **虚函数分派**：`memory_resource` 用虚函数实现运行期多态，理解 vtable 有助于预测调用成本（`[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)`）。
+- **内存池/对象池**：pool resource 本质是"库内置的内存池"，与手写 arena 思想同源（`[第 44 章 内存池（Memory Pool）从零实现](../part04_memory/ch44_memory_pool.md)`）。
 
 ---
 
-## ③ 后续依赖 [第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)
+## ③ 后续依赖 [第121章 Contracts 契约（方向，C++26）](../part10_modern/ch121_contracts.md)
 
-- PMR 与 **契约（C++26 方向）** 可组合：用 `pre:`/`post:` 约束资源指针非空、对齐合法（`[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)`）。
-- PMR 的线程安全边界（synchronized vs unsynchronized）与并发章节的锁成本相关（`[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)`）。
-- 性能分析见缓存优化与分配器基准（`[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)`、`[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)`）。
+- PMR 与 **契约（C++26 方向）** 可组合：用 `pre:`/`post:` 约束资源指针非空、对齐合法（`[第121章 Contracts 契约（方向，C++26）](../part10_modern/ch121_contracts.md)`）。
+- PMR 的线程安全边界（synchronized vs unsynchronized）与并发章节的锁成本相关（`[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)`）。
+- 性能分析见缓存优化与分配器基准（`[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)`、`[第152章　性能模型与测量学](../part14_perf/ch152_perf_model.md)`）。
 
 ---
 
@@ -277,9 +277,9 @@ _Z13use_monotonicv:
 
 ## ⑪ STL 联系
 
-- `std::pmr::vector<T>` 等别名 = `std::vector<T, std::pmr::polymorphic_allocator<T>>`（`[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)`）。
+- `std::pmr::vector<T>` 等别名 = `std::vector<T, std::pmr::polymorphic_allocator<T>>`（`[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)`）。
 - `polymorphic_allocator` 满足 `Allocator` 概念，因此能直接喂给任意标准容器；`allocator_traits` 对它做了特化（传播策略见 `⑬`）。
-- `std::pmr::string` / `std::pmr::map` / `std::pmr::unordered_map` 同理是带 `polymorphic_allocator` 的别名（`[第81章　std::string 与 SSO 短字符串优化](Book/part07_stl/ch81_string.md)`、`[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)`）。
+- `std::pmr::string` / `std::pmr::map` / `std::pmr::unordered_map` 同理是带 `polymorphic_allocator` 的别名（`[第81章　std::string 与 SSO 短字符串优化](../part07_stl/ch81_string.md)`、`[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)`）。
 
 ```text
 // ⑪ pmr 容器别名——示例可编译但依赖内部实现细节
@@ -480,7 +480,7 @@ struct pool_options {
 4. **`new_delete_resource()` 每次返回同一指针吗？**
    → 是，它是单例（`⑯` 验证）。
 5. **PMR 相比"自定义 Allocator（C++11）"解决了什么？**
-   → 运行期多态 + 标准容器别名 + 现成内存池，无需为每个策略写一个分配器类型（`[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)`）。
+   → 运行期多态 + 标准容器别名 + 现成内存池，无需为每个策略写一个分配器类型（`[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)`）。
 
 ---
 
@@ -646,7 +646,7 @@ int main() {
 }
 ```
 
-- `[经验]`：示意量级——池资源通常比默认 `new` **快 2–5×**，因为池把"成百上千次 `operator new`"合并为"几次大块上游分配 + 指针切分"；且对象在内存中更紧凑，缓存命中率更高（`[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)`）。
+- `[经验]`：示意量级——池资源通常比默认 `new` **快 2–5×**，因为池把"成百上千次 `operator new`"合并为"几次大块上游分配 + 指针切分"；且对象在内存中更紧凑，缓存命中率更高（`[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)`）。
 
 ### 19.3 与 jemalloc / tcmalloc 的思想对照
 
@@ -657,11 +657,11 @@ int main() {
 | 作用域 | 可精确限定到某容器/某请求 | 全局所有分配 |
 | 适用 | 已知生命周期的局部分配 | 整个程序的内存治理 |
 
-`[经验]`：PMR 不替代 jemalloc/tcmalloc，而是**互补**——你可在 PMR 的 `upstream` 链上挂 jemalloc（自定义 resource 调 `malloc`），既享全局分配器，又得局部 arena/pool 的可预测性（`[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)`）。
+`[经验]`：PMR 不替代 jemalloc/tcmalloc，而是**互补**——你可在 PMR 的 `upstream` 链上挂 jemalloc（自定义 resource 调 `malloc`），既享全局分配器，又得局部 arena/pool 的可预测性（`[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)`）。
 
 ### 19.4 缓存友好性
 
-`[实现]` `monotonic_buffer_resource` 顺序推进指针，使同一请求内的对象**物理相邻**，遍历时 prefetch 友好、false sharing 低（`[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)`）。
+`[实现]` `monotonic_buffer_resource` 顺序推进指针，使同一请求内的对象**物理相邻**，遍历时 prefetch 友好、false sharing 低（`[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)`）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
 ```cpp
@@ -1087,7 +1087,7 @@ PMR 把「分配策略」从全局 `operator new` 提升为「每个容器可携
 **源码阅读建议（libstdc++）**
 - `bits/memory_resource.h`：从 `memory_resource` 基类读起，再看 `polymorphic_allocator` 的 `construct`（`行号：215-228` 的 uses-allocator 协议）与 `allocator_traits` 特化（`行号：378-501`）。
 - `memory_resource`（顶层）：读 `monotonic_buffer_resource::do_allocate`（`行号：354-369`）体会"指针推进"；读 `pool_options`（`行号：94-109`）理解调参入口。
-- libc++ / MS STL 对应实现接口一致，差异仅在池的 chunk 管理与调试断言（`[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)`、`[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)`）。
+- libc++ / MS STL 对应实现接口一致，差异仅在池的 chunk 管理与调试断言（`[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)`、`[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)`）。
 
 ## 附录B: 补充可编译示例
 
@@ -1194,11 +1194,11 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第121章](Book/part10_modern/ch121_contracts.md) | 键值查找/缓存 | 本章提供概念，第121章提供实现 |
-| [第121章](Book/part10_modern/ch121_contracts.md) | 多态插件/框架扩展 | 本章提供概念，第121章提供实现 |
-| [第126章](Book/part11_source/ch126_msstl.md) | 泛型库/编译期计算 | 本章提供概念，第126章提供实现 |
-| [第93章](Book/part07_stl/ch93_thread_async.md) | 多线程服务器 | 本章提供概念，第93章提供实现 |
-| [第152章](Book/part14_perf/ch152_perf_model.md) | 资源管理/事务回滚 | 本章提供概念，第152章提供实现 |
+| [第121章](../part10_modern/ch121_contracts.md) | 键值查找/缓存 | 本章提供概念，第121章提供实现 |
+| [第121章](../part10_modern/ch121_contracts.md) | 多态插件/框架扩展 | 本章提供概念，第121章提供实现 |
+| [第126章](../part11_source/ch126_msstl.md) | 泛型库/编译期计算 | 本章提供概念，第126章提供实现 |
+| [第93章](../part07_stl/ch93_thread_async.md) | 多线程服务器 | 本章提供概念，第93章提供实现 |
+| [第152章](../part14_perf/ch152_perf_model.md) | 资源管理/事务回滚 | 本章提供概念，第152章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1213,7 +1213,7 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 - `std::pmr::monotonic_buffer_resource` 不释放，必须整体 reset；跨线程传 pmr 对象需确保 resource 生命周期覆盖使用期。
 - 自定义 `memory_resource` 的 `do_allocate` 必须满足对齐与等价条件；`is_equal` 决定跨 resource 释放是否合法（对应「⑬」）。
 
-> 交叉引用：分配器实现见 [ch38](Book/part04_memory/ch38_allocator.md)；内存池见 [ch44](Book/part04_memory/ch44_memory_pool.md)；MS STL 实现见 [ch126](Book/part11_source/ch126_msstl.md)。
+> 交叉引用：分配器实现见 [ch38](../part04_memory/ch38_allocator.md)；内存池见 [ch44](../part04_memory/ch44_memory_pool.md)；MS STL 实现见 [ch126](../part11_source/ch126_msstl.md)。
 
 ## 附录 C：编译实证——std::pmr 分配路径 vs 默认 `operator new` [E: Low-level / F: Industry]
 
@@ -1286,12 +1286,12 @@ pmr_push():
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)—— 编号相邻、主题接续。
-- **同模块**：[第118章　Modules 模块（C++20）](Book/part10_modern/ch118_modules.md)）—— 同模块下的其他主题。
+- **后续依赖**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)模型与 PMR）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第121章 Contracts 契约（方向，C++26）](../part10_modern/ch121_contracts.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第123章　Compile-Time 编程范式总览](../part10_modern/ch123_ct_programming.md)—— 编号相邻、主题接续。
+- **同模块**：[第118章　Modules 模块（C++20）](../part10_modern/ch118_modules.md)）—— 同模块下的其他主题。
 
 ## 自测练习（Exercises）
 

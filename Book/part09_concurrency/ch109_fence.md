@@ -1,11 +1,11 @@
 # 第109章 内存屏障与 fence
 
-[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)
-[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
+[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)
+[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)
 
-[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)
+[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)
 
-> 标准基: C++23 / GCC 15.3.0（仓库权威工具链）/ [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md) / 难度: ★★★★☆｜层级：L3 专家
+> 标准基: C++23 / GCC 15.3.0（仓库权威工具链）/ [第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md) / 难度: ★★★★☆｜层级：L3 专家
 > 立场分层与验证标记（见 `CONVENTIONS.md` §1/§10）：正文用 `[标准]`/`[实现·GCC15]`/`[ABI]`/`[平台·x86-64]`/`[微架构·x86-64 TSO]`/`[微架构·ARM]`/`[经验]` 区分层级，高风险断言标 `[VERIFIED]`（本机 GCC 15.3.0 复编确认）或 `[UNVERIFIED]`（ARM 行为、绝对 ns 量级本机无法验证）。
 
 ## ⓪ 历史动机：内存屏障的来龙去脉
@@ -454,9 +454,9 @@ int main(){std::cout<<"fence vs atomic: fence orders ALL subsequent ops, atomic 
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第108章](Book/part09_concurrency/ch108_memory_order.md) | 键值查找/缓存 | 本章提供概念，第108章提供实现 |
-| [第110章](Book/part09_concurrency/ch110_lockfree.md) | 无锁队列/计数器 | 本章提供概念，第110章提供实现 |
-| [第107章](Book/part09_concurrency/ch107_atomic.md) | 泛型库/编译期计算 | 本章提供概念，第107章提供实现 |
+| [第108章](../part09_concurrency/ch108_memory_order.md) | 键值查找/缓存 | 本章提供概念，第108章提供实现 |
+| [第110章](../part09_concurrency/ch110_lockfree.md) | 无锁队列/计数器 | 本章提供概念，第110章提供实现 |
+| [第107章](../part09_concurrency/ch107_atomic.md) | 泛型库/编译期计算 | 本章提供概念，第107章提供实现 |
 
 ## 附录 F：fence工业与面试
 
@@ -535,13 +535,13 @@ _Z13release_fencev:
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）
-- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）
-- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）
-- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)）
-- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)）
-- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
-- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— x86 TSO 与 ARM 弱内存模型决定 fence 的真实成本与正确性
+- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)）
+- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)）
+- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)）
+- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)）
+- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](../part09_concurrency/ch112_hazard_rcu.md)）
+- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](../part09_concurrency/ch113_coroutine.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](../part03_language/ch30_volatile.md)—— x86 TSO 与 ARM 弱内存模型决定 fence 的真实成本与正确性
 
 ## 附录 I：fence 工业实现与源码对照
 

@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)
-[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)
+[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)
+[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)
 
 > **取证说明（本章所有结论均可复现）**
 > 编译器：`g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`（C++23）。
@@ -51,8 +51,8 @@ Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"�
 
 ## ① 概述：行为型模式解决什么
 
-[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)
-[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)
+[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)
+[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)
 
 行为型模式关注**对象之间如何协作、职责如何分配、算法如何在运行时被组合与切换**。
 与创建型（谁创建）、结构型（怎样组合）不同，行为型回答的是「这条消息该交给谁、按什么规则、以什么代价」。
@@ -975,10 +975,10 @@ A: 编译器检查穷举性(忘记处理一个类型=编译错误), 无需 accep
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第137章](Book/part12_patterns/ch137_structural.md) | 模板约束/类型安全API | 本章提供概念，第137章提供实现 |
-| [第137章](Book/part12_patterns/ch137_structural.md) | 独占所有权/工厂模式 | 本章提供概念，第137章提供实现 |
-| [第139章](Book/part12_patterns/ch139_crtp_pattern.md) | STL算法回调/异步任务 | 本章提供概念，第139章提供实现 |
-| [第141章](Book/part12_patterns/ch141_di.md) | 多态插件/框架扩展 | 本章提供概念，第141章提供实现 |
+| [第137章](../part12_patterns/ch137_structural.md) | 模板约束/类型安全API | 本章提供概念，第137章提供实现 |
+| [第137章](../part12_patterns/ch137_structural.md) | 独占所有权/工厂模式 | 本章提供概念，第137章提供实现 |
+| [第139章](../part12_patterns/ch139_crtp_pattern.md) | STL算法回调/异步任务 | 本章提供概念，第139章提供实现 |
+| [第141章](../part12_patterns/ch141_di.md) | 多态插件/框架扩展 | 本章提供概念，第141章提供实现 |
 
 ## 附录 F：行为型模式
 
@@ -1008,14 +1008,14 @@ int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
-- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
-- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
-- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
-- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
-- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)）
 
 ## 底层视角：行为型模式的多态代价与静态替代 [E: Low-level]
 

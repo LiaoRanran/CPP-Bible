@@ -1,8 +1,8 @@
 # 第05章　C++14：小幅完善
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
-[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)
+[第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)
+[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)
 
 > 标准基：ISO/IEC 14882:2014（N4140）｜预计阅读：20 min｜前置：ch04｜后续：ch27 lambda、ch48 智能指针、ch69 constexpr、ch63 变参｜难度：★★｜层级：L1 入门
 
@@ -49,8 +49,8 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 
 ## ① 学习目标
 
-[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)
-[第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)
+[第04章　C++11：现代 C++ 革命](../part01_history/ch04_cpp11.md)
+[第06章　C++17：生产力跃升](../part01_history/ch06_cpp17.md)
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
 ```cpp
@@ -569,10 +569,10 @@ C++14标准库变化:
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第4章](Book/part01_history/ch04_cpp11.md) | 独占所有权/工厂模式 | 本章提供概念，第4章提供实现 |
-| [第6章](Book/part01_history/ch06_cpp17.md) | STL算法回调/异步任务 | 本章提供概念，第6章提供实现 |
-| [第69章](Book/part06_templates/ch69_constexpr.md) | 泛型库/编译期计算 | 本章提供概念，第69章提供实现 |
-| [第115章](Book/part10_modern/ch115_move.md) | 资源管理/事务回滚 | 本章提供概念，第115章提供实现 |
+| [第4章](../part01_history/ch04_cpp11.md) | 独占所有权/工厂模式 | 本章提供概念，第4章提供实现 |
+| [第6章](../part01_history/ch06_cpp17.md) | STL算法回调/异步任务 | 本章提供概念，第6章提供实现 |
+| [第69章](../part06_templates/ch69_constexpr.md) | 泛型库/编译期计算 | 本章提供概念，第69章提供实现 |
+| [第115章](../part10_modern/ch115_move.md) | 资源管理/事务回滚 | 本章提供概念，第115章提供实现 |
 
 ## 附录 E：C++14面试
 
@@ -593,9 +593,9 @@ int main(){auto p=std::make_unique<int>(42);auto l=[](auto x){return x*2;};std::
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)—— 编号相邻、主题接续。
-- **相邻主题**：[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)—— 编号相邻、主题接续。
-- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
+- **相邻主题**：[第03章　C++98 / C++03：奠基时代](../part01_history/ch03_cpp98_03.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第07章　C++20：量级升级](../part01_history/ch07_cpp20.md)—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](../part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 叙事补遗 [J: Learning]
 

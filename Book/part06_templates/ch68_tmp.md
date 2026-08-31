@@ -2,8 +2,8 @@
 > 层级：L3 专家
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
+[第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
 
 > 立场标签约定：`[标准]`=语言标准规定　`[实现]`=编译器/ABI 实现　`[平台]`=平台相关　`[经验]`=工程经验。
 ## ⓪ 历史动机：模板元编程的来龙去脉
@@ -45,8 +45,8 @@ TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、�
 
 ## ① 学习目标
 
-[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
-[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
+[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)
+[第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)
 
 - 理解 TMP（Template Metaprogramming）的本质：用模板实例化机制在**编译期**完成值计算与类型计算。
 - 掌握三条基本控制流：**递归**（值/类型递归实例化 + 偏特化终止）、**分支**（`std::conditional` / `if constexpr` / bool 特化）、**循环**（包展开 / 折叠 / 递归展开）。
@@ -292,8 +292,8 @@ _ZN3FibILi10EE7computeEv:        ; Fib<10>::compute
 
 ## ⑪ STL 中的该模式
 
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（类型特征 Type Traits）—— STL 用 traits 在 TMP 中萃取/分发类型
-[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)（SFINAE 与 std::enable_if）—— TMP 谓词经 SFINAE 转为候选筛选
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)（类型特征 Type Traits）—— STL 用 traits 在 TMP 中萃取/分发类型
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)（SFINAE 与 std::enable_if）—— TMP 谓词经 SFINAE 转为候选筛选
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
@@ -424,8 +424,8 @@ template <typename T> struct Traits<T*> { using type = int; };    // 重复偏�
 
 ## ⑭ 工业案例
 
-[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost.MPL/Hana 是 TMP 工业化的代表
-[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— TMP 与 policy 协同实现编译期可配置组件
+[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)（Boost 库生态）—— Boost.MPL/Hana 是 TMP 工业化的代表
+[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— TMP 与 policy 协同实现编译期可配置组件
 
 **案例 A：编译期单位制检查（防止 米+秒 误加）**
 
@@ -466,7 +466,7 @@ static_assert(list_size(typename MyEcs::types{}) == 3);
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— STL 的编译期设施在此统一实现
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— STL 的编译期设施在此统一实现
 
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
@@ -564,8 +564,8 @@ void only_int(T) { static_assert(std::is_integral_v<T>, "only integral allowed")
 
 ## ⑲ 性能（编译期 / 运行期）
 
-[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— TMP 实例化成本取决于编译器前端预算
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销须微基准实测
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— TMP 实例化成本取决于编译器前端预算
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销须微基准实测
 
 - **编译期**：TMP 在 `-O2` 下所有 `::value` / `::type` 查询折叠为立即数，零运行期指令（`[实现]` 证据见 ⑩）。代价是**编译时间增长**与**二进制膨胀**（每个递归实例化一份符号，见 `Fib<0..10>`）。
 - **运行期**：若把 TMP 写成 `compute()` 运行时函数（反模式 4），则退化成普通递归，有函数调用与栈帧开销，且可能指数级展开。
@@ -691,19 +691,19 @@ P2448R2 (C++23): 放宽constexpr限制 → 允许非constexpr函数在constexpr�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第69章](Book/part06_templates/ch69_constexpr.md) | 配置解析/API响应 | 本章提供概念，第69章提供实现 |
-| [第67章](Book/part06_templates/ch67_concepts.md) | 泛型库/编译期计算 | 本章提供概念，第67章提供实现 |
-| [第69章](Book/part06_templates/ch69_constexpr.md) | 文本处理/协议解析 | 本章提供概念，第69章提供实现 |
-| [第65章](Book/part06_templates/ch65_type_traits.md) | 模板约束/类型安全API | 本章提供概念，第65章提供实现 |
+| [第69章](../part06_templates/ch69_constexpr.md) | 配置解析/API响应 | 本章提供概念，第69章提供实现 |
+| [第67章](../part06_templates/ch67_concepts.md) | 泛型库/编译期计算 | 本章提供概念，第67章提供实现 |
+| [第69章](../part06_templates/ch69_constexpr.md) | 文本处理/协议解析 | 本章提供概念，第69章提供实现 |
+| [第65章](../part06_templates/ch65_type_traits.md) | 模板约束/类型安全API | 本章提供概念，第65章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— TMP 是模板基础的递归元编程延伸
-- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)）—— 特化实现 TMP 的编译期分支
-- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 可变参数 TMP 以递归包展开
-- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)—— SFINAE 实现 TMP 条件分支
-- **同模块接续**：[第70章　std::integral_constant 与标签分发（Tag Dispatch）](Book/part06_templates/ch70_tag_dispatch.md)）—— 标签分发是 TMP 的经典应用
-- **跨模块**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)）—— CRTP 是 TMP 实现的静态多态惯用法
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— TMP 是模板基础的递归元编程延伸
+- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](../part06_templates/ch62_specialization.md)）—— 特化实现 TMP 的编译期分支
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)）—— 可变参数 TMP 以递归包展开
+- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)—— SFINAE 实现 TMP 条件分支
+- **同模块接续**：[第70章　std::integral_constant 与标签分发（Tag Dispatch）](../part06_templates/ch70_tag_dispatch.md)）—— 标签分发是 TMP 的经典应用
+- **跨模块**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)）—— CRTP 是 TMP 实现的静态多态惯用法
 
 ## 附录 G：模板元编程（TMP）工业应用与编译期性能
 

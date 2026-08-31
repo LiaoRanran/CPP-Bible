@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
+[第64章　折叠表达式 Fold Expression（C++17）](../part06_templates/ch64_fold.md)
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)
 
 ## ⓪ 历史动机：可变参数模板的来龙去脉
 
@@ -40,8 +40,8 @@ C 风格的可变参数是类型安全的黑洞：`printf` 全靠格式串和约
 
 ## ① 学习目标
 
-[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)
-[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)
+[第62章　类模板特化与偏特化（Class Template Specialization）](../part06_templates/ch62_specialization.md)
+[第64章　折叠表达式 Fold Expression（C++17）](../part06_templates/ch64_fold.md)
 
 - 说清参数包（parameter pack）、包展开（pack expansion）、`sizeof...` <span class="badge badge-std">标准</span>
 - 掌握递归终止 + 包展开两种展开方式 <span class="badge badge-std">标准</span>
@@ -91,8 +91,8 @@ static_assert(count() == 0);
 
 ## ④ 递归展开（C++11 经典写法）
 
-[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)（折叠表达式：C++17 归约替代递归，更优）
-[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)（偏特化常做递归终止 base case）
+[第64章　折叠表达式 Fold Expression（C++17）](../part06_templates/ch64_fold.md)（折叠表达式：C++17 归约替代递归，更优）
+[第62章　类模板特化与偏特化（Class Template Specialization）](../part06_templates/ch62_specialization.md)（偏特化常做递归终止 base case）
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 递归展开（C++11 经典写法）
 ```cpp
@@ -417,8 +417,8 @@ template <typename... Ts> auto add(Ts... ts) { return (0 + ... + ts); }
 
 ## ⑪ STL 中的该模式
 
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（emplace 的可变参数完美转发实现）
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（对参数包做类型萃取）
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)（emplace 的可变参数完美转发实现）
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)（对参数包做类型萃取）
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
@@ -511,7 +511,7 @@ template <typename... Ts> auto s(Ts... ts) { return (ts + ...); }   // 优于递
 
 ## ⑭ 工业案例
 
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（日志/格式化库的可变参数转发底座）
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)（日志/格式化库的可变参数转发底座）
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
@@ -720,7 +720,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 - libstdc++ `bits/tuple`：tuple 递归继承 + 包展开
 - libstdc++ `bits/invoke.h`：std::apply 实现
 - GCC `cp/pt.cc`：包展开（expand_pack）
-- [第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)（折叠表达式）　[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)（CRTP）
+- [第64章　折叠表达式 Fold Expression（C++17）](../part06_templates/ch64_fold.md)（折叠表达式）　[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)（CRTP）
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -790,10 +790,10 @@ N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第64章](Book/part06_templates/ch64_fold.md) | STL算法回调/异步任务 | 本章提供概念，第64章提供实现 |
-| [第62章](Book/part06_templates/ch62_specialization.md) | 独占所有权/工厂模式 | 本章提供概念，第62章提供实现 |
-| [第64章](Book/part06_templates/ch64_fold.md) | 泛型库/编译期计算 | 本章提供概念，第64章提供实现 |
-| [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 日志格式化/序列化 | 本章提供概念，第116章提供实现 |
+| [第64章](../part06_templates/ch64_fold.md) | STL算法回调/异步任务 | 本章提供概念，第64章提供实现 |
+| [第62章](../part06_templates/ch62_specialization.md) | 独占所有权/工厂模式 | 本章提供概念，第62章提供实现 |
+| [第64章](../part06_templates/ch64_fold.md) | 泛型库/编译期计算 | 本章提供概念，第64章提供实现 |
+| [第116章](../part10_modern/ch116_perfect_forwarding.md) | 日志格式化/序列化 | 本章提供概念，第116章提供实现 |
 
 ## 附录 F：可变参数工业
 
@@ -894,14 +894,14 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 可变参数模板是模板基础的包推广
-- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— 包展开参与模板重载决议
-- **同模块接续**：[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)）—— 折叠表达式是可变参数包展开的简化语法
-- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)）—— 特化常针对包做递归终止
-- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 常对包做萃取
-- **跨模块**：[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)—— C++11 引入可变参数模板，是核心语言演进
-- **跨模块**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)—— deque 等容器用可变参数包转发
-- **跨模块**：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)—— 完美转发与可变参数包协同
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— 可变参数模板是模板基础的包推广
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)）—— 包展开参与模板重载决议
+- **同模块接续**：[第64章　折叠表达式 Fold Expression（C++17）](../part06_templates/ch64_fold.md)）—— 折叠表达式是可变参数包展开的简化语法
+- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](../part06_templates/ch62_specialization.md)）—— 特化常针对包做递归终止
+- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— type_traits 常对包做萃取
+- **跨模块**：[第04章　C++11：现代 C++ 革命](../part01_history/ch04_cpp11.md)—— C++11 引入可变参数模板，是核心语言演进
+- **跨模块**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)—— deque 等容器用可变参数包转发
+- **跨模块**：[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)—— 完美转发与可变参数包协同
 
 ## 自测练习（Exercises）
 

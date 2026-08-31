@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)
-[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)
+[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)
+[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)
 
 > 元数据：标准基 `C++20` / 预计阅读 40 分钟 / 前置 第146章（错误处理）、第143章（缓存行对齐）/ 后续 第?章（无锁数据结构）/ 难度 ★★★
 >
@@ -48,8 +48,8 @@
 
 ## ① 概述：日志的价值 <span class="badge badge-exp">经验</span>
 
-[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)
-[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)
+[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)
+[第162章 从零实现 JSON 库（C++）](../part15_cases/ch162_json.md)
 
 日志是"程序运行时的黑匣子"。**<span class="badge badge-exp">经验</span>** 在一个出过生产事故的人眼里，日志不是可选项，而是事故复盘的**唯一客观证据**——你无法用 gdb 去"回放"昨天凌晨三点的崩溃，但一条带时间戳和调用栈的 `error` 日志可以。
 
@@ -1494,10 +1494,10 @@ void set_threshold(Logger& log, Level l) { log.set_level(l); }
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第160章](Book/part15_cases/ch160_mempool.md) | TCP服务器/HTTP客户端 | 本章提供概念，第160章提供实现 |
-| [第162章](Book/part15_cases/ch162_json.md) | 无锁队列/计数器 | 本章提供概念，第162章提供实现 |
-| [第144章](Book/part13_engineering/ch144_style.md) | 多态插件/框架扩展 | 本章提供概念，第144章提供实现 |
-| [第131章](Book/part11_source/ch131_fmt_spdlog.md) | 配置解析/API响应 | 本章提供概念，第131章提供实现 |
+| [第160章](../part15_cases/ch160_mempool.md) | TCP服务器/HTTP客户端 | 本章提供概念，第160章提供实现 |
+| [第162章](../part15_cases/ch162_json.md) | 无锁队列/计数器 | 本章提供概念，第162章提供实现 |
+| [第144章](../part13_engineering/ch144_style.md) | 多态插件/框架扩展 | 本章提供概念，第144章提供实现 |
+| [第131章](../part11_source/ch131_fmt_spdlog.md) | 配置解析/API响应 | 本章提供概念，第131章提供实现 |
 
 ## 项目学习地图：日志库 → 全书知识映射
 
@@ -1607,11 +1607,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）
-- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)）
-- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)）
-- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）
-- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）
+- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](../part15_cases/ch159_threadpool.md)）
+- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)）
+- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](../part15_cases/ch162_json.md)）
+- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](../part15_cases/ch163_net.md)）
+- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](../part15_cases/ch164_framework.md)）
 
 ### 面试要点（速记·日志库）
 

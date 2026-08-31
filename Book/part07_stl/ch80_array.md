@@ -1,7 +1,7 @@
 # 第80章　array 与固定数组
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：70 分钟 / 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（变量与存储期）、[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)（引用与指针）、[第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)（span 视图）/ 后续：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector）、[第81章　std::string 与 SSO 短字符串优化](Book/part07_stl/ch81_string.md)（string）、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)（ranges）/ 难度：★★☆☆☆｜层级：L2 进阶
+> 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：70 分钟 / 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)（变量与存储期）、[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](../part03_language/ch20_reference_pointer.md)（引用与指针）、[第82章　span 与裸数组视图](../part07_stl/ch82_span.md)（span 视图）/ 后续：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)（vector）、[第81章　std::string 与 SSO 短字符串优化](../part07_stl/ch81_string.md)（string）、[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)（ranges）/ 难度：★★☆☆☆｜层级：L2 进阶
 
 ## ⓪ 历史动机：std::array 的来龙去脉
 > 一个"知道自己有多长"的 C 数组——它的诞生是为了堵住裸数组退化为指针的那道口子。
@@ -1014,7 +1014,7 @@ int main() {
 - `std::array` 大小是类型一部分（`std::array<int,3>` ≠ `std::array<int,4>`）。
 - C 数组退化（传参丢大小）用 `std::array` / `std::span` 避免。
 
-> 交叉引用：span 视图见 [ch82](Book/part07_stl/ch82_span.md)；vector 见 [ch77](Book/part07_stl/ch77_vector.md)。
+> 交叉引用：span 视图见 [ch82](../part07_stl/ch82_span.md)；vector 见 [ch77](../part07_stl/ch77_vector.md)。
 
 ## 附录 G：工业中 std::array 的典型使用场景
 
@@ -1030,10 +1030,10 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 固定容量连续容器的迭代器概念
-- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— 与 vector 的定长/变长对比
-- **同模块相邻**：[第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)—— span 是其数据的零拷贝视图
-- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— array 不使用 allocator（栈/静态存储），对比展示 STL 内存后端
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— 固定容量连续容器的迭代器概念
+- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)—— 与 vector 的定长/变长对比
+- **同模块相邻**：[第82章　span 与裸数组视图](../part07_stl/ch82_span.md)—— span 是其数据的零拷贝视图
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)模型与 PMR）—— array 不使用 allocator（栈/静态存储），对比展示 STL 内存后端
 
 ## 自测练习（Exercises）
 

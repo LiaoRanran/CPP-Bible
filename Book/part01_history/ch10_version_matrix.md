@@ -1,9 +1,9 @@
 # 第10章　版本特性全景对照表与迁移指南
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)
-[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)
-[第165章 C++ 进阶路线图（C++）](Book/part16_reading/ch165_roadmap.md)
+[第04章　C++11：现代 C++ 革命](../part01_history/ch04_cpp11.md)
+[第07章　C++20：量级升级](../part01_history/ch07_cpp20.md)
+[第165章 C++ 进阶路线图（C++）](../part16_reading/ch165_roadmap.md)
 
 > 标准基：C++98 → C++26｜预计阅读：20 min｜前置：ch03–ch09｜后续：全书｜难度：★★｜层级：L1 入门
 
@@ -43,7 +43,7 @@
 
 ## ① 学习目标
 
-[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)
+[第09章　C++26：已确定特性与方向](../part01_history/ch09_cpp26.md)
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
 ```cpp
@@ -541,9 +541,9 @@ int main(){std::cout<<"GCC 13 C++23 support: ~90%. MSVC 17.8: ~95%. Clang 17: ~8
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第9章](Book/part01_history/ch09_cpp26.md) | 键值查找/缓存 | 本章提供概念，第9章提供实现 |
-| [第7章](Book/part01_history/ch07_cpp20.md) | STL算法回调/异步任务 | 本章提供概念，第7章提供实现 |
-| [第4章](Book/part01_history/ch04_cpp11.md) | 文件扫描/配置加载 | 本章提供概念，第4章提供实现 |
+| [第9章](../part01_history/ch09_cpp26.md) | 键值查找/缓存 | 本章提供概念，第9章提供实现 |
+| [第7章](../part01_history/ch07_cpp20.md) | STL算法回调/异步任务 | 本章提供概念，第7章提供实现 |
+| [第4章](../part01_history/ch04_cpp11.md) | 文件扫描/配置加载 | 本章提供概念，第4章提供实现 |
 
 ## 附录 E：版本选择工业与面试
 
@@ -626,10 +626,10 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)—— 编号相邻、主题接续。
-- **相邻主题**：[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)）—— 编号相邻、主题接续。
-- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
+- **相邻主题**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第08章　C++23：标准库大修](../part01_history/ch08_cpp23.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第12章　构建系统：Make / Ninja / CMake（C++）](../part02_toolchain/ch12_buildsystems.md)）—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](../part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 附录 H：版本矩阵工业实践与源码对照
 

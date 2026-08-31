@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
-[第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
+[第123章　Compile-Time 编程范式总览](../part10_modern/ch123_ct_programming.md)
 
 > 本章所有汇编证据由 **MinGW GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）真实提取，源码剖析行号取自该工具链安装的 libstdc++ 15.3.0 头文件。
 ## ⓪ 历史动机：constexpr 的来龙去脉
@@ -44,8 +44,8 @@
 
 ## ① 学习目标
 
-[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
-[第70章　std::integral_constant 与标签分发（Tag Dispatch）](Book/part06_templates/ch70_tag_dispatch.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
+[第70章　std::integral_constant 与标签分发（Tag Dispatch）](../part06_templates/ch70_tag_dispatch.md)
 
 - 区分 `constexpr`、`consteval`、`constinit` 三个语义不同的说明符，理解它们各自约束的是"求值时刻"还是"初始化时刻"。
 - 掌握 `constexpr` 函数在编译期被求值的充要条件：所有实参必须是常量表达式、函数体必须是常量表达式（无未定义行为、无运行期 `new` 等）。
@@ -736,21 +736,21 @@ A: 编译时间显著增加 (模板实例化级), 但生成代码更优 (编译�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第68章](Book/part06_templates/ch68_tmp.md) | STL算法回调/异步任务 | 本章提供概念，第68章提供实现 |
-| [第68章](Book/part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
-| [第70章](Book/part06_templates/ch70_tag_dispatch.md) | 日志格式化/序列化 | 本章提供概念，第70章提供实现 |
-| [第123章](Book/part10_modern/ch123_ct_programming.md) | 计时器/性能测量 | 本章提供概念，第123章提供实现 |
+| [第68章](../part06_templates/ch68_tmp.md) | STL算法回调/异步任务 | 本章提供概念，第68章提供实现 |
+| [第68章](../part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
+| [第70章](../part06_templates/ch70_tag_dispatch.md) | 日志格式化/序列化 | 本章提供概念，第70章提供实现 |
+| [第123章](../part10_modern/ch123_ct_programming.md) | 计时器/性能测量 | 本章提供概念，第123章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— constexpr 函数即模板无关的编译期计算
-- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— concepts 约束 constexpr 模板参数
-- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— constexpr traits 提供编译期值查询
-- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— TMP 与 constexpr 共同构成编译期计算
-- **同模块接续**：[第71章　策略设计 Policy-Based Design](Book/part06_templates/ch71_policy.md)—— Policy-Based Design 的 policy 常为 constexpr
-- **跨模块**：[第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)—— C++14 放宽 constexpr 界限
-- **跨模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 编译器对 constexpr 的求值实现（GCC/Clang/MSVC）
-- **跨模块**：[第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)—— 编译期编程（CTP）以 constexpr 为基石
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— constexpr 函数即模板无关的编译期计算
+- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)—— concepts 约束 constexpr 模板参数
+- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— constexpr traits 提供编译期值查询
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)）—— TMP 与 constexpr 共同构成编译期计算
+- **同模块接续**：[第71章　策略设计 Policy-Based Design](../part06_templates/ch71_policy.md)—— Policy-Based Design 的 policy 常为 constexpr
+- **跨模块**：[第05章　C++14：小幅完善](../part01_history/ch05_cpp14.md)—— C++14 放宽 constexpr 界限
+- **跨模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)）—— 编译器对 constexpr 的求值实现（GCC/Clang/MSVC）
+- **跨模块**：[第123章　Compile-Time 编程范式总览](../part10_modern/ch123_ct_programming.md)—— 编译期编程（CTP）以 constexpr 为基石
 
 ## 附录 E（工业级 constexpr 实战）
 

@@ -1,10 +1,10 @@
 # 第108章　memory_order：六种内存序（C++11）
 > 层级：L3 专家
 
-[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
-[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
+[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)
+[第109章 内存屏障与 fence](../part09_concurrency/ch109_fence.md)
 
-[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)
+[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（`relaxed`/`release` store = `mov`、`seq_cst` store = `xchg`（隐式 `lock`）、RMW = `lock xadd`），见附录 J 与下文 `[VERIFIED]` 标注。
 > 本章所有汇编片段均为 x86-64（TSO）上的**真实产物**，源码位于 `Examples/_ch108_*.cpp`。
@@ -44,7 +44,7 @@
 
 ## ① 概述：内存序解决什么问题 <span class="badge badge-std">标准</span>
 
-[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
+[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)
 
 `std::atomic` 让单次读/写具备**原子性**（不会被观察到半写的值）。但多线程下还有第二个问题：**多个内存操作之间的可见顺序**。CPU 与编译器都会重排指令以提升性能，单线程语义不变，但跨线程观察时可能看到“乱序”的结果。
 
@@ -334,7 +334,7 @@ int main() {
 }
 ```
 
-> **[警告·并发安全]** 上方 `pop()`（示例 17/18）**仅在单线程下正确**。一旦多个线程并发 `pop`、或与 `push` 交错，`delete old`（L308）后另一线程可能经已被推进的 `head` 再次读到 `old->next` 指向的**已释放内存**——这是经典 **ABA 问题 / use-after-free**。本节标注的「已用 GCC 15.3.0 -O2 验证通过」只证明**单线程逻辑与内存序标注正确**，**不代表该结构可安全用于并发**；真正多线程 `pop` 的安全回收须配 tagged pointer（见 [ch111](Book/part09_concurrency/ch111_aba.md)）或 Hazard Pointer / RCU（见 [ch112](Book/part09_concurrency/ch112_hazard_rcu.md)）。生产环境优先复用 `std::stack`+mutex 或 `boost::lockfree::stack`。
+> **[警告·并发安全]** 上方 `pop()`（示例 17/18）**仅在单线程下正确**。一旦多个线程并发 `pop`、或与 `push` 交错，`delete old`（L308）后另一线程可能经已被推进的 `head` 再次读到 `old->next` 指向的**已释放内存**——这是经典 **ABA 问题 / use-after-free**。本节标注的「已用 GCC 15.3.0 -O2 验证通过」只证明**单线程逻辑与内存序标注正确**，**不代表该结构可安全用于并发**；真正多线程 `pop` 的安全回收须配 tagged pointer（见 [ch111](../part09_concurrency/ch111_aba.md)）或 Hazard Pointer / RCU（见 [ch112](../part09_concurrency/ch112_hazard_rcu.md)）。生产环境优先复用 `std::stack`+mutex 或 `boost::lockfree::stack`。
 
 - `[实现·GCC15]`：CAS 在 x86 上编译为 `lock cmpxchg`；acquire/release 的“屏障”在 TSO 下是免费的普通 `mov`。
 - `[经验]`：无锁结构难度极高，生产环境优先复用 `std::stack`+mutex，或 `boost::lockfree::stack`；手写仅用于学习底层机制。
@@ -846,10 +846,10 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第107章](Book/part09_concurrency/ch107_atomic.md) | 无锁队列/计数器 | 本章提供概念，第107章提供实现 |
-| [第109章](Book/part09_concurrency/ch109_fence.md) | 线程安全数据结构 | 本章提供概念，第109章提供实现 |
-| [第107章](Book/part09_concurrency/ch107_atomic.md) | 热路径识别/优化目标 | 本章提供概念，第107章提供实现 |
-| [第110章](Book/part09_concurrency/ch110_lockfree.md) | 无锁栈/队列的 CAS 循环 | 本章提供内存序概念，第110章提供 lock-free 实现 |
+| [第107章](../part09_concurrency/ch107_atomic.md) | 无锁队列/计数器 | 本章提供概念，第107章提供实现 |
+| [第109章](../part09_concurrency/ch109_fence.md) | 线程安全数据结构 | 本章提供概念，第109章提供实现 |
+| [第107章](../part09_concurrency/ch107_atomic.md) | 热路径识别/优化目标 | 本章提供概念，第107章提供实现 |
+| [第110章](../part09_concurrency/ch110_lockfree.md) | 无锁栈/队列的 CAS 循环 | 本章提供内存序概念，第110章提供 lock-free 实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -872,19 +872,19 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 - `memory_order_relaxed` 只保原子性不保顺序；错误放松顺序导致微妙的数据竞争，需用 ThreadSanitizer 验证。
 - 单生产者单消费者可用 relaxed + 单条 acq/rel 即可，不必 seq_cst；Chromium 与 Folly 在计数场景均如此。
 
-> 交叉引用：原子 RMW 见 [ch109](Book/part09_concurrency/ch109_fence.md)；无锁见 [ch110](Book/part09_concurrency/ch110_lockfree.md)。
+> 交叉引用：原子 RMW 见 [ch109](../part09_concurrency/ch109_fence.md)；无锁见 [ch110](../part09_concurrency/ch110_lockfree.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）
-- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
-- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）
-- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)）
-- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)）
-- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
-- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— 内存序的强弱最终映射到 x86 TSO / ARM 弱内存模型的真实屏障
-- **多线程落地（part07）**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— acquire/release 在线程/异步结果可见性中的用法
-- **协作取消衔接（part07）**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)—— stop_token 的原子标志依赖内存序保证取消可见
+- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)）
+- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](../part09_concurrency/ch109_fence.md)
+- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)）
+- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)）
+- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](../part09_concurrency/ch112_hazard_rcu.md)）
+- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](../part09_concurrency/ch113_coroutine.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](../part03_language/ch30_volatile.md)—— 内存序的强弱最终映射到 x86 TSO / ARM 弱内存模型的真实屏障
+- **多线程落地（part07）**：[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)—— acquire/release 在线程/异步结果可见性中的用法
+- **协作取消衔接（part07）**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)—— stop_token 的原子标志依赖内存序保证取消可见
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。RTTI（`dynamic_cast` / `typeid` / `std::type_info`）的**运行时布局由 ABI 规定而非 C++ 标准**（<span class="badge badge-std">标准</span> 不规定 vtable 中 RTTI 指针、type_info 对象的具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 `type_info` 结构与 `dynamic_cast` 查找路径均为 **GCC/Itanium ABI 实测**，跨编译器或平台可能存在差异，切勿视作标准保证。
 
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
-[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
 
 ## ⓪ 历史动机：RTTI 的来龙去脉
 
@@ -41,8 +41,8 @@ RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型
 
 ## ① 学习目标
 
-[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
-[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
+[第49章 虚继承与菱形继承：共享虚基类](../part05_oo/ch49_virtual_inheritance.md)
 
 - 说清 RTTI 由哪两个运算符提供、它们依赖 vtable 何处信息
 - 从真实 x86-64 汇编解释 `typeid(b).name()` 与 `dynamic_cast` 的全部指令与运行期成本
@@ -975,10 +975,10 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第47章](Book/part05_oo/ch47_virtual_functions.md) | 键值查找/缓存 | 本章提供概念，第47章提供实现 |
-| [第47章](Book/part05_oo/ch47_virtual_functions.md) | 泛型库/编译期计算 | 本章提供概念，第47章提供实现 |
-| [第49章](Book/part05_oo/ch49_virtual_inheritance.md) | 错误恢复/不可恢复错误 | 本章提供概念，第49章提供实现 |
-| [第65章](Book/part06_templates/ch65_type_traits.md) | 性能基准/回归检测 | 本章提供概念，第65章提供实现 |
+| [第47章](../part05_oo/ch47_virtual_functions.md) | 键值查找/缓存 | 本章提供概念，第47章提供实现 |
+| [第47章](../part05_oo/ch47_virtual_functions.md) | 泛型库/编译期计算 | 本章提供概念，第47章提供实现 |
+| [第49章](../part05_oo/ch49_virtual_inheritance.md) | 错误恢复/不可恢复错误 | 本章提供概念，第49章提供实现 |
+| [第65章](../part06_templates/ch65_type_traits.md) | 性能基准/回归检测 | 本章提供概念，第65章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1041,16 +1041,16 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 - `dynamic_cast` 跨动态库在部分平台失败（RTTI 信息不共享）；热路径避免 `dynamic_cast`（用访问者模式或 type tag）。
 - `-fno-rtti` 构建下的代码不能用 `dynamic_cast`/`typeid`，需用静态替代。
 
-> 交叉引用：虚函数见 [ch47](Book/part05_oo/ch47_virtual_functions.md)；类型萃取见 [ch65](Book/part06_templates/ch65_type_traits.md)。
+> 交叉引用：虚函数见 [ch47](../part05_oo/ch47_virtual_functions.md)；类型萃取见 [ch65](../part06_templates/ch65_type_traits.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 对象模型中的 vtable 携带 RTTI 信息（type_info）
-- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 继承体系是 RTTI 查询的作用域
-- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— dynamic_cast 对多态类型（含虚函数）才有效
-- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 多重继承下 dynamic_cast 跨分支需虚基类
-- **跨模块**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— dynamic_cast 是转型四兄弟之一，依赖 RTTI
-- **跨模块**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 提供编译期类型查询，是 RTTI 的编译期对应物
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)—— 对象模型中的 vtable 携带 RTTI 信息（type_info）
+- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)—— 继承体系是 RTTI 查询的作用域
+- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— dynamic_cast 对多态类型（含虚函数）才有效
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)）—— 多重继承下 dynamic_cast 跨分支需虚基类
+- **跨模块**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](../part03_language/ch27_cast.md)—— dynamic_cast 是转型四兄弟之一，依赖 RTTI
+- **跨模块**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— type_traits 提供编译期类型查询，是 RTTI 的编译期对应物
 
 ## 底层视角：RTTI 指针、typeinfo 与 dynamic_cast 的指针追逐 [E: Low-level]
 

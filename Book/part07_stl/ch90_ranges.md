@@ -39,8 +39,8 @@ Ranges 最核心的立场是**"算法应操作区间而非迭代器对"**，并�
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
-[第89章　tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)
-[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)
+[第89章　tuple / pair / any / function / bind](../part07_stl/ch89_tuple_any.md)
+[第91章 文件系统 filesystem](../part07_stl/ch91_filesystem.md)
 
 读完本章你能独立回答：
 
@@ -1043,8 +1043,8 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第89章](Book/part07_stl/ch89_tuple_any.md) | 键值查找/缓存 | 本章提供概念，第89章提供实现 |
-| [第91章](Book/part07_stl/ch91_filesystem.md) | 模板约束/类型安全API | 本章提供概念，第91章提供实现 |
+| [第89章](../part07_stl/ch89_tuple_any.md) | 键值查找/缓存 | 本章提供概念，第89章提供实现 |
+| [第91章](../part07_stl/ch91_filesystem.md) | 模板约束/类型安全API | 本章提供概念，第91章提供实现 |
 
 ## 附录 E：Ranges工业
 
@@ -1142,7 +1142,7 @@ unsigned long long bench_eager(const vector<int>& v) {
 
 ### M.5 交叉引用与方法学注
 
-- 性能基准范式见 [ch95 附录 J](Book/part08_algorithms/ch95_algo_overview.md)（introsort 真实基准）、[ch107 附录 K](Book/part09_concurrency/ch107_atomic.md)（并发基准）、[ch77 附录 L](Book/part07_stl/ch77_vector.md)（扩容实证）、[ch154 附录 I](Book/part14_perf/ch154_cache_opt.md)（局部性基准）。
+- 性能基准范式见 [ch95 附录 J](../part08_algorithms/ch95_algo_overview.md)（introsort 真实基准）、[ch107 附录 K](../part09_concurrency/ch107_atomic.md)（并发基准）、[ch77 附录 L](../part07_stl/ch77_vector.md)（扩容实证）、[ch154 附录 I](../part14_perf/ch154_cache_opt.md)（局部性基准）。
 - **版本治理注**：本章 ⑬ 源码摘录声明基于 GCC 13.1.0（mingw1310，见 line 4）；本 D5 基准基于 GCC 15.3.0（项目 canonical）。libstdc++ ranges 实现在两版本间语义一致，但行号可能偏移，建议将 ⑬ 摘录迁移到 15.3.0 以对齐全书版本基线。
 - 基准源 `_bench_ranges.cpp` 存于库根，复跑：`g++ -std=c++20 -O2 -pthread _bench_ranges.cpp -o _bench_ranges && ./_bench_ranges`。
 
@@ -1158,9 +1158,9 @@ flowchart TD
     C --> G["忌: 管道中插 collect<br/>→ 退化成贪婪物化 4.5x 慢"]
 ```
 
-> 交叉引用：惰性求值范式见 [ch120 协程应用](Book/part10_modern/ch120_coroutine_app.md)；表达式模板零开销见 [ch124 libstdc++ 架构](Book/part11_source/ch124_libstdcxx.md)（Eigen 同构）。
+> 交叉引用：惰性求值范式见 [ch120 协程应用](../part10_modern/ch120_coroutine_app.md)；表达式模板零开销见 [ch124 libstdc++ 架构](../part11_source/ch124_libstdcxx.md)（Eigen 同构）。
 
-> 交叉引用：迭代器见 [ch76](Book/part07_stl/ch76_stl_arch.md)；算法见 [ch95](Book/part08_algorithms/ch95_algo_overview.md)；惰性求值见 [ch120](Book/part10_modern/ch120_coroutine_app.md)。
+> 交叉引用：迭代器见 [ch76](../part07_stl/ch76_stl_arch.md)；算法见 [ch95](../part08_algorithms/ch95_algo_overview.md)；惰性求值见 [ch120](../part10_modern/ch120_coroutine_app.md)。
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 
@@ -1233,14 +1233,14 @@ flowchart TD
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— ranges 构建于该架构的迭代器概念之上
-- **同模块相邻**：[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)—— optional/variant 常与 ranges 管道配合
-- **同模块相邻**：[第89章　tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)—— tuple 等常与 ranges 配合
-- **跨模块前置**：[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)）—— C++20 ranges 深入讲解视图与适配器
-- **跨模块前置**：[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)）—— ranges 算法是 STL 算法思想的惰性化重构
-- **跨模块前置**：[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)）—— 排序等算法在 ranges 下的管道表达
-- **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 管道元素移动依赖移动语义
-- **相邻主题**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— Concepts 约束 ranges 的迭代器/视图参数
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— ranges 构建于该架构的迭代器概念之上
+- **同模块相邻**：[第88章　optional / expected / variant：可空与可辨别联合](../part07_stl/ch88_optional_variant.md)—— optional/variant 常与 ranges 管道配合
+- **同模块相邻**：[第89章　tuple / pair / any / function / bind](../part07_stl/ch89_tuple_any.md)—— tuple 等常与 ranges 配合
+- **跨模块前置**：[第119章　Ranges 深入（C++20）](../part10_modern/ch119_ranges_deep.md)）—— C++20 ranges 深入讲解视图与适配器
+- **跨模块前置**：[第95章　STL 算法分类与复杂度（C++）](../part08_algorithms/ch95_algo_overview.md)）—— ranges 算法是 STL 算法思想的惰性化重构
+- **跨模块前置**：[第96章　排序：sort / stable_sort / partial_sort（C++）](../part08_algorithms/ch96_sorting.md)）—— 排序等算法在 ranges 下的管道表达
+- **相邻主题**：[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)—— 管道元素移动依赖移动语义
+- **相邻主题**：[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)—— Concepts 约束 ranges 的迭代器/视图参数
 
 ## 自测练习（Exercises）
 

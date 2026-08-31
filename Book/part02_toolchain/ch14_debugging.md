@@ -2,7 +2,7 @@
 > 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)
+[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](../part02_toolchain/ch15_profiling.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`）。本章示例源码位于 `Examples/`，统一前缀 `_ch14_`。
 > 说明：本机 MinGW GCC 13.1.0（x86_64-posix-seh 构建）**未随附 `libasan`/`libubsan`/`libtsan` 运行时**，因此 ASan/UBSan/TSan 的 `-fsanitize=...` 链接会失败（已真实复现，见 ⑪）。本章对"真实取证"采用本工具链可执行的 `g++ -S -g`（调试符号与汇编）、`strip`、`-Wall -Wextra` 警告等真实产物，绝不编造 ASan 报告。
@@ -45,8 +45,8 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 
 ## ① 概述：调试的目标与分层 <span class="badge badge-std">标准</span>
 
-[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)
-[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)
+[第13章　包管理：vcpkg / Conan（C++）](../part02_toolchain/ch13_packaging.md)
+[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](../part02_toolchain/ch15_profiling.md)
 
 调试不是"找 bug"的代名词，而是**把程序的可观察行为对齐到设计意图**的闭环。C++ 的典型故障分层：
 
@@ -1123,9 +1123,9 @@ Sanitizer与标准库:
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第15章](Book/part02_toolchain/ch15_profiling.md) | 独占所有权/工厂模式 | 本章提供概念，第15章提供实现 |
-| [第13章](Book/part02_toolchain/ch13_packaging.md) | 无锁队列/计数器 | 本章提供概念，第13章提供实现 |
-| [第15章](Book/part02_toolchain/ch15_profiling.md) | STL算法回调/异步任务 | 本章提供概念，第15章提供实现 |
+| [第15章](../part02_toolchain/ch15_profiling.md) | 独占所有权/工厂模式 | 本章提供概念，第15章提供实现 |
+| [第13章](../part02_toolchain/ch13_packaging.md) | 无锁队列/计数器 | 本章提供概念，第13章提供实现 |
+| [第15章](../part02_toolchain/ch15_profiling.md) | STL算法回调/异步任务 | 本章提供概念，第15章提供实现 |
 
 ## 附录 D：调试工具汇编验证与面试
 
@@ -1241,9 +1241,9 @@ int main(){std::thread t1([]{x=1;});std::thread t2([]{x=2;});t1.join();t2.join()
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)）—— 编号相邻、主题接续。
-- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
+- **后续依赖**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](../part02_toolchain/ch16_ide.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第12章　构建系统：Make / Ninja / CMake（C++）](../part02_toolchain/ch12_buildsystems.md)）—— 编号相邻、主题接续。
+- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1264,7 +1264,7 @@ int main(){std::thread t1([]{x=1;});std::thread t2([]{x=2;});t1.join();t2.join()
 - **深度信号（DEP）**：GDB `disas /r` 显示 `-O2` 下函数体直接内存寻址——`mov eax, [rdi+0x10]` 无 prologue；栈帧省略（FPO）使回溯依赖 `.eh_frame`（DWARF）。ASan 在 `0x7fff00000000` 影子区插入 `0x1000` 红区（redzone），越界触发 `__builtin_trap` 前先报告字节偏移。
   → <https://github.com/llvm/llvm-project>
 
-> 交叉引用：UB 检测见 [ch156](Book/part14_perf/ch156_compiler_opt.md)；测试见 [ch150](Book/part13_engineering/ch150_testing.md)。
+> 交叉引用：UB 检测见 [ch156](../part14_perf/ch156_compiler_opt.md)；测试见 [ch150](../part13_engineering/ch150_testing.md)。
 
 ## 附录 K（调试器底层与断点）
 
@@ -1587,12 +1587,12 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | 调试依赖编译器生成的 DWARF（第⑫节与 ch11 ⑰衔接） |
-| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | -g/strip 由构建配置控制（第⑫节与 ch18 ⑩衔接） |
-| ch15 性能剖析 | [Book/part02_toolchain/ch15_profiling.md](Book/part02_toolchain/ch15_profiling.md) | 性能陷阱定位与调试协同（第⑱节外推） |
-| ch28 生命周期/UB | [Book/part03_language/ch28_lifetime_ub.md](Book/part03_language/ch28_lifetime_ub.md) | UBSan 捕获未定义行为（第⑦节与 ch28 衔接） |
-| ch150 测试 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | 调试驱动测试失败定位（第⑰节外推） |
-| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 优化下 sanitizer 行为差异（第⑥节与 ch156 衔接） |
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](../part02_toolchain/ch11_compilers.md) | 调试依赖编译器生成的 DWARF（第⑫节与 ch11 ⑰衔接） |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](../part02_toolchain/ch18_buildconfig.md) | -g/strip 由构建配置控制（第⑫节与 ch18 ⑩衔接） |
+| ch15 性能剖析 | [Book/part02_toolchain/ch15_profiling.md](../part02_toolchain/ch15_profiling.md) | 性能陷阱定位与调试协同（第⑱节外推） |
+| ch28 生命周期/UB | [Book/part03_language/ch28_lifetime_ub.md](../part03_language/ch28_lifetime_ub.md) | UBSan 捕获未定义行为（第⑦节与 ch28 衔接） |
+| ch150 测试 | [Book/part13_engineering/ch150_testing.md](../part13_engineering/ch150_testing.md) | 调试驱动测试失败定位（第⑰节外推） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | 优化下 sanitizer 行为差异（第⑥节与 ch156 衔接） |
 
 ## 附录 D5：真实基准与性能分析 — 调试构建代价：-O0 -g 相对 -O2 的运行时开销（GCC 15.3.0）
 

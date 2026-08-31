@@ -45,14 +45,16 @@ BOOK = ROOT / "Book"
 
 # 匹配一处跨章引用：可选前导 "](" 或反引号，路径主体，可选 #锚点，条件闭合。
 # 用 conditional group 一次性区分三种上下文。
-# 路径两种形态：
+# 路径形态（三选一）：
 #   A) `Book/partNN/chNN.md`   —— 带 Book/ 前缀（裸文本 ⟶、markdown 链接、反引号皆可）
 #   B) `partNN/chNN.md`        —— 相对 Book 根、无前缀（仅出现在已有的 `](...)` 链接内，
-#      共 1461 处 / 399 文件；正文散落的裸 partNN/chNN.md 不予匹配，见 repl 中的守卫）
+#      共 1461+ 处 / 399 文件；正文散落的裸 partNN/chNN.md 不予匹配，见 repl 中的守卫）
+#   C) `../partNN/chNN.md`     —— 源相对（tools/fix_book_links.py 改写后的 md 链接形态；
+#      标准渲染器里正确，发布时由本脚本对 PDF 归一化为 #chNN 锚点）
 CHREF_RE = re.compile(
     r"(?P<mdlink>\]\()?"                                      # markdown 链接前缀 ](
     r"(?P<btick>`)?"                                          # 反引号前缀
-    r"(?P<path>(?:Book/)?part\d+[A-Za-z0-9_]*/ch\d+[A-Za-z0-9_]*\.md)"  # 书内路径(Book/可选)
+    r"(?P<path>(?:(?:\.\./)+|Book/)?part\d+[A-Za-z0-9_]*/ch\d+[A-Za-z0-9_]*\.md)"  # 书内路径(../或Book/可选)
     r"(?P<anchor>#[-\w]+)?"                                   # 可选锚点
     r"(?(btick)`)"                                            # 若有反引号则闭合
     r"(?(mdlink)\))"                                          # 若有 ]( 则闭合 )
@@ -285,10 +287,15 @@ def rewrite_content(content: str, src_book_rel: str, index: dict, mode: str) -> 
 
     def repl(m: re.Match) -> str:
         nonlocal count
-        raw = m.group("path")                  # 形态 A: Book/partPP/chQQ.md；形态 B: partPP/chQQ.md
+        raw = m.group("path")                  # 形态 A: Book/...；B: part...；C: ../part...
         anchor = m.group("anchor") or ""
         if raw.startswith("Book/"):
             target = raw
+        elif raw.startswith("../"):
+            # 源相对（fix_book_links 改写形态）：归一化回 Book 根目标
+            if not m.group("mdlink"):
+                return m.group(0)
+            target = "Book/" + raw.lstrip("./")
         else:
             # 无 Book/ 前缀（相对 Book 根）：仅在 markdown 链接 `](...)` 上下文内才算跨章引用，
             # 否则可能是正文里无关的 partNN/chNN.md 文本，原样保留（不臆造）。

@@ -2,8 +2,8 @@
 > 层级：L3 专家
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
-[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)
+[第119章　Ranges 深入（C++20）](../part10_modern/ch119_ranges_deep.md)
 
 > 文件路径：`Book/part06_templates/ch67_concepts.md`
 > 用途：工业级讲解 C++20 Concepts 与 requires 子句，含手写 concept、标准库 concept 源码剖析、与 SFINAE 的 ABI 等价性、MinGW GCC 15.3.0 真实汇编证据。
@@ -48,8 +48,8 @@ concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强�
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
-[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
-[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
 
 - 说清 `concept` 是什么：一个「编译期布尔谓词」，可被命名、组合、复用 <span class="badge badge-std">标准</span>
 - 掌握 `requires` 表达式（简单/类型/复合/嵌套）四类约束的写法与语义 <span class="badge badge-std">标准</span>
@@ -776,20 +776,20 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第66章](Book/part06_templates/ch66_sfinae.md) | 键值查找/缓存 | 本章提供概念，第66章提供实现 |
-| [第66章](Book/part06_templates/ch66_sfinae.md) | 模板约束/类型安全API | 本章提供概念，第66章提供实现 |
-| [第68章](Book/part06_templates/ch68_tmp.md) | 配置解析/API响应 | 本章提供概念，第68章提供实现 |
-| [第119章](Book/part10_modern/ch119_ranges_deep.md) | 泛型库/编译期计算 | 本章提供概念，第119章提供实现 |
+| [第66章](../part06_templates/ch66_sfinae.md) | 键值查找/缓存 | 本章提供概念，第66章提供实现 |
+| [第66章](../part06_templates/ch66_sfinae.md) | 模板约束/类型安全API | 本章提供概念，第66章提供实现 |
+| [第68章](../part06_templates/ch68_tmp.md) | 配置解析/API响应 | 本章提供概念，第68章提供实现 |
+| [第119章](../part10_modern/ch119_ranges_deep.md) | 泛型库/编译期计算 | 本章提供概念，第119章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— concepts 约束模板参数，建立在模板基础之上
-- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— concepts 重写重载决议的约束层
-- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— concepts 是 type_traits 的类型安全替代
-- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)—— concepts 以更清晰方式替代 SFINAE
-- **同模块接续**：[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)—— constexpr + concepts 约束编译期计算
-- **跨模块**：[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)—— C++20 引入 concepts，是量级升级
-- **跨模块**：[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)）—— ranges 深度依赖 concepts 约束
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— concepts 约束模板参数，建立在模板基础之上
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)）—— concepts 重写重载决议的约束层
+- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— concepts 是 type_traits 的类型安全替代
+- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](../part06_templates/ch66_sfinae.md)—— concepts 以更清晰方式替代 SFINAE
+- **同模块接续**：[第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)—— constexpr + concepts 约束编译期计算
+- **跨模块**：[第07章　C++20：量级升级](../part01_history/ch07_cpp20.md)—— C++20 引入 concepts，是量级升级
+- **跨模块**：[第119章　Ranges 深入（C++20）](../part10_modern/ch119_ranges_deep.md)）—— ranges 深度依赖 concepts 约束
 
 ## 附录 G：Concepts 工业实践与编译期性能
 

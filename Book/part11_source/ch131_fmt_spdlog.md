@@ -44,8 +44,8 @@ fmt 对 `iostream`/`printf` 之争的答案是"类型安全 + 性能好 + 语法
 
 ## ① 概述：fmt / spdlog（现代格式化与日志） <span class="badge badge-std">标准</span>
 
-[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)
-[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)
+[第130章　Chromium / Abseil 基础设施（C++）](../part11_source/ch130_chromium_abseil.md)
+[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)
 
 `fmt`（原 cppformat）是现代 C++ 的**类型安全、快速、小而全**的文本格式化库；`spdlog` 是建立在 fmt 之上的**高性能、仅头文件**日志库。二者共同解决了传统 `<iostream>`（慢、冗长）与 `printf`（无类型安全、格式串与参数易错位）的痛点。
 
@@ -726,8 +726,8 @@ class SPDLOG_API registry {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第130章](Book/part11_source/ch130_chromium_abseil.md) | 泛型库/编译期计算 | 本章提供概念，第130章提供实现 |
-| [第132章](Book/part11_source/ch132_leveldb_rocksdb.md) | 日志格式化/序列化 | 本章提供概念，第132章提供实现 |
+| [第130章](../part11_source/ch130_chromium_abseil.md) | 泛型库/编译期计算 | 本章提供概念，第130章提供实现 |
+| [第132章](../part11_source/ch132_leveldb_rocksdb.md) | 日志格式化/序列化 | 本章提供概念，第132章提供实现 |
 
 ## ㉑ 真实工程使用场景：把 fmt / spdlog 接到你的工程
 
@@ -890,18 +890,18 @@ int main(){std::cout<<"fmt=5-10x faster than cout; spdlog=300ns/msg async"<<std:
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
-- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
-- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
-- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
-- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
-- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
-- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
-- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
-- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
-- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
-- **跨模块延伸（part07 STL）**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)—— list / forward_list 节点式存储是日志缓冲区的常见底层
-- **跨模块延伸（part07 STL）**：[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)—— chrono 为日志时间戳提供时基
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](../part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）
+- **跨模块延伸（part07 STL）**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](../part07_stl/ch79_list.md)—— list / forward_list 节点式存储是日志缓冲区的常见底层
+- **跨模块延伸（part07 STL）**：[第92章 时间库 chrono](../part07_stl/ch92_chrono.md)—— chrono 为日志时间戳提供时基
 
 ## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

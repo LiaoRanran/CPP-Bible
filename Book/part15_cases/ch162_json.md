@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
-[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
+[第88章　optional / expected / variant：可空与可辨别联合](../part07_stl/ch88_optional_variant.md)
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)
 
 > 元数据：标准基 `C++20` / 预计阅读 45 分钟 / 前置 第?章（std::variant 与类型安全联合）、第?章（RAII 与异常）/ 后续 第?章（零开销抽象与内联）/ 难度 ★★★
 >
@@ -52,8 +52,8 @@ C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除
 
 ## ① 概述：JSON 与 C++ 映射 <span class="badge badge-std">标准</span>
 
-[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)
-[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)
+[第161章 从零实现日志库（C++）](../part15_cases/ch161_logger.md)
+[第163章 从零实现网络编程（C++）](../part15_cases/ch163_net.md)
 
 JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量数据交换格式。**<span class="badge badge-std">标准</span>** 严格说 JSON 不是 C++ 标准的一部分——C++ 标准库（至 C++23）并未提供 `std::json`；它由 IETF RFC 8259 规定，各语言自行实现。把一个"文本协议"干净地映射进 C++ 的强类型世界，正是本章要解决的问题。
 
@@ -945,10 +945,10 @@ A: 状态机: NORMAL → ESCAPE → UNICODE_4_HEX → 转换码点为 UTF-8 字�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第161章](Book/part15_cases/ch161_logger.md) | 键值查找/缓存 | 本章提供概念，第161章提供实现 |
-| [第163章](Book/part15_cases/ch163_net.md) | 多态插件/框架扩展 | 本章提供概念，第163章提供实现 |
-| [第88章](Book/part07_stl/ch88_optional_variant.md) | 配置解析/API响应 | 本章提供概念，第88章提供实现 |
-| [第63章](Book/part06_templates/ch63_variadic.md) | 泛型库/编译期计算 | 本章提供概念，第63章提供实现 |
+| [第161章](../part15_cases/ch161_logger.md) | 键值查找/缓存 | 本章提供概念，第161章提供实现 |
+| [第163章](../part15_cases/ch163_net.md) | 多态插件/框架扩展 | 本章提供概念，第163章提供实现 |
+| [第88章](../part07_stl/ch88_optional_variant.md) | 配置解析/API响应 | 本章提供概念，第88章提供实现 |
+| [第63章](../part06_templates/ch63_variadic.md) | 泛型库/编译期计算 | 本章提供概念，第63章提供实现 |
 
 ## 项目学习地图：JSON库 → 全书知识映射
 
@@ -986,15 +986,15 @@ int main() {
 
 | `json.hpp` 模块 | 回链章节 | 知识点 |
 |---|---|---|
-| `Value`＝`std::variant<Null,bool,long long,unsigned long long,double,string,Array,Object>`（值语义、无 vptr） | [第88章](Book/part07_stl/ch88_optional_variant.md) `std::optional`/`std::variant` | 类型安全区分联合 |
-| `Array = std::vector<Value>` | [第77章](Book/part07_stl/ch77_vector.md) `std::vector` | 动态数组容器 |
-| `Object = std::map<std::string, Value>` | [第83章](Book/part07_stl/ch83_map.md) `std::map` | 有序键容器（红黑树） |
-| `parse_error : std::runtime_error`（携带 line/col） | [第146章](Book/part13_engineering/ch146_error_handling.md) 错误处理、[第40章](Book/part04_memory/ch40_exception_safety.md) 异常安全 | 异常层级 + 定位 |
-| 重载构造与 `set` 系列（int/int64/uint64/double/`const char*` 精确匹配） | [第61章](Book/part06_templates/ch61_template_overload.md) 模板/函数重载 | 重载决议、「`set("x")` 误走 `bool`」陷阱 |
-| `parse_string`/`parse_unicode`（UTF-16 代理对 → UTF-8） | [第81章](Book/part07_stl/ch81_string.md) `std::string`、⑫ UTF-8 | 转义 + 编码 |
+| `Value`＝`std::variant<Null,bool,long long,unsigned long long,double,string,Array,Object>`（值语义、无 vptr） | [第88章](../part07_stl/ch88_optional_variant.md) `std::optional`/`std::variant` | 类型安全区分联合 |
+| `Array = std::vector<Value>` | [第77章](../part07_stl/ch77_vector.md) `std::vector` | 动态数组容器 |
+| `Object = std::map<std::string, Value>` | [第83章](../part07_stl/ch83_map.md) `std::map` | 有序键容器（红黑树） |
+| `parse_error : std::runtime_error`（携带 line/col） | [第146章](../part13_engineering/ch146_error_handling.md) 错误处理、[第40章](../part04_memory/ch40_exception_safety.md) 异常安全 | 异常层级 + 定位 |
+| 重载构造与 `set` 系列（int/int64/uint64/double/`const char*` 精确匹配） | [第61章](../part06_templates/ch61_template_overload.md) 模板/函数重载 | 重载决议、「`set("x")` 误走 `bool`」陷阱 |
+| `parse_string`/`parse_unicode`（UTF-16 代理对 → UTF-8） | [第81章](../part07_stl/ch81_string.md) `std::string`、⑫ UTF-8 | 转义 + 编码 |
 | `Parser`（递归下降分派） | ④⑥ 递归下降解析 | 文法直接映射到函数 |
-| 数字三元组分流（`long long`/`unsigned long long`/`double`，>2^53 整数无损、非有限值拒收） | [第88章](Book/part07_stl/ch88_optional_variant.md) variant + 基础类型精度 | 整数精度 vs 浮点近似 |
-| 构造与 `parse` 全程 `std::move`（零深拷贝） | [第115章](Book/part10_modern/ch115_move.md) 移动语义 | 值语义 + NRVO |
+| 数字三元组分流（`long long`/`unsigned long long`/`double`，>2^53 整数无损、非有限值拒收） | [第88章](../part07_stl/ch88_optional_variant.md) variant + 基础类型精度 | 整数精度 vs 浮点近似 |
+| 构造与 `parse` 全程 `std::move`（零深拷贝） | [第115章](../part10_modern/ch115_move.md) 移动语义 | 值语义 + NRVO |
 | `escape_string`/`serialize_into`（紧凑/美化双模式） | ⑧ 序列化 | 逆过程 + 幂等往返 |
 
 **编译与自测**（本机 `g++` 真实验证，`-std=c++23`）：
@@ -1012,11 +1012,11 @@ g++ -std=c++23 -O2 -Wall -Wextra -o json_demo.exe json_demo.cpp
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）
-- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)）
-- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)）
-- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）
-- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）
+- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](../part15_cases/ch159_threadpool.md)）
+- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)）
+- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](../part15_cases/ch161_logger.md)）
+- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](../part15_cases/ch163_net.md)）
+- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](../part15_cases/ch164_framework.md)）
 
 ## 附录 G：工业 JSON 库生态
 

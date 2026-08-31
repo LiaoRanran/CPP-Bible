@@ -229,6 +229,7 @@ def cmd_check(args: argparse.Namespace) -> int:
             ("Fence Sweep", [PYTHON_EXE, "tools/sweep_fences.py", "--check"]),
             ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
             ("S10 Verify", [PYTHON_EXE, "tools/s10_verify_mark.py", "--check"]),
+            ("Book Link Integrity", [PYTHON_EXE, "tools/fix_book_links.py", "--check"]),
         ]
     elif stage == "compile":
         gates = [

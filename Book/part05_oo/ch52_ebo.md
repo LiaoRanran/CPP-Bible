@@ -1,6 +1,6 @@
 # 第52章　空基类优化 EBO（Empty Base Optimization）
 
-[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
+[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台]` ABI/OS · `[经验]` 工程共识｜层级：L2 进阶
 > 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_ebo.cpp` → `_asm_ebo.asm`）
@@ -44,7 +44,7 @@ EBO 体现 C++ 对「大小即性能」的执念：在密集容器、嵌入式�
 
 ## ① 学习目标
 
-[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)
 
 - 说清**空类**为何 `sizeof ≥ 1`，而**空基类子对象**可占 0 字节（C++ 对「基类子对象」的特例）。
 - 能从 assembly/offsetof 证明 EBO：`Derived : Empty { int x; }` 中 `x` 在偏移 0，而 `AsMember { Empty e; int x; }` 中 `x` 在偏移 4。
@@ -698,8 +698,8 @@ int main(){Combined c{{},{},42};std::cout<<sizeof(c)<<" (int + EBO for both base
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第51章](Book/part05_oo/ch51_crtp.md) | 独占所有权/工厂模式 | 本章提供概念，第51章提供实现 |
-| [第45章](Book/part05_oo/ch45_oop_object_model.md) | 泛型库/编译期计算 | 本章提供概念，第45章提供实现 |
+| [第51章](../part05_oo/ch51_crtp.md) | 独占所有权/工厂模式 | 本章提供概念，第51章提供实现 |
+| [第45章](../part05_oo/ch45_oop_object_model.md) | 泛型库/编译期计算 | 本章提供概念，第45章提供实现 |
 
 ## 深度增强：EBO编译器实现与工业
 
@@ -736,11 +736,11 @@ int main(){std::cout<<sizeof(std::unique_ptr<int>)<<" bytes (EBO=默认deleter�
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— EBO 是对象模型层面的布局优化，空基类不占空间
-- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 多重继承基类中 EBO 收益明显
-- **同模块接续**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)）—— CRTP 基类为空，EBO 使其零成本
-- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)—— 虚继承与 EBO 都服务于基类布局优化
-- **跨模块**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 对象内存布局解释 EBO 的段级落点
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)—— EBO 是对象模型层面的布局优化，空基类不占空间
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)）—— 多重继承基类中 EBO 收益明显
+- **同模块接续**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)）—— CRTP 基类为空，EBO 使其零成本
+- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](../part05_oo/ch49_virtual_inheritance.md)—— 虚继承与 EBO 都服务于基类布局优化
+- **跨模块**：[第 35 章  C++ 程序的内存模型与操作系统视角](../part04_memory/ch35_memory_layout.md)—— 对象内存布局解释 EBO 的段级落点
 
 ## 真实开源项目参考（可查证链接）
 
@@ -758,9 +758,9 @@ int main(){std::cout<<sizeof(std::unique_ptr<int>)<<" bytes (EBO=默认deleter�
 - **Qt 6（github.com/qt/qtbase）**：`Q_D`/`Q_Q` 指针封装（d-pointer 惯用法）用 EBO 让私有类零开销挂到公开类。
 - **Eigen（gitlab.com/libeigen/eigen）**：固定大小矩阵 `Matrix<float,3,1>` 把维度作为空基类存储，EBO 使其零开销——与 `std::array` 同尺寸。
 
-> 交叉引用：内存布局见 [ch35](Book/part04_memory/ch35_memory_layout.md)；对象模型见 [ch45](Book/part05_oo/ch45_oop_object_model.md)。
+> 交叉引用：内存布局见 [ch35](../part04_memory/ch35_memory_layout.md)；对象模型见 [ch45](../part05_oo/ch45_oop_object_model.md)。
 
-- **同模块**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚函数表与 EBO 同属对象模型视角，布局优化互补。
+- **同模块**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚函数表与 EBO 同属对象模型视角，布局优化互补。
 
 ## 自测练习（Exercises）
 

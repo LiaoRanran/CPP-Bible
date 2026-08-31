@@ -39,8 +39,8 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
-[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
-[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)
+[第88章　optional / expected / variant：可空与可辨别联合](../part07_stl/ch88_optional_variant.md)
+[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)
 
 读完本章你能独立回答：
 
@@ -1194,8 +1194,8 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第88章](Book/part07_stl/ch88_optional_variant.md) | 键值查找/缓存 | 本章提供概念，第88章提供实现 |
-| [第90章](Book/part07_stl/ch90_ranges.md) | STL算法回调/异步任务 | 本章提供概念，第90章提供实现 |
+| [第88章](../part07_stl/ch88_optional_variant.md) | 键值查找/缓存 | 本章提供概念，第88章提供实现 |
+| [第90章](../part07_stl/ch90_ranges.md) | STL算法回调/异步任务 | 本章提供概念，第90章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1210,7 +1210,7 @@ int main() {
 - `std::any` 类型擦除有堆分配与 RTTI 成本；`std::tuple` 过大（>8 元素）编译慢且可读性差，考虑结构化绑定 + 具名 struct。
 - `std::any_cast` 类型不符抛 `std::bad_any_cast`，用 `std::any_cast<T>(p)` 指针形式返回 nullptr 更安全。
 
-> 交叉引用：变参见 [ch63](Book/part06_templates/ch63_variadic.md)；variant 见 [ch25](Book/part03_language/ch25_union_variant.md)。
+> 交叉引用：变参见 [ch63](../part06_templates/ch63_variadic.md)；variant 见 [ch25](../part03_language/ch25_union_variant.md)。
 
 ## 附录 G（tuple / any 存储布局）
 
@@ -1245,11 +1245,11 @@ jne .bad_any
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 定长异构组件属于该架构的编译期工具集
-- **同模块相邻**：[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)—— optional/variant 是定长异构近亲
-- **同模块相邻**：[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)—— ranges 常与这些类型配合
-- **相邻主题**：[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)—— any 以 RAII 管理类型擦除的资源
-- **相邻主题**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 是这些组件的类型萃取基础
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— 定长异构组件属于该架构的编译期工具集
+- **同模块相邻**：[第88章　optional / expected / variant：可空与可辨别联合](../part07_stl/ch88_optional_variant.md)—— optional/variant 是定长异构近亲
+- **同模块相邻**：[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)—— ranges 常与这些类型配合
+- **相邻主题**：[第 39 章　RAII 与 Rule of Zero/Three/Five](../part04_memory/ch39_raii_rule.md)—— any 以 RAII 管理类型擦除的资源
+- **相邻主题**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— type_traits 是这些组件的类型萃取基础
 
 ## 自测练习（Exercises）
 

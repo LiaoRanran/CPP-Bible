@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
-[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)
 
 > 本章所有汇编证据由 **MinGW GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）真实提取，源码剖析行号取自该工具链安装的 libstdc++ 15.3.0 头文件。
 ## ⓪ 历史动机：表达式模板的来龙去脉
@@ -43,7 +43,7 @@ C++ 的运算符重载很优雅，但对 `a*b + c*d` 这类向量/矩阵表达�
 
 ## ① 学习目标
 
-[第71章　策略设计 Policy-Based Design](Book/part06_templates/ch71_policy.md)
+[第71章　策略设计 Policy-Based Design](../part06_templates/ch71_policy.md)
 
 - 理解 **表达式模板（Expression Templates, ET）** 的核心动机：消除 `u = a + b + c` 这类算子表达式中的**临时对象与多次遍历**，把"计算时机"从 `operator+` 推迟到 `operator=`。
 - 掌握 ET 三件套：**表达式基类 `Expr<E>`**（CRTP 风格静态接口）、**代理节点 `Sum<A,B>`**（存储操作数引用、`operator[]` 递归求值）、**`operator+` 返回代理而非结果**。
@@ -364,8 +364,8 @@ _ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E
 
 ## ⑪ STL 中的该模式
 
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（完美转发）—— ET 运算符链式返回用完美转发保持值类别
-[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)（CRTP 与静态多态）—— valarray 的 `_Expr` 节点是 CRTP 静态多态的早期形态
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)（完美转发）—— ET 运算符链式返回用完美转发保持值类别
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)（CRTP 与静态多态）—— valarray 的 `_Expr` 节点是 CRTP 静态多态的早期形态
 
 - **`std::valarray`**：运算符（`operator+` 等）返回**新的 `valarray`**（立即求值），**不是** ET；但其内部 `_Expr` 模板（如 `operator+=` 接受 `_Expr`）有部分惰性优化。标准选择"返回 `valarray`"是为语义简单、可预期（对比 ⑮）。
 - **`std::vector`**：`operator=` 是逐元素拷贝（立即语义），**不用 ET**——保持 STL 容器简单、可调试（ch38/77）。
@@ -461,8 +461,8 @@ Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持�
 
 ## ⑭ 工业案例
 
-[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost.uBLAS 是另一个 ET 数值线性代数实现
-[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— Blaze 用 policy 组合定制表达式求值策略
+[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)（Boost 库生态）—— Boost.uBLAS 是另一个 ET 数值线性代数实现
+[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— Blaze 用 policy 组合定制表达式求值策略
 
 - **Eigen**：`MatrixXd C = A * B + D * E;` 编译为单 kernel，自动向量化，零中间矩阵。ET 是 Eigen 性能核心。
 - **Blaze**：类似 Eigen，ET + 智能表达式优化（选择最优求值顺序）。
@@ -490,7 +490,7 @@ Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持�
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库容器的运算符语义在此统一实现
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库容器的运算符语义在此统一实现
 
 **剖析 1：`std::vector::operator=` 立即语义（对比 ET 的延迟）**（`bits/stl_vector.h`）
 
@@ -581,8 +581,8 @@ Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
 
 ## ⑲ 性能（编译期 / 运行期）
 
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— ET 加速需用微基准如实测量化，避免印象式估算
-[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 单遍循环能否被自动向量化取决于循环形式与别名分析
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— ET 加速需用微基准如实测量化，避免印象式估算
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— 单遍循环能否被自动向量化取决于循环形式与别名分析
 
 - **运行期**：ET 把 `u = a + b + c` 的**分配从 5 次降到 4 次、遍历从 3 次降到 1 次**（⑩ 实测），且单遍循环可被自动向量化（AVX），大向量加速显著（Eigen 可达数倍）。
 - **编译期**：表达式树在编译期构建为嵌套类型（`Sum<Sum<Fast,Fast>,Fast>`），无运行期类型开销；但**实例化深度/编译时间随树深增长**（⑧）。
@@ -640,9 +640,9 @@ Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第71章](Book/part06_templates/ch71_policy.md) | STL算法回调/异步任务 | 本章提供概念，第71章提供实现 |
-| [第68章](Book/part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
-| [第51章](Book/part05_oo/ch51_crtp.md) | 向量化计算/图像处理 | 本章提供概念，第51章提供实现 |
+| [第71章](../part06_templates/ch71_policy.md) | STL算法回调/异步任务 | 本章提供概念，第71章提供实现 |
+| [第68章](../part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
+| [第51章](../part05_oo/ch51_crtp.md) | 向量化计算/图像处理 | 本章提供概念，第51章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -703,12 +703,12 @@ int main(){std::cout<<"Eigen: Matrix a=b+c*d → expression template → single 
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 表达式模板建立在模板基础之上
-- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— 表达式模板是 TMP 消除临时对象的经典应用
-- **同模块接续**：[第70章　std::integral_constant 与标签分发（Tag Dispatch）](Book/part06_templates/ch70_tag_dispatch.md)）—— 表达式模板用标签选择实现分支
-- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 可变参数表达式模板对包做惰性展开
-- **同模块接续**：[第71章　策略设计 Policy-Based Design](Book/part06_templates/ch71_policy.md)—— policy 与表达式模板组合定制算子
-- **跨模块**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)）—— CRTP 实现表达式模板的算子链式返回类型
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— 表达式模板建立在模板基础之上
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)）—— 表达式模板是 TMP 消除临时对象的经典应用
+- **同模块接续**：[第70章　std::integral_constant 与标签分发（Tag Dispatch）](../part06_templates/ch70_tag_dispatch.md)）—— 表达式模板用标签选择实现分支
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)）—— 可变参数表达式模板对包做惰性展开
+- **同模块接续**：[第71章　策略设计 Policy-Based Design](../part06_templates/ch71_policy.md)—— policy 与表达式模板组合定制算子
+- **跨模块**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)）—— CRTP 实现表达式模板的算子链式返回类型
 
 ## 附录 G（表达式模板实例化）
 

@@ -85,6 +85,7 @@ quality_gates = [
     "tools/sweep_fences.py --check",
     "tools/whitespace_fix.py --check",
     "tools/s10_verify_mark.py --check",
+    "tools/fix_book_links.py --check",
 ]
 
 [tool.ruff]

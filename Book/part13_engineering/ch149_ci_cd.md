@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
-[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
+[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)
+[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)
 
 > **取证说明（真实运行，非编造）**
 > 本章所有 `g++` 输出均来自本机真实执行：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`（路径 `C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
@@ -50,8 +50,8 @@ CI 的核心理念是"让集成失败尽早、自动化、可重复"，反对"�
 
 ## ① 概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>
 
-[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
-[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
+[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)
+[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)
 
 CI（Continuous Integration，持续集成）指开发者频繁把代码合并进主干，并由自动化流水线在**每次推送**完成构建与测试；CD（Continuous Delivery/Deployment，持续交付/部署）在此基础上把通过门禁的产物自动发布到预发或生产。**CI 解决“合并地狱”，CD 解决“发布恐惧”**。
 
@@ -1131,10 +1131,10 @@ CI中处理标准库差异:
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第148章](Book/part13_engineering/ch148_gitflow.md) | TCP服务器/HTTP客户端 | 本章提供概念，第148章提供实现 |
-| [第150章](Book/part13_engineering/ch150_testing.md) | 日志格式化/序列化 | 本章提供概念，第150章提供实现 |
-| [第148章](Book/part13_engineering/ch148_gitflow.md) | 数据局部性/缓存友好设计 | 本章提供概念，第148章提供实现 |
-| [第150章](Book/part13_engineering/ch150_testing.md) | 文本处理/协议解析 | 本章提供概念，第150章提供实现 |
+| [第148章](../part13_engineering/ch148_gitflow.md) | TCP服务器/HTTP客户端 | 本章提供概念，第148章提供实现 |
+| [第150章](../part13_engineering/ch150_testing.md) | 日志格式化/序列化 | 本章提供概念，第150章提供实现 |
+| [第148章](../part13_engineering/ch148_gitflow.md) | 数据局部性/缓存友好设计 | 本章提供概念，第148章提供实现 |
+| [第150章](../part13_engineering/ch150_testing.md) | 文本处理/协议解析 | 本章提供概念，第150章提供实现 |
 
 ## 附录 F：CI/CD工业
 
@@ -1147,14 +1147,14 @@ int main(){std::cout<<"LLVM:Buildbot+GH Actions(15min pre,2h full);Chromium:LUCI
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
-- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
-- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
-- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
-- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
-- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
-- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
-- **跨模块延伸（part02 工具链）**：[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)）—— CI/CD 构建配置依赖 Debug/Release/LTO/PGO 设定
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](../part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](../part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)）
+- **跨模块延伸（part02 工具链）**：[第18章　构建配置：Debug / Release / LTO / PGO（C++）](../part02_toolchain/ch18_buildconfig.md)）—— CI/CD 构建配置依赖 Debug/Release/LTO/PGO 设定
 
 ## 附录 B：编译缓存与分布式构建深度 [E: Low-level / B: Principle]
 
@@ -1355,7 +1355,7 @@ int main() { return 0; }
 | 单元测试（千级用例） | 10–120 s | sanitizer（ASan/UBSan）使内存检查慢 2–5x |
 | 全量构建（bootstrap） | 0.5–3 h | LLVM/Chromium 量级 |
 
-C++23 约束：`static_assert` 在 CI 中作为编译期门禁（如 `static_assert(std::is_trivial_v<T>)`），配合 `-Wall -Wextra -Werror` 让接口契约在合并前失效即红。这呼应 [ch18](Book/part02_toolchain/ch18_buildconfig.md) 的构建配置与 [ch151](Book/part13_engineering/ch151_benchmark.md) 的基准门禁。
+C++23 约束：`static_assert` 在 CI 中作为编译期门禁（如 `static_assert(std::is_trivial_v<T>)`），配合 `-Wall -Wextra -Werror` 让接口契约在合并前失效即红。这呼应 [ch18](../part02_toolchain/ch18_buildconfig.md) 的构建配置与 [ch151](../part13_engineering/ch151_benchmark.md) 的基准门禁。
 
 ## 附录 J：CI/CD 流水线阶段图（D3 维度）
 
@@ -1444,13 +1444,13 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑥⑫ 静态分析门禁 |
-| ch148 Git 工作流 | [Book/part13_engineering/ch148_gitflow.md](Book/part13_engineering/ch148_gitflow.md) | §⑮ Git 触发 / §⑩ CD |
-| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | §⑥⑦⑲ 测试/覆盖率门禁 |
-| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑭ 性能回归门禁 |
-| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | 构建系统集成 |
-| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | CMake/CTest 进 CI |
-| ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 矩阵构建跨优化等级 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](../part13_engineering/ch147_code_review.md) | §⑥⑫ 静态分析门禁 |
+| ch148 Git 工作流 | [Book/part13_engineering/ch148_gitflow.md](../part13_engineering/ch148_gitflow.md) | §⑮ Git 触发 / §⑩ CD |
+| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](../part13_engineering/ch150_testing.md) | §⑥⑦⑲ 测试/覆盖率门禁 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](../part13_engineering/ch151_benchmark.md) | §⑭ 性能回归门禁 |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](../part02_toolchain/ch18_buildconfig.md) | 构建系统集成 |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](../part02_toolchain/ch12_buildsystems.md) | CMake/CTest 进 CI |
+| ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | 矩阵构建跨优化等级 |
 
 ## 附录 U：流水线阶段与门禁设计决策流（D3 维度）
 

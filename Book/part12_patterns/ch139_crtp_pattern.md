@@ -1,8 +1,8 @@
 # 第139章 CRTP 与静态多态（C++）
 > 层级：L2 进阶
 
-[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
-[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
 
 > **取证说明（本章所有机器证据来源）**
 > 本章所有汇编片段、基准数字、符号名、`sizeof` 结果均来自本机真实取证，未做任何编造：
@@ -54,8 +54,8 @@ CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为
 
 ## ① 概述：CRTP 是什么
 
-[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)
-[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)
+[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)
+[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)
 
 **CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）** 指一个类 `Base` 以「派生类自身」作为模板参数来继承自己：
 
@@ -1052,21 +1052,21 @@ A: 不能。CRTP是编译期绑定，variant/any需要运行时类型擦除 → 
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第138章](Book/part12_patterns/ch138_behavioral.md) | 键值查找/缓存 | 本章提供概念，第138章提供实现 |
-| [第140章](Book/part12_patterns/ch140_policy_pattern.md) | 模板约束/类型安全API | 本章提供概念，第140章提供实现 |
-| [第68章](Book/part06_templates/ch68_tmp.md) | 独占所有权/工厂模式 | 本章提供概念，第68章提供实现 |
-| [第51章](Book/part05_oo/ch51_crtp.md) | 多态插件/框架扩展 | 本章提供概念，第51章提供实现 |
+| [第138章](../part12_patterns/ch138_behavioral.md) | 键值查找/缓存 | 本章提供概念，第138章提供实现 |
+| [第140章](../part12_patterns/ch140_policy_pattern.md) | 模板约束/类型安全API | 本章提供概念，第140章提供实现 |
+| [第68章](../part06_templates/ch68_tmp.md) | 独占所有权/工厂模式 | 本章提供概念，第68章提供实现 |
+| [第51章](../part05_oo/ch51_crtp.md) | 多态插件/框架扩展 | 本章提供概念，第51章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
-- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
-- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
-- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
-- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
-- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
-- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](../part12_patterns/ch142_ecs.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)）
 
 ## 底层视角：CRTP 静态绑定消除 vptr 与间接 [E: Low-level]
 

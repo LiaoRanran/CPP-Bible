@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
-[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)
+[第96章　排序：sort / stable_sort / partial_sort（C++）](../part08_algorithms/ch96_sorting.md)
+[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`g++ -std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`。
@@ -19,7 +19,7 @@
 ### 0.2 关键转折（编年）
 - C++98：一整套查找算法随 STL 入标，二分系列依赖随机访问迭代器以获得 O(log n)。<span class="badge badge-history">史</span>
 - 后续：C++20 Ranges 让 `lower_bound` 等支持投影（按某成员比较）与惰性区间。
-- 实践：哈希容器（[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)）提供了"平均 O(1)"的另一种查找路线。
+- 实践：哈希容器（[第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)）提供了"平均 O(1)"的另一种查找路线。
 
 ### 0.3 设计哲学之争
 "二分 vs 哈希"是查找的路线分歧：二分要求有序、给出范围查询与稳定复杂度；哈希平均更快但需好哈希函数、无序、最坏退化。<span class="badge badge-comment">评</span> 另一个经典坑是"手写二分容易写错边界"——STL 把 `lower_bound` 等做成经过千锤百炼的版本，正是为了减少这类 off-by-one bug。<span class="badge badge-comment">评</span>
@@ -44,8 +44,8 @@
 
 ## ① 概述：查找算法的分类与定位 <span class="badge badge-std">标准</span>
 
-[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
-[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)
+[第96章　排序：sort / stable_sort / partial_sort（C++）](../part08_algorithms/ch96_sorting.md)
+[第98章　堆算法 heap（C++）](../part08_algorithms/ch98_heap.md)
 
 查找（search）是算法库 `<algorithm>` 中最大的一类。按**底层机制**分为三族：
 
@@ -1016,16 +1016,16 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第96章](Book/part08_algorithms/ch96_sorting.md) | 键值查找/缓存 | 本章提供概念，第96章提供实现 |
-| [第96章](Book/part08_algorithms/ch96_sorting.md) | STL算法回调/异步任务 | 本章提供概念，第96章提供实现 |
-| [第98章](Book/part08_algorithms/ch98_heap.md) | 向量化计算/图像处理 | 本章提供概念，第98章提供实现 |
-| [第83章](Book/part07_stl/ch83_map.md) | 数据处理管道/排行榜 | 本章提供概念，第83章提供实现 |
+| [第96章](../part08_algorithms/ch96_sorting.md) | 键值查找/缓存 | 本章提供概念，第96章提供实现 |
+| [第96章](../part08_algorithms/ch96_sorting.md) | STL算法回调/异步任务 | 本章提供概念，第96章提供实现 |
+| [第98章](../part08_algorithms/ch98_heap.md) | 向量化计算/图像处理 | 本章提供概念，第98章提供实现 |
+| [第83章](../part07_stl/ch83_map.md) | 数据处理管道/排行榜 | 本章提供概念，第83章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第99章　数值算法与并行执行策略（C++）](Book/part08_algorithms/ch99_numeric.md)）—— 编号相邻、主题接续。
-- **同模块**：[第100章　Ranges 算法与投影（C++20）](Book/part08_algorithms/ch100_ranges_algo.md)）—— 同模块下的其他主题。
+- **后续依赖**：[第95章　STL 算法分类与复杂度（C++）](../part08_algorithms/ch95_algo_overview.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第99章　数值算法与并行执行策略（C++）](../part08_algorithms/ch99_numeric.md)）—— 编号相邻、主题接续。
+- **同模块**：[第100章　Ranges 算法与投影（C++20）](../part08_algorithms/ch100_ranges_algo.md)）—— 同模块下的其他主题。
 
 ## 附录 C（工业级查找实战）
 

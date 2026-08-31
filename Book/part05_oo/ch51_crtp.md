@@ -1,7 +1,7 @@
 # 第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）
 
-[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
-[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台]` ABI/OS · `[经验]` 工程共识｜层级：L2 进阶
 > 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_crtp.cpp` → `_asm_crtp.asm`）
@@ -45,8 +45,8 @@ CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期�
 
 ## ① 学习目标
 
-[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)
-[第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)
+[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)
+[第52章　空基类优化 EBO（Empty Base Optimization）](../part05_oo/ch52_ebo.md)
 
 - 用一句话说清 CRTP 的本质：**基类是模板，以派生类为模板实参，借 `static_cast<Derived*>` 把动态多态搬进编译期**。
 - 能从汇编证明 CRTP 调用**零运行时开销**（无 vtable、无 this 调整 thunk、可完全内联）。
@@ -749,20 +749,20 @@ int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第50章](Book/part05_oo/ch50_multiple_inheritance.md) | 模板约束/类型安全API | 本章提供概念，第50章提供实现 |
-| [第52章](Book/part05_oo/ch52_ebo.md) | 独占所有权/工厂模式 | 本章提供概念，第52章提供实现 |
-| [第47章](Book/part05_oo/ch47_virtual_functions.md) | 多态插件/框架扩展 | 本章提供概念，第47章提供实现 |
-| [第68章](Book/part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
+| [第50章](../part05_oo/ch50_multiple_inheritance.md) | 模板约束/类型安全API | 本章提供概念，第50章提供实现 |
+| [第52章](../part05_oo/ch52_ebo.md) | 独占所有权/工厂模式 | 本章提供概念，第52章提供实现 |
+| [第47章](../part05_oo/ch47_virtual_functions.md) | 多态插件/框架扩展 | 本章提供概念，第47章提供实现 |
+| [第68章](../part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— CRTP 以静态多态替代虚函数动态分发，是对象模型的编译期视角
-- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)—— CRTP 是虚继承/虚函数的零开销替代
-- **同模块接续**：[第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)）—— CRTP 基类常为空的，EBO 使其零成本
-- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— CRTP 与多重继承组合实现静态接口叠加
-- **跨模块**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— 模板基础是 CRTP 的语法前提
-- **跨模块**：[第72章　表达式模板 Expression Templates](Book/part06_templates/ch72_expression_templates.md)—— 表达式模板是 CRTP 的经典应用
-- **跨模块**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）—— CRTP 设计模式详述其惯用法
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)—— CRTP 以静态多态替代虚函数动态分发，是对象模型的编译期视角
+- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](../part05_oo/ch49_virtual_inheritance.md)—— CRTP 是虚继承/虚函数的零开销替代
+- **同模块接续**：[第52章　空基类优化 EBO（Empty Base Optimization）](../part05_oo/ch52_ebo.md)）—— CRTP 基类常为空的，EBO 使其零成本
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)）—— CRTP 与多重继承组合实现静态接口叠加
+- **跨模块**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)）—— 模板基础是 CRTP 的语法前提
+- **跨模块**：[第72章　表达式模板 Expression Templates](../part06_templates/ch72_expression_templates.md)—— 表达式模板是 CRTP 的经典应用
+- **跨模块**：[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)）—— CRTP 设计模式详述其惯用法
 
 ## 附录 G（工业级 CRTP 实战）
 

@@ -40,7 +40,7 @@
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>
 
-[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)
+[第122章　PMR 与多态分配器](../part10_modern/ch122_pmr.md)
 
 "编译期编程"（Compile-Time Programming，CTP）是指**把计算、类型推导与分支决策尽量前移到翻译阶段**的范式。它的发展是一条从"模板元编程（TMP）→ constexpr 函数 → Concepts 约束 → consteval 立即函数"的渐进演化线，目标始终如一：用零（或近乎零）运行期开销换取类型安全、可优化与可证明的正确性。
 
@@ -1060,7 +1060,7 @@ int main(){std::cout<<compile_only(7)<<std::endl;return 0;}
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第122章](Book/part10_modern/ch122_pmr.md) | 模板约束/类型安全API | 本章提供概念，第122章提供实现 |
+| [第122章](../part10_modern/ch122_pmr.md) | 模板约束/类型安全API | 本章提供概念，第122章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1073,7 +1073,7 @@ int main(){std::cout<<compile_only(7)<<std::endl;return 0;}
 - `constexpr` 函数里不能用 static 局部变量做缓存（C++23 才允许部分情形）；编译期计算应避免非法表达式（即使不求值也会 SFINAE 失败）。
 - 编译期递归深度受实现限制，超深需改用 fold / 迭代式元函数。
 
-> 交叉引用：折叠表达式见 [ch64](Book/part06_templates/ch64_fold.md)；type traits 见 [ch65](Book/part06_templates/ch65_type_traits.md)。
+> 交叉引用：折叠表达式见 [ch64](../part06_templates/ch64_fold.md)；type traits 见 [ch65](../part06_templates/ch65_type_traits.md)。
 
 ## 附录 B：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
@@ -1105,12 +1105,12 @@ int main(){std::cout<<compile_only(7)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)）—— 编号相邻、主题接续。
-- **相邻主题**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— 编号相邻、主题接续。
-- **同模块**：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)—— 同模块下的其他主题。
+- **后续依赖**：[第60章　模板基础与实例化（Template Basics & Instantiation）](../part06_templates/ch60_template_basics.md)）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第121章 Contracts 契约（方向，C++26）](../part10_modern/ch121_contracts.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第122章　PMR 与多态分配器](../part10_modern/ch122_pmr.md)—— 编号相邻、主题接续。
+- **同模块**：[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)—— 同模块下的其他主题。
 
 ## 自测练习（Exercises）
 

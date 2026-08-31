@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)
-[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)
+[第113章　协程 coroutine：promise / awaiter（C++20）](../part09_concurrency/ch113_coroutine.md)
+[第159章 从零实现线程池（C++）](../part15_cases/ch159_threadpool.md)
 
 > 元数据：标准基 `C++23` / 预计阅读 55 分钟 / 前置 第159章（线程池与并发）、第162章（JSON 序列化）、第?章（RAII 与异常）/ 后续 第?章（零开销抽象与内联）/ 难度 ★★★★
 >
@@ -55,8 +55,8 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 
 ## ① 概述：C++ 网络编程 <span class="badge badge-std">标准</span>
 
-[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)
-[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)
+[第162章 从零实现 JSON 库（C++）](../part15_cases/ch162_json.md)
+[第164章 从零实现迷你框架（C++）](../part15_cases/ch164_framework.md)
 
 网络编程的本质是**让两个进程通过文件描述符/套接字交换字节流**。C++ 标准库至 `C++23` 都没有把 socket 纳入标准（**<span class="badge badge-std">标准</span>** 这一点与 Java 的 `java.net`、Go 的 `net` 包不同），因此工业级 C++ 网络栈要么基于操作系统 API（Berkeley Socket / Winsock），要么基于库（Boost.Asio、libuv、libevent）。**[实现·GCC15]** 本章选择"从零实现"路线：用手写 socket 把 TCP、缓冲、协议、并发、序列化全部打通，让你看清 Asio 这类库在底层到底替你做了什么。
 
@@ -1162,10 +1162,10 @@ localhost TCP connect : 355 us | RTT(1B echo): 35.3 us/op | bulk: 889 MB/s | ctx
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第162章](Book/part15_cases/ch162_json.md) | 键值查找/缓存 | 本章提供概念，第162章提供实现 |
-| [第164章](Book/part15_cases/ch164_framework.md) | TCP服务器/HTTP客户端 | 本章提供概念，第164章提供实现 |
-| [第159章](Book/part15_cases/ch159_threadpool.md) | 无锁队列/计数器 | 本章提供概念，第159章提供实现 |
-| [第113章](Book/part09_concurrency/ch113_coroutine.md) | 配置解析/API响应 | 本章提供概念，第113章提供实现 |
+| [第162章](../part15_cases/ch162_json.md) | 键值查找/缓存 | 本章提供概念，第162章提供实现 |
+| [第164章](../part15_cases/ch164_framework.md) | TCP服务器/HTTP客户端 | 本章提供概念，第164章提供实现 |
+| [第159章](../part15_cases/ch159_threadpool.md) | 无锁队列/计数器 | 本章提供概念，第159章提供实现 |
+| [第113章](../part09_concurrency/ch113_coroutine.md) | 配置解析/API响应 | 本章提供概念，第113章提供实现 |
 
 ## 项目学习地图：网络编程 → 全书知识映射
 
@@ -1185,12 +1185,12 @@ int main(){std::cout<<"Network=ch163+ch93+ch81+ch77+ch159"<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）
-- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)）
-- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)）
-- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)）
-- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）
-- **跨模块延伸**：[第165章 C++ 进阶路线图（C++）](Book/part16_reading/ch165_roadmap.md)）
+- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](../part15_cases/ch159_threadpool.md)）
+- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)）
+- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](../part15_cases/ch161_logger.md)）
+- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](../part15_cases/ch162_json.md)）
+- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](../part15_cases/ch164_framework.md)）
+- **跨模块延伸**：[第165章 C++ 进阶路线图（C++）](../part16_reading/ch165_roadmap.md)）
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

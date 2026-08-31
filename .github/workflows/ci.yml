@@ -213,6 +213,14 @@ jobs:
       run: python3 tools/s10_verify_mark.py --check
       continue-on-error: false
 
+    - name: Book Link Integrity Gate (正文跨章链接 前缀完整性)
+      # 2026-08-31 修复「Book/ 前缀链接在源码渲染器（GitHub/编辑器/mdBook）里全部
+      # 404」的结构性硬伤后，锁定防复发：正文 markdown 链接必须为源相对路径
+      # `](../partXX/chYY.md)`，任何重新引入的 `](Book/...)` 即 BLOCK。
+      # 裸文本 `⟶ Book/...` 引用除外（由 rewrite_links 构建期转链接，不在此列）。
+      run: python3 tools/fix_book_links.py --check
+      continue-on-error: false
+
   compile:
     needs: quality
     runs-on: ubuntu-latest

@@ -2,9 +2,9 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
-[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)
+[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)
+[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)
 
 > 取证说明（本章所有数字与汇编均来自本机真实采集，未编造）：
 > - 编译器：`C:/Qt/Tools/mingw1310_64/bin/g++.exe`（GCC 13.1.0，`x86_64-posix-seh`）。
@@ -62,7 +62,7 @@
 
 ## ① 概述：线程池解决什么（频繁创建线程开销）<span class="badge badge-exp">经验</span>
 
-[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)
+[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)
 
 线程不是免费的。每 `std::thread` 的诞生都伴随内核对象、栈（默认 1–8 MB）、调度器注册与线程本地存储（TLS）的代价。当任务粒度远小于「建线程 + 跑任务 + 销毁线程」的固定开销时，吞吐会被启动成本淹没。
 
@@ -1092,10 +1092,10 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第160章](Book/part15_cases/ch160_mempool.md) | TCP服务器/HTTP客户端 | 本章提供概念，第160章提供实现 |
-| [第160章](Book/part15_cases/ch160_mempool.md) | STL算法回调/异步任务 | 本章提供概念，第160章提供实现 |
-| [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 无锁队列/计数器 | 本章提供概念，第116章提供实现 |
-| [第107章](Book/part09_concurrency/ch107_atomic.md) | 泛型库/编译期计算 | 本章提供概念，第107章提供实现 |
+| [第160章](../part15_cases/ch160_mempool.md) | TCP服务器/HTTP客户端 | 本章提供概念，第160章提供实现 |
+| [第160章](../part15_cases/ch160_mempool.md) | STL算法回调/异步任务 | 本章提供概念，第160章提供实现 |
+| [第116章](../part10_modern/ch116_perfect_forwarding.md) | 无锁队列/计数器 | 本章提供概念，第116章提供实现 |
+| [第107章](../part09_concurrency/ch107_atomic.md) | 泛型库/编译期计算 | 本章提供概念，第107章提供实现 |
 
 ## 项目学习地图：线程池 → 全书知识映射
 
@@ -1123,15 +1123,15 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)）
-- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)）
-- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)）
-- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）
-- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）
-- **跨模块延伸**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)
-- **跨模块延伸**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)
-- **跨模块延伸**：[第158章 性能反模式与陷阱](Book/part14_perf/ch158_perf_antipatterns.md)
-- **跨模块延伸**：[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
+- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](../part15_cases/ch160_mempool.md)）
+- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](../part15_cases/ch161_logger.md)）
+- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](../part15_cases/ch162_json.md)）
+- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](../part15_cases/ch163_net.md)）
+- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](../part15_cases/ch164_framework.md)）
+- **跨模块延伸**：[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)
+- **跨模块延伸**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)
+- **跨模块延伸**：[第158章 性能反模式与陷阱](../part14_perf/ch158_perf_antipatterns.md)
+- **跨模块延伸**：[第157章 Compiler Explorer 实战](../part14_perf/ch157_compiler_explorer.md)
 
 ## 附录 G（工业级线程池实战）
 

@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)
-[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
+[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)
+[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)
 
 > 真实编译器取证：MinGW **GCC 13.1.0**（`-std=c++23`）。
 > 本章所有 ```` ```asm ```` 块均来自本机真实编译产物（`g++ -std=c++23 -O2 -S -masm=intel`），未做任何编造；基准数字来自真实运行（见 ⑥）。
@@ -53,8 +53,8 @@ ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语
 
 ## ① 概述：ECS 是什么（游戏/仿真） <span class="badge badge-std">标准</span>
 
-[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)
-[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)
+[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)
+[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)
 
 **实体组件系统（Entity-Component-System，ECS）** 是一种将数据（组件）与行为（系统）彻底分离的组合式架构范式。它起源于 1990 年代的游戏引擎（如 *Thief*、*Dungeon Siege*），在 2010 年后因 **Unity DOTS**、**Unreal MassEntity**、**EnTT** 等而工业化。
 
@@ -871,24 +871,24 @@ a alive after destroy? no
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第143章](Book/part12_patterns/ch143_dod.md) | 键值查找/缓存 | 本章提供概念，第143章提供实现 |
-| [第141章](Book/part12_patterns/ch141_di.md) | TCP服务器/HTTP客户端 | 本章提供概念，第141章提供实现 |
-| [第143章](Book/part12_patterns/ch143_dod.md) | 无锁队列/计数器 | 本章提供概念，第143章提供实现 |
-| [第45章](Book/part05_oo/ch45_oop_object_model.md) | 多态插件/框架扩展 | 本章提供概念，第45章提供实现 |
+| [第143章](../part12_patterns/ch143_dod.md) | 键值查找/缓存 | 本章提供概念，第143章提供实现 |
+| [第141章](../part12_patterns/ch141_di.md) | TCP服务器/HTTP客户端 | 本章提供概念，第141章提供实现 |
+| [第143章](../part12_patterns/ch143_dod.md) | 无锁队列/计数器 | 本章提供概念，第143章提供实现 |
+| [第45章](../part05_oo/ch45_oop_object_model.md) | 多态插件/框架扩展 | 本章提供概念，第45章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
-- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
-- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
-- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
-- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
-- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
-- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
-- **跨模块延伸（part07 STL）**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](Book/part07_stl/ch79_list.md)—— list/forward_list 节点式存储是 ECS 组件池的常见底层
-- **跨模块延伸（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）—— Unreal 的 actor 体系是 ECS 思想的近亲
-- **跨模块延伸（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）—— 代码风格与规范约束模式命名与接口
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](../part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](../part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](../part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](../part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](../part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](../part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](../part12_patterns/ch143_dod.md)）
+- **跨模块延伸（part07 STL）**：[第79章　list / forward_list <span class="badge badge-std">标准</span>](../part07_stl/ch79_list.md)—— list/forward_list 节点式存储是 ECS 组件池的常见底层
+- **跨模块延伸（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）—— Unreal 的 actor 体系是 ECS 思想的近亲
+- **跨模块延伸（part13 工程）**：[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)）—— 代码风格与规范约束模式命名与接口
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 

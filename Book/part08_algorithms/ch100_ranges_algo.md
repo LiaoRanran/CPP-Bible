@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)
-[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)
+[第119章　Ranges 深入（C++20）](../part10_modern/ch119_ranges_deep.md)
+[第95章　STL 算法分类与复杂度（C++）](../part08_algorithms/ch95_algo_overview.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；ranges 是标准库组件，证据取自 libstdc++ 在 `-O2` 下生成的真实汇编与 chrono 实测。
@@ -43,8 +43,8 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 
 ## ① 概述：C++20 Ranges <span class="badge badge-std">标准</span>
 
-[第101章　哈希、图、树、DP、贪心（算法思想）](Book/part08_algorithms/ch101_algo_theory.md)
-[第99章　数值算法与并行执行策略（C++）](Book/part08_algorithms/ch99_numeric.md)
+[第101章　哈希、图、树、DP、贪心（算法思想）](../part08_algorithms/ch101_algo_theory.md)
+[第99章　数值算法与并行执行策略（C++）](../part08_algorithms/ch99_numeric.md)
 
 **Ranges** 是一套以"范围（range）"为一等公民的标准库抽象：一个 range 由迭代器对（`begin`/`end`）定义，算法直接吃"整个容器/视图"而不是两个迭代器。`[标准]`：Ranges 由 P0896R4（C++20）引入，核心位于 `<ranges>`，复用 `<iterator>` 的 `std::input_iterator` 等概念。
 
@@ -926,15 +926,15 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第101章](Book/part08_algorithms/ch101_algo_theory.md) | STL算法回调/异步任务 | 本章提供概念，第101章提供实现 |
-| [第99章](Book/part08_algorithms/ch99_numeric.md) | 泛型库/编译期计算 | 本章提供概念，第99章提供实现 |
-| [第95章](Book/part08_algorithms/ch95_algo_overview.md) | 向量化计算/图像处理 | 本章提供概念，第95章提供实现 |
-| [第119章](Book/part10_modern/ch119_ranges_deep.md) | 数据处理管道/排行榜 | 本章提供概念，第119章提供实现 |
+| [第101章](../part08_algorithms/ch101_algo_theory.md) | STL算法回调/异步任务 | 本章提供概念，第101章提供实现 |
+| [第99章](../part08_algorithms/ch99_numeric.md) | 泛型库/编译期计算 | 本章提供概念，第99章提供实现 |
+| [第95章](../part08_algorithms/ch95_algo_overview.md) | 向量化计算/图像处理 | 本章提供概念，第95章提供实现 |
+| [第119章](../part10_modern/ch119_ranges_deep.md) | 数据处理管道/排行榜 | 本章提供概念，第119章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)）—— 编号相邻、主题接续。
-- **同模块**：[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)）—— 同模块下的其他主题。
+- **相邻主题**：[第98章　堆算法 heap（C++）](../part08_algorithms/ch98_heap.md)）—— 编号相邻、主题接续。
+- **同模块**：[第96章　排序：sort / stable_sort / partial_sort（C++）](../part08_algorithms/ch96_sorting.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 
@@ -951,7 +951,7 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 - 悬垂 view（「⑬」）是 ranges 头号陷阱——`auto v = vec | views::filter(...)` 后 `vec` 销毁即悬垂；用 `std::vector` 具化或保证源生命周期覆盖使用期。
 - 并行 + view 链需注意「⑭」：`views::chunk` + `execution::par` 才可真正并行，裸 `views::filter` 仍单线程。
 
-> 交叉引用：排序→ [ch96](Book/part08_algorithms/ch96_sorting.md)；算法总览→ [ch95](Book/part08_algorithms/ch95_algo_overview.md)；深度 ranges→ [ch119](Book/part10_modern/ch119_ranges_deep.md)；数值算法→ [ch99](Book/part08_algorithms/ch99_numeric.md)。
+> 交叉引用：排序→ [ch96](../part08_algorithms/ch96_sorting.md)；算法总览→ [ch95](../part08_algorithms/ch95_algo_overview.md)；深度 ranges→ [ch119](../part10_modern/ch119_ranges_deep.md)；数值算法→ [ch99](../part08_algorithms/ch99_numeric.md)。
 
 ## 自测练习（Exercises）
 

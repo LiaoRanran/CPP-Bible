@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)
-[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
+[第29章 友元 friend 与访问控制](../part03_language/ch29_friend.md)
+[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)
 
 > **取证说明（真实运行，非编造）**
 > 本章所有 `g++` 输出均来自本机真实执行：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`（路径 `C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
@@ -50,8 +50,8 @@ xUnit 的核心取舍是"隔离 + 断言 + 可重复"：每个测试独立、快
 
 ## ① 概述：测试金字塔 <span class="badge badge-exp">经验</span>
 
-[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
-[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)
+[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)
+[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)
 
 测试金字塔（Test Pyramid）是测试策略的全局权衡框架：底层是大量的**单元测试**（快、稳定、廉价），中层是较少的**集成测试**（验证模块协作），顶层是更少的**端到端测试**（慢、易碎、昂贵）。C++ 因编译/链接重、平台耦合强，更应避免把逻辑验证压在端到端层。
 
@@ -1184,10 +1184,10 @@ P2895R0 (std::testing): 标准化测试框架提案 (2024, 早期讨论)
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第149章](Book/part13_engineering/ch149_ci_cd.md) | 键值查找/缓存 | 本章提供概念，第149章提供实现 |
-| [第149章](Book/part13_engineering/ch149_ci_cd.md) | 泛型库/编译期计算 | 本章提供概念，第149章提供实现 |
-| [第151章](Book/part13_engineering/ch151_benchmark.md) | 性能基准/回归检测 | 本章提供概念，第151章提供实现 |
-| [第29章](Book/part03_language/ch29_friend.md) | 计时器/性能测量 | 本章提供概念，第29章提供实现 |
+| [第149章](../part13_engineering/ch149_ci_cd.md) | 键值查找/缓存 | 本章提供概念，第149章提供实现 |
+| [第149章](../part13_engineering/ch149_ci_cd.md) | 泛型库/编译期计算 | 本章提供概念，第149章提供实现 |
+| [第151章](../part13_engineering/ch151_benchmark.md) | 性能基准/回归检测 | 本章提供概念，第151章提供实现 |
+| [第29章](../part03_language/ch29_friend.md) | 计时器/性能测量 | 本章提供概念，第29章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1200,18 +1200,18 @@ P2895R0 (std::testing): 标准化测试框架提案 (2024, 早期讨论)
 - 测试要确定性（避免依赖时钟/随机数）；用 dependency injection 隔离外部依赖，避免测试触发网络/文件副作用。
 - 测试名应描述行为而非实现，重构实现时测试不应随之改名。
 
-> 交叉引用：基准测试见 [ch151](Book/part13_engineering/ch151_benchmark.md)；契约断言见 [ch121](Book/part10_modern/ch121_contracts.md)。
+> 交叉引用：基准测试见 [ch151](../part13_engineering/ch151_benchmark.md)；契约断言见 [ch121](../part10_modern/ch121_contracts.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
-- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
-- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
-- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
-- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
-- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
-- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
-- **跨模块延伸（part14 性能）**：[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)—— 测试策略需结合性能模型判断基准有效性
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](../part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](../part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](../part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)）
+- **跨模块延伸（part14 性能）**：[第152章　性能模型与测量学](../part14_perf/ch152_perf_model.md)—— 测试策略需结合性能模型判断基准有效性
 
 ## 底层视角：测试开销、并行争用与 SIMD 校验 [E: Low-level]
 
@@ -1511,12 +1511,12 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch141 依赖注入 | [Book/part12_patterns/ch141_di.md](Book/part12_patterns/ch141_di.md) | §④ Mock 与依赖注入 |
-| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑨ 测试覆盖审查 |
-| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑥⑦⑲ 测试/覆盖率门禁 |
-| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑪ 基准测试衔接 |
-| ch121 契约与断言 | [Book/part10_modern/ch121_contracts.md](Book/part10_modern/ch121_contracts.md) | §⑭ 异常测试与契约 |
-| ch29 友元 | [Book/part03_language/ch29_friend.md](Book/part03_language/ch29_friend.md) | 友元与白盒测试访问 |
+| ch141 依赖注入 | [Book/part12_patterns/ch141_di.md](../part12_patterns/ch141_di.md) | §④ Mock 与依赖注入 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](../part13_engineering/ch147_code_review.md) | §⑨ 测试覆盖审查 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | §⑥⑦⑲ 测试/覆盖率门禁 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](../part13_engineering/ch151_benchmark.md) | §⑪ 基准测试衔接 |
+| ch121 契约与断言 | [Book/part10_modern/ch121_contracts.md](../part10_modern/ch121_contracts.md) | §⑭ 异常测试与契约 |
+| ch29 友元 | [Book/part03_language/ch29_friend.md](../part03_language/ch29_friend.md) | 友元与白盒测试访问 |
 
 ## 附录 U：测试类型选型决策流（D3 维度）
 

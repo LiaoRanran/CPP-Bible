@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++17/C++20 特性 ⟶ 标注 `[C++17]`/`[C++20]`。｜层级：L2 进阶
 > 预计阅读：约 95 分钟（深度版，含源码/汇编/基准）。
-> 前置：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)（map/multimap 红黑树） · [第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（存储期） · [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（比较器 traits）。
-> 后续：[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)（哈希集合，对比本章） · [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)（缓存与局部性）。
+> 前置：[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)（map/multimap 红黑树） · [第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)（存储期） · [第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)（比较器 traits）。
+> 后续：[第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)（哈希集合，对比本章） · [第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)（缓存与局部性）。
 > 难度：★★★☆☆（掌握有序容器与节点句柄，需理解红黑树平衡）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_set.h`、`bits/stl_multiset.h`、`bits/stl_tree.h`，逐行标注文件与行号。
 
@@ -16,7 +16,7 @@
 
 ### 0.2 关键转折（编年）
 - C++98：`std::set`/`std::multiset` 随 STL 标准化，确立"有序唯一/可重复"语义。<span class="badge badge-history">史</span>
-- 后续：C++11 的 `unordered_set`（[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)）提供哈希版对照；C++20 起与 ranges 联动更顺。
+- 后续：C++11 的 `unordered_set`（[第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)）提供哈希版对照；C++20 起与 ranges 联动更顺。
 
 ### 0.3 设计哲学之争
 `set` 与 `unordered_set` 的争论，本质同 `map` 家族：要不要"有序"这笔账。<span class="badge badge-comment">评</span> `set` 的额外价值在于——它直接对应数学集合，配合 STL 集合算法能做并集/交集/差集，这是哈希容器难以优雅替代的。<span class="badge badge-comment">评</span> 而红黑树带来的"有序遍历"在需要按序输出（如排行榜、字典序）时仍是首选。
@@ -58,17 +58,17 @@
 
 ## ② 前置知识
 
-- 关联容器与迭代器：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）。
-- `map`/`multimap`：`set` 是"键即值"的 `map`，底层同为 `_Rb_tree`，强烈建议先读 [第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)。
-- 比较器（`Compare`）：默认 `std::less<Key>`，要求**严格弱序（strict weak ordering）**，见 [第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md) §比较语义。
-- 异常安全与 RAII：[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)。
-- 移动语义：提取节点依赖移动，见 [第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)。
+- 关联容器与迭代器：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）。
+- `map`/`multimap`：`set` 是"键即值"的 `map`，底层同为 `_Rb_tree`，强烈建议先读 [第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)。
+- 比较器（`Compare`）：默认 `std::less<Key>`，要求**严格弱序（strict weak ordering）**，见 [第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md) §比较语义。
+- 异常安全与 RAII：[第 40 章　异常安全（Exception Safety）](../part04_memory/ch40_exception_safety.md)。
+- 移动语义：提取节点依赖移动，见 [第115章　移动语义与右值引用](../part10_modern/ch115_move.md)。
 
 ## ③ 后续依赖
 
-- `unordered_set`/`unordered_map`：哈希而非有序，平均 O(1) 查找，见 [第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)。
-- 缓存与局部性：RB 树节点随机散布于堆，缓存命中率低，对比见 [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)。
-- 容器适配器 `set` 不提供，但 `priority_queue` 用堆，见 [第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)。
+- `unordered_set`/`unordered_map`：哈希而非有序，平均 O(1) 查找，见 [第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)。
+- 缓存与局部性：RB 树节点随机散布于堆，缓存命中率低，对比见 [第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)。
+- 容器适配器 `set` 不提供，但 `priority_queue` 用堆，见 [第86章　容器适配器：stack / queue / priority_queue](../part07_stl/ch86_adapters.md)。
 
 ## ④ 知识图谱（ASCII）
 
@@ -206,8 +206,8 @@ flowchart TD
 
 ## ⑪ STL 联系
 
-- 与 `map`：`set<K>` ≈ `map<K, K>` 的"键即值"特例，二者共用 `_Rb_tree`（[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）。
-- 与 `unordered_set`：有序、范围查询强、缓存差；哈希平均 O(1)、范围查询弱（[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)）。
+- 与 `map`：`set<K>` ≈ `map<K, K>` 的"键即值"特例，二者共用 `_Rb_tree`（[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)）。
+- 与 `unordered_set`：有序、范围查询强、缓存差；哈希平均 O(1)、范围查询弱（[第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)）。
 - 与 `vector`+`sort`/`flat_set` 模拟：排序 `vector` 二分查找缓存友好、无节点开销，但插入 O(n)；见 ⑲ 与 ⑳。
 - 与算法 `std::set_union` 等：这些算法要求**已排序区间**，可直接对 `set` 的区间使用（⑬ 示例）。
 
@@ -450,7 +450,7 @@ int main() {
 | 内存/元素 | ~40B 节点（int） | 4B 值 + 少量 | 指针 + 哈希 + 桶数组 |
 
 - `[实现·GCC15]`：RB 树每次插入/删除都涉及一次 `new`/`delete`（节点分配器），这是热点上的主要成本。
-- `[平台·x86-64]`：`set` 遍历是"跳着读内存"，缓存命中低；对 10⁷ 量级元素的范围扫描，`vector` 二分/连续遍历常快数倍（[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)）。
+- `[平台·x86-64]`：`set` 遍历是"跳着读内存"，缓存命中低；对 10⁷ 量级元素的范围扫描，`vector` 二分/连续遍历常快数倍（[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)）。
 - `[平台·x86-64]`：ABI 稳定——`std::set` 的 `_Rb_tree` 布局跨 GCC 版本基本兼容，但跨编译器（libstdc++/libc++/MS STL）**不保证**二进制兼容，跨模块传递需用 C 接口或序列化。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
@@ -1142,11 +1142,11 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第83章](Book/part07_stl/ch83_map.md) | 键值查找/缓存 | 本章提供概念，第83章提供实现 |
-| [第85章](Book/part07_stl/ch85_unordered.md) | 索引查找/路由表 | 本章提供概念，第85章提供实现 |
-| [第83章](Book/part07_stl/ch83_map.md) | 泛型库/编译期计算 | 本章提供概念，第83章提供实现 |
-| [第85章](Book/part07_stl/ch85_unordered.md) | 高性能容器/零拷贝传输 | 本章提供概念，第85章提供实现 |
-| [第86章](Book/part07_stl/ch86_adapters.md) | 资源管理/事务回滚 | 本章提供概念，第86章提供实现 |
+| [第83章](../part07_stl/ch83_map.md) | 键值查找/缓存 | 本章提供概念，第83章提供实现 |
+| [第85章](../part07_stl/ch85_unordered.md) | 索引查找/路由表 | 本章提供概念，第85章提供实现 |
+| [第83章](../part07_stl/ch83_map.md) | 泛型库/编译期计算 | 本章提供概念，第83章提供实现 |
+| [第85章](../part07_stl/ch85_unordered.md) | 高性能容器/零拷贝传输 | 本章提供概念，第85章提供实现 |
+| [第86章](../part07_stl/ch86_adapters.md) | 资源管理/事务回滚 | 本章提供概念，第86章提供实现 |
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1169,15 +1169,15 @@ int main() {
 - `std::set` 插入即分配节点；成员去重用 `flat_hash_set` 更快，Chromium 与 Folly 在热路径都这么做。
 - 有序输出才需要 `std::set`；`flat_hash_set` 不保证顺序且迭代器在重哈希后失效。
 
-> 交叉引用：映射见 [ch83](Book/part07_stl/ch83_map.md)；哈希见 [ch38](Book/part04_memory/ch38_allocator.md)。
+> 交叉引用：映射见 [ch83](../part07_stl/ch83_map.md)；哈希见 [ch38](../part04_memory/ch38_allocator.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 有序集合满足双向迭代器
-- **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— map 是其键值分离的变体
-- **同模块相邻**：[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)—— unordered_set 是其哈希无序版本
-- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 红黑树节点经 allocator 分配
-- **相邻主题**：[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)）—— 插入的强异常保证依赖异常安全
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— 有序集合满足双向迭代器
+- **同模块相邻**：[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)）—— map 是其键值分离的变体
+- **同模块相邻**：[第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)—— unordered_set 是其哈希无序版本
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)模型与 PMR）—— 红黑树节点经 allocator 分配
+- **相邻主题**：[第 40 章　异常安全（Exception Safety）](../part04_memory/ch40_exception_safety.md)）—— 插入的强异常保证依赖异常安全
 
 ## 自测练习（Exercises）
 

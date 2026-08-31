@@ -42,7 +42,7 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 
 ## ① 本章地图（先给结论，再击穿）
 
-[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)
+[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](../part03_language/ch27_cast.md)
 
 **知识图谱（前置→本章→后续）**：
 
@@ -1443,7 +1443,7 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第27章](Book/part03_language/ch27_cast.md) | 独占所有权/工厂模式 | 本章提供概念，第27章提供实现 |
+| [第27章](../part03_language/ch27_cast.md) | 独占所有权/工厂模式 | 本章提供概念，第27章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1518,11 +1518,11 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 存储期结束即生命周期结束，二者在本章合一
-- **同模块接续**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 返回局部引用/指针悬垂是生命周期头号案例
-- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— 未定义转换产生 UB，是本章 UB 分类的重要来源
-- **同模块接续**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— volatile 与硬件寄存器访问涉及对象生存期与可见性
-- **同模块接续**：[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)—— 初始化顺序直接决定对象生命周期起点，跨 TU 乱序即 SOIF
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)）—— 存储期结束即生命周期结束，二者在本章合一
+- **同模块接续**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](../part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 返回局部引用/指针悬垂是生命周期头号案例
+- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](../part03_language/ch27_cast.md)—— 未定义转换产生 UB，是本章 UB 分类的重要来源
+- **同模块接续**：[第30章 volatile / atomic 与硬件寄存器](../part03_language/ch30_volatile.md)—— volatile 与硬件寄存器访问涉及对象生存期与可见性
+- **同模块接续**：[第32章 初始化与列表初始化](../part03_language/ch32_initialization.md)—— 初始化顺序直接决定对象生命周期起点，跨 TU 乱序即 SOIF
 
 ## 附录 G（工业级 UB / sanitizer 实战）
 

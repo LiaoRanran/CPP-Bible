@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23)。｜层级：L2 进阶
 > 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。
-> 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（迭代器与六大组件） · [第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)（new/delete） · [第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)（分配器）。
-> 后续：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)（分段连续） · [第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)（有序容器对比） · [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)（缓存局部性）。
+> 前置：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)（迭代器与六大组件） · [第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)（new/delete） · [第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)（分配器）。
+> 后续：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)（分段连续） · [第84章　set / multiset：红黑树有序集合](../part07_stl/ch84_set.md)（有序容器对比） · [第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)（缓存局部性）。
 > 难度：★★★☆☆（理解三指针、扩容摊还与异常安全）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_vector.h`、`bits/vector.tcc`、`bits/allocator.h`、`bits/alloc_traits.h`，逐行标注文件与行号。
 
@@ -55,16 +55,16 @@
 
 ## ② 前置知识
 
-- 迭代器范畴与 `contiguous_iterator`：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)。
-- `new`/`delete` 与自由存储：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)。
-- 分配器与 `std::allocator`：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)。
-- 移动语义与 `noexcept` 移动：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)。
+- 迭代器范畴与 `contiguous_iterator`：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)。
+- `new`/`delete` 与自由存储：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)。
+- 分配器与 `std::allocator`：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)。
+- 移动语义与 `noexcept` 移动：[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)。
 
 ## ③ 后续依赖
 
-- `deque` 分段连续（头尾插不失效）：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)。
-- 缓存与局部性：连续内存为何快，见 [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)。
-- `vector<bool>`  pitfalls 与 `bitset` 替代：[第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)。
+- `deque` 分段连续（头尾插不失效）：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)。
+- 缓存与局部性：连续内存为何快，见 [第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)。
+- `vector<bool>`  pitfalls 与 `bitset` 替代：[第87章　bitset：编译期定长位集](../part07_stl/ch87_bitset.md)。
 
 ## ④ 知识图谱（ASCII）
 
@@ -193,11 +193,11 @@ main
 
 ## ⑪ STL 联系
 
-- 与 `deque`：`vector` 中段插入/删除 O(n) 且扩容失效；`deque` 头尾 O(1) 且不整体失效（[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)）。
-- 与 `array`：`array` 固定容量、栈/内联、无扩容（[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)）。
-- 与 `unordered_map`：`vector` 适合顺序存储；哈希表适合键值查找（[第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)）。
-- 与算法：连续内存使 `sort`/`binary_search` 高效（[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md) §⑲）。
-- 分配器：`vector` 通过 `_Vector_base` 持有分配器，元素构造走 `allocator_traits::construct`（[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)）。
+- 与 `deque`：`vector` 中段插入/删除 O(n) 且扩容失效；`deque` 头尾 O(1) 且不整体失效（[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)）。
+- 与 `array`：`array` 固定容量、栈/内联、无扩容（[第80章　array 与固定数组](../part07_stl/ch80_array.md)）。
+- 与 `unordered_map`：`vector` 适合顺序存储；哈希表适合键值查找（[第85章　unordered_map / unordered_set：哈希开链集合](../part07_stl/ch85_unordered.md)）。
+- 与算法：连续内存使 `sort`/`binary_search` 高效（[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md) §⑲）。
+- 分配器：`vector` 通过 `_Vector_base` 持有分配器，元素构造走 `allocator_traits::construct`（[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)）。
 
 ## ⑫ 工业案例：网络包缓冲池（批量接收，避免反复扩容，非 Hello World）
 
@@ -392,7 +392,7 @@ RAII 自动释放、知道 `size`、可增长、配合算法与迭代器、异�
 3. 需要"清空复用"用 `clear()` 保留容量，不要反复重建。
 4. 移除元素用 `erase(remove_if(...), end())` 惯用法（Erase-Remove）。
 5. 持有大对象时用 `vector<unique_ptr<T>>` 或 `vector<T>` + `reserve` 减少重分配。
-6. 需要按位压缩用 `vector<bool>` 前想清楚代理陷阱；否则用 `std::bitset` 或 `vector<char>`（[第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)）。
+6. 需要按位压缩用 `vector<bool>` 前想清楚代理陷阱；否则用 `std::bitset` 或 `vector<char>`（[第87章　bitset：编译期定长位集](../part07_stl/ch87_bitset.md)）。
 7. 并发：单写多读需外部同步；或分段（`vector` 数组 + 每线程一段）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
@@ -425,7 +425,7 @@ int main() {
 - 1.5×（MSVC）：容量序列 1,1.5,2.25,3.375…（取整）；斐波那契式增长使"较早释放的块"大小恰等于"稍后某次申请量"，`free` 后的内存可被 `malloc` 直接复用 → 峰值更低、碎片更少。`[经验]` 这是 MSVC 选择 1.5× 的核心理由。
 
 **缓存与局部性**
-- `[平台·x86-64]`：连续内存使遍历可向量化（AVX 加载）、缓存预取友好（[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)）。`deque`/`list`/关联容器因分段或跳指针远不如。
+- `[平台·x86-64]`：连续内存使遍历可向量化（AVX 加载）、缓存预取友好（[第154章　缓存优化与数据局部性（C++/硬件）](../part14_perf/ch154_cache_opt.md)）。`deque`/`list`/关联容器因分段或跳指针远不如。
 - `[平台·x86-64]`：ABI 稳定——`std::vector` 布局跨 GCC 版本兼容，但跨编译器（libstdc++/libc++/MS STL）不保证二进制兼容。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
@@ -1044,11 +1044,11 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第76章](Book/part07_stl/ch76_stl_arch.md) | 键值查找/缓存 | 本章提供概念，第76章提供实现 |
-| [第78章](Book/part07_stl/ch78_deque.md) | 独占所有权/工厂模式 | 本章提供概念，第78章提供实现 |
-| [第78章](Book/part07_stl/ch78_deque.md) | 索引查找/路由表 | 本章提供概念，第78章提供实现 |
-| [第76章](Book/part07_stl/ch76_stl_arch.md) | 泛型库/编译期计算 | 本章提供概念，第76章提供实现 |
-| [第80章](Book/part07_stl/ch80_array.md) | 资源管理/事务回滚 | 本章提供概念，第80章提供实现 |
+| [第76章](../part07_stl/ch76_stl_arch.md) | 键值查找/缓存 | 本章提供概念，第76章提供实现 |
+| [第78章](../part07_stl/ch78_deque.md) | 独占所有权/工厂模式 | 本章提供概念，第78章提供实现 |
+| [第78章](../part07_stl/ch78_deque.md) | 索引查找/路由表 | 本章提供概念，第78章提供实现 |
+| [第76章](../part07_stl/ch76_stl_arch.md) | 泛型库/编译期计算 | 本章提供概念，第76章提供实现 |
+| [第80章](../part07_stl/ch80_array.md) | 资源管理/事务回滚 | 本章提供概念，第80章提供实现 |
 
 ## 附录 G（vector 扩容与缓存）
 
@@ -1204,13 +1204,13 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 迭代器概念与连续存储的架构背景
-- **同模块相邻**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](Book/part07_stl/ch78_deque.md)—— deque 与 vector 的扩容/失效语义对比
-- **同模块相邻**：[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)—— array 是固定容量连续容器，无扩容
-- **同模块相邻**：[第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)—— span 是 vector 数据的零拷贝只读视图
-- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 扩容经 allocator 在堆上成长，allocator 决定后端
-- **跨模块前置**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)与堆（heap）的深度对比）—— 堆上扩容的内存来自堆，与栈对象的生命周期差异
-- **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 扩容时元素移动依赖移动语义避免拷贝
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— 迭代器概念与连续存储的架构背景
+- **同模块相邻**：[第78章　deque 与分段连续 <span class="badge badge-std">标准</span>](../part07_stl/ch78_deque.md)—— deque 与 vector 的扩容/失效语义对比
+- **同模块相邻**：[第80章　array 与固定数组](../part07_stl/ch80_array.md)—— array 是固定容量连续容器，无扩容
+- **同模块相邻**：[第82章　span 与裸数组视图](../part07_stl/ch82_span.md)—— span 是 vector 数据的零拷贝只读视图
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)模型与 PMR）—— 扩容经 allocator 在堆上成长，allocator 决定后端
+- **跨模块前置**：[第 36 章　栈（stack）与堆（heap）的深度对比](../part04_memory/ch36_stack_heap.md)与堆（heap）的深度对比）—— 堆上扩容的内存来自堆，与栈对象的生命周期差异
+- **相邻主题**：[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)—— 扩容时元素移动依赖移动语义避免拷贝
 
 ## 自测练习（Exercises）
 

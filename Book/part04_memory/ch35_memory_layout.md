@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)
-[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
+[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)
+[第 39 章　RAII 与 Rule of Zero/Three/Five](../part04_memory/ch39_raii_rule.md)
 
 > 本章从「进程虚拟地址空间」这一操作系统抽象出发，把前几章讲过的**存储期**（ch19）、**const 与只读段**（ch21）、**引用**（ch20）落到一个可执行文件真实存在的段（section）里；并为后续 **栈与堆**（ch36）、**new/delete**（ch37）、**allocator**（ch38）、**内存池**（ch44）、**模板对齐 trait**（ch60）奠定地址空间与对齐基础。
 >
@@ -46,7 +46,7 @@ C++ 标准刻意不规定段布局（那是 OS / ABI 的事），只谈"对象�
 
 ## ① 概览：进程虚拟地址空间
 
-[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
+[第 36 章　栈（stack）与堆（heap）的深度对比](../part04_memory/ch36_stack_heap.md)
 
 `[标准]` C++ 标准本身不规定「虚拟地址空间」——那是操作系统/实现的概念。但标准中的**存储期（storage duration）**、**对象生存期**、**指针**、**对齐**全部建立在一个前提上：**每个进程拥有独立、连续的虚拟地址空间，由操作系统通过 MMU（内存管理单元）映射到物理页框**。
 
@@ -1517,9 +1517,9 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第36章](Book/part04_memory/ch36_stack_heap.md) | 键值查找/缓存 | 本章提供概念，第36章提供实现 |
-| [第37章](Book/part04_memory/ch37_new_delete.md) | 多态插件/框架扩展 | 本章提供概念，第37章提供实现 |
-| [第39章](Book/part04_memory/ch39_raii_rule.md) | 泛型库/编译期计算 | 本章提供概念，第39章提供实现 |
+| [第36章](../part04_memory/ch36_stack_heap.md) | 键值查找/缓存 | 本章提供概念，第36章提供实现 |
+| [第37章](../part04_memory/ch37_new_delete.md) | 多态插件/框架扩展 | 本章提供概念，第37章提供实现 |
+| [第39章](../part04_memory/ch39_raii_rule.md) | 泛型库/编译期计算 | 本章提供概念，第39章提供实现 |
 
 ## 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
@@ -1572,15 +1572,15 @@ int main() {
 - 成员重排减少 padding（大端成员在前）可省数字节/对象；`#pragma pack` 破坏对齐可能触发 SIGBUS 于某些架构。
 - 跨 ABI 传递对象需同一编译器/标准库，否则布局不一致。
 
-> 交叉引用：对齐与分配见 [ch38](Book/part04_memory/ch38_allocator.md)；EBO 见 [ch52](Book/part05_oo/ch52_ebo.md)。
+> 交叉引用：对齐与分配见 [ch38](../part04_memory/ch38_allocator.md)；EBO 见 [ch52](../part05_oo/ch52_ebo.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)—— 本章地址空间布局直接决定栈/堆位置与相向扩张。
-- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— 堆上对象由 new/delete 落地，是本章段视图的运行态体现。
-- **同模块接续**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)—— allocator 在堆上切分内存，依赖本章段/页视图。
-- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 智能指针默认在堆持有资源，是本章内存模型的典型消费者。
-- **前置基础**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)—— 自动/静态/动态存储期对应栈/.bss/堆，是本章的物理落点。
+- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](../part04_memory/ch36_stack_heap.md)—— 本章地址空间布局直接决定栈/堆位置与相向扩张。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](../part04_memory/ch37_new_delete.md)—— 堆上对象由 new/delete 落地，是本章段视图的运行态体现。
+- **同模块接续**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)—— allocator 在堆上切分内存，依赖本章段/页视图。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](../part04_memory/ch41_smart_pointers.md)—— 智能指针默认在堆持有资源，是本章内存模型的典型消费者。
+- **前置基础**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)—— 自动/静态/动态存储期对应栈/.bss/堆，是本章的物理落点。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

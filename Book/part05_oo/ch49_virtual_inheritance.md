@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。虚继承的 **vbptr / vbtable / thunk 布局由 ABI 规定而非 C++ 标准**（<span class="badge badge-std">标准</span> 不规定具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**（含虚基类偏移调整 thunk），MSVC 采用独立的 vfptr/vbptr 双指针布局。本章展示的虚继承布局与偏移均为 **GCC/Itanium ABI 实测**，跨编译器或平台可能存在差异，切勿视作标准保证。
 
-[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
-[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)
+[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)
 
 ## ⓪ 历史动机：虚继承的来龙去脉
 
@@ -43,8 +43,8 @@
 
 ## ① 学习目标
 
-[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)
-[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](../part05_oo/ch48_rtti.md)
+[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)
 
 - 说清菱形继承为何导致虚基类子对象重复，以及虚继承如何消除重复
 - 画清虚继承下最派生类的对象布局（vbptr + vbase offset 表 + 共享虚基类落位）
@@ -212,8 +212,8 @@ _Z10cross_castP2M1:
 
 ## ⑪ STL 联系
 
-[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)（虚函数与虚表）—— 虚继承下的虚调用涉及 this 调整
-[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)（对象模型基础）—— 虚基类在对象模型中的共享布局（vbptr/vbtable）
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)（虚函数与虚表）—— 虚继承下的虚调用涉及 this 调整
+[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)（对象模型基础）—— 虚基类在对象模型中的共享布局（vbptr/vbtable）
 
 - `std::iostream` 经典菱形：`ios` ← `istream`/`ostream`(virtual) ← `iostream`，靠虚继承让 `ios` 唯一（标准库内部就用虚继承）。
 - `std::optional`/`std::variant`/`std::any`（ch10/ch25）用组合而非继承，规避菱形，是现代替代方向。
@@ -221,8 +221,8 @@ _Z10cross_castP2M1:
 
 ## ⑫ 工业案例
 
-[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)（多重继承与对象模型）—— 菱形继承是虚继承+多重继承的组合
-[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)（CRTP 与静态多态）—— 用静态多态规避虚基类开销的工业替代
+[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)（多重继承与对象模型）—— 菱形继承是虚继承+多重继承的组合
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)（CRTP 与静态多态）—— 用静态多态规避虚基类开销的工业替代
 
 ### 工业案例 49-A：iostream 菱形（标准库真实用例）
 
@@ -447,8 +447,8 @@ struct D : M { D() : V(7) {} };   // D 的 V(7) 生效，M 的 V(1) 被忽略
 
 ## ⑬ 源码分析
 
-[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)（RTTI 与 type_info）—— 虚继承的 type_info 层次由最派生类构建
-[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)（对象模型基础）—— 偏移表的底层存储语义
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](../part05_oo/ch48_rtti.md)（RTTI 与 type_info）—— 虚继承的 type_info 层次由最派生类构建
+[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)（对象模型基础）—— 偏移表的底层存储语义
 
 ### 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
 
@@ -553,8 +553,8 @@ vtable for M1 (在 D 中):
 
 ## ⑲ 性能分析
 
-[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 虚调用能否去虚拟化取决于别名分析
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— vtable 间接取指对 I-cache/分支预测的影响
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— 虚调用能否去虚拟化取决于别名分析
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— vtable 间接取指对 I-cache/分支预测的影响
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
@@ -923,10 +923,10 @@ int main(){std::cout<<"sizeof(V)="<<sizeof(V)<<" (int + vptr + padding)"<<std::e
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第50章](Book/part05_oo/ch50_multiple_inheritance.md) | 静态多态/编译期接口 | 本章提供概念，第50章提供实现 |
-| [第48章](Book/part05_oo/ch48_rtti.md) | 泛型库/编译期计算 | 本章提供概念，第48章提供实现 |
-| [第50章](Book/part05_oo/ch50_multiple_inheritance.md) | 多态插件/框架扩展 | 本章提供概念，第50章提供实现 |
-| [第47章](Book/part05_oo/ch47_virtual_functions.md) | 性能基准/回归检测 | 本章提供概念，第47章提供实现 |
+| [第50章](../part05_oo/ch50_multiple_inheritance.md) | 静态多态/编译期接口 | 本章提供概念，第50章提供实现 |
+| [第48章](../part05_oo/ch48_rtti.md) | 泛型库/编译期计算 | 本章提供概念，第48章提供实现 |
+| [第50章](../part05_oo/ch50_multiple_inheritance.md) | 多态插件/框架扩展 | 本章提供概念，第50章提供实现 |
+| [第47章](../part05_oo/ch47_virtual_functions.md) | 性能基准/回归检测 | 本章提供概念，第47章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1001,15 +1001,15 @@ mov    eax, DWORD PTR [rdi+0x8]    ; +8 跳过 B 的 vptr，取 int b
 
 可见访问虚基类成员需 **3 次内存取指**（vbptr → vbase offset → 字段），比普通继承的 1 次多 2 次；在 `-O2` 下若 `d` 已在寄存器且 vbase offset 为常数，GCC 可把 `[rax-0x18]` 折叠为直接偏移，但仍保留 `add rdi, rax` 的指针调整。这印证「⑩ 汇编分析」中"虚基类访问多一次间接"的结论，且 0x18（24 字节）是 `D` 布局中 B 子对象相对 M1 vtable 头的固定负偏移。
 
-> 交叉引用：对象模型见 [ch45](Book/part05_oo/ch45_oop_object_model.md)；封装见 [ch46](Book/part05_oo/ch46_encapsulation_inheritance.md)。
+> 交叉引用：对象模型见 [ch45](../part05_oo/ch45_oop_object_model.md)；封装见 [ch46](../part05_oo/ch46_encapsulation_inheritance.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 虚基类在对象模型中的共享布局（vbptr/vbtable）
-- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 虚继承是继承关系的特殊形态，解决菱形重复基类
-- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚继承下的虚函数调用涉及虚基类 this 调整
-- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 菱形继承即虚继承+多重继承的组合
-- **同模块接续**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)）—— CRTP 以静态多态替代虚继承的动态分发，规避虚基类开销
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)—— 虚基类在对象模型中的共享布局（vbptr/vbtable）
+- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)—— 虚继承是继承关系的特殊形态，解决菱形重复基类
+- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](../part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚继承下的虚函数调用涉及虚基类 this 调整
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)）—— 菱形继承即虚继承+多重继承的组合
+- **同模块接续**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)）—— CRTP 以静态多态替代虚继承的动态分发，规避虚基类开销
 
 ## 附录 G（vtable 底层与性能数据）
 

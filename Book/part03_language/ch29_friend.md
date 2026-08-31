@@ -1,7 +1,7 @@
 # 第29章 友元 friend 与访问控制
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-> 标准基: C++23 / GCC 15.3 / 预计阅读: 40min / 前置: [第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md) / 难度: ★★☆☆☆｜层级：L2 进阶
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 40min / 前置: [第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md) / 难度: ★★☆☆☆｜层级：L2 进阶
 
 ## ⓪ 历史动机：友元与访问控制的来龙去脉
 
@@ -681,13 +681,13 @@ int main(){X x;std::cout<<Test::get(x)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)—— constexpr 友元函数把编译期计算注入类接口
-- **同模块接续**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
-- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— 用户定义转换运算符常声明为友元，与转型协同
-- **同模块接续**：[第31章 运算符重载](Book/part03_language/ch31_operator_overloading.md)—— 运算符重载常声明为友元以访问私有成员
-- **同模块接续**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— 友元与访问控制在对象生命期/可见性上交互
-- **跨模块**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 封装与继承中友元破坏封装边界，需权衡设计
-- **跨模块**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）—— 测试中对私有成员常借友元做白盒测试，与测试策略联动
+- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](../part03_language/ch21_const_family.md)—— constexpr 友元函数把编译期计算注入类接口
+- **同模块接续**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](../part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
+- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](../part03_language/ch27_cast.md)—— 用户定义转换运算符常声明为友元，与转型协同
+- **同模块接续**：[第31章 运算符重载](../part03_language/ch31_operator_overloading.md)—— 运算符重载常声明为友元以访问私有成员
+- **同模块接续**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](../part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— 友元与访问控制在对象生命期/可见性上交互
+- **跨模块**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)—— 封装与继承中友元破坏封装边界，需权衡设计
+- **跨模块**：[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)）—— 测试中对私有成员常借友元做白盒测试，与测试策略联动
 
 ## 真实开源项目参考（可查证链接）
 
@@ -701,7 +701,7 @@ int main(){X x;std::cout<<Test::get(x)<<std::endl;return 0;}
 - friend 不传递（A 是 B 的友元，B 是 C 的友元 ≠ A 是 C 的友元）。
 - 隐藏友元模式（hidden friend）让运算符只在 ADL 可见，避免污染全局命名空间，是 [Boost](https://www.boost.org) 与 [LLVM](https://llvm.org) 库的通用惯例。
 
-> 交叉引用：ADL 见 [ch23](Book/part03_language/ch23_namespace_adl.md)；封装见 [ch46](Book/part05_oo/ch46_encapsulation_inheritance.md)。
+> 交叉引用：ADL 见 [ch23](../part03_language/ch23_namespace_adl.md)；封装见 [ch46](../part05_oo/ch46_encapsulation_inheritance.md)。
 
 ## 附录 D（友元与访问控制底层）
 

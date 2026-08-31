@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
-[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)
+[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)
+[第18章　构建配置：Debug / Release / LTO / PGO（C++）](../part02_toolchain/ch18_buildconfig.md)
 
 > **取证说明（真实运行，非编造）**
 > 本章所有 `git` 输出均来自本机真实执行：`git version 2.54.0.windows.1`、MinGW `g++.exe 13.1.0`。
@@ -50,8 +50,8 @@
 
 ## ① 概述：版本控制价值 <span class="badge badge-exp">经验</span>
 
-[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)
-[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
+[第147章 代码审查（C++）](../part13_engineering/ch147_code_review.md)
+[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)
 
 版本控制不是“存档工具”，而是**工程协作的事实真相源（single source of truth）**。对 C++ 这类编译型、强耦合、构建缓慢的工程，Git 的价值体现在四个维度：
 
@@ -983,20 +983,20 @@ A: cherry-pick=复制提交到当前分支; revert=创建反向提交(不改历�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第149章](Book/part13_engineering/ch149_ci_cd.md) | 无锁队列/计数器 | 本章提供概念，第149章提供实现 |
-| [第147章](Book/part13_engineering/ch147_code_review.md) | 泛型库/编译期计算 | 本章提供概念，第147章提供实现 |
-| [第149章](Book/part13_engineering/ch149_ci_cd.md) | 日志格式化/序列化 | 本章提供概念，第149章提供实现 |
-| [第18章](Book/part02_toolchain/ch18_buildconfig.md) | 性能基准/回归检测 | 本章提供概念，第18章提供实现 |
+| [第149章](../part13_engineering/ch149_ci_cd.md) | 无锁队列/计数器 | 本章提供概念，第149章提供实现 |
+| [第147章](../part13_engineering/ch147_code_review.md) | 泛型库/编译期计算 | 本章提供概念，第147章提供实现 |
+| [第149章](../part13_engineering/ch149_ci_cd.md) | 日志格式化/序列化 | 本章提供概念，第149章提供实现 |
+| [第18章](../part02_toolchain/ch18_buildconfig.md) | 性能基准/回归检测 | 本章提供概念，第18章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
-- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
-- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
-- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
-- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
-- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
-- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](../part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](../part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](../part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](../part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](../part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](../part13_engineering/ch151_benchmark.md)）
 
 ## 深度附录：Git 对象存储与性能画像（DEP）
 
@@ -1011,7 +1011,7 @@ A: cherry-pick=复制提交到当前分支; revert=创建反向提交(不改历�
 
 > 表注（DEP）：对象存储的「内容寻址 + delta + zlib」决定了分支/合并的成本下限；[最佳实践] feature 分支长期不合并会累积冲突面，用 `git rebase` 保持线性历史可让 `git bisect` 在 `log2(N)` 步内定位回归提交（N 为提交数）。Chromium/LLVM 用 monorepo 而非 gitflow；Google 内部用 Piper，Mesos/DPDK 坚守 gitflow 变体。
 
-> 交叉引用：CI/CD 见 [ch149](Book/part13_engineering/ch149_ci_cd.md)；代码评审见 [ch147](Book/part13_engineering/ch147_code_review.md)。
+> 交叉引用：CI/CD 见 [ch149](../part13_engineering/ch149_ci_cd.md)；代码评审见 [ch147](../part13_engineering/ch147_code_review.md)。
 
 ## 附录 F：packfile 与 CI 缓存键深度 [E: Low-level / B: Principle]
 
@@ -1278,14 +1278,14 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑩ 提交信息规范驱动审查 |
-| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑮ Git 触发流水线 / §⑩ CD |
-| ch144 代码风格 | [Book/part13_engineering/ch144_style.md](Book/part13_engineering/ch144_style.md) | pre-commit 钩子接风格工具 |
-| ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | 分支命名与 API 稳定性 |
-| ch146 错误处理 | [Book/part13_engineering/ch146_error_handling.md](Book/part13_engineering/ch146_error_handling.md) | 提交信息描述错误修复 |
-| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | CI 跑测试门禁 |
-| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | CI 跑性能回归 |
-| ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 矩阵构建跨编译器版本 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](../part13_engineering/ch147_code_review.md) | §⑩ 提交信息规范驱动审查 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | §⑮ Git 触发流水线 / §⑩ CD |
+| ch144 代码风格 | [Book/part13_engineering/ch144_style.md](../part13_engineering/ch144_style.md) | pre-commit 钩子接风格工具 |
+| ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](../part13_engineering/ch145_naming_api.md) | 分支命名与 API 稳定性 |
+| ch146 错误处理 | [Book/part13_engineering/ch146_error_handling.md](../part13_engineering/ch146_error_handling.md) | 提交信息描述错误修复 |
+| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](../part13_engineering/ch150_testing.md) | CI 跑测试门禁 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](../part13_engineering/ch151_benchmark.md) | CI 跑性能回归 |
+| ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | 矩阵构建跨编译器版本 |
 
 ## 附录 U：分支模型与发布策略决策流（D3 维度）
 

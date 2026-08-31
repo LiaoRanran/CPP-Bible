@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
-[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
 > Boost 本机未安装；所有"上游参考"源码行号取自 `https://github.com/boostorg/...` 仓库，使用 `-I` 的编译命令均标注"典型输出（本机未装 Boost）"。
@@ -44,8 +44,8 @@ Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头
 
 ## ① 概述：Boost 库集合（事实标准库）
 
-[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)
-[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)
+[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)
+[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)
 
 Boost 是一组经过同行评审、可移植、开源的 C++ 库集合，被称为 C++ 的"事实标准库"。它长期充当**标准库的试验田**：大量组件经提炼后进入 ISO C++ 标准。
 
@@ -1003,10 +1003,10 @@ Boost 不是教科书玩具，而是工业软件的隐形底座：
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第127章](Book/part11_source/ch127_llvm.md) | 键值查找/缓存 | 本章提供概念，第127章提供实现 |
-| [第129章](Book/part11_source/ch129_qt.md) | 独占所有权/工厂模式 | 本章提供概念，第129章提供实现 |
-| [第124章](Book/part11_source/ch124_libstdcxx.md) | 无锁队列/计数器 | 本章提供概念，第124章提供实现 |
-| [第65章](Book/part06_templates/ch65_type_traits.md) | 文件扫描/配置加载 | 本章提供概念，第65章提供实现 |
+| [第127章](../part11_source/ch127_llvm.md) | 键值查找/缓存 | 本章提供概念，第127章提供实现 |
+| [第129章](../part11_source/ch129_qt.md) | 独占所有权/工厂模式 | 本章提供概念，第129章提供实现 |
+| [第124章](../part11_source/ch124_libstdcxx.md) | 无锁队列/计数器 | 本章提供概念，第124章提供实现 |
+| [第65章](../part06_templates/ch65_type_traits.md) | 文件扫描/配置加载 | 本章提供概念，第65章提供实现 |
 
 ## 附录 F：Boost生态
 
@@ -1019,17 +1019,17 @@ int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, op
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
-- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
-- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
-- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
-- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
-- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
-- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
-- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
-- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
-- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
-- **跨模块延伸（part02 工具链）**：[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)）—— Boost 通过 vcpkg / Conan 包管理分发
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](../part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](../part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）
+- **跨模块延伸（part02 工具链）**：[第13章　包管理：vcpkg / Conan（C++）](../part02_toolchain/ch13_packaging.md)）—— Boost 通过 vcpkg / Conan 包管理分发
 
 ## 附录 G：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

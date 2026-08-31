@@ -1,10 +1,10 @@
 # 第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
-[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
 
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）；核心条款 `[expr.prim.lambda]` / `[expr.prim.lambda.capture]` / `[expr.prim.lambda.closure]`｜层级：L2 进阶
 > 预计阅读：210 min｜难度：★★★★
@@ -58,8 +58,8 @@ lambda 本质仍是"语法糖 + 闭包类"，委员会坚持零开销：不捕�
 
 ## ① 本章地图（先给结论，再击穿）
 
-[第25章　union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)
-[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)
+[第25章　union 与 std::variant 深度详解](../part03_language/ch25_union_variant.md)
+[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](../part03_language/ch27_cast.md)
 
 lambda 不是"语法糖"，而是一台**编译器在编译期为你合成匿名类（闭包类型）**的机器。把 lambda 当作"语法糖化的函数对象"，本章所有现象立刻自洽：
 
@@ -1453,11 +1453,11 @@ std::function（类型擦除）      ~430 ms                   8.1×
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第25章](Book/part03_language/ch25_union_variant.md) | 独占所有权/工厂模式 | 本章提供概念，第25章提供实现 |
-| [第27章](Book/part03_language/ch27_cast.md) | STL算法回调/异步任务 | 本章提供概念，第27章提供实现 |
-| [第77章](Book/part07_stl/ch77_vector.md) | 泛型库/编译期计算 | 本章提供概念，第77章提供实现 |
-| [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 高性能容器/零拷贝传输 | 本章提供概念，第116章提供实现 |
-| [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 性能基准/回归检测 | 本章提供概念，第116章提供实现 |
+| [第25章](../part03_language/ch25_union_variant.md) | 独占所有权/工厂模式 | 本章提供概念，第25章提供实现 |
+| [第27章](../part03_language/ch27_cast.md) | STL算法回调/异步任务 | 本章提供概念，第27章提供实现 |
+| [第77章](../part07_stl/ch77_vector.md) | 泛型库/编译期计算 | 本章提供概念，第77章提供实现 |
+| [第116章](../part10_modern/ch116_perfect_forwarding.md) | 高性能容器/零拷贝传输 | 本章提供概念，第116章提供实现 |
+| [第116章](../part10_modern/ch116_perfect_forwarding.md) | 性能基准/回归检测 | 本章提供概念，第116章提供实现 |
 
 ## 深度增强：lambda工业底层与面试
 
@@ -1586,13 +1586,13 @@ lambda 在 C++11（N2927 路线）落地，闭包类型由编译器合成；C++1
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— lambda 捕获按存储期持有变量，捕获的引用/值即存储期选择
-- **同模块接续**：[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)—— lambda 返回类型常由 auto/decltype 推导，泛型 lambda 即模板
-- **同模块接续**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)）—— lambda 状态机以 enum 表达状态
-- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— 泛型 lambda 的 auto 参数经转型规则推导，与 cast 协同
-- **同模块接续**：[第31章 运算符重载](Book/part03_language/ch31_operator_overloading.md)—— lambda 闭包即带 operator() 的函数对象，是运算符重载的特例
-- **跨模块**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— std::vector 的排序/遍历大量配合 lambda 谓词
-- **跨模块**：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)—— 完美转发与泛型 lambda 协同实现零拷贝回调
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)）—— lambda 捕获按存储期持有变量，捕获的引用/值即存储期选择
+- **同模块接续**：[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](../part03_language/ch22_auto_decltype.md)—— lambda 返回类型常由 auto/decltype 推导，泛型 lambda 即模板
+- **同模块接续**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](../part03_language/ch24_enum.md)）—— lambda 状态机以 enum 表达状态
+- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](../part03_language/ch27_cast.md)—— 泛型 lambda 的 auto 参数经转型规则推导，与 cast 协同
+- **同模块接续**：[第31章 运算符重载](../part03_language/ch31_operator_overloading.md)—— lambda 闭包即带 operator() 的函数对象，是运算符重载的特例
+- **跨模块**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)—— std::vector 的排序/遍历大量配合 lambda 谓词
+- **跨模块**：[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)—— 完美转发与泛型 lambda 协同实现零拷贝回调
 
 ## 附录 G（工业级 lambda 实战）
 

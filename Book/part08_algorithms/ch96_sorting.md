@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)
-[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
+[第98章　堆算法 heap（C++）](../part08_algorithms/ch98_heap.md)
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；以真实编译产物（`__introsort_loop` 符号、内联比较器、chrono 实测）为证据。本章示例代码置于 `Examples/_ch96_*.cpp`（相对路径，非绝对路径）。
@@ -42,8 +42,8 @@
 
 ## ① 概述：排序在 `<algorithm>` 中的位置 <span class="badge badge-std">标准</span>
 
-[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)
-[第97章　查找与二分（C++）](Book/part08_algorithms/ch97_search.md)
+[第95章　STL 算法分类与复杂度（C++）](../part08_algorithms/ch95_algo_overview.md)
+[第97章　查找与二分（C++）](../part08_algorithms/ch97_search.md)
 
 排序是算法库最常用的一组：无序转有序，使二分查找、去重、归并、集合运算成为可能。`<algorithm>` 提供 `std::sort`、`std::stable_sort`、`std::partial_sort`、`std::nth_element`、`std::stable_partition` 等，全部作用于**有序区间**（[first, last)），比较默认用 `operator<`（严格弱序）。
 
@@ -982,17 +982,17 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第95章](Book/part08_algorithms/ch95_algo_overview.md) | STL算法回调/异步任务 | 本章提供概念，第95章提供实现 |
-| [第97章](Book/part08_algorithms/ch97_search.md) | 索引查找/路由表 | 本章提供概念，第97章提供实现 |
-| [第98章](Book/part08_algorithms/ch98_heap.md) | 泛型库/编译期计算 | 本章提供概念，第98章提供实现 |
-| [第77章](Book/part07_stl/ch77_vector.md) | 数据处理管道/排行榜 | 本章提供概念，第77章提供实现 |
+| [第95章](../part08_algorithms/ch95_algo_overview.md) | STL算法回调/异步任务 | 本章提供概念，第95章提供实现 |
+| [第97章](../part08_algorithms/ch97_search.md) | 索引查找/路由表 | 本章提供概念，第97章提供实现 |
+| [第98章](../part08_algorithms/ch98_heap.md) | 泛型库/编译期计算 | 本章提供概念，第98章提供实现 |
+| [第77章](../part07_stl/ch77_vector.md) | 数据处理管道/排行榜 | 本章提供概念，第77章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第101章　哈希、图、树、DP、贪心（算法思想）](Book/part08_algorithms/ch101_algo_theory.md)）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](Book/part07_stl/ch94_stop_token.md)—— 编号相邻、主题接续。
-- **同模块**：[第99章　数值算法与并行执行策略（C++）](Book/part08_algorithms/ch99_numeric.md)）—— 同模块下的其他主题。
+- **后续依赖**：[第101章　哈希、图、树、DP、贪心（算法思想）](../part08_algorithms/ch101_algo_theory.md)）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)—— 编号相邻、主题接续。
+- **同模块**：[第99章　数值算法与并行执行策略（C++）](../part08_algorithms/ch99_numeric.md)）—— 同模块下的其他主题。
 
 ## 附录 C（排序算法底层）
 

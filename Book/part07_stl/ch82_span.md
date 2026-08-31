@@ -1,7 +1,7 @@
 # 第82章　span 与裸数组视图
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：80 分钟 / 前置：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)（引用与指针）、[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)（array）、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector）/ 后续：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)（map）、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)（ranges）/ 难度：★★★☆☆｜层级：L2 进阶
+> 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：80 分钟 / 前置：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](../part03_language/ch20_reference_pointer.md)（引用与指针）、[第80章　array 与固定数组](../part07_stl/ch80_array.md)（array）、[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)（vector）/ 后续：[第83章　map / multimap（红黑树）](../part07_stl/ch83_map.md)（map）、[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)（ranges）/ 难度：★★★☆☆｜层级：L2 进阶
 
 ## ⓪ 历史动机：std::span 的来龙去脉
 > 一个"只借不拿"的视图，专治函数签名里 `(T* p, size_t n)` 这对极易出错的孪生兄弟。
@@ -1166,14 +1166,14 @@ int main() {
 - **ClickHouse（ClickHouse/ClickHouse）**：query 执行中用 `std::span` 零拷贝传递列块，避免 `std::vector` 拷贝。
 - **Google Benchmark（github.com/google/benchmark）**：`benchmark::Span` 等工具用 `std::span` 传参，是 span 在测试框架中的落地。
 
-> 交叉引用：数组见 [ch80](Book/part07_stl/ch80_array.md)；连续内存见 [ch35](Book/part04_memory/ch35_memory_layout.md)。
+> 交叉引用：数组见 [ch80](../part07_stl/ch80_array.md)；连续内存见 [ch35](../part04_memory/ch35_memory_layout.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— span 是该架构下的轻量连续视图
-- **同模块相邻**：[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)—— span 是 array 数据的零拷贝视图
-- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— span 是 vector 数据的零拷贝视图
-- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— span 不拥有内存，其来源常由 allocator 分配
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— span 是该架构下的轻量连续视图
+- **同模块相邻**：[第80章　array 与固定数组](../part07_stl/ch80_array.md)—— span 是 array 数据的零拷贝视图
+- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)—— span 是 vector 数据的零拷贝视图
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](../part04_memory/ch38_allocator.md)模型与 PMR）—— span 不拥有内存，其来源常由 allocator 分配
 
 ## 自测练习（Exercises）
 

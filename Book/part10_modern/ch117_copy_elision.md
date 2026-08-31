@@ -40,8 +40,8 @@
 
 ## ① 概述：拷贝消除（copy elision）是什么
 
-[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
-[第118章　Modules 模块（C++20）](Book/part10_modern/ch118_modules.md)
+[第116章　完美转发与万能引用](../part10_modern/ch116_perfect_forwarding.md)
+[第118章　Modules 模块（C++20）](../part10_modern/ch118_modules.md)
 
 **定义**：拷贝消除是编译器在语义允许时，省去「把对象从一个存储位置复制到另一个存储位置」这一步的优化——两个名字（源与目标）实际上指向**同一块内存**，根本不发生复制构造或移动构造。
 
@@ -1016,16 +1016,16 @@ A: P2025 提议将 NRVO 也强制化（目前仅 RVO 强制）。通过后，所
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 独占所有权/工厂模式 | 本章提供概念，第116章提供实现 |
-| [第118章](Book/part10_modern/ch118_modules.md) | 泛型库/编译期计算 | 本章提供概念，第118章提供实现 |
+| [第116章](../part10_modern/ch116_perfect_forwarding.md) | 独占所有权/工厂模式 | 本章提供概念，第116章提供实现 |
+| [第118章](../part10_modern/ch118_modules.md) | 泛型库/编译期计算 | 本章提供概念，第118章提供实现 |
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)）—— 编号相邻、主题接续。
-- **同模块**：[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)—— 同模块下的其他主题。
+- **后续依赖**：[第115章　移动语义与右值引用](../part10_modern/ch115_move.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第119章　Ranges 深入（C++20）](../part10_modern/ch119_ranges_deep.md)）—— 编号相邻、主题接续。
+- **同模块**：[第120章 Coroutine 应用模式](../part10_modern/ch120_coroutine_app.md)—— 同模块下的其他主题。
 
-- **同模块**：[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)）—— 同模块下的其他主题。
+- **同模块**：[第121章 Contracts 契约（方向，C++26）](../part10_modern/ch121_contracts.md)）—— 同模块下的其他主题。
 
 ## 附录 G：copy elision 工业实践与深度
 

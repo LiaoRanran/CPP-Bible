@@ -1,8 +1,8 @@
 # 第01章　C 语言遗产与 C with Classes
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)
-[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)
+[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)
+[第32章 初始化与列表初始化](../part03_language/ch32_initialization.md)
 
 > 标准基：前标准（1972–1985）｜预计阅读：35 min｜前置：无｜后续：ch02 标准化、ch19 变量、ch50 封装｜难度：★｜层级：L1 入门
 
@@ -61,7 +61,7 @@
 
 ## ① 学习目标
 
-[第02章　标准化组织、WG21 与提案流程](Book/part01_history/ch02_standardization.md)
+[第02章　标准化组织、WG21 与提案流程](../part01_history/ch02_standardization.md)
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
 ```cpp
@@ -464,7 +464,7 @@ int main() {
 
 ## ⑫ 工业案例
 
-[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)
+[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
@@ -493,7 +493,7 @@ int main() {
 
 ## ⑬ 源码分析
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析
 ```cpp
@@ -522,8 +522,8 @@ int main() {
 
 ## ⑭ WG21 提案 / 标准背景
 
-[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)
-[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)
+[第03章　C++98 / C++03：奠基时代](../part01_history/ch03_cpp98_03.md)
+[第04章　C++11：现代 C++ 革命](../part01_history/ch04_cpp11.md)
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案 / 标准背景
 ```cpp
@@ -642,7 +642,7 @@ int main() {
 
 ## ⑲ 性能分析
 
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
 ```cpp
@@ -833,9 +833,9 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第2章](Book/part01_history/ch02_standardization.md) | STL算法回调/异步任务 | 本章提供概念，第2章提供实现 |
-| [第19章](Book/part03_language/ch19_variables.md) | 多态插件/框架扩展 | 本章提供概念，第19章提供实现 |
-| [第32章](Book/part03_language/ch32_initialization.md) | 泛型库/编译期计算 | 本章提供概念，第32章提供实现 |
+| [第2章](../part01_history/ch02_standardization.md) | STL算法回调/异步任务 | 本章提供概念，第2章提供实现 |
+| [第19章](../part03_language/ch19_variables.md) | 多态插件/框架扩展 | 本章提供概念，第19章提供实现 |
+| [第32章](../part03_language/ch32_initialization.md) | 泛型库/编译期计算 | 本章提供概念，第32章提供实现 |
 
 ## 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 
@@ -907,8 +907,8 @@ int main(){std::cout<<"C=simplicity, C++=abstraction. Use C for kernel, C++ for 
 
 ## 附录 I：C ABI兼容性深度
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
-[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)
+[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)
 
 C ABI是操作系统最底层的接口约定。Linux kernel, Win32 API, POSIX全部使用C ABI。C++通过extern "C"与此交互。
 
@@ -958,9 +958,9 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：[第165章 C++ 进阶路线图（C++）](Book/part16_reading/ch165_roadmap.md)）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)—— 编号相邻、主题接续。
-- **同模块**：[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)—— 同模块下的其他主题。
+- **后续依赖**：[第165章 C++ 进阶路线图（C++）](../part16_reading/ch165_roadmap.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第03章　C++98 / C++03：奠基时代](../part01_history/ch03_cpp98_03.md)—— 编号相邻、主题接续。
+- **同模块**：[第04章　C++11：现代 C++ 革命](../part01_history/ch04_cpp11.md)—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 
@@ -974,7 +974,7 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 **最佳实践**：读标准演化时以 [LLVM](https://llvm.org) 的 `cxx_status` 与 [Boost](https://www.boost.org) 的提案库为交叉验证源，避免仅凭二手博客判断某特性是否进入某标准版。
 
-> 交叉引用：版本特性全景见 [ch10](Book/part01_history/ch10_version_matrix.md)；编译器实现见 [ch11](Book/part02_toolchain/ch11_compilers.md)。
+> 交叉引用：版本特性全景见 [ch10](../part01_history/ch10_version_matrix.md)；编译器实现见 [ch11](../part02_toolchain/ch11_compilers.md)。
 
 ## 叙事补遗 [J: Learning]
 

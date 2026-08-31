@@ -2,9 +2,9 @@
 > 层级：L2 进阶
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 <span class="badge badge-std">标准</span>（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
-[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
-[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
+[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)
+[第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
 
 ## ⓪ 历史动机：模板的来龙去脉
 
@@ -45,7 +45,7 @@
 
 ## ① 学习目标
 
-[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
+[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)
 
 - 说清「模板」「模板参数」「模板实参」「实例化」四者关系 <span class="badge badge-std">标准</span>
 - 区分隐式实例化 / 显式实例化 / 显式特化 / 显式实例化定义 <span class="badge badge-std">标准</span>
@@ -430,8 +430,8 @@ template void f<int>(double);              // 错误：实参类型不匹配
 
 ## ⑪ STL 中的该模式
 
-[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）—— STL 容器/算法全是模板
-[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
+[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）—— STL 容器/算法全是模板
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
@@ -538,8 +538,8 @@ int main() {
 
 ## ⑭ 工业案例
 
-[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost 是工业模板库的最大实践场
-[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— 模板+policy 组合定制组件
+[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)（Boost 库生态）—— Boost 是工业模板库的最大实践场
+[第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— 模板+policy 组合定制组件
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
@@ -578,7 +578,7 @@ int main() {
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
+[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
 ```cpp
@@ -692,8 +692,8 @@ int main() {
 
 ## ⑲ 性能（编译期 / 运行期）
 
-[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 实例化成本取决于前端预算
-[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销须微基准实测
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— 实例化成本取决于前端预算
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销须微基准实测
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能（编译期 / 运行期）
 ```cpp
@@ -755,7 +755,7 @@ int main() {
 
 **设计动机**：模板的本质是"编译期代码生成器"（line 7），其零开销来自单态化（为每个具体类型生成专用机器码）。类型擦除（`std::any`/`std::function`）为换取"运行期存储异质对象"而付出堆分配/间接调用；虚函数为换取"运行期多态"付出 vtable 取指。三者是"运行期灵活性 ↔ 编译期开销"Pareto 边界上不同点。
 
-**方法学注**：比值是可移植证据，绝对值随 CPU/编译器波动；本基准在 MinGW GCC 15.3.0 x64 `-O2` 取得，Ubuntu gcc-15 应同量级（无平台相关整型陷阱）。`std::any` SBO 阈值 16B 为 libstdc++ 实现定义常量（`_Any_data` 联合体大小），非标准强制。代码膨胀维度（每实例化一份函数体）的符号计数论证见 [ch156 编译器优化](Book/part14_perf/ch156_compiler_opt.md)；运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+**方法学注**：比值是可移植证据，绝对值随 CPU/编译器波动；本基准在 MinGW GCC 15.3.0 x64 `-O2` 取得，Ubuntu gcc-15 应同量级（无平台相关整型陷阱）。`std::any` SBO 阈值 16B 为 libstdc++ 实现定义常量（`_Any_data` 联合体大小），非标准强制。代码膨胀维度（每实例化一份函数体）的符号计数论证见 [ch156 编译器优化](../part14_perf/ch156_compiler_opt.md)；运行期微架构深潜见 [ch153 CPU 微基准](../part14_perf/ch153_cpu_micro.md)。
 
 ### ⑲.2 选型流（何时用模板 / 类型擦除 / 虚函数）
 
@@ -770,7 +770,7 @@ flowchart TD
     C --> H["忌: 为少写代码而模板化<br/>单类型内部工具→拖慢编译"]
 ```
 
-> 交叉引用：零开销与 mangled 名见 ⑩/⑮；类型擦除成本对照 [ch26 lambda](Book/part03_language/ch26_lambda.md)（std::function ≈ 8×）/ [ch45 对象模型](Book/part05_oo/ch45_oop_object_model.md)（虚函数 vtable）；编译期成本深潜见 [ch156 编译器优化](Book/part14_perf/ch156_compiler_opt.md)；NTTP 与偏特化见 [ch61 模板重载](Book/part06_templates/ch61_template_overload.md)、[ch62 特化](Book/part06_templates/ch62_specialization.md)。
+> 交叉引用：零开销与 mangled 名见 ⑩/⑮；类型擦除成本对照 [ch26 lambda](../part03_language/ch26_lambda.md)（std::function ≈ 8×）/ [ch45 对象模型](../part05_oo/ch45_oop_object_model.md)（虚函数 vtable）；编译期成本深潜见 [ch156 编译器优化](../part14_perf/ch156_compiler_opt.md)；NTTP 与偏特化见 [ch61 模板重载](../part06_templates/ch61_template_overload.md)、[ch62 特化](../part06_templates/ch62_specialization.md)。
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
@@ -813,10 +813,10 @@ flowchart TD
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第61章](Book/part06_templates/ch61_template_overload.md) | 泛型库/编译期计算 | 本章提供概念，第61章提供实现 |
-| [第61章](Book/part06_templates/ch61_template_overload.md) | 静态多态/编译期接口 | 本章提供概念，第61章提供实现 |
-| [第69章](Book/part06_templates/ch69_constexpr.md) | 内存管理/PMR定制 | 本章提供概念，第69章提供实现 |
-| [第77章](Book/part07_stl/ch77_vector.md) | 文本处理/协议解析 | 本章提供概念，第77章提供实现 |
+| [第61章](../part06_templates/ch61_template_overload.md) | 泛型库/编译期计算 | 本章提供概念，第61章提供实现 |
+| [第61章](../part06_templates/ch61_template_overload.md) | 静态多态/编译期接口 | 本章提供概念，第61章提供实现 |
+| [第69章](../part06_templates/ch69_constexpr.md) | 内存管理/PMR定制 | 本章提供概念，第69章提供实现 |
+| [第77章](../part07_stl/ch77_vector.md) | 文本处理/协议解析 | 本章提供概念，第77章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -898,13 +898,13 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— 重载决议决定哪个模板实例化，是实例化流程的入口
-- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)）—— 特化/偏特化是实例化的分支终点
-- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 可变参数模板的包展开依赖实例化机制
-- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 建立在模板基础之上做编译期萃取
-- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— 模板元编程是模板基础的递归延伸
-- **跨模块**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— STL 容器/算法全是模板，架构建立在模板基础之上
-- **跨模块**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— vector 等容器即类模板的典型实例化
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)）—— 重载决议决定哪个模板实例化，是实例化流程的入口
+- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](../part06_templates/ch62_specialization.md)）—— 特化/偏特化是实例化的分支终点
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](../part06_templates/ch63_variadic.md)）—— 可变参数模板的包展开依赖实例化机制
+- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)—— type_traits 建立在模板基础之上做编译期萃取
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](../part06_templates/ch68_tmp.md)）—— 模板元编程是模板基础的递归延伸
+- **跨模块**：[第76章　STL 架构与迭代器概念](../part07_stl/ch76_stl_arch.md)—— STL 容器/算法全是模板，架构建立在模板基础之上
+- **跨模块**：[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)—— vector 等容器即类模板的典型实例化
 
 ## 附录 G：工业 C++ 模板生态
 
@@ -1384,7 +1384,7 @@ int main() {
 
 ### D5.4 方法学注
 
-基准源码见库根 `_bench_d5_ch60_template_callback.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch60_template_callback.cpp -o _bench_d5_ch60.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~7.8x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。std::function 的调用期间接开销在 libstdc++/libc++/MSVC STL 中均存在（类型擦除的固有代价），跨实现同量级。lambda 为无捕获（可转换为函数指针），但 std::function 仍走 SBO + 间接调用路径。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+基准源码见库根 `_bench_d5_ch60_template_callback.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch60_template_callback.cpp -o _bench_d5_ch60.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~7.8x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。std::function 的调用期间接开销在 libstdc++/libc++/MSVC STL 中均存在（类型擦除的固有代价），跨实现同量级。lambda 为无捕获（可转换为函数指针），但 std::function 仍走 SBO + 间接调用路径。运行期微架构深潜见 [ch153 CPU 微基准](../part14_perf/ch153_cpu_micro.md)。
 
 | 关联章 | 路径 | 关系 |
 | --- | --- | --- |

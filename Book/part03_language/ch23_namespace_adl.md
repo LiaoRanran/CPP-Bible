@@ -1,8 +1,8 @@
 # 第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)
-[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
+[第29章 友元 friend 与访问控制](../part03_language/ch29_friend.md)
+[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：210 min｜难度：★★★★｜层级：L2 进阶
 > 前置：ch19（变量/对象/ODR/链接）｜后续：ch21（const 与命名空间作用域）、ch31（`const_cast` 与命名空间可见性）、ch60（模板·ADL 与友元）、ch62（模板元编程中的 ADL）、ch119（模块 Modules 深度版）
@@ -52,8 +52,8 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 
 ## ① 本章地图（先给结论，再击穿）
 
-[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)
-[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)
+[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](../part03_language/ch22_auto_decltype.md)
+[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](../part03_language/ch24_enum.md)
 
 本章回答四个互相缠绕的问题：**如何把名字分隔开（namespace）**、**如何让名字进入作用域（using）**、**为什么有些名字不需要 using 也能被找到（ADL）**、**如何用 namespace 管控 ABI（inline namespace）**。四者关系如下：
 
@@ -1223,10 +1223,10 @@ int main() {
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第22章](Book/part03_language/ch22_auto_decltype.md) | 泛型库/编译期计算 | 本章提供概念，第22章提供实现 |
-| [第24章](Book/part03_language/ch24_enum.md) | 性能基准/回归检测 | 本章提供概念，第24章提供实现 |
-| [第29章](Book/part03_language/ch29_friend.md) | 文本处理/协议解析 | 本章提供概念，第29章提供实现 |
-| [第61章](Book/part06_templates/ch61_template_overload.md) | 高性能容器/零拷贝传输 | 本章提供概念，第61章提供实现 |
+| [第22章](../part03_language/ch22_auto_decltype.md) | 泛型库/编译期计算 | 本章提供概念，第22章提供实现 |
+| [第24章](../part03_language/ch24_enum.md) | 性能基准/回归检测 | 本章提供概念，第24章提供实现 |
+| [第29章](../part03_language/ch29_friend.md) | 文本处理/协议解析 | 本章提供概念，第29章提供实现 |
+| [第61章](../part06_templates/ch61_template_overload.md) | 高性能容器/零拷贝传输 | 本章提供概念，第61章提供实现 |
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -1277,16 +1277,16 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲�
 - ADL 会拉入关联命名空间的同名函数导致意外重载；隐藏友元（hidden friend）是把运算符限制在类内的常用手法。
 - 禁止 ADL 可用 `()` 调用+`std::` 限定，或 `(void)` 强转压警告。
 
-> 交叉引用：友元见 [ch29](Book/part03_language/ch29_friend.md)；重载见 [ch61](Book/part06_templates/ch61_template_overload.md)。
+> 交叉引用：友元见 [ch29](../part03_language/ch29_friend.md)；重载见 [ch61](../part06_templates/ch61_template_overload.md)。
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 匿名命名空间与 inline 变量重塑链接三态，承接变量章链接主题
-- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)—— inline 变量/函数定义在命名空间作用域，是头文件共享状态的基础
-- **同模块接续**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)）—— enum class 可置于命名空间内实现作用域隔离与版本化
-- **同模块接续**：[第25章　union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)—— 匿名命名空间可包裹 union 等私有类型，避免跨 TU 冲突
-- **同模块接续**：[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
-- **跨模块**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— ADL 在模板重载决议中决定候选函数集合，是泛型编程的隐形规则
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](../part03_language/ch19_variables.md)）—— 匿名命名空间与 inline 变量重塑链接三态，承接变量章链接主题
+- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](../part03_language/ch21_const_family.md)—— inline 变量/函数定义在命名空间作用域，是头文件共享状态的基础
+- **同模块接续**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](../part03_language/ch24_enum.md)）—— enum class 可置于命名空间内实现作用域隔离与版本化
+- **同模块接续**：[第25章　union 与 std::variant 深度详解](../part03_language/ch25_union_variant.md)—— 匿名命名空间可包裹 union 等私有类型，避免跨 TU 冲突
+- **同模块接续**：[第29章 友元 friend 与访问控制](../part03_language/ch29_friend.md)—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
+- **跨模块**：[第61章　函数模板重载决议（Function Template Overload Resolution）](../part06_templates/ch61_template_overload.md)）—— ADL 在模板重载决议中决定候选函数集合，是泛型编程的隐形规则
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

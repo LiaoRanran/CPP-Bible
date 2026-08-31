@@ -2,8 +2,8 @@
 > 层级：L2 进阶
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
-[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
+[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++20 -O0/-O2 -S -masm=intel`）。
 > 取证源码根：`Examples/_ch127_*.cpp`。LLVM/Clang 本机未安装，源码剖析一律引用上游仓库 `https://github.com/llvm/llvm-project/...` 并标注「上游参考」，行号为该文件中相关逻辑的代表性位置。
@@ -46,8 +46,8 @@ LLVM 对 GCC 的核心之争是"模块化/库化 vs 单体"。LLVM 以 MIT 类�
 
 ## ① 概述：LLVM 项目与 Clang <span class="badge badge-std">标准</span>
 
-[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)
-[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)
+[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)
+[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)
 
 LLVM 是一套**模块化、可重用**的编译器后端基础设施；Clang 是构建在 LLVM 之上的 C/C++/Obj-C 前端。二者分离：Clang 把源码翻译成中立的 **LLVM IR**，LLVM 后端把 IR 优化并生成目标机器码。这种「前端/IR/后端」解耦让 Rust、Swift、Julia 等都能复用同一套优化器与代码生成器。
 
@@ -817,10 +817,10 @@ Clang 对 C++ 标准的遵循度由 `clang/test/CXX/...` 下的 conformance 测�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第126章](Book/part11_source/ch126_msstl.md) | 无锁队列/计数器 | 本章提供概念，第126章提供实现 |
-| [第128章](Book/part11_source/ch128_boost.md) | 日志格式化/序列化 | 本章提供概念，第128章提供实现 |
-| [第125章](Book/part11_source/ch125_libcxx.md) | 泛型库/编译期计算 | 本章提供概念，第125章提供实现 |
-| [第11章](Book/part02_toolchain/ch11_compilers.md) | 数据局部性/缓存友好设计 | 本章提供概念，第11章提供实现 |
+| [第126章](../part11_source/ch126_msstl.md) | 无锁队列/计数器 | 本章提供概念，第126章提供实现 |
+| [第128章](../part11_source/ch128_boost.md) | 日志格式化/序列化 | 本章提供概念，第128章提供实现 |
+| [第125章](../part11_source/ch125_libcxx.md) | 泛型库/编译期计算 | 本章提供概念，第125章提供实现 |
+| [第11章](../part02_toolchain/ch11_compilers.md) | 数据局部性/缓存友好设计 | 本章提供概念，第11章提供实现 |
 
 ## 附录 F：LLVM架构
 
@@ -833,16 +833,16 @@ int main(){std::cout<<"LLVM=Frontend(Clang→AST→IR)→Optimizer(Passes)→Bac
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
-- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
-- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
-- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
-- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
-- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
-- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
-- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
-- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
-- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](../part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](../part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](../part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](../part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](../part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](../part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](../part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](../part11_source/ch134_unreal.md)）
 
 ## 底层视角：LLVM IR、SSA 与后端向量化 [E: Low-level]
 

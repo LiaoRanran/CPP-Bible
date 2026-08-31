@@ -2,8 +2,8 @@
 > 层级：L1 入门
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)
-[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
+[第18章　构建配置：Debug / Release / LTO / PGO（C++）](../part02_toolchain/ch18_buildconfig.md)
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)
 
 > 元数据：标准基 C++23 ／ 预计阅读 55 分钟 ／ 前置 第11章 编译器与工具链 ／ 后续 第13章 包管理 ／ 难度 ★★★☆☆
 > 真实工具链：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。本章所有 `-MMD` / `-S` / `.a` / `.dll` 证据均在本机 GCC 13.1.0 真实运行得到，绝不编造。
@@ -46,8 +46,8 @@ Make 直白却难跨平台、依赖 shell 与文件系统时间戳；CMake 选�
 
 ## ① 概述：构建系统解决什么 <span class="badge badge-std">标准</span>
 
-[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
-[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](../part02_toolchain/ch11_compilers.md)
+[第13章　包管理：vcpkg / Conan（C++）](../part02_toolchain/ch13_packaging.md)
 
 C++ 是**翻译单元（translation unit，TU）**模型：每个 `.cpp` 独立经预处理→编译→汇编生成 `.o`，最后由链接器拼成可执行文件或库。**构建系统（build system）** 的核心职责只有三件：
 
@@ -950,10 +950,10 @@ A: PRIVATE=仅当前target用; PUBLIC=当前+依赖方用; INTERFACE=仅依赖�
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
-| [第11章](Book/part02_toolchain/ch11_compilers.md) | 键值查找/缓存 | 本章提供概念，第11章提供实现 |
-| [第11章](Book/part02_toolchain/ch11_compilers.md) | 配置解析/API响应 | 本章提供概念，第11章提供实现 |
-| [第13章](Book/part02_toolchain/ch13_packaging.md) | 日志格式化/序列化 | 本章提供概念，第13章提供实现 |
-| [第18章](Book/part02_toolchain/ch18_buildconfig.md) | 数据局部性/缓存友好设计 | 本章提供概念，第18章提供实现 |
+| [第11章](../part02_toolchain/ch11_compilers.md) | 键值查找/缓存 | 本章提供概念，第11章提供实现 |
+| [第11章](../part02_toolchain/ch11_compilers.md) | 配置解析/API响应 | 本章提供概念，第11章提供实现 |
+| [第13章](../part02_toolchain/ch13_packaging.md) | 日志格式化/序列化 | 本章提供概念，第13章提供实现 |
+| [第18章](../part02_toolchain/ch18_buildconfig.md) | 数据局部性/缓存友好设计 | 本章提供概念，第18章提供实现 |
 
 ## 附录 H：CMake最佳实践
 
@@ -1016,12 +1016,12 @@ int main(){std::cout<<"CMake=PUBLIC(传递)/PRIVATE(不传递)/INTERFACE(仅依�
 - 用 `target_include_directories` 而非全局 `include_directories` 防止头文件泄漏。
 - 不要把编译期宏当成配置开关滥用；构建类型（Debug/Release）影响优化与断言。
 
-> 交叉引用：工具链概览见 [ch14](Book/part02_toolchain/ch14_debugging.md)；CI 见 [ch150](Book/part13_engineering/ch150_testing.md)。
+> 交叉引用：工具链概览见 [ch14](../part02_toolchain/ch14_debugging.md)；CI 见 [ch150](../part13_engineering/ch150_testing.md)。
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)—— 编号相邻、主题接续。
-- **同模块**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)）—— 同模块下的其他主题。
+- **相邻主题**：[第10章　版本特性全景对照表与迁移指南](../part01_history/ch10_version_matrix.md)—— 编号相邻、主题接续。
+- **同模块**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](../part02_toolchain/ch15_profiling.md)）—— 同模块下的其他主题。
 
 ## 附录 J：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
@@ -1321,9 +1321,9 @@ flowchart TD
 
 | 目标章 | 路径 | 闭环点 |
 |--------|------|--------|
-| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | CMake 调用编译器完成编译（第⑮节） |
-| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | vcpkg/Conan 与 CMake find_package 集成（第⑯/⑰节） |
-| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | 构建产出的符号供调试（第⑫节衔接 ch14） |
-| ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](Book/part02_toolchain/ch17_crosscompile.md) | CMake toolchain file 跨平台（第⑭节与 ch17 ⑦衔接） |
-| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | -O0/-O2 由构建系统注入（第⑰节与 ch18 衔接） |
-| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 构建系统驱动持续集成（第⑲节外推） |
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](../part02_toolchain/ch11_compilers.md) | CMake 调用编译器完成编译（第⑮节） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](../part02_toolchain/ch13_packaging.md) | vcpkg/Conan 与 CMake find_package 集成（第⑯/⑰节） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | 构建产出的符号供调试（第⑫节衔接 ch14） |
+| ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](../part02_toolchain/ch17_crosscompile.md) | CMake toolchain file 跨平台（第⑭节与 ch17 ⑦衔接） |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](../part02_toolchain/ch18_buildconfig.md) | -O0/-O2 由构建系统注入（第⑰节与 ch18 衔接） |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | 构建系统驱动持续集成（第⑲节外推） |
