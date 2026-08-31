@@ -36,6 +36,11 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/header/type_traits ；https://en.cppreference.com/w/cpp/language/constraints
 
+!!! note "类比：traits = 类型的海关查验官"
+    类型特性（type traits）可以**类比**为一位海关官员：它检查类型的"护照"（有没有 `.size()`？是不是整型？），然后盖 `true_type`/`false_type` 的章，供重载决议据此分流。更**好比**给每个类型建了一张"属性档案卡"，编译期随查随用。
+
+    > 失效边界：traits 只能查到"语法上可探测"的属性——它看得到声明、看得到能否调用，却看不透语义意图（`is_empty` 对一个带 `char` 成员的类型仍是 `false`，即便逻辑上它"空"）。要读语义，得靠 concepts（ch67）。
+
 > 版本：v3.0（2026-07-08）
 
 ## ① 本章要击穿的二十个问题 <span class="badge badge-std">标准</span>

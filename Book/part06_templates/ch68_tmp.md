@@ -34,6 +34,11 @@ TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、�
 
 > 史料来源：https://en.wikipedia.org/wiki/Template_metaprogramming ；https://www.boost.org/ ；https://en.cppreference.com/w/cpp/language/constexpr
 
+!!! note "类比：TMP = 在类型系统里搭的积木计算机"
+    模板元编程可以**类比**为一台把所有计算"刻进类型"的计算机：递归实例化像函数调用栈，偏特化像 `switch` 基例，编译器在编译期就把结果算成常量。更**好比**用乐高按规则搭出答案，而不是运行时一步步算。
+
+    > 失效边界：这台"计算机"报错极狠、编译极慢、可读极差（被戏称"图灵焦油坑"）；递归深度还会撞上编译器的实例化深度上限。今天值级计算更该交给 `constexpr`（ch69），TMP 主要留守类型级活儿。
+
 > 本章所有汇编证据由 **MinGW GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）真实提取，源码剖析行号取自该工具链安装的 libstdc++ 15.3.0 头文件。
 
 ## ① 学习目标

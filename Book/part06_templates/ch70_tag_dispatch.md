@@ -34,6 +34,11 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 
 > 史料来源：https://en.cppreference.com/w/cpp/iterator/iterator_tags ；https://en.cppreference.com/w/cpp/algorithm
 
+!!! note "类比：标签分发 = 让类型自带身份证去挂号"
+    标签分发可以**类比**为医院分诊：每种迭代器自带一张"身份证"（`input_iterator_tag`/`random_access_iterator_tag`…），挂号处（重载决议）按身份证在编译期把它分到 O(1) 或 O(n) 的诊室，全程无运行期 `if`。更**好比**快递按"易碎/普通"标签在分拣线早期就选好不同传送带。
+
+    > 失效边界：标签的"层级靠继承约定"（random_access 继承 bidirectional…），写错继承关系或忘记打标签，就会落到错误的重载；且标签只认"类型身份"，认不出运行期才知的属性。concepts（ch67）用谓词约束更直白，但标准库为兼容仍保留标签重载。
+
 > 立场标签：`[标准]`=标准条文，`[实现]`=编译器实现行为，`[平台]`=平台/ABI 相关，`[经验]`=工程经验。
 
 ## ① 学习目标

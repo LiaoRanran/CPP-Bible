@@ -37,6 +37,11 @@ concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强�
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/constraints ；https://en.wikipedia.org/wiki/C%2B%2B20
 
+!!! note "类比：concepts = 把隐式要求写成显式招聘启事"
+    concept 可以**类比**为一张写在模板参数位上的"招聘启事"：明确写清"我要什么样的类型"，不满足的直接在门口被拒、报错只说"不满足某 concept"。更**好比**把 SFINAE（ch66）那种"偷偷试探"升级为"明文面试"——可读性从天书变人话。
+
+    > 失效边界：concept 只约束"接口形状"（有没有某成员、某表达式是否合法），不保证语义正确；一个类型"长得很像"却行为不对，仍可能通过约束。此外 concepts 与旧偏序（ch61）并存，约束排序只作用于 concepts 重载。
+
 > 版本：v3.0（2026-07-08）
 
 ## ① 学习目标 <span class="badge badge-std">标准</span>
