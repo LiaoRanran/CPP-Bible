@@ -45,6 +45,12 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/allocator ｜ https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/iterator/generator
 
+!!! note "类比：分配器 = 把容器与内存来源解耦"
+    分配器可以**类比**为「把容器与内存来源解耦的抽象」——容器模板多一个 Allocator 参数，默认 std::allocator 只是薄包 ::operator new；原 STL 接口（rebind 等）太复杂被讥「默认无意义」。它**好比**让纸箱（容器）不问纸浆从哪来，只管装东西。
+    换个角度：「编译期分配器（类型参数，零开销但模板膨胀）vs 运行时分配器（PMR，灵活但一次间接）」之争，也**类似于**买现成套装（快、固定）vs 租可换芯的机器（灵活、有调用成本）。
+
+    > 失效边界：委员会先给编译期分配器、再补 PMR 运行时多态——承认多数场景默认 allocator 就够，真正定制的是少数热点；C++11 用 allocator_traits 精简了接口，但模板膨胀与间接调用的取舍仍在，PMR 并未取代类型参数分配器。
+
 ## ① 概述：分配器是什么，为何存在
 
 [第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)

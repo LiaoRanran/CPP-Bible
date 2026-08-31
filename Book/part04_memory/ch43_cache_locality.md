@@ -47,6 +47,12 @@ C++ 不替你做数据布局优化，但给你"控制布局"的全部权力（�
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/assume_aligned ｜ https://en.cppreference.com/w/cpp/language/attributes ｜ https://en.cppreference.com/w/cpp/types/hardware_interference_size
 
+!!! note "类比：缓存与局部性 = 内存墙"
+    缓存与局部性可以**类比**为「内存墙」——CPU 比内存快百倍，缓存未命中成了主导延迟的因素，于是「数据如何流动于存储层次」成了第一性能杠杆。它**好比**工作台布局：常用工具摆在手边（L1）秒取，去仓库（主存）走半天才回。
+    换个角度：C++ 不替你做数据布局优化但给你全部控制权（成员顺序、SOA / AOS、alignas），也**类似于**编译器不偷偷重排你的结构体，性能责任在作者——换来可预测性。
+
+    > 失效边界：缓存提示（如 std::hardware_destructive_interference_size）只是提示，并非强制对齐保证；NUMA 让「内存在哪」也影响延迟，false sharing 让多核「看起来并行实则互踩」；Big-O 说了不算、访存行为说了算，但 DOD 重构也付出可读性与类型安全代价。
+
 > **一句话结论**：CPU 缓存比内存快百倍，「数据局部性」（连续访问、少指针跳转）往往比算法微优化更能决定实测性能。
 
 ## ① 存储层次与延迟量级（内存墙）

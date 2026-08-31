@@ -41,6 +41,12 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/new ｜ https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/allocator
 
+!!! note "类比：new = 分配与构造焊成一步"
+    `new` 表达式可以**类比**为「把分配和构造焊成一步」；关键洞察是把 new 表达式（语言）与 operator new（可替换的分配函数）拆成两层——这**类似于**买房时「签约 + 装修」合一，但允许你换掉「装修队」（重载 operator new 定制内存来源）。
+    换个角度：委员会坚持「new 表达式不可改、底层 operator new 可改」，也**类似于**语法统一但内存策略开放——既保证一致又放开内存来源，反对者嫌这层分离太隐晦，催生 std::pmr 用分配器显式表达。
+
+    > 失效边界：new 表达式不可被用户改、但底层 operator new 可以——这层分离反直觉，很多 bug 源于混淆二者；C++17 std::pmr 把「可替换的 operator new」升级为「可热插拔的内存策略对象」，但定制分配器只在游戏 / 交易 / 嵌入式等热点有意义，多数应用仍用默认 ::operator new。
+
 > **一句话结论**：operator new/delete 是「分配原始内存 + 调构造/析构」的底层原语，可全局或类局部重载，是定制内存策略与定位 new 的入口。
 
 ## ① 本章在全书中的位置

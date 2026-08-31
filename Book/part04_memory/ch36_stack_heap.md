@@ -39,6 +39,12 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource ｜ https://en.cppreference.com/w/cpp/language/coroutines
 
+!!! note "类比：栈与堆 = 两块根本不同的资源"
+    栈与堆可以**类比**为「两块根本不同的资源」——栈像餐厅给每位客人固定的小托盘（快、按调用 LIFO 进出、大小封顶），堆像公共仓库（大、灵活、但借还慢且有碎片 / 泄漏风险）。C++ 把「用哪块」交给程序员与 RAII，而非像 GC 语言统一托管。
+    换个角度：栈上分配大对象会栈溢出、堆会碎片化，也**类似于**两种容器各有爆点——托盘放不下就溢出，仓库借多了理不清账就泄漏。
+
+    > 失效边界：栈的代价是「大小上限 + 必须 LIFO」，堆灵活却慢且有碎片；`alloca` / VLA 仍是非标准扩展、易溢出；C++20 协程帧默认在堆上、其分配后端可定制，把「栈还是堆」选择权第一次交到协程作者手里，但本质仍是两者取舍。
+
 ## ① 导言：两块内存，两种哲学
 
 [第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)

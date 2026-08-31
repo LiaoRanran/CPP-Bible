@@ -45,6 +45,12 @@ RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零�
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/optional ｜ https://en.cppreference.com/w/cpp/thread/jthread ｜ https://en.cppreference.com/w/cpp/utility/expected
 
+!!! note "类比：RAII = 没 GC 世界里的异常安全契约"
+    RAII 可以**类比**为「在没有 GC 的世界里给自己签的异常安全契约」——资源（内存、锁、文件、句柄）在构造获取、析构释放，靠作用域退出自动清理。它**好比**借伞登记：进门借、出门还，异常（提前离场）也由析构自动归还，不会漏还淋雨。
+    换个角度：RAII 是「确定性析构」对「垃圾回收」的回答——C++ 选可预测、零运行时追踪的清理，也**类似于**账单当月结清而非月底统算，代价是程序员必须想清所有权。
+
+    > 失效边界：RAII 的保证依赖「析构确定执行」，但若析构本身抛异常或对象从未构造完成（构造中途抛），清理链会断；Rule of Zero / Three / Five 把「何时手写析构 / 拷贝 / 移动」写成纪律，但 scope guard（std::scope_exit 等）多次推进仍未进标准，RAII 边界还差临门一脚。
+
 > **一句话结论**：RAII 用「对象生命周期绑定资源」把释放写进析构，Rule of Zero/Three/Five 则是据此决定该手写哪些特殊成员函数的经验法则。
 
 ## ① 概述：RAII 是什么，为何是 C++ 的脊梁

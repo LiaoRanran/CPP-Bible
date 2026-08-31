@@ -42,6 +42,12 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/utility/expected ｜ https://en.cppreference.com/w/cpp/error/error_code ｜ https://isocpp.github.io/CppCoreGuidelines/
 
+!!! note "类比：异常安全 = 抛异常后世界仍自洽"
+    异常安全可以**类比**为「抛异常之后世界是否仍自洽」——不是「会不会抛」，而是四种保证（noexcept / strong / basic / none）立下的契约。它**好比**电梯故障演练：不是「会不会卡」，而是卡住后乘客是否安全、楼层状态是否一致。
+    换个角度：noexcept 既是优化提示也是接口承诺，直接决定 std::vector 扩容走移动还是拷贝，也**类似于**给编译器一张「我绝不抛」的保证书——它据此敢用更快的移动路径。
+
+    > 失效边界：异常安全保证是软性契约而非语言强制；noexcept 一旦误标（实际会抛）会在边界上 terminate；Chromium / Android 等大型库长期禁用异常（-fno-exceptions）用错误码 + RAII 维持安全，证明「有异常但不强制」本身是工程化取舍，std::expected 只是并行补充。
+
 ## ① 概述：异常安全是什么，四种保证一览
 
 [第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)

@@ -107,6 +107,12 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 
 > 史料来源：https://en.cppreference.com/w/cpp/memory/shared_ptr ｜ https://en.cppreference.com/w/cpp/memory/out_ptr ｜ https://en.cppreference.com/w/cpp/memory/unique_ptr
 
+!!! note "类比：智能指针 = 把所有权语义写进类型"
+    智能指针可以**类比**为「把所有权语义写进类型」——unique_ptr 是独占 ownership（编译为裸指针、零开销，像一把只认一个主人的钥匙），shared_ptr 是共享 ownership（控制块引用计数，像一张多人共用的借书卡），weak_ptr 是「不增计数、只探存活」的旁观者。
+    换个角度：shared_ptr 的循环引用要靠 weak_ptr 打破，也**类似于**两张互相指向的借书卡会永远不归还，得有一张「只查看不持有」的卡来切断环。
+
+    > 失效边界：unique_ptr 不共享、shared_ptr 有原子计数开销且控制块需额外分配（make_shared 合并分配但仍占控制块）；enable_shared_from_this 用错会造出第二套控制块导致双释放；裸指针 / 智能指针混用、或把 this 裸传进 shared_ptr 是经典误用，智能指针不是「随便用就安全」。
+
 > **一句话结论**：unique_ptr 独占、shared_ptr 引用计数共享、weak_ptr 打破循环——智能指针把 RAII 套到堆对象上，基本消除了裸指针所有权混乱。
 
 ## ① 动机与全景：为何需要智能指针

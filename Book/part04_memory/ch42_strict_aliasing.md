@@ -35,6 +35,12 @@
 
 > 史料来源：https://en.cppreference.com/w/cpp/numeric/bit_cast ｜ https://en.cppreference.com/w/cpp/language/reinterpret_cast ｜ https://en.cppreference.com/w/cpp/language/object
 
+!!! note "类比：严格别名 = 编译器激进优化的执照"
+    严格别名规则可以**类比**为「编译器做激进优化的执照」——它规定「不能用错类型读同一块内存」，编译器据此假设两个不同类型指针不指向同一对象，从而大胆缓存 / 重排 / 向量化。违反它得到的是 UB：不崩溃、却给出静默错误结果，比崩溃更危险。
+    换个角度：严格别名把「类型系统」变成「优化许可」，也**类似于**你承诺「不乱用别名」，编译器回报「全体程序更快」——委员会押注优化收益大于偶发 bug。
+
+    > 失效边界：类型双关（type punning）必须用 memcpy / std::bit_cast 而非 union / 强转，否则踩 UB；char* / std::byte* 被特许可别名任意类型是合法「窥探字节」通道；Linux 内核等用 -fno-strict-aliasing 当安全阀，因为 TBAA 越来越激进，隐藏的别名 UB 更易被优化器「踩中」。
+
 ## 目录
 
 1. 为什么需要严格别名规则
