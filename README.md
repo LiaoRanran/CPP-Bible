@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml)
 
-> **147 章 · 16 part · 约 23.7 万行 · 7523 个 cpp 代码块**（数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
+> **147 章 · 16 part · 约 23.9 万行 · 7531 个 cpp 代码块**（数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
 > 密度审计 v3 均分 **25.7/30**，浅章（<15 分）**0** 个
 
 一本面向**系统 / 嵌入式 / 高性能**方向的现代 C++ 硬核教程，覆盖 C++11 至 C++26。
@@ -49,7 +49,7 @@
 | 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（66 设计性豁免块） |
 | 密度审计 v3 | `python tools/density_audit.py --json` | 均分 25.7/30，浅章 0 |
 | 交叉引用 | `python tools/crossref_audit.py` | 0 断链 |
-| D5 性能附录 | `python tools/d5_gap_scanner.py` | 119/147 章（81%，口径已统一），结构 ERROR=0 / WARN=0 |
+| D5 性能附录 | `python tools/d5_gap_scanner.py` | 127/147 章（86%，口径已统一），结构 ERROR=0 / WARN=3（措辞建议，不阻断） |
 
 > **豁免说明**：`tools/compile_exempt.json` 中的 66 个失败块均为**设计性不可单编**内容
 > （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、
