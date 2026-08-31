@@ -989,7 +989,8 @@ int main() {
     for (int i = 0; i < M; ++i) v[i] = (i % 1000) * 0.001;
     double s = 0;
     for (int i = 0; i < M; ++i) s += std::sin(v[i]) * std::cos(v[i]);
-    assert(s > -1.0 && s < 1.0);   // 结果有界（稳定可断言）
+    const double half = static_cast<double>(M) / 2.0;      // 每一项 ∈[-0.5,+0.5]
+    assert(std::isfinite(s) && s > -half - 1.0 && s < half + 1.0); // 结果有界（稳定可断言）
     std::cout << "sum = " << s << std::endl;
     return 0;
 }
