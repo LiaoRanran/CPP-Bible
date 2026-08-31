@@ -37,21 +37,18 @@ Ranges 最核心的立场是**"算法应操作区间而非迭代器对"**，并�
 
     > 失效边界：视图不拥有数据，悬空视图比悬空引用更隐蔽；管道是惰性求值的，越后的工序在每个元素上才被触发——一次遍历里 `for_each` 后再 `| filter` 的「顺序错觉」会导致重复计算或意外副作用。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第89章　tuple / pair / any / function / bind](../part07_stl/ch89_tuple_any.md)
 [第91章 文件系统 filesystem](../part07_stl/ch91_filesystem.md)
 
-读完本章你能独立回答：
+Ranges 常被当成"更简洁的 for 循环 / 算法语法糖"，但它**真正的本质是把"区间"从一对迭代器升级为一等公民**：算法直接吃 range、view 惰性且不持有元素、管道 `|` 让过滤与变换可组合。它不是省几个字符的糖，而是 STL 自 1998 年以来最大的一次范式升级。本章不重复"`v | views::filter` 怎么写"的入门句，而要带着这五笔账往下读：
 
-1. `range` 与 `view` 概念（`concept`）的精确定义，二者关系与区别。
-2. **惰性求值（lazy evaluation）** 为何是 views 的核心：管道 `|` 不拷贝元素、不立即计算，迭代时才驱动。
-3. `borrowed_range` 与 `viewable_range` 解决什么生命周期问题（悬垂 `dangling`）。
-4. 常用 view：`filter` / `transform` / `take` / `drop` / `iota` / `join` / `split` / `reverse` / `common` / `enumerate` / `zip` / `chunk` / `slide` / `stride` / `cartesian_product` 的语义与零开销保证。
-5. **range adaptor 管道 `|`** 的底层是 `operator|` 把 range 与「范围适配器闭包对象」组合。
-6. 与传统 `begin()/end()` 迭代器对、与 `<algorithm>` 的本质差异（投影 `proj`、直接作用于 range）。
-7. `-O2` 下 view 是否零开销（对比手写循环汇编）。
-8. C++23 新增 views：`zip` / `enumerate` / `chunk` / `slide` / `adjacent` / `pairwise` / `repeat` / `stride` / `cartesian_product`（GCC 13.1 均已实现，本章给出可编译示例）。
+1. **`range` 与 `view` 的本质区别？为什么 view 必须"轻量非拥有"？** `range` 只要求存在 `begin` / `end`（且允许哨兵类型不同），`view` 额外要求可移动 + `enable_view` 标记（⑬ 源码分析：`ranges_base.h` 行号 501/578，⑥ UML 画出二者的继承关系）。view 不持有元素——⑦ 内存图里 `filter_view` 只有 `_M_base` 指针 + 谓词，`sizeof ≈ 16B` 与底层 `v` 的大小无关；⑮ 面试题 1 一句话点破"所有 view 都是 range，但 `vector` 是 range 不是 view"。
+2. **惰性求值到底"懒"在哪？管道构造时发生了什么？** 管道构造只组装 view 对象、不计算；迭代时才按需驱动——⑨ 时序图画出每次 `Lp` 拉取、上游按需前进、`take` 计数到 n 即停。⑲ 示例 12 用副作用计数实证：`transform_calls == 2`，`take(2)` 使上游只处理 2 个元素，其余 3 个从未进入 transform。这就是"惰性"的硬证据。
+3. **`borrowed_range` 与 `dangling` 解决什么生命周期问题？** view 不拥有数据，若底层 range 先析构则视图悬垂；`borrowed_range`（`string_view` / `span` / `ref_view`）返回迭代器/子范围安全，否则 `std::ranges::dangling` 在编译期拦截误用（⑧ 生命周期图）。⑯ 易错点把"对临时 vector 取 `views::all` 并保存"列为头号坑，⑰ FAQ 给出"view 作函数返回值"的存活判据。
+4. **`-O2` 下 view 真的零开销吗？证据是什么？** ⑩ 汇编显示 `filter` 管道与手写循环生成几乎相同的汇编：谓词 lambda 被内联进循环体，没有为 `filter_view` 单独生成一层函数调用。但"零开销"指**无抽象惩罚**（无分配、无虚调用、可内联），**不**减少你自己的谓词计算量（⑰ FAQ + ⑲ 性能分析）。
+5. **管道 `|` 的底层机制与适用边界 / 代价？** `operator|` 把 range 与"范围适配器闭包对象"组合，`ranges::` 算法可直接吃 view、支持投影 `proj`（⑪ STL 联系 + ⑱ 最佳实践 3）。代价与陷阱：`filter_view::begin()` 非 const（要缓存首个命中位置）、`split` / `join_with` 的分隔符必须是 range（`' '` 编译失败）、`reverse` 需要双向迭代器（⑯ 易错点）；需要旧式同类型迭代器时用 `views::common`（⑱ 最佳实践 2）。
 
 ## ② 前置知识 ⟶ 链接
 

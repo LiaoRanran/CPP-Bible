@@ -40,18 +40,19 @@
 
     > 失效边界：尺寸编译期固定、不能动态增长；它与 `vector<bool>`（按需增长、按位压缩）是两类东西，别混用；下标返回的是代理引用而非真 `bool&`。
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-1. 理解 `std::bitset<N>` 的**编译期定长**本质：`N` 必须是编译期常量，决定对象大小与 ABI。
-2. 画出 `bitset` 内部 `_WordT _M_w[_Nw]` 的 word 数组布局，理解 bit 与 word 的映射（`_S_whichword`/`_S_whichbit`）。
-3. 掌握位运算 API：`& | ^ ~` 与 `&= |= ^=`，`<< >>` 与 `<<= >>=`，以及 `set/reset/flip/test/count/to_ulong/to_string`。
-4. 弄清 `bitset` 与 `vector<bool>`（位压缩特化）、手写位图的本质区别与取舍。
-5. 看懂 `count()` 背后的 popcount（人口计数）如何实现：libstdc++ 的 `__builtin_popcountl` → `popcnt` 指令（开启时）或 `__popcountdi2` 库函数。
-6. 把 `<bit>`（C++20：`popcount`/`countl_zero`/`countr_zero`）与 bitset 联系起来。
-7. 在权限掩码、状态标志、布隆过滤器、页分配位图等工业场景正确使用 bitset。
-8. 读 libstdc++ `bitset` 真实源码（`file:`+`line:`）。
+[第80章　array 与固定数组](../part07_stl/ch80_array.md)
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
 
-> `[标准]` `std::bitset` 由 C++98 引入（N0520 系列）；`std::hash<std::bitset>` 由 C++11 引入；`<bit>` 的 `std::popcount` 等由 C++20 引入（P0553）。
+`std::bitset` 常被当成"一个能按位操作的数组"，但**它真正的本质是"把 N 个布尔压进整字、用位运算做集合与掩码"**——N 是编译期常量、大小编码进类型，每个元素只占 1 比特，`& | ^ ~ << >>` 让"位操作"第一次有了类型安全与边界意识。它与 `vector<bool>` 是"好榜样 vs 坏特化"的著名对照。本章不重复"bitset 怎么用"的入门句，而要带着这六笔账往下读：
+
+1. **bitset 的"编译期定长"到底意味着什么？** N 是模板非类型参数，决定对象大小与 ABI；对象就是一块连续 word 数组 `_M_w[_Nw]`，无虚表无指针，`sizeof` 不含运行期长度字段——这是它与 `vector<bool>`（含指针/长度）的根本内存差异。运行期变量当 N 直接编译失败。本章 ⑦ ASCII 内存图 + ⑮ 面试题 + ⑯ 易错点把约束讲清。
+2. **bit 与 word 怎么映射？单 bit 读写怎么做？** `_S_whichword = pos / 64`、`_S_whichbit = pos % 64`，位值 = `(_M_w[w] >> (pos%64)) & 1`；`operator[]` 返回代理对象 `reference`（因为 `bool&` 无法指向压缩存储中的单个 bit）。本章 ⑤ 位布局流程图 + ⑦ ASCII 内存图 + ⑰ FAQ 把机制讲清。
+3. **count() 的人口计数到底怎么实现？为什么能比手写循环快一个数量级？** 每个 word 调一次 `__builtin_popcountl`（bitset:234），开 `-mpopcnt` 时被编译为单条 `popcnt` 指令；手写逐位 `test` 是 O(N) 且分支多。本章 ⑨ 调用栈/时序图 + ⑩ 汇编分析 + ⑲ 性能分析给出证据。
+4. **bitset 与 vector<bool> 的本质区别是什么？为什么说后者是"坏特化"？** 前者编译期定长、无迭代器、API 偏位运算；后者运行期大小、位压缩、`operator[]` 返回代理引用、不能取地址，破坏了"容器里每个元素都是独立对象"的不变式。本章 ⑪ STL 联系 + ⑯ 易错点 + ⑳ 跨语言对比把取舍讲清。
+5. **`<bit>`（C++20）和 bitset 是什么关系？什么时候该用哪个？** `std::popcount`/`countl_zero`/`countr_zero` 等对**单整型**做位操作，bitset 的 `count()` 正是循环调用它；宽度 ≤ 内置整型时优先用 `<bit>`（能编译成单条 `popcnt`/`tzcnt`/`lzcnt`），bitset 适合宽度超过机器字长或需要 `set`/`flip`/`test` 语义的场景。本章 ⑬ `<bit>` 库 + ⑮ 面试题给出分工。
+6. **bitset 的代价与陷阱是什么？适用边界判据？** 越界访问是 UB（调试模式才断言）；`to_ulong()` 高位非零抛 `overflow_error`；超大 bitset 放栈上会溢出；需要动态大小就换 `vector<bool>` 或 `boost::dynamic_bitset`（后者属 Boost，未进标准库）。判据：大小编译期已知、需位运算/计数 → bitset；大小运行期决定、需迭代/动态增长 → vector<bool>。本章 ⑯ 易错点 + ⑰ FAQ + ⑱ 最佳实践 + ⑲ 性能分析给出边界。
 
 ---
 

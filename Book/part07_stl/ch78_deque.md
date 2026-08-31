@@ -38,31 +38,19 @@ deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来�
 
     > 失效边界：它并非单块连续内存，所以不能像 `vector` 那样做指针算术或安全地 `data()` 当裸数组传给 C 接口；中间插入仍是 O(n)。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-`std::deque`（double-ended queue，双端队列）是 STL 中**最被低估**的序列容器：
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
+[第79章　list / forward_list](../part07_stl/ch79_list.md)
 
-- 理解其**分段连续（segmented contiguous）**内存模型：`map` 中控数组 + 若干固定大小 `buffer`，首尾插入/删除均摊 O(1)，且**中控扩容不会使已有元素失效**（仅迭代器失效）。
-- 掌握 libstdc++ 的 `_Deque_iterator` **四指针**（cur / first / last / node）如何做跨段游标。
-- 明白 `operator[]` 的随机访问如何**除法+取模跨段**定位，以及它与 `vector` 随机访问的常数差异。
-- 厘清 deque 的**迭代器失效规则**（与 `vector` 对比）。
-- 知道为何 `std::stack` / `std::queue` 的**默认底层容器是 deque**。
-- 用 microbenchmark 量化"首尾插入"与 `vector` 的差异，并理解其**缓存局部性的两面性**（段内连续、段间跳跃）。
+`std::deque` 常被当成"比 vector 头插快一点的容器"，但**它真正的本质是"分段连续（segmented contiguous）"**——用中控数组（map）+ 若干固定大小 buffer，同时拿到"首尾 O(1) 插入"与"近似随机访问"，代价是单次访问多一次间接、缓存局部性打折。它是 STL 里最被低估的序列容器。本章不重复"deque 是什么"的入门句，而要带着这六笔账往下读：
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
-```cpp
-// ① 动机：双端队列首尾都能 O(1) 推入（完整可编译）
-#include <iostream>
-#include <deque>
-int main() {
-    std::deque<int> d;
-    for (int i = 0; i < 3; ++i) d.push_back(i);    // 尾插
-    for (int i = 9; i >= 7; --i) d.push_front(i);  // 头插
-    for (int x : d) std::cout << x << " ";          // 7 8 9 0 1 2
-    std::cout << "\n";
-    return 0;
-}
-```
+1. **deque 怎么做到"头尾都 O(1) 插入"还不搬元素？** 中控 map + 固定大小 buffer：`push_front`/`push_back` 只在边界 buffer 里增减，buffer 满才分配新块；中控扩容（`_M_reallocate_map`）只拷贝 map 指针数组、**绝不搬 buffer 内的元素**——这正是"中控扩容不使元素失效"的底层原因。本章 ⑤ Mermaid（push_front 触发新 buffer 分配）+ ⑦ 内存图 + ⑧ 生命周期图 + ⑬ 源码分析把机制讲清。
+2. **deque 的迭代器为什么是"四指针"？跨段怎么走？** `_Deque_iterator` 用 `_M_cur`/`_M_first`/`_M_last`/`_M_node` 四个指针做跨段游标：段内 `++_M_cur`，到尾则 `_M_set_node(node+1)` 切到下一 buffer 的 `first`。这也是它比 vector 迭代器（单指针）大得多、解引用多一次间接的根源。本章 ⑦ ASCII 内存图 + ⑬ 源码分析（行号 142-145/192）把布局钉死。
+3. **deque 的 `operator[]` 为什么比 vector 贵？贵在哪？** 跨段时用**除法 + 取模**定位 buffer 与段内偏移；落在当前 buffer 内则走快速路径、几乎与 vector 同速。`-O2` 下除以常量 buffer_size 被优化为乘逆元，但仍有额外运算。本章 ⑨ 调用栈/时序图 + ⑩ 汇编分析给出证据。
+4. **deque 的迭代器失效规则为什么和 vector 根本不同？** 头尾插入/删除**不使指向元素的引用与指针失效**，只使迭代器失效（因中控 map 扩容重映射）；唯独中间插入/删除使所有迭代器、引用、指针失效。这是 `[deque.modifiers]` 的明文规定，也是 deque 与 vector 最大的语义差异之一。本章 ⑧ 生命周期图 + ⑲ 性能分析把规则讲清。
+5. **为什么 `std::stack` / `std::queue` 的默认底层容器是 deque？** 因为 deque 首尾 O(1) 完美契合栈/队列语义；且它提供随机访问迭代器，可直接 `std::sort`——这点和 list 形成对比。本章 ⑪ STL 联系给出答案。
+6. **deque 的代价与适用边界是什么？什么时候该退回 vector？** 它没有 `data()`、不能当连续数组传给 C API；迭代器 4 指针、缓存段内好段间跳；若访问模式高度随机且跨段多，vector 的单一连续访问更稳更快。判据：需要首尾频繁插入删除 → deque；高频随机访问且不需双端插入 → 仍用 vector。本章 ⑯ 易错点 + ⑱ 最佳实践 + ⑲ 性能分析给出边界。
 
 ---
 

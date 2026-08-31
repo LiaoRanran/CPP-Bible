@@ -38,37 +38,18 @@ C++11 的 `std::thread` 没有安全取消手段：你既不能从外部强行 `
 
     > 失效边界：这是「协作式取消」，循环体若不主动 `stop_requested()` 检查，哨声永远不被听见，任务永不中止；且多个 `jthread` 共享同一 stop 状态时要注意竞态。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-C++20 引入的**协作取消（cooperative cancellation）**三件套：
+[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)
+[第92章　时间库 chrono](../part07_stl/ch92_chrono.md)
 
-- `std::stop_token`：可查询"是否有人请求停止"的轻量令牌（值语义、可拷贝）。
-- `std::stop_source`：发起"停止请求"的端点；与 `stop_token` 共享同一个内部 `_Stop_state`。
-- `std::stop_callback`：注册一个回调，在 `stop_source::request_stop()` 时被同步调用（用于释放资源、唤醒等待）。
-- `std::jthread`：C++20 新线程类型，在 `std::thread` 之上**自动持有 `stop_source`**，并把 `stop_token` 注入线程函数；析构时自动 `request_stop()` + `join()`。
+`std::stop_token` 常被当成"取消线程的句柄"，但**它真正的本质是"协作取消的广播信号"**——它只能被查询（`stop_requested()`），不能强制停任何东西；停止是"请求"，由工作线程在检查点自行退出。C++ 刻意拒绝"强制杀线程"，因为强制终止会跳过析构、破坏锁与不变量。本章不重复"怎么 `request_stop()`"的入门句，而要带着这五笔账往下读：
 
-学完应理解：**为什么 C++ 坚决不给"强制杀线程"**；如何用 `stop_requested()` 轮询、`stop_callback` 做中断唤醒；以及它与 [第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)（可中断等待）、[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)（内部原子位）的关系。
-
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
-```cpp
-// ① 动机：jthread 在退出作用域时自动请求停止并 join（完整可编译）
-#include <iostream>
-#include <thread>
-int main() {
-    std::jthread worker([](std::stop_token st) {   // 第二参自动注入 stop_token
-        while (!st.stop_requested()) {             // 协作检查点
-            std::cout << "working...\n";
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-        std::cout << "stop requested, exiting\n";
-    });
-    std::this_thread::sleep_for(std::chrono::milliseconds(350));
-    // worker 析构：request_stop() + join() 自动发生
-    return 0;
-}
-```
-
----
+1. **为什么 C++ 坚决不给"强制杀线程"？协作取消的动机是什么？** 强制终止（`pthread_cancel`/旧 `Thread.stop`）会跳过析构导致资源泄漏、在持锁时被杀导致永久死锁、破坏类型/不变量导致后续 UB；因此 P0660 选择协作模型——停止是"请求"，工作线程在检查点自行退出，与 Rust（无 kill）、Go（`context.Context`）一致。本章 ⑭ WG21 提案 + ⑳ 跨语言对比把动机讲清。
+2. **`stop_token` / `stop_source` / `stop_callback` / `jthread` 四件套怎么分工？** `stop_source` 是"发令枪"（能 `request_stop`）、`stop_token` 是"听令者"（只能查询）、`stop_callback` 注册"停止时同步执行的回调"、`jthread` 自动持有 `stop_source` 并在析构时 `request_stop()` + `join()`；它们共享同一个内部 `_Stop_state`（原子位 + 回调链表）。本章 ⑥ UML 类图 + ⑦ ASCII 内存图把模型讲清。
+3. **`request_stop()` 是异步的吗？回调什么时候执行？** 不是——`request_stop` 是**同步**的，返回时已执行完所有已注册回调；`stop_callback` 在 `request_stop` 的调用栈里被同步调用（用于 `cv.notify_all` / 释放外部资源），若注册时停止已发生则立即执行。本章 ⑧ 生命周期图 + ⑨ 时序图把时序钉死。
+4. **怎么从汇编确认"`stop_requested()` 是零开销的原子位测试"？** `-O2` 下一次 `stop_requested()` 编译为一次指针解引用 + 一次原子位测试（`test al,1`），无锁、无系统调用，量级约 1 ns；而 `request_stop()` 是加锁 + 遍历回调（µs 级）。本章 ⑩ 汇编分析 + ⑲ 性能分析给出真实证据。
+5. **协作取消的边界在哪？轮询不够时怎么办？** `stop_token` 只是"建议停止"——若工作线程从不检查 `stop_requested()`，请求会被完全忽略，`join()` 永远等；阻塞调用（`accept()`/`read()`/锁等待）单靠轮询无效，必须用 `stop_callback` + `condition_variable_any::wait(stoken, pred)` 实现可中断等待。本章 ⑪ STL 联系 + ⑫ 工业案例 + ⑯ 易错点 + ⑱ 最佳实践给出适用边界与判据。
 
 ## ② 前置知识 <span class="badge badge-std">标准</span>
 

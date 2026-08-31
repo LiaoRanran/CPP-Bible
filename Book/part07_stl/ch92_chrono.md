@@ -43,20 +43,19 @@ chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，
 
     > 失效边界：多种时钟语义不同——`system_clock` 会被校时回拨，`steady_clock` 才适合测「时长/性能」；拿 `system_clock` 算耗时可能因 NTP 跳变得到负值。
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-学完本章你应能：
+[第91章　文件系统 filesystem](../part07_stl/ch91_filesystem.md)
+[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)
+[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)
 
-- 讲清 **duration / time_point / clock 三元组** 如何配合：duration 是"刻度计数"，time_point 是"某 clock 的 duration 偏移"，clock 是"产生 time_point 的工厂"；
-- 解释 `std::ratio<Num, Den>` 如何在编译期表示单位（秒=ratio<1>，毫秒=ratio<1,1000>），并理解 `duration_cast` 的截断语义；
-- 区分 `system_clock`（挂钟，可变、可与时区换算）、`steady_clock`（单调、用于测量时长）、`high_resolution_clock`（别名，精度最高）；
-- 正确使用字面量 `1s`/`100ms`（在函数内 `using namespace std::chrono_literals;`），避免裸整数秒；
-- 用 C++20 日历 `year_month_day` / `sys_days` 做日期运算，用时区 `zoned_time` 做本地时间转换（GCC13 实测 tzdb 可用）；
-- 掌握"作用域计时器"与"超时控制"两种工业惯用法（见第⑫节）；
-- 理解 `[第91章 文件系统 filesystem](../part07_stl/ch91_filesystem.md)` 中 `file_time_type` 与 `file_clock` 的关系；
-- 对比 `chrono` 与传统 `time_t`/`gettimeofday` 的优劣（见第⑳节）。
+`std::chrono` 常被当成"一个更好用的 `time_t` 封装"，但**它真正的本质是"把时间单位变成编译期类型"**——`duration` 是"刻度计数"，`time_point` 是"某 clock 的偏移"，`clock` 是"产生 `time_point` 的工厂"，三者靠 `ratio` 在编译期编码单位，让"毫秒 + 秒"这类错配在编译期就报错，而不是运行期算错 1000 倍。本章不重复"怎么调 `now()`"的入门句，而要带着这五笔账往下读：
 
----
+1. **`duration` / `time_point` / `clock` 三元组到底怎么分工？** `duration` 是"数值 + 单位（period）"的类型化时长，`time_point` 必须绑定一个 `clock` 才能存在，`clock` 是产生 `time_point` 的工厂；三者配合让跨单位运算自动按比换算、不丢精度。本章 ④ 知识图谱 + ⑥ UML 类图把三元组关系讲清。
+2. **`ratio<Num,Den>` 怎么在编译期把"秒/毫秒/微秒"变成不同类型？** `milli = ratio<1,1000>`，`duration<Rep, Period>` 的两个模板参数把单位编码进类型；`duration_cast` 对整数是**截断向零**而非四舍五入（`1500ms → 1s`），需要舍入用 `round`。本章 ⑩ 汇编分析 + ⑮ 面试题把这条机制钉死。
+3. **`system_clock` 与 `steady_clock` 到底差在哪，为什么测量时长必须用后者？** `system_clock` 是挂钟、可被 NTP 回拨，`steady_clock` 单调不回拨；用 `system_clock` 测耗时可能得到负时长——这是"测时长"与"记时间"两条路线的分界。本章 ⑫ 工业案例 + ⑯ 易错点给出判据。
+4. **怎么从汇编确认"`duration` 运算是零开销的编译期单位"？** `-O2` 下 `+`、`-`、`count()` 直接折叠为对整数 `_r` 的运算，`duration_cast` 编译为一次常数乘/除，无任何 syscall、无函数调用；`now()` 的关键路径只是 `__steady_clock_now` → `clock_gettime`/QPC（约 20–30 ns）。本章 ⑨ 调用栈 + ⑩ 汇编证据给出真实链路。
+5. **C++20 的日历/时区（`year_month_day`/`zoned_time`）与 `file_time_type` 怎么接进这套体系？代价在哪？** 日历与时区是 `time_point` 之上的"可读化"层，`file_time_type` 就是 `time_point<file_clock,...>`；但不同 `clock` 的 `time_point` 不可直接相减（类型不同）。代价与边界：tzdb 数据依赖系统 IANA 时区库，`sleep_for` 不是精确计时、关键时序要自检 `now()`。本章 ⑪ STL 联系 + ⑭ WG21 提案 + ⑳ 跨语言对比给出边界与互操作判据。
 
 ## ② 前置知识
 

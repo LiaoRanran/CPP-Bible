@@ -43,18 +43,18 @@
 
     > 失效边界：这些操作是真实副作用（建/删/改真文件），跨平台路径分隔符与权限语义不同；操作抛 `filesystem_error`，网络/可移动介质上的路径可能随时失效。
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-学完本章你应能：
+[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)
+[第92章 时间库 chrono](../part07_stl/ch92_chrono.md)
 
-- 区分 `std::filesystem::path` 的**词法（lexical）**与**语义（lexical-vs-physical）**操作，明白 `"/a/b/../c"` 在构造期不访问磁盘；
-- 解释 Windows 反斜杠 `\` 与 POSIX 正斜杠 `/` 在 `path` 内部统一为**可移植分隔符**的机制，以及 `generic_string()` 的作用；
-- 用 `directory_iterator` / `recursive_directory_iterator` 遍历目录（C++20 起它们是合法的 `range`，可配 `[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)` 的算法）；
-- 用 `status` / `file_type` / `perms` 读取文件元数据，并理解 `symlink_status` 与 `status` 的差异；
-- 掌握 `copy` / `remove` / `rename` / `create_directory` 的语义与**原子性边界**；
-- 正确使用 `error_code` 双接口（抛异常 vs 无异常）做错误控制，关联到 `[第 40 章　异常安全（Exception Safety）](../part04_memory/ch40_exception_safety.md)`；
-- 理解 `last_write_time` 返回的是 `std::chrono::file_time_type`（见 `[第92章 时间库 chrono](../part07_stl/ch92_chrono.md)`）；
-- 认识 Windows 宽字符路径与 UTF-8 编码的处理，以及 `std::filesystem` 与底层 POSIX / WinAPI 的映射关系。
+`std::filesystem` 常被当成"跨平台的文件读写库"，但它**真正的本质是操作文件元数据与目录结构的"元数据库"**——它不替代 `fstream` / `stdio` 做内容 IO，而是把路径、目录遍历、文件状态等操作系统差异收进标准。全章主线是"词法 vs 语义（磁盘）"的二分：一半操作纯字符串、不进内核，另一半才落到 `stat` / `readdir`。本章不重复"`fs::copy` 怎么用"的入门句，而要带着这五笔账往下读：
+
+1. **`path` 是"字符串"还是"文件系统对象"？词法与语义操作的本质区别？** `path` 构造是纯词法操作：`"/a/b/../c"` 不解析 `..`、不访问磁盘、不 `stat`；只有 `status` / `exists` / `file_size` 等才进内核（⑮ 面试题 1）。⑩ 汇编证明 `operator/=` 只是字符串拼接 + 分隔符规范化，无 syscall、无 opendir、无 stat——这就是"词法"的硬证据。
+2. **跨平台路径分隔符如何统一？`generic_string()` 的作用？** `path` 内部存本机序列（Windows 上 `value_type` 是 `wchar_t` / UTF-16，POSIX 是 `char`），词法操作把 `/` 视为可移植分隔符、`native()` 时转本机形式，`generic_string()` 统一规范为 `/`（⑦ 内存图 + ⑬ 源码分析：`fs_path.h` 行号 474/476/1231）。Windows 上所有窄字符接口做一次 UTF-8↔UTF-16 转换（⑰ FAQ）。
+3. **目录遍历的生命周期与迭代器语义？为什么不能存迭代器？** `directory_iterator` 是单遍 `InputIterator`，析构时 RAII 关闭底层句柄（`DIR*` / `HANDLE`），不能存储/复制复用；要"再看一遍"就存 `path` 而非迭代器（⑧ 生命周期图 + ⑯ 易错点示例 12/13）。C++20 起它满足 `std::ranges::input_range`，可直接进 ranges 管道（⑪ STL 联系）。
+4. **错误模型：为什么两套接口（异常 vs `error_code`）？原子性边界在哪？** 标准把选择权交给调用方：`path` 构造等可抛 `filesystem_error`，也可传 `error_code` 不抛（⑨ 调用栈画出无异常版 `exists` 的 `status → stat` 路径）。批量遍历优先 `error_code` 版，避免单文件错误中断整轮（⑱ 最佳实践 1）；`rename` 同设备原子、跨设备（`EXDEV`）失败，跨设备移动须 `copy` + `remove`（⑮ 面试题 4 + ⑯ 易错点示例 14/15）；"写临时 + `rename` 原子替换"是热更新回滚的经典模式（⑱-补）。
+5. **filesystem 的代价与适用边界？** 词法操作 O(路径长度)、无系统调用；`status` / `exists` / `file_size` 每次 1 次 `stat` 系统调用（约 1–10µs），目录遍历一棵 N 文件树 O(N) 次 `stat`（⑲ 性能分析）。它是"元数据库"非"内容库"，不替代 `fstream` 做内容 IO；异步文件 IO 至今未进标准（⑭ WG21 提案 P1031 未落地）；Windows 上 `perms` 只粗略映射 ACL、不可靠表达组/其他权限（⑰ FAQ）——这些边界决定了"什么时候该用它、什么时候该绕开"。
 
 ---
 

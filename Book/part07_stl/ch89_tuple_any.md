@@ -37,21 +37,18 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
 
     > 失效边界：`tuple` 的类型与长度编译期固定、不能运行时增删；`any` 做类型擦除，取回时若类型不匹配抛 `bad_any_cast`，且持有大对象时有堆分配与一次类型查询的代价。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第88章　optional / expected / variant：可空与可辨别联合](../part07_stl/ch88_optional_variant.md)
 [第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)
 
-读完本章你能独立回答：
+tuple 与 any 常被当成"返回多值 / 装任意类型的小工具"，但它们**真正的本质是两条相反的异构策略**：tuple 在编译期把类型定死、用递归继承做到零开销；any / function 在运行期把类型擦掉、用一张函数指针管理器表换灵活性；bind 则是"把函数与参数打包"的旧式手段。本章不重复"怎么用 tuple 返回多值"的入门句，而要带着这五笔账往下读：
 
-1. `std::tuple` 在 libstdc++ 中为何采用**递归继承**（`_Tuple_impl`）而非扁平存储，空基类优化（EBO）在其中如何省掉 `sizeof`？
-2. 结构化绑定（structured bindings）如何从 `tuple`/`pair`/聚合结构体上「拆包」，其底层是 `get`/`tuple_size`/`tuple_element` 三件套。
-3. `std::get<Index>` 与 `std::get<T>` 的差异，以及 `get<T>` 在**类型重复**时为何产生歧义（编译期硬错）。
-4. `std::apply` / `std::make_from_tuple` 如何用 `index_sequence` + 折叠表达式把编译期整数序列「展开」成运行期调用参数。
-5. `std::any` 的**小对象优化（SBO）**边界、`type erasure`（类型擦除）与 `any_cast` 的两种失败路径。
-6. `std::function` 的 `type erasure` + SBO + 分配失败语义，为什么大 functor 会落到堆上。
-7. `std::bind` 的占位符机制，以及**现代 C++ 为何更推荐 lambda 而非 bind**。
-8. `std::reference_wrapper` 如何「让引用进容器 / 进算法」，它与 `tuple`/`function` 的协作。
+1. **tuple 为什么用递归继承而非扁平数组？EBO 在其中省掉了什么？** 类型不同的元素无法放进数组，递归继承让每个 `_M_head_impl` 拥有独立静态类型，`get<I>` 才能沿继承层级精准取第 I 个基类；当某元素是空类型时，`_Head_base` 走 `true` 偏特化并用 `[[__no_unique_address__]]`，该空成员不占空间——这是 tuple 能零成本容纳空类型的原因。本章 ⑦ 内存图画出 `_Tuple_impl` 递归链，⑬ 源码分析给出 `tuple` 行号 259/489 与 `_Head_base` 行号 79/130 的实锤。
+2. **结构化绑定、`get<Index>` 与 `get<T>` 的底层关系？`get<T>` 为何在类型重复时歧义？** 结构化绑定不是魔法，底层就是 `tuple_size` / `tuple_element` / `get` 三件套；`get<Index>` 按位置取，`get<T>` 按类型取——tuple 含重复类型时 `get<T>` 编译失败（二义性硬错），只能退回 `get<0>` / `get<2>`。本章 ⑮ 面试题 1 直接给出该编译错误的判据，⑯ 易错点把它列为头号坑。
+3. **`apply` / `make_from_tuple` 如何把编译期整数序列展开成运行期调用？零开销的证据是什么？** `index_sequence` + 折叠表达式把"异构打包 → 异构展开"闭环；`-O2` 下 `make_from_tuple` 被完全内联——⑩ 汇编示例 A 里 `build()` 直接常量折叠成 `mov eax, 7`，看不到任何 `_Tuple_impl` 成员访问，⑨ 时序图画出 `__apply_impl` 的逐参转发。这就是"编译期展开"最硬的证据。
+4. **`any` 的类型擦除到底是什么？SBO 边界与 `any_cast` 的两种失败路径？** `any` 不存 `type_info*`，而是把"如何 clone / destroy / access / 取 type_info"编码进一个函数指针 `_M_manager`（⑬ 源码分析 B，行号 80/96/360）；SBO 阈值是 `sizeof(Tp) ≤ 8` 且 `alignof(Tp) ≤ 8` 就地存储、否则堆分配（⑦ 内存图）；`any_cast<T>` 值/引用版类型不符抛 `bad_any_cast`，指针版 `any_cast<T*>(&a)` 返回 `nullptr` 不抛（⑯ 易错点 + ⑰ FAQ）。
+5. **`function` / `bind` / `reference_wrapper` 的代价与选型判据？** `function` 的 SBO 阈值 16B，超限走堆分配，且调用走 `_M_invoker` 间接跳转、无法跨边界内联（⑩ 汇编示例 B 的 `jmp rax`）；`bind` 默认按值拷贝实参、需 `std::ref` 显式传引用，lambda 在可读性与可内联性上全面占优（⑱ 最佳实践 2/3）。判据一句话：类型编译期已知就上模板 / lambda，只有"类型必须在运行期变化"的接口边界才用 `any` / `function`；`reference_wrapper` 负责让引用能进按值容器与算法（⑮ 面试题 5 + ⑯ 易错点 + ⑰ FAQ），⑲ 性能分析给出各方案的开销量级。
 
 ## ② 前置知识 ⟶ 链接
 

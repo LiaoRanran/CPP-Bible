@@ -41,24 +41,18 @@ STL 最具颠覆性的一点是**算法与容器解耦**：算法只认迭代器
 
     > 失效边界：乐高件之间物理兼容、乐队靠人协调；STL 的「容器/算法/迭代器」仅在迭代器范畴（input/forward/random…）匹配时才成立，用随机访问算法去套前向迭代器会直接编译失败——不是「拼不上」，而是「根本接不进去」。
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-STL（Standard Template Library）由**六大组件**构成，迭代器是连接算法与容器的"胶水"：
+[第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
+[第90章　ranges 与 views：惰性求值与管道组合](../part07_stl/ch90_ranges.md)
 
-1. **容器（Containers）**：`vector`/`list`/`map`/… 管理元素存储。
-2. **迭代器（Iterators）**：泛化的"指针"，让算法不依赖具体容器。
-3. **算法（Algorithms）**：`sort`/`find`/`transform`/… 以迭代器区间 `[first,last)` 为参数。
-4. **仿函数 / 函数对象（Functors）**：`std::less`、lambda，作为算法策略。
-5. **适配器（Adapters）**：`stack`/`queue`、`back_inserter`、反向迭代器，改造接口。
-6. **分配器（Allocators）**：隔离内存申请/释放，见 [第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)。
+STL 常被当成"一堆容器 + 一堆算法的工具箱"，但它真正的骨架是**三层正交的架构：容器管存储、算法管操作、迭代器做黏合**——再加分配器与仿函数这两个配角。这套骨架的价值在于：算法只认迭代器区间 `[first, last)`，不认 `vector` 还是 `list`，于是 `sort`、`find` 写一遍就能跑遍所有容器。本章不重复"STL 有容器有算法"这种入门句，而要带着这五笔账往下读：
 
-本章目标：
-
-- 掌握迭代器**五类范畴（category）**及其层次：`input < forward < bidirectional < random_access < contiguous`（C++20）。
-- 理解 `iterator_traits` 如何萃取迭代器属性，以及**标签分发（tag dispatch）**如何驱动 `advance`/`distance` 选择最优实现。
-- 理解 range-based for 的展开、C++20 **哨兵（sentinel）** 与 `contiguous_iterator` 概念。
-- 掌握各容器的**迭代器失效规则总览**（为后续每章容器铺垫）。
-- 理解 SGI STL"分层 + 泛型"的设计哲学：为何算法与容器解耦却能零开销。
+1. **迭代器五类范畴的层次到底怎么排？为什么只写 `++` 的算法不能在随机访问容器上当 `O(1)` 用？** `input < forward < bidirectional < random_access < contiguous`（C++20）构成一条继承链，`advance`/`distance` 靠**标签分发**在编译期按迭代器能力选最优实现——随机访问迭代器走 O(1) 跳步，前向迭代器只能逐步 `++`。这个"能力到复杂度"的映射，是 STL 算法与容器解耦却零开销的根基。本章 ⑦ 内存图 + ⑨ `std::advance` 时序图 + ⑲ 复杂度的关系钉死。
+2. **`iterator_traits` 怎么"萃取"迭代器属性？标签分发怎么驱动 `advance` 选实现？** `iterator_traits<Iter>` 把 `iterator_category`/`value_type`/`difference_type` 等属性聚成一套接口，再以 `iterator_category` 对应的标签类型（`random_access_iterator_tag` 等）触发重载决议——同一套算法，按迭代器能力自动切到最优分支。看 `advance` 的调用栈与汇编能确认这个"编译期选路"真的发生。本章 ⑨ 时序图 + ⑩ 汇编 + ⑬ 源码剖析把它拆开。
+3. **range-based for 到底是怎么展开的？C++20 的哨兵（sentinel）和 `contiguous_iterator` 概念解决了什么？** `for (auto x : r)` 事实上展开成 `begin(r)`/`end(r)` 的迭代器循环；C++20 把 end 泛化为"哨兵"（可以是类型不同的边界），并新增 `contiguous_iterator` 概念把"连续内存"（`vector`/`array`）显式编码进类型系统——这正是 std::span 与 `std::ranges` 能接管裸指针的前提。本章 ⑧ 生命周期 + ⑭ WG21 提案 + ⑦ 内存图给出展开细节。
+4. **`iterator_traits` / 迭代器失效规则怎么为后续每章容器铺垫？** 不同容器的迭代器在插入/删除后的存活规则完全不同——`vector` 扩容使全部迭代器失效，`list` 删除仅失效被删点，`map`/`set` 不失效其余节点。这一章先给"失效规则总览"，后面每一章（ch77/84/85）再逐容器深化。看懂这个总览，你才不会写出"边遍历边删却以为安全"的 bug。本章 ⑯ 易错点 + ⑲ 性能中的失效讨论给出判据。
+5. **为什么"算法与容器解耦却能零开销"是个真命题，而不是妥协？** 泛型算法靠编译期模板实例化绑定到具体容器，没有 vtable 查表、没有运行期多态——代价是报错信息冗长、编译变慢。Stepanov 用"编译期复杂度换运行期效率"的取舍，正是 STL 至今的设计哲学。本章 ⓪ 历史动机 + ⑬ 源码 + ⑫ 工业案例把这条哲学讲清。
 
 ## ② 前置知识
 

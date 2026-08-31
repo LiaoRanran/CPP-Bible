@@ -39,44 +39,18 @@
 
     > 失效边界：`future` 的共享状态若没人 `get()`，析构时会阻塞等待结果（潜在死锁风险）；`async` 默认 `launch::async|deferred` 可能「惰性同步执行」——想要真并行必须显式写 `launch::async`。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-本章把 C++11 引入、并经 C++20/23 打磨的**线程与异步原语**作为一个有机整体讲透：
+[第92章　时间库 chrono](../part07_stl/ch92_chrono.md)
+[第94章　stop_token 与协作取消 <span class="badge badge-std">标准</span>](../part07_stl/ch94_stop_token.md)
 
-- `std::thread`：操作系统线程的 RAII 包装，构造即启动、**析构即 terminate** 的残酷契约。
-- `std::future` / `std::promise` / `std::packaged_task` / `std::async`：四种"异步结果"表达，本质都是**共享状态（shared state）** 的不同入口。
-- `std::async` 的 `launch::async` 与 `launch::deferred` 两种策略，以及 deferred 在 `get()` 处同步求值、async 返回的 `future` **析构会阻塞**这两大陷阱。
-- `std::shared_future`、异常如何跨线程经共享状态传播、`future::get()` 一次性的语义。
-- `std::call_once` / `std::once_flag`：线程安全的"只做一次"。
+`std::thread` / `std::future` 常被当成"开线程 + 拿结果"的两个独立工具，但**它们真正的本质是"把异步结果变成共享状态（shared state）"**——`thread` 只管执行，`future`/`promise`/`packaged_task`/`async` 都是同一份共享状态的不同入口，`get()` 的阻塞、异常重抛、一次性语义全部由这份状态决定。本章不重复"怎么 `join` 一个线程"的入门句，而要带着这五笔账往下读：
 
-学完应能在**不写裸 `pthread`、不直接 `new` 线程、不手动管理 join** 的前提下，用标准库搭出健壮的并发代码，并理解它与 [第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)（并发内存模型）、[第107章　std::atomic 原子类型（C++11）](../part09_concurrency/ch107_atomic.md)（原子）、[第108章　memory_order：六种内存序（C++11）](../part09_concurrency/ch108_memory_order.md)（内存序）的边界关系。
-
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
-```cpp
-// ① 动机：单线程累加 vs 多线程累加（完整可编译）
-#include <iostream>
-#include <thread>
-#include <vector>
-#include <numeric>
-int main() {
-    const int N = 1'000'000;
-    std::vector<int> v(N);
-    std::iota(v.begin(), v.end(), 1);          // 1..N
-    long long single = 0;
-    for (int x : v) single += x;               // 单线程
-    std::cout << "single sum = " << single << "\n";
-
-    // 两线程各算一半（仅作结构演示；真实场景见 ⑲ 性能分析）
-    long long a = 0, b = 0;
-    std::thread t1([&] { for (int i = 0; i < N / 2; ++i) a += v[i]; });
-    std::thread t2([&] { for (int i = N / 2; i < N; ++i) b += v[i]; });
-    t1.join(); t2.join();
-    std::cout << "multi  sum = " << (a + b) << "\n";
-    return 0;
-}
-```
-
----
+1. **四种异步原语（`future`/`promise`/`packaged_task`/`async`）为什么本质是同一个东西？** 它们都通向同一份**共享状态**：`promise` 是生产者入口、`packaged_task` 是"任务即生产者"、`async` 是"自动起线程或 deferred 的工厂"、`future` 是消费者入口；`get()` 在结果就绪前阻塞、就绪后返回 `T` 或重抛异常。本章 ⑤ Mermaid + ⑥ UML 类图 + ⑧ 生命周期图把这条主线讲清。
+2. **`std::thread` 的 RAII 契约到底有多残酷？传参为什么"默认拷贝"？** 构造即启动、析构时若仍 `joinable()` 直接 `terminate()`；构造函数把可调用对象与实参 `decay` 后**按值拷贝**进 `_State_impl`，想传引用必须 `std::ref`。本章 ⑦ ASCII 内存图 + ⑯ 易错点把这条契约钉死。
+3. **`std::async` 的 `launch::async` / `launch::deferred` 到底怎么选？两大陷阱在哪？** 不指定策略时由实现二选一、可能是 deferred（看似并行实则串行）；`deferred` 在 `get()` 处、在调用线程上同步执行；而 `async` 返回的 `future` 析构会**阻塞**到任务完成——不接收返回值等于同步调用。本章 ⑨ 调用栈/时序图 + ⑯ 易错点给出判据。
+4. **怎么从汇编/基准确认"每次起线程都有堆分配 + 系统调用"？** `-O2` 下 `std::thread` 构造仍含 `operator new` 分配状态对象、设置 vtable、调用 `_M_start_thread` → `__gthread_create`；量级上 `thread` 构造约 15–50 µs，而 `get()` 命中已就绪仅数十 ns。本章 ⑩ 汇编分析 + ⑲ 性能分析给出真实证据。
+5. **什么时候该用 `async`、什么时候该上线程池？取消又靠什么？** 生产环境不要每请求 `async`（线程创建昂贵且无上限），应配合线程池；结论不是"多线程更快"，而是"并行只在任务足够重或 I/O 密集时才划算"。而"取消"在 C++ 里没有强制杀线程——只靠协作（`jthread` + `stop_token`，见第94章），`async` 的继任者是执行器（见 ⑭ WG21 提案）。本章 ⑫ 工业案例 + ⑱ 最佳实践 + ⑳ 跨语言对比给出适用边界。
 
 ## ② 前置知识 <span class="badge badge-std">标准</span>
 

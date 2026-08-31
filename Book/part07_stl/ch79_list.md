@@ -38,31 +38,19 @@
 
     > 失效边界：线索要一节节走，所以没有 O(1) 随机访问——取第 k 个必须从头遍历 O(k)；且它比 `vector` 多付前后指针的内存与缓存不友好的代价。
 
-## ① 学习目标 <span class="badge badge-std">标准</span>
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
-`std::list`（双向链表）与 `std::forward_list`（单向链表）是 STL 中**唯一保证迭代器稳定性**的序列容器：
+[第78章　deque 与分段连续](../part07_stl/ch78_deque.md)
+[第86章　容器适配器：stack / queue / priority_queue](../part07_stl/ch86_adapters.md)
 
-- 节点布局：`prev` / `next` / `value`（list）；`next` / `value`（forward_list）；libstdc++ 用**环形哨兵头节点**（`_List_node_base`）串起整条链。
-- O(1) 的 `splice`（整段搬移，不拷贝元素）、`merge`（归并）、`insert` / `erase`（任意位置）。
-- **迭代器稳定性**：除被删除的元素外，其余迭代器、引用、指针**全部不失效**——这是 vector/deque 做不到的。
-- `list::sort` 是**成员函数**（归并排序），因为链表不能用 `std::sort`（需要随机访问）。
-- `forward_list` 的"反直觉"设计：没有 `size()`（O(n) 才知长度）、没有 `push_back`/`back`，只有 `before_begin()` + `insert_after` / `erase_after`。
-- 缓存不友好导致的遍历慢，以及侵入式链表（`Linux list_head`）思想。
+`std::list` 常被当成"中间插入多就该用的容器"，但**它真正的本质是"用节点分散换迭代器稳定 + O(1) splice"**——只有它敢保证除被删元素外所有迭代器/引用/指针永不失效，也只有它能在 O(1) 内把整段节点从一条链搬到另一条链、零拷贝零分配。代价是放弃随机访问、每节点多付指针、缓存极不友好——现代硬件下遍历常比 vector 慢一个数量级。本章不重复"链表是啥"的入门句，而要带着这六笔账往下读：
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标 <span class="badge badge-std">标准</span>]
-```cpp
-// ① 动机：任意位置 O(1) 插入且不搬移其他元素（完整可编译）
-#include <iostream>
-#include <list>
-int main() {
-    std::list<int> l = {1, 2, 4, 5};
-    auto it = std::next(l.begin(), 2);   // 指向 4
-    l.insert(it, 3);                     // O(1) 插入，不搬移 4/5
-    for (int x : l) std::cout << x << " ";   // 1 2 3 4 5
-    std::cout << "\n";
-    return 0;
-}
-```
+1. **list 的迭代器为什么"永不失稳"？节点布局长什么样？** 每个节点在堆上独立分配，libstdc++ 用**环形哨兵头节点** `_List_node_base` 串起整条链；插入删除只改指针（`_M_hook`/`_M_unhook`）、不搬移任何已有节点，因此其他迭代器指向的地址不变——这是 vector/deque 做不到的。本章 ⑦ ASCII 内存图 + ⑬ 源码分析（行号 81/97/100）把布局讲清。
+2. **splice 为什么是 O(1) 且零拷贝？它和"拷进 vector 再拷回"差在哪？** 只重接节点指针、不构造/不拷贝任何 T 对象，元素原地不动；因此整段搬移 O(1)，对不可拷贝/移动昂贵的类型尤其有价值。本章 ⑤ Mermaid + ⑬ 源码分析（行号 1612）+ ⑰ FAQ 把机制钉死。
+3. **为什么 list 不能用 `std::sort`？为什么它有成员 `sort`？** `std::sort` 需要随机访问迭代器，list 只有双向迭代器；成员 `list::sort` 用归并排序，O(n log n) 且稳定。同理 `std::remove` 对链表低效，要用成员 `remove`。本章 ⑪ STL 联系 + ⑮ 面试题给出答案。
+4. **forward_list 的"反直觉"设计（无 size、无 push_back）是为什么？** 为保持单链表最轻量：要常数时间 `size()` 就得给每个节点多存计数，`push_back` 需 O(n) 找尾（没有 prev）；于是只有 `before_begin()` + `insert_after`/`erase_after`。这是"不为不用的能力付费"哲学的硬体现。本章 ⑬ 源码分析 + ⑯ 易错点 + ⑲ 性能分析把设计动机讲清。
+5. **list 遍历为什么慢？"缓存 vs 理论复杂度"这场仗谁赢了？** 节点分散在堆上，遍历每次都要通过指针加载下一节点地址、引发大量随机 cache miss，无法被硬件预取；10^6 级遍历常比连续存储的 vector 慢数倍。本章 ⑩ 汇编分析 + ⑲ 性能分析给出证据。
+6. **list 的适用边界判据是什么？什么时候该放弃 list？** 需要任意位置 O(1) 增删 + 迭代器长期稳定 + 遍历少时 list 才胜出；遍历是热点、或只是想要"头删快"（该用 deque）时别用 list。判据：增删多 + 引用稳定 + 遍历少 → list；否则优先 vector/deque。本章 ⑯ 易错点 + ⑱ 最佳实践 + ⑲ 性能分析给出边界。
 
 ---
 
