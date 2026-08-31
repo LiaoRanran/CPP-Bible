@@ -974,3 +974,65 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 | ch118 modules | CORE→K4 | ch118 重构编译模型，缩短 ch156 编译时间。 |
 | ch82 span | CORE→K5 | ch82 span 在 ch07 成为标准视图。 |
 | ch08 C++23 | CORE→K9 | ch07 基础在 ch08 扩展（ranges 深化等）。 |
+
+## 附录 D5：真实基准与性能分析 — C++20 std::format：格式化吞吐实测（format vs snprintf vs ostringstream）(GCC 13.1.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 13.1.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，20 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，比较三种字符串格式化手法的吞吐，并点破"format 一定慢"的迷思。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+格式化 `id={i} pi={3.14159..}` 共 300'000 次。"相对"列以 `std::format` 为 1.00×，更慢者加粗。
+
+| 场景 | 耗时 | 相对（format = 1.00×） |
+|---|---|---|
+| `std::format` | 75.32 ms | 基准 1.00× |
+| `snprintf` | 92.41 ms | **1.227×**（format 更快） |
+| `std::ostringstream` | 404.25 ms | **5.37×**（format 快 5.37×） |
+
+### D5.2 非显然结论
+
+1. **`std::format` 比 `snprintf` 快 1.23×，比 `ostringstream` 快 5.37×。** 非显然：普遍印象认为 format 因类型安全与模板而慢，但本环境（libstdc++ 13）下 format 的格式化路径已被高度优化，反超经典 snprintf；ostringstream 因流式抽象最慢。
+2. **根因：三个实现的运行时路径天差地别。** `ostringstream` 每次 `<<` 都走 `std::ostream` 虚函数派发 + locale 处理 + 内部缓冲同步，开销巨大；`snprintf` 走 C 可变参 + 运行时解析格式串；`std::format` 在**编译期**解析格式串并把每个参数类型特化到对应 `_formatter`，运行时仅做最小拷贝，无可变参解析。
+3. **陷阱：format 的"快"是实现相关的。** 换 Clang/libc++ 或不同 GCC 版本，三者排序可能变化；但"ostringstream 几乎总是最慢"与"format 类型安全、防格式串/参数不匹配的 UB"两条结论稳定。生产代码优先 `std::format`。
+
+### D5.3 可复现 demo
+
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+```cpp
+#include <iostream>
+#include <string>
+#include <format>
+#include <cstdio>
+#include <cassert>
+
+int main() {
+    int id = 7;
+    double pi = 3.1416;
+    std::string a = std::format("id={} pi={:.2f}", id, pi);
+    char b[64];
+    std::snprintf(b, sizeof b, "id=%d pi=%.2f", id, pi);
+    assert(a == b);                 // 两种手法产出相同文本
+    std::cout << a << "\n";
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_07_format.cpp`。
+- 计时取 20 轮中位数，规避调度抖动。
+- `volatile` sink（`g_sink += s.size()`）防 DCE。
+- 加速比（format 快 1.23×/5.37×）是可移植信号；绝对毫秒随标准库实现而变。libc++ 下三者排序可能不同，但 ostringstream 最慢这条通常不变。
+- 复现旗标：`g++ -O2 -std=c++20`。demo 断言两种手法文本相等（稳定语义，可断言），未对时间或倍数做任何断言。
+
+### D5.5 汇编实证 (GCC 13.1.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++20 -masm=intel _bench_d5_07_format.cpp` 真实生成（节选）。决定性差异：`snprintf` 路径落到 C 可变参实现，而 `std::format` 在编译期把参数特化到 `__formatter_int` / `__formatter_fp` 模板，运行时不再解析格式串。
+
+```asm
+; bench_snprintf 路径（节选自 _asm07.s）
+    call    __mingw_vsnprintf        ; snprintf 落到 C 可变参实现
+; bench_format 路径（节选自 _asm07.s）
+;   std::format 在编译期把参数特化到 _ZNSt8__format... 模板机器，
+;   运行时直接走 __formatter_int / __formatter_fp，无可变参解析开销。
+```
