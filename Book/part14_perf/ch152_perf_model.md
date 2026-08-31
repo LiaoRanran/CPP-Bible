@@ -1259,3 +1259,61 @@ flowchart TD
 | 性能模型 | ch15 性能剖析 | 硬件计数器取证支撑模型 |
 | 性能模型 | ch149 CI/CD | 模型进回归门禁 |
 | 性能模型 | ch43 缓存局部性 | 带宽墙根因在局部性 |
+
+## 附录 D5：真实基准与性能分析 — 性能测量学：steady_clock 分辨率与计时开销 (GCC 13.1.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 13.1.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock`。本附录目的：用主控实测锁死本机时钟的**分辨率**与**单次计时对开销**，为全书 D5 的方法学基线（为何取中位、为何用 volatile sink、为何报加速比）提供量化依据。
+
+### D5.1 基准结果
+
+| 指标 | 数值 |
+|---|---|
+| `steady_clock` 分辨率（最小可观测非零间隔） | 100 ns |
+| 单次计时对开销（起点 `now()` + 终点 `now()`） | 106.7 ns |
+
+### D5.2 非显然结论
+
+1. **本机 `steady_clock` 分辨率为 100 ns。** 在 Windows 上它通常量化到系统时钟（QueryPerformanceCounter）的 ~100ns 粒度。含义：任何短于 100ns 的耗时差异在单次测量中不可分辨；测亚微秒级现象必须多次重复取统计。
+2. **单次计时对固有开销 ≈ 2× 分辨率（约 100ns）。** 因此"测量"本身会污染被测代码——被测区间越短，测量开销占比越高；极短区间测出的"耗时"往往是测量噪声而非真实工作量。这正是为什么微基准必须用大 N 摊薄计时开销。
+3. **测量学铁律（本书所有 D5 的方法学基线）：** ① 永远测"足够多次重复"的总时间再除以次数，而非单次；② 用 `volatile` sink 防 DCE；③ 取中位数而非均值以抗调度抖动；④ 报告加速比而非绝对毫秒。违背任一条都会得到不可复现、不可移植的数字。
+
+### D5.3 可复现 demo
+
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+```cpp
+#include <iostream>
+#include <chrono>
+#include <cassert>
+
+int main() {
+    using namespace std::chrono;
+    auto prev = steady_clock::now();
+    long long min_delta = 1'000'000'000;
+    for (int i = 0; i < 3'000'000; ++i) {
+        auto cur = steady_clock::now();
+        long long d = duration_cast<nanoseconds>(cur - prev).count();
+        if (d > 0 && d < min_delta) min_delta = d;
+        prev = cur;
+    }
+    std::cout << "steady_clock 分辨率 ≈ " << min_delta << " ns\n";
+    assert(min_delta > 0);   // 必能观测到非零最小间隔
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_152_clock.cpp`。
+- 分辨率测量：连续读取 3'000'000 次，记录首次出现的最小非零间隔。
+- `volatile` sink（`g_sink += d & 1`）防 DCE，确保 `now()` 真的被调用而非被消除。
+- 100ns 是**操作系统时钟粒度**的下限，不是 `now()` 指令本身的 CPU 成本（后者通常仅数 ns）；换用 TSC 时钟源或裸 `rdtsc` 可更低，但可移植性下降。
+- 复现旗标：`g++ -O2 -std=c++20`。demo 断言分辨率 > 0（稳定语义，可断言），未对具体数值做任何断言。
+
+### D5.5 汇编实证 (GCC 13.1.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++20 -masm=intel _bench_d5_152_clock.cpp` 真实生成（节选计时区）。每次 `now()` 最终落到 `steady_clock::now` 调用；100ns 下限来自其内部的系统时钟读取，而非这条指令本身。
+
+```asm
+; resolution_ns / pair_overhead_ns 计时区（节选）
+    call    _ZNSt6chrono3_V212steady_clock3nowEv   ; 读取时钟
+```

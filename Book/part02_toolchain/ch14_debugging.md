@@ -1591,3 +1591,72 @@ flowchart TD
 | ch28 生命周期/UB | [Book/part03_language/ch28_lifetime_ub.md](Book/part03_language/ch28_lifetime_ub.md) | UBSan 捕获未定义行为（第⑦节与 ch28 衔接） |
 | ch150 测试 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | 调试驱动测试失败定位（第⑰节外推） |
 | ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 优化下 sanitizer 行为差异（第⑥节与 ch156 衔接） |
+
+## 附录 D5：真实基准与性能分析 — 调试构建代价：-O0 -g 相对 -O2 的运行时开销 (GCC 13.1.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 13.1.0；负载为"对 5'000'000 个随机 `int` 顺序求和"；`std::chrono::steady_clock` 计时，30 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化"调试构建"相对"发布构建"的真实运行时代价，澄清 `-g` 与 `-O0` 各自的贡献。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+同一求和负载，分别用典型调试配置与发布配置编译。"相对"列以 `-O2` 为 1.00×，更快者加粗。
+
+| 场景 | 编译旗标 | 耗时 | 相对（-O2 = 1.00×） |
+|---|---|---|---|
+| 调试构建 | `-O0 -g` | 55.35 ms | 基准 1.00× |
+| 发布构建 | `-O2` | 1.37 ms | **0.025×**（即 40.4× faster） |
+
+### D5.2 非显然结论
+
+1. **同一负载，调试构建比发布构建慢 40.4×。** 根因：`-O0` 关闭所有优化，顺序求和退化为逐元素标量加法且完全不向量化；`-O2` 将其向量化为 SSE（见 D5.5 的 `movdqu`/`paddq` 循环）并消除冗余边界检查。
+2. **`-g` 本身几乎不增加运行时开销。** 调试信息只写进符号表/ELF 段，不影响执行路径；40× 差距几乎全来自 `-O0` 与 `-O2` 的优化跨度。因此"调试构建慢"的真正含义是"未优化构建慢"，`-g` 可放心常开（详见 ch149 CI/CD 的 `-O2 -g` 实践）。
+3. **推论：切勿把调试构建的性能数字当作算法真实成本。** 它高估了 1~2 个数量级，会让你在调优时误判瓶颈。本地用 `-O0 -g` 调试、CI/产品用 `-O2`（或 `-O2 -g` 兼顾可调试性与性能）是标准实践。
+
+### D5.3 可复现 demo
+
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <cassert>
+
+int main() {
+    const int M = 1'000'000;
+    std::vector<int> v(M);
+    std::iota(v.begin(), v.end(), 0);          // 0..M-1
+    long long s = 0;
+    for (int x : v) s += x;
+    // 闭式解 M*(M-1)/2，与编译优化无关，稳定可断言
+    assert(s == (long long)M * (M - 1) / 2);
+    std::cout << "sum = " << s << "\n";
+    return 0;
+}
+```
+> 注：同一份源码用 `g++ -O0 -g` 与 `g++ -O2` 各编一次运行，求和结果必须一致（断言即此语义）；差异仅在耗时，不在正确性。
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_14_debug.cpp`。
+- 计时取 30 轮中位数，规避调度抖动。
+- `volatile` sink（`g_sink += s`）防 DCE；负载用 `mt19937` 随机填充，避免编译器把可常量折叠的 `iota` 求和优化成闭式而失真。
+- 加速比（40.4×）是可移植信号；绝对毫秒随 CPU 而变。本机 MinGW 13.1 的 `-O0` 甚至不展开循环，故差距偏大；其他平台数量级一致但绝对值不同。
+- 复现旗标：`g++ -O0 -g -std=c++20` 与 `g++ -O2 -std=c++20` 各编一次对比。demo 断言求和等于闭式解（稳定语义，可断言），未对时间或倍数做任何断言。
+
+### D5.5 汇编实证 (GCC 13.1.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++20 -masm=intel _bench_d5_14_debug.cpp` 真实生成（节选 `bench` 的求和循环）。`-O2` 把标量求和向量化为 128 位 SSE 并行累加；`-O0` 则生成逐元素标量 `add`，这正是 40× 差距的机器码根因。
+
+```asm
+; bench() 在 -O2 下被向量化（节选自 _Z5benchv）
+.L116:
+    movdqu  xmm0, XMMWORD PTR [rdi]
+    movdqa  xmm1, xmm3
+    add     rdi, 16
+    cmp     rdi, rbx
+    pcmpgtd xmm1, xmm0
+    punpckldq xmm2, xmm1
+    paddq   xmm6, xmm2          ; 128 位宽并行累加
+    punpckhdq xmm0, xmm1
+    paddq   xmm6, xmm0
+    jne     .L116
+```

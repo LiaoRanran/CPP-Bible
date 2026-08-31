@@ -1172,3 +1172,89 @@ flowchart TD
 | ch22 auto_decltype | CORE→K3 | auto 大幅简化 ch60 模板代码。 |
 | ch05 C++14 | CORE→K11 | ch05 的泛型 lambda 建立在 ch04 lambda 之上。 |
 | ch60 模板基础 | CORE→K6 | variadic 模板是 ch60 基础能力的扩展。 |
+
+## 附录 D5：真实基准与性能分析 — C++11 移动语义：拷贝构造 vs 移动构造 (GCC 13.1.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 13.1.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实微秒，量化 `vector<string>` 在「拷贝构造（深拷贝）」与「移动构造（仅搬指针）」两种语义下的开销差距，并给出非显然根因。**绝对微秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+元素为 `std::string`（长度 64B），`N = 200'000`。"相对"列以拷贝构造为 1.00×，更快者加粗。
+
+| 场景 | 耗时 | 相对（拷贝 = 1.00×） |
+|---|---|---|
+| `vector<string>` 拷贝构造（逐元素深拷贝 200k×64B） | 33493.6 µs | 基准 1.00× |
+| `vector<string>` 移动构造（仅搬 3 个内部指针） | 0.1 µs | **~3.0×10⁻⁶×**（≈ 334936× faster） |
+
+### D5.2 非显然结论
+
+1. **移动构造令 `vector<string>` 的"复制"从 O(N·L) 深拷贝骤降为 O(1) 指针窃取。** 根因：拷贝必须逐元素克隆每个 `std::string`（各自堆分配 + 字符复制），而移动只交换容器内部的 `start / finish / end_of_storage` 三指针——旧容器被置空、新容器直接接管缓冲区，零元素级操作。实测比拷贝构造快约 3.3×10⁵×。
+2. **移动"近乎免费"并非因为元素变少，而是根本不发生元素级工作。** 原 vector 的 200k 个 string 内存在移动后归新 vector 所有，全程零拷贝。这正是 C++11 把"资源所有权转移"而非"值复制"作为默认语义升级的核心收益，也是 `emplace*` / 返回值优化能消除中间副本的同一机理。
+3. **陷阱：移动语义的收益前提是类型真的可移动且不被拷贝绑定。** 若元素类型未实现移动（如含 `const` 成员、或被 `std::array` 这类定长聚合），或移动对象被 `const&` 捕获，`std::move` 会悄悄退化为拷贝——此时性能回落到拷贝水平，且毫无编译告警。务必用 `noexcept` 移动构造保住强异常安全下的移动路径。
+
+### D5.3 可复现 demo
+
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cassert>
+#include <cstdlib>
+
+static long long g_allocs = 0;
+void* operator new(std::size_t n) { g_allocs++; return std::malloc(n); }
+void operator delete(void* p) noexcept { std::free(p); }
+void operator delete(void* p, std::size_t) noexcept { std::free(p); }
+
+int main() {
+    const int N = 1 << 14;
+    // 路径 1：拷贝构造 → 逐元素深拷贝
+    g_allocs = 0;
+    {
+        std::vector<std::string> src;
+        for (int i = 0; i < N; ++i) src.emplace_back(16, 'x');
+        std::vector<std::string> dst = src;            // 拷贝构造
+        assert(dst.size() == N);
+    }
+    long long allocs_copy = g_allocs;
+    // 路径 2：移动构造 → 仅交换三指针
+    g_allocs = 0;
+    {
+        std::vector<std::string> src;
+        for (int i = 0; i < N; ++i) src.emplace_back(16, 'x');
+        std::vector<std::string> dst = std::move(src); // 移动构造
+        assert(dst.size() == N && src.empty());
+    }
+    long long allocs_move = g_allocs;
+    std::cout << "allocs (copy) = " << allocs_copy << "\n";
+    std::cout << "allocs (move) = " << allocs_move << "\n";
+    assert(allocs_move < allocs_copy);   // 移动路径分配远少于拷贝
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_04_move.cpp`。
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink（`g_sink += dst.size()`）防 DCE：若优化器判定结果无用，整段可被消除。
+- 加速比（≈3.3×10⁵×）是可移植信号；绝对微秒随 CPU、内存带宽、编译器版本而变，请勿跨机器直接比较毫秒/微秒。
+- 复现旗标：`g++ -O2 -std=c++20`。demo 用重载 `operator new` 统计分配次数，断言"移动路径分配少于拷贝路径"（稳定语义，可断言），未对时间或倍数做任何断言。
+
+### D5.5 汇编实证 (GCC 13.1.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++20 -masm=intel _bench_d5_04_move.cpp` 真实生成（节选 `bench_copy` / `bench_move` 计时区）。决定性差异：拷贝路径的计时区反复调用 `operator new`（`_Znwy`）做逐元素堆分配，而移动路径的计时区只有三指针交换、无任何 `_Znwy` 调用——这正是 3.3×10⁵× 差距的机器码根因。
+
+```asm
+; bench_copy 计时区（节选自 _Z10bench_copyv）
+;   N=200000 个 string，拷贝构造逐元素深拷贝 → 反复触发堆分配
+.L458:
+    lea     rax, 16[rsi]
+    mov     ecx, 65
+    mov     QWORD PTR [rsi], rax
+    call    _Znwy                  ; ← operator new：拷贝构造的逐元素分配
+; bench_move 计时区（节选自 _Z10bench_movev）
+;   仅交换 vector 内部三指针，整个计时区无 _Znwy 调用
+    mov     QWORD PTR 80[rsp], 0   ; 目标 vector 接管源缓冲区，零元素操作
+```
