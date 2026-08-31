@@ -1371,6 +1371,7 @@ int main() {
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_88_variant.cpp` 真实生成（节选自 VA::op(int) const, VB::op(int) const, VB::~VB()）。D5.2 比较 std::variant 访问与虚函数调用的开销。下方为 GCC 15.3.0 -O2 下两个访问函数的真实产物。
 
 ```asm
+; 节选自 Examples/_ch88_optional_variant_b1.asm
 ; VA::op(int) const  (2 条指令)
 lea    eax, 1[rdx]
 ret
