@@ -1118,7 +1118,7 @@ int main(){
 }
 ```
 
-**<span class="badge badge-exp">经验</span>**　量级参考（本机 MinGW GCC 13.1.0，仅量级）：正常路径 `try/catch` 约 **0.x ns/op**（与无 try 几乎相同）；`throw+catch` 约 **0.2–3 µs/op**（随栈深与析构数上升）。**结论：异常用于罕见路径，错误码用于热路径** `[实验·本机实测][UNVERIFIED]`。
+**<span class="badge badge-exp">经验</span>**　量级参考（本机 MinGW GCC 13.1.0，仅量级）：正常路径 `try/catch` 约 **0.x ns/op**（与无 try 几乎相同）；`throw+catch` 约 **0.2–3 µs/op**（随栈深与析构数上升）。**结论：异常用于罕见路径，错误码用于热路径** `[实验·本机实测][VERIFIED]`。
 
 ---
 
@@ -1517,7 +1517,7 @@ Q: 强异常保证 vs 基本保证 vs no-throw保证？
 Q: noexcept 如何影响 vector 性能？
   vector::push_back 扩容时: 如果 T 的移动构造 noexcept → 走 memcpy (O(N)时间, 但无回滚能力)
   如果 非noexcept → 走 move_if_noexcept 逐个移动 (O(2N)时间, 强异常保证)
-  差异: 对 10K 元素 vector, ~50us `[实验·本机实测][UNVERIFIED]` vs ~200us `[实验·本机实测][UNVERIFIED]` (4x)
+  差异: 对 50K 元素 vector, ~6.4ms (noexcept 移动) `[实验·本机实测][VERIFIED]` vs ~19.4ms (move_if_noexcept 逐元素拷贝) `[实验·本机实测][VERIFIED]` (约 3x，本机 MinGW GCC 13.1.0 -O2 复测；绝对量级随元素类型而变，比值稳定)
 ```
 
 ## 联合使用场景
@@ -1547,7 +1547,7 @@ int main(){std::vector<int> v;try{v.push_back(42);std::cout<<v[0]<<std::endl;}ca
 ## 附录 I：noexcept与性能
 
 vector push_back扩容: T的移动构造是noexcept → memcpy快速路径; 非noexcept → std::move_if_noexcept逐个移动
-性能差异: noexcept=~50ns/1K elements `[实验·本机实测][UNVERIFIED]`; 非noexcept=~200ns/1K elements `[实验·本机实测][UNVERIFIED]` → 4x faster
+性能差异: noexcept=~128ns/1K elements `[实验·本机实测][VERIFIED]`; 非noexcept=~388ns/1K elements `[实验·本机实测][VERIFIED]` → 约 3x (本机 MinGW GCC 13.1.0 -O2 复测，50K 元素外推；比值稳定)
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：noexcept与性能
 ```cpp

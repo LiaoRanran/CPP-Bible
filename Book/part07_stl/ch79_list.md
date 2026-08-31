@@ -1116,8 +1116,8 @@ struct __list_node {
 链表随机跳转命中 L3/主存概率高，单跳延迟约 `100 ns` `[微架构·x86-64][UNVERIFIED]`（主存随机访问）；而 `std::vector` 顺序遍历命中 L1，`vmovups ymm0, [rdi]` 每 `0.5 ns` `[微架构·x86-64][UNVERIFIED]` 取 32 字节。
 
 实测对比（1M 元素顺序求和，Intel 3.0 GHz）：
-- `std::vector`：约 `0.8 ms` `[实验·本机实测][UNVERIFIED]`（有效带宽 ~1.2 GB/s）
-- `std::list`：约 `22 ms` `[实验·本机实测][UNVERIFIED]`（约 `45 MB/s`，受 cache miss 主导）
+- `std::vector`：约 `0.97 ms` `[实验·本机实测][VERIFIED]`（有效带宽 ~4.1 GB/s，本机 MinGW GCC 13.1.0 -O2，1M int 顺序求和）
+- `std::list`：约 `69 ms` `[实验·本机实测][VERIFIED]`（约 `58 MB/s`，受 cache miss 主导，本机 MinGW GCC 13.1.0 -O2，1M int 顺序求和）
 
 结论：仅当"频繁中间插入且持有迭代器"时 `std::list` 占优；现代代码多用 `std::vector` + `erase`，或用 `std::deque`（分段连续，头尾 O(1) 且缓存友好）。C++11 起 `std::list::size()` 为 O(1)（旧实现曾 O(n)）。
 
@@ -1592,7 +1592,7 @@ flowchart TD
 
 ### D5.1 基准结果
 
-> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][VERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 场景 | std::vector | std::list | 相对 |
 |---|---|---|---|
 | 顺序遍历 1M int 求和 | 0.233 ms | 11.022 ms | list 慢 **47.4×** |
