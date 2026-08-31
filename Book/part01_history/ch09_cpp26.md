@@ -50,23 +50,28 @@ C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象
 ![Bjarne Stroustrup，C++26 进行中（WG21 持续演进）](../assets/history/bjarne_stroustrup.jpg)
 > 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第08章　C++23：标准库大修](../part01_history/ch08_cpp23.md)
 [第10章　版本特性全景对照表与迁移指南](../part01_history/ch10_version_matrix.md)
 
-> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
+C++26 是"未来时态"的一章，也最容易被读成一张"和现在无关的清单"。本章替你把三笔账算清，先给你一个诚实的定位：**下面这些不是今天就能用的承诺，而是明确标注了成熟度的方向**——写不下、编译器不认的，我不会假装能编过：
+
+1. **C++26 到底在解决哪三根刺？** 一句话：**元编程繁琐**（每写一个 trait 都像在跟预处理器搏斗）、**契约缺失**（一个 `assert` 在 release 里被静默拔掉，连契约都没有）、**异步碎片化**（每个库自己发明一套回调约定）。这就是本章第② 的小结"元编程繁琐 / 契约缺失 / 异步碎片化"三大痛点背后的真正含义（可对照本书 ch121 对契约语义的完整论证）。
+2. **静态反射（`std::meta`）为什么是"最难但最值"的一个？** 因为它想把"遍历类型成员、生成序列化/比较/加速代码"这类**过去只能靠宏或代码生成逗号展开的职业**，变成编译器直接可查可算的元对象操作。若能落地，序列化框架、`==` 生成、AOP 惯用法的写法会被重写。但也正因触及语言根本，它在 GCC 上**尚未成熟**——读到相关节时留意"反射未落地"的显式标注，别把它当已编过的代码。
+3. **Contracts 为什么要"回归"？** 因为语言级 `<contract>` 一旦成为标准，`assert` 那套"release 消失"的含糊才有正式答案（默认已开启、违约即程序 bug——见 ch121）。这条与 senders/receivers 执行器（`std::execution`）并列为"影响面最大、落地最晚"的两项，读本章时把它们划进"看方向、别急着用"一类。
+
+带着这几笔账往下读，每一节都会回到它们：⑩ 的 GCC 15.3 真机实测会让你亲眼看到"反射尚未实现——`<meta>` 头不存在"，⑰ FAQ / ⑱ 最佳实践会明确告诉你"哪些特性现在就能在你的编译器上试、哪些必须等"；通篇凡 `[UNVERIFIED]` 标记处都代表"本机 GCC 当前不可验证"，请别误读为已能编过。
+
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 我们正在回答的问题
 ```cpp
-// [merged] ## ① 学习目标
+// [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 #include <string>
 constexpr int sum3(){ int a[3]{1,2,3}; return a[0]+a[1]+a[2]; } static_assert(sum3()==6, "");
 std::string s9="a"; void use_d9(){ auto d9=s9; (void)d9; }
 int main() {}
 ```
-
-- 了解 C++26 已确定/高概率特性：静态反射（static reflection）、契约（Contracts，回归）、发送者/接收者执行器（`std::execution`）、模块化标准库（`std::meta`/`std` 模块）、`std::format` 增强、`std::simd` 可能、`std::generator` 稳定、 placement new 等小修。
-- 理解这些特性解决「元编程繁琐 / 契约缺失 / 异步碎片化」三大痛点。
 
 ## ② 前置知识
 

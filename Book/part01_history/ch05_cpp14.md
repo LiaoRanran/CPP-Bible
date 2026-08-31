@@ -47,14 +47,22 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 ![Cray-1 超级计算机：C++ 在高性能计算（HPC）领域长期占据核心（语境影像）](../assets/history/cray1.jpg)
 > 图源：Rama，许可 CC BY-SA 2.0 fr，来源 <https://commons.wikimedia.org/wiki/File:Cray_1_IMG_9126.jpg>
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第04章　C++11：现代 C++ 革命](../part01_history/ch04_cpp11.md)
 [第06章　C++17：生产力跃升](../part01_history/ch06_cpp17.md)
 
-> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
+C++14 常被一句话打发成"C++11 的小修"。这句话对了一半——它底下的判断才要命**你该把 C++14 当成"把 C++11 的手感磨平"，而不是一笔带过**。本章要替你把三笔账算清：
+
+1. **C++11 已经"足够现代"，为什么 C++14 还要再改？** 因为 C++11 把骨架立起来了，却留了一地"你得写得绕"的边角：`make_unique` 缺席导致 `unique_ptr` 只能靠 `new` 拼、lambda 参数必须老老实实写死类型、`constexpr` 函数体里连个循环都不敢放。C++14 的每一项（泛型 lambda、返回类型推导、`make_unique`、泛化 `constexpr`、变量模板）都不是新思想，而是**清掉 C++11 时代"明明想做却做不到"的别扭**。本节下方示例 1 里那个 `auto add = [](auto a, auto b){ return a+b; }`，在 C++11 里根本写不了。
+2. **"语言不做大改"是省事还是克制？** 表面看 C++14 没有第四个"支柱"，但它刻意只做"完善"。这恰恰是标准演化的健康节奏——C++11 的激进需要一两年消化。想通这一条，你就明白为什么 C++17 敢再来一轮"生产力跃升"（见 ③ 入口）。
+3. **这些补全里哪一个，对你的代码影响最实际、最该先掌握？** `std::make_unique`。它不只是少敲几个字符，而是让 `unique_ptr` 也能享受 `make_shared` 那条"单次分配 + 异常安全"的路径——远在 C++17 之前就能写的现代所有权写法，从这里是分水岭。
+
+带着这几笔账往下读，每一节都会回到它们：⑪ STL 联系给你 `make_unique` 的确凿理由，⑱ 最佳实践把泛型 lambda/`constexpr` 的正确姿势收束成清单，附录 D5 用 GCC 15.3 基准告诉你这些补全的真实开销。
+
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 我们正在回答的问题
 ```cpp
-// [merged] ## ① 学习目标
+// [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 #include <vector>
 auto make(){ return std::vector<int>{1,2,3}; }
@@ -62,8 +70,6 @@ int main() {
     auto add=[](auto a,auto b){ return a+b; }; auto r=add(1,2.0);
 }
 ```
-
-- 掌握 C++14 对 C++11 的关键补全：泛型 lambda、返回类型推导、`std::make_unique`、泛化 `constexpr`、变量模板、二进制字面量、数字分隔符、`[[deprecated]]`、泛型 lambda 捕获。
 
 ## ② 前置知识
 

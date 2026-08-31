@@ -47,14 +47,22 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 ![贝尔实验室新泽西霍尔姆德尔园区，C 与 C++ 的诞生地，标准化工作的长期据点（语境影像）](../assets/history/bell_labs_holmdel.jpg)
 > 图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg>
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第07章　C++20：量级升级](../part01_history/ch07_cpp20.md)
 [第09章　C++26：已确定特性与方向](../part01_history/ch09_cpp26.md)
 
-> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 学习目标
+C++23 是最容易被误读的版本：语言层面改动很小，很多人因此觉得它"没什么料"。恰好相反——本章要替你把三笔账算清，你会看到这版的重心**不在语言新关键词，而在把日常写库、写业务时"最想要的那块砖"补齐**：
+
+1. **为什么 C++23 的主角是标准库而不是语言？** 因为 C++20 已经把语言地基（Concepts/Ranges/模块）打牢，C++23 的任务是**消化这套地基、把"数据结构与算法"按新范式补齐**：`std::expected` 给了返回值一个规范的"值或错误"容器（本节下方示例 1），`std::flat_map`/`flat_set` 让有序容器不再只靠红黑树，`std::mdspan`/`std::stacktrace` 各攻下一块痛点。它说明 C++ 的演进节奏不是"每个版本都造新语法"，而是"语言立范式，库来兑现"。
+2. **`std::expected` 凭什么值得第一个学？** 因为它是 "**值或可按错误分支处理的结果**"这一古老需求的现代答案——比 `optional` 多带了错误，比抛异常更加显式、可静默处理。对写"解析器/协议/IO"这头发代码，它直接替代一大票 "返回 int 哨兵 + 全局 errno" 的祖宗写法。本节下方示例 1 那个 `expected<int, error_code>` 就是最小可用的模板。
+3. **`std::print`/`std::println`、范围增强这些"便利货"，价值只有省字吗？** 表面看是 `printf` 的现代平替，底子里是**类型安全格式化 + Unicode/本地化由工具链扛走**，还顺带省下一笔格式化开销（见本章 ⑩ 汇编证据）。别小看"印刷"这一环——它是每个 C++ 程序第一条 `cout` 就开始接触的接口，这里磨好了，全世界的模板代码都跟着受益。
+
+带着这几笔账往下读，每一节都会回到它们：⑩ 汇编证明 `std::print` 的格式检查发生在编译期，⑯ 易错点把 `expected` 的嵌套分支陷阱挑明，⑱ 最佳实践收束成"哪些立刻能用、哪些等生态"清单；附录 D5 用 GCC 15.3 基准给你看 ranges 惰性管线的真实开销。
+
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 我们正在回答的问题
 ```cpp
-// [merged] ## ① 学习目标
+// [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 #include <expected>
 #include <system_error>
@@ -63,9 +71,6 @@ int main() {
     std::expected<int, int> e=std::unexpected(1); bool bad=!e.has_value();
 }
 ```
-
-- 掌握 C++23 核心特性：`std::expected`（带错误值的返回值）、`std::flat_map`/`flat_set`（连续存储有序容器）、`std::print`/`std::println`、`std::stacktrace`、`std::mdspan`、范围适配增强（`zip`/`chunk`/`slide`/`adjacent`）、`std::ranges::contains`、多维度等。
-- 理解 C++23 重心在**标准库完善**而非语言大改（语言侧有 `auto(x)`、`size_t` 字面量后缀、静态运算符 `operator()` 改进、显式对象形参 `this` 等小补）。
 
 ## ② 前置知识
 

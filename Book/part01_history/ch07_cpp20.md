@@ -48,12 +48,21 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 ![Ken Thompson，Unix 与 C 共同创造者（C++ 工程文化的重要源头）](../assets/history/ken_thompson.jpg)
 > 图源：Public domain，作者 Unknown，来源 <https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg>
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第06章　C++17：生产力跃升](../part01_history/ch06_cpp17.md)
 [第08章　C++23：标准库大修](../part01_history/ch08_cpp23.md)
 
-> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
+C++20 常被念成"最大更新"，但这四个字最容易让你误以为它只是"更多新语法"。本章要替你把四笔账算清——因为它们之间其实绷着同一根弦：
+
+1. **Concepts、Modules、Coroutines、Ranges 这"四大支柱"到底在联合解决什么？** 它们不只是四个独立功能，而是**把 C++ 过去"靠纪律维持"的事逐个"语言化"**：Concepts 让"模板该满足什么约束"可写、可查、报错可读；Modules 让"头文件的文本裸露"崩坏的编译模型有救；Ranges 让"容器+算法"从"嵌套迭代器"变成"管道式组合"；Coroutines 让"异步暂停/恢复"不再是手写状态机的灾难。你不需要一次学完四根支柱，但**不能不知道它们在体系上是同一次"把潜规则变成显式规则"的运动**（本节下方示例 1 的 ranges `views::iota`、示例 2 的 concept 是这场运动的牛奶尝法）。
+2. **Concepts 为什么值得排第一、最先尝？** 因为它是唯一一个"你现在写普通模板代码就会立刻受益"的支柱——约束不只是在函数名后声明，而是让你在写 `template<typename T> requires` 或 `template<Addable T>` 时，**把"错误的模板调用"从一堆深不可测的实例化报错，变成一句能看懂人话**。本节下方示例 2 那个 `concept Addable` 就是最小可用的样板。
+3. **Coroutines 的"学习曲线陡"，值不值得现在投入？** 关键判断是：它解决的是"异步代码的**语法糖**"，而`std::jthread`/`stop_token` 解决的是"并发的**生命周期**"。两者不一样——如果你只是想要范型的并发工具，`std::jthread` + 停止令牌（见 ⑪ 出口）对多数项目性价比更高；协程是为"自己编排复杂异步状态机"准备的。先分清这点，你就不会在错误的入口卡很久。
+4. **为什么 C++20 大改语言，却没让标准库大爆炸？** 它把重心压在语言基础（`<=>`、`constexpr` 扩展、`std::format` 文本、`std::span` 零拷贝视图）上，为 C++23 的标准库大修做好地基。想通这一句，你就明白 C++23 的主角为什么是库而非语言。
+
+带着这几笔账往下读，每一节都会回到它们：⑩ 用 GCC 15.3 汇编证明 Concepts **不产生任何运行时开销**（这是它能放心用的前提），⑬ 源码分析用 libstdc++ 的 `ranges/base.h`（示例 1 的出处）给你看 concepts 约束检查的展开，⑱ 最佳实践给你一根支柱一根支柱的落地顺序；附录 D5 用 GCC 15.3 基准实测 `std::format` 的吞吐。
+
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 我们正在回答的问题
 ```cpp
 // 源码剖析：libstdc++ 中 C++20 概念（concepts）约束检查的展开
 // 文件：libstdc++/include/bits/ranges/base.h
@@ -62,14 +71,11 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 auto v = std::views::iota(1, 5);
 void use_view(){ for (int x : v) (void)x; }
 ```
-> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 学习目标
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 我们正在回答的问题
 ```cpp
 // 简单概念
 template<class T> concept Addable = requires(T a,T b){ a+b; };
 ```
-
-- 掌握 C++20 四大支柱：**Concepts**、**Modules**、**Coroutines**、**Ranges**。
-- 掌握配套小特性：三路比较 `<=>`、范围 for 初始化、`std::span`、`std::jthread`/`stop_token`、`constinit`、`std::format`、`std::bit_cast`、`likely/unlikely` 属性、指定初始化增强、模板形参列表中的 `typename` 可省为 `class` 等。
 
 ## ② 前置知识
 

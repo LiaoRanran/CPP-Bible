@@ -47,21 +47,28 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 ![Dennis Ritchie，C 语言创造者（C++ 的直接血缘来源）](../assets/history/dennis_ritchie.jpg)
 > 图源：Denise Panyik-Dale，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg>
 
-## ① 学习目标
+## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第05章　C++14：小幅完善](../part01_history/ch05_cpp14.md)
 [第07章　C++20：量级升级](../part01_history/ch07_cpp20.md)
 
-> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 学习目标
+C++17 的标签一直是"生产力跃升"，但这四个字最容易让人把它读成"又一批语法糖"。本章要替你把四笔账算清，其中钱花得最值的恰恰是那些看着"不炫"的：
+
+1. **C++17 到底是哪类跃升？** 它不像 C++11 那样重构所有权心智、也不像 C++20 那样立新支柱，而是**一次系统性"填平日常生活中最后几条沟"**：`if (auto x = f(); x.ok())` 把作用域收窄、结构化绑定让解引用不再啰嗦、CTAD 让 `pair<int,double>` 不必手写模板实参、`string_view` 让只读字符串零拷贝。单项都不大，合起来把你每天写的代码压缩一大截（本节下方示例 1 的 `auto& [a,b]=p` + `if constexpr` 只是这场压缩的缩影）。
+2. **最有生产力的一项，为什么可能是 `std::optional`/`std::variant`/`std::any` 这套"可变存在"工具？** 因为它们终于让"可能没有""要么这样要么那样"这类日常表达**有类型、可检查、能进 `switch`**，而不是靠裸指针判空或靠 int 哨兵值硬凑。这与 C++23 的 `std::expected` 是同一先导思想（见 ⑪ 出口）——别等新标准，先在 C++17 里把这套手感练熟。
+3. **"保证的拷贝消除 + 强制 RVO + 内联变量"这三条"看不见"的特性，价值在哪？** 它们是编译器需要你"手动绕"的最后一批优化：之前你要靠 `std::move` 提示、靠 head/tail 文件技巧来实现"零额外拷贝""单一定义"。C++17 把这两件事变成**语言保证**，你的代码可以写得既直观又不慢。这是"生产力"最深刻的一层——生产率不止省动作，更在消除"不得不写的绕路代码"。
+4. **为什么 C++17 敢把 `std::filesystem`、并行算法直接搬进标准？** 这是本版最有野心的部分：它说明标准库决心吞下"跨平台系统编程"与"并行"这两个过去留给第三方（Boost/OpenMP）的地盘。想通这一点，C++20 的 `std::jthread`、C++23 的范围合并就只是顺理成章的下一格。
+
+带着这几笔账往下读，每一节都会回到它们：⑪ STL 联系把 optional/variant/any 接回容器选择，⑱ 最佳实践收束成可照抄清单，附录 D5 用 GCC 15.3 基准实测这些"语义糖"的零开销承诺到底兑现没有。
+
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 我们正在回答的问题
 ```cpp
-// [merged] ## ① 学习目标
+// [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 auto p=std::make_pair(1,2.0); void use_sb(){ auto& [a,b]=p; (void)a;(void)b; }
 template<class T> auto get(T x){ if constexpr(std::is_pointer_v<T>) return *x; else return x; }
 int main() {}
 ```
-
-- 掌握 C++17 关键特性：结构化绑定、`if`/`switch` 带初始化、折叠表达式、`std::string_view`、`std::optional` / `std::variant` / `std::any`、`std::filesystem`、并行算法执行策略、类模板参数推导（CTAD）、`[[nodiscard]]`/`[[maybe_unused]]`、保证的拷贝消除、内联变量、强制 RVO。
 
 ## ② 前置知识
 
