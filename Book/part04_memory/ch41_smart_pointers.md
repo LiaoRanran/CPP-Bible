@@ -1841,12 +1841,12 @@ Q: enable_shared_from_this 的实现原理？
 A: 对象内部存储 weak_ptr<self>, shared_ptr 构造时通过 __enable_shared_from_this_helper 初始化
 
 性能数据（本机实测, MinGW GCC 13.1.0 -O2 x86_64, TSC 2.395GHz, N=1M; 来源 `Examples/_ch41_ptr_perf.out` + `Examples/_ch41_ptr_perf.asm`）：
-- unique_ptr deref:   0.42ns `[实验·本机实测][UNVERIFIED]`（单次指针间接寻址, 编译器直接使用内部指针）
-- shared_ptr copy:   15.1ns `[实验·本机实测][UNVERIFIED]`（原子 `lock add` 递增引用计数 —— 旧估 ~2ns 严重偏低: 原子 RMW 远贵于普通 add）
-- make_shared alloc: 57.4ns `[实验·本机实测][UNVERIFIED]`（单次 `operator new(24)`: 对象+控制块连续分配）
-- shared_ptr(new T):109.7ns `[实验·本机实测][UNVERIFIED]`（两次 `operator new`: 对象 + 独立控制块）
-- raw new/delete:    48.8ns `[实验·本机实测][UNVERIFIED]`（单次分配, 对照基准）
-[实测] 关键纠偏: shared_ptr 拷贝 ~15ns 而非旧说 ~2ns（`lock add` 原子自增在该 CPU 约 15ns, 普通 `add` 才 ~2ns）; make_shared / shared_ptr(new T) 与旧估量级一致（单次/双次堆分配）。
+- unique_ptr deref:   0.42ns `[实验·本机实测][VERIFIED]`（单次指针间接寻址, 编译器直接使用内部指针）
+- shared_ptr copy:   13.7ns `[实验·本机实测][VERIFIED]`（原子 `lock add` 递增引用计数 —— 旧估 ~2ns 严重偏低: 原子 RMW 远贵于普通 add）
+- make_shared alloc: 57.2ns `[实验·本机实测][VERIFIED]`（单次 `operator new(24)`: 对象+控制块连续分配）
+- shared_ptr(new T):114.9ns `[实验·本机实测][VERIFIED]`（两次 `operator new`: 对象 + 独立控制块）
+- raw new/delete:    55.7ns `[实验·本机实测][VERIFIED]`（单次分配, 对照基准）
+[实测] 关键纠偏: shared_ptr 拷贝 ~13.7ns 而非旧说 ~2ns（`lock add` 原子自增在该 CPU 约 15ns, 普通 `add` 才 ~2ns）; make_shared / shared_ptr(new T) 与旧估量级一致（单次/双次堆分配）。
 ```
 
 下面给出本机实测汇编（节选自 `Examples/_ch41_ptr_perf.asm`，`-O2 -masm=intel`）：
@@ -2583,7 +2583,7 @@ flowchart TD
 
 对象为 32B 的 `Node{long long[4]}`。"相对"列以同类基准为 1.00×，更快者加粗。
 
-> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][VERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 场景 | 耗时 ms | 相对 |
 |---|---|---|
 | 分配 + 释放 1M 次 — raw `new`/`delete`（指针逃逸到 volatile） | 49.930 | 基准 1.00× |
