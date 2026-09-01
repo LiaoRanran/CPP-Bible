@@ -62,6 +62,29 @@ CHREF_RE = re.compile(
 
 CHNUM_RE = re.compile(r"/ch(\d+)")
 H1_RE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
+
+
+def _gitignored_dirs(root: str) -> list[str]:
+    """返回 .gitignore 中 `root/...` 形式、被整体忽略（以 / 结尾、无通配符）的子目录相对路径。
+
+    发布管线复制外部资产根目录时须排除这些 gitignored 目录，否则本地会把 gitignored 素材
+    （人文库/书籍/标准等）带进站点 nav，触发 mkdocs --strict 断链与 site_audit 假红
+    （CI 上这些目录本就不存在，故仅影响本地）。
+    """
+    gi = ROOT / ".gitignore"
+    if not gi.exists():
+        return []
+    prefix = root.rstrip("/") + "/"
+    out: list[str] = []
+    for line in gi.read_text(encoding="utf-8", errors="replace").splitlines():
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        if any(c in s for c in "*?["):
+            continue
+        if s.startswith(prefix) and s.endswith("/"):
+            out.append(s[len(prefix):].rstrip("/"))
+    return out
 # 发布产物自检用：markdown 链接/图片 `](target)` / `![alt](target)`。
 # 同时覆盖图片与内联链接（图片语法 `[alt](path)` 也会被本式匹配，无妨）。
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
@@ -378,6 +401,10 @@ def run_site(index: dict) -> list:
         if dst_root.exists():
             shutil.rmtree(dst_root)
         shutil.copytree(src_root, dst_root)
+        for gdir in _gitignored_dirs(root):
+            p = dst_root / gdir
+            if p.is_dir():
+                shutil.rmtree(p)
         for md in sorted(dst_root.rglob("*.md")):
             rel = md.relative_to(out_docs).as_posix()
             t = md.read_text(encoding="utf-8", errors="replace")
