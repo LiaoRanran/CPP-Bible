@@ -144,6 +144,20 @@
 
 > 抓取记录（2026-09-01）：`doc.qt.io` 与 `cmake.org` 本机直连可达（200，真实静态 HTML）；`docs.unrealengine.com` 403。CMake 全站 BFS（~1200 页）因环境限制未跑，先取概念 manual + 总索引；UE 文档因登录墙仅在线。
 
+### 3.9 T-H 人文与历史源（「历史注脚」专用，全部免费公开）
+
+> 用途：章节「历史注脚」盒子的素材。引用必须落到真实文献，**禁止编造轶事**——没有出处的历史段子不写。
+
+| 键 | 源 | 本地 |
+|----|----|------|
+| `hopl:<paper>` | Stroustrup HOPL 论文：HOPL-II《A History of C++: 1979–1991》/ HOPL-IV 草稿《Thriving in a Crowded and Changing World: C++ 2006–2020》（`stroustrup.com`） | ✅ `external/humanities/hopl2_cpp_1979_1991.pdf`、`hopl4_cpp_2006_2020_draft.pdf` |
+| `ritchie:<essay>` | D. M. Ritchie《The Development of the C Language》（HOPL-II，1993；`bell-labs.com/usr/dmr/`） | ✅ `external/humanities/ritchie_development_of_c.html` |
+| `stepanov:<work>` | A. Stepanov《Notes on Programming》/《Elements of Programming》（`stepanovpapers.com`、`elementsofprogramming.com`） | ✅ `external/humanities/stepanov_notes_on_programming.pdf`、`stepanov_elements_of_programming.pdf` |
+| `qcon:<y/speaker>` | 演讲实录（如 QCon 2009 C. A. R. Hoare《Null References: The Billion Dollar Mistake》） | ❌ 在线 |
+| `de:<ch>` | Stroustrup《The Design and Evolution of C++》 | ❌ **待补书** |
+
+> 主题→素材→可挂章节的映射见 `docs/references/humanities_index.md`（入库）。
+
 ---
 
 ## 4. 手册写作用法（强制）

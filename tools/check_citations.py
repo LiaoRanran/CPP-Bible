@@ -40,6 +40,7 @@ PREFIXES = (
     "gcc:", "clang:", "msvc:", "abi:",
     "cmake:", "qt:", "ue:",
     "ubsan:", "asan:", "cppcon:", "so:",
+    "hopl:", "ritchie:", "stepanov:", "qcon:", "de:",
 )
 
 # SOURCING §3.5 已登记的书籍 slug（含两本仍缺的 krc / exceptional-cpp）

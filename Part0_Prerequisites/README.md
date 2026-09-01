@@ -55,6 +55,7 @@
 | C2（工具链） | ✅ 已完成 | GCC 四阶段真机产物；`objdump -h`（`.bss` 不占磁盘空间）、`-r`（`__mingw_printf` 重定位）、`-d`（`add` 印证 **Microsoft x64 影子空间 `rbp+0x10`**） |
 | C3（类型系统） | ✅ 已完成 | LLP64 实测（`long`=4、指针=8）；真实警告 `-Wsign-compare`（`-1 < 1u` 为 false）、`-Wsizeof-array-argument`（数组形参退化） |
 | C4（函数与栈帧） | ✅ 已完成 | 第 5 参栈传实证（callee `[rbp+0x30]` / caller `[rsp+0x20]`）；递归栈帧链；`-O2` 递归被内联成循环（符号消失）；`stdarg` 寄存器保存区 + `va_arg` 8 字节步长；`float→double` 提升与 XMM+GP 双通道投递 |
-| C5–C9 | ⏳ 待写 | 指针内存 / 结构体对齐 / 预处理 / 标准库 / C↔C++ 互操作 |
+| C5（指针与内存） | ✅ 已完成 | 五区地址双跑实测（镜像两次相同 vs 堆/栈每次换，PE 头 `DYNAMIC_BASE`）；`malloc` 账本（要 64 给 80）；**首个「事故现场」**：`-Wuse-after-free` 三连抓、读回值=分配器记账、`q==p` 同址复用、double free 触发 `0xC0000374`；**首个「历史注脚」**：Hoare 十亿美元错误（`qcon:2009-hoare-null`） |
+| C6–C9 | ⏳ 待写 | 结构体对齐 / 预处理 / 标准库 / C↔C++ 互操作 |
 
 _创建：2026-09-01 | 不计入主书 147 章_
