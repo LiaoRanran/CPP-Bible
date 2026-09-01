@@ -247,6 +247,7 @@ flowchart LR
 `[实现·GCC15.3.0]` 直接 `new int[10]` 每次都落到 `operator new[]`（`_Znay`）：
 
 ```asm
+; 节选自 Examples/ch122_use_new.asm
 ; 文件：use_new（源：new int[10]×2 + delete[]，GCC 15.3.0 -O2 -masm=intel，真实提取）
 _Z7use_newv:
         mov     ecx, 40
@@ -266,6 +267,7 @@ _Z7use_newv:
 `[实现·GCC15.3.0]` `monotonic_buffer_resource` 的 `do_allocate` 被内联为"取默认资源 + 指针推进"：构造时调用一次 `get_default_resource`，之后分配是纯算术（无 `operator new`）：
 
 ```asm
+; 节选自 Examples/ch122_use_monotonic.asm
 ; 文件：use_monotonic（源：monotonic_buffer_resource + allocate(64)，GCC 15.3.0）
 _Z13use_monotonicv:
         call    _ZNSt3pmr20get_default_resourceEv   ; 仅在构造时取 upstream

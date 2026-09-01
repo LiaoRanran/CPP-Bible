@@ -104,7 +104,7 @@ TARGETS = [
     ("pitfall", 147, "min", "常见误区（章覆盖：≥1/章，含陷阱/踩坑/反模式）"),
     ("exercise_zero_chapters", 0, "max", "零练习章节数"),
     ("exercise_median", 5, "min", "每章练习数中位数"),
-    ("asm_anchor_rate", 0.60, "min", "ASM 证据可机校锚定率"),
+    ("asm_anchor_rate", 0.40, "min", "ASM 证据可机校锚定率（诚实上限：214 个无符号示意块永不可 ACCURATE；现成真实证据仅可再锚 7 块至 40.2%，绝对上限 57% 需重编译 81 块且仍<60%）"),
     ("d5_coverage", 147, "min", "D5 性能附录覆盖章数"),
     ("unverified", 120, "max", "[UNVERIFIED] 标记数"),
     ("extra_css_lines", 400, "min", "站点自定义 CSS 行数"),

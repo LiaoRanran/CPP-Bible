@@ -175,6 +175,7 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_vcall.cpp -o _asm_vcall.asm
 【真实汇编：虚调用 vs 非虚调用】
 
 ```asm
+; 节选自 Examples/ch47_vcall.asm
 ; int call_virtual(const Base& b) { return b.foo(); }
 _Z12call_virtualRK4Base:
         mov     rax, QWORD PTR [rcx]      ; rcx = this (Base&)，取对象头部 vptr

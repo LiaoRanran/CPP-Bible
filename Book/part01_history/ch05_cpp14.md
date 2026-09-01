@@ -234,6 +234,7 @@ C++14 不引入任何运行时机制；generic lambda 编译为独立的模板�
 > 以下汇编由仓库权威 GCC 15.3.0 真实生成（`g++ -std=c++14 -masm=intel`，节选自 `_asm_demo/ch05_generic_lambda_o0.s` 与 `_o2.s`，源码 `_asm_demo/ch05_generic_lambda.cpp`）：
 
 ```asm
+; 节选自 Examples/ch05_generic_lambda_o0.asm
 ; -O0：泛型 lambda 实例化为两个独立模板实例函数（int / double 各一份）
 _ZZ11use_genericvENKUlT_E_clIiEEDaS_:   ; operator()<int>
 _ZZ11use_genericvENKUlT_E_clIdEEDaS_:   ; operator()<double>

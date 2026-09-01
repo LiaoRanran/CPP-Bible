@@ -800,6 +800,7 @@ Service& getServiceEx() {
 ### 8.1 汇编证据（GCC 15.3.0 -O2）
 
 ```asm
+; 节选自 Examples/ch19_getlogger_gcc15.asm
 getLogger():
     sub     rsp, 40
     movzx   eax, BYTE PTR _ZGVZ9getLoggervE8instance[rip]   # guard 字节

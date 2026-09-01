@@ -1053,6 +1053,7 @@ non-virtual thunk to D::~D() (deleting):   ; 非平凡路径
 **场景**：`struct D : virtual B { int d; int f() override { return b + d; } };`（`B` 为虚基类，`f` 同时访问 `b` 与 `d`，故需完整 `D` 的 `this`）。经虚基类指针 `B*` 调用 `f` 必须把 `this` 从 `B` 子对象调整到完整 `D` 对象。
 
 ```asm
+; 节选自 Examples/ch50_vi_test.asm
 ; callB(B*)：经虚基类指针调用
 mov    rax,QWORD PTR [rcx]   ; 取 B 子对象 vptr
 rex.W jmp QWORD PTR [rax]    ; 间接跳到虚表 f 槽(指向 virtual thunk)

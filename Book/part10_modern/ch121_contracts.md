@@ -227,6 +227,7 @@ int user(int v) {
 ```
 
 ```asm
+; 节选自 Examples/ch121_ctest2.asm
 ; 关键证据（GCC 15.3.0 -std=c++2c -fcontracts -O2 -masm=intel）
 ; 函数本体：precondition 谓词本身被编译进热路径，仅 2 条指令
 _Z7abs_posi:
