@@ -20,7 +20,7 @@
 | # | 剩余项 | 实测现状 | 优先级 | 状态 |
 |---|---|---|---|---|
 | 1 | Python 版本漂移 | `.venv`=3.14.5、托管解释器实 3.13.14（目录名 3.13.12）、系统 `python`=3.14.5（WindowsApps Store stub） | P0 | ✅ 已落地（`fc784ba`；.venv 重建待后续） |
-| 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | ✅ ruff 清零并进 CI（150 自动 + 99 人工）；✅ mypy 类型债务清零（60→0 / 110 文件，2026-09-01；未纳入 CI，待后续批次加 `uv run mypy tools/`） |
+| 2 | 静态检查链 | ruff/mypy/pre-commit 配置已写，但三者 PATH 与 `.venv` 均缺失 | P0 | ✅ ruff 清零并进 CI（150 自动 + 99 人工）；✅ mypy 类型债务清零并接入 CI（60→0 / 110 文件，2026-09-01；钉版 2.3.1 进 `quality` job，无 # noqa 豁免） |
 | 3 | 容器镜像 digest | `ci.yml` compile job 与 `Dockerfile` 用浮动 tag `gcc:15.3.0` | P1 | ✅ 已钉 `sha256:8f59ba4b…`（2026-08-25 快照，多架构 manifest list） |
 | 4 | 指标单一事实源 | README 的 cpp 块数 7530（实 7523）、自包含章数 112（实 114）、STATE.json 的 `last_commit` 落后 HEAD 24 个提交 | P1 | ✅ 已落地（`metrics.schema.json` + `tools/gen_metrics.py`，已进 CI quality job） |
 | 5 | CROSSREF 生成器过时 | dry-run 依赖边 732→103（退化 85%），生成器已与正文链接形式脱节 | P2 | ✅ 已裁决选项 A：CROSSREF.md 头部改「冻结+指向活跃门禁」，删除悬空生成器引用 |

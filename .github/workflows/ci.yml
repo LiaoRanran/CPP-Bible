@@ -33,10 +33,23 @@ jobs:
       # --unsafe-fixes 批量糊）。此处固化为硬门禁，防止债务再次累积。
       # 版本钉定 0.6.9（与 .pre-commit-config.yaml 一致）：ruff 规则集会随版本
       # 漂移，跟随最新版会让「已清零」的基线失效。
-      # mypy 尚未做类型标注 triage，故暂不接入——接入必红，留给下一批。
       run: |
         python3 -m pip install --quiet "ruff==0.6.9"
         ruff check tools/
+      continue-on-error: false
+
+    - name: Mypy (tools/ 类型检查硬门禁)
+      # P0-2 收口（TOOLCHAIN_UPGRADE_NEXT.md §2）：2026-09-01 完成 tools/ 的
+      # 类型标注 triage（60 错误 → 0，覆盖 110 文件，含 tools/legacy/），
+      # 全部为真实债务修复（纯注解 / .group() 判空 / 返回类型 / 文件句柄遮蔽重命名），
+      # 无 # noqa 豁免。此处固化为硬门禁，防止类型债务再次累积。
+      # 版本钉定 2.3.1：mypy 报错项会随版本漂移，跟最新版会让「已清零」基线失效。
+      # 配置走 pyproject [tool.mypy]（python_version=3.11 / warn_return_any /
+      # warn_unused_configs）；CI 跑在 Linux，tools/ 无 Windows-only 标准库导入，
+      # 与本机 Windows 解析一致。
+      run: |
+        python3 -m pip install --quiet "mypy==2.3.1"
+        mypy tools/
       continue-on-error: false
 
     - name: Metrics Single-Source-of-Truth Gate (文档数字 vs 事实源)

@@ -29,7 +29,14 @@
 
 - 用 `uvx mypy tools/`（110 文件）逐文件清除真实类型债务；**60 错误 → 0（`Success: no issues found in 110 source files`，仅 1 条 `annotation-unchecked` 信息提示非错误）**。
 - 修复类别（均为真实债务，非 `# noqa` 豁免）：`var-annotated`/`list-item`/`dict-item`（共 ~30 处纯注解，零运行时风险）、`union-attr`（4 处 `.group()` 绑定后判空）、`no-any-return`/`return-value`（5+5 处 str()/bytes() 包裹与 `run_site`/`run_pdf` 返回类型补 `-> list`）、`attr-defined`（`consistency_check` 的 `Sequence[str]`→`list[str]`、compile_p0 文件句柄被循环变量遮蔽重命名 `f`→`fh`）。
-- mypy 尚未纳入 CI（按计划留待后续批次）；CI 钉版 ruff 0.6.9 仍全绿，本批改动引入 0 个新 lint。
+- mypy 已接入 CI（`quality` job 硬门禁，钉版 2.3.1，配置走 pyproject `[tool.mypy]`，无 `# noqa` 豁免）；CI 钉版 ruff 0.6.9 仍全绿，本批改动引入 0 个新 lint。
+
+### 工具链类型检查固化进 CI（mypy 硬门禁）
+
+- 在 `ci.yml` 的 `quality` job 紧接 Ruff 之后新增 `Mypy` 步骤：钉版 `mypy==2.3.1`，跑 `mypy tools/`（读 pyproject `[tool.mypy]`：`python_version=3.11` / `warn_return_any` / `warn_unused_configs`）。
+- 原 Ruff 注释里「mypy 暂不接入——接入必红，留给下一批」已作废（triage 已完成，60→0）。
+- CI 跑在 Linux；已排查 `tools/` 无 Windows-only 标准库导入（`msvcrt`/`winreg` 等），与本机 Windows 解析一致，不会跨平台误红。
+- 收益：固化 60→0 的类型清洁度，未来任一处重新引入类型债务即 BLOCK，防回归。
 
 ### 门禁复验
 
