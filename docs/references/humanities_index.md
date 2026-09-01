@@ -9,7 +9,8 @@
 |------|----|----------|----------|
 | Ritchie《The Development of the C Language》(1993) | `ritchie:chist` | C 从 BCPL/B 一路被 UNIX 逼出来的演化史；类型系统是妥协而非设计；NB→C 的改名动机 | ch01、Part0 C1、C5 |
 | HOPL-II《A History of C++: 1979–1991》 | `hopl:hopl2` | "C with Classes"→C++ 的命名；异常与模板为何长成这样；标准化前夜 | ch01、ch03、ch60 |
-| HOPL-IV 草稿《C++ 2006–2020》 | `hopl:hopl4` | 现代委员会如何运转；Concepts 十年提案史；C++20 的取舍 | ch02、ch07、ch67 |
+| HOPL-III《Evolving a language in and for the real world: C++ 1991–2006》 | `hopl:hopl3` | 异常/模板/RTTI 如何成形；标准化委员会如何运转；C++98 的取舍 | ch03、ch60、ch67 |
+| HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》 | `hopl:hopl4` | C++11/14/17/20 的设计政治；Concepts 十年提案史；现代委员会运作 | ch02、ch07、ch67 |
 | QCon 2009 C. A. R. Hoare | `qcon:2009-hoare-null` | 「空引用：十亿美元的错误」原话出处 | ch41、ch88、C5 |
 
 ## 哲学 / 设计观

@@ -150,7 +150,7 @@
 
 | 键 | 源 | 本地 |
 |----|----|------|
-| `hopl:<paper>` | Stroustrup HOPL 论文：HOPL-II《A History of C++: 1979–1991》/ HOPL-IV 草稿《Thriving in a Crowded and Changing World: C++ 2006–2020》（`stroustrup.com`） | ✅ `external/humanities/hopl2_cpp_1979_1991.pdf`、`hopl4_cpp_2006_2020_draft.pdf` |
+| `hopl:<paper>` | Stroustrup HOPL 论文（均 `stroustrup.com`）：HOPL-II《A History of C++: 1979–1991》/ HOPL-III《Evolving a language in and for the real world: C++ 1991–2006》/ HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》（英文见 ACM DL `dl.acm.org/toc/pacmpl/2020/4/HOPL`，权威中文全译本 `Cxx_HOPL4_zh`） | ✅ `external/humanities/hopl2_cpp_1979_1991.pdf`（II）、`hopl3_cpp_1991_2006.pdf`（III）；`hopl4_zh/`（IV 中文全译本，11 章 + README） |
 | `ritchie:<essay>` | D. M. Ritchie《The Development of the C Language》（HOPL-II，1993；`bell-labs.com/usr/dmr/`） | ✅ `external/humanities/ritchie_development_of_c.html` |
 | `stepanov:<work>` | A. Stepanov《Notes on Programming》/《Elements of Programming》（`stepanovpapers.com`、`elementsofprogramming.com`） | ✅ `external/humanities/stepanov_notes_on_programming.pdf`、`stepanov_elements_of_programming.pdf` |
 | `qcon:<y/speaker>` | 演讲实录（如 QCon 2009 C. A. R. Hoare《Null References: The Billion Dollar Mistake》） | ❌ 在线 |
