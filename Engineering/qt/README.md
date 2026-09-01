@@ -9,3 +9,4 @@
   - 与标准库协作：`QString`↔`std::string`、容器互操作、智能指针
   - 跨平台坑：MSVC/GCC/Clang 下 Qt 行为差异（标 `[msvc:ext]`/`[gcc:ext]`）
 - 引用键示例：`[msvc:ext]` `[book:primercpp:secxx]` `[std-cpp23]`
+- 官方文档（离线）：`qt:` → `docs/references/external/vendor/qt-doc/`（QtCore/Gui/Widgets/Quick/QML 概览+指南+CMake 手册，111 页；类参考在线查 `doc.qt.io/qt-6/`）

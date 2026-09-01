@@ -14,8 +14,11 @@ Book.zip
 *.exe
 *.o
 *.obj
-/*.cpp          # 仅根目录：compile_all/chapter_compile_check 漏回根目录的 .cpp（不伤 Examples/ 真实源）
-!_bench_d5_*.cpp   # 例外：库根 D5 基准源码须跟踪（覆盖上面 /*.cpp，修复新建 bench 被静默忽略的脚枪）
+# 仅根目录：compile_all/chapter_compile_check 漏回根目录的 .cpp（不伤 Examples/ 真实源）
+# 注意：.gitignore 不支持行内注释，注释必须独占一行，否则整条规则失效
+/*.cpp
+# 例外：库根 D5 基准源码须跟踪（覆盖上面 /*.cpp，修复新建 bench 被静默忽略的脚枪）
+!_bench_d5_*.cpp
 _probe*.cpp
 _tu_*.cpp
 _repro.py
@@ -36,7 +39,8 @@ ac_verify.log
 _g.py
 _one.py
 _two.py
-book.toml       # mdBook 配置；本项目交付物为 MkDocs（CI 用 mkdocs build --strict），book.toml 为废弃实验遗留
+# mdBook 配置；本项目交付物为 MkDocs（CI 用 mkdocs build --strict），book.toml 为废弃实验遗留
+book.toml
 
 # Python
 __pycache__/

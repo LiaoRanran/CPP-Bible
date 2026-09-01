@@ -10,3 +10,4 @@
   - 与标准库边界：引擎容器（`TArray`/`TMap`）vs `std::`；何时用哪种
   - 性能：`UPROPERTY` 标记的内存布局影响（呼应 Part0 A5 对齐）
 - 引用键示例：`[msvc:ext]` `[std-cpp23]` `[book:effective-modern:itemxx]`
+- 官方文档：**在线** `ue:` → `docs.unrealengine.com`（本机 403，需登录；未 vendored）。涉及 UE 反射/GC/容器的事实性陈述以此在线文档为准，并标 `[ue:...]` 以备溯源。
