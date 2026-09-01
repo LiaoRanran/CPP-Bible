@@ -1,4 +1,4 @@
-# HANDOVER.md — 项目接手快照（2026-08-31 晚）
+# HANDOVER.md — 项目接手快照（2026-09-01）
 
 > 接手者先读本文件 + `NEXT_LLM.md`。本快照覆盖 **2026-08-31「极致打磨」收尾后** 的真实状态，
 > 数字派生自 `build/metrics.json`（由 `tools/gen_metrics.py --check` 门禁守护，散文里的写死数字与事实源一致）。
@@ -16,7 +16,7 @@ CI 七 job 实跑（quality / compile / publish-check / site / pdf / epub / depl
 | 维度 | 数据 | 状态 |
 |------|------|------|
 | 章节 | 147 章 / 16 part / 151 文件 / 239,016 行 | ✅ |
-| cpp 代码块 | 7,531 | ✅ |
+| cpp 代码块 | 7,525 | ✅ |
 | asm 块 | 497（锚定 137 = 27.6%，**DRIFT=0**） | ✅ 证据真实 |
 | D5 性能附录 | 127/147 章（86%），结构 ERROR=0 | ✅ 口径统一为 GCC 15.3.0 |
 | 写作质量门禁 | `cppbible.py check --stage quality` **16/16** | ✅ |
@@ -37,13 +37,25 @@ CI 七 job 实跑（quality / compile / publish-check / site / pdf / epub / depl
 |---|---|---|---|
 | `asm_anchor_rate` | 27.6% | 60% | ≈27.6%（剩余 334 未锚定中约 178 无符号、其余真实源码不在书内） |
 | `d5_coverage` | 127 | 147 | ≈127（约 20 章为历史/工具链/库内部，无真实可测性能现象） |
-| `unverified` | 294 | 120 | ≈192（130 微架构 + 56 声明头 + 6 C++26 假设，0 个可本机复测数据声明） |
+| `unverified` | 297 | 120 | ≈192（130 微架构 + 56 声明头 + 6 C++26 假设，0 个可本机复测数据声明）。294→297 系 ch109 新增 ① 节对 ARM 弱内存行为与 ~ns 经验值**如实**标注 `[UNVERIFIED]`，按红线不为凑指标摘除 |
 | `root_docs` | 41 | 10 | 有意保留（根目录元文档互链，见 `RELEASE.md`） |
 | `glossary_lines` | 39 | 800 | 自动生成（`gen_indexes.py` 文件头明令勿手改） |
 
 ## Git 提交链（近期）
 
 ```
+4d934f3 docs(changelog): 补 2026-09-01 里程碑条目（changelog_lag 53→0）
+d0d5dda fix(site): 欢迎页 part 表标题全空——parse_part_titles 兜底字典未接上
+c53848b docs(polish): ch31/ch109 学习目标改写为问题驱动论证（本专项 60 章收官）
+eda64b8 docs(handover): 落档学习目标→问题驱动论证 58 章收口
+c246651 docs(polish): 性能板块 3 章(ch152/153/158) 学习目标改写为问题驱动论证
+008c265 docs(polish): 现代板块 4 章(ch116/120/122/123) 学习目标改写为问题驱动论证
+957870a docs(polish): 语言板块 5 章(ch22/24/29/30/32) 学习目标改写为问题驱动论证
+5cf5362 docs(polish): STL 板块 10 章 学习目标改写为问题驱动论证
+f80c7cd docs(polish): 模板板块 12 章 学习目标改写为问题驱动论证
+65b3bf1 docs(polish): STL 容器 4 章 学习目标改写为问题驱动论证
+10dc21e fix(ch157): 断言过强修复（s 上界按 M 推导 + isfinite）
+b9ffeaf fix(links): 正文跨章链接 Book/ 前缀 → 源相对（2628 处）+ 链接门禁入 CI
 7a66baa docs(asm): 补锚定 ch88 的 1 个 asm 块（ACCURATE 136→137，27.4%→27.6%）
 57a60fc docs(evidence): 真实编译证据锚定 69 个 asm 块 + GCC 15.3.0 重测 8 章 D5 附录
 463b8c1 docs(verification): ch79/ch40 本机实测翻牌（unverified 302→294）
@@ -60,7 +72,8 @@ d4631fb build(site): extra.css 扩至 411 行 + 启用 16 个 mkdocs-material �
 C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe
 
 # C++ 编译器（两套，D5/asm 证据口径 = GCC 15.3.0）
-C:/Qt/Tools/mingw1310_64/bin/g++.exe                       # GCC 13.1.0（asm 锚定符号级证据够用）
+C:/Qt/Tools/mingw1530_64/bin/g++.exe                        # GCC 15.3.0（msvcrt-posix-seh r1）← 仓库权威工具链，toolchain.toml 已钉
+C:/Qt/Tools/mingw1310_64/bin/g++.exe                        # GCC 13.1.0（asm 锚定符号级证据够用）
 C:/Users/ASUS/Desktop/gcc-15.3.0-binary/mingw64/bin/g++.exe # GCC 15.3.0（WinLibs ucrt r1，2026-08-31 装）
 
 # 项目根目录
@@ -71,7 +84,7 @@ C:/CodeLearnling/note/note/C++/CPP-Bible/
 
 | 命令 | 用途 | 预期输出 |
 |------|------|----------|
-| `python tools/cppbible.py check --stage quality` | 写作质量门禁（16 项） | 16/16 |
+| `python tools/cppbible.py check --stage quality` | 写作质量门禁（17 项） | 17/17 |
 | `python tools/gen_metrics.py --check` | 文档数字 vs 事实源（**CI 硬门禁，README 数字漂移即红**） | 全部一致 |
 | `python tools/consistency_check.py` | 一致性 | 147 章 ERROR=0 WARN=0 |
 | `python tools/verify_asm_evidence.py --root Book --examples Examples` | asm 符号真实性 | ACCURATE=137，DRIFT=0 |
@@ -128,6 +141,26 @@ PY="C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
    典型：ch157 -O0/-O2 3.79×→1.67×、ch14 调试/发布 40.4×→8.20×、ch07 format/snprintf 1.23×→2.82×。
 4. **修 CI 报错**：`gen_metrics.py --check` 漂移 3 处（README cpp 7523→7531、d5 119→127、d5_pct 81→86），已回填。
 5. **修 9 处 D5.3 demo** `<<"\n"` → `<<std::endl`（d5_appendix_audit 约定）。
+
+## 2026-09-01 当日工作（本轮）
+
+1. **`c53848b` 内容打磨专项收官（60 章）**：「① 学习目标」→「① 我们真正要回答的问题」，
+   收尾 ch31（运算符重载）+ ch109（内存屏障与 fence）两章各写六问，每条回指节号逐条核证
+   （ch109 引用了附录 J 的 GCC 15.3.0 真机汇编与附录 D5 真实基准数据）。全书 147 章再无
+   「① 学习目标」节。顺带修 ch76:1311 的悬空回指。
+2. **`d0d5dda` 修真实缺陷——站点欢迎页 part 表标题全空**：`DEFAULT_PART_TITLES`（16 条中文
+   part 标题）注释写明「INDEX.md 未提供时启用」，但 `parse_part_titles()` 从不回落它；
+   本站点的 `INDEX.md` 是项目文档索引、通篇无 `Part` 字样，故解析恒空（日志 `part 0`）。
+   因 `build_nav()` 自带兜底而 `build_part_table()` 没有，只有欢迎页退化成 16 行空白。
+   改根因：以该字典为初值、INDEX.md 解析结果覆盖其上 → 日志 `part 16`、标题全部填充。
+3. **修 README 数字漂移**：`7531` → `7525`（CI 硬门禁 `gen_metrics.py --check` 项）。
+4. **`4d934f3` 补 CHANGELOG 2026-09-01 条目**：changelog_lag 53→0。
+5. **看板 8/15 → 10/15**：`extra_css_lines` 0→411（重跑 `gen_mkdocs_nav.py` 重生成
+   `build/site/docs/assets/extra.css`）、`changelog_lag` 53→0。
+
+> ⚠️ **给下一位的经验**：`extra_css_lines` 依赖 `build/` 下的生成产物，而 `build/` 被 gitignore——
+> 一旦 `build/site/docs/assets/` 被清空，该指标会静默掉到 0，看起来像「内容退化」实则是构建产物丢失。
+> 判别方法：先跑 `python tools/gen_mkdocs_nav.py` 再看板；不要为此去改 `EXTRA_CSS` 内容。
 
 ## 已知非 bug 编译失败（豁免清单）
 
