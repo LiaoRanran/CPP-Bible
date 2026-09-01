@@ -6,12 +6,15 @@ CPP-Bible 索引生成器 (gen_indexes.py)
 一次生成三份导航索引，全部落在 Book/ 下、路径相对 Book/：
 
   1. Book/SUMMARY.md      — 147 章全链目录（按 part 分组，MkDocs/GitBook 风格）
-  2. Book/GLOSSARY.md     — 术语 → 章节（关键词匹配真实章标题，0 匹配即丢弃，不臆造）
+  2. Book/GLOSSARY.md     — 术语 → 章节（权威源 glossary.json + 硬编码补充，0 匹配即丢弃，不臆造）
   3. Book/PREREQUISITES.md— 依赖建议（真实 `前置：` 元数据 + part 级阅读链）
 
 设计原则（与全书红线一致）:
   - 章标题、路径、章号全部来自文件系统，确定性生成，可复跑。
   - GLOSSARY 只收录能匹配到真实章节的术语；宁缺毋滥。
+  - GLOSSARY 权威源为仓库根 glossary.json（治理约定：新术语一律追加到该文件，
+    其 chapter_ref 由 consistency_check.py 校验指向真实文件）；硬编码
+    GLOSSARY_TERMS 仅作补充，覆盖权威库未收录的 STL/算法/并发/设计模式等条目。
   - PREREQUISITES 的逐章 `前置` 仅来自章内真实元数据；part 级链条明确标注为启发式建议。
 
 用法:
@@ -21,6 +24,7 @@ CPP-Bible 索引生成器 (gen_indexes.py)
 import os
 import re
 import sys
+import json
 import argparse
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -162,7 +166,26 @@ def gen_summary(parts):
     return "\n".join(out).rstrip() + "\n"
 
 
+def _norm_term(s):
+    """术语归一化键：去 '/…' 后段、去括号后缀、转小写。
+
+    仅用于「权威库 vs 硬编码列表」去重判断，不参与展示。
+    """
+    return re.split(r"\s*[/（(]", s)[0].strip().lower()
+
+
 def gen_glossary(parts):
+    """术语 → 章节。
+
+    权威源是仓库根 `glossary.json`（治理约定：新增术语一律追加到该文件，其
+    chapter_ref 由 consistency_check.py 校验指向真实文件）。此前本函数只读硬编码
+    GLOSSARY_TERMS，导致权威库 129 个术语全部未出现在书内术语表——权威库被架空。
+
+    现改为「权威库优先 + 硬编码补充」：硬编码仅收录权威库尚未覆盖的条目
+    （STL/算法/并发/设计模式等），避免回归。每个术语一行，别名括注；
+    不把 aliases 拆成独立行——其中混有子概念（如「自动/静态/线程存储期」并非
+    「存储期」的同义词），拆行既是灌水刷行数，也会误导读者。
+    """
     # 建 (ch, title, rel, haystack)
     idx = []
     for part, rows in parts.items():
@@ -175,7 +198,36 @@ def gen_glossary(parts):
     out.append("> 术语 → 讲解该主题的章节。仅收录能匹配到真实章节的术语。")
     out.append("")
     kept = 0
+    covered = set()
+
+    # 1) 权威术语库 glossary.json
+    gj = os.path.join(HERE, "glossary.json")
+    if os.path.isfile(gj):
+        with open(gj, encoding="utf-8") as f:
+            terms = json.load(f).get("terms", [])
+        for t in sorted(terms, key=lambda x: x.get("term", "")):
+            rel = str(t.get("chapter_ref", ""))
+            if rel.startswith("Book/"):
+                rel = rel[len("Book/"):]
+            m = CHFILE.search(rel)
+            if not m:
+                continue
+            # 别名已在术语名中出现的不重复括注
+            aliases = [a for a in t.get("aliases", [])
+                       if a and a not in t.get("term", "")]
+            label = t.get("term", "")
+            if aliases:
+                label += "（" + "、".join(aliases[:3]) + "）"
+            out.append(f"- **{label}**：[ch{m.group(1)}]({rel})")
+            kept += 1
+            covered.add(_norm_term(t.get("term", "")))
+            for a in t.get("aliases", []):
+                covered.add(_norm_term(a))
+
+    # 2) 硬编码补充：仅收录权威库未覆盖的条目
     for term, kw in GLOSSARY_TERMS:
+        if _norm_term(term) in covered:
+            continue
         pat = re.compile(kw, re.I)
         hits = [(ch, title, rel) for ch, title, rel, hay in idx if pat.search(hay)]
         if not hits:
