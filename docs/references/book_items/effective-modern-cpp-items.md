@@ -201,7 +201,7 @@
 
 - **规则**：Use decltype on auto&& parameters to std::forward them.
 - **引用键**：`book:effective-modern-cpp:item33`
-- **书中要点**：std::forward them. One of the most exciting features of C++14 is generic lambdas —lambdas that use auto in their parameter specifications. The implementation of this feature is straight‐ forward: operator() in the lambda’s closure class is a template. Given this lambda, for example, auto f = [](auto x){ return func(normalize(x)); }; the closure class’s function call operator looks like this: class SomeCompilerGeneratedClassName { public: template<typename T> // see Item 3 for auto operator()(T x) const // auto return type { return func(normalize(x)); } … // other closure class }; // functionality In this example, …
+- **书中要点**：std::forward them. One of the most exciting features of C++14 is generic lambdas —lambdas that use auto in their parameter specifications. The implementation of this feature is straight‐ forward: operator() in the lambda’s closure class is a template. Given this lambda, for example, `auto f = [](auto x){ return func(normalize(x)); };` the closure class’s function call operator looks like this: class SomeCompilerGeneratedClassName { public: template<typename T> // see Item 3 for auto operator()(T x) const // auto return type { return func(normalize(x)); } … // other closure class }; // functionality In this example, …
 
 ## Item 34，p.232
 
