@@ -69,7 +69,7 @@ def _fenced(lines: list[bytes]) -> set[int]:
 def transform_line(line: bytes) -> tuple[bytes, int]:
     """改写单行内所有带 Book/ 前缀的 md 链接为源相对路径，返回 (新行, 改写数)。"""
     def repl(m: re.Match) -> bytes:
-        return b"](../" + m.group(1) + (m.group(2) or b"") + b")"
+        return bytes(b"](../" + m.group(1) + (m.group(2) or b"") + b")")
     hits = PREFIXED_RE.findall(line)
     new = PREFIXED_RE.sub(repl, line)
     return new, (len(hits) if new != line else 0)

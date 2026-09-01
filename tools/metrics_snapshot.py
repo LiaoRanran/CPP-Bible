@@ -208,9 +208,10 @@ def scan_chapters() -> dict:
         admonitions += len(re.findall(r"^(?:!!!|\?\?\?)\s", text, re.M))
 
         n_ex = len(EXERCISE_RE.findall(text))
-        if CH_NUM_RE.match(p.name):
+        m_num = CH_NUM_RE.match(p.name)
+        if m_num:
             exercise_counts[p.name] = n_ex
-            chapter_nums.append(int(CH_NUM_RE.match(p.name).group(1)))
+            chapter_nums.append(int(m_num.group(1)))
 
     # —— 脚手架税：出现在 ≥50% 章节的标题 = 强制脚手架 ——
     freq: dict[str, int] = {}
@@ -387,9 +388,10 @@ def scan_chapter_levels() -> dict:
         for i, line in enumerate(t.splitlines()):
             if i >= 30:
                 break
-            if line.lstrip().startswith(">") and pat.search(line):
+            m_tier = pat.search(line)
+            if line.lstrip().startswith(">") and m_tier:
                 total += 1
-                counts["L" + pat.search(line).group(1)] += 1
+                counts["L" + m_tier.group(1)] += 1
                 break
     return {"total": total, "L1": counts["L1"], "L2": counts["L2"], "L3": counts["L3"]}
 

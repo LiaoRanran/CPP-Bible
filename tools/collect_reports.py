@@ -15,6 +15,9 @@ collect_reports.py — 门禁/审计报告归集器（T4）。
   python3 tools/collect_reports.py [--root ROOT] [--out build/reports]
 """
 
+from __future__ import annotations
+from typing import Any
+
 import argparse
 import json
 import os
@@ -74,7 +77,7 @@ def collect(root: str, out: str):
             seen.add(np)
             candidates.append((os.path.relpath(p, root_abs), p))
 
-    index = {"tool": "collect_reports", "out": out_abs, "reports": {}}
+    index: dict[str, Any] = {"tool": "collect_reports", "out": out_abs, "reports": {}}
     copied = 0
     for rel, p in candidates:
         dest = os.path.join(out_abs, os.path.basename(p))

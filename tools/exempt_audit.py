@@ -67,7 +67,7 @@ def gcc_version(gcc: str) -> str:
 
 def find_files(root: str) -> dict[str, str]:
     """basename -> absolute path (recursive)."""
-    out = {}
+    out: dict[str, str] = {}
     for r, _d, files in os.walk(root):
         if "_legacy" in r:
             continue
@@ -79,7 +79,10 @@ def find_files(root: str) -> dict[str, str]:
 
 def extract_cpp_blocks(text: str) -> list[str]:
     """Replicate compile_all.extract_blocks: ```cpp ... ``` (closing ```)."""
-    blocks, cur, in_block = [], [], False
+    blocks: list[str]
+    cur: list[str]
+    in_block = False
+    blocks, cur = [], []
     for line in text.split("\n"):
         s = line.strip()
         if s.startswith("```cpp"):

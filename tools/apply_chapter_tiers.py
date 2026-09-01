@@ -114,8 +114,8 @@ def plan(path: Path):
 
     # 幂等：全文已有合法 层级：Lx 标记 -> 跳过（不覆盖人工判断）
     for line in lines:
-        if line.lstrip().startswith(">") and TIER_RE.search(line):
-            m = TIER_RE.search(line)
+        m = TIER_RE.search(line)
+        if line.lstrip().startswith(">") and m:
             return m.group(1) and tier, "skip", f"已有 层级：L{m.group(1)}"
 
     meta_idx = find_meta_line_idx(lines)

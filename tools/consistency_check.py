@@ -26,6 +26,9 @@
 退出码：0=全部通过(或无 ERROR)，1=存在 ERROR。
 """
 
+from __future__ import annotations
+from typing import Any
+
 import argparse
 import json
 import re
@@ -84,7 +87,7 @@ def scan_elements(text: str) -> set[str]:
 def check_chapter(path: Path, root: Path) -> dict:
     text = path.read_text(encoding="utf-8")
     rel = path.relative_to(root).as_posix()
-    rep = {"file": rel, "errors": [], "warns": [], "info": []}
+    rep: dict[str, Any] = {"file": rel, "errors": [], "warns": [], "info": []}
 
     # 1. 20 元素覆盖
     elems = scan_elements(text)
@@ -165,7 +168,7 @@ def check_chapter(path: Path, root: Path) -> dict:
 
 def check_glossary(root: Path) -> dict:
     gpath = root / "glossary.json"
-    rep = {"errors": [], "warns": [], "info": []}
+    rep: dict[str, Any] = {"errors": [], "warns": [], "info": []}
     if not gpath.exists():
         rep["errors"].append("glossary.json 缺失")
         return rep
@@ -194,8 +197,8 @@ def check_glossary(root: Path) -> dict:
 
 def check_duplicate_chapter_numbers(root: Path) -> list[str]:
     book = root / "Book"
-    seen = {}
-    dups = []
+    seen: dict[str, list[str]] = {}
+    dups: list[str] = []
     if not book.is_dir():
         return dups
     for f in book.rglob("*.md"):

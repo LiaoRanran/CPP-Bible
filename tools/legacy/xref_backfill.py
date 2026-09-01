@@ -145,7 +145,10 @@ def backfill(path: Path, meta, deps, preds, dry=False):
     cur_refs = count_refs(text)
     if len(cur_refs) >= THRESHOLD:
         return "skip-threshold"
-    num = re.match(r"ch(\d+)_", path.name).group(1)
+    m_num = re.match(r"ch(\d+)_", path.name)
+    if not m_num:
+        return "skip-noname"
+    num = m_num.group(1)
     num = f"{int(num):02d}"
     if num not in meta:
         return "skip-nometa"

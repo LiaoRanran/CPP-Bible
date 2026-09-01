@@ -30,7 +30,7 @@ FENCE_END = re.compile(r'^\s*```\s*$')
 ALREADY_INCLUDE = re.compile(r'^\s*#include\s*[<"]')
 
 # ── 符号→头文件映射（与 expand_assist.py 共用）─────────────
-SYMBOL_MAP: list[tuple[str, str]] = [
+SYMBOL_MAP: list[tuple[str, str | None]] = [
     # === 容器 ===
     (r'\bstd::vector\b', '<vector>'),
     (r'\bstd::deque\b', '<deque>'),

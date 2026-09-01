@@ -272,7 +272,7 @@ def collect_external_roots(index: dict) -> list:
 
 def _short_link_text(meta: dict) -> str:
     """裸引用转链接时的锚文本：保留原有信息量，避免注水。"""
-    return meta["title"]
+    return str(meta["title"])
 
 
 def rewrite_content(content: str, src_book_rel: str, index: dict, mode: str) -> tuple[str, int]:
@@ -294,17 +294,17 @@ def rewrite_content(content: str, src_book_rel: str, index: dict, mode: str) -> 
         elif raw.startswith("../"):
             # 源相对（fix_book_links 改写形态）：归一化回 Book 根目标
             if not m.group("mdlink"):
-                return m.group(0)
+                return str(m.group(0))
             target = "Book/" + raw.lstrip("./")
         else:
             # 无 Book/ 前缀（相对 Book 根）：仅在 markdown 链接 `](...)` 上下文内才算跨章引用，
             # 否则可能是正文里无关的 partNN/chNN.md 文本，原样保留（不臆造）。
             if not m.group("mdlink"):
-                return m.group(0)
+                return str(m.group(0))
             target = "Book/" + raw
         meta = index.get(target)
         if meta is None:
-            return m.group(0)                  # 未知目标，原样保留（不臆造）
+            return str(m.group(0))                  # 未知目标，原样保留（不臆造）
         count += 1
         if mode == "pdf":
             # 合并单文件：一律指向书内锚点
@@ -327,7 +327,7 @@ def rewrite_content(content: str, src_book_rel: str, index: dict, mode: str) -> 
     return new, count
 
 
-def run_site(index: dict) -> None:
+def run_site(index: dict) -> list:
     out_docs = ROOT / "build" / "site" / "docs"
     if out_docs.exists():
         shutil.rmtree(out_docs)
@@ -481,7 +481,7 @@ def _convert_admonitions(content: str) -> str:
     return "\n".join(out)
 
 
-def run_pdf(index: dict) -> None:
+def run_pdf(index: dict) -> list:
     out_dir = ROOT / "build" / "pdf" / "combined_src"
     if out_dir.exists():
         shutil.rmtree(out_dir)

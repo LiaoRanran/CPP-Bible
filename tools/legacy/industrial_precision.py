@@ -52,7 +52,7 @@ INDUSTRIAL_PROJECTS = [
 def classify_urls(text: str):
     """Classify all industrial URLs in text by precision level.
     Returns dict with L3/L2/L1/L0 lists of (url, context_line)."""
-    results = {'L3': [], 'L2': [], 'L1': [], 'L0': []}
+    results: dict[str, list] = {'L3': [], 'L2': [], 'L1': [], 'L0': []}
     seen = set()
 
     # L3: github line-level

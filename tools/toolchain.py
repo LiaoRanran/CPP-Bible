@@ -237,7 +237,7 @@ def expected_python() -> str | None:
     return exp[0] if exp else None
 
 
-def report() -> dict[str, str | None]:
+def report() -> dict[str, str | bool | None]:
     """供 metrics.json 使用的解析结果快照（含配置来源）。"""
     return {
         "config": str(CONFIG) if CONFIG.is_file() else None,

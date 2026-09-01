@@ -184,7 +184,7 @@ EXCERPT_MARKER_RE = re.compile(
 # 不计入编译/运行失败，避免 CI 误报红。
 PRINT_LINK_GAP_RE = re.compile(r"std::__open_terminal|std::__write_to_terminal")
 
-SANITIZER_CACHE = {}
+SANITIZER_CACHE: dict = {}
 
 
 def find_gpp():

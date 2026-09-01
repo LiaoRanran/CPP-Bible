@@ -94,7 +94,7 @@ def parse_meta_codes(seg: str):
       - 斜杠列表：ch21/22/27/31  → ch21,ch22,ch27,ch31（仅首个带 ch 前缀，其余为续号）
     忽略「等…」「无」等描述性文字。
     """
-    codes = set()
+    codes: set[int] = set()
     if not seg:
         return codes
     s = seg.strip()
@@ -153,8 +153,8 @@ def build(root: Path):
     # 出链: short -> set(short)
     out_edges = defaultdict(set)
     # 策展
-    curated_pre = {}
-    curated_post = {}
+    curated_pre: dict[int, set[int]] = {}
+    curated_post: dict[int, set[int]] = {}
 
     # 已知章号集合（用于断链判定）
     known_nums = {chapter_num(p) for p in files}
@@ -215,7 +215,7 @@ def fmt_link(info, num) -> str:
 def generate(root: Path) -> str:
     info, out_edges, in_edges, curated_pre, curated_post, broken, nums = build(root)
 
-    seen = []
+    seen: list[str] = []
     for n in nums:
         pt = info[n]["part"]
         if not seen or seen[-1] != pt:
@@ -324,13 +324,13 @@ def generate(root: Path) -> str:
             L.append("- **入链**：无")
         # 策展
         if n in curated_pre or n in curated_post:
-            pre = sorted(curated_pre.get(n, set()))
-            post = sorted(curated_post.get(n, set()))
+            pre_sorted = sorted(curated_pre.get(n, set()))
+            post_sorted = sorted(curated_post.get(n, set()))
             L.append(
                 "- **策展路径**：前置 "
-                + ("、".join(f"ch{x:02d}" for x in pre) if pre else "无")
+                + ("、".join(f"ch{x:02d}" for x in pre_sorted) if pre_sorted else "无")
                 + " ｜ 后续 "
-                + ("、".join(f"ch{x:02d}" for x in post) if post else "无")
+                + ("、".join(f"ch{x:02d}" for x in post_sorted) if post_sorted else "无")
             )
         L.append("")
 

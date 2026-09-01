@@ -25,6 +25,12 @@
 - **ch05（C++14）翻转为 `[VERIFIED]`**：§⑩「C++14 零新增运行时开销」补真实汇编证据——新增 `_asm_demo/ch05_generic_lambda.cpp` 及权威 GCC 15.3.0 编译产物 `_o0.s`（泛型 lambda 实例化为两个独立符号 `_ZZ11use_genericvENKUlT_E_clIiEEDaS_` / `clIdEEDaS_`）与 `_o2.s`（实例全部内联/常量折叠为 `mov eax, 19`，零 call），章内 asm 围栏为真实节选；`book_asm_freshness` 复验 0 漂移。验证横幅现状 73 章（66 VERIFIED / 7 UNVERIFIED）。
 - **其余 7 章（ch02/16/132/148/149/150/165）审计结论：UNVERIFIED 依红线保留**——逐章正则扫描具体数字/基准词候选并人工复核，均为组织史实、外部工具（IDE/git/ccache/RocksDB）经验值或已显式标注「示意，非本机实测」的内容，无机器可验断言，不可为指标伪造证据链。逐章结论落档 `HANDOVER.md`「UNVERIFIED 章审计结论」。
 
+### 工具链类型化（mypy 清零，60→0）
+
+- 用 `uvx mypy tools/`（110 文件）逐文件清除真实类型债务；**60 错误 → 0（`Success: no issues found in 110 source files`，仅 1 条 `annotation-unchecked` 信息提示非错误）**。
+- 修复类别（均为真实债务，非 `# noqa` 豁免）：`var-annotated`/`list-item`/`dict-item`（共 ~30 处纯注解，零运行时风险）、`union-attr`（4 处 `.group()` 绑定后判空）、`no-any-return`/`return-value`（5+5 处 str()/bytes() 包裹与 `run_site`/`run_pdf` 返回类型补 `-> list`）、`attr-defined`（`consistency_check` 的 `Sequence[str]`→`list[str]`、compile_p0 文件句柄被循环变量遮蔽重命名 `f`→`fh`）。
+- mypy 尚未纳入 CI（按计划留待后续批次）；CI 钉版 ruff 0.6.9 仍全绿，本批改动引入 0 个新 lint。
+
 ### 门禁复验
 
 - `cppbible.py check --stage quality`：**17/17** 全绿。

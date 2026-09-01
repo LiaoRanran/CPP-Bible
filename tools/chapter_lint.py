@@ -93,7 +93,7 @@ def parse_chapter(text: str):
     headings = []
     paras = []
     i = 0
-    cur_para = []
+    cur_para: list[str] = []
     cur_start = None
 
     def flush_para():
@@ -102,7 +102,7 @@ def parse_chapter(text: str):
             body = "\n".join(cur_para).strip()
             if body and len(body) > 20:
                 paras.append((cur_start, i, body))
-        cur_para = []
+        cur_para = []  # type: list[str]
         cur_start = None
 
     while i < n:

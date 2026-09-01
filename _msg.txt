@@ -1,0 +1,13 @@
+toolchain(quality): mypy 类型债务清零 60→0（110 文件），钉版 ruff 仍全绿
+
+- 用 `uvx mypy tools/`（110 文件）逐文件清真实类型债务：60 错误 → 0（`Success: no issues found`，
+  仅 1 条 annotation-unchecked 信息提示）。修复均属真实债务，无 `# noqa` 豁免：
+  - 纯注解（零运行时风险）：var-annotated/list-item/dict-item 共 ~30 处（含 consistency_check
+    的 `Sequence[str]`→`list[str]`、auto_include SYMBOL_MAP 纳入 None、audit_cpp_defects by_part 类型）
+  - union-attr ×4：`.group()` 先绑定再判空（metrics_snapshot / apply_chapter_tiers / xref_backfill）
+  - no-any-return/return-value ×10：str()/bytes() 包裹；`run_site`/`run_pdf` 返回类型补 `-> list`
+  - attr-defined：compile_p0 文件句柄被循环变量遮蔽，重命名 `f`→`fh`
+- 教训：`from __future__ import annotations`/`from typing import Any` 必须置于模块 docstring 之后，
+  否则钉版 ruff 0.6.9 报 E402；已修正 consistency_check/collect_reports 两处放置。
+- CI 钉版 ruff 0.6.9 复验 All checks passed（本批 0 新 lint）；mypy 尚未纳入 CI（按计划留后续批次）。
+- 文档：CHANGELOG 补「mypy 清零」节；TOOLCHAIN_UPGRADE_NEXT 行 2 标记 mypy 清零；NEXT_LLM 待办收口。

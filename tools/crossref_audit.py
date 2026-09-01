@@ -87,7 +87,7 @@ def audit(root: Path):
 
 def suggest_refs(chapter_path: Path, all_chapters: list) -> list:
     """根据章节编号和主题推荐交叉引用目标。"""
-    suggestions = []
+    suggestions: list[str] = []
     name = chapter_path.stem
     num_match = re.match(r"ch(\d+)", name)
     if not num_match:

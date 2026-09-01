@@ -55,7 +55,7 @@ def read_head(path: Path) -> str:
             cwd=REPO, capture_output=True, text=True, check=True,
         ).stdout
     except subprocess.CalledProcessError:
-        return None  # 未跟踪（不应发生）
+        return ""  # 未跟踪（不应发生）
 
 
 def main():

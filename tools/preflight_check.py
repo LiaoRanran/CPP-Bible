@@ -50,7 +50,7 @@ def strip_protected(line: str) -> str:
     return line
 
 def scan_file(path: pathlib.Path):
-    hits = []
+    hits: list[dict[str, object]] = []
     in_fence = False
     fence_marker = None
     try:

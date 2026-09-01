@@ -58,6 +58,13 @@ CI 七 job 实跑（quality / compile / publish-check / site / pdf / epub / depl
 
 验证横幅现状：73 章（66 VERIFIED / 7 UNVERIFIED）。**这 7 章不要再当缺口去「补」**——补即是编造。
 
+## 工具链类型化：mypy 债务清零（2026-09-01，commit 待定）
+
+- 用 `uvx mypy tools/`（110 文件）逐文件清真实类型债务：**60 错误 → 0**（`Success: no issues found`；仅 1 条 `annotation-unchecked` 信息提示）。
+- 修复均属真实债务，无 `# noqa` 豁免：纯注解（var-annotated/list-item/dict-item ~30 处）、`.group()` 判空（union-attr ×4）、str()/bytes() 包裹与 `run_site`/`run_pdf` 返回类型补 `-> list`（no-any-return/return-value）、`Sequence[str]`→`list[str]`、`compile_p0` 文件句柄被循环变量遮蔽重命名 `f`→`fh`。
+- **仍在坑**：`from __future__ import annotations`/`from typing import Any` 必须放在模块 docstring **之后**，否则钉版 ruff 0.6.9 报 E402（教训已吃）。
+- mypy **未纳入 CI**（按计划留待后续批次加 `uv run mypy tools/`）；CI 钉版 ruff 0.6.9 全绿，本批 0 新 lint。
+
 ## Git 提交链（近期）
 
 ```

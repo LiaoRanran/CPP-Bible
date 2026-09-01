@@ -17,6 +17,7 @@ import json
 import pathlib
 import subprocess
 from datetime import datetime
+from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PYTHON = r"C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
@@ -24,7 +25,7 @@ PYTHON = r"C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
 
 def collect_data() -> dict:
     """采集所有审计数据"""
-    data = {"timestamp": datetime.now().isoformat(), "scores": {}, "top_issues": [], "metrics": {}}
+    data: dict[str, Any] = {"timestamp": datetime.now().isoformat(), "scores": {}, "top_issues": [], "metrics": {}}
 
     # expansion_audit
     r = subprocess.run(

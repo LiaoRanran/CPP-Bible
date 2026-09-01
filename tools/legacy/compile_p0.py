@@ -23,8 +23,8 @@ TARGETS = [
 
 OUT = 'tools/results_p0.txt'
 # Fresh file
-with open(OUT, 'w', encoding='utf-8') as f:
-    f.write('# P0 compile results (main-only)\n')
+with open(OUT, 'w', encoding='utf-8') as fh:
+    fh.write('# P0 compile results (main-only)\n')
 
 for f in TARGETS:
     try:

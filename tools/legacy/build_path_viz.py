@@ -32,7 +32,7 @@ for d in sorted(os.listdir(os.path.join(ROOT, "Book"))):
         PART_ORDER.append(d)
 
 # 路线解析（取自 learning_paths.md：## 路线 X: 标题下的各阶段 chXX→chXX 序列）
-ROUTES = {}
+ROUTES: dict[str, list] = {}
 md = open(os.path.join(ROOT, "learning_paths.md"), encoding="utf-8").read()
 cur = None
 for line in md.splitlines():

@@ -115,7 +115,7 @@ def main() -> int:
 
     total = 0
     intent_error = 0
-    cats = {
+    cats: dict[str, list] = {
         "unsafe_c": [],
         "raw_new_no_delete": [],
         "reinterpret_cast": [],
@@ -123,7 +123,7 @@ def main() -> int:
         "using_namespace_std": [],
         "endl_flush": [],
     }
-    by_part = {}
+    by_part: dict[str, dict[str, int]] = {}
 
     for f in files:
         part = f.parent.name

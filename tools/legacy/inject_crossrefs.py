@@ -6,7 +6,7 @@ import json
 
 kg = json.load(open('knowledge_graph.json', encoding='utf-8'))
 # Build part → chapter file map
-part_map = {}
+part_map: dict[str, list[str]] = {}
 for root, dirs, files in os.walk('Book/'):
     for f in sorted(files):
         if not f.endswith('.md') or '_legacy' in root:
