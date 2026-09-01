@@ -2082,3 +2082,11 @@ int main() {
 - 计时用 `std::chrono::steady_clock`，每个场景跑 5 轮取中位数，避免调度抖动污染；求和结果经 `volatile` sink 落盘，防止编译器把「无副作用的构建循环」整体优化掉。
 - 全部数字为同机实测锁定值，**请勿在本机重测并据此质疑正文**：绝对毫秒随 CPU 频率、内存带宽、后台负载而变，唯一可跨机器比较的是「加速比」。
 - demo 仅用 C++17 的 `<memory_resource>`，编译旗标与全书一致（`-O2 -std=c++17`）；CI 环境 gcc-15 原生支持 pmr，无需特殊处理。规模已缩到 CI 秒级，断言只验证功能等价（两列表求和一致、size 一致），不断言任何耗时。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/memory/memory_resource]`（T1）cppreference `cpp/memory/memory_resource` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:stdlib4:<ch>]`（T4）The C++ Standard Library 4th（Josuttis，含 C++23） · <ch> —— 提取文本 `docs/references/external/books/cpp-stdlib-4e.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

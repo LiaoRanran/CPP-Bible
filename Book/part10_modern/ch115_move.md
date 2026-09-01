@@ -1731,3 +1731,13 @@ int main() {
 ```
 
 > 注意：加速比（2.0×）是可移植信号；绝对毫秒随 CPU/内存而变。这里看到的 `call _Znwy`（分配）与整段 `movups`/`movdqu` 复制块，正是"O(n) 深拷贝"的硬件代价；移动把它压缩成一次 O(1) 的指针交接与一次近乎免费的析构（源已置空）。与 D5.2 第 1、2 点一致。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/move_constructor]`（T1）cppreference `cpp/language/move_constructor` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item23]`（T4）Effective Modern C++（Meyers，42 条） · Item 23：Understand std::move and std::forward. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item25]`（T4）Effective Modern C++（Meyers，42 条） · Item 25：Use std::move on rvalue references, std::forward on universal references. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item29]`（T4）Effective Modern C++（Meyers，42 条） · Item 29：Assume that move operations are not present, not cheap, and not used. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

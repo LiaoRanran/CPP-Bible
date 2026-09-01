@@ -1384,3 +1384,11 @@ jmp    _ZdlPvy
 ```
 
 > 注意：在 -O2 下 VA::op / VB::op 均被编译为 2 条指令的极简本体（lea;ret），析构走 jmp operator delete。这说明 D5.2 的 1.41× 差异并非来自计算本体，而是来自 std::visit 相比虚调用省去的堆分配（new/delete 往返）与一次间接 call 的开销。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/utility/optional]`（T1）cppreference `cpp/utility/optional` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[cppref:cpp/utility/variant]`（T1）cppreference `cpp/utility/variant` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

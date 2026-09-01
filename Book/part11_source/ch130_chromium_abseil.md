@@ -1454,3 +1454,9 @@ int main(){
 ```
 
 > 注意：可移植信号是「unordered_map 用 `div` 算桶 + 逐节点 `QWORD PTR` 指针跳转（缓存不友好），sorted_vec 仅用 `sar` + 连续 `cmp`（缓存友好但 mid 计算有开销）」。这把 D5.2 的「胜负手是缓存而非算法」落到机器码：flat/vector 的连续存储让预取器有效工作，unordered_map 的散点节点让每跳都可能 miss；故 flat_hash_map 与 sorted_vec 同快，unordered_map 独慢。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

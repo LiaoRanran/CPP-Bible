@@ -1468,3 +1468,10 @@ int main() {
 ```
 
 > 注意：两个虚 `compute` 明明都只是单条 `lea`，却必须保留独立符号、每次调用经 `vptr → vtable 槽 → call [rax]` 间接跳转，优化器对循环体内语义不可知，归约循环无法被自动向量化——这是 35.09ms（基准）的主因。CRTP 的 `compute` 因模板静态定型被内联，连符号都不生成，`x*3+1` 直接暴露给 -O2，循环被 SIMD + 强度折减，得到 2.60ms（13.5×）。与 ch47 机制同源，倍数随循环体是否可向量化而浮动。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

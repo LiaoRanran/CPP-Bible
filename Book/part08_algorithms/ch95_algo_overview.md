@@ -2134,3 +2134,10 @@ int main() {
 ```
 
 > 注意：`find` 的核心 `add rax,4` + `cmp [rax],ecx` 是 O(N) 顺序比较（200 次查询共触碰 ~2 亿次比较），`lower_bound` 的 `sar r8` + `cmp [r9+r8*4],r10d` 是 O(log N)（200 次查询仅 ~4200 次比较）。比较次数差约 5 个数量级，正是 D5.2 结论 2「有序前提的价值被严重低估」的机器码证据。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/algorithm/<algo>]`（T1）cppreference `cpp/algorithm/<algo>` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

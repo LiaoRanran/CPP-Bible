@@ -1430,3 +1430,10 @@ int main() {
 - 注意：`std::memcpy` 用于 trivial 类型是良构的；non-trivial 类型必须走逐元素拷贝（或逐字段移动），否则未定义行为。
 - 加速比（1.19×、3.02×、2.08× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch65_type_traits.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

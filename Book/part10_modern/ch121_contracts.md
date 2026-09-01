@@ -1442,3 +1442,10 @@ int main() {
 ```
 
 > 注意：三份代码完全相同，说明在本基准的输入范围内 `assert` 与手写 `if` 都被证明"条件恒真"后消除，**零运行期开销**。代价/前提：这依赖编译器能静态证明条件恒真；若前置条件依赖运行期未知输入，assert 会保留为真实分支（Debug），而 Release（NDEBUG）下 assert 直接消失（同样零成本，但失去检查）。绝对毫秒随机器而变；"检查是否被消除"这一事实与编译器优化能力相关，与 D5.2 一致。
+
+## 参考引用
+
+- `[std-cpp26]`（T0·终审）C++26 工作草案 —— 本地 `docs/references/external/standards/N5001_C++26draft.pdf`（草案，可能变动）
+- `[isocpp:<contracts>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

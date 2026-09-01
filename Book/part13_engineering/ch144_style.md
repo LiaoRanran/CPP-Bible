@@ -1444,3 +1444,11 @@ ret
 ```
 
 > 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:NL.1]`（T3）C++ Core Guidelines 规则 NL.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+- `[book:swe-google:ch8]`（T4）Software Engineering at Google · ch8 —— 提取文本 `docs/references/external/books/swe-at-google.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -2417,3 +2417,11 @@ int main() {
 - 异常对象故意取空结构体 `MyErr{}`，避免字符串/堆消息分配掩盖 `__cxa_throw` 本身的展开成本。
 - 异常抛出成本高度依赖 unwinder 实现（SEH / SJLJ）与操作系统：本例 **51.4×** 为原测量环境值；在 GCC 15.3.0 / MinGW-w64 SEH 下本机实测约 **120×**。可移植信号是「异常路径比错误码路径慢约 1–2 个数量级」这一**量级结论**，而非精确倍数；绝对毫秒与精确倍数均随 CPU、内存、编译器版本、unwinder 而变，请勿跨机器直接比较毫秒或倍数。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_40_exception.cpp`。demo 仅演示功能语义（try 块不改变正常结果、抛出可被捕获），未对时间或倍数做任何断言。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:E.6]`（T3）C++ Core Guidelines 规则 E.6 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+- `[book:effective-cpp:item29]`（T4）Effective C++（Meyers，55 条） —— 提取文本 `docs/references/external/books/effective-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

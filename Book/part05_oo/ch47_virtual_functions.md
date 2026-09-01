@@ -2019,3 +2019,10 @@ int main() {
 ```
 
 > 注意：`D1::f`/`D2::f` 明明是单条 `lea` 的廉价函数体，却必须保留独立符号、每次调用都经 `vptr → vtable 槽 → call [rax]` 间接跳转，因此无法被内联、循环体对外 opaque，**整条归约链失去向量化机会**——这是 1.93×（类型恒定、BTB 命中）到 7.14×（类型混排、BTB 失准）的根源。CRTP 的 `f` 因静态定型被内联、连符号都不生成，故有「CRTP = 直接调用」的 1.00×。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

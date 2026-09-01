@@ -1227,3 +1227,11 @@ int main() {
 - 加速比（如 8.2×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较。
 - 复现旗标：`g++ -O2 -std=c++23 -pthread`。本 demo 用两线程 relaxed store + release/acquire fence 配对传递 flag+data，仅断言"观察到 flag 后 data 必可见"这一同步语义正确性，未对时间或倍数做任何断言。
 - 基准源码见库根 `_bench_d5_109_fence.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/atomic/atomic_thread_fence]`（T1）cppreference `cpp/atomic/atomic_thread_fence` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:concurrency:ch5]`（T4）C++ Concurrency in Action（Williams） · ch5 —— 提取文本 `docs/references/external/books/cpp-concurrency.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

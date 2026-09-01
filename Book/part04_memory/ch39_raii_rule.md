@@ -2581,3 +2581,11 @@ int main() {
 ```
 
 > 注意：两段共享同一 `push_back` 循环骨架，向量扩容 `_M_realloc_append`（里的 `call _Znwy`/`memcpy`）在两条路径上都发生且被摊还，不构成差异；真正的 109× 来自**每个元素**的构造体：copy 多一次 1KB 的 `operator new`+`memcpy`，move 仅搬 16 字节的指针/长度并清空源。`_Znay`=`operator new[]`、`_Znwy`=`operator new`、`memcpy` 即 1KB 缓冲的逐字节复制。绝对毫秒随机器而变，109× 这个加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:R.1]`（T3）C++ Core Guidelines 规则 R.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+- `[book:effective-modern:item17]`（T4）Effective Modern C++（Meyers，42 条） · Item 17：Understand special member function generation. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1745,3 +1745,11 @@ int main() {
 | ranges `filter \| transform` 管道 | 26.79 | **5.38×**（慢） |
 
 > 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/ranges]`（T1）cppreference `cpp/ranges` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:stdlib4:<ch>]`（T4）The C++ Standard Library 4th（Josuttis，含 C++23） · <ch> —— 提取文本 `docs/references/external/books/cpp-stdlib-4e.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

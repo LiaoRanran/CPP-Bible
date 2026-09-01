@@ -1477,3 +1477,10 @@ int main(){
 ```
 
 > 注意：绝对毫秒随 CPU/编译器而变，可移植信号是「直接路径 0 次 call，虚路径每槽 1 次 `call rax`」这一结构性差异。它精确对应 D5.2：虚调用不可内联，多槽则把一次虚调用乘成 N 次容器遍历内的虚调用，故 4 接收者 ≈ 15× 单虚槽。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[qt:<object-model>]`（T7）Qt 官方文档 `<object-model>` —— 本地 `docs/references/external/vendor/qt-doc/`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

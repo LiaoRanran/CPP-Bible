@@ -1820,3 +1820,11 @@ int main() {
 ```
 
 > 注意：`coro_sum` 的代价不是「求和更慢」，而是**每次调用都要在堆上分配/销毁协程帧**（48 字节 promise + 局部变量 + 恢复上下文）；`plain_sum` 在 `-O2` 下被完全内联/闭式求值，连栈帧都没有。代价换来了可挂起/恢复的无栈并发表达力（D5.2 第②条）。**绝对毫秒随机器而变，加速比（约 3.50×）才是可移植信号**。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/coroutines]`（T1）cppreference `cpp/language/coroutines` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:cpp-guide:<ch>]`（T4）C++: The Comprehensive Guide（Torsten T. Will） · <ch> —— 提取文本 `docs/references/external/books/cpp-will-torsten.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

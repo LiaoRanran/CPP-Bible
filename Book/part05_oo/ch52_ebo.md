@@ -1485,3 +1485,10 @@ int main() {
 - 断言仅用相对尺寸（`<=`），禁用精确 `sizeof ==`（EBO 是实现许可非强制，复合布局不可移植）。
 - 加速比（如 1.50×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_52_ebo.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

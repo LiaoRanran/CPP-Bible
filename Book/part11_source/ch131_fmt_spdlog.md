@@ -1232,3 +1232,9 @@ int main() {
 ```
 
 > 注意：可移植信号是「format 的写路径 = 一次加法（_M_bump）+ 一次比较（_M_reserve 的 `jnb`）」，而 `ostringstream` 每次 `<<` 都要经 `streambuf` 虚函数与潜在堆分配。D5.2 的 1.42×/1.48× 加速比即源于此结构性差异，而非魔法；mingw 下 `snprintf` 反常识地慢属运行时实现特性，与这段 format 内部机制无关。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

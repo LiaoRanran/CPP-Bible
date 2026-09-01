@@ -1621,3 +1621,11 @@ int main() {
 ```
 
 > 注意：x86 的 `lock` 前缀本身就是全屏障（sequentially consistent），不存在「更弱」的 RMW 指令；想靠 `memory_order_relaxed` 给 `fetch_add` 在 x86 上提速是徒劳的——节省的只是 ARM 等弱内存架构上才有的语义差异。这与 D5.2 结论④一致：**绝对毫秒随机器而变，加速比（relaxed vs seq_cst ≈ 1.01×）才是可移植信号**。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/atomic/memory_order]`（T1）cppreference `cpp/atomic/memory_order` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:concurrency:ch5]`（T4）C++ Concurrency in Action（Williams） · ch5 —— 提取文本 `docs/references/external/books/cpp-concurrency.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

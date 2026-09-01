@@ -1684,3 +1684,11 @@ int main() {
 ```
 
 > 注意：两条路径的差异仅限于源码里的名字查找规则，落到 `-O2` 机器码后都是同一个 `call`，没有任何重定向、虚表或间接跳转。因此「ADL 慢」是误区——可移植信号是「调用指令一致」，绝对毫秒随微架构而变。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/adl]`（T1）cppreference `cpp/language/adl` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-cpp:item25]`（T4）Effective C++（Meyers，55 条） —— 提取文本 `docs/references/external/books/effective-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

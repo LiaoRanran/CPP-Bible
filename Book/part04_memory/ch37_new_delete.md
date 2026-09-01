@@ -2748,3 +2748,11 @@ int main() {
 - 加速比（21.74×、1.17× 等）是可移植信号；绝对毫秒随 CPU、分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。
 - demo 只断言分配**次数**与**对齐边界**这类稳定语义，未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch37_new_delete.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/memory/new]`（T1）cppreference `cpp/memory/new` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-cpp:item16]`（T4）Effective C++（Meyers，55 条） —— 提取文本 `docs/references/external/books/effective-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

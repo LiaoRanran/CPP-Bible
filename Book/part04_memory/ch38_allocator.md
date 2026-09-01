@@ -2498,3 +2498,11 @@ int main() {
 ```
 
 > 注意：默认 `std::allocator` 的释放会被内联成直通的 `free`/`delete`，没有这次虚调用；PMR 把「能否互相释放」推迟到运行期指针比较，代价就是每次分配/释放多一次 `call [vtable]`（D5.2 第 5 条）。但即便含这笔虚调用开销，节点容器仍比默认分配器快约 10×——因为削掉的是「每次 push_back 一次分配」的固定成本（D5.2 第 1 条）。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/memory/allocator]`（T1）cppreference `cpp/memory/allocator` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:stdlib4:<ch>]`（T4）The C++ Standard Library 4th（Josuttis，含 C++23） · <ch> —— 提取文本 `docs/references/external/books/cpp-stdlib-4e.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

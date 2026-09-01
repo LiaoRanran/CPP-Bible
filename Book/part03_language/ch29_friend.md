@@ -1230,3 +1230,10 @@ int main() {
 ```
 
 > 注意：友元只是放宽编译期名字可见性，不改变数据布局或生成的访存序列——因此 `friend` 访问私有成员与 `getter`/公有访问产生相同机器码。绝对毫秒随微架构而变，「三者指令逐字节相同」才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/friend]`（T1）cppreference `cpp/language/friend` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

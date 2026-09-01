@@ -1556,3 +1556,10 @@ ret
 - Stroustrup：模式被语言吸收的论述（*The C++ Programming Language* 4th ed.）。
 - *C++ Core Guidelines*：相关 lambda/`std::function`/回调条目。
 - LLVM/Clang `RecursiveASTVisitor.h`/`InstVisitor`；Chromium `observer_list.h`/`callback.h`；Qt `qobject.cpp`；Boost `signals2`/`serialization`；`spdlog` sinks。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -2041,3 +2041,11 @@ int main() {
 ```
 
 > 注意：vector 遍历核只有一次内存读取（`[rax]`）+ 一次 `add rax, 4`，CPU 顺序预取器能稳定命中 L1；list 遍历核每元素需两次地址互不连续的解引用（`16[rax]` 取 value + `[rax]` 取 next），几乎每步都触发缓存缺失——这正是 D5.2 结论 #1「同复杂度 O(n) 却慢 16.54×」的机器码根因。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:effective-stl:item1]`（T4）Effective STL 中文版（Meyers，50 条） · Item 1：慎重选择容器类型。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[book:stdlib4:<ch>]`（T4）The C++ Standard Library 4th（Josuttis，含 C++23） · <ch> —— 提取文本 `docs/references/external/books/cpp-stdlib-4e.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

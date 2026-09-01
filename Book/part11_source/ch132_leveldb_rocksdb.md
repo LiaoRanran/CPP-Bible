@@ -1739,3 +1739,9 @@ int main() {
 <span class="badge badge-ref">引用</span> RocksDB（Compaction 与 SSTable）：<https://github.com/facebook/rocksdb/wiki>；cppreference `std::merge`：<https://en.cppreference.com/w/cpp/algorithm/merge>。
 
 </details>
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

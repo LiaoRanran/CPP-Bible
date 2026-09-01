@@ -1788,3 +1788,12 @@ int main() {
 ```
 
 > 注意：`set::find` 走的就是这条完全相同的下降循环——每层一次 `cmp` + 一次 `_M_left`/`_M_right` 指针追逐，树高约 20 层即约 20 次潜在 cache miss。vector 的 `lower_bound` 每层也是一次 `cmp`，但"下一层中点"由 `base + mid*4` 算术连续得出，预取器可预测、几乎全在 L1 命中。这正是 D5.2 #1「同阶复杂度、缓存定胜负」的机器码注脚，也是 #4（有序遍历 vector 快 327×）与 #5（set 内存膨胀 10×）同一根因：节点散布堆上 → 缓存友好性崩塌。绝对毫秒随 CPU/编译器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/set]`（T1）cppreference `cpp/container/set` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item19]`（T4）Effective STL 中文版（Meyers，50 条） · Item 19：理解相等（equality）和等价（equivalence）的区别。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[book:effective-stl:item22]`（T4）Effective STL 中文版（Meyers，50 条） · Item 22：切勿直接修改set或multiset中的键。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

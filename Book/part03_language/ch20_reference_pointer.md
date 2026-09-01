@@ -1811,3 +1811,12 @@ int main() {
 ```
 
 > 调用点的差异才是 6.3× 的来源：`by_value` 路径在 `call` 之前需把整个 `Big`（64 B）从调用者栈帧 `vmovdqu`/`mov` 到被调栈帧；`by_cref` 路径仅 `lea`/`mov` 一个 8 字节指针。故「大对象按值传递慢 6.3×」是**栈拷贝成本**，与函数体内的求和循环无关（见 D5.2.1）。这也解释了为什么 ≤16 B 的小对象按值反而更快——它走寄存器、零栈拷贝。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/reference]`（T1）cppreference `cpp/language/reference` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item24]`（T4）Effective Modern C++（Meyers，42 条） · Item 24：Distinguish universal references from rvalue references. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[core:F.1]`（T3）C++ Core Guidelines 规则 F.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

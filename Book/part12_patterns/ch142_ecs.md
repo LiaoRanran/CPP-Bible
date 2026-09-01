@@ -1620,3 +1620,10 @@ ECS 并非免费午餐。每个 `System` 都要「声明自己读/写哪些组�
 ### M.7 生产价值小结与权威出处
 
 ECS 的生产价值不在「模式优雅」，而在**「把数据局部性卖给缓存、把遍历并行性卖给多核」**——第 142 章 附录 D5 用 GCC 15.3.0 实测量化：Archetype SoA 比 Naive AoS 快 5.80×、稀疏指针追逐慢 2.68×，根因全在缓存行污染与预取器失效。权威出处：Unity DOTS 文档（`https://docs.unity3d.com/Packages/com.unity.entities@latest`）、EnTT（`https://github.com/skypjack/entt`）、Bevy（`https://github.com/bevyengine/bevy`）、Mike Acton 的 *Data-Oriented Design* 演讲（见第 143 章 附录 M）、以及 id Software 在 Doom/Quake 时代确立的「缓存为王」工程传统。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

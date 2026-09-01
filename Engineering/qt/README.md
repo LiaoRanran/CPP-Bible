@@ -1,6 +1,6 @@
 # qt — Qt 框架详细
 
-平行核心章：`Book/part14_engineering`（工程实践）/ 实际应用案例。
+平行核心章：`Book/part13_engineering`（工程实践）/ 实际应用案例。
 
 - 主参考：`msvc`、`gcc`、`book:primercpp`、`cppref:cpp/...`
 - 计划内容：

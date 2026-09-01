@@ -1759,3 +1759,11 @@ int main() {
 ```
 
 > 注意：`manual_split` 用「指针 + 长度」（`[r10+rdx]` 直接扫描原串）定位分隔符，中间切分零拷贝，仅对 dir/name/ext 三个结果各物化一次（`string_view` 子串）；而 `path` 的每个 `parent_path()`/`filename()`/`extension()` 都返回一个**值语义** `std::string`，必经 `resize` 的 `call _Znwy`（堆分配），销毁时再走 `_M_dispose` 的 `_ZdlPvy`（堆释放）——每个子操作一次「分配 + 释放」的堆抖动，正是 8.9× 的机器码来源。绝对毫秒随路径长度而变，加速比（手写较 `path` 快 8.91×）才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/filesystem]`（T1）cppreference `cpp/filesystem` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:josuttis17:<ch>]`（T4）C++17 The Complete Guide（Josuttis） · <ch> —— 提取文本 `docs/references/external/books/cpp17-guide.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

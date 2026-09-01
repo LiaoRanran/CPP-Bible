@@ -1893,3 +1893,10 @@ DOD 并非「反 STL」，恰恰相反——**`std::vector` 的连续存储是 D
 - Carruth, C. *Efficiency with Algorithms, Performance with Data Structures*, CppCon 2014/2016.
 - Unity DOTS 文档：`https://docs.unity3d.com/Packages/com.unity.entities@latest`
 - 第 143 章 ⑤/⑦/⑬/⑭ 与附录 D5 的 GCC 15.3.0 实测（AoS vs SoA：partial 10.3×、full 3.61×、reduce 2.38×）
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

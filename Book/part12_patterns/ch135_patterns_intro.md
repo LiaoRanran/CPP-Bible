@@ -1486,3 +1486,10 @@ GoF 书（Gamma、Helm、Johnson、Vlissides，*Design Patterns: Elements of Reu
 - Chromium 源码：`base/observer_list.h`、`base/callback.h`、`base/singleton.h`。
 - Qt 源码：`qobject.cpp`（信号槽）、`qfiledialog.cpp`（Facade）。
 - Boost：`signals2`、`iterator`、`iostreams`、`serialization`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

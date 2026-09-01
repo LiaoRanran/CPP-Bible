@@ -1680,3 +1680,10 @@ xor    esi, esi
 - Alexandrescu（2001）*Modern C++ Design*：编译期创建型（policy-based Singleton/Factory）。
 - *C++ Core Guidelines*：`I.27`（工厂函数）、`C.130`（虚 `clone`）、`R.20`–`R.37`（智能指针）。
 - LLVM `IRBuilder.h` / `Registry.h`；Unreal `CoreUObject`（CDO）；Abseil `absl::Singleton`；Chromium `base::Singleton`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

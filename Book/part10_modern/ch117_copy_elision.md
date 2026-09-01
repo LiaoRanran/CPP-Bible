@@ -1583,3 +1583,10 @@ int main() {
 ```
 
 > 注意：前两者循环体只有 3 条 `mov QWORD` 指针交接（O(1)），与 `construct_only` 几乎同成本；`make_move_copyonly` 多出 `call memcpy` + `call _ZdlPvy`，恰好等于一次额外深拷贝，使总耗时 ≈ 构造 + 纯拷贝（2.0×）。这印证了 D5.2 第 1、2、3 点：`return b;` 永远不劣于 `return std::move(b);`。加速比随机器而变。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/copy_elision]`（T1）cppreference `cpp/language/copy_elision` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

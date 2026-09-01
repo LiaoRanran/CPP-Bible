@@ -2465,3 +2465,11 @@ int main() {
 | `dynamic_cast<D4*>` | RTTI type_info 验证 | 113.81 | ~10.3x 慢 |
 
 > 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/explicit_cast]`（T1）cppreference `cpp/language/explicit_cast` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-cpp:item27]`（T4）Effective C++（Meyers，55 条） —— 提取文本 `docs/references/external/books/effective-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

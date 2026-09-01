@@ -1846,3 +1846,12 @@ int main() {
 ```
 
 > 注意：两侧都含 `call memcmp` 这一键比较大头，因此"键越贵，结构差距越被稀释"——这正是 #2（string 键 3.65× < int 键 22.5×）的机器码注脚。`map` 的下降循环深度约 log2(N)：1M 元素 ≈ 20 层，每层一次 cache-miss 倾向的指针追逐，结构上就注定查找远慢于"一次哈希 + 短桶链"的 `unordered_map`。绝对毫秒随 CPU/编译器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/map]`（T1）cppreference `cpp/container/map` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item19]`（T4）Effective STL 中文版（Meyers，50 条） · Item 19：理解相等（equality）和等价（equivalence）的区别。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[book:effective-stl:item24]`（T4）Effective STL 中文版（Meyers，50 条） · Item 24：当效率至关重要时，请在map::operator[]与map::insert之间谨慎做出选择。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1,6 +1,6 @@
 # debugging — 调试技巧 / 崩溃复盘
 
-平行核心章：`Book/part02_toolchain/`（工具链）/ `Book/part14_engineering`。
+平行核心章：`Book/part02_toolchain/`（工具链）/ `Book/part13_engineering`。
 
 - 主参考：`gcc` `clang` `msvc` `ubsan` `asan` `so`（调试类高频帖）
 - 计划内容：

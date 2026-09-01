@@ -1523,3 +1523,9 @@ flowchart TD
 | ch133 向量化执行 | ch43 缓存局部性 | SIMD 吞吐受 cache line 制约，二次闭环 ch43 |
 | ch133 分片 worker | ch93 thread/async | 分片由线程池驱动，呼应 ch93 |
 | ch133 ZSET 跳表 | ch35 内存布局 | 跳表节点指针布局决定缓存友好度，关联 ch35 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

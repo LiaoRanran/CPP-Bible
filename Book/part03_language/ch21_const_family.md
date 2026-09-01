@@ -1415,3 +1415,11 @@ int main() {
 ```
 
 > 注意：这里 `rt_sum` 的耗时（152.94 ms）与等价普通函数完全一致，证明 constexpr 不会给运行期实参「加速」；真正免费的是 `ct_sum(编译期常量)`，它在机器码层面彻底消失（无符号、无指令），其「加速比」不可测量，因为账单为空。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/constexpr]`（T1）cppreference `cpp/language/constexpr` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item15]`（T4）Effective Modern C++（Meyers，42 条） · Item 15：Use constexpr whenever possible.                                                              97 vii === PAGE 10 === —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1754,3 +1754,9 @@ paddd    xmm2, xmm4
 <span class="badge badge-ref">引用</span> POSIX `fcntl(2)`（设 `O_NONBLOCK`）<https://man7.org/linux/man-pages/man2/fcntl.2.html>；Microsoft Winsock `ioctlsocket` <https://learn.microsoft.com/windows/win32/api/winsock2/nf-winsock2-ioctlsocket>；C10K 问题综述 <https://daniel.haxx.se/docs/poll/。
 
 </details>
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

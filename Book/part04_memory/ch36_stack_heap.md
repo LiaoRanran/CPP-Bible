@@ -2028,3 +2028,10 @@ int main() {
 ```
 
 > 注意：栈路径的「分配」只有 `___chkstk_ms` + `sub rsp`（栈帧探测，几乎零内存写），写回还是向量化的；对照的堆路径（`new int` / `new int[1024]`）在 `main` 中每次迭代内联 `operator new`/`delete`，要走分配器慢路径（D5.2 第 2、4 条）。绝对毫秒随机器而变，**「栈路径零堆调用」才是可移植、可机校的事实**，加速比只是它的吞吐投影。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:cpp-guide:<ch>]`（T4）C++: The Comprehensive Guide（Torsten T. Will） · <ch> —— 提取文本 `docs/references/external/books/cpp-will-torsten.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1212,3 +1212,10 @@ flowchart TD
 | ch126 | ch125 | MS STL 与 libc++ 的 ABI 与模块策略对照 |
 | ch127 | ch125 | LLVM 基础设施支撑 libc++ 的构建与测试 |
 | ch132 | ch125 | 存储引擎对分配器的需求反哺 libc++ PMR 设计 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[clang:libc++]`（T5）CLANG 官方文档 —— 在线 `clang.llvm.org`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

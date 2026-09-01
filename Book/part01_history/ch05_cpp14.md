@@ -970,3 +970,11 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 | ch04 C++11 | CORE→K8 | ch05 所有特性建立在 ch04 现代化基础上。 |
 | ch06 C++17 | CORE→K9 | ch05 的完善在 ch06 进一步扩展（如 if constexpr）。 |
 | ch145 命名与 API | CORE→K7 | [[deprecated]] 是 ch145 API 演进管理的工具。 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[isocpp:<history>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[book:tour:<sec>]`（T4）A Tour of C++（Bjarne） · <sec> —— 提取文本 `docs/references/external/books/tour-of-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

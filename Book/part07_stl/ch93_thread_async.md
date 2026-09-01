@@ -2001,3 +2001,14 @@ int main() {
 ```
 
 > 注意：两段机器码几乎同构——都构造 `Task_setter` 闭包（`punpcklqdq` 拼 16 字节 `Any_data`）并 `call _M_set_result` 跑任务。`async` 的 `_M_run` 之所以贵，不是这 29 条指令本身，而是它被 std::thread 在一个**新建 OS 线程**里启动（线程 ctor → 内核对象 + 默认栈保留 + 调度注册/注销），每次 `async` 调用都付一次；`deferred` 的 `_M_complete_async` 则在 `get()` 调用线程内同步执行，零线程开销（D5.2 结论 2 的「假并发」）。绝对毫秒随机器/标准库而变，595× 才是可移植信号（且 MinGW winpthreads 可能在原生线程 API 之上再叠一层）。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/thread]`（T1）cppreference `cpp/thread` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item35]`（T4）Effective Modern C++（Meyers，42 条） · Item 35：Prefer task-based programming to thread-based. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item36]`（T4）Effective Modern C++（Meyers，42 条） · Item 36：Specify std::launch::async if asynchronicity is essential. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item37]`（T4）Effective Modern C++（Meyers，42 条） · Item 37：Make std::threads unjoinable on all paths. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:concurrency:ch2]`（T4）C++ Concurrency in Action（Williams） · ch2 —— 提取文本 `docs/references/external/books/cpp-concurrency.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

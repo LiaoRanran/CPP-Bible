@@ -1,6 +1,6 @@
 # software_engineering — 工程流程 / 评审 / 测试 / 可维护性
 
-平行核心章：`Book/part14_engineering` `Book/part16_reading`。
+平行核心章：`Book/part13_engineering` `Book/part16_reading`。
 
 - 蓝本：Software Engineering at Google (PDF，`C:\Users\ASUS\Desktop\cppb参考资料\`)
 - 主参考：`core` `cert` `isocpp`

@@ -1871,3 +1871,11 @@ int main() {
 ```
 
 > 注意：`unordered_map` 的代价被浓缩进一条桶数组寻址（外加一次取模）；`map` 的代价被摊成约 20 次"解引用堆节点 + 取子指针"的串行走廊，每次都可能是 L3 cache miss（50–100 cycle）。int 键比较本身可忽略，故 18.5× 几乎全是内存访问模式的差距——这与 ch83 的 22.5×、ch84 的 6× 同源：节点散布堆上时"指针追逐"才是真瓶颈，`reserve` 只能压桶数组重排（见 D5.2 #2），救不了每元素仍逐个堆分配的本质。绝对毫秒随 CPU/编译器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/unordered_map]`（T1）cppreference `cpp/container/unordered_map` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item25]`（T4）Effective STL 中文版（Meyers，50 条） · Item 25：熟悉非标准的散列容器。 第4章　迭代器 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

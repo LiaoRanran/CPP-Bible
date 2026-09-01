@@ -1783,3 +1783,10 @@ int main() {
 ```
 
 > 注意：贪心与 DP 的差距来自**循环嵌套层数**——DP 内层 `sub rdx,1`（w 递减）叠加外层 `add r8,4`/`add r9,4`（i 递增）形成 O(n·W) 的双层循环，而贪心只有 `add rax,16` 的单层线性扫描，故差千倍。哈希 vs 二分则相反：尽管哈希多了一次昂贵的 `div` 与指针跳转的链表遍历，但每查询只需 O(1) 几步；二分每次查询都要 `sar` 砍半并做 ~21 次随机访存（跨 8MB 数组，缓存未命中率高），在 Q≫N（5M 查询）时被放大。两例都印证 D5.2「选算法阶数比抠常数重要」与「绝对毫秒随机器而变，加速比才是可移植信号」。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/algorithm/<algo>]`（T1）cppreference `cpp/algorithm/<algo>` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1257,3 +1257,10 @@ flowchart TD
 | ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](../part02_toolchain/ch18_buildconfig.md) | Debug/Release 混链陷阱（第⑯节与 ch18 衔接） |
 | ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | 二进制缓存接入持续集成（第⑲节） |
 | ch124 libstdcxx / ch125 libcxx | [Book/part11_source/ch124_libstdcxx.md](../part11_source/ch124_libstdcxx.md) | 标准库实现影响 ABI 兼容（第⑭节外推） |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[gcc:options]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

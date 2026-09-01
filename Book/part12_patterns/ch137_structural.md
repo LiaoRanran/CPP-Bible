@@ -1750,3 +1750,10 @@ ret
 - GoF（1994）*Design Patterns*：结构型七模式。
 - *C++ Core Guidelines*：`C.35`（基类析构）、相关 pImpl 用法条目。
 - Boost `iterator`/`iostreams`；LLVM `raw_ostream`/`StringMap`；WebKit `RenderObject`；Qt `qfiledialog.cpp`；Chromium `waitable_event.h`；Unreal `ApplicationCore`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

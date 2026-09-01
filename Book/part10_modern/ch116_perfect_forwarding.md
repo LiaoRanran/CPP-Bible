@@ -1668,3 +1668,15 @@ int main() {
 - 加速比（1.01× / 1.08× / 1.44×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - pair_emplace 反慢 1.44× 为本机可复现事实，3 次复测 919 / 1014 / 1070 ms 方向一致；其根因（见 D5.2 第 2 条）为候选解释，换编译器 / 版本可能反转，请勿当作通用铁律。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_116_forwarding.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/utility/forward]`（T1）cppreference `cpp/utility/forward` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item24]`（T4）Effective Modern C++（Meyers，42 条） · Item 24：Distinguish universal references from rvalue references. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item26]`（T4）Effective Modern C++（Meyers，42 条） · Item 26：Avoid overloading on universal references. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item27]`（T4）Effective Modern C++（Meyers，42 条） · Item 27：Familiarize yourself with alternatives to overloading on universal references. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item28]`（T4）Effective Modern C++（Meyers，42 条） · Item 28：Understand reference collapsing. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item30]`（T4）Effective Modern C++（Meyers，42 条） · Item 30：Familiarize yourself with perfect forwarding failure cases. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

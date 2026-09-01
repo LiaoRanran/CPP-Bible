@@ -1811,3 +1811,12 @@ int main() {
 - `volatile` sink 防 DCE；末态和恒等于 `N` 作为正确性校验，防止数据竞争或循环被优化掉。
 - 加速比（如 2.11× / 1.56× / 1.89×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 仅断言功能正确性（两种计数器末态都等于 `2 * iterations`），未对时间或倍数做任何断言。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/atomic]`（T1）cppreference `cpp/atomic` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item40]`（T4）Effective Modern C++（Meyers，42 条） · Item 40：Use std::atomic for concurrency, volatile for special memory. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:concurrency:ch5]`（T4）C++ Concurrency in Action（Williams） · ch5 —— 提取文本 `docs/references/external/books/cpp-concurrency.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

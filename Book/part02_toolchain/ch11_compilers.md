@@ -1408,3 +1408,10 @@ flowchart TD
 | ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](../part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译器汇编码（第⑬节外推） |
 | ch118 模块 | [Book/part10_modern/ch118_modules.md](../part10_modern/ch118_modules.md) | C++20 Modules 编译模型（第⑮节） |
 | ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](../part02_toolchain/ch17_crosscompile.md) | 三元组决定目标架构（第⑯节与 ch17 ②衔接） |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[gcc:options]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1078,3 +1078,11 @@ int main() {
 ; substr 路径循环体：每 token 调用 std::string 拷贝构造（含 _Znwy 分配）
 ; string_view 路径循环体：仅计算 (data 指针, len)，无 _Znwy 调用
 ```
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[isocpp:<history>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[book:tour:<sec>]`（T4）A Tour of C++（Bjarne） · <sec> —— 提取文本 `docs/references/external/books/tour-of-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

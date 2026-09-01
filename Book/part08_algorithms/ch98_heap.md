@@ -1618,3 +1618,10 @@ int main() {
 - 反直觉点已在 D5.2 第 4 条诚实标注：同为 O(N log N)，heapsort 比 introsort 慢 3.55×。
 - 复现旗标：`g++ -O2 -std=c++23`。demo 仅断言四策略得到的 top-K 值集合排序后逐元素一致，未断言运行时间或加速比。
 - 基准源码见库根 `_bench_d5_98_heap.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/algorithm/<algo>]`（T1）cppreference `cpp/algorithm/<algo>` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

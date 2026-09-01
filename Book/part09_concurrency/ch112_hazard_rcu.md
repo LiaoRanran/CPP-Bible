@@ -1624,3 +1624,10 @@ int main() {
 ```
 
 > 注意：三种「安全读」的核心取数都是同一条 `movsxd` 普通 load；**慢的根因是发布/回收同步**：hazard 用一次 `xchg`（隐式 lock 全屏障）换无 GC 回收，shared_ptr 用两条 `lock` 原子 RMW 维护引用计数并承受控制块 cache-line 争用。这与 D5.2 第②、③条一致：**绝对毫秒随机器而变，加速比（4.59× / 18.55×）才是可移植信号**。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:concurrency:ch7]`（T4）C++ Concurrency in Action（Williams） · ch7 —— 提取文本 `docs/references/external/books/cpp-concurrency.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

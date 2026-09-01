@@ -1997,3 +1997,12 @@ int main() {
 ```
 
 > 注意：`unique_ptr` 的「零成本抽象」指它不在对象上额外加 vptr/控制块，但每次 `reset`/析构仍要真实调用 `operator new`/`delete`——这是堆分配本身的开销，而非智能指针的包装开销。绝对毫秒随分配器/微架构而变，3× 的「堆 vs 栈」差才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/lifetime]`（T1）cppreference `cpp/language/lifetime` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[core:R.5]`（T3）C++ Core Guidelines 规则 R.5 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+- `[cert:EXP54-CPP]`（T3）CERT C/C++ Secure Coding —— 在线 `wiki.sei.cmu.edu`（本机 403 未本地化）
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

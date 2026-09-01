@@ -1794,3 +1794,10 @@ int main() {
 ```
 
 > 注意：两条路径元素数都是 16，但静态 extent 把长度编进类型，GCC 在 -O2 默认 very-cheap 向量化代价模型下即可展开为 SSE2（`movdqu` + `paddq`，4 路并行、无尾循环）；动态 extent 因长度只在运行期存在于 span 的第二个字段（`QWORD PTR 8[rcx]`），编译器拒绝向量化，退回逐元素标量 `add`。这正是 D5.2 结论#3「静态 extent 稳定快 2.36×」的代价根因——把 extent 编进类型，从理论优势变成实测 2.4×。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/span]`（T1）cppreference `cpp/container/span` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

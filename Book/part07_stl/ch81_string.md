@@ -1441,3 +1441,12 @@ int main() {
 ```
 
 > 注意：`_M_dispose` 的 `cmp rax, rdx; je .L` 是字符串「是否为 SSO」的唯一判据，同样的 is_local 分支在构造、拷贝、赋值时都存在。对 len≤15 的 SSO 串它永远走 `ret`（无 malloc / 无 free / 数据就在栈上对象内）；对 len≥16 的堆串它每轮都真实进入 `operator delete`（构造时则对应 `operator new`）。正因如此，D5.1 中 len16 与 len32 几乎同价（6.60 vs 6.42×）——贵的是「分配这件事本身」而非字节数。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/string/basic_string]`（T1）cppreference `cpp/string/basic_string` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item13]`（T4）Effective STL 中文版（Meyers，50 条） · Item 13：vector和string优先于动态分配的数组。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[book:effective-stl:item15]`（T4）Effective STL 中文版（Meyers，50 条） · Item 15：注意string实现的多样性。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -2497,3 +2497,11 @@ int main() {
 ```
 
 > 注意：`std::variant` 的「类型安全」只体现在源码层与编译期检查；`-O2` 下它退化为与手写 tagged union 相同的整数分发 + 同一计算核，没有任何 RTTI 或虚调用开销。绝对毫秒随微架构而变，二者「零成本差」才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/utility/variant]`（T1）cppreference `cpp/utility/variant` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item7]`（T4）Effective Modern C++（Meyers，42 条） · Item 7：Distinguish between () and {} when creating objects. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

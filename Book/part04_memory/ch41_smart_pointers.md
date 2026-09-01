@@ -2763,3 +2763,15 @@ int main() {
 ```
 
 > 注意：`shared_ptr` 的「一次拷贝」= 此处原子 `sub`（减旧计数）+ 拷贝构造里对应的原子 `inc`（加新计数），共两条 `lock` 前缀指令，外加引用计数 cache line 的写争用——这条正是 D5.2 第 4 条「按值传参贵 24×」的硬件成因。对照 `unique_ptr`/`make_unique` 在 `main` 中不触碰任何原子、析构序列与手写 `delete` 逐指令等价（D5.2 第 1 条）。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/memory/unique_ptr]`（T1）cppreference `cpp/memory/unique_ptr` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item18]`（T4）Effective Modern C++（Meyers，42 条） · Item 18：Use std::unique_ptr for exclusive-ownership resource management. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item19]`（T4）Effective Modern C++（Meyers，42 条） · Item 19：Use std::shared_ptr for shared-ownership resource management. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item20]`（T4）Effective Modern C++（Meyers，42 条） · Item 20：Use std::weak_ptr for std::shared_ptr-like pointers that can dangle. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item21]`（T4）Effective Modern C++（Meyers，42 条） · Item 21：Prefer std::make_unique and std::make_shared to direct use of new. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[core:R.20]`（T3）C++ Core Guidelines 规则 R.20 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

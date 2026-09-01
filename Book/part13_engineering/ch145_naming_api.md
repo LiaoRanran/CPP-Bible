@@ -1449,3 +1449,11 @@ flowchart TD
 | ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | §⑥ 静态分析门禁查 API 兼容 |
 | ch88 optional/variant | [Book/part07_stl/ch88_optional_variant.md](../part07_stl/ch88_optional_variant.md) | §⑭ 返回值策略 optional |
 | ch67 概念约束 | [Book/part06_templates/ch67_concepts.md](../part06_templates/ch67_concepts.md) | §⑮ concepts 作为接口文档 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:NL.5]`（T3）C++ Core Guidelines 规则 NL.5 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+- `[book:swe-google:<ch>]`（T4）Software Engineering at Google · <ch> —— 提取文本 `docs/references/external/books/swe-at-google.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

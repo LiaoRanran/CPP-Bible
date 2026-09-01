@@ -1859,3 +1859,10 @@ jmp    _ZdlPvy
 ```
 
 > 注意：在 -O2 下，由于本基准中对象动态类型可知，GCC 对这些虚函数做了去虚拟化（devirtualize），将调用点直接编译为极简的 lea;ret（各 2 条指令），故此处只见到函数本体。D5.2 测得的虚派发/RTTI 开销来自类型无法静态确定的调用点——即经 vtable 的间接寻址（call [vptr+N]）与运行库 __dynamic_cast 沿 type_info 链的遍历，而非函数本体本身。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

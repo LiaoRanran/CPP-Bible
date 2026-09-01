@@ -1573,3 +1573,10 @@ int main() {
 ```
 
 > 注意：`alloc_node` 是「预分配对象池」里的指针自增，是基准用来隔离「真实同步开销」的对照组——它证明各 ABA 防护方案的性能差距是**纯同步原语成本**（CAS 重试、hazard 槽的 `seq_cst` store、shared_ptr 的两条 `lock` 引用计数 RMW），而非分配器。这与 D5.2 各条「开销归因」自洽：**绝对毫秒随机器而变，加速比才是可移植信号**。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:concurrency:ch7]`（T4）C++ Concurrency in Action（Williams） · ch7 —— 提取文本 `docs/references/external/books/cpp-concurrency.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

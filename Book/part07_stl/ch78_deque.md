@@ -1717,3 +1717,11 @@ int main() {
 ```
 
 > 注意：这两段 asm 证明 D5.2 的根因——deque 每次访问都要先凭「中央 map 指针」找到对应 512B 块再取元素（二级间接），且顺序遍历每跨一个块就有一次块边界判断（`jb .L`），cache 局部性远差于 vector 的单一连续数组，这正是 2.27×/2.35× 的机器码来历；而 `_M_reallocate_map` 全程只 `memmove` 指针、`_ZdlPvy` 旧 map，元素缓冲始终原地不动，解释了为何 `push_back` 仅比 vector 慢 1.21×（`vector` 容量耗尽要分配更大缓冲并搬移全部旧元素）。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/deque]`（T1）cppreference `cpp/container/deque` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item1]`（T4）Effective STL 中文版（Meyers，50 条） · Item 1：慎重选择容器类型。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

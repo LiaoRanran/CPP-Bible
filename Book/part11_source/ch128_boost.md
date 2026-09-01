@@ -1263,3 +1263,9 @@ flowchart TD
 | ch124 | ch128 | 标准库实现总览衔接 Boost 补位定位 |
 | ch125 | ch128 | libc++ 对 Boost 头-only 的兼容验证 |
 | ch131 | ch128 | fmt 与 Boost 格式化能力的对比取舍 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

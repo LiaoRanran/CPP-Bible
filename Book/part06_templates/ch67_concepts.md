@@ -1311,3 +1311,11 @@ int main() {
 ```
 
 > 注意：两个 concept-约束函数都是 2 条指令的常数加载，运行期零开销——印证 D5.2"concepts 在运行时是隐形的"。三者（concepts≡SFINAE≡if-constexpr）差异仅在编译期：报错友好度、可读性与约束检查成本。唯一引入运行时分派成本的是 virtual（≈17.9×，vtable 间接 + 阻断内联）。绝对毫秒随机器而变，concepts≈SFINAE≈if-constexpr = 1.00× 的比值才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/constraints]`（T1）cppreference `cpp/language/constraints` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

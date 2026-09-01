@@ -1233,3 +1233,10 @@ flowchart TD
 <span class="badge badge-ref">引用</span> C++ Core Guidelines（嵌入式/系统编程约束）<https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>；交叉编译与工具链见本手册 ch17；缓存与对齐见 ch42/ch154；网络实战见 ch163。
 
 </details>
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[isocpp:<topic>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

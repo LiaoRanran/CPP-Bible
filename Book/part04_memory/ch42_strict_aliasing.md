@@ -1942,3 +1942,11 @@ int main() {
 ```
 
 > 注意：本例中 `__restrict` 版（10 条）与可别名版逐指令相同——GCC 并未用 `restrict` 把计数器提升寄存器，故 D5.2 第 2、3 条「restrict 反直觉地没加速」在此 bench 成立；但 `count_via_local` 因**作用域局部性**让编译器得以消除每轮 store，才拿到 16.7×。教训同 D5.2 第 4 条：**测量而非信仰关键字**。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/reinterpret_cast]`（T1）cppreference `cpp/language/reinterpret_cast` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:optimized-cpp:<ch>]`（T4）Optimized C++（Guntheroth） · <ch> —— 提取文本 `docs/references/external/books/optimized-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

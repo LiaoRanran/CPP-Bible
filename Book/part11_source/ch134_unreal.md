@@ -1402,3 +1402,10 @@ int main(){
 ```
 
 > 注意：可移植信号是「直接/成员指针 = 0 次 call，虚 getter = 每属性 1 次 `call rax`，字符串反射 = 每属性 1 次 `Hash_bytes` + `div` + 桶探probe」的阶梯。D5.2「字符串键比 virtual 还慢 4.3×、比直接慢几个数量级」正是这条机器码阶梯的累加结果；引擎为热属性生成强类型 getter，编译后等价于 `bench_offset_access` 的零调用路径。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[ue:<uobject>]`（T7）Unreal Engine 官方文档 —— 在线 `docs.unrealengine.com`（本机 403，未本地化）
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

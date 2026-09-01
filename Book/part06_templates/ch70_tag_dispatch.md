@@ -1544,3 +1544,10 @@ int main() {
 ```
 
 > 注意：`random_access` 版只有 3 条指令（纯整型移位 + 指针加），`input` 版要 18 条走链表——差距完全来自"底层数据结构"，与 D5.2 第 4 点一致；标签分发只是把这两份实现在编译期按 `iterator_tag` 选中并内联，空标签对象零传递（第 1 点）。函数指针版因无法内联而稳定慢约 1.7×（第 3 点，本块未列）。绝对毫秒随机器而变，list/vector 的差距才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

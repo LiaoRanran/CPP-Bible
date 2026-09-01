@@ -961,3 +961,11 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ![贝尔实验室新泽西霍尔姆德尔园区，ISO C++ 标准委员会（WG21）长期据点，C++ 标准化工作在此及全球分会场推进](../assets/history/bell_labs_holmdel.jpg)
 > 图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg>
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[isocpp:<history>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[book:tour:<sec>]`（T4）A Tour of C++（Bjarne） · <sec> —— 提取文本 `docs/references/external/books/tour-of-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

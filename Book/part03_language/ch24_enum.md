@@ -2007,3 +2007,11 @@ int main() {
 ```
 
 > 注意：`call rax` 的间接调用让处理器无法静态解析目标，既阻止内联又损害分支预测；`cmovne` 则把分发变成无分支的数据流。绝对毫秒随机器而变，但「间接调用 vs 无调用」4.1× 的相对差是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/enum]`（T1）cppreference `cpp/language/enum` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item10]`（T4）Effective Modern C++（Meyers，42 条） · Item 10：Prefer scoped enums to unscoped enums. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

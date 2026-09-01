@@ -1203,3 +1203,10 @@ export int square(int x) { return x * x; }
 | --- | --- | --- |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
 | ch154 缓存优化 | Book/part14_perf/ch154_cache_opt.md | 同为「用预计算/空间换时间」思想（编译期版） |
+
+## 参考引用
+
+- `[std-cpp20]`（T0·终审）ISO/IEC 14882:2020（C++20） —— 在线 `eel.is/c++draft`；N4860 PDF 本机 403 未取（见 SOURCING §3.1）
+- `[cppref:cpp/language/modules]`（T1）cppreference `cpp/language/modules` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

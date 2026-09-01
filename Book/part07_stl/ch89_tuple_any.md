@@ -1866,3 +1866,11 @@ int main() {
 ```
 
 > 注意：两条路径都付出 manager 跳转表间接分发（D5.2 结论 1 的 5.7× 根因是每次访问的指针/类型校验，而非堆分配）；区别在 `_Manager_external` 多出 `push/sub rsp` 的栈帧与「堆上 string 外壳 + 其内 64 字节数据区」两级分配（D5.2 结论 4）。`int` 因满足可平凡移动而命中 SBO，故帧仅 7 条、无 `_ZdlPv`；绝对毫秒随机器而变，5.7× 才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/utility/tuple]`（T1）cppreference `cpp/utility/tuple` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item34]`（T4）Effective Modern C++（Meyers，42 条） · Item 34：Prefer lambdas to std::bind. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

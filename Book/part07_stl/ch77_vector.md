@@ -1816,3 +1816,13 @@ int main() {
 ```
 
 > 注意：`bench_reserve` 的重分配块虽同样存在于代码里，但因 `rsi` 被一次性设为整块末端而**永不执行**；`bench_no_reserve` 的 `rsi=0` 使每条 `push_back` 都反复进入该块，累计约 2N 次元素搬移（D5.2 结论#3）。这与是否 reserve 无关、只关乎「是否预知大小」——已知大小务必 `reserve`。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/vector]`（T1）cppreference `cpp/container/vector` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item3]`（T4）Effective STL 中文版（Meyers，50 条） · Item 3：确保容器中的对象副本正确而高效。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[book:effective-stl:item5]`（T4）Effective STL 中文版（Meyers，50 条） · Item 5：区间成员函数优先于与之对应的单元素成员函数。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[book:effective-stl:item14]`（T4）Effective STL 中文版（Meyers，50 条） · Item 14：使用reserve来避免不必要的重新分配。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -2284,3 +2284,13 @@ int main() {
 ```
 
 > 注意：`std::function` 的间接调用（`call [QWORD PTR 24[rsi]]`）强制一次不可内联的桩调用并损害内联展开；泛型 lambda 则让循环核留在原地。绝对毫秒随微架构而变，3.27× 的「间接调用代价」才是可移植信号——热路径优先用模板/泛型 lambda 而非 `std::function`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/lambda]`（T1）cppreference `cpp/language/lambda` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item31]`（T4）Effective Modern C++（Meyers，42 条） · Item 31：Avoid default capture modes. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item32]`（T4）Effective Modern C++（Meyers，42 条） · Item 32：Use init capture to move objects into closures. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item34]`（T4）Effective Modern C++（Meyers，42 条） · Item 34：Prefer lambdas to std::bind. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

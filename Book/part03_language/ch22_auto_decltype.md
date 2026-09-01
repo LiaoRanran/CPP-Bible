@@ -1941,3 +1941,14 @@ int main() {
 ```
 
 > 注意：`rep movsq` 只在大对象（> 寄存器宽度）上才显现成本；对 ≤ 2 word 的小类型，`auto` 拷贝可忽略，此时 `auto` 与 `const auto&` 生成相同机器码。绝对毫秒随对象大小而变，36% 的拷贝差才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/auto]`（T1）cppreference `cpp/language/auto` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item1]`（T4）Effective Modern C++（Meyers，42 条） · Item 1：Understand template type deduction. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item2]`（T4）Effective Modern C++（Meyers，42 条） · Item 2：Understand auto type deduction. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item5]`（T4）Effective Modern C++（Meyers，42 条） · Item 5：Prefer auto to explicit type declarations. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item6]`（T4）Effective Modern C++（Meyers，42 条） · Item 6：Use the explicitly typed initializer idiom when auto deduces undesired types. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

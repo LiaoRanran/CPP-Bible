@@ -1588,3 +1588,11 @@ int main() {
 ```
 
 > 注意：`fact_rt`/`isqrt_pure` 的 `imul` 循环是 O(n) 运行期工作；`isqrt_ct` 的 LUT 路径把计算挪到编译期，运行期只剩一条 `movzx`（内存读），这正是 D5.2 第 4、5 点"编译期 LUT 快 1.84×"与"收益取决于查询频率"的硬件体现。绝对毫秒随机器而变；`movzx` 查表 vs `imul` 循环这一事实与编译器无关。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+- `[cppref:cpp/language/constexpr]`（T1）cppreference `cpp/language/constexpr` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

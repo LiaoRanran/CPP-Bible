@@ -1734,3 +1734,10 @@ int main() {
 ```
 
 > 注意：`sub rcx, 16` 就是 D5.2 第 1 条点名的「thunk 在跳转前多一条 `sub` 形式的常量减法」——它确实存在，但只是一次常量减法，在乱序核上与间接跳转的 BTB 预测、vtable 载入完全重叠，占不到额外周期，故实测落在噪声内（0.97×~1.05× 翻号）。真正的、方向从不翻转的开销是右侧虚继承那条 `add rcx, QWORD PTR -24[rax]`：每次访问虚基类成员都要先跑一次 vtable 依赖加载。thunk 的真实代价是抬高二进制体积与 i-cache 压力，而非单次调用周期。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

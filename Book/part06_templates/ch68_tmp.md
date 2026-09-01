@@ -1226,3 +1226,10 @@ int main() {
 ```
 
 > 注意：运行期版是 16 条指令的真实循环（含 `jne` 回边），每轮重新展开计算——这是 D5.2 第 3 点"运行时版每轮都要重新迭代"的机器码证据；而 TMP `Fib<30>::value` 与 `constexpr fib_ce(30)` 在 -O2 都折成同一常量 `832040`，热点循环里只是读取它（运行期零额外指令）。运行期→编译期的 9.3× 来自"常量 vs 迭代"，非 TMP 比 constexpr 快。绝对毫秒随机器而变，runtime/TMP≈9.3× 的比值才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

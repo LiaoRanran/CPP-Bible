@@ -1153,3 +1153,11 @@ flowchart TD
 | ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](../part14_perf/ch156_compiler_opt.md) | 嵌入式子集约束优化空间（第⑮节与 ch156 衔接） |
 | ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | 交叉调试经 gdbserver/openocd（第⑬节与 ch14 衔接） |
 | ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](../part02_toolchain/ch13_packaging.md) | 目标 sysroot 内库由包管理提供（第③节与 ch13 衔接） |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cmake:cmake-toolchains.7]`（T7）CMake 官方文档 `cmake-toolchains.7` —— 本地 `docs/references/external/vendor/cmake-doc/`
+- `[gcc:<target>]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

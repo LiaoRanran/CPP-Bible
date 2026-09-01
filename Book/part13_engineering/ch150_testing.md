@@ -1619,3 +1619,11 @@ int main() {
 <span class="badge badge-ref">引用</span> 依赖注入与 mock 见 ch150 ④ 与 ch141 DI；GoogleTest Mock（google.github.io/googletest）提供成熟的 fake/mock 设施；测试金字塔与隔离性见 ch150 ①。
 
 </details>
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:swe-google:ch11]`（T4）Software Engineering at Google · ch11 —— 提取文本 `docs/references/external/books/swe-at-google.txt`
+- `[ubsan:<case>]`（T6）复现/案例源 —— 在线
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -937,3 +937,11 @@ flowchart TD
 | ch04 C++11 | CORE→K2 | ch04 是全景中「现代 C++」起点。 |
 | ch07 C++20 | CORE→K5 | ch07 是全景中变化最大的一版。 |
 | ch09 C++26 | CORE→K7 | ch09 是全景中仍在演进的一版。 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[isocpp:<history>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[book:tour:<sec>]`（T4）A Tour of C++（Bjarne） · <sec> —— 提取文本 `docs/references/external/books/tour-of-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

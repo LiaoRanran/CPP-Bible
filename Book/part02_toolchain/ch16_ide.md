@@ -1216,3 +1216,10 @@ flowchart TD
 | ch145 命名/API | [Book/part13_engineering/ch145_naming_api.md](../part13_engineering/ch145_naming_api.md) | IDE 辅助 API 一致性（第⑩节外推） |
 | ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](../part02_toolchain/ch14_debugging.md) | IDE 封装 GDB/LLDB 调试（第⑫节与 ch14 衔接） |
 | ch150 测试 | [Book/part13_engineering/ch150_testing.md](../part13_engineering/ch150_testing.md) | IDE 运行单元测试（第⑭节外推） |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[gcc:options]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

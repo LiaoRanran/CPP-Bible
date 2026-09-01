@@ -2008,3 +2008,11 @@ int main() {
 ```
 
 > 注意：本机（MinGW GCC 15.3.0）的 `thread_local` 用模拟 TLS（`__emutls_get_address` 解析一次地址）而非原生 `%gs` 段相对指令；不同工具链/TLS 模型下指令组合会不同。因此「加速比（tls ≈ 0.83× local）」才是可移植信号，绝对毫秒与具体寻址指令随编译器与微架构而变，勿直接跨机比较。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/storage_duration]`（T1）cppreference `cpp/language/storage_duration` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-cpp:item4]`（T4）Effective C++（Meyers，55 条） —— 提取文本 `docs/references/external/books/effective-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

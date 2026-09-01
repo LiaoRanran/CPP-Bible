@@ -1492,3 +1492,10 @@ flowchart TD
 | 缓存优化 | ch15 性能剖析 | cachegrind 取证 |
 | 缓存优化 | ch151 基准测试 | 优化靠基准复测 |
 | 缓存优化 | ch149 CI/CD | 缓存基准进回归门禁 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:optimized-cpp:ch6]`（T4）Optimized C++（Guntheroth） · ch6 —— 提取文本 `docs/references/external/books/optimized-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

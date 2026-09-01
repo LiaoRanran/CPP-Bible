@@ -1327,3 +1327,11 @@ flowchart TD
 | ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](../part02_toolchain/ch17_crosscompile.md) | CMake toolchain file 跨平台（第⑭节与 ch17 ⑦衔接） |
 | ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](../part02_toolchain/ch18_buildconfig.md) | -O0/-O2 由构建系统注入（第⑰节与 ch18 衔接） |
 | ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](../part13_engineering/ch149_ci_cd.md) | 构建系统驱动持续集成（第⑲节外推） |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cmake:cmake-buildsystem.7]`（T7）CMake 官方文档 `cmake-buildsystem.7` —— 本地 `docs/references/external/vendor/cmake-doc/`
+- `[cmake:cmake-language.7]`（T7）CMake 官方文档 `cmake-language.7` —— 本地 `docs/references/external/vendor/cmake-doc/`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

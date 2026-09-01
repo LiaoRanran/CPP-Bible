@@ -1429,3 +1429,10 @@ int main() {
 ```
 
 > 注意：fold / 递归 / 展开三者产物相同（`movsd` 常量 + `ret`），故 D5.2 第 1 点"位级等价、1.00×"。`loop_sum` 多出的指令几乎都是"把编译期常量搬到栈再读回"——这是点 2 所谓"栈上数组 vs 立即数"的机器码证据；把 `const` 数组改为 `constexpr`/`std::array` 字面量即可让循环追平 fold。绝对毫秒随机器而变，fold≈rec≈unrolled 的比值（1.00×）才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1635,3 +1635,11 @@ int main() {
 ```
 
 > 注意：`std::array` 的 `operator[]` 在 -O2 内联后就是一次 SIMD 加载 + 指针自增（与 C 数组下标、`vector` 连续遍历完全一致），没有任何边界检查或间接开销——证实 D5.2 结论#1「访问已存在的数据零开销」。按值版本 26% 的惩罚（结论#3）并不在这个函数体里（两者等价），而是发生在**调用点**：按值传参迫使调用方把 64 字节整块拷入实参槽（Windows x64 隐藏副本 ABI）2000 万次，而 `const&` 只传 8 字节指针。零开销抽象保证「访问」免费，但不消除「值语义拷贝」。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/array]`（T1）cppreference `cpp/container/array` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item1]`（T4）Effective STL 中文版（Meyers，50 条） · Item 1：慎重选择容器类型。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

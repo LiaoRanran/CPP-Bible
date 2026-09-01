@@ -1332,3 +1332,11 @@ int main() {
 ```
 
 > 注意：两个 `handle_tag` 重载都是 2 条指令的"常数加载"，运行期不产生任何 dispatch 成本——与 D5.2 第 1 点一致。代价只在编译期（实例化两份重载）；运行期三者（if-constexpr/tag/SFINAE）不可分，选型应看报错友好度与可读性。真正贵的是把类型延迟到运行时的 virtual（≈17.8×，vtable 间接 + 阻断内联）与 variant visit（≈1.38×）。绝对毫秒随机器而变，静态三机制≈1.00× 的比值才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:ch8]`（T4）C++ Templates: The Complete Guide · ch8 —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+- `[cppref:cpp/types/enable_if]`（T1）cppreference `cpp/types/enable_if` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

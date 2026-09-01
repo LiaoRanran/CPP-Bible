@@ -1314,3 +1314,11 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 | ch47 虚函数 | C0→C1→C8 | C with Classes 的虚函数在 ch47 完整展开为 vtable 与动态绑定。 |
 | ch60 模板基础 | C0→C3→C11 | C 函数指针的泛型意图由 ch60 模板在编译期安全实现。 |
 | ch156 编译器优化 | C0→C7 | C 的稳定 ABI 约束了 ch156 中跨版本优化与名称改编策略。 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[isocpp:<history>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[book:tour:<sec>]`（T4）A Tour of C++（Bjarne） · <sec> —— 提取文本 `docs/references/external/books/tour-of-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1559,3 +1559,12 @@ int main() {
 - 数组零初始化成本随 N 线性增长，是最易被忽视的"安全"开销；生产代码对 trivial 大数组优先用默认初始化（若允许未初始化）或 `std::vector` 的 `reserve`+`push_back`。
 - 加速比（44.85× 等）是可移植信号；绝对毫秒随机器负载而变，请勿跨机器直接比较。
 - 基准源码见库根 `_bench_d5_ch32_initialization.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/initialization]`（T1）cppreference `cpp/language/initialization` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-modern:item7]`（T4）Effective Modern C++（Meyers，42 条） · Item 7：Distinguish between () and {} when creating objects. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[book:effective-modern:item8]`（T4）Effective Modern C++（Meyers，42 条） · Item 8：Prefer nullptr to 0 and NULL. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

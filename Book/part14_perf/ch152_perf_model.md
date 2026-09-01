@@ -1303,3 +1303,10 @@ int main() {
 ; resolution_ns / pair_overhead_ns 计时区（节选）
     call    _ZNSt6chrono3_V212steady_clock3nowEv   ; 读取时钟
 ```
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:optimized-cpp:ch2]`（T4）Optimized C++（Guntheroth） · ch2 —— 提取文本 `docs/references/external/books/optimized-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

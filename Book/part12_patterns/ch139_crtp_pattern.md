@@ -1608,3 +1608,10 @@ CRTP 有一个教科书极少强调、但真实踩坑极多的陷阱：**在 `Ba
 - Boost.Iterator 文档，`https://www.boost.org/doc/libs/release/libs/iterator/doc/iterator_facade.html`。
 - libstdc++ `bits/shared_ptr.h` 中 `enable_shared_from_this<_Tp>` 真实 CRTP 实现（本机路径见 §⑪）。
 - C++ Core Guidelines（Stroustrup & Sutter）在「接口与多态」相关条目中坚持「不要为编译期已知类型付出运行时多态代价」的立场，社区据此把 CRTP 视为零开销静态多态的标准 idiom；更系统的 CRTP 论述见上方《C++ Templates》专章。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

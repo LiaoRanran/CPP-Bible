@@ -1,6 +1,6 @@
 # build — 构建系统（CMake 为主）
 
-平行核心章：`Book/part14_engineering`（工程实践）/ 实际应用案例；另 `Part0_Prerequisites/` 工具链章。
+平行核心章：`Book/part13_engineering`（工程实践）/ 实际应用案例；另 `Part0_Prerequisites/` 工具链章。
 
 - 主参考（离线）：`cmake:` → `docs/references/external/vendor/cmake-doc/manual/`（CMake 官方概念文档 + 命令/变量/模块/策略总索引）
 - 在线补充：命令/变量/模块/策略**逐页 leaf** 见 `cmake.org/cmake/help/latest/`（本机可达）

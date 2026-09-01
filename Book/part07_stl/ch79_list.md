@@ -1753,3 +1753,11 @@ int main() {
 - 求和/规模等结果经 `volatile` sink 累加，防止编译器把无副作用循环整段死代码消除（DCE）。
 - 报告一律给「相对倍数 ×」而非绝对毫秒作为可移植信号；绝对毫秒随机器、编译器版本、频率伸缩而变，不可横向比较。
 - 复现旗标：`g++ -O2 -std=c++17 -pthread`（-pthread 仅用于对齐多线程环境，不影响单线程基准）。完整 demo 见 D5.3，规模已缩小 10×，CI 可在秒级跑完。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/list]`（T1）cppreference `cpp/container/list` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item1]`（T4）Effective STL 中文版（Meyers，50 条） · Item 1：慎重选择容器类型。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

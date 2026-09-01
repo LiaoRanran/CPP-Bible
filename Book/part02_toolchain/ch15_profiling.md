@@ -1406,3 +1406,11 @@ flowchart TD
 | ch151 基准 | [Book/part13_engineering/ch151_benchmark.md](../part13_engineering/ch151_benchmark.md) | Google Benchmark 接入基准体系（第⑧节外推） |
 | ch152 性能模型 | [Book/part14_perf/ch152_perf_model.md](../part14_perf/ch152_perf_model.md) | 微架构瓶颈对应性能模型（第⑩节与 ch152 衔接） |
 | ch153 CPU 微架构 | [Book/part14_perf/ch153_cpu_micro.md](../part14_perf/ch153_cpu_micro.md) | 硬件计数器解释 CPU 行为（第③节与 ch153 衔接） |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[gcc:<profiling>]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+- `[cppcon:<profiling>]`（T6）复现/案例源 —— 在线
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

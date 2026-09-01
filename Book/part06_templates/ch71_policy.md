@@ -1414,3 +1414,10 @@ int main() {
 ```
 
 > 注意：三个策略类（`VDouble`/`VTransformOffset`/`VTransformIdentity`/`VPassThrough`）都被内联成 2 条指令的纯算术，运行期零分发成本；`transform_fptr` 因 `call rsi` 无法内联慢 2.27×，`insertion_sort_func` 经 `std::function` 类型擦除的 `call [24[r15]]` 双重间接最慢（S1 3.3×、S4 14×）。与 D5.2 一致：能用模板静态分发就不要函数指针 / `std::function` / 虚函数。绝对毫秒随机器而变，策略模板/运行期分发的比值才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

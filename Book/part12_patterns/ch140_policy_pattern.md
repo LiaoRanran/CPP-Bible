@@ -1584,3 +1584,10 @@ Policy-Based Design 相对 GoF「Strategy 模式（虚接口）」的核心优�
 - ISO/IEC 14882:2023，`[allocator.traits]`（标准库 policy 组合实例）；`std::pmr`（C++17 运行期分配策略）
 - Boost.SmartPtr / Boost.Parameter 文档：`https://www.boost.org/doc/libs/`
 - Alexandrescu 后续演讲 "Declarative Control Flow"（2013）及 `folly` 库：`https://github.com/facebook/folly`
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

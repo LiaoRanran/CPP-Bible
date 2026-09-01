@@ -2229,3 +2229,11 @@ int main() {
 - `volatile` sink 防 DCE；矩阵用确定性伪随机填充，避免优化器把"全 0"循环直接折叠。
 - 加速比（10.2×）是可移植信号；绝对毫秒随 CPU、缓存层级、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_43_cache.cpp`（库根）。demo 把规模缩到 256×256 以适配 CI，仅断言行/列两序求和相等（稳定功能语义），未对时间或倍数做任何断言。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:optimized-cpp:<ch>]`（T4）Optimized C++（Guntheroth） · <ch> —— 提取文本 `docs/references/external/books/optimized-cpp.txt`
+- `[cppcon:<cache>]`（T6）复现/案例源 —— 在线
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

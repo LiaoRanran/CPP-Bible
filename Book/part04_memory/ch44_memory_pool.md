@@ -2894,3 +2894,10 @@ int main() {
 ```
 
 > 注意：`pool.alloc()` 的「弹出空闲链表头」是 O(1) 纯指针运算，被内联进 `main`、不出现在本函数里；本析构函数展示的是它的对称面——**延迟归还**：所有块都积累到析构才批量 `free`。这正解释了 D5.2 第 2 条「直到池析构才把内存归还 OS」的语义代价，也说明该池只适合「大量同尺寸、短生命周期」场景。绝对毫秒随机器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:optimized-cpp:<ch>]`（T4）Optimized C++（Guntheroth） · <ch> —— 提取文本 `docs/references/external/books/optimized-cpp.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

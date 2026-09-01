@@ -1044,3 +1044,10 @@ flowchart TD
 | ch125 | ch127 | libc++ 与 LLVM 同源构建与测试 |
 | ch126 | ch127 | Clang-CL 与 MS STL 的协同工具链 |
 | ch132 | ch127 | 存储引擎借助 sanitizer 验证并发安全 |
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[clang:<internals>]`（T5）CLANG 官方文档 —— 在线 `clang.llvm.org`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

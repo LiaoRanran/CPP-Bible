@@ -1400,3 +1400,10 @@ int main() {
 ```
 
 > 注意：两条路径都是直线型标量加法，指令数完全相同（5 条），差异仅在偏移加法的顺序——这正是 D5.2 第 2 点"开销来自布局而非运行期"的机器码证据。`std::get<N>` 的所有索引在编译期确定，运行期零分派开销；9% 差距是递归基类链布局 vs 扁平 struct 的寄存器分配代价，随编译器/微架构略有波动。绝对毫秒随机器而变，加速比（tuple/struct = 1.09×）才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1013,3 +1013,10 @@ int main() {
 ; bench() 在 -O2 下（节选自 _asm157.s）
     call    sincos          ; GCC 将 sin*cos 融合为单次 sincos 库调用
 ```
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[gcc:optimize-options]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

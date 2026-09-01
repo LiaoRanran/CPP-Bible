@@ -1929,3 +1929,11 @@ int main() {
 ```
 
 > 注意：`deque` 的 1.40× 劣势不是来自算法，而来自内存布局——两层结构带来"映射数组取块指针 + 块内取元素"的二级寻址，以及逐块 `operator new`（ch37 已证单次 `_Znwy` ≈ 49.5 ns）。`vector` 把元素压进同一块连续内存，硬件预取器可整行预取，尾端 `push_back` 退化为一条 `mov`。这同时解释了 D5.2 #2（`queue<list>` 17.7× 灾难：`list` 比 `deque` 还糟，每节点独立 `malloc` + 2 指针元数据 + 纯指针追逐）与 #4（换 `list` 几乎永远是错）：适配器暴露底层容器选择权时，应看访问模式与内存布局，而非直觉。绝对毫秒随分配器/编译器而变，加速比才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/container/priority_queue]`（T1）cppreference `cpp/container/priority_queue` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:item1]`（T4）Effective STL 中文版（Meyers，50 条） · Item 1：慎重选择容器类型。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

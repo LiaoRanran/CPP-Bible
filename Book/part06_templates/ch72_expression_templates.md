@@ -1472,3 +1472,10 @@ int main() {
 ```
 
 > 注意：朴素 `operator+` 的关键指令里，`call _Znwy`（分配）与 `call memset`（清零）是固定的堆开销，逐元素 `addsd` 循环则是每趟完整内存读写的来源——这正是 D5.2 第 1 点"3 次分配 + 3 趟内存搬运"的机器码证据。表达式模板用惰性 `AddExpr` 把物化推迟到赋值、合并成单循环（1 读 1 写），且与手写融合循环仅差 ~6%（第 2、3 点）。绝对毫秒随机器而变，ET/朴素 ≈ 4.2× 的比值才是可移植信号。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

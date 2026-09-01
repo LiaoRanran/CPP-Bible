@@ -1720,3 +1720,10 @@ int main() {
 ```
 
 > 注意：`call rax` 的分支目标在运行期才确定，无法静态内联、且可能扰乱分支预测——这正是类型擦除抽象的"非零成本"所在。协程走另一条代价路径（堆分配帧 + 挂起/恢复），故 D5.2 中协程链比回调嵌套慢 1.67×，但二者都远快于线程。绝对毫秒随机器负载而变；间接调用这一事实与编译器无关。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/language/coroutines]`（T1）cppreference `cpp/language/coroutines` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

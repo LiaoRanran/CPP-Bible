@@ -1639,3 +1639,10 @@ int main() {
 - 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（10.6× / 2.5× / 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_87_bitset.cpp`。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[cppref:cpp/utility/bitset]`（T1）cppreference `cpp/utility/bitset` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

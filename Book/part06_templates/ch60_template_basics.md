@@ -1461,3 +1461,11 @@ int main() {
 | `std::function<int(int)>` | 类型擦除 + 间接调用 | 45.24 | ~7.8x 慢 |
 
 > 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。
+
+## 参考引用
+
+- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:templates:ch1]`（T4）C++ Templates: The Complete Guide · ch1 —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+- `[cppref:cpp/language/templates]`（T1）cppreference `cpp/language/templates` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+
+> 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。
