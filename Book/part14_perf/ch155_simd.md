@@ -297,6 +297,7 @@ _Z10add_arraysPfS_S_i:
 对比**显式 intrinsics 在 `-O2` 即出现 `vmovaps`/`vaddps`**（注意是 `vmovaps` 对齐版，因为 intrinsics 用了 `_mm_load_ps`）：
 
 ```asm
+; 节选自 Examples/_ch155_align.asm
 ; 关键证据：_ch155_align.cpp 的对齐加载（_mm_load_ps -> vmovaps）
 _Z12load_alignedPKfS0_Pf:
 	vmovaps	xmm0, XMMWORD PTR [rcx]   ; 对齐 16 字节加载
@@ -343,6 +344,7 @@ void load_unaligned(const float* a, const float* b, float* c) {
 ```
 
 ```asm
+; 节选自 Examples/_ch155_align.asm
 ; 关键证据：-O2 下 intrinsics 直接映射为对齐(vmovaps) vs 未对齐(vmovups)
 _Z12load_alignedPKfS0_Pf:
 	vmovaps	xmm0, XMMWORD PTR [rcx]   ; 对齐加载 -> vmovaps
@@ -487,6 +489,7 @@ bool have_avx512() {
 真实汇编（`-O3 -mavx512f`，节选主循环）：
 
 ```asm
+; 节选自 Examples/_ch155_avx512.asm
 ; 关键证据：zmm 512 位，每轮 64 字节 = 16 个 float
 _Z13add_arrays512PfS_S_i:
 	...

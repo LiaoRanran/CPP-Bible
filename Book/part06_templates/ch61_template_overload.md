@@ -205,6 +205,7 @@ void f(int);  // 决议结果固定，无运行期开销
 编译 `Examples/_asm_tpl_overload.cpp`（每个重载向 `volatile g_log` 写不同值，强制保留语义）。main 内联后暴露决议结果：
 
 ```asm
+; 节选自 Examples/_asm_tpl_overload.asm
 ; _asm_tpl_overload.asm 节选（MinGW GCC 15.3.0, -O2）
 _Z1fi:                          ; f(int) 非模板
     movsxd  rax, DWORD PTR g_i[rip]

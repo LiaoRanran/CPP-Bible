@@ -1246,6 +1246,7 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 
 **① 默认 `std::vector` —— 扩容走堆三连**
 ```asm
+; 节选自 Examples/_asm_ranges.asm
 ; ① 默认 std::vector —— 扩容走堆三连（GCC 15.3.0 -O2 -masm=intel，源：_asm_demo/ch122_pmr_test.cpp）
 default_push():
     ...                         ; 容量不足时重新分配：

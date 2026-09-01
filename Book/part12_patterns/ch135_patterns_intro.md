@@ -574,6 +574,7 @@ main:
 实验二：跨翻译单元、动态类型对编译器不可见（`Examples/_ch135_vcall_impl.cpp`）。此时 `via_virtual` 做 **speculative devirtualization**，慢路径为真实 vtable 间接调用：
 
 ```asm
+; 节选自 Examples/_ch135_virtual_dispatch.asm
 _Z11via_virtualRK6Animal:
     lea     rdx, _ZNK3Dog5speakEv[rip]
     mov     rax, QWORD PTR [rcx]        ; ① 取对象首 8 字节 = vtable 指针

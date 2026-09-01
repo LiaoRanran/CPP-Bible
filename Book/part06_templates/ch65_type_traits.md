@@ -175,6 +175,7 @@ static_assert(std::is_pointer<int*>::value == true,  "编译期常量，无运�
 下列汇编由 `Examples/_asm_tpl_traits.cpp` 在 `-std=c++23 -O2 -masm=intel` 下生成。**关键结论**：所有 trait 运算在编译期完成，运行期只剩常量。
 
 ```asm
+; 节选自 Examples/_asm_tpl_traits.asm
 ; _Z10use_traitsv —— 全部 trait 运算在编译期折叠为常量 48
 _Z10use_traitsv:
     sub     rsp, 24

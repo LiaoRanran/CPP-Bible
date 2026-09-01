@@ -553,6 +553,7 @@ _Z13strategy_demoiPK8Strategy:          ; strategy_demo(int, Strategy const*)
 ```
 
 ```asm
+; 节选自 Examples/_ch140_policy_vs_strategy.asm
 ; === nm：策略模式为两个具体策略各自生成虚函数 + vtable 符号 ===
 ; (Examples/_ch140_policy_vs_strategy.o)
 0000000000000000 T _Z11policy_demoi

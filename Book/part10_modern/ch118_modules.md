@@ -141,6 +141,7 @@ int use_mod() { return square(7); }
 ```
 
 ```asm
+; 节选自 Examples/_mod_use.asm
 ; 关键证据（GCC 15.3.0 -O2 -fmodules-ts -masm=intel）：导入函数被编译为直接跳转，
 ; 实参 7 在编译期折叠进 ecx，全程无 #include 头文本展开
 _Z7use_modv:
@@ -149,6 +150,7 @@ _Z7use_modv:
 	jmp	_ZW4math6squarei        ; 尾调用模块 math 的 square(int)，符号 W4math = module math
 ```
 ```asm
+; 节选自 Examples/_mod_use.asm
 ; 同一工程中模块接口单元 _mod_main.cpp 里的 square(int) 本体（GCC 15.3.0 截取）
 _ZW4math6squarei:
 	imul	ecx, ecx             ; ecx = ecx * ecx

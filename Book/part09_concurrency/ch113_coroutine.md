@@ -409,6 +409,7 @@ _Z5rangei:                       ; range(int) 的函数体（协程入口）
 ```
 
 ```asm
+; 节选自 Examples/_ch113_co_O2.asm
 ; 文件：Examples/_ch113_co.cpp，行号：59
 ; 恢复（resume）符号：_Z5rangeP15_Z5rangei.Frame.actor
 ; 即协程"状态机"入口；每次 h.resume() 跳到这里，由恢复索引分派到挂起点之后
@@ -438,6 +439,7 @@ _Z5rangeP15_Z5rangei.Frame.actor:
 ```
 
 ```asm
+; 节选自 Examples/_ch113_co_O2.asm
 ; 文件：Examples/_ch113_co.cpp，行号：64（_Z8count_upv = count_up()）
 ; 另一协程帧；15.3.0 下同样为 40 字节（编译器升级后两类协程帧布局统一压低）
 _Z8count_upv:

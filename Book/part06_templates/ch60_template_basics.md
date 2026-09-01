@@ -215,6 +215,7 @@ static_assert(sizeof(S<double>) == sizeof(double));  // 通常 8
 编译 `Examples/_asm_tpl_basic.cpp`：显式实例化 `max_val<int>`、`max_val<double>` 发射如下 mangled 符号：
 
 ```asm
+; 节选自 Examples/_asm_tpl_basic.asm
 ; _asm_tpl_basic.asm 节选（MinGW GCC 15.3.0, -O2）
     .section    .text$_Z7max_valIiET_S0_S0_,"x"
     .globl  _Z7max_valIiET_S0_S0_        ; max_val<int> 的 mangled 名

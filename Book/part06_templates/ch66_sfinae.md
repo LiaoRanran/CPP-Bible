@@ -358,6 +358,7 @@ static_assert(sizeof(empty_trait) == 1);             // 空类：不携带运行
 编译 `Examples/_asm_tpl_sfinae.cpp`（`-std=c++23 -O2 -masm=intel`）。**结论一**：`-O2` 下 `use_sfinae` 把两个重载的「选择」在编译期完成，运行期只剩常量，分发彻底消失：
 
 ```asm
+; 节选自 Examples/_asm_tpl_sfinae.asm
 ; _Z10use_sfinaev （MinGW GCC 15.3.0, -O2）—— 分发已被编译期消除
 _Z10use_sfinaev:
     sub     rsp, 24

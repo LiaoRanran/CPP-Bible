@@ -403,6 +403,7 @@ _Z9NewObjectPK6FClass:
 ```
 
 ```asm
+; 节选自 Examples/_ch134_objsys.asm
 ; 典型输出：_Z13MarkReachableP7FObjectRSt6vectorIS0_SaIS0_EE（等价 GC 标记阶段）
 	sub	rsp, 40
 	.seh_endprologue

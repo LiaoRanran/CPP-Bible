@@ -421,6 +421,7 @@ int main() {
 下面汇编由 **GCC 15.3.0** `-O2 -masm=intel -std=c++23` 对 `Buf` 的**移动赋值**与**拷贝赋值**真实生成（`objdump -d -M intel -C`；源码 `_asm_demo/_ch115_buf_gcc15_noinline.cpp`，算子标 `[[gnu::noinline]]` 以暴露算子本体——`-O2` 下平凡驱动会把算子整体内联消除）。最关键的区别：移动 = **释放旧资源(`delete[]`) + 指针窃取**，无 `new[]` 分配、无逐元素循环；拷贝 = **释放旧资源 + `new[]` 分配 + 逐元素循环 `O(n)`**。
 
 ```asm
+; 节选自 Examples/_asm_expr.asm
 ; GCC 15.3.0 -O2 -masm=intel -std=c++23  ；移动赋值 Buf::operator=(Buf&&)  [this=rcx, 源=rdx]
 ; 关键片断：delete[] 旧资源 + 指针窃取（无 new[]、无循环）
         call    _ZdaPv                 ; delete[] 旧 this->p

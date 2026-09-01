@@ -322,6 +322,7 @@ _Z11use_inlinedv:
 另一组真实取证来自 `Examples/_ch127_gvn.cpp`：`caller()` 调用 `compute(7)`，在 `-O2` 下被完全折叠：
 
 ```asm
+; 节选自 Examples/_ch127_gvn_O2.asm
 ; 真实取证 C：caller @ -O2 —— SCCP 把 compute(7) 折叠为常量 92（a=14,b=14,c=64, 14+14+64=92）
 _Z6callerv:
 	.seh_endprologue

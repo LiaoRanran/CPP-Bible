@@ -2053,6 +2053,7 @@ int main(){
 **bump（`_ZL10probe_bumpy`，实测 ≈0 ns）** —— 仅一个 `addq $16` 指针加法：
 
 ```asm
+# 节选自 Examples/_ch44_pool_perf.asm
 _ZL10probe_bumpy:
         movq    _ZL6g_bump(%rip), %rax      ; 取 base
         testq   %rcx, %rcx
@@ -2073,6 +2074,7 @@ _ZL10probe_bumpy:
 **freelist（`_ZL14probe_freelisty`，实测 1.30 ns / 3.12 cyc）** —— 多出一条依赖链取指：
 
 ```asm
+# 节选自 Examples/_ch44_pool_perf.asm
 _ZL14probe_freelisty:
         movq    _ZL10g_fl_head0(%rip), %rax
         testq   %rcx, %rcx
@@ -2093,6 +2095,7 @@ _ZL14probe_freelisty:
 **malloc（`_ZL12probe_mallocy`，实测 45.5 ns / 108.98 cyc）** —— 真实进入 glibc 路径：
 
 ```asm
+# 节选自 Examples/_ch44_pool_perf.asm
 _ZL12probe_mallocy:
         ...
 .L28:

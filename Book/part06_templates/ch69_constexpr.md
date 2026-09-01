@@ -271,6 +271,7 @@ int b_use = a_init + 1;     // 安全：a_init 已在静态阶段初始化
 **`use_constexpr()` 主体（关键片段）**：
 
 ```asm
+; 节选自 Examples/_asm_constexpr.asm
 _Z13use_constexprv:
     sub     rsp, 40
     movsd   xmm0, QWORD PTR .LC0[rip]   ; 2.5  ← pick<double>() 结果（constexpr if 非整型分支）

@@ -238,6 +238,7 @@ long sum_of_squares(const std::vector<int>& v) {
 ```
 
 ```asm
+; 节选自 Examples/_ch95_for_each.asm
 ; 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch95_for_each.cpp -o _ch95_for_each.asm
 ; 关键证据：sum_of_squares 整个函数体就是一条循环，无 call 到任何 operator()
 _Z14sum_of_squaresRKSt6vectorIiSaIiEE:
@@ -457,6 +458,7 @@ void par_square(std::vector<double>& v) {
 ```
 
 ```asm
+; 节选自 Examples/_ch95_parallel.asm
 // 文件：Examples/_ch95_parallel.cpp
 // 行号：13
 ; 真实汇编（GCC 15.3.0 / MinGW，仅 -S 不链接）：

@@ -184,6 +184,7 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_vinherit.cpp -o _asm_vinherit.asm
 【真实汇编：访问虚基类成员 vs 跨菱形 dynamic_cast】
 
 ```asm
+; 节选自 Examples/_asm_vinherit.asm
 ; int read_vbase(const D& x) { return x.b; }   // b 在虚基类 B 中
 _Z10read_vbaseRK1D:
         mov     rax, QWORD PTR [rcx]      ; rcx=&D，取头部 M1 子对象的 vbptr

@@ -388,6 +388,7 @@ return x.load(std::memory_order_seq_cst); // reader()
 ```
 
 ```asm
+; 节选自 Examples/_ch108_seqcst.asm
 ; 文件：Examples/_ch108_seqcst.cpp
 ; 行号：11
 _Z6readerv:
@@ -450,6 +451,7 @@ void wait_go() {
 - `[实现·GCC15]`：真实汇编见下——x86 TSO 下，-O2 把这对 fence 优化为**空操作（普通 mov）**；-O0 则把 seq_cst fence 编译为一个 dummy 锁定指令充当全屏障。
 
 ```asm
+; 节选自 Examples/_ch108_fence.asm
 ; 文件：Examples/_ch108_fence.cpp
 ; 行号：9（release fence）/ 15（acquire fence）
 ; -O2 结果：fence 被直接消除，只剩普通存储/加载（TSO 已保证顺序）
@@ -477,6 +479,7 @@ int consume()       { return g.load(std::memory_order_acquire); } // ⑬
 ```
 
 ```asm
+; 节选自 Examples/_ch108_acqrel.asm
 ; 文件：Examples/_ch108_acqrel.cpp
 ; 行号：7（publish 的 release store）/ 11（consume 的 acquire load）
 _Z7publishi:
@@ -596,6 +599,7 @@ void relaxed_rmw()    { c.fetch_add(1, std::memory_order_relaxed); } // ⑰ lock
 ```
 
 ```asm
+; 节选自 Examples/_ch108_relaxed.asm
 ; 文件：Examples/_ch108_relaxed.cpp
 ; 行号：7（relaxed fetch_add）/ 11（relaxed load）
 _Z4bumpv:

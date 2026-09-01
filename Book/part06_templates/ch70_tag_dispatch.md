@@ -285,6 +285,7 @@ static_assert(sizeof(Holder) >= sizeof(int));        // 必然成立：Holder �
 **`use_tag()` 主体（关键片段）**：
 
 ```asm
+; 节选自 Examples/_asm_tag.asm
 _Z7use_tagv:
     mov     eax, DWORD PTR g_count[rip]
     lea     edx, 101[rax]          ; g_count + 101  ← dispatch(42) 的 +1 与 dispatch(2.5) 的 +100 经标签选路后合并
@@ -304,6 +305,7 @@ _Z7use_tagv:
 **`-O0` 标签分发 mangled 符号（验证标签类型进实例化名）**：
 
 ```asm
+; 节选自 Examples/_asm_tag_O0.asm
 .globl  _Z8dispatchIiEvT_                                  ; dispatch<int>
 .globl  _Z8dispatchIdEvT_                                  ; dispatch<double>
 .globl  _Z4implIiEvT_St17integral_constantIbLb1EE          ; impl<int, true_type>

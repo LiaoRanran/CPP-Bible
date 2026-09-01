@@ -402,6 +402,7 @@ Disassembly of section .text.unlikely:     ; ← 冷路径被独立搬到此节
 ```
 
 ```asm
+; 节选自 Examples/_ch156_pgo_base.asm
 ; ===== PGO 下 .text.unlikely 节里的 cold 函数体（被移出热路径）=====
 0000000000000000 <_Z4coldi>:
    0: 89 c8                 mov    eax,ecx

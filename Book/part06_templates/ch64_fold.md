@@ -184,6 +184,7 @@ int main() { demo_types(1, 2, 3); }   // x is int=1 y is double=1
 编译 `Examples/_asm_tpl_fold.cpp`：`use_fold` 调用三个折叠（加/乘/与），全部编译期求值，整函数塌缩为常数：
 
 ```asm
+; 节选自 Examples/_asm_tpl_fold.asm
 ; _asm_tpl_fold.asm 节选（MinGW GCC 15.3.0, -O2）
     .globl  _Z8use_foldv
 _Z8use_foldv:

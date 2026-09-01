@@ -350,6 +350,7 @@ static_assert(std::integral<int> == true, "concept 折叠为编译期 bool 常�
 编译 `Examples/_asm_tpl_concepts.cpp`（`-std=c++23 -O2 -masm=intel`）。**结论一**：`-O2` 下 `use_concepts` 把约束分派完全折叠为常量，运行期无 `requires` 痕迹：
 
 ```asm
+; 节选自 Examples/_asm_tpl_concepts.asm
 ; _Z12use_conceptsv （MinGW GCC 15.3.0, -O2）—— 约束分派已被编译期消除
 _Z12use_conceptsv:
     sub     rsp, 24
@@ -370,6 +371,7 @@ _Z12use_conceptsv:
 **结论二**：`-O0` 下可见 mangled 符号——Concepts 与 ch66 的 SFINAE **一一对应**：`concept_f<int>`↔`sfinae_f<int>`（都做 `x*2`）、`concept_f<double>`↔`sfinae_f<double>`（都原样返回）；相反约束的候选不发射。
 
 ```asm
+; 节选自 Examples/_asm_tpl_concepts_O0.asm
 ; _asm_tpl_concepts_O0.asm 节选（MinGW GCC 15.3.0, -O0）
     call    _Z9concept_fIiET_S0_   ; concept_f<int>     —— std::integral 约束命中
     call    _Z9concept_fIdET_S0_   ; concept_f<double>  —— requires !integral 命中

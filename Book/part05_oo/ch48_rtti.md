@@ -180,6 +180,7 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_rtti.cpp -o _asm_rtti.asm
 【真实汇编：typeid 取名字 vs dynamic_cast 下行/引用】
 
 ```asm
+; 节选自 Examples/_asm_rtti.asm
 ; const char* get_name(const Base& b) { return typeid(b).name(); }
 _Z8get_nameRK4Base:
         xor     edx, edx

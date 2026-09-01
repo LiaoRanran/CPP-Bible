@@ -460,6 +460,7 @@ void inc_relaxed() {
 ```
 
 ```asm
+; 节选自 Examples/_ch110_counter.asm
 ; 文件：Examples/_ch110_counter.cpp
 ; 行号：11（_Z11inc_relaxedv 生成的关键指令）
 _Z11inc_relaxedv:
@@ -494,6 +495,7 @@ void push(int v) {
 ```
 
 ```asm
+; 节选自 Examples/_ch110_cas.asm
 ; 文件：Examples/_ch110_cas.cpp
 ; 行号：24（push 生成的 CAS 循环；g++.exe -std=c++23 -O2 -S -masm=intel）
 _Z4pushi:
@@ -723,6 +725,7 @@ void swap_dw(std::uint64_t a, std::uint64_t b) {
 ```
 
 ```asm
+; 节选自 Examples/_ch110_dwcas.asm
 ; 文件：Examples/_ch110_dwcas.cpp
 ; 行号：34（GCC 15.3.0 对 128 位 CAS 的真实生成；注意它调用 libatomic）
 _Z7swap_dwyy:

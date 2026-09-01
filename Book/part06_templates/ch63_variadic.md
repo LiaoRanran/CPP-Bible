@@ -211,6 +211,7 @@ template <std::size_t... I> struct IndexSeq {};
 编译 `Examples/_asm_tpl_variadic.cpp`：`-O2` 把 `print_all(1,2.0,'c')` 完全内联为 **4 次 `g_depth+=1`**（对应四级展开），`fold_sum` 折叠为常量 10；`-O0` 暴露真实递归实例化链 mangled 名。
 
 ```asm
+; 节选自 Examples/_asm_tpl_variadic_O0.asm
 ; _asm_tpl_variadic.asm -O2 节选：四级展开内联为 4 次自增
 main:
     mov eax, DWORD PTR g_depth[rip]

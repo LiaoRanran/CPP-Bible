@@ -985,6 +985,7 @@ _Z10yield_stepR3GenIiE:
 ```
 
 ```asm
+; 节选自 Examples/_ch120_coro_perf.asm
 ; ===== co_await(ready=true) 在 GCC 15.3.0 被彻底消除 =====
 ; GCC 13.1 此处仍有 ready_task...Frame.actor（含 movl $42 / jmp free）；
 ; GCC 15.3.0 因 await_ready() 恒为 true，整个协程帧被优化消失，

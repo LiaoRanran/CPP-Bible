@@ -301,6 +301,7 @@ static_assert(sizeof(Handle<int>) > sizeof(int*));   // 含 RefCount 成员
 **`use_policy()` 主体（关键片段）**：
 
 ```asm
+; 节选自 Examples/_asm_policy.asm
 _Z10use_policyv:
     sub     rsp, 32
     mov     ecx, 4
@@ -318,6 +319,7 @@ _Z10use_policyv:
 **`use_virtual()` 主体（虚函数对照，即使被 devirtualize 仍留 vtable 取指）**：
 
 ```asm
+; 节选自 Examples/_asm_policy.asm
 _Z11use_virtualR5VBase:
     lea     rdx, _ZN4VNew4makeEv[rip]
     mov     rax, QWORD PTR [rcx]    ; ← 取 vtable 指针（对象首 8 字节）
@@ -337,6 +339,7 @@ _Z11use_virtualR5VBase:
 **`-O0` 策略组合 mangled 符号（验证每组合独立实例化）**：
 
 ```asm
+; 节选自 Examples/_asm_policy_O0.asm
 .globl  _ZN6WidgetIi10NewCreator14SingleThreadedE4makeEv     ; W1 = NewCreator + SingleThreaded
 .globl  _ZN6WidgetIi13MallocCreator13MultiThreadedE4makeEv   ; W2 = MallocCreator + MultiThreaded
 ```

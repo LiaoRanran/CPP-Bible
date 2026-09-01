@@ -335,6 +335,7 @@ void release() { f.clear(std::memory_order_release); }
 ```
 
 ```asm
+; 节选自 Examples/_ch107_atomic_flag.asm
 ; 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch107_atomic_flag.cpp -o _ch107_atomic_flag.asm
 ; 文件：Examples/_ch107_atomic_flag.cpp
 ; 行号：16（xchg 自旋）/ 28（clear）
@@ -454,6 +455,7 @@ int read() {
 ```
 
 ```asm
+; 节选自 Examples/_ch107_fetch_add.asm
 ; 编译：g++ -std=c++23 -O0 -S -masm=intel Examples/_ch107_mangled.cpp -o _ch107_mangled.asm
 ; 文件：Examples/_ch107_mangled.cpp
 ; 行号：26（lock xadd，来自 _ch107_mangled.cpp 的 -O0 产物）
@@ -473,6 +475,7 @@ _Z7add_onev:
 ```
 
 ```asm
+; 节选自 Examples/_ch107_fetch_add.asm
 ; 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch107_fetch_add.cpp -o _ch107_fetch_add.asm
 ; 文件：Examples/_ch107_fetch_add.cpp
 ; 行号：11（lock add，O2 对 +1 的特化）
@@ -510,6 +513,7 @@ void unlock() { locked.store(false, std::memory_order_release); }
 ```
 
 ```asm
+; 节选自 Examples/_ch107_spinlock.asm
 ; 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch107_spinlock.cpp -o _ch107_spinlock.asm
 ; 文件：Examples/_ch107_spinlock.cpp
 ; 行号：17（lock cmpxchg 自旋）
@@ -622,6 +626,7 @@ void atomic_inc()  { a.fetch_add(1, std::memory_order_relaxed); }  // 原子
 ```
 
 ```asm
+; 节选自 Examples/_ch107_volatile.asm
 ; 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch107_volatile.cpp -o _ch107_volatile.asm
 ; 文件：Examples/_ch107_volatile.cpp
 ; 行号：11（volatile 三指令，无 lock）/ 23（atomic 单条 lock add）

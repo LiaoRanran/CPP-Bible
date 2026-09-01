@@ -246,6 +246,7 @@ template <> struct Deep<0> { static constexpr int v = 0; };
 源：`Examples/_asm_tmp.cpp` 的 `use_tmp()`，调用 `Fact<5>`/`Gcd<48,36>`/`IsPrime<17>`/`IsPrime<15>`/`SelectT`/`sum_seq`。
 
 ```asm
+; 节选自 Examples/_asm_tmp.asm
 _Z7use_tmpv:
     sub     rsp, 40
     ; Fact<5>::value == 120
@@ -269,6 +270,7 @@ _Z7use_tmpv:
 **证据 2：`-O0` 下 `std::integer_sequence` 的包展开实例化一条 mangled 符号链。**
 
 ```asm
+; 节选自 Examples/_asm_tmp_O0.asm
 ; Examples/_asm_tmp.cpp 编译 -O0
 .section .text$_Z7sum_seqIJLi0ELi1ELi2ELi3ELi4ELi5EEEiSt16integer_sequenceIiJXspT_EEE,"x"
 .globl  _Z7sum_seqIJLi0ELi1ELi2ELi3ELi4ELi5EEEiSt16integer_sequenceIiJXspT_EEE

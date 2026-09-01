@@ -315,6 +315,7 @@ static_assert(sizeof(Sum<Fast,Fast>) == 2 * sizeof(Fast*));   // 16 字节（x64
 **朴素 `use_naive`（关键片段）**——产生 5 次 `new[]` 与 3 个遍历循环：
 
 ```asm
+; 节选自 Examples/_asm_expr.asm
 ; 分配 a/b/c 三个 Naive（3 次 new[]）
 call    _Znay          ; a
 call    _Znay          ; b
@@ -330,6 +331,7 @@ call    _Znay          ; t2 = (a+b)+c 临时（第2个额外 new[]）
 **表达式模板 `use_expr`（关键片段）**——仅 4 次 `new[]`（无临时）与 **单遍循环**：
 
 ```asm
+; 节选自 Examples/_asm_expr.asm
 ; 分配 a/b/c（3 次 new[]）
 call    _Znay          ; a
 call    _Znay          ; b
@@ -357,6 +359,7 @@ call    _Znay          ; 仅 u（1 次 new[]，无临时）
 **`-O0` 表达式树 mangled 符号（验证编译期类型树）**：
 
 ```asm
+; 节选自 Examples/_asm_expr_O0.asm
 ; operator+<Fast,Fast> → Sum<Fast,Fast>  （a+b）
 _ZplI4FastS0_E3SumIT_T0_ERK4ExprIS2_ERKS5_IS3_E
 ; operator+<Sum<Fast,Fast>,Fast> → Sum<Sum<Fast,Fast>,Fast>  （(a+b)+c）

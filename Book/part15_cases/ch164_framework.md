@@ -868,6 +868,7 @@ static_assert(ring_capacity(16) == 16);
 ```
 
 ```asm
+; 节选自 Examples/_ch164_framework_rb.asm
 ; ⑬ _ch164_framework_rb.asm（g++ -O2 -masm=intel 截取 Ring::push）
 _ZN4Ring4pushEc:
 	mov	r8d, edx

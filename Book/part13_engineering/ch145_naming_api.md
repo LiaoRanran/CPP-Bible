@@ -695,6 +695,7 @@ std::optional<Big> by_opt();    // 可选结果
 真实 g++ 汇编（节选）：
 
 ```asm
+; 节选自 Examples/_ch145_return.asm
 _Z8by_valuev:
         movdqa  xmm0, XMMWORD PTR .LC0[rip]
         movups  XMMWORD PTR [rcx], xmm0   ; rcx = 调用方提供的隐藏返回缓冲(sret 指针)
