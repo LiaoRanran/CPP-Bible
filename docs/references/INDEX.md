@@ -1,7 +1,10 @@
 # 参考资料归档登记
 
-> 更新时间：2026-08-30
-> 原始位置：`C:\Users\ASUS\Desktop\参考资料`（PDF 体积较大，不复制入库，仅登记引用；如需入库请单独确认）
+> 更新时间：2026-09-01
+> 原始位置（现用）：`C:\Users\ASUS\Desktop\cppb参考资料`（PDF 体积较大，不复制入库，仅登记引用；如需入库请单独确认）
+> 旧登记路径 `C:\Users\ASUS\Desktop\参考资料` 已迁至上述 `cppb参考资料`。
+> **引用与事实基线总规范见 `docs/references/SOURCING.md`**（六级来源 T0–T6 + 引用键 + 「手册必须对齐标准」铁律）。本书全部事实性陈述须带该文件登记的引用键。
+> 离线 cppreference（T1 RAG 源）：`C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`（6640 html）。
 
 ## 1. 参考书籍（PDF，用于内容复审/工程实践校准）
 
