@@ -239,7 +239,7 @@ sequenceDiagram
 
 ## ⑩ 汇编分析（Compiler Explorer 风格，标注 -O2）
 
-**[stack::push]** 编译：`g++ -std=c++23 -O2 -S -masm=intel`，目标 x86-64。下面是从 `void f(std::stack<int>& s,int x){ s.push(x); }` 抽出的**真实**汇编（MinGW GCC 13.1.0）。可以看到 `stack::push` 被**完全内联为 `deque::push_back` 的尾插逻辑**：
+**`stack::push` 编译**：`g++ -std=c++23 -O2 -S -masm=intel`，目标 x86-64。下面是从 `void f(std::stack<int>& s,int x){ s.push(x); }` 抽出的**真实**汇编（MinGW GCC 13.1.0）。可以看到 `stack::push` 被**完全内联为 `deque::push_back` 的尾插逻辑**：
 
 ```asm
 ; _Z10stack_pushRSt5stackIiSt5dequeIiSaIiEEEi

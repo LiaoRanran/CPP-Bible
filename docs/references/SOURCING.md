@@ -124,6 +124,7 @@
 - `gcc:<t>` → GCC 官方文档 + libstdc++（`https://gcc.gnu.org/onlinedocs/`）。
 - `clang:<t>` → Clang/LLVM + libc++（`https://clang.llvm.org/` `https://libcxx.llvm.org/`）。
 - `msvc:<t>` → Microsoft C++ Docs（`https://learn.microsoft.com/cpp/`），含 MSVC 扩展与 MSVC STL 行为。
+- `abi:<name>` → C++ ABI 文档：Itanium C++ ABI（`https://itanium-cxx-abi.github.io/cxx-abi/abi.html`，GCC/Clang 侧）与 MSVC x64 约定（`learn.microsoft.com/cpp/build/x64-software-conventions`）。例：`[abi:itanium]` 名字改编/mangled name 稳定性。
 - 写入手册时显式标 `std:`/`ext:`/`ub:`（例：`[msvc:ext]` 某扩展、`[gcc:ext]` `__attribute__`）。
 
 ### 3.7 T6 UB/陷阱/案例库（极有价值）
@@ -171,7 +172,7 @@
 
 ## 6. 待补（后续）
 
-- 建立 `tools/check_citations.py`：扫描手册 `[键]` 是否在本文件登记、键是否过期。
+- ~~建立 `tools/check_citations.py`~~ ✅ **已建**（2026-09-01）：扫描 `Book/**/ch*.md` 行内 `[键]`，按本文前缀白名单校验；无冒号小写记号（如 `[temp]` `[atomics.order]`）视为 **WG21 条款锚点**单独计数，不判未知；`<...>` 占位符合法但计数提示落地。ruff 0.6.9 + mypy 全绿。
 - 将 cppreference 离线 html 建向量索引（RAG），遇到歧义时自动检索。
 - Software Engineering at Google（PDF）条目化提取到 Engineering/software_engineering。
 - 持续补 `std-cpp26` 前瞻特性与 `cert:` `core:` 条目映射。

@@ -1412,6 +1412,8 @@ flowchart TD
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
-- `[gcc:options]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+- `[gcc:<internals>]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+- `[clang:<internals>]`（T5）CLANG 官方文档 —— 在线 `clang.llvm.org`
+- `[msvc:<internals>]`（T5）MSVC 官方文档 —— 在线 `learn.microsoft.com/cpp`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

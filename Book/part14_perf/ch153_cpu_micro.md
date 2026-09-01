@@ -1393,5 +1393,6 @@ movdqa    xmm12, xmm0
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[book:optimized-cpp:<ch>]`（T4）Optimized C++（Guntheroth） · <ch> —— 提取文本 `docs/references/external/books/optimized-cpp.txt`
+- `[cppcon:<microarch>]`（T6）复现/案例源 —— 在线
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1261,6 +1261,7 @@ flowchart TD
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
-- `[gcc:options]`（T5）GCC 官方文档 —— 在线 `gcc.gnu.org/onlinedocs`
+- `[cmake:cmake-packages.7]`（T7）CMake 官方文档 `cmake-packages.7` —— 本地 `docs/references/external/vendor/cmake-doc/`
+- `[book:swe-google:<ch>]`（T4）Software Engineering at Google · <ch> —— 提取文本 `docs/references/external/books/swe-at-google.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

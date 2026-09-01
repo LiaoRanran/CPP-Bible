@@ -1435,5 +1435,6 @@ int main() {
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+- `[cppref:cpp/meta]`（T1）cppreference `cpp/meta` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

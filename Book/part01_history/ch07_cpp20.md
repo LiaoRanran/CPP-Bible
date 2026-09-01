@@ -1045,8 +1045,7 @@ int main() {
 
 ## 参考引用
 
-- `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
-- `[isocpp:<history>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[std-cpp20]`（T0·终审）ISO/IEC 14882:2020（C++20） —— 在线 `eel.is/c++draft`；N4860 PDF 本机 403 未取（见 SOURCING §3.1）
 - `[book:tour:<sec>]`（T4）A Tour of C++（Bjarne） · <sec> —— 提取文本 `docs/references/external/books/tour-of-cpp.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

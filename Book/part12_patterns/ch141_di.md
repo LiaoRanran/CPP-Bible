@@ -1631,6 +1631,7 @@ Boost.DI / Fruit 的「编译期依赖图」既是优势也是负担：
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
-- `[core:C.1]`（T3）C++ Core Guidelines 规则 C.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+- `[book:swe-google:<ch>]`（T4）Software Engineering at Google · <ch> —— 提取文本 `docs/references/external/books/swe-at-google.txt`
+- `[core:<di>]`（T3）C++ Core Guidelines 规则 <di> —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -1661,5 +1661,6 @@ xor    edi, edi
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:more-exceptional:<item>]`（T4）More Exceptional C++（Sutter，40 puzzles） · <item> —— 提取文本 `docs/references/external/books/more-exceptional-cpp.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

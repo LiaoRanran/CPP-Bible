@@ -1237,6 +1237,8 @@ flowchart TD
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
+- `[book:tour:<sec>]`（T4）A Tour of C++（Bjarne） · <sec> —— 提取文本 `docs/references/external/books/tour-of-cpp.txt`
 - `[isocpp:<topic>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[cppcon:<roadmap>]`（T6）复现/案例源 —— 在线
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

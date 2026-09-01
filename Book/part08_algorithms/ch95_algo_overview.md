@@ -2138,6 +2138,7 @@ int main() {
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
-- `[cppref:cpp/algorithm/<algo>]`（T1）cppreference `cpp/algorithm/<algo>` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[book:effective-stl:<item>]`（T4）Effective STL 中文版（Meyers，50 条） · <item> —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[cppref:cpp/algorithm]`（T1）cppreference `cpp/algorithm` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。
