@@ -78,6 +78,8 @@ flowchart LR
     5. `reinterpret_cast` 是"比特重解释"，是四种里最危险的；跨类型读违反 **strict aliasing（[basic.lval]）** 即 UB。
     6. 优先使用类型安全惯用法：`std::bit_cast`(C++20)、`std::chrono::duration_cast`、`std::static_pointer_cast/dynamic_pointer_cast`、`std::polymorphic_downcast`（boost，debug 断言）、`std::is_convertible/convertible_to`。
 
+> 事故现场：`reinterpret_cast` 把 `double*` 当 `int*` 读是 strict aliasing 的经典 UB——编译器按 `[basic.lval]` 假设 `double` 与 `int` 不会重叠于同一地址，于是把"读 int 视角下的那个 double"直接优化成"它自己的常量"或彻底删掉，你拿到的值与内存里实际的比特毫无关系（[std-cpp23]）。这比崩溃更阴：程序安静地输出错误数字，排障时反汇编里看不到任何非法指令，只有一条"编译器替你做、你没同意的"假设。跨类型读内存请走 `std::bit_cast`（C++20），它显式声明"我要重解释这些比特"且保证定义良好。
+
 **生命周期流程图（一次 `dynamic_cast` 的调用栈）**：
 
 ```mermaid
