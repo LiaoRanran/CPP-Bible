@@ -4478,6 +4478,1974 @@
       ],
       "difficulty": "中级",
       "see_also": []
+    },
+    {
+      "id": "translation_unit",
+      "term": "翻译单元（translation unit）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "一个源文件经预处理后形成的编译输入；ODR 与内部链接均以翻译单元为边界讨论。",
+      "standard_clause": "[lex.separate]",
+      "chapter_ref": "Book/part02_toolchain/ch11_compilers.md",
+      "related": [
+        "odr",
+        "linkage"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "static_shared_lib",
+      "term": "静态库与共享库",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "静态库在链接期并入产物；共享库在运行期由动态链接器加载，可节省磁盘但引入加载与符号解析问题。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part02_toolchain/ch11_compilers.md",
+      "related": [
+        "symbol_visibility",
+        "pic"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "symbol_visibility",
+      "term": "符号可见性（visibility）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "控制动态库导出哪些符号；默认隐藏（hidden）可减小体积、加快加载并避免符号冲突。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part02_toolchain/ch11_compilers.md",
+      "related": [
+        "static_shared_lib",
+        "odr"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "pic",
+      "term": "位置无关代码（-fPIC）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "生成可加载至任意地址的代码；共享库通常必须编译为 PIC，静态库若需链入共享库也需 PIC。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part02_toolchain/ch11_compilers.md",
+      "related": [
+        "static_shared_lib"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "preprocess",
+      "term": "预处理与包含守卫",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "预处理做宏展开与文本包含；#pragma once 或 include guard 防重复包含，模块（Modules）是其替代方向。",
+      "standard_clause": "[cpp]",
+      "chapter_ref": "Book/part02_toolchain/ch11_compilers.md",
+      "related": [
+        "modules",
+        "header_only"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "compiler_warning",
+      "term": "编译警告（-Wall / -Wextra / -Werror）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "警告是成本最低的静态检查；建议开启 -Wall -Wextra 并在 CI 中配合 -Werror 阻止回归。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part02_toolchain/ch18_buildconfig.md",
+      "related": [
+        "static_analysis"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "build_type",
+      "term": "构建类型（Debug / Release / RelWithDebInfo）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "Debug 保留调试信息且少优化，Release 优化后性能与体积差异大；优化级别不同可能暴露或掩盖 UB。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part02_toolchain/ch18_buildconfig.md",
+      "related": [
+        "compiler_opt",
+        "debugger"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "compile_commands",
+      "term": "compile_commands.json",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "记录每个翻译单元真实编译命令的编译数据库，是 clangd/clang-tidy 等工具正确理解工程的前提。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part02_toolchain/ch12_buildsystems.md",
+      "related": [
+        "static_analysis",
+        "buildsystem"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "value_category",
+      "term": "值类别（lvalue / rvalue / xvalue / glvalue / prvalue）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "表达式的两维分类：是否有身份（glvalue）与是否可移动（rvalue）；决定重载决议选择拷贝还是移动。",
+      "standard_clause": "[basic.lval]",
+      "chapter_ref": "Book/part03_language/ch19_variables.md",
+      "related": [
+        "move",
+        "perfect_forwarding"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "evaluation_order",
+      "term": "求值顺序与序列点",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "C++17 起限定部分求值顺序（如函数实参不再互相交错、赋值右先于左）；未限定的顺序属未指定行为，不得依赖。",
+      "standard_clause": "[intro.execution]",
+      "chapter_ref": "Book/part03_language/ch19_variables.md",
+      "related": [
+        "ub_vs_unspecified"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "ub_vs_unspecified",
+      "term": "未定义 / 未指定 / 实现定义行为",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "UB 无任何保证（标准不管）；未指定行为有多个合法结果但不 UB；实现定义行为须由实现文档说明。",
+      "standard_clause": "[defns.undefined]",
+      "chapter_ref": "Book/part03_language/ch28_lifetime_ub.md",
+      "related": [
+        "evaluation_order",
+        "data_race"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "integer_promotion",
+      "term": "整型提升与一般算术转换",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "小于 int 的类型先提升为 int/unsigned，再按秩与符号统一操作数类型；符号/无符号混用是经典缺陷来源。",
+      "standard_clause": "[conv.prom]",
+      "chapter_ref": "Book/part03_language/ch19_variables.md",
+      "related": [
+        "narrowing"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "narrowing",
+      "term": "窄化转换（narrowing conversion）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "可能丢失信息的隐式转换（如 long→int、浮点→整型）；列表初始化（花括号）禁止窄化转换。",
+      "standard_clause": "[dcl.init.list]",
+      "chapter_ref": "Book/part03_language/ch32_initialization.md",
+      "related": [
+        "integer_promotion",
+        "initialization"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "nullptr",
+      "term": "nullptr 与 NULL",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "nullptr 是 std::nullptr_t 类型的空指针字面量，消除 NULL（0）在函数重载中的整型/指针歧义。",
+      "standard_clause": "[lex.nullptr]",
+      "chapter_ref": "Book/part03_language/ch20_reference_pointer.md",
+      "related": [
+        "auto_decltype"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "type_alias",
+      "term": "类型别名（using / typedef）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "using 可模板化（别名模板）且语法更清晰，typedef 不能模板化；两者均不创建新类型。",
+      "standard_clause": "[dcl.typedef]",
+      "chapter_ref": "Book/part03_language/ch19_variables.md",
+      "related": [
+        "template"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "overload_resolution",
+      "term": "重载决议",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "按可行性、转换序列优劣与偏序规则选最佳候选；歧义即编译错误，是 SFINAE 与 concepts 的作用场。",
+      "standard_clause": "[over.match]",
+      "chapter_ref": "Book/part03_language/ch31_operator_overloading.md",
+      "related": [
+        "name_lookup",
+        "sfinae"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "name_lookup",
+      "term": "名字查找（qualified / unqualified / ADL）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "限定查找按作用域限定符；非限定查找含普通查找与实参依赖查找（ADL），决定了调用能看见哪些声明。",
+      "standard_clause": "[basic.lookup]",
+      "chapter_ref": "Book/part03_language/ch23_namespace_adl.md",
+      "related": [
+        "namespace_adl",
+        "overload_resolution"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "bitfield",
+      "term": "位域（bit-field）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "按位分配的结构体成员，可节省空间；内存布局与跨位域的并发访问是实现定义/存在数据竞争风险。",
+      "standard_clause": "[class.bit]",
+      "chapter_ref": "Book/part03_language/ch19_variables.md",
+      "related": [
+        "object_layout"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "anonymous_namespace",
+      "term": "匿名命名空间与内部链接",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "匿名命名空间中的名字具内部链接，是替代 static 的 C++ 写法；具唯一命名空间名，不污染全局。",
+      "standard_clause": "[namespace.unnamed]",
+      "chapter_ref": "Book/part03_language/ch23_namespace_adl.md",
+      "related": [
+        "linkage",
+        "namespace_adl"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "inline_variable",
+      "term": "内联变量（inline 变量，C++17）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "允许在头文件中定义变量且多处定义合并为一个（如 inline constexpr 常量），消除 ODR 问题。",
+      "standard_clause": "[dcl.inline]",
+      "chapter_ref": "Book/part03_language/ch19_variables.md",
+      "related": [
+        "odr",
+        "local_static_init"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "local_static_init",
+      "term": "局部静态初始化（Magic Static）",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "C++11 起函数内静态变量的初始化是线程安全的（首次控制流经过时），常用于线程安全的懒初始化。",
+      "standard_clause": "[stmt.dcl]",
+      "chapter_ref": "Book/part03_language/ch19_variables.md",
+      "related": [
+        "singleton",
+        "inline_variable"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "trailing_return",
+      "term": "尾置返回类型与返回类型推导",
+      "aliases": [],
+      "category": "语言基础",
+      "definition": "auto f() -> T 便于表达依赖参数的返回类型；C++14 起可直接用 auto 推导，有多返回路径时须一致。",
+      "standard_clause": "[dcl.fct]",
+      "chapter_ref": "Book/part03_language/ch22_auto_decltype.md",
+      "related": [
+        "auto_decltype"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "memory_leak",
+      "term": "内存泄漏（memory leak）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "已分配内存失去所有可达引用而无法释放；RAII 与智能指针是根本对策，工具可用 ASan/LSan 检出。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch37_new_delete.md",
+      "related": [
+        "raii",
+        "sanitizer"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "use_after_free",
+      "term": "use-after-free（释放后使用）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "访问已释放内存，属 UB 且是典型安全漏洞；ASan 可检测，所有权清晰化可从源头避免。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch37_new_delete.md",
+      "related": [
+        "dangling",
+        "sanitizer"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "buffer_overflow",
+      "term": "缓冲区溢出（buffer overflow）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "越界写入破坏相邻对象或控制流；优先用带边界的容器与 span，避免裸数组与不检查长度的写操作。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch37_new_delete.md",
+      "related": [
+        "sanitizer",
+        "span"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "memory_fragmentation",
+      "term": "内存碎片",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "长期分配释放产生无法利用的空洞：外部碎片为总量够但不连续，内部碎片为块内浪费；池化与分区可缓解。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch44_memory_pool.md",
+      "related": [
+        "memory_pool",
+        "allocator"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "page_fault",
+      "term": "缺页中断（page fault）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "访问未在物理内存中的页触发内核调入；次要缺页代价小，主缺页涉及磁盘 IO，是随机访问缓慢的根源之一。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch35_memory_layout.md",
+      "related": [
+        "virtual_memory",
+        "huge_page"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "huge_page",
+      "term": "大页（Huge Page / THP）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "使用更大的页（如 2MB）减少 TLB 缺失与页表开销，对大内存随机访问工作负载收益明显。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch35_memory_layout.md",
+      "related": [
+        "page_fault",
+        "tlb"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "endianness",
+      "term": "字节序（endianness）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "多字节值的字节存储顺序；跨平台二进制格式与网络传输须显式规定，否则不可移植。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch35_memory_layout.md",
+      "related": [
+        "object_layout"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "padding",
+      "term": "结构体填充（padding）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "为满足对齐在成员间插入的空隙；按对齐从大到小排列成员可减小结构体尺寸。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch35_memory_layout.md",
+      "related": [
+        "alignment",
+        "object_layout"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "cow",
+      "term": "写时复制（copy-on-write）",
+      "aliases": [],
+      "category": "内存管理",
+      "definition": "共享底层数据直到某方写入才复制；C++11 后 std::string 因线程安全代价普遍放弃 COW。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part04_memory/ch43_cache_locality.md",
+      "related": [
+        "string"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "pure_virtual",
+      "term": "纯虚函数与抽象类",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "virtual f() = 0 使类抽象、不可实例化；纯虚析构仍需提供定义，否则派生析构链接失败。",
+      "standard_clause": "[class.abstract]",
+      "chapter_ref": "Book/part05_oo/ch47_virtual_functions.md",
+      "related": [
+        "virtual_dtor",
+        "interface"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "virtual_dtor",
+      "term": "虚析构函数",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "经基类指针删除派生对象时，基类析构非虚是 UB；多态基类应声明虚析构（或 protected 非虚以禁止删除）。",
+      "standard_clause": "[class.dtor]",
+      "chapter_ref": "Book/part05_oo/ch47_virtual_functions.md",
+      "related": [
+        "pure_virtual",
+        "object_slicing"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "covariant_return",
+      "term": "协变返回类型",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "派生类重写虚函数时可返回基类返回类型的派生指针/引用，使下转型不必要；协变只适用于指针与引用。",
+      "standard_clause": "[class.virtual]",
+      "chapter_ref": "Book/part05_oo/ch47_virtual_functions.md",
+      "related": [
+        "pure_virtual"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "ctor_dtor_order",
+      "term": "构造与析构顺序",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "构造：虚基类→基类→成员（声明序）→自身函数体；析构严格逆序。构造/析构期间虚函数不向下派发。",
+      "standard_clause": "[class.base.init]",
+      "chapter_ref": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+      "related": [
+        "virtual_dtor",
+        "pure_virtual"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "delegating_ctor",
+      "term": "委托构造函数",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "构造函数在初始化列表中调用同类另一构造函数以复用逻辑；不得形成委托环。",
+      "standard_clause": "[class.base.init]",
+      "chapter_ref": "Book/part03_language/ch32_initialization.md",
+      "related": [
+        "inheriting_ctor"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "inheriting_ctor",
+      "term": "继承构造函数（using Base::Base）",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "把基类构造函数引入派生类作用域以便直接构造派生对象；基类构造仍只初始化基类子对象。",
+      "standard_clause": "[class.inhctor.init]",
+      "chapter_ref": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+      "related": [
+        "delegating_ctor"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "explicit",
+      "term": "explicit 与转换构造",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "explicit 禁止隐式转换（含 C++11 起作用于转换运算符），避免意外构造与比较语义失真。",
+      "standard_clause": "[class.conv.ctor]",
+      "chapter_ref": "Book/part03_language/ch27_cast.md",
+      "related": [
+        "operator_overloading"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "trivial_type",
+      "term": "平凡类型（trivial）",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "平凡默认构造/拷贝/移动/析构且无非静态成员初始化；可用 memcpy 复制，是很多优化的门槛。",
+      "standard_clause": "[class.prop]",
+      "chapter_ref": "Book/part05_oo/ch45_oop_object_model.md",
+      "related": [
+        "standard_layout",
+        "pod"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "standard_layout",
+      "term": "标准布局类型（standard-layout）",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "布局与 C 兼容、无虚、单一访问控制、无多重继承中的非标准布局基类；可与 C 互操作。",
+      "standard_clause": "[class.prop]",
+      "chapter_ref": "Book/part05_oo/ch45_oop_object_model.md",
+      "related": [
+        "trivial_type",
+        "pod"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "pod",
+      "term": "POD 类型",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "平凡且标准布局的聚合类型（C++20 起该术语被弃用，分别使用 trivial 与 standard-layout 描述）。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part05_oo/ch45_oop_object_model.md",
+      "related": [
+        "trivial_type",
+        "standard_layout"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "aggregate",
+      "term": "聚合类与聚合初始化",
+      "aliases": [],
+      "category": "面向对象",
+      "definition": "无用户声明构造、无私有/保护非静态成员、无虚函数的类可用花括号按成员顺序聚合初始化。",
+      "standard_clause": "[dcl.init.aggr]",
+      "chapter_ref": "Book/part03_language/ch32_initialization.md",
+      "related": [
+        "initialization",
+        "pod"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "nttp",
+      "term": "非类型模板参数（NTTP）",
+      "aliases": [],
+      "category": "模板元编程",
+      "definition": "以常量值作模板实参（整型、指针、引用、成员指针；C++20 起支持浮点与字面量类类型）。",
+      "standard_clause": "[temp.arg.nontype]",
+      "chapter_ref": "Book/part06_templates/ch60_template_basics.md",
+      "related": [
+        "template",
+        "template_template_param"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "template_template_param",
+      "term": "模板模板参数",
+      "aliases": [],
+      "category": "模板元编程",
+      "definition": "以模板本身作参数（template<class...> class Container），便于注入容器/策略而不写死具体类型。",
+      "standard_clause": "[temp.arg.template]",
+      "chapter_ref": "Book/part06_templates/ch60_template_basics.md",
+      "related": [
+        "nttp",
+        "policy"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "explicit_instantiation",
+      "term": "显式实例化与 extern template",
+      "aliases": [],
+      "category": "模板元编程",
+      "definition": "显式实例化定义强制在此生成代码；extern template 声明则抑制本翻译单元实例化，用于缩短编译时间。",
+      "standard_clause": "[temp.explicit]",
+      "chapter_ref": "Book/part06_templates/ch60_template_basics.md",
+      "related": [
+        "template"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "template_error",
+      "term": "模板错误信息与概念诊断",
+      "aliases": [],
+      "category": "模板元编程",
+      "definition": "深层实例化会产生冗长错误；concepts 与static_assert 能把失败定位到约束层，显著改善诊断。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part06_templates/ch67_concepts.md",
+      "related": [
+        "concepts",
+        "requires_expr"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "load_factor",
+      "term": "负载因子与 rehash",
+      "aliases": [],
+      "category": "STL",
+      "definition": "load_factor = size / bucket_count；max_load_factor 是触发 rehash 的阈值，rehash 使迭代器失效。",
+      "standard_clause": "[unord.req]",
+      "chapter_ref": "Book/part07_stl/ch85_unordered.md",
+      "related": [
+        "unordered_map",
+        "iterator_invalidation"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "node_handle",
+      "term": "节点句柄（node handle / extract）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "C++17 起可从关联容器 extract 出节点并 insert 到另一容器，实现零拷贝/零分配的元素迁移与键修改。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part07_stl/ch83_map.md",
+      "related": [
+        "unordered_map",
+        "map"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "emplace",
+      "term": "emplace 与就地构造",
+      "aliases": [],
+      "category": "STL",
+      "definition": "emplace_back/emplace 直接以实参在容器内构造，省去临时对象；但可能掩盖隐式转换，且不等价于 push_back。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part07_stl/ch77_vector.md",
+      "related": [
+        "vector",
+        "perfect_forwarding"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "reverse_iterator",
+      "term": "反向迭代器（reverse_iterator）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "适配器式的逆向遍历封装，其 base() 指向下一位置（半开区间偏移一），插入删除时需注意换算。",
+      "standard_clause": "[reverse.iterators]",
+      "chapter_ref": "Book/part07_stl/ch76_stl_arch.md",
+      "related": [
+        "iterator",
+        "insert_iterator"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "insert_iterator",
+      "term": "插入迭代器（back_inserter / front_inserter / inserter）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "把赋值语义转为容器插入操作，使 copy 等算法可写入变长容器而无需预分配。",
+      "standard_clause": "[insert.iterators]",
+      "chapter_ref": "Book/part07_stl/ch76_stl_arch.md",
+      "related": [
+        "reverse_iterator",
+        "stream_iterator"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "stream_iterator",
+      "term": "流迭代器（istream_iterator / ostream_iterator）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "把流适配为迭代器区间，可直接接算法；输入流迭代器为单遍（input）语义。",
+      "standard_clause": "[stream.iterators]",
+      "chapter_ref": "Book/part07_stl/ch76_stl_arch.md",
+      "related": [
+        "insert_iterator"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "sentinel",
+      "term": "哨兵（sentinel）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "C++20 Ranges 允许区间终点是与起点不同类型（如以 '\u0000' 判终），突破了传统迭代器对的限制。",
+      "standard_clause": "[iterator.sentinel]",
+      "chapter_ref": "Book/part07_stl/ch90_ranges.md",
+      "related": [
+        "ranges",
+        "range_view"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "pair",
+      "term": "std::pair",
+      "aliases": [],
+      "category": "STL",
+      "definition": "二元组，标准库（尤其关联容器）的键值载体；结构化绑定可可读性更好地解包 first/second。",
+      "standard_clause": "[pairs]",
+      "chapter_ref": "Book/part07_stl/ch89_tuple_any.md",
+      "related": [
+        "tuple",
+        "map"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "vector_bool",
+      "term": "std::vector<bool> 特化",
+      "aliases": [],
+      "category": "STL",
+      "definition": "按位压缩的特化，代理引用使其不满足容器要求（取地址失败），泛型代码与并发访问需特别小心。",
+      "standard_clause": "[vector.bool]",
+      "chapter_ref": "Book/part07_stl/ch87_bitset.md",
+      "related": [
+        "bitset",
+        "vector"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "strict_weak_ordering",
+      "term": "严格弱序（strict weak ordering）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "有序容器与排序要求的比较关系：非自反、非对称、可传递且不可比关系可传递；不满足则行为未定义。",
+      "standard_clause": "[alg.sorting]",
+      "chapter_ref": "Book/part07_stl/ch83_map.md",
+      "related": [
+        "equivalence",
+        "map"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "equivalence",
+      "term": "等价与相等（equivalence vs equality）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "有序容器用「!(a<b) && !(b<a)」判等价而非 operator==；无序容器则用 == 与哈希判等。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part07_stl/ch83_map.md",
+      "related": [
+        "strict_weak_ordering",
+        "unordered_map"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "type_erasure",
+      "term": "类型擦除（type erasure）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "在类型系统之外保留行为：以统一接口包裹任意满足概念的类型（std::function、std::any 均属此类）。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part07_stl/ch89_tuple_any.md",
+      "related": [
+        "std_function",
+        "any"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "allocator_aware",
+      "term": "分配器感知（allocator-aware）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "容器把分配器作为类型的一部分随容器传播（拷贝/移动/交换规则各异），PMR 则用运行期多态分配器。",
+      "standard_clause": "[allocator.requirements]",
+      "chapter_ref": "Book/part04_memory/ch38_allocator.md",
+      "related": [
+        "allocator",
+        "pmr"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "partition",
+      "term": "划分（partition / stable_partition）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "按谓词把元素重排为两组；stable_partition 保序但可能分配，partition 为线性且不保序。",
+      "standard_clause": "[alg.partitions]",
+      "chapter_ref": "Book/part08_algorithms/ch95_algo_overview.md",
+      "related": [
+        "sorting",
+        "stability"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "rotate",
+      "term": "旋转（rotate）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "把区间循环左移，使中间元素成为新首元素；是许多原地重排算法的构件。",
+      "standard_clause": "[alg.rotate]",
+      "chapter_ref": "Book/part08_algorithms/ch95_algo_overview.md",
+      "related": [
+        "partition"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "shuffle",
+      "term": "随机洗牌（shuffle）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "以均匀随机数发生器重排；random_shuffle 因依赖 rand 已在 C++17 移除，应改用 shuffle 与 <random>。",
+      "standard_clause": "[alg.random.shuffle]",
+      "chapter_ref": "Book/part08_algorithms/ch95_algo_overview.md",
+      "related": [
+        "sample"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "set_algo",
+      "term": "集合算法（set_union / set_intersection / set_difference）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "作用于已排序区间的集合运算，输出亦有序；复杂度线性，要求输入已按同一序排好。",
+      "standard_clause": "[alg.set.operations]",
+      "chapter_ref": "Book/part08_algorithms/ch97_search.md",
+      "related": [
+        "sorting"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "minmax",
+      "term": "最小最大值（min_element / max_element / minmax_element）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "minmax_element 一次遍历同时取最小与最大，比较次数少于分别调用两次。",
+      "standard_clause": "[alg.min.max]",
+      "chapter_ref": "Book/part08_algorithms/ch97_search.md",
+      "related": [
+        "sorting"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "scan",
+      "term": "扫描与前缀和（inclusive_scan / exclusive_scan）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "前缀归约：inclusive 含当前元素、exclusive 不含；C++17 起支持并行执行策略。",
+      "standard_clause": "[numeric.ops]",
+      "chapter_ref": "Book/part08_algorithms/ch99_numeric.md",
+      "related": [
+        "numeric",
+        "execution_policy"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "sample",
+      "term": "采样（sample）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "从区间中无放回抽取若干元素（蓄水池抽样），需提供随机数发生器。",
+      "standard_clause": "[alg.random.sample]",
+      "chapter_ref": "Book/part08_algorithms/ch99_numeric.md",
+      "related": [
+        "shuffle"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "non_mutating",
+      "term": "非变异算法（non-mutating algorithms）",
+      "aliases": [],
+      "category": "STL",
+      "definition": "不修改元素值的算法族（find/count/all_of/equal 等），通常只读访问，可与 const 区间配合。",
+      "standard_clause": "[alg.nonmodifying]",
+      "chapter_ref": "Book/part08_algorithms/ch95_algo_overview.md",
+      "related": [
+        "algo_overview"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "race_condition",
+      "term": "竞态条件（race condition）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "结果依赖线程执行的相对时序；注意它不等于 data race——竞态是逻辑缺陷，data race 在 C++ 中是 UB。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part09_concurrency/ch107_atomic.md",
+      "related": [
+        "data_race",
+        "deadlock"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "happens_before",
+      "term": "happens-before",
+      "aliases": [],
+      "category": "并发",
+      "definition": "定义可见性偏序：若 A happens-before B，则 A 的副作用对 B 可见；由 synchronizes-with 与 sequenced-before 构成。",
+      "standard_clause": "[intro.races]",
+      "chapter_ref": "Book/part09_concurrency/ch108_memory_order.md",
+      "related": [
+        "memory_order",
+        "release_sequence"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "release_sequence",
+      "term": "释放序列（release sequence）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "由释放操作及其后续同一原子对象上的读改写操作组成的序列，扩展了 acquire 可见范围。",
+      "standard_clause": "[atomics.order]",
+      "chapter_ref": "Book/part09_concurrency/ch108_memory_order.md",
+      "related": [
+        "happens_before",
+        "memory_order"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "consume_order",
+      "term": "memory_order_consume",
+      "aliases": [],
+      "category": "并发",
+      "definition": "只保证依赖顺序的可见性，本意为指针发布场景在弱序架构上省屏障；实践中被广泛视为不可用/暂勿使用。",
+      "standard_clause": "[atomics.order]",
+      "chapter_ref": "Book/part09_concurrency/ch108_memory_order.md",
+      "related": [
+        "memory_order",
+        "happens_before"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "atomic_ref",
+      "term": "std::atomic_ref（C++20）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "为已存在的非原子对象提供原子视图；使用该视图期间，其它访问也须经 atomic_ref 否则仍可能 data race。",
+      "standard_clause": "[atomics.ref.generic]",
+      "chapter_ref": "Book/part09_concurrency/ch107_atomic.md",
+      "related": [
+        "atomic"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "thread_local",
+      "term": "thread_local 与线程局部存储",
+      "aliases": [],
+      "category": "并发",
+      "definition": "每线程独立实例；静态 thread_local 在线程首次使用时初始化，析构在线程退出时按逆序进行。",
+      "standard_clause": "[basic.stc.thread]",
+      "chapter_ref": "Book/part09_concurrency/ch107_atomic.md",
+      "related": [
+        "storage_duration"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "spinlock",
+      "term": "自旋锁（spinlock）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "忙等而非睡眠的锁，临界区极短时可省去上下文切换；持锁时间长会空耗 CPU，且不可在单核上忙等。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part09_concurrency/ch110_lockfree.md",
+      "related": [
+        "mutex",
+        "lockfree"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "shared_lock",
+      "term": "读写锁（shared_mutex / shared_lock）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "读共享、写独占，适合读多写少；但写者饥饿与锁本身开销可能抵消收益，需实测。",
+      "standard_clause": "[thread.sharedmutex]",
+      "chapter_ref": "Book/part09_concurrency/ch107_atomic.md",
+      "related": [
+        "mutex",
+        "lock_guard"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "semaphore",
+      "term": "信号量（std::counting_semaphore，C++20）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "计数型同步原语：acquire 减计数（为零则阻塞）、release 加计数，适合限流与资源配额。",
+      "standard_clause": "[thread.sema]",
+      "chapter_ref": "Book/part07_stl/ch93_thread_async.md",
+      "related": [
+        "latch_barrier",
+        "mutex"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "latch_barrier",
+      "term": "latch 与 barrier（C++20）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "latch 是一次性倒计时门闩；barrier 可重复使用并支持到达时回调，用于分阶段并行。",
+      "standard_clause": "[thread.coord]",
+      "chapter_ref": "Book/part07_stl/ch93_thread_async.md",
+      "related": [
+        "semaphore",
+        "async_future"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "thread_pool",
+      "term": "线程池（thread pool）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "复用固定数量线程执行任务队列，避免频繁创建销毁；需关注任务队列竞争、窃取与优雅关闭。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part15_cases/ch159_threadpool.md",
+      "related": [
+        "producer_consumer",
+        "async_future"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "producer_consumer",
+      "term": "生产者-消费者",
+      "aliases": [],
+      "category": "并发",
+      "definition": "以有界队列解耦生产与消费；需同时处理满/空等待与关闭通知，条件变量或信号量是常见实现。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part07_stl/ch93_thread_async.md",
+      "related": [
+        "condition_variable",
+        "thread_pool"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "reentrancy",
+      "term": "可重入性（reentrancy）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "函数可在执行中被再次进入而结果仍正确；通常要求不依赖静态/全局可变状态，与线程安全相关但不等价。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part09_concurrency/ch107_atomic.md",
+      "related": [
+        "thread_local",
+        "data_race"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "sequential_consistency",
+      "term": "顺序一致性（sequentially consistent）",
+      "aliases": [],
+      "category": "并发",
+      "definition": "所有线程看到同一全局操作顺序且各线程操作按序出现，最易推理也最贵；是原子操作的默认内存序。",
+      "standard_clause": "[atomics.order]",
+      "chapter_ref": "Book/part09_concurrency/ch108_memory_order.md",
+      "related": [
+        "memory_order",
+        "happens_before"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "guaranteed_copy_elision",
+      "term": "强制拷贝省略（C++17）",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "纯右值直接初始化同类型对象时不再产生临时对象，连拷贝/移动构造的调用都被消除（不是可选优化）。",
+      "standard_clause": "[dcl.init]",
+      "chapter_ref": "Book/part10_modern/ch117_copy_elision.md",
+      "related": [
+        "copy_elision",
+        "value_category"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "nodiscard",
+      "term": "[[nodiscard]]",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "提示返回值不应被丢弃；对返回错误码或昂贵结果的函数收益最大，编译器可据此告警。",
+      "standard_clause": "[dcl.attr.nodiscard]",
+      "chapter_ref": "Book/part10_modern/ch123_ct_programming.md",
+      "related": [
+        "error_handling"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "deprecated_attr",
+      "term": "[[deprecated]]",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "标记已不推荐的实体，使用时产生编译告警；可附说明文字指引替代方案。",
+      "standard_clause": "[dcl.attr.deprecated]",
+      "chapter_ref": "Book/part10_modern/ch123_ct_programming.md",
+      "related": [
+        "nodiscard"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "udl",
+      "term": "用户定义字面量（UDL）",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "以 operator\"\" 为字面量定义单位语义（如 100ms），提升可读性；标准库已定义 chrono/string 等字面量。",
+      "standard_clause": "[lex.ext]",
+      "chapter_ref": "Book/part03_language/ch31_operator_overloading.md",
+      "related": [
+        "chrono"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "inline_namespace",
+      "term": "内联命名空间（inline namespace）",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "成员如同在外围命名空间中可见，用于 ABI 版本化（如 std::__1）与符号版本过渡。",
+      "standard_clause": "[namespace.def]",
+      "chapter_ref": "Book/part03_language/ch23_namespace_adl.md",
+      "related": [
+        "namespace_adl",
+        "symbol_visibility"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "source_location",
+      "term": "std::source_location（C++20）",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "编译期获取文件名、行号、列号与函数名，替代 __FILE__/__LINE__ 宏，便于日志与断言。",
+      "standard_clause": "[support.srcloc]",
+      "chapter_ref": "Book/part10_modern/ch123_ct_programming.md",
+      "related": [
+        "logging",
+        "assert"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "mdspan",
+      "term": "std::mdspan（C++23）",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "多维非拥有数组视图，可自定义布局（行主/列主/跨步）与访问器，便于数值与图像处理。",
+      "standard_clause": "[views.multidim]",
+      "chapter_ref": "Book/part10_modern/ch123_ct_programming.md",
+      "related": [
+        "span",
+        "simd"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "reflection",
+      "term": "反射（C++26 在议）",
+      "aliases": [],
+      "category": "现代特性",
+      "definition": "编译期查询程序实体（类型、成员、枚举值）并据此生成代码；可大幅减少样板，但标准形态仍在演进。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch09_cpp26.md",
+      "related": [
+        "cpp26",
+        "tmp"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "qt",
+      "term": "Qt",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "C++ 跨平台应用框架：以 moc 元对象系统扩展信号槽与属性，自成一套内存与事件模型。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part11_source/ch129_qt.md",
+      "related": [
+        "boost"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "chromium",
+      "term": "Chromium",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "大规模 C++ 工程范例：多进程架构、严格的编码规范与大量自研基础库（如 base）。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part11_source/ch130_chromium_abseil.md",
+      "related": [
+        "abseil"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "unreal",
+      "term": "Unreal Engine",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "大型游戏引擎：以 UObject 反射与垃圾回收管理对象生命周期，大量使用宏与代码生成。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part11_source/ch134_unreal.md",
+      "related": [
+        "ecs"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "clickhouse",
+      "term": "ClickHouse",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "列式分析型数据库：以向量化执行与稀疏索引追求扫描吞吐，Block 是其中枢数据结构。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part11_source/ch133_clickhouse_redis.md",
+      "related": [
+        "simd",
+        "data_oriented"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "redis",
+      "term": "Redis",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "内存数据结构存储：单线程事件循环配合 I/O 多路复用，避开了锁复杂度而换取可预测延迟。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part11_source/ch133_clickhouse_redis.md",
+      "related": [
+        "io_multiplexing"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "header_only",
+      "term": "头文件库（header-only）",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "全部实现置于头文件，免去链接与部署；代价是编译时间与 ODR/宏污染风险，inline 变量可缓解全局状态问题。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part11_source/ch128_boost.md",
+      "related": [
+        "inline_variable",
+        "modules"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "static_analysis",
+      "term": "静态分析（clang-tidy / cppcheck）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "在不运行程序的前提下检查缺陷与风格；应把规则集固化在配置里并随 CI 渐进收紧。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch144_style.md",
+      "related": [
+        "compiler_warning",
+        "compile_commands"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "cyclomatic",
+      "term": "圈复杂度（cyclomatic complexity）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "衡量分支数量的指标，数值越高越难测试与理解；宜作为重构候选的筛选信号而非绝对红线。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch144_style.md",
+      "related": [
+        "refactoring",
+        "unit_test"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "refactoring",
+      "term": "重构（refactoring）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "在不改变外在行为的前提下改善结构；须有测试兜底，小步提交以便定位回归。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch147_code_review.md",
+      "related": [
+        "unit_test",
+        "tech_debt"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "tech_debt",
+      "term": "技术债（technical debt）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "为短期速度牺牲长期可维护性所累积的代价；需显式登记与排期偿还，而非被动累积。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch147_code_review.md",
+      "related": [
+        "refactoring"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "semver",
+      "term": "语义化版本（SemVer）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "主版本.次版本.修订号：不兼容变更升主版本、向后兼容新增升次版本、修复升修订；库应严格遵守。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch148_gitflow.md",
+      "related": [
+        "binary_compat"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "binary_compat",
+      "term": "二进制兼容（ABI 兼容）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "升级库后无需重编译即可运行；受符号、布局、内联与标准库 ABI 共同影响，比源码兼容严格得多。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part02_toolchain/ch11_compilers.md",
+      "related": [
+        "semver",
+        "symbol_visibility"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "regression_test",
+      "term": "回归测试",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "用已修复缺陷的复现用例防止复发；缺陷应先写成失败测试，再修实现。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch150_testing.md",
+      "related": [
+        "unit_test",
+        "ci_cd"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "test_double",
+      "term": "测试替身（fake / stub / mock / spy）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "fake 为可用简版实现，stub 返回固定值，mock 校验交互，spy 记录调用；优先用最简替身以降低耦合。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch150_testing.md",
+      "related": [
+        "unit_test",
+        "dependency_injection"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "coverage",
+      "term": "覆盖率（coverage）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "行/分支覆盖率衡量被执行到的代码比例；它是未覆盖的探针而非质量证明，100% 覆盖不等于无缺陷。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch150_testing.md",
+      "related": [
+        "unit_test",
+        "fuzzing"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "fuzzing",
+      "term": "模糊测试（fuzzing）",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "以大量随机/变异输入探测崩溃与 UB；与 Sanitizer 联用效果最佳，适合解析器与边界处理密集的代码。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part13_engineering/ch150_testing.md",
+      "related": [
+        "sanitizer",
+        "unit_test"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "amdahl",
+      "term": "阿姆达尔定律",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "加速比受串行部分限制：即使无限并行，可并行占比 S 时上限约为 1/(1−S)，指导优化应先削串行段。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch152_perf_model.md",
+      "related": [
+        "perf_model",
+        "lock_contention"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "latency_throughput",
+      "term": "延迟与吞吐",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "延迟是单请求耗时，吞吐是单位时间完成量；二者常需权衡，批处理提吞吐往往抬高延迟。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch152_perf_model.md",
+      "related": [
+        "tail_latency"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "tail_latency",
+      "term": "尾延迟（p99 / p999）",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "高分位延迟决定用户体验上限；常被 GC、锁竞争、排队与慢盘 IO 放大，需按分位而非均值观测。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch152_perf_model.md",
+      "related": [
+        "latency_throughput",
+        "context_switch"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "context_switch",
+      "term": "上下文切换",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "线程切换需保存恢复寄存器并可能冲刷 TLB/缓存；线程数远超核数时会显著吞噬有效算力。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch153_cpu_micro.md",
+      "related": [
+        "thread_pool",
+        "lock_contention"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "syscall_overhead",
+      "term": "系统调用开销",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "陷入内核伴随特权切换与缓存污染；批量化与用户态缓冲（如缓冲写）可摊薄开销。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch153_cpu_micro.md",
+      "related": [
+        "context_switch",
+        "zero_copy"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "ooo_exec",
+      "term": "乱序执行与推测执行",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "CPU 乱序调度指令并推测执行分支以提升并行度；推测失败需回滚，且是 Spectre 类侧信道的根源。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch153_cpu_micro.md",
+      "related": [
+        "branch_prediction",
+        "simd"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "loop_unrolling",
+      "term": "循环展开（loop unrolling）",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "减少分支与循环开销、提高指令级并行；过度展开会增大代码体积并挤压指令缓存。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch156_compiler_opt.md",
+      "related": [
+        "compiler_opt",
+        "vectorization"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "strength_reduction",
+      "term": "强度削减（strength reduction）",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "用廉价运算替代昂贵运算（如乘法改加法、除法改移位），常由编译器自动完成。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch156_compiler_opt.md",
+      "related": [
+        "compiler_opt"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "loop_tiling",
+      "term": "循环分块（loop tiling / blocking）",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "把大循环切成可放入缓存的小块重排访问顺序，显著提升矩阵运算等局部性敏感负载。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch154_cache_opt.md",
+      "related": [
+        "cache_opt",
+        "loop_unrolling"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "cache_associativity",
+      "term": "缓存关联度与命中率",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "组相联缓存中同组路数有限，跨步为组数整数倍会造成冲突缺失；调整步长/填充可缓解。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch154_cache_opt.md",
+      "related": [
+        "cache_line",
+        "cache_opt"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "lock_contention",
+      "term": "锁竞争（lock contention）",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "多线程争抢同一锁导致串行化与上下文切换；降低粒度、分片、无锁化或消除共享是主要手段。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part14_perf/ch158_perf_antipatterns.md",
+      "related": [
+        "mutex",
+        "false_sharing"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "json_serialization",
+      "term": "JSON 序列化",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "把对象与 JSON 互转；性能关键在于减少字符串分配与解析拷贝，流式与零拷贝解析器可大幅提速。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part15_cases/ch162_json.md",
+      "related": [
+        "zero_copy"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "io_multiplexing",
+      "term": "I/O 多路复用（select / poll / epoll）",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "单线程同时监视多个描述符；epoll 以事件通知替代线性扫描，适合大量并发连接。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part15_cases/ch163_net.md",
+      "related": [
+        "redis",
+        "zero_copy"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "zero_copy",
+      "term": "零拷贝（zero copy）",
+      "aliases": [],
+      "category": "性能优化",
+      "definition": "消除不必要的数据复制（如 sendfile、mmap、string_view 传参），直接降低内存带宽与系统调用压力。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part15_cases/ch163_net.md",
+      "related": [
+        "syscall_overhead",
+        "span"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "framework_design",
+      "term": "框架设计",
+      "aliases": [],
+      "category": "源码解析",
+      "definition": "框架与库的差别在于控制反转：框架调用用户代码；扩展点、生命周期与错误传播是设计重心。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part15_cases/ch164_framework.md",
+      "related": [
+        "dependency_injection",
+        "policy"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "cfront",
+      "term": "Cfront",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "早期的 C++ 实现：把 C++ 翻译为 C 再编译，奠定了类、构造析构与内联等早期语义。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch01_c_history.md",
+      "related": [
+        "arm_manual"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "arm_manual",
+      "term": "ARM（带注解参考手册）",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "1989 年 Ellis 与 Stroustrup 的《Annotated C++ Reference Manual》，是首个标准化的事实基准。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch02_standardization.md",
+      "related": [
+        "cfront",
+        "wg21"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "wg21",
+      "term": "WG21 / ISO C++ 委员会",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "ISO/IEC JTC1/SC22/WG21 负责 C++ 标准化；变更经提案（P 编号）讨论投票后进入标准。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch02_standardization.md",
+      "related": [
+        "proposal",
+        "ts"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "proposal",
+      "term": "提案（P 编号）",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "提交 WG21 的正式文件（如 P0123R0），带修订号；LEWG/LWG/EWG/CWG 各小组分别审议设计与措辞。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch02_standardization.md",
+      "related": [
+        "wg21",
+        "ts"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "ts",
+      "term": "TS（技术规范）",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "独立于标准发布的可选规范（如 Ranges TS、Coroutines TS），成熟后再并入标准。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch02_standardization.md",
+      "related": [
+        "wg21",
+        "proposal"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "cpp11",
+      "term": "C++11",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "重大更新：auto、右值引用与移动、lambda、变参模板、智能指针、<atomic> 与内存模型、constexpr、nullptr。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch04_cpp11.md",
+      "related": [
+        "cpp14",
+        "cpp17"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "cpp14",
+      "term": "C++14",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "小修订：泛型 lambda、返回类型推导、变量模板、relaxed constexpr、[[deprecated]]、make_unique。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch05_cpp14.md",
+      "related": [
+        "cpp11",
+        "cpp17"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "cpp17",
+      "term": "C++17",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "结构化绑定、if constexpr、折叠表达式、类模板实参推导、inline 变量、std::optional/variant/any、文件系统、并行算法、强制拷贝省略。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch06_cpp17.md",
+      "related": [
+        "cpp20",
+        "guaranteed_copy_elision"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "cpp20",
+      "term": "C++20",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "四大特性：Concepts、Ranges、Modules、协程；另有 <=>、constexpr 增强、jthread、原子等待、格式化库。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch07_cpp20.md",
+      "related": [
+        "cpp23",
+        "concepts"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "cpp23",
+      "term": "C++23",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "完善 C++20：std::expected、mdspan、if consteval、去重范围算法（ranges::to、zip）、std::print、扁平化容器与字符串格式化增强。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch08_cpp23.md",
+      "related": [
+        "cpp20",
+        "expected"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "cpp26",
+      "term": "C++26（在议）",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "方向含反射、契约、std::simd、线性代数、异步模型；在议特性可能变动，不宜当作既有能力。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch09_cpp26.md",
+      "related": [
+        "contracts",
+        "reflection"
+      ],
+      "difficulty": "高级",
+      "see_also": []
+    },
+    {
+      "id": "deprecation",
+      "term": "弃用与移除（deprecated / removed）",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "弃用仅表示不推荐且未来可能移除，仍可用（如 std::auto_ptr 已移除）；移除特性在后续标准中不再保证可用。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch10_version_matrix.md",
+      "related": [
+        "cpp17"
+      ],
+      "difficulty": "基础",
+      "see_also": []
+    },
+    {
+      "id": "std_feature_macro",
+      "term": "__cplusplus 与特性测试宏",
+      "aliases": [],
+      "category": "标准治理",
+      "definition": "__cplusplus 给出标准年份（C++20 起为 202002L），<version> 中的特性测试宏用于按能力而非按版本号做条件编译。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part01_history/ch10_version_matrix.md",
+      "related": [
+        "cpp20"
+      ],
+      "difficulty": "中级",
+      "see_also": []
+    },
+    {
+      "id": "learning_path",
+      "term": "阅读与进阶路径",
+      "aliases": [],
+      "category": "工程实践",
+      "definition": "先语言核心与内存模型，再 STL 与模板，其后并发与性能；案例与源码剖析用于把知识连成体系。",
+      "standard_clause": "",
+      "chapter_ref": "Book/part16_reading/ch165_roadmap.md",
+      "related": [],
+      "difficulty": "基础",
+      "see_also": []
     }
   ]
 }
