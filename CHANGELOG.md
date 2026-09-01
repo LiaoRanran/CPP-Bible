@@ -4,6 +4,34 @@
 
 ---
 
+## [Unreleased] - 2026-09-02
+
+本轮两条线：**Part0 前置篇收官** + **TEACHING.md 三气质样板铺开**，并修掉长期红灯的 CI `site` job。
+
+### Part0 前置篇收官（asm A1–A6 + C C1–C9）
+- 新增 C4 函数与栈帧、C5 指针与内存、C6 结构体与内存布局、C7 预处理、C8 标准库、C9 互操作六章，
+  全部为 GCC 15.3 真机证据（`objdump -d -M intel` / `gcc -std=c11` 编译运行），与 C1–C3 同体例。
+  Part0 独立于主书 147 章门禁，不参与主书统计。
+
+### TEACHING.md 铺开：三气质样板（3 批共 9 章，稀疏推进）
+- 按「历史 / 工程 / 悬疑」三种气质各挑样章贴 1 个显式盒子定调，每批 3 章、**保持稀疏不齐刷刷**
+  （守红线：宁 30 章有，不可 147 章齐刷刷）：
+  - 第一批：ch01（历史注脚·零开销原则的源头）/ ch77（迭代器失效）/ ch28（返回局部引用被编译器蒸发）。
+  - 第二批：ch04（C++11 的技术债清算）/ ch81（c_str() 悬垂）/ ch27（strict aliasing UB）。
+  - 第三批：ch03（C++98 整库采纳 STL 的代价）/ ch76（sort 比较器须严格弱序）/ ch20（vector<bool> 返回 proxy 而非 bool&）。
+
+### CI site job 修复（长期红灯已转绿）
+- **`site` job「health audit」失败根因**：`docs/references/book_items/effective-modern-cpp-items.md`
+  的通用 lambda 示例未加反引号，`[](auto x)` 被 Markdown 解析成空链接 `<a href="auto x">`，
+  `site_audit` 检查 3 视为站内资源 → 文件不存在 → exit 1（7 个 failure run 的共同根因）。修复：反引号包裹。
+- **本地假红根因**：`rewrite_links` 收集顶层 `docs` 后整目录复制，把 gitignored 的
+  `docs/references/external/` 素材一并带进 nav，导致本地 `mkdocs build --strict` 断链、
+  `site_audit` 报 10715 处缺失。修复：新增 `_gitignored_dirs()`，按 `.gitignore` 剔除忽略目录（外部 md 51→29）。
+- 复验：run #473 八个 job 全绿，`Site front-end health audit` 由 failure 转 success，
+  `deploy` 由长期 skipped 转 success，GitHub Pages 部署恢复。
+
+---
+
 ## [Unreleased] - 2026-09-01
 
 内容侧「学习目标 → 问题驱动论证」打磨专项 **60 章全面收官**；本轮另修掉两处真实缺陷（站点欢迎页 part 表标题全空、README 数字与事实源漂移）。
