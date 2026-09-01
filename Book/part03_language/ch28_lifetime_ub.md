@@ -72,6 +72,9 @@ flowchart LR
 3. 临时对象的生命周期延长只发生在 **`const T&` 或右值引用绑定到 prvalue** 时，且有一长串例外（成员/数组元素/range-for 临时容器/返回引用/initializer_list）。
 4. **悬垂（dangling）** 是所有返回"已亡对象"引用/指针的场景统称：`string_view`/`initializer_list`/range-for 临时/返回局部引用是最常见陷阱。
 5. **UB 不是运行时错误**——它是"编译器可任意处理"的许可。编译器据此做激进优化：删空指针检查、把 UB 循环变成无限循环、重排越界访问。
+
+> 事故现场：返回局部变量引用 `int& bad(){ int x=5; return x; }`——`x` 随栈帧回退即亡，返回的引用悬垂（[std-cpp23] UB）。GCC 15 把它从「警告」升级为**硬错误**；用语义等价的指针版 `bad_ptr()` 看真机反汇编：`-O2` 下整段被优化成 `xor eax,eax; ret`（直接返回 0）——编译器"证明"这个地址必然失效，索性不返回任何有意义的地址。这正是 UB 最反直觉的一面：**它没有运行时报错，而是被编译器当场"蒸发"**。对照 `-O0` 版本（本章 §⑦ 反汇编）还能看到栈操作，优化一开 UB 连机器码都不给你留。
+
 6. 检测 UB 靠 **UBSan / ASan / TSan**；规避 UB 靠 **Core Guidelines + 生命周期静态分析（Lifetime 提案）**；`constexpr` 中任何 UB 会**直接编译失败**。
 
 **分层判定总览表（<span class="badge badge-std">标准</span><span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span><span class="badge badge-exp">经验</span>）**：
