@@ -41,6 +41,23 @@ CI 七 job 实跑（quality / compile / publish-check / site / pdf / epub / depl
 | `root_docs` | 41 | 10 | 有意保留（根目录元文档互链，见 `RELEASE.md`） |
 | `glossary_lines` | 39 | 800 | 自动生成（`gen_indexes.py` 文件头明令勿手改） |
 
+## UNVERIFIED 章审计结论（2026-09-01 收口，勿重做）
+
+8 个带 `[UNVERIFIED]` 章级横幅的章已逐章审计（正则扫描具体数字/基准词候选 + 人工复核）：
+
+| 章 | 结论 |
+|---|---|
+| ch05（C++14） | **翻转 VERIFIED**：§⑩ 补真实汇编证据——`_asm_demo/ch05_generic_lambda.cpp` 经权威 GCC 15.3.0 编译出 `_o0.s`（泛型 lambda 两个独立实例符号 `_ZZ11use_genericvENKUlT_E_clIiEEDaS_` / `clIdEEDaS_`）与 `_o2.s`（实例全部内联/折叠为 `mov eax, 19`，零 call），印证「零新增运行时机制」断言；`book_asm_freshness` 0 漂移 |
+| ch02（标准化组织） | 保留 UNVERIFIED：委员会史实与「约 70% 提案被拒」等行业经验口径，无本机可复现断言 |
+| ch16（IDE） | 保留：clangd 索引量级/延迟等均为外部工具经验值（本机无对应复现链）；L414 的 g++ 实测可编译声明已按 `[实现]` 标注 |
+| ch132（LevelDB/RocksDB） | 保留：库内部行为，代码块已显式标注「示意，非本机实测」 |
+| ch148（Git 工作流） | 保留：git 对象机制为可验证事实，但超出本书「编译/汇编」证据链范围 |
+| ch149（CI/CD） | 保留：ccache/LTO 量级为经验值，fib(35) 计时为示意输出 |
+| ch150（测试策略） | 保留：已诚实标注「本机未装 Google Benchmark，典型输出为示意」 |
+| ch165（路线图） | 保留：前瞻性内容 |
+
+验证横幅现状：73 章（66 VERIFIED / 7 UNVERIFIED）。**这 7 章不要再当缺口去「补」**——补即是编造。
+
 ## Git 提交链（近期）
 
 ```

@@ -20,6 +20,11 @@
 - **站点欢迎页 part 表标题全空（`d0d5dda`）**：`DEFAULT_PART_TITLES`（16 条中文 part 标题）注释写明「INDEX.md 未提供 `## Part N:` 时启用」，但 `parse_part_titles()` 从不回落它——兜底是定义了却没接上的死代码。本站点的 `INDEX.md` 是项目文档索引而非章节总目，通篇无 `Part` 字样，故解析恒为空。因 `build_nav()` 自带兜底而 `build_part_table()` 没有，只有欢迎页退化成空白列。改根因：`parse_part_titles()` 以该字典为初值、INDEX.md 解析结果覆盖其上。重生成后日志 `part 16`、16 行标题全部填充。
 - **README 数字漂移**：`README:5` 写死 `7531` 个 cpp 块，事实源实测 `7525`（CI 硬门禁 `gen_metrics.py --check` 项），已回填。
 
+### UNVERIFIED 章审计收口（8 章）
+
+- **ch05（C++14）翻转为 `[VERIFIED]`**：§⑩「C++14 零新增运行时开销」补真实汇编证据——新增 `_asm_demo/ch05_generic_lambda.cpp` 及权威 GCC 15.3.0 编译产物 `_o0.s`（泛型 lambda 实例化为两个独立符号 `_ZZ11use_genericvENKUlT_E_clIiEEDaS_` / `clIdEEDaS_`）与 `_o2.s`（实例全部内联/常量折叠为 `mov eax, 19`，零 call），章内 asm 围栏为真实节选；`book_asm_freshness` 复验 0 漂移。验证横幅现状 73 章（66 VERIFIED / 7 UNVERIFIED）。
+- **其余 7 章（ch02/16/132/148/149/150/165）审计结论：UNVERIFIED 依红线保留**——逐章正则扫描具体数字/基准词候选并人工复核，均为组织史实、外部工具（IDE/git/ccache/RocksDB）经验值或已显式标注「示意，非本机实测」的内容，无机器可验断言，不可为指标伪造证据链。逐章结论落档 `HANDOVER.md`「UNVERIFIED 章审计结论」。
+
 ### 门禁复验
 
 - `cppbible.py check --stage quality`：**17/17** 全绿。
