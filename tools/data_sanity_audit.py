@@ -11,10 +11,11 @@
      历史事故：2026-09-02 全书扫描发现 8 章 10 处（ch72/ch61/ch50/ch16/
      ch152/ch13/ch132/ch134）性能量级被写成十六进制，已修复并复扫清零。
 
-  2. PERF_CONFLICT (WARN) —— 同章内同一算法的性能数字数量级冲突。
-     例：ch96 同章既写 `sort ≈ 22ms` 又写 `~87ms`，真机实测 88.3ms，
-     说明 22ms 是坏数据（同章自相矛盾是最容易被批量生成漏掉的信号）。
-     需人工复核：不同负载 / 数据规模本就可能差数倍，工具只负责提示。
+  2. PERF_CONFLICT (WARN) —— 同章内同一关键词 + 单位、跨行、差异落在 [3×, 10×) 的性能数字。
+     定位为「粗筛提示」：误报率较高——多数是不同负载 / 数据规模的合理差异，
+     或「移动 vs 拷贝」「vector vs deque」这类刻意对比；极少数才是「同规模自相矛盾」
+     （历史原型：ch96 同章既写 `sort ≈ 22ms` 又写 `~87ms`，真机 88.3ms 证 22ms 为坏数据）。
+     >10× 的差异已过滤（几乎必为刻意对比），<3× 视为噪声。仅供人工在有怀疑时复核，不进 CI。
 
   3. UNANCHORED_EVIDENCE (WARN) —— 声称「实测 / 真机」却无 Examples 锚定的 asm 块，
      即「推断示意伪装成真机证据」，违反 TEACHING「亲手跑过」红线。
@@ -167,10 +168,16 @@ def scan_lines(lines: list[str]) -> list[tuple[int, str, str]]:
             continue
         vals = sorted(v for v, _ in items)
         lo, hi = vals[0], vals[-1]
-        if lo <= 0 or hi / lo < 3.0:
+        # 只报 [3×, 10×) 区间：<3× 视为噪声；>10× 几乎必为「不同场景/规模对比」
+        # （如移动 vs 拷贝 ≈23 万倍、vector::push_front vs deque ≈3150 倍），非同规模矛盾
+        if lo <= 0 or hi / lo < 3.0 or hi / lo >= 10.0:
             continue
         lo_ln = min(ln for v, ln in items if v == lo)
         hi_ln = min(ln for v, ln in items if v == hi)
+        # 同一行出现的「X vs Y」是对比表述（如 sort vs stable_sort、reserve vs 无 reserve），
+        # 不是自相矛盾——只有跨行独立声明才值得人工复核
+        if lo_ln == hi_ln:
+            continue
         issues.append((
             lo_ln,
             "PERF_CONFLICT",
