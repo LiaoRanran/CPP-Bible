@@ -721,7 +721,7 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 
 ### ㉒.1 历史渊源补强：多重继承的来龙去脉
 
-<span class="badge badge-history">史</span> C++ 自诞生即支持**多重继承（MI）**，源于 Simula/C with Classes 的「一个类可有多个基类」诉求；但 C++ 是少数主流语言坚持 MI 的——Java/C# 选择「单继承 + 接口」正是为了回避 MI 的菱形与布局复杂性（ch49）。<span class="badge badge-history">史</span> MI 在 C++ 里的真实形态由 **Itanium C++ ABI（1990 年代末）** 规定：每个基类可能带来独立 vptr，跨基类转型需要 **this 调整 thunk**（第 ⑩/⑲ 节），这决定了 MI 对象的布局与虚调用成本。多继承 + 虚继承叠加即菱形（ch49）。<span class="badge badge-anecdote">轶</span> 一个史实：早期 C++ 的 MI 曾被批评「过度复杂」，Stroustrup 的回应是「MI 允许 `Interface` + `Implementation` 正交组合，远比单继承 + 接口模拟更诚实」——这一思想体现在 COM/`IUnknown` 等「多接口聚合」工业模式里。
+<span class="badge badge-history">史</span> C++ 自诞生即支持**多重继承（MI）**，源于 Simula/C with Classes 的「一个类可有多个基类」诉求；但 C++ 是少数主流语言坚持 MI 的——Java/C# 选择「单继承 + 接口」正是为了回避 MI 的菱形与布局复杂性（ch49）。<span class="badge badge-history">史</span> MI 在 C++ 里的真实形态由 **Itanium C++ ABI（1990 年代末）** 规定：每个基类可能带来独立 vptr，跨基类转型需要 **this 调整 thunk**（第 ⑩/⑲ 节），这决定了 MI 对象的布局与虚调用成本。多继承 + 虚继承叠加即菱形（ch49）。<span class="badge badge-anecdote">轶</span> 一个史实：多重继承在 C++ 里一度**争议极大**——D&E §12.6 记载它因概念复杂度、实用性及对工具构建的影响而招致多方批评（Cargill 1991、Carroll 1991、Waldo 1991、Sakkinen 1992、Waldo 1993 等）；Bjarne 更自承早期实现**违反零开销规则**——即使用户只用单继承也会付出 overhead，由此造成「MI 天生低效」的错误印象。`[de:12.6]` 这一「多接口正交聚合」思想后来在 COM/`IUnknown` 等工业模式里得到印证。
 
 ### ㉒.2 真实工程坐标：多重继承活在哪里
 
@@ -1740,5 +1740,6 @@ int main() {
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[cppref:cpp/language/derived_class]`（T1）cppreference `cpp/language/derived_class` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
 - `[book:effective-cpp:item40]`（T4）Effective C++（Meyers，55 条） —— 提取文本 `docs/references/external/books/effective-cpp.txt`
+- `[de:12.6]`（T-H）Stroustrup《The Design and Evolution of C++》§12.6 The Multiple Inheritance Controversy —— 提取文本 `docs/references/external/books/design-evolution.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

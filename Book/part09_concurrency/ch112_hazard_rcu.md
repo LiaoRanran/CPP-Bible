@@ -15,7 +15,7 @@
 无锁（lock-free）数据结构的死穴不是"推进"，而是**安全回收**：因为没有互斥锁来界定"谁还在用这个节点"，写者一旦 `delete` 一个被并发读者持有的指针，就会制造悬垂引用（use-after-free）。早期实用方案只能粗暴延迟——比如给每个线程一个"私有回收列表"，等所有人都越过某个全局 epoch 再释放。<span class="badge badge-history">史</span> 这个"如何安全地延迟释放"问题，长期是手写无锁代码里最易错、最不可移植的部分。
 
 ### 0.2 关键转折（编年）
-- **Hazard Pointer**：Maged M. Michael（IBM）在 2004 年的论文中正式提出，用"每个线程声明自己正保护哪个指针"来精确判断某节点当前能否释放，成为工业界（malloc 实现、并发库）的常客。<span class="badge badge-history">史</span>
+- **Hazard Pointer**：Maged M. Michael（IBM）在 PODC 2002 论文中首次提出（2004 年 IEEE TPDS 期刊版），用"每个线程声明自己正保护哪个指针"来精确判断某节点当前能否释放，成为工业界（malloc 实现、并发库）的常客。<span class="badge badge-history">史</span>
 - **RCU（Read-Copy-Update）**：源自 DEC/Utah 的研究，由 Paul E. McKenney 等人在 Linux 内核中大规模落地，靠"读者无同步、写者复制并延迟回收"实现极致读性能。<span class="badge badge-history">史</span>
 - 标准化：Hazard Pointer 提案（P1122）被接纳进 **C++26** 工作方向，RCU 相关提案同期推进。<span class="badge badge-history">史</span>
 
@@ -697,7 +697,7 @@ struct Guard { int slot; void* p;
 
 ### ㉒.1 历史渊源补强：从 hazard pointer 到 RCU
 
-<span class="badge badge-history">史</span> **Hazard Pointer** 由 **Maged Michael（2004，IBM，论文《Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects》）** 提出：每个读者把自己的「正在读哪个指针」登记到一张全局 hazard 表，写者回收前先扫表，若有人登记则推迟回收——从而在无锁结构里安全释放内存、规避 ABA 与 UAF。**RCU（Read-Copy-Update）** 的源头更早：由 **Paul E. McKenney（IBM）** 在 1990 年代为 Linux 内核设计，核心思想是「读者无锁、写者拷贝新副本并更新指针、等宽限期（grace period）所有旧读者退出后再回收旧副本」。<span class="badge badge-history">史</span> C++ 标准长期**没有**这两者的标准实现（C++11/14/17 都得手写或用库）；直到 **C++26 推进 hazard pointer 标准化（P1122 / P2530，Maged Michael 本人参与）**，RCU 的标准化探讨也并行推进。<span class="badge badge-anecdote">轶</span> RCU 在 Linux 内核已服役近 20 年，是内核并发读侧无可替代的基石——它把「读侧零开销」做到了极致，代价是写者要等宽限期。<span class="badge badge-comment">评</span> hazard pointer 适合「对象粒度回收、读者数有限」，RCU 适合「读极多写极少、读侧要极致便宜」；两者都是「无锁内存安全回收」的主流答案。
+<span class="badge badge-history">史</span> **Hazard Pointer** 由 **Maged Michael（IBM）** 提出——原始论文《Safe Memory Reclamation for Dynamic Lock-Free Objects Using Atomic Reads and Writes》发表于 **PODC 2002**，2004 年以《Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects》刊于 IEEE TPDS（`[book:concurrency:ch7]`）：每个读者把自己的「正在读哪个指针」登记到一张全局 hazard 表，写者回收前先扫表，若有人登记则推迟回收——从而在无锁结构里安全释放内存、规避 ABA 与 UAF。**RCU（Read-Copy-Update）** 的源头更早：由 **Paul E. McKenney（IBM）** 在 1990 年代为 Linux 内核设计，核心思想是「读者无锁、写者拷贝新副本并更新指针、等宽限期（grace period）所有旧读者退出后再回收旧副本」。<span class="badge badge-history">史</span> C++ 标准长期**没有**这两者的标准实现（C++11/14/17 都得手写或用库）；直到 **C++26 推进 hazard pointer 标准化（P1122 / P2530，Maged Michael 本人参与）**，RCU 的标准化探讨也并行推进。<span class="badge badge-anecdote">轶</span> RCU 在 Linux 内核已服役近 20 年，是内核并发读侧无可替代的基石——它把「读侧零开销」做到了极致，代价是写者要等宽限期。<span class="badge badge-comment">评</span> hazard pointer 适合「对象粒度回收、读者数有限」，RCU 适合「读极多写极少、读侧要极致便宜」；两者都是「无锁内存安全回收」的主流答案。
 
 ### ㉒.2 真实工程坐标：hazard pointer / RCU 活在哪些产品里
 

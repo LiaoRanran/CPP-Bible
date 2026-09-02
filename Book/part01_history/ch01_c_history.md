@@ -43,7 +43,7 @@
 
 > **一句话结论**：C++ 脱胎于 C with Classes：Stroustrup 要把 Simula 的「对象抽象」缝进 C 的「零开销速度」，靠零开销原则与 C 兼容赢下了存量程序员。
 
-> 历史注脚：零开销原则的源头可钉到 Stroustrup 自己在 HOPL 论文里的陈述——C++ 的目标之一是"不向用户收取他们没用到的任何东西"（[hopl:cpp1991]）。而它为此付出的代价，正是全盘继承了 C 的"粗糙"：裸指针、未定义行为、手算内存边界（[ritchie:chist]）。这不是设计失误，是 1979 年一个清醒的取舍——用"背负 C 的坑"换"立刻能吃下整个 C 生态"。全书的悬疑章（ch28 生命周期与 UB）与工程章（ch77 vector 的迭代器失效）都从这一个历史决定里长出来。
+> 历史注脚：零开销原则的源头可钉到 Stroustrup 自己在 HOPL 论文里的陈述——C++ 的目标之一是"不向用户收取他们没用到的任何东西"（[hopl:cpp1991]；正式命名为"零开销规则"见 D&E §4.5 `[de:4.5]`）。而它为此付出的代价，正是全盘继承了 C 的"粗糙"：裸指针、未定义行为、手算内存边界（[ritchie:chist]）。这不是设计失误，是 1979 年一个清醒的取舍——用"背负 C 的坑"换"立刻能吃下整个 C 生态"。全书的悬疑章（ch28 生命周期与 UB）与工程章（ch77 vector 的迭代器失效）都从这一个历史决定里长出来。
 
 ### 0.5 历史影像（真实照片，自由许可）
 
@@ -1322,5 +1322,8 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 - `[std-c11]`（T0·终审）ISO/IEC 9899:2011（C11） —— 本地 `docs/references/external/standards/N1570_C11.pdf`
 - `[book:cpp-guide:<ch>]`（T4）C++: The Comprehensive Guide（Torsten T. Will） · <ch> —— 提取文本 `docs/references/external/books/cpp-will-torsten.txt`
 - `[isocpp:<history>]`（T2）isocpp 官方 FAQ —— 在线 `https://isocpp.org/faq`
+- `[hopl:cpp1991]`（T-H）Stroustrup HOPL-II《A History of C++: 1979–1991》 —— 本地 `docs/references/external/humanities/hopl2_cpp_1979_1991.pdf`
+- `[ritchie:chist]`（T-H）Ritchie《The Development of the C Language》 —— 本地 `docs/references/external/humanities/ritchie_development_of_c.html`
+- `[de:4.5]`（T-H）Stroustrup《The Design and Evolution of C++》§4.5 Low-Level Programming Support Rules —— 提取文本 `docs/references/external/books/design-evolution.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

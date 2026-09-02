@@ -827,7 +827,7 @@ flowchart TD
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：模板如何从「容器泛型」长成「图灵完备的元语言」
-<span class="badge badge-history">史</span> 模板的思想源头并非 C++ 一家：Ada 1983 的泛型参数化、Barbara Liskov 一脉的 CLU 参数化类型，都是 Stroustrup 设计模板时明确借鉴的对象。模板最早只为解决「容器/算法想同时服务 `int` 与 `double`，又不想退回 `void*` + 强转」——类型安全与零开销必须兼得。1990 年的《带注解的 C++ 参考手册（ARM）》第一次把模板机制写进语言规格，1998 年 C++98 正式把「类模板、函数模板、全特化、偏特化」确立为标准核心。但社区很快发现意外：模板能在编译期靠递归实例化「自己算自己」，1994 年 Erwin Unruh 在委员会会议上用编译器报错信息打印出编译期算出的素数（见 ch68），证明模板是图灵完备的——这把模板从「类型参数化的容器」一路推成一门独立的编译期元语言。
+<span class="badge badge-history">史</span> 模板的思想源头并非 C++ 一家：Ada 1983 的泛型参数化、Barbara Liskov 一脉的 CLU 参数化类型，都是 Stroustrup 设计模板时明确借鉴的对象。模板最早只为解决「容器/算法想同时服务 `int` 与 `double`，又不想退回 `void*` + 强转」——类型安全与零开销必须兼得。1990 年的《带注解的 C++ 参考手册（ARM）》第一次把模板机制写进语言规格，1998 年 C++98 正式把「类模板、函数模板、全特化、偏特化」确立为标准核心。但社区很快发现意外：模板能在编译期靠递归实例化「自己算自己」，1994 年 Erwin Unruh 在委员会会议上用编译器报错信息打印出编译期算出的素数（见 ch68），证明模板是图灵完备的——这把模板从「类型参数化的容器」一路推成一门独立的编译期元语言。<span class="badge badge-history">史</span> D&E §1.1 亦点明：模板与异常是 C++ 设计中最难啃的部分——它们迫使语言**偏离既有准则**（零开销、C 兼容等），这份「设计张力」正是模板复杂性的根。`[de:1.1]`
 <span class="badge badge-anecdote">轶</span> 一个常被低估的事实：C++ 模板的「二次生长」几乎是被 Boost 库逼出来的。2000 年代 `boost::mpl`、`boost::type_traits` 大量使用模板技巧，倒逼标准在 C++11 把 `type_traits`、可变参数模板收编——模板从「用户的黑魔法」变成了「标准的一等公民」。
 <span class="badge badge-comment">评</span> 模板 vs Java/C# 泛型是理解其历史坐标的关键：后者用类型擦除换运行时兼容，牺牲值类型效率；C++ 模板在实例化点生成真实代码，兑现零开销，代价是代码膨胀（code bloat）与更长的编译时间。这条权衡线贯穿之后所有模板相关章节。
 
@@ -1467,5 +1467,6 @@ int main() {
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[book:templates:ch1]`（T4）C++ Templates: The Complete Guide · ch1 —— 提取文本 `docs/references/external/books/cpp-templates.txt`
 - `[cppref:cpp/language/templates]`（T1）cppreference `cpp/language/templates` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[de:1.1]`（T-H）Stroustrup《The Design and Evolution of C++》§1.1 The Prehistory of C++ —— 提取文本 `docs/references/external/books/design-evolution.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

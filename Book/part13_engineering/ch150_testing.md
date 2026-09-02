@@ -1134,6 +1134,8 @@ sanity: ch150 self-contained examples compile & run OK
 
 **一条判读**：测试投入应与「错误代价 + 重构频率」成正比——编译器/存储引擎必须大规模自测 + fuzz，业务库聚焦核心路径单元 + 集成测试；不要为覆盖率数字写无断言的「假测试」，那只会膨胀维护成本。
 
+> 历史注脚：Google 的测试文化凝成两条定律——**Hyrum 定律**（Hyrum Wright）：API 的每个可观察行为最终都会被某个用户依赖，无论契约是否承诺，因此「不破坏行为」比「遵守契约」更难（`[book:swe-google:ch1]`）；**Beyoncé 规则**：「如果你喜欢它，就该给它写测试」——没有测试保护的行为，不享受基础设施变更的保障（`[book:swe-google:ch11]`）。二者共同说明：测试不是「验证」，而是「锁定行为契约」。
+
 ### ㉒.3 生产踩坑：测试的常见误用
 - **测实现而非行为**：断言私有细节，一重构测试就碎，维护成本反噬；应测可观察的行为契约。
 - **flaky 测试**：依赖时间/顺序/并发的测试随机失败，团队学会"重跑"，门禁失效（见第149章）。
@@ -1624,6 +1626,7 @@ int main() {
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[book:swe-google:ch11]`（T4）Software Engineering at Google · ch11 —— 提取文本 `docs/references/external/books/swe-at-google.txt`
+- `[book:swe-google:ch1]`（T4）Software Engineering at Google · ch1 —— 提取文本 `docs/references/external/books/swe-at-google.txt`
 - `[ubsan:<case>]`（T6）复现/案例源 —— 在线
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

@@ -527,7 +527,7 @@ int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：性能反模式被"点名"的由来
-<span class="badge badge-history">史</span> C++ 性能反模式长期散落在 Scott Meyers《Effective STL》《More Effective C++》与各路大会演讲里；现代最系统的汇编是 **C++ Core Guidelines 的 "Per"（Performance）章节**，把"隐式拷贝、虚调用、类型擦除、false sharing"等逐一列为规则并配 clang-tidy 检查。<span class="badge badge-history">史</span> Chandler Carruth（LLVM/Google）在 CppCon 的系列演讲把"为什么 `std::endl` 慢、`std::function` 有代价"讲成可量化常识（见 ④⑩）。<span class="badge badge-comment">评</span> 反模式清单是"前人踩坑的复利"——它把个人经验变成团队可执行的纪律。
+<span class="badge badge-history">史</span> C++ 性能反模式长期散落在 Scott Meyers《Effective STL》《More Effective C++》与各路大会演讲里；现代最系统的汇编是 **C++ Core Guidelines 的 "Per"（Performance）章节**，把"隐式拷贝、虚调用、类型擦除、false sharing"等逐一列为规则并配 clang-tidy 检查。<span class="badge badge-history">史</span> Chandler Carruth（LLVM/Google）在 CppCon 的系列演讲把"为什么 `std::endl` 慢、`std::function` 有代价"讲成可量化常识（见 ④⑩）。<span class="badge badge-comment">评</span> 反模式清单是"前人踩坑的复利"——它把个人经验变成团队可执行的纪律。<span class="badge badge-history">史</span> 优化界的"第一性规则"是 **90/10 规则**（Optimized C++ 第 3 章）：程序 90% 的运行时间集中在 10% 的代码里，所以反模式只在热路径上修才有意义——冷路径上的反模式不是敌人。`[book:optimized-cpp:ch3]`
 
 ### ㉒.2 真实工程坐标：反模式藏在哪些地方
 

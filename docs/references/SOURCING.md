@@ -52,7 +52,7 @@
 
 | 键 | 标准 | 文本/URL | 权威范围 |
 |----|------|----------|----------|
-| `std-cpp20` | ISO/IEC 14882:2020 | N4860；`https://eel.is/c++draft`（等价内容） | C++20 全条款 |
+| `std-cpp20` | ISO/IEC 14882:2020 | **N4861**（FDIS；`https://eel.is/c++draft` 等价内容） | C++20 全条款 |
 | `std-cpp23` | ISO/IEC 14882:2023 | N4950；`https://eel.is/c++draft` | C++23 全条款（**当前主力对齐版**） |
 | `std-cpp26` | C++26 草案 | N5001；`https://eel.is/c++draft` | 前瞻特性（标注「草案，可能变动」） |
 | `std-c11` | ISO/IEC 9899:2011 | N1570（`http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf`） | C11 全条款 |
@@ -65,7 +65,12 @@
 > - `N5001_C++26draft.pdf`（9.1 MB）—— `std-cpp26` 草案本地正本。
 > - `N1570_C11.pdf`（1.7 MB）—— `std-c11` 本地正本。
 > - `N2176_C17.pdf`（3.8 MB）—— `std-c17` 本地正本。
-> - ⚠️ `N4860_C++20.pdf`：`open-std.org/.../prot/14882fdis/n4860.pdf` 对本机返回 403（热链被拦），**未入库**；C++20 条款由 `std-cpp23`(N4950) 与 `eel.is/c++draft` 覆盖，必要时用 `https://timsong-cpp.github.io/cppwp/n4860/`（HTML）复审。
+> - `N4861_C++20.pdf`（6.7 MB，2026-09-02 抓取）—— `std-cpp20` 本地正本。
+>
+> ✅ **编号勘误（2026-09-02）**：旧记的 `N4860` 是**错号**——`open-std.org/.../papers/2020/n4860.pdf`
+> 实测 **404**（该编号不存在于此路径），`timsong-cpp.github.io/cppwp/n4860/` 亦 404。C++20 的 FDIS
+> 正本实为 **N4861**（`papers/2020/n4861.pdf`，实测 200 / 7,045,947 B / 魔数 `%PDF-1.5`），已下载入库。
+> 与既有序列自洽：C++17=N2176（C 侧 N4659 系）、**C++20=N4861**、C++23=N4950、C++26=N5001。
 
 ### 3.2 T1 cppreference（Agent 第一手）
 
@@ -110,13 +115,13 @@
 | `book:swe-google:<ch>` | Software Engineering at Google | PDF | `swe-at-google.txt`（1353 KB） | Engineering/software_engineering |
 | `book:cpp-guide:<ch>` | **C++: The Comprehensive Guide**（Torsten T. Will，Rheinwerk，1092 页） | PDF | `cpp-will-torsten.txt`（2270 KB） | 现代 C++ 综合参考（原「书名不明」已确认，见下注） |
 | `book:c-tutorial:<ch>` | C Programming Tutorial 4th（⚠️ **非 K&R**） | PDF | `c-programming-tutorial.txt`（528 KB） | C 入门补充，**不作 C 本源引用** |
-| `book:krc:<ch>` | K&R《The C Programming Language》 | — | ❌ **仍缺** | C89 基准范式（Part0 C 篇唯一本源缺口） |
-| `book:exceptional-cpp:<item>` | Exceptional C++（Sutter 第一册） | — | ❌ **仍缺** | 陷阱/设计题（现有的是「More Exceptional」） |
+| `book:krc:<ch>` | K&R《The C Programming Language》 | EPUB | `kr-c.txt`（450 KB） | C89 基准范式（Part0 C 篇本源）；极简/正交设计基因（ch01 历史气质素材） |
+| `book:exceptional-cpp:<item>` | Exceptional C++（Sutter 第一册） | **扫描版图片 PDF**（已 OCR） | ✅ `exceptional-cpp.txt`（443 KB；`_ocr_books.py` = pypdfium2 + tesseract） | 异常安全/中断要点（Item 8–17 十部曲，源自 Cargill94 挑战） |
 
 > ✅ **原「书名不明」的 `C++ (Will, Torsten T.).pdf` 已确认**：为 Rheinwerk Computing 出版的 **Torsten T. Will《C++: The Comprehensive Guide》**（1092 页，现代 C++ 综合指南），键 `book:cpp-guide:<ch>`。此前猜测的 Schildt《The Complete Reference》是错的。
 > ⚠️ **两个 `.epub` 实为 PDF**（魔数 `%PDF-1.4`/`%PDF-1.5`，仅扩展名被改）：`C++ Concurrency in Action.epub`、`Optimized C++ ....epub`。提取脚本因此**按魔数而非扩展名**判定格式（`detect_kind()`），勿改回扩展名判定。
 > ⚠️ `C Programming Tutorial 4th` **不是 K&R**，不可替代 C 本源；涉及 C 标准语义仍以 `[std-c11]`（N1570，已本地化）为终审。
-> ❌ **仍缺两本**：K&R（C 篇本源）、Exceptional C++ 第一册（Sutter）。其余 P0/P1 全部到齐。
+> ✅ **K&R、D&E、Exceptional C++ 第一册已全补**（2026-09-02 用户入库原件）：前两本 pypdf 直抽；Exceptional C++ 第一册为扫描版图片 PDF，经 `_ocr_books.py`（pypdfium2 渲染 + tesseract 5.4 OCR）提取。
 > 提取约定：**只取要点+代码片段，不整本投喂**；引用时写明 `book:<slug>:<item/ch>` 便于溯源。
 
 ### 3.6 T5 编译器实现（须三态标注 std/ext/ub）
@@ -153,8 +158,8 @@
 | `hopl:<paper>` | Stroustrup HOPL 论文（均 `stroustrup.com`）：HOPL-II《A History of C++: 1979–1991》/ HOPL-III《Evolving a language in and for the real world: C++ 1991–2006》/ HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》（英文见 ACM DL `dl.acm.org/toc/pacmpl/2020/4/HOPL`，权威中文全译本 `Cxx_HOPL4_zh`） | ✅ `external/humanities/hopl2_cpp_1979_1991.pdf`（II）、`hopl3_cpp_1991_2006.pdf`（III）；`hopl4_zh/`（IV 中文全译本，11 章 + README） |
 | `ritchie:<essay>` | D. M. Ritchie《The Development of the C Language》（HOPL-II，1993；`bell-labs.com/usr/dmr/`） | ✅ `external/humanities/ritchie_development_of_c.html` |
 | `stepanov:<work>` | A. Stepanov《Notes on Programming》/《Elements of Programming》（`stepanovpapers.com`、`elementsofprogramming.com`） | ✅ `external/humanities/stepanov_notes_on_programming.pdf`、`stepanov_elements_of_programming.pdf` |
-| `qcon:<y/speaker>` | 演讲实录（如 QCon 2009 C. A. R. Hoare《Null References: The Billion Dollar Mistake》） | ❌ 在线 |
-| `de:<ch>` | Stroustrup《The Design and Evolution of C++》 | ❌ **待补书** |
+| `qcon:<y/speaker>` | 演讲实录（如 QCon 2009 C. A. R. Hoare《Null References: The Billion Dollar Mistake》） | ✅ `external/humanities/qcon2009_hoare_null.md`（InfoQ 官方页 SUMMARY + 逐段 show notes 引述，2026-09-02 抓取；含 1964/1965 出入说明） |
+| `de:<ch>` | Stroustrup《The Design and Evolution of C++》 | ✅ `external/books/design-evolution.txt`（1022 KB，474 页） |
 
 > 主题→素材→可挂章节的映射见 `docs/references/humanities_index.md`（入库）。
 
@@ -177,7 +182,7 @@
 - **已本地化标准 PDF（T0）**：`docs/references/external/standards/`（N4950/N5001/N1570/N2176；见 §3.1，`.gitignore` 忽略）。
 - **已本地化 Core Guidelines（T3）**：`docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`（见 §3.4）。
 - 书籍 PDF/EPUB 原件：`C:\Users\ASUS\Desktop\cppb参考资料\`（见 §3.5；旧登记见 `docs/references/INDEX.md` 的 `C:\Users\ASUS\Desktop\参考资料`）。
-- **书籍提取文本（T4 RAG 主源）**：`external/books/*.txt`（15 本，约 14 MB；见 §3.5）。提取脚本 `external/_extract_books.py`（按魔数判格式、可断点续跑）。
+- **书籍提取文本（T4 RAG 主源）**：`external/books/*.txt`（18 本；见 §3.5）。提取脚本 `external/_extract_books.py`（按魔数判格式、可断点续跑）。
 - 手册类 MD（已入库 `docs/references/external/`）：`C语言极致详解手册.md`（Part0 C 篇蓝本）、`Linux内核极致详细手册.md`（Engineering/linux_kernel 蓝本）。
 - 嵌入式 MD：`C:\Users\ASUS\Desktop\cppb参考资料\嵌入式\`（29 篇，Engineering/embedded 素材）。
 - **框架/构建工具官方文档（T7，vendored）**：`external/vendor/cmake-doc/manual/`（CMake 核心 manual）、`external/vendor/qt-doc/`（Qt 核心模块 overview/guide/manual）；详见 §3.8 与 `external/README.md`。

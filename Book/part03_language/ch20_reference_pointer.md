@@ -44,7 +44,7 @@ Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要�
 - **C++23 显式对象形参（deducing this, P0847）统一 `*this`**：成员函数可写成 `void f(this auto&& self)`，用转发引用统一 `*this` 的值类别（左值 / 右值），使"成员上的完美转发"不再靠笨拙的辅助自由函数。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **"可为空引用"提案（P0298 等）反复被否**：社区多次提议让 `T&` 能表示空，最终都被拒绝——维持"引用必绑定、不可空"的契约，把可选性留给 `std::optional<T>` 与指针。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span>
 - **转发引用在泛型库的渗透**：C++14 泛型 lambda + C++20 模板 lambda 让 `auto&&` 转发成为 STL 算法与 `std::ranges` 的默认惯用法，引用与模板推导深度耦合。<span class="badge badge-history">史</span>
-- **轶事**：Stroustrup 在 *The Design and Evolution of C++* 中称引用"本是为运算符重载而生的小特性"，却成了移动语义与完美转发的基础设施——据记载他多次感叹这一"副作用"远超当初设想。<span class="badge badge-anecdote">轶</span>
+- **轶事**：Stroustrup 在 *The Design and Evolution of C++*（§3.7）开篇直言引用"本是为运算符重载而生"——原文 "References were introduced primarily to support operator overloading"。Doug McIlroy 回忆，一次 Bjarne 向他解释运算符重载前身方案的难题时，McIlroy 用了 "reference" 一词，令 Bjarne 道谢后离开办公室，次日便带回基本完整的方案——点醒他的正是 Algol 68。这一"为运算符而生的小特性"，后来却成了移动语义与完美转发的基础设施。`[de:3.7]`<span class="badge badge-anecdote">轶</span>
 
 > 史料来源：https://en.cppreference.com/w/cpp/language/reference ｜ https://en.cppreference.com/w/cpp/language/constraints ｜ https://en.cppreference.com/w/cpp/language/function
 
@@ -1820,5 +1820,6 @@ int main() {
 - `[cppref:cpp/language/reference]`（T1）cppreference `cpp/language/reference` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
 - `[book:effective-modern:item24]`（T4）Effective Modern C++（Meyers，42 条） · Item 24：Distinguish universal references from rvalue references. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
 - `[core:F.1]`（T3）C++ Core Guidelines 规则 F.1 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
+- `[de:3.7]`（T-H）Stroustrup《The Design and Evolution of C++》§3.7 References —— 提取文本 `docs/references/external/books/design-evolution.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

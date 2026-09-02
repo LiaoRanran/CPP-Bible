@@ -939,6 +939,7 @@ int main() {
 - **稳定性误判**：需要「相等元素保持原相对顺序」（如先按时间再按优先级稳定排序）却用了 `std::sort`（不保证稳定），结果错乱；应改 `std::stable_sort` 或在一次排序里把全部 key 合一。
 - **对几乎有序数据用朴素实现**：经典 quicksort 在已排序/反向数据上退化到 O(n²)；`std::sort` 因 introsort 不会崩，但手写快排会——别裸写快排处理外部输入。
 - **排大数组却忽略缓存与并行**：超过 L3 的数据排序受内存带宽限制；C++17 `std::execution::par` 可并行（需 TBB），但小数据量并行开销反而更大。
+- **算法复杂度骗不了人——「伪归并」27 小时 vs 真归并 45 分钟**：Optimized C++ 记载一个真实事故：某工程师把插入排序用「merge」「sort」词汇包装成「归并排序」，O(n²) 处理一天的数据要 27 小时；换成真归并（O(n log n)）只需 45 分钟。教训：复杂度是排序的第一性，微观优化救不了 O(n²)。`[book:optimized-cpp:ch1]`
 
 ### ㉒.4 与标准的互动：排序与 C++ 标准的演进
 
@@ -1738,5 +1739,6 @@ xor    edi, edi
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[cppref:cpp/algorithm/sort]`（T1）cppreference `cpp/algorithm/sort` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
 - `[book:effective-stl:item31]`（T4）Effective STL 中文版（Meyers，50 条） · Item 31：了解各种与排序有关的选择。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[book:optimized-cpp:ch1]`（T4）Optimized C++（Guntheroth） · ch1 —— 提取文本 `docs/references/external/books/optimized-cpp.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

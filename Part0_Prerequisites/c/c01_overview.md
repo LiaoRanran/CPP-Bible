@@ -37,6 +37,8 @@ C 诞生于 1972 年，Dennis Ritchie 为写 UNIX 而设计。它的本质是**�
 
 > 立场：[经验] C 的「信任程序员」哲学意味着：编译器默认不替你做边界检查、不初始化内存、不阻止你解引用野指针。这些「不做」换来的是可预测的性能与极小的运行时依赖——代价是全由程序员承担正确性的重量。C++ 继承了这份重量，又用类型系统、RAII、`std::` 容器试图减轻它（见主书 part04/part05）。
 
+> 历史注脚：所谓「信任程序员」（trust the programmer）是**后世对 C 哲学的概括，并非 K&R 原词**——K&R 在 *The C Programming Language* 序言的原文是 "C is not a big language, and it is not well served by a big book"；引言更点明「把语言保持在小尺寸有真实收益：程序员可以合理期望通晓并使用整个语言」。`[book:krc:preface]` 这一「小」的自觉，正是 C 与后来愈发庞大的 C++ 在哲学上的分水岭。
+
 ## ③ C 在计算机体系中的位置
 
 - **操作系统**：UNIX、Linux 内核、Windows 内核大量用 C 写；C 是「系统编程」事实语言。

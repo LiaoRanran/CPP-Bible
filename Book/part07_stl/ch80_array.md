@@ -959,7 +959,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：std::array 与「定长数组的类型化」
 
-<span class="badge badge-history">史</span> `std::array` 随 C++11 进入标准，由 Bjarne Stroustrup 与 Gabriel Dos Reis 推动，目的是给「固定大小、栈上、零开销」的数组一个带迭代器与值语义的 First-class 类型，取代裸 `T[N]` 的部分用途。<span class="badge badge-history">史</span> 它的设计刻意保持与 C 数组布局完全一致（无额外指针/大小字段），因此可平凡地与 C API 互操作。<span class="badge badge-anecdote">轶</span> 一个有趣的细节：`std::array` 的聚合初始化允许「省略内层花括号」，这个便利来自聚合类型规则，也常被新手误用导致维度错配。<span class="badge badge-comment">评</span> `array` 的本质是「零成本抽象」的教科书案例：不付出任何运行时代价，却换来 `.size()`、范围 for、`at()` 边界检查与结构化绑定。
+<span class="badge badge-history">史</span> `std::array` 随 C++11 进入标准，由 Bjarne Stroustrup 与 Gabriel Dos Reis 推动，目的是给「固定大小、栈上、零开销」的数组一个带迭代器与值语义的 First-class 类型，取代裸 `T[N]` 的部分用途。<span class="badge badge-history">史</span> 它的设计刻意保持与 C 数组布局完全一致（无额外指针/大小字段），因此可平凡地与 C API 互操作。<span class="badge badge-anecdote">轶</span> 一个有趣的细节：`std::array` 的聚合初始化允许「省略内层花括号」，这个便利来自聚合类型规则，也常被新手误用导致维度错配。<span class="badge badge-comment">评</span> `array` 的本质是「零成本抽象」的教科书案例：不付出任何运行时代价，却换来 `.size()`、范围 for、`at()` 边界检查与结构化绑定。<span class="badge badge-history">史</span> 关于「C/C++ 不做数组边界检查」的批评，D&E §15.11 早有回应：这种批评多半**误置**——能犯越界错误不等于必须犯；模板让裸数组退居实现的底层，需要检查时用 `at()` 即可。`[de:15.11]`
 
 ### ㉒.2 真实工程坐标：array 活在哪些产品里
 
@@ -1641,5 +1641,6 @@ int main() {
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[cppref:cpp/container/array]`（T1）cppreference `cpp/container/array` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
 - `[book:effective-stl:item1]`（T4）Effective STL 中文版（Meyers，50 条） · Item 1：慎重选择容器类型。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
+- `[de:15.11]`（T-H）Stroustrup《The Design and Evolution of C++》§15.11 Implications of Templates —— 提取文本 `docs/references/external/books/design-evolution.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

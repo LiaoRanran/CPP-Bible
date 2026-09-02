@@ -1440,7 +1440,7 @@ int main(){
 
 ### ㉒.1 历史渊源补强：C++ 异常机制的来龙去脉
 
-<span class="badge badge-history">史</span> C++ 异常源自 **1980 年代末 Bell 实验室** 对「构造函数失败如何安全处理」的探索——Stroustrup 在 *The Design and Evolution of C++* 中记录，早期 C++ 用 error code + 手动回滚，极易漏处理；异常被引入以与 RAII（ch39）配合解决此问题。异常规范（exception specification）初版随 **C++98（1998）** 落地，允许 `throw(type-list)` 声明函数可能抛出的类型。<span class="badge badge-anecdote">轶</span> 但 `throw()` 动态规范很快被证明是「昂贵的失败」：编译器要么在每次调用插入运行时检查、要么根本无法内联，且 `unexpected()` 行为反直觉。因此 **C++11（2011）将动态异常规范整体弃用，并引入 `noexcept`（第 ⑤ 节）** 作为零成本的「不抛」契约；**P0003R5（C++17）** 正式把 `throw(type)` 从语言中删除，仅保留 `throw()` 作为弃用的 `noexcept(true)` 别名（第 ⑤ 节）。<span class="badge badge-history">史</span> 「异常安全（exception safety）」这一术语与强/基本/不抛三级保证，由 **David Abrahams 在 1990 年代末的论文与 Boost 实践中** 系统化，后被 C++ 标准库条款 `[res.on.exception.handling]`（第 ⑩ 节）采纳。
+<span class="badge badge-history">史</span> C++ 异常源自 **1980 年代末 Bell 实验室** 对「构造函数失败如何安全处理」的探索——Stroustrup 在 *The Design and Evolution of C++*（§16.1）中记录：异常在最初设计时即被**考虑但推迟**——当时没时间彻底探索设计与实现问题、又担心它给实现带来的复杂度；实际的异常机制设计**历时 1984–1989 五年**，是 C++ 第一个「在公众目光下设计」的部分。早期 C++ 用 error code + 手动回滚，极易漏处理，异常最终引入以与 RAII（ch39）配合解决此问题。`[de:16.1]`异常规范（exception specification）初版随 **C++98（1998）** 落地，允许 `throw(type-list)` 声明函数可能抛出的类型。<span class="badge badge-anecdote">轶</span> 但 `throw()` 动态规范很快被证明是「昂贵的失败」：编译器要么在每次调用插入运行时检查、要么根本无法内联，且 `unexpected()` 行为反直觉。因此 **C++11（2011）将动态异常规范整体弃用，并引入 `noexcept`（第 ⑤ 节）** 作为零成本的「不抛」契约；**P0003R5（C++17）** 正式把 `throw(type)` 从语言中删除，仅保留 `throw()` 作为弃用的 `noexcept(true)` 别名（第 ⑤ 节）。<span class="badge badge-history">史</span> 更早的转折在 **1994 年**：Tom Cargill 在 *C++ Report* 发表《Exception Handling: A False Sense of Security》，用一个容器示例证明当时社区对「异常安全」尚无共识、甚至无人能给出完整解；三年后（1997）Herb Sutter 以《Exception-Safe Generic Containers》给出三个完整解，异常安全才从「玄学」变成「可论证的工程」——这段十部曲后来收进 *Exceptional C++*（Item 8–17）。`[book:exceptional-cpp:item8]`<span class="badge badge-history">史</span> 「异常安全（exception safety）」这一术语与强/基本/不抛三级保证，由 **David Abrahams 在 1990 年代末的论文与 Boost 实践中** 系统化，后被 C++ 标准库条款 `[res.on.exception.handling]`（第 ⑩ 节）采纳。
 
 ### ㉒.2 真实工程坐标：异常安全活在哪里
 
@@ -2423,5 +2423,7 @@ int main() {
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[core:E.6]`（T3）C++ Core Guidelines 规则 E.6 —— 本地 `docs/references/external/vendor/CppCoreGuidelines/CppCoreGuidelines.md`
 - `[book:effective-cpp:item29]`（T4）Effective C++（Meyers，55 条） —— 提取文本 `docs/references/external/books/effective-cpp.txt`
+- `[book:exceptional-cpp:item8]`（T4）Exceptional C++（Sutter，第一册）Item 8：Writing Exception-Safe Code —— 提取文本 `docs/references/external/books/exceptional-cpp.txt`
+- `[de:16.1]`（T-H）Stroustrup《The Design and Evolution of C++》§16.1 Introduction —— 提取文本 `docs/references/external/books/design-evolution.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。
