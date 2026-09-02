@@ -11,9 +11,9 @@
 |------|------|
 | 什么项目？ | 《现代 C++ 终极圣经》147 章 C++ 技术书 + Python 质量门禁工具链，仓库 `LiaoRanran/CPP-Bible` |
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
-| 当前阶段？ | **quality_consolidation（第三阶段：质量收尾 + 高含金量升级）**，CI 八 job 已全链路真绿 |
+| 当前阶段？ | **L2 深度深耕 + L3 治理工具化已落地**（2026-09-02），CI 八 job 全链路真绿 |
 | 在飞的活？ | ✅ **无**——内容侧「学习目标→问题驱动论证」打磨专项已 **60 章全面收官**（历史9 + OO6 + STL17 + 模板12 + 语言5 + 现代4 + 性能3 + 其他2 + 收尾 ch31/ch109），全书再无「① 学习目标」节，见「已收口批次（2026-09-01）」 |
-| 剩余待办？ | **内容侧**：✅ 8 个 UNVERIFIED 章审计已收口（2026-09-01）——ch05 翻转 VERIFIED，其余 7 章保留（结论见 `HANDOVER.md`）。剩余：ch163 网络章是否补 POSIX 对照（低优先）。**工具链**：✅ mypy 类型债务清零并固化进 CI（60→0 / 110 文件，钉版 2.3.1；`.venv` 重建 3.14→3.13 仍待办）。**看板**：15 条标准 10/15，剩余 5 项均属诚实边界，见 `HANDOVER.md` |
+| 剩余待办？ | ① `data_sanity_audit` 的 7 条 PERF_CONFLICT 提示（多为规模差异，人工复核）②㉒.2 模板同构（风格问题，不批量动）③CI 待确认全绿 |
 | HEAD？ | **一律以 `git rev-parse HEAD` 为准**——本文件不复制哈希。写死的哈希在提交那一刻就已过期，这正是「指标单一事实源」待办项要根治的反例 |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
 | Python？ | ✅ 已收敛：配置 glob 识别托管 3.13.14 + `toolchain.py` 版本自检（漂移即非零退出）；`.venv` 仍 3.14.5 但不影响门禁（门禁改走托管 3.13.14） |
@@ -45,6 +45,44 @@ ruff、quality 门禁；并打印接手简报（事实快照 + 剩余待办 + �
 .venv/Scripts/python.exe tools/cppbible.py check --stage quality   # 期望 16/16
 .venv/Scripts/python.exe tools/cppbible.py check --stage compile   # 期望 5/5，3-5 分钟
 ```
+
+---
+
+## 🛠️ 常见任务 SOP（照做即可，避免踩坑）
+
+> 这几条是「能力较弱模型也能干好活」的关键——把高频任务的标准流程固化。
+> 关键新工具：`data_sanity_audit.py`（十六进制污染/性能冲突/未锚定证据）、
+> `teaching_audit.py`（编造轶事嫌疑）。
+
+### SOP-1：深耕一章（L2 配真机）
+1. 读 `docs/references/TEACHING.md` 红线（禁编造、亲手跑过）。
+2. 定位弱证据：grep `示意|推断|实现-推断`。
+3. 真机验证：demo 写仓库外 → `C:/Qt/Tools/mingw1530_64/bin/g++.exe -O2 -S -masm=intel` 编译；
+   运行须 `-static` 链接（MinGW 缺 DLL 会静默失败）。
+4. 锚定：源码入 `Examples/_chNN_xxx.cpp`，产物 `Examples/_chNN_xxx.asm`，
+   书内 asm 块首行 `; 节选自 Examples/_chNN_xxx.asm`。
+5. 验证：`python tools/verify_asm_evidence.py --root Book --examples Examples`（DRIFT 必须 0）。
+
+### SOP-2：修数据错误（十六进制污染等）
+1. `python tools/data_sanity_audit.py --porcelain` 拉清单。
+2. 只信 ERROR（HEX_QUANTITY 零误报）；WARN（PERF/UNANCHORED）需人工判定。
+3. 精确修复：按 file:line:token 三元组替换，字节级保留行尾（勿全文 read_text/write_text）。
+4. 复扫 `--fail-on ERROR` exit 0。
+
+### SOP-3：清编造轶事
+1. `python tools/teaching_audit.py --porcelain` 拉嫌疑清单。
+2. 真编造→删/改有出处；有 `badge-anecdote` 标注→诚实声明，保留。
+3. 复扫确认 0。
+
+### SOP-4：提交（中文 message 防乱码）
+1. ⚠️ 本机 PowerShell 是 GBK，**绝不用 `git commit -m "中文"`**（会 mojibake）。
+2. 写 UTF-8 message 文件到仓库外，`git commit -F <文件>`。
+3. push 前 `git status` 确认无临时脚本混入（`_*.py` 等）。
+
+### 红线（违反即返工）
+- 🔴 L0：**禁止「147 章一波流」批量改造**（波次越多越同构）。
+- 🔴 禁编造轶事、禁伪造汇编、禁注水数字。
+- 🔴 会误报的检查不进 CI（门禁必须零误报）。
 
 ---
 
@@ -173,7 +211,9 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 | `docs/references/P1_memory_object_model_checklist.md` | 台阶一 P1 内存/对象模型实证结论清单（强模型定结论，弱模型施工图） | ✅ |
 | `ISSUES.md` | 遗留清单（2026-08-30 口径） | ✅ |
 | `docs/references/content_debt_tasklist.md` | 内容债任务单（已清零，留档） | 需要时 |
-| `tools/cppbible.py` | 门禁聚合入口（quality/compile） | ✅ |
+| `tools/cppbible.py` | 门禁聚合入口（quality/compile/preflight） | ✅ |
+| `tools/data_sanity_audit.py` | 数据健全性审计：①十六进制污染(ERROR,零误报,已接 CI+pre-push) ②性能冲突(WARN) ③未锚定证据(WARN) | ✅ |
+| `tools/teaching_audit.py` | 写作红线审计：扫描编造轶事信号（据记载/据说/广为流传，无标注无引用键即 WARN） | ✅ |
 | `tools/fix_book_links.py` | 正文跨章链接前缀修复器（`Book/`→源相对，字节级）；`--check` 即 CI「Book Link Integrity」卡口 | ✅ |
 | `tools/consistency_check.py` | 一致性门禁（147 章 ERROR=0 WARN=0） | 参考 |
 | `Book/part*/ch*.md` | 147 章正文 | 按批 |
