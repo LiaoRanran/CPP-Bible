@@ -441,7 +441,7 @@ int main() {
 
 ### ㉒.1 历史渊源补强：STL 的诞生与泛型范式
 
-<span class="badge badge-history">史</span> 1979 年 Alexander Stepanov 在通用电气（GE）开始思考「如何让算法独立于具体容器与数据类型」；1985—1993 年他在惠普（HP）实验室系统提出并实现最初的 STL：容器、迭代器、算法、仿函数四件套，并以模板泛型作为统一抽象层。<span class="badge badge-history">史</span> 1994 年 Stepanov 转往 Silicon Graphics（SGI），将 STL 定型并以自由许可发布「SGI STL」，这成为后来标准库的直接蓝本。<span class="badge badge-anecdote">轶</span> 一个广为流传的轶事是：Stepanov 曾要求一门语言必须能证明「数组下标寻址」与「链表遍历」可被同一套算法统一处理，否则就不够好——这直接催生了迭代器这一中间层。<span class="badge badge-comment">评</span> STL 最大的历史贡献不是某个具体容器，而是「算法—迭代器—容器」三层解耦：让 `std::sort` 能作用于任何满足 RandomAccessIterator 的序列，这一设计比多数工业框架早了近十年。
+<span class="badge badge-history">史</span> 1979 年 Alexander Stepanov 在通用电气（GE）开始思考「如何让算法独立于具体容器与数据类型」；1985—1993 年他在惠普（HP）实验室系统提出并实现最初的 STL：容器、迭代器、算法、仿函数四件套，并以模板泛型作为统一抽象层。<span class="badge badge-history">史</span> 1994 年 Stepanov 转往 Silicon Graphics（SGI），将 STL 定型并以自由许可发布「SGI STL」，这成为后来标准库的直接蓝本。<span class="badge badge-anecdote">轶</span> Stepanov 在《Notes on Programming》中的自省尤见功力：早在 90 年代初他已懂得「把每个算法约简到其最小需求」，但直到多年后才真正领会「填满算法空间」的重要——STL 的 `partition` 曾因误设为 bidirectional 迭代器而留下多年之憾；他选 C++ 的理由也一以贯之：「既贴近机器又有强大的抽象设施……C++ 是我唯一的选择」。`[stepanov:notes]`<span class="badge badge-comment">评</span> STL 最大的历史贡献不是某个具体容器，而是「算法—迭代器—容器」三层解耦：让 `std::sort` 能作用于任何满足 RandomAccessIterator 的序列，这一设计比多数工业框架早了近十年。
 
 ### ㉒.2 真实工程坐标：STL 活在哪些产品里
 
@@ -2049,5 +2049,6 @@ int main() {
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[book:effective-stl:item1]`（T4）Effective STL 中文版（Meyers，50 条） · Item 1：慎重选择容器类型。 —— 提取文本 `docs/references/external/books/effective-stl.txt`
 - `[book:stdlib4:<ch>]`（T4）The C++ Standard Library 4th（Josuttis，含 C++23） · <ch> —— 提取文本 `docs/references/external/books/cpp-stdlib-4e.txt`
+- `[stepanov:notes]`（T-H）A. Stepanov《Notes on Programming》（12/24/2018 版） —— 本地 `docs/references/external/humanities/stepanov_notes.txt`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

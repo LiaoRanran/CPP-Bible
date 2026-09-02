@@ -1550,7 +1550,7 @@ Q: mutable lambda? A: 允许修改值捕获的变量(默认const operator())
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：lambda 的出身与定型
-C++ 在 STL 时代靠"函数对象（functor）"传逻辑——要传一段回调得先写带 `operator()` 的类，冗长且隔断思维（见 ch26 0.1）。<span class="badge badge-history">史</span> 同时代 Lisp/Python/C# 2007 已有匿名函数，C++ 程序员只能羡慕；C++11 引入 lambda，本质是"编译器替你合成那个仿函数类（闭包类型）"。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> C++14 泛型 lambda（`auto` 参数）、初始化捕获；C++17/20 constexpr lambda、模板形参 lambda（`[]<typename T>`）、`[=, *this]` 精确捕获逐步补齐。<span class="badge badge-history">史</span>
+C++ 在 STL 时代靠"函数对象（functor）"传逻辑——要传一段回调得先写带 `operator()` 的类，冗长且隔断思维（见 ch26 0.1）。<span class="badge badge-history">史</span> 同时代 Lisp/Python/C# 2007 已有匿名函数，C++ 程序员只能羡慕；C++11 引入 lambda，本质是"编译器替你合成那个仿函数类（闭包类型）"。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> C++14 泛型 lambda（`auto` 参数）、初始化捕获；C++17/20 constexpr lambda、模板形参 lambda（`[]<typename T>`）、`[=, *this]` 精确捕获逐步补齐。<span class="badge badge-history">史</span><span class="badge badge-anecdote">轶</span> HOPL-IV 补遗：语言级 lambda 的直接动因是性能——Jaakko Järvi 的 Boost.Lambda 库比手写等价代码**稳定地慢约 2.5 倍**；2006 年 Järvi 领衔提出语言级方案，初版语法用 `<>` 作引导器（「我们不敢提出一个新的关键词」），2009 年批准前由 Herb Sutter 建议改用 `[]`、Jonathan Caves 落实实现。`[hopl:hopl4]`
 
 ### ㉒.2 真实工程坐标：lambda 活在哪些产品里
 
@@ -2292,5 +2292,6 @@ int main() {
 - `[book:effective-modern:item31]`（T4）Effective Modern C++（Meyers，42 条） · Item 31：Avoid default capture modes. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
 - `[book:effective-modern:item32]`（T4）Effective Modern C++（Meyers，42 条） · Item 32：Use init capture to move objects into closures. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
 - `[book:effective-modern:item34]`（T4）Effective Modern C++（Meyers，42 条） · Item 34：Prefer lambdas to std::bind. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[hopl:hopl4]`（T-H）Stroustrup HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》 —— 本地 `docs/references/external/humanities/hopl4_zh/`（中文全译本）
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

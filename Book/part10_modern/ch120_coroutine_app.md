@@ -1022,6 +1022,7 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 - `[史]` 协程（coroutine）概念由 Kristen Nygaard 与 Ole-Johan Dahl 在 **Simula 67** 中首创，后由 Lua、Modula-2、Python 生成器、Go goroutine、C# async/await 发扬光大。
 - `[史]` C++ 的协程框架（`co_await` / `co_yield` / `co_return`）由 **Gor Nishanov（Microsoft）** 提案，经 N4663 演化到 **P0912**，最终作为「无栈协程（stackless coroutine）」进入 C++20；它与 Boost.Coroutine / Boost.Asio 的「有栈协程」是两套不同机制。
 - `[轶]` 标准协程只定义「关键字 + 帧语义」，真正的 `task`/`generator` 类型要靠库作者用 `promise_type` 自己拼——所以同一个 `co_await` 在不同库里含义天差地别，这一「最小语言原语」哲学引发了大量讨论。
+- `[轶]` 从提案到定案拖了八年：2012 年 Niklas Gustafsson（微软）「可恢复函数」起步，2017 年 Gor Nishanov 的无栈方案成为 TS；2018 年最后时刻谷歌抛出**未实现**的「核心协程（Core Coroutines）」竞争方案，决胜点是其「用普通 lambda 表达式表示协程状态」的策略存在根本缺陷——Gor 方案最终以 **48:4** 的绝对优势过关。HOPL-IV 评价：若非 Gor Nishanov 的坚韧与他在 MSVC/Clang 双编译器上的扎实实现，C++20 不会有协程。`[hopl:hopl4]`
 
 ### ㉒.2 真实产业坐标：异步与可暂停计算的主战场
 
@@ -1725,5 +1726,6 @@ int main() {
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[cppref:cpp/language/coroutines]`（T1）cppreference `cpp/language/coroutines` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
+- `[hopl:hopl4]`（T-H）Stroustrup HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》 —— 本地 `docs/references/external/humanities/hopl4_zh/`（中文全译本）
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

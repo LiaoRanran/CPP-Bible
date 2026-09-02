@@ -27,7 +27,7 @@ concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强�
 ### 0.4 史料补遗与持续编年
 0.2 编年止于 C++20 正式发布 concepts。concepts 自身的演化并未停步：
 
-- <span class="badge badge-history">史</span> concepts 的正式落地走得很长：从 2003 年 Bjarne 的「concepts lite」设想、2009 年 C++0x 试图纳入却因设计分歧在 2012 年被「一致投票移除」，直到 2017 年 P0734 重启、才随 C++20 定稿。这是标准史上少见的「被否决后重做」的特性。
+- <span class="badge badge-history">史</span> concepts 的落地走了近二十年：2004 年「印第安纳」（显式建模，仿 Haskell 类型类）与「得克萨斯」（基于使用模式的隐式匹配）两派路线之争；2009 年 C++0x 概念被委员会以绝对多数票移除——彼时支持概念的编译器比无约束模板**慢 10 倍以上**（供应商底线是 20%），规范膨胀至 91 页、标准库塞入约 125 个概念；2011 年 Palo Alto 一周会议诞生「Concepts Lite」，2016 年纳入 C++17 的提案以 **25:31:8** 落选，2018 年「缩写语法」（`void sort(Sortable auto&)`）折中破局，才随 C++20 定稿。这是标准史上少见的「被否决后重做」的特性。`[hopl:hopl4]`
 
 - <span class="badge badge-history">史</span> C++23 增强了 abbreviated function templates 与 `auto` 在更多位置的约束能力；后续（C++26 轨道）还有「扩展的 auto」「原子约束细化」「对 concept 做合取/析取的更细约束」等讨论，让约束能表达更复杂的逻辑。
 
@@ -1317,5 +1317,6 @@ int main() {
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[cppref:cpp/language/constraints]`（T1）cppreference `cpp/language/constraints` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
 - `[book:templates:<ch>]`（T4）C++ Templates: The Complete Guide · <ch> —— 提取文本 `docs/references/external/books/cpp-templates.txt`
+- `[hopl:hopl4]`（T-H）Stroustrup HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》 —— 本地 `docs/references/external/humanities/hopl4_zh/`（中文全译本）
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

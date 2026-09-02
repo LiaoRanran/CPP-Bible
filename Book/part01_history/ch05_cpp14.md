@@ -397,7 +397,7 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 
 ### ㉒.1 历史渊源补强：C++14 为何是"C++11 的修正式"
 
-<span class="badge badge-history">史</span> C++14（ISO/IEC 14882:2014，2014-12-15 发布）被定位为 C++11 的小幅完善：主要补 11 版遗漏、修缺陷报告（DR），几乎不加"大"特性。<span class="badge badge-history">史</span> 其标志性语言特性来自产业提案：**泛型 lambda**（允许 `auto` 形参）让 `[](auto x){}` 成为可能；**变量模板**（`template<typename T> constexpr T pi = ...`）统一了之前的特化宏技巧；**返回类型推导**（`auto f() { return expr; }`）省去尾置返回类型；还有 `std::make_unique`（Herb Sutter 力推，补 C++11 唯独缺的"unique_ptr 工厂"）。<span class="badge badge-anecdote">轶</span> `std::make_unique` 的缺席曾被认为是 C++11 最尴尬的疏漏——于是它成了 C++14 第一个被通过的标准库提案之一。<span class="badge badge-comment">评</span> C++14 的存在证明"3 年小版本"模型有效：它把 11 的锐利棱角磨平，让团队敢于在 2015 年前后全面切到现代 C++。
+<span class="badge badge-history">史</span> C++14（ISO/IEC 14882:2014，2014-12-15 发布）被定位为 C++11 的小幅完善：主要补 11 版遗漏、修缺陷报告（DR），几乎不加"大"特性。<span class="badge badge-history">史</span> 其标志性语言特性来自产业提案：**泛型 lambda**（允许 `auto` 形参）让 `[](auto x){}` 成为可能；**变量模板**（`template<typename T> constexpr T pi = ...`）统一了之前的特化宏技巧；**返回类型推导**（`auto f() { return expr; }`）省去尾置返回类型；还有 `std::make_unique`（Herb Sutter 力推，补 C++11 唯独缺的"unique_ptr 工厂"）。<span class="badge badge-anecdote">轶</span> `std::make_unique` 的缺席曾被认为是 C++11 最尴尬的疏漏——于是它成了 C++14 第一个被通过的标准库提案之一。<span class="badge badge-comment">评</span> C++14 的存在证明"3 年小版本"模型有效：它把 11 的锐利棱角磨平，让团队敢于在 2015 年前后全面切到现代 C++。<span class="badge badge-history">史</span> HOPL-IV 补遗：这套节奏源自 C++11 延期的教训——原计划 2007 年冻结特性的 C++0x 因「重要特性等不得」一路滑到 2011（社区戏称十六进制 **C++0xB**）；事后召集人 Herb Sutter 提出**列车模型**——「列车在预定时间出发，没上车的等下一班」，Stroustrup 力主 3 年而非 5 年，因为周期再长就会被「这个特性非常重要，等不了」的说法重新拖累。`[hopl:hopl4]`
 
 ### ㉒.2 真实工程坐标：C++14 活在哪些基线里
 
@@ -975,5 +975,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[book:effective-modern:<item>]`（T4）Effective Modern C++（Meyers，42 条） · <item> —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[hopl:hopl4]`（T-H）Stroustrup HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》 —— 本地 `docs/references/external/humanities/hopl4_zh/`（中文全译本）
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

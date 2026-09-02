@@ -1470,7 +1470,7 @@ int main() {
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
 ### ㉒.1 历史渊源补强：auto 与 decltype 的复活
-`auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"，几乎无人使用形同废字；C++11 把它"劫持"为类型推导发动机，直接动机是 lambda 闭包类型、模板返回类型无法手写（见 ch22 0.1）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> `decltype` 同期引入，回答"这个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。<span class="badge badge-history">史</span> C++14 的 `decltype(auto)` 保留引用性，C++20 缩写函数模板（P1141）让 `void f(auto x)` 等价于单参数模板，把 auto 从"变量推导"跃迁到"函数签名"。<span class="badge badge-history">史</span>
+`auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"，几乎无人使用形同废字；C++11 把它"劫持"为类型推导发动机，直接动机是 lambda 闭包类型、模板返回类型无法手写（见 ch22 0.1）。<span class="badge badge-history">史</span><span class="badge badge-comment">评</span> `decltype` 同期引入，回答"这个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。<span class="badge badge-history">史</span> C++14 的 `decltype(auto)` 保留引用性，C++20 缩写函数模板（P1141）让 `void f(auto x)` 等价于单参数模板，把 auto 从"变量推导"跃迁到"函数签名"。<span class="badge badge-history">史</span> HOPL-IV 补遗：Stroustrup 早在 **1982/83 年冬**就实现过 auto，为保持 C 兼容而移除；C++11 重拾时感叹——"一个简单情况一天就能实现的小功能，却花了 4 年才在委员会通过"。`[hopl:hopl4]`
 
 ### ㉒.2 真实工程坐标：auto/decltype 活在哪些产品里
 
@@ -1950,5 +1950,6 @@ int main() {
 - `[book:effective-modern:item2]`（T4）Effective Modern C++（Meyers，42 条） · Item 2：Understand auto type deduction. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
 - `[book:effective-modern:item5]`（T4）Effective Modern C++（Meyers，42 条） · Item 5：Prefer auto to explicit type declarations. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
 - `[book:effective-modern:item6]`（T4）Effective Modern C++（Meyers，42 条） · Item 6：Use the explicitly typed initializer idiom when auto deduces undesired types. —— 提取文本 `docs/references/external/books/effective-modern-cpp.txt`
+- `[hopl:hopl4]`（T-H）Stroustrup HOPL-IV《Thriving in a Crowded and Changing World: C++ 2006–2020》 —— 本地 `docs/references/external/humanities/hopl4_zh/`（中文全译本）
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。
