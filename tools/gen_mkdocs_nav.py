@@ -621,6 +621,83 @@ EXTRA_CSS = """\
   background: var(--md-accent-fg-color);
   z-index: 9999;
 }
+
+/* ============================================================================
+   14. 暗色模式（slate）完整适配 —— 2026-09-02 前端美观化
+   此前徽章/引用块/mermaid/表格全用硬编码浅色，暗色模式下刺眼。本分区补齐。
+   ========================================================================== */
+[data-md-color-scheme="slate"] .md-typeset .badge-std     { background: rgba(100,181,246,0.14); color: #90caf9; border-color: rgba(144,202,249,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-impl    { background: rgba(129,199,132,0.14); color: #a5d6a7; border-color: rgba(165,214,167,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-exp     { background: rgba(255,183,77,0.14); color: #ffcc80; border-color: rgba(255,204,128,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-abi     { background: rgba(206,147,216,0.14); color: #ce93d8; border-color: rgba(206,147,216,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-platform{ background: rgba(128,222,234,0.14); color: #80deea; border-color: rgba(128,222,234,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-microarch{ background: rgba(179,157,219,0.14); color: #b39ddb; border-color: rgba(179,157,219,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-history { background: rgba(244,143,177,0.14); color: #f48fb1; border-color: rgba(244,143,177,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-anecdote{ background: rgba(255,224,130,0.14); color: #ffe082; border-color: rgba(255,224,130,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-comment{ background: rgba(176,190,197,0.14); color: #b0bec5; border-color: rgba(176,190,197,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-ref    { background: rgba(128,203,196,0.14); color: #80cbc4; border-color: rgba(128,203,196,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-measured{ background: rgba(174,213,129,0.14); color: #aed581; border-color: rgba(174,213,129,0.35); }
+[data-md-color-scheme="slate"] .md-typeset .badge-perf   { background: rgba(255,171,145,0.14); color: #ffab91; border-color: rgba(255,171,145,0.35); }
+[data-md-color-scheme="slate"] .md-typeset blockquote {
+  background: rgba(100,181,246,0.05);
+  border-left-color: #64b5f6;
+}
+[data-md-color-scheme="slate"] .md-typeset .mermaid {
+  background: rgba(255,255,255,0.02);
+  border-color: rgba(255,255,255,0.1);
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background: rgba(63,81,181,0.55);
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:nth-child(even) td {
+  background: rgba(255,255,255,0.03);
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:hover td {
+  background: rgba(100,181,246,0.12);
+}
+[data-md-color-scheme="slate"] .md-typeset code {
+  background-color: rgba(255,255,255,0.08);
+}
+[data-md-color-scheme="slate"] .md-typeset pre {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+}
+[data-md-color-scheme="slate"] .md-typeset mark {
+  background: rgba(255,245,157,0.28);
+}
+[data-md-color-scheme="slate"] .md-typeset details,
+[data-md-color-scheme="slate"] .md-typeset .tabbed-set {
+  border-color: rgba(255,255,255,0.12);
+}
+[data-md-color-scheme="slate"] .md-typeset hr {
+  border-top-color: rgba(255,255,255,0.12);
+}
+
+/* ============================================================================
+   15. 标题层级美化（浅色/暗色通用）
+   ========================================================================== */
+.md-typeset h2 {
+  border-left: 4px solid var(--md-accent-fg-color, #3f51b5);
+  padding-left: 0.6em;
+  border-radius: 0 3px 3px 0;
+}
+.md-typeset h3 {
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding-bottom: 0.35em;
+}
+[data-md-color-scheme="slate"] .md-typeset h3 {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+/* ============================================================================
+   16. 徽章悬浮微动效
+   ========================================================================== */
+.md-typeset .badge {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.md-typeset .badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
 """
 
 
