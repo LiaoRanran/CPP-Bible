@@ -521,16 +521,45 @@ vector<Base<???>> v;   // ❌ Base<Vec3> 与 Base<Mat3> 是不同类型，无法
 
 ## ⑰ FAQ（≥10）
 
-- **Q：CRTP 的 static_cast 不会越界吗？** A：模板实例化时 `Derived` 必是 `Base<Derived>` 的派生类，`static_cast` 向上转回派生类是良构且安全（标准允许指向派生类的基类指针转回派生类）。
-- **Q：为什么叫「奇异递归」？** A：派生类在自身定义中作为基类模板实参出现（`struct D : Base<D>`），递归地以「尚未完成的自己」参数化基类，故名。
-- **Q：CRTP 有 vtable 吗？** A：若基类/派生类都无虚函数，则无 vptr、无 vtable。
-- **Q：CRTP 会代码膨胀吗？** A：每个 `Base<Derived>` 独立实例化，若含非内联函数体会为每组生成一份，可能增大二进制（见 ⑲）。
-- **Q：deducing this 能完全取代 CRTP 吗？** A：多数静态多态场景可以（`void f(this auto& self)`），但 CRTP 还能做「基类注入接口/数据」，deducing this 不能。
-- **Q：CRTP 基类能加约束吗？** A：C++20 起用 `template<class D> requires requires(D d){ d.step(); }`（ch67）。
-- **Q：菱形 CRTP 怎么办？** A：多个 CRTP 基类混入时，各自 `static_cast` 互不干扰；注意名字冲突（ch50 B3）。
-- **Q：CRTP 影响 ABI 吗？** A：模板实例化结果进符号表（`_ZN8CrtpBaseI4Vec3E...`），跨 TU 一致；但不同编译选项可能 ODR 冲突。
-- **Q：调试时 CRTP 调用栈难读吗？** A：因全内联，调用栈可能看不到 `interface()` 帧，但性能更好；用 `-g` + 源码级调试规避。
-- **Q：CRTP 基类可以有状态吗？** A：可以，但状态属于每个 `Base<Derived>` 实例，注意 EBO（ch52）压缩空基类。
+**Q：CRTP 的 `static_cast` 不会越界吗？**
+
+不会，前提是"当前对象真的是 `Derived`"。模板实例化时 `Derived` 必然是 `Base<Derived>` 的派生类，而 `static_cast` 把指向派生类的基类子对象指针转回派生类，是标准允许的良构转换。越界只发生在你把 `Base<Derived>` 拿去套在一层非 CRTP 继承上（见 坑 第二点）——那属于误用，不是 CRTP 本身的缺陷。
+
+**Q：为什么叫「奇异递归」？**
+
+因为派生类在自身的定义里，就作为基类模板的实参出现了：`struct D : Base<D>`——`D` 用"尚未完成的自己"去参数化基类，递归地闭合。这种"自己出现在自己基类的参数里"的写法在标准术语里叫 curiously recurring，故译"奇异递归"。它把"派生类是谁"编码进了基类，这正是后续 `static_cast` 能转回派生类的依据。
+
+**Q：CRTP 有 vtable 吗？**
+
+只要基类与派生类都没有虚函数，就没有 vptr、没有 vtable。这是 CRTP 零开销的来源——静态多态不付任何运行期类型信息成本。一旦你在 CRTP 类里加了虚函数，原本的零开销优势就丢了，这时该重新评估是否真需要 CRTP。
+
+**Q：CRTP 会代码膨胀吗？**
+
+会，但可控。每个 `Base<Derived>` 独立实例化，若基类含非内联函数体，会为每组派生类生成一份副本，可能增大二进制（见 ⑲）。缓解手段是把通用逻辑抽到非模板自由函数，让基类只保留必须模板化的部分——这样膨胀基本压到可忽略。
+
+**Q：deducing this 能完全取代 CRTP 吗？**
+
+多数静态多态场景可以：`void f(this auto& self)` 让成员函数能在编译期拿到 `*this` 的静态类型，实现和 CRTP 类似的"接口注入"。但 CRTP 还能做 deducing this 做不到的事——**基类向派生类注入数据成员**，而 deducing this 只是改变了函数接收 `*this` 的方式，不改变继承结构。需要"基类携带状态并被派生类复用"时，CRTP 仍不可替代。
+
+**Q：CRTP 基类能加约束吗？**
+
+C++20 起可以，用 `template<class D> requires requires(D d){ d.step(); }` 约束 `D` 必须提供 `step()`（ch67）。这正是 Concepts 对 CRTP 的救赎：过去"派生类漏写 `impl()`"要等模板深度展开才报"模板墙"，现在在实例化期就清清楚楚。
+
+**Q：菱形 CRTP 怎么办？**
+
+多个 CRTP 基类混入时，各自 `static_cast` 互不干扰——每个基类只转回自己那一支。真正的麻烦是名字冲突：两个基类都注入同名方法时，派生类调用会歧义（ch50 B3 的同名冲突同理）。解法是显式限定 `Base1<D>::method()`，或让各基类的方法名带前缀。
+
+**Q：CRTP 影响 ABI 吗？**
+
+模板实例化结果进符号表（如 `_ZN8CrtpBaseI4Vec3E...`），跨翻译单元一致；但不同编译选项（如 `-fvisibility`、内联深度）可能让同一 `Base<Derived>` 在不同 TU 里生成不同副本，存在 ODR 冲突风险。作为头文件库的一部分时，这点要和虚函数接口一样纳入 ABI 考量。
+
+**Q：调试时 CRTP 调用栈难读吗？**
+
+因全内联，调用栈里可能看不到 `interface()` 这一帧，断点不好下。代价是性能更好（少一次调用）。规避办法是 `-g` 配合源码级调试，或在排查期临时给基类方法加 `noinline` 让帧显形——定位完再去掉。
+
+**Q：CRTP 基类可以有状态吗？**
+
+可以有，状态属于每个 `Base<Derived>` 实例。但基类常为空的（只注入接口），这时要留意 EBO（ch52）：空基类应被压缩，不该白白占一个字节——把 CRTP 基类声明为空基类，对象大小才真的不增加。
 
 ## ⑱ 最佳实践
 
@@ -544,9 +573,11 @@ vector<Base<???>> v;   // ❌ Base<Vec3> 与 Base<Mat3> 是不同类型，无法
 
 ## ⑲ 性能分析
 
-- **对象大小**：CRTP（无虚函数）对象 `sizeof` 不含 vptr；虚函数版本 +8 字节/对象（x64）。
-- **分派成本**：CRTP 调用在 -O2 全内联（0 间接跳转）；虚函数至少 2 次内存取指 + 间接跳转（~1ns，且破坏分支预测）。
-- **代码膨胀**：每个 `Base<Derived>` 独立实例化。以下 microbenchmark 思路可量化：
+**对象大小** 上，CRTP（无虚函数）对象的 `sizeof` 不含 vptr；等价的虚函数版本每个对象多 8 字节（x64）。对百万级对象（如游戏实体、容器元素），这 8 字节累计可观，是 CRTP 在内存敏感场景被采用的硬理由之一。
+
+**分派成本** 上，CRTP 调用在 `-O2` 全内联，零间接跳转；虚函数至少 2 次内存取指加一次间接跳转（约 1ns，且因目标地址不可预测而破坏分支预测）。单次差距看似微小时，放到热点循环里就是能否被流水化的分水岭——这也是 Eigen 那种数值内核非用 CRTP 不可的原因（见附录 G）。
+
+**代码膨胀** 是硬币另一面：每个 `Base<Derived>` 独立实例化，若基类含非内联函数体，会为每组派生类生成一份副本，可能增大二进制。量化思路是用 microbenchmark 对比"N 个不同派生类的 CRTP 基类"与"等价虚函数基类"的符号表体积——但实践中只要把基类通用逻辑抽到非模板自由函数（见 ⑳ 第 5 点），膨胀基本可控。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析
 ```cpp
@@ -622,10 +653,15 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 
 ### ㉒.3 生产踩坑：CRTP 的误用
 
-- **基类在派生类不完整时访问其成员**：第 ⑫ 节，CRTP 基类模板体内若引用 `Derived::xxx`，而 `Derived` 在该点尚未完整定义，会编译失败——CRTP 要求基类只依赖「派生类作为完整类型被使用时」才可见的成员，易触发「循环依赖」错误。
-- **`static_cast<Derived*>(this)` 的隐含前提**：第 ⑬ 节，CRTP 靠 `static_cast` 把 `this` 向上转为派生类，前提是「当前对象真的是 `Derived`」；一旦有人在中间插入另一层非 CRTP 继承或误把基类用于多重继承，转换会越界——比虚函数更「相信程序员」。
-- **模板错误信息的爆炸**：CRTP 的静态分派出错时，报错链极长且难读（「模板墙」），新团队维护成本高，是它被 concepts（ch67）部分替代的动因。
-- **误以为 CRTP 万能替代虚函数**：CRTP 是「开放给有限已知派生类」的静态多态，无法表达「运行时才知道具体类型」的真多态（如插件按接口加载），后者仍需虚函数/visitor（ch47/ch48）。
+CRTP 的四个坑，本质都来自同一件事：**它把"类型关系"在编译期锁死，于是运行时那种"多态兜底"的安全网也没了**。
+
+**基类在派生类不完整时访问其成员** 是第一坑。CRTP 基类模板体内若引用 `Derived::xxx`，而 `Derived` 在该点尚未完整定义，会编译失败——CRTP 要求基类只依赖"派生类作为完整类型被使用时"才可见的成员。写基类时若忍不住在模板体内调 `Derived` 的方法，很容易触发这种"循环依赖"错误，根因是 CRTP 的递归参数化顺序。
+
+**`static_cast<Derived*>(this)` 的隐含前提** 更隐蔽（见 ⑬）。CRTP 靠这个转型把 `this` 向上转回派生类，前提是"当前对象真的是 `Derived`"；一旦有人在中间插入一层非 CRTP 继承、或误把基类拿去多重继承，转换就会越界——而且这是未定义行为，不会在编译期报错。它比虚函数更"相信程序员"：虚函数至少有 vtable 兜底，CRTP 连这层兜底都不给。
+
+**模板错误信息的爆炸** 是维护性代价。CRTP 的静态分派出错时，报错链极长且难读（俗称"模板墙"），新团队维护成本高。这恰恰是被 Concepts（ch67）部分替代的动因——`requires` 能把"派生类必须提供 `impl()`"这种约束在实例化期就报清楚，而不是等模板深度展开后才炸。
+
+**误以为 CRTP 万能替代虚函数** 是最常见误解。CRTP 是"开放给有限、已知派生类"的静态多态，无法表达"运行时才知道具体类型"的真多态（如插件按接口加载）——后者仍需虚函数或 visitor（ch47/ch48）。选型判据很硬：**类型集合编译期封闭用 CRTP，运行期开放用虚函数**。
 
 ### ㉒.4 与标准的互动：CRTP 与 WG21 演进
 
@@ -772,26 +808,15 @@ int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 
 > 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
 
-- **Google** — Abseil 用 CRTP 实现 `absl::Span` 的静态接口
-- **LLVM** — LLVM `RTTI` 用 CRTP 做编译期多态
-- **Chromium** — base 用 CRTP 实现 `RepeatingCallback` 基类
-- **Boost** — Boost.Iterator 用 CRTP 暴露迭代器接口
-- **Qt ** — Qt 容器用 CRTP 复用实现
-- **Eigen** — Eigen 矩阵表达式全程 CRTP 避免虚调用
-- **folly** — folly 用 CRTP 实现 `AsyncPool` 接口
-- **Redis** — hiredispp 用 CRTP 包装回复解析
-- **ClickHouse** — 函数基类用 CRTP 固定接口
-- **RocksDB** — 迭代器用 CRTP 派发读路径
-- **V8** — API 句柄用 CRTP 派生类型
-- **DPDK** — mbuf 用 CRTP 标记包类型
-- **gRPC** — 序列化用 CRTP 固定消息接口
-- **spdlog** — sink 用 CRTP 实现零虚调用
-- **fmt** — format 参数用 CRTP 展开
-- **Unreal** — UE 用 CRTP 实现组件接口
-- **WebKit** — WTF 用 CRTP 优化智能指针
-- **Mozilla** — mfbt 用 CRTP 实现萃取
-- **Abseil** — Abseil `absl::CRTP` 惯用法文档化
-- **Blink** — Blink 用 CRTP 推导样式节点
+这些项目不是"都用 CRTP"这么简单——它们用的是 CRTP 的**同一种形状**：基类通过 `static_cast<Derived*>` 把接口或数据注入派生类，派生类因此获得静态多态，全程零虚调用、零 vptr。下面按动机分三类，其余可在各自公开仓库核查（Abseil 的 `absl::Span`、Boost.Iterator 的迭代器 facade、Qt 容器、folly 的 `AsyncPool`、Redis 的 hiredispp、V8 句柄、Unreal 组件、WebKit/WTF 智能指针、Mozilla/mfbt 萃取、Blink 样式节点等，均属同类）。
+
+**性能关键型——用 CRTP 替换本该是虚调用的地方**。Eigen 最典型：矩阵表达式（如 `a + b * c`）全程 CRTP，编译器把整条表达式折叠成单遍循环，既不产生临时矩阵也不走虚表；若用虚函数做运算符，每次 `+`/`*` 都是一次间接跳转且禁止内联，对数值内核是致命的。DPDK 的 `mbuf`、fmt 的参数展开、spdlog 的 sink 同理——它们都是"被调用百万次的底层操作"，虚调用开销不可接受，CRTP 把分派在编译期定死。
+
+**接口注入型——基类给派生类一套固定接口**。Chromium 的 `RepeatingCallback`、gRPC 的序列化、ClickHouse 的函数基类、RocksDB 的迭代器读路径，都是"基类定义接口骨架、派生类填实现"的 CRTP 惯用法；比起"接口多重继承 + 虚函数"，它不付 vptr、还能让接口方法内联。Abseil 的 `absl::Span`、Boost.Iterator 的迭代器 facade 是同一思路的标准化版本。
+
+**类型标记型——用 CRTP 给类型打编译期标签**。V8 的 API 句柄、Unreal 的组件接口、WebKit/WTF 的智能指针、Mozilla/mfbt 的萃取，用 CRTP 让"派生类即一种已知子类型"在类型系统里可见，从而能在编译期做特化而不必运行时查类型。LLVM 的 RTTI 则反过来——用 CRTP 把"本该运行时查的类型信息"前移到编译期多态。
+
+共同结论：CRTP 在这些项目里从不是"炫技"，而是"在调用频率极高、或零开销约束硬的地方，用编译期多态替代运行期多态"——这正好对应 ⑲ 的性能账与 ⑬ 的 `static_cast` 前提：你省下了虚调用，代价是把类型关系在编译期就锁死。
 
 ## 附录 H：编译实证——CRTP vs 虚函数 vs final 的真实汇编代价 [C: Compiler / E: Low-level]
 
