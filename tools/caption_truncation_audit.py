@@ -164,7 +164,7 @@ def _file_impl_citation(lines: list[str]) -> str:
             counts[c] = counts.get(c, 0) + 1
     if not counts:
         return ""
-    return max(counts, key=counts.get)
+    return max(counts, key=lambda k: counts[k])
 
 
 def bracket_repair(tag: str, headings: list[tuple[int, str]], impl_citation: str):
