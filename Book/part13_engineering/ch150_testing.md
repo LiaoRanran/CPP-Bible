@@ -1445,7 +1445,7 @@ flowchart TD
   INT --> E2E
   TDD["TDD 红-绿-重构循环"]
   UNIT --> TDD
-  TDD -->|红: 先写失败测试| RED["实现让测试通过 (绿)"]
+  TDD -->|"红: 先写失败测试"| RED["实现让测试通过 (绿)"]
   RED --> REF["重构并保绿"]
   REF --> TDD
 ```
@@ -1541,21 +1541,21 @@ flowchart TD
   DONE["测试策略确定"]
 
   START --> Q1
-  Q1 -->|是| UNIT
-  Q1 -->|否| Q2
+  Q1 -->|"是"| UNIT
+  Q1 -->|"否"| Q2
   UNIT --> Q4
-  Q2 -->|是| INTG
-  Q2 -->|否| MOCK
+  Q2 -->|"是"| INTG
+  Q2 -->|"否"| MOCK
   INTG --> Q3
   MOCK --> Q3
-  Q3 -->|是| E2E
-  Q3 -->|否| Q4
+  Q3 -->|"是"| E2E
+  Q3 -->|"否"| Q4
   E2E --> Q4
-  Q4 -->|是| PROP
-  Q4 -->|否| Q5
+  Q4 -->|"是"| PROP
+  Q4 -->|"否"| Q5
   PROP --> Q5
-  Q5 -->|是| PERF
-  Q5 -->|否| DONE
+  Q5 -->|"是"| PERF
+  Q5 -->|"否"| DONE
   PERF --> DONE
 ```
 

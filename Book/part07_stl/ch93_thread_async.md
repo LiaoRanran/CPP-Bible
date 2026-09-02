@@ -90,7 +90,7 @@ flowchart TD
     futureR["std::future<R>: (task.get_future)"]
     shared_future["std::shared_future<T>: (share(), 多消费者)"]
     call_once["std::call_once / once_flag: (只做一次 原语)"]
-    thread -->|仅负责「执行」| shared
+    thread -->|"仅负责「执行」"| shared
     shared --> promise
     shared --> packaged
     shared --> async
@@ -111,18 +111,18 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[callable F] --> B{选择原语}
-    B -->|promise| C["producer: set_value/set_exception"]
-    B -->|packaged_task| D[task 自身即生产者]
-    B -->|async| E[运行时自动起 thread 或 deferred]
-    B -->|thread+ref| F[手动传 future 引用]
+    B -->|"promise"| C["producer: set_value/set_exception"]
+    B -->|"packaged_task"| D[task 自身即生产者]
+    B -->|"async"| E[运行时自动起 thread 或 deferred]
+    B -->|"thread+ref"| F[手动传 future 引用]
     C --> G[shared state]
     D --> G
     E --> G
     F --> G
     G --> H["consumer: future.get"]
     H --> I{"结果 ready?"}
-    I -->|yes| J[返回 T 或抛异常]
-    I -->|no| K[阻塞等待]
+    I -->|"yes"| J[返回 T 或抛异常]
+    I -->|"no"| K[阻塞等待]
     K --> J
 ```
 
@@ -179,8 +179,8 @@ flowchart TD
     t["栈上的 std::thread 对象 (sizeof ≈ 两个指针): std::thread t; _M_id (thread::id: 内部是 __gthread_t) [标识/句柄]; _M_state (unique_ptr<_State>)"]
     state["new _State_impl<_Invoker<tuple<...>>>: vptr → _State_impl vtable; 被decay后的实参 tuple (按值拷贝！)"]
     kern["内核线程 / pthread (Win32: CreateThread)"]
-    t -->|_M_state 指向| state
-    state -->|OS 调度| kern
+    t -->|"_M_state 指向"| state
+    state -->|"OS 调度"| kern
 ```
 
 `[实现·GCC15]`：`std::thread` 构造函数把可调用对象及其实参 `decay` 后**按值拷贝**进 `_State_impl`（文件：`bits/std_thread.h`，行号：`234` 的 `struct _State_impl`；拷贝发生在行号：`164` 的 `new _State_impl<_Wrapper>(...)`）。这就是为什么传引用**不会**被线程看到，必须用 `std::ref`。
@@ -201,9 +201,9 @@ flowchart LR
     subgraph S3 [consumer 线程]
         cons["future.get()"]
     end
-    prod -->|set_value(42)| sh
-    sh -->|get() 返回 42| cons
-    sh -.->|若 set_exception / get() 抛异常| cons
+    prod -->|"set_value(42)"| sh
+    sh -->|"get() 返回 42"| cons
+    sh -.->|"若 set_exception / get() 抛异常"| cons
     %% (无引用 t 也行)；future 析构 ≠ 共享状态析构, 仅最后一个引用者析构才回收
 ```
 
@@ -225,10 +225,10 @@ flowchart LR
     subgraph S3 [共享状态]
         ss["共享状态"]
     end
-    main -->|async(launch::async, F): 创建 thread, 立即执行 F| rt
-    rt -->|运行 F: 写入结果| ss
-    main -->|future.get(): 阻塞直到 ready| ss
-    ss -->|返回 T| main
+    main -->|"async(launch::async, F): 创建 thread, 立即执行 F"| rt
+    rt -->|"运行 F: 写入结果"| ss
+    main -->|"future.get(): 阻塞直到 ready"| ss
+    ss -->|"返回 T"| main
     %% (继续干别的)；thread 结束, join 由运行时在 future 析构时等待
 ```
 

@@ -1095,11 +1095,11 @@ C++03 的 `std::auto_ptr` 用**拷贝构造实现"移动"**（destructive copy�
 ```mermaid
 graph LR
     subgraph MOVE["移动 (noexcept) : O(1) 指针交换"]
-        A1[v1: ptr -> 堆缓冲X] -->|std::move| A2[v2: ptr -> 堆缓冲X]
+        A1[v1: ptr -> 堆缓冲X] -->|"std::move"| A2[v2: ptr -> 堆缓冲X]
         A1x[v1 变空: ptr=null]
     end
     subgraph COPY["复制 (copy) : O(n) 深拷贝"]
-        B1[v1: ptr -> 堆缓冲X] -->|copy ctor| B2[v2: ptr -> 堆缓冲Y]
+        B1[v1: ptr -> 堆缓冲X] -->|"copy ctor"| B2[v2: ptr -> 堆缓冲Y]
         B1c[v1 仍持有 X]
     end
 ```
@@ -1110,12 +1110,12 @@ graph LR
 flowchart TD
     S[容量满, 需扩容] --> N[分配新缓冲 new_cap]
     N --> T{元素移动构造 noexcept?}
-    T -->|是| M[move 旧元素到新缓冲, O1 指针]
-    T -->|否| C[copy 旧元素到新缓冲]
+    T -->|"是"| M[move 旧元素到新缓冲, O1 指针]
+    T -->|"否"| C[copy 旧元素到新缓冲]
     M --> OK{全部成功?}
     C --> OK
-    OK -->|是| D[释放旧缓冲, commit]
-    OK -->|抛异常| R[旧缓冲仍完整, rollback, 析构新缓冲, 抛回]
+    OK -->|"是"| D[释放旧缓冲, commit]
+    OK -->|"抛异常"| R[旧缓冲仍完整, rollback, 析构新缓冲, 抛回]
     R --> G[强异常保证: 调用方状态不变]
 ```
 
@@ -1220,24 +1220,24 @@ flowchart TD
     M{"默认成员初始化?"}
     N["在类内给默认成员初始化器"]
     Z["决策完成"]
-    A -->|是| C
-    A -->|否| B
-    B -->|是| C
-    B -->|否| D
+    A -->|"是"| C
+    A -->|"否"| B
+    B -->|"是"| C
+    B -->|"否"| D
     C --> E
-    E -->|是| F
-    E -->|否| Z
+    E -->|"是"| F
+    E -->|"否"| Z
     D --> Z
     F --> Z
     C --> G
-    G -->|是| H
-    G -->|否| I
+    G -->|"是"| H
+    G -->|"否"| I
     H --> I
-    I -->|是| J
-    I -->|否| K
+    I -->|"是"| J
+    I -->|"否"| K
     J --> Z
-    K -->|是| L
-    K -->|否| M
+    K -->|"是"| L
+    K -->|"否"| M
     L --> Z
     M --> Z
 ```

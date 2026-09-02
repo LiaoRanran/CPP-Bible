@@ -2433,16 +2433,16 @@ std::pmr::vector<Packet> v{&res};    // vector 内存全部来自池, 零系统�
 ```mermaid
 flowchart TD
     START["频繁分配同尺寸对象?"] --> D1{"分配尺寸固定或有限档?"}
-    D1 -->|是| FIX["固定尺寸池: 自由链表"]
-    D1 -->|否| D2{"热点路径需低延迟?"}
-    D2 -->|是| LOW["线程本地池 无锁"]
-    D2 -->|否| D3{"跨线程分配?"}
-    D3 -->|是| TL["thread-local 池避免竞争"]
-    D3 -->|否| D4{"标准容器适用?"}
-    D4 -->|是| ALLOC["自定义 std::allocator 接入"]
-    D4 -->|否| D5{"通用不规则分配?"}
-    D5 -->|是| MALLOC["回退 malloc/free"]
-    D5 -->|否| FRAG["碎片 缓存未命中风险"]
+    D1 -->|"是"| FIX["固定尺寸池: 自由链表"]
+    D1 -->|"否"| D2{"热点路径需低延迟?"}
+    D2 -->|"是"| LOW["线程本地池 无锁"]
+    D2 -->|"否"| D3{"跨线程分配?"}
+    D3 -->|"是"| TL["thread-local 池避免竞争"]
+    D3 -->|"否"| D4{"标准容器适用?"}
+    D4 -->|"是"| ALLOC["自定义 std::allocator 接入"]
+    D4 -->|"否"| D5{"通用不规则分配?"}
+    D5 -->|"是"| MALLOC["回退 malloc/free"]
+    D5 -->|"否"| FRAG["碎片 缓存未命中风险"]
     MALLOC --> FRAG
     FRAG --> FALLBACK["降级: 直接用全局 new"]
     FALLBACK -->|"先测再重构"| D1

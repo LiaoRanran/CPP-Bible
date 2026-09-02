@@ -1627,18 +1627,18 @@ flowchart TD
 ```mermaid
 flowchart TD
     A["需要操作区间 [first, last)"] --> B{"是否修改原区间元素?"}
-    B -->|否 只读| C{"是否需要查找/定位?"}
-    B -->|是 修改| D{"结果是否需要有序?"}
-    C -->|是| C1["find / binary_search (查找族 ch97)"]
-    C -->|否 计数谓词| C2["count / all_of / for_each"]
-    D -->|是| D1["sort 族 (排序 ch96)"]
-    D -->|否 仅变换| E{"原地改还是写新区间?"}
-    E -->|原地| E1["transform (in-place)"]
-    E -->|新区间| E2["copy / transform 到输出迭代器"]
+    B -->|"否 只读"| C{"是否需要查找/定位?"}
+    B -->|"是 修改"| D{"结果是否需要有序?"}
+    C -->|"是"| C1["find / binary_search (查找族 ch97)"]
+    C -->|"否 计数谓词"| C2["count / all_of / for_each"]
+    D -->|"是"| D1["sort 族 (排序 ch96)"]
+    D -->|"否 仅变换"| E{"原地改还是写新区间?"}
+    E -->|"原地"| E1["transform (in-place)"]
+    E -->|"新区间"| E2["copy / transform 到输出迭代器"]
     A --> F{"需要堆/优先队列语义?"}
-    F -->|是| F1["heap 族 (堆 ch98)"]
+    F -->|"是"| F1["heap 族 (堆 ch98)"]
     A --> G{"需要数值归约/扫描?"}
-    G -->|是| G1["numeric 族 (数值 ch99)"]
+    G -->|"是"| G1["numeric 族 (数值 ch99)"]
     C1 --> X["落地: 选族并断言迭代器/比较器前置"]
     C2 --> X
     D1 --> X

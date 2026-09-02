@@ -101,11 +101,11 @@ flowchart TD
 ```mermaid
 flowchart TD
     A["push_front(x)"] --> B{"cur == first?"}
-    B -->|否| C["--cur; 构造 *cur=x"]
-    B -->|是| D[需新 buffer]
+    B -->|"否"| C["--cur; 构造 *cur=x"]
+    B -->|"是"| D[需新 buffer]
     D --> E{"map 前端有空位?"}
-    E -->|是| F["取 map 前一槽, 分配 buffer"]
-    E -->|否| G[_M_reallocate_map 扩容中控]
+    E -->|"是"| F["取 map 前一槽, 分配 buffer"]
+    E -->|"否"| G[_M_reallocate_map 扩容中控]
     F --> H["cur=新buffer尾, 构造 x"]
     G --> H
     H --> I["完成, 均摊 O(1)"]
@@ -206,8 +206,8 @@ flowchart TD
     A["访问 d[k]"] --> B["_M_start 迭代器 + k"]
     B -->|"operator+=(k)（行号：232）"| C["__offset = k + (_M_cur - _M_first) // 当前 buffer 内偏移 + k"]
     C --> D{"__offset 在 [0, buffer_size)?"}
-    D -->|是| E["_M_cur += k // 同段内，直接偏移"]
-    D -->|否| F["__node_offset = 跨段数(除法) // offset / buffer_size"]
+    D -->|"是"| E["_M_cur += k // 同段内，直接偏移"]
+    D -->|"否"| F["__node_offset = 跨段数(除法) // offset / buffer_size"]
     F --> G["_M_set_node(_M_node + __node_offset) // 跳 map"]
     G --> H["_M_cur = _M_first + (offset % buffer_size) // 段内取模定位"]
     E --> R["返回 *_M_cur"]

@@ -1202,16 +1202,16 @@ int main() {
 ```mermaid
 flowchart TD
     A["需要动态优先队列 / 流式 top-k"] --> B{"用容器适配器还是裸堆算法?"}
-    B -->|容器适配器| B1["std::priority_queue (push/pop/top)"]
-    B -->|裸堆算法| C{"区间是否已经建堆?"}
-    C -->|否| C1["make_heap 先建堆"]
-    C -->|是| D{"主要操作是插入?"}
-    D -->|是 插入| D1["push_heap 后再 push_back"]
-    D -->|否 取最大| E{"取走堆顶?"}
-    E -->|是| E1["pop_heap 再 pop_back"]
-    E -->|否 全排序| F["sort_heap O(n log n)"]
+    B -->|"容器适配器"| B1["std::priority_queue (push/pop/top)"]
+    B -->|"裸堆算法"| C{"区间是否已经建堆?"}
+    C -->|"否"| C1["make_heap 先建堆"]
+    C -->|"是"| D{"主要操作是插入?"}
+    D -->|"是 插入"| D1["push_heap 后再 push_back"]
+    D -->|"否 取最大"| E{"取走堆顶?"}
+    E -->|"是"| E1["pop_heap 再 pop_back"]
+    E -->|"否 全排序"| F["sort_heap O(n log n)"]
     A --> G{"需要最小堆?"}
-    G -->|是| G1["greater<> 比较器 或 取负得最小堆"]
+    G -->|"是"| G1["greater<> 比较器 或 取负得最小堆"]
     H["比较器 Comp 严格弱序"] --> B1
     H --> C1
     H --> D1

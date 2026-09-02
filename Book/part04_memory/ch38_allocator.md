@@ -2193,25 +2193,25 @@ flowchart TD
 ```mermaid
 flowchart TD
     A["容器需分配内存"] --> B{"是否标准容器<br>默认即可?"}
-    B -->|是| C["用 std::allocator<br>默认分配器"]
-    B -->|否| D{"是否需共享<br>同一内存资源?"}
-    D -->|是| E["用 pmr::polymorphic_allocator<br>+ memory_resource"]
-    D -->|否| F{"是否需定制<br>分配策略?"}
-    F -->|是| G["自定义 Allocator<br>满足要件"]
-    F -->|否| C
+    B -->|"是"| C["用 std::allocator<br>默认分配器"]
+    B -->|"否"| D{"是否需共享<br>同一内存资源?"}
+    D -->|"是"| E["用 pmr::polymorphic_allocator<br>+ memory_resource"]
+    D -->|"否"| F{"是否需定制<br>分配策略?"}
+    F -->|"是"| G["自定义 Allocator<br>满足要件"]
+    F -->|"否"| C
     G --> H{"是否需要为<br>不同 T 分配?"}
     E --> H
     C --> H
-    H -->|是| I["提供 rebind 或<br>allocator_traits 推导"]
-    H -->|否| J["单类型分配即可"]
+    H -->|"是"| I["提供 rebind 或<br>allocator_traits 推导"]
+    H -->|"否"| J["单类型分配即可"]
     I --> K{"分配是否可能<br>失败抛异常?"}
     J --> K
-    K -->|是| L["捕获异常或<br>noexcept 分支"]
-    K -->|否| M["正常返回内存"]
+    K -->|"是"| L["捕获异常或<br>noexcept 分支"]
+    K -->|"否"| M["正常返回内存"]
     L --> N{"是否跨容器<br>传递同一分配器?"}
     M --> N
-    N -->|是| O["确保相等语义<br>propagate_on_container_copy"]
-    N -->|否| P["各容器独立持有"]
+    N -->|"是"| O["确保相等语义<br>propagate_on_container_copy"]
+    N -->|"否"| P["各容器独立持有"]
     O --> Q["完成：分配策略一致"]
     P --> Q
     Q --> B

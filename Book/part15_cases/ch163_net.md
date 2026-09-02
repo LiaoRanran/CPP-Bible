@@ -217,11 +217,11 @@ int main() {
 
 ```mermaid
 flowchart TD
-  C1["CLOSED"] -->|bind| B["BOUND"]
-  B -->|listen| L["LISTEN"]
-  L -->|accept()| E["ESTABLISHED"]
-  E <-->|recv/send| R["回显循环"]
-  E -->|recv==0 (对方关闭)| C2["CLOSED (closesocket)"]
+  C1["CLOSED"] -->|"bind"| B["BOUND"]
+  B -->|"listen"| L["LISTEN"]
+  L -->|"accept()"| E["ESTABLISHED"]
+  E <-->|"recv/send"| R["回显循环"]
+  E -->|"recv==0 (对方关闭)"| C2["CLOSED (closesocket)"]
 ```
 
 ```text
@@ -1437,26 +1437,26 @@ flowchart TD
   A["socket 创建端点"] --> B["bind 加 listen SO_REUSEADDR"]
   B --> ACC["accept 等待连接"]
   ACC --> N{"阻塞 或 非阻塞?"}
-  N -->|阻塞| T1["一连接一线程 或 线程池 ch159"]
-  N -->|非阻塞| MUX{"多路复用?"}
-  MUX -->|select poll| SL["O(n) 轮询"]
-  MUX -->|epoll kqueue| EP["O(1) 事件就绪"]
-  MUX -->|io_uring| IU["共享环 零拷贝"]
+  N -->|"阻塞"| T1["一连接一线程 或 线程池 ch159"]
+  N -->|"非阻塞"| MUX{"多路复用?"}
+  MUX -->|"select poll"| SL["O(n) 轮询"]
+  MUX -->|"epoll kqueue"| EP["O(1) 事件就绪"]
+  MUX -->|"io_uring"| IU["共享环 零拷贝"]
   T1 --> RECV["recv 收字节流"]
   SL --> RECV
   EP --> RECV
   IU --> RECV
   RECV --> FR{"如何定界消息?"}
-  FR -->|长度前缀| LP["4B 大端 加 payload"]
-  FR -->|分隔符| DL["按换行符 切分"]
+  FR -->|"长度前缀"| LP["4B 大端 加 payload"]
+  FR -->|"分隔符"| DL["按换行符 切分"]
   LP --> PARSE["JSON 解析 ch162"]
   DL --> PARSE
   PARSE --> H{"处理完毕?"}
-  H -->|否| RECV
-  H -->|是| SND["send 回显 或 响应"]
+  H -->|"否"| RECV
+  H -->|"是"| SND["send 回显 或 响应"]
   SND --> C{"对端关闭 recv 等于 0?"}
-  C -->|是| CL["closesocket 释放 fd"]
-  C -->|否| RECV
+  C -->|"是"| CL["closesocket 释放 fd"]
+  C -->|"否"| RECV
   CL --> RAII["Socket RAII 析构即关闭"]
 ```
 

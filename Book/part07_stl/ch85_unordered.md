@@ -1624,20 +1624,20 @@ int main() {
 ```mermaid
 flowchart TD
     A["需求:哈希关联容器"] --> D1{"自定义类型作 key?"}
-    D1 -->|是| D2{"是否提供良好 hash / eq?"}
-    D1 -->|否 内建类型| F1["直接用 unordered_map / set"]
-    D2 -->|否| G1["实现 hash + == 避免碰撞攻击"]
-    D2 -->|是| G2["提供 std::hash 特化"]
+    D1 -->|"是"| D2{"是否提供良好 hash / eq?"}
+    D1 -->|"否 内建类型"| F1["直接用 unordered_map / set"]
+    D2 -->|"否"| G1["实现 hash + == 避免碰撞攻击"]
+    D2 -->|"是"| G2["提供 std::hash 特化"]
     F1 --> D3{"负载因子是否接近上限?"}
-    D3 -->|是| H1["reserve / rehash 预扩容"]
-    D3 -->|否| H2["保持低负载因子"]
+    D3 -->|"是"| H1["reserve / rehash 预扩容"]
+    D3 -->|"否"| H2["保持低负载因子"]
     G2 --> D3
     H1 --> D4{"插入触发 rehash 尖峰?"}
-    D4 -->|是| I1["预 reserve 或改 map / flat"]
-    D4 -->|否| I2["unordered 均摊 O(1)"]
+    D4 -->|"是"| I1["预 reserve 或改 map / flat"]
+    D4 -->|"否"| I2["unordered 均摊 O(1)"]
     H2 --> D5{"需要有序遍历?"}
-    D5 -->|是| J1["改 std::map 有序"]
-    D5 -->|否| J2["unordered 满足"]
+    D5 -->|"是"| J1["改 std::map 有序"]
+    D5 -->|"否"| J2["unordered 满足"]
     G1 --> Z["结论:低负载+好 hash 用 unordered"]
     I1 --> Z
     I2 --> Z

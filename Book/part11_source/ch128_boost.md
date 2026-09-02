@@ -1184,19 +1184,19 @@ int main(){
 ```mermaid
 flowchart TD
     S0["项目需引入第三方 C++ 库能力"] --> D1{"所需能力是否已进标准库?"}
-    D1 -->|是| A1["优先使用 std 等价组件"]
-    D1 -->|否| D2{"是否为头文件仅依赖库?"}
-    D2 -->|是| A2["引入 Boost.HeaderOnly 组件"]
-    D2 -->|否| A3["评估需要编译的 Boost 库"]
+    D1 -->|"是"| A1["优先使用 std 等价组件"]
+    D1 -->|"否"| D2{"是否为头文件仅依赖库?"}
+    D2 -->|"是"| A2["引入 Boost.HeaderOnly 组件"]
+    D2 -->|"否"| A3["评估需要编译的 Boost 库"]
     A2 --> D3{"是否担心编译时间与二进制尺寸?"}
     A3 --> D3
-    D3 -->|是| B1["裁剪 Boost 并禁用不需要模块"]
-    D3 -->|否| B2["全量引入所需 Boost 库"]
+    D3 -->|"是"| B1["裁剪 Boost 并禁用不需要模块"]
+    D3 -->|"否"| B2["全量引入所需 Boost 库"]
     B1 --> C1["核对 Boost 版本与 C++ 标准"]
     B2 --> C1
     C1 --> D4{"是否需序列化 / 协程 / 计算几何?"}
-    D4 -->|是| E1["引入 Boost.Serialization / Coroutine / Geometry"]
-    D4 -->|否| E2["仅引入算法 / 容器增强"]
+    D4 -->|"是"| E1["引入 Boost.Serialization / Coroutine / Geometry"]
+    D4 -->|"否"| E2["仅引入算法 / 容器增强"]
     E1 --> F1["对接 Boost.Build 或 CMake Fetch"]
     E2 --> F2["直接包含头文件"]
     F1 --> G1["在标准库成熟后制定迁移路线"]

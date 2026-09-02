@@ -1132,16 +1132,16 @@ int main() { return 0; }
 ```mermaid
 flowchart TD
     S0["项目需选型 C++ 标准库实现"] --> D1{"目标平台含 Apple / LLVM 生态?"}
-    D1 -->|是| A1["采用 libc++ 为默认标准库"]
-    D1 -->|否| D2{"是否要求与 system libstdc++ 二进制共存?"}
-    D2 -->|是| A2["保留 libstdc++ 并隔离 ABI"]
-    D2 -->|否| D3{"是否需前沿 C++ 特性 / 模块支持?"}
-    D3 -->|是| A3["采用 libc++ 并启用 -stdlib=libc++"]
-    D3 -->|否| A4["沿用供应商默认标准库"]
+    D1 -->|"是"| A1["采用 libc++ 为默认标准库"]
+    D1 -->|"否"| D2{"是否要求与 system libstdc++ 二进制共存?"}
+    D2 -->|"是"| A2["保留 libstdc++ 并隔离 ABI"]
+    D2 -->|"否"| D3{"是否需前沿 C++ 特性 / 模块支持?"}
+    D3 -->|"是"| A3["采用 libc++ 并启用 -stdlib=libc++"]
+    D3 -->|"否"| A4["沿用供应商默认标准库"]
     A1 --> D4{"是否启用 libc++ 模块 / 并行 STL?"}
     A3 --> D4
-    D4 -->|模块优先| B1["开启 C++20 Modules 与 <module> 实验"]
-    D4 -->|并行优先| B2["启用 -fexperimental-library + 并行算法后端"]
+    D4 -->|"模块优先"| B1["开启 C++20 Modules 与 <module> 实验"]
+    D4 -->|"并行优先"| B2["启用 -fexperimental-library + 并行算法后端"]
     B1 --> C1["核对 __config 宏与 _LIBCPP_VERSION"]
     B2 --> C1
     A2 --> C2["用 inline namespace 隔离 ABI 版本"]

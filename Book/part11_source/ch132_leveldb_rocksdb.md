@@ -1592,20 +1592,20 @@ int main() {
 ```mermaid
 flowchart TD
     S0["项目需嵌入式 KV 存储"] --> D1{"写吞吐优先还是读优先?"}
-    D1 -->|写优先| A1["选 LSM 引擎 LevelDB/RocksDB"]
-    D1 -->|读优先| A2["评估 B+Tree 类引擎"]
+    D1 -->|"写优先"| A1["选 LSM 引擎 LevelDB/RocksDB"]
+    D1 -->|"读优先"| A2["评估 B+Tree 类引擎"]
     A1 --> D2{"是否需要丰富可调参数?"}
     A2 --> D2
-    D2 -->|是| B1["选 RocksDB 调参"]
-    D2 -->|否| B2["选 LevelDB 轻量实现"]
+    D2 -->|"是"| B1["选 RocksDB 调参"]
+    D2 -->|"否"| B2["选 LevelDB 轻量实现"]
     B1 --> D3{"是否需要事务 / 合并算子?"}
     B2 --> D3
-    D3 -->|是| C1["RocksDB 事务与 Merge"]
-    D3 -->|否| C2["基础 Put/Get/Delete"]
+    D3 -->|"是"| C1["RocksDB 事务与 Merge"]
+    D3 -->|"否"| C2["基础 Put/Get/Delete"]
     C1 --> D4{"是否旁路压缩加速?"}
     C2 --> D4
-    D4 -->|是| E1["集成 zstd 等压缩"]
-    D4 -->|否| E2["默认压缩策略"]
+    D4 -->|"是"| E1["集成 zstd 等压缩"]
+    D4 -->|"否"| E2["默认压缩策略"]
     E1 --> F1["按 SSTable 分层组织"]
     E2 --> F1
     F1 --> G1["MemTable + WAL 写路径"]

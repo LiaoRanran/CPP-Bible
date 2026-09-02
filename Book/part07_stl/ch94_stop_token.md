@@ -82,10 +82,10 @@ flowchart TD
     tok["stop_token (可拷贝多份)"]
     jt["jthread 构造: 建 stop_source, 把 get_token() 传给 callable; 析构: request_stop() → 所有 stop_callback 被调用 → join()"]
     cb["stop_callback(token, cb) 注册到 _Stop_state: request_stop 时按注册顺序同步执行 cb (释放锁/唤醒)"]
-    src -->|拥有| st
-    src -->|request_stop()| jt
-    st -->|拷贝/共享| tok
-    st -->|st.stop_requested() / st 注入线程函数| jt
+    src -->|"拥有"| st
+    src -->|"request_stop()"| jt
+    st -->|"拷贝/共享"| tok
+    st -->|"st.stop_requested() / st 注入线程函数"| jt
     jt --> cb
 ```
 
@@ -100,9 +100,9 @@ flowchart TD
     A[主线程创建 jthread] --> B[jthread 内部建 stop_source]
     B --> C[stop_token 注入线程函数]
     C --> D["工作线程循环: stop_requested?"]
-    D -->|否| E["干活 / 等待"]
+    D -->|"否"| E["干活 / 等待"]
     E --> D
-    D -->|是| F[清理并退出]
+    D -->|"是"| F[清理并退出]
     G["jthread 析构 / 手动 request_stop"] --> H[request_stop 置位原子]
     H --> I[按序同步调用所有 stop_callback]
     I --> J[唤醒 condition_variable_any]
@@ -163,8 +163,8 @@ flowchart LR
         st["_Stop_state (堆): _M_value : atomic<uint32_t>; bit0 = stop_possible (可取消?); bit1 = stop_requested (已请求?); _M_head : _Stop_cb*"]
         cblist["[cb0] -> [cb1] -> [cb2] -> nullptr: each: _M_callback + _M_next/_M_prev"]
     end
-    src -->|shared_ptr| st
-    tok -->|shared_ptr| st
+    src -->|"shared_ptr"| st
+    tok -->|"shared_ptr"| st
     st --> cblist
     %% 多个 stop_token 可拷贝, 均指向同一 _Stop_state；request_stop(): 置 bit1 (release), 然后遍历链表同步调用各 _M_callback
 ```
@@ -215,11 +215,11 @@ flowchart LR
     subgraph S4 [stop_callback]
         cb["stop_callback"]
     end
-    main -->|request_stop()| st
-    st -->|遍历链表: 调用 operator() (唤醒 cv_any)| cb
-    cb -->|返回| st
-    main -->|join(): 检查点看到停止| wt
-    wt -->|退出循环 / join 返回| main
+    main -->|"request_stop()"| st
+    st -->|"遍历链表: 调用 operator() (唤醒 cv_any)"| cb
+    cb -->|"返回"| st
+    main -->|"join(): 检查点看到停止"| wt
+    wt -->|"退出循环 / join 返回"| main
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 时序图：stopcallback 在

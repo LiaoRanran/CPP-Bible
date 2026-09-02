@@ -1325,19 +1325,19 @@ int main() {
 ```mermaid
 flowchart TD
     A["查找需求: 在集合中定位 key"] --> B{"区间已排序?"}
-    B -->|否 但需要二分| BS["若需二分先 std::sort 再走二分"]
-    B -->|是| C{"需要精确命中 key 还是范围?"}
-    C -->|精确命中| C1["binary_search 或 lower_bound+== 检查"]
-    C -->|范围| C2["lower_bound/upper_bound/equal_range 取子区间"]
-    B -->|否 不想排序| D{"是否允许额外空间建索引?"}
-    D -->|是 哈希| D1["unordered_set/map 哈希查找 O(1) 均摊"]
-    D -->|是 有序容器| D2["set/map 有序容器 O(log n)"]
-    D -->|否| E{"是子串/模式匹配?"}
-    E -->|是| E1["std::search / Boyer-Moore"]
-    E -->|否| F["std::find 线性 O(n)"]
+    B -->|"否 但需要二分"| BS["若需二分先 std::sort 再走二分"]
+    B -->|"是"| C{"需要精确命中 key 还是范围?"}
+    C -->|"精确命中"| C1["binary_search 或 lower_bound+== 检查"]
+    C -->|"范围"| C2["lower_bound/upper_bound/equal_range 取子区间"]
+    B -->|"否 不想排序"| D{"是否允许额外空间建索引?"}
+    D -->|"是 哈希"| D1["unordered_set/map 哈希查找 O(1) 均摊"]
+    D -->|"是 有序容器"| D2["set/map 有序容器 O(log n)"]
+    D -->|"否"| E{"是子串/模式匹配?"}
+    E -->|"是"| E1["std::search / Boyer-Moore"]
+    E -->|"否"| F["std::find 线性 O(n)"]
     F --> G{"区间极大且只读一次?"}
-    G -->|是| H["并行 std::find(std::execution::par)"]
-    G -->|否| Fend["std::find 单线程"]
+    G -->|"是"| H["并行 std::find(std::execution::par)"]
+    G -->|"否"| Fend["std::find 单线程"]
     BS --> C
     C1 --> X["落地: 选算法并断言前置不变量"]
     C2 --> X

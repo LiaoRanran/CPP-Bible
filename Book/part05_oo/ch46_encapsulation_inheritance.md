@@ -1936,16 +1936,16 @@ int main() { Shape* s = new Circle; s->draw(); }
 ```mermaid
 flowchart TD
     START["类间需复用行为?"] --> D1{"是 is-a 关系?"}
-    D1 -->|是| PUB["public 继承 接口契约"]
-    D1 -->|否| D2{"仅复用实现?"}
-    D2 -->|是| COMP["组合 成员委托"]
-    D2 -->|否| D3{"需改写行为?"}
-    D3 -->|是| VIRT["虚函数 override"]
-    D3 -->|否| D4{"基类接口稳定?"}
-    D4 -->|是| BASE["抽象基类 保护成员"]
-    D4 -->|否| D5{"需访问控制?"}
-    D5 -->|是| PRIV["private/protected 封装"]
-    D5 -->|否| LEAK["过度暴露 脆弱耦合"]
+    D1 -->|"是"| PUB["public 继承 接口契约"]
+    D1 -->|"否"| D2{"仅复用实现?"}
+    D2 -->|"是"| COMP["组合 成员委托"]
+    D2 -->|"否"| D3{"需改写行为?"}
+    D3 -->|"是"| VIRT["虚函数 override"]
+    D3 -->|"否"| D4{"基类接口稳定?"}
+    D4 -->|"是"| BASE["抽象基类 保护成员"]
+    D4 -->|"否"| D5{"需访问控制?"}
+    D5 -->|"是"| PRIV["private/protected 封装"]
+    D5 -->|"否"| LEAK["过度暴露 脆弱耦合"]
     LEAK --> FALLBACK["降级: 友元最小暴露"]
     FALLBACK -->|"收紧接口"| D5
 ```

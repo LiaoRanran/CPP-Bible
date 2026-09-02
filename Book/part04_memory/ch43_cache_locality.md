@@ -283,12 +283,12 @@ flowchart TD
     M["M (Modified 修改)"]
     S["S (Shared 共享)"]
     I["I (Invalid 无效)"]
-    E -->|PrRd (独占到共享)| S
-    S -->|PrWr (改=Modified)| M
-    S -->|BusRd (他人读)| E
-    M -->|BusRdX (他人写)| I
-    S -->|BusUpgr (他人要写)| I
-    I -.->|PrRd/PrWr (行无效, 降级为 Invalid)| E
+    E -->|"PrRd (独占到共享)"| S
+    S -->|"PrWr (改=Modified)"| M
+    S -->|"BusRd (他人读)"| E
+    M -->|"BusRdX (他人写)"| I
+    S -->|"BusUpgr (他人要写)"| I
+    I -.->|"PrRd/PrWr (行无效, 降级为 Invalid)"| E
     %% 注：省略部分细节（状态机内部双向箭头与总线事务）；事件缩写: PrRd=本处理器读, PrWr=本处理器写, BusRd=总线收到他人读, BusRdX=他人读并独占写(Read-For-Ownership), BusUpgr=总线升级为写(Shared→Invalid 他人)
 ```
 
@@ -2041,29 +2041,29 @@ flowchart TD
     N{"指针追逐 linked list 热路径?"}
     O["改数组索引 / 分块 (cache blocking)"]
     Z["决策完成"]
-    A -->|否| D
-    A -->|是| B
-    B -->|是| Z
-    B -->|否| C
+    A -->|"否"| D
+    A -->|"是"| B
+    B -->|"是"| Z
+    B -->|"否"| C
     C --> Z
-    D -->|否| F
-    D -->|是| E
+    D -->|"否"| F
+    D -->|"是"| E
     E --> Z
-    F -->|否| I
-    F -->|是| G
-    G -->|是| H
-    G -->|否| I
+    F -->|"否"| I
+    F -->|"是"| G
+    G -->|"是"| H
+    G -->|"否"| I
     H --> Z
-    I -->|否| L
-    I -->|是| J
-    J -->|是| K
-    J -->|否| L
+    I -->|"否"| L
+    I -->|"是"| J
+    J -->|"是"| K
+    J -->|"否"| L
     K --> Z
-    L -->|否| N
-    L -->|是| M
+    L -->|"否"| N
+    L -->|"是"| M
     M --> Z
-    N -->|否| Z
-    N -->|是| O
+    N -->|"否"| Z
+    N -->|"是"| O
     O --> Z
 ```
 

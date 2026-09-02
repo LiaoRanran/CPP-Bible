@@ -1054,21 +1054,21 @@ flowchart TD
   DONE["审查结论: 批准 / 打回"]
 
   START --> Q1
-  Q1 -->|小| S1
-  Q1 -->|大| BIG
+  Q1 -->|"小"| S1
+  Q1 -->|"大"| BIG
   S1 --> Q2
   BIG --> Q2
-  Q2 -->|否| STD
-  Q2 -->|是| Q3
-  Q3 -->|否| STD
-  Q3 -->|是| SEC
+  Q2 -->|"否"| STD
+  Q2 -->|"是"| Q3
+  Q3 -->|"否"| STD
+  Q3 -->|"是"| SEC
   STD --> Q4
   SEC --> Q4
-  Q4 -->|否| Q5
-  Q4 -->|是| API
+  Q4 -->|"否"| Q5
+  Q4 -->|"是"| API
   API --> Q5
-  Q5 -->|否| AUTO
-  Q5 -->|是| CONC
+  Q5 -->|"否"| AUTO
+  Q5 -->|"是"| CONC
   CONC --> AUTO
   AUTO --> DONE
 ```

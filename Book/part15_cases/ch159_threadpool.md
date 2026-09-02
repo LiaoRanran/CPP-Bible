@@ -1301,22 +1301,22 @@ int main() {
 ```mermaid
 flowchart TD
   S["submit task 调用方投递"] --> Q{"队列空 且 stop_?"}
-  Q -->|否 入队| P["push 到 TaskQueue"]
+  Q -->|"否 入队"| P["push 到 TaskQueue"]
   P --> N["cv notify_one 唤醒一个 worker"]
   N --> W["worker 循环 cv wait 被唤醒"]
   W --> D{"stop load 且 队列空?"}
-  D -->|是| X["worker 退出 return"]
-  D -->|否| G["pop 取任务 谓词防虚假唤醒"]
+  D -->|"是"| X["worker 退出 return"]
+  D -->|"否"| G["pop 取任务 谓词防虚假唤醒"]
   G --> E{"任务内抛异常?"}
-  E -->|是| F["packaged_task 捕获 存入 future"]
-  E -->|否| R["直接执行任务"]
+  E -->|"是"| F["packaged_task 捕获 存入 future"]
+  E -->|"否"| R["直接执行任务"]
   F --> C["调用方 future get 取结果或异常"]
   R --> C
   C --> S2{"submit 时 stop_?"}
-  S2 -->|是| ERR["抛 runtime_error 拒绝提交"]
-  S2 -->|否| OK["入队成功 返回 future"]
-  N -.->|高竞争| LS["work-stealing 从其他 worker 偷任务"]
-  D -.->|无锁队列| L["CAS enqueue dequeue lock-free"]
+  S2 -->|"是"| ERR["抛 runtime_error 拒绝提交"]
+  S2 -->|"否"| OK["入队成功 返回 future"]
+  N -.->|"高竞争"| LS["work-stealing 从其他 worker 偷任务"]
+  D -.->|"无锁队列"| L["CAS enqueue dequeue lock-free"]
 ```
 
 > 决策流说明：submit 与 worker 唤醒之间是「与」关系——只有 stop_ 为假「且」队列非空才真正取任务执行；异常分支与正常分支在 future.get 处「或」汇合（任务内抛错由 packaged_task 捕获转发，否则直接返回结果）。跨章外推：无锁路径依赖第107章 atomic 与第110章 lock-free，停止语义外推第94章 stop_token。

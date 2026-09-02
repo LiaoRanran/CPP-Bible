@@ -1762,18 +1762,18 @@ flowchart TD
   REP["报告 + 可视化"]
   CI["接入 CI 回归 (ch149)"]
   START --> Q1
-  Q1 -->|否| GUARD
+  Q1 -->|"否"| GUARD
   GUARD --> Q1
-  Q1 -->|是| Q2
-  Q2 -->|否| WARM
+  Q1 -->|"是"| Q2
+  Q2 -->|"否"| WARM
   WARM --> Q2
-  Q2 -->|是| Q3
-  Q3 -->|否| RUN
+  Q2 -->|"是"| Q3
+  Q3 -->|"否"| RUN
   RUN --> Q3
-  Q3 -->|是| STAT
+  Q3 -->|"是"| STAT
   STAT --> DCE
-  DCE -->|未消除| GUARD
-  DCE -->|已消除| REP
+  DCE -->|"未消除"| GUARD
+  DCE -->|"已消除"| REP
   REP --> CI
 ```
 
@@ -1872,22 +1872,22 @@ flowchart TD
   DONE["测量方案确定"]
 
   START --> Q1
-  Q1 -->|微| MICRO
-  Q1 -->|宏| MACRO
+  Q1 -->|"微"| MICRO
+  Q1 -->|"宏"| MACRO
   MICRO --> Q2
   MACRO --> Q2
-  Q2 -->|是| PERF
-  Q2 -->|否| Q3
+  Q2 -->|"是"| PERF
+  Q2 -->|"否"| Q3
   PERF --> Q3
-  Q3 -->|小| GB
-  Q3 -->|大| CUST
+  Q3 -->|"小"| GB
+  Q3 -->|"大"| CUST
   GB --> Q4
   CUST --> Q4
-  Q4 -->|是| Q5
-  Q4 -->|否| ISO
+  Q4 -->|"是"| Q5
+  Q4 -->|"否"| ISO
   ISO --> Q5
-  Q5 -->|否| STAT
-  Q5 -->|是| REP
+  Q5 -->|"否"| STAT
+  Q5 -->|"是"| REP
   STAT --> REP
   REP --> DONE
 ```

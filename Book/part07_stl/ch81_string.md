@@ -1156,16 +1156,16 @@ int main() {
 ```mermaid
 flowchart TD
     A["需求:处理文本字符串"] --> D1{"需要拥有并修改字符串?"}
-    D1 -->|否 只读查看| D2{"生命周期是否确定覆盖使用?"}
-    D1 -->|是| D3{"字符串长度通常超过 SSO 阈值?"}
-    D2 -->|是| F1["std::string_view 零拷贝"]
-    D2 -->|否| F2["std::string 持有副本"]
-    D3 -->|否 短串| F3["std::string SSO 栈内联"]
-    D3 -->|是 长串| F4["std::string 堆分配"]
+    D1 -->|"否 只读查看"| D2{"生命周期是否确定覆盖使用?"}
+    D1 -->|"是"| D3{"字符串长度通常超过 SSO 阈值?"}
+    D2 -->|"是"| F1["std::string_view 零拷贝"]
+    D2 -->|"否"| F2["std::string 持有副本"]
+    D3 -->|"否 短串"| F3["std::string SSO 栈内联"]
+    D3 -->|"是 长串"| F4["std::string 堆分配"]
     F3 --> D4{"拼接多个串?"}
     F4 --> D4
-    D4 -->|是| G1["先 reserve 再 += / append"]
-    D4 -->|否| G2["直接构造 / operator+"]
+    D4 -->|"是"| G1["先 reserve 再 += / append"]
+    D4 -->|"否"| G2["直接构造 / operator+"]
     F1 --> Z["结论:只读用 view,拥有用 string"]
     F2 --> Z
     F3 --> Z

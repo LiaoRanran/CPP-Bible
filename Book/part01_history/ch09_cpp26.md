@@ -196,8 +196,8 @@ int main() { ex9(); return 0; }   // 输出 sorted: 1 2
 theme: neutral
 ---
 flowchart LR
-    S[Sender] -->|then| T[Transform]
-    T -->|via Scheduler| R[Receiver 结果]
+    S[Sender] -->|"then"| T[Transform]
+    T -->|"via Scheduler"| R[Receiver 结果]
     R --> C[continuation]
 ```
 
@@ -866,13 +866,13 @@ flowchart TD
   N1 --> N6
   N1 --> N7
   N2 --> N8
-  N8 -->|是| N9
+  N8 -->|"是"| N9
   N3 --> N10
-  N10 -->|是| N11
+  N10 -->|"是"| N11
   N4 --> N12
-  N12 -->|是| N13
+  N12 -->|"是"| N13
   N6 --> N14
-  N14 -->|是| N15
+  N14 -->|"是"| N15
   N1 --> N16
 ```
 

@@ -94,13 +94,13 @@ Ranges 常被当成"更简洁的 for 循环 / 算法语法糖"，但它**真正�
 
 ```mermaid
 flowchart LR
-    A[源 range v] -->|v：views::filter| B[filter_view]
-    B -->|...：views::transform| C[transform_view]
-    C -->|...：views::take| D[take_view]
-    D -->|for 循环迭代| E{逐元素驱动}
-    E -->|第1次| F1[filter 拉取直到命中]
-    E -->|第2次| F2[transform 作用于命中元素]
-    E -->|到达n| STOP("[停止, 不触碰剩余元素]")
+    A[源 range v] -->|"v：views::filter"| B[filter_view]
+    B -->|"...：views::transform"| C[transform_view]
+    C -->|"...：views::take"| D[take_view]
+    D -->|"for 循环迭代"| E{逐元素驱动}
+    E -->|"第1次"| F1[filter 拉取直到命中]
+    E -->|"第2次"| F2[transform 作用于命中元素]
+    E -->|"到达n"| STOP("[停止, 不触碰剩余元素]")
     style E fill:#ffe,stroke:#a00
 ```
 
@@ -1148,10 +1148,10 @@ unsigned long long bench_eager(const vector<int>& v) {
 ```mermaid
 flowchart TD
     A["对序列做多步变换/过滤?"] --> B{"末端是否只需<br/>单次消费(累加/查找/拷贝)?"}
-    B -->|是| C["用 views 惰性管道<br/>filter|transform|消费<br/>零开销≈手写"]
-    B -->|否 需多次遍历<br/>或随机访问| D{"中间结果<br/>必须复用?"}
-    D -->|是| E["先 ranges 生成<br/>再一次性 collect 到 vector<br/>(仅一次物化)"]
-    D -->|否| F["避免 ranges<br/>直接手写循环更直观"]
+    B -->|"是"| C["用 views 惰性管道<br/>filter|transform|消费<br/>零开销≈手写"]
+    B -->|"否 需多次遍历<br/>或随机访问"| D{"中间结果<br/>必须复用?"}
+    D -->|"是"| E["先 ranges 生成<br/>再一次性 collect 到 vector<br/>(仅一次物化)"]
+    D -->|"否"| F["避免 ranges<br/>直接手写循环更直观"]
     C --> G["忌: 管道中插 collect<br/>→ 退化成贪婪物化 4.5x 慢"]
 ```
 

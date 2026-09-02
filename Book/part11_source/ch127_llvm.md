@@ -966,20 +966,20 @@ int main() { return 0; }
 ```mermaid
 flowchart TD
     S0["项目需引入编译器基础设施 / 工具链"] --> D1{"是否自建 LLVM 工具链?"}
-    D1 -->|是| A1["拉取 LLVM  monorepo 并配置 CMake"]
-    D1 -->|否| D2{"是否仅消费 clang / libc++?"}
-    D2 -->|是| A2["安装发行版 clang + libc++"]
-    D2 -->|否| A3["评估其他前端如 GCC / MSVC"]
+    D1 -->|"是"| A1["拉取 LLVM  monorepo 并配置 CMake"]
+    D1 -->|"否"| D2{"是否仅消费 clang / libc++?"}
+    D2 -->|"是"| A2["安装发行版 clang + libc++"]
+    D2 -->|"否"| A3["评估其他前端如 GCC / MSVC"]
     A1 --> D3{"是否编写自定义 Pass / 后端?"}
     A3 --> D3
-    D3 -->|是| B1["基于 LLVM IR 与 TableGen 开发"]
-    D3 -->|否| B2["仅使用 clang 驱动与 sanitizer"]
+    D3 -->|"是"| B1["基于 LLVM IR 与 TableGen 开发"]
+    D3 -->|"否"| B2["仅使用 clang 驱动与 sanitizer"]
     B1 --> C1["依赖 Support / ADT / 后端库"]
     B2 --> C2["依赖 clang 驱动与运行时"]
     C1 --> D4{"是否联动 libc++ 源码?"}
     C2 --> D4
-    D4 -->|是| E1["并行构建 libc++ 与 LLVM"]
-    D4 -->|否| E2["独立使用 LLVM 库"]
+    D4 -->|"是"| E1["并行构建 libc++ 与 LLVM"]
+    D4 -->|"否"| E2["独立使用 LLVM 库"]
     E1 --> F1["用 LIT 测试驱动验证"]
     E2 --> F2["用单元测试框架验证"]
     F1 --> G1["纳入 CI 门禁与基准"]

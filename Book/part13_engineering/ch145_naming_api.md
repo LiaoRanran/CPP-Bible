@@ -1366,17 +1366,17 @@ flowchart TD
   DOC["Doxygen 注解 + concepts 约束 (ch145⑮)"]
   DONE["发布 API → 进入 ch147 审查 / ch149 CI"]
   START --> Q1
-  Q1 -->|是| PIMPL
-  Q1 -->|否| Q2
+  Q1 -->|"是"| PIMPL
+  Q1 -->|"否"| Q2
   PIMPL --> Q2
-  Q2 -->|是| NOEXC
-  Q2 -->|否| Q3
+  Q2 -->|"是"| NOEXC
+  Q2 -->|"否"| Q3
   NOEXC --> Q3
-  Q3 -->|是| STRONG
-  Q3 -->|否| Q4
+  Q3 -->|"是"| STRONG
+  Q3 -->|"否"| Q4
   STRONG --> Q4
-  Q4 -->|否| DOC
-  Q4 -->|是| DONE
+  Q4 -->|"否"| DOC
+  Q4 -->|"是"| DONE
   DOC --> DONE
 ```
 

@@ -894,9 +894,9 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
   N1 --> N7
   N1 --> N8
   N2 --> N9
-  N9 -->|是| N10
+  N9 -->|"是"| N10
   N5 --> N11
-  N11 -->|是| N12
+  N11 -->|"是"| N12
   N13 --> N14
   N13 --> N15
 ```

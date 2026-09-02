@@ -1364,17 +1364,17 @@ int main() {
 ```mermaid
 flowchart TD
     S0["起点：定义共享 atomic 变量"] --> D1{"需要跨线程同步?"}
-    D1{"需要跨线程同步?"} -->|否| A1["memory_order_relaxed 仅保原子性"]
-    D1{"需要跨线程同步?"} -->|是| D2{"建立发布/订阅 happens-before?"}
-    D2{"建立发布/订阅 happens-before?"} -->|否| A2["relaxed + 显式 fence 兜底"]
-    D2{"建立发布/订阅 happens-before?"} -->|是| D3{"单生产者单消费者?"}
-    D3{"单生产者单消费者?"} -->|是| A3["release / acquire 配对"]
-    D3{"单生产者单消费者?"} -->|否| D4{"多变量需单一全序?"}
-    D4{"多变量需单一全序?"} -->|否| A4["release / acquire 配对同步"]
-    D4{"多变量需单一全序?"} -->|是| A5["memory_order_seq_cst"]
+    D1{"需要跨线程同步?"} -->|"否"| A1["memory_order_relaxed 仅保原子性"]
+    D1{"需要跨线程同步?"} -->|"是"| D2{"建立发布/订阅 happens-before?"}
+    D2{"建立发布/订阅 happens-before?"} -->|"否"| A2["relaxed + 显式 fence 兜底"]
+    D2{"建立发布/订阅 happens-before?"} -->|"是"| D3{"单生产者单消费者?"}
+    D3{"单生产者单消费者?"} -->|"是"| A3["release / acquire 配对"]
+    D3{"单生产者单消费者?"} -->|"否"| D4{"多变量需单一全序?"}
+    D4{"多变量需单一全序?"} -->|"否"| A4["release / acquire 配对同步"]
+    D4{"多变量需单一全序?"} -->|"是"| A5["memory_order_seq_cst"]
     A4 --> D5{"含读-改-写 RMW?"}
-    D5{"含读-改-写 RMW?"} -->|是| A6["memory_order_acq_rel"]
-    D5{"含读-改-写 RMW?"} -->|否| A7["单侧 acquire 或 release"]
+    D5{"含读-改-写 RMW?"} -->|"是"| A6["memory_order_acq_rel"]
+    D5{"含读-改-写 RMW?"} -->|"否"| A7["单侧 acquire 或 release"]
     A1 --> END["结束：序已确定"]
     A2 --> END
     A3 --> END

@@ -563,15 +563,15 @@ graph LR
 
 ```mermaid
 flowchart TD
-    Q["需要对类型/值加约束?"] -->|否| N["普通模板"]
-    Q -->|是| Q1["约束要复用/命名?"]
-    Q1 -->|是| C1["concept + requires"]
-    Q1 -->|否| Q2["仅单点分支?"]
-    Q2 -->|运行期已知| IF1["if constexpr"]
-    Q2 -->|编译期剪裁重载| SF1["SFINAE enable_if"]
+    Q["需要对类型/值加约束?"] -->|"否"| N["普通模板"]
+    Q -->|"是"| Q1["约束要复用/命名?"]
+    Q1 -->|"是"| C1["concept + requires"]
+    Q1 -->|"否"| Q2["仅单点分支?"]
+    Q2 -->|"运行期已知"| IF1["if constexpr"]
+    Q2 -->|"编译期剪裁重载"| SF1["SFINAE enable_if"]
     C1 --> Q3["约束失败期望?"]
-    Q3 -->|清晰错误| C2["concept 报不满足 X"]
-    Q3 -->|晦涩错误| SF2["SFINAE 报 substitution failure"]
+    Q3 -->|"清晰错误"| C2["concept 报不满足 X"]
+    Q3 -->|"晦涩错误"| SF2["SFINAE 报 substitution failure"]
     style C1 fill:#1f6feb,color:#fff
     style IF1 fill:#2da44e,color:#fff
     style SF1 fill:#cf222e,color:#fff
@@ -1105,20 +1105,20 @@ int main() {
 ```mermaid
 flowchart TD
     A["需要给模板参数加约束?"] --> B{"约束要复用/命名?"}
-    B -->|是| C["定义 concept 命名约束"]
-    B -->|否| D{"是否单点分支?"}
-    D -->|运行期已知类型| E["if constexpr 剪裁分支"]
-    D -->|编译期剪裁重载| F["SFINAE enable_if ch66"]
+    B -->|"是"| C["定义 concept 命名约束"]
+    B -->|"否"| D{"是否单点分支?"}
+    D -->|"运行期已知类型"| E["if constexpr 剪裁分支"]
+    D -->|"编译期剪裁重载"| F["SFINAE enable_if ch66"]
     C --> G{"约束施加方式?"}
-    G -->|约束占位| H["template<C T> 最干净"]
-    G -->|尾置| I["requires 子句 尾置约束"]
+    G -->|"约束占位"| H["template<C T> 最干净"]
+    G -->|"尾置"| I["requires 子句 尾置约束"]
     H --> J["更受约束者优先 偏序"]
     I --> J
     E --> K["零运行期开销"]
     F --> K
     J --> L{"约束失败期望?"}
-    L -->|清晰错误| M["concept 报不满足 X"]
-    L -->|晦涩错误| N["SFINAE 报 substitution failure"]
+    L -->|"清晰错误"| M["concept 报不满足 X"]
+    L -->|"晦涩错误"| N["SFINAE 报 substitution failure"]
     M --> O["编译期约束求解 零运行期开销"]
     N --> O
     K --> O

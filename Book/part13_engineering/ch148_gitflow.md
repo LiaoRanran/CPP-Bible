@@ -1312,22 +1312,22 @@ flowchart TD
   DONE["分支策略与流转确定"]
 
   START --> Q1
-  Q1 -->|功能| FEAT
-  Q1 -->|热修复| HOT
-  Q1 -->|发布| REL
+  Q1 -->|"功能"| FEAT
+  Q1 -->|"热修复"| HOT
+  Q1 -->|"发布"| REL
   FEAT --> Q2
   HOT --> Q5
   REL --> Q3
-  Q2 -->|小/快| TRUNK
-  Q2 -->|大/多| FLOW
+  Q2 -->|"小/快"| TRUNK
+  Q2 -->|"大/多"| FLOW
   TRUNK --> Q3
   FLOW --> Q3
-  Q3 -->|高频| CONT
-  Q3 -->|低频| SCHED
+  Q3 -->|"高频"| CONT
+  Q3 -->|"低频"| SCHED
   CONT --> Q4
   SCHED --> Q4
-  Q4 -->|是| MAINT
-  Q4 -->|否| DONE
+  Q4 -->|"是"| MAINT
+  Q4 -->|"否"| DONE
   MAINT --> DONE
   Q5 --> HBR
   HBR --> MERGE

@@ -1242,20 +1242,20 @@ std::sort(a.begin()+a.size()-100, a.end());
 ```mermaid
 flowchart TD
     A["待排序区间 [first, last)"] --> B{"需要保持相等元素原始相对顺序(稳定性)?"}
-    B -->|是| B1["stable_sort (归并思路, O(n log n), 稳定)"]
-    B -->|否| C{"只要前 k 个有序 (top-k)?"}
-    C -->|是| C1["partial_sort(first, middle, last) O(n log k)"]
-    C -->|否| D{"只要第 k 小/中位数就位, 不要求全有序?"}
-    D -->|是| D1["nth_element(first, nth, last) O(n)"]
-    D -->|否| E{"需要整体有序?"}
-    E -->|否| Z1["无需排序: 用 nth_element/堆选 等更轻原语"]
-    E -->|是| I{"迭代器为随机存取?"}
-    I -->|否| J["std::list::sort / 先拷到 vector 再 sort"]
-    I -->|是| G{"元素可移动且比较器满足严格弱序?"}
-    G -->|否| H["提供 noexcept 移动 + 自定义 Comp 严格弱序"]
-    G -->|是| K{"需要并行加速大区间?"}
-    K -->|是| N["std::sort(std::execution::par) C++17"]
-    K -->|否| F["std::sort (introsort 平均/最坏 O(n log n))"]
+    B -->|"是"| B1["stable_sort (归并思路, O(n log n), 稳定)"]
+    B -->|"否"| C{"只要前 k 个有序 (top-k)?"}
+    C -->|"是"| C1["partial_sort(first, middle, last) O(n log k)"]
+    C -->|"否"| D{"只要第 k 小/中位数就位, 不要求全有序?"}
+    D -->|"是"| D1["nth_element(first, nth, last) O(n)"]
+    D -->|"否"| E{"需要整体有序?"}
+    E -->|"否"| Z1["无需排序: 用 nth_element/堆选 等更轻原语"]
+    E -->|"是"| I{"迭代器为随机存取?"}
+    I -->|"否"| J["std::list::sort / 先拷到 vector 再 sort"]
+    I -->|"是"| G{"元素可移动且比较器满足严格弱序?"}
+    G -->|"否"| H["提供 noexcept 移动 + 自定义 Comp 严格弱序"]
+    G -->|"是"| K{"需要并行加速大区间?"}
+    K -->|"是"| N["std::sort(std::execution::par) C++17"]
+    K -->|"否"| F["std::sort (introsort 平均/最坏 O(n log n))"]
     H --> F
     J --> F
     N --> F

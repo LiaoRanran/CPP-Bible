@@ -1495,19 +1495,19 @@ int main() {
 ```mermaid
 flowchart TD
     A["需求:存储线性序列"] --> D1{"增删后是否需要迭代器/引用保持稳定?"}
-    D1 -->|是| D2{"是否频繁在任意位置 insert/erase?"}
-    D1 -->|否| D3{"是否主要做随机下标访问?"}
-    D2 -->|是| D4{"遍历是否是热点,高频顺序访问?"}
-    D2 -->|否| E1["优先 vector / deque"]
-    D4 -->|否 遍历少| F1["std::list / forward_list"]
-    D4 -->|是 遍历多| F2["vector / deque,缓存友好"]
-    D3 -->|是| F3["vector,随机访问 O(1)"]
-    D3 -->|否| D5{"需要单向还是双向遍历?"}
-    D5 -->|单向 省内存| F4["std::forward_list"]
-    D5 -->|双向| F5["std::list"]
+    D1 -->|"是"| D2{"是否频繁在任意位置 insert/erase?"}
+    D1 -->|"否"| D3{"是否主要做随机下标访问?"}
+    D2 -->|"是"| D4{"遍历是否是热点,高频顺序访问?"}
+    D2 -->|"否"| E1["优先 vector / deque"]
+    D4 -->|"否 遍历少"| F1["std::list / forward_list"]
+    D4 -->|"是 遍历多"| F2["vector / deque,缓存友好"]
+    D3 -->|"是"| F3["vector,随机访问 O(1)"]
+    D3 -->|"否"| D5{"需要单向还是双向遍历?"}
+    D5 -->|"单向 省内存"| F4["std::forward_list"]
+    D5 -->|"双向"| F5["std::list"]
     F1 --> D6{"是否在链表间搬移大量数据?"}
-    D6 -->|是| G1["用 splice O(1) 零拷贝"]
-    D6 -->|否| G2["普通 insert / erase"]
+    D6 -->|"是"| G1["用 splice O(1) 零拷贝"]
+    D6 -->|"否"| G2["普通 insert / erase"]
     F4 --> H1["注意:无 size / push_back"]
     F5 --> H2["成员 sort 归并排序"]
     G1 --> Z["结论:链表在稳定引用+低频遍历胜出"]

@@ -75,10 +75,10 @@ STL 常被当成"一堆容器 + 一堆算法的工具箱"，但它真正的骨�
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
 ```mermaid
 flowchart TD
-    Root["六大组件: 容器 迭代器 算法 仿函数 适配器 分配器"] -->|迭代器连接| Algo["算法: sort(first,last)"]
-    Root -->|迭代器连接| Cont["容器: vector/list/map"]
-    Algo -->|通过迭代器区间操作| Cont
-    Cont -->|提供 begin()/end()| Algo
+    Root["六大组件: 容器 迭代器 算法 仿函数 适配器 分配器"] -->|"迭代器连接"| Algo["算法: sort(first,last)"]
+    Root -->|"迭代器连接"| Cont["容器: vector/list/map"]
+    Algo -->|"通过迭代器区间操作"| Cont
+    Cont -->|"提供 begin()/end()"| Algo
     Root --> Hier["迭代器范畴层次（C++20）"]
     Hier --> I["input (单遍)"]
     I --> Fw["forward (多遍)"]
@@ -91,11 +91,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[算法 sort] -->|first,last| B(迭代器区间)
+    A[算法 sort] -->|"first,last"| B(迭代器区间)
     B --> C{"迭代器范畴?"}
-    C -->|random_access| D["指针算术 O(1) 跳步"]
-    C -->|bidirectional| E["++/-- 逐步"]
-    C -->|input| F["单遍 ++"]
+    C -->|"random_access"| D["指针算术 O(1) 跳步"]
+    C -->|"bidirectional"| E["++/-- 逐步"]
+    C -->|"input"| F["单遍 ++"]
     D --> G["vector/deque/array"]
     E --> H["list/map/set"]
     F --> I[istream_iterator]
@@ -150,7 +150,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A["迭代器对象创建（通常栈上，或从 begin() 返回）"] --> B["指向容器元素（引用/指针语义）"]
-    B -->|容器修改可能使其失效（见 ⑲ 失效总览）| C["迭代器析构（无资源，廉价；但指向的元素可能已被容器释放）"]
+    B -->|"容器修改可能使其失效（见 ⑲ 失效总览）"| C["迭代器析构（无资源，廉价；但指向的元素可能已被容器释放）"]
 ```
 
 ## ⑨ 调用栈 / 时序图：`std::advance(it, n)` 的标签分发
@@ -158,10 +158,10 @@ flowchart TD
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：std::adv
 ```mermaid
 flowchart TD
-    Caller["调用方"] -->|std::advance(it, n)| Adv["__advance(it, n, iterator_category(it)) // stl_iterator_base_funcs.h:224"]
-    Adv -->|按标签重载| I["input_iterator_tag -> 循环 ++ (O(n)) :157"]
-    Adv -->|按标签重载| Bi["bidirectional_iterator_tag -> 先判正负再 ++/-- :168"]
-    Adv -->|按标签重载| Ra["random_access_iterator_tag -> it += n (O(1)) :184"]
+    Caller["调用方"] -->|"std::advance(it, n)"| Adv["__advance(it, n, iterator_category(it)) // stl_iterator_base_funcs.h:224"]
+    Adv -->|"按标签重载"| I["input_iterator_tag -> 循环 ++ (O(n)) :157"]
+    Adv -->|"按标签重载"| Bi["bidirectional_iterator_tag -> 先判正负再 ++/-- :168"]
+    Adv -->|"按标签重载"| Ra["random_access_iterator_tag -> it += n (O(1)) :184"]
 ```
 
 ## ⑩ 汇编分析（Compiler Explorer 风格，标注 -O2）

@@ -96,8 +96,8 @@ struct FrameworkMeta {
 ```mermaid
 flowchart TD
   %% ① 框架与'裸程序'的职责划分
-  APP["你的应用 (App): on_start() / on_tick() 只关心业务逻辑"] -->|被调用| FW["框架 (MiniFW) 拥有主循环 启动→事件→关闭 全自动"]
-  BARE["裸程序 (main): 自己写 while 循环 自己管理 socket/线程"] -->|自己调用| NONE["无中间层，全自己来 易重复、易泄漏、难测试"]
+  APP["你的应用 (App): on_start() / on_tick() 只关心业务逻辑"] -->|"被调用"| FW["框架 (MiniFW) 拥有主循环 启动→事件→关闭 全自动"]
+  BARE["裸程序 (main): 自己写 while 循环 自己管理 socket/线程"] -->|"自己调用"| NONE["无中间层，全自己来 易重复、易泄漏、难测试"]
 ```
 
 ## ② 框架 vs 库
@@ -272,8 +272,8 @@ struct Proactor {
 
 ```mermaid
 flowchart LR
-  PROD["producer"] -->|publish('tick')| TBL["table['tick']: [h1, h2]"]
-  TBL -->|顺序同步调用| H["h1(data); h2(data)"]
+  PROD["producer"] -->|"publish('tick')"| TBL["table['tick']: [h1, h2]"]
+  TBL -->|"顺序同步调用"| H["h1(data); h2(data)"]
   %% 注：reactor 是「你来处理就绪事件」；proactor 是「内核处理完再通知你」。
 ```
 
@@ -939,9 +939,9 @@ int main() {
 
 ```mermaid
 flowchart TD
-  BIZ["业务代码"] -->|只调用 PAL::sleep_ms()| PAL["PAL"]
-  PAL -->|#ifdef _WIN32| SLEEP["Sleep(ms)"]
-  PAL -->|#else| USLEEP["usleep(ms*1000)"]
+  BIZ["业务代码"] -->|"只调用 PAL::sleep_ms()"| PAL["PAL"]
+  PAL -->|"#ifdef _WIN32"| SLEEP["Sleep(ms)"]
+  PAL -->|"#else"| USLEEP["usleep(ms*1000)"]
   %% 平台差异被'墙'在 PAL 内，业务零 #ifdef。
 ```
 
@@ -1460,9 +1460,9 @@ int main() {
 flowchart TD
   A["main 加载配置 mini.conf"] --> CFG["Config load INI/JSON"]
   CFG --> REG{"有自注册组件?"}
-  REG -->|静态构造期| AUTO["AutoReg 自注册进 Registry"]
+  REG -->|"静态构造期"| AUTO["AutoReg 自注册进 Registry"]
   AUTO --> START["Framework start"]
-  REG -->|无| ERR["无组件可启动"]
+  REG -->|"无"| ERR["无组件可启动"]
   START --> INST["遍历 factories 实例化组件"]
   INST --> DI["注入 Container DI ch141"]
   DI --> PUB["bus publish startup"]
@@ -1470,12 +1470,12 @@ flowchart TD
   RUN --> TICK{"每帧?"}
   TICK --> DISP["bus publish tick 到 各 handler"]
   DISP --> EXT{"扩展点拦截?"}
-  EXT -->|中间件管道| MW["Auth/Log/Block 链式处理"]
-  EXT -->|否| COMP["组件 onTick 执行业务"]
+  EXT -->|"中间件管道"| MW["Auth/Log/Block 链式处理"]
+  EXT -->|"否"| COMP["组件 onTick 执行业务"]
   MW --> COMP
   COMP --> STOP{"ticks 用尽 或 stop?"}
-  STOP -->|否| TICK
-  STOP -->|是| SHUT["framework stop 逆序 stop 组件"]
+  STOP -->|"否"| TICK
+  STOP -->|"是"| SHUT["framework stop 逆序 stop 组件"]
   SHUT --> RAII["RAII 析构释放 socket/file/thread"]
 ```
 

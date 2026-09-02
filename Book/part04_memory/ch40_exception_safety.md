@@ -1953,14 +1953,14 @@ int main() {
 ```mermaid
 flowchart TD
     START["函数可能抛异常?"] --> D1{"操作需强保证<br/>(提交或回滚)?"}
-    D1 -->|是| D2{"可用 copy-and-swap?"}
-    D1 -->|否| D3{"可避免抛异常?"}
-    D2 -->|是| SW["copy-and-swap 实现强保证"]
-    D2 -->|否| BASIC["基本保证: 不泄漏不 UB"]
-    D3 -->|是| NOTHROW["标记 noexcept / 提供 nothrow 路径"]
-    D3 -->|否| D4{"资源获取?"}
-    D4 -->|是| RAII["用 RAII / 智能指针"]
-    D4 -->|否| BASIC
+    D1 -->|"是"| D2{"可用 copy-and-swap?"}
+    D1 -->|"否"| D3{"可避免抛异常?"}
+    D2 -->|"是"| SW["copy-and-swap 实现强保证"]
+    D2 -->|"否"| BASIC["基本保证: 不泄漏不 UB"]
+    D3 -->|"是"| NOTHROW["标记 noexcept / 提供 nothrow 路径"]
+    D3 -->|"否"| D4{"资源获取?"}
+    D4 -->|"是"| RAII["用 RAII / 智能指针"]
+    D4 -->|"否"| BASIC
     SW --> STRONG["强保证: 成功或原状"]
     RAII --> LEAK["裸资源 易泄漏风险"]
     LEAK --> FALLBACK["降级为基本保证并记录"]

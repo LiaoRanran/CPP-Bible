@@ -99,14 +99,14 @@ tuple 与 any 常被当成"返回多值 / 装任意类型的小工具"，但它�
 ```mermaid
 flowchart TD
     A["构造 tuple/pair"] --> B{访问方式}
-    B -->|已知索引| C["std::get<I>(t)"]
-    B -->|已知类型| D["std::get<T>(t) 类型唯一才可"]
-    B -->|批量拆包| E["结构化绑定 auto& [a,b,c]=t"]
-    B -->|整体转发| F["std::apply(f, t)"]
+    B -->|"已知索引"| C["std::get<I>(t)"]
+    B -->|"已知类型"| D["std::get<T>(t) 类型唯一才可"]
+    B -->|"批量拆包"| E["结构化绑定 auto& [a,b,c]=t"]
+    B -->|"整体转发"| F["std::apply(f, t)"]
     F --> G["index_sequence 展开"]
     H["构造 any/function"] --> I{对象大小}
-    I -->|≤SBO| J["就地存储, 无堆分配"]
-    I -->|大于SBO| K["堆分配, 指针入存储"]
+    I -->|"≤SBO"| J["就地存储, 无堆分配"]
+    I -->|"大于SBO"| K["堆分配, 指针入存储"]
     J --> L["manager/invoker 表驱动"]
     K --> L
     L --> M["any_cast / operator() 经类型检查"]

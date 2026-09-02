@@ -159,14 +159,14 @@ flowchart TD
 flowchart TD
     A[find key k] --> B[从 _M_header._M_parent 根节点出发]
     B --> C{"k < 节点.key ?"}
-    C -->|是| D[走向 _M_left]
-    C -->|否| E[走向 _M_right]
+    C -->|"是"| D[走向 _M_left]
+    C -->|"否"| E[走向 _M_right]
     D --> F{"到达空指针?"}
     E --> F
-    F -->|是| G["未找到 -> end"]
-    F -->|否| H{"命中?"}
-    H -->|是| I[返回迭代器]
-    H -->|否| C
+    F -->|"是"| G["未找到 -> end"]
+    F -->|"否"| H{"命中?"}
+    H -->|"是"| I[返回迭代器]
+    H -->|"否"| C
 
     J[insert key] --> K["树下降找插入点 O(logN)"]
     K --> L[分配新节点并染色为红]
@@ -1541,18 +1541,18 @@ int main() {
 ```mermaid
 flowchart TD
     A["需求:键值关联存储与查找"] --> D1{"是否需要按 key 有序遍历/范围查询?"}
-    D1 -->|是| F1["std::map 红黑树"]
-    D1 -->|否| D2{"单点查找是否绝对热点?"}
-    D2 -->|是| D3{"数据量大且哈希质量好?"}
-    D2 -->|否| F2["std::map 稳妥"]
-    D3 -->|是| F3["std::unordered_map 哈希"]
-    D3 -->|否| F4["std::map 避免 rehash 抖动"]
+    D1 -->|"是"| F1["std::map 红黑树"]
+    D1 -->|"否"| D2{"单点查找是否绝对热点?"}
+    D2 -->|"是"| D3{"数据量大且哈希质量好?"}
+    D2 -->|"否"| F2["std::map 稳妥"]
+    D3 -->|"是"| F3["std::unordered_map 哈希"]
+    D3 -->|"否"| F4["std::map 避免 rehash 抖动"]
     F1 --> D4{"遍历是否热点?"}
-    D4 -->|是| G1["flat_map / 排序 vector 缓存友好"]
-    D4 -->|否| G2["map 节点稳定优势"]
+    D4 -->|"是"| G1["flat_map / 排序 vector 缓存友好"]
+    D4 -->|"否"| G2["map 节点稳定优势"]
     F3 --> D5{"频繁插入触发 rehash?"}
-    D5 -->|是| H1["prefer map / flat 避免尖峰"]
-    D5 -->|否| H2["unordered_map 均摊 O(1)"]
+    D5 -->|"是"| H1["prefer map / flat 避免尖峰"]
+    D5 -->|"否"| H2["unordered_map 均摊 O(1)"]
     G1 --> Z["结论:有序+稳定选 map"]
     G2 --> Z
     F2 --> Z

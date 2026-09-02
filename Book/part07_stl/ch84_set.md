@@ -1471,20 +1471,20 @@ size==3: 1
 ```mermaid
 flowchart TD
     A["需求:去重/成员判定的集合"] --> D1{"是否允许重复键?"}
-    D1 -->|是| F1["std::multiset"]
-    D1 -->|否| D2{"是否需要有序遍历/范围查询?"}
-    D2 -->|是| F2["std::set 红黑树"]
-    D2 -->|否| D3{"单点查找是否热点?"}
-    D3 -->|是| D4{"数据量大且哈希好?"}
-    D3 -->|否| F3["std::set 稳妥"]
-    D4 -->|是| F4["std::unordered_set 哈希"]
-    D4 -->|否| F5["std::set 避免 rehash"]
+    D1 -->|"是"| F1["std::multiset"]
+    D1 -->|"否"| D2{"是否需要有序遍历/范围查询?"}
+    D2 -->|"是"| F2["std::set 红黑树"]
+    D2 -->|"否"| D3{"单点查找是否热点?"}
+    D3 -->|"是"| D4{"数据量大且哈希好?"}
+    D3 -->|"否"| F3["std::set 稳妥"]
+    D4 -->|"是"| F4["std::unordered_set 哈希"]
+    D4 -->|"否"| F5["std::set 避免 rehash"]
     F2 --> D5{"遍历是否热点?"}
-    D5 -->|是| G1["flat_set / 排序 vector 缓存友好"]
-    D5 -->|否| G2["set 节点稳定"]
+    D5 -->|"是"| G1["flat_set / 排序 vector 缓存友好"]
+    D5 -->|"否"| G2["set 节点稳定"]
     F4 --> D6{"频繁插入触发 rehash?"}
-    D6 -->|是| H1["prefer set / flat"]
-    D6 -->|否| H2["unordered_set 均摊 O(1)"]
+    D6 -->|"是"| H1["prefer set / flat"]
+    D6 -->|"否"| H2["unordered_set 均摊 O(1)"]
     G1 --> Z["结论:有序+稳定+去重选 set"]
     G2 --> Z
     F3 --> Z

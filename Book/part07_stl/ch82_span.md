@@ -159,10 +159,10 @@ flowchart TD
     Root --> Sv["string_view (字符特化)"]
     Root --> Arr["array<T,N> (拥有,定长)"]
     Root --> Vec["vector<T> (拥有,可变)"]
-    Span -->|构造来源| S1["C数组/vector/array/指针+长度"]
-    Sv -->|构造来源| S2["string/data()/C字符串/char*"]
-    Arr -->|构造来源| S3["字面量/数组 (定长)"]
-    Vec -->|构造来源| S4["push_back (动态扩容)"]
+    Span -->|"构造来源"| S1["C数组/vector/array/指针+长度"]
+    Sv -->|"构造来源"| S2["string/data()/C字符串/char*"]
+    Arr -->|"构造来源"| S3["字面量/数组 (定长)"]
+    Vec -->|"构造来源"| S4["push_back (动态扩容)"]
     S1 --> N["非拥有：{ptr, extent}"]
     N --> FL["first/last/subspan"]
     N --> UB["动态 extent 或 静态 N -> 越界 = UB（不抛异常）"]
@@ -175,8 +175,8 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[连续内存源] --> B{"C 数组 / vector / array / 指针+长度"}
-    B -->|C数组/array| C[静态 extent span T N]
-    B -->|vector/指针+len| D[动态 extent span T]
+    B -->|"C数组/array"| C[静态 extent span T N]
+    B -->|"vector/指针+len"| D[动态 extent span T]
     C --> E[subspan 可能产生动态 extent]
     D --> E
     E --> F["first n / last n"]
@@ -1502,18 +1502,18 @@ int main() {
 ```mermaid
 flowchart TD
     A["需求:把一段连续数据交给函数/算法"] --> D1{"函数内是否修改底层数据?"}
-    D1 -->|只读| D2{"是否长期持有该内存?"}
-    D1 -->|读写| D3{"是否拥有该内存?"}
-    D2 -->|否 局部借用| F1["std::span<const T> 零拷贝"]
-    D2 -->|是 长期| F2["传 const vector<T>& 或返回 vector"]
-    D3 -->|否 借用修改| F3["std::span<T> 视图"]
-    D3 -->|是 拥有| F4["用 vector / array 拥有"]
+    D1 -->|"只读"| D2{"是否长期持有该内存?"}
+    D1 -->|"读写"| D3{"是否拥有该内存?"}
+    D2 -->|"否 局部借用"| F1["std::span<const T> 零拷贝"]
+    D2 -->|"是 长期"| F2["传 const vector<T>& 或返回 vector"]
+    D3 -->|"否 借用修改"| F3["std::span<T> 视图"]
+    D3 -->|"是 拥有"| F4["用 vector / array 拥有"]
     F1 --> D4{"底层来源类型多样?"}
-    D4 -->|是 数组/vector/array| G1["span 统一接收"]
-    D4 -->|否 单一类型| G2["直接用该容器引用"]
+    D4 -->|"是 数组/vector/array"| G1["span 统一接收"]
+    D4 -->|"否 单一类型"| G2["直接用该容器引用"]
     F3 --> D5{"需要切片?"}
-    D5 -->|是| H1["first / last / subspan O(1)"]
-    D5 -->|否| H2["直接遍历"]
+    D5 -->|"是"| H1["first / last / subspan O(1)"]
+    D5 -->|"否"| H2["直接遍历"]
     F4 --> Z["结论:只读传 span<const T>"]
     F2 --> Z
     G1 --> Z

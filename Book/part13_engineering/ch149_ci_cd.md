@@ -1372,11 +1372,11 @@ flowchart TD
   DEPLOY["CD: 部署 / 交付 (ch149⑩)"]
   FAIL["fail-fast 中断"]
   START --> BUILD
-  BUILD -->|失败| FAIL
+  BUILD -->|"失败"| FAIL
   BUILD --> TEST
-  TEST -->|失败| FAIL
+  TEST -->|"失败"| FAIL
   TEST --> STAT
-  STAT -->|失败| FAIL
+  STAT -->|"失败"| FAIL
   STAT --> COV
   COV --> PKG
   PKG --> DEPLOY
@@ -1476,25 +1476,25 @@ flowchart TD
   DONE["流水线定稿"]
 
   START --> Q1
-  Q1 -->|长| CACHE
-  Q1 -->|短| FAST
+  Q1 -->|"长"| CACHE
+  Q1 -->|"短"| FAST
   CACHE --> Q2
   FAST --> Q2
-  Q2 -->|浅| UNIT
-  Q2 -->|中| INTG
-  Q2 -->|深| E2E
+  Q2 -->|"浅"| UNIT
+  Q2 -->|"中"| INTG
+  Q2 -->|"深"| E2E
   UNIT --> Q3
   INTG --> Q3
   E2E --> Q3
-  Q3 -->|低| AUTO
-  Q3 -->|高| GATE
+  Q3 -->|"低"| AUTO
+  Q3 -->|"高"| GATE
   AUTO --> Q5
   GATE --> Q5
-  Q5 -->|否| Q4
-  Q5 -->|是| APPROVE
+  Q5 -->|"否"| Q4
+  Q5 -->|"是"| APPROVE
   APPROVE --> Q4
-  Q4 -->|否| DONE
-  Q4 -->|是| MATRIX
+  Q4 -->|"否"| DONE
+  Q4 -->|"是"| MATRIX
   MATRIX --> DONE
 ```
 

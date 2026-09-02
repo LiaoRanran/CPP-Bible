@@ -1779,27 +1779,27 @@ ret
 ```mermaid
 flowchart TD
     S0["需要一个离散取值集合?"] --> D1{"是否要求强类型与无隐式转换?"}
-    D1 -->|是| EC["enum class 作用域枚举"]
-    D1 -->|否 兼容 C| D2{"是否需要隐式转 int?"}
-    D2 -->|是| UE["无作用域 enum 传统"]
-    D2 -->|否| EC
+    D1 -->|"是"| EC["enum class 作用域枚举"]
+    D1 -->|"否 兼容 C"| D2{"是否需要隐式转 int?"}
+    D2 -->|"是"| UE["无作用域 enum 传统"]
+    D2 -->|"否"| EC
     EC --> D3{"是否关心底层存储大小?"}
-    D3 -->|是| ECB["enum class : uint8_t 定底层类型"]
-    D3 -->|否| ECD["默认 int 底层"]
+    D3 -->|"是"| ECB["enum class : uint8_t 定底层类型"]
+    D3 -->|"否"| ECD["默认 int 底层"]
     UE --> D4{"是否用作标志位集合?"}
-    D4 -->|是| FLG["enum + 位运算 或 std::bitset"]
-    D4 -->|否| OK1["普通无作用域 enum"]
+    D4 -->|"是"| FLG["enum + 位运算 或 std::bitset"]
+    D4 -->|"否"| OK1["普通无作用域 enum"]
     ECB --> D5{"需要越界保护?"}
-    D5 -->|是| SW["switch + default 越界处理"]
-    D5 -->|否| OK2["直接 switch"]
+    D5 -->|"是"| SW["switch + default 越界处理"]
+    D5 -->|"否"| OK2["直接 switch"]
     ECD --> D5
     SW --> D6{"越界时如何处理?"}
-    D6 -->|抛异常/断言| TH["抛出 std::out_of_range"]
-    D6 -->|回退安全值| FB["回退到已知合法枚举值"]
+    D6 -->|"抛异常/断言"| TH["抛出 std::out_of_range"]
+    D6 -->|"回退安全值"| FB["回退到已知合法枚举值"]
     FB --> OK2
     FLG --> D7{"位运算类型安全?"}
-    D7 -->|否 易错| FB2["回退 改用强类型封装"]
-    D7 -->|是| OK3["位标志 enum"]
+    D7 -->|"否 易错"| FB2["回退 改用强类型封装"]
+    D7 -->|"是"| OK3["位标志 enum"]
     FB2 --> EC
 ```
 

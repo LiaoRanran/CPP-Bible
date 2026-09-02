@@ -1724,25 +1724,25 @@ int main() { BoundedQueue<int> bq; std::cout << bq.try_push(1) << '\n'; }
 ```mermaid
 flowchart TD
   A["LOG_xxx 业务调用"] --> L{"级别 不低于 阈值?"}
-  L -->|否| DROP["编译期 或 运行期 丢弃 零开销"]
-  L -->|是| SRC["捕获 FILE LINE ch146"]
+  L -->|"否"| DROP["编译期 或 运行期 丢弃 零开销"]
+  L -->|"是"| SRC["捕获 FILE LINE ch146"]
   SRC --> FMT["std format 格式化 C++20"]
   FMT --> TS["加时间戳 ts"]
   TS --> Q{"同步 或 异步?"}
-  Q -->|同步| OUT["直接写 console/file sink"]
-  Q -->|异步| ENQ["入 BoundedQueue 生产者"]
+  Q -->|"同步"| OUT["直接写 console/file sink"]
+  Q -->|"异步"| ENQ["入 BoundedQueue 生产者"]
   ENQ --> W["后台 worker 出队"]
   W --> ROT{"超过 max_bytes 或 间隔?"}
-  ROT -->|是| ROTATE["轮转 改名备份 开新文件"]
-  ROT -->|否| OUT
+  ROT -->|"是"| ROTATE["轮转 改名备份 开新文件"]
+  ROT -->|"否"| OUT
   OUT --> M{"多线程?"}
-  M -->|是| LK["mutex shared_mutex 保护"]
-  M -->|否| DONE["直接落地"]
+  M -->|"是"| LK["mutex shared_mutex 保护"]
+  M -->|"否"| DONE["直接落地"]
   LK --> DONE
   DROP --> END["结束"]
   DONE --> END
-  Q -.->|背压| BP["队列过长丢弃低级别 防 OOM"]
-  W -.->|零开销| L0["if constexpr 关闭级别 汇编消除"]
+  Q -.->|"背压"| BP["队列过长丢弃低级别 防 OOM"]
+  W -.->|"零开销"| L0["if constexpr 关闭级别 汇编消除"]
 ```
 
 > 决策流说明：级别判定是第一道闸门——只有"不低于阈值"才进入格式化与落地（否则在编译期或运行期直接丢弃，零开销）；同步与异步落地两条边在"输出"处「或」汇合，异步路径又把昂贵的 sink IO 从生产者移走。跨章外推：异步依赖第93章 thread，线程安全依赖第107章 atomic，结构化外推第131章 fmt/spdlog。

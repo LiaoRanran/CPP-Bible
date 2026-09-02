@@ -2428,27 +2428,27 @@ flowchart TD
 ```mermaid
 flowchart TD
     A["需要动态对象"] --> B{"是否使用<br>标准 new/delete?"}
-    B -->|是| C{"是否需构造<br>语义 new?"}
-    C -->|是| D["用 new T()<br>调用构造"]
-    C -->|否| E["用 ::operator new<br>仅分配字节"]
-    B -->|否| F{"是否需自定义<br>分配策略?"}
-    F -->|是| G["重载 operator new<br>或提供 allocator"]
-    F -->|否| H["直接 new / delete"]
+    B -->|"是"| C{"是否需构造<br>语义 new?"}
+    C -->|"是"| D["用 new T()<br>调用构造"]
+    C -->|"否"| E["用 ::operator new<br>仅分配字节"]
+    B -->|"否"| F{"是否需自定义<br>分配策略?"}
+    F -->|"是"| G["重载 operator new<br>或提供 allocator"]
+    F -->|"否"| H["直接 new / delete"]
     D --> I{"是否需数组<br>或多维?"}
     E --> I
     G --> I
     H --> I
-    I -->|数组| J["new[] / delete[]<br>严格配对"]
-    I -->|单对象| K["new / delete<br>严格配对"]
+    I -->|"数组"| J["new[] / delete[]<br>严格配对"]
+    I -->|"单对象"| K["new / delete<br>严格配对"]
     J --> L{"是否可能<br>分配失败?"}
     K --> L
     E --> L
-    L -->|是| M["捕获 bad_alloc<br>或 noexcept 处理"]
-    L -->|否| N["正常继续"]
+    L -->|"是"| M["捕获 bad_alloc<br>或 noexcept 处理"]
+    L -->|"否"| N["正常继续"]
     M --> O{"资源是否在<br>异常路径释放?"}
     N --> O
-    O -->|是| P["用智能指针包裹<br>RAII 兜底"]
-    O -->|否| Q["裸指针短生命周期"]
+    O -->|"是"| P["用智能指针包裹<br>RAII 兜底"]
+    O -->|"否"| Q["裸指针短生命周期"]
     P --> R["完成：无泄漏"]
     Q --> R
     R --> B

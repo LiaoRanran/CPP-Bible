@@ -111,9 +111,9 @@ STL 早已有了 `deque`、`vector`、`list`，但很多算法只想要"后进�
 ```mermaid
 flowchart TD
     A["用户调用 push/pop/top"] --> B{适配器类型}
-    B -->|stack| C["调用 c.back/push_back/pop_back"]
-    B -->|queue| D["调用 c.front/back/push_back/pop_front"]
-    B -->|priority_queue| E["调用 c.push_back 后 push_heap / pop_heap"]
+    B -->|"stack"| C["调用 c.back/push_back/pop_back"]
+    B -->|"queue"| D["调用 c.front/back/push_back/pop_front"]
+    B -->|"priority_queue"| E["调用 c.push_back 后 push_heap / pop_heap"]
     C --> F["底层 Sequence 容器: deque/vector/list"]
     D --> F
     E --> G["底层 Sequence 容器: vector/deque"]
@@ -1665,18 +1665,18 @@ priority_queue pop order: 3 2 1
 ```mermaid
 flowchart TD
     A["需求:受限接口容器适配器"] --> D1{"需要 LIFO 栈?"}
-    D1 -->|是| D2{"是否介意顶部不缩容?"}
-    D1 -->|否| D3{"需要 FIFO 队列?"}
-    D2 -->|否| F1["stack 默认 deque<T>"]
-    D2 -->|是 用 vector| F2["stack<vector<T>> 不自缩"]
-    D3 -->|是| D4{"是否需随机访问底层?"}
-    D3 -->|否| D5{"需要优先级出队?"}
-    D4 -->|否| F3["queue 默认 deque<T>"]
-    D4 -->|是| F4["queue<vector> 不满足 无 pop_front"]
-    D5 -->|是| D6{"大顶还是小顶?"}
-    D5 -->|否| F5["选普通容器而非适配器"]
-    D6 -->|大顶 默认| G1["priority_queue<vector<T>,less>"]
-    D6 -->|小顶| G2["priority_queue<vector<T>,greater>"]
+    D1 -->|"是"| D2{"是否介意顶部不缩容?"}
+    D1 -->|"否"| D3{"需要 FIFO 队列?"}
+    D2 -->|"否"| F1["stack 默认 deque<T>"]
+    D2 -->|"是 用 vector"| F2["stack<vector<T>> 不自缩"]
+    D3 -->|"是"| D4{"是否需随机访问底层?"}
+    D3 -->|"否"| D5{"需要优先级出队?"}
+    D4 -->|"否"| F3["queue 默认 deque<T>"]
+    D4 -->|"是"| F4["queue<vector> 不满足 无 pop_front"]
+    D5 -->|"是"| D6{"大顶还是小顶?"}
+    D5 -->|"否"| F5["选普通容器而非适配器"]
+    D6 -->|"大顶 默认"| G1["priority_queue<vector<T>,less>"]
+    D6 -->|"小顶"| G2["priority_queue<vector<T>,greater>"]
     F1 --> Z["结论:stack/queue 默认 deque"]
     F2 --> Z
     F3 --> Z

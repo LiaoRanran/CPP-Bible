@@ -1161,21 +1161,21 @@ true
 ```mermaid
 flowchart TD
     A["需要在编译期查询/修改类型属性?"] --> B{"结果用 bool 还是 类型?"}
-    B -->|bool| C["布尔 trait 继承 true_type/false_type"]
-    B -->|类型| D["变换 trait 暴露 type 成员 + _t 别名"]
+    B -->|"bool"| C["布尔 trait 继承 true_type/false_type"]
+    B -->|"类型"| D["变换 trait 暴露 type 成员 + _t 别名"]
     C --> E["用偏特化把特殊类型分流到 true"]
     D --> E
     E --> F{"需要检测成员/嵌套类型是否存在?"}
-    F -->|是| G["void_t 探测惯用法 ch66"]
-    F -->|否| H{"分发要复用/可读?"}
-    H -->|否| I["enable_if 重载分流 ch66"]
-    H -->|是| J["if constexpr 单函数内分支"]
+    F -->|"是"| G["void_t 探测惯用法 ch66"]
+    F -->|"否"| H{"分发要复用/可读?"}
+    H -->|"否"| I["enable_if 重载分流 ch66"]
+    H -->|"是"| J["if constexpr 单函数内分支"]
     I --> K["SFINAE 静默剔除失败候选"]
     J --> K
     G --> K
     K --> L{"是否 C++20 可用?"}
-    L -->|是| M["Concepts requires 替代 报错可读"]
-    L -->|否| N["保留 SFINAE/trait 兼容"]
+    L -->|"是"| M["Concepts requires 替代 报错可读"]
+    L -->|"否"| N["保留 SFINAE/trait 兼容"]
     M --> O["零运行期开销 编译期常量折叠"]
     N --> O
 ```

@@ -1712,18 +1712,18 @@ void axpy(int n, double* __restrict y, const double* __restrict a,
 ```mermaid
 flowchart TD
     START["需在同一内存上 reinterpret 类型?"] --> D1{"类型间有继承或标准布局兼容?"}
-    D1 -->|是| COMPAT["用 memcpy / std::bit_cast (C++20)"]
-    D1 -->|否| D2{"确为不同动态类型?"}
-    D2 -->|是| CAST["用 char* 或 unsigned char* 别名通道"]
-    D2 -->|否| D3{"需强制类型双关?"}
-    D3 -->|是| UNION["用共用体 (POD) 或 memcpy"]
-    D3 -->|否| D4{"编译器乐观优化?"}
-    D4 -->|是| OPT["启用 -fstrict-aliasing 的风险"]
-    D4 -->|否| UB["未定义行为: 错误优化"]
+    D1 -->|"是"| COMPAT["用 memcpy / std::bit_cast (C++20)"]
+    D1 -->|"否"| D2{"确为不同动态类型?"}
+    D2 -->|"是"| CAST["用 char* 或 unsigned char* 别名通道"]
+    D2 -->|"否"| D3{"需强制类型双关?"}
+    D3 -->|"是"| UNION["用共用体 (POD) 或 memcpy"]
+    D3 -->|"否"| D4{"编译器乐观优化?"}
+    D4 -->|"是"| OPT["启用 -fstrict-aliasing 的风险"]
+    D4 -->|"否"| UB["未定义行为: 错误优化"]
     OPT --> UB
     UNION --> D5{"能否改数据结构?"}
-    D5 -->|是| REDES["重设计: 标签联合体 访存分离"]
-    D5 -->|否| FALLBACK["降级: -fno-strict-aliasing"]
+    D5 -->|"是"| REDES["重设计: 标签联合体 访存分离"]
+    D5 -->|"否"| FALLBACK["降级: -fno-strict-aliasing"]
     FALLBACK -->|"优先重构"| D5
 ```
 

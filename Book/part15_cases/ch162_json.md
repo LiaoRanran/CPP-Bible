@@ -66,8 +66,8 @@ JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量
 
 ```mermaid
 flowchart LR
-  JT["JSON 文本: {'a':1,'b':[2]}"] -->|parse| MEM["C++ 内存: variant<null,bool,double,string,vector,map>"]
-  MEM -->|serialize| JT
+  JT["JSON 文本: {'a':1,'b':[2]}"] -->|"parse"| MEM["C++ 内存: variant<null,bool,double,string,vector,map>"]
+  MEM -->|"serialize"| JT
 ```
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：JSON 与 C++ 映射 [
@@ -1151,26 +1151,26 @@ int main() {
 flowchart TD
   A["parse json_text 入口"] --> W["skip_ws 跳过空白"]
   W --> V{"首字符分派?"}
-  V -->|左花括号| OBJ["parse_object"]
-  V -->|左方括号| ARR["parse_array"]
-  V -->|双引号| STR["parse_string 加 转义"]
-  V -->|数字或负号| NUM["parse_number 严格校验"]
-  V -->|true false| LIT["字面量"]
-  V -->|null| NUL["null"]
+  V -->|"左花括号"| OBJ["parse_object"]
+  V -->|"左方括号"| ARR["parse_array"]
+  V -->|"双引号"| STR["parse_string 加 转义"]
+  V -->|"数字或负号"| NUM["parse_number 严格校验"]
+  V -->|"true false"| LIT["字面量"]
+  V -->|"null"| NUL["null"]
   OBJ --> KP{"键是字符串?"}
-  KP -->|否| ERR1["fail 对象键必须字符串"]
-  KP -->|是| COL{"有冒号?"}
-  COL -->|否| ERR2["fail 缺冒号"]
-  COL -->|是| V2["递归 parse_value 取值"]
+  KP -->|"否"| ERR1["fail 对象键必须字符串"]
+  KP -->|"是"| COL{"有冒号?"}
+  COL -->|"否"| ERR2["fail 缺冒号"]
+  COL -->|"是"| V2["递归 parse_value 取值"]
   ARR --> V3["递归 parse_value 元素"]
   NUM --> CHK{"尾部有多余字符?"}
-  CHK -->|是| ERR3["fail 残留字符"]
-  CHK -->|否| OK["构建 Value variant 树"]
+  CHK -->|"是"| ERR3["fail 残留字符"]
+  CHK -->|"否"| OK["构建 Value variant 树"]
   V2 --> OK
   V3 --> OK
   STR --> ESC{"含 uXXXX 转义?"}
-  ESC -->|是| UTF["合并代理对 转 UTF-8"]
-  ESC -->|否| RAW["原样存入 string"]
+  ESC -->|"是"| UTF["合并代理对 转 UTF-8"]
+  ESC -->|"否"| RAW["原样存入 string"]
   RAW --> OK
   UTF --> OK
 ```

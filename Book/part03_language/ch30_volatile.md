@@ -1051,13 +1051,13 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     Q["目标：访问一个内存位置?"] --> Q1{"需要编译器<br/>每次真读/真写?"}
-    Q1 -->|是·硬件/ISR/信号| V["volatile<br/>(MMIO·信号处理·setjmp)"]
-    Q1 -->|否·普通变量| P["普通变量<br/>(交给优化器提速)"]
+    Q1 -->|"是·硬件/ISR/信号"| V["volatile<br/>(MMIO·信号处理·setjmp)"]
+    Q1 -->|"否·普通变量"| P["普通变量<br/>(交给优化器提速)"]
     Q --> Q2{"多线程共享?"}
-    Q2 -->|是·单变量简单状态| A["std::atomic<br/>(memory_order 控序)"]
-    Q2 -->|是·多变量不变式| M["std::mutex<br/>(临界区保护)"]
-    V -.->|误用于多线程| X["✗ 数据竞争<br/>volatile 不保证原子/可见/有序"]
-    A -.->|需要更强同步| M
+    Q2 -->|"是·单变量简单状态"| A["std::atomic<br/>(memory_order 控序)"]
+    Q2 -->|"是·多变量不变式"| M["std::mutex<br/>(临界区保护)"]
+    V -.->|"误用于多线程"| X["✗ 数据竞争<br/>volatile 不保证原子/可见/有序"]
+    A -.->|"需要更强同步"| M
 ```
 
 ---
@@ -1075,13 +1075,13 @@ flowchart TD
     VOL --> SJ["setjmp/longjmp<br/>跨跳转变量"]
     VOL --> CONST["volatile const<br/>(ROM 映射只读)"]
     OPT --> FENCE["编译器屏障<br/>asm volatile('':::'memory')"]
-    FENCE -->|更强约束| VOL
+    FENCE -->|"更强约束"| VOL
     VOL --> ATOM["std::atomic<br/>(多线程正确超集)"]
     ATOM --> MO["memory_order<br/>(六种内存序)"]
     ATOM --> MUTEX["std::mutex<br/>(互斥临界区)"]
     ATOM --> MM["内存模型<br/>happens-before"]
     MM --> MESI["缓存一致性 / MESI<br/>(伪共享物理根)"]
-    VOL -.->|误用| UB["数据竞争 / UB<br/>volatile≠线程同步"]
+    VOL -.->|"误用"| UB["数据竞争 / UB<br/>volatile≠线程同步"]
     SJ --> UB
     CONST --> MMIO
 ```
@@ -1137,18 +1137,18 @@ flowchart TD
     M{"单纯防止编译器重排?"}
     N["用编译器屏障 asm volatile 或 atomic_signal_fence"]
     Z["决策完成"]
-    A -->|否| B
-    A -->|是| E
-    B -->|否| M
-    B -->|是| C
-    C -->|是| G
-    C -->|否| D
-    D -->|是| H
-    D -->|否| I
-    I -->|是| J
-    I -->|否| K
-    K -->|是| L
-    K -->|否| N
+    A -->|"否"| B
+    A -->|"是"| E
+    B -->|"否"| M
+    B -->|"是"| C
+    C -->|"是"| G
+    C -->|"否"| D
+    D -->|"是"| H
+    D -->|"否"| I
+    I -->|"是"| J
+    I -->|"否"| K
+    K -->|"是"| L
+    K -->|"否"| N
     G --> Z
     H --> Z
     J --> Z

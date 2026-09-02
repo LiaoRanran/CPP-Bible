@@ -2343,25 +2343,25 @@ hi
 ```mermaid
 flowchart TD
     S0["需要在固定存储上表示多种类型之一?"] --> D1{"是否可用 std::variant 替代裸 union?"}
-    D1 -->|是| VAR["std::variant 类型安全联合"]
-    D1 -->|否 必须裸 union| D2{"能否保证活跃成员跟踪?"}
-    D2 -->|能 手动标记| U["裸 union + 判别式/active 标志"]
-    D2 -->|不能| FB["回退 改用 std::variant"]
+    D1 -->|"是"| VAR["std::variant 类型安全联合"]
+    D1 -->|"否 必须裸 union"| D2{"能否保证活跃成员跟踪?"}
+    D2 -->|"能 手动标记"| U["裸 union + 判别式/active 标志"]
+    D2 -->|"不能"| FB["回退 改用 std::variant"]
     VAR --> D3{"访问时需要编译期完备?"}
-    D3 -->|是| VIS["std::visit + 访客"]
-    D3 -->|否| IDX["index()/get_if 检查"]
+    D3 -->|"是"| VIS["std::visit + 访客"]
+    D3 -->|"否"| IDX["index()/get_if 检查"]
     U --> D4{"切换活跃成员?"}
-    D4 -->|是| DEST["手动调用析构再布置新值"]
-    D4 -->|否| OK1["读取当前活跃成员"]
+    D4 -->|"是"| DEST["手动调用析构再布置新值"]
+    D4 -->|"否"| OK1["读取当前活跃成员"]
     DEST --> D5{"涉及非平凡类型?"}
-    D5 -->|是| PLACE["std::construct_at / 显式构造"]
-    D5 -->|否| OK2["平凡拷贝即可"]
+    D5 -->|"是"| PLACE["std::construct_at / 显式构造"]
+    D5 -->|"否"| OK2["平凡拷贝即可"]
     VAR --> D6{"需要错误而非异常?"}
-    D6 -->|是| MONO["使用 std::monostate 占位"]
-    D6 -->|否| OK3["普通 variant"]
+    D6 -->|"是"| MONO["使用 std::monostate 占位"]
+    D6 -->|"否"| OK3["普通 variant"]
     VIS --> D7{"访客覆盖所有 alternative?"}
-    D7 -->|否| FB2["回退 补全覆盖或 get_if 兜底"]
-    D7 -->|是| OK4["完整分发"]
+    D7 -->|"否"| FB2["回退 补全覆盖或 get_if 兜底"]
+    D7 -->|"是"| OK4["完整分发"]
     FB --> VAR
     FB2 --> IDX
 ```

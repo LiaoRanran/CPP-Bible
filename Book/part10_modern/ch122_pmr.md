@@ -1560,23 +1560,23 @@ int main() {
 ```mermaid
 flowchart TD
     A["频繁 批量分配 性能敏感"] --> D1{"分配模式 同生同灭?"}
-    D1 -->|是 批创建同销毁| B["monotonic_buffer_resource"]
-    D1 -->|否 高频小对象| D2{"是否多线程并发?"}
-    D2 -->|是 并发| C["synchronized_pool_resource"]
-    D2 -->|否 单线程| E["unsynchronized_pool_resource"]
+    D1 -->|"是 批创建同销毁"| B["monotonic_buffer_resource"]
+    D1 -->|"否 高频小对象"| D2{"是否多线程并发?"}
+    D2 -->|"是 并发"| C["synchronized_pool_resource"]
+    D2 -->|"否 单线程"| E["unsynchronized_pool_resource"]
     B --> D3{"需复用中间块?"}
     C --> D3
     E --> D3
-    D3 -->|否 arena 够| F["共享 arena 对象森林"]
-    D3 -->|是 需回收| G["换池或默认 allocator"]
+    D3 -->|"否 arena 够"| F["共享 arena 对象森林"]
+    D3 -->|"是 需回收"| G["换池或默认 allocator"]
     F --> D4{"嵌套容器递归传播?"}
     G --> D4
-    D4 -->|是| H["polymorphic_allocator 传 memory_resource*"]
-    D4 -->|否| I["普通容器默认 allocator"]
+    D4 -->|"是"| H["polymorphic_allocator 传 memory_resource*"]
+    D4 -->|"否"| I["普通容器默认 allocator"]
     H --> D5{"与既有 allocator 代码兼容?"}
     I --> D5
-    D5 -->|兼容| Y1["迁移到 pmr 接口"]
-    D5 -->|不兼容| Y2["保留默认 operator new"]
+    D5 -->|"兼容"| Y1["迁移到 pmr 接口"]
+    D5 -->|"不兼容"| Y2["保留默认 operator new"]
     Y1 --> Z["选定分配器策略 写基准"]
     Y2 --> Z
 ```

@@ -896,13 +896,13 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
   N1 --> N7
   N1 --> N8
   N2 --> N9
-  N9 -->|是| N10
+  N9 -->|"是"| N10
   N3 --> N11
-  N11 -->|是| N12
+  N11 -->|"是"| N12
   N4 --> N13
-  N13 -->|是| N14
+  N13 -->|"是"| N14
   N5 --> N15
-  N15 -->|是| N16
+  N15 -->|"是"| N16
 ```
 
 > 决策流说明：第⑭节指出四大特性相互独立（或门）——可单独采用 concepts 或 coroutines；但 concepts 与 ranges 是「与门」组合（ch90 的 view 需 concept 约束），modules 与 constexpr 结合可把更多代码移入编译期（ch69）。

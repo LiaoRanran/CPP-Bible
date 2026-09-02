@@ -1407,12 +1407,12 @@ flowchart TD
   OPT["std::optional / expected (ch88/ch91)"]
   DONE["选择表征并文档化"]
   START --> Q1
-  Q1 -->|是| ASS
-  Q1 -->|否| Q2
-  Q2 -->|是| EXC
-  Q2 -->|否| Q3
-  Q3 -->|是| CODE
-  Q3 -->|否| OPT
+  Q1 -->|"是"| ASS
+  Q1 -->|"否"| Q2
+  Q2 -->|"是"| EXC
+  Q2 -->|"否"| Q3
+  Q3 -->|"是"| CODE
+  Q3 -->|"否"| OPT
   ASS --> DONE
   EXC --> DONE
   CODE --> DONE
@@ -1509,21 +1509,21 @@ flowchart TD
   DONE["处置完成"]
 
   START --> Q1
-  Q1 -->|是| A1
-  Q1 -->|否| Q2
+  Q1 -->|"是"| A1
+  Q1 -->|"否"| Q2
   A1 --> DONE
-  Q2 -->|否| A1
-  Q2 -->|是| Q3
-  Q3 -->|是| EXP
-  Q3 -->|否| EXC
+  Q2 -->|"否"| A1
+  Q2 -->|"是"| Q3
+  Q3 -->|"是"| EXP
+  Q3 -->|"否"| EXC
   EXP --> Q4
   EXC --> Q4
-  Q4 -->|是| CODE
-  Q4 -->|否| Q5
+  Q4 -->|"是"| CODE
+  Q4 -->|"否"| Q5
   CODE --> DONE
-  Q5 -->|是| RETRY
-  Q5 -->|否| LOG
-  RETRY -->|达上限| LOG
+  Q5 -->|"是"| RETRY
+  Q5 -->|"否"| LOG
+  RETRY -->|"达上限"| LOG
   RETRY --> DONE
   LOG --> PROP
   PROP --> DONE

@@ -109,7 +109,7 @@ flowchart LR
     me["测量: steady / rdtsc / perf"]
     o["优化: -O3/LTO / SIMD / cache"]
     m --> me --> o
-    o -->|再建模 (验证假设)| m
+    o -->|"再建模 (验证假设)"| m
     lat["延迟 Latency: 单次操作耗时 / ns per op"]
     bw["带宽 Bandwidth: 单位时间吞吐 / GB/s"]
     %% 指标二维：延迟 vs 带宽

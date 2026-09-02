@@ -1186,15 +1186,15 @@ int main() {
 ```mermaid
 flowchart TD
     A["需要算法 / 管道处理区间"] --> B{"惰性视图还是立即算法?"}
-    B -->|惰性 可组合| C{"需要过滤/变换/分割?"}
-    B -->|立即| D{"需要查找/计数?"}
-    C -->|是| C1["views::filter / transform / split (惰性)"]
-    C -->|否 投影排序| C2["ranges::sort 带 projection"]
-    D -->|是| D1["ranges::find / count (带投影)"]
-    D -->|否 排序| D2["ranges::sort (C++20)"]
+    B -->|"惰性 可组合"| C{"需要过滤/变换/分割?"}
+    B -->|"立即"| D{"需要查找/计数?"}
+    C -->|"是"| C1["views::filter / transform / split (惰性)"]
+    C -->|"否 投影排序"| C2["ranges::sort 带 projection"]
+    D -->|"是"| D1["ranges::find / count (带投影)"]
+    D -->|"否 排序"| D2["ranges::sort (C++20)"]
     A --> E{"底层范围生命周期?"}
-    E -->|长寿命安全| E1["视图可返回/存储"]
-    E -->|短 局部容器| E2["禁止悬垂: 先物化 to vector"]
+    E -->|"长寿命安全"| E1["视图可返回/存储"]
+    E -->|"短 局部容器"| E2["禁止悬垂: 先物化 to vector"]
     F["投影 projection"] --> C2
     F --> D1
     G["管道 operator| 组合"] --> C1

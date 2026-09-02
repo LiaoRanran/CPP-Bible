@@ -1533,24 +1533,24 @@ int main() { using std::swap; Handle a, b; swap(a, b); (void)a; (void)b; }
 ```mermaid
 flowchart TD
     S0["要组织符号/调用一个函数?"] --> D1{"符号属于哪个逻辑域?"}
-    D1 -->|单一库| NS["放入专属 namespace"]
-    D1 -->|跨域协作| D2{"是否希望关联类型的运算符被自动找到?"}
-    D2 -->|是| ADL["依赖 ADL 按实参类型定位"]
-    D2 -->|否| EXP["显式限定调用 a::f()"]
+    D1 -->|"单一库"| NS["放入专属 namespace"]
+    D1 -->|"跨域协作"| D2{"是否希望关联类型的运算符被自动找到?"}
+    D2 -->|"是"| ADL["依赖 ADL 按实参类型定位"]
+    D2 -->|"否"| EXP["显式限定调用 a::f()"]
     NS --> D3{"namespace 嵌套过深?"}
-    D3 -->|是| ALIAS["namespace 别名 / 内联 namespace"]
-    D3 -->|否| OK1["保持扁平层次"]
+    D3 -->|"是"| ALIAS["namespace 别名 / 内联 namespace"]
+    D3 -->|"否"| OK1["保持扁平层次"]
     ADL --> D4{"普通查找已能找到吗?"}
-    D4 -->|是| OK2["直接调用 无需 using"]
-    D4 -->|否| D5{"是否要定制 swap/运算符?"}
-    D5 -->|是| US["using std::swap; 再调用 swap"]
-    D5 -->|否| FB["回退 把符号移入可见 namespace"]
+    D4 -->|"是"| OK2["直接调用 无需 using"]
+    D4 -->|"否"| D5{"是否要定制 swap/运算符?"}
+    D5 -->|"是"| US["using std::swap; 再调用 swap"]
+    D5 -->|"否"| FB["回退 把符号移入可见 namespace"]
     US --> D6{"定制函数与 std 同名?"}
-    D6 -->|是 需防隐藏| OK3["ADL 自动优先定制版本"]
-    D6 -->|否| OK4["正常重载解析"]
+    D6 -->|"是 需防隐藏"| OK3["ADL 自动优先定制版本"]
+    D6 -->|"否"| OK4["正常重载解析"]
     ALIAS --> D7{"需要版本兼容?"}
-    D7 -->|是| INL["inline namespace 做版本"]
-    D7 -->|否| OK5["普通 namespace"]
+    D7 -->|"是"| INL["inline namespace 做版本"]
+    D7 -->|"否"| OK5["普通 namespace"]
     FB --> NS
 ```
 

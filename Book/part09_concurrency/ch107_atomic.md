@@ -1446,18 +1446,18 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    REORD["编译器重排 / CPU 重排<br/>(乱序执行 · store 缓冲 · 写合并)"] -->|被 memory_order 约束| MO["memory_order<br/>relaxed / acq-rel / seq_cst"]
-    MO -->|决定可见性强度| AT["std::atomic&lt;T&gt;<br/>(RMW: lock xadd / lock cmpxchg)"]
-    AT -->|acquire/release 配对建立| SW["synchronizes-with<br/>(跨线程同步关系)"]
-    SW -->|推导| HB["happens-before<br/>(跨线程偏序保证)"]
-    AT -->|运行于硬件之上| MESI["cache 一致性 (MESI)<br/>独占行弹跳 = 争用成本"]
-    MO -->|可由显式屏障表达| FENCE["atomic_thread_fence<br/>(批量刷新可见性)"]
-    MUTEX["std::mutex / 锁<br/>(互斥 + 隐含 acq/rel)"] -->|提供更强 synchronizes-with| HB
-    AT -->|CAS/RMW 支撑| LF["lock-free / wait-free<br/>(无阻塞进度保证)"]
-    LF -->|依赖 CAS 实现| CAS["compare_exchange<br/>(无锁算法原语)"]
-    CAS -->|固有陷阱| ABA["ABA 问题<br/>(指针复用致 CAS 误判)"]
-    AT -.->|共享写触发| FS["伪共享 (false sharing)<br/>⑰ / ch154: 缓存行乒乓"]
-    MESI -.->|争用放大| FS
+    REORD["编译器重排 / CPU 重排<br/>(乱序执行 · store 缓冲 · 写合并)"] -->|"被 memory_order 约束"| MO["memory_order<br/>relaxed / acq-rel / seq_cst"]
+    MO -->|"决定可见性强度"| AT["std::atomic&lt;T&gt;<br/>(RMW: lock xadd / lock cmpxchg)"]
+    AT -->|"acquire/release 配对建立"| SW["synchronizes-with<br/>(跨线程同步关系)"]
+    SW -->|"推导"| HB["happens-before<br/>(跨线程偏序保证)"]
+    AT -->|"运行于硬件之上"| MESI["cache 一致性 (MESI)<br/>独占行弹跳 = 争用成本"]
+    MO -->|"可由显式屏障表达"| FENCE["atomic_thread_fence<br/>(批量刷新可见性)"]
+    MUTEX["std::mutex / 锁<br/>(互斥 + 隐含 acq/rel)"] -->|"提供更强 synchronizes-with"| HB
+    AT -->|"CAS/RMW 支撑"| LF["lock-free / wait-free<br/>(无阻塞进度保证)"]
+    LF -->|"依赖 CAS 实现"| CAS["compare_exchange<br/>(无锁算法原语)"]
+    CAS -->|"固有陷阱"| ABA["ABA 问题<br/>(指针复用致 CAS 误判)"]
+    AT -.->|"共享写触发"| FS["伪共享 (false sharing)<br/>⑰ / ch154: 缓存行乒乓"]
+    MESI -.->|"争用放大"| FS
 ```
 
 ### L.1 逐边解读（依赖方向为何成立）
@@ -1640,18 +1640,18 @@ int main() {
 ```mermaid
 flowchart TD
     A["多线程共享变量需要同步"] --> B{"单变量原子操作就够?"}
-    B -->|是 单变量| C{"类型 trivially copyable 且 <= 机器字?"}
-    B -->|否 多变量事务| D["用 mutex / 自旋锁 保护临界区"]
-    C -->|是 小字| C1["std::atomic<T> (通常 lock-free)"]
-    C -->|否 大字| C2["atomic<T> 可能加锁 -> 拆分/用指针"]
+    B -->|"是 单变量"| C{"类型 trivially copyable 且 <= 机器字?"}
+    B -->|"否 多变量事务"| D["用 mutex / 自旋锁 保护临界区"]
+    C -->|"是 小字"| C1["std::atomic<T> (通常 lock-free)"]
+    C -->|"否 大字"| C2["atomic<T> 可能加锁 -> 拆分/用指针"]
     C1 --> E{"需要无锁进度保证?"}
-    E -->|是| F{"is_lock_free() 为真?"}
-    F -->|是| F1["CAS 循环 (compare_exchange_weak)"]
-    F -->|否| F2["退化为锁 / 改设计"]
-    E -->|否| G["直接用 load/store/exchange"]
+    E -->|"是"| F{"is_lock_free() 为真?"}
+    F -->|"是"| F1["CAS 循环 (compare_exchange_weak)"]
+    F -->|"否"| F2["退化为锁 / 改设计"]
+    E -->|"否"| G["直接用 load/store/exchange"]
     A --> H{"需要自定义内存序?"}
-    H -->|是| H1["memory_order_acquire/release/seq_cst"]
-    H -->|否| H2["默认 seq_cst 安全"]
+    H -->|"是"| H1["memory_order_acquire/release/seq_cst"]
+    H -->|"否"| H2["默认 seq_cst 安全"]
     C1 --> X["落地: 选原子操作并守内存序/无锁前提"]
     C2 --> X
     D --> X

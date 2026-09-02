@@ -1012,17 +1012,17 @@ int main() {
 ```mermaid
 flowchart TD
     S0["起点：需要约束重排或可见性"] --> D1{"约束发生在同线程内?"}
-    D1{"约束发生在同线程内?"} -->|是| A1["atomic_signal_fence"]
-    D1{"约束发生在同线程内?"} -->|否| D2{"需要跨线程/跨核可见性?"}
-    D2{"需要跨线程/跨核可见性?"} -->|否| A2["无需 fence 或仅 relaxed"]
-    D2{"需要跨线程/跨核可见性?"} -->|是| D3{"是否配对 release/acquire?"}
-    D3{"是否配对 release/acquire?"} -->|是| A3["atomic_thread_fence(release/acquire)"]
-    D3{"是否配对 release/acquire?"} -->|否| D4{"是否单全序 seq_cst?"}
-    D4{"是否单全序 seq_cst?"} -->|否| A4["atomic_thread_fence 单向"]
-    D4{"是否单全序 seq_cst?"} -->|是| A5["atomic_thread_fence(seq_cst)"]
+    D1{"约束发生在同线程内?"} -->|"是"| A1["atomic_signal_fence"]
+    D1{"约束发生在同线程内?"} -->|"否"| D2{"需要跨线程/跨核可见性?"}
+    D2{"需要跨线程/跨核可见性?"} -->|"否"| A2["无需 fence 或仅 relaxed"]
+    D2{"需要跨线程/跨核可见性?"} -->|"是"| D3{"是否配对 release/acquire?"}
+    D3{"是否配对 release/acquire?"} -->|"是"| A3["atomic_thread_fence(release/acquire)"]
+    D3{"是否配对 release/acquire?"} -->|"否"| D4{"是否单全序 seq_cst?"}
+    D4{"是否单全序 seq_cst?"} -->|"否"| A4["atomic_thread_fence 单向"]
+    D4{"是否单全序 seq_cst?"} -->|"是"| A5["atomic_thread_fence(seq_cst)"]
     A3 --> D5{"是否信号/中断上下文?"}
-    D5{"是否信号/中断上下文?"} -->|是| A6["追加 signal_fence 防编译器重排"]
-    D5{"是否信号/中断上下文?"} -->|否| A7["仅 thread_fence 即可"]
+    D5{"是否信号/中断上下文?"} -->|"是"| A6["追加 signal_fence 防编译器重排"]
+    D5{"是否信号/中断上下文?"} -->|"否"| A7["仅 thread_fence 即可"]
     A1 --> END["结束：栅栏选型确定"]
     A2 --> END
     A5 --> END

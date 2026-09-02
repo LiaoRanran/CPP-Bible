@@ -1813,16 +1813,16 @@ int main() {
 ```mermaid
 flowchart TD
     A["数值归约 / 扫描需求"] --> B{"需要并行或 SIMD 加速?"}
-    B -->|是| C{"二元操作可交换且结合?"}
-    C -->|是| C1["std::reduce / transform_reduce(par/unseq)"]
-    C -->|否 需确定序| C2["std::accumulate (串行, 确定序)"]
-    B -->|否| D{"需要点积/乘加融合?"}
-    D -->|是| D1["std::inner_product / transform_reduce"]
-    D -->|否 单序列求和| E{"结果类型需大整数/浮点?"}
-    E -->|是| E1["accumulate(init=0.0 / 0LL) 指定 init 类型"]
-    E -->|否| E2["accumulate(init=0)"]
+    B -->|"是"| C{"二元操作可交换且结合?"}
+    C -->|"是"| C1["std::reduce / transform_reduce(par/unseq)"]
+    C -->|"否 需确定序"| C2["std::accumulate (串行, 确定序)"]
+    B -->|"否"| D{"需要点积/乘加融合?"}
+    D -->|"是"| D1["std::inner_product / transform_reduce"]
+    D -->|"否 单序列求和"| E{"结果类型需大整数/浮点?"}
+    E -->|"是"| E1["accumulate(init=0.0 / 0LL) 指定 init 类型"]
+    E -->|"否"| E2["accumulate(init=0)"]
     A --> F{"需要相邻差分/前缀和?"}
-    F -->|是| F1["adjacent_difference / inclusive_scan / exclusive_scan"]
+    F -->|"是"| F1["adjacent_difference / inclusive_scan / exclusive_scan"]
     H["执行策略 execution"] --> C1
     C1 --> X["落地: 守 init 类型与迭代器/结合性"]
     C2 --> X

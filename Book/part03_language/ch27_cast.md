@@ -89,8 +89,8 @@ flowchart TD
     lib --> vptr["取 *p 的 vptr"]
     vptr --> vt["读 vtable 中 __vmi / typeinfo 指针"]
     vt --> match{"沿继承树 most-derived 向上/向下匹配"}
-    match -->|成功| ret["返回正确偏移后的指针"]
-    match -->|失败| fail["ptr==nullptr / 抛 bad_cast"]
+    match -->|"成功"| ret["返回正确偏移后的指针"]
+    match -->|"失败"| fail["ptr==nullptr / 抛 bad_cast"]
 ```
 
 `static_cast`/`const_cast`/`reinterpret_cast` 在 `-O2` 下**不产生任何运行时代码**（纯编译期类型改写），而 `dynamic_cast` 必然进入运行期路径——这是性能差异的根本来源（§10、§12）。
@@ -2201,14 +2201,14 @@ uint32_t bits = std::bit_cast<uint32_t>(1.0f);   // 编译期可求值, 类型�
 ```mermaid
 flowchart TD
     S["需要类型转换"] --> Q1{"涉及多态下行?"}
-    Q1 -->|是| DC["dynamic_cast 运行时检查"]
-    Q1 -->|否| Q2{"数值类型间转换?"}
-    Q2 -->|是| SC["static_cast 数值或上行"]
-    Q2 -->|否| Q3{"仅改 const volatile?"}
-    Q3 -->|是| CC["const_cast 只动 cv 限定"]
-    Q3 -->|否| Q4{"重新解释位模式?"}
-    Q4 -->|是| RC["reinterpret_cast 极危险"]
-    Q4 -->|否| BC["优先 std::bit_cast 类型安全"]
+    Q1 -->|"是"| DC["dynamic_cast 运行时检查"]
+    Q1 -->|"否"| Q2{"数值类型间转换?"}
+    Q2 -->|"是"| SC["static_cast 数值或上行"]
+    Q2 -->|"否"| Q3{"仅改 const volatile?"}
+    Q3 -->|"是"| CC["const_cast 只动 cv 限定"]
+    Q3 -->|"否"| Q4{"重新解释位模式?"}
+    Q4 -->|"是"| RC["reinterpret_cast 极危险"]
+    Q4 -->|"否"| BC["优先 std::bit_cast 类型安全"]
 ```
 
 ## 附录 J：类型转换 cast 决策流（D3 维度）
@@ -2216,24 +2216,24 @@ flowchart TD
 ```mermaid
 flowchart TD
     S0["需要转换类型/重新解释对象?"] --> D1{"只是移除/添加 const volatile?"}
-    D1 -->|是| CC["const_cast 仅动 cv"]
-    D1 -->|否| D2{"相关类型间有继承/转换?"}
-    D2 -->|是 向上/向下/跨| D3{"运行时需检查?"}
-    D3 -->|是| DY["dynamic_cast 带 RTTI 检查"]
-    D3 -->|否 已知安全| STC["static_cast 静态转换"]
-    D2 -->|否 无关类型| D4{"是否位模式重解释?"}
-    D4 -->|是 同尺寸类型安全| BI["std::bit_cast 类型安全"]
-    D4 -->|是 极危险底层| RC["reinterpret_cast 重解释"]
-    D4 -->|否| FB["回退 重构设计 避免转换"]
+    D1 -->|"是"| CC["const_cast 仅动 cv"]
+    D1 -->|"否"| D2{"相关类型间有继承/转换?"}
+    D2 -->|"是 向上/向下/跨"| D3{"运行时需检查?"}
+    D3 -->|"是"| DY["dynamic_cast 带 RTTI 检查"]
+    D3 -->|"否 已知安全"| STC["static_cast 静态转换"]
+    D2 -->|"否 无关类型"| D4{"是否位模式重解释?"}
+    D4 -->|"是 同尺寸类型安全"| BI["std::bit_cast 类型安全"]
+    D4 -->|"是 极危险底层"| RC["reinterpret_cast 重解释"]
+    D4 -->|"否"| FB["回退 重构设计 避免转换"]
     STC --> D5{"转换可能窄化/丢信息?"}
-    D5 -->|是| WARN["加断言/检查或改用安全 API"]
-    D5 -->|否| OK1["static_cast 安全"]
+    D5 -->|"是"| WARN["加断言/检查或改用安全 API"]
+    D5 -->|"否"| OK1["static_cast 安全"]
     DY --> D6{"转换失败?"}
-    D6 -->|是 返回 nullptr/抛| FB2["回退 改 static_cast 或处理空"]
-    D6 -->|否| OK2["dynamic_cast 成功"]
+    D6 -->|"是 返回 nullptr/抛"| FB2["回退 改 static_cast 或处理空"]
+    D6 -->|"否"| OK2["dynamic_cast 成功"]
     CC --> D7{"被去 const 的对象本就 const?"}
-    D7 -->|是| UB["未定义行为! 严禁写回"]
-    D7 -->|否| OK3["const_cast 安全去 const"]
+    D7 -->|"是"| UB["未定义行为! 严禁写回"]
+    D7 -->|"否"| OK3["const_cast 安全去 const"]
     FB --> STC
     FB2 --> D2
 ```

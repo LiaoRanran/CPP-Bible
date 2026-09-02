@@ -1214,22 +1214,22 @@ int main() {
 ```mermaid
 flowchart TD
   A["allocate n 调用方申请"] --> B{"n 超过单块上限?"}
-  B -->|是| F["回退 系统 operator new n"]
-  B -->|否| C{"free_list_ 为空?"}
-  C -->|是| G["grow 批量 operator new 一大块"]
+  B -->|"是"| F["回退 系统 operator new n"]
+  B -->|"否"| C{"free_list_ 为空?"}
+  C -->|"是"| G["grow 批量 operator new 一大块"]
   G --> S["切块串成 FreeNode 链表"]
   S --> D["摘头节点返回 O(1)"]
-  C -->|否| D
+  C -->|"否"| D
   D --> R["返回给用户 对齐 max_align_t"]
   R --> U["用户使用对象"]
   U --> E["deallocate p 头插回 free_list_"]
   E --> Z{"进程退出?"}
-  Z -->|否| A
-  Z -->|是| X["析构 逐个 operator delete chunks_"]
-  F -->|deallocate| E2["operator delete p"]
+  Z -->|"否"| A
+  Z -->|"是"| X["析构 逐个 operator delete chunks_"]
+  F -->|"deallocate"| E2["operator delete p"]
   E2 --> Z
-  C -.->|多线程| M["mutex 加锁 或 无锁 CAS ch107"]
-  G -.->|缓存行| P["alignas 64 防 false sharing ch43"]
+  C -.->|"多线程"| M["mutex 加锁 或 无锁 CAS ch107"]
+  G -.->|"缓存行"| P["alignas 64 防 false sharing ch43"]
 ```
 
 > 决策流说明：尺寸判定与 free_list 状态之间是「与/或」组合——只有"未超上限「且」free_list 空"才触发 grow 批量切块，否则直接摘头（O(1)）；析构释放与回退释放两条边在"进程退出"闸门「或」汇合。跨章外推：无锁路径依赖第107章 atomic 与第110章 lock-free，对齐外推第43章 cache_locality。

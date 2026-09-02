@@ -141,7 +141,7 @@ flowchart TD
     Root["定长连续序列（编译期 N 已知）"] --> C["裸 C 数组 T[N]: 值? 退化指针 / 无 .size() / 无 at 检查"]
     Root --> Arr["std::array<T,N>: 值语义聚合类型 / 有 .size()/迭代器 / at() 边界检查"]
     Root --> Vec["std::vector<T>: 堆上变长 / 有 .size()/扩容 / at()/[]"]
-    Arr -->|可转| Span["std::span<T,N/动态>（视图，见 ch82）"]
+    Arr -->|"可转"| Span["std::span<T,N/动态>（视图，见 ch82）"]
 ```
 
 ---
@@ -151,8 +151,8 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[定长数据] --> B{"长度编译期已知?"}
-    B -->|是| C["std::array T N : 栈上零开销"]
-    B -->|否| D["std::vector T : 堆上变长"]
+    B -->|"是"| C["std::array T N : 栈上零开销"]
+    B -->|"否"| D["std::vector T : 堆上变长"]
     C --> E[花括号聚合初始化]
     C --> F["std::to_array 从 C 数组提升"]
     C --> G["data 转 span/C 指针"]
@@ -1356,17 +1356,17 @@ sizeof==N*sizeof(int): 1
 ```mermaid
 flowchart TD
     A["需求:存储一组同类型元素"] --> D1{"长度编译期已知?"}
-    D1 -->|是| D2{"长度是否较大,有爆栈风险?"}
-    D1 -->|否| F1["std::vector 堆上变长"]
-    D2 -->|否 适中| D3{"需要把序列传给算法/接口?"}
-    D2 -->|是 很大| F2["std::vector 避免栈溢出"]
-    D3 -->|是| D4{"需要只读视图还是拥有副本?"}
-    D3 -->|否| F3["std::array 栈上定长"]
-    D4 -->|只读视图| F4["std::span / string_view"]
-    D4 -->|拥有并修改| F5["std::array 值语义"]
+    D1 -->|"是"| D2{"长度是否较大,有爆栈风险?"}
+    D1 -->|"否"| F1["std::vector 堆上变长"]
+    D2 -->|"否 适中"| D3{"需要把序列传给算法/接口?"}
+    D2 -->|"是 很大"| F2["std::vector 避免栈溢出"]
+    D3 -->|"是"| D4{"需要只读视图还是拥有副本?"}
+    D3 -->|"否"| F3["std::array 栈上定长"]
+    D4 -->|"只读视图"| F4["std::span / string_view"]
+    D4 -->|"拥有并修改"| F5["std::array 值语义"]
     F3 --> D5{"需要边界检查?"}
-    D5 -->|调试期检查| G1["用 at() 抛异常"]
-    D5 -->|热路径| G2["用 operator[] 自保证"]
+    D5 -->|"调试期检查"| G1["用 at() 抛异常"]
+    D5 -->|"热路径"| G2["用 operator[] 自保证"]
     F1 --> Z["结论:定长已知且不大用 array"]
     F2 --> Z
     F4 --> Z
