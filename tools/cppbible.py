@@ -348,6 +348,8 @@ def cmd_preflight(_args: argparse.Namespace) -> int:
         # data_sanity 第 8 项：HEX_QUANTITY（十六进制污染）经 ABI 豁免后零误报，
         # --fail-on ERROR 只拦 ERROR，PERF_CONFLICT/UNANCHORED_EVIDENCE 为 WARN 不阻断。
         ("Data Sanity (HEX)", [PYTHON_EXE, "tools/data_sanity_audit.py", "--fail-on", "ERROR"]),
+        # 标题截断污染已清零（60fb2c8），门禁防回归：新增截断即阻断
+        ("Caption Truncation", [PYTHON_EXE, "tools/caption_truncation_audit.py", "--check"]),
         # 错误左移补充：LaTeX 致命反斜杠 + 行尾卫生（秒级，与 CI quality 一致）
         ("Preflight (LaTeX)", [PYTHON_EXE, "tools/preflight_check.py"]),
         ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
