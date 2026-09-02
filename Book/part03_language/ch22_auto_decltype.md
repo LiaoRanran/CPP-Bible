@@ -179,19 +179,29 @@ main()
 
 ## ⑨ 汇编
 
-**[实现-推断]** 以下为 GCC 15.3.0 `-O2 -std=c++20` 下 `auto` 与显式类型生成**完全相同**汇编的示意（已实测验证二者同构；具体字节取决于上下文）：
+**[实验·本机实测]** GCC 15.3.0 `-O2 -std=c++20 -masm=intel` 真机产物（源码 `Examples/_ch22_auto_zero_cost.cpp`）。`auto` 与显式类型生成**逐字节相同**的汇编——这不是推断，是实测：
 
 ```asm
-; auto x = compute();  与   int x = compute();  在 -O2 下均生成：
-call    compute()
-mov     DWORD PTR [rsp-4], eax     ; 返回值落入同一栈槽
+; 节选自 Examples/_ch22_auto_zero_cost.asm（GCC 15.3.0 -O2 -std=c++20 -masm=intel）
+; int via_auto()     { auto x = compute(); return x; }
+; int via_explicit() { int  x = compute(); return x; }
+_Z8via_autov:
+        mov     eax, 42
+        ret
+_Z12via_explicitv:
+        mov     eax, 42
+        ret
 
-; auto&& r = getVec(); 转发引用绑定右值：无拷贝，直接 hold 地址
-call    getVec()
-mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
+; decltype(auto) 转发工厂 vs 手写 int& 返回版本——逐字节一致，转发零开销：
+_Z9front_refRSt6vectorIiSaIiEE:      ; int& front_ref(vector<int>&)
+        mov     rax, QWORD PTR [rcx]  ; 返回 v.front() 的地址
+        ret
+_Z9fwd_frontRSt6vectorIiSaIiEE:      ; decltype(auto) fwd_front(vector<int>&)
+        mov     rax, QWORD PTR [rcx]  ; 与上面完全一致
+        ret
 ```
 
-`decltype(auto)` 转发函数（KP6）在 `-O2` 下通常被内联，生成的汇编与其手写返回类型的等价版本逐字节一致——转发零开销。
+> **读图要点**：`compute()` 返回 `42`，在 `-O2` 下被内联折叠，故 `via_auto` 与 `via_explicit` 的函数体都只剩 `mov eax, 42; ret`，机器码完全一致——`auto` 在编译期把类型求出来后，代码生成阶段与手写类型走同一条路，运行时零成本。`decltype(auto)` 转发工厂（`fwd_front`）与手写 `int&` 版本（`front_ref`）同样逐字节一致，转发不引入任何额外指令。这是「auto/decltype 零成本」的真机证据，而非口头宣称。
 
 ---
 
