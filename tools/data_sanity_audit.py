@@ -46,6 +46,7 @@ SEVERITY: dict[str, str] = {
     "HEX_QUANTITY": "ERROR",
     "PERF_CONFLICT": "WARN",
     "UNANCHORED_EVIDENCE": "WARN",
+    "PERF_REVIEWED": "INFO",
 }
 
 FENCE_RE = re.compile(r"^\s*(```|~~~)")
@@ -68,6 +69,26 @@ ABI_CTX_RE = re.compile(
 )
 OFFSET_ARITH_RE = re.compile(r"0x[0-9A-Fa-f]+\s*\*")
 OFFSET_CTX_RE = re.compile(r"(?:偏移|offset|地址|位掩码|掩码|mangled|符号名)\s*[：:]?\s*0x", re.I)
+
+# PERF_CONFLICT 人工复核结论（2026-09-02 逐条核实：7 处全部为「不同场景/规模/来源」的
+# 合理并存，非矛盾数据）。key=(章文件名, 关键词, 单位, lo, hi)，value=豁免理由。
+# 正文数字一旦被改动，key 不再命中 → 自动重新 WARN 需重新复核（豁免不会过期滞留）。
+REVIEWED_PERF: dict[tuple[str, str, str, float, float], str] = {
+    ("ch03_cpp98_03.md", "std::sort", "ms", 85.0, 450.0):
+        "450 为「旧估偏高」的修正留痕说明，85 为真机值（正文 L130 已自证）",
+    ("ch36_stack_heap.md", "malloc", "ns", 10.0, 48.0):
+        "10ns 为 TCMalloc 线程缓存宣称值（已标 UNVERIFIED），48ns 为本机 glibc new int 实测",
+    ("ch38_allocator.md", "vector", "ms", 41.319, 144.898):
+        "默认 allocator 基线 vs monotonic 加速组，3.51× 即表格倍数列",
+    ("ch71_policy.md", "sort", "ms", 147.973, 487.992):
+        "模板策略 vs std::function 场景对比，3.30× 即表格倍数列",
+    ("ch93_thread_async.md", "std::atomic", "ns", 3.5, 20.0):
+        "relaxed 无争用精确实测 vs 标注「粗略」的量级表（含屏障/保守区间）",
+    ("ch100_ranges_algo.md", "vector", "ms", 91.4, 737.0):
+        "预填充含分配路径 vs 单循环基线，7.5× 即图注主题",
+    ("ch96_sorting.md", "std::sort", "ms", 87.0, 383.317):
+        "N=1M vs N=4M 规模差异，正文已注明 383÷4≈96 同量级",
+}
 
 # ② 性能数字 + 算法关键词（长词在前，保证 std::stable_sort 优先于 sort）
 PERF_NUM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*(ms|us|µs|ns)\b")
@@ -100,7 +121,7 @@ def _join(lines: list[str], start: int, end: int) -> str:
     return "\n".join(lines[max(0, start):end])
 
 
-def scan_lines(lines: list[str]) -> list[tuple[int, str, str]]:
+def scan_lines(lines: list[str], fname: str = "") -> list[tuple[int, str, str]]:
     """扫描单个文件的行序列，返回 [(行号(1-based), 类别, 说明)]。"""
     issues: list[tuple[int, str, str]] = []
     perf: dict[tuple[str, str], list[tuple[float, int]]] = {}
@@ -178,6 +199,14 @@ def scan_lines(lines: list[str]) -> list[tuple[int, str, str]]:
         # 不是自相矛盾——只有跨行独立声明才值得人工复核
         if lo_ln == hi_ln:
             continue
+        reviewed = REVIEWED_PERF.get((os.path.basename(fname), kw, unit, lo, hi))
+        if reviewed is not None:
+            issues.append((
+                lo_ln,
+                "PERF_REVIEWED",
+                f"已人工复核豁免（同章「{kw}」{lo:g}{unit} vs {hi:g}{unit}）：{reviewed}",
+            ))
+            continue
         issues.append((
             lo_ln,
             "PERF_CONFLICT",
@@ -221,7 +250,7 @@ def main() -> int:
     for fp in files:
         with open(fp, "r", encoding="utf-8", newline="") as f:
             lines = f.read().split("\n")
-        for ln, kind, msg in scan_lines(lines):
+        for ln, kind, msg in scan_lines(lines, fp):
             rows.append({
                 "file": fp,
                 "line": ln,
@@ -246,14 +275,17 @@ def main() -> int:
             print(f"   L{it['line']}: [{it['severity']}] {it['kind']} — {it['msg']}")
         n_err = sum(1 for x in rows if x["severity"] == "ERROR")
         n_warn = sum(1 for x in rows if x["severity"] == "WARN")
+        n_info = sum(1 for x in rows if x["severity"] == "INFO")
         print(
-            f"\n合计 {len(rows)} 处（ERROR {n_err} / WARN {n_warn}），"
+            f"\n合计 {len(rows)} 处（ERROR {n_err} / WARN {n_warn} / 已复核豁免 {n_info}），"
             f"扫描 {len(files)} 文件；HEX_QUANTITY 零误报可用 --fail-on ERROR 接门禁"
         )
 
     if args.fail_on == "ERROR" and any(x["severity"] == "ERROR" for x in rows):
         return 1
-    if args.fail_on == "WARN" and rows:
+    if args.fail_on == "WARN" and any(
+        x["severity"] in ("ERROR", "WARN") for x in rows
+    ):
         return 1
     return 0
 
