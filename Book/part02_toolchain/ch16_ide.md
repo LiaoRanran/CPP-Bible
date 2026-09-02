@@ -932,14 +932,14 @@ call lookup_symbol       ; 递归查找定义
 
 ### 量级
 
-- 单文件 AST 构建 ≈ 0x0100 ms（含头展开 `0x0100` KB）
+- 单文件 AST 构建 ≈ 256 ms（含头展开 `256` KB）
 - 符号索引（背景）≈ 22s / 万行；增量重解析 ≈ 5.0ms
 - 补全请求端到端 ≈ 0.2us（缓存命中）→ 1.2ms（需重解析）
 - 诊断延迟 ≈ 0.5us/千行（clang-tidy）
 
 ### 实现要点
 
-- clangd 用 preamble 缓存头文件，省 ≈ 0x0040 KB 重读
+- clangd 用 preamble 缓存头文件，省 ≈ 64 KB 重读
 - 符号数据库偏移 `0x0008` 存声明位置
 - `clangd` 经 LSP 与 IDE 通信，JSON 报文 `0x0040` 字节量级
 

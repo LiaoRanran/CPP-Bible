@@ -931,7 +931,7 @@ call [rcx]                ; 首次解析后填回 GOT
 
 ### 实测量级
 
-- 静态链接可执行 ≈ 0x0100 KB 起步；动态链接省 ≈ 0x0040 KB
+- 静态链接可执行 ≈ 256 KB 起步；动态链接省 ≈ 64 KB
 - 符号查找 `dlsym` ≈ 1.2us（缓存命中）→ 22ms（冷）
 - LTO 全程序优化额外 ≈ 22s，但去虚化省 ≈ 3.2ns/调用
 - 跨 gcc/clang 的 libstdc++/libc++ ABI 不兼容需 `-D_GLIBCXX_USE_CXX11_ABI`

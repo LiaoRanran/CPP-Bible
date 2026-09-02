@@ -799,8 +799,8 @@ jbe .depth_error
 
 ### 实例化代价
 
-- 每套实参生成一份代码：模板在 0x0008 种实参下二进制膨胀 ≈ 0x0100 KB [UNVERIFIED]
-- 符号修饰（mangling）长度 ≈ 0x0040 字符；`c++filt` 还原 ≈ 0.1us [UNVERIFIED]
+- 每套实参生成一份代码：模板在 8 种实参下二进制膨胀 ≈ 256 KB [UNVERIFIED]
+- 符号修饰（mangling）长度 ≈ 64 字符；`c++filt` 还原 ≈ 0.1us [UNVERIFIED]
 - 默认实例化深度上限 `0x0100`（256），超出报 `template instantiation depth` [UNVERIFIED]
 
 ### 决议时序

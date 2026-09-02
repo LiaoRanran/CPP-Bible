@@ -1321,7 +1321,7 @@ mov rax, [rdi+0x0010]     ; 下一级
 ### 量级
 
 - 写（WAL + memtable）≈ 1.0us；读（memtable 命中）≈ 0.5us
-- compaction 读取 ≈ 22ms/GB；L0→L1 合并 ≈ 0x0008 路
+- compaction 读取 ≈ 22ms/GB；L0→L1 合并 ≈ 8 路
 - 块缓存命中 LRU ≈ 1.0ns；冷读主存 ≈ 100ns
 
 ### 编译器与标准

@@ -731,13 +731,13 @@ add rdi, 0x0008           ; 步进 int32
 
 ### 实例化代价
 
-- 每套表达式类型生成一份代码：0x0008 种组合膨胀 ≈ 0x0100 KB [UNVERIFIED]
-- 符号修饰长度 ≈ 0x0040 字符；`c++filt` 还原 ≈ 0.1us [UNVERIFIED]
+- 每套表达式类型生成一份代码：8 种组合膨胀 ≈ 256 KB [UNVERIFIED]
+- 符号修饰长度 ≈ 64 字符；`c++filt` 还原 ≈ 0.1us [UNVERIFIED]
 - 默认实例化深度上限 `0x0100`（256） [UNVERIFIED]
 
 ### 量级
 
-- 展开后循环无临时对象，省 ≈ 0x0020 次拷贝 ≈ 20ns [UNVERIFIED]
+- 展开后循环无临时对象，省 ≈ 32 次拷贝 ≈ 20ns [UNVERIFIED]
 - `constexpr` 表达式在 C++20 可编译期求值，省全部运行时代价
 - AVX2 向量化后 8x 展开，吞吐 +4x [UNVERIFIED]
 
