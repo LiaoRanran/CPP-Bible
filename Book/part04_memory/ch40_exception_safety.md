@@ -389,7 +389,7 @@ int main(){
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与移动：vector 扩容的决策
 ```cpp
-// [示例 10] 扩容实验：移动抛 → 走拷贝（用 move_if_noexcept 等价于标准库）
+// [示例 10] 扩容实验：移动抛（非 noexcept）→ move_if_noexcept 走拷贝 → 扩容成功
 #include <vector>
 #include <utility>
 #include <type_traits>
@@ -397,16 +397,27 @@ int main(){
 struct M {
     int v=0;
     M(int x=0):v(x){}
-    M(M&& o) noexcept(false) { v=o.v; throw "move throws"; } // 故意：移动抛
-    M(const M& o):v(o.v){}                                     // 拷贝安全
+    M(M&& o) noexcept(false) { v=o.v; throw "move throws"; } // 移动抛，且未标 noexcept
+    M(const M& o):v(o.v){ std::cout << "  [copy] v=" << o.v << "\n"; } // 拷贝安全
 };
 int main(){
     std::vector<M> v; v.reserve(1); v.emplace_back(1);
-    try { v.emplace_back(2); }   // 扩容：move_if_noexcept 见移动抛→改用拷贝
-    catch(const char*){ std::cout << "rollback OK, size=" << v.size() << "\n"; }
-    // 扩容中拷贝若抛，旧缓冲完整→整体回滚到 size=1（strong）
+    std::cout << "is_nothrow_move_constructible<M> = "
+              << std::is_nothrow_move_constructible<M>::value << "\n";
+    v.emplace_back(2);  // 扩容：move_if_noexcept 见移动非 noexcept → 改用拷贝
+    std::cout << "after: size=" << v.size() << "（扩容成功，走拷贝，未抛异常）\n";
 }
 ```
+
+**[实验·本机实测]** 真机输出（GCC 15.3.0 `-O0 -std=c++17 -static`）：
+
+```text
+is_nothrow_move_constructible<M> = 0
+  [copy] v=1
+after: size=2（扩容成功，走拷贝，未抛异常）
+```
+
+> 关键结论：`M` 移动构造是 `noexcept(false)`，故 `is_nothrow_move_constructible<M> = 0`；`vector` 扩容时 `move_if_noexcept` 据此**改用拷贝**（输出 `[copy] v=1`），拷贝安全不抛 → 扩容直接成功到 `size=2`，**根本没有异常、没有回滚**。这正是 strong 保证的实现方式——「移动可能抛就改走拷贝」在**源头**规避「搬一半抛异常」的状态损坏；「回滚」是另一场景（拷贝也抛时 `_M_realloc_insert` 的 catch 分支才触发，见第 7.2 节）。
 
 **<span class="badge badge-exp">经验</span>**　**给你的类型写 `noexcept` 移动构造/移动赋值**——这是让 `vector`/`deque`/`string` 在扩容、排序、resize 时**用移动而非拷贝**的唯一开关，既保强保证又获性能（第 16、18 节 microbenchmark）。`ch115` 详述移动语义。
 
