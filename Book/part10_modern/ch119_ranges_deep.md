@@ -176,8 +176,7 @@ auto f = v | std::views::slice(1,4);                       // [1,4)
 auto g = std::views::iota(1, 10);                          // 无限/有限整数序列 1..9
 ```
 
-- `[标准]`：`filter`/`transform`/`take`/`drop`/`reverse`/`slice`/`iota` 均为惰性 view。
-- `[经验]`：`views::iota` 可构造无限序列，配合 `take` 截断——这是传统迭代器对做不到的。
+**惰性 view 的代价与能力**。`filter`/`transform`/`take`/`drop`/`reverse`/`slice`/`iota` 都是惰性 view——本身不持有数据，组合也只是几个闭包对象。其中最值得记住的是 `views::iota`：它能构造无限整数序列，再用 `take` 截断成有限区间；这种"无限源 + 截断"的写法在传统迭代器对里根本表达不出来，是 Ranges 把"序列"提升为一等公民的直接体现。
 
 ## ⑦ 范围算法（ranges 算法） <span class="badge badge-std">标准</span>
 
@@ -193,8 +192,7 @@ auto m = std::ranges::max(v);             // 返回元素（非迭代器）
 bool has = std::ranges::any_of(v, [](int i){ return i > 2; });
 ```
 
-- `[标准]`：`std::ranges::` 算法以范围为参数，返回更直观（如 `max` 返回值而非迭代器）。
-- `[经验]`：优先用 `std::ranges::` 算法，少写 `begin()/end()`，可读性高。
+**范围算法比迭代器对算法更直观**。`std::ranges::` 算法直接以范围为参数，返回的是元素而非迭代器（如 `max` 返回值而不是指向它的迭代器），并自带 Concept 约束与 `borrowed_range` 安全。实践中优先用它而非 `std::` 老算法——少写 `begin()/end()`，可读性更高，还能顺带避免"把悬空迭代器当结果返回"这类老坑。
 
 ## ⑧ 投影（projection） <span class="badge badge-std">标准</span>
 
@@ -351,8 +349,7 @@ int hand_way(std::vector<int>& v) {
 // 两者 -O2 生成近似汇编，性能一致；ranges 胜在可读性，hand 胜在零抽象（极微）
 ```
 
-- `[经验]`：Ranges 的"零开销抽象"经得起实测——融合后等价于手写循环，差异仅在可读性。
-- `[经验]`：调试时惰性链不如手循环直观；性能敏感且链极长时手循环更易 profile。
+**"零开销抽象"经得起实测，但调试性是另一回事**。⑭/⑮ 的量级对比说明：融合后 Ranges 链等价于手写单循环，性能差异只在可读性（Ranges 胜）与零抽象（手写胜）。代价落在调试上——惰性链在断点里不如手循环直观，性能敏感且链极长时，手循环更易 profile、更易定位热点，这时不必硬上管道。
 
 ## ⑯ Ranges 与并行/执行策略 <span class="badge badge-std">标准</span>
 
@@ -395,8 +392,7 @@ auto bad = v | std::views::transform([](int i){ return std::to_string(i); });
 // 闭包返回临时 string，遍历时取地址会悬空 -> 用 values 或物化
 ```
 
-- `[经验]`：`filter` 视图降为前向迭代器，失去 `[]` 下标；`transform` 返回临时对象时勿长期持有引用。
-- `[经验]`：需要随机访问/下标时，先 `ranges::to<std::vector>()` 物化。
+**两个 filter/transform 的直觉陷阱**。`filter` 视图降为前向迭代器，于是失去 `[]` 下标——想随机访问就得先 `ranges::to<std::vector>()` 物化；`transform` 若返回临时对象（如 `std::to_string` 的结果），遍历时取地址就会悬空。两条都源于同一件事：视图借用的数据，其生命周期与迭代器类别由底层决定，不在你手里，视图只是"看"它。
 
 ## ⑲ Ranges 工程应用模式 <span class="badge badge-exp">经验</span>
 
@@ -414,8 +410,7 @@ std::vector<std::string> clean(const std::vector<std::string>& in) {
 }
 ```
 
-- `[经验]`：ETL/日志清洗用 Ranges 管道表达，可读性远高于嵌套循环；末尾物化为容器返回。
-- `[经验]`：配合 `std::ranges::to`（C++23）可写为 `return view | std::ranges::to<std::vector>();`。
+**工程上，管道的价值在"读起来像数据流向"**。ETL/日志清洗用 `filter | transform` 表达，可读性远高于嵌套循环；末尾用 `ranges::to<std::vector>`（C++23）物化为容器返回——这条"惰性链 + 末尾物化"的模式，正是 Ranges 在大多数业务代码里的标准形态，也正好对应 ㉒.3 强调的物化责任：惰性链负责算，物化负责交付。
 
 ## 补充完整可编译示例（ranges）
 
@@ -608,18 +603,25 @@ Ranges 的价值是「视图零拷贝 + 惰性求值」——把多步变换写�
 
 ### ㉒.3 生产踩坑：视图是「借用」，不是「拥有」
 
-- **悬挂视图（dangling view）**：`auto r = std::views::all(getTempVec());` 之类把视图绑到临时容器，容器析构后视图悬空——这是 Ranges 头号事故。规则：视图只「看」，绝不「持有」。
-- **惰性 vs 急切的错觉**：`views::filter` 不会减少元素存储，只是跳过；想要物化必须用 `ranges::to<std::vector>`。误以为「管道自动省内存」会踩坑。
-- **`views::filter` 要求双向迭代**：过滤后无法 `prev` 的迭代器类别会编译失败，这是 Ranges 著名的「奇数次迭代」约束。
-- **投影（projection）与键类型**：`ranges::sort(v, {}, &T::key)` 的投影容易和比较器参数顺序搞混；视图适配器的「闭包对象」每次 `|` 都会产生新对象，注意拷贝/引用捕获。
+**视图是"借用"不是"拥有"**——这条判据能预防 Ranges 几乎全部头号事故，下面四坑都从它派生。
+
+**悬挂视图（dangling view）** 最致命。`auto r = std::views::all(getTempVec());` 把视图绑到临时容器，容器一析构 `r` 就悬空。记住一句话就够：**视图只"看"、绝不"持有"**；任何视图的生命周期都必须短于它借用的数据。这也是为什么 `std::ranges::` 算法返回 `borrowed_range`——它把"这个视图会不会悬空"编码进类型系统，调用方拿到的若是 `borrowed_range` 就说明它不持有底层。
+
+**惰性 ≠ 省内存** 是第二个错觉。`views::filter` 从不减少元素存储，它只是跳过不满足的元素；想要真正的物化必须 `ranges::to<std::vector>`。以为"管道自动省内存"的人，往往在同一作用域里同时持有原容器和视图，内存一点没省——省掉的只是中间容器，不是原数据。
+
+**迭代器类别约束** 是第三个坑。`views::filter` 把迭代器降级为前向/输入，于是需要 `prev`、需要双向迭代的操作会编译失败——这是 Ranges 著名的"奇数次迭代"约束：过滤后元素个数在编译期未知，无法随机回退。写 `r[3]` 报错的来源就在这里（filter_view 只有输入/前向迭代器，没有 `operator[]`）。
+
+**投影与闭包捕获** 是第四个易混点。`ranges::sort(v, {}, &T::key)` 的投影容易和比较器参数顺序搞混（投影是第三个参数，不是比较器）；而每次 `|` 产生的视图适配器都是新闭包对象，里面若捕获了引用要当心——视图本身廉价，但捕获的生命周期并不廉价，悬空视图常常就是从这里来的。
 
 ### ㉒.4 与 C++ 标准的互动
 
-- `[评]` Ranges 把「Concept 约束 + 视图组合 + 算法重载」三者拧成一个体系，是 C++20 最能体现「零开销抽象」哲学的特性之一。
-- C++20 落地基础 Ranges（P0896）；C++23 大幅扩军：`views::zip`、`views::chunk`、`views::adjacent`、`ranges::to`、切片与滑动窗口等；C++26 继续补 `views::enumerate` 风格与更多适配器。
-- `[评]` 标准演进的张力在于：既要保持「视图零开销」，又要让算法能直接吃「范围」而非迭代器对——新旧两套接口长期并存。
+**Ranges 与标准的互动**，主线是"零开销抽象"哲学的一次集中兑现，也暴露出新旧接口的张力。
 
-- <span class="badge badge-history">史</span> **Ranges 修订链**：**P0896（The One Ranges Proposal）** 由 Eric Niebler 等提案，最终修订 **R4（C++20 采纳）**，把 range-v3 的设计沉为标准；C++23 的 `views::zip`/`chunk`/`adjacent`/`ranges::to` 与 C++26 的 `views::enumerate` 在其上持续扩军；<https://wg21.link/p0896>。
+Ranges 把三件事拧成一个体系：**Concept 约束（算法直接吃范围而非迭代器对）、视图组合（惰性适配器）、算法重载（返回更直观）**。这是 C++20 最能体现"零开销抽象"的特性之一——同样的管道，编译期实例化成单循环，运行期零额外分配；代价则是更高的模板实例数与更长的报错，这正是 ㉒.2 末尾那句"复杂度代价"的由来。
+
+演进节奏上，C++20 落地基础 Ranges（P0896）；C++23 大幅扩军：`views::zip`/`chunk`/`adjacent`/`ranges::to`、切片与滑动窗口；C++26 继续补 `views::enumerate` 等。张力始终在：既要保持"视图零开销"，又要让老算法也能直接吃范围——于是 `<algorithm>` 与 `<ranges>` 两套接口长期并存，调用时优选 `std::ranges::` 那套（见 最佳实践）。
+
+<span class="badge badge-history">史</span> **Ranges 修订链**：**P0896（The One Ranges Proposal）** 由 Eric Niebler 等提案，最终修订 **R4（C++20 采纳）**，把 range-v3 的设计沉为标准；C++23 的 `views::zip`/`chunk`/`adjacent`/`ranges::to` 与 C++26 的 `views::enumerate` 在其上持续扩军（提案全文见 <https://wg21.link/p0896>）。这套"库先行、再沉标准"的路径，本身就是 Ranges 能把视图组合做到零开销的原因——range-v3 多年的实战先把设计磨透了。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 
@@ -783,7 +785,7 @@ sentinel使range不必提供同类型的end迭代器——这对复杂数据结�
 
 ## ⑭ ranges性能深度分析
 
-编译器融合(Loop Fusion)的汇编证据:
+编译器融合(Loop Fusion)示意反汇编（手绘重建，非提取产物；GCC 15.3.0 真实反汇编见 ⑤）：
 ```asm
 ; v|views::filter(f)|views::transform(g)
 ; GCC -O2: 生成单循环, filter代码内联进循环体
@@ -802,11 +804,17 @@ sentinel使range不必提供同类型的end迭代器——这对复杂数据结�
 
 ## 最佳实践 <span class="badge badge-exp">经验</span>
 
-- **投影优先于手写 lambda**：`ranges::sort(v, {}, &T::key)` 比 `[](auto&a,auto&b){return a.key<b.key;}` 更短且不易写错比较方向。
-- **视图惰性、零分配**：`views::filter | views::transform` 是 O(1) 组合，不持有数据也不产生中间容器；需要物化时才 `ranges::to<vector>`。
-- **优先 `std::ranges::` 而非 `std::`**：自动约束 + 返回 `borrowed_range` 安全，且可对整容器直接调用，无需手写 `begin/end`。
-- **并行策略有前提**：`execution::par` 仅对随机访问区间 + 可并行操作有效；视图链中配合 `views::chunk` 才能切分并行，单纯 `views::filter` 不自动并行。
-- **`ranges::to` 物化时机**：只在确需容器/字符串时调用，过度 `to` 会抵消惰性收益。
+这几条实践可以归到一条主线上：**Ranges 的收益来自"视图零开销 + 算法直吃范围"，代价是"惰性把物化责任交还给你、并把复杂度推到编译期"**——所有最佳实践都是在这条权衡上做选择。
+
+**用投影取代手写比较 lambda** 是第一处省心。`ranges::sort(v, {}, &T::key)` 用成员指针做投影，比 `[](auto&a,auto&b){return a.key<b.key;}` 短，且从机制上杜绝了"把比较方向写反"这类低级错误——投影把"取键"和"比较"两件事拆开，你只负责取键。
+
+**信任视图的惰性，但自己掌控物化时机** 是第二处。`views::filter | views::transform` 是 O(1) 组合：不持有底层数据、不分配中间容器，组合成本只是几个闭包对象。代价是"数据不在视图里"——任何需要拥有结果的时刻（返回、跨作用域、落盘）都必须显式 `ranges::to<std::vector>` 物化，否则你就拿着一个绑到已死容器的悬空视图（见 ㉒.3）。
+
+**优先 `std::ranges::` 而非 `std::`** 是第三处。`std::ranges::` 算法自带 Concept 约束、返回 `borrowed_range`（悬空安全）、且能对整个容器直接调用，不必手写 `begin()/end()`。可读性提升只是表面，真正的收益是类型安全与悬空防护。
+
+**并行策略有前提** 则是一个常被误用的点。`execution::par` 只对随机访问区间、且操作本身可并行时才有效；在视图链里，单纯 `views::filter` 不会自动并行，必须配合 `views::chunk` 把序列切成可独立处理的块。把并行当成"加个标签就快"是典型误解。
+
+**`ranges::to` 的物化时机** 收口：只在确实需要容器/字符串时才调用，过度 `to` 会把惰性链变回"每步分配容器"，彻底抵消零开销收益。判据很朴素——谁拥有结果、结果要活多久，再决定物化不物化。
 ## 相关章节（交叉引用）
 
 - **后续依赖**：[第07章　C++20：量级升级](../part01_history/ch07_cpp20.md)—— 本章为其前置，建议后续延伸阅读。
