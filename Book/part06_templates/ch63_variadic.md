@@ -828,7 +828,8 @@ C++17折叠表达式: 编译器直接展开, 编译时间基本不随 N 变 (GCC
   N=500  → fold≈118ms / rec≈484ms (4.1×)
   N=1000 → fold≈123ms / rec≈11.6s (94.5×)
 
-```asm
+```text
+; 递归展开示意（非汇编，是模板实例化过程的伪代码）：
 ; 递归: f(int,double,char) → f(int) + f(double,char) → f(int) + f(double) + f(char)
 ; → 3层实例化, 每层生成函数调用链
 ; 折叠: (ts + ...) → t1 + (t2 + (t3 + 0))

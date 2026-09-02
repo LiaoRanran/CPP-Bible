@@ -253,11 +253,12 @@ void by_ptr(int* p) { if (p) (*p)++; }   // 加 null 检查以凸显"唯一差�
 
 **GCC 15.3.0 `-O2`（MinGW / Windows x64 ABI，首参在 `rcx`）实测：**
 ```asm
-by_ref(int&):
-        add     DWORD PTR [rcx], 1   # rcx = &对象, 直接加 1
+; 节选自 Examples/_ch20_ref_ptr.asm（GCC 15.3.0 -O2 -std=c++17 -masm=intel）
+_Z6by_refRi:
+        add     DWORD PTR [rcx], 1   ; rcx = &对象, 直接加 1
         ret
-by_ptr(int*):
-        test    rcx, rcx             # 我们加了 null 检查以凸显差异
+_Z6by_ptrPi:
+        test    rcx, rcx             ; 我们加了 null 检查以凸显差异
         je      .L3
         add     DWORD PTR [rcx], 1
 .L3:
@@ -265,7 +266,7 @@ by_ptr(int*):
 ```
 > 去掉 `if(p)` 后 `by_ptr` 与 `by_ref` **逐字节相同**。这证明：底层引用参数就是"按指针 ABI 传地址"。语言层的"不可空/不可重绑"是**编译期约束，零运行时指令**。
 
-**Clang 17 `-O2`（AT&T）实测：**
+**Clang 17 `-O2`（AT&T，Compiler Explorer 对拍；本机无 Clang，未复测）：**
 ```asm
 by_ref(int&):                           # @by_ref(int&)
         incl    (%rdi)
@@ -278,7 +279,7 @@ by_ptr(int*):                           # @by_ptr(int*)
         retq
 ```
 
-**MSVC 19 `-O2`（Intel 语法，Windows x64 ABI，首参在 `rcx`）实测：**
+**MSVC 19 `-O2`（Intel 语法，Compiler Explorer 对拍；本机无 MSVC，未复测）：**
 ```asm
 by_ref(int &):
         inc     DWORD PTR [rcx]

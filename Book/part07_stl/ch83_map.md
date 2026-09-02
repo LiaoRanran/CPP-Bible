@@ -377,10 +377,10 @@ int main() {
 
 ## ⑩ 汇编分析：map::find 的树下降（-O2 实测）
 
-下面汇编由 `g++ 13.1 -O2 -masm=intel` 对 `m.find(k)` 真实生成（非手绘）。可见 `find` 被内联为一串 `cmp` + `jge/jne` 的指针追逐循环，每次迭代比较节点内偏移 32 处的 key。
+下面汇编由 `GCC 15.3.0 -O2 -masm=intel` 对 `m.find(k)` 真实生成（非手绘，节选自 `Examples/_ch83_map_find.asm`）。可见 `find` 被内联为一串 `cmp` + `jge/jne` 的指针追逐循环，每次迭代比较节点内偏移 32 处的 key。
 
 ```asm
-; g++ 13.1 -O2 -masm=intel ；int lookup(const map<int,int>&, int)
+; 节选自 Examples/_ch83_map_find.asm（GCC 15.3.0 -O2 -std=c++17 -masm=intel）
 _Z6lookupRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi:
         mov     rax, QWORD PTR 16[rcx]      ; rax = _M_header._M_parent（根）
         lea     r10, 8[rcx]                 ; r10 = &_M_header（哨兵）

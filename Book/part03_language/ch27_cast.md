@@ -1143,9 +1143,9 @@ main
       └─ 遍历基类链，无匹配 → return nullptr
 ```
 
-### 11.3 汇编示意（<span class="badge badge-measured">实测</span> GCC 15.3.0 `-O2`，x86-64 AT&T）
+### 11.3 汇编示意（GCC 15.3.0 `-O2`，x86-64 AT&T，示意非真机锚定）
 
-`static_cast` 下行（多继承 this 调整）生成**编译期常数偏移**（本机实测：`Most:Base(vptr-only),Right` → `mov 0x8(%rcx),%rax`，偏移 `0x0008` = `sizeof(Base)`）：
+`static_cast` 下行（多继承 this 调整）生成**编译期常数偏移**（示意：`Most:Base(vptr-only),Right` → `mov 0x8(%rcx),%rax`，偏移 `0x0008` = `sizeof(Base)`）：
 ```asm
 ; static_cast<Right*>(&most)  →  this += sizeof(Left)
 addq  $4, %rdi          ; 编译期已知偏移 4 字节（int l）—— 偏移量 = 主基类子对象大小

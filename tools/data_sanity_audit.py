@@ -86,6 +86,13 @@ ALGO_KEYWORDS: tuple[str, ...] = (
 
 # ③ 实测声称与 asm 锚定
 CLAIM_RE = re.compile(r"(?:本机实测|真机|实测输出|本机运行结果|实测)")
+# asm 块的「有据」信号：标准锚定(节选自 Examples/)、_asm_demo 源、证据源码、工具链、objdump，
+# 以及各种 Examples 引用写法（见/文件：/裸路径）
+ANCHOR_RE = re.compile(r"节选自|_asm_demo/|证据源码|工具链|objdump|Examples/", re.I)
+# 「示意/推断」诚实标注（声明非真机产物，不算伪装）：
+#   「示意」几乎总出现在诚实声明语境（汇编示意/仅示意/示意：…），直接认；
+#   「推断」只认 [xx-推断] 形式，避免误伤「类型推断」这类正常术语
+MARKED_RE = re.compile(r"示意|\[[^\]]*推断\]", re.I)
 
 
 def _join(lines: list[str], start: int, end: int) -> str:
@@ -113,17 +120,18 @@ def scan_lines(lines: list[str]) -> list[tuple[int, str, str]]:
                 in_fence = False
                 if fence_lang.startswith("asm"):
                     body = "\n".join(fence_buf)
-                    anchored = "节选自" in body
-                    marked = re.search(r";\s*(示意|推断)", body) is not None
-                    if not anchored and not marked:
-                        before = _join(lines, fence_start - 8, fence_start)
-                        if CLAIM_RE.search(before):
-                            issues.append((
-                                fence_start + 1,
-                                "UNANCHORED_EVIDENCE",
-                                "声称「实测/真机」的 asm 块既无 Examples 锚定、"
-                                "也无「示意/推断」标注——疑似推断示意伪装成真机证据",
-                            ))
+                    before = _join(lines, fence_start - 6, fence_start)
+                    zone = body + "\n" + before
+                    anchored = ANCHOR_RE.search(zone) is not None
+                    marked = MARKED_RE.search(zone) is not None
+                    if not anchored and not marked and CLAIM_RE.search(before):
+                        issues.append((
+                            fence_start + 1,
+                            "UNANCHORED_EVIDENCE",
+                            "声称「实测/真机」的 asm 块既无锚定"
+                            "（节选自/_asm_demo/证据源码），也无「示意/推断」标注"
+                            "——疑似推断示意伪装成真机证据",
+                        ))
                 fence_buf = []
             continue
 
