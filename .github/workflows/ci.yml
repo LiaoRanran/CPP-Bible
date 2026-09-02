@@ -75,6 +75,16 @@ jobs:
       run: python3 tools/consistency_check.py
       continue-on-error: false
 
+    - name: Data Sanity Audit (十六进制污染门禁，HEX_QUANTITY 零误报)
+      # 2026-09-02 三轮 L2 深耕沉淀的工具：量级描述误用十六进制（`0x0040` 字节、
+      # `0x0100` KB 等）是批量生成流程的高频错误，已人工修复 26 处并复扫清零。
+      # HEX_QUANTITY 经 ABI 语境豁免（偏移/对齐/vptr/槽位/标签/哨兵/掩码/长地址），
+      # 零误报，故以 --fail-on ERROR 接入门禁，防止同类错误被未来编辑重新引入。
+      # PERF_CONFLICT / UNANCHORED_EVIDENCE 为 WARN 级（误报率较高或需语义判定），
+      # 不进 CI，仅作离线人工复核线索。
+      run: python3 tools/data_sanity_audit.py --fail-on ERROR
+      continue-on-error: false
+
     - name: Cross-Reference Audit
       run: python3 tools/crossref_audit.py
       continue-on-error: false
