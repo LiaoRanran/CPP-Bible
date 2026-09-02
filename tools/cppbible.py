@@ -417,8 +417,12 @@ def cmd_preflight(_args: argparse.Namespace) -> int:
     ]:
         try:
             r = run(cmd, check=False)
-            n = len([ln for ln in (r.stdout or "").splitlines() if ln.strip()])
-            print(f"  [{name}] {n} 条提示（不阻断，人工复核）")
+            lines = [ln for ln in (r.stdout or "").splitlines() if ln.strip()]
+            # porcelain 第三段是类别；已复核豁免（PERF_REVIEWED）单列，避免误读为待复核
+            n_reviewed = sum(1 for ln in lines if ":PERF_REVIEWED:" in ln)
+            n = len(lines) - n_reviewed
+            extra = f"，另有 {n_reviewed} 条已复核豁免" if n_reviewed else ""
+            print(f"  [{name}] {n} 条提示{extra}（不阻断，人工复核）")
         except Exception:
             print(f"  [{name}] ⚠️ 无法运行")
 
