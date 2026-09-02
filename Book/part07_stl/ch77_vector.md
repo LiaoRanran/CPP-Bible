@@ -1570,6 +1570,22 @@ int main() {
 
 预期输出（libstdc++）：容量在 1→2→4→8→16 处跳变，直接印证 `_M_check_len` 的指数公式。
 
+**[实验·本机实测]** 真机输出（GCC 15.3.0 / libstdc++，`-O0 -std=c++17`，连续 `push_back` 24 次，仅在容量变化时打印）：
+
+```text
+push # 1 -> size= 1 cap= 1
+push # 2 -> size= 2 cap= 2
+push # 3 -> size= 3 cap= 4
+push # 5 -> size= 5 cap= 8
+push # 9 -> size= 9 cap=16
+push #17 -> size=17 cap=32
+final: size=24 cap=32
+```
+
+容量严格按 **1→2→4→8→16→32** 二倍跳变，且每次跳变都发生在 `size` 追上 `capacity` 后的下一次 `push_back`（#3/#5/#9/#17，即 2ⁿ+1）。
+
+> ⚠️ **边界**：「二倍增长」是 **libstdc++ 的实现选择，不是标准规定**——MSVC STL 用 **1.5 倍**增长。标准只保证 `push_back` 摊还 O(1)（见 ⑳ 跨实现对比）。**不要**把"扩容就是二倍"写进跨平台假设或容量预估逻辑，需要精确控制容量就用 `reserve`。
+
 ## 附录 J：vector 决策流（D3 维度）
 
 ```mermaid
