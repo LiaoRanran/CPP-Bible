@@ -1441,7 +1441,7 @@ int main() {
 #include <cstdint>
 enum class Color:uint8_t{Red,Green,Blue};
 int main(){Color c=Color::Red;std::cout<<static_cast<int>(c)<<","<<sizeof(c)<<std::endl;return 0;}
-```cpp
+```
 
 | enum | enum class |
 |---|---|
@@ -1508,7 +1508,7 @@ int main() {
     // int x = c;            // 编译失败：无隐式转换（类型安全）
     // if (c == 1) {}        // 编译失败：必须与同枚举比较
 }
-```cpp
+```
 
 [K03][K04] `enum class` 的强类型阻止了 `unscoped enum` 那种静默的整数提升与跨枚举比较，把一类整型误用错误从运行期提前到编译期。
 

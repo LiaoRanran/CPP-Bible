@@ -561,28 +561,15 @@ BENCHMARK(BM_DecltypeAutoForward);
 
 ## `auto` 非引用推导规则（含数组/函数退化）
 
-- **定义**：`auto x = init;` 中 `x` 的类型按函数模板参数推导规则从 `init` 推导（除 `{}` 特例）。
-- **历史**：C++11 引入（`auto` 在 C++98 曾为「自动存储期」旧义，被回收重作类型占位符）。提案 N1984。
-- **为什么设计**：消除冗长类型拼写（迭代器、lambda、`future` 等），同时保留静态类型与零开销。
-- **标准规定**：`[dcl.spec.auto]` / `[dcl.type.auto.deduct]`：非引用 `auto` 的推导等价于 `template<class T> void f(T) f(init);`。
-- **编译器行为**：`auto` 被替换为推导类型后正常类型检查；顶层 cv 在推导中被丢弃（与模板一致）。
-- **GCC实现**：`cp/pt.cc: do_auto_deduction`（**[实现-推断]**）。
-- **LLVM实现**：`Sema::deduceVarTypeFromInitializer`（**[实现-推断]**）。
-- **MSVC实现**：前端 `cp_*` 类型推导阶段（**[平台-推断]**）。
-- **libstdc++实现**：不直接涉及；STL 仅消费推导结果。
-- **libc++实现**：同（**[实现-推断]**）。
-- **MS STL实现**：同（**[平台-推断]**）。
-- **内存模型**：`auto`（非引用）产生独立对象，发生拷贝/移动；数组退化成指针、函数退化成函数指针。
-- **汇编**：`-O2` 下与显式类型同构（见「汇编」节）。
-- **性能**：零开销（microbenchmark 18.1）。
-- **复杂度**：编译期 O(1) 推导；运行时无成本。
-- **异常安全**：推导本身不抛异常；初始化可能抛（按 `init` 的异常规范）。
-- **线程安全**：变量局部，无共享。
-- **缓存友好**：与显式类型相同。
-- **CPU影响**：无额外指令。
-- **ABI**：`auto` 变量无 mangling 影响（属实现细节）。
-- **工程应用**：`auto sz = v.size();`、`for (auto it = m.begin(); ...)`。
-- **真实源码**：`auto` 为语言特性，标准库无对应源码；编译器前端实现（见阅读路线）。
+**一句话模型**：`auto x = init;` 的推导是**函数模板参数推导的化身**——[dcl.type.auto.deduct] 明文规定它等价于 `template<class T> void f(T); f(init);`。C++11 复用而非新造规则（N1984 的动机就是"消除冗长拼写、不发明新语义"）。抓住这条同构，本节的每个"现象"都变成"推论"：
+
+- **顶层 `const` 为什么丢？** 按值形参的拷贝副本从不携带顶层 cv——`auto x = c` 走的正是这条按值路径，`x` 是 `int` 而非 `const int`。这不是 auto 的怪癖，是对模板按值形参语义的忠实复刻；想保留就显式写 `const auto`。
+- **数组/函数为什么退化？** 同一条规则：按值形参收到 `int[10]` 衰减成 `int*`、收到函数名衰减成函数指针——`auto p = a` 得 `int*`、`auto q = f` 得 `void(*)()`，与模板行为逐字相同。
+- **引用为什么丢？** `int& r = getRef(); auto x = r;`——模板按值推导会解除引用（`T` 推成 `int`），auto 同理。**`auto` 默认语义是"重新拷贝一份"**；要接引用必须显式写 `auto&`/`auto&&`（下一专题）。
+
+编译器侧的落点印证了同构：GCC 的 `do_auto_deduction`（`cp/pt.cc`，**[实现-推断]**）把 auto 占位符直接交给模板推导机器；Clang 的 `Sema::deduceVarTypeFromInitializer`（**[实现-推断]**）同途。这也解释了为什么 auto 推导失败的报错信息与模板推导如出一辙——它们本来就是同一条代码路径。
+
+零开销不是优化承诺而是机制的副产品：推导在编译期完成、运行期只剩一次拷贝/移动构造——`-O2` 下 `auto` 与显式类型生成逐字节相同的机器码（本章 ⑨ 汇编节已用真机 objdump 证实 `mov eax,42; ret` 完全一致）。真正要花心思的不是"auto 慢不慢"，而是"按值收 auto 的大对象会真实拷贝"——这条性能边界与显式类型完全一样，见 ⑱ 性能节。
 - **错误示例**：
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 非引用推导规则
   ```cpp
@@ -756,42 +743,29 @@ int main() {
 
 ## `auto&` / `const auto&` / `auto&&`（引用与转发语义）
 
-- **定义**：`auto&` 左值引用；`const auto&` const 左值引用；`auto&&` 转发引用（可绑左/右值）。
-- **历史**：C++11 随右值引用与转发引用引入。
-- **为什么设计**：让 `auto` 能保留引用类别，避免意外拷贝并支持完美转发。
-- **标准规定**：`[dcl.type.auto.deduct]`：`auto&`/`const auto&` 按「模板 `T&`/`const T&`」推导；`auto&&` 按转发引用规则。
-- **编译器行为**：`auto&&` 绑左值→`T&`，绑右值→`T&&`（与模板 `T&&` 一致）。
-- **GCC实现**：同 `do_auto_deduction` 处理引用形式（**[实现-推断]**）。
-- **LLVM实现**：`DeduceTemplateArgumentByDeclaration` 处理 `auto&&`（**[实现-推断]**）。
-- **MSVC实现**：同（**[平台-推断]**）。
-- **libstdc++实现**：不直接涉及。
-- **libc++实现**：（**[实现-推断]**）。
-- **MS STL实现**：（**[平台-推断]**）。
-- **内存模型**：引用不产生存储，仅绑定到已有对象/临时（后者延长生命期）。
-- **汇编**：`-O2` 下引用通常优化为直接访问，无间接开销。
-- **性能**：零拷贝、零开销。
-- **复杂度**：编译期。
-- **异常安全**：绑定时不抛；`const auto&` 延长临时生命期。
-- **线程安全**：取决于所绑对象。
-- **缓存友好**：直接访问原对象，缓存行为同原对象。
-- **CPU影响**：无。
-- **ABI**：无 mangling 影响。
-- **工程应用**：`for (const auto& x : bigVec)` 避免拷贝大对象。
-- **真实源码**：语言特性；无 STL 源码。
+**一句话模型**：上一节 `auto` 丢了引用与顶层 cv，这一节的三种写法就是**把引用类别加回来的旋钮**——而且同样逐字复刻模板世界的对应形式：`auto&` 对应 `T&`、`const auto&` 对应 `const T&`、`auto&&` 对应转发引用 `T&&`（[dcl.type.auto.deduct]）。模板推导的全部引用规则因此原样生效：
+
+- **`auto&` 只能绑左值**：非 const 左值引用绑右值非法——`int f(); auto& r = f();` 直接编译错误，与 `T&` 形参收到右值时的报错一字不差。
+- **`const auto&` 是万能接收器**：const 左值引用可绑右值并**延长临时生命期**（`const auto& r = f();` 合法且 `r` 活到作用域结束）——range-based for 里 `for (const auto& x : bigVec)` 避免拷贝大对象，靠的正是它。
+- **`auto&&` 按入参类别折叠**：绑左值时引用折叠出 `T&`、绑右值出 `T&&`——与模板转发引用同一套折叠规则。事实上 `auto&&` 是语言里除 `T&&` 之外**唯一**的转发引用写法，这也是它在完美转发返回值（`decltype(auto)` 出现前）承担重任的原因。
+
+编译器侧（**[实现-推断]**）：GCC 在 `do_auto_deduction` 内处理引用形式；Clang 走 `DeduceTemplateArgumentByDeclaration`——还是那套模板推导机器。
+
+引用不产生存储、只做绑定，所以这三种写法在 `-O2` 下通常被优化成对原对象的直接访问、无间接开销；绑定动作本身不抛异常，但所绑对象的线程安全取决于对象自身。真正值得记住的行为差异是：`const auto&` 延长临时生命期——这是它区别于 `auto&`/`auto&&` 的关键语义，也是"绑了个临时还以为对象死了"这类悬垂直觉的反例。
 - **错误示例**：
-> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
   ```cpp
   int f(); auto& r = f();   // 错误：不能把非 const 左值引用绑到右值
 ```
 - **正确示例**：
-> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
   ```cpp
   int f(); const auto& r = f();  // OK，延长临时生命期
   auto&& u = f();                 // OK，u 为 int&&
 ```
 - **≥10 个例子**：ex03, ex04, ex21, ex22, ex24, ex38, ex28, ex29, ex30, ex18。
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex03_const_auto_ref.cpp —— const auto& 避免大对象拷贝
 #include <string>
@@ -805,7 +779,7 @@ int main() {
 }
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex04_auto_forwarding_ref.cpp —— auto&& 转发引用
 #include <type_traits>
@@ -818,7 +792,7 @@ void sink(T&& x) {                  // 转发引用
 int main() { int i=0; sink(i); sink(0); }
 ```
 
-> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex21_range_for_auto.cpp —— auto 范围 for（值拷贝）
 #include <vector>
@@ -830,7 +804,7 @@ int main() {
 }
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex22_range_for_auto_ref.cpp —— auto& 范围 for（原地修改）
 #include <vector>
@@ -842,7 +816,7 @@ int main() {
 }
 ```
 
-> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex24_vector_bool_autoref_fail.cpp —— vector<bool> proxy 不能绑 auto&
 #include <vector>
@@ -854,7 +828,7 @@ int main() {
 }
 ```
 
-> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex38_auto_ref_proxy_range.cpp —— auto&& 遍历 proxy 容器（推荐）
 #include <vector>
@@ -866,7 +840,7 @@ int main() {
 }
 ```
 
-> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex28_generic_lambda_auto.cpp —— C++14 generic lambda（auto 参数）
 #include <iostream>
@@ -876,7 +850,7 @@ int main() {
 }
 ```
 
-> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto& / const auto
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex29_auto_param_new.cpp —— C++20 普通函数 auto 参数（缩写模板）
 #include <iostream>
@@ -885,7 +859,7 @@ auto twice(auto x) { return x + x; }  // 等价于 template<class T> auto twice(
 int main() { std::cout << twice(3) << twice(std::string{"ab"}); }
 ```
 
-> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex30_auto_concept_requires.cpp —— C++20 concepts + auto 参数
 #include <concepts>
@@ -894,49 +868,34 @@ void print(std::integral auto x) { std::cout << x; } // 受约束缩写模板
 int main() { print(42); /* print(3.0); 错误：非 integral */ }
 ```
 
-> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto& / auto&&
 ```cpp
 // ex18_abbreviated_concept.cpp —— 缩写函数模板 + 多 auto 参数
 #include <concepts>
 #include <iostream>
 auto add(std::integral auto a, std::integral auto b) { return a + b; }
 int main() { std::cout << add(2, 3); }
-```cpp
+```
 
 ---
 
 ## `auto + { }` → `std::initializer_list`（特例）
 
-- **定义**：`auto x = {e1, e2, ...};` 推导 `x` 为 `std::initializer_list<ET>`。
-- **历史**：C++11 引入 `auto` 时即规定此特例；N3922 在 C++17 调整了 `{...}` 与 `=` 的关系（禁止 `auto x{1,2};` 多元素形式）。
-- **为什么设计**：让 `auto` 能自然持有初始化列表；但**模板 `T` 刻意不**做此推断，以保留 `f({...})` 的歧义报错语义。
-- **标准规定**：`[dcl.type.auto.deduct]/1`：`auto x = { ... }` 推 `std::initializer_list`，元素类型由 `{}` 公共类型决定。
-- **编译器行为**：仅 `auto` 单参数形式支持；`auto x{a,b}`（direct-init，多元素）为错误。
-- **GCC实现**：前端特殊处理 braced-init-list（**[实现-推断]**）。
-- **LLVM实现**：`Sema::ActOnAutoDecl` 特判（**[实现-推断]**）。
-- **MSVC实现**：（**[平台-推断]**）。
-- **libstdc++实现**：`std::initializer_list` 在 `<initializer_list>`。
-- **libc++实现**：同（**[实现-推断]**）。
-- **MS STL实现**：同（**[平台-推断]**）。
-- **内存模型**：`initializer_list` 仅包含两个指针（begin/end），**不**拥有元素数组（数组寿命与初始化器同作用域）。
-- **汇编**：`initializer_list` 通常编译为栈上数组 + 两个指针参数传递。
-- **性能**：数组在栈上构造；传递为两个指针，开销极小但需注意生命期。
-- **复杂度**：O(n) 构造。
-- **异常安全**：构造元素若抛，已构造部分析构。
-- **线程安全**：局部。
-- **缓存友好**：栈数组连续，缓存友好。
-- **CPU影响**：极小。
-- **ABI**：`initializer_list` 作为参数有既定 ABI 布局（两个指针）。
-- **工程应用**：`auto il = {1,2,3};` 极少直接写；陷阱多（见最佳实践 5）。
-- **真实源码**：`<initializer_list>`（libstdc++）定义 `std::initializer_list`（**真实存在**，行略；本书未贴全行，仅说明语义）。
+这个特例的起点是一个事实：`{1, 2, 3}` 根本不是表达式。braced-init-list 没有类型、没有值类别，而 `auto` 复用的那台模板推导机器（上一专题）只能从「有类型的实参」里取 `T`——推导在它面前无处下手。标准因此只剩两条路：要么判 `auto x = {...}` 非法，要么硬性规定结果。C++11 选了后者：[dcl.type.auto.deduct]/1 直接立法，`auto x = {e1, e2, ...}` 推导为 `std::initializer_list<ET>`，`ET` 取各元素的公共类型。这也是「`auto` 推导 == 模板推导」这条全章不变量唯一的法定例外（横向专题第 4 条）——例外的根源不是设计偏好，而是被推导物本身无类型可推。
+
+模板那边刻意没有跟进。`template<class T> void f(T); f({1,2,3});` 至今是错误：委员会保留了 `f({...})` 的歧义报错语义，不让模板从 `{}` 推出 `initializer_list`。于是形成本章反复用到的不对称——`auto` 能接 `{}`，模板 `T` 不能。示例 37 后面对照 ex06 的实验（`f({1,2,3})` 编译失败）正是「同规则、除 `{}` 特例」这一结论的权威证明。
+
+规则的边界后来被 N3922（C++17）收紧过一次：`auto x{1,2};` 这类 direct-init 多元素形式自此判错，copy-list-init 的 `auto x = {...}` 维持特例不变；元素类型不一致（`auto y = {1, 2.0};`）同样判错。落到编译器里没有秘密：`{...}` 的特判发生在前端的类型推导阶段（实现细节**[实现-推断]**）；`std::initializer_list` 本体由 `<initializer_list>` 头提供，三大 STL 各有一份。
+
+真正的代价在 `initializer_list` 自身：它只是一对 begin/end 指针，**不拥有**背后的元素数组——数组是与初始化器同作用域的临时物，把列表返回出去或存起来就是悬垂。传递本身极便宜（既定的两指针 ABI 参数布局，栈上连续数组 O(n) 构造、缓存友好，元素构造抛异常时已构造前缀会被析构），但生命期这笔账让「直接写 `auto il = {1,2,3};`」在工程上几乎没有正确用法——最佳实践 5 的结论即：确需列表时显式写 `std::vector<int> x{..}`。
 - **错误示例**：
-> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto + { } → std::
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto + { } → initializer_list
   ```cpp
   auto x{1,2};   // 错误（C++17 起, direct-init 多元素）
   auto y = {1, 2.0}; // 错误：元素类型不一致
 ```
 - **正确示例**：
-> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto + { } → std::
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto + { } → initializer_list
   ```cpp
 #include <initializer_list>
 #include <vector>
@@ -945,7 +904,7 @@ int main() { std::cout << add(2, 3); }
 ```
 - **≥10 个例子**：ex05, ex06, ex23(rest), 及下方 ex05。
 
-> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto + { } → std::
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto + { } → initializer_list
 ```cpp
 // ex05_auto_brace_initializer_list.cpp —— auto + {} 特例
 #include <initializer_list>
@@ -958,7 +917,7 @@ int main() {
     for (auto e : x) sum += e;
     std::cout << sum;          // 6
 }
-```cpp
+```
 
 > 对照 ex06：`template<class T> void f(T); f({1,2,3});` 是**错误**——模板不会从 `{}` 推导 `initializer_list`，这正是「`auto` 与模板推导同规则，除 `{}` 特例」的权威证明。
 
@@ -966,28 +925,12 @@ int main() {
 
 ## `decltype` 两条规则（id-expression / 表达式类别）
 
-- **定义**：`decltype(e)` 产生表达式 `e` 的「声明类型」。`e` 为未加括号的 id-expression 或类成员访问 → 实体类型；否则按 `e` 的值类别：`xvalue`→`T&&`，`lvalue`→`T&`，`prvalue`→`T`。
-- **历史**：C++11 引入（N2546），用于泛型库精确查询表达式类型。
-- **为什么设计**：模板元编程需要「不求值地取得表达式类型」——`typeof` 不够（不处理引用/cv），`decltype` 与 `auto` 互补：`auto` 从初始化器推类型，`decltype` 从表达式求类型。
-- **标准规定**：`[dcl.type.decltype]/1`：两条规则（实体规则 + 值类别规则）。
-- **编译器行为**：`decltype` 是**纯编译期**、不求值表达式（不触发副作用）。
-- **GCC实现**：`cp/typeck.cc` `decltype` 处理（**[实现-推断]**）。
-- **LLVM实现**：`Sema::ActOnDecltype` / `BuildDecltypeType`（**[实现-推断]**）。
-- **MSVC实现**：（**[平台-推断]**）。
-- **libstdc++实现**：`declval`、`invoke_result` 大量使用 `decltype`（真实源码见「源码分析」）。
-- **libc++实现**：同（**[实现-推断]**）。
-- **MS STL实现**：同（**[平台-推断]**）。
-- **内存模型**：`decltype` 不生成对象、不占内存——它只产出类型。
-- **汇编**：无（编译期类型运算）。
-- **性能**：零运行时成本。
-- **复杂度**：编译期。
-- **异常安全**：不求值，无异常。
-- **线程安全**：编译期。
-- **缓存友好**：无运行时。
-- **CPU影响**：无。
-- **ABI**：类型参与 mangling，但 `decltype` 本身不引入新 ABI 实体。
-- **工程应用**：推导返回类型、写 traits、完美转发返回。
-- **真实源码**：`type_traits:1015` `decltype(__declval<_Tp>(0))`；`type_traits:3286` 继承 `__invoke_result`（均为真实行号）。
+`decltype` 与 `auto` 的分工一句话可以说清：**`auto` 从初始化器推类型（"我要装这个值"），`decltype` 从表达式取类型（"这个表达式是什么类型"）**——且全程不求值、零运行时：只在编译期查表达式的类型，不生成任何代码（实现细节**[实现-推断]**）。但它取类型用的是**两条**规则，这个"两条"不是标准任性，而是两类使用场景的真实需求（N2546，[dcl.type.decltype]/1）：
+
+- **规则一（实体规则）**：`e` 是**未加括号**的 id-expression 或类成员访问时，给出**实体的声明类型**，cv 完整保留——`decltype(c)` 是 `const int` 而非 `int`。这条服务"查名字"：traits 与泛型代码问"这个实体的类型是什么"，答案就该是声明它的类型，一个 cv 都不能少。
+- **规则二（值类别规则）**：其余一切表达式按值类别映射——`lvalue`→`T&`、`xvalue`→`T&&`、`prvalue`→`T`。这条服务"查表达式"：泛型转发代码问的不是"名字是什么类型"，而是"这个表达式**能赋给什么**"——要接住左值表达式就得是 `T&`，所以 `decltype(*p)` 是 `int&`、`decltype(x + 1)` 是 `int`。
+
+两条规则的分水岭是"括号"——`decltype(x)` 走规则一、`decltype((x))` 落进规则二，这正是下一节的经典面试题。工程落点上，标准库自己就是 decltype 的最大用户：`type_traits:1015` 的 `declval` 与 `:3286` 的 `invoke_result` 全靠它撑起"不求值取类型"的元编程地基（真实行号，见「源码分析」节）。
 - **错误示例**：
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype 两条规则
   ```cpp
@@ -1064,36 +1007,26 @@ int main() { auto l = [](int& x) -> int& { return x; }; int v=1; int& r = call(l
 
 ## `decltype((x))` 为何是引用（经典面试题）
 
-- **定义**：`decltype((x))` 中 `(x)` 是**加了括号的表达式**，不再是 id-expression，故走「值类别规则」：`(x)` 是左值 → `decltype((x))` = `T&`。
-- **历史**：C++11，WG21 刻意规定括号改变「是否 id-expression」判断。
-- **为什么设计**：保持「`decltype` 精确反映表达式值类别」的统一语义；若 `(x)` 仍当 id-expression，会与「所有加括号变量都是左值」的普遍规则矛盾。
-- **标准规定**：`[dcl.type.decltype]/1`：仅当 `e` 是**未加括号**的 id-expression 或类成员访问时才取实体类型；否则按值类别。
-- **编译器行为**：前端先把 `(x)` 解析为 `ParenExpr`（lvalue），再查值类别。
-- **GCC实现**：（**[实现-推断]**）。
-- **LLVM实现**：（**[实现-推断]**）。
-- **MSVC实现**：（**[平台-推断]**）。
-- **libstdc++实现**：`decltype((x))` 广泛用于检测表达式类别（如 traits）。
-- **libc++ / MS STL**：同（**[实现-推断]/[平台-推断]**）。
-- **内存模型**：无运行时对象。
-- **汇编 / 性能 / 复杂度**：纯编译期。
-- **异常安全 / 线程安全 / 缓存友好 / CPU影响 / ABI**：同 KP4（编译期）。
-- **工程应用**：「`decltype((x))` 是引用」是 `decltype(auto)` 返回 `(x)` 产生悬垂引用的根因（见 KP6）。
-- **真实源码**：语言特性；标准库用例见 `type_traits:1015`（`decltype(__declval<_Tp>(0))` 中 `0` 是 prvalue → `T` 而非 `T&`）。
+括号在这里不是修饰，而是**规则的切换器**。`(x)` 是加了括号的表达式，不再是 id-expression——上一专题「两条规则」的分水岭当场现形：实体规则出局，值类别规则接管。而 `(x)` 这个带括号的名字依旧是个左值（C++ 的普遍规则：加括号不改变值类别，`(a+b)` 不会因此变成 prvalue），按 `lvalue → T&` 的映射，`decltype((x))` 就是 `int&`。与 `decltype(x)` 的 `int` 一对比：一对括号，差出一个引用。这不是语言的刁难，是两条规则各自忠实执行的结果。
+
+问「为什么允许这样」，答案在一致性。若 decltype 独独把 `(x)` 当回 id-expression，就得为「括号内的名字」在值类别体系里开一条特例，而 C++ 在其他所有地方都遵守「括号不改变值类别」。[dcl.type.decltype]/1 因此把界线划得可以机械执行：**未加括号**的 id-expression 与类成员访问才走实体规则，其余一切表达式（含 `(x)`）按值类别。编译器侧同样没有魔法：前端把 `(x)` 记为带括号的表达式节点（如 Clang 的 `ParenExpr`），值类别照旧是左值，decltype 据此选规则（实现细节**[实现-推断]**）。
+
+工程上它远不止面试题。「`decltype((x))` 是引用」正是 `decltype(auto)` 返回 `(x)` 时产生悬垂引用的根因（下一专题）：`(x)` 被当作左值表达式，推导出 `T&` 绑到局部变量。标准库则把这两条规则当工具用——`declval` 的返回类型就由 `decltype(__declval<_Tp>(0))` 推出：调用一个返回 `_Tp&&` 的函数是 xvalue，值类别规则给出 `_Tp&&`，正是 traits 需要的「任意类型的右值化身」（`type_traits:1004-1015`，真实行号，见 ⑫ 源码分析）。代价栏是全章最干净的：不求值、无运行时对象、不生成任何代码。
 - **错误示例**：
-> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype((x)) 为何是引
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype((x)) 为何是引用
   ```cpp
   int x = 0;
   decltype((x)) r = x;   // int&，若误以为 int 会出错
 ```
 - **正确示例**：
-> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype((x)) 为何是引
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype((x)) 为何是引用
   ```cpp
   int x = 0;
   static_assert(std::is_same_v<decltype((x)), int&>); // 明确认知
 ```
 - **≥10 个例子**：ex09, ex08, ex10, ex25, ex11, ex12, ex13, 面试 Q2/Q4.
 
-> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype((x)) 为何是引
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype((x)) 为何是引用
 ```cpp
 // ex09_decltype_paren_reference.cpp —— 经典面试题：decltype((x)) 是 int&
 #include <type_traits>
@@ -1108,40 +1041,25 @@ int main() {
 
 ## `decltype(auto)`（完美转发返回类型）
 
-- **定义**：`decltype(auto)` 让占位类型按 `decltype` 规则从初始化器/return 表达式推导，**保留引用与 cv**（不像 `auto` 会 decay）。
-- **历史**：C++14（N3638），为「返回类型需完美转发」而生。
-- **为什么设计**：`auto` 返回会 decay（丢引用/cv），无法写出「返回引用且类型由表达式决定」的泛型函数；`decltype(auto)` 解决之。
-- **标准规定**：`[dcl.spec.auto]/1`：`decltype(auto)` 仅可作占位符，推导用 `decltype` 而非 `auto` 规则。
-- **编译器行为**：对返回语句 `return e;` 推导为 `decltype(e)`。
-- **GCC实现**：（**[实现-推断]**）。
-- **LLVM实现**：（**[实现-推断]**）。
-- **MSVC实现**：（**[平台-推断]**）。
-- **libstdc++实现**：STL 内部泛型代码使用（`std::invoke` 返回 `invoke_result_t` 即 `decltype` 派生的等价物）。
-- **libc++ / MS STL**：同（**[实现-推断]/[平台-推断]**）。
-- **内存模型**：返回引用时调用方拿到的是原对象别名；返回值时正常构造。
-- **汇编**：`-O2` 下与手写返回类型同构（见 microbenchmark 18.2）。
-- **性能**：零开销（转发）。
-- **复杂度**：编译期。
-- **异常安全**：返回引用时若绑到临时 → 悬垂（未定义行为，非异常）。
-- **线程安全**：依赖被引用对象。
-- **缓存友好 / CPU影响**：同手写。
-- **ABI**：返回类型在调用点必须可见（类型仍参与 mangling）。
-- **工程应用**：完美转发包装器（见 ex25）、`operator->*` 等代理。
-- **真实源码**：STL 对应机制为 `invoke_result_t`（functional:109，真实行号）。
+`decltype(auto)` 回答的是「谁做证人」：同一个占位位置，`auto` 交给模板推导那台机器（拷贝语义，丢引用丢顶层 cv），`decltype(auto)` 交给 decltype 那套（从表达式原样取类型，引用与 cv 全保留）。C++14（N3638）引入它的动机极其具体：泛型转发包装器需要「返回类型由 return 表达式决定、引用性原样传递」，而 `return std::forward<T>(t);` 落到 `auto` 手里会被 decay 成按值返回（引用性丢失），手写 `decltype(...)` 又得复述整个转发表达式。标准 [dcl.spec.auto]/1 给出第三条路：`decltype(auto) f() { return e; }` 按 `decltype(e)` 推导。
+
+上一专题的括号规则在这里直接变现。`return (x);` 里 `(x)` 是左值 → 推导 `T&`，绑到局部变量就是悬垂（示例 48 的经典坑）；`return x;` 走实体规则 → `T` 值返回，安全。**一对括号成了悬垂与否的开关**——语言律师题变成生产事故的路径就在这里。真正需要它的场景全在转发：ex25 的完美转发包装器、`operator->*` 类代理，要的都是「表达式本来的类型」而非「表达式值的拷贝」。
+
+标准库的态度是个清醒的注脚：公开接口没有用 `decltype(auto)`，而是明写 `invoke_result_t`（见 ⑫ 源码分析：`type_traits:3283-3297` 定义、`functional:117` 的 `std::invoke` 用的正是它）——同一套 decltype 机制，但名字显式、文档可见，调用方读头文件就知道返回什么。其余账目与 `auto` 返回一致：编译期推导，`-O2` 下与手写返回类型同构（18.2 基准实测），零运行时开销；返回类型仍参与 ABI mangling，调用点必须能看到完整类型。
 - **错误示例**（悬垂引用）：
-> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype
+> **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype(auto) 完美转发返回
   ```cpp
   decltype(auto) bad() { int x = 0; return (x); } // 返回 int& 绑到局部 -> 悬垂!
 ```
 - **正确示例**：
-> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · decltype(auto) 完美转发返回
   ```cpp
   int g = 0;
   decltype(auto) good() { return (g); }   // 返回 int&，合法（g 是静态生命期）
 ```
 - **≥10 个例子**：ex11, ex12, ex25, ex31, 18.2 bench, ex37.
 
-> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype(auto) 完美转发返回
 ```cpp
 // ex11_decltype_auto_forward_return.cpp —— 完美转发返回类型
 #include <type_traits>
@@ -1155,7 +1073,7 @@ int main() {
 }
 ```
 
-> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · decltype(auto) 完美转发返回
 ```cpp
 // ex12_decltype_auto_dangling.cpp —— 经典坑：decltype(auto) 绑临时悬垂
 #include <iostream>
@@ -1177,17 +1095,11 @@ int main() {
 
 ## trailing return type（尾置返回类型）
 
-- **定义**：`auto f(...) -> ReturnType;` 把返回类型写在参数列表之后，允许返回类型引用参数名/依赖类型。
-- **历史**：C++11 引入，最初是为 lambda 与依赖类型返回必要；后 `auto` 返回（C++14）部分取代。
-- **为什么设计**：在返回类型需依赖参数时（如 `a+b` 的类型），参数名尚未可见，尾置可解。
-- **标准规定**：`[dcl.decl]/1` 与 `[expr.prim.lambda]`：`auto` 占位 + `-> Type`。
-- **编译器行为**：返回类型在 `->` 后正常推导/检查。
-- **GCC/LLVM/MSVC实现**：（**[实现-推断]/[平台-推断]**）。
-- **libstdc++/libc++/MS STL**：消费端（如 `std::invoke` 用 `invoke_result_t` 作返回类型）。
-- **内存模型 / 汇编 / 性能**：与手写返回类型一致（零开销）。
-- **复杂度 / 异常安全 / 线程安全 / 缓存 / CPU / ABI**：无特殊。
-- **工程应用**：C++11 泛型函数返回依赖类型（见 ex13）。
-- **真实源码**：`std::invoke` 用 `invoke_result_t<...>` 作返回类型（functional:109）。
+尾置返回类型解决的是一个纯粹的语法顺序问题。C++ 声明从左往右读：返回类型在前、参数表在后——于是 `decltype(a+b) add(A a, B b);` 必然编译失败，编译器读返回类型的那一刻，`a`、`b` 还不存在（示例 52）。尾置形式 `auto add(A a, B b) -> decltype(a+b);` 把顺序倒过来：参数先声明、返回类型挪到 `->` 之后，此时参数名已进入作用域，`decltype(a+b)` 才有东西可指。标准落点是 [dcl.decl]/1 与 [expr.prim.lambda]——后者是同批引入的另一半动因：lambda 的返回类型常常依赖函数体里的表达式，同样需要「先写参数、后写返回类型」的次序。
+
+这里有一个容易看错的点：`auto` 在尾置语法里**不做推导**，它只是占据头部位置的占位符（[dcl.decl]/1 的表述就是「`auto` 占位 + `-> Type`」）；真正决定类型的是 `->` 之后写的东西，在那里被正常推导与检查。因此尾置语法没有引入任何新语义，与手写返回类型逐点一致：内存布局、汇编、性能相同，ABI mangling 也相同——ex31 实测 `auto square(int)`（推导出 int 后）的 mangling 与 `int square(int)` 一字不差。
+
+它今天的地位是「C++11 的刚需、C++14 的备胎」：`auto` 返回类型推导（下一专题）接手了多数场景，但只要你想**显式写出**依赖参数的返回类型，尾置仍是唯一写法。标准库自己就站在这一边——`std::invoke` 的返回类型是明写的 `invoke_result_t<_Callable, _Args...>`（functional:117，见 ⑫ 源码分析示例 6），保证与原调用表达式完全一致（含引用与 cv），而不是交给 return 语句去推。
 - **错误示例**：
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `auto` 类型推导、`decltype` 与返回类型推导
   ```cpp
@@ -1215,33 +1127,27 @@ int main() { static_assert(std::is_same_v<decltype(square(2)), int>); }
 
 ## C++14 普通函数 `auto` 返回
 
-- **定义**：`auto f() { return expr; }` 返回类型从 return 语句推导（无需 `->`）。
-- **历史**：C++14（N3638）。
-- **为什么设计**：简化返回类型书写；配合 `decltype(auto)` 实现转发。
-- **标准规定**：`[dcl.spec.auto]/1`：所有 return 语句须推导为**同一类型**；不可用于虚函数、不可用于无 return 的函数模板特化歧义处。
-- **编译器行为**：首个 return 确定类型；后续 return 必须一致（否则错误）。
-- **GCC实现**：（**[实现-推断]**）。
-- **LLVM实现**：（**[实现-推断]**）。
-- **MSVC实现**：（**[平台-推断]**）。
-- **libstdc++/libc++/MS STL**：STL 内 `constexpr` 函数多用 `auto` 返回。
-- **内存模型 / 汇编 / 性能**：与手写一致。
-- **复杂度 / 异常安全 / 线程安全 / 缓存 / CPU / ABI**：无特殊；ABI 要求类型在调用点可见。
-- **工程应用**：工厂、泛型算法（ex37）。
-- **真实源码**：`std::invoke` 返回 `invoke_result_t`（functional:109）即等价机制。
+C++14（N3638）把「返回类型的证据」从声明处挪进了函数体：`auto f() { return expr; }` 不需要在参数列表之前或之后写任何类型，返回类型由 return 语句推导（[dcl.spec.auto]/1）。一句 `return` 从此兼任两个角色——既是控制流的出口，也是返回类型的唯一证人。
+
+证人在函数体里，规则就跟着证人的性质走。其一，每个 return 语句都是证人，裁决必须一致：[dcl.spec.auto]/1 要求所有 return 语句推导为**同一类型**，首个 return 先定类型，后续 return 必须吻合——`auto bad() { if (true) return 1; else return 2.0; }` 中 `int` 与 `double` 互斥，直接编译错误（示例 55）。其二，虚函数被排除在外：覆盖（overriding）判定发生在声明处，返回类型不能等到函数体里才揭晓。
+
+「声明时类型还不存在」的代价在递归处现形：函数体内调用自身时，返回类型尚未推导完成。ex15 的解法是先用尾置语法声明确定类型（`auto fact(int n) -> int;`），且定义必须与声明签名一致、同样带 `-> int`——写成裸 `auto` 定义会与既有声明冲突，报 `ambiguating new declaration`。上一专题的尾置语法正是在这里重新变得必要。
+
+其余边界很干净：推导全程在编译期完成，生成的代码与手写返回类型一致；但返回类型参与 ABI mangling，仍要求它在调用点可见。标准库两条路并行——`constexpr` 函数大量用 `auto` 返回，需要精确保留引用与 cv 的转发场景则交给同批引入的 `decltype(auto)`（见 `decltype(auto)` 专题），或像 `std::invoke` 那样明写 `invoke_result_t`。工厂与泛型算法（ex37）是日常落点。
 - **错误示例**（多 return 不一致）：
-> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++14 普通函数 auto 返回
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · C++14 普通函数 auto 返回
   ```cpp
   auto bad() { if (true) return 1; else return 2.0; } // 错误：int vs double
 ```
 - **正确示例**：
-> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++14 普通函数 auto 返回
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · C++14 普通函数 auto 返回
   ```cpp
   auto ok() { return 1; }              // int
   auto ok2() { if (true) return 1; else return 2; } // 一致 int
 ```
 - **≥10 个例子**：ex14, ex15, ex16, ex37, ex31, ex11, ex12.
 
-> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++14 普通函数 auto 返回
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++14 普通函数 auto 返回
 ```cpp
 // ex14_auto_return_multi.cpp —— 多 return 必须一致
 #include <type_traits>
@@ -1249,7 +1155,7 @@ auto f(bool b) { if (b) return 1; else return 2; } // 都是 int
 int main() { static_assert(std::is_same_v<decltype(f(true)), int>); }
 ```
 
-> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++14 普通函数 auto 返回
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · C++14 普通函数 auto 返回
 ```cpp
 // ex15_auto_return_recursion.cpp —— 递归需先有确定返回类型的 return
 #include <type_traits>
@@ -1261,7 +1167,7 @@ auto fact(int n) -> int { return n <= 1 ? 1 : n * fact(n - 1); }
 int main() { static_assert(std::is_same_v<decltype(fact(5)), int>); }
 ```
 
-> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++14 普通函数 auto 返回
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++14 普通函数 auto 返回
 ```cpp
 // ex16_auto_return_constexpr.cpp —— auto 返回 + constexpr
 #include <type_traits>
@@ -1270,39 +1176,33 @@ int main() {
     static_assert(square(4) == 16);
     static_assert(std::is_same_v<decltype(square(4)), int>);
 }
-```cpp
+```
 
 ---
 
 ## C++20 缩写函数模板（abbreviated function templates）
 
-- **定义**：`void f(auto x);` 等价于 `template<class T> void f(T x);`；`auto` 参数即隐式模板参数。
-- **历史**：C++20（P1141）。
-- **为什么设计**：写简短泛型助手时免去 `template<class T>` 样板。
-- **标准规定**：`[dcl.fct]`：每个 `auto` 参数引入一个唯一隐式模板参数。
-- **编译器行为**：前端把缩写函数模板重写为模板再正常实例化。
-- **GCC实现**：GCC 9+（`-std=c++20`）（**[实现-推断]**）。
-- **LLVM实现**：Clang 10+（**[实现-推断]**）。
-- **MSVC实现**：VS2019 16.6+（**[平台-推断]**）。
-- **libstdc++/libc++/MS STL**：范围/算法库广泛采用。
-- **内存模型 / 汇编 / 性能**：与普通模板一致。
-- **复杂度 / 异常安全 / 线程安全 / 缓存 / CPU / ABI**：同模板。
-- **工程应用**：短助手（ex18/ex29/ex30）。
-- **真实源码**：标准库 `<algorithm>` 中大量 `auto` 参数（**[实现-推断]**，未贴具体行）。
+`void f(auto x);` 与 `template<class T> void f(T x);` 的关系不是「相似」，而是**同一物**：C++20（P1141）在 [dcl.fct] 规定每个 `auto` 参数引入一个唯一的隐式模板参数，前端把它重写回模板、再走正常实例化。所以本节没有任何新的推导规则可学——它省的是打字量，不是语义；实例化、汇编、性能、ABI 全部与普通模板一致。这也解释了为什么三大编译器的门槛只是版本号（GCC 9+ / Clang 10+ / VS2019 16.6+，`-std=c++20`）：要实现的不过是一次语法展开。
+
+两个行为细节值得停下来看。其一，「每个 `auto` 一个隐式参数」意味着逐个独立：`auto add(auto a, auto b)` 的两个 `auto` 是两个不同的模板参数（ex18），不是同一个 `T`——缩写不改变模板语义的又一例证。其二，与 concepts 组合才是这套语法的真正甜点：`std::totally_ordered auto a`（ex17）把约束直接贴在 `auto` 上——正因为底层对象本来就是模板参数，约束天然有处可挂。`auto id(auto x) { return x; }` 展开就是 `template<class T> T id(T)`（示例 61）。
+
+它的身世比标准早：C++14 的 generic lambda `[](auto x){...}` 本质上就是缩写模板（ch26 交叉引用），C++20 只是把 lambda 里已经存在的机制正名推广到普通函数。标准库随即跟进——范围/算法库（`<algorithm>`）大量采用 `auto` 参数。
+
+工程分界线在最佳实践 7：短泛型助手用它（ex18/ex29/ex30），大型 API 优先具名 `template<class T>`，为的是文档与约束的可见性。使用上还有一条注意来自它的模板身份本身：缩写形式参与重载决议时就是模板，与同名非模板函数共存（`void f(int);` 旁放 `auto f(auto){}`）要按重载规则仔细核对（示例 60）。
 - **错误示例**：
-> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++20 缩写函数模板
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · C++20 缩写函数模板
   ```cpp
   // 缩写函数模板不能和同名非模板共存产生歧义（按重载规则）
   void f(int); auto f(auto) { } // 可能重载决议冲突，需谨慎
 ```
 - **正确示例**：
-> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++20 缩写函数模板
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++20 缩写函数模板
   ```cpp
   auto id(auto x) { return x; }  // template<class T> T id(T)
 ```
 - **≥10 个例子**：ex18, ex29, ex30, ex17.
 
-> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++20 缩写函数模板
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · C++20 缩写函数模板
 ```cpp
 // ex17_abbreviated_function_template.cpp —— 缩写函数模板（C++20）
 #include <concepts>
@@ -1311,43 +1211,33 @@ auto max(std::totally_ordered auto a, std::totally_ordered auto b) {
     return a < b ? b : a;
 }
 int main() { std::cout << max(3, 7) << max(1.0, 2.0); }
-```cpp
+```
 
 ---
 
 ## C++17 `auto` 非类型模板参数（auto NTTP）
 
-- **定义**：`template<auto V> struct C {};` 中 `V` 的类型由实参推导（可以是 `int`/`char*`/枚举/指针等）。
-- **历史**：C++17（P0127）。
-- **为什么设计**：以前 NTTP 类型必须显式写（`template<int N>`）；`auto` 让「类型也参数化」的 NTTP 更易用。
-- **标准规定**：`[temp.param]/1`：`auto` NTTP 的类型由模板实参推导，但同一参数类型必须固定。
-- **编译器行为**：推导 NTTP 类型并实例化；类型不一致 → 不同实例化或错误。
-- **GCC实现**：GCC 7.1+（**[实现-推断]**）。
-- **LLVM实现**：Clang 5+（**[实现-推断]**）。
-- **MSVC实现**：VS2017 15.5+（**[平台-推断]**）。
-- **libstdc++/libc++/MS STL**：`<array>`/`std::integer_sequence` 相关可用 `auto` NTTP。
-- **内存模型**：`V` 是编译期常量，不占运行时存储。
-- **汇编**：NTTP 通常内联为常数立即数。
-- **性能 / 复杂度**：零运行时（编译期）。
-- **异常安全 / 线程安全 / 缓存 / CPU / ABI**：编译期常量。
-- **工程应用**：编译期配置、类型分发（ex19/ex20）。
-- **真实源码**：标准库 NTTP 用例见 `<utility>` 的 `integer_sequence`（**[实现-推断]**，未贴行）。
+C++17 之前，非类型模板参数只被参数化了一半：值可以变，类型被钉死在声明处——写下 `template<int N>` 的那一刻，`N` 就永远是 `int`。P0127（C++17，[temp.param]/1）把 `auto` 的推导机制搬进了模板参数位：`template<auto V> struct C {};` 让 `V` 的类型由实参推导，`int`、`char*`、枚举、指针都合法。三大编译器自 GCC 7.1 / Clang 5 / VS2017 15.5 起支持。
+
+第一个推论关乎「实例的身份」：类型与值**共同**构成模板实参。`C<5>`、`C<'x'>`、`C<5.0>` 全部合法，但它们是三个互不相同的实例化——类型不一致不报错，而是分道扬镳（示例 63）；而单个参数一旦被某个实参定型，类型就必须固定（[temp.param]/1 的另一半）。ex20 从反方向印证：`decltype(V)` 取到的是实体的声明类型，`tag<5>::type` 是 `int`、`tag<3.0>::type` 是 `double`——被推导出的类型已经成了实体身份的一部分。
+
+运行时代价是零，且不是优化器挣来的：`V` 是编译期常量，不占运行时存储，汇编里通常直接内联为常数立即数——语言层面就没给它在运行期存在的方式。工程落点是编译期配置与类型分发（ex19/ex20）；标准库同型用法见 `<utility>` 的 `std::integer_sequence` 与 `<array>`。
 - **错误示例**：
-> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++17 auto 非类型模板参数
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++17 auto 非类型模板参数
   ```cpp
   template<auto V> struct C {};
   C<5> a; C<'x'> b;  // V 类型不同 -> 两个不同实例化
   // C<5>; C<5.0>;   // int vs double -> 不同实例化（非错误）
 ```
 - **正确示例**：
-> **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++17 auto 非类型模板参数
+> **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++17 auto 非类型模板参数
   ```cpp
   template<auto V> struct wrap { static constexpr auto value = V; };
   static_assert(wrap<42>::value == 42);
 ```
 - **≥10 个例子**：ex19, ex20.
 
-> **示例 65** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++17 auto 非类型模板参数
+> **示例 65** <span class="badge badge-exp">难度 ★★★☆☆</span> · C++17 auto 非类型模板参数
 ```cpp
 // ex19_auto_nttp.cpp —— C++17 auto 非类型模板参数
 #include <type_traits>
@@ -1360,7 +1250,7 @@ int main() {
 }
 ```
 
-> **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++17 auto 非类型模板参数
+> **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · C++17 auto 非类型模板参数
 ```cpp
 // ex20_auto_nttp_different_types.cpp —— 不同类型产生不同实例化
 #include <type_traits>
@@ -1377,24 +1267,11 @@ int main() {
 
 ## `auto` 与 proxy 对象（`vector<bool>::reference` 等陷阱）
 
-- **定义**：某些容器（`vector<bool>`）的 `operator[]` 返回**代理对象**（proxy），而非真实引用；`auto` 推导得到 proxy 类型，易引发陷阱。
-- **历史**：`vector<bool>` 特化自 C++98（空间优化位打包）；proxy 引用是历史妥协。
-- **为什么设计**：位级压缩存储；但代价是「引用」不再是真正的 `bool&`。
-- **标准规定**：`[vector.bool]`：`vector<bool>::reference` 是代理类。
-- **编译器行为**：`auto x = bv[i];` 中 `x` 类型为 `vector<bool>::reference`；`auto&` 绑定失败（proxy 是右值）。
-- **GCC/LLVM/MSVC实现**：（**[实现-推断]/[平台-推断]**）。
-- **libstdc++实现**：`vector<bool>::reference` 在 `<bits/stl_bvector.h>`（真实存在；本书未贴行，仅说明）。
-- **libc++/MS STL**：同语义（**[实现-推断]/[平台-推断]**）。
-- **内存模型**：proxy 内部持有「位迭代器」；赋值时写回容器位。
-- **汇编**：proxy 读写涉及位运算，比 `bool&` 略贵。
-- **性能**：单元素访问有位操作开销；批量更差。
-- **复杂度**：O(1) 但带掩码。
-- **异常安全**：赋值不抛（位操作）。
-- **线程安全**：proxy 读写同容器位——非原子，需外部同步。
-- **缓存友好 / CPU影响**：位打包密集，缓存友好但位运算有成本。
-- **ABI**：`vector<bool>` 是标准特化，各实现 ABI 类似。
-- **工程应用**：不要以 `auto&` 遍历；算法需特化或避免 proxy。
-- **真实源码**：`<bits/stl_bvector.h>` `vector<bool>::reference`（真实文件，行略）。
+陷阱的源头不在 `auto`，在 `vector<bool>` 自己。这个特化自 C++98 就存在：把 bit 打包进机器字以省空间。代价来自一个语言级事实——机器字里的某个 bit **没有地址**，不存在能指认 `bv[i]` 的 `bool&`。于是 [vector.bool] 规定 `operator[]` 返回**代理类** `vector<bool>::reference`（按值）：它内部持有「位迭代器」，对它的赋值通过位运算写回容器所在的位。这是一桩明码标价的历史妥协——省下的空间，用「引用不再是真引用」来支付。
+
+`auto` 在这里做的每件事都诚实：它如实拷贝 `operator[]` 的返回类型，所以 `auto x = bv[0];` 里 `x` 是 proxy，不是 `bool`。两条失败路径随即现形。`auto&` 路径直接编译失败：proxy 是右值，非 const 左值引用绑不上（`for (auto& x : bv)` 见 ex24、面试 Q6）。`auto`（值）路径更阴险：编译通过、行为不对——`auto x = bv[0]; x = true;` 改的是 proxy 副本，`bv[0]` 纹丝不动（示例 67、ex23 输出 0）。这正是本章开篇点名的「编译过了却错了」最常见源头（⑪ 工业案例 B、易错点 6）。
+
+正确的工具是 `auto&&`：既能绑左值也能绑右值，`for (auto&& e : bv) e = true;` 稳定正确（ex38、示例 68）——最佳实践 3 把 `for (auto&& x : rng)` 设为默认写法的理由正在于此，它对含 proxy 的任意容器都成立；要值就显式写 `bool b = bv[i];`。性能与并发的账也要记：单元素读写带位运算（掩码），比 `bool&` 贵、批量更差（位打包换来的缓存密度是另一面的收益）；对同一容器位的读写不原子，需外部同步。libstdc++ 的实现可查（`<bits/stl_bvector.h>`，libc++/MS STL 同语义）；算法若以 `auto&` 遍历这类容器会编译失败，需特化或改写。
 - **错误示例**：
 > **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · auto 与 proxy 对象
   ```cpp
@@ -1423,7 +1300,7 @@ int main() {
     x = true;                   // 仅修改 proxy 副本，bv[0] 仍 false
     std::cout << bv[0];         // 输出 0
 }
-```cpp
+```
 
 ---
 
@@ -1451,7 +1328,7 @@ int main() {
     f(a);                // T = int*（退化，同 auto）
     static_assert(std::is_same_v<decltype(x), int*>);
 }
-```cpp
+```
 
 ---
 

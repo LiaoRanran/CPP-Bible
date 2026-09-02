@@ -1641,7 +1641,7 @@ int main() {
     std::cout << "rebuilt=" << d->id << '\n';     // 1
     return 0;
 }
-```cpp
+```
 
 ### 调试与诊断技巧
 
@@ -2202,7 +2202,7 @@ auto pa = std::make_shared<A>();   // use_count(A)=1
 auto pb = std::make_shared<B>();   // use_count(B)=1
 pa->b = pb; pb->a = pa;            // 互相 +1 -> 双方引用计数停在有环状态
 // 离开作用域: pa/pb 析构各 -1, 但计数仍 >=1, 对象永不释放 -> 泄漏
-```cpp
+```
 
 修复：`struct B { std::weak_ptr<A> a; };` —— `weak_ptr` 不增加强引用计数，析构时 `B` 先释放，
 其 `weak_ptr` 自动失效，`A` 随后释放。
