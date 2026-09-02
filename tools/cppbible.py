@@ -348,6 +348,9 @@ def cmd_preflight(_args: argparse.Namespace) -> int:
         # data_sanity 第 8 项：HEX_QUANTITY（十六进制污染）经 ABI 豁免后零误报，
         # --fail-on ERROR 只拦 ERROR，PERF_CONFLICT/UNANCHORED_EVIDENCE 为 WARN 不阻断。
         ("Data Sanity (HEX)", [PYTHON_EXE, "tools/data_sanity_audit.py", "--fail-on", "ERROR"]),
+        # 错误左移补充：LaTeX 致命反斜杠 + 行尾卫生（秒级，与 CI quality 一致）
+        ("Preflight (LaTeX)", [PYTHON_EXE, "tools/preflight_check.py"]),
+        ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
     ]
 
     passed = 0
@@ -405,6 +408,19 @@ def cmd_preflight(_args: argparse.Namespace) -> int:
             if e.stderr:
                 print(e.stderr[-500:])
             failed += 1
+
+    # 报告型提示（非阻断）：编造轶事嫌疑 + 数据 WARN，仅供 push 前人工扫一眼
+    print("\n[Report-type hints (non-blocking)]")
+    for name, cmd in [
+        ("Teaching (anecdote)", [PYTHON_EXE, "tools/teaching_audit.py", "--porcelain"]),
+        ("Data Sanity WARN", [PYTHON_EXE, "tools/data_sanity_audit.py", "--porcelain"]),
+    ]:
+        try:
+            r = run(cmd, check=False)
+            n = len([ln for ln in (r.stdout or "").splitlines() if ln.strip()])
+            print(f"  [{name}] {n} 条提示（不阻断，人工复核）")
+        except Exception:
+            print(f"  [{name}] ⚠️ 无法运行")
 
     print(f"\nResult: {passed} passed / {failed} failed")
     return 1 if failed else 0
