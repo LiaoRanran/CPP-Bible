@@ -337,7 +337,7 @@ exec "{python_posix}" "{root_posix}/tools/cppbible.py" preflight
 
 
 def cmd_preflight(_args: argparse.Namespace) -> int:
-    """推送前快速预检（等价原 pre_push_check.sh 7 项）。"""
+    """推送前快速预检（等价原 pre_push_check.sh 7 项 + data_sanity 第 8 项）。"""
     print("\n[cppbible] preflight (push guard)\n")
     checks = [
         ("Consistency", [PYTHON_EXE, "tools/consistency_check.py"]),
@@ -345,6 +345,9 @@ def cmd_preflight(_args: argparse.Namespace) -> int:
         ("Deduplication", [PYTHON_EXE, "tools/deduplication_audit.py"]),
         ("Chapter Lint HIGH", [PYTHON_EXE, "tools/chapter_lint.py", "--fail-on", "HIGH"]),
         ("ASM Evidence", [PYTHON_EXE, "tools/verify_asm_evidence.py"]),
+        # data_sanity 第 8 项：HEX_QUANTITY（十六进制污染）经 ABI 豁免后零误报，
+        # --fail-on ERROR 只拦 ERROR，PERF_CONFLICT/UNANCHORED_EVIDENCE 为 WARN 不阻断。
+        ("Data Sanity (HEX)", [PYTHON_EXE, "tools/data_sanity_audit.py", "--fail-on", "ERROR"]),
     ]
 
     passed = 0
