@@ -222,11 +222,19 @@ PY="C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
 3. pre-push 漏了 `preflight_check`（LaTeX）和 `whitespace_fix --check` → 补为阻断门禁。
 pre-push 守卫现 = **10 阻断 + 2 提示**。
 
-### 提交链（09-02，13 个 commit）
+### 提交链（09-02，14 个 commit）
 `1c61811`(mermaid 修复) → `14599ca`(ch22) → `7294008`(ch40) → `491d178`(ch96+16章hex)
 → `1bf50ed`(ch77) → `a7fbcb5`(data_sanity 工具) → `f6d74c5`(ch20/83 锚定) → `274b52a`(PERF 收紧)
 → `798a22f`(HEX 接 CI) → `796468e`(pre-push) → `c34f5a0`(teaching+SOP)
-→ `e93d5a1`(前端 CSS) → `2b2c738`(管线审查)
+→ `e93d5a1`(前端 CSS) → `2b2c738`(管线审查) → `b10e5cb`(PERF_CONFLICT 复核豁免)。
+
+### 五、PERF_CONFLICT 复核收口（09-02 当日追加）
+逐条人工复核 7 处 PERF_CONFLICT：**全部为「不同场景/规模/来源」的合理并存，无坏数据**
+——ch03 修正留痕（85 真机 vs 450 旧估自证）/ ch36 TCMalloc 线程缓存宣称值(UNVERIFIED) vs 本机 glibc 实测
+/ ch38 与 ch71 均为「基线 vs 加速组」的表格倍数列 / ch93 relaxed 无争用精确实测 vs 标注「粗略」的量级表
+/ ch100 预填充含分配路径 vs 单循环基线（7.5× 即图注主题）/ ch96 N=1M vs N=4M（正文已注明 383÷4≈96 同量级）。
+复核结论固化进 `data_sanity_audit.py` 的 `REVIEWED_PERF` 豁免表：键 =（章文件名, 关键词, 单位, lo, hi），
+正文数字一旦被改，键失配自动重新 WARN——豁免不会过期滞留。工具现报 **ERROR 0 / WARN 0 / 已复核豁免 7**。
 
 ### 给下一位的关键经验
 - 🔴 **L0 红线**：禁止「147 章一波流」批量改造（波次越多越同构）。
@@ -234,7 +242,7 @@ pre-push 守卫现 = **10 阻断 + 2 提示**。
 - 中文 commit 绝不用 `-m`（GBK 乱码），写 UTF-8 文件 + `git commit -F`。
 - 前端 CSS 唯一源是 `gen_mkdocs_nav.py` 的 `EXTRA_CSS`（`build/` gitignored）。
 - 会误报的检查不进 CI（门禁必须零误报）；报告型工具定位为「离线跑、人工复核」。
-- 剩余待办：7 条 PERF_CONFLICT 提示（规模差异）、㉒.2 模板同构（风格问题，不批量动）、CI 待确认全绿。
+- 剩余待办：㉒.2 模板同构（风格问题，不批量动）、CI 待确认全绿（PERF_CONFLICT 已于 09-02 复核收口，见「五」）。
 > 判别方法：先跑 `python tools/gen_mkdocs_nav.py` 再看板；不要为此去改 `EXTRA_CSS` 内容。
 
 ## 已知非 bug 编译失败（豁免清单）

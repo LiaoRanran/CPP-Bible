@@ -13,7 +13,7 @@
 | 根目录？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
 | 当前阶段？ | **L2 深度深耕 + L3 治理工具化已落地**（2026-09-02），CI 八 job 全链路真绿 |
 | 在飞的活？ | ✅ **无**——内容侧「学习目标→问题驱动论证」打磨专项已 **60 章全面收官**（历史9 + OO6 + STL17 + 模板12 + 语言5 + 现代4 + 性能3 + 其他2 + 收尾 ch31/ch109），全书再无「① 学习目标」节，见「已收口批次（2026-09-01）」 |
-| 剩余待办？ | ① `data_sanity_audit` 的 7 条 PERF_CONFLICT 提示（多为规模差异，人工复核）②㉒.2 模板同构（风格问题，不批量动）③CI 待确认全绿 |
+| 剩余待办？ | ①㉒.2 模板同构（风格问题，不批量动）②CI 待确认全绿 ③mypy 类型 triage（需 `uv sync --extra dev` 重建 `.venv`，本机高风险，见 `TOOLCHAIN_UPGRADE_NEXT.md`）。~~PERF_CONFLICT 7 条~~ 已于 09-02 逐条复核（全部为合理场景差异，无坏数据）并固化进 `data_sanity_audit.py` 的 `REVIEWED_PERF` 豁免表（`b10e5cb`），工具现报 ERROR 0 / WARN 0 / 豁免 7 |
 | HEAD？ | **一律以 `git rev-parse HEAD` 为准**——本文件不复制哈希。写死的哈希在提交那一刻就已过期，这正是「指标单一事实源」待办项要根治的反例 |
 | 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`（`-std=c++23`） |
 | Python？ | ✅ 已收敛：配置 glob 识别托管 3.13.14 + `toolchain.py` 版本自检（漂移即非零退出）；`.venv` 仍 3.14.5 但不影响门禁（门禁改走托管 3.13.14） |
