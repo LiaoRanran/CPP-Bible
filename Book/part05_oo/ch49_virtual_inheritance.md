@@ -316,7 +316,7 @@ void demo_f() { std::printf("%zu %zu\n", sizeof(D_bad), sizeof(D_good)); }
 
 ### 工业案例 49-G：跨菱形 dynamic_cast 到虚基类
 
-> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-G：跨菱形 dyna
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-G：跨菱形 dynamic_cast 到虚基类
 ```cpp
 struct B { virtual ~B() = default; };
 struct M1 : virtual B {}; struct M2 : virtual B {};
@@ -326,7 +326,7 @@ B* cross(M2* p) { return dynamic_cast<B*>(p); }  // 经虚基类 this 调整（�
 
 ### 工业案例 49-H：虚基类指针 dynamic_cast 回派生
 
-> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-H：虚基类指针 dy
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-H：虚基类指针 dynamic_cast 回派生
 ```cpp
 struct B { virtual ~B() = default; };
 struct M1 : virtual B {};
@@ -462,7 +462,7 @@ struct D : M { D() : V(7) {} };   // D 的 V(7) 生效，M 的 V(1) 被忽略
 
 [标准·Itanium C++ ABI] 含虚基类的子对象 vtable 在「负偏移区」存 virtual base offset table：
 
-> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析 1：vbase offse
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
 ```
 vtable for M1 (在 D 中):
   [-3]  vbase offset (M1 → 虚基类 B 的偏移，即本例 -24 编码值)
@@ -484,7 +484,7 @@ vtable for M1 (在 D 中):
 > 行号：编译器后端 `gcc/cp/class.cc`（layout_virtual_bases）
 > 提取：`grep -n "virtual_base\|vbptr\|vbase" <gcc/cp/class.cc>`
 
-> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析 1：vbase offse
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
 ```cpp
 // GCC 后端计算虚基类偏移并写入子对象 vtable 负区（节选逻辑）
 // 每个含虚基类的子对象生成独立 vbptr；其指向的 vtable 负偏移存 vbase offset
@@ -799,7 +799,7 @@ int f(D& d){ return d.a; }   // 唯一，OK
 【真实源码】Itanium ABI §2.6.3；`gcc/cp/class.cc`。
 
 【错误示例】
-> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：vbptr 与 vba
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：vbptr 与 vbase offset 表
 ```cpp
 // ❌ 误以为虚基类成员可直接偏移访问
 struct B { int b; };
@@ -809,7 +809,7 @@ int bad(D& d){ return *(int*)((char*)&d + 8); }  // 错：b 不在固定偏移�
 ```
 
 【正确示例】
-> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：vbptr 与 vba
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：vbptr 与 vbase offset 表
 ```cpp
 // ✅ 让编译器经 vbptr 计算
 struct B { int b; };

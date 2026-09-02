@@ -55,7 +55,7 @@ LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compac
 
 LSM-Tree（Log-Structured Merge-Tree）把**随机写**转化为**顺序写**：所有写入先进内存表（MemTable），写满后刷成有序的不可变文件（SSTable），后台合并（Compaction）回收空间并维持读性能。LevelDB / RocksDB 是工业级 LSM 引擎，被 TiKV、Kafka、Rockset、MongoDB（WiredTiger 同源思想）等广泛使用。
 
-> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [标准]
 ```cpp
 // ① 最小 LevelDB 打开示例：一个 LSM 引擎实例
 #include <leveldb/db.h>
@@ -69,14 +69,14 @@ leveldb::Status s = leveldb::DB::Open(opt, "/tmp/testdb", &db);  // 创建/打�
 - `[标准]`：LSM 不是 C++ 标准的一部分，而是**存储引擎架构范式**；LevelDB 提供 `leveldb::DB` 这一具体 API 契约。
 - `[经验]`：LSM 用「写放大 / 读放大 / 空间放大」三角权衡换顺序写吞吐，理解三者取舍是调优前提。
 
-> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [标准]
 ```cpp
 // ① LSM 三层结构（概念，非 LevelDB 源码）
 //   写:  Client -> WAL(顺序) -> MemTable(内存有序) -> 刷盘 -> SSTable(有序文件)
 //   读:  Client -> MemTable -> Immutable -> SSTable(L0..Ln) -> BlockCache
 ```
 
-> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [标准]
 ```cpp
 // ① 读放大/写放大/空间放大的直觉度量（示意，非本机实测）
 enum class Amplification { Read, Write, Space };
@@ -242,7 +242,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* my_batch) {
 
 RocksDB 是 Facebook 对 LevelDB 的工业级分支，增加**列族（Column Family）**、**Merge 算子**、**通用压缩（Universal/_FIFO）**、**事务**、**前缀布隆**等。
 
-> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 扩展（列族/合并/压缩） [实现·R
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · RocksDB 扩展（列族/合并/压缩） [实现·RocksDB]
 ```cpp
 // ④ 列族：一个 DB 内含多个独立有序空间，共享 WAL/Manifest 但独立 Compaction
 #include <rocksdb/db.h>
@@ -260,7 +260,7 @@ rocksdb::DB::Open(rocksdb::DBOptions(), "/tmp/rdb", descs, &handles, &db);
 cf_meta = handles[1]; cf_data = handles[2];
 ```
 
-> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩展（列族/合并/压缩） [实现·R
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RocksDB 扩展（列族/合并/压缩） [实现·RocksDB]
 ```cpp
 // ④ Merge 算子：把「读-改-写」变成服务端合并，避免读放大
 //   适合计数器、集合、最高值等场景
@@ -269,7 +269,7 @@ db->Merge(wopt, cf_data, "page_views", "+1");   // 累加合并
 db->Merge(wopt, cf_data, "tags", "rocksdb");     // 集合合并
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩展（列族/合并/压缩） [实现·R
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RocksDB 扩展（列族/合并/压缩） [实现·RocksDB]
 ```cpp
 // ④ 通用压缩（Universal Compaction）：按文件数/大小触发，而非按层
 rocksdb::ColumnFamilyOptions uo;
@@ -280,7 +280,7 @@ uo.compaction_options_universal.size_ratio = 10;   // 相邻文件大小比阈�
 - `[实现·RocksDB]`：列族让单进程多租户共享 WAL 但独立调优；Merge 把累加逻辑下推，减少读放大。
 - `[经验]`：列族数量别太多（每列族有独立 MemTable + 线程开销），通常按「冷热/生命周期」而非「每张表」划分。
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩展（列族/合并/压缩） [实现·R
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RocksDB 扩展（列族/合并/压缩） [实现·RocksDB]
 ```cpp
 // ④ 前缀布隆：对前缀范围查询加速（如 user:1000:*）
 rocksdb::BlockBasedTableOptions bto;
@@ -338,7 +338,7 @@ g++ -std=c++17 -O2 -I/opt/leveldb/include ch132_leveldb_demo.cpp \
 
 读先看 MemTable，再 Immutable，再 SSTable（自 L0 向下）；BlockCache 缓存热点数据块，布隆过滤器跳过必然缺失的文件。
 
-> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 读路径与缓存 [实现·LevelDB
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 读路径与缓存 [实现·LevelDB]
 ```cpp
 #include <string>
 // ⑥ 点查：Get 自动走 MemTable -> Immutable -> SSTable
@@ -348,7 +348,7 @@ if (s.ok()) { /* value 可用 */ }
 else if (s.IsNotFound()) { /* 键不存在 */ }
 ```
 
-> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 读路径与缓存 [实现·LevelDB
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 读路径与缓存 [实现·LevelDB]
 ```cpp
 // ⑥ 快照读：保证迭代期间视图不变（SequenceNumber 快照）
 leveldb::ReadOptions ro;
@@ -357,7 +357,7 @@ ro.snapshot = db->GetSnapshot();           // 固定一致视图
 db->ReleaseSnapshot(ro.snapshot);          // 用完释放
 ```
 
-> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 读路径与缓存 [实现·LevelDB
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 读路径与缓存 [实现·LevelDB]
 ```cpp
 // ⑥ 迭代器：范围扫描（LevelDB 合并各层形成有序视图）
 leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
@@ -370,7 +370,7 @@ delete it;   // 迭代器需手动释放（见 ⑧ RAII 封装）
 - `[实现·LevelDB]`：布隆过滤器在 `Table::Get` 前先判「文件必有？」，消除大量无谓 IO。
 - `[经验]`：默认 BlockCache 为 8MB LRU；热数据集调大 `options.block_cache` 显著降读放大。
 
-> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 读路径与缓存 [实现·LevelDB
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 读路径与缓存 [实现·LevelDB]
 ```cpp
 // ⑥ 显式 BlockCache 尺寸（RocksDB 写法，LevelDB 用 options.block_cache）
 // 上游参考：https://github.com/facebook/rocksdb/blob/main/include/rocksdb/options.h

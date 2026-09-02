@@ -169,7 +169,7 @@ void retire(void* p) {
 
 回收的关键不变量：**若某个 HP 槽里存着 `ptr`，则 `ptr` 此刻正被某读者使用，绝不能删**。
 
-> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 回收流程（扫描 HP 表） [实现·
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · HP 回收流程（扫描 HP 表） [实现·GCC15]
 ```cpp
 // ⑤ 回收者：取出 retired 链表，逐个对照所有 HP 槽
 extern "C" void hp_scan_and_reclaim() {
@@ -292,7 +292,7 @@ void synchronize_rcu(std::atomic<int>* readers, int n) {
 
 Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系统 inode、防火墙规则等都用 RCU 让**海量读者零开销并发读，写者偶尔更新**。
 
-> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 在 Linux 内核的应用 [平台·
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RCU 在 Linux 内核的应用 [平台·Linux]
 ```cpp
 // ⑨ Linux 内核 RCU API 示意（kernel 风格，非本机可编译，仅展示模型）
 // rcu_read_lock();        // ⑨ 进入读者临界区（几乎零开销，仅禁止抢占）
@@ -301,7 +301,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 // kfree_rcu(old, rcu);    // ⑨ 在宽限期后自动 kfree
 ```
 
-> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 在 Linux 内核的应用 [平台·
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RCU 在 Linux 内核的应用 [平台·Linux]
 ```cpp
 // ⑨ 经典用法：路由查找（读者路径热，写者路径冷）
 // 读者：rcu_read_lock(); route = rcu_dereference(routing_table); ...; rcu_read_unlock();
@@ -316,7 +316,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 
 用户态没有调度器帮忙，urcu（Userspace RCU 库）用**每线程静态计数器**实现静止态检测：读者进入临界区时本线程计数 +1，离开时 -1；`synchronize_rcu()` 等待每个线程计数归零。
 
-> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用户态 RCU(urcu) 简介 [
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用户态 RCU(urcu) 简介 [实现·GCC15]
 ```cpp
 // ⑩ urcu 读者/写者骨架（语义示意，基于 liburcu API）
 // #include <urcu.h>
@@ -332,7 +332,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 // free(old);                       // ⑩ 安全回收
 ```
 
-> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 用户态 RCU(urcu) 简介 [
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 用户态 RCU(urcu) 简介 [实现·GCC15]
 ```cpp
 // ⑩ 手动复刻的"每线程计数"版宽限期（单文件可编译模型）
 #include <atomic>
@@ -760,7 +760,7 @@ C++ proposal P0566R3 (2020): hazard pointers 进入 C++26 方向
 
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
-> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与设计 [J: Lea
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与设计 [J: Learning / H: Design / I: Practice]
 ```
 面试高频:
 Q: Hazard Pointer 和 RCU 的根本区别？

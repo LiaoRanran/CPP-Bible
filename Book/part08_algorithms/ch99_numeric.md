@@ -1510,7 +1510,7 @@ void demo_c10(const std::vector<long long>& v) {
 
 ## 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：数值算法底层与工业 [E:
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 ```
 数值算法工业应用:
 
@@ -1528,7 +1528,7 @@ ClickHouse:
   std::inner_product用于buy/sell net position → 热路径, 需inline展开 + SIMD
 ```
 
-> **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：数值算法底层与工业 [E:
+> **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <vector>

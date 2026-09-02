@@ -798,7 +798,7 @@ int main() {
 
 本书覆盖不全的领域（需要外部补充）：
 
-> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：你还需要读什么 [J: L
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：你还需要读什么 [J: Learning]
 ```
 1. 编译原理 (本书: ch11编译器, ch127 LLVM)
    → 补充: Engineering a Compiler (Keith Cooper, 3rd ed)
@@ -821,7 +821,7 @@ int main() {
    → 实践: 实现简单的Raft共识算法
 ```
 
-> **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：你还需要读什么 [J: L
+> **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：你还需要读什么 [J: Learning]
 ```cpp
 #include <iostream>
 int main() {

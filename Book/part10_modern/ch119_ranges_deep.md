@@ -44,7 +44,7 @@ Ranges 入标后，演进是"补适配器"与"打通协程/并行"两路并进�
 
 传统 STL 算法（`std::sort(v.begin(), v.end())`）要求显式迭代器对、难以组合。Ranges 把"范围"作为一等公民，支持**管道组合**（`|`）与**惰性求值**。
 
-> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Ranges 解决了什么 [标
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Ranges 解决了什么 [标准]
 ```cpp
 // ① 旧式 vs 新式
 #include <vector>
@@ -181,7 +181,7 @@ auto g = std::views::iota(1, 10);                          // 无限/有限整�
 
 ## ⑦ 范围算法（ranges 算法） <span class="badge badge-std">标准</span>
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 范围算法（ranges 算法） [标
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 范围算法（ranges 算法） [标准]
 ```cpp
 // ⑦ 范围版算法接受范围而非迭代器对
 #include <ranges>
@@ -216,7 +216,7 @@ auto p = std::ranges::max(people, {}, &Person::age);  // 年龄最大者
 
 ## ⑨ 自定义 range 与 view <span class="badge badge-std">标准</span>
 
-> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义 range 与 view [
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义 range 与 view [标准]
 ```cpp
 // ⑨ 实现简单 input range（满足 begin/end + iterator_traits）
 #include <ranges>
@@ -287,7 +287,7 @@ use(cached); use(cached);
 
 ## ⑫ 真实源码：view 的存储结构 <span class="badge badge-impl">实现</span>
 
-> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实源码：view 的存储结构 [实
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实源码：view 的存储结构 [实现·GCC15.3.0]
 ```cpp
 // 文件：bits/ranges_base.h / bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：filter_view 存 _M_base/_M_pred（概念，参见 ⑬）
 // 概念：filter_view 持有 _M_base（底层范围引用）+ _M_pred（谓词）
@@ -303,7 +303,7 @@ use(cached); use(cached);
 
 ## ⑬ 真实源码：管道运算符 `|` 的实现 <span class="badge badge-impl">实现</span>
 
-> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实源码：管道运算符 | 的实现 [
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实源码：管道运算符 `|` 的实现 [实现·GCC15.3.0]
 ```cpp
 #include <utility>
 // 文件：bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：_RangeAdaptorClosure 重载 operator|（range|adaptor == adaptor(range)）

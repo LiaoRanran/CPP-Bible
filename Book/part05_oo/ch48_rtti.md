@@ -463,7 +463,7 @@ Der* manual_down(Base* p) { return p->kind() == 1 ? static_cast<Der*>(p) : nullp
 
 ### 工业案例 48-P：捕获 std::bad_cast（引用形态）
 
-> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-P：捕获 std::
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-P：捕获 std::bad_cast（引用形态）
 ```cpp
 #include <typeinfo>
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
@@ -1258,7 +1258,7 @@ int main() { X x; Base* b = &x; b->handle(); }  // 多态分发，无 RTTI
 
 **常见错误**：源类型不含任何虚函数（非多态），`dynamic_cast` 直接编译失败。
 
-> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：对无虚函数类误用 dyna
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：对无虚函数类误用 `dynamic_cast`
 ```
 // 错误：A 非多态（无虚函数），dynamic_cast 不允许
 struct A {};
@@ -1271,7 +1271,7 @@ int main() {
 
 **修复**：`dynamic_cast` 要求源表达式为多态类型。若确实需要在已知层次内转换且自担保安全，用 `static_cast`（无运行时检查）；否则把基类改为多态（加虚析构）或重构为 `variant`/虚函数层次。
 
-> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：对无虚函数类误用 dyna
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：对无虚函数类误用 `dynamic_cast`
 ```cpp
 #include <iostream>
 struct A { virtual ~A() = default; };
@@ -1293,7 +1293,7 @@ RTTI 常被说成"黑盒"，但它的实现完全可在汇编里看清：多态 
 
 ### ① 多态 `typeid` —— 读 vtable[-1]
 
-> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 多态 typeid —— 读 vta
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 多态 `typeid` —— 读 vtable[-1]
 ```cpp
 const std::type_info& who(Base& b) { return typeid(b); }
 ```

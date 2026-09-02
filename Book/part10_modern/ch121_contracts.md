@@ -71,7 +71,7 @@ int main() {
 
 ## ④ C++26 P2900 语法展望 <span class="badge badge-std">标准</span>
 
-> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++26 P2900 语法展望 [标
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++26 P2900 语法展望 [标准/预览]
 ```cpp
 // ④-a 模拟 C++26 契约语法（GCC13 不支持，仅示意）
 #include <iostream>
@@ -300,7 +300,7 @@ int main() {
 
 ## ⑫ 工业案例：安全关键系统中的契约 <span class="badge badge-exp">经验</span>
 
-> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：安全关键系统中的契约 [经
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：安全关键系统中的契约 [经验]
 ```cpp
 // ⑫ DO-178C 航空软件中的契约检查模式
 #include <iostream>
@@ -339,7 +339,7 @@ int main() {
 
 ## ⑬ 源码分析：assert 和 static_assert 的编译器实现 [实现·GCC15]
 
-> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：assert 和 stat
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：assert 和 static_assert 的编译器实现 [实现·GCC15]
 ```cpp
 // ⑬ GCC 中 assert 宏和 static_assert 的实现路径
 #include <iostream>

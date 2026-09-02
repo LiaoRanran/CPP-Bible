@@ -550,7 +550,7 @@ int main(){
 
 ## 附录 C：C++23底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 ```
 C++23关键特性底层:
 
@@ -567,7 +567,7 @@ std::print (P2093):
   vs cout: 无locale分配, 无mutex锁, 快5-10x（量级; C++23, 来源 cppreference / fmt-lib 基准）
 ```
 
-> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <expected>

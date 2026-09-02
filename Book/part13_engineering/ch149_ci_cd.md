@@ -257,7 +257,7 @@ int main() {
 
 矩阵（matrix）让同一份代码在“编译器 × 标准 × OS × 架构”的组合上并行验证，尽早暴露平台相关缺陷。
 
-> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·Windows]
 ```cpp
 // ⑤ 矩阵构建：探测编译器与 OS，驱动多维度组合
 // 见 Examples/_ch149_matrix.cpp
@@ -279,7 +279,7 @@ int main() {
 }
 ```
 
-> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·Windows]
 ```cpp
 // ⑤' 平台门禁：不支持的编译器直接编译失败，矩阵尽早暴露不兼容
 // 见 Examples/_ch149_matrix_guard.cpp
@@ -293,7 +293,7 @@ int main() {
 }
 ```
 
-> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 矩阵构建（多编译器/多平台）[平台·Windows]
 ```cpp
 // ⑤'' 分布式编译：把 .o 的编译派发到编译集群（仅打印说明）
 // 见 Examples/_ch149_distcc.cpp
@@ -1082,7 +1082,7 @@ CI 本身非 ISO C++ 标准，但它与标准工具链深度绑定：**CMake + C
 
 ## 附录 A：工业 CI/CD 管道 [F: Industry / B: Principle]
 
-> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业 CI/CD 管道 [
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业 CI/CD 管道 [F: Industry / B: Principle]
 ```
 C++ 项目 CI/CD 工业实践:
 

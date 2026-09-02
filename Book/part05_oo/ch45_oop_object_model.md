@@ -469,7 +469,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>**　`[class.this]`：非静态成员函数有一个隐式对象形参 `this`，其类型为 `T*`（非 const 成员函数）或 `T const*`（const 成员函数）。编译器把 `obj.foo(args)` 改写为 `T::foo(&obj, args)` 形式的**非成员函数调用**。
 
-> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 指针机制：成员函数 = 带 this
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · this 指针机制：成员函数 = 带 this 的非成员函数
 ```cpp
 // [示例 11] this 指针观察：成员函数第一个隐式参数就是对象地址
 #include <cstdio>
@@ -490,7 +490,7 @@ int main() {
 
 **[平台·Windows]**　在本机 MinGW GCC 15.3.0（Windows 目标）上，使用的是 **Microsoft x64 调用约定**——`this` 通过寄存器 **`rcx`** 传递（而非压栈）。`[实现-推断]` 在 Linux 的 GCC/Clang（System V AMD64 ABI）下 `this` 走 **`rdi`**；MSVC（x64）同样是 `rcx`（见 `ch36` 调用约定）。下面用本机生成的反汇编实证。
 
-> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 指针机制：成员函数 = 带 this
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · this 指针机制：成员函数 = 带 this 的非成员函数
 ```cpp
 // [示例 12] this 通过 rcx 寄存器传递（本机 MinGW Windows：MS x64 ABI）
 // 编译实证：g++ -O2 -S -masm=intel asm45.cpp 后查看 T::f 的 [rcx] 取成员
@@ -506,7 +506,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>**　你不能取**绑定到成员函数的**指针：`&obj.func` 非法（`func` 是非对象实体）；但可以取**指向成员的指针** `&Class::func`（见 `ch47`）。
 
-> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 指针机制：成员函数 = 带 this
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · this 指针机制：成员函数 = 带 this 的非成员函数
 ```cpp
 // [示例 13] &obj.memfunc 不可取；只能取「指向成员的指针」
 #include <cstdio>
@@ -520,7 +520,7 @@ int main() {
 }
 ```
 
-> **示例 19** <span class="badge badge-exp">难度 ★★★★☆</span> · 指针机制：成员函数 = 带 this
+> **示例 19** <span class="badge badge-exp">难度 ★★★★☆</span> · this 指针机制：成员函数 = 带 this 的非成员函数
 ```cpp
 // [示例 14] const 成员函数的 this 是 T const*
 #include <type_traits>
@@ -933,7 +933,7 @@ int main() {
 
 ### 15.3 is_polymorphic（L961–963）
 
-> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · polymorphic
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · is_polymorphic（L961–963）
 ```cpp
 // 文件：type_traits ，行号：961–963
   /// is_polymorphic
@@ -991,7 +991,7 @@ int main() {
 
 标准库在「已分配但未构造」的内存上构造对象，用的是 **placement new**——这正是 `ch37` 的原地构造机制。核心函数 `_Construct`（L123–137）与 `construct_at`（L96–122）：
 
-> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：`<bits/stl_construct.h>` 的 _Construct / construct_at
 ```cpp
 #include <utility>
 // 文件：bits/stl_construct.h ，行号：96–122  (C++20 construct_at)
@@ -1005,7 +1005,7 @@ int main() {
 #endif
 ```
 
-> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：`<bits/stl_construct.h>` 的 _Construct / construct_at
 ```cpp
 #include <utility>
 // 文件：bits/stl_construct.h ，行号：123–137  (_Construct，C++11+)
@@ -1033,7 +1033,7 @@ int main() {
 - C++20 常量求值分支：`std::__is_constant_evaluated()` 在 `constexpr` 上下文里改用 `construct_at`，使构造可在编译期发生。
 - 这正是 `std::vector::emplace_back`、`std::allocator::construct`（`ch38`）的底层——**把内存分配与对象构造分离**，是 RAII/容器零泄漏设计的核心。
 
-> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：`<bits/uses_allocator.h>` 的构造探测
 ```cpp
 // [示例 30] 复刻 libstdc++ _Construct：用 placement new 在缓冲上构造
 #include <new>
@@ -1065,7 +1065,7 @@ int main() {
 
 `uses_allocator<T, Alloc>` 回答「类型 `T` 能否用分配器 `Alloc` 构造」——这是 `std::scoped_allocator_adaptor` / 容器构造的编译期探针。关键定义（L73–75 主模板，L133 `uses_allocator_v`，L176–200 构造分发）：
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码逐行：`<bits/uses_allocator.h>` 的构造探测
 ```cpp
 // 文件：bits/uses_allocator.h ，行号：73–75
   template<typename _Tp, typename _Alloc>
@@ -1074,7 +1074,7 @@ int main() {
     { };
 ```
 
-> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码逐行：`<bits/uses_allocator.h>` 的构造探测
 ```cpp
 #include <utility>
 // 文件：bits/uses_allocator.h ，行号：166–191  （构造探测分发）
@@ -1106,7 +1106,7 @@ int main() {
 - 三个 `__uses_allocator_construct_impl` 重载对应三种构造策略，**全部基于 placement new**（与第 16 节一致）。
 - 这正是 `std::vector`、`std::list` 等容器在「用分配器构造元素」时走的编译期分支——把「分配器感知构造」从运行时挪到了编译期（零运行时开销）。
 
-> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码逐行：`<bits/uses_allocator.h>` 的构造探测
 ```cpp
 // [示例 31] uses_allocator 探测：自定义类型是否「分配器感知」
 #include <memory>

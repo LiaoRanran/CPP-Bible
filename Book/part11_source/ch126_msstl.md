@@ -184,7 +184,7 @@ int m(int a, int b) { return std::max(a, b); }  // 用 std::max 而非宏
 
 MSVC 的 C++ 异常在 Windows 上由 **SEH（Structured Exception Handling）** 承载：栈展开经 `vcruntime` 的 `__CxxFrameHandler*`，由编译器为每个 `try` 生成 `FuncInfo` 描述。MinGW-w64（seh 变体）用同一套 Windows SEH 机制，故可在本机用 g++ 真实演示 C++ 异常→SEH 的映射。
 
-> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 异常与 SEH [实现·MS STL
+> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 异常与 SEH [实现·MS STL]
 ```cpp
 // ⑥ 用 C++ 异常演示 Windows SEH 机制（真实编译取证见下方汇编）
 #include <stdexcept>
@@ -248,7 +248,7 @@ int p() {
 
 MS STL 的 `std::string` 采用 **SSO（Small String Optimization）**：短串存对象内建缓冲，避免堆分配。`basic_string` 用 union `_Bx` 在「内置缓冲 `_Buf`」与「堆指针 `_Ptr`」间二选一（见 ④ `xstring:1860`）。本机用 g++ 编译 `std::string` 可演示同构的 SSO 阈值判定（`15`）。
 
-> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 字符串实现策略 [实现·MS STL
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 字符串实现策略 [实现·MS STL]
 ```cpp
 // ⑧ SSO：短串不触发堆分配（本机 g++/libstdc++ 演示同一机制）
 #include <string>
@@ -269,7 +269,7 @@ int main() {
 ; MS STL 同样以 15 字节(x86-64, char) 为 SSO 阈值（见 ④ xstring union）
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 字符串实现策略 [实现·MS STL
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 字符串实现策略 [实现·MS STL]
 ```cpp
 // ⑧ SSO 容量探测（实现相关，演示短串存对象内）
 #include <string>
@@ -540,7 +540,7 @@ void my_erase_last(std::vector<_Ty>& v) {
 
 libstdc++（GCC）、libc++（Clang）、MS STL（MSVC）实现同一标准，但策略不同：SSO 阈值、ABI 稳定机制、并行后端、调试源可用性各异。
 
-> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库对比（三套 STL） [平台·W
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库对比（三套 STL） [平台·Windows]
 ```cpp
 // ⑱ 三套 STL 都能编译的同款代码（可移植性验证）
 #include <vector>
@@ -569,7 +569,7 @@ int demo() {
 
 在 Windows 上读 MS STL 源码最顺手：VS 安装时自带 `VC\Tools\MSVC\<ver>\include`，直接 `Ctrl+点击` 跳进 `vector`。也可在 GitHub 网页读 `microsoft/STL` 的 `stl/inc`。非 Windows 上可用 VS Code + 远程仓库只读浏览。
 
-> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试/源码阅读 [平台·Window
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试/源码阅读 [平台·Windows]
 ```cpp
 // ⑲ 阅读入口：从顶层头追到实现（与 ③ 同思路）
 #include <vector>
@@ -976,7 +976,7 @@ MS STL 的覆盖由「Windows 生态」定义，凡用 MSVC 编译的本地代�
 
 ## 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
 
-> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：MS STL 工业背景 [
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
 ```
 Microsoft STL 的关键设计决策:
 
@@ -1001,7 +1001,7 @@ Microsoft STL 的关键设计决策:
 
 ## 附录 E：MS STL工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
-> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：MS STL工业与底层 [
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：MS STL工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 ```
 MS STL设计权衡:
 
@@ -1020,7 +1020,7 @@ MS STL设计权衡:
   parallel algorithms → Windows ThreadPool (无需TBB, 开箱即用)
 ```
 
-> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：MS STL工业与底层 [
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：MS STL工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <thread>

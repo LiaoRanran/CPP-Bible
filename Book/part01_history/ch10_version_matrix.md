@@ -581,7 +581,7 @@ int main(){std::cout<<"C++11->14=minor, 14->17=productivity, 17->20=paradigm"<<s
 | C++14→17 | optional,variant,filesystem | 低(string_view) | 推荐 |
 | C++17→20 | concepts,ranges,coroutines | 中(SFINAE→concepts重写) | 新项目推荐 |
 
-> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 G：版本升级设计权衡 [H:
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 G：版本升级设计权衡 [H: Design]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Upgrade decisively: C++17 is the new minimum for new C++ projects."<<std::endl;return 0;}

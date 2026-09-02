@@ -224,7 +224,7 @@ int main(){std::cout<<"Eigen: operator+ returns expression template. fmt: operat
 ```
 
 ## ⑬ 源码分析 [实现·GCC15.3.0]
-> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析 [实现·GCC15.3.0
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析 [实现·GCC15.3.0]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC resolving operator@: lookup + overload resolution, error messages in cp/call.cc.\n";return 0;}
@@ -446,7 +446,7 @@ int main(){Json j{42,"hello"};std::cout<<(int)j<<" "<<(std::string)j<<std::endl;
 
 ## 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 L：标准库与底层 [D: st
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 ```
 标准库中的运算符重载:
 - std::complex<T>: operator+,-,*,/ → libstdc++内联展开为2条addps(SIMD)

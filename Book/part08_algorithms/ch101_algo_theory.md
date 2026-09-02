@@ -1003,7 +1003,7 @@ int main() { return 0; }
 
 ## 附录 A：算法在工业中的应用 [F: Industry / B: Principle]
 
-> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：算法在工业中的应用 [F:
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：算法在工业中的应用 [F: Industry / B: Principle]
 ```
 工业项目中的算法选择实例:
 
@@ -1022,7 +1022,7 @@ protobuf: varint 编码 = 7-bit 分组 + MSB 标志 (O(1) 编码, O(N) 传输, �
 
 ## 附录 B：面试高频 [J: Learning / I: Practice]
 
-> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试高频 [J: Lear
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试高频 [J: Learning / I: Practice]
 ```
 高频算法题 → C++实现:
 1. LRU Cache → std::list + std::unordered_map (O(1) get/put)

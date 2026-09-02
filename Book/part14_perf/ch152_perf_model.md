@@ -234,7 +234,7 @@ flowchart TD
 
 若基准结果"没被使用"，编译器会把整个被测循环删掉，测出 0 ns——这是最经典的陷阱。
 
-> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：防止死代码消除（DCE）[
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：防止死代码消除（DCE）[实现·GCC15]
 ```cpp
 // C4 错误示范（被优化的基准）：结果未使用，编译器可删掉 work
 #include <iostream>
@@ -261,7 +261,7 @@ int main() {
 
 **正确做法**：用 `volatile` 接收结果，或用内联汇编 `black_box` 强制"使用"。
 
-> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编分析：防止死代码消除（DCE）[
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编分析：防止死代码消除（DCE）[实现·GCC15]
 ```cpp
 // C5 正确示范：volatile 接收，阻止 DCE
 #include <iostream>
@@ -277,7 +277,7 @@ int main() {
 }
 ```
 
-> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编分析：防止死代码消除（DCE）[
+> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编分析：防止死代码消除（DCE）[实现·GCC15]
 ```cpp
 // C6 内联汇编 black_box：强制"使用"变量且不引入真实存储（比 volatile 更狠）
 #include <iostream>
@@ -327,7 +327,7 @@ int main() {
 
 线上性能**不能只看平均值**——p99/p999 决定尾部用户体验。下例模拟从采样数组算分位数。
 
-> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
 ```cpp
 // C8 中位数 / 分位数计算：先排序再取位置
 #include <iostream>
@@ -346,7 +346,7 @@ int main() {
 }
 ```
 
-> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
 ```cpp
 // C9 服务端延迟采样：warmup 后反复测一个 handler，报告 p50/p95/p99
 #include <iostream>
@@ -374,7 +374,7 @@ int main() {
 }
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
 ```cpp
 // C10 Amdahl 定律：并行化占比 f，加速比 S = 1 / ((1-f) + f/p)
 #include <iostream>
@@ -388,7 +388,7 @@ int main() {
 }
 ```
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
 ```cpp
 // C11 Gustafson 定律：固定时间，扩大规模，总工作量随核数线性增
 #include <iostream>
@@ -400,7 +400,7 @@ int main() {
 }
 ```
 
-> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
 ```cpp
 // C12 Roofline：给定算力上限与带宽，算术强度决定能否喂饱 CPU
 #include <iostream>

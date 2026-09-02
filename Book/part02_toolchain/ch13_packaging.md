@@ -516,7 +516,7 @@ main:
 
 包管理不只是装库，还要管**许可证 (license)** 与 **ABI 边界**。静态链接 GPL 库可能传染你的分发义务；动态链接通常隔离得更干净（具体以律师意见为准，此处仅工程视角）。
 
-> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Wi
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Windows]
 ```cpp
 // ⑭ 许可证元数据在 manifest/recipe 里声明
 // vcpkg.json:  "license": "MIT"
@@ -524,7 +524,7 @@ main:
 // 工具可据此做合规扫描（如拒绝 GPL 进入闭源产物）
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Wi
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Windows]
 ```cpp
 #include <string>
 // ⑭ ABI 边界：跨 .dll/.so 传递 STL 类型需谨慎
@@ -532,7 +532,7 @@ main:
 // 结果：std::string 内部布局/分配器不同 -> 崩溃或静默损坏
 ```
 
-> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Wi
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Windows]
 ```cpp
 // ⑭ 安全跨边界的做法：用 C ABI（POD / 句柄）
 // extern "C" { struct Handle { void* p; }; Handle make(); void free(Handle); }
@@ -806,7 +806,7 @@ main:
 
 ## 附录 E：包管理工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：包管理工业与面试 [B:
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：包管理工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 ```
 C++包管理的三种范式:
 
@@ -826,7 +826,7 @@ CMake FetchContent:
   劣势: 无版本管理, 无二进制缓存
 ```
 
-> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：包管理工业与面试 [B:
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：包管理工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 ```cpp
 #include <iostream>
 int main() {
@@ -856,7 +856,7 @@ int main() {
 | FetchContent | 零外部工具 | 无版本管理 | 小项目/原型 |
 | git submodule | pin精确版本 | 更新繁琐 | 深度集成的依赖 |
 
-> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G: Conan vs vcp
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G: Conan vs vcpkg vs FetchContent
 ```cpp
 #include <iostream>
 int main(){std::cout<<"vcpkg=simple+Windows; Conan=flexible+enterprise; FetchContent=zero-dep"<<std::endl;return 0;}

@@ -486,7 +486,7 @@ static_assert(std::is_trivially_copyable_v<Pod>);
 
 标准库 `<type_traits>` 中 `is_pointer` 的真实骨架（libstdc++ 摘录，行号指 `_bits/type_traits.h` 区块）：
 
-> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析 [实现·libstdc++
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析 [实现·libstdc++]
 ```cpp
 // libstdc++ 风格（简化，非逐字节）：指针偏特化命中 -> true_type
 template<typename _Tp>
@@ -516,7 +516,7 @@ template<typename _Tp>
 
 `type_traits` 属标准强约束区，三编译器结论一致率 >99% [UNVERIFIED]。分歧仅在极少数内建 trait（如 `is_trivially_constructible` 对含 `volatile` 成员的类）。工程建议：跨编译器库用标准 trait 而非编译器内建宏。
 
-> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 GCC / Clang / MS
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 GCC / Clang / MSVC 一致性
 ```cpp
 // 跨平台写法：优先标准 trait
 #if defined(_MSC_VER)

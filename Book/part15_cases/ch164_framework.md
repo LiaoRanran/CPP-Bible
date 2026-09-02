@@ -896,7 +896,7 @@ _ZN4Ring4pushEc:
 
 **[平台·Windows]** 框架要跨平台，必须把"平台差异"收口到一个 PAL（Platform Abstraction Layer）。用编译期宏把 `os_name`、`path_sep`、`sleep` 等差异隔离，业务代码永远看不到 `#ifdef`。
 
-> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台抽象层（PAL）[平台·Wind
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台抽象层（PAL）[平台·Windows]
 ```cpp
 // ⑭ PAL（本机实测通过：Examples/_ch164_pal.cpp，本机走 _WIN32 分支）
 #include <iostream>

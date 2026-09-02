@@ -79,7 +79,7 @@ int t = pq.top();                     // 8，且不弹出
 - `push_heap(first, last)`：前提——`[first, last-1)` 已是堆，且 `*(last-1)` 是新元素；它把新尾元素 sift-up 回正确位置（O(log n)）。
 - `pop_heap(first, last)`：前提——`[first, last)` 已是堆；它把 `*(first)`（极值）与 `*(last-1)` 交换，再把 `[first, last-1)` 重新 sift-down 成堆（O(log n)）。**注意：极值被换到了尾端，并未真正删除**，需再 `pop_back()`。
 
-> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · heap / pushheap /
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · make_heap / push_heap / pop_heap
 ```cpp
 // ② make_heap：O(n) 自底向上建立堆性质
 #include <vector>
@@ -88,7 +88,7 @@ std::vector<int> a{4, 10, 3, 5, 1};
 std::make_heap(a.begin(), a.end());   // 大顶堆：a[0]==10
 ```
 
-> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · heap / pushheap /
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · make_heap / push_heap / pop_heap
 ```cpp
 #include <vector>
 // ② push_heap：先 push_back 再 push_heap（顺序不能反）
@@ -97,7 +97,7 @@ b.push_back(8);
 std::push_heap(b.begin(), b.end());   // 8 上浮 -> a[0] 仍为 10
 ```
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · heap / pushheap /
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · make_heap / push_heap / pop_heap
 ```cpp
 #include <vector>
 // ② pop_heap：极值被移到末尾，需手动 pop_back 才是"弹出"
@@ -107,7 +107,7 @@ int top = c.back();                    // top == 10
 c.pop_back();                          // 真正删除
 ```
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · heap / pushheap /
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · make_heap / push_heap / pop_heap
 ```cpp
 #include <vector>
 // ② 完整优先队列循环：make -> 反复 push/pop
@@ -171,7 +171,7 @@ static_assert(parent(3) == 1 && left(1) == 3 && right(1) == 4);
 
 下面汇编来自真实编译（`g++ -std=c++23 -O2 -S -masm=intel`，见 `Examples/_ch98_heap.asm`）。源码中 `std::push_heap` 被内联进 `do_push`，编译器生成的就是经典的 sift-up 循环。
 
-> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实汇编：pushheap 的 si
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实汇编：push_heap 的 sift-up（比较+交换）
 ```cpp
 #include <vector>
 // 文件：Examples/_ch98_heap.cpp
@@ -577,7 +577,7 @@ ListNode* merge_k(std::vector<ListNode*>& lists) {
 
 最大的坑是**违反前置条件**。`push_heap/pop_heap/sort_heap` 都要求区间已满足堆性质；任何在未维持堆性质的容器上调用它们都是未定义行为。
 
-> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见坑：在已修改的容器上重复 mak
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
 ```cpp
 // ⑭ ❌ 坑1：重复 make_heap + 之后又 push_heap 但忘了维护堆性质
 #include <vector>
@@ -588,7 +588,7 @@ v.push_back(99);                        // 直接尾插但没 push_heap -> v 不
 std::push_heap(v.begin(), v.end());     // ❌ UB：push_heap 要求 [first,last-1) 已是堆
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见坑：在已修改的容器上重复 mak
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
 ```cpp
 // ⑭ ❌ 坑2：pop_heap 后没 pop_back，又直接改了尾部元素
 std::vector<int> w{10, 5, 3};
@@ -597,7 +597,7 @@ w.back() = 7;                           // ❌ 破坏了 [first,last-1) 的堆�
 std::pop_heap(w.begin(), w.end());      // ❌ UB：区间已不是合法堆
 ```
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：在已修改的容器上重复 mak
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
 ```cpp
 // ⑭ ❌ 坑3：比较器不一致 —— make_heap 用 less，push_heap 用 greater
 std::vector<int> u{5, 2, 8};
@@ -605,7 +605,7 @@ std::make_heap(u.begin(), u.end(), std::less<int>());              // 大顶
 std::push_heap(u.begin(), u.end(), std::greater<int>());           // ❌ UB：比较器必须一致
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：在已修改的容器上重复 mak
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
 ```cpp
 #include <vector>
 // ⑭ ✅ 正确：pop_heap 后务必 pop_back，比较器全程一致
@@ -893,7 +893,7 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 
 ## 附录 A：工业堆应用 [F: Industry / B: Principle]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业堆应用 [F: Ind
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业堆应用 [F: Industry / B: Principle]
 ```
 堆在工业项目中的关键应用:
 
@@ -910,7 +910,7 @@ Linux kernel: timer wheel (多级时间轮) → 优于堆的 O(1) 插入, 用于
 
 ## 附录 B：性能与面试 [G: Performance / J: Learning]
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：性能与面试 [G: Per
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：性能与面试 [G: Performance / J: Learning]
 ```cpp
 #include <iostream>
 #include <queue>

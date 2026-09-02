@@ -630,7 +630,7 @@ void outer() {
 
 `[平台·Windows]` 异常是**实现细节耦合**的：Itanium ABI 与 MSVC 的异常处理模型不同，不同编译器/不同异常模型（SJLJ vs SEH vs DWARF）混链会 `terminate`。因此**跨 ABI / 跨语言 / 插件边界严禁抛异常穿越**。
 
-> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨 ABI 错误处理 [平台·Win
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨 ABI 错误处理 [平台·Windows]
 ```cpp
 // ❌ 危险：异常从 DLL(MSVC) 抛到 EXE(MinGW) 边界 => 未定义行为
 extern "C" void plugin_entry();   // 插件绝不能让 C++ 异常逃逸
@@ -645,7 +645,7 @@ extern "C" int plugin_entry_safe(int* out) noexcept {
 
 `[平台·Windows]` 在 Windows SEH 与 C++ 异常混合场景，用结构化异常处理捕获系统级故障（访问违例）时需隔离——C++ `catch(...)` 不一定捕获 SEH 异常，除非启用 `/EHa`（MSVC）或编译器特定选项。跨 ABI 边界统一用 `noexcept` + 返回码最稳妥。
 
-> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 ABI 错误处理 [平台·Win
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 ABI 错误处理 [平台·Windows]
 ```cpp
 // 跨边界契约：所有导出 C 函数 noexcept，错误用 int 码
 extern "C" int api_init() noexcept;
@@ -1033,7 +1033,7 @@ ret
 | Chromium | 返回码 + CHECK/DCHECK | `base::Callback`, `bool` | 禁止异常 (二进制大小 + 可调试性)，简洁的 bool + CHECK |
 | Qt | 信号/槽 + 错误码 | `QString::arg()`, `errorString()` | 无需异常 (跨语言绑定)，GUI 框架天然异步 |
 
-> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业错误处理范式对比 [F
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业错误处理范式对比 [F: Industry]
 ```cpp
 #include <iostream>
 int main() {
@@ -1099,7 +1099,7 @@ int main() {
 
 ## 附录 C：WG21 为什么拒绝 Checked Exceptions [B: Principle]
 
-> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：WG21 为什么拒绝 Ch
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：WG21 为什么拒绝 Checked Exceptions [B: Principle]
 ```
 Java 的 checked exceptions 强制调用方处理或声明异常。C++ 委员会在多个提案中拒绝了类似机制:
 
@@ -1120,7 +1120,7 @@ C++ 错误处理的未来方向:
 
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
-> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与设计权衡 [H: D
+> **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
 ```
 错误处理策略选择矩阵:
 
@@ -1135,7 +1135,7 @@ C API 包装                error_code → 异常转换       C 调用方不理�
 异步回调                  std::promise::set_exception 唯一传递异常的方式
 ```
 
-> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与设计权衡 [H: D
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <expected>

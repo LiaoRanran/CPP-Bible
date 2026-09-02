@@ -135,7 +135,7 @@ struct FMinimalClass {
 
 下面两处为 **上游 Unreal Engine 源码** 的真实位置（本机未装 UE，仅作权威定位，标注「上游参考」）。
 
-> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase /
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase / UObjectGlobals（上游参考） [实现·Unreal]
 ```cpp
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h
 // 行号：73
@@ -150,7 +150,7 @@ struct FMinimalClass {
 //   };
 ```
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase /
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase / UObjectGlobals（上游参考） [实现·Unreal]
 ```cpp
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/UObjectGlobals.cpp
 // 行号：2451
@@ -937,7 +937,7 @@ Unreal Engine C++ 的设计哲学与标准 C++ 的差异:
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learni
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
 ```
 Unreal C++ 面试高频:
 Q: UObject 为什么需要 BeginPlay/Tick/EndPlay？

@@ -902,7 +902,7 @@ int main(){std::cout<<"Ninja: faster than make. cmake -G Ninja -B build. CCache:
 
 ## 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：构建配置工业 [D: St
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
 ```
 Debug vs Release 编译器差异:
 
@@ -922,7 +922,7 @@ Google/LLVM/Chromium 实践:
 - PGO: Profile-Guided Optimization → 二次编译 + 性能测例 → +10-20%性能
 ```
 
-> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：构建配置工业 [D: St
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
 ```cpp
 #include <iostream>
 int main() {

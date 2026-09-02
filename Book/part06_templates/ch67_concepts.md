@@ -759,7 +759,7 @@ int main() {
 
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
-> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: D
+> **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
 ```
 面试高频:
 Q: concept 和 SFINAE 的根本区别？
@@ -975,7 +975,7 @@ int main() { report(21); }
 
 **对比**：SFINAE 失败时通常报"无匹配重载"或一长串候选；concept 失败直接指出"实参不满足 integral 概念"。
 
-> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：概念约束的诊断远优于 SF
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：概念约束的诊断远优于 SFINAE
 ```cpp
 #include <iostream>
 #include <concepts>

@@ -87,7 +87,7 @@ fmt 的核心不在「运行期拼字符串」，而在**编译期**对格式串
 2. 其 `FMT_CONSTEVAL` 构造函数在**编译期**遍历格式串，用 `format_string_checker` 核对每个 `{}` 占位符的类型/数量与 `Args...` 一致；不匹配直接编译失败。
 3. 运行期按预解析结果把参数经 `formatter<T>` 特化写入输出缓冲，避免重复扫描格式串。
 
-> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 格式化原理（编译期格式串解析） [实
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · fmt 格式化原理（编译期格式串解析） [实现·fmt]
 ```cpp
 // ② 等价思路：编译期统计占位符数（fmt 在编译期做更强的事——类型检查）
 constexpr int count_braces(const char* s, int i = 0, int n = 0) {
@@ -98,7 +98,7 @@ constexpr int count_braces(const char* s, int i = 0, int n = 0) {
 static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 ```
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 格式化原理（编译期格式串解析） [实
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · fmt 格式化原理（编译期格式串解析） [实现·fmt]
 ```cpp
 // ② fmt 把「字面量」升级为「类型安全的格式描述」
 //    fmt::format("{}", x) 中 "{}" 的类型是 format_string<T>，
@@ -111,7 +111,7 @@ static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 
 > 本机未装 fmt，以下引用上游固定 tag 源码做剖析，标注「上游参考」。
 
-> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·fmt] 源码剖析：upst
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·fmt] 源码剖析：upstream basic_format_string / 编译期检查 [实现·fmt]
 ```cpp
 // 文件：https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/format.h
 // 行号：4050
@@ -127,7 +127,7 @@ class basic_format_string {
 };
 ```
 
-> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·fmt] 源码剖析：upst
+> **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·fmt] 源码剖析：upstream basic_format_string / 编译期检查 [实现·fmt]
 ```cpp
 // 文件：https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/core.h
 // 行号：748
@@ -190,7 +190,7 @@ spdlog::set_default_logger(existing);     // 设为默认
 
 fmt 快在三点：
 
-> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：比 iostream / pr
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：比 iostream / printf 快的原因 [实现·fmt]
 ```cpp
 // ⑤ 对比：iostream 的 operator<< 链式调用 + 锁 + 临时对象开销大
 #include <iostream>
@@ -199,7 +199,7 @@ void io_way()  { std::cout << "x=" << 3.14 << " y=" << 42 << "\n"; }
 void fmt_way() { fmt::print("x={} y={}\n", 3.14, 42); }
 ```
 
-> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能：比 iostream / pr
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能：比 iostream / printf 快的原因 [实现·fmt]
 ```cpp
 // ⑤ fmt 用连续内存缓冲 + 整数/浮点专用快速路径，避免 locale 反复查询
 //    并可在编译期决定格式布局，运行期直接写缓冲（见第 ⑦ 节汇编证据）
@@ -445,14 +445,14 @@ auto s = std::make_shared<spdlog::sinks::basic_file_sink_mt>(f);
 
 ## ⑫ 常见陷阱：格式化用户类型需特化 <span class="badge badge-exp">经验</span>
 
-> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经验]
 ```cpp
 // ⑫ 陷阱1：未特化 formatter 的用户类型无法用 {} 格式化（编译失败）
 struct Widget { int id; };
 // fmt::format("{}", Widget{1});   // 错误：no matching formatter
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经验]
 ```cpp
 #include <string>
 // ⑫ 陷阱2：悬空引用——format 的参数若绑定临时对象要注意生命周期
@@ -461,7 +461,7 @@ fmt::format("hi {}", name);          // OK：值/引用都安全（fmt 拷贝必
 // fmt::format("{}", std::string("tmp").c_str()); // 危险：c_str 悬空
 ```
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经验]
 ```cpp
 // ⑫ 陷阱3：spdlog 默认按引用捕获参数？不会——它立即格式化，无悬空风险
 spdlog::info("v={}", compute());     // 立即求值并格式化，安全

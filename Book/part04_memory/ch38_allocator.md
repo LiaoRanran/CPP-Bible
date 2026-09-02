@@ -875,7 +875,7 @@ int main() {
 
 **真实源码（libstdc++ `memory_resource:221-276` 与 `155-217`）**：
 
-> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：unsynchron
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 ```cpp
 #include <cstddef>
 // memory_resource:258-267 —— unsynchronized 的 do_* 直接转私有实现
@@ -887,7 +887,7 @@ bool  do_is_equal(const memory_resource& __other) const noexcept override
 
 `synchronized` 多了一层线程特定池（`memory_resource:203-216`）：
 
-> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 ```cpp
 // memory_resource:212-216
 __pool_resource _M_impl;
@@ -898,7 +898,7 @@ mutable shared_mutex _M_mx;              // 多线程锁
 
 `pool_options`（`memory_resource:94-109`）调优参数：
 
-> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：unsynchron
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 ```cpp
 #include <cstddef>
 // memory_resource:94-109
@@ -916,7 +916,7 @@ struct pool_options {
 
 程序 17：`unsynchronized_pool_resource` 基础：
 
-> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：unsynchron
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 ```cpp
 // 编译: g++ -std=c++17 ch38_p17.cpp -o ch38_p17
 #include <memory_resource>
@@ -933,7 +933,7 @@ int main() {
 
 程序 18：`synchronized_pool_resource` 多线程（独立可编译）：
 
-> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 ```cpp
 // 编译: g++ -std=c++17 ch38_p18.cpp -o ch38_p18 -pthread
 #include <memory_resource>
@@ -955,7 +955,7 @@ int main() {
 
 程序 19：`pool_options` 调优（限制超大分配直接走上游）：
 
-> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 ```cpp
 // 编译: g++ -std=c++17 ch38_p19.cpp -o ch38_p19
 #include <memory_resource>
@@ -976,7 +976,7 @@ int main() {
 
 程序 20：池资源与 `monotonic` 对比的两种资源接同一类型容器：
 
-> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：unsynchron
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
 ```cpp
 // 编译: g++ -std=c++17 ch38_p20.cpp -o ch38_p20
 #include <memory_resource>
@@ -1080,7 +1080,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>**　`<memory_resource>` 为所有标准容器提供了 PMR 别名（`[mem.poly.allocator.aliases]`），例如：
 
-> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 容器别名与 allocatortyp
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · PMR 容器别名与 `allocator_type`
 ```cpp
 #include <vector>
 namespace std::pmr {
@@ -1094,7 +1094,7 @@ namespace std::pmr {
 
 程序 24：PMR 各类容器的 `allocator_type` 与默认资源：
 
-> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 容器别名与 allocatortyp
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · PMR 容器别名与 `allocator_type`
 ```cpp
 // 编译: g++ -std=c++17 ch38_p24.cpp -o ch38_p24
 #include <memory_resource>

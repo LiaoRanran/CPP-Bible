@@ -497,7 +497,7 @@ SUMMARY: AddressSanitizer: heap-buffer-overflow Examples/_ch14_heap_overflow.cpp
 
 `-g` 在目标文件/可执行中嵌入 DWARF 调试信息（变量名、行号、类型），让 GDB 能把机器码映射回源码。
 
-> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试符号与 -g / strip [
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试符号与 -g / strip [实现·GCC15]
 ```cpp
 // 文件：Examples/_ch14_asm.cpp
 // 行号：4
@@ -1098,7 +1098,7 @@ int main() { errno = 0; std::perror("debug point"); return 0; }
 
 ## 附录 A：工业调试与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
-> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业调试与标准库 [B:
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业调试与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 ```
 C++调试工具工业对比:
 GDB: GNU调试器, Linux标配, 支持C++表达式(pType, p vector.size())

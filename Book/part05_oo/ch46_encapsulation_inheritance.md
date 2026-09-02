@@ -702,7 +702,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>**　`[class.derived]` / `[expr]`：引用和指针**不复制对象**，只绑定/指向原对象，因此不触发切片。智能指针（见 `ch41`）同理——`std::unique_ptr<Base>` 持有的是基类指针，销毁时通过虚析构正确派发到派生析构（前提是基类析构 `virtual`，见 `ch39`/`ch47`）。
 
-> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片修复：引用 / 指针 / uni
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片修复：引用 / 指针 / unique_ptr<Base>
 ```cpp
 // [示例 23] 修复 ①：按引用传参，避免切片与多态丧失
 #include <cstdio>
@@ -715,7 +715,7 @@ void describe(const Base& b) { printf("%s\n", b.who()); }   // 引用：不切�
 int main() { Derived d; describe(d); }                       // Derived
 ```
 
-> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片修复：引用 / 指针 / uni
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片修复：引用 / 指针 / unique_ptr<Base>
 ```cpp
 // [示例 24] 修复 ②：vector<unique_ptr<Base>>，多态容器不切片
 #include <cstdio>
@@ -734,7 +734,7 @@ int main() {
 }
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片修复：引用 / 指针 / uni
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片修复：引用 / 指针 / unique_ptr<Base>
 ```cpp
 // [示例 25] 修复 ③：基类指针 + 显式 new/delete（现代写法优先 unique_ptr）
 #include <cstdio>
@@ -1153,7 +1153,7 @@ int main() { Car c; c.drive(); }
 
 `[实现-推断]`　理解 `__is_base_of` 的机制，可看经典 SFINAE 实现（仅当 `D*` 能 `static_cast` 到 `B*` 时 `test<D>(...)` 才返回 `true_type`）：
 
-> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 手搓版 isbaseof：用 sta
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 手搓版 `is_base_of`：用 `static_cast` + SFINAE 探测（讲清内建背后的原理）
 ```cpp
 // [示例 41] 手搓 is_base_of：派生指针可 static_cast 到基类指针 → 是基类
 #include <type_traits>
@@ -1371,7 +1371,7 @@ int main() {
 
 下面用可编译小程序实证四个工程关注点。为简洁，计时用 `std::chrono` 的粗粒度演示（生产基准见 Google Benchmark）。
 
-> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · microbenchmark：切片、构造顺序、NVI、override 缺失
 ```cpp
 // [示例 45] 微基准 ①：切片导致派生数据丢失（正确性，非性能）
 #include <cstdio>
@@ -1387,7 +1387,7 @@ int main() {
 }
 ```
 
-> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · microbenchmark：切片、构造顺序、NVI、override 缺失
 ```cpp
 // [示例 46] 微基准 ②：构造/析构顺序日志（运行时可观测）
 #include <cstdio>
@@ -1404,7 +1404,7 @@ struct Derived : Base, Mid { Tracer d{"Derived"}; };
 int main(){ Derived d; }   // +Base +Mid +Derived -Derived -Mid -Base
 ```
 
-> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · microbenchmark：切片、构造顺序、NVI、override 缺失
 ```cpp
 // [示例 47] 微基准 ③：NVI 前置检查收益（统一度量，派生无法绕过）
 #include <cstdio>
@@ -1428,7 +1428,7 @@ int main(){
 }
 ```
 
-> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片、构造顺序、NVI、overri
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · microbenchmark：切片、构造顺序、NVI、override 缺失
 ```cpp
 // [示例 48] 微基准 ④：漏写 override → 静默错误（基准对照“有 override”）
 #include <cstdio>

@@ -114,7 +114,7 @@ int main(){Box<int> b(42);peek(b);return 0;}
 
 ## ⑧ friend 与 operator<< 惯用法 <span class="badge badge-exp">经验</span>
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 operator<< 惯用法 [
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · friend 与 operator<< 惯用法 [经验]
 ```cpp
 #include <iostream>
 class Vec3{double x,y,z;public:Vec3(double a,double b,double c):x(a),y(b),z(c){}friend std::ostream& operator<<(std::ostream&,const Vec3&);};

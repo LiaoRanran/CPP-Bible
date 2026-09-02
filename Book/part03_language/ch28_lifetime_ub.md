@@ -1288,7 +1288,7 @@ set(CMAKE_EXE_LINKER_FLAGS_SANITIZE
 
 `[标准]` [expr.const]：常量表达式求值中若出现 UB（溢出、空解引用、越界等），则**该表达式不是常量表达式**，含有它的 `constexpr` 变量/函数**直接编译失败**——这是 constexpr 的"免费 UB 检测"。
 
-> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常量表达式中的 UB：constex
+> **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常量表达式中的 UB：constexpr 直接编译失败
 ```cpp
 // prog_46_constexpr_ub_fail.cpp  —— 编译失败示例 (constexpr 中 UB)
 // 编译: g++ -std=c++20 -Wall prog_46_constexpr_ub_fail.cpp -o prog_46  (报错)
@@ -1300,7 +1300,7 @@ constexpr int bad() {
 int main() { constexpr int v = bad(); (void)v; }
 ```
 **典型编译错误**（参考输出）：
-> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常量表达式中的 UB：constex
+> **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常量表达式中的 UB：constexpr 直接编译失败
 ```
 prog_46_constexpr_ub_fail.cpp: In function 'constexpr int bad()':
 prog_46_constexpr_ub_fail.cpp:4:11: error: overflow in constant expression [-fpermissive]

@@ -798,7 +798,7 @@ int main() { c_style(); cpp_style(); printf("RAII: no manual free needed.\n"); r
 
 ## 附录 D：C遗产底层与工业影响 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：C遗产底层与工业影响 [E
+> **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：C遗产底层与工业影响 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 ```
 C语言如何影响C++底层:
 
@@ -819,7 +819,7 @@ extern "C": 不name-mangling, 不异常处理, 不重载
 | 类型安全 | 弱(void*,隐式转换) | 强(static_cast, explicit, template) |
 | 抽象能力 | 函数+结构体 | 函数+类+模板+lambda+concepts |
 
-> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：C遗产底层与工业影响 [E
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：C遗产底层与工业影响 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -845,7 +845,7 @@ int main() {
 
 ## 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 
-> **示例 48** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 E：C遗产的现代C++替代 [
+> **示例 48** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 ```
 C → C++ 替代对照:
 
@@ -861,7 +861,7 @@ C → C++ 替代对照:
 | qsort + cmp | std::sort + lambda | 内联, 无函数指针调用 |
 ```
 
-> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C遗产的现代C++替代 [
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 ```cpp
 #include <iostream>
 #include <array>

@@ -109,7 +109,7 @@ int main(){g.store(1,std::memory_order_relaxed);std::atomic_thread_fence(std::me
 
 ## ⑦ 硬件内存模型 [微架构·x86-64 TSO]
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 硬件内存模型 [微架构·x86-64
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 硬件内存模型 [微架构·x86-64 TSO]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"x86: TSO model. ARM/POWER: weak ordering. x86 seq_cst = mfence, acquire = no-op.\n";return 0;}
@@ -494,7 +494,7 @@ dmb ishld  ; 只阻止load-load和load-store重排, 不阻止store-store
 ; cost: ~2ns on Cortex-A76
 ```
 
-> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 G：fence设计权衡 [H:
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 G：fence设计权衡 [H: Design / E: Lowlevel]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"x86 mfence=10ns(seq_cst); ARM dmb=2-5ns(acquire/release)"<<std::endl;return 0;}

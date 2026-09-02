@@ -594,7 +594,7 @@ int main(){std::vector<Movable> v;v.reserve(10);std::cout<<"noexcept enables mov
 
 > 本附录为量级估算；精确数值与真实汇编见「附录 H：真实基准/汇编证据」（本机 MinGW GCC 13.1.0 -O2 实测）。硬件级延迟（内存屏障、TLS）平台相关，软件无法干净测得，仅给数量级并标注来源。
 
-> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：C++11的底层影响 [E
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：C++11的底层影响 [E: Lowlevel / H: Design]
 ```
 C++11引入的底层变化:
 1. move语义: 右值引用 → 汇编层面 = 交换 3 个指针(24 字节控制块: start/finish/end_of_storage) vs 深拷贝 N 字节
@@ -1013,7 +1013,7 @@ int main() {
 **选型**：lambda 就地写行为，`std::function` 做类型擦除的统一存储容器。
 **落地**：
 
-> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：lambda + std:
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：lambda + std::function —— 可存储的回调
 ```cpp
 #include <iostream>
 #include <functional>

@@ -140,7 +140,7 @@ int main() {
 
 ## ⑥ UML / 结构图（C++26 方向性特性）<span class="badge badge-std">标准</span>
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构图（C++26 方向性特性）[标
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · UML / 结构图（C++26 方向性特性） [标准]
 ```cpp
 // [merged] ## ⑥ UML / 结构图（C++26 方向性特性）[标准]
 #include <iostream>

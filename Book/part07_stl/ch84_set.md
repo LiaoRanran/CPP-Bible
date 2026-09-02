@@ -1324,7 +1324,7 @@ int main() {
 ### 演绎 2：set 与 unordered_set 的小规模性能拐点
 元素少且需要有序时用 set；元素多且只判存在时用 unordered_set（均摊 O(1)）。
 
-> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：set 与 unorder
+> **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：set 与 unordered_set 的小规模性能拐点
 ```cpp
 #include <iostream>
 #include <set>

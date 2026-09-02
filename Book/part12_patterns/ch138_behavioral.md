@@ -319,7 +319,7 @@ struct Macro : Cmd {
 
 模板方法在基类固定**算法骨架**，把可变步骤声明为虚函数（钩子）留给子类。
 
-> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板方法 Template Meth
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板方法 Template Method
 ```cpp
 #include <iostream>
 struct Algorithm {
@@ -344,7 +344,7 @@ int main() { Impl{}.run(); }
 
 模板方法 vs 策略：模板方法用**继承**复用骨架（编译期绑定步骤），策略用**组合**替换整体算法（运行期）。
 
-> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模板方法 Template Meth
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模板方法 Template Method
 ```cpp
 // 非虚钩子的「空默认」也是常见形态，子类按需覆写
 virtual void hook() {}   // 默认什么都不做
@@ -941,7 +941,7 @@ int main() {
 
 ## 附录 B：工业案例 —— Qt / LLVM / Chromium 中的行为型模式 [F: Industry]
 
-> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业案例 —— Qt /
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业案例 —— Qt / LLVM / Chromium 中的行为型模式 [F: Industry]
 ```
 Qt: Observer = 信号/槽; Command = QAction; State = QStateMachine (SCXML状态机)
     → Qt Creator 的整个 UI 交互层是 Observer 模式的大型实例
@@ -958,7 +958,7 @@ Chromium: Observer = base::ObserverList (线程安全); Task = base::OnceCallbac
 
 ## 附录 C：面试 [J: Learning]
 
-> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learni
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learning]
 ```
 面试高频:
 Q: 行为型模式中最常在 C++ 中见到哪些？
@@ -1000,7 +1000,7 @@ int main(){std::vector<std::function<void(int)>> obs;obs.push_back([](int x){std
 | State | std::variant+visit | 虚函数State | 封闭状态集→variant |
 | Command | lambda(轻量) | Command类(重量) | 简单→lambda |
 
-> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：行为型模式设计权衡 [H:
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：行为型模式设计权衡 [H: Design]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual(~5ns/call)"<<std::endl;return 0;}

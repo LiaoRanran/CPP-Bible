@@ -668,7 +668,7 @@ Boost.MPL（2000s）把 TMP 系统化成「编译期容器与算法」；2015 �
 
 ## 附录 A：原理与工业 [B: Principle / F: Industry / E: Lowlevel]
 
-> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：原理与工业 [B: Pri
+> **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：原理与工业 [B: Principle / F: Industry / E: Lowlevel]
 ```
 WG21 TMP演化:
 N3291 (C++11): constexpr函数 → 替代部分TMP (循环/条件在编译期)

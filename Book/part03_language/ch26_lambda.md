@@ -179,7 +179,7 @@ int main() {
 
 > **<span class="badge badge-std">标准</span> 关键细节**：`[=]` 与 `[&]` 的"默认捕获"只作用于**在 lambda 体内被 odr-use（取地址/被绑定）**的变量；未被使用的变量**不会被捕获**（因此空 lambda 即便写在 `[=]` 里也可能无状态，见 prog_10）。
 
-> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 [] 到 [=,
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 `[]` 到 `[=, *this]`
 ```cpp
 // prog_04_capture_empty.cpp —— [] 不捕获
 #include <cstdio>
@@ -193,7 +193,7 @@ int main() {
 }
 ```
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 [] 到 [=,
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 `[]` 到 `[=, *this]`
 ```cpp
 // prog_05_capture_byvalue.cpp —— [=] 按值（拷贝）
 #include <cstdio>
@@ -206,7 +206,7 @@ int main() {
 }
 ```
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 [] 到 [=,
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 `[]` 到 `[=, *this]`
 ```cpp
 // prog_06_capture_byref.cpp —— [&] 按引用
 #include <cstdio>
@@ -219,7 +219,7 @@ int main() {
 }
 ```
 
-> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 [] 到 [=,
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 `[]` 到 `[=, *this]`
 ```cpp
 // prog_07_capture_mixed.cpp —— 混合：x 按值、y 按引用
 #include <cstdio>
@@ -231,7 +231,7 @@ int main() {
 }
 ```
 
-> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 [] 到 [=,
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 `[]` 到 `[=, *this]`
 ```cpp
 // prog_08_capture_expr.cpp —— [x = expr] / [&x = expr]（其实是 init-capture，C++14）
 #include <cstdio>
@@ -248,7 +248,7 @@ int main() {
 ```
 > 上面 `[sq = ...]` 与 `[&ref = b]` 属于 **init-capture**（C++14，详见 ⑧）。`[x = expr]` 在 C++11 不存在。
 
-> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 [] 到 [=,
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 `[]` 到 `[=, *this]`
 ```cpp
 // prog_09_capture_this.cpp —— [this] 与 [*this]
 #include <cstdio>
@@ -265,7 +265,7 @@ struct Widget {
 int main() { Widget w; w.demo(); return 0; }
 ```
 
-> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 [] 到 [=,
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获列表全解：从 `[]` 到 `[=, *this]`
 ```cpp
 // prog_10_capture_only_odr_used.cpp —— 未被 odr-use 的变量不被捕获
 #include <cstdio>
@@ -356,7 +356,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>** `[expr.prim.lambda]/3`：若 lambda 不声明 `mutable`，其 `operator()` 是 `const` 成员函数，因此**按值捕获的副本不可修改**。加上 `mutable` 后 `operator()` 不再是 const，可按值捕获变量被修改（且每次调用共享同一份副本状态）。
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 解开 operator() 的 co
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · mutable：解开 `operator()` 的 const 封印
 ```cpp
 // prog_11_mutable.cpp —— mutable 让按值捕获可改
 #include <cstdio>
@@ -369,7 +369,7 @@ int main() {
 }
 ```
 
-> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 解开 operator() 的 co
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · mutable：解开 `operator()` 的 const 封印
 ```cpp
 // prog_12_no_mutable_error.cpp —— 无 mutable 改按值捕获 = 编译失败（演示）
 #include <cstdio>
@@ -474,7 +474,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>** `[expr.prim.lambda]`（C++20 P0712R1）：lambda 可带**显式模板形参列表** `template<...>`，允许：显式指定模板参数、对形参加 concept 约束、甚至**重载 / 偏特化**式地写多个模板 lambda。**约束 lambda**（`[](std::integral auto x)`）语法来自 C++20 abbreviated function template + concepts。
 
-> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板 lambda（C++20）+
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板 lambda（C++20）+ concept：显式模板参数与约束
 ```cpp
 // prog_18_template_lambda.cpp —— C++20 显式 template<...>
 #include <cstdio>
@@ -492,7 +492,7 @@ int main() {
 }
 ```
 
-> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板 lambda（C++20）+
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板 lambda（C++20）+ concept：显式模板参数与约束
 ```cpp
 // prog_19_concept_lambda.cpp —— concept 约束的泛型 lambda
 #include <cstdio>
@@ -505,7 +505,7 @@ int main() {
 }
 ```
 
-> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板 lambda（C++20）+
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模板 lambda（C++20）+ concept：显式模板参数与约束
 ```cpp
 // prog_20_template_lambda_overload.cpp —— 用模板 lambda做编译期分派
 #include <cstdio>
@@ -992,7 +992,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>** `[func.invoke]`：`std::invoke` 是统一的可调用对象调用原语，能调用函数指针、成员函数、成员数据指针、`std::reference_wrapper`，以及**任何可调用对象（含 lambda）**。它让"用统一接口调用一切可调用体"成为可能，是 `std::function`、线程、打包任务（`std::packaged_task`）、`std::apply` 的底层。
 
-> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::invoke 与 lamb
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · `std::invoke` 与 lambda
 ```cpp
 // prog_39_invoke_lambda.cpp —— std::invoke 调用 lambda
 #include <cstdio>
@@ -1005,7 +1005,7 @@ int main() {
 }
 ```
 
-> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::invoke 与 lamb
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · `std::invoke` 与 lambda
 ```cpp
 // prog_40_invoke_generic.cpp —— std::invoke + 泛型 lambda 传递
 #include <cstdio>

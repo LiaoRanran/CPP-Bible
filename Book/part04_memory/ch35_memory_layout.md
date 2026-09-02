@@ -401,7 +401,7 @@ $ cat /proc/$(pidof a.out)/maps
 
 每行 6 字段：范围、权限（`rwx` + `p`私有/`s`共享）、文件偏移、设备、inode、映射源。权限位 `p`(PROT_EXEC 在 r-x 行) 正对应元素 7 的 R/W/X；`[heap]`/`[stack]`/`libc.so.6` 直观印证元素 14 的经典布局；多个进程映射同一 `.so` 的 `r-x` 行共享同一物理页，即元素 13 的 COW/共享库机制。
 
-> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 观测进程的虚拟内存布局：/proc/
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 观测进程的虚拟内存布局：`/proc/<pid>/maps` 与 `pmap`
 ```cpp
 // P35: 打印自身 maps 路径，配合外部 `cat /proc/self/maps` 观察（Linux）[平台-推断]
 #include <cstdio>
@@ -651,7 +651,7 @@ int main() {
 - `alignas(N)` / `alignas(T)` —— 指定变量/类型的对齐（N 必须是合法对齐且 ≥ 其固有对齐）。
 - `std::alignment_of<T>` —— 等同 `integral_constant<size_t, alignof(T)>`（见元素 18 真实源码）。
 
-> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐基础：alignof / ali
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐基础：alignof / alignas
 ```cpp
 // P14: alignof 各基础类型的对齐（x86-64 System V ABI）
 #include <cstdio>
@@ -668,7 +668,7 @@ int main() {
 // 编译: g++ -std=c++17 p14.cpp -o p14 && ./p14
 ```
 
-> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对齐基础：alignof / ali
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对齐基础：alignof / alignas
 ```cpp
 // P15: alignas 提升对齐
 #include <cstdio>
@@ -1059,7 +1059,7 @@ int main() {
 
 `[实现-推断]` 三家的**值都是 64**（x86-64 主流 cache line），但**旧版本根本不声明这两个常量**——这是工程陷阱：用 `#ifdef __cpp_lib_hardware_interference_size` 守护，缺失时回退到硬编码 64（或平台探测）。
 
-> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 三 STL 对比：libstdc++
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 三 STL 对比：libstdc++ / libc++ / MS STL
 ```cpp
 // P23: 可移植地取 interference size（缺失时回退 64）
 #include <cstddef>
@@ -1523,7 +1523,7 @@ int main() {
 
 ## 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：内存布局面试与工业 [B:
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
 ```
 Linux进程内存布局 (64位):
 
@@ -1542,7 +1542,7 @@ Linux进程内存布局 (64位):
            OOM Killer → Linux在内存耗尽时杀进程, 无C++异常
 ```
 
-> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：内存布局面试与工业 [B:
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
 ```cpp
 #include <iostream>
 #include <cstdlib>

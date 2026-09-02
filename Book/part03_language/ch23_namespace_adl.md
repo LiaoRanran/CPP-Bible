@@ -209,7 +209,7 @@ int main() {
 
 ### 3.5 内联（inline）命名空间——ABI 版本控制（详见 §⑨）
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联（inline）命名空间——AB
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联（inline）命名空间——ABI 版本控制（详见 §⑨）
 ```cpp
 // prog_06_inline_ns_intro.cpp  —— 库版本选择
 #include <cstdio>
@@ -582,7 +582,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 > **[真实源码]** `std::swap` 主模板位于
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/move.h`，第 225–238 行：
 
-> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码：st
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实 libstdc++ 源码：`std::swap` 与 `using std::swap`
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/move.h:225-238）=====
   template<typename _Tp>
@@ -609,7 +609,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 > **[真实源码]** 采用 `using std::swap;` 惯用法的库代码，例如
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/stl_pair.h` 第 325–327 行：
 
-> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：st
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：`std::swap` 与 `using std::swap`
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/stl_pair.h:325-327）=====
       _GLIBCXX20_CONSTEXPR void
@@ -679,7 +679,7 @@ int main() {
 > **[真实源码]** 本机探测
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/x86_64-w64-mingw32/bits/c++config.h`，第 371–375 行：
 
-> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：cx
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`__cxx11` 区分新旧 string ABI
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/c++config.h:371-375）=====
 #if _GLIBCXX_USE_CXX11_ABI
@@ -850,7 +850,7 @@ int main() {
 > **[真实源码]** 本机探测
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/compare`，第 706–708 行（位于 `_Fp_fmt` 作用域内的 `consteval` 函数中，且用宏 `__cpp_using_enum` 守卫）：
 
-> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：co
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：`compare` 中的 `using enum`
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, compare:706-708）=====
 #ifdef __cpp_using_enum

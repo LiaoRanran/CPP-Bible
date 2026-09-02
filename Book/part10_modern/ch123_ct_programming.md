@@ -170,7 +170,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：编译期值 vs 运行期值 <span class="badge badge-impl">实现</span>
 
-> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：编译期值 vs 运行期值 [
+> **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASCII 内存图：编译期值 vs 运行期值 [实现·GCC15.3.0]
 ```mermaid
 flowchart LR
   C1["运行期求值（翻译后留在 .text，运行时算）"]
@@ -183,7 +183,7 @@ flowchart LR
   B2 --> T
 ```
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：编译期值 vs 运行期值 [
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ASCII 内存图：编译期值 vs 运行期值 [实现·GCC15.3.0]
 ```cpp
 // C3 编译期值不占内存：数组大小用 constexpr 计算（需要翻译期常量）
 #include <iostream>
@@ -198,7 +198,7 @@ int main() {
 
 ## ⑧ 生命周期图：模板实例化与 constexpr 求值 <span class="badge badge-impl">实现</span>
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：模板实例化与 const
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：模板实例化与 constexpr 求值
 ```mermaid
 flowchart LR
   subgraph P1 [翻译期（编译）]
@@ -763,7 +763,7 @@ int main() {
 - 同一 constexpr 被 N 个不同常量实参调用，可能生成 N 份代码（代码膨胀）。
 - 重度 TMP（如 Boost.MPL 风格）曾让单 TU 编译耗时数分钟。
 
-> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：编译期快，但翻译期慢 [经
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：编译期快，但翻译期慢 [经验]
 ```
 编译时间成本示意（实测量级，示意）：
   普通函数                     ~0 额外翻译成本
@@ -772,7 +772,7 @@ int main() {
   大型表达式模板(数百 T)        可能 +秒级，需 Modules/LTO 缓解
 ```
 
-> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析：编译期快，但翻译期慢 [经
+> **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析：编译期快，但翻译期慢 [经验]
 ```cpp
 // C24 性能对照：编译期斐波那契被折叠，运行期版本需要算
 #include <iostream>

@@ -726,7 +726,7 @@ auto r = v | std::views::filter([](auto x){return x>0;})
 
 跨平台代码必须把 OS/ABI 差异收敛到少量文件，避免 `#ifdef` 在业务逻辑里四处蔓延。`[平台·x86-64/Windows+POSIX]`
 
-> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台相关代码隔离 [平台·Windo
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台相关代码隔离 [平台·Windows]
 ```cpp
 // 所有平台差异收敛到一个编译单元，业务代码不感知
 #if defined(_PLATFORM_WIN)
@@ -744,7 +744,7 @@ int platform_tag() { return static_cast<int>(family()[0]); }
 
 `[实现·GCC15]` 该文件在 Windows 与 POSIX 两种宏定义下均通过 `-Wall -Wextra` 洁净编译（`Examples/_ch144_platform*.o`）；**不定义任何平台宏时 `#error` 直接失败**，证明守卫有效、不会静默编译出错误目标。
 
-> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台相关代码隔离 [平台·Windo
+> **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台相关代码隔离 [平台·Windows]
 ```cpp
 #include <memory>
 // 更好的隔离：抽象接口 + 每平台一个 .cpp 实现（编译防火墙）
@@ -952,7 +952,7 @@ ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bj
 
 ## 附录 A：工业代码规范对比 [F: Industry / B: Principle]
 
-> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业代码规范对比 [F:
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业代码规范对比 [F: Industry / B: Principle]
 ```
 C++ 代码风格——四大工业规范对比:
 
@@ -977,7 +977,7 @@ Qt Coding Style:
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B：面试 [J: Learni
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
 ```
 Q: clang-format 团队采纳的最佳实践？
 A: .clang-format 文件入 Git; CI pre-commit hook 自动检查; PR 不接受未格式化代码

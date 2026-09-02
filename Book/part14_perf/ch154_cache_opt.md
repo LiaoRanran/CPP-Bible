@@ -177,7 +177,7 @@ int main() {
 
 缓存用 `(地址 >> 6) % 路数` 把主存行映射到少量缓存槽。若多个热点行映射同一槽且数量 > 关联度，会互相"颠簸"（conflict miss / thrashing）。
 
-> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 缓存映射：直接映射 / 组相联 /
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 缓存映射：直接映射 / 组相联 / 冲突未命中 [实现·GCC15]
 ```cpp
 // ⑤ 冲突未命中演示：下标间隔 = 关联度×行大小 时反复同槽
 #include <iostream>
@@ -393,14 +393,14 @@ int main() {
 
 遍历只取 `x` 时，AoS 每读一个 x 还顺带载入 y、z（浪费 2/3 带宽）；SoA 的 x 连续，预取器一路顺风，且天然对齐向量化。
 
-> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局与向量化/缓存 [实现·GC
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · AoS vs SoA 内存布局与向量化/缓存 [实现·GCC15]
 ```
 ⑪ 布局对比（每个元素 12B）
 AoS: [x y z][x y z][x y z]...   取 x 要跳过 y,z
 SoA: [x x x ...][y y y ...][z z z ...]   取 x 全连续
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局与向量化/缓存 [实现·GC
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · AoS vs SoA 内存布局与向量化/缓存 [实现·GCC15]
 ```cpp
 // ⑪ AoS 定义与遍历
 #include <iostream>
@@ -417,7 +417,7 @@ int main() {
 }
 ```
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局与向量化/缓存 [实现·GC
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · AoS vs SoA 内存布局与向量化/缓存 [实现·GCC15]
 ```cpp
 // ⑪ SoA 定义与遍历
 #include <iostream>

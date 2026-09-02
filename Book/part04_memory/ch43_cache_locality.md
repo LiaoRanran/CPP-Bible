@@ -933,7 +933,7 @@ int main() {
 
 程序 P24：`[[likely]]`/`[[unlikely]]` 用法（C++20）。
 
-> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分支预测与 [[likely]] /
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分支预测与 `[[likely]]` / `[[unlikely]]`
 ```cpp
 // P24: 分支预测提示（C++20）
 #include <iostream>
@@ -954,7 +954,7 @@ int main() {
 
 程序 P25：老式 `__builtin_expect` 跨编译器兜底（C++17 也可）。
 
-> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分支预测与 [[likely]] /
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分支预测与 `[[likely]]` / `[[unlikely]]`
 ```cpp
 // P25: __builtin_expect（GCC/Clang，C++17 可用）
 #include <iostream>
@@ -979,7 +979,7 @@ int main() { std::cout << classify_legacy(5) << "\n"; }
 
 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，行号：126（operator new）
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：ha
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`hardware_*_interference_size`
 ```cpp
 #include <cstddef>
 // new:210-214  (libstdc++ 13.1.0, 经 Read 探测真实存在)
@@ -1004,7 +1004,7 @@ int main() { std::cout << classify_legacy(5) << "\n"; }
 
 程序 P26：用特性测试宏安全使用（保证可移植）。
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：ha
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`hardware_*_interference_size`
 ```cpp
 // P26: 用特性测试宏安全使用 interference_size
 #include <new>
@@ -1024,7 +1024,7 @@ int main() {
 
 **【实现】** 交叉引用 ch35：`<bit>` 的 `std::bit_cast`（C++20）与缓存无关，但同样位于 libstdc++，本机验证存在且可用（见 P27 仅作"无关但真实"的源码侧确认，证明本章探测手段一致）。
 
-> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：ha
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：`hardware_*_interference_size`
 ```cpp
 // P27: 仅确认 <bit> 真实存在（与缓存无关，交叉引用 ch35）
 #include <bit>

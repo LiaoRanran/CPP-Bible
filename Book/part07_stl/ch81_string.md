@@ -214,7 +214,7 @@ int main() {
 
 ## ⑨ data() / c_str() 与 null 终止 <span class="badge badge-std">标准</span>
 
-> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · str() 与 null 终止 [标
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · data() / c_str() 与 null 终止 [标准]
 ```cpp
 // ⑨ c_str() 与 data() 在 C++11 后都返回以 '\0' 结尾的连续缓冲
 #include <string>
@@ -292,7 +292,7 @@ int main() {
 
 ## ⑬ 编码与 Unicode 注意事项 <span class="badge badge-exp">经验</span>
 
-> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编码与 Unicode 注意事项 [
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编码与 Unicode 注意事项 [经验]
 ```cpp
 // ⑬ std::string 不感知编码，只存字节序列
 #include <string>
@@ -319,7 +319,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 ## ⑮ 真实 libstdc++ 源码逐行：`basic_string.h` 的 SSO 缓冲 <span class="badge badge-impl">实现</span>
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码逐行：`basic_string.h` 的 SSO 缓冲
 ```cpp
 // 文件：bits/basic_string.h （GCC 13.1.0, libstdc++）
 // 行号：213
@@ -1012,7 +1012,7 @@ int main() {
 ### 演绎 1：日志接口统一用 string_view 避免临时 string 分配
 函数参数用 `string_view` 可同时接受字面量、`std::string`、C 字符串，且不发生拷贝。
 
-> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：日志接口统一用 strin
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：日志接口统一用 string_view 避免临时 string 分配
 ```cpp
 #include <iostream>
 #include <string>

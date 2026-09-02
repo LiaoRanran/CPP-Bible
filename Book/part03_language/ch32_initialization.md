@@ -97,7 +97,7 @@ int main(){Point2D p2{3,4};std::cout<<p2.x<<","<<p2.y<<std::endl;return 0;}
 
 ## ⑦ 构造函数 vs initializer_list 优先级 <span class="badge badge-std">标准</span>
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造函数 vs initialize
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造函数 vs initializer_list 优先级
 ```cpp
 #include <iostream>
 #include <initializer_list>
@@ -205,7 +205,7 @@ int main() {
 
 ## ⑬ 源码分析：GCC 中 initializer_list 的实现 [实现·GCC15.3.0]
 
-> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC 中 initial
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC 中 initializer_list 的实现 [实现·GCC15.3.0]
 ```cpp
 // ⑬ libstdc++ 中 std::initializer_list 的核心实现
 #include <iostream>
@@ -681,7 +681,7 @@ int main(){P p1{1,2};P p2{.x=10,.y=20};std::cout<<p1.x<<" "<<p2.y<<std::endl;ret
 | T x{1,2,3} | 禁止窄化 | 中(initializer_list陷阱) | 聚合初始化 |
 | T x(42) | 普通 | 简洁 | 单参数构造 |
 
-> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：初始化设计权衡 [H: D
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：初始化设计权衡 [H: Design]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Use T x{} as default: value-init, zero-cost, impossible to forget."<<std::endl;return 0;}
@@ -925,7 +925,7 @@ int main() {
 
 **常见错误**：想构造 10 个默认元素却写了 `vector<int> v{10}`，结果得到"含单个元素 10"的向量——花括号优先匹配 `initializer_list` 构造：
 
-> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：initializerli
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：initializer_list 构造 vs 圆括号构造的歧义
 ```cpp
 #include <iostream>
 #include <vector>
@@ -937,7 +937,7 @@ int main() {
 
 **修复**：明确意图——"n 个元素"用圆括号，"列表内容"用花括号：
 
-> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：initializerli
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：initializer_list 构造 vs 圆括号构造的歧义
 ```cpp
 #include <iostream>
 #include <vector>

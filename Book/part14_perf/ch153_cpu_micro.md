@@ -71,7 +71,7 @@ CPU 微架构常被当成"研究 CPU 的硬件课"，但**它真正的本质是"
 
 ## ④ 知识图谱（ASCII）[平台·x86-64]
 
-> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）[平台·x86
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）[平台·x86-64]
 ```mermaid
 flowchart TD
     if["取指 IF"]

@@ -657,7 +657,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 | C++23 | constexpr 放宽: 允许 static constexpr 变量 | P2448R2 |
 | C++26 | constexpr 异常 + placement new (方向) | P3068R1 |
 
-> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 演进全景 [B:
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 演进全景 [B: Principle]
 ```cpp
 #include <iostream>
 int main() {
@@ -687,7 +687,7 @@ int main() {
 
 ## 附录 C：asm 证据 —— constexpr vs runtime [E: Low-level / G: Performance]
 
-> **示例 38** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：asm 证据 —— con
+> **示例 38** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：asm 证据 —— constexpr vs runtime [E: Low-level / G: Performance]
 ```cpp
 // constexpr 消除的是"编译后的运行时指令"
 constexpr int fib_cx(int n) { return n <= 1 ? n : fib_cx(n-1) + fib_cx(n-2); }
@@ -717,7 +717,7 @@ int main() {
 
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
-> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: D
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
 ```
 面试高频:
 Q: constexpr vs consteval vs constinit 的区别？
@@ -1014,7 +1014,7 @@ auto deref(T v) { return *v; }
 
 **修复**：`if constexpr` 单函数表达，未命中分支不检查。
 
-> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：用 if constexp
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：用 if constexpr 替代 SFINAE 分支
 ```cpp
 #include <iostream>
 #include <type_traits>

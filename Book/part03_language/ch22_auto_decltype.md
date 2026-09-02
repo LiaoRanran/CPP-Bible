@@ -1594,7 +1594,7 @@ template <class T> auto get(T& o) { return o.m; }   // 若 o.m 是 int& 也会�
 ```
 
 **修复**：
-> **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：转发函数的返回类型——de
+> **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：转发函数的返回类型——`decltype(auto)` 保真
 ```cpp
 #include <iostream>
 struct S { int m = 5; };

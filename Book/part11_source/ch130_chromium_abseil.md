@@ -65,7 +65,7 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 - **Abseil**：2019 年 Google 开源，把内部 `strings`/`container`/`time`/`synchronization` 等沉淀标准化，许多特性后来进入 C++17/20/23（见第⑱节）。
 - **Chromium `base`**：Chromium 项目的地基，提供 `TaskRunner`/`MessageLoop`/`PartitionAlloc`/`StringPiece` 等，支撑每秒数十亿次回调与多进程沙箱。
 
-> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Chromium / Abse
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Chromium / Abseil 基础设施
 ```cpp
 // ① 一个"同时用到两者"的典型工程入口草图（合法 C++，需链接对应库）
 #include "absl/container/flat_hash_map.h"
@@ -643,7 +643,7 @@ base::ThreadPool::PostTask(
 
 ## ⑯ 跨库协作：Abseil × Chromium × 标准 <span class="badge badge-std">标准</span>
 
-> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chro
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chromium × 标准
 ```cpp
 #include <string_view>
 // ⑯-a Abseil 与 std 互操作：absl 类型大多能直接转 std
@@ -651,7 +651,7 @@ absl::string_view av = "x";
 std::string_view sv = av;            // 隐式可转换（同布局）
 ```
 
-> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chro
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chromium × 标准
 ```cpp
 #include <utility>
 // ⑯-b Chromium base 回调里调用 Abseil 算法
@@ -662,7 +662,7 @@ base::OnceClosure cb = base::BindOnce([] {
 std::move(cb).Run();
 ```
 
-> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chro
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库协作：Abseil × Chromium × 标准
 ```cpp
 #include <memory>
 // ⑯-c 在 Abseil 容器中存 std::unique_ptr，兼顾性能与稳定句柄

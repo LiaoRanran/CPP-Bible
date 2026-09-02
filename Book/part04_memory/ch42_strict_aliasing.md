@@ -268,7 +268,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>** C++ 标准对 union 的类型双关**极其严格**：写入一个成员后读取另一个成员（active member 切换）在 C++ 中是 UB，**唯一例外**是 **common initial sequence（共同初始序列）** 规则 `[class.mem]/26`：若两个标准布局结构体共享相同的初始成员序列，且它们作为某个 union 的成员，则允许通过该 union 的任一成员读取这些共同初始成员。
 
-> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 合法双关之三：union 的 com
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 合法双关之三：union 的 common initial sequence 例外
 ```cpp
 // 【程序 5】合法：common initial sequence（共同初始序列）读取
 #include <cstdio>
@@ -291,7 +291,7 @@ int main() {
 }
 ```
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 合法双关之三：union 的 com
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 合法双关之三：union 的 common initial sequence 例外
 ```cpp
 // 【程序 6】非法：写入 a.x 后读 b.y（非共同初始序列，UB）
 #include <cstdio>
@@ -358,7 +358,7 @@ int main() {
 
 下面这个函数，编译器**假定 `p` 与 `q` 不 alias**，于是可以把 `*p`、`*q` 缓存在寄存器：
 
-> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 优化武器化实例：int p + fl
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 优化武器化实例：`int* p` + `float* q` 循环的**真实汇编**对比
 ```cpp
 // 【程序 8】优化武器化：int* 与 float* 被假定不 alias
 void f(int* p, float* q, int n) {
@@ -427,7 +427,7 @@ _Z1fPiPfi:
 | `__restrict__` | GCC / Clang |
 | `restrict` | C 关键字；GCC/Clang 在 C++ 模式下作为扩展支持（需不开启 `-std=c++NN` 严格模式或加 `-fpermissive` 视情况） |
 
-> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · restrict / restric
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · restrict` / `__restrict__` / `restrict`：给编译器的契约
 ```cpp
 // 【程序 9】__restrict 契约：承诺 dest 与 src 不重叠
 void scale(double* __restrict dest,
@@ -438,7 +438,7 @@ void scale(double* __restrict dest,
 }
 ```
 
-> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · restrict / restric
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · restrict` / `__restrict__` / `restrict`：给编译器的契约
 ```cpp
 // 【程序 10】违反 restrict 契约 = UB（不要这样做）
 void bad(double* __restrict p, int n) {
@@ -797,7 +797,7 @@ int main() { std::printf("see build commands in comments\n"); return 0; }
 
 **[平台·x86-64]** 本机 GCC 13.1.0，CPU 见 `[平台-推断]`，实测数组求和（2000 万元素 × 30 轮，`-O3 -march=native`）：
 
-> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 microbenchmark：
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 microbenchmark：restrict 的向量化加速量级
 ```
 norestrict : 721.0 ms  (sum sample=40.000000)
 restrict   : 702.5 ms  (speedup = 1.03x)
@@ -809,7 +809,7 @@ restrict   : 702.5 ms  (speedup = 1.03x)
 >
 > 这正是教学要点：**restrict 的价值用汇编看最清楚，用计时看要选对循环类型**。在自己的热点循环上用 `-O3 -S` 检查是否生成 `addpd`/`mulps` 等打包指令，比单纯计时更可靠。
 
-> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark：
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark：restrict 的向量化加速量级
 ```cpp
 // 【程序 23】compute-bound 友好基准骨架（自行调 N 与迭代次数观察 restrict 红利）
 #include <chrono>
@@ -1361,7 +1361,7 @@ int main() {
 
 ## 附录 L：工业严格别名规则 [F: Industry / B: Principle / H: Design]
 
-> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：工业严格别名规则 [F:
+> **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：工业严格别名规则 [F: Industry / B: Principle / H: Design]
 ```
 为什么存在 strict aliasing? (WG21 + C99 共同决定):
   → 编译器优化: 两个不同类型指针不会指向同一内存 → 可重排读写 → SIMD + 向量化
@@ -1379,7 +1379,7 @@ int main() {
 
 ## 附录 M：面试与工程实践 [J: Learning / I: Practice]
 
-> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 M：面试与工程实践 [J: L
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 M：面试与工程实践 [J: Learning / I: Practice]
 ```
 常见问题与面试:
 Q: 什么是 strict aliasing rule?

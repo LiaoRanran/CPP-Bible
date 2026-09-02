@@ -44,7 +44,7 @@ Modules 入标只是起点，真正的硬仗是"工具链落地"与"生态迁移
 
 传统 C++ 用 `#include` 做**文本包含**——预处理器把整个头文件复制粘贴进每个翻译单元，导致重复解析、宏泄漏、编译慢。Modules 提供**语义导入单元**，只暴露声明、按需编译一次、无宏污染。
 
-> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Modules 要解决什么 [
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Modules 要解决什么 [标准]
 ```cpp
 // ① 模块接口单元：导出声明
 // 文件：math.ixx（或 .cppm）
@@ -55,7 +55,7 @@ export namespace geom {
 }
 ```
 
-> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Modules 要解决什么 [
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Modules 要解决什么 [标准]
 ```cpp
 // ① 模块使用单元：导入而非包含
 import math;
@@ -131,7 +131,7 @@ int main() { return std::cout ? 0 : 1; }
 
 ## ⑤ 真实汇编：模块符号与零包含开销 [实现·GCC15.3.0]
 
-> **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实汇编：模块符号与零包含开销 [实
+> **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实汇编：模块符号与零包含开销 [实现·GCC15.3.0]
 ```cpp
 // 文件：Examples/_mod_use.cpp，行号：8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）
 // 编译：g++ 15.3.0 -std=c++23 -O2 -fmodules-ts -S -masm=intel _mod_use.cpp -o _mod_use.asm
@@ -163,7 +163,7 @@ _ZW4math6squarei:
 
 ## ⑥ 模块分区（partitions） <span class="badge badge-std">标准</span>
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块分区（partitions） [
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块分区（partitions） [标准]
 ```cpp
 // ⑥ 大模块拆分为分区，对外仍是一个模块
 export module big;                  // 主接口（本文件）
@@ -323,7 +323,7 @@ T max_of(T a, T b) { return a < b ? b : a; }
 
 ## ⑰ 模块与内联/constexpr <span class="badge badge-std">标准</span>
 
-> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模块与内联/constexpr [标
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模块与内联/constexpr [标准]
 ```cpp
 // ⑰ inline / constexpr 在模块中照常工作
 export module consts;

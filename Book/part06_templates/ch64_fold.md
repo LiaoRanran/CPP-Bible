@@ -798,7 +798,7 @@ int main() {
 
 ## 附录 A：WG21 提案 [B: Principle]
 
-> **示例 80** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：WG21 提案 [B: P
+> **示例 80** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：WG21 提案 [B: Principle]
 ```
 折叠表达式 (Fold Expressions) 的标准化历程:
 
@@ -842,7 +842,7 @@ int main() {
 
 ## 附录 C：折叠表达式的性能 [E: Low-level / G: Performance]
 
-> **示例 82** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：折叠表达式的性能 [E:
+> **示例 82** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：折叠表达式的性能 [E: Low-level / G: Performance]
 ```cpp
 // 折叠表达式 vs 递归模板 —— 编译期 vs 运行时对比
 // 编译性能:
@@ -866,7 +866,7 @@ int main() {
 
 ## 附录 D：面试与常见错误 [J: Learning / I: Practice]
 
-> **示例 83** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：面试与常见错误 [J: L
+> **示例 83** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：面试与常见错误 [J: Learning / I: Practice]
 ```
 面试高频:
 Q: 四种折叠表达式的语法?  (pack op ...) ( ... op pack) (pack op ... op init) (init op ... op pack)

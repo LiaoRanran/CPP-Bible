@@ -248,7 +248,7 @@ int main() {
 
 ### 示例 05：自定义删除器——lambda  `[核心知识点05]`
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 05：自定义删除器——lamb
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 05：自定义删除器——lambda  `[核心知识点05]`
 ```cpp
 #include <iostream>
 #include <memory>
@@ -317,7 +317,7 @@ int main() {
 
 ### 示例 08：`unique_ptr<T[]>` 数组特化  `[核心知识点06]`
 
-> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 08：uniqueptr<T[
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 08：`unique_ptr<T[]>` 数组特化  `[核心知识点06]`
 ```cpp
 #include <iostream>
 #include <memory>
@@ -334,7 +334,7 @@ int main() {
 
 [实现·GCC15] libstdc++ `<bits/unique_ptr.h>` 行 535 起有 `class unique_ptr<_Tp[], _Dp>` 特化；其析构走 `_Sp_array_delete`（对 `is_array<_Tp>` 选择 `delete[]`）：
 
-> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 08：uniqueptr<T[
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 08：`unique_ptr<T[]>` 数组特化  `[核心知识点06]`
 ```cpp
 // <bits/unique_ptr.h> 行 132-141（default_delete<T[]> 对数组）
 template<typename _Up>
@@ -358,7 +358,7 @@ template<typename _Up>
 
 [实现·GCC15] 这些直接转发到 `__uniq_ptr_impl`（`<bits/unique_ptr.h>` 行 196-220）：
 
-> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · uniqueptr 成员：relea
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `unique_ptr` 成员：release / get / reset / swap  `[核心知识点07]`
 ```cpp
 // <bits/unique_ptr.h> 行 214-220
 pointer release() noexcept {
@@ -377,7 +377,7 @@ void reset(pointer __p) noexcept {
 
 ### 示例 09：release / get / reset / swap  `[核心知识点07]`
 
-> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 09：release / ge
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 09：release / get / reset / swap  `[核心知识点07]`
 ```cpp
 #include <iostream>
 #include <memory>
@@ -482,7 +482,7 @@ void Widget::draw() const { p_->draw(); }
 
 ### 示例 12：工厂函数返回 `unique_ptr`  `[核心知识点08]`
 
-> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 12：工厂函数返回 uniqu
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 12：工厂函数返回 `unique_ptr`  `[核心知识点08]`
 ```cpp
 #include <memory>
 struct Shape { virtual ~Shape() = default; virtual double area() const = 0; };
@@ -974,7 +974,7 @@ int main() {
 
 [实现·GCC15] `weak_ptr::lock()`（`shared_ptr_base.h` 行 2066-2068）直接委托给带 `nothrow` 的 `shared_ptr` 构造，该构造内部调用 `_M_refcount(__r._M_refcount, nothrow)`——若强计数已 0 则 `_M_ptr` 置空：
 
-> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · weakptr：lock / exp
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `weak_ptr`：lock / expired / 打破循环  `[核心知识点17]`
 ```cpp
 // <bits/shared_ptr_base.h> 行 2066-2076
 __shared_ptr<_Tp, _Lp>
@@ -1151,7 +1151,7 @@ int main() {
 
 ### 示例 27：别名构造 + `enable_shared_from_this` 组合
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 27：别名构造 + enabl
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 27：别名构造 + `enable_shared_from_this` 组合
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1204,7 +1204,7 @@ int main() {
 
 ### 示例 29：`shared_ptr<T[]>`(C++17) 数组  `[核心知识点21]`
 
-> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 29：sharedptr<T[
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 29：`shared_ptr<T[]>`(C++17) 数组  `[核心知识点21]`
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1515,7 +1515,7 @@ int main() {
 
 1. **`release()` 后忘记 `delete`**：拿到裸指针必须有人释放，否则泄漏（元素 05）。
 2. **`shared_ptr` 从同一裸指针构造两次**：会产生**两个独立控制块**，析构时双重释放（double free）。必须用 `shared_ptr` 拷贝或 `enable_shared_from_this`。
-> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱清单  [核心知识点07][
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱清单  `[核心知识点07][18][16]`
    ```cpp
 #include <memory>
    int* raw = new int(1);
@@ -1825,7 +1825,7 @@ int main() {
 
 ## 附录 B：面试与性能 [J: Learning / G: Performance]
 
-> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试与性能 [J: Lea
+> **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试与性能 [J: Learning / G: Performance]
 ```
 面试高频:
 Q: unique_ptr 和 shared_ptr 的选择？

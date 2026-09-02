@@ -70,7 +70,7 @@ flowchart LR
   MEM -->|"serialize"| JT
 ```
 
-> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：JSON 与 C++ 映射 [
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：JSON 与 C++ 映射 [标准]
 ```cpp
 // ① JSON 类型到 C++ 类型的标准映射（参考 RFC 8259 §1）
 // null    -> std::nullptr_t
@@ -920,7 +920,7 @@ int main() {
 
 ## 附录 B：底层实现与面试 [E: Low-level / J: Learning / I: Practice]
 
-> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：底层实现与面试 [E: L
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：底层实现与面试 [E: Low-level / J: Learning / I: Practice]
 ```
 JSON Parser 实现的关键决策:
 

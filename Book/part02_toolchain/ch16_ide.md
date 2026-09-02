@@ -299,14 +299,14 @@ int foo(int x, int y) {
 
 `clang-tidy` 是基于 **Clang AST** 的 lint 工具，能抓到 g++ 不报的**语义异味**（悬空、窄化、冗余拷贝）。它同样读 `compile_commands.json`。
 
-> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态检查 clang-tidy [实
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态检查 clang-tidy [实现·Clang19]
 ```cpp
 // ⑨ clang-tidy 会报：参数按值传大对象 → 建议 const&（performance-unnecessary-value-param）
 #include <string>
 std::string mirror(std::string s) { return s; }   // 应改为 const std::string&
 ```
 
-> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态检查 clang-tidy [实
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态检查 clang-tidy [实现·Clang19]
 ```cpp
 // ⑨ 修复后：按 const 引用传递，消除一次拷贝
 #include <string>
@@ -796,7 +796,7 @@ Meson: 默认生成 compile_commands.json
 
 ## 附录 B：面试与权衡 [J: Learning / H: Design]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与权衡 [J: Lea
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与权衡 [J: Learning / H: Design]
 ```
 IDE 选型决策:
 - 新手: VS 2022 Community (Windows) / CLion (跨平台, 开箱即用)
@@ -826,7 +826,7 @@ A: 生成 compile_commands.json, IDE 的 clangd 读取后即可精确解析 incl
 | CLion | 自研(clangd-based) | CMake原生 | GDB/LLDB |
 | Qt Creator | clangd | CMake/QMake | GDB/CDB |
 
-> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：IDE底层与编译器集成 [
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：IDE底层与编译器集成 [C: Compiler]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"compile_commands.json=universal bridge between build system and IDE LSP"<<std::endl;return 0;}
@@ -838,7 +838,7 @@ GCC/clangd集成: compile_commands.json→clangd→LSP(汇编级别的token解�
 MSVC实现: VS Intellisense→EDG前端(非clang)→MSVC专用ABI理解
 Clang实现: clangd→AST完整遍历→内存中索引(100MB for LLVM项目)
 
-> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：IDE编译器实现细节 [C
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：IDE编译器实现细节 [C: Compiler]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"clangd+GCC: compile_commands.json bridges build system to IDE LSP"<<std::endl;std::cout<<"MSVC: EDG frontend for intellisense, not clang-based"<<std::endl;return 0;}

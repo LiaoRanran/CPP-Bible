@@ -831,7 +831,7 @@ int main() {
 - `= delete` 用于**禁止拷贝**（独占资源语义，如 `unique_ptr`）、禁止不需要的构造等。
 
 **<span class="badge badge-impl">实现</span>**　libstdc++ 的 `unique_ptr` 即在 `bits/unique_ptr.h:522-523` 用 `= delete` 禁用拷贝：
-> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · = default 与 = dele
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · = default 与 = delete：精确控制特殊成员
 ```cpp
 // bits/unique_ptr.h:521-523
 // Disable copy from lvalue.
@@ -839,7 +839,7 @@ unique_ptr(const unique_ptr&) = delete;
 unique_ptr& operator=(const unique_ptr&) = delete;
 ```
 
-> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · = default 与 = dele
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · = default 与 = delete：精确控制特殊成员
 ```cpp
 // [示例 22] =default 让编译器生成正确的移动（当存在自定义析构时）
 #include <cstdio>
@@ -864,7 +864,7 @@ int main() {
 }
 ```
 
-> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · = default 与 = dele
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · = default 与 = delete：精确控制特殊成员
 ```cpp
 // [示例 23] =delete 禁止拷贝，实现独占语义
 #include <cstdio>
@@ -898,7 +898,7 @@ int main() {
 
 **<span class="badge badge-exp">经验</span>**　经典 bug：对移后对象读取值或依赖其状态。`std::move` 本身**不移动任何东西**——它只是把左值转为右值引用，真正的移动发生在接收方的移动构造/赋值里；移后源对象变成「空壳」。
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 移动后状态：valid but un
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 移动后状态：valid but unspecified
 ```cpp
 // [示例 24] 移动后状态：vector 移后通常为空（valid but unspecified）
 #include <vector>
@@ -915,7 +915,7 @@ int main() {
 }
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动后状态：valid but un
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动后状态：valid but unspecified
 ```cpp
 // [示例 25] 误用移后对象：经典 bug
 #include <string>
@@ -949,7 +949,7 @@ int main() { buggy(); }
 
 这里仅做预告与自定义 deleter 演示，详细语义、原子性、控制块、别名构造留待 `ch41`。
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：uniqueptr /
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：unique_ptr / shared_ptr / weak_ptr（见 ch41）
 ```cpp
 // [示例 26] 自定义 deleter（带状态的 deleter 对象）
 #include <memory>
@@ -970,7 +970,7 @@ int main() {
 }
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：uniqueptr /
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：unique_ptr / shared_ptr / weak_ptr（见 ch41）
 ```cpp
 // [示例 27] 自定义 deleter（lambda / 函数指针）
 #include <memory>
@@ -985,7 +985,7 @@ int main() {
 }
 ```
 
-> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：uniqueptr /
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针预告：unique_ptr / shared_ptr / weak_ptr（见 ch41）
 ```cpp
 // [示例 28] unique_ptr 管理 FILE*（预告，完整见 ch41）
 #include <memory>
@@ -1010,7 +1010,7 @@ int main() {
 - `std::scoped_lock<Mutexes...>`（C++17）：可同时锁多个互斥量并**避免死锁**（内部用 `std::lock` 算法）。
 - `std::unique_lock<Mutex>`：更灵活，可延迟加锁、手动 `lock()`/`unlock()`、可移动、可配合条件变量。
 
-> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 锁：lockguard / scop
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · RAII 锁：lock_guard / scoped_lock / unique_lock
 ```cpp
 // [示例 29] lock_guard 基本使用
 #include <mutex>
@@ -1031,7 +1031,7 @@ int main() {
 }
 ```
 
-> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 锁：lockguard / scop
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · RAII 锁：lock_guard / scoped_lock / unique_lock
 ```cpp
 // [示例 30] scoped_lock 双锁防死锁（C++17）
 #include <mutex>
@@ -1048,7 +1048,7 @@ void transfer() {
 int main() { transfer(); }
 ```
 
-> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 锁：lockguard / scop
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · RAII 锁：lock_guard / scoped_lock / unique_lock
 ```cpp
 // [示例 31] unique_lock 灵活锁 + 条件变量配合（演示延迟加锁）
 #include <mutex>

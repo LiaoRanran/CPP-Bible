@@ -200,7 +200,7 @@ void movement_system(std::vector<Position>& pos,
 
 这是 ECS 性能讨论的**核心分叉**。两种把 N 个实体存进内存的方式：
 
-> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数据布局：AoS vs SoA [实
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数据布局：AoS vs SoA [实现·GCC15]
 ```
 ┌───────────────────────── AoS (Array of Structures) ─────────────────────────┐
 │ 实体0: [Pos | Vel | Hp | ...]  实体1: [Pos | Vel | Hp | ...]  实体2: [...]   │
@@ -212,7 +212,7 @@ void movement_system(std::vector<Position>& pos,
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数据布局：AoS vs SoA [实
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数据布局：AoS vs SoA [实现·GCC15]
 ```cpp
 // ⑤ AoS：所有组件打包进一个结构体，实体数组按"行"存储
 #include <vector>
@@ -222,7 +222,7 @@ void integrate_aos(Particle* p, int n, float dt) {
 }
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数据布局：AoS vs SoA [实
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数据布局：AoS vs SoA [实现·GCC15]
 ```cpp
 // ⑤ SoA：每个组件是独立数组，实体按"列"存储
 #include <vector>
@@ -318,7 +318,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
 
 裸 `index` 有个致命问题：**槽位复用**会让"已销毁实体的旧引用"悄悄指向一个新实体。解决：**句柄 = index + version（代际戳）**。销毁时 `version++`，旧句柄的 version 对不上 → 立即识别为悬空。
 
-> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体管理与句柄（handle） [实
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体管理与句柄（handle） [实现·GCC15]
 ```
 ┌── 句柄 32 位打包 ──────────────┐      ┌── 存储槽 ──────┐
 │ 31..20 : version (12bit)      │      │ version : uint32│
@@ -327,7 +327,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
   旧句柄 version=3, 槽已复用 version=4 => 校验失败
 ```
 
-> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实体管理与句柄（handle） [实
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实体管理与句柄（handle） [实现·GCC15]
 ```cpp
 // ⑧ 打包句柄：高 12 位版本 + 低 20 位索引（也可拆成两个字段，见 mini ECS ⑲）
 #include <cstdint>
@@ -338,7 +338,7 @@ constexpr std::uint32_t idx_of(std::uint32_t h) { return h & 0xFFFFFu; }
 constexpr std::uint32_t gen_of(std::uint32_t h) { return h >> 20; }
 ```
 
-> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体管理与句柄（handle） [实
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体管理与句柄（handle） [实现·GCC15]
 ```cpp
 #include <cstdint>
 #include <vector>
@@ -356,7 +356,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 
 系统的并行性来自一个事实：**多数系统只读共享组件、只写自己独占的组件**。把系统排成有向图，无数据依赖的系统可并行跑；有依赖的按拓扑序串行。
 
-> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统调度（并行） [实现·GCC15
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统调度（并行） [实现·GCC15]
 ```
 ┌── 帧调度（拓扑序 + 并行层）─────────────────────────────┐
 │  Layer0: [input_sys]  [network_sys]   (并行，互不写同组件)│
@@ -367,7 +367,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 └──────────────────────────────────────────────────────────┘
 ```
 
-> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统调度（并行） [实现·GCC15
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统调度（并行） [实现·GCC15]
 ```cpp
 // ⑨ 用 std::jthread 并行跑"无写冲突"的系统组（C++20，见 part09 并发章）
 #include <thread>
@@ -379,7 +379,7 @@ void run_parallel(std::vector<std::function<void()>> systems) {
 }
 ```
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统调度（并行） [实现·GCC15
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统调度（并行） [实现·GCC15]
 ```cpp
 // ⑨ 依赖声明：用组件读写集合推导系统图（简化示意）
 struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
@@ -394,7 +394,7 @@ struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
 
 当世界有**上百万实体**，单块连续内存既放不下也不利于并发。方案：**分块（chunk）**——每块固定容量（如 16k 实体），块内组件连续，块间用数组/链表组织。这把"大数组"切成"缓存友好的小方块"，也便于多线程各拿一块。
 
-> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与多叉/分块（chunk） [平台·
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ECS 与多叉/分块（chunk） [平台·x86-64]
 ```
 ┌── World ────────────────────────────────────────────┐
 │  Chunk0 [e0..e15 连续]   Chunk1 [e16..e31 连续]  ...  │
@@ -402,7 +402,7 @@ struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
 └──────────────────────────────────────────────────────┘
 ```
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多叉/分块（chunk） [平台·
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ECS 与多叉/分块（chunk） [平台·x86-64]
 ```cpp
 // ⑩ 固定容量分块：偏移 = i * 每块字节，连续、可预测、缓存友好
 #include <cstddef>
@@ -415,7 +415,7 @@ struct Chunk {
 constexpr std::size_t offset_of(std::size_t i) { return i * CHUNK_COMPONENT_BYTES; }
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多叉/分块（chunk） [平台·
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ECS 与多叉/分块（chunk） [平台·x86-64]
 ```cpp
 #include <cstddef>
 #include <span>
@@ -614,7 +614,7 @@ void migrate(std::uint32_t entity, ArchKey from, ArchKey to) {
 
 ECS 的天然并行点：**只读共享组件的系统**可以无锁并发读。只要没有写者在同一帧改同一组件，读者之间就完全无竞争。写者则常用 `std::atomic` 做"版本戳"式无锁发布。
 
-> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多线程（无锁读） [平台·x86-
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ECS 与多线程（无锁读） [平台·x86-64]
 ```cpp
 // ⑮ 无锁读：读线程只 load 一个 atomic，无需加锁
 #include <atomic>
@@ -628,7 +628,7 @@ bool is_alive(const EntityRecord& r) {
 }
 ```
 
-> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与多线程（无锁读） [平台·x86-
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · ECS 与多线程（无锁读） [平台·x86-64]
 ```cpp
 // ⑮ 写：先释放式置否，再 relaxed 递增版本（发布-订阅式）
 void kill(EntityRecord& r) {

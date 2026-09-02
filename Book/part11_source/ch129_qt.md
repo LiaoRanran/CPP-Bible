@@ -836,7 +836,7 @@ int main() {
 
 ## 附录 B：工业级 Qt 项目模式 [F: Industry]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业级 Qt 项目模式 [
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业级 Qt 项目模式 [F: Industry]
 ```cpp
 #include <iostream>
 int main() {
@@ -860,7 +860,7 @@ int main() {
 | 内存 | parent-child 树 | unique_ptr/shared_ptr | GUI控件→Qt; 业务逻辑→std::unique_ptr |
 | 线程 | QThread::moveToThread | std::thread + std::async | GUI→Qt; 后端→std::thread |
 
-> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：Qt vs 标准 C++
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：Qt vs 标准 C++ 设计权衡 [H: Design]
 ```
 选择建议:
 - 纯后端/CLI → 标准 C++ (无 Qt 依赖, 编译更快)

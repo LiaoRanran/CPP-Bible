@@ -547,7 +547,7 @@ std::atomic<Tagged> tp{};
 
 多核各持缓存行；当一个核写某变量、另一核频繁读"同一缓存行"的另一个变量时，缓存一致性协议会反复无效化该行——**伪共享（false sharing）**让无锁反而更慢。C++17 提供 `std::hardware_destructive_interference_size`（典型 64）用于按缓存行对齐隔离。
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line pa
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line padding（std::hardware_destructive_interference_size） [平台·x86-64]
 ```cpp
 // ⑬ 反例：a、b 常被放入同一 64B 缓存行，跨核写互相 invalidate
 #include <atomic>
@@ -558,7 +558,7 @@ struct Bad {
 };
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line pa
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line padding（std::hardware_destructive_interference_size） [平台·x86-64]
 ```cpp
 // ⑬ 正解：用 interference_size 对齐，把两个原子隔开到不同缓存行
 #include <atomic>
@@ -571,7 +571,7 @@ struct Good {
 static_assert(alignof(Good) >= 64);
 ```
 
-> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line pa
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享与 cache-line padding（std::hardware_destructive_interference_size） [平台·x86-64]
 ```cpp
 // ⑬ 读取该常量的可移植写法（C++17 起）
 #include <new>
@@ -655,7 +655,7 @@ double bench(F f, intthreads, int iters) {
 
 定性结论（量级，非固定数字；实测请跑 ⑮ 脚手架）：低竞争时 mutex 胜（无 CAS 重试、缓存友好）；高竞争时 mutex 因阻塞上下文切换而劣，无锁靠自旋胜出；但伪共享会反杀无锁。
 
-> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x86-64]
 ```
 ┌──────────────────┬───────────────┬───────────────┬──────────────────┐
 │ 场景              │ mutex          │ lock-free      │ 胜者             │
@@ -667,7 +667,7 @@ double bench(F f, intthreads, int iters) {
 └──────────────────┴───────────────┴───────────────┴──────────────────┘
 ```
 
-> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x86-64]
 ```cpp
 // ⑯ 同等语义下，atomic fetch_add 计数的"无锁"写法
 #include <atomic>
@@ -675,7 +675,7 @@ std::atomic<unsigned long long> atomic_ctr{0};
 void atomic_work(int iters) { for (int i = 0; i < iters; ++i) atomic_ctr.fetch_add(1, std::memory_order_relaxed); }
 ```
 
-> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x86-64]
 ```cpp
 // ⑯ 同等语义下，mutex 计数的"阻塞"写法（对比用）
 #include <atomic>
@@ -915,7 +915,7 @@ void cheat_sheet() {
 
 ## 附录 A：工业无锁数据结构 [F: Industry / B: Principle]
 
-> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业无锁数据结构 [F:
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业无锁数据结构 [F: Industry / B: Principle]
 ```
 世界级 C++ 项目中的无锁数据结构:
 
@@ -1007,7 +1007,7 @@ _ZL11probe_mutexy:
 
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
-> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：面试与设计权衡 [J: L
+> **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：面试与设计权衡 [J: Learning / H: Design]
 ```
 面试高频:
 Q: 如何判断一个数据结构是否 lock-free？

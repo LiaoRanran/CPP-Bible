@@ -82,7 +82,7 @@ int main(){safe.store(1);std::cout<<safe.load()<<std::endl;return 0;}
 
 ## ⑤ 信号处理中的 volatile [平台·x86-64]
 
-> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 信号处理中的 volatile [平
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 信号处理中的 volatile [平台·x86-64]
 ```cpp
 #include <iostream>
 #include <csignal>
@@ -92,7 +92,7 @@ int main(){flag=1;std::cout<<(int)flag<<std::endl;return 0;}
 
 ## ⑥ setjmp/longjmp 中的 volatile [平台·x86-64]
 
-> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 中的 volatile [平台·x8
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · setjmp/longjmp 中的 volatile [平台·x86-64]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\n";return 0;}
@@ -100,7 +100,7 @@ int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\
 
 ## ⑦ 编译器屏障 [实现·GCC15.3.0]
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器屏障 [实现·GCC15.3.
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器屏障 [实现·GCC15.3.0]
 ```cpp
 #include <iostream>
 int main(){int x=0;asm volatile("":::"memory");x=1;std::cout<<x<<std::endl;return 0;}

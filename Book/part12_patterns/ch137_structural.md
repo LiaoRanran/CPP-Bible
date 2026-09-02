@@ -1183,7 +1183,7 @@ int main(){Facade f;f.simple();return 0;}
 
 ## 附录 A：结构型模式工业实例 [F: Industry / B: Principle]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：结构型模式工业实例 [F:
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：结构型模式工业实例 [F: Industry / B: Principle]
 ```
 C++ 标准库中的结构型模式:
 
@@ -1205,7 +1205,7 @@ Proxy: std::vector<bool>::reference → 代理 bit 引用 (非 bool&)
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learni
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
 ```
 面试高频:
 Q: Adapter vs Decorator vs Proxy 的区别？
@@ -1247,7 +1247,7 @@ int main(){std::stack<int,std::vector<int>> s;s.push(42);std::cout<<s.top()<<std
 | Proxy | 延迟/远程访问 | 与真实对象不同 | unique_ptr(简单场景) |
 | Facade | 简化复杂系统 | 可能过于简化 | 直接使用子系统 |
 
-> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：结构型模式设计权衡 [H:
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：结构型模式设计权衡 [H: Design]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=control access; Facade=simplify"<<std::endl;return 0;}

@@ -1328,7 +1328,7 @@ int main() {
 ### 演绎 2：const 正确性——span<const T> 与 span<T>
 只读函数用 `span<const T>`，可接收 `vector<int>` 与 `const vector<int>`；`span<T>` 才能写回。
 
-> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：const 正确性——sp
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：const 正确性——span<const T> 与 span<T>
 ```cpp
 #include <iostream>
 #include <span>

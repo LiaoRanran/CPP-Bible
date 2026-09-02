@@ -143,7 +143,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：节点布局与环形哨兵 [实现·GCC15]
 
-> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：节点布局与环形哨兵 [实现·
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ASCII 内存图：节点布局与环形哨兵 [实现·GCC15]
 ```mermaid
 flowchart TD
     Obj["std::list<int> 对象"] --> S["_M_impl._M_node (哨兵头节点, 自身不存 value)"]
@@ -1318,7 +1318,7 @@ int main() {
 ### 演绎 2：list 与 vector 删除中间元素时的迭代器失效差异
 `list` 的 `erase` 只使被删节点的迭代器失效，返回下一有效迭代器；`vector` 删除后所有后续迭代器失效（需重新取）。
 
-> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：list 与 vector
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：list 与 vector 删除中间元素时的迭代器失效差异
 ```cpp
 #include <iostream>
 #include <list>

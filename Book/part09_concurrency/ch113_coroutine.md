@@ -174,7 +174,7 @@ struct my_coro {
 | `co_yield v` | 产出值并挂起 | `co_await promise.yield_value(v)` |
 | `co_return v` | 协程结束，返回值（如有） | `promise.return_value(v); goto final` |
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · await / coyield /
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · co_await / co_yield / co_return 三个关键字
 ```cpp
 // ④A co_await：挂起等待一个 awaiter（此处用标准 suspend_always 立即挂起）
 #include <coroutine>
@@ -183,7 +183,7 @@ mini_task await_demo() {
 }
 ```
 
-> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · await / coyield /
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · co_await / co_yield / co_return 三个关键字
 ```cpp
 // ④B co_yield：产出整数序列（需 promise_type 提供 yield_value）
 struct generator { /* 见 ⑥ */ };
@@ -193,7 +193,7 @@ generator seq() {
 }
 ```
 
-> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · await / coyield /
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · co_await / co_yield / co_return 三个关键字
 ```cpp
 // ④C co_return：结束协程（无值版本调用 return_void；有值见 ⑫）
 mini_task ret_demo() {
@@ -208,7 +208,7 @@ mini_task ret_demo() {
 
 `co_await` 的操作数会被适配成一个 **awaiter**，需提供三个成员：
 
-> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 接口：awaitready / aw
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · awaiter 接口：await_ready / await_suspend / await_resume
 ```cpp
 // ⑤ awaiter 三件套：决定"是否立即就绪 / 如何挂起 / 恢复后给什么"
 struct my_awaiter {
@@ -225,7 +225,7 @@ struct my_awaiter {
 };
 ```
 
-> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 接口：awaitready / aw
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · awaiter 接口：await_ready / await_suspend / await_resume
 ```cpp
 // ⑤B 使用自定义 awaiter：co_await 表达式的值为 await_resume() 的返回
 mini_task use_awaiter() {
@@ -293,7 +293,7 @@ int sum_range(int n) {
 
 `task` 表示"将来完成的无值计算"，可组合（`co_await` 一个 task 会等到它完成）。与 generator 不同，task 通常 `final_suspend` 挂起以便手动 `destroy`。
 
-> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 未来式（future-like） [
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · task / 未来式（future-like） [标准]
 ```cpp
 // ⑦ task：可 await 的完成信号（future-like，无返回值版本）
 struct task {
@@ -320,7 +320,7 @@ struct task {
 };
 ```
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 未来式（future-like） [
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · task / 未来式（future-like） [标准]
 ```cpp
 // ⑦B task 组合：co_await 一个 task 会驱动它跑完
 task step1() { co_await std::suspend_always{}; }
@@ -616,7 +616,7 @@ auto dt = std::chrono::steady_clock::now() - t0;
 
 **坑 1**：返回**指向局部变量/参数的引用**的协程——参数在帧里，但若函数形参是引用且指向调用者栈，则恢复时调用者栈可能已消亡。
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：悬垂引用与协程帧生命周期 [
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：悬垂引用与协程帧生命周期 [标准]
 ```cpp
 // ⑮A ❌ 悬垂：co_yield 返回对形参引用的视图，调用者栈帧已不在
 generator bad_view(const std::string& s) {
@@ -624,7 +624,7 @@ generator bad_view(const std::string& s) {
 }
 ```
 
-> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：悬垂引用与协程帧生命周期 [
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：悬垂引用与协程帧生命周期 [标准]
 ```cpp
 #include <string>
 // ⑮B ✅ 正确：把需要的数据按值拷入帧（参数拷贝在协程帧内，生命周期随帧）
@@ -635,7 +635,7 @@ generator good_copy(std::string s) {   // 按值接收：s 成为帧的一部分
 
 **坑 2**：忘记 `destroy()` 导致帧泄漏；或 `final_suspend` 返回 `suspend_never` 后还 `resume()` 帧（UB）。
 
-> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：悬垂引用与协程帧生命周期 [
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：悬垂引用与协程帧生命周期 [标准]
 ```cpp
 // ⑮C ❌ 泄漏：构造后从不 resume/destroy，堆帧永不被释放
 void leak() { auto g = range(10); /* 未 next 也未显式 destroy 路径 */ }

@@ -920,7 +920,7 @@ int main() {
 
 ## 附录 D：Git 与 C++ CI/CD 管道 [B: Principle / H: Design]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：Git 与 C++ CI/
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：Git 与 C++ CI/CD 管道 [B: Principle / H: Design]
 ```
 标准 C++ 项目的 Git + CI 管道（以 LLVM 为参考）:
 
@@ -941,7 +941,7 @@ post-merge (CI post-submit):
   package + deploy → CPack / Conan upload
 ```
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：Git 与 C++ CI/
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：Git 与 C++ CI/CD 管道 [B: Principle / H: Design]
 ```cpp
 #include <iostream>
 int main() {

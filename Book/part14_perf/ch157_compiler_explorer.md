@@ -64,7 +64,7 @@ int main() {
 
 ## ③ 优化级别的汇编差异 [实现·GCC15]
 
-> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化级别的汇编差异 [实现·GCC1
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化级别的汇编差异 [实现·GCC15]
 ```cpp
 #include <iostream>
 int sum(int n) {
@@ -130,7 +130,7 @@ int main() { std::cout << hotspot(100) << std::endl; return 0; }
 
 ## ⑧ 链接器优化 LTO [实现·GCC15]
 
-> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 链接器优化 LTO [实现·GCC1
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 链接器优化 LTO [实现·GCC15]
 ```cpp
 #include <iostream>
 int helper(int x) { return x * x; }
@@ -140,7 +140,7 @@ int main() { std::cout << call_helper(10) << std::endl; return 0; }
 
 ## ⑨ inline 与不 inline 的汇编差异 [实现·GCC15]
 
-> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与不 inline 的汇编差异 [实
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · inline 与不 inline 的汇编差异 [实现·GCC15]
 ```cpp
 #include <iostream>
 inline int sq(int x) { return x * x; }
@@ -156,7 +156,7 @@ int main() { std::cout << use_sq(3, 4) << std::endl; return 0; }
 | CE 支持 | ✅ | ✅ | ✅ |
 | LTO | -flto | -flto=thin | /GL |
 
-> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三编译器对比详表 [平台·x86-6
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三编译器对比详表 [平台·x86-64]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC -S -masm=intel vs Clang -S -mllvm --x86-asm-syntax=intel\n";return 0;}
@@ -328,7 +328,7 @@ int main() {
 
 ## ⑱ 最佳实践：CE 工作流黄金法则 <span class="badge badge-exp">经验</span>
 
-> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践：CE 工作流黄金法则 [经
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践：CE 工作流黄金法则 [经验]
 ```cpp
 // ⑱ Compiler Explorer 高效使用的 6 条规则
 #include <iostream>
@@ -352,7 +352,7 @@ int main() {
 
 ## ⑲ 性能分析：CE 编译延迟及其影响 [平台·x86-64]
 
-> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：CE 编译延迟及其影响 [
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：CE 编译延迟及其影响 [平台·x86-64]
 ```cpp
 // ⑲ CE 编译性能与本地编译的对比
 #include <iostream>

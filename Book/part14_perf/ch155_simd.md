@@ -399,7 +399,7 @@ void avx512_select(const float* a, const float* b, float* out, int n) {
 
 SIMD 是编译器优化栈的**底层执行形态**之一：上层优化（循环交换、标量替换、函数内联）决定了能否暴露出"可向量化内核"，下层再由向量化器生成 SIMD。
 
-> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch156 编译器优化衔接 [标
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch156 编译器优化衔接 [标准]
 ```cpp
 // ⑪ 内联 + 常数折叠后，热点才容易被向量化
 inline float op(float x) { return x * 3.0f + 1.0f; }   // 小函数 -> 易内联
@@ -924,7 +924,7 @@ WG21 **P0214** 是标准 SIMD 类型的主线提案，配合编译器 `-O2/-O3` 
 
 ## 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
 
-> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：SIMD设计权衡与实战 [
+> **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
 ```
 SIMD设计决策树:
 1. 数据连续？ → 否: 重排数据或用SoA布局; 是: 继续

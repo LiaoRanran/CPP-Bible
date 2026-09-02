@@ -722,7 +722,7 @@ int main(){std::vector<int> v(3,7);std::cout<<v.size()<<std::endl;return 0;}
 
 ## 附录 A：工业交叉编译 [B: Principle / F: Industry / H: Design / I: Practice / J: Learning]
 
-> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业交叉编译 [B: Pr
+> **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业交叉编译 [B: Principle / F: Industry / H: Design / I: Practice / J: Learning]
 ```
 交叉编译工业场景:
 - 嵌入式: arm-none-eabi-gcc (Cortex-M), aarch64-linux-gnu-gcc (ARM64 Linux)

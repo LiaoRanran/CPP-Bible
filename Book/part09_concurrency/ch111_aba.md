@@ -739,7 +739,7 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 
 ## 附录 E：ABA问题工业案例 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
-> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：ABA问题工业案例 [F:
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：ABA问题工业案例 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 ```
 ABA问题在工业中的真实出现:
 
@@ -756,7 +756,7 @@ Hazard Pointer (P0566): C++26方向, 从根本上消除ABA
   → 原理: 在回收对象前等待所有读者离开 → 保证不会读到"重新分配但相同地址"的对象
 ```
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：ABA问题工业案例 [F:
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：ABA问题工业案例 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <atomic>

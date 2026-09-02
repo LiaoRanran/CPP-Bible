@@ -119,7 +119,7 @@ std::unique_ptr<Connection> makeConnection(const char* kind) {
 
 <span class="badge badge-impl">实现</span> 关键三件套：**抽象产品（Product）**、**具体产品（ConcreteProduct）**、**创建者（Creator）及其工厂方法 `factory()`**。
 
-> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工厂方法 Factory Metho
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工厂方法 Factory Method [标准/实现]
 ```cpp
 // ② 工厂方法：抽象产品 + 创建者
 #include <iostream>
@@ -138,7 +138,7 @@ struct Square : Shape {   // 具体产品 B
 };
 ```
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂方法 Factory Metho
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂方法 Factory Method [标准/实现]
 ```cpp
 // ② 创建者：把“new 哪个类”推迟到子类
 struct ShapeFactory {
@@ -220,7 +220,7 @@ void client(const ShapeFactory& f) {
 
 <span class="badge badge-std">标准</span> 抽象工厂提供创建**一系列相关或相互依赖对象**的接口，而无需指定它们的具体类。它与工厂方法的区别：工厂方法产**单个**产品，抽象工厂产**一族**产品。
 
-> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 抽象工厂 Abstract Fact
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 抽象工厂 Abstract Factory
 ```cpp
 // ④ 抽象工厂：产品族（按钮 + 文本框）
 #include <iostream>
@@ -235,7 +235,7 @@ struct MacButton : Button { void paint() const override { std::cout << "MacButto
 struct MacTextBox : TextBox { void paint() const override { std::cout << "MacTextBox\n"; } };
 ```
 
-> **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 抽象工厂 Abstract Fact
+> **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 抽象工厂 Abstract Factory
 ```cpp
 #include <memory>
 // ④ 抽象工厂接口 + 两套具体工厂（保证产品“配套”）
@@ -785,7 +785,7 @@ void usePool() {
 
 用 `std::function` 把“构造动作”当值传递，可把工厂表做成运行时数据（map of factories），非常适合命令分发、插件注册。
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂与 std::function/
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工厂与 std::function/lambda
 ```cpp
 // ⑯ 用 std::function 做可注册工厂表
 #include <functional>
@@ -1114,7 +1114,7 @@ int main(){std::cout<<"Factory Method: defer instantiation to subclass. Abstract
 
 C++ 标准库本身就是创建型模式的最大用户：
 
-> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业中的创建型模式 [F:
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业中的创建型模式 [F: Industry / B: Principle]
 ```
 Singleton:     std::cout (Meyer's Singleton, C++11起线程安全)
 Factory:       std::make_unique, std::make_shared (工厂函数, 异常安全)
@@ -1128,7 +1128,7 @@ Prototype:     std::unique_ptr<T> clone() = 0 (多态克隆)
 - Qt: Factory pattern (QPluginLoader → runtime plugin creation)
 ```
 
-> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业中的创建型模式 [F:
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业中的创建型模式 [F: Industry / B: Principle]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1142,7 +1142,7 @@ int main() {
 
 ## 附录 B：面试与设计权衡 [J: Learning / H: Design]
 
-> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试与设计权衡 [J: L
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试与设计权衡 [J: Learning / H: Design]
 ```
 面试高频:
 Q: C++ 中线程安全的 Singleton 实现？

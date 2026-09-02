@@ -723,7 +723,7 @@ C++98/03 把重载决议与偏序写入标准；C++11 后 `constexpr`、concepts
 
 ## 附录 A：原理与工业 [B: Principle / F: Industry]
 
-> **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：原理与工业 [B: Pri
+> **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：原理与工业 [B: Principle / F: Industry]
 ```
 WG21模板重载决议提案:
 N3291 (C++11): SFINAE正式标准化 → enable_if成为合法的重载控制手段

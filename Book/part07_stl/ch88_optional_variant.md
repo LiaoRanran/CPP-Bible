@@ -44,7 +44,7 @@
 
 `std::optional<T>`、`std::expected<T,E>`、`std::variant<...>` 三者都把"可能缺失 / 可能失败 / 多类型其一"编码进**值语义类型**，替代裸指针、`union`、异常或输出参数。
 
-> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么需要可空与可辨别联合 [
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么需要可空与可辨别联合 [标准]
 ```cpp
 // ① 三种"不止一个值"的语义
 #include <optional>
@@ -289,7 +289,7 @@ std::vector<std::expected<std::optional<int>, std::string>> parse_all(std::vecto
 
 ## ⑬ monostate：让 variant 可默认构造 <span class="badge badge-std">标准</span>
 
-> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 让 variant 可默认构造 [标
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · monostate：让 variant 可默认构造 [标准]
 ```cpp
 // ⑬ 若 variant 所有类型都不可默认构造，用 std::monostate 作首个类型
 #include <variant>
@@ -323,7 +323,7 @@ std::expected<int,std::string> with_exp(int a, int b);    // expected（显式�
 
 ## ⑮ 真实 libstdc++ 源码逐行：optional 的 engaged 标志 <span class="badge badge-impl">实现</span>
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码逐行：
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码逐行：optional 的 engaged 标志
 ```cpp
 #include <utility>
 // 文件：optional （GCC 13.1.0, libstdc++）
@@ -351,7 +351,7 @@ std::expected<int,std::string> with_exp(int a, int b);    // expected（显式�
 
 ## ⑰ 真实源码：expected 的 unexpected 路径 <span class="badge badge-impl">实现</span>
 
-> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实源码：expected 的 un
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实源码：expected 的 unexpected 路径
 ```cpp
 // 文件：expected （GCC 13.1.0, libstdc++）
 // 概念：std::unexpected<E> 构造一个 error 包装，expected 构造时
@@ -621,7 +621,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 optional 和 variant 是 C++17 从 Boost 引入的两个最重要的类型安全容器:
 
-> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：WG21 —— optio
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：WG21 —— optional/variant 的标准化之路 [B: Principle]
 ```
 std::optional (P0220R1, 2016, Fernando Cacciola):
   → 源自 Boost.Optional (2003), 经过 13 年社区验证后标准化
@@ -638,7 +638,7 @@ std::expected (P0323R12, 2022, Vicente Botet):
   → 设计目标: 替代异常 (成功返值, 失败返错误), 零开销成功路径
 ```
 
-> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 —— optio
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 —— optional/variant 的标准化之路 [B: Principle]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -655,7 +655,7 @@ int main() {
 
 ## 附录 B：工业案例 [F: Industry / H: Design]
 
-> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业案例 [F: Indu
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业案例 [F: Industry / H: Design]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -674,7 +674,7 @@ int main() {
 
 ## 附录 C：性能与内存布局 [E: Low-level / G: Performance]
 
-> **示例 39** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：性能与内存布局 [E: L
+> **示例 39** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：性能与内存布局 [E: Low-level / G: Performance]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -693,7 +693,7 @@ int main() {
 
 ## 附录 D：面试 [J: Learning]
 
-> **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：面试 [J: Learni
+> **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：面试 [J: Learning]
 ```
 面试高频:
 Q: optional vs unique_ptr 的选择？

@@ -1186,7 +1186,7 @@ _Z15probe_umap_findRKSt13unordered_mapIiiSt4hashIiESt8equal_toIiESaISt4pairIKiiE
 	mov	r11, QWORD PTR [rax+rdx*8]      ; 桶数组一次访存
 ```
 
-> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：map vs unorde
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：map vs unordered_map底层
 ```cpp
 #include <iostream>
 #include <map>

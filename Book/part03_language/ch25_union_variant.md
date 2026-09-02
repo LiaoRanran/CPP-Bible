@@ -190,7 +190,7 @@ int main() {
 
 > `[标准]` [class.union]/2：如果 union 含有带非平凡默认构造、拷贝/移动构造、拷贝/移动赋值或析构的成员，则这些特殊成员函数在 union 中**被隐式删除**，用户必须自定义。
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++11 起：union 可含非平凡
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++11 起：union 可含非平凡成员
 ```cpp
 // 示例 5：union 含 std::string（非平凡），必须手动构造/析构
 #include <string>
@@ -463,7 +463,7 @@ int main() {
 
 真实 libstdc++ 源码（`variant` 行 1188-1230）：
 
-> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · if
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · get / get_if
 ```cpp
 #include <cstddef>
 // libstdc++ 15.3.0 <variant> 行 1188-1199（节选，已 Read 探测）
@@ -482,7 +482,7 @@ template<size_t _Np, typename... _Types>
 ```
 > `[实现]` `get_if` 先 `static_assert` 索引合法与类型非 `void`，再在运行期判 `index()==_Np`，命中才取地址；否则返回 `nullptr`。而 `get`（行 1787-1792）在 `index()!=_Np` 时调用 `__throw_bad_variant_access`，区分 valueless 与 wrong-index 的错误信息。
 
-> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · if
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · get / get_if
 ```cpp
 // 示例 14：get / get_if 用法
 #include <variant>

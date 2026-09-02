@@ -553,7 +553,7 @@ int main() {
 
 ## 附录 D：面试 [J: Learning]
 
-> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试 [J: Learni
+> **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试 [J: Learning]
 ```
 面试高频:
 Q: C++14 最大的三个新特性？
@@ -568,7 +568,7 @@ A: 不能用于虚函数, 不能用于递归函数 (除非有明确的返回语�
 
 ## 附录 L：C++14标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
-> **示例 35** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：C++14标准库与底层 [
+> **示例 35** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：C++14标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 ```
 C++14标准库变化:
 - std::make_unique: 补齐C++11遗漏, 消除最后一个裸new的理由

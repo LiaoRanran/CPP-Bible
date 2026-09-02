@@ -1016,7 +1016,7 @@ int main() { std::vector<int> v(5); auto it=v.begin(); my_advance(it,2);
 
 **修复示例**：当分支依赖**类型类别**（如 iterator_category）且需与重载/ADL 交互时，标签仍是标准库首选；纯"类型布尔属性"分支用 `if constexpr` 更简洁：
 
-> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：标签分发 vs if co
+> **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：标签分发 vs if constexpr
 ```cpp
 #include <iostream>
 #include <type_traits>

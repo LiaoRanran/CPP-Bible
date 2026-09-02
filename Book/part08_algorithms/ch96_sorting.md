@@ -204,7 +204,7 @@ int main() {
 
 `std::sort` 要求 **O(N·log N)** 平均与最坏。枢纽选择决定快排段质量，libstdc++ 用 **三点取中（median-of-three）** 降低坏分区概率：
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 复杂度与枢纽（pivot）选择 [标
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 复杂度与枢纽（pivot）选择 [标准]
 ```cpp
 // ③ 三点取中：取首、中、尾的中位数作为枢纽（libstdc++ 思路的简化版）
 #include <algorithm>
@@ -223,7 +223,7 @@ It median_of_three(It a, It b, It c) {
 }
 ```
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 复杂度与枢纽（pivot）选择 [标
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 复杂度与枢纽（pivot）选择 [标准]
 ```cpp
 // ③ 复杂度直觉：N 次 logN 层比较 — 用 std::distance 验证规模
 #include <algorithm>
@@ -287,7 +287,7 @@ void merge_sort(It first, It last, Cmp cmp) {
 
 不需要全序时，部分排序更快：`partial_sort` 让前 k 个最小元素就位（且有序）；`nth_element` 仅让第 n 个就位（左边都 ≤、右边都 ≥），均摊 O(N)。
 
-> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · sort / nthelement：
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · partial_sort / nth_element：部分排序
 ```cpp
 // ⑤ partial_sort：只保证前 3 个最小且有序，其余无序
 #include <algorithm>
@@ -300,7 +300,7 @@ int main() {
 }
 ```
 
-> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · sort / nthelement：
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · partial_sort / nth_element：部分排序
 ```cpp
 // ⑤ nth_element：找第 4 小（下标 3），线性期望 O(N)
 #include <algorithm>
@@ -482,7 +482,7 @@ int main() {
 
 不稳定排序会打乱相等元素原序。当"先按主键排、再按主键的次序展示"时，不稳定会破坏预期。
 
-> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 稳定性陷阱：何时"不稳定"会咬你 [
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 稳定性陷阱：何时"不稳定"会咬你 [经验]
 ```cpp
 // ⑩ 陷阱演示：unstable sort 后，相等 key 的插入次序被打乱
 #include <algorithm>
@@ -498,7 +498,7 @@ int main() {
 }
 ```
 
-> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性陷阱：何时"不稳定"会咬你 [
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性陷阱：何时"不稳定"会咬你 [经验]
 ```cpp
 // ⑩ 修复：需要保序时用 stable_sort
 #include <algorithm>
@@ -764,7 +764,7 @@ int main() {
 
 `std::stable_partition` 把满足谓词的元素移到前端、其余置后，**保持各组内部原相对顺序**，且是稳定的。常用于"按条件分组但保序"。
 
-> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 stablepartition：
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 stable_partition：把"满足谓词"的元素前置
 ```cpp
 // ⑰ stable_partition：偶数前置，且保持原次序
 #include <algorithm>
@@ -779,7 +779,7 @@ int main() {
 }
 ```
 
-> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 stablepartition：
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 stable_partition：把"满足谓词"的元素前置
 ```cpp
 // ⑰ 与 sort 的关系：partition 不排序，只分组；要"分组且组内有序"需两步
 #include <algorithm>
@@ -956,7 +956,7 @@ int main() {
 
 ## 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
 
-> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业排序实现与标准提案 [
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
 ```
 introsort (C++ std::sort): 快速排序 + 堆排序回退 (O(N log N) 保证)
 pdqsort (Rust, 2016): Pattern-Defeating Quicksort → 检测已排序/反向, 比 introsort 快 ~2×

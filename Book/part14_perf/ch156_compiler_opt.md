@@ -149,7 +149,7 @@ int diff(int a) {
 
 `-Ofast = -O3 -ffast-math -fallow-store-data-races`。核心是 **`-ffast-math`**：它让编译器假定浮点运算满足「实数代数律」——可重结合、可忽略 NaN/Inf、可忽略舍入误差、可假设无零除。这与 IEEE-754 严格语义冲突。
 
-> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与不严谨（放松 IEEE） [实现·
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · -Ofast 与不严谨（放松 IEEE） [实现·GCC15]
 ```cpp
 // ③ -ffast-math 允许把 s = a*b + a*b 重结合为 (a+a)*b（改变舍入结果）
 double reassoc(double a, double b) {
@@ -159,7 +159,7 @@ double reassoc(double a, double b) {
 }
 ```
 
-> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与不严谨（放松 IEEE） [实现·
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · -Ofast 与不严谨（放松 IEEE） [实现·GCC15]
 ```cpp
 // ③ 实编译取证：dot 乘积在 -O2 vs -Ofast 下是否向量化（见 ⑨ 汇编）。
 //   -O2 默认不重结合 FP，标量累加；-Ofast 用 mulpd/addpd 打包（128/256-bit）。
@@ -170,7 +170,7 @@ double dot(const double* a, const double* b, int n) {
 }
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与不严谨（放松 IEEE） [实现·
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · -Ofast 与不严谨（放松 IEEE） [实现·GCC15]
 ```cpp
 // ③ -ffast-math 还可能「删除」你以为存在的 NaN 守卫
 //   严格模式：若 x 是 NaN，x==x 为 false，走错误处理
@@ -429,14 +429,14 @@ g++ -std=c++23 -O3 -fopt-info-vec Examples/_ch156_fast.cpp -c -o /dev/null
 g++ -std=c++23 -O3 -fopt-info-vec=vec.log Examples/_ch156_fast.cpp -c -o /dev/null
 ```
 
-> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info /
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info / -fopt-info-vec [实现·GCC15]
 ```cpp
 // ⑩ -fopt-info-vec 的典型输出（示意）
 //   Examples/_ch156_fast.cpp:3:21: note: 循环向量化，vector_size 16，步长 1
 //   examples.cpp:42:9: missed: 因可能存在别名，循环未向量化
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info /
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info / -fopt-info-vec [实现·GCC15]
 ```cpp
 // ⑩ 配合 -fopt-info-inline 看内联决策
 //   note: 将 foo 内联进 bar（热度/尺寸预算允许）

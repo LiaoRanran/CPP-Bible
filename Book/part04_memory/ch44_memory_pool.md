@@ -104,14 +104,14 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 
 **[实现·GCC15]** GCC 扩展提供了一个真实的 free-list 池分配器 `std::pool_allocator`（在 `ext` 命名空间）。完整源码位于：
 
-> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：gn
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
 ```
 C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/pool_allocator.h
 ```
 
 核心设计（pool_allocator.h:77-118）：
 
-> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：gn
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
 ```cpp
 #include <cstddef>
 // ext/pool_allocator.h:77-118  (__gnu_cxx::__pool_alloc_base)
@@ -148,7 +148,7 @@ protected:
 
 分配路径（pool_allocator.h:214-266 节选）：
 
-> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：gn
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
 ```cpp
 #include <cstddef>
 // ext/pool_allocator.h:246-263
@@ -172,7 +172,7 @@ else
 
 释放路径（pool_allocator.h:268-295 节选）：
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：gn
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
 ```cpp
 // ext/pool_allocator.h:285-293
 _Obj* volatile* __free_list = _M_get_free_list(__bytes);

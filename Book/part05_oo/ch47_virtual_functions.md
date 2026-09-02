@@ -346,7 +346,7 @@ struct Der : Base { Der* clone() const override { return new Der(*this); } };  /
 
 ### 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
 
-> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-H：多重继承 thu
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
 ```cpp
 struct L { virtual int lf() const { return 1; } };
 struct R { virtual int rf() const { return 2; } };
@@ -885,7 +885,7 @@ _ZThn8_N...+B2::vf:      ; thunk 名含偏移 8
 【真实源码】Itanium ABI §2.6.4（this 调整与 thunk）。
 
 【错误示例】
-> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this 指针调整（thunk）
 ```cpp
 // ❌ 误把 B2* 当 Derived* 用（this 未调整）
 struct B1 { virtual void f(); }; struct B2 { virtual void g(); };
@@ -895,7 +895,7 @@ D d; B2* p = &d;  // p 指向 d 内 B2 子对象（偏移8），非 d 头
 ```
 
 【正确示例】
-> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this 指针调整（thunk）
 ```cpp
 // ✅ 用 static_cast/dynamic_cast 正确处理偏移
 B2* p = &d; D* q = static_cast<D*>(p);  // 编译器插入 -8 调整

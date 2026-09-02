@@ -124,7 +124,7 @@ int sum(int a, int b) { return a + b; }
 
 Clang 是 LLVM 的 C/C++/ObjC 前端；LLVM 是后端基础设施，核心是 **LLVM IR**（一种强类型、SSA 形式的低级虚拟指令集）。
 
-> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：模块化、libclang、LL
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Clang/LLVM 架构：模块化、libclang、LLVM IR
 ```cpp
 // ③ LLVM IR 是平台无关的低级表示；下列 C++ 在 LLVM 中被翻译为 LLVM IR 而非直接出码
 // 用 clang++ -std=c++23 -emit-llvm -S x.cpp -o x.ll 可见 IR
@@ -139,7 +139,7 @@ Clang/LLVM 的差异化优势：
 - **LLVM IR**：前后端解耦——同一份 IR 可被不同 `Target` 后端（`X86`、`AArch64`、`RISCV`）翻译，易于移植新架构。
 - **PassManager**：基于依赖图的按需调度，而非 GCC 的固定顺序。
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构：模块化、libclang、LL
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Clang/LLVM 架构：模块化、libclang、LLVM IR
 ```cpp
 // ③ LLVM 多后端示意：同一 IR，不同 -mtriple 产出不同汇编
 //   clang++ -target x86_64-w64-windows-gnu -emit-llvm ...   -> X86
@@ -148,7 +148,7 @@ Clang/LLVM 的差异化优势：
 int add(int a, int b) { return a + b; }
 ```
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：模块化、libclang、LL
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Clang/LLVM 架构：模块化、libclang、LLVM IR
 ```cpp
 // ③ 用 libclang 做 AST 遍历（仅示意 API 调用骨架，非完整可编译工程）
 // clang_getCursorKind / clang_visitChildren —— IDE 精确补全即源于此
@@ -401,7 +401,7 @@ extern "C" int f_c(int x) { return x + 1; }   // 符号即 "f_c"（无 _Z 前缀
 
 C++ 异常的实现依赖运行期机制，三大编译器分属两套模型。
 
-> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 异常处理模型：Itanium zer
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 ```cpp
 // ⑨ Itanium 零成本模型（GCC/Clang 在 Linux/macOS 用）：
 //   无异常时不付任何运行时检查代价（"零成本"），异常抛出时才查表(.eh_frame)展开栈
@@ -415,7 +415,7 @@ int risky(bool b) {
 - **Itanium zero-cost（GCC/Clang on ELF/Mach-O）**：正常路径零开销；异常对象通过 `.eh_frame`（DWARF 展开信息）与 `__gxx_personality_v0`  personality routine 做栈展开。`[平台·Itanium ABI]`
 - **Windows SEH（结构化异常）**：Windows 把 C++ 异常建立在一套 OS 级结构化异常（SEH）之上，用 `.pdata`/`.xdata` 描述函数展开信息；MSVC 用 `___CxxFrameHandler3`，MinGW(GCC on Windows) 也适配到 SEH。
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常处理模型：Itanium zer
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 ```cpp
 // ⑨ MSVC 异常变体（真实命令，非本机 MSVC 环境，标注"典型输出"）
 //   cl /EHsc main.cpp   -> 同步 C++ 异常（不捕获 SEH）
@@ -423,7 +423,7 @@ int risky(bool b) {
 //   典型输出：/EHa 下 try { *(int*)0 = 0; } catch(...) {} 能吞掉访问违规(AV)
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常处理模型：Itanium zer
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 ```cpp
 // ⑨ 跨模型陷阱：在 MinGW(GCC) 下 throw 与 Windows SEH 是两套体系，
 //   用 -fnon-call-exceptions 才能让某些 async 信号被 C++ 异常捕获
@@ -509,7 +509,7 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 
 **调用约定（calling convention）** 规定：参数怎么传（寄存器/栈）、谁清理栈、返回值放哪。这纯属 `[平台·Windows]` 层约定。
 
-> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用约定：cdecl / stdca
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用约定：cdecl / stdcall / thiscall / fastcall / Win64
 ```cpp
 // ⑪ 32 位 x86 常见调用约定（x86-64 下大多被统一，见下）
 //   cdecl   : 参数右→左压栈, 调用方清栈 (C 默认)
@@ -520,7 +520,7 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 extern "C" int __attribute__((stdcall)) win_api(int, int);
 ```
 
-> **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用约定：cdecl / stdca
+> **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用约定：cdecl / stdcall / thiscall / fastcall / Win64
 ```cpp
 // 文件：Examples/_ch11_cconv.cpp
 // 行号：3
@@ -552,14 +552,14 @@ _Z7computellllll:
 
 源码剖析：`[平台·x86-64 Win64 ABI]` 真实汇编证实——第 1~4 参在 `rcx/rdx/r8/r9`，第 5、6 参在栈偏移 `[rsp+40]`、`[rsp+48]`（因返回地址 8 + 32 字节"影子空间(shadow space)"占 40）。这正是 Windows x64 调用约定，与 System V x86-64（Linux）用 6 个寄存器传参不同。
 
-> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用约定：cdecl / stdca
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用约定：cdecl / stdcall / thiscall / fastcall / Win64
 ```cpp
 // ⑪ 成员函数的 thiscall(32位) / this 在 x86-64 走 rcx(第1参)
 struct Widget { int v; int get() const { return v; } };
 // x86-64: Widget::get(Widget const* this) -> this 在 rcx
 ```
 
-> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用约定：cdecl / stdca
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用约定：cdecl / stdcall / thiscall / fastcall / Win64
 ```cpp
 // ⑪ extern "C" 统一 ABI 边界：C 函数无 mangling、用 cdecl，是跨编译器/跨语言的安全接口
 extern "C" void log_event(const char* msg);   // 任何编译器产出的符号都是裸名 log_event
@@ -985,7 +985,7 @@ int trivia(int x) { return x; }
 
 ## 附录 E：编译器面试与设计 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：编译器面试与设计 [B:
+> **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：编译器面试与设计 [B: Principle / H: Design / I: Practice / J: Learning]
 ```
 C++编译器选择的工业现实:
 
@@ -1003,7 +1003,7 @@ Chromium: Clang (跨平台统一) + MSVC (Windows兼容性)
   → 每个编译器必须通过完全相同的测试矩阵
 ```
 
-> **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：编译器面试与设计 [B:
+> **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：编译器面试与设计 [B: Principle / H: Design / I: Practice / J: Learning]
 ```cpp
 #include <iostream>
 int main() {

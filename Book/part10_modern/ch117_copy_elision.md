@@ -107,7 +107,7 @@ int main(){ Big x = build(7); (void)x; }
 
 **核心变革**：C++17 重新定义了 **prvalue**——prvalue 不再「是一个将要被构造的值」，而是「一个**初始化动作的描述**」。当你写 `T obj = f();` 且 `f()` 返回 prvalue 时，该 prvalue 直接在 `obj` 的存储上「具现（materialize）」，中间对象与 `obj` 是**同一个实体**。
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++17 guaranteed co
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++17 guaranteed copy elision
 ```cpp
 // ④ C++17 之前：return T{} 先在返回槽构造临时，再拷到 x（可被省略）
 // ④ C++17 起：T{} 这个 prvalue 直接在 x 的存储上具现，零拷贝、零移动，且不可观察
@@ -779,7 +779,7 @@ C++26:    P2025 — guaranteed NRVO（方向，未正式进入）
 
 ## 附录 B：编译器实现对比 [C: Compiler / E: Low-level]
 
-> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：编译器实现对比 [C: C
+> **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：编译器实现对比 [C: Compiler / E: Low-level]
 ```cpp
 // 编译器资源管理器对比：GCC vs Clang vs MSVC 的拷贝消除行为
 struct Noisy {
@@ -818,7 +818,7 @@ Noisy make_rvo() {
 // - 拷贝消除后：调用方直接在自己的栈帧中分配返回对象空间，传递地址给被调方
 ```
 
-> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：编译器实现对比 [C: C
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：编译器实现对比 [C: Compiler / E: Low-level]
 ```cpp
 #include <iostream>
 // 验证：C++17 guaranteed copy elision 即使删除拷贝/移动构造也能编译
@@ -845,7 +845,7 @@ int main() {
 
 拷贝消除对标准库的影响体现在 **ABI 稳定性** 和 **异常安全** 两个维度：
 
-> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：标准库实现视角 [D: s
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：标准库实现视角 [D: stdlib]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -880,7 +880,7 @@ int main() {
 
 ## 附录 D：工业案例与真实模式 [F: Industry / I: Practice]
 
-> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：工业案例与真实模式 [F:
+> **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：工业案例与真实模式 [F: Industry / I: Practice]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -939,7 +939,7 @@ int main() {
 
 拷贝消除不是银弹。以下是 5 个反模式：
 
-> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：设计权衡与反模式 [H:
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：设计权衡与反模式 [H: Design]
 ```
 反模式1: 在拷贝构造函数中放置关键业务逻辑（引用计数、锁、日志）
   → 拷贝消除让这些逻辑完全消失。用显式的 clone() 或工厂方法替代。
@@ -960,7 +960,7 @@ int main() {
   → 对超大对象（>1MB），考虑输出参数或 shared_ptr。
 ```
 
-> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：设计权衡与反模式 [H:
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：设计权衡与反模式 [H: Design]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -979,7 +979,7 @@ int main() {
 
 ## 附录 F：面试与 FAQ [J: Learning]
 
-> **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：面试与 FAQ [J: L
+> **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：面试与 FAQ [J: Learning]
 ```
 Q1: C++17 guaranteed copy elision 和 C++11 NRVO 有什么区别？
 A: NRVO 是"编译器允许省略"；guaranteed copy elision 是"编译器必须省略"。

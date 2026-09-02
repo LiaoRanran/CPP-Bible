@@ -1004,7 +1004,7 @@ C++11 的 `std::async` 提供"异步任务 + future 取结果"的最小池；C++
 | Seastar (ScyllaDB) | reactor per core | 共享无架构 (shared-nothing) | 每核一个线程，绑定 CPU 亲和性 |
 | ClickHouse | GlobalThreadPool | 固定大小线程池 | std::priority_queue (按优先级) |
 
-> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业线程池对比 [F: I
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业线程池对比 [F: Industry]
 ```cpp
 #include <iostream>
 int main() {
@@ -1019,7 +1019,7 @@ int main() {
 
 ## 附录 B：线程池的性能陷阱 [E: Low-level / G: Performance]
 
-> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：线程池的性能陷阱 [E:
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：线程池的性能陷阱 [E: Low-level / G: Performance]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1041,7 +1041,7 @@ int main() {
 
 ## 附录 C：设计权衡与面试 [H: Design / J: Learning]
 
-> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：设计权衡与面试 [H: D
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：设计权衡与面试 [H: Design / J: Learning]
 ```
 面试高频:
 Q: 线程池 vs std::async 的区别？
@@ -1066,7 +1066,7 @@ A: 全局队列 = 单点竞争；工作窃取 = 每个 worker 有本地队列，
 - 任务优先级：Priority queue → O(log n) push；FIFO → O(1) push
 ```
 
-> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：设计权衡与面试 [H: D
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：设计权衡与面试 [H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <thread>

@@ -780,7 +780,7 @@ struct PoolPtr {
 
 Windows 上可直接用 `VirtualAlloc` 申请按页对齐的大块（本机 MinGW 可编译）：
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异（虚拟内存）[平台·Wind
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异（虚拟内存）[平台·Windows]
 ```cpp
 // 文件：Examples/_ch160_valloc.cpp 思路（Windows VirtualAlloc，MinGW 可编译）
 #include <windows.h>
@@ -796,7 +796,7 @@ int main() {
 }
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异（虚拟内存）[平台·Wind
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异（虚拟内存）[平台·Windows]
 ```cpp
 // Linux/Unix 对应（示意，非本机编译）：用 mmap 拿匿名页
 // void* mem = mmap(nullptr, sz, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);

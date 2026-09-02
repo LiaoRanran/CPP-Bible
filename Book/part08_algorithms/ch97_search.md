@@ -126,7 +126,7 @@ int find_first_of_demo() {
 - `upper_bound`：首个 **comp(value, elem)**（即 `> value`）的位置。
 - `equal_range`：等价于 `{lower_bound, upper_bound}`，返回 `[first_eq, last_eq)` 半开区间。
 
-> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lowerbound /
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lower_bound / upper_bound / equal_range
 ```cpp
 // ③ lower_bound：第一个 >= 5 的位置
 #include <algorithm>
@@ -138,7 +138,7 @@ int lower_demo() {
 }
 ```
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lowerbound /
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lower_bound / upper_bound / equal_range
 ```cpp
 // ③ upper_bound：第一个 > 5 的位置
 #include <algorithm>
@@ -150,7 +150,7 @@ int upper_demo() {
 }
 ```
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lowerbound /
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lower_bound / upper_bound / equal_range
 ```cpp
 // ③ equal_range：返回等于 5 的半开区间 [2, 4)
 #include <algorithm>
@@ -163,7 +163,7 @@ int eqrange_demo() {
 }
 ```
 
-> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lowerbound /
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 二分查找 lower_bound / upper_bound / equal_range
 ```cpp
 // ③ 三者的恒等式：lower 与 upper 的差 = 等于 value 的元素个数
 #include <algorithm>
@@ -322,7 +322,7 @@ std::vector<int> merge_demo() {
 
 `search` 在母序列中找**首个**等于子序列的偏移；`find_end` 找**最后**一个；`search_n` 找连续 `count` 个相等元素。都是线性、单趟。
 
-> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 搜索子序列 search / fin
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 搜索子序列 search / find_end / search_n
 ```cpp
 // ⑦ search：找子序列首次出现
 #include <algorithm>
@@ -336,7 +336,7 @@ int search_demo() {
 }
 ```
 
-> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 搜索子序列 search / fin
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 搜索子序列 search / find_end / search_n
 ```cpp
 // ⑦ find_end：找子序列最后一次出现
 #include <algorithm>
@@ -350,7 +350,7 @@ int find_end_demo() {
 }
 ```
 
-> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 搜索子序列 search / fin
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 搜索子序列 search / find_end / search_n
 ```cpp
 // ⑦ search_n：找连续 count 个等于 value 的段
 #include <algorithm>
@@ -402,7 +402,7 @@ int adj_pred_demo() {
 
 `find_if(first, last, pred)` 返回首个使 `pred(*it)` 为真的迭代器。`find_if_not` 是其反义（C++11）。
 
-> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 谓词查找 findif / find
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 谓词查找 find_if / find_if_not
 ```cpp
 // ⑨ find_if：找首个偶数
 #include <algorithm>
@@ -415,7 +415,7 @@ int find_if_demo() {
 }
 ```
 
-> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 谓词查找 findif / find
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 谓词查找 find_if / find_if_not
 ```cpp
 // ⑨ find_if_not：找首个"不满足"谓词者
 #include <algorithm>
@@ -980,7 +980,7 @@ int s8() {
 
 ## 附录 A：工业查找算法 [F: Industry / B: Principle / G: Performance]
 
-> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业查找算法 [F: In
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业查找算法 [F: Industry / B: Principle / G: Performance]
 ```
 工业查找策略对比:
 Redis: 哈希表 (dict) + 跳表 (skiplist, 有序查找)
@@ -995,7 +995,7 @@ LLVM: DenseMap (开放地址哈希) + StringMap (字符串哈希特化)
 
 ## 附录 B：面试 [J: Learning]
 
-> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learni
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning]
 ```
 面试高频:
 Q: std::find vs std::binary_search 选择?

@@ -48,7 +48,7 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 
 **Ranges** 是一套以"范围（range）"为一等公民的标准库抽象：一个 range 由迭代器对（`begin`/`end`）定义，算法直接吃"整个容器/视图"而不是两个迭代器。`[标准]`：Ranges 由 P0896R4（C++20）引入，核心位于 `<ranges>`，复用 `<iterator>` 的 `std::input_iterator` 等概念。
 
-> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：C++20 Ranges [标
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：C++20 Ranges [标准]
 ```cpp
 // ① ranges 算法直接接受容器，无需 begin()/end()
 #include <algorithm>
@@ -481,7 +481,7 @@ auto safe = store | std::views::reverse;    // ✅ store 比 safe 活得久
 
 `views::chunk(n)` 把 range 切成大小为 `n` 的连续块；每块是子 range，可交给 `std::execution::par` 并行处理（注意：view 本身不是线程安全的，分块后各块独立处理即可）。
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与并行：views::chunk +
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与并行：views::chunk + par
 ```cpp
 // ⑭ chunk 分块 + 并行策略：每块内部并行
 #include <execution>
@@ -907,7 +907,7 @@ int main() {
 
 ## 附录 D：面试 [J: Learning]
 
-> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试 [J: Learni
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试 [J: Learning]
 ```
 面试高频:
 Q: ranges::sort vs std::sort 的区别？

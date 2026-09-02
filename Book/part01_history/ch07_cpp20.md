@@ -832,7 +832,7 @@ int main() {
 **选型**：C++20 指派初始化 `{.a=1, .d=1}`，按名初始化、未指派字段值初始化。
 **落地**：
 
-> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：designated in
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：designated initializers —— 明确的聚合初始化
 ```cpp
 #include <iostream>
 

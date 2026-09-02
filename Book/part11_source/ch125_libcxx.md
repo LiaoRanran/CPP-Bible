@@ -174,7 +174,7 @@ template <typename T> void show() {
 
 libc++ 的 `std::string` 用一个「标记联合（tagged union）」`__rep` 存放数据：短字符串走 `__short`（内联缓冲区 + 长度编码在高字节），长字符串走 `__long`（指针 + 大小 + 容量），还有一个 `__raw` 视图用于低层拷贝。判别靠一个标志位。**下面为上游源码定位（本机未装 libc++，标注上游参考）**。
 
-> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·libc++]源码剖析：ba
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·libc++]源码剖析：basic_string 的 __rep 联合（上游参考）
 ```cpp
 #include <cstddef>
 // ④ 源码剖析（上游参考）：basic_string 的 repr 联合布局
@@ -190,7 +190,7 @@ union __rep {
 // 判别位：__s.__size_ 的最高位（__short_mask）区分短/长
 ```
 
-> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·libc++]源码剖析：ba
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·libc++]源码剖析：basic_string 的 __rep 联合（上游参考）
 ```cpp
 // ④ 用 libc++ 特征宏确认运行库身份（本机为 libstdc++，以下为典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ probe.cpp -o probe && ./probe
@@ -328,7 +328,7 @@ struct my_resource : std::pmr::memory_resource {
 
 libc++ 的 `std::string` 采用**短字符串优化（SSO）**：短串内联进对象本身，长串才在堆上分配。与 libstdc++ 的关键区别在**内联容量**——libc++ 64 位下 SSO 容量为 **22 字节**（对象总 24 字节），libstdc++ 为 **15 字节**（对象总 32 字节）。两者都不用 COW（C++11 起禁止）。
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 字符串实现策略 [实现·libc++
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 字符串实现策略 [实现·libc++]
 ```cpp
 // ⑧ libc++ SSO：__short 内联 22 字节（64-bit，上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/string
@@ -343,7 +343,7 @@ int main() {
 }
 ```
 
-> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 字符串实现策略 [实现·libc++
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 字符串实现策略 [实现·libc++]
 ```cpp
 // ⑧ 区分短/长：libc++ 用 __size_ 最高位作标志（示意）
 // 短串：__size_ 高位为 1（__is_long() == false），数据在 __data_[]
@@ -556,7 +556,7 @@ libc++ 与 Clang 是「原生搭档」：Clang 默认在 Apple/FreeBSD 上选 li
 #   g++ -std=c++23 -O2 app.cpp -o app_gcc && ./app_gcc
 ```
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 LLVM/Clang 集成 [平
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 LLVM/Clang 集成 [平台·Linux]
 ```cpp
 // ⑭ Clang + libc++ 启用 sanitizer 检查（典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -fsanitize=address -g app.cpp -o app_asan
@@ -951,7 +951,7 @@ libc++ 的长期标签是 **「最先完整实现新标准」**。它往往早�
 
 ## 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：libc++工业与底层 [
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 ```
 libc++设计权衡:
 
@@ -966,7 +966,7 @@ SSO (string): 22字节阈值(比libstdc++的15字节大47%)
   → 原因: libc++使用轻量级检查(仅大小/边界), libstdc++有完整安全迭代器验证
 ```
 
-> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：libc++工业与底层 [
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 ```cpp
 #include <iostream>
 #include <string>

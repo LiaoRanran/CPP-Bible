@@ -1013,7 +1013,7 @@ CRTP（奇异递归模板模式）用「基类以派生类为模板参数」在�
 
 ## 附录 A：CRTP 工业应用 [F: Industry / B: Principle]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 A：CRTP 工业应用 [F:
+> **示例 41** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 A：CRTP 工业应用 [F: Industry / B: Principle]
 ```
 CRTP 在工业C++中的关键应用:
 
@@ -1035,7 +1035,7 @@ Boost.Operators → CRTP 自动生成运算符
 
 ## 附录 B：面试 [J: Learning / I: Practice]
 
-> **示例 42** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 B：面试 [J: Learni
+> **示例 42** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 B：面试 [J: Learning / I: Practice]
 ```
 面试高频:
 Q: CRTP 和虚函数的本质区别？

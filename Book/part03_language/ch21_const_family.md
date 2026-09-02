@@ -158,14 +158,14 @@ public:
 
 ### 1.5 const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
 
-> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与对象模型 / .rodata /
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
 ```cpp
 const int G = 100;          // 通常落 .rodata（只读段，页属性 R）
 int        H = 200;          // 落 .data（RW）
 ```
 
 内存布局（x86-64 ELF）：
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与对象模型 / .rodata /
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
 ```
 0x400000 .text    (R-X)  代码
 0x400500 .rodata  (R--)  G=100  ← 写保护页
@@ -174,7 +174,7 @@ int        H = 200;          // 落 .data（RW）
 ```
 
 `const_cast` 去掉 const 后写**真正的 const 对象**的后果：
-> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与对象模型 / .rodata /
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
 ```cpp
 const int G = 100;
 int* p = const_cast<int*>(&G);
@@ -743,7 +743,7 @@ static_assert(used == 255);
 3. **非类型模板参数（NTTP）与 cv**：C++20 允许 `template<auto V>` 把 const 值类型作为 NTTP；`template<const int* P>` 要求实参是指向 const 的指针。
 4. **const 成员函数与重载**：`struct S { void f(); void f() const; };` 按对象 cv 限定选择，是"const 正确接口"的核心（见 ch20 §⑪.2）。
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与 const
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与 const（cv 在模板推导中的精确行为）
 ```cpp
 template<class T> void g(T x) { static_assert(std::is_same_v<T, int>); }  // 顶层 const 被忽略
 g(42);
@@ -760,7 +760,7 @@ s.f();    // 选非 const 重载
 cs.f();   // 选 const 重载
 ```
 
-> **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 模板与 const
+> **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 模板与 const（cv 在模板推导中的精确行为）
 ```cpp
 // NTTP 与 cv：C++20 允许 const 值类型作为非类型模板参数
 template<const int* P> struct Tag { static constexpr const int* ptr = P; };

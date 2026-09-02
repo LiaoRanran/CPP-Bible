@@ -223,7 +223,7 @@ int main() {
 
 <span class="badge badge-std">标准</span> [dcl.type.cv]：试图通过去 const 后的访问路径修改一个**被声明为 const 的对象**，是**未定义行为**。`[平台·x86-64]` 在典型 ELF/PE 可执行文件中，被 `const` 初始化的全局/静态对象放进 `.rodata`（只读数据段），由 **MMU 映射到只读页**。一旦去 const 写它，CPU 触发页保护故障 → POSIX 下 `SIGSEGV`、Windows 下 `0xC0000005` 访问冲突。
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 去 const 写"真 const
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 去 const 写"真 const 对象" = UB（硬件层解释）
 ```cpp
 // prog_04_const_ub_rodata.cpp —— 去 const 写真 const 对象（UB，运行时崩溃示意）
 // 编译: g++ -std=c++20 -O2 prog_04_const_ub_rodata.cpp -o prog_04
@@ -246,7 +246,7 @@ int main() {
 
 <span class="badge badge-std">标准</span> 关键区分：UB 仅当"底层对象本身被声明为 const"。若对象原本**不是** const，只是你通过 `const T&`/`const T*` 看到它，则去 const 后写入**良构且合法**——这是 const-correct 库接口与可写实现解耦的惯用法。
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 去 const 写"通过 const
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 去 const 写"通过 const 引用看到的非常量对象" = 合法
 ```cpp
 // prog_05_const_cast_legal_write.cpp —— 去 const 写非常量底层对象（合法）
 // 编译: g++ -std=c++20 -Wall prog_05_const_cast_legal_write.cpp -o prog_05
@@ -560,7 +560,7 @@ int main() {
 - **`may_alias`**（GCC/Clang 属性，`__attribute__((__may_alias__))`）：声明该类型可作任意类型的别名，关闭 TBAA 对该类型的优化，<span class="badge badge-impl">实现</span> 用于手写协议解析结构时避免 UB（比裸 `reinterpret_cast` 合规）。`[[noalias]]` 是 C 的 restrict 思路，**不是标准 C++ 属性**（C++ 用 `__restrict`/`-fstrict-aliasing` 配合）。
 - **`std::launder`**（C++17，P0137R1）：当对象的存储被复用（placement new 覆盖）后，**旧指针/引用因严格别名与"对象同一性"规则失效**，`launder` 返回一个"指向新对象"的合规指针。<span class="badge badge-std">标准</span> [ptr.launder]：用于对象生存期结束又在同一地址新建对象后取新对象指针。
 
-> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · mayalias / [[noali
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · `may_alias` / `[[noalias]]` / `std::launder`
 ```cpp
 // prog_16_launder_example.cpp —— std::launder 处理存储复用
 // 编译: g++ -std=c++20 -Wall prog_16_launder_example.cpp -o prog_16
@@ -904,7 +904,7 @@ int main() {
 
 文件：`bits/chrono.h`（被 `chrono` 包含），行号：**278–296**（主函数）+ **184–243**（`__duration_cast_impl` 特化）。
 
-> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · <chrono> 的 duratio
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · `<chrono>` 的 `duration_cast`
 ```cpp
 // libstdc++ 15.3.0  —— bits/chrono.h:278-296
     template<typename _ToDur, typename _Rep, typename _Period>
@@ -931,7 +931,7 @@ int main() {
 
 `__duration_cast_impl` 四个偏特化（**184–243**）按 `num==1`/`den==1` 组合优化：
 
-> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <chrono> 的 duratio
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `<chrono>` 的 `duration_cast`
 ```cpp
 // bits/chrono.h:184-194  （num!=1 且 den!=1：通用"先乘后除"路径，截断向零）
   return _ToDur(static_cast<__to_rep>(static_cast<_CR>(__d.count())
@@ -1009,7 +1009,7 @@ int main() {
 
 ### 10.1 `dynamic_cast` vs `static_cast` vs 虚函数调用
 
-> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · dynamiccast vs sta
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `dynamic_cast` vs `static_cast` vs 虚函数调用
 ```cpp
 // prog_24_bench_cast.cpp —— Google Benchmark：三种多态下行
 // 编译: g++ -std=c++20 -O2 prog_24_bench_cast.cpp -lbenchmark -lpthread -o prog_24

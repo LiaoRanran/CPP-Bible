@@ -656,7 +656,7 @@ int main() { observe(); }
 
 **程序 19：类内隐式 inline 成员函数多 TU 安全**
 
-> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类内定义 / static 成员 /
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类内定义 / static 成员 / inline 的 ODR 合并
 ```cpp
 // widget.hpp
 #pragma once
@@ -671,7 +671,7 @@ inline int make_id() { return 7; } // 显式 inline 函数
 
 **程序 20：C++17 inline static 成员类内直接定义**
 
-> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类内定义 / static 成员 /
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类内定义 / static 成员 / inline 的 ODR 合并
 ```cpp
 // pool.hpp
 #pragma once
@@ -830,7 +830,7 @@ getLogger():
 
 **文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（__cxa_guard_acquire 声明），行号：120**
 
-> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ / lib
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ / libgcc 守卫源码逐行
 ```cpp
 // libstdc++-v3/libsupc++/guard.h （真实声明）
 namespace __cxxabiv1 {
@@ -843,7 +843,7 @@ namespace __cxxabiv1 {
 
 **文件：`libstdc++-v3/libsupc++/guard.cc`（GCC 15.3.0 源码树，Linux futex 快速路径），行号：~110（__cxa_guard_acquire 实现）**
 
-> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ / lib
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ / libgcc 守卫源码逐行
 ```cpp
 // libstdc++-v3/libsupc++/guard.cc （Linux/GLIBC 路径，保留真实结构）
 #include <bits/c++config.h>

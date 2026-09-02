@@ -534,7 +534,7 @@ int main() {
 
 ### 5.4 场景 D：`initializer_list` 引用元素生命周期坑
 
-> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景 D：initializerli
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景 D：`initializer_list` 引用元素生命周期坑
 ```cpp
 // prog_18_init_list_dangle.cpp  —— 用 initializer_list 存"引用"? 危险
 #include <initializer_list>
@@ -554,7 +554,7 @@ void ok_pattern() {
 
 ### 5.5 场景 E：引用绑定到已被 `std::move` 的对象
 
-> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景 E：引用绑定到已被 std::
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景 E：引用绑定到已被 `std::move` 的对象
 ```cpp
 // prog_19_ref_to_moved.cpp  —— 库场景: 转移后原引用失效
 #include <string>
@@ -1062,7 +1062,7 @@ bool is_allowed(const ServerConfig& cfg, const std::string& peer) {
 
 ### 案例 B：operator[] / front() 返回 T&（容器内元素别名）
 
-> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 案例 B：operator[] /
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 案例 B：operator[] / front() 返回 T&（容器内元素别名）
 ```cpp
 // prog_36_container_returns_ref.cpp  —— ch77 预告
 #include <vector>

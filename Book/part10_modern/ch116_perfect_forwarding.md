@@ -756,7 +756,7 @@ int main() { int a = 1; checked_forward(a); checked_forward(2); return 0; }
 
 `[实现·GCC15]`：**`std::forward_like` 在 GCC 13.1 的 libstdc++ 中尚不存在**（它随 GCC 14 进入）。下面给出等价手写实现，用于在"通过对象 `obj` 访问其成员 `m` 并把 `m` 转发"时，让 `m` 的值类别跟随 `obj` 的值类别：
 
-> **示例 28** <span class="badge badge-exp">难度 ★★★★☆</span> · ++23 std::forwardl
+> **示例 28** <span class="badge badge-exp">难度 ★★★★☆</span> · C++23 std::forward_like
 ```cpp
 // ⑲-c 手写 forward_like（语义等价于 C++23 std::forward_like，P2445）
 #include <utility>

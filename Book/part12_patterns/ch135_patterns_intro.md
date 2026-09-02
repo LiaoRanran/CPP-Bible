@@ -106,7 +106,7 @@ graph TD
 
 GoF 23 模式分类速记（与第③节一致）：
 
-> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 历史：GoF 23 模式与 C++
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 历史：GoF 23 模式与 C++ 渊源
 ```cpp
 // 创建型 5：Factory Method, Abstract Factory, Builder, Prototype, Singleton
 // 结构型 7：Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy
@@ -116,7 +116,7 @@ GoF 23 模式分类速记（与第③节一致）：
 
 一个贯穿历史的「Iterator」雏形（GoF 与 STL 同源）：
 
-> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 历史：GoF 23 模式与 C++
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 历史：GoF 23 模式与 C++ 渊源
 ```cpp
 #include <vector>
 #include <cstdio>
@@ -141,7 +141,7 @@ int main() {
 
 GoF 把 23 个模式按**目的**分为三类。下面的 ASCII 框线图给出本章后续的索引骨架（仅结构示意，非代码）：
 
-> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式分类：创建/结构/行为三大类 [
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式分类：创建/结构/行为三大类 [标准]
 ```
 ┌──────────────┬──────────────────────────────────────┐
 │ 创建型(5)    │ 封装"对象如何被创建"                    │
@@ -155,7 +155,7 @@ GoF 把 23 个模式按**目的**分为三类。下面的 ASCII 框线图给出�
 
 创建型最简示例——工厂方法：
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式分类：创建/结构/行为三大类 [
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式分类：创建/结构/行为三大类 [标准]
 ```cpp
 #include <memory>
 struct Widget { virtual ~Widget()=default; virtual const char* kind() const=0; };
@@ -165,7 +165,7 @@ std::unique_ptr<Widget> make_button() { return std::make_unique<Button>(); }
 
 结构型最简示例——组合（Composite）：
 
-> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式分类：创建/结构/行为三大类 [
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式分类：创建/结构/行为三大类 [标准]
 ```cpp
 #include <vector>
 #include <memory>
@@ -177,7 +177,7 @@ struct Tree : Node { std::vector<std::unique_ptr<Node>> kids;
 
 行为型最简示例——命令（Command）：
 
-> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式分类：创建/结构/行为三大类 [
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式分类：创建/结构/行为三大类 [标准]
 ```cpp
 #include <functional>
 struct Command { std::function<void()> fn; void run() const { fn(); } };
@@ -741,7 +741,7 @@ int main(){ Counter<LogPrint> c; c.inc(); }  // 行为在编译期锁定，测�
 
 跨 ABI 的安全边界封装（C 接口 + 内部 C++ 模式）：
 
-> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨平台模式注意事项 [平台·x86-
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨平台模式注意事项 [平台·x86-64]
 ```cpp
 // 对外暴露 C 链接的稳定句柄，规避 vtable/STL ABI 差异
 extern "C" {

@@ -343,7 +343,7 @@ int main() {
 
 Dekker 算法用两个标志互相探测，要求对两个变量的写/读在所有线程眼中**顺序一致**。若用 relaxed（甚至单纯的 release/acquire 各管各的），两个线程可能**同时**进入临界区——因为各自都“没看到对方的写”。seq_cst 的单一总序消除了这种歧义。
 
-> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例子说明 seqcst 的必要性 [
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Dekker 例子说明 seq_cst 的必要性 [标准]
 ```cpp
 // ⑩ Dekker：两线程互斥，依赖 seq_cst 的全局总序
 #include <atomic>
@@ -362,7 +362,7 @@ void thread_b() {
 }
 ```
 
-> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 例子说明 seqcst 的必要性 [
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Dekker 例子说明 seq_cst 的必要性 [标准]
 ```cpp
 // ⑩ 若把 store/load 改成 relaxed，两个线程都可能跳过对方的检查 -> 双重进入（bug）
 void thread_a_bad() {
@@ -378,7 +378,7 @@ void thread_a_bad() {
 
 **真实证据（GCC 15.3.0, x86-64, -O2，已复编确认 `[VERIFIED]`）**：seq_cst **加载**就是普通 `mov`；但 seq_cst **存储**编译为**带锁的 `xchg`**（x86 上 `xchg` 隐含 lock 前缀，提供全序所需的强写）。这与“x86 TSO 下 seq_cst 很便宜”一致——它不需要 `mfence`，但写端仍是一个原子交换。
 
-> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：seq
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：seq_cst 在 x86 是普通 mov（TSO 强内存模型），在 ARM 需 dmb 屏障 [实现·GCC15]
 ```cpp
 // 文件：Examples/_ch108_seqcst.cpp
 // 行号：7
@@ -400,7 +400,7 @@ _Z6writerv:
 	ret
 ```
 
-> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：seq
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：seq_cst 在 x86 是普通 mov（TSO 强内存模型），在 ARM 需 dmb 屏障 [实现·GCC15]
 ```cpp
 // ⑪ 对比：release 存储在 x86 上连 xchg 都不需要，就是普通 mov（见 ⑬）
 #include <atomic>
@@ -469,7 +469,7 @@ _Z8producerv:
 
 x86 采用 **TSO（Total Store Order）** `[微架构·x86-64 TSO]`：写-写、写-读、读-读都不重排（仅允许“读早于写”重排，即 store-buffer 效应），因此 acquire/release 几乎“免费”。ARM/POWER 是**弱内存模型** `[微架构·ARM]`：写可延迟、读可提前、彼此可乱序，必须显式屏障。
 
-> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 硬件映射：x86 TSO vs AR
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 硬件映射：x86 TSO vs ARM 弱内存模型 [平台·x86-64]
 ```cpp
 // ⑬ 同一段 release/acquire 代码，两种硬件命运不同
 #include <atomic>
@@ -500,7 +500,7 @@ _Z7consumev:
 
 编译器在**不改变单线程可观察行为**（as-if 规则）的前提下，可自由重排、合并、消除内存访问。它**看不见**其他线程，因此若无内存序标注，你的“先写数据后写标志”可能被重排为“先写标志后写数据”。
 
-> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器重排与 as-if 规则 [标
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器重排与 as-if 规则 [标准]
 ```cpp
 // ⑭ 编译器可把 flag 的写提前到 data 之前（单线程语义不变）
 int data = 0;
@@ -511,7 +511,7 @@ void producer() {
 }
 ```
 
-> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器重排与 as-if 规则 [标
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器重排与 as-if 规则 [标准]
 ```cpp
 // ⑭ 用原子 + release 阻止重排：release 之后的写不能越过它，之前的写对 acquire 方可见
 #include <atomic>
@@ -767,7 +767,7 @@ int main() {
 
 ## 附录 A：WG21 —— memory_order 的设计哲学 [B: Principle]
 
-> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 —— memor
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 —— memory_order 的设计哲学 [B: Principle]
 ```
 为什么 C++ 需要 6 种 memory_order，而不是简单的"原子"或"非原子"？
 
@@ -791,7 +791,7 @@ C++20 提案: P0371R1 建议弃用 memory_order_consume，使用 memory_order_ac
 
 > [微架构·ARM] [UNVERIFIED]：附录 A 第 3 点「弱架构省 5-10ns」为微架构经验量级，随 CPU 而变，非本机实测，仅说明「弱内存模型下 relaxed 更便宜」的相对结论。
 
-> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：跨平台成本量化 [E: L
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：跨平台成本量化 [E: Low-level / G: Performance]
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -826,7 +826,7 @@ int main() {
 
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
-> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learni
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learning / H: Design]
 ```
 面试高频:
 Q: 默认的 memory_order 是什么？

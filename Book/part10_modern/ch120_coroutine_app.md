@@ -537,7 +537,7 @@ int main() {
 
 ## ⑲ 性能分析：协程帧开销量化 [平台·x86-64]
 
-> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：协程帧开销量化 [平台·x
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：协程帧开销量化 [平台·x86-64]
 ```cpp
 // ⑲ 协程的微基准：帧分配、resume 延迟、vs 函数调用
 #include <iostream>

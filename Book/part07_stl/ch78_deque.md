@@ -148,7 +148,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：分段连续与四指针 [实现·GCC15]
 
-> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：分段连续与四指针 [实现·G
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ASCII 内存图：分段连续与四指针 [实现·GCC15]
 ```mermaid
 flowchart TD
     Deque["deque 对象（栈/堆）"] --> Map["_M_map (T** 指针数组), _M_map_size = 8"]
@@ -181,7 +181,7 @@ flowchart TD
 
 ## ⑧ 生命周期图：中控扩容不搬运元素 <span class="badge badge-std">标准</span>
 
-> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：中控扩容不搬运元素 [标
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：中控扩容不搬运元素 [标准]
 ```mermaid
 flowchart TD
     Init["初始: map 容量 8, 仅用中间若干槽"] --> Grow["push_front/push_back 反复增长..."]
@@ -258,7 +258,7 @@ int main() {
 - `std::stack<T>` 与 `std::queue<T>` 的**默认底层容器就是 `deque<T>`**（[第86章　容器适配器：stack / queue / priority_queue](../part07_stl/ch86_adapters.md)），因为 deque 首尾 O(1) 完美契合栈/队列语义。
 - `std::deque` 满足 *Erasable*/*DefaultInsertable* 等容器要求，可用于大多数接受序列容器的泛型算法。
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：deque 与算法/适配器 [
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · STL 联系：deque 与算法/适配器 [标准]
 ```cpp
 // ⑪ deque 可直接用 std::sort（随机访问迭代器，完整可编译）
 #include <iostream>

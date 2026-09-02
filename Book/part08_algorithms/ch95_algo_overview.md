@@ -1015,7 +1015,7 @@ int quickcheck() {
 
 STL 算法在不同标准库实现中的差异：
 
-> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业实现对比 [F: In
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业实现对比 [F: Industry / D: stdlib]
 ```
                     libstdc++ (GCC)       libc++ (Clang)         MS STL
 ─────────────────────────────────────────────────────────────────
@@ -1027,7 +1027,7 @@ std::for_each       循环展开 (O2自动)     循环展开 (O3)          自�
 并行算法            Intel TBB 后端        未完全支持             完全支持(C++17)
 ```
 
-> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业实现对比 [F: In
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业实现对比 [F: Industry / D: stdlib]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1043,7 +1043,7 @@ int main() {
 
 ## 附录 B：算法选择决策树 [H: Design]
 
-> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：算法选择决策树 [H: D
+> **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：算法选择决策树 [H: Design]
 ```
 选择算法的系统决策流程:
 
@@ -1073,7 +1073,7 @@ int main() {
 
 ## 附录 C：并行算法的真实性能 [G: Performance / B: Principle]
 
-> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：并行算法的真实性能 [G:
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：并行算法的真实性能 [G: Performance / B: Principle]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1095,7 +1095,7 @@ int main() {
 
 ## 附录 D：常见错误与面试 [I: Practice / J: Learning]
 
-> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：常见错误与面试 [I: P
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：常见错误与面试 [I: Practice / J: Learning]
 ```
 算法使用中的5大错误:
 1. 忘记 include <algorithm> — 编译通过但行为未定义 (ADL 可能拉入错误版本)

@@ -686,7 +686,7 @@ int main(){
 
 **<span class="badge badge-impl">实现</span>**　典型用于「事务/日志/批量写入」：构造时记录 `int init = std::uncaught_exceptions();`，析构时比较 `std::uncaught_exceptions() > init`：若更大，说明**在自己生命周期内又发生了新异常（正在展开）→ 回滚**；否则→**提交**。
 
-> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exceptions（C++17）：
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::uncaught_exceptions（C++17）：提交或回滚惯用法
 ```cpp
 // [示例 13] 事务惯用法：展开中析构→回滚，正常析构→提交
 #include <exception>
@@ -712,7 +712,7 @@ int main(){
 // 输出：ROLLBACK data  (t) \n COMMIT data (t2)
 ```
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · exceptions（C++17）：
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::uncaught_exceptions（C++17）：提交或回滚惯用法
 ```cpp
 // [示例 14] uncaught_exceptions 计数（嵌套）
 #include <exception>
@@ -740,7 +740,7 @@ int main(){
 
 **<span class="badge badge-impl">实现</span>**　libstdc++ 各容器在 realloc/insert 中统一用 `__uninitialized_move_if_noexcept_a` + `__catch` 回滚（见 7.2、7.3），即该条款的实现落点。
 
-> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全的 STL 条款 [res.
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全的 STL 条款 [res.on.exception.handling]
 ```cpp
 // [示例 15] STL 基本保证验证：sort 比较器抛→无泄漏但序列可能乱序
 #include <algorithm>
@@ -855,7 +855,7 @@ int main(){
 - **正常路径**：几乎零开销（仅多占一点代码/数据段存放表）。`try/catch` 本身在正常执行时不耗时（microbenchmark 见第 16 节）。
 - **抛异常路径**：需**运行时查表**、解卷（unwind）、逐帧执行析构、匹配 `catch`——代价在 **数百 ns 到数 µs** 量级（取决于栈深度、析构数量、表大小）。
 
-> **示例 30** <span class="badge badge-exp">难度 ★★★★☆</span> · 异常成本：Itanium zero-
+> **示例 30** <span class="badge badge-exp">难度 ★★★★☆</span> · 异常成本：Itanium zero-cost EH
 ```cpp
 // [示例 19] 验证 try/catch 正常路径零/近零开销
 #include <chrono>
@@ -875,7 +875,7 @@ int main(){
 }
 ```
 
-> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常成本：Itanium zero-
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常成本：Itanium zero-cost EH
 ```cpp
 // [示例 20] 抛异常延迟量级（仅量级参考）
 #include <chrono>
@@ -910,7 +910,7 @@ objdump -h a.out | grep -E "eh_frame|\.gcc_except"
 # g++ -fno-exceptions 时 .eh_frame 完全消失，二进制更小
 ```
 
-> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实地查看展开表：objdump /
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实地查看展开表：objdump / .eh_frame
 ```cpp
 // [示例 36] 用 __builtin 观察：noexcept 让编译器相信不会展开
 #include <vector>
@@ -1492,7 +1492,7 @@ int main(){
 
 ## 附录 A：工业异常安全实践 [F: Industry / B: Principle]
 
-> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业异常安全实践 [F:
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业异常安全实践 [F: Industry / B: Principle]
 ```
 Google Style Guide 第3条: "We do not use C++ exceptions"
   → 原因: 二进制尺寸+15-30%, 老代码不支持, 团队一致性, 不可预测性能
@@ -1514,7 +1514,7 @@ Chromium C++ Style Guide: "We do not use C++ exceptions"
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learni
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
 ```
 面试高频:
 Q: 析构函数为何不应抛异常？C++11起析构默认noexcept(true)
@@ -1913,7 +1913,7 @@ int main() {
 
 **修复**：析构函数默认就是 `noexcept`；清理失败应吞掉异常（或仅记日志），绝不能向外传播。需要时把"可能失败"的清理做成显式、可抛的 `close()` 成员，由调用者决定如何处理。
 
-> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：析构函数抛异常 → std
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：析构函数抛异常 → std::terminate
 ```cpp
 #include <iostream>
 #include <stdexcept>

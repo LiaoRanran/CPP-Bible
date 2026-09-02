@@ -285,7 +285,7 @@ install(FILES engine.h DESTINATION include)
 
 `-MMD` 让编译器在编译同时**输出一个 `.d` 依赖文件**，列出本 TU 依赖的所有头。构建系统据它重建依赖图。下面全部为本机 GCC 13.1.0 真实运行结果。
 
-> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·GCC15]真实：用 g++
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·GCC15]真实：用 g++ -MMD 编译看生成的 .d 依赖文件
 ```cpp
 // 文件：Examples/_ch12_dep.cpp
 // 行号：1
@@ -925,7 +925,7 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 
 ## 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
-> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业构建系统与标准库 [B
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 ```
 C++构建系统工业对比:
 CMake: 事实标准(90%+项目), 跨平台, 但语法丑陋

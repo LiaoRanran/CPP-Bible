@@ -264,7 +264,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 
 `[实现-推断] libstdc++ src/libstdc++-v3/libsupc++/new_op.cc`（节选，已与本地 `<new>` 声明一致核对）：
 
-> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认实现：最终落到 malloc /
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认实现：最终落到 `malloc` / `free`
 ```cpp
 #include <cstddef>
 // [实现-推断] new_op.cc（GCC libstdc++ canonical，对应 <new>:126 声明）
@@ -291,7 +291,7 @@ void* operator new(std::size_t sz) {
 
 `operator delete` 对应 `[实现-推断] new_op.cc / del_op.cc`：
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认实现：最终落到 malloc /
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认实现：最终落到 `malloc` / `free`
 ```cpp
 // [实现-推断] del_op.cc（对应 <new>:130）
 void operator delete(void* ptr) noexcept {
@@ -303,7 +303,7 @@ void operator delete(void* ptr) noexcept {
 
 下面这个程序证明 `new` 得到的指针确实来自 `malloc`（地址空间连续、且可被 `free` 释放）：
 
-> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认实现：最终落到 malloc /
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认实现：最终落到 `malloc` / `free`
 ```cpp
 // 程序 2：new 与 malloc 同源验证
 #include <new>
@@ -328,7 +328,7 @@ int main() {
 
 `C:/.../include/c++/new:55-86` 真实定义：
 
-> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::badalloc 与 st
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `std::bad_alloc` 与 `std::bad_array_new_length`
 ```cpp
 // new:55-71 —— bad_alloc
 class bad_alloc : public exception {
@@ -357,7 +357,7 @@ public:
 
 程序验证：
 
-> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::badalloc 与 st
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · `std::bad_alloc` 与 `std::bad_array_new_length`
 ```cpp
 // 程序 3：捕获 bad_alloc
 #include <new>
@@ -383,7 +383,7 @@ int main() {
 }
 ```
 
-> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::badalloc 与 st
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `std::bad_alloc` 与 `std::bad_array_new_length`
 ```cpp
 // 程序 4：bad_array_new_length（长度溢出）
 #include <new>
@@ -1252,7 +1252,7 @@ int main() {
 
 `C:/.../include/c++/bits/new_allocator.h:121-148` 真实实现（逐行）：
 
-> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · operator new 与 std
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `::operator new` 与 `std::allocator::allocate` 的关系（见 ch38）
 ```cpp
 #include <cstddef>
 // new_allocator.h:121-148
@@ -1286,7 +1286,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 - **`:140-145` 对齐分支**：过对齐类型走对齐 new（呼应 37.9）。
 - **`:147` 普通分支**：`_GLIBCXX_OPERATOR_NEW` 在支持 `__builtin_operator_new` 时展开为内建（让编译器知道这是分配函数，可优化），否则为 `::operator new`（`new_allocator.h:111-117`）。
 
-> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · operator new 与 std
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `::operator new` 与 `std::allocator::allocate` 的关系（见 ch38）
 ```cpp
 // 程序 28：std::allocator::allocate 底层即 operator new
 #include <memory>
@@ -1550,7 +1550,7 @@ int main() {
 
 [实现·Clang] libc++ 的 `std::allocator::allocate` 同样直接调用 `::operator new`（C++17 后通过 `__libcpp_allocate` 包装，最终 `::operator new`）。与 libstdc++ 行为一致——替换全局 new 即影响容器。
 
-> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三 STL 对比：libstdc++ vs libc++ vs MS STL
 ```cpp
 // [实现-推断] libc++ <memory> 简化：
 // pointer allocate(size_type n) {
@@ -1877,7 +1877,7 @@ int main() {
 
 ## 附录 E：operator new/delete 工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：operator new/
+> **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：operator new/delete 工业 [B: Principle / H: Design / I: Practice / J: Learning]
 ```cpp
 operator new 的内部实现:
 
@@ -1898,7 +1898,7 @@ GCC (libstdc++):
   替换方式: LD_PRELOAD=/path/to/allocator.so ./app
 ```
 
-> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：operator new/
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：operator new/delete 工业 [B: Principle / H: Design / I: Practice / J: Learning]
 ```cpp
 #include <iostream>
 #include <new>
@@ -2233,7 +2233,7 @@ void on_packet() {
 
 **修复**：用空闲链表对象池复用 Pkt 块，或 placement new 落预分配缓冲；分配次数从"每包一次"降到"池耗尽才一次"。
 
-> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：高频小对象 → 对象池 /
+> **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：高频小对象 → 对象池 / placement new 降碎片
 ```cpp
 #include <iostream>
 #include <cstdlib>

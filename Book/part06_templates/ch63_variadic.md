@@ -766,7 +766,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 
 ## 附录 A：底层与原理 [B: Principle / E: Lowlevel]
 
-> **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：底层与原理 [B: Pri
+> **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：底层与原理 [B: Principle / E: Lowlevel]
 ```
 WG21可变参数模板提案:
 N2242 (C++11): Variadic templates (Douglas Gregor, 2007)

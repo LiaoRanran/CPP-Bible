@@ -1570,7 +1570,7 @@ C++20 的 **P0645（Text Formatting）** 把 {fmt} 的 `{}-占位`、类型安�
 
 ## 附录 G：日志库工业原理 [B: Principle / D: Stdlib / E: Lowlevel / I: Practice / J: Learning]
 
-> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 G：日志库工业原理 [B: P
+> **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 G：日志库工业原理 [B: Principle / D: Stdlib / E: Lowlevel / I: Practice / J: Learning]
 ```
 spdlog (Gabriele Melman, 2014-2024) 设计原理:
 - async logger: 后台线程 + 无锁MPSC队列 → 日志不阻塞业务线程
@@ -1584,7 +1584,7 @@ spdlog (Gabriele Melman, 2014-2024) 设计原理:
 - cout: ~1us/条 (locale + mutex overhead)
 ```
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 G：日志库工业原理 [B: P
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 G：日志库工业原理 [B: Principle / D: Stdlib / E: Lowlevel / I: Practice / J: Learning]
 ```cpp
 #include <iostream>
 int main() {

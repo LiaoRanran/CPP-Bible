@@ -51,7 +51,7 @@ C++ 面临两条路：一是暴露编译器/硬件内建（如 GCC 的 `__atomic
 
 多线程同时读写同一普通变量而缺乏同步，即构成**数据竞争（data race）**——这是 C++ 标准中未定义行为（UB），结果不可预测，且会被编译器优化彻底破坏。`std::atomic<T>` 提供**不可分割**的读写与读-改-写（RMW）操作，并附带**内存序（memory order）**约束，使并发访问既安全又可推理。
 
-> **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 概述：为什么需要原子操作与 data
+> **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 概述：为什么需要原子操作与 data race
 ```cpp
 // ① 没有原子保护的计数器：data race（UB）
 #include <thread>
@@ -59,7 +59,7 @@ int bad_counter = 0;                 // 普通 int，多写并发 = data race
 void worker_bad() { for (int i = 0; i < 100000; ++i) ++bad_counter; }
 ```
 
-> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：为什么需要原子操作与 data
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：为什么需要原子操作与 data race
 ```cpp
 // ① 用原子类型消除 data race
 #include <atomic>
@@ -195,7 +195,7 @@ int old = a.exchange(99);    // old == 7, a 现在为 99
 
 CAS（Compare-And-Swap）是几乎所有无锁算法的基石：`compare_exchange(expected, desired)` 在 `*this == expected` 时写入 `desired` 并返回 `true`，否则把真实值写回 `expected` 并返回 `false`。
 
-> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exchangeweak / com
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · compare_exchange_weak / compare_exchange_strong
 ```cpp
 // ⑤ compare_exchange_strong：成功才替换，失败回写实际值到 expected
 #include <atomic>
@@ -206,7 +206,7 @@ bool set_if(int old_val, int new_val) {
 }
 ```
 
-> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exchangeweak / com
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · compare_exchange_weak / compare_exchange_strong
 ```cpp
 // ⑤ compare_exchange_weak：可能在无竞争时也虚假失败，必须配合循环
 #include <atomic>
@@ -220,7 +220,7 @@ void add_using_cas(int delta) {
 }
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exchangeweak / com
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · compare_exchange_weak / compare_exchange_strong
 ```cpp
 // ⑤ 两内存序重载：成功用 acq_rel，失败用 relaxed（失败时未改值，弱序即可）
 #include <atomic>
@@ -440,7 +440,7 @@ void relaxed_only_count() { c.fetch_add(1, std::memory_order_relaxed); }
 
 这是本章核心证据。`fetch_add(1)` 在 x86 上对应**带 LOCK 前缀的原子 RMW**。`-O0` 生成经典 `lock xadd`；`-O2` 对"加 1"特例优化为更短的 `lock add`，二者都是不可分割的原子指令。
 
-> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：ato
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实汇编：atomic<int>::fetch_add 编译为 lock xadd [实现·GCC15] [VERIFIED]
 ```cpp
 // 文件：Examples/_ch107_fetch_add.cpp
 // 行号：6
@@ -614,7 +614,7 @@ void buggy_pop() {
 
 `volatile` 只禁止编译器对该变量的重排/缓存，**不提供原子性、不生成 `lock`、不建立线程间 happens-before**。`volatile++` 在汇编里是普通 `mov/add/mov` 三条指令，可被线程抢占；`atomic++` 是单条 `lock add`。二者不可互换。
 
-> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 volatile 的本质区别 [
+> **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 volatile 的本质区别 [经验]
 ```cpp
 // 文件：Examples/_ch107_volatile.cpp
 // 行号：6
@@ -935,7 +935,7 @@ int main() {
 
 ## 附录 B：底层汇编与性能证据 [E: Low-level / G: Performance]
 
-> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：底层汇编与性能证据 [E:
+> **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：底层汇编与性能证据 [E: Low-level / G: Performance]
 ```cpp
 // GCC -O2 x86-64 atomic 操作的汇编对比
 #include <atomic>
@@ -968,7 +968,7 @@ int main() {
 
 ## 附录 D：面试与设计权衡 [J: Learning / H: Design]
 
-> **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：面试与设计权衡 [J: L
+> **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：面试与设计权衡 [J: Learning / H: Design]
 ```
 面试高频:
 Q: std::atomic<int> 一定能做到 lock-free 吗？

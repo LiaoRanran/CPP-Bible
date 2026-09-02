@@ -225,7 +225,7 @@ int main() {
 
 **(b) strongly-typed：消灭魔法数** [K04]
 
-> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 设计动机深度剖析：为什么需要 enu
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 设计动机深度剖析：为什么需要 `enum class`？
 ```cpp
 // 示例 5：enum class 杜绝魔法数（这是它最重要的价值）
 enum class State { Idle, Running, Stopped };
@@ -242,7 +242,7 @@ void handle(State s) {
 
 强类型不是免费的——当你确实需要整数值（序列化、位掩码、数组下标）时，必须写 `static_cast`。这不是运行时开销，而是**书写成本**。
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 设计动机深度剖析：为什么需要 enu
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 设计动机深度剖析：为什么需要 `enum class`？
 ```cpp
 // 示例 6：static_cast 的“必要性”与“零运行时代价”
 #include <cstdio>
@@ -268,7 +268,7 @@ int main() {
 - **固定底层类型枚举（fixed underlying type）**：声明时写了 `: Type`，如 `enum E : std::uint8_t {...}`。底层类型固定为 `Type`。
 - **不固定底层类型枚举（unfixed）**：没写 `: Type`。底层类型由实现选择，但要能表示所有枚举符的值；若所有枚举符非负，实现可能选无符号类型。
 
-> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 枚举底层类型与 ABI [K06][
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 枚举底层类型与 ABI [K06][K07][K08][K20]
 ```cpp
 // 示例 7：指定底层类型 : uint8_t 省内存
 #include <cstdint>
@@ -368,7 +368,7 @@ int main() {
 
 **<span class="badge badge-std">标准</span>** `static_cast` 在枚举与整数之间执行底层值拷贝。对于 scoped 枚举这是唯一通往整数的门。
 
-> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 显式转换 staticcast [K
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 显式转换 `static_cast` [K12]
 ```cpp
 // 示例 11：static_cast 双向
 #include <cstdint>
@@ -541,7 +541,7 @@ int main() {
 
 **文件**：`x86_64-w64-mingw32/bits/error_constants.h`，第 42 行起。
 
-> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::errc（枚举错误码）[K
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · `std::errc`（枚举错误码）[K18]
 ```cpp
 // x86_64-w64-mingw32/bits/error_constants.h:42  (libstdc++ 15.3.0, 本机实测)
   enum class errc
@@ -870,7 +870,7 @@ int main(){
 
 **[标准/预览]** P2996（静态反射）引入编译期元数据。`std::meta::enumerators_of<E>()` 返回一个枚举符的编译期序列，每个元素可取到名字（`@name`/`.name()`）与值。
 
-> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++26 静态反射预览 std::m
+> **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · C++26 静态反射预览 std::meta::enumerators_of
 ```cpp
 // 示例 22：C++26 静态反射（预览语法，编译器支持前无法编译）
 // #include <meta>  // C++26
@@ -1005,7 +1005,7 @@ int main() {
 ## ⑲ 常见陷阱与最佳实践 [K09][K14]<span class="badge badge-exp">经验</span>
 
 1. **陷阱：未初始化枚举变量**
-> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱与最佳实践 [K09][K1
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱与最佳实践 [K09][K14]
    ```cpp
    // 示例 28：枚举变量默认未初始化（与 int 一样）
    enum class E { A, B };
@@ -1014,7 +1014,7 @@ int main() {
    **实践**：始终初始化；或优先用 `constexpr E x = E::A;`。
 
 2. **陷阱：负数枚举符与无符号底层类型**
-> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱与最佳实践 [K09][K1
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱与最佳实践 [K09][K14]
    ```cpp
 #include <cstdint>
    // 示例 29：无符号底层类型装不下负枚举符 → 编译错误
@@ -1023,7 +1023,7 @@ int main() {
    **实践**：有负值就用有符号底层类型（`int`/`int8_t`）。
 
 3. **陷阱：哈希/比较跨枚举类型**
-> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱与最佳实践 [K09][K1
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱与最佳实践 [K09][K14]
    ```cpp
    // 示例 30：不同枚举类型即使底层值相同也不可比较
    enum class A { X = 1 };
@@ -1035,7 +1035,7 @@ int main() {
 4. **最佳实践：`[[nodiscard]]` 标在纯位运算符上**（见 ⑨）。
 
 5. **最佳实践：序列化枚举时固定底层类型**
-> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱与最佳实践 [K09][K1
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱与最佳实践 [K09][K14]
    ```cpp
 #include <cstdint>
    // 示例 31：网络/文件序列化必须固定底层类型，避免实现相关大小

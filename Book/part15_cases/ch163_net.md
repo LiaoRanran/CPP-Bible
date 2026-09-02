@@ -1028,7 +1028,7 @@ struct Endpoint {
 | Muduo (陈硕) | Reactor + 线程池 | one loop per thread | TCP | Linux epoll 极简实现 |
 | Envoy (Lyft) | Event-driven | 多 worker 线程 | HTTP/1/2/3 | L7 代理，热重启 |
 
-> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业网络框架对比 [F:
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业网络框架对比 [F: Industry / H: Design]
 ```cpp
 #include <iostream>
 int main() {
@@ -1069,7 +1069,7 @@ int main() {
 
 ## 附录 C：面试 [J: Learning]
 
-> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learni
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learning]
 ```
 面试高频:
 Q: epoll 的水平触发 (LT) 和边缘触发 (ET) 的区别？
@@ -1084,7 +1084,7 @@ A: TIME_WAIT = 2MSL 等待 (防止残留报文干扰); SO_REUSEADDR = 允许绑�
 
 ## 附录 D：编译器与底层网络性能 [C: Compiler / E: Low-level / I: Practice]
 
-> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：编译器与底层网络性能 [C
+> **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：编译器与底层网络性能 [C: Compiler / E: Low-level / I: Practice]
 ```
 网络编程的底层性能边界（量级参考，区分平台）：
 
@@ -1123,7 +1123,7 @@ _Z9sock_recvyPci:
 
 ## 附录 E：面试补充 [J: Learning]
 
-> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：面试补充 [J: Lear
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：面试补充 [J: Learning]
 ```
 Q: epoll ET vs LT? A: ET=一次通知需循环读(高性能); LT=持续通知(简单,默认)
 Q: sendfile vs mmap? A: sendfile=kernel zero-copy; mmap=映射到userspace(有一次拷贝)
@@ -1132,7 +1132,7 @@ Q: SO_REUSEPORT? A: 多socket绑定同端口,内核自动负载均衡(Linux 3.9+
 
 ## 附录 F：编译器与底层网络性能 [C: Compiler / E: Lowlevel / I: Practice]
 
-> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：编译器与底层网络性能 [C
+> **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：编译器与底层网络性能 [C: Compiler / E: Lowlevel / I: Practice]
 ```
 GCC编译选项对网络代码的影响:
 -D_GNU_SOURCE → 启用epoll_create1, accept4, recvmmsg等Linux特有API

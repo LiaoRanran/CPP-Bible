@@ -48,7 +48,7 @@ libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）
 
 libstdc++（全称 *The GNU C++ Library*）是 GCC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>` 等标准容器/算法/迭代器/本地化/IO。它与 `libgcc`（底层运行时）协同：标准库负责 C++ 抽象，运行时负责异常、RTTI、`new` 等。每个 GCC 版本绑定一个 libstdc++ 版本（GCC 13.1.0 → libstdc++ 13）。
 
-> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：libstdc++ 是 GCC
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：libstdc++ 是 GCC 的 C++ 标准库
 ```cpp
 // ① 最小可编译程序：仅依赖 libstdc++ 的 <vector>
 #include <vector>
@@ -171,7 +171,7 @@ int main() {
 
 `std::allocator` 是标准默认分配器；`__gnu_cxx` 命名空间承载 GNU 扩展（如 `__gnu_cxx::__alloc_traits`，对 `std::allocator_traits` 做补充）。理解分配器是读懂容器内存管理的前提。
 
-> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分配器与 gnucxx / std:
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
 ```cpp
 // ⑤ 标准 allocator 用法
 #include <vector>
@@ -185,7 +185,7 @@ int main() {
 }
 ```
 
-> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 gnucxx / std:
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
 ```cpp
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/allocator.h
 // 行号：130
@@ -193,7 +193,7 @@ int main() {
 //    class allocator : public __allocator_base<_Tp>
 ```
 
-> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 gnucxx / std:
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
 ```cpp
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/alloc_traits.h
 // 行号：36
@@ -201,7 +201,7 @@ int main() {
 // namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
 ```
 
-> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 gnucxx / std:
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
 ```cpp
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/alloc_traits.h
 // 行号：45
@@ -436,7 +436,7 @@ int main() {
 
 新 ABI（`__cxx11`）自 GCC 5 起默认。它通过 `inline namespace __cxx11` 把新布局类型放进独立命名空间，使新旧 `std::string` 在同一进程可并存而不冲突；旧代码可 `-D_GLIBCXX_USE_CXX11_ABI=0` 回退。
 
-> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · cxx11 新 ABI 与兼容 [实
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
 ```cpp
 // ⑬ 验证当前处于哪个 ABI 命名空间
 #include <string>
@@ -453,7 +453,7 @@ int main() {
 }
 ```
 
-> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
 ```cpp
 // ⑬ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：348
@@ -461,7 +461,7 @@ int main() {
 // # define _GLIBCXX_BEGIN_NAMESPACE_CXX11 namespace __cxx11 {
 ```
 
-> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
 ```cpp
 // ⑬ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：417
@@ -493,7 +493,7 @@ int main() {
 
 `debug/`（即 `__gnu_debug`）提供带越界/迭代器失效检查的「调试版」容器；`profile/` 统计操作开销；`parallel/` 用 OpenMP 并行化算法。它们通过宏（如 `_GLIBCXX_DEBUG`）切换，不影响发布构建。
 
-> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 扩展（gnucxx 调试容器） [实
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 扩展（__gnu_cxx 调试容器） [实现·libstdc++]
 ```cpp
 // ⑮ 调试模式：越界访问会触发断言（需 -D_GLIBCXX_DEBUG 编译）
 #define _GLIBCXX_DEBUG
@@ -505,7 +505,7 @@ int main() {
 }
 ```
 
-> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩展（gnucxx 调试容器） [实
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩展（__gnu_cxx 调试容器） [实现·libstdc++]
 ```cpp
 // ⑮ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/debug/string
 // 行号：77
@@ -1034,7 +1034,7 @@ int main() {
 
 ## 附录 B：源码阅读导航 [F: Industry / I: Practice]
 
-> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：源码阅读导航 [F: In
+> **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：源码阅读导航 [F: Industry / I: Practice]
 ```
 libstdc++ 源码阅读路径 (难度递增):
 
@@ -1052,7 +1052,7 @@ libstdc++ 源码阅读路径 (难度递增):
 
 ## 附录 C：面试 [J: Learning]
 
-> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：面试 [J: Learni
+> **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：面试 [J: Learning]
 ```
 Q: libstdc++ 和 libc++ 可以互换使用吗？
 A: 可以 (Linux x86-64 ABI兼容)。Clang Linux 默认用 libstdc++，macOS 用 libc++

@@ -80,7 +80,7 @@ int main() { return 42; }
                                    └──────────────┘
 ```
 
-> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：前端 / 优化器 / 后端 /
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构：前端 / 优化器 / 后端 / IR [实现·LLVM]
 ```cpp
 // ② 三组件各自独立演进：换前端不影响后端
 // Clang(前端) 1.0 ─┐
@@ -149,7 +149,7 @@ extern "C" int g(int* p, long n) { return (int)(p[0] + n); }
 
 Clang 把 AST 翻译成 IR 的核心在 `clang/lib/CodeGen/`。`CodeGenFunction` 是「单函数发射器」，每个 AST 语句节点由 `Emit*Stmt` 处理；表达式由 `CodeGenFunction::EmitExpr` 分派到 `Scalar/Complex/Agg 表达式 emitter`。
 
-> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·LLVM] 源码剖析：Cla
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·LLVM] 源码剖析：Clang CodeGen 如何发射函数 [实现·LLVM]
 ```cpp
 // ⑤ 源码剖析（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CodeGenFunction.h
@@ -162,7 +162,7 @@ Clang 把 AST 翻译成 IR 的核心在 `clang/lib/CodeGen/`。`CodeGenFunction`
 //   };
 ```
 
-> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·LLVM] 源码剖析：Cla
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·LLVM] 源码剖析：Clang CodeGen 如何发射函数 [实现·LLVM]
 ```cpp
 // ⑤ 源码剖析（上游参考）：循环发射
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CGStmt.cpp
@@ -210,7 +210,7 @@ int use_poly() { return poly(2, 3) + poly(1.5, 2.5); }
 
 Clang 以「诊断友好」著称：模板错误用 `note:` 串联实例化栈；`-Werror`、`-Weverything`、`-fsanitize=...` 都是 Clang 的特色。标准遵循度由 `clang/test/CXX/...` 下的 conformance 测试守护。
 
-> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 C++ 标准：诊断 / 实现 [
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 C++ 标准：诊断 / 实现 [标准]
 ```cpp
 // ⑦ 标准违反的清晰诊断（典型输出，Clang 未本机安装）
 //   template<class T> requires T::value struct X {};
@@ -220,7 +220,7 @@ template <typename T> struct needs { static constexpr bool value = T::flag; };
 template <typename T> requires (needs<T>::value) int f(T) { return 0; }
 ```
 
-> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 标准：诊断 / 实现 [
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 标准：诊断 / 实现 [标准]
 ```cpp
 // ⑦ 实现定义行为：Clang 用 __builtin / 属性暴露底层控制
 // -fsanitize=undefined 在 IR 中插入运行时检查（由 UBSan Pass 完成）
@@ -239,7 +239,7 @@ int ub_example(int* p) {
 - **GVN（全局值编号）**：同一表达式只算一次，重复出现复用其结果。
 - **循环优化**：LoopRotate / LICM / LoopUnroll 把循环变成更易优化的形态。
 
-> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 优化管道：SCCP / GVN /
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 优化管道：SCCP / GVN / 循环优化 [实现·LLVM]
 ```cpp
 // ⑧ SCCP 示例：caller() 传入常量 7，compute 全程被折叠
 // 见 ⑨ 真实汇编：O2 下 caller() 直接 mov eax, 92
@@ -252,7 +252,7 @@ int compute(int x) {
 int caller() { return compute(7); }  // SCCP: 全部代入 -> 常量
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化管道：SCCP / GVN /
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化管道：SCCP / GVN / 循环优化 [实现·LLVM]
 ```cpp
 // ⑧ GVN 去重：两个 x*2 在 IR 中合并为单个 mul
 // 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/Transforms/Scalar/GVN.cpp
@@ -261,7 +261,7 @@ int caller() { return compute(7); }  // SCCP: 全部代入 -> 常量
 //       replaceAllUsesWith(Existing);
 ```
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化管道：SCCP / GVN /
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化管道：SCCP / GVN / 循环优化 [实现·LLVM]
 ```cpp
 // ⑧ 循环优化：LICM 把不变计算移出循环体
 // 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/Transforms/Scalar/LICM.cpp
@@ -280,7 +280,7 @@ int dot(const int* a, const int* b, int n, int k) {
 
 我们用 GCC 13.1.0 真实编译 `Examples/_ch127_inline.cpp`，对比 `-O0` 与 `-O2` 的汇编。**这是真实取证，非示意**。
 
-> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·LLVM] 真实：用 g++
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·LLVM] 真实：用 g++ 编译展示内联 / O2 差异 [实现·LLVM]
 ```cpp
 // 文件：Examples/_ch127_inline.cpp，行号：9（use_inlined）/ 14（use_noinline）/ 5（add_inline）
 // 编译命令（真实）：
@@ -330,7 +330,7 @@ _Z6callerv:
 	ret
 ```
 
-> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·LLVM] 真实：用 g++
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·LLVM] 真实：用 g++ 编译展示内联 / O2 差异 [实现·LLVM]
 ```cpp
 // ⑨ 对照：同一份源码在 -O0 下不做常量传播（compute 仍是真实 mul/add）
 // 文件：Examples/_ch127_gvn.cpp，行号：3（compute）
@@ -355,7 +355,7 @@ llc -O2 -march=x86-64 -o main.s main.opt.ll
 llc -O2 -march=x86-64 -filetype=obj -o main.o main.opt.ll
 ```
 
-> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工具链：opt / llc / cl
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工具链：opt / llc / clang -emit-llvm [平台·x86-64]
 ```cpp
 // ⑩ clang -emit-llvm 的 IR 典型输出（代表性质，非本机产生）
 // 对应源码: int caller(){ return compute(7); }  其中 compute 见 ⑧
@@ -402,7 +402,7 @@ int bench_inline() {
 
 同一份 LLVM IR 经不同 `Target` 后端生成不同 ISA。后端含指令选择（DAG/SelectionDAG 或 GlobalISel）、寄存器分配、指令调度、代码布局。
 
-> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台后端：x86 / ARM /
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台后端：x86 / ARM / RISC-V [平台·x86-64]
 ```cpp
 // ⑫ 一份源码，多后端目标（典型输出，需 llc）
 //   llc -march=x86-64  -> add eax, edx        (CISC, 少指令)
@@ -412,7 +412,7 @@ int bench_inline() {
 int neutral_add(int a, int b) { return a + b; }
 ```
 
-> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台后端：x86 / ARM /
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台后端：x86 / ARM / RISC-V [平台·x86-64]
 ```cpp
 // ⑫ 后端特定的内建：用 attribute 选择调用约定 / 指令集
 // Clang: __attribute__((target("avx2"))) 让函数体用 AVX2 指令（上游 CodeGen 会选 VEX 编码）
@@ -584,7 +584,7 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 
 阅读 LLVM/Clang 源码的入口：先 `clang -emit-llvm -O0 -S` 看 IR，再对照 `clang/lib/CodeGen` 中对应 `Emit*` 函数；用 `opt -print-after-all` 观察每个 Pass 后的 IR 变化。
 
-> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读 [实现·LLVM
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读 [实现·LLVM]
 ```cpp
 // ⑲ 源码阅读锚点（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/IR/IRBuilder.cpp
@@ -596,7 +596,7 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 // 结论：C++ 里任何整数 '+' 最终都经 CreateAdd -> BinaryOperator::CreateAdd
 ```
 
-> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读 [实现·LLVM
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读 [实现·LLVM]
 ```cpp
 // ⑲ 源码阅读锚点（上游参考）：诊断发出
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/Sema/Sema.cpp
