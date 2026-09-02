@@ -1,6 +1,6 @@
-# HANDOVER.md — 项目接手快照（2026-09-01）
+# HANDOVER.md — 项目接手快照（2026-09-02）
 
-> 接手者先读本文件 + `NEXT_LLM.md`。本快照覆盖 **2026-08-31「极致打磨」收尾后** 的真实状态，
+> 接手者先读本文件 + `NEXT_LLM.md`。本快照覆盖 **2026-09-02「L2 深度深耕 + L3 治理工具化」收官后** 的真实状态，
 > 数字派生自 `build/metrics.json`（由 `tools/gen_metrics.py --check` 门禁守护，散文里的写死数字与事实源一致）。
 > 更早的历史（07-13 前四轮质量验证）见 `RELEASE.md` 与本文末节。
 
@@ -8,8 +8,10 @@
 
 《现代 C++ 终极圣经》147 章 / 16 part，已推送 GitHub（`origin = https://github.com/LiaoRanran/CPP-Bible.git`，master 分支）。
 CI 七 job 实跑（quality / compile / publish-check / site / pdf / epub / deploy）。
-「极致打磨」15 条验收标准 **10/15**：写作质量三件套（one_liner / analogy / pitfall）满标，
-写作质量门禁 16/16 全绿。剩余 5 项未达标中 3 项为**内容类诚实天花板**、2 项为**项目有意保留**，不可再注水推进（见「诚实边界」）。
+「极致打磨」15 条验收标准 **11/15**（较 09-01 的 10/15 提升，`asm_anchor_rate` 达标）。
+写作质量门禁 16/16 全绿。剩余 4 项未达标均为**诚实边界**，不可再注水推进（见「诚实边界」）。
+本轮（09-02）核心成果：**L2 深度深耕**（配真机/清编造）+ **L3 治理工具化**（`data_sanity_audit`/`teaching_audit`）
++ **前端美观化**（暗色模式适配）+ **管线审查**（pre-push 10 阻断 + 2 提示）。
 
 ## 当前状态总表（2026-08-31 实测）
 
@@ -184,6 +186,55 @@ PY="C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
 
 > ⚠️ **给下一位的经验**：`extra_css_lines` 依赖 `build/` 下的生成产物，而 `build/` 被 gitignore——
 > 一旦 `build/site/docs/assets/` 被清空，该指标会静默掉到 0，看起来像「内容退化」实则是构建产物丢失。
+
+## 2026-09-02 当日工作（本轮：L2 深度深耕 + L3 治理工具化）
+
+> 本轮主线：从「项目现状诊断」出发，发现「门禁全绿但深度贫血」，执行 L2 深耕 + L3 工具化。
+
+### 一、L2 深度深耕（配真机 + 清编造）
+1. **ch22（auto/decltype）⑨ 汇编节真机化**：原「[实现-推断] 示意」→ GCC 15.3.0 真机 objdump
+   （`via_auto` 与 `via_explicit` 逐字节一致 `mov eax,42; ret`），新增 `Examples/_ch22_auto_zero_cost.cpp/.asm` 锚定。
+2. **ch40（异常安全）示例10 清编造**：原注释断言「扩容回滚 size=1」，真机实测走拷贝成功 size=2——
+   修正注释 + 附真机输出，厘清「走拷贝防患」vs「回滚」两概念。
+3. **ch96（排序）量级节坏数据**：`sort ≈22ms`/`stable_sort ≈4.0ms` 与真机（88.3ms/100.0ms）差 4-25 倍，
+   替换为本机实测；示例47 补完整真机输出。
+4. **ch77（vector）扩容序列真机实证**：补真机输出（1→2→4→8→16→32），补「二倍增长非标准规定（MSVC 1.5 倍）」边界。
+5. **全书系统性数据污染（重大）**：性能量级被写成十六进制（`0x0040`=64 等），全书 **26 处 / 24 行 / 17 章**。
+   人工只修了带 `≈` 的形式，`data_sanity_audit` 首跑再抓出反引号包裹形式的 26 处漏网 → 全部清零。
+6. **7 处「推断示意伪装真机」**：ch20 GCC 真机锚定（Clang/MSVC 降级 Compiler Explorer 对拍）、
+   ch83 map::find 真机锚定、ch27 badge 修正、ch63 伪代码改 text 块。
+7. **ch144 编造轶事清除**：删「据记载，早期大厂靠格式化警察」无出处轶事。
+
+### 二、L3 治理工具化（错误模式 → 工具 → 门禁）
+1. **`tools/data_sanity_audit.py`**：三类检查——①HEX_QUANTITY（十六进制污染，ERROR 零误报，已接 CI+pre-push）
+   ②PERF_CONFLICT（性能数字冲突，WARN）③UNANCHORED_EVIDENCE（未锚定证据，WARN）。
+   含 ABI 语境豁免（偏移/对齐/vptr/槽位/标签/哨兵/掩码/长地址）。
+2. **`tools/teaching_audit.py`**：写作红线审计——扫编造轶事信号（据记载/据说/有传言/广为流传），
+   豁免 `badge-anecdote` 诚实标注与引用键；`(?<!证)` 排除「证据说明」误匹配。
+
+### 三、前端美观化（暗色模式从未适配 → 补齐）
+`gen_mkdocs_nav.py` 的 `EXTRA_CSS` 加 77 行：暗色模式完整适配（12 类徽章/blockquote/mermaid/表格
+全补 slate 变体）+ 标题层级美化（h2 色条/h3 分隔线）+ 徽章微动效。extra_css_lines 411→488。
+
+### 四、管线审查（揪出并修复 3 个死角）
+1. `teaching_audit` 成孤儿工具（没接任何管线）→ 补进 pre-push 报告型提示。
+2. `data_sanity` 的 WARN 没接 pre-push → 补进报告型提示。
+3. pre-push 漏了 `preflight_check`（LaTeX）和 `whitespace_fix --check` → 补为阻断门禁。
+pre-push 守卫现 = **10 阻断 + 2 提示**。
+
+### 提交链（09-02，13 个 commit）
+`1c61811`(mermaid 修复) → `14599ca`(ch22) → `7294008`(ch40) → `491d178`(ch96+16章hex)
+→ `1bf50ed`(ch77) → `a7fbcb5`(data_sanity 工具) → `f6d74c5`(ch20/83 锚定) → `274b52a`(PERF 收紧)
+→ `798a22f`(HEX 接 CI) → `796468e`(pre-push) → `c34f5a0`(teaching+SOP)
+→ `e93d5a1`(前端 CSS) → `2b2c738`(管线审查)
+
+### 给下一位的关键经验
+- 🔴 **L0 红线**：禁止「147 章一波流」批量改造（波次越多越同构）。
+- 真机验证 demo 须 `-static` 链接（MinGW 缺 DLL 会静默失败）。
+- 中文 commit 绝不用 `-m`（GBK 乱码），写 UTF-8 文件 + `git commit -F`。
+- 前端 CSS 唯一源是 `gen_mkdocs_nav.py` 的 `EXTRA_CSS`（`build/` gitignored）。
+- 会误报的检查不进 CI（门禁必须零误报）；报告型工具定位为「离线跑、人工复核」。
+- 剩余待办：7 条 PERF_CONFLICT 提示（规模差异）、㉒.2 模板同构（风格问题，不批量动）、CI 待确认全绿。
 > 判别方法：先跑 `python tools/gen_mkdocs_nav.py` 再看板；不要为此去改 `EXTRA_CSS` 内容。
 
 ## 已知非 bug 编译失败（豁免清单）
