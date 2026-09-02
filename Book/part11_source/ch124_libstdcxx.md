@@ -1119,8 +1119,8 @@ sub rdx, rax              ; capacity = end - start
 ### 容量增长（翻倍）
 
 - 初始 0 → push 后 0x0001 → 0x0002 → 0x0004 → 0x0008 → 0x0010 → 0x0020
-- 扩容触发拷贝：`memcpy` 新缓冲 `0x0100` 字节量级，均摊 O(1)
-- SSO 短字符串阈值在 libstdc++ 为 `0x0010` 字节（15 char + null）
+- 扩容触发拷贝：`memcpy` 新缓冲 `256` 字节量级，均摊 O(1)
+- SSO 短字符串阈值在 libstdc++ 为 `16` 字节（15 char + null）
 
 ### 实测分配开销 [UNVERIFIED]
 

@@ -925,7 +925,7 @@ call [rcx]                ; 首次解析后填回 GOT
 
 ### 布局与偏移
 
-- 符号修饰（mangling）长度可达 `0x0040` 字符；`c++filt` 还原 ≈ 0.1us
+- 符号修饰（mangling）长度可达 `64` 字符；`c++filt` 还原 ≈ 0.1us
 - vtable 符号默认带 `@GLIBCXX` 版本节点（Itanium ABI）
 - `.text` 段对齐 `0x0010`；`-fPIC` 引入 GOT 间接，每次调用 +0.5ns
 
@@ -940,7 +940,7 @@ call [rcx]                ; 首次解析后填回 GOT
 
 - GCC 15.3.0 / Clang 19 / MSVC 19.4x ABI 各异
 - `__cplusplus` = 202302L；`__attribute__((visibility("hidden")))` 减小 SO
-- C++20 模块 `import` 将头开销从 `0x0100` KB 降到 `0x0040` KB
+- C++20 模块 `import` 将头开销从 `256` KB 降到 `64` KB
 
 ## 底层视角：编译旗标、SIMD 与二进制布局 [E: Low-level]
 

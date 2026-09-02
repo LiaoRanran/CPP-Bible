@@ -941,7 +941,7 @@ call lookup_symbol       ; 递归查找定义
 
 - clangd 用 preamble 缓存头文件，省 ≈ 64 KB 重读
 - 符号数据库偏移 `0x0008` 存声明位置
-- `clangd` 经 LSP 与 IDE 通信，JSON 报文 `0x0040` 字节量级
+- `clangd` 经 LSP 与 IDE 通信，JSON 报文 `64` 字节量级
 
 ### 编译器与标准
 

@@ -1212,14 +1212,14 @@ call __cxa_throw          ; 触发展开
 ### 开销量级（3.2GHz，x86-64）
 
 - 无异常时 try 块 ≈ 0.5ns（仅 `test`+分支）；happy path 真正零成本
-- 抛异常：栈展开 ≈ 1.0us（每帧 `0x0020` 字节 unwind 表），随栈深线性
+- 抛异常：栈展开 ≈ 1.0us（每帧 `32` 字节 unwind 表），随栈深线性
 - `std::expected` 返回路径 ≈ 0.3ns，优于异常 3 个数量级
 - L1 命中 ≈ 1.0ns；unwind 表在 `.eh_frame` 段，冷路径 ≈ 100ns 取
 
 ### 设计取舍
 
 - 热路径用 `std::expected` / `absl::StatusOr` 替代异常
-- `noexcept` 让编译器省略展开表，二进制减 `0x0040` KB
+- `noexcept` 让编译器省略展开表，二进制减 `64` KB
 - `-fno-exceptions` 下异常路径编译失败，需 `std::terminate`
 
 ### 编译器与标准

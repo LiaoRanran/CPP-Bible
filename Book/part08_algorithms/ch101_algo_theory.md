@@ -1071,8 +1071,8 @@ add rdi, 0x0008             ; 收缩左界
 
 ### 缓存与 SIMD
 
-- AVX2 一次处理 8 个 int32（`0x0020` 字节），吞吐提升 ≈ 4x
-- 缓存行 `0x0040` 字节；false sharing 使跨核写放大到 ≈ 100ns
+- AVX2 一次处理 8 个 int32（`32` 字节），吞吐提升 ≈ 4x
+- 缓存行 `64` 字节；false sharing 使跨核写放大到 ≈ 100ns
 - `C++17` 并行算法 `std::sort(std::execution::par)` 借助线程池摊薄
 
 ### 编译器与标准

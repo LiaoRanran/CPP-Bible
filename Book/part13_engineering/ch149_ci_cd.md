@@ -1182,7 +1182,7 @@ jne .hit                  ; 命中跳过编译
 
 - ccache 命中 key 为预处理后内容哈希，前缀 `0x9f2a` 标记版本
 - 本地命中 ≈ 0.2us（L3）；远端 Redis 命中 ≈ 1.2ms
-- 未命中全量编译单 TU：GCC 13.1.0 ≈ 800ms（含头文件 `0x0100` KB 量级）
+- 未命中全量编译单 TU：GCC 13.1.0 ≈ 800ms（含头文件 `256` KB 量级）
 
 ### 并行与流水
 
@@ -1194,7 +1194,7 @@ jne .hit                  ; 命中跳过编译
 
 - GCC 15.3.0 / Clang 19 / MSVC 19.4x 均受 CI 矩阵覆盖
 - `__cplusplus` = 202302L；`__attribute__((visibility("hidden")))` 减小 SO 体积
-- C++20 模块 `import` 可将头开销从 0x0100KB 降到 0x0040KB
+- C++20 模块 `import` 可将头开销从 256KB 降到 64KB
 
 ## 底层视角：构建矩阵、缓存与并行测试的时序 [E: Low-level]
 

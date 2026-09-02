@@ -754,12 +754,12 @@ main:
 
 - - [微架构·x86-64][UNVERIFIED] `-O0` 栈帧开销 ≈ 5.0ns/调用；`-O2` 内联后 ≈ 0.5ns
 - 自动向量化：`-O3 -mavx2` 将循环 8x 展开，吞吐 +4x
-- 一条 [微架构·x86-64][UNVERIFIED] `imul` 延迟 ≈ 3 cycles（3.2GHz ≈ 0.9ns）；`0x0004` 字节结果
+- 一条 [微架构·x86-64][UNVERIFIED] `imul` 延迟 ≈ 3 cycles（3.2GHz ≈ 0.9ns）；`4` 字节结果
 
 ### 编译器标志与版本
 
 - 本书统一以 MinGW **GCC 15.3.0** 为实证工具链（见 D5.5 与 ASM 证据库）；Compiler Explorer 同时提供 GCC 13.x/14.x、Clang 17/18、MSVC 19.x 等多种版本供跨编译器对比，对比时务必锁定同一优化档位
-- `-march=native` 启用 AVX2/NEON；`0x0020` 字节向量寄存器
+- `-march=native` 启用 AVX2/NEON；`32` 字节向量寄存器
 - `__cplusplus` = 202302L；C++20 概念错误在 Clang 给出更短诊断
 - WG21 提案 P0468R2 规定范围算法，Explorer 可对比其生成代码
 

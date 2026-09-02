@@ -801,7 +801,7 @@ call scan_node           ; 递归访问
 
 <span class="badge badge-std">标准</span> `-Wall -Wextra` 由 `GCC 13.1.0` / `Clang 17` 默认开启多数诊断；未初始化、`-Wshadow`、`-Wunused` 在编译期直接拦截，省一次运行期 `0x0008` 级野指针解引用（主存未命中 ≈100 ns）。`Clang-Tidy` 用 AST 匹配捕获 `0x0008` 误用与 `const` 违规。
 
-UB（数据竞争、越界、空引用）无法靠测试稳定复现：线程竞争落在同一 `0x0040` 缓存行（false sharing）时吞吐骤降；越界写污染相邻 `0x0008` 对象。`C++20` `consteval` / `constexpr` 把越界、除零等推到编译期求值报错，提前消除一类 UB。
+UB（数据竞争、越界、空引用）无法靠测试稳定复现：线程竞争落在同一 `0x0040` 缓存行（false sharing）时吞吐骤降；越界写污染相邻 `8` 对象。`C++20` `consteval` / `constexpr` 把越界、除零等推到编译期求值报错，提前消除一类 UB。
 
 SIMD 审查：`-mavx2`（32 字节 `0x0020` 宽）/ `-mavx512f`（64 字节 `0x0040` 宽）要求 `alignas(0x0020)`/`alignas(0x0040)`，否则 `vmovdqa` 触发 #GP。`C++17` `[[nodiscard]]` 标注资源句柄，减少泄漏类回归。
 

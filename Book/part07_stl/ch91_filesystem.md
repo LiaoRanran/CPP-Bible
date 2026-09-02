@@ -1078,13 +1078,13 @@ jne .not_exist
 ### 量级
 
 - `stat` 系统调用 ≈ 1.2us`[微架构·x86-64][UNVERIFIED]`（缓存命中）→ 22ms（冷盘）
-- `directory_iterator` 单次 `getdents` ≈ 0.5us`[微架构·x86-64][UNVERIFIED]`，批量 `0x0100` 项
+- `directory_iterator` 单次 `getdents` ≈ 0.5us`[微架构·x86-64][UNVERIFIED]`，批量 `256` 项
 - 路径解析每组件 ≈ 0.1us`[微架构·x86-64][UNVERIFIED]`；绝对路径省 ≈ 0.2us`[微架构·x86-64][UNVERIFIED]`
 - L1 ≈ 1.0ns`[微架构·x86-64][UNVERIFIED]`，主存 ≈ 100ns`[微架构·x86-64][UNVERIFIED]`
 
 ### 布局
 
-- path 内部存 `0x0010` 字节短路径 SSO，长路径堆分配 `0x0040` 字节
+- path 内部存 `16` 字节短路径 SSO，长路径堆分配 `64` 字节
 - 文件元数据偏移 `0x0008` 存 mtime/size
 
 ### 编译器与标准
@@ -1095,7 +1095,7 @@ jne .not_exist
 
 ## 底层视角：系统调用号、stat 结构与路径解析代价 [E: Low-level]
 
-<span class="badge badge-std">标准</span> x86-64 上 `openat` 系统调用号为 `0x0101`（257），`stat` 为 `0x0004`（4）；glibc 包装后进入 `syscall` 指令，一次陷入内核约 0.1–0.5 µs`[微架构·x86-64][UNVERIFIED]`。`struct stat` 的 `off_t` 在 LP64 为 `0x0008` 字节，文件大小以字节计。
+<span class="badge badge-std">标准</span> x86-64 上 `openat` 系统调用号为 `0x0101`（257），`stat` 为 `0x0004`（4）；glibc 包装后进入 `syscall` 指令，一次陷入内核约 0.1–0.5 µs`[微架构·x86-64][UNVERIFIED]`。`struct stat` 的 `off_t` 在 LP64 为 `8` 字节，文件大小以字节计。
 
 路径解析逐分量进行：每个分量一次目录项查找，命中 dentry 缓存（≈1 ns `[微架构·x86-64][UNVERIFIED]`）则快，未命中落到 inode/磁盘（L3 ≈12 ns `[微架构·x86-64][UNVERIFIED]` 或主存 ≈100 ns `[微架构·x86-64][UNVERIFIED]`）。`std::filesystem::path` 在 `C++17` 引入，`C++20` 加 `path::lexically_normal`。
 

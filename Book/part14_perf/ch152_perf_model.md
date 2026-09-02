@@ -973,15 +973,15 @@ add rdi, 0x0040              ; 步进一个缓存行
 
 ### 缓存与带宽（3.2GHz，桌面）
 
-- [微架构·x86-64][UNVERIFIED] L1 ≈ 1.0ns / 0x0040 字节行；L2 ≈ 4.0ns；L3 ≈ 12ns；主存 ≈ 100ns
+- [微架构·x86-64][UNVERIFIED] L1 ≈ 1.0ns / 64 字节行；L2 ≈ 4.0ns；L3 ≈ 12ns；主存 ≈ 100ns
 - 内存带宽 ≈ 4096 MB/s 量级；AVX2 算力 ≈ 256 GFLOP/s
-- 计算密度 < 0x0008 FLOP/字节 时为带宽受限（Roofline 左侧）
+- 计算密度 < 8 FLOP/字节 时为带宽受限（Roofline 左侧）
 
 ### 量化方法
 
 - [微架构·x86-64][UNVERIFIED] `std::chrono` 高精度时钟分辨率 ≈ 1.0ns；`RDTSC` ≈ 0.3ns
-- [微架构·x86-64][UNVERIFIED] perf 采样开销 ≈ 0.2us/事件；cache-miss 计数经 `0x0040` 位 MSR
-- [微架构·x86-64][UNVERIFIED] 单次测量抖动 ≈ 5.0ns，需取 0x1000 次中位数
+- [微架构·x86-64][UNVERIFIED] perf 采样开销 ≈ 0.2us/事件；cache-miss 计数经 `64` 位 MSR
+- [微架构·x86-64][UNVERIFIED] 单次测量抖动 ≈ 5.0ns，需取 4096 次中位数
 
 ### 编译器与标准
 
