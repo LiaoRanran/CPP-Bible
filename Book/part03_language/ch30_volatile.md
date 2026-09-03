@@ -798,7 +798,8 @@ void handler(int) { g_stop = 1; }
 int main() {
     std::signal(SIGINT, handler);
     while (!g_stop) { // 工作循环
-    std::cout << "stopped by signal\n";
+        std::cout << "stopped by signal\n";
+    }
 }
 ```
 
