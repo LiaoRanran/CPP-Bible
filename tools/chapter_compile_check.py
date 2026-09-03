@@ -172,8 +172,30 @@ OPERATOR_REPLACE_RE = re.compile(
 # GCC 15）。这些块是真实 C++23 代码，由外部 GCC 14+/15+ 工具链单独编译并产出 Examples
 # 实证产物；在本门禁（GCC 13.1）作用域之外，跳过（不计为失败）。
 CXX23_LIB_RE = re.compile(
-    r"#include\s*<(print|flat_map|flat_set)>|\bstd::(print|println|vprint_unicode"
-    r"|vprint|flat_map|flat_set)\b")
+    r"#include\s*<(print|flat_map|flat_set|generator)>|\bstd::(print|println|vprint_unicode"
+    r"|vprint|flat_map|flat_set|generator)\b")
+
+# C++20 模块（Modules）示例（如 ch11 的 `export module ch12;` / `import std;` /
+# `import <...>;`）。本门禁把每个块包进 `namespace chk_...` 包裹，而模块声明只能
+# 出现在全局翻译单元顶层，包进 namespace 会 "module does not name a type" 误报失败。
+# 模块示例由外部支持 Modules 的工具链单独编译实证，属本门禁作用域之外，跳过。
+MODULE_RE = re.compile(
+    r"^\s*(export\s+module|module|import)\s+\S", re.M)
+# 第三方 fmt 库示例（如 ch12/ch13 的 `#include <fmt/...>` 或 `fmt::format`）。
+# <fmt/> 不在本 MinGW 工具链且 harness 默认剥离块内 #include（含 <fmt/>），导致
+# `fmt::` 未声明。该库属外部框架示例，超出本门禁作用域，跳过（不计为失败）。
+FMT_RE = re.compile(r'#include\s*<fmt/|\bfmt::|\bFMT_')
+# 自定义 std::formatter 特化（如 `template<> struct std::formatter<Point>`）。
+# 特化必须声明于命名空间 std，而本门禁把块包进 `namespace chk_...`，导致
+# "declaration of class std::formatter<...> in namespace 'chk_...'" 误报失败。
+# 此类特化示例在全局作用域本可编译，属门禁包裹模型作用域之外，跳过。
+FORMATTER_RE = re.compile(r"template\s*<>\s*struct\s+\w*formatter<")
+# 行号源码列表展示块（如 libstdc++/编译器内部摘录，形如 `  98  #undef calloc`）：
+# 每行以数字行号 + 空格前缀，并非独立可编译代码；属“实现讲解”展示，超出本门禁作用域，
+# 跳过（不计为失败）。判定：块内 >=3 行匹配「可选空白 + 1~4 位数字 + 空格 + 非空」，
+# 这是源码列表的典型形态，正常 C++ 块不会出现此类逐行前缀，误伤风险极低。
+LINE_LISTING_RE = re.compile(r"^\s*\d{1,4}\s+\S")
+
 
 
 def sanitize(code: str):
@@ -260,6 +282,29 @@ def check_file(path: pathlib.Path, tmpdir: pathlib.Path):
         if OPERATOR_REPLACE_RE.search(code):
             print(f"[SKIP] {path.name}#{idx}: 可替换全局 operator new/delete 定义（须全局作用域），"
                   f"门禁 namespace 包裹会误报，跳过（教学示例）")
+            continue
+        # C++20 模块（Modules）示例：`export module`/`module`/`import` 只能位于全局翻译单元
+        # 顶层，门禁的 namespace 包裹会误报失败；由外部支持 Modules 的工具链单独编译实证，跳过。
+        if MODULE_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: C++20 模块(export module/import)示例需全局顶层，"
+                  f"门禁 namespace 包裹误报，跳过（外部工具链实证）")
+            continue
+        # 第三方 fmt 库示例（#include <fmt/> 或 fmt::）：<fmt/> 不在本 MinGW 工具链且
+        # harness 剥离块内 #include，导致 fmt:: 未声明；属外部框架示例，跳过。
+        if FMT_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: 第三方 fmt 库示例(不在本 MinGW 工具链)，跳过")
+            continue
+        # 自定义 std::formatter 特化（template<> struct formatter<...>）：特化须声明于
+        # 命名空间 std，门禁 namespace 包裹误报失败；在全局作用域本可编译，跳过。
+        if FORMATTER_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: std::formatter 特化须声明于命名空间 std，"
+                  f"门禁 namespace 包裹误报，跳过（教学示例）")
+            continue
+        # 行号源码列表展示块：块内 >=3 行以「数字行号 + 空格」前缀（如 libstdc++/编译器
+        # 内部摘录），并非独立可编译代码；属“实现讲解”展示，跳过（不计为失败）。
+        if sum(1 for ln in code.splitlines() if LINE_LISTING_RE.match(ln)) >= 3:
+            print(f"[SKIP] {path.name}#{idx}: 行号源码列表展示块（逐行数字前缀），"
+                  f"非独立可编译代码，跳过（实现讲解）")
             continue
         includes, body = sanitize(code)
         # Winsock 章节（如 ch163）的示例依赖 <winsock2.h>/<ws2tcpip.h> 且需链接
