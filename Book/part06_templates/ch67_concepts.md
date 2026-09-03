@@ -252,8 +252,12 @@ static_assert(Indexable<std::vector<int>>);
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
 #include <string>
-// 仅算术类型可实例化的类模板（concept 版）
-template <std::arithmetic T>
+#include <type_traits>
+// 仅算术类型可实例化的类模板（约束版）
+// 注：C++ 标准库没有 std::arithmetic 概念——"算术类型"须用类型萃取
+// std::is_arithmetic_v 表达（integral 与 floating_point 的并集），概念库里只有
+// std::integral / std::floating_point 两个更细的档。
+template <typename T> requires std::is_arithmetic_v<T>
 struct ArithmeticOnly { T v; };
 // ArithmeticOnly<std::string> 约束不满足 → 不可实例化
 ```
@@ -306,11 +310,12 @@ concept MyInputIt = requires(T it) { *it; ++it; it != it; };
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
 ```cpp
-// 兜底重载保证完备（concept 版）
-template <std::pointer T>
+// 兜底重载保证完备（约束版）
+// 注：C++ 标准库没有 std::pointer 概念——"是指针"须用类型萃取 std::is_pointer_v 表达。
+template <typename T> requires std::is_pointer_v<T>
 void visit(T) {}
 template <typename T>
-requires (!std::pointer<T>)
+requires (!std::is_pointer_v<T>)
 void visit(T) {}
 ```
 

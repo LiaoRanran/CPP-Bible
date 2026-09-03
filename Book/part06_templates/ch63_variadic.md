@@ -569,7 +569,7 @@ template <typename _Tp, typename... _Rest> class tuple<_Tp, _Rest...> : public t
 #include <cstddef>
 // std::apply 用 index_sequence + 包展开调用
 template <typename F, typename Tuple, std::size_t... I>
-decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
+decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>) {
     return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
 }
 ```
