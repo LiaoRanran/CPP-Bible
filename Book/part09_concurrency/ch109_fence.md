@@ -488,11 +488,40 @@ int main(){std::atomic<int> x;x.store(1);std::cout<<x.load()<<std::endl;return 0
 ```
 
 ## ⑫ 工业案例 <span class="badge badge-exp">经验</span>
-> **示例 21** [难度 ★★☆☆☆] [主题：工业案例 <span class="badge badge-exp">经验</span>]
+> **示例 21** [难度 ★★★☆☆] [主题：工业案例 <span class="badge badge-exp">经验</span>]
+
+工业级并发代码的内存序选择是"按访问性质分级"：引用计数用 **relaxed 增 + acq_rel 减**（Chrome `base::AtomicRefCount`、`std::shared_ptr` 控制块同款），发布-订阅用 **release/acquire**（Linux RCU 读侧、示例 18），只有需要全局全序才上 seq_cst。下面把引用计数那一级落到真机：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"Linux RCU (release+consume), Chrome base::AtomicRefCount (relaxed), ClickHouse lock-free queue.\n";return 0;}
+// ㉑ 工业案例真机：引用计数 = relaxed 增 + acq_rel 减（Chrome base::AtomicRefCount / shared_ptr 控制块同款）
+// 注：本演示用栈上对象规避"最后一个 release 才 delete"的所有权竞态，专注展示计数语义与内存序选择。
+#include <atomic>
+#include <cstdio>
+#include <thread>
+#include <vector>
+
+struct Widget { std::atomic<int> ref{1}; };
+
+void retain(Widget* w) { w->ref.fetch_add(1, std::memory_order_relaxed); }
+// 减到 0 才回收：acq_rel 保证"回收前的读"不会与"其他线程最后的写"重排
+// （真实代码里 release()==1 的分支执行 delete；这里对象在栈上存活，故只打印计数）
+bool release(Widget* w) { return w->ref.fetch_sub(1, std::memory_order_acq_rel) == 1; }
+
+int main() {
+    Widget w;                        // 栈上，全程存活，避免所有权竞态
+    constexpr int N = 200000;
+    std::vector<std::thread> ts;
+    for (int t = 0; t < 4; ++t)
+        ts.emplace_back([&] { for (int i = 0; i < N; ++i) { retain(&w); release(&w); } });
+    for (auto& t : ts) t.join();
+    std::printf("final ref=%d (初始1 ±4N 次增减，恰好归 1：relaxed 增 / acq_rel 减)\n", w.ref.load());
+    return 0;
+}
 ```
+
+真机输出：`final ref=1 (初始1 ±4N 次增减，恰好归 1：relaxed 增 / acq_rel 减)`。
+
+为什么增用 relaxed、减用 acq_rel：计数本身的原子性由 `fetch_add/fetch_sub` 保证，与内存序无关（见示例 ㉗ 的 RMW 测量——两种序都 `lock xadd`）；而 **`release()` 返回 1 的那个线程要 `delete` 对象**，必须用 acq_rel 确保"删之前读到的对象字段"看到其他线程最后的写——这就是 acq_rel 在引用计数里的唯一职责。ClickHouse 的无锁队列、`Folly` 的 `AtomicIntrusiveLinkedList` 都是这套分级的延伸：**只在"所有权交接"那一个边界用较重的内存序，热点路径一律 relaxed**。Linux RCU 则是另一个极端——读者侧**零原子、零内存序**（示例 18），把同步成本全推给写者的一次 release。
 
 ## ⑬ 源码分析 [实现·GCC15]
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析 [实现·GCC15]
