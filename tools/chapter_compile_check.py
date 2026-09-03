@@ -279,20 +279,24 @@ def check_file(path: pathlib.Path, tmpdir: pathlib.Path):
         tu += f"\nnamespace chk_{stem}_{idx} {{\n{body}\n}}\nint main(){{ return 0; }}\n"
         cpp = tmpdir / f"{stem}_{idx}.cpp"
         cpp.write_text(tu, encoding="utf-8")
+        # bytes 模式 + errors="replace" 解码：g++ 诊断会原样回显书内源码行，
+        # 含中文注释时若按 Windows ANSI(GBK) 解码会 UnicodeDecodeError（读者线程
+        # 崩溃导致 r.stderr 为 None）。字节读入后按 UTF-8 宽松解码，诊断丢失不了。
         r = subprocess.run(
             [GPP, "-std=c++23", "-O2", "-Wall", "-Wextra",
              "-mavx2", "-mavx512f", "-mfma",   # SIMD 章节（ch155）示例合法需要的目标标志
              "-o", str(tmpdir / f"{stem}_{idx}.exe"), str(cpp)] + extra_libs,
-            capture_output=True, text=True)
+            capture_output=True)
+        stderr_text = (r.stderr or b"").decode("utf-8", "replace")
         if r.returncode != 0:
             first = ""
-            for ln in r.stderr.splitlines():
+            for ln in stderr_text.splitlines():
                 if "error:" in ln:
                     first = ln.strip()
                     break
             if not first:
-                first = (r.stderr.strip().splitlines()[-1]
-                         if r.stderr.strip() else "linkerr")
+                first = (stderr_text.strip().splitlines()[-1]
+                         if stderr_text.strip() else "linkerr")
             fails.append((idx, first))
     return len(blocks), fails
 

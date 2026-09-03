@@ -129,11 +129,32 @@ int main(){Adder add5{5};std::cout<<add5(10)<<std::endl;return 0;}
 ## ⑩ 不可重载的运算符 <span class="badge badge-std">标准</span>
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：不可重载的运算符 <span class="badge badge-std">标准</span>]
+
+红线名单：`.`、`.*`、`::`、`?:`、`sizeof`、`typeid` 与四个命名 cast（`const_cast`/`static_cast`/`dynamic_cast`/`reinterpret_cast`）不可重载；注意解引用 `*` 可以重载，但成员指针解引用 `.*` 永远内建。红线之外的可重载面有多大，一个类就能串起来：
+
 ```cpp
+// ⑨ 不可重载的红线之外，能重载的面有多大——一个类把主要可重载运算符串起来
 #include <iostream>
-#include <typeinfo>
-int main(){std::cout<<"Cannot overload: . .* :: ?: sizeof typeid const_cast static_cast dynamic_cast reinterpret_cast\n";return 0;}
+#include <cstddef>
+
+struct Probe {
+    int v{};
+    Probe& operator++() { ++v; return *this; }        // 前置++ 可重载
+    int operator*() const { return v; }               // 解引用可重载（注意 .* 与成员指针永远内建）
+    int operator[](int i) const { return v + i; }     // 下标可重载
+    int operator()(int x) const { return v * x; }     // 调用可重载
+};
+
+int main() {
+    Probe p{10};
+    ++p;
+    std::cout << *p << ' ' << p[5] << ' ' << p(3) << '\n';
+    std::cout << "sizeof(Probe) = " << sizeof(Probe) << "（sizeof 永远内建）\n";
+    return 0;
+}
 ```
+
+真机输出（GCC 13.1.0）：`11 16 33`、`sizeof(Probe) = 4（sizeof 永远内建）`。
 
 ## 补充完整可编译示例
 
@@ -153,10 +174,31 @@ int main(){String s("hello");String t=s;std::cout<<t.b<<std::endl;return 0;}
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
+「成员 vs 自由函数」的对称性论断可以真机验证——自由函数允许**左操作数**隐式转换：
+
 ```cpp
+// ⑫ 成员 vs 自由函数：自由函数让左操作数也能隐式转换（对称性）
 #include <iostream>
-int main(){std::cout<<"operator overloading: member vs free function. Free prefer non-member for symmetry.\n";return 0;}
+
+struct Meters {
+    double v;
+    Meters(double x) : v(x) {}                 // 非显式：允许 2.0 隐式转换
+    Meters& operator+=(const Meters& o) { v += o.v; return *this; }
+};
+
+Meters operator+(const Meters& a, const Meters& b) { return Meters{a.v + b.v}; }
+
+int main() {
+    Meters m{1.5};
+    m += Meters{2.0};
+    Meters s = 2.0 + m;     // 左操作数 2.0 经隐式转换成 Meters：成员版 operator+ 做不到
+    std::cout << s.v << '\n';
+    return 0;
+}
 ```
+
+真机输出：`5.5`。若把 `operator+` 写成 `Meters` 的成员，`2.0 + m` 直接编译失败（成员版的左操作数必须是 `Meters` 本身，不参与用户定义转换）——这就是「对称二元运算符用自由函数」的机器级理由。
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
@@ -202,10 +244,38 @@ int main(){Bool b{true};if(b)std::cout<<"true\n";return 0;}
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
+十几个单点示例之后，给一页纸「正典」把惯用法串起来——`+=` 成员、`+` 自由、比较 defaulted、流输出隐藏友元：
+
 ```cpp
+// ⑲ 一页纸正典：+= 成员、+ 自由、==/<=> defaulted、<< 隐藏友元
 #include <iostream>
-int main(){std::cout<<"operator总结: 保留语义(+==>+), 避免歧义, 成员vs自由选择, <=>统一比较。"<<std::endl;return 0;}
+
+class Vec2 {
+public:
+    Vec2(double px, double py) : x(px), y(py) {}
+    Vec2& operator+=(const Vec2& o) { x += o.x; y += o.y; return *this; }
+    bool operator==(const Vec2&) const = default;
+    auto operator<=>(const Vec2&) const = default;      // 六种比较一次到位（P0515）
+    friend std::ostream& operator<<(std::ostream& os, const Vec2& v) {
+        return os << '(' << v.x << ',' << v.y << ')';
+    }
+private:
+    double x, y;
+};
+
+Vec2 operator+(Vec2 a, const Vec2& b) { return a += b; }   // 自由函数：对称
+
+int main() {
+    Vec2 a{1, 2}, b{3, 4};
+    std::cout << (a + b)
+              << " eq=" << (Vec2{4, 6} == a + b)
+              << " lt=" << (a < b) << '\n';
+    return 0;
+}
 ```
+
+真机输出：`(4,6) eq=1 lt=1`。这一屏就是 §⑱ 最佳实践的可编译形态：`operator+` 用 `+=` 实现（值入参，无重复代码）；`<=>` defaulted 让 `!=`/`<`/`<=`/`>`/`>=` 全部自动生成；`<<` 是隐藏友元（见示例 27 的 ADL 分析）。
 
 ## ⑪ STL 联系 <span class="badge badge-std">标准</span>
 > **示例 20** [难度 ★☆☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
@@ -218,59 +288,242 @@ int main(){S arr[]{{3},{1},{2}};std::sort(std::begin(arr),std::end(arr));std::co
 
 ## ⑫ 工业案例 <span class="badge badge-exp">经验</span>
 > **示例 21** [难度 ★☆☆☆☆] [主题：工业案例 <span class="badge badge-exp">经验</span>]
+
+工业库的两块地基——用户定义字面量与类型化算术——几行就能立起来：
+
 ```cpp
+// ⑪ 工业范式：UDL + 类型化算术——units/fmt 这类库的地基手法
 #include <iostream>
-int main(){std::cout<<"Eigen: operator+ returns expression template. fmt: operator<<_format for custom types.\n";return 0;}
+
+struct Distance {
+    double meters;
+    friend Distance operator+(Distance a, Distance b) { return {a.meters + b.meters}; }
+    friend std::ostream& operator<<(std::ostream& os, Distance d) { return os << d.meters << " m"; }
+};
+constexpr Distance operator""_km(long double v) { return Distance{static_cast<double>(v) * 1000.0}; }
+constexpr Distance operator""_m(long double v) { return Distance{static_cast<double>(v)}; }
+
+int main() {
+    Distance total = 3.5_km + 200.0_m;   // 单位在类型里：绝不会出现 3.5 + 200 这种裸加
+    std::cout << total << '\n';
+    return 0;
+}
 ```
+
+真机输出：`3700 m`。`std::chrono` 的 `1h + 30min`、LLVM 的 `MipMap` 量纲、fmt 的自定义 formatter，走的就是这条路：**单位/格式编码进类型，运算符重载只负责让表达式读起来像它所表示的事**。
 
 ## ⑬ 源码分析 [实现·GCC15.3.0]
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析 [实现·GCC15.3.0]
+
+GCC 的重载决议实现在 `gcc/cp/call.cc`（查找 + 排序 + 诊断一体）。决议排序里最容易被忽略的一维是**引用限定符**——成员函数可以按 `this` 的值类别重载：
+
 ```cpp
+// ⑫ 重载决议真机：引用限定符参与排序（决议实现在 gcc/cp/call.cc）
 #include <iostream>
-int main(){std::cout<<"GCC resolving operator@: lookup + overload resolution, error messages in cp/call.cc.\n";return 0;}
+#include <string>
+
+struct Token {
+    std::string kind;
+    Token& f() &  { kind = "lvalue"; return *this; }   // 只允许左值调用
+    Token  f() && { return Token{"rvalue"}; }          // 只允许右值调用
+};
+
+int main() {
+    Token t;
+    std::cout << t.f().kind << ' ' << Token{}.f().kind << '\n';
+    return 0;
+}
 ```
+
+真机输出：`lvalue rvalue`。具名变量 `t` 是左值走 `f() &`，临时量 `Token{}` 是右值走 `f() &&`——同一名字、同一实参个数，决议靠**隐式对象参数的值类别**分派。这就是 `std::string` 能对右值做移动式 `operator=` 的机制底层。
 
 ## ⑭ WG21 提案 <span class="badge badge-std">标准</span>
 > **示例 23** [难度 ★☆☆☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
+
+P0515（三路比较）落地后的第一个惊喜是成员逐位比较的语义——**不是字符串词典序**：
+
 ```cpp
+// ⑬ P0515 三路比较：defaulted <=> 一次生成六种比较（P1185 让 == 独立 default）
 #include <iostream>
-int main(){std::cout<<"P0515: three-way comparison <=>. P1185: defaulted <=> = default.\n";return 0;}
+
+struct Version {
+    int major, minor;
+    auto operator<=>(const Version&) const = default;
+};
+
+int main() {
+    static_assert(Version{1, 4} < Version{1, 10}, "成员逐个比较，非字符串词典序");
+    static_assert(Version{2, 0} > Version{1, 99}, "先比 major，再比 minor");
+    std::cout << (Version{1, 4} < Version{1, 10} ? "1.4 < 1.10 (按数值)" : "never") << '\n';
+    return 0;
+}
 ```
+
+真机输出：`1.4 < 1.10 (按数值)`。字符串比较里 `"1.4" > "1.10"`（'4' > '1'），defaulted `<=>` 按成员数值逐个比，版本号语义自动正确——这正是 `<=>` 相对手写六个比较的收益。
 
 ## ⑮ 面试题 <span class="badge badge-exp">经验</span>
 > **示例 24** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+
+「后置 ++ 返回副本」不必背，用拷贝计数器抓现行：
+
 ```cpp
+// ⑭ 前置 vs 后置：后置按语义必须返回旧值副本——拷贝计数器真机验证
 #include <iostream>
-int main(){std::cout<<"Q: prefix vs postfix ++? A: prefix returns ref, postfix returns copy. Use prefix for perf.\n";return 0;}
+
+struct Counter {
+    int v{};
+    static inline int copies = 0;
+    Counter(int x = 0) : v(x) {}
+    Counter(const Counter& o) : v(o.v) { ++copies; }
+    Counter& operator++() { ++v; return *this; }                       // 前置：零拷贝
+    Counter operator++(int) { Counter old = *this; ++v; return old; }  // 后置：至少一次拷贝
+};
+
+int main() {
+    Counter c{0};
+    ++c; ++c; ++c;
+    int before = Counter::copies;
+    c++;
+    std::cout << "3 次前置++ 拷贝=" << before
+              << "；1 次后置++ 拷贝=" << (Counter::copies - before) << '\n';
+    return 0;
+}
 ```
+
+真机输出：`3 次前置++ 拷贝=0；1 次后置++ 拷贝=1`。前置零拷贝、后置至少一次——`for (auto it = v.begin(); it != v.end(); ++it)` 用前置不是风格洁癖，是省一次拷贝（迭代器重的场景是实打实的开销）。
 
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 > **示例 25** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+
+「重载 `&&`/`||` 丢失短路」是本领域最危险的一条，真机抓现行：
+
 ```cpp
+// ⑮ 重载 && / || 丢失短路：两个操作数都要求值——真机抓现行
 #include <iostream>
-int main(){std::cout<<"Pitfall: operator, overload loses short-circuit; operator&&/|| overload loses short-circuit.\n";return 0;}
+
+struct Flag {
+    bool v;
+    friend Flag operator&&(const Flag& a, const Flag& b) {
+        std::cout << "  (operator&& 两侧都已求值)\n";
+        return Flag{a.v && b.v};
+    }
+};
+
+Flag check(const char* name, bool result) {
+    std::cout << "  check(" << name << ")\n";
+    return Flag{result};
+}
+
+int main() {
+    std::cout << "重载 &&：lhs 已是 false，rhs 仍会被求值\n";
+    Flag r = check("lhs=false", false) && check("rhs", true);
+    std::cout << "result=" << r.v << "（内建 && 下 rhs 根本不会执行）\n";
+    return 0;
+}
 ```
+
+真机输出顺序：`check(lhs=false)` → `check(rhs)` → `(operator&& 两侧都已求值)` → `result=0`。**左操作数已是 false，右操作数照样执行**——重载后运算符退化为普通函数调用，两个实参都必须先算完。若 `check("rhs")` 是有副作用的守卫（加锁、除法、解引用），这就是 UB 工厂。结论：永远不重载 `&&`/`||`/`,`。
 
 ## ⑰ FAQ <span class="badge badge-exp">经验</span>
 > **示例 26** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
+
+「`operator<<` 为什么不能是你的成员」——因为成员版的左操作数是 `*this`，而 `os << m` 的左操作数是 `std::ostream`，你无法给标准库的类新增成员。正确形态是友元自由函数：
+
 ```cpp
+// ⑯ operator<< 为何不能是你的成员：左操作数是 std::ostream（它的成员你无法新增）
 #include <iostream>
-int main(){std::cout<<"Q: Why can't operator<< be a member? A: left operand is std::ostream, not your class.\n";return 0;}
+
+struct Money {
+    int cents;
+    // 若写成 Money 的成员：os << m 相当于 os.operator<<(m)，而 ostream 的成员你改不了
+    friend std::ostream& operator<<(std::ostream& os, const Money& m) {
+        return os << (m.cents / 100) << '.' << (m.cents % 100) << " CNY";
+    }
+};
+
+int main() {
+    std::cout << Money{199} << '\n';
+    return 0;
+}
 ```
+
+真机输出：`1.99 CNY`。同理，右移 `>>` 读取流也是这个形态；想让流操作可扩展、可继承返回 `std::ostream&` 即可对接任意流层级。
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 > **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
+把最佳实践再收紧一档：流输出等二元友元写成**隐藏友元**（hidden friend）——定义在类内，不在类外作用域暴露，只能经 ADL 找到：
+
 ```cpp
+// ⑰ 最佳实践：隐藏友元只经 ADL 可见——不污染普通查找，拒绝意外转换
 #include <iostream>
-int main(){std::cout<<"Best: use <=> for comparison; non-member for symmetric ops; friend for stream I/O.\n";return 0;}
+
+struct Price {
+    int cents;
+    friend std::ostream& operator<<(std::ostream& os, const Price& p) {  // 隐藏友元：类外不可见
+        return os << p.cents << "c";
+    }
+};
+
+int main() {
+    Price p{250};
+    std::cout << p << '\n';   // 经 ADL 找到：实参类型 Price → 去 Price 所在作用域找 operator<<
+    return 0;
+}
 ```
+
+真机输出：`250c`。隐藏友元的好处：①不会因 `Price` 的隐式转换构造出意外的重载匹配（普通作用域里的自由 `operator<<` 会参与**所有**类型的查找）；②减少重载集污染，编译器诊断更干净。这是 Herb Sutter 倡导、标准库（`std::chrono` 各 duration 运算符）全面采用的手法。
 
 ## ⑲ 性能分析 [平台·x86-64]
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析 [平台·x86-64]
+
+「`operator+` 产生临时对象」可以用分配计数器量化，再示范表达式模板（Eigen/range-v3 的核心机制）如何把它压到零：
+
 ```cpp
+// ⑱ 表达式模板最小样本：operator+ 返回代理，赋值处才物化——中间临时 Vec 归零
 #include <iostream>
-int main(){std::cout<<"operator+ temporaries can be avoided with expression templates (Eigen, range-v3).\n";return 0;}
+#include <vector>
+#include <cstddef>
+#include <cstdlib>
+#include <initializer_list>
+
+std::size_t allocs = 0;
+void* operator new(std::size_t n) { ++allocs; return std::malloc(n); }
+void operator delete(void* p) noexcept { std::free(p); }
+
+struct Sum;                                            // 前置声明
+
+struct Vec {
+    std::vector<int> d;
+    Vec(std::initializer_list<int> l) : d(l) {}
+    Vec& operator=(const Sum& s);                      // 从代理赋值：此刻才物化
+};
+
+struct Sum {
+    const Vec& a;
+    const Vec& b;
+    std::size_t size() const { return a.d.size(); }
+    int operator[](std::size_t i) const { return a.d[i] + b.d[i]; }
+};
+
+Sum operator+(const Vec& a, const Vec& b) { return Sum{a, b}; }
+
+Vec& Vec::operator=(const Sum& s) {
+    for (std::size_t i = 0; i < s.size(); ++i) d[i] = s[i];
+    return *this;
+}
+
+int main() {
+    Vec a{1, 2, 3}, b{10, 20, 30}, c{0, 0, 0};
+    std::size_t before = allocs;
+    c = a + b;                     // 朴素版这里会先造一个临时 Vec（多 1 次分配）
+    std::cout << c.d[0] << ',' << c.d[1] << ',' << c.d[2]
+              << " | 中间临时 Vec 分配=" << (allocs - before) << '\n';
+    return 0;
+}
 ```
+
+真机输出（GCC 13.1.0）：`11,22,33 | 中间临时 Vec 分配=0`。朴素版 `c = a + b` 的 `operator+` 返回新 `Vec`（1 次堆分配 + 一次整块拷贝）；代理版把求值推迟到 `operator=`，逐元素直写目标。N 维大向量链式 `a+b+c+d` 时差距按维数放大——这是 Eigen 不写循环只写 `A*B+C*D` 还能接近手写内核的全部秘密。
 
 ## ⑳ 跨语言对比 <span class="badge badge-exp">经验</span>
 
@@ -289,16 +542,51 @@ int main(){std::cout<<"operator+ temporaries can be avoided with expression temp
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[over.literal]（字面量运算符）；cppreference "User-defined_literals" 词条。
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+
+跨语言对比的实质不是语法糖形状（Rust `std::ops` trait、Python `__add__`），而是**零开销的编译期类型安全**——C++ 用重载决议在编译期拒绝量纲错配：
+
 ```cpp
+// ⑲ 跨语言视角：C++ 的算子是零开销强类型——编译期就能拒绝"米加秒"
 #include <iostream>
-int main(){std::cout<<"C++ operator overloading vs Rust std::ops traits vs Python __add__/dunder methods.\n";return 0;}
+
+struct Meters { double v; explicit Meters(double x) : v(x) {} };
+struct Seconds { double v; explicit Seconds(double x) : v(x) {} };
+Meters operator+(Meters a, Meters b) { return Meters{a.v + b.v}; }
+double operator/(Meters a, Seconds b) { return a.v / b.v; }   // m / s → 纯量
+
+int main() {
+    // Meters bad = Meters{1.0} + Seconds{2.0};   // 编译期拒绝：没有这个重载
+    Meters total = Meters{100.0} + Meters{23.5};
+    std::cout << "speed = " << total / Seconds{2.0} << " m/s\n";
+    return 0;
+}
 ```
 
+真机输出：`speed = 61.75 m/s`。`Meters + Seconds` 连编译都过不了——没有那个重载，也没有到 `double` 的隐式后门（构造函数 `explicit`）。Python 的 dunder 在运行期抛 `TypeError`，C++ 在编译期拒绝且运行时零装箱——这是本节跨语言对比的可执行版结论。
+
 > **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+
+收尾用一个反面教材实证「保留原始语义」为什么排第一——一个隐式 `operator bool` 的泄漏面：
+
 ```cpp
+// ⑳ 总结实证：隐式 operator bool 的泄漏面（比较/算术全中招），explicit 是解药
 #include <iostream>
-int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <=>优先defaulted, 自由函数优于成员。"<<std::endl;return 0;}
+
+struct Tricky {
+    bool ok;
+    operator bool() const { return ok; }          // 隐式：1 == t 都能编译
+};
+
+int main() {
+    Tricky t{false};
+    std::cout << "1 == t 编译通过，值=" << (1 == t)
+              << "；!t=" << !t << "；t+1=" << t + 1 << '\n';
+    // 解药：explicit operator bool()——if(t) 仍可用（语境转换），但 1==t / t+1 直接编译失败
+    return 0;
+}
 ```
+
+真机输出：`1 == t 编译通过，值=0；!t=1；t+1=1`。整数比较、逻辑取反、算术加法——全被这一个隐式转换「合法地」吞了。`explicit operator bool()`（C++11）是标准答案：`if (t)`、`while (t)` 等语境转换仍可用，其余路径编译失败。全章各条最佳实践（对称自由函数 / defaulted `<=>` / 隐藏友元 / `explicit` 转换）合起来就是一句话：**重载要像没重载过一样**。
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -658,7 +946,12 @@ struct Matrix {                 // rule of 5
         for (size_t i=0;i<n*n;++i) data[i]=o.data[i];
     }
     Matrix& operator=(const Matrix& o){                         // 拷贝赋值
-        if (this!=&o){ double* p=new double[o.n*o.n]; // ...
+        if (this!=&o){
+            double* p = new double[o.n*o.n];       // 先分配再接管：new 抛异常时 *this 不变（强异常安全）
+            for (size_t i=0;i<o.n*o.n;++i) p[i]=o.data[i];
+            delete[] data;
+            data=p; n=o.n;
+        }
         return *this;
     }
     Matrix(Matrix&& o) noexcept : n(o.n), data(o.data) { o.data=nullptr; }   // 移动构造
