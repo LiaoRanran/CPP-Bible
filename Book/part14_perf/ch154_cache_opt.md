@@ -65,9 +65,7 @@ int main() {
 }
 ```
 
-- `[标准]`：C++ 不规定缓存，缓存是 **目标架构（ISA + 微架构）** 的属性；C++ 侧只提供"对齐/布局/遍历方式"等可观测旋钮。
-- `[平台·x86-64]`：x86-64 主流桌面/服务器每核私有 L1/L2、共享 L3；典型延迟 L1≈4、L2≈12、L3≈40、DRAM≈200+ 周期（见 ② 表格，标"典型值"）。
-- `[经验]`：先量（perf / cachegrind / 前后耗时对比），再改布局；盲猜"加缓存"常无效。
+C++ 不规定缓存——缓存是**目标架构（ISA + 微架构）**的属性，C++ 侧只提供"对齐/布局/遍历方式"等可观测旋钮；x86-64 主流桌面/服务器每核私有 L1/L2、共享 L3，典型延迟 L1≈4、L2≈12、L3≈40、DRAM≈200+ 周期（见 ② 表格，标"典型值"）。实践铁律：先量（perf / cachegrind / 前后耗时对比）再改布局，盲猜"加缓存"常无效。
 
 ## ② 内存层级：L1/L2/L3/DDR 的延迟与带宽（周期数） [平台·x86-64]
 
@@ -112,8 +110,7 @@ int main() {
 }
 ```
 
-- `[平台·x86-64]`：把 N 改成 1024（全进 L1）再跑，ns/step 会从"数十 ns"跌到"个位数 ns"——这就是缓存层级差。
-- `[经验]`：指针追逐是"最坏访问模式"，是测真实内存延迟的经典微基准。
+把 N 改成 1024（全进 L1）再跑，ns/step 会从"数十 ns"跌到"个位数 ns"——这就是缓存层级差的体感；指针追逐是"最坏访问模式"，也是测真实内存延迟的经典微基准。
 
 ## ③ cache line（64 字节）与地址对齐 <span class="badge badge-std">标准</span>
 
@@ -141,8 +138,7 @@ int main() {
 }
 ```
 
-- `[标准]`：对齐由 `alignas` / `alignof`（C++11）规定；`alignof(T)` 是 `T` 的必对齐值（≤ 由 `std::max_align_t` 给出的最大基本对齐）。
-- `[实现/平台]`：x86-64 cache line 宽度由 CPU 微架构决定，经典 64B；`std::hardware_destructive_interference_size` 即"一行大小"的可移植表达（见 ⑩）。
+对齐由 `alignas` / `alignof`（C++11）规定，`alignof(T)` 是 `T` 的必对齐值（≤ 由 `std::max_align_t` 给出的最大基本对齐）；x86-64 cache line 宽度由 CPU 微架构决定、经典 64B，`std::hardware_destructive_interference_size` 即"一行大小"的可移植表达（见 ⑩）。
 
 ## ④ 时间局部性与空间局部性 <span class="badge badge-std">标准</span>
 
@@ -170,8 +166,7 @@ int main() {
 }
 ```
 
-- `[标准]`：局部性是程序行为，非语言特性；但 C++ 的"连续容器 + 顺序迭代"天然放大空间局部性。
-- `[经验]`：能用 `for (x : v)` 就不手写下标；`std::span` 让切片也保持连续。
+局部性是程序行为、非语言特性，但 C++ 的"连续容器 + 顺序迭代"天然放大空间局部性；能用 `for (x : v)` 就不手写下标，`std::span` 让切片也保持连续。
 
 ## ⑤ 缓存映射：直接映射 / 组相联 / 冲突未命中 [实现·GCC15]
 
@@ -198,8 +193,7 @@ int main() {
 }
 ```
 
-- `[平台/x86-64]`：现代 L1 多为 8-way 组相联、L2 常 8–16-way，故真实程序很少直接映射颠簸；但矩阵分块不足时仍会 L3 颠簸（见 ⑰）。
-- `[经验]`：真遇颠簸，靠"改块大小/换布局"比"加缓存"更有效。
+现代 L1 多为 8-way 组相联、L2 常 8–16-way，故真实程序很少直接映射颠簸；但矩阵分块不足时仍会 L3 颠簸（见 ⑰）。真遇颠簸，靠"改块大小/换布局"比"加缓存"更有效。
 
 ## ⑥ 预取：硬件预取器与 `__builtin_prefetch` [实现·GCC15]
 
@@ -230,8 +224,7 @@ int main() {
 }
 ```
 
-- `[实现/GCC13]`：`__builtin_prefetch` 在 `-O2` 下通常被保留为 `prefetch[t0]` 指令；但它只是**提示**，乱用（太早/太晚/无用）反而拖慢——务必前后对比（见 ⑰ 工具）。
-- `[平台·x86-64]`：参数 locality=0 表示取完即弃，3 表示尽量驻留各级缓存；x86 仅用到 locality 的低 2 位。
+`__builtin_prefetch` 在 `-O2` 下通常被保留为 `prefetch[t0]` 指令，但它只是**提示**——乱用（太早/太晚/无用）反而拖慢，务必前后对比（见 ⑰ 工具）；参数 locality=0 表示取完即弃、3 表示尽量驻留各级缓存，x86 仅用到 locality 的低 2 位。
 
 ## ⑦ 行填充与写策略（write-back / write-allocate） [平台·x86-64]
 
@@ -257,8 +250,7 @@ int main() {
 }
 ```
 
-- `[平台·x86-64]`：x86-64 默认 write-back + write-allocate；`non-temporal` 存储（`_mm_stream_si64` 等）才绕过缓存，用于"写一次不再读"的大块（见 ⑱）。
-- `[经验]`：写后不再读的大数组，用 streaming store 省缓存污染。
+x86-64 默认 write-back + write-allocate；`non-temporal` 存储（`_mm_stream_si64` 等）才绕过缓存，用于"写一次不再读"的大块（见 ⑱）。写后不再读的大数组，用 streaming store 省缓存污染。
 
 ## ⑧ 伪共享（false sharing）成因 [实现·GCC15]
 
@@ -308,8 +300,7 @@ int main() {
 ; 两核对同一行的 lock 指令互相等待 MESI 状态翻转 → 吞吐被锁死
 ```
 
-- `[实现·GCC15]`：`std::atomic` 的 `fetch_add` 在 x86 编译为 `lock xadd`（或 `lock add`）；`lock` 前缀强制独占该行，是伪共享的"放大器"。
-- `[标准]`：用 `std::memory_order_relaxed` 只去掉排序约束，**不**去掉原子性，故仍会触发行失效——伪共享与内存序无关。
+`std::atomic` 的 `fetch_add` 在 x86 编译为 `lock xadd`（或 `lock add`），`lock` 前缀强制独占该行，是伪共享的"放大器"；而 `std::memory_order_relaxed` 只去掉排序约束、**不**去掉原子性，故仍会触发行失效——伪共享与内存序无关。
 
 ## ⑨ 实测：伪共享前后耗时对比（线程计数器） <span class="badge badge-exp">经验</span>
 
@@ -321,8 +312,7 @@ FALSE_SHARING bad ≈ 2.9× 于 good（同核数、同迭代）
 即把两个原子计数塞在同一行，耗时约为各自独占一行的 2~4 倍（双核争用越狠越大）
 ```
 
-- `[经验]`：伪共享只在不同核**并发写不同字段**时出现；单核或只读不会。诊断靠 `perf stat -e cache-misses` 飙升或 `false-sharing` 火焰图（见 ⑲）。
-- `[标准]`：消除手段是"让它们不在同一行"——见 ⑩。
+伪共享只在不同核**并发写不同字段**时出现，单核或只读不会；诊断靠 `perf stat -e cache-misses` 飙升或 `false-sharing` 火焰图（见 ⑲）。消除手段很简单："让它们不在同一行"（见 ⑩）。
 
 ## ⑩ 消除伪共享：`alignas(64)` 与 `std::hardware_destructive_interference_size` <span class="badge badge-std">标准</span>
 
@@ -383,8 +373,7 @@ int main() {
 ;   两核不再争同一行 → 无 MESI 来回弹 → 吞吐线性提升
 ```
 
-- `[标准]`：`std::hardware_destructive_interference_size` 与 `std::hardware_constructive_interference_size` 定义于 `<new>`（C++17，[support.limits]）；GCC 12 起修正为 64（此前错为 16）。
-- `[经验]`：只给"会被并发写"的字段加对齐，**不要**给只读或单线程字段加——白占内存、还可能损害空间局部性。
+`std::hardware_destructive_interference_size` 与 `std::hardware_constructive_interference_size` 定义于 `<new>`（C++17，[support.limits]），GCC 12 起修正为 64（此前错为 16）。只给"会被并发写"的字段加对齐，**不要**给只读或单线程字段加——白占内存、还可能损害空间局部性。
 
 ## ⑪ AoS vs SoA 内存布局与向量化/缓存 [实现·GCC15]
 
@@ -439,8 +428,7 @@ int main() {
 }
 ```
 
-- `[实现/GCC13]`：SoA 的 `for(v:soa.x)` 在 `-O3 -mavx2` 下可自动向量化为 `vmovaps/vaddps`；AoS 取单字段则破坏向量宽度（见 ch155 ⑫）。
-- `[经验]`：只读/写其中少数字段 → SoA；需整体移动对象 → AoS。游戏引擎 ECS 即 SoA 思想（见 ⑯）。
+SoA 的 `for(v:soa.x)` 在 `-O3 -mavx2` 下可自动向量化为 `vmovaps/vaddps`，AoS 取单字段则破坏向量宽度（见 ch155 ⑫）；只读/写其中少数字段 → SoA，需整体移动对象 → AoS，游戏引擎 ECS 即 SoA 思想（见 ⑯）。
 
 ## ⑫ 实测：AoS vs SoA 遍历耗时 <span class="badge badge-exp">经验</span>
 
@@ -480,7 +468,7 @@ int main() {
 }
 ```
 
-- `[经验]`：差距随"被忽略的字段占比"放大；若遍历用全部字段，两者接近（AoS 反而略优，因对象局部性好）。
+差距随"被忽略的字段占比"放大；若遍历用全部字段，两者接近（AoS 反而略优，因对象局部性好）。
 
 ## ⑬ 遍历顺序：行优先 vs 列优先（矩阵） <span class="badge badge-std">标准</span>
 
@@ -513,8 +501,7 @@ int main() {
 }
 ```
 
-- `[标准]`：C++ 未规定"行优先"语义，但内建多维数组 `T a[R][C]` 的下标映射 `a[i][j] == *(a + i*C + j)` 由 `[dcl.array]` 给出，天然行优先。
-- `[经验]`：务必"外层行、内层列"；把矩阵存成 `std::vector<std::vector<int>>` 还会因每层独立堆分配进一步碎化（见 ⑭ 反例）。
+C++ 未规定"行优先"语义，但内建多维数组 `T a[R][C]` 的下标映射 `a[i][j] == *(a + i*C + j)` 由 `[dcl.array]` 给出，天然行优先；务必"外层行、内层列"，把矩阵存成 `std::vector<std::vector<int>>` 还会因每层独立堆分配进一步碎化（见 ⑭ 反例）。
 
 ## ⑭ 实测：行优先 vs 列优先耗时对比 <span class="badge badge-exp">经验</span>
 
@@ -546,8 +533,7 @@ int main() {
 }
 ```
 
-- `[经验]`：大矩阵优先用扁平一维 `vector<T>(R*C)` + `i*C+j` 索引，或 `std::mdspan`（C++23，但 GCC 13.1 未发货，见 ⑱ 替代）。
-- `[实现·GCC15]`：列优先慢的根因是"每步跨一个 cache line"，预取器无法提前，缓存命中率骤降。
+大矩阵优先用扁平一维 `vector<T>(R*C)` + `i*C+j` 索引，或 `std::mdspan`（C++23，但 GCC 13.1 未发货，见 ⑱ 替代）；列优先慢的根因是"每步跨一个 cache line"，预取器无法提前，缓存命中率骤降。
 
 ## ⑮ 结构体填充（padding）与字段重排 [实现·GCC15]
 
@@ -590,8 +576,7 @@ int main() {
 }
 ```
 
-- `[标准]`：成员布局/对齐/填充由 `[class.mem]` 与 `[basic.align]` 规定；重排必须保持"相同可观测语义"（除 padding 与地址）。
-- `[实现·GCC15]`：GCC 提供 `__attribute__((packed))` 消除填充，但会引发非对齐访问（x86 慢、某些架构直接 SIGBUS），**慎用**。
+成员布局/对齐/填充由 `[class.mem]` 与 `[basic.align]` 规定，重排必须保持"相同可观测语义"（除 padding 与地址）；GCC 提供 `__attribute__((packed))` 消除填充，但会引发非对齐访问（x86 慢、某些架构直接 SIGBUS），**慎用**。
 
 ## ⑯ 数据结构布局：热/冷分离与 ECS 数据导向设计 <span class="badge badge-exp">经验</span>
 
@@ -620,8 +605,7 @@ int main() {
 }
 ```
 
-- `[经验]`：DOD 不是"反对 OOP"，而是把"频繁一起遍历的数据"放到一起；对热点循环收益巨大，对低频逻辑无必要。
-- `[平台·x86-64]`：与 ⑪ SoA 同源——连续即缓存友好、即利于向量化。
+DOD 不是"反对 OOP"，而是把"频繁一起遍历的数据"放到一起——对热点循环收益巨大，对低频逻辑无必要；它与 ⑪ SoA 同源：连续即缓存友好、即利于向量化。
 
 ## ⑰ 缓存友好算法：分块（cache blocking / tiling） <span class="badge badge-std">标准</span>
 
@@ -651,8 +635,7 @@ int main() {
 }
 ```
 
-- `[标准]`：分块不改变算法渐进复杂度，但把"访存/计算比"从 O(N³)/O(N²) 降到接近 1（理想块大小）。
-- `[经验]`：块大小按目标缓存容量反推：`B ≈ sqrt(cacheBytes / (3*sizeof(T)))`；用 `perf` 看 cache-misses 下降验证（见 ⑲）。
+分块不改变算法渐进复杂度，但把"访存/计算比"从 O(N³)/O(N²) 降到接近 1（理想块大小）；块大小按目标缓存容量反推：`B ≈ sqrt(cacheBytes / (3*sizeof(T)))`，用 `perf` 看 cache-misses 下降验证（见 ⑲）。
 
 ## ⑱ 内存对齐 API：`assume_aligned`、`alignof`、non-temporal [实现·GCC15]
 
@@ -692,8 +675,7 @@ int main() {
 }
 ```
 
-- `[实现/GCC13]`：`assume_aligned` 在 `-O3` 下可让循环用对齐装载指令（`vmovaps` 而非 `vmovups`），少一次对齐检查。
-- `[平台·x86-64]`：GCC 13.1 仍**无** `<mdspan>`/`<print>`，大矩阵用扁平 `vector<T>` + `i*C+j`（见 ⑭），不要等 mdspan。
+`assume_aligned` 在 `-O3` 下可让循环用对齐装载指令（`vmovaps` 而非 `vmovups`），少一次对齐检查；GCC 13.1 仍**无** `<mdspan>`/`<print>`，大矩阵用扁平 `vector<T>` + `i*C+j`（见 ⑭），不要等 mdspan。
 
 ## ⑲ 工具：`perf` / `cachegrind` / `std::hardware_*` 取证 [实现·GCC15]
 
@@ -718,8 +700,7 @@ int main() {
 }
 ```
 
-- `[实现·GCC15]`：GCC/Clang 可用 `-fopt-info-vec` 看哪些循环被向量化；`-fsanitize=address` 抓越界（见 ch155 ⑯ 调试）。
-- `[经验]`：先用工具定位"是哪级缓存、哪个循环"在漏，再动手改布局。
+GCC/Clang 可用 `-fopt-info-vec` 看哪些循环被向量化，`-fsanitize=address` 抓越界（见 ch155 ⑯ 调试）；先用工具定位"是哪级缓存、哪个循环"在漏，再动手改布局。
 
 ## ⑳ 源码阅读路线（缓存相关实现与标准） <span class="badge badge-std">标准</span>
 
@@ -737,10 +718,7 @@ int main() {
    - <span class="badge badge-std">标准</span> 语言只保证成员连续与实现定义填充；冷热分离是工程优化，非语言层保证。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
 
-- `[平台·x86-64]`：libstdc++ `<new>` 中 `hardware_destructive_interference_size` 的定义（GCC 12 由 16 修正为 64）。
-- `[实现·GCC15]`：GCC 预取与对齐优化 passes（`tree-vectorize`、`pass_peephole2`）源码 `gcc/tree-vect-*.cc`。
-- `[标准]`：ISO `[support.limits]`（interference size）、`[class.mem]`（布局/对齐）、`[basic.align]`。
-- `[经验]`：阅读游戏引擎（如 EnTT 的 ECS、Godot 的 `LocalVector`）如何按 SoA/DOD 组织数据；读 `folly::AtomicStruct` 等如何用 alignas 消除伪共享。
+libstdc++ `<new>` 中 `hardware_destructive_interference_size` 的定义（GCC 12 由 16 修正为 64）；GCC 预取与对齐优化 passes（`tree-vectorize`、`pass_peephole2`）源码在 `gcc/tree-vect-*.cc`。标准侧：ISO `[support.limits]`（interference size）、`[class.mem]`（布局/对齐）、`[basic.align]`；延伸阅读：游戏引擎（EnTT 的 ECS、Godot 的 `LocalVector`）如何按 SoA/DOD 组织数据，以及 `folly::AtomicStruct` 如何用 alignas 消除伪共享。
 - 衔接：[第155章　SIMD / AVX 向量化（C++/硬件）](../part14_perf/ch155_simd.md)（SoA 与向量化）、[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（布局对优化的影响）。
 
 ## 补充完整可编译示例（缓存优化综合）

@@ -7,7 +7,7 @@
 - T0 标准（精确匹配）：``std-cpp20`` ``std-cpp23`` ``std-cpp26`` ``std-c11``
   ``std-c17``
 - T1-T7 前缀：``cppref:`` ``isocpp:`` ``core:`` ``cert:`` ``book:`` ``gcc:``
-  ``clang:`` ``msvc:`` ``cmake:`` ``qt:`` ``ue:`` ``ubsan:`` ``asan:``
+  ``clang:`` ``llvm:`` ``msvc:`` ``cmake:`` ``qt:`` ``ue:`` ``ubsan:`` ``asan:``
   ``cppcon:`` ``so:``
 - ``book:<slug>:<loc>`` 的 slug 必须在已登记书单内
 - 含 ``<...>`` 占位符的键（如 ``book:templates:<ch>``）合法但单独计数，
@@ -37,7 +37,7 @@ STD_KEYS = {"std-cpp20", "std-cpp23", "std-cpp26", "std-c11", "std-c17"}
 
 PREFIXES = (
     "cppref:", "isocpp:", "core:", "cert:", "book:",
-    "gcc:", "clang:", "msvc:", "abi:",
+    "gcc:", "clang:", "llvm:", "msvc:", "abi:",
     "cmake:", "qt:", "ue:",
     "ubsan:", "asan:", "cppcon:", "so:",
     "hopl:", "ritchie:", "stepanov:", "qcon:", "de:",

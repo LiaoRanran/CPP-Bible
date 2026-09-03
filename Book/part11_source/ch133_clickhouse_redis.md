@@ -60,8 +60,7 @@ struct ColumnFloat64 { double* data; size_t size; };
 struct FiredEvent { int fd; int mask; };
 ```
 
-- `[标准]`：OLAP 读多列聚合（SUM/AVG）天然适配列存；KV 点查（GET/SET）天然适配哈希表 + 单线程。
-- `[经验]`：看一个 C++ 系统性能，先看它「喂给 CPU 的数据布局」与「喂给线程的并发模型」——这两点决定 80% 的成败。
+OLAP 读多列聚合（SUM/AVG）天然适配列存；KV 点查（GET/SET）天然适配哈希表 + 单线程。看一个 C++ 系统性能，先看它「喂给 CPU 的数据布局」与「喂给线程的并发模型」——这两点决定 80% 的成败。
 
 ## ② ClickHouse 列存与向量化执行
 
@@ -103,7 +102,7 @@ struct ColumnVector : IColumn {
 };
 ```
 
-- `[实现·ClickHouse]`：列存的收益不来自「少读数据」（仍需读整列），而来自**内存布局对 SIMD 与 prefetch 友好**——连续 `double[]` 命中硬件预取，且循环体可被自动向量化。
+列存的收益不来自「少读数据」（仍需读整列），而来自**内存布局对 SIMD 与 prefetch 友好**——连续 `double[]` 命中硬件预取，且循环体可被自动向量化。
 
 ## ③ [实现·ClickHouse]源码剖析：向量化相关文件（上游参考，逐行解读）
 
@@ -366,7 +365,7 @@ typedef struct zskiplistNode {
 - `backward` 仅最底层有，支持 `ZRANGE` 从尾向头遍历；其余层只向前，省一半指针。
 - 与 `dict` 共享 `ele` 指针：同一 member 在跳表和字典中各有一份引用、同一 `sds`，避免双份字符串拷贝——这是 Redis「用指针共享省内存」的一贯手法。
 
-- `[实现·Redis]`：Redis 把「并发」交给内核 `epoll`，把「执行」锁死在单线程——这样所有数据结构访问都**天然无锁**，这是它简单又快的 root cause。
+Redis 把「并发」交给内核 `epoll`，把「执行」锁死在单线程——这样所有数据结构访问都**天然无锁**，这是它简单又快的 root cause。
 
 ## ⑤ 与 C++ 特性：模板 / 智能指针 / 内存池
 
@@ -409,8 +408,7 @@ struct RedisConn {
 };
 ```
 
-- `[标准]`：模板提供编译期多态（无 vtable 开销），智能指针提供 RAII 安全；二者都被两个系统间接/直接使用。
-- `[经验]`：高频路径（ClickHouse 列、Redis 事件）几乎不用 `shared_ptr`——引用计数本身就要原子操作，破坏单线程/向量化假设。
+模板提供编译期多态（无 vtable 开销），智能指针提供 RAII 安全；二者都被两个系统间接/直接使用。高频路径（ClickHouse 列、Redis 事件）几乎不用 `shared_ptr`——引用计数本身就要原子操作，破坏单线程/向量化假设。
 
 ## ⑥ [实现·GCC15]真实：编译自包含向量化批处理 / 事件循环等价示例取汇编
 
@@ -483,7 +481,7 @@ g++ -std=c++20 -O2 -S -masm=intel Examples/_ch133_eventloop.cpp -o Examples/_ch1
 call    rax                 ; 单线程串行分发回调，无锁、无上下文切换
 ```
 
-- `[实现·GCC15]`：示例 A 的 `vaddps zmm` 一条指令完成 16 个浮点加法，正是 ClickHouse 列存向量化的**硬件本质**；示例 B 的 `call rax` 是 Redis 事件循环唯一的「多路分发」点，全程单线程。
+示例 A 的 `vaddps zmm` 一条指令完成 16 个浮点加法，正是 ClickHouse 列存向量化的**硬件本质**；示例 B 的 `call rax` 是 Redis 事件循环唯一的「多路分发」点，全程单线程。
 
 ## ⑦ 性能：向量化 vs 行存
 
@@ -517,7 +515,7 @@ double acc(const std::vector<double>& v) {
 }
 ```
 
-- `[经验]`：向量化的前提只有一条——**数据连续且循环体无分支**。任何 `if (row.flag)` 都会打断自动向量化，ClickHouse 用「列拆分 + 常量折叠」规避。
+向量化的前提只有一条——**数据连续且循环体无分支**。任何 `if (row.flag)` 都会打断自动向量化，ClickHouse 用「列拆分 + 常量折叠」规避。
 
 ## ⑧ 调试
 
@@ -549,7 +547,7 @@ void aeProcessEvents(aeEventLoop* el, int flags) {
 }
 ```
 
-- `[平台·Linux]`：`-fopt-info-vec` 在 MinGW GCC 13 同样有效；Windows 下用 WinDbg/VS 看寄存器 `zmm0` 即可确认是否真在跑 AVX-512。
+`-fopt-info-vec` 在 MinGW GCC 13 同样有效；Windows 下用 WinDbg/VS 看寄存器 `zmm0` 即可确认是否真在跑 AVX-512。
 
 ## ⑨ 跨平台
 
@@ -595,7 +593,7 @@ bool has_avx2() {
 #endif
 ```
 
-- `[平台·Linux]`：写跨平台 SIMD 的代码，**永远优先用编译器自动向量化 + `alignas`**，而非手撸 intrinsics——除非 profiling 证明某热点需要。
+写跨平台 SIMD 的代码，**永远优先用编译器自动向量化 + `alignas`**，而非手撸 intrinsics——除非 profiling 证明某热点需要。
 
 ## ⑩ 常见陷阱
 
@@ -642,7 +640,7 @@ void slow(const std::function<float(float)>& f, float* out, const float* a, size
 }
 ```
 
-- `[经验]`：四个陷阱本质是同一句话——**别在 hot path 破坏连续性与单线程假设**。
+四个陷阱本质是同一句话——**别在 hot path 破坏连续性与单线程假设**。
 
 ## ⑪ 演进
 
@@ -678,7 +676,7 @@ void kernel(T* out, const T* a, const T* b, size_t n) {
 }
 ```
 
-- `[标准]`：`if constexpr`（C++17）让「编译期后端分发」比宏更类型安全、更易读。
+`if constexpr`（C++17）让「编译期后端分发」比宏更类型安全、更易读。
 
 ## ⑫ 最佳实践
 
@@ -721,7 +719,7 @@ public:
 };
 ```
 
-- `[经验]`：向量化系统用 Arena + 连续 POD；事件系统用「主线程只做快路径」——这是两个项目能 scaling 的共同纪律。
+向量化系统用 Arena + 连续 POD；事件系统用「主线程只做快路径」——这是两个项目能 scaling 的共同纪律。
 
 ## ⑬ 与 STL 容器对比
 
@@ -765,7 +763,7 @@ public:
 struct aeEventLoop { aeFileEvent events[AE_SETSIZE]; };
 ```
 
-- `[经验]`：STL 容器通用但为安全付出代价（边界检查、构造/析构、迭代器抽象）。hot path 上 ClickHouse 自己写 PODArray、Redis 用裸数组——**通用性服从性能**。
+STL 容器通用但为安全付出代价（边界检查、构造/析构、迭代器抽象）。hot path 上 ClickHouse 自己写 PODArray、Redis 用裸数组——**通用性服从性能**。
 
 ## ⑭ 跨库
 
@@ -800,7 +798,7 @@ void compute(std::span<const float> col) {
 }
 ```
 
-- `[标准]`：`std::span`（C++20）是表达「连续列视图」的现代零开销抽象，等价于 ClickHouse 的 `ColumnVector::getData()` 返回类型。
+`std::span`（C++20）是表达「连续列视图」的现代零开销抽象，等价于 ClickHouse 的 `ColumnVector::getData()` 返回类型。
 
 ## ⑮ 贡献
 
@@ -828,7 +826,7 @@ void mycommandCommand(client* c) {
 }
 ```
 
-- `[经验]`：给这类项目提 PR，最易被拒的理由是「引入分支打断向量化」或「回调变慢」。贡献前先用 `-fopt-info-vec` 自证没退化。
+给这类项目提 PR，最易被拒的理由是「引入分支打断向量化」或「回调变慢」。贡献前先用 `-fopt-info-vec` 自证没退化。
 
 ## ⑯ 工程应用
 
@@ -874,7 +872,7 @@ void batch_scale(float* out, const float* in, float k, size_t n) {
 }
 ```
 
-- `[经验]`：工程上把「向量化」与「单线程事件」两类模式当作可复用模板，分别用于计算密集与 IO 密集子系统。
+工程上把「向量化」与「单线程事件」两类模式当作可复用模板，分别用于计算密集与 IO 密集子系统。
 
 ## ⑰ 性能对比
 
@@ -911,7 +909,7 @@ double par_sum(const std::vector<double>& v) {
 // 多线程 KV 上限 ≈ 核数 × 单核，但需锁/无锁结构（如分片哈希）
 ```
 
-- `[经验]`：向量化解决「单核算力利用率」，单线程事件循环解决「并发正确性」；二者正交，可叠加（ClickHouse 既向量化又多线程分片）。
+向量化解决「单核算力利用率」，单线程事件循环解决「并发正确性」；二者正交，可叠加（ClickHouse 既向量化又多线程分片）。
 
 ## ⑱ 调试 / 源码阅读
 
@@ -941,7 +939,7 @@ double par_sum(const std::vector<double>& v) {
 // Windows 等价：VTune / 看寄存器 zmm0 是否被写
 ```
 
-- `[平台·Linux]`：源码阅读顺序决定理解速度——**先数据结构（IColumn / aeFileEvent），后控制流（executeOnColumn / aeMain）**。
+源码阅读顺序决定理解速度——**先数据结构（IColumn / aeFileEvent），后控制流（executeOnColumn / aeMain）**。
 
 ## ⑲ <span class="badge badge-exp">经验</span>选型
 
@@ -970,7 +968,7 @@ bool should_vectorize(size_t n, bool branchy) {
 // 等价：若状态共享简单，单线程事件循环比无锁并发更易写对
 ```
 
-- `[经验]`：列存向量化与单线程事件循环是两种「用约束换性能」的哲学——前者约束数据布局，后者约束并发模型。选型时先认清你的约束。
+列存向量化与单线程事件循环是两种「用约束换性能」的哲学——前者约束数据布局，后者约束并发模型。选型时先认清你的约束。
 
 ## ⑳ 速查表
 
@@ -1028,7 +1026,7 @@ bool should_vectorize(size_t n, bool branchy) {
 //   if constexpr-> 编译期 SIMD 后端选择（C++17）
 ```
 
-- `[经验]`：记不住细节就看速查表的四行——**列连续、循环无分支、单线程无锁、先 profile 再优化**。
+记不住细节就看速查表的四行——**列连续、循环无分支、单线程无锁、先 profile 再优化**。
 
 ## ㉑ 真实工程使用场景：把 ClickHouse / Redis 接到你的工程
 
@@ -1089,8 +1087,7 @@ int main() {
 }
 ```
 
-- `[标准]`：`std::map` + `std::chrono` 即"带时间戳的 KV"；Redis 用同一思路但把数据放内存哈希表、用事件循环统一驱动过期回收（见第④节）。
-- `[经验]`：看懂这个 25 行例子，你就理解了 Redis TTL 90% 的语义；剩下 10% 是内存淘汰策略（LRU/LFU，`maxmemory`）与主从复制。
+`std::map` + `std::chrono` 即"带时间戳的 KV"；Redis 用同一思路但把数据放内存哈希表、用事件循环统一驱动过期回收（见第④节）。看懂这个 25 行例子，你就理解了 Redis TTL 90% 的语义；剩下 10% 是内存淘汰策略（LRU/LFU，`maxmemory`）与主从复制。
 
 ### ㉑.3 真实 API 长什么样（注释呈现，需链接第三方库）
 
@@ -1130,8 +1127,7 @@ int main() {
 4. **连接串**：Redis 用 `tcp://host:port`（或 `redis://` 带密码）；ClickHouse 用 `host:port` + 账号密码，列数据尽量批量发送发挥向量化优势（见第⑭节）。
 5. **取舍**：热数据/低延迟走 Redis，海量扫描聚合走 ClickHouse；两者用"Redis 缓存 + ClickHouse 落库"分层最常见。
 
-- `[平台·Linux]`：`redis-plus-plus` 依赖 `hiredis`，链接时别忘了二者都加；`clickhouse-cpp` 用 TCP 原生协议，比走 HTTP 更高效。
-- `[引用]` redis-plus-plus：`https://github.com/sewenew/redis-plus-plus`；ClickHouse C++ 客户端：`https://github.com/ClickHouse/clickhouse-cpp`。
+`redis-plus-plus` 依赖 `hiredis`，链接时别忘了二者都加；`clickhouse-cpp` 用 TCP 原生协议，比走 HTTP 更高效。扩展阅读：redis-plus-plus `https://github.com/sewenew/redis-plus-plus`；ClickHouse C++ 客户端 `https://github.com/ClickHouse/clickhouse-cpp`。
 
 ## ㉒ 史料深挖与工业实证：从 LLOOGG 到 Yandex.Metrica，再到许可地震
 
@@ -1527,6 +1523,6 @@ flowchart TD
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
-- `[cppcon:<storage>]`（T6）复现/案例源 —— 在线
+- `[cppcon:vectorization]`（T6）复现/案例源（SIMD 与向量化专题）—— 在线 `cppcon.org`
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

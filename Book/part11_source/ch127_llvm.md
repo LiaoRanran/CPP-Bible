@@ -59,8 +59,7 @@ LLVM 是一套**模块化、可重用**的编译器后端基础设施；Clang �
 int main() { return 42; }
 ```
 
-- `[标准]`：C++ 标准本身不规定编译器内部结构；但 Clang 以「忠实实现标准 + 可诊断扩展」为工程目标（见 ⑦）。
-- `[平台·x86-64]`：Clang/LLVM 覆盖 x86-64、ARM/ARM64、RISC-V、PowerPC 等（见 ⑫）。
+C++ 标准本身不规定编译器内部结构，但 Clang 以「忠实实现标准 + 可诊断扩展」为工程目标（见 ⑦）；这套设计让它覆盖 x86-64、ARM/ARM64、RISC-V、PowerPC 等后端（见 ⑫），而这份广度正是前端/IR/后端解耦的红利。
 
 ## ② 架构：前端 / 优化器 / 后端 / IR [实现·LLVM]
 
@@ -89,12 +88,15 @@ int main() { return 42; }
 struct CompileUnit { const char* frontend; const char* target; };
 ```
 
-- `[实现·LLVM]`：Clang 的 IR 生成集中在 `clang/lib/CodeGen/`，每个 AST 节点有对应 `Emit*` 函数（见 ⑤）。
-- `[经验]`：理解 LLVM 的关键不是记住某个 Pass，而是理解 **IR 是通用货币**——所有优化都在 IR 上表达。
+Clang 的 IR 生成集中在 `clang/lib/CodeGen/`，每个 AST 节点有对应 `Emit*` 函数（见 ⑤）；理解 LLVM 的关键不是记住某个 Pass，而是理解 **IR 是通用货币**——所有优化都在 IR 上表达，记住这点比背任何 Pass 名字都管用。
 
 ## ③ LLVM IR 表示 <span class="badge badge-std">标准</span>
 
-LLVM IR 是**强类型、SSA 形式、低级但机器无关**的中间表示。函数、基本块、指令三层结构；每个值（除 PHI 外）只被赋值一次。
+LLVM IR 是**强类型、SSA 形式、低级但机器无关**的中间表示——按官方 LangRef 的定义，它是 "a Static Single Assignment (SSA) based representation that provides type safety, low-level operations, flexibility, and the capability of representing 'all' high-level languages cleanly"，并且是"贯穿 LLVM 编译策略所有阶段的公共代码表示" `[llvm:langref]`。
+
+**它有三种等价形态**，这一点常被忽略：内存中的编译器 IR、磁盘上的 bitcode（供 JIT 快速加载）、以及人类可读的汇编文本（`.ll`）。官方明确说这三种形式**完全等价**，正因为等价，`opt` 改文本、`llc` 读 bitcode、`lli` 直接执行才能随意组合——这也是 LLVM 工具链能拆成一堆单职责小工具的前提（⑩）`[llvm:langref]`。
+
+**SSA 的"良构"比"语法合法"更严**。例如 `%x = add i32 1, %x` 语法上没问题，但**不是良构 IR**——因为 `%x` 的定义没有支配（dominate）它的所有使用。LLVM 提供 Verifier pass 专门查这类问题，它会在 parser 读完输入之后、以及优化器输出 bitcode 之前**自动运行** `[llvm:langref]`。由此也带来一条 PHI 约束：函数**入口块没有前驱，因此不能包含任何 PHI 节点**；而 PHI 必须为每个前驱各准备一项。
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：表示 <span class="badge badge-std">标准</span>]
 ```cpp
@@ -115,12 +117,17 @@ int add(int a, int b) { return a + b; }
 extern "C" int g(int* p, long n) { return (int)(p[0] + n); }
 ```
 
-- `[标准]`：IR 的 SSA + 类型系统使「值版本」分析（常量传播、死代码消除）天然高效。
-- `[平台·x86-64]`：IR 与 ABI 解耦——同一份 `.ll` 可被不同 Target 后端消费。
+**为什么 SSA + 强类型值得付这个代价？** 因为优化器可以直接在"值"上推理，不必先做复杂的别名/到达定义推断。官方举的例子最能说明问题：**有了类型信息，指针分析可以证明某个 C 局部变量在当前函数之外从不被访问，于是把它从内存位置提升（promote）成一个普通的 SSA 值** `[llvm:langref]`——这正是 `mem2reg` Pass 干的事（⑧）。局部变量一旦变成 SSA 值，常量传播、GVN、死代码消除就都能直接生效；若它还躺在栈上，这一切都无从谈起。
+
+**IR 与 ABI 是解耦的**：同一份 `.ll` 可被不同 Target 后端消费（⑫），这正是"写一种 IR，落所有硬件"的底气所在。
 
 ## ④ Pass 框架与优化管道 [实现·LLVM]
 
 早期 LLVM 用 `FunctionPassManager`/`ModulePassManager` 顺序跑 Pass；现代 LLVM（≥14）转向 **Analysis/Transform 分离的新 PassManager**，由 `PassBuilder` 按优化等级组装管道。
+
+官方把 Pass 分成三类，理解这个划分比记住单个 Pass 名字重要得多 `[llvm:passes]`：**Analysis passes** 只计算信息供别的 Pass 或调试/可视化使用、不改程序（`domtree`、`loops`、`scalar-evolution` 属此类）；**Transform passes** 会改动程序，官方原话是它们"可以使用、也可能使分析结果失效"（*can use or invalidate the analysis passes*）；**Utility passes** 提供工具性功能，不归入前两类。
+
+⚠️ 一处必须诚实说明：官方这份 Pass 列表自带免责声明——"本文档更新不频繁，Pass 列表很可能不完整"，真正的权威清单要用 `opt -print-passes` 现场打印 `[llvm:passes]`。所以任何"LLVM 有哪些 Pass"的列举（**包括本书 ⑧**）都应视为快照而非契约。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架与优化管道 [实现·LLVM]
 ```cpp
@@ -176,8 +183,7 @@ Clang 把 AST 翻译成 IR 的核心在 `clang/lib/CodeGen/`。`CodeGenFunction`
 // 优化器（LoopSimplify/Unroll）才有机会将其展开为常量（mov eax,10）。
 ```
 
-- `[实现·LLVM]`：`IRBuilder` 不是「写文本」，而是构造 `llvm::Value*` 对象图；Clang 每 emit 一条表达式就拿到一个 `Value*`，供父节点复用（这正是 GVN 能去重的基础，见 ⑧）。
-- `[平台·x86-64]`：上述路径为上游 `main` 分支；具体行号随版本漂移，引用时务必带 commit/分支。
+`IRBuilder` 不是「写文本」而是构造 `llvm::Value*` 对象图——Clang 每 emit 一条表达式就拿一个 `Value*` 供父节点复用，这正是 GVN 能去重的基础（见 ⑧）；上述路径是上游 `main` 分支，具体行号随版本漂移，引用时务必带 commit/分支。
 
 ## ⑥ Clang 前端与 AST [实现·LLVM]
 
@@ -203,8 +209,7 @@ template <typename T> T poly(T a, T b) { return a + b; }
 int use_poly() { return poly(2, 3) + poly(1.5, 2.5); }
 ```
 
-- `[实现·LLVM]`：AST 与 IR 的边界清晰——**Sema 保证语义正确，CodeGen 只负责忠实 lowering**。这也是 Clang 诊断质量高的根源（见 ⑦）。
-- `[经验]`：要读懂 IR 为什么是那样，先理解 AST 节点是怎么被 Emit 的（⑤ 的 `EmitStmt`/`EmitExpr`）。
+AST 与 IR 的边界清晰：**Sema 保证语义正确，CodeGen 只负责忠实 lowering**——这也是 Clang 诊断质量高的根源（见 ⑦）；要读懂 IR 为什么是那样，先理解 AST 节点怎么被 Emit（见 ⑤ 的 `EmitStmt`/`EmitExpr`）。
 
 ## ⑦ 与 C++ 标准：诊断 / 实现 <span class="badge badge-std">标准</span>
 
@@ -229,15 +234,23 @@ int ub_example(int* p) {
 }
 ```
 
-- `[标准]`：Clang 对 C++20 模块化、`<ranges>`、concepts 的支持与 GCC 互有快慢（见 ⑭/⑮）。
-- `[经验]`：把 `-Wall -Wextra -Werror` 当默认；Clang 的 `-Wshadow`/`-Wconversion` 能抓出大量潜藏 bug。
+Clang 对 C++20 模块化、`<ranges>`、concepts 的支持与 GCC 互有快慢（见 ⑭/⑮）；实践中把 `-Wall -Wextra -Werror` 当默认，Clang 的 `-Wshadow`/`-Wconversion` 能抓出大量潜藏 bug。
 
 ## ⑧ 优化管道：SCCP / GVN / 循环优化 [实现·LLVM]
 
-三个机器无关优化的代表：
-- **SCCP（稀疏条件常量传播）**：沿 CFG 传播常量，遇不可判定则退化为「未知」，最终把可定值替换为立即数。
-- **GVN（全局值编号）**：同一表达式只算一次，重复出现复用其结果。
-- **循环优化**：LoopRotate / LICM / LoopUnroll 把循环变成更易优化的形态。
+机器无关优化里，有六个 Pass 值得逐个说清——它们几乎解释了你在 ⑨ 的汇编里看到的一切 `[llvm:passes]`。
+
+**`mem2reg`（提升内存到寄存器）**：把只被 load/store 使用的 `alloca` 提升为寄存器值。做法是**用支配边界（dominator frontier）放置 PHI 节点**，再按深度优先遍历改写 load/store——这正是标准的"pruned SSA 构造算法"。它承接 ③ 的 LangRef 论断：类型信息 + 指针分析证明局部变量不外泄，于是从内存位置提升为 SSA 值。**没有 mem2reg，后面所有优化都无从谈起**——变量还躺在栈上时，常量传播与 GVN 都看不见它。
+
+**`sccp`（稀疏条件常量传播）**：官方概括为四条——"假定值是常量，除非被证明不是；假定基本块是死的，除非被证明是活的；证明出常量就替换；证明出条件分支就改成无条件跳转"。注意官方还提醒："这个 Pass 有个毛病，会把一些定义变成死的，所以最好在它之后跑一次 DCE。" ⑨ 里 `caller()` 被折叠成 `mov eax, 92` 就是它干的。
+
+**`gvn`（全局值编号）**：官方定义是"消除**完全冗余与部分冗余**的指令，并执行冗余 load 消除"。注意它不只是"同一表达式只算一次"——消除冗余 load 意味着它还能合并重复的内存读取，这依赖别名分析。
+
+**`instcombine`（指令合并）**："把指令合并成更少、更简单的指令，是代数化简发生的地方"，且**它不修改 CFG**。官方列出它的规范化保证，例如：二元运算的常量操作数一律移到右侧；乘上 2 的幂会变成左移（于是 `add X, X` → `mul X, 2` → `shl X, 1`）。③ 里那个 `mul %X, 8` → `shl %X, 3` 的例子正是这一类。
+
+**`licm`（循环不变量外提）**："通过把代码提升到 preheader 块、或下沉到 exit 块，尽可能把代码移出循环体；它还会把循环中必须别名的内存位置提升到寄存器里。" 官方强调外提是**规范化变换**——它本身未必直接变快，而是"让后续的中端优化得以进行、变得更简单"。
+
+**`loop-simplify` + `indvars`（循环规范化）**：`loop-simplify` 插入 pre-header，保证从循环外进入循环头只有一条非关键边——官方明说这"简化了一批分析与变换，例如 LICM"；`indvars` 则把归纳变量规范化成"从 0 开始、步长为 1"，官方保证"规范化后的归纳变量一定是循环头里的第一个 PHI 节点"。⑨ 的 `use_inlined` 循环之所以能被完全展开成 `mov eax, 10`，靠的就是这一串：规范化 → 算出 trip count → 展开 → SCCP 折叠。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 优化管道：SCCP / GVN / 循环优化 [实现·LLVM]
 ```cpp
@@ -273,8 +286,9 @@ int dot(const int* a, const int* b, int n, int k) {
 }
 ```
 
-- `[实现·LLVM]`：这些 Pass 在 `buildPerModuleDefaultPipeline` 中按 O2 组合（见 ④）；`opt` 可单独调试（见 ⑩）。
-- `[经验]`：SCCP 与 GVN 经常协同——SCCP 先折叠出常量，GVN 再去重，最终 IR 大幅瘦身。
+这些 Pass 由 `buildPerModuleDefaultPipeline` 按优化等级组装（④），`opt` 可单独调试（⑩）`[llvm:passes]`。
+
+**它们之间是协同而非并列**：mem2reg 先把变量搬进 SSA，SCCP 折叠出常量，GVN 再去重，instcombine 收尾化简——⑨ 里 `compute(7)` 变成 `mov eax, 92` 正是这条链的产物，而 ⑨ 也证明了同样的机制在 GCC 上成立（原理跨编译器通用）。
 
 ## ⑨ [实现·LLVM] 真实：用 g++ 编译展示内联 / O2 差异 [实现·LLVM]
 
@@ -316,8 +330,7 @@ _Z11use_inlinedv:
 	ret
 ```
 
-- `[实现·LLVM]`：`-O2` 下 `use_inlined` 里对 `add_inline` 的 4 次调用被内联、循环被展开、加法被常量折叠，最终只留下 `mov eax, 10`。这正是 ⑧ 所述 SCCP/GVN/Unroll 协同的结果——**在 GCC 上也成立**，证明优化原理跨编译器通用。
-- `[平台·x86-64]`：GCC 的 `-O2` 管道同样含内联、循环展开、常量传播；Clang 用同名 Pass 但启发式不同，数字可能略有差异但机制一致。
+`-O2` 下 `use_inlined` 里对 `add_inline` 的 4 次调用被内联、循环展开、加法常量折叠，最终只留 `mov eax, 10`——这正是 ⑧ 所述 SCCP/GVN/Unroll 协同的结果，且**在 GCC 上也成立**，证明优化原理跨编译器通用；GCC 的 `-O2` 管道同样含内联、循环展开、常量传播，Clang 用同名 Pass 但启发式不同，数字略有差异但机制一致。
 
 另一组真实取证来自 `Examples/_ch127_gvn.cpp`：`caller()` 调用 `compute(7)`，在 `-O2` 下被完全折叠：
 
@@ -366,8 +379,7 @@ llc -O2 -march=x86-64 -filetype=obj -o main.o main.opt.ll
 int caller_typical() { return 92; }  // 语义等价于优化后的 caller()
 ```
 
-- `[平台·x86-64]`：GCC 对应物是 `g++ -S -fverbose-asm`（看汇编）与内部 GIMPLE（无可公开 `-fdump` IR 文本的标准格式）；Clang/LLVM 的 IR 完全外显，是学习编译优化的首选。
-- `[经验]`：调试「为什么没优化」时，先 `clang -emit-llvm -O0` 看 IR，再 `-O2` 对比，定位是哪个 Pass 没触发。
+GCC 对应物是 `g++ -S -fverbose-asm`（看汇编）与内部 GIMPLE（无公开 `-fdump` IR 文本的标准格式）；Clang/LLVM 的 IR 完全外显，是学习编译优化的首选。调试「为什么没优化」时，先 `clang -emit-llvm -O0` 看 IR，再 `-O2` 对比，定位是哪个 Pass 没触发。
 
 ## ⑪ 性能 <span class="badge badge-exp">经验</span>
 
@@ -395,8 +407,7 @@ int bench_inline() {
 // GCC 等价：g++ -O2 -flto ...（本机 GCC 13 支持，但未在此章实测）
 ```
 
-- `[经验]`：绝大多数项目 `-O2` 性价比最高；`-O3` 对向量化友好但可能增大代码体积导致 icache 抖动。
-- `[平台·x86-64]`：Clang 与 GCC 在 `-O2` 下生成代码的性能差距通常在个位数百分比，选熟悉的即可。
+绝大多数项目 `-O2` 性价比最高；`-O3` 对向量化友好但可能增大代码体积导致 icache 抖动。Clang 与 GCC 在 `-O2` 下生成代码的性能差距通常在个位数百分比，选熟悉的即可。
 
 ## ⑫ 跨平台后端：x86 / ARM / RISC-V [平台·x86-64]
 
@@ -421,8 +432,7 @@ __attribute__((target("avx2"))) int vec_sum(const int* p, int n) {
 }
 ```
 
-- `[平台·x86-64]`：RISC-V 后端在 LLVM 中成熟度近年快速上升，常被用作教学后端（指令集规整、文档好）。
-- `[实现·LLVM]`：后端代码在 `llvm/lib/Target/<Arch>/`，每个架构一个子目录（X86/ARM/RISCV/...）。
+RISC-V 后端在 LLVM 中成熟度近年快速上升，常被用作教学后端（指令集规整、文档好）；后端代码在 `llvm/lib/Target/<Arch>/`，每个架构一个子目录（X86/ARM/RISCV/...）。
 
 ## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
@@ -449,8 +459,11 @@ int spin() { while (!flag) {} return flag; } // 不是正确的线程同步
 double trap_fma(double a, double b, double c) { return a * b + c; }
 ```
 
-- `[经验]`：最常见的是**过度依赖 UB 然后怪优化器**。写「定义良好」的代码，优化器才会给你想要的结果。
-- `[标准]`：C++ 标准定义 UB 的边界；Clang/GCC 的优化都建立在「UB 不会发生」的假设上。
+实践中最常见的是**过度依赖 UB 然后怪优化器**——写"定义良好"的代码，优化器才会给你想要的结果。C++ 标准定义了 UB 的边界，而 Clang 与 GCC 的优化都建立在"UB 不会发生"这个假设之上；一旦你踩了 UB，优化器删掉你的判停条件（陷阱 1）是**合规**的，不是 bug。
+
+**把 IR 当稳定 ABI 是另一个坑**（陷阱 3）。IR 有 Verifier 保证"良构"，但**良构 ≠ 跨版本稳定**：LLVM 明确不承诺 `.ll` 文本或 bitcode 的向后兼容，Opaque Pointer 迁移（LLVM 14→15 删除 `PointerType::getElementType()`）就是活生生的例子——大量直接读元素类型的内部 Pass 一夜之间编译失败 `[llvm:opaquepointers]`。这与 ③ 说的"三种形式互相等价"并不矛盾：等价性是**同一版本内**的性质，跨版本契约另论。
+
+**浮点 FMA 收缩（陷阱 4）** 也属同类：`a * b + c` 是否被合并成一条 FMA 由编译选项决定，跨编译器结果不一致，需要 `-ffp-contract=off` 锁定。
 
 ## ⑭ 与 GCC 对比：CGEN vs GCC 后端 [平台·x86-64]
 
@@ -474,8 +487,7 @@ int both_inline(int a, int b) { return (a + b) * (a + b); }
 void unused_warn(int x) { int y = x; (void)y; } // -Wunused 两边都会报
 ```
 
-- `[平台·x86-64]`：关键区别——**LLVM IR 是外部可见、可序列化的文本**；GCC 的 GIMPLE/RTL 主要内部使用。这决定了 LLVM 生态（clang 插件、opt、LLDB、KLEE）更开放。
-- `[经验]`：跨编译器项目（库作者）务必在 Clang 与 GCC 上各编译一遍，避免踩「某编译器扩展」的坑。
+关键区别——**LLVM IR 是外部可见、可序列化的文本**，而 GCC 的 GIMPLE/RTL 主要内部使用，这决定了 LLVM 生态（clang 插件、opt、LLDB、KLEE）更开放；跨编译器项目（库作者）务必在 Clang 与 GCC 上各编译一遍，避免踩「某编译器扩展」的坑。
 
 ## ⑮ 演进：C++ 标准支持 <span class="badge badge-std">标准</span>
 
@@ -499,8 +511,7 @@ export module math_evolution;
 export int sq(int x) { return x * x; }
 ```
 
-- `[标准]`：WG21 提案在 Clang 的 `clang/test/CXX/` 与 GCC 的 `testsuite/` 都有 conformance 测试守护。
-- `[经验]`：尝鲜新标准特性优先 Clang 主线；生产稳定性则看发行版打包质量。
+WG21 提案在 Clang 的 `clang/test/CXX/` 与 GCC 的 `testsuite/` 都有 conformance 测试守护；尝鲜新标准特性优先 Clang 主线，生产稳定性则看发行版打包质量。
 
 ## ⑯ 最佳实践 <span class="badge badge-exp">经验</span>
 
@@ -527,8 +538,7 @@ constexpr int lookup_size(int n) { return n * n + 1; }
 static_assert(lookup_size(7) == 50);
 ```
 
-- `[经验]`：优化是**测量**出来的，不是猜出来的。先 `-O2`，profile 定位热点，再针对性用内联提示/LTO/PGO。
-- `[实现·LLVM]`：`[[likely]]` 在 Clang 中会被 CodeGen 写入 `!prof` 权重元数据，影响块布局 Pass。
+优化是**测量**出来的不是猜出来的：先 `-O2`，profile 定位热点，再针对性用内联提示/LTO/PGO；而 `[[likely]]` 在 Clang 中会被 CodeGen 写入 `!prof` 权重元数据，影响块布局 Pass。
 
 ## ⑰ 贡献 <span class="badge badge-exp">经验</span>
 
@@ -554,8 +564,7 @@ static_assert(lookup_size(7) == 50);
 // 配套：clang/lib/Sema/SemaXXX.cpp 中 Diag(Loc, diag::warn_my_new_warn);
 ```
 
-- `[经验]`：LLVM 代码风格要求 80 列、2 空格缩进、`[Reference]` 注释风格；PR 前务必 `clang-format` 与 `ninja check-all`。
-- `[平台·x86-64]`：所有讨论在 GitHub 与 Discourse（llvm-dev）进行；RFC 先于大改动。
+LLVM 代码风格要求 80 列、2 空格缩进、`[Reference]` 注释风格，PR 前务必 `clang-format` 与 `ninja check-all`；所有讨论在 GitHub 与 Discourse（llvm-dev）进行，RFC 先于大改动。
 
 ## ⑱ 跨语言：Rust / Swift 用 LLVM [平台·x86-64]
 
@@ -577,8 +586,7 @@ int add_cross_lang(int a, int b) { return a + b; }  // 三语言最终都落到�
 template <typename T> inline T add_generic(T a, T b) { return a + b; }
 ```
 
-- `[平台·x86-64]`：启示——学透 LLVM IR 与 Pass，等于同时掌握了 C++/Rust/Swift 三套编译器的「底层语言」。
-- `[经验]`：多语言团队可用 LLVM IR 作为「通用中间契约」，做跨语言 FFI 优化（如 Rust 导出给 C++ 调用）。
+启示：学透 LLVM IR 与 Pass，等于同时掌握了 C++/Rust/Swift 三套编译器的「底层语言」；多语言团队可用 LLVM IR 作为「通用中间契约」，做跨语言 FFI 优化（如 Rust 导出给 C++ 调用）。
 
 ## ⑲ 调试 / 源码阅读 [实现·LLVM]
 
@@ -605,8 +613,7 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 // 想理解「为什么报这个错」，从 Diag(..., diag::err_xxx) 反向追 AST 检查点
 ```
 
-- `[实现·LLVM]`：LLVM 源码以 `lib/` + `include/` 对应，`XXX.cpp` 实现 `XXX.h` 中声明的接口；阅读时「先接口后实现」最高效。
-- `[经验]`：不要试图通读——带着具体问题（「'+' 怎么变成 IR？」「这个警告在哪发出？」）去读，命中即止。
+LLVM 源码以 `lib/` + `include/` 对应，`XXX.cpp` 实现 `XXX.h` 中声明的接口，阅读时「先接口后实现」最高效；不要试图通读——带着具体问题（「加号怎么变成 IR？」「这个警告在哪发出？」）去读，命中即止。
 
 ## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
@@ -656,8 +663,7 @@ export module opt_bridge;
 export int bridge(int a, int b) { return (a + b) * (a + b); }
 ```
 
-- `[标准]`：LLVM/Clang 是**标准无关**的基础设施——它实现 C++ 标准，但不被标准定义内部结构。
-- `[经验]`：把 LLVM 当「可观察的编译器」来学：IR 是语言、Pass 是动词、后端是方言。掌握它，你同时懂了 C++/Rust/Swift 的底层。
+LLVM/Clang 是**标准无关**的基础设施——它实现 C++ 标准，但不被标准定义内部结构；把 LLVM 当「可观察的编译器」来学：IR 是语言、Pass 是动词、后端是方言，掌握它你就同时懂了 C++/Rust/Swift 的底层。
 
 ## ㉑ 真实工程使用场景：Clang / Swift / Rust 背后那台 LLVM
 
@@ -711,8 +717,7 @@ int main() {
 }
 ```
 
-- `[标准]`：`std::variant` + `std::visit` 是 C++17 的标签联合与访问者机制；LLVM 用自研的 `llvm::dyn_cast`/`InstVisitor` 做同类分派，但模式完全同构。
-- `[评]`：看懂这个 25 行例子，你就懂了"为什么 LLVM Pass 里满屏 `if (auto* I = dyn_cast<...>(V))`"——本质就是 variant 的 `std::holds_alternative` 检查。
+`std::variant` + `std::visit` 是 C++17 的标签联合与访问者机制，LLVM 用自研的 `llvm::dyn_cast`/`InstVisitor` 做同类分派，模式完全同构；看懂这个 25 行例子，你就懂了"为什么 LLVM Pass 里满屏 `if (auto* I = dyn_cast<...>(V))`"——本质就是 variant 的 `std::holds_alternative` 检查。
 
 ### ㉑.3 真实 LLVM API 长什么样（注释呈现，需 LLVM 头）
 
@@ -1048,6 +1053,11 @@ flowchart TD
 ## 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
-- `[clang:<internals>]`（T5）CLANG 官方文档 —— 在线 `clang.llvm.org`
+- `[clang:docs]`（T5）Clang 官方文档 —— `clang.llvm.org/docs`（前端 / 诊断 / Sanitizer）
+- `[llvm:langref]`（T5·终审）LLVM Language Reference Manual —— `llvm.org/docs/LangRef.html`：IR 的 SSA 形式、三种等价形态、良构性（支配关系）、PHI 约束、类型系统，是本书 IR 语义的终审源（③）
+- `[llvm:passes]`（T5）LLVM's Analysis and Transform Passes —— `llvm.org/docs/Passes.html`：mem2reg / sccp / gvn / instcombine / licm / loop-simplify / indvars 的官方语义（④⑧）；⚠️ 官方自注"更新不频繁、列表可能不全"，权威以 `opt -print-passes` 为准
+- `[llvm:opaquepointers]`（T5）Opaque Pointers —— `llvm.org/docs/OpaquePointers.html`：LLVM 14→15 删除 `PointerType::getElementType()`（⑬㉔）
+- `[llvm:writinganllvmpass]`（T5）Writing an LLVM Pass —— `llvm.org/docs/WritingAnLLVMPass.html`（㉑.3 练习 2）
+- `[llvm:programmersmanual]`（T5）LLVM Programmer's Manual —— `llvm.org/docs/ProgrammersManual.html`（ADT：`SmallVector` / `StringSwitch` / `dyn_cast`，练习 1/3）
 
 > 键的含义与全部来源见 `docs/references/SOURCING.md`；写作时只取要点，不整本投喂。

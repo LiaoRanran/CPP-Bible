@@ -84,8 +84,7 @@ int main() {
 }
 ```
 
-- `[标准]`：ISO C++ 规定容器/算法的语义；libc++、libstdc++、MSVC STL 都是对同一条款的「实现」，符合度有差异（见 ⑮）。
-- `[经验]`：libc++ 不是「另一个头文件集合」——它的字符串布局、异常 ABI、调试模式都与 libstdc++ 不二进制兼容（见 ⑤ ⑨ ⑬）。
+ISO C++ 规定容器/算法的语义；libc++、libstdc++、MSVC STL 都是对同一条款的「实现」，符合度有差异（见 ⑮）。libc++ 不是「另一个头文件集合」——它的字符串布局、异常 ABI、调试模式都与 libstdc++ 不二进制兼容（见 ⑤ ⑨ ⑬）。
 
 ## ② 架构与模块化（<experimental>/模块） [实现·libc++]
 
@@ -125,8 +124,7 @@ int use_std() {
 └──────────────────────────────────────────────────────────────┘
 ```
 
-- `[实现·libc++]`：`__`-前缀实现头是 libc++ 的显式约定——用户代码不应 `#include <__string>`，因为它不属标准接口。
-- `[平台·Linux]`：libc++ 模块（`import std`）在 Clang 上最成熟；GCC 对 libc++ 模块支持较弱（见 ⑭）。
+`__`-前缀实现头是 libc++ 的显式约定——用户代码不应 `#include <__string>`，因为它不属标准接口；libc++ 模块（`import std`）在 Clang 上最成熟，GCC 对 libc++ 模块支持较弱（见 ⑭）。
 
 ## ③ 与 libc++abi 关系 <span class="badge badge-std">标准</span>
 
@@ -167,8 +165,7 @@ template <typename T> void show() {
 }
 ```
 
-- `[标准]`：标准只规定 `throw`/`catch` 语义，不规定展开实现；libc++abi 是 LLVM 对这部分的具体实现。
-- `[经验]`：链接 libc++ 程序时通常需同时链 `-lc++ -lc++abi -lunwind`（见 ⑭）。
+标准只规定 `throw`/`catch` 语义，不规定展开实现；libc++abi 是 LLVM 对这部分的具体实现。链接 libc++ 程序时通常需同时链 `-lc++ -lc++abi -lunwind`（见 ⑭）。
 
 ## ④ [实现·libc++]源码剖析：basic_string 的 __rep 联合（上游参考）
 
@@ -206,8 +203,7 @@ int main() {
 }
 ```
 
-- `[实现·libc++]`：`__rep` 联合让 `std::string` 在 64 位下仅占 **24 字节**，短字符串内联 22 字节（见 ⑧ ⑨ 容量对比） [UNVERIFIED]。
-- `[平台·Linux]`：该布局受 `_LIBCPP_ABI_ALTERNATE_STRING_LAYOUT` 控制，不同平台/ABI 配置可能不同（见 ⑫）。
+`__rep` 联合让 `std::string` 在 64 位下仅占 **24 字节**，短字符串内联 22 字节（见 ⑧ ⑨ 容量对比）[UNVERIFIED]；该布局受 `_LIBCPP_ABI_ALTERNATE_STRING_LAYOUT` 控制，不同平台/ABI 配置可能不同（见 ⑫）。
 
 ## ⑤ 与 libstdc++ 差异 <span class="badge badge-std">标准</span>
 
@@ -240,8 +236,7 @@ int main() {
 }
 ```
 
-- `[标准]`：inline namespace 是标准特性；但各实现选用的名字（`__cxx11` vs `__1`）是**实现定义**，故符号级不兼容。
-- `[经验]`：同一二进制不要同时链 libc++ 与 libstdc++（见 ⑬ 陷阱）。
+inline namespace 是标准特性；但各实现选用的名字（`__cxx11` vs `__1`）是**实现定义**，故符号级不兼容。同一二进制不要同时链 libc++ 与 libstdc++（见 ⑬ 陷阱）。
 
 ## ⑥ 异常 / RTTI <span class="badge badge-std">标准</span>
 
@@ -280,8 +275,7 @@ int main() {
 }
 ```
 
-- `[标准]`：异常/RTTI 语义由 ISO C++ 规定；libc++ 仅提供符合该语义的实现，并委托 libc++abi 做底层展开。
-- `[经验]`：`-fno-exceptions` 下 `std::vector` 的 `at()` 等仍声明 `throw`，但实现会变成终止——不要假设「不抛」。
+异常/RTTI 语义由 ISO C++ 规定；libc++ 仅提供符合该语义的实现，并委托 libc++abi 做底层展开。`-fno-exceptions` 下 `std::vector` 的 `at()` 等仍声明 `throw`，但实现会变成终止——不要假设「不抛」。
 
 ## ⑦ 内存资源 pmr <span class="badge badge-std">标准</span>
 
@@ -321,8 +315,7 @@ struct my_resource : std::pmr::memory_resource {
 };
 ```
 
-- `[标准]`：`<memory_resource>` 是 C++17 标准；libc++ 与 libstdc++ 均实现，语义一致。
-- `[经验]`：用 `monotonic_buffer_resource` 做「函数内临时大量分配」可绕开 malloc 锁竞争，是 libc++ 常见性能技巧（见 ⑪）。
+`<memory_resource>` 是 C++17 标准；libc++ 与 libstdc++ 均实现，语义一致。用 `monotonic_buffer_resource` 做「函数内临时大量分配」可绕开 malloc 锁竞争，是 libc++ 常见性能技巧（见 ⑪）。
 
 ## ⑧ 字符串实现策略 [实现·libc++]
 
@@ -351,8 +344,7 @@ int main() {
 // 这正是与 libstdc++ 的 _M_local_data / _M_ptr 判别位不同的地方
 ```
 
-- `[实现·libc++]`：判别位方向、内联容量、对象大小均是实现细节——**不要靠 `reinterpret_cast` 窥探 `std::string` 内部**（见 ⑬）。
-- `[平台·Linux]`：22 vs 15 的容量差是 libc++ 与 libstdc++ 字符串「行为可见差异」之一（见 ⑨ 实测）。
+判别位方向、内联容量、对象大小均是实现细节——**不要靠 `reinterpret_cast` 窥探 `std::string` 内部**（见 ⑬）；22 vs 15 的容量差是 libc++ 与 libstdc++ 字符串「行为可见差异」之一（见 ⑨ 实测）。
 
 ## ⑨ [实现·libc++]真实：本机 libstdc++ 实测 vs libc++ 行为对比
 
@@ -403,8 +395,7 @@ g++ -std=c++23 -O2 -S -masm=intel Examples/_ch125_sso.cpp -o Examples/_ch125_sso
 // 即：同一段源码，libc++ 的短串内联容量更大、对象更小
 ```
 
-- `[实现·libc++]`：本机真实测得 libstdc++ `std::string` **SSO 容量=15、对象=32 字节**；libc++（典型输出）为 **22 / 24**——差异来自二者 `__rep`/`__rep` 布局不同（见 ④ ⑧）。
-- `[经验]`：跨标准库迁移字符串密集代码时，SSO 容量差会影响「小对象是否触发堆分配」的热路径，进而影响性能画像（见 ⑪）。
+本机真实测得 libstdc++ `std::string` **SSO 容量=15、对象=32 字节**；libc++（典型输出）为 **22 / 24**——差异来自二者 `__rep`/`__rep` 布局不同（见 ④ ⑧）。跨标准库迁移字符串密集代码时，SSO 容量差会影响「小对象是否触发堆分配」的热路径，进而影响性能画像（见 ⑪）。
 
 ## ⑩ 调试 <span class="badge badge-exp">经验</span>
 
@@ -439,8 +430,7 @@ int main() {
 }
 ```
 
-- `[经验]`：调试模式务必**全工程统一**（不能只给一个 TU 开），否则链接期/运行期出现诡异崩溃（见 ⑬）。
-- `[平台·Linux]`：`LIBCXX_DEBUG` 是 libc++ 专属宏；libstdc++ 对应是 `_GLIBCXX_DEBUG`，名字不同但目的相同。
+调试模式务必**全工程统一**（不能只给一个 TU 开），否则链接期/运行期出现诡异崩溃（见 ⑬）；`LIBCXX_DEBUG` 是 libc++ 专属宏，libstdc++ 对应是 `_GLIBCXX_DEBUG`，名字不同但目的相同。
 
 ## ⑪ 性能 <span class="badge badge-exp">经验</span>
 
@@ -473,8 +463,7 @@ long hot() {
 }
 ```
 
-- `[经验]`：字符串密集场景，libc++ 的 22 字节 SSO 常比 libstdc++ 少一次堆分配（见 ⑨ 实测）。
-- `[标准]`：`reserve`/`pmr` 语义两库一致；差异只在分配器底层实现与默认策略。
+字符串密集场景，libc++ 的 22 字节 SSO 常比 libstdc++ 少一次堆分配（见 ⑨ 实测）；`reserve`/`pmr` 语义两库一致，差异只在分配器底层实现与默认策略。
 
 ## ⑫ 跨平台 [平台·Linux]
 
@@ -511,8 +500,7 @@ int main() {
 }
 ```
 
-- `[平台·Linux]`：在 Apple/FreeBSD 上 libc++ 是默认；在 Linux/Windows 上必须与构建系统显式约定，且**不可与 libstdc++ 混链**（见 ⑤ ⑬）。
-- `[实现·libc++]`：`_LIBCPP_ABI_*` 宏决定对象布局，切换 ABI 配置会破坏二进制兼容。
+在 Apple/FreeBSD 上 libc++ 是默认；在 Linux/Windows 上必须与构建系统显式约定，且**不可与 libstdc++ 混链**（见 ⑤ ⑬）。`_LIBCPP_ABI_*` 宏决定对象布局，切换 ABI 配置会破坏二进制兼容。
 
 ## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
@@ -539,8 +527,7 @@ int main() { bad(); return 0; }
 // 必须全工程一致开启/关闭（见 ⑩）
 ```
 
-- `[经验]`：最致命的是**混链**——症状可能是链接期未定义符号，也可能是运行期诡异崩溃，排查极难。统一工具链与标准库。
-- `[经验]`：不要 `reinterpret_cast` 窥探 `std::string`/`std::vector` 内部布局（见 ⑧），那是实现细节，跨版本会变。
+最致命的是**混链**——症状可能是链接期未定义符号，也可能是运行期诡异崩溃，排查极难，统一工具链与标准库；也不要 `reinterpret_cast` 窥探 `std::string`/`std::vector` 内部布局（见 ⑧），那是实现细节，跨版本会变。
 
 ## ⑭ 与 LLVM/Clang 集成 [平台·Linux]
 
@@ -569,8 +556,7 @@ int main() {
 }
 ```
 
-- `[平台·Linux]`：Clang 对 libc++ 的模块、`std::ranges`、sanitizer 集成最完整；GCC 用 libc++ 时部分特性不可用。
-- `[经验]`：跨平台项目若选 libc++，构建系统（CMake `CMAKE_CXX_STANDARD_LIBRARY=libc++`）要全工程统一。
+Clang 对 libc++ 的模块、`std::ranges`、sanitizer 集成最完整；GCC 用 libc++ 时部分特性不可用。跨平台项目若选 libc++，构建系统（CMake `CMAKE_CXX_STANDARD_LIBRARY=libc++`）要全工程统一。
 
 ## ⑮ 演进（C++23 支持度） <span class="badge badge-std">标准</span>
 
@@ -604,8 +590,7 @@ int main() {
 }
 ```
 
-- `[标准]`：特性测试宏（`__cpp_lib_*`）是标准机制，跨实现一致；**具体取值/是否定义**取决于实现进度。
-- `[经验]`：libc++ 与 MSVC STL 常比 libstdc++ 更早落地 C++23 特性，迁移新特性前先查特性宏。
+特性测试宏（`__cpp_lib_*`）是标准机制，跨实现一致；**具体取值/是否定义**取决于实现进度。libc++ 与 MSVC STL 常比 libstdc++ 更早落地 C++23 特性，迁移新特性前先查特性宏。
 
 ## ⑯ 最佳实践 <span class="badge badge-exp">经验</span>
 
@@ -647,8 +632,7 @@ int work() {
 int guard() { return 0; }
 ```
 
-- `[经验]`：统一标准库、用 `string_view` 减少拷贝、热点用 `pmr`、警惕混链——这是用 libc++ 的四条铁律。
-- `[标准]`：上述 API 均属标准，libc++ 与 libstdc++ 语义一致，可安全迁移。
+统一标准库、用 `string_view` 减少拷贝、热点用 `pmr`、警惕混链——这是用 libc++ 的四条铁律；上述 API 均属标准，libc++ 与 libstdc++ 语义一致，可安全迁移。
 
 ## ⑰ 贡献 <span class="badge badge-exp">经验</span>
 
@@ -682,8 +666,7 @@ constexpr bool ok() {
 static_assert(ok());
 ```
 
-- `[经验]`：libc++ 对测试覆盖率要求高——任何行为改动都必须带回归测试，否则 CI 不通过。
-- `[平台·Linux]`：贡献前读 `libcxx/docs/DesignDocs/`，遵循其 ABI 稳定性策略（API 可改、ABI 谨慎）。
+libc++ 对测试覆盖率要求高——任何行为改动都必须带回归测试，否则 CI 不通过；贡献前读 `libcxx/docs/DesignDocs/`，遵循其 ABI 稳定性策略（API 可改、ABI 谨慎）。
 
 ## ⑱ 跨库对比（三套 STL） <span class="badge badge-std">标准</span>
 
@@ -729,8 +712,7 @@ int main() {
 }
 ```
 
-- `[标准]`：`<optional>`/`<memory_resource>` 等标准特性三库语义一致；差异集中在**布局、ABI、默认策略、调试宏**。
-- `[经验]`：跨库移植时，先把「实现相关」的部分（mangled 名、调试宏、SSO 容量）隔离出来，再迁移。
+`<optional>`/`<memory_resource>` 等标准特性三库语义一致；差异集中在**布局、ABI、默认策略、调试宏**。跨库移植时，先把「实现相关」的部分（mangled 名、调试宏、SSO 容量）隔离出来，再迁移。
 
 ## ⑲ 调试 / 源码阅读 <span class="badge badge-exp">经验</span>
 
@@ -754,8 +736,7 @@ static_assert(std::is_same_v<std::string::value_type, char>);
 int probe() { return (int)sizeof(std::string); }  // 24(libc++) / 32(libstdc++)
 ```
 
-- `[经验]`：libc++ 源码注释极全，配合 `libcxx/docs/DesignDocs/` 是最快理解路径；非模板逻辑优先看 `libcxx/src/`。
-- `[平台·Linux]`：本机无 libc++，可用 libstdc++ 的同名文件对照阅读（结构高度相似，布局不同）。
+libc++ 源码注释极全，配合 `libcxx/docs/DesignDocs/` 是最快理解路径；非模板逻辑优先看 `libcxx/src/`。本机无 libc++，可用 libstdc++ 的同名文件对照阅读（结构高度相似，布局不同）。
 
 ## ⑳ 速查表 <span class="badge badge-std">标准</span>
 
@@ -804,8 +785,7 @@ int main() {
 }
 ```
 
-- `[标准]`：上表所有「语义」项均源自 ISO C++；「数值/宏/布局」项为 libc++ 实现定义，迁移时以特征宏实测为准。
-- `[经验]`：把本速查表与 `Examples/_ch125_sso.cpp` 的真实输出（libstdc++: cap15/size32）对照，即可在任意机器上验证当前标准库身份。
+上表所有「语义」项均源自 ISO C++；「数值/宏/布局」项为 libc++ 实现定义，迁移时以特征宏实测为准。把本速查表与 `Examples/_ch125_sso.cpp` 的真实输出（libstdc++: cap15/size32）对照，即可在任意机器上验证当前标准库身份。
 
 ## ㉑ 真实工程使用场景：Apple 默认、Clang 首选的 libc++
 
@@ -844,8 +824,7 @@ static_assert(sum_first(5) == 15);      // 编译期验证：无需运行即确�
 int main() { return 0; }
 ```
 
-- `[标准]`：`std::vector`/`std::accumulate` 的 constexpr 来自 C++20（P1004/P1645）；libc++ 的实现把这类能力做得很彻底。
-- `[评]`：代价是编译更慢、模板展开更深——激进 constexpr 是 libc++ 的"工程取舍"，也是它常被吐槽编译慢的原因之一。
+`std::vector`/`std::accumulate` 的 constexpr 来自 C++20（P1004/P1645）；libc++ 的实现把这类能力做得很彻底。代价是编译更慢、模板展开更深——激进 constexpr 是 libc++ 的"工程取舍"，也是它常被吐槽编译慢的原因之一。
 
 ### ㉑.3 真实 libc++ 长什么样（注释呈现，需 libc++）
 

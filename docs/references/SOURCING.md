@@ -127,7 +127,14 @@
 ### 3.6 T5 编译器实现（须三态标注 std/ext/ub）
 
 - `gcc:<t>` → GCC 官方文档 + libstdc++（`https://gcc.gnu.org/onlinedocs/`）。
-- `clang:<t>` → Clang/LLVM + libc++（`https://clang.llvm.org/` `https://libcxx.llvm.org/`）。
+- `clang:<t>` → Clang 前端文档（`https://clang.llvm.org/docs/`），含诊断、sanitizer、AST/Driver。
+- `llvm:<t>` → **LLVM 核心文档**（`https://llvm.org/docs/`）——与 `clang:` 分工：凡属 **IR 语言本身 / Pass 管道 / 后端代码生成** 的一律用本键。常用子页：
+  - `[llvm:langref]` LLVM Language Reference Manual —— IR 的 SSA 形式、三种等价表示（in-memory / bitcode / textual）、良构性（支配关系）、PHI 约束、类型系统。**IR 语义终审源**。
+  - `[llvm:passes]` LLVM's Analysis and Transform Passes —— 各 Pass 官方语义（`mem2reg`/`sccp`/`gvn`/`instcombine`/`licm`/`loop-simplify`/`indvars` 等）与三类划分（Analysis / Transform / Utility）。⚠️ 官方自注"更新不频繁、列表可能不全"，权威清单以 `opt -print-passes` 为准。
+  - `[llvm:codegenerator]` The LLVM Target-Independent Code Generator —— 指令选择 / 调度 / 寄存器分配 / 代码发射。
+  - `[llvm:opaquepointers]` Opaque Pointers —— LLVM 14→15 指针迁移（删除 `PointerType::getElementType()`）。
+  - `[llvm:writinganllvmpass]` Writing an LLVM Pass —— 新 PassManager 下自定义 Pass 骨架。
+  - `[llvm:programmersmanual]` LLVM Programmer's Manual —— ADT（`SmallVector`/`StringSwitch`/`dyn_cast`）用法。
 - `msvc:<t>` → Microsoft C++ Docs（`https://learn.microsoft.com/cpp/`），含 MSVC 扩展与 MSVC STL 行为。
 - `abi:<name>` → C++ ABI 文档：Itanium C++ ABI（`https://itanium-cxx-abi.github.io/cxx-abi/abi.html`，GCC/Clang 侧）与 MSVC x64 约定（`learn.microsoft.com/cpp/build/x64-software-conventions`）。例：`[abi:itanium]` 名字改编/mangled name 稳定性。
 - 写入手册时显式标 `std:`/`ext:`/`ub:`（例：`[msvc:ext]` 某扩展、`[gcc:ext]` `__attribute__`）。
