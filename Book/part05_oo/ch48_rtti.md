@@ -290,7 +290,7 @@ void bad(A* p) {
 ```cpp
 // ✅ 修复：用虚函数做分派，彻底不依赖 RTTI
 struct A { virtual ~A() = default; virtual void dispatch() = 0; };
-struct B : A { void dispatch() override { // B 的逻辑
+struct B : A { void dispatch() override { /* B 的逻辑 */ } };
 void good(A* p) { p->dispatch(); }   // 走虚表，无需 RTTI，体积更小
 ```
 
@@ -321,7 +321,7 @@ void demo_c() {
 void demo_d() {
     int* p = nullptr;
     try { (void)typeid(*p); }                 // ❌ 抛 bad_typeid
-    catch (const std::bad_typeid&) { // 处理
+    catch (const std::bad_typeid&) { /* 处理 */ }
 }
 ```
 
@@ -347,7 +347,7 @@ struct Der : Base {};
 struct Other : Base {};
 void demo_f(Base& b) {
     try { Der& d = dynamic_cast<Der&>(b); (void)d; }
-    catch (const std::bad_cast&) { // 失败处理
+    catch (const std::bad_cast&) { /* 失败处理 */ }
 }
 ```
 
@@ -469,7 +469,7 @@ Der* manual_down(Base* p) { return p->kind() == 1 ? static_cast<Der*>(p) : nullp
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
 void demo_p(Base& b) {
     try { (void)dynamic_cast<Der&>(b); }
-    catch (std::bad_cast&) { // 引用失败
+    catch (std::bad_cast&) { /* 引用失败 */ }
 }
 ```
 
@@ -492,8 +492,8 @@ void demo_q() {
 #include <type_traits>
 template<class T>
 void process(T v) {
-    if constexpr (std::is_integral_v<T>) { // 整型分支，编译期
-    else { // 其他
+    if constexpr (std::is_integral_v<T>) { /* 整型分支，编译期 */ }
+    else { /* 其他 */ }
 }
 ```
 
