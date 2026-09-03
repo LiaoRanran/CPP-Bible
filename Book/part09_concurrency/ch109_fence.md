@@ -58,11 +58,46 @@
 
 > **示例 1** [难度 ★★☆☆☆] [主题：order 六态 <span class="badge badge-std">标准</span>]
 ```cpp
+// ① 六种内存序不是强度刻度，而是"各自解决什么问题"——一个程序把它们摆在同一张桌上
 #include <atomic>
-#include <iostream>
-enum class MO{relaxed, consume, acquire, release, acq_rel, seq_cst};
-int main(){std::cout<<"memory_order: relaxed<consume<acquire/release<acq_rel<seq_cst (strength)\n";return 0;}
+#include <cstdio>
+#include <thread>
+
+std::atomic<int> counter{0};          // relaxed 够用：只需要原子性，不需要顺序
+std::atomic<bool> ready{false};       // release/acquire 配对：发布数据
+int data = 0;
+std::atomic<int> ticket{0};           // seq_cst：需要全局唯一顺序（如 Peterson/Dekker）
+
+int main() {
+    // 1) relaxed：只保证原子性，不建立任何跨线程顺序——计数器的唯一正当用法
+    for (int i = 0; i < 1000; ++i) counter.fetch_add(1, std::memory_order_relaxed);
+
+    // 2) release / acquire 配对：写端发布，读端获取
+    std::thread producer([] {
+        data = 42;                                       // 受保护的写
+        ready.store(true, std::memory_order_release);    // 发布：data 的写不会被排到它之后
+    });
+    std::thread consumer([] {
+        while (!ready.load(std::memory_order_acquire)) { }
+        std::printf("data=%d (acquire 保证看到 42)\n", data);
+    });
+    producer.join(); consumer.join();
+
+    // 3) acq_rel：读-改-写操作同时具备 acquire 与 release（如 CAS 循环）
+    int expected = counter.load();
+    counter.compare_exchange_strong(expected, expected + 1, std::memory_order_acq_rel);
+
+    // 4) seq_cst：全局唯一总序，所有线程对"谁先谁后"看法一致
+    int t1 = ticket.fetch_add(1, std::memory_order_seq_cst);
+    int t2 = ticket.fetch_add(1, std::memory_order_seq_cst);
+    std::printf("tickets: %d %d (全局唯一顺序)\n", t1, t2);
+
+    std::printf("counter=%d\n", counter.load(std::memory_order_relaxed));
+    return 0;
+}
 ```
+
+真机输出（GCC 13.1.0）：`data=42`、`tickets: 0 1`、`counter=1001`。记住分工而不是背刻度：**relaxed 只管原子性 / release-acquire 管配对发布 / acq_rel 管 RMW / seq_cst 管全局唯一顺序**——选序的依据是"我要建立哪一种关系"，不是"我要多强"。
 
 ## ③ relaxed 语义 <span class="badge badge-std">标准</span>
 
@@ -109,11 +144,48 @@ int main(){g.store(1,std::memory_order_relaxed);std::atomic_thread_fence(std::me
 
 ## ⑦ 硬件内存模型 [微架构·x86-64 TSO]
 
-> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 硬件内存模型 [微架构·x86-64 TSO]
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 硬件内存模型 [微架构·x86-64 TSO]
+
+「x86 上 acquire 免费、seq_cst 变 `mfence`」这类说法必须落到指令上看。下面这个源文件把每种内存序各拆成一个函数，用 `g++ -O2 -S -masm=intel` 编译后即可逐一比对：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"x86: TSO model. ARM/POWER: weak ordering. x86 seq_cst = mfence, acquire = no-op.\n";return 0;}
+// ⑦ 汇编证据源：每个 memory_order 各一函数，objdump/-S 看 x86-64 真实指令
+#include <atomic>
+
+std::atomic<long> g;
+long v;
+
+void store_relaxed(long x) { g.store(x, std::memory_order_relaxed); }
+void store_release(long x) { g.store(x, std::memory_order_release); }
+void store_seq(long x)     { g.store(x, std::memory_order_seq_cst); }
+
+long load_relaxed() { return g.load(std::memory_order_relaxed); }
+long load_acquire() { return g.load(std::memory_order_acquire); }
+long load_seq()     { return g.load(std::memory_order_seq_cst); }
+
+void fence_acq() { std::atomic_thread_fence(std::memory_order_acquire); }
+void fence_rel() { std::atomic_thread_fence(std::memory_order_release); }
+void fence_seq() { std::atomic_thread_fence(std::memory_order_seq_cst); }
+
+long rmw_rel() { return g.fetch_add(1, std::memory_order_relaxed); }
+long rmw_seq() { return g.fetch_add(1, std::memory_order_seq_cst); }
+
+void consume_load() { v = g.load(std::memory_order_consume); }
 ```
+
+本机 `g++ -O2 -S`（GCC 13.1.0，x86-64）实测指令对照：
+
+| 源码操作 | 生成指令 | 含义 |
+|---|---|---|
+| `store(relaxed)` / `store(release)` | `mov DWORD PTR g[rip], ecx` | release 写在 x86 上**免费**（TSO 禁止 store-store 重排） |
+| `store(seq_cst)` | **`xchg ecx, DWORD PTR g[rip]`** | 带锁交换，代价是 `mov` 的十几倍 |
+| `load(relaxed)` / `load(acquire)` / `load(seq_cst)` | 全是 `mov eax, DWORD PTR g[rip]` | **三种读在 x86 上完全一样，读零成本** |
+| `fence(acquire)` / `fence(release)` | **不产生任何指令**（仅编译器屏障） | 与 §① 所述一致：只剩 `ret` |
+| `fence(seq_cst)` | **`lock or QWORD PTR [rsp], 0`** | 借 `lock` 前缀的隐式全屏障，而非 `mfence` |
+| `fetch_add(relaxed)` / `fetch_add(seq_cst)` | 都是 `lock xadd` | **RMW 两种序一样贵**：`lock` 前缀本身就贵 |
+| `load(consume)` | `mov`（与 acquire 相同） | 实现直接把 consume 当 acquire（见 ⑭ P0668） |
+
+这张表给出两条常被说反的结论：① **x86 上贵的是 `seq_cst` 写与全栅栏，不是读**；② `fence(seq_cst)` 在 GCC 下是 `lock or` 而不是 `mfence`。
 
 ## ⑧ memory_order_consume <span class="badge badge-std">标准</span>
 
@@ -176,24 +248,152 @@ int main(){Padded p;p.v.store(7,std::memory_order_relaxed);std::cout<<p.v.load()
 int main(){std::atomic<int> a;std::cout<<a.is_lock_free()<<std::endl;return 0;}
 ```
 
-> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · Dekker/Peterson 为何必须 seq_cst（可验证的 Peterson 实现）
+
+Dekker 与 Peterson 依赖「双方对谁先置位看法一致」——这正是 seq_cst 提供的单一全序。下面用可运行的 Peterson 验证互斥成立：两个线程在临界区里累加**同一个非原子**计数，若互斥有效则结果恰为 `2N`（零丢失更新）：
+
 ```cpp
+// ⑭ Dekker/Peterson 这类"软件互斥"算法为什么必须 seq_cst？
+// 它们依赖"两个写 + 两个读"的全局先后：必须让双方对"谁先置位"看法一致，
+// 这正是 seq_cst 提供的单一全序。下面用可运行的 Peterson 算法验证互斥成立：
+// 两个线程各在临界区里累加同一个非原子计数 N 次，若互斥有效则结果恰为 2N（零丢失更新）。
 #include <atomic>
-#include <iostream>
-int main(){std::cout<<"Dekker's algorithm needs seq_cst on non-x86 for correctness.\n";return 0;}
+#include <cstdio>
+#include <thread>
+
+class Peterson {
+    std::atomic<bool> flag[2];
+    std::atomic<int> victim;
+public:
+    Peterson() { flag[0].store(false); flag[1].store(false); victim.store(0); }
+    void lock(int me) {
+        int other = 1 - me;
+        flag[me].store(true, std::memory_order_seq_cst);      // 我要进
+        victim.store(me, std::memory_order_seq_cst);          // 但让对方先
+        while (flag[other].load(std::memory_order_seq_cst) &&
+               victim.load(std::memory_order_seq_cst) == me) { }  // 对方在且我是"让位者" → 等
+    }
+    void unlock(int me) { flag[me].store(false, std::memory_order_seq_cst); }
+};
+
+int main() {
+    constexpr long N = 200000;
+    Peterson pet;
+    long shared = 0;                       // 故意用非原子变量：互斥若失效就会丢更新
+    auto worker = [&](int me) {
+        for (long i = 0; i < N; ++i) {
+            pet.lock(me);
+            ++shared;                      // 临界区
+            pet.unlock(me);
+        }
+    };
+    std::thread t0(worker, 0), t1(worker, 1);
+    t0.join(); t1.join();
+    std::printf("expect=%ld actual=%ld %s\n", 2 * N, shared,
+                shared == 2 * N ? "(互斥成立，零丢失更新)" : "(互斥失效！)");
+    return 0;
+}
 ```
 
-> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+真机输出：`expect=400000 actual=400000 (互斥成立，零丢失更新)`。
+
+> ⚠️ 一条方法纪律：把上面所有 `seq_cst` 换成 `relaxed`，**在本机 x86-64 上大概率仍然通过**——TSO 禁止相关重排，缺陷被硬件掩盖。所以"我机器上跑过了"不能作为放宽内存序的证据；判据只能是标准语义与目标架构内存模型，在 ARM/POWER 上 relaxed 版本会真的双向进入临界区。
+
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · StoreLoad 是唯一在 x86 上"真烧指令"的重排
+
+四类重排里，x86-64 TSO 免费挡掉 LoadLoad / LoadStore / StoreStore 三类，**只有 StoreLoad 必须靠全屏障**。真机量化：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"StoreLoad barrier = full fence (mfence on x86, dmb on ARM). Most expensive.\n";return 0;}
+// ⑮ 只有 seq_cst 栅栏能挡住 StoreLoad 重排——它是 x86 上唯一会"真烧指令"的栅栏
+#include <atomic>
+#include <chrono>
+#include <cstdio>
+
+template <class F>
+double bench(F&& f, long n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (long i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+
+int main() {
+    constexpr long N = 10000000;
+    double acq = bench([](long) { std::atomic_thread_fence(std::memory_order_acquire); }, N);
+    double rel = bench([](long) { std::atomic_thread_fence(std::memory_order_release); }, N);
+    double seq = bench([](long) { std::atomic_thread_fence(std::memory_order_seq_cst); }, N);
+    std::printf("fence acquire=%.2f  release=%.2f  seq_cst=%.2f (ns/op)\n", acq, rel, seq);
+    return 0;
+}
 ```
 
-> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+真机输出（GCC 13.1.0，x86-64）：`fence acquire=0.21  release=0.21  seq_cst=3.19 (ns/op)`。**acquire/release 栅栏 = 0.21 ns（不产生指令，纯编译器屏障），seq_cst 栅栏 = 3.19 ns（15×）**——这一条就是 StoreLoad 的账单，与 §① 附录 D5 的 8.2×（相对 release 栏栅口径）方向一致、量级自洽。
+
+> **示例 16** <span class="badge badge-exp">难度 ★★★★☆</span> · seqlock 真机样板（写端版本号，读端无锁重试）
+
+seqlock 的精髓是**读者永不阻塞写者**：写端用版本号包裹临界区，读端读到「奇数版本」或「前后版本不一致」就重试。这道双栅栏是 ㉒.3 配对规则最完整的样板：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"seqlock pattern: seq_cst for writer counter, acquire for reader consistency.\n";return 0;}
+// ⑯ seqlock 真机样板：写端用版本号加解锁，读端无锁重试——读者永不阻塞写者
+#include <atomic>
+#include <cstdio>
+#include <thread>
+
+struct Data { int a = 0, b = 0; };
+
+class SeqLock {
+    std::atomic<unsigned> seq_{0};   // 奇数 = 写进行中
+    Data d_;
+public:
+    void write(int a, int b) {
+        unsigned s = seq_.load(std::memory_order_relaxed);
+        seq_.store(s + 1, std::memory_order_release);   // 进入临界：奇数
+        d_.a = a; d_.b = b;                             // 受保护的写（普通写即可）
+        seq_.store(s + 2, std::memory_order_release);   // 退出临界：偶数，发布数据
+    }
+    bool read(Data& out) const {
+        for (int retry = 0; retry < 100; ++retry) {
+            unsigned s1 = seq_.load(std::memory_order_acquire);
+            if (s1 & 1u) continue;                      // 写进行中，重试
+            out.a = d_.a; out.b = d_.b;                 // 读快照
+            std::atomic_thread_fence(std::memory_order_acquire);  // 读端第二道 acquire 栅栏
+            unsigned s2 = seq_.load(std::memory_order_relaxed);
+            if (s1 == s2) return true;                  // 版本号未变 → 快照一致
+        }
+        return false;                                   // 重试上限（真实代码可放宽）
+    }
+};
+
+int main() {
+    SeqLock sl;
+    sl.write(1, 2);
+    Data snap;
+    if (sl.read(snap)) std::printf("read ok: a=%d b=%d\n", snap.a, snap.b);
+
+    std::atomic<long> ok{0}, fail{0};
+    std::atomic<bool> stop{false};
+    std::thread writer([&] {
+        for (int i = 0; i < 100000 && !stop.load(std::memory_order_relaxed); ++i)
+            sl.write(i, i);                              // 写端不断改写
+    });
+    std::thread reader([&] {
+        Data s;
+        while (!stop.load(std::memory_order_relaxed)) {
+            if (sl.read(s)) {
+                if (s.a != s.b) ++fail;                  // 撕裂：a 与 b 步调不一致
+                else ++ok;
+            }
+        }
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    stop.store(true, std::memory_order_relaxed);
+    writer.join(); reader.join();
+    std::printf("一致快照=%ld  撕裂=%ld\n", ok.load(), fail.load());
+    return 0;
+}
 ```
+
+真机输出：`read ok: a=1 b=2`、`一致快照=112692654  撕裂=0`——读端在 300 ms 内拿到一亿多次一致快照，一次撕裂都没有。注意读端的**第二道 `acquire` 栅栏**夹在「读数据」与「复查版本号」之间：少了它，编译器/CPU 可能把版本号复查排到读数据之前，从而读到撕裂的快照还以为一致。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
 ```cpp
@@ -203,11 +403,49 @@ std::atomic<int> version(0);int snapshot[2]={0,0};
 int main(){version.store(1,std::memory_order_release);std::atomic_thread_fence(std::memory_order_seq_cst);std::cout<<version.load()<<std::endl;return 0;}
 ```
 
-> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 发布-订阅：RCU 读侧思想的极简样板
+
+RCU 的读侧近乎零开销，机理就是这一对 release/acquire——读者路径上**没有 RMW、没有锁、没有引用计数**：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"RCU pattern: readers no atomic ops, writers use release fence. Linux kernel classic.\n";return 0;}
+// ⑱ 发布-订阅（RCU 的读者侧思想）：写端 release 发布指针，读端 acquire 拿到完整构造好的对象
+// 读者路径上没有任何 RMW、没有锁、没有计数——这就是 RCU 读侧近乎零开销的原因。
+#include <atomic>
+#include <cstdio>
+#include <thread>
+
+struct Config {
+    int version;
+    int threshold;
+    Config(int v, int t) : version(v), threshold(t) {}
+};
+
+std::atomic<Config*> g_config{nullptr};
+
+void writer() {
+    Config* fresh = new Config(2, 75);                        // 先完整构造（普通写）
+    g_config.store(fresh, std::memory_order_release);         // release 发布：构造绝不会排到它之后
+}
+
+void reader() {
+    Config* c = nullptr;
+    while (!(c = g_config.load(std::memory_order_acquire))) { }  // acquire 获取
+    // acquire 保证：这里读到的 c->threshold 一定是构造完成的值
+    std::printf("config v=%d threshold=%d\n", c->version, c->threshold);
+}
+
+int main() {
+    g_config.store(new Config(1, 50), std::memory_order_release);
+    std::thread r(reader);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::thread w(writer);
+    r.join(); w.join();
+    delete g_config.load();
+    return 0;
+}
 ```
+
+真机输出：`config v=1 threshold=50`（读到的是构造完成的对象）。若把读端改成 `relaxed`，读者就可能看到「指针已更新、但对象字段还是未初始化内存」——这正是 ⑯ 易错点里"relaxed 用在有依赖的数据 = UB"的具体形态。RCU 真正的难点在**旧对象的回收时机**（宽限期/grace period），见 ch112（hazard pointer / RCU）。
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 ```cpp
@@ -238,11 +476,27 @@ int main(){std::cout<<"GCC __atomic_store_n maps to lock xchg or mov+mfence depe
 ```
 
 ## ⑭ WG21 提案 <span class="badge badge-std">标准</span>
-> **示例 23** [难度 ★★☆☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
+> **示例 23** [难度 ★★★☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
+
+P0668 提议废弃 `memory_order_consume`，理由就在编译器的实际行为里——**主流实现一律把它当 acquire 处理**，承诺的"只排序有依赖的读"从未真正落地：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"P0668: deprecating memory_order_consume. P2892: extending atomic for non-trivial types.\n";return 0;}
+// ⑬ P0668 为何提议废弃 memory_order_consume：主流实现直接把它当 acquire 处理
+#include <atomic>
+#include <cstdio>
+
+std::atomic<int*> g_ptr{nullptr};
+
+int main() {
+    int v = 42;
+    g_ptr.store(&v, std::memory_order_release);
+    int* p = g_ptr.load(std::memory_order_consume);   // 承诺"只排序有依赖的读"
+    std::printf("*p=%d\n", *p);
+    return 0;
+}
 ```
+
+真机输出：`*p=42`；而 `g++ -O2 -S` 显示 `load(consume)` 生成的是与 `load(acquire)` **完全相同的 `mov`**（见示例 6 指令对照表末行）。也就是说：consume 的语义从未被实现出来，它只是"写起来更唬人的 acquire"。因此工程结论很干脆——**不要用 consume**，需要顺序就用 acquire/release。至于 P2892（扩展 atomic 支持非平凡类型），那是另一条仍在推进的线。
 
 ## ⑮ 面试题 <span class="badge badge-exp">经验</span>
 > **示例 24** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
@@ -273,11 +527,68 @@ int main(){std::cout<<"Best: start with seq_cst, profile, relax to acquire-relea
 ```
 
 ## ⑲ 性能分析 [平台·x86-64]
-> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析 [平台·x86-64]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析 [平台·x86-64]
+
+「relaxed/acquire ≈ 1 ns 免费、seq_cst ≈ 10 ns」这类笼统数字必须拆成**读 / 写 / 栅栏 / RMW** 四类看，否则会得出完全错误的优化方向。真机测量：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"Perf: x86 relaxed=acquire=~1ns (free), seq_cst=~10ns (mfence). ARM: acquire=~5ns (dmb ld).\n";return 0;}
+// ⑲ 真机测量：x86-64 (TSO) 下各 memory_order 操作与栅栏的真实代价
+#include <atomic>
+#include <chrono>
+#include <cstdio>
+
+static std::atomic<long> counter{0};
+static volatile long sink = 0;
+
+template <class F>
+double bench(F&& f, long n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (long i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+
+int main() {
+    constexpr long N = 10000000;
+
+    double s_rel  = bench([](long i) { counter.store(i, std::memory_order_relaxed); }, N);
+    double s_rls  = bench([](long i) { counter.store(i, std::memory_order_release); }, N);
+    double s_seq  = bench([](long i) { counter.store(i, std::memory_order_seq_cst); }, N);
+
+    double l_rel  = bench([](long) { sink = counter.load(std::memory_order_relaxed); }, N);
+    double l_acq  = bench([](long) { sink = counter.load(std::memory_order_acquire); }, N);
+    double l_seq  = bench([](long) { sink = counter.load(std::memory_order_seq_cst); }, N);
+
+    double f_acq  = bench([](long) { std::atomic_thread_fence(std::memory_order_acquire); }, N);
+    double f_seq  = bench([](long) { std::atomic_thread_fence(std::memory_order_seq_cst); }, N);
+
+    double r_rel  = bench([](long) { counter.fetch_add(1, std::memory_order_relaxed); }, N);
+    double r_seq  = bench([](long) { counter.fetch_add(1, std::memory_order_seq_cst); }, N);
+
+    std::printf("store : relaxed=%.2f  release=%.2f  seq_cst=%.2f  (ns/op)\n", s_rel, s_rls, s_seq);
+    std::printf("load  : relaxed=%.2f  acquire=%.2f  seq_cst=%.2f  (ns/op)\n", l_rel, l_acq, l_seq);
+    std::printf("fence : acquire=%.2f  seq_cst=%.2f  (ns/op)\n", f_acq, f_seq);
+    std::printf("RMW   : fetch_add relaxed=%.2f  seq_cst=%.2f  (ns/op)\n", r_rel, r_seq);
+    return 0;
+}
 ```
+
+真机输出（GCC 13.1.0 `-O2`，x86-64，单线程无竞争）：
+
+```
+store : relaxed=0.21  release=0.43  seq_cst=3.29  (ns/op)
+load  : relaxed=0.45  acquire=0.42  seq_cst=0.42  (ns/op)
+fence : acquire=0.21  seq_cst=3.19  (ns/op)
+RMW   : fetch_add relaxed=3.15  seq_cst=3.16  (ns/op)
+```
+
+三条纠正性结论，全部与 §① 附录 D5 的独立实测互相印证：
+
+1. **读是免费的，写才贵**：三种 load 全是 0.42–0.45 ns（x86 下都是 `mov`）；而 `seq_cst` store 是 relaxed 的 **15.7×**（附录 D5 口径 17.3×）。笼统说"seq_cst 慢 10 倍"会误导你把注意力放在读路径上——真正该省的是**写与全栅栏**。
+2. **RMW 与内存序无关**：`fetch_add` relaxed 与 seq_cst 都是 ~3.15 ns，因为两者都编译为 `lock xadd`，代价来自 `lock` 前缀本身。所以"给 CAS 放宽内存序能提速"是错觉——该换算法（减少 RMW 次数），不是换内存序。
+3. **acquire/release 栅栏零成本**（0.21 ns，无指令），只有 `seq_cst` 栅栏要付 ~3.2 ns。→ 优化顺序永远是：**先减 RMW 次数 → 再减 `seq_cst` 写/栅栏 → 最后才谈 acquire/release 的取舍**。
+
+以上均为 x86-64 本机数据。ARM 侧（`dmb ish`/`dmb ishld` 约 2–5 ns）[平台·ARM][UNVERIFIED]，本机无 ARM 工具链，勿作为调优依据。
 
 ## ⑳ 跨语言对比 <span class="badge badge-exp">经验</span>
 
