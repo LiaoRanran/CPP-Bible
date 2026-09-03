@@ -385,7 +385,7 @@ template <typename Derived, typename LogP>
 struct BaseCRTP {
     void run() { static_cast<Derived*>(this)->impl(); LogP::log("run"); }
 };
-struct MyImpl : BaseCRTP<MyImpl, NoLog> { void impl() { /* ... */ } };
+struct MyImpl : BaseCRTP<MyImpl, NoLog> { void impl() { // ...
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
@@ -458,7 +458,7 @@ FilePtr open_log(const char* p) { return FilePtr(std::fopen(p, "w")); }
 // 工业案例：线程模型策略（单线程零锁）
 template <typename T, typename ThreadP>
 class SafeQueue {
-    void push(T v) { ThreadP::lock(); /* ... */ ThreadP::unlock(); }
+    void push(T v) { ThreadP::lock(); // ...
 };
 // SafeQueue<int, SingleThreaded> 单线程版无锁开销；SafeQueue<int, Mutexed> 多线程版加锁
 ```
@@ -488,7 +488,7 @@ using CM = Mat<float, 3, 3, 0x0>;   // 列主序策略
 template <typename _CharT,
           typename _Traits = char_traits<_CharT>,        // ← 字符特性策略
           typename _Alloc  = allocator<_CharT>>           // ← 内存分配策略
-class basic_string { /* ... */ };
+class basic_string { // ...
 // char_traits 定义见 bits/char_traits.h 行 113（主模板）/ 331（char 特化）
 ```
 
@@ -575,7 +575,7 @@ template <typename P>
 concept ThreadPolicy = requires { P::lock(); P::unlock(); };
 template <typename T, ThreadPolicy TP>
 class Guarded {
-    void op() { TP::lock(); /* ... */ TP::unlock(); }
+    void op() { TP::lock(); // ...
 };
 ```
 

@@ -575,7 +575,7 @@ std::print (P2093):
 #include <vector>
 #include <algorithm>
 // 注：本例不依赖 <flat_map>（本机 Qt MinGW 13.1 未提供该 C++23 头），
-//     用 sorted vector + lower_bound 等价演示 flat_map 的存储本质。
+// 用 sorted vector + lower_bound 等价演示 flat_map 的存储本质。
 std::expected<int, std::string> safe_div(int a, int b) {
     if (b == 0) return std::unexpected("div by zero!");
     return a / b;

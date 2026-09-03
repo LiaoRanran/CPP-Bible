@@ -780,13 +780,13 @@ int main() { std::printf("x\n"); return 0; }
 ```cpp
 // 【程序 22】三编译器编译/诊断开关速查（注释即命令，非单文件编译）
 // GCC  :
-//   g++ -O2 -fstrict-aliasing -Wstrict-aliasing=2 -S -masm=intel t.cpp
-//   g++ -O2 -fno-strict-aliasing t.cpp
+// g++ -O2 -fstrict-aliasing -Wstrict-aliasing=2 -S -masm=intel t.cpp
+// g++ -O2 -fno-strict-aliasing t.cpp
 // Clang:
-//   clang++ -O2 -fstrict-aliasing -Wstrict-aliasing -S -masm=intel t.cpp
+// clang++ -O2 -fstrict-aliasing -Wstrict-aliasing -S -masm=intel t.cpp
 // MSVC :
-//   cl /O2 /d2StrictAlias t.cpp        (实验性开启严格别名)
-//   cl /O2 t.cpp                       (默认关闭)
+// cl /O2 /d2StrictAlias t.cpp        (实验性开启严格别名)
+// cl /O2 t.cpp                       (默认关闭)
 #include <cstdio>
 int main() { std::printf("see build commands in comments\n"); return 0; }
 ```
@@ -1120,7 +1120,7 @@ int main() {
 #include <type_traits>
 #include <cstdio>
 
-struct WithPad { char c; /* 3 字节填充 */ int i; };  // 填充位 → 同值多表示
+struct WithPad { char c; // 3 字节填充
 
 int main() {
     std::printf("int  unique=%d\n",  std::has_unique_object_representations_v<int>);

@@ -82,7 +82,7 @@ delete old;                // ② 与上面 p->val 并发 -> data race
 ```cpp
 // ② 用 ThreadSanitizer 能抓到的典型 race（伪代码模型）
 // READ of size 4 at 0x... by thread T1 (p->val)
-//   previous WRITE of size 8 at 0x... by thread T2 (delete old)
+// previous WRITE of size 8 at 0x... by thread T2 (delete old)
 // WARNING: ThreadSanitizer: data race
 ```
 
@@ -187,7 +187,7 @@ extern "C" void hp_scan_and_reclaim() {
         else { delete static_cast<Node*>(head->ptr); delete head; }
         head = nxt;
     }
-    if (keep) { /* ⑤ 把 keep 重新挂回 g_retired 等下一轮 */ }
+    if (keep) { // ⑤ 把 keep 重新挂回 g_retired 等下一轮
 }
 ```
 
@@ -306,7 +306,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 // ⑨ 经典用法：路由查找（读者路径热，写者路径冷）
 // 读者：rcu_read_lock(); route = rcu_dereference(routing_table); ...; rcu_read_unlock();
 // 写者：new_tbl = copy_table(old); update(new_tbl); 
-//       rcu_assign_pointer(routing_table, new_tbl); synchronize_rcu(); free(old);
+// rcu_assign_pointer(routing_table, new_tbl); synchronize_rcu(); free(old);
 ```
 
 - `[平台·Linux]`：内核 RCU 利用"上下文切换即静止态"免去显式计数，读者临界区只是关抢占，极端轻量。
@@ -532,9 +532,9 @@ HP/RCU 无法消除数据竞争检测，**错误实现照样会被 TSan 抓到**
 // g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch112_hp.cpp -o _ch112_hp_tsan
 // ./_ch112_hp_tsan
 // ⑯ 若误用3（宽限期前 delete）会出现：
-//   WARNING: ThreadSanitizer: data race
-//     Read of size 8 at 0x... by thread T1 (rcu_read)
-//     Previous write of size 8 at 0x... by thread T2 (delete old)
+// WARNING: ThreadSanitizer: data race
+// Read of size 8 at 0x... by thread T1 (rcu_read)
+// Previous write of size 8 at 0x... by thread T2 (delete old)
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试
@@ -615,7 +615,7 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 // std::hazard_pointer<std::atomic<Node*>> hp;
 // Node* p = hp.protect(head);   // ⑲ 标准 API：自动管理 HP 槽
 // use(p);
-// // 析构时自动 clear，无需手动 slot
+//// 析构时自动 clear，无需手动 slot
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
@@ -879,7 +879,7 @@ int main() {
     g_hp.store(p, std::memory_order_release);      // 读者登记 HP
     std::cout << "protected try_retire = " << try_retire(p) << " (0=被拒，正确)\n";
 
-    g_hp.store(nullptr, std::memory_order_release);// 读者用完清除
+    g_hp.store(nullptr, std::memory_order_release); // 读者用完清除
     std::cout << "unprotected try_retire = " << try_retire(p) << " (1=删除，正确)\n";
     return 0;
 }

@@ -258,7 +258,7 @@ public:
     auto norm() const { return derived().eval().squaredNorm(); }
 };
 template<int R,int C>
-class Matrix : public MatrixBase<Matrix<R,C>> { /* ... */ };
+class Matrix : public MatrixBase<Matrix<R,C>> { // ...
 // a + b + c 不生成中间 Matrix，编译期折叠为单一循环（ch72 表达式模板）
 ```
 

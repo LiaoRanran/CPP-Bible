@@ -67,8 +67,8 @@ std::variant<int, double, std::string> v;  // 三种类型之一
 ```cpp
 // ② 概念布局（libstdc++）
 // struct optional {
-//     bool _M_engaged;     // 是否已设值
-//     union { T _M_payload; /* 未设值时为空 */ };
+// bool _M_engaged;     // 是否已设值
+// union { T _M_payload; /* 未设值时为空 */ };
 // };
 // 大小 = sizeof(T) 向上对齐到 bool，通常 sizeof(T)+padding
 #include <optional>
@@ -192,8 +192,8 @@ int use() {
 ```cpp
 // ⑧ 概念布局
 // struct expected {
-//     bool _has_value;          // 或编码进哪个联合成员活跃
-//     union { T _value; E _error; };
+// bool _has_value;          // 或编码进哪个联合成员活跃
+// union { T _value; E _error; };
 // };
 // 大小 = max(sizeof(T), sizeof(E)) 对齐到标志位
 #include <expected>
@@ -257,7 +257,7 @@ struct Throws { Throws(const Throws&){ throw 1; } };
 void f() {
     std::variant<int, Throws> v = 1;
     try { v = Throws{}; }          // 若 Throws 拷贝抛异常
-    catch (...) { /* v 保持原 int(1) 或 valueless_by_exception */ }
+    catch (...) { // v 保持原 int(1) 或 valueless_by_exception
     bool lost = v.valueless_by_exception();  // 极端情况：两类型都不可构造
 }
 ```
@@ -355,7 +355,7 @@ std::expected<int,std::string> with_exp(int a, int b);    // expected（显式�
 ```cpp
 // 文件：expected （GCC 13.1.0, libstdc++）
 // 概念：std::unexpected<E> 构造一个 error 包装，expected 构造时
-//       将其放入 _M_unexpected 联合成员并置 _M_has_value = false
+// 将其放入 _M_unexpected 联合成员并置 _M_has_value = false
 ```
 
 - `[实现-推断]`：`expected` 成功路径仅存 `T`，错误路径仅存 `E`，二者不共存；`has_value()` 经标志位判定，零分支成本（内联后）。

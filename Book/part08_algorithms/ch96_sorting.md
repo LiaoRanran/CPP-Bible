@@ -1110,7 +1110,7 @@ else                       quick_sort_partition + recurse(depth_limit-1);
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 // 方法 A: partial_sort -> O(n log k), 这里 k=n/2
-std::vector<int> a = /*...*/;
+std::vector<int> a = // ...
 std::partial_sort(a.begin(), a.begin()+a.size()/2, a.end());
 int medA = a[a.size()/2-1];
 

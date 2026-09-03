@@ -277,15 +277,15 @@ clock_choice: high_resolution_clock::is_steady=0
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/chrono.h
 // 行号：1276-1287
-//   struct steady_clock
-//   {
-//     typedef chrono::nanoseconds              duration;
-//     typedef duration::rep                    rep;
-//     typedef duration::period                 period;
-//     typedef chrono::time_point<steady_clock, duration> time_point;
-//     static constexpr bool is_steady = true;
-//     static time_point now() noexcept;
-//   };
+// struct steady_clock
+// {
+// typedef chrono::nanoseconds              duration;
+// typedef duration::rep                    rep;
+// typedef duration::period                 period;
+// typedef chrono::time_point<steady_clock, duration> time_point;
+// static constexpr bool is_steady = true;
+// static time_point now() noexcept;
+// };
 ```
 
 > **立场**：`[平台·Linux]` 在 MinGW-w64 上为 `high_resolution_clock` 选了 `system_clock` 别名（故 `is_steady==0`）；在 Linux libstdc++ 上它通常别名 `steady_clock`。**跨平台基准一律显式写 `steady_clock`**，不要依赖 `high_resolution_clock` 的别名身份。

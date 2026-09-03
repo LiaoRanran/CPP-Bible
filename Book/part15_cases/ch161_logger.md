@@ -746,7 +746,7 @@ int main() {
 // 文件：Examples/_ch161_zerooverhead.cpp
 // 行号：47-59（main 函数）
 // 汇编证据：main 仅保留 log_if<6> 一处调用（edx=6），
-//          log_if<0>/<2> 的调用在生成的 .text 中完全不存在
+// log_if<0>/<2> 的调用在生成的 .text 中完全不存在
 int main() {
     log_if<0>(0, "trace message (compiled out)");
     log_if<2>(0, "info message (compiled out)");
@@ -1925,7 +1925,7 @@ N=200000 条消息。格式化维度各方式独立计时；落地维度以「�
 ```cpp
 // D5.3 可复现 demo — ch161 日志库
 // 演示：std::format 与 ostringstream 生成相同文本（语义等价）；
-//       批量写 N 行到临时文件，行数必须与 N 一致。正确性断言（非时间/倍数）。
+// 批量写 N 行到临时文件，行数必须与 N 一致。正确性断言（非时间/倍数）。
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

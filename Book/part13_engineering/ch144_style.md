@@ -159,7 +159,7 @@ private:
 // ❌ 反例：同语义的变量用了三种风格
 int UserCount;        // 大驼峰
 int maxConnect;       // 小驼峰
-int DEFAULT_PORT = 80;// 全小写常量
+int DEFAULT_PORT = 80; // 全小写常量
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名一致性（关联 ch145）
@@ -222,7 +222,7 @@ int main() { Widget w{42, 7}; return w.id + w.value; }
 ```cpp
 // 具名命名空间：隔离模块符号
 namespace net {
-    class Socket { /* ... */ };
+    class Socket { // ...
 }
 ```
 
@@ -239,10 +239,10 @@ namespace {
 ```cpp
 // 内联命名空间：让内层符号对外层"透明"，常用于 ABI 版本切换
 inline namespace v2 {
-    void serialize() { /* 新格式 */ }
+    void serialize() { // 新格式
 }
 namespace v1 {
-    void serialize() { /* 旧格式，仍可显式 net::v1::serialize 调用 */ }
+    void serialize() { // 旧格式，仍可显式 net::v1::serialize 调用
 }
 ```
 
@@ -357,7 +357,7 @@ long auto_sum(const std::vector<long>& v) {
 #include <map>
 // ✅ 推荐：避免迭代器类型噪声
 std::map<std::string, int> m;
-for (const auto& [key, val] : m) { /* ... */ }
+for (const auto& [key, val] : m) { // ...
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 使用规范
@@ -400,7 +400,7 @@ void by_range(const std::vector<int>& v, long& acc) {
 // ✅ 优先范围 for；需要下标时才回退索引
 for (auto& item : items) process(item);
 // ❌ 反例：手写迭代器却忘记 ++it，或下标越界风险
-for (auto it = v.begin(); it != v.end();) { /* 漏写 ++it → 死循环 */ }
+for (auto it = v.begin(); it != v.end();) { // 漏写 ++it → 死循环
 ```
 
 `[经验]` 例外：需要"边遍历边删除"或随机访问特定下标时，才用迭代器/索引循环。
@@ -475,13 +475,13 @@ struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc
 // 行号：75-91
-//   if _GLIBCXX17_CONSTEXPR (_S_use_relocate())
-//     { __tmp = this->_M_allocate(__n);
-//       _S_relocate(...); }              // 可 relocate：整体移动
-//   else
-//     { __tmp = _M_allocate_and_copy(__n,
-//         _GLIBCXX_MAKE_MOVE_IF_NOEXCEPT_ITERATOR(...),   // 否则退化为拷贝
-//         _GLIBCXX_MAKE_MOVE_IF_NOEXCEPT_ITERATOR(...)); }
+// if _GLIBCXX17_CONSTEXPR (_S_use_relocate())
+// { __tmp = this->_M_allocate(__n);
+// _S_relocate(...); }              // 可 relocate：整体移动
+// else
+// { __tmp = _M_allocate_and_copy(__n,
+// _GLIBCXX_MAKE_MOVE_IF_NOEXCEPT_ITERATOR(...),   // 否则退化为拷贝
+// _GLIBCXX_MAKE_MOVE_IF_NOEXCEPT_ITERATOR(...)); }
 ```
 
 `[实现·GCC15]` `Examples/_ch144_noexcept_O2.asm` 中 `fill_copy` 与 `fill_move` 对**平凡类型 `int`** 生成了几乎一致的代码——这恰好说明：对于 trivially-copyable 类型，移动与拷贝在机器层面无差别；`noexcept` 的收益在**非平凡类型（如 `std::string`）**上才体现为"指针交换而非深拷贝"。结论真实、可复现。
@@ -543,7 +543,7 @@ std::cout << s;        // ❌ s 处于有效但未指定状态，读取危险
 #include <utility>
 #include <vector>
 // ✅ 仅在"不再使用原对象"时移动；传参用值+移动习惯用法
-void sink(std::vector<int> v) { /* 接管所有权 */ }
+void sink(std::vector<int> v) { // 接管所有权
 sink(std::move(local_vec));    // ✅ 明确转让
 ```
 
@@ -663,7 +663,7 @@ Connection::~Connection() = default;
 ```cpp
 // ❌ 反例：模板以外的函数体塞进头文件，导致所有包含方重复编译、耦合膨胀
 // utils.h
-inline void log_time() { /* 大段实现 */ }   // 非模板也应放 .cpp
+inline void log_time() { // 大段实现
 ```
 
 `[经验]` 组织规则：
@@ -696,7 +696,7 @@ auto g = [](auto x) { return x + x; };
 #include <map>
 // C++17：结构化绑定、if 带初始化、折叠表达式、string_view
 std::map<std::string, int> m;
-if (auto [it, ok] = m.try_emplace("k", 1); ok) { /* ... */ }
+if (auto [it, ok] = m.try_emplace("k", 1); ok) { // ...
 std::string_view sv = "zero-copy view";   // ✅ 避免临时 string
 ```
 

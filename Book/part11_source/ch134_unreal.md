@@ -65,7 +65,7 @@ Unreal Engine（UE）的 C++ 并非「裸标准 C++」——它构建在 **UObje
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Unreal Engine C
 ```cpp
 // ① UE 工程的典型最小对象：必须继承 UObject 才获得反射/GC 能力
-//   （UHT 宏在此以空宏模拟，使片段可独立编译）
+// （UHT 宏在此以空宏模拟，使片段可独立编译）
 #define UCLASS(...) 
 #define UPROPERTY(...) 
 #define GENERATED_BODY() 
@@ -107,7 +107,7 @@ UE 的每個对象都是 `UObject` 派生实例；每个类型对应一个 **`UC
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对象模型
 ```cpp
 // ② UObject 与 UClass 的核心关系（上游字段简化示意）
-//   UObjectBase 持有 ClassPrivate（指向 UClass*）；UClass 描述类型自身
+// UObjectBase 持有 ClassPrivate（指向 UClass*）；UClass 描述类型自身
 struct FMinimalObject {
     const void* ClassPrivate;   // 等价 UObjectBase::ClassPrivate
     const void* GetClass() const { return ClassPrivate; }
@@ -140,14 +140,14 @@ struct FMinimalClass {
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h
 // 行号：73
 // 上游参考：UObjectBase 定义 ClassPrivate / NamePrivate / OuterPrivate 等核心字段。
-//   关键片段（节选）：
-//   class COREUOBJECT_API UObjectBase
-//   {
-//   protected:
-//       UClass*        ClassPrivate;   // 指向该对象类型的 UClass 单例
-//       FName          NamePrivate;    // 对象名（FName 池化，避免字符串重复）
-//       UObject*       OuterPrivate;   // 拥有者（包/关卡/对象层级）
-//   };
+// 关键片段（节选）：
+// class COREUOBJECT_API UObjectBase
+// {
+// protected:
+// UClass*        ClassPrivate;   // 指向该对象类型的 UClass 单例
+// FName          NamePrivate;    // 对象名（FName 池化，避免字符串重复）
+// UObject*       OuterPrivate;   // 拥有者（包/关卡/对象层级）
+// };
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase / UObjectGlobals（上游参考） [实现·Unreal]
@@ -155,12 +155,12 @@ struct FMinimalClass {
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/UObjectGlobals.cpp
 // 行号：2451
 // 上游参考：StaticAllocateObject / ConstructObject 的分配逻辑，串接 UClass 与 GC 图。
-//   关键片段（节选）：
-//   UObject* UObjectBaseUtility::CreateObject(...)
-//   {
-//       // 1) 查/建 UClass   2) 从 GUObjectArray 分配槽位
-//       // 3) 调用构造函数   4) 注册到引用图供 GC 扫描
-//   }
+// 关键片段（节选）：
+// UObject* UObjectBaseUtility::CreateObject(...)
+// {
+//// 1) 查/建 UClass   2) 从 GUObjectArray 分配槽位
+//// 3) 调用构造函数   4) 注册到引用图供 GC 扫描
+// }
 ```
 
 - `[实现·UHT]`：UHT 扫描头文件中 `UCLASS()`/`UPROPERTY()`，生成 `ClassName.generated.h` 与 `.gen.cpp`，把字段偏移、类型名注入对应 `UClass`。
@@ -215,7 +215,7 @@ TSharedPtr<FRenderResource> g_Res = std::make_shared<FRenderResource>();
 // ⑤ TWeakPtr：观察而不增加引用计数，典型用于缓存/回调防悬空
 TWeakPtr<FRenderResource> g_Cache = g_Res;
 void UseCache() {
-    if (auto Pin = g_Cache.lock()) { /* 对象仍存活 */ }
+    if (auto Pin = g_Cache.lock()) { // 对象仍存活
 }
 ```
 
@@ -345,7 +345,7 @@ struct FString8 {
     std::u16string W;                       // 内部 UTF-16
     static FString8 FromUtf8(std::string_view s) {
         FString8 r; std::size_t i=0;
-        while (i < s.size()) { /* UTF-8 解码到 UTF-16，省略 */ r.W.push_back((char16_t)s[i]); ++i; }
+        while (i < s.size()) { // UTF-8 解码到 UTF-16，省略
         return r;
     }
 };
@@ -354,7 +354,7 @@ struct FString8 {
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准 C++ 差异
 ```cpp
 // ⑧ 标准 C++ 没有「蓝图可见」概念：这是 UE 反射层独有的附加语义
-//   UPROPERTY() 让字段进入反射——std::string 成员不会自动获得该能力
+// UPROPERTY() 让字段进入反射——std::string 成员不会自动获得该能力
 #define UPROPERTY(...)
 #include <string>
 struct UThing { UPROPERTY() std::string Tag; };  // 仅当类是 UObject 时 Tag 才入图
@@ -371,7 +371,7 @@ struct UThing { UPROPERTY() std::string Tag; };  // 仅当类是 UObject 时 Tag
 ```cpp
 // 文件：Examples/_ch134_objsys.cpp，行号：46（GetClass）/ 52（NewObject）
 // 编译：C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++17 -O2 -S -masm=intel
-//       Examples/_ch134_objsys.cpp -o Examples/_ch134_objsys.asm
+// Examples/_ch134_objsys.cpp -o Examples/_ch134_objsys.asm
 // 等价 UObject::GetClass() 的 RTTI 入口：
 const FClass* GetClass() const { return Class; }   // 返回 UClass 等价单例指针
 ```
@@ -564,7 +564,7 @@ struct FSubsystemStub { void Tick() {} };
 // ⑮ 用 AActor 的 BeginPlay 做初始化，而非构造函数（此时 World/组件就绪）
 struct AActorStub2 { virtual void BeginPlay() {} virtual ~AActorStub2()=default; };
 class AMyActor : public AActorStub2 {
-    void BeginPlay() override { /* 安全访问 Subsystem/World */ }
+    void BeginPlay() override { // 安全访问 Subsystem/World
 };
 ```
 
@@ -595,8 +595,8 @@ int Sum(const TArray<int32_t>& xs) { int s=0; for(int x:xs) s+=x; return s; }
 > **示例 35** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑯ 引入第三方库（如 rapidjson）时，用模块 Build.cs 的 PublicDependencyModuleNames
-//   而非手动 -I；跨模块符号由 UE 构建系统（UBT）解析
-//   （此处示意接口隔离：把第三方结果转成 FString 再回传游戏层）
+// 而非手动 -I；跨模块符号由 UE 构建系统（UBT）解析
+// （此处示意接口隔离：把第三方结果转成 FString 再回传游戏层）
 #include <string>
 std::string ToStd(const char* u8) { return std::string(u8); }
 ```
@@ -621,9 +621,9 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 > **示例 37** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 贡献引擎代码的典型改动点：在 Runtime/CoreUObject 下修改，保持 UHT 宏一致
-//   例：给 UObject 增加一个新的反射说明符，需要同步修改
-//   Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h
-//   与 UHT 的元数据解析器（上游参考，非本机文件）
+// 例：给 UObject 增加一个新的反射说明符，需要同步修改
+// Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h
+// 与 UHT 的元数据解析器（上游参考，非本机文件）
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h
 // 行号：312
 ```
@@ -651,7 +651,7 @@ void Validate(const FContrib& c) { check(c.Id >= 0); }
 > **示例 39** [难度 ★☆☆☆☆] [主题：与游戏引擎对比 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ Unity 用 C# 对象；UE 用 C++ UObject——生命周期模型根本不同
-//   C#：GC 自动；UE：GC + UPROPERTY 显式引用图（开发者参与标注）
+// C#：GC 自动；UE：GC + UPROPERTY 显式引用图（开发者参与标注）
 #include <cstddef>
 struct EngineDiff { const char* Name; bool HasExplicitRefGraph; };
 EngineDiff Diffs[4] = {
@@ -667,10 +667,10 @@ EngineDiff Diffs[4] = {
 > **示例 40** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 阅读引擎源码的入口：从 UObject 派生类的构造函数反向追 UClass 构建
-//   上游参考（非本机）：
+// 上游参考（非本机）：
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp
 // 行号：1187
-//   该处是 UClass 的构造与 StaticClass 注册逻辑，理解反射骨架的关键。
+// 该处是 UClass 的构造与 StaticClass 注册逻辑，理解反射骨架的关键。
 int ReadEntry() { return 1; }   // 占位：提示读者去上游该位置阅读
 ```
 
@@ -814,20 +814,20 @@ int main() {
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 UE C++ 长什么样
 ```cpp
 // ㉑.3 真实 UE C++ 写法（仅注释演示，需 UE + UHT；本门禁按空块编译通过）：
-//   #include "HealthPickup.h"
-//   #include "GameFramework/Actor.h"
-//   UCLASS()
-//   class AHealthPickup : public AActor {
-//       GENERATED_BODY()
-//   public:
-//       AHealthPickup() { PrimaryActorTick.bCanEverTick = false; }
-//       virtual void BeginPlay() override;          // 引擎在关卡开始时调用
-//   protected:
-//       // 编辑器可改、蓝图可读写、且被 GC 追踪——三个能力都来自 UPROPERTY
-//       UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup")
-//       int32 HealAmount = 25;
-//   };
-//   文档：https://dev.epicgames.com/documentation/en-us/unreal-engine/introduction-to-cplusplus-programming-in-unreal-engine
+// #include "HealthPickup.h"
+// #include "GameFramework/Actor.h"
+// UCLASS()
+// class AHealthPickup : public AActor {
+// GENERATED_BODY()
+// public:
+// AHealthPickup() { PrimaryActorTick.bCanEverTick = false; }
+// virtual void BeginPlay() override;          // 引擎在关卡开始时调用
+// protected:
+//// 编辑器可改、蓝图可读写、且被 GC 追踪——三个能力都来自 UPROPERTY
+// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup")
+// int32 HealAmount = 25;
+// };
+// 文档：https://dev.epicgames.com/documentation/en-us/unreal-engine/introduction-to-cplusplus-programming-in-unreal-engine
 ```
 
 ### ㉑.4 一个 UE C++ 工程到底怎么跑起来（端到端步骤）

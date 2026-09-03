@@ -530,7 +530,7 @@ void col_major(const std::vector<std::vector<double>>& m, double& s) {
 #include <map>
 std::unordered_map<const char*, long> g_calls;
 #define COUNT() g_calls[__func__]++
-void api_a() { COUNT(); /* ... */ }
+void api_a() { COUNT(); // ...
 void api_b() { COUNT(); api_a(); }
 ```
 
@@ -546,7 +546,7 @@ void api_b() { COUNT(); api_a(); }
 // ⑭a 用 Google Benchmark 的阈值断言（回归捕获）
 #include <benchmark/benchmark.h>
 void BM_CriticalPath(benchmark::State& st) {
-    for (auto _ : st) { /* 核心路径 */ }
+    for (auto _ : st) { // 核心路径
 }
 BENCHMARK(BM_CriticalPath)->Iterations(1000);
 ```

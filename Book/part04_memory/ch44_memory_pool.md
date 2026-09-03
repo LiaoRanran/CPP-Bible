@@ -311,7 +311,7 @@ public:
 
 #include <iostream>
 #include <cstddef>
-struct Particle { float x, y; ~Particle() { /* 资源清理 */ } };
+struct Particle { float x, y; ~Particle() { // 资源清理
 int main() {
     FixedPool<Particle> pool(64);
     Particle* p = pool.construct(1.0f, 2.0f);
@@ -1080,8 +1080,8 @@ int main() {
 // 编译(MinGW): g++ -std=c++17 -O2 program_16_aligned_malloc.cpp -o p16
 #include <cstddef>
 // 关键：判别条件必须用 _WIN32（MSVC 与 MinGW 都定义），不能只用 _MSC_VER——
-//       MinGW 的 CRT 同样【不提供】C11 std::aligned_alloc，只用 _MSC_VER 会漏掉
-//       MinGW 分支而落到 std::aligned_alloc 导致编译失败。
+// MinGW 的 CRT 同样【不提供】C11 std::aligned_alloc，只用 _MSC_VER 会漏掉
+// MinGW 分支而落到 std::aligned_alloc 导致编译失败。
 #if defined(_WIN32)
   #include <malloc.h>
   #define ALIGNED_ALLOC(p, sz, a) p = _aligned_malloc(sz, a)

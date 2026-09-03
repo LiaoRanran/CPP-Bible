@@ -1229,7 +1229,7 @@ int main() {
 int main() {
     namespace fs = std::filesystem;
     fs::path p = "/tmp/data/report.2024.txt";
-    std::cout << p.parent_path() << '\n';   // /tmp/data
+    std::cout << p.parent_path() << '\n';   ///tmp/data
     std::cout << p.stem()       << '\n';    // report.2024
     std::cout << p.extension()  << '\n';    // .txt
 }

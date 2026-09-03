@@ -73,9 +73,9 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 
 // 标签实现：两条重载，第二参是 true_type / false_type
 template <typename T>
-void impl(T, std::true_type)  { /* 整型路径 */ }
+void impl(T, std::true_type)  { // 整型路径
 template <typename T>
-void impl(T, std::false_type) { /* 非整型路径 */ }
+void impl(T, std::false_type) { // 非整型路径
 
 // 公共入口：用 is_integral<T>::type 产出标签
 template <typename T>
@@ -91,9 +91,9 @@ struct fast_path {};
 struct slow_path {};
 
 template <typename T>
-void algo(T, fast_path) { /* O(1) 实现 */ }
+void algo(T, fast_path) { // O(1) 实现
 template <typename T>
-void algo(T, slow_path) { /* O(n) 实现 */ }
+void algo(T, slow_path) { // O(n) 实现
 
 template <typename T>
 void run(T v) { algo(v, fast_path{}); }   // 显式选 fast
@@ -104,9 +104,9 @@ void run(T v) { algo(v, fast_path{}); }   // 显式选 fast
 // 迭代器标签分发（STL 范式）
 #include <iterator>
 template <typename It>
-void adv(It, std::random_access_iterator_tag) { /* O(1) */ }
+void adv(It, std::random_access_iterator_tag) { // O(1)
 template <typename It>
-void adv(It, std::input_iterator_tag)         { /* O(n) */ }
+void adv(It, std::input_iterator_tag)         { // O(n)
 template <typename It>
 void adv_dispatch(It it) {
     adv(it, typename std::iterator_traits<It>::iterator_category{});
@@ -153,17 +153,17 @@ adv_dispatch(arr);   // int* 的 iterator_category == random_access_iterator_tag
 // 选型：同一算法用标签分发（C++11）与 if constexpr（C++17）两种写法
 // 标签分发版
 template <typename T>
-void f_tag(T v, std::true_type)  { /* 整型 */ }
+void f_tag(T v, std::true_type)  { // 整型
 template <typename T>
-void f_tag(T v, std::false_type) { /* 其他 */ }
+void f_tag(T v, std::false_type) { // 其他
 template <typename T>
 void f_tag(T v) { f_tag(v, typename std::is_integral<T>::type{}); }
 
 // if constexpr 版（更紧凑，但需 C++17）
 template <typename T>
 void f_ce(T v) {
-    if constexpr (std::is_integral_v<T>) { /* 整型 */ }
-    else { /* 其他 */ }
+    if constexpr (std::is_integral_v<T>) { // 整型
+    else { // 其他
 }
 ```
 
@@ -227,8 +227,8 @@ int main() {
 // 自定义标签类型
 struct optimized {};
 struct generic {};
-template <typename T> void work(T, optimized) { /* 快速路径 */ }
-template <typename T> void work(T, generic)   { /* 通用路径 */ }
+template <typename T> void work(T, optimized) { // 快速路径
+template <typename T> void work(T, generic)   { // 通用路径
 template <typename T> void work(T v) { work(v, optimized{}); }
 ```
 
@@ -337,8 +337,8 @@ auto dv = std::distance(v.begin(), v.end());
 auto dl = std::distance(l.begin(), l.end());
 // std::distance 的返回类型恒为 std::ptrdiff_t（C++11 起）。
 // 注意：ptrdiff_t 的具体“原名”随平台数据模型而变——
-//   LP64（Linux/macOS x86-64）：ptrdiff_t 即 long（64 位）
-//   LLP64（Windows x86-64）：  ptrdiff_t 即 long long（64 位）
+// LP64（Linux/macOS x86-64）：ptrdiff_t 即 long（64 位）
+// LLP64（Windows x86-64）：  ptrdiff_t 即 long long（64 位）
 // 因此绝不能断言它“就是 long long”（Windows 成立、Linux 翻车），
 // 只能断言它等于 std::ptrdiff_t 这个标准差异类型（跨平台恒真）。
 static_assert(std::is_same_v<decltype(dv), std::ptrdiff_t>);
@@ -373,10 +373,10 @@ void advance_ce(It& it, int n) {
 template <typename Derived>
 struct Base {
     void run() { static_cast<Derived*>(this)->impl(fast_path{}); }
-    void impl(slow_path) { /* 默认慢路径 */ }
+    void impl(slow_path) { // 默认慢路径
 };
 struct Fast : Base<Fast> {
-    void impl(fast_path) { /* 快路径覆盖 */ }
+    void impl(fast_path) { // 快路径覆盖
 };
 ```
 
@@ -384,7 +384,7 @@ struct Fast : Base<Fast> {
 ```cpp
 // 变体：标签作为策略键（衔接 ch71）
 template <typename Tag>
-struct Algorithm { /* 按 Tag 选实现 */ };
+struct Algorithm { // 按 Tag 选实现
 using OptA = Algorithm<optimized{}>;
 using OptB = Algorithm<generic{}>;
 ```
@@ -419,7 +419,7 @@ void good(T v) { impl(v, typename std::is_integral<T>::type{}); }
 ```cpp
 // 反模式：用虚函数替代编译期标签分发（运行期开销）
 struct VBase { virtual void run() = 0; };
-struct VInt : VBase { void run() override { /* 整型 */ } };   // 间接调用 + vtable
+struct VInt : VBase { void run() override { // 整型
 ```
 
 ## ⑭ 工业案例
@@ -433,9 +433,9 @@ struct VInt : VBase { void run() override { /* 整型 */ } };   // 间接调用 
 ```cpp
 // 工业案例：按算术类型标签选编码
 template <typename T>
-void encode(T v, std::true_type)  { /* 二进制定长 */ }
+void encode(T v, std::true_type)  { // 二进制定长
 template <typename T>
-void encode(T v, std::false_type) { /* 反射递归 */ }
+void encode(T v, std::false_type) { // 反射递归
 template <typename T>
 void encode(T v) { encode(v, typename std::is_arithmetic<T>::type{}); }
 ```
@@ -459,7 +459,7 @@ void copy_range(It first, It last, int* out, std::input_iterator_tag) {
 // 工业案例：编译期策略选择（标签作 key）
 struct SimdOn {}; struct SimdOff {};
 template <typename T>
-void transform(T* p, int n, SimdOn)  { /* SIMD 路径 */ }
+void transform(T* p, int n, SimdOn)  { // SIMD 路径
 template <typename T>
 void transform(T* p, int n, SimdOff) { for (int i=0;i<n;++i) p[i]*=2; }
 ```
@@ -537,8 +537,8 @@ impl(42, std::true_type{});   // OK
 ```cpp
 #include <vector>
 // FAQ 演示：继承链使 derived 标签可匹配 base 重载
-void use(std::input_iterator_tag)  { /* 弱 */ }
-void use(std::random_access_iterator_tag) { /* 强 */ }
+void use(std::input_iterator_tag)  { // 弱
+void use(std::random_access_iterator_tag) { // 强
 std::vector<int> v;
 use(std::iterator_traits<decltype(v.begin())>::iterator_category{}); // 选强（random_access）
 ```

@@ -911,9 +911,9 @@ int main() {
 struct S { ~S(); int a; };
 void f(S* p, std::size_t n) {
     // 等价于 delete[] p 的伪代码展开：
-    //   std::size_t count = *(reinterpret_cast<std::size_t*>(p) - 1); // 读 cookie
-    //   for (std::size_t i = 0; i < count; ++i) p[i].~S();
-    //   operator delete(p - cookie_size, total_size, cookie_size);    // 退回 cookie 起点
+    // std::size_t count = *(reinterpret_cast<std::size_t*>(p) - 1); // 读 cookie
+    // for (std::size_t i = 0; i < count; ++i) p[i].~S();
+    // operator delete(p - cookie_size, total_size, cookie_size);    // 退回 cookie 起点
     (void)p; (void)n;
 }
 ```
@@ -1515,7 +1515,7 @@ int main() {
 struct S { int x; };
 
 int main() {
-    S* p = new S();     // /Zc:throwingNew 下编译器不插入 if(!p) 检查
+    S* p = new S();     ///Zc:throwingNew 下编译器不插入 if(!p) 检查
     p->x = 1;           // 直接解引用，假设 new 已抛或成功
     std::printf("%d\n", p->x);
     delete p;
@@ -1554,8 +1554,8 @@ int main() {
 ```cpp
 // [实现-推断] libc++ <memory> 简化：
 // pointer allocate(size_type n) {
-//     return static_cast<pointer>(__libcpp_allocate(n * sizeof(value_type),
-//                                                   alignof(value_type)));
+// return static_cast<pointer>(__libcpp_allocate(n * sizeof(value_type),
+// alignof(value_type)));
 // }
 // __libcpp_allocate 最终: ::operator new(size, align_val_t(alignof))
 ```
@@ -1809,9 +1809,9 @@ int main() {
 
     // 2) placement new 在已有缓冲上构造第二个（同一类型，不同实例）
     // 关键：类内声明了自定义 operator new 后，会【隐藏】全局 placement new
-    //       operator new(size_t, void*)，直接 `new (buf)` 会误配到本类的
-    //       operator new(size_t, const nothrow_t&) → char[32] 无法转 nothrow_t&。
-    //       用 `::new` 显式走全局作用域的 placement new 才正确。
+    // operator new(size_t, void*)，直接 `new (buf)` 会误配到本类的
+    // operator new(size_t, const nothrow_t&) → char[32] 无法转 nothrow_t&。
+    // 用 `::new` 显式走全局作用域的 placement new 才正确。
     alignas(Particle) char buf[sizeof(Particle)];
     Particle* q = ::new (buf) Particle(3.0f, 4.0f);
     Particle* qf = std::launder(q);     // 取"新鲜"指针

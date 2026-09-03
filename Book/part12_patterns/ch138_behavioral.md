@@ -477,9 +477,9 @@ enum class S { Idle, Run, Stop };
 enum class E { Start, Stop, Reset };
 S next(S s, E e) {
     static const S tbl[3][3] = {            // [当前状态][事件]
-        /*Idle*/ {S::Run,  S::Idle,  S::Idle },
-        /*Run */ {S::Run,  S::Stop,  S::Idle },
-        /*Stop*/ {S::Idle, S::Stop,  S::Idle },
+        // Idle
+        // Run
+        // Stop
     };
     return tbl[static_cast<int>(s)][static_cast<int>(e)];
 }

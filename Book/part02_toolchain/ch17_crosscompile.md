@@ -71,7 +71,7 @@ int add(int a, int b) { return a + b; }   // 同一份源码，x86 或 ARM 都�
 ```cpp
 // ② 三元组拆解（注释示意，非运行代码）
 // arm      - none   - eabi        : GNU Arm Embedded，裸机嵌入式
-//  ↑架构      ↑厂商     ↑OS/ABI
+// ↑架构      ↑厂商     ↑OS/ABI
 // aarch64 - linux  - gnu         : 64 位 ARM Linux（glibc）
 // x86_64  - w64    - mingw32     : 本机 MinGW-W64（Windows）
 // riscv32 - unknown - elf        : RISC-V 32 位裸机 ELF
@@ -125,7 +125,7 @@ int main() { std::printf("built for target\n"); return 0; }
 ```cpp
 // ④ 裸机程序：必须自己定义入口，不能有 main 依赖 libc 的初始化
 extern "C" void _start() {              // 复位向量跳到这里
-    for (;;) { /* 自旋 */ }
+    for (;;) { // 自旋
 }
 // 链接：arm-none-eabi-ld -T script.ld -o fw.elf start.o
 ```
@@ -220,10 +220,10 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 ```cpp
 // ⑦ 业务代码完全不感知交叉：CMakeLists 里照常 add_executable
 // CMakeLists.txt 片段（示意）：
-//   cmake_minimum_required(VERSION 3.21)
-//   project(fw CXX)
-//   add_executable(fw.elf src/main.cpp)
-//   target_compile_features(fw.elf PRIVATE cxx_std_23)
+// cmake_minimum_required(VERSION 3.21)
+// project(fw CXX)
+// add_executable(fw.elf src/main.cpp)
+// target_compile_features(fw.elf PRIVATE cxx_std_23)
 ```
 
 - `[标准]`：`CMAKE_SYSTEM_NAME=Generic` 告诉 CMake **不要**执行任何宿主机探测；`FIND_ROOT_PATH_MODE_*` 防止 `find_package` 误用宿主机的库。
@@ -290,7 +290,7 @@ int main() {
 // ⑩ 复位向量表：第一项 SP 初值，第二项 Reset_Handler 入口
 // 文件：Examples/_ch17_baremetal.cpp，行号：16（_start）
 extern "C" void _start() {
-    for (;;) { /* 点亮 LED 后自旋 */ }
+    for (;;) { // 点亮 LED 后自旋
 }
 // 向量表通常单独汇编： .word _estack ; .word _start
 ```

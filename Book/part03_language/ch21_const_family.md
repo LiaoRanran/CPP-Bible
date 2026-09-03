@@ -143,7 +143,7 @@ const Blob cb; cb.get();   // 调用 #2（cb 是 const 对象，只能调用 con
 #include <optional>
 class Cache {
     mutable std::mutex mtx_;        // 逻辑可变：锁不是"业务状态"
-    mutable std::optional<int> val_;// 缓存也不是业务状态
+    mutable std::optional<int> val_; // 缓存也不是业务状态
     int compute() const;            // 耗算
 public:
     int value() const {              // 对调用者表现为 const
@@ -529,7 +529,7 @@ constexpr auto crc32_table = [] consteval {
 static_assert(crc32_table[1]==0x77073096u);
 // 31. 编译期 FNV-1a 哈希（用于编译期字符串键）
 constexpr uint64_t fnv1a(const char* s){ uint64_t h=14695981039346656037ULL; for(;*s;++s){h^=uint8_t(*s);h*=1099511628211ULL;} return h; }
-static_assert(fnv1a("key")==/* 编译期算出 */ fnv1a("key"));
+static_assert(fnv1a("key")== // 编译期算出
 // 32. 类型安全 printf 替代（C++20 format）
 void log(std::format_string<int,double> fmt, int a, double b){ std::print(fmt, a, b); }
 ```
@@ -543,8 +543,8 @@ void log(std::format_string<int,double> fmt, int a, double b){ std::print(fmt, a
 ```cpp
 #include <benchmark/benchmark.h>
 #include <cstdint>
-constexpr auto table_constexpr = /* 256项编译期表 */;
-uint32_t table_runtime()[256] { /* 运行期构建 */ }
+constexpr auto table_constexpr = // 256项编译期表
+uint32_t table_runtime()[256] { // 运行期构建
 
 static void BM_ConstexprTable(benchmark::State& s){ for(auto _:s) benchmark::DoNotOptimize(table_constexpr[0]); }
 static void BM_RuntimeTable(benchmark::State& s){ auto* t=table_runtime(); for(auto _:s) benchmark::DoNotOptimize(t[0]); }
@@ -750,7 +750,7 @@ g(42);
 const int ci = 5;
 g(ci);   // 仍推导 T=int，不是 const int（拷贝形参，原 const 无关）
 
-template<class T> void h(const T& x) { /* x 始终 const 引用 */ }
+template<class T> void h(const T& x) { // x 始终 const 引用
 int v = 1; const int cv = 2;
 h(v);  h(cv);   // 都合法，T 分别为 int / int，形参加回 const
 

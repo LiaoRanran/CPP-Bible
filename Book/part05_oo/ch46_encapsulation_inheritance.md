@@ -363,7 +363,7 @@ public:    long id() const { return (long(id_hi_)<<32)|id_lo_; }
 struct Panel : Widget {
     void dump() {
         // 版本 2 下这行直接编译失败：id_ 已不存在
-        printf("%ld\n", /* id_ */ id());
+        printf("%ld\n", // id_
     }
 };
 
@@ -1437,7 +1437,7 @@ struct Base { virtual void tick() { printf("base tick\n"); } virtual ~Base()=def
 
 // 错误示范：本想覆盖，却因签名差异（漏 const）成了新重载
 struct Buggy : Base {
-    void tick() /* 应为 void tick() const 覆盖，却写错 */ { printf("buggy tick\n"); }
+    void tick() // 应为 void tick() const 覆盖，却写错
 };
 
 int main(){

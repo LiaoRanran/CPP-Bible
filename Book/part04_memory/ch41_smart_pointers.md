@@ -558,8 +558,8 @@ template<_Lock_policy _Lp = __default_lock_policy>
 ```cpp
 // <bits/shared_ptr_base.h> 行 1422 起，__shared_ptr 关键成员
 // （数据成员在类尾，真实为）
-//   element_type*    _M_ptr;       // 被指对象
-//   __shared_count<_Lp> _M_refcount; // 仅一个控制块指针 _M_pi
+// element_type*    _M_ptr;       // 被指对象
+// __shared_count<_Lp> _M_refcount; // 仅一个控制块指针 _M_pi
 ```
 
 ### 示例 14：`shared_ptr` 基本与引用计数  `[核心知识点09]`
@@ -1541,7 +1541,7 @@ using D1 = std::unique_ptr<int, void(*)(int*)>;
 
 // 无状态函数对象删除器：类是空类型，EBO 把它吃掉 → 仍是一个指针大小
 // 注意：不能用 `decltype(fd)`（那是函数类型 void(int*)，非指针，不能当删除器；
-//       且 is_empty_v<函数类型> 恒为 false）。要用「无状态 functor / 无捕获 lambda」。
+// 且 is_empty_v<函数类型> 恒为 false）。要用「无状态 functor / 无捕获 lambda」。
 struct FreeDeleter { void operator()(int* p) const { delete p; } };
 using D2 = std::unique_ptr<int, FreeDeleter>;
 
@@ -2196,7 +2196,7 @@ int main() {
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 struct A; struct B;
-struct A { std::shared_ptr<B> b; ~A(){/*不会跑*/} };
+struct A { std::shared_ptr<B> b; ~A(){ // 不会跑
 struct B { std::shared_ptr<A> a; };
 auto pa = std::make_shared<A>();   // use_count(A)=1
 auto pb = std::make_shared<B>();   // use_count(B)=1
@@ -2404,7 +2404,7 @@ public:
     }
 };
 // 关键：对象必须已由 shared_ptr 管理(如 make_shared)才能调 shared_from_this；
-//      构造期间 this 尚未交给 shared_ptr，调用会抛 std::bad_weak_ptr —— 见示例 25。
+// 构造期间 this 尚未交给 shared_ptr，调用会抛 std::bad_weak_ptr —— 见示例 25。
 ```
 
 **结论（贯穿）**：这条演化链把「所有权」一步步写进类型系统——`unique_ptr` 用「不可拷贝」在编译期杜绝双重释放；`shared_ptr` 用引用计数支持多方共享；`weak_ptr` 用弱引用切断循环；`enable_shared_from_this` 让对象在需要时从 `this` 安全取回 `shared_ptr`。裸 `new/delete` 只应出现在 `make_unique/make_shared` 内部。

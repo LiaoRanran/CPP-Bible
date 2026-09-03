@@ -96,7 +96,7 @@ stateDiagram-v2
 // ②A 线程：抢占式、有独立栈、由 OS 调度
 #include <thread>
 void with_thread() {
-    std::thread t([] { /* 并发工作 */ });
+    std::thread t([] { // 并发工作
     t.join();   // 阻塞等待；栈内存 MB 级、切换代价高
 }
 ```
@@ -186,7 +186,7 @@ mini_task await_demo() {
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · co_await / co_yield / co_return 三个关键字
 ```cpp
 // ④B co_yield：产出整数序列（需 promise_type 提供 yield_value）
-struct generator { /* 见 ⑥ */ };
+struct generator { // 见 ⑥
 generator seq() {
     co_yield 1;   // 等价于 co_await promise.yield_value(1)，挂起并产出
     co_yield 2;
@@ -569,7 +569,7 @@ std::suspend_always final_suspend() noexcept { return {}; }
 template <typename T>
 T sync_wait(task<T> t) {
     // 简化示意：反复 resume 直到 final_suspend 挂起（真实实现需事件循环）
-    while (t.resume()) { /* 由调度器在 IO 就绪时回调 resume */ }
+    while (t.resume()) { // 由调度器在 IO 就绪时回调 resume
     return t.h.promise().val_;   // 取 return_value 结果
 }
 ```
@@ -638,7 +638,7 @@ generator good_copy(std::string s) {   // 按值接收：s 成为帧的一部分
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：悬垂引用与协程帧生命周期 [标准]
 ```cpp
 // ⑮C ❌ 泄漏：构造后从不 resume/destroy，堆帧永不被释放
-void leak() { auto g = range(10); /* 未 next 也未显式 destroy 路径 */ }
+void leak() { auto g = range(10); // 未 next 也未显式 destroy 路径
 // ⑮D ✅ 正确：RAII 句柄析构 destroy（见 ⑥/⑦ 析构函数）
 ```
 
@@ -678,7 +678,7 @@ struct logging_awaiter {
         // printf("suspend\n");
         return a.await_suspend(h);
     }
-    auto await_resume() const noexcept { /* printf("resume\n"); */ return a.await_resume(); }
+    auto await_resume() const noexcept { // printf("resume\n");
 };
 ```
 
@@ -1029,7 +1029,7 @@ int main() {
 struct ready_value {
     int v;
     bool await_ready() const noexcept { return true; }          // 立即就绪，不挂起
-    void await_suspend(std::coroutine_handle<>) const noexcept {}// 就绪则不会被调用
+    void await_suspend(std::coroutine_handle<>) const noexcept {} // 就绪则不会被调用
     int await_resume() const noexcept { return v; }             // 产出值
 };
 struct task {

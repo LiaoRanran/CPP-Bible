@@ -430,7 +430,7 @@ struct Holder {
 
 Holder make() {
     return Holder(std::string("tmp"));   // ⚠ 临时 string 绑定到成员 r,
-                                          //    但成员引用不延长 → r 悬垂
+                                          // 但成员引用不延长 → r 悬垂
 }
 // 调用方拿到 Holder 后访问 r 即 UB
 ```
@@ -501,7 +501,7 @@ std::vector<int> snapshot() { return {1, 2, 3}; }  // 返回临时 vector
 
 void bad() {
     // ⚠ 范围 for 展开: auto&& __range = snapshot();
-    //    临时 vector 在"完整表达式结束"析构, 而 __range 仍引用它 → 悬垂
+    // 临时 vector 在"完整表达式结束"析构, 而 __range 仍引用它 → 悬垂
     for (int x : snapshot()) {
         std::printf("%d ", x);   // UB: 遍历已析构的 vector
     }
@@ -541,7 +541,7 @@ int main() {
 #include <cstdio>
 
 // ⚠ std::initializer_list<T> 底层是 const T* 指向临时数组
-//    该临时数组生命只到"包含它的完整表达式"结束
+// 该临时数组生命只到"包含它的完整表达式"结束
 void bad() {
     // auto& il = {1, 2, 3};   // 临时数组在语句结束析构, il 悬垂
 }
@@ -561,7 +561,7 @@ void ok_pattern() {
 #include <utility>
 #include <cstdio>
 
-void consume(std::string&& s) { /* 接管 s */ }
+void consume(std::string&& s) { // 接管 s
 
 void bad() {
     std::string s = "data";

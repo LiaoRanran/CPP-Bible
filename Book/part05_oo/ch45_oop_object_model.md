@@ -142,8 +142,8 @@ int main() {
 // [示例 2] public 继承 = is-a（最常用）
 #include <cstdio>
 
-struct Animal { void breathe() const { /* ... */ } };
-struct Dog : public Animal { void bark() const { /* ... */ } };
+struct Animal { void breathe() const { // ...
+struct Dog : public Animal { void bark() const { // ...
 
 int main() {
     Dog d;
@@ -568,8 +568,8 @@ _ZN1T1fEv:                    ;; T::f() 的符号修饰名
 
 struct Foo {
     int x;
-    void big_method() { /* 几百行代码，不影响对象大小 */ }
-    void another()    { /* 同样不影响 */ }
+    void big_method() { // 几百行代码，不影响对象大小
+    void another()    { // 同样不影响
 };
 
 int main() {

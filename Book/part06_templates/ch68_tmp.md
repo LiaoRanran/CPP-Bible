@@ -500,7 +500,7 @@ struct conditional<false, _Iftrue, _Iffalse> { using type = _Iffalse; };
 ```cpp
 // libstdc++ integer_sequence：增量偏特化构造索引序列
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/utility.h
-//       行号：164（struct integer_sequence）/ 175（make_integer_sequence）
+// 行号：164（struct integer_sequence）/ 175（make_integer_sequence）
 template <typename _Tp, _Tp... _Idx>
 struct integer_sequence { using value_type = _Tp; };
 template <typename _Tp, _Tp _Num>

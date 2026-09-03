@@ -866,8 +866,8 @@ int main() {
 
 > **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
-template <class T> void f(T)  { /* 通用 */ }
-template <class T> void f(T*) { /* 指针 */ }
+template <class T> void f(T)  { // 通用
+template <class T> void f(T*) { // 指针
 ```
 调用 `f((int*)nullptr)` 是否歧义？给出两种消除歧义的写法（`enable_if` 或标签）。
 
@@ -880,17 +880,17 @@ template <class T> void f(T*) { /* 指针 */ }
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <type_traits>
-template <class T, class = void> void f(T) { /* 通用 */ }
+template <class T, class = void> void f(T) { // 通用
 template <class T>
-void f(T*, std::enable_if_t<std::is_pointer_v<T>, int> = 0) { /* 指针 */ }
+void f(T*, std::enable_if_t<std::is_pointer_v<T>, int> = 0) { // 指针
 ```
 
 写法 B——`std::true_type` 标签分发（见 ch70）：
 > **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <type_traits>
-template <class T> void f_impl(T, std::false_type) { /* 通用 */ }
-template <class T> void f_impl(T*, std::true_type)  { /* 指针 */ }
+template <class T> void f_impl(T, std::false_type) { // 通用
+template <class T> void f_impl(T*, std::true_type)  { // 指针
 template <class T> void f(T v) { f_impl(v, std::is_pointer<T>{}); }
 ```
 

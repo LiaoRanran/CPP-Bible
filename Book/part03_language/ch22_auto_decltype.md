@@ -865,7 +865,7 @@ int main() { std::cout << twice(3) << twice(std::string{"ab"}); }
 #include <concepts>
 #include <iostream>
 void print(std::integral auto x) { std::cout << x; } // 受约束缩写模板
-int main() { print(42); /* print(3.0); 错误：非 integral */ }
+int main() { print(42); // print(3.0); 错误：非 integral
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto& / auto&&
@@ -1257,7 +1257,7 @@ int main() {
 template<auto V> struct tag { using type = decltype(V); };
 int main() {
     // 注意：template<auto V> 按 auto 规则推导，V 的声明类型是 int / double（不带 const）；
-    //       decltype(未加括号的 id-expression V) 取实体的声明类型，故为 int / double。
+    // decltype(未加括号的 id-expression V) 取实体的声明类型，故为 int / double。
     static_assert(std::is_same_v<tag<5>::type, int>);
     static_assert(std::is_same_v<tag<3.0>::type, double>);
 }

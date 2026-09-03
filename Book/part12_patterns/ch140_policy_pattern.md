@@ -117,7 +117,7 @@ static_assert(!std::is_same_v<A, B>);  // 编译期即知二者不同
 ```cpp
 // ② 形态一：静态成员函数 policy
 struct LoggingOff { static void log(const char*) {} };
-struct LoggingOn  { static void log(const char* m) { /* 写日志 */ (void)m; } };
+struct LoggingOn  { static void log(const char* m) { // 写日志
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策类基本形态
@@ -656,11 +656,11 @@ int use_sfinae() {
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：288
-//   using deleter_type  = _Dp;   // _Dp 即删除器 policy（默认 std::default_delete<_Tp>）
+// using deleter_type  = _Dp;   // _Dp 即删除器 policy（默认 std::default_delete<_Tp>）
 //
 // 行号：84-85（bits/stl_vector.h）
-//   template<typename _Tp, typename _Alloc>
-//     struct _Vector_base { ... };   // _Alloc 即分配器 policy
+// template<typename _Tp, typename _Alloc>
+// struct _Vector_base { ... };   // _Alloc 即分配器 policy
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计真实案例
@@ -822,7 +822,7 @@ struct Bundle {
 ```cpp
 // ⑰ 反模式一：policy 之间隐含耦合（顺序敏感却无文档）
 template <typename A, typename B>
-struct Bad { /* A 必须在 B 之前初始化，否则 UB，但接口看不出来 */ };
+struct Bad { // A 必须在 B 之前初始化，否则 UB，但接口看不出来
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计反模式
@@ -836,7 +836,7 @@ struct Host { P policy; };   // 若 P 有大数据成员，每个宿主实例都
 ```cpp
 // ⑰ 反模式三：组合爆炸且无共享实现
 template <typename X, typename Y, typename Z>
-struct Explode { /* 三层嵌套各 4 选 1 => 64 份实例化 */ };
+struct Explode { // 三层嵌套各 4 选 1 => 64 份实例化
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计反模式

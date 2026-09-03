@@ -1013,7 +1013,7 @@ void demo_voidptr() {
 }
 
 // ② struct 名称作用域：C 中类型名不进普通命名空间，须写 struct Tag
-//    C++ 中 struct/union/enum 名直接进入普通作用域，可直接当类型用
+// C++ 中 struct/union/enum 名直接进入普通作用域，可直接当类型用
 struct Point { int x, y; };
 int area(Point p) { return p.x * p.y; }   // C++ 直接写 Point；C 须写 struct Point p
 
@@ -1090,9 +1090,9 @@ int main() {
 #include <cstdio>
 
 // 这段 C++ 在 CFront 时代会被机械展开为等价的 C 代码：
-//   struct Counter { int value; };
-//   void Counter__init(Counter* self){ self->value = 0; }
-//   void Counter__inc(Counter* self){ ++(self->value); }
+// struct Counter { int value; };
+// void Counter__init(Counter* self){ self->value = 0; }
+// void Counter__inc(Counter* self){ ++(self->value); }
 struct Counter {
     int value;
     Counter() : value(0) {}   // 构造函数 → CFront 生成的 Counter__init
@@ -1134,8 +1134,8 @@ C++ 在 1980 年代通过 CFront 把新语法机械展开回 C，因此它刻意
 #include <cstdio>
 
 // C++ 的 class 在 CFront 时代会被展开成“struct + 全局函数”：
-//   struct Stack { int* base; int top; };
-//   void Stack_push(Stack* s, int v){ ... }
+// struct Stack { int* base; int top; };
+// void Stack_push(Stack* s, int v){ ... }
 // 下面这段在 C++ 下编译，其结构正对应这种展开。
 struct Stack {
     int data[16];

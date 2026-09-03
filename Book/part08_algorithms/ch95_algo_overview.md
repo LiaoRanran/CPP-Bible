@@ -541,7 +541,7 @@ bool slow_lookup(const std::set<int>& s, int k) {
 void danger(std::vector<int>& v) {
     // ❌ 下面这种"算法内部插入导致迭代器失效"是未定义行为：
     // std::remove_if(v.begin(), v.end(), [&](int x){
-    //     if (x==0) { v.push_back(99); return true; } return false; });
+    // if (x==0) { v.push_back(99); return true; } return false; });
 }
 ```
 
@@ -811,8 +811,8 @@ int median_of_three(std::vector<int>& v) {
 > **示例 46** [难度 ★★☆☆☆] [主题：跨 STL 实现差异 <span class="badge badge-platform">平台</span>]
 ```cpp
 // ⑰-B 调试模式差异：libstdc++ 的 _GLIBCXX_DEBUG 会额外检查迭代器失效
-//   编译加 -D_GLIBCXX_DEBUG 可在运行期捕获 ⑪ 节的失效 UB；libc++ 用 _LIBCPP_HARDENING_MODE。
-//   这类检查默认关闭（为性能），发布构建不会暴露问题——务必在 debug 构建验证。
+// 编译加 -D_GLIBCXX_DEBUG 可在运行期捕获 ⑪ 节的失效 UB；libc++ 用 _LIBCPP_HARDENING_MODE。
+// 这类检查默认关闭（为性能），发布构建不会暴露问题——务必在 debug 构建验证。
 ```
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
@@ -877,15 +877,15 @@ void debug_count_if(const std::vector<int>& v, int d) {
 > **示例 51** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲-B 用 _GLIBCXX_DEBUG（GCC）在运行期捕获迭代器失效/越界（发布构建移除以保性能）
-//   编译：g++ -D_GLIBCXX_DEBUG -std=c++23 _dbg.cpp -o _dbg
-//   一旦算法操作了失效迭代器，会立即 abort 并给出精确位置——比"偶发崩溃"好定位。
+// 编译：g++ -D_GLIBCXX_DEBUG -std=c++23 _dbg.cpp -o _dbg
+// 一旦算法操作了失效迭代器，会立即 abort 并给出精确位置——比"偶发崩溃"好定位。
 ```
 
 > **示例 52** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲-C 用 Compiler Explorer 风格 -S 比对：怀疑某算法没内联时，看汇编有无 call
-//   g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm
-//   若热点算法仍出现 call 到 std:: 函数，多半是谓词阻止了内联（如捕获了状态且过大）。
+// g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm
+// 若热点算法仍出现 call 到 std:: 函数，多半是谓词阻止了内联（如捕获了状态且过大）。
 ```
 
 ## ⑳ 速查表
@@ -940,7 +940,7 @@ int quickcheck() {
     std::sort(v.begin(), v.end());                 // O(n log n)，不稳定
     auto it = std::unique(v.begin(), v.end());      // 去重分区
     v.erase(it, v.end());                           // 真正去重
-    long s = std::accumulate(v.begin(), v.end(), 0L);// O(n)
+    long s = std::accumulate(v.begin(), v.end(), 0L); // O(n)
     bool has3 = std::binary_search(v.begin(), v.end(), 3); // O(log n)
     return static_cast<int>(s) + (has3 ? 1 : 0);
 }

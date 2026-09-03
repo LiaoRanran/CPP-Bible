@@ -82,21 +82,21 @@ int main() {
 template <typename T>
 struct Storage {
     T value;
-    void describe() const { /* 通用 */ }
+    void describe() const { // 通用
 };
 
 // 全特化：为 bool 提供位压缩替代（示意）
 template <>
 struct Storage<bool> {
     unsigned bits;
-    void describe() const { /* bool 专用 */ }
+    void describe() const { // bool 专用
 };
 
 // 偏特化：指针
 template <typename U>
 struct Storage<U*> {
     U* ptr;
-    void describe() const { /* 指针专用 */ }
+    void describe() const { // 指针专用
 };
 ```
 
@@ -188,7 +188,7 @@ int main() {
 // 差异主要：模板报错可读性（见 ch75）与对 C++20 概念的支持进度
 // MSVC 对「函数模板偏序」曾与类模板偏序处理不一致；用类模板包装规避
 #include <iostream>
-template <typename T> struct Dispatcher { static void run(T) { /* 类模板包装规避函数模板偏序差异 */ } };
+template <typename T> struct Dispatcher { static void run(T) { // 类模板包装规避函数模板偏序差异
 int main() { Dispatcher<int> d; d.run(0); std::cout << "ok\n"; }
 ```
 
@@ -522,8 +522,8 @@ int main() {
 #include <type_traits>
 #include <concepts>
 // 用偏特化实现「按类别分流」的 dispatch
-template <typename T> struct Handler { static void run() { /* 通用 */ } };
-template <typename T> struct Handler<T*> { static void run() { /* 指针 */ } };
+template <typename T> struct Handler { static void run() { // 通用
+template <typename T> struct Handler<T*> { static void run() { // 指针
 // SFINAE 偏特化（ch66）：用 enable_if 选特化
 template <typename T, typename = void> struct HasFoo : std::false_type {};
 template <typename T> struct HasFoo<T, std::void_t<decltype(std::declval<T>().foo())>> : std::true_type {};
@@ -594,8 +594,8 @@ template <typename T> struct Codec { static void write(const T&); };
 template <> struct Codec<int> { static void write(int); };   // 定长快路径
 template <typename T> struct Codec<std::vector<T>> { static void write(const std::vector<T>&); };
 // Eigen 对固定/动态尺寸矩阵用不同存储特化（示意，需 Eigen 头，此处仅注释）
-//   template <typename Scalar, int Rows, int Cols> class Matrix;            // 固定
-//   template <typename Scalar> class Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;  // 动态
+// template <typename Scalar, int Rows, int Cols> class Matrix;            // 固定
+// template <typename Scalar> class Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;  // 动态
 int main() {
     std::cout << is_integral<int>::value << ' ' << is_integral<double>::value << '\n';  // 1 0
 }

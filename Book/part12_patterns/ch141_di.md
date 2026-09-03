@@ -335,7 +335,7 @@ int main() {
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与接口（抽象基类）
 ```cpp
 // ❌ 漏写 virtual 析构：delete 基类指针不会调用派生析构
-struct BadIface { /* 无 virtual ~BadIface() */ virtual void f() = 0; };
+struct BadIface { // 无 virtual ~BadIface()
 ```
 
 [实现·GCC15] 接口注入会在目标文件里生成 vtable（如 `_ZTV8IStorage`、RTTI `_ZTI8IStorage`）；这带来轻微代码体积与间接调用成本，详见 ⑭ 取证。
@@ -459,9 +459,9 @@ int main() {
 ```cpp
 // 上游参考（Boost.DI，需 boost 1.80+，本书环境未装 boost，故不在此编译）。
 // 其“自动装配”风格：
-//   auto injector = boost::di::make_injector(
-//       boost::di::bind<IRepo>.to<DbRepo>());
-//   auto* svc = injector.create<OrderService*>();  // 按构造签名自动 new 依赖
+// auto injector = boost::di::make_injector(
+// boost::di::bind<IRepo>.to<DbRepo>());
+// auto* svc = injector.create<OrderService*>();  // 按构造签名自动 new 依赖
 //
 // 下面给出其思想的“最小自包含模仿”，可独立编译，用于说明自动解析思路：
 #include <iostream>
@@ -690,7 +690,7 @@ int main() {
 // Examples/_ch141_perf.cpp
 // DI 性能取证：接口注入（虚 / 运行时多态） vs 模板注入（静态多态，无虚调用）。
 // 编译：g++ -std=c++23 -O2 -S -masm=intel -o _ch141_perf.asm _ch141_perf.cpp
-//       g++ -std=c++23 -O0 -S -masm=intel -o _ch141_perf_O0.asm _ch141_perf.cpp
+// g++ -std=c++23 -O0 -S -masm=intel -o _ch141_perf_O0.asm _ch141_perf.cpp
 #include <cstdio>
 
 struct IStorage { virtual ~IStorage() = default; virtual int get() const = 0; };

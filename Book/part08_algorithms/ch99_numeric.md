@@ -401,8 +401,8 @@ double l2_norm(const std::vector<double>& a) {
 // 文件：Examples/_ch99_transform_reduce.cpp
 // 行号：10 (tr_square) / 17 (tr_mul) / 25 (tr_int)
 // 编译：
-//   g++ -std=c++23 -O2 -S -masm=intel Examples/_ch99_transform_reduce.cpp -o Examples/_ch99_transform_reduce.asm
-//   g++ -std=c++23 -O3 -mavx2 -ffast-math -S -masm=intel Examples/_ch99_transform_reduce.cpp -o Examples/_ch99_transform_reduce_avx.asm
+// g++ -std=c++23 -O2 -S -masm=intel Examples/_ch99_transform_reduce.cpp -o Examples/_ch99_transform_reduce.asm
+// g++ -std=c++23 -O3 -mavx2 -ffast-math -S -masm=intel Examples/_ch99_transform_reduce.cpp -o Examples/_ch99_transform_reduce_avx.asm
 #include <numeric>
 #include <cstddef>
 
@@ -704,8 +704,8 @@ void naive_vs_stable() {
 // 文件：Examples/_ch99_par_bench.cpp
 // 行号：见 main：hardware_concurrency=32；seq/par 计时与 ratio 见下方真实输出
 // 编译运行：
-//   g++ -std=c++23 -O2 Examples/_ch99_par_bench.cpp -o Examples/_ch99_par_bench.exe
-//   Examples/_ch99_par_bench.exe
+// g++ -std=c++23 -O2 Examples/_ch99_par_bench.cpp -o Examples/_ch99_par_bench.exe
+// Examples/_ch99_par_bench.exe
 #include <algorithm>
 #include <numeric>
 #include <execution>
@@ -1282,7 +1282,7 @@ int main() {
 > **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 调试
 ```cpp
 // ⑲ 用 sanitizer 抓数据竞争：编译加 -fsanitize=thread 跑并行版
-//   g++ -std=c++23 -O1 -fsanitize=thread _ch99_debug.cpp -o dbg && ./dbg
+// g++ -std=c++23 -O1 -fsanitize=thread _ch99_debug.cpp -o dbg && ./dbg
 // 若归约 op 里写了共享变量（第⑦节 ❌ 示例），TSan 会直接报 race。
 #include <numeric>
 #include <vector>
@@ -1753,7 +1753,7 @@ int main() {
 > **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：并行规约——reduce
 ```cpp
 // 错误写法（std::accumulate 不接受执行策略，以下为反模式示意，本身不可编译）:
-//   auto s = std::accumulate(std::execution::par, v.begin(), v.end(), 0);
+// auto s = std::accumulate(std::execution::par, v.begin(), v.end(), 0);
 ```
 
 **修复（cpp）**：用 `std::reduce`（带执行策略重载）做并行规约。

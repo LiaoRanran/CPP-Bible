@@ -201,7 +201,7 @@ union StrU {
     std::string s;
     int         i;
     StrU() : i(0) {}                         // 需初始化一个活跃成员
-    ~StrU() { /* 不知道谁活跃，外面负责 */ }
+    ~StrU() { // 不知道谁活跃，外面负责
 };
 
 int main() {
@@ -1098,8 +1098,8 @@ struct JsonValue : std::variant<
 
 void dump(const JsonValue& v, int indent = 0) {
     // 注意：std::visit 会对【每个】variant 备选实例化这个泛型 lambda，
-    //       因此 JsonArray / JsonObject 分支必须显式处理——不能落到
-    //       `std::cout << x`（vector/map 没有 operator<<，会编译失败）。
+    // 因此 JsonArray / JsonObject 分支必须显式处理——不能落到
+    // `std::cout << x`（vector/map 没有 operator<<，会编译失败）。
     std::visit([&](const auto& x) {
         using T = std::decay_t<decltype(x)>;
         std::cout << std::string(indent, ' ');
@@ -1351,8 +1351,8 @@ int count(const Node& n) {
 }
 int main() {
     // 陷阱：不能用 initializer_list `Kids{a, b}` 构造 move-only 元素的 vector，
-    //       因为 initializer_list 的元素恒为 const 且只能拷贝，而 unique_ptr 不可拷贝。
-    //       正确做法：逐个 push_back(std::move(...)) 或 emplace_back。
+    // 因为 initializer_list 的元素恒为 const 且只能拷贝，而 unique_ptr 不可拷贝。
+    // 正确做法：逐个 push_back(std::move(...)) 或 emplace_back。
     Kids kids;
     kids.push_back(std::make_unique<Node>(Leaf{1}));
     kids.push_back(std::make_unique<Node>(Leaf{2}));
@@ -1524,8 +1524,8 @@ int main() {
 int main() {
     std::uint64_t w = 0x0102030405060708ULL;
     // 关键约束：bit_cast 要求 sizeof(To)==sizeof(From)。
-    //   直接 bit_cast<uint32_t>(uint64_t) 会因 8!=4 被 requires 拒绝。
-    //   协议字段重组的正解：把 64 位按位重解释为两个 32 位字段（等尺寸）。
+    // 直接 bit_cast<uint32_t>(uint64_t) 会因 8!=4 被 requires 拒绝。
+    // 协议字段重组的正解：把 64 位按位重解释为两个 32 位字段（等尺寸）。
     auto parts = std::bit_cast<std::array<std::uint32_t, 2>>(w);
     // 小端（x86-64）下 parts[0] 为低 32 位、parts[1] 为高 32 位
     std::printf("lo=0x%08x hi=0x%08x\n", parts[0], parts[1]);

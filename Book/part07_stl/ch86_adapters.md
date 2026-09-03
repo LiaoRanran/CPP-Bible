@@ -346,19 +346,19 @@ int main() { dispatch_loop(); return 0; }
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析
 ```cpp
 // 文件：bits/stl_stack.h     行号：99  （以下为真实源码逐行引用，注释化以便独立编译）
-//    template<typename _Tp, typename _Sequence = std::deque<_Tp> >
-//    class stack
-//    {
-//    protected:
-//      _Sequence c;                       // 行号：约 146-150（class stack 的 protected 成员）
-//    public:
-//      void push(const value_type& __x)   // 行号：261
-//      { c.push_back(__x); }
-//      void pop()                         // 行号：293
-//      { c.pop_back(); }
-//      reference top()                    // 行号：232
-//      { __glibcxx_requires_nonempty(); return c.back(); }
-//    };
+// template<typename _Tp, typename _Sequence = std::deque<_Tp> >
+// class stack
+// {
+// protected:
+// _Sequence c;                       // 行号：约 146-150（class stack 的 protected 成员）
+// public:
+// void push(const value_type& __x)   // 行号：261
+// { c.push_back(__x); }
+// void pop()                         // 行号：293
+// { c.pop_back(); }
+// reference top()                    // 行号：232
+// { __glibcxx_requires_nonempty(); return c.back(); }
+// };
 int main() { return 0; }
 ```
 
@@ -370,21 +370,21 @@ int main() { return 0; }
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析
 ```cpp
 // 文件：bits/stl_queue.h     行号：96  （以下为真实源码逐行引用，注释化以便独立编译）
-//    template<typename _Tp, typename _Sequence = std::deque<_Tp> >
-//    class queue
-//    {
-//    protected:
-//      _Sequence c;                       // 行号：153
-//    public:
-//      void push(const value_type& __x)   // 行号：286
-//      { c.push_back(__x); }
-//      void pop()                         // 行号：318
-//      { c.pop_front(); }                 // 注意是 pop_front（FIFO）
-//      reference front()                  // 行号：233
-//      { __glibcxx_requires_nonempty(); return c.front(); }
-//      reference back()                   // 行号：257
-//      { __glibcxx_requires_nonempty(); return c.back(); }
-//    };
+// template<typename _Tp, typename _Sequence = std::deque<_Tp> >
+// class queue
+// {
+// protected:
+// _Sequence c;                       // 行号：153
+// public:
+// void push(const value_type& __x)   // 行号：286
+// { c.push_back(__x); }
+// void pop()                         // 行号：318
+// { c.pop_front(); }                 // 注意是 pop_front（FIFO）
+// reference front()                  // 行号：233
+// { __glibcxx_requires_nonempty(); return c.front(); }
+// reference back()                   // 行号：257
+// { __glibcxx_requires_nonempty(); return c.back(); }
+// };
 int main() { return 0; }
 ```
 
@@ -394,27 +394,27 @@ int main() { return 0; }
 ```cpp
 #include <vector>
 // 文件：bits/stl_queue.h     行号：498  （以下为真实源码逐行引用，注释化以便独立编译）
-//    template<typename _Tp, typename _Sequence = std::vector<_Tp>,
-//             typename _Compare  = std::less<typename _Sequence::value_type> >
-//    class priority_queue
-//    {
-//    protected:
-//      _Sequence  c;                      // 行号：538
-//      _Compare   comp;                   // 行号：539
-//    public:
-//      void push(const value_type& __x)   // 行号：741
-//      {
-//        c.push_back(__x);
-//        std::push_heap(c.begin(), c.end(), comp);
-//      }
-//      void pop()                         // 行号：773
-//      {
-//        std::pop_heap(c.begin(), c.end(), comp);
-//        c.pop_back();
-//      }
-//      const_reference top() const        // 行号：约 760
-//      { __glibcxx_requires_nonempty(); return c.front(); }
-//    };
+// template<typename _Tp, typename _Sequence = std::vector<_Tp>,
+// typename _Compare  = std::less<typename _Sequence::value_type> >
+// class priority_queue
+// {
+// protected:
+// _Sequence  c;                      // 行号：538
+// _Compare   comp;                   // 行号：539
+// public:
+// void push(const value_type& __x)   // 行号：741
+// {
+// c.push_back(__x);
+// std::push_heap(c.begin(), c.end(), comp);
+// }
+// void pop()                         // 行号：773
+// {
+// std::pop_heap(c.begin(), c.end(), comp);
+// c.pop_back();
+// }
+// const_reference top() const        // 行号：约 760
+// { __glibcxx_requires_nonempty(); return c.front(); }
+// };
 int main() { return 0; }
 ```
 

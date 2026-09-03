@@ -368,8 +368,8 @@ int runtime_input = 10;
 ```cpp
 // 反模式：if constexpr 用在非模板函数
 // int bad(int n) {
-//     if constexpr (n > 0) return 1;   // [标准] 错误：n 非模板参数，if constexpr 不可用
-//     return 0;
+// if constexpr (n > 0) return 1;   // [标准] 错误：n 非模板参数，if constexpr 不可用
+// return 0;
 // }
 ```
 

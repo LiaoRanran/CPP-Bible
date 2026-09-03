@@ -79,8 +79,8 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 ```cpp
 // ② vcpkg 端口本质：一个目录 + 配方（portfile.cmake 控制下载/构建）
 // 端口目录结构（示意）：
-//   ports/fmt/portfile.cmake
-//   ports/fmt/vcpkg.json
+// ports/fmt/portfile.cmake
+// ports/fmt/vcpkg.json
 // 你不用手写它——它来自 vcpkg 内置端口注册表（或自定义注册表）。
 ```
 
@@ -99,9 +99,9 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 ```cpp
 // ② 三元组决定产物形态：静态 vs 动态、CRT 归属
 // 常用 triplet（只列名，不写进 C++）：
-//   x64-windows          (static RTL, 动态链接到库? 实际 static lib by default)
-//   x64-windows-static    (完全静态)
-//   x64-linux-dynamic
+// x64-windows          (static RTL, 动态链接到库? 实际 static lib by default)
+// x64-windows-static    (完全静态)
+// x64-linux-dynamic
 // 选型影响最终链接命令里的 -static / -MD / -MT
 ```
 
@@ -161,11 +161,11 @@ class MyApp(ConanFile):
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模型：recipe / 二进制缓存
 ```cpp
 // ④ settings 决定 package_id：任意一项变了 = 不同二进制
-//   os: Windows / Linux / Macos
-//   compiler: gcc / clang / msvc
-//   compiler.version: 13 / 17 / 19.3
-//   build_type: Release / Debug
-//   arch: x86_64 / armv8
+// os: Windows / Linux / Macos
+// compiler: gcc / clang / msvc
+// compiler.version: 13 / 17 / 19.3
+// build_type: Release / Debug
+// arch: x86_64 / armv8
 // 例：gcc13-Release-x64 与 msvc19-Debug-x64 是两份独立缓存
 ```
 
@@ -201,10 +201,10 @@ class MyApp(ConanFile):
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与依赖图 [实现·Conan]
 ```cpp
 // ⑤ 依赖图是 DAG：A 依赖 fmt 与 spdlog，spdlog 又依赖 fmt
-//   myapp
-//   ├─ fmt/10.1.1
-//   └─ spdlog/1.12
-//       └─ fmt/10.1.1   ← 同一份，Conan 解出唯一版本
+// myapp
+// ├─ fmt/10.1.1
+// └─ spdlog/1.12
+// └─ fmt/10.1.1   ← 同一份，Conan 解出唯一版本
 // Conan 默认"高版本优先 + 单一版本"解决 diamond
 ```
 
@@ -226,11 +226,11 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 ```cpp
 // ⑥ CMakePresets 里指向 Conan 工具链（现代做法）
 // {
-//   "configurePresets": [{
-//     "name": "conan-default",
-//     "toolchainFile": "build/conan_toolchain.cmake",
-//     "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
-//   }]
+// "configurePresets": [{
+// "name": "conan-default",
+// "toolchainFile": "build/conan_toolchain.cmake",
+// "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+// }]
 // }
 ```
 
@@ -263,7 +263,7 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 // ⑦ 头-only 库 = 源码分发的最简形式：无 .lib，编译期实例化
 // 例：自写 span_view（见 ⑨ 的 _ch13_packlib.hpp）
 namespace pkg {
-template <class T> class span_view { /* 全在头里 */ };
+template <class T> class span_view { // 全在头里
 }
 ```
 
@@ -271,14 +271,14 @@ template <class T> class span_view { /* 全在头里 */ };
 ```cpp
 // ⑦ 二进制分发：头 + 已编译 .a/.lib
 // 头里是声明 + inline 薄包装，实体在 .a 内
-// // fmt/core.h 里大量 inline，但 fmt::vformat 实体在 libfmt.a
+//// fmt/core.h 里大量 inline，但 fmt::vformat 实体在 libfmt.a
 ```
 
 > **示例 13** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑦ 二者代价对比（示意）
-//   源码分发：编译慢、但 ABI 无关（随你的编译器走）
-//   二进制分发：编译快、但绑定供应方的编译器/CRT/flags
+// 源码分发：编译慢、但 ABI 无关（随你的编译器走）
+// 二进制分发：编译快、但绑定供应方的编译器/CRT/flags
 ```
 
 - `[标准]`：ISO 不规定分发形态；但模板/inline 必须在调用端可见（ODR），所以模板重的库几乎只能头-only 或伴随源码。
@@ -303,8 +303,8 @@ template <class T> class span_view { /* 全在头里 */ };
 > **示例 16** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑧ 冲突示例：A 要 fmt/9，B 要 fmt/10
-//   vcpkg：baseline 决定唯一版本，强行统一（可能让 A 用 fmt/10 重编）
-//   Conan：默认选高版本并统一；若真不兼容需 override
+// vcpkg：baseline 决定唯一版本，强行统一（可能让 A 用 fmt/10 重编）
+// Conan：默认选高版本并统一；若真不兼容需 override
 ```
 
 - `[标准]`：SemVer 非 ISO 标准，但被两大主流包管理器采纳为事实约定（见 CONVENTIONS.md 立场）。
@@ -391,21 +391,21 @@ main:
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统包管理器 apt/brew/vc
 ```cpp
 // ⑩ apt 装的库是"系统全局一份"，常滞后、且 ABI 绑定系统编译器
-//   sudo apt install libfmt-dev   -> /usr/lib/x86_64-linux-gnu/libfmt.so
-//   你的 gcc 必须与系统 libfmt 的 ABI 匹配，否则链接期/运行期炸
+// sudo apt install libfmt-dev   -> /usr/lib/x86_64-linux-gnu/libfmt.so
+// 你的 gcc 必须与系统 libfmt 的 ABI 匹配，否则链接期/运行期炸
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统包管理器 apt/brew/vc
 ```cpp
 // ⑩ brew 同理（macOS），且同一时刻每个公式基本单版本
-//   brew install fmt   -> /opt/homebrew/lib/libfmt.dylib
-//   多版本并存需 brew 的版本化前缀或自己管理
+// brew install fmt   -> /opt/homebrew/lib/libfmt.dylib
+// 多版本并存需 brew 的版本化前缀或自己管理
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统包管理器 apt/brew/vc
 ```cpp
 // ⑩ vcpkg/Conan 的优势：按 triplet/settings 同机多份并存、版本自由、可重现
-//   同一机器可同时有 fmt/9-static、fmt/10-dynamic、fmt/10-Release/Debug
+// 同一机器可同时有 fmt/9-static、fmt/10-dynamic、fmt/10-Release/Debug
 ```
 
 | 维度 | apt/brew | vcpkg | Conan |
@@ -549,16 +549,16 @@ main:
 > **示例 30** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑮ 粗略决策树（工程经验，非标准）
-//   用 MSVC + Windows 产线  -> vcpkg 体验最顺（微软亲儿子）
-//   跨平台 + 自定义二进制缓存/私有库 -> Conan 更灵活
-//   只是本地试库、CI 简单        -> apt/brew 也行，但牺牲可重现
+// 用 MSVC + Windows 产线  -> vcpkg 体验最顺（微软亲儿子）
+// 跨平台 + 自定义二进制缓存/私有库 -> Conan 更灵活
+// 只是本地试库、CI 简单        -> apt/brew 也行，但牺牲可重现
 ```
 
 > **示例 31** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑮ 团队已重度 CMake + 多 triplet -> 两者都 OK，看是否要二进制复用
-//   要"编译一次全队复用" -> Conan（binary cache 强）
-//   要"跟着 VS 开箱即用" -> vcpkg
+// 要"编译一次全队复用" -> Conan（binary cache 强）
+// 要"跟着 VS 开箱即用" -> vcpkg
 ```
 
 - `[经验]`：一旦选定，**全员统一版本与配置**；混合使用 vcpkg 与 Conan 同一项目会增加复杂度，除非用其一仅做镜像源。
@@ -574,31 +574,31 @@ main:
 ```cpp
 #include <string>
 // ⑯ 陷阱1：ABI 不匹配
-//   你的 exe 用 gcc13/libstdc++，链接的 .dll 用 gcc11/libstdc++
-//   跨运行时传 std::string/异常 -> 布局不同 -> 崩
-//   现象常是"偶发崩溃""未处理异常""堆损坏"
+// 你的 exe 用 gcc13/libstdc++，链接的 .dll 用 gcc11/libstdc++
+// 跨运行时传 std::string/异常 -> 布局不同 -> 崩
+// 现象常是"偶发崩溃""未处理异常""堆损坏"
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 ```cpp
 // ⑯ 陷阱2：Debug/Release 混链
-//   MSVC: /MDd (Debug DLL CRT) vs /MD (Release DLL CRT)
-//   混链 -> 同一堆被两个 CRT 管理 -> 释放错 CRT 堆 -> 崩
-//   表现：free/delete 时 abort，或 Debug 跑得好好的 Release 崩
+// MSVC: /MDd (Debug DLL CRT) vs /MD (Release DLL CRT)
+// 混链 -> 同一堆被两个 CRT 管理 -> 释放错 CRT 堆 -> 崩
+// 表现：free/delete 时 abort，或 Debug 跑得好好的 Release 崩
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 ```cpp
 // ⑯ 陷阱3：静态/动态不一致
-//   fmt 以 static 编进 A，又以 shared 编进 B，符号两份 -> ODR 违例风险
-//   统一：要么全 static，要么全 shared，由 triplet/settings 决定
+// fmt 以 static 编进 A，又以 shared 编进 B，符号两份 -> ODR 违例风险
+// 统一：要么全 static，要么全 shared，由 triplet/settings 决定
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 ```cpp
 // ⑯ 陷阱4：忘记导出符号（Windows DLL）
-//   __declspec(dllexport) 漏写 -> 链接方找不到符号
-//   用 imported target 时，包作者已处理，但你自写 DLL 要小心
+// __declspec(dllexport) 漏写 -> 链接方找不到符号
+// 用 imported target 时，包作者已处理，但你自写 DLL 要小心
 ```
 
 - `[经验]`：所有传递依赖的 **compiler + version + build_type + CRT + static/dynamic** 必须全链路一致——这正是包管理器用 `triplet`/`settings`/`package_id` 强制保证的事。
@@ -613,22 +613,22 @@ main:
 > **示例 36** [难度 ★★☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ vcpkg 模式：CMake 启动时读 vcpkg.cmake 工具链
-//   - CMAKE_TOOLCHAIN_FILE 指向 vcpkg.cmake
-//   - find_package 被重定向到 installed/<triplet>
+// - CMAKE_TOOLCHAIN_FILE 指向 vcpkg.cmake
+// - find_package 被重定向到 installed/<triplet>
 ```
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ Conan 模式：先 conan install 生成集成文件，再让 CMake 读
-//   -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
-//   find_package 命中 CMakeDeps 生成的 *-config.cmake
+// -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+// find_package 命中 CMakeDeps 生成的 *-config.cmake
 ```
 
 > **示例 38** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 多配置生成器（Visual Studio / Ninja Multi-Config）注意：
-//   不要把一个 Debug 包塞进 Release 配置
-//   用 $<CONFIG> 区分 imported target 的 Debug/Release 变体
+// 不要把一个 Debug 包塞进 Release 配置
+// 用 $<CONFIG> 区分 imported target 的 Debug/Release 变体
 ```
 
 - `[经验]`：把"包管理"和"构建系统"当成两段独立流水线：先解依赖（生成集成文件），再构建。两者顺序错了就玄学报错。
@@ -644,22 +644,22 @@ main:
 ```cpp
 // ⑱ 跨平台 manifest 写法一致，差异由工具按宿主推断
 // vcpkg: 在 Linux 自动 x64-linux，Windows 自动 x64-windows
-//        显式覆盖：--triplet=x64-linux-dynamic
+// 显式覆盖：--triplet=x64-linux-dynamic
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
 ```cpp
 // ⑱ Conan profile 显式区分平台
-//   Windows: compiler=msvc, compiler.version=193
-//   Linux:   compiler=gcc,   compiler.version=13
-//   同一 recipe 在两 profile 下解出不同二进制缓存
+// Windows: compiler=msvc, compiler.version=193
+// Linux:   compiler=gcc,   compiler.version=13
+// 同一 recipe 在两 profile 下解出不同二进制缓存
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
 ```cpp
 // ⑱ macOS 注意：universal binary / arm64 vs x86_64
-//   arch=x86_64 与 arch=armv8 是不同 package_id
-//   交叉编译时 settings.arch 必须显式，否则取到宿主架构
+// arch=x86_64 与 arch=armv8 是不同 package_id
+// 交叉编译时 settings.arch 必须显式，否则取到宿主架构
 ```
 
 - `[平台·Windows]`：三大桌面平台的 C++ ABI 与 CRT 各成体系（MSVC ABI / Linux Itanium / macOS），包管理器的 triplet/settings 正是为把这些差异**显式参数化**。
@@ -714,31 +714,31 @@ main:
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```cpp
 // ⑳ vcpkg 速查
-//   声明依赖      : vcpkg.json { "dependencies": ["fmt"] }
-//   注入 CMake    : -DCMAKE_TOOLCHAIN_FILE=.../vcpkg.cmake
-//   锁版本        : vcpkg-configuration.json 的 baseline
-//   常用 triplet  : x64-windows / x64-windows-static / x64-linux-dynamic
-//   模式          : manifest 模式（推荐）> 古典全局 install
+// 声明依赖      : vcpkg.json { "dependencies": ["fmt"] }
+// 注入 CMake    : -DCMAKE_TOOLCHAIN_FILE=.../vcpkg.cmake
+// 锁版本        : vcpkg-configuration.json 的 baseline
+// 常用 triplet  : x64-windows / x64-windows-static / x64-linux-dynamic
+// 模式          : manifest 模式（推荐）> 古典全局 install
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ Conan 速查
-//   声明依赖      : conanfile.py requires = "fmt/10.1.1"
-//   解依赖+生成    : conan install . --output-folder=build --build=missing
-//   锁版本        : conan lock create / --lockfile=conan.lock
-//   配置维度      : settings = os, compiler, version, build_type, arch
-//   生成器        : CMakeDeps + CMakeToolchain
+// 声明依赖      : conanfile.py requires = "fmt/10.1.1"
+// 解依赖+生成    : conan install . --output-folder=build --build=missing
+// 锁版本        : conan lock create / --lockfile=conan.lock
+// 配置维度      : settings = os, compiler, version, build_type, arch
+// 生成器        : CMakeDeps + CMakeToolchain
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```cpp
 // ⑳ 通用速查
-//   链接姿势      : target_link_libraries(x PRIVATE pkg::pkg)   // 永远用 imported target
-//   可重现铁三角  : 依赖声明 + 锁文件 + profile/triplet
-//   崩溃首查      : compiler/CRT/static-dynamic 是否全链路一致
-//   跨模块边界    : 只过 C ABI，禁传 STL 对象
-//   本机取证命令  : g++ -std=c++23 -O2 -I <inc> -S x.cpp -o x.asm   // 看真实汇编
+// 链接姿势      : target_link_libraries(x PRIVATE pkg::pkg)   // 永远用 imported target
+// 可重现铁三角  : 依赖声明 + 锁文件 + profile/triplet
+// 崩溃首查      : compiler/CRT/static-dynamic 是否全链路一致
+// 跨模块边界    : 只过 C ABI，禁传 STL 对象
+// 本机取证命令  : g++ -std=c++23 -O2 -I <inc> -S x.cpp -o x.asm   // 看真实汇编
 ```
 
 | 主题 | 一句话 |

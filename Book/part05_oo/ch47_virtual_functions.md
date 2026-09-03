@@ -246,7 +246,7 @@ struct IRenderBackend {
 };
 
 struct VulkanBackend : IRenderBackend {
-    ~VulkanBackend() override { /* 释放 Vulkan 设备 */ }
+    ~VulkanBackend() override { // 释放 Vulkan 设备
     void draw(std::string_view n) override { std::cout << "[Vulkan] " << n << "\n"; }
     const char* name() const override { return "Vulkan"; }
 };
@@ -671,7 +671,7 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：vtable 布局与覆
 ```cpp
 // ❌ 误以为虚函数数量影响对象大小
-struct Big { virtual void f1(); /*...*/ virtual void f200(); };
+struct Big { virtual void f1(); // ...
 // sizeof(Big) 仍 = 8（vptr），不因虚函数多而增大
 ```
 
@@ -1563,7 +1563,7 @@ struct Filter {
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 设计一个可扩展的
 ```cpp
 struct Grayscale : Filter {
-    Image apply(const Image& i) const override { /* ... */ return gray; }
+    Image apply(const Image& i) const override { // ...
     const char* name() const override { return "grayscale"; }
 };
 ```
@@ -1586,7 +1586,7 @@ Image out = f->apply(src);              // 经 vtable 分发到正确实现
 template <class Impl> struct FilterCrtp {
     Image apply(const Image& i) const { return static_cast<const Impl*>(this)->impl(i); }
 };
-struct GrayscaleS : FilterCrtp<GrayscaleS> { Image impl(const Image&) const { /*...*/ } };
+struct GrayscaleS : FilterCrtp<GrayscaleS> { Image impl(const Image&) const { // ...
 ```
 
 `FilterCrtp` 把 `apply` 编译期内联（无 vtable 间接、可被优化掉），但**容器必须同类型**——

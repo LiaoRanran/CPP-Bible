@@ -247,10 +247,10 @@ int main() {
 ```cpp
 #include <utility>
 // 文件：bits/stl_vector.h   行号：94, 95, 96, 423
-//   94:  pointer _M_start;
-//   95:  pointer _M_finish;
-//   96:  pointer _M_end_of_storage;
-//  423:  class vector : protected _Vector_base<_Tp, _Alloc>
+// 94:  pointer _M_start;
+// 95:  pointer _M_finish;
+// 96:  pointer _M_end_of_storage;
+// 423:  class vector : protected _Vector_base<_Tp, _Alloc>
 
 // 文件：bits/stl_vector.h   行号：1008, 1029, 1050, 1063, 1105, 1276, 1293, 1294, 1581
 // 1008:  resize(size_type __new_size);                  // 单参 resize
@@ -263,22 +263,22 @@ int main() {
 // 1581:  swap(vector& __x) _GLIBCXX_NOEXCEPT;           // O(1) 交换三指针
 
 // 文件：bits/vector.tcc   行号：68, 123, 446, 451, 530, 635, 716, 721
-//   68:  reserve(size_type __n)              // 实现：不足才重分配
-//  123:  push_back -> _M_realloc_insert(end(), forward<_Args>(__args)...)
-//  446:  _M_realloc_insert(iterator __position, _Args&&... __args)  // 核心插入
-//  451:  _M_realloc_insert(iterator, const _Tp& __x)
-//  455:  _M_check_len(size_type(1), "vector::_M_realloc_insert");   // 容量检查
-//  530:  _M_fill_insert(iterator, size_type, const value_type&);     // insert 填充
-//  635:  _M_default_append(size_type __n);            // resize 增长默认构造
-//  716:  _M_shrink_to_fit();                          // 真正收缩
-//  721:  return std::__shrink_to_fit_aux<vector>::_S_do_it(*this);
+// 68:  reserve(size_type __n)              // 实现：不足才重分配
+// 123:  push_back -> _M_realloc_insert(end(), forward<_Args>(__args)...)
+// 446:  _M_realloc_insert(iterator __position, _Args&&... __args)  // 核心插入
+// 451:  _M_realloc_insert(iterator, const _Tp& __x)
+// 455:  _M_check_len(size_type(1), "vector::_M_realloc_insert");   // 容量检查
+// 530:  _M_fill_insert(iterator, size_type, const value_type&);     // insert 填充
+// 635:  _M_default_append(size_type __n);            // resize 增长默认构造
+// 716:  _M_shrink_to_fit();                          // 真正收缩
+// 721:  return std::__shrink_to_fit_aux<vector>::_S_do_it(*this);
 
 // 文件：bits/allocator.h   行号：130, 145
-//  130:  class allocator : public __allocator_base<_Tp>
-//  145:  struct rebind                                    // 类型重绑定
+// 130:  class allocator : public __allocator_base<_Tp>
+// 145:  struct rebind                                    // 类型重绑定
 
 // 文件：bits/alloc_traits.h（allocator_traits）
-//   construct(ptr, args...) -> 调用 placement new；destroy(ptr) -> 调析构
+// construct(ptr, args...) -> 调用 placement new；destroy(ptr) -> 调析构
 ```
 
 - `[实现·GCC15]`：`_M_realloc_insert`（`vector.tcc:446`）先 `_M_check_len` 计算新容量（GCC 为 **2 倍**，见 `_M_check_len` 内 `max(2*old, old+n)` 逻辑），再分配、迁移、构造、释放旧块。

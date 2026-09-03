@@ -1164,7 +1164,7 @@ int main() {
 #include <iostream>
 struct SpinLock {
     std::atomic_flag f = ATOMIC_FLAG_INIT;
-    void lock()   { while (f.test_and_set(std::memory_order_acquire)) { /* spin */ } }
+    void lock()   { while (f.test_and_set(std::memory_order_acquire)) { // spin
     void unlock() { f.clear(std::memory_order_release); }
 };
 int main() {

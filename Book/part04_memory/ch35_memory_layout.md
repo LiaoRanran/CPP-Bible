@@ -561,8 +561,8 @@ int main() {
     return 0;
 }
 // 运行(本机不可用 /dev/[s]mem 概念，仅 Linux 演示):
-//   g++ -std=c++17 p11.cpp -o p11 && ./p11
-//   Linux 下用 `grep VmRSS /proc/$!/status` 在两次回车间对比。
+// g++ -std=c++17 p11.cpp -o p11 && ./p11
+// Linux 下用 `grep VmRSS /proc/$!/status` 在两次回车间对比。
 ```
 
 `[标准]` 这对 C++ 的含义：一个 `std::vector<char>(big)` 或 `new char[big]` 只承诺「虚拟上可用」，不保证立即占用物理内存；`bad_alloc` 多因地址空间或 overcommit 策略，而非物理 RAM 瞬时不足。
@@ -824,7 +824,7 @@ int main() {
 }
 // 编译: g++ -std=c++17 -O2 p18.cpp -o p18 -pthread && ./p18
 // 量级: 在典型多核 x86-64 上，packed 通常比 isolated 慢 数倍到十余倍
-//      （伪共享触发大量 cache line 在核间来回无效化）。
+// （伪共享触发大量 cache line 在核间来回无效化）。
 ```
 
 `[经验]` 实测量级因 CPU/核数/频率而异，但**「慢 2×–10× 以上」是常态**。这正是把无锁计数、per-thread 统计放在独立 cache line 的动机。
@@ -972,7 +972,7 @@ int main() {
 #include <cstdio>
 #include <cstddef>
 // 平台差异：Windows CRT（MSVC 与 MinGW）不提供 C11 std::aligned_alloc，
-//           改用 _aligned_malloc / _aligned_free（注意实参顺序与释放函数都不同）。
+// 改用 _aligned_malloc / _aligned_free（注意实参顺序与释放函数都不同）。
 #if defined(_WIN32)
   #include <malloc.h>
   static void* aa(std::size_t align, std::size_t size) { return _aligned_malloc(size, align); }
@@ -1026,7 +1026,7 @@ int main() {
     return 0;
 }
 // 编译: g++ -std=c++17 p22.cpp -o p22 && ./p22
-//       MSVC: cl /std:c++17 /Zp1 p22.cpp （/Zp1 全局 1 字节打包，等价 #pragma pack(1)）
+// MSVC: cl /std:c++17 /Zp1 p22.cpp （/Zp1 全局 1 字节打包，等价 #pragma pack(1)）
 ```
 
 `[经验]` 网络协议/文件格式解析常用 `#pragma pack`/`alignas` 精确控制布局；但过度打包会拖慢未对齐访问，且破坏 ABI 兼容性——跨模块传递结构体时必须保证**双方打包一致**。

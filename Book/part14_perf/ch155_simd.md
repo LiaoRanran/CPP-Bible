@@ -56,7 +56,7 @@ SIMD（单指令多数据）的动机来自"对一大堆数据做同一件事"�
 float scalar_add(float a, float b) { return a + b; }
 
 // ① 向量等价：一条 vaddps 同时加 8 个 float（AVX2，256 位）
-//    c[i..i+7] = a[i..i+7] + b[i..i+7]  一次完成
+// c[i..i+7] = a[i..i+7] + b[i..i+7]  一次完成
 ```
 
 - `[标准]`：C++ 本身不直接规定 SIMD，SIMD 由**目标架构 ISA**（x86 的 SSE/AVX、ARM 的 NEON）与编译器提供；C++ 侧通过三种途径利用：自动向量化、intrinsics、`std::experimental::simd`。
@@ -77,9 +77,9 @@ x86 向量指令集按寄存器宽度代际演进，宽度翻倍 = 同一条指�
 > **示例 2** [难度 ★★★☆☆] [主题：演进与寄存器宽度 <span class="badge badge-std">标准</span>]
 ```cpp
 // ② 寄存器宽度决定每轮处理的元素数（float，4 字节）
-//   SSE  xmm: 16B / 4B = 4 个 float
-//   AVX  ymm: 32B / 4B = 8 个 float
-//   AVX512 zmm: 64B / 4B = 16 个 float
+// SSE  xmm: 16B / 4B = 4 个 float
+// AVX  ymm: 32B / 4B = 8 个 float
+// AVX512 zmm: 64B / 4B = 16 个 float
 constexpr int floats_per_sse   = 16 / 4;  // 4
 constexpr int floats_per_avx   = 32 / 4;  // 8
 constexpr int floats_per_avx512= 64 / 4;  // 16
@@ -122,7 +122,7 @@ void bad_dep(float* a, int n) {                       // ✘ 依赖前一项
 }
 
 // ④ 条件C：无循环体内函数调用/虚调用阻断
-//    （纯算术、内联小函数可向量化；printf/虚函数通常打断）
+// （纯算术、内联小函数可向量化；printf/虚函数通常打断）
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 循环向量化的必要条件
@@ -619,10 +619,10 @@ x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，ARM64 默认 128 位 `float32
 ```cpp
 // ⑰ x86 AVX2 已在 ⑦/⑳ 的 v_avx2 中实现，下面给出 ARM 等价
 // ⑰ ARM NEON 等价（ARM64，GCC/Clang 均支持）
-//    说明：以下为 ARM-only 代码；本教科书编译门禁为 MinGW x86-64，
-//    不存在 <arm_neon.h>，故用 #ifdef 跳过，避免 x86 上编译失败。
-//    跨平台库的生产做法是在此按架构分发（或改用 ⑥ 的
-//    std::experimental::simd / 自动向量化，避免手写双份 intrinsics）。
+// 说明：以下为 ARM-only 代码；本教科书编译门禁为 MinGW x86-64，
+// 不存在 <arm_neon.h>，故用 #ifdef 跳过，避免 x86 上编译失败。
+// 跨平台库的生产做法是在此按架构分发（或改用 ⑥ 的
+// std::experimental::simd / 自动向量化，避免手写双份 intrinsics）。
 #if defined(__aarch64__) || defined(__ARM_NEON)
 #include <arm_neon.h>
 void neon_add(const float* a, const float* b, float* c) {
@@ -1348,7 +1348,7 @@ int main() {
     std::cout << "branchless sum = " << sn << std::endl;
 
     // 2) 浮点求和：顺序求和 vs 4 路部分和（模拟向量化的重结合）
-    //    两者数学上等价，但 IEEE 浮点下可能有 ULP 级差异 —— 只打印，不断言相等
+    // 两者数学上等价，但 IEEE 浮点下可能有 ULP 级差异 —— 只打印，不断言相等
     std::uniform_real_distribution<float> df(0.0f, 1.0f);
     std::vector<float> xf(100000);
     for (auto& v : xf) v = df(rng);

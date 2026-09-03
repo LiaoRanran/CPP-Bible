@@ -96,9 +96,9 @@ void naive_per_task(int n) {
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：线程池解决什么
 ```cpp
 // 一个最小心智模型：线程池 = 预建线程 + 任务队列
-//   submit(task)  ->  push 到队列
-//   worker loop   ->  pop 队列并执行
-//   destructor    ->  join 所有 worker（RAII）
+// submit(task)  ->  push 到队列
+// worker loop   ->  pop 队列并执行
+// destructor    ->  join 所有 worker（RAII）
 ```
 
 > <span class="badge badge-exp">经验</span> 经验法则：当单任务执行时间 < 线程创建时间（本机实测量级约数十 μs 级，含调度）时，必须用线程池；短任务越多，收益越大。
@@ -201,7 +201,7 @@ class Worker {                                       // ③ worker
 ```cpp
 // C++11：必须手动管理 join，否则析构即 terminate
 #include <thread>
-void hello() { /* ... */ }
+void hello() { // ...
 int main() {
     std::thread t(hello);
     t.join();   // 必须！否则 main 退出时 t 仍 joinable -> terminate
@@ -212,7 +212,7 @@ int main() {
 ```cpp
 #include <thread>
 // 危险：detach 后线程可能与 main 同归于尽（访问已销毁对象）
-std::thread t([] { /* 引用了栈上变量 */ });
+std::thread t([] { // 引用了栈上变量
 t.detach();   // 极易悬垂，工业代码应尽量避免
 ```
 
@@ -223,7 +223,7 @@ C++20 的 `std::jthread`（joining thread）在析构时**自动**调用 `reques
 // C++20：jthread 析构自动 join，无需手动管理
 #include <thread>
 int main() {
-    std::jthread t([] { /* 工作 */ });
+    std::jthread t([] { // 工作
     // 离开作用域自动 join，绝不 terminate
 }
 ```
@@ -322,7 +322,7 @@ std::cout << f1.get() << f2.get() << '\n';         // 阻塞取结果
 // std::async：fire-and-forget 由运行时选线程
 #include <future>
 auto fa = std::async(std::launch::async, compute, 7);  // 真起线程
-auto fd = std::async(std::launch::deferred, compute, 7);// 惰性，get 时才执行
+auto fd = std::async(std::launch::deferred, compute, 7); // 惰性，get 时才执行
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · task / std::async
@@ -397,8 +397,8 @@ std::jthread t(worker, 1);   // jthread 自动把 stop_token 注入首参
 ```cpp
 // 用 stop_callback 在取消时做清理（如flush日志）
 std::jthread t([](std::stop_token st) {
-    std::stop_callback cb(st, [] { /* 取消时执行一次 */ });
-    while (!st.stop_requested()) { /* ... */ }
+    std::stop_callback cb(st, [] { // 取消时执行一次
+    while (!st.stop_requested()) { // ...
 });
 ```
 
@@ -472,7 +472,7 @@ void parallel_for(std::size_t n, std::size_t workers, auto&& fn) {
 struct Worker {
     std::deque<Task> local_;        // 自己的双端队列
     // 空闲时：从其他 worker 的 local_ 尾部偷任务
-    bool try_steal(Task& out) { /* pop_back from victim */ }
+    bool try_steal(Task& out) { // pop_back from victim
 };
 ```
 
@@ -493,7 +493,7 @@ std::packaged_task<int(bool)> pt(risky);
 std::future<int> f = pt.get_future();
 pt(true);
 try { f.get(); }
-catch (const std::exception& e) { /* 拿到 "boom from task" */ }
+catch (const std::exception& e) { // 拿到 "boom from task"
 ```
 
 worker 端**不要**吞掉异常，也不要让异常逃出 `std::thread` 的栈（那会 `terminate`）：
@@ -510,7 +510,7 @@ task();   // task = [pt]{ (*pt)(); }，异常不会逃出线程
 // 若直接用裸 function（无 packaged_task）则需显式 try/catch 避免 terminate
 void safe_run(std::function<void()> f) {
     try { f(); }
-    catch (...) { /* 记录日志，切勿让异常逃出线程 */ }
+    catch (...) { // 记录日志，切勿让异常逃出线程
 }
 ```
 
@@ -633,7 +633,7 @@ long work(long n) {
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能测量
 ```cpp
 auto t0 = std::chrono::steady_clock::now();
-/* 跑负载 */
+// 跑负载
 auto t1 = std::chrono::steady_clock::now();
 double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
 ```
@@ -678,7 +678,7 @@ naive per-task-thread (2000 线程): 266.726 ms   <- 比串行还慢！
 // 原生 pthread 等价写法（仅 Linux/macOS，展示底层映射）
 #ifdef __linux__
 #include <pthread.h>
-extern "C" void* thread_main(void*) { /* ... */ return nullptr; }
+extern "C" void* thread_main(void*) { // ...
 void spawn_pthread() {
     pthread_t t; pthread_create(&t, nullptr, thread_main, nullptr);
     pthread_join(t, nullptr);

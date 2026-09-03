@@ -55,8 +55,8 @@ libc++ 是 LLVM 项目自带的 C++ 标准库实现（与 Clang 配套，但也�
 // ① 用 libc++ 编译一个最小程序（本机无 libc++，以下为真实命令+典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -O2 main.cpp -o main
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
-//   $ ./main
-//   libc++ std::string ok
+// $ ./main
+// libc++ std::string ok
 #include <string>
 #include <cstdio>
 int main() {
@@ -105,7 +105,7 @@ libc++ 头文件按「公开头 + 内部细节」分层：`<string>`、`<vector>
 // ② 模块化：C++23 起用标准库模块替代海量 #include（Clang + libc++ 最成熟）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -fmodules -c use_std.cpp -o use_std.o
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
-//   编译一次 BMI，全工程复用，显著加速
+// 编译一次 BMI，全工程复用，显著加速
 import std;                       // libc++ 提供的 std 模块
 int use_std() {
     std::vector<int> v = {1, 2, 3};
@@ -192,7 +192,7 @@ union __rep {
 // ④ 用 libc++ 特征宏确认运行库身份（本机为 libstdc++，以下为典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ probe.cpp -o probe && ./probe
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
-//   _LIBCPP_VERSION = 170000
+// _LIBCPP_VERSION = 170000
 #include <version>
 #include <cstdio>
 int main() {
@@ -391,7 +391,7 @@ g++ -std=c++23 -O2 -S -masm=intel Examples/_ch125_sso.cpp -o Examples/_ch125_sso
 // ⑨ libc++ 同例的「典型输出」（libc++ 未在本机安装，以下为典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ _ch125_sso.cpp -o sso_llvm && ./sso_llvm
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
-//   a.cap=22 b.cap=52 size=24      <-- SSO 容量 22、对象 24 字节，区别于 libstdc++ 的 15/32
+// a.cap=22 b.cap=52 size=24      <-- SSO 容量 22、对象 24 字节，区别于 libstdc++ 的 15/32
 // 即：同一段源码，libc++ 的短串内联容量更大、对象更小
 ```
 
@@ -406,7 +406,7 @@ libc++ 提供 `LIBCXX_DEBUG` 宏开启**迭代器/容器合法性检查**（越�
 // ⑩ 开启 LIBCXX_DEBUG 后，迭代器失效会被断言捕获（libc++ 典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -D_LIBCXX_DEBUG d.cpp -o d && ./d
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
-//   libc++ DEBUG ERROR: iterator invalidated
+// libc++ DEBUG ERROR: iterator invalidated
 #include <vector>
 #include <cstdio>
 int main() {
@@ -548,7 +548,7 @@ libc++ 与 Clang 是「原生搭档」：Clang 默认在 Apple/FreeBSD 上选 li
 // ⑭ Clang + libc++ 启用 sanitizer 检查（典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -fsanitize=address -g app.cpp -o app_asan
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
-//   ==PID== ERROR: AddressSanitizer: heap-buffer-overflow ...
+// ==PID== ERROR: AddressSanitizer: heap-buffer-overflow ...
 #include <vector>
 int main() {
     std::vector<int> v(3);
@@ -833,15 +833,15 @@ int main() { return 0; }
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 libc++ 长什么样
 ```cpp
 // ㉑.3 真实 libc++ 用法（仅注释演示，门禁按空块编译通过）：
-//   // 1) 检测当前是否 libc++
-//   #include <__config>            // libc++ 内部配置头
-//   #ifdef _LIBCPP_VERSION
-//   std::cout << "libc++ " << _LIBCPP_VERSION << "\n";   // 形如 190100
-//   #endif
-//   // 2) 切换：Apple 平台 Clang 默认即 libc++；Linux 需显式指定
-//   //   clang++ -stdlib=libc++ main.cpp -lc++ -lc++abi
-//   // 3) libc++ 用 inline namespace 做 ABI 版本隔离（_LIBCPP_ABI_NAMESPACE）
-//   官方文档：https://libcxx.llvm.org/
+//// 1) 检测当前是否 libc++
+// #include <__config>            // libc++ 内部配置头
+// #ifdef _LIBCPP_VERSION
+// std::cout << "libc++ " << _LIBCPP_VERSION << "\n";   // 形如 190100
+// #endif
+//// 2) 切换：Apple 平台 Clang 默认即 libc++；Linux 需显式指定
+////   clang++ -stdlib=libc++ main.cpp -lc++ -lc++abi
+//// 3) libc++ 用 inline namespace 做 ABI 版本隔离（_LIBCPP_ABI_NAMESPACE）
+// 官方文档：https://libcxx.llvm.org/
 ```
 
 ### ㉑.4 端到端：怎么切到 libc++ 与其部署注意
@@ -1067,7 +1067,7 @@ libc++ 把实现放在 `inline namespace __1`（不同 ABI 代为 `__2` 等）�
 ```cpp
 #include <string>
 // libc++ 大致等价于：
-//   inline namespace __1 { template<class CharT> class basic_string { ... }; }
+// inline namespace __1 { template<class CharT> class basic_string { ... }; }
 // 用户仍可无感知地写 std::string，但其 mangled 名携带 __1
 int main() {
     std::string a = "hello";

@@ -107,9 +107,9 @@ Node* child = new Node(root);      // child 的 parent = root
 ```cpp
 // ② moc 在头文件里看到的「宏」，预处理后展开为访问元对象的函数声明
 // Q_OBJECT 宏 ≈ 声明：
-//   virtual const QMetaObject* metaObject() const;
-//   virtual void* qt_metacast(const char*);
-//   virtual int qt_metacall(QMetaObject::Call, int, void**);
+// virtual const QMetaObject* metaObject() const;
+// virtual void* qt_metacast(const char*);
+// virtual int qt_metacall(QMetaObject::Call, int, void**);
 // 这些声明的实现由 moc 生成的 cpp 文件提供。
 ```
 
@@ -162,8 +162,8 @@ public:
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 信号槽机制
 ```cpp
 // ③ 【典型输出】本机 moc.exe（Qt 6.8.3）对上面 Button 的真实产物节选：
-//   文件：Examples/_ch129_moc_button.cpp
-//   行号：140
+// 文件：Examples/_ch129_moc_button.cpp
+// 行号：140
 // （以下为本章作者运行 moc 的真实生成代码，非手写示意）
 void Button::clicked(int _t1)
 {
@@ -306,7 +306,7 @@ Qt 线程模型：**`QThread` 是线程控制器，不是线程本体**。正确
 #include <QObject>
 class Worker : public QObject { Q_OBJECT
 public slots:
-    void doWork() { /* 运行在子线程 */ }
+    void doWork() { // 运行在子线程
 };
 QThread* t = new QThread;
 Worker* w = new Worker;
@@ -320,7 +320,7 @@ t->start();
 // ⑦ 反模式：继承 QThread 并重写 run()（Qt4 遗物，易踩线程亲和性坑）
 #include <QThread>
 class MyThread : public QThread {
-    void run() override { /* 只有这里在子线程，this 仍亲和主线程 */ }
+    void run() override { // 只有这里在子线程，this 仍亲和主线程
 };
 ```
 
@@ -460,7 +460,7 @@ void share() {
 ```cpp
 // ⑪ 跨线程信号传大对象：用 const 引用 + 注册元类型，避免不必要拷贝
 #include <QMetaType>
-struct Frame { /* 大图像数据 */ };
+struct Frame { // 大图像数据
 Q_DECLARE_METATYPE(Frame)    // 让 Frame 可在信号槽中按值传递
 ```
 
@@ -534,7 +534,7 @@ Qt 所有权（父子 `delete`）与标准 C++ RAII（`std::unique_ptr`）是**�
 // ⑭ 混用：用 unique_ptr 管理非 QObject 的纯标准类型，Qt 管 QObject 树
 #include <memory>
 #include <QObject>
-struct Buffer { char* data; ~Buffer(){ /* RAII 释放 */ } };
+struct Buffer { char* data; ~Buffer(){ // RAII 释放
 class View : public QObject { Q_OBJECT
     std::unique_ptr<Buffer> buf = std::make_unique<Buffer>();  // 标准 RAII 成员
 };   // View 自身由 Qt 父对象管理；buf 随 View 析构由 unique_ptr 释放
@@ -595,7 +595,7 @@ QObject::connect(&b, &Button::clicked, &l, &Label::on_clicked);   // 优于 SIGN
 #include <QString>
 class Receiver : public QObject { Q_OBJECT
 public slots:
-    void onText(const QString& t) { /* 引用，零拷贝 */ }
+    void onText(const QString& t) { // 引用，零拷贝
 };
 ```
 
@@ -631,7 +631,7 @@ signals:
 // ⑱ Boost.Signals2：纯模板、无 moc，但编译期更重、无运行时内省
 #include <boost/signals2.hpp>
 boost::signals2::signal<void(int)> sig;
-sig.connect([](int x){ /* 槽 */ });
+sig.connect([](int x){ // 槽
 sig(42);                       // 等价 emit
 ```
 
@@ -646,8 +646,8 @@ sig(42);                       // 等价 emit
 ```cpp
 // ⑲ 阅读入口：先把你的 .h 跑一遍 moc，对比生成 cpp，立刻看懂元对象机制
 // 命令（本机真实可用）：
-//   moc -I<qt include> myclass.h -o moc_myclass.cpp
-//   # 然后读 moc_myclass.cpp 中的 staticMetaObject / qt_static_metacall
+// moc -I<qt include> myclass.h -o moc_myclass.cpp
+// # 然后读 moc_myclass.cpp 中的 staticMetaObject / qt_static_metacall
 ```
 
 - `[上游参考]` 信号槽引擎入口 `QMetaObject::activate`：`// 文件：https://github.com/qt/qtbase/blob/6.8/src/corelib/kernel/qobject.cpp` `// 行号：3895`。
@@ -766,22 +766,22 @@ int main() {
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 Qt API 长什么样
 ```cpp
 // ㉑.3 真实 Qt 6 写法（仅注释演示，需 Qt 链接；本门禁按空块编译通过）：
-//   #include <QCoreApplication>
-//   #include <QObject>
-//   #include <QTimer>
-//   class Downloader : public QObject {
-//       Q_OBJECT
-//   signals:
-//       void progress(int pct);                 // 后台线程 emit progress(i)
-//   public slots:
-//       void onProgress(int pct) {             // UI 线程槽：更新 QProgressBar
-//           ui->bar->setValue(pct);
-//       }
-//   };
-//   // 跨线程安全连接：自动排队到接收者所在线程的事件循环（代替手写互斥+条件变量）
-//   connect(&dl, &Downloader::progress, &win, &Window::onProgress,
-//           Qt::QueuedConnection);
-//   官方文档：https://doc.qt.io/qt-6/signalsandslots.html
+// #include <QCoreApplication>
+// #include <QObject>
+// #include <QTimer>
+// class Downloader : public QObject {
+// Q_OBJECT
+// signals:
+// void progress(int pct);                 // 后台线程 emit progress(i)
+// public slots:
+// void onProgress(int pct) {             // UI 线程槽：更新 QProgressBar
+// ui->bar->setValue(pct);
+// }
+// };
+//// 跨线程安全连接：自动排队到接收者所在线程的事件循环（代替手写互斥+条件变量）
+// connect(&dl, &Downloader::progress, &win, &Window::onProgress,
+// Qt::QueuedConnection);
+// 官方文档：https://doc.qt.io/qt-6/signalsandslots.html
 ```
 
 ### ㉑.4 一个 Qt 6 工程到底怎么跑起来（端到端步骤）

@@ -185,7 +185,7 @@ int main() {
 #include <cstdio>
 int main() {
     int base = 10;
-    auto f = []() { /* 不碰 base */ return 42; };  // ✅ 无捕获，可转函数指针
+    auto f = []() { // 不碰 base
     std::printf("%d\n", f());
     int (*fp)() = f;                                // 见 ⑭
     std::printf("via fp: %d\n", fp());
@@ -1306,7 +1306,7 @@ static const bool __stored_locally =
   (__is_location_invariant<_Functor>::value       // (1) trivially copyable（位置不变）
    && sizeof(_Functor) <= _M_max_size             // (2) 大小 ≤ 16
    && __alignof__(_Functor) <= _M_max_align       // (3) 对齐 ≤ 8
-   && (_M_max_align % __alignof__(_Functor) == 0));// (4) 对齐整除
+   && (_M_max_align % __alignof__(_Functor) == 0)); // (4) 对齐整除
 
 // std_function.h:150-164  —— 构造：本地 placement-new 或堆 new
 template<typename _Fn> static void _M_create(_Any_data& __dest, _Fn&& __f, true_type)

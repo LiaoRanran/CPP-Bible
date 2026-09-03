@@ -155,7 +155,7 @@ void waitfree_count() {
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁编程：lock-free / wait-free
 ```cpp
 // ④ 注意：并非所有算法都能 wait-free。下面"交换两个原子"在无额外机制时
-//        只能 lock-free（需要 CAS 循环），不是 wait-free
+// 只能 lock-free（需要 CAS 循环），不是 wait-free
 #include <atomic>
 std::atomic<int> a{0}, b{0};
 bool swap_pair(int na, int nb) {
@@ -432,7 +432,7 @@ void inc_cas() {
     unsigned long long old = cA.load(std::memory_order_relaxed);
     while (!cA.compare_exchange_weak(old, old + 1,
              std::memory_order_relaxed,
-             std::memory_order_relaxed)) { /* retry */ }
+             std::memory_order_relaxed)) { // retry
 }
 ```
 
@@ -784,8 +784,8 @@ struct SPSCRing {
 // ⑱ 使用：一个线程 push，另一个线程 pop，无需任何锁
 #include <cassert>
 SPSCRing<int, 1024> ring;
-void producer() { while (!ring.push(42)) { /* 满则等待/跳过 */ } }
-void consumer() { int x; while (ring.pop(x)) { /* 处理 x */ } }
+void producer() { while (!ring.push(42)) { // 满则等待/跳过
+void consumer() { int x; while (ring.pop(x)) { // 处理 x
 ```
 
 - `[标准]`：SPSC 环形缓冲只用 `load/store`（relaxed/acquire/release），是**最强保证**——生产者与消费者各自 wait-free。

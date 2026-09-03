@@ -391,7 +391,7 @@ class Arena {
     char*  begin_; char* cur_; char* end_;
 public:
     void* alloc(size_t n) {
-        if (cur_ + n > end_) { /* 新块 */ }
+        if (cur_ + n > end_) { // 新块
         void* p = cur_; cur_ += n; return p;   // 只挪指针
     }
 };
@@ -401,10 +401,10 @@ public:
 ```cpp
 // ⑤ Redis C++ 客户端（redis-plus-plus）用 unique_ptr 持有连接上下文
 #include <memory>
-struct redisContext { /* C 结构 */ };
+struct redisContext { // C 结构
 struct RedisConn {
     std::unique_ptr<redisContext, void(*)(redisContext*)> ctx;
-    RedisConn() : ctx(nullptr, [](redisContext* c){ /* redisFree */ }) {}
+    RedisConn() : ctx(nullptr, [](redisContext* c){ // redisFree
 };
 ```
 
@@ -543,7 +543,7 @@ void add_buf(float* out, const float* a, const float* b, size_t n) {
 void aeProcessEvents(aeEventLoop* el, int flags) {
     // redis 用 aeApiPoll 阻塞；若某命令慢，整个循环卡住（单线程代价）
     int n = aeApiPoll(el, nullptr);   // 调试时在这里计时
-    for (int j=0; j<n; ++j) { /* 回调 */ }
+    for (int j=0; j<n; ++j) { // 回调
 }
 ```
 
@@ -916,26 +916,26 @@ double par_sum(const std::vector<double>& v) {
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑱ 读 ClickHouse 源码路径（上游参考）：从 IColumn 入手
-//   src/Columns/IColumn.h        —— 列抽象
-//   src/Columns/ColumnVector.cpp —— 具体列 + 向量化 kernel 入口
-//   src/Interpreters/ExpressionActions.cpp —— 向量化调度
+// src/Columns/IColumn.h        —— 列抽象
+// src/Columns/ColumnVector.cpp —— 具体列 + 向量化 kernel 入口
+// src/Interpreters/ExpressionActions.cpp —— 向量化调度
 // 读法：先跟一个 SELECT 的列如何被切成 Block，再到 executeOnColumn。
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑱ 读 Redis 源码路径（上游参考）：从 aeMain 入手
-//   src/ae.c / src/ae.h          —— 事件循环
-//   src/server.c                 —— 主函数调 aeMain
-//   src/networking.c             —— 命令读取与回复
+// src/ae.c / src/ae.h          —— 事件循环
+// src/server.c                 —— 主函数调 aeMain
+// src/networking.c             —— 命令读取与回复
 // 读法：跟一个 GET 命令从 epoll_wait 就绪到 call 回调再到 addReply。
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑱ 本地用 perf（Linux）看是否真向量化
-//   perf record ./clickhouse ...
-//   perf annotate -> 找 vaddps/vmulps 即证明向量化命中
+// perf record ./clickhouse ...
+// perf annotate -> 找 vaddps/vmulps 即证明向量化命中
 // Windows 等价：VTune / 看寄存器 zmm0 是否被写
 ```
 
@@ -989,41 +989,41 @@ bool should_vectorize(size_t n, bool branchy) {
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 ```cpp
 // ⑳ ClickHouse 向量化速查
-//   - 数据按列连续存放（ColumnVector<T>），不用 struct-of-row
-//   - hot loop 无分支、无别名（用 __restrict）、对齐 64B
-//   - 用 -O3 -march=native -fopt-info-vec 验证是否被向量化
-//   - 上游入口：src/Columns/IColumn.h / ColumnVector.cpp / ExpressionActions.cpp
+// - 数据按列连续存放（ColumnVector<T>），不用 struct-of-row
+// - hot loop 无分支、无别名（用 __restrict）、对齐 64B
+// - 用 -O3 -march=native -fopt-info-vec 验证是否被向量化
+// - 上游入口：src/Columns/IColumn.h / ColumnVector.cpp / ExpressionActions.cpp
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ Redis 事件循环速查
-//   - 单线程 aeMain 循环，epoll/kqueue/select 多路复用
-//   - 每个 fd 一个 aeFileEvent{ rfileProc, wfileProc }
-//   - 回调必须 O(1)/O(log N)，慢命令阻塞整个实例
-//   - 上游入口：src/ae.c / src/ae.h / src/server.c
+// - 单线程 aeMain 循环，epoll/kqueue/select 多路复用
+// - 每个 fd 一个 aeFileEvent{ rfileProc, wfileProc }
+// - 回调必须 O(1)/O(log N)，慢命令阻塞整个实例
+// - 上游入口：src/ae.c / src/ae.h / src/server.c
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 本机可复现实证命令（GCC 13.1.0）
-//   g++ -std=c++20 -O3 -march=native -S -masm=intel \
-//       Examples/_ch133_vectorize.cpp -o Examples/_ch133_vectorize.asm
-//   g++ -std=c++20 -O2 -S -masm=intel \
-//       Examples/_ch133_eventloop.cpp -o Examples/_ch133_eventloop.asm
-//   关键汇编：vaddps zmm / vmulps zmm / vfmadd231ss（向量化）
-//            call rax（事件循环回调分发）
+// g++ -std=c++20 -O3 -march=native -S -masm=intel \
+// Examples/_ch133_vectorize.cpp -o Examples/_ch133_vectorize.asm
+// g++ -std=c++20 -O2 -S -masm=intel \
+// Examples/_ch133_eventloop.cpp -o Examples/_ch133_eventloop.asm
+// 关键汇编：vaddps zmm / vmulps zmm / vfmadd231ss（向量化）
+// call rax（事件循环回调分发）
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 ```cpp
 #include <span>
 // ⑳ C++ 特性映射
-//   模板       -> ColumnVector<T> 零开销类型分发
-//   智能指针   -> 连接/资源 RAII（hot path 避免 shared_ptr）
-//   内存池     -> Arena bump-pointer 批量分配/释放
-//   std::span  -> 零拷贝列视图（C++20）
-//   if constexpr-> 编译期 SIMD 后端选择（C++17）
+// 模板       -> ColumnVector<T> 零开销类型分发
+// 智能指针   -> 连接/资源 RAII（hot path 避免 shared_ptr）
+// 内存池     -> Arena bump-pointer 批量分配/释放
+// std::span  -> 零拷贝列视图（C++20）
+// if constexpr-> 编译期 SIMD 后端选择（C++17）
 ```
 
 记不住细节就看速查表的四行——**列连续、循环无分支、单线程无锁、先 profile 再优化**。
@@ -1096,17 +1096,17 @@ int main() {
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 API 长什么样
 ```cpp
 // ㉑.3 真实 Redis / ClickHouse C++ 客户端写法（仅注释演示，需链接 redis++/hiredis / clickhouse-cpp；本门禁按空块编译通过）：
-//   // ① Redis（redis-plus-plus，基于 hiredis）
-//   #include <sw/redis++/redis++.h>
-//   sw::redis::Redis r("tcp://127.0.0.1:6379");
-//   r.set("session", "abc123");          // SET
-//   r.expire("session", 60);             // EXPIRE 60 秒
-//   auto v = r.get("session");           // GET -> std::optional<std::string>
-//   // ② ClickHouse（clickhouse-cpp，按列批量发送）
-//   #include <clickhouse/client.h>
-//   clickhouse::Client c(clickhouse::ClientOptions().SetHost("localhost"));
-//   c.Execute("INSERT INTO hits VALUES", clickhouse::Values{1, "alice", 3.14});
-//   官方文档：https://github.com/sewenew/redis-plus-plus  |  https://github.com/ClickHouse/clickhouse-cpp
+//// ① Redis（redis-plus-plus，基于 hiredis）
+// #include <sw/redis++/redis++.h>
+// sw::redis::Redis r("tcp://127.0.0.1:6379");
+// r.set("session", "abc123");          // SET
+// r.expire("session", 60);             // EXPIRE 60 秒
+// auto v = r.get("session");           // GET -> std::optional<std::string>
+//// ② ClickHouse（clickhouse-cpp，按列批量发送）
+// #include <clickhouse/client.h>
+// clickhouse::Client c(clickhouse::ClientOptions().SetHost("localhost"));
+// c.Execute("INSERT INTO hits VALUES", clickhouse::Values{1, "alice", 3.14});
+// 官方文档：https://github.com/sewenew/redis-plus-plus  |  https://github.com/ClickHouse/clickhouse-cpp
 ```
 
 ### ㉑.4 端到端：怎么把它接进你的工程
@@ -1299,9 +1299,9 @@ long long sum_column(const std::vector<long long>& col) {
 // 手工 SIMD（接口不变）：
 // #include <immintrin.h>
 // for (; i + 4 <= n; i += 4) {
-//     __m256i v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p + i));
-//     acc += _mm256_extract_epi64(v,0)+_mm256_extract_epi64(v,1)
-//           +_mm256_extract_epi64(v,2)+_mm256_extract_epi64(v,3);
+// __m256i v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p + i));
+// acc += _mm256_extract_epi64(v,0)+_mm256_extract_epi64(v,1)
+// +_mm256_extract_epi64(v,2)+_mm256_extract_epi64(v,3);
 // }
 
 int main() {

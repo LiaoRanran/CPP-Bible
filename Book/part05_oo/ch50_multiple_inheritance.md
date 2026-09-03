@@ -252,8 +252,8 @@ _ZThn8_N1D1gEv:                ; thunk（rcx = B2 子对象 = D+8）
 struct IStartable { virtual void start() = 0; };
 struct IStoppable { virtual void stop() = 0; };
 struct Service : IStartable, IStoppable {        // 多接口实现
-    void start() override { /* 启动 */ }
-    void stop()  override { /* 停止 */ }
+    void start() override { // 启动
+    void stop()  override { // 停止
 };
 void run(IStartable& s){ s.start(); }            // 传 Service&，this 指向首基类 IStartable
 void halt(IStoppable& s){ s.stop(); }            // 传 Service&，this 指向 IStoppable 子对象
@@ -350,9 +350,9 @@ static_assert(offsetof(D, x) == 16);   // 两 vptr(16) + x@16
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例9：虚析构链在多重继承下按逆序调用
-struct A { virtual ~A() { /*A*/ } };
-struct B { virtual ~B() { /*B*/ } };
-struct D : A, B { ~D() override { /*D*/ } };  // 析构顺序 D→B→A
+struct A { virtual ~A() { // A
+struct B { virtual ~B() { // B
+struct D : A, B { ~D() override { // D
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例

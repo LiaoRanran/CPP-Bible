@@ -127,8 +127,8 @@ int use_stl() {
 // ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/vector
 // 行号：36
 // 上游参考（随提交浮动）：class vector 的前向与 allocator_type 别名
-//   template <class _Ty, class _Alloc = allocator<_Ty>>
-//   class vector { ... };
+// template <class _Ty, class _Alloc = allocator<_Ty>>
+// class vector { ... };
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析
@@ -136,8 +136,8 @@ int use_stl() {
 // ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/xstring
 // 行号：1860
 // 上游参考（随提交浮动）：basic_string 的 SSO 缓冲字段 _Bx
-//   union _Bx { _Elem _Buf[_BUF_SIZE]; _Elem* _Ptr; } _Bx;
-//   短串用 _Buf，长串用 _Ptr（与 libstdc++ 同构，见 ⑧）
+// union _Bx { _Elem _Buf[_BUF_SIZE]; _Elem* _Ptr; } _Bx;
+// 短串用 _Buf，长串用 _Ptr（与 libstdc++ 同构，见 ⑧）
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析
@@ -145,8 +145,8 @@ int use_stl() {
 // ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/yvals.h
 // 行号：540
 // 上游参考（随提交浮动）：特性宏开关
-//   #define _HAS_CXX23 1   // C++23 特性总开关（影响 <print>/<expected> 等）
-//   #define _HAS_STATIC_RTTI 1
+// #define _HAS_CXX23 1   // C++23 特性总开关（影响 <print>/<expected> 等）
+// #define _HAS_STATIC_RTTI 1
 ```
 
 - `[实现·MSVC]`：`vector` 类是模板，定义在头内；`basic_string` 用 union `_Bx` 在「本地缓冲」与「堆指针」间二选一，即 SSO（见 ⑧）。
@@ -472,7 +472,7 @@ extern "C" void widget_free(Widget* w) { delete w; }
 ```cpp
 // ⑮ 统一标准等级 + CRT 的编译指示（CMake/MSBuild 等价）
 // cl /std:c++20 /EHsc /MD /nologo app.cpp
-//   /MD  -> 动态 CRT，跨 DLL 共享 msvcp140（见 ⑬）
+///MD  -> 动态 CRT，跨 DLL 共享 msvcp140（见 ⑬）
 #include <vector>
 int main() { std::vector<int> v{1,2,3}; return (int)v.size(); }
 ```
@@ -881,15 +881,15 @@ int main() {
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 MSVC/Window
 ```cpp
 // ㉑.3 真实 MSVC/Windows 用法（仅注释演示，门禁按空块编译通过）：
-//   // 1) 检测 MSVC 编译器版本
-//   #include <yvals.h>
-//   #ifdef _MSC_VER
-//   std::cout << "MSVC " << _MSC_VER << "\n";   // 如 1930 = VS2022 17.0
-//   #endif
-//   // 2) 运行期选择（/MD 动态 CRT vs /MT 静态 CRT）由编译器开关决定，非代码
-//   //   动态: /MD(/MDd)  静态: /MT(/MTd) —— 二者不可混链，否则 CRT 状态冲突
-//   // 3) 常用安全扩展：_s 家族，如 errno_t strcpy_s(char*, rsize_t, const char*)
-//   官方文档：https://learn.microsoft.com/cpp/standard-library/
+//// 1) 检测 MSVC 编译器版本
+// #include <yvals.h>
+// #ifdef _MSC_VER
+// std::cout << "MSVC " << _MSC_VER << "\n";   // 如 1930 = VS2022 17.0
+// #endif
+//// 2) 运行期选择（/MD 动态 CRT vs /MT 静态 CRT）由编译器开关决定，非代码
+////   动态: /MD(/MDd)  静态: /MT(/MTd) —— 二者不可混链，否则 CRT 状态冲突
+//// 3) 常用安全扩展：_s 家族，如 errno_t strcpy_s(char*, rsize_t, const char*)
+// 官方文档：https://learn.microsoft.com/cpp/standard-library/
 ```
 
 ### ㉑.4 端到端：运行时开关与 Redistributable 怎么选

@@ -464,7 +464,7 @@ int main() {
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 特性，C++ 无
 ```cpp
 // P9：VLA 是 GCC/Clang 扩展，C++ 标准不支持，MSVC 报错
-//      用 -Wvla 可警告，-Werror=vla 可禁止
+// 用 -Wvla 可警告，-Werror=vla 可禁止
 #include <cstdio>
 void f(int n) {
     int a[n];                 // 扩展：GCC/Clang OK，MSVC 报错，标准不支持
@@ -1294,7 +1294,7 @@ int main() {
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐分配与 new 失败处理
 ```cpp
 // P39：对齐分配（缓存行/SIMD 对齐）。标准名 std::aligned_alloc(C++17)；
-//       本机 MinGW 未暴露该名，改用 Windows 的 _aligned_malloc 演示。
+// 本机 MinGW 未暴露该名，改用 Windows 的 _aligned_malloc 演示。
 #include <cstdio>
 #include <cstddef>
 #include <cstdint>

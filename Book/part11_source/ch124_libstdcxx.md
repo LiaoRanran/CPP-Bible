@@ -154,7 +154,7 @@ int main() {
 // ④ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 // 行号：213
 // 原文（节选）：
-//      enum { _S_local_capacity = 15 / sizeof(_CharT) };
+// enum { _S_local_capacity = 15 / sizeof(_CharT) };
 ```
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
@@ -162,7 +162,7 @@ int main() {
 // ④ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 // 行号：217
 // 原文（节选）：
-//      _CharT           _M_local_buf[_S_local_capacity + 1];
+// _CharT           _M_local_buf[_S_local_capacity + 1];
 ```
 
 - `[实现·GCC15]`：`basic_string.h:213` 的 `_S_local_capacity = 15 / sizeof(_CharT)` 决定 SSO 阈值；`basic_string.h:217` 的 `_M_local_buf[_S_local_capacity+1]` 是内置缓冲。对象用一个 union 在「本地缓冲」与「堆指针」间二选一（证据见 ⑨ 真实汇编的 `cmp r12, 15`）。
@@ -190,7 +190,7 @@ int main() {
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/allocator.h
 // 行号：130
 // 原文（节选）：
-//    class allocator : public __allocator_base<_Tp>
+// class allocator : public __allocator_base<_Tp>
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
@@ -206,7 +206,7 @@ int main() {
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/alloc_traits.h
 // 行号：45
 // 原文（节选）：
-//  struct __alloc_traits
+// struct __alloc_traits
 ```
 
 - `[标准]`：`std::allocator` 满足 *Allocator* 要求；容器通过 `allocator_traits` 间接使用它，故可替换为自定义分配器。
@@ -236,7 +236,7 @@ int main() {
 // ⑥ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 // 行号：678
 // 原文（节选）：
-//      basic_string(basic_string&& __str) noexcept
+// basic_string(basic_string&& __str) noexcept
 ```
 
 - `[标准]`：C++11 起标准鼓励「移动为 noexcept」；libstdc++ 据此把 `basic_string` 移动设为 `noexcept`（`basic_string.h:678`），使容器扩容免拷贝、免异常回滚。
@@ -264,7 +264,7 @@ int main() {
 // ⑦ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/typeinfo
 // 行号：92
 // 原文（节选）：
-//  class type_info
+// class type_info
 ```
 
 - `[实现·libstdc++]`：`type_info` 在 `typeinfo:92` 定义；其 vtable 与 `type_name` 指向由 `cxxabi` 运行时提供。`name()` 返回 mangled 名，需 `__cxa_demangle` 解码。
@@ -297,7 +297,7 @@ int main() {
 // ⑧ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：341
 // 原文（节选）：
-//  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+// inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
 ```
 
 - `[实现·GCC15]`：`c++config.h:338` 据 `_GLIBCXX_USE_CXX11_ABI` 选择 ABI；`c++config.h:341` 的 `inline namespace __cxx11` + `abi_tag("cxx11")` 让新 ABI 符号自动带 `cxx11` 标签（见 ⑨ 汇编里的 `B5cxx11`）。
@@ -466,7 +466,7 @@ int main() {
 // ⑬ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：417
 // 原文（节选）：
-//  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+// inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
 ```
 
 - `[实现·libstdc++]`：`c++config.h:348` 的 `_GLIBCXX_BEGIN_NAMESPACE_CXX11` 把 `std::string` 实际定义进 `__cxx11`；`c++config.h:417` 再次确认。结合 ⑨ 的 `B5cxx11`，可证 ABI 标签贯穿编译全程。
@@ -905,15 +905,15 @@ int main() {
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 libstdc++ 长
 ```cpp
 // ㉑.3 真实工程里常见的 libstdc++ 用法（仅注释演示，门禁按空块编译通过）：
-//   // 1) 查询 libstdc++ 版本：__GLIBCXX__ 是一个日期，如 20250627
-//   #include <bits/c++config.h>
-//   #ifdef __GLIBCXX__
-//   std::cout << "libstdc++ from GCC " << __GLIBCXX__ << "\n";
-//   #endif
-//   // 2) 双 ABI 开关：C++11 起新 ABI（std::string 不再是 COW）由它控制
-//   #define _GLIBCXX_USE_CXX11_ABI 1     // 1=新 ABI(默认)，0=旧 ABI(兼容老 .so)
-//   // 3) 系统里查已安装版本：strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
-//   官方文档：https://gcc.gnu.org/onlinedocs/libstdc++/
+//// 1) 查询 libstdc++ 版本：__GLIBCXX__ 是一个日期，如 20250627
+// #include <bits/c++config.h>
+// #ifdef __GLIBCXX__
+// std::cout << "libstdc++ from GCC " << __GLIBCXX__ << "\n";
+// #endif
+//// 2) 双 ABI 开关：C++11 起新 ABI（std::string 不再是 COW）由它控制
+// #define _GLIBCXX_USE_CXX11_ABI 1     // 1=新 ABI(默认)，0=旧 ABI(兼容老 .so)
+//// 3) 系统里查已安装版本：strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
+// 官方文档：https://gcc.gnu.org/onlinedocs/libstdc++/
 ```
 
 ### ㉑.4 端到端：怎么确认版本 + 如何在 Clang 下切到 libc++
@@ -1219,7 +1219,7 @@ int main() {
 struct Slow {
     int* p = new int(0);
     Slow() = default;                          // 需默认构造以构造/扩容
-    Slow(Slow&&) { /* 未标 noexcept */ }     // ❌ 扩容退回拷贝
+    Slow(Slow&&) { // 未标 noexcept
     Slow(const Slow&) {}
     ~Slow() { delete p; }
 };

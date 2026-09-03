@@ -374,8 +374,8 @@ int main() {
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang-tools-extra/clang-tidy/ClangTidy.cpp
 // 行号：L540
 // 剖析：ClangTidyContext 收集每一条 diagnostic，按 CheckName 归类后
-//       交给 DiagnosticsEngine；当诊断级别达到 Warning 且开启 -warnings-as-errors
-//       时，clang-tidy 以非零码退出——这正是 CI 门禁“零容忍”的落点。
+// 交给 DiagnosticsEngine；当诊断级别达到 Warning 且开启 -warnings-as-errors
+// 时，clang-tidy 以非零码退出——这正是 CI 门禁“零容忍”的落点。
 ```
 
 > **立场**：`[实现]` 静态分析门禁应“先宽后严”：新仓库从 `-Wall -Wextra` 起步，存量告警用 `// NOLINT` 或基线文件冻结，再逐步开启 `clang-tidy` 检查。一次性 `-Werror` 全开只会让开发者学会 `// NOLINT` 糊弄。

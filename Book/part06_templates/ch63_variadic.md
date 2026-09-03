@@ -150,7 +150,7 @@ int main() { print(1, 2.5, 'x', "hi"); }
 // 完美转发构造（emplace 基础）
 struct Widget {
     template <typename... Ts>
-    Widget(Ts&&... args) { /* 转发给成员构造 */ }
+    Widget(Ts&&... args) { // 转发给成员构造
 };
 ```
 

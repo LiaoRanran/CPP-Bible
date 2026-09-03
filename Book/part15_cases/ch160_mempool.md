@@ -116,7 +116,7 @@ int main() {
 ```cpp
 #include <new>
 void* p = ::operator new(64, std::nothrow);   // [标准] [new.delete.single] 若失败返回 nullptr
-if (!p) { /* 处理内存不足，不抛异常 */ }
+if (!p) { // 处理内存不足，不抛异常
 ```
 
 ## ③ 固定大小块池（free list，ASCII 画布局）
@@ -704,7 +704,7 @@ MemoryPool full run OK
 struct Node { Node* next; };
 struct MiniPool {
     Node* h = nullptr;
-    void* alloc() { if(!h){ /* grow: operator new 一大块切成 Node 串起 */ } Node* n=h; h=n->next; return n; }
+    void* alloc() { if(!h){ // grow: operator new 一大块切成 Node 串起
     void free(void* p){ auto* n=(Node*)p; n->next=h; h=n; }
 };
 ```
@@ -857,7 +857,7 @@ int main() {
 ```cpp
 // ✅ 释放后立即置空、且每个指针只释放一次；必要时用守卫（见上）
 void* p = std::malloc(64);
-/* ... 使用 p ... */
+// ... 使用 p ...
 std::free(p);
 p = nullptr;            // 释放后置空，杜绝悬挂/重复释放
 ```
@@ -1145,7 +1145,7 @@ struct Pool {
     void* allocate() { FreeNode* p = head; head = head->next; return p; }      // O(1) 摘头
     void  deallocate(void* p) { auto* n = static_cast<FreeNode*>(p); n->next = head; head = n; } // 头插
 };
-int main() { Pool pool; /* grow() 时把大块串成 FreeNode 链挂到 head */ std::cout << "ok\n"; }
+int main() { Pool pool; // grow() 时把大块串成 FreeNode 链挂到 head
 ```
 
 <span class="badge badge-std">标准</span> `union` 允许同一存储表示多种类型（[class.union]）；对象生命周期由 `new`/`delete` 与存储期管理（[basic.stc]）。

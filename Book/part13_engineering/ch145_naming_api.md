@@ -133,8 +133,8 @@ void dispatch(const Event& e);
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型命名
 ```cpp
-class ConnectionPool { /* ... */ };     // ✅ PascalCase 类型
-struct HttpRequest  { /* ... */ };      // ✅ struct 同样 PascalCase
+class ConnectionPool { // ...
+struct HttpRequest  { // ...
 enum class ColorSpace { Srgb, DisplayP3 };  // ✅ enum class 成员 PascalCase
 ```
 
@@ -143,11 +143,11 @@ enum class ColorSpace { Srgb, DisplayP3 };  // ✅ enum class 成员 PascalCase
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型命名
 ```cpp
 // ❌ 反例：单字母模板参数，约束意图不清
-template <typename T, typename U> class Pair { /* ... */ };
+template <typename T, typename U> class Pair { // ...
 
 // ✅ 正例：描述性模板参数
-template <typename Key, typename Value> class LruCache { /* ... */ };
-template <std::regular T> class RingBuffer { /* ... */ };
+template <typename Key, typename Value> class LruCache { // ...
+template <std::regular T> class RingBuffer { // ...
 ```
 
 概念（concept）命名用名词或形容词短语，常以 `able`/`ible` 结尾：
@@ -259,7 +259,7 @@ std::string user_name;
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 变量命名
 ```cpp
-for (const auto& [key, value] : registry) { /* key/value 局部自明 */ }
+for (const auto& [key, value] : registry) { // key/value 局部自明
 ```
 
 ## ⑥ 常量与宏命名（kXxx/UPPER_CASE）
@@ -337,7 +337,7 @@ namespace myproject {
 ```cpp
 namespace {
     int g_debug_counter = 0;                 // ✅ 仅本 .cpp 可见
-    void trace_raw(const char* s) { /* ... */ }
+    void trace_raw(const char* s) { // ...
 }
 ```
 
@@ -529,7 +529,7 @@ public:
 ```cpp
 #include <memory>
 // Widget 实现（widget.cpp）：所有数据成员与逻辑在这里，改它不触发调用方重编
-struct Widget::Impl { int w = 0, h = 0; void paint() { /* ... */ } };
+struct Widget::Impl { int w = 0, h = 0; void paint() { // ...
 Widget::Widget() : impl_(std::make_unique<Impl>()) {}
 Widget::~Widget() = default;
 void Widget::draw() { impl_->paint(); }
@@ -603,8 +603,8 @@ void open(const std::string& path, int flags = 0);   // 与上一行冲突
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认值与重载顺序
 ```cpp
 #include <string>
-void open(const std::string& path) { /* 缺省模式 */ }
-void open(const std::string& path, int flags) { /* 显式模式 */ }
+void open(const std::string& path) { // 缺省模式
+void open(const std::string& path, int flags) { // 显式模式
 
 int main() {
     open("a.txt");          // 唯一匹配 (const string&)
@@ -935,7 +935,7 @@ const std::string& name() const;
 /// @defgroup pool Connection Pool
 /// @brief 连接池公开接口
 /// @{
-class ConnectionPool { /* ... */ };
+class ConnectionPool { // ...
 /// @}
 ```
 
@@ -951,8 +951,8 @@ class ConnectionPool { /* ... */ };
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h
 // 行号：109-125
-//   struct __move_if_noexcept_cond        // 109: 判断"移动是否 noexcept"的特质
-//   move_if_noexcept(_Tp& __x) noexcept    // 125: 不抛则返回 T&&，否则 const T&
+// struct __move_if_noexcept_cond        // 109: 判断"移动是否 noexcept"的特质
+// move_if_noexcept(_Tp& __x) noexcept    // 125: 不抛则返回 T&&，否则 const T&
 ```
 
 **案例 B：`std::vector` 重分配的 `relocate` vs `move_if_noexcept`**
@@ -963,9 +963,9 @@ class ConnectionPool { /* ... */ };
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc
 // 行号：478-515
-//   478: if _GLIBCXX17_CONSTEXPR (_S_use_relocate())
-//   492:     = std::__uninitialized_move_if_noexcept_a(...)   // 否则退化为拷贝
-//   515: if _GLIBCXX17_CONSTEXPR (!_S_use_relocate())
+// 478: if _GLIBCXX17_CONSTEXPR (_S_use_relocate())
+// 492:     = std::__uninitialized_move_if_noexcept_a(...)   // 否则退化为拷贝
+// 515: if _GLIBCXX17_CONSTEXPR (!_S_use_relocate())
 ```
 
 **案例 C：`std::optional` 的命名——"可能无值"的显式类型**
@@ -976,8 +976,8 @@ class ConnectionPool { /* ... */ };
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/optional
 // 行号：705, 89
-//   705: class optional                          // 公开类型，PascalCase
-//    89: inline constexpr nullopt_t nullopt      // 空状态单例，自解释命名
+// 705: class optional                          // 公开类型，PascalCase
+// 89: inline constexpr nullopt_t nullopt      // 空状态单例，自解释命名
 ```
 
 `[标准]` 从标准库命名可提炼三条 API 经验：

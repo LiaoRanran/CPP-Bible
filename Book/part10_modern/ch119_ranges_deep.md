@@ -289,10 +289,10 @@ use(cached); use(cached);
 ```cpp
 // 文件：bits/ranges_base.h / bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：filter_view 存 _M_base/_M_pred（概念，参见 ⑬）
 // 概念：filter_view 持有 _M_base（底层范围引用）+ _M_pred（谓词）
-//   struct filter_view : view_interface<filter_view> {
-//       _Vp _M_base;        // 底层范围
-//       _Pred _M_pred;      // 谓词
-//   };
+// struct filter_view : view_interface<filter_view> {
+// _Vp _M_base;        // 底层范围
+// _Pred _M_pred;      // 谓词
+// };
 // transform_view 持有 _M_base + _M_fun（变换函数）
 ```
 
@@ -306,9 +306,9 @@ use(cached); use(cached);
 #include <utility>
 // 文件：bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：_RangeAdaptorClosure 重载 operator|（range|adaptor == adaptor(range)）
 // 概念：_RangeAdaptorClosure 重载 operator| 使 range | adaptor 成立
-//   template <typename _Tp, typename _Closure>
-//   auto operator|( _Tp&& __lhs, _Closure __rhs )
-//     -> decltype( __rhs(std::forward<_Tp>(__lhs)) );
+// template <typename _Tp, typename _Closure>
+// auto operator|( _Tp&& __lhs, _Closure __rhs )
+// -> decltype( __rhs(std::forward<_Tp>(__lhs)) );
 // 即 range | adaptor == adaptor(range)
 ```
 

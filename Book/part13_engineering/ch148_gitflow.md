@@ -114,7 +114,7 @@ b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0
 ```cpp
 // ②' 用自包含 SHA-1 复现上述哈希（不依赖 OpenSSL），编译运行输出见下方
 // 见 Examples/_ch148_git_object.cpp：sha1("blob 5\0hello")
-//   => b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0  （与 git 一致）
+// => b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0  （与 git 一致）
 ```
 
 继续用 `git cat-file` 检查一个真实提交对象（沙箱 `calc.cpp` 仓库）：
@@ -150,8 +150,8 @@ $ git cat-file -s bfd1bd5ca13df8f54bb59fc6dae90e210c1b9e35
 // 文件：https://github.com/git/git/blob/master/object.c
 // 行号：约 240（type_from_string / 对象头写入附近）
 // 剖析：Git 把 "<type> <size>\0" 与内容拼接后整体做 SHA-1，
-//       得到内容寻址的 40 位哈希；任一字节变化都会使哈希雪崩式改变，
-//       这是 Git “不可变对象 + 内容寻址” 的数学根基。
+// 得到内容寻址的 40 位哈希；任一字节变化都会使哈希雪崩式改变，
+// 这是 Git “不可变对象 + 内容寻址” 的数学根基。
 ```
 
 > **立场**：`[实现·Git]` 注意 Git 2.29+ 默认哈希已支持 SHA-256（`--object-format=sha256`），SHA-1 仅向后兼容；新仓库在大组织内可评估迁移。
@@ -221,9 +221,9 @@ void fill(Buffer& b, int value, size_t count) {    // 提交 B：只改实现
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提交原子性
 ```cpp
 // ④' 用 git 命令把一次大改动按文件/函数逻辑拆分（示意）
-//   git add -p      交互式暂存“此提交的语义块”
-//   git commit -m "refactor: extract Buffer::reserve"
-//   git commit -m "feat: add fill() populating Buffer"
+// git add -p      交互式暂存“此提交的语义块”
+// git commit -m "refactor: extract Buffer::reserve"
+// git commit -m "feat: add fill() populating Buffer"
 ```
 
 ---
@@ -291,8 +291,8 @@ $ git log --oneline --graph --decorate -n 8
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 用 git log --graph
 ```cpp
 // ⑥ 通过配置统一团队默认整合方式，避免每个人手滑
-//   git config --add merge.ff false        # 总是产生 merge commit
-//   git config --add pull.rebase true      # pull 时默认 rebase
+// git config --add merge.ff false        # 总是产生 merge commit
+// git config --add pull.rebase true      # pull 时默认 rebase
 // 下面给出读取该配置的 C++ 取值示例（实际由 git 自身读取）
 #include <cstdio>
 const char* integration_policy(bool pull_rebase) {
@@ -481,8 +481,8 @@ $ git bisect run ./check.sh
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代码归档与 bisect
 ```cpp
 // ⑪' bisect run 的判定脚本本质是一个“黄金测试”：
-//   给定某 commit 的源码能编译且行为正确 -> good(0)，否则 bad(非0)。
-//   把“人肉判断”固化为可重复脚本，是 bisect 高效的关键。
+// 给定某 commit 的源码能编译且行为正确 -> good(0)，否则 bad(非0)。
+// 把“人肉判断”固化为可重复脚本，是 bisect 高效的关键。
 ```
 
 ---
@@ -603,7 +603,7 @@ const char* ci_target(std::string_view branch, bool is_tag) {
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 触发（预告 ch149）
 ```cpp
 // ⑮' 构建期把 CI 信息注入版本串，保证“二进制可溯源”
-//   g++ -DGIT_DESCRIBE=\"$(git describe --tags --always)\"
+// g++ -DGIT_DESCRIBE=\"$(git describe --tags --always)\"
 ```
 
 > **立场**：`[经验]` 没有 CI 守护的 `main` 分支等于“裸奔”；预章 ch149 将系统讲解流水线设计、缓存、矩阵与产物归档。
@@ -671,7 +671,7 @@ int answer() { return ANSWER; }
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 ```cpp
 // ⑰' 把本次“坏提交定位”固化为回归测试，防止复发
-//   将该 commit 引入的失败用例加入单元测试集，CI 永久守护。
+// 将该 commit 引入的失败用例加入单元测试集，CI 永久守护。
 ```
 
 > **立场**：`[经验]` `bisect` 的价值不只在“找到 bug”，更在“把定位成本从 O(n) 降到 O(log n)”，并可作为故障复盘的客观证据。
@@ -686,7 +686,7 @@ int answer() { return ANSWER; }
 ```cpp
 // ⑱ 反例：一个提交里同时（a）改接口（b）加功能（c）格式化（d）升级依赖
 // ❌ 这种提交无法 bisect、无法 revert、无法 review
-void process(/* 旧签名 */) { /* 旧实现 */ }
+void process( // 旧签名
 // ... 同一 diff 里出现 400 行无关改动 ...
 ```
 
@@ -695,7 +695,7 @@ void process(/* 旧签名 */) { /* 旧实现 */ }
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（大提交/-force）
 ```cpp
 // ⑱' 安全替代：--force-with-lease 仅在远端未领先于本地预期时才推送
-//   git push --force-with-lease
+// git push --force-with-lease
 // 等价于在 C++ 里做 CAS（compare-and-swap）式的乐观锁：
 bool try_push_only_if_remote_unchanged(Local expected, Remote actual) {
     return expected == actual;  // 远端被他人推送过则拒绝，避免覆盖

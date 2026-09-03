@@ -53,9 +53,9 @@ C++ 源码不是机器能直接执行的——它需要被**翻译**为特定 IS
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：为什么需要编译器，三巨头格局
 ```cpp
 // ① 同一份 C++ 源码，三种主流编译器都能产出可执行文件
-//   GCC       : g++ main.cpp -o main
-//   Clang     : clang++ main.cpp -o main
-//   MSVC      : cl.exe main.cpp /Fe:main.exe
+// GCC       : g++ main.cpp -o main
+// Clang     : clang++ main.cpp -o main
+// MSVC      : cl.exe main.cpp /Fe:main.exe
 int main() { return 0; }
 ```
 
@@ -111,8 +111,8 @@ GCC 的关键分层：
 // 下面仅示意 dump 的内容，非可编译代码
 // sum (int a, int b)
 // {
-//   _1 = a + b;
-//   return _1;
+// _1 = a + b;
+// return _1;
 // }
 int sum(int a, int b) { return a + b; }
 ```
@@ -142,8 +142,8 @@ Clang/LLVM 的差异化优势：
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Clang/LLVM 架构：模块化、libclang、LLVM IR
 ```cpp
 // ③ LLVM 多后端示意：同一 IR，不同 -mtriple 产出不同汇编
-//   clang++ -target x86_64-w64-windows-gnu -emit-llvm ...   -> X86
-//   clang++ -target aarch64-linux-gnu        -emit-llvm ...   -> AArch64
+// clang++ -target x86_64-w64-windows-gnu -emit-llvm ...   -> X86
+// clang++ -target aarch64-linux-gnu        -emit-llvm ...   -> AArch64
 // 前端产物(IR)不变，仅后端 Target 不同
 int add(int a, int b) { return a + b; }
 ```
@@ -165,7 +165,7 @@ MSVC 是 Windows 原生工具链，组件与另两家命名完全不同。
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后端、MSBuild
 ```cpp
 // ④ MSVC 编译命令（cl.exe 一站式完成 编译+汇编+链接）
-//   cl /std:c++20 /EHsc /O2 /Fe:app.exe main.cpp
+// cl /std:c++20 /EHsc /O2 /Fe:app.exe main.cpp
 // 与 GCC/Clang 的 "g++/clang++ 只编译，ld 链接" 习惯不同，cl 默认直接产出 exe
 int main() { return 0; }
 ```
@@ -180,8 +180,8 @@ MSVC 关键组件：
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后端、MSBuild
 ```cpp
 // ④ MSVC 的模块支持：用 /interface 编译 .ixx 接口单元
-//   cl /std:c++20 /interface math.ixx /c -> 生成 .ifc(等价 BMI)
-//   cl /std:c++20 use.cpp math.obj /Fe:app.exe
+// cl /std:c++20 /interface math.ixx /c -> 生成 .ifc(等价 BMI)
+// cl /std:c++20 use.cpp math.obj /Fe:app.exe
 export module math;
 export int square(int x) { return x * x; }
 ```
@@ -189,8 +189,8 @@ export int square(int x) { return x * x; }
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后端、MSBuild
 ```cpp
 // ④ MSVC 异常模型：/EHsc 是 C++ 项目的标准选择（同步 C++ 异常）
-//   /EHa 会也捕获异步结构化异常(SEH)，代价更大
-//   throw 与 __try/__except(SEH) 在 MSVC 下语义不同，见 ⑨
+///EHa 会也捕获异步结构化异常(SEH)，代价更大
+// throw 与 __try/__except(SEH) 在 MSVC 下语义不同，见 ⑨
 void may_throw(bool b) { if (b) throw 1; }
 ```
 
@@ -244,9 +244,9 @@ int use_foo() { foo(); return 0; }   // 若 foo 无定义 -> 链接错误
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标文件格式：ELF / COFF
 ```cpp
 // ⑥ 下面代码在三平台产出不同格式目标文件
-//   Linux   : ELF      (.o)         readelf -h a.o
-//   Windows : COFF/PE  (.obj/.exe)  dumpbin /headers a.obj
-//   macOS   : Mach-O  (.o)         otool -h a.o
+// Linux   : ELF      (.o)         readelf -h a.o
+// Windows : COFF/PE  (.obj/.exe)  dumpbin /headers a.obj
+// macOS   : Mach-O  (.o)         otool -h a.o
 int g(int x) { return x + 1; }
 ```
 
@@ -270,7 +270,7 @@ char     buf[1024];         // .bss
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标文件格式：ELF / COFF
 ```cpp
 // ⑥ ELF 的 .symtab 里，C++ 名字以 mangled 形式存在（见 ⑦ / ⑧）
-//   readelf -s a.o  -> 看到 _Z1gi 而非 "g(int)"
+// readelf -s a.o  -> 看到 _Z1gi 而非 "g(int)"
 int g(int, double) { return 0; }
 ```
 
@@ -314,20 +314,20 @@ template<typename T> T id(T);        // -> _Z2idIiET_S0_ (id<int>)
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 ```cpp
 // ⑦ 编码拆解：_Z1ksPil
-//   _Z : 非限定函数
-//   1k : 名字 "k" (长度1)
-//   s  : short
-//   P  : pointer  (指向 int)
-//   i  : int      (指针所指)
-//   l  : long     (第三个参数)
+// _Z : 非限定函数
+// 1k : 名字 "k" (长度1)
+// s  : short
+// P  : pointer  (指向 int)
+// i  : int      (指针所指)
+// l  : long     (第三个参数)
 // 注意顺序：参数按声明顺序，指针先标 P 再标所指类型
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 ```cpp
 // ⑦ c++filt 还原命令（本机已装，真实可用）
-//   c++filt _Z1ksPil   ->  k(short, int*, long)
-//   c++filt _ZN2ns1qEi ->  ns::q(int)
+// c++filt _Z1ksPil   ->  k(short, int*, long)
+// c++filt _ZN2ns1qEi ->  ns::q(int)
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ ABI 与名字改编
@@ -404,7 +404,7 @@ C++ 异常的实现依赖运行期机制，三大编译器分属两套模型。
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 ```cpp
 // ⑨ Itanium 零成本模型（GCC/Clang 在 Linux/macOS 用）：
-//   无异常时不付任何运行时检查代价（"零成本"），异常抛出时才查表(.eh_frame)展开栈
+// 无异常时不付任何运行时检查代价（"零成本"），异常抛出时才查表(.eh_frame)展开栈
 #include <stdexcept>
 int risky(bool b) {
     if (b) throw std::runtime_error("boom");
@@ -418,16 +418,16 @@ int risky(bool b) {
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 ```cpp
 // ⑨ MSVC 异常变体（真实命令，非本机 MSVC 环境，标注"典型输出"）
-//   cl /EHsc main.cpp   -> 同步 C++ 异常（不捕获 SEH）
-//   cl /EHa main.cpp    -> 同时捕获异步 SEH（代价更高）
-//   典型输出：/EHa 下 try { *(int*)0 = 0; } catch(...) {} 能吞掉访问违规(AV)
+// cl /EHsc main.cpp   -> 同步 C++ 异常（不捕获 SEH）
+// cl /EHa main.cpp    -> 同时捕获异步 SEH（代价更高）
+// 典型输出：/EHa 下 try { *(int*)0 = 0; } catch(...) {} 能吞掉访问违规(AV)
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 ```cpp
 // ⑨ 跨模型陷阱：在 MinGW(GCC) 下 throw 与 Windows SEH 是两套体系，
-//   用 -fnon-call-exceptions 才能让某些 async 信号被 C++ 异常捕获
-//   GCC 默认不会把 SIGSEGV 变成 C++ 异常——这与 MSVC /EHa 行为不同！
+// 用 -fnon-call-exceptions 才能让某些 async 信号被 C++ 异常捕获
+// GCC 默认不会把 SIGSEGV 变成 C++ 异常——这与 MSVC /EHa 行为不同！
 ```
 
 - `[平台·Windows]`：MinGW-w64 的 GCC 现在默认生成 **SEH** 展开信息（`-mseh`/`posix-seh` 构建），而非旧的 `setjmp`/`sjlj` 慢速模型。
@@ -473,7 +473,7 @@ _ZTV5Shape:
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 vtable 布局：从真实汇编看
 ```cpp
 // ⑩ 对象内存布局：vptr 在最前（Itanium ABI 单继承）
-//   Shape 对象: [ vptr -> _ZTV5Shape ][ ...派生成员... ]
+// Shape 对象: [ vptr -> _ZTV5Shape ][ ...派生成员... ]
 struct Circle : Shape {
     double r;
     double area() const override { return 3.141592653589793 * r * r; }
@@ -512,10 +512,10 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用约定：cdecl / stdcall / thiscall / fastcall / Win64
 ```cpp
 // ⑪ 32 位 x86 常见调用约定（x86-64 下大多被统一，见下）
-//   cdecl   : 参数右→左压栈, 调用方清栈 (C 默认)
-//   stdcall : 参数右→左压栈, 被调方清栈 (Win32 API __stdcall)
-//   thiscall: this 走 ecx, 其余右→左压栈 (32位 C++ 成员函数)
-//   fastcall: 前两个 int 走 ecx/edx, 其余压栈
+// cdecl   : 参数右→左压栈, 调用方清栈 (C 默认)
+// stdcall : 参数右→左压栈, 被调方清栈 (Win32 API __stdcall)
+// thiscall: this 走 ecx, 其余右→左压栈 (32位 C++ 成员函数)
+// fastcall: 前两个 int 走 ecx/edx, 其余压栈
 // 32 位 GCC/Clang 用 __attribute__((cdecl/stdcall/fastcall))，MSVC 用 __cdecl/__stdcall
 extern "C" int __attribute__((stdcall)) win_api(int, int);
 ```
@@ -584,7 +584,7 @@ int use1(int a) { return square(a) + 1; }   // 很可能被内联
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ __attribute__((always_inline)) / [[gnu::always_inline]] 强制内联（GCC/Clang）
-//   注意 MSVC 用 __forceinline
+// 注意 MSVC 用 __forceinline
 [[gnu::always_inline]] inline int triple(int x) { return x * 3; }
 int use2(int a) { return triple(a); }
 ```
@@ -592,17 +592,17 @@ int use2(int a) { return triple(a); }
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ 优化级别对照： -O0 不内联、不优化；-O2 开全套；-O3 加向量化/循环展开
-//   g++ -O0 -S x.cpp   -> 直译式汇编，每个语句对应几条指令
-//   g++ -O2 -S x.cpp   -> 内联 + 常量折叠，square(a)+1 可能直接成 lea
-//   g++ -O3 -S x.cpp   -> 额外自动向量化(如 SSE/AVX 处理数组)
+// g++ -O0 -S x.cpp   -> 直译式汇编，每个语句对应几条指令
+// g++ -O2 -S x.cpp   -> 内联 + 常量折叠，square(a)+1 可能直接成 lea
+// g++ -O3 -S x.cpp   -> 额外自动向量化(如 SSE/AVX 处理数组)
 int add_one(int x) { return x + 1; }
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联与优化管道
 ```cpp
 // ⑫ Link-Time Optimization(LTO)：跨 TU 内联，需 -flto 与配套链接
-//   g++ -O2 -flto a.cpp b.cpp -o app   (a/b 间也能内联)
-//   clang++ -O2 -flto=thin ...         (ThinLTO 增量)
+// g++ -O2 -flto a.cpp b.cpp -o app   (a/b 间也能内联)
+// clang++ -O2 -flto=thin ...         (ThinLTO 增量)
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联与优化管道
@@ -651,9 +651,9 @@ int f(int v) {
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 标准符合度对比（C++23 支持度）
 ```cpp
 // ⑬ 三家对"实验性特性"的门控宏不同：
-//   GCC     : __cpp_modules / __cpp_concepts (特性测试宏，ISO 规定)
-//   Clang   : 同样支持特性测试宏 __cpp_xxx
-//   MSVC    : 也支持 __cpp_xxx，但部分需 /std:c++latest
+// GCC     : __cpp_modules / __cpp_concepts (特性测试宏，ISO 规定)
+// Clang   : 同样支持特性测试宏 __cpp_xxx
+// MSVC    : 也支持 __cpp_xxx，但部分需 /std:c++latest
 #ifndef __cpp_modules
 #error "本编译器未开启 Modules 支持"
 #endif
@@ -669,7 +669,7 @@ int f(int v) {
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ 同一错误在三家中的表现差异（以下为"典型输出"示意，因本机仅装 GCC13）
-//   错误：漏写分号 / 模板实参推导失败 / 类型不匹配
+// 错误：漏写分号 / 模板实参推导失败 / 类型不匹配
 template<typename T> T max_of(T a, T b) { return a < b ? b : a; }
 auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 ```
@@ -677,24 +677,24 @@ auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ GCC 经典报错（较"朴素"，但 13 已大幅改善）：
-//   error: no matching function for call to 'max_of(int, double)'
-//   note: candidate template ignored: deduced conflicting types for parameter 'T'
-//   （信息正确，但缺"可视化对比箭头"）
+// error: no matching function for call to 'max_of(int, double)'
+// note: candidate template ignored: deduced conflicting types for parameter 'T'
+// （信息正确，但缺"可视化对比箭头"）
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ Clang 经典报错（带 ~~~ 下划线与"期望/实际"对照）：
-//   note: candidate template ignored: deduced type 'int' for parameter 'T'
-//         does not match deduced type 'double' for parameter 'T'
-//   （多出代码片段高亮，定位更快）
+// note: candidate template ignored: deduced type 'int' for parameter 'T'
+// does not match deduced type 'double' for parameter 'T'
+// （多出代码片段高亮，定位更快）
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 ```cpp
 // ⑭ MSVC 经典报错（编号体系，需查 MSDN）：
-//   error C2782: 'T max_of(T,T)' : template parameter 'T' is ambiguous
-//   编号化便于检索文档，但信息密度低
+// error C2782: 'T max_of(T,T)' : template parameter 'T' is ambiguous
+// 编号化便于检索文档，但信息密度低
 ```
 
 - `[经验]`：Clang 的报错/警告最友好（含修复建议 `-fixits`）；GCC 13 已追平大部分；MSVC 报错偏 terse 且用编号。CI 里同时跑 GCC + Clang 可互补抓出对方漏报的警告。
@@ -707,7 +707,7 @@ Modules（C++20）是 `#include` 的文本包含的语义化替代（详见本�
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块（Modules）支持现状
 ```cpp
 // ⑮ GCC 13：用 -fmodules-ts（仍是技术规范 TS 门控）
-//   g++ -std=c++23 -fmodules-ts -c math.ixx -o math.o  生成 BMI(.gcm)
+// g++ -std=c++23 -fmodules-ts -c math.ixx -o math.o  生成 BMI(.gcm)
 export module math;
 export int square(int x) { return x * x; }
 ```
@@ -716,7 +716,7 @@ export int square(int x) { return x * x; }
 ```cpp
 #include <vector>
 // ⑮ Clang：最成熟，用 -fmodules 或 -std=c++20（含标准库模块 std）
-//   clang++ -std=c++20 -fmodules -c math.cppm -o math.o
+// clang++ -std=c++20 -fmodules -c math.cppm -o math.o
 import std;                       // Clang 的 std 模块较完整
 int use() { std::vector<int> v{1,2,3}; return (int)v.size(); }
 ```
@@ -724,7 +724,7 @@ int use() { std::vector<int> v{1,2,3}; return (int)v.size(); }
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块（Modules）支持现状
 ```cpp
 // ⑮ MSVC：用 /std:c++20 + .ixx + /interface
-//   cl /std:c++20 /interface math.ixx /c -> math.ifc
+// cl /std:c++20 /interface math.ixx /c -> math.ifc
 export module math;
 export int square(int x) { return x * x; }
 ```
@@ -732,7 +732,7 @@ export int square(int x) { return x * x; }
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模块（Modules）支持现状
 ```cpp
 // ⑮ 三家的 BMI 格式互不相通！同一模块无法跨编译器复用 .gcm/.ifc
-//   所以团队必须锁定"单一编译器 + 固定版本"才能做模块迁移
+// 所以团队必须锁定"单一编译器 + 固定版本"才能做模块迁移
 import math;
 int main() { return square(7); }
 ```
@@ -747,18 +747,18 @@ int main() { return square(7); }
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台与三元组
 ```cpp
 // ⑯ 指示编译器产出不同平台代码，源码 C++ 不变
-//   x86_64-w64-mingw32   -> Windows x64 (MinGW)
-//   x86_64-linux-gnu     -> Linux x64
-//   aarch64-apple-darwin -> macOS ARM64 (Apple Silicon)
-//   riscv64-unknown-elf  -> RISC-V 裸机
+// x86_64-w64-mingw32   -> Windows x64 (MinGW)
+// x86_64-linux-gnu     -> Linux x64
+// aarch64-apple-darwin -> macOS ARM64 (Apple Silicon)
+// riscv64-unknown-elf  -> RISC-V 裸机
 int portable() { return sizeof(void*) == 8 ? 8 : 4; }   // 64位平台返回8
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台与三元组
 ```cpp
 // ⑯ 三元组常经宏暴露给代码，用于条件编译
-//   __x86_64__ / __aarch64__ / __riscv  (GCC/Clang 内置宏)
-//   _M_X64 / _M_ARM64                    (MSVC 内置宏)
+// __x86_64__ / __aarch64__ / __riscv  (GCC/Clang 内置宏)
+// _M_X64 / _M_ARM64                    (MSVC 内置宏)
 #ifdef __x86_64__
 static constexpr bool kIsX64 = true;
 #elif defined(__aarch64__)
@@ -769,8 +769,8 @@ static constexpr bool kIsX64 = false;
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台与三元组
 ```cpp
 // ⑯ 交叉编译：在 x64 主机上为 ARM 设备编出镜像
-//   aarch64-linux-gnu-g++ main.cpp -o main_arm   (工具链前缀即三元组前缀)
-//   注意：交叉编译出的目标文件是 ELF(ARM)，不能在 x64 主机直接运行
+// aarch64-linux-gnu-g++ main.cpp -o main_arm   (工具链前缀即三元组前缀)
+// 注意：交叉编译出的目标文件是 ELF(ARM)，不能在 x64 主机直接运行
 int cross() { return 0; }
 ```
 
@@ -784,25 +784,25 @@ int cross() { return 0; }
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试信息：DWARF vs PDB
 ```cpp
 // ⑰ GCC/Clang 在 ELF/Mach-O 上产出 DWARF（嵌入 .debug_* 段或独立 .dwo）
-//   g++ -g -O2 main.cpp -o main     (-g 开启 DWARF)
-//   DWARF 是开放标准，gdb/lldb 通用
+// g++ -g -O2 main.cpp -o main     (-g 开启 DWARF)
+// DWARF 是开放标准，gdb/lldb 通用
 int traced(int x) { return x * x; }   // 断点可停在源码行，变量可见
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试信息：DWARF vs PDB
 ```cpp
 // ⑭/⑰ MSVC 产出 PDB（Program Database），由 link.exe /DEBUG 生成
-//   cl /Zi /EHsc main.cpp /link /DEBUG   -> main.exe + main.pdb
-//   PDB 是 Microsoft 专有格式，VS / WinDbg 使用
+// cl /Zi /EHsc main.cpp /link /DEBUG   -> main.exe + main.pdb
+// PDB 是 Microsoft 专有格式，VS / WinDbg 使用
 int traced2(int x) { return x + 1; }
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试信息：DWARF vs PDB
 ```cpp
 // ⑰ 拆分调试信息（发布时分离，减小二进制）：
-//   GCC : objcopy --only-keep-debug a.out a.debug ; strip a.out
-//         gdb 需要时再 "symbol-file a.debug"
-//   Clang 亦支持 -gsplit-dwarf 把 DWARF 放 .dwo
+// GCC : objcopy --only-keep-debug a.out a.debug ; strip a.out
+// gdb 需要时再 "symbol-file a.debug"
+// Clang 亦支持 -gsplit-dwarf 把 DWARF 放 .dwo
 int release(int x) { return x; }
 ```
 
@@ -816,35 +816,35 @@ int release(int x) { return x; }
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ Make：手写规则，命令即 g++（最透明，但大项目维护成本高）
-//   %.o: %.cpp
-//       g++ -std=c++23 -O2 -c $< -o $@
+// %.o: %.cpp
+// g++ -std=c++23 -O2 -c $< -o $@
 int build_make() { return 0; }
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ CMake：跨编译器/跨平台生成器（可产 Makefile / Ninja / VS 工程）
-//   cmake_minimum_required(VERSION 3.28)
-//   project(demo CXX)
-//   set(CMAKE_CXX_STANDARD 23)
-//   add_executable(demo main.cpp)
-//   换工具链只需 -DCMAKE_CXX_COMPILER=clang++ 或指定 toolchain 文件
+// cmake_minimum_required(VERSION 3.28)
+// project(demo CXX)
+// set(CMAKE_CXX_STANDARD 23)
+// add_executable(demo main.cpp)
+// 换工具链只需 -DCMAKE_CXX_COMPILER=clang++ 或指定 toolchain 文件
 int build_cmake() { return 0; }
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ Bazel / Ninja：Google/Chrome 等超大型项目用，增量编译极快
-//   Ninja 由 CMake 生成 build.ninja，背后仍调用 g++/clang++
-//   MSBuild：Visual Studio 的构建引擎，驱动 cl.exe + link.exe
+// Ninja 由 CMake 生成 build.ninja，背后仍调用 g++/clang++
+// MSBuild：Visual Studio 的构建引擎，驱动 cl.exe + link.exe
 int build_bazel() { return 0; }
 ```
 
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统集成
 ```cpp
 // ⑱ 模块要求构建系统保证"先编接口单元"的依赖序
-//   CMake 3.28+ 自动识别 export module 单元并排定顺序；
-//   旧 Make 需手动写规则先编 .ixx 再编使用者
+// CMake 3.28+ 自动识别 export module 单元并排定顺序；
+// 旧 Make 需手动写规则先编 .ixx 再编使用者
 export module demo;
 export int answer() { return 42; }
 ```
@@ -862,18 +862,18 @@ export int answer() { return 42; }
 > **示例 61** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑲ 场景 → 推荐（经验法则，非铁律）
-//   科学计算/超算/Linux 服务   -> GCC（libstdc++，最长历史、最优数值代码）
-//   macOS/iOS/IDE 体验/静态分析 -> Clang（clangd、最佳诊断、libc++）
-//   纯 Windows 桌面/游戏/驱动   -> MSVC（PDB、/EH、MS-STL、VS 集成）
-//   跨平台库(对外发布)          -> 三套全验 + extern "C" ABI 边界
+// 科学计算/超算/Linux 服务   -> GCC（libstdc++，最长历史、最优数值代码）
+// macOS/iOS/IDE 体验/静态分析 -> Clang（clangd、最佳诊断、libc++）
+// 纯 Windows 桌面/游戏/驱动   -> MSVC（PDB、/EH、MS-STL、VS 集成）
+// 跨平台库(对外发布)          -> 三套全验 + extern "C" ABI 边界
 int choose() { return 0; }
 ```
 
 > **示例 62** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 ```cpp
 // ⑲ 团队工具链统一原则：锁版本！
-//   例：CMakePresets.json 固定 compiler + version，避免"我机器能编"问题
-//   { "cacheVariables": { "CMAKE_CXX_COMPILER": "g++-13" } }
+// 例：CMakePresets.json 固定 compiler + version，避免"我机器能编"问题
+// { "cacheVariables": { "CMAKE_CXX_COMPILER": "g++-13" } }
 ```
 
 - `[经验]`：CI 同时跑 GCC + Clang 可互补抓警告/UB；但**发布二进制只认一种编译器**，避免混链不同 STL 引发的 ODR/ABI 灾难。
@@ -900,9 +900,9 @@ int choose() { return 0; }
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 三巨头最小可用命令速查
-//   GCC     : g++ -std=c++23 -O2 -Wall -Wextra main.cpp -o main
-//   Clang   : clang++ -std=c++23 -O2 -Wall -Wextra main.cpp -o main
-//   MSVC    : cl /std:c++20 /O2 /EHsc /W4 main.cpp /Fe:main.exe
+// GCC     : g++ -std=c++23 -O2 -Wall -Wextra main.cpp -o main
+// Clang   : clang++ -std=c++23 -O2 -Wall -Wextra main.cpp -o main
+// MSVC    : cl /std:c++20 /O2 /EHsc /W4 main.cpp /Fe:main.exe
 int main() { return 0; }
 ```
 
@@ -922,11 +922,11 @@ int main() { return 0; }
 > **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 取证命令速查（本机 GCC13 + c++filt 已验证可用）
-//   g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm   // 取真实汇编
-//   c++filt _Z1fi                                     // -> f(int)
-//   g++ -fdump-tree-gimple x.cpp                      // 看 GIMPLE
-//   g++ -E x.cpp | tail                               // 看预处理结果
-//   readelf -s x.o  /  objdump -t x.o                 // 看符号表(需 ELF 工具)
+// g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm   // 取真实汇编
+// c++filt _Z1fi                                     // -> f(int)
+// g++ -fdump-tree-gimple x.cpp                      // 看 GIMPLE
+// g++ -E x.cpp | tail                               // 看预处理结果
+// readelf -s x.o  /  objdump -t x.o                 // 看符号表(需 ELF 工具)
 int trivia(int x) { return x; }
 ```
 
@@ -1250,7 +1250,7 @@ int main() {
 ```cpp
 #include <iostream>
 
-extern "C" void old_init() { /* 真实工程中由 C 静态库 libold.a 提供，此处占位以便独立编译 */
+extern "C" void old_init() { // 真实工程中由 C 静态库 libold.a 提供，此处占位以便独立编译
 }
 
 int main() {

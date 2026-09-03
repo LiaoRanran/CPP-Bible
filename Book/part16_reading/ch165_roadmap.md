@@ -55,7 +55,7 @@ C++ 的版本演进本身，就是一份"学习路线困惑史"。1998 年 C++98
 // 验证本章示例的编译器（本机已取证）
 // C:/Qt/Tools/mingw1310_64/bin/g++.exe  版本 13.1.0
 // 统一编译命令：
-//   g++ -std=c++23 -O2 -Wall -Wextra _ch165_xxx.cpp -o _ch165_xxx
+// g++ -std=c++23 -O2 -Wall -Wextra _ch165_xxx.cpp -o _ch165_xxx
 ```
 
 ## ① 概述：为什么需要路线图
@@ -75,7 +75,7 @@ enum SummerKPI { ThreadPool=1, MemPool=2, Logger=4, JsonParser=8, NetServer=16 }
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么需要路线图
 ```cpp
 // 每天最小产出：1 个能跑的 .cpp
-int main() { /* 今天写了什么，能编译运行吗？ */ return 0; }
+int main() { // 今天写了什么，能编译运行吗？
 ```
 
 ## ② C++ 版本演进（一句话每版必学点）
@@ -91,7 +91,7 @@ int main() { /* 今天写了什么，能编译运行吗？ */ return 0; }
 auto x = 5;                       // 类型推导
 std::vector<int> v{1,2,3};        // 统一初始化
 std::shared_ptr<int> p = std::make_shared<int>(1); // 智能指针
-std::thread t([]{ /*...*/ }); t.join();            // 线程
+std::thread t([]{ // ...
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 版本演进（一句话每版必学点）
@@ -253,7 +253,7 @@ bool decode(const std::vector<uint8_t>& buf, size_t& pos, std::string& out);
 ```cpp
 // 项目名：单线程 Reactor 回声服务器（epoll / IOCP）
 // 关键文件落点：见第163章 网络（事件循环 + 非阻塞 socket）
-class Reactor { /* add_event / del_event / loop */ };
+class Reactor { // add_event / del_event / loop
 ```
 
 务实建议：先读懂 `muduo`（陈硕）的 `EventLoop` 一处实现，再自己写一版迷你回声服务器，工时约 1 周。
@@ -292,7 +292,7 @@ public:
 ```cpp
 #include <vector>
 // 错误示范：面向对象，缓存不友好
-struct Entity { float x,y,z; int hp; /* 散落内存 */ };
+struct Entity { float x,y,z; int hp; // 散落内存
 std::vector<Entity> ents;          // 遍历时大量 cache miss
 
 // 正确示范：结构数组(SoA)
@@ -325,10 +325,10 @@ struct Velocity { float dx, dy; };
 // 行号：vector::reserve / push_back 扩容段
 //
 // 关键判断（伪代码，对应源码逻辑）：
-//   if (size_ == capacity_) {
-//       size_t n = capacity_ ? capacity_ * 2 : 1;
-//       reallocate(n);   // 分配新缓冲、搬移、释放旧缓冲
-//   }
+// if (size_ == capacity_) {
+// size_t n = capacity_ ? capacity_ * 2 : 1;
+// reallocate(n);   // 分配新缓冲、搬移、释放旧缓冲
+// }
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器 / 库开发方向（读源码路径）
@@ -340,7 +340,7 @@ class MyVec {
     T* data_ = nullptr; size_t size_ = 0, cap_ = 0;
 public:
     void push_back(const T& v) {
-        if (size_ == cap_) { cap_ = cap_ ? cap_*2 : 1; /* realloc */ }
+        if (size_ == cap_) { cap_ = cap_ ? cap_*2 : 1; // realloc
         data_[size_++] = v;
     }
 };
@@ -384,7 +384,7 @@ struct Der : Base { int b; };
 ```cpp
 // 项目1：线程池（见第159章 线程池，文件 Examples/_ch165_threadpool.cpp）
 // 工时：3 天。落点：mutex + condition_variable + 任务队列
-ThreadPool pool(4); pool.submit([]{ /* job */ });
+ThreadPool pool(4); pool.submit([]{ // job
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 必做项目
@@ -479,11 +479,11 @@ delete[] a;
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 社区与开源
 ```cpp
 // GitHub 搜索语法（直接可用）
-//   language:C++ stars:>5000 topic:networking
-//   "thread pool" language:C++
+// language:C++ stars:>5000 topic:networking
+// "thread pool" language:C++
 // 推荐仓库（搜名即得）：
-//   facebook/folly, google/abseil-cpp, boostorg,
-//   chenshuo/muduo, entropia/tinyhttpd
+// facebook/folly, google/abseil-cpp, boostorg,
+// chenshuo/muduo, entropia/tinyhttpd
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 社区与开源
@@ -582,7 +582,7 @@ bool can_write_project = (leetcode_count > 300) && (projects == 0); // 仍 false
 #include <memory>
 // 误区2：把 C++ 当 C 用，全程裸指针 + malloc
 // 现实：工程用 RAII + 智能指针防泄漏，裸指针只在底层接口出现
-void bad() { int* p = (int*)malloc(sizeof(int)); /* 易忘 free */ }
+void bad() { int* p = (int*)malloc(sizeof(int)); // 易忘 free
 void good(){ auto p = std::make_unique<int>(1); } // 离开作用域自动释放
 ```
 
@@ -628,31 +628,31 @@ struct Day { bool read, code, test, note; };
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
 ```cpp
 // B站 UP 主（搜名字）
-//   侯捷：C++ 面向对象/STL/内存模型系列（配第10节读书）
-//   linbai：现代 C++ 实战
-//   程序喵大人：C++ 面试向
-//   极客时间《C++ 实战训练营》(付费,按需)
+// 侯捷：C++ 面向对象/STL/内存模型系列（配第10节读书）
+// linbai：现代 C++ 实战
+// 程序喵大人：C++ 面试向
+// 极客时间《C++ 实战训练营》(付费,按需)
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
 ```cpp
 // 书籍（见第⑩节顺序）
-//   C++ Primer / Effective C++ / STL源码剖析 / 深度探索C++对象模型
+// C++ Primer / Effective C++ / STL源码剖析 / 深度探索C++对象模型
 // 在线：en.cppreference.com（语法权威查）、zh.cppreference.com（中文）
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
 ```cpp
 // 练手项目名（直接搜）
-//   muduo（网络）、tinyhttpd（HTTP）、redis（数据结构/网络）
-//   STM32F103 裸机→FreeRTOS 例程（嵌入式）
-//   本机示例集：Examples/_ch165_*.cpp（14 个已验证可编译）
+// muduo（网络）、tinyhttpd（HTTP）、redis（数据结构/网络）
+// STM32F103 裸机→FreeRTOS 例程（嵌入式）
+// 本机示例集：Examples/_ch165_*.cpp（14 个已验证可编译）
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
 ```cpp
 // 求职/刷题
-//   LeetCode（算法）、牛客网（C++ 面经）、GitHub trending(C++)
+// LeetCode（算法）、牛客网（C++ 面经）、GitHub trending(C++)
 ```
 
 ## ⑳ 小结

@@ -1813,10 +1813,10 @@ int main() {
 #include <iostream>
 #include <vector>
 struct Cold { int meta; };            // 多个冷字段
-struct Entity { int hit; Cold cold; };// 重构前：热冷同体
+struct Entity { int hit; Cold cold; }; // 重构前：热冷同体
 // 重构后：
-//   std::vector<int>  hits(N);       // 热数组，遍历只碰 hit
-//   std::vector<Cold> colds(N);      // 冷数组，按需访问
+// std::vector<int>  hits(N);       // 热数组，遍历只碰 hit
+// std::vector<Cold> colds(N);      // 冷数组，按需访问
 int main() {
     const int N = 1 << 20;
     std::vector<Entity> e(N);

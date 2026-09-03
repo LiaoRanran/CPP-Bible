@@ -442,7 +442,7 @@ template<typename T> struct Wrapper { T v; };
 int main() {
     Wrapper<traits::tag> w{};
     tune(w.v);                  // ADL: Wrapper<traits::tag> 的实参 traits::tag
-                               //      → 关联命名空间 traits → 找到 traits::tune
+                               // → 关联命名空间 traits → 找到 traits::tune
     return 0;
 }
 ```
@@ -501,7 +501,7 @@ namespace derived_ns {
 int main() {
     derived_ns::Derived obj;
     dump(obj);          // ADL: 实参 Derived → 关联类含基类 base_ns::Base
-                        //      → 关联命名空间 base_ns → 找到 base_ns::dump
+                        // → 关联命名空间 base_ns → 找到 base_ns::dump
     return 0;
 }
 ```
@@ -803,7 +803,7 @@ int main() {
     process(w);      // ADL: 找到 thirdparty::process(Wrapper) + (int)
     process(7);      // 注意: 即使没有 using，int 版本也被 ADL 拉入（因无实参属 thirdparty?）
                     // 实际: process(7) 实参 int 是基础类型，无关联命名空间 → 找不到 thirdparty::process(int)
-                    //       此处会编译失败（除非全局有 process(int)）。证明 ADL 受类型约束。
+                    // 此处会编译失败（除非全局有 process(int)）。证明 ADL 受类型约束。
     return 0;
 }
 // 注: 上例 process(7) 行会编译错误——恰说明 ADL 严格受"实参类型所属命名空间"约束。
@@ -925,12 +925,12 @@ int main() { std::printf("%s\n", old::n(old::A)); return 0; }
 ```cpp
 // prog_24_module_demo.cpp  —— C++20 模块（需 -std=c++20 且编译器支持模块）
 // 真实模块需分文件编译（接口单元 math.cppm + 使用单元 main.cpp），结构示意：
-//   // 文件 math.cppm（接口单元）
-//   export module math;
-//   export namespace math { inline int add(int a, int b) { return a + b; } }
-//   // 文件 main.cpp（使用单元）
-//   import math;
-//   int main(){ return math::add(1,2); }
+//// 文件 math.cppm（接口单元）
+// export module math;
+// export namespace math { inline int add(int a, int b) { return a + b; } }
+//// 文件 main.cpp（使用单元）
+// import math;
+// int main(){ return math::add(1,2); }
 // 注：分文件模块编译见 ch118/ch119。下面给出“等价可运行”的命名空间版本：
 #include <cstdio>
 namespace math { inline int add(int a, int b) { return a + b; } }
@@ -955,8 +955,8 @@ int main() {
 ```cpp
 // prog_25_odr_trap.cpp  —— 头文件中定义非 inline 函数于命名空间 → 多 TU 冲突
 // lib.h:
-//   namespace lib { int f(){ return 1; } }   // 非 inline → 每个包含该头文件的 TU 都定义 f
-//                                            // 多 TU 链接 → ODR 违规 (multiple definition)
+// namespace lib { int f(){ return 1; } }   // 非 inline → 每个包含该头文件的 TU 都定义 f
+//// 多 TU 链接 → ODR 违规 (multiple definition)
 // 正确做法：加 inline 或放进匿名 NS/static，或只声明在头、定义在单一 .cpp
 #include <cstdio>
 namespace lib {

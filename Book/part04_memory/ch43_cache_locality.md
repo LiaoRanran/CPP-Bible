@@ -1481,7 +1481,7 @@ int main() {
 #include <cstddef>
 #include <cstdint>   // std::uintptr_t
 // 平台差异：Windows CRT（MSVC 与 MinGW）不提供 C11 std::aligned_alloc，
-//           改用 _aligned_malloc / _aligned_free（实参顺序与释放函数都不同）。
+// 改用 _aligned_malloc / _aligned_free（实参顺序与释放函数都不同）。
 #if defined(_WIN32)
   #include <malloc.h>
   static void* aa(std::size_t align, std::size_t size) { return _aligned_malloc(size, align); }

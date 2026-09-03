@@ -149,16 +149,16 @@ int main() {
 ```cpp
 // ❌ 反例：基类在前，派生类永远命中不到
 try { may_throw(); }
-catch (const std::exception&) { /* 截胡 */ }
-catch (const std::runtime_error&) { /* 死代码 */ }
+catch (const std::exception&) { // 截胡
+catch (const std::runtime_error&) { // 死代码
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常机制
 ```cpp
 // ✅ 正例：最派生优先
 try { may_throw(); }
-catch (const std::runtime_error&) { /* 具体 */ }
-catch (const std::exception&)     { /* 兜底 */ }
+catch (const std::runtime_error&) { // 具体
+catch (const std::exception&)     { // 兜底
 ```
 
 `catch` 的形参用 `const T&` 而非值：避免切片（slicing）且避免额外拷贝。需要重新抛出时写无操作数的 `throw;`（保留原对象类型与信息）。
@@ -274,13 +274,13 @@ int main() {
 #include <string>
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/system_error
 // 行号：106
-//   class error_category { ... };           // 类别基类
+// class error_category { ... };           // 类别基类
 // 行号：118
-//   virtual const char* name() const noexcept = 0;     // 类别名（纯虚）
+// virtual const char* name() const noexcept = 0;     // 类别名（纯虚）
 // 行号：134
-//   virtual std::string message(int) const = 0;        // 人类可读信息（纯虚）
+// virtual std::string message(int) const = 0;        // 人类可读信息（纯虚）
 // 行号：147
-//   virtual error_condition default_error_condition(int) const noexcept;  // 归一到可移植条件
+// virtual error_condition default_error_condition(int) const noexcept;  // 归一到可移植条件
 ```
 
 自定义类别只需覆写 `name()`、`message()`，即可把任意枚举接入 `std::error_code` 体系（完整可编译示例见 `Examples/_ch146_errorcode.cpp`，本机运行输出 `db:1 connection timeout`）。
@@ -532,9 +532,9 @@ void load() { throw ParseError("missing [server]"); }
 ```cpp
 // 捕获层次：派生在前
 try { load(); }
-catch (const ParseError& e)    { /* 具体 */ }
-catch (const ConfigError& e)   { /* 父类 */ }
-catch (const std::exception& e){ /* 通用 */ }
+catch (const ParseError& e)    { // 具体
+catch (const ConfigError& e)   { // 父类
+catch (const std::exception& e){ // 通用
 ```
 
 `[经验]` 异常类型用**分层继承**而非扁平枚举，能让调用方按"可恢复粒度"捕获；但层次不宜过深（>3 层即过度设计）。给异常加上附加上下文字段（错误码、位置）提升可诊断性。
@@ -725,14 +725,14 @@ error=not an int: oops
 ```cpp
 // ❌ 反例 1：空 catch 吞掉一切
 try { commit(); }
-catch (...) { /* 什么都不做：故障消失，事务状态未知 */ }
+catch (...) { // 什么都不做：故障消失，事务状态未知
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（吞异常/空 catch）
 ```cpp
 // ❌ 反例 2：catch 后忽略，继续执行（逻辑已不一致）
 try { load_config(); }
-catch (const std::exception&) { /* 继续用默认配置？还是已损坏？ */ }
+catch (const std::exception&) { // 继续用默认配置？还是已损坏？
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（吞异常/空 catch）
@@ -1279,7 +1279,7 @@ std::error_code open_file(const std::string&) {
     return std::make_error_code(std::errc::no_such_file_or_directory);  // 示意失败
 }
 int main() {
-    if (auto ec = open_file("x"); ec) { /* 跨 ABI 安全：仅传整数码 + 类别 */ }
+    if (auto ec = open_file("x"); ec) { // 跨 ABI 安全：仅传整数码 + 类别
 }
 ```
 

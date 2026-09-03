@@ -1166,7 +1166,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 struct S { int m; };
 int f() {
     // 非标准扩展: 在成员函数外用 "S::m" 取成员类型在非标准模式被容忍,
-    // /permissive- 下按标准拒绝 -> 逼你写明确、无歧义的合法代码
+    ///permissive- 下按标准拒绝 -> 逼你写明确、无歧义的合法代码
     return sizeof(S::m);          // C++11 起合法, 但宽松模式可能放过更多隐患写法
 }
 ```

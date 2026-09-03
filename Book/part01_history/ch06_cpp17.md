@@ -882,7 +882,7 @@ int main() {
     std::cout << "key=[" << key << "] val=[" << val << "]\n";
 
     // 反例（勿学）：std::string_view bad = std::string("tmp");
-    //   → 指向的临时 string 立即销毁，bad 悬垂，读它是 UB
+    // → 指向的临时 string 立即销毁，bad 悬垂，读它是 UB
     std::cout << "string_view 不拥有数据，必须保证底层存活。\n";
 }
 ```

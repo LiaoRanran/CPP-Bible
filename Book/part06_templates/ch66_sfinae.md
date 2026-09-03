@@ -513,9 +513,9 @@ void f(T&&) {}            // f(0) 时 T=int → OK；f(ci)（const int&）时 T=
 // 最佳实践：互斥且完备的一对重载，注释说明分工
 // 整型走 A，非整型（浮点/类）走 B；二者覆盖全集且无交集
 template <typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
-auto dispatch(T) { /* 整型 */ }
+auto dispatch(T) { // 整型
 template <typename T, std::enable_if_t<!std::is_integral_v<T>, int> = 0>
-auto dispatch(T) { /* 其余 */ }
+auto dispatch(T) { // 其余
 ```
 
 ## ⑲ 性能（编译期 / 运行期）

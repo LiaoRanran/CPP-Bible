@@ -620,12 +620,12 @@ int main() {
 #include <cstddef>
 // ⑬-1a libstdc++ 源码摘录（文件：span，行号：81-99）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   struct _ExtentStorage {
-//     _S_extent() noexcept { return this->_M_extent_value; }   // 动态 extent 读取
-//     : _M_extent_value(__extent) { }                          // 成员初始化列表
-//     _M_extent() const noexcept { return this->_M_extent_value; }
-//     size_t _M_extent_value;                                  // 仅动态 extent 时存在
-//   };
+// struct _ExtentStorage {
+// _S_extent() noexcept { return this->_M_extent_value; }   // 动态 extent 读取
+// : _M_extent_value(__extent) { }                          // 成员初始化列表
+// _M_extent() const noexcept { return this->_M_extent_value; }
+// size_t _M_extent_value;                                  // 仅动态 extent 时存在
+// };
 // 静态 extent 时该结构为空，_M_extent() 直接返回编译期常量，对象不占此字段。
 int main() { return 0; }
 ```
@@ -638,15 +638,15 @@ int main() { return 0; }
 ```cpp
 // ⑬-2a libstdc++ 源码摘录（文件：span，行号：153 / 161 / 189 / 212）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // 行号 153：nullptr 构造
-//   : _M_ptr(nullptr), _M_extent(0)
-//   // 行号 161：指针 + 计数构造
-//   : _M_ptr(std::to_address(__first)), _M_extent(__count)
-//   // 行号 189：C 数组构造（阻止意外推导）
-//   span(type_identity_t<element_type> (&__arr)[_ArrayExtent]) noexcept
-//     : span(static_cast<pointer>(__arr.data()), _ArrayExtent)
-//   // 行号 212：range 构造，requires contiguous_range + borrowed_range
-//   : _M_extent(__s.size()), _M_ptr(__s.data())
+//// 行号 153：nullptr 构造
+// : _M_ptr(nullptr), _M_extent(0)
+//// 行号 161：指针 + 计数构造
+// : _M_ptr(std::to_address(__first)), _M_extent(__count)
+//// 行号 189：C 数组构造（阻止意外推导）
+// span(type_identity_t<element_type> (&__arr)[_ArrayExtent]) noexcept
+// : span(static_cast<pointer>(__arr.data()), _ArrayExtent)
+//// 行号 212：range 构造，requires contiguous_range + borrowed_range
+// : _M_extent(__s.size()), _M_ptr(__s.data())
 int main() { return 0; }
 ```
 
@@ -658,18 +658,18 @@ int main() { return 0; }
 ```cpp
 // ⑬-3a libstdc++ 源码摘录（文件：span，行号：252-253 / 280-283 / 287-288 / 341-344 / 360-363 / 399）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // 行号 252-253：size()
-//   size() const noexcept { return this->_M_extent._M_extent(); }
-//   // 行号 280-283：operator[]
-//   operator[](size_type __idx) const noexcept
-//   { __glibcxx_assert(__idx < size()); return *(this->_M_ptr + __idx); }
-//   // 行号 287-288：data()
-//   data() const noexcept { return this->_M_ptr; }
-//   // 行号 341-344：first(count)
-//   first(size_type __count) const noexcept
-//   { __glibcxx_assert(__count <= size()); return { this->data(), __count }; }
-//   // 行号 399：subspan(offset, count)
-//   subspan(size_type __offset, size_type __count = dynamic_extent) const noexcept
+//// 行号 252-253：size()
+// size() const noexcept { return this->_M_extent._M_extent(); }
+//// 行号 280-283：operator[]
+// operator[](size_type __idx) const noexcept
+// { __glibcxx_assert(__idx < size()); return *(this->_M_ptr + __idx); }
+//// 行号 287-288：data()
+// data() const noexcept { return this->_M_ptr; }
+//// 行号 341-344：first(count)
+// first(size_type __count) const noexcept
+// { __glibcxx_assert(__count <= size()); return { this->data(), __count }; }
+//// 行号 399：subspan(offset, count)
+// subspan(size_type __offset, size_type __count = dynamic_extent) const noexcept
 int main() { return 0; }
 ```
 

@@ -290,7 +290,7 @@ void bad(A* p) {
 ```cpp
 // ✅ 修复：用虚函数做分派，彻底不依赖 RTTI
 struct A { virtual ~A() = default; virtual void dispatch() = 0; };
-struct B : A { void dispatch() override { /* B 的逻辑 */ } };
+struct B : A { void dispatch() override { // B 的逻辑
 void good(A* p) { p->dispatch(); }   // 走虚表，无需 RTTI，体积更小
 ```
 
@@ -321,7 +321,7 @@ void demo_c() {
 void demo_d() {
     int* p = nullptr;
     try { (void)typeid(*p); }                 // ❌ 抛 bad_typeid
-    catch (const std::bad_typeid&) { /* 处理 */ }
+    catch (const std::bad_typeid&) { // 处理
 }
 ```
 
@@ -347,7 +347,7 @@ struct Der : Base {};
 struct Other : Base {};
 void demo_f(Base& b) {
     try { Der& d = dynamic_cast<Der&>(b); (void)d; }
-    catch (const std::bad_cast&) { /* 失败处理 */ }
+    catch (const std::bad_cast&) { // 失败处理
 }
 ```
 
@@ -469,7 +469,7 @@ Der* manual_down(Base* p) { return p->kind() == 1 ? static_cast<Der*>(p) : nullp
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
 void demo_p(Base& b) {
     try { (void)dynamic_cast<Der&>(b); }
-    catch (std::bad_cast&) { /* 引用失败 */ }
+    catch (std::bad_cast&) { // 引用失败
 }
 ```
 
@@ -492,8 +492,8 @@ void demo_q() {
 #include <type_traits>
 template<class T>
 void process(T v) {
-    if constexpr (std::is_integral_v<T>) { /* 整型分支，编译期 */ }
-    else { /* 其他 */ (void)v; }
+    if constexpr (std::is_integral_v<T>) { // 整型分支，编译期
+    else { // 其他
 }
 ```
 
@@ -535,7 +535,7 @@ public:
 ```cpp
 // libsupc++ 中 __dynamic_cast 的语义（节选）
 // 入参：__src=源对象指针, __dst_type=目标 type_info,
-//       __static_type=静态源 type_info, __flags=转换种类
+// __static_type=静态源 type_info, __flags=转换种类
 // 行为：沿继承树自底向上比对 type_info，命中则按 this 调整量返回目标子对象指针
 extern "C" void* __dynamic_cast(const void* __src,
                                 const __class_type_info* __dst_type,
@@ -799,7 +799,7 @@ A a; dynamic_cast<B*>(&a);   // 编译错误：A 非多态（无虚函数）
 // ✅ 多态下行，判空
 struct A { virtual ~A()=default; }; struct B : A {};
 A* p = new B;
-if (B* b = dynamic_cast<B*>(p)) { /* 安全使用 b */ }
+if (B* b = dynamic_cast<B*>(p)) { // 安全使用 b
 ```
 
 【例 1】上行 `dynamic_cast<Base*>(derPtr)` 永远成功且近乎零成本。

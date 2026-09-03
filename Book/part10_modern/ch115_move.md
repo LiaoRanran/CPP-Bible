@@ -582,11 +582,11 @@ int main() {
 #include <utility>
 // ⑬-1a libstdc++ 源码摘录（文件：bits/move.h，行号：104）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   constexpr typename remove_reference<_Tp>::type&&
-//   move(_Tp&& __t) noexcept {        // 行号 104
-//     return static_cast<typename remove_reference<_Tp>::type&&>(__t);
-//   }
-//   即：std::move 只是 static_cast<T&&>，编译期转型，零运行期代码。
+// constexpr typename remove_reference<_Tp>::type&&
+// move(_Tp&& __t) noexcept {        // 行号 104
+// return static_cast<typename remove_reference<_Tp>::type&&>(__t);
+// }
+// 即：std::move 只是 static_cast<T&&>，编译期转型，零运行期代码。
 int main() { return 0; }
 ```
 
@@ -597,11 +597,11 @@ int main() { return 0; }
 #include <utility>
 // ⑬-2a libstdc++ 源码摘录（文件：bits/move.h，行号：125）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   template<typename _Tp>
-//   constexpr typename conditional<                       // 行号 124-125
-//     __move_if_noexcept_cond<_Tp>::value, const _Tp&, _Tp&&>::type
-//   move_if_noexcept(_Tp& __x) noexcept { return std::move(__x); }
-//   若 _Tp 的移动构造 noexcept -> 返回 T&&（移动）；否则返回 const T&（拷贝）。
+// template<typename _Tp>
+// constexpr typename conditional<                       // 行号 124-125
+// __move_if_noexcept_cond<_Tp>::value, const _Tp&, _Tp&&>::type
+// move_if_noexcept(_Tp& __x) noexcept { return std::move(__x); }
+// 若 _Tp 的移动构造 noexcept -> 返回 T&&（移动）；否则返回 const T&（拷贝）。
 int main() { return 0; }
 ```
 
@@ -611,10 +611,10 @@ int main() { return 0; }
 ```cpp
 // ⑬-3a libstdc++ 源码摘录（文件：bits/stl_vector.h，行号：615 / 761）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // 移动构造（行号 615）：默认实现，仅复制三个指针（_M_start/_M_finish/_M_end_of_storage）
-//   vector(vector&&) noexcept = default;
-//   // 移动赋值（行号 761）：noexcept 取决于分配器是否不抛移动
-//   operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move());
+//// 移动构造（行号 615）：默认实现，仅复制三个指针（_M_start/_M_finish/_M_end_of_storage）
+// vector(vector&&) noexcept = default;
+//// 移动赋值（行号 761）：noexcept 取决于分配器是否不抛移动
+// operator=(vector&& __x) noexcept(_Alloc_traits::_S_nothrow_move());
 int main() { return 0; }
 ```
 

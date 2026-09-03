@@ -367,7 +367,7 @@ void thread_b() {
 // ⑩ 若把 store/load 改成 relaxed，两个线程都可能跳过对方的检查 -> 双重进入（bug）
 void thread_a_bad() {
     flag0.store(1, std::memory_order_relaxed);            // ⑩ 错误示范
-    if (flag1.load(std::memory_order_relaxed) == 0) { /* 可能与 B 同时进入 */ }
+    if (flag1.load(std::memory_order_relaxed) == 0) { // 可能与 B 同时进入
 }
 ```
 
@@ -443,7 +443,7 @@ void consumer() {
 std::atomic<bool> go{false};
 void wait_go() {
     std::atomic_thread_fence(std::memory_order_seq_cst);
-    while (!go.load(std::memory_order_relaxed)) { /* spin */ }
+    while (!go.load(std::memory_order_relaxed)) { // spin
 }
 ```
 
@@ -533,7 +533,7 @@ void producer_fixed() {
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存模型对应的 C++ 标准条款
 ```cpp
 // ⑮ memory_order 枚举（节选自 <atomic> 概念，C++11 起）
-enum class memory_order : /* 未指定 */ {
+enum class memory_order : // 未指定
     relaxed, consume, acquire, release, acq_rel, seq_cst
 };
 ```
@@ -561,7 +561,7 @@ void producer() {
     ready.store(true, std::memory_order_relaxed); // ⑯ 错误：relaxed 不发布 payload
 }
 void consumer() {
-    while (!ready.load(std::memory_order_relaxed)) { /* spin */ } // ⑯
+    while (!ready.load(std::memory_order_relaxed)) { // spin
     int r = payload;                              // ⑯ 可能读到 0（数据写未被同步！）
     (void)r;
 }
@@ -575,7 +575,7 @@ void producer_ok() {
     ready.store(true, std::memory_order_release); // ⑯ release 发布 payload
 }
 void consumer_ok() {
-    while (!ready.load(std::memory_order_acquire)) { /* spin */ } // ⑯ acquire 获取
+    while (!ready.load(std::memory_order_acquire)) { // spin
     int r = payload;                              // ⑯ 现在保证读到 42
     (void)r;
 }
@@ -647,20 +647,20 @@ bool is_done() { return done.load(); }      // ⑱ 默认 seq_cst
 > **示例 34** [难度 ★★★★☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 技巧1：用 ThreadSanitizer 编译运行，捕获数据竞争与缺失同步
-//   g++ -std=c++23 -O1 -g -fsanitize=thread _ch108_misuse.cpp -o misuse_tsan
-//   ./misuse_tsan   -> 报告 ready/payload 之间的 race（relaxed 未建立 happens-before）
+// g++ -std=c++23 -O1 -g -fsanitize=thread _ch108_misuse.cpp -o misuse_tsan
+// ./misuse_tsan   -> 报告 ready/payload 之间的 race（relaxed 未建立 happens-before）
 ```
 
 > **示例 35** [难度 ★★☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 技巧2：把可疑原子全部升回 seq_cst，若 bug 消失则证明是内存序问题
-//   用 sed/宏把 relaxed/acquire/release 统一替换为 memory_order_seq_cst 做对照实验
+// 用 sed/宏把 relaxed/acquire/release 统一替换为 memory_order_seq_cst 做对照实验
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 技巧3：在弱内存平台或 QEMU(ARM) 上复跑；x86 上“好好的”在 ARM 常立刻出错
-//   交叉编译示意：aarch64-linux-gnu-g++ -std=c++23 -O2 -S -masm=intel ...
+// 交叉编译示意：aarch64-linux-gnu-g++ -std=c++23 -O2 -S -masm=intel ...
 ```
 
 > **示例 37** [难度 ★★☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
@@ -711,10 +711,10 @@ int main() {
 > **示例 38** [难度 ★★☆☆☆] [主题：速查表（6 种序对照） <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 一图流：按“是否需要跨线程同步”选序
-//   只需原子性 ............ relaxed
-//   发布/获取一对数据 ..... release + acquire
-//   读-改-写需同步 ........ acq_rel
-//   要所有线程看到一致总序 . seq_cst（默认，最省心）
+// 只需原子性 ............ relaxed
+// 发布/获取一对数据 ..... release + acquire
+// 读-改-写需同步 ........ acq_rel
+// 要所有线程看到一致总序 . seq_cst（默认，最省心）
 ```
 
 - `[标准]`：六种序从弱到强为 `relaxed < consume(弃用) < acquire/release < acq_rel < seq_cst`。
@@ -983,7 +983,7 @@ int main() {
     std::atomic<bool> ready{false};
     std::thread producer([&]{
         data = 42;                                   // ① 普通写
-        ready.store(true, std::memory_order_release);// ② release：① 不会重排到 ② 之后
+        ready.store(true, std::memory_order_release); // ② release：① 不会重排到 ② 之后
     });
     std::thread consumer([&]{
         while (!ready.load(std::memory_order_acquire)) {}  // ③ acquire

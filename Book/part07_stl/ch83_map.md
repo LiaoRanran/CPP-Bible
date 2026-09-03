@@ -566,13 +566,13 @@ int main() {
 ```cpp
 // ⑬-1a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：99-109）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   enum _Rb_tree_color { _S_red = false, _S_black = true };   // 行号 99
-//   struct _Rb_tree_node_base {                                // 行号 101
-//     _Rb_tree_color _M_color;   // 行号 106
-//     _Base_ptr      _M_parent;  // 行号 107
-//     _Base_ptr      _M_left;    // 行号 108
-//     _Base_ptr      _M_right;   // 行号 109
-//   };
+// enum _Rb_tree_color { _S_red = false, _S_black = true };   // 行号 99
+// struct _Rb_tree_node_base {                                // 行号 101
+// _Rb_tree_color _M_color;   // 行号 106
+// _Base_ptr      _M_parent;  // 行号 107
+// _Base_ptr      _M_left;    // 行号 108
+// _Base_ptr      _M_right;   // 行号 109
+// };
 int main() { return 0; }
 ```
 
@@ -583,22 +583,22 @@ int main() { return 0; }
 #include <utility>
 // ⑬-2a libstdc++ 源码摘录（文件：bits/stl_map.h，行号：502-507 / 721-723 / 966-968）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // operator[]（行号 502）
-//   operator[](const key_type& __k) {
-//     iterator __i = lower_bound(__k);
-//     if (__i == end() || key_comp()(__k, (*__i).first))
-//       __i = insert(__i, value_type(__k, mapped_type()));
-//     return (*__i).second;
-//   }
-//   // try_emplace（行号 721）：仅当 key 不存在才构造 mapped_type，避免拷贝
-//   try_emplace(const key_type& __k, _Args&&... __args) {
-//     iterator __i = lower_bound(__k);
-//     if (__i == end() || key_comp()(__k, (*__i).first))
-//       __i = emplace_hint(__i, std::piecewise_construct,
-//                           std::forward_as_tuple(__k),
-//                           std::forward_as_tuple(std::forward<_Args>(__args)...));
-//     return { __i, __i == end() };
-//   }
+//// operator[]（行号 502）
+// operator[](const key_type& __k) {
+// iterator __i = lower_bound(__k);
+// if (__i == end() || key_comp()(__k, (*__i).first))
+// __i = insert(__i, value_type(__k, mapped_type()));
+// return (*__i).second;
+// }
+//// try_emplace（行号 721）：仅当 key 不存在才构造 mapped_type，避免拷贝
+// try_emplace(const key_type& __k, _Args&&... __args) {
+// iterator __i = lower_bound(__k);
+// if (__i == end() || key_comp()(__k, (*__i).first))
+// __i = emplace_hint(__i, std::piecewise_construct,
+// std::forward_as_tuple(__k),
+// std::forward_as_tuple(std::forward<_Args>(__args)...));
+// return { __i, __i == end() };
+// }
 int main() { return 0; }
 ```
 
@@ -608,16 +608,16 @@ int main() { return 0; }
 ```cpp
 // ⑬-3a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：910 / 1948 / 1980）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // 声明（行号 910）
-//   _Rb_tree<_Key,_Val,...>::_M_lower_bound(_Link_type __x, _Base_ptr __y,
-//                                           const _Key& __k)
-//   // 定义（行号 1948）：树下降，记录"最后一个 <= k 的候选"
-//   while (__x != 0)
-//     if (_M_impl._M_key_compare(_S_key(__x), __k))
-//       __x = _S_right(__x);
-//     else { __y = __x; __x = _S_left(__x); }
-//   return iterator(__y);
-//   // _M_upper_bound 定义在行号 1980，对称地查找第一个 > k 的节点
+//// 声明（行号 910）
+// _Rb_tree<_Key,_Val,...>::_M_lower_bound(_Link_type __x, _Base_ptr __y,
+// const _Key& __k)
+//// 定义（行号 1948）：树下降，记录"最后一个 <= k 的候选"
+// while (__x != 0)
+// if (_M_impl._M_key_compare(_S_key(__x), __k))
+// __x = _S_right(__x);
+// else { __y = __x; __x = _S_left(__x); }
+// return iterator(__y);
+//// _M_upper_bound 定义在行号 1980，对称地查找第一个 > k 的节点
 int main() { return 0; }
 ```
 
@@ -627,13 +627,13 @@ int main() { return 0; }
 ```cpp
 // ⑬-4a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：1532-1548 / 1562 / 1584）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // extract（行号 1532）：把节点从树中摘下，但不释放内存
-//   node_type extract(const_iterator __pos) {
-//     _Link_type __nh = _M_reinterpret_cast(__pos._M_node);
-//     ...
-//   }
-//   // _M_merge_unique（行号 1562）/ _M_merge_equal（行号 1584）：
-//   // 把源树节点整棵平移过来（O(N) 且仅旋转，不拷贝 value）
+//// extract（行号 1532）：把节点从树中摘下，但不释放内存
+// node_type extract(const_iterator __pos) {
+// _Link_type __nh = _M_reinterpret_cast(__pos._M_node);
+// ...
+// }
+//// _M_merge_unique（行号 1562）/ _M_merge_equal（行号 1584）：
+//// 把源树节点整棵平移过来（O(N) 且仅旋转，不拷贝 value）
 int main() { return 0; }
 ```
 
@@ -1139,7 +1139,7 @@ _Z15probe_flat_findRKSt6vectorISt4pairIiiESaIS1_EEi:
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能数据
 ```cpp
 // 附录 E 例：flat_map 读重场景（独立可编译；std::flat_map 即 sorted vector 封装，
-//          本例用 sorted vector + lower_bound 等价演示，免 <flat_map> 依赖）
+// 本例用 sorted vector + lower_bound 等价演示，免 <flat_map> 依赖）
 #include <iostream>
 #include <map>
 #include <vector>

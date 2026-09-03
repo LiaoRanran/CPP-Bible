@@ -355,7 +355,7 @@ void f(Unscoped) { std::puts("Unscoped"); }
 
 int main() {
     f(U0);          // 调用 f(Unscoped)：精确匹配（enum）优先于 int 的隐式转换
-    f(Unscoped(U0));// 显式转 Unscoped，同样调用 f(Unscoped)
+    f(Unscoped(U0)); // 显式转 Unscoped，同样调用 f(Unscoped)
     // f(Scoped::S0); // 错误：scoped 不能隐式转 int
 
     int x = U0;                 // OK：unscoped → int
@@ -691,10 +691,10 @@ int main() {
   // ...
   template<typename _Tp>
     struct is_scoped_enum                  // : public false_type
-    { /* ... */ };
+    { // ...
   template<typename _Tp>
     struct is_scoped_enum<_Tp>             // 偏特化
-    { /* ... */ };
+    { // ...
   template<typename _Tp>
     inline constexpr bool is_scoped_enum_v = is_scoped_enum<_Tp>::value;
 ```
@@ -877,15 +877,15 @@ int main(){
 // enum class Color { Red, Green, Blue };
 //
 // constexpr void dump() {
-//     template for (auto e : std::meta::enumerators_of(^^Color)) {
-//         // e 是枚举符的元对象；std::meta::name_of(e) 是 "Red" 等
-//         // std::meta::value_of(e) 是 Color::Red
-//     }
+// template for (auto e : std::meta::enumerators_of(^^Color)) {
+//// e 是枚举符的元对象；std::meta::name_of(e) 是 "Red" 等
+//// std::meta::value_of(e) 是 Color::Red
+// }
 // }
 //
-// // 现代写法可生成一个名字<->值映射，无需手写：
+//// 现代写法可生成一个名字<->值映射，无需手写：
 // constexpr auto names = std::meta::enumerators_of(^^Color)
-//     | std::views::transform([](auto e){ return std::meta::name_of(e); });
+// | std::views::transform([](auto e){ return std::meta::name_of(e); });
 ```
 
 **[讲解]** 反射把“枚举名字字符串”从**运行时手写表**变成**编译期编译器直接提供**，彻底消除名字数组与枚举定义不同步的 bug。截至 C++23 尚未合并，语法可能在 C++26 调整。
@@ -1143,7 +1143,7 @@ enum class PktFlag : std::uint8_t {
 [[nodiscard]] constexpr PktFlag operator&(PktFlag a, PktFlag b) noexcept {
     return static_cast<PktFlag>(static_cast<std::uint8_t>(a)&static_cast<std::uint8_t>(b));
 }
-struct Packet { PktFlag flags; /* ... */ };
+struct Packet { PktFlag flags; // ...
 bool is_syn_ack(Packet p){ return (p.flags & (PktFlag::SYN|PktFlag::ACK)) == (PktFlag::SYN|PktFlag::ACK); }
 ```
 
@@ -1261,7 +1261,7 @@ int main() { (void)g_min_level; }
 ```cpp
 // 示例 45：匿名枚举常量在头文件多 TU 中的内部链接
 // header.h:
-//   enum { kMax = 256 };   // 每个 TU 独立，互不冲突（内部链接语义）
+// enum { kMax = 256 };   // 每个 TU 独立，互不冲突（内部链接语义）
 // 多个 .cpp 包含不会 ODR 冲突（因为它是值，不是有链接对象）
 ```
 

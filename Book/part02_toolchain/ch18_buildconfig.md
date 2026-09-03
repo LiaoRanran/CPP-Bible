@@ -225,7 +225,7 @@ _Z4mul3i:
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与浮点不严谨
 ```cpp
 // ⑤ -ffast-math 下，编译器可假设 x+x+x == 3*x、0.0 不会是负零、
-//      且 (a+b)+c == a+(b+c)（即忽略舍入误差与 NaN/Inf 规则）
+// 且 (a+b)+c == a+(b+c)（即忽略舍入误差与 NaN/Inf 规则）
 double sum3(double x) { return x + x + x; }     // -ffast-math: 变 3*x
 double dot(const double* a, const double* b, int n) {
     double s = 0.0;
@@ -384,7 +384,7 @@ _Z6driveri:
 #include <cassert>
 double sqrt_pos(double x) {
     assert(x >= 0.0 && "sqrt 定义域非负");
-    return /* ... */ x;          // 真实实现略
+    return // ...
 }
 ```
 
@@ -392,9 +392,9 @@ double sqrt_pos(double x) {
 ```cpp
 #include <vector>
 // ⑨ C++26 方向（契约，语法示意，非 GCC13 默认可用）：
-//   int pop(std::vector<int>& v)
-//       [[ensures r: r == old(v).back()]]   // 后置条件
-//       [[assert: !v.empty()]];             // 断言（契约形式）
+// int pop(std::vector<int>& v)
+// [[ensures r: r == old(v).back()]]   // 后置条件
+// [[assert: !v.empty()]];             // 断言（契约形式）
 // 当前 GCC13 需用 -fcontracts（实验分支）；生产仍用 assert / gsl::Expects。
 ```
 
@@ -593,7 +593,7 @@ int suspect(const std::vector<int>& v) {
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 警告等级 -Wall / -Wext
 ```cpp
 // ⑭ -Wextra 进一步：参数未使用、有符号/无符号细节
-int handler(int /*unused*/) { return 0; }   // -Wunused-parameter（用注释名抑制）
+int handler(int // unused
 ```
 
 ```bash
@@ -631,7 +631,7 @@ g++ -std=c++23 -O1 -g -fsanitize=address -fno-omit-frame-pointer \
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 集成（-fsanitize）
 ```cpp
 // ⑮ UBSan：抓整数溢出、空指针解引用、未对齐等未定义行为
-//   -fsanitize=undefined 编译后，下面的有符号溢出会被标记
+// -fsanitize=undefined 编译后，下面的有符号溢出会被标记
 int overflow(int a, int b) { return a + b; }   // a,b 接近 INT_MAX 时 UB
 ```
 
@@ -706,15 +706,15 @@ int x = *p;                    // UB；-O0 可能"恰好"段错误，-O2 可能�
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
 ```cpp
 // ⑱ 坑3：混用 LTO 与非 LTO 目标文件
-//   g++ -O2 -flto -c a.cpp -o a.o   +   g++ -O2 -c b.cpp -o b.o
-//   g++ -flto a.o b.o -o app        # b.o 是普通 .o，无法被跨 TU 优化
+// g++ -O2 -flto -c a.cpp -o a.o   +   g++ -O2 -c b.cpp -o b.o
+// g++ -flto a.o b.o -o app        # b.o 是普通 .o，无法被跨 TU 优化
 // ✅ 所有参与 LTO 的 TU 都用 -flto 编译
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
 ```cpp
 // ⑱ 坑4：PGO 用错负载，优化器被误导
-//   用单元测试的随机输入做剖面 → 生产真实分布完全不同 → 分支布局变负优化
+// 用单元测试的随机输入做剖面 → 生产真实分布完全不同 → 分支布局变负优化
 // ✅ 用线上回放/典型用户录制做 -fprofile-generate 的输入
 ```
 
@@ -748,9 +748,9 @@ T clamp(T v, T lo, T hi) {
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // ⑲ 实践3：发布保留调试符号的独立副本，分发 strip 版
-//   objcopy --only-keep-debug app app.debug
-//   strip --strip-debug app
-//   objcopy --add-gnu-debuglink=app.debug app
+// objcopy --only-keep-debug app app.debug
+// strip --strip-debug app
+// objcopy --add-gnu-debuglink=app.debug app
 ```
 
 ```bash

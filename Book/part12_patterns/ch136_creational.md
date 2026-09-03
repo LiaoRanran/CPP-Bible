@@ -205,11 +205,11 @@ void client(const ShapeFactory& f) {
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：277
-//   277:  class unique_ptr
-//   278:  {
-//   279:    using pointer = _Ptr<_Tp, _Dp>;
-//   280:    ...
-//   —— default_delete 在析构中调用 ::delete ptr_
+// 277:  class unique_ptr
+// 278:  {
+// 279:    using pointer = _Ptr<_Tp, _Dp>;
+// 280:    ...
+// —— default_delete 在析构中调用 ::delete ptr_
 ```
 
 <span class="badge badge-impl">实现</span> 用 `unique_ptr` 返回工厂产品是现代 C++ 的**强制约定**：它把「何时释放」固化进类型系统，编译器在编译期就禁止所有权歧义。

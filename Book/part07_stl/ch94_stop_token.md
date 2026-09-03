@@ -1257,7 +1257,7 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 #include <thread>
 int main() {
     std::jthread worker([](std::stop_token st) {
-        while (!st.stop_requested()) { /* 工作 */ }
+        while (!st.stop_requested()) { // 工作
     });
     // worker 析构自动 request_stop() + join()
     std::cout << "stopping\n";

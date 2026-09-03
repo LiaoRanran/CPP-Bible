@@ -253,7 +253,7 @@ extern template void f<char>(char);        // 不生成，期望别处提供
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 显式特化：为特定实参提供完全不同实现
-template <> void f<const char*>(const char* s) { /* 字符串专用 */ }
+template <> void f<const char*>(const char* s) { // 字符串专用
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
@@ -440,7 +440,7 @@ template void f<int>(double);              // 错误：实参类型不匹配
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
 ```cpp
 // 本节覆盖：① vector 类模板独立实例化 ② std::max 函数模板推导
-//           ③ std::integral_constant 类模板+NTTP ④ std::pair 类模板
+// ③ std::integral_constant 类模板+NTTP ④ std::pair 类模板
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -475,7 +475,7 @@ int main() {
 > **示例 41** <span class="badge badge-exp">难度 ★★★★☆</span> · 变体
 ```cpp
 // 本节覆盖：① 变量模板 ② 别名模板 ③ 默认模板参数
-//           ④ 模板参数包 ⑤ 概念约束（C++20）
+// ④ 模板参数包 ⑤ 概念约束（C++20）
 #include <iostream>
 #include <vector>
 #include <cstddef>
@@ -488,7 +488,7 @@ template <typename T> using Vec = std::vector<T>;
 
 // ③ 默认模板参数
 template <typename T, typename Alloc = std::allocator<T>>
-struct MyVector { /* ... */ };
+struct MyVector { // ...
 
 // ④ 模板参数包
 template <typename... Ts> struct Tuple { };
@@ -514,11 +514,11 @@ int main() {
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式合集（保留原 5 条要点，并给出可编译实证）
-//  AP1: 为省类型滥用宏——丢类型安全、参数求值两次
-//  AP2: 模板实现藏进 .cpp（非显式实例化）→ 链接期 undefined reference
-//  AP3: 过度模板化——单类型内部工具没必要模板，拖慢编译
-//  AP4: NTTP 用浮点（C++20 前非法），且浮点 NTTP 比较有坑
-//  AP5: 头文件放 template 的非 inline 静态成员 → ODR 多重定义
+// AP1: 为省类型滥用宏——丢类型安全、参数求值两次
+// AP2: 模板实现藏进 .cpp（非显式实例化）→ 链接期 undefined reference
+// AP3: 过度模板化——单类型内部工具没必要模板，拖慢编译
+// AP4: NTTP 用浮点（C++20 前非法），且浮点 NTTP 比较有坑
+// AP5: 头文件放 template 的非 inline 静态成员 → ODR 多重定义
 #include <iostream>
 
 // 实证 AP1：宏 MAX 对参数求值两次，且易出笔误
@@ -537,7 +537,7 @@ int main() {
     return 0;
 }
 // 输出示例：after macro: i=2 j=4 bad=3  (i/j 各增两次)
-//          after lambda: x=2 y=3 ok=2   (x/y 各增一次)
+// after lambda: x=2 y=3 ok=2   (x/y 各增一次)
 ```
 
 ## ⑭ 工业案例
@@ -611,12 +611,12 @@ struct integral_constant {
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点
 ```cpp
 // 易错点合集（保留原 6 条，并给出可编译实证）
-//  1) 模板定义必须对所有实例化可见（通常放头文件）
-//  2) 依赖名前漏 typename / template 报错
-//  3) 推导失败：max(1, 1.0) 两类不同 → 必须显式 max<double>(1, 1.0)
-//  4) 默认实参：只有主模板能给默认模板参数；全特化不能加默认
-//  5) 模板函数不可偏特化（只能全特化或重载）；类模板可偏特化
-//  6) auto 返回类型推导对递归模板有顺序约束
+// 1) 模板定义必须对所有实例化可见（通常放头文件）
+// 2) 依赖名前漏 typename / template 报错
+// 3) 推导失败：max(1, 1.0) 两类不同 → 必须显式 max<double>(1, 1.0)
+// 4) 默认实参：只有主模板能给默认模板参数；全特化不能加默认
+// 5) 模板函数不可偏特化（只能全特化或重载）；类模板可偏特化
+// 6) auto 返回类型推导对递归模板有顺序约束
 #include <iostream>
 #include <algorithm>
 
@@ -638,12 +638,12 @@ int main() {
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · FAQ 问答
 ```cpp
 // FAQ 合集（保留原 5 条问答，并给出"宏 vs 模板"可编译实证）
-//  Q：模板和宏有什么区别？
-//  A：模板有类型检查、作用域、两阶段查找；宏是文本替换，无类型安全。
-//  Q：为什么模板报错这么长？ A：实例化栈 + 多层嵌套（见 ch67）。
-//  Q：头文件放模板实现会拖慢编译吗？ A：会，每 TU 独立实例化；用 extern template 缓解。
-//  Q：NTTP 能用 std::string 吗？ A：C++20 起字符串字面量（具链接期地址）可作 NTTP；std::string 运行时对象不行。
-//  Q：typename 和 class 在模板参数上等价吗？ A：类型参数上完全等价；仅 typename 能用于依赖类型名。
+// Q：模板和宏有什么区别？
+// A：模板有类型检查、作用域、两阶段查找；宏是文本替换，无类型安全。
+// Q：为什么模板报错这么长？ A：实例化栈 + 多层嵌套（见 ch67）。
+// Q：头文件放模板实现会拖慢编译吗？ A：会，每 TU 独立实例化；用 extern template 缓解。
+// Q：NTTP 能用 std::string 吗？ A：C++20 起字符串字面量（具链接期地址）可作 NTTP；std::string 运行时对象不行。
+// Q：typename 和 class 在模板参数上等价吗？ A：类型参数上完全等价；仅 typename 能用于依赖类型名。
 #include <iostream>
 
 // 实证：宏无类型安全——MAX(i++, j++) 对参数求值两次
@@ -667,11 +667,11 @@ int main() {
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践合集（保留原 5 条，并给出可编译实证）
-//  1) 模板声明与定义同放头文件（或 .ipp 包含）
-//  2) 频繁实例化的大模板用 extern template 收敛到单一 TU
-//  3) 受限模板优先用 C++20 Concepts（见 ch67）而非 SFINAE，提升报错可读性
-//  4) 优先 alias template 而非宏拼类型
-//  5) 能用 constexpr / NTTP 在编译期算的，别留到运行期
+// 1) 模板声明与定义同放头文件（或 .ipp 包含）
+// 2) 频繁实例化的大模板用 extern template 收敛到单一 TU
+// 3) 受限模板优先用 C++20 Concepts（见 ch67）而非 SFINAE，提升报错可读性
+// 4) 优先 alias template 而非宏拼类型
+// 5) 能用 constexpr / NTTP 在编译期算的，别留到运行期
 #include <iostream>
 #include <vector>
 

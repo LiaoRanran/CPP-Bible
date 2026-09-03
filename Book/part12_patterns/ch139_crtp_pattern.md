@@ -70,7 +70,7 @@ struct Base {
 };
 
 struct Derived : Base<Derived> {               // 派生类把“自己”喂回基类
-    void impl() { /* ... */ }
+    void impl() { // ...
 };
 ```
 
@@ -98,7 +98,7 @@ CRTP 不是「设计模式教科书」里凭空发明的，而是 C++ 模板系�
 ```cpp
 // 动态多态：分发在运行时，经虚表
 struct Animal { virtual void speak() const = 0; };
-struct Dog : Animal { void speak() const override { /* wang */ } };
+struct Dog : Animal { void speak() const override { // wang
 
 // 静态多态（CRTP）：分发在编译期，经模板实例化
 template <typename D>
@@ -106,7 +106,7 @@ struct Animal2 {
     void speak() const { static_cast<const D*>(this)->speak_impl(); }
 };
 struct Dog2 : Animal2<Dog2> {
-    void speak_impl() const { /* wang, 编译期已确定 */ }
+    void speak_impl() const { // wang, 编译期已确定
 };
 ```
 
@@ -1162,7 +1162,7 @@ template <typename D>
 struct ParticleBase {
     void update() { static_cast<D&>(*this).step(); }   // 编译期绑定，可内联
 };
-struct Fire : ParticleBase<Fire> { void step() { /* 推进火焰 */ } };
+struct Fire : ParticleBase<Fire> { void step() { // 推进火焰
 static_assert(std::is_empty_v<ParticleBase<Fire>>, "EBO: 空基类不占空间");
 int main() { Fire f; f.update(); std::cout << "ok\n"; }
 ```

@@ -230,32 +230,32 @@ int main() {
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析（libstdc++ 逐行）
 ```cpp
 // 文件：bits/stl_iterator_base_types.h   行号：93, 96, 99, 103, 107, 111
-//   93:  struct input_iterator_tag { };
-//   96:  struct output_iterator_tag { };
-//   99:  struct forward_iterator_tag : public input_iterator_tag { };
-//  103:  struct bidirectional_iterator_tag : public forward_iterator_tag { };
-//  107:  struct random_access_iterator_tag : public bidirectional_iterator_tag { };
-//  111:  struct contiguous_iterator_tag : public random_access_iterator_tag { };  // C++20
+// 93:  struct input_iterator_tag { };
+// 96:  struct output_iterator_tag { };
+// 99:  struct forward_iterator_tag : public input_iterator_tag { };
+// 103:  struct bidirectional_iterator_tag : public forward_iterator_tag { };
+// 107:  struct random_access_iterator_tag : public bidirectional_iterator_tag { };
+// 111:  struct contiguous_iterator_tag : public random_access_iterator_tag { };  // C++20
 
 // 文件：bits/stl_iterator_base_types.h   行号：177, 198, 200, 201
-//  177:  struct iterator_traits<_Iter> { ... 萃取 5 个属性 ... };
-//  198:  struct iterator_traits<_Tp*> {                       // 指针特化
-//  200:      using iterator_concept  = contiguous_iterator_tag;
-//  201:      using iterator_category = random_access_iterator_tag;
-//          // 裸指针既是连续迭代器又是随机访问迭代器
-//          };
+// 177:  struct iterator_traits<_Iter> { ... 萃取 5 个属性 ... };
+// 198:  struct iterator_traits<_Tp*> {                       // 指针特化
+// 200:      using iterator_concept  = contiguous_iterator_tag;
+// 201:      using iterator_category = random_access_iterator_tag;
+//// 裸指针既是连续迭代器又是随机访问迭代器
+// };
 
 // 文件：bits/stl_iterator_base_funcs.h   行号：81, 100, 157, 168, 184, 224
-//   81:  __distance(_InputIterator, _InputIterator, input_iterator_tag)   // O(n) 循环
-//  100:  __distance(_RandomAccessIterator, ..., random_access_iterator_tag) // O(1) 相减
-//  157:  __advance(_InputIterator&, _Distance, input_iterator_tag)          // O(n) ++
-//  168:  __advance(_BidirectionalIterator&, _Distance, bidirectional...)    // 判正负
-//  184:  __advance(_RandomAccessIterator&, _Distance, random_access...)    // O(1) +=
-//  224:  std::advance(it, n) -> __advance(it, n, __iterator_category(it)); // 入口分发
+// 81:  __distance(_InputIterator, _InputIterator, input_iterator_tag)   // O(n) 循环
+// 100:  __distance(_RandomAccessIterator, ..., random_access_iterator_tag) // O(1) 相减
+// 157:  __advance(_InputIterator&, _Distance, input_iterator_tag)          // O(n) ++
+// 168:  __advance(_BidirectionalIterator&, _Distance, bidirectional...)    // 判正负
+// 184:  __advance(_RandomAccessIterator&, _Distance, random_access...)    // O(1) +=
+// 224:  std::advance(it, n) -> __advance(it, n, __iterator_category(it)); // 入口分发
 
 // 文件：bits/stl_iterator.h   行号：1477-1483, 2651
-//  1477: 返回 input/forward/bidirectional/random_access 标签的 __iterator_category
-//  2651: 对指针返回 contiguous_iterator_tag{}（C++20 连续迭代器判定）
+// 1477: 返回 input/forward/bidirectional/random_access 标签的 __iterator_category
+// 2651: 对指针返回 contiguous_iterator_tag{}（C++20 连续迭代器判定）
 ```
 
 - `[实现·GCC15]`：`std::advance`/`std::distance` 的公共入口调用 `__advance(__i, __n, __iterator_category(__i))`。编译器根据迭代器范畴**在编译期**解析到正确重载——这是**编译期多态（标签分发）**，无运行期分支成本。

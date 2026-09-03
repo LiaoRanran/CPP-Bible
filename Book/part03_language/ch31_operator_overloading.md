@@ -658,7 +658,7 @@ struct Matrix {                 // rule of 5
         for (size_t i=0;i<n*n;++i) data[i]=o.data[i];
     }
     Matrix& operator=(const Matrix& o){                         // 拷贝赋值
-        if (this!=&o){ double* p=new double[o.n*o.n]; /*...*/ delete[] data; data=p; n=o.n; }
+        if (this!=&o){ double* p=new double[o.n*o.n]; // ...
         return *this;
     }
     Matrix(Matrix&& o) noexcept : n(o.n), data(o.data) { o.data=nullptr; }   // 移动构造

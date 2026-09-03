@@ -513,10 +513,10 @@ int main() {
 ```cpp
 // ⑬-1a libstdc++ 源码摘录（文件：array，行号：94 / 109）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   struct array {                       // 行号 94：无用户构造 -> 聚合类型
-//     typename __array_traits<_Tp, _Nm>::_Type  _M_elems;   // 行号 109
-//   };
-//   // _M_elems 就是长度为 N 的内联数组，无额外指针/大小字段
+// struct array {                       // 行号 94：无用户构造 -> 聚合类型
+// typename __array_traits<_Tp, _Nm>::_Type  _M_elems;   // 行号 109
+// };
+//// _M_elems 就是长度为 N 的内联数组，无额外指针/大小字段
 int main() { return 0; }
 ```
 
@@ -526,14 +526,14 @@ int main() { return 0; }
 ```cpp
 // ⑬-2a libstdc++ 源码摘录（文件：array，行号：200-208 / 217-227 / 240-281）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // operator[]（行号 200/208）：直接返回 _M_elems[__n]，无边界检查
-//   operator[](size_type __n) noexcept { return _M_elems[__n]; }
-//   // at（行号 217/227）：先 __throw_out_of_range 检查再返回
-//   at(size_type __n) {
-//     if (__n >= _Nm) __throw_out_of_range(...);
-//     return _M_elems[__n];
-//   }
-//   // front/back/data（行号 240-281）：返回首/末元素与裸指针
+//// operator[]（行号 200/208）：直接返回 _M_elems[__n]，无边界检查
+// operator[](size_type __n) noexcept { return _M_elems[__n]; }
+//// at（行号 217/227）：先 __throw_out_of_range 检查再返回
+// at(size_type __n) {
+// if (__n >= _Nm) __throw_out_of_range(...);
+// return _M_elems[__n];
+// }
+//// front/back/data（行号 240-281）：返回首/末元素与裸指针
 int main() { return 0; }
 ```
 
@@ -544,10 +544,10 @@ int main() { return 0; }
 #include <utility>
 // ⑬-3a libstdc++ 源码摘录（文件：array，行号：384-411 / 418 / 433 / 461 / 466）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
-//   // std::get（行号 384-411）：返回 _M_elems.__get(_Nm) 的引用，支持结构化绑定
-//   // __cpp_lib_to_array（行号 418）：C++20 特性宏
-//   // to_array（行号 433/446）：从 C 数组构造 array（逐个 std::move/copy）
-//   // tuple_size（行号 461）/ tuple_element（行号 466）：使 array 满足 tuple-like
+//// std::get（行号 384-411）：返回 _M_elems.__get(_Nm) 的引用，支持结构化绑定
+//// __cpp_lib_to_array（行号 418）：C++20 特性宏
+//// to_array（行号 433/446）：从 C 数组构造 array（逐个 std::move/copy）
+//// tuple_size（行号 461）/ tuple_element（行号 466）：使 array 满足 tuple-like
 int main() { return 0; }
 ```
 

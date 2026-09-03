@@ -245,7 +245,7 @@ Big pick_same(bool c) {
 ```cpp
 // ⑨ 三条通道对比
 #include <utility>
-struct Big { /* ... */ Big(); Big(const Big&); Big(Big&&); };
+struct Big { // ...
 Big by_elision() { Big b; return b; }      // 通道A：NRVO（零拷贝零移动）
 Big by_move()    { Big b; return std::move(b); }  // 通道B：移动构造（有一次 move）
 Big by_value(Big b) { return b; }          // 通道C：取决于调用方实参类别
@@ -369,9 +369,9 @@ C++23 工作草案（N4950）相关条文要点：
 ```cpp
 // ⑭ 条文精要（非可编译条文，仅作条款索引，链接见 ISO/ 目录亦可）
 // [class.copy.elision]/1：在 return 语句中，若操作数是与函数返回类型同类型的
-//   非volatile 局部对象（或临时）的 id 表达式 / 类成员访问，则允许省略拷贝。
+// 非volatile 局部对象（或临时）的 id 表达式 / 类成员访问，则允许省略拷贝。
 // [class.copy.elision]/3（C++17 新增）：用 prvalue 初始化同类型对象（含 return prvalue、
-//   throw prvalue、按值形参用 prvalue 初始化）时，拷贝/移动被强制省略。
+// throw prvalue、按值形参用 prvalue 初始化）时，拷贝/移动被强制省略。
 ```
 
 - `[标准]`：**强制性省略**只发生在 prvalue 初始化场景（C++17 引入）；NRVO（具名对象）始终是**允许性**省略。
@@ -434,8 +434,8 @@ Vec make_copy(const Vec& src){ Vec v=src; return v; }  // v 必须从 src 拷贝
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能基准（消除前后耗时对比）
 ```cpp
 // ⑯ 实测示意（量级，非本机承诺值）：每对象 256*8=2KB
-//   NRVO 命中：  ~120 ms / 1e6 次（仅构造，无复制）
-//   强制拷贝：   ~480 ms / 1e6 次（多一次 2KB memcpy，约 4x 慢）
+// NRVO 命中：  ~120 ms / 1e6 次（仅构造，无复制）
+// 强制拷贝：   ~480 ms / 1e6 次（多一次 2KB memcpy，约 4x 慢）
 // 注：绝对值随 CPU/缓存波动，结论稳定：消除可消除一次大块内存拷贝。
 ```
 
@@ -453,7 +453,7 @@ Vec make_copy(const Vec& src){ Vec v=src; return v; }  // v 必须从 src 拷贝
 struct Buff { Buff(); Buff(const Buff&); Buff(Buff&&); };
 Buff make() {
     Buff b;
-    if (/* 某些让 NRVO 失败的控制流 */ false)
+    if ( // 某些让 NRVO 失败的控制流
         return Buff{};     // prvalue -> guaranteed elision
     return b;              // 具名 -> 若 NRVO 成功则零移动；失败则移动构造
 }
@@ -500,7 +500,7 @@ Tracer good() { Tracer b; return b; }              // NRVO：静默
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑲ 1) 直接返回局部对象，不要用 std::move
-auto f1() { Widget w; /* ... */ return w; }        // ✅ NRVO
+auto f1() { Widget w; // ...
 auto f2() { Widget w; return std::move(w); }        // ❌ 抑制 NRVO
 ```
 
@@ -549,10 +549,10 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
 ```cpp
 #include <utility>
 // ⑳ 速查：四种返回写法的命运汇总（✅=无拷贝/移动, ⚠=可能复制）
-//  return T{};          prvalue        -> 强制省略 ✅（C++17）
-//  return local;        具名局部对象    -> NRVO 允许省略 ✅（通常命中）
-//  return std::move(l); 右值           -> 强制移动 ⚠（抑制 NRVO，有 move 副作用）
-//  return a_or_b;       多分支不同对象  -> NRVO 失败 ⚠（拷贝/移动）
+// return T{};          prvalue        -> 强制省略 ✅（C++17）
+// return local;        具名局部对象    -> NRVO 允许省略 ✅（通常命中）
+// return std::move(l); 右值           -> 强制移动 ⚠（抑制 NRVO，有 move 副作用）
+// return a_or_b;       多分支不同对象  -> NRVO 失败 ⚠（拷贝/移动）
 ```
 
 | 写法 | C++ 标准保证 | 典型结果 | 拷贝构造副作用 |
@@ -801,13 +801,13 @@ Noisy make_rvo() {
 
 // GCC 13 -O2 汇编（x86-64 Intel syntax）:
 // make_nrvo:
-//   lea rax, [rdi]         ; 返回值地址在 rdi（hidden parameter）
-//   mov DWORD PTR [rdi], 42 ; 直接在返回槽写入 42
-//   ret                     ; 零次拷贝！零次移动！
+// lea rax, [rdi]         ; 返回值地址在 rdi（hidden parameter）
+// mov DWORD PTR [rdi], 42 ; 直接在返回槽写入 42
+// ret                     ; 零次拷贝！零次移动！
 //
 // make_rvo:
-//   mov DWORD PTR [rdi], 0  ; 在返回槽直接默认构造
-//   ret
+// mov DWORD PTR [rdi], 0  ; 在返回槽直接默认构造
+// ret
 //
 // Clang 17: 行为相同，汇编几乎一致
 // MSVC 2022: /O2 下 NRVO/RVO 均有效，使用 __stdcall 不同的返回约定

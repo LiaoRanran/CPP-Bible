@@ -85,10 +85,10 @@ public:
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 审查清单
 ```cpp
 // 正确性自查清单（伪代码，落到 PR 模板里）
-//   [ ] 所有分支都有返回值（非空路径）？
-//   [ ] 容器下标/迭代器在修改后是否失效？
-//   [ ] 整数运算是否可能溢出/有符号-无符号混用？
-//   [ ] 资源（new/fd/mutex）是否成对获取释放？
+// [ ] 所有分支都有返回值（非空路径）？
+// [ ] 容器下标/迭代器在修改后是否失效？
+// [ ] 整数运算是否可能溢出/有符号-无符号混用？
+// [ ] 资源（new/fd/mutex）是否成对获取释放？
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 审查清单
@@ -303,7 +303,7 @@ void inc(){ for(int i=0;i<100000;++i){ std::lock_guard lk(m); ++g; } }
 ```cpp
 // 坏味道：裸 owning 指针 + 漏释放（_ch147_leak.cpp 节选）
 int* make() { return new int(1); }
-int main(){ int* p = make(); (void)*p; /* 漏 delete -> 泄漏 */ }
+int main(){ int* p = make(); (void)*p; // 漏 delete -> 泄漏
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存安全审查（泄漏/UB）
@@ -346,9 +346,9 @@ int main(){ int a[3] = {1,2,3}; return a[5]; }  // 越界，运行时未定义
 ```cpp
 #include <cstdint>
 // 破坏兼容的改动（应被 review 拦下）：
-//   - 把 int32_t 改成 int64_t（调用方栈布局改变）
-//   - 删除 compute_v1 或改名（链接断链）
-//   - 给基类加 virtual ~Base 之前，确认没有外部代码以非虚方式 delete 派生
+// - 把 int32_t 改成 int64_t（调用方栈布局改变）
+// - 删除 compute_v1 或改名（链接断链）
+// - 给基类加 virtual ~Base 之前，确认没有外部代码以非虚方式 delete 派生
 ```
 
 ## ⑨ 测试覆盖审查（关联第150章）
@@ -366,7 +366,7 @@ struct Stack { int pop(); bool empty() const; };
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试覆盖审查（关联第150章）
 ```cpp
 // 审查清单：新增逻辑是否带测试？分支是否都有断言覆盖？
-//   if (x < 0) return error;   // 必须有 x<0 的测试用例
+// if (x < 0) return error;   // 必须有 x<0 的测试用例
 ```
 
 ## ⑩ 提交信息规范（关联第148章）
@@ -619,9 +619,9 @@ declared with attribute 'nodiscard' [-Wunused-result]
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反转：被审查者视角
 ```cpp
 // 自审清单（提交前自查，减少 review 往返）
-//   [ ] 编译通过 -Wall -Wextra -Werror？
-//   [ ] 命名/注释是否让陌生人看懂？
-//   [ ] 是否我把调试代码/注释漏在了 diff 里？
+// [ ] 编译通过 -Wall -Wextra -Werror？
+// [ ] 命名/注释是否让陌生人看懂？
+// [ ] 是否我把调试代码/注释漏在了 diff 里？
 bool ready_to_send() {
     return build_clean() && self_reviewed() && tests_pass();
 }
@@ -630,7 +630,7 @@ bool ready_to_send() {
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反转：被审查者视角
 ```cpp
 // 对审查意见的成熟回应方式：
-//   "有道理，n 确实可能为负，已在 a832c1 加前置校验并补测试。"
+// "有道理，n 确实可能为负，已在 a832c1 加前置校验并补测试。"
 // 而非："你不懂，这样就行。"
 ```
 

@@ -470,7 +470,7 @@ template <typename T>
 struct DebugAlloc {
     using value_type = T;
     DebugAlloc() = default;   // 关键：声明了转换构造函数会抑制隐式默认构造，
-                              //       而 vector 默认构造其分配器时需要 DebugAlloc()。
+                              // 而 vector 默认构造其分配器时需要 DebugAlloc()。
     T* allocate(std::size_t n) {
         ++Stats::allocs;
         return static_cast<T*>(::operator new(n * sizeof(T)));
@@ -743,7 +743,7 @@ monotonic_buffer_resource(void* __buffer, size_t __buffer_size,
   _M_next_bufsiz(_S_next_bufsize(__buffer_size)),
   _M_upstream(__upstream),
   _M_orig_buf(__buffer), _M_orig_size(__buffer_size)
-{ /* assert upstream != null && buffer != null || size==0 */ }
+{ // assert upstream != null && buffer != null || size==0
 ```
 
 **核心知识点 #14/15**：栈缓冲 + bump pointer，不释放直至销毁/ `release()`；典型用途是临时构建。

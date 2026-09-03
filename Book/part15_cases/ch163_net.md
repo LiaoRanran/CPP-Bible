@@ -96,7 +96,7 @@ Berkeley Socket（BSD socket）是 1983 年 4.2BSD 引入的 API，如今已成�
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 从零实现网络编程
 ```cpp
 // ② Berkeley 风格的最小 TCP 服务器骨架（Linux/macOS 可直接编译）
-//   g++ -std=c++23 -O2 bsd_echo.cpp -o bsd_echo
+// g++ -std=c++23 -O2 bsd_echo.cpp -o bsd_echo
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -120,8 +120,8 @@ int bsd_server() {
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 从零实现网络编程
 ```cpp
 // ② SO_REUSEADDR：避免 TIME_WAIT 状态下 bind 失败（服务器重启必备）
-//   典型用法：bind 之前对监听套接字设置一次（Windows/Winsock 风格，
-//   跨平台时把 optval 写成 const void* 即可）
+// 典型用法：bind 之前对监听套接字设置一次（Windows/Winsock 风格，
+// 跨平台时把 optval 写成 const void* 即可）
 void set_reuseaddr(SOCKET fd) {
     int yes = 1;
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes, sizeof(yes));
@@ -158,16 +158,16 @@ const char* last_err() { return ::strerror(errno); }
 ```cpp
 #include <iostream>
 // ③ 错误处理差异：Winsock 用 WSAGetLastError()，POSIX 用 errno
-//   [Windows] if (connect(fd,...)==SOCKET_ERROR) cerr<<WSAGetLastError();
-//   [Linux]   if (connect(fd,...)<0)              cerr<<errno;
+// [Windows] if (connect(fd,...)==SOCKET_ERROR) cerr<<WSAGetLastError();
+// [Linux]   if (connect(fd,...)<0)              cerr<<errno;
 // 关键数字：Winsock 的 WSAEWOULDBLOCK=10035 ≈ POSIX 的 EINPROGRESS/EAGAIN
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 [平台·Linux]
 ```cpp
 // ③ 地址解析：inet_pton 在两边都存在，但头文件不同
-//   [Windows] #include <winsock2.h> + <ws2tcpip.h>
-//   [Linux]   #include <arpa/inet.h>
+// [Windows] #include <winsock2.h> + <ws2tcpip.h>
+// [Linux]   #include <arpa/inet.h>
 // 调用形态完全一致：
 sockaddr_in a{};
 a.sin_family = AF_INET;
@@ -269,7 +269,7 @@ int main() {
 ```cpp
 #include <string>
 // ⑤ recv 直到遇到换行（应用层"读一行"），演示 TCP 流式读取的边界处理
-//   注意：一次 recv 可能只拿到半行，需要循环累加。
+// 注意：一次 recv 可能只拿到半行，需要循环累加。
 std::string recv_line(SOCKET fd) {
     std::string s; char c;
     while (recv(fd, &c, 1, 0) == 1) {
@@ -297,7 +297,7 @@ std::string recv_line(SOCKET fd) {
 void blocking_accept_loop(SOCKET lfd) {
     for (;;) {
         SOCKET c = accept(lfd, nullptr, nullptr);  // 无连接时在此睡眠
-        std::thread t([c]{ /* 处理 c */ closesocket(c); });
+        std::thread t([c]{ // 处理 c
         t.detach();
     }
 }
@@ -345,7 +345,7 @@ void select_loop(SOCKET lfd) {
     for (;;) {
         fd_set read_set = master;
         int n = select(0, &read_set, nullptr, nullptr, nullptr); // 阻塞等事件
-        for (int i = 0; i < n; ++i) { /* 遍历 fd_set 找出就绪者 */ }
+        for (int i = 0; i < n; ++i) { // 遍历 fd_set 找出就绪者
     }
 }
 ```
@@ -359,7 +359,7 @@ void poll_loop(int lfd) {
     std::vector<pollfd> fds{{lfd, POLLIN, 0}};
     for (;;) {
         int n = ::poll(fds.data(), fds.size(), -1);
-        for (auto& p : fds) if (p.revents & POLLIN) { /* 就绪 */ }
+        for (auto& p : fds) if (p.revents & POLLIN) { // 就绪
     }
 }
 ```
@@ -425,7 +425,7 @@ int main() {
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多线程/线程池服务
 ```cpp
 // ⑨ 内联最小线程池 + 把"一个连接"封装成任务提交（关联 第159章 任务抽象）
-//   已编译通过 _ch163_threadpool.cpp（含 -pthread -lws2_32）
+// 已编译通过 _ch163_threadpool.cpp（含 -pthread -lws2_32）
 #include <thread>
 #include <vector>
 #include <queue>
@@ -705,7 +705,7 @@ struct Stats {
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 安全（TLS 简述，上游参考）
 ```cpp
 // ⑮ OpenSSL 上下文初始化（示意，需 -lssl -lcrypto，上游参考）
-//   本机未编译，仅展示工业级 TLS 服务器的最小起手式。
+// 本机未编译，仅展示工业级 TLS 服务器的最小起手式。
 #if 0
 #include <openssl/ssl.h>
 SSL_CTX* make_ctx() {
@@ -723,7 +723,7 @@ SSL_CTX* make_ctx() {
 #include <vector>
 #include <array>
 // ⑮ 轻量完整性校验：用 HMAC-SHA256 给消息加签名（示意，需 crypto 库）
-//   思路：发送方附 mac，接收方重算并比对，防篡改（非加密，仅完整性）。
+// 思路：发送方附 mac，接收方重算并比对，防篡改（非加密，仅完整性）。
 struct Frame {
     uint32_t len;        // ⑪ 长度前缀
     std::vector<char> payload;
@@ -849,7 +849,7 @@ void proposed() {
 > **示例 37** [难度 ★★☆☆☆] [主题：++26 网络 TS 前瞻 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑱ 与之配套的执行器（executor）概念——把"在哪里跑回调"显式化
-//   示意：strand 保证同一连接的回调不并发，等价于 ⑨ 线程池的互斥效果。
+// 示意：strand 保证同一连接的回调不并发，等价于 ⑨ 线程池的互斥效果。
 #if 0
 net::strand<net::io_context::executor_type> s = net::make_strand(ctx);
 net::co_spawn(s, echo_coro(sock), net::detached);
@@ -1048,7 +1048,7 @@ int main() {
 ```cpp
 #include <iostream>
 // 注：以下为 Linux epoll/io_uring 参考量级（Jens Axboe / lwn.net 基准），
-//     仅作对照示意，本机 Windows/MinGW 无 epoll/io_uring，未实测；本机实测见附录 D/F。
+// 仅作对照示意，本机 Windows/MinGW 无 epoll/io_uring，未实测；本机实测见附录 D/F。
 int main() {
     std::cout << "Linux I/O evolution:\n\n";
     std::cout << "select/poll: O(n) scan, 1024 fd limit -> obsolete\n";
@@ -1414,7 +1414,7 @@ int main() {
 #include <iostream>
 #include <unordered_map>
 
-struct Conn { int fd; /* 读写缓冲、状态机等 */ };
+struct Conn { int fd; // 读写缓冲、状态机等
 
 int main() {
     std::unordered_map<int, Conn> conns;          // fd -> 连接元数据

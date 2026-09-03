@@ -424,8 +424,8 @@ static_assert(!my_is_array_v<int>);
 // negation 手写：逻辑非
 template <class T> struct my_negation : bool_constant<!T::value> {};
 template <class T> inline constexpr bool my_negation_v = my_negation<T>::value;
-static_assert(my_negation_v<std::is_pointer<int>>);      // !false = true
-static_assert(!my_negation_v<std::is_pointer<int*>>);    // !true = false
+static_assert(my_negation_v<std::is_pointer<int>>);      //!false = true
+static_assert(!my_negation_v<std::is_pointer<int*>>);    //!true = false
 ```
 
 > **示例 21** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
@@ -562,9 +562,9 @@ template <class T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
 void f(T) { }
 // 若同时有另一 enable_if 版且条件互补不当，会"二义性"或"无匹配"
 // ✅ 排错清单：
-//   1. 确认 enable_if_t 的第二个参数默认 = 0（或某种类型），否则是"类型缺省"
-//   2. 用 c++filt 看 mangled 名，确认实例化的是哪个偏特化
-//   3. 用 static_assert 单独验证 trait 本身的值，隔离 SFINAE 干扰
+// 1. 确认 enable_if_t 的第二个参数默认 = 0（或某种类型），否则是"类型缺省"
+// 2. 用 c++filt 看 mangled 名，确认实例化的是哪个偏特化
+// 3. 用 static_assert 单独验证 trait 本身的值，隔离 SFINAE 干扰
 static_assert(std::is_integral_v<int>);
 ```
 

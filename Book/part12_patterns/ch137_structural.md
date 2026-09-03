@@ -589,7 +589,7 @@ int main() {
 int main() {
     namespace fs = std::filesystem;
     for (auto& p : fs::recursive_directory_iterator("."))
-        if (fs::is_regular_file(p)) { /* 统一接口，屏蔽 OS 差异 */ }
+        if (fs::is_regular_file(p)) { // 统一接口，屏蔽 OS 差异
 }
 ```
 
@@ -713,7 +713,7 @@ int main() {
 // libstdc++ 中 unique_ptr::operator-> 即转发到被管理指针（见
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：460）
-//   element_type* operator->() const noexcept { return get(); }  // 仅一次指针返回
+// element_type* operator->() const noexcept { return get(); }  // 仅一次指针返回
 ```
 
 **【经验】** 代理与智能指针是「同一枚硬币」：RAII 管理器（`std::lock_guard`、`std::scoped_lock`、`std::fstream`）都可视为对「资源/锁/文件句柄」的代理，构造时获取、析构时释放：

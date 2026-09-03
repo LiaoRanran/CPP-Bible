@@ -274,20 +274,20 @@ int main() {
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析（libstdc++ 逐行）
 ```cpp
 // 文件：bits/stl_set.h   行号：94, 156
-//   94:  class set
-//  156:  using node_type = typename _Rep_type::node_type;  // C++17 节点句柄类型
+// 94:  class set
+// 156:  using node_type = typename _Rep_type::node_type;  // C++17 节点句柄类型
 //
 // 文件：bits/stl_set.h   行号：509, 578, 584-594
-//  509:  insert(const value_type& __x)   -> 转 _M_t._M_insert_unique
-//  578:  insert(initializer_list<value_type> __l)
-//  584:  node_type extract(const_iterator __pos);          // 摘除节点，不移交值
-//  593:  node_type extract(const key_type& __x);
-//  598:  insert(node_type&& __nh);                         // 重新挂回，零拷贝
+// 509:  insert(const value_type& __x)   -> 转 _M_t._M_insert_unique
+// 578:  insert(initializer_list<value_type> __l)
+// 584:  node_type extract(const_iterator __pos);          // 摘除节点，不移交值
+// 593:  node_type extract(const key_type& __x);
+// 598:  insert(node_type&& __nh);                         // 重新挂回，零拷贝
 //
 // 文件：bits/stl_set.h   行号：611-627  merge
-//  611:  merge(set<_Key, _Compare1, _Alloc>& __source)
-//  614:    _M_t._M_merge_unique(_Merge_helper::_S_get_tree(__source));
-//  merge 把 __source 中"不重复"的节点直接搬进本 set，不拷贝值。
+// 611:  merge(set<_Key, _Compare1, _Alloc>& __source)
+// 614:    _M_t._M_merge_unique(_Merge_helper::_S_get_tree(__source));
+// merge 把 __source 中"不重复"的节点直接搬进本 set，不拷贝值。
 ```
 
 底层 `_Rb_tree`（`bits/stl_tree.h:427 class _Rb_tree`）：
@@ -295,12 +295,12 @@ int main() {
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++ 逐行）
 ```cpp
 // 文件：bits/stl_tree.h   行号：99, 101, 410, 417, 1048, 1052, 1378
-//   99:  enum _Rb_tree_color { _S_red = false, _S_black = true };
-//  101:  struct _Rb_tree_node_base { _Rb_tree_color _M_color; _Base_ptr _M_parent;
-//                                    _Base_ptr _M_left;  _Base_ptr _M_right; };
-//  410:  _Rb_tree_insert_and_rebalance(const bool __insert_left, _Link_type __x,
-//                                      _Base_ptr __p, _Rb_tree_node_base& __header);
-//  417:  _Rb_tree_rebalance_for_erase(_Rb_tree_node_base* const __z, ...);
+// 99:  enum _Rb_tree_color { _S_red = false, _S_black = true };
+// 101:  struct _Rb_tree_node_base { _Rb_tree_color _M_color; _Base_ptr _M_parent;
+// _Base_ptr _M_left;  _Base_ptr _M_right; };
+// 410:  _Rb_tree_insert_and_rebalance(const bool __insert_left, _Link_type __x,
+// _Base_ptr __p, _Rb_tree_node_base& __header);
+// 417:  _Rb_tree_rebalance_for_erase(_Rb_tree_node_base* const __z, ...);
 // 1048:  _M_insert_unique(_Arg&&)   // set 用：键唯一
 // 1052:  _M_insert_equal(_Arg&&)    // multiset 用：键可重复
 // 1378:  _M_equal_range_tr(const _Kt& __k)  // 透明比较版本 equal_range

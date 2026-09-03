@@ -61,9 +61,9 @@ int f(int a) { return sq(a) + sq(a + 1); }   // O0: 两次 call sq；O2/LTO: 内
 > **示例 2** [难度 ★★☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 优化器的三块主战场
-//   (a) 局部：常量折叠、代数化简、死代码消除
-//   (b) 过程间：内联、尾调用、纯函数消去
-//   (c) 循环/向量：展开、向量化、循环交换
+// (a) 局部：常量折叠、代数化简、死代码消除
+// (b) 过程间：内联、尾调用、纯函数消去
+// (c) 循环/向量：展开、向量化、循环交换
 constexpr int k = 1 << 10;            // (a) 编译期折叠为 1024
 int g(int x) { return x + 0; }        // (a) 化简为 return x;
 ```
@@ -88,20 +88,20 @@ int only_user() { return unused_helper(3); } // 内联后 helper 消失，只剩
 > **示例 5** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ② -O0：几乎不做优化，逐语句翻译，便于逐行调试
-//   特点：每个变量落栈、每个函数真实 call、无内联
+// 特点：每个变量落栈、每个函数真实 call、无内联
 int o0_demo(int a, int b) { return a * b + a; }  // O0 下：imul; add; 三次内存往返
 ```
 
 > **示例 6** [难度 ★★☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ② -O1：基础优化（常量折叠、简单内联、跳转线程），编译快、调试尚可
-//   仍保守，不开循环变换
+// 仍保守，不开循环变换
 ```
 
 > **示例 7** [难度 ★★☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ② -O2：发布默认。开启绝大多数「安全且通常盈利」的优化，含函数内联、
-//   循环不变外提、公共子表达式消除、尾调用、部分向量化准备
+// 循环不变外提、公共子表达式消除、尾调用、部分向量化准备
 int o2_sum(const int* p, int n) {
     int s = 0;
     for (int i = 0; i < n; ++i) s += p[i];   // O2：可能向量化（见第155章），至少累加器留寄存器
@@ -112,7 +112,7 @@ int o2_sum(const int* p, int n) {
 > **示例 8** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ② -O3：在 -O2 之上加更激进的 loop 变换——多层展开、向量化、循环分布/ interchange
-//   收益：计算密集内核更快；风险：代码膨胀、指令缓存压力、个别场景反而变慢
+// 收益：计算密集内核更快；风险：代码膨胀、指令缓存压力、个别场景反而变慢
 double o3_dot(const double* a, const double* b, int n) {
     double s = 0;
     for (int i = 0; i < n; ++i) s += a[i] * b[i];   // O3 默认尝试 AVX 向量化
@@ -123,10 +123,10 @@ double o3_dot(const double* a, const double* b, int n) {
 > **示例 9** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ② 等级对照（GCC 13 实情，量级示意）
-//   -O0  调试友好，体积/速度最差
-//   -O1  快编译、接近 -O2 的 70% 性能
-//   -O2  发布默认，性能/体积/编译时间的平衡点
-//   -O3  计算内核更快，通用代码不一定
+// -O0  调试友好，体积/速度最差
+// -O1  快编译、接近 -O2 的 70% 性能
+// -O2  发布默认，性能/体积/编译时间的平衡点
+// -O3  计算内核更快，通用代码不一定
 ```
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
@@ -162,7 +162,7 @@ double reassoc(double a, double b) {
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · -Ofast 与不严谨（放松 IEEE） [实现·GCC15]
 ```cpp
 // ③ 实编译取证：dot 乘积在 -O2 vs -Ofast 下是否向量化（见 ⑨ 汇编）。
-//   -O2 默认不重结合 FP，标量累加；-Ofast 用 mulpd/addpd 打包（128/256-bit）。
+// -O2 默认不重结合 FP，标量累加；-Ofast 用 mulpd/addpd 打包（128/256-bit）。
 double dot(const double* a, const double* b, int n) {
     double s = 0;
     for (int i = 0; i < n; ++i) s += a[i] * b[i];
@@ -173,8 +173,8 @@ double dot(const double* a, const double* b, int n) {
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · -Ofast 与不严谨（放松 IEEE） [实现·GCC15]
 ```cpp
 // ③ -ffast-math 还可能「删除」你以为存在的 NaN 守卫
-//   严格模式：若 x 是 NaN，x==x 为 false，走错误处理
-//   -ffast-math：编译器假定 x 非 NaN，可能直接消去该分支
+// 严格模式：若 x 是 NaN，x==x 为 false，走错误处理
+// -ffast-math：编译器假定 x 非 NaN，可能直接消去该分支
 int guard(double x) {
     if (x != x) return -1;   // -Ofast 下可能被整体消除（假设永不触发）
     return (int)x;
@@ -201,13 +201,13 @@ int os_sum(const int* p, int n) {
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 体积优化 [实现·GCC15]
 ```cpp
 // ④ 体积敏感场景：嵌入式 / 启动加载器 / 代码缓存受限
-//   代价：同算法 -Os 常比 -O2 慢 5%–20%（不展开、少向量化）
+// 代价：同算法 -Os 常比 -O2 慢 5%–20%（不展开、少向量化）
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 体积优化 [实现·GCC15]
 ```cpp
 // ④ GCC 没有 -Oz；等价做法是用 -Os 配合 -finline-limit= 与属性控制
-//   Clang 可用 -Oz 进一步压缩（甚至牺牲更多性能换尺寸）
+// Clang 可用 -Oz 进一步压缩（甚至牺牲更多性能换尺寸）
 ```
 
 - `[平台·x86-64]`：`-Os` 在 x86 上对 **i-cache 压力**敏感的热点反而可能变快（更小更易装入缓存）；但纯计算内核会变慢。
@@ -245,8 +245,8 @@ g++ -std=c++23 -O2 -flto   Examples/_ch156_lib.o Examples/_ch156_main.o -o Examp
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器优化：O2/O3/Ofast/LTO/PGO
 ```cpp
 // ⑤ LTO 还能跨 TU 做常量传播与死代码消除
-//   lib.cpp: int config() { return 8; }
-//   main.cpp: int arr[config()];  → LTO 后 config() 被识别为常量 8，数组大小折叠
+// lib.cpp: int config() { return 8; }
+// main.cpp: int arr[config()];  → LTO 后 config() 被识别为常量 8，数组大小折叠
 ```
 
 - `[实现·GCC15]`：GCC 的 LTO 用 `gcc/lto1` 在链接期重放优化；`-flto=N` 并行分区加速大工程。
@@ -310,8 +310,8 @@ int main(int argc, char**) { return compute(argc); }
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原理 [实现·GCC15]
 ```cpp
 // ⑦ PGO 的本质：把「运行时频率」变成编译期可用的常量信息
-//   普通编译：编译器对分支频率只能瞎猜（默认 50/50）
-//   PGO 编译：编译器知道 if (hot) 走了 99%、else 走了 1%
+// 普通编译：编译器对分支频率只能瞎猜（默认 50/50）
+// PGO 编译：编译器知道 if (hot) 走了 99%、else 走了 1%
 int classify(int x) {
     if (x >= 0) return x * 2;        // 训练负载里几乎总走这里
     return -x;                       // 极少走
@@ -321,10 +321,10 @@ int classify(int x) {
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原理 [实现·GCC15]
 ```cpp
 // ⑦ 哪些决策被 profile 反转？
-//   - 分支预测提示 / 基本块布局（热块紧邻、冷块跳走）
-//   - 函数/调用点内联（只内联热调用点）
-//   - 值画像（value profile）→ 间接调用去虚拟化、if 转查表
-//   - 循环展开因子按真实 trip count 定
+// - 分支预测提示 / 基本块布局（热块紧邻、冷块跳走）
+// - 函数/调用点内联（只内联热调用点）
+// - 值画像（value profile）→ 间接调用去虚拟化、if 转查表
+// - 循环展开因子按真实 trip count 定
 ```
 
 - `[实现·GCC15]`：profile 数据存为 `.gcda`（运行期由插桩写出）与 `.gcno`（编译期结构）；`-fprofile-use` 读取。
@@ -370,7 +370,7 @@ g++ -std=c++23 -O2 -fprofile-use -c Examples/_ch156_pgo.cpp -o Examples/_ch156_p
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 流程：-fprofile-gener
 ```cpp
 // ⑧ 训练负载决定一切：若训练全是负值，编译器会把 cold 当热路径——适得其反
-//   工程上用「生产流量采样回放」做训练集，而非随机合成数据
+// 工程上用「生产流量采样回放」做训练集，而非随机合成数据
 ```
 
 - `[经验]`：PGO 的坑是「训练集漂移」——上线后流量分布变了，旧 profile 反而劣化。建议随版本刷新 profile。
@@ -432,15 +432,15 @@ g++ -std=c++23 -O3 -fopt-info-vec=vec.log Examples/_ch156_fast.cpp -c -o /dev/nu
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info / -fopt-info-vec [实现·GCC15]
 ```cpp
 // ⑩ -fopt-info-vec 的典型输出（示意）
-//   Examples/_ch156_fast.cpp:3:21: note: 循环向量化，vector_size 16，步长 1
-//   examples.cpp:42:9: missed: 因可能存在别名，循环未向量化
+// Examples/_ch156_fast.cpp:3:21: note: 循环向量化，vector_size 16，步长 1
+// examples.cpp:42:9: missed: 因可能存在别名，循环未向量化
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info / -fopt-info-vec [实现·GCC15]
 ```cpp
 // ⑩ 配合 -fopt-info-inline 看内联决策
-//   note: 将 foo 内联进 bar（热度/尺寸预算允许）
-//   missed: 不内联 big_fn（超出内联尺寸上限）
+// note: 将 foo 内联进 bar（热度/尺寸预算允许）
+// missed: 不内联 big_fn（超出内联尺寸上限）
 ```
 
 - `[实现·GCC15]`：`-fopt-info` 是 `-fopt-info-optall` 的别名；细分为 `-vec`/`-inline`/`-loop`/`-ipa`（过程间）。
@@ -453,9 +453,9 @@ g++ -std=c++23 -O3 -fopt-info-vec=vec.log Examples/_ch156_fast.cpp -c -o /dev/nu
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch155 衔接
 ```cpp
 // ⑪ 同一循环，不同等级命运不同
-//   -O2  ：标量累加（除非手写 pragma/#pragma GCC ivdep 提示）
-//   -O3  ：尝试向量化，但 FP 归约仍需 -ffast-math 才重结合
-//   -Ofast：放松 IEEE，FP 归约被向量化（见 ③ 的 mulpd 实证）
+// -O2  ：标量累加（除非手写 pragma/#pragma GCC ivdep 提示）
+// -O3  ：尝试向量化，但 FP 归约仍需 -ffast-math 才重结合
+// -Ofast：放松 IEEE，FP 归约被向量化（见 ③ 的 mulpd 实证）
 void scale(double* a, double k, int n) {
     for (int i = 0; i < n; ++i) a[i] *= k;
 }
@@ -464,14 +464,14 @@ void scale(double* a, double k, int n) {
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch155 衔接
 ```cpp
 // ⑪ 想强制 -O2 也向量化，可显式开启对应 pass（等价 -O3 的子集）
-//   #pragma GCC optimize("tree-vectorize")
-//   void hot_kernel(float* p, int n) { for (int i=0;i<n;++i) p[i]+=1.0f; }
+// #pragma GCC optimize("tree-vectorize")
+// void hot_kernel(float* p, int n) { for (int i=0;i<n;++i) p[i]+=1.0f; }
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch155 衔接
 ```cpp
 // ⑪ 与 ch155 的关系：向量化是「优化 pass 的一种」，O 级是它的总开关之一；
-//   LTO/PGO 也能改变向量化可行性（跨 TU 看到数组不别名、热循环被选中）
+// LTO/PGO 也能改变向量化可行性（跨 TU 看到数组不别名、热循环被选中）
 ```
 
 - `[标准]`：自动向量化属实现质量，标准不规定；是否开启由 `-O` 与 `-ftree-vectorize` 决定。
@@ -571,19 +571,19 @@ float to_float(uint32_t u) { return std::bit_cast<float>(u); }  // C++20 安全�
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译时间代价 [实现·GCC15]
 ```cpp
 // ⑭ LTO 的编译时间主要来自链接期重放优化，且内存占用陡增
-//   大工程 -flto 链接可能吃掉数 GB RAM；用 -flto=N 并行分区缓解
+// 大工程 -flto 链接可能吃掉数 GB RAM；用 -flto=N 并行分区缓解
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译时间代价 [实现·GCC15]
 ```cpp
 // ⑭ PGO 是「编译两遍 + 跑训练」：时间 ≈ 1.5~2× 普通 -O2 构建 + 训练运行开销
-//   适合「每晚一次」的发布构建，而非开发者本地每次增量编译
+// 适合「每晚一次」的发布构建，而非开发者本地每次增量编译
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译时间代价 [实现·GCC15]
 ```cpp
 // ⑭ 开发期用 -O0/-Og 保编译快、调试准；仅发布流水线用 -O2 -flto -fprofile-use
-//   -Og：专为调试优化的等级，保留变量与行号，同时做少量无害优化
+// -Og：专为调试优化的等级，保留变量与行号，同时做少量无害优化
 int dev_build(int x) { return x * x + x; }   // -Og 下仍可在调试器看 x 的值
 ```
 
@@ -597,7 +597,7 @@ int dev_build(int x) { return x * x + x; }   // -Og 下仍可在调试器看 x �
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 误用：过度 -Ofast 导致数值错
 ```cpp
 // ⑮ 错误：对金融/科学计算无脑 -Ofast → 结果偏离 IEEE 语义
-//   重结合后 s 的舍入顺序改变，与「严格累加」的参考实现不一致
+// 重结合后 s 的舍入顺序改变，与「严格累加」的参考实现不一致
 double bad_accumulate(const double* a, int n) {
     double s = 0;
     for (int i = 0; i < n; ++i) s += a[i];   // -Ofast 可能用不同归约树
@@ -616,7 +616,7 @@ bool is_finite_ok(double x) {
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 误用：过度 -Ofast 导致数值错
 ```cpp
 // ⑮ 正确：需要确定性/可复现数值时绝不用 -ffast-math
-//   若只求「快且可接受微小误差」，把 -ffast-math 限定到具体函数：
+// 若只求「快且可接受微小误差」，把 -ffast-math 限定到具体函数：
 __attribute__((optimize("fast-math")))
 double fast_kernel(double* a, double* b, int n) {
     double s = 0;
@@ -649,11 +649,11 @@ BENCHMARK(BM_dot);
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能基准
 ```cpp
 // ⑯ 相对收益（服务器计算内核，量级示意，非承诺）
-//   -O2        : 基线 1.00×
-//   -O3        : 1.05×–1.30×（向量化内核更高）
-//   -O2 -flto  : 1.10×–1.40×（跨 TU 内联 + 过程间）
-//   +PGO       : 再 +1.05×–1.15×（分支/冷热分区）
-//   注意：-O3 在分支密集、i-cache 受限代码上可能持平甚至回退
+// -O2        : 基线 1.00×
+// -O3        : 1.05×–1.30×（向量化内核更高）
+// -O2 -flto  : 1.10×–1.40×（跨 TU 内联 + 过程间）
+// +PGO       : 再 +1.05×–1.15×（分支/冷热分区）
+// 注意：-O3 在分支密集、i-cache 受限代码上可能持平甚至回退
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能基准
@@ -680,15 +680,15 @@ objdump -d -M intel Examples/_ch156_app_lto.exe > Examples/_ch156_main_lto.asm
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试：看编译器到底做了什么
 ```cpp
 // ⑰ 想确认某函数有没有被内联：搜符号 + 看调用点
-//   有 call _Z3foo / jmp _Z3foo  → 没内联
-//   汇编里直接出现 foo 的指令体   → 已内联
+// 有 call _Z3foo / jmp _Z3foo  → 没内联
+// 汇编里直接出现 foo 的指令体   → 已内联
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试：看编译器到底做了什么
 ```cpp
 // ⑰ Compiler Explorer (godbolt.org) 实践：并排 -O2 / -O3 / -Ofast
-//   一眼看出向量化有没有发生（有没有 xmm/ymm 打包指令）
-//   注意本章取证用的是本机 GCC 13.1.0，结论与 godbolt 上 GCC 13 一致
+// 一眼看出向量化有没有发生（有没有 xmm/ymm 打包指令）
+// 注意本章取证用的是本机 GCC 13.1.0，结论与 godbolt 上 GCC 13 一致
 ```
 
 - `[实现·GCC15]`：`-masm=intel` 出 Intel 语法（AT&T 默认）；想看优化中间可用 `-fdump-tree-optimized`。
@@ -713,13 +713,13 @@ g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践：发布用 -O2 -flto
 ```cpp
 // ⑱ 不要全局 -Ofast：严格数值用 -O2；仅对可接受误差的内核局部放宽
-//   （见 ⑮ 的 __attribute__((optimize("fast-math"))) 局部做法）
+// （见 ⑮ 的 __attribute__((optimize("fast-math"))) 局部做法）
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践：发布用 -O2 -flto
 ```cpp
 // ⑱ 调试符号与优化可共存：-O2 -g 仍出可用回溯（变量可能被优化掉，属正常）
-//   发布产物用 -O2 -flto -DNDEBUG 去掉断言与调试开销
+// 发布产物用 -O2 -flto -DNDEBUG 去掉断言与调试开销
 ```
 
 - `[经验]`：开发 `-Og`、CI 预发布 `-O2`、正式发布 `-O2 -flto [-fprofile-use]`。
@@ -734,8 +734,8 @@ g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨编译器
 ```cpp
 // ⑲ 等价档位对照（语义层面）
-//   GCC/Clang : -O0 -O1 -O2 -O3 -Os  ;-Ofast(GCC) ≈ -O3 -ffast-math(Clang)
-//   MSVC      : /Od /O1 /O2 /O2 /O1s ;无 -Ofast，用 /fp:fast 放松浮点
+// GCC/Clang : -O0 -O1 -O2 -O3 -Os  ;-Ofast(GCC) ≈ -O3 -ffast-math(Clang)
+// MSVC      : /Od /O1 /O2 /O2 /O1s ;无 -Ofast，用 /fp:fast 放松浮点
 ```
 
 ```bash
@@ -752,7 +752,7 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨编译器
 ```cpp
 // ⑲ ThinLTO（Clang）比全量 LTO 更省内存、增量友好；GCC 也可用 -flto=thin（较新版本）
-//   跨编译器不共享 LTO/IR 缓存：GCC 的 .o(IR) 不能喂给 Clang 链接
+// 跨编译器不共享 LTO/IR 缓存：GCC 的 .o(IR) 不能喂给 Clang 链接
 ```
 
 - `[平台·x86-64]`：LTO/PGO 的**中间格式是编译器私有的**，跨编译器不能混用目标文件。
@@ -796,20 +796,20 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 > **示例 56** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 一行决策树（伪代码）
-//   if (开发)        flags = "-Og -g";
-//   elif (发布应用)  flags = "-O2 -flto";
-//   elif (计算库)    flags = "-O3 -flto";
-//   elif (极致性能)  flags = "-O2 -flto -fprofile-use";
-//   if (需严格数值)  assert 不含 -ffast-math / -Ofast;
+// if (开发)        flags = "-Og -g";
+// elif (发布应用)  flags = "-O2 -flto";
+// elif (计算库)    flags = "-O3 -flto";
+// elif (极致性能)  flags = "-O2 -flto -fprofile-use";
+// if (需严格数值)  assert 不含 -ffast-math / -Ofast;
 ```
 
 > **示例 57** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 最小可验证清单：改 flags 后必做
-//   1) 用 -fopt-info-vec 确认热循环向量化；
-//   2) objdump 确认关键函数内联（无 call）；
-//   3) 跑带 DoNotOptimize 的基准，确认非 0ns 且真有收益；
-//   4) 严格数值路径用 -O2 复核结果一致性。
+// 1) 用 -fopt-info-vec 确认热循环向量化；
+// 2) objdump 确认关键函数内联（无 call）；
+// 3) 跑带 DoNotOptimize 的基准，确认非 0ns 且真有收益；
+// 4) 严格数值路径用 -O2 复核结果一致性。
 ```
 
 - `[标准]`：上表所有等级均受 `[intro.abstract]` 的 `as-if` 约束——可观察行为不变是底线。

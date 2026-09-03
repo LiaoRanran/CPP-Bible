@@ -129,7 +129,7 @@ int main() { return std::cout ? 0 : 1; }
 ```cpp
 // 文件：Examples/_mod_use.cpp，行号：8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）
 // 编译：g++ 15.3.0 -std=c++23 -O2 -fmodules-ts -S -masm=intel _mod_use.cpp -o _mod_use.asm
-//       （两步：先 g++ -fmodules-ts -c _mod_main.cpp 生成 BMI，再编译使用者）
+// （两步：先 g++ -fmodules-ts -c _mod_main.cpp 生成 BMI，再编译使用者）
 import math;
 int use_mod() { return square(7); }
 ```
@@ -331,8 +331,8 @@ export inline int twice(int x) { return x * 2; }
 ```cpp
 // ⑲ 单 TU 运行期开销：模块函数 = 普通函数（零差）
 // 编译期收益（量级，非本机实测数字示意）：
-//   #include <vector>+<string>+<map> 重复 100 次：~8.2s 重解析
-//   import std; 一次编译 BMI 后复用：~2.1s
+// #include <vector>+<string>+<map> 重复 100 次：~8.2s 重解析
+// import std; 一次编译 BMI 后复用：~2.1s
 // 运行期二者生成相同汇编（jmp / call 序列一致）
 ```
 
@@ -1171,9 +1171,9 @@ flowchart TD
 ```cpp
 // 模块无法写成「单文件可运行」demo：它天然是多翻译单元 + 模块编译管线（GCC 15 需 -fmodules）。
 // 复现步骤（CI 编译门禁按 MODULE 模式显式豁免本块，不单独编译运行）：
-//   g++ -std=c++23 -fmodules -c math.cppm -o math.o         // ① 构建模块接口（一次性）
-//   g++ -std=c++23 -fmodules -c consumer.cpp -o consumer.o // ② 消费 TU（每 TU）
-//   g++ -std=c++23 -fmodules math.o consumer.o -o app && ./app
+// g++ -std=c++23 -fmodules -c math.cppm -o math.o         // ① 构建模块接口（一次性）
+// g++ -std=c++23 -fmodules -c consumer.cpp -o consumer.o // ② 消费 TU（每 TU）
+// g++ -std=c++23 -fmodules math.o consumer.o -o app && ./app
 export module math;                           // 模块接口单元
 export int square(int x) { return x * x; }
 // ---- 独立翻译单元 consumer.cpp ----

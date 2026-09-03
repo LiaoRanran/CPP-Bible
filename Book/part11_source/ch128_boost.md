@@ -70,10 +70,10 @@ int main() {
 #include <memory>
 #include <optional>
 // ① Boost 与标准同名组件的命名惯例对照
-//   Boost:   boost::shared_ptr<T>      ->  C++11: std::shared_ptr<T>
-//   Boost:   boost::filesystem::path   ->  C++17: std::filesystem::path
-//   Boost:   boost::optional<T>        ->  C++17: std::optional<T>
-//   Boost:   BOOST_FOREACH              ->  C++11: 基于范围的 for
+// Boost:   boost::shared_ptr<T>      ->  C++11: std::shared_ptr<T>
+// Boost:   boost::filesystem::path   ->  C++17: std::filesystem::path
+// Boost:   boost::optional<T>        ->  C++17: std::optional<T>
+// Boost:   BOOST_FOREACH              ->  C++11: 基于范围的 for
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Boost 库集合
@@ -123,7 +123,7 @@ bool exists_demo(const std::string& p) {
 int asio_demo() {
     boost::asio::io_context io;
     boost::asio::steady_timer t(io, std::chrono::seconds(1));
-    t.async_wait([](const boost::system::error_code&){ /* 1s 后回调 */ });
+    t.async_wait([](const boost::system::error_code&){ // 1s 后回调
     io.run();
     return 0;
 }
@@ -190,14 +190,14 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // 上游参考：shared_ptr 主模板声明（节选，关注 px_ / pn_ 两个成员）
 //
 // template<class T> class shared_ptr {
-//     typedef shared_ptr this_type;
+// typedef shared_ptr this_type;
 // public:
-//     typedef T element_type;
-//     constexpr shared_ptr() noexcept : px(0), pn() {}
-//     ...
+// typedef T element_type;
+// constexpr shared_ptr() noexcept : px(0), pn() {}
+// ...
 // private:
-//     element_type* px;      // 裸指针
-//     boost::detail::shared_count pn;  // 引用计数控制块
+// element_type* px;      // 裸指针
+// boost::detail::shared_count pn;  // 引用计数控制块
 // };
 ```
 
@@ -208,13 +208,13 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // 上游参考：引用计数的原子增减落在这里
 //
 // shared_count& operator=(shared_count const& r) {
-//     sp_counted_base* tmp = r.pi_;
-//     if (tmp != pi_) {
-//         if (tmp) tmp->add_ref_copy();   // 原子 fetch_add
-//         if (pi_) pi_->release();        // 原子 fetch_sub，归零则析构
-//         pi_ = tmp;
-//     }
-//     return *this;
+// sp_counted_base* tmp = r.pi_;
+// if (tmp != pi_) {
+// if (tmp) tmp->add_ref_copy();   // 原子 fetch_add
+// if (pi_) pi_->release();        // 原子 fetch_sub，归零则析构
+// pi_ = tmp;
+// }
+// return *this;
 // }
 ```
 
@@ -228,9 +228,9 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // 上游参考：path 的拼接运算符 / 与分隔符无关性
 //
 // path operator/(path const& lhs, path const& rhs) {
-//     path tmp(lhs);
-//     tmp /= rhs;       // 自动选择 '/' 或 '\\'
-//     return tmp;
+// path tmp(lhs);
+// tmp /= rhs;       // 自动选择 '/' 或 '\\'
+// return tmp;
 // }
 ```
 
@@ -242,7 +242,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 //
 // template <typename Handler, typename IoExecutor>
 // void async_connect(...) {
-//   ... // 由 service 在 IO 线程完成，回调经 executor 派发
+// ... // 由 service 在 IO 线程完成，回调经 executor 派发
 // }
 ```
 
@@ -275,8 +275,8 @@ target_link_libraries(demo PRIVATE Boost::system Boost::filesystem)
 // ⑤ 编译命令（含 -I 路径）示例，标注"典型输出（本机未装 Boost）"
 // g++ -std=c++17 -I C:/boost/include main.cpp -L C:/boost/lib -lboost_system -lboost_filesystem -o app
 // 典型输出（本机未装 Boost）：
-//   c:/.../ld.exe: cannot find -lboost_system
-//   collect2: error: ld returned 1 exit status
+// c:/.../ld.exe: cannot find -lboost_system
+// collect2: error: ld returned 1 exit status
 // 说明：本机未装 Boost，故链接失败；命令本身正确，装好 Boost 即可通过
 ```
 
@@ -575,7 +575,7 @@ fs::path p = fs::path("a") / "b" / "c";  // 跨平台均正确
 ```cpp
 // ⑫ 线程/同步：Boost.Thread 在 C++11 前提供可移植线程
 #include <boost/thread.hpp>
-void worker(){ boost::thread t([]{ /* ... */ }); t.join(); }
+void worker(){ boost::thread t([]{ // ...
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
@@ -593,8 +593,8 @@ boost::endian::big_int32_t net_value = 0x01020304;  // 大端存储，跨机一�
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱（版本 / ABI）
 ```cpp
 // ⑬ ❌ 错误：混链不同 Boost 版本编译的库（ABI 不兼容）
-//    app 用 Boost 1.83 头、却链 Boost 1.75 的 libboost_filesystem
-//    -> 运行期崩溃 / 静默数据错乱
+// app 用 Boost 1.83 头、却链 Boost 1.75 的 libboost_filesystem
+// -> 运行期崩溃 / 静默数据错乱
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱（版本 / ABI）
@@ -606,13 +606,13 @@ boost::endian::big_int32_t net_value = 0x01020304;  // 大端存储，跨机一�
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱（版本 / ABI）
 ```cpp
 // ⑬ ❌ 错误：跨 DLL 边界传递 boost::shared_ptr 却未用同一 CRT/Boost 构建
-//    -> 控制块在一个堆分配、在另一个堆释放 -> 双重释放/崩溃
+// -> 控制块在一个堆分配、在另一个堆释放 -> 双重释放/崩溃
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱（版本 / ABI）
 ```cpp
 // ⑬ ✅ 正确：把 Boost 作为接口边界的"实现细节"封装，边界只暴露 POD/标准类型
-//    或用 BOOST_SYMBOL_EXPORT / 统一编译选项（同 /MD、同 Boost 版本）
+// 或用 BOOST_SYMBOL_EXPORT / 统一编译选项（同 /MD、同 Boost 版本）
 ```
 
 - `[平台·Windows]`：MSVC 的 `/MD` vs `/MT`、`_ITERATOR_DEBUG_LEVEL`、Boost 的 `BOOST_DEBUG` 必须与调用方一致，否则 ODR 违规。
@@ -626,18 +626,18 @@ Boost 正从"单一巨库"走向**模块化**：自 Boost 1.73 起采用模块�
 ```cpp
 // ⑭ 现代用法：只取需要的子模块，显式声明依赖（Boost.Deprecated 会被剔除）
 // 例如只要 Asio + System，不拉整个 Boost：
-//   git clone --depth 1 https://github.com/boostorg/asio
-//   git clone --depth 1 https://github.com/boostorg/system
-//   + 依赖的 config / core / preprocessor / assert / throw_exception ...
+// git clone --depth 1 https://github.com/boostorg/asio
+// git clone --depth 1 https://github.com/boostorg/system
+// + 依赖的 config / core / preprocessor / assert / throw_exception ...
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（模块化 Boost）
 ```cpp
 // ⑭ C++20 Modules 对 Boost 的影响：Boost 当前仍以头文件为主，
-//     头-only 库天然适合做成模块接口（减少重编译），但官方 modules 支持尚在试验
+// 头-only 库天然适合做成模块接口（减少重编译），但官方 modules 支持尚在试验
 // 典型输出（本机未装 Boost）：
-//   g++ -std=c++23 -fmodules-ts -I C:/boost/include -c asio_mod.cppm
-//   error: boost headers are not yet modularized (实验性限制)
+// g++ -std=c++23 -fmodules-ts -I C:/boost/include -c asio_mod.cppm
+// error: boost headers are not yet modularized (实验性限制)
 ```
 
 - `[标准]`：C++20 Modules 是标准特性；Boost 模块化是**项目组织**层面的演进，二者正交。
@@ -648,15 +648,15 @@ Boost 正从"单一巨库"走向**模块化**：自 Boost 1.73 起采用模块�
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑮ 优先用 std:: 等价物，仅在 Boost 有独占能力时引入 Boost
-//   独占能力例：Boost.Asio（异步网络）、Boost.Beast（HTTP/WS）、
-//              Boost.Geometry、Boost.Spirit（解析器 DSL）、Boost.MPL/Fusion
+// 独占能力例：Boost.Asio（异步网络）、Boost.Beast（HTTP/WS）、
+// Boost.Geometry、Boost.Spirit（解析器 DSL）、Boost.MPL/Fusion
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
 ```cpp
 // ⑮ 头-only 优先：减少部署与 ABI 风险
-//   可用 header-only 的部分：algorithm / lexical_cast / numeric / type_traits
-//   必须编译的部分：filesystem / system / asio(部分) / regex / thread / date_time
+// 可用 header-only 的部分：algorithm / lexical_cast / numeric / type_traits
+// 必须编译的部分：filesystem / system / asio(部分) / regex / thread / date_time
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
@@ -677,7 +677,7 @@ Boost 与其他库协作是常态（标准库、OpenSSL、Protobuf 等）。
 ```cpp
 // ⑯ Boost.Asio + OpenSSL：HTTPS/TLS 服务（Beast 的 ssl_stream）
 // 编译：g++ -std=c++17 -I C:/boost/include -I C:/openssl/include \
-//        ch128_tls.cpp -lboost_system -lssl -lcrypto -lws2_32 -o tls.exe
+// ch128_tls.cpp -lboost_system -lssl -lcrypto -lws2_32 -o tls.exe
 // 典型输出（本机未装 Boost / OpenSSL）
 #include <boost/beast.hpp>
 #include <boost/asio/ssl.hpp>
@@ -705,10 +705,10 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献
 ```cpp
 // ⑰ 贡献路径（上游参考）：
-//   1) 在 https://github.com/boostorg/<lib> 提 Issue 讨论设计
-//   2) Fork -> 分支开发 -> 本地 b2 测试（含文档与示例）
-//   3) 提 PR；需至少一位 Boost 评审员（Review Manager）批准
-//   4) 通过后合入 develop 分支，随发布周期进 master
+// 1) 在 https://github.com/boostorg/<lib> 提 Issue 讨论设计
+// 2) Fork -> 分支开发 -> 本地 b2 测试（含文档与示例）
+// 3) 提 PR；需至少一位 Boost 评审员（Review Manager）批准
+// 4) 通过后合入 develop 分支，随发布周期进 master
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献
@@ -777,7 +777,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 //
 // template<class Y>
 // explicit shared_ptr(Y* p) : px(p), pn() {
-//     boost::detail::sp_pointer_construct(this, p, pn);
+// boost::detail::sp_pointer_construct(this, p, pn);
 // }   // 构造即把 p 交给控制块 pn 管理
 ```
 
@@ -789,15 +789,15 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 // 上游参考：io_context::run() 的事件循环骨架（proactor 调度）
 //
 // std::size_t io_context::run() {
-//   ... impl_.run(); ...   // 调度的核心：从完成队列取 operation 执行
+// ... impl_.run(); ...   // 调度的核心：从完成队列取 operation 执行
 // }
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读
 ```cpp
 // ⑲ 本机可做的源码阅读：用上面真实编译的 _ch128_shared_ptr 对照
-//    在 GDB 下单步，观察 control block 的 strong 计数变化，
-//    再回头比对上游 shared_count.hpp 的 add_ref_copy / release 实现
+// 在 GDB 下单步，观察 control block 的 strong 计数变化，
+// 再回头比对上游 shared_count.hpp 的 add_ref_copy / release 实现
 ```
 
 - `[经验]`：读 Boost 源码从**单文件头**（如 `shared_ptr.hpp`）入手，配合本机自包含复刻（见 ⑨）对照理解，比直接啃巨库更高效。
@@ -846,8 +846,8 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 ```cpp
 // ⑳ 一行判断该不该用 Boost：
-//   标准已有等价物 → 用 std::（shared_ptr/filesystem/optional/format/ranges…）
-//   标准缺失且 Boost 独占 → 用 Boost（Asio/Beast/Geometry/Spirit/MPL/Fusion）
+// 标准已有等价物 → 用 std::（shared_ptr/filesystem/optional/format/ranges…）
+// 标准缺失且 Boost 独占 → 用 Boost（Asio/Beast/Geometry/Spirit/MPL/Fusion）
 ```
 
 - `[经验]`：2026 年的工程共识是"**标准优先，Boost 补缺**"——能用 `std::` 就用，把 Boost 留给标准尚未覆盖的高地（异步网络、HTTP/WS、几何、解析器、重型 TMP）。
@@ -907,13 +907,13 @@ int main() {
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 Boost API 长
 ```cpp
 // ㉑.3 真实 Boost 用法（仅注释演示，门禁按空块编译通过）：
-//   #include <boost/asio.hpp>                  // 网络/异步 I/O（标准网络 TS 的源头）
-//   #include <boost/graph/adjacency_list.hpp>  // 图算法
-//   boost::asio::io_context io;
-//   boost::asio::steady_timer t(io, std::chrono::seconds(1));
-//   t.async_wait([](const boost::system::error_code&){ /* 到期回调 */ });
-//   io.run();                                  // 解决「事件循环 + 异步完成」这一真实痛点
-//   官方文档：https://www.boost.org/doc/
+// #include <boost/asio.hpp>                  // 网络/异步 I/O（标准网络 TS 的源头）
+// #include <boost/graph/adjacency_list.hpp>  // 图算法
+// boost::asio::io_context io;
+// boost::asio::steady_timer t(io, std::chrono::seconds(1));
+// t.async_wait([](const boost::system::error_code&){ /* 到期回调 */ });
+// io.run();                                  // 解决「事件循环 + 异步完成」这一真实痛点
+// 官方文档：https://www.boost.org/doc/
 ```
 
 ### ㉑.4 端到端：怎么把 Boost 接进你的工程
@@ -1076,7 +1076,7 @@ int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, op
 #include <optional>
 #include <string_view>
 template <class T>
-std::optional<T> maybe_parse(std::string_view /*s*/) {
+std::optional<T> maybe_parse(std::string_view // s
     // 真实实现按 T 解析；此处示意：失败返回 nullopt
     return std::nullopt;
 }

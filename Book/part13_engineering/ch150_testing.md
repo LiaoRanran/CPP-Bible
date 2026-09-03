@@ -987,8 +987,8 @@ gcc-testsuite-style: vector(5,7) VERIFY OK
 // 44  #include <assert.h>
 //
 // 说明：cassert 是 C++ 对 C 标准头 assert.h 的转发封装；第 44 行把
-//       C 的 assert 机制引入翻译单元，因此任何用到 assert() 的示例
-//       都需包含 <cassert>（见 ②/③/④ 等示例中缺失即编译失败的经验）。
+// C 的 assert 机制引入翻译单元，因此任何用到 assert() 的示例
+// 都需包含 <cassert>（见 ②/③/④ 等示例中缺失即编译失败的经验）。
 ```
 
 > 取证：本机 libstdc++ 13.1.0 的 `cassert` 第 44 行确为 `#include <assert.h>`（见文件 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cassert`），与上文剖析一致，非编造。

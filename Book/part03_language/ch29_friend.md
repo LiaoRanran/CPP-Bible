@@ -87,7 +87,7 @@ int main(){Safe s;Key k;k.unlock(s);return 0;}
 #include <iostream>
 class A{int a=1;friend class B;};
 class B{int b=2;friend class C; void show(A& a){std::cout<<a.a<<std::endl;} };
-class C{ void show(A& a){ /* a.a 不可访问！C不是A的友元 */ } };
+class C{ void show(A& a){ // a.a 不可访问！C不是A的友元
 int main(){A a;B b;std::cout<<"friend not transitive\n";return 0;}
 ```
 
@@ -378,7 +378,7 @@ int main() {
     int a = d.get();      // 公共接口访问
     int b = read(d);       // friend 接口访问
     // 汇编（GCC -O2）:
-    //   mov eax, [rdi]     ← 两条路径生成完全相同的指令
+    // mov eax, [rdi]     ← 两条路径生成完全相同的指令
     // friend 不增加任何额外的间接调用、跳转或条件判断
     std::cout << a << " " << b << std::endl;
     std::cout << "Assembly: both paths = mov eax,[rdi]. friend has ZERO runtime cost.\n";

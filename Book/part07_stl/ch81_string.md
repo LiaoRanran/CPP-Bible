@@ -99,15 +99,15 @@ libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 
 ```cpp
 // ③ libstdc++ 概念布局（来自 bits/basic_string.h）
 // struct basic_string {
-//     // 联合体：要么指向堆缓冲区(_M_ptr)，要么内联本地缓冲(_M_local_buf)
-//     struct _Alloc_hider { char* _M_p; };   // 指向当前数据的指针（含本地缓冲）
-//     _Alloc_hider  _M_dataplus;
-//     size_type     _M_string_length;         // 字符数（不含 '\0'）
-//     // 联合体：本地缓冲区（SSO） 或 容量字段（堆模式）
-//     union {
-//         char            _M_local_buf[_S_local_capacity + 1];  // 内联存储
-//         size_type       _M_allocated_capacity;                // 堆模式下的容量
-//     };
+//// 联合体：要么指向堆缓冲区(_M_ptr)，要么内联本地缓冲(_M_local_buf)
+// struct _Alloc_hider { char* _M_p; };   // 指向当前数据的指针（含本地缓冲）
+// _Alloc_hider  _M_dataplus;
+// size_type     _M_string_length;         // 字符数（不含 '\0'）
+//// 联合体：本地缓冲区（SSO） 或 容量字段（堆模式）
+// union {
+// char            _M_local_buf[_S_local_capacity + 1];  // 内联存储
+// size_type       _M_allocated_capacity;                // 堆模式下的容量
+// };
 // };
 ```
 
@@ -162,7 +162,7 @@ SSO 模式的切换靠长度与阈值的比较。
 ```cpp
 // ⑥ 判定逻辑（libstdc++ 概念）
 // bool is_local() const {
-//     return _M_string_length <= _S_local_capacity;   // 长度 ≤ 15 -> 内联
+// return _M_string_length <= _S_local_capacity;   // 长度 ≤ 15 -> 内联
 // }
 // 堆模式时 _M_dataplus._M_p 指向堆；SSO 模式时指向 _M_local_buf
 ```
@@ -276,7 +276,7 @@ const char* good() {
 #include <string_view>
 #include <string>
 void print(std::string_view sv) {            // 接受 string / char* / 子串，零拷贝
-    for (char c : sv) { /* ... */ }
+    for (char c : sv) { // ...
 }
 int main() {
     std::string s = "hello world";
@@ -490,7 +490,7 @@ int conv() {
 // S8 反向遍历
 #include <string>
 void rev(const std::string& s) {
-    for (auto it = s.rbegin(); it != s.rend(); ++it) { /* 逆序 */ }
+    for (auto it = s.rbegin(); it != s.rend(); ++it) { // 逆序
 }
 ```
 

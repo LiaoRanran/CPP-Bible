@@ -573,7 +573,7 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 // ⑲ range-v3 写法（需 #include <range/v3/all.hpp>，命名空间 ranges::v3）
 // #include <range/v3/all.hpp>
 // int s = v3::accumulate(v | v3::views::filter([](int n){return n>0;})
-//                         | v3::views::transform([](int n){return n*2;}), 0);
+// | v3::views::transform([](int n){return n*2;}), 0);
 ```
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：跨库：range-v3 <span class="badge badge-exp">经验</span>]
@@ -581,9 +581,9 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 #include <ranges>
 #include <algorithm>
 // ⑲ 对应关系：标准 ranges ↔ range-v3
-//   std::views::filter    ↔  ranges::v3::views::filter
-//   std::views::transform ↔  ranges::v3::views::transform
-//   std::ranges::sort     ↔  ranges::v3::sort
+// std::views::filter    ↔  ranges::v3::views::filter
+// std::views::transform ↔  ranges::v3::views::transform
+// std::ranges::sort     ↔  ranges::v3::sort
 // 语义几乎一致，迁移多为改名 + 换命名空间
 ```
 

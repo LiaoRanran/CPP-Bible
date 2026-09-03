@@ -61,10 +61,10 @@
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：从零写框架的意义 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ① 框架在概念上对"应用"的抽象：框架拥有主循环，应用只提供回调
-//   应用代码从不写 main 的轮询，而是注册 handler 等框架回调。
+// 应用代码从不写 main 的轮询，而是注册 handler 等框架回调。
 struct App {
-    void on_start() { /* 框架在启动时调用你，而非你调用框架 */ }
-    void on_tick(int t) { /* 框架在每帧调用你 */ }
+    void on_start() { // 框架在启动时调用你，而非你调用框架
+    void on_tick(int t) { // 框架在每帧调用你
 };
 ```
 
@@ -107,7 +107,7 @@ flowchart TD
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架 vs 库
 ```cpp
 // ② 库风格：你主动调用，控制流在你手里
-//   render() 是"被你调用"的普通函数。
+// render() 是"被你调用"的普通函数。
 void lib_style() {
     init_window();
     while (running) { render(); poll_input(); }   // 主循环由你写
@@ -118,9 +118,9 @@ void lib_style() {
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架 vs 库
 ```cpp
 // ② 框架风格：你注册回调，主循环由框架写（控制反转 IoC）
-//   runloop() 内部会反过来调用你提供的 on_frame。
+// runloop() 内部会反过来调用你提供的 on_frame。
 struct Game {
-    void on_frame() { /* 框架每帧回调这里，你只写业务 */ }
+    void on_frame() { // 框架每帧回调这里，你只写业务
 };
 void framework_style(Game& g) {
     Framework fw;
@@ -262,7 +262,7 @@ int main() {
 #include <string>
 #include <functional>
 // ④ proactor 示意：内核完成 I/O 后才回调（与 reactor 同步处理相对）
-//   工业实现见第163章（网络编程）的 IOCP / 异步；此处仅给出接口形态。
+// 工业实现见第163章（网络编程）的 IOCP / 异步；此处仅给出接口形态。
 struct Proactor {
     void async_read(std::function<void(std::string)> on_done) {
         on_done("data");   // 真实实现：提交读请求，完成时回调
@@ -426,7 +426,7 @@ int main() { MemoryStorage store; use(store); return 0; }
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块化（接口+实现分离）
 ```cpp
 // ⑦ 依赖方向：业务 → 接口 ← 实现，箭头不越过接口（编译防火墙雏形）
-//   进一步可用 PIMPL（⑭）把实现藏进 .cpp，接口头零实现依赖。
+// 进一步可用 PIMPL（⑭）把实现藏进 .cpp，接口头零实现依赖。
 struct ITask { virtual ~ITask() = default; virtual void run() = 0; };
 ```
 
@@ -501,8 +501,8 @@ int main() {
 // ⑨ 自包含迷你框架 MiniFW（本机 g++ -std=c++23 -O2 可编译运行，单文件可跑）
 // 文件：Examples/_ch164_framework.cpp
 // 行号： 47-58（Registry 自注册 AutoReg + MINIFW_REGISTER 宏）
-//       60-86（Framework::start/run/stop 生命周期）
-//      118-143（main：加载配置 → 启动 → 事件循环 → 关闭）
+// 60-86（Framework::start/run/stop 生命周期）
+// 118-143（main：加载配置 → 启动 → 事件循环 → 关闭）
 #include <iostream>
 #include <string>
 #include <vector>
@@ -960,16 +960,16 @@ flowchart TD
 ```cpp
 #include <memory>
 // ⑮ 上游框架接口示意（仅对比，非本机编译目标）
-//   Qt 信号槽（需 moc 预处理）：
-//     class Worker : public QObject {
-//         Q_OBJECT
-//     signals: void progress(int);
-//     public slots: void doWork() { emit progress(50); }
-//     };
-//   Boost.DI 构造器注入：
-//     auto injector = di::make_injector(di::bind<Interface>.to<Impl>());
-//     auto p = injector.create<std::unique_ptr<Interface>>();
-//   注意：Qt 依赖 moc 代码生成（关联 第148章 工具链），Boost.DI 是编译期容器。
+// Qt 信号槽（需 moc 预处理）：
+// class Worker : public QObject {
+// Q_OBJECT
+// signals: void progress(int);
+// public slots: void doWork() { emit progress(50); }
+// };
+// Boost.DI 构造器注入：
+// auto injector = di::make_injector(di::bind<Interface>.to<Impl>());
+// auto p = injector.create<std::unique_ptr<Interface>>();
+// 注意：Qt 依赖 moc 代码生成（关联 第148章 工具链），Boost.DI 是编译期容器。
 ```
 
 ```text
@@ -1171,7 +1171,7 @@ flowchart LR
 struct MiniFWApp {
     Framework fw{registry()};
     MiniFWApp(const std::string& conf) {
-        fw.bus.subscribe("startup", [](const EventBus::Event&) { /* 你的业务 */ });
+        fw.bus.subscribe("startup", [](const EventBus::Event&) { // 你的业务
         if (fw.loadConfig(conf)) { fw.start(); fw.run(3); fw.stop(); }
     }
 };

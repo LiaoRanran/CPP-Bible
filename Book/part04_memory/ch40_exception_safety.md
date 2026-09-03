@@ -120,7 +120,7 @@
 ```cpp
 // [示例 1] vector::swap 的 noexcept 声明（真实 libstdc++ 行号见第 7 节）
 // bits/stl_vector.h:1581
-//   swap(vector& __x) _GLIBCXX_NOEXCEPT
+// swap(vector& __x) _GLIBCXX_NOEXCEPT
 #include <vector>
 #include <type_traits>
 int main() {
@@ -178,12 +178,12 @@ struct Ledger {
         send_over_network();              // 副作用：成功则对端已收
         update_local_state();             // 若此处抛，网络已发出→无法回滚
     }
-    void send_over_network(){ /* 假设成功 */ std::printf("sent\n"); }
+    void send_over_network(){ // 假设成功
     void update_local_state(){ throw std::runtime_error("local fail"); }
 };
 int main(){
     Ledger l;
-    try { l.commit(); } catch(const std::exception& e){ /* 世界已不一致 */ }
+    try { l.commit(); } catch(const std::exception& e){ // 世界已不一致
 }
 ```
 
@@ -270,7 +270,7 @@ struct Bad {
 };
 int main(){
     try { Bad b; throw std::runtime_error("outer"); }
-    catch(...) { /* 永远到不了：dtor 抛 → terminate */ }
+    catch(...) { // 永远到不了：dtor 抛 → terminate
 }
 ```
 
@@ -751,7 +751,7 @@ int main(){
     try {
         std::sort(v.begin(), v.end(), [](int a,int b){
             if (a==2) throw std::runtime_error("cmp throws"); return a<b; });
-    } catch(...) { /* v 仍合法（无泄漏），但顺序未定义 */ }
+    } catch(...) { // v 仍合法（无泄漏），但顺序未定义
 }
 ```
 
@@ -1018,7 +1018,7 @@ int main(){
 int main(){
     try {
         int* p = nullptr; *p = 1;          // 访问违规（SEH）
-    } catch (...) {                          // /EHa 才能捕获，/EHsc 不能
+    } catch (...) {                          ///EHa 才能捕获，/EHsc 不能
         std::cout << "caught SEH via C++\n";
     }
 }
@@ -1055,7 +1055,7 @@ int main(){
 void on_term(){ std::cout << "terminated via /EHr\n"; std::abort(); }
 void boom() noexcept { throw 1; }   // 违反 noexcept：/EHr 下被捕获并 terminate
 int main(){ std::set_terminate(on_term); boom(); }
-// /EHr：输出 terminated via /EHr；默认 /EHsc：未定义/崩溃（无检查）
+///EHr：输出 terminated via /EHr；默认 /EHsc：未定义/崩溃（无检查）
 ```
 
 **<span class="badge badge-exp">经验</span>**　跨编译器项目若需「noexcept 逃逸必终止」的强保证（如安全关键系统），在 MSVC 显式加 `/EHr`，GCC/Clang 侧则需靠代码审查与 `-fno-exceptions` 之外的静态断言保证。
@@ -1227,7 +1227,7 @@ std::expected<int,std::string> parse(const char* s){
 #include <type_traits>
 #include <utility>
 // 注意：显式声明移动/拷贝构造会抑制隐式默认构造，而 vector<T>(10) 需要 T 默认可构造，
-//       故显式补上 `T()=default`（两者均为空类型，默认构造平凡）。
+// 故显式补上 `T()=default`（两者均为空类型，默认构造平凡）。
 struct Fast { Fast()=default; Fast(Fast&&) noexcept = default; Fast(const Fast&)=default; };
 struct Slow { Slow()=default; Slow(Slow&&); Slow(const Slow&)=default; };  // 移动抛
 static_assert(std::is_nothrow_move_constructible_v<Fast>);
@@ -1262,7 +1262,7 @@ int main(){
 extern "C" int c_api() { throw 1; }  // 错误：C 调用方无法展开 C++ 栈
 // 正确：
 extern "C" int c_api_safe(int* ok){
-    try { /* ... */ *ok = 1; return 0; }
+    try { // ...
     catch(...) { *ok = 0; return -1; }   // 错误码过界
 }
 ```
@@ -1919,8 +1919,8 @@ int main() {
 #include <stdexcept>
 struct T {
     ~T() noexcept {                  // 析构不向外抛
-        try { /* 可能失败的清理 */ }
-        catch (...) { /* 吞掉, 记日志, 绝不抛 */ }
+        try { // 可能失败的清理
+        catch (...) { // 吞掉, 记日志, 绝不抛
     }
 };
 int main() { T t; std::cout << "dtor safe (no terminate)\n"; }

@@ -64,9 +64,9 @@ ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语
 ```cpp
 #include <cstdint>
 // ① ECS 三元组的本质区别（观念先行，具体实现见 ② ③ ④）
-//   Entity  : 仅是一个 ID（整型），本身无成员
-//   Component: 仅数据，平凡可拷贝（trivially copyable 最佳）
-//   System  : 纯函数式算法，输入"组件切片"，输出"修改后的组件切片"
+// Entity  : 仅是一个 ID（整型），本身无成员
+// Component: 仅数据，平凡可拷贝（trivially copyable 最佳）
+// System  : 纯函数式算法，输入"组件切片"，输出"修改后的组件切片"
 enum class Comp { Position, Velocity, Render, Health }; // 组件种类（仅标签）
 using Entity = std::uint32_t;                           // 实体即 ID
 void movement_system();                                 // 系统即逻辑（见 ④）
@@ -79,8 +79,8 @@ void movement_system();                                 // 系统即逻辑（见
 ```cpp
 #include <span>
 // ① 经典 OOP 的"对象=数据+行为" vs ECS 的"数据归数据、行为归系统"
-//   OOP:  class Monster { float x; void update(); };   // 数据行为耦合
-//   ECS:  struct Position { float x; };  void sys(std::span<Position>); // 解耦
+// OOP:  class Monster { float x; void update(); };   // 数据行为耦合
+// ECS:  struct Position { float x; };  void sys(std::span<Position>); // 解耦
 ```
 
 > 【为什么设计】当实体数量从"百"级膨胀到"百万"级（开放世界、粒子、战斗单位），OOP 的"每个对象一个虚表指针 + 散乱堆分配"会让内存带宽与分支预测双双崩溃。ECS 把所有同类组件压进**连续数组**，让一个系统只碰它需要的那几列数据——这就是 ⑤ 起所有性能讨论的根。
@@ -151,7 +151,7 @@ struct Tag      { std::uint32_t id; };   // 标签组件：几乎零数据，仅
 #include <span>
 #include <cstddef>
 void render_system(std::span<const Position> pos, std::span<const Tag> visible) {
-    for (std::size_t i = 0; i < pos.size(); ++i) { /* 只读 pos[i] */ (void)pos[i]; (void)visible; }
+    for (std::size_t i = 0; i < pos.size(); ++i) { // 只读 pos[i]
 }
 ```
 
@@ -180,8 +180,8 @@ void movement_system(std::vector<Position>& pos,
 ```cpp
 #include <vector>
 // ④ 系统应该是"无状态函数"：所有状态都在组件里，便于并行（见 ⑨ ⑮）
-//   坏味道：系统里藏着 static std::vector<Entity> g_cache;  // 全局可变状态
-//   好味道：系统只读组件、写组件，输入输出显式化
+// 坏味道：系统里藏着 static std::vector<Entity> g_cache;  // 全局可变状态
+// 好味道：系统只读组件、写组件，输入输出显式化
 ```
 
 - `[实现·GCC15]`：`movement_system` 在 `-O2` 内循环被编译为简单的 `movss`/`mulss`/`addss` 标量序列（未向量化，因 `-O2` 默认不开 tree-vectorize；`-O3 -mavx2` 才会展开为 `vmulps`/`vaddps`，见 ⑬）。
@@ -190,9 +190,9 @@ void movement_system(std::vector<Position>& pos,
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实体组件系统 ECS
 ```cpp
 // ④ 系统可以"查询"而非"持有"：用组件的有无组合出行为
-//   [Position, Velocity]        -> 移动
-//   [Position, Render, Visible] -> 渲染
-//   [Position, AI]              -> 决策
+// [Position, Velocity]        -> 移动
+// [Position, Render, Visible] -> 渲染
+// [Position, AI]              -> 决策
 // 同一份 Position 被多个系统共享读取 = 只读共享，天然无锁（见 ⑮）
 ```
 
@@ -741,8 +741,8 @@ ECS 是 **Data-Oriented Design（面向数据设计，DOD）** 在"实体-组件
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 DOD 衔接
 ```cpp
 // ⑱ DOD 心法：把"对数据的操作"按"访问模式"分组，而非按"对象"分组
-//   OOP 视角: for obj in world: obj.update();        // 对象驱动，访存跳
-//   DOD 视角: for sys in systems: sys.run(components); // 数据驱动，访存顺
+// OOP 视角: for obj in world: obj.update();        // 对象驱动，访存跳
+// DOD 视角: for sys in systems: sys.run(components); // 数据驱动，访存顺
 ```
 
 - `[标准]`：DOD 不是 C++ 标准概念，而是**架构方法论**；它的落地依赖标准库容器、平凡类型（`[basic.types]`）、`std::span`、以及对缓存/TLB/预取（`[intro.abstract]` 之外的平台特性）的理解。

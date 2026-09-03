@@ -293,41 +293,41 @@ int main() {
 ```cpp
 #include <cstddef>
 // 文件：bits/unordered_set.h   行号：102, 133, 490, 504, 601, 690, 731, 782, 829, 854, 865
-//  102:  class unordered_set
-//  133:  using node_type = typename _Hashtable::node_type;
-//  490:  node_type extract(const_iterator __pos);
-//  504:  insert(node_type&& __nh);                    // 重新挂回，零拷贝
-//  601:  merge(unordered_set<...>& __source);         // _M_h._M_merge_unique
-//  690:  count(const key_type& __x) const;           // _M_h.count
-//  731:  equal_range(const key_type& __x);            // _M_h.equal_range
-//  782:  bucket(const key_type& __key) const;         // 返回键所在桶索引
-//  829:  load_factor() const noexcept;                // _M_h.load_factor()
-//  854:  rehash(size_type __n);                       // _M_h.rehash(__n)
-//  865:  reserve(size_type __n);                      // _M_h.reserve(__n)
+// 102:  class unordered_set
+// 133:  using node_type = typename _Hashtable::node_type;
+// 490:  node_type extract(const_iterator __pos);
+// 504:  insert(node_type&& __nh);                    // 重新挂回，零拷贝
+// 601:  merge(unordered_set<...>& __source);         // _M_h._M_merge_unique
+// 690:  count(const key_type& __x) const;           // _M_h.count
+// 731:  equal_range(const key_type& __x);            // _M_h.equal_range
+// 782:  bucket(const key_type& __key) const;         // 返回键所在桶索引
+// 829:  load_factor() const noexcept;                // _M_h.load_factor()
+// 854:  rehash(size_type __n);                       // _M_h.rehash(__n)
+// 865:  reserve(size_type __n);                      // _M_h.reserve(__n)
 
 // 文件：bits/hashtable.h   行号：181, 387-391, 721, 723, 994, 1152, 2159, 2523, 2546
-//  181:  class _Hashtable
-//  387:  __buckets_ptr  _M_buckets        = &_M_single_bucket;
-//  388:  size_type      _M_bucket_count   = 1;
-//  389:  __node_base    _M_before_begin;
-//  391:  _RehashPolicy  _M_rehash_policy;
-//  721:  load_factor() const noexcept
-//  723:  return static_cast<float>(size()) / static_cast<float>(bucket_count());
-//  994:  void rehash(size_type __bkt_count);
+// 181:  class _Hashtable
+// 387:  __buckets_ptr  _M_buckets        = &_M_single_bucket;
+// 388:  size_type      _M_bucket_count   = 1;
+// 389:  __node_base    _M_before_begin;
+// 391:  _RehashPolicy  _M_rehash_policy;
+// 721:  load_factor() const noexcept
+// 723:  return static_cast<float>(size()) / static_cast<float>(bucket_count());
+// 994:  void rehash(size_type __bkt_count);
 // 1152:  void _M_rehash(size_type __bkt_count, const __rehash_state& __state);
 // 2159:  _M_need_rehash(_M_bucket_count, _M_element_count, __n);  // 策略决定何时扩容
 // 2523:  rehash(size_type __bkt_count)       // 定义：分配新桶、重挂节点
 // 2546:  _M_rehash(size_type __bkt_count, ...) // 真正重哈希实现
 
 // 文件：bits/functional_hash.h   行号：201, 204, 206, 210
-//  201:  struct _Hash_impl
-//  204:  hash(const void* __ptr, size_t __clength, size_t __seed)
-//  206:  { return _Hash_bytes(__ptr, __clength, __seed); }   // 转发到 FNV
-//  210:  hash(const _Tp& __val) { return hash(&__val, sizeof(__val)); }
+// 201:  struct _Hash_impl
+// 204:  hash(const void* __ptr, size_t __clength, size_t __seed)
+// 206:  { return _Hash_bytes(__ptr, __clength, __seed); }   // 转发到 FNV
+// 210:  hash(const _Tp& __val) { return hash(&__val, sizeof(__val)); }
 
 // 文件：bits/hash_bytes.h   行号：47, 54
-//   47:  _Hash_bytes(const void* __ptr, size_t __len, size_t __seed);
-//   54:  _Fnv_hash_bytes(const void* __ptr, size_t __len, size_t __seed); // FNV-1a
+// 47:  _Hash_bytes(const void* __ptr, size_t __len, size_t __seed);
+// 54:  _Fnv_hash_bytes(const void* __ptr, size_t __len, size_t __seed); // FNV-1a
 ```
 
 - `[实现·GCC15]`：`unordered_set::find(k)` → `_M_h._M_find_node(bkt, k, code)`（`hashtable.h:812`），其中 `bkt = _M_bucket_index(code) = code % _M_bucket_count`（`hashtable.h:684/796`）。

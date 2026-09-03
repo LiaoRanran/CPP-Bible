@@ -236,10 +236,10 @@ _Z10cross_castP2M1:
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-A：iostream
 ```cpp
 // 标准库概念（节选，示意）
-struct ios { /* 格式化状态、rdbuf */ virtual ~ios(); };
-struct istream : virtual ios { /* >> 运算符 */ };
-struct ostream : virtual ios { /* << 运算符 */ };
-struct iostream : istream, ostream { /* 既是输入也是输出，ios 仅一份 */ };
+struct ios { // 格式化状态、rdbuf
+struct istream : virtual ios { // >> 运算符
+struct ostream : virtual ios { // << 运算符
+struct iostream : istream, ostream { // 既是输入也是输出，ios 仅一份
 ```
 
 【设计要点】若 `istream`/`ostream` 非虚继承 `ios`，则 `iostream` 会有两份 `ios`，`cin.rdbuf()` 等访问产生歧义。虚继承使 `ios` 共享唯一，由 `iostream` 构造。这是虚继承「存在即合理」的少数必要场景之一。
@@ -1134,7 +1134,7 @@ int main() {
     R* pr = &d;
     std::cout << (void*)&d << '\n';   // 对象首地址
     std::cout << (void*)pl << '\n';   // == 首地址（L 是首个基类）
-    std::cout << (void*)pr << '\n';   // != 首地址（R 子对象有偏移）
+    std::cout << (void*)pr << '\n';   //!= 首地址（R 子对象有偏移）
 }
 ```
 

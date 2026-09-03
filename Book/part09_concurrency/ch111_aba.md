@@ -53,7 +53,7 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 // ① ABA 的最小抽象：值序列 A→B→A 对 CAS 不可区分
 // 假设 shared 是 std::atomic<int>
 // T1: int e = shared.load();          // 读到 A
-//     ... T1 被抢占 ...
+// ... T1 被抢占 ...
 // T2: shared.store(B);                // A -> B
 // T2: shared.store(A);                // B -> A（同值，可能复用同一内存）
 // T1: shared.compare_exchange(e, X);  // 看到 A，CAS 成功 —— 但中间世界已变
@@ -111,8 +111,8 @@ CAS 的契约是：“若当前值 == 预期值，则替换为新值，返回 tr
 ```cpp
 // ③ CAS 的语义（标准库等价抽象）
 // bool compare_exchange(atomic<T>& a, T& expected, T desired):
-//     if (a.load() == expected) { a.store(desired); return true; }
-//     else { expected = a.load(); return false; }
+// if (a.load() == expected) { a.store(desired); return true; }
+// else { expected = a.load(); return false; }
 // 注意：比较的是 T 的位模式；A->B->A 的位模式回到 A，CAS 必然成功。
 ```
 
@@ -247,8 +247,8 @@ void critical_exit()  { in_critical = false; }   // ⑦ 离开后，旧纪元对
 ```cpp
 // ⑦ 回收条件：某 epoch 的节点可被回收，当且仅当没有任何线程仍登记在该 epoch
 // bool safe_to_reclaim(e):
-//     for each thread t: if (t.in_critical && t.local_epoch == e) return false;
-//     return true;
+// for each thread t: if (t.in_critical && t.local_epoch == e) return false;
+// return true;
 ```
 
 - `[标准]`：EBR 同样基于标准原子，属于算法层方案。
@@ -379,8 +379,8 @@ delete p;                 // ⑩ ❌ 若 T2 刚 load 了 p 的副本，这里 de
 > **示例 19** [难度 ★★☆☆☆] [主题：内存回收的根本难题 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑩ 根本矛盾：
-//   - 不能“等所有线程都不用再 delete”：无锁算法没有全局锁来统计使用者；
-//   - 也不能“不 delete”：会内存泄漏。
+// - 不能“等所有线程都不用再 delete”：无锁算法没有全局锁来统计使用者；
+// - 也不能“不 delete”：会内存泄漏。
 // 解法只有两条路：(a) 延迟回收（风险指针 / EBR / RCU）；(b) 永不回收（对象池复用）。
 ```
 
@@ -411,10 +411,10 @@ C++ 标准**至今没有**内建的 ABA 防御或安全回收原语。相关能�
 > **示例 21** [难度 ★★☆☆☆] [主题：语言级支持现状：无标准方案 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑫ 标准提供“积木”，不提供“方案”
-//   - std::atomic<T>::compare_exchange_*  ：有，但只比较位模式（正是 ABA 根源）
-//   - std::atomic<T>::is_always_lock_free ：可查询某类型是否真无锁（关键！）
-//   - std::atomic<__int128>              ：GCC/Clang 扩展，非标准
-//   - hazard pointer / RCU / EBR          ：全在“标准库之外”，需自写或借第三方库
+// - std::atomic<T>::compare_exchange_*  ：有，但只比较位模式（正是 ABA 根源）
+// - std::atomic<T>::is_always_lock_free ：可查询某类型是否真无锁（关键！）
+// - std::atomic<__int128>              ：GCC/Clang 扩展，非标准
+// - hazard pointer / RCU / EBR          ：全在“标准库之外”，需自写或借第三方库
 static_assert(std::atomic<__int128>::is_always_lock_free || true, "DCAS 未必无锁");
 ```
 
@@ -492,7 +492,7 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 ```cpp
 // ⑭ ✅ 正确：用 64 位 tag + 风险指针保护 + 恰当内存序
 // 关键三点：(1) tag 足够宽；(2) pop 出的节点进 retire 而非立刻 delete；
-//          (3) CAS 用 acq_rel/acquire，保证节点字段对回收者可见。
+// (3) CAS 用 acq_rel/acquire，保证节点字段对回收者可见。
 ```
 
 - `[经验]`：最常见两类误用：① 内存序过弱导致读者看不到写者写入的 `next`；② 低估 `tag` 回绕与回收时序，导致“修了 CAS 却没修回收”。
@@ -511,17 +511,17 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 #include <chrono>
 #include <cstdio>
 // 伪代码：N 个线程各做 M 次 push/pop，测每秒操作数
-//   mutex 栈：竞争时线程睡眠/唤醒，延迟高但公平
-//   标签栈：竞争时自旋重试，延迟低但烧 CPU
+// mutex 栈：竞争时线程睡眠/唤醒，延迟高但公平
+// 标签栈：竞争时自旋重试，延迟低但烧 CPU
 // 结论（示意）：低竞争 mutex≈标签栈；高竞争 mutex 更稳、标签栈 CPU 飙升
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能代价对比 [实现·GCC15]
 ```cpp
 // ⑮ 双字 CAS 的额外代价：本工具链走 libatomic 锁，可能比单字 CAS 更慢
-//   - 单字 CAS：1 条 lock cmpxchg（约十几周期）
-//   - 双字 CAS（本 MinGW）：libatomic 内部锁 + 回退，开销明显更高
-//   => 选型时先用 is_always_lock_free 确认，再决定是否值当
+// - 单字 CAS：1 条 lock cmpxchg（约十几周期）
+// - 双字 CAS（本 MinGW）：libatomic 内部锁 + 回退，开销明显更高
+// => 选型时先用 is_always_lock_free 确认，再决定是否值当
 ```
 
 - `[平台·x86-64]`：单字 `lock cmpxchg` 是自旋原语；双字若落到 libatomic 锁，则退化为“自旋+锁”，ABA 防御的代价可能吃掉无锁的收益。
@@ -542,8 +542,8 @@ bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为
 > **示例 30** [难度 ★☆☆☆☆] [主题：与第110章衔接 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑯ 本章补的洞：当“值”是指针且指向的内存会被回收/复用，CAS 的“比较”不够
-//   -> 加 tag（本章④⑤）保护 CAS 语义
-//   -> 加风险指针/RCU（本章⑨⑪，见第112章）保护内存安全
+// -> 加 tag（本章④⑤）保护 CAS 语义
+// -> 加风险指针/RCU（本章⑨⑪，见第112章）保护内存安全
 ```
 
 - `[标准]`：ABA 防御是“CAS 之上的协议层”，不改动第110章的任何原语语义。
@@ -554,12 +554,12 @@ bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为
 > **示例 31** [难度 ★★☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰ 决策表（示意）
-//   场景                                  是否需要担心 ABA
-//   原子计数器 int/uint64 自增            不需要（值无“内存回收”语义）
-//   无锁栈/队列的节点指针                需要（pop 后 delete + 地址复用）
-//   只 push 不 pop 的无锁结构             不需要（无回收）
-//   读多写少、用 RCU 的表                不需要（写者等宽限期后回收）
-//   用节点池复用、永不真正 delete         基本不需要（但仍需 tag 防逻辑 ABA）
+// 场景                                  是否需要担心 ABA
+// 原子计数器 int/uint64 自增            不需要（值无“内存回收”语义）
+// 无锁栈/队列的节点指针                需要（pop 后 delete + 地址复用）
+// 只 push 不 pop 的无锁结构             不需要（无回收）
+// 读多写少、用 RCU 的表                不需要（写者等宽限期后回收）
+// 用节点池复用、永不真正 delete         基本不需要（但仍需 tag 防逻辑 ABA）
 ```
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
@@ -603,9 +603,9 @@ double bench(F f, int threads, int iters) {
 ```cpp
 #include <mutex>
 // ⑱ 三种被测操作（示意签名）
-//   op_mutex():  std::mutex 保护的栈 pop/push
-//   op_tagged(): 16 字节标签指针 CAS 栈（本章④⑤）
-//   op_rcu():    RCU 表更新（本章⑪，见第112章）
+// op_mutex():  std::mutex 保护的栈 pop/push
+// op_tagged(): 16 字节标签指针 CAS 栈（本章④⑤）
+// op_rcu():    RCU 表更新（本章⑪，见第112章）
 // 预期（低竞争）：tagged ≈ rcu > mutex；高竞争：rcu ≈ mutex > tagged(自旋烧CPU)
 ```
 
@@ -621,26 +621,26 @@ double bench(F f, int threads, int iters) {
 ```cpp
 #include <cstdint>
 // ⑲ 1) 先确认是否真有无锁 + 真无 ABA 风险，再决定是否上无锁
-//   if (!std::atomic<T>::is_always_lock_free) 考虑退回 mutex，别硬上
+// if (!std::atomic<T>::is_always_lock_free) 考虑退回 mutex，别硬上
 static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 2) tag 用 64 位，且每次写都递增；读路径也要携带 tag 做快照
-//   （见本章④的 TaggedPtr / unpack）
+// （见本章④的 TaggedPtr / unpack）
 ```
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 3) 回收用成熟方案：优先 hazard pointer 或 RCU（第112章），不要手搓
-//   pop 出的节点进 retire 列表，确认无读者后再 delete
+// pop 出的节点进 retire 列表，确认无读者后再 delete
 ```
 
 > **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑲ 4) 内存序别乱用：CAS 用 acq_rel/acquire；纯计数器可用 relaxed
-//   compare_exchange_strong(expected, desired, acq_rel, acquire)
+// compare_exchange_strong(expected, desired, acq_rel, acquire)
 ```
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
@@ -686,7 +686,7 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 > **示例 40** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 ```cpp
 // ⑳ 一句话记忆：ABA = “地址复用了，但世界变了”；
-//     防御 = “给值加版本（tag）” + “给内存加保护（hazard/RCU）”。
+// 防御 = “给值加版本（tag）” + “给内存加保护（hazard/RCU）”。
 ```
 
 - `[标准]`：本章所有机制均建立在 `std::atomic` 之上，ISO C++ 完全支持；DCAS 的 `__int128` 属编译器扩展。

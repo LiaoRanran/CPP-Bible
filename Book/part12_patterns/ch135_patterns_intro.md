@@ -111,7 +111,7 @@ GoF 23 模式分类速记（与第③节一致）：
 // 创建型 5：Factory Method, Abstract Factory, Builder, Prototype, Singleton
 // 结构型 7：Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy
 // 行为型 11：Chain of Responsibility, Command, Interpreter, Iterator,
-//            Mediator, Memento, Observer, State, Strategy, Template Method, Visitor
+// Mediator, Memento, Observer, State, Strategy, Template Method, Visitor
 ```
 
 一个贯穿历史的「Iterator」雏形（GoF 与 STL 同源）：
@@ -254,7 +254,7 @@ struct LockGuard {
     LockGuard(const LockGuard&) = delete;
     LockGuard& operator=(const LockGuard&) = delete;
 };
-void work() { LockGuard g; /* 作用域结束自动 unlock */ }
+void work() { LockGuard g; // 作用域结束自动 unlock
 ```
 
 经典模式借 RAII 变得"异常安全"：
@@ -389,7 +389,7 @@ double integrate(std::function<double(double)> f, double a, double b){
 ```cpp
 // 反模式：为单一固定行为建立三层抽象
 struct ILogger { virtual void log()=0; };
-struct ConsoleLogger : ILogger { void log() override {/*...*/} };
+struct ConsoleLogger : ILogger { void log() override { // ...
 struct LoggerFactory { static ILogger* create(); }; // 多余
 ```
 
@@ -434,7 +434,7 @@ struct MemStore { void write(int, int) {} };
 > **示例 24** [难度 ★☆☆☆☆] [主题：模式与 SOLID 原则 <span class="badge badge-std">标准</span>]
 ```cpp
 struct Bird { virtual void fly() {} };
-struct Penguin : Bird { void fly() override { /* 抛异常：违反 LSP */ } };
+struct Penguin : Bird { void fly() override { // 抛异常：违反 LSP
 ```
 
 ---
@@ -502,8 +502,8 @@ std::unique_ptr<Product> make(char k){
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：304
-//  constexpr unique_ptr() noexcept
-//  : _M_t() { }   // 默认构造：内部 _M_t（指针+删除器）置空，无动态分配
+// constexpr unique_ptr() noexcept
+// : _M_t() { }   // 默认构造：内部 _M_t（指针+删除器）置空，无动态分配
 ```
 
 > 源码取证：`unique_ptr.h` 第 304 行确为默认构造函数；结合 `Examples/_ch135_factory.cpp`（`g++ -std=c++23 -O2` 编译通过）可知，现代 Factory 返回 `unique_ptr`，调用方拿到的就是"所有权已转移、离开作用域自动释放"的对象，彻底消灭 `delete`。

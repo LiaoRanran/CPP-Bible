@@ -262,7 +262,7 @@ template <typename E> double eval_at(const Expr<E>& e, size_t i) {
 > **示例 11** [难度 ★☆☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
 ```cpp
 // 标准：operator+ 可返回任意类型（包括代理）
-struct Proxy { /* ... */ };
+struct Proxy { // ...
 struct Vec {
     Proxy operator+(const Vec&) const;   // 合法：返回代理即 ET 雏形
 };
@@ -447,7 +447,7 @@ template <typename E> struct Expr {
 ```cpp
 #include <cstddef>
 // 反模式：代理引用悬垂（操作数是临时）
-Fast make_vec(size_t n) { Fast f(n); /* fill */ return f; }
+Fast make_vec(size_t n) { Fast f(n); // fill
 // Sum<Fast,Fast> bad = make_vec(3) + make_vec(3);  // 临时 Fast 已析构，代理引用悬垂！
 // 正确：操作数须先于代理求值完成前存活
 ```
@@ -572,8 +572,8 @@ u = a + b + c;          // 0 临时、单遍（ET）
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践：完整 ET 骨架（Expr + Sum + operator+ + operator=）
-template <typename E> struct Expr { /* CRTP 接口 */ };
-template <typename A, typename B> struct Sum : Expr<Sum<A,B>> { /* 引用 + 递归 [] */ };
+template <typename E> struct Expr { // CRTP 接口
+template <typename A, typename B> struct Sum : Expr<Sum<A,B>> { // 引用 + 递归 []
 template <typename A, typename B> Sum<A,B> operator+(const Expr<A>&, const Expr<B>&);
 // Fast::operator=(const Expr<O>&) 单遍求值
 ```

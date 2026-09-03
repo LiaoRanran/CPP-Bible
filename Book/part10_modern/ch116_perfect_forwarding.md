@@ -200,8 +200,8 @@ classDiagram
 ```cpp
 // ⑦-a 引用折叠四条规则：编译期 static_assert 验证
 // 关键：源码中不能直接写 `int& &&`（引用的引用），编译器会报
-//       "cannot declare reference to 'int&'"。引用折叠只在【模板/别名替换】
-//       时发生，因此必须借助别名模板把 T 替换进 T& / T&& 才能观察折叠。
+// "cannot declare reference to 'int&'"。引用折叠只在【模板/别名替换】
+// 时发生，因此必须借助别名模板把 T 替换进 T& / T&& 才能观察折叠。
 #include <type_traits>
 template<class T> using LRef = T&;   // T& ：形成"对 T 加左值引用"
 template<class T> using RRef = T&&;  // T&&：形成"对 T 加右值引用"

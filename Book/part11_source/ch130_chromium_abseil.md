@@ -74,7 +74,7 @@ int bootstrap() {
     absl::flat_hash_map<int, int> cache;   // Abseil：O(1) 开放寻址哈希表
     cache[1] = 42;
     base::ThreadPool::PostTask(            // Chromium：把任务丢进线程池
-        FROM_HERE, base::BindOnce([] { /* 后台工作 */ }));
+        FROM_HERE, base::BindOnce([] { // 后台工作
     return cache.size();
 }
 ```
@@ -137,17 +137,17 @@ consume(arr);   // 零拷贝视图
 // 文件：https://github.com/abseil/abseil-cpp/blob/master/absl/container/flat_hash_map.h
 // 行号：86
 // 上游参考：以下为上游 flat_hash_map 声明骨架（节选，非本机）
-//   template <class K, class V, class Hash = absl::container_internal::hash<K>,
-//             class Eq = absl::container_internal::eq<K>,
-//             class Alloc = std::allocator<std::pair<const K, V>>>
-//   class flat_hash_map
-//       : public absl::container_internal::raw_hash_map<...> {
-//     using Base = typename flat_hash_map::raw_hash_map;
-//    public:
-//     using key_type = K; using mapped_type = V;
-//     V& operator[](const K& key);          // 缺失则默认构造并插入
-//     V& operator[](K&& key);
-//   };
+// template <class K, class V, class Hash = absl::container_internal::hash<K>,
+// class Eq = absl::container_internal::eq<K>,
+// class Alloc = std::allocator<std::pair<const K, V>>>
+// class flat_hash_map
+// : public absl::container_internal::raw_hash_map<...> {
+// using Base = typename flat_hash_map::raw_hash_map;
+// public:
+// using key_type = K; using mapped_type = V;
+// V& operator[](const K& key);          // 缺失则默认构造并插入
+// V& operator[](K&& key);
+// };
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·Abseil]源码剖析：上游
@@ -156,8 +156,8 @@ consume(arr);   // 零拷贝视图
 // 文件：https://github.com/abseil/abseil-cpp/blob/master/absl/container/internal/raw_hash_map.h
 // 行号：65
 // 上游参考：raw_hash_map 持有一块"控制字节(ctrl) + slot"的连续数组；
-//   ctrl[i] 编码本槽状态（Empty/Deleted/Full + 7 位哈希片段 H2），
-//   查找时先用 H1 定位组(group)，再用 SIMD 比较 ctrl 与 H2，命中后再比 key。
+// ctrl[i] 编码本槽状态（Empty/Deleted/Full + 7 位哈希片段 H2），
+// 查找时先用 H1 定位组(group)，再用 SIMD 比较 ctrl 与 H2，命中后再比 key。
 ```
 
 - `[实现·Abseil]`：Abseil 的核心技巧是**控制字节(ctrl)与数据(slot)分离存储**——用一条 `pcmpeqb`/`movmask` 即可一次比较一组 16 个槽的 H2，避免逐槽解引用，这是 `flat_hash_map` 比链表式 `unordered_map` 快的根本原因。
@@ -190,7 +190,7 @@ log_url(p);
 base::Thread worker("io_thread");
 worker.Start();                         // 起线程，内部建 MessageLoop
 worker.task_runner()->PostTask(        // 往该线程投递任务
-    FROM_HERE, base::BindOnce([] { /* 在 io_thread 上执行 */ }));
+    FROM_HERE, base::BindOnce([] { // 在 io_thread 上执行
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 库
@@ -215,7 +215,7 @@ Chromium 的任务系统的三大件：`TaskRunner`（投递入口）、`Message
 #include "base/functional/bind.h"
 base::ThreadPool::PostTask(
     FROM_HERE,
-    base::BindOnce([] { /* 在池内某线程执行，顺序不保证 */ }));
+    base::BindOnce([] { // 在池内某线程执行，顺序不保证
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 任务系统
@@ -225,7 +225,7 @@ base::ThreadPool::PostTask(
 base::ThreadPool::PostTask(
     FROM_HERE,
     {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-    base::BindOnce([] { /* 可能阻塞，按 I/O 任务调度 */ }));
+    base::BindOnce([] { // 可能阻塞，按 I/O 任务调度
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 任务系统
@@ -234,8 +234,8 @@ base::ThreadPool::PostTask(
 #include "base/task/sequenced_task_runner.h"
 scoped_refptr<base::SequencedTaskRunner> seq =
     base::ThreadPool::CreateSequencedTaskRunner({});
-seq->PostTask(FROM_HERE, base::BindOnce([] { /* 第 1 */ }));
-seq->PostTask(FROM_HERE, base::BindOnce([] { /* 第 2，必在第 1 后 */ }));
+seq->PostTask(FROM_HERE, base::BindOnce([] { // 第 1
+seq->PostTask(FROM_HERE, base::BindOnce([] { // 第 2，必在第 1 后
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 任务系统
@@ -244,7 +244,7 @@ seq->PostTask(FROM_HERE, base::BindOnce([] { /* 第 2，必在第 1 后 */ }));
 #include "base/functional/callback.h"
 #include <utility>
 #include <functional>
-base::OnceClosure cb = base::BindOnce([] { /* 只能运行一次 */ });
+base::OnceClosure cb = base::BindOnce([] { // 只能运行一次
 std::move(cb).Run();
 ```
 
@@ -508,8 +508,8 @@ for (int i = 0; i < (1 << 20); ++i) m[i] = i;
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：flathashmap vs
 ```cpp
 // ⑪-c 测量缓存行为（perf 思路，非本机运行）
-//   perf stat -e cache-misses,instructions ./bench_flat
-//   perf stat -e cache-misses,instructions ./bench_unordered
+// perf stat -e cache-misses,instructions ./bench_flat
+// perf stat -e cache-misses,instructions ./bench_unordered
 // 典型结论：flat_hash_map 的 cache-misses 显著更低（连续内存）
 ```
 
@@ -581,22 +581,22 @@ struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出
 ```cpp
 #include <string>
 // ⑭-a 早期 Google 代码用 base::hash_map（已废弃），后统一到 absl
-//   旧：base::hash_map<std::string, int> m;   // ⚠ 已移除
-//   新：absl::flat_hash_map<std::string, int> m;
+// 旧：base::hash_map<std::string, int> m;   // ⚠ 已移除
+// 新：absl::flat_hash_map<std::string, int> m;
 ```
 
 > **示例 34** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <string_view>
 // ⑭-b Abseil 的 "absl::string_view" 在 C++17 后建议改用 std::string_view
-//   迁移：using string_view = std::string_view;  // 逐步去 absl 依赖
+// 迁移：using string_view = std::string_view;  // 逐步去 absl 依赖
 ```
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑭-c Chromium 正在把 base::Callback 迁移到 base::OnceCallback/RepeatingCallback
-//   旧：base::Callback<void()> cb = base::Bind([]{});  // 已弃用
-//   新：base::OnceClosure cb = base::BindOnce([]{});
+// 旧：base::Callback<void()> cb = base::Bind([]{});  // 已弃用
+// 新：base::OnceClosure cb = base::BindOnce([]{});
 ```
 
 - `[经验]`：两套库都在"向标准靠拢"——新代码优先标准类型，老代码用别名逐步去依赖，降低长期维护成本。
@@ -633,9 +633,9 @@ base::ThreadPool::PostTask(
 ```cpp
 #include <map>
 // ⑮-d 容器选型表（速查，详见第⑳节）
-//   需要稳定引用       -> std::unordered_map / std::map
-//   需要极致查找性能   -> absl::flat_hash_map
-//   需要有序遍历       -> std::map / absl::btree_map
+// 需要稳定引用       -> std::unordered_map / std::map
+// 需要极致查找性能   -> absl::flat_hash_map
+// 需要有序遍历       -> std::map / absl::btree_map
 ```
 
 - `[经验]`：先想"接口边界用 std，内部热点用 absl"；`absl::Status` + `string_view` + `flat_hash_map` 是 Abseil 的黄金三件套。
@@ -678,19 +678,19 @@ widgets.emplace(1, std::make_unique<Widget>());
 > **示例 43** [难度 ★★☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰-a Abseil 补丁示例：给 flat_hash_map 加一个 helper（伪代码草图）
-//   提交前必须过测试 + clang-format + 通过 CI
-//   template <class K, class V, class H, class E, class A>
-//   bool flat_hash_map<K,V,H,E,A>::contains(const K& key) const {
-//     return find(key) != end();
-//   }
+// 提交前必须过测试 + clang-format + 通过 CI
+// template <class K, class V, class H, class E, class A>
+// bool flat_hash_map<K,V,H,E,A>::contains(const K& key) const {
+// return find(key) != end();
+// }
 ```
 
 > **示例 44** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑰-b Chromium 用 Gerrit + tryjob：CL 描述需含 bug 号与测试说明
-//   BUG=123456
-//   TEST=base_unittests --gtest_filter=*ThreadPool*
-//   （非 C++，是贡献流程约定）
+// BUG=123456
+// TEST=base_unittests --gtest_filter=*ThreadPool*
+// （非 C++，是贡献流程约定）
 ```
 
 > **示例 45** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
@@ -747,23 +747,23 @@ std::span<const int> t = s;      // 布局一致，可互转
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读：怎么读这两套库
 ```cpp
 // ⑲-a 读 flat_hash_map：入口看声明，实现跳 internal
-//   1) absl/container/flat_hash_map.h  —— 只看 public 接口
-//   2) absl/container/internal/raw_hash_map.h —— 真正算法
-//   3) absl/container/internal/raw_hash_set.h  —— 底层容器
+// 1) absl/container/flat_hash_map.h  —— 只看 public 接口
+// 2) absl/container/internal/raw_hash_map.h —— 真正算法
+// 3) absl/container/internal/raw_hash_set.h  —— 底层容器
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读：怎么读这两套库
 ```cpp
 // ⑲-b 读 Chromium 任务系统：从 PostTask 顺藤摸瓜
-//   base/task/thread_pool/thread_pool.h        —— PostTask 入口
-//   base/task/thread_pool/thread_pool_impl.cc  —— 入队与调度
-//   base/message_loop/message_loop.cc          —— Run 循环
+// base/task/thread_pool/thread_pool.h        —— PostTask 入口
+// base/task/thread_pool/thread_pool_impl.cc  —— 入队与调度
+// base/message_loop/message_loop.cc          —— Run 循环
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读：怎么读这两套库
 ```cpp
 // ⑲-c 用本机等价实现辅助理解（见第⑥/⑨节，自包含、可单步调试）
-//   把上游复杂的 SIMD/锁逻辑替换成最小可运行版本，先懂机制再读优化
+// 把上游复杂的 SIMD/锁逻辑替换成最小可运行版本，先懂机制再读优化
 ```
 
 - `[实现·Abseil]`：上游 `raw_hash_set.h` 的 `Find`/`Insert` 与第⑨节本机 `FlatMap::find/insert` 是同构的——先在本机跑通精简版，再回到上游读 `group`/`ctrl`/SIMD 优化，事半功倍。
@@ -818,7 +818,7 @@ int quickstart() {
     int sum = 0;
     for (auto& kv : m) sum += kv.second;                 // 范围 for
     base::ThreadPool::PostTask(                           // 后台任务
-        FROM_HERE, base::BindOnce([] { /* work */ }));
+        FROM_HERE, base::BindOnce([] { // work
     return sum;
 }
 ```
@@ -887,22 +887,22 @@ int main() {
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 API 长什么样
 ```cpp
 // ㉑.3 真实 Abseil/Chromium 写法（仅注释演示，需链接 absl / Chromium base；本门禁按空块编译通过）：
-//   #include "absl/container/flat_hash_map.h"
-//   #include "absl/status/status.h"
-//   #include "base/functional/callback.h"
-//   // ① 高性能哈希表：连续内存 + 开放寻址，比 std::unordered_map 缓存友好（见第⑨节）
-//   absl::flat_hash_map<std::string, int> cache;
-//   cache["hits"] = 1;
-//   // ② 统一错误模型：代替异常/错误码混用（见第⑮节）
-//   absl::Status open(const char* path) {
-//       if (!path) return absl::InvalidArgumentError("path 为空");
-//       return absl::OkStatus();
-//   }
-//   // ③ 可重复回调：与上面的 std::function 例子同义，但来自 base 库
-//   base::RepeatingCallback<void(int)> cb = base::BindRepeating(
-//       [](int n) { /* 可被多次运行 */ });
-//   cb.Run(1); cb.Run(2);
-//   官方文档：https://abseil.io/docs/cpp/guides  |  https://chromium.googlesource.com/chromium/src/+/main/base/
+// #include "absl/container/flat_hash_map.h"
+// #include "absl/status/status.h"
+// #include "base/functional/callback.h"
+//// ① 高性能哈希表：连续内存 + 开放寻址，比 std::unordered_map 缓存友好（见第⑨节）
+// absl::flat_hash_map<std::string, int> cache;
+// cache["hits"] = 1;
+//// ② 统一错误模型：代替异常/错误码混用（见第⑮节）
+// absl::Status open(const char* path) {
+// if (!path) return absl::InvalidArgumentError("path 为空");
+// return absl::OkStatus();
+// }
+//// ③ 可重复回调：与上面的 std::function 例子同义，但来自 base 库
+// base::RepeatingCallback<void(int)> cb = base::BindRepeating(
+// [](int n) { /* 可被多次运行 */ });
+// cb.Run(1); cb.Run(2);
+// 官方文档：https://abseil.io/docs/cpp/guides  |  https://chromium.googlesource.com/chromium/src/+/main/base/
 ```
 
 ### ㉑.4 端到端：怎么把它接进你的工程
