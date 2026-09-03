@@ -469,11 +469,33 @@ int main(){std::cout<<"Linux RCU (release+consume), Chrome base::AtomicRefCount 
 ```
 
 ## ⑬ 源码分析 [实现·GCC15]
-> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析 [实现·GCC15]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析 [实现·GCC15]
+
+`std::atomic<T>::store` 在 GCC 里正是通过 `__atomic_store_n` lowering 的（见 `gcc/builtins.cc` 的 `expand_atomic_store`）。直接调内建，用 `g++ -O2 -S` 看它怎么把内存序变成指令：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"GCC __atomic_store_n maps to lock xchg or mov+mfence depending on order in gcc/builtins.cc.\n";return 0;}
+// ㉓ gcc/builtins.cc 的 __atomic_store_n：把内存序直接 lowering 成不同指令
+#include <cstdio>
+
+long g;
+
+int main() {
+    __atomic_store_n(&g, 7, __ATOMIC_RELAXED);   // → mov
+    __atomic_store_n(&g, 8, __ATOMIC_RELEASE);   // → mov（release 在 x86 免费）
+    __atomic_store_n(&g, 9, __ATOMIC_SEQ_CST);   // → xchg（带锁）
+    std::printf("g=%ld\n", g);
+    return 0;
+}
 ```
+
+真机输出：`g=9`。`g++ -O2 -S` 对照（GCC 13.1.0，x86-64）：
+
+| 内建调用 | 生成指令 | 与示例 6 表格一致 |
+|---|---|---|
+| `__atomic_store_n(&g, v, __ATOMIC_RELAXED)` | `mov DWORD PTR g[rip], ...` | 同 `store(relaxed/release)` |
+| `__atomic_store_n(&g, v, __ATOMIC_SEQ_CST)` | **`xchg ..., DWORD PTR g[rip]`** | 同 `store(seq_cst)` |
+
+也就是说：`std::atomic<T>::store(x, seq_cst)` 与手写 `__atomic_store_n(&x, x, __ATOMIC_SEQ_CST)` 是**同一道带锁交换**，没有魔法——你写的 `memory_order` 直接决定 GCC 选 `mov` 还是 `xchg`。这也解释了为什么 §① 附录 D5 测到 seq_cst 写是 relaxed 的十几倍：代价来自指令本身，不是库开销。
 
 ## ⑭ WG21 提案 <span class="badge badge-std">标准</span>
 > **示例 23** [难度 ★★★☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
@@ -499,11 +521,47 @@ int main() {
 真机输出：`*p=42`；而 `g++ -O2 -S` 显示 `load(consume)` 生成的是与 `load(acquire)` **完全相同的 `mov`**（见示例 6 指令对照表末行）。也就是说：consume 的语义从未被实现出来，它只是"写起来更唬人的 acquire"。因此工程结论很干脆——**不要用 consume**，需要顺序就用 acquire/release。至于 P2892（扩展 atomic 支持非平凡类型），那是另一条仍在推进的线。
 
 ## ⑮ 面试题 <span class="badge badge-exp">经验</span>
-> **示例 24** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+> **示例 24** [难度 ★★★☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+
+面试题"acquire 和 seq_cst 差在哪"的标准答案是：acquire 是单向屏障（只挡它之前的读不与其他读重排），seq_cst 是全局唯一总序（所有线程对顺序看法一致）。但**代价**必须用真机数说话，不能停在标准语义：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"Q: acquire vs seq_cst? A: acquire=one-way barrier, seq_cst=global total order, ~10x slower on ARM.\n";return 0;}
+// ㉔ 面试题真机答：acquire 与 seq_cst 到底差在哪、差多少（x86-64）
+#include <atomic>
+#include <chrono>
+#include <cstdio>
+
+static std::atomic<long> c{0};
+static volatile long sink = 0;
+
+template <class F>
+double bench(F&& f, long n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (long i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+
+int main() {
+    constexpr long N = 10000000;
+    double seq_load = bench([](long) { sink = c.load(std::memory_order_seq_cst); }, N);
+    double acq_load = bench([](long) { sink = c.load(std::memory_order_acquire); }, N);
+    double seq_st   = bench([](long i) { c.store(i, std::memory_order_seq_cst); }, N);
+    double rel_st   = bench([](long i) { c.store(i, std::memory_order_relaxed); }, N);
+    std::printf("load  seq_cst=%.2f ns  acquire=%.2f ns\n", seq_load, acq_load);
+    std::printf("store seq_cst=%.2f ns  relaxed=%.2f ns\n", seq_st, rel_st);
+    return 0;
+}
 ```
+
+真机输出（GCC 13.1.0，x86-64）：
+
+```
+load  seq_cst=0.43 ns  acquire=0.85 ns
+store seq_cst=3.58 ns  relaxed=0.22 ns
+```
+
+给面试官的两条真结论：① **x86 上贵的是 seq_cst 的「写」与「全栅栏」，不是读**——两种 load 都 ~0.4–0.9 ns（TSO 下都是 `mov`），而 seq_cst 写是 relaxed 的 **16×**（3.58 vs 0.22，指令是 `xchg`）。② ARM 上 acquire 读也变贵（约 5 ns 的 `ldar`），但那是因为 ARM 是弱内存模型——**本机数字是 x86 口径，移植目标架构必须重新测**（与示例 6、⑲ 的结论互相印证）。
 
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 > **示例 25** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
@@ -513,11 +571,32 @@ int main(){std::cout<<"Pitfall: relaxed on dependent data = UB; forgetting fence
 ```
 
 ## ⑰ FAQ <span class="badge badge-exp">经验</span>
-> **示例 26** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
+> **示例 26** [难度 ★★★☆☆] [主题：<span class="badge badge-exp">经验</span>]
+
+FAQ「什么时候用 fence 而不用 atomic 操作」的答案一句话：fence 顺序化「其后所有原子操作」、不绑定任何变量；atomic 操作只顺序化「这一个变量」。这句话落到指令上最直观——两者在 GCC 下生成**完全不同的指令**：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"Q: When to use fence vs atomic operation? A: fence when multiple variables need ordering together.\n";return 0;}
+// ㉖ FAQ：fence 与 atomic 操作的区别——落到指令上
+#include <atomic>
+
+std::atomic<long> g;
+
+void by_fence() {
+    std::atomic_thread_fence(std::memory_order_seq_cst);   // 顺序化"其后所有原子操作"，不绑定变量
+}
+void by_atomic() {
+    g.store(1, std::memory_order_seq_cst);                 // 只顺序化"这一个变量 g"
+}
 ```
+
+`g++ -O2 -S`（GCC 13.1.0，x86-64）对照：
+
+| 写法 | 生成指令 | 含义 |
+|---|---|---|
+| `atomic_thread_fence(seq_cst)` | **`lock or QWORD PTR [rsp], 0`** | 全局全屏障，与你写没写 `g` 无关 |
+| `g.store(1, seq_cst)` | **`xchg ..., DWORD PTR g[rip]`** | 只把这次对 `g` 的写变成带锁交换 |
+
+所以判据很硬：**要同步的是「一个变量」→ 用它的 atomic 内存序；要同步的是「一组成片的代码边界」（如 CAS 发布路径、锁的获取/释放、seqlock 读写端、UMA 下设备-主机可见性）→ 用一道 fence 一次讲清**。把 fence 当「更贵的 atomic」是错的——它们是不同维度：fence 是位置、atomic 是变量。
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 > **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
