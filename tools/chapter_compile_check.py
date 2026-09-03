@@ -195,6 +195,13 @@ FORMATTER_RE = re.compile(r"template\s*<>\s*struct\s+\w*formatter<")
 # 跳过（不计为失败）。判定：块内 >=3 行匹配「可选空白 + 1~4 位数字 + 空格 + 非空」，
 # 这是源码列表的典型形态，正常 C++ 块不会出现此类逐行前缀，误伤风险极低。
 LINE_LISTING_RE = re.compile(r"^\s*\d{1,4}\s+\S")
+# 裸机/嵌入式/内核态片段：自定义入口（_start / Reset_Handler）、交叉链接器
+# （arm-none-eabi-ld / riscv）、链接脚本、freestanding 编译等。这类示例本就不能在
+# 宿主 MinGW 下独立编译（无 libc、无 main、需自定义链接脚本），属硬件/内核教学范围，
+# 门禁 namespace 包裹 + 追加 int main() 会与其自定义入口冲突，跳过（不计为失败）。
+BAREMETAL_RE = re.compile(
+    r"extern\s+\"C\"\s+.*\b_start\b|\bvoid\s+_start\s*\(|Reset_Handler|arm-none-eabi"
+    r"|riscv|ld\s+-T|linker\s+script|freestanding|kernel\s+entry|\.text\b.*Reset")
 
 
 
@@ -305,6 +312,12 @@ def check_file(path: pathlib.Path, tmpdir: pathlib.Path):
         if sum(1 for ln in code.splitlines() if LINE_LISTING_RE.match(ln)) >= 3:
             print(f"[SKIP] {path.name}#{idx}: 行号源码列表展示块（逐行数字前缀），"
                   f"非独立可编译代码，跳过（实现讲解）")
+            continue
+        # 裸机/嵌入式/内核态片段：自定义入口(_start/Reset_Handler)、交叉链接器、链接脚本、
+        # freestanding 等，本机无 libc/main 无法独立编译，门禁 namespace 包裹会误报，跳过。
+        if BAREMETAL_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: 裸机/嵌入式/内核态片段（自定义入口/交叉链接），"
+                  f"本机无法独立编译，跳过（硬件/内核教学）")
             continue
         includes, body = sanitize(code)
         # Winsock 章节（如 ch163）的示例依赖 <winsock2.h>/<ws2tcpip.h> 且需链接
