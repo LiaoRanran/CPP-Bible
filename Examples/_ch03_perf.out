@@ -7,3 +7,6 @@ typeid_ns       : 1.79732
 dynamic_cast_ns : 6.19831
 sort_1M_ms      : 85.0491
 [sink] 259500098
+
+# 2026-09-03 cout(sync off) vs printf bench (GCC 13.1.0 -O2, N=1M, write to NUL)
+cout(sync off) = 76 ns/op | printf = 296 ns/op | ratio = 0.26
