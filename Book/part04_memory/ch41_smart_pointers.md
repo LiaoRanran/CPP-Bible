@@ -2196,12 +2196,14 @@ int main() {
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 struct A; struct B;
-struct A { std::shared_ptr<B> b; ~A(){ // 不会跑
+struct A { std::shared_ptr<B> b; ~A(){ /* 不会跑 */ } };
 struct B { std::shared_ptr<A> a; };
+int main(){
 auto pa = std::make_shared<A>();   // use_count(A)=1
 auto pb = std::make_shared<B>();   // use_count(B)=1
 pa->b = pb; pb->a = pa;            // 互相 +1 -> 双方引用计数停在有环状态
 // 离开作用域: pa/pb 析构各 -1, 但计数仍 >=1, 对象永不释放 -> 泄漏
+}
 ```
 
 修复：`struct B { std::weak_ptr<A> a; };` —— `weak_ptr` 不增加强引用计数，析构时 `B` 先释放，

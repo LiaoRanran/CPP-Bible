@@ -178,12 +178,12 @@ struct Ledger {
         send_over_network();              // 副作用：成功则对端已收
         update_local_state();             // 若此处抛，网络已发出→无法回滚
     }
-    void send_over_network(){ // 假设成功
+    void send_over_network(){}   // 假设成功
     void update_local_state(){ throw std::runtime_error("local fail"); }
 };
 int main(){
     Ledger l;
-    try { l.commit(); } catch(const std::exception& e){ // 世界已不一致
+    try { l.commit(); } catch(const std::exception& e){ /* 世界已不一致 */ }
 }
 ```
 
@@ -270,7 +270,7 @@ struct Bad {
 };
 int main(){
     try { Bad b; throw std::runtime_error("outer"); }
-    catch(...) { // 永远到不了：dtor 抛 → terminate
+    catch(...) { /* 永远到不了：dtor 抛 → terminate */ }
 }
 ```
 
@@ -751,7 +751,7 @@ int main(){
     try {
         std::sort(v.begin(), v.end(), [](int a,int b){
             if (a==2) throw std::runtime_error("cmp throws"); return a<b; });
-    } catch(...) { // v 仍合法（无泄漏），但顺序未定义
+    } catch(...) { /* v 仍合法（无泄漏），但顺序未定义 */ }
 }
 ```
 
@@ -1148,8 +1148,10 @@ int main(){
 struct BigNT { int a[16]; BigNT(BigNT&&) noexcept = default;
                BigNT(const BigNT&)=default; BigNT()=default;
                BigNT& operator=(BigNT&&) noexcept = default; BigNT& operator=(const BigNT&)=default; };
-struct BigT  { int a[16]; BigT(BigT&&); BigT(const BigT&)=default; BigT()=default;
-               BigT& operator=(BigT&&); BigT& operator=(const BigT&)=default; };
+struct BigT  { int a[16]; BigT(BigT&&) {}              // 未标 noexcept → sort 退化用拷贝
+               BigT(const BigT&)=default; BigT()=default;
+               BigT& operator=(BigT&&) { return *this; }
+               BigT& operator=(const BigT&)=default; };
 template<class T> double bench_sort(){
     const int N=20000;
     auto t0=std::chrono::steady_clock::now();
@@ -1262,7 +1264,7 @@ int main(){
 extern "C" int c_api() { throw 1; }  // 错误：C 调用方无法展开 C++ 栈
 // 正确：
 extern "C" int c_api_safe(int* ok){
-    try { // ...
+    try { /* ... */ }
     catch(...) { *ok = 0; return -1; }   // 错误码过界
 }
 ```
@@ -1919,8 +1921,8 @@ int main() {
 #include <stdexcept>
 struct T {
     ~T() noexcept {                  // 析构不向外抛
-        try { // 可能失败的清理
-        catch (...) { // 吞掉, 记日志, 绝不抛
+        try { /* 可能失败的清理 */ }
+        catch (...) { /* 吞掉, 记日志, 绝不抛 */ }
     }
 };
 int main() { T t; std::cout << "dtor safe (no terminate)\n"; }

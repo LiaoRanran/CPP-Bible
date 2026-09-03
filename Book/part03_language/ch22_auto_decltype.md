@@ -865,7 +865,7 @@ int main() { std::cout << twice(3) << twice(std::string{"ab"}); }
 #include <concepts>
 #include <iostream>
 void print(std::integral auto x) { std::cout << x; } // 受约束缩写模板
-int main() { print(42); // print(3.0); 错误：非 integral
+int main() { print(42); } // print(3.0); 错误：非 integral → 不会选中该重载
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · auto& / const auto& / auto&&

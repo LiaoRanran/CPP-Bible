@@ -87,7 +87,7 @@ int main(){Safe s;Key k;k.unlock(s);return 0;}
 #include <iostream>
 class A{int a=1;friend class B;};
 class B{int b=2;friend class C; void show(A& a){std::cout<<a.a<<std::endl;} };
-class C{ void show(A& a){ // a.a 不可访问！C不是A的友元
+class C{ void show(A& a){ /* a.a 不可访问！C不是A的友元 */ } };
 int main(){A a;B b;std::cout<<"friend not transitive\n";return 0;}
 ```
 
