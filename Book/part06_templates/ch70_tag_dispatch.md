@@ -419,7 +419,7 @@ void good(T v) { impl(v, typename std::is_integral<T>::type{}); }
 ```cpp
 // 反模式：用虚函数替代编译期标签分发（运行期开销）
 struct VBase { virtual void run() = 0; };
-struct VInt : VBase { void run() override { // 整型
+struct VInt : VBase { void run() override { /* 整型 */ } };
 ```
 
 ## ⑭ 工业案例

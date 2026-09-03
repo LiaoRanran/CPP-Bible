@@ -413,7 +413,7 @@ _Z9add_twiceIiET_S0_:              ; add_twice<int>：Addable 约束命中，x+x
 ```cpp
 // 标准库风格：用 concept 约束算法入参
 template <std::random_access_iterator It>
-void my_sort(It first, It last) { // ...
+void my_sort(It first, It last) { /* ... */ }
 ```
 
 ## ⑫ 变体（variant patterns）

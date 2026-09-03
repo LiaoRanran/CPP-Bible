@@ -323,7 +323,7 @@ Derived arr[100];   // 占 400B；AsMember arr2[100] 占 800B
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
 // 例13：boost::compressed_pair 思路
-template<class T1, class T2> struct CPair : T1, T2 { // 空成员也压
+template<class T1, class T2> struct CPair : T1, T2 { /* 空成员也压 */ };
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例

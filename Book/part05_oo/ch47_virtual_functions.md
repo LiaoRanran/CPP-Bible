@@ -246,7 +246,7 @@ struct IRenderBackend {
 };
 
 struct VulkanBackend : IRenderBackend {
-    ~VulkanBackend() override { // 释放 Vulkan 设备
+    ~VulkanBackend() override { /* 释放 Vulkan 设备 */ }
     void draw(std::string_view n) override { std::cout << "[Vulkan] " << n << "\n"; }
     const char* name() const override { return "Vulkan"; }
 };
@@ -671,8 +671,9 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：vtable 布局与覆
 ```cpp
 // ❌ 误以为虚函数数量影响对象大小
-struct Big { virtual void f1(); // ...
-// sizeof(Big) 仍 = 8（vptr），不因虚函数多而增大
+#include <iostream>
+struct Big { virtual void f1() {} virtual void f2() {} virtual void f3() {} };
+int main() { std::cout << sizeof(Big) << "（一个 vptr，不因虚函数多而增大）\n"; }
 ```
 
 【正确示例】
