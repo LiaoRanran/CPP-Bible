@@ -564,11 +564,32 @@ store seq_cst=3.58 ns  relaxed=0.22 ns
 给面试官的两条真结论：① **x86 上贵的是 seq_cst 的「写」与「全栅栏」，不是读**——两种 load 都 ~0.4–0.9 ns（TSO 下都是 `mov`），而 seq_cst 写是 relaxed 的 **16×**（3.58 vs 0.22，指令是 `xchg`）。② ARM 上 acquire 读也变贵（约 5 ns 的 `ldar`），但那是因为 ARM 是弱内存模型——**本机数字是 x86 口径，移植目标架构必须重新测**（与示例 6、⑲ 的结论互相印证）。
 
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
-> **示例 25** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 25** [难度 ★★★☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+
+三个经典坑里，"relaxed 发布指针"最隐蔽——它在本机**往往能跑**，却是未定义行为：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"Pitfall: relaxed on dependent data = UB; forgetting fence in seqlock reader; consume unreliable.\n";return 0;}
+// ㉕ 易错点真机演示：relaxed 发布指针 = UB（本机"碰巧能跑"≠正确）
+#include <atomic>
+#include <cstdio>
+
+struct Payload { int a; int b; };
+Payload g_payload{0, 0};
+std::atomic<Payload*> g_ptr{nullptr};
+
+int main() {
+    g_payload = Payload{1, 2};
+    // 错误写法：relaxed 发布 + relaxed 读取（应为 release/acquire）
+    g_ptr.store(&g_payload, std::memory_order_relaxed);
+    Payload* p = g_ptr.load(std::memory_order_relaxed);
+    std::printf("a=%d b=%d（x86 上碰巧正确，但这是 UB）\n", p->a, p->b);
+    return 0;
+}
 ```
+
+真机输出：`a=1 b=2（x86 上碰巧正确，但这是 UB）`。
+
+注意：x86-64 是 TSO，`relaxed` 写/读不会被重排成"读到非空指针却字段未初始化"——所以**本机永远输出 1 2，让你以为代码对**。但搬到 ARM/POWER 这类弱内存模型，读端完全可能观察到 `g_ptr` 非空、而 `g_payload.a/b` 还是旧值（发布写与指针写被重排），读到的就是撕裂/未初始化数据，且这种 bug 不可复现、极难调。三个坑的正确方子：① 有依赖的数据用 **release/acquire**（不是 relaxed，见示例 18）；② seqlock 读端**两道 acquire 栅栏**都不能省（示例 16 已验证缺一道就读到撕裂）；③ **consume 不要碰**（示例 23：实现直接当 acquire，写了也白写）。
 
 ## ⑰ FAQ <span class="badge badge-exp">经验</span>
 > **示例 26** [难度 ★★★☆☆] [主题：<span class="badge badge-exp">经验</span>]
@@ -599,11 +620,43 @@ void by_atomic() {
 所以判据很硬：**要同步的是「一个变量」→ 用它的 atomic 内存序；要同步的是「一组成片的代码边界」（如 CAS 发布路径、锁的获取/释放、seqlock 读写端、UMA 下设备-主机可见性）→ 用一道 fence 一次讲清**。把 fence 当「更贵的 atomic」是错的——它们是不同维度：fence 是位置、atomic 是变量。
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
-> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 27** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
+"从 seq_cst 起步，证明安全后再放宽"不是空话，真机量化就是：热点能 relaxed 就 relaxed，**只在真正需要全局全序的"边界"放一道 `fence(seq_cst)`**，而不是每个操作都付 seq_cst 的 `xchg` 税：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"Best: start with seq_cst, profile, relax to acquire-release where safe. Never relax unless proven.\n";return 0;}
+// ㉗ 最佳实践真机：热点用 relaxed，只在"需要全序的边界"放一道 fence(seq_cst)
+#include <atomic>
+#include <chrono>
+#include <cstdio>
+
+static std::atomic<long> c{0};
+static volatile long sink = 0;
+
+template <class F>
+double bench(F&& f, long n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (long i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+
+int main() {
+    constexpr long N = 10000000;
+    double a = bench([](long i) { c.store(i, std::memory_order_seq_cst); }, N);
+    double b = bench([](long i) { c.store(i, std::memory_order_relaxed); }, N);
+    double cc = bench([](long i) {
+        c.store(i, std::memory_order_relaxed);
+        if ((i & 1023) == 0) std::atomic_thread_fence(std::memory_order_seq_cst);
+    }, N);
+    std::printf("seq_cst store=%.2f  relaxed store=%.2f  relaxed+fence/1024=%.2f (ns/op)\n", a, b, cc);
+    return 0;
+}
 ```
+
+真机输出（GCC 13.1.0，x86-64）：`seq_cst store=3.32  relaxed store=0.22  relaxed+fence/1024=0.43 (ns/op)`。
+
+路线很硬：**每个操作都 seq_cst = 3.32 ns；全 relaxed = 0.22 ns；只有"每 1024 次写刷一道全屏障" = 0.43 ns**——既拿到周期性全局点、又把单次成本压到接近 relaxed。这正是 ⑱ 那句"先减 seq_cst 写/栅栏"的量化依据。放宽的前提永远是"用示例 6 的指令表、示例 ㉔ 的跨架构口径、以及目标平台的弱内存模型"三项一起证明安全，**绝不靠本机跑通就放宽**（见示例 14/25 的两条方法纪律）。
 
 ## ⑲ 性能分析 [平台·x86-64]
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析 [平台·x86-64]
