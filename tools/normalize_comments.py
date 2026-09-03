@@ -237,12 +237,12 @@ def process_file(path: str, apply: bool):
     with open(path, "rb") as fh:
         data = fh.read()
     lines, crlf = split_eol(data)
-    out = []
+    out: list[str] = []
     changed = 0
     english = 0
     in_fence = False
     fence_lang = ""
-    buf = []
+    buf: list[str] = []
     for ln in lines:
         m = FENCE_RE.match(ln)
         if m:
