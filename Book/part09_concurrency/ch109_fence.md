@@ -199,11 +199,37 @@ int main(){int v=42;ptr.store(&v,std::memory_order_release);int*p=ptr.load(std::
 
 ## ⑨ 跨语言对比 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 8** [难度 ★★★☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+
+三句话讲清 C++ 内存模型在语言谱系里的位置：① **C++ 与 C11 共享同一套 `memory_order` 语义**（同名枚举、同一套获取/释放规则，`_Atomic` 与 `std::atomic` 一一对应）；② **Rust 的 `Ordering` 与 C++ 几乎一一对应**（Acquire/Release/Relaxed/SeqCst 同名同义）；③ **Java 的 `volatile` 是"全序可见 + 禁止重排"的强保证，没有 `relaxed` 这种"只原子、不排序"档位**——下面是 C++ 独有、Java 写不出的"弱"用法：
+
 ```cpp
-#include <iostream>
-int main(){std::cout<<"C++ memory_order vs Rust Ordering vs C11 memory_order vs Java volatile+VarHandle.\n";return 0;}
+// ㉘ 跨语言对比：C++/C11 共享同一套 memory_order；Java volatile 没有 relaxed 档
+#include <atomic>
+#include <cstdio>
+#include <thread>
+
+// C++ 与 C11 独有：relaxed 计数器——只原子、不强排序
+std::atomic<long> hits{0};
+void worker() { for (int i = 0; i < 1000; ++i) hits.fetch_add(1, std::memory_order_relaxed); }
+
+// C++ 与 C11 共有：acquire/release 配对发布
+std::atomic<int*> published{nullptr};
+int payload = 99;
+void publisher() { published.store(&payload, std::memory_order_release); }
+void consumer() { while (!published.load(std::memory_order_acquire)) ; std::printf("seen=%d\n", *published); }
+
+int main() {
+    std::thread a(worker), b(worker); a.join(); b.join();
+    std::printf("hits=%ld (relaxed 计数无丢失，Java volatile 无此弱档)\n", hits.load());
+    std::thread p(publisher), c(consumer); p.join(); c.join();
+    return 0;
+}
 ```
+
+真机输出：`hits=2000 (relaxed 计数无丢失，Java volatile 无此弱档)`、`seen=99`。
+
+要点：Java `volatile` 的每次读写都带全序可见性（近似 C++ 的 `seq_cst` 可见性但语义不同、且不能选更弱档），所以 Java 程序**无法表达**"只原子、不排序"的 relaxed 计数——这正是 C++/C11/Rust 比 Java 多出来的性能档位，也是为什么并发性能调优时 C++ 能比 Java 走得更细。代价是：这些弱档位**必须按标准语义正确使用**，不能用"Java 那种 volatile 天然安全"的心智去套（见示例 14/25 的方法纪律）。
 
 ## ⑩ 跨语言对比：内存模型 <span class="badge badge-exp">经验</span>
 
