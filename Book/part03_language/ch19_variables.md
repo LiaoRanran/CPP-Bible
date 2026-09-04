@@ -1383,16 +1383,13 @@ int main() {
 
 ## ⑯ 易错点（深度）
 
-1. **返回局部引用/指针 → 悬垂**（ch28）：`int& bad(){ int x=42; return x; }` —— x 离开作用域析构，返回悬垂引用。
-2. **误以为 static 局部多线程不安全** → C++11 起**已线程安全**（但构造抛异常留 guard 异常标志，后续调用反复重抛，ch93/ch107）。
-3. **头文件定义非 inline 变量** → 每 TU 一份定义，ODR 违规（multiple definition）。修复：inline / extern（⑤-3）。
-4. **头文件定义 `const` 全局却不用 inline** → 命名空间 `const` 默认 internal 链接！各 TU 看到不同地址，二进制膨胀。跨 TU 共享用 `inline const`/`inline constexpr`（ch21）。
-5. **`thread_local` 在线程池复用线程时残留状态** → 线程不退出则 thread_local 不重置，下一请求读到上一次 `g_request_id`（程序 28 已修复：任务入口重置）。
-6. **`static` 成员漏写类外定义** → C++17 前链接错误 `undefined reference to C::x`；C++17 起 `inline static` 类内定义规避。
-7. **依赖跨 TU 全局初始化顺序（SOIF）** → 未定义行为，仅在特定链接顺序/优化级"偶发"，极难调试（⑦-1）。
-8. **`const_cast` 去掉真正 const 对象的 const 后写** → 若对象在 `.rodata`（真 const），写入触发 SIGSEGV（UB，ch31）。
-9. **误把 static 变量当线程安全共享** → 函数内 static **初始化**线程安全，**读写**不保证；多线程度量计数器需 `std::atomic` 或锁（ch93/ch107）。
-10. **TLS 析构顺序依赖** → 主线程 TLS 在所有其他线程退出后销毁，若主线程 TLS 析构依赖已退出的工作线程 TLS 状态 → UB（ch93/ch107）。
+ch19 的易错点可以归成"生命周期、static 语义、头文件 ODR、线程模型"四簇。**生命周期簇**的核心是悬垂与初始化顺序：**返回局部引用/指针**是最常见悬垂（`int& bad(){ int x=42; return x; }`，x 离开作用域已析构，ch28）；**依赖跨 TU 全局初始化顺序（SOIF）**是运行期 UB，只在特定链接顺序/优化级"偶发"，极难调试（⑦-1）；**TLS 析构顺序依赖**则更隐蔽——主线程 TLS 在所有其他线程退出后才销毁，若其析构依赖已退出的工作线程 TLS 状态即为 UB（ch93/ch107）。
+
+**static 语义簇**集中在"初始化安全 ≠ 访问安全"。**误以为 static 局部多线程不安全**：C++11 起局部 static 初始化已线程安全（`__cxa_guard`），但构造抛异常会留下 guard 异常标志，后续调用反复重抛（ch93/ch107）；反过来**误把 static 变量当线程安全共享**同样错——函数内 static 只有初始化是线程安全，读写不保证，多线程度量计数器必须 `std::atomic` 或锁（ch93/ch107）。此外 **`static` 成员若漏写类外定义**，C++17 前是链接错误 `undefined reference`，C++17 起可用 `inline static` 类内定义规避。
+
+**头文件 ODR 簇**是链接期高频雷区：**头文件定义非 inline 变量**每 TU 一份 external 定义、ODR 违规（multiple definition），应改 `inline`/`extern`（⑤-3）；**头文件定义 `const` 全局却不加 inline** 更隐蔽——命名空间 `const` 默认 internal 链接，各 TU 看到不同地址、二进制膨胀，跨 TU 共享必须用 `inline const`/`inline constexpr`（ch21）。
+
+**线程模型簇**的坑在 thread_local 的"线程身份"。**`thread_local` 在线程池复用线程时残留状态**：线程不退出则 thread_local 不重置，下一请求读到上一次的 `g_request_id`（程序 28 已在任务入口重置）。最后是**内存语义**：`const_cast` 去掉真正 const 对象的 const 后再写，若对象落在 `.rodata`（真 const），写入即触发 SIGSEGV（UB，ch31）。
 
 ### 16.1 嵌入式场景真实示例
 
@@ -1459,35 +1456,23 @@ void clear_status() {
 
 ## ⑱ 最佳实践
 
-1. **默认偏好 automatic + RAII**，少用全局/static——降耦合易测试（ch47）。
-2. **头文件跨 TU 共享变量 → `inline`**（C++17）（⑤-3）。
-3. **进程级单例用函数内 static（Meyers）**，非 `new`+裸指针——线程安全、延迟、自动销毁（⑦-2）。
-4. **跨 TU 初始化依赖 → `constinit` 或函数内 static**，根治 SOIF（⑦-3/7.4）。
-5. **每线程状态用 `thread_local`**，无锁并发；线程池场景**任务入口重置**（⑨-4）。
-6. **多线程序列化访问的 static → `std::atomic` 或互斥**，区分"初始化安全"与"访问安全"（ch93/ch107）。
-7. **类静态成员优先 `inline static`**（C++17）类内定义，避免漏写类外定义。
-8. **不返回局部引用/指针**；需延寿用返回值（RVO）或智能指针（ch28、ch41）。
-9. **嵌入式/ISR**：`constinit`/`constexpr` 全局保证 main 前就绪，ISR 安全（16.1）。
-10. **库头文件**：暴露常量用 `inline constexpr`，暴露配置对象用 `inline`，避免 ODR 雷（⑬-C）。
+把易错点翻个面，就是一套可照抄的**变量最佳实践**，按"存储期选择、单例与共享、线程模型、接口封装"四条线收束。**存储期选择**的总纲是：**默认偏好 automatic + RAII**，少用全局/static——降耦合、易测试（ch47）；确需跨 TU 共享时，头文件内变量一律 `inline`（C++17）（⑤-3）；库头文件对外暴露常量用 `inline constexpr`、暴露可配置对象用 `inline`，从根上避开 ODR 雷（⑬-C）。
+
+**单例与初始化依赖**这条线用两个手段根治：**进程级单例用函数内 static（Meyers）**而非 `new`+裸指针——线程安全、延迟、自动销毁（⑦-2）；**跨 TU 初始化依赖用 `constinit` 或函数内 static**，彻底清除 SOIF（⑦-3/7.4）。类静态成员则优先 `inline static`（C++17）类内定义，省去类外定义那步漏写风险。
+
+**线程模型**这条线强调"按并发需求表态"：**每线程状态用 `thread_local`**（无锁并发），线程池场景务必**在任务入口重置**（⑨-4）；多线程序列化访问的 static 一律 `std::atomic` 或互斥，时刻区分"初始化安全"与"访问安全"（ch93/ch107）。
+
+最后是**接口与嵌入式**的收口：**不返回局部引用/指针**，需延寿用返回值（RVO/NRVO）或智能指针（ch28、ch41）；**嵌入式/ISR** 场景用 `constinit`/`constexpr` 全局保证 `main` 前就绪、ISR 安全（16.1）。这四条线合起来，"少全局、按需 inline、Meyers 单例、TLS 任务入口重置、constinit 就绪"便是变量落位的稳健姿态。
 
 ---
 
 ## ⑲ FAQ（14 问）
 
-- **Q：作用域、链接、生命周期关系？** A：三者正交。作用域=编译期可见范围；链接=跨 TU 共享；生命周期=运行期存在区间（③④）。
-- **Q：为何字符串字面量是 `const char[]` 不可改？** A：存 `.rodata`（只读页），修改 UB（ch21/④）。
-- **Q：inline 变量增代码体积？** A：不膨胀——ODR 合并为单一实体；反因省 `extern`+单 TU 定义样板更简洁。
-- **Q：函数内 static 与全局 static 谁先初始化？** A：都在 main 前（static 期）；函数内 static 实际在**首次执行到定义**才构造（延迟），全局在启动阶段（有 SOIF 风险）。
-- **Q：thread_local 对象能跨线程传递？** A：不能——"线程身份"绑定创建它的线程；传指针/引用给别的线程访问的是**本线程副本**，属误用。
-- **Q：为何 static 局部看似初始化两次（asan）？** A：asan 插桩 guard；或动态库多次 `dlopen` 同一 static 在不同库实例各一份（真多定义，非 ODR 合并）。
-- **Q：`extern "C"` 影响存储期？** A：不影响存储期/生命周期，只改**名字修饰**为 C 风格（ch60）。
-- **Q：`constexpr` 与 `inline` 变量关系？** A：`constexpr` 变量**隐式 inline**；但 `inline` 不一定 `constexpr`（初值可运行期）（⑥）。
-- **Q：如何确认变量落在哪个段？** A：`nm`/`objdump -t` 看符号段（`.data`/`.bss`/`.rodata`/`*TLS*`），或打印地址区间比较（④、ch35）。
-- **Q：类内 static 成员能 thread_local？** A：能（`static thread_local int x;`），每线程每类一份。
-- **Q：为何多线程计数器用 static 要 `std::atomic`？** A：`++s_hits` 在 static 上非原子（读-改-写），多写者竞争 → 数据竞争（ch93/ch107）。
-- **Q：`constinit` 与本章关系？** A：强制变量在**常量初始化阶段**完成（static 期最早子阶段），是 SOIF 根治（⑦-3）。
-- **Q：动态库 static 何时构造/析构？** A：随 `dlopen`/`dlclose`；多次 `dlopen` 产生多个独立实例，易致"重复初始化"错觉。
-- **Q：如何避免全局变量？** A：依赖注入、函数内 static（延迟单例）、状态放对象成员（RAII，ch47）；仅真正进程级共享且需早初始化时用 static/inline。
+这 14 个高频问题把变量的三个正交维度——**作用域、链接、生命周期**——重新拧紧。开篇就是总纲：三者**正交**——作用域是编译期可见范围、链接是跨 TU 共享、生命周期是运行期存在区间（③④）。由此亮出的派生结论：**函数内 static 与全局 static 谁先初始化？**——都在 main 前（static 期），但函数内 static 在首次执行到定义才构造（延迟），全局在启动阶段（有 SOIF 风险）；**为什么字符串字面量是 `const char[]` 不可改？**——它存 `.rodata`（只读页），修改即 UB（ch21/④）。
+
+编译期连续设问里的**链接维度**最易出错。**作用域与生命周期一定相同吗？**——否：函数内 `static T s;` 作用域仅函数内、生命周期却是整个程序（④）。**`constexpr` 与 `inline` 变量的关系？**——`constexpr` 变量**隐式 inline**；但 `inline` 不一定 `constexpr`（初值可运行期）（⑥）。**`extern "C"` 影响存储期吗？**——不，它只把名字修饰改成 C 风格（ch60），存储期/生命周期一概不变。**inline 变量增代码体积吗？**——不膨胀，反而因省去 `extern`+单 TU 定义样板更简洁。
+
+线程与实现相关的边界问题排在最末。**thread_local 对象能跨线程传吗？**——不能，"线程身份"绑定创建它的线程，把指针/引用传给别的线程访问的是**本线程副本**（误用）。**为何 static 局部看似初始化两次（asan）？**——要么是 asan 插桩了 guard，要么是动态库多次 `dlopen` 同一 static 在不同库实例各一份（真多定义，非 ODR 合并）。**类内 static 成员能 thread_local？**——能（`static thread_local int x;`），每线程每类一份。**为何多线程计数器用 static 就必须 `std::atomic`？**——`++s_hits` 在 static 上是读-改-写非原子操作，多写者竞争即数据竞争（ch93/ch107）。**动态库 static 何时构造/析构？**——随 `dlopen`/`dlclose`，多次 `dlopen` 产生多个独立实例，易造成"重复初始化"错觉。收束两条 How-to：**如何确认变量落在哪个段？**——`nm`/`objdump -t` 看符号段（`.data`/`.bss`/`.rodata`/`*TLS*`），或打印地址区间比较（④、ch35）；**如何避免全局变量？**——依赖注入、函数内 static（延迟单例）、状态放对象成员（RAII，ch47），仅在真正需进程级共享且要早初始化时才用 static/inline。
 
 ---
 
