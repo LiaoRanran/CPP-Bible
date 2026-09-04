@@ -385,7 +385,7 @@ int main() {
 consteval int parse_int(std::string_view s) {
     int v = 0;
     for (char c : s) {
-        if (c < '0' || c < '0' || c > '9') {  // 简化：假设全数字
+        if (c < '0' || c > '9') continue;     // 简化：假设全数字
         v = v * 10 + (c - '0');
     }
     return v;

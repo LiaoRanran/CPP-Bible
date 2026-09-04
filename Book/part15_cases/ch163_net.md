@@ -1414,7 +1414,7 @@ int main() {
 #include <iostream>
 #include <unordered_map>
 
-struct Conn { int fd;                     // 读写缓冲、状态机等
+struct Conn { int fd; };                  // 读写缓冲、状态机等
 
 int main() {
     std::unordered_map<int, Conn> conns;  // fd -> 连接元数据

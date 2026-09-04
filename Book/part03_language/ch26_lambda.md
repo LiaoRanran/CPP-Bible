@@ -185,9 +185,9 @@ int main() {
 #include <cstdio>
 int main() {
     int base = 10;
-    auto f = []() {   // 不碰 base
+    auto f = []() { return 0; };  // 不碰 base（空捕获）
     std::printf("%d\n", f());
-    int (*fp)() = f;  // 见 ⑭
+    int (*fp)() = f;              // 见 ⑭
     std::printf("via fp: %d\n", fp());
     return 0;
 }

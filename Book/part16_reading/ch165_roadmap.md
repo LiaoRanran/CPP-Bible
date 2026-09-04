@@ -75,7 +75,7 @@ enum SummerKPI { ThreadPool=1, MemPool=2, Logger=4, JsonParser=8, NetServer=16 }
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么需要路线图
 ```cpp title="示例 3 · ★☆☆☆☆"
 // 每天最小产出：1 个能跑的 .cpp
-int main() { // 今天写了什么，能编译运行吗？
+int main() { /* 今天写了什么，能编译运行吗？ */ }
 ```
 
 ## ② C++ 版本演进（一句话每版必学点）

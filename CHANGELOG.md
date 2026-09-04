@@ -4,6 +4,17 @@
 
 ---
 
+### 2026-09-04（续四）CI 编译门禁 regression 清零（19 → 0）
+- **根因**：CI compile job 用 `--changed` 增量门禁；题注铺开改动覆盖全库 → 回退全量重编 →
+  历史既存失败一次性暴露为 19 个 REGRESSION（run #522 红）。非内容新增 bug，是覆盖面扩大。
+- **分诊**：16 处骨架体 `{ // …` 未闭合（ch70 同型：`{ /* … */ }` 修法）+ 3 处真 bug——
+  ch41 示例62 缺 `#include <memory>`、ch25 示例5 非法伪析构 `u.s.~basic_string()`
+  （改 `u.s.std::string::~string()`）、ch123 示例15 条件误写 `c<'0' || c<'0'`（改 `c<'0' || c>'9'`）。
+- **验证（本地确定性复现）**：`compile_all --main-only --parallel` → 失败块 80→**61**（全豁免
+  覆盖）→ `compile_gate.py` **PASS（0 regression）** → `exempt_audit.py --check` **PASS**。
+  文档三道门禁：whitespace 0 / gen_metrics ✅ / consistency 100/100。
+- 台账：PROGRESS 6.3 追加、新增 7.6（CI 编译门禁机制 + 本地复现链路 + 块号口径坑）。
+
 ### 2026-09-04（续三）围栏配对错位修复（10 章 11 处）+ 题注迁移全库铺开（7309 块）
 - **围栏配对错位修复**：10 章 11 处「关闭围栏被写成 `​```text`」（CommonMark 关闭围栏禁止
   info string）→ 渲染层与工具层双错位（前块吞题注行、真裸围栏与后续 cpp 块被吞、门禁覆盖缺失）。

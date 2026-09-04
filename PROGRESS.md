@@ -265,6 +265,11 @@
   **围栏数不得增删**（README `cpp_blocks` 写死，只替换块内容）。
 - **2026-09-04 追加**：ch24 块 #33（`struct Packet { PktFlag flags; // …` 缺 `};`）——题注迁移
   试点编译复验时暴露，HEAD 同样 fail（既存，非版式/题注引入）；补 `/* … */ };` 后 57/0。
+- **2026-09-04 三次追加（CI 全量重编暴露，已清零）**：题注全库铺开（改 148 文件）触发 CI
+  `--changed` 增量门禁回退全量 → 历史既存失败一次性暴露为 **19 个 REGRESSION**（CI #522 红）。
+  分诊=16 处骨架体 `{ // …` 未闭合（ch70 同型）+ 3 处真 bug（ch41 示例62 缺 `<memory>`、
+  ch25 示例5 非法伪析构 `u.s.~basic_string()`、ch123 示例15 条件写成 `c<'0' || c<'0'`）。
+  全部修复后：失败块 80→61、**gate PASS（0 regression）**、exempt_audit PASS。见 7.6。
 - **2026-09-04 二次追加（围栏错位修复曝光）**：part13/part15 三章首次纳入门禁实测视野——
   ch145 30 fail（`Connection`/`User`/`Event` 跨块为主；**疑真截断候选** #7/#25/#43/#64
   `expected ';'`/`function-definition not allowed`/`expected '}'`）、ch147 10 fail（跨块 +
@@ -360,3 +365,20 @@
 - **工具加固**：`codeblock_style.py` stdout GBK 控制台 `⚠️` 崩溃 → `reconfigure(utf-8, replace)`
   （批量处理中断防护）。
 - **台账修正**：7.3 的「裸围栏 329→0」当时为错位假象；README cpp_blocks 同步 7534。
+
+### 7.6 CI 编译门禁：全量重编暴露与清零（2026-09-04）
+
+- **触发机制**：CI compile job = `cppbible.py compile --changed --parallel || --full --parallel`
+  → `compile_gate.py` → `exempt_audit.py --check`。`--changed` 只编 git 变更章节；
+  **改动面覆盖全库（如题注铺开）或无 Book 变更时回退全量**，历史既存失败即一次性暴露为
+  REGRESSION（不在 `compile_exempt.json` 且不匹配 AUTO_PATTERNS 即判回归 → CI 红）。
+- **本地确定性复现链路**（几分钟，胜过等 CI 1 小时）：
+  `compile_all.py --main-only --parallel` → `compile_gate.py` → `exempt_audit.py --check`。
+  口径：main-only（只编译含 `int main` 的块）、4229 块 / 61 失败 / 61 豁免。
+- **块号口径（坑）**：`compile_report.json` 的 `block` = `extract_blocks` 的 **1-based 全 cpp 块
+  序号**（开围栏 `startswith('```cpp')` 天然兼容 title；关闭围栏必须**裸** ```）。
+  自写分诊脚本必须复用 `from compile_all import extract_blocks`，按"所有围栏交替配对"会错位
+  （ch41 报 blk63 而按交替配对只有 51 个 cpp 块）。
+- **本轮战绩**：19 regression → 0；失败块 80 → 61（全豁免覆盖）；三道文档门禁全绿。
+- 分诊脚本：`_rw_tmp/dump_regress.py`（dump）、`diag_regress.py`（完整 g++ 诊断）、
+  `fix_regress.py`（批量修复，片段唯一性校验）。

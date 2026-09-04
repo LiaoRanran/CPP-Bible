@@ -201,7 +201,7 @@ class Worker {                              // ③ worker
 ```cpp title="示例 8 · ★★☆☆☆"
 // C++11：必须手动管理 join，否则析构即 terminate
 #include <thread>
-void hello() {  // ...
+void hello() { /* ... */ }
 int main() {
     std::thread t(hello);
     t.join();   // 必须！否则 main 退出时 t 仍 joinable -> terminate
@@ -223,7 +223,7 @@ C++20 的 `std::jthread`（joining thread）在析构时**自动**调用 `reques
 // C++20：jthread 析构自动 join，无需手动管理
 #include <thread>
 int main() {
-    std::jthread t([] { // 工作
+    std::jthread t([] { /* 工作 */ });
     // 离开作用域自动 join，绝不 terminate
 }
 ```

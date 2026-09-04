@@ -1120,7 +1120,7 @@ int main() {
 #include <type_traits>
 #include <cstdio>
 
-struct WithPad { char c; // 3 字节填充
+struct WithPad { char c; };                        // 3 字节填充
 
 int main() {
     std::printf("int  unique=%d\n",  std::has_unique_object_representations_v<int>);

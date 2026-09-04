@@ -1145,7 +1145,7 @@ struct Pool {
     void* allocate() { FreeNode* p = head; head = head->next; return p; }      // O(1) 摘头
     void  deallocate(void* p) { auto* n = static_cast<FreeNode*>(p); n->next = head; head = n; } // 头插
 };
-int main() { Pool pool; // grow() 时把大块串成 FreeNode 链挂到 head
+int main() { Pool pool; /* grow() 时把大块串成 FreeNode 链挂到 head */ }
 ```
 
 <span class="badge badge-std">标准</span> `union` 允许同一存储表示多种类型（[class.union]）；对象生命周期由 `new`/`delete` 与存储期管理（[basic.stc]）。

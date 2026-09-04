@@ -603,12 +603,12 @@ void open(const std::string& path, int flags = 0);   // 与上一行冲突
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认值与重载顺序
 ```cpp title="示例 46 · ★☆☆☆☆"
 #include <string>
-void open(const std::string& path) {             // 缺省模式
-void open(const std::string& path, int flags) {  // 显式模式
+void open(const std::string& path) { /* 缺省模式 */ }
+void open(const std::string& path, int flags) { /* 显式模式 */ }
 
 int main() {
-    open("a.txt");                               // 唯一匹配 (const string&)
-    open("b.txt", 0644);                         // 唯一匹配 (const string&, int)
+    open("a.txt");        // 唯一匹配 (const string&)
+    open("b.txt", 0644);  // 唯一匹配 (const string&, int)
     return 0;
 }
 ```

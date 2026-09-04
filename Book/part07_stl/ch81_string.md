@@ -275,14 +275,14 @@ const char* good() {
 // ⑫ string_view 不拥有存储，仅指向现有缓冲区
 #include <string_view>
 #include <string>
-void print(std::string_view sv) {  // 接受 string / char* / 子串，零拷贝
-    for (char c : sv) {            // ...
+void print(std::string_view sv) {   // 接受 string / char* / 子串，零拷贝
+    for (char c : sv) { (void)c; }  // 逐字符遍历
 }
 int main() {
     std::string s = "hello world";
-    print(s);                      // OK，无拷贝
-    print("hello world");          // OK，字面量
-    print(s.substr(0, 5));         // OK，string_view 子串 O(1)
+    print(s);                       // OK，无拷贝
+    print("hello world");           // OK，字面量
+    print(s.substr(0, 5));          // OK，string_view 子串 O(1)
     return 0;
 }
 ```

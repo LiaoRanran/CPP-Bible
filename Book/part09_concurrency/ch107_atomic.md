@@ -1164,17 +1164,17 @@ int main() {
 #include <iostream>
 struct SpinLock {
     std::atomic_flag f = ATOMIC_FLAG_INIT;
-    void lock()   { while (f.test_and_set(std::memory_order_acquire)) {  // spin
+    void lock()   { while (f.test_and_set(std::memory_order_acquire)) { /* spin */ } }
     void unlock() { f.clear(std::memory_order_release); }
 };
 int main() {
     SpinLock sl;
-    int shared = 0;                                                      // 普通 int，靠锁保护
+    int shared = 0;               // 普通 int，靠锁保护
     auto work = [&]{ for (int i = 0; i < 100000; ++i) { sl.lock(); ++shared; sl.unlock(); } };
     std::vector<std::thread> ts;
     for (int i = 0; i < 4; ++i) ts.emplace_back(work);
     for (auto& t : ts) t.join();
-    std::cout << shared << '\n';                                         // 400000
+    std::cout << shared << '\n';  // 400000
     return shared == 400000 ? 0 : 1;
 }
 ```

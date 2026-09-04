@@ -2195,6 +2195,7 @@ int main() {
 
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp title="示例 62 · ★★☆☆☆"
+#include <memory>
 struct A; struct B;
 struct A { std::shared_ptr<B> b; ~A(){ /* 不会跑 */ } };
 struct B { std::shared_ptr<A> a; };

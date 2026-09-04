@@ -1279,7 +1279,7 @@ std::error_code open_file(const std::string&) {
     return std::make_error_code(std::errc::no_such_file_or_directory);  // 示意失败
 }
 int main() {
-    if (auto ec = open_file("x"); ec) {                                 // 跨 ABI 安全：仅传整数码 + 类别
+    if (auto ec = open_file("x"); ec) { /* 跨 ABI 安全：仅传整数码 + 类别 */ }
 }
 ```
 

@@ -303,7 +303,7 @@ void inc(){ for(int i=0;i<100000;++i){ std::lock_guard lk(m); ++g; } }
 ```cpp title="示例 23 · ★☆☆☆☆"
 // 坏味道：裸 owning 指针 + 漏释放（_ch147_leak.cpp 节选）
 int* make() { return new int(1); }
-int main(){ int* p = make(); (void)*p; // 漏 delete -> 泄漏
+int main(){ int* p = make(); (void)*p; }           // 漏 delete -> 泄漏
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存安全审查（泄漏/UB）

@@ -1162,7 +1162,7 @@ template <typename D>
 struct ParticleBase {
     void update() { static_cast<D&>(*this).step(); }  // 编译期绑定，可内联
 };
-struct Fire : ParticleBase<Fire> { void step() {      // 推进火焰
+struct Fire : ParticleBase<Fire> { void step() { /* 推进火焰 */ } };
 static_assert(std::is_empty_v<ParticleBase<Fire>>, "EBO: 空基类不占空间");
 int main() { Fire f; f.update(); std::cout << "ok\n"; }
 ```

@@ -201,7 +201,7 @@ union StrU {
     std::string s;
     int         i;
     StrU() : i(0) {}                  // 需初始化一个活跃成员
-    ~StrU() {                         // 不知道谁活跃，外面负责
+    ~StrU() { }                       // 不知道谁活跃，外面负责
 };
 
 int main() {
@@ -209,7 +209,7 @@ int main() {
     // 手动构造 string 成员（placement new）
     new (&u.s) std::string("hello");  // 现在 s 活跃
     std::printf("%s\n", u.s.c_str());
-    u.s.~basic_string();              // 手动析构，避免泄漏
+    u.s.std::string::~string();       // 手动析构，避免泄漏
 }
 ```
 > `[经验]` 手写 union + 非平凡成员是 bug 温床。标准库的 `std::variant` 正是把这套"placement new + 手动析构 + 跟踪 index"封装好交给你。

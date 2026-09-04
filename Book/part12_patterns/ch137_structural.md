@@ -589,7 +589,7 @@ int main() {
 int main() {
     namespace fs = std::filesystem;
     for (auto& p : fs::recursive_directory_iterator("."))
-        if (fs::is_regular_file(p)) { // 统一接口，屏蔽 OS 差异
+        if (fs::is_regular_file(p)) { /* 统一接口，屏蔽 OS 差异 */ }
 }
 ```
 

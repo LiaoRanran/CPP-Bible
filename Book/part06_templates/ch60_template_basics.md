@@ -488,7 +488,7 @@ template <typename T> using Vec = std::vector<T>;
 
 // ③ 默认模板参数
 template <typename T, typename Alloc = std::allocator<T>>
-struct MyVector {                // ...
+struct MyVector { };             // ...
 
 // ④ 模板参数包
 template <typename... Ts> struct Tuple { };
