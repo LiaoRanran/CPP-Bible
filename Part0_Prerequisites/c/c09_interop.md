@@ -76,4 +76,4 @@ Part 0 收官：汇编（A1–A6）讲机器怎么跑，C（C1–C9）讲贴近�
 - `[std-c11]`（N1570）：6.2.8 对齐、6.7.2.1 结构体布局（ABI 一致性基础）。
 - `[cppref:cpp/language/extern]`（离线 cppreference）：`extern "C"` 与名字改写（C++ 侧事实源）。
 - `[ritchie:chist]`：Ritchie《The Development of the C Language》——C 符号朴素、与 BCPL 的渊源（人文源，见 `humanities_index.md`）。
-- 交叉引用：C2（链接器符号解析）；C6（结构体布局/LLP64，ABI 一致性）；A3（调用约定，ABI 另一半）；A5（§④ 偏移硬编码进指令）；主书 ch33–ch34（C++ 类与虚表布局，跨语言接口禁区）、ch 与 C 互操作章。
+- 交叉引用：C2（链接器符号解析）；C6（结构体布局/LLP64，ABI 一致性）；A3（调用约定，ABI 另一半）；A5（§④ 偏移硬编码进指令）；主书 ch45/ch47（C++ 类与虚表布局，跨语言接口禁区）、ch 与 C 互操作章。

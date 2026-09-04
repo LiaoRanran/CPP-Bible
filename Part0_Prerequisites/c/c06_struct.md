@@ -125,4 +125,4 @@ A5 §③ 看过 `Point` 的反汇编：字段名在编译后彻底消失，只�
 - `[std-c11]`（N1570，本地 `docs/references/external/standards/N1570_C11.pdf`）：6.2.8 对齐、`6.2.6.1` 对象表示（padding 未指定）、6.7.2.1 结构体/位域、6.7.3 `_Alignas` 对齐说明符。
 - `[cppref:c/language/object]`（离线 cppreference）：对齐、结构体布局语义。
 - `[ritchie:chist]`：Ritchie《The Development of the C Language》——结构体是 C 在 B/BCPL 之后补入的特性（人文源，见 `humanities_index.md`）。
-- 交叉引用：A5（§④ 对齐 padding、§⑤ LLP64，汇编视角）；C3（类型与 LLP64）；C5（内存布局、悬垂指针）；C9（C↔C++ 结构体 ABI 互操作）；主书 ch19（变量/对象表示）、ch33–ch34（类与虚表布局）、ch52（位运算与线格式）。
+- 交叉引用：A5（§④ 对齐 padding、§⑤ LLP64，汇编视角）；C3（类型与 LLP64）；C5（内存布局、悬垂指针）；C9（C↔C++ 结构体 ABI 互操作）；主书 ch19（变量/对象表示）、ch45/ch47（类与虚表布局）、ch52（位运算与线格式）。

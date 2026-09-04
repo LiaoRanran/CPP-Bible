@@ -11,7 +11,7 @@
 - **N2725** Lambda 表达式 → C++11。⟶ ch27
 - **N2242** `constexpr` → C++11（后放宽）。⟶ ch21、ch69
 - **N2249** `unique_ptr`/`shared_ptr` → C++11。⟶ ch48
-- **N2660** `std::thread` 与相关 → C++11。⟶ ch93、ch102
+- **N2660** `std::thread` 与相关 → C++11。⟶ ch93
 - **N2429** 内存模型与原子 → C++11。⟶ ch107
 - **N1836** `enum class` → C++11。⟶ ch25
 
@@ -38,7 +38,7 @@
 - **P0588R1** Ranges → C++20。⟶ ch90、ch119
 - **P0515R3** 三路比较 `<=>` → C++20。
 - **P1068R0** `std::span`（原 TS）→ C++20。⟶ ch82
-- **P1135R2** `std::jthread`/stop_token → C++20。⟶ ch94、ch103
+- **P1135R2** `std::jthread`/stop_token → C++20。⟶ ch94
 
 ## C++23（N4950）
 - **P0798R8** `std::expected` → C++23。⟶ ch88
@@ -49,9 +49,9 @@
 - **P1467R9** 扩展 `float`/`enum` 的 `std::hash` 等。
 
 ## C++26（进行中，可能变动）
-- **P2996R3** 静态反射（static reflection）⟶ ch74。
+- **P2996R3** 静态反射（static reflection）⟶ ch09（反射未入标准）。
 - **P0542R5 / 契约方向** Contracts 回归讨论 ⟶ ch121。
-- **P2300R10** Sender/Receiver 执行器（std::execution）⟶ ch114。
+- **P2300R10** Sender/Receiver 执行器（std::execution）⟶ ch93 / ch113（std::execution 未入标准）。
 - **P2641R?** 模块化标准库（std 模块）⟶ ch118。
 
 ## 提案阅读指引

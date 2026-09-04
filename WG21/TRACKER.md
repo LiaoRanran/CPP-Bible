@@ -28,7 +28,7 @@
 | P0896 | Ranges | `__cpp_lib_ranges` | ✅ 202302 | ✅ 15 | ✅ 19.29 | GCC 15.3 实测 ✅；ch08 附录 G.5 真机零成本实证（ranges::sort≡std::sort 同一 `__introsort_loop` / views::filter 谓词内联为 `test`+`jne`） | ch90、ch119、ch08 |
 | P0645 | `std::format` | `__cpp_lib_format` | ✅ 202304 | ✅ 17 | ✅ 19.29 | GCC 实测 202304 | ch131 |
 | P0122 | `std::span` | `__cpp_lib_span` | ✅ 202002 | ✅ 7 | ✅ 19.26 | | ch82 |
-| P1135 | `std::jthread`/`stop_token` | `__cpp_lib_jthread` | ✅ 201911 | ✅ 18 | ✅ 19.28 | Clang 长期缺失，18 才补 | ch94、ch103 |
+| P1135 | `std::jthread`/`stop_token` | `__cpp_lib_jthread` | ✅ 201911 | ✅ 18 | ✅ 19.28 | Clang 长期缺失，18 才补 | ch94、ch93 |
 | P0019 | `std::atomic_ref` | `__cpp_lib_atomic_ref` | ✅ 201806 | ✅ 19 | ✅ 19.28 | | ch107 |
 
 ## C++23 语言特性
@@ -56,8 +56,8 @@
 
 | 提案 | 特性 | feature-test macro | GCC | Clang [DOC] | MSVC [DOC] | 备注 | 章节 |
 |------|------|-------------------|:---:|:---:|:---:|------|------|
-| P2996 | 静态反射（reflection） | `__cpp_reflection` | ❌ `<meta>` 缺失 | 🚧 实验 | ❌ | GCC15 无 `<meta>` 头（fatal error: meta: No such file），无法编译 `reflect_value`/`^T`；里程碑特性，编译器均在起步。详见 ch09 ⑩ 汇编 | ch09、ch74 |
-| P2300 | `std::execution`（Sender/Receiver） | 未定名 | 🚧 头有/算法无 | 🚧 | ❌ | GCC15 `<execution>` 头可编译，但 `just`/`then` 算法未实现（'not a member of ex'）；参考实现 stdexec。注意 `__cpp_lib_execution`（实测 201902）是 **C++17 并行算法执行策略**，与 P2300 无关。详见 ch09 附录 E | ch09、ch93、ch114 |
+| P2996 | 静态反射（reflection） | `__cpp_reflection` | ❌ `<meta>` 缺失 | 🚧 实验 | ❌ | GCC15 无 `<meta>` 头（fatal error: meta: No such file），无法编译 `reflect_value`/`^T`；里程碑特性，编译器均在起步。详见 ch09 ⑩ 汇编 | ch09 |
+| P2300 | `std::execution`（Sender/Receiver） | 未定名 | 🚧 头有/算法无 | 🚧 | ❌ | GCC15 `<execution>` 头可编译，但 `just`/`then` 算法未实现（'not a member of ex'）；参考实现 stdexec。注意 `__cpp_lib_execution`（实测 201902）是 **C++17 并行算法执行策略**，与 P2300 无关。详见 ch09 附录 E | ch09、ch93 |
 | P2632 | `std::hive`（原 colony） | — | ❌ | ❌ | ❌ | 提案阶段 | ch85 |
 | P0843 | `std::inplace_vector` | `__cpp_lib_inplace_vector` | ❌ `<undef>` | 🚧 | 🚧 | GCC 15.3 实测 UNDEF；无堆容器标准化，嵌入式关键（见 Interview E1） | ch77 |
 | P2786 | Trivial relocatability | `__cpp_trivial_relocatability`（拟） | ❌ | 🚧 | ❌ | 移动优化，容器提速 | ch115 |

@@ -62,10 +62,10 @@
 | [ch03](Book/part01_history/ch03_cpp98_03.md) | C++98 / C++03：奠基时代 | `part01_history` | 5 | 2 | — | — |
 | [ch04](Book/part01_history/ch04_cpp11.md) | C++11：现代 C++ 革命 | `part01_history` | 4 | 4 | ch01、ch02、ch03 | ch21、ch22、ch27、ch31、ch48、ch69、ch93、ch107、ch115、ch116 |
 | [ch05](Book/part01_history/ch05_cpp14.md) | C++14：小幅完善 | `part01_history` | 4 | 4 | ch04 | ch27、ch48、ch63、ch69 |
-| [ch06](Book/part01_history/ch06_cpp17.md) | C++17：生产力跃升 | `part01_history` | 4 | 4 | ch04、ch05 | ch26、ch32、ch33、ch64、ch81、ch82、ch88、ch91、ch99 |
+| [ch06](Book/part01_history/ch06_cpp17.md) | C++17：生产力跃升 | `part01_history` | 4 | 4 | ch04、ch05 | ch26、ch32、ch28、ch64、ch81、ch82、ch88、ch91、ch99 |
 | [ch07](Book/part01_history/ch07_cpp20.md) | C++20：量级升级 | `part01_history` | 4 | 4 | ch04、ch05、ch06、ch60、ch63 | ch21、ch25、ch32、ch67、ch90、ch113、ch118、ch119、ch120 |
-| [ch08](Book/part01_history/ch08_cpp23.md) | C++23：标准库大修 | `part01_history` | 4 | 5 | ch04、ch05、ch06、ch07 | ch34、ch82、ch88、ch90、ch131 |
-| [ch09](Book/part01_history/ch09_cpp26.md) | C++26：已确定特性与方向 | `part01_history` | 4 | 3 | ch07、ch67、ch113、ch114 | ch74、ch114、ch121 |
+| [ch08](Book/part01_history/ch08_cpp23.md) | C++23：标准库大修 | `part01_history` | 4 | 5 | ch04、ch05、ch06、ch07 | ch40、ch82、ch88、ch90、ch131 |
+| [ch09](Book/part01_history/ch09_cpp26.md) | C++26：已确定特性与方向 | `part01_history` | 4 | 3 | ch07、ch67、ch93、ch113 | ch121 |
 | [ch10](Book/part01_history/ch10_version_matrix.md) | 版本特性全景对照表与迁移指南 | `part01_history` | 3 | 1 | ch03、ch04、ch05、ch06、ch07、ch08、ch09 | — |
 | [ch11](Book/part02_toolchain/ch11_compilers.md) | 编译器全景：GCC / Clang / MSVC 架构与 ABI（C++） | `part02_toolchain` | 3 | 6 | — | — |
 | [ch12](Book/part02_toolchain/ch12_buildsystems.md) | 构建系统：Make / Ninja / CMake（C++） | `part02_toolchain` | 3 | 4 | — | — |
@@ -75,16 +75,16 @@
 | [ch16](Book/part02_toolchain/ch16_ide.md) | IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++） | `part02_toolchain` | 4 | 3 | — | — |
 | [ch17](Book/part02_toolchain/ch17_crosscompile.md) | 交叉编译与嵌入式工具链（C++） | `part02_toolchain` | 4 | 3 | — | — |
 | [ch18](Book/part02_toolchain/ch18_buildconfig.md) | 构建配置：Debug / Release / LTO / PGO（C++） | `part02_toolchain` | 3 | 4 | — | — |
-| [ch19](Book/part03_language/ch19_variables.md) | 变量、存储期、链接与 ODR（工业级深度版） | `part03_language` | 5 | 19 | ch01、ch10、ch20、ch31 | ch21、ch32、ch33、ch35、ch60、ch102 |
-| [ch20](Book/part03_language/ch20_reference_pointer.md) | 引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争 | `part03_language` | 5 | 12 | ch19 | ch21、ch31、ch33、ch52、ch77、ch89、ch94、ch115、ch116、ch154、ch157 |
+| [ch19](Book/part03_language/ch19_variables.md) | 变量、存储期、链接与 ODR（工业级深度版） | `part03_language` | 5 | 19 | ch01、ch10、ch20、ch31 | ch21、ch32、ch28、ch35、ch60 |
+| [ch20](Book/part03_language/ch20_reference_pointer.md) | 引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争 | `part03_language` | 5 | 12 | ch19 | ch21、ch31、ch28、ch52、ch77、ch89、ch94、ch115、ch116、ch154、ch157 |
 | [ch21](Book/part03_language/ch21_const_family.md) | const / constexpr / consteval / constinit 深度详解 | `part03_language` | 4 | 5 | ch19、ch20 | — |
 | [ch22](Book/part03_language/ch22_auto_decltype.md) | 第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导 | `part03_language` | 4 | 2 | — | — |
 | [ch23](Book/part03_language/ch23_namespace_adl.md) | 命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找 | `part03_language` | 4 | 3 | ch19 | ch21、ch31、ch60、ch62、ch119 |
 | [ch24](Book/part03_language/ch24_enum.md) | 第 24 章 枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射） | `part03_language` | 4 | 2 | — | — |
-| [ch25](Book/part03_language/ch25_union_variant.md) | union 与 std::variant 深度详解 | `part03_language` | 4 | 2 | ch19、ch20、ch21、ch34、ch59、ch115 | — |
-| [ch26](Book/part03_language/ch26_lambda.md) | lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除 | `part03_language` | 4 | 6 | ch19、ch20、ch21、ch22、ch59、ch80、ch115、ch116 | ch27、ch52、ch115、ch116、ch154 |
+| [ch25](Book/part03_language/ch25_union_variant.md) | union 与 std::variant 深度详解 | `part03_language` | 4 | 2 | ch19、ch20、ch21、ch40、ch60、ch115 | — |
+| [ch26](Book/part03_language/ch26_lambda.md) | lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除 | `part03_language` | 4 | 6 | ch19、ch20、ch21、ch22、ch60、ch80、ch115、ch116 | ch27、ch52、ch115、ch116、ch154 |
 | [ch27](Book/part03_language/ch27_cast.md) | 显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解 | `part03_language` | 4 | 5 | ch19、ch20、ch21、ch60 | ch31、ch42、ch65 |
-| [ch28](Book/part03_language/ch28_lifetime_ub.md) | 对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化 | `part03_language` | 5 | 3 | ch19、ch20、ch21、ch25、ch27、ch31、ch33、ch42、ch61 | ch42、ch61 |
+| [ch28](Book/part03_language/ch28_lifetime_ub.md) | 对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化 | `part03_language` | 5 | 3 | ch19、ch20、ch21、ch25、ch27、ch31、ch42、ch61 | ch42、ch61 |
 | [ch29](Book/part03_language/ch29_friend.md) | 友元 friend 与访问控制 | `part03_language` | 8 | 6 | ch46 | — |
 | [ch30](Book/part03_language/ch30_volatile.md) | volatile / atomic 与硬件寄存器 | `part03_language` | 7 | 6 | — | — |
 | [ch31](Book/part03_language/ch31_operator_overloading.md) | 运算符重载 | `part03_language` | 6 | 5 | — | — |
@@ -105,7 +105,7 @@
 | [ch48](Book/part05_oo/ch48_rtti.md) | RTTI 与 typeid/dynamic_cast：运行时类型查询 | `part05_oo` | 3 | 3 | — | — |
 | [ch49](Book/part05_oo/ch49_virtual_inheritance.md) | 虚继承与菱形继承：共享虚基类 | `part05_oo` | 3 | 3 | — | — |
 | [ch50](Book/part05_oo/ch50_multiple_inheritance.md) | 多重继承与对象模型（Multiple Inheritance） | `part05_oo` | 3 | 3 | — | ch14、ch19、ch45、ch46、ch47、ch48、ch49、ch51 |
-| [ch51](Book/part05_oo/ch51_crtp.md) | CRTP 与静态多态（Curiously Recurring Template Pattern） | `part05_oo` | 4 | 6 | — | ch47、ch50、ch62、ch67、ch69、ch73 |
+| [ch51](Book/part05_oo/ch51_crtp.md) | CRTP 与静态多态（Curiously Recurring Template Pattern） | `part05_oo` | 4 | 6 | — | ch47、ch50、ch62、ch67、ch69 |
 | [ch52](Book/part05_oo/ch52_ebo.md) | 空基类优化 EBO（Empty Base Optimization） | `part05_oo` | 4 | 4 | — | ch19、ch41、ch45、ch50、ch71 |
 | [ch60](Book/part06_templates/ch60_template_basics.md) | 模板基础与实例化（Template Basics & Instantiation） | `part06_templates` | 3 | 5 | — | — |
 | [ch61](Book/part06_templates/ch61_template_overload.md) | 函数模板重载决议（Function Template Overload Resolution） | `part06_templates` | 4 | 3 | — | — |
@@ -259,7 +259,7 @@
   [ch05 C++14：小幅完善](Book/part01_history/ch05_cpp14.md)、[ch07 C++20：量级升级](Book/part01_history/ch07_cpp20.md)、[ch64 折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)、[ch88 optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
 - **入链**（指向本章）：
   [ch03 C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)、[ch05 C++14：小幅完善](Book/part01_history/ch05_cpp14.md)、[ch07 C++20：量级升级](Book/part01_history/ch07_cpp20.md)、[ch88 optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
-- **策展路径**：前置 ch04、ch05 ｜ 后续 ch26、ch32、ch33、ch64、ch81、ch82、ch88、ch91、ch99
+- **策展路径**：前置 ch04、ch05 ｜ 后续 ch26、ch32、ch28、ch64、ch81、ch82、ch88、ch91、ch99
 
 ### ch07 · C++20：量级升级
 
@@ -277,7 +277,7 @@
   [ch07 C++20：量级升级](Book/part01_history/ch07_cpp20.md)、[ch09 C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)、[ch88 optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)、[ch120 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)
 - **入链**（指向本章）：
   [ch07 C++20：量级升级](Book/part01_history/ch07_cpp20.md)、[ch09 C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)、[ch88 optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)、[ch92 时间库 chrono](Book/part07_stl/ch92_chrono.md)、[ch120 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)
-- **策展路径**：前置 ch04、ch05、ch06、ch07 ｜ 后续 ch34、ch82、ch88、ch90、ch131
+- **策展路径**：前置 ch04、ch05、ch06、ch07 ｜ 后续 ch40、ch82、ch88、ch90、ch131
 
 ### ch09 · C++26：已确定特性与方向
 
@@ -286,7 +286,7 @@
   [ch08 C++23：标准库大修](Book/part01_history/ch08_cpp23.md)、[ch10 版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)、[ch121 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)、[ch123 Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)
 - **入链**（指向本章）：
   [ch08 C++23：标准库大修](Book/part01_history/ch08_cpp23.md)、[ch10 版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)、[ch121 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)
-- **策展路径**：前置 ch07、ch67、ch113、ch114 ｜ 后续 ch74、ch114、ch121
+- **策展路径**：前置 ch07、ch67、ch93、ch113 ｜ 后续 ch121
 
 ### ch10 · 版本特性全景对照表与迁移指南
 
@@ -368,7 +368,7 @@
   [ch20 引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)、[ch21 const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)、[ch32 初始化与列表初始化](Book/part03_language/ch32_initialization.md)、[ch35 第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)、[ch36 第 36 章 栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
 - **入链**（指向本章）：
   [ch01 C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)、[ch20 引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)、[ch21 const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)、[ch22 第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)、[ch28 对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)、[ch29 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)、[ch30 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)、[ch31 运算符重载](Book/part03_language/ch31_operator_overloading.md)、[ch32 初始化与列表初始化](Book/part03_language/ch32_initialization.md)、[ch76 STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[ch80 array 与固定数组](Book/part07_stl/ch80_array.md)、[ch84 set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)、[ch85 unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)、[ch86 容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[ch91 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)、[ch92 时间库 chrono](Book/part07_stl/ch92_chrono.md)、[ch93 线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[ch115 移动语义与右值引用](Book/part10_modern/ch115_move.md)、[ch165 C++ 进阶路线图（C++）](Book/part16_reading/ch165_roadmap.md)
-- **策展路径**：前置 ch01、ch10、ch20、ch31 ｜ 后续 ch21、ch32、ch33、ch35、ch60、ch102
+- **策展路径**：前置 ch01、ch10、ch20、ch31 ｜ 后续 ch21、ch32、ch28、ch35、ch60
 
 ### ch20 · 引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争
 
@@ -377,7 +377,7 @@
   [ch19 变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)、[ch21 const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)、[ch32 初始化与列表初始化](Book/part03_language/ch32_initialization.md)、[ch65 类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)、[ch69 编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
 - **入链**（指向本章）：
   [ch19 变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)、[ch21 const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)、[ch24 第 24 章 枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)、[ch32 初始化与列表初始化](Book/part03_language/ch32_initialization.md)、[ch76 STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[ch78 deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)、[ch80 array 与固定数组](Book/part07_stl/ch80_array.md)、[ch82 span 与裸数组视图](Book/part07_stl/ch82_span.md)、[ch83 map / multimap（红黑树）](Book/part07_stl/ch83_map.md)、[ch89 tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)、[ch115 移动语义与右值引用](Book/part10_modern/ch115_move.md)、[ch116 完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
-- **策展路径**：前置 ch19 ｜ 后续 ch21、ch31、ch33、ch52、ch77、ch89、ch94、ch115、ch116、ch154、ch157
+- **策展路径**：前置 ch19 ｜ 后续 ch21、ch31、ch28、ch52、ch77、ch89、ch94、ch115、ch116、ch154、ch157
 
 ### ch21 · const / constexpr / consteval / constinit 深度详解
 
@@ -420,7 +420,7 @@
   [ch24 第 24 章 枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)、[ch26 lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](Book/part03_language/ch26_lambda.md)、[ch32 初始化与列表初始化](Book/part03_language/ch32_initialization.md)、[ch88 optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
 - **入链**（指向本章）：
   [ch24 第 24 章 枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)、[ch26 lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](Book/part03_language/ch26_lambda.md)
-- **策展路径**：前置 ch19、ch20、ch21、ch34、ch59、ch115 ｜ 后续 无
+- **策展路径**：前置 ch19、ch20、ch21、ch40、ch60、ch115 ｜ 后续 无
 
 ### ch26 · lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除
 
@@ -429,7 +429,7 @@
   [ch25 union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)、[ch27 显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)、[ch77 vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[ch116 完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)
 - **入链**（指向本章）：
   [ch25 union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)、[ch27 显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)、[ch28 对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)、[ch86 容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[ch89 tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)、[ch90 ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)
-- **策展路径**：前置 ch19、ch20、ch21、ch22、ch59、ch80、ch115、ch116 ｜ 后续 ch27、ch52、ch115、ch116、ch154
+- **策展路径**：前置 ch19、ch20、ch21、ch22、ch60、ch80、ch115、ch116 ｜ 后续 ch27、ch52、ch115、ch116、ch154
 
 ### ch27 · 显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解
 
@@ -447,7 +447,7 @@
   [ch19 变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)、[ch26 lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](Book/part03_language/ch26_lambda.md)、[ch27 显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)、[ch29 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)、[ch30 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)
 - **入链**（指向本章）：
   [ch27 显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)、[ch29 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)、[ch30 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)
-- **策展路径**：前置 ch19、ch20、ch21、ch25、ch27、ch31、ch33、ch42、ch61 ｜ 后续 ch42、ch61
+- **策展路径**：前置 ch19、ch20、ch21、ch25、ch27、ch31、ch42、ch61 ｜ 后续 ch42、ch61
 
 ### ch29 · 友元 friend 与访问控制
 
@@ -618,7 +618,7 @@
   [ch47 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)、[ch50 多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)、[ch52 空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)、[ch68 模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
 - **入链**（指向本章）：
   [ch47 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)、[ch50 多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)、[ch52 空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)、[ch72 表达式模板 Expression Templates](Book/part06_templates/ch72_expression_templates.md)、[ch123 Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)、[ch139 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)
-- **策展路径**：前置 无 ｜ 后续 ch47、ch50、ch62、ch67、ch69、ch73
+- **策展路径**：前置 无 ｜ 后续 ch47、ch50、ch62、ch67、ch69
 
 ### ch52 · 空基类优化 EBO（Empty Base Optimization）
 
