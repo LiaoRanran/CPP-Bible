@@ -194,7 +194,7 @@ sequenceDiagram
 **示例：view 管道 vs 手写循环**——在 `-O2` 下，简单 `transform`/`take` 管道常被完全优化成与手写循环相同的汇编。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析（-O2，Intel 语法）
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 // 文件：Examples/_ch90_view_asm.cpp
 // 编译：g++ -std=c++23 -O2 -S -masm=intel _ch90_view_asm.cpp -o _ch90_view_asm.asm
 #include <vector>
@@ -265,7 +265,7 @@ _Z8sum_evenRKSt6vectorIiSaIiEE:
 **案例 1（日志管道）**：从一批日志行中筛选 ERROR 级别、提取时间戳、仅取前 100 条，全程惰性、无中间容器。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志过滤 + 词频统计 E
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // 案例1：惰性日志处理管道
 #include <vector>
 #include <string>
@@ -291,7 +291,7 @@ int main() {
 **案例 2（词频 ETL）**：分词 → 过滤短词 → 计数（投影 + group），展示投影 `proj` 的威力。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志过滤 + 词频统计 E
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // 案例2：ranges 投影（proj）按字段排序/筛选
 #include <vector>
 #include <string>
@@ -415,7 +415,7 @@ A：可用，本章所有 C++23 view 示例均通过 `-std=c++23 -O2` 编译（G
 1. **优先管道组合**而非嵌套 `std::copy_if` + 临时 `vector`：
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ✅ 惰性管道，零中间容器
 #include <vector>
 #include <ranges>
@@ -432,7 +432,7 @@ int main() {
 2. **需要传统 `begin()/end()` 同类型（如传旧 API）时用 `views::common`**：
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ✅ 把 view 变成 common_range（begin/end 同类型）
 #include <vector>
 #include <ranges>
@@ -461,7 +461,7 @@ int main() {
 **惰性 vs 急切（副作用计数）**：
 
 > **示例 12** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // 演示惰性：transform 的副作用仅在迭代时发生，且仅对「被拉取」的元素
 #include <vector>
 #include <ranges>
@@ -483,7 +483,7 @@ int main() {
 ## ⑲b 补充完整可编译示例（ch90_ex01 – ch90_ex30，每块独立可编译）<span class="badge badge-std">标准</span>
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ch90_ex01：基础 ranges for_each（惰性遍历）
 #include <vector>
 #include <ranges>
@@ -497,7 +497,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // ch90_ex02：views::filter
 #include <vector>
 #include <ranges>
@@ -512,7 +512,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ch90_ex03：views::transform
 #include <vector>
 #include <ranges>
@@ -527,7 +527,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // ch90_ex04：filter | transform | take 组合管道
 #include <vector>
 #include <ranges>
@@ -545,7 +545,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // ch90_ex05：views::take（惰性截断）
 #include <vector>
 #include <ranges>
@@ -559,7 +559,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ch90_ex06：views::drop
 #include <vector>
 #include <ranges>
@@ -573,7 +573,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // ch90_ex07：views::reverse（需双向迭代器）
 #include <vector>
 #include <ranges>
@@ -587,7 +587,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // ch90_ex08：views::iota 无限序列 + take（惰性）
 #include <vector>
 #include <ranges>
@@ -601,7 +601,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // ch90_ex09：views::iota 有界区间
 #include <ranges>
 #include <iostream>
@@ -613,7 +613,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // ch90_ex10：views::common 转为传统同类型迭代器对
 #include <vector>
 #include <ranges>
@@ -628,7 +628,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // ch90_ex11：views::enumerate（索引 + 值，C++23）
 #include <vector>
 #include <ranges>
@@ -644,7 +644,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // ch90_ex12：views::zip 多 range 并行（C++23）
 #include <vector>
 #include <ranges>
@@ -659,7 +659,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ch90_ex13：views::chunk 分块（C++23）
 #include <vector>
 #include <ranges>
@@ -674,7 +674,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // ch90_ex14：views::slide 滑动窗口（C++23）
 #include <vector>
 #include <ranges>
@@ -691,7 +691,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // ch90_ex15：views::pairwise / adjacent（C++23）
 #include <vector>
 #include <ranges>
@@ -706,7 +706,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // ch90_ex16：views::stride 步进取样（C++23）
 #include <vector>
 #include <ranges>
@@ -720,7 +720,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ch90_ex17：views::cartesian_product 笛卡尔积（C++23）
 #include <vector>
 #include <ranges>
@@ -735,7 +735,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ch90_ex18：views::split + join（惰性分词与扁平化）
 #include <string>
 #include <ranges>
@@ -753,7 +753,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ch90_ex19：views::split + join_with 拼接（C++23）
 #include <vector>
 #include <string>
@@ -769,7 +769,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // ch90_ex20：views::join 扁平化嵌套 range
 #include <vector>
 #include <ranges>
@@ -783,7 +783,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // ch90_ex21：views::keys / values（map 投影）
 #include <map>
 #include <ranges>
@@ -800,7 +800,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // ch90_ex22：views::elements（元组序列投影）
 #include <vector>
 #include <tuple>
@@ -816,7 +816,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ch90_ex23：投影 proj 用于 ranges::sort
 #include <vector>
 #include <string>
@@ -834,7 +834,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ch90_ex24：ranges::count / ranges::find 直接作用于 view
 #include <vector>
 #include <ranges>
@@ -849,7 +849,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // ch90_ex25：const 元素 + 结构化绑定遍历
 #include <vector>
 #include <ranges>
@@ -866,7 +866,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // ch90_ex26：views::repeat + take（C++23）
 #include <ranges>
 #include <iostream>
@@ -879,7 +879,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // ch90_ex27：ref_view 显式引用（不拥有底层 range）
 #include <vector>
 #include <ranges>
@@ -897,7 +897,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 // ch90_ex28：subrange 返回区间（不拷贝）
 #include <vector>
 #include <ranges>
@@ -916,7 +916,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 // ch90_ex29：lazy 验证（transform 副作用仅在迭代时发生）
 #include <vector>
 #include <ranges>
@@ -934,7 +934,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 // ch90_ex30：ranges 与传统算法的桥接（管道 + 旧 API）
 #include <vector>
 #include <ranges>
@@ -1049,7 +1049,7 @@ range-v3(2014-2019): C++20 ranges前身; LLVM 17+:内部用ranges::sort; ClickHo
 views=惰性+管道+零开销(编译器融合为单循环)
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：Ranges工业
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
 int main(){auto v=std::views::iota(1,6)|std::views::transform([](int x){return x*x;});for(int x:v)std::cout<<x<<" ";std::cout<<std::endl;return 0;}
@@ -1092,7 +1092,7 @@ int main(){auto v=std::views::iota(1,6)|std::views::transform([](int x){return x
 - **策略 C · 贪婪物化**：先 `push_back` 过滤结果到 `vector`，再 `push_back` 变换结果到 `vector`，最后累加——三遍 + 两次堆分配。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准设计（三策略）
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 // _bench_ranges.cpp（库根，不进 Book/ 编译门禁；g++ -std=c++20 -O2 -pthread）
 unsigned long long bench_lazy(const vector<int>& v) {
     auto r = v
@@ -1250,7 +1250,7 @@ flowchart TD
 <details><summary>答案与解析</summary>
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
 #include <vector>
@@ -1276,7 +1276,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
 #include <vector>
@@ -1300,7 +1300,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 47 · ★★★☆☆"
 #include <iostream>
 #include <ranges>
 #include <string_view>
@@ -1327,7 +1327,7 @@ int main() {
 `views::filter` 与 `views::transform` 都是"视图"（view）：它们不拥有元素、不复制数据，只持有"底层范围 + 计算规则"。过滤和映射推迟到迭代器解引用那一刻逐元素完成，因此整条管道是 O(n) 单次遍历、零额外内存。惰性意味着不访问的元素根本不会被计算，适合"先筛选后转换"的流式处理；与之对照，`std::copy_if` + 新容器会强制物化。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <ranges>
@@ -1357,7 +1357,7 @@ int main() {
 `views::take(n)` 产生至多 n 个元素的子视图，底层迭代器到达 n 或底层结束时即停——它不会遍历整个范围，因此配合 `ranges::copy` 写入 `vector` 时，只物化真正需要的元素。这正是"惰性 + 提前停止"的价值：数据集很大时，后半部分根本不被访问。注意 `take` 是 O(1) 构造、O(n) 访问，且不改变元素所有权。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <ranges>
@@ -1465,7 +1465,7 @@ Ranges 视图的核心工程价值是「零拷贝 + 惰性求值」：视图对�
 ### D4.4 可编译验证
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
-```cpp
+```cpp title="示例 48 · ★★★☆☆"
 #include <ranges>
 #include <vector>
 #include <iostream>
@@ -1665,7 +1665,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <array>
 #include <ranges>

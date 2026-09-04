@@ -61,7 +61,7 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 网络编程的本质是**让两个进程通过文件描述符/套接字交换字节流**。C++ 标准库至 `C++23` 都没有把 socket 纳入标准（**<span class="badge badge-std">标准</span>** 这一点与 Java 的 `java.net`、Go 的 `net` 包不同），因此工业级 C++ 网络栈要么基于操作系统 API（Berkeley Socket / Winsock），要么基于库（Boost.Asio、libuv、libevent）。**[实现·GCC15]** 本章选择"从零实现"路线：用手写 socket 把 TCP、缓冲、协议、并发、序列化全部打通，让你看清 Asio 这类库在底层到底替你做了什么。
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：C++ 网络编程 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 // ① 网络分层到 C++ 概念的映射（自上而下）
 // 应用层协议  -> 你定义的 Message / 序列化器
 // 传输层 TCP  -> socket(AF_INET, SOCK_STREAM, 0) 提供的字节流
@@ -71,7 +71,7 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 ```
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：C++ 网络编程 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // ① 一个 TCP 端点的最小描述（跨平台字段一致）
 #include <cstdint>
 struct Endpoint {
@@ -81,7 +81,7 @@ struct Endpoint {
 ```
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：概述：C++ 网络编程 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ① Winsock2 的最小初始化包装（RAII 风格，后续每个示例都依赖它）
 struct WSAGuard {
     WSAGuard() { WSADATA w{}; if (WSAStartup(MAKEWORD(2,2), &w)) throw "WSAStartup"; }
@@ -94,7 +94,7 @@ struct WSAGuard {
 Berkeley Socket（BSD socket）是 1983 年 4.2BSD 引入的 API，如今已成为**事实标准**：Linux/macOS/BSD 的接口几乎一致。**<span class="badge badge-std">标准</span>** 一个 TCP 服务器的最小生命周期是 `socket → bind → listen → accept → recv/send → close`。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 从零实现网络编程
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // ② Berkeley 风格的最小 TCP 服务器骨架（Linux/macOS 可直接编译）
 // g++ -std=c++23 -O2 bsd_echo.cpp -o bsd_echo
 #include <sys/socket.h>
@@ -118,7 +118,7 @@ int bsd_server() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 从零实现网络编程
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // ② SO_REUSEADDR：避免 TIME_WAIT 状态下 bind 失败（服务器重启必备）
 // 典型用法：bind 之前对监听套接字设置一次（Windows/Winsock 风格，
 // 跨平台时把 optval 写成 const void* 即可）
@@ -129,7 +129,7 @@ void set_reuseaddr(SOCKET fd) {
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 从零实现网络编程
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // ② 把 errno 转成可读信息（POSIX 侧，Berkeley 与 Linux 通用）
 #include <cerrno>
 #include <cstring>
@@ -141,7 +141,7 @@ const char* last_err() { return ::strerror(errno); }
 **[平台·Linux]** Windows 的 Winsock2 是 BSD socket 的"近亲但不同宗"：类型名、错误处理、头文件都有差异。下表是必须记住的映射，否则跨平台编译会满屏报错。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 [平台·Linux]
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ③ 跨平台 close/closesocket 包装：用宏抹平差异（本机走 #else 分支）
 #ifdef _WIN32
     using sock_t = SOCKET;
@@ -155,7 +155,7 @@ const char* last_err() { return ::strerror(errno); }
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 [平台·Linux]
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
 // ③ 错误处理差异：Winsock 用 WSAGetLastError()，POSIX 用 errno
 // [Windows] if (connect(fd,...)==SOCKET_ERROR) cerr<<WSAGetLastError();
@@ -164,7 +164,7 @@ const char* last_err() { return ::strerror(errno); }
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 [平台·Linux]
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ③ 地址解析：inet_pton 在两边都存在，但头文件不同
 // [Windows] #include <winsock2.h> + <ws2tcpip.h>
 // [Linux]   #include <arpa/inet.h>
@@ -180,7 +180,7 @@ inet_pton(AF_INET, "127.0.0.1", &a.sin_addr);   // 返回 1 表示成功
 这是本章的"门面示例"：绑定 `127.0.0.1:54321`、accept 一个连接、逐行回显。**本机 g++ 已真实编译运行**，输出见本节末尾与 ⑲。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 从零实现网络编程
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ④ 完整可编译 echo server（本机实测通过：g++ -std=c++23 -O2 -lws2_32）
 // 文件：Examples/_ch163_echo_server.cpp
 // 行号：20-35（bind/listen/accept → recv/send 回显主循环）
@@ -238,7 +238,7 @@ flowchart TD
 客户端比服务器简单：无需 bind/listen，调用 `connect` 即可。**[实现·GCC15]** 注意 `connect` 在阻塞模式下会一直等到三次握手完成（或超时失败）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 从零实现网络编程
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑤ 完整可编译 echo client（本机实测通过）
 // 文件：Examples/_ch163_echo_client.cpp
 #include <winsock2.h>
@@ -266,7 +266,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 从零实现网络编程
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 #include <string>
 // ⑤ recv 直到遇到换行（应用层"读一行"），演示 TCP 流式读取的边界处理
 // 注意：一次 recv 可能只拿到半行，需要循环累加。
@@ -291,7 +291,7 @@ std::string recv_line(SOCKET fd) {
 默认 socket 是**阻塞**的：`recv` 没有数据就睡眠，直到有数据或连接关闭才返回。**<span class="badge badge-exp">经验</span>** 阻塞模型写起来直观，但一个线程只能服务一个连接，高并发必须靠"线程/进程 × N"。**非阻塞**模式（`ioctlsocket(fd, FIONBIO, &mode)`）下 `recv`/`connect` 立刻返回，配合 `select`/`poll`/`epoll` 才能单线程扛万级连接。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 阻塞 vs 非阻塞
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 #include <thread>
 // ⑥ 阻塞：最简单的"一连接一线程"accept 循环（教学清晰，但扩展性差）
 void blocking_accept_loop(SOCKET lfd) {
@@ -304,7 +304,7 @@ void blocking_accept_loop(SOCKET lfd) {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 阻塞 vs 非阻塞
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // ⑥ 非阻塞：把 socket 设为 FIONBIO=1，调用立即返回（本机实测）
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -336,7 +336,7 @@ void set_nonblocking(SOCKET fd) {
 | `kqueue` | BSD/macOS | O(1) 事件就绪 | macOS/BSD 的等价物，**非 Windows** |
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多路复用
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ⑦ select 骨架（本机 Windows 同样支持，已编译通过 _ch163_select.cpp）
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -351,7 +351,7 @@ void select_loop(SOCKET lfd) {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多路复用
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑦ poll 骨架（POSIX；Windows 没有原生 poll，用 WSAPoll 近似）
 #include <poll.h>
 #include <vector>
@@ -423,7 +423,7 @@ int main() {
 **[实现·GCC15]** 阻塞模型下，把"每连接一线程"升级为**线程池**即可复用线程、避免频繁创建开销。这里的思想与 第159章（线程池与并发）完全一致——任务队列 + 固定 worker。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多线程/线程池服务
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑨ 内联最小线程池 + 把"一个连接"封装成任务提交（关联 第159章 任务抽象）
 // 已编译通过 _ch163_threadpool.cpp（含 -pthread -lws2_32）
 #include <thread>
@@ -475,7 +475,7 @@ void handle_connection(ThreadPool& pool, SOCKET conn) {
 **<span class="badge badge-exp">经验</span>** 网络代码最大的性能陷阱是"每次 recv 都 new/拷贝"。工业做法是**应用层环形缓冲（RingBuffer）**：读写指针循环复用同一块内存，避免频繁分配。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓冲区管理
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // ⑩ 单生产者/单消费者环形缓冲（跨平台纯 C++23，已编译通过 _ch163_buffer.cpp）
 #include <cstddef>
 template <size_t N>
@@ -489,7 +489,7 @@ struct RingBuffer {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓冲区管理
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 #include <cstddef>
 #include <vector>
 // ⑩ 可增长缓冲：容量不足时按 2 倍扩容，模拟 std::vector 的 amortized 策略
@@ -518,7 +518,7 @@ TCP 是字节流，**你必须自己切"消息"**。两种主流 framing：
 2. **分隔符**：用 `\n` 或 `\r\n` 当消息边界——人类可读，但 payload 不能含分隔符。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 协议设计（长度前缀/分隔符）
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // ⑪ 长度前缀编解码（已编译通过 _ch163_lenprefix.cpp）
 #include <vector>
 #include <cstdint>
@@ -538,7 +538,7 @@ std::string decode(const std::vector<char>& in) {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 协议设计（长度前缀/分隔符）
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 #include <string>
 // ⑪ 分隔符 framing：从缓冲里切出下一条以 '\n' 结尾的消息
 bool try_extract(std::string& buf, std::string& msg) {
@@ -561,7 +561,7 @@ bool try_extract(std::string& buf, std::string& msg) {
 消息切包后，payload 内部的"结构化数据"需要序列化。**[实现·GCC15]** 这里复用 第162章（JSON 库）的思想：把对象序列成 JSON 字符串，再用 ⑪ 的长度前缀包一层，得到"自描述且二进制安全"的线路格式。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 序列化（关联 第162章 JSON）
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -581,7 +581,7 @@ std::vector<char> frame_json(const std::string& payload) {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 序列化（关联 第162章 JSON）
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 #include <string>
 // ⑫ 收到帧后解析字段（示意：取 "seq" 的值，工业实现见 第162章 解析器）
 int parse_seq(const std::string& json) {
@@ -601,7 +601,7 @@ int parse_seq(const std::string& json) {
 **[平台·Linux]** 跨平台网络程序的入口是 `getaddrinfo`：它同时支持 IPv4/IPv6，且 Windows/Linux 接口一致。本节两个示例本机均 `g++` 跑通。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实跨平台实现
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑬ 用 getaddrinfo 解析 "localhost"（已编译通过 _ch163_getaddrinfo.cpp）
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -626,7 +626,7 @@ void resolve() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实跨平台实现
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ⑬ Winsock 版本号打印（已编译通过 _ch163_init.cpp）
 #include <winsock2.h>
 #include <iostream>
@@ -639,7 +639,7 @@ void print_version() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实跨平台实现
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 // ⑬ Winsock 错误码 -> 可读字符串（跨平台时换成 strerror）
 #include <winsock2.h>
 const char* wsa_err(int code) {
@@ -666,7 +666,7 @@ _getaddrinfo.exe:
 **<span class="badge badge-exp">经验</span>** 网络服务的两个核心指标：**并发连接数**与**单连接吞吐**。本机（Windows 笔记本 + MinGW）受限于单核调度与杀毒软件对 .exe 的首跑扫描，仅适合做"正确性证据"与小规模基准，不适合作为权威性能数字。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（连接数/吞吐，说明本机限制）
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // ⑭ 高精度计时器（C++11 steady_clock），用于本地微基准
 #include <chrono>
 struct Timer {
@@ -680,7 +680,7 @@ struct Timer {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（连接数/吞吐，说明本机限制）
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 #include <cstdint>
 // ⑭ 连接计数器：记录 accept 总数与回显字节数（真实服务应加原子保护）
 struct Stats {
@@ -703,7 +703,7 @@ struct Stats {
 **[实现·GCC15]** 裸 TCP 是明文，生产环境必须叠 TLS。C++ 标准库无 TLS，工业做法是用 **OpenSSL / BoringSSL / mbedTLS**（上游参考，非本章自实现）。下面给出 OpenSSL 上下文初始化示意——它需要 OpenSSL 头文件与 `-lssl -lcrypto`，**本机未编译，仅作接口示范**。
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 安全（TLS 简述，上游参考）
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ⑮ OpenSSL 上下文初始化（示意，需 -lssl -lcrypto，上游参考）
 // 本机未编译，仅展示工业级 TLS 服务器的最小起手式。
 #if 0
@@ -718,7 +718,7 @@ SSL_CTX* make_ctx() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 安全（TLS 简述，上游参考）
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <cstdint>
 #include <vector>
 #include <array>
@@ -736,7 +736,7 @@ struct Frame {
 **<span class="badge badge-std">标准</span>** 手写 socket 让你理解原理，但工业项目更常用 Boost.Asio（或 C++ 标准提案的 `std::net`）。Asio 用 **proactor 模式**把 `select`/`epoll`/`IOCP` 统一成 `async_read/async_write`，并自动管理缓冲区生命周期。下面是对比示意（上游参考）。
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ASIO/boost::asio
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ⑯ boost::asio 回显（示意，需 -lboost_asio，上游参考，本机未编译）
 #if 0
 #include <boost/asio.hpp>
@@ -756,7 +756,7 @@ void asio_echo() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ASIO/boost::asio
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 #include <cstddef>
 #include <memory>
 #include <vector>
@@ -789,7 +789,7 @@ void async_echo(tcp::socket& s, std::shared_ptr<std::vector<char>> buf) {
 **<span class="badge badge-exp">经验</span>** 以下是新手高发的三类错误，逐一配"错误示范 + 正确做法"。
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（忙等/连接泄漏）
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // ⑰ 反模式 A：忙等（busy-wait）——空转吃满一个 CPU 核心
 // ❌ 错误：没有数据也疯狂轮询
 void bad_busy_wait(SOCKET fd) {
@@ -802,7 +802,7 @@ void bad_busy_wait(SOCKET fd) {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（忙等/连接泄漏）
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // ⑰ 反模式 B：连接泄漏——accept 后忘了 closesocket
 // ❌ 错误：每次异常路径都漏一个句柄，最终耗尽 fd
 void bad_leak(SOCKET lfd) {
@@ -813,7 +813,7 @@ void bad_leak(SOCKET lfd) {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（忙等/连接泄漏）
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // ⑰ 正确做法：RAII 包装 socket，构造即持有、析构即关闭，杜绝泄漏
 struct Socket {
     SOCKET fd;
@@ -830,7 +830,7 @@ struct Socket {
 **<span class="badge badge-std">标准</span>** WG21 长期推进 **Networking TS**（基于 Asio 抽象），目标是在某版 C++（曾展望 C++23/26，目前仍未合并入标准）提供 `std::net`。下面用**示意 API**展示其方向——注意这是提案形态，并非本机可编译的 C++23 代码。
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：++26 网络 TS 前瞻 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ⑱ 网络 TS 拟议接口（示意，非本机 C++23 可编译，仅展示方向）
 #if 0
 #include <net>                 // 提案头文件
@@ -847,7 +847,7 @@ void proposed() {
 ```
 
 > **示例 37** [难度 ★★☆☆☆] [主题：++26 网络 TS 前瞻 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // ⑱ 与之配套的执行器（executor）概念——把"在哪里跑回调"显式化
 // 示意：strand 保证同一连接的回调不并发，等价于 ⑨ 线程池的互斥效果。
 #if 0
@@ -861,7 +861,7 @@ net::co_spawn(s, echo_coro(sock), net::detached);
 本节的每段输出都来自本机 `g++ 13.1.0 -std=c++23 -O2 -lws2_32` 的真实运行，绝不编造。先给出**单进程确定性回显**源码，再给出**双进程（后台 server + 前台 client）**的真实交互。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // ⑲ 单进程回显证据（已编译通过 _ch163_echo_inproc.cpp）
 // 文件：Examples/_ch163_echo_inproc.cpp
 // 行号：23-28（accept/recv/send 回显核心），47-54（client 连接/发送/接收）
@@ -942,7 +942,7 @@ int main() {
 从 `socket()` 到 `epoll`，从字节流到"消息"，从阻塞到线程池——本章把 C++ 网络编程的骨架从零搭了一遍，并用本机 Winsock2 的真实编译运行做了端到端取证。核心结论：**<span class="badge badge-exp">经验</span>** 手写 socket 的价值不在"重复造轮子"，而在让你理解 Asio / 第159章线程池 / 第162章序列化 这些上层抽象到底在替你屏蔽什么。**<span class="badge badge-std">标准</span>** 记住 C++ 标准至今没有网络 API，选 Winsock 还是 Berkeley、选 select 还是 epoll，都是工程权衡而非语言规定。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 #include <cstdint>
 #include <string>
 // ⑳ 收尾：把本章知识点合成一个"可复用端点"示意（跨平台包装的雏形）
@@ -1029,7 +1029,7 @@ struct Endpoint {
 | Envoy (Lyft) | Event-driven | 多 worker 线程 | HTTP/1/2/3 | L7 代理，热重启 |
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业网络框架对比 [F: Industry / H: Design]
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 int main() {
     std::cout << "Networking library choice:\n";
@@ -1045,7 +1045,7 @@ int main() {
 ## 附录 B：性能模型 —— epoll vs io_uring [E: Low-level / G: Performance]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：性能模型 —— epoll
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 // 注：以下为 Linux epoll/io_uring 参考量级（Jens Axboe / lwn.net 基准），
 // 仅作对照示意，本机 Windows/MinGW 无 epoll/io_uring，未实测；本机实测见附录 D/F。
@@ -1080,12 +1080,12 @@ A: Reactor = 事件通知 + 用户自己读写; Proactor = 内核完成 IO + 通
 
 Q: TCP 的 TIME_WAIT 和 SO_REUSEADDR 的作用？
 A: TIME_WAIT = 2MSL 等待 (防止残留报文干扰); SO_REUSEADDR = 允许绑定处于 TIME_WAIT 的端口
-```text
+```
 
 ## 附录 D：编译器与底层网络性能 [C: Compiler / E: Low-level / I: Practice]
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：编译器与底层网络性能 [C: Compiler / E: Low-level / I: Practice]
-```
+```text
 网络编程的底层性能边界（量级参考，区分平台）：
 
 [Linux x86-64 — 本机 Windows/MinGW 无 epoll/io_uring，未实测；来源: Jens Axboe io_uring 基准 / lwn.net epoll 基准 / Brendan Gregg]
@@ -1178,7 +1178,7 @@ localhost TCP connect : 355 us | RTT(1B echo): 35.3 us/op | bulk: 889 MB/s | ctx
 | 线程模型 | ch93(thread), ch159(threadpool) | one-loop-per-thread |
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 项目学习地图：网络编程 → 全书知识
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Network=ch163+ch93+ch81+ch77+ch159"<<std::endl;return 0;}
 ```
@@ -1220,7 +1220,7 @@ int main(){std::cout<<"Network=ch163+ch93+ch81+ch77+ch159"<<std::endl;return 0;}
 使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 重构建议
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
 template <typename T>
@@ -1250,7 +1250,7 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 请实现一个定长环形缓冲区 `RingBuffer`：`push` 写入、`pop` 取出，跨读写指针不越界。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <cstddef>
@@ -1292,7 +1292,7 @@ TCP 是字节流，应用层必须自己定界。长度前缀（先发 4 字节�
 请实现 `encode`/`decode`：把一条消息序列化为 `[uint32 len][payload]`，再解析回来。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -1331,7 +1331,7 @@ int main() {
 “读头部 → 读载荷 → 处理”，并用分块输入的字节流驱动它，模拟非阻塞累积。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -1384,7 +1384,7 @@ int main() {
 **落地**：
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：epoll vs iour
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 #include <iostream>
 
 // 用常量表达两种模型的“每次事件系统调用/拷贝开销”量级差异
@@ -1410,7 +1410,7 @@ int main() {
 **落地**：
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：C10K 到 C100K—
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <unordered_map>
 
@@ -1617,7 +1617,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <cstdio>
 #include <cstring>
 
@@ -1717,7 +1717,7 @@ paddd    xmm2, xmm4
 顺序：`socket()` 创建套接字 → `bind()` 绑定地址端口 → `listen()` 进入监听（backlog 为已完成+进行中连接队列上限）→ `accept()` 阻塞等待并产出已连接套接字 → `read/write` 收发 → `close()`。backlog 是内核为该监听套接字维护的"半连接+全连接"队列长度上限，过小会丢连接、过大浪费资源。
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 54 · ★☆☆☆☆"
 // 概念骨架（Linux/macOS 需 <sys/socket.h>，本 MinGW 门禁跳过该块）
 // int s = socket(AF_INET, SOCK_STREAM, 0);
 // bind(s, (sockaddr*)&addr, sizeof addr);
@@ -1744,7 +1744,7 @@ paddd    xmm2, xmm4
 - Windows Winsock：`u_long mode=1; ioctlsocket(s, FIONBIO, &mode);`。
 
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 55 · ★☆☆☆☆"
 // POSIX 设非阻塞（门禁跳过 <sys/socket.h>/<fcntl.h> 块）
 // fcntl(fd, F_SETFL, fcntl(fd,F_GETFL,0) | O_NONBLOCK);
 ```

@@ -93,7 +93,7 @@ struct Flusher {
 级别是"噪声闸门"：级别越低越详细、越吵。**核心原则：用整数序关系做门控，而不是一堆 if。** `[标准]` 这并非标准强制，而是工业库的通用约定（参照 RFC 5424 syslog severity 与 spdlog 的层级命名）。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 日志级别
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // ② 级别定义：用连续整数表达"包含关系"
 enum class Level : int {
     trace    = 0,  // 最吵：逐行跟踪
@@ -114,7 +114,7 @@ inline bool enabled(Level msg, Level threshold) {
 本机 `Examples/_ch161_levels.cpp` 实测（阈值 = info）：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 日志级别
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 #include <iostream>
 // 文件：Examples/_ch161_levels.cpp
 // 行号：24-31（main 中门控循环）
@@ -149,7 +149,7 @@ const char* color_of(Level l) {
 
 // ② 运行时动态过滤：把阈值提到 warn，低级别静默丢弃（真实可编译，Examples/_ch161_fix1.cpp）
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 日志级别
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix1.cpp
 #include <cstdio>
 #include <string_view>
@@ -199,7 +199,7 @@ printed=2 (info 被过滤)
 Sink 是"日志的去向"。一个 Logger 可以挂多个 sink，形成扇出拓扑。**<span class="badge badge-impl">实现</span>** 用基类 + 虚函数（或 `std::function`）解耦"产生日志"与"落地日志"。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 日志 sink
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
 #include <string_view>
 // ③ sink 基类：Logger 只依赖抽象接口
@@ -226,7 +226,7 @@ struct ConsoleSink : Sink {
 file sink 把日志持久化，便于事后排查：
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 日志 sink
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 #include <string_view>
 #include <fstream>
 // ③ file sink：追加写入文件
@@ -263,7 +263,7 @@ struct UdpSink {
 
 // ③ 自定义 sink（一）：用 std::function 注入任意落地逻辑，此处落内存 vector 便于回放（真实可编译，Examples/_ch161_fix2.cpp）
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 日志 sink
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix2.cpp
 #include <cstdio>
 #include <functional>
@@ -299,7 +299,7 @@ store.size=1
 
 // ③ 自定义 sink（二）：内存环形缓冲 sink，容量封顶、旧日志被覆盖（真实可编译，Examples/_ch161_fix3.cpp）
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 日志 sink
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 // 文件：Examples/_ch161_fix3.cpp
 #include <array>
 #include <cstddef>
@@ -344,7 +344,7 @@ ring[2]=c
 `{fmt}`（现已被收编为 C++20 `std::format`）的核心思想：**编译期检查格式串、运行期类型安全替换**。它比 `printf` 安全（无类型不匹配的 UB），比字符串流快（无临时 `ostringstream` 堆分配）。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 格式化（fmt 风格，上游参考）
-```cpp
+```cpp title="示例 10 · ★★★☆☆"
 #include <cstddef>
 #include <string>
 #include <string_view>
@@ -388,7 +388,7 @@ user 42 logged in from 10.0.0.7
 **<span class="badge badge-std">标准</span>** `[format.syn]` 规定 `std::format` 在编译期校验格式串，类型错误直接编译失败，而非运行期 UB。需要 `-std=c++20`（本机 gcc 13.1.0 已支持）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 从零实现日志库
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑤ std::format：编译期格式串检查 + 类型安全
 #include <format>
 #include <iostream>
@@ -419,7 +419,7 @@ std::string dyn_format(std::string_view fmt, int a, double b) {
 
 // ⑤ 自定义 std::format formatter：为用户类型提供 {} 格式化（真实可编译，Examples/_ch161_fix4.cpp）
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 从零实现日志库
-```cpp
+```cpp title="示例 12 · ★★★☆☆"
 // 文件：Examples/_ch161_fix4.cpp
 #include <cstdio>
 #include <format>
@@ -453,7 +453,7 @@ p=(3, 4)
 同步日志的痛点：业务线程要等"写盘/写网络"完成才能继续。异步日志把"格式化+入队"与"落地"拆开——**生产者只把消息推入线程安全队列，消费者（后台线程）慢慢落地**。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异步日志（队列+后台线程）
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
 #include <mutex>
@@ -501,7 +501,7 @@ bool should_drop(std::size_t qsize, Level lvl) {
 
 // ⑥ 异步队列实现：有界阻塞队列（生产者满则等、消费者空则等），是异步日志的核心交接结构（真实可编译，Examples/_ch161_fix5.cpp）
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异步日志（队列+后台线程）
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix5.cpp
 #include <condition_variable>
 #include <cstdio>
@@ -556,7 +556,7 @@ got msg3
 单个日志文件无限增长会撑爆磁盘。轮转策略常见两种：**按大小**（超过 `max_bytes` 就重命名备份、开新文件）与**按时间**（每天/每小时切一个文件）。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 日志轮转
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
 #include <cstddef>
@@ -604,7 +604,7 @@ std::string daily_name(const char* base) {
 
 // ⑦ 轮转触发条件（二）：按时间间隔触发，与按大小轮转互补（真实可编译，Examples/_ch161_fix6.cpp）
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 日志轮转
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix6.cpp
 #include <chrono>
 #include <cstdio>
@@ -633,7 +633,7 @@ should_rotate=1 (期望1)
 多业务线程并发写日志，必须保护共享状态。最简单是 `std::mutex`；高并发可上无锁结构（原子计数器、SPSC 环形缓冲）。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程安全（mutex/无锁）
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -673,7 +673,7 @@ struct MultiSink {
 
 // ⑧ 线程安全锁（二）：std::shared_mutex 读写锁，多读少写时读者之间不互斥（真实可编译，Examples/_ch161_fix7.cpp）
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程安全（mutex/无锁）
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix7.cpp
 #include <cstdio>
 #include <mutex>
@@ -720,7 +720,7 @@ final=m3
 这是日志库最关键的"零开销抽象"技巧：**当某级别在编译期被整体关闭，对应日志代码应被完全消除，运行时零成本**。用 `if constexpr` 实现编译期门控。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能（零开销关闭级别）
-```cpp
+```cpp title="示例 19 · ★★★★☆"
 #include <cstdio>
 // ⑨ 编译期阈值；低于它的日志在编译期直接消失
 constexpr int COMPILE_THRESHOLD = 6;               // 6 == Level::off
@@ -742,7 +742,7 @@ int main() {
 源码剖析（本机 `g++ -O2 -S -masm=intel` 提取）：
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能（零开销关闭级别）
-```cpp
+```cpp title="示例 20 · ★★★☆☆"
 // 文件：Examples/_ch161_zerooverhead.cpp
 // 行号：47-59（main 函数）
 // 汇编证据：main 仅保留 log_if<6> 一处调用（edx=6），
@@ -774,7 +774,7 @@ main:
 
 // ⑨ 零开销关闭级别（二）：用模板非类型参数 + if constexpr，低级别在编译期整体消失（真实可编译，Examples/_ch161_fix8.cpp）
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能（零开销关闭级别）
-```cpp
+```cpp title="示例 21 · ★★★☆☆"
 // 文件：Examples/_ch161_fix8.cpp
 #include <cstdio>
 
@@ -806,7 +806,7 @@ int main() {
 手写 `logger.log(Level::info, __FILE__, __LINE__, ...)` 太啰嗦。宏自动注入文件/行/级别，并做门控：
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 宏设计（LOGINFO 等）
-```cpp
+```cpp title="示例 22 · ★★★☆☆"
 #include <cstdio>
 // ⑩ 宏：自动捕获级别、文件、行号
 enum class Lv { info = 2, warn = 3, error = 4 };
@@ -837,7 +837,7 @@ constexpr Lv g_thr = Lv::info;
 
 // ⑩ 作用域计时宏：进入/离开函数自动记日志（RAII + 计时）
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宏设计（LOGINFO 等）
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 #define LOG_SCOPE()                                                     \
     const auto _t0 = std::chrono::steady_clock::now();                  \
     struct _ScopeGuard {                                                \
@@ -852,7 +852,7 @@ constexpr Lv g_thr = Lv::info;
 
 // ⑩ 宏设计（二）：完整 LOG_TRACE/DEBUG/INFO 家族，自动注入文件行号与级别门控（真实可编译，Examples/_ch161_fix9.cpp）
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 宏设计（LOGINFO 等）
-```cpp
+```cpp title="示例 24 · ★★★☆☆"
 // 文件：Examples/_ch161_fix9.cpp
 #include <cstdio>
 
@@ -890,7 +890,7 @@ int main() {
 日志若没有"发生在哪一行"，排查价值减半。`__FILE__` / `__LINE__` / `__func__` 是编译器注入的现场坐标。
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码定位（FILE/LINE）
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <cstdio>
 // ⑪ 源码定位：__FILE__ / __LINE__ / __func__
 inline void log_loc(const char* file, int line, const char* func, const char* msg) {
@@ -919,7 +919,7 @@ constexpr std::string_view filename(std::string_view path) {
 
 // ⑪ 源码定位（二）：C++20 std::source_location 直接拿到文件/行/函数，免去手写 __FILE__/__LINE__ 宏（真实可编译，Examples/_ch161_fix10.cpp）
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码定位（FILE/LINE）
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix10.cpp
 #include <cstdio>
 #include <source_location>
@@ -952,7 +952,7 @@ Examples/_ch161_fix10.cpp:14 inside deep
 把前面所有积木拼成**一个自包含、本机可编译**的 logger：级别门控 + `std::format` 格式化 + 时间戳 + 异步队列 + 文件/控制台双 sink。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实完整实现
-```cpp
+```cpp title="示例 27 · ★★★☆☆"
 // 文件：Examples/_ch161_full.cpp
 // 行号：50-83（Logger::log 与宏）
 // 整文件经 g++ -std=c++20 -O2 -pthread 真实编译运行通过
@@ -1058,7 +1058,7 @@ spdlog 是工业级标杆。本章自写 logger 与之在**架构同构**，能�
 spdlog 用法（上游 API 参考，**本机未安装 spdlog 头文件，故不编译**）：
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 spdlog 对比（上游参考）
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // ⑬ spdlog 上游参考（需 #include <spdlog/spdlog.h>，本机未安装故不编译）
 // auto logger = spdlog::basic_logger_mt("app", "logs/app.log");
 // spdlog::set_level(spdlog::level::info);
@@ -1073,7 +1073,7 @@ spdlog 用法（上游 API 参考，**本机未安装 spdlog 头文件，故不�
 **[平台·Windows]** 日志路径分隔符、默认行尾、控制台句柄在 Windows 与类 Unix 上不同。可移植代码用宏隔离：
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <string>
 // ⑭ 平台差异：路径分隔符与行尾
 std::string separator() {
@@ -1114,7 +1114,7 @@ platform=windows sep=\ eol_is_crlf=1
 传统文本日志给人看，结构化日志给机器吃——输出 JSON，便于 ELK / Loki / Grafana 直接索引查询。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结构化日志（JSON）
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 #include <cstdio>
 #include <string>
 // ⑮ 结构化 JSON 日志：机器可解析
@@ -1152,7 +1152,7 @@ struct JsonBuilder {
 
 // ⑮ 结构化日志（二）：JSON 含数组字段，机器可索引查询（真实可编译，Examples/_ch161_fix11.cpp）
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结构化日志（JSON）
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix11.cpp
 #include <cstdio>
 #include <string>
@@ -1189,7 +1189,7 @@ int main() {
 不要"感觉很快"，要用 `std::chrono::steady_clock`（单调、不受系统时间回拨影响）测。**真实基准数字如下，本机实测，未编造**：
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能测量
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 #include <cstdio>
 #include <mutex>
 // ⑯ 100 万条消息：同步 vs 异步（本机 g++ -O2 -pthread）
@@ -1240,7 +1240,7 @@ double bench_ms(auto&& f) {
 
 // ⑯ 性能测量（二）：RAII 计时器，构造记起点、析构自动打印耗时，作用域即测量区间（真实可编译，Examples/_ch161_fix12.cpp）
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能测量
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix12.cpp
 #include <chrono>
 #include <cstdio>
@@ -1275,7 +1275,7 @@ int main() {
 反模式一：**在热路径无脑构建日志字符串**，即便该级别被关闭也要付出构建成本。
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（同步阻塞/过度日志）
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <string>
 // ⑰ 反模式：级别关闭也要付 ostringstream 构建成本
 std::string build_slow(int id, double v) {
@@ -1297,7 +1297,7 @@ built 200000 strings in 213.6 ms (sink=6425926)
 
 // ⑰ 反模式修正：先判级别再构建字符串，关闭时避免白做功（真实可编译，Examples/_ch161_fix13.cpp）
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 反模式（同步阻塞/过度日志）
-```cpp
+```cpp title="示例 35 · ★★★☆☆"
 // 文件：Examples/_ch161_fix13.cpp
 #include <cstdio>
 #include <string>
@@ -1330,7 +1330,7 @@ skipped: level disabled
 **<span class="badge badge-exp">经验</span>** 务必分清两件事：**错误处理负责控制流（让程序正确），日志负责可观测性（让人看懂）**。日志 ≠ 错误处理。一个函数失败了，应该**返回错误码/抛异常**让调用者决策，同时**记一条日志保留现场**——日志只是旁观者。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与错误处理衔接（关联 ch146）
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 #include <cstdio>
 #include <string>
 #include <string_view>
@@ -1365,7 +1365,7 @@ caller handles error code=1
 
 // ⑱ 与错误处理衔接（二）：异常负责控制流（向上抛），日志只旁观留痕（真实可编译，Examples/_ch161_fix14.cpp）
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与错误处理衔接（关联 ch146）
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // 文件：Examples/_ch161_fix14.cpp
 #include <cstdio>
 #include <stdexcept>
@@ -1402,7 +1402,7 @@ int main() {
 一个迷你 HTTP 服务的访问日志：根据状态码自动选级别，把 5xx 记 error、4xx 记 warn、其余记 info。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实案例
-```cpp
+```cpp title="示例 38 · ★★★☆☆"
 #include <cstdio>
 #include <vector>
 #include <string>
@@ -1483,7 +1483,7 @@ void set_threshold(Logger& log, Level l) { log.set_level(l); }
 - **日志不等同错误处理**：错误靠返回/异常传，日志只留痕（⑱，关联第146章）。
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 小结
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // ⑳ 一句话总结：好日志 = 正确分级 + 零开销关闭 + 异步不阻塞 + 结构化可检索
 // 自写一遍（见 Examples/_ch161_full.cpp）胜过读十篇博客——本机 g++ 已验证。
 ```
@@ -1511,7 +1511,7 @@ void set_threshold(Logger& log, Level l) { log.set_level(l); }
 | RAII | ch39(RAII), ch41(unique_ptr) | Logger对象生命周期 | 全局Logger用Meyers Singleton |
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 项目学习地图：日志库 → 全书知识映
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 #include <iostream>
 int main() {
     std::cout << "Logger = ch81(string) + ch92(chrono) + ch131(fmt)" << std::endl;
@@ -1585,7 +1585,7 @@ spdlog (Gabriele Melman, 2014-2024) 设计原理:
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 G：日志库工业原理 [B: Principle / D: Stdlib / E: Lowlevel / I: Practice / J: Learning]
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 int main() {
     std::cout << "Logger perf: spdlog=300ns/msg, glog=500ns, cout=1us" << std::endl;
@@ -1640,7 +1640,7 @@ int main() {
 `source_location::current()` 取它**所在调用点**的信息；把它作为带默认实参的函数参数，调用方不显式传参时，`current()` 就在调用点求值，从而拿到正确的文件行号。若再包一层转发函数却没把 `loc` 透传，就会变成转发函数的位置。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <source_location>
 #include <iostream>
 #include <string_view>
@@ -1666,7 +1666,7 @@ int main() { log("hello"); }   // 打印的是 main 里的行号，而非 log �
 `if constexpr` 在编译期只保留成立的分支，不成立分支里的代码根本不实例化——所以关闭的级别既不格式化、也不求值昂贵参数，达到零开销。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <string>
 enum Level { TRACE, DEBUG, INFO, WARN, ERROR };
@@ -1694,7 +1694,7 @@ int main() { log<TRACE>("never printed, never built"); log<ERROR>("err"); }
 有界队列在 `push` 时若已达容量，按级别策略丢弃（如 DEBUG/TRACE）而非无限增长。下面给出有界入队骨架；背压也可改为"阻塞直到有空位"，但会耦合生产者延迟。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 45 · ★★★★☆"
 #include <queue>
 #include <mutex>
 #include <condition_variable>
@@ -1922,7 +1922,7 @@ N=200000 条消息。格式化维度各方式独立计时；落地维度以「�
 ### D5.3 可复现 demo
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 // D5.3 可复现 demo — ch161 日志库
 // 演示：std::format 与 ostringstream 生成相同文本（语义等价）；
 // 批量写 N 行到临时文件，行数必须与 N 一致。正确性断言（非时间/倍数）。

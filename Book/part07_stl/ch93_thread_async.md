@@ -233,7 +233,7 @@ flowchart LR
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈/时序图：std::async
-```cpp
+```cpp title="示例 6 · ★★★★☆"
 // ⑨ async(launch::async) 立即起线程，get() 等待结果（完整可编译）
 #include <iostream>
 #include <future>
@@ -285,7 +285,7 @@ _Z16launch_and_countv:
 - `std::future` 的阻塞语义与 `std::condition_variable` 的等待（[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)）实现原理同源：`future` 的共享状态用 `call_once` + 条件变量实现"就绪通知"。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：future 在容器/算法/范
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ⑪ 把一组 future 收集进 vector 并 wait（完整可编译）
 #include <iostream>
 #include <future>
@@ -308,7 +308,7 @@ int main() {
 真实服务器常需把一次外部请求拆成 N 个子任务并发执行（如并行查缓存、DB、远程服务），再合并结果。下面是基于 `std::async` + `std::future` 的**结构骨架**（非 Hello World，可运行、可扩展为真实 handler）。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：高并发 Web 服务器的"
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ⑫ 工业：一次请求并发调用三个下游服务并归并（完整可编译骨架）
 #include <iostream>
 #include <future>
@@ -416,7 +416,7 @@ class _State_baseV2 {
 8. **`packaged_task` 与 `async` 区别？** → 前者是"可手动调用的任务对象"（可延迟、可放进队列），后者是"立即/惰性启动的工厂"。
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ⑮ 面试题佐证：future 第二次 get() 抛 no_state（完整可编译）
 #include <iostream>
 #include <future>
@@ -444,7 +444,7 @@ int main() {
 - **移动-only 类型（如 `std::unique_ptr`）直接传 thread** → 必须 `std::move`，否则拷贝失败。
 
 > **示例 10** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ⑯ 易错：deferred 在调用线程同步执行（完整可编译，注意计数线程id）
 #include <iostream>
 #include <future>
@@ -476,7 +476,7 @@ int main() {
 **Q：为什么 `future` 不能拷贝？** A：共享状态只有一份结果，"单一消费者"语义保证 `get()` 的一次性；多消费者请用 `shared_future`。
 
 > **示例 11** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑰ FAQ 佐证：packaged_task 通过 get_future 取结果（完整可编译）
 #include <iostream>
 #include <future>
@@ -501,7 +501,7 @@ int main() {
 6. 真实高并发请用线程池 + 任务队列，而非每任务 `async`。
 
 > **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑱ 最佳实践：移动-only 结果经 promise 跨线程传递（完整可编译）
 #include <iostream>
 #include <future>
@@ -536,7 +536,7 @@ int main() {
 | `future::get()` 阻塞等待 | 取决于子线程 | 条件变量等待（µs 级上下文切换） |
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // ⑲ microbenchmark：线程创建 vs 任务本身（量级示意，完整可编译）
 #include <iostream>
 #include <thread>
@@ -632,7 +632,7 @@ int main() {
 下面 E1–E26 每个都是**完整可编译程序**（自带 `#include` 与 `int main`），覆盖本章所有原语，且每个 thread 都已 `join`/`detach` 以确保正常退出。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // E1 std::thread 基本构造与 join
 #include <iostream>
 #include <thread>
@@ -645,7 +645,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 // E2 多个线程 join 的惯用法（vector<thread>）
 #include <iostream>
 #include <thread>
@@ -660,7 +660,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // E3 detach 后台线程（必须确保被引用对象活得够久）
 #include <iostream>
 #include <thread>
@@ -675,7 +675,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // E4 按值传参（参数被 decay 拷贝进线程）
 #include <iostream>
 #include <thread>
@@ -690,7 +690,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // E5 按引用传参必须用 std::ref
 #include <iostream>
 #include <thread>
@@ -706,7 +706,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // E6 移动-only 对象经 std::move 传入线程
 #include <iostream>
 #include <thread>
@@ -722,7 +722,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // E7 成员函数作为线程入口（this 被拷贝/引用传入）
 #include <iostream>
 #include <thread>
@@ -738,7 +738,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // E8 thread::id 与 hardware_concurrency（不依赖结果，仅演示 API）
 #include <iostream>
 #include <thread>
@@ -752,7 +752,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // E9 简单 RAII 包装：作用域结束自动 join（thread 自身不可拷贝，用移动）
 #include <iostream>
 #include <thread>
@@ -772,7 +772,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // E10 promise 设置值，future 在另一线程读取
 #include <iostream>
 #include <future>
@@ -789,7 +789,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // E11 promise 传播异常，future.get() 在消费线程重抛
 #include <iostream>
 #include <future>
@@ -811,7 +811,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // E12 packaged_task：把可调用体封装为"可设置结果的任务"
 #include <iostream>
 #include <future>
@@ -829,7 +829,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // E13 async(launch::async)：立即并行
 #include <iostream>
 #include <future>
@@ -841,7 +841,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // E14 async(launch::deferred)：惰性，在 get() 处同步执行
 #include <iostream>
 #include <future>
@@ -854,7 +854,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // E15 默认 async（async|deferred，由实现选择）
 #include <iostream>
 #include <future>
@@ -866,7 +866,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 29 · ★★★★☆"
 // E16 async 组合 policy 的陷阱演示：可能退化成 deferred（严格按标准）
 #include <iostream>
 #include <future>
@@ -882,7 +882,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // E17 shared_future：结果可被多个消费者读取
 #include <iostream>
 #include <future>
@@ -901,7 +901,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // E18 future 的 wait / wait_for 超时控制
 #include <iostream>
 #include <future>
@@ -920,7 +920,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // E19 call_once：只执行一次（多线程竞态安全）
 #include <iostream>
 #include <mutex>
@@ -937,7 +937,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // E20 并行 for（fan-out）：用 async 并行处理区间
 #include <iostream>
 #include <future>
@@ -967,7 +967,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // E21 async 返回移动-only 结果
 #include <iostream>
 #include <future>
@@ -982,7 +982,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // E22 promise 设置异常后再 get 重抛（含 error_code 风格）
 #include <iostream>
 #include <future>
@@ -998,7 +998,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // E23 packaged_task 的可调用体抛出异常也经 future 传播
 #include <iostream>
 #include <future>
@@ -1015,7 +1015,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // E24 shared_future 的副本语义（拷贝后才共享同一状态）
 #include <iostream>
 #include <future>
@@ -1030,7 +1030,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // E25 嵌套 async：任务内再发起子任务（完整可编译）
 #include <iostream>
 #include <future>
@@ -1045,7 +1045,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // E26 future::valid() 检查后再 get（避免 no_state）
 #include <iostream>
 #include <future>
@@ -1123,7 +1123,7 @@ mfence                  ; 全内存屏障，约 10–20 ns
 ### 测试源码
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 #include <thread>; std::mutex mtx; std::atomic<int> cnt{0}; thread_local int tl=0;
 
 std::thread* make_thread() { return new std::thread([]{volatile int x=0;for(int i=0;i<100;i++)x+=i;}); }
@@ -1218,7 +1218,7 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 <details><summary>答案与解析</summary>
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 #include <thread>
 #include <vector>
 long sum = 0;
@@ -1246,7 +1246,7 @@ int main(){
 <details><summary>答案与解析</summary>
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 void fire_and_forget(){
     std::async(std::launch::async, [](){ heavy_work(); });  // future 是临时对象
 }                                                           // 此处 future 析构 -> 阻塞等待 heavy_work 完成! 本想异步, 实际变同步
@@ -1268,7 +1268,7 @@ void fire_and_forget(){
 <details><summary>答案与解析</summary>
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <atomic>
 std::atomic<int> counter{0};                           // 原子 RMW, 无竞争
 void worker(){ for(int i=0;i<100000;++i) ++counter; }  // 正确累加到 200000
@@ -1293,7 +1293,7 @@ void worker(){ for(int i=0;i<100000;++i) ++counter; }  // 正确累加到 200000
 `std::thread` 是"可 join 的句柄"：对象存在时若仍关联运行中的线程且未 `join()`/`detach()`，析构会调用 `std::terminate`。因此要么显式 `join()` 等它结束，要么 `detach()` 让它自管——多数业务场景用 `join()` 更可控。lambda 按值捕获的变量在线程里有独立副本，避免了数据竞争。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 #include <thread>
 
@@ -1320,7 +1320,7 @@ int main() {
 `std::async(policy, f, args)` 返回一个 `future`：`launch::async` 立刻在新线程执行 `f`；`launch::deferred` 则推迟到调用 `get()`/`wait()` 时，在调用者线程同步执行。`future::get()` 会阻塞直至就绪并返回值（或重抛异常），且只能调用一次。选择 `async` 才能真正并行；`deferred` 适合纯惰性求值、零线程开销的场景。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 #include <future>
 
@@ -1346,7 +1346,7 @@ int main() {
 **步骤 1：朴素共享计数器（数据竞争 → 错误结果）**
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录：用法演绎 — 并行求和的数据竞
-```cpp
+```cpp title="示例 44 · ★★★★☆"
 long counter = 0;
 auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // 读-改-写非原子
 std::thread t1(worker), t2(worker), t3(worker), t4(worker);
@@ -1359,7 +1359,7 @@ t1.join(); t2.join(); t3.join(); t4.join();
 **步骤 2：加 `std::mutex`（正确但较重）**
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 并行求和的数据竞
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 long counter = 0; std::mutex m;
 auto worker = [&](){ for(int i=0;i<50000;++i){ std::lock_guard<std::mutex> lk(m); ++counter; } };
 // 正确, 但每次 ++ 都加锁 -> 串行化, 并行收益被锁吃掉
@@ -1368,7 +1368,7 @@ auto worker = [&](){ for(int i=0;i<50000;++i){ std::lock_guard<std::mutex> lk(m)
 **步骤 3：改 `std::atomic<int>`（无锁、正确）**
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 并行求和的数据竞
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 std::atomic<long> counter{0};
 auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // lock xadd 单指令 RMW
 // 结果严格 200000, 且无锁竞争开销远低于 mutex
@@ -1377,7 +1377,7 @@ auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // lock xadd 单指�
 **步骤 4：更好——每个线程私有计数，最后合并（无共享 → 无竞争）**
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 并行求和的数据竞
-```cpp
+```cpp title="示例 47 · ★★★☆☆"
 std::vector<long> local(4, 0);
 std::vector<std::thread> ts;
 for (int t=0;t<4;++t) ts.emplace_back([&,t]{ for(int i=t*25000;i<(t+1)*25000;++i) local[t]+=i; });
@@ -1698,7 +1698,7 @@ future/promise/async 的核心是引用计数的共享状态。`_State_baseV2` �
 ### D4.9 编译验证
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -1912,7 +1912,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 #include <iostream>
 #include <thread>
 #include <future>

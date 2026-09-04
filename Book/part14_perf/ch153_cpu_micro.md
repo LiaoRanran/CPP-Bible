@@ -176,7 +176,7 @@ sequenceDiagram
 **分支被编译为 `cmov`（无分支）**：当编译器判断「用条件传送比预测更好」时，消除分支。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析（-O2，Intel 语法）
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 // 文件：Examples/ch153_cmov_asm.cpp  行号：1-50（完整示例）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel ch153_cmov_asm.cpp -o ch153_cmov_asm.asm
 #include <iostream>
@@ -218,7 +218,7 @@ int main() { std::cout << pick(1, 10, 20) << "\n"; return 0; }
 **案例 1（热路径偏向）**：解析协议时，合法报文占 99.9%，错误包极罕见——把错误分支标 `[[unlikely]]`。
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：热点函数去分支与拆依赖链
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // 案例1：协议解析热路径偏向
 #include <iostream>
 struct Pkt { int len; bool valid; };
@@ -236,7 +236,7 @@ int main() {
 **案例 2（拆依赖链加速规约）**：大数组求和从「单累加器串行链」改为「4 路独立累加器」，吃满多个执行端口。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：热点函数去分支与拆依赖链
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // 案例2：4 路累加拆依赖链（见 ⑲ 实测对比）
 #include <vector>
 #include <chrono>
@@ -326,7 +326,7 @@ A：不能通用（⟶ `Book/part14_perf/ch152_perf_model.md` ⑰）。只在固
 - 以下示例给出可复现的对比骨架（数值为示意量级，实机请自行跑）。
 
 > **示例 6** [难度 ★★☆☆☆] [主题：性能分析（实测对比）<span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // ⑲ 实测骨架: 串行依赖 vs 4 路无关链 (示意量级)
 #include <vector>
 #include <chrono>
@@ -448,7 +448,7 @@ ISO C++ 只在"抽象机"层面定义语义，对"多少周期"只字不提；C+
 ### 补充完整可编译示例（ch153_ex01 – ch153_ex30，每块独立可编译）<span class="badge badge-std">标准</span>
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ch153_ex01：[[likely]] 标注热路径
 #include <iostream>
 int main() {
@@ -460,7 +460,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // ch153_ex02：[[unlikely]] 标注冷路径（错误/异常）
 #include <iostream>
 int main() {
@@ -472,7 +472,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ch153_ex03：__builtin_expect（GCC 扩展，等价 [[likely]]）
 #include <iostream>
 int main() {
@@ -484,7 +484,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ch153_ex04：__builtin_expect_with_probability（带概率提示）
 #include <iostream>
 int main() {
@@ -496,7 +496,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ch153_ex05：分支误预测实测（排序 vs 交替数据）
 #include <vector>
 #include <chrono>
@@ -519,7 +519,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ch153_ex06：长依赖链（串行累加）吞吐受加法延迟钉死
 #include <vector>
 #include <chrono>
@@ -537,7 +537,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // ch153_ex07：4 路无关累加器（拆依赖链, 提升 ILP）
 #include <vector>
 #include <chrono>
@@ -556,7 +556,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // ch153_ex08：手动循环展开（4 路，等价于 ex07 思路）
 #include <vector>
 #include <chrono>
@@ -575,7 +575,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ch153_ex09：无分支 abs（位运算消除分支）
 #include <iostream>
 int main() {
@@ -587,7 +587,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ch153_ex10：条件传送（cmov 风格的 ? : 写法）
 #include <iostream>
 int main() {
@@ -599,7 +599,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ch153_ex11：__builtin_prefetch（提前取数据, 缓解长延迟加载）
 #include <vector>
 #include <chrono>
@@ -617,7 +617,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ch153_ex12：函数调用开销测量
 #include <chrono>
 #include <iostream>
@@ -633,7 +633,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // ch153_ex13：分支 vs 无分支 吞吐对比
 #include <vector>
 #include <chrono>
@@ -655,7 +655,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // ch153_ex14：UDL 字面量 operator"" _cyc（带空格写法）
 #include <iostream>
 constexpr long long operator"" _cyc(unsigned long long n) { return static_cast<long long>(n); }
@@ -663,7 +663,7 @@ int main() { auto c = 5_cyc; std::cout << "cycles=" << c << "\n"; return 0; }
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // ch153_ex15：特性测试宏 __cplusplus >= 202002L
 #include <iostream>
 int main() {
@@ -677,7 +677,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // ch153_ex16：折叠表达式无返回值聚合 ((s+=xs), ...)
 #include <tuple>
 #include <iostream>
@@ -691,7 +691,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // ch153_ex17：两条独立链（超标量可并行）
 #include <vector>
 #include <chrono>
@@ -709,7 +709,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ch153_ex18：高延迟依赖链（乘加链）
 #include <vector>
 #include <chrono>
@@ -727,7 +727,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 25 · ★★★☆☆"
 // ch153_ex19：分支 vs cmov 实测
 #include <vector>
 #include <chrono>
@@ -749,7 +749,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // ch153_ex20：alignas(64) 缓存行对齐
 #include <iostream>
 struct alignas(64) CacheLine { long v[8]; };
@@ -757,7 +757,7 @@ int main() { std::cout << "size=" << sizeof(CacheLine) << "\n"; return 0; }
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // ch153_ex21：热路径 [[likely]] 遍历计时（仅演示语法 + 小基准）
 #include <vector>
 #include <chrono>
@@ -775,7 +775,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // ch153_ex22：指针追逐（强内存依赖, 测延迟/ROB 限制）
 #include <vector>
 #include <chrono>
@@ -794,7 +794,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // ch153_ex23：顺序访问 vs 大步长访问（内存级并行/缓存友好性）
 #include <vector>
 #include <chrono>
@@ -816,7 +816,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★★★☆☆"
 // ch153_ex24：寄存器压力——多个无关累加器
 #include <chrono>
 #include <iostream>
@@ -833,7 +833,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // ch153_ex25：编译期已知分支（if constexpr, 无运行期分支）
 #include <iostream>
 int main() {
@@ -845,7 +845,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // ch153_ex26：8 路无关累加（逼近执行端口数上限）
 #include <vector>
 #include <chrono>
@@ -867,7 +867,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // ch153_ex27：偏斜数据（99.9% 走热路径）遍历计时
 #include <vector>
 #include <chrono>
@@ -885,7 +885,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // ch153_ex28：虚函数调用开销（动态分派 vs 内联）
 #include <chrono>
 #include <iostream>
@@ -903,7 +903,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ch153_ex29：无分支 min（位运算）对比 ?: min（数据均匀时应测后定）
 #include <iostream>
 int main() {
@@ -916,7 +916,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // ch153_ex30：综合——依赖链长度对规约时间的影响（乘加链长度可调）
 #include <vector>
 #include <chrono>
@@ -936,7 +936,7 @@ int main() {
 ## 补充分编可编译示例
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch153_cpu_micro."<<std::endl;return 0;}
@@ -995,7 +995,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 交替 `0/1` 让分支方向频繁翻转，预测器误预测率高；排序后同值成段，预测器几乎全中。现代 CPU 的投机执行与分支目标缓冲（BTB）依赖历史局部性。
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <algorithm>
 #include <vector>
 #include <iostream>
@@ -1025,7 +1025,7 @@ int main() {
 单条 `a += i` 每轮都依赖上一轮结果，形成串行依赖链，吞吐被单条链的延迟（而非端口数）卡死；拆成两条互不依赖的链后，乱序引擎可让它们重叠执行。
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 int main() {
     unsigned long a = 0;
@@ -1051,7 +1051,7 @@ int main() {
 把累加结果立刻回读会制造别名/假依赖；乱序引擎靠 store buffer 把写缓冲、靠内存歧义预测判断后续读是否命中未提交写，预测失败时回滚。拆分读写目标可消除该依赖。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 int main() {
     unsigned long acc = 0;
@@ -1286,7 +1286,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>

@@ -244,7 +244,7 @@ _Z13down_cast_refRK4Base:
 > 文件：`Examples/case48_dispatcher.cpp`
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-A：消息分发器
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 #include <iostream>
 #include <unordered_map>
 #include <typeindex>
@@ -276,7 +276,7 @@ int main() {
 ### 工业案例 48-B：错误示范——`-fno-rtti` 下误用 typeid/dynamic_cast
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-B：错误示范——-f
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // 编译选项含 -fno-rtti 时，下面全部编译失败
 struct A { virtual ~A() = default; };
 struct B : A {};
@@ -287,7 +287,7 @@ void bad(A* p) {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-B：错误示范——-f
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ✅ 修复：用虚函数做分派，彻底不依赖 RTTI
 struct A { virtual ~A() = default; virtual void dispatch() = 0; };
 struct B : A { void dispatch() override { /* B 的逻辑 */ } };
@@ -297,7 +297,7 @@ void good(A* p) { p->dispatch(); }   // 走虚表，无需 RTTI，体积更小
 ### 工业案例 48-C：typeid 静态 vs 动态（核心语义对照）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-C：typeid 静
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // typeid 对非多态取静态类型，对多态对象取动态类型
 #include <typeinfo>
 #include <iostream>
@@ -315,7 +315,7 @@ void demo_c() {
 ### 工业案例 48-D：typeid(*p) 空指针抛 std::bad_typeid
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-D：typeid 空指针抛 std::bad
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 #include <typeinfo>
 #include <exception>
 void demo_d() {
@@ -328,7 +328,7 @@ void demo_d() {
 ### 工业案例 48-E：dynamic_cast 上行转换（编译期确定，零运行期成本）
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-E：dynamicc
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 struct Base { virtual ~Base() = default; };
 struct Der : Base {};
 void demo_e(Der* d) {
@@ -340,7 +340,7 @@ void demo_e(Der* d) {
 ### 工业案例 48-F：dynamic_cast 引用失败抛 std::bad_cast
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-F：dynamicc
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 #include <typeinfo>
 struct Base { virtual ~Base() = default; };
 struct Der : Base {};
@@ -354,7 +354,7 @@ void demo_f(Base& b) {
 ### 工业案例 48-G：dynamic_cast<void*> 取最派生对象地址
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-G：dynamicc
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 struct Base { virtual ~Base() = default; };
 struct Der : Base { int extra{}; };
 void demo_g(Der* d) {
@@ -366,7 +366,7 @@ void demo_g(Der* d) {
 ### 工业案例 48-H：type_index + unordered_map 完整可运行分发
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-H：typeinde
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 #include <iostream>
 #include <unordered_map>
 #include <typeindex>
@@ -387,7 +387,7 @@ void demo_h() {
 ### 工业案例 48-I：std::any 内部依赖 type_info
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-I：std::any
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 #include <any>
 #include <iostream>
 #include <typeinfo>
@@ -400,7 +400,7 @@ void demo_i() {
 ### 工业案例 48-J：-fno-rtti 下这些会编译失败（示意）
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-J：-fno-rtt
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 #include <typeinfo>
 // 编译加 -fno-rtti 时：
 // struct P { virtual ~P() = default; }; struct Q : P {};
@@ -411,7 +411,7 @@ void demo_i() {
 ### 工业案例 48-K：type_info::hash_code 作容器 key
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-K：typeinfo
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 #include <unordered_set>
 #include <typeinfo>
 #include <cstddef>
@@ -425,7 +425,7 @@ void demo_k() {
 ### 工业案例 48-L：dynamic_cast 交叉（兄弟）失败返 nullptr
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-L：dynamicc
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 struct Root { virtual ~Root() = default; };
 struct L : Root {}; struct R : Root {};
 void demo_l(Root* r) {
@@ -437,7 +437,7 @@ void demo_l(Root* r) {
 ### 工业案例 48-M：typeid 对引用取动态类型
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-M：typeid 对
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 #include <typeinfo>
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
 void demo_m(Base& b) { const std::type_info& t = typeid(b); (void)t; } // 动态
@@ -446,7 +446,7 @@ void demo_m(Base& b) { const std::type_info& t = typeid(b); (void)t; } // 动态
 ### 工业案例 48-N：typeid 对指针取静态类型（对比 M）
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-N：typeid 对
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 #include <typeinfo>
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
 void demo_n(Base* p) { const std::type_info& t = typeid(p); (void)t; } // 静态 Base*
@@ -455,7 +455,7 @@ void demo_n(Base* p) { const std::type_info& t = typeid(p); (void)t; } // 静态
 ### 工业案例 48-O：手写「类型标签」替代 dynamic_cast（概念演示）
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-O：手写「类型标签」
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 struct Base { virtual ~Base() = default; virtual int kind() const = 0; };
 struct Der : Base { int kind() const override { return 1; } };
 Der* manual_down(Base* p) { return p->kind() == 1 ? static_cast<Der*>(p) : nullptr; }
@@ -464,7 +464,7 @@ Der* manual_down(Base* p) { return p->kind() == 1 ? static_cast<Der*>(p) : nullp
 ### 工业案例 48-P：捕获 std::bad_cast（引用形态）
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-P：捕获 std::bad_cast（引用形态）
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 #include <typeinfo>
 struct Base { virtual ~Base() = default; }; struct Der : Base {};
 void demo_p(Base& b) {
@@ -476,7 +476,7 @@ void demo_p(Base& b) {
 ### 工业案例 48-Q：type_info operator==（同类型程序内唯一）
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 48-Q：typeinfo
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 #include <typeinfo>
 void demo_q() {
     bool same = (typeid(int) == typeid(int));     // true
@@ -488,7 +488,7 @@ void demo_q() {
 ### 工业案例 48-R：模板 + type_traits 编译期替代 RTTI
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 48-R：模板 + typ
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 #include <type_traits>
 template<class T>
 void process(T v) {
@@ -506,7 +506,7 @@ void process(T v) {
 > 提取：`grep -n "__name\|class type_info" <上述路径>`
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析 1：typeinfo 对象
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 #include <cstddef>
 // libstdc++ <typeinfo>（节选，去注释）
 class type_info {
@@ -532,7 +532,7 @@ public:
 > 行号：约 `extern "C" void* __dynamic_cast(const void* __src, ...);`
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析 1：typeinfo 对象
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // libsupc++ 中 __dynamic_cast 的语义（节选）
 // 入参：__src=源对象指针, __dst_type=目标 type_info,
 // __static_type=静态源 type_info, __flags=转换种类
@@ -612,7 +612,7 @@ extern "C" void* __dynamic_cast(const void* __src,
 【microbenchmark 设计（Google Benchmark，可复现）】
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 26 · ★★★☆☆"
 #include <benchmark/benchmark.h>
 #include <typeinfo>
 struct Base { virtual ~Base()=default; virtual int f() const { return 1; } };
@@ -724,7 +724,7 @@ BENCHMARK(BM_typeid_name); BENCHMARK(BM_dyncast_down); BENCHMARK(BM_static_upcas
 
 【错误示例】
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：typeid 运算符语
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // ❌ 以为 typeid 对指针取动态类型
 Base* p = new Der;
 typeid(p);        // 取的是 Base* 的静态类型，不是 Der！应写 typeid(*p)
@@ -732,7 +732,7 @@ typeid(p);        // 取的是 Base* 的静态类型，不是 Der！应写 typei
 
 【正确示例】
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：typeid 运算符语
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <typeinfo>
 // ✅ 取动态类型
 Base* p = new Der;
@@ -787,7 +787,7 @@ const std::type_info& ti = typeid(*p);   // ti 是 Der 的 type_info
 
 【错误示例】
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：dynamiccast
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ❌ 对非多态类型用 dynamic_cast
 struct A {}; struct B : A {};
 A a; dynamic_cast<B*>(&a);   // 编译错误：A 非多态（无虚函数）
@@ -795,7 +795,7 @@ A a; dynamic_cast<B*>(&a);   // 编译错误：A 非多态（无虚函数）
 
 【正确示例】
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：dynamiccast
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ✅ 多态下行，判空
 struct A { virtual ~A()=default; }; struct B : A {};
 A* p = new B;
@@ -852,7 +852,7 @@ if (B* b = dynamic_cast<B*>(p)) { // 安全使用 b
 
 【错误示例】
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B3：-fno-rtti 的
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ❌ -fno-rtti 下编译失败
 auto& t = typeid(*polyPtr);       // error: not allowed with -fno-rtti
 auto* d = dynamic_cast<Der*>(p);  // error: likewise
@@ -860,7 +860,7 @@ auto* d = dynamic_cast<Der*>(p);  // error: likewise
 
 【正确示例】
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B3：-fno-rtti 的
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // ✅ 禁用 RTTI 后用虚函数替代
 struct Iface { virtual ~Iface()=default; virtual void on_event()=0; };
 void dispatch(Iface* p){ p->on_event(); }   // 走虚表，无 RTTI
@@ -914,7 +914,7 @@ void dispatch(Iface* p){ p->on_event(); }   // 走虚表，无 RTTI
 
 【错误示例】
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：typeinfo 对象
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // ❌ 假设跨模块 type_info 一定同一份
 // 插件 .so 与主程序各自生成的 type_info 可能不等价，operator== 误判
 extern "C" void plugin_entry(Base* p){ if (typeid(*p)==typeid(LocalType)) {} }
@@ -922,7 +922,7 @@ extern "C" void plugin_entry(Base* p){ if (typeid(*p)==typeid(LocalType)) {} }
 
 【正确示例】
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：typeinfo 对象
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <typeinfo>
 // ✅ 同链接单元或经虚函数分派，避免跨模块 type_info 比较
 struct Iface { virtual ~Iface()=default; virtual bool is_local() const = 0; };
@@ -937,7 +937,7 @@ bool ok(Iface* p){ return p->is_local(); }   // 用虚函数而非 typeid 跨边
 ## 附录: RTTI 深度
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <typeinfo>
 struct Base{virtual~Base(){}};struct Der:Base{};
@@ -945,14 +945,14 @@ int main(){Base*b=new Der;std::cout<<typeid(*b).name()<<std::endl;delete b;retur
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 struct A{virtual~A(){}};struct B:A{};
 int main(){A*a=new B;if(dynamic_cast<B*>(a))std::cout<<"is B"<<std::endl;delete a;return 0;}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 #include <typeindex>
 #include <map>
@@ -962,13 +962,13 @@ int main(){std::map<std::type_index,std::string> m;m[typeid(int)]="int";m[typeid
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"RTTI overhead: one type_info object per polymorphic class. ~40 bytes each."<<std::endl;return 0;}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: RTTI 深度
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 #include <memory>
 struct Animal{virtual void speak()=0;virtual~Animal(){}};struct Dog:Animal{void speak()override{std::cout<<"woof"<<std::endl;}};
@@ -1075,7 +1075,7 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 `dynamic_cast` 在运行时经 vtable 的 `type_info` 检查目标类型是否确实是对象的动态类型（或其派生）。源类型必须**多态**（含虚函数）。
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 struct Base { virtual ~Base() = default; };
 struct Derived : Base { int tag = 7; };
@@ -1108,7 +1108,7 @@ int main() {
 `typeid` 对多态左值/表达式返回动态类型信息（经 vtable 的 `type_info`）；对非多态类型退化为编译期静态类型，无法反映实际派生。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 #include <typeinfo>
 struct Base { virtual ~Base() = default; };
@@ -1137,7 +1137,7 @@ int main() {
 `variant` 把"可能是哪几种类型"编码进类型系统；`visit` 在编译期对每种 alternative 生成分支，无 vtable 查询、无运行时类型检查，且漏处理一种类型会编译失败。
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 #include <variant>
 struct Circle { int r = 2; };
@@ -1170,7 +1170,7 @@ int main() {
 `dynamic_cast` 对多态类型做运行时类型检查：源表达式指向/引用目标类型（或其派生）时成功；失败时指针返回 `nullptr`、引用抛 `std::bad_cast`。它依赖对象的 vtable 类型信息，因此源类型必须是多态的（含虚函数）。`typeid` 对多态对象返回动态类型，对非多态对象返回静态类型。
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <typeinfo>
 struct B { virtual ~B() = default; };
@@ -1200,7 +1200,7 @@ int main() {
 `dynamic_cast` 不仅能向派生类下转，还能在"共享同一对象的不同基类"间做侧向转型——前提是源类型与目的类型都参与同一个多态对象。这在多重继承非常有用：从一个接口拿到对象，再拿到它的另一个接口。`static_cast` 只能做"基类↔派生"的已知层级转换，无法跨兄弟基类。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 struct Base { virtual ~Base() = default; };
 struct Left { virtual ~Left() = default; };
@@ -1229,7 +1229,7 @@ int main() {
 **常见错误**：用一长串 `if (auto* p = dynamic_cast<X*>(b)) ...` 做类型分支——脆弱（新增类型易漏）、慢（每次走 vtable 查询）。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 dynamiccast
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 struct Base { virtual ~Base() = default; };
 struct X : Base { void fx() { std::cout << "X\n"; } };
@@ -1243,7 +1243,7 @@ int main() { X x; handle(&x); }
 **修复**：把分支逻辑上提为虚函数（真正多态），或用 `std::variant`+`visit`（见练习3）做编译期分发。
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 dynamiccast
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 struct Base { virtual ~Base() = default; virtual void handle() = 0; };
 struct X : Base { void handle() override { std::cout << "X\n"; } };
@@ -1272,7 +1272,7 @@ int main() {
 **修复**：`dynamic_cast` 要求源表达式为多态类型。若确实需要在已知层次内转换且自担保安全，用 `static_cast`（无运行时检查）；否则把基类改为多态（加虚析构）或重构为 `variant`/虚函数层次。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：对无虚函数类误用 `dynamic_cast`
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 struct A { virtual ~A() = default; };
 struct B : A { int tag = 5; };
@@ -1294,7 +1294,7 @@ RTTI 常被说成"黑盒"，但它的实现完全可在汇编里看清：多态 
 ### ① 多态 `typeid` —— 读 vtable[-1]
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 多态 `typeid` —— 读 vtable[-1]
-```cpp
+```cpp title="示例 47 · ★★★☆☆"
 const std::type_info& who(Base& b) { return typeid(b); }
 ```
 
@@ -1310,7 +1310,7 @@ const std::type_info& who(Base& b) { return typeid(b); }
 ### ② `dynamic_cast` 下行 —— 尾调 `__dynamic_cast`
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · dynamiccast 下行 ——
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 Derived* down(Base* b) { return dynamic_cast<Derived*>(b); }
 ```
 
@@ -1331,7 +1331,7 @@ Derived* down(Base* b) { return dynamic_cast<Derived*>(b); }
 ### ③ 静态 `typeid` —— 编译期常量，零运行期开销
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 静态 typeid —— 编译期常量
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 const std::type_info& static_who() { return typeid(Derived); }  // 非多态表达式
 ```
 
@@ -1670,7 +1670,7 @@ flowchart TD
 | `src2dst` hint | 支持 `>-1/-1/-2/-3` | 不以此接口暴露 | 不以此接口暴露 |
 ### D4.4 可编译 demo：上下行 cast + typeid 比较 + hash_code
 > **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 可编译 demo：上下行 cast
-```cpp
+```cpp title="示例 50 · ★★★★☆"
 #include <iostream>
 #include <typeinfo>
 #include <cstddef>
@@ -1797,7 +1797,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 #include <iostream>
 #include <typeinfo>
 #include <cassert>

@@ -233,7 +233,7 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_ctor_vptr.cpp -o _asm_ctor_vptr.asm
 > 文件：`Examples/case47_plugin.cpp`
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 工业案例 47-A：插件式渲染后端
-```cpp
+```cpp title="示例 5 · ★★★★☆"
 #include <memory>
 #include <iostream>
 #include <string_view>
@@ -275,7 +275,7 @@ int main() {
 ### 工业案例 47-B：错误示范——基类非虚析构导致泄漏/UB
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-B：错误示范——基类
-```cpp
+```cpp title="示例 6 · ★★★☆☆"
 // ❌ 基类析构非虚：delete 基类指针只调 Base 析构，派生部分不释放
 struct BadBase { ~BadBase() {} };  // 非虚
 struct BadDerived : BadBase { int* buf = new int[1024]; ~BadDerived(){ delete[] buf; } };
@@ -287,7 +287,7 @@ int bad() {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-B：错误示范——基类
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ✅ 修复：基类析构加 virtual
 struct GoodBase { virtual ~GoodBase() = default; };
 struct GoodDerived : GoodBase { int* buf = new int[1024]; ~GoodDerived() override { delete[] buf; } };
@@ -296,7 +296,7 @@ struct GoodDerived : GoodBase { int* buf = new int[1024]; ~GoodDerived() overrid
 ### 工业案例 47-C：同类型对象共享同一份 vtable（vptr 相同）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-C：同类型对象共享同
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 #include <cstdio>
 struct Base { virtual ~Base() = default; virtual int f() const { return 1; } };
 struct Der : Base { int f() const override { return 2; } };
@@ -310,7 +310,7 @@ void demo_c() {
 ### 工业案例 47-D：override 误写（签名不匹配导致不是覆盖）
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-D：override
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 struct Base { virtual int foo(int) const { return 1; } };
 struct Der : Base {
     // int foo() const override;  // ❌ 编译错误：缺 int 参数，签名不匹配，非 override
@@ -321,7 +321,7 @@ struct Der : Base {
 ### 工业案例 47-E：final 封闭类/方法（去虚化 + 禁继承）
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-E：final 封闭
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 struct Base { virtual int f() const { return 1; } };
 struct Leaf final : Base { int f() const override { return 2; } };
 // struct Bad : Leaf {};  // ❌ 编译错误：Leaf 是 final，不可继承
@@ -330,7 +330,7 @@ struct Leaf final : Base { int f() const override { return 2; } };
 ### 工业案例 47-F：含纯虚函数的类不可实例化
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-F：含纯虚函数的类不
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 struct Abstract { virtual void f() = 0; virtual ~Abstract() = default; };
 // Abstract a;  // ❌ 编译错误：纯虚类不可实例化
 struct Concrete : Abstract { void f() override {} };
@@ -339,7 +339,7 @@ struct Concrete : Abstract { void f() override {} };
 ### 工业案例 47-G：协变返回类型（covariant return）
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-G：协变返回类型
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 struct Base { virtual ~Base() = default; virtual Base* clone() const { return new Base(*this); } };
 struct Der : Base { Der* clone() const override { return new Der(*this); } };  // 返回派生指针
 ```
@@ -347,7 +347,7 @@ struct Der : Base { Der* clone() const override { return new Der(*this); } };  /
 ### 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 struct L { virtual int lf() const { return 1; } };
 struct R { virtual int rf() const { return 2; } };
 struct D : L, R { int lf() const override { return 3; } int rf() const override { return 4; } };
@@ -357,7 +357,7 @@ struct D : L, R { int lf() const override { return 3; } int rf() const override 
 ### 工业案例 47-I：切片丢失多态
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-I：切片丢失多态
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 struct Base { virtual int f() const { return 1; } virtual ~Base() = default; };
 struct Der : Base { int f() const override { return 2; } };
 void demo_i() {
@@ -369,7 +369,7 @@ void demo_i() {
 ### 工业案例 47-J：虚函数默认参数静态绑定（陷阱）
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-J：虚函数默认参数静
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 struct Base { virtual void f(int x = 1) const { (void)x; } virtual ~Base() = default; };
 struct Der : Base { void f(int x = 2) const override { (void)x; } };
 // 经 Base* 调 f() 用 Base 默认值 1（静态类型），非 Der 的 2 —— 避免虚函数默认参数
@@ -378,7 +378,7 @@ struct Der : Base { void f(int x = 2) const override { (void)x; } };
 ### 工业案例 47-K：构造期调用虚函数不下降到派生
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-K：构造期调用虚函数
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 struct Base { Base() { show(); } virtual void show() const {} virtual ~Base() = default; };
 struct Der : Base { Der() : Base() {} void show() const override {} };  // Base 构造期调 Base::show
 ```
@@ -386,7 +386,7 @@ struct Der : Base { Der() : Base() {} void show() const override {} };  // Base 
 ### 工业案例 47-L：析构期同理不下降到派生
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-L：析构期同理不下降
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 struct Base { virtual ~Base() { cleanup(); } virtual void cleanup() const {} };
 struct Der : Base { void cleanup() const override {} };  // 基类析构时调 Base::cleanup
 ```
@@ -394,7 +394,7 @@ struct Der : Base { void cleanup() const override {} };  // 基类析构时调 B
 ### 工业案例 47-M：模板成员不可为虚函数
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 47-M：模板成员不可为虚
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 struct Base { virtual ~Base() = default; };
 // template<class T> virtual void f(T);  // ❌ 编译错误：模板成员不可为 virtual
 ```
@@ -402,7 +402,7 @@ struct Base { virtual ~Base() = default; };
 ### 工业案例 47-N：NVI（非虚接口）模式
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-N：NVI模式
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 struct Base {
     void run() { do_run(); }    // 公有非虚，稳定接口
     virtual ~Base() = default;
@@ -415,7 +415,7 @@ struct Der : Base { void do_run() override {} };
 ### 工业案例 47-O：去虚化后虚函数可内联
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-O：去虚化后虚函数可
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 struct Base { virtual int f() const { return 1; } virtual ~Base() = default; };
 struct Der : Base { int f() const override { return 2; } };
 void demo_o(Der& d) { d.f(); }  // d 静态类型 Der，编译器可能内联 Der::f
@@ -424,7 +424,7 @@ void demo_o(Der& d) { d.f(); }  // d 静态类型 Der，编译器可能内联 De
 ### 工业案例 47-P：接口类（纯虚 + 虚析构）
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-P：接口类
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 struct IShape {
     virtual ~IShape() = default;
     virtual double area() const = 0;     // 纯虚：强制实现
@@ -435,7 +435,7 @@ struct IShape {
 ### 工业案例 47-Q：CRTP 静态替代（对比 ⑲ benchmark）
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-Q：CRTP 静态替
-```cpp
+```cpp title="示例 22 · ★★★☆☆"
 template<class D>
 struct CrtpBase { int f() const { return static_cast<const D*>(this)->f_impl(); } };
 struct CrtpDer : CrtpBase<CrtpDer> { int f_impl() const { return 2; } };  // 无 vtable
@@ -444,7 +444,7 @@ struct CrtpDer : CrtpBase<CrtpDer> { int f_impl() const { return 2; } };  // 无
 ### 工业案例 47-R：虚析构确保经基类指针 delete 安全（回顾 ⑫-B）
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-R：虚析构确保经基类
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 struct B { virtual ~B() = default; };
 struct D : B { int* p = new int[8]; ~D() override { delete[] p; } };
 void demo_r() { B* b = new D; delete b; }  // 正确：先 ~D 再 ~B
@@ -487,7 +487,7 @@ vtable for C:
 > 提取：`grep -n "__cxa_pure_virtual" <上述路径>`
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析 1：虚析构与 vtable
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // libstdc++/libsupc++ 中定义：纯虚函数被调用时的终止处理
 extern "C" void __cxa_pure_virtual() { std::terminate(); }
 ```
@@ -564,7 +564,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 【microbenchmark 设计（Google Benchmark，可复现）】
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 26 · ★★★☆☆"
 #include <benchmark/benchmark.h>
 struct Base { virtual ~Base()=default; virtual int f() const { return 1; } };
 struct Derived : Base { int f() const override { return 2; } };
@@ -669,7 +669,7 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 
 【错误示例】
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：vtable 布局与覆
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // ❌ 误以为虚函数数量影响对象大小
 #include <iostream>
 struct Big { virtual void f1() {} virtual void f2() {} virtual void f3() {} };
@@ -678,7 +678,7 @@ int main() { std::cout << sizeof(Big) << "（一个 vptr，不因虚函数多而
 
 【正确示例】
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B1：vtable 布局与覆
-```cpp
+```cpp title="示例 28 · ★★★☆☆"
 // ✅ 覆盖同名同签名虚函数，编译器自动替换 vtable 同槽
 struct Base { virtual int f() { return 1; } };
 struct Der : Base { int f() override { return 2; } };  // 替换 Base::f 的槽
@@ -739,7 +739,7 @@ struct Der : Base { int f() override { return 2; } };  // 替换 Base::f 的槽
 
 【错误示例】
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：构造期 vptr 重写
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ❌ 期望构造期调派生覆盖版本
 struct Base { Base(){ init(); } virtual void init(){ log("base"); } };
 struct Der : Base { void init() override { log("der"); } };
@@ -748,7 +748,7 @@ Der d;  // 打印 "base"，非 "der"
 
 【正确示例】
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：构造期 vptr 重写
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ✅ 构造期不依赖虚分派；初始化逻辑放独立两阶段 init() 由用户显式调用
 struct Base { virtual void init(){ log("base"); } };
 struct Der : Base { void init() override { log("der"); } };
@@ -810,7 +810,7 @@ Der d; d.init();  // 显式调用，打印 "der"
 
 【错误示例】
 > **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：虚析构必须 virtu
-```cpp
+```cpp title="示例 31 · ★★★☆☆"
 // ❌ 非虚析构基类 + 多态 delete
 struct Shape { ~Shape(){} };    // 非虚
 struct Circle : Shape { int* pts=new int[1000]; ~Circle(){delete[] pts;} };
@@ -819,7 +819,7 @@ Shape* s=new Circle; delete s;  // UB：pts 泄漏
 
 【正确示例】
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点 B3：虚析构必须 virtu
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // ✅ 虚析构
 struct Shape { virtual ~Shape()=default; };
 struct Circle : Shape { int* pts=new int[1000]; ~Circle() override {delete[] pts;} };
@@ -887,7 +887,7 @@ _ZThn8_N...+B2::vf:      ; thunk 名含偏移 8
 
 【错误示例】
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this 指针调整（thunk）
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // ❌ 误把 B2* 当 Derived* 用（this 未调整）
 struct B1 { virtual void f(); }; struct B2 { virtual void g(); };
 struct D : B1, B2 {};
@@ -897,7 +897,7 @@ D d; B2* p = &d;  // p 指向 d 内 B2 子对象（偏移8），非 d 头
 
 【正确示例】
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：多重继承的 this 指针调整（thunk）
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // ✅ 用 static_cast/dynamic_cast 正确处理偏移
 B2* p = &d; D* q = static_cast<D*>(p);  // 编译器插入 -8 调整
 ```
@@ -957,7 +957,7 @@ B2* p = &d; D* q = static_cast<D*>(p);  // 编译器插入 -8 调整
 
 【错误示例】
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B5：动态分派成本与去虚化
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ❌ 未标注 final，热点虚调用无法被编译器去虚化
 struct Node { virtual int cost() const; };
 int total(const Node& n){ return n.cost(); }  // 间接调用，难内联
@@ -965,7 +965,7 @@ int total(const Node& n){ return n.cost(); }  // 间接调用，难内联
 
 【正确示例】
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B5：动态分派成本与去虚化
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ✅ 叶类 final，编译器可去虚化 total() 内调用
 struct Leaf final : Node { int cost() const final; };
 ```
@@ -988,28 +988,28 @@ struct Leaf final : Node { int cost() const final; };
 ## 附录: 虚函数深度
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 struct B{virtual void f(){std::cout<<"B";}virtual~B(){}};struct D:B{void f()override{std::cout<<"D";}};
 int main(){B*b=new D;b->f();delete b;std::cout<<std::endl;return 0;}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 struct A{virtual int val(){return 1;}};struct C:A{int val()final{return 2;}};
 int main(){C c;std::cout<<c.val()<<std::endl;return 0;}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 struct X{int data;virtual~X(){}};
 int main(){X x;std::cout<<sizeof(x)<<" (has vptr + data)"<<std::endl;return 0;}
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 // virtual 仅能修饰类的非静态成员函数；命名空间/全局作用域的自由函数不能带 virtual
 void pure_virtual_demo(){std::cout<<"pure virtual function demo"<<std::endl;}
@@ -1017,7 +1017,7 @@ int main(){pure_virtual_demo();return 0;}
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <memory>
 struct Base{int n;Base(int x):n(x){}virtual~Base(){}};struct Derived:Base{Derived(int x):Base(x){}};
@@ -1164,7 +1164,7 @@ call rax                ; 间接跳转，目标运行期才定
 > 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-rtti -fno-exceptions`
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★★★</span> · 附录 E：编译实证——虚调用的真实汇
-```cpp
+```cpp title="示例 42 · ★★★★★"
 struct Base {
     virtual int value() const { return 1; }
     virtual ~Base() = default;
@@ -1261,7 +1261,7 @@ call_virtual(int):
 ### 测试源码（节选）
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 测试源码（节选）
-```cpp
+```cpp title="示例 43 · ★★★★☆"
 struct ShapeV { int k; virtual int area() const = 0; virtual ~ShapeV()=default; };
 struct CircV : ShapeV { int r; int area() const override { return r*r; } };
 struct RectV : ShapeV { int w,h; int area() const override { return w*h; } };
@@ -1359,7 +1359,7 @@ long c_loop<RectC>(RectC const*, int):
 ### 测试源码（节选）
 
 > **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-47-deleting_dtor 测试源码
-```cpp
+```cpp title="示例 55 · ★★★☆☆"
 long long g_calls;
 struct Base    { virtual ~Base();    int b; };
 struct Derived : Base { ~Derived();  int d; };
@@ -1419,7 +1419,7 @@ L_fallback: jmp rax                 ;   否则回退间接跳转
 <details><summary>答案与解析</summary>
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -1450,7 +1450,7 @@ int main(){
 <details><summary>答案与解析</summary>
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 struct Base { Base(){ f(); } virtual void f(){ std::cout << "Base::f\n"; } };
 struct Der : Base { Der():Base(){} void f() override { std::cout << "Der::f\n"; } };
@@ -1473,7 +1473,7 @@ int main(){ Der d; }   // 输出 "Base::f", 不是 "Der::f"
 <details><summary>答案与解析</summary>
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 46 · ★★★★☆"
 // 动态多态: 运行时异构, 有 vtable + 间接调用开销
 struct Addable { virtual int add(int)=0; };
 // 静态多态(CRTP): 编译期绑定, 无 vtable, 但容器必须同类型
@@ -1498,7 +1498,7 @@ struct IntA : AddableCrtp<IntA> { int impl(int x){ return x+1; } };
 协变返回类型（covariant return type）规则：覆盖函数的返回类型可以是被覆盖函数返回类型的派生类指针/引用。这让 `clone()` 既能保持多态契约（`Base*`），又让调用方在已知静态类型是 `Derived` 时拿到更精确的类型，无需再向下转型。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 53 · ★★☆☆☆"
 #include <iostream>
 struct B { virtual B* clone() { return new B; } virtual ~B() = default; };
 struct D : B { D* clone() override { return new D; } };
@@ -1527,7 +1527,7 @@ int main() {
 析构函数是"构造的逆过程"，但经基类指针 `delete` 时，只有基类析构会被调用——除非基类析构为 `virtual`。因为 `delete` 通过静态类型（基类）决定调用哪个析构；没有虚析构时，派生部分根本不会被销毁，造成资源泄漏与未定义行为。
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 54 · ★★★☆☆"
 #include <iostream>
 struct B { virtual ~B() { std::cout << "~B\n"; } };
 struct D : B { ~D() override { std::cout << "~D\n"; } };
@@ -1551,7 +1551,7 @@ int main() {
 **步骤 1：定义抽象接口（多态基类）**
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 设计一个可扩展的
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 struct Filter {
     virtual ~Filter() = default;
     virtual Image apply(const Image&) const = 0;
@@ -1562,7 +1562,7 @@ struct Filter {
 **步骤 2：派生具体滤镜（override 虚函数）**
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 设计一个可扩展的
-```cpp
+```cpp title="示例 48 · ★☆☆☆☆"
 struct Grayscale : Filter {
     Image apply(const Image& i) const override { // ...
     const char* name() const override { return "grayscale"; }
@@ -1572,7 +1572,7 @@ struct Grayscale : Filter {
 **步骤 3：工厂注册 + 运行时按名创建（多态分发）**
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 设计一个可扩展的
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 std::map<std::string, std::function<std::unique_ptr<Filter>()>> registry;
 registry["grayscale"] = [] { return std::make_unique<Grayscale>(); };
 // 运行时:
@@ -1583,7 +1583,7 @@ Image out = f->apply(src);            // 经 vtable 分发到正确实现
 **步骤 4：对比 CRTP 静态策略（性能优先时）**
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★★★</span> · 附录：用法演绎 — 设计一个可扩展的
-```cpp
+```cpp title="示例 50 · ★★★★★"
 template <class Impl> struct FilterCrtp {
     Image apply(const Image& i) const { return static_cast<const Impl*>(this)->impl(i); }
 };
@@ -1812,7 +1812,7 @@ OFFSET           TYPE                      VALUE
 ### D4.5 第一方可编译验证（type_info 三能力）
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 51 · ★★★★☆"
 #include <iostream>
 #include <typeinfo>
 
@@ -1928,7 +1928,7 @@ int main() {
 ### 下一节 可复现 demo
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 下一节 可复现 demo
-```cpp
+```cpp title="示例 52 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <cstdint>

@@ -61,7 +61,7 @@
 - **一句话定义**：对含模板的重载集，编译器按「非模板优先、偏序定模板胜负」选出唯一最佳可行函数 <span class="badge badge-std">标准</span>
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本模板模式速查
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 void f(int);                       // 非模板
 template <typename T> void f(T);   // 泛化模板
 template <typename T> void f(T*);  // 更特化的模板
@@ -72,7 +72,7 @@ template <typename T> void f(T*);  // 更特化的模板
 重载决议三阶段 <span class="badge badge-std">标准</span>（候选集 → 可行集 → 最佳匹配）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 2 · ★★★☆☆"
 #include <iostream>
 // 阶段1：名称查找建立候选集 {log(int)非模板, log(T)泛化, log(T*)更特化}
 // 阶段2：按实参隐式转换可行性筛选可行集
@@ -91,7 +91,7 @@ int main() {
 ## ④ 优先权规则（非模板 > 模板）
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 优先权规则（非模板 > 模板）
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 void g(int);  // 非模板 优先
 template <typename T> void g(T);
 void t() {
@@ -100,7 +100,7 @@ void t() {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 优先权规则（非模板 > 模板）
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // 关键：只有「同样可行」时非模板才优先；若非模板不可行，才轮到模板
 void h(double);
 template <typename T> void h(T*);
@@ -113,7 +113,7 @@ void u() {
 ## ⑤ 偏序（Partial Ordering）：谁更特化
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 偏序：谁更特化
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 template <typename T> void f(T);   // F1 泛化
 template <typename T> void f(T*);  // F2 更特化（指针）
 // 偏序测试：用 F2 的形参推导 F1 成功，反之用 F1 推导 F2 失败 → F2 更特化
@@ -124,7 +124,7 @@ void k() {
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 偏序：谁更特化
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // 偏序也适用于多个模板之间
 template <typename T> void p(T, T);    // P1
 template <typename T> void p(T*, T*);  // P2 更特化
@@ -138,7 +138,7 @@ void q() {
 ## ⑥ 完整可运行示例（最小）
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 #include <iostream>
 void f(int)  { std::cout << "f(int)\n"; }
 template <typename T> void f(T) { std::cout << "f(T)\n"; }
@@ -152,7 +152,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 #include <iostream>
 template <typename T> void g(T) { std::cout << "g(T)\n"; }
 template <typename T> void g(T*) { std::cout << "g(T*)\n"; }
@@ -163,7 +163,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // 引用 vs 值：const 引用模板比非 const 值模板更泛化还是更特化？
 template <typename T> void h(T);
 template <typename T> void h(const T&);
@@ -179,13 +179,13 @@ void use() { int x; h(x); }   // 两个可行；h(T) 对 int 是直接匹配，h
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 > **示例 10** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // 三者均严格遵循偏序（现代 MSVC 已修好旧版两阶段查找不严的问题）
 // 唯一常见差异：SFINAE 报错信息可读性与候选项展示（见 ch75）
 ```
 
 > **示例 11** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // MSVC 旧版在「依赖基类成员函数」决议上更宽松；GCC/Clang 更严
 template <typename T> void m(T x) { foo(x); }   // foo 依赖 T，实例化点才查
 ```
@@ -195,7 +195,7 @@ template <typename T> void m(T x) { foo(x); }   // foo 依赖 T，实例化点�
 决议是**纯编译期**行为，不产生运行期数据。选定函数后调用约定与参数传递与普通函数一致。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存 / 对象模型
-```cpp
+```cpp title="示例 12 · ★★★☆☆"
 // 选定 f(int) 后，参数按普通调用约定进寄存器（见 ch47/part05 调用约定，占位）
 void f(int);  // 决议结果固定，无运行期开销
 ```
@@ -229,68 +229,68 @@ _Z1fi:                          ; f(int) 非模板
 **B1 三阶段决议逐步推演 <span class="badge badge-std">标准</span>**（≥10 例）
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 void f(short);              template <typename T> void f(T);
 void a(){ f(1); }           // int->short 标准转换 vs int->int 完全匹配：模板 f(int) 完全匹配胜
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 void f(long); f(int);       template <typename T> void f(T);
 void b(){ f(1L); }          // 1L: f(long) 完全匹配，模板 f(long) 也匹配；非模板优先 → f(long)
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 template <typename T> void f(T);  template <typename T> void f(T*);
 void c(){ int x; f(&x); }   // f(T*) 更特化胜
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 void f(int);  template <typename T> void f(T);
 void d(){ const int x=0; f(x); }  // f(int) 非模板优先（const int->int 限定转换，平级时非模板胜）
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 template <typename T> void f(T);  template <typename T> void f(const T&);
 void e(){ int x; f(x); }   // f(T) 完全匹配（无 const 加），f(const T&) 需加 const；f(T) 胜
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 template <typename T> void f(T);  template <typename T> void f(volatile T*);
 void g(){ volatile int x; f(&x); }  // 仅 f(volatile T*) 可行
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 void f(int*);  template <typename T> void f(T*);
 void h(){ int x; f(&x); }   // 两者同：f(int*) 非模板优先
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 template <typename T> void f(T);  template <typename T, typename U> void f(T, U);
 void i(){ f(1); }        // 单参数版胜（参数个数更少，更匹配）
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 template <typename T> void f(T); template <typename T> void f(T, int=0);
 void j(){ f(1); }        // 单参数版胜（无默认实参参与匹配优先级）
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 struct B{}; struct D: B{};
 void f(B);  template <typename T> void f(T);
 void k(){ f(D{}); }       // f(B) 需派生->基（标准转换）；f(D) 完全匹配；模板 f(D) 胜
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 void f(B);  void f(D);
 void m(){ f(D{}); }       // f(D) 更匹配（派生类优先于基类转换）
 ```
@@ -298,28 +298,28 @@ void m(){ f(D{}); }       // f(D) 更匹配（派生类优先于基类转换）
 **B2 偏序推导双向测试 <span class="badge badge-std">标准</span>**
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 template <typename T> void p(T);
 template <typename T> void p(T*);
 // 用 p(T*) 推导 p(T)：成功；用 p(T) 推导 p(T*)：失败 → p(T*) 更特化
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 template <typename T> void q(const T&);
 template <typename T> void q(T&);
 // q(T&) 比 q(const T&) 更特化（非 const 引用更窄）
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 template <typename T> void r(T, T);
 template <typename T, typename U> void r(T, U);
 // r(T,U) 更特化（参数间关联更强）
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 #include <vector>
 template <typename T> void s(std::vector<T>&);
 template <typename T> void s(T&);
@@ -329,14 +329,14 @@ template <typename T> void s(T&);
 **B3 SFINAE 在决议中的角色 <span class="badge badge-std">标准</span>**
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 template <typename T> auto f(T x) -> decltype(x.foo(), void()) { }
 template <typename T> auto f(T x) -> decltype(x.bar(), void()) { }
 // 推导 substitution 失败者被静默移出候选集（SFINAE）
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 void g(T);
 template <typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
@@ -345,7 +345,7 @@ void g(T);
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 template <typename T> void h(T, std::enable_if_t<std::is_pointer_v<T>, int> = 0);
 template <typename T> void h(T, std::enable_if_t<!std::is_pointer_v<T>, int> = 0);
 ```
@@ -353,20 +353,20 @@ template <typename T> void h(T, std::enable_if_t<!std::is_pointer_v<T>, int> = 0
 **B4 二义（ambiguous）触发条件 <span class="badge badge-exp">经验</span>**
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 template <typename T> void f(T);
 template <typename T> void f(T, T = T{});
 // f(1) 两候选同等级 → 二义（不同模板参数数但都匹配单一实参）
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 template <typename T> void g(T);  template <typename U> void g(U);
 // 同一模板两次声明 → 不是重载，重复定义
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 struct A{}; struct B{};
 template <typename T> void h(T, int);
 template <typename T> void h(int, T);
@@ -376,20 +376,20 @@ void u(){ h(1, 1); }   // 两候选转换等级相同 → 二义
 **B5 错误与正确对照 <span class="badge badge-exp">经验</span>**
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // 错误：以为模板一定优先
 void f(int);  template <typename T> void f(T);
 void bad(){ f(1); }    // 实际 f(int) 非模板优先，不是模板
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // 正确：想用模板请去掉同名非模板，或用不同名字
 template <typename T> void f_tmpl(T) { }
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // 错误：重载集二义
 template <typename T> void k(T);  template <typename T> void k(const T&);
 void bad(){ int x; k(x); }   // 注意：k(T) 对 int 完全匹配，k(const T&) 需加 const → 不二义；但若都 const 则二义
@@ -401,7 +401,7 @@ void bad(){ int x; k(x); }   // 注意：k(T) 对 int 完全匹配，k(const T&)
 [第67章　Concepts 与 requires —— C++20 的编译期约束](../part06_templates/ch67_concepts.md)（Concepts 与 requires）—— C++20 起 STL 以 concepts 重写重载约束
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -424,7 +424,7 @@ int main() {
 ## ⑫ 变体（variant patterns）
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
-```cpp
+```cpp title="示例 38 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
 #include <type_traits>
@@ -451,26 +451,26 @@ int main() {
 ## ⑬ 反模式（anti-patterns）
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // 反模式1：重载集二义导致编译失败
 template <typename T> void f(T);  template <typename T> void f(T*);
 // 这其实 OK；但若再加 template <typename T> void f(const T*) 就可能二义
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // 反模式2：用模板重载替代虚函数做运行期多态 → 失去运行时分发
 // 模板是编译期决议，异构容器无法用函数模板重载处理
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // 反模式3：在头文件大量重载模板拖慢编译且报错难读
 // 用 Concepts（ch67）替代 SFINAE 重载群
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 // 反模式4：转发引用重载与构造冲突
 struct S {
     template <typename T> S(T&&) {}   // 劫持拷贝/移动构造
@@ -478,7 +478,7 @@ struct S {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 // 反模式5：依赖隐式转换做重载，可读性差、易二义
 void f(int);  void f(double);  f(1.0f);  // float->int 与 float->double 谁优先？易踩坑
 ```
@@ -489,7 +489,7 @@ void f(int);  void f(double);  f(1.0f);  // float->int 与 float->double 谁优�
 [第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— policy 与重载协同定制行为
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <array>
 #include <vector>
@@ -516,7 +516,7 @@ int main() {
 [第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— STL 重载候选在此统一实现
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 #include <utility>
 // libstdc++ std::swap 主模板
 template <typename _Tp>
@@ -529,70 +529,70 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 // GCC overmatch.c：重载决议主流程；pt.cc 做偏序推导
 ```
 
 ## ⑯ 易错点
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 // 1) 非模板优先于模板——不要以为模板会「自动」胜出
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 48 · ★☆☆☆☆"
 // 2) 转发引用（T&&）会参与所有决议，易意外劫持拷贝构造
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 49 · ★☆☆☆☆"
 // 3) 两候选转换等级相同 → 二义；用更特化或约束打破
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 // 4) 函数模板不能偏特化，只能用重载或 enable_if 模拟
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 51 · ★☆☆☆☆"
 // 5) 派生类隐藏基类同名模板 → 用 using Base::f 拉回候选集
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 52 · ★☆☆☆☆"
 // 6) 默认实参不参与决议等级，仅用于可行性
 ```
 
 ## ⑰ FAQ
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 53 · ★☆☆☆☆"
 // Q：为什么 f(42) 选了 f(int) 而非 f(T)？
 // A：两者都可行且等级相同，非模板优先。
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 54 · ★☆☆☆☆"
 // Q：偏序和特化有什么区别？
 // A：偏序是针对「模板之间」的更特化比较；全特化是「完全指定实参」的单独实体。
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 // Q：如何让两个模板不二义？
 // A：让其一更特化（偏序胜）或用不同约束（Concepts / enable_if）。
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 56 · ★☆☆☆☆"
 // Q：函数模板能偏特化吗？
 // A：不能。用重载集合或类模板包装（见 ch62）。
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 57 · ★★☆☆☆"
 // Q：转发引用重载怎么避免劫持构造？
 // A：用 std::enable_if / requires 排除自身类型与拷贝。
 ```
@@ -600,27 +600,27 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 ## ⑱ 最佳实践
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 58 · ★★☆☆☆"
 // 1) 优先 Concepts（ch67）约束重载，替代 SFINAE 重载群，报错清晰
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 59 · ★☆☆☆☆"
 // 2) 非模板与模板同名时清楚注释优先级，避免意外
 ```
 
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 60 · ★☆☆☆☆"
 // 3) 转发引用重载务必约束，或用 Tag 分发绕过构造劫持
 ```
 
 > **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 61 · ★☆☆☆☆"
 // 4) 重载集保持「正交」：每个重载覆盖不相交的类型区间
 ```
 
 > **示例 62** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 62 · ★☆☆☆☆"
 // 5) 公共 API 避免依赖隐式转换做决议
 ```
 
@@ -630,18 +630,18 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销需微基准实测
 
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 63 · ★★☆☆☆"
 // 决议纯编译期，选定后调用开销与普通函数一致（含内联）
 // 代价：重载+模板候选越多，编译期决议越慢、报错越长（见 ch75）
 ```
 
 > **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 64 · ★☆☆☆☆"
 // 内联后模板重载与普通函数无差别：上文 f(&x)->300 直接内联进 main
 ```
 
 > **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 65 · ★☆☆☆☆"
 // 模板实例化数量随重载组合数增长 → 控制候选规模
 ```
 
@@ -833,7 +833,7 @@ jbe .depth_error
 
 给定：
 > **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 67 · ★★☆☆☆"
 template <class T> T id(T x) { return x; }
 int id(int x) { return x + 1; }
 ```
@@ -845,7 +845,7 @@ int id(int x) { return x + 1; }
 非模板 `int id(int)` 对 `int` 实参是**精确匹配**，优先于模板实例化；`id(3.14)` 只能由模板 `T=double` 匹配。
 
 > **示例 68** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 68 · ★★☆☆☆"
 #include <iostream>
 template <class T> T id(T x) { return x; }
 int id(int x) { return x + 1; }
@@ -865,7 +865,7 @@ int main() {
 **真实场景：序列化框架的"指针 vs 值"分发。** 你的 `serialize(stream, x)` 想对指针做"写长度前缀 + 递归写入目标"，对值做"直接写字节"；两个模板 `void f(T)` 与 `void f(T*)` 同时存在。结果传入 `int*` 时编译器报歧义。请分析**重载歧义与消歧**：
 
 > **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 69 · ★★☆☆☆"
 template <class T> void f(T)  {  // 通用
 template <class T> void f(T*) {  // 指针
 ```
@@ -878,7 +878,7 @@ template <class T> void f(T*) {  // 指针
 
 写法 A——`enable_if` 把指针版限定为指针类型：
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 70 · ★★☆☆☆"
 #include <type_traits>
 template <class T, class = void> void f(T) {                   // 通用
 template <class T>
@@ -887,7 +887,7 @@ void f(T*, std::enable_if_t<std::is_pointer_v<T>, int> = 0) {  // 指针
 
 写法 B——`std::true_type` 标签分发（见 ch70）：
 > **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 71 · ★★★☆☆"
 #include <type_traits>
 template <class T> void f_impl(T, std::false_type) {   // 通用
 template <class T> void f_impl(T*, std::true_type)  {  // 指针
@@ -908,7 +908,7 @@ template <class T> void f(T v) { f_impl(v, std::is_pointer<T>{}); }
 全局运算符模板会经实参依赖查找（ADL）污染所有类型，与 `std` 内 `operator==` 冲突。安全做法：定义为**类内友元**，仅对自定义类型生效：
 
 > **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 72 · ★★☆☆☆"
 #include <iostream>
 struct Point {
     int x, y;
@@ -936,7 +936,7 @@ int main() {
 重载决议区分"非模板函数"与"函数模板实例"：当两者都能匹配时，非模板函数（更特化）优先；模板仅在没有同样好的非模板候选时才被选用。这是"用户手写特例优先于泛型"的基础语义。
 
 > **示例 77** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
-```cpp
+```cpp title="示例 77 · ★★★☆☆"
 #include <iostream>
 template <typename T> void f(T)   { std::cout << "template\n"; }
 void               f(int) { std::cout << "int\n"; }
@@ -961,7 +961,7 @@ int main() {
 当多个函数模板都能匹配时，编译器做偏序比较：若模板 A 的实参可匹配模板 B、而反之不成立，则 A 更特化、被优先。这里 `T*` 比 `T` 更特化，因此 `g(&x)` 选择指针版本。
 
 > **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 78 · ★★★☆☆"
 #include <iostream>
 template <typename T> void g(T)   { std::cout << "T\n"; }
 template <typename T> void g(T*)  { std::cout << "T*\n"; }
@@ -995,7 +995,7 @@ id(42);                       // 期望 42，得到 43
 **修复**：明确要哪个——若所有整数统一走模板，删掉非模板重载；若 `int` 需特殊行为，保留并意识到它胜出。
 
 > **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：重载决议——模板并非总是优
-```cpp
+```cpp title="示例 73 · ★★☆☆☆"
 #include <iostream>
 template <class T> T id(T x) { return x; }
 int main() { std::cout << id(42) << "\n"; }   // 42
@@ -1017,7 +1017,7 @@ bool eq = (v1 == v2);   // 与 std::vector 的 operator== 经 ADL 冲突 / 递�
 **修复**：放进类内作友元（见练习 3 答案），作用域仅限该类型。
 
 > **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：运算符模板别放全局
-```cpp
+```cpp title="示例 74 · ★★★☆☆"
 #include <iostream>
 struct Point { int x, y;
     friend bool operator==(const Point& a, const Point& b) {
@@ -1197,7 +1197,7 @@ SFINAE（Substitution Failure Is Not An Error）是模板元编程中重载选�
 ### 可编译实证
 
 > **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译实证
-```cpp
+```cpp title="示例 75 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
 
@@ -1298,7 +1298,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 76** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 76 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 

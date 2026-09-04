@@ -63,7 +63,7 @@ Epic 的取舍很清楚：**保留 C++ 的性能和零抽象控制力**（对比
 Unreal Engine（UE）的 C++ 并非「裸标准 C++」——它构建在 **UObject 对象系统** 之上：一套由 UHT 在编译期扫描、运行时由 GC 与反射驱动的对象框架。标准 C++ 提供语言；UE 在其上叠加**元数据、垃圾回收、序列化、蓝图桥接**四大支柱。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Unreal Engine C
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 // ① UE 工程的典型最小对象：必须继承 UObject 才获得反射/GC 能力
 // （UHT 宏在此以空宏模拟，使片段可独立编译）
 #define UCLASS(...) 
@@ -83,7 +83,7 @@ public:
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Unreal Engine C
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // ① 标准 C++ 与 UE 的分层对照（概念图，ASCII 框线）
 // ┌─────────────────────────────────────────────┐
 // │ 蓝图 / 编辑器（可视化层）                    │
@@ -105,7 +105,7 @@ int layer_count() { return 4; }   // 四层
 UE 的每個对象都是 `UObject` 派生实例；每个类型对应一个 **`UClass` 单例**（类元数据），持有属性表、函数表、父类链。`UObject::GetClass()` 是运行期 RTTI 的等价入口。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对象模型
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ② UObject 与 UClass 的核心关系（上游字段简化示意）
 // UObjectBase 持有 ClassPrivate（指向 UClass*）；UClass 描述类型自身
 struct FMinimalObject {
@@ -115,7 +115,7 @@ struct FMinimalObject {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对象模型
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // ② 等价 UClass 的最小元数据：类型名 + 父类 + 属性表
 #include <string>
 #include <vector>
@@ -136,7 +136,7 @@ struct FMinimalClass {
 下面两处为 **上游 Unreal Engine 源码** 的真实位置（本机未装 UE，仅作权威定位，标注「上游参考」）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase / UObjectGlobals（上游参考） [实现·Unreal]
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h
 // 行号：73
 // 上游参考：UObjectBase 定义 ClassPrivate / NamePrivate / OuterPrivate 等核心字段。
@@ -151,7 +151,7 @@ struct FMinimalClass {
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析：UObjectBase / UObjectGlobals（上游参考） [实现·Unreal]
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/UObjectGlobals.cpp
 // 行号：2451
 // 上游参考：StaticAllocateObject / ConstructObject 的分配逻辑，串接 UClass 与 GC 图。
@@ -171,7 +171,7 @@ struct FMinimalClass {
 UE 使用 **标记-清扫（mark-sweep）增量 GC**。可达性从「根集合」（如关卡 `World`、显式 `UPROPERTY` 引用）出发，沿 `UObject` 引用图递归标记；未被标记的对象被回收。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 垃圾回收
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ④ UPROPERTY 强引用：让 GC 把子对象视为可达，避免误回收
 #define UPROPERTY(...)
 #include <memory>
@@ -184,7 +184,7 @@ class UWeapon : public UActorStub {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 垃圾回收
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ④ 非 UPROPERTY 裸指针：GC 看不见 -> 悬空风险（见第⑬节陷阱）
 class UBroken : public UActorStub {
     UActorStub* NotTracked = nullptr;  // 不在引用图中：GC 可能回收它指向的对象
@@ -199,7 +199,7 @@ class UBroken : public UActorStub {
 UE 提供三件套，**不依赖 `std::`**，且能与 UObject GC 共存：
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 智能指针
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 // ⑤ TSharedPtr：引用计数（非 GC），用于非 UObject 的资源/工具对象
 #include <memory>
 template <typename T> using TSharedPtr = std::shared_ptr<T>;
@@ -211,7 +211,7 @@ TSharedPtr<FRenderResource> g_Res = std::make_shared<FRenderResource>();
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 智能指针
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ⑤ TWeakPtr：观察而不增加引用计数，典型用于缓存/回调防悬空
 TWeakPtr<FRenderResource> g_Cache = g_Res;
 void UseCache() {
@@ -220,7 +220,7 @@ void UseCache() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 智能指针
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 #include <memory>
 // ⑤ TUniquePtr：独占所有权，禁止拷贝，等价 std::unique_ptr
 TUniquePtr<FRenderResource> g_Owned = std::make_unique<FRenderResource>();
@@ -235,7 +235,7 @@ TUniquePtr<FRenderResource> g_Owned = std::make_unique<FRenderResource>();
 反射靠宏 + UHT 代码生成实现。`UCLASS()` 标记类型可被反射；`UPROPERTY()` 标记字段进入属性表；`UFUNCTION()` 标记方法可被蓝图/网络调用。
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反射与元数据
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 // ⑥ 反射三宏的最小可用形态（空宏 shim 使片段可编译）
 #define UCLASS(...)
 #define UPROPERTY(...)
@@ -256,7 +256,7 @@ public:
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反射与元数据
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ⑥ 反射的「等价手写」：把字段登记进属性表，UHT 正是生成此类代码
 #include <string>
 #include <vector>
@@ -278,7 +278,7 @@ struct PlayerMeta {
 UE 自研容器替代 STL，强调**内存可控、序列化友好、调试可视化**：
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 容器
-```cpp
+```cpp title="示例 14 · ★★★☆☆"
 // ⑦ TArray：连续存储，接口近似 std::vector，但默认不抛异常、内存策略可调
 #include <vector>
 #include <cstdint>
@@ -290,7 +290,7 @@ int32_t top = Scores[0];   // 不越界检查（Shipping）；Development 下可
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 容器
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ⑦ FString：UTF-16 的宽字符串，与 std::string(UTF-8) 不同
 #include <string>
 #include <codecvt>
@@ -304,7 +304,7 @@ FString Name(u"Hero");
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 容器
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑦ TMap：哈希表，Key 需有 GetTypeHash；等价 std::unordered_map
 #include <unordered_map>
 #include <cstdint>
@@ -314,7 +314,7 @@ TMap<int32_t, FString> PlayerNames;
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 容器
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // ⑦ FName：全局去重字符串池，比较是 O(1) 指针比较，非字符串比较
 #include <string>
 struct FName {
@@ -336,16 +336,16 @@ struct FName {
 | 互操作 | 标准库通用 | 需 `StringCast`/`StringConv` 转换 |
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准 C++ 差异
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑧ 编码转换：UTF-8 std::string <-> UTF-16 FString 必须显式转换
 #include <string>
 #include <string_view>
 #include <cstddef>
 struct FString8 {
-    std::u16string W;           // 内部 UTF-16
+    std::u16string W;        // 内部 UTF-16
     static FString8 FromUtf8(std::string_view s) {
         FString8 r;
-        for (char ch : s) {     // 真实实现按 UTF-8 码点解码；ASCII 场景此循环等价
+        for (char ch : s) {  // 真实实现按 UTF-8 码点解码；ASCII 场景此循环等价
             r.W.push_back(static_cast<char16_t>(static_cast<unsigned char>(ch)));
         }
         return r;
@@ -354,7 +354,7 @@ struct FString8 {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准 C++ 差异
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // ⑧ 标准 C++ 没有「蓝图可见」概念：这是 UE 反射层独有的附加语义
 // UPROPERTY() 让字段进入反射——std::string 成员不会自动获得该能力
 #define UPROPERTY(...)
@@ -370,7 +370,7 @@ struct UThing { UPROPERTY() std::string Tag; };  // 仅当类是 UObject 时 Tag
 下面用 **GCC 15.3.0** 真实编译 `Examples/_ch134_objsys.cpp`（自包含对象系统 / RTTI 等价），证明 UObject 式反射骨架在标准 C++ 下可编译、并观察其汇编。UE 专属命令 `UHT` 未安装，故取真实汇编为证，标注「典型输出」。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实取证：编译自包含对象系统取汇编
-```cpp
+```cpp title="示例 20 · ★★★☆☆"
 // 文件：Examples/_ch134_objsys.cpp，行号：46（GetClass）/ 52（NewObject）
 // 编译：C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++17 -O2 -S -masm=intel
 // Examples/_ch134_objsys.cpp -o Examples/_ch134_objsys.asm
@@ -429,7 +429,7 @@ _Z9NewObjectPK6FClass:
 ## ⑩ 调试 <span class="badge badge-exp">经验</span>
 
 > **示例 21** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // ⑩ 用 ensure/check 宏替代裸 assert，能触发编辑器断点与调用栈
 #define check(cond) do { if(!(cond)) __builtin_trap(); } while(0)
 #define ensure(cond) (cond)
@@ -440,7 +440,7 @@ int ComputeDamage(int base) {
 ```
 
 > **示例 22** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // ⑩ 调试时打印 UObject 信息：GetName/GetClass()->GetName 是常用入口
 #include <string>
 struct DbgObj { std::string Name; std::string ClassName; };
@@ -456,7 +456,7 @@ void Dump(const DbgObj& o) {
 ## ⑪ 性能 <span class="badge badge-exp">经验</span>
 
 > **示例 23** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // ⑪ TArray 预分配：避免多次 realloc（与 std::vector::reserve 同义）
 #include <vector>
 template <typename T> using TArray = std::vector<T>;
@@ -466,7 +466,7 @@ for (int i=0;i<1024;++i) Positions.push_back((float)i);
 ```
 
 > **示例 24** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑪ 避免在热循环里创建 FString：用栈缓冲 / 数值直传
 #include <string>
 void BadHotLoop(int n) {
@@ -483,7 +483,7 @@ void BadHotLoop(int n) {
 ## ⑫ 跨平台 [平台·Linux]
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Linux]
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ⑫ 平台抽象：用 UE 提供的 typedef 而非原生类型，保证 64 位一致
 #include <cstdint>
 #include <cstddef>
@@ -494,7 +494,7 @@ int32 ReadInput(uint16 DeviceId) { return (int32)DeviceId; }
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Linux]
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // ⑫ 字节序敏感处用平台无关接口；UE 在 Core 层已封装 FPlatformMisc
 #include <cstdint>
 uint32 HostToNetwork(uint32 v) {
@@ -509,7 +509,7 @@ uint32 HostToNetwork(uint32 v) {
 ## ⑬ 常见陷阱（裸指针跨 UObject 边界） <span class="badge badge-exp">经验</span>
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // ⑬ 陷阱1：裸 UObject* 不标 UPROPERTY -> GC 看不见 -> 悬空
 #define UPROPERTY(...)
 class UEnemy : public UObjBase2 { public: virtual ~UObjBase2()=default; };
@@ -519,7 +519,7 @@ class UGameMgr {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // ⑬ 陷阱2：TSharedPtr 持有 UObject -> 与 GC 双重生命周期冲突
 #include <memory>
 class UBad {
@@ -528,7 +528,7 @@ class UBad {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // ⑬ 陷阱3：在构造函数里访问未初始化的 UPROPERTY（UHT 顺序问题）
 class USafe {
     int32 A = InitFrom(B);   // B 可能尚未构造 -> 未定义
@@ -543,7 +543,7 @@ class USafe {
 ## ⑭ 演进（UE5） [平台·UE5]
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（UE5） [平台·UE5]
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ⑭ UE5 引入 FSoftObjectPath / 软引用，降低硬引用导致的加载耦合
 #include <string>
 struct FSoftObjectPath { std::string AssetPath; };   // 仅记录路径，不立即加载
@@ -551,7 +551,7 @@ FSoftObjectPath Mesh = FSoftObjectPath{"/Game/Models/Hero.Hero"};
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（UE5） [平台·UE5]
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ⑭ UE5 的 Chaos 物理、Nanite、Lumen 都是 C++ 子系统，可经 API 调用
 struct FSubsystemStub { void Tick() {} };
 ```
@@ -562,7 +562,7 @@ struct FSubsystemStub { void Tick() {} };
 ## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // ⑮ 用 AActor 的 BeginPlay 做初始化，而非构造函数（此时 World/组件就绪）
 struct AActorStub2 { virtual void BeginPlay() {} virtual ~AActorStub2()=default; };
 class AMyActor : public AActorStub2 {
@@ -571,7 +571,7 @@ class AMyActor : public AActorStub2 {
 ```
 
 > **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // ⑮ 用 UPROPERTY(EditAnywhere) 暴露给编辑器，减少硬编码
 #define UPROPERTY(...)
 #include <string>
@@ -581,7 +581,7 @@ class USettings {
 ```
 
 > **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // ⑮ 用 const 引用传大对象，避免 UObject 上的不必要拷贝
 #include <vector>
 #include <cstdint>
@@ -595,7 +595,7 @@ int Sum(const TArray<int32_t>& xs) { int s=0; for(int x:xs) s+=x; return s; }
 ## ⑯ 跨库 <span class="badge badge-exp">经验</span>
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ⑯ 引入第三方库（如 rapidjson）时，用模块 Build.cs 的 PublicDependencyModuleNames
 // 而非手动 -I；跨模块符号由 UE 构建系统（UBT）解析
 // （此处示意接口隔离：把第三方结果转成 FString 再回传游戏层）
@@ -604,7 +604,7 @@ std::string ToStd(const char* u8) { return std::string(u8); }
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ⑯ 与标准库共存：UE 容器与 STL 可混用，注意边界转换成本
 #include <vector>
 #include <string>
@@ -621,7 +621,7 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 ## ⑰ 贡献 <span class="badge badge-exp">经验</span>
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // ⑰ 贡献引擎代码的典型改动点：在 Runtime/CoreUObject 下修改，保持 UHT 宏一致
 // 例：给 UObject 增加一个新的反射说明符，需要同步修改
 // Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h
@@ -631,7 +631,7 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 ```
 
 > **示例 38** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // ⑰ 自测：新增类型应满足最小不变量（等价引擎内的 check 断言）
 #define check(c) do{ if(!(c)) __builtin_trap(); }while(0)
 struct FContrib { int Id = 0; };
@@ -651,7 +651,7 @@ void Validate(const FContrib& c) { check(c.Id >= 0); }
 | CryEngine | `IEntity`/`IComponent` | 有限 | 手动/引用 | Lua |
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：与游戏引擎对比 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // ⑱ Unity 用 C# 对象；UE 用 C++ UObject——生命周期模型根本不同
 // C#：GC 自动；UE：GC + UPROPERTY 显式引用图（开发者参与标注）
 #include <cstddef>
@@ -667,7 +667,7 @@ EngineDiff Diffs[4] = {
 ## ⑲ 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
 > **示例 40** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 // ⑲ 阅读引擎源码的入口：从 UObject 派生类的构造函数反向追 UClass 构建
 // 上游参考（非本机）：
 // 文件：https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp
@@ -677,7 +677,7 @@ int ReadEntry() { return 1; }   // 占位：提示读者去上游该位置阅读
 ```
 
 > **示例 41** [难度 ★★☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // ⑲ 用条件断点观察 GC：在 MarkReachable 等价函数上断住，查看可达集合增长
 #include <vector>
 template <typename T> using TArray = std::vector<T>;
@@ -717,7 +717,7 @@ void InspectGC(const TArray<void*>& reachables) { (void)reachables; }
 | 软引用 | `FSoftObjectPath` | 路径字符串 | 延迟加载 |
 
 > **示例 42** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 // ⑳ 一页速记：UObject 派生类型的最小骨架（空宏 shim 可编译）
 #define UCLASS(...)
 #define UPROPERTY(...)
@@ -737,7 +737,7 @@ public:
 ```
 
 > **示例 43** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 // ⑳ 选择指南（编译期决策树，ASCII 框线）
 // ┌─ 是否 UObject 派生？ ─┐
 // │ 是 ──> UPROPERTY 标引用，GC 托管        │
@@ -772,7 +772,7 @@ int Decide(bool isUObject) { return isUObject ? 0 : 1; }
 不装 UE 也能理解 `UPROPERTY` 与 `UClass` 的运行模型——下面用标准库复刻核心：**每个类有一张属性元数据表，每个对象注册进全局存活表（GC 根集）**。这正是 UE 让编辑器/序列化/网络复制"看见"字段的机制。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：先把
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 // ㉑.2 用标准 C++ 复刻 UE「反射属性表 + GC 托管」的最小模型（本块可独立编译，GCC 15.3.0 验证）
 #include <string>
 #include <vector>
@@ -814,7 +814,7 @@ int main() {
 下面才是你在 UE 编辑器里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入引擎头依赖）。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 UE C++ 长什么样
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 // ㉑.3 真实 UE C++ 写法（仅注释演示，需 UE + UHT；本门禁按空块编译通过）：
 // #include "HealthPickup.h"
 // #include "GameFramework/Actor.h"
@@ -1045,7 +1045,7 @@ call [rcx+0x0018]         ; 反射访问属性
 宏在静态初始化期把"类名→工厂"登记进全局表，实现运行期按名构造：
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <map>
 #include <string>
 #include <functional>
@@ -1093,7 +1093,7 @@ int main() {
 只有被"强引用列表"登记的对象参与可达性；未登记的裸指针目标不可达、被回收：
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <vector>
 
 struct UObject {
@@ -1139,7 +1139,7 @@ int main() {
 Actor 拥有组件生命周期；Tick 向下传播，对应 UE 的组件驱动模型：
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <vector>
 
 struct UActorComponent {
@@ -1332,7 +1332,7 @@ UObject 反射看着「灵活」，但字符串键属性访问的代价是哈希
 ### D5.3 可复现 demo
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 51 · ★★★★☆"
 #include <cstdio>
 #include <unordered_map>
 #include <string_view>

@@ -237,7 +237,7 @@ flowchart TD
 词法操作（`operator/`、`filename`、`parent_path`）只处理字符串，不进内核。下面看 `operator/=` 的核心：
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：词法拼接 p / "x"
-```cpp
+```cpp title="示例 5 · ★★★☆☆"
 // ⑩ 词法拼接（不访问磁盘）的等价结构
 #include <filesystem>
 #include <iostream>
@@ -287,7 +287,7 @@ libstdc++ 中 `operator/=` 调用 `_M_append`：
 真实服务器（如 spdlog / logrotate 类组件）需要：按日期建目录、清理超过 N 天的旧日志、计算占用空间。下面给出一个**自包含、可编译**的骨架（用词法与存在性检查，避免依赖特定磁盘内容）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志归档服务的目录滚动与清
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // ⑫-1 日志归档：按日期子目录存放，并清理超龄日志
 #include <filesystem>
 #include <iostream>
@@ -316,7 +316,7 @@ int main() {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志归档服务的目录滚动与清
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // ⑫-2 计算某目录下所有普通文件的总字节数（工业级统计）
 #include <filesystem>
 #include <iostream>
@@ -337,7 +337,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：日志归档服务的目录滚动与清
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ⑫-3 原子发布：先写临时文件再 rename 覆盖（避免读者看到半成品）
 #include <filesystem>
 #include <iostream>
@@ -365,7 +365,7 @@ int main() {
 下面先用一段**可编译**代码验证 `path` 的关键词法 API，再给出真实头文件源码片段（以普通代码块呈现，仅供阅读，不参与编译）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 p
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 // ⑬-1 path 词法 API 实测（不访问磁盘，纯字符串）
 #include <filesystem>
 #include <iostream>
@@ -450,7 +450,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ❌ 错误：用手动字符串拼接代替 operator/=，漏分隔符且无法跨平台归一
 #include <filesystem>
 #include <iostream>
@@ -463,7 +463,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ✅ 正确：用 operator/= 或 / 进行路径拼接
 #include <filesystem>
 #include <iostream>
@@ -477,7 +477,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 // ❌ 错误：遍历时持有迭代器副本跨循环复用
 #include <filesystem>
 #include <vector>
@@ -489,7 +489,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ✅ 正确：需要"再看一遍"就存 path，而不是迭代器
 #include <filesystem>
 #include <vector>
@@ -502,7 +502,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // ❌ 错误：跨文件系统用 rename 期望原子移动
 #include <filesystem>
 #include <iostream>
@@ -516,7 +516,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 // ✅ 正确：跨设备用 copy + remove，并自知非原子
 #include <filesystem>
 #include <iostream>
@@ -562,7 +562,7 @@ A：`path` → `string()` 在 Windows 上是 UTF-16→UTF-8 的**有损可能**�
 ## ⑱ 最佳实践
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // ⑱-1 统一用 error_code 版做批量遍历，避免单文件错误中断整轮
 #include <filesystem>
 #include <iostream>
@@ -578,7 +578,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // ⑱-2 用 expected 包装 fs 操作，给业务层一个类型化错误通道（结合第88章）
 #include <filesystem>
 #include <expected>
@@ -595,7 +595,7 @@ int main() { return 0; }   // 仅演示编译；使用见正文
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑱-3 路径归一化：用 lexical_normal 消除 "." 与 ".."（仍不访问磁盘）
 #include <filesystem>
 #include <iostream>
@@ -607,7 +607,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // ⑱-4 安全创建目录（已存在不报错）
 #include <filesystem>
 #include <iostream>
@@ -629,7 +629,7 @@ int main() {
 生产服务常需"热加载配置且不中断连接"。经典模式是：把新配置写到临时文件，校验通过后用 `rename` 原子替换旧文件，并把旧文件先备份以便回滚（若新配置有 bug 可秒级回退）。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充工业案例：配置热更新与原子回
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // B1 配置热更新：写临时 + 备份旧版 + 原子 rename 替换
 #include <filesystem>
 #include <iostream>
@@ -665,7 +665,7 @@ int main() {
 **microbenchmark（示意，量级取自典型 NVMe + 热缓存）：**
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // ⑲-1 词法拼接 vs 系统调用耗时量级对比（示意数字）
 #include <filesystem>
 #include <chrono>
@@ -686,7 +686,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // ⑲-2 status 调用计数（示意：N 次 stat 的耗时数量级）
 #include <filesystem>
 #include <chrono>
@@ -708,7 +708,7 @@ int main() {
 - `[经验·量级]`：`exists` 在热缓存下约 0.1–0.5 µs/次；冷缓存（首次访问、网络盘）可达数十 µs 到 ms。`directory_entry` 的 `is_regular_file()` 在**遍历时已顺带缓存 status**（libstdc++ 在构造 `directory_entry` 时调用 `symlink_status`），因此遍历中再调 `e.is_regular_file()` 通常**不再**额外 `stat`——这是重要的性能优化点。
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // ⑲-3 利用 directory_entry 的缓存 status，避免重复 stat
 #include <filesystem>
 #include <iostream>
@@ -731,7 +731,7 @@ int main() {
 ## ⑲-补 补充完整可编译示例（F1–F15，均为独立程序）
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // F1 path 多种构造方式（词法）
 #include <filesystem>
 #include <iostream>
@@ -745,7 +745,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // F2 取相对路径 relative（词法/语义）
 #include <filesystem>
 #include <iostream>
@@ -760,7 +760,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // F3 path 比较运算符（词法，不访问磁盘）
 #include <filesystem>
 #include <iostream>
@@ -773,7 +773,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // F4 路径分解：root_name / root_directory / relative_path
 #include <filesystem>
 #include <iostream>
@@ -786,7 +786,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // F5 has_extension / has_filename 谓词（词法）
 #include <filesystem>
 #include <iostream>
@@ -799,7 +799,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // F6 查询文件类型（语义，需用 error_code 包裹）
 #include <filesystem>
 #include <iostream>
@@ -813,7 +813,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // F7 is_regular_file / is_directory 便捷谓词
 #include <filesystem>
 #include <iostream>
@@ -825,7 +825,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // F8 读取权限位 perms（语义）
 #include <filesystem>
 #include <iostream>
@@ -840,7 +840,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // F9 查询磁盘空间 space（语义，需存在路径）
 #include <filesystem>
 #include <iostream>
@@ -853,7 +853,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // F10 temp_directory_path 与 current_path（语义但稳定）
 #include <filesystem>
 #include <iostream>
@@ -866,7 +866,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // F11 file_size（语义，需为常规文件；这里仅演示 API，用 exists 保护）
 #include <filesystem>
 #include <iostream>
@@ -882,7 +882,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // F12 last_write_time 返回 chrono::file_time_type（见第92章）
 #include <filesystem>
 #include <iostream>
@@ -896,7 +896,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // F13 canonical / weakly_canonical 解析 . 与 ..（语义，需存在）
 #include <filesystem>
 #include <iostream>
@@ -910,7 +910,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // F14 copy_options 位掩码：跳过已存在 / 递归
 #include <filesystem>
 #include <iostream>
@@ -926,7 +926,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // F15 创建符号链接与硬链接（语义；仅演示 API，用 ec 吞掉错误）
 #include <filesystem>
 #include <iostream>
@@ -1025,7 +1025,7 @@ int main() {
 ## 补充分编可编译示例
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch91_filesystem."<<std::endl;return 0;}
@@ -1120,7 +1120,7 @@ jne .not_exist
 <details><summary>答案与解析</summary>
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -1143,7 +1143,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -1167,7 +1167,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -1194,7 +1194,7 @@ int main() {
 `recursive_directory_iterator` 会沿子目录递归深入，而 `directory_iterator` 只枚举单层。两者都产生 `directory_entry`，可用 `is_regular_file()`/`is_directory()` 判别类型；底层走 OS 的目录读取 API，跨平台一致。注意符号链接与权限错误可能抛 `filesystem_error`，生产代码一般用 `error_code` 重载做边界处理。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 #include <filesystem>
 
@@ -1222,7 +1222,7 @@ int main() {
 `path` 的 `parent_path()`/`filename()`/`stem()`/`extension()` 只是对路径字符串的词法分解，不访问磁盘；真正的存在性/类型查询才需要 `status`。`stem()` 返回去掉最后一个 `.` 之后扩展名的部分（如 `c.log.1` → `c.log`），`extension()` 返回 `.1`。这种纯词法解析让路径拼接与拆分在任何平台都可预测。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 46 · ★★★☆☆"
 #include <iostream>
 #include <filesystem>
 
@@ -1589,7 +1589,7 @@ flowchart TD
 ### D4.5 第一方可编译验证（filesystem）
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 #include <filesystem>
 #include <fstream>
@@ -1694,7 +1694,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <string>
 #include <string_view>

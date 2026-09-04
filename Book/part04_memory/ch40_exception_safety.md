@@ -117,7 +117,7 @@
 **<span class="badge badge-std">标准</span>**　`[swappable]` / `[algorithm.swap]`：标准库要求容器 `swap` 提供 **noexcept**（当元素 `swap` 不抛时）。libstdc++ 中 `vector::swap`：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 应为 noexcept
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // [示例 1] vector::swap 的 noexcept 声明（真实 libstdc++ 行号见第 7 节）
 // bits/stl_vector.h:1581
 // swap(vector& __x) _GLIBCXX_NOEXCEPT
@@ -138,7 +138,7 @@ int main() {
 **<span class="badge badge-std">标准</span>**　`[vector.modifiers]`：若 `push_back` **未触发重新分配（reallocation）**，提供 strong 保证（仅构造新元素，旧元素不动）；若**触发 reallocation**，libstdc++ 仍提供 strong 保证——因为它用 `move_if_noexcept` 在「移动可能抛」时**退化为拷贝**，拷贝抛异常可整体回滚（见第 6、7 节）。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · back 的强保证与容量边界
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // [示例 2] push_back 强保证实验：触发扩容时仍可回滚
 #include <vector>
 #include <iostream>
@@ -169,7 +169,7 @@ int main(){
 **<span class="badge badge-std">标准</span>**　强保证是**纯内存/纯状态**概念，对**外部世界副作用**（I/O、网络、锁、硬件）无能为力——这些不可「回滚」。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 强保证为何在外部副作用前失效
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 // [示例 3] 强保证破裂：网络发送不可回滚
 #include <stdexcept>
 #include <cstdio>
@@ -199,7 +199,7 @@ int main(){
 - **就地多步修改**：仅 basic 保证（示例 12）。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · = 的强保证实现与退化路径
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // [示例 33] 先拷贝临时再提交：强保证且比 copy-and-swap 省一次整体拷贝
 #include <vector>
 #include <utility>
@@ -223,7 +223,7 @@ int main(){ Widget a, b; a = b; a = Widget{}; }
 **<span class="badge badge-exp">经验</span>**　保证等级**依赖元素类型**。下面用 `is_nothrow_*` trait 在编译期自省，说明「为什么给你的类型写 noexcept 移动能提升整条调用链的保证」。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 同一操作在不同类型上的保证差异
-```cpp
+```cpp title="示例 5 · ★★★☆☆"
 // [示例 34] 编译期断言：noexcept 移动把 vector 移动升级为 noexcept
 #include <type_traits>
 #include <vector>
@@ -244,7 +244,7 @@ int main(){
 **<span class="badge badge-impl">实现</span>**　libstdc++ 在展开时若遇到二次抛出，由 unwinder（`__cxa_throw` → `__cxxabiv1::__forced_unwind`，见 `bits/cxxabi_forced.h`）触发 terminate。该文件中 `__forced_unwind` 是「强制展开」占位类，专用于识别「正在 terminate 流程中」的异常。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈展开与 double-exception
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // [示例 4] 栈展开：逐层析构自动变量（见 ch36）
 #include <iostream>
 struct Tracer {
@@ -261,7 +261,7 @@ int main(){
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 栈展开与 double-exception
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // [示例 5] double-exception → std::terminate
 #include <iostream>
 #include <stdexcept>
@@ -286,7 +286,7 @@ int main(){
 **<span class="badge badge-std">标准</span>**　`[except.terminate]`：`std::set_terminate` 可安装自定义终止处理函数，在 `terminate()` 被调用（含 double-exception、noexcept 违例、`[平台]` unwinder 强制展开）时执行——用于打日志/落盘/退出码，但**不得返回**（返回即 UB）。
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · terminate / 自定义终止行
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // [示例 39] 安装 terminate 处理器：捕获 double-exception 现场
 #include <exception>
 #include <iostream>
@@ -309,7 +309,7 @@ int main(){
 **<span class="badge badge-std">标准</span>**　C++98 允许 `void f() throw(std::bad_alloc);` 声明「只抛这些类型」，否则 `unexpected()` → `terminate`。C++11 将其**弃用**，`[except.spec]` 在 C++17 起**删除动态异常规格**（仅保留 `throw()` 作为 `noexcept(true)` 的别名，也已废弃）。MSVC 长期接受但不强制检查（属于「注释性」）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 动态异常规格 throw —— 已删除
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // [示例 6] throw(type) 动态规格：C++17 起非法（演示用 gnu++14 可编但弃用警告）
 // 现代代码禁止再写。下面在 C++17+ 下编译失败：
 // void old_style() throw(std::runtime_error);   // C++17 deleted
@@ -326,7 +326,7 @@ int main(){
 - `noexcept(expr)`：**运算符**，返回 `bool` 常量，表示「对 `expr` 求值是否可能抛」（用于条件 noexcept 内部）。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 家族
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // [示例 7] noexcept 运算符探测是否可能抛
 #include <iostream>
 #include <vector>
@@ -338,7 +338,7 @@ int main(){
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 家族
-```cpp
+```cpp title="示例 11 · ★★★☆☆"
 // [示例 8] 条件 noexcept：模板按成员操作决定自身 noexcept
 #include <utility>
 #include <type_traits>
@@ -367,7 +367,7 @@ int main(){ static_assert(noexcept(move_or_copy(std::declval<S&>(), std::declval
 **<span class="badge badge-impl">实现</span>**　libstdc++ 用 `std::move_if_noexcept` 实现该决策（第 7 节逐行）。语义：`move_if_noexcept(x)` 返回 `x` 的**右值引用**当且仅当移动构造不抛且可移动；否则返回 **`const T&`**（强制走拷贝）。`copy-and-swap` 之外，这是标准库「用 noexcept 信息保强保证」的核心机制。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与移动：vector 扩容的决策
-```cpp
+```cpp title="示例 12 · ★★★☆☆"
 // [示例 9] move_if_noexcept 决策演示
 #include <utility>
 #include <type_traits>
@@ -388,7 +388,7 @@ int main(){
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与移动：vector 扩容的决策
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // [示例 10] 扩容实验：移动抛（非 noexcept）→ move_if_noexcept 走拷贝 → 扩容成功
 #include <vector>
 #include <utility>
@@ -431,7 +431,7 @@ after: size=2（扩容成功，走拷贝，未抛异常）
 **<span class="badge badge-std">标准</span>**　`<type_traits>` 的 `is_nothrow_move_constructible`、`is_nothrow_swappable`、`is_nothrow_default_constructible` 等是编译期布尔常量，是标准库做 noexcept 决策的同一组工具（第 7 节 `move_if_noexcept` 内部即用 `is_nothrow_move_constructible`）。用户代码可复用它们编写「若元素够强则优化、否则回退」的泛型逻辑。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 实战：用 isnothrow 编写
-```cpp
+```cpp title="示例 14 · ★★★☆☆"
 // [示例 41] 泛型容器包装：移动不抛才 relocate，否则拷贝（复刻标准库思路）
 #include <type_traits>
 #include <utility>
@@ -469,7 +469,7 @@ int main(){
 ### 7.1 `bits/move.h:108-126` —— move_if_noexcept 本体
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · bits/move.h:108-12
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 108	  template<typename _Tp>
 109	    struct __move_if_noexcept_cond
 110	    : public __and_<__not_<is_nothrow_move_constructible<_Tp>>,
@@ -551,7 +551,7 @@ int main(){
 ### 7.4 `bits/exception_ptr.h:60-112` —— exception_ptr / current / rethrow
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · bits/exceptionptr.
-```cpp
+```cpp title="示例 18 · ★★★☆☆"
 61	  namespace __exception_ptr { class exception_ptr; }
 66	  using __exception_ptr::exception_ptr;
 75	  exception_ptr current_exception() _GLIBCXX_USE_NOEXCEPT;
@@ -607,7 +607,7 @@ int main(){
 3. 返回前 `other`（旧状态）随函数退出析构 → 资源释放。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 惯用法（强保证）
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // [示例 11] copy-and-swap：强保证赋值
 #include <utility>
 #include <vector>
@@ -630,7 +630,7 @@ int main(){ Buffer x, y; x = y; }               // 若拷贝抛，x 不变（强
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法（强保证）
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // [示例 12] 对比：朴素赋值仅 basic 保证（中途抛→半改状态）
 #include <vector>
 struct Naive {
@@ -654,7 +654,7 @@ struct Naive {
 **<span class="badge badge-exp">经验</span>**　强保证不是免费。copy-and-swap 在 rhs 是左值时**多一次完整拷贝**。下面量化「强保证赋值」与「basic 赋值」的性能差——权衡依据是：拷贝成本 vs 回滚需求。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的代价可测量
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // [示例 35] copy-and-swap 与 in-place 赋值的代价对比（量级）
 #include <vector>
 #include <chrono>
@@ -687,7 +687,7 @@ int main(){
 **<span class="badge badge-impl">实现</span>**　典型用于「事务/日志/批量写入」：构造时记录 `int init = std::uncaught_exceptions();`，析构时比较 `std::uncaught_exceptions() > init`：若更大，说明**在自己生命周期内又发生了新异常（正在展开）→ 回滚**；否则→**提交**。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::uncaught_exceptions（C++17）：提交或回滚惯用法
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // [示例 13] 事务惯用法：展开中析构→回滚，正常析构→提交
 #include <exception>
 #include <cstdio>
@@ -713,7 +713,7 @@ int main(){
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::uncaught_exceptions（C++17）：提交或回滚惯用法
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // [示例 14] uncaught_exceptions 计数（嵌套）
 #include <exception>
 #include <iostream>
@@ -741,7 +741,7 @@ int main(){
 **<span class="badge badge-impl">实现</span>**　libstdc++ 各容器在 realloc/insert 中统一用 `__uninitialized_move_if_noexcept_a` + `__catch` 回滚（见 7.2、7.3），即该条款的实现落点。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全的 STL 条款 [res.on.exception.handling]
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // [示例 15] STL 基本保证验证：sort 比较器抛→无泄漏但序列可能乱序
 #include <algorithm>
 #include <vector>
@@ -786,7 +786,7 @@ int main(){
 **<span class="badge badge-std">标准</span>**　`[except.ctor]/1`：若构造函数通过异常退出，则**已构造的基类子对象与成员子对象按逆序自动析构**，对象本身的内存被释放——**无资源泄漏**。这正是 RAII 与异常安全衔接点（见 `ch39`）。
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造函数中的异常：成员自动析构
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // [示例 16] 构造失败→已初始化成员自动析构
 #include <iostream>
 #include <stdexcept>
@@ -813,7 +813,7 @@ int main(){ try { C c; } catch(const std::exception&){ std::cout << "caught\n"; 
 **<span class="badge badge-impl">实现</span>**　libstdc++ 中 `exception_ptr` 内部是 `void* _M_exception_object`，引用计数管理（7.4）。`rethrow_exception` 标 `__noreturn__`。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · exception / rethro
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // [示例 17] 跨线程传递异常：worker 捕获，主线程重抛
 #include <exception>
 #include <thread>
@@ -832,7 +832,7 @@ int main(){
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · exception / rethro
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // [示例 18] make_exception_ptr 直接构造句柄
 #include <exception>
 #include <iostream>
@@ -856,7 +856,7 @@ int main(){
 - **抛异常路径**：需**运行时查表**、解卷（unwind）、逐帧执行析构、匹配 `catch`——代价在 **数百 ns 到数 µs** 量级（取决于栈深度、析构数量、表大小）。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★★☆</span> · 异常成本：Itanium zero-cost EH
-```cpp
+```cpp title="示例 30 · ★★★★☆"
 // [示例 19] 验证 try/catch 正常路径零/近零开销
 #include <chrono>
 #include <iostream>
@@ -876,7 +876,7 @@ int main(){
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常成本：Itanium zero-cost EH
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // [示例 20] 抛异常延迟量级（仅量级参考）
 #include <chrono>
 #include <iostream>
@@ -911,7 +911,7 @@ objdump -h a.out | grep -E "eh_frame|\.gcc_except"
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实地查看展开表：objdump / .eh_frame
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // [示例 36] 用 __builtin 观察：noexcept 让编译器相信不会展开
 #include <vector>
 [[gnu::cold]] void log_fail(const char*);
@@ -934,7 +934,7 @@ int main(){ std::vector<int> v; writer(v); writer_throw(v); }
 **<span class="badge badge-std">标准</span>/<span class="badge badge-platform">平台</span>**　GCC/Clang 的 `-fno-exceptions` 禁止异常机制：所有 `throw` 编译失败或 `std::terminate`，`try/catch` 无效，且库/生成代码更小更快（无展开表）。嵌入式、游戏、内核常开。代价：标准库容器等在无法分配时会 `std::abort` 而非抛 `bad_alloc`，且 `vector` 扩容的 strong 保证退化为「失败即终止」。
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // [示例 21] -fno-exceptions 下需避免异常，改用错误码/必成功假设
 // 编译：g++ -fno-exceptions 时下面无法通过 throw 表达错误
 #include <cstdio>
@@ -954,7 +954,7 @@ int main(){ int v; if(!parse(nullptr, v)) std::printf("fail\n"); }
 - **零开销要求 / `-fno-exceptions` 环境**：只能错误码。
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常 vs 错误码
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // [示例 22] std::expected（C++23）无异常错误传递
 #include <expected>
 #include <string>
@@ -971,7 +971,7 @@ int main(){
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常 vs 错误码
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // [示例 23] std::error_code 风格（C++11，系统错误）
 #include <system_error>
 #include <iostream>
@@ -1011,7 +1011,7 @@ int main(){
 | `/EHr` | 即使函数标记 noexcept，也生成「异常到达 noexcept → terminate」的运行时检查（强健壮性，略增代码） |
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的 /EH 开关
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // [示例 24] MSVC /EHa 下 SEH 异常进入 C++ catch(...)（Windows 专属）
 // 编译：cl /EHa 时下面会进 catch；/EHsc 下直接崩溃
 #include <iostream>
@@ -1047,7 +1047,7 @@ int main(){
 **[平台-推断]**　MSVC `/EHr` 会在**每个 `noexcept` 函数**插入运行期检查：「若有异常抵达 noexcept 边界 → 调用 terminate」。这牺牲少量体积/速度换取「即使第三方代码从 noexcept 逃逸异常也能优雅终止」，而 GCC/Clang 默认假定 noexcept 真的不会抛、不插入检查。
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 函数遇上 /EHr
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // [示例 40] /EHr 下 noexcept 逃逸异常被 terminate 捕获（MSVC 行为示意）
 // 编译：cl /EHr /std:c++17
 #include <iostream>
@@ -1067,7 +1067,7 @@ int main(){ std::set_terminate(on_term); boom(); }
 **<span class="badge badge-impl">实现</span>**　当元素移动构造 `noexcept`，`vector` 扩容用移动（或 relocate），否则用拷贝。下面测量两者差异。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 移动让扩容走移动（更快）
-```cpp
+```cpp title="示例 38 · ★★★☆☆"
 // [示例 25] 扩容：noexcept 移动 vs 拷贝（量级对比）
 #include <vector>
 #include <chrono>
@@ -1095,7 +1095,7 @@ int main(){
 ### 16.2 noexcept 对代码生成的影响（优化）
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对代码生成的影响（优化）
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // [示例 26] noexcept 让编译器删除展开表（概念验证，需用 objdump 看）
 #include <vector>
 void f_noexcept(std::vector<int>& v) noexcept { v.push_back(1); }  // 不抛→无展开表
@@ -1107,7 +1107,7 @@ int main(){ std::vector<int> v; f_noexcept(v); f_throws(v); }
 ### 16.3 异常延迟量级汇总
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常延迟量级汇总
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // [示例 27] 综合：正常路径零开销 + 抛异常延迟（复用示例 19/20 思路）
 #include <chrono>
 #include <iostream>
@@ -1138,7 +1138,7 @@ int main(){
 **<span class="badge badge-impl">实现</span>**　`std::sort`、`std::rotate` 等在「元素可 noexcept 移动」时可用移动而非拷贝交换元素，性能差异随元素大小放大。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测量 noexcept 移动对重排算
-```cpp
+```cpp title="示例 41 · ★★★☆☆"
 // [示例 37] sort 中 noexcept 移动 vs 拷贝交换（量级）
 #include <algorithm>
 #include <vector>
@@ -1170,7 +1170,7 @@ int main(){
 ### 16.5 异常 vs 错误码：热路径成本对照
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常 vs 错误码：热路径成本对照
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 // [示例 38] 错误码（无展开）在热路径显著快于异常
 #include <chrono>
 #include <iostream>
@@ -1198,7 +1198,7 @@ int main(){
 | **Swift** | `Error` 协议 + `do/try/catch`；值语义 | 较低成本（enum 错误，非栈追踪）；无隐式抛检查 | C++ 异常 + `noexcept` 近似 |
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 // [示例 28] 对照：Rust Result 的 C++ expected 写法（概念映射）
 // Rust:  fn parse(s:&str)->Result<i32,String> { ... }
 // C++  (C++23):
@@ -1223,7 +1223,7 @@ std::expected<int,std::string> parse(const char* s){
 **[平台-推断]**　MSVC `/EHr` 会对 `noexcept` 函数仍插入「到达 noexcept 即 terminate」的运行期检查（牺牲一点体积换健壮性），与其他编译器默认「完全省略」略有差异。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 对编译器优化的影响
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 // [示例 29] noexcept 移动使容器放心移动 + 编译器删展开表
 #include <vector>
 #include <type_traits>
@@ -1259,7 +1259,7 @@ int main(){
 10. **`-fno-exceptions` 环境**：全代码库统一用错误码，禁用 `throw`。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工程实践清单与常见陷阱
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 // [示例 30] 反例：异常穿越 C ABI（危险，UB）
 extern "C" int c_api() { throw 1; }     // 错误：C 调用方无法展开 C++ 栈
 // 正确：
@@ -1270,7 +1270,7 @@ extern "C" int c_api_safe(int* ok){
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工程实践清单与常见陷阱
-```cpp
+```cpp title="示例 46 · ★★★☆☆"
 // [示例 31] ScopeGuard：用 uncaught_exceptions 的工业级提交/回滚（简化版）
 #include <exception>
 #include <utility>
@@ -1291,7 +1291,7 @@ int main(){
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工程实践清单与常见陷阱
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 // [示例 32] 验证类型是否提供各级保证的 trait（编译期自检）
 #include <type_traits>
 #include <vector>
@@ -1309,7 +1309,7 @@ int main(){}
 **<span class="badge badge-std">标准</span>**　`[except.spec]/4`：覆盖（override）基类虚函数时，派生类的 `noexcept` 说明**不能比基类更宽**（即派生可声明 `noexcept(true)` 当基类是 `noexcept(false)`，但**不能**把基类 `noexcept(true)` 的覆盖成可能抛——那会编译错误）。这是「基类承诺了不抛，派生不得破坏」的协变规则。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 在虚函数覆盖（override）上的
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 // [示例 42] 虚函数 noexcept 覆盖约束
 #include <type_traits>
 struct Base { virtual void f() noexcept; virtual void g(); };
@@ -1331,7 +1331,7 @@ int main(){ static_assert(std::is_same_v<decltype(&Base::f), void (Base::*)() no
 4. **`std::uncaught_exceptions` 与栈深度**：递归中多层对象各自记录 `init_`，计数差只在「本对象生命周期内新增异常」时为真——这正是示例 13/31 正确工作的原因。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多工业级陷阱
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 // [示例 43] std::async 异常延迟到 get() 重抛（安全传递）
 #include <future>
 #include <iostream>
@@ -1344,7 +1344,7 @@ int main(){
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多工业级陷阱
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 // [示例 44] 线程入口必须自捕获，否则 terminate
 #include <thread>
 #include <iostream>
@@ -1543,7 +1543,7 @@ Q: noexcept 如何影响 vector 性能？
 ## 附录 H：异常安全面试
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：异常安全面试
-```cpp
+```cpp title="示例 53 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v;try{v.push_back(42);std::cout<<v[0]<<std::endl;}catch(std::bad_alloc&){std::cout<<"OOM"<<std::endl;}return 0;}
@@ -1563,7 +1563,7 @@ vector push_back扩容: T的移动构造是noexcept → memcpy快速路径; 非n
 性能差异: noexcept=~128ns/1K elements `[实验·本机实测][VERIFIED]`; 非noexcept=~388ns/1K elements `[实验·本机实测][VERIFIED]` → 约 3x (本机 MinGW GCC 13.1.0 -O2 复测，50K 元素外推；比值稳定)
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：noexcept与性能
-```cpp
+```cpp title="示例 54 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"noexcept move=vector realloc uses memcpy(4x faster). Always mark move noexcept!"<<std::endl;return 0;}
 ```
@@ -1628,7 +1628,7 @@ Google/LLVM禁止异常的深层原因: 异常会阻止noexcept优化链
 ### 测试源码
 
 > **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
-```cpp
+```cpp title="示例 55 · ★★★☆☆"
 int may_throw_div(int a, int b) {
     if (b == 0) throw "div by zero";
     return a / b;
@@ -1738,7 +1738,7 @@ Contents of section .xdata
 赋值运算符按值接收参数（发生拷贝），再与当前对象 `swap`；若拷贝阶段抛异常，当前对象原封不动（强保证）；`swap` 本身标 `noexcept`。
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 56 · ★☆☆☆☆"
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -1770,7 +1770,7 @@ int main() {
 异常沿调用栈展开时会逐个析构已构造的栈对象（栈展开）；RAII 正是利用这一点保证资源释放。
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 57 · ★☆☆☆☆"
 #include <iostream>
 #include <stdexcept>
 struct Guard { ~Guard() { std::cout << "cleanup\n"; } };
@@ -1799,7 +1799,7 @@ int main() {
 先复制已提交状态到局部副本，在副本上合并暂存区；只有合并成功才与 `committed` 交换。若合并过程抛异常，`committed` 完全不受影响。
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 58 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 struct Db {
@@ -1839,7 +1839,7 @@ int main() {
 实现与边界：`sum` 的「部分累计」对调用方是可见副作用——若这是必须原子的操作，循环内直接失败处理或事务式重试才符合 strong 保证。何时失效：多阶段管线（读→算→写）中途异常，中间产物怎么处理由捕获粒度决定。替代方案：catch 里只做「记录并继续」应把 catch 放循环内；「整体失败」则循环外 + 事务式提交（练习 3 的 KV 模式）。
 
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 63 · ★★☆☆☆"
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -1880,7 +1880,7 @@ int main() {
 实现与边界：noexcept 声明若与实际抛出不符，`std::terminate` 代替可预期的处理——所以只对确实不抛的操作声明。何时失效：标了 noexcept 却调用了可能抛的函数（如分配、格式化），既失去优化又引火烧身。替代方案：析构默认 noexcept（ch39 练习 5）；`swap`/移动标 noexcept 是容器优化的前提；不确定时先不标，测量确认再收紧。
 
 > **示例 64** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 64 · ★★★☆☆"
 #include <iostream>
 
 void no_throw() noexcept {}
@@ -1916,7 +1916,7 @@ int main() {
 **修复**：析构函数默认就是 `noexcept`；清理失败应吞掉异常（或仅记日志），绝不能向外传播。需要时把"可能失败"的清理做成显式、可抛的 `close()` 成员，由调用者决定如何处理。
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：析构函数抛异常 → std::terminate
-```cpp
+```cpp title="示例 59 · ★☆☆☆☆"
 #include <iostream>
 #include <stdexcept>
 struct T {
@@ -1942,7 +1942,7 @@ S(S&& o) : p(o.p) { o.p = nullptr; }   // 未标 noexcept -> vector 扩容退化
 **修复**：当底层资源的移动确实不抛时，显式把移动操作标 `noexcept`；容器据此选择移动而非拷贝。
 
 > **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：关键路径用 noexcep
-```cpp
+```cpp title="示例 60 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -2233,7 +2233,7 @@ C++26 前 GCC 的 `make_exception_ptr` 有两种实现：**有 RTTI 时走 `__cx
 ### D4.6 第一方可编译验证
 
 > **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 61 · ★★☆☆☆"
 #include <iostream>
 #include <exception>
 #include <stdexcept>
@@ -2382,7 +2382,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 62 · ★★☆☆☆"
 #include <iostream>
 #include <cassert>
 

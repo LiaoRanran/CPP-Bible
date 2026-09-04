@@ -41,7 +41,7 @@ Compiler Explorer 背后是一种"去神秘化"的立场：编译器输出不是
 ## ① Compiler Explorer 核心工作流 <span class="badge badge-exp">经验</span>
 
 > **示例 1** [难度 ★★☆☆☆] [主题：核心工作流 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 #include <iostream>
 int main() {
     std::cout << "Compiler Explorer (godbolt.org) —— 在线查看 C++ 编译后的汇编输出\n";
@@ -52,7 +52,7 @@ int main() {
 ## ② 三编译器对比 [平台·x86-64]
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三编译器对比 [平台·x86-64]
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 int square(int x) { return x * x; }
 int main() {
@@ -65,7 +65,7 @@ int main() {
 ## ③ 优化级别的汇编差异 [实现·GCC15]
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化级别的汇编差异 [实现·GCC15]
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
 int sum(int n) {
     int s = 0;
@@ -78,7 +78,7 @@ int main() { std::cout << sum(100) << std::endl; return 0; }
 ## ④ 查看汇编的五种方式 <span class="badge badge-exp">经验</span>
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：查看汇编的五种方式 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 #include <iostream>
 int main() {
     std::cout << "1. godbolt.org (online)\n";
@@ -93,7 +93,7 @@ int main() {
 ## ⑤ ABI 与调用约定 [平台·x86-64]
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与调用约定 [平台·x86-64]
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
 int add(int a, int b, int c, int d, int e, int f, int g, int h) {
     return a + b + c + d + e + f + g + h;
@@ -104,7 +104,7 @@ int main() { std::cout << add(1,2,3,4,5,6,7,8) << std::endl; return 0; }
 ## ⑥ 防止编译器消除死代码 <span class="badge badge-exp">经验</span>
 
 > **示例 6** [难度 ★☆☆☆☆] [主题：防止编译器消除死代码 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
 void benchmark() {
     volatile int x = 0;
@@ -116,7 +116,7 @@ int main() { benchmark(); std::cout << "DCE prevented by volatile\n"; return 0; 
 ## ⑦ 识别关键路径与循环 <span class="badge badge-exp">经验</span>
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：识别关键路径与循环 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
 int hotspot(int n) {
     int s = 0;
@@ -131,7 +131,7 @@ int main() { std::cout << hotspot(100) << std::endl; return 0; }
 ## ⑧ 链接器优化 LTO [实现·GCC15]
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 链接器优化 LTO [实现·GCC15]
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
 int helper(int x) { return x * x; }
 int call_helper(int n) { return helper(n) + helper(n+1); }
@@ -141,7 +141,7 @@ int main() { std::cout << call_helper(10) << std::endl; return 0; }
 ## ⑨ inline 与不 inline 的汇编差异 [实现·GCC15]
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · inline 与不 inline 的汇编差异 [实现·GCC15]
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
 inline int sq(int x) { return x * x; }
 int use_sq(int a, int b) { return sq(a) + sq(b); }
@@ -157,7 +157,7 @@ int main() { std::cout << use_sq(3, 4) << std::endl; return 0; }
 | LTO | -flto | -flto=thin | /GL |
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三编译器对比详表 [平台·x86-64]
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"GCC -S -masm=intel vs Clang -S -mllvm --x86-asm-syntax=intel\n";return 0;}
 ```
@@ -165,7 +165,7 @@ int main(){std::cout<<"GCC -S -masm=intel vs Clang -S -mllvm --x86-asm-syntax=in
 ## ⑪ STL 联系：std::sort 的汇编实例化 <span class="badge badge-std">标准</span>
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系：std::sort 的汇编实例
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑪ CE 中观察 STL 算法的模板实例化
 #include <iostream>
 #include <algorithm>
@@ -186,7 +186,7 @@ int main() {
 ## ⑫ 工业案例：CI/CD 中集成 CE API 实现回归检查 <span class="badge badge-exp">经验</span>
 
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：CI/CD 中集成 CE
-```cpp
+```cpp title="示例 12 · ★★★☆☆"
 // ⑫ 使用 Compiler Explorer API 自动化汇编回归测试
 #include <iostream>
 #include <string>
@@ -210,7 +210,7 @@ int main() {
 ## ⑬ 源码分析：GCC -S 输出结构解析 [实现·GCC15]
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：GCC -S 输出结构解析
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // ⑬ 理解 GCC 汇编输出的每个部分
 #include <iostream>
 int square(int x) { return x * x; }
@@ -237,7 +237,7 @@ int main() {
 ## ⑭ WG21 关联提案 <span class="badge badge-std">标准</span>
 
 > **示例 14** [难度 ★★★★☆] [主题：关联提案 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 14 · ★★★★☆"
 // ⑭ 影响汇编质量的 C++ 标准提案
 #include <iostream>
 #include <vector>
@@ -258,7 +258,7 @@ int main() {
 ## ⑮ 面试题精选：读汇编 5 问 <span class="badge badge-exp">经验</span>
 
 > **示例 15** [难度 ★★★☆☆] [主题：面试题精选：读汇编 5 问 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // ⑮ Compiler Explorer 相关面试问题
 #include <iostream>
 int main() {
@@ -279,7 +279,7 @@ int main() {
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 > **示例 16** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 16 · ★★★★☆"
 // ⑯ 使用 CE 时的 5 大陷阱
 #include <iostream>
 int main() {
@@ -303,7 +303,7 @@ int main() {
 ## ⑰ FAQ：CE 实战问题 <span class="badge badge-exp">经验</span>
 
 > **示例 17** [难度 ★★☆☆☆] [主题：实战问题 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑰ Compiler Explorer 高频使用问答
 #include <iostream>
 #include <algorithm>
@@ -329,7 +329,7 @@ int main() {
 ## ⑱ 最佳实践：CE 工作流黄金法则 <span class="badge badge-exp">经验</span>
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践：CE 工作流黄金法则 [经验]
-```cpp
+```cpp title="示例 18 · ★★★☆☆"
 // ⑱ Compiler Explorer 高效使用的 6 条规则
 #include <iostream>
 int main() {
@@ -353,7 +353,7 @@ int main() {
 ## ⑲ 性能分析：CE 编译延迟及其影响 [平台·x86-64]
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：CE 编译延迟及其影响 [平台·x86-64]
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // ⑲ CE 编译性能与本地编译的对比
 #include <iostream>
 #include <chrono>
@@ -394,7 +394,7 @@ int main() {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[strings]（实现细节）/ [container.requirements]；cppreference。
 
 > **示例 20** [难度 ★★☆☆☆] [主题：跨语言对比：汇编探索工具全景 <span class="badge badge-exp">经验</span>
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // ⑳ 各语言的编译器资源管理器等价工具
 #include <iostream>
 int main() {
@@ -420,7 +420,7 @@ int main() {
 ## 补充完整可编译示例
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 21 · ★★★☆☆"
 #include <iostream>
 template<typename T> T max(T a, T b) { return a > b ? a : b; }
 template int max<int>(int, int); // 显式实例化看汇编
@@ -428,14 +428,14 @@ int main() { std::cout << max(10, 20) << std::endl; return 0; }
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 #include <iostream>
 int tail_call_fact(int n, int acc = 1) { return n <= 1 ? acc : tail_call_fact(n - 1, acc * n); }
 int main() { std::cout << tail_call_fact(5) << std::endl; return 0; }
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int sum_vec(const std::vector<int>& v) { int s=0; for(int x:v)s+=x; return s; }
@@ -443,7 +443,7 @@ int main() { std::vector<int> v{1,2,3,4,5}; std::cout << sum_vec(v) << std::endl
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 #include <iostream>
 struct V { virtual int f() { return 42; } };
 struct D : V { int f() override { return 99; } };
@@ -451,21 +451,21 @@ int main() { V* p = new D; std::cout << p->f() << std::endl; delete p; return 0;
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 int div_const(int x) { return x / 10; }
 int main() { std::cout << div_const(100) << std::endl; return 0; }
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 #include <iostream>
 int shift_instead(int x) { return x * 8; }
 int main() { std::cout << shift_instead(15) << std::endl; return 0; }
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 #include <iostream>
 #include <cstdint>
 int popcount(uint64_t x) { int c=0; while(x){c+=x&1;x>>=1;} return c; }
@@ -473,7 +473,7 @@ int main() { std::cout << popcount(0b101011) << std::endl; return 0; }
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
 std::atomic<int> g;
@@ -481,7 +481,7 @@ int main() { g.store(42, std::memory_order_relaxed); std::cout<<g.load()<<std::e
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 #include <cmath>
 double fma_test(double a, double b, double c) { return std::fma(a, b, c); }
@@ -489,7 +489,7 @@ int main() { std::cout << fma_test(2.0, 3.0, 4.0) << std::endl; return 0; }
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 int switch_lookup(int x) {
     switch(x) { case 1:return 10;case 2:return 20;case 3:return 30;default:return 0; }
@@ -498,7 +498,7 @@ int main() { std::cout << switch_lookup(2) << std::endl; return 0; }
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 #include <string_view>
 bool is_prefix(std::string_view s, std::string_view prefix) { return s.starts_with(prefix); }
@@ -506,28 +506,28 @@ int main() { std::cout << is_prefix("hello","he")<<std::endl;return 0; }
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 auto lambda_capture() { int x=5; return [=]{return x;}; }
 int main() { std::cout << lambda_capture()() << std::endl; return 0; }
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 struct S { char a; int b; short c; };
 int main() { std::cout << "sizeof(S)="<<sizeof(S)<<" (padding visible on godbolt)\n"; return 0; }
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 int constprop() { const int x=42; return x*2; }
 int main() { std::cout << constprop() << std::endl; return 0; }
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
 std::string concat(const std::string& a,const std::string& b){return a+b;}
@@ -535,35 +535,35 @@ int main() { std::cout << concat("hi","world") << std::endl; return 0; }
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 int loop_unroll(int n) { int s=0; for(int i=0;i<8;++i)s+=n*i; return s; }
 int main() { std::cout << loop_unroll(10) << std::endl; return 0; }
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 int simd_hint() { int a[4]={1,2,3,4},s=0;for(int i=0;i<4;++i)s+=a[i];return s; }
 int main() { std::cout << simd_hint() << std::endl; return 0; }
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 #include <algorithm>
 int main() { int a[]={3,1,4,1,5}; std::sort(std::begin(a),std::end(a)); std::cout<<a[0]<<std::endl;return 0; }
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 int branchless_abs(int x) { int m=x>>31; return (x^m)-m; }
 int main() { std::cout << branchless_abs(-42) << std::endl; return 0; }
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 int null_check(const int* p) { return p ? *p : -1; }
 int main() { int x=100; std::cout << null_check(&x) << std::endl; return 0; }
@@ -616,7 +616,7 @@ ISO C++ 只定义抽象机语义，不规定汇编形态；但 `noexcept`、内�
 ## 附录 A: CE 工作流实战
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: CE 工作流实战
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 int main(){
     std::cout<<"CE Workflow: 1) paste code 2) select compiler 3) pick -O2 4) look for jmp/call/loop overhead\n";
@@ -628,7 +628,7 @@ int main(){
 ## 附录 B: 识别优化机会
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: 识别优化机会
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 int div_by_pow2(int x){return x/8;}    // CE shows: sar eax, 3
 int mul_by_const(int x){return x*10;}  // CE shows: lea eax,[rax+rax*4]; add eax,eax
@@ -638,7 +638,7 @@ int main(){std::cout<<div_by_pow2(64)<<" "<<mul_by_const(5)<<std::endl;return 0;
 ## 附录 C: 三编译器输出对比实战
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C: 三编译器输出对比实战
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 int squares(int n){int s=0;for(int i=0;i<n;++i)s+=i*i;return s;}
 int main(){std::cout<<squares(10)<<std::endl;return 0;}
@@ -648,7 +648,7 @@ int main(){std::cout<<squares(10)<<std::endl;return 0;}
 ## 附录 D: CE API 自动化
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: CE API 自动化
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 int main(){
     std::cout<<"CE API: POST to godbolt.org/api/compiler/compile for automated regression testing.\n";
@@ -660,7 +660,7 @@ int main(){
 ## 附录 E: 常见误读
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: 常见误读
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 int main(){
     std::cout<<"Myth: fewer asm lines = faster. Reality: vectorized code may be longer but 4x faster.\n";
@@ -776,7 +776,7 @@ main:
 `-O0` 逐语句翻译：`square` 本体生成 `imul`，`main` 里 `call square` 后再交给 `cout`；`-O2` 把 `square(5)` 视为编译期可求的常量，`5*5` 折叠成 `25`，函数被内联展开，于是 `main` 中既无 `imul` 也无 `call`，只有把 `25` 装入寄存器交给 `cout` 的指令。看汇编能确认"到底生成了什么"，不被基准噪声或链接细节误导。
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 int square(int x) { return x * x; }
 int main() { std::cout << square(5) << '\n'; }
@@ -796,7 +796,7 @@ int main() { std::cout << square(5) << '\n'; }
 向量化成功的标志是出现宽向量寄存器（`xmm`/`ymm`/`zmm`）与 packed 指令（`vaddps`、`vmulps`）。循环需连续、无分支、无指针别名；若出现一堆标量 `addss` 则说明未向量化。
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 #include <vector>
 #include <iostream>
 int main() {
@@ -821,7 +821,7 @@ int main() {
 `noexcept` 移动构造让 `std::vector` 重新分配时移动元素（否则退化为拷贝）。GCC 与 Clang 都应据此消除拷贝调用；跨编译器核对能确认该选择是标准语义驱动、而非某编译器的偶然优化。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 48 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -977,7 +977,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <cmath>

@@ -66,7 +66,7 @@
 ## ③ 核心结构与完整代码实现
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 1 · ★★★☆☆"
 // 策略 1：线程策略（类型策略，无状态）
 struct SingleThreaded { static void lock() {} static void unlock() {} };
 struct MultiThreaded  { static void lock() {} static void unlock() {} };
@@ -92,7 +92,7 @@ using W2 = Widget<int, MallocCreator, MultiThreaded>;
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // 策略作为"类型参数"（非模板）：日志策略
 struct NoLog { static void log(const char*) {} };
 struct StdLog { static void log(const char* m) { std::puts(m); } };
@@ -109,7 +109,7 @@ using LoudCounter   = Counter<int, StdLog>;
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 // 多策略组合：线程 + 创建 + 校验
 template <typename T, typename ThreadPolicy, typename CreatePolicy, typename CheckPolicy>
 class Resource {
@@ -125,7 +125,7 @@ public:
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 4 · ★★★☆☆"
 // 策略可含状态（非纯静态）：引用计数策略
 struct RefCount {
     int n = 0;
@@ -149,7 +149,7 @@ public:
 - **组合爆炸**：N 个策略各有 M 种选择 → 最多 M^N 种组合，每种一份实例化（代码体积代价，见 ⑲）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实例化机制
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // 实例化示例：W1 与 W2 是不同类型（即便 T 相同）
 static_assert(!std::is_same_v<W1, W2>);             // 不同策略组合 = 不同类型
 static_assert(std::is_same_v<W1::make, T*(void)>);  // make 是静态成员
@@ -164,7 +164,7 @@ static_assert(std::is_same_v<W1::make, T*(void)>);  // make 是静态成员
 - **vs 虚函数**：需要运行期动态切换行为用虚函数；行为在编译期已知且追求零开销用 Policy-Based。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 适用场景与选型
-```cpp
+```cpp title="示例 6 · ★★★★☆"
 // 选型对比：静态策略 vs 虚函数
 struct FastPolicy { static int run() { return 1; } };
 struct SlowPolicy { static int run() { return 2; } };
@@ -175,7 +175,7 @@ struct VFast : VPoly { int run() override { return 1; } };   // 运行期 vtable
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适用场景与选型
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // 选型：删除器策略（unique_ptr）
 #include <memory>
 auto fdel = [](FILE* f) { if (f) std::fclose(f); };
@@ -186,7 +186,7 @@ FilePtr fp(std::fopen("x.txt", "r"), fdel);   // 自定义删除策略
 ## ⑥ 完整可运行示例（最小）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 // 编译：g++ -std=c++23 -O2 policy_demo.cpp -o policy_demo
 #include <cstdlib>
 #include <iostream>
@@ -213,7 +213,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // 日志策略最小示例
 #include <iostream>
 struct NoLog  { static void log(const char*) {} };
@@ -228,7 +228,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // 删除器策略最小示例
 #include <memory>
 #include <cstdio>
@@ -247,14 +247,14 @@ int main() {
 - **分配器/删除器要求**：`Allocator` 须满足 `Cpp17Allocator`（`allocate`/`deallocate`/`value_type`），`Deleter` 须可调用 `d(ptr)`——这些是策略类的"概念契约"（衔接 ch67）。
 
 > **示例 11** [难度 ★★☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // 标准：模板模板参数语法（C++17 起可用 typename 替代 class）
 template <typename T, template <typename> typename CP>   // C++17 typename 等价 class
 struct Host { using R = decltype(CP<T>::create()); };
 ```
 
 > **示例 12** [难度 ★★☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // 标准：依赖名消歧（template 关键字）
 template <typename T, typename CP>
 void f() { auto p = CP::template create<T>(); (void)p; }
@@ -267,7 +267,7 @@ void f() { auto p = CP::template create<T>(); (void)p; }
 - **模板模板参数匹配**：C++17 起模板模板参数可用 `typename`；旧 MSVC 对"默认模板实参一致性"检查更严，跨编译器策略类建议显式默认实参一致。
 
 > **示例 13** [难度 ★★★☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // 各编译器对策略组合的实例化符号一致（Itanium ABI）
 // GCC/Clang: _ZN6WidgetIi10NewCreator14SingleThreadedE4makeEv
 // MSVC:      ?make@?$Widget@H$1?NewCreator@@... 装饰名不同，但同样每组合一份
@@ -281,7 +281,7 @@ void f() { auto p = CP::template create<T>(); (void)p; }
 - **EBO 影响**：若策略作基类（ch52），空策略受 EBO 优化占 0 字节；若作成员则至少 1 字节。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存 / 对象模型
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // 内存对比：策略宿主无 vptr
 struct VPoly { virtual ~VPoly() = default; };
 static_assert(sizeof(VPoly) == 8);  // [平台] x64 含 vptr
@@ -289,7 +289,7 @@ static_assert(sizeof(W1) == 1);     // 空宿主（策略皆空/静态）占 1 �
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
-```cpp
+```cpp title="示例 15 · ★★★★☆"
 // 有状态策略增加对象大小
 static_assert(sizeof(Handle<int>) > sizeof(int*));   // 含 RefCount 成员
 ```
@@ -355,7 +355,7 @@ _Z11use_virtualR5VBase:
 - **`std::regex`**：`Traits` 策略参数定制字符类别识别。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // 复用 STL 策略：自定义分配器的 vector
 #include <vector>
 #include <memory>
@@ -364,7 +364,7 @@ std::vector<int, std::allocator<int>> v1;     // 默认堆分配策略
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 中的该模式
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // 复用 STL 策略：unique_ptr 删除器
 #include <memory>
 auto arr_del = [](int* p) { delete[] p; };
@@ -379,7 +379,7 @@ std::unique_ptr<int[], decltype(arr_del)> buf(new int[10], arr_del);  // 数组�
 - **策略链（Chain of Policies）**：多个策略按固定顺序组合，前一策略的输出作后一输入（如 `Threading → Creation → Checking`）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // 变体：Policy-Based + CRTP 组合
 template <typename Derived, typename LogP>
 struct BaseCRTP {
@@ -389,7 +389,7 @@ struct MyImpl : BaseCRTP<MyImpl, NoLog> { void impl() { // ...
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
-```cpp
+```cpp title="示例 19 · ★★★☆☆"
 // 变体：用 concept 约束策略契约（C++20）
 template <typename P>
 concept CreatorPolicy = requires { P::template create<int>(); };
@@ -398,7 +398,7 @@ struct Widget2 { static T* make() { return CP::template create<T>(); } };
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // 变体：策略链
 template <typename A, typename B>
 struct Chain { static void go() { A::step(); B::step(); } };
@@ -412,14 +412,14 @@ struct Chain { static void go() { A::step(); B::step(); } };
 - **忘记 `template` 关键字**：在宿主内调 `Policy<T>::create()` 漏 `template`，模板内编译错误。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // 反模式：组合爆炸（4 策略各 3 选 = 81 种类型）
 // template <typename T, typename P1, typename P2, typename P3, typename P4> class X;
 // 实际多数组合无用 → 编译慢、体积大
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // 反模式：漏 template 关键字
 // template <typename T, typename CP>
 // void bad() { auto p = CP::create<T>(); }   // [标准] 错误：需 CP::template create<T>()
@@ -428,7 +428,7 @@ void good() { auto p = CP::template create<T>(); (void)p; }
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // 反模式：有状态策略误用 static
 struct BadState { static int counter; static void tick() { ++counter; } };  // 全局共享，非每对象
 ```
@@ -444,7 +444,7 @@ struct BadState { static int counter; static void tick() { ++counter; } };  // �
 - **序列化框架**：编码策略（二进制/JSON/XML）作为模板参数，公共 `serialize(T)` 入口按策略分派。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // 工业案例：文件句柄的删除器策略
 #include <memory>
 #include <cstdio>
@@ -454,7 +454,7 @@ FilePtr open_log(const char* p) { return FilePtr(std::fopen(p, "w")); }
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 25 · ★★★☆☆"
 // 工业案例：线程模型策略（单线程零锁）
 template <typename T, typename ThreadP>
 class SafeQueue {
@@ -469,7 +469,7 @@ public:
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 26 · ★★★☆☆"
 // 工业案例：Eigen 式存储策略
 template <typename T, int Rows, int Cols, int Options>
 class Mat {
@@ -487,7 +487,7 @@ using CM = Mat<float, 3, 3, 0x0>;                     // 列主序策略
 **剖析 1：`std::basic_string` 的双策略参数（Traits + Allocator）**（`bits/basic_string.h`）
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 27 · ★★★☆☆"
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
 // 行号：94（class basic_string 模板参数）
 template <typename _CharT,
@@ -500,7 +500,7 @@ class basic_string {                               // ...
 **剖析 2：`std::allocator` 作为默认策略**（`bits/allocator.h`）
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 28 · ★★★☆☆"
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/allocator.h
 // 行号：133（class allocator : public __allocator_base<_Tp>）
 template <typename _Tp>
@@ -515,7 +515,7 @@ class allocator : public __allocator_base<_Tp> {
 **剖析 3：`allocator_traits` 把任意策略归一化**（`bits/alloc_traits.h`）
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 29 · ★★★☆☆"
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/alloc_traits.h
 // 行号：249（struct allocator_traits）
 template <typename _Alloc>
@@ -535,14 +535,14 @@ struct allocator_traits {
 - **二进制兼容**：不同策略组合的宿主是不同类型，不能在同一 ABI 边界混用（如 `W1*` 不能指向 `W2` 对象）。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // 易错点：模板模板参数误传普通类
 // using Bad = Widget<int, NewCreatorInst, ST>;  // 若 NewCreatorInst 非类模板 → 编译错误
 // 应为类模板 NewCreator（template <typename> struct）
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // 易错点：template 关键字
 template <typename T, typename P>
 void use() {
@@ -559,7 +559,7 @@ void use() {
 - **Q：何时不用 Policy-Based？** A：行为需运行期动态切换、或组合维度很少且变化频繁时，虚函数/函数指针更合适；或策略组合爆炸得不偿失时。
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // FAQ 演示：策略组合是不同类型，不能混用
 W1 x;
 // W2* p = &x;   // 错误：W1 与 W2 是不同的、不相关的类型
@@ -574,7 +574,7 @@ W1 x;
 - 复杂策略链用 CRTP/概念约束，确保组合合法（⑫）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 33 · ★★★☆☆"
 // 最佳实践：策略契约用 concept 约束（C++20）
 template <typename P>
 concept ThreadPolicy = requires { P::lock(); P::unlock(); };
@@ -590,7 +590,7 @@ public:
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // 最佳实践：无状态策略 + 静态方法
 struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 ```
@@ -606,14 +606,14 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 - **对象大小**：无状态策略零占用（对比含 vptr 的虚基类少 8 字节，⑨）。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 35 · ★★★☆☆"
 // 性能对比：Policy-Based 内联消除 vs 虚函数间接调用
 // use_policy（⑩）：call malloc / call free 直接调用，无 [vtable]
 // use_virtual（⑩）：mov rax,[rcx]; mov rax,[rax]  vtable 查表后才 call
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // 体积代价：3 策略各 2 选 → 8 种实例化
 // 应只暴露实际使用的组合，未用组合用 extern template 抑制（C++11）
 ```
@@ -752,7 +752,7 @@ policy-based design 自 2001 年起影响了整个 C++ 库生态（见 ch71 正�
 <summary>参考答案</summary>
 
 > **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 37 · ★★★☆☆"
 #include <iostream>
 #include <cstddef>
 struct HeapPolicy {
@@ -784,7 +784,7 @@ int main() {
 <summary>参考答案</summary>
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 38 · ★★★☆☆"
 #include <iostream>
 #include <cstddef>
 #include <stdexcept>
@@ -826,7 +826,7 @@ int main() {
 可以：把排序策略作为编译期类型参数，调用点直接内联策略的 `sort`，无运行期间接。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 39 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -856,7 +856,7 @@ int main() {
 策略化设计（Policy-Based Design）把"可替换的行为"抽象成模板参数（策略类）。组合多个策略即组合多个能力，编译期确定、可完全内联——这正是 `std::vector` 的分配器、`std::map` 的比较器思路。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 struct HeapStorage  { int* get() { return new int(0); } };
 struct StackStorage { int v = 0; int* get() { return &v; } };
@@ -882,7 +882,7 @@ int main() { Container<StackStorage> c; c.show(); }
 策略可任意组合：把"线程模型"也做成策略，对象即可在"单线程（零锁）"与"多线程（加锁）"之间编译期切换。组合多个策略的本质是"多重基类混入"，每个维度独立、可正交替换。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 #include <iostream>
 struct SingleThreaded { void lock() { std::cout << "no-lock\n"; } };
 struct MultiThreaded  { void lock() { std::cout << "lock\n"; } };
@@ -915,7 +915,7 @@ struct Ascending : ISortStrategy { void sort(std::vector<int>& v) override { std
 **修复**：策略作为模板参数（见练习 3），编译期内联。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：编译期策略替代运行期虚函数
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -939,7 +939,7 @@ class VecHeap; class VecStack; class VecHeapChecked; class VecStackChecked; ... 
 **修复**：每个维度一个模板模板参数，正交组合（见练习 2），编译器按需生成单一特化。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：正交策略避免组合爆炸
-```cpp
+```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 #include <cstddef>
 template <class T> struct Heap { T* p = new T[1]; ~Heap() { delete[] p; } };
@@ -1163,7 +1163,7 @@ int main() { Vec<int, Heap, NoCheck> v; std::cout << "ok\n"; }
 ### D4.7 编译验证
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译验证
-```cpp
+```cpp title="示例 42 · ★★★☆☆"
 #include <unordered_map>
 #include <memory>
 #include <iostream>
@@ -1346,7 +1346,7 @@ flowchart TD
 ### D5.3 可复现演示
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
-```cpp
+```cpp title="示例 43 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>

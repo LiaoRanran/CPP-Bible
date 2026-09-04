@@ -53,7 +53,7 @@
 带着这两笔账往下读，每一节都会回到它们：⑤ 迁移指南直接给你一条可照走的升级路径，⑯ 易错点提醒你现在最容易踩的版本混用坑，⑳ 练习题/思考题让你用手头的项目试一遍；附录 J 把"先迁哪一步"的决策流画成图，你按图对照自己项目即可。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 我们正在回答的问题
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 void show_ver(){ std::cout << __cplusplus; }
@@ -67,7 +67,7 @@ int main() {
 ## ② 前置知识
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // [merged] ## ② 前置知识
 #include <iostream>
 int main() {
@@ -83,7 +83,7 @@ int main() {
 ## ③ 后续依赖
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // [merged] ## ③ 后续依赖
 #include <iostream>
 int main() {
@@ -99,7 +99,7 @@ int main() {
 ## ④ 对照总表
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对照总表
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // [merged] ## ④ 对照总表
 #include <iostream>
 int main() {
@@ -124,7 +124,7 @@ int main() {
 ## ⑤ 迁移指南
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 迁移指南
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // [merged] ## ⑤ 迁移指南
 #include <iostream>
 int main() {
@@ -165,7 +165,7 @@ int main() {
 ## ⑥ 编译器支持矩阵（要点，详见 ch11）
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器支持矩阵
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // [merged] ## ⑥ 编译器支持矩阵（要点，详见 ch11）
 #include <iostream>
 int main() {
@@ -184,7 +184,7 @@ int main() {
 ## ⑦ 版本演进 Mermaid
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本演进 Mermaid
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // [merged] ## ⑦ 版本演进 Mermaid
 #include <iostream>
 int main() {
@@ -198,7 +198,7 @@ int main() {
 ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // [merged] ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
 #include <iostream>
 #include <version>
@@ -213,7 +213,7 @@ int main() {
 ## ⑨ 调用栈 / ABI（见 ch11、ch47）
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / ABI
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // [merged] ## ⑨ 调用栈 / ABI（见 ch11、ch47）
 #include <iostream>
 int main() {
@@ -238,7 +238,7 @@ flowchart LR
 ## ⑩ 自检（每版一条）
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自检（每版一条）
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // 平台宏 _WIN32 / __linux__（编译器预定义，零头文件依赖）
 #include <cstdio>
 int main() {
@@ -252,7 +252,7 @@ int main() {
 }
 ```
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自检（每版一条）
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // 检测 64 位平台（编译期断言，不满足即编译失败）
 static_assert(sizeof(void*)==8, "64-bit");
 #include <cstdio>
@@ -265,7 +265,7 @@ int main() {
 ## ⑪ STL 联系（各版标准库演进）
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系（各版标准库演进）
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // [merged] ## ⑪ STL 联系（各版标准库演进）
 #include <iostream>
 int main() {
@@ -278,7 +278,7 @@ C++11 起 STL 大幅扩展（智能指针、区间、并发）；C++17/20 加入
 ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // [merged] ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
 #include <iostream>
 #include <ranges>
@@ -292,7 +292,7 @@ GCC/Clang/MSVC 与 libc++/libstdc++/MS STL 对新课标的支持普遍滞后 1�
 ## ⑬ 源码分析（标准文本即规范源码）
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（标准文本即规范源码）
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // [merged] ## ⑬ 源码分析（标准文本即规范源码）
 #include <iostream>
 int main() {
@@ -308,7 +308,7 @@ C++ 标准文本（ISO/IEC 14882）与 WG21 提案、编译器前端实现共同
 ## ⑭ WG21 提案背景 <span class="badge badge-std">标准</span>
 
 > **示例 15** [难度 ★☆☆☆☆] [主题：提案背景 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // [merged] ## ⑭ WG21 提案背景 [标准]
 #include <iostream>
 int main() {
@@ -331,7 +331,7 @@ int main() {
 ## ⑮ 面试题
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // [merged] ## ⑮ 面试题
 #include <iostream>
 #include <string_view>
@@ -343,7 +343,7 @@ int main() {
 ## ⑯ 易错点（版本混用陷阱）
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点（版本混用陷阱）
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // [merged] ## ⑯ 易错点（版本混用陷阱）
 #include <iostream>
 #include <string>
@@ -356,7 +356,7 @@ int main() {}
 ## ⑰ FAQ（迁移必读）
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // [merged] ## ⑰ FAQ（迁移必读）
 #include <iostream>
 int main() {
@@ -370,7 +370,7 @@ int main() {
 ## ⑱ 最佳实践（版本治理）
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践（版本治理）
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // 特性宏 __cpp_explicit_this_parameter（C++23 deducing this，GCC 15.3 实测 202110）
 // 注意：标准宏名是 __cpp_explicit_this_parameter，非直觉的 __cpp_deducing_this（后者不存在）
 #include <cstdio>
@@ -388,7 +388,7 @@ int main() {
 ## ⑲ 性能（标准版本 ≠ 性能）
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（标准版本 ≠ 性能）
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // 特性宏 __cpp_multidimensional_subscript（C++23 多维 operator[]）
 #include <cstdio>
 int main() {
@@ -421,7 +421,7 @@ int main() {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性宏未定义即视为不支持）；cppreference "Feature test macros" 词条。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // 编译期 if 检测平台（#ifdef 分支在预处理期裁剪，无运行时开销）
 #include <cstdio>
 int main() {
@@ -483,25 +483,25 @@ int main() {
 ## 附录: 版本特性速查
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: 版本特性速查
-```cpp
+```cpp title="示例 22 · ★★★☆☆"
 #include <iostream>
 int main(){std::cout<<"C++11: move,auto,lambda,smart_ptr,constexpr,noexcept,thread\n";return 0;}
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 版本特性速查
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++17: structured_binding,if_constexpr,optional,variant,string_view,filesystem\n";return 0;}
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 版本特性速查
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++20: concepts,coroutines,ranges,modules,span,<=>\n";return 0;}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 版本特性速查
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++23: expected,print,flat_map,views::zip,deducing_this\n";return 0;}
 ```
@@ -512,13 +512,13 @@ int main(){std::cout<<"C++23: expected,print,flat_map,views::zip,deducing_this\n
 ## 附录 B: 版本选择决策树
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: 版本选择决策树
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"New project? Start C++17 minimum. Can target C++20? Use concepts/coroutines. Embedded? C++11+ with RTOS."<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 版本选择决策树
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 #include <iostream>
 int main(){
     std::cout<<"Decision matrix:"<<std::endl;
@@ -530,13 +530,13 @@ int main(){
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 版本选择决策树
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Feature macro names: __cpp_lib_*, __cpp_*. Check with #if. Portable detection without version guessing."<<std::endl;return 0;}
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 版本选择决策树
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"GCC 13 C++23 support: ~90%. MSVC 17.8: ~95%. Clang 17: ~85%. Check cppreference for details."<<std::endl;return 0;}
 ```
@@ -558,7 +558,7 @@ LTS/企业: C++17 (GCC8/Clang6/MSVC2019, RHEL8)
 安全关键: C++14 (DO-178C certified compilers)
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：版本选择工业与面试
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++11->14=minor, 14->17=productivity, 17->20=paradigm"<<std::endl;return 0;}
 ```
@@ -582,7 +582,7 @@ int main(){std::cout<<"C++11->14=minor, 14->17=productivity, 17->20=paradigm"<<s
 | C++17→20 | concepts,ranges,coroutines | 中(SFINAE→concepts重写) | 新项目推荐 |
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 G：版本升级设计权衡 [H: Design]
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Upgrade decisively: C++17 is the new minimum for new C++ projects."<<std::endl;return 0;}
 ```
@@ -615,7 +615,7 @@ WG21 train model每3年1版:
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编验证
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 #include <optional>
 std::optional<int> make(){return 42;}
@@ -670,7 +670,7 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 用 SD-6 特性测试宏在预处理期分档，编译器只编译命中的那一档：
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 #include <expected>
 #include <optional>
 #include <string>
@@ -735,7 +735,7 @@ int main() {
 `std::result_of` → `std::invoke_result`（C++17 引入，语义更清晰、支持成员指针/可调用对象统一）；`std::bind1st` → lambda 或 `std::bind_front`（C++20）：
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 #include <utility>
 #include <functional>
 
@@ -765,7 +765,7 @@ int main() {
 `__cplusplus` 是标准年份的"粗粒度"信号（201703L / 202002L / 202302L）；以此分派可以把"仅新版支持"的写法隔离起来。但要精确探测某个库特性，仍应以 `__cpp_*` 特性宏为准（见 ch02 练习）。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 35 · ★★★☆☆"
 #include <iostream>
 #include <version>
 
@@ -795,7 +795,7 @@ int main() {
 特性测试宏是"能力"而非"年份"：即便编译器声称支持 C++20，某个具体库特性仍可能尚未实现或默认关闭。用 `#ifdef __cpp_lib_*` 才能在代码里精确门控。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 36 · ★★★☆☆"
 #include <iostream>
 #include <version>
 // 仅当本编译器真正暴露该库特性时才走新路径；否则回退，避免编译失败

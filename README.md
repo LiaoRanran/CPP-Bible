@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml)
 
-> **147 章 · 16 part · 约 23.9 万行 · 7527 个 cpp 代码块**（数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
+> **147 章 · 16 part · 约 23.9 万行 · 7534 个 cpp 代码块**（数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
 > 密度审计 v3 均分 **25.7/30**，浅章（<15 分）**0** 个
 
 一本面向**系统 / 嵌入式 / 高性能**方向的现代 C++ 硬核教程，覆盖 C++11 至 C++26。

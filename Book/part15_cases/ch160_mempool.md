@@ -58,7 +58,7 @@ C++ 的分配器模型长期在"零开销但僵化"（C++98 要求分配器无�
 当你在 hot path 上以极高频率分配/释放同一种小尺寸对象（如网络包、游戏实体、节点对象）时，通用分配器的固定开销会被放大。**<span class="badge badge-exp">经验</span>** 此时"自己管一块内存、只切固定大小的块"往往比反复打扰系统分配器快一个数量级。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：为什么需要内存池
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // 痛点演示：2,000,000 次 64 字节 malloc/free 的真实耗时（本机实测见 ⑩）
 #include <cstdlib>
 int main() {
@@ -79,7 +79,7 @@ C++ 的"内存获取"与"对象构造"是分离的：`::operator new` 只负责�
 可以为类提供**专属 operator new/delete**（见 `Examples/_ch160_interface.cpp`），从而把该类的所有实例引向自定义池：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存分配器接口
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // 文件：Examples/_ch160_interface.cpp  （本机 g++ -O2 实测通过）
 #include <cstddef>
 #include <cstdio>
@@ -113,7 +113,7 @@ int main() {
 `nothrow` 形式（不抛异常，失败返回 `nullptr`）在嵌入式/低延迟场景常用：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存分配器接口
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 #include <new>
 void* p = ::operator new(64, std::nothrow);  // [标准] [new.delete.single] 若失败返回 nullptr
 if (!p) {                                    // 处理内存不足，不抛异常
@@ -141,7 +141,7 @@ flowchart LR
 `Examples/_ch160_fixedpool.cpp` 是一个自包含、可编译、可运行的实现（节选核心）：
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 固定大小块池
-```cpp
+```cpp title="示例 4 · ★★★☆☆"
 #include <cstddef>
 #include <vector>
 // 文件：Examples/_ch160_fixedpool.cpp  （本机 g++ -O2 实测通过）
@@ -187,7 +187,7 @@ public:
 经典技巧是用 `union` 让"空闲节点的 next 指针"与"用户数据"**复用同一段内存**——块空闲时前几个字节是 `next`，块被使用时那几个字节就是用户数据。这样 pool 本身**零额外元数据开销**（每个子块不需要额外的"是否空闲/大小"位）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现（union 技巧省内存）
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // 文件：Examples/_ch160_union.cpp  （本机 g++ -O2 实测通过）
 union FreeNode {
     FreeNode* next;    // 块空闲时：指向下一个空闲块
@@ -202,7 +202,7 @@ struct FreeList {
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现（union 技巧省内存）
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 #include <cstdio>
 // 用法：把 4 个 64 字节子块串起来再依次弹出（节选自 _ch160_union.cpp）
 int main() {
@@ -223,7 +223,7 @@ int main() {
 `::operator new` 返回的存储天然对齐到 `max_align_t`（本机 16 字节，见实测）。但某些场景需要**更严格的对齐**：SIMD 类型（`__m256` 需 32）、缓存行（64）以避免 false sharing（见 ⑱），或 GPU/DMA 缓冲区（4 KiB 页）。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 对齐分配
-```cpp
+```cpp title="示例 7 · ★★★☆☆"
 // 文件：Examples/_ch160_align.cpp  （本机 g++ -O2 实测通过）
 #include <cstddef>
 #include <cstdio>
@@ -267,7 +267,7 @@ std::align -> 00007ff6a9e9c040 (aligned64=yes)
 对齐提升（round up）是池的标配，保证块起点落在对齐边界：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 对齐分配
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 #include <cstddef>
 // 把 v 向上取整到 a 的倍数（a 为 2 的幂），等价于汇编的 `and` 掩码
 constexpr std::size_t round_up(std::size_t v, std::size_t a) {
@@ -280,7 +280,7 @@ constexpr std::size_t round_up(std::size_t v, std::size_t a) {
 固定块池只服务一种尺寸。真实负载往往混合多种小尺寸，于是引入 **size class（尺寸分级）**：把请求按大小映射到若干"档位"（如 32/64/128/256），每档一个独立固定块池；超大请求直接回退系统分配。这平衡了**内部碎片**（档位越密，浪费越少）与**池数量**（档位越多，管理成本越高）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 多级池（size class）
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 #include <cstddef>
 #include <vector>
 #include <array>
@@ -337,7 +337,7 @@ public:
 单链表 free list 在多线程下需要同步。**方案 A：互斥锁**（`std::mutex`）——简单、正确，但高并发下有锁竞争。**[实现·GCC15]** 锁保护下 `allocate`/`deallocate` 都是几条指针操作，临界区极短。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程安全池（mutex/无锁）
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 #include <cstddef>
 #include <mutex>
 #include <vector>
@@ -366,7 +366,7 @@ public:
 **方案 B：无锁（Treiber 栈，`std::atomic` + CAS）**——用 `compare_exchange_weak` 实现无互斥的 push/pop。free list 本质是一个栈，CAS 把"读取头 + 改写头"做成原子：
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程安全池（mutex/无锁）
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // 文件：Examples/_ch160_lockfree.cpp  （本机 g++ -O2 实测：4 线程 × 20 万次 OK）
 class LockFreePool {
     struct FreeNode { std::atomic<FreeNode*> next; };
@@ -397,7 +397,7 @@ public:
 无锁 push 的最小 CAS 骨架（与 `_ch160_lockfree.cpp` 同源，可独立编译验证）：
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程安全池（mutex/无锁）
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 #include <atomic>
 struct Node { std::atomic<Node*> next; };
 std::atomic<Node*> head_{nullptr};
@@ -414,7 +414,7 @@ void push(Node* n) {
 STL 容器通过 `Allocator` 抽象获取内存。只要实现 `allocate`/`deallocate`/`value_type`/`rebind` 等成员（或直接用 `std::allocator_traits` 的默认值），就能把 `std::vector`/`std::unordered_map` 等接到你的池上。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 std::allocator 对
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 #include <cstddef>
 // 文件：Examples/_ch160_allocator.cpp  （本机 g++ -O2 实测通过）
 template <class T>
@@ -440,7 +440,7 @@ struct PoolAllocator {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 std::allocator 对
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 #include <cstdio>
 #include <vector>
 // 用法（节选自 _ch160_allocator.cpp，实测 vector size=100000）
@@ -460,7 +460,7 @@ int main() {
 把整个程序的 `::operator new`/`::operator delete` 换成自己的版本，看似"一键池化"，实则**高危**：
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 定制 new/delete 全局替换
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 #include <cstddef>
 // 文件：Examples/_ch160_global_new.cpp  （本机 g++ -O2 实测通过，仅作演示）
 void* operator new(std::size_t n) {
@@ -485,7 +485,7 @@ void operator delete(void* p, std::size_t) noexcept { if (p) std::free(p); }
 用 `std::chrono::high_resolution_clock` 对同一负载分别跑"固定块池"与"`std::malloc`"，取多次最优。以下是 `Examples/_ch160_benchmark.cpp` 在**本机 g++ 13.1.0 -O2** 的真实运行结果（N=2,000,000，块 64 字节）：
 
 > **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能测量
-```cpp
+```cpp title="示例 16 · ★★★☆☆"
 // 文件：Examples/_ch160_benchmark.cpp  （本机 g++ -O2 实测通过）
 #include <chrono>
 #include <cstddef>
@@ -546,7 +546,7 @@ _Z12hot_allocateR4Pool:
 外部碎片：长期运行的程序反复分配不同大小、随机释放后，空闲内存被切成许多"用不上"的小洞。下面的实验（`Examples/_ch160_frag.cpp`）交替分配 16..192 字节并随机释放约一半，模拟负载：
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存碎片实证
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // 文件：Examples/_ch160_frag.cpp  （本机 g++ -O2 实测通过）
 #include <random>
 #include <cstdio>
@@ -598,7 +598,7 @@ request=100   _msize(usable)=100   overhead=0 bytes
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 jemalloc/tcmallo
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // 上游参考：tcmalloc 的接口样子（非本机编译，仅示意其 API 形态）
 // #include <gperftools/tcmalloc.h>
 // void* p = tc_malloc(64);   // 自动接管，无需改业务代码
@@ -612,7 +612,7 @@ request=100   _msize(usable)=100   overhead=0 bytes
 下面是本章的"集大成"实现 `Examples/_ch160_full.cpp`，包含对齐、统计、异常安全析构，且**自包含、可编译、可运行**。它一次性分配 100 万块、全部释放、再复用 100 万次：
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实完整实现
-```cpp
+```cpp title="示例 19 · ★★★☆☆"
 // 文件：Examples/_ch160_full.cpp  （本机 g++ -O2 实测通过，完整可运行）
 #include <cstddef>
 #include <cstdio>
@@ -666,7 +666,7 @@ public:
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实完整实现
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 #include <cstdio>
 #include <vector>
 // 主程序：2,000,000 次分配+释放+复用（节选自 _ch160_full.cpp，本机真实输出见下）
@@ -700,7 +700,7 @@ MemoryPool full run OK
 最小可运行定长池（15 行，与 `_ch160_full.cpp` 同构，便于记忆）：
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实完整实现
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 struct Node { Node* next; };
 struct MiniPool {
     Node* h = nullptr;
@@ -712,7 +712,7 @@ struct MiniPool {
 **libstdc++ 源码对照**：我们的 `::operator new` 正是替换了 libstdc++ 的全局 `operator new`。其声明位于本机 libstdc++ 头文件（真实路径，行号取自本机读取）：
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实完整实现
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 #include <cstddef>
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new
 // 行号：126
@@ -728,7 +728,7 @@ _GLIBCXX_NODISCARD void* operator new(std::size_t, const std::nothrow_t&) _GLIBC
 在分配器里维护"未释放指针集合"即可检测泄漏（生产可用 `AddressSanitizer`/Valgrind，这里给一个**自包含可运行**的简化版）：
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试（内存泄漏检测）
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // 文件：Examples/_ch160_debug.cpp  （本机 g++ -O2 实测通过）
 #include <unordered_set>
 #include <mutex>
@@ -763,7 +763,7 @@ int main() {
 更稳健的做法是 RAII 守卫，让任何提前返回/异常都不会漏释放：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试（内存泄漏检测）
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 template <class T>
 struct PoolPtr {
     MemoryPool* pool_; T* p_;
@@ -781,7 +781,7 @@ struct PoolPtr {
 Windows 上可直接用 `VirtualAlloc` 申请按页对齐的大块（本机 MinGW 可编译）：
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异（虚拟内存）[平台·Windows]
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // 文件：Examples/_ch160_valloc.cpp 思路（Windows VirtualAlloc，MinGW 可编译）
 #include <windows.h>
 #include <cstdio>
@@ -797,7 +797,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台差异（虚拟内存）[平台·Windows]
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // Linux/Unix 对应（示意，非本机编译）：用 mmap 拿匿名页
 // void* mem = mmap(nullptr, sz, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 // ... munmap(mem, sz);
@@ -812,7 +812,7 @@ int main() {
 **反模式 2：双重释放。** 对同一指针 `free` 两次，会破坏 free list/堆结构，是经典安全漏洞来源。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（越界/双重释放）
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // 文件：Examples/_ch160_antipattern.cpp  （本机 g++ -O2 实测通过）
 #include <unordered_set>
 #include <mutex>
@@ -844,7 +844,7 @@ int main() {
 **错误示例（切勿编译运行，仅注释展示）：**
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（越界/双重释放）
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // ❌ 越界 + 双重释放（未定义行为，禁止实际运行）
 // int* p = (int*)malloc(sizeof(int) * 10);
 // p[10] = 0;          // 越界写，破坏堆元数据
@@ -854,7 +854,7 @@ int main() {
 **正确示例：**
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（越界/双重释放）
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ✅ 释放后立即置空、且每个指针只释放一次；必要时用守卫（见上）
 void* p = std::malloc(64);
 // ... 使用 p ...
@@ -867,7 +867,7 @@ p = nullptr;            // 释放后置空，杜绝悬挂/重复释放
 把池接到 `std::unordered_map` 等节点容器时（②/⑧），需要注意 **rebind 后分配的是内部节点而非 `value_type`**。`Examples/_ch160_stl.cpp` 用一个 `PAlloc` 把 `unordered_map` 接到池，并对"超出块大小或数组请求"回退 `::operator new` 以保证正确：
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 STL 容器结合
-```cpp
+```cpp title="示例 30 · ★★★☆☆"
 #include <cstddef>
 // 文件：Examples/_ch160_stl.cpp  （本机 g++ -O2 实测：pool-backed unordered_map size=10000）
 template <class T>
@@ -896,7 +896,7 @@ struct PAlloc {
 当不同线程频繁写**同一缓存行**上的不同变量时，CPU 缓存一致性协议会让该缓存行在核间反复失效，性能急剧下降——这就是 **false sharing（伪共享）**。第143章已系统讨论缓存行对齐，这里给出本池相关的实测：
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存行对齐
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // 文件：Examples/_ch160_cacheline.cpp  （本机 g++ -O2 实测通过）
 struct Packed { std::atomic<int> a{0}; std::atomic<int> b{0}; };  // a,b 共享一行
 struct Padded { alignas(64) std::atomic<int> a{0}; alignas(64) std::atomic<int> b{0}; };
@@ -923,7 +923,7 @@ Padded    : 159.7 ms  (a=50000000 b=50000000)
 | 回收 | 逐对象释放 | 整池一次性释放，无逐对象开销 |
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例（游戏/网络服务器）
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // 真实案例节选：游戏实体定长池（自包含思路，等价 _ch160_fixedpool 的使用）
 class EntityPool {
     FixedPool pool_{sizeof(Entity)};   // Entity 为定长 POD/组件集合
@@ -942,7 +942,7 @@ public:
 | 内存占用 | 长期运行外碎片累积 | 长连接场景平稳、无外部碎片累积 |
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例（游戏/网络服务器）
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 #include <cstddef>
 // 真实案例节选：网络包 size-class 缓冲池
 class PacketPool {
@@ -993,13 +993,13 @@ public:
 ## 补充分编可编译示例
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch160_mempool."<<std::endl;return 0;}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch160_mempool."<<std::endl;return 0;}
@@ -1025,7 +1025,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 f
 | 性能测试 | ch151(benchmark), ch157(compiler_explorer) | malloc vs pool 延迟对比 | malloc≈50ns、pool≈5ns 仅为量级示意 [UNVERIFIED]（方向约 10× 更快） |
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 项目学习地图：内存池 → 全书知识映
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 #include <iostream>
 int main() {
     std::cout << "Memory pool = ch37(new) + ch38(allocator) + ch122(pmr)" << std::endl;
@@ -1136,7 +1136,7 @@ C++17 的 `std::pmr::memory_resource` / `std::pmr::polymorphic_allocator` 让"�
 空闲时用 `union` 把首字节当 `next` 指针，使用时不冲突，从而不额外浪费每对象头。分配只摘链表头，回收只头插——O(1)。
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <cstddef>
 #include <iostream>
 struct FreeNode { FreeNode* next; };
@@ -1163,7 +1163,7 @@ int main() { Pool pool; // grow() 时把大块串成 FreeNode 链挂到 head
 把共享写热点各自对齐到独立缓存行，避免一行在核间反复失效。下面是把池头指针隔离到独立行的示意。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 #include <new>
 #include <atomic>
 #include <iostream>
@@ -1188,7 +1188,7 @@ int main() { PaddedHead h; std::cout << "head aligned\n"; }
 `monotonic_buffer_resource` 在预分配的缓冲上线性推进指针分配，几乎零开销、无碎片；代价是单个对象不能单独 `deallocate`，只能等整个 resource 析构时一次性归还。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 #include <memory_resource>
 #include <vector>
 #include <iostream>
@@ -1374,7 +1374,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 #include <iomanip>
 #include <cstdint>

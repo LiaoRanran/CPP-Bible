@@ -59,7 +59,7 @@
 - **optional** ⟶ `Book/part07_stl/ch88_optional_variant.md`：`find` 返回 `end()` 表示"未找到"，相当于用迭代器表达 `optional` 的"无"。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 1 · ★★★☆☆"
 // ②-1 前置：map 的 value_type 是 pair<const Key, T>（独立可编译）
 #include <map>
 #include <iostream>
@@ -81,7 +81,7 @@ int main() {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // ②-2 前置：map 是双向迭代器（不能 +n 随机访问）（独立可编译）
 #include <map>
 #include <iostream>
@@ -105,7 +105,7 @@ int main() {
 - **ranges** ⟶ `Book/part07_stl/ch90_ranges.md`：可用 `std::views::keys` / `std::views::values` 投影 `map` 的键或值（C++20）。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ③-1 后续：用 ranges 投影 map 的键/值（C++20，独立可编译）
 #include <map>
 #include <iostream>
@@ -123,7 +123,7 @@ int main() {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // ③-2 后续：map 与 set 同源（set 只存 key，复用 Rb_tree）（独立可编译）
 #include <set>
 #include <map>
@@ -233,7 +233,7 @@ flowchart TD
 - `[标准]`：红黑树保证从根到任意叶子的**黑高相同**，从而最坏路径不超过 2·log₂(N+1)，所有操作稳定 `O(log N)`。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：红黑树节点与哨兵头
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // ⑦-1 验证 map 节点代价：每个元素一次堆分配（独立可编译，演示元素数->节点数）
 #include <map>
 #include <iostream>
@@ -248,7 +248,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图：红黑树节点与哨兵头
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // ⑦-2 中序遍历 = 按键升序（红黑树性质，独立可编译）
 #include <map>
 #include <iostream>
@@ -285,7 +285,7 @@ flowchart TD
 - `[经验]`：这一性质让 `map` 非常适合"长期持有元素引用、偶尔增删"的场景（如配置注册表、对象表）。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：节点稳定性
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ⑧-1 节点稳定：插入其他元素后旧引用仍有效（独立可编译）
 #include <map>
 #include <iostream>
@@ -300,7 +300,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：节点稳定性
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑧-2 迭代器失效：仅被删节点的迭代器失效（独立可编译）
 #include <map>
 #include <iostream>
@@ -343,7 +343,7 @@ flowchart TD
 - `[实现·GCC15]`：`operator[]` 内部调用 `lower_bound`（见 `文件：bits/stl_map.h`, `行号：502-507`）。
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：operator
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ⑨-1 operator[] 会"顺手插入"缺失的键（独立可编译）
 #include <map>
 #include <iostream>
@@ -358,7 +358,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：operator
-```cpp
+```cpp title="示例 14 · ★★★☆☆"
 // ⑨-2 只读查找用 find / at，避免意外插入（独立可编译）
 #include <map>
 #include <iostream>
@@ -409,7 +409,7 @@ _Z6lookupRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi:
 - `[标准]`：`find` 复杂度 `O(log N)`，对应循环最多执行树高（≤ 2·log₂(N+1)）次指针追逐。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编分析：map::find 的树下
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ⑩-1 被测查找的源码（与上方 asm 对应，独立可编译）
 #include <map>
 #include <iostream>
@@ -442,7 +442,7 @@ int main() {
 - `[实现·GCC15]`：四者（map/multimap/set/multiset）共用同一份 `bits/stl_tree.h` 的 `_Rb_tree` 实现，仅通过 `_Select1st` / 特化区分"存 pair 还是存 key"。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：map 与家族成员
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // ⑪-1 map 与 multimap 的差异：multimap 无 operator[]（独立可编译）
 #include <map>                                                  // std::map 与 std::multimap 同在 <map>，无独立 <multimap> 头
 #include <iostream>
@@ -460,7 +460,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：map 与家族成员
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // ⑪-2 multimap 的 equal_range 取某个 key 的全部值（独立可编译）
 #include <map>
 #include <iostream>
@@ -485,7 +485,7 @@ int main() {
 数据库的聚簇索引本质是"有序映射"。内存中可用 `std::map<RowId, Row>` 表达，支持 `lower_bound` 做"主键 ≥ X 的范围扫描"，且节点稳定（扫描途中可安全增删其他行）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：有序索引、配置注册表、路由
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // ⑫-1 数据库范围扫描：lower_bound + 迭代到上界（独立可编译，模拟逻辑）
 #include <map>
 #include <iostream>
@@ -512,7 +512,7 @@ int main() {
 配置项以 `std::map<std::string, ConfigValue>` 持有；后台线程可 `insert_or_assign` 热更新某项，前台读取线程持有的引用不失效。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：有序索引、配置注册表、路由
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // ⑫-2 配置注册表热更新：insert_or_assign 避免整体重建（独立可编译，模拟逻辑）
 #include <map>
 #include <string>
@@ -537,7 +537,7 @@ int main() {
 路由查找常以目的 IP 为 key 做精确匹配；`map` 的节点稳定性适合频繁增删路由项而不惊动既有迭代器。
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：有序索引、配置注册表、路由
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // ⑫-3 路由表：按 32 位前缀精确查找（独立可编译，模拟逻辑）
 #include <map>
 #include <iostream>
@@ -563,7 +563,7 @@ int main() {
 ### 13.1 节点基与颜色
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 节点基与颜色
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // ⑬-1a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：99-109）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
 // enum _Rb_tree_color { _S_red = false, _S_black = true };   // 行号 99
@@ -579,7 +579,7 @@ int main() { return 0; }
 ### 13.2 map 的 operator[] 与 try_emplace
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的 operator[] 与 try
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 #include <utility>
 // ⑬-2a libstdc++ 源码摘录（文件：bits/stl_map.h，行号：502-507 / 721-723 / 966-968）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -605,7 +605,7 @@ int main() { return 0; }
 ### 13.3 红黑树的查找核心 `_M_lower_bound`
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 红黑树的查找核心 Mlowerbou
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // ⑬-3a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：910 / 1948 / 1980）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
 //// 声明（行号 910）
@@ -624,7 +624,7 @@ int main() { return 0; }
 ### 13.4 节点提取与合并（C++17）
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 节点提取与合并（C++17）
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // ⑬-4a libstdc++ 源码摘录（文件：bits/stl_tree.h，行号：1532-1548 / 1562 / 1584）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
 //// extract（行号 1532）：把节点从树中摘下，但不释放内存
@@ -653,7 +653,7 @@ int main() { return 0; }
 - `[经验]`：任何"可能查不到、查到后未必写"的场景，优先 `try_emplace` 而非 `operator[]` + 赋值，省一次默认构造。
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案背景
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ⑭-1 try_emplace 避免"key 已存在时浪费构造 mapped_type"（独立可编译）
 #include <map>
 #include <string>
@@ -677,7 +677,7 @@ int main() {
 默认 `std::less<Key>` 只接受 `Key` 类型的实参，因此 `m.find("key")` 会**临时构造一个 `std::string` key** 再比较。透明比较器让 `find` 接受 `std::string_view` 等"可比较但不必是 Key"的类型，省去这次分配。
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 透明比较器：istransparen
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 // ⑮-1 透明比较器：用 string_view 查找 string key，零临时分配（独立可编译）
 #include <map>
 #include <string>
@@ -702,7 +702,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 透明比较器：istransparen
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // ⑮-2 透明比较器同样适用 lower_bound / equal_range（独立可编译）
 #include <map>
 #include <string>
@@ -752,7 +752,7 @@ int main() {
    → 颜色约束使任意分支黑高相等，树高 ≤ 2·log₂(N+1)（§⑦）。
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // ⑯-1 面试题实战：统计各 key 出现次数（map 计数经典题，独立可编译）
 #include <map>
 #include <vector>
@@ -774,7 +774,7 @@ int main() {
 
 1. **用 `operator[]` 做只读查找，意外插入键**
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 29 · ★☆☆☆☆"
    // ❌ 逻辑错误演示（编译通过）：本想判断是否存在，却插入了键
    #include <map>
    #include <iostream>
@@ -789,7 +789,7 @@ int main() {
 
 2. **遍历中修改 key** —— key 是 `const`，本身编译期禁止；但若持有 `pair<const K,T>&` 并试图改 key 会编译失败。修改 key 必须 `extract` 后重插。
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 30 · ★☆☆☆☆"
    // ✅ 正确：改 key 用 extract + 重插（独立可编译）
    #include <map>
    #include <iostream>
@@ -806,7 +806,7 @@ int main() {
 
 3. **遍历 `map` 时 `erase(it)` 后继续使用 `it`**
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 31 · ★☆☆☆☆"
    // ✅ 正确：erase 返回下一迭代器（C++11 起，独立可编译）
    #include <map>
    #include <iostream>
@@ -826,7 +826,7 @@ int main() {
 5. **把 `map` 当 `unordered_map` 用却期望 `O(1)`** —— `map` 是 `O(log N)`，大数据量高频查找应评估 `unordered_map`（§⑲）。
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // ⑰-1 易错点：find 未判 end 直接解引用（独立可编译，安全写法对照）
 #include <map>
 #include <iostream>
@@ -855,7 +855,7 @@ int main() {
 8. **`noexcept`/异常安全**：`insert`/`emplace` 在节点分配失败抛 `bad_alloc`；`try_emplace` 强异常安全（key 已存在时不改容器）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // ⑱-1 最佳实践：lower_bound + upper_bound 做范围扫描（独立可编译）
 #include <map>
 #include <iostream>
@@ -870,7 +870,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // ⑱-2 最佳实践：extract + merge 在 map 间零拷贝迁移（独立可编译）
 #include <map>
 #include <iostream>
@@ -909,7 +909,7 @@ int main() {
 ### 19.3 microbenchmark 量级（示意）
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 量级（示意）
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // ⑲-1 量级对照：map 单点查找 vs unordered_map vs 排序 vector 二分（独立可编译，计时骨架）
 #include <map>
 #include <unordered_map>
@@ -993,7 +993,7 @@ int main() {
 - `[经验]`：从 Java/Python 转来的工程师需注意：Python `dict` 虽"保序"但按**插入顺序**而非 key 顺序，且没有 `lower_bound` 这类范围能力——这正是 C++ `map` 的价值所在。从 Rust 来的工程师会注意到 `BTreeMap` 读写更连续、缓存更友好。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：有序映射
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // ⑳-1 跨语言映射：Java TreeMap / Rust BTreeMap 的"有序范围"在 C++ 用 equal_range（独立可编译）
 #include <map>
 #include <iostream>
@@ -1009,7 +1009,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：有序映射
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // ⑳-2 跨语言映射：C# SortedDictionary 的"按 key 序遍历"即 C++ 范围 for（独立可编译）
 #include <map>
 #include <iostream>
@@ -1085,13 +1085,13 @@ int main() {
 ## 补充分编可编译示例
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch83_map."<<std::endl;return 0;}
 ```
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充分编可编译示例
-```cpp
+```cpp title="示例 39 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch83_map."<<std::endl;return 0;}
@@ -1137,7 +1137,7 @@ _Z15probe_flat_findRKSt6vectorISt4pairIiiESaIS1_EEi:
 | 内存 (N=1M `pair<int,int>`) | 38.1MB | 7.6MB | 5.0x节省 |
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能数据
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // 附录 E 例：flat_map 读重场景（独立可编译；std::flat_map 即 sorted vector 封装，
 // 本例用 sorted vector + lower_bound 等价演示，免 <flat_map> 依赖）
 #include <iostream>
@@ -1187,7 +1187,7 @@ _Z15probe_umap_findRKSt13unordered_mapIiiSt4hashIiESt8equal_toIiESaISt4pairIKiiE
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：map vs unordered_map底层
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 #include <unordered_map>
@@ -1259,7 +1259,7 @@ int main(){std::map<int,int> m{{1,10}};std::unordered_map<int,int> um{{1,10}};st
 **真实场景：订单簿按价格区间查询——`[price_lo, price_hi]` 闭开区间遍历。** 撮合系统用有序 `map<price,orders>` 取某价位段的全部挂单，`lower_bound`/`upper_bound` 构成闭开区间，O(log n)。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 int main() {
@@ -1278,7 +1278,7 @@ int main() {
 **真实场景：配置表读写——`operator[]` 误插入 vs `at` 显式缺键抛异常。** 读配置项时 `[]` 的"缺则插入"副作用会污染配置；请对比 `operator[]`/`at`/`insert_or_assign` 三项语义差异。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 #include <string>
@@ -1298,7 +1298,7 @@ int main() {
 **真实场景：跨订单簿迁移大对象节点——不拷贝 key/value。** 把某价位整档从旧簿 `extract` 到新簿，避免大订单向量的拷贝；转移后引用仍有效。
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 int main() {
@@ -1324,7 +1324,7 @@ int main() {
 `operator[]` 的契约是"若键存在则赋值，不存在则插入默认构造元素再返回引用"——它**一定不抛异常且总会给你一个可写引用**，但代价是可能在你只想"读"时悄悄增加容器大小。`at(key)` 则纯读：键存在返回引用，不存在抛 `std::out_of_range`，不会插入。`find(key)` 返回迭代器，可同时表达"存在/不存在"而不产生副作用。读多写少、且不容忍意外插入时，应优先 `find`/`contains`（C++20）/`at`。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 #include <string>
@@ -1353,7 +1353,7 @@ int main() {
 把比较器设为 `std::less<>`（或任何带 `is_transparent` 的类型），容器就以"透明"方式比较——`find` 接受任意能与 key 比较的类型（如 `std::string_view` 对比 `std::string`），不再强制构造 `std::string`。这要求 `key_type` 与查询类型之间定义了 `<`，且无歧义。代价是透明比较器下不能再用 `operator[]`（它依赖可写引用），须改用 `find`/`insert`/`erase`。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 50 · ★★★☆☆"
 #include <iostream>
 #include <map>
 #include <string_view>
@@ -1379,7 +1379,7 @@ int main() {
 以左闭起点为 key，查询时取"第一个大于 x 的起点"的前驱，即得 x 所属区间的值。
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 map 实现区间映射
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 #include <string>
@@ -1398,7 +1398,7 @@ int main() {
 红黑树节点分散在堆上，有序遍历会发生指针跳转，缓存命中率低于连续存储的 unordered 容器。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：map 的 O 与缓存局部性代价
-```cpp
+```cpp title="示例 46 · ★★★☆☆"
 #include <iostream>
 #include <map>
 int main() {
@@ -1525,7 +1525,7 @@ while (__x != __root && __x->_M_parent->_M_color == _S_red)
 ### 4. 第一方可编译验证（观察中序有序）
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证（观察中序有序）
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <map>
 #include <iostream>
 int main() {
@@ -1739,7 +1739,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <map>
 #include <unordered_map>

@@ -191,7 +191,7 @@ flowchart TD
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈/时序图：merge 的归并
-```cpp
+```cpp title="示例 6 · ★★★☆☆"
 // ⑨ 两个有序 list 归并（完整可编译）
 #include <iostream>
 #include <list>
@@ -233,7 +233,7 @@ list 遍历每次迭代都要**通过指针加载下一个节点地址**（一�
 - `forward_list` 与 `<algorithm>` 的前向迭代器算法（如 `std::find`、`std::for_each`）兼容。
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：联系：与算法、适配器 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ⑪ list 用成员 sort（不能用 std::sort，完整可编译）
 #include <iostream>
 #include <list>
@@ -254,7 +254,7 @@ int main() {
 实体（粒子、UI 节点、待渲染对象）常需：频繁在中间插入/删除、迭代器长期持有引用、偶尔整体排序。list 的"迭代器稳定 + O(1) 增删"正合适（注意缓存）。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：游戏/编辑器的"有序实体链
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ⑫ 工业：持有迭代器的稳定引用，删除其他元素不影响（完整可编译骨架）
 #include <iostream>
 #include <list>
@@ -337,7 +337,7 @@ struct _List_node_base {
 7. **哪个容器 erase 后只有被删迭代器失效？** → list / forward_list（其余稳定）。
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ⑮ 面试题佐证：forward_list 没有 size()，用 distance 求长度（完整可编译）
 #include <iostream>
 #include <forward_list>
@@ -361,7 +361,7 @@ int main() {
 - **大链表高频遍历追求性能** → list 缓存差，考虑 deque/vector 或 SoA 布局。
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ⑯ 易错：forward_list 用 before_begin 才能插到首元素前（完整可编译）
 #include <iostream>
 #include <forward_list>
@@ -387,7 +387,7 @@ int main() {
 **Q：list 能 `reserve` 吗？** A：不能，链表无连续容量概念（同 deque）。
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ⑰ FAQ 佐证：splice 零拷贝搬移整段（完整可编译）
 #include <iostream>
 #include <list>
@@ -413,7 +413,7 @@ int main() {
 5. **遍历是热点** → 优先考虑 `vector`/`deque`；list 仅在"增删多+引用稳定+遍历少"时胜出。
 
 > **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑱ 最佳实践：list 的 unique / reverse / remove_if（完整可编译）
 #include <iostream>
 #include <list>
@@ -448,7 +448,7 @@ int main() {
 | 缓存友好 | **差** | **差** | 好 |
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // ⑲ microbenchmark：list vs vector 遍历速度（量级示意，完整可编译）
 #include <iostream>
 #include <list>
@@ -545,7 +545,7 @@ int main() {
 下面 L1–L35 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // L1 基本构造 + 遍历（list）
 #include <iostream>
 #include <list>
@@ -558,7 +558,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // L2 push_back / push_front
 #include <iostream>
 #include <list>
@@ -573,7 +573,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // L3 insert 在指定位置
 #include <iostream>
 #include <list>
@@ -588,7 +588,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // L4 erase 单个元素（其余迭代器稳定）
 #include <iostream>
 #include <list>
@@ -603,7 +603,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // L5 splice 整段搬移（O(1) 零拷贝）
 #include <iostream>
 #include <list>
@@ -617,7 +617,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // L6 splice 单个元素
 #include <iostream>
 #include <list>
@@ -632,7 +632,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // L7 merge 两个有序链表
 #include <iostream>
 #include <list>
@@ -646,7 +646,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // L8 sort（成员）
 #include <iostream>
 #include <list>
@@ -660,7 +660,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // L9 reverse
 #include <iostream>
 #include <list>
@@ -674,7 +674,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // L10 unique（去相邻重复）
 #include <iostream>
 #include <list>
@@ -688,7 +688,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // L11 remove / remove_if（成员）
 #include <iostream>
 #include <list>
@@ -702,7 +702,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // L12 front / back / pop
 #include <iostream>
 #include <list>
@@ -716,7 +716,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // L13 迭代器稳定性：删除中间元素不影响两端引用
 #include <iostream>
 #include <list>
@@ -731,7 +731,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // L14 双向迭代 rbegin/rend
 #include <iostream>
 #include <list>
@@ -744,7 +744,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // L15 emplace_back / emplace_front（就地构造）
 #include <iostream>
 #include <list>
@@ -759,7 +759,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // L16 用 std::next / std::prev 移动迭代器
 #include <iostream>
 #include <list>
@@ -772,7 +772,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // L17 list 作 LRU 缓存骨架（去尾插头）
 #include <iostream>
 #include <list>
@@ -788,7 +788,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // L18 与 vector 对比：list 不能随机访问
 #include <iostream>
 #include <list>
@@ -805,7 +805,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // L19 forward_list 基本 + 单向遍历
 #include <iostream>
 #include <forward_list>
@@ -818,7 +818,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // L20 forward_list before_begin + insert_after（头插）
 #include <iostream>
 #include <forward_list>
@@ -832,7 +832,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // L21 forward_list erase_after
 #include <iostream>
 #include <forward_list>
@@ -846,7 +846,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // L22 forward_list 没有 size()/push_back/back（完整可编译验证）
 #include <iostream>
 #include <forward_list>
@@ -861,7 +861,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // L23 forward_list 反转（反向拼接）
 #include <iostream>
 #include <forward_list>
@@ -875,7 +875,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // L24 用 distance 求 forward_list 长度
 #include <iostream>
 #include <forward_list>
@@ -888,7 +888,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // L25 forward_list 插入到指定值之后
 #include <iostream>
 #include <forward_list>
@@ -903,7 +903,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // L26 list 与 forward_list 互转（借助迭代器）
 #include <iostream>
 #include <list>
@@ -918,7 +918,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 // L27 list 存自定义类型
 #include <iostream>
 #include <list>
@@ -933,7 +933,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 // L28 list::remove 按值删除全部匹配
 #include <iostream>
 #include <list>
@@ -947,7 +947,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 // L29 用 std::find 在 list 查找
 #include <iostream>
 #include <list>
@@ -961,7 +961,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 // L30 list 判等 / 比较
 #include <iostream>
 #include <list>
@@ -974,7 +974,7 @@ int main() {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 // L31 list 的 max_size / empty / clear
 #include <iostream>
 #include <list>
@@ -989,7 +989,7 @@ int main() {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 // L32 splice 区间搬移（first,last）
 #include <iostream>
 #include <list>
@@ -1005,7 +1005,7 @@ int main() {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 // L33 用 list 实现"稳定引用"的事件监听器列表（骨架）
 #include <iostream>
 #include <list>
@@ -1022,7 +1022,7 @@ int main() {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 // L34 forward_list 构建并遍历求和
 #include <iostream>
 #include <forward_list>
@@ -1036,7 +1036,7 @@ int main() {
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
-```cpp
+```cpp title="示例 48 · ★☆☆☆☆"
 // L35 list vs forward_list 内存示意：前者每节点多一指针
 #include <iostream>
 #include <list>
@@ -1160,7 +1160,7 @@ struct __list_node {
 **真实场景：LRU 缓存命中提升——把最近访问的节点 O(1) 搬到表头。** 一个 LRU 用 `list` 维护使用顺序，命中时 `splice` 把节点搬到表头，仅改指针不拷贝值（对比 `vector` 须 O(n) 搬移）。请用 `list::splice` 把第 k 个节点前移到表头。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★☆☆☆☆"
 #include <iostream>
 #include <list>
 #include <iterator>
@@ -1183,7 +1183,7 @@ int main() {
 **真实场景：两个待办链表的区间合并。** 把源链表一个半开区间 `[first,last)` 整体搬到目标链尾（如把"已处理"区间从工作链摘走），验证 splice 区间版同样 O(1) 且源/目标迭代器均不失效。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 #include <list>
 int main() {
@@ -1205,7 +1205,7 @@ int main() {
 **真实场景：稳定分区——把奇数 ID 节点搬到另一条链保持原序。** 如把"异常订单"稳定迁到审查链而不破坏相对顺序。请用 `splice` 把原链表中奇数节点稳定搬到另一条链表，全程不拷贝节点值。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 #include <iostream>
 #include <list>
 int main() {
@@ -1240,7 +1240,7 @@ int main() {
 `splice` 把节点从一个 list 链接到另一个 list（或本 list 内移动），只改指针、不拷贝也不移动元素本身，因此是 O(1)（仅涉及相邻节点的链接重排）；它也不会使被搬移节点之外的迭代器失效。相比之下，若先 `erase` 再 `push_back` 等价元素，会触发一次析构加一次拷贝构造，且所有迭代器需要重建——对大对象或昂贵拷贝类型是巨大浪费。
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 56 · ★☆☆☆☆"
 #include <iostream>
 #include <list>
 int main() {
@@ -1267,7 +1267,7 @@ int main() {
 `list` 是节点式容器：删除一个元素只影响该节点本身的前后指针，其他迭代器全部保持有效——这正是它相对 vector 的核心优势（vector 删除中间元素会让后续迭代器全部失效）。标准惯用法是 `it = lst.erase(it)`：erase 返回指向被删元素之后元素的迭代器，循环据此继续，避免悬空。对比 vector 必须用索引或小心重算 `end()`。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 57 · ★★★☆☆"
 #include <iostream>
 #include <list>
 int main() {
@@ -1293,7 +1293,7 @@ int main() {
 `list` 维护使用顺序（前端=最近使用），`map` 存键到 `list` 迭代器；命中时 `splice` 把节点搬到前端，无需拷贝值。
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：用 list + map
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <list>
 #include <unordered_map>
@@ -1319,7 +1319,7 @@ int main() {
 `list` 的 `erase` 只使被删节点的迭代器失效，返回下一有效迭代器；`vector` 删除后所有后续迭代器失效（需重新取）。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：list 与 vector 删除中间元素时的迭代器失效差异
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 #include <list>
 int main() {
@@ -1472,7 +1472,7 @@ list 节点不持有数据容器，而是将 `prev`/`next` 指针嵌入节点本
 ### D4.7 编译验证
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
-```cpp
+```cpp title="示例 54 · ★★☆☆☆"
 #include <list>
 #include <iostream>
 int main() {
@@ -1656,7 +1656,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 #include <list>
 #include <vector>
 #include <random>

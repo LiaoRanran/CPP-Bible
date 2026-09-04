@@ -234,7 +234,7 @@ _Z10cross_castP2M1:
 > 构建：无需编译，引自 libstdc++ 源码 `include/istream`、`ostream`、`iostream`
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-A：iostream
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // 标准库概念（节选，示意）
 struct ios {                          // 格式化状态、rdbuf
 struct istream : virtual ios {        // >> 运算符
@@ -247,7 +247,7 @@ struct iostream : istream, ostream {  // 既是输入也是输出，ios 仅一�
 ### 工业案例 49-B：错误示范——非虚继承菱形导致歧义与膨胀
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 49-B：错误示范——非虚
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // ❌ 非虚继承：D 含两份 A，访问 d.a 歧义，sizeof 翻倍
 struct A { int a; };
 struct B1 : A {};
@@ -256,7 +256,7 @@ struct D : B1, B2 {};        // 编译期 d.a 报错：'A::a' is ambiguous
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-B：错误示范——非虚
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ✅ 修复：虚继承消除重复
 struct A { int a; };
 struct B1 : virtual A {};
@@ -267,7 +267,7 @@ struct D : B1, B2 {};        // d.a 唯一，无歧义
 ### 工业案例 49-C：打印各路径地址，验证虚基类唯一
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-C：打印各路径地址，
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 #include <cstdio>
 struct B { int b = 1; virtual ~B() = default; };
 struct M1 : virtual B {}; struct M2 : virtual B {};
@@ -283,7 +283,7 @@ void demo_c() {
 ### 工业案例 49-D：构造顺序（最派生类先调虚基类）
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-D：构造顺序
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
 struct V { V() { std::cout << "V\n"; } };
 struct M1 : virtual V { M1() { std::cout << "M1\n"; } };
@@ -295,7 +295,7 @@ struct D : M1, M2 { D() { std::cout << "D\n"; } };
 ### 工业案例 49-E：非虚菱形歧义（注释对照）
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-E：非虚菱形歧义
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // struct A { int x; }; struct X : A {}; struct Y : A {};
 // struct D : X, Y {}; int f(D& d) { return d.x; }
 // 错误：'x' is ambiguous → 须显式 d.X::x
@@ -304,7 +304,7 @@ struct D : M1, M2 { D() { std::cout << "D\n"; } };
 ### 工业案例 49-F：sizeof 对比（非虚菱形 vs 虚菱形）
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-F：sizeof 对
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 #include <cstdio>
 struct A { int a; virtual ~A() = default; };
 struct X : A {}; struct Y : A {};
@@ -317,7 +317,7 @@ void demo_f() { std::printf("%zu %zu\n", sizeof(D_bad), sizeof(D_good)); }
 ### 工业案例 49-G：跨菱形 dynamic_cast 到虚基类
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-G：跨菱形 dynamic_cast 到虚基类
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 struct B { virtual ~B() = default; };
 struct M1 : virtual B {}; struct M2 : virtual B {};
 struct D : M1, M2 {};
@@ -327,7 +327,7 @@ B* cross(M2* p) { return dynamic_cast<B*>(p); }  // 经虚基类 this 调整（�
 ### 工业案例 49-H：虚基类指针 dynamic_cast 回派生
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-H：虚基类指针 dynamic_cast 回派生
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 struct B { virtual ~B() = default; };
 struct M1 : virtual B {};
 struct D : M1 {};
@@ -337,7 +337,7 @@ M1* back(D* d) { B* b = d; return dynamic_cast<M1*>(b); } // 回派生，成功
 ### 工业案例 49-I：三层虚继承，虚基类仍唯一
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-I：三层虚继承，虚基
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 struct Top { virtual ~Top() = default; };
 struct Mid : virtual Top {};
 struct Low : virtual Mid {};
@@ -347,7 +347,7 @@ struct Leaf : Low {};   // Top 仅一份，由 Leaf 构造
 ### 工业案例 49-J：MSVC vtordisp 说明（平台差异）
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 49-J：MSVC vto
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // MSVC 在含虚基类对象的构造/析构期插入 vtordisp 字段做 this 调整；
 // GCC/Clang(Itanium) 用 vbase offset 表替代，无需 vtordisp（见 ⑬-3）。
 ```
@@ -355,7 +355,7 @@ struct Leaf : Low {};   // Top 仅一份，由 Leaf 构造
 ### 工业案例 49-K：访问虚基类数据成员（可运行）
 
 > **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 49-K：访问虚基类数据成
-```cpp
+```cpp title="示例 16 · ★★★☆☆"
 #include <cstdio>
 struct B { int b = 7; virtual ~B() = default; };
 struct M1 : virtual B { int m1 = 2; };
@@ -366,7 +366,7 @@ void demo_k() { D d; std::printf("%d\n", d.b); }  // 经 vbptr+vbase offset（�
 ### 工业案例 49-L：组合替代虚继承
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 49-L：组合替代虚继承
-```cpp
+```cpp title="示例 17 · ★★★☆☆"
 // 显式持有共享对象，无 vbptr 代价，ABI 更稳定
 struct Shared { int a; };
 struct L { Shared* s; int m1; };
@@ -377,7 +377,7 @@ struct D { Shared s; L l{&s}; R r{&s}; };  // a 唯一，由 D 持有
 ### 工业案例 49-M：CRTP 替代多继承（编译期多态）
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 49-M：CRTP 替代多
-```cpp
+```cpp title="示例 18 · ★★★☆☆"
 template<class D>
 struct BaseCRTP { void foo() { static_cast<D*>(this)->impl(); } };
 struct Der : BaseCRTP<Der> { void impl() {} };  // 无虚函数/无 vbptr
@@ -386,7 +386,7 @@ struct Der : BaseCRTP<Der> { void impl() {} };  // 无虚函数/无 vbptr
 ### 工业案例 49-N：虚基类无默认构造须最派生初始化（注释）
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-N：虚基类无默认构造
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // struct V { V(int); }; struct M : virtual V { M() : V(1) {} };
 // struct D : M { D() {} };  // 错误：D 必须初始化 V（无默认 ctor）→ D() : V(7) {}
 ```
@@ -394,7 +394,7 @@ struct Der : BaseCRTP<Der> { void impl() {} };  // 无虚函数/无 vbptr
 ### 工业案例 49-O：虚基类 + 普通基类混合
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-O：虚基类 + 普通
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 struct V { virtual ~V() = default; };  // 虚基类
 struct N { int n; };                   // 普通基类
 struct M : virtual V, N {};            // V 唯一，N 按普通继承重复规则
@@ -403,7 +403,7 @@ struct M : virtual V, N {};            // V 唯一，N 按普通继承重复规�
 ### 工业案例 49-P：热路径避免频繁访问虚基类成员
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 49-P：热路径避免频繁访
-```cpp
+```cpp title="示例 21 · ★★★☆☆"
 struct B { int b = 0; virtual ~B() = default; };
 struct M1 : virtual B {};
 struct D : M1 { long sum() { long s = 0; for (int i = 0; i < 1000; ++i) s += b; return s; } };
@@ -413,7 +413,7 @@ struct D : M1 { long sum() { long s = 0; for (int i = 0; i < 1000; ++i) s += b; 
 ### 工业案例 49-Q：菱形虚基类含虚函数，覆盖无歧义
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-Q：菱形虚基类含虚函
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 struct B { virtual ~B() = default; virtual int f() const { return 1; } };
 struct M1 : virtual B { int f() const override { return 2; } };
 struct M2 : virtual B {};
@@ -423,7 +423,7 @@ struct D : M1, M2 {};   // B::f 唯一覆盖，无歧义
 ### 工业案例 49-R：dynamic_cast<void*> 取最派生地址（虚继承）
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-R：dynamicc
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 struct B { virtual ~B() = default; };
 struct M1 : virtual B {};
 struct D : M1 { int d; };
@@ -433,7 +433,7 @@ void* top(D* d) { return dynamic_cast<void*>(static_cast<B*>(d)); }
 ### 工业案例 49-S：不同路径各有 vbptr
 
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 49-S：不同路径各有 v
-```cpp
+```cpp title="示例 24 · ★★★☆☆"
 struct B { virtual ~B() = default; };
 struct M1 : virtual B {}; struct M2 : virtual B {};
 struct D : M1, M2 {};
@@ -443,7 +443,7 @@ struct D : M1, M2 {};
 ### 工业案例 49-T：最派生类初始化覆盖中间类
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-T：最派生类初始化覆
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 struct V { V(int); };
 struct M : virtual V { M() : V(1) {} };
 struct D : M { D() : V(7) {} };   // D 的 V(7) 生效，M 的 V(1) 被忽略
@@ -485,7 +485,7 @@ vtable for M1 (在 D 中):
 > 提取：`grep -n "virtual_base\|vbptr\|vbase" <gcc/cp/class.cc>`
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
-```cpp
+```cpp title="示例 27 · ★★★☆☆"
 // GCC 后端计算虚基类偏移并写入子对象 vtable 负区（节选逻辑）
 // 每个含虚基类的子对象生成独立 vbptr；其指向的 vtable 负偏移存 vbase offset
 // 最派生类负责调用唯一虚基类构造（ctor 初始化列表顺序：虚基类优先）
@@ -563,7 +563,7 @@ vtable for M1 (在 D 中):
 【microbenchmark 设计（Google Benchmark，可复现）】
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能分析
-```cpp
+```cpp title="示例 28 · ★★★★☆"
 #include <benchmark/benchmark.h>
 struct B { int b = 1; virtual ~B()=default; };
 struct M1 : virtual B { int m1=2; };
@@ -670,7 +670,7 @@ BENCHMARK(BM_vbase_access); BENCHMARK(BM_normal_access);
 
 【错误示例】
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：虚继承语法与语义
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ❌ 非虚继承菱形，d.a 歧义且 sizeof 翻倍
 struct A { int a; };
 struct X : A {}; struct Y : A {};
@@ -679,7 +679,7 @@ struct D : X, Y {};   // D::a 二义
 
 【正确示例】
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B1：虚继承语法与语义
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ✅ 虚继承消除重复
 struct A { int a; };
 struct X : virtual A {};
@@ -735,7 +735,7 @@ struct D : X, Y {};   // D::a 唯一
 
 【错误示例】
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：菱形继承问题
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ❌ 菱形二义
 struct A { int a; }; struct L : A {}; struct R : A {};
 struct D : L, R {};
@@ -744,7 +744,7 @@ int f(D& d){ return d.a; }   // 错误：'a' is ambiguous，须 d.L::a 或 d.R::
 
 【正确示例】
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B2：菱形继承问题
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // ✅ 虚继承去歧义
 struct A { int a; };
 struct L : virtual A {}; struct R : virtual A {};
@@ -800,7 +800,7 @@ int f(D& d){ return d.a; }   // 唯一，OK
 
 【错误示例】
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：vbptr 与 vbase offset 表
-```cpp
+```cpp title="示例 33 · ★★★☆☆"
 // ❌ 误以为虚基类成员可直接偏移访问
 struct B { int b; };
 struct M : virtual B {};
@@ -810,7 +810,7 @@ int bad(D& d){ return *(int*)((char*)&d + 8); }  // 错：b 不在固定偏移�
 
 【正确示例】
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点 B3：vbptr 与 vbase offset 表
-```cpp
+```cpp title="示例 34 · ★★★☆☆"
 // ✅ 让编译器经 vbptr 计算
 struct B { int b; };
 struct M : virtual B {};
@@ -866,7 +866,7 @@ int good(D& d){ return d.b; }   // 编译器生成 vbptr+vbase offset 访问（�
 
 【错误示例】
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：虚基类构造责任
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ❌ 中间类初始化虚基类，但最派生类没初始化 → 若虚基类无默认 ctor 则编译错
 struct V { V(int); };
 struct M : virtual V { M() : V(1) {} };  // 仅中间类初始化
@@ -875,7 +875,7 @@ struct D : M { D() {} };                 // 错：D 必须初始化 V（无默�
 
 【正确示例】
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B4：虚基类构造责任
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ✅ 最派生类负责虚基类初始化
 struct V { V(int); };
 struct M : virtual V { M() : V(1) {} };
@@ -889,27 +889,27 @@ struct D : M { D() : V(7) {} };   // D 显式初始化 V(7)，M 的 V(1) 被忽�
 ## 附录: 虚继承深度
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚继承深度
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 struct A{int a=1;};struct B:virtual A{};struct C:virtual A{};struct D:B,C{};
 int main(){D d;std::cout<<d.a<<std::endl;return 0;}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚继承深度
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 struct Base{int x;Base(int v):x(v){}};struct Der:virtual Base{Der(int v):Base(v){}};
 int main(){Der d(42);std::cout<<d.x<<std::endl;return 0;}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚继承深度
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Virtual inheritance solves diamond problem but adds vbase pointer overhead."<<std::endl;return 0;}
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚继承深度
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <memory>
 struct I{virtual void f()=0;virtual~I(){}};struct Impl:I{void f()override{std::cout<<"impl"<<std::endl;}};
@@ -917,7 +917,7 @@ int main(){auto p=std::make_unique<Impl>();p->f();return 0;}
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚继承深度
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 struct V{int v;virtual~V(){}};
 int main(){std::cout<<"sizeof(V)="<<sizeof(V)<<" (int + vptr + padding)"<<std::endl;return 0;}
@@ -1059,7 +1059,7 @@ _Z8call_fooP4Base:
 非虚继承下，`D` 内含两份 `A` 子对象，`d.a` 不知选哪份。虚继承让 `B1,B2` 共享同一份虚基类 `A`，`d.a` 唯一。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 struct A { int a = 1; };
 struct B1 : A {};
@@ -1075,7 +1075,7 @@ int main() {
 **修复**（虚继承共享基类）：
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 struct A { int a = 1; };
 struct B1 : virtual A {};
@@ -1099,7 +1099,7 @@ int main() { D d; std::cout << d.a << '\n'; }  // 1，无二义
 虚基类的初始化控制权上移到最派生类；中间类构造函数里对虚基类的初始化列表不生效（或仅当该类恰为最派生时才生效）。
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 struct A { A() { std::cout << "A\n"; } };
 struct B1 : virtual A { B1() { std::cout << "B1\n"; } };
@@ -1123,7 +1123,7 @@ int main() { D d; }   // 输出 A B1 B2 D（A 只构造一次，由 D 直接负�
 多重继承时，第二个及以后的基类子对象相对对象首地址有非零偏移。`dynamic_cast` 在跨基类转换时插入 this 调整代码（比较 this 指针与子对象地址即见差异）。
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 struct L { int l = 0; };
 struct R { int r = 0; };
@@ -1153,7 +1153,7 @@ int main() {
 非虚拟继承下，派生类为每条继承路径保留独立的基类子对象。菱形（`Top` 被 `L`、`R` 各自继承，再被 `D` 继承）因此产生两个 `Top` 子对象，`d.t` 无法知道指代哪一个，编译器报二义。消歧虽能编译，但两个副本状态各自独立，并非共享。
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 struct Top { int t = 0; };
 struct L : Top { };
@@ -1182,7 +1182,7 @@ int main() {
 虚拟继承让"最派生类"直接持有那个被多个中间基类共享的虚基类子对象，从而菱形结构中只有一份。`virtual` 基类由最终派生类初始化，二义随之消失；访问 `t` 无需再消歧。代价是虚拟基类访问通常多一次间接、布局更复杂。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 struct Top { int t = 0; };
 struct L : virtual Top { };
@@ -1210,7 +1210,7 @@ int main() {
 **常见错误**：直接 `d.a` 编译失败（二义），或随意 `d.B1::a` 仅消歧却不消除重复子对象，状态写入一个副本、读到另一个副本。
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：菱形继承二义性踩坑
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 struct A { int a = 0; };
 struct B1 : A {};
@@ -1226,7 +1226,7 @@ int main() {
 **修复**：虚继承共享基类，状态唯一；配合"虚基类由最派生类初始化"规则，在 `D` 的初始化列表里构造 `A`。
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：菱形继承二义性踩坑
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 #include <iostream>
 struct A { int a = 0; };
 struct B1 : virtual A {};
@@ -1244,7 +1244,7 @@ int main() { D d; std::cout << d.a << '\n'; }  // 5，单一状态
 **常见错误**：在 `B1`/`B2` 的初始化列表里写 `A(初始值)`，实际最派生类 `D` 负责 `A` 构造，中间类的初始化被忽略，成员保持默认/未初始化。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：虚基类构造顺序错乱导致未初
-```cpp
+```cpp title="示例 48 · ★★★★☆"
 #include <iostream>
 struct A { int a; A(int v) : a(v) { std::cout << "A(" << v << ")\n"; } };
 struct B1 : virtual A { B1() : A(1) { std::cout << "B1\n"; } };           // A(1) 被忽略
@@ -1469,7 +1469,7 @@ D() : A(), B(), C() { /* B、C 不再构造 A */ }
 ### D4.4 可编译 demo：菱形虚继承 + 共享虚基地址 + sizeof 对比
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 可编译 demo：菱形虚继承 + 共
-```cpp
+```cpp title="示例 50 · ★★★★☆"
 #include <iostream>
 
 struct A { int a = 1; virtual ~A() = default; };
@@ -1602,7 +1602,7 @@ int main() {
 ### D5.3 验证 demo
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 #include <iostream>
 #include <cassert>
 

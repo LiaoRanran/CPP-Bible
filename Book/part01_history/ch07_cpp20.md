@@ -63,7 +63,7 @@ C++20 常被念成"最大更新"，但这四个字最容易让你误以为它只
 带着这几笔账往下读，每一节都会回到它们：⑩ 用 GCC 15.3 汇编证明 Concepts **不产生任何运行时开销**（这是它能放心用的前提），⑬ 源码分析用 libstdc++ 的 `ranges/base.h`（示例 1 的出处）给你看 concepts 约束检查的展开，⑱ 最佳实践给你一根支柱一根支柱的落地顺序；附录 D5 用 GCC 15.3 基准实测 `std::format` 的吞吐。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 我们正在回答的问题
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // 源码剖析：libstdc++ 中 C++20 概念（concepts）约束检查的展开
 // 文件：libstdc++/include/bits/ranges/base.h
 // 行号：120
@@ -72,7 +72,7 @@ auto v = std::views::iota(1, 5);
 void use_view(){ for (int x : v) (void)x; }
 ```
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 我们正在回答的问题
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // 简单概念
 template<class T> concept Addable = requires(T a,T b){ a+b; };
 ```
@@ -80,7 +80,7 @@ template<class T> concept Addable = requires(T a,T b){ a+b; };
 ## ② 前置知识
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 // [merged] ## ② 前置知识
 #include <iostream>
 template<class T> concept Addable = requires(T a,T b){ a+b; };  // C++20 concept
@@ -94,7 +94,7 @@ int main() {}
 ## ③ 后续依赖
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 4 · ★★★☆☆"
 // [merged] ## ③ 后续依赖
 #include <iostream>
 #include <ranges>
@@ -109,7 +109,7 @@ int main() {}
 ## ④ 知识图谱
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识图谱
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // [merged] ## ④ 知识图谱
 #include <iostream>
 #include <vector>
@@ -138,7 +138,7 @@ C++20 四大支柱 + 配套
 ## ⑤ Mermaid（Ranges 管道）
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Mermaid 图解
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // [merged] ## ⑤ Mermaid（Ranges 管道）
 #include <iostream>
 #include <format>
@@ -152,7 +152,7 @@ int main() {
 ## ⑥ UML / 结构图（特性关系）<span class="badge badge-std">标准</span>
 
 > **示例 8** [难度 ★★★☆☆] [主题：结构图（特性关系）<span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
 #include <thread>
@@ -183,7 +183,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ## ⑦ ASCII 内存图（Modules 编译模型）
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（Modules 编译模型）
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // [merged] ## ⑦ ASCII 内存图（Modules 编译模型）
 #include <iostream>
 unsigned pc=std::popcount(0b1011u); void use_pc(){ (void)pc; }
@@ -194,7 +194,7 @@ int main() {}
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期（新增库类型的所有权语义）
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
 consteval int square(int x){ return x*x; } static_assert(square(3)==9, "");
@@ -206,7 +206,7 @@ int main() {}
 ## ⑨ 调用栈（编译期分支与折叠）
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈（编译期分支与折叠）
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // [merged] ## ⑨ 调用栈（编译期分支与折叠）
 #include <iostream>
 struct Pt{ int x; int y; }; Pt p{.x=1,.y=2};
@@ -222,10 +222,10 @@ int main() {
 TU1.cpp ─┐
 TU2.cpp ─┼─> 全部文本拼入 → 解析(重复)
 TU3.cpp ─┘
-```text
+```
 Modules：编译一次为二进制 BMI，复用：
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
-```
+```text
 module M; 编译 → M.pcm/BMI (一次) → 各 TU 直接加载
 ```
 > Modules 消除宏泄漏、加速编译、改善封装（ch118）。
@@ -233,7 +233,7 @@ module M; 编译 → M.pcm/BMI (一次) → 各 TU 直接加载
 ## ⑩ 汇编（Concepts 不产生运行时开销）
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // [merged] ## ⑩ 汇编（Concepts 不产生运行时开销）
 #include <iostream>
 #include <chrono>
@@ -247,13 +247,13 @@ int main() {}
 ## ⑪ STL 联系
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // std::ssize 带符号大小
 #include <vector>
 void ss(){ std::vector<int> v{1,2}; auto n=std::ssize(v); (void)n; }
 ```
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // 范围算法 ranges::sort
 #include <ranges>
 #include <vector>
@@ -267,7 +267,7 @@ void rs(){ std::vector<int> v{3,1,2}; std::ranges::sort(v); }
 ## ⑫ 工业案例
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 17 · ★★★☆☆"
 // [merged] ## ⑫ 工业案例
 #include <iostream>
 #include <concepts>
@@ -284,7 +284,7 @@ int main() {
 ## ⑬ 源码分析
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // [merged] ## ⑬ 源码分析
 #include <iostream>
 #include <span>
@@ -299,7 +299,7 @@ int main() {
 ## ⑭ WG21 提案
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
 struct Cmp{ int v; auto operator<=>(const Cmp&) const = default; };
@@ -318,7 +318,7 @@ int main() {}
 ## ⑮ 面试题
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // [merged] ## ⑮ 面试题
 #include <iostream>
 #include <ranges>
@@ -336,7 +336,7 @@ int main() {}
 ## ⑯ 易错点
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // 概念约束返回值
 template<class T> requires std::default_initializable<T> T make(){ return T{}; }
 ```
@@ -348,7 +348,7 @@ template<class T> requires std::default_initializable<T> T make(){ return T{}; }
 ## ⑰ FAQ
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // 范围 for + 结构化绑定
 #include <map>
 #include <string>
@@ -361,7 +361,7 @@ void m(){ std::map<int,std::string> x{{1,"a"}}; for(auto& [k,v]:x){ (void)k;(voi
 ## ⑱ 最佳实践
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 auto s2=std::format("{} {:.1f}", 1, 2.5); void use_fmt2(){ (void)s2; }
 ```
 
@@ -371,7 +371,7 @@ auto s2=std::format("{} {:.1f}", 1, 2.5); void use_fmt2(){ (void)s2; }
 ## ⑲ 性能分析
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // 移除 throw() 异常规范（C++20 弃用）
 void legacy() noexcept;
 ```
@@ -395,7 +395,7 @@ void legacy() noexcept;
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[module.import]（模块导入）；cppreference "Modules" 词条。
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习题 + 思考题 + 源码阅读路线
-```cpp
+```cpp title="示例 25 · ★★★★☆"
 // C++20 小结：concepts/ranges/<=</format/jthread
 ```
 
@@ -447,7 +447,7 @@ C++20 是「概念 / 范围 / 协程 / 模块」的代际跃迁。下面按领�
 ## 附录: C++20 四大特性速查
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: C++20 四大特性速查
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 #include <iostream>
 #include <concepts>
 template<std::integral T>T safe_add(T a,T b){return a+b;}
@@ -455,7 +455,7 @@ int main(){std::cout<<safe_add(10,20)<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++20 四大特性速查
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 #include <iostream>
 #include <span>
 void print(std::span<int>s){for(int x:s)std::cout<<x<<" ";}
@@ -463,7 +463,7 @@ int main(){int arr[]{1,2,3,4,5};print(arr);std::cout<<std::endl;return 0;}
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++20 四大特性速查
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 #include <compare>
 struct V{int x;auto operator<=>(const V&)const=default;};
@@ -471,7 +471,7 @@ int main(){V a{1},b{2};std::cout<<(a<b)<<std::endl;return 0;}
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++20 四大特性速查
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
 int main(){auto v=std::views::iota(1,10)|std::views::filter([](int x){return x%2==0;});int s=0;for(int x:v)s+=x;std::cout<<s<<std::endl;return 0;}
@@ -482,21 +482,21 @@ int main(){auto v=std::views::iota(1,10)|std::views::filter([](int x){return x%2
 ## 附录 B: C++20 更多特性实例
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++20 更多特性实例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 #include <chrono>
 int main(){auto now=std::chrono::system_clock::now();auto t=std::chrono::system_clock::to_time_t(now);std::cout<<"epoch seconds: "<<t<<std::endl;return 0;}
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++20 更多特性实例
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 #include <bit>
 int main(){unsigned x=42;std::cout<<"popcount:"<<std::popcount(x)<<" bit_width:"<<std::bit_width(x)<<std::endl;return 0;}
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++20 更多特性实例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 #include <source_location>
 void log(std::source_location loc=std::source_location::current()){std::cout<<loc.file_name()<<":"<<loc.line()<<std::endl;}
@@ -504,7 +504,7 @@ int main(){log();return 0;}
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: C++20 更多特性实例
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 #include <iostream>
 #include <version>
 int main(){
@@ -518,15 +518,15 @@ int main(){
 ## 附录追加：工业底层与面试
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录追加：工业底层与面试
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"ch07_cpp20.md enhanced"<<"\n";return 0;}
-```text
+```
 
 ## 附录 D：C++20 Concepts/Ranges底层
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：C++20 Concept
-```
+```text
 Concepts: 编译期boolean谓词, 汇编=SFINAE(完全相同mov/call)
 编译时间: 2-5x faster(early rejection); 错误: 500行→1行
 Ranges: views融合为单循环(零临时容器); 汇编=手写for循环
@@ -534,7 +534,7 @@ Coroutines: 堆分配状态机,sizeof~40-200B; co_yield~10ns
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：C++20 Concept
-```cpp
+```cpp title="示例 36 · ★★★★☆"
 #include <iostream>
 #include <concepts>
 template<std::integral T> T add(T a,T b){return a+b;}
@@ -578,7 +578,7 @@ int main(){std::cout<<add(10,20)<<std::endl;std::cout<<"concepts=zero runtime ov
 | 二进制大小 | 1x | 1x | 无差异 |
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能数据
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <concepts>
 template<std::integral T> T add(T a,T b){return a+b;}
@@ -593,7 +593,7 @@ Q: concepts支持哪些约束? A: 类型属性(is_integral), 表达式有效性(
 ## 附录 E：C++20面试速查
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：C++20面试速查
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <concepts>
 template<std::integral T> T add(T a,T b){return a+b;}
@@ -646,7 +646,7 @@ C++20 的 concepts / ranges / coroutines / modules 在主流工具链与大型�
 **真实场景：数值聚合 API 的清晰报错。** 你写一个 `add` 聚合接口供全公司调用，传错类型时旧的 SFINAE 报错没人看得懂。请用 C++20 concepts 定义一个 `Number` 概念并约束 `add` 模板，展示非数值类型调用时被概念明确拒绝、错误信息直指"不满足 Number"。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 39 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
 
@@ -674,7 +674,7 @@ int main() {
 **真实场景：事件流的惰性处理管道。** 你处理一条日志/指标流，要先"过滤出错误事件"再"转成错误码计数"，但不想为每步生成中间 `vector`。请用 C++20 Ranges 的 `views::filter` + `views::transform` 构建"取偶数再平方"的惰性管道，并说明惰性求值（不生成中间容器）的意义。
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <ranges>
@@ -701,7 +701,7 @@ int main() {
 **真实场景：依赖/库版本兼容性比较。** 你的包管理器或构建系统要判断"依赖 A 的版本 ≥ 要求的最低版本"，版本号是 `major.minor.patch` 三元组。请用 C++20 `<=>` 为 `Version` 实现三路比较与 `==`，并说明 `= default` 如何一次性自动派生 `< > <= >=`。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 #include <compare>
 
@@ -737,7 +737,7 @@ int main() {
 `std::span<T>` 是连续的、非拥有的视图：它只记录 `{指针, 长度}`，可同时接受原生数组、`std::array` 与 `std::vector` 的连续区间，避免为统一接口而作拷贝。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <span>
 #include <array>
@@ -771,7 +771,7 @@ int main() {
 C++20 Ranges 用 `|` 把视图组合成惰性管道：每个元素只在被消费时才经过各阶段，不生成中间容器。`views::filter` 仅过滤、不产生新数组。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <ranges>
@@ -800,7 +800,7 @@ int main() {
 **落地**：
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：std::span ——
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 #include <span>
 #include <vector>
@@ -833,7 +833,7 @@ int main() {
 **落地**：
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：designated initializers —— 明确的聚合初始化
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 
 struct Config {
@@ -1004,7 +1004,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ### D5.3 可复现 demo
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 #include <string>
 #include <format>

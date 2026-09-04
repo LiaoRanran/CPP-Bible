@@ -56,7 +56,7 @@ xUnit 的核心取舍是"隔离 + 断言 + 可重复"：每个测试独立、快
 测试金字塔（Test Pyramid）是测试策略的全局权衡框架：底层是大量的**单元测试**（快、稳定、廉价），中层是较少的**集成测试**（验证模块协作），顶层是更少的**端到端测试**（慢、易碎、昂贵）。C++ 因编译/链接重、平台耦合强，更应避免把逻辑验证压在端到端层。
 
 > **示例 1** [难度 ★★☆☆☆] [主题：概述：测试金字塔 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // ① 测试金字塔：单元/集成/端到端的比例经验值
 // 见 Examples/_ch150_pyramid.cpp
 #include <cstdio>
@@ -99,7 +99,7 @@ invariant: unit_tests >> integration_tests > e2e_tests
 单元测试聚焦**最小可测单元**（函数、类方法），要求快、隔离、可重复。工业界主流是 GoogleTest 与 Catch2，但二者本机均未安装。下面先给自包含等价实现，再给框架上游参考与「典型输出」。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 单元测试
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // ② 自包含单元测试：最小测试 harness（等价 GoogleTest TEST）
 // 见 Examples/_ch150_unit.cpp
 #include <cstdio>
@@ -120,7 +120,7 @@ int main() {
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 单元测试
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ②' 纯函数单元测试：覆盖正常/边界/负数分支
 // 见 Examples/_ch150_unit_calc.cpp
 #include <cstdio>
@@ -141,7 +141,7 @@ int main() {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 单元测试
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // ②'' GoogleTest 等价自包含实现：TEST 宏 + ASSERT_EQ 风格
 // 见 Examples/_ch150_gtest_equiv.cpp
 #include <cstdio>
@@ -156,7 +156,7 @@ int main() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 单元测试
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // ②''' Catch2 等价自包含实现：SECTION 风格计数
 // 见 Examples/_ch150_catch2_equiv.cpp
 #include <cstdio>
@@ -187,7 +187,7 @@ catch2-equiv: mul() 3 sections OK
 **上游参考（GoogleTest）**——若本机已装 `gtest`，等价写法如下（本机未装，故仅作范式，`典型输出` 为框架运行示意）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 单元测试
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // GoogleTest 上游参考（本机未装，未用 g++ 编译；典型输出见下）
 #include <gtest/gtest.h>
 int add(int a, int b) { return a + b; }
@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
 **上游参考（Catch2）**：
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 单元测试
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // Catch2 上游参考（本机未装，未用 g++ 编译；典型输出见下）
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch_test_macros.hpp>
@@ -240,7 +240,7 @@ assertions: 2 | 2 passed
 夹具（fixture）把“准备前置状态 / 清理后置状态”从每个用例中抽离，等价于 GoogleTest 的 `TestFixture`：构造即 `SetUp`，析构即 `TearDown`。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试夹具（fixture）
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ③ 测试夹具：setup/teardown 等价 GoogleTest TestFixture
 // 见 Examples/_ch150_fixture.cpp
 #include <cstdio>
@@ -267,7 +267,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试夹具（fixture）
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // ③' 夹具测试 std::vector 生命周期与容量增长
 // 见 Examples/_ch150_fixture_vec.cpp
 #include <cstdio>
@@ -301,7 +301,7 @@ fixture<vector>: size after clear=0
 外部依赖（网络、数据库、时钟）让单元测试变慢变脆。解法：**依赖注入（DI）**——把依赖抽象成接口，测试时注入假实现（test double / mock）。这把“被测对象”与“环境”解耦。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与依赖注入
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ④ 依赖注入：通过接口替换真实实现为测试替身（test double）
 // 见 Examples/_ch150_mock_di.cpp
 #include <cstdio>
@@ -326,7 +326,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与依赖注入
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ④' Mock 输出流：截获被测代码的写行为做断言
 // 见 Examples/_ch150_mock_stream.cpp
 #include <cstdio>
@@ -364,7 +364,7 @@ mock-stream: captured="error:42"
 断言风格决定了失败时的可诊断性。GoogleTest 的 `ASSERT_*`/`EXPECT_*`、Catch2 的 `REQUIRE` 都提供“表达式 + 失败上下文”。自包含实现同样能给出可读信息。
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 断言风格
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 // ⑤ REQUIRE 风格自定义断言宏（等价 Catch2）
 // 见 Examples/_ch150_assert_style.cpp
 #include <cstdio>
@@ -383,7 +383,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 断言风格
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // ⑤' 带信息的断言：失败时打印上下文
 // 见 Examples/_ch150_assert_msg.cpp
 #include <cstdio>
@@ -415,7 +415,7 @@ assert-msg: 2+2 == 4 verified
 好的测试名本身就是文档。推荐 `Method_Condition_Expectation`（或 Given/When/Then）三段式，使失败信息自解释，无需读实现即可定位。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试命名与组织
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // ⑥ 测试命名：Method_Condition_Expectation（Given/When/Then 风格）
 // 见 Examples/_ch150_naming.cpp
 #include <cstdio>
@@ -447,7 +447,7 @@ naming: 2 named cases (Divide_*) OK
 覆盖率衡量“被测试执行到”的代码比例，常用行覆盖、分支覆盖、MC/DC（修订的条件/判定覆盖，安全关键领域强制）。覆盖率**不是目标而是探针**：低覆盖暴露未测路径，高覆盖不保证正确。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 覆盖率
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 // ⑦ 分支覆盖率：sign() 的 pos/neg/zero 三条分支均被覆盖
 // 见 Examples/_ch150_coverage.cpp
 #include <cstdio>
@@ -479,7 +479,7 @@ coverage: sign() branches pos/neg/zero all hit
 集成测试验证**多个模块协作**是否正确，例如“服务层 ↔ 仓储层”。相比单元测试，它允许（并需要）真实的协作对象，但仍不触达进程外资源。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 集成测试
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑧ 集成测试：仓储层 + 服务层协作（自包含，无外部 DB）
 // 见 Examples/_ch150_integration.cpp
 #include <cstdio>
@@ -517,7 +517,7 @@ integration: UserService<->Repo OK (alice, empty)
 端到端（E2E）测试驱动完整链路（请求→处理→响应），最接近真实使用，但最慢、最易碎。应仅覆盖**关键 happy-path**。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 端到端测试
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑨ 端到端测试：模拟 HTTP 请求 -> 处理 -> 响应 全链路
 // 见 Examples/_ch150_e2e.cpp
 #include <cstdio>
@@ -552,7 +552,7 @@ e2e: request PING -> response 'PONG'
 模糊测试（fuzzing）以大量（半）随机输入持续喂给被测函数，自动探索崩溃、越界、死循环等。LLVM 的 libFuzzer 是 C/C++ 主流。本机未装 clang/libFuzzer，先给**自包含等价**（固定对抗语料驱动解析器），再给 libFuzzer 上游命令与「典型输出」。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模糊测试
-```cpp
+```cpp title="示例 18 · ★★★☆☆"
 // ⑩ 模糊测试等价：以固定对抗语料驱动解析器，捕捉越界/崩溃
 // 见 Examples/_ch150_fuzz_equiv.cpp
 #include <cstdio>
@@ -589,7 +589,7 @@ fuzz-equiv: corpus=5 parsed_ok=3 (no crash)
 **上游参考（libFuzzer）**——若本机有 clang，等价 fuzz target 与命令如下（本机未装，`典型输出` 为框架运行示意）：
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模糊测试
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // libFuzzer 上游参考（本机未装 clang/libFuzzer，未用 g++ 编译）
 #include <cstdint>
 #include <cstddef>
@@ -616,7 +616,7 @@ $ ./fuzz
 基准测试量化性能，但极易被编译器优化欺骗（见 ⑮）。Google Benchmark 是 C++ 主流框架；本机未装，先给**自包含计时等价**，再给上游命令与「典型输出」。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准测试
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // ⑪ 基准测试等价：计时 std::vector push_back（结果经 volatile 下沉防 DCE）
 // 见 Examples/_ch150_bench_equiv.cpp
 #include <cstdio>
@@ -637,7 +637,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 基准测试
-```cpp
+```cpp title="示例 21 · ★★★☆☆"
 // ⑪' 朴素基准陷阱：循环结果被常量折叠消除（此处保留消费以真实计时）
 // 见 Examples/_ch150_bench_naive.cpp
 #include <cstdio>
@@ -669,7 +669,7 @@ bench-naive: sum 0..1000000 = 499999500000 in 0.000 ms
 **上游参考（Google Benchmark）**——若本机已装，写法定式如下（本机未装，`典型输出` 为框架运行示意）：
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准测试
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // Google Benchmark 上游参考（本机未装，未用 g++ 编译）
 #include <benchmark/benchmark.h>
 #include <vector>
@@ -699,7 +699,7 @@ BM_PushBack         6.23 ms         6.21 ms          112
 TDD 的节奏是 **红→绿→重构**：先写会失败的测试（红），再写最少实现使其通过（绿），最后在测试保护下重构。下面呈现场景的“绿”态。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试驱动开发 TDD
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // ⑫ TDD 红-绿：先写失败测试，再实现使其通过（此处呈现场景最终态）
 // 见 Examples/_ch150_tdd.cpp
 #include <cstdio>
@@ -734,7 +734,7 @@ tdd: is_palindrome green (4 cases)
 参数化测试用同一段断言驱动多组数据，避免复制粘贴，等价于 GoogleTest 的 `TEST_P` / Catch2 的 `TEMPLATE_TEST_CASE`。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 参数化测试
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑬ 参数化测试：以数据集驱动同一断言（等价 GoogleTest TEST_P）
 // 见 Examples/_ch150_param.cpp
 #include <cstdio>
@@ -754,7 +754,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 参数化测试
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // ⑬' 结构化参数：{输入,期望} 表驱动测试
 // 见 Examples/_ch150_param_struct.cpp
 #include <cstdio>
@@ -774,7 +774,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 参数化测试
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 // ⑬'' GoogleTest TEST_P 等价：组合 {a,b,expect}
 // 见 Examples/_ch150_param_gtest_equiv.cpp
 #include <cstdio>
@@ -808,7 +808,7 @@ param-gtest-equiv: max() 4 params OK
 异常安全路径必须被显式测试：验证“在给定条件下**确实抛出**预期异常”，等价于 GoogleTest 的 `EXPECT_THROW` / Catch2 的 `REQUIRE_THROWS_AS`。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常测试
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // ⑭ 异常测试：验证被测代码按契约抛异常（等价 EXPECT_THROW）
 // 见 Examples/_ch150_except.cpp
 #include <cstdio>
@@ -845,7 +845,7 @@ except: out_of_range thrown as expected
 **陷阱一：DCE。** 若基准计算的结果不被“消费”，编译器在 `-O2` 下会把整段计算消除，测得 0 毫秒，毫无意义。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能测试陷阱
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // ⑮ DCE 实证：结果未消费 -> 循环被 -O2 消除；用 volatile 下沉则保留
 // 见 Examples/_ch150_dce.cpp
 #include <cstdio>
@@ -880,7 +880,7 @@ dce: A(no-sink)=0.000 ms  B(volatile-sink)=107.406 ms
 **陷阱二：未预热。** 首次执行往往更慢（指令缓存、内存映射未热），基准应丢弃首批。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能测试陷阱
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // ⑮' 预热实证：同一负载首次往往更慢，基准应丢弃首批
 // 见 Examples/_ch150_dce_warm.cpp
 #include <cstdio>
@@ -918,7 +918,7 @@ warmup: round1=11.984 ms round2=10.366 ms (discard round1)
 C++ 代码常因平台（Windows / Linux / macOS）在类型宽度、对齐、系统 API 上分叉。测试应随编译宏选择断言路径，并在 CI 矩阵里覆盖多平台。
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：平台相关测试 <span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ⑯ 平台相关测试：依据编译宏选择断言路径（本机为 Windows/MinGW）
 // 见 Examples/_ch150_platform.cpp
 #include <cstdio>
@@ -952,7 +952,7 @@ platform: _WIN32 path, LP64 pointer=8 bytes
 GCC 的 libstdc++ 自带庞大 testsuite（`${GCC_SRC}/libstdc++-v3/testsuite/`），每个用例以 `// { dg-do run }` 标注语义动作，用 `VERIFY` 宏断言。下面给出一个**等价自包含**用例，并附对真实 `cassert` 头文件的源码剖析（行号取自本机 libstdc++ 13.1.0）。
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // ⑰ libstdc++ testsuite 风格：dg-do run + VERIFY 宏
 // 见 Examples/_ch150_gcc_testsuite.cpp
 #include <cstdio>
@@ -980,7 +980,7 @@ gcc-testsuite-style: vector(5,7) VERIFY OK
 **源码剖析（模板 C）**——`assert` 宏来自标准转发头 `cassert`，其底层 `#include <assert.h>` 的真实位置如下（行号取自本机 libstdc++ 13.1.0 真实文件）：
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cassert
 // 行号：44
 // 43  #include <bits/c++config.h>
@@ -1000,7 +1000,7 @@ gcc-testsuite-style: vector(5,7) VERIFY OK
 常见测试反模式：**脆弱测试（fragile test）** 与被测顺序耦合的**共享可变状态**。下面的例子演示“不重置全局状态 → 用例间相互污染”。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（脆弱测试/测试依赖）
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // ⑱ 反模式：依赖全局顺序/隐式状态的脆弱测试（演示为何要避免）
 // 见 Examples/_ch150_antipattern.cpp
 #include <cstdio>
@@ -1034,7 +1034,7 @@ antipattern: reset global before each case -> stable
 测试只有在**每次推送自动执行**时才产生价值。CI 门禁约定：测试可执行文件返回非 0 即阻断合并。测试套件本身也应进入流水线（见 ch149）。
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试与 CI
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // ⑲ CI 门禁：测试可执行文件返回非 0 即阻断合并（此处呈现场景通过态）
 // 见 Examples/_ch150_ci_test.cpp
 #include <cstdio>
@@ -1086,7 +1086,7 @@ CI 中的测试门禁可用 ASCII 框线表示（Bible 允许）：
 测试策略是 C++ 工程健壮性的基石：以**单元测试为主力**（≥70%），用**夹具/参数化**消除重复，用**依赖注入 + mock** 隔离外部世界，用 **TDD/异常测试** 固化契约，用 **fuzz/基准** 守住鲁棒与性能边界，并最终通过 **CI 门禁** 自动化执行。所有示例均经本机 `g++ 13.1.0` 真实编译运行（见下方聚合自检与 `_run/ch150_mine.log`），框架部分以“上游参考 + 自包含等价”如实呈现。
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 小结
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // 收尾：汇总自检（在 CI 中被逐个调用；此处独立验证编译链可用）
 // 见 Examples/_ch150_sanity.cpp
 #include <cstdio>
@@ -1249,7 +1249,7 @@ gRPC C++ 仓库有 ~3000 个测试用例，每天 CI 总有 2–5 个随机失�
 使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 重构建议
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
 template <typename T>
@@ -1267,7 +1267,7 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 请写一个不依赖任何框架的迷你测试台：收集通过/失败数，`main` 返回非 0 表示有失败。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <string>
 
@@ -1296,7 +1296,7 @@ int main() {
 并对一组用例（正常/空串/溢出/非数字）循环断言，模拟参数化执行。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 #include <iostream>
 #include <optional>
 #include <string>
@@ -1340,7 +1340,7 @@ int main() {
 再用一个“变异输入循环”持续调用并断言“绝不溢出、绝不崩溃”——这是 libFuzzer 思想的自包含等价。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 #include <iostream>
 #include <optional>
 #include <cstdint>
@@ -1382,7 +1382,7 @@ int main() {
 **落地**：
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：Flaky Test——共
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 
 // 反例：共享全局计数器，不清零 -> 结果依赖执行顺序（flaky 根源）
@@ -1410,7 +1410,7 @@ int main() {
 **落地**：
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：TDD 红-绿-重构——先
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 #include <string>
 #include <cstddef>
@@ -1572,7 +1572,7 @@ flowchart TD
 金字塔自底向上：单元测试（大量，~70%）→ 集成测试（中等，~20%）→ 端到端测试（少量，~10%）。端到端测试启动慢、脆弱、调试难、覆盖成本高，故应最少；单元测试快、隔离、定位准，故最多。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <cassert>
 #include <iostream>
 static int passed = 0;
@@ -1598,7 +1598,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <cassert>
 #include <string>
 #include <unordered_map>

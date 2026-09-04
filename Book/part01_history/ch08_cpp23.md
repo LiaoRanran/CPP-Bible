@@ -61,7 +61,7 @@ C++23 是最容易被误读的版本：语言层面改动很小，很多人因�
 带着这几笔账往下读，每一节都会回到它们：⑩ 汇编证明 `std::print` 的格式检查发生在编译期，⑯ 易错点把 `expected` 的嵌套分支陷阱挑明，⑱ 最佳实践收束成"哪些立刻能用、哪些等生态"清单；附录 D5 用 GCC 15.3 基准给你看 ranges 惰性管线的真实开销。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 我们正在回答的问题
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 // [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 #include <expected>
@@ -75,7 +75,7 @@ int main() {
 ## ② 前置知识
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // [merged] ## ② 前置知识
 #include <iostream>
 #include <span>
@@ -92,7 +92,7 @@ int main() {
 ## ③ 后续依赖
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // [merged] ## ③ 后续依赖
 #include <iostream>
 #include <string>
@@ -107,7 +107,7 @@ int main() {
 ## ④ 知识图谱
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识图谱
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // [merged] ## ④ 知识图谱
 #include <iostream>
 struct M{ int at(int i,int j) const { return i+j; } }; M m; int v=m.at(1,2);
@@ -132,7 +132,7 @@ C++23 库大修
 ## ⑤ Mermaid（expected 错误处理流）
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Mermaid 图解
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // [merged] ## ⑤ Mermaid（expected 错误处理流）
 #include <iostream>
 #include <ranges>
@@ -145,7 +145,7 @@ int main() {}
 ## ⑥ UML / 结构图（特性关系）<span class="badge badge-std">标准</span>
 
 > **示例 7** [难度 ★★☆☆☆] [主题：结构图（特性关系）<span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
 inline unsigned long long operator"" _u(unsigned long long x){ return x; }  // 用户定义字面量（UDL）
@@ -177,7 +177,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ## ⑦ ASCII 内存图（flat_map 连续布局）
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（flatmap 连续布局）
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // [merged] ## ⑦ ASCII 内存图（flat_map 连续布局）
 #include <iostream>
 #include <ranges>
@@ -188,7 +188,7 @@ int main() {}
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期（新增库类型的所有权语义）
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
 #include <expected>
@@ -201,7 +201,7 @@ int main() {
 ## ⑨ 调用栈（编译期分支与折叠）
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈（编译期分支与折叠）
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // [merged] ## ⑨ 调用栈（编译期分支与折叠）
 #include <iostream>
 void hi(){ std::cout << "hi\n"; }
@@ -235,7 +235,7 @@ values: [v1][v2][v3]...   ← 连续内存, 缓存友好, 查找 O(log n)
 > 故用**等价的 `std::format`（已验证可编译+链接）**展示格式化机制。自定义 formatter 通过 handler 函数指针注入格式上下文，编译期生成 `_S_format<Point const>`：
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编
-```cpp
+```cpp title="示例 13 · ★★★★☆"
 // _asm_demo/ch08_format_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测可编可链）
 #include <format>
 #include <cstdio>
@@ -263,7 +263,7 @@ mov    edx,DWORD PTR [r8]       ; 取 Point.x
 ## ⑪ STL 联系
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // [merged] ## ⑪ STL 联系
 #include <iostream>
 struct Cb{ static void run(){ } };
@@ -277,7 +277,7 @@ int main() {}
 ## ⑫ 工业案例
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // [merged] ## ⑫ 工业案例
 #include <iostream>
 #include <expected>
@@ -296,7 +296,7 @@ int main() {}
 ## ⑬ 源码分析
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // 属性 [[assume]] 优化提示（C++23，GCC 13+）：给优化器的"不为假"承诺
 #include <cstdio>
 int scale(int x){ [[assume(x>0)]]; return x*2; }
@@ -312,7 +312,7 @@ int main() {
 ## ⑭ WG21 提案
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // std::flat_set（C++23 有序去重集合；GCC 13 尚无 <flat_set>，用 std::set 等价演示）
 #include <set>
 #include <cstdio>
@@ -346,7 +346,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // std::print 格式化（GCC 14 起可用；此处用 cout 等价演示）
 #include <iostream>
 void fmt(){ std::cout << "val=" << 100 << "\n"; }
@@ -362,7 +362,7 @@ int main() {
 ## ⑰ FAQ
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // 多维下标运算符重载（C++23 起允许 operator[](int, int) 多参数形参）
 #include <cstdio>
 struct Mat{
@@ -382,7 +382,7 @@ int main() {
 ## ⑱ 最佳实践
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // std::expected 作为返回（C++23，GCC 12+）：无异常的错误通道
 #include <expected>
 #include <cstdio>
@@ -476,7 +476,7 @@ C++23 是「修齐现代写法」的小代际。下面按领域展开：
 ## 附录: C++23 关键特性速查
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
 #include <expected>
 #include <string>
@@ -486,7 +486,7 @@ int main(){auto r=safe_div(10,2);std::cout<<(r?r.value():-1)<<std::endl;return 0
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 // C++23: #include <print> + std::print("C++23 print: {} + {} = {}\n",1,2,3);
 // 本机 GCC 13.1.0 未实现 <print>，用 cout 等价演示：
@@ -494,14 +494,14 @@ int main(){std::cout << "C++23 print: 1 + 2 = 3\n"; return 0;}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
 int main(){auto v=std::views::iota(1)|std::views::take(5);for(int x:v)std::cout<<x<<" ";std::cout<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++23 关键特性速查
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 #include <iostream>
 int main(){int a[3]{1,2,3};for(int i=0;i<3;i++)if(auto j=a[i];j>1)std::cout<<j<<" ";std::cout<<std::endl;return 0;}
 ```
@@ -511,7 +511,7 @@ int main(){int a[3]{1,2,3};for(int i=0;i<3;i++)if(auto j=a[i];j>1)std::cout<<j<<
 ## 附录 B: C++23 关键特性实战
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 // C++23: #include <print> + std::print("C++23 print: {} + {} = {}\n", 1, 2, 3);
 // 本机 GCC 13.1.0 未实现 <print>，用 cout 等价演示：
@@ -519,7 +519,7 @@ int main(){std::cout << "C++23 print: 1 + 2 = 3\n"; return 0;}
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 #include <expected>
 #include <string>
@@ -528,14 +528,14 @@ int main(){auto r=safe_div(10,2);if(r)std::cout<<*r<<std::endl;return 0;}
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
 int main(){auto sq=std::views::iota(1,6)|std::views::transform([](int x){return x*x;});for(int x:sq)std::cout<<x<<" ";std::cout<<std::endl;return 0;}
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++23 关键特性实战
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // 注：演示用 sorted vector + lower_bound 等价 flat_map 查找（免 <flat_map> 依赖，本机 Qt MinGW 13.1 未提供）
 #include <iostream>
 #include <vector>
@@ -568,7 +568,7 @@ std::print (P2093):
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 #include <iostream>
 #include <expected>
 #include <string>
@@ -641,7 +641,7 @@ _Z13expected_pathv:
 | 输出 | std::cout | std::print | 5-10x faster（量级; C++23, 来源 cppreference） |
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能数据
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 #include <expected>
 #include <string>
@@ -659,7 +659,7 @@ Q: flat_map vs map? A: flat_map=读多写少(Cache友好, 插入O(N)); map=读�
 
 views::zip: 并行迭代:
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C++23 ranges增
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
 #include <vector>
@@ -685,7 +685,7 @@ flat_map底层: std::vector<pair<K,V>> + std::sort → 二分查找O(logN)
 vs std::map(红黑树): flat_map内存连续, Cache友好, 遍历快 ~252x（本机实测, 见 ch83_map 附录 E）
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：C++23 flatmap
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // 注：演示用 sorted vector + lower_bound 等价 flat_map 存储（免 <flat_map> 依赖，本机 Qt MinGW 13.1 未提供）
 #include <iostream>
 #include <vector>
@@ -939,7 +939,7 @@ count_even(const std::vector<int>&) @ -O2 (98 B):
 C++23 把多个 range 按元素位置绑定成单个"元组视图"，并可直接给迭代标上下标，无需拷贝、无需手写索引：
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 #include <iostream>
 #include <ranges>
 #include <vector>
@@ -979,7 +979,7 @@ int main() {
 `std::byteswap`（P1272R4，C++23，头 `<bit>`）把一个整数类型的字节序整体反转，且**只对无符号整数有意义**：
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <bit>
 #include <cstdint>
@@ -1013,7 +1013,7 @@ int main() {
 `std::generator<T>`（P2168R5，C++23，头 `<generator>`）基于协程，迭代时才 `co_yield` 出下一个值，零预分配：
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <generator>
 #include <ranges>
@@ -1054,7 +1054,7 @@ int main() {
 `std::expected<T, E>` 把"成功值 T"与"失败值 E"放进同一个返回值，调用方必须显式检查 `has_value()` 或 `operator bool`，比裸错误码更难遗漏，又比异常更适合零开销的热路径。
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 42 · ★★★☆☆"
 #include <iostream>
 #include <expected>
 #include <string>
@@ -1087,7 +1087,7 @@ int main() {
 `std::views::zip` 在 C++23 提供"多范围按最短长度"的惰性 zip 视图，按引用取元素，不构造任何中间容器——这正是它相比"先拼成 `vector<pair>`"的优势。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 43 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <ranges>
@@ -1258,7 +1258,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ### D5.3 可复现 demo
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>

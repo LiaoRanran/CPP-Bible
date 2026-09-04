@@ -228,6 +228,10 @@ def process_file(path: pathlib.Path, apply: bool, titles: bool):
 
 
 def main():
+    # GBK 控制台护栏：输出含 ⚠️/中文时 UnicodeEncodeError 会中断批量处理
+    if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description="代码块版式统一（围栏标签 + 行尾注释对齐）")
     ap.add_argument("files", nargs="+", help="章节 .md 文件")
     ap.add_argument("--apply", action="store_true", help="写入修改（默认仅报告）")

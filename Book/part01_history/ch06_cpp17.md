@@ -62,7 +62,7 @@ C++17 的标签一直是"生产力跃升"，但这四个字最容易让人把它
 带着这几笔账往下读，每一节都会回到它们：⑪ STL 联系把 optional/variant/any 接回容器选择，⑱ 最佳实践收束成可照抄清单，附录 D5 用 GCC 15.3 基准实测这些"语义糖"的零开销承诺到底兑现没有。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 我们正在回答的问题
-```cpp
+```cpp title="示例 1 · ★★★☆☆"
 // [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 auto p=std::make_pair(1,2.0); void use_sb(){ auto& [a,b]=p; (void)a;(void)b; }
@@ -73,7 +73,7 @@ int main() {}
 ## ② 前置知识
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // [merged] ## ② 前置知识
 #include <iostream>
 #include <optional>
@@ -89,7 +89,7 @@ int main() {
 ## ③ 后续依赖
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 // [merged] ## ③ 后续依赖
 #include <iostream>
 inline int g_counter=0;
@@ -102,7 +102,7 @@ int main() {}
 ## ④ 知识图谱
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // [merged] ## ④ 知识图谱
 #include <iostream>
 #include <filesystem>
@@ -132,7 +132,7 @@ C++17 生产力
 ## ⑤ Mermaid（结构化绑定解构）
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Mermaid 图解
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // [merged] ## ⑤ Mermaid（结构化绑定解构）
 #include <iostream>
 #include <vector>
@@ -145,7 +145,7 @@ int main() {
 ## ⑥ UML / 结构图（特性关系）<span class="badge badge-std">标准</span>
 
 > **示例 7** [难度 ★★☆☆☆] [主题：结构图（特性关系）<span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
 namespace outer::inner { int x=1; }
@@ -175,7 +175,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ## ⑦ ASCII 内存图（string_view 不拥有数据）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // [merged] ## ⑦ ASCII 内存图（string_view 不拥有数据）
 #include <iostream>
 int main() {
@@ -187,7 +187,7 @@ int main() {
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期（新增库类型的所有权语义）
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
 #include <variant>
@@ -203,11 +203,11 @@ int main() {
 ## ⑨ 调用栈（编译期分支与折叠）
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 auto t=std::make_tuple(1,2); void use_apply(){ std::apply([](auto...x){ ((void)x, ...); }, t); }
 ```
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // 并行算法（执行策略）
 #include <algorithm>
 #include <vector>
@@ -229,7 +229,7 @@ string_view sv:
 ## ⑩ 汇编（折叠表达式展开）
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编（折叠表达式展开）
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // [merged] ## ⑩ 汇编（折叠表达式展开）
 #include <iostream>
 #include <algorithm>
@@ -245,7 +245,7 @@ int main() {
 ## ⑪ STL 联系
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // [merged] ## ⑪ STL 联系
 #include <iostream>
 #include <string>
@@ -262,7 +262,7 @@ int main() {}
 ## ⑫ 工业案例
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // [merged] ## ⑫ 工业案例
 #include <iostream>
 #include <type_traits>
@@ -277,7 +277,7 @@ int main() {}
 ## ⑬ 源码分析
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // [merged] ## ⑬ 源码分析
 #include <iostream>
 #include <filesystem>
@@ -291,7 +291,7 @@ int main() {}
 ## ⑭ WG21 提案
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
 #include <string_view>
@@ -318,7 +318,7 @@ int main() {}
 ## ⑮ 面试题
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // [merged] ## ⑮ 面试题
 #include <iostream>
 #include <optional>
@@ -336,7 +336,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点
-```cpp
+```cpp title="示例 19 · ★★★☆☆"
 // [merged] ## ⑯ 易错点
 #include <iostream>
 #include <variant>
@@ -355,7 +355,7 @@ int main() {
 ## ⑰ FAQ
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // 嵌套命名空间别名
 namespace a::b::c { int v=0; }
 ```
@@ -366,7 +366,7 @@ namespace a::b::c { int v=0; }
 ## ⑱ 最佳实践
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 #include <array>
 std::array<int,2> arr{1,2}; void use_arr(){ auto [x,y]=arr; (void)x;(void)y; }
 ```
@@ -377,7 +377,7 @@ std::array<int,2> arr{1,2}; void use_arr(){ auto [x,y]=arr; (void)x;(void)y; }
 ## ⑲ 性能分析
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // [[maybe_unused]] 参数
 void log([[maybe_unused]] int verbose){}
 ```
@@ -401,7 +401,7 @@ void log([[maybe_unused]] int verbose){}
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.inline]（inline 变量）；cppreference "inline" 词条。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // C++17 小结：结构化绑定/optional/string_view/折叠/if constexpr
 ```
 
@@ -457,7 +457,7 @@ C++17 是今天工业界的事实默认基线。下面按领域展开：
 ## 附录: C++17 五大特性速查
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++17 五大特性速查
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
 #include <optional>
 // 避免与 <cstdlib> 的 ::div 冲突（其它头文件可能间接引入），改名 safe_div
@@ -466,7 +466,7 @@ int main(){if(auto r=safe_div(10,2))std::cout<<*r<<std::endl;return 0;}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++17 五大特性速查
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 #include <variant>
 #include <string>
@@ -474,14 +474,14 @@ int main(){std::variant<int,std::string>v="hello";std::cout<<std::get<std::strin
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++17 五大特性速查
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 int main(){std::map<int,int>m{{1,10},{2,20}};for(auto[k,v]:m)std::cout<<k<<":"<<v<<" ";std::cout<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: C++17 五大特性速查
-```cpp
+```cpp title="示例 27 · ★★★☆☆"
 #include <iostream>
 template<typename T>auto print(T t){if constexpr(std::is_integral_v<T>)std::cout<<"int:"<<t;else std::cout<<"other:"<<t;std::cout<<std::endl;}
 int main(){print(42);print("str");return 0;}
@@ -492,7 +492,7 @@ int main(){print(42);print("str");return 0;}
 ## 附录 B: C++17 更多特性实例
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++17 更多特性实例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 #include <filesystem>
 namespace fs=std::filesystem;
@@ -500,7 +500,7 @@ int main(){auto p=fs::current_path();std::cout<<p.string()<<std::endl;return 0;}
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++17 更多特性实例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 #include <any>
 #include <string>
@@ -508,7 +508,7 @@ int main(){std::any a=42;a=std::string("hello");std::cout<<std::any_cast<std::st
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++17 更多特性实例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 #include <string_view>
 #include <string>
@@ -517,7 +517,7 @@ int main(){print("hello");std::string s="world";print(s);return 0;}
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: C++17 更多特性实例
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 #include <iostream>
 template<typename...Ts> auto sum(Ts...ts){return (ts+...);}
 int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
@@ -538,7 +538,7 @@ filesystem: 跨平台统一, 替代boost::filesystem
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：C++17底层与工业采纳
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 #include <optional>
 #include <string_view>
@@ -597,7 +597,7 @@ if constexpr(P0292R2): 死分支不编译→编译快2-5x, 二进制减10-30%
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编验证
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 #include <string_view>
 void process(std::string_view sv){std::cout<<sv.size()<<std::endl;}
@@ -613,7 +613,7 @@ Q: if constexpr vs SFINAE? A: 简单分支→if constexpr; 多重重载→concep
 ## 附录 E：C++17面试速查
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C++17面试速查
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <optional>
 #include <string_view>
@@ -676,7 +676,7 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 **真实场景：解析配置/HTTP 头键值对。** 你处理一个 `std::map` 里的配置项（超时、重试次数），`it->first`/`it->second` 写法又长又易错。请用 C++17 结构化绑定遍历并解构 `[key, value]`，说明它如何提升可读性并减少 `it->` 噪音。
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 #include <map>
 #include <string>
@@ -703,7 +703,7 @@ int main() {
 **真实场景：缓存/配置查表可能缺失。** 你写一个 `lookup(key)`：查缓存命中返回结果，未命中不应返回 `-1` 之类魔法值（调用方容易忘判）。请用 `std::optional<T>` 实现一个可能失败的查表，并演示 `value_or` 与 `has_value` 如何强制处理缺失分支。
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 #include <optional>
 #include <string>
@@ -733,7 +733,7 @@ int main() {
 **真实场景：类型安全的序列化/JSON 编码。** 你写一个把异构值转成字符串的小编码器，`stringify` 要按类型分支、`sum` 要把任意个指标聚合成总和。请用 `if constexpr` + 折叠表达式实现，并说明二者都在编译期完成、零运行期开销。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 38 · ★★★☆☆"
 #include <iostream>
 #include <string>
 #include <type_traits>
@@ -773,7 +773,7 @@ SFINAE/标签分派样板；折叠表达式把变参递归展开压成一行，�
 `std::optional<T>` 把"可能没有 T"这件事直接写进类型系统：调用方拿到 `optional<T>` 时，必须区分"有值"与"无值"，无法再像哨兵值那样被无意忽略。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 #include <optional>
 #include <string>
@@ -805,7 +805,7 @@ int main() {
 `std::string_view` 是一个"指向字符缓冲区的轻量视图"，不拥有内存，因此传参既不拷贝、也不要求对象必须是 `std::string`——字面量、子串、C 字符串都能直接喂进去。
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 42 · ★★★☆☆"
 #include <iostream>
 #include <string_view>
 #include <string>
@@ -837,7 +837,7 @@ int main() {
 **落地**：
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：std::variant
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 #include <variant>
 #include <string>
@@ -868,7 +868,7 @@ int main() {
 **落地**：
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：stringview 零拷
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 #include <string_view>
 #include <string>
@@ -1037,7 +1037,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ### D5.3 可复现 demo
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 #include <string>
 #include <string_view>

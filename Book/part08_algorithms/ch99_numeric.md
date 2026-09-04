@@ -49,7 +49,7 @@
 `<numeric>` 提供一组**归约（reduction）**与**扫描（scan）**算法，以及一组独立的数学工具。它们与 `<algorithm>` 的 `for_each`/`transform` 不同：核心是**把一段输入折叠成一个标量**，或**把前缀状态逐位置展开**。
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：数值算法 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 // ① 头文件与最重要的一组接口（C++17 起成熟，C++20/23 扩展）
 #include <numeric>                                       // accumulate/reduce/inner_product/partial_sum/scan/gcd/lcm/iota/midpoint/lerp
 #include <execution>                                     // execution::seq / par / par_unseq / unseq
@@ -71,7 +71,7 @@ int main() {
 `std::accumulate` 自 C++98 起存在，严格顺序；`std::reduce` 自 C++17 起，允许任意结合顺序，因而可并行。
 
 > **示例 2** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
-```cpp
+```cpp title="示例 2 · ★★★☆☆"
 // 文件：Examples/_ch99_accumulate.cpp
 // 行号：10 (reduce_int) / 13 (accum_int) / 18 (reduce_dbl) / 21 (accum_dbl)
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch99_accumulate.cpp -o Examples/_ch99_accumulate.asm
@@ -183,7 +183,7 @@ _Z10reduce_dblPKdy:
 ```
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ② reduce 与 accumulate 在"整数 + 结合律"下结果一致，但语义不同
 #include <numeric>
 #include <vector>
@@ -198,7 +198,7 @@ int demo_diff() {
 ```
 
 > **示例 4** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // ② 初值类型陷阱：用 0（int）会先把元素截断成 int 再累加 -> 溢出/截断
 #include <numeric>
 #include <vector>
@@ -219,7 +219,7 @@ void init_type_trap() {
 `std::inner_product` 是 "点积 + 广义加权累加"：先把两序列对应元素经二元变换相乘，再经另一二元运算累加。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · product
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // 文件：Examples/_ch99_inner_product.cpp
 // 行号：9 (dot) / 14 (axpy_reduce)
 #include <numeric>
@@ -245,7 +245,7 @@ int main() {
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · product
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // ③ 用 inner_product 计算余弦相似度分子（两向量点积）
 #include <numeric>
 #include <vector>
@@ -256,7 +256,7 @@ double cosine_num(const std::vector<double>& a, const std::vector<double>& b) {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · product
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ③ 与 transform_reduce 的等价写法（见第⑤节）：inner_product 是"二元序列"特例
 #include <numeric>
 #include <vector>
@@ -274,7 +274,7 @@ double dot_via_tr(const std::vector<double>& a, const std::vector<double>& b) {
 "扫描"把**前缀状态**逐位置写出。`partial_sum` 是经典就地流式接口；C++17 起 `inclusive_scan`（含当前）/ `exclusive_scan`（不含当前）/ `transform_exclusive_scan` 提供更规范、可并行的版本。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · sum / inclusivesca
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // 文件：Examples/_ch99_scan.cpp
 // 行号：9 (demo_partial) / 15 (demo_scan) / 21 (demo_exclusive)
 #include <numeric>
@@ -311,7 +311,7 @@ int main() { demo_partial(); demo_scan(); demo_exclusive(); }
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · sum / inclusivesca
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ④ exclusive_scan 的初值语义：out[0] = init，out[i] = op(out[i-1], in[i-1])
 #include <numeric>
 #include <vector>
@@ -347,7 +347,7 @@ void prefix_min_exclusive() {
 `std::transform_reduce` 是 `reduce` + 元素级变换的组合：先对输入做 unary op，再用 binary op 归约。它是**并行友好**的归约主力（点积、平方和、范数、映射后求和都用它）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · reduce
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ⑤ 映射到值后再归约：sum of squares
 #include <numeric>
 #include <vector>
@@ -361,7 +361,7 @@ double sum_of_squares(const std::vector<double>& a) {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · reduce
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 // ⑤ 双区间版本（a,b 对应元素先 binary op 再 reduce），等价点积
 #include <numeric>
 #include <vector>
@@ -375,7 +375,7 @@ double dot2(const std::vector<double>& a, const std::vector<double>& b) {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · reduce
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ⑤ 范数（L2）：sqrt(sum x^2)
 #include <numeric>
 #include <vector>
@@ -397,7 +397,7 @@ double l2_norm(const std::vector<double>& a) {
 用与第②节相同的真实工具链编译 `transform_reduce`，看它到底有没有被向量化。
 
 > **示例 14** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：transformre]
-```cpp
+```cpp title="示例 14 · ★★★☆☆"
 // 文件：Examples/_ch99_transform_reduce.cpp
 // 行号：10 (tr_square) / 17 (tr_mul) / 25 (tr_int)
 // 编译：
@@ -559,7 +559,7 @@ _Z9tr_squarePKdy:
 ```
 
 > **示例 15** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：transformre]
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 // ⑥ 把上面两个编译结果落到"可读结论"：想要 SIMD，需要 -O3 + 合适 ISA + FP 重排许可
 // 本例 tr_square 在 -O2 不向量化，-O3 -mavx2 -ffast-math 才出 vmulpd/vaddpd（见第⑬节）
 #include <cstddef>
@@ -574,7 +574,7 @@ inline bool vectorized_only_at_o3() { return true; }   // 占位：结论见汇�
 C++17 引入 `std::execution`：`seq`/`par`/`par_unseq`/`unseq`。归约类算法（reduce/transform_reduce/scan 家族）接受策略参数即可并行化**计算**，但前提是**归约运算可结合+可交换**且**没有数据竞争**。
 
 > **示例 16** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑦ 正确并行：归约内部无共享写，天然无数据竞争
 #include <numeric>
 #include <vector>
@@ -585,7 +585,7 @@ double par_sum(const std::vector<double>& a) {
 ```
 
 > **示例 17** [难度 ★★★★☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 17 · ★★★★☆"
 // ⑦ 危险并行：在 op 里写共享状态 -> 数据竞争（UB）
 #include <numeric>
 #include <vector>
@@ -600,7 +600,7 @@ double par_with_race(const std::vector<double>& a, double& side_effect) {
 ```
 
 > **示例 18** [难度 ★☆☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑦ 安全替代：把副作用移出归约（先算值，再单独处理）
 #include <numeric>
 #include <vector>
@@ -630,7 +630,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 归约的数值质量取决于**求和顺序**与**量级差异**。`1e15 + 1.0 - 1e15` 在浮点下可能直接得 `0` 而非 `1.0`（大数"吞掉"小数）。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数值稳定性
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // 文件：Examples/_ch99_stability.cpp
 // 行号：11 (cond_number) / 21 (compensated_pairwise)
 #include <numeric>
@@ -663,7 +663,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值稳定性
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // ⑧ Kahan 补偿求和：用第二变量记住被舍入掉的部分，显著提升稳定性
 #include <vector>
 #include <numeric>
@@ -680,7 +680,7 @@ double kahan(const std::vector<double>& v) {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值稳定性
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // ⑧ 朴素 vs 稳定：巨大 + 微小混合时差异明显
 #include <iostream>
 #include <cmath>
@@ -700,7 +700,7 @@ void naive_vs_stable() {
 用 `std::chrono` 在本机实测 `execution::seq` 与 `execution::par` 的耗时差。**结论：本 MinGW 无 TBB，`par` 串行回退，ratio≈1。**
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并行加速实测
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // 文件：Examples/_ch99_par_bench.cpp
 // 行号：见 main：hardware_concurrency=32；seq/par 计时与 ratio 见下方真实输出
 // 编译运行：
@@ -763,7 +763,7 @@ ratio(par/seq) = 1.00962  (≈1 表示串行回退)
 C++17 起 `<numeric>` 提供 `std::gcd`/`std::lcm`，取代手写的欧几里得/倍数计算，且对符号与零有明确定义。
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // 文件：Examples/_ch99_gcd_lcm.cpp
 // 行号：8 (simplify_fraction) / 14 (ring_wrap)
 #include <numeric>
@@ -787,7 +787,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ⑩ 用 gcd 判断互质（RSA/数论常见）
 #include <numeric>
 #include <iostream>
@@ -797,7 +797,7 @@ void coprime_check() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // ⑩ lcm 对零的定义：lcm(x,0)=0（与数学直觉一致，但注意别意外传 0）
 #include <numeric>
 #include <iostream>
@@ -814,7 +814,7 @@ void lcm_zero() {
 `std::iota` 用**连续自增**填充区间，名字源自 APL 的 ⍳。适合快速生成 0..N、步进序列、索引数组。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // 文件：Examples/_ch99_iota.cpp
 // 行号：8 (fill_seq) / 14 (fill_steps)
 #include <numeric>
@@ -839,7 +839,7 @@ int main() { fill_seq(); fill_steps(); }
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // ⑪ 生成下标索引（常用于并行分区 / gather-scatter）
 #include <numeric>
 #include <vector>
@@ -852,7 +852,7 @@ std::vector<std::size_t> make_index(std::size_t n) {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ⑪ 生成 0,2,4,6... 步进序列（iota 配合自定义迭代器语义）
 #include <numeric>
 #include <vector>
@@ -872,7 +872,7 @@ std::vector<int> even_seq(int n) {
 C++20 引入 `std::midpoint`（防溢出中点）与 `std::lerp`（线性插值）。两者都处理了边界/精度陷阱。
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // 文件：Examples/_ch99_midpoint_lerp.cpp
 // 行号：10 (safe_mid) / 16 (anim)
 #include <numeric>
@@ -897,7 +897,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ⑫ midpoint 对指针/浮点也安全：浮点中点不会因大数而溢出
 #include <numeric>
 #include <cmath>
@@ -909,7 +909,7 @@ void mid_fp() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数值算法与并行执行策略
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // ⑫ lerp 在 t=0/t=1 的边界保证：lerp(a,b,0)==a, lerp(a,b,1)==b
 #include <numeric>
 #include <cmath>
@@ -928,7 +928,7 @@ void lerp_edges() {
 `<numeric>` 算法本身不"产生" SIMD，但**规整的归约循环 + 合适编译选项**可被自动向量化（第②/⑥节已实证）。衔接要点：循环体无数据依赖、步长固定、运算可重排。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 SIMD 衔接
-```cpp
+```cpp title="示例 33 · ★★★☆☆"
 // 文件：Examples/_ch99_simd.cpp
 // 行号：11 (manual_simd_friendly) / 19 (compare_tr)
 // 编译-取证：g++ -std=c++23 -O3 -mavx2 -ffast-math -S -masm=intel _ch99_simd.cpp -o _ch99_simd.asm
@@ -957,7 +957,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 SIMD 衔接
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // ⑬ 用 execution::par_unseq 显式允许"并行 + 向量化"两个条件
 #include <numeric>
 #include <vector>
@@ -970,7 +970,7 @@ double par_unseq_sum(const std::vector<double>& a) {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 SIMD 衔接
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ⑬ 对齐 + 避免跨界：若用显式 intrinsic，需 aligned 分配（此处仅示意接口）
 #include <vector>
 #include <cstddef>
@@ -989,7 +989,7 @@ void simd_hint() {
 `reduce` 的并行/分块把加法**重新结合**，而 IEEE-754 浮点加法不结合，于是结果随策略/线程数/输入顺序**改变**（甚至同机器两次跑都不同）。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // 文件：Examples/_ch99_pitfall.cpp
 // 行号：10 (nonassoc) / 18 (fixed_associative)
 // 演示：浮点 reduce 因结合律不成立，结果随执行策略/分块不同而改变
@@ -1016,7 +1016,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // ⑭ 同样输入、不同结合顺序，浮点结果可能不同（示意，(1e-8)*N 与 1.0 的相对位置）
 #include <vector>
 #include <numeric>
@@ -1030,7 +1030,7 @@ void reorder_demo() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // ⑭ 缓解：若必须 FP 归约且要确定性，用 seq + 固定顺序（牺牲并行）
 #include <vector>
 #include <numeric>
@@ -1048,7 +1048,7 @@ double deterministic_fp(const std::vector<double>& v) {
 C++20 ranges 把管道（`|`）与算法结合；C++23 更引入 `ranges::fold_left` 等作为 `accumulate` 的现代化替代，并能与 `<numeric>` 的 `reduce` 混用。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ranges
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // 文件：Examples/_ch99_ranges.cpp
 // 行号：9 (rng_sum) / 15 (rng_fold)
 #include <ranges>
@@ -1078,7 +1078,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 // ⑮ C++23 ranges::fold_left 处理字符串拼接等二元折叠
 #include <ranges>
 #include <string>
@@ -1091,7 +1091,7 @@ std::string join_words(const std::vector<std::string>& ws) {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 // ⑮ iota_view 生成无限/有限步进取前 N：替代手写 iota 填充
 #include <ranges>
 #include <vector>
@@ -1107,7 +1107,7 @@ std::vector<int> first_n(int n) {
 ## ⑯ 最佳实践
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 // 文件：Examples/_ch99_best_practice.cpp
 // 行号：11 (safe_mean) / 19 (kahan)
 #include <numeric>
@@ -1143,7 +1143,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 // ⑯ 实践3：归约初值用"单位元"——加法的单位元是 0，乘法的单位元是 1
 #include <numeric>
 #include <vector>
@@ -1155,7 +1155,7 @@ double product_of(const std::vector<double>& v) {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 // ⑯ 实践4：单线程小数据用 accumulate/reduce(seq)，少一层策略开销
 #include <numeric>
 #include <vector>
@@ -1171,7 +1171,7 @@ double small_sum(const std::vector<double>& v) {
 不同标准库/PSTL 后端对"并行算法"的实现差异很大，这是工业代码移植时最易踩的坑。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库差异
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 // ⑰ 同一份并行代码，三套标准库行为可能不同（伪代码对比，非可编译单文件）
 // libstdc++ (GCC)    : par 需要 TBB 才多线程；否则串行回退（本章已实测）
 // libc++    (Clang)  : par 用自身线程池/或 TBB，行为依构建选项
@@ -1187,7 +1187,7 @@ double cross_lib(const std::vector<double>& a) {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库差异
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 // ⑰ 用宏隔离不同后端的并行开关（工程常见手法）
 #include <numeric>
 #include <vector>
@@ -1211,7 +1211,7 @@ double portable_sum(const std::vector<double>& a) {
 `reduce`/`accumulate` 的浮点结果不仅"不确定"，其**精度**也受顺序影响。理解误差累积是写对数值代码的前提。
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 浮点精度
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 // ⑱ 单精度 vs 双精度：归约误差量级不同
 #include <numeric>
 #include <vector>
@@ -1227,7 +1227,7 @@ void precision_diff() {
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 浮点精度
-```cpp
+```cpp title="示例 48 · ★☆☆☆☆"
 // ⑱ 用 std::lerp 做定点/归一化的稳定插值，避免手算 a+t*(b-a) 的抵消误差
 #include <numeric>
 #include <cmath>
@@ -1247,7 +1247,7 @@ void stable_interp() {
 数值算法难调试，因为"结果只差几个 ULP"看不出。策略：先固定顺序（seq）验证正确性，再比较并行结果是否**近似**一致。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 // 文件：Examples/_ch99_debug.cpp
 // 行号：9 (dump_reduce) / 16 (assert_det)
 // 调试数值算法：对比不同策略结果、断言确定性
@@ -1280,7 +1280,7 @@ int main() {
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 调试
-```cpp
+```cpp title="示例 50 · ★★★★☆"
 // ⑲ 用 sanitizer 抓数据竞争：编译加 -fsanitize=thread 跑并行版
 // g++ -std=c++23 -O1 -fsanitize=thread _ch99_debug.cpp -o dbg && ./dbg
 // 若归约 op 里写了共享变量（第⑦节 ❌ 示例），TSan 会直接报 race。
@@ -1293,7 +1293,7 @@ double tsan_target(const std::vector<double>& a) {
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 // ⑲ 打印归约中间块和，定位"哪一段"贡献异常（调试大数组）
 #include <numeric>
 #include <vector>
@@ -1318,7 +1318,7 @@ void chunk_trace(const std::vector<double>& a) {
 > 此节汇总本章所有独立示例，便于一次性编译校验（路径均位于 `Examples/_ch99_*.cpp`）。
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 52 · ★☆☆☆☆"
 // C1 accumulate / reduce 对比（整数 + 浮点，含初值类型）
 #include <numeric>
 #include <vector>
@@ -1329,7 +1329,7 @@ long long demo_c1(const std::vector<long long>& v) {
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 53 · ★☆☆☆☆"
 // C2 inner_product 点积
 #include <numeric>
 #include <vector>
@@ -1339,7 +1339,7 @@ double demo_c2(const std::vector<double>& a, const std::vector<double>& b) {
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 54 · ★☆☆☆☆"
 // C3 transform_reduce 平方和
 #include <numeric>
 #include <vector>
@@ -1351,7 +1351,7 @@ double demo_c3(const std::vector<double>& a) {
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 55 · ★☆☆☆☆"
 // C4 exclusive_scan 严格前缀
 #include <numeric>
 #include <vector>
@@ -1363,7 +1363,7 @@ std::vector<int> demo_c4(const std::vector<int>& v) {
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 56 · ★☆☆☆☆"
 // C5 gcd/lcm
 #include <numeric>
 #include <iostream>
@@ -1371,7 +1371,7 @@ void demo_c5() { std::cout << std::gcd(12,18) << " " << std::lcm(4,6) << "\n"; }
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 57 · ★☆☆☆☆"
 // C6 iota 索引
 #include <numeric>
 #include <vector>
@@ -1381,7 +1381,7 @@ std::vector<int> demo_c6(int n) {
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 58 · ★☆☆☆☆"
 // C7 midpoint/lerp 边界安全
 #include <numeric>
 #include <cmath>
@@ -1394,7 +1394,7 @@ void demo_c7() {
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 59 · ★★☆☆☆"
 // C8 par_unseq 显式 SIMD+并行意图
 #include <numeric>
 #include <vector>
@@ -1406,7 +1406,7 @@ double demo_c8(const std::vector<double>& a) {
 ```
 
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 60 · ★☆☆☆☆"
 // C9 ranges::fold_left 替代 accumulate
 #include <ranges>
 #include <vector>
@@ -1417,7 +1417,7 @@ int demo_c9(const std::vector<int>& v) {
 ```
 
 > **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
-```cpp
+```cpp title="示例 61 · ★☆☆☆☆"
 // C10 调试：整数 seq/par 必相等
 #include <numeric>
 #include <vector>
@@ -1529,7 +1529,7 @@ ClickHouse:
 ```
 
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
-```cpp
+```cpp title="示例 63 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1606,7 +1606,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 64 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1634,7 +1634,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 65 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1658,7 +1658,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 66 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1690,7 +1690,7 @@ int main() {
 边界条件与失效场景：输出区间与输入区间重叠时须"就地"——`partial_sum(v.begin(), v.end(), v.begin())` 合法（单遍右写）；但输出到 `v.begin()+1` 这类部分重叠属未定义。累加溢出是常见坑：`int` 前缀和在大数据下会溢出，建议输出到 `long long` 并显式指定类型。浮点前缀和误差随长度累积，金融场景用 `Kahan` 等补偿算法替代。
 
 > **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 73 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1722,7 +1722,7 @@ int main() {
 边界条件与失效场景：`reduce` 在无 TBB 的 libstdc++ 上 `par` 会回退串行仍正确，但 `par` 需要链接 TBB 才能在真正多线程下运行；`unseq` 则无此依赖。浮点归约顺序不定 → 结果与 `accumulate` 有微小数值差，需要位级一致性的场景（金融对账）应坚持 `accumulate`。`iota` 对 `char` 等会回绕，注意值域。
 
 > **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 74 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1751,7 +1751,7 @@ int main() {
 **常见错误（text）**：
 
 > **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：并行规约——reduce
-```cpp
+```cpp title="示例 67 · ★☆☆☆☆"
 // 错误写法（std::accumulate 不接受执行策略，以下为反模式示意，本身不可编译）:
 // auto s = std::accumulate(std::execution::par, v.begin(), v.end(), 0);
 ```
@@ -1759,7 +1759,7 @@ int main() {
 **修复（cpp）**：用 `std::reduce`（带执行策略重载）做并行规约。
 
 > **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：并行规约——reduce
-```cpp
+```cpp title="示例 68 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1781,7 +1781,7 @@ int main() {
 **常见错误（text）**：
 
 > **示例 69** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：初值类型决定结果类型
-```cpp
+```cpp title="示例 69 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -1795,7 +1795,7 @@ int main() {
 **修复（cpp）**：用 `0.0` 作初值，结果类型即 `double`。
 
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：初值类型决定结果类型
-```cpp
+```cpp title="示例 70 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>
@@ -2052,7 +2052,7 @@ flowchart TD
 ### D4.5 第一方可编译验证（accumulate / reduce / partial_sum）
 
 > **示例 71** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 71 · ★★☆☆☆"
 #include <iostream>
 #include <numeric>
 #include <vector>
@@ -2179,7 +2179,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 72 · ★★☆☆☆"
 #include <iostream>
 #include <numeric>
 #include <vector>

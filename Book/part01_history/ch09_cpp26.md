@@ -64,7 +64,7 @@ C++26 是"未来时态"的一章，也最容易被读成一张"和现在无关�
 带着这几笔账往下读，每一节都会回到它们：⑩ 的 GCC 15.3 真机实测会让你亲眼看到"反射尚未实现——`<meta>` 头不存在"，⑰ FAQ / ⑱ 最佳实践会明确告诉你"哪些特性现在就能在你的编译器上试、哪些必须等"；通篇凡 `[UNVERIFIED]` 标记处都代表"本机 GCC 当前不可验证"，请别误读为已能编过。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 我们正在回答的问题
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // [merged] ## ① 我们真正要回答的问题
 #include <iostream>
 #include <string>
@@ -76,7 +76,7 @@ int main() {}
 ## ② 前置知识
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // [merged] ## ② 前置知识
 #include <iostream>
 struct Base9{ int a; }; struct Der9:Base9{ int b; }; Der9 d9{{1},2};
@@ -89,7 +89,7 @@ int main() {}
 ## ③ 后续依赖
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 // [merged] ## ③ 后续依赖
 #include <iostream>
 #include <concepts>
@@ -103,7 +103,7 @@ int main() {}
 ## ④ 知识图谱（ASCII）
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识图谱（ASCII）
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // [merged] ## ④ 知识图谱（ASCII）
 #include <iostream>
 #include <ranges>
@@ -129,7 +129,7 @@ C++26 (方向)
 ## ⑤ Mermaid（执行器 Sender 管线）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Mermaid 图解
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // [merged] ## ⑤ Mermaid（执行器 Sender 管线）
 #include <iostream>
 static_assert(__cplusplus >= 202002L, "need c++20+");
@@ -141,7 +141,7 @@ int main() {
 ## ⑥ UML / 结构图（C++26 方向性特性）<span class="badge badge-std">标准</span>
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · UML / 结构图（C++26 方向性特性） [标准]
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // [merged] ## ⑥ UML / 结构图（C++26 方向性特性）[标准]
 #include <iostream>
 int main() {}
@@ -151,7 +151,7 @@ C++26（草案）：静态反射、`std::execution` sender/receiver、契约 (co
 ## ⑦ ASCII 内存图（C++26 反射与值）
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（C++26 反射与值）
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // [merged] ## ⑦ ASCII 内存图（C++26 反射与值）
 #include <iostream>
 struct W9{ int v=1; void run(){ auto f=[self=*this]{ return self.v; }; (void)f; } };
@@ -162,7 +162,7 @@ int main() {}
 ## ⑧ 生命周期（C++26 契约与 constexpr 扩展）
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // [merged] ## ⑧ 生命周期（C++26 契约与 constexpr 扩展）
 #include <iostream>
 struct V9{ constexpr virtual int f() const { return 1; } };
@@ -173,7 +173,7 @@ int main() {}
 ## ⑨ 调用栈（C++26 sender/receiver 执行器）
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // std::execution 执行策略（par 并行；P2300 sender/receiver 见下文 UNVERIFIED 节）
 #include <execution>
 #include <algorithm>
@@ -204,7 +204,7 @@ flowchart LR
 ## ⑩ 汇编（反射编译期生成）
 
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编（反射编译期生成）
-```cpp
+```cpp title="示例 12 · ★★★☆☆"
 // [merged] ## ⑩ 汇编（反射编译期生成）
 #include <iostream>
 void use_hex2(){ auto hex_f=0x1.8p3; (void)hex_f; }  // 十六进制浮点字面量（C++23 起）
@@ -223,7 +223,7 @@ int main() {}
 ## ⑪ STL 联系
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // [merged] ## ⑪ STL 联系
 #include <iostream>
 #include <vector>
@@ -239,7 +239,7 @@ int main() {
 ## ⑫ 工业案例
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // [merged] ## ⑫ 工业案例
 #include <iostream>
 [[assume(true)]] void hint9(){}
@@ -252,7 +252,7 @@ int main() {}
 ## ⑬ 源码分析（方向）
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析（方向）
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // [merged] ## ⑬ 源码分析（方向）
 #include <iostream>
 int main() {}
@@ -264,7 +264,7 @@ int main() {}
 ## ⑭ WG21 提案（关键，可能变动）
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 提案（关键，可能变动）
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // [merged] ## ⑭ WG21 提案（关键，可能变动）
 #include <iostream>
 #include <atomic>
@@ -283,7 +283,7 @@ int main() {
 ## ⑮ 面试题
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // [merged] ## ⑮ 面试题
 #include <iostream>
 #include <ranges>
@@ -298,7 +298,7 @@ int main() {}
 ## ⑯ 易错点
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // [merged] ## ⑯ 易错点
 #include <iostream>
 constexpr int len(const char* s){ int n=0; while(s[n]) ++n; return n; } static_assert(len("hi")==2, "");
@@ -311,7 +311,7 @@ int main() {}
 ## ⑰ FAQ
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // [merged] ## ⑰ FAQ
 #include <iostream>
 #include <cstdint>
@@ -328,7 +328,7 @@ int main() {
 ## ⑱ 最佳实践
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // [merged] ## ⑱ 最佳实践
 #include <iostream>
 #include <variant>
@@ -364,7 +364,7 @@ int main() {}
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为支持判定）；cppreference "Feature test macros" 词条。
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // 编译器版本探测（编译期宏 + static_assert，零运行时成本）
 #include <cstdio>
 #ifdef __GNUC__
@@ -427,7 +427,7 @@ C++26 的特性已在编译器实验分支提前「活」起来。下面按领�
 ## 附录: C++26 方向特性前瞻
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++26 方向特性前瞻
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::execution(P2300), std::simd.\n";return 0;}
 ```
@@ -438,7 +438,7 @@ int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::executio
 ## 附录 B: C++26 方向深度代码
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
 #include <cassert>
 int bounded_sqrt(int x){assert(x>=0);int r=0;while(r*r<=x)++r;return r-1;}
@@ -446,19 +446,19 @@ int main(){std::cout<<bounded_sqrt(50)<<std::endl;return 0;}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"P2300 sender/receiver: composable async pipeline, replaces future/promise."<<std::endl;return 0;}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"P2996 reflection: enumerate members at compile time, auto-generate JSON/serialization."<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: C++26 方向深度代码
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"std::simd: explicit SIMD vectors without intrinsics, portable across architectures."<<std::endl;return 0;}
 ```
@@ -483,7 +483,7 @@ std::execution (P2300R7):
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：C++26底层影响与工业前
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 int main() {
     std::cout << "C++26 = Contracts + Reflection + std::execution = trifecta" << std::endl;
@@ -529,7 +529,7 @@ std::execution(P2300): 统一15年分散的异步模型(callback/future/coroutin
 | std::execution | asio/epoll | 编译期组合 | 统一异步 |
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业影响
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++26=Contracts+Reflection+std::execution=proof-carrying+zero-preprocessor+unified-async"<<std::endl;return 0;}
 ```
@@ -548,7 +548,7 @@ P2300 sender/receiver模型统一了C++的异步编程:
 - 组合器: then/upon_error/retry/stop_when
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C++26 P2300 s
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"P2300 sender/receiver=unified async model, zero-callback overhead"<<std::endl;std::cout<<"Replaces: Boost.Asio callbacks, std::future, coroutine manual scheduling"<<std::endl;return 0;}
 ```
@@ -572,7 +572,7 @@ P2300核心优势:
 C++20 P0542被拒(continuation过于复杂)。P2900简化: 只保留pre/post/assert + 三级检查(default/audit/axiom)。
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：Contracts P29
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"P2900 contracts=pre/post/assert with default/audit/axiom levels"<<std::endl;return 0;}
 ```
@@ -637,7 +637,7 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 C++23 的痛点：每一步都要手动嵌套回调，错误与取消需自建通道，且 `std::future` 是"急切"启动、组合时被迫 `.get()` 串行等待。下面是一段可编译的回调拼接示例（`[实现·GCC15]`）：
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 #include <iostream>
 #include <functional>
 #include <string>
@@ -689,7 +689,7 @@ std::execution::start_detached(pipeline);   // 惰性：仅在此处才真正调
 C++23 用手工 `if/throw` 模拟契约——能编译，但检查是"手写的、可遗漏的"（`[实现·GCC15]`）：
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 #include <stdexcept>
 
@@ -735,7 +735,7 @@ int clamp(int x, int lo, int hi)
 C++23 的样板：字段名与访问硬编码，新增成员必须同步修改序列化函数（`[实现·GCC15]`）：
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★）
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
 
@@ -781,7 +781,7 @@ consteval auto field_names() {
 C++26 契约（P2900R7）引入 `[[pre]]`/`[[post]]`/`[[assert:]]`，把"前置/后置条件"从注释升级为一等公民；编译器可在编译期与运行期分别检查。当前标准里你只能用 `if`/断言模拟其语义：
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 
 int divide(int a, int b) {
@@ -812,7 +812,7 @@ int main() {
 没有反射时，序列化/比较/打印每个结构体都要手写访问每个成员；新增字段就得同步改多处。C++26 的 `std::meta`（P2996R5）能在编译期枚举成员，循环生成上述逻辑。当前只能这样手写：
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 
 struct Point { int x; int y; };

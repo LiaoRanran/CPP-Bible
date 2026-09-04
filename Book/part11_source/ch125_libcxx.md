@@ -51,7 +51,7 @@ libc++ 的核心取舍是"现代化优先、许可友好、模块化"。它不�
 libc++ 是 LLVM 项目自带的 C++ 标准库实现（与 Clang 配套，但也能被 GCC 通过 `-stdlib=libc++` 使用）。它的设计目标是：高 C++11/14/17/20/23 符合度、模块化、与 LLVM/Clang 工具链深度协同、在 Apple 平台作为系统默认标准库。它与 libstdc++（GCC）、MSVC STL 并列为三大主流实现。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：libc++ 是 LLVM 的
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 // ① 用 libc++ 编译一个最小程序（本机无 libc++，以下为真实命令+典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -O2 main.cpp -o main
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
@@ -67,7 +67,7 @@ int main() {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：libc++ 是 LLVM 的
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // ① 三大标准库实现并存的现实：同一份源码可被不同实现编译
 #include <version>
 #include <cstdio>
@@ -91,7 +91,7 @@ ISO C++ 规定容器/算法的语义；libc++、libstdc++、MSVC STL 都是对�
 libc++ 头文件按「公开头 + 内部细节」分层：`<string>`、`<vector>` 等公开头只做转发，真正实现落在 `<__string>`、`<__memory/>` 等以双下划线开头的「实现头」中（libc++ 自 C++17 起大规模采用 `__`-prefixed 实现头，避免污染全局命名空间）。`<experimental/>` 放 TS 实验特性。C++23 起 libc++ 提供 `import std;` 标准库模块。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构与模块化
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ② 公开头只转发，真正实现在 __ 前缀实现头（上游参考写法示意）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/string
 // 行号：1
@@ -100,7 +100,7 @@ libc++ 头文件按「公开头 + 内部细节」分层：`<string>`、`<vector>
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构与模块化
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 #include <vector>
 // ② 模块化：C++23 起用标准库模块替代海量 #include（Clang + libc++ 最成熟）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -fmodules -c use_std.cpp -o use_std.o
@@ -131,7 +131,7 @@ int use_std() {
 libc++ 负责「标准库」（容器、算法、IO），而**异常展开（unwinding）、RTTI、`__cxa_` 运行时符号、虚表、demangle** 由独立的 **libc++abi** 提供。两者关系类似 libstdc++ 与 libgcc_s / libstdc++'s `libsupc++` 的分工。抛异常时 libc++ 调用 libc++abi 的 `__cxa_throw`，栈展开由 libunwind 完成。
 
 > **示例 5** [难度 ★☆☆☆☆] [主题：与 libc++abi 关系 <span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // ③ libc++ 抛异常最终落到 libc++abi 的 __cxa_throw（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/src/stdexcept.cpp
 // 行号：38
@@ -150,7 +150,7 @@ int main() {
 ```
 
 > **示例 6** [难度 ★★☆☆☆] [主题：与 libc++abi 关系 <span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // ③ demangle 依赖 libc++abi 的 __cxa_demangle（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxxabi/src/cxa_demangle.cpp
 // 行号：1
@@ -172,7 +172,7 @@ template <typename T> void show() {
 libc++ 的 `std::string` 用一个「标记联合（tagged union）」`__rep` 存放数据：短字符串走 `__short`（内联缓冲区 + 长度编码在高字节），长字符串走 `__long`（指针 + 大小 + 容量），还有一个 `__raw` 视图用于低层拷贝。判别靠一个标志位。**下面为上游源码定位（本机未装 libc++，标注上游参考）**。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·libc++]源码剖析：basic_string 的 __rep 联合（上游参考）
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 #include <cstddef>
 // ④ 源码剖析（上游参考）：basic_string 的 repr 联合布局
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/string
@@ -188,7 +188,7 @@ union __rep {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·libc++]源码剖析：basic_string 的 __rep 联合（上游参考）
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // ④ 用 libc++ 特征宏确认运行库身份（本机为 libstdc++，以下为典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ probe.cpp -o probe && ./probe
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
@@ -210,7 +210,7 @@ int main() {
 最易踩坑的差异在**名字空间（inline namespace）** 与**特征值**。libstdc++ 新 ABI 把所有标准类型放进 `__cxx11` inline namespace，mangled 名形如 `_ZNSt7__cxx1112basic_string...`；libc++ 放进 `std::__1`（双下划线 + 数字 `1`）。二者符号不兼容，**混链会直接报未定义符号或 ODR 违规**。
 
 > **示例 9** [难度 ★★☆☆☆] [主题：与 libstdc++ 差异 <span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // ⑤ 同一个 std::string，在两个实现下 mangled 名不同（ABI 不兼容根因）
 // libstdc++ : _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE...  (__cxx11)
 // libc++    : _ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEE...  (__1)
@@ -220,7 +220,7 @@ int main() { auto s = make(); return (int)s.size(); }
 ```
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：与 libstdc++ 差异 <span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ⑤ 特征宏差异速判当前实现
 #include <cstdio>
 int main() {
@@ -243,7 +243,7 @@ inline namespace 是标准特性；但各实现选用的名字（`__cxx11` vs `_
 libc++ 默认开启异常与 RTTI（`-fexceptions -frtti`）。它用 libc++abi 的 `__cxa_throw`/`__cxa_begin_catch` 做展开；`std::exception_ptr`、`<exception>`、`std::current_exception()` 均在 libc++abi 中实现。可用 `-fno-exceptions` 构建「无异常」版本（此时 `throw` 变为 `__builtin_unreachable` 并触发编译错误）。
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：异常 / RTTI <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ⑥ 异常路径：libc++ 借 libc++abi 展开（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/src/stdexcept.cpp
 // 行号：38
@@ -261,7 +261,7 @@ int main() {
 ```
 
 > **示例 12** [难度 ★★☆☆☆] [主题：异常 / RTTI <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑥ RTTI：typeid / dynamic_cast 由 libc++abi 提供实现
 #include <typeinfo>
 #include <cstdio>
@@ -282,7 +282,7 @@ int main() {
 libc++ 完整实现 C++17 的 `<memory_resource>`：`std::pmr::memory_resource`、`std::pmr::polymorphic_allocator`、`std::pmr::monotonic_buffer_resource`、`std::pmr::unsynchronized_pool_resource` 等。容器可通过 `std::pmr::vector<T>`（别名模板）使用多态分配器，从而在「栈上缓冲区」零碎片分配，是 libc++ 性能优势的常见来源。
 
 > **示例 13** [难度 ★★☆☆☆] [主题：内存资源 pmr <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // ⑦ monotonic_buffer_resource：在栈缓冲区上零系统调用分配
 #include <memory_resource>
 #include <vector>
@@ -298,7 +298,7 @@ int main() {
 ```
 
 > **示例 14** [难度 ★★☆☆☆] [主题：内存资源 pmr <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // ⑦ 自定义 memory_resource（上游参考接口）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/memory_resource
 // 行号：156
@@ -322,7 +322,7 @@ struct my_resource : std::pmr::memory_resource {
 libc++ 的 `std::string` 采用**短字符串优化（SSO）**：短串内联进对象本身，长串才在堆上分配。与 libstdc++ 的关键区别在**内联容量**——libc++ 64 位下 SSO 容量为 **22 字节**（对象总 24 字节），libstdc++ 为 **15 字节**（对象总 32 字节）。两者都不用 COW（C++11 起禁止）。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 字符串实现策略 [实现·libc++]
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ⑧ libc++ SSO：__short 内联 22 字节（64-bit，上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/string
 // 行号：1231   （struct __short { value_type __data_[__min_cap]; ... }）
@@ -337,7 +337,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 字符串实现策略 [实现·libc++]
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // ⑧ 区分短/长：libc++ 用 __size_ 最高位作标志（示意）
 // 短串：__size_ 高位为 1（__is_long() == false），数据在 __data_[]
 // 长串：__size_ 高位为 0，数据在 __l.__data 堆指针
@@ -351,7 +351,7 @@ int main() {
 下面**本机真实编译 libstdc++ 示例**取证 SSO 容量，并对比 libc++ 的已知不同行为。取证命令与产物均来自 MinGW GCC 13.1.0。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★★☆</span> · [实现·libc++]真实：本机 l
-```cpp
+```cpp title="示例 17 · ★★★★☆"
 // ⑨ 真实示例（已落盘 Examples/_ch125_sso.cpp，本机 libstdc++ 编译运行）
 #include <string>
 #include <cstdio>
@@ -387,7 +387,7 @@ g++ -std=c++23 -O2 -S -masm=intel Examples/_ch125_sso.cpp -o Examples/_ch125_sso
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·libc++]真实：本机 l
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑨ libc++ 同例的「典型输出」（libc++ 未在本机安装，以下为典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ _ch125_sso.cpp -o sso_llvm && ./sso_llvm
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
@@ -402,7 +402,7 @@ g++ -std=c++23 -O2 -S -masm=intel Examples/_ch125_sso.cpp -o Examples/_ch125_sso
 libc++ 提供 `LIBCXX_DEBUG` 宏开启**迭代器/容器合法性检查**（越界、失效迭代器、非法比较会断言），等价于 libstdc++ 的 `_GLIBCXX_DEBUG`。注意：开启调试模式的库**与普通模式不 ABI 兼容**，必须全工程一致。
 
 > **示例 19** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // ⑩ 开启 LIBCXX_DEBUG 后，迭代器失效会被断言捕获（libc++ 典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -D_LIBCXX_DEBUG d.cpp -o d && ./d
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
@@ -419,7 +419,7 @@ int main() {
 ```
 
 > **示例 20** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // ⑩ 用 __builtin_addressof / 地址观察窥探实现差异（仅调试辅助，非生产）
 #include <string>
 #include <cstdio>
@@ -437,7 +437,7 @@ int main() {
 libc++ 的常见性能优势来源：更大的 SSO（22 vs 15）、`std::pmr` 与栈缓冲区的零碎片分配、`__compressed_pair` 压缩空基类、`std::string` 的 `constexpr` 化、以及 Clang 更激进的 inline。下列对比展示 `reserve` 与 `pmr` 的收益。
 
 > **示例 21** [难度 ★☆☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // ⑪ 预分配避免多次扩容（两库通用，但扩容阈值/策略不同）
 #include <vector>
 int sum(std::vector<int>& v) {
@@ -449,7 +449,7 @@ int sum(std::vector<int>& v) {
 ```
 
 > **示例 22** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // ⑪ pmr 栈缓冲：热点内临时分配绕开 malloc 锁
 #include <memory_resource>
 #include <vector>
@@ -470,7 +470,7 @@ long hot() {
 libc++ 是 Apple 平台（macOS/iOS）的**系统默认**标准库；FreeBSD 也默认 libc++；Linux 上通常与 GCC/libstdc++ 并存，需 `-stdlib=libc++` 显式选择。Windows 上可经 LLVM/Clang-Clang（clang-cl）或 MinGW-Clang 使用 libc++，但需自带 libc++abi/libunwind。平台差异通过 `__config` 与 `__config_site` 裁剪。
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Linux]
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // ⑫ 平台特征宏：识别当前 libc++ 所在平台（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/__config
 // 行号：1
@@ -489,7 +489,7 @@ int platform() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Linux]
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // ⑫ 字符串布局受 _LIBCPP_ABI_ALTERNATE_STRING_LAYOUT 影响（平台差异）
 // 某些平台/历史 ABI 下 libc++ 的 __rep 布局与默认不同 -> 跨平台二进制不兼容
 #include <string>
@@ -505,7 +505,7 @@ int main() {
 ## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
 > **示例 25** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // ⑬ 陷阱1：在 noexcept 函数里抛异常 -> 直接 std::terminate
 #include <stdexcept>
 void bad() noexcept { throw std::runtime_error("x"); }  // 违例 -> terminate
@@ -513,7 +513,7 @@ int main() { bad(); return 0; }
 ```
 
 > **示例 26** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 #include <string>
 // ⑬ 陷阱2：混链 libc++ 与 libstdc++ -> 未定义符号 / ODR 违规
 // 错误示范：一部分 .o 用 -stdlib=libc++，另一部分默认 libstdc++
@@ -522,7 +522,7 @@ int main() { bad(); return 0; }
 ```
 
 > **示例 27** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // ⑬ 陷阱3：调试模式只对开启的 TU 生效 -> 仅部分 TU 开 LIBCXX_DEBUG 会崩溃
 // 必须全工程一致开启/关闭（见 ⑩）
 ```
@@ -544,7 +544,7 @@ libc++ 与 Clang 是「原生搭档」：Clang 默认在 Apple/FreeBSD 上选 li
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 LLVM/Clang 集成 [平台·Linux]
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // ⑭ Clang + libc++ 启用 sanitizer 检查（典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -fsanitize=address -g app.cpp -o app_asan
 // 典型输出（libc++ 未在本机安装，以下为典型输出）：
@@ -563,7 +563,7 @@ Clang 对 libc++ 的模块、`std::ranges`、sanitizer 集成最完整；GCC 用
 libc++ 通常**率先实现**新标准特性（如 `<print>`、`std::expected`、`std::mdspan`、`std::ranges` 扩展、`std::flat_map`）。可用特征宏/特性测试宏确认支持度。
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：演进（C++23 支持度） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // ⑮ C++23 <print>：libc++ 较早支持（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/print
 // 行号：28
@@ -576,7 +576,7 @@ int main() {
 ```
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：演进（C++23 支持度） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ⑮ 用特性测试宏确认当前实现支持度（两库通用写法）
 #include <version>
 #include <cstdio>
@@ -595,7 +595,7 @@ int main() {
 ## ⑯ 最佳实践 <span class="badge badge-exp">经验</span>
 
 > **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ⑯ 优先用 std::string_view 避免不必要的字符串拷贝（两库均支持）
 #include <string_view>
 #include <string>
@@ -609,7 +609,7 @@ int main() { return (int)count('a', std::string("banana")); }
 ```
 
 > **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // ⑯ 用 pmr + 栈缓冲做函数内临时分配，减少碎片（libc++ 强项）
 #include <memory_resource>
 #include <vector>
@@ -623,7 +623,7 @@ int work() {
 ```
 
 > **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // ⑯ 避免从异常规约/虚函数里泄露实现信息；统一工程标准库
 #include <version>
 #ifndef _LIBCPP_VERSION
@@ -639,7 +639,7 @@ int guard() { return 0; }
 libc++ 是 LLVM 子项目，贡献走 GitHub `llvm/llvm-project` 的 `libcxx/`、`libcxxabi/` 目录。流程：Fork → 改 `libcxx/include/...` 或 `libcxx/src/...` → 补 `libcxx/test/` 下的 libc++ 测试（`// XFAIL`/`// REQUIRES` 注解）→ `ninja check-cxx` 跑测试 → 发 Phabricator/PR。
 
 > **示例 34** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // ⑰ 一个最小测试示例（libc++ 风格 lit 测试，上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/test/libcxx/... 
 // 行号：1
@@ -654,7 +654,7 @@ int main() {
 ```
 
 > **示例 35** [难度 ★★☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // ⑰ 修复补丁常见形态：改实现头 + 加测试（示意）
 // 修改 libcxx/include/__string 中某算法 -> 同步补 libcxx/test/... 回归用例
 #include <string>
@@ -682,7 +682,7 @@ libc++ 对测试覆盖率要求高——任何行为改动都必须带回归测�
 | 模块 `import std` | Clang 最成熟 | GCC 实验 | MSVC 成熟 |
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：跨库对比（三套 STL） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ⑱ 用特征宏做「三库识别」的 portable 探针
 #include <version>
 #include <cstdio>
@@ -701,7 +701,7 @@ int main() { std::printf("%s\n", which_stdlib()); return 0; }
 ```
 
 > **示例 37** [难度 ★★☆☆☆] [主题：跨库对比（三套 STL） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // ⑱ 三库都实现的 C++17 特性（语义一致，可安全跨库迁移）
 #include <optional>
 #include <cstdio>
@@ -728,7 +728,7 @@ int main() {
 ```
 
 > **示例 38** [难度 ★★☆☆☆] [主题：调试 / 源码阅读 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // ⑲ 用 static_assert 验证实现行为（跨库可复现的小探针）
 #include <type_traits>
 #include <string>
@@ -768,7 +768,7 @@ libc++ 源码注释极全，配合 `libcxx/docs/DesignDocs/` 是最快理解路�
 | 贡献 | 改 `libcxx/` + 补 `libcxx/test/` | ⑰ |
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // ⑳ 一页式探针：确认本机实现与关键常量
 #include <version>
 #include <string>
@@ -808,7 +808,7 @@ int main() {
 libc++ 长期以" aggressively constexpr 的 STL"著称——把更多算法/容器推进编译期。下面用纯标准库复刻这一思想：
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · ㉑.2 标准 C++ 等价实现：用
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // ㉑.2 用标准库复刻 libc++「编译期可求值的 STL」思想（本块可独立编译，GCC 15.3.0 验证）
 #include <vector>
 #include <numeric>                                  // std::accumulate
@@ -831,7 +831,7 @@ int main() { return 0; }
 下面才是你在 libc++ 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 libc++ 长什么样
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 // ㉑.3 真实 libc++ 用法（仅注释演示，门禁按空块编译通过）：
 //// 1) 检测当前是否 libc++
 // #include <__config>            // libc++ 内部配置头
@@ -946,7 +946,7 @@ SSO (string): 22字节阈值(比libstdc++的15字节大47%)
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
 int main() {
@@ -1035,7 +1035,7 @@ int main() {
 利用 libc++ 的 `_LIBCPP_VERSION` 宏配合 `std::void_t` 做 SFINAE 探测；该宏在非 libc++ 环境下未定义，trait 自动退化为 `false_type`，代码在各标准库下都可编译：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <type_traits>
 struct lib_identity {};
 template <class T, class = void>
@@ -1064,7 +1064,7 @@ int main() { return 0; }
 libc++ 把实现放在 `inline namespace __1`（不同 ABI 代为 `__2` 等）中，`std::string` 的修饰名实际含 `__1::basic_string`，因此不同 ABI 版本的符号天然隔离、无法跨版本链接：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <string>
 // libc++ 大致等价于：
 // inline namespace __1 { template<class CharT> class basic_string { ... }; }
@@ -1090,7 +1090,7 @@ int main() {
 C++20 起 `std::vector` 等容器已 constexpr 友好，可在常量表达式上下文构造并访问；若链接的 libc++ 过旧或编译选项未开启，下列 `static_assert` 会在编译期直接失败：
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★）
-```cpp
+```cpp title="示例 46 · ★★★☆☆"
 #include <vector>
 constexpr int make_constexpr_vector() {
     std::vector<int> v{1, 2, 3};   // C++20 起 std::vector 支持 constexpr

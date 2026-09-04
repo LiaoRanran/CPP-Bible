@@ -105,7 +105,7 @@ _ZL5chasePyy:
 程序 P1：把延迟量级打印成可读表格（编译期常量，仅作教学示意，但完全可编译）。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 存储层次与延迟量级（内存墙）
-```cpp
+```cpp title="示例 1 · ★★★☆☆"
 // P1: 存储层次延迟量级表（编译期常量，示意量级，可编译）
 #include <iostream>
 #include <string_view>
@@ -140,7 +140,7 @@ int main() {
 **【平台】** 本机实测（程序 P2）:
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // P2: 探测本机 cache line 大小
 #include <iostream>
 #include <new>
@@ -164,7 +164,7 @@ int main() {
 程序 P3：用 `std::hardware_destructive_interference_size` 定义对齐常量，并展示一个结构体如何被"撑大"到一行。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 基础
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 // P3: 用标准常量做 cache-line 对齐排版
 #include <new>
 #include <iostream>
@@ -200,7 +200,7 @@ int main() {
 程序 P4：演示"步长导致冲突 miss"的可观测模式（通过时间测量，非精确硬件计数器）。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存映射
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // P4: 冲突缺失的可观测示意（步长扫描）
 #include <iostream>
 #include <vector>
@@ -241,7 +241,7 @@ int main() {
 程序 P5：用非时态写提示（GCC/Clang 内建）做流式写（编译器可能忽略，但代码合法可编译）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 写策略
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // P5: 流式写示意（__builtin_ia32_movnti 仅 x86，需 <immintrin.h>）
 #include <immintrin.h>
 #include <cstdint>
@@ -319,7 +319,7 @@ flowchart TD
 程序 P6：量化空间局部性——顺序 vs 随机访问同一数组的时间差（随机访问几乎每次 miss）。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 局部性原理（空间 / 时间）
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // P6: 顺序 vs 随机访问（空间局部性演示）
 #include <iostream>
 #include <vector>
@@ -367,7 +367,7 @@ int main() {
 ### 43.7.1　未修复：相邻 `int` 被同一线程各自写
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 未修复：相邻 int 被同一线程各自
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // P7: false sharing —— 坏版（两个原子计数相邻，同处一行）
 #include <atomic>
 #include <thread>
@@ -398,7 +398,7 @@ int main() {
 ### 43.7.2　修复 A：填充到整行
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 修复 A：填充到整行
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // P8: false sharing —— 填充修复版
 #include <atomic>
 #include <thread>
@@ -430,7 +430,7 @@ int main() {
 ### 43.7.3　修复 B：`alignas(64)`（最常用、最清晰）
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 修复 B：alignas
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // P9: false sharing —— alignas(64) 修复版（推荐写法）
 #include <atomic>
 #include <thread>
@@ -460,7 +460,7 @@ int main() {
 ### 43.7.4　修复 C：每线程独立计数 + 归约（最佳实践）
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 修复 C：每线程独立计数 + 归约
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // P10: false sharing 最佳实践——每线程私有累加，最后归约
 #include <atomic>
 #include <thread>
@@ -506,7 +506,7 @@ int main() {
 程序 P11：跨平台 NUMA 拓扑观察（Linux 用 libnuma 风格 API，Windows 用 `GetLogicalProcessorInformationEx`；无 NUMA 时优雅退化）。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // P11: NUMA 拓扑观察（Windows 路径用 Win32；Linux 见注释 API）
 #include <iostream>
 #include <thread>
@@ -551,7 +551,7 @@ int main() {
 程序 P12：first-touch 演示——先由某线程触碰内存，使其落在本地节点（示意；精确测量需 `numactl` 绑核）。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // P12: first-touch 分配示意——让工作线程自己分配并首写自己的分片
 #include <iostream>
 #include <vector>
@@ -590,7 +590,7 @@ int main() {
 程序 P13：大页映射示意（Linux `MAP_HUGETLB`；Windows 注释等价 API）。编译需 root/配置，此处给出可编译骨架。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与大页
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // P13: 大页映射示意（Linux；Windows 用 VirtualAlloc + MEM_LARGEPAGE）
 #include <iostream>
 #if defined(__linux__)
@@ -615,7 +615,7 @@ int main() {
 程序 P14：TLB 抖动可观测——大数组随机访问（除命中缓存外，还受 TLB 限制）vs 顺序访问。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与大页
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 // P14: 顺序 vs 随机（同时受 cache 与 TLB 影响，量级示意）
 #include <iostream>
 #include <vector>
@@ -666,7 +666,7 @@ int main() {
 程序 P15：GCC/Clang 软件预取遍历大数组（带可调距离）。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // P15: __builtin_prefetch 遍历（GCC/Clang）
 #include <iostream>
 #include <vector>
@@ -694,7 +694,7 @@ int main() {
 程序 P16：MSVC 风格 `_mm_prefetch`（GCC/Clang 也支持该内建）。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 17 · ★★★☆☆"
 // P16: _mm_prefetch（跨编译器都可编译，需 <xmmintrin.h>）
 #include <xmmintrin.h>
 #include <iostream>
@@ -720,7 +720,7 @@ int main() {
 程序 P17：预取距离扫描（演示"距离"是需调的参数）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // P17: 预取距离扫描（找本机最优 D）
 #include <iostream>
 #include <vector>
@@ -759,7 +759,7 @@ int main() {
 程序 P18：行主序 vs 列主序遍历（用扁平一维数组模拟二维，清晰可控）。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行主序 vs 列主序遍历（C 数组）
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // P18: 行主序 vs 列主序（扁平数组 row-major）
 #include <iostream>
 #include <vector>
@@ -799,7 +799,7 @@ int main() {
 程序 P19：AoS 遍历单字段（带宽浪费）。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // P19: AoS —— 只处理 x 字段，却载入整结构体
 #include <iostream>
 #include <vector>
@@ -822,7 +822,7 @@ int main() {
 程序 P20：SoA 遍历单字段（带宽友好 + 可向量化）。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // P20: SoA —— 同字段连续，缓存/向量化友好
 #include <iostream>
 #include <vector>
@@ -848,7 +848,7 @@ int main() {
 程序 P21：把 AoS 批量转换到 SoA 以加速（常见于 ECS、物理引擎、数值计算）。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // P21: AoS -> SoA 转换（数据布局重排以提速）
 #include <iostream>
 #include <vector>
@@ -878,7 +878,7 @@ int main() {
 程序 P22：SoA 上用 `std::transform` + 编译期向量化提示（ch14 主题延伸）。
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · CPU 缓存体系与内存局部性
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // P22: SoA 批量运算（编译器易自动向量化）
 #include <iostream>
 #include <vector>
@@ -902,7 +902,7 @@ int main() {
 程序 P23：热冷分离——把热点状态与稀有元数据分拆。
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 热冷数据分离
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // P23: 热冷数据分离
 #include <iostream>
 #include <vector>
@@ -934,7 +934,7 @@ int main() {
 程序 P24：`[[likely]]`/`[[unlikely]]` 用法（C++20）。
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分支预测与 `[[likely]]` / `[[unlikely]]`
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // P24: 分支预测提示（C++20）
 #include <iostream>
 
@@ -955,7 +955,7 @@ int main() {
 程序 P25：老式 `__builtin_expect` 跨编译器兜底（C++17 也可）。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分支预测与 `[[likely]]` / `[[unlikely]]`
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // P25: __builtin_expect（GCC/Clang，C++17 可用）
 #include <iostream>
 
@@ -980,7 +980,7 @@ int main() { std::cout << classify_legacy(5) << "\n"; }
 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，行号：126（operator new）
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`hardware_*_interference_size`
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 #include <cstddef>
 // new:210-214  (libstdc++ 13.1.0, 经 Read 探测真实存在)
 #ifdef __GCC_DESTRUCTIVE_SIZE
@@ -1005,7 +1005,7 @@ int main() { std::cout << classify_legacy(5) << "\n"; }
 程序 P26：用特性测试宏安全使用（保证可移植）。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`hardware_*_interference_size`
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // P26: 用特性测试宏安全使用 interference_size
 #include <new>
 #include <iostream>
@@ -1025,7 +1025,7 @@ int main() {
 **【实现】** 交叉引用 ch35：`<bit>` 的 `std::bit_cast`（C++20）与缓存无关，但同样位于 libstdc++，本机验证存在且可用（见 P27 仅作"无关但真实"的源码侧确认，证明本章探测手段一致）。
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：`hardware_*_interference_size`
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // P27: 仅确认 <bit> 真实存在（与缓存无关，交叉引用 ch35）
 #include <bit>
 #include <cstdint>
@@ -1061,7 +1061,7 @@ int main() {
 程序 P28：跨编译器对齐属性统一宏。
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三编译器对比：GCC / Clang
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // P28: 跨编译器对齐属性封装
 #include <new>
 #include <iostream>
@@ -1087,7 +1087,7 @@ int main() {
 程序 P29：跨编译器预取宏封装。
 
 > **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 三编译器对比：GCC / Clang
-```cpp
+```cpp title="示例 31 · ★★★☆☆"
 // P29: 跨编译器预取封装
 #include <iostream>
 #include <vector>
@@ -1112,7 +1112,7 @@ int main() {
 程序 P30：`-falign-loops` 说明性演示（编译选项层面，非代码；展示如何启用）。
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 三编译器对比：GCC / Clang
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // P30: 循环对齐（编译选项层面）示例源
 // 编译（GCC/Clang）: g++ -O2 -falign-loops=32 ch43_align.cpp -o a
 // MSVC 无等价 CLI，依赖自动对齐；此处代码本身与对齐无关，仅为占位演示
@@ -1138,7 +1138,7 @@ int main() {
 程序 P31：Google Benchmark —— false sharing 惩罚。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // P31: Google Benchmark —— false sharing（需链接 benchmark 库）
 #include <benchmark/benchmark.h>
 #include <atomic>
@@ -1174,7 +1174,7 @@ BENCHMARK_MAIN();
 程序 P32：Google Benchmark —— 行主序 vs 列主序。
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // P32: Benchmark 行/列主序
 #include <benchmark/benchmark.h>
 #include <vector>
@@ -1199,7 +1199,7 @@ BENCHMARK_MAIN();
 程序 P33：Google Benchmark —— SoA vs AoS。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // P33: Benchmark SoA vs AoS
 #include <benchmark/benchmark.h>
 #include <vector>
@@ -1222,7 +1222,7 @@ BENCHMARK_MAIN();
 程序 P34：Google Benchmark —— prefetch 对大数组遍历的吞吐。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // P34: Benchmark prefetch（GCC/Clang）
 #include <benchmark/benchmark.h>
 #include <vector>
@@ -1326,7 +1326,7 @@ public struct Counters {
 程序 P39：用 `std::hardware_constructive_interference_size` 确认"可构造性"对齐（与 destructive 配对，用于把常一起访问的字段放进同一行以提升 constructive 局部性）。
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 检测工具：perf / cacheg
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // P39: constructive interference——把常配对访问的字段放进同一行
 #include <new>
 #include <iostream>
@@ -1365,7 +1365,7 @@ int main() { std::cout << "Pair in one line: " << sizeof(Pair) << " <= "
 程序 P40：per-thread 槽 + 缓存对齐的并发计数器（无 false sharing）。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // P40: 缓存友好的并发计数器（per-slot 对齐，无伪共享）
 #include <new>
 #include <vector>
@@ -1399,7 +1399,7 @@ int main() {
 程序 P41：用 `std::pmr::monotonic_buffer_resource` + 对齐分配（NUMA 注意见 43.8）。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // P41: PMR 缓存对齐分配（ch38 延伸；NUMA 需用 NUMA-aware upstream）
 #include <memory_resource>
 #include <vector>
@@ -1419,7 +1419,7 @@ int main() {
 程序 P42：热冷分离 + SoA 组合的对象池（缓存友好内存池雏形，ch44 详述）。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // P42: 缓存友好的对象池雏形（hot 字段 SoA 化）
 #include <iostream>
 #include <vector>
@@ -1443,7 +1443,7 @@ int main() {
 程序 P43：矩阵乘法分块（cache blocking / tiling）——把工作集压进 L1/L2，消除 43.11.1 的跨行 miss。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // P43: 矩阵乘法分块（cache blocking）提升局部性
 #include <iostream>
 #include <vector>
@@ -1473,7 +1473,7 @@ int main() {
 程序 P44：用 `std::aligned_alloc` 分配页/行对齐大缓冲（配合大页与 TLB，见 43.9）。
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 42 · ★★★☆☆"
 // P44: std::aligned_alloc 行对齐缓冲（C++17）
 #include <cstdlib>
 #include <new>
@@ -1503,7 +1503,7 @@ int main() {
 程序 P45：结构体字段偏移查看（用 `offsetof` 验证 false sharing 候选）。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 // P45: offsetof 看字段是否挤在同一 cache line
 #include <iostream>
 #include <cstddef>
@@ -1528,7 +1528,7 @@ int main() {
 程序 P46：原子计数器的 relaxed/acquire-release 选择对 false sharing 无影响（提示：false sharing 是硬件层，与内存序无关）。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 // P46: 内存序不影响 false sharing（仅影响可见性语义）
 #include <atomic>
 #include <thread>
@@ -1547,7 +1547,7 @@ int main() {
 程序 P47：用 `std::hardware_destructive_interference_size` 做"环形缓冲区"生产/消费指针隔离（无锁队列常见手法，ch61 并发延伸）。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 // P47: 无锁 SPSC 环形缓冲——prod/cons 索引各占一行（避免 false sharing）
 #include <new>
 #include <atomic>
@@ -1579,7 +1579,7 @@ int main() {
 程序 P48：数组尺寸加奇数填充打破"步长=组数×行"冲突（呼应 43.3）。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 // P48: 给数组加 1 列 padding 打破 cache 冲突（行主序 + 防别名）
 #include <iostream>
 #include <vector>
@@ -1600,7 +1600,7 @@ int main() {
 程序 P49：大数组分块遍历以压留 L1（局部性工程化）。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 // P49: 分块遍历把 working set 压进 L1
 #include <iostream>
 #include <vector>
@@ -1625,7 +1625,7 @@ int main() {
 程序 P50：用 `std::this_thread::get_id()` 把工作绑定到核（与 `taskset`/`SetThreadAffinityMask` 配合测 NUMA/false sharing）。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：缓存友好的计数器与内存池
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 // P50: 线程亲和（Windows SetThreadAffinityMask）示意
 #include <iostream>
 #include <thread>
@@ -1790,7 +1790,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 int main(){
     static int m[256][256]{};                                        // static 避免栈溢出; 教学只关心遍历顺序
     long sum = 0;
@@ -1821,7 +1821,7 @@ cache miss 数量级差约 16×，实测可慢一个数量级。
 <details><summary>答案与解析</summary>
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 // 错误: a 与 b 可能落在同一缓存行(64B), 两线程写不同字段仍互相使对方缓存行失效
 struct Bad { long a; long b; };
 // 修复: 把每个字段推到独立缓存行
@@ -1848,7 +1848,7 @@ struct Aligned { alignas(64) long a; alignas(64) long b; };
 <details><summary>答案与解析</summary>
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 51 · ★☆☆☆☆"
 struct P { float x,y,vx,vy; } ps[1024];
 void update_aos(){ for (auto& p: ps) p.x += p.vx; }               // 每读 16B 只用 8B, 浪费一半带宽
 struct Soa { float x[1024],y[1024],vx[1024],vy[1024]; } s;
@@ -1878,7 +1878,7 @@ SOA 把同类字段聚到一起，`x[]` 与 `vx[]` 连续，SIMD 一条指令可
 实现与边界：**二进制格式固定的结构不能重排**——网络协议头、磁盘记录、硬件描述符必须按规范字节序排布（ch35 练习 2 的 padding 管控是另一个方向）。何时失效：成员的填充虽省字节，若访问模式本身是「隔几个字段取一次」，重排收益有限；纯读字段的 struct 可整体只读放 `.rodata`。替代方案：按「从大到小」排成员（int/double 在前、char 在后）是通用启发；要求精确布局用 `alignas`/显式填充（ch35 练习 5）。
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 56 · ★★☆☆☆"
 #include <iostream>
 #include <cstddef>
 
@@ -1918,7 +1918,7 @@ int main() {
 实现与边界：`list` 的优势只在「中段频繁插入/删除 + 很少遍历」；若数据常被遍历，`vector`/`deque` 是更好基线。何时失效：元素是大对象且需稳定指针时 `list` 才划算；数据量极小（几字节）时差别可忽略。替代方案：需要「可增长 + 连续」用 `vector`（预留 reserve，ch38）；需要双向迭代又不牺牲局部性用 `std::deque`（分段连续）或自定义池化（ch44）。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 57 · ★★★☆☆"
 #include <iostream>
 #include <list>
 #include <vector>
@@ -1946,7 +1946,7 @@ int main() {
 **步骤 1：列优先遍历（cache miss 爆炸）**
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 矩阵遍历：一次
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 int main(){
     const int N = 256; int m[N][N]{}; long sum = 0;
     for (int j=0;j<N;++j)
@@ -1961,7 +1961,7 @@ int main(){
 **步骤 2：行优先遍历（顺序预取友好）**
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 矩阵遍历：一次
-```cpp
+```cpp title="示例 53 · ★☆☆☆☆"
 int main(){
     const int N = 256; int m[N][N]{}; long sum = 0;
     for (int i=0;i<N;++i)
@@ -1983,7 +1983,7 @@ int main(){
 **步骤 4：进阶——SOA + SIMD**
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 矩阵遍历：一次
-```cpp
+```cpp title="示例 54 · ★★☆☆☆"
 #include <immintrin.h>
 int main(){
     const int N = 64; alignas(32) float x[N]{}, vx[N]{};
@@ -2192,7 +2192,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <cassert>

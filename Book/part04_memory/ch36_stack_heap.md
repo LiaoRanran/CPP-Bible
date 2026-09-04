@@ -105,7 +105,7 @@
 **源（节选，完整见 P1）**：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实汇编：prologue / ep
-```cpp
+```cpp title="示例 2 · ★★★☆☆"
 // P1：观察栈帧与参数落位（配合 §3 汇编阅读）
 #include <cstdio>
 int leaf(int a, int b) {
@@ -219,7 +219,7 @@ _Z6calleriiii:
 [平台-实现] 下面用本机编译的真实汇编展示"寄存器传参 + 超出走栈"。源为 P2（`extern "C"` 避免名字改编，便于阅读）：
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 寄存器传参与调用约定（实例）
-```cpp
+```cpp title="示例 4 · ★★★☆☆"
 // P2：寄存器传参 vs 栈传参（extern "C"，配合 §5 汇编）
 extern "C" long sum6(long a, long b, long c, long d, long e, long f) {
     return a + b + c + d + e + f;
@@ -274,7 +274,7 @@ sum8:
 P3 演示"被调用者必须保存 callee-saved 寄存器"的语义（用标准属性避免被优化掉）：
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用者保存 vs 被调用者保存寄存器
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // P3：callee-saved 语义演示（rbx 须保存恢复）
 #include <cstdio>
 [[gnu::noinline]] int use_rbx(int n) {
@@ -300,7 +300,7 @@ int main() {
 [平台-实现] **本机 Microsoft x64 没有红区**（ABI 不保证 RSP 下方安全，因 Windows 可能在 RSP 下方使用内存，且 `RSP` 下方 32 字节是 shadow space）。所以本机编译的叶子函数仍会 `sub rsp` 或 `push rbp`+对齐（见 §3 的 `pure_leaf`：`pushq %rbp; ...; subq $32,%rsp`，并未利用红区）。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 红区（Red Zone）
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // P4：叶子函数局部缓冲（System V 下可落红区；本机 Microsoft x64 走普通栈）
 #include <cstdio>
 [[gnu::noinline]] int leaf_scratch() {
@@ -329,7 +329,7 @@ int main() { leaf_scratch(); }
 <span class="badge badge-impl">实现</span> 栈空间有限（Linux 默认 8 MB，Windows 默认 1 MB 线程栈）。递归过深或分配超大栈数组会越过栈边界，触及**保护页（guard page）**或非法地址，触发 `SIGSEGV`（Linux）/ `EXCEPTION_STACK_OVERFLOW`（Windows），进程终止。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈溢出
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // P5：无限递归触发栈溢出（SIGSEGV / 栈溢出异常）
 #include <cstdio>
 void boom() { boom(); }  // 无终止条件，栈帧不断累积
@@ -340,7 +340,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★★☆</span> · 栈溢出
-```cpp
+```cpp title="示例 8 · ★★★★☆"
 // P6：超大栈数组越界，触碰 guard page
 #include <cstdio>
 int main() {
@@ -360,7 +360,7 @@ int main() {
 <span class="badge badge-impl">实现</span> GCC/Clang 支持 `-fstack-protector` / `-fstack-protector-strong` / `-fstack-protector-all`。编译器在返回地址前插入随机 **canary（栈保护气）**，函数返回前检查它是否被改写；若被改写（典型栈缓冲区溢出改写返回地址）则 `__stack_chk_fail` 中止，防止攻击者劫持控制流。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 防护机制二：-fstack-prot
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 // P7：栈缓冲区溢出（开启 -fstack-protector-strong 时会被 canary 捕获）
 #include <cstring>
 #include <cstdio>
@@ -407,7 +407,7 @@ ulimit -s 16384      # 设为 16 MB（仅对当前 shell 会话有效）
 [平台-推断] 下面用 pthread 创建一个**大栈线程**（Linux/macOS 示意；Windows 用 `CreateThread` + `/STACK`）：
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈大小查询与调整
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // 大栈线程示意（Linux/macOS；非 Windows 下用条件编译隔离）
 #include <cstdio>
 #ifdef __linux__
@@ -439,7 +439,7 @@ int main() {
 [实现·GCC15] `alloca(size)` 在**当前栈帧**内直接移动 `RSP` 分配内存，函数返回时随栈帧一起自动回收——**不能用 `free`，也不能跨函数返回使用**。它本质是内联的 `sub rsp, size`。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · alloca：栈上动态大小分配
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // P8：alloca 在栈上按需分配（Microsoft x64 下由编译器内联 sub rsp）
 #include <cstdio>
 #include <cstdlib>      // alloca 在 MinGW 中由 <cstdlib>/<malloc.h> 提供
@@ -462,7 +462,7 @@ int main() {
 <span class="badge badge-impl">实现</span> GCC/Clang 作为扩展支持 VLA（即使以 `-std=c++17` 也可能默认开启，可用 `-Wvla` 警告、`-Werror=vla` 禁止）；**MSVC 不支持 VLA**（会报错）。
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 特性，C++ 无
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 // P9：VLA 是 GCC/Clang 扩展，C++ 标准不支持，MSVC 报错
 // 用 -Wvla 可警告，-Werror=vla 可禁止
 #include <cstdio>
@@ -485,7 +485,7 @@ int main() { f(10); }
 [实现·GCC15] 在 libstdc++ 的 `<cstdlib>` 中，`malloc`/`free` 是 **C 库函数**，通过 `using ::malloc;` 引入 `std` 命名空间。本机真实声明（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cstdlib`）：
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 堆分配器语义：malloc / fr
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // 真实源码：.../x86_64-w64-mingw32/13.1.0/include/c++/cstdlib
   98  #undef calloc
  101  #undef free
@@ -501,7 +501,7 @@ int main() { f(10); }
 <span class="badge badge-exp">经验</span> `size == 0` 时 `malloc(0)` 返回 `NULL` 或一个可 `free` 的最小块（实现定义）；不要依赖其行为。下面 P10 演示基本用法，P11 演示 `malloc(0)` 与 `calloc`/`realloc`。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆分配器语义：malloc / fr
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // P10：malloc/free 基本用法（检查 NULL，避免泄漏）
 #include <cstdlib>
 #include <cstdio>
@@ -516,7 +516,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆分配器语义：malloc / fr
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 // P11：malloc(0)、calloc（清零）、realloc（扩容）
 #include <cstdlib>
 #include <cstdio>
@@ -578,7 +578,7 @@ int main() {
 P12 用代码观察 chunk 对齐（用户指针前的 size 头）：
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 合并（Coalescing）与 tc
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // P12：观察 malloc 返回地址的对齐与"块头"存在（实现层观察）
 #include <cstdlib>
 #include <cstdio>
@@ -644,7 +644,7 @@ int main() {
 P13 演示**内部碎片**（size class 取整导致浪费）：
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 碎片：内部碎片 vs 外部碎片
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // P13：内部碎片观察（请求大小相近，实际占用随 size class 跳变）
 #include <cstdlib>
 #include <cstdio>
@@ -664,7 +664,7 @@ int main() {
 P14 演示**外部碎片**（交替分配释放，留下难以利用的空洞）：
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 碎片：内部碎片 vs 外部碎片
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // P14：外部碎片实验（长期运行后大块分配可能失败，尽管总量充足）
 #include <cstdlib>
 #include <cstdio>
@@ -697,7 +697,7 @@ int main() {
 [实现·GCC15] 默认的 `::operator new` **底层就是调用 `malloc`**（libstdc++ 实现见 `libstdc++-v3/libsupc++/new_op.cc`；本机仅含头文件，故标注 `[实现-推断]`）。本机 `<new>` 的真实**声明**（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`）：
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · new/delete 与 mallo
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 #include <cstddef>
 // 真实源码：.../include/c++/new  （声明，非定义）
  126  _GLIBCXX_NODISCARD void* operator new(std::size_t) _GLIBCXX_THROW (std::bad_alloc);
@@ -718,7 +718,7 @@ int main() {
 P15 验证 `new` 调构造、delete 调析构（与 malloc 对比）：
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · new/delete 与 mallo
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // P15：new 调构造 + delete 调析构；对比 malloc（不调构造）
 #include <new>
 #include <cstdlib>
@@ -752,7 +752,7 @@ int main() {
 [平台-实现] 下面用本机 `g++ 13.1.0` + `<chrono>` 的 microbenchmark，对比"在栈上创建 N 个对象"与"在堆上 new N 个对象"的耗时。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈 vs 堆：性能差异
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // P16：栈 vs 堆 分配/释放 microbenchmark（本机 g++ 13.1.0 可编译）
 #include <chrono>
 #include <cstdio>
@@ -799,7 +799,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈 vs 堆：性能差异
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // P17：堆分配计时（多次 malloc/free 的平均延迟，单位 ns 量级观察）
 #include <chrono>
 #include <cstdio>
@@ -829,7 +829,7 @@ int main() {
 P18 观察 `vector` 容量增长与堆地址变化（reallocation 时整体搬迁）：
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::vector 等容器的堆使
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // P18：vector 增长触发 realloc（堆上整体搬迁，地址变化）
 #include <vector>
 #include <cstdio>
@@ -847,7 +847,7 @@ int main() {
 P19 对比"栈上 array"与"堆上 vector"的生命周期边界：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::vector 等容器的堆使
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // P19：栈 array（固定大小，零分配） vs 堆 vector（动态，需分配）
 #include <array>
 #include <vector>
@@ -872,7 +872,7 @@ int main() {
 P20 RAII：栈对象在作用域退出时自动释放（即使中间 return）：
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈对象 vs 堆对象：生命周期与 R
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // P20：栈对象 RAII（作用域结束自动析构，无需手动释放）
 #include <cstdio>
 struct File {
@@ -890,7 +890,7 @@ int main() { use(); }
 P21 裸 `new` 忘记 `delete` 会泄漏（对比 RAII）：
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈对象 vs 堆对象：生命周期与 R
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 // P21：裸 new 遗忘 delete = 内存泄漏；应改用智能指针/栈对象
 #include <cstdio>
 struct Res { ~Res() { std::puts("  freed"); } };
@@ -905,7 +905,7 @@ int main() { leak(); }
 P22 用 `std::unique_ptr` 把堆对象纳入 RAII（推荐做法）：
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈对象 vs 堆对象：生命周期与 R
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // P22：unique_ptr 让堆对象获得栈式生命周期（RAII + 零拷贝所有权）
 #include <memory>
 #include <cstdio>
@@ -929,7 +929,7 @@ int main() {
 P23 栈展开：异常抛出后，已构造的栈对象逆序析构：
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈展开
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // P23：异常触发栈展开，局部对象逆序析构
 #include <cstdio>
 #include <stdexcept>
@@ -955,7 +955,7 @@ int main() {
 P24 嵌套 try/catch 中展开停在匹配 catch：
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈展开
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // P24：栈展开在遇到第一个匹配 catch 时停止
 #include <cstdio>
 #include <stdexcept>
@@ -1006,7 +1006,7 @@ cl /EHsc /GS /W4 /RTCs p25.cpp        # /GS 栈 cookie，/RTCs 栈帧检查
 P26 用 `[[gnu::noinline]]` 写出三编译器都能编译、验证栈帧存在的程序：
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三编译器对比：GCC / Clang
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // P26：跨编译器可编译——验证栈对象地址随递归递减（栈向下增长）
 #include <cstdio>
 [[gnu::noinline]] void rec(int depth, void* prev) {
@@ -1127,7 +1127,7 @@ class Prog {
 ### 22.1 ABI 与帧观测（P31–P32）
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与帧观测（P31–P32）
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // P31：用 GCC/Clang 内建观察栈帧与返回地址（本机 g++ 支持）
 #include <cstdio>
 [[gnu::noinline]] void probe(int depth) {
@@ -1141,7 +1141,7 @@ int main() { probe(0); }
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与帧观测（P31–P32）
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // P32：递归各层帧地址差（量化本机帧大小，含 16B 对齐填充）
 #include <cstdio>
 [[gnu::noinline]] void levels(int d, void* prev) {
@@ -1160,7 +1160,7 @@ int main() { int seed; levels(0, &seed); }
 ### 22.2 自定义 free-list 与内存池（P33–P34，交叉 ch44）
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义 free-list 与内存池
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // P33：教学用 free-list 分配器（演示 §11 bin/freelist 思想，可编译运行）
 #include <cstdio>
 #include <cstddef>
@@ -1183,7 +1183,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义 free-list 与内存池
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // P34：固定大小内存池（ch44 交叉）：一次 malloc，多次 O(1) 取还，避免碎片
 #include <cstdio>
 #include <cstddef>
@@ -1209,7 +1209,7 @@ int main() {
 ### 22.3 并发堆竞争（P35，交叉 ch61）
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并发堆竞争（P35，交叉 ch61）
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // P35：多线程并发 malloc/free 竞争计时（ch61 交叉）
 #include <thread>
 #include <vector>
@@ -1236,7 +1236,7 @@ int main() {
 ### 22.4 RAII 计数与对象生命周期（P36）
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 计数与对象生命周期（P36）
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // P36：栈对象 vs 堆对象 构造/析构次数统计
 #include <cstdio>
 struct T { static int c, d; T(){++c;} ~T(){++d;} };
@@ -1256,7 +1256,7 @@ int main() {
 ### 22.5 栈缓冲上的构造与 PMR（P37–P38，交叉 ch38）
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈缓冲上的构造与 PMR
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // P37：在栈缓冲上用 placement new 构造对象数组（不触发堆分配）
 #include <new>
 #include <cstdio>
@@ -1271,7 +1271,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈缓冲上的构造与 PMR
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // P38：C++17 std::pmr 在栈缓冲上分配（演示"分配器后端"概念，ch38 交叉）
 #include <memory_resource>
 #include <vector>
@@ -1292,7 +1292,7 @@ int main() {
 ### 22.6 对齐分配与 new 失败处理（P39–P42，交叉 ch37）
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐分配与 new 失败处理
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // P39：对齐分配（缓存行/SIMD 对齐）。标准名 std::aligned_alloc(C++17)；
 // 本机 MinGW 未暴露该名，改用 Windows 的 _aligned_malloc 演示。
 #include <cstdio>
@@ -1315,7 +1315,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 对齐分配与 new 失败处理
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // P40：new 失败时抛 std::bad_alloc（关联 ch37）
 #include <new>
 #include <cstdio>
@@ -1333,7 +1333,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐分配与 new 失败处理
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // P41：查询实际分配尺寸（Windows CRT _msize；演示"内部碎片"真实开销）
 #include <cstdio>
 #include <cstdlib>
@@ -1356,7 +1356,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐分配与 new 失败处理
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 // P42：nothrow new 失败返回 nullptr；普通 new 抛 bad_alloc（ch37 交叉）
 #include <new>
 #include <cstdio>
@@ -1543,7 +1543,7 @@ int main() {
 栈对象在离开作用域时自动析构；堆对象脱离创建它的作用域后依然存在，必须 `delete` 或交给智能指针管理，否则泄漏。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 struct T { ~T() { std::cout << "T destroyed\n"; } };
 T* leak() { T* p = new T(); return p; }  // 堆对象: 返回后仍存在
@@ -1570,7 +1570,7 @@ int main() {
 `std::unique_ptr` 在析构时自动释放，异常栈展开时也会调用析构，从而提供异常安全的资源回收。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 struct T { ~T() { std::cout << "released\n"; } };
@@ -1596,7 +1596,7 @@ int main() { use(); }
 栈分配只是指针/栈槽移动（O(1) 指令）；堆分配要进入分配器、搜索空闲链表、可能系统调用，开销高 1~2 个数量级。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <chrono>
@@ -1634,7 +1634,7 @@ int main() {
 实现与边界：栈溢出是运行期崩溃（Segment fault / 硬件 fault），编译期查不出；把百万级数组放栈上就是赌「栈足够大」。何时失效：`unique_ptr` 的堆对象若在栈上被拷贝（`auto big2 = big;`）会编译失败（不可拷贝）——这恰是防错设计；需要共享时用 `shared_ptr`（ch41）。替代方案：栈上放 `std::array` 但要大小可控；运行期才知道大小只能用堆 + RAII（`vector`/`unique_ptr`）。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -1668,7 +1668,7 @@ int main() {
 实现与边界：任何递归都可能爆栈，不只尾递归；深递归 + 大局部对象更危险。何时失效：递归深度由输入数据决定（树深度、嵌套 JSON）时，必须设深度上限或转迭代。替代方案：尾递归 → 循环；任意递归 → 显式栈（`std::vector` 存待处理节点，模拟 DFS/BFS，本质把栈从「调用栈」搬进「堆」）。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 50 · ★★★☆☆"
 #include <iostream>
 
 long long sum_rec(long long n) { return n <= 0 ? 0 : n + sum_rec(n - 1); }
@@ -1705,7 +1705,7 @@ const int& bad() {
 **修复**：需要传值就按值返回（拷贝/移动）；需要跨作用域生命周期才用智能指针管理堆对象。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：返回局部变量引用/指针 →
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 // 错误: const int& bad(){ int x=42; return x; }
@@ -1732,7 +1732,7 @@ char buf[n];              // VLA, 非标准且易栈溢出
 **修复**：大小运行时确定就用 `std::vector`（或 `std::unique_ptr<T[]>`），在堆上按需分配。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：大小在运行时才确定的缓冲
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 int main() {
@@ -1964,7 +1964,7 @@ flowchart TD
 ### D5.3 验证 demo
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <cassert>
 #include <vector>

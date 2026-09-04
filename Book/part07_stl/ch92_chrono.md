@@ -215,7 +215,7 @@ flowchart TD
 `duration` 的 `+`、`-`、`count()` 在 `-O2` 下直接折叠为对整数 `_r` 的运算；跨单位 `duration_cast` 编译为一次整数乘/除（常数折叠）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编分析：duration 运算是零
-```cpp
+```cpp title="示例 5 · ★★★★☆"
 // ⑩ duration 运算与单位换算（编译期零开销）
 #include <chrono>
 #include <iostream>
@@ -256,7 +256,7 @@ int main() {
 真实项目（交易系统、RPC、游戏循环）中时间的两大用途：**测量性能**与**限制等待**。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：作用域计时器与超时控制
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // ⑫-1 作用域计时器（RAII）：离开作用域自动输出耗时
 #include <chrono>
 #include <iostream>
@@ -279,7 +279,7 @@ int main() {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：作用域计时器与超时控制
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // ⑫-2 超时控制：RPC 调用最多等 200ms
 #include <chrono>
 #include <iostream>
@@ -297,7 +297,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：作用域计时器与超时控制
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // ⑫-3 日志时间戳：system_clock 转可读时间（C 接口桥接）
 #include <chrono>
 #include <iostream>
@@ -314,7 +314,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：作用域计时器与超时控制
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 // ⑫-4 帧率控制：游戏/渲染循环固定 16.67ms（60 FPS）
 #include <chrono>
 #include <iostream>
@@ -427,7 +427,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ❌ 错误：用 system_clock 测量时长，且用裸整数秒
 #include <chrono>
 #include <iostream>
@@ -442,7 +442,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ✅ 正确：用 steady_clock + 显式单位转换
 #include <chrono>
 #include <iostream>
@@ -457,7 +457,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 // ❌ 错误：用 auto 推断 duration 后乘以裸整数，单位被"吃掉"
 #include <chrono>
 #include <iostream>
@@ -471,7 +471,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ✅ 正确：明确目标单位
 #include <chrono>
 #include <iostream>
@@ -485,7 +485,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // ❌ 错误：比较不同 clock 的 time_point（编译失败，类型不匹配）
 #include <chrono>
 int main() {
@@ -497,7 +497,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ✅ 正确：比较同 clock 的 time_point，或用 duration 表达相对关系
 #include <chrono>
 #include <iostream>
@@ -534,7 +534,7 @@ int main() {
 ## ⑱ 最佳实践
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // ⑱-1 计时惯用法：用 auto 接 now()，用 duration_cast 取单位
 #include <chrono>
 #include <iostream>
@@ -548,7 +548,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 17 · ★★★☆☆"
 // ⑱-2 用字面量让单位显式
 #include <chrono>
 #include <iostream>
@@ -563,7 +563,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑱-3 超时类型化：expected 表达"超时失败"（结合第88章）
 #include <chrono>
 #include <expected>
@@ -577,7 +577,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // ⑱-4 日志用 system_clock + UTC，避免时区混乱
 #include <chrono>
 #include <iostream>
@@ -600,7 +600,7 @@ int main() {
 网络服务常用 `chrono` 实现**令牌桶限流**与**指数退避重试**，二者都是把"时长"作为控制变量。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充工业案例：令牌桶限流与指数退
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // B1 令牌桶限流：定时补充令牌，超出则拒绝（示意 refill 逻辑）
 #include <chrono>
 #include <iostream>
@@ -628,7 +628,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充工业案例：令牌桶限流与指数退
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // B2 指数退避：重试间隔 100ms -> 200ms -> 400ms ...
 #include <chrono>
 #include <iostream>
@@ -656,7 +656,7 @@ int main() {
 **microbenchmark（示意，量级取自 x86-64 / 热路径）：**
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // ⑲-1 steady_clock::now() 单次开销量级
 #include <chrono>
 #include <iostream>
@@ -678,7 +678,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // ⑲-2 duration_cast 截断 vs round 的数值差异
 #include <chrono>
 #include <iostream>
@@ -696,7 +696,7 @@ int main() {
 - `[汇编]`：`now()` 的关键路径在 libstdc++ 中只是调用 `__steady_clock_now` → `clock_gettime`/QPC；运算本身零开销（见第⑩节）。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑲-3 基准开销扣除：先测计时本身的成本
 #include <chrono>
 #include <iostream>
@@ -721,7 +721,7 @@ int main() {
 ## ⑲-补 补充完整可编译示例（C1–C14，均为独立程序）
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // C1 duration 构造与 count（显式单位）
 #include <chrono>
 #include <iostream>
@@ -733,7 +733,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // C2 字面量（函数内 using chrono_literals）
 #include <chrono>
 #include <iostream>
@@ -746,7 +746,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // C3 duration_cast 截断（整数 Rep）
 #include <chrono>
 #include <iostream>
@@ -759,7 +759,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // C4 floor / round / ceil（C++17，避免静默截断）
 #include <chrono>
 #include <iostream>
@@ -774,7 +774,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // C5 time_point 算术：now() + duration
 #include <chrono>
 #include <iostream>
@@ -788,7 +788,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // C6 system_clock::now 转 time_t（桥接 C API）
 #include <chrono>
 #include <iostream>
@@ -802,7 +802,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // C7 steady_clock 单调验证
 #include <chrono>
 #include <iostream>
@@ -817,7 +817,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // C8 system_clock vs steady_clock 的 is_steady 差异
 #include <chrono>
 #include <iostream>
@@ -829,7 +829,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // C9 C++20 日历：year_month_day 与 sys_days 互转
 #include <chrono>
 #include <iostream>
@@ -845,7 +845,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // C10 日期加减：100 天后是几号
 #include <chrono>
 #include <iostream>
@@ -860,7 +860,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // C11 weekday 计算（C++20）
 #include <chrono>
 #include <iostream>
@@ -873,7 +873,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // C12 GCC13 实测可用的时区：locate_zone + zoned_time（tzdb 已链接）
 #include <chrono>
 #include <iostream>
@@ -891,7 +891,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // C13 clock_cast：file_clock / system_clock 纪元换算（见第91章 file_time_type）
 #include <chrono>
 #include <iostream>
@@ -910,7 +910,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补 补充完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // C14 用 ratio 自定义单位：1 tick = 1/8 秒
 #include <chrono>
 #include <iostream>
@@ -928,7 +928,7 @@ int main() {
 单次测量噪声大，工程上需多次采样后取均值/中位数。`duration<double>` 把时长表示为浮点秒，便于做统计聚合（求和、均值），且不受整数截断影响。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 注 浮点 duration 与多次测
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // D1 多次测量的浮点平均（微基准统计惯用法）
 #include <chrono>
 #include <iostream>
@@ -1084,7 +1084,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <chrono>
 int main() {
@@ -1109,7 +1109,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <chrono>
 int main() {
@@ -1132,7 +1132,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★）
-```cpp
+```cpp title="示例 42 · ★★★★☆"
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -1159,7 +1159,7 @@ int main() {
 `steady_clock` 保证单调递增、不受墙钟调整影响，是"测时长"的正确选择；`system_clock` 可被 NTP/手动改时间导致负时长。`duration_cast` 在不同 `ratio`（如纳秒→毫秒）间做整数截断转换，不会丢精度而只做受控取整。把 `time_point` 相减得到 `duration`，再 `duration_cast<milliseconds>` 取整数毫秒。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 #include <chrono>
 
@@ -1189,7 +1189,7 @@ int main() {
 `duration<Rep, Period>` 把"计数"与"单位"解耦：用 `ratio<1,100>` 即定义 1/100 秒单位。不同单位的 `duration` 之间可隐式/显式换算，`floor<D>(d)` 向负无穷取整到目标单位，适合把高精度时长安全地降精度展示。`seconds` 到 `centi` 属精确放大（1→100），可隐式转换。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 46 · ★★★☆☆"
 #include <iostream>
 #include <chrono>
 
@@ -1309,7 +1309,7 @@ int main() {
 ### D4.7 编译验证
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <chrono>
 #include <iostream>
 int main() {
@@ -1525,7 +1525,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <chrono>
 #include <type_traits>

@@ -62,7 +62,7 @@
 - **optional / expected** ⟶ `Book/part07_stl/ch88_optional_variant.md`：返回"可能缺失的视图"时，用 `std::optional<std::span<const T>>` 表达"无数据"比返回空 `span` 更明确。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 // ②-1 前置：span 与三大数据源的关系（独立可编译）
 #include <span>
 #include <vector>
@@ -83,7 +83,7 @@ int main() {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // ②-2 前置：span 不改变底层数据的所有权（仍是别人的内存）
 #include <span>
 #include <vector>
@@ -112,7 +112,7 @@ int main() {
 - **STL 算法** ⟶ `Book/part08_algorithms/ch95_algo_overview.md`：几乎所有接受"区间"的算法都可用 `span` 直接喂入（因为 `span` 满足 `contiguous_range`）。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ③-1 后续：span 作为算法区间直接喂给 std::ranges（C++20）
 #include <span>
 #include <vector>
@@ -131,7 +131,7 @@ int main() {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // ③-2 后续：ranges::subrange 与 span 的互转思想（独立可编译）
 #include <span>
 #include <vector>
@@ -235,7 +235,7 @@ flowchart TD
 - `[标准]`：`sizeof(span<T, dynamic_extent>)` 通常等于 `2 * sizeof(void*)`（指针 + 大小），`sizeof(span<T, N>)` 通常等于 `sizeof(void*)`，因为大小是类型的一部分，不需存储。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图：span 的对象布局
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // ⑦-1 验证 span 的对象大小（独立可编译）
 #include <span>
 #include <iostream>
@@ -249,7 +249,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：span 的对象布局
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 // ⑦-2 静态 extent 是类型的一部分（长度信息进入类型系统）
 #include <span>
 #include <iostream>
@@ -292,7 +292,7 @@ flowchart TD
 - `[经验]`：函数参数用 `span` 传"调用方保证存活"的缓冲区；不要把它存进成员变量后长期持有。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：span 是"借来的引用
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ⑧-1 生命周期：从局部 vector 返回 span 是悬垂（代码可编译，运行期 UB！）
 #include <span>
 #include <vector>
@@ -310,7 +310,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：span 是"借来的引用
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ⑧-2 正确：调用方持有存储，span 仅在本作用域内借用
 #include <span>
 #include <vector>
@@ -347,7 +347,7 @@ flowchart LR
 - `[实现]`：这些函数在 `-O2` 下通常被内联为一条 `lea`（地址计算），无分支、无拷贝。
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：subspan
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ⑨-1 subspan 不拷贝，仅移动指针（独立可编译）
 #include <span>
 #include <iostream>
@@ -364,7 +364,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：subspan
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // ⑨-2 first / last 是 subspan 的便捷包装
 #include <span>
 #include <iostream>
@@ -386,7 +386,7 @@ int main() {
 下面用 x86-64（`-std=c++23 -O2 -masm=intel`）观察 `span` 与普通指针+长度访问生成的指令是否等价。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：span 的零开销
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // ⑩-1 被测代码（仅作汇编对照，下方 asm 为其 -O2 产物）
 #include <span>
 #include <cstddef>
@@ -430,7 +430,7 @@ _Z7sum_ptrPKiy:
 - `[标准]`：这正是 `span` 作为"零开销抽象"的体现——它只是把"指针 + 长度"这对本就存在的运行期信息，用类型安全地封装起来。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编分析：span 的零开销
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // ⑩-2 验证：span 访问不引入边界检查指令（独立可编译，说明零开销）
 #include <span>
 #include <iostream>
@@ -461,7 +461,7 @@ int main() {
 - `[经验]`：接口参数优先用 `span`（而非 `vector&` 或裸指针+长度）；返回结果时，若需"返回并转移所有权"用 `vector`，若"返回调用方已有的缓冲区视图"则 `span` 不合适（应用 `vector&` 输出参数或返回值）。
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：span 在容器/视图家族中的
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // ⑪-1 span 与 string_view 的同源对比（独立可编译）
 #include <span>
 #include <string_view>
@@ -478,7 +478,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：span 在容器/视图家族中的
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑪-2 用 span 取代 (ptr, len) 二参数接口（更安全、更表达化）
 #include <span>
 #include <iostream>
@@ -513,7 +513,7 @@ int main() {
 网络层常拿到一整块 `char` 缓冲区，需要按协议帧切片。用 `span<std::byte>` 表达"当前待解析的剩余字节"，逐帧 `subspan` 推进，避免反复传 `offset` 与 `len`。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：网络封包解析与行情快照
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // ⑫-1 网络封包：用 span 表达"剩余待解析字节"（独立可编译，模拟逻辑）
 #include <span>
 #include <cstddef>
@@ -552,7 +552,7 @@ int main() {
 交易所行情常以连续数字数组下发（买价数组、卖量数组）。`span<const double>` 把"价格数组 + 长度"打包给风控/撮合模块，零拷贝。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：网络封包解析与行情快照
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // ⑫-2 行情快照：零拷贝把价格数组交给计算模块（独立可编译，模拟逻辑）
 #include <span>
 #include <cmath>
@@ -580,7 +580,7 @@ int main() {
 - `[经验]`：工业代码中 `span` 最常见的角色是**函数参数**，向算法层暴露"我给你一块连续内存及其长度"。它几乎从不当作长期存储对象（见 §⑧）。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：网络封包解析与行情快照
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // ⑫-3 工业：序列化写入——span 作为"剩余可写缓冲区"视图（独立可编译）
 #include <span>
 #include <cstddef>
@@ -616,7 +616,7 @@ int main() {
 ### 13.1 extent 的存储策略
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的存储策略
-```cpp
+```cpp title="示例 22 · ★★★☆☆"
 #include <cstddef>
 // ⑬-1a libstdc++ 源码摘录（文件：span，行号：81-99）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -635,7 +635,7 @@ int main() { return 0; }
 ### 13.2 两个核心成员与构造函数
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 两个核心成员与构造函数
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // ⑬-2a libstdc++ 源码摘录（文件：span，行号：153 / 161 / 189 / 212）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
 //// 行号 153：nullptr 构造
@@ -655,7 +655,7 @@ int main() { return 0; }
 ### 13.3 访问函数与切片
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 访问函数与切片
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑬-3a libstdc++ 源码摘录（文件：span，行号：252-253 / 280-283 / 287-288 / 341-344 / 360-363 / 399）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
 //// 行号 252-253：size()
@@ -677,7 +677,7 @@ int main() { return 0; }
 - `[标准]`：注意 `operator[]` 标注 `const noexcept` 但**不抛异常也不做运行期边界检查**（NDEBUG 时）；越界访问是 UB，调用方负责保证索引合法。
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 访问函数与切片
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // ⑬-1 对照理解：调试构建下越界会被断言捕获（独立可编译，演示接口）
 #include <span>
 #include <iostream>
@@ -704,7 +704,7 @@ int main() {
 - `[经验]`：若需兼容 C++17 代码库，可用 `gsl::span`（Guidelines Support Library）作为过渡，接口高度一致。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案背景
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // ⑭-1 as_bytes / as_writable_bytes：以字节视角看任意 span（C++20，GCC13 支持）
 #include <span>
 #include <iostream>
@@ -734,7 +734,7 @@ int main() {
 
 4. **下面代码有什么问题？**
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
-   ```cpp
+   ```cpp title="示例 27 · ★☆☆☆☆"
 #include <vector>
 #include <span>
    std::span<int> f() { std::vector<int> v{1,2,3}; return {v}; }
@@ -754,7 +754,7 @@ int main() {
    → 不能（无 `operator<` 且语义是视图，比较无意义）。若需关联容器见 ⟶ `Book/part07_stl/ch83_map.md`。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题
-```cpp
+```cpp title="示例 28 · ★★★☆☆"
 // ⑮-1 面试题实战：判断 span 是否 contiguous（独立可编译）
 #include <span>
 #include <type_traits>
@@ -774,7 +774,7 @@ int main() {
 
 1. **悬垂 span（从临时对象构造后外传）** —— 见 §⑧。永远确保底层存储活得比 `span` 久。
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 29 · ★★☆☆☆"
    // ❌ 逻辑错误演示（编译通过，运行期 UB）：从临时 string 取 view 外传
    #include <string>
    #include <string_view>
@@ -787,7 +787,7 @@ int main() {
 
 2. **把 `span` 存为成员变量后底层被修改/释放** —— `vector` 扩容、`std::string` 的 SSO 迁移都会让已存的 `span` 失效。
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 30 · ★★☆☆☆"
    // ❌ 逻辑错误演示（编译通过）：扩容使 span 悬垂
    #include <span>
    #include <vector>
@@ -803,7 +803,7 @@ int main() {
 
 3. **误以为 `span` 越界会抛异常** —— 它不会（§⑬）。需要安全访问请用 `std::size` 先检查。
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 31 · ★☆☆☆☆"
    // ❌ 错误预期：希望 s[100] 抛异常
    #include <span>
    #include <iostream>
@@ -819,7 +819,7 @@ int main() {
 
 4. **用 `span` 返回函数内新建的数据** —— `span` 不拥有，无法"返回并转移所有权"，应返回 `vector` 或接受 `span` 输出参数。
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 32 · ★☆☆☆☆"
    // ✅ 正确：输出参数写入调用方提供的缓冲区
    #include <span>
    #include <iostream>
@@ -837,7 +837,7 @@ int main() {
 
 5. **混淆 `dynamic_extent` 与 0** —— `dynamic_extent` 是 `static_cast<std::size_t>(-1)`，代表"长度运行期决定"，不是"长度为 0"。
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-   ```cpp
+   ```cpp title="示例 33 · ★☆☆☆☆"
    // ✅ 演示 dynamic_extent 的值
    #include <span>
    #include <iostream>
@@ -870,7 +870,7 @@ int main() {
 → 不一样。`span` 本身没有"失效"概念，失效的是**底层存储**。底层的 `vector` 扩容会让所有指向它的 `span` 同时失效（见 §⑧）。
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // ⑰-1 FAQ：const 退化的 span 互转（独立可编译）
 #include <span>
 #include <iostream>
@@ -888,7 +888,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ⑰-2 FAQ：span 与 string_view 互操作（字符特化）
 #include <span>
 #include <string_view>
@@ -916,7 +916,7 @@ int main() {
 7. **`noexcept` 与零开销**：`span` 的访问都是 `noexcept`，可在热路径放心使用。
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ⑱-1 最佳实践：只读 span 作为万能参数（独立可编译）
 #include <span>
 #include <vector>
@@ -939,7 +939,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // ⑱-2 最佳实践：跨 C 接口时拆/装 span（独立可编译）
 #include <span>
 #include <cstddef>
@@ -982,7 +982,7 @@ int main() {
 ### 19.3 与 `vector` 传参的对比（microbenchmark 量级）
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 vector 传参的对比
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // ⑲-1 量级对照：span 传参 vs vector 传值（独立可编译，含示意计时骨架）
 #include <span>
 #include <vector>
@@ -1061,7 +1061,7 @@ int main() {
 - `[经验]`：从 Rust/C# 转来的工程师会自然使用 `span`；但必须习惯"C++ 不会在编译期阻止你持有悬垂视图"，要靠代码审查与 `-DNDEBUG` 之外的 sanitizer（`-fsanitize=address`）兜底。
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：连续视图的语义
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // ⑳-1 跨语言映射：Go 式 s[lo:hi] 在 C++ 用 subspan 表达（独立可编译）
 #include <span>
 #include <iostream>
@@ -1077,7 +1077,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比：连续视图的语义
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // ⑳-2 跨语言映射：Rust &[T] 的"借用保证"在 C++ 需 manual discipline（独立可编译）
 #include <span>
 #include <vector>
@@ -1186,7 +1186,7 @@ int main() {
 **真实场景：底层二进制帧解析——同一函数接收栈缓冲/array/vector。** 网络包负载可能是 `uint8_t[]`、定长 `array` 或动态 `vector`，用 `span` 统一接收，避免为每种容器重载。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <span>
 #include <vector>
@@ -1211,7 +1211,7 @@ int main() {
 **真实场景：协议分块——不拷贝取载荷子区间。** 从整帧 `span` 切出 payload 段做 CRC 校验，`subspan` 在原缓冲上滑动视图，复杂度 O(1)。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 #include <span>
 #include <vector>
@@ -1232,7 +1232,7 @@ int main() {
 **真实场景：图像行视图——把扁平 RGB 缓冲按宽切成逻辑行，无拷贝。** 图像处理把 `vector<byte>` 当二维，按列数出每行 `span`。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <span>
 #include <vector>
@@ -1260,7 +1260,7 @@ int main() {
 `std::span<T>` 本质是一个 `{ptr, size}` 视图，它不拥有内存、构造时不拷贝元素，仅"借用"底层连续区间，因此是零拷贝、零分配的。代价是它与 `string_view` 一样**不拥有**内存、且 `operator[]` 不做边界检查（越界即 UB，和裸指针一致）。安全切片要用 `first(n)`、`last(n)`、`subspan(off, n)` 这些会重新计算长度的成员，而不是手算指针加减。
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 48 · ★☆☆☆☆"
 #include <iostream>
 #include <span>
 int main() {
@@ -1286,7 +1286,7 @@ int main() {
 `std::span<T>` 的第二个模板参数 `Extent` 决定长度是否编码进类型：`std::span<T>`（动态，`Extent==dynamic_extent`）长度存运行时；`std::span<T, N>`（静态）长度在编译期固定，可推导出 `size()` 为 constexpr，且能直接从 `std::array<T,N>` 构造（长度自动匹配）。静态 extent 的好处是让越界在编译期更易被发现、且无需额外存储 `size`，但对动态来源（如 `vector`）需先保证长度等于 N。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 #include <iostream>
 #include <span>
 #include <array>
@@ -1309,7 +1309,7 @@ int main() {
 把容器转成 `span<const T>` 后用标准算法累加，签名只依赖连续性。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：泛型数值累加，接受任意连续
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <iostream>
 #include <span>
 #include <vector>
@@ -1329,7 +1329,7 @@ int main() {
 只读函数用 `span<const T>`，可接收 `vector<int>` 与 `const vector<int>`；`span<T>` 才能写回。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：const 正确性——span<const T> 与 span<T>
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 #include <iostream>
 #include <span>
 #include <vector>
@@ -1473,7 +1473,7 @@ at_span(std::span<int const, N>, unsigned long long):
 ### D4.7 编译验证
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <span>
 #include <array>
 #include <iostream>
@@ -1691,7 +1691,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <numeric>
 #include <span>

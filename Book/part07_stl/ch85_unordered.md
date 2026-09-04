@@ -235,7 +235,7 @@ flowchart TD
 场景：网关维护在线会话表，键为 `session_id`（字符串），值为会话上下文指针/状态。需要极高并发的查找/插入/过期删除；"`unordered_map`"是天然选型。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：分布式会话缓存
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // 工业案例 C1：会话表（unordered_map<string, SessionState>）
 #include <unordered_map>
 #include <string>
@@ -290,7 +290,7 @@ int main() {
 `unordered_set` 薄封装 `_Hashtable`（`bits/unordered_set.h:102` `class unordered_set`，组合成员 `_Hashtable _M_h`）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析（libstdc++ 逐行）
-```cpp
+```cpp title="示例 6 · ★★★☆☆"
 #include <cstddef>
 // 文件：bits/unordered_set.h   行号：102, 133, 490, 504, 601, 690, 731, 782, 829, 854, 865
 // 102:  class unordered_set
@@ -362,7 +362,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // ❌ 错误1：自定义类型未特化 hash -> 编译失败
 #include <unordered_set>
 struct Point { int x, y; };
@@ -385,7 +385,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ❌ 错误2：扩容导致迭代器失效（rehash 后旧迭代器不可用）
 #include <unordered_set>
 #include <iostream>
@@ -401,7 +401,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ❌ 错误3：糟糕哈希导致严重碰撞（所有键同桶 -> O(n) 查找）
 #include <unordered_set>
 #include <iostream>
@@ -415,7 +415,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ❌ 错误4：忘记 reserve，运行期反复 rehash 造成延迟毛刺
 #include <unordered_map>
 #include <string>
@@ -452,7 +452,7 @@ int main() {
 7. 若需要"有序遍历 + 缓存友好"，改用排序 `vector` 或 `flat_map`（GCC13 未实现，用 `vector<pair>`+`sort`）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // 最佳实践 B1：自定义键的高质量哈希 + 透明等值（C++20 异构查找）
 #include <unordered_set>
 #include <string>
@@ -495,7 +495,7 @@ int main() {
 - `[经验]`：碰撞攻击面——libstdc++ 默认字符串哈希是 **FNV-1a**（`hash_bytes.h:54`），**非抗碰撞**。对外网输入做键时，应使用带密钥哈希（如 SipHash，自行实现或第三方库）或限制键空间。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // 性能 P1：reserve 前后 rehash 次数对比（用 bucket_count 变化观测）
 #include <unordered_set>
 #include <iostream>
@@ -512,7 +512,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // 性能 P2：microbenchmark 量级（示意）。unordered vs ordered 查找循环
 #include <unordered_set>
 #include <set>
@@ -615,7 +615,7 @@ int main() {
 以下为第85章完整可编译示例集（每块独立、自带 `#include` 与 `int main`，经 `g++ -std=c++23 -O2 -Wall -Wextra` 校验）。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // U1 基础：unordered_set 创建与查找（无序）
 #include <unordered_set>
 #include <iostream>
@@ -628,7 +628,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // U2 基础：unordered_map 插入与访问
 #include <unordered_map>
 #include <string>
@@ -645,7 +645,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // U3 operator[] vs at vs find（at 越界抛异常）
 #include <unordered_map>
 #include <iostream>
@@ -661,7 +661,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // U4 insert 返回 pair<iterator,bool>
 #include <unordered_set>
 #include <iostream>
@@ -676,7 +676,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // U5 自定义键类型：Point + 高质量哈希 + 等值
 #include <unordered_set>
 #include <functional>
@@ -701,7 +701,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // U6 load_factor / max_load_factor 观测
 #include <unordered_set>
 #include <iostream>
@@ -716,7 +716,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // U7 rehash 显式扩容，观察 bucket_count 跳变
 #include <unordered_set>
 #include <iostream>
@@ -730,7 +730,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // U8 reserve 预留容量（避免反复 rehash）
 #include <unordered_map>
 #include <iostream>
@@ -746,7 +746,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // U9 bucket 接口：定位键所在桶与桶长度
 #include <unordered_set>
 #include <iostream>
@@ -761,7 +761,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // U10 局部迭代器：遍历单个桶（begin(n)/end(n)）
 #include <unordered_set>
 #include <iostream>
@@ -777,7 +777,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // U11 透明哈希（C++20）：find 用 string_view，免临时 string
 #include <unordered_set>
 #include <string>
@@ -804,7 +804,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // U12 extract 节点句柄 + 跨表迁移（零拷贝）
 #include <unordered_set>
 #include <iostream>
@@ -819,7 +819,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // U13 merge 合并（C++17）
 #include <unordered_set>
 #include <iostream>
@@ -833,7 +833,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // U14 equal_range（unordered_multiset 取某键全部）
 #include <unordered_set>                                                   // std::unordered_multiset 定义于此，无独立 <unordered_multiset> 头
 #include <iterator>                                                        // std::distance
@@ -847,7 +847,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // U15 工业：词频统计（Counter）
 #include <unordered_map>
 #include <string>
@@ -865,7 +865,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // U16 工业：倒排索引（token -> doc ids），unordered_map<string, unordered_set>
 #include <unordered_map>
 #include <unordered_set>
@@ -882,7 +882,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // U17 工业：URL 短链/缓存命中率统计（计数 + 命中判定）
 #include <unordered_map>
 #include <string>
@@ -903,7 +903,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // U18 删除：按迭代器与按键，观察失效规则
 #include <unordered_set>
 #include <iostream>
@@ -917,7 +917,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // U19 桶长度诊断（碰撞健康检查）
 #include <unordered_set>
 #include <algorithm>
@@ -935,7 +935,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // U20 糟糕哈希导致全碰撞（验证最坏情况）
 #include <unordered_set>
 #include <iostream>
@@ -950,7 +950,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // U21 node_type 提取后引用仍有效（节点未移动）
 #include <unordered_set>
 #include <iostream>
@@ -964,7 +964,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // U22 版本宏：C++20 透明哈希可用性探测
 #include <unordered_set>
 #include <iostream>
@@ -980,7 +980,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // U23 折叠表达式批量插入 unordered_set
 #include <unordered_set>
 #include <iostream>
@@ -997,7 +997,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // U24 用用户定义字面量计时（UDL 带空格写法）观察 reserve 收益
 #include <unordered_map>
 #include <chrono>
@@ -1018,7 +1018,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // U25 unordered_multimap：一键多值
 #include <unordered_map>
 #include <iostream>
@@ -1033,7 +1033,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // U26 try_emplace（C++17）：仅在缺失时构造 value，避免覆盖
 #include <unordered_map>
 #include <string>
@@ -1049,7 +1049,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 // U27 insert_or_assign：存在则赋值，缺失则插入
 #include <unordered_map>
 #include <iostream>
@@ -1063,7 +1063,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 // U28 交换 O(1)：swap 只交换内部指针
 #include <unordered_set>
 #include <iostream>
@@ -1076,7 +1076,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 // U29 迭代顺序不稳定：两次遍历顺序可能不同（尤其 rehash 后）
 #include <unordered_set>
 #include <iostream>
@@ -1091,7 +1091,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 // U30 并发读安全（const 读可多线程；写需锁，演示锁）
 #include <unordered_map>
 #include <string>
@@ -1113,7 +1113,7 @@ int main() {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 // U31 与 map 对比：unordered_map 平均更快点查（量级示意）
 #include <unordered_map>
 #include <map>
@@ -1127,7 +1127,7 @@ int main() {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 // U32 自定义哈希的混合函数单元测试桩（验证 h(a)==h(a)）
 #include <functional>
 #include <iostream>
@@ -1146,7 +1146,7 @@ int main() {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 // U33 工业：用排序 vector 模拟 flat_map（GCC13 无 <flat_map>），对比缓存/有序
 #include <vector>
 #include <algorithm>
@@ -1165,7 +1165,7 @@ int main() {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 // U34 absl::flat_hash_map 思想对比（描述为开放寻址探测，非编译）
 #include <iostream>
 int main() {
@@ -1179,7 +1179,7 @@ int main() {
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 48 · ★☆☆☆☆"
 // U35 完整综合：会话表（复用 C1 思路，自包含可编译）
 #include <unordered_map>
 #include <string>
@@ -1223,7 +1223,7 @@ int main() {
 **真实场景：会话 ID 去重集合——为自定义 key 提供哈希。** 用自定义哈希的 `unordered_set<SessionId>` 做连接去重；字符串等标准类型可复用 `std::hash`/`std::equal_to`。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★☆☆☆☆"
 #include <iostream>
 #include <unordered_set>
 #include <string>
@@ -1246,7 +1246,7 @@ int main() {
 **真实场景：高频查找避免临时 string 构造。** 热点路径用 `string_view` 直接 `contains`，不经 `std::string` 分配（异构查找 `is_transparent`）。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 #include <unordered_set>
 #include <string>
@@ -1275,7 +1275,7 @@ int main() {
 **真实场景：预分配桶避免 rehash 抖动。** 已知规模先 `reserve` 防 rehash 使迭代器失效；`load_factor = size/bucket_count`，超过 `max_load_factor`（默认 1.0）即触发扩容。
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 51 · ★☆☆☆☆"
 #include <iostream>
 #include <unordered_set>
 int main() {
@@ -1300,7 +1300,7 @@ int main() {
 `unordered_*` 容器要求 key 满足：① 有哈希函数（默认 `std::hash<Key>`，自定义类型需特化或传入 Hash 模板参数）；② 有等价比较（默认 `std::equal_to`，依赖 `operator==`）。二者必须保持一致——同一个等价类必须映射到同一个桶。常见写法：给 `operator==` 并特化 `std::hash<Point>`，或干脆传入自定义 Hash 函数对象（更易控制质量）。哈希质量直接影响冲突率与退化风险。
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 57 · ★☆☆☆☆"
 #include <iostream>
 #include <unordered_set>
 #include <string>
@@ -1331,7 +1331,7 @@ int main() {
 `unordered_*` 在元素数超过 `max_load_factor() * bucket_count()` 时会触发 rehash：分配新桶数组、把每个节点"改挂"到新桶（不搬元素值，只改指针），但桶布局变了，**所有迭代器/引用失效**（仅 `end()` 例外保证稳定）。预先 `reserve(n)` 让桶数一次性到位，避免中途多次 rehash 的尖峰。注意 `bucket_count` 是实际桶数（实现通常取 2 的幂），`load_factor` 为 元素数/桶数。
 
 > **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 58 · ★★★☆☆"
 #include <iostream>
 #include <unordered_map>
 int main() {
@@ -1355,7 +1355,7 @@ int main() {
 map 存 key→list 迭代器做 O(1) 命中查找，list 维护使用顺序。
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：用 unorderedma
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <unordered_map>
 #include <list>
@@ -1376,7 +1376,7 @@ int main() {
 用移位+加法组合两个字段的哈希，降低碰撞概率（对抗哈希 DoS 需随机化种子，此处仅示组合法）。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：为 pair 提供组合哈希
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 #include <unordered_set>
 #include <utility>
@@ -1503,7 +1503,7 @@ bucket_chain:
 可复现基准（自包含、可编译）：
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实性能基准：哈希容器 vs 红黑树
-```cpp
+```cpp title="示例 54 · ★★☆☆☆"
 // g++ -std=c++23 -O2 ch85_bench.cpp
 #include <unordered_map>
 #include <map>
@@ -1601,7 +1601,7 @@ _M_rehash(size_type __bkt_count, true_type /* __uks */)
 ### 4. 第一方可编译验证（观察桶数 2 的幂扩张）
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 #include <unordered_map>
 #include <iostream>
 int main() {
@@ -1794,7 +1794,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 56 · ★★☆☆☆"
 #include <iostream>
 #include <unordered_map>
 #include <cassert>

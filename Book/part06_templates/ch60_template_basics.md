@@ -64,7 +64,7 @@
 - **一句话定义**：模板是一段「带未定参数的代码蓝图」，编译器在实例化点把它落地为具体实体 <span class="badge badge-std">标准</span>
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本模板模式速查
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 template <typename T>  // 模板参数列表：T 是类型参数
 T max_val(T a, T b) {  // 函数模板
     return (a < b) ? b : a;
@@ -76,7 +76,7 @@ T max_val(T a, T b) {  // 函数模板
 模板参数有三类：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 2 · ★★★☆☆"
 // 1) 类型参数
 template <typename T> struct Box { T v; };
 
@@ -91,7 +91,7 @@ struct Holder { Container<T> c; };
 非类型参数的合法类型 <span class="badge badge-std">标准</span>：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 #include <cstddef>
 template <int I>            struct A {};  // 整数
 template <bool B>           struct B {};  // 布尔
@@ -105,7 +105,7 @@ template <const char* S>    struct G {};  // 字符串字面量地址可作 NTTP
 ## ④ 实例化机制（实例化点 / 两阶段查找）
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实例化机制
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 template <typename T>
 void f(T x) {
     // 两阶段查找：
@@ -119,7 +119,7 @@ void f(T x) {
 实例化点（POI）规则 <span class="badge badge-std">标准</span>：
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实例化机制
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 template <typename T> void g(T);
 void h() {
     g(1);     // 实例化点：h() 定义之后、namespace 作用域
@@ -139,7 +139,7 @@ void h() {
 ## ⑥ 完整可运行示例（最小）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 #include <iostream>
 template <typename T>
 T max_val(T a, T b) { return (a < b) ? b : a; }
@@ -152,7 +152,7 @@ int main() {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // 类模板最小示例
 #include <iostream>
 template <typename T>
@@ -164,7 +164,7 @@ int main() { Pair<int> p{1, 2}; std::cout << p.bigger() << '\n'; }
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 #include <cstddef>
 // NTTP 最小示例：编译期定长数组
 template <typename T, std::size_t N>
@@ -184,7 +184,7 @@ int main() { Fixed<int, 4> f; static_assert(f.size() == 4); }
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 > **示例 9** [难度 ★★★☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 // MSVC 老前端（<=19.1x）对两阶段查找不严：dependent name 在定义点即查
 // GCC/Clang 严格：以下在 MSVC 可能误编过，GCC/Clang 必报错
 template <typename T>
@@ -192,7 +192,7 @@ void buggy(T x) { undefined_helper(x); }   // GCC/Clang：dependent，实例化�
 ```
 
 > **示例 10** [难度 ★★★★☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 10 · ★★★★☆"
 // Mangling 差异：GCC/Clang 用 Itanium ABI；MSVC 用自己的一套（?max_val@@...）
 // 跨编译器 ABI 不兼容，模板实参不能跨 DLL 边界导出（见 ch47 ABI 节，占位：part05）
 template <typename T> void cross_dll(T);   // 导出模板函数跨 MSVC DLL 易 ODR 违规
@@ -203,7 +203,7 @@ template <typename T> void cross_dll(T);   // 导出模板函数跨 MSVC DLL 易
 模板本身**不占运行时内存**。实例化出的每个具体函数/类是独立实体，各自有代码段与（按需）数据段。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
-```cpp
+```cpp title="示例 11 · ★★★★☆"
 template <typename T> struct S { T x; };
 static_assert(sizeof(S<int>) == sizeof(int));        // 通常 4
 static_assert(sizeof(S<double>) == sizeof(double));  // 通常 8
@@ -240,7 +240,7 @@ _Z7max_valIdET_S0_S0_:
 **B1 实例化类型：隐式 vs 显式 vs 特化 <span class="badge badge-std">标准</span>**（各带可编译示例）
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 template <typename T> void f(T) {}   // 主模板
 // 隐式实例化：调用处触发
 void a() { f(1); }                   // 实例化 f<int>
@@ -251,13 +251,13 @@ extern template void f<char>(char);  // 不生成，期望别处提供
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // 显式特化：为特定实参提供完全不同实现
 template <> void f<const char*>(const char* s) { // 字符串专用
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 #include <vector>
 // 类模板显式实例化
 template class std::vector<int>;           // 强制实例化整个 vector<int>
@@ -266,7 +266,7 @@ template class std::vector<int>;           // 强制实例化整个 vector<int>
 **B2 两阶段查找实战 <span class="badge badge-impl">实现</span>**（≥10 例）
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 int g(int);                   // 非依赖
 template <typename T>
 void use(T x) {
@@ -278,60 +278,60 @@ void test() { use(N::X{}); }  // 实例化点 ADL 找到 N::g
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 template <typename T> void h(T x) { T::static_method(); }  // 依赖，Phase2
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 template <typename T> auto k(T x) -> decltype(x.foo()) { return x.foo(); } // 依赖，SFINAE 友好
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 template <typename T> void m() { T::value; }   // 非类型值依赖，Phase2
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 template <typename T> void n(T x) { ::g(x); }   // 限定名 :: 不 ADL，Phase1 绑定 ::g
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 template <typename T> void p(T x) { g(x); }     // 非限定，ADL 在 Phase2
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 struct B { void f() {} };
 template <typename T> void q(T x) { x.f(); }    // 成员调用依赖，Phase2
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 template <typename T> T r(T a, T b) { return a + b; }  // operator+ 依赖 T，Phase2
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 template <typename T> void s(T x) { using U = typename T::type; } // typename 必需：依赖类型
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 template <typename T> void t(T x) { T::template rebind<int>::other y; } // template 必需：依赖模板
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 template <typename T> auto u(T x) -> std::enable_if_t<sizeof(T) == 4> { } // 依赖 SFINAE
 ```
 
 **B3 非类型模板参数 NTTP 边界 <span class="badge badge-std">标准</span>**
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 26 · ★★★☆☆"
 template <int N> struct Ctx { static constexpr int n = N; };
 Ctx<3> c;  // OK：字面量
 constexpr int k = 5;
@@ -341,7 +341,7 @@ int x = 6;
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // C++20 字符串字面量作 NTTP（需 static 存储期）
 template <const char* S> struct Lit {};
 extern const char hello[] = "hi";  // 具链接期地址
@@ -349,19 +349,19 @@ Lit<hello> l;                      // OK（C++20 放宽）
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // auto NTTP（C++17）
 template <auto V> struct Val { static constexpr auto value = V; };
 Val<42> a; Val<'x'> b; Val<3.14> c;        // 整数/字符/浮点均可（浮点 NTTP C++20）
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 template <std::nullptr_t P> struct Null {};  // nullptr_t 可作 NTTP
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 template <int(*F)(int)> struct FnPtr { static int call(int x){ return F(x); } };
 int inc(int x){ return x+1; }
 FnPtr<inc> fp;                              // 函数指针作 NTTP
@@ -370,7 +370,7 @@ FnPtr<inc> fp;                              // 函数指针作 NTTP
 **B4 模板模板参数 TTP <span class="badge badge-std">标准</span>**
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 #include <vector>
 template <typename T, template <typename> class C>
 struct Wrap { C<T> v; };
@@ -378,34 +378,34 @@ Wrap<int, std::vector> w;                   // OK（C++17 起不必写 <typename
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // 带默认参数的 TTP
 template <typename T, template <typename, typename = std::allocator<T>> class C>
 struct Wrap2 { C<T> v; };
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // TTP 匹配时参数列表要兼容
 template <typename T, template <typename U, typename A> class C>
 struct Wrap3 { C<T, std::allocator<T>> v; };
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // 变量模板（C++14）
 template <typename T> constexpr T pi = T(3.1415926535897932385L);
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 template <typename T> constexpr bool is_small = sizeof(T) <= 4;
 ```
 
 **B5 错误与正确对照 <span class="badge badge-exp">经验</span>**
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // 错误：依赖类型名漏 typename
 template <typename T> void bad(T x) { T::iterator i; }   // 报错：依赖名前需 typename
 // 正确
@@ -413,20 +413,20 @@ template <typename T> void good(typename T::iterator i) { }
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // 错误：依赖模板名漏 template
 template <typename T> void bad2(T x) { typename T::template rebind<int>::other y; }
 // 实际缺 template 关键字会报
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // 正确：auto 返回类型推导
 template <typename T, typename U> auto add(T a, U b) { return a + b; }
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // 错误：模板定义与声明参数不一致
 extern template void f<int>(int);  // 声明
 template void f<int>(double);      // 错误：实参类型不匹配
@@ -438,7 +438,7 @@ template void f<int>(double);      // 错误：实参类型不匹配
 [第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中的该模式
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // 本节覆盖：① vector 类模板独立实例化 ② std::max 函数模板推导
 // ③ std::integral_constant 类模板+NTTP ④ std::pair 类模板
 #include <iostream>
@@ -473,7 +473,7 @@ int main() {
 ## ⑫ 变体（variant patterns）
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★★☆</span> · 变体
-```cpp
+```cpp title="示例 41 · ★★★★☆"
 // 本节覆盖：① 变量模板 ② 别名模板 ③ 默认模板参数
 // ④ 模板参数包 ⑤ 概念约束（C++20）
 #include <iostream>
@@ -512,7 +512,7 @@ int main() {
 ## ⑬ 反模式（anti-patterns）
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 42 · ★★★☆☆"
 // 反模式合集（保留原 5 条要点，并给出可编译实证）
 // AP1: 为省类型滥用宏——丢类型安全、参数求值两次
 // AP2: 模板实现藏进 .cpp（非显式实例化）→ 链接期 undefined reference
@@ -546,7 +546,7 @@ int main() {
 [第140章 Policy-Based Design（C++）](../part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— 模板+policy 组合定制组件
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 // 案例：跨 TU 显式实例化，避免头文件模板在每个 .cpp 重复实例化、缩短编译时间
 // math.h
 template <typename T> T dot(const T* a, const T* b, int n);
@@ -558,7 +558,7 @@ template double dot<double>(const double*, const double*, int);
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★★☆</span> · 工业案例
-```cpp
+```cpp title="示例 44 · ★★★★☆"
 // 工业案例（NTTP 定维 + std::array 定长）
 #include <iostream>
 #include <array>
@@ -585,7 +585,7 @@ int main() {
 [第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 // libstdc++ 的 std::integral_constant 本质（简化）
 template <typename _Tp, _Tp __v>
 struct integral_constant {
@@ -596,20 +596,20 @@ struct integral_constant {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 // libstdc++ vector 是类模板，allocator 作为第二参数（默认 std::allocator<T>）
 // 实例化 vector<int> 时，allocator<int> 一并实例化；弱符号去重
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 // 实例化弱符号机制：.text$_Z... 段带 linkonce discard，链接器保留一份
 ```
 
 ## ⑯ 易错点
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点
-```cpp
+```cpp title="示例 48 · ★★★☆☆"
 // 易错点合集（保留原 6 条，并给出可编译实证）
 // 1) 模板定义必须对所有实例化可见（通常放头文件）
 // 2) 依赖名前漏 typename / template 报错
@@ -636,7 +636,7 @@ int main() {
 ## ⑰ FAQ
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 // FAQ 合集（保留原 5 条问答，并给出"宏 vs 模板"可编译实证）
 // Q：模板和宏有什么区别？
 // A：模板有类型检查、作用域、两阶段查找；宏是文本替换，无类型安全。
@@ -665,7 +665,7 @@ int main() {
 ## ⑱ 最佳实践
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 50 · ★★★☆☆"
 // 最佳实践合集（保留原 5 条，并给出可编译实证）
 // 1) 模板声明与定义同放头文件（或 .ipp 包含）
 // 2) 频繁实例化的大模板用 extern template 收敛到单一 TU
@@ -700,7 +700,7 @@ int main() {
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销须微基准实测
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 51 · ★★★★☆"
 // 性能要点（保留原 3 条）：实例化零运行期开销 / Code bloat / NTTP 编译期求值
 #include <iostream>
 
@@ -869,7 +869,7 @@ LLVM: llvm::cast<T>/ArrayRef<T>模板, ~30%代码是模板
 Eigen: Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> 6模板参数
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：模板工业
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 template<typename T> T max(T a,T b){return a>b?a:b;}
 int main(){std::cout<<max(10,20)<<std::endl;return 0;}
@@ -886,7 +886,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 ## 附录 F：模板面试
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：模板面试
-```cpp
+```cpp title="示例 53 · ★★☆☆☆"
 #include <iostream>
 template<typename T> T max(T a,T b){return a>b?a:b;}
 int main(){std::cout<<max(10,20)<<std::endl;return 0;}
@@ -933,7 +933,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 <details><summary>答案与解析</summary>
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 54 · ★★☆☆☆"
 #include <iostream>
 
 struct Less { bool operator()(int a, int b) const { return a < b; } };
@@ -967,7 +967,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 55 · ★★★☆☆"
 #include <iostream>
 
 template <typename T, int R, int C>
@@ -999,7 +999,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 56 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
 
@@ -1030,7 +1030,7 @@ int main() {
 模板把"类型"提升为编译期参数：编译器为每次遇到的实参组合生成一份独立实例（`monomorphization`）。`max(3,7)` 触发 `T=int` 的实例化；显式 `Wrapper<int>` 则把类型写死。模板只在边界（实参）做推导，内部代码完全静态。
 
 > **示例 61** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
-```cpp
+```cpp title="示例 61 · ★★★☆☆"
 #include <iostream>
 template <typename T> T max(T a, T b) { return a > b ? a : b; }
 template <typename T> struct Wrapper { T v; };
@@ -1056,7 +1056,7 @@ int main() {
 非类型模板参数（NTTP）把"值"也作为编译期参数。以 `const T (&a)[N]` 引用数组，编译器从实参大小推导 `N`，循环边界成为编译期常量，便于展开与边界检查消除。
 
 > **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 62 · ★★★☆☆"
 #include <iostream>
 template <typename T, int N>
 T dot(const T (&a)[N], const T (&b)[N]) {
@@ -1093,7 +1093,7 @@ T clamp_bad(T v, T lo, T hi, Cmp cmp);
 **修复**：默认参数必须整体落在参数列表末尾：
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：默认模板参数的位置约束
-```cpp
+```cpp title="示例 57 · ★★★☆☆"
 #include <iostream>
 
 struct Less { bool operator()(int a, int b) const { return a < b; } };
@@ -1124,7 +1124,7 @@ Matrix<double, r, c> m;   // 错误：r/c 不是编译期常量
 **修复**：用 `constexpr`/字面量：
 
 > **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：非类型参数必须是编译期常量
-```cpp
+```cpp title="示例 58 · ★★★☆☆"
 #include <iostream>
 
 template <typename T, int R, int C>
@@ -1200,7 +1200,7 @@ template<typename _Tp>
 ### D4.4 可编译验证
 
 > **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
-```cpp
+```cpp title="示例 59 · ★★★☆☆"
 #include <utility>
 #include <type_traits>
 #include <iostream>
@@ -1361,7 +1361,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 60 · ★★★☆☆"
 #include <iostream>
 #include <functional>
 

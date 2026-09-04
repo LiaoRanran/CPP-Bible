@@ -49,7 +49,7 @@
 堆（heap）是二叉**最大/最小堆**的数组实现——逻辑上是一棵完全二叉树，物理上是一段连续数组。C++ 标准库把"堆"建模成一段 `[first, last)` 区间上满足**堆性质**（heap property）的序列，并通过 `std::make_heap / push_heap / pop_heap / sort_heap` 四种算法维护它；`std::priority_queue` 则是建立在 `std::vector` 之上的容器适配器（container adapter），把堆封装成"只暴露队首"的优先队列。
 
 > **示例 1** [难度 ★★☆☆☆] [主题：概述：堆（优先队列）<span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // ① 裸算法版：用 vector 当堆存储
 #include <vector>
 #include <algorithm>
@@ -60,7 +60,7 @@ int top = h.front();                 // 取最大（不弹出）
 ```
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：堆（优先队列）<span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // ① 适配器版：priority_queue 封装同一套算法
 #include <queue>
 std::priority_queue<int> pq;  // 默认大顶堆
@@ -80,7 +80,7 @@ int t = pq.top();             // 8，且不弹出
 - `pop_heap(first, last)`：前提——`[first, last)` 已是堆；它把 `*(first)`（极值）与 `*(last-1)` 交换，再把 `[first, last-1)` 重新 sift-down 成堆（O(log n)）。**注意：极值被换到了尾端，并未真正删除**，需再 `pop_back()`。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · make_heap / push_heap / pop_heap
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 // ② make_heap：O(n) 自底向上建立堆性质
 #include <vector>
 #include <algorithm>
@@ -89,7 +89,7 @@ std::make_heap(a.begin(), a.end());   // 大顶堆：a[0]==10
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · make_heap / push_heap / pop_heap
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 #include <vector>
 // ② push_heap：先 push_back 再 push_heap（顺序不能反）
 std::vector<int> b{10, 5, 3, 1};     // 已是堆
@@ -98,7 +98,7 @@ std::push_heap(b.begin(), b.end());  // 8 上浮 -> a[0] 仍为 10
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · make_heap / push_heap / pop_heap
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 #include <vector>
 // ② pop_heap：极值被移到末尾，需手动 pop_back 才是"弹出"
 std::vector<int> c{10, 5, 3, 1};
@@ -108,7 +108,7 @@ c.pop_back();                       // 真正删除
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · make_heap / push_heap / pop_heap
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 #include <vector>
 // ② 完整优先队列循环：make -> 反复 push/pop
 std::vector<int> q;
@@ -140,7 +140,7 @@ while (!q.empty()) {
 这意味着堆不需要任何指针/next 字段——索引即"指针"，空间开销为 0（仅元素本身），且对缓存极度友好（顺序访问）。
 
 > **示例 8** [难度 ★★☆☆☆] [主题：堆性质与数组布局 <span class="badge badge-impl">实现</span>]
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ③ 数组布局：完全二叉树的下标亲子公式（无指针、连续内存）
 #include <cstddef>
 constexpr std::size_t parent(std::size_t i) { return (i - 1) / 2; }
@@ -172,7 +172,7 @@ static_assert(parent(3) == 1 && left(1) == 3 && right(1) == 4);
 下面汇编来自真实编译（`g++ -std=c++23 -O2 -S -masm=intel`，见 `Examples/_ch98_heap.asm`）。源码中 `std::push_heap` 被内联进 `do_push`，编译器生成的就是经典的 sift-up 循环。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实汇编：push_heap 的 sift-up（比较+交换）
-```cpp
+```cpp title="示例 10 · ★★★☆☆"
 #include <vector>
 // 文件：Examples/_ch98_heap.cpp
 // 行号：7
@@ -224,7 +224,7 @@ void do_push(std::vector<int>& v, int x) {
 `sort_heap(first, last)` 重复 `pop_heap`：`[first,last)` 已是堆时，每次把当前极值换到末尾、区间缩一，循环 `n-1` 次后得到升序序列。总复杂度 O(n log n)。
 
 > **示例 11** [难度 ★★☆☆☆] [主题：heap：把堆变成有序序列 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑤ sort_heap：堆 -> 完全有序（升序，因大顶堆每次把最大沉到尾）
 #include <vector>
 #include <algorithm>
@@ -234,7 +234,7 @@ std::sort_heap(a.begin(), a.end());  // a == {1,3,4,5,10}
 ```
 
 > **示例 12** [难度 ★☆☆☆☆] [主题：heap：把堆变成有序序列 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 #include <vector>
 // ⑤ 等价展开：sort_heap 即反复 pop_heap + 缩小区间
 std::vector<int> b{10, 7, 8, 1, 3};
@@ -252,7 +252,7 @@ for (auto it = b.end(); it != b.begin(); --it) {
 `std::priority_queue<T, Container=vector<T>, Compare=less<T>>` 把堆算法封装成只暴露队首的适配器：`push` = `c.push_back` + `push_heap(c)`，`pop` = `pop_heap(c)` + `c.pop_back()`，`top` = `c.front()`。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · queue 容器适配器
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // 文件：Examples/_ch98_pq.cpp
 // 行号：5
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch98_pq.cpp -o Examples/_ch98_pq.asm
@@ -316,7 +316,7 @@ _ZNSt14priority_queueIiSt6vectorIiSaIiEESt4lessIiEE4pushERKi:
 `pop_heap` 把 `*(first)` 换到末尾，并对 `[first, last-1)` 做 sift-down（自顶向下找更大子节点并下沉）。下面汇编来自 `do_pop`（`Examples/_ch98_heap.asm`）。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实汇编：popheap 的 sif
-```cpp
+```cpp title="示例 14 · ★★★☆☆"
 #include <vector>
 // 文件：Examples/_ch98_heap.cpp
 // 行号：12
@@ -360,7 +360,7 @@ int do_pop(std::vector<int>& v) {
 堆的"顶"由比较器决定：`less<T>`（默认）→ 大顶堆（最大在 `a[0]`）；`greater<T>` → 小顶堆（最小在 `a[0]`）。比较器的契约：**它必须是对 `<` 的严格弱序（strict weak ordering）**，且 `comp(a,b)==true` 表示"a 应排在 b 之下"（即 b 更靠近堆顶）。
 
 > **示例 15** [难度 ★☆☆☆☆] [主题：自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ⑧ 小顶堆：用 greater<int>
 #include <vector>
 #include <algorithm>
@@ -370,7 +370,7 @@ std::make_heap(a.begin(), a.end(), std::greater<int>());  // a[0]==1（最小）
 ```
 
 > **示例 16** [难度 ★★☆☆☆] [主题：自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑧ priority_queue 小顶堆
 #include <queue>
 #include <functional>
@@ -381,7 +381,7 @@ int t = minpq.top();                    // t == 1
 ```
 
 > **示例 17** [难度 ★★☆☆☆] [主题：自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑧ 自定义类型 + 自定义比较器（按得分降序的玩家堆）
 #include <string>
 #include <vector>
@@ -405,7 +405,7 @@ std::make_heap(v.begin(), v.end(), ByScore{});
 堆的两大经典用途：**动态取极值**（Dijkstra 取最近未访问节点）与 **Top-K / 流式中位数**（维护大小为 K 的堆）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆在算法中
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // ⑨ Dijkstra 的最短边提取：用 priority_queue 反复取最小距离节点
 #include <queue>
 #include <vector>
@@ -434,7 +434,7 @@ int dijkstra(const std::vector<std::vector<Edge>>& g, int src) {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆在算法中
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // ⑨ Top-K：维护大小为 K 的小顶堆，遍历后堆中即最大的 K 个
 #include <queue>
 #include <vector>
@@ -452,7 +452,7 @@ std::vector<int> top_k(const std::vector<int>& a, int k) {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆在算法中
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // ⑨ 流式中位数：大顶堆存较小半 + 小顶堆存较大半
 #include <queue>
 #include <vector>
@@ -477,7 +477,7 @@ double median_stream(const std::vector<int>& s) {
 堆算法**不稳定**：`push_heap/pop_heap` 只依据比较器决定位置，相等元素（比较器返回 `false` 双方）的相对顺序不保证保留；且 sift 过程中相等元素可能被交换。
 
 > **示例 21** [难度 ★★☆☆☆] [主题：稳定性与堆 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // ⑩ 不稳定演示：相等优先级的任务，出堆顺序不保证原入堆顺序
 #include <queue>
 #include <string>
@@ -506,7 +506,7 @@ q.push({"A", "t1"}); q.push({"A", "t2"}); q.push({"A", "t3"});
 | 任意查找 | 线性扫描 | — | O(n)（堆不支持二分） |
 
 > **示例 22** [难度 ★☆☆☆☆] [主题：性能 O(log n) <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // ⑪ 复杂度直觉：sift 路径长度 = 树高 = floor(log2(n))
 #include <cmath>
 #include <cstddef>
@@ -528,7 +528,7 @@ double sift_height(std::size_t n) { return std::floor(std::log2((double)n)); }
 | 完全有序 | sort_heap 额外 O(n log n) | 已有序 |
 
 > **示例 23** [难度 ★★☆☆☆] [主题：与 sort 取舍 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // ⑫ 选择依据：只取少量极值 -> 堆；要全序或频繁查询 -> sort
 #include <vector>
 #include <algorithm>
@@ -551,7 +551,7 @@ void choose(std::vector<int>& v, bool only_top_k, int k) {
 ## ⑬ 场景：何时用堆 <span class="badge badge-exp">经验</span>
 
 > **示例 24** [难度 ★★☆☆☆] [主题：场景：何时用堆 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑬ 场景A：合并 K 个有序链表（LeetCode 23）——小顶堆按节点值取最小
 #include <queue>
 #include <vector>
@@ -578,7 +578,7 @@ ListNode* merge_k(std::vector<ListNode*>& lists) {
 最大的坑是**违反前置条件**。`push_heap/pop_heap/sort_heap` 都要求区间已满足堆性质；任何在未维持堆性质的容器上调用它们都是未定义行为。
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
-```cpp
+```cpp title="示例 25 · ★★★☆☆"
 // ⑭ ❌ 坑1：重复 make_heap + 之后又 push_heap 但忘了维护堆性质
 #include <vector>
 #include <algorithm>
@@ -589,7 +589,7 @@ std::push_heap(v.begin(), v.end());  // ❌ UB：push_heap 要求 [first,last-1)
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
-```cpp
+```cpp title="示例 26 · ★★★☆☆"
 // ⑭ ❌ 坑2：pop_heap 后没 pop_back，又直接改了尾部元素
 std::vector<int> w{10, 5, 3};
 std::pop_heap(w.begin(), w.end());  // 10 被换到 w.back()，前段已重排成堆
@@ -598,7 +598,7 @@ std::pop_heap(w.begin(), w.end());  // ❌ UB：区间已不是合法堆
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // ⑭ ❌ 坑3：比较器不一致 —— make_heap 用 less，push_heap 用 greater
 std::vector<int> u{5, 2, 8};
 std::make_heap(u.begin(), u.end(), std::less<int>());     // 大顶
@@ -606,7 +606,7 @@ std::push_heap(u.begin(), u.end(), std::greater<int>());  // ❌ UB：比较器�
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <vector>
 // ⑭ ✅ 正确：pop_heap 后务必 pop_back，比较器全程一致
 std::vector<int> ok{10, 5, 3};
@@ -625,7 +625,7 @@ ok.pop_back();                         // ✅ 真正删除极值
 C++20 起 `<algorithm>` 提供 ranges 版堆算法：`std::ranges::make_heap / push_heap / pop_heap / sort_heap / is_heap / is_heap_until`，返回 `borrowed_iterator`（便于在 `|` 管道中衔接），并支持**投影（projection）**。
 
 > **示例 29** [难度 ★★☆☆☆] [主题：与 ranges（C++20）<span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // ⑮ ranges::make_heap + 投影：直接按成员排序，不必写比较器
 #include <vector>
 #include <algorithm>
@@ -636,7 +636,7 @@ std::ranges::make_heap(jobs, {}, &Job::prio);    // 按 prio 建大顶堆 -> job
 ```
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：与 ranges（C++20）<span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <ranges>
 #include <algorithm>
 // ⑮ ranges::push_heap / pop_heap 同样支持投影，且返回迭代器
@@ -646,7 +646,7 @@ jobs.pop_back();
 ```
 
 > **示例 31** [难度 ★★☆☆☆] [主题：与 ranges（C++20）<span class="badge badge-std">标准</span>
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // ⑮ ranges::is_heap / is_heap_until：调试与校验堆性质（见 §⑲）
 #include <vector>
 #include <algorithm>
@@ -662,7 +662,7 @@ auto bad = std::ranges::is_heap_until(h);  // 指向第一个破坏性质的位
 ## ⑯ 最佳实践 <span class="badge badge-exp">经验</span>
 
 > **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // ⑯ 实践1：优先用 priority_queue 而非裸算法，除非需要中断式遍历
 #include <queue>
 #include <vector>
@@ -670,7 +670,7 @@ std::priority_queue<int> pq;          // 不变量由适配器托管，最不容
 ```
 
 > **示例 33** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // ⑯ 实践2：需要随机访问堆中间（如"减小 key"）时，用裸 vector + 下标管理
 #include <vector>
 #include <algorithm>
@@ -683,7 +683,7 @@ void decrease_key(std::vector<int>& h, std::size_t i, int newval) {
 ```
 
 > **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 #include <vector>
 // ⑯ 实践3：比较器全程一致；把堆封装进类，杜绝裸调用前置条件错误
 struct MinHeap {
@@ -701,7 +701,7 @@ struct MinHeap {
 三套标准库对堆算法的**语义完全一致**（都遵循 `[alg.heap.operations]`），差异只在：`sift-down` 实现策略、`is_heap` 辅助、以及 `priority_queue` 默认容器/比较器默认值。
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：跨库差异 <span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // ⑰ 跨库行为一致的最小复现：下列代码在 libstdc++/libc++/MS STL 结果相同
 #include <vector>
 #include <algorithm>
@@ -734,7 +734,7 @@ std::make_heap(cross.begin(), cross.end(), std::greater<int>());   // 小顶 -> 
 ```
 
 > **示例 37** [难度 ★★☆☆☆] [主题：内存布局 <span class="badge badge-impl">实现</span>]
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // ⑱ 内存连续性验证：底层 vector 的 data() 即堆的连续存储
 #include <queue>
 #include <cassert>
@@ -757,7 +757,7 @@ assert(h.size() == 3);
 验证"区间是否仍是合法堆"是排查堆 UB 的第一手段；C++ 提供 `std::is_heap` / `std::is_heap_until`，前者返回布尔，后者返回第一个破坏堆性质的迭代器。
 
 > **示例 38** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // ⑲ 调试1：用 is_heap 校验不变量（定位 §⑭ 的 UB 现场）
 #include <vector>
 #include <algorithm>
@@ -772,7 +772,7 @@ std::cout << "first broken at index " << (it - h.begin()) << "\n";
 ```
 
 > **示例 39** [难度 ★★★☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 39 · ★★★☆☆"
 // ⑲ 调试2：封装一个带断言的 safe_pop，开发期捕获 UB
 #include <vector>
 #include <algorithm>
@@ -785,7 +785,7 @@ void safe_pop(std::vector<int>& h) {
 ```
 
 > **示例 40** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // ⑲ 调试3：dump 堆为层序，肉眼核对父子关系
 #include <vector>
 #include <iostream>
@@ -911,7 +911,7 @@ Linux kernel: timer wheel (多级时间轮) → 优于堆的 O(1) 插入, 用于
 ## 附录 B：性能与面试 [G: Performance / J: Learning]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：性能与面试 [G: Performance / J: Learning]
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -969,7 +969,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -995,7 +995,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1022,7 +1022,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -1060,7 +1060,7 @@ int main() {
 边界条件与失效场景：`is_heap` 为 false 时，对区间调用 `pop_heap` 行为未定义——这就是验证的意义。工程上 Debug 模式可在每次 `push_heap`/`pop_heap` 后 `assert(std::is_heap(...))` 抓逻辑 bug；注意 `is_heap_until` 对"部分合规"输入返回破坏点的下标，可用于定位是哪一次修改破坏了堆。
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1094,7 +1094,7 @@ int main() {
 边界条件与失效场景：同 deadline 的任务顺序不保证（不稳定）；要"相同 deadline 按 id 决胜"需比较器加第二键。若任务带动态优先级（运行中改变 deadline），`priority_queue` 不支持"改键"——此时要自建堆 + 索引，或直接重插。相比手写 `make_heap`，适配器省去 `push_back`/`pop_back` 的配对，是生产首选。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -1130,7 +1130,7 @@ int main() {
 **常见错误（text）**：
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：动态极值——priorit
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1146,7 +1146,7 @@ int main() {
 **修复（cpp）**：用 `std::priority_queue`（堆），插入/取最大均 O(log n)。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：动态极值——priorit
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <queue>
 int main() {
@@ -1167,7 +1167,7 @@ int main() {
 **常见错误（text）**：
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：堆不变量——裸 pushb
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1182,7 +1182,7 @@ int main() {
 **修复（cpp）**：插入后必须 `push_heap` 维护不变量。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：堆不变量——裸 pushb
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1423,7 +1423,7 @@ flowchart TD
 ### D4.5 第一方可编译验证（堆四件套）
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证（堆四件套）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -1556,7 +1556,7 @@ N = 1000 万，取 top-100（K=100）。checksum 214746090999 四策略一致。
 ### D5.3 验证 demo
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>

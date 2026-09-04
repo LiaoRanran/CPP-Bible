@@ -49,7 +49,7 @@ STL 收编的算法并非随意堆砌，而是围绕几条主线组织：**遍�
 算法 = 在有限步骤内把输入变为输出的确定过程。工业 C++ 工程中，绝大多数"业务逻辑瓶颈"可归结为六类经典思想：**哈希（O(1) 近似随机访问）、图（关系与遍历）、树（有序与平衡）、动态规划（重叠子问题）、贪心（局部最优）、分治/回溯（分解与枚举）**。
 
 > **示例 1** [难度 ★★☆☆☆] [主题：概述：算法思想总览 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // ① 六类思想的"一句话 C++ 形态"
 #include <unordered_map>
 #include <vector>
@@ -90,7 +90,7 @@ std::function<int(int)> fib = [&](int n){ return n<2?n:fib(n-1)+fib(n-2); };  //
 **链地址（separate chaining）**：每个桶挂一条链表。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 哈希表原理与冲突（链地址/开放寻址）
-```cpp
+```cpp title="示例 2 · ★★★☆☆"
 // ② 链地址：桶数组 + 单向链表
 #include <list>
 #include <vector>
@@ -117,7 +117,7 @@ struct ChainingHash {
 **开放寻址（open addressing）**：所有元素存在桶数组内，冲突时按探测序列找下一个空槽。常见探测：线性 `h+i`、二次 `h+i²`、双重哈希 `h + i·h2(k)`。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 哈希表原理与冲突（链地址/开放寻址）
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 // ② 开放寻址骨架（线性探测）：槽位内联，无链表节点
 #include <cstddef>
 struct Slot { int key; int val; bool used; bool deleted; };
@@ -135,7 +135,7 @@ struct OAHash {
 图用邻接表表达最省内存。BFS（队列，求无权最短路/层序），DFS（栈/递归，求连通分量/拓扑序）。
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：图（BFS/DFS） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 // ③ BFS：队列逐层扩展，首次到达即最短距离
 #include <queue>
 #include <vector>
@@ -153,7 +153,7 @@ std::vector<int> bfs(int s, const std::vector<std::vector<int>>& adj) {
 ```
 
 > **示例 5** [难度 ★☆☆☆☆] [主题：图（BFS/DFS） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // ③ DFS：递归深入，标记访问避免回环
 #include <vector>
 void dfs(int u, const std::vector<std::vector<int>>& adj,
@@ -173,7 +173,7 @@ void dfs(int u, const std::vector<std::vector<int>>& adj,
 Dijkstra 在非负权图上求单源最短路，核心是"每次取出当前距离最小的未定节点并松弛邻居"。用 `std::priority_queue`（堆）实现为 O((V+E)logV)。
 
 > **示例 6** [难度 ★★☆☆☆] [主题：最短路径 Dijkstra <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // ④ Dijkstra：最小堆驱动，距离数组 + 松弛
 #include <queue>
 #include <vector>
@@ -208,7 +208,7 @@ std::vector<long long> dijkstra(int s,
 二叉搜索树（BST）中序有序，但退化为链时 O(n)。平衡树通过旋转维持高度 O(log n)：AVL（严格平衡，查找快、插入慢）、红黑树（近似平衡，插入删除更稳）。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 树（BST/平衡树 AVL/红黑）
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // ⑤ BST 插入（递归）：左小右大
 struct BST {
     int val; BST* l = nullptr; BST* r = nullptr;
@@ -221,7 +221,7 @@ struct BST {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 树（BST/平衡树 AVL/红黑）
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 // ⑤ AVL 平衡因子与旋转（左旋示意）
 struct AVL {
     int val, h = 1; AVL* l = nullptr; AVL* r = nullptr;
@@ -231,7 +231,7 @@ int bf(AVL* t){ return t ? height(t->l) - height(t->r) : 0; }
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 树（BST/平衡树 AVL/红黑）
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ⑤ 红黑树思想：节点着黑/红，5 条性质保证"黑高"平衡
 // STL 关联容器（map/set）即用红黑树实现
 #include <map>
@@ -246,7 +246,7 @@ std::map<int, int> rb;   // ⑤ 底层红黑树，查找/插入/删除 O(log n)
 DP = 把原问题拆成重叠子问题，用表缓存已解子问题避免重复计算。典型两类：**线性 DP**（背包、LIS）与 **区间/树形 DP**。
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：动态规划 DP <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 10 · ★☆☆☆☆"
 // ⑥ 0/1 背包：dp[i][w] = 前 i 件在容量 w 下的最大价值
 #include <vector>
 int knapsack(const std::vector<int>& wt, const std::vector<int>& val, int W) {
@@ -263,7 +263,7 @@ int knapsack(const std::vector<int>& wt, const std::vector<int>& val, int W) {
 ```
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：动态规划 DP <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // ⑥ 最长递增子序列 LIS：dp[i] = 以 i 结尾的 LIS 长度
 #include <vector>
 #include <algorithm>
@@ -281,7 +281,7 @@ int lis(const std::vector<int>& a) {
 ```
 
 > **示例 12** [难度 ★★☆☆☆] [主题：动态规划 DP <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑥ 状态压缩 DP：用整数位表示集合（旅行商 TSP 雏形）
 // dp[mask][u] = 已访问集合 mask、当前在 u 的最小代价
 #include <vector>
@@ -307,7 +307,7 @@ int tsp(int n, const std::vector<std::vector<int>>& g) {
 贪心每步取局部最优，若问题具**贪心选择性质 + 最优子结构**则全局最优。典型：区间调度（按结束时间排序）、霍夫曼编码、最小生成树（Kruskal/Prim）。
 
 > **示例 13** [难度 ★☆☆☆☆] [主题：贪心 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 13 · ★☆☆☆☆"
 // ⑦ 区间调度：最多不重叠区间 = 每次选结束最早的
 #include <vector>
 #include <algorithm>
@@ -323,7 +323,7 @@ int max_intervals(std::vector<std::pair<int,int>> iv) {
 ```
 
 > **示例 14** [难度 ★★☆☆☆] [主题：贪心 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // ⑦ Kruskal 思路：边按权升序，并查集避免环
 #include <vector>
 #include <algorithm>
@@ -350,7 +350,7 @@ int kruskal(std::vector<std::tuple<int,int,int>> edges, int n) {
 下面是被真实编译的源（完整可编译见 `Examples/_ch101_open_addressing.cpp`）。`oah_find` 用线性探测：`for i in [0,cap): idx=(h+i)&(cap-1)`，遇空槽返回、遇同键返回。
 
 > **示例 15** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：手写开放寻址哈希表编译]
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 #include <cstddef>
 // 文件：Examples/_ch101_open_addressing.cpp
 // 行号：27   （oah_find 函数定义起始；线性探测查找）
@@ -397,7 +397,7 @@ static Entry* oah_find(OAHMap* m, int key) {
 真实基准（源 `Examples/_ch101_bench.cpp`，MinGW GCC 15.3.0，`-O2`，x86-64，N=300000 次插入+查找）：
 
 > **示例 16** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：手写哈希表 vs st]
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 #include <map>
 // 文件：Examples/_ch101_bench.cpp
 // 行号：31   （oah_insert / oah_find 与 ⑧ 同源；下方为 main 计时段）
@@ -430,7 +430,7 @@ speedup(hand/std)=3.01x
 分治 = 分解 → 解决子问题 → 合并。经典：归并排序、快速排序。C++ 的 `std::sort` 是 introsort（快排 + 堆排 + 插入排序混合）。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分治（与 std::sort 衔接）
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑩ 归并排序（分治 + 合并）：O(n log n)，稳定
 #include <vector>
 #include <algorithm>
@@ -448,7 +448,7 @@ void merge_sort(std::vector<int>& a, int l, int r) {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分治（与 std::sort 衔接）
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑩ 与 STL 衔接：std::sort 即工业级 introsort
 #include <algorithm>
 #include <vector>
@@ -465,7 +465,7 @@ std::sort(v.begin(), v.end(), std::greater<int>());  // 降序
 回溯 = 试探性搜索，走到死路就撤销（undo）并返回上一层。典型：N 皇后、全排列、数独。
 
 > **示例 19** [难度 ★★☆☆☆] [主题：回溯 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // ⑪ N 皇后：逐行放皇后，冲突则回溯
 #include <vector>
 int total = 0;
@@ -483,7 +483,7 @@ void queen(int row, int n, long long cols, long long diag, long long adiag) {
 ```
 
 > **示例 20** [难度 ★☆☆☆☆] [主题：回溯 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // ⑪ 全排列：固定前缀，回溯交换
 #include <vector>
 void permute(std::vector<int>& a, int i, std::vector<std::vector<int>>& out) {
@@ -504,7 +504,7 @@ void permute(std::vector<int>& a, int i, std::vector<std::vector<int>>& out) {
 算法选择本质是时间↔空间的交易（space-time tradeoff）：多用内存换更快，或省内存接受更慢。
 
 > **示例 21** [难度 ★☆☆☆☆] [主题：时空权衡 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // ⑫ 以空间换时间：前缀和把"区间和"从 O(n) 降到 O(1)
 #include <vector>
 #include <cstddef>
@@ -519,7 +519,7 @@ struct PrefixSum {
 ```
 
 > **示例 22** [难度 ★☆☆☆☆] [主题：时空权衡 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 #include <vector>
 // ⑫ 以时间换空间：不建索引，每次线性扫描（省内存）
 int range_sum(const std::vector<int>& a, int l, int r) {
@@ -535,7 +535,7 @@ int range_sum(const std::vector<int>& a, int l, int r) {
 ## ⑬ <span class="badge badge-exp">经验</span>选型：何时用 STL 算法 vs 自写 <span class="badge badge-exp">经验</span>
 
 > **示例 23** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：何时用 STL 算法 ]
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // ⑬ 默认路径：先 STL，再 profile，最后自写
 #include <algorithm>
 #include <vector>
@@ -556,7 +556,7 @@ std::sort(v.begin(), v.end(), [](int a,int b){ return a > b; });
 - **均摊**：一系列操作的平均代价。哈希表扩容（rehash）单次 O(n)，但均摊 O(1)。
 
 > **示例 24** [难度 ★☆☆☆☆] [主题：复杂度分析（均摊/最坏） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // ⑭ 均摊分析示例：动态数组 push_back 的均摊 O(1)
 #include <vector>
 // 容量翻倍策略：第 n 次插入触发 rehash（复制 n 个元素）
@@ -573,7 +573,7 @@ for (int i = 0; i < 1000000; ++i) dyn.push_back(i);  // ⑭ 均摊 O(1)/次
 经典思想在 STL 中都有对应设施，理解思想才能用对算法：
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 算法对应
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ⑮ 查找思想 -> std::find / std::lower_bound / unordered_map::find
 #include <algorithm>
 #include <vector>
@@ -583,7 +583,7 @@ auto lb = std::lower_bound(v.begin(), v.end(), 5);  // 有序 O(log n)
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 STL 算法对应
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 // ⑮ 堆思想 -> std::priority_queue / std::make_heap（Dijkstra 用其取最小，见 ④）
 #include <queue>
 #include <vector>
@@ -593,7 +593,7 @@ int top = minheap.top();   // ⑮ = 1，O(log n) 取最小
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 算法对应
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // ⑮ 图遍历思想 -> 可用 std::queue(BFS) / std::stack(DFS) 表达（见 ③）
 #include <queue>
 std::queue<int> q; q.push(0);    // ⑮ BFS 的天然容器
@@ -605,7 +605,7 @@ std::queue<int> q; q.push(0);    // ⑮ BFS 的天然容器
 ## ⑯ 常见坑 <span class="badge badge-exp">经验</span>
 
 > **示例 28** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // ⑯ 坑1：std::unordered_map 在遍历中误用 operator[]（会插入！）
 #include <unordered_map>
 #include <map>
@@ -616,7 +616,7 @@ if (m.find(1) != m.end()) { }
 ```
 
 > **示例 29** [难度 ★★☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // ⑯ 坑2：自定义 key 未特化 std::hash / 未定义 operator==
 #include <unordered_map>
 #include <cstddef>
@@ -634,7 +634,7 @@ std::unordered_map<Pt, int> pts;   // ⑯ 必须提供 hash + ==，否则编译/
 ## ⑰ 工程应用案例 <span class="badge badge-std">标准</span>
 
 > **示例 30** [难度 ★★★☆☆] [主题：工程应用案例 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 30 · ★★★☆☆"
 // ⑰ 案例：LRU 缓存 = 哈希表(定位) + 双向链表(顺序)，O(1) get/put
 #include <unordered_map>
 #include <list>
@@ -679,7 +679,7 @@ struct LRU {
 ## ⑲ 最佳实践 <span class="badge badge-exp">经验</span>
 
 > **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // ⑲ 实践1：为哈希表预设桶数，避免反复 rehash
 #include <unordered_map>
 #include <map>
@@ -688,7 +688,7 @@ m.reserve(1 << 16);     // ⑲ 预分配，INSERT 阶段不扩容
 ```
 
 > **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // ⑲ 实践2：遍历图/树用迭代器或显式栈，避免深递归爆栈
 #include <vector>
 #include <stack>
@@ -709,7 +709,7 @@ void dfs_iter(int s, const std::vector<std::vector<int>>& adj) {
 ## 补充完整可编译示例（算法思想）
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 33 · ★★★☆☆"
 // E1 链地址哈希表完整版（可编译）
 #include <list>
 #include <vector>
@@ -734,7 +734,7 @@ struct ChainingHash {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // E2 开放寻址完整版（墓碑删除）
 #include <cstddef>
 #include <cstdlib>
@@ -753,7 +753,7 @@ struct OA2 { Slot2* s; size_t cap;
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // E3 BFS 完整可编译（返回到 s 的距离）
 #include <queue>
 #include <vector>
@@ -767,7 +767,7 @@ std::vector<int> bfs_full(int s, const std::vector<std::vector<int>>& adj) {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // E4 DFS 连通分量计数
 #include <vector>
 #include <cstddef>
@@ -783,7 +783,7 @@ int components(const std::vector<std::vector<int>>& adj) {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // E5 Dijkstra 完整可编译
 #include <queue>
 #include <vector>
@@ -806,7 +806,7 @@ std::vector<long long> dijkstra_full(int s,
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // E6 0/1 背包一维优化（滚动数组）
 #include <vector>
 #include <algorithm>
@@ -821,7 +821,7 @@ int knap1d(const std::vector<int>& wt, const std::vector<int>& val, int W) {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // E7 区间调度完整版
 #include <vector>
 #include <algorithm>
@@ -836,7 +836,7 @@ int schedule_full(std::vector<std::pair<int,int>> iv) {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 // E8 归并排序完整可编译
 #include <vector>
 #include <algorithm>
@@ -853,7 +853,7 @@ void msort(std::vector<int>& a, int l, int r,
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // E9 N 皇后计数（位运算剪枝）
 #include <vector>
 long long queen_count(int n) {
@@ -872,7 +872,7 @@ long long queen_count(int n) {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 // E10 前缀和（空间换时间）
 #include <vector>
 #include <cstddef>
@@ -884,7 +884,7 @@ std::vector<long long> build_prefix(const std::vector<int>& a) {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 43 · ★★★☆☆"
 // E11 LRU 缓存完整可编译（见 ⑰ 思想）
 #include <unordered_map>
 #include <list>
@@ -904,7 +904,7 @@ struct LRU2 {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 // E12 动态数组均摊演示（见 ⑭）
 #include <vector>
 #include <cstddef>
@@ -916,7 +916,7 @@ long long push_total(int n) {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（算法思想）
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 // E13 自写哈希表 vs STL 思想对照（main 入口，需链接 ⑧⑨ 源）
 // 见 Examples/_ch101_bench.cpp 的真实 chrono 对比
 int main() { return 0; }
@@ -1133,7 +1133,7 @@ add rdi, 0x0008             ; 收缩左界
 开放寻址把所有元素内联在桶数组里，冲突时沿探测序列找下一个空槽；删除用墓碑而非清 `used`，避免切断链：
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实开源项目参考（可查证链接）
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -1209,7 +1209,7 @@ int main() {
 Dijkstra 每次取出当前最近未定节点并松弛邻居；`priority_queue` 配 `greater<>` 当小顶堆：
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -1266,7 +1266,7 @@ int main() {
 状态 `dp[w]` = 容量 `w` 下的最大价值；逆序更新保证每件物品至多选一次：
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1310,7 +1310,7 @@ BFS 用队列按"层"推进：从起点出发，每轮从队列取出一个节�
 边界条件与失效场景：BFS 只对**无权图**给出最短跳数；带权图需 Dijkstra（练习 2）或 SPFA/Bellman-Ford。若起点到某节点不可达，其距离保持 `-1`——业务上要单独处理（如"无关系"）。内存敏感时邻接表可换成 `vector<int>` 平铺 + 偏移索引；稀疏图用邻接表、稠密图用邻接矩阵权衡。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 53 · ★★☆☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -1347,7 +1347,7 @@ int main() {
 边界条件与失效场景：`n` 大时 fib(n) 超出 64 位——fib(93) 已超 `long long` 上限，需大整数或换模。递归深度受栈限制（`n` 达十万级会栈溢出），此时改迭代递推。记忆化的"查表命中"依赖子问题可判别——状态空间离散、可哈希是前提，连续参数需离散化。
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 54 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 long long fib(int n, std::vector<long long>& memo) {
@@ -1575,7 +1575,7 @@ flowchart TD
 ### D4.5 第一方可编译验证（equal / lexicographical_compare）
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -1685,7 +1685,7 @@ int main() {
 ### D5.3 可复现演示
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
-```cpp
+```cpp title="示例 52 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>

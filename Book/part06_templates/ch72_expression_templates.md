@@ -66,7 +66,7 @@ C++ 的运算符重载很优雅，但对 `a*b + c*d` 这类向量/矩阵表达�
 ## ③ 核心结构与完整代码实现
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 1 · ★★★☆☆"
 #include <cstdlib>
 #include <cstddef>
 
@@ -108,7 +108,7 @@ Sum<A,B> operator+(const Expr<A>& x, const Expr<B>& y) {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // 使用：a+b+c 在编译期构建 Sum<Sum<Fast,Fast>,Fast>，赋值才单遍求值
 Fast a(3), b(3), c(3);
 a.p[0]=0; b.p[0]=1; c.p[0]=2;  // ...
@@ -117,7 +117,7 @@ u = a + b + c;                 // 等价 u[i] = a[i]+b[i]+c[i]，零临时
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 #include <cstddef>
 // 扩展：乘法代理（与 Sum 对称）
 template <typename A, typename B>
@@ -135,7 +135,7 @@ Prod<A,B> operator*(const Expr<A>& x, const Expr<B>& y) {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 4 · ★★★☆☆"
 #include <cstddef>
 // 标量混合：标量 × 向量（标量也是表达式节点）
 template <typename A>
@@ -162,7 +162,7 @@ Scale<A> operator*(double s, const Expr<A>& x) {
 - **两阶段查找**：`Sum<A,B>::operator[]` 依赖 `A::operator[]`/`B::operator[]`（依赖型），按 ch60 ④ 解析；`static_cast<const E&>(*this)` 是 CRTP 向下转型（ch51/57）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实例化机制
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // 实例化验证：表达式类型在编译期唯一确定
 using E1 = decltype(std::declval<Fast>() + std::declval<Fast>());   // Sum<Fast,Fast>
 static_assert(std::is_same_v<E1, Sum<Fast,Fast>>);
@@ -177,21 +177,21 @@ static_assert(std::is_same_v<E1, Sum<Fast,Fast>>);
 - **vs 惰性 lambda**：`[&]{ return a+b+c; }` 也惰性，但 ET 在编译期类型化、可被 `-O2` 充分内联/向量化；lambda 需运行期闭包。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适用场景与选型
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 // 选型：大向量必须用 ET（避免 N 次临时分配）
 // 朴素：u = a+b+c → 2 临时矩阵 + 3 遍历（见 ⑩ 汇编）
 // ET：u = a+b+c → 0 临时 + 1 遍历
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适用场景与选型
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 // 选型：调试期可读优先用朴素；发布用 ET（同一接口，换模板实现）
 ```
 
 ## ⑥ 完整可运行示例（最小）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 // 编译：g++ -std=c++23 -O2 expr_demo.cpp -o expr_demo
 #include <cstdlib>
 #include <cstdio>
@@ -230,7 +230,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 #include <cstddef>
 // 最小 ET 含乘法（u = a*b + c）
 template <typename A, typename B> struct Prod : Expr<Prod<A,B>> {
@@ -244,7 +244,7 @@ template <typename A, typename B> Prod<A,B> operator*(const Expr<A>&x, const Exp
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 #include <cstddef>
 // 最小：显式转估值（无 operator= 时也能求值）
 template <typename E> double eval_at(const Expr<E>& e, size_t i) {
@@ -260,7 +260,7 @@ template <typename E> double eval_at(const Expr<E>& e, size_t i) {
 - **`valarray` 语义**：标准规定 `valarray` 二元运算符返回**新的 `valarray`**（立即求值），并非 ET；这是 ET 在标准库中的"反面参照"（⑪/⑮）。
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // 标准：operator+ 可返回任意类型（包括代理）
 struct Proxy {                          // ...
 struct Vec {
@@ -269,7 +269,7 @@ struct Vec {
 ```
 
 > **示例 12** [难度 ★☆☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 12 · ★☆☆☆☆"
 // 标准：临时对象生命周期（朴素实现的问题根源）
 Vec r = a + b;   // a+b 返回临时 Vec，r 从临时拷贝/移动；临时在本表达式结束析构
 ```
@@ -282,7 +282,7 @@ Vec r = a + b;   // a+b 返回临时 Vec，r 从临时拷贝/移动；临时在�
 - **符号名长度**：ET 类型 mangled 名极长（`Sum<Sum<...>>`），MSVC 装饰名可能超 `MAX_PATH` 相关限制，建议控制树深。
 
 > **示例 13** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // 各编译器对深 ET 树需控制深度
 // template <int N> using Chain = Sum<Chain<N-1>, Fast>;   // 深递归实例化
 // using Deep = Chain<2000>;   // [实现] 可能超 GCC/Clang 模板深度上限
@@ -296,14 +296,14 @@ Vec r = a + b;   // a+b 返回临时 Vec，r 从临时拷贝/移动；临时在�
 - **引用悬垂风险**：代理持有对操作数的引用，**操作数必须在求值完成前存活**（⑬ 反模式）。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存 / 对象模型
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // 内存对比：朴素临时数组 vs ET 零额外数组
 // 朴素 a+b+c：分配 t1(a+b)、t2(t1+c) 两个 double[n] 临时 → 2*n*8 字节 + 2 次 new
 // ET   a+b+c：Sum 代理仅 16 字节栈，无 double[n] 临时
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存 / 对象模型
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // 对象大小：代理仅引用
 static_assert(sizeof(Sum<Fast,Fast>) == 2 * sizeof(Fast*));   // 16 字节（x64）
 ```
@@ -379,7 +379,7 @@ _ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E
 - **`std::accumulate` / 算法**：属运行期遍历，非编译期表达式树。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 中的该模式
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // 对比：valarray 是立即求值（非 ET）
 #include <valarray>
 std::valarray<double> a(3), b(3), c(3);
@@ -389,7 +389,7 @@ auto u = t + c;  // 又一次分配 + 遍历（共 2 临时，类似朴素 Vec�
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 中的该模式
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // vector 不用 ET：operator= 立即拷贝
 #include <vector>
 std::vector<double> x(3), y(3);
@@ -405,7 +405,7 @@ x = y;   // 立即逐元素拷贝（bits/stl_vector.h 746 行 operator= 模板�
 - **ET + 概念**（ch67）：约束表达式节点满足 `Expr`（有 `operator[]`/`size()`）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
-```cpp
+```cpp title="示例 18 · ★★★☆☆"
 #include <cstddef>
 // 变体：ET + 常量折叠节点
 template <double V> struct Const : Expr<Const<V>> {
@@ -416,7 +416,7 @@ template <double V> struct Const : Expr<Const<V>> {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
-```cpp
+```cpp title="示例 19 · ★★★☆☆"
 #include <cstddef>
 // 变体：ET 节点概念约束（C++20）
 template <typename E>
@@ -427,7 +427,7 @@ template <ExprNode E> double sum(const E& e) {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 #include <cstddef>
 // 变体：ET 与 CRTP 组合（Expr 基类即 CRTP）
 template <typename E> struct Expr {
@@ -444,7 +444,7 @@ template <typename E> struct Expr {
 - **调试困难**：表达式树类型名极长，断点/堆栈深（嵌套 `Sum`），错误追溯到具体节点难。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 #include <cstddef>
 // 反模式：代理引用悬垂（操作数是临时）
 Fast make_vec(size_t n) { Fast f(n); // fill
@@ -453,14 +453,14 @@ Fast make_vec(size_t n) { Fast f(n); // fill
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // 反模式：operator+ 返回引用到局部代理
 // Sum<A,B>& operator+(...) { Sum<A,B> s(...); return s; }  // [标准] 返回局部引用 → UB
 Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持有外部引用，安全）
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // 反模式：超深表达式树
 // using Deep = decltype(a+b+c+...+z);  // 数百项 → 模板实例化深度超限、编译极慢
 ```
@@ -476,20 +476,20 @@ Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持�
 - **Thrust/Kokkos**：ET 表达式树传给 GPU kernel 生成器，单 kernel 完成多步（CPU/GPU 统一 DSL）。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // 工业案例：Eigen 式 ET（概念示意）
 // MatrixXd C = A * B + D;   // 编译期：Sum<Prod<Matrix,Matrix>,Matrix>
 // 运行期：单遍循环 + AVX，无 A*B 临时矩阵
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // 工业案例：自定义数组库 ET（u = a + 2*b）
 // u = a + 2.0 * b;  // 编译期：Sum<Fast, Scale<Fast>>，单遍 u[i]=a[i]+2*b[i]
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // 工业案例：GPU ET（Kokkos 示意）
 // auto expr = a + b * c;   // 表达式树传给 kernel：并行单遍求值
 ```
@@ -501,7 +501,7 @@ Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持�
 **剖析 1：`std::vector::operator=` 立即语义（对比 ET 的延迟）**（`bits/stl_vector.h`）
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/stl_vector.h
 // 行号：818（operator= 拷贝赋值模板）
 vector& operator=(const vector& __x);     // 立即逐元素拷贝，非延迟
@@ -512,7 +512,7 @@ vector& operator=(const vector& __x);     // 立即逐元素拷贝，非延迟
 **剖析 2：`std::valarray::operator+=` 立即求值（非 ET）**（`valarray`）
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/valarray
 // 行号：441（operator+= 成员，返回 valarray&，就地立即修改）
 valarray<_Tp>& operator+=(const valarray<_Tp>&);
@@ -530,7 +530,7 @@ valarray<_Tp>& operator+=(const valarray<_Tp>&);
 - **`operator=` 必须接收 `const Expr<O>&`**：若写成具体 `Fast& operator=(const Fast&)` 则 ET 无法赋值（丢失延迟）。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // 易错点：auto 保存代理导致悬垂
 Fast a(3), b(3);
 auto e = a + b;  // e 持有 a/b 引用
@@ -540,7 +540,7 @@ u = e;           // 立即求值，安全（在 a/b 存活时）
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // 易错点：operator= 签名必须通用
 // Fast& operator=(const Fast&);   // 错误：无法接收 Sum 代理
 template <typename O> Fast& operator=(const Expr<O>& e);  // 正确：接收任意表达式
@@ -554,7 +554,7 @@ template <typename O> Fast& operator=(const Expr<O>& e);  // 正确：接收任�
 - **Q：何时不该用 ET？** A：表达式树浅且性能不敏感时（朴素实现可读性更好）；或编译时间/错误信息成为瓶颈时。
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 // FAQ 演示：ET 零临时 vs 朴素临时
 Fast a(3), b(3), c(3); Fast u(3);
 u = a + b + c;          // 0 临时、单遍（ET）
@@ -570,7 +570,7 @@ u = a + b + c;          // 0 临时、单遍（ET）
 - 给表达式节点加 concept（ch67）约束，错误更早。
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // 最佳实践：完整 ET 骨架（Expr + Sum + operator+ + operator=）
 template <typename E> struct Expr {                              // CRTP 接口
 template <typename A, typename B> struct Sum : Expr<Sum<A,B>> {  // 引用 + 递归 []
@@ -579,7 +579,7 @@ template <typename A, typename B> Sum<A,B> operator+(const Expr<A>&, const Expr<
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // 最佳实践：显式 eval 便于调试
 template <typename E> Fast eval(const Expr<E>& e) { Fast r(e.size()); r = e; return r; }
 Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
@@ -596,14 +596,14 @@ Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
 - **代价**：编译时间、可执行体积（每个表达式节点组合一份实例化）、调试难度（⑬）。
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // 性能对比数据（来自 ⑩ 汇编）：a+b+c 在 n=大向量时
 // 朴素：2 次额外 new[]（2*n*8 B）+ 2 次额外遍历（2*n 次 load/store）
 // ET  ：0 次额外 new[] + 1 次遍历（单遍 a[i]+b[i]+c[i]，可 SIMD）
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // 性能：ET 单遍循环可向量化
 // .L33: movsd xmm0,[a+i]; addsd xmm0,[b+i]; addsd xmm0,[c+i]; movsd [u+i]
 // 编译器可升级为 vmovupd/vaddpd（AVX 4 路并行）
@@ -692,7 +692,7 @@ C++20 的 `std::ranges` 视图（`views::filter | views::transform`）在精神�
 ## 附录 F：表达式模板工业
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：表达式模板工业
-```cpp
+```cpp title="示例 36 · ★★★☆☆"
 #include <iostream>
 int main(){std::cout<<"Eigen: Matrix a=b+c*d → expression template → single loop(no temporaries)"<<std::endl;std::cout<<"Boost.Spirit: parser combinators via expression templates → compile-time grammar"<<std::endl;std::cout<<"Blaze: similar to Eigen, expression templates for linear algebra"<<std::endl;return 0;}
 ```
@@ -759,7 +759,7 @@ add rdi, 0x0008           ; 步进 int32
 <summary>参考答案</summary>
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 struct Vec {
@@ -797,7 +797,7 @@ int main() {
 <summary>参考答案</summary>
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 struct Vec {
@@ -837,7 +837,7 @@ int main() {
 代理 `VecAdd` 内部引用 `a`、`b`；若 `a/b` 已销毁，`tmp[i]` 读悬垂引用 → 未定义行为。安全写法：立即物化为 `Vec`（`Vec z = a + b;`），或让代理持有值副本。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 struct Vec {
@@ -874,7 +874,7 @@ int main() {
 表达式模板（Expression Templates）把 `a + b` 表示成"运算节点"而非立即结果，整个式子是一棵编译期构建的表达式树，直到赋值时才逐元素求值。它把循环融合进单趟，避免了中间临时数组的分配与拷贝。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 template <typename L, typename R>
 struct Add {
@@ -910,7 +910,7 @@ int main() {
 让 `Vec` 的赋值运算符接受"任意表达式类型 `E`"，并在内部按索引访问 `x[i]` 赋值。这样 `c = a + b` 不会先生成中间 `Vec`，而是直接把 `a[i]+b[i]` 写入 `c[i]`——循环 fusion，运行期零临时分配。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 #include <iostream>
 template <typename L, typename R>
 struct Add {
@@ -959,7 +959,7 @@ Vec z = a + b + c;   // 2 次分配 + 2 次全量拷贝（O(n) 临时）
 **修复**：返回惰性代理，赋值点单次遍历（见练习 1）。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：表达式模板为何快
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 struct Vec { std::vector<double> d; Vec(std::size_t n):d(n,0){}
@@ -992,7 +992,7 @@ use(tmp);               // 读已销毁对象的引用 -> UB
 **修复**：跨作用域保存前物化为 `Vec`（见练习 3）；调试困难时可退化为朴素 `operator+` 换取可观测性。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：表达式模板的陷阱
-```cpp
+```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 struct Vec { std::vector<double> d; Vec(std::size_t n):d(n,0){}
@@ -1187,7 +1187,7 @@ _DEFINE_BINARY_OPERATOR(+, __plus)
 ### D4.7 编译验证
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <valarray>
 #include <iostream>
 
@@ -1377,7 +1377,7 @@ flowchart TD
 ### D5.3 验证 demo
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <cassert>

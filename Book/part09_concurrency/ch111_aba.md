@@ -49,7 +49,7 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 **ABA 问题**发生在基于**比较并交换（CAS）**的无锁（lock-free）算法中：一个共享变量的值从 `A` 变成 `B`，又变回 `A`，于是 CAS 看到“值还是 A”便误以为“什么都没发生”，从而**错误地成功**。但中间状态（`A→B→A`）往往伴随**被回收/被复用的内存**，导致逻辑被破坏。
 
 > **示例 1** [难度 ★★☆☆☆] [主题：概述：什么是 ABA 问题 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // ① ABA 的最小抽象：值序列 A→B→A 对 CAS 不可区分
 // 假设 shared 是 std::atomic<int>
 // T1: int e = shared.load();          // 读到 A
@@ -67,13 +67,13 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 无锁栈用“栈顶指针”做 CAS。下面是被教科书反复引用的经典反例：线程 T1 准备 pop 出节点 A，但在它执行 CAS 之前被抢占；T2 把 A、B 都 pop 出来并 `delete` A，随后又把同一块内存（或新节点）重新 push 成栈顶。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典例子：无锁栈 pop 中的 A→
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // ② 无锁栈节点定义（Examples/_ch111_aba.cpp:4）
 struct Node { int data; Node* next; };
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典例子：无锁栈 pop 中的 A→
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 // ② 经典无锁 pop（存在 ABA 隐患）—— Examples/_ch111_aba.cpp:8
 std::atomic<Node*> top{nullptr};
 
@@ -91,7 +91,7 @@ Node* pop_unsafe() {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典例子：无锁栈 pop 中的 A→
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // ② 触发 ABA 的交错（示意：两个线程 + 内存分配器复用）
 // 初始：top -> A -> B -> C
 // T1: old=A, nxt=B            （读完后被抢占）
@@ -108,7 +108,7 @@ Node* pop_unsafe() {
 CAS 的契约是：“若当前值 == 预期值，则替换为新值，返回 true；否则返回 false 并把当前值写回预期。” 它**不记录历史、不比较“版本”**。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为何 CAS 看不出 ABA：值相同
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // ③ CAS 的语义（标准库等价抽象）
 // bool compare_exchange(atomic<T>& a, T& expected, T desired):
 // if (a.load() == expected) { a.store(desired); return true; }
@@ -117,7 +117,7 @@ CAS 的契约是：“若当前值 == 预期值，则替换为新值，返回 tr
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 为何 CAS 看不出 ABA：值相同
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 // ③ 用“版本号”视角看问题：CAS 只看了 value 列，没看 version 列
 // 时刻0: (value=A, version=0)
 // 时刻1: (value=B, version=1)
@@ -133,7 +133,7 @@ CAS 的契约是：“若当前值 == 预期值，则替换为新值，返回 tr
 **标签指针**把“指针”和“版本号（tag/戳）”打包成一个**原子双字**，每次 CAS 同时比较指针与版本。只要版本在每次写时递增，A→B→A 会变成 `(A,0)→(B,1)→(A,2)`，版本不同，CAS 失败。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 带标签指针解法
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 #include <cstdint>
 // ④ tagged pointer 结构：64 位指针 + 64 位版本（Examples/_ch111_tagged.cpp:6）
 struct TaggedPtr {
@@ -144,7 +144,7 @@ static_assert(sizeof(TaggedPtr) == 16);  // ④ 必须占满 16 字节才能做�
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 带标签指针解法
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ④ 带标签的 push：CAS 同时比较 ptr 与 tag
 using AtomicTagged = std::atomic<__int128>;   // ④ 用 16 字节原子承载 TaggedPtr
 
@@ -160,7 +160,7 @@ bool push_tagged(AtomicTagged& a, void* old_ptr, void* new_ptr) {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 带标签指针解法
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ④ 读取时也用标签，保证读到的 (ptr,tag) 是同一快照
 TaggedPtr unpack(__int128 v) { TaggedPtr t; std::memcpy(&t, &v, sizeof(t)); return t; }
 ```
@@ -173,7 +173,7 @@ TaggedPtr unpack(__int128 v) { TaggedPtr t; std::memcpy(&t, &v, sizeof(t)); retu
 C++ 标准不直接提供“双字 CAS”原语，但 x86-64 提供 16 字节的 `cmpxchg16b`。用 `std::atomic<__int128>`（或 `unsigned __int128`）即可让编译器生成双字 CAS。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 双字 CAS
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ⑤ 用 std::atomic<__int128> 承载任意 16 字节数据做 DCAS（Examples/_ch111_dcas.cpp:3）
 #include <atomic>
 #include <cstdint>
@@ -186,7 +186,7 @@ extern "C" int dcas_probe(__int128 expected, __int128 desired) {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 双字 CAS
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 #include <cstdint>
 // ⑤ 用 __int128 实现“指针 + 计数器”无锁栈顶（核心模式）
 struct Head { Node* top; std::uint64_t count; };
@@ -203,7 +203,7 @@ bool cas_head(__int128& expected, const Head& desired) {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 双字 CAS
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑤ 注意：__int128 不是标准 C++ 类型，是 GCC/Clang 扩展（[实现·GCC15]）
 // 可移植层应使用 std::atomic<struct-of-two-words> 或 std::atomic_ref。
 ```
@@ -216,7 +216,7 @@ bool cas_head(__int128& expected, const Head& desired) {
 标签指针解决了“CAS 误判”，但**没有解决内存回收**——你仍不能在 pop 后立刻 `delete`，因为别的线程可能正持有旧指针。第112章将完整实现**风险指针（Hazard Pointer）**：每个线程在解引用共享指针前，先把该指针“挂到”自己的风险槽内；回收者只有确认**没有线程的风险槽指向该指针**时才真正 `delete`。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 风险指针预告
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // ⑥ 风险指针骨架（仅示意接口，完整实现见第112章）
 // 线程 T 在解引用 p 前：hazard_slot.store(p); 然后再次确认 p 仍有效
 // 回收者 retire(p)：把 p 放进待回收列表，扫描所有 hazard_slot，无人引用才 delete
@@ -231,7 +231,7 @@ struct HazardSlot { std::atomic<void*> protected_ptr; };
 **基于纪元回收（EBR, Epoch-Based Reclamation）**是另一条回收主线：全局维护一个“纪元（epoch）”计数器；线程进入临界区时登记当前纪元，退出时清除。当所有线程都离开了“旧纪元”，该纪元内 retire 的节点才可被安全回收。
 
 > **示例 14** [难度 ★★☆☆☆] [主题：简介 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 #include <cstdint>
 // ⑦ EBR 最小骨架（示意）
 std::atomic<std::uint64_t> global_epoch{0};
@@ -244,7 +244,7 @@ void critical_exit()  { in_critical = false; }   // ⑦ 离开后，旧纪元对
 ```
 
 > **示例 15** [难度 ★★★☆☆] [主题：简介 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // ⑦ 回收条件：某 epoch 的节点可被回收，当且仅当没有任何线程仍登记在该 epoch
 // bool safe_to_reclaim(e):
 // for each thread t: if (t.in_critical && t.local_epoch == e) return false;
@@ -336,7 +336,7 @@ _Z10pop_unsafev:
 标签指针让 CAS“看穿”A→B→A；风险指针让“被 pop 的节点”不会被立即回收，从而**消除悬空指针**。两者组合是工业界最稳的搭配。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 Hazard Pointer 解
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑨ 风险指针保护的 pop（接口示意，完整见第112章）
 Node* pop_safe(HazardSlot& slot) {
     while (true) {
@@ -353,7 +353,7 @@ Node* pop_safe(HazardSlot& slot) {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 Hazard Pointer 解
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑨ 回收侧：retire 而非立刻 delete
 void retire_node(Node* p) {
     retired_list.push_back(p);    // ⑨ 暂存
@@ -370,14 +370,14 @@ void retire_node(Node* p) {
 无锁数据结构真正的硬骨头不是“怎么改”，而是“**什么时候能 delete**”。在并发下，`delete p` 之后，另一个线程可能正拿着 `p` 的副本走进 `p->next`——于是立刻是**释放后使用（use-after-free）** 或**野指针解引用**。
 
 > **示例 18** [难度 ★★★★☆] [主题：内存回收的根本难题 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 18 · ★★★★☆"
 // ⑩ 错误：pop 后立刻 delete（另一个线程可能正持有该指针）
 Node* p = pop_unsafe();
 delete p;                 // ⑩ ❌ 若 T2 刚 load 了 p 的副本，这里 delete 后 T2 解引用即 UB
 ```
 
 > **示例 19** [难度 ★★☆☆☆] [主题：内存回收的根本难题 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // ⑩ 根本矛盾：
 // - 不能“等所有线程都不用再 delete”：无锁算法没有全局锁来统计使用者；
 // - 也不能“不 delete”：会内存泄漏。
@@ -392,7 +392,7 @@ delete p;                 // ⑩ ❌ 若 T2 刚 load 了 p 的副本，这里 de
 **RCU（Read-Copy-Update）** 是 Linux 内核的标志性回收技术：读者侧**零同步开销**（只禁止抢占/调度），写者侧“复制新版本、原子切换指针、等待所有读者退出宽限期（grace period）后再回收旧版本”。第112章将给出用户态 RCU 的最小实现。
 
 > **示例 20** [难度 ★★☆☆☆] [主题：预告（指 ch112） <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // ⑪ 用户态 RCU 读侧（示意）：读者几乎免费
 void reader_side(const std::atomic<Node*>& head) {
     // ⑪ 进入宽限期：在支持的机制下“安静”即可，无需原子操作保护
@@ -409,7 +409,7 @@ void reader_side(const std::atomic<Node*>& head) {
 C++ 标准**至今没有**内建的 ABA 防御或安全回收原语。相关能力分散在：
 
 > **示例 21** [难度 ★★☆☆☆] [主题：语言级支持现状：无标准方案 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // ⑫ 标准提供“积木”，不提供“方案”
 // - std::atomic<T>::compare_exchange_*  ：有，但只比较位模式（正是 ABA 根源）
 // - std::atomic<T>::is_always_lock_free ：可查询某类型是否真无锁（关键！）
@@ -419,7 +419,7 @@ static_assert(std::atomic<__int128>::is_always_lock_free || true, "DCAS 未必�
 ```
 
 > **示例 22** [难度 ★★★☆☆] [主题：语言级支持现状：无标准方案 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 22 · ★★★☆☆"
 // ⑫ 用 is_always_lock_free 探测平台能力（而不是假设）
 #include <atomic>
 #include <cstdint>
@@ -440,7 +440,7 @@ constexpr bool dcas_lockfree = std::atomic<__int128>::is_always_lock_free;
 **ThreadSanitizer（TSan）** 能发现数据竞争，但对"ABA 逻辑错误"本身**不能直接报"——它报的是并发访问冲突；ABA 常常表现为"无害的并发读"被 TSan 标记为 race，从而间接暴露隐患。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 检测工具：ThreadSanitiz
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // ⑬ TSan 可捕获的隐患示例（Examples/_ch111_tsan.cpp）
 #include <atomic>
 struct Node { int val; Node* next; };
@@ -469,7 +469,7 @@ g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch111_tsan.cpp -o Examples/_ch
 ## ⑭ 误用案例 <span class="badge badge-exp">经验</span>
 
 > **示例 24** [难度 ★★☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑭ ❌ 误用1：用 relaxed 内存序做无锁栈，且回收不及时
 std::atomic<Node*> t{nullptr};
 Node* bad_pop() {
@@ -483,13 +483,13 @@ Node* bad_pop() {
 ```
 
 > **示例 25** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ⑭ ❌ 误用2：以为“tag 用 32 位就够了”——高并发下会回绕，回绕后 ABA 重现
 struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时间运行回绕
 ```
 
 > **示例 26** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // ⑭ ✅ 正确：用 64 位 tag + 风险指针保护 + 恰当内存序
 // 关键三点：(1) tag 足够宽；(2) pop 出的节点进 retire 而非立刻 delete；
 // (3) CAS 用 acq_rel/acquire，保证节点字段对回收者可见。
@@ -505,7 +505,7 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 无锁结构比加锁（`std::mutex`）快的前提是**低竞争**；高竞争下 CAS 自旋会空转。下面是定性对比（量级示意，非本机实测数字）：
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能代价对比 [实现·GCC15]
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 // ⑮ 用粗粒度计时对比“锁 vs 无锁标签栈”的吞吐（示意骨架）
 #include <atomic>
 #include <chrono>
@@ -517,7 +517,7 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能代价对比 [实现·GCC15]
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // ⑮ 双字 CAS 的额外代价：本工具链走 libatomic 锁，可能比单字 CAS 更慢
 // - 单字 CAS：1 条 lock cmpxchg（约十几周期）
 // - 双字 CAS（本 MinGW）：libatomic 内部锁 + 回退，开销明显更高
@@ -532,7 +532,7 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 第110章讲了 `std::atomic`、CAS 与无锁编程基础。本章是它天然的延伸：**CAS 能成立的前提是“值没被偷偷换过”**，而 ABA 正是这一前提在“带回收的指针”场景下的塌方。
 
 > **示例 29** [难度 ★★☆☆☆] [主题：与第110章衔接 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // ⑯ 第110章的 CAS 模板（回顾）：compare_exchange 只比较“当前值 vs 预期值”
 std::atomic<int> a{0};
 int expected = 0;
@@ -540,7 +540,7 @@ bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为
 ```
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：与第110章衔接 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // ⑯ 本章补的洞：当“值”是指针且指向的内存会被回收/复用，CAS 的“比较”不够
 // -> 加 tag（本章④⑤）保护 CAS 语义
 // -> 加风险指针/RCU（本章⑨⑪，见第112章）保护内存安全
@@ -552,7 +552,7 @@ bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为
 ## ⑰ 何时需要担心 ABA <span class="badge badge-exp">经验</span>
 
 > **示例 31** [难度 ★★☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // ⑰ 决策表（示意）
 // 场景                                  是否需要担心 ABA
 // 原子计数器 int/uint64 自增            不需要（值无“内存回收”语义）
@@ -563,7 +563,7 @@ bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为
 ```
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // ⑰ 经验法则：只要“CAS 的值”是其底层内存可能被释放并复用的指针，就该担心
 bool need_aba_guard = uses_pointer_cas && reclaims_memory;
 ```
@@ -579,7 +579,7 @@ bool need_aba_guard = uses_pointer_cas && reclaims_memory;
 下面给出一个**可运行**的微基准骨架，用同一工作负载对比三种策略的相对吞吐（数字为示意，落地时请在本机用 `std::chrono` 实测并标注来源）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 基准对比 [实现·GCC15]
-```cpp
+```cpp title="示例 33 · ★★★☆☆"
 // ⑱ 基准骨架：固定工作量，测三种实现的耗时（示意）
 #include <atomic>
 #include <chrono>
@@ -600,7 +600,7 @@ double bench(F f, int threads, int iters) {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准对比 [实现·GCC15]
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 #include <mutex>
 // ⑱ 三种被测操作（示意签名）
 // op_mutex():  std::mutex 保护的栈 pop/push
@@ -618,7 +618,7 @@ double bench(F f, int threads, int iters) {
 [第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)（无锁编程 lock-free/wait-free）—— 先确认真有无锁收益再上
 
 > **示例 35** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 #include <cstdint>
 // ⑲ 1) 先确认是否真有无锁 + 真无 ABA 风险，再决定是否上无锁
 // if (!std::atomic<T>::is_always_lock_free) 考虑退回 mutex，别硬上
@@ -626,25 +626,25 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // ⑲ 2) tag 用 64 位，且每次写都递增；读路径也要携带 tag 做快照
 // （见本章④的 TaggedPtr / unpack）
 ```
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // ⑲ 3) 回收用成熟方案：优先 hazard pointer 或 RCU（第112章），不要手搓
 // pop 出的节点进 retire 列表，确认无读者后再 delete
 ```
 
 > **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // ⑲ 4) 内存序别乱用：CAS 用 acq_rel/acquire；纯计数器可用 relaxed
 // compare_exchange_strong(expected, desired, acq_rel, acquire)
 ```
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // ⑲ 5) 用 TSan + 压力测试 + 形式化推理三者交叉验证，而非只靠“看起来对”
 ```
 
@@ -684,7 +684,7 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 | 最佳实践 | 先确认无锁+无 ABA，再上；优先成熟库 | ⑲ |
 
 > **示例 40** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 // ⑳ 一句话记忆：ABA = “地址复用了，但世界变了”；
 // 防御 = “给值加版本（tag）” + “给内存加保护（hazard/RCU）”。
 ```
@@ -757,7 +757,7 @@ Hazard Pointer (P0566): C++26方向, 从根本上消除ABA
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：ABA问题工业案例 [F: Industry / E: Lowlevel / H: Design / J: Learning]
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
 #include <thread>
@@ -874,7 +874,7 @@ int main() {
 CAS 只比较「当前值是否等于期望值」，看不到期望值被读取后到 CAS 提交之间的历史。若地址（或值）先变 B 再变回 A，CAS 认为「没变过」而成功提交，逻辑却已被破坏。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 43 · ★★★★☆"
 #include <atomic>
 #include <iostream>
 int main() {
@@ -909,7 +909,7 @@ int main() {
 给指针附带单调递增的版本号，CAS 比较的是 `{ptr, ver}` 整体。即使 `ptr` 变回原值，`ver` 已改变，CAS 失败，从而识破 ABA。此处用一个可被 `atomic` 无锁承载的 64 位打包（32 位索引 + 32 位版本）演示。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <atomic>
 #include <cstdint>
 #include <iostream>
@@ -945,7 +945,7 @@ int main() {
 64 位平台上指针本身占满 64 位，无空闲位打包版本，需要 128 位宽 CAS（x86-64 的 `cmpxchg16b`，要求 16 字节对齐）。`std::atomic<__int128>` 在开启 `-mcx16` 时可 `is_lock_free`。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <atomic>
 #include <cstdint>
 #include <iostream>
@@ -984,7 +984,7 @@ int main() {
 边界条件与失效场景：回绕概率虽低，但无锁代码的失败模式是"偶发、难复现、后果严重（use-after-free）"——"足够大"不构成正确性论证。替代方案：64 位版本（指针 + 版本压缩进 64 位见练习 2，或 128 位宽 CAS 见练习 3）；或用 hazard pointer / RCU 这类**不让地址复用发生**的结构性解法（ch112），从根上消灭 ABA 而无需版本号。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
-```cpp
+```cpp title="示例 50 · ★★★☆☆"
 #include <cstdint>
 #include <iostream>
 int main() {
@@ -1015,7 +1015,7 @@ ABA 的本质是"CAS 比较相等 ⇒ 认为期间无变化"，但"值相等"不
 边界条件与失效场景：判断"这个 CAS 是否需要防 ABA"看三点：①被比较的是否是指针/索引（身份语义）；②被指对象是否可能被回收后同地址复用（无回收协议就会）；③失败模式是否仅影响性能（计数器）还是破坏内存安全（指针）。无锁栈/队列/链表指针场景一律要 tagged pointer（练习 2/3）或 HP/RCU（ch112）。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 51 · ★★★☆☆"
 #include <atomic>
 #include <iostream>
 int main() {
@@ -1055,7 +1055,7 @@ int main() {
 **常见错误**：忽略节点回收，裸 CAS 指针。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 1：无锁栈的 pop 直接 C
-```cpp
+```cpp title="示例 46 · ★★★★☆"
 #include <atomic>
 #include <iostream>
 struct Node { int v; Node* next; };
@@ -1084,7 +1084,7 @@ int main() {
 **常见错误**：版本号太窄，`2^16` 次更新后回绕到旧值，ABA 重新可能。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：版本号位宽不足导致的回绕
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <atomic>
 #include <cstdint>
 #include <iostream>
@@ -1363,7 +1363,7 @@ flowchart TD
 ### D4.5 第一方可编译验证（CAS 原语 + atomic<shared_ptr> 锁位代价）
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
 #include <memory>
@@ -1518,7 +1518,7 @@ int main() {
 ### D5.3 可复现演示
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
 #include <cstdint>

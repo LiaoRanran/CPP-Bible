@@ -52,7 +52,7 @@ C++ 的 `private` / `public` 访问控制继承自 Simula 67 的"数据隐藏"�
 ## ② 友元函数 <span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：友元函数 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
 class Point { int x_, y_; public: Point(int x,int y):x_(x),y_(y){} friend std::ostream& operator<<(std::ostream&,const Point&); };
 std::ostream& operator<<(std::ostream& os,const Point& p){return os<<p.x_<<","<<p.y_;}
@@ -62,7 +62,7 @@ int main(){Point p(3,4);std::cout<<p<<std::endl;return 0;}
 ## ③ 友元类 <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：友元类 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 class Engine { int rpm=0; friend class Mechanic; };
 class Mechanic { public: void tune(Engine& e){ e.rpm=3000;std::cout<<"tuned\n"; } };
@@ -72,7 +72,7 @@ int main(){Engine e;Mechanic m;m.tune(e);return 0;}
 ## ④ 友元成员函数 <span class="badge badge-std">标准</span>
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：友元成员函数 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
 class Safe; class Key{public:void unlock(Safe&);};
 class Safe{int secret=42;friend void Key::unlock(Safe&);};
@@ -83,7 +83,7 @@ int main(){Safe s;Key k;k.unlock(s);return 0;}
 ## ⑤ 友元不可传递 <span class="badge badge-std">标准</span>
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：友元不可传递 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 #include <iostream>
 class A{int a=1;friend class B;};
 class B{int b=2;friend class C; void show(A& a){std::cout<<a.a<<std::endl;} };
@@ -94,7 +94,7 @@ int main(){A a;B b;std::cout<<"friend not transitive\n";return 0;}
 ## ⑥ 友元不可继承 <span class="badge badge-std">标准</span>
 
 > **示例 5** [难度 ★☆☆☆☆] [主题：友元不可继承 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
 class Base{int x=10;friend class Viewer;};
 class Derived:public Base{int y=20;};
@@ -105,7 +105,7 @@ int main(){Base b;Derived d;Viewer v;v.show(b);return 0;}
 ## ⑦ 模板友元 <span class="badge badge-std">标准</span>
 
 > **示例 6** [难度 ★★☆☆☆] [主题：模板友元 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 #include <iostream>
 template<typename T> class Box{T val; public:Box(T v):val(v){} template<typename U> friend void peek(const Box<U>&);};
 template<typename T> void peek(const Box<T>& b){std::cout<<b.val<<std::endl;}
@@ -115,7 +115,7 @@ int main(){Box<int> b(42);peek(b);return 0;}
 ## ⑧ friend 与 operator<< 惯用法 <span class="badge badge-exp">经验</span>
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · friend 与 operator<< 惯用法 [经验]
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
 class Vec3{double x,y,z;public:Vec3(double a,double b,double c):x(a),y(b),z(c){}friend std::ostream& operator<<(std::ostream&,const Vec3&);};
 std::ostream& operator<<(std::ostream& os,const Vec3& v){return os<<v.x<<" "<<v.y<<" "<<v.z;}
@@ -125,7 +125,7 @@ int main(){Vec3 v(1,2,3);std::cout<<v<<std::endl;return 0;}
 ## ⑨ friend 的替代方案 <span class="badge badge-exp">经验</span>
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：的替代方案 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
 class Widget{int val=99;public:int get()const{return val;} void set(int v){val=v;} };
 int main(){Widget w;w.set(42);std::cout<<w.get()<<std::endl;return 0;}
@@ -134,7 +134,7 @@ int main(){Widget w;w.set(42);std::cout<<w.get()<<std::endl;return 0;}
 ## ⑩ friend 与单元测试 <span class="badge badge-exp">经验</span>
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：与单元测试 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
 class PrivateClass{int secret=99;friend struct TestAccessor;};struct TestAccessor{static int peek(const PrivateClass& p){return p.secret;}};
 int main(){PrivateClass p;std::cout<<TestAccessor::peek(p)<<std::endl;return 0;}
@@ -143,7 +143,7 @@ int main(){PrivateClass p;std::cout<<TestAccessor::peek(p)<<std::endl;return 0;}
 ## ⑪ STL 联系：operator<< 必须 friend <span class="badge badge-std">标准</span>
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系：operator<< 必须 f
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ⑪ std::ostream::operator<< 只能通过 friend 访问私有成员
 #include <iostream>
 #include <string>
@@ -169,7 +169,7 @@ int main() {
 ## ⑫ 工业案例：工厂模式 + 友元控制构造 <span class="badge badge-exp">经验</span>
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：工厂模式 + 友元控制构造
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑫ friend 工厂：构造函数私有，仅工厂类可创建
 #include <iostream>
 #include <memory>
@@ -210,7 +210,7 @@ int main() {
 ## ⑬ 源码分析：GCC friend 处理流程 [实现·GCC15.3.0]
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC friend 处理
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑬ GCC 编译器内部的 friend 处理路径（伪代码注释）
 #include <iostream>
 int main() {
@@ -230,7 +230,7 @@ int main() {
 ## ⑭ WG21 关键提案 <span class="badge badge-std">标准</span>
 
 > **示例 13** [难度 ★★★☆☆] [主题：关键提案 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // ⑭ friend 相关的标准演化与提案
 #include <iostream>
 int main() {
@@ -252,7 +252,7 @@ int main() {
 ## ⑮ 面试题精选 <span class="badge badge-exp">经验</span>
 
 > **示例 14** [难度 ★★☆☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // ⑮ 高频面试问题与标准答案
 #include <iostream>
 int main() {
@@ -275,7 +275,7 @@ int main() {
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 > **示例 15** [难度 ★★★☆☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // ⑯ 5 个最常见的 friend 使用错误
 #include <iostream>
 
@@ -301,7 +301,7 @@ int main() {
 ## ⑰ FAQ：工程实战常见问题 <span class="badge badge-exp">经验</span>
 
 > **示例 16** [难度 ★★☆☆☆] [主题：工程实战常见问题 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑰ 来自实际项目的 friend 使用问答
 #include <iostream>
 class Database {
@@ -337,7 +337,7 @@ int main() {
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 > **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑱ friend 使用的 6 条黄金法则
 #include <iostream>
 #include <memory>
@@ -365,7 +365,7 @@ int main() {
 ## ⑲ 性能分析：friend 的零运行时成本 [平台·x86-64]
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能分析：friend 的零运行时成
-```cpp
+```cpp title="示例 18 · ★★★★☆"
 // ⑲ friend 是编译期概念 —— 生成代码与非 friend 完全一致
 // 验证方法：Compiler Explorer 对比两种访问方式
 #include <iostream>
@@ -406,7 +406,7 @@ int main() {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.friend]；cppreference "friend#Inheritance" 词条。
 
 > **示例 19** [难度 ★★★☆☆] [主题：跨语言对比：访问控制机制 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 19 · ★★★☆☆"
 // ⑳ C++ friend vs 其他语言的访问控制旁路机制
 #include <iostream>
 int main() {
@@ -428,7 +428,7 @@ int main() {
 ## 补充完整可编译示例
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 #include <iostream>
 class Lock{bool locked=true;friend class MasterKey; public:bool isLocked()const{return locked;} };
 class MasterKey{public:void unlock(Lock&l){l.locked=false;std::cout<<"unlocked\n";}};
@@ -436,28 +436,28 @@ int main(){Lock l;MasterKey m;m.unlock(l);std::cout<<l.isLocked()<<std::endl;ret
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 #include <iostream>
 template<typename T>class Outer{template<typename U>class Inner{friend class Outer;};};
 int main(){std::cout<<"nested friend template OK\n";return 0;}
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 #include <iostream>
 class A{int a=1;friend void show(A&);}; void show(A& a){std::cout<<a.a<<std::endl;}
 int main(){A a;show(a);return 0;}
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 #include <iostream>
 struct X{int x;friend void f(X&);}; struct Y{int y;friend void f(X&);};
 int main(){std::cout<<"multiple friend declarations OK\n";return 0;}
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
 class Secret{int code=1234;friend class Auditor;};
 class Auditor{public:int audit(const Secret& s){return s.code;}};
@@ -465,7 +465,7 @@ int main(){Secret s;Auditor a;std::cout<<a.audit(s)<<std::endl;return 0;}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 class C{static int count;friend class Counter;};int C::count=0;
 class Counter{public:void inc(){++C::count;} int get(){return C::count;}};
@@ -473,7 +473,7 @@ int main(){Counter c;c.inc();c.inc();std::cout<<c.get()<<std::endl;return 0;}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 #include <iostream>
 class Matrix{int d[4];public:Matrix(int a,int b,int c,int e){d[0]=a;d[1]=b;d[2]=c;d[3]=e;}friend Matrix operator+(const Matrix&,const Matrix&);};
 Matrix operator+(const Matrix& a,const Matrix& b){return Matrix(a.d[0]+b.d[0],a.d[1]+b.d[1],a.d[2]+b.d[2],a.d[3]+b.d[3]);}
@@ -481,7 +481,7 @@ int main(){Matrix m(1,2,3,4);std::cout<<"matrix op+\n";return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 #include <iostream>
 class Node{int data;Node*next;friend class List;public:Node(int d):data(d),next(nullptr){}};
 class List{Node*head=nullptr;public:void push(int d){auto*n=new Node(d);n->next=head;head=n;}int top(){return head->data;}};
@@ -489,84 +489,84 @@ int main(){List l;l.push(10);l.push(20);std::cout<<l.top()<<std::endl;return 0;}
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 class H{int v;friend void set(H&,int);friend int get(const H&);};void set(H&h,int x){h.v=x;}int get(const H&h){return h.v;}
 int main(){H h;set(h,7);std::cout<<get(h)<<std::endl;return 0;}
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 class Limited{int limit=100;friend bool check(const Limited&,int);};bool check(const Limited& l,int v){return v<l.limit;}
 int main(){Limited l;std::cout<<check(l,50)<<std::endl;return 0;}
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 class Pair{int a,b;friend void swap(Pair&);public:Pair(int x,int y):a(x),b(y){}void show(){std::cout<<a<<","<<b<<std::endl;}};void swap(Pair& p){int t=p.a;p.a=p.b;p.b=t;}
 int main(){Pair p(1,2);swap(p);p.show();return 0;}
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 struct Data{protected:int val=0;friend class Proxy;};struct Proxy{void set(Data& d,int v){d.val=v;}int get(Data& d){return d.val;}};
 int main(){Data d;Proxy p;p.set(d,99);std::cout<<p.get(d)<<std::endl;return 0;}
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★★★☆☆"
 #include <iostream>
 template<int N>struct Fib{static constexpr int v=Fib<N-1>::v+Fib<N-2>::v;};template<>struct Fib<0>{static constexpr int v=0;};template<>struct Fib<1>{static constexpr int v=1;};
 int main(){std::cout<<Fib<10>::v<<std::endl;return 0;}
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 class Logger{friend void log(const Logger&,const char*); int id; public:Logger(int i):id(i){}};void log(const Logger& l,const char* msg){std::cout<<"["<<l.id<<"] "<<msg<<std::endl;}
 int main(){Logger l(1);log(l,"started");return 0;}
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 class Vault{int code;public:Vault(int c):code(c){}friend int crack(const Vault&);};int crack(const Vault& v){return v.code;}
 int main(){Vault v(1234);std::cout<<crack(v)<<std::endl;return 0;}
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 class A2{int a=10;friend class B2;};class B2{public:void show(A2& a){std::cout<<a.a<<std::endl;}};
 int main(){A2 a;B2 b;b.show(a);return 0;}
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 struct Vec{int x,y;friend Vec add(const Vec&,const Vec&);};Vec add(const Vec& a,const Vec& b){return{a.x+b.x,a.y+b.y};}
 int main(){Vec v=add({1,2},{3,4});std::cout<<v.x<<","<<v.y<<std::endl;return 0;}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 class Counter{int n=0;friend void reset(Counter&);friend int read(const Counter&);};void reset(Counter& c){c.n=0;}int read(const Counter& c){return c.n;}
 int main(){Counter c;std::cout<<read(c)<<std::endl;return 0;}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 struct Window{int w,h;friend int area(const Window&);Window(int a,int b):w(a),h(b){}};int area(const Window& win){return win.w*win.h;}
 int main(){Window w(800,600);std::cout<<area(w)<<std::endl;return 0;}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"friend总结: 单向/不传递/不继承。用于operator<<、工厂、测试、内部类访问。"<<std::endl;return 0;}
 ```
@@ -622,7 +622,7 @@ C++ 的 `private`/`public` 访问控制继承自 Simula 67 的"数据隐藏"思�
 | CRTP 基类访问 | 基类模板 | `friend class Base<Derived>` |
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A: friend 模式速查
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 class Resource{int* p;Resource(int v):p(new int(v)){}friend std::unique_ptr<Resource> makeResource(int);public:~Resource(){delete p;}int get()const{return*p;}};
@@ -633,7 +633,7 @@ int main(){auto r=makeResource(99);std::cout<<r->get()<<std::endl;return 0;}
 ## 附录 B: friend 与封装边界设计
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: friend 与封装边界
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 int main(){
     std::cout<<"Design rule: friend is a deliberate encapsulation bypass.\n";
@@ -647,7 +647,7 @@ int main(){
 ## 附录 C: 模板 friend 模式
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: 模板 friend 模式
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 template<typename T>class Box{T val;public:Box(T v):val(v){}template<typename U>friend class Inspector;};
 template<typename T>class Inspector{public:void peek(const Box<T>&b){std::cout<<b.val<<std::endl;}};
@@ -661,7 +661,7 @@ CRTP中使用friend: 基类方法访问派生类(private)
 测试: 测试框架访问被测类的private成员
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：friend的工业应用
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 class X{int v=42;friend std::ostream&operator<<(std::ostream&o,const X&x){return o<<x.v;}};
 int main(){X x;std::cout<<x<<std::endl;return 0;}
@@ -676,7 +676,7 @@ friend不影响ABI: 不改变sizeof, 不改变vtable, 不改变name mangling
 friend是纯编译期特性: 只在访问检查时起作用, 编译后无痕迹
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：friend的ABI影响
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 class X{int v=42;friend class Test;};
 struct Test{static int get(X&x){return x.v;}};
@@ -751,7 +751,7 @@ call private_impl
 `operator<<` 必须是（或调用）`friend` 才能访问右操作数的私有成员：
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
 struct Point {
@@ -782,7 +782,7 @@ int main() {
 在类模板内用当前模板参数声明友元，约束为同 `T`：
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 template <typename T>
 class Box {
@@ -798,7 +798,7 @@ int main() { Box<int> a(1); Box<double> b(2.0); std::cout << "ok\n"; }
 更严格的"仅同 `T` 友元"写法（每个实例只与自身类型友元）：
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 template <typename T>
 class Box {
@@ -825,7 +825,7 @@ int main() { Box<int> a(1); std::cout << "ok\n"; }
 构造私有 + 友元工厂，外部无法直接构造：
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 class Widget {
@@ -869,7 +869,7 @@ int main() {
 实现与边界：类内 friend 定义适合简短的操作符（`<<`、`==`、`+`）与一次性辅助函数；函数较长时放类内会让头文件臃肿。注意：若你指望「非 ADL 也能找到它」，类内 friend 定义会落空——对不涉及该类型实参的调用必须写外部声明。替代方案：用公开成员函数（如 `print_to`）配合非友元 `operator<<`，牺牲一点直读性换取普通查找可见。
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 #include <iostream>
 
 struct Point {
@@ -903,7 +903,7 @@ int main() {
 实现与边界：友元类把「能访问私有」的权利整包发放，最小权限原则下应尽量用友元函数而非友元类；若 `Mechanic` 只有两三个函数需要访问，可改为「仅声明那两个函数为友元」。替代方案：把诊断逻辑做成 `Engine` 的公有 `const` 查询成员 + 非友元的算法层；或引入 PIMPL 隐藏实现，让「内部」只在实现文件里可见。
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 56 · ★★★☆☆"
 #include <iostream>
 
 class Engine {
@@ -942,7 +942,7 @@ int main() {
 **常见错误**：为打印/测试便利，把所有成员改成 `public`，导致任何调用方都能破坏对象不变式：
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：何时用 friend 而非
-```cpp
+```cpp title="示例 49 · ★☆☆☆☆"
 #include <iostream>
 struct Account {
     double balance;   // 错误：public 暴露，任何人可任意改
@@ -957,7 +957,7 @@ int main() {
 **修复**：成员保持 `private`，仅对必要函数授予 `friend`：
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：何时用 friend 而非
-```cpp
+```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 struct Account {
     double balance;
@@ -982,7 +982,7 @@ int main() {
 **常见错误**：为测试方便把私有成员改为 `public`，污染公共接口并误导使用者：
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：friend 与单元测试
-```cpp
+```cpp title="示例 51 · ★☆☆☆☆"
 #include <iostream>
 class Engine {
 public:
@@ -995,7 +995,7 @@ int main() { Engine e; e.rpm = 9999; }  // 生产代码也能乱改
 **修复**：仅对测试夹具类授予 `friend`，内部状态保持 `private`：
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：friend 与单元测试
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 class TestEngine;                                            // 前置声明
 class Engine {
@@ -1036,7 +1036,7 @@ int main() {
 可验证示例（自包含、可编译；两函数产物指令一致）：
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能视角：friend 的零运行期开
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 // g++ -std=c++23 -O2 ch29_costmodel.cpp
 #include <cstdio>
 class Account {
@@ -1171,7 +1171,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 54 · ★★★☆☆"
 #include <cstdio>
 
 class Container {

@@ -61,7 +61,7 @@
 - **一句话定义**：特化为特定（或某类）实参提供「替代主模板」的实现，由偏序选出最特化者 <span class="badge badge-std">标准</span>
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 本模板模式速查
-```cpp
+```cpp title="示例 1 · ★★★☆☆"
 // 主模板 / 全特化 / 偏特化同台竞技：偏序决定选中谁
 #include <iostream>
 template <typename T> struct Wrapper { static const char* k() { return "primary"; } };
@@ -77,7 +77,7 @@ int main() {
 ## ③ 核心结构与完整代码实现
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 // 主模板
 template <typename T>
 struct Storage {
@@ -103,7 +103,7 @@ struct Storage<U*> {
 全特化可改成员集合 <span class="badge badge-std">标准</span>：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 template <typename T> struct S { T v; };
 template <> struct S<void> {            // 全特化 void：完全不同类型集
     static constexpr bool is_void = true;
@@ -114,7 +114,7 @@ template <> struct S<void> {            // 全特化 void：完全不同类型�
 ## ④ 偏序：哪份特化更特化
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 偏序：哪份特化更特化
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 template <typename T> struct C { static const char* name() { return "primary"; } };
 template <typename U> struct C<U*>   { static const char* name() { return "ptr"; } };
 template <typename V> struct C<const V> { static const char* name() { return "const"; } };
@@ -126,7 +126,7 @@ template <typename V> struct C<const V> { static const char* name() { return "co
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 偏序：哪份特化更特化
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // 多份偏特化并存时的偏序
 template <typename T> struct D { };
 template <typename T> struct D<T*> { };        // D1
@@ -146,7 +146,7 @@ template <typename T> struct D<const T*> { };  // D2 比 D1 更特化（const �
 ## ⑥ 完整可运行示例（最小）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 #include <iostream>
 template <typename T> struct W { static const char* k() { return "primary"; } };
 template <> struct W<int> { static const char* k() { return "int"; } };
@@ -159,7 +159,7 @@ int main() {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
-```cpp
+```cpp title="示例 7 · ★★★☆☆"
 // 全特化可改成员集；偏特化可针对类型族（数组）
 #include <iostream>
 #include <cstddef>
@@ -183,7 +183,7 @@ int main() {
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 > **示例 8** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // 三者在偏序与 SFINAE 上基本一致（现代 MSVC 已修复旧版宽松两阶段）
 // 差异主要：模板报错可读性（见 ch75）与对 C++20 概念的支持进度
 // MSVC 对「函数模板偏序」曾与类模板偏序处理不一致；用类模板包装规避
@@ -197,7 +197,7 @@ int main() { Dispatcher<int> d; d.run(0); std::cout << "ok\n"; }
 每份选中的特化是**独立类型**，各自布局独立。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
-```cpp
+```cpp title="示例 9 · ★★★★☆"
 // 每份选中的特化是独立类型，各自布局独立
 #include <iostream>
 #include <vector>
@@ -253,71 +253,71 @@ _ZN7WrapperIKdE4kindEv:
 **B1 全特化语法与语义 <span class="badge badge-std">标准</span>**（≥10 例）
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 template <typename T> struct A { T v; };
 template <> struct A<int> { int v; void f(){} };   // 全特化 int
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 template <typename T, typename U> struct B {};
 template <> struct B<int, double> {};              // 双参数全特化
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 template <typename T> void foo(T);
 template <> void foo<int>(int) {};                 // 函数模板全特化
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 template <typename T> struct C { static constexpr int x = 0; };
 template <> struct C<char> { static constexpr int x = 1; };
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 template <typename T> struct D { using type = T; };
 template <> struct D<void> { using type = int; };   // 全特化改 type
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 template <typename T> struct E { void f(); };
 template <> void E<bool>::f() {};                   // 类外定义全特化成员
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // 全特化必须匹配主模板参数数目
 template <typename T, typename U> struct F {};
 // template <> struct F<int> {};   // 错误：参数数不匹配
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // 全特化可加 constexpr 不同行为
 template <typename T> struct G { static constexpr bool small = false; };
 template <> struct G<char> { static constexpr bool small = true; };
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // 函数模板全特化不参与重载决议优先级（它等同具体函数）
 template <typename T> void h(T);
 template <> void h(int) {}   // 等同 void h(int)，非模板优先
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // 变量模板全特化（C++14）
 template <typename T> constexpr T eps = T(1e-6);
 template <> constexpr float eps<float> = 1e-4f;
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // 成员模板全特化
 template <typename T> struct H { template <typename U> void m(U); };
 template <> template <typename U> void H<int>::m(U) {}
@@ -326,63 +326,63 @@ template <> template <typename U> void H<int>::m(U) {}
 **B2 偏特化模式 <span class="badge badge-std">标准</span>**
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 template <typename T> struct P { };
 template <typename T> struct P<T*> { };        // 指针偏特化
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 template <typename T> struct Q { };
 template <typename T> struct Q<T&> { };         // 左值引用偏特化
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 template <typename T> struct R { };
 template <typename T> struct R<T&&> { };        // 右值引用偏特化
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 #include <cstddef>
 template <typename T> struct S { };
 template <typename T, std::size_t N> struct S<T[N]> { };  // 数组偏特化
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 template <typename T> struct V { };
 template <typename T> struct V<const T> { };     // const 偏特化
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 template <typename T> struct W { };
 template <typename T> struct W<volatile T> { };  // volatile 偏特化
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 27 · ★★☆☆☆"
 template <typename T> struct X { };
 template <template <typename> class C, typename T> struct X<C<T>> { };  // 模板模板偏特化
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 #include <vector>
 template <typename T> struct Y { };
 template <typename T> struct Y<std::vector<T>> { };  // 具体模板实例偏特化
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 template <typename T> struct Z { };
 template <typename T> struct Z<T(*)()> { };       // 函数指针偏特化
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 #include <functional>
 template <typename T> struct M { };
 template <typename T> struct M<std::function<T()>> { };  // std::function 偏特化
@@ -391,7 +391,7 @@ template <typename T> struct M<std::function<T()>> { };  // std::function 偏特
 **B3 偏序推导 <span class="badge badge-std">标准</span>**
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 template <typename T> struct A { };
 template <typename T> struct A<T*> { };
 template <typename T> struct A<const T*> { };
@@ -399,7 +399,7 @@ template <typename T> struct A<const T*> { };
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 template <typename T> struct B { };
 template <typename T> struct B<T*> { };
 template <typename T> struct B<T* const> { };
@@ -407,7 +407,7 @@ template <typename T> struct B<T* const> { };
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 #include <vector>
 template <typename T> struct C { };
 template <typename T> struct C<std::vector<T>> { };
@@ -415,7 +415,7 @@ template <typename T> struct C<std::vector<T>*> { };  // 指针版更特化
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 template <typename T> struct D { };
 template <typename T> struct D<T&> { };
 template <typename T> struct D<const T&> { };   // const T& 更特化？注意引用折叠
@@ -424,32 +424,32 @@ template <typename T> struct D<const T&> { };   // const T& 更特化？注意�
 **B4 trait 中的特化 <span class="badge badge-std">标准</span>**
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 template <typename T> struct is_pointer : std::false_type {};
 template <typename T> struct is_pointer<T*> : std::true_type {};
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 template <typename T> struct is_const : std::false_type {};
 template <typename T> struct is_const<const T> : std::true_type {};
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 #include <cstddef>
 template <typename T> struct is_array : std::false_type {};
 template <typename T, std::size_t N> struct is_array<T[N]> : std::true_type {};
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 template <typename T> struct remove_const { using type = T; };
 template <typename T> struct remove_const<const T> { using type = T; };
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 39 · ★★★☆☆"
 #include <cstddef>
 template <typename T> struct rank { static constexpr std::size_t value = 0; };
 template <typename T, std::size_t N> struct rank<T[N]> { static constexpr std::size_t value = 1 + rank<T>::value; };
@@ -458,7 +458,7 @@ template <typename T, std::size_t N> struct rank<T[N]> { static constexpr std::s
 **B5 二义与错误对照 <span class="badge badge-exp">经验</span>**
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // 二义：两份偏特化同样特化
 template <typename T> struct A { };
 template <typename T> struct A<T*> { };
@@ -468,7 +468,7 @@ template <typename T> struct A<const T*> { };
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // 错误：偏特化参数必须从主模板「可推导」
 template <typename T> struct B { };
 // template <typename T> struct B<T*> { };   // OK
@@ -476,20 +476,20 @@ template <typename T> struct B { };
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 // 错误：主模板未声明就特化
 // template <> struct C<int> {};   // 必须先有 template <typename T> struct C {}
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 // 正确：先主后特
 template <typename T> struct D { };
 template <> struct D<void> { };
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 // 错误：函数模板偏特化非法
 // template <typename T> void f<T*>(T*) {}   // 非法；用重载或类模板包装
 ```
@@ -499,7 +499,7 @@ template <> struct D<void> { };
 [第65章　类型特性 Type Traits —— 编译期类型自省与分发](../part06_templates/ch65_type_traits.md)
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 // STL 中大量使用特化实现「通用算法 -> 最优实现」替换
 #include <iostream>
 #include <vector>
@@ -526,7 +526,7 @@ int main() {
 ## ⑫ 变体（variant patterns）
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
-```cpp
+```cpp title="示例 46 · ★★★☆☆"
 #include <type_traits>
 #include <concepts>
 // 用偏特化实现「按类别分流」的 dispatch
@@ -552,7 +552,7 @@ int main() {
 ## ⑬ 反模式（anti-patterns）
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 // 反模式1：特化顺序导致意外二义
 template <typename T> struct A { };
 template <typename T> struct A<T*> { };
@@ -561,7 +561,7 @@ template <typename T> struct A<const T*> { };
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <vector>
 // 反模式2：在命名空间 std 里特化非用户定义的模板（仅允许对用户类型特化 std 模板）
 // template <> struct std::less<MyType> {};  // OK（用户类型）
@@ -569,7 +569,7 @@ template <typename T> struct A<const T*> { };
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 // 反模式3：偏特化写死类型当全特化用，导致永远命中
 template <typename T> struct B { };      // 主模板（须先声明）
 template <typename T> struct B<T*> { };  // ❌ 想"只针对 int*"，实际命中所有指针
@@ -577,12 +577,12 @@ template <typename T> struct B<T*> { };  // ❌ 想"只针对 int*"，实际命�
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 50 · ★☆☆☆☆"
 // 反模式4：函数模板想偏特化 → 用类模板包装
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 // 反模式5：特化改变接口契约，调用方依赖主模板成员名 → 运行期/编译期错配
 ```
 
@@ -591,7 +591,7 @@ template <typename T> struct B<T*> { };  // ❌ 想"只针对 int*"，实际命�
 [第128章　Boost 核心库（C++）](../part11_source/ch128_boost.md)
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 52 · ★★★☆☆"
 // 工业案例：type traits 库全靠偏特化萃取类型属性；序列化框架按类型特化
 #include <iostream>
 #include <type_traits>
@@ -616,7 +616,7 @@ int main() {
 [第124章　libstdc++ 架构与阅读入口（C++）](../part11_source/ch124_libstdcxx.md)
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 // libstdc++ std::is_pointer（简化）+ 偏序比较机制演示
 #include <iostream>
 #include <type_traits>
@@ -636,64 +636,64 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 54 · ★☆☆☆☆"
 // 1) 偏特化必须从主模板推导参数，不能写死（写死应全特化）
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 55 · ★☆☆☆☆"
 // 2) 函数模板不能偏特化，用重载或类模板包装
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 56 · ★☆☆☆☆"
 // 3) 全特化是独立模板，可改成员集，但与主模板「同名不同类型」
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 57 · ★☆☆☆☆"
 // 4) 多份偏特化同样特化 → 二义
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 58 · ★☆☆☆☆"
 // 5) 在命名空间 std 只能为用户类型特化标准模板
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 59 · ★☆☆☆☆"
 // 6) 特化需可见（通常放头文件），否则 ODR 违规
 ```
 
 ## ⑰ FAQ
 
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 60 · ★☆☆☆☆"
 // Q：全特化与偏特化区别？
 // A：全特化实参完全固定（一份具体类型）；偏特化仍留参数给一类类型。
 ```
 
 > **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 61 · ★☆☆☆☆"
 // Q：为什么不能直接偏特化函数模板？
 // A：标准未提供；用重载（决议能选更特化）或类模板静态成员替代。
 ```
 
 > **示例 62** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 62 · ★☆☆☆☆"
 // Q：偏序怎么比？
 // A：用一份特化的形参去推导另一份，能单向推导者更特化。
 ```
 
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 63 · ★☆☆☆☆"
 #include <vector>
 // Q：std::vector<bool> 为什么奇怪？
 // A：它是主模板的偏特化，用位压缩，operator[] 返回代理而非 bool&。
 ```
 
 > **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
-```cpp
+```cpp title="示例 64 · ★☆☆☆☆"
 // Q：特化能改成员吗？
 // A：全特化可以；偏特化也可以（它仍是独立定义）。但接口契约应保持一致。
 ```
@@ -701,27 +701,27 @@ int main() {
 ## ⑱ 最佳实践
 
 > **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 65 · ★☆☆☆☆"
 // 1) trait 用偏特化萃取，全特化铺叶子类型（int/long/...）
 ```
 
 > **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 66 · ★☆☆☆☆"
 // 2) 需要「改成员集」用全特化；只是「换实现」用偏特化
 ```
 
 > **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 67 · ★☆☆☆☆"
 // 3) 避免二义：偏特化层次保持严格更特化关系
 ```
 
 > **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 68 · ★☆☆☆☆"
 // 4) 命名空间 std 仅特化用户类型；其余放进自己命名空间
 ```
 
 > **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 69 · ★★☆☆☆"
 // 5) 用 Concepts（ch67）替代 enable_if 偏特化，可读性更好
 ```
 
@@ -730,19 +730,19 @@ int main() {
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)
 
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 70 · ★★☆☆☆"
 #include <vector>
 // 特化选择纯编译期；选中后类型独立，零运行期分支
 // std::vector<bool> 偏特化以空间换时间（位压缩省内存，访问多一次位运算）
 ```
 
 > **示例 71** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 71 · ★☆☆☆☆"
 // 实例化成本：每份特化 = 一份类型定义；收敛方式同 ch60（extern template 不适用全特化但适用主模板）
 ```
 
 > **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
-```cpp
+```cpp title="示例 72 · ★★☆☆☆"
 // trait 偏特化多在编译期 ::value 求值，无运行期开销
 ```
 
@@ -881,7 +881,7 @@ libstdc++特化: vector<bool>位压缩(1bit/bool); hash<string>→FNV-1a; char_t
 Eigen特化: Matrix<float,4,4>完全特化→4条mulps; Dynamic列向量偏特化
 
 > **示例 73** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：模板特化工业
-```cpp
+```cpp title="示例 73 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<bool> v{true,false,true};std::cout<<v[0]<<std::endl;return 0;}
@@ -897,7 +897,7 @@ int main(){std::vector<bool> v{true,false,true};std::cout<<v[0]<<std::endl;retur
 ## 附录 F：特化工业案例
 
 > **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：特化工业案例
-```cpp
+```cpp title="示例 74 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<bool> v{true,false};std::cout<<v[0]<<std::endl;std::cout<<"Partial spec=fix some params; full spec=fix all params"<<std::endl;return 0;}
@@ -935,7 +935,7 @@ Q: 为什么vector<bool>是"不完整"的容器? A: 特化后成员bit_reference
 Q: 函数模板可以偏特化吗? A: 不可以(语言限制)。用重载替代偏特化, 或类模板偏特化+成员函数
 
 > **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试巩固
-```cpp
+```cpp title="示例 75 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
 template<typename T> struct is_pointer: std::false_type {};     // primary
@@ -946,7 +946,7 @@ int main() { std::cout << is_pointer<int*>::value << is_pointer<int>::value << s
 ## 附录 H：特化面试
 
 > **示例 76** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：特化面试
-```cpp
+```cpp title="示例 76 · ★★☆☆☆"
 #include <iostream>
 template<typename T> struct Traits{static const char* name(){return"T";}};
 template<> struct Traits<int>{static const char* name(){return"int";}};  // full spec
@@ -1005,7 +1005,7 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 做法 A（自定义哈希器，可编译、工业更常见，作用域局部）：
 
 > **示例 77** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 77 · ★★★☆☆"
 #include <iostream>
 #include <unordered_set>
 
@@ -1048,7 +1048,7 @@ template <> struct std::hash<Point> {
 <details><summary>答案与解析</summary>
 
 > **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 78 · ★★★☆☆"
 #include <iostream>
 #include <string>
 
@@ -1080,7 +1080,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 79** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 79 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
 #include <vector>
@@ -1112,7 +1112,7 @@ int main() {
 全特化（full specialization）为某个具体模板实参提供独立定义，优先级高于主模板。编译器在实例化时选择与实参最匹配的特化；特化必须保持主模板的接口（成员）一致。
 
 > **示例 84** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
-```cpp
+```cpp title="示例 84 · ★★★☆☆"
 #include <iostream>
 template <typename T>
 struct Trait { static const char* name() { return "generic"; } };
@@ -1139,7 +1139,7 @@ int main() {
 偏特化（partial specialization）只固定部分模板参数，其余仍由实参推导。它比全特化更灵活，是 traits/类型计算的核心——标准库 `std::remove_pointer`、`std::tuple_element` 等都基于此。
 
 > **示例 85** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 85 · ★★★☆☆"
 #include <iostream>
 template <typename T> struct RemovePtr      { using type = T; };
 template <typename T> struct RemovePtr<T*> { using type = T; };
@@ -1175,7 +1175,7 @@ template <> struct MyHash<Point> {          // 漏了 (const Point&) const -> �
 **修复**：完全匹配主模板签名（同一命名空间内特化即可，无需动 `std`）：
 
 > **示例 80** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：特化签名必须匹配主模板
-```cpp
+```cpp title="示例 80 · ★★★☆☆"
 #include <iostream>
 
 template <typename K> struct MyHash {
@@ -1209,7 +1209,7 @@ template <typename T> struct is_ptr_like<const T*>  : std::true_type {};  // 对
 **修复**：确保每一对特化之间存在严格偏序（更特化的胜出）：
 
 > **示例 81** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：偏序歧义——两个偏特化同等
-```cpp
+```cpp title="示例 81 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
 #include <vector>
@@ -1391,7 +1391,7 @@ libstdc++ 的类型特性几乎全部建立在（偏）模板特化之上：主�
 ### 可编译实证
 
 > **示例 82** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译实证
-```cpp
+```cpp title="示例 82 · ★★★☆☆"
 #include <type_traits>
 #include <iostream>
 
@@ -1489,7 +1489,7 @@ int main()
 ### D5.3 可复现 demo
 
 > **示例 83** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 83 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 

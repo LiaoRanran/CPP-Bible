@@ -296,7 +296,7 @@ sequenceDiagram
 **场景**：一个网络服务器用单 reactor 线程处理多种请求。高优先级请求（如管理指令、心跳回应）应优先于普通数据请求被处理，但不能用"遍历整个队列排序"这种 O(n log n) 的笨办法——用 `priority_queue` 在插入时即维持有序，取出永远 O(1)。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // 工业案例 C1：请求优先级调度（真实服务器模式的精简版）
 #include <queue>
 #include <vector>
@@ -344,7 +344,7 @@ int main() { dispatch_loop(); return 0; }
 **[libstdc++ stack]** 真实定义（`bits/stl_stack.h`）：
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析
-```cpp
+```cpp title="示例 5 · ★★★☆☆"
 // 文件：bits/stl_stack.h     行号：99  （以下为真实源码逐行引用，注释化以便独立编译）
 // template<typename _Tp, typename _Sequence = std::deque<_Tp> >
 // class stack
@@ -368,7 +368,7 @@ int main() { return 0; }
 **[libstdc++ queue]** 真实定义（`bits/stl_queue.h`）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析
-```cpp
+```cpp title="示例 6 · ★★★☆☆"
 // 文件：bits/stl_queue.h     行号：96  （以下为真实源码逐行引用，注释化以便独立编译）
 // template<typename _Tp, typename _Sequence = std::deque<_Tp> >
 // class queue
@@ -391,7 +391,7 @@ int main() { return 0; }
 **[libstdc++ priority_queue]** 真实定义（`bits/stl_queue.h`）：
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析
-```cpp
+```cpp title="示例 7 · ★★★☆☆"
 #include <vector>
 // 文件：bits/stl_queue.h     行号：498  （以下为真实源码逐行引用，注释化以便独立编译）
 // template<typename _Tp, typename _Sequence = std::vector<_Tp>,
@@ -460,7 +460,7 @@ int main() { return 0; }
 
 - **❌ 在空栈/空队列上调用 `top()`/`front()`/`pop()`**：标准不要求抛异常，结果是 **UB**（可能读到垃圾或段错误）。
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点
-  ```cpp
+  ```cpp title="示例 8 · ★★★☆☆"
   // ❌ 错误：未检查就 pop
   #include <stack>
   #include <iostream>
@@ -472,7 +472,7 @@ int main() { return 0; }
   int main() { return bad(); }
 ```
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-  ```cpp
+  ```cpp title="示例 9 · ★☆☆☆☆"
   // ✅ 正确：先 empty 再访问
   #include <stack>
   #include <iostream>
@@ -491,7 +491,7 @@ int main() { return 0; }
 
 - **❌ 把 `top()` 返回的引用在 `pop()` 之后继续使用**：
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-  ```cpp
+  ```cpp title="示例 10 · ★★☆☆☆"
   // ❌ 错误：pop 后引用悬垂
   #include <stack>
   int dangling() {
@@ -560,7 +560,7 @@ int main() { return 0; }
 **microbenchmark（示意量级，非绝对）**
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // 性能对比 C2：stack 尾插 vs 直接 deque 尾插（同一底层，差异应≈0）
 #include <stack>
 #include <deque>
@@ -672,7 +672,7 @@ int main() { return bench(); }
 **更多完整可编译示例（每块独立可编译）**
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // E1 三个适配器的声明（展示模板签名）
 #include <stack>
 #include <queue>
@@ -688,7 +688,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // E2 验证 stack 默认底层是 deque（typeid 仅作演示）
 #include <stack>
 #include <deque>
@@ -705,7 +705,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // E3 stack 基本 API：push / top / pop / size
 #include <stack>
 #include <iostream>
@@ -720,7 +720,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // E4 stack LIFO 顺序验证
 #include <stack>
 #include <iostream>
@@ -734,7 +734,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // E5 queue FIFO 基本 API
 #include <queue>
 #include <iostream>
@@ -749,7 +749,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // E6 queue FIFO 顺序验证
 #include <queue>
 #include <iostream>
@@ -764,7 +764,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 18 · ★★☆☆☆"
 // E7 priority_queue 默认大顶堆
 #include <queue>
 #include <iostream>
@@ -778,7 +778,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // E8 priority_queue 小顶堆（greater）
 #include <queue>
 #include <vector>
@@ -794,7 +794,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // E9 自定义比较器（按字符串长度的大顶堆）
 #include <queue>
 #include <vector>
@@ -815,7 +815,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // E10 emplace 原地构造（避免临时 string）
 #include <stack>
 #include <string>
@@ -829,7 +829,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // E11 适配器没有迭代器：以下代码编译失败（演示其不可遍历）
 #include <stack>
 #include <iostream>
@@ -843,7 +843,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 // E12 自定义底层容器：stack 用 vector 作底层
 #include <stack>
 #include <vector>
@@ -857,7 +857,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // E13 自定义底层容器：stack 用 list（同样满足接口）
 #include <stack>
 #include <list>
@@ -871,7 +871,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // E14 priority_queue 用 vector + 自定义比较器（任务调度）
 #include <queue>
 #include <vector>
@@ -888,7 +888,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // E15 工业案例精简：请求调度（与 ⑫ 同思想，独立可编译）
 #include <queue>
 #include <vector>
@@ -906,7 +906,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // E16 内存布局：适配器大小 ≈ 底层容器大小（priority_queue 含空比较器）
 #include <stack>
 #include <queue>
@@ -920,7 +920,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 28 · ★★★☆☆"
 // E17 汇编验证：stack::push 与 deque::push_back 行为一致（编译期可验证）
 #include <stack>
 #include <deque>
@@ -937,7 +937,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // E18 适配器与容器关系：queue 底层就是 deque
 #include <queue>
 #include <deque>
@@ -952,7 +952,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // E19 性能：stack 尾插大量元素（示意，真实请用 benchmark 框架）
 #include <stack>
 #include <chrono>
@@ -970,7 +970,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // E20 top-K：用 priority_queue 求最大的 K 个（小顶堆，容量 K）
 #include <queue>
 #include <vector>
@@ -991,7 +991,7 @@ int main() { std::cout << topK({5,1,9,3,7,2,8}, 3) << "\n"; return 0; }  // 9+8+
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // E21 简化 Dijkstra：priority_queue 做距离松弛（示意）
 #include <queue>
 #include <vector>
@@ -1018,7 +1018,7 @@ int main() { std::cout << dijkstra_demo() << "\n"; return 0; }
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // E22 栈判断括号匹配
 #include <stack>
 #include <string>
@@ -1043,7 +1043,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // E23 queue 实现层序遍历（BFS，示意树）
 #include <queue>
 #include <iostream>
@@ -1059,7 +1059,7 @@ int main() { std::cout << bfs_sum({1,2,3,4,5}) << "\n"; return 0; }
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // E24 移动语义：push 右值避免拷贝
 #include <stack>
 #include <string>
@@ -1075,7 +1075,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // E25 swap 两个 stack（O(1) 交换底层）
 #include <stack>
 #include <iostream>
@@ -1090,7 +1090,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // E26 比较两个 stack 相等（底层 c 比较）
 #include <stack>
 #include <iostream>
@@ -1103,7 +1103,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 38 · ★★★☆☆"
 // E27 派生 stack 访问 protected 底层 c（仅在确有需要时）
 #include <stack>
 #include <deque>
@@ -1121,7 +1121,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // E28 priority_queue 与手写堆对比：手写建堆
 #include <vector>
 #include <algorithm>
@@ -1137,7 +1137,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // E29 priority_queue 存自定义结构体 + 比较器（事件时间戳）
 #include <queue>
 #include <vector>
@@ -1154,7 +1154,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // E30 priority_queue 默认比较器类型查看
 #include <queue>
 #include <type_traits>
@@ -1169,7 +1169,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 // E31 用版本宏区分 C++ 版本（展示 __cplusplus）
 #include <iostream>
 int main() {
@@ -1185,7 +1185,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 更多完
-```cpp
+```cpp title="示例 43 · ★★★☆☆"
 // E32 折叠表达式 + 适配器：批量入栈（示意现代 C++ 组合）
 #include <stack>
 #include <utility>
@@ -1249,7 +1249,7 @@ int main() {
 **真实场景：撤销栈（LIFO）与任务队列（FIFO）。** 编辑器撤销用 `stack`（底层 `vector`），打印/IO 任务派发用 `queue`，对比二者受限接口。
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 #include <stack>
 #include <vector>
@@ -1271,7 +1271,7 @@ int main() {
 **真实场景：定时器最小堆——最近到期先触发。** 调度器用 `priority_queue` + `greater` 取最早定时器（`top()` 为最小延迟），演示比较器决定堆序。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -1291,7 +1291,7 @@ int main() {
 **真实场景：实时监控 Top-K hottest URLs。** 用最大堆维护访问量前 K，超过 K 弹堆顶，最终堆中即最大的 K 个。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -1321,7 +1321,7 @@ int main() {
 `std::priority_queue` 是容器适配器：它在底层容器（默认 `std::vector`）之上维护堆序，比较器默认 `std::less` 即"最大值在顶部"。改用 `std::greater<T>`（或自定义 comparator）即得到小顶堆，`top()` 返回最小元素。适配器对底层容器只有最低要求：`back()`、`push_back()`、`pop_back()` 与随机访问（用于 `make_heap` 类操作），因此 `vector`/`deque` 都可用，但 `list` 不行。
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 56 · ★☆☆☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -1347,7 +1347,7 @@ int main() {
 `stack`/`queue` 通过第二模板参数选择底层序列容器（默认 `deque`），它们只暴露"栈/队列"所需要的操作：`stack` 暴露 `push`/`pop`/`top`，`queue` 暴露 `push`/`pop`/`front`/`back`。换成 `vector` 底层后，内存连续、可预测；但代价是 `vector` 在中部插入/删除昂贵——不过栈/队列只在端点操作，正好规避。适配器不提供迭代器，因为"只允许端点访问"本就是栈/队列的契约。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 57 · ★★★☆☆"
 #include <iostream>
 #include <stack>
 #include <vector>
@@ -1370,7 +1370,7 @@ int main() {
 遇到开括号入栈，遇到闭括号与栈顶配对，全程 LIFO 校验嵌套正确性。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：用 stack 实现括号匹
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <stack>
 #include <string>
@@ -1396,7 +1396,7 @@ int main() {
 自定义比较器须是函数对象类型；底层容器必须满足 RandomAccessIterator（故不能用 `list`）。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：priorityqueue
-```cpp
+```cpp title="示例 48 · ★★★☆☆"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -1505,7 +1505,7 @@ push_sift:
 可复现基准（自包含、可编译）：
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实性能基准：容器适配器底层实现
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 // g++ -std=c++23 -O2 ch86_bench.cpp
 #include <stack>
 #include <vector>
@@ -1542,7 +1542,7 @@ int main(){
 
 // 摘自 libstdc++ 15.3.0：bits/stl_stack.h:106（节选）
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
   template<typename _Tp, typename _Sequence = deque<_Tp> >
     class stack
     {
@@ -1558,7 +1558,7 @@ int main(){
 
 // 摘自 libstdc++ 15.3.0：bits/stl_queue.h:103（节选）
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
   template<typename _Tp, typename _Sequence = deque<_Tp> >
     class queue
     {
@@ -1573,7 +1573,7 @@ int main(){
 
 // 摘自 libstdc++ 15.3.0：bits/stl_queue.h:550（节选）
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
   template<typename _Tp, typename _Sequence = vector<_Tp>,
 	   typename _Compare = less<typename _Sequence::value_type> >
     class priority_queue
@@ -1623,7 +1623,7 @@ int main(){
 ### D4.4 可编译验证
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译验证
-```cpp
+```cpp title="示例 53 · ★★☆☆☆"
 // D4-demo：验证 stack 的 LIFO 与 priority_queue 的默认大顶堆
 #include <stack>
 #include <queue>
@@ -1841,7 +1841,7 @@ flowchart TD
 ### D5.3 验证 demo
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 #include <iostream>
 #include <queue>
 #include <stack>

@@ -194,7 +194,7 @@ range-based for 对 `vector` 展开后就是指针比较循环，GCC13 `-O2` 下
 场景：把来自不同来源的"事件 timestamp"聚合统计，来源可能是 `vector`（内存）、`deque`（双端）、甚至 `list`（频繁中间插入）。算法代码应**一套通吃**。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：泛型日志聚合器
-```cpp
+```cpp title="示例 5 · ★★★☆☆"
 // 工业案例 C1：跨容器泛型聚合（算法与容器解耦）
 #include <vector>
 #include <deque>
@@ -228,7 +228,7 @@ int main() {
 迭代器五类标签是空结构体，通过继承表达"层次"（`bits/stl_iterator_base_types.h`）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析（libstdc++ 逐行）
-```cpp
+```cpp title="示例 6 · ★★★☆☆"
 // 文件：bits/stl_iterator_base_types.h   行号：93, 96, 99, 103, 107, 111
 // 93:  struct input_iterator_tag { };
 // 96:  struct output_iterator_tag { };
@@ -289,7 +289,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // ❌ 错误1：用 input 迭代器做多遍遍历（istream_iterator 只读一遍）
 #include <iterator>
 #include <sstream>
@@ -306,7 +306,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 // ❌ 错误2：把 vector 迭代器当 list 那样"安全"——扩容后全部失效
 #include <vector>
 #include <iostream>
@@ -321,7 +321,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 // ✅ 正确：随机访问迭代器支持 it + n（O(1)），list 不支持
 #include <vector>
 #include <list>
@@ -362,7 +362,7 @@ int main() {
 6. 新代码用 C++20 概念（如 `std::forward_iterator`）替代 `enable_if`  SFINAE 约束。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
-```cpp
+```cpp title="示例 10 · ★★★☆☆"
 // 最佳实践 B1：用 C++20 概念约束泛型算法（最弱够用）
 #include <vector>
 #include <list>
@@ -493,7 +493,7 @@ int main() {
 以下为第76章完整可编译示例集（每块独立、自带 `#include` 与 `int main`，经 `g++ -std=c++23 -O2 -Wall -Wextra` 校验）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 11 · ★☆☆☆☆"
 // A1 range-based for 展开（等价于 begin/end + ++ + !=）
 #include <vector>
 #include <iostream>
@@ -506,7 +506,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 12 · ★★★☆☆"
 // A2 iterator_traits 萃取范畴并用 type_traits 判断
 #include <vector>
 #include <list>
@@ -527,7 +527,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // A3 标签分发：手写 advance 选择（示意编译期多态）
 #include <iterator>
 #include <list>
@@ -553,7 +553,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // A4 std::advance 在不同范畴下的行为（O(1) vs O(n)）
 #include <vector>
 #include <list>
@@ -569,7 +569,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // A5 std::distance：vector O(1)，list O(n)
 #include <vector>
 #include <list>
@@ -585,7 +585,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // A6 六组件组合：容器+算法+仿函数+适配器
 #include <vector>
 #include <algorithm>
@@ -602,7 +602,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // A7 back_inserter 适配器：赋值即 push_back
 #include <vector>
 #include <algorithm>
@@ -618,7 +618,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // A8 inserter 适配器：插入到指定位置前
 #include <vector>
 #include <list>
@@ -636,7 +636,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // A9 reverse_iterator 适配器：反向遍历
 #include <vector>
 #include <iostream>
@@ -649,7 +649,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // A10 move_iterator（C++11）：移动而非拷贝元素
 #include <vector>
 #include <iterator>
@@ -666,7 +666,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 // A11 哨兵 C++20：istream_iterator + default_sentinel（读到 EOF 停止）
 #include <iterator>
 #include <sstream>
@@ -682,7 +682,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 // A12 contiguous_iterator 概念检查（C++20）
 #include <vector>
 #include <list>
@@ -698,7 +698,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // A13 裸指针即连续迭代器（演示范畴）
 #include <iostream>
 #include <iterator>
@@ -714,7 +714,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 // A14 仿函数（lambda）作为算法策略
 #include <vector>
 #include <algorithm>
@@ -728,7 +728,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // A15 transform 用仿函数生成新序列
 #include <vector>
 #include <algorithm>
@@ -745,7 +745,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 26 · ★☆☆☆☆"
 // A16 适配器：front_inserter（list 头插，逆序）
 #include <list>
 #include <vector>
@@ -763,7 +763,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // A17 迭代器失效演示：list 插入不影响其它迭代器
 #include <list>
 #include <iostream>
@@ -777,7 +777,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 28 · ★★★☆☆"
 // A18 C++20 概念约束：要求 forward_iterator
 #include <vector>
 #include <list>
@@ -794,7 +794,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // A19 版本宏探测：C++20 contiguous_iterator 可用性
 #include <iterator>
 #include <iostream>
@@ -809,7 +809,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // A20 折叠 + 迭代器：求和（演示泛型）
 #include <vector>
 #include <iostream>
@@ -827,7 +827,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // A21 自定义输出迭代器（写入 ostream）
 #include <iterator>
 #include <ostream>
@@ -850,7 +850,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 // A22 streambuf 迭代器：逐字符读取（input 范畴）
 #include <iostream>
 #include <iterator>
@@ -867,7 +867,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // A23 用 sentinel 概念检查 istream_iterator 可比较 default_sentinel
 #include <iterator>
 #include <sstream>
@@ -883,7 +883,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 // A24 泛型 + 适配器统计大于阈值的元素并写入新容器
 #include <vector>
 #include <algorithm>
@@ -901,7 +901,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // A25 不同容器共用同一算法（解耦验证）
 #include <deque>
 #include <array>
@@ -918,7 +918,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // A26 迭代器作为"泛型指针"：find 跨容器
 #include <vector>
 #include <list>
@@ -934,7 +934,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // A27 用户定义字面量计时 + 范畴对比（UDL 带空格写法）
 #include <vector>
 #include <list>
@@ -956,7 +956,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // A28 反向 + 正向迭代器同时遍历（回文判定）
 #include <vector>
 #include <iostream>
@@ -972,7 +972,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // A29 ostream_iterator 写出分隔序列
 #include <vector>
 #include <iterator>
@@ -988,7 +988,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // A30 概念约束错误演示（注释）：非迭代器类型不会被接受
 #include <concepts>
 #include <iostream>
@@ -1005,7 +1005,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // A31 工业：泛型日志聚合（复用 C1 思路，自包含）
 #include <vector>
 #include <deque>
@@ -1037,7 +1037,7 @@ int main() {
 ## 附录 F：STL架构工业
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：STL架构工业
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -1059,7 +1059,7 @@ int main(){std::vector<int> v{5,3,1,4,2};std::sort(v.begin(),v.end());std::cout<
 ## 附录 H：STL容器决策树
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：STL容器决策树
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -1122,7 +1122,7 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 自定义迭代器把范畴标为 `random_access_iterator_tag`（委托裸指针算术），`my_distance` 的公共壳据 `iterator_traits::iterator_category` 在编译期选 `random_access`（O(1) 相减）或 `input`（O(n) 计数）重载：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -1209,7 +1209,7 @@ int main() {
 哨兵类型 `NullSentinel` 只与迭代器做 `==` 比较（遇 `'\0'` 即结束），`my_find` 用 `std::sentinel_for` 约束"结束"，不要求 `end` 与 `first` 同类型——于是 `(It, NullSentinel)` 与 `(It, It)` 都能复用同一算法：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★）
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 #include <iostream>
 #include <string>
 #include <iterator>
@@ -1271,7 +1271,7 @@ int main() {
 用 `std::input_iterator`（只读来源）与 `std::output_iterator`（可写目标）约束，使算法对任意满足能力的迭代器都成立；再示范 `std::contiguous_iterator` 分支说明连续内存可批量/SIMD 优化（此处以 `if constexpr` 标注分支，运行时逻辑二者一致，证明概念可静态区分）：
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★）
-```cpp
+```cpp title="示例 46 · ★★★★☆"
 #include <iostream>
 #include <vector>
 #include <list>
@@ -1325,7 +1325,7 @@ int main() {
 `std::iterator_traits<It>::iterator_category` 给出迭代器类别标签（如 `std::random_access_iterator_tag`）。标准保证随机访问迭代器类别"派生自"更弱的类别，因此可以用 `std::is_base_of`/`if constexpr` 在编译期选择分支：随机访问直接 `b - a` 得到距离（O(1)，并不真的逐元素走一遍），其余类别退化成线性自增。这正是 STL 算法（如 `std::distance`、`std::advance`）的底层分发手法——类别决定复杂度，零运行时开销。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <list>
@@ -1367,7 +1367,7 @@ int main() {
 `std::begin(r)`/`std::end(r)` 是"定制点"：对容器它调用成员 `begin()`；对裸数组它退化到指针 `r + N`；对实现了 `begin()/end()` 的自定义类型则通过 ADL 找到对应函数。相比强制要求 `.begin()` 成员，非成员 `std::begin` 既能服务内置数组，又能让第三方类型在不改动自身的情况下接入基于范围的循环与 STL 算法，是"开放扩展"的设计；它也是 range-based for 的底层机制。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 5（难度 ★★）
-```cpp
+```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <array>
@@ -1735,7 +1735,7 @@ flowchart TD
 ### D4.6 第一方可编译验证（traits 提取 + 标签分发）
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 47 · ★★★☆☆"
 #include <iostream>
 #include <iterator>
 #include <vector>
@@ -1898,7 +1898,7 @@ int main() {
 ### D5.3 可复现演示
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
-```cpp
+```cpp title="示例 48 · ★★★☆☆"
 #include <iostream>
 #include <vector>
 #include <list>

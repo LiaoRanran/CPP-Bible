@@ -76,7 +76,7 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 `x86_64-w64-mingw32/bits/c++allocator.h:47`：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 设计动机：容器与内存解耦，但默认无
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // x86_64-w64-mingw32/bits/c++allocator.h:46-47
 template<typename _Tp>
   using __allocator_base = __new_allocator<_Tp>;
@@ -85,7 +85,7 @@ template<typename _Tp>
 而 `__new_allocator::allocate`（`bits/new_allocator.h:121-148`）最终就是：
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 设计动机：容器与内存解耦，但默认无
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 // bits/new_allocator.h:143-147
 std::align_val_t __al = std::align_val_t(alignof(_Tp));
 return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp), __al));
@@ -116,7 +116,7 @@ return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp), __al));
 **真实源码（libstdc++ `std::allocator` 主模板，`bits/allocator.h:129-227`）**：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 经典 std::allocator
-```cpp
+```cpp title="示例 3 · ★★★☆☆"
 #include <cstddef>
 // bits/allocator.h:129-147 —— 主模板只声明类型别名与 rebind，其余继承基类
 template<typename _Tp>
@@ -142,7 +142,7 @@ template<typename _Tp>
 注意 **C++20 起** `std::allocator` 删除了 `pointer`/`rebind` 等成员（`bits/allocator.h:137-147` 被 `#if __cplusplus <= 201703L` 包住），构造/析构 `allocate`/`deallocate` 改为在类内定义并优先走常量求值分支（`bits/allocator.h:186-212`）：
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 经典 std::allocator
-```cpp
+```cpp title="示例 4 · ★★★☆☆"
 #include <cstddef>
 // bits/allocator.h:186-199 (C++20)
 [[nodiscard,__gnu__::__always_inline__]]
@@ -167,7 +167,7 @@ constexpr _Tp* allocate(size_t __n)
 程序 1：直接用 `std::allocator` 申请/释放（完整可编译）：
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典 std::allocator
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p1.cpp -o ch38_p1
 #include <memory>
 #include <iostream>
@@ -197,7 +197,7 @@ int main() {
 **真实源码（libstdc++ `allocator_traits` 主模板，`bits/alloc_traits.h:105-230`）**：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 6 · ★★★☆☆"
 // bits/alloc_traits.h:105-117 —— 主模板只取 value_type，其余用「检测或默认」
 struct allocator_traits : __allocator_traits_base
 {
@@ -209,7 +209,7 @@ struct allocator_traits : __allocator_traits_base
 传播 traits 与 `is_always_equal` 的「检测或默认」逻辑（`bits/alloc_traits.h:197-225`）：
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // bits/alloc_traits.h:197-225
 using propagate_on_container_copy_assignment
   = __detected_or_t<false_type, __pocca, _Alloc>;                       // 无则 false_type
@@ -224,7 +224,7 @@ using is_always_equal
 `rebind_alloc` 的推导（`bits/alloc_traits.h:227-230`）：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 // bits/alloc_traits.h:227-230
 template<typename _Tp>
   using rebind_alloc = __alloc_rebind<_Alloc, _Tp>;          // 优先 A::rebind<U>::other
@@ -235,7 +235,7 @@ template<typename _Tp>
 **`std::allocator<T>` 的 traits 特化**（`bits/alloc_traits.h:428-470`）明确给出传播行为与 `is_always_equal`：
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 9 · ★★★☆☆"
 // bits/alloc_traits.h:455-470
 using propagate_on_container_copy_assignment = false_type;
 using propagate_on_container_move_assignment = true_type;  // 见 LWG 2103
@@ -255,7 +255,7 @@ template<typename _Up>
 程序 2：只用「最小接口」写一个分配器（仅 `value_type`/`allocate`/`deallocate`），靠 traits 补全：
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 10 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p2.cpp -o ch38_p2
 #include <memory>
 #include <vector>
@@ -285,7 +285,7 @@ int main() {
 程序 3：直接通过 `allocator_traits` 分配（等价于程序 1 的 traits 用法，独立可编译）：
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p3.cpp -o ch38_p3
 #include <memory>
 #include <iostream>
@@ -306,7 +306,7 @@ int main() {
 程序 4：演示传播 traits 的作用（拷贝/移动时分配器是否跟随）：
 
 > **示例 12** <span class="badge badge-exp">难度 ★★★★☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 12 · ★★★★☆"
 // 编译: g++ -std=c++17 ch38_p4.cpp -o ch38_p4
 #include <memory>
 #include <vector>
@@ -341,7 +341,7 @@ int main() {
 程序 5：`is_always_equal` 判定演示：
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p5.cpp -o ch38_p5
 #include <memory>
 #include <type_traits>
@@ -357,7 +357,7 @@ int main() {
 程序 6：`rebind` 让 `allocator<T>` 变成 `allocator<Node<T>>`（节点容器内部）：
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::allocatortrai
-```cpp
+```cpp title="示例 14 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p6.cpp -o ch38_p6
 #include <memory>
 #include <type_traits>
@@ -387,7 +387,7 @@ int main() {
 程序 7：可编译的固定大小池分配器（接 `std::vector`）：
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自定义分配器（一）：固定大小池分配器
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p7.cpp -o ch38_p7
 #include <vector>
 #include <cstddef>
@@ -456,7 +456,7 @@ int main() {
 程序 8：统计分配次数的调试分配器：
 
 > **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自定义分配器（二）：调试分配器统计
-```cpp
+```cpp title="示例 16 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p8.cpp -o ch38_p8
 #include <vector>
 #include <cstddef>
@@ -510,7 +510,7 @@ int main() {
 程序 9：同一 `pmr::vector<int>` 在运行时挂两种资源（展示编译期类型不变）：
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全景：为何出现
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p9.cpp -o ch38_p9
 #include <memory_resource>
 #include <vector>
@@ -538,7 +538,7 @@ int main() {
 **真实源码（libstdc++ `bits/memory_resource.h:56-104`）**：
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::pmr::memoryre
-```cpp
+```cpp title="示例 18 · ★★★☆☆"
 #include <cstddef>
 // bits/memory_resource.h:56-104 —— 抽象基类，公有接口调用私有纯虚
 class memory_resource
@@ -574,7 +574,7 @@ private:
 程序 10：自己继承 `memory_resource` 写一个计数资源：
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::memoryre
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p10.cpp -o ch38_p10
 #include <memory_resource>
 #include <cstddef>
@@ -612,7 +612,7 @@ int main() {
 **<span class="badge badge-std">标准</span>**　`polymorphic_allocator<T>`（`[mem.poly.allocator.class]`）是 PMR 的「分配器外观」——它满足 `Allocator` 要求，但内部只存一个 `memory_resource*`（`_M_resource`）。构造函数若不给资源，取默认资源（`bits/memory_resource.h:121-126`）：
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // bits/memory_resource.h:121-131
 polymorphic_allocator() noexcept
 {
@@ -627,7 +627,7 @@ polymorphic_allocator(memory_resource* __r) noexcept
 `allocate` 转调资源（`bits/memory_resource.h:143-152`）：
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::pmr::polymorp
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 #include <cstddef>
 // bits/memory_resource.h:143-152
 [[nodiscard]] _Tp* allocate(size_t __n)
@@ -643,7 +643,7 @@ polymorphic_allocator(memory_resource* __r) noexcept
 **真实源码（PMR 的 traits 特化，`bits/memory_resource.h:375-419`）**：
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // bits/memory_resource.h:409-419 —— PMR 不传播、非 always_equal
 using propagate_on_container_copy_assignment = false_type;
 using propagate_on_container_move_assignment = false_type;
@@ -659,7 +659,7 @@ using is_always_equal = false_type;  // 不同资源实例不等价
 程序 11：`polymorphic_allocator` 基础用法（独立可编译）：
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p11.cpp -o ch38_p11
 #include <memory_resource>
 #include <iostream>
@@ -677,7 +677,7 @@ int main() {
 程序 12：`pmr::string` 别名容器（注意要 `#include <string>`）：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::pmr::polymorp
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p12.cpp -o ch38_p12
 #include <memory_resource>
 #include <string>
@@ -701,7 +701,7 @@ int main() {
 **真实源码（libstdc++ `memory_resource:354-411`）—— 核心 bump 逻辑**：
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（一）：monotonicb
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 #include <cstddef>
 // memory_resource:354-373 —— do_allocate 的指针碰撞
 void* do_allocate(size_t __bytes, size_t __alignment) override
@@ -725,7 +725,7 @@ bool do_is_equal(const memory_resource& __other) const noexcept override
 缓冲增长参数（`memory_resource:397-398`）：
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（一）：monotonicb
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 #include <cstddef>
 static constexpr size_t _S_init_bufsize = 128 * sizeof(void*);  // 初始 1KB 左右
 static constexpr float  _S_growth_factor = 1.5;                 // 每次 1.5 倍增长
@@ -734,7 +734,7 @@ static constexpr float  _S_growth_factor = 1.5;                 // 每次 1.5 �
 构造器（给出初始栈缓冲，零额外 malloc）（`memory_resource:297-320`）：
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内置资源（一）：monotonicb
-```cpp
+```cpp title="示例 27 · ★★★☆☆"
 #include <cstddef>
 // memory_resource:297-307 —— 用调用者提供的 buffer 作为初始存储
 monotonic_buffer_resource(void* __buffer, size_t __buffer_size,
@@ -778,7 +778,7 @@ _Z13bump_allocateRPcS_y:
 程序 13：`monotonic` 基础用法（独立）：
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现·GCC 15.3.0：bump
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // 编译: g++ -std=c++17 ch38_p13.cpp -o ch38_p13
 #include <memory_resource>
 #include <iostream>
@@ -795,7 +795,7 @@ int main() {
 程序 14：`monotonic` + `pmr::vector` 临时构建（经典模式）：
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现·GCC 15.3.0：bump
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p14.cpp -o ch38_p14
 #include <memory_resource>
 #include <vector>
@@ -813,7 +813,7 @@ int main() {
 程序 15：`monotonic` 模拟「请求解析」临时容器（解析完即弃）：
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现·GCC 15.3.0：bump
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p15.cpp -o ch38_p15
 #include <memory_resource>
 #include <vector>
@@ -841,7 +841,7 @@ int main() {
 程序 16：`release()` 重置缓冲（可复用同一资源多次）：
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现·GCC 15.3.0：bump
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p16.cpp -o ch38_p16
 #include <memory_resource>
 #include <vector>
@@ -876,7 +876,7 @@ int main() {
 **真实源码（libstdc++ `memory_resource:221-276` 与 `155-217`）**：
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 #include <cstddef>
 // memory_resource:258-267 —— unsynchronized 的 do_* 直接转私有实现
 void* do_allocate(size_t __bytes, size_t __alignment) override;  // _M_impl 处理
@@ -888,7 +888,7 @@ bool  do_is_equal(const memory_resource& __other) const noexcept override
 `synchronized` 多了一层线程特定池（`memory_resource:203-216`）：
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // memory_resource:212-216
 __pool_resource _M_impl;
 __gthread_key_t _M_key;      // 线程局部池 key
@@ -899,7 +899,7 @@ mutable shared_mutex _M_mx;  // 多线程锁
 `pool_options`（`memory_resource:94-109`）调优参数：
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <cstddef>
 // memory_resource:94-109
 struct pool_options {
@@ -917,7 +917,7 @@ struct pool_options {
 程序 17：`unsynchronized_pool_resource` 基础：
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // 编译: g++ -std=c++17 ch38_p17.cpp -o ch38_p17
 #include <memory_resource>
 #include <vector>
@@ -934,7 +934,7 @@ int main() {
 程序 18：`synchronized_pool_resource` 多线程（独立可编译）：
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p18.cpp -o ch38_p18 -pthread
 #include <memory_resource>
 #include <vector>
@@ -956,7 +956,7 @@ int main() {
 程序 19：`pool_options` 调优（限制超大分配直接走上游）：
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p19.cpp -o ch38_p19
 #include <memory_resource>
 #include <vector>
@@ -977,7 +977,7 @@ int main() {
 程序 20：池资源与 `monotonic` 对比的两种资源接同一类型容器：
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内置资源（二）：`unsynchronized/synchronized_pool_resource` + `pool_options`
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p20.cpp -o ch38_p20
 #include <memory_resource>
 #include <vector>
@@ -1002,7 +1002,7 @@ int main() {
 **<span class="badge badge-std">标准</span>**　PMR 维护一个**进程级默认资源指针**（见 `memory_resource:75-83`）：
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // memory_resource:66-83 —— 全局资源相关声明（key function 在库中定义）
 memory_resource* new_delete_resource() noexcept;                       // 用 ::operator new/delete
 memory_resource* null_memory_resource() noexcept;                      // allocate 永远抛 bad_alloc
@@ -1019,7 +1019,7 @@ memory_resource* get_default_resource() noexcept;                      // 当前
 程序 21：获取默认资源指针：
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p21.cpp -o ch38_p21
 #include <memory_resource>
 #include <iostream>
@@ -1035,7 +1035,7 @@ int main() {
 程序 22：`set_default_resource` 全局切换（影响无参构造的 PMR 容器）：
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p22.cpp -o ch38_p22
 #include <memory_resource>
 #include <vector>
@@ -1054,7 +1054,7 @@ int main() {
 程序 23：`new_delete_resource` vs `null_memory_resource`：
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p23.cpp -o ch38_p23
 #include <memory_resource>
 #include <vector>
@@ -1081,7 +1081,7 @@ int main() {
 **<span class="badge badge-std">标准</span>**　`<memory_resource>` 为所有标准容器提供了 PMR 别名（`[mem.poly.allocator.aliases]`），例如：
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · PMR 容器别名与 `allocator_type`
-```cpp
+```cpp title="示例 43 · ★★★☆☆"
 #include <vector>
 namespace std::pmr {
   template <class T> using vector = std::vector<T, polymorphic_allocator<T>>;
@@ -1095,7 +1095,7 @@ namespace std::pmr {
 程序 24：PMR 各类容器的 `allocator_type` 与默认资源：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · PMR 容器别名与 `allocator_type`
-```cpp
+```cpp title="示例 44 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p24.cpp -o ch38_p24
 #include <memory_resource>
 #include <vector>
@@ -1130,7 +1130,7 @@ int main() {
 程序 25：`do_is_equal` 与 `operator==` 行为：
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · doisequal 的重要性
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 // 编译: g++ -std=c++17 ch38_p25.cpp -o ch38_p25
 #include <memory_resource>
 #include <iostream>
@@ -1146,7 +1146,7 @@ int main() {
 程序 26：自定义资源必须正确实现 `do_is_equal`（否则跨实例释放出错）：
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · doisequal 的重要性
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p26.cpp -o ch38_p26
 #include <memory_resource>
 #include <cstddef>
@@ -1177,7 +1177,7 @@ int main() {
 **真实源码定位（libstdc++ `scoped_allocator:177` 定义 `class scoped_allocator_adaptor`；`:372` `construct`；`:202-227` `_M_construct` 按 `uses_allocator` 协议分派）**：
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · scoped_allocator_adaptor
-```cpp
+```cpp title="示例 47 · ★★☆☆☆"
 #include <utility>
 // scoped_allocator:372-377 —— 构造元素时把「内层分配器」自动下发
 construct(_Tp* __p, _Args&&... __args)
@@ -1194,7 +1194,7 @@ construct(_Tp* __p, _Args&&... __args)
 程序 27：经典 `scoped_allocator_adaptor` 让 `vector<string>` 的字符也走同一分配器：
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · scoped_allocator_adaptor
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p27.cpp -o ch38_p27
 #include <vector>
 #include <string>
@@ -1219,7 +1219,7 @@ int main() {
 **<span class="badge badge-exp">经验</span>**　PMR 的杀手级特性：`polymorphic_allocator<T>` 的拷贝构造函数会**复制 `memory_resource*`**（`bits/memory_resource.h:135-138`），因此 `pmr::vector<string>` 在构造内部 `pmr::string` 元素时，自动把同一个 `resource` 指针下传给元素的 `polymorphic_allocator<char>`。嵌套“免费”共享资源——这正是它比经典分配器（需 `scoped_allocator_adaptor` 手动传递）优雅的地方。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · scoped_allocator_adaptor
-```cpp
+```cpp title="示例 49 · ★☆☆☆☆"
 // 编译: g++ -std=c++17 ch38_p28.cpp -o ch38_p28
 #include <memory_resource>
 #include <vector>
@@ -1249,7 +1249,7 @@ int main() {
 程序 29：`map` 使用自定义分配器（注意 `A` 必须是模板且提供默认构造，因为 `map` 会把它 `rebind` 到内部节点类型）：
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 分配器感知容器
-```cpp
+```cpp title="示例 50 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p29.cpp -o ch38_p29
 #include <map>
 #include <cstddef>
@@ -1277,7 +1277,7 @@ int main() {
 程序 30：`unordered_map` 使用池资源（PMR）：
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器感知容器
-```cpp
+```cpp title="示例 51 · ★☆☆☆☆"
 // 编译: g++ -std=c++17 ch38_p30.cpp -o ch38_p30
 #include <memory_resource>
 #include <unordered_map>
@@ -1295,7 +1295,7 @@ int main() {
 程序 31：`list` 使用 `monotonic`（节点全在栈缓冲）：
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器感知容器
-```cpp
+```cpp title="示例 52 · ★☆☆☆☆"
 // 编译: g++ -std=c++17 ch38_p31.cpp -o ch38_p31
 #include <memory_resource>
 #include <list>
@@ -1313,7 +1313,7 @@ int main() {
 程序 32：`vector`/`deque` 的 `get_allocator()` 与 `allocator_type` 查询：
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 分配器感知容器
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 // 编译: g++ -std=c++17 ch38_p32.cpp -o ch38_p32
 #include <vector>
 #include <deque>
@@ -1354,7 +1354,7 @@ int main() {
 程序 33（差异探测，独立可编译，打印本 STL 的关键宏）：
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三编译器 / 三 STL 实现差异
-```cpp
+```cpp title="示例 54 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p33.cpp -o ch38_p33
 #include <version>
 #include <memory_resource>
@@ -1391,7 +1391,7 @@ int main() {
 程序 34：PMR monotonic vs new_delete 量级对比：
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 microbenchmark
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 // 编译: g++ -std=c++17 ch38_p34.cpp -o ch38_p34 -O2
 #include <memory_resource>
 #include <vector>
@@ -1427,7 +1427,7 @@ int main() {
 程序 35：自定义对象池 vs `std::allocator` 的「malloc 调用次数」对比：
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实 microbenchmark
-```cpp
+```cpp title="示例 56 · ★★★★☆"
 // 编译: g++ -std=c++17 ch38_p35.cpp -o ch38_p35 -O2
 #include <vector>
 #include <cstddef>
@@ -1548,7 +1548,7 @@ int main() {
 5. 需全局统计/替换 → 自定义 `Allocator` 派生 `std::allocator`（程序 8），或替换 `new_delete_resource()`。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 综合实战：分配器选型决策树 + 速记
-```cpp
+```cpp title="示例 57 · ★★☆☆☆"
 // 决策树落地：临时解析用 monotonic，零释放开销
 std::pmr::monotonic_buffer_resource mr(std::pmr::new_delete_resource());
 std::pmr::vector<int> v(&mr);          // 整个 v 的生命周期在 mr 内 bump 分配
@@ -1622,7 +1622,7 @@ C++17 PMR (P0220R1) 彻底解决了这个问题:
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：Allocator工业与面
-```cpp
+```cpp title="示例 59 · ★★☆☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -1760,7 +1760,7 @@ int main() {
 `monotonic_buffer_resource` 在给定缓冲上单调分配（只增不减，销毁时整体回收）；把它的指针交给 pmr 容器的分配器，容器就在该缓冲上取内存。
 
 > **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 60 · ★★☆☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -1790,7 +1790,7 @@ int main() {
 继承 `std::pmr::memory_resource` 并重写 `do_allocate` / `do_deallocate` / `do_is_equal` 三个虚函数；在 `do_allocate` 里累加后委托上游。
 
 > **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 61 · ★★☆☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -1832,7 +1832,7 @@ int main() {
 vector 容量不足时扩容会重新分配并搬运元素；`reserve` 一次到位则只分配一次。用计数资源可把这一点量化出来。
 
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 62 · ★★☆☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -1877,7 +1877,7 @@ int main() {
 实现与边界：名字里的 `unsynchronized` 表示**线程不安全**——多线程用同一个池要加锁或换 `synchronized_pool_resource`；池的尺寸桶有上限，超大块仍委托上游。何时失效：跨线程并发分配/释放、或块尺寸分散到几乎没有复用率时，池收益消失。替代方案：单次批量临时区用 `monotonic`（练习 1）；长期同尺寸复用用 pool；进程级跨线程用 synchronized 版本。
 
 > **示例 67** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
-```cpp
+```cpp title="示例 67 · ★★★☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -1910,7 +1910,7 @@ int main() {
 实现与边界：把 `mr` 声明在更大作用域（如成员、`main` 顶层）即可免疫；匿名块内的顺序错误是高频 bug。何时失效：容器作为类成员、resource 也是成员时，析构顺序按成员声明逆序——先声明的后析构，要按「resource 声明在前、容器声明在后」排成员（后声明的先析构）。替代方案：PMR 容器与 resource 同生命周期最省心；`monotonic_buffer_resource` 建议传栈上缓冲（练习 1）时同样遵守此序。
 
 > **示例 68** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
-```cpp
+```cpp title="示例 68 · ★★☆☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -1949,7 +1949,7 @@ void on_request() {
 **修复**：为请求准备一块 `monotonic_buffer_resource`，请求内所有临时 pmr 容器都从这块缓冲取内存；请求结束资源析构，一次性整体回收，零逐对象释放。
 
 > **示例 63** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：高频临时容器 → pmr
-```cpp
+```cpp title="示例 63 · ★★★☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -1982,7 +1982,7 @@ auto vec = std::make_shared<std::pmr::vector<int>>(&*res);
 **修复**：资源生命周期必须 ≥ 所有使用它的 pmr 容器；把资源与容器放在同一作用域，或把资源作为容器的成员/拥有者。
 
 > **示例 64** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：pmr 资源的生命周期陷阱
-```cpp
+```cpp title="示例 64 · ★★★★☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>
@@ -2087,7 +2087,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 ### D4.4 可编译验证
 
 > **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译验证
-```cpp
+```cpp title="示例 65 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -2361,7 +2361,7 @@ flowchart TD
 ### D5.3 可复现演示
 
 > **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
-```cpp
+```cpp title="示例 66 · ★★★☆☆"
 #include <iostream>
 #include <memory_resource>
 #include <vector>

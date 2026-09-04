@@ -65,7 +65,7 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 ```
 
 > **示例 2** [难度 ★★★☆☆] [主题：概述：调试的目标与分层 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 2 · ★★★☆☆"
 // ① 同一段代码，无插桩时静默出错，加诊断后暴露问题
 #include <cstddef>
 #include <cstdio>
@@ -91,7 +91,7 @@ int main() {
 GDB 是 GNU 调试器，三大基石命令：`break`（断点）、`watch`（观察点）、`backtrace`（调用栈）。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★★☆</span> · 基础
-```cpp
+```cpp title="示例 3 · ★★★★☆"
 // ② 供 GDB 练习的示例：求数组和，但有 off-by-one 隐患
 #include <cstddef>
 #include <cstdio>
@@ -158,7 +158,7 @@ $6 = 6291116      # s（循环结束后：10+20+30 + v[3] 越界脏值）
 无条件断点在大循环里会频繁命中；`condition` 让断点只在表达式为真时停下。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 条件断点与表达式
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 // ③ 100 万次循环，只在 i==999999 时关心状态
 #include <cstddef>
 #include <cstdio>
@@ -191,7 +191,7 @@ int main() {
 LLDB 是 LLVM 调试器，命令语义与 GDB 高度对应，但在 macOS/Clang 生态是默认。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对比 [平台·Linux]
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 // ④ 与 ② 同构，但用更现代的 range-for 风格
 #include <cstddef>
 #include <cstdio>
@@ -226,7 +226,7 @@ int main() {
 当进程收到 `SIGSEGV` 等致命信号，内核可写入 **core 文件**（进程内存镜像），事后用 GDB 离线分析。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心转储 core dump 分析
-```cpp
+```cpp title="示例 6 · ★★★☆☆"
 // ⑤ 故意空指针解引用，触发 SIGSEGV 生成 core dump
 #include <cstddef>
 #include <cstdio>
@@ -262,7 +262,7 @@ gdb ./a.out core
 AddressSanitizer（ASan）在编译期插桩，运行时检测堆/栈/全局变量的越界、UAF、double free。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 地址消毒
-```cpp
+```cpp title="示例 7 · ★★★☆☆"
 // 文件：Examples/_ch14_heap_overflow.cpp
 // 行号：6
 // ⑥ 故意堆缓冲区溢出：合法下标 0..9，写 arr[10] 越界
@@ -295,7 +295,7 @@ $ echo $?
 UndefinedBehaviorSanitizer（UBSan）捕获有符号溢出、空指针解引用、对齐错误、移位越界等。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 未定义行为检测
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 // 文件：Examples/_ch14_ubsan.cpp
 // 行号：6
 // ⑦ 故意有符号整数溢出：INT_MAX + 1 是 UB
@@ -342,7 +342,7 @@ Examples/_ch14_ubsan.cpp:6:7: runtime error: signed integer overflow: 2147483647
 ThreadSanitizer（TSan）检测多线程对同地址的无同步并发访问（data race）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 数据竞争检测
-```cpp
+```cpp title="示例 9 · ★★★★☆"
 // ⑧ 数据竞争：两线程无锁并发写同一变量（需 libtsan，Linux/Clang 可用）
 #include <cstddef>
 #include <thread>
@@ -369,7 +369,7 @@ int main() {
 Valgrind `memcheck` 是二进制插桩的内存错误检测器，无需重新编译（但会显著减速）。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试与诊断：GDB / LLDB / Sanitizer / Valgrind
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ⑨ 内存泄漏示例：分配后不释放
 #include <cstddef>
 #include <cstdio>
@@ -400,7 +400,7 @@ int main() {
 C++ 的**RAII**让资源在析构时自动释放，从语言层面消灭大多数泄漏。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存泄漏检测（自动 vs 手动）
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑩ RAII：用 std::vector / 智能指针替代裸 new，析构自动释放
 #include <cstddef>
 #include <memory>
@@ -419,7 +419,7 @@ int main() { leak_free(); return 0; }
 手动泄漏检测思路（调试宏）：
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存泄漏检测（自动 vs 手动）
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑩ 轻量泄漏钩子：重载 operator new/delete 记录未释放计数
 #include <cstddef>
 #include <cstdio>
@@ -498,7 +498,7 @@ SUMMARY: AddressSanitizer: heap-buffer-overflow Examples/_ch14_heap_overflow.cpp
 `-g` 在目标文件/可执行中嵌入 DWARF 调试信息（变量名、行号、类型），让 GDB 能把机器码映射回源码。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试符号与 -g / strip [实现·GCC15]
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // 文件：Examples/_ch14_asm.cpp
 // 行号：4
 // ⑫ 调试符号演示：g++ -g -O0 -S 会在汇编里写入 .loc 行号指令
@@ -560,7 +560,7 @@ strip后:    13824 字节
 目标机（嵌入式/容器/无头服务器）跑 `gdbserver`，开发机 GDB 通过网络连接。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 远程/嵌入式调试
-```cpp
+```cpp title="示例 14 · ★☆☆☆☆"
 // ⑬ 目标板程序：裸机/嵌入式里一个会被断点暂停的循环
 #include <cstddef>
 
@@ -592,7 +592,7 @@ gdb ./firmware
 `assert` 在 `NDEBUG` 未定义时校验条件，失败则 `abort` 并打调用栈。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 断言 assert 与调试宏
-```cpp
+```cpp title="示例 15 · ★☆☆☆☆"
 // ⑭ 用断言固化前置条件；发布构建定义 NDEBUG 自动移除
 #include <cassert>
 #include <cstddef>
@@ -612,7 +612,7 @@ int main() {
 自定义调试宏：
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 断言 assert 与调试宏
-```cpp
+```cpp title="示例 16 · ★☆☆☆☆"
 // ⑭ 带等级与行号的轻量日志宏（无开销发布版）
 #include <cstdio>
 
@@ -637,7 +637,7 @@ int main() {
 结构化策略胜过"逐行 println"。通用下钻法：
 
 > **示例 17** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>调试策略]
-```cpp
+```cpp title="示例 17 · ★☆☆☆☆"
 // ⑮ 二分定位：用一个可控的 flag 快速缩小问题区间
 #include <cstddef>
 #include <cstdio>
@@ -655,7 +655,7 @@ int main() {
 ```
 
 > **示例 18** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>调试策略]
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // ⑮ 最小复现：把 bug 从大系统抽离成 20 行可编译样本
 #include <cstddef>
 #include <vector>
@@ -675,7 +675,7 @@ int main() {
 ## ⑯ 常见崩溃（SEGV / double free / ABBA 死锁）
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见崩溃
-```cpp
+```cpp title="示例 19 · ★☆☆☆☆"
 // ⑯ SEGV：空/野指针解引用
 #include <cstddef>
 #include <cstdio>
@@ -689,7 +689,7 @@ int main() { std::printf("%d\n", segv()); return 0; }
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见崩溃
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 // ⑯ double free：同一指针释放两次
 #include <cstddef>
 
@@ -702,7 +702,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见崩溃
-```cpp
+```cpp title="示例 21 · ★★☆☆☆"
 // ⑯ ABBA 死锁：两线程以相反顺序取锁
 #include <cstddef>
 #include <mutex>
@@ -735,7 +735,7 @@ int main() {
 现代 IDE（VS Code、CLion、Qt Creator、Visual Studio）内嵌 GDB/LLDB，提供图形断点、变量视图、调用栈。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 IDE 集成
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // ⑰ IDE 调试的典型目标：一个带状态的对象
 #include <cstddef>
 #include <cstdio>
@@ -775,7 +775,7 @@ int main() {
 先确认瓶颈在**哪一层**，再用工具采样（perf / sampling profiler），而不是猜。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能陷阱定位
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 // 文件：Examples/_ch14_opt.cpp
 // 行号：2
 // ⑱ 同一计算，-O0 保留循环，-O2 被识别为可约简的闭式
@@ -815,7 +815,7 @@ _Z6sum_toi:
 把"防 bug"前置到编码习惯，比事后调试更省成本：
 
 > **示例 24** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // ⑲ 用 std::lock 一次性锁多把锁，消除 ABBA（对应 ⑯ 死锁修复）
 #include <cstddef>
 #include <mutex>
@@ -838,7 +838,7 @@ int main() {
 ```
 
 > **示例 25** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // ⑲ 用 span 把"裸指针+长度"变成带边界检查的接口
 #include <cstddef>
 #include <span>
@@ -875,7 +875,7 @@ int main() {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "Memory model" 词条。
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★★★</span> · 速查表
-```cpp
+```cpp title="示例 26 · ★★★★★"
 // ⑳ 一页可粘贴的"调试开关"清单（C++23）
 // 编译期：g++ -std=c++23 -Wall -Wextra -Wshadow -g -O0
 // 内存/UB：g++ -std=c++23 -fsanitize=address,undefined -g   （需 libasan/libubsan）
@@ -903,7 +903,7 @@ int main() { return 0; }
 ## 补充完整可编译示例（debugging）
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 // G1 观察点目标：被多处修改的变量
 #include <cstddef>
 int g_flag = 0;
@@ -911,7 +911,7 @@ int main() { g_flag = 1; g_flag = 2; return g_flag; }
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 // G2 调用栈追踪：深层递归
 #include <cstddef>
 #include <cstdio>
@@ -920,7 +920,7 @@ int main() { std::printf("%d\n", fact(5)); return 0; }
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 // G3 GDB 表达式求值：在断点处调用函数
 #include <cstddef>
 #include <cstdio>
@@ -929,7 +929,7 @@ int main() { std::printf("%d\n", sq(4)); return 0; }
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 // G4 LLDB 等价：打印对象布局
 #include <cstddef>
 #include <cstdio>
@@ -938,7 +938,7 @@ int main() { Pt p{1, 2}; std::printf("%d,%d\n", p.x, p.y); return 0; }
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // G5 core dump 寄存器观测：除零
 #include <cstddef>
 #include <cstdio>
@@ -946,14 +946,14 @@ int main() { int z = 0; std::printf("%d\n", 1 / z); return 0; }
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 // G6 ASan 栈溢出（需 libasan）：超大栈数组越界
 #include <cstddef>
 int main() { int a[4]; a[4] = 1; return 0; }
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 // G7 UBSan 空指针：需 libubsan
 #include <cstddef>
 #include <cstdio>
@@ -961,7 +961,7 @@ int main() { int* p = nullptr; *p = 5; std::printf("%d\n", *p); return 0; }
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // G8 TSan 竞争（需 libtsan，Linux/Clang）
 #include <cstddef>
 #include <thread>
@@ -974,7 +974,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 // G9 Valgrind 未初始化读：读未赋值内存
 #include <cstddef>
 #include <cstdio>
@@ -982,7 +982,7 @@ int main() { int x; std::printf("%d\n", x); return 0; }
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★☆☆☆☆"
 // G10 泄漏防护：unique_ptr 自动释放
 #include <cstddef>
 #include <memory>
@@ -990,7 +990,7 @@ int main() { auto p = std::make_unique<int>(9); return *p; }
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 // G11 自定义断言宏
 #include <cstddef>
 #include <cstdio>
@@ -999,7 +999,7 @@ int main() { CHECK(1 + 1 == 2); return 0; }
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 // G12 NDEBUG 下断言消失验证
 #include <cassert>
 #include <cstdio>
@@ -1011,7 +1011,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 // G13 远程调试桩：可被 gdbserver 附加的循环
 #include <cstddef>
 volatile int tick = 0;
@@ -1019,7 +1019,7 @@ int main() { while (true) { ++tick; for (volatile int i = 0; i < 500; ++i); } }
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 40 · ★★☆☆☆"
 // G14 调试宏成本对比：DBG 在 NDEBUG 下零开销
 #include <cstddef>
 #include <cstdio>
@@ -1032,7 +1032,7 @@ int main() { TRACE(); return 0; }
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 // G15 最小复现模板：抽离到 20 行以内
 #include <cstddef>
 #include <vector>
@@ -1046,7 +1046,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 // G16 速查：perror 打印系统错误
 #include <cstddef>
 #include <cstdio>
@@ -1148,7 +1148,7 @@ Sanitizer与标准库:
 | MSan | uninitialized read | 3x | 2x | 否(仅Clang) |
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能对比
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"GDB: int3(0xCC) breakpoint. ASan: shadow memory. TSan: lock+atomic interception."<<std::endl;return 0;}
 ```
@@ -1166,7 +1166,7 @@ Core dump分析: gdb ./a.out core → bt(backtrace) → frame N → print var
 Watchpoint: watch x → x值改变时断(~1000x slower, uses hardware watchpoints)
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：GDB高级调试技术
-```cpp
+```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 int main(){int x=0;x=42;std::cout<<"GDB: b main, r, p x, watch x, c"<<std::endl;return 0;}
 ```
@@ -1184,7 +1184,7 @@ int main(){int x=0;x=42;std::cout<<"GDB: b main, r, p x, watch x, c"<<std::endl;
 ## 附录 H：Valgrind vs Sanitizer
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：Valgrind vs S
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Valgrind=no recompile, 20x slow; ASan=recompile, 2x slow, more precise"<<std::endl;return 0;}
 ```
@@ -1212,7 +1212,7 @@ int main(){std::cout<<"Valgrind=no recompile, 20x slow; ASan=recompile, 2x slow,
 | watch | 监视变量 | watch x |
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：GDB核心命令速查
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 #include <iostream>
 int main(){int x=0;x=42;std::cout<<"GDB:b main,r,p x,bt,frame 2,watch x"<<std::endl;return 0;}
 ```
@@ -1224,7 +1224,7 @@ TSan检测data race: 两个线程访问同一变量, 至少一个写, 无同步�
 运行: ./a.out → TSan报告race的调用栈(两个线程的调用栈)
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 J：TSan使用指南
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <thread>
 int x=0;  // shared, no synchronization
@@ -1327,7 +1327,7 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 **真实场景：偶发的堆破坏。** 程序偶尔输出乱码、重现不了，怀疑某处越界写坏了别的对象的元数据。请用 AddressSanitizer 在运行时抓堆越界：写一段含堆缓冲溢出的程序（编译期合法），并说明加上 `-fsanitize=address -g` 后运行会报什么。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 
@@ -1348,7 +1348,7 @@ int main() {
 **真实场景：发布档里的整数溢出。** 一段计数逻辑在 Debug 下正常、`-O2` 下结果诡异，怀疑有符号溢出被优化消除。请用 UndefinedBehaviorSanitizer 抓这类 UB：写程序展示有符号溢出，并说明为什么"普通 `-O2` 构建"可能让这种 bug 更难发现。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 
 int main() {
@@ -1368,7 +1368,7 @@ int main() {
 **真实场景：线上 core dump 分析。** 一台服务器崩了只留下 core 文件，你需要从中还原崩溃位置。请用 `-g` 把源码行映射到机器指令、用 `strip` 演示移除前后差异：写程序说明同样一个崩溃，带 `-g` 与不带 `-g` 在调试器里能看到的差异（用断言验证不变量作示范）。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 #include <cassert>
 
@@ -1394,7 +1394,7 @@ int main() {
 `-fsanitize=address` 在运行期监控每一次内存访问，能抓越界/泄漏/UAF；但"边界自觉"也能在未开 Sanitizer 时兜底。`std::array::at` 在越界时抛异常而非静默越界，是源码层的第一道防线。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 #include <array>
 
@@ -1425,7 +1425,7 @@ int main() {
 裸 `new/free` 配对一旦在分支里忘记释放就会泄漏；`std::unique_ptr` 把释放绑到析构，Sanitizer 下也能验证"每条路径都配对"。下面用现代写法消除泄漏窗口：
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 54 · ★★★☆☆"
 #include <iostream>
 #include <memory>
 
@@ -1459,7 +1459,7 @@ g++ -std=c++23 -fsanitize=address -g bug.cpp -o bug
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 1：用 ASan 定位“偶发”
-```cpp
+```cpp title="示例 52 · ★★★★☆"
 #include <iostream>
 #include <vector>
 int main() { std::vector<int> v(3); v[3] = 1; std::cout << v[3] << "\n"; }
@@ -1616,7 +1616,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <numeric>

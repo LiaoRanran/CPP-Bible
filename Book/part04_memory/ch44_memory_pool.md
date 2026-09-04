@@ -55,7 +55,7 @@
 **[实现·GCC15]** `libstdc++` 的 `std::allocator` 直接转发到 `__new_allocator::allocate`，最终调用 `_GLIBCXX_OPERATOR_NEW`（即 `::operator new` 或 `__builtin_operator_new`）：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为何需要内存池（动机全景）
-```cpp
+```cpp title="示例 1 · ★★☆☆☆"
 // C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/new_allocator.h:121-148
 _GLIBCXX_NODISCARD _Tp*
 allocate(size_type __n, const void* = static_cast<const void*>(0))
@@ -112,7 +112,7 @@ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/pool_
 核心设计（pool_allocator.h:77-118）：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 #include <cstddef>
 // ext/pool_allocator.h:77-118  (__gnu_cxx::__pool_alloc_base)
 class __pool_alloc_base
@@ -149,7 +149,7 @@ protected:
 分配路径（pool_allocator.h:214-266 节选）：
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
-```cpp
+```cpp title="示例 4 · ★★☆☆☆"
 #include <cstddef>
 // ext/pool_allocator.h:246-263
 if (__bytes > size_t(_S_max_bytes) || _S_force_new > 0)
@@ -173,7 +173,7 @@ else
 释放路径（pool_allocator.h:268-295 节选）：
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 // ext/pool_allocator.h:285-293
 _Obj* volatile* __free_list = _M_get_free_list(__bytes);
 _Obj* __q = reinterpret_cast<_Obj*>(__p);
@@ -210,7 +210,7 @@ __q->_M_free_list_link = *__free_list;                  // O(1) 头插
 ### 44.4.2 完整可编译实现（程序 1/≥30）
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可编译实现（程序 1/≥30）
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 // program_01_fixed_block_pool.cpp  —— 侵入式固定块池（完整可编译）
 // 编译: g++ -std=c++17 -O2 program_01_fixed_block_pool.cpp -o p01
 #include <cstddef>
@@ -283,7 +283,7 @@ int main() {
 ### 44.4.3 带构造/析构的强类型封装（程序 2/≥30）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 带构造/析构的强类型封装
-```cpp
+```cpp title="示例 8 · ★★★☆☆"
 // program_02_fixed_pool_typed.cpp —— 在池上做 placement new + 析构
 // 编译: g++ -std=c++17 -O2 program_02_fixed_pool_typed.cpp -o p02
 #include <new>
@@ -341,7 +341,7 @@ int main() {
 **<span class="badge badge-std">标准</span>** `<memory>` 提供 `void* std::align(std::size_t alignment, std::size_t size, void*& ptr, std::size_t& space)`，在 `[ptr, ptr+space)` 区间内找到满足对齐的地址并前移 `ptr`、缩减 `space`。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::align 标准对齐工具
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 // program_03_std_align.cpp —— 用 std::align 在缓冲内对齐
 // 编译: g++ -std=c++17 -O2 program_03_std_align.cpp -o p03
 #include <memory>
@@ -364,7 +364,7 @@ int main() {
 **<span class="badge badge-std">标准</span>** 手动向上对齐：`(addr + (a-1)) & ~(a-1)`，依赖 `a` 为 2 的幂。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 手动指针算术对齐（程序 4/≥30）
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // program_04_manual_align.cpp —— reinterpret_cast + 指针算术手动对齐
 // 编译: g++ -std=c++17 -O2 program_04_manual_align.cpp -o p04
 #include <cstdint>
@@ -399,7 +399,7 @@ int main() {
 ### 44.6.1 完整可编译实现（程序 5/≥30）
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可编译实现（程序 5/≥30）
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // program_05_bitmap_pool.cpp —— 1 bit/对象 的位图池
 // 编译: g++ -std=c++17 -O2 program_05_bitmap_pool.cpp -o p05
 #include <cstddef>
@@ -468,7 +468,7 @@ int main() {
 ### 44.7.1 完整可编译实现（程序 6/≥30）
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可编译实现（程序 6/≥30）
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // program_06_monotonic.cpp —— bump pointer 单调分配器
 // 编译: g++ -std=c++17 -O2 program_06_monotonic.cpp -o p06
 #include <cstddef>
@@ -523,7 +523,7 @@ int main() {
 ### 44.8.1 完整可编译实现（程序 7/≥30）
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可编译实现（程序 7/≥30）
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 // program_07_segregated.cpp —— 分级空闲列表分配器
 // 编译: g++ -std=c++17 -O2 program_07_segregated.cpp -o p07
 #include <cstddef>
@@ -614,7 +614,7 @@ int main() {
 ### 44.9.1 完整可编译实现（程序 8/≥30）
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可编译实现（程序 8/≥30）
-```cpp
+```cpp title="示例 14 · ★★★☆☆"
 // program_08_thread_local.cpp —— thread_local free list + 全局批量取还
 // 编译: g++ -std=c++17 -O2 -pthread program_08_thread_local.cpp -o p08
 #include <cstddef>
@@ -701,7 +701,7 @@ int main() {
 ### 44.10.1 完整可编译实现（程序 9/≥30）
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可编译实现（程序 9/≥30）
-```cpp
+```cpp title="示例 15 · ★★★☆☆"
 // program_09_object_pool.cpp —— 预构造 N 个对象复用（无运行时构造）
 // 编译: g++ -std=c++17 -O2 program_09_object_pool.cpp -o p09
 #include <vector>
@@ -752,7 +752,7 @@ int main() {
 ### 44.11.1 完整可编译实现（程序 10/≥30）
 
 > **示例 16** <span class="badge badge-exp">难度 ★★★★☆</span> · 完整可编译实现（程序 10/≥30）
-```cpp
+```cpp title="示例 16 · ★★★★☆"
 // program_10_embedded_static.cpp —— 编译期固定池，运行期无 new
 // 编译: g++ -std=c++17 -O2 program_10_embedded_static.cpp -o p10
 #include <cstddef>
@@ -798,7 +798,7 @@ int main() {
 ### 44.12.1 统一对齐固定块池 + 强类型包装（程序 11/≥30）
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 统一对齐固定块池 + 强类型包装
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // program_11_combo_fixed.cpp
 // 编译: g++ -std=c++17 -O2 -pthread program_11_combo_fixed.cpp -o p11
 #include <cstddef>
@@ -864,7 +864,7 @@ int main() {
 ### 44.12.2 分级池 + STL 容器对接（程序 12/≥30）
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★★☆</span> · 分级池 + STL 容器对接
-```cpp
+```cpp title="示例 18 · ★★★★☆"
 // program_12_combo_seg_stl.cpp —— 分级池作为 std::list 的分配器
 // 编译: g++ -std=c++17 -O2 program_12_combo_seg_stl.cpp -o p12
 #include <list>
@@ -922,7 +922,7 @@ int main() {
 ### 44.12.3 线程局部池 + 确定性批量取还（程序 13/≥30）
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 线程局部池 + 确定性批量取还
-```cpp
+```cpp title="示例 19 · ★★★☆☆"
 // program_13_combo_tls.cpp —— 线程局部池（复用 44.9 思路，独立可编译）
 // 编译: g++ -std=c++17 -O2 -pthread program_13_combo_tls.cpp -o p13
 #include <cstddef>
@@ -988,7 +988,7 @@ int main() {
 ### 44.13.1 把固定块池包成 memory_resource（程序 14/≥30）
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 把固定块池包成 memoryreso
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 // program_14_pmr_adapter.cpp —— 自定义池接入 PMR
 // 编译: g++ -std=c++17 -O2 program_14_pmr_adapter.cpp -o p14
 #include <memory_resource>
@@ -1050,7 +1050,7 @@ int main() {
 ### 44.14.1 GCC/Clang 对齐假设（程序 15/≥30）
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 对齐假设（程序 15/≥30）
-```cpp
+```cpp title="示例 21 · ★★★☆☆"
 // program_15_assume_aligned.cpp
 // 编译: g++ -std=c++17 -O2 -fstrict-aliasing program_15_assume_aligned.cpp -o p15
 #include <cstddef>
@@ -1074,7 +1074,7 @@ int main() {
 ### 44.14.2 MSVC `_aligned_malloc`（程序 16/≥30）
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · alignedmalloc
-```cpp
+```cpp title="示例 22 · ★★☆☆☆"
 // program_16_aligned_malloc.cpp  —— [平台·Windows] MSVC / Windows
 // 编译(MSVC): cl /EHsc /O2 program_16_aligned_malloc.cpp
 // 编译(MinGW): g++ -std=c++17 -O2 program_16_aligned_malloc.cpp -o p16
@@ -1112,7 +1112,7 @@ int main() {
 ### 44.15.1 基准程序（程序 17/≥30）
 
 > **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 基准程序（程序 17/≥30）
-```cpp
+```cpp title="示例 23 · ★★★☆☆"
 // program_17_bench_fixed_vs_new.cpp
 // 编译: g++ -std=c++17 -O2 program_17_bench_fixed_vs_new.cpp -o p17
 #include <iostream>
@@ -1154,7 +1154,7 @@ int main() {
 ### 44.16.1 基准程序（程序 18/≥30）
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准程序（程序 18/≥30）
-```cpp
+```cpp title="示例 24 · ★★☆☆☆"
 // program_18_bench_seg_vs_malloc.cpp
 // 编译: g++ -std=c++17 -O2 program_18_bench_seg_vs_malloc.cpp -o p18
 #include <iostream>
@@ -1192,7 +1192,7 @@ int main() {
 ### 44.17.1 扩展性测试（程序 19/≥30）
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 扩展性测试（程序 19/≥30）
-```cpp
+```cpp title="示例 25 · ★★☆☆☆"
 // program_19_bench_tls_scaling.cpp
 // 编译: g++ -std=c++17 -O2 -pthread program_19_bench_tls_scaling.cpp -o p19
 #include <iostream>
@@ -1234,7 +1234,7 @@ int main() {
 ### 44.18.1 RTOS 风格静态对象池（程序 20/≥30）
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 风格静态对象池（程序 20/≥30）
-```cpp
+```cpp title="示例 26 · ★★★☆☆"
 // program_20_rtos_static.cpp —— ISR 安全：运行期零分配
 // 编译: g++ -std=c++17 -O2 program_20_rtos_static.cpp -o p20
 #include <cstddef>
@@ -1293,7 +1293,7 @@ int main() {
 ### 44.19.1 `uses_allocator` 探测演示（程序 21/≥30）
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★★☆</span> · usesallocator 探测演示
-```cpp
+```cpp title="示例 27 · ★★★★☆"
 // program_21_uses_allocator.cpp
 // 编译: g++ -std=c++17 -O2 program_21_uses_allocator.cpp -o p21
 #include <memory>
@@ -1443,7 +1443,7 @@ class Program {
 ### 44.21.1 栈式 LIFO 池（程序 26/≥30）
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈式 LIFO 池
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // program_26_lifo_stack_pool.cpp
 // 编译: g++ -std=c++17 -O2 program_26_lifo_stack_pool.cpp -o p26
 #include <vector>
@@ -1484,7 +1484,7 @@ int main() {
 ### 44.21.2 Arena 区域池（程序 27/≥30）
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 区域池（程序 27/≥30）
-```cpp
+```cpp title="示例 29 · ★★☆☆☆"
 // program_27_arena.cpp —— Arena：分配只增，析构整体释放（连接 ch39 RAII）
 // 编译: g++ -std=c++17 -O2 program_27_arena.cpp -o p27
 #include <cstddef>
@@ -1533,7 +1533,7 @@ int main() {
 ### 44.22.1 伪共享规避（程序 28/≥30）
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 伪共享规避（程序 28/≥30）
-```cpp
+```cpp title="示例 30 · ★★★☆☆"
 // program_28_cache_friendly.cpp —— 每线程池块独立缓存行，避免 false sharing
 // 编译: g++ -std=c++17 -O2 -pthread program_28_cache_friendly.cpp -o p28
 #include <new>
@@ -1568,7 +1568,7 @@ int main() {
 ### 44.23.1 碎片对比（程序 29/≥30）
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 碎片对比（程序 29/≥30）
-```cpp
+```cpp title="示例 31 · ★★☆☆☆"
 // program_29_fragmentation.cpp
 // 编译: g++ -std=c++17 -O2 program_29_fragmentation.cpp -o p29
 #include <iostream>
@@ -1598,7 +1598,7 @@ int main() {
 ### 44.24.1 综合基准（程序 30/≥30）
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 综合基准（程序 30/≥30）
-```cpp
+```cpp title="示例 32 · ★★★☆☆"
 // program_30_final_bench.cpp —— 三池统一并发基准
 // 编译: g++ -std=c++17 -O2 -pthread program_30_final_bench.cpp -o p30
 #include <iostream>
@@ -1696,7 +1696,7 @@ int main(){
 ### 44.25.1 对齐尺寸 > 指针尺寸的固定块池（程序 31/≥30）
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐尺寸 > 指针尺寸的固定块池
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 // program_31_overaligned.cpp —— 块尺寸必须容纳 next 且对齐 over-aligned 类型
 // 编译: g++ -std=c++17 -O2 program_31_overaligned.cpp -o p31
 #include <cstddef>
@@ -1715,7 +1715,7 @@ int main() {
 ### 44.25.2 用 `std::pmr::synchronized_pool_resource`（程序 32/≥30）
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 std::pmr::synchr
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 // program_32_pmr_synchronized.cpp —— 标准库线程安全池（连接 ch38）
 // 编译: g++ -std=c++17 -O2 program_32_pmr_synchronized.cpp -o p32
 #include <memory_resource>
@@ -1734,7 +1734,7 @@ int main() {
 ### 44.25.3 对象池 + 构造复用（程序 33/≥30）
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对象池 + 构造复用
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // program_33_object_pool_reuse.cpp
 // 编译: g++ -std=c++17 -O2 program_33_object_pool_reuse.cpp -o p33
 #include <vector>
@@ -1754,7 +1754,7 @@ int main() {
 ### 44.25.4 单调池 + 类型化 placement new 区域（程序 34/≥30）
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 单调池 + 类型化 placemen
-```cpp
+```cpp title="示例 36 · ★★★☆☆"
 // program_34_monotonic_typed.cpp
 // 编译: g++ -std=c++17 -O2 program_34_monotonic_typed.cpp -o p34
 #include <cstddef>
@@ -1784,7 +1784,7 @@ int main(){
 ### 44.25.5 分级池 size class 对照 tcmalloc（程序 35/≥30）
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分级池 size class 对照
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // program_35_sizeclass.cpp —— 展示 size class 几何分级（对照 tcmalloc SizeMap）
 // 编译: g++ -std=c++17 -O2 program_35_sizeclass.cpp -o p35
 #include <iostream>
@@ -1806,7 +1806,7 @@ int main(){
 ### 44.25.6 线程局部池无锁路径断言（程序 36/≥30）
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 线程局部池无锁路径断言
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 // program_36_tls_lockfree.cpp —— 演示线程热路径无 mutex（仅批量才锁）
 // 编译: g++ -std=c++17 -O2 -pthread program_36_tls_lockfree.cpp -o p36
 #include <thread>
@@ -1834,7 +1834,7 @@ int main(){
 ### 44.25.7 池容量回退到 ::operator new（程序 37/≥30）
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 池容量回退到 ::operator
-```cpp
+```cpp title="示例 39 · ★★☆☆☆"
 // program_37_fallback.cpp —— 池满时回退系统分配（对照 pool_allocator.h 大块直走 new）
 // 编译: g++ -std=c++17 -O2 program_37_fallback.cpp -o p37
 #include <cstddef>
@@ -1857,7 +1857,7 @@ int main(){ SafePool p(sizeof(long),4); void* a=p.alloc(); void* b=p.alloc();
 ### 44.25.8 RAII 池资源守卫（程序 38/≥30，连接 ch39）
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 池资源守卫
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // program_38_raii_guard.cpp —— 池对象 RAII 守卫，离开作用域自动归还
 // 编译: g++ -std=c++17 -O2 program_38_raii_guard.cpp -o p38
 #include <utility>
@@ -1885,7 +1885,7 @@ int main(){
 ### 44.25.9 位图池批量分配（程序 39/≥30）
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 位图池批量分配（程序 39/≥30）
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 // program_39_bitmap_batch.cpp
 // 编译: g++ -std=c++17 -O2 program_39_bitmap_batch.cpp -o p39
 #include <cstddef>
@@ -1919,7 +1919,7 @@ int main(){ BitmapBatch b(sizeof(int),256);
 ### 44.25.10 完整 PMR 单调池 + 容器（程序 40/≥30）
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整 PMR 单调池 + 容器
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 // program_40_pmr_monotonic.cpp —— monotonic_buffer_resource 实测（连接 ch38/44.7）
 // 编译: g++ -std=c++17 -O2 program_40_pmr_monotonic.cpp -o p40
 #include <memory_resource>
@@ -2020,7 +2020,7 @@ int main(){
 ## 附录 F：内存池面试
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：内存池面试
-```cpp
+```cpp title="示例 43 · ★★★☆☆"
 #include <iostream>
 int main(){
   std::cout<<"Pool alloc (MinGW GCC 13.1.0 -O2, x86_64, TSC=2.395GHz):\n";
@@ -2110,7 +2110,7 @@ _ZL12probe_mallocy:
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：内存池汇编（真实产物）
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 int main(){
   std::cout<<"bump~0ns, freelist=1.3ns, malloc=45.5ns (实测; tcmalloc/jemalloc 为文献值)\n";
@@ -2159,7 +2159,7 @@ int main(){
 <details><summary>答案与解析</summary>
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <cstddef>
 template <class Block, std::size_t N>
 struct FixedPool {
@@ -2189,7 +2189,7 @@ struct FixedPool {
 <details><summary>答案与解析</summary>
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <memory_resource>
 #include <vector>
 struct PoolResource : std::pmr::memory_resource {
@@ -2222,7 +2222,7 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 <details><summary>答案与解析</summary>
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 // 通用分配器: 任意大小混合分配/释放 -> 空闲块被切碎 -> 外部碎片
 // 长期运行后: 总空闲内存足够, 但无单块够大 -> 分配失败 (嵌入式致命)
 // 池分配器: 只服务一种固定块 -> 无外部碎片, 但 block 比对象大则内碎片
@@ -2252,7 +2252,7 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 实现与边界：范围检查只能证明「指针在池的地址带内」，不能证明「该块当前正被占用」（同一块归还两次仍需另行记录，可用 bitmap/占用标记）。何时失效：若池内存来自 `malloc` 的不同 chunk，仅「范围在 blocks_ 内」仍可能误收块间 gap——更严格做法是维护「已分配集合」。替代方案：pimpl/句柄表（归还索引而非裸指针）从根上杜绝错误指针；代价是多一次映射（ch41 的 deleter 归还与之配套）。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 53 · ★★☆☆☆"
 #include <iostream>
 #include <cstddef>
 #include <cstdint>
@@ -2313,7 +2313,7 @@ int main() {
 实现与边界：池空时 `acquire` 返回空 `unique_ptr`（调用方要判空）；`reclaim` 会把指针**重新包成池的 `unique_ptr`**，保证同一块永远只有一个智能指针持有。何时失效：对象在归还后又被 `get()` 保存并解引用（悬垂）；要求归还后彻底与池解耦则需释放语义。替代方案：只租借语义可用裸指针 + 显式 `release()` 契约；需要「自动归还不计成本」时本方案的 deleter 是标准答案（EASTL `fixed_pool` 同理）。
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 54 · ★★★☆☆"
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -2367,7 +2367,7 @@ int main() {
 **步骤 1：裸 new（不确定性延迟 + 碎片）**
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 实时系统里把 n
-```cpp
+```cpp title="示例 48 · ★★☆☆☆"
 struct Packet { int seq; };
 void use(Packet*);           // -c 仅编译不链接, 声明即可
 void control_loop(){
@@ -2383,7 +2383,7 @@ void control_loop(){
 **步骤 2：固定块池（O(1) 分配 + 零碎片，但有内碎片）**
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 实时系统里把 n
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 struct Packet { int seq; };
 template <class T, std::size_t N> struct FixedPool {
     void* alloc();
@@ -2405,7 +2405,7 @@ void control_loop(){
 **步骤 3：接入 STL（pmr）**
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 实时系统里把 n
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 struct Packet { int seq; };
 struct PoolResource : std::pmr::memory_resource {
     void* do_allocate(std::size_t, std::size_t) override;
@@ -2720,7 +2720,7 @@ libstdc++ 提供了一款**生产级**的池分配器 `__gnu_cxx::__pool_alloc`�
 ### 可编译实证
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译实证
-```cpp
+```cpp title="示例 51 · ★★☆☆☆"
 #include <ext/pool_allocator.h>
 #include <vector>
 #include <iostream>
@@ -2815,7 +2815,7 @@ int main()
 ### D5.3 可复现 demo
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <cassert>
 #include <cstdlib>

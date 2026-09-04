@@ -144,7 +144,7 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 [实现·GCC15] libstdc++ 把 `unique_ptr` 的状态放在一个 `tuple<pointer, _Dp>` 里：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · uniqueptr 总览与零开销本质
-```cpp
+```cpp title="示例 1 · ★★★☆☆"
 #include <utility>
 // <bits/unique_ptr.h> 行 147-233（libstdc++ 13.1.0，真实摘录）
 template <typename _Tp, typename _Dp>
@@ -169,7 +169,7 @@ template <typename _Tp, typename _Dp>
 ### 示例 01：`unique_ptr` 基本用法与自动释放
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 01：uniqueptr 基本
-```cpp
+```cpp title="示例 2 · ★★☆☆☆"
 #include <iostream>
 #include <memory>                                            // std::unique_ptr / std::make_unique 都在 <memory>
 
@@ -195,7 +195,7 @@ int main() {
 ### 示例 02：`unique_ptr` 不可拷贝、只可移动  `[核心知识点03]`
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 02：uniqueptr 不可
-```cpp
+```cpp title="示例 3 · ★★☆☆☆"
 #include <memory>
 #include <utility>
 
@@ -219,7 +219,7 @@ int main() {
 ### 示例 03：默认 `default_delete`  `[核心知识点04]`
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 示例 03：默认 defaultde
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 #include <memory>
 int main() {
     std::unique_ptr<int> p(new int(7));   // 删除器 = default_delete<int>，析构时 delete
@@ -230,7 +230,7 @@ int main() {
 ### 示例 04：自定义删除器——函数指针  `[核心知识点05]`
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 04：自定义删除器——函数指针
-```cpp
+```cpp title="示例 5 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 
@@ -249,7 +249,7 @@ int main() {
 ### 示例 05：自定义删除器——lambda  `[核心知识点05]`
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 05：自定义删除器——lambda  `[核心知识点05]`
-```cpp
+```cpp title="示例 6 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 
@@ -266,7 +266,7 @@ int main() {
 ### 示例 06：自定义删除器——可调用对象作为**类型参数**  `[核心知识点05]`
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 06：自定义删除器——可调用对
-```cpp
+```cpp title="示例 7 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 
@@ -287,7 +287,7 @@ int main() {
 ### 示例 07：自定义删除器——**构造参数**传入（无状态更灵活）  `[核心知识点05]`
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 07：自定义删除器——构造参数
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -318,7 +318,7 @@ int main() {
 ### 示例 08：`unique_ptr<T[]>` 数组特化  `[核心知识点06]`
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 08：`unique_ptr<T[]>` 数组特化  `[核心知识点06]`
-```cpp
+```cpp title="示例 9 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 
@@ -335,7 +335,7 @@ int main() {
 [实现·GCC15] libstdc++ `<bits/unique_ptr.h>` 行 535 起有 `class unique_ptr<_Tp[], _Dp>` 特化；其析构走 `_Sp_array_delete`（对 `is_array<_Tp>` 选择 `delete[]`）：
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 08：`unique_ptr<T[]>` 数组特化  `[核心知识点06]`
-```cpp
+```cpp title="示例 10 · ★★★☆☆"
 // <bits/unique_ptr.h> 行 132-141（default_delete<T[]> 对数组）
 template<typename _Up>
   typename enable_if<is_convertible<_Up(*)[], _Tp(*)[]>::value>::type
@@ -359,7 +359,7 @@ template<typename _Up>
 [实现·GCC15] 这些直接转发到 `__uniq_ptr_impl`（`<bits/unique_ptr.h>` 行 196-220）：
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `unique_ptr` 成员：release / get / reset / swap  `[核心知识点07]`
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // <bits/unique_ptr.h> 行 214-220
 pointer release() noexcept {
     pointer __p = _M_ptr();
@@ -378,7 +378,7 @@ void reset(pointer __p) noexcept {
 ### 示例 09：release / get / reset / swap  `[核心知识点07]`
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 09：release / get / reset / swap  `[核心知识点07]`
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 
@@ -415,7 +415,7 @@ int main() {
 ### 示例 10：EBO 验证——`sizeof` 对比  `[核心知识点02]`
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 10：EBO 验证——size
-```cpp
+```cpp title="示例 13 · ★★★☆☆"
 #include <iostream>
 #include <memory>
 #include <type_traits>
@@ -454,7 +454,7 @@ int main() {
 ### 示例 11：Pimpl 惯用法（编译防火墙）  `[核心知识点08]`
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 11：Pimpl 惯用法
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // widget.h
 #include <memory>
 class Widget {
@@ -483,7 +483,7 @@ void Widget::draw() const { p_->draw(); }
 ### 示例 12：工厂函数返回 `unique_ptr`  `[核心知识点08]`
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 12：工厂函数返回 `unique_ptr`  `[核心知识点08]`
-```cpp
+```cpp title="示例 15 · ★★☆☆☆"
 #include <memory>
 struct Shape { virtual ~Shape() = default; virtual double area() const = 0; };
 struct Circle : Shape { double r; Circle(double r):r(r){} double area() const override { return 3.14*r*r; } };
@@ -496,7 +496,7 @@ std::unique_ptr<Shape> make_circle(double r) {
 ### 示例 13：`unique_ptr` 存入容器  `[核心知识点08]`
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 13：uniqueptr 存入
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 #include <memory>
 #include <vector>
 #include <iostream>
@@ -535,7 +535,7 @@ int main() {
 [实现·GCC15] libstdc++ 控制块基类 `_Sp_counted_base`（`<bits/shared_ptr_base.h>` 行 124-239）直接给出了两个计数与构造初值：
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · sharedptr 总览与控制块结构
-```cpp
+```cpp title="示例 17 · ★★★☆☆"
 // <bits/shared_ptr_base.h> 行 124-239（真实摘录，截断无关方法）
 template<_Lock_policy _Lp = __default_lock_policy>
   class _Sp_counted_base : public _Mutex_base<_Lp>
@@ -555,7 +555,7 @@ template<_Lock_policy _Lp = __default_lock_policy>
 `__shared_ptr` 自身只持有 `_M_ptr`（被指对象指针）和 `_M_refcount`（一个 `__shared_count`，内部就是那个控制块指针 `_M_pi`）：
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · sharedptr 总览与控制块结构
-```cpp
+```cpp title="示例 18 · ★☆☆☆☆"
 // <bits/shared_ptr_base.h> 行 1422 起，__shared_ptr 关键成员
 // （数据成员在类尾，真实为）
 // element_type*    _M_ptr;       // 被指对象
@@ -565,7 +565,7 @@ template<_Lock_policy _Lp = __default_lock_policy>
 ### 示例 14：`shared_ptr` 基本与引用计数  `[核心知识点09]`
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 14：sharedptr 基本
-```cpp
+```cpp title="示例 19 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 
@@ -586,7 +586,7 @@ int main() {
 ### 示例 15：`shared_ptr` 自定义删除器控制释放方式  `[核心知识点22]`（先预览，详[元素17]）
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 15：sharedptr 自定
-```cpp
+```cpp title="示例 20 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -609,7 +609,7 @@ int main() {
 [实现·GCC15] libstdc++ 的 `make_shared`（`shared_ptr.h` 行 1003-1011）只构造一个 `_Sp_alloc_shared_tag` 转发给 `shared_ptr` 构造，再进 `__shared_count` 的 `_Sp_alloc_shared_tag` 分支（`shared_ptr_base.h` 行 963-976）：
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · makeshared 一次分配与缺陷
-```cpp
+```cpp title="示例 21 · ★★★☆☆"
 #include <utility>
 // <bits/shared_ptr.h> 行 1003-1011
 template<typename _Tp, typename... _Args>
@@ -641,7 +641,7 @@ template<typename _Tp, typename _Alloc, typename... _Args>
 一次分配的本质是 `_Sp_counted_ptr_inplace`（`<bits/shared_ptr_base.h>` 行 580-653），它用 `__gnu_cxx::__aligned_buffer<_Tp> _M_storage;` 把对象**内联**进控制块：
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · makeshared 一次分配与缺陷
-```cpp
+```cpp title="示例 22 · ★★★☆☆"
 // <bits/shared_ptr_base.h> 行 580-653（截断）
 template<typename _Tp, typename _Alloc, _Lock_policy _Lp>
   class _Sp_counted_ptr_inplace final : public _Sp_counted_base<_Lp>
@@ -663,7 +663,7 @@ template<typename _Tp, typename _Alloc, _Lock_policy _Lp>
 ### 示例 16：`make_shared` vs `new + shared_ptr` 两次分配  `[核心知识点11][12]`
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 16：makeshared v
-```cpp
+```cpp title="示例 23 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -693,7 +693,7 @@ int main() {
 [实现·GCC15] 走 `__shared_count(_Ptr __p)`（`shared_ptr_base.h` 行 911-924）：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · new + sharedptr 两次
-```cpp
+```cpp title="示例 24 · ★★★☆☆"
 // <bits/shared_ptr_base.h> 行 911-924
 template<typename _Ptr>
   explicit
@@ -709,7 +709,7 @@ template<typename _Ptr>
 而 `_Sp_counted_ptr`（`shared_ptr_base.h` 行 419-443）只持有 `_M_ptr`，删除器固定 `delete _M_ptr`：
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · new + sharedptr 两次
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 // <bits/shared_ptr_base.h> 行 426-428
 virtual void _M_dispose() noexcept { delete _M_ptr; }   // 对象与控制块分离
 ```
@@ -717,7 +717,7 @@ virtual void _M_dispose() noexcept { delete _M_ptr; }   // 对象与控制块分
 ### 示例 17：自定义删除器计数验证"两次分配"路径  `[核心知识点12]`
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 17：自定义删除器计数验证"两
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -743,7 +743,7 @@ int main() {
 [实现·GCC15] `_Sp_counted_base<_S_atomic>::_M_release()`（`<bits/shared_ptr_base.h>` 行 315-363）：
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★★☆</span> · 引用计数原子操作与 memoryor
-```cpp
+```cpp title="示例 27 · ★★★★☆"
 // <bits/shared_ptr_base.h> 行 315-363（_S_atomic 策略，真实摘录）
 template<>
   inline void
@@ -779,7 +779,7 @@ template<>
 当计数归零时调用 `_M_release_last_use()`（`shared_ptr_base.h` 行 172-193）：先 `_M_dispose()`（释放对象），再原子减弱计数，弱计数也归零才 `_M_destroy()`（释放控制块）：
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 引用计数原子操作与 memoryor
-```cpp
+```cpp title="示例 28 · ★★☆☆☆"
 // <bits/shared_ptr_base.h> 行 172-193
 void _M_release_last_use() noexcept
 {
@@ -804,7 +804,7 @@ void _M_release_last_use() noexcept
 ### 示例 18：引用计数原子性——多线程拷贝  `[核心知识点13][15]`
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 示例 18：引用计数原子性——多线程
-```cpp
+```cpp title="示例 29 · ★★★★☆"
 #include <memory>
 #include <thread>
 #include <vector>
@@ -828,7 +828,7 @@ int main() {
 ### 示例 19：所指对象访问非线程安全（需要互斥）  `[核心知识点15]`
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 19：所指对象访问非线程安全
-```cpp
+```cpp title="示例 30 · ★★☆☆☆"
 #include <memory>
 #include <thread>
 #include <mutex>
@@ -858,7 +858,7 @@ int main() {
 [实现·GCC15] libstdc++ 的 C++11 自由函数（`<bits/shared_ptr_atomic.h>` 行 127-133）用 `_Sp_locker` 对指针加自旋锁：
 
 > **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::atomic<shared
-```cpp
+```cpp title="示例 31 · ★★★☆☆"
 // <bits/shared_ptr_atomic.h> 行 127-133
 template<typename _Tp>
   inline shared_ptr<_Tp>
@@ -876,7 +876,7 @@ template<typename _Tp>
 ### 示例 20：`std::atomic<shared_ptr>` C++20 多线程  `[核心知识点14]`
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 20：std::atomic<
-```cpp
+```cpp title="示例 32 · ★★☆☆☆"
 #include <memory>
 #include <atomic>
 #include <thread>
@@ -914,7 +914,7 @@ int main() {
 ### 示例 21：循环引用泄漏（自定义删除器计数未释放）  `[核心知识点16]`
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 21：循环引用泄漏
-```cpp
+```cpp title="示例 33 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -941,7 +941,7 @@ int main() {
 ### 示例 22：`weak_ptr` 打破循环  `[核心知识点16][17]`
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 22：weakptr 打破循环
-```cpp
+```cpp title="示例 34 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -975,7 +975,7 @@ int main() {
 [实现·GCC15] `weak_ptr::lock()`（`shared_ptr_base.h` 行 2066-2068）直接委托给带 `nothrow` 的 `shared_ptr` 构造，该构造内部调用 `_M_refcount(__r._M_refcount, nothrow)`——若强计数已 0 则 `_M_ptr` 置空：
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `weak_ptr`：lock / expired / 打破循环  `[核心知识点17]`
-```cpp
+```cpp title="示例 35 · ★★☆☆☆"
 // <bits/shared_ptr_base.h> 行 2066-2076
 __shared_ptr<_Tp, _Lp>
 lock() const noexcept
@@ -990,7 +990,7 @@ bool expired() const noexcept
 ### 示例 23：`weak_ptr::lock()` / `expired()` 用法  `[核心知识点17]`
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 23：weakptr::loc
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -1028,7 +1028,7 @@ int main() {
 [实现·GCC15] `enable_shared_from_this`（`shared_ptr.h` 行 919-972）与基类 `__enable_shared_from_this`（`shared_ptr_base.h` 行 2171-2219）：
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · enable_shared_from_this
-```cpp
+```cpp title="示例 37 · ★★☆☆☆"
 // <bits/shared_ptr.h> 行 919-939（真实摘录）
 class enable_shared_from_this
 {
@@ -1052,7 +1052,7 @@ class __enable_shared_from_this
 ### 示例 24：`enable_shared_from_this` 正确用法  `[核心知识点18]`
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 24：enableshared
-```cpp
+```cpp title="示例 38 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -1074,7 +1074,7 @@ int main() {
 ### 示例 25：`enable_shared_from_this` 陷阱——构造期禁止调用  `[核心知识点18]`
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 25：enableshared
-```cpp
+```cpp title="示例 39 · ★★★☆☆"
 #include <memory>
 #include <iostream>
 
@@ -1104,7 +1104,7 @@ int main() {
 [实现·GCC15] `__shared_ptr` 别名构造（`shared_ptr_base.h` 行 1505-1520）：
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 别名构造 sharedptr<T>
-```cpp
+```cpp title="示例 40 · ★★★☆☆"
 // <bits/shared_ptr_base.h> 行 1505-1510（左值引用版别名构造）
 template<typename _Yp>
   __shared_ptr(const __shared_ptr<_Yp, _Lp>& __r, element_type* __p) noexcept
@@ -1117,7 +1117,7 @@ template<typename _Yp>
 ### 示例 26：别名构造——返回成员并延长整体生命周期  `[核心知识点19]`
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 26：别名构造——返回成员并延
-```cpp
+```cpp title="示例 41 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -1152,7 +1152,7 @@ int main() {
 ### 示例 27：别名构造 + `enable_shared_from_this` 组合
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 27：别名构造 + `enable_shared_from_this` 组合
-```cpp
+```cpp title="示例 42 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -1186,7 +1186,7 @@ int main() {
 ### 示例 28：`shared_ptr` 自定义删除器管理 `FILE*`  `[核心知识点22]`
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 28：sharedptr 自定
-```cpp
+```cpp title="示例 43 · ★★☆☆☆"
 #include <memory>
 #include <cstdio>
 
@@ -1205,7 +1205,7 @@ int main() {
 ### 示例 29：`shared_ptr<T[]>`(C++17) 数组  `[核心知识点21]`
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 29：`shared_ptr<T[]>`(C++17) 数组  `[核心知识点21]`
-```cpp
+```cpp title="示例 44 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -1230,7 +1230,7 @@ int main() {
 [实现·GCC15] `owner_less`（`shared_ptr_base.h` 行 2148-2168）转发到 `owner_before`，后者比较控制块指针 `_M_less`：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · ownerless 与原子智能指针对
-```cpp
+```cpp title="示例 45 · ★★★☆☆"
 // <bits/shared_ptr_base.h> 行 2160-2168
 template<typename _Tp, _Lock_policy _Lp>
   struct owner_less<__shared_ptr<_Tp, _Lp>>
@@ -1242,7 +1242,7 @@ template<typename _Tp, _Lock_policy _Lp>
 ### 示例 30：`owner_less` 用于 `std::map` 键  `[核心知识点20]`
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 30：ownerless 用于
-```cpp
+```cpp title="示例 46 · ★★☆☆☆"
 #include <memory>
 #include <map>
 #include <iostream>
@@ -1279,7 +1279,7 @@ int main() {
 ### 示例 31：microbenchmark——unique vs shared vs raw 创建/销毁  `[核心知识点01]`
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★★☆</span> · 示例 31：microbenchma
-```cpp
+```cpp title="示例 47 · ★★★★☆"
 #include <memory>
 #include <chrono>
 #include <iostream>
@@ -1324,7 +1324,7 @@ int main() {
 ### 示例 32：microbenchmark——make_shared vs new 的拷贝原子成本  `[核心知识点11][12]`
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 32：microbenchma
-```cpp
+```cpp title="示例 48 · ★★★☆☆"
 #include <memory>
 #include <chrono>
 #include <iostream>
@@ -1348,7 +1348,7 @@ int main() {
 ### 示例 33：microbenchmark——`weak_ptr::lock()` 成本  `[核心知识点17]`
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 33：microbenchma
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 #include <memory>
 #include <chrono>
 #include <iostream>
@@ -1374,7 +1374,7 @@ int main() {
 ### 示例 34：make_shared 缺陷实证——weak_ptr 期间对象内存不回收  `[核心知识点23]`
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 34：makeshared 缺
-```cpp
+```cpp title="示例 50 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 
@@ -1400,7 +1400,7 @@ int main() {
 ### 示例 35：`shared_ptr` 自定义分配器  `[核心知识点22]`
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 35：sharedptr 自定
-```cpp
+```cpp title="示例 51 · ★★★☆☆"
 #include <memory>
 #include <iostream>
 #include <cstddef>
@@ -1516,7 +1516,7 @@ int main() {
 1. **`release()` 后忘记 `delete`**：拿到裸指针必须有人释放，否则泄漏（元素 05）。
 2. **`shared_ptr` 从同一裸指针构造两次**：会产生**两个独立控制块**，析构时双重释放（double free）。必须用 `shared_ptr` 拷贝或 `enable_shared_from_this`。
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱清单  `[核心知识点07][18][16]`
-   ```cpp
+   ```cpp title="示例 52 · ★☆☆☆☆"
 #include <memory>
    int* raw = new int(1);
    std::shared_ptr<int> a(raw);
@@ -1531,7 +1531,7 @@ int main() {
 ### 示例 36：删除器作为类型参数 vs 构造参数（EBO 对照复测）  `[核心知识点02][05]`
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 示例 36：删除器作为类型参数 vs
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <memory>
 #include <iostream>
 #include <type_traits>
@@ -1558,7 +1558,7 @@ int main() {
 ### 示例 37：`make_shared_for_overwrite`(C++20) 与未初始化对象  `[核心知识点11]`
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 示例 37：makesharedfo
-```cpp
+```cpp title="示例 54 · ★☆☆☆☆"
 #include <memory>
 #include <cstring>
 
@@ -1581,7 +1581,7 @@ int main() {
 ### 示例 38：有状态删除器 + 容器（资源标签）  `[核心知识点05][08]`
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 38：有状态删除器 + 容器
-```cpp
+```cpp title="示例 55 · ★★☆☆☆"
 #include <memory>
 #include <vector>
 #include <iostream>
@@ -1610,7 +1610,7 @@ int main() {
 ### 示例 39：用 `weak_ptr` 实现对象缓存（自动失效）  `[核心知识点17]`
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 39：用 weakptr 实现
-```cpp
+```cpp title="示例 56 · ★★☆☆☆"
 #include <memory>
 #include <unordered_map>
 #include <iostream>
@@ -1784,7 +1784,7 @@ folly::rc_shared_ptr<Widget> s = folly::to_shared_ptr(raw);
 下面把「计数内嵌于对象、一次分配」落成**本机可编译**的最小范式，对比 `std::shared_ptr` 少一次控制块堆分配。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自包含可编译：最小侵入式引用计数
-```cpp
+```cpp title="示例 57 · ★★★☆☆"
 #include <cstddef>
 #include <atomic>
 // 附录A.2：最小侵入式引用计数（模仿 folly::IntrusiveRefCounted 概念）
@@ -1899,7 +1899,7 @@ call    _Znwy                   ; operator new(24): 单次分配
 > 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-exceptions` | 结论: `unique_ptr` 在析构/返回全路径零额外指令开销。
 
 > **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：编译实证——uniquep
-```cpp
+```cpp title="示例 59 · ★★★☆☆"
 #include <memory>
 
 struct Data { int x, y, z; };
@@ -2006,7 +2006,7 @@ unique_ptr_factory(int,int,int):
 ### 测试源码（节选）
 
 > **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码（节选）
-```cpp
+```cpp title="示例 60 · ★★★☆☆"
 struct S { int x; };
 // 返回 p 触发 shared_ptr 拷贝构造 → 引用计数原子递增
 [[gnu::noinline]] std::shared_ptr<S> clone(const std::shared_ptr<S>& p) { return p; }
@@ -2053,7 +2053,7 @@ clone(std::shared_ptr<S> const&):
 ### 测试源码（节选）
 
 > **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-41-make_shared 测试源码
-```cpp
+```cpp title="示例 75 · ★★★☆☆"
 struct Widget { int a, b, c; explicit Widget(int x) : a(x), b(x+1), c(x+2) {} };
 
 std::shared_ptr<Widget> via_make_shared(int x) { return std::make_shared<Widget>(x); }
@@ -2104,7 +2104,7 @@ via_new(int):
 ### 测试源码（节选）
 
 > **示例 76** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-41-esft 测试源码
-```cpp
+```cpp title="示例 76 · ★★★☆☆"
 struct Plain   { int x; };                                            // 4B 对照组
 struct WithEsft : std::enable_shared_from_this<WithEsft> { int x; };  // 24B
 
@@ -2169,7 +2169,7 @@ grab(WithEsft*):                  ; rcx=返回值, rdx=p(this)
 工厂返回 `unique_ptr`，调用方用 `std::move` 接收转移；若想共享则 `std::shared_ptr<std::unique_ptr 不可>`——直接返回 `shared_ptr` 或用 `std::move` 构造 `shared_ptr`。
 
 > **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 61 · ★★☆☆☆"
 #include <memory>
 struct Node { int v; };
 std::unique_ptr<Node> make_node(int v) { return std::make_unique<Node>(Node{v}); }
@@ -2194,7 +2194,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 62 · ★★☆☆☆"
 struct A; struct B;
 struct A { std::shared_ptr<B> b; ~A(){ /* 不会跑 */ } };
 struct B { std::shared_ptr<A> a; };
@@ -2227,7 +2227,7 @@ pa->b = pb; pb->a = pa;           // 互相 +1 -> 双方引用计数停在有环
 `f(shared_ptr<T>(new T), g())` 的参数求值顺序导致泄漏；后者是两次分配。
 
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 63 · ★★☆☆☆"
 #include <memory>
 #include <cstdio>
 auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
@@ -2257,7 +2257,7 @@ auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
 实现与边界：有状态删除器最常用于「归还池、统计、日志」；`reset()` 后 `get()` 为空、删除器不再触发。何时失效：把带状态删除器的 `unique_ptr` 存进容器时按元素移动即可（删除器随对象移动）；跨 ABI 传递自定义删除器类型要保证定义可见。替代方案：无状态统计可改用全局计数器（避免撑大对象）；需要共享删除器语义就用 `shared_ptr`（练习 3 的 FILE* 场景）。
 
 > **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 73 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 
@@ -2301,7 +2301,7 @@ int main() {
 实现与边界：别名构造避免「额外持有一份 `shared_ptr<Obj>` + 记录成员偏移」的繁琐；`member.reset()` 只是减少引用计数，`sp` 是否存活取决于其它引用。何时失效：`&sp->v` 在 `sp` 被 `reset`/悬垂后再取就是悬垂指针——先取地址再构造别名才安全。替代方案：直接持 `shared_ptr<Obj>` + 手动 `.v` 访问语义等价但调用方要处理父对象类型；`weak_ptr`（练习 2）用于「可过期」的回边。
 
 > **示例 74** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 74 · ★★★☆☆"
 #include <iostream>
 #include <memory>
 
@@ -2328,7 +2328,7 @@ int main() {
 **步骤 1：原始代码（双重释放雷区）**
 
 > **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 用法演绎 — 连接池资源类演进
-```cpp
+```cpp title="示例 64 · ★☆☆☆☆"
 Connection* create_conn(int id) { return new Connection(id); }
 // 调用方:
 Connection* c = create_conn(0);
@@ -2339,7 +2339,7 @@ delete c;                 // 若 use() 内部也 delete -> 双重释放; 若抛�
 **步骤 2：用 `unique_ptr` 接管唯一所有权**
 
 > **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用法演绎 — 连接池资源类演进
-```cpp
+```cpp title="示例 65 · ★★☆☆☆"
 auto create_conn(int id) {
     return std::unique_ptr<Connection>(new Connection(id));  // 或 make_unique
 }
@@ -2350,7 +2350,7 @@ use(c.get());                                                // .get() 仅借出
 **步骤 3：移动语义转移所有权**
 
 > **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用法演绎 — 连接池资源类演进
-```cpp
+```cpp title="示例 66 · ★★☆☆☆"
 std::unique_ptr<Connection> c = create_conn(0);  // 拥有
 std::unique_ptr<Connection> c2 = std::move(c);   // 显式转移; c 变空
 // 不能 copy: auto c3 = c2; 编译失败 -> 编译期杜绝双重释放
@@ -2359,7 +2359,7 @@ std::unique_ptr<Connection> c2 = std::move(c);   // 显式转移; c 变空
 **步骤 4：管理非内存资源（FILE*）**
 
 > **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用法演绎 — 连接池资源类演进
-```cpp
+```cpp title="示例 67 · ★★☆☆☆"
 auto f = std::unique_ptr<FILE, decltype(&fclose)>(fopen("x","r"), fclose);
 // 文件句柄随 f 析构自动 fclose, 异常安全
 ```
@@ -2367,7 +2367,7 @@ auto f = std::unique_ptr<FILE, decltype(&fclose)>(fopen("x","r"), fclose);
 **步骤 5：`shared_ptr` 共享所有权——一个连接同时被「池」与「借用者」持有**
 
 > **示例 70** <span class="badge badge-exp">难度 ★★★☆☆</span> · 用法演绎 — 连接池资源类演进
-```cpp
+```cpp title="示例 70 · ★★★☆☆"
 class ConnectionPool {
     std::vector<std::shared_ptr<Connection>> idle_;
     int next_id_ = 0;
@@ -2384,7 +2384,7 @@ public:
 **步骤 6：`weak_ptr` 打破循环——连接「回指」池用弱引用，不构成强环**
 
 > **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 用法演绎 — 连接池资源类演进
-```cpp
+```cpp title="示例 71 · ★★★☆☆"
 class Connection {
     std::weak_ptr<ConnectionPool> pool_;   // 弱引用：不延长池的生命周期
 public:
@@ -2396,7 +2396,7 @@ public:
 **步骤 7：`enable_shared_from_this` 从 `this` 安全取回 `shared_ptr` 归还自己**
 
 > **示例 72** <span class="badge badge-exp">难度 ★★★★☆</span> · 用法演绎 — 连接池资源类演进
-```cpp
+```cpp title="示例 72 · ★★★★☆"
 class Connection : public std::enable_shared_from_this<Connection> {
     std::weak_ptr<ConnectionPool> pool_;
 public:
@@ -2498,7 +2498,7 @@ _Sp_counted_base<_S_atomic>::_M_release() noexcept
 ### 6. 第一方可编译验证（观察共享所有权与 weak 失效）
 
 > **示例 68** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
-```cpp
+```cpp title="示例 68 · ★★☆☆☆"
 #include <memory>
 #include <iostream>
 struct Foo { ~Foo() { std::cout << "Foo destroyed" << std::endl; } };
@@ -2698,7 +2698,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
-```cpp
+```cpp title="示例 69 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
 #include <cassert>

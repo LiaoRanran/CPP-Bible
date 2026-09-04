@@ -54,7 +54,7 @@ C 的初始化靠 `=`、`()`（构造）、aggregate 大括号 `{ }`，各自规
 ## ② 六种初始化语法 <span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：六种初始化语法 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
 struct S{int x;};
 int main(){S a{1};S b={2};S c=S{3};auto d=S{4};S e(5);S f;std::cout<<a.x<<b.x<<c.x<<d.x<<e.x<<std::endl;return 0;}
@@ -63,7 +63,7 @@ int main(){S a{1};S b={2};S c=S{3};auto d=S{4};S e(5);S f;std::cout<<a.x<<b.x<<c
 ## ③ 列表初始化与窄化 <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：列表初始化与窄化 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 int main(){int x{42};double d=3.14;int y{static_cast<int>(d)};std::cout<<x<<" "<<y<<std::endl;return 0;}
 ```
@@ -71,7 +71,7 @@ int main(){int x{42};double d=3.14;int y{static_cast<int>(d)};std::cout<<x<<" "<
 ## ④ std::initializer_list <span class="badge badge-std">标准</span>
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：list <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
 #include <initializer_list>
 int main(){std::initializer_list<int> il={1,2,3,4,5};int s=0;for(int x:il)s+=x;std::cout<<s<<std::endl;return 0;}
@@ -80,7 +80,7 @@ int main(){std::initializer_list<int> il={1,2,3,4,5};int s=0;for(int x:il)s+=x;s
 ## ⑤ 默认/值/零初始化 <span class="badge badge-std">标准</span>
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：默认/值/零初始化 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 4 · ★☆☆☆☆"
 #include <iostream>
 struct A{int x;};A a;A b{};
 int main(){std::cout<<a.x<<" "<<b.x<<std::endl;return 0;}
@@ -89,7 +89,7 @@ int main(){std::cout<<a.x<<" "<<b.x<<std::endl;return 0;}
 ## ⑥ 聚合初始化 <span class="badge badge-std">标准</span>
 
 > **示例 5** [难度 ★☆☆☆☆] [主题：聚合初始化 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
 typedef struct { int x,y; } Point2D;
 int main(){Point2D p2{3,4};std::cout<<p2.x<<","<<p2.y<<std::endl;return 0;}
@@ -98,7 +98,7 @@ int main(){Point2D p2{3,4};std::cout<<p2.x<<","<<p2.y<<std::endl;return 0;}
 ## ⑦ 构造函数 vs initializer_list 优先级 <span class="badge badge-std">标准</span>
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造函数 vs initializer_list 优先级
-```cpp
+```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
 #include <initializer_list>
 struct V{V(std::initializer_list<int>){}V(int,int){}};
@@ -108,7 +108,7 @@ int main(){V v1(1,2);std::cout<<"ctor chosen when () used\n";return 0;}
 ## ⑧ 静态初始化与动态初始化 <span class="badge badge-std">标准</span>
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：静态初始化与动态初始化 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
 static int x=42;
 int main(){std::cout<<x<<std::endl;return 0;}
@@ -117,7 +117,7 @@ int main(){std::cout<<x<<std::endl;return 0;}
 ## ⑨ 跨语言对比：初始化语法 <span class="badge badge-exp">经验</span>
 
 > **示例 8** [难度 ★★☆☆☆] [主题：跨语言对比：初始化语法 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 8 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++ brace init vs Rust let x:Type=... vs Go x:=... vs Java Type x=new Type()\n";return 0;}
 ```
@@ -125,7 +125,7 @@ int main(){std::cout<<"C++ brace init vs Rust let x:Type=... vs Go x:=... vs Jav
 ## ⑩ 初始化与移动语义 <span class="badge badge-std">标准</span>
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：初始化与移动语义 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
 #include <utility>
@@ -135,7 +135,7 @@ int main(){std::string a="hello";std::string b=std::move(a);std::cout<<b<<std::e
 ## ⑪ STL 联系：容器初始化全景 <span class="badge badge-std">标准</span>
 
 > **示例 10** [难度 ★★☆☆☆] [主题：联系：容器初始化全景 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 10 · ★★☆☆☆"
 // ⑪ 六种 STL 容器初始化方式对比
 #include <iostream>
 #include <vector>
@@ -172,7 +172,7 @@ int main() {
 ## ⑫ 工业案例：JSON 配置解析器初始化 <span class="badge badge-exp">经验</span>
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：JSON 配置解析器初始化
-```cpp
+```cpp title="示例 11 · ★★☆☆☆"
 // ⑫ 使用 initializer_list 实现声明式配置
 #include <iostream>
 #include <string>
@@ -206,7 +206,7 @@ int main() {
 ## ⑬ 源码分析：GCC 中 initializer_list 的实现 [实现·GCC15.3.0]
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC 中 initializer_list 的实现 [实现·GCC15.3.0]
-```cpp
+```cpp title="示例 12 · ★★☆☆☆"
 // ⑬ libstdc++ 中 std::initializer_list 的核心实现
 #include <iostream>
 #include <cstddef>
@@ -227,7 +227,7 @@ int main() {
 ## ⑭ WG21 关键提案：初始化演进史 <span class="badge badge-std">标准</span>
 
 > **示例 13** [难度 ★★☆☆☆] [主题：关键提案：初始化演进史 <span class="badge badge-std">标准</span>]
-```cpp
+```cpp title="示例 13 · ★★☆☆☆"
 // ⑭ 从 C++11 到 C++26 的初始化提案全景
 #include <iostream>
 int main() {
@@ -249,7 +249,7 @@ int main() {
 ## ⑮ 面试题精选：初始化 5 问 <span class="badge badge-exp">经验</span>
 
 > **示例 14** [难度 ★★☆☆☆] [主题：面试题精选：初始化 5 问 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 14 · ★★☆☆☆"
 // ⑮ 初始化相关的 5 道高频面试题
 #include <iostream>
 #include <vector>
@@ -272,7 +272,7 @@ int main() {
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 > **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 15 · ★★★★☆"
 // ⑯ 初始化的 5 大陷阱
 #include <iostream>
 #include <vector>
@@ -310,7 +310,7 @@ int main() {
 ## ⑰ FAQ：初始化实战问题 <span class="badge badge-exp">经验</span>
 
 > **示例 16** [难度 ★★☆☆☆] [主题：初始化实战问题 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 16 · ★★☆☆☆"
 // ⑰ 实际开发中的初始化高频问答
 #include <iostream>
 #include <string>
@@ -340,7 +340,7 @@ int main() {
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 > **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 17 · ★★☆☆☆"
 // ⑱ 初始化的 6 条黄金法则
 #include <iostream>
 #include <vector>
@@ -377,7 +377,7 @@ int main() {
 ## ⑲ 性能分析：初始化的运行时开销 [平台·x86-64]
 
 > **示例 18** [难度 ★★★☆☆] [主题：性能分析：初始化的运行时开销 <span class="badge badge-platform">平台</span>
-```cpp
+```cpp title="示例 18 · ★★★☆☆"
 // ⑲ 不同初始化方式的汇编对比
 #include <iostream>
 #include <chrono>
@@ -423,7 +423,7 @@ int main() {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.start.static]；cppreference "Initialization#Non-local_variables" 词条。
 
 > **示例 19** [难度 ★★★☆☆] [主题：跨语言对比：初始化语法全景 <span class="badge badge-exp">经验</span>]
-```cpp
+```cpp title="示例 19 · ★★★☆☆"
 // ⑳ 各语言初始化语义对比
 #include <iostream>
 int main() {
@@ -453,34 +453,34 @@ int main() {
 ## 补充完整可编译示例
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 20 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2,3,4,5};std::cout<<v.size()<<std::endl;return 0;}
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 21 · ★☆☆☆☆"
 #include <iostream>
 struct C{int a;double b;};C c{42,3.14};
 int main(){std::cout<<c.a<<" "<<c.b<<std::endl;return 0;}
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 22 · ★☆☆☆☆"
 #include <iostream>
 int main(){int arr[]{1,2,3,4,5};std::cout<<arr[0]<<std::endl;return 0;}
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 23 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
 int main(){std::string s="hello";std::cout<<s<<std::endl;return 0;}
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
 #include <initializer_list>
 struct D{D(int){}D(std::initializer_list<int>){}};
@@ -488,107 +488,107 @@ int main(){D d(42);std::cout<<"ctor\n";return 0;}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 static int counter=0;struct T{T(){++counter;}};T t1,t2;
 int main(){std::cout<<counter<<std::endl;return 0;}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 26 · ★★☆☆☆"
 #include <iostream>
 constexpr int sq(int x){return x*x;}
 int main(){constexpr int v=sq(10);std::cout<<v<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 27 · ★☆☆☆☆"
 #include <iostream>
 struct P{int x,y;};int main(){P p{.x=1,.y=2};std::cout<<p.x<<","<<p.y<<std::endl;return 0;}
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 #include <utility>
 int main(){auto [a,b]=std::pair{10,20};std::cout<<a<<" "<<b<<std::endl;return 0;}
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 struct Null{int* p=nullptr;};Null n;
 int main(){std::cout<<(n.p==nullptr)<<std::endl;return 0;}
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 int main(){int* p=new int{42};std::cout<<*p<<std::endl;delete p;return 0;}
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 struct M{int a;double b;};M m{.a=10,.b=3.14};
 int main(){std::cout<<m.a<<","<<m.b<<std::endl;return 0;}
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){auto v=std::vector{1,2,3};std::cout<<v.size()<<std::endl;return 0;}
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 struct F{int val;F():val(42){}F(int v):val(v){}};F f1,f2(99);
 int main(){std::cout<<f1.val<<" "<<f2.val<<std::endl;return 0;}
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 int main(){auto x={1,2,3,4,5};std::cout<<*x.begin()<<std::endl;return 0;}
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 struct G{int x=5;};
 int main(){G g;std::cout<<g.x<<std::endl;return 0;}
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 36 · ★★☆☆☆"
 #include <iostream>
 constexpr int compile_time=42;int runtime=42;
 int main(){std::cout<<compile_time<<" "<<runtime<<std::endl;return 0;}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 int main(){int arr[3]={};for(int i=0;i<3;++i)std::cout<<arr[i]<<" ";std::cout<<std::endl;return 0;}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 int main(){int x{};std::cout<<x<<std::endl;return 0;}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 struct Copyable{Copyable()=default;Copyable(const Copyable&)=default;Copyable&operator=(const Copyable&)=default;};
 int main(){Copyable a,b=a;std::cout<<"copy init\n";return 0;}
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
-```cpp
+```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"初始化总结: 优先{}列表初始化(防窄化);区分零/值/默认;aggregate用designated initializer"<<std::endl;return 0;}
 ```
@@ -644,7 +644,7 @@ C++98 传统初始化语法林立；C++11 统一初始化（`{}`）与 `std::ini
 | `auto x = T{val}` | auto + 列表 | ✅ | C++11+ 惯用法 |
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: 初始化语法速查表
-```cpp
+```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 struct Demo{int a;double b;};
 int main(){Demo d{42,3.14};Demo e{};std::cout<<d.a<<" "<<e.a<<std::endl;return 0;}
@@ -653,7 +653,7 @@ int main(){Demo d{42,3.14};Demo e{};std::cout<<d.a<<" "<<e.a<<std::endl;return 0
 ## 附录 B: Most Vexing Parse 陷阱
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: Most Vexing
-```cpp
+```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 struct Foo{};
 int main(){
@@ -667,7 +667,7 @@ int main(){
 ## 附录 C: 聚合初始化进化
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C: 聚合初始化进化
-```cpp
+```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 struct P{int x,y;}; // C++11 aggregate
 int main(){P p1{1,2};P p2{.x=10,.y=20};std::cout<<p1.x<<" "<<p2.y<<std::endl;return 0;}
@@ -682,7 +682,7 @@ int main(){P p1{1,2};P p2{.x=10,.y=20};std::cout<<p1.x<<" "<<p2.y<<std::endl;ret
 | T x(42) | 普通 | 简洁 | 单参数构造 |
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：初始化设计权衡 [H: Design]
-```cpp
+```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Use T x{} as default: value-init, zero-cost, impossible to forget."<<std::endl;return 0;}
 ```
@@ -696,7 +696,7 @@ initializer_list vs constructor: vector<int> v{1,2} = initializer_list(2元素)
 vector<int> v(2) = size_t(2个默认初始化的元素)
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：初始化面试陷阱
-```cpp
+```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> a{1,2},b(2);std::cout<<a.size()<<","<<b.size()<<std::endl;return 0;}
@@ -715,7 +715,7 @@ int main(){std::vector<int> a{1,2},b(2);std::cout<<a.size()<<","<<b.size()<<std:
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：初始化汇编
-```cpp
+```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;return 0;}
@@ -772,7 +772,7 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 圆括号走"计数/值"构造，花括号优先匹配 `initializer_list` 构造：
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
-```cpp
+```cpp title="示例 47 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 #include <initializer_list>
@@ -801,7 +801,7 @@ int main() {
 聚合体（无用户声明构造、无私有非静态成员等）可用 `{ .成员 = 值 }` 指定初始化：
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```cpp
+```cpp title="示例 48 · ★☆☆☆☆"
 #include <iostream>
 struct Point { int x; int y; int z; };                     // 聚合体
 int main() {
@@ -827,7 +827,7 @@ int main() {
 `std::array` 是聚合、定长、无堆分配，`{}` 直接聚合初始化其底层数组：
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
-```cpp
+```cpp title="示例 49 · ★★★☆☆"
 #include <iostream>
 #include <array>
 #include <vector>
@@ -860,7 +860,7 @@ int main() {
 实现与边界：C++ 里 `T t;`、`T t{};`、`T t = {};` 三者的差别正是默认 vs 值初始化；`new S` 与 `new S{}` 同理。何时失效：成员有默认成员初始化器（`int a = 0;`）时默认初始化也会拿初值，陷阱消失——所以现代风格「能写默认初始化器就写」。替代方案：无脑用 `{}` 值初始化最省心，聚合体配默认成员初始化器更自文档化（练习 2 的指定初始化同源）。
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
-```cpp
+```cpp title="示例 59 · ★★☆☆☆"
 #include <iostream>
 
 struct S { int a; double b; };
@@ -896,7 +896,7 @@ int main() {
 实现与边界：把初始化器按声明顺序写是唯一免疫方法；`-Wall -Wextra` 会提醒顺序错乱，但「依赖另一个成员」这种逻辑错误编译器不一定能查。何时失效：成员依赖别的成员/基类的值（而不是参数）时，必须保证被依赖者先初始化——靠声明顺序而非书写顺序。替代方案：避免成员间初始化依赖，把「需要先后关系」的逻辑放进构造函数体或用静态工厂计算后传入。
 
 > **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
-```cpp
+```cpp title="示例 60 · ★★★☆☆"
 #include <iostream>
 
 struct Widget {
@@ -926,7 +926,7 @@ int main() {
 **常见错误**：想构造 10 个默认元素却写了 `vector<int> v{10}`，结果得到"含单个元素 10"的向量——花括号优先匹配 `initializer_list` 构造：
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：initializer_list 构造 vs 圆括号构造的歧义
-```cpp
+```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main() {
@@ -938,7 +938,7 @@ int main() {
 **修复**：明确意图——"n 个元素"用圆括号，"列表内容"用花括号：
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：initializer_list 构造 vs 圆括号构造的歧义
-```cpp
+```cpp title="示例 51 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main() {
@@ -957,7 +957,7 @@ int main() {
 **常见错误**：给聚合体加了用户声明构造函数或 `private` 成员，破坏了聚合性，导致 `{}` 聚合初始化与指定初始化器全部编译失败：
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：聚合初始化与指定初始化器的
-```cpp
+```cpp title="示例 52 · ★☆☆☆☆"
 #include <iostream>
 struct Config { int port; bool tls;
     Config(int p) : port(p), tls(false) {}   // 用户构造 → 不再是聚合
@@ -972,7 +972,7 @@ int main() {
 **修复**：保持聚合（移除用户构造、成员公开），使用 C++20 指定初始化器按需赋值，未指定成员自动零值：
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：聚合初始化与指定初始化器的
-```cpp
+```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 struct Config { int port; bool tls; char host[8]; };                  // 仍是聚合
 int main() {
@@ -1015,7 +1015,7 @@ ret
 `initializer_list` 不拥有数据，它指向一个**临时数组**。一旦该数组失效，il 即悬垂：
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：std::initialize
-```cpp
+```cpp title="示例 54 · ★★☆☆☆"
 std::initializer_list<int> dangling_il() {
     return {1, 2, 3};   // 底层数组为临时，; 处销毁 → 悬垂
 }
@@ -1145,7 +1145,7 @@ graph TD
 **libstdc++（GCC）—— `bits/move.h`**
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 维度四 · 源码解析：三标准库的同一
-```cpp
+```cpp title="示例 56 · ★★★☆☆"
 // std::move_if_noexcept 的真实定义（节选）
 template<typename _Tp>
 constexpr typename conditional<
@@ -1377,7 +1377,7 @@ flowchart TD
 ### 可编译实证
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 可编译实证
-```cpp
+```cpp title="示例 57 · ★☆☆☆☆"
 #include <iostream>
 #include <initializer_list>
 
@@ -1520,7 +1520,7 @@ N_S1S2=2'000'000，N_S3=1'000'000，N_S4=2'000'000（50 轮重复）。所有场
 ### D5.3 可复现演示
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
-```cpp
+```cpp title="示例 58 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
 #include <cstddef>
