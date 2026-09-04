@@ -24,6 +24,8 @@ _tu_*.cpp
 _repro.py
 # 分诊/扫描临时脚本与 dump 的 TU（triage2 / dumpblocks / allfails 等）
 _rw_tmp/
+# 中文提交信息临时文件（git commit -F 用，用完即删）
+_commitmsg.txt
 
 # 根目录调试/编译副产物（应只写 build/，见 tools/clean_root_artifacts.py）
 # 这些目录/文件是 ch148/149/150/151/161 调试与 benchmark 的泄漏产物，违反
