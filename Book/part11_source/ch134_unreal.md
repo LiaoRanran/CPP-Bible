@@ -24,7 +24,7 @@
 
 真正的分水岭在 **2014 年 GDC**。Sweeney 做了一个让整个行业倒吸一口凉气的决定：**把 UE4 免费开放**，只对超过 30 万美元收入的部分收 5% 版税。这等于对着当时 **Unity Pro 每座席 1500 美元** 的收费模式正面开火——一夜之间，独立开发者、学生、甚至影视和汽车团队都能用上工业级引擎。同期推出的 **Blueprint 可视化脚本**，让不会写代码的人也能"连线做游戏"。
 
-> **<span class="badge badge-history">史</span>** UE4 发布前，Epic 的授权模式是"月费 $19 + 5% 版税"；更早的 UE3 则是高额 per-title 许可。** <span class="badge badge-anecdote">轶</span>** Sweeney 后来把同一股"掀桌子"劲头用在了 **Epic v. Apple（2020）** 上——为反对 30% 抽成让《堡垒之夜》被 App Store 下架，官司一路打到最高法院。
+> **<span class="badge badge-history">史</span>** UE4 发布前，Epic 的授权模式是"月费 \$19 + 5% 版税"；更早的 UE3 则是高额 per-title 许可。** <span class="badge badge-anecdote">轶</span>** Sweeney 后来把同一股"掀桌子"劲头用在了 **Epic v. Apple（2020）** 上——为反对 30% 抽成让《堡垒之夜》被 App Store 下架，官司一路打到最高法院。
 
 ### 0.3 设计哲学之争：为什么不用裸 C++，而要 UObject/UHT/GC/反射？
 
