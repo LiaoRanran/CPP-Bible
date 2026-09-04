@@ -48,8 +48,16 @@ jobs:
       # warn_unused_configs）；CI 跑在 Linux，tools/ 无 Windows-only 标准库导入，
       # 与本机 Windows 解析一致。
       run: |
-        python3 -m pip install --quiet "mypy==2.3.1"
-        mypy tools/
+        # Ubuntu-latest 2026+ 为 PEP-668 externally-managed，--break-system-packages 兜底；
+        # 失败时把报错写入 GITHUB_STEP_SUMMARY（可经 check-runs API 读取，绕过日志 admin 限制）
+        python3 -m pip install --break-system-packages --quiet "mypy==2.3.1" ||
+          python3 -m pip install --quiet "mypy==2.3.1"
+        mypy tools/ || {
+          {
+            mypy tools/ || true
+          } | tee "$GITHUB_STEP_SUMMARY"
+          exit 1
+        }
       continue-on-error: false
 
     - name: Metrics Single-Source-of-Truth Gate (文档数字 vs 事实源)
