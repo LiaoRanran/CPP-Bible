@@ -403,8 +403,10 @@ def check_file(path: pathlib.Path, tmpdir: pathlib.Path):
         # 隐藏"）：门禁把块包进 chk_ 命名空间后，顶层 `namespace X` 变成 chk::X，`::X`
         # 全局限定查找落空 → 误报。此类代码在真实全局作用域本可编译，跳过（教学示例）。
         own_ns = set(re.findall(r"^namespace\s+([A-Za-z_]\w*)\s*\{", code, re.M))
-        if any(re.search(r"::" + re.escape(ns) + r"\b", code) for ns in own_ns):
-            print(f"[SKIP] {path.name}#{idx}: 顶层 namespace 内回指全局 ::{next(n for n in own_ns if re.search(r'::'+re.escape(n)+r'\b', code))}，"
+        back_ref_ns = next((n for n in own_ns
+                            if re.search("::" + re.escape(n) + r"\b", code)), None)
+        if back_ref_ns is not None:
+            print(f"[SKIP] {path.name}#{idx}: 顶层 namespace 内回指全局 ::{back_ref_ns}，"
                   f"门禁 namespace 包裹误报，跳过（全局限定名教学示例）")
             continue
         includes, body = sanitize(code)
