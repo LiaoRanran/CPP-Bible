@@ -536,6 +536,17 @@ jobs:
         path: build/pdf/part*.pdf
         retention-days: 14
 
+    # Build PDF 失败时，普通 artifact step 会被跳过，导致 *.pandoc.err 从不保留、
+    # 真实 xelatex 报错无从追溯。always() 无条件上传错误日志以打破该黑盒。
+    - name: Upload PDF error logs (always)
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: cpp-bible-pdf-err
+        path: build/pdf/*.pandoc.err
+        if-no-files-found: ignore
+        retention-days: 14
+
   # ---- 发布：全书 EPUB（pandoc epub3）----
   epub:
     needs: [compile, publish-check]
