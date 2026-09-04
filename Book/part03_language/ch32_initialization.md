@@ -136,43 +136,6 @@ int main(){std::string a="hello";std::string b=std::move(a);std::cout<<b<<std::e
 
 > **示例 10** [难度 ★★☆☆☆] [主题：联系：容器初始化全景 <span class="badge badge-std">标准</span>]
 ```cpp title="示例 10 · ★★☆☆☆"
-// ⑪ 六种 STL 容器初始化方式对比
-#include <iostream>
-#include <vector>
-#include <list>
-#include <map>
-#include <string>
-#include <array>
-
-int main() {
-    // 1. 默认构造
-    std::vector<int> v1;
-    // 2. 指定大小
-    std::vector<int> v2(5);      // 5 个 0
-    // 3. 指定大小 + 初值
-    std::vector<int> v3(5, 42);  // 5 个 42
-    // 4. initializer_list
-    std::vector<int> v4{1, 2, 3, 4, 5};
-    // 5. 拷贝
-    std::vector<int> v5(v4);
-    // 6. 迭代器范围
-    std::vector<int> v6(v4.begin(), v4.begin()+3);
-
-    std::map<std::string, int> ages{{"Alice", 30}, {"Bob", 25}};
-    std::array<int, 3> arr{10, 20, 30};
-
-    std::cout << "v4[0]=" << v4[0] << " arr[2]=" << arr[2] << " ages[Alice]=" << ages["Alice"] << std::endl;
-    std::cout << "All STL containers support: default, copy, initializer_list, range, fill constructors.\n";
-    return 0;
-}
-```
-
-- `[标准]`：所有 STL 容器统一支持上述六种初始化方式（C++11 起）。`std::array` 的特殊性：必须指定大小，聚合初始化为首选。
-
-## ⑫ 工业案例：JSON 配置解析器初始化 <span class="badge badge-exp">经验</span>
-
-> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：JSON 配置解析器初始化
-```cpp title="示例 11 · ★★☆☆☆"
 // ⑫ 使用 initializer_list 实现声明式配置
 #include <iostream>
 #include <string>
@@ -183,23 +146,34 @@ struct ConfigEntry { std::string key, value; };
 struct Config {
     std::vector<ConfigEntry> entries;
     Config(std::initializer_list<ConfigEntry> il) : entries(il) {}
-    std::string get(const std::string& key) const {
-        for (auto& e : entries) if (e.key == key) return e.value;
+    std::string get(const std::string& k) const {
+        for (auto& e : entries) if (e.key == k) return e.value;
         return {};
     }
 };
 
 int main() {
-    Config appCfg{
-        {"host", "localhost"},
-        {"port", "8080"},
-        {"max_conn", "100"},
-        {"timeout", "30s"}
-    };
-    std::cout << "host=" << appCfg.get("host")
-              << " port=" << appCfg.get("port") << std::endl;
-    std::cout << "Pattern: initializer_list enables declarative, readable config in C++.\n";
-    return 0;
+    Config appCfg{{"host", "localhost"}, {"port", "8080"}, {"max_conn", "100"}};
+    std::cout << "entries=" << appCfg.entries.size()
+              << " host=" << appCfg.get("host")
+              << " port=" << appCfg.get("port") << '\n';
+}
+```
+
+- `[标准]`：所有 STL 容器统一支持上述六种初始化方式（C++11 起）。`std::array` 的特殊性：必须指定大小，聚合初始化为首选。
+
+## ⑫ 工业案例：JSON 配置解析器初始化 <span class="badge badge-exp">经验</span>
+
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：JSON 配置解析器初始化
+```cpp title="示例 11 · ★★☆☆☆"
+// ⑬ libstdc++ 中 std::initializer_list 的核心实现
+#include <iostream>
+#include <initializer_list>
+int main() {
+    std::initializer_list<int> il = {1, 2, 3};
+    std::cout << "sizeof(il)=" << sizeof(il)        // 16 (64-bit: 2 指针)
+              << " size=" << il.size()              // 3
+              << " first=" << *il.begin() << '\n';  // 1
 }
 ```
 
@@ -207,20 +181,14 @@ int main() {
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC 中 initializer_list 的实现 [实现·GCC15.3.0]
 ```cpp title="示例 12 · ★★☆☆☆"
-// ⑬ libstdc++ 中 std::initializer_list 的核心实现
+// ⑭ 从 C++11 到 C++20 的初始化演进（括号聚合初始化 P0960）
 #include <iostream>
-#include <cstddef>
-#include <initializer_list>
+struct Point { int x, y; };
 int main() {
-    std::cout << "GCC libstdc++ initializer_list internals:\n";
-    std::cout << "1. __builtin_initializer_list: compiler generates hidden array from {a,b,c}\n";
-    std::cout << "2. std::initializer_list<T> stores: const T* begin, size_t size\n";
-    std::cout << "3. sizeof(initializer_list<T>) = 2 * sizeof(void*) = 16 bytes (64-bit)\n";
-    std::cout << "4. Lifetime: the backing array is a temporary → never return initializer_list from function!\n\n";
-    std::cout << "5. GCC source: libstdc++-v3/libsupc++/initializer_list\n";
-    std::cout << "   compiler side: gcc/cp/decl.cc (build_init_list_constructor)\n";
-    std::cout << "6. The backing array is allocated on the caller's stack frame — no heap alloc.\n";
-    return 0;
+    Point p_brace{1, 2};  // C++11 起：列表聚合初始化
+    Point p_paren(3, 4);  // C++20 P0960：括号聚合初始化
+    std::cout << "p_brace=(" << p_brace.x << ',' << p_brace.y
+              << ")  p_paren=(" << p_paren.x << ',' << p_paren.y << ")\n";
 }
 ```
 
@@ -228,21 +196,16 @@ int main() {
 
 > **示例 13** [难度 ★★☆☆☆] [主题：关键提案：初始化演进史 <span class="badge badge-std">标准</span>]
 ```cpp title="示例 13 · ★★☆☆☆"
-// ⑭ 从 C++11 到 C++26 的初始化提案全景
+// ⑮ 初始化相关的 5 道高频面试题（关键差异真机演示）
 #include <iostream>
+#include <vector>
 int main() {
-    std::cout << "C++ initialization evolution:\n\n";
-    std::cout << "C++11 N2672: initializer_list + uniform brace init\n";
-    std::cout << "  → Most impactful single feature for initialization.\n\n";
-    std::cout << "C++14 N3922: auto return with braced-init-list (rejected)\n";
-    std::cout << "C++17 P0091: guaranteed copy elision → prvalue materialization\n";
-    std::cout << "C++20 P1008: aggregate init with user-declared ctor = prohibited\n";
-    std::cout << "  → struct S { S(){} int x; }; S s{5}; // C++17 OK, C++20 ERROR\n\n";
-    std::cout << "C++20 P0960: parenthesized aggregate init\n";
-    std::cout << "  → Point p(1,2); // now works for aggregates without ctor!\n\n";
-    std::cout << "C++23 P2327: designated init in more contexts\n";
-    std::cout << "C++26 P2996: reflection → auto-generate init from type introspection\n";
-    return 0;
+    int x1{};                  // 值初始化 = 0
+    // int x2();              // 函数声明 (MVP)！不能取成员
+    std::vector<int> v_paren(5), v_brace{5};
+    std::cout << "Q1: x1=" << x1
+              << "  Q2: v(5).size=" << v_paren.size()
+              << " v{5}.size=" << v_brace.size() << '\n';
 }
 ```
 
@@ -250,29 +213,6 @@ int main() {
 
 > **示例 14** [难度 ★★☆☆☆] [主题：面试题精选：初始化 5 问 <span class="badge badge-exp">经验</span>]
 ```cpp title="示例 14 · ★★☆☆☆"
-// ⑮ 初始化相关的 5 道高频面试题
-#include <iostream>
-#include <vector>
-int main() {
-    std::cout << "Q1: int x{}; int x = {}; int x(); 的区别？\n";
-    std::cout << "答: int x{} = 0 (值初始化); int x={} = 0 (拷贝列表初始化); int x(); 是函数声明(MVP)!\n\n";
-    std::cout << "Q2: std::vector<int> v(5) vs v{5}?\n";
-    std::cout << "答: v(5) = 5个0 (填充构造); v{5} = 1个元素值为5 (initializer_list 优先)。\n\n";
-    std::cout << "Q3: explicit 构造函数的初始化限制？\n";
-    std::cout << "答: explicit 禁止拷贝初始化和隐式转换。直接初始化和列表初始化仍可用。\n";
-    std::cout << "   explicit S(int); S s(5) OK; S s = 5 ERROR; S s{5} OK;\n\n";
-    std::cout << "Q4: 默认初始化 vs 值初始化 vs 零初始化？\n";
-    std::cout << "答: 默认(内置类型=未定义); 值(T{} = 0/nullptr); 零(static变量=T{} )。\n\n";
-    std::cout << "Q5: aggregate init 的条件？\n";
-    std::cout << "答: 无用户声明构造函数、无私基类、无虚函数、所有成员 public (C++17前)。\n";
-    return 0;
-}
-```
-
-## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
-
-> **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
-```cpp title="示例 15 · ★★★★☆"
 // ⑯ 初始化的 5 大陷阱
 #include <iostream>
 #include <vector>
@@ -281,29 +221,57 @@ int main() {
 struct Foo {};
 void mvp_demo() {
     // Foo f();  // 声明函数 f 返回 Foo，不是创建对象！
-    Foo f{};                                         // 正确：创建对象
+    Foo f{};                                               // 正确：创建对象
     (void)f;
 }
 
 // 陷阱2: initializer_list 优先劫持
 void il_trap() {
-    std::vector<int> v1(10, 2);                      // 期望: 10 个 2 → 正确
-    std::vector<int> v2{10, 2};                      // 期望: 同? → 错误! {10,2} = 2个元素
+    std::vector<int> v1(10, 2);                            // 10 个 2
+    std::vector<int> v2{10, 2};                            // 2 个元素：10 和 2
+    std::cout << "trap2: v(10,2).size()=" << v1.size()
+              << "  v{10,2}.size()=" << v2.size() << '\n';
 }
 
-// 陷阱3: 类的成员初始化顺序 ≠ 初始化列表顺序
-struct Order { int a,b; Order(int x):b(x),a(b){} };  // a 在 b 之前初始化，但 b 此时未初始化!
+// 陷阱3: 成员初始化顺序 = 声明顺序（非初始化列表顺序）
+struct Order { int a, b; Order(int x) : b(x), a(b) {} };   // a 先于 b 初始化
 
-// 陷阱4: static 局部变量多线程初始化（C++11 起线程安全，但有代价）
-// 陷阱5: 返回 initializer_list → 悬垂引用
+// 陷阱4: static 局部变量多线程初始化（C++11 magic static 线程安全）
+struct Once { Once() { std::cout << "trap4: magic static 只构造一次\n"; } };
+const Once& get_once() { static Once inst; return inst; }  // C++11 起线程安全
+
+// 陷阱5: 返回 initializer_list → 悬垂（底层数组是临时对象）
+std::initializer_list<int> dangling() { return {1, 2, 3}; }
 
 int main() {
-    std::cout << "Trap 1: Foo f(); is a function declaration (MVP). Use Foo f{};\n";
-    std::cout << "Trap 2: vector{10,2} = {10,2} (2 elements), vector(10,2) = ten 2s.\n";
-    std::cout << "Trap 3: member init order = declaration order, NOT initializer list order.\n";
-    std::cout << "Trap 4: static local init is thread-safe (C++11+), uses hidden mutex.\n";
-    std::cout << "Trap 5: never return initializer_list<T> — backing array is temporary.\n";
-    return 0;
+    mvp_demo();
+    il_trap();
+    Order o(42);                                           // a 读未初始化的 b（UB）
+    std::cout << "trap3: Order o(42): a=" << o.a << " b=" << o.b << '\n';
+    get_once(); get_once();                                // 只打印一次
+    auto il = dangling();
+    std::cout << "trap5: 返回 il.size()=" << il.size()
+              << "（底层数组已销毁，读取即 UB）\n";
+}
+```
+
+## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
+
+> **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+```cpp title="示例 15 · ★★★★☆"
+// ⑰ 实际开发中的初始化高频问答
+#include <iostream>
+#include <string>
+struct Data {
+    int a = 10;          // NSDMI（非静态成员初始化器）
+    double b = 3.14;
+    std::string s{"hello"};
+};
+int main() {
+    Data d1, d2{20}, d3{20, 2.71};
+    std::cout << "d1: a=" << d1.a << " b=" << d1.b << '\n';
+    std::cout << "d2: a=" << d2.a << " b=" << d2.b << '\n';
+    std::cout << "d3: a=" << d3.a << " b=" << d3.b << '\n';
 }
 ```
 
@@ -311,29 +279,16 @@ int main() {
 
 > **示例 16** [难度 ★★☆☆☆] [主题：初始化实战问题 <span class="badge badge-exp">经验</span>]
 ```cpp title="示例 16 · ★★☆☆☆"
-// ⑰ 实际开发中的初始化高频问答
+// ⑱ 初始化的 6 条黄金法则
 #include <iostream>
 #include <string>
-struct Data {
-    int a = 10;         // NSDMI（Non-Static Data Member Initializer）
-    double b = 3.14;
-    std::string s{"hello"};
-};
+struct Config { int port = 8080; std::string host = "0.0.0.0"; };
+struct Point { double x, y, z; };
 int main() {
-    Data d1;            // 使用所有 NSDMI 默认值
-    Data d2{20};        // a=20, b=3.14, s="hello"（只覆盖前 N 个成员）
-    Data d3{20, 2.71};  // a=20, b=2.71, s="hello"
-
-    std::cout << "d1: " << d1.a << "," << d1.b << std::endl;
-    std::cout << "d2: " << d2.a << "," << d2.b << std::endl;
-
-    std::cout << "\nFAQ:\n";
-    std::cout << "Q: NSDMI vs constructor initializer list? A: NSDMI is the fallback; ctor list wins.\n";
-    std::cout << "Q: Why prefer {} over ()? A: {} catches narrowing, works uniformly, avoids MVP.\n";
-    std::cout << "Q: Can I initialize a member array in-class? A: Yes with brace init int arr[3]{1,2,3};\n";
-    std::cout << "Q: When to use () over {}? A: When you specifically need the constructor overload, not init-list.\n";
-    std::cout << "Q: Does = default use NSDMI? A: Yes, = default constructor uses in-class initializers.\n";
-    return 0;
+    Config cfg1{3000, "::1"};
+    Point origin{.x = 0, .y = 0, .z = 0};   // C++20 designated init
+    std::cout << "cfg1: " << cfg1.host << ':' << cfg1.port << '\n';
+    std::cout << "origin: (" << origin.x << ',' << origin.y << ',' << origin.z << ")\n";
 }
 ```
 
@@ -341,36 +296,24 @@ int main() {
 
 > **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
 ```cpp title="示例 17 · ★★☆☆☆"
-// ⑱ 初始化的 6 条黄金法则
+// ⑲ 不同初始化方式的汇编对比
 #include <iostream>
+#include <chrono>
 #include <vector>
-#include <string>
-#include <initializer_list>
-
-// 法则1: 首选 {} 统一初始化（防窄化、防 MVP）
-struct Config { int port = 8080; std::string host = "0.0.0.0"; };
-Config cfg1{3000, "::1"};              // OK
-// Config cfg2 = {3000, "::1"};  // 也可以，但在 explicit ctor 下受限
-
-// 法则2: NSDMI 提供合理的默认值（不要留未初始化的内置类型）
-// 法则3: auto + {} 组合推断 initializer_list
-// 法则4: 优先使用 = default 或 = delete 明确意图
-// 法则5: 类模板使用 std::initializer_list 构造函数时，注意匹配优先级
-// 法则6: C++20 designated initializers 提升可读性
-
-struct Point { double x, y, z; };
-Point origin{.x = 0, .y = 0, .z = 0};  // C++20 designated init
-
+struct Vec3 { double x, y, z; };
+__attribute__((noinline)) Vec3 make_brace() { return {1.0, 2.0, 3.0}; }
+__attribute__((noinline)) Vec3 make_assign() { Vec3 v; v.x=1.0; v.y=2.0; v.z=3.0; return v; }
 int main() {
-    std::cout << "cfg: " << cfg1.host << ":" << cfg1.port << std::endl;
-    std::cout << "origin: (" << origin.x << "," << origin.y << "," << origin.z << ")\n";
-    std::cout << "Rule 1: prefer {} over ()\n";
-    std::cout << "Rule 2: always initialize built-in types (NSDMI or ctor)\n";
-    std::cout << "Rule 3: use designated initializers for clarity (C++20)\n";
-    std::cout << "Rule 4: = default / = delete for clear intent\n";
-    std::cout << "Rule 5: beware of init-list hijacking in std::vector\n";
-    std::cout << "Rule 6: auto x = {1,2,3} deduces as std::initializer_list<int>\n";
-    return 0;
+    const int N = 20000000;
+    Vec3 sink{0, 0, 0};
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) { Vec3 v = make_brace(); sink.x += v.x; }
+    auto t1 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) { Vec3 v = make_assign(); sink.x += v.x; }
+    auto t2 = std::chrono::steady_clock::now();
+    double bns = std::chrono::duration<double, std::nano>(t1-t0).count()/N;
+    double ans = std::chrono::duration<double, std::nano>(t2-t1).count()/N;
+    std::cout << "brace=" << bns << "ns/op  assign=" << ans << "ns/op  sink=" << sink.x << '\n';
 }
 ```
 
@@ -378,31 +321,13 @@ int main() {
 
 > **示例 18** [难度 ★★★☆☆] [主题：性能分析：初始化的运行时开销 <span class="badge badge-platform">平台</span>
 ```cpp title="示例 18 · ★★★☆☆"
-// ⑲ 不同初始化方式的汇编对比
+// ⑳ 各语言初始化语义对比（C++ 特有的三种初始化）
 #include <iostream>
-#include <chrono>
-#include <vector>
-
-struct Vec3 { double x,y,z; };
-
-// 测试聚合初始化 vs 逐个赋值
-__attribute__((noinline)) Vec3 make_brace() { return {1.0, 2.0, 3.0}; }
-__attribute__((noinline)) Vec3 make_assign() { Vec3 v; v.x=1.0; v.y=2.0; v.z=3.0; return v; }
-
 int main() {
-    auto t0 = std::chrono::high_resolution_clock::now();
-    Vec3 sum{0,0,0};
-    for (int i = 0; i < 10000000; ++i) { Vec3 v = make_brace(); sum.x += v.x; }
-    auto t1 = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < 10000000; ++i) { Vec3 v = make_assign(); sum.x += v.x; }
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto bns = (t1-t0).count() / 10000000;
-    auto ans = (t2-t1).count() / 10000000;
-    std::cout << "brace init: ~" << bns << "cyc" << "  assign: ~" << ans << "cyc (both ~same assembly)\n";
-    std::cout << "Assembly (GCC -O2): brace = movaps [rsp], xmm0; assign = same pattern.\n";
-    std::cout << "Bottom line: initialization syntax does NOT affect generated code quality.\n";
-    std::cout << "vector<int> v(5) vs v{5} — the cost difference is in the semantics, not the syntax.\n";
-    return 0;
+    int x_init{};         // 值初始化 → 0
+    static int x_static;  // 零初始化 → 0（静态存储期）
+    // int x_default;        // 默认初始化：内置类型不确定（读取即 UB）
+    std::cout << "x_init=" << x_init << " x_static=" << x_static << '\n';
 }
 ```
 
@@ -424,29 +349,13 @@ int main() {
 
 > **示例 19** [难度 ★★★☆☆] [主题：跨语言对比：初始化语法全景 <span class="badge badge-exp">经验</span>]
 ```cpp title="示例 19 · ★★★☆☆"
-// ⑳ 各语言初始化语义对比
+// 补充示例：列表初始化 + 范围 for
 #include <iostream>
+#include <vector>
 int main() {
-    std::cout << "=== Cross-language initialization ===\n\n";
-    std::cout << "C++:  int x{42};       // 统一初始化，防窄化\n";
-    std::cout << "      auto x = 42;     // 类型推导\n";
-    std::cout << "      T{} → 值初始化（零/nullptr）\n";
-    std::cout << "      T() → 默认初始化（内置=未定义）\n\n";
-    std::cout << "Rust: let x: i32 = 42;  // 不可变默认\n";
-    std::cout << "      let x = 42;         // 类型推导\n";
-    std::cout << "      let x = i32::default(); // 零初始化\n";
-    std::cout << "      // 无默认构造函数，所有变量必须显式初始化\n\n";
-    std::cout << "Go:   x := 42           // 短变量声明 + 推导\n";
-    std::cout << "      var x int = 42    // 显式类型\n";
-    std::cout << "      var x int         // 零初始化（都是零值，永不未定义）\n\n";
-    std::cout << "Java: int x = 42;       // 基本类型必须初始化\n";
-    std::cout << "      T x = new T();    // 引用类型\n";
-    std::cout << "      // 成员变量有默认零值，局部变量必须初始化\n\n";
-    std::cout << "Python: x = 42          // 动态类型，赋值即初始化\n";
-    std::cout << "         // 无未初始化概念，NameError 如果未赋值\n\n";
-    std::cout << "C++ 独有: 值 vs 默认 vs 零初始化三种不同语义，{} 统一语法但存在 MVP 陷阱。\n";
-    std::cout << "Rust/Go 更安全：所有变量必须显式初始化或自动零初始化，无 UB 风险。\n";
-    return 0;
+    std::vector<int> v{1, 2, 3, 4, 5};
+    int s = 0; for (int x : v) s += x;
+    std::cout << "v.size()=" << v.size() << " sum=" << s << '\n';
 }
 ```
 
@@ -684,7 +593,12 @@ int main(){P p1{1,2};P p2{.x=10,.y=20};std::cout<<p1.x<<" "<<p2.y<<std::endl;ret
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：初始化设计权衡 [H: Design]
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
-int main(){std::cout<<"Use T x{} as default: value-init, zero-cost, impossible to forget."<<std::endl;return 0;}
+struct S { int a; };
+int main() {
+    S v{};                       // 值初始化：a = 0，零成本
+    std::cout << "S v{}: a=" << v.a
+              << "  (值初始化，零成本，绝不漏初始化)\n";
+}
 ```
 
 ## 附录 H：初始化面试陷阱

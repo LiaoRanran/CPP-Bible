@@ -4,6 +4,13 @@
 
 ---
 
+### 2026-09-04（续五）ch32 初始化 真机实证深耕（L2 主线）
+- **病灶**：ch32 总 59 cpp 块、1570 行，散文密度 75.1%（骨架不贫血），但 **10 个块把散文/跨语言对比/面试题塞进 `std::cout`**（赝品，如 `cout<<"Trap 1: ..."`、`cout<<"Q1: ... 答: ..."`、编造汇编 `cout<<"Assembly (GCC -O2): brace = movaps..."`）。另 #59 玩具块打印一句英文建议。
+- **选章依据（避开 prose_density 误伤）**：用 `cout<<"` 玩具代码扫描（ch32=96 处，全库最高之一）定位真稀薄，而非按密度升序（ch71/ch70/ch19 曾误伤深章）。
+- **真机取证**（GCC 15.3.0，Examples/_ch32_init.cpp）：`vector(10,2)`=10 元素 vs `vector{10,2}`=2 元素、成员初始化顺序 UB（a 读到未初始化栈）、返回 initializer_list 悬垂（size=3 底层数组已销毁）、brace≈assign（2.335/2.327 ns/op，生成等价代码）、静态零初始化 vs `value{}` 均全 0。
+- **修复**：10 块伪代码 → 真机实证（陷阱4/5 补可编译代码、性能块删编造汇编改真机计时、FAQ/法则/面试题文字移正文）；#59 玩具块 → 值初始化演示。cpp 块数不变（7534），节号不动。
+- **验证**：ch32 全部 59 块 main-only 编译 0 失败；全量 compile gate **PASS（0 regression）**、exempt_audit PASS；whitespace 0 / gen_metrics ✅ / consistency 100/100。
+
 ### 2026-09-04（续四）CI 编译门禁 regression 清零（19 → 0）
 - **根因**：CI compile job 用 `--changed` 增量门禁；题注铺开改动覆盖全库 → 回退全量重编 →
   历史既存失败一次性暴露为 19 个 REGRESSION（run #522 红）。非内容新增 bug，是覆盖面扩大。
