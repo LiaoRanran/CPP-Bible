@@ -760,6 +760,8 @@ concept Drawable = requires(T t) { { t.draw() } -> std::same_as<void>; };
 
 template <Drawable T>
 void render(T& t) { t.draw(); }
+
+struct Circle { void draw() const {} };   // 满足 Drawable 概念（含 draw() 成员），供下方示例使用
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概念约束
