@@ -1460,7 +1460,7 @@ int main()
 
 ## 附录 D5：真实基准与性能分析 — libstdc++ 内部：std::string 短字符串优化(SSO)阈值实测（GCC 15.3.0）
 
-> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，10 轮取中位；重载 `operator new` 统计分配次数。本附录目的：用主控实测锁死 libstdc++ 短字符串优化(SSO)的容量阈值与"超阈值"的代价断崖。**绝对微秒随机器而变，加速比才是可移植信号。**
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++20`；`std::chrono::steady_clock` 计时，10 轮取中位；重载 `operator new` 统计分配次数。本附录目的：用主控实测锁死 libstdc++ 短字符串优化(SSO)的容量阈值与"超阈值"的代价断崖。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
 ### D5.1 基准结果
 

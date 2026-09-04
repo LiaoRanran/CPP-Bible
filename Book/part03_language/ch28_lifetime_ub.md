@@ -1186,7 +1186,7 @@ int f() {
 
 `[平台·x86-64]` **本机实测**：在 GCC 15.3.0 上链接 sanitizer 失败：
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 检测
-```asm
+```text
 C:/Qt/.../ld.exe: cannot find -lubsan: No such file or directory
 collect2.exe: error: ld returned 1 exit status
 ```
