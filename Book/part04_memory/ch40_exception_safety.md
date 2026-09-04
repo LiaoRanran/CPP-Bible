@@ -147,12 +147,12 @@ struct ThrowsOnCopy {
     int v;
     ThrowsOnCopy(int x=0):v(x){}
     ThrowsOnCopy(const ThrowsOnCopy&) { throw std::runtime_error("copy throws"); }
-    ThrowsOnCopy(ThrowsOnCopy&&) noexcept = default;   // 移动不抛
+    ThrowsOnCopy(ThrowsOnCopy&&) noexcept = default;  // 移动不抛
 };
 int main(){
     std::vector<ThrowsOnCopy> v;
-    v.reserve(1); v.emplace_back(1);   // size=1,cap=1
-    try { v.emplace_back(2); }          // 扩容：移动不抛→直接 move，成功
+    v.reserve(1); v.emplace_back(1);                  // size=1,cap=1
+    try { v.emplace_back(2); }                        // 扩容：移动不抛→直接 move，成功
     catch(...) { std::cout << "unreachable\n"; }
     // 若移动会抛而拷贝也会抛，则 realloc 的 catch 回滚到原状
 }
@@ -174,11 +174,11 @@ int main(){
 #include <stdexcept>
 #include <cstdio>
 struct Ledger {
-    void commit() {                       // 想提供 strong 保证
-        send_over_network();              // 副作用：成功则对端已收
-        update_local_state();             // 若此处抛，网络已发出→无法回滚
+    void commit() {             // 想提供 strong 保证
+        send_over_network();    // 副作用：成功则对端已收
+        update_local_state();   // 若此处抛，网络已发出→无法回滚
     }
-    void send_over_network(){}   // 假设成功
+    void send_over_network(){}  // 假设成功
     void update_local_state(){ throw std::runtime_error("local fail"); }
 };
 int main(){
@@ -206,8 +206,8 @@ int main(){
 struct Widget {
     std::vector<int> data;
     Widget& operator=(const Widget& rhs) {
-        std::vector<int> tmp = rhs.data;   // 若抛，*this 未动（强）
-        data.swap(tmp);                    // noexcept：提交
+        std::vector<int> tmp = rhs.data;        // 若抛，*this 未动（强）
+        data.swap(tmp);                         // noexcept：提交
         return *this;
     }
     Widget& operator=(Widget&& rhs) noexcept {  // 移动不抛 → noexcept
@@ -250,9 +250,9 @@ int main(){
 struct Tracer {
     const char* name;
     Tracer(const char* n):name(n){ std::cout << "ctor " << name << "\n"; }
-    ~Tracer(){ std::cout << "dtor " << name << "\n"; }   // 注意：非 noexcept 也行，只要不抛
+    ~Tracer(){ std::cout << "dtor " << name << "\n"; }  // 注意：非 noexcept 也行，只要不抛
 };
-void f(){ Tracer c("c"); throw 1; }   // c 在抛出时析构
+void f(){ Tracer c("c"); throw 1; }                     // c 在抛出时析构
 int main(){
     try { Tracer a("a"); Tracer b("b"); f(); }
     catch(int){ std::cout << "caught\n"; }
@@ -333,7 +333,7 @@ int main(){
 int main(){
     std::cout << std::boolalpha;
     std::cout << noexcept(1/0) << "\n";                 // true：内建运算不抛
-    std::cout << noexcept(std::vector<int>()) << "\n"; // 依赖分配；noexcept 取决于 allocator
+    std::cout << noexcept(std::vector<int>()) << "\n";  // 依赖分配；noexcept 取决于 allocator
 }
 ```
 
@@ -343,12 +343,12 @@ int main(){
 #include <utility>
 #include <type_traits>
 struct S {
-    S(S&&) noexcept;                 // 移动不抛
-    S(const S&) noexcept(false);     // 拷贝抛
+    S(S&&) noexcept;                            // 移动不抛
+    S(const S&) noexcept(false);                // 拷贝抛
 };
 template<class T>
 void move_or_copy(T& dst, T& src)
-    noexcept(noexcept(T(std::declval<T&&>())))   // 若 T 移动不抛则本函数不抛
+    noexcept(noexcept(T(std::declval<T&&>())))  // 若 T 移动不抛则本函数不抛
 {
     dst = std::move(src);
 }
@@ -397,14 +397,14 @@ int main(){
 struct M {
     int v=0;
     M(int x=0):v(x){}
-    M(M&& o) noexcept(false) { v=o.v; throw "move throws"; } // 移动抛，且未标 noexcept
-    M(const M& o):v(o.v){ std::cout << "  [copy] v=" << o.v << "\n"; } // 拷贝安全
+    M(M&& o) noexcept(false) { v=o.v; throw "move throws"; }            // 移动抛，且未标 noexcept
+    M(const M& o):v(o.v){ std::cout << "  [copy] v=" << o.v << "\n"; }  // 拷贝安全
 };
 int main(){
     std::vector<M> v; v.reserve(1); v.emplace_back(1);
     std::cout << "is_nothrow_move_constructible<M> = "
               << std::is_nothrow_move_constructible<M>::value << "\n";
-    v.emplace_back(2);  // 扩容：move_if_noexcept 见移动非 noexcept → 改用拷贝
+    v.emplace_back(2);                                                  // 扩容：move_if_noexcept 见移动非 noexcept → 改用拷贝
     std::cout << "after: size=" << v.size() << "（扩容成功，走拷贝，未抛异常）\n";
 }
 ```
@@ -441,7 +441,7 @@ template<class T>
 void relocate_or_copy(std::vector<T>& dst, std::vector<T>& src){
     if constexpr (std::is_nothrow_move_constructible_v<T>) {
         dst.insert(dst.end(), std::make_move_iterator(src.begin()),
-                                 std::make_move_iterator(src.end()));   // 快路径
+                                 std::make_move_iterator(src.end()));  // 快路径
         std::cout << "relocated (noexcept move)\n";
     } else {
         dst.insert(dst.end(), src.begin(), src.end());                 // 安全路径
@@ -455,8 +455,8 @@ struct Safe { Safe(Safe&&) noexcept = default; Safe(const Safe&)=default;
 struct Unsafe { Unsafe(Unsafe&&); Unsafe(const Unsafe&)=default;
                 Unsafe& operator=(Unsafe&&); Unsafe& operator=(const Unsafe&)=default; };
 int main(){
-    std::vector<Safe> a,b;   relocate_or_copy(a,b);   // relocated
-    std::vector<Unsafe> c,d; relocate_or_copy(c,d);   // copied
+    std::vector<Safe> a,b;   relocate_or_copy(a,b);                    // relocated
+    std::vector<Unsafe> c,d; relocate_or_copy(c,d);                    // copied
 }
 ```
 
@@ -495,7 +495,7 @@ int main(){
 ### 7.2 `bits/vector.tcc:477-523` —— _M_realloc_insert 的 realloc + 回滚
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · bits/vector.tcc:47
-```
+```text
 477	  if _GLIBCXX17_CONSTEXPR (_S_use_relocate())
 478	    {
 479	      __new_finish = _S_relocate(__old_start, __position.base(),
@@ -527,7 +527,7 @@ int main(){
 ### 7.3 `bits/stl_vector.h:462-509` —— _S_use_relocate / noexcept 决策
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · bits/stlvector.h:4
-```
+```text
 464	  static constexpr bool
 465	  _S_nothrow_relocate(true_type)
 466	  {
@@ -569,7 +569,7 @@ int main(){
 ### 7.5 `exception:121-130` —— uncaught_exception / uncaught_exceptions
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · exception:121-130
-```
+```text
 121	  _GLIBCXX17_DEPRECATED_SUGGEST("std::uncaught_exceptions()")
 122	  bool uncaught_exception() _GLIBCXX_USE_NOEXCEPT __attribute__ ((__pure__));
 124	  #if __cplusplus >= 201703L || !defined(__STRICT_ANSI__)
@@ -582,7 +582,7 @@ int main(){
 ### 7.6 `bits/cxxabi_forced.h:39-55` —— __forced_unwind
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · bits/cxxabiforced.
-```
+```text
 39	  namespace __cxxabiv1 {
 48	    class __forced_unwind {
 50	      virtual ~__forced_unwind() throw();
@@ -616,17 +616,17 @@ class Buffer {
     std::vector<int> d_;
 public:
     Buffer() = default;
-    Buffer(const Buffer& o): d_(o.d_) {}          // 拷贝可能抛，但在 swap 前
-    Buffer(Buffer&&) noexcept = default;           // 移动不抛
-    Buffer& operator=(Buffer other) noexcept {     // 按值：拷贝/移动构造
-        swap(*this, other);                        // noexcept 交换
-        return *this;                              // other 析构释放旧资源
+    Buffer(const Buffer& o): d_(o.d_) {}        // 拷贝可能抛，但在 swap 前
+    Buffer(Buffer&&) noexcept = default;        // 移动不抛
+    Buffer& operator=(Buffer other) noexcept {  // 按值：拷贝/移动构造
+        swap(*this, other);                     // noexcept 交换
+        return *this;                           // other 析构释放旧资源
     }
     friend void swap(Buffer& a, Buffer& b) noexcept {
         using std::swap; swap(a.d_, b.d_);
     }
 };
-int main(){ Buffer x, y; x = y; }   // 若拷贝抛，x 不变（强保证）
+int main(){ Buffer x, y; x = y; }               // 若拷贝抛，x 不变（强保证）
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法（强保证）
@@ -635,9 +635,9 @@ int main(){ Buffer x, y; x = y; }   // 若拷贝抛，x 不变（强保证）
 #include <vector>
 struct Naive {
     std::vector<int> a, b;
-    Naive& operator=(const Naive& o) {   // 两步拷贝，第一步成功后第二步抛→半改
-        a = o.a;                         // 成功
-        b = o.b;                         // 若抛，a 已改，o 未变 → 状态不一致(basic)
+    Naive& operator=(const Naive& o) {  // 两步拷贝，第一步成功后第二步抛→半改
+        a = o.a;                        // 成功
+        b = o.b;                        // 若抛，a 已改，o 未变 → 状态不一致(basic)
         return *this;
     }
 };
@@ -660,10 +660,10 @@ struct Naive {
 #include <chrono>
 #include <iostream>
 struct Blob { std::vector<int> d = std::vector<int>(64); };
-Blob& cas_assign(Blob& self, Blob other) noexcept {       // copy-and-swap
+Blob& cas_assign(Blob& self, Blob other) noexcept {  // copy-and-swap
     using std::swap; swap(self.d, other.d); return self;
 }
-Blob& inl_assign(Blob& self, const Blob& o) {              // 就地（basic，无额外拷贝）
+Blob& inl_assign(Blob& self, const Blob& o) {        // 就地（basic，无额外拷贝）
     self.d = o.d; return self;
 }
 int main(){
@@ -692,22 +692,22 @@ int main(){
 #include <exception>
 #include <cstdio>
 struct Transaction {
-    int init_ = std::uncaught_exceptions();   // 构造时快照
+    int init_ = std::uncaught_exceptions();  // 构造时快照
     void commit(){ std::printf("COMMIT data\n"); }
     void rollback(){ std::printf("ROLLBACK data\n"); }
     ~Transaction() {
         if (std::uncaught_exceptions() > init_)
-            rollback();                        // 因异常展开→不提交
+            rollback();                      // 因异常展开→不提交
         else
-            commit();                          // 正常离开作用域→提交
+            commit();                        // 正常离开作用域→提交
     }
 };
 int main(){
     try {
-        Transaction t;                        // init_ = 0
-        throw 1;                              // 抛→展开，t 析构时 uncaught=1>0
+        Transaction t;                       // init_ = 0
+        throw 1;                             // 抛→展开，t 析构时 uncaught=1>0
     } catch(int){}
-    Transaction t2;                           // 正常析构，uncaught=0 → 提交
+    Transaction t2;                          // 正常析构，uncaught=0 → 提交
 }
 // 输出：ROLLBACK data  (t) \n COMMIT data (t2)
 ```
@@ -793,8 +793,8 @@ int main(){
 struct M { M(){ std::cout << "M ctor\n"; } ~M(){ std::cout << "M dtor\n"; } };
 struct N { N(){ std::cout << "N ctor\n"; throw std::runtime_error("N fails"); } ~N() noexcept {} };
 struct C {
-    M m;   // 先构造
-    N n;   // 构造抛→m 自动析构
+    M m;  // 先构造
+    N n;  // 构造抛→m 自动析构
 };
 int main(){ try { C c; } catch(const std::exception&){ std::cout << "caught\n"; } }
 // 输出：M ctor, N ctor, M dtor, caught
@@ -864,9 +864,9 @@ volatile int sink = 0;
 int main(){
     const int N = 100'000'000;
     auto t0 = std::chrono::steady_clock::now();
-    for (int i=0;i<N;++i){ try { sink += i; } catch(...){} }   // 永不抛
+    for (int i=0;i<N;++i){ try { sink += i; } catch(...){} }  // 永不抛
     auto t1 = std::chrono::steady_clock::now();
-    for (int i=0;i<N;++i){ sink += i; }                        // 无 try/catch
+    for (int i=0;i<N;++i){ sink += i; }                       // 无 try/catch
     auto t2 = std::chrono::steady_clock::now();
     auto a = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
     auto b = std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count();
@@ -915,10 +915,10 @@ objdump -h a.out | grep -E "eh_frame|\.gcc_except"
 // [示例 36] 用 __builtin 观察：noexcept 让编译器相信不会展开
 #include <vector>
 [[gnu::cold]] void log_fail(const char*);
-void writer(std::vector<int>& v) noexcept {   // 编译器可省略展开注册
-    v.push_back(1);                            // 即便内部可能"逻辑失败"，noexcept 承诺不抛
+void writer(std::vector<int>& v) noexcept {  // 编译器可省略展开注册
+    v.push_back(1);                          // 即便内部可能"逻辑失败"，noexcept 承诺不抛
 }
-void writer_throw(std::vector<int>& v) {       // 保留完整展开表
+void writer_throw(std::vector<int>& v) {     // 保留完整展开表
     v.push_back(1);
 }
 int main(){ std::vector<int> v; writer(v); writer_throw(v); }
@@ -1017,8 +1017,8 @@ int main(){
 #include <iostream>
 int main(){
     try {
-        int* p = nullptr; *p = 1;          // 访问违规（SEH）
-    } catch (...) {                          ///EHa 才能捕获，/EHsc 不能
+        int* p = nullptr; *p = 1;  // 访问违规（SEH）
+    } catch (...) {                // /EHa 才能捕获，/EHsc 不能
         std::cout << "caught SEH via C++\n";
     }
 }
@@ -1074,14 +1074,14 @@ int main(){ std::set_terminate(on_term); boom(); }
 #include <iostream>
 struct NoThrow { NoThrow()=default; NoThrow(NoThrow&&) noexcept = default;
                  NoThrow(const NoThrow&)=default; int a[8]{}; };
-struct Throws  { Throws()=default; Throws(Throws&&) {}   // 移动抛→走拷贝
+struct Throws  { Throws()=default; Throws(Throws&&) {}  // 移动抛→走拷贝
                  Throws(const Throws&)=default; int a[8]{}; };
 template<class T>
 double bench(){
     const int N = 200'000;
     auto t0 = std::chrono::steady_clock::now();
     for (int k=0;k<50;++k){ std::vector<T> v; v.reserve(1);
-        for (int i=0;i<N;++i) v.push_back(T{}); }   // 反复扩容
+        for (int i=0;i<N;++i) v.push_back(T{}); }       // 反复扩容
     auto t1 = std::chrono::steady_clock::now();
     return std::chrono::duration<double,std::milli>(t1-t0).count();
 }
@@ -1098,8 +1098,8 @@ int main(){
 ```cpp
 // [示例 26] noexcept 让编译器删除展开表（概念验证，需用 objdump 看）
 #include <vector>
-void f_noexcept(std::vector<int>& v) noexcept { v.push_back(1); } // 不抛→无展开表
-void f_throws(std::vector<int>& v)            { v.push_back(1); } // 可能抛→保留展开表
+void f_noexcept(std::vector<int>& v) noexcept { v.push_back(1); }  // 不抛→无展开表
+void f_throws(std::vector<int>& v)            { v.push_back(1); }  // 可能抛→保留展开表
 // 编译：g++ -O2 -S 后对比 .eh_frame 尺寸：f_noexcept 更小
 int main(){ std::vector<int> v; f_noexcept(v); f_throws(v); }
 ```
@@ -1235,8 +1235,8 @@ struct Slow { Slow()=default; Slow(Slow&&); Slow(const Slow&)=default; };  // �
 static_assert(std::is_nothrow_move_constructible_v<Fast>);
 static_assert(!std::is_nothrow_move_constructible_v<Slow>);
 int main(){
-    std::vector<Fast> a(10); std::vector<Fast> b(std::move(a)); // relocate/移动，无回滚表
-    std::vector<Slow> c(10); std::vector<Slow> d(std::move(c)); // 走 move_if_noexcept→拷贝
+    std::vector<Fast> a(10); std::vector<Fast> b(std::move(a));            // relocate/移动，无回滚表
+    std::vector<Slow> c(10); std::vector<Slow> d(std::move(c));            // 走 move_if_noexcept→拷贝
 }
 ```
 
@@ -1261,11 +1261,11 @@ int main(){
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工程实践清单与常见陷阱
 ```cpp
 // [示例 30] 反例：异常穿越 C ABI（危险，UB）
-extern "C" int c_api() { throw 1; }  // 错误：C 调用方无法展开 C++ 栈
+extern "C" int c_api() { throw 1; }     // 错误：C 调用方无法展开 C++ 栈
 // 正确：
 extern "C" int c_api_safe(int* ok){
     try { /* ... */ }
-    catch(...) { *ok = 0; return -1; }   // 错误码过界
+    catch(...) { *ok = 0; return -1; }  // 错误码过界
 }
 ```
 
@@ -1295,10 +1295,10 @@ int main(){
 // [示例 32] 验证类型是否提供各级保证的 trait（编译期自检）
 #include <type_traits>
 #include <vector>
-static_assert(std::is_nothrow_swappable_v<std::vector<int>>);      // swap noexcept
-static_assert(std::is_nothrow_move_constructible_v<std::vector<int>>); // 移动 noexcept
+static_assert(std::is_nothrow_swappable_v<std::vector<int>>);           // swap noexcept
+static_assert(std::is_nothrow_move_constructible_v<std::vector<int>>);  // 移动 noexcept
 struct S { S(S&&) noexcept; S(const S&); };
-static_assert(std::is_nothrow_move_constructible_v<S>);            // 用户类型 noexcept 移动
+static_assert(std::is_nothrow_move_constructible_v<S>);                 // 用户类型 noexcept 移动
 int main(){}
 ```
 
@@ -1313,8 +1313,8 @@ int main(){}
 // [示例 42] 虚函数 noexcept 覆盖约束
 #include <type_traits>
 struct Base { virtual void f() noexcept; virtual void g(); };
-struct D1 : Base { void f() noexcept override; };          // OK：同样不抛
-struct D2 : Base { void g() override; };                   // OK：基类可抛
+struct D1 : Base { void f() noexcept override; };  // OK：同样不抛
+struct D2 : Base { void g() override; };           // OK：基类可抛
 // struct Bad : Base { void f() override; };               // 错误：基类 noexcept(true) 不能被覆盖成可能抛
 int main(){ static_assert(std::is_same_v<decltype(&Base::f), void (Base::*)() noexcept>); }
 ```
@@ -1495,7 +1495,7 @@ int main(){
 ## 附录 A：工业异常安全实践 [F: Industry / B: Principle]
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业异常安全实践 [F: Industry / B: Principle]
-```
+```text
 Google Style Guide 第3条: "We do not use C++ exceptions"
   → 原因: 二进制尺寸+15-30%, 老代码不支持, 团队一致性, 不可预测性能
   → 替代: absl::Status, absl::StatusOr<T> (零开销成功路径)
@@ -1517,7 +1517,7 @@ Chromium C++ Style Guide: "We do not use C++ exceptions"
 ## 附录 B：面试 [J: Learning / H: Design]
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
-```
+```text
 面试高频:
 Q: 析构函数为何不应抛异常？C++11起析构默认noexcept(true)
   抛 → std::terminate (noexcept违背), 或double exception (析构在stack unwinding中)
@@ -1808,9 +1808,9 @@ struct Db {
     void begin() { stage.clear(); }
     void add(int x) { stage.push_back(x); }
     void commit() {
-        auto next = committed;                          // 拷贝旧状态
+        auto next = committed;  // 拷贝旧状态
         next.insert(next.end(), stage.begin(), stage.end());
-        committed.swap(next);                           // 原子提交(强保证)
+        committed.swap(next);   // 原子提交(强保证)
     }
 };
 int main() {
@@ -1889,8 +1889,8 @@ void may_throw() {}
 int main() {
     // noexcept 运算符: 编译期查询表达式是否保证不抛
     std::cout << std::boolalpha
-              << noexcept(no_throw()) << " "      // true
-              << noexcept(may_throw()) << "\n";   // false
+              << noexcept(no_throw()) << " "     // true
+              << noexcept(may_throw()) << "\n";  // false
 }
 ```
 
@@ -1949,12 +1949,12 @@ S(S&& o) : p(o.p) { o.p = nullptr; }   // 未标 noexcept -> vector 扩容退化
 struct S {
     int* p = new int[8];
     S() = default;
-    S(S&& o) noexcept : p(o.p) { o.p = nullptr; }   // noexcept: 承诺不抛
+    S(S&& o) noexcept : p(o.p) { o.p = nullptr; }  // noexcept: 承诺不抛
     ~S() { delete[] p; }
 };
 int main() {
     std::vector<S> v; v.reserve(4);
-    for (int i = 0; i < 4; ++i) v.push_back(S{});     // 扩容走移动(S 移动 noexcept)
+    for (int i = 0; i < 4; ++i) v.push_back(S{});  // 扩容走移动(S 移动 noexcept)
     std::cout << "vector grew via move (noexcept)\n";
 }
 ```
@@ -2273,8 +2273,8 @@ struct CopyHeavy {
     static int copies;
     int id;
     CopyHeavy(int i = 0) : id(i) { }
-    CopyHeavy(const CopyHeavy& o) : id(o.id) { ++copies; }       // 拷贝计数
-    CopyHeavy(CopyHeavy&& o) noexcept(false) : id(o.id) { }      // 非 noexcept move
+    CopyHeavy(const CopyHeavy& o) : id(o.id) { ++copies; }   // 拷贝计数
+    CopyHeavy(CopyHeavy&& o) noexcept(false) : id(o.id) { }  // 非 noexcept move
 };
 int CopyHeavy::copies = 0;
 
@@ -2284,7 +2284,7 @@ int main() {
 
     std::vector<CopyHeavy> v;
     v.reserve(1);
-    for (int i = 0; i < 4; ++i) v.push_back(CopyHeavy(i));  // 多次扩容
+    for (int i = 0; i < 4; ++i) v.push_back(CopyHeavy(i));   // 多次扩容
     std::cout << "CopyHeavy copies during reallocation = "
               << CopyHeavy::copies << std::endl;
 
@@ -2408,7 +2408,7 @@ int main() {
         }
     } catch (const MyErr&) {
         caught = true;
-        s_caught = -1; // 标记异常分支被走
+        s_caught = -1;          // 标记异常分支被走
     }
 
     std::cout << "no_try  : " << s_no_try << std::endl;
@@ -2416,9 +2416,9 @@ int main() {
     std::cout << "caught  : " << (caught ? 1 : 0) << std::endl;
 
     // 功能正确性断言（绝不断言时间 / 倍数 / sizeof）
-    assert(s_no_try == s_try);   // try 块不影响正常路径结果
-    assert(caught);              // 异常被成功捕获
-    assert(s_caught == -1);      // 捕获分支正确执行
+    assert(s_no_try == s_try);  // try 块不影响正常路径结果
+    assert(caught);             // 异常被成功捕获
+    assert(s_caught == -1);     // 捕获分支正确执行
     return 0;
 }
 ```

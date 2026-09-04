@@ -51,7 +51,7 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 调试不是"找 bug"的代名词，而是**把程序的可观察行为对齐到设计意图**的闭环。C++ 的典型故障分层：
 
 > **示例 1** [难度 ★★★★★] [主题：概述：调试的目标与分层 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  层级            典型故障              首选工具                │
 ├─────────────────────────────────────────────────────────────┤
@@ -70,7 +70,7 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 #include <cstddef>
 #include <cstdio>
 
-int compute(int* p, int n) {          // p 可能为空、n 可能为负
+int compute(int* p, int n) {             // p 可能为空、n 可能为负
     int s = 0;
     for (int i = 0; i < n; ++i) s += p[i];
     return s;
@@ -78,7 +78,7 @@ int compute(int* p, int n) {          // p 可能为空、n 可能为负
 
 int main() {
     int a[4] = {1, 2, 3, 4};
-    std::printf("%d\n", compute(a, 4));   // 正常路径
+    std::printf("%d\n", compute(a, 4));  // 正常路径
     // compute(nullptr, -1);              // 静默 UB：编译期无任何提示
 }
 ```
@@ -98,13 +98,13 @@ GDB 是 GNU 调试器，三大基石命令：`break`（断点）、`watch`（观
 
 int sum_range(int* a, int lo, int hi) {
     int s = 0;
-    for (int i = lo; i <= hi; ++i) s += a[i];   // hi 越界时崩溃
+    for (int i = lo; i <= hi; ++i) s += a[i];  // hi 越界时崩溃
     return s;
 }
 
 int caller() {
     int v[3] = {10, 20, 30};
-    return sum_range(v, 0, 3);                  // 传入 hi=3，越界读 v[3]
+    return sum_range(v, 0, 3);                 // 传入 hi=3，越界读 v[3]
 }
 
 int main() { std::printf("%d\n", caller()); }
@@ -269,8 +269,8 @@ AddressSanitizer（ASan）在编译期插桩，运行时检测堆/栈/全局变�
 #include <cstddef>
 
 int main() {
-    int* arr = new int[10];   // 行5：分配 10 个 int
-    arr[10] = 42;             // 行6：越界写，污染相邻堆块头
+    int* arr = new int[10];  // 行5：分配 10 个 int
+    arr[10] = 42;            // 行6：越界写，污染相邻堆块头
     delete[] arr;
     return 0;
 }
@@ -302,8 +302,8 @@ UndefinedBehaviorSanitizer（UBSan）捕获有符号溢出、空指针解引用�
 #include <cstdio>
 
 int main() {
-    int x = 2147483647;       // 行5：INT_MAX
-    x += 1;                   // 行6：有符号溢出 -> 未定义行为
+    int x = 2147483647;  // 行5：INT_MAX
+    x += 1;              // 行6：有符号溢出 -> 未定义行为
     std::printf("%d\n", x);
     return 0;
 }
@@ -350,13 +350,13 @@ ThreadSanitizer（TSan）检测多线程对同地址的无同步并发访问（d
 int g_counter = 0;
 
 void worker() {
-    for (int i = 0; i < 100000; ++i) ++g_counter;   // 非原子、无锁
+    for (int i = 0; i < 100000; ++i) ++g_counter;  // 非原子、无锁
 }
 
 int main() {
     std::thread a(worker), b(worker);
     a.join(); b.join();
-    return g_counter;   // 结果不确定
+    return g_counter;                              // 结果不确定
 }
 ```
 
@@ -408,10 +408,10 @@ C++ 的**RAII**让资源在析构时自动释放，从语言层面消灭大多�
 #include <vector>
 
 void leak_free() {
-    auto p = std::make_unique<int[]>(100);   // 离开作用域自动 delete[]
+    auto p = std::make_unique<int[]>(100);  // 离开作用域自动 delete[]
     p[0] = 7;
     std::printf("%d\n", p[0]);
-}                                            // 此处无泄漏
+}                                           // 此处无泄漏
 
 int main() { leak_free(); return 0; }
 ```
@@ -567,9 +567,9 @@ strip后:    13824 字节
 volatile int heartbeat = 0;
 
 int main() {
-    while (true) {            // 远程调试器在此下断点观察 heartbeat
+    while (true) {                                 // 远程调试器在此下断点观察 heartbeat
         ++heartbeat;
-        for (volatile int i = 0; i < 1000; ++i) ;   // 模拟工作
+        for (volatile int i = 0; i < 1000; ++i) ;  // 模拟工作
     }
 }
 ```
@@ -642,9 +642,9 @@ int main() {
 #include <cstddef>
 #include <cstdio>
 
-bool step_a() { return true; }     // 阶段 A
-bool step_b() { return true; }     // 阶段 B
-int  result() { return 7; }        // 阶段 C
+bool step_a() { return true; }  // 阶段 A
+bool step_b() { return true; }  // 阶段 B
+int  result() { return 7; }     // 阶段 C
 
 int main() {
     if (!step_a()) { std::printf("FAIL at A\n"); return 1; }
@@ -712,11 +712,11 @@ std::mutex m1, m2;
 
 void t1() {
     std::lock_guard<std::mutex> a(m1);
-    std::lock_guard<std::mutex> b(m2);   // 持 m1 等 m2
+    std::lock_guard<std::mutex> b(m2);  // 持 m1 等 m2
 }
 void t2() {
     std::lock_guard<std::mutex> b(m2);
-    std::lock_guard<std::mutex> a(m1);   // 持 m2 等 m1 -> 死锁
+    std::lock_guard<std::mutex> a(m1);  // 持 m2 等 m1 -> 死锁
 }
 
 int main() {
@@ -824,10 +824,10 @@ _Z6sum_toi:
 std::mutex m1, m2;
 
 void t1() {
-    std::scoped_lock lk(m1, m2);   // 无死锁地同时持有两把锁
+    std::scoped_lock lk(m1, m2);  // 无死锁地同时持有两把锁
 }
 void t2() {
-    std::scoped_lock lk(m2, m1);   // 顺序无关，std::lock 内部死锁规避
+    std::scoped_lock lk(m2, m1);  // 顺序无关，std::lock 内部死锁规避
 }
 
 int main() {
@@ -1099,7 +1099,7 @@ int main() { errno = 0; std::perror("debug point"); return 0; }
 ## 附录 A：工业调试与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业调试与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
-```
+```text
 C++调试工具工业对比:
 GDB: GNU调试器, Linux标配, 支持C++表达式(pType, p vector.size())
 LLDB: LLVM调试器, macOS标配, 与GDB命令兼容(lldb → gdb别名)
@@ -1353,8 +1353,8 @@ int main() {
 
 int main() {
     int x = 2147483647;
-    x += 1;                        // BUG: 有符号溢出是 UB
-    std::cout << "x=" << x << "\n"; // -fsanitize=undefined 会在此报 signed integer overflow
+    x += 1;                          // BUG: 有符号溢出是 UB
+    std::cout << "x=" << x << "\n";  // -fsanitize=undefined 会在此报 signed integer overflow
 }
 ```
 
@@ -1432,9 +1432,9 @@ int main() {
 struct Node { int v; explicit Node(int i) : v(i) {} };
 
 int main() {
-    auto p = std::make_unique<Node>(7);   // 构造即拥有，析构即释放
+    auto p = std::make_unique<Node>(7);  // 构造即拥有，析构即释放
     std::cout << p->v << '\n';
-    return 0;                             // 离开作用域自动 delete，无泄漏
+    return 0;                            // 离开作用域自动 delete，无泄漏
 }
 ```
 

@@ -56,17 +56,17 @@ STL 收编的算法并非随意堆砌，而是围绕几条主线组织：**遍�
 #include <functional>
 #include <map>
 // 哈希：key -> value 的近似常数时间映射
-std::unordered_map<int, int> hash;          // ①
+std::unordered_map<int, int> hash;                                            // ①
 // 图：邻接表（vector<vector<int>>）
-std::vector<std::vector<int>> adj(10);      // ①
+std::vector<std::vector<int>> adj(10);                                        // ①
 // 树：递归或指针结构
-struct Node { int v; Node* left; Node* right; }; // ①
+struct Node { int v; Node* left; Node* right; };                              // ①
 // DP：以数组缓存子问题解
-std::vector<long long> dp(1000);            // ①
+std::vector<long long> dp(1000);                                              // ①
 // 贪心：每次取当前最优
-auto pick = [](int a, int b){ return std::max(a,b); }; // ①
+auto pick = [](int a, int b){ return std::max(a,b); };                        // ①
 // 分治/回溯：递归分解
-std::function<int(int)> fib = [&](int n){ return n<2?n:fib(n-1)+fib(n-2); }; // ①
+std::function<int(int)> fib = [&](int n){ return n<2?n:fib(n-1)+fib(n-2); };  // ①
 ```
 
 - `[标准]`：上述六类均可在 STL 找到对应设施（见 ⑮），但理解其思想是选型与排错的前提。
@@ -160,8 +160,8 @@ void dfs(int u, const std::vector<std::vector<int>>& adj,
          std::vector<bool>& vis, std::vector<int>& order) {
     vis[u] = true;
     for (int v : adj[u])
-        if (!vis[v]) dfs(v, adj, vis, order);   // ③ 递归深入
-    order.push_back(u);                          // 后序：拓扑排序用
+        if (!vis[v]) dfs(v, adj, vis, order);  // ③ 递归深入
+    order.push_back(u);                        // 后序：拓扑排序用
 }
 ```
 
@@ -186,14 +186,14 @@ std::vector<long long> dijkstra(int s,
     std::vector<long long> d(adj.size(), INF);
     std::priority_queue<std::pair<long long,int>,
                         std::vector<std::pair<long long,int>>,
-                        std::greater<>> pq;          // ④ 小顶堆
+                        std::greater<>> pq;                            // ④ 小顶堆
     d[s] = 0; pq.emplace(0, s);
     while (!pq.empty()) {
         auto [dist, u] = pq.top(); pq.pop();
-        if (dist > d[u]) continue;                   // ④ 过期堆项
+        if (dist > d[u]) continue;                                     // ④ 过期堆项
         for (auto& e : adj[u]) {
             long long nd = d[u] + e.w;
-            if (nd < d[e.to]) { d[e.to] = nd; pq.emplace(nd, e.to); } // 松弛
+            if (nd < d[e.to]) { d[e.to] = nd; pq.emplace(nd, e.to); }  // 松弛
         }
     }
     return d;
@@ -314,10 +314,10 @@ int tsp(int n, const std::vector<std::vector<int>>& g) {
 #include <utility>
 int max_intervals(std::vector<std::pair<int,int>> iv) {
     std::sort(iv.begin(), iv.end(),
-              [](auto&a, auto&b){ return a.second < b.second; }); // ⑦ 按结束排序
+              [](auto&a, auto&b){ return a.second < b.second; });  // ⑦ 按结束排序
     int cnt = 0, end = -1;
     for (auto& [s, e] : iv)
-        if (s >= end) { ++cnt; end = e; }   // ⑦ 能接上就选
+        if (s >= end) { ++cnt; end = e; }                          // ⑦ 能接上就选
     return cnt;
 }
 ```
@@ -357,9 +357,9 @@ int kruskal(std::vector<std::tuple<int,int,int>> edges, int n) {
 static Entry* oah_find(OAHMap* m, int key) {
     size_t h = hash_fn(key, m->cap);
     for (size_t i = 0; i < m->cap; ++i) {
-        size_t idx = (h + i) & (m->cap - 1);   // cap 为 2 的幂，掩码取模
+        size_t idx = (h + i) & (m->cap - 1);  // cap 为 2 的幂，掩码取模
         Entry* e = &m->slots[idx];
-        if (!e->used) return nullptr;          // 遇空槽：链断
+        if (!e->used) return nullptr;         // 遇空槽：链断
         if (!e->deleted && e->key == key) return e;
     }
     return nullptr;
@@ -453,8 +453,8 @@ void merge_sort(std::vector<int>& a, int l, int r) {
 #include <algorithm>
 #include <vector>
 std::vector<int> v = {5,3,8,1,9,2};
-std::sort(v.begin(), v.end());                 // ⑩ O(n log n)，平均快于手写
-std::sort(v.begin(), v.end(), std::greater<int>()); // 降序
+std::sort(v.begin(), v.end());                       // ⑩ O(n log n)，平均快于手写
+std::sort(v.begin(), v.end(), std::greater<int>());  // 降序
 ```
 
 - `[标准]`：`std::sort` 平均 O(n log n)，最坏 O(n log n)（introsort 在递归过深时切堆排防退化）。
@@ -474,10 +474,10 @@ void queen(int row, int n, long long cols, long long diag, long long adiag) {
     for (int c = 0; c < n; ++c) {
         long long bit = 1LL << c;
         if (cols & bit || diag & (1LL << (row + c)) || adiag & (1LL << (row - c + n)))
-            continue;                            // ⑪ 剪枝：冲突
+            continue;                           // ⑪ 剪枝：冲突
         queen(row + 1, n, cols | bit,
               diag | (1LL << (row + c)),
-              adiag | (1LL << (row - c + n)));   // ⑪ 递归深入
+              adiag | (1LL << (row - c + n)));  // ⑪ 递归深入
     }
 }
 ```
@@ -490,8 +490,8 @@ void permute(std::vector<int>& a, int i, std::vector<std::vector<int>>& out) {
     if (i == (int)a.size()) { out.push_back(a); return; }
     for (int j = i; j < (int)a.size(); ++j) {
         std::swap(a[i], a[j]);
-        permute(a, i + 1, out);                  // ⑪ 递归
-        std::swap(a[i], a[j]);                   // ⑪ 撤销（回溯）
+        permute(a, i + 1, out);  // ⑪ 递归
+        std::swap(a[i], a[j]);   // ⑪ 撤销（回溯）
     }
 }
 ```
@@ -509,12 +509,12 @@ void permute(std::vector<int>& a, int i, std::vector<std::vector<int>>& out) {
 #include <vector>
 #include <cstddef>
 struct PrefixSum {
-    std::vector<long long> pre;             // ⑫ 额外 O(n) 空间
+    std::vector<long long> pre;                                      // ⑫ 额外 O(n) 空间
     PrefixSum(const std::vector<int>& a) {
         pre.resize(a.size() + 1);
         for (size_t i = 0; i < a.size(); ++i) pre[i+1] = pre[i] + a[i];
     }
-    long long sum(int l, int r) const { return pre[r+1] - pre[l]; } // O(1)
+    long long sum(int l, int r) const { return pre[r+1] - pre[l]; }  // O(1)
 };
 ```
 
@@ -541,8 +541,8 @@ int range_sum(const std::vector<int>& a, int l, int r) {
 #include <vector>
 // 情况 A：标准设施已足够 -> 直接用
 std::vector<int> v{4,2,7,1};
-std::sort(v.begin(), v.end());                       // ⑬ 用 std::sort
-auto it = std::find(v.begin(), v.end(), 7);          // ⑬ 用 std::find
+std::sort(v.begin(), v.end());               // ⑬ 用 std::sort
+auto it = std::find(v.begin(), v.end(), 7);  // ⑬ 用 std::find
 // 情况 B：需要自定义策略且 STL 提供 -> 用算法+谓词
 std::sort(v.begin(), v.end(), [](int a,int b){ return a > b; });
 ```
@@ -578,8 +578,8 @@ for (int i = 0; i < 1000000; ++i) dyn.push_back(i);  // ⑭ 均摊 O(1)/次
 #include <algorithm>
 #include <vector>
 std::vector<int> v{1,3,5,7,9};
-auto it = std::find(v.begin(), v.end(), 5);                 // 顺序 O(n)
-auto lb = std::lower_bound(v.begin(), v.end(), 5);          // 有序 O(log n)
+auto it = std::find(v.begin(), v.end(), 5);         // 顺序 O(n)
+auto lb = std::lower_bound(v.begin(), v.end(), 5);  // 有序 O(log n)
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 STL 算法对应
@@ -644,11 +644,11 @@ std::unordered_map<Pt, int> pts;   // ⑯ 必须提供 hash + ==，否则编译/
 template <typename K, typename V>
 struct LRU {
     size_t cap;
-    std::list<std::pair<K,V>> lst;                       // ⑰ 最近使用在头
+    std::list<std::pair<K,V>> lst;                 // ⑰ 最近使用在头
     std::unordered_map<K, typename std::list<std::pair<K,V>>::iterator> pos;
     V get(const K& k) {
-        auto it = pos.find(k);                           // ⑱ 哈希 O(1) 定位
-        lst.splice(lst.begin(), lst, it->second);        // 提到头部
+        auto it = pos.find(k);                     // ⑱ 哈希 O(1) 定位
+        lst.splice(lst.begin(), lst, it->second);  // 提到头部
         return it->second->second;
     }
     void put(const K& k, const V& v) {
@@ -1004,7 +1004,7 @@ int main() { return 0; }
 ## 附录 A：算法在工业中的应用 [F: Industry / B: Principle]
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：算法在工业中的应用 [F: Industry / B: Principle]
-```
+```text
 工业项目中的算法选择实例:
 
 Google Search: PageRank (迭代幂法, 稀疏矩阵乘法) + 倒排索引 (哈希表)
@@ -1023,7 +1023,7 @@ protobuf: varint 编码 = 7-bit 分组 + MSB 标志 (O(1) 编码, O(N) 传输, �
 ## 附录 B：面试高频 [J: Learning / I: Practice]
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试高频 [J: Learning / I: Practice]
-```
+```text
 高频算法题 → C++实现:
 1. LRU Cache → std::list + std::unordered_map (O(1) get/put)
 2. 最大子数组和 → Kadane (O(N), 单 pass)
@@ -1222,13 +1222,13 @@ std::vector<long long> dijkstra(
     std::vector<long long> d(adj.size(), INF);
     std::priority_queue<std::pair<long long,int>,
                         std::vector<std::pair<long long,int>>,
-                        std::greater<>> pq;            // 小顶堆
+                        std::greater<>> pq;                                 // 小顶堆
     d[s] = 0; pq.emplace(0, s);
     while (!pq.empty()) {
         auto [dist, u] = pq.top(); pq.pop();
-        if (dist > d[u]) continue;                    // 过期堆项：跳过
+        if (dist > d[u]) continue;                                          // 过期堆项：跳过
         for (auto& [v, w] : adj[u])
-            if (d[u] + w < d[v]) { d[v] = d[u] + w; pq.emplace(d[v], v); } // 松弛
+            if (d[u] + w < d[v]) { d[v] = d[u] + w; pq.emplace(d[v], v); }  // 松弛
     }
     return d;
 }
@@ -1275,7 +1275,7 @@ int knapsack(const std::vector<int>& wt, const std::vector<int>& val, int W) {
     int n = static_cast<int>(wt.size());
     std::vector<int> dp(W + 1, 0);
     for (int i = 0; i < n; ++i)
-        for (int w = W; w >= wt[i]; --w)              // 逆序：避免重复选同一件
+        for (int w = W; w >= wt[i]; --w)        // 逆序：避免重复选同一件
             dp[w] = std::max(dp[w], dp[w - wt[i]] + val[i]);
     return dp[W];
 }
@@ -1283,7 +1283,7 @@ int knapsack(const std::vector<int>& wt, const std::vector<int>& val, int W) {
 int main() {
     std::vector<int> wt  = {2, 3, 4, 5};
     std::vector<int> val = {3, 4, 5, 6};
-    std::cout << knapsack(wt, val, 8) << '\n';        // 容量 8 的最大价值
+    std::cout << knapsack(wt, val, 8) << '\n';  // 容量 8 的最大价值
 }
 ```
 
@@ -1315,18 +1315,18 @@ BFS 用队列按"层"推进：从起点出发，每轮从队列取出一个节�
 #include <queue>
 #include <vector>
 int main() {
-    std::vector<std::vector<int>> g{{1, 2}, {0, 3}, {0, 3}, {1, 2}};   // 无向图
-    std::vector<int> d(g.size(), -1);                                   // -1 = 未访问
+    std::vector<std::vector<int>> g{{1, 2}, {0, 3}, {0, 3}, {1, 2}};  // 无向图
+    std::vector<int> d(g.size(), -1);                                 // -1 = 未访问
     std::queue<int> q;
     d[0] = 0; q.push(0);
     while (!q.empty()) {
         int u = q.front(); q.pop();
         for (int v : g[u])
-            if (d[v] < 0) { d[v] = d[u] + 1; q.push(v); }               // 首次访问即最短
+            if (d[v] < 0) { d[v] = d[u] + 1; q.push(v); }             // 首次访问即最短
     }
     for (size_t i = 0; i < d.size(); ++i)
         std::cout << "dist(0->" << i << ")=" << d[i] << ' ';
-    std::cout << '\n';    // dist(0->0)=0 dist(0->1)=1 dist(0->2)=1 dist(0->3)=2
+    std::cout << '\n';                                                // dist(0->0)=0 dist(0->1)=1 dist(0->2)=1 dist(0->3)=2
 }
 ```
 
@@ -1351,14 +1351,14 @@ int main() {
 #include <iostream>
 #include <vector>
 long long fib(int n, std::vector<long long>& memo) {
-    if (n <= 1) return n;                 // 基准情形
-    if (memo[n] >= 0) return memo[n];     // 命中缓存：不再重复递归
-    return memo[n] = fib(n - 1, memo) + fib(n - 2, memo);   // 算完存表
+    if (n <= 1) return n;                                        // 基准情形
+    if (memo[n] >= 0) return memo[n];                            // 命中缓存：不再重复递归
+    return memo[n] = fib(n - 1, memo) + fib(n - 2, memo);        // 算完存表
 }
 int main() {
     int n = 40;
-    std::vector<long long> memo(n + 1, -1);   // -1 = 未计算
-    std::cout << "fib(" << n << ") = " << fib(n, memo) << '\n';   // 102334155
+    std::vector<long long> memo(n + 1, -1);                      // -1 = 未计算
+    std::cout << "fib(" << n << ") = " << fib(n, memo) << '\n';  // 102334155
 }
 ```
 

@@ -198,8 +198,8 @@ flowchart TD
 int main() {
     std::list<int> a = {1, 3, 5, 7};
     std::list<int> b = {2, 4, 6};
-    a.merge(b);                       // b 被搬空，a 变有序
-    for (int x : a) std::cout << x << " ";   // 1 2 3 4 5 6 7
+    a.merge(b);                             // b 被搬空，a 变有序
+    for (int x : a) std::cout << x << " ";  // 1 2 3 4 5 6 7
     std::cout << "\n";
     std::cout << "b empty? " << std::boolalpha << b.empty() << "\n";
     return 0;
@@ -240,8 +240,8 @@ list 遍历每次迭代都要**通过指针加载下一个节点地址**（一�
 #include <algorithm>
 int main() {
     std::list<int> l = {4, 1, 3, 2};
-    l.sort();                          // 成员 sort（归并），O(n log n)
-    for (int x : l) std::cout << x << " ";   // 1 2 3 4
+    l.sort();                               // 成员 sort（归并），O(n log n)
+    for (int x : l) std::cout << x << " ";  // 1 2 3 4
     std::cout << "\n";
     return 0;
 }
@@ -261,9 +261,9 @@ int main() {
 #include <string>
 int main() {
     std::list<std::string> entities = {"player", "enemy1", "enemy2"};
-    auto player = entities.begin();             // 长期持有引用(迭代器稳定)
-    entities.push_front("boss");                // 头插不影响 player 迭代器
-    entities.erase(std::next(entities.begin(), 2)); // 删某个 enemy
+    auto player = entities.begin();                     // 长期持有引用(迭代器稳定)
+    entities.push_front("boss");                        // 头插不影响 player 迭代器
+    entities.erase(std::next(entities.begin(), 2));     // 删某个 enemy
     std::cout << "player still = " << *player << "\n";  // 仍有效
     return 0;
 }
@@ -394,8 +394,8 @@ int main() {
 int main() {
     std::list<int> a = {1, 2}, b = {3, 4, 5};
     auto it = a.begin();
-    ++it;                                  // 指向 2
-    a.splice(it, b);                       // 把 b 整体搬到 2 之前
+    ++it;                                   // 指向 2
+    a.splice(it, b);                        // 把 b 整体搬到 2 之前
     for (int x : a) std::cout << x << " ";  // 1 3 4 5 2
     std::cout << "\nB empty? " << std::boolalpha << b.empty() << "\n";
     return 0;
@@ -419,14 +419,14 @@ int main() {
 #include <list>
 int main() {
     std::list<int> l = {1, 2, 2, 3, 3, 3, 4};
-    l.unique();                            // 去重(相邻相同)
-    for (int x : l) std::cout << x << " "; // 1 2 3 4
+    l.unique();                                     // 去重(相邻相同)
+    for (int x : l) std::cout << x << " ";          // 1 2 3 4
     std::cout << "\n";
     l.reverse();
-    for (int x : l) std::cout << x << " "; // 4 3 2 1
+    for (int x : l) std::cout << x << " ";          // 4 3 2 1
     std::cout << "\n";
     l.remove_if([](int x) { return x % 2 == 0; });  // 删偶数
-    for (int x : l) std::cout << x << " "; // 3 1
+    for (int x : l) std::cout << x << " ";          // 3 1
     std::cout << "\n";
     return 0;
 }
@@ -594,10 +594,10 @@ int main() {
 #include <list>
 int main() {
     std::list<int> l = {1, 2, 3, 4};
-    auto it = l.begin(); ++it;          // 指向 2
-    auto keep = std::next(it);           // 指向 3（删除后依然有效）
+    auto it = l.begin(); ++it;              // 指向 2
+    auto keep = std::next(it);              // 指向 3（删除后依然有效）
     l.erase(it);
-    std::cout << "kept=" << *keep << "\n";   // 3
+    std::cout << "kept=" << *keep << "\n";  // 3
     return 0;
 }
 ```
@@ -624,8 +624,8 @@ int main() {
 int main() {
     std::list<int> a = {1, 2, 3}, b = {100};
     auto bit = b.begin();
-    a.splice(std::next(a.begin()), b, bit);   // 把 100 搬进 a 第2位后
-    for (int x : a) std::cout << x << " ";     // 1 100 2 3
+    a.splice(std::next(a.begin()), b, bit);  // 把 100 搬进 a 第2位后
+    for (int x : a) std::cout << x << " ";   // 1 100 2 3
     std::cout << "\n";
     return 0;
 }
@@ -724,8 +724,8 @@ int main() {
     std::list<int> l = {10, 20, 30, 40};
     auto first = l.begin();
     auto last  = std::prev(l.end());
-    l.erase(std::next(l.begin()));           // 删 20
-    std::cout << *first << " " << *last << "\n";   // 10 40 仍有效
+    l.erase(std::next(l.begin()));                // 删 20
+    std::cout << *first << " " << *last << "\n";  // 10 40 仍有效
     return 0;
 }
 ```
@@ -838,8 +838,8 @@ int main() {
 #include <forward_list>
 int main() {
     std::forward_list<int> fl = {1, 2, 3, 4};
-    fl.erase_after(fl.before_begin());        // 删首元素(1)
-    for (int x : fl) std::cout << x << " ";   // 2 3 4
+    fl.erase_after(fl.before_begin());       // 删首元素(1)
+    for (int x : fl) std::cout << x << " ";  // 2 3 4
     std::cout << "\n";
     return 0;
 }
@@ -894,9 +894,9 @@ int main() {
 #include <forward_list>
 int main() {
     std::forward_list<int> fl = {1, 3};
-    auto it = fl.begin();   // 指向 1
-    fl.insert_after(it, 2); // 在 1 之后插 2
-    for (int x : fl) std::cout << x << " ";   // 1 2 3
+    auto it = fl.begin();                    // 指向 1
+    fl.insert_after(it, 2);                  // 在 1 之后插 2
+    for (int x : fl) std::cout << x << " ";  // 1 2 3
     std::cout << "\n";
     return 0;
 }
@@ -996,9 +996,9 @@ int main() {
 int main() {
     std::list<int> a = {1, 2, 3}, b = {10, 20, 30};
     auto f = b.begin();
-    auto l = std::next(b.begin(), 2);   // 指向 30
+    auto l = std::next(b.begin(), 2);       // 指向 30
     a.splice(a.end(), b, f, std::next(l));  // 搬 10,20
-    for (int x : a) std::cout << x << " ";   // 1 2 3 10 20
+    for (int x : a) std::cout << x << " ";  // 1 2 3 10 20
     std::cout << "\n";
     return 0;
 }
@@ -1167,9 +1167,9 @@ struct __list_node {
 int main() {
     std::list<int> l{1, 2, 3, 4, 5};
     auto it = l.begin();
-    std::advance(it, 3);                 // 指向 4（无随机访问，O(k)）
-    std::cout << "l[3]=" << *it << "\n"; // 4
-    l.splice(l.begin(), l, it);          // O(1) 节点搬移到表头
+    std::advance(it, 3);                  // 指向 4（无随机访问，O(k)）
+    std::cout << "l[3]=" << *it << "\n";  // 4
+    l.splice(l.begin(), l, it);           // O(1) 节点搬移到表头
     for (int x : l) std::cout << x << ' ';
     std::cout << "\n";                    // 4 1 2 3 5
 }
@@ -1188,8 +1188,8 @@ int main() {
 #include <list>
 int main() {
     std::list<int> a{1, 2, 3}, b{10, 20, 30};
-    auto first = std::next(b.begin());    // 指向 20
-    a.splice(a.end(), b, first, b.end()); // 搬移 [20, 30]，O(1)
+    auto first = std::next(b.begin());     // 指向 20
+    a.splice(a.end(), b, first, b.end());  // 搬移 [20, 30]，O(1)
     for (int x : a) std::cout << x << ' ';
     std::cout << "\n";                     // 1 2 3 20 30
     for (int x : b) std::cout << x << ' ';
@@ -1214,16 +1214,16 @@ int main() {
     for (auto it = l.begin(); it != l.end(); ) {
         if (*it % 2 != 0) {
             auto nx = std::next(it);
-            odds.splice(odds.end(), l, it);   // 稳定搬移，保持原序
+            odds.splice(odds.end(), l, it);  // 稳定搬移，保持原序
             it = nx;
         } else {
             ++it;
         }
     }
     for (int x : odds) std::cout << x << ' ';
-    std::cout << "\n";                         // 1 3 5
+    std::cout << "\n";                       // 1 3 5
     for (int x : l) std::cout << x << ' ';
-    std::cout << "\n";                         // 2 4 6
+    std::cout << "\n";                       // 2 4 6
 }
 ```
 
@@ -1245,9 +1245,9 @@ int main() {
 #include <list>
 int main() {
     std::list<int> a{1,2,3}, b{9,8};
-    auto it = a.begin(); ++it;                       // 指向 2
-    a.splice(it, b,  b.begin());                     // O(1) 把 b 的 9 移到 a 的 it 之前, 不拷贝元素
-    for (int x : a) std::cout << x << " ";           // 1 9 2 3
+    auto it = a.begin(); ++it;              // 指向 2
+    a.splice(it, b,  b.begin());            // O(1) 把 b 的 9 移到 a 的 it 之前, 不拷贝元素
+    for (int x : a) std::cout << x << " ";  // 1 9 2 3
     std::cout << "\n";
 }
 ```
@@ -1273,10 +1273,10 @@ int main() {
 int main() {
     std::list<int> l{1,2,3,4};
     for (auto it = l.begin(); it != l.end(); ) {
-        if (*it % 2 == 0) it = l.erase(it);   // erase 仅使被删元素迭代器失效
-        else ++it;                             // 其余迭代器不受影响
+        if (*it % 2 == 0) it = l.erase(it);  // erase 仅使被删元素迭代器失效
+        else ++it;                           // 其余迭代器不受影响
     }
-    for (int x : l) std::cout << x << " ";     // 1 3
+    for (int x : l) std::cout << x << " ";   // 1 3
     std::cout << "\n";
 }
 ```
@@ -1325,9 +1325,9 @@ int main() {
 int main() {
     std::list<int> l{1, 2, 3, 4};
     for (auto it = l.begin(); it != l.end(); )
-        it = ((*it % 2 == 0) ? l.erase(it) : std::next(it)); // erase 返回下一有效迭代器
+        it = ((*it % 2 == 0) ? l.erase(it) : std::next(it));  // erase 返回下一有效迭代器
     for (int x : l) std::cout << x << ' ';
-    std::cout << "\n";                                       // 1 3
+    std::cout << "\n";                                        // 1 3
 }
 ```
 ## 附录：GCC 15.3.0 真机实证 — `std::list` 节点分配与遍历代价
@@ -1479,9 +1479,9 @@ int main() {
     std::list<int> l{3, 1, 4, 1, 5};
     l.push_front(0);
     l.push_back(9);
-    std::cout << "front=" << l.front() << std::endl;  // 0
-    std::cout << "back=" << l.back() << std::endl;     // 9
-    std::cout << "size=" << l.size() << std::endl;     // 7
+    std::cout << "front=" << l.front() << std::endl;             // 0
+    std::cout << "back=" << l.back() << std::endl;               // 9
+    std::cout << "size=" << l.size() << std::endl;               // 7
     l.sort();
     std::cout << "after sort front=" << l.front() << std::endl;  // 0
     return 0;

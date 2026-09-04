@@ -70,7 +70,7 @@ int main() {
 - `[经验]`：项目从 1 个文件增长到 1000 个文件时，手工敲 `g++ *.cpp` 会崩溃（重复全量编译、无法增量）；构建系统把"哪些要重编"变成图上问题。
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌──────────────── 构建流水线（单 TU）────────────────┐
 │  foo.cpp ──▶ [预处理] ──▶ [编译] ──▶ foo.o ──┐      │
 │  bar.cpp ──▶ [预处理] ──▶ [编译] ──▶ bar.o ──┤      │
@@ -138,7 +138,7 @@ app: $(OBJ)
 Ninja 设计哲学与 Make 相反：**Ninja 几乎不做决策**，它只执行一个扁平的依赖图；"哪些要重编"由生成器（CMake、Meson）算好写进 `build.ninja`。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 快在哪（无递归、图依赖、紧凑语法）
-```
+```text
 ┌──────── Make vs Ninja 决策位置 ─────────┐
 │ Make：读 Makefile → 边解析边决策 → 慢   │
 │ Ninja：生成器算好图 → build.ninja → 直跑│
@@ -356,7 +356,7 @@ constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 ```
 
 > **示例 14** [难度 ★☆☆☆☆] [主题：头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌──────── 头依赖传播（增量边界）─────────┐
 │  config.h ──┬──▶ a.cpp ──▶ a.o       │
 │             └──▶ b.cpp ──▶ b.o       │
@@ -714,7 +714,7 @@ int main() { std::printf("chosen build system\n"); return 0; }
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.include]（源文件包含）；cppreference "Replacing text macros / #include" 词条。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
-```
+```text
 ┌────────────── 构建系统速查 ──────────────┐
 │ g++ 选项：                                 │
 │   -c           编译到 .o（不链接）         │
@@ -926,7 +926,7 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 ## 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
-```
+```text
 C++构建系统工业对比:
 CMake: 事实标准(90%+项目), 跨平台, 但语法丑陋
   → CMakeLists.txt + cmake -B build -G Ninja → build.ninja → ninja

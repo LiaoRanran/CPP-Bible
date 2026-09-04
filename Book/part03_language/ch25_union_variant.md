@@ -117,11 +117,11 @@ union Bad {
 
 int main() {
     Bad b;
-    b.i = 42;          // i 活跃
+    b.i = 42;                  // i 活跃
     // f 此时非活跃，以下读取是 UB：
     // std::printf("%f\n", b.f);  // UB！可能打印垃圾，也可能崩溃
-    b.f = 3.14f;       // 现在 f 活跃
-    std::printf("%d\n", b.i); // UB！i 非活跃
+    b.f = 3.14f;               // 现在 f 活跃
+    std::printf("%d\n", b.i);  // UB！i 非活跃
 }
 ```
 > `[经验]` 这类 UB **不会**被大多数编译器默认诊断（除非开启 `-fsanitize=address` 或特定 UB 检测）。裸 union 的"安全性完全靠人"。
@@ -175,10 +175,10 @@ void f() {
 
 int main() {
     float f = 3.14f;
-    std::uint32_t bits = std::bit_cast<std::uint32_t>(f); // 合法：平凡可复制
+    std::uint32_t bits = std::bit_cast<std::uint32_t>(f);  // 合法：平凡可复制
     std::printf("0x%08x\n", bits);
     float back = std::bit_cast<float>(bits);
-    std::printf("%f\n", back); // 还原 3.14
+    std::printf("%f\n", back);                             // 还原 3.14
 }
 ```
 
@@ -200,16 +200,16 @@ int main() {
 union StrU {
     std::string s;
     int         i;
-    StrU() : i(0) {}                         // 需初始化一个活跃成员
-    ~StrU() { // 不知道谁活跃，外面负责
+    StrU() : i(0) {}                  // 需初始化一个活跃成员
+    ~StrU() {                         // 不知道谁活跃，外面负责
 };
 
 int main() {
     StrU u;
     // 手动构造 string 成员（placement new）
-    new (&u.s) std::string("hello");         // 现在 s 活跃
+    new (&u.s) std::string("hello");  // 现在 s 活跃
     std::printf("%s\n", u.s.c_str());
-    u.s.~basic_string();                      // 手动析构，避免泄漏
+    u.s.~basic_string();              // 手动析构，避免泄漏
 }
 ```
 > `[经验]` 手写 union + 非平凡成员是 bug 温床。标准库的 `std::variant` 正是把这套"placement new + 手动析构 + 跟踪 index"封装好交给你。
@@ -286,7 +286,7 @@ int main() {
 #include <cstdint>
 
 struct Reg {
-    union {                 // 匿名 union
+    union {                                      // 匿名 union
         std::uint32_t raw;
         struct { std::uint16_t lo, hi; } parts;  // 高低字
     };
@@ -315,13 +315,13 @@ void process(bool use_str) {
     union U {
         int         code;
         std::string text;
-        U() : code(0) {}          // 默认激活 trivial 成员
-        ~U() {}                   // 不自动析构非平凡成员，需手动
+        U() : code(0) {}                     // 默认激活 trivial 成员
+        ~U() {}                              // 不自动析构非平凡成员，需手动
     } u;
     if (use_str) {
-        new (&u.text) std::string("local");   // 手动构造（复用 union 存储）
+        new (&u.text) std::string("local");  // 手动构造（复用 union 存储）
         std::printf("%s\n", u.text.c_str());
-        u.text.~basic_string();               // 手动析构
+        u.text.~basic_string();              // 手动析构
     } else {
         u.code = 7;
         std::printf("code=%d\n", u.code);
@@ -390,15 +390,15 @@ int main() {
 union Leak {
     std::string a;
     std::string b;
-    Leak() {}   // 含非平凡成员的 union，默认构造被隐式删除，须显式提供
-    ~Leak() {}  // 注意：这里不析构任何成员！两个 string 都泄漏
+    Leak() {}                     // 含非平凡成员的 union，默认构造被隐式删除，须显式提供
+    ~Leak() {}                    // 注意：这里不析构任何成员！两个 string 都泄漏
 };
 
 int main() {
     Leak l;
     new (&l.a) std::string("x");
     // 错误：没有 l.a.~basic_string() 就直接构造 b
-    new (&l.b) std::string("y"); // a 的资源泄漏
+    new (&l.b) std::string("y");  // a 的资源泄漏
     l.a.~basic_string();
     l.b.~basic_string();
 }
@@ -421,12 +421,12 @@ int main() {
 #include <cstdio>
 
 int main() {
-    std::variant<int, double, std::string> v;   // 默认持有 int(0)
-    std::printf("index=%zu\n", v.index());      // 0
+    std::variant<int, double, std::string> v;  // 默认持有 int(0)
+    std::printf("index=%zu\n", v.index());     // 0
     v = 3.14;
-    std::printf("index=%zu\n", v.index());      // 1
+    std::printf("index=%zu\n", v.index());     // 1
     v = std::string("hi");
-    std::printf("index=%zu\n", v.index());      // 2
+    std::printf("index=%zu\n", v.index());     // 2
 }
 ```
 
@@ -491,13 +491,13 @@ template<size_t _Np, typename... _Types>
 
 int main() {
     std::variant<int, std::string> v = 10;
-    std::printf("by index: %d\n", std::get<0>(v));      // 10
-    std::printf("by type:  %d\n", std::get<int>(v));    // 10
+    std::printf("by index: %d\n", std::get<0>(v));    // 10
+    std::printf("by type:  %d\n", std::get<int>(v));  // 10
 
-    if (auto* p = std::get_if<0>(&v))                   // 不抛异常
+    if (auto* p = std::get_if<0>(&v))                 // 不抛异常
         std::printf("get_if ok: %d\n", *p);
 
-    try { std::get<std::string>(v); }                   // 抛 bad_variant_access
+    try { std::get<std::string>(v); }                 // 抛 bad_variant_access
     catch (const std::bad_variant_access&) { std::printf("caught\n"); }
 }
 ```
@@ -594,13 +594,13 @@ variant **承诺"从不部分构造"**：当一次赋值/emplace 在构造新 al
 #include <stdexcept>
 
 struct Boom {
-    Boom() { throw std::runtime_error("boom"); }   // 默认构造抛异常
+    Boom() { throw std::runtime_error("boom"); }  // 默认构造抛异常
 };
 
 int main() {
     std::variant<int, Boom> v = 1;
     try {
-        v = Boom{};   // 构造 Boom 抛异常
+        v = Boom{};                               // 构造 Boom 抛异常
     } catch (...) { }
     std::printf("valueless=%d index=%zu\n",
                 v.valueless_by_exception(), v.index());
@@ -629,7 +629,7 @@ template<typename _Tp>
 #include <variant>
 #include <cstdio>
 
-struct NotEmpty { int a, b, c; };   // trivially copyable, small
+struct NotEmpty { int a, b, c; };                               // trivially copyable, small
 
 int main() {
     std::variant<int, NotEmpty> v = 1;
@@ -652,7 +652,7 @@ int main() {
 #include <string>
 #include <cstdio>
 
-struct NoDefault {               // 删除默认构造
+struct NoDefault {                                   // 删除默认构造
     NoDefault(int) {}
 };
 
@@ -684,15 +684,15 @@ variant 不能直接递归包含自身（无限大小）。经典技巧：用 `s
 #include <string>
 #include <type_traits>
 
-struct Expr;                                    // 前向声明
+struct Expr;                                                   // 前向声明
 
 using ExprList = std::vector<std::unique_ptr<Expr>>;
 
 struct Num  { double v; };
-struct Add  { ExprList operands; };             // 通过 vector<unique_ptr<Expr>> 间接递归
+struct Add  { ExprList operands; };                            // 通过 vector<unique_ptr<Expr>> 间接递归
 struct Mul  { ExprList operands; };
 
-struct Expr : std::variant<Num, Add, Mul> {     // 继承 variant，方便使用
+struct Expr : std::variant<Num, Add, Mul> {                    // 继承 variant，方便使用
     using variant::variant;
 };
 
@@ -1555,8 +1555,8 @@ int main() { f(true); f(false); }
 #include <optional>
 #include <cstdio>
 int main() {
-    std::optional<int> o;          // 单一类型，可能无值
-    std::variant<int, double> v;   // 多类型，总有值（int）
+    std::optional<int> o;         // 单一类型，可能无值
+    std::variant<int, double> v;  // 多类型，总有值（int）
     std::printf("o.has=%d v.idx=%zu\n", (bool)o, v.index());
 }
 ```
@@ -1584,8 +1584,8 @@ int main() {
 struct Err { std::string msg; };
 using Result = std::variant<std::monostate, int, Err>;
 int main() {
-    Result r = std::monostate{};     // 初始：无结果
-    r = 42;                          // 成功
+    Result r = std::monostate{};  // 初始：无结果
+    r = 42;                       // 成功
     std::printf("holds=%d idx=%zu\n", std::holds_alternative<int>(r), r.index());
 }
 ```
@@ -1643,8 +1643,8 @@ int main() {
 #include <cstdint>
 #include <cstdio>
 std::uint32_t set_mode(std::uint32_t reg, std::uint32_t mode) {
-    reg &= ~(0x7u << 1);          // 清 mode 位（bit1..3）
-    reg |=  (mode & 0x7u) << 1;   // 设 mode 位
+    reg &= ~(0x7u << 1);         // 清 mode 位（bit1..3）
+    reg |=  (mode & 0x7u) << 1;  // 设 mode 位
     return reg;
 }
 int main() { std::printf("0x%08x\n", set_mode(0, 0b101)); }
@@ -1683,8 +1683,8 @@ int main() {
 #include <cstdio>
 union Trivial { int i; float f; };
 int main() {
-    Trivial t; t.i = 5;   // i 活跃
-    t.f = 1.0f;           // f 活跃（平凡类型，写即切换，无析构问题）
+    Trivial t; t.i = 5;  // i 活跃
+    t.f = 1.0f;          // f 活跃（平凡类型，写即切换，无析构问题）
     std::printf("%f\n", t.f);
 }
 ```
@@ -2020,9 +2020,9 @@ int main() {
     std::variant<int, double, std::string> v = 42;
     if (std::holds_alternative<int>(v))
         std::cout << "int=" << std::get<int>(v) << "\n";
-    if (auto* p = std::get_if<double>(&v))            // 不抛, 返回 nullptr 表示类型不符
+    if (auto* p = std::get_if<double>(&v))  // 不抛, 返回 nullptr 表示类型不符
         std::cout << "double=" << *p << "\n";
-    try { std::get<double>(v); }                       // 当前是 int -> 抛 std::bad_variant_access
+    try { std::get<double>(v); }            // 当前是 int -> 抛 std::bad_variant_access
     catch (const std::bad_variant_access&) { std::cout << "bad get\n"; }
 }
 ```
@@ -2075,12 +2075,12 @@ int main() {
 #include <vector>
 struct ThrowsOnCopy {
     ThrowsOnCopy() = default;
-    ThrowsOnCopy(const ThrowsOnCopy&) { throw 1; }   // 拷贝构造抛异常
+    ThrowsOnCopy(const ThrowsOnCopy&) { throw 1; }                    // 拷贝构造抛异常
 };
 int main() {
     // 当前为大的、非平凡可复制类型, 半途失败 -> variant 变 valueless
     std::variant<std::vector<int>, ThrowsOnCopy> v = std::vector<int>(100);
-    try { v = ThrowsOnCopy{}; }                       // 目标类型拷贝抛 -> 半途失败
+    try { v = ThrowsOnCopy{}; }                                       // 目标类型拷贝抛 -> 半途失败
     catch (...) {}
     std::cout << "valueless=" << v.valueless_by_exception() << "\n";  // 可能 1
 }
@@ -2111,7 +2111,7 @@ int main() {
 
 struct Header {
     int type;
-    union {          // 匿名 union: 两字段共享同一内存
+    union {             // 匿名 union: 两字段共享同一内存
         int   as_int;
         float as_float;
     };
@@ -2122,7 +2122,7 @@ int main() {
     h.type = 1;
     h.as_int = 42;
     std::cout << h.as_int << "\n";
-    h.as_float = 3.5f;          // 主动切换解释, 由程序员保证一致
+    h.as_float = 3.5f;  // 主动切换解释, 由程序员保证一致
     std::cout << h.as_float << "\n";
 }
 ```
@@ -2154,11 +2154,11 @@ int main() {
 
 int main() {
     std::variant<int, std::string> v;
-    v.emplace<1>("hello");                      // 按索引 emplace
+    v.emplace<1>("hello");            // 按索引 emplace
     std::cout << std::get<1>(v) << "\n";
-    v.emplace<std::string>("world");            // 按类型 emplace
+    v.emplace<std::string>("world");  // 按类型 emplace
     std::cout << std::get<std::string>(v) << "\n";
-    v = 42;                                     // 赋值切换类型
+    v = 42;                           // 赋值切换类型
     std::cout << std::get<int>(v) << "\n";
 }
 ```
@@ -2189,10 +2189,10 @@ enum { T_INT, T_STR } tag;
 #include <variant>
 #include <string>
 struct Token {
-    std::variant<int, std::string, char> val;   // 类型即 tag, 编译期保证活跃成员唯一
+    std::variant<int, std::string, char> val;  // 类型即 tag, 编译期保证活跃成员唯一
 };
 int main() {
-    Token t{42};                                  // 活跃成员是 int, 无需手工 tag
+    Token t{42};                               // 活跃成员是 int, 无需手工 tag
     if (auto* p = std::get_if<int>(&t.val)) std::cout << *p << "\n";
 }
 ```
@@ -2216,7 +2216,7 @@ using Event = std::variant<std::string, int>;   // 默认构造会去构造 std:
 #include <string>
 using Event = std::variant<std::monostate, std::string, int>;  // 首个 alternative 默认可构造
 int main() {
-    Event e;                               // 默认 -> std::monostate (空事件), 零成本
+    Event e;                                                   // 默认 -> std::monostate (空事件), 零成本
     std::cout << "holds monostate=" << std::holds_alternative<std::monostate>(e) << "\n";
 }
 ```
@@ -2271,7 +2271,7 @@ graph LR
 
 // 摘自 libstdc++ 15.3.0：variant:470（_Variant_storage 持 union + index 判别式）
 > **示例 79** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<typename... _Types>
     struct _Variant_storage<false, _Types...>
     {
@@ -2329,7 +2329,7 @@ int main() {
 
 预期输出：
 > **示例 81** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
-```
+```text
 0
 42
 1

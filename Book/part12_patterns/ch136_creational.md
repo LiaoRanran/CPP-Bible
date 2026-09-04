@@ -61,7 +61,7 @@
 > 表注（①）：三类痛点分别击中"编译依赖 / 内存安全 / 可维护性"——创建型模式的核心使命就是同时消解这三者，下文 ②–⑲ 逐一给出对应解法（如 ③ 用 `unique_ptr` 根治生命周期混乱）。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：创建型模式解决什么
-```
+```text
 ┌──────────────────────── 创建型模式家族 ────────────────────────┐
 │  Factory Method   工厂方法   单产品、单方法创建                  │
 │  Abstract Factory 抽象工厂   产品族（多产品一组）                │
@@ -82,7 +82,7 @@
 // ① 反面教材：调用方直接依赖具体类与裸 new
 #include <iostream>
 
-class MySQLConnection {  // 具体类，调用方被迫知道
+class MySQLConnection {                          // 具体类，调用方被迫知道
 public:
     void query() { std::cout << "mysql\n"; }
 };
@@ -125,15 +125,15 @@ std::unique_ptr<Connection> makeConnection(const char* kind) {
 #include <iostream>
 #include <memory>
 
-struct Shape {            // 抽象产品
+struct Shape {           // 抽象产品
     virtual ~Shape() = default;
     virtual void draw() const = 0;
 };
 
-struct Circle : Shape {   // 具体产品 A
+struct Circle : Shape {  // 具体产品 A
     void draw() const override { std::cout << "Circle\n"; }
 };
-struct Square : Shape {   // 具体产品 B
+struct Square : Shape {  // 具体产品 B
     void draw() const override { std::cout << "Square\n"; }
 };
 ```
@@ -143,7 +143,7 @@ struct Square : Shape {   // 具体产品 B
 // ② 创建者：把“new 哪个类”推迟到子类
 struct ShapeFactory {
     virtual ~ShapeFactory() = default;
-    virtual Shape* create() const = 0;   // 工厂方法（纯虚）
+    virtual Shape* create() const = 0;  // 工厂方法（纯虚）
 };
 
 struct CircleFactory : ShapeFactory {
@@ -157,7 +157,7 @@ struct SquareFactory : ShapeFactory {
 void client(const ShapeFactory& f) {
     Shape* s = f.create();
     s->draw();
-    delete s;                // 仍裸指针：见 ③ 改为 unique_ptr
+    delete s;                           // 仍裸指针：见 ③ 改为 unique_ptr
 }
 ```
 
@@ -184,19 +184,19 @@ struct Square : Shape { void draw() const override { std::cout << "Square\n"; } 
 
 struct ShapeFactory {
     virtual ~ShapeFactory() = default;
-    virtual std::unique_ptr<Shape> create() const = 0;   // 返回智能指针
+    virtual std::unique_ptr<Shape> create() const = 0;  // 返回智能指针
 };
 
 struct CircleFactory : ShapeFactory {
     std::unique_ptr<Shape> create() const override {
-        return std::make_unique<Circle>();   // 无裸 new，异常安全
+        return std::make_unique<Circle>();              // 无裸 new，异常安全
     }
 };
 
 void client(const ShapeFactory& f) {
-    auto s = f.create();    // unique_ptr：离开作用域自动析构
+    auto s = f.create();                                // unique_ptr：离开作用域自动析构
     s->draw();
-}                       // 无需 delete，无泄漏
+}                                                       // 无需 delete，无泄漏
 ```
 
 **源码剖析（libstdc++ `unique_ptr`）**：`std::make_unique` 本质是 `new` + 构造进 `unique_ptr`，其 deleter 默认是 `default_delete`，析构时调用 `delete`。下面截取本机真实 libstdc++ 头中 `unique_ptr` 的主模板定义位置：
@@ -443,7 +443,7 @@ struct Resume : Document {
     std::string name;
     std::unique_ptr<Document> clone() const override {
         auto c = std::make_unique<Resume>();
-        c->name = name;                 // 复制原型状态
+        c->name = name;       // 复制原型状态
         return c;
     }
     void print() const override { std::cout << "Resume:" << name << '\n'; }
@@ -452,7 +452,7 @@ struct Resume : Document {
 // 用一份原型批量派生，无需知道具体类
 std::unique_ptr<Document> proto = std::make_unique<Resume>();
 proto->name = "模板";
-auto copy1 = proto->clone();   // 克隆
+auto copy1 = proto->clone();  // 克隆
 copy1->print();
 ```
 
@@ -488,16 +488,16 @@ struct BadBuffer {
 #include <iostream>
 
 struct GoodBuffer {
-    std::string data;                       // string 自带深拷贝
+    std::string data;                              // string 自带深拷贝
     GoodBuffer(const char* s) : data(s) {}
-    GoodBuffer(const GoodBuffer&) = default; // 成员逐一深拷贝
+    GoodBuffer(const GoodBuffer&) = default;       // 成员逐一深拷贝
     GoodBuffer& operator=(const GoodBuffer&) = default;
     ~GoodBuffer() = default;
 };
 
 void demo() {
     GoodBuffer a("hi");
-    GoodBuffer b = a;          // 深拷贝，互不影响
+    GoodBuffer b = a;                              // 深拷贝，互不影响
     b.data = "bye";
     std::cout << a.data << ' ' << b.data << '\n';  // hi bye
 }
@@ -536,9 +536,9 @@ struct Logger {
     static Logger* inst_;
     static std::mutex mtx_;
     static Logger* get() {
-        if (inst_ == nullptr) {            // 第一次检查（无锁，快路径）
+        if (inst_ == nullptr) {    // 第一次检查（无锁，快路径）
             std::lock_guard<std::mutex> lk(mtx_);
-            if (inst_ == nullptr)          // 第二次检查（持锁）
+            if (inst_ == nullptr)  // 第二次检查（持锁）
                 inst_ = new Logger();
         }
         return inst_;
@@ -668,7 +668,7 @@ struct Clock { virtual ~Clock() = default; virtual int now() const = 0; };
 struct SysClock : Clock { int now() const override { return 100; } };
 
 struct Session {
-    Clock& clk;                       // 依赖通过构造注入（引用/指针）
+    Clock& clk;                                              // 依赖通过构造注入（引用/指针）
     explicit Session(Clock& c) : clk(c) {}
     bool isExpired(int t) const { return clk.now() > t; }
 };
@@ -713,12 +713,12 @@ struct Locator {
 
 struct App {
     Session s;
-    explicit App(Clock& c) : s(c) {}   // 依赖在根部注入，业务代码零全局
+    explicit App(Clock& c) : s(c) {}  // 依赖在根部注入，业务代码零全局
 };
 
 int main() {
     SysClock sys;
-    App app(sys);                      // 可测试：换成 FakeClock 即可
+    App app(sys);                     // 可测试：换成 FakeClock 即可
 }
 ```
 
@@ -898,11 +898,11 @@ struct ShapeBase {
 };
 
 struct Circle : ShapeBase<Circle> {
-    void drawImpl() const { std::cout << "Circle\n"; }   // 非虚，编译期绑定
+    void drawImpl() const { std::cout << "Circle\n"; }                    // 非虚，编译期绑定
 };
 
 void use() {
-    auto c = Circle::create();   // 返回 unique_ptr<Circle>，零虚表
+    auto c = Circle::create();                                            // 返回 unique_ptr<Circle>，零虚表
     c->draw();
 }
 ```
@@ -975,7 +975,7 @@ sink  : 50115500 3381600
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy.ctor]（拷贝构造）/ [class.copy.assign]；cppreference "Copy constructor" 词条。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 小结：何时用哪种创建型模式
-```
+```text
 ┌──────────────────── 创建型模式选型速查 ────────────────────┐
 │ 场景                              → 选用                    │
 │──────────────────────────────────────────────────────────│
@@ -1115,7 +1115,7 @@ int main(){std::cout<<"Factory Method: defer instantiation to subclass. Abstract
 C++ 标准库本身就是创建型模式的最大用户：
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业中的创建型模式 [F: Industry / B: Principle]
-```
+```text
 Singleton:     std::cout (Meyer's Singleton, C++11起线程安全)
 Factory:       std::make_unique, std::make_shared (工厂函数, 异常安全)
 Builder:       std::stringstream (逐步构建), nlohmann::json (fluent API)
@@ -1143,7 +1143,7 @@ int main() {
 ## 附录 B：面试与设计权衡 [J: Learning / H: Design]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试与设计权衡 [J: Learning / H: Design]
-```
+```text
 面试高频:
 Q: C++ 中线程安全的 Singleton 实现？
 A: C++11 起 static 局部变量初始化是线程安全的 (Meyer's Singleton)
@@ -1291,9 +1291,9 @@ int main() {
 ```cpp
 #include <iostream>
 struct Config { int timeout_ms = 3000; };
-Config& config() { static Config c; return c; }   // Meyers 单例：首次使用才构造
+Config& config() { static Config c; return c; }  // Meyers 单例：首次使用才构造
 int main() {
-    config().timeout_ms = 5000;                   // 全程序共享同一实例
+    config().timeout_ms = 5000;                  // 全程序共享同一实例
     std::cout << config().timeout_ms << '\n';
 }
 ```

@@ -94,7 +94,7 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 ### 3.1 三个正交维度
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三个正交维度
-```
+```text
                             ┌──────── 变量三大正交属性 ────────┐
                             │                                  │
    存储期 storage duration  │  链接 linkage       作用域 scope  │
@@ -112,7 +112,7 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 ### 3.2 关键组合速查
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 关键组合速查
-```
+```text
 ├─ 命名空间 static int x;       → static 存储期 + internal 链接
 ├─ int g; (命名空间)            → static 存储期 + external 链接
 ├─ inline int k = 1; (头文件)   → static 存储期 + external 链接 + 允许多定义
@@ -176,16 +176,16 @@ void format_into(char* buf, std::size_t n, unsigned long long id) {
 }
 
 void handle(unsigned long long req_id) {
-    char scratch[512];              // automatic：本帧栈上，离开即失效
+    char scratch[512];  // automatic：本帧栈上，离开即失效
     format_into(scratch, sizeof scratch, req_id);
     // ... 处理 ...
-}                                   // scratch 在此自动回退，无泄漏
+}                       // scratch 在此自动回退，无泄漏
 ```
 
 栈帧布局（`-O0` 下，`rbp` 为帧基址）：
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——真实栈帧布局图
-```
+```text
 调用前:
         ... 调用者栈帧 ...
 foo 栈帧 (rbp 指向旧 rbp 保存处):
@@ -209,14 +209,14 @@ foo 栈帧 (rbp 指向旧 rbp 保存处):
 
 // 每次递归调用都有独立栈帧，a 互不影响
 int descend(int n) {
-    int a = n * 10;                 // 每个栈帧一份 automatic a
+    int a = n * 10;                   // 每个栈帧一份 automatic a
     if (n <= 0) return a;
     int r = descend(n - 1);
     return a + r;
 }
 
 int main() {
-    std::printf("%d\n", descend(3)); // 30 + 20 + 10 + 0 = 60
+    std::printf("%d\n", descend(3));  // 30 + 20 + 10 + 0 = 60
 }
 ```
 
@@ -251,11 +251,11 @@ foo(int):
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——真实 ELF 段图
 ```cpp
 // segments.cpp
-int   g_init   = 42;          // .data    (非零初值, external 链接)
-int   g_zero;                 // .bss     (零初始化, external 链接)
-static int s_file = 7;        // .data    (internal 链接, 仅本 TU)
-const int C = 100;            // .rodata  (只读, external; 可能内联消除)
-thread_local int t = 0;       // .tdata/.tbss (thread 存储期, 每线程一份)
+int   g_init   = 42;     // .data    (非零初值, external 链接)
+int   g_zero;            // .bss     (零初始化, external 链接)
+static int s_file = 7;   // .data    (internal 链接, 仅本 TU)
+const int C = 100;       // .rodata  (只读, external; 可能内联消除)
+thread_local int t = 0;  // .tdata/.tbss (thread 存储期, 每线程一份)
 
 int main() { return g_init + g_zero + s_file + C + t; }
 ```
@@ -263,7 +263,7 @@ int main() { return g_init + g_zero + s_file + C + t; }
 ELF 段落位图（x86-64，低→高地址）：
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ——真实 ELF 段图
-```
+```text
 高地址 0x7fff...
 ┌─────────────────────────────┐
 │        栈 stack              │ ← automatic 局部; 向低地址增长 (rsp 下移)
@@ -295,8 +295,8 @@ ELF 段落位图（x86-64，低→高地址）：
 // bss_size.cpp
 #include <cstdio>
 // 一个大零初始化数组 → 进 .bss，不增加可执行文件体积
-int big_zero[1 << 20];         // 4 MiB，但文件几乎不增大
-int big_init[1 << 20] = {1};   // 进 .data，文件显著增大（需存初值）
+int big_zero[1 << 20];        // 4 MiB，但文件几乎不增大
+int big_init[1 << 20] = {1};  // 进 .data，文件显著增大（需存初值）
 
 int main() {
     std::printf("big_zero[0]=%d big_init[0]=%d\n", big_zero[0], big_init[0]);
@@ -319,11 +319,11 @@ size bss_size      # .bss 列巨大，但文件 size 远小于 4MiB
 #include <thread>
 #include <vector>
 #include <cstdio>
-#include <cstddef>     // std::size_t
-#include <functional>  // std::hash
+#include <cstddef>                  // std::size_t
+#include <functional>               // std::hash
 
 thread_local unsigned long long g_request_id = 0;
-thread_local unsigned g_depth = 0;       // 非平凡? 否，但每线程独立
+thread_local unsigned g_depth = 0;  // 非平凡? 否，但每线程独立
 
 void worker(unsigned long long base) {
     g_request_id = base;
@@ -372,10 +372,10 @@ struct Session {
 
 void serve() {
     // dynamic 存储期：对象在堆，控制块在堆，生命周期由 unique_ptr 管理
-    auto s = std::make_unique<Session>();   // 转发 new → malloc
+    auto s = std::make_unique<Session>();  // 转发 new → malloc
     s->fd = 3;
     std::printf("session @ %p\n", (void*)s.get());
-}                                           // 离开作用域自动 delete → free
+}                                          // 离开作用域自动 delete → free
 ```
 
 > `[实现]` `new`/`delete` 在 libstdc++ 中默认转发到 `malloc`/`free`（可经 `operator new` 重载）。`malloc` 内部维护空闲链表（bins），小块走 thread cache（`tcmalloc`）或 ptmalloc 的 fastbin，大块走 `mmap`。堆对象局部性差、易 cache miss，访问延迟常比栈/全局高一个量级（见 ⑧ microbenchmark）。
@@ -398,11 +398,11 @@ void serve() {
 // static_phases.cpp
 #include <cstdio>
 
-int a = 0;                  // zero-init
-int b = 42;                 // constant-init (字面量)
-int compute_at_start();     // 前向声明
-int c = compute_at_start(); // dynamic-init (运行期, 顺序不确定 → SOIF 来源)
-constinit int d = 1;        // constant-init 阶段强制完成 → 避免 SOIF (见 ④-4)
+int a = 0;                   // zero-init
+int b = 42;                  // constant-init (字面量)
+int compute_at_start();      // 前向声明
+int c = compute_at_start();  // dynamic-init (运行期, 顺序不确定 → SOIF 来源)
+constinit int d = 1;         // constant-init 阶段强制完成 → 避免 SOIF (见 ④-4)
 
 int compute_at_start() { std::printf("dynamic-init c\n"); return 7; }
 
@@ -431,13 +431,13 @@ int main() {
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 链接三态精确语义
 ```cpp
 // linkage.cpp
-int g_ext = 1;                 // external：可被其他 TU 引用
-static int s_int = 2;          // internal：仅本 TU
-namespace { int anon = 3; }    // none→实际 internal（C++11 起等价 static，见 5.2）
+int g_ext = 1;               // external：可被其他 TU 引用
+static int s_int = 2;        // internal：仅本 TU
+namespace { int anon = 3; }  // none→实际 internal（C++11 起等价 static，见 5.2）
 
 void f() {
-    int local = 4;             // none：块内局部
-    static int s_local = 5;    // none：无链接，但 static 存储期
+    int local = 4;           // none：块内局部
+    static int s_local = 5;  // none：无链接，但 static 存储期
 }
 ```
 
@@ -456,10 +456,10 @@ void f() {
 ```cpp
 // anon_ns.cpp
 namespace {
-    struct InternalParser {        // 整个类型在本 TU 私有
+    struct InternalParser {   // 整个类型在本 TU 私有
         int parse(const char*);
     };
-    InternalParser g_parser;       // 同 TU 内使用
+    InternalParser g_parser;  // 同 TU 内使用
 }
 
 int use() {
@@ -474,8 +474,8 @@ int use() {
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 匿名命名空间演进史
 ```cpp
 // static_vs_anon.cpp
-static int legacy_counter = 0;     // C 风格 internal 链接
-namespace { int modern_counter = 0; } // C++11+ 推荐：等价且可包类型
+static int legacy_counter = 0;         // C 风格 internal 链接
+namespace { int modern_counter = 0; }  // C++11+ 推荐：等价且可包类型
 
 int bump() { return ++legacy_counter + ++modern_counter; }
 ```
@@ -519,11 +519,11 @@ inline constexpr int    kMax  = 1024;
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 头文件 inline 变量——根治 ODR 多定义
 ```cpp
 // config.hpp
-extern Config g_config;            // 声明，不定义
+extern Config g_config;                // 声明，不定义
 
 // config.cpp
 #include "config.hpp"
-Config g_config{ .http_port = 8080 }; // 唯一定义
+Config g_config{ .http_port = 8080 };  // 唯一定义
 
 // 风险：漏写 config.cpp 的定义 → undefined reference 链接错误。
 // inline 变量省去这种样板与漏写风险。
@@ -537,18 +537,18 @@ Config g_config{ .http_port = 8080 }; // 唯一定义
 ```cpp
 // counter.hpp
 #pragma once
-extern int g_global_hits;          // 声明
+extern int g_global_hits;                     // 声明
 
 // counter.cpp
 #include "counter.hpp"
-int g_global_hits = 0;             // 唯一定义（static 存储期 + external 链接）
+int g_global_hits = 0;                        // 唯一定义（static 存储期 + external 链接）
 
 // main.cpp
 #include "counter.hpp"
 #include <cstdio>
 int main() {
     ++g_global_hits;
-    std::printf("hits=%d\n", g_global_hits); // 引用 counter.cpp 中的实体
+    std::printf("hits=%d\n", g_global_hits);  // 引用 counter.cpp 中的实体
 }
 // 编译：g++ main.cpp counter.cpp -o m
 ```
@@ -590,10 +590,10 @@ inline int g_shared = 42;          // 多 TU 合法
 
 template <typename T>
 struct Counter {
-    static int count;              // 声明
+    static int count;       // 声明
 };
 template <typename T>
-int Counter<T>::count = 0;         // 定义（每个 TU 可有一份，ODR 合并）
+int Counter<T>::count = 0;  // 定义（每个 TU 可有一份，ODR 合并）
 
 int main() {
     Counter<int>::count = 5;
@@ -619,17 +619,17 @@ int main() {
 // odr_use.cpp
 #include <cstdio>
 
-constexpr int kInline = 10;        // 可能完全内联，不占存储
-const int kStable = 20;            // const 默认 internal 链接
+constexpr int kInline = 10;  // 可能完全内联，不占存储
+const int kStable = 20;      // const 默认 internal 链接
 
 int read_const() {
-    int a = kInline;               // 右值读取：不 odr-use，直接内联 10
-    int b = kStable;               // 右值读取 const int：仍可内联（非 odr-use）
+    int a = kInline;         // 右值读取：不 odr-use，直接内联 10
+    int b = kStable;         // 右值读取 const int：仍可内联（非 odr-use）
     return a + b;
 }
 
 const int* address_of() {
-    return &kStable;               // 取地址 → odr-use → kStable 实际占 .rodata
+    return &kStable;         // 取地址 → odr-use → kStable 实际占 .rodata
 }
 
 int main() {
@@ -662,9 +662,9 @@ int main() { observe(); }
 #pragma once
 struct Widget {
     int id;
-    int get() const { return id; } // 类内定义 → 隐式 inline → 多 TU 合法
+    int get() const { return id; }  // 类内定义 → 隐式 inline → 多 TU 合法
 };
-inline int make_id() { return 7; } // 显式 inline 函数
+inline int make_id() { return 7; }  // 显式 inline 函数
 
 // a.cpp / b.cpp 都 #include 无冲突
 ```
@@ -696,11 +696,11 @@ struct Pool {
 // file_a.cpp
 #include <cstdio>
 extern int& getThreshold();
-int& ref = getThreshold();         // dynamic-init：依赖别 TU 的对象
+int& ref = getThreshold();  // dynamic-init：依赖别 TU 的对象
 
 // file_b.cpp
 int& getThreshold() {
-    static int t = 100;            // 此 static 的 dynamic-init 顺序不确定
+    static int t = 100;     // 此 static 的 dynamic-init 顺序不确定
     return t;
 }
 
@@ -733,9 +733,9 @@ private:
     Logger& operator=(const Logger&) = delete;
 };
 
-inline Logger& getLogger() {       // inline 允许头文件定义
-    static Logger instance;        // __cxa_guard 保证只构造一次（见 ⑧）
-    return instance;               // 延迟初始化 → 无 SOIF
+inline Logger& getLogger() {  // inline 允许头文件定义
+    static Logger instance;   // __cxa_guard 保证只构造一次（见 ⑧）
+    return instance;          // 延迟初始化 → 无 SOIF
 }
 // 用法: getLogger().write("boot");
 ```
@@ -747,9 +747,9 @@ inline Logger& getLogger() {       // inline 允许头文件定义
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 修复 2：constinit 强制常
 ```cpp
 // constinit_fix.cpp
-constinit int g_threshold = 100;   // 强制 constant-init 阶段完成，早于所有 dynamic-init
+constinit int g_threshold = 100;          // 强制 constant-init 阶段完成，早于所有 dynamic-init
 
-int& threshold() { return g_threshold; } // 任何 TU 任何时刻读取都安全
+int& threshold() { return g_threshold; }  // 任何 TU 任何时刻读取都安全
 ```
 
 > `[标准]` `[dcl.constinit]`（C++20）：`constinit` 要求变量在常量初始化阶段完成，否则编译错误。它**不要求**变量是 `const`，只要求初值是常量表达式——因此 `g_threshold` 可被修改，但初始化时机被钉死在最早阶段，SOIF 无从发生。
@@ -834,10 +834,10 @@ getLogger():
 ```cpp
 // libstdc++-v3/libsupc++/guard.h （真实声明）
 namespace __cxxabiv1 {
-  typedef int __guard;                          // 守卫变量类型（实际实现按平台位宽）
-  extern "C" int  __cxa_guard_acquire(__guard*); // 进入：原子测试 + 必要时互斥
-  extern "C" void __cxa_guard_release(__guard*); // 成功：置位守卫字节
-  extern "C" void __cxa_guard_abort(__guard*);   // 异常：释放锁，允许重试
+  typedef int __guard;                            // 守卫变量类型（实际实现按平台位宽）
+  extern "C" int  __cxa_guard_acquire(__guard*);  // 进入：原子测试 + 必要时互斥
+  extern "C" void __cxa_guard_release(__guard*);  // 成功：置位守卫字节
+  extern "C" void __cxa_guard_abort(__guard*);    // 异常：释放锁，允许重试
 }
 ```
 
@@ -860,7 +860,7 @@ __cxa_guard_acquire(__guard* g)
 {
   // ── 行1：快速路径。守卫字节最低位为 1 表示已初始化 ──
   if (_GLIBCXX_GUARD_TEST(g))
-    return 0;                       // 已初始化 → 不做任何同步，直接返回（热路径无锁）
+    return 0;                         // 已初始化 → 不做任何同步，直接返回（热路径无锁）
 
 #if defined(__GTHREADS) && defined(_GLIBCXX_HAS_GTHREADS)
   // ── 行2：多线程路径。用递归互斥序列化"首次初始化" ──
@@ -938,8 +938,8 @@ struct Boom {
 };
 
 Boom& getBoom() {
-    static Boom b;              // 前两次构造抛异常 → __cxa_guard_abort
-    return b;                   // 第三次成功 → 置位
+    static Boom b;  // 前两次构造抛异常 → __cxa_guard_abort
+    return b;       // 第三次成功 → 置位
 }
 
 int main() {
@@ -1009,11 +1009,11 @@ inc PROC
 #include <cstdint>
 // libgcc/emutls.c （保留真实结构）
 typedef struct emutls_control {
-  void *(*func)(void*);   // 构造器（若有），否则 NULL
-  void *obj;              // 已构造对象指针（非平凡类型用）
-  uint32_t size;          // 对象大小
-  uint32_t align;         // 对齐
-  void *val;              // 初值模板（POD 用）
+  void *(*func)(void*);         // 构造器（若有），否则 NULL
+  void *obj;                    // 已构造对象指针（非平凡类型用）
+  uint32_t size;                // 对象大小
+  uint32_t align;               // 对齐
+  void *val;                    // 初值模板（POD 用）
 } emutls_control;
 
 // 每线程的 TLS 指针数组（经原生 __thread 或平台 TLS 持有）
@@ -1035,20 +1035,20 @@ __emutls_get_address(emutls_control *obj)
   if (ret == NULL) {
     // ── 行4：副本尚未构造 → 分配内存 ──
     if (obj->size == 0) {
-      ret = (void*)&obj->val;      // 零大小：共享初值，无需每线程副本
+      ret = (void*)&obj->val;   // 零大小：共享初值，无需每线程副本
     } else {
       ret = malloc(obj->size);
       // ── 行5：用 val 模板/func 构造器初始化本线程副本 ──
       if (obj->func)
-        ret = obj->func(ret);      // 调用非平凡构造函数
+        ret = obj->func(ret);   // 调用非平凡构造函数
       else if (obj->val)
         memcpy(ret, obj->val, obj->size);
-      base[obj->offset] = ret;     // 写回本线程数组
+      base[obj->offset] = ret;  // 写回本线程数组
       // ── 行6：注册线程退出析构（调用 obj->func 对应析构 + free）──
       emutls_register_destructor(obj, ret, base);
     }
   }
-  return ret;                      // ── 行7：返回本线程副本地址 ──
+  return ret;                   // ── 行7：返回本线程副本地址 ──
 }
 ```
 
@@ -1079,8 +1079,8 @@ struct Tracer {
     ~Tracer() { std::printf("Tracer dtor on thread\n"); }
 };
 
-thread_local Tracer g_tracer;             // 每线程构造/析构
-thread_local std::string g_trace_buf;     // 非平凡：每线程独立 string
+thread_local Tracer g_tracer;          // 每线程构造/析构
+thread_local std::string g_trace_buf;  // 非平凡：每线程独立 string
 
 void task() {
     g_trace_buf = "work";
@@ -1090,7 +1090,7 @@ int main() {
     std::printf("main start\n");
     task();
     std::printf("main end\n");
-}   // g_tracer / g_trace_buf 在主线程退出时逆序析构
+}                                      // g_tracer / g_trace_buf 在主线程退出时逆序析构
 ```
 
 **程序 27：thread_local 类静态成员（每线程每类一份）**
@@ -1159,10 +1159,10 @@ int main() {
 #include <atomic>
 #include <cstdint>
 
-static int       g_static = 0;                 // 全局 static（.data）
-thread_local int g_tls    = 0;                 // thread_local
-static int*      g_heap   = new int(0);        // dynamic（演示，仅指针常驻）
-static std::atomic<uint64_t> g_atom{0};        // atomic 对照
+static int       g_static = 0;           // 全局 static（.data）
+thread_local int g_tls    = 0;           // thread_local
+static int*      g_heap   = new int(0);  // dynamic（演示，仅指针常驻）
+static std::atomic<uint64_t> g_atom{0};  // atomic 对照
 
 static void BM_GlobalStatic(benchmark::State& s) {
     for (auto _ : s) benchmark::DoNotOptimize(++g_static);
@@ -1190,7 +1190,7 @@ BENCHMARK(BM_AtomicStatic);
 // 首次调用含 __cxa_guard 的一次性代价（单独测）
 static void BM_FuncStaticFirstTime(benchmark::State& s) {
     for (auto _ : s) {
-        static int once = 0;       // 仅首次进入触发 guard；此处循环内只首次
+        static int once = 0;             // 仅首次进入触发 guard；此处循环内只首次
         benchmark::DoNotOptimize(once);
     }
 }
@@ -1345,12 +1345,12 @@ struct CoutInit {
 };
 // 每个 TU 包含 <iostream> 都会有一个 static Init → 用 inline 避免多定义
 inline CoutInit& getCoutInit() {
-    static CoutInit init;            // Meyers 风格，延迟且线程安全
+    static CoutInit init;  // Meyers 风格，延迟且线程安全
     return init;
 }
 
 int main() {
-    getCoutInit();                   // 确保 cout 就绪（对应 std::ios_base::Init）
+    getCoutInit();         // 确保 cout 就绪（对应 std::ios_base::Init）
     std::printf("hello\n");
 }
 ```
@@ -1403,11 +1403,11 @@ int main() {
 // embedded_config.cpp  (bare-metal / RTOS)
 #include <cstdint>
 
-static const uint32_t UART_BAUD = 115200;   // 进 .rodata，启动即用，零初始化成本
-static uint32_t g_tick_count = 0;           // 进 .data，ISR 与 main 共享
+static const uint32_t UART_BAUD = 115200;  // 进 .rodata，启动即用，零初始化成本
+static uint32_t g_tick_count = 0;          // 进 .data，ISR 与 main 共享
 
-extern "C" void SysTick_Handler() {         // 中断服务程序
-    ++g_tick_count;                         // 原子性由 volatile/临界区保证
+extern "C" void SysTick_Handler() {        // 中断服务程序
+    ++g_tick_count;                        // 原子性由 volatile/临界区保证
 }
 
 uint32_t get_tick() { return g_tick_count; }
@@ -1646,13 +1646,13 @@ void clear_status() {
 #include <iostream>
 #include <cstdint>
 int& counter() {
-    static int c = 0;          // 仅首次调用时初始化
+    static int c = 0;                // 仅首次调用时初始化
     return c;
 }
 int main() {
     counter() = 10;
-    counter()++;               // 第二次调用看到上一次的值
-    std::cout << counter() << "\n";   // 11
+    counter()++;                     // 第二次调用看到上一次的值
+    std::cout << counter() << "\n";  // 11
     static_assert(sizeof(&counter()) == sizeof(void*), "static 对象在静态区");
 }
 ```
@@ -1672,10 +1672,10 @@ int main() {
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 // cfg.h  (被多个 .cpp 包含)
-inline int g_timeout_ms = 3000;          // C++17: inline 变量, 多 TU 合并为一份
+inline int g_timeout_ms = 3000;  // C++17: inline 变量, 多 TU 合并为一份
 
 namespace {
-    int detail_log_level = 2;            // 匿名命名空间: 每 TU 各一份(内部链接)
+    int detail_log_level = 2;    // 匿名命名空间: 每 TU 各一份(内部链接)
 }
 ```
 
@@ -1695,8 +1695,8 @@ namespace {
 ```cpp
 #include <iostream>
 struct Database { int open() const { return 1; } };
-Database& get_db() {            // Meyers 单例: 局部 static 延迟到首次使用
-    static Database db;         // 由 __cxa_guard 保证线程安全的一次初始化
+Database& get_db() {     // Meyers 单例: 局部 static 延迟到首次使用
+    static Database db;  // 由 __cxa_guard 保证线程安全的一次初始化
     return db;
 }
 int main() { std::cout << get_db().open() << "\n"; }
@@ -1764,11 +1764,11 @@ int main() {
 ```cpp
 #include <iostream>
 
-int g_zeroed;                 // 零初始化: .bss, main 前完成
-constexpr int g_const = 42;   // 常量初始化: 编译期确定
+int g_zeroed;                     // 零初始化: .bss, main 前完成
+constexpr int g_const = 42;       // 常量初始化: 编译期确定
 
 int& get() {
-    static int s = g_zeroed + 1;   // 动态初始化: 首次进入才执行
+    static int s = g_zeroed + 1;  // 动态初始化: 首次进入才执行
     return s;
 }
 

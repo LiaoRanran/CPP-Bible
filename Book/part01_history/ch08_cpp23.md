@@ -116,7 +116,7 @@ int main() {}
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱
-```
+```text
 C++23 库大修
 ├─ std::expected<T,E> (值或错误, 替代异常/可选错误码)
 ├─ std::flat_map / flat_set (pair<vector> 连续)
@@ -212,12 +212,12 @@ int main() {}
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
 普通 `std::map`（红黑树，节点分散）：
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
-```
+```text
 [节点]→[节点]→... (堆上跳跃, 缓存不友好)
 ```
 `flat_map`（两个并行 `vector`，连续）：
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
-```
+```asm
 keys:   [k1][k2][k3]...
 values: [v1][v2][v3]...   ← 连续内存, 缓存友好, 查找 O(log n)
 ```
@@ -367,11 +367,11 @@ int main() {
 #include <cstdio>
 struct Mat{
     int d[4];
-    int operator[](int i){ return d[i]; }      // 一维下标：C++98 起即可
+    int operator[](int i){ return d[i]; }  // 一维下标：C++98 起即可
 };
 int main() {
     Mat m{{3,1,4,1}};
-    std::printf("m[2]=%d\n", m[2]);           // 4
+    std::printf("m[2]=%d\n", m[2]);        // 4
     return 0;
 }
 ```
@@ -551,7 +551,7 @@ int main(){
 ## 附录 C：C++23底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：C++23底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
-```
+```asm
 C++23关键特性底层:
 
 std::expected<T,E> (P0323R12):
@@ -984,11 +984,11 @@ int main() {
 #include <bit>
 #include <cstdint>
 int main() {
-    std::uint32_t big = 0x01020304u;          // 大端视角下的字节
-    std::uint32_t host = std::byteswap(big);  // 翻转成本机序
-    std::cout << std::hex << "host=0x" << host << '\n'; // 0x04030201
-    std::uint32_t net = 0x0a0b0c0du;          // 网络字节序(大端)
-    std::cout << "swapped=0x" << std::byteswap(net) << '\n'; // 0x0d0c0b0a
+    std::uint32_t big = 0x01020304u;                          // 大端视角下的字节
+    std::uint32_t host = std::byteswap(big);                  // 翻转成本机序
+    std::cout << std::hex << "host=0x" << host << '\n';       // 0x04030201
+    std::uint32_t net = 0x0a0b0c0du;                          // 网络字节序(大端)
+    std::cout << "swapped=0x" << std::byteswap(net) << '\n';  // 0x0d0c0b0a
 }
 ```
 
@@ -1267,13 +1267,13 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 int main() {
     std::vector<int> v(10);
-    std::iota(v.begin(), v.end(), 0);            // 0..9
+    std::iota(v.begin(), v.end(), 0);        // 0..9
     long long m = 0;
-    for (int x : v) if (x % 2 == 0) m += x;      // 手写过滤求和
+    for (int x : v) if (x % 2 == 0) m += x;  // 手写过滤求和
     auto even = v | std::views::filter([](int x) { return x % 2 == 0; });
     long long r = 0;
-    for (int x : even) r += x;                    // ranges 过滤求和
-    assert(m == r);                               // 两种手法求和一致
+    for (int x : even) r += x;               // ranges 过滤求和
+    assert(m == r);                          // 两种手法求和一致
     std::cout << "sum(even) = " << r << std::endl;
     return 0;
 }

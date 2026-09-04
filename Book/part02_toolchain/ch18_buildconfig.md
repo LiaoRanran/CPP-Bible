@@ -63,7 +63,7 @@ int workload(int x) {
 构建配置的核心维度（每个维度都是一个旋钮）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：构建配置维度
-```
+```text
 ┌───────────────┬───────────────────────────┬──────────────────────────┐
 │ 维度          │ Debug 端                   │ Release 端               │
 ├───────────────┼───────────────────────────┼──────────────────────────┤
@@ -138,8 +138,8 @@ GCC 优化级别是递进的（每组开启上一级全部 + 新增 pass）：
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化级别 -O0/-O1/-O2/-
 ```cpp
 // ③ 一个能被 -O2 完全消除的平凡例子
-int identity(int x) { return x; }          // -O2 下调用点被直接替换
-int twice(int x)    { return x + x; }      // -O2：lea eax,[rcx+rcx]
+int identity(int x) { return x; }      // -O2 下调用点被直接替换
+int twice(int x)    { return x + x; }  // -O2：lea eax,[rcx+rcx]
 ```
 
 | 级别 | 单步调试 | 典型提速 | 体积 | 适用 |
@@ -226,7 +226,7 @@ _Z4mul3i:
 ```cpp
 // ⑤ -ffast-math 下，编译器可假设 x+x+x == 3*x、0.0 不会是负零、
 // 且 (a+b)+c == a+(b+c)（即忽略舍入误差与 NaN/Inf 规则）
-double sum3(double x) { return x + x + x; }     // -ffast-math: 变 3*x
+double sum3(double x) { return x + x + x; }        // -ffast-math: 变 3*x
 double dot(const double* a, const double* b, int n) {
     double s = 0.0;
     for (int i = 0; i < n; ++i) s += a[i] * b[i];  // 可被向量化/重排
@@ -485,7 +485,7 @@ nm libch18.a | grep engine
 加固三件套提升对抗内存破坏的能力：
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构建配置：Debug / Release / LTO / PGO
-```
+```text
 ┌────────────────────┬─────────────────────────────┬──────────────────────┐
 │ 加固项             │ 作用                        │ GCC 标志              │
 ├────────────────────┼─────────────────────────────┼──────────────────────┤
@@ -583,9 +583,9 @@ _Z5parsePKcy:
 #include <vector>
 #include <cstddef>
 int suspect(const std::vector<int>& v) {
-    int total;                     // -Wuninitialized（实际 -Wmaybe-uninitialized）
-    for (int x : v) total += x;    // 用了未初始化值
-    if (v.size() < 0) return -1;   // -Wsign-compare：size_t 永不小于 0
+    int total;                    // -Wuninitialized（实际 -Wmaybe-uninitialized）
+    for (int x : v) total += x;   // 用了未初始化值
+    if (v.size() < 0) return -1;  // -Wsign-compare：size_t 永不小于 0
     return total;
 }
 ```
@@ -782,7 +782,7 @@ ccache g++ -std=c++23 -O2 -flto -c app.cpp -o app.o
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.replace]（宏替换与参数求值）；cppreference "Replacing text macros" 词条。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★★☆</span> · 速查表
-```
+```text
 ┌──────────────────────────┬───────────────────────────────────────────────┐
 │ 目标                     │ 推荐标志（GCC 13 / C++23）                      │
 ├──────────────────────────┼───────────────────────────────────────────────┤
@@ -903,7 +903,7 @@ int main(){std::cout<<"Ninja: faster than make. cmake -G Ninja -B build. CCache:
 ## 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
-```
+```text
 Debug vs Release 编译器差异:
 
 | 选项 | Debug | Release | 差异 |

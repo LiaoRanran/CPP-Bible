@@ -66,7 +66,7 @@
 <span class="badge badge-std">标准</span> 每次函数调用，运行时会为其建立一个**栈帧（stack frame / activation record）**。一个典型 x86-64 栈帧（自高地址向低地址）包含：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 栈帧结构（Stack Frame）
-```
+```text
 高地址
 │  ┌─────────────────────────┐
 │  │ 调用者的栈帧              │
@@ -182,7 +182,7 @@ _Z6calleriiii:
 ### 4.2 System V 栈帧布局（规范图）
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈帧布局（规范图）
-```
+```text
 高地址
   调用者栈帧
   │  arg7, arg8, ...        ← 第 7+ 个参数（右→左压栈）
@@ -278,12 +278,12 @@ P3 演示"被调用者必须保存 callee-saved 寄存器"的语义（用标准�
 // P3：callee-saved 语义演示（rbx 须保存恢复）
 #include <cstdio>
 [[gnu::noinline]] int use_rbx(int n) {
-    register long v asm("rbx") = n * 7;   // 强制用 rbx 承载值
-    asm volatile("" : "+r"(v));           // 防止优化消除
+    register long v asm("rbx") = n * 7;                  // 强制用 rbx 承载值
+    asm volatile("" : "+r"(v));                          // 防止优化消除
     return (int)(v + 1);
 }
 int main() {
-    std::printf("rbx-based result = %d\n", use_rbx(3)); // 11
+    std::printf("rbx-based result = %d\n", use_rbx(3));  // 11
 }
 ```
 
@@ -332,10 +332,10 @@ int main() { leaf_scratch(); }
 ```cpp
 // P5：无限递归触发栈溢出（SIGSEGV / 栈溢出异常）
 #include <cstdio>
-void boom() { boom(); }            // 无终止条件，栈帧不断累积
+void boom() { boom(); }  // 无终止条件，栈帧不断累积
 int main() {
     std::puts("about to overflow...");
-    boom();                        // 运行期崩溃：stack overflow
+    boom();              // 运行期崩溃：stack overflow
 }
 ```
 
@@ -366,7 +366,7 @@ int main() {
 #include <cstdio>
 void vuln(const char* s) {
     char buf[8];
-    std::strcpy(buf, s);   // 溢出！若 s 过长会改写返回地址
+    std::strcpy(buf, s);               // 溢出！若 s 过长会改写返回地址
     std::printf("buf=%s\n", buf);
 }
 int main() {
@@ -413,7 +413,7 @@ ulimit -s 16384      # 设为 16 MB（仅对当前 shell 会话有效）
 #ifdef __linux__
 #include <pthread.h>
 void* worker(void*) {
-    char big[4 * 1024 * 1024];     // 4 MB 栈上缓冲
+    char big[4 * 1024 * 1024];                        // 4 MB 栈上缓冲
     big[0] = 1;
     std::printf("big stack ok, big[0]=%d\n", big[0]);
     return nullptr;
@@ -421,7 +421,7 @@ void* worker(void*) {
 int main() {
     pthread_t t; pthread_attr_t a;
     pthread_attr_init(&a);
-    pthread_attr_setstacksize(&a, 16 * 1024 * 1024);   // 16 MB 栈
+    pthread_attr_setstacksize(&a, 16 * 1024 * 1024);  // 16 MB 栈
     pthread_create(&t, &a, worker, nullptr);
     pthread_join(t, nullptr);
 }
@@ -509,9 +509,9 @@ int main() {
     int* p = (int*)std::malloc(10 * sizeof(int));
     if (!p) { std::fprintf(stderr, "OOM\n"); return 1; }
     for (int i = 0; i < 10; ++i) p[i] = i * i;
-    std::printf("p[9]=%d\n", p[9]);   // 81
-    std::free(p);                     // 必须配对释放
-    p = nullptr;                      // 防止悬垂指针
+    std::printf("p[9]=%d\n", p[9]);  // 81
+    std::free(p);                    // 必须配对释放
+    p = nullptr;                     // 防止悬垂指针
 }
 ```
 
@@ -522,16 +522,16 @@ int main() {
 #include <cstdio>
 #include <cstring>
 int main() {
-    void* z = std::malloc(0);         // 实现定义：NULL 或最小块
+    void* z = std::malloc(0);                         // 实现定义：NULL 或最小块
     std::printf("malloc(0)=%p (可 free)\n", z);
     std::free(z);
 
-    int* a = (int*)std::calloc(4, sizeof(int));   // 4*4 字节，全 0
-    std::printf("calloc a[0]=%d\n", a[0]);        // 0
+    int* a = (int*)std::calloc(4, sizeof(int));       // 4*4 字节，全 0
+    std::printf("calloc a[0]=%d\n", a[0]);            // 0
 
-    int* b = (int*)std::realloc(a, 8 * sizeof(int)); // 扩容到 8 个
+    int* b = (int*)std::realloc(a, 8 * sizeof(int));  // 扩容到 8 个
     if (b) { a = b; }
-    std::printf("realloc ok, a[0]=%d\n", a[0]);   // 0（内容保留）
+    std::printf("realloc ok, a[0]=%d\n", a[0]);       // 0（内容保留）
     std::free(a);
 }
 ```
@@ -583,8 +583,8 @@ P12 用代码观察 chunk 对齐（用户指针前的 size 头）：
 #include <cstdlib>
 #include <cstdio>
 #include <cstddef>
-#include <cstdint>          // uintptr_t
-#include <initializer_list> // range-for 遍历 {…} 花括号列表
+#include <cstdint>           // uintptr_t
+#include <initializer_list>  // range-for 遍历 {…} 花括号列表
 int main() {
     for (size_t s : {1, 16, 24, 33, 100}) {
         void* p = std::malloc(s);
@@ -706,9 +706,9 @@ int main() {
  140  _GLIBCXX_NODISCARD void* operator new(std::size_t, const std::nothrow_t&) _GLIBCXX_USE_NOEXCEPT
  141    __attribute__((__externally_visible__, __alloc_size__ (1), __malloc__));
  ...
- 174  // Default placement versions of operator new.
+ 174                   // Default placement versions of operator new.
  175  _GLIBCXX_NODISCARD inline void* operator new(std::size_t, void* __p) _GLIBCXX_USE_NOEXCEPT
- 176  { return __p; }                 // ← placement new：不分配，仅在 __p 上构造
+ 176  { return __p; }  // ← placement new：不分配，仅在 __p 上构造
 ```
 
 [实现-推断] 默认 `operator new(size_t)` 在 libstdc++ 的 `new_op.cc` 中大体为：循环调用 `malloc(size)`，失败则调用 `std::get_new_handler()` 的 handler，仍失败抛 `std::bad_alloc`。`nothrow` 版本失败返回 `nullptr` 而非抛异常。`operator delete` 调 `free`。
@@ -729,14 +729,14 @@ struct Widget {
 };
 int main() {
     std::puts("[new/delete]");
-    Widget* w = new Widget();     // 分配 + 构造
-    delete w;                     // 析构 + 释放
+    Widget* w = new Widget();                          // 分配 + 构造
+    delete w;                                          // 析构 + 释放
 
     std::puts("[malloc/free]");
-    Widget* p = (Widget*)std::malloc(sizeof(Widget)); // 仅分配，不构造
-    new (p) Widget();             // placement new：在 p 上构造
-    p->~Widget();                 // 手动析构
-    std::free(p);                 // 手动 free（不能 delete p）
+    Widget* p = (Widget*)std::malloc(sizeof(Widget));  // 仅分配，不构造
+    new (p) Widget();                                  // placement new：在 p 上构造
+    p->~Widget();                                      // 手动析构
+    std::free(p);                                      // 手动 free（不能 delete p）
 }
 ```
 
@@ -764,7 +764,7 @@ struct Node { int v; Node* next; };
 
 // 栈：在栈上建一个固定大小数组
 [[gnu::noinline]] long bench_stack(int n) {
-    int buf[256];                 // 全在栈上，O(1) 分配
+    int buf[256];                        // 全在栈上，O(1) 分配
     long s = 0;
     for (int i = 0; i < n; ++i) { buf[i & 255] = i; s += buf[i & 255]; }
     return s;
@@ -776,10 +776,10 @@ struct Node { int v; Node* next; };
     v.reserve(n);
     long s = 0;
     for (int i = 0; i < n; ++i) {
-        Node* p = new Node{i, nullptr};   // 每次都走 malloc（含锁/查找）
+        Node* p = new Node{i, nullptr};  // 每次都走 malloc（含锁/查找）
         v.push_back(p); s += p->v;
     }
-    for (auto p : v) delete p;            // 每次走 free
+    for (auto p : v) delete p;           // 每次走 free
     return s;
 }
 
@@ -853,9 +853,9 @@ P19 对比"栈上 array"与"堆上 vector"的生命周期边界：
 #include <vector>
 #include <cstdio>
 int main() {
-    std::array<int, 100> a{};            // 栈（或外层对象内），无堆分配
+    std::array<int, 100> a{};  // 栈（或外层对象内），无堆分配
     a[0] = 42;
-    std::vector<int> b(100);             // 元素在堆
+    std::vector<int> b(100);   // 元素在堆
     b[0] = 42;
     std::printf("array[0]=%d vector[0]=%d\n", a[0], b[0]);
 }
@@ -895,9 +895,9 @@ P21 裸 `new` 忘记 `delete` 会泄漏（对比 RAII）：
 #include <cstdio>
 struct Res { ~Res() { std::puts("  freed"); } };
 void leak() {
-    Res* r = new Res();         // 若忘记 delete r; 则析构不运行 → 泄漏
+    Res* r = new Res();  // 若忘记 delete r; 则析构不运行 → 泄漏
     // ... 若此处提前 return 或抛异常，delete 永不到达
-    delete r;                   // 必须手动配对
+    delete r;            // 必须手动配对
 }
 int main() { leak(); }
 ```
@@ -938,10 +938,10 @@ struct B { ~B() { std::puts("  ~B"); } };
 void inner() {
     A a; B b;
     std::puts("throw...");
-    throw std::runtime_error("boom");   // 展开：先 ~B 后 ~A
+    throw std::runtime_error("boom");  // 展开：先 ~B 后 ~A
 }
 void outer() {
-    inner();   // inner 抛出的异常向外传播
+    inner();                           // inner 抛出的异常向外传播
 }
 int main() {
     try { outer(); }
@@ -965,11 +965,11 @@ int main() {
         try {
             G g;
             throw std::runtime_error("x");
-        } catch (const char*) {           // 不匹配
+        } catch (const char*) {          // 不匹配
             std::puts("char* caught");
         }
         // g 已在此前展开析构
-    } catch (const std::exception& e) {    // 匹配，展开停在这里
+    } catch (const std::exception& e) {  // 匹配，展开停在这里
         std::printf("std::exception caught: %s\n", e.what());
     }
 }
@@ -1242,8 +1242,8 @@ int main() {
 struct T { static int c, d; T(){++c;} ~T(){++d;} };
 int T::c=0; int T::d=0;
 int main() {
-    { T a; T b; }                 // 栈：2 构造 + 2 析构（作用域结束自动）
-    T* p = new T();               // 堆：仅 1 构造（未 delete → 析构缺失 = 泄漏）
+    { T a; T b; }    // 栈：2 构造 + 2 析构（作用域结束自动）
+    T* p = new T();  // 堆：仅 1 构造（未 delete → 析构缺失 = 泄漏）
     std::printf("ctor=%d dtor=%d\n", T::c, T::d);
     delete p;
     std::printf("after delete: ctor=%d dtor=%d\n", T::c, T::d);
@@ -1280,7 +1280,7 @@ int main() {
     char buf[1024];
     std::pmr::monotonic_buffer_resource res(buf, sizeof(buf));  // 后端=栈缓冲
     std::pmr::polymorphic_allocator<int> alloc(&res);
-    std::pmr::vector<int> v(alloc);   // 元素在 buf（栈）上分配
+    std::pmr::vector<int> v(alloc);                             // 元素在 buf（栈）上分配
     v.push_back(1); v.push_back(2);
     std::printf("pmr vec size=%zu (后端=栈缓冲)\n", v.size());
 }
@@ -1322,9 +1322,9 @@ int main() {
 #include <cstdlib>
 #include <cstddef>
 int main() {
-    volatile size_t huge = ~0ull;     // 运行时极大值，避免编译期折叠
+    volatile size_t huge = ~0ull;  // 运行时极大值，避免编译期折叠
     try {
-        char* p = new char[huge];     // 失败抛 std::bad_alloc
+        char* p = new char[huge];  // 失败抛 std::bad_alloc
         (void)p;
     } catch (const std::bad_alloc&) {
         std::puts("caught bad_alloc (new 失败抛异常，关联 ch37)");
@@ -1546,8 +1546,8 @@ int main() {
 ```cpp
 #include <iostream>
 struct T { ~T() { std::cout << "T destroyed\n"; } };
-T* leak() { T* p = new T(); return p; }   // 堆对象: 返回后仍存在
-void scope() { T s; }                      // 栈对象: 离开 scope() 自动析构
+T* leak() { T* p = new T(); return p; }  // 堆对象: 返回后仍存在
+void scope() { T s; }                    // 栈对象: 离开 scope() 自动析构
 int main() {
     scope();
     T* p = leak();
@@ -1736,8 +1736,8 @@ char buf[n];              // VLA, 非标准且易栈溢出
 #include <iostream>
 #include <vector>
 int main() {
-    int n = 1024;                       // 运行时确定的大小(此处以常量示意)
-    std::vector<int> v(n);              // 堆上分配, 自动管理生命周期
+    int n = 1024;           // 运行时确定的大小(此处以常量示意)
+    std::vector<int> v(n);  // 堆上分配, 自动管理生命周期
     std::cout << "heap buffer = " << v.size() << " ints\n";
 }
 ```

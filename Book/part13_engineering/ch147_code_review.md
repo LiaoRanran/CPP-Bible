@@ -106,7 +106,7 @@ int bad(const std::vector<int>& a, const std::vector<int>& b) {
 下面是一次标准审查的 ASCII 流水线框线图（Bible 允许 ASCII 图）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 审查清单
-```
+```text
 ┌─────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌────────┐
 │ 作者自审 │──▶│ 静态分析  │──▶│ 同行评审  │──▶│ CI 门禁   │──▶│ 合入   │
 │ self     │   │ clang-tidy│   │ peer CR  │   │ -Werror  │   │ merge  │
@@ -237,9 +237,9 @@ const std::string& bad() {
 #include <vector>
 // 坏味道：一个函数做太多事（_ch147_refactor.cpp 节选）
 int bad_report(const std::vector<int>& a, const std::vector<int>& b) {
-    int sa = 0; for (auto x : a) sa += x;          // 职责1：求和
-    int sb = 0; for (auto x : b) sb += x;          // 职责2：求和（重复）
-    if (sa > sb) return sa - sb;                   // 职责3：比较
+    int sa = 0; for (auto x : a) sa += x;  // 职责1：求和
+    int sb = 0; for (auto x : b) sb += x;  // 职责2：求和（重复）
+    if (sa > sb) return sa - sb;           // 职责3：比较
     return 0;
 }
 ```
@@ -549,7 +549,7 @@ double time_to_review_hours(std::time_t submitted, std::time_t first_comment) {
 void f(const std::vector<int>& v, int n) {
     if (n < v.size()) std::printf("ok\n");
 }
-```
+```text
 
 真实 g++ 警告（节选）：
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
@@ -570,7 +570,7 @@ int main(){ important(); std::printf("ignored\n"); }
 
 真实 g++ 警告（节选）：
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实案例
-```
+```text
 _ch147_nodiscard.cpp:3:22: warning: ignoring return value of 'int important()',
 declared with attribute 'nodiscard' [-Wunused-result]
 ```
@@ -712,7 +712,7 @@ int main(){std::cout<<"ch147_code_review.md enhanced"<<"\n";return 0;}
 ## 附录 E：工业CR标准
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：工业CR标准
-```
+```text
 Google: CL<=500行, 1 owner LGTM, clang-format强制
 LLVM: arc diff→review→arc land, clang-format+clang-tidy+lit tests
 Chromium: CQ pre-submit CI(编译+测试), 禁止裸new/异常/RTTI
@@ -884,21 +884,21 @@ int main() { send("hi"); }   // 仍匹配旧单参数重载，仅触发弃用告
 ```cpp
 #include <string>
 
-struct RetryConfig {                 // 用配置结构体取代 8 个布尔形参
-    int  max_attempts = 3;           // 具名常量，意图自显
+struct RetryConfig {                    // 用配置结构体取代 8 个布尔形参
+    int  max_attempts = 3;              // 具名常量，意图自显
     int  timeout_ms   = 3000;
     bool log_each     = false;
     bool async        = false;
 };
 
-bool do_work(RetryConfig const& cfg) {   // 单参数，调用点可读
+bool do_work(RetryConfig const& cfg) {  // 单参数，调用点可读
     for (int i = 0; i < cfg.max_attempts; ++i) { (void)i; }
     return cfg.timeout_ms > 0 && cfg.async;
 }
 
 int main() {
     RetryConfig c;
-    c.timeout_ms = 5000;                  // 无魔法数字，一眼可知含义
+    c.timeout_ms = 5000;                // 无魔法数字，一眼可知含义
     (void)do_work(c);
 }
 ```
@@ -924,8 +924,8 @@ int main() {
 // std::string_view bad() { std::string s = "temporary"; return s; }
 
 int main() {
-    std::string owned = "owned-by-caller";   // 所有者存活于调用方作用域
-    std::string_view v{owned};               // view 寿命 <= owned，安全
+    std::string owned = "owned-by-caller";  // 所有者存活于调用方作用域
+    std::string_view v{owned};              // view 寿命 <= owned，安全
     (void)v;
 }
 ```

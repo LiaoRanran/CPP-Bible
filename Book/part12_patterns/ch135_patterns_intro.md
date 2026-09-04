@@ -142,7 +142,7 @@ int main() {
 GoF 把 23 个模式按**目的**分为三类。下面的 ASCII 框线图给出本章后续的索引骨架（仅结构示意，非代码）：
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式分类：创建/结构/行为三大类 [标准]
-```
+```text
 ┌──────────────┬──────────────────────────────────────┐
 │ 创建型(5)    │ 封装"对象如何被创建"                    │
 │ 结构型(7)    │ 处理类/对象的组合关系                  │
@@ -199,7 +199,7 @@ C++ 适合模式的三个硬理由：
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为什么 C++ 特别适合模式
 ```cpp
-template <typename T> T add(T a, T b) { return a + b; }   // 无虚表、无间接
+template <typename T> T add(T a, T b) { return a + b; }  // 无虚表、无间接
 int f() { return add(1, 2); }                            // 直接内联为常量
 ```
 
@@ -250,11 +250,11 @@ int main(){ Circle c{2}; std::printf("%f\n", area_of(c)); } // 编译期解析
 #include <cstdio>
 struct LockGuard {
     LockGuard() { std::printf("lock\n"); }
-    ~LockGuard() { std::printf("unlock\n"); }   // 即使异常也执行
+    ~LockGuard() { std::printf("unlock\n"); }  // 即使异常也执行
     LockGuard(const LockGuard&) = delete;
     LockGuard& operator=(const LockGuard&) = delete;
 };
-void work() { LockGuard g; // 作用域结束自动 unlock
+void work() { LockGuard g;                     // 作用域结束自动 unlock
 ```
 
 经典模式借 RAII 变得"异常安全"：
@@ -322,7 +322,7 @@ int main(){ Square s; s.side=7; volatile int a=s.area(); (void)a; }
 CRTP vs 虚函数决策表：
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 静态多态（CRTP）与动态多态权衡
-```
+```text
 ┌─────────────────┬──────────────┬────────────────────┐
 │ 维度            │ CRTP(静态)   │ 虚函数(动态)       │
 │ 调用开销        │ 0（内联）    │ 1~2 次内存读+跳转  │
@@ -355,9 +355,9 @@ C++ 标准库本身就是模式的集大成者。理解这点，能让你"用标
 #include <memory>
 #include <cstdio>
 int main(){
-    std::vector<int> v{1,2,3};                 // 容器即 Composite 思想的线性版
-    for(int x : v) std::printf("%d ", x);      // range-for = Iterator 模式语法化
-    std::shared_ptr<int> p(new int(5), [](int* q){ delete q; }); // 删除器=策略
+    std::vector<int> v{1,2,3};                                    // 容器即 Composite 思想的线性版
+    for(int x : v) std::printf("%d ", x);                         // range-for = Iterator 模式语法化
+    std::shared_ptr<int> p(new int(5), [](int* q){ delete q; });  // 删除器=策略
 }
 ```
 
@@ -389,8 +389,8 @@ double integrate(std::function<double(double)> f, double a, double b){
 ```cpp
 // 反模式：为单一固定行为建立三层抽象
 struct ILogger { virtual void log()=0; };
-struct ConsoleLogger : ILogger { void log() override { // ...
-struct LoggerFactory { static ILogger* create(); }; // 多余
+struct ConsoleLogger : ILogger { void log() override {  // ...
+struct LoggerFactory { static ILogger* create(); };     // 多余
 ```
 
 直接写法更优：
@@ -691,7 +691,7 @@ int main(){
 重构路径（从坏到好）：
 
 > **示例 36** [难度 ★★☆☆☆] [主题：模式组合与重构 <span class="badge badge-exp">经验</span>]
-```
+```text
 裸指针 + 手动 delete  →  unique_ptr 返回所有权   →  进一步用值语义/optional
 虚函数热点循环        →  加 final / 改 CRTP        →  编译期策略
 全局 Singleton        →  显式注入依赖              →  测试可替换的接口
@@ -713,7 +713,7 @@ struct FakeSensor : Sensor { int read() const override { return 7; } };  // 测�
 int process(const Sensor& s){ return s.read()*2; }
 void test(){
     FakeSensor f;
-    assert(process(f) == 14);   // 不依赖硬件即可测
+    assert(process(f) == 14);                                            // 不依赖硬件即可测
 }
 ```
 
@@ -784,7 +784,7 @@ extern "C" {
 后续章节索引（仅章号与主题，不含跨章链接）：
 
 > **示例 40** [难度 ★★☆☆☆] [主题：本章小结与索引 <span class="badge badge-std">标准</span>]
-```
+```text
 ch136  创建型模式（Factory/Builder/Prototype/Singleton 现代写法）
 ch137  结构型模式（Adapter/Bridge/Composite/Decorator/Proxy）
 ch138  行为型模式（Observer/Strategy/Command/State/Visitor）
@@ -857,7 +857,7 @@ int main(){std::cout<<"ch135_patterns_intro.md enhanced"<<"\n";return 0;}
 ## 附录 E：STL中的设计模式
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：STL中的设计模式
-```
+```text
 Adapter: std::stack/queue → 适配deque接口
 Decorator: reverse_iterator/move_iterator → 装饰迭代器
 Strategy: unique_ptr<T,Deleter> → 编译期策略
@@ -1040,13 +1040,13 @@ int main() {
 struct Button {
     std::vector<std::function<void()>> slots;
     void connect(std::function<void()> f) { slots.push_back(std::move(f)); }
-    void click() { for (auto& s : slots) s(); }   // 广播给所有订阅者
+    void click() { for (auto& s : slots) s(); }  // 广播给所有订阅者
 };
 int main() {
     Button b;
     b.connect([]{ std::cout << "log\n"; });
     b.connect([]{ std::cout << "sfx\n"; });
-    b.click();                                     // 两个订阅者都被通知
+    b.click();                                   // 两个订阅者都被通知
 }
 ```
 

@@ -151,8 +151,8 @@ public:
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实例化机制
 ```cpp
 // 实例化示例：W1 与 W2 是不同类型（即便 T 相同）
-static_assert(!std::is_same_v<W1, W2>);          // 不同策略组合 = 不同类型
-static_assert(std::is_same_v<W1::make, T*(void)>); // make 是静态成员
+static_assert(!std::is_same_v<W1, W2>);             // 不同策略组合 = 不同类型
+static_assert(std::is_same_v<W1::make, T*(void)>);  // make 是静态成员
 ```
 
 ## ⑤ 适用场景与选型
@@ -168,10 +168,10 @@ static_assert(std::is_same_v<W1::make, T*(void)>); // make 是静态成员
 // 选型对比：静态策略 vs 虚函数
 struct FastPolicy { static int run() { return 1; } };
 struct SlowPolicy { static int run() { return 2; } };
-template <typename P> int static_run() { return P::run(); }   // 编译期内联
+template <typename P> int static_run() { return P::run(); }  // 编译期内联
 
 struct VPoly { virtual int run() = 0; };
-struct VFast : VPoly { int run() override { return 1; } };     // 运行期 vtable 查表
+struct VFast : VPoly { int run() override { return 1; } };   // 运行期 vtable 查表
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适用场景与选型
@@ -222,8 +222,8 @@ template <typename T, typename L = NoLog>
 struct Box { T v; void set(T x) { v = x; L::log("set"); } };
 
 int main() {
-    Box<int> silent; silent.set(1);            // 无输出
-    Box<int, PrintLog> loud; loud.set(2);      // 输出 "set"
+    Box<int> silent; silent.set(1);        // 无输出
+    Box<int, PrintLog> loud; loud.set(2);  // 输出 "set"
 }
 ```
 
@@ -284,8 +284,8 @@ void f() { auto p = CP::template create<T>(); (void)p; }
 ```cpp
 // 内存对比：策略宿主无 vptr
 struct VPoly { virtual ~VPoly() = default; };
-static_assert(sizeof(VPoly) == 8);          // [平台] x64 含 vptr
-static_assert(sizeof(W1) == 1);             // 空宿主（策略皆空/静态）占 1 字节
+static_assert(sizeof(VPoly) == 8);  // [平台] x64 含 vptr
+static_assert(sizeof(W1) == 1);     // 空宿主（策略皆空/静态）占 1 字节
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
@@ -458,7 +458,12 @@ FilePtr open_log(const char* p) { return FilePtr(std::fopen(p, "w")); }
 // 工业案例：线程模型策略（单线程零锁）
 template <typename T, typename ThreadP>
 class SafeQueue {
-    void push(T v) { ThreadP::lock(); // ...
+public:
+    void push(T v) {
+        ThreadP::lock();  // 加锁动作由策略决定（单线程策略为空实现）
+        (void)v;          // 真实实现：写入队列
+        ThreadP::unlock();
+    }
 };
 // SafeQueue<int, SingleThreaded> 单线程版无锁开销；SafeQueue<int, Mutexed> 多线程版加锁
 ```
@@ -468,11 +473,11 @@ class SafeQueue {
 // 工业案例：Eigen 式存储策略
 template <typename T, int Rows, int Cols, int Options>
 class Mat {
-    static constexpr bool row_major = Options & 0x1;   // 存储顺序策略（位标志）
+    static constexpr bool row_major = Options & 0x1;  // 存储顺序策略（位标志）
     T data[Rows * Cols];
 };
-using RM = Mat<float, 3, 3, 0x1>;   // 行主序策略
-using CM = Mat<float, 3, 3, 0x0>;   // 列主序策略
+using RM = Mat<float, 3, 3, 0x1>;                     // 行主序策略
+using CM = Mat<float, 3, 3, 0x0>;                     // 列主序策略
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
@@ -486,9 +491,9 @@ using CM = Mat<float, 3, 3, 0x0>;   // 列主序策略
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
 // 行号：94（class basic_string 模板参数）
 template <typename _CharT,
-          typename _Traits = char_traits<_CharT>,        // ← 字符特性策略
-          typename _Alloc  = allocator<_CharT>>           // ← 内存分配策略
-class basic_string { // ...
+          typename _Traits = char_traits<_CharT>,  // ← 字符特性策略
+          typename _Alloc  = allocator<_CharT>>    // ← 内存分配策略
+class basic_string {                               // ...
 // char_traits 定义见 bits/char_traits.h 行 113（主模板）/ 331（char 特化）
 ```
 
@@ -575,7 +580,12 @@ template <typename P>
 concept ThreadPolicy = requires { P::lock(); P::unlock(); };
 template <typename T, ThreadPolicy TP>
 class Guarded {
-    void op() { TP::lock(); // ...
+public:
+    void op() {
+        TP::lock();               // 策略不满足 concept 时此行即被约束拒绝
+        /* 临界区 */
+        TP::unlock();
+    }
 };
 ```
 

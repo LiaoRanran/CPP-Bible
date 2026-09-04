@@ -51,14 +51,14 @@
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：数值算法 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 头文件与最重要的一组接口（C++17 起成熟，C++20/23 扩展）
-#include <numeric>      // accumulate/reduce/inner_product/partial_sum/scan/gcd/lcm/iota/midpoint/lerp
-#include <execution>    // execution::seq / par / par_unseq / unseq
+#include <numeric>                                       // accumulate/reduce/inner_product/partial_sum/scan/gcd/lcm/iota/midpoint/lerp
+#include <execution>                                     // execution::seq / par / par_unseq / unseq
 #include <vector>
 
 // ① 归约：把 [first,last) 折成一个值；扫描：把前缀状态写到输出区间
 int main() {
     std::vector<int> v{1,2,3,4,5};
-    long long s = std::reduce(v.begin(), v.end(), 0LL);   // 15
+    long long s = std::reduce(v.begin(), v.end(), 0LL);  // 15
     return (int)s;
 }
 ```
@@ -190,9 +190,9 @@ _Z10reduce_dblPKdy:
 #include <cassert>
 int demo_diff() {
     std::vector<int> v{1,2,3,4,5};
-    auto a = std::accumulate(v.begin(), v.end(), 0);   // 严格 ((((1+2)+3)+4)+5)
-    auto r = std::reduce(v.begin(), v.end(), 0);        // 顺序未指定
-    assert(a == r);                                     // 整数：相等
+    auto a = std::accumulate(v.begin(), v.end(), 0);  // 严格 ((((1+2)+3)+4)+5)
+    auto r = std::reduce(v.begin(), v.end(), 0);      // 顺序未指定
+    assert(a == r);                                   // 整数：相等
     return a;
 }
 ```
@@ -205,9 +205,9 @@ int demo_diff() {
 #include <iostream>
 void init_type_trap() {
     std::vector<long long> v{2'000'000'000LL, 2'000'000'000LL};
-    auto bad  = std::reduce(v.begin(), v.end(), 0);            // 0 是 int -> 溢出！
-    auto good = std::reduce(v.begin(), v.end(), 0LL);          // 0LL -> 正确
-    std::cout << bad << " " << good << "\n";                   // 不可预期  4000000000
+    auto bad  = std::reduce(v.begin(), v.end(), 0);    // 0 是 int -> 溢出！
+    auto good = std::reduce(v.begin(), v.end(), 0LL);  // 0LL -> 正确
+    std::cout << bad << " " << good << "\n";           // 不可预期  4000000000
 }
 ```
 
@@ -284,17 +284,17 @@ double dot_via_tr(const std::vector<double>& a, const std::vector<double>& b) {
 void demo_partial() {
     std::vector<int> v{1,2,3,4,5};
     std::vector<int> out(v.size());
-    std::partial_sum(v.begin(), v.end(), out.begin());   // 含前项(就地累积)
-    for (int x : out) std::cout << x << " ";             // 1 3 6 10 15
+    std::partial_sum(v.begin(), v.end(), out.begin());        // 含前项(就地累积)
+    for (int x : out) std::cout << x << " ";                  // 1 3 6 10 15
     std::cout << "\n";
 }
 
 void demo_scan() {
     std::vector<int> v{1,2,3,4,5};
     std::vector<int> out(v.size());
-    std::inclusive_scan(v.begin(), v.end(), out.begin());   // 与 partial_sum 等价
-    std::exclusive_scan(v.begin(), v.end(), out.begin(), 0); // 不含当前项
-    for (int x : out) std::cout << x << " ";                // 0 1 3 6 10
+    std::inclusive_scan(v.begin(), v.end(), out.begin());     // 与 partial_sum 等价
+    std::exclusive_scan(v.begin(), v.end(), out.begin(), 0);  // 不含当前项
+    for (int x : out) std::cout << x << " ";                  // 0 1 3 6 10
     std::cout << "\n";
 }
 
@@ -303,7 +303,7 @@ void demo_exclusive() {
     std::vector<int> out(v.size());
     std::transform_exclusive_scan(v.begin(), v.end(), out.begin(), 100,
                         std::plus<>(), [](int x){ return x * 10; });
-    for (int x : out) std::cout << x << " ";                // 100 110 130 160
+    for (int x : out) std::cout << x << " ";                  // 100 110 130 160
     std::cout << "\n";
 }
 
@@ -330,7 +330,7 @@ void prefix_min_exclusive() {
 - `[经验]`：做"前缀和/前缀最值/前缀积"时优先 `inclusive_scan`/`exclusive_scan`（可喂 `execution::par`），`partial_sum` 仅当需流式、单线程、且与旧代码兼容时使用。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · sum / inclusivesca
-```
+```text
 ┌──────────────── 扫描数据流（inclusive）────────────────┐
 │ in :  1   2   3   4   5                                  │
 │       │   │   │   │   │                                  │
@@ -613,7 +613,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 ```
 
 > **示例 19** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
-```
+```text
 ┌──────────── 并行归约的线程划分（概念）────────────┐
 │ 输入 [0..N) 被切成块，各线程独立归约出局部和：     │
 │  T0: sum0 = Σ块0      T1: sum1 = Σ块1   ...      │
@@ -686,8 +686,8 @@ double kahan(const std::vector<double>& v) {
 #include <cmath>
 void naive_vs_stable() {
     double a = 1e16, b = 1.0, c = -1e16;
-    double naive = a + b + c;           // 可能 = 0
-    double stable = (a + c) + b;        // 先抵消同量级，再加大数 -> 1.0
+    double naive = a + b + c;     // 可能 = 0
+    double stable = (a + c) + b;  // 先抵消同量级，再加大数 -> 1.0
     std::cout << naive << " " << stable << "\n";
 }
 ```
@@ -781,8 +781,8 @@ long ring_wrap(long a, long b) {
 }
 
 int main() {
-    simplify_fraction(12, 18);   // 2/3
-    std::cout << ring_wrap(4, 6) << "\n";   // 12
+    simplify_fraction(12, 18);             // 2/3
+    std::cout << ring_wrap(4, 6) << "\n";  // 12
 }
 ```
 
@@ -823,14 +823,14 @@ void lcm_zero() {
 
 void fill_seq() {
     std::vector<int> v(5);
-    std::iota(v.begin(), v.end(), 0);   // 0 1 2 3 4
+    std::iota(v.begin(), v.end(), 0);    // 0 1 2 3 4
     for (int x : v) std::cout << x << " ";
     std::cout << "\n";
 }
 
 void fill_steps() {
     std::vector<double> v(5);
-    std::iota(v.begin(), v.end(), 1.5); // 1.5 2.5 3.5 4.5 5.5
+    std::iota(v.begin(), v.end(), 1.5);  // 1.5 2.5 3.5 4.5 5.5
     for (double x : v) std::cout << x << " ";
     std::cout << "\n";
 }
@@ -1023,9 +1023,9 @@ int main() {
 #include <iostream>
 void reorder_demo() {
     std::vector<double> v{1.0, 1e-8, 1e-8, 1e-8};
-    double left = ((1.0 + 1e-8) + 1e-8) + 1e-8;     // 先加小数
-    double right = 1.0 + (1e-8 + (1e-8 + 1e-8));    // 先聚小数
-    std::cout << left << " " << right << "\n";        // 可能不相等
+    double left = ((1.0 + 1e-8) + 1e-8) + 1e-8;   // 先加小数
+    double right = 1.0 + (1e-8 + (1e-8 + 1e-8));  // 先聚小数
+    std::cout << left << " " << right << "\n";    // 可能不相等
 }
 ```
 
@@ -1511,7 +1511,7 @@ void demo_c10(const std::vector<long long>& v) {
 ## 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
-```
+```asm
 数值算法工业应用:
 
 std::accumulate (并行):
@@ -1614,10 +1614,10 @@ int main() {
 int main() {
     std::vector<int> v{1, 2, 3, 4, 5};
     int s = std::accumulate(v.begin(), v.end(), 0);
-    std::cout << "sum=" << s << "\n";                       // 15
+    std::cout << "sum=" << s << "\n";    // 15
     std::vector<std::string> w{"a", "b", "c"};
     std::string cat = std::accumulate(w.begin(), w.end(), std::string(""));
-    std::cout << "cat=" << cat << "\n";                     // abc
+    std::cout << "cat=" << cat << "\n";  // abc
 }
 ```
 
@@ -1729,10 +1729,10 @@ int main() {
 #include <execution>
 int main() {
     std::vector<int> v(1'000'000);
-    std::iota(v.begin(), v.end(), 1);                      // 1..1e6
+    std::iota(v.begin(), v.end(), 1);                    // 1..1e6
     long long s = std::reduce(std::execution::unseq,
-                              v.begin(), v.end(), 0LL);    // 允许 SIMD 的串行归约
-    std::cout << "sum=" << s << '\n';                      // 500000500000
+                              v.begin(), v.end(), 0LL);  // 允许 SIMD 的串行归约
+    std::cout << "sum=" << s << '\n';                    // 500000500000
 }
 ```
 
@@ -1801,7 +1801,7 @@ int main() {
 #include <numeric>
 int main() {
     std::vector<double> v{0.1, 0.2, 0.3};
-    double sum = std::accumulate(v.begin(), v.end(), 0.0);   // 0.0 -> double
+    double sum = std::accumulate(v.begin(), v.end(), 0.0);            // 0.0 -> double
     std::cout << "sum=" << sum << " avg=" << sum / v.size() << "\n";  // 0.6 0.2
 }
 ```

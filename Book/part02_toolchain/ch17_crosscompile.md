@@ -83,9 +83,9 @@ int add(int a, int b) { return a + b; }   // 同一份源码，x86 或 ARM 都�
 #include <cstdio>
 int main() {
 #if defined(__ARM_ARCH)
-    return __ARM_ARCH;          // ARM 目标：返回架构代次（如 7）
+    return __ARM_ARCH;  // ARM 目标：返回架构代次（如 7）
 #elif defined(__x86_64__)
-    return 64;                  // x86-64 目标
+    return 64;          // x86-64 目标
 #else
     return 0;
 #endif
@@ -124,8 +124,8 @@ int main() { std::printf("built for target\n"); return 0; }
 > **示例 6** [难度 ★★☆☆☆] [主题：裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
 ```cpp
 // ④ 裸机程序：必须自己定义入口，不能有 main 依赖 libc 的初始化
-extern "C" void _start() {              // 复位向量跳到这里
-    for (;;) { // 自旋
+extern "C" void _start() {  // 复位向量跳到这里
+    for (;;) {              // 自旋
 }
 // 链接：arm-none-eabi-ld -T script.ld -o fw.elf start.o
 ```
@@ -152,9 +152,9 @@ int main(int argc, char** argv) {
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch17_callconv.cpp -o Examples/_ch17_callconv.asm
 struct Point { long x, y; };
 long sum6(long a, long b, long c, long d, long e, long f) {
-    return a + b + c + d + e + f;       // 6 个参数：4 寄存器 + 2 栈
+    return a + b + c + d + e + f;              // 6 个参数：4 寄存器 + 2 栈
 }
-long manhattan(Point p) { return p.x + p.y; }   // 16 字节结构按值传递
+long manhattan(Point p) { return p.x + p.y; }  // 16 字节结构按值传递
 Point make_point(long x, long y) { return {x, y}; }
 ```
 
@@ -407,10 +407,10 @@ void toggle() { g_dbg ^= 1; }    // 在 GDB 里设断点、watch g_dbg
 ```cpp
 // 文件：Examples/_ch17_sizeopt.cpp，行号：7（active，被引用）/ 11（dead，未引用）
 #include <cstdint>
-uint32_t active(uint32_t x) { return x * 3u + 1u; }   // main 调用 -> 保留
-uint32_t dead(uint32_t x)   { return x * x + 12345u; } // 无人调用 -> 期望被 GC
-int used_var = 7;        // 被引用 -> 保留
-int unused_var = 99;     // 未引用 -> 期望被 GC
+uint32_t active(uint32_t x) { return x * 3u + 1u; }     // main 调用 -> 保留
+uint32_t dead(uint32_t x)   { return x * x + 12345u; }  // 无人调用 -> 期望被 GC
+int used_var = 7;                                       // 被引用 -> 保留
+int unused_var = 99;                                    // 未引用 -> 期望被 GC
 ```
 
 ```bash
@@ -495,7 +495,7 @@ extern char _ebss;    // 启动文件里若叫 __bss_end__，这里就链接失�
 // ⑯ 坑3：int 宽度假设。x86/ARM 桌面与 Cortex-M 的 int 都是 32 位，
 // 但指针在 Cortex-M 是 32 位、在 AArch64 是 64 位——把指针存进 int 会截断！
 #include <cstdint>
-void bad(uintptr_t p) { int leak = (int)p; }   // ❌ 64 位目标上截断指针
+void bad(uintptr_t p) { int leak = (int)p; }             // ❌ 64 位目标上截断指针
 void good(uintptr_t p) { intptr_t safe = (intptr_t)p; }  // ✅ 用 intptr_t
 ```
 
@@ -535,9 +535,9 @@ int main() {
 namespace arch {
     inline int hart_count() {
 #if defined(__x86_64__)
-        return 1;                  // 宿主机示意
+        return 1;  // 宿主机示意
 #elif defined(__ARM_ARCH)
-        return 1;                  // 单核 MCU
+        return 1;  // 单核 MCU
 #else
         return 1;
 #endif
@@ -723,7 +723,7 @@ int main(){std::vector<int> v(3,7);std::cout<<v.size()<<std::endl;return 0;}
 ## 附录 A：工业交叉编译 [B: Principle / F: Industry / H: Design / I: Practice / J: Learning]
 
 > **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业交叉编译 [B: Principle / F: Industry / H: Design / I: Practice / J: Learning]
-```
+```text
 交叉编译工业场景:
 - 嵌入式: arm-none-eabi-gcc (Cortex-M), aarch64-linux-gnu-gcc (ARM64 Linux)
 - Android: NDK (aarch64-linux-android), API level 21+ (C++17支持)

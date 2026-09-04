@@ -240,8 +240,8 @@ int main() {
     });
     std::this_thread::sleep_for(std::chrono::milliseconds(150));
     std::cout << "main: request_stop\n";
-    ssrc.request_stop();     // 此刻同步执行 cb，然后 worker 退出
-    return 0;                // jthread 析构 join
+    ssrc.request_stop();  // 此刻同步执行 cb，然后 worker 退出
+    return 0;             // jthread 析构 join
 }
 ```
 
@@ -319,12 +319,12 @@ int main() {
 #include <chrono>
 
 struct Server {
-    std::jthread acceptor_;     // 接受连接的后台线程
+    std::jthread acceptor_;                 // 接受连接的后台线程
     std::atomic<bool> stopped_{false};
 
     void start() {
         acceptor_ = std::jthread([this](std::stop_token st) {
-            while (!st.stop_requested()) {          // 协作检查点
+            while (!st.stop_requested()) {  // 协作检查点
                 // 实际：accept() 阻塞；生产用 stop_callback 唤醒 accept
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 // ... 处理在途请求 ...
@@ -434,9 +434,9 @@ bool _M_request_stop() noexcept {
 #include <stop_token>
 int main() {
     std::stop_source s;
-    std::cout << "first  = " << std::boolalpha << s.request_stop() << "\n"; // true
-    std::cout << "second = " << s.request_stop() << "\n";                   // false
-    std::cout << "requested = " << s.get_token().stop_requested() << "\n"; // true
+    std::cout << "first  = " << std::boolalpha << s.request_stop() << "\n";  // true
+    std::cout << "second = " << s.request_stop() << "\n";                    // false
+    std::cout << "requested = " << s.get_token().stop_requested() << "\n";   // true
     return 0;
 }
 ```
@@ -531,8 +531,8 @@ int main() {
     });
     std::this_thread::sleep_for(std::chrono::milliseconds(120));
     { std::lock_guard lk(m); data_ready = true; }
-    cv.notify_all();        // 也可改为 worker.request_stop() 触发停止分支
-    return 0;               // jthread 析构 request_stop + join
+    cv.notify_all();  // 也可改为 worker.request_stop() 触发停止分支
+    return 0;         // jthread 析构 request_stop + join
 }
 ```
 
@@ -696,8 +696,8 @@ int main() {
         std::cout << "worker exited by external request\n";
     });
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ctrl.request_stop();   // 控制方下令
-    return 0;              // join
+    ctrl.request_stop();  // 控制方下令
+    return 0;             // join
 }
 ```
 
@@ -807,9 +807,9 @@ int main() {
 #include <stop_token>
 int main() {
     std::stop_source s1;
-    std::stop_source s2 = s1;        // 拷贝，共享 _Stop_state
+    std::stop_source s2 = s1;  // 拷贝，共享 _Stop_state
     std::stop_token tok = s1.get_token();
-    s2.request_stop();               // 通过任一 source 发令
+    s2.request_stop();         // 通过任一 source 发令
     std::cout << "token sees stop = " << tok.stop_requested() << "\n";
     return 0;
 }
@@ -956,11 +956,11 @@ int main() {
         for (long long i = 0; !st.stop_requested(); ++i) {
             sum.fetch_add(i, std::memory_order_relaxed);
             if ((i & 0xFFFFFF) == 0)
-                std::this_thread::sleep_for(std::chrono::milliseconds(1)); // 检查点
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));  // 检查点
         }
     });
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return 0;    // 在下一检查点看到停止
+    return 0;                                                               // 在下一检查点看到停止
 }
 ```
 
@@ -1103,8 +1103,8 @@ int main() {
     {
         std::stop_source s;
         tok = s.get_token();
-        s.request_stop();          // 在 source 作用域内停止
-    }                              // source 析构，但 token 仍持有 shared state
+        s.request_stop();  // 在 source 作用域内停止
+    }                      // source 析构，但 token 仍持有 shared state
     std::cout << "after source destroyed, token.stop_requested="
               << tok.stop_requested() << "\n";
     return 0;
@@ -1148,7 +1148,7 @@ struct Flusher {
     void run(std::stop_token st) {
         while (!st.stop_requested()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            ++ticks_;                       // 模拟刷盘
+            ++ticks_;  // 模拟刷盘
         }
     }
     void start() { thread_ = std::jthread([this](std::stop_token st){ run(st); }); }
@@ -1158,7 +1158,7 @@ int main() {
     f.start();
     std::this_thread::sleep_for(std::chrono::milliseconds(350));
     std::cout << "flushed ticks=" << f.ticks_.load() << " (graceful stop on exit)\n";
-    return 0;    // 析构 thread_ -> request_stop + join
+    return 0;          // 析构 thread_ -> request_stop + join
 }
 ```
 
@@ -1367,13 +1367,13 @@ int main() {
 
 int main() {
     std::jthread worker([](std::stop_token st) {
-        while (!st.stop_requested()) {             // 协作式轮询
+        while (!st.stop_requested()) {  // 协作式轮询
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         std::cout << "clean exit\n";
     });
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    worker.request_stop();                          // 通过内部 stop_source 广播
+    worker.request_stop();              // 通过内部 stop_source 广播
     // jthread 析构自动 join，无需手动
 }
 ```
@@ -1769,7 +1769,7 @@ int main() {
     });
     std::stop_callback cb1(worker.get_stop_token(), [&] { order.push_back(1); });
     std::stop_callback cb2(worker.get_stop_token(), [&] { order.push_back(2); });
-    worker.request_stop();  // 主线程显式请求停止 -> 同步触发回调（LIFO）
+    worker.request_stop();                                       // 主线程显式请求停止 -> 同步触发回调（LIFO）
     for (int v : order)
         std::cout << "callback fired order=" << v << std::endl;  // 2 然后 1
     return 0;
@@ -1965,14 +1965,14 @@ int main() {
     std::stop_source src;
     std::jthread worker([stoken = src.get_token()]() {
         long long count = 0;
-        while (!stoken.stop_requested()) {        // 协作取消点
+        while (!stoken.stop_requested()) {  // 协作取消点
             ++count;
         }
         std::cout << "worker stopped at count=" << count << std::endl;
     });
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    src.request_stop();   // 广播取消
-    worker.join();        // jthread 自动 join
+    src.request_stop();                     // 广播取消
+    worker.join();                          // jthread 自动 join
     std::cout << "main: cancellation delivered" << std::endl;
     return 0;
 }

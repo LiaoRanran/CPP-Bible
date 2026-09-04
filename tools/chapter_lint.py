@@ -62,7 +62,7 @@ try:
     sys.path.insert(0, str(HERE))
     from chapter_compile_check import CPP_FENCE, FENCE_END  # noqa: E402
 except Exception:  # 兜底，防止工具被单独移动后 import 失败
-    CPP_FENCE = re.compile(r"^```cpp\s*$")
+    CPP_FENCE = re.compile(r"^```cpp(?:\s.*)?$")   # 允许围栏信息串（title="…"）
     FENCE_END = re.compile(r"^```\s*$")
 
 # ---- 缺陷规则定义 ----

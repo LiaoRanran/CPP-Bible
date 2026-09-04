@@ -74,11 +74,11 @@ Qt 是 Trolltech（现 The Qt Company）推出的跨平台 C++ 应用框架，�
 // ① 最小 QObject 派生类骨架（moc 预处理的输入）
 #include <QObject>
 class Sensor : public QObject {
-    Q_OBJECT                       // [实现·moc] 触发元对象代码生成
+    Q_OBJECT                      // [实现·moc] 触发元对象代码生成
 public:
     explicit Sensor(QObject* parent = nullptr) : QObject(parent) {}
 signals:
-    void valueChanged(double v);   // 信号：只声明，moc 生成实现
+    void valueChanged(double v);  // 信号：只声明，moc 生成实现
 };
 ```
 
@@ -248,9 +248,9 @@ Qt 用**父子所有权**替代裸 `delete`：把子对象 `new` 出来时把父
 class Worker : public QObject { Q_OBJECT public: ~Worker(){ qDebug()<<"dtor"; } };
 void scope() {
     QObject* parent = new QObject;
-    new Worker(parent);          // 子：随 parent 一起销毁
+    new Worker(parent);  // 子：随 parent 一起销毁
     new Worker(parent);
-    delete parent;               // 两个 Worker 被自动 delete
+    delete parent;       // 两个 Worker 被自动 delete
 }
 ```
 
@@ -275,8 +275,8 @@ Qt 是**事件驱动**：GUI 主线程跑 `QApplication::exec()`，内部是 `QE
 // ⑥ 主事件循环
 #include <QApplication>
 int main(int argc, char** argv) {
-    QApplication app(argc, argv);   // 启动事件循环前必须存在
-    return app.exec();              // 阻塞，直到 quit()
+    QApplication app(argc, argv);  // 启动事件循环前必须存在
+    return app.exec();             // 阻塞，直到 quit()
 }
 ```
 
@@ -367,16 +367,16 @@ Qt 未链接时，用**自包含纯 C++**（观察者模式 + `std::function` �
 #include <functional>
 #include <utility>
 
-struct SignalClick {                        // 等价 moc 为 signal 生成的回调表
+struct SignalClick {                                         // 等价 moc 为 signal 生成的回调表
     using Slot = std::function<void(int)>;
     std::vector<Slot> slots;
-    void connect(Slot f) { slots.push_back(std::move(f)); }   // 等价 QObject::connect
-    void emit(int v) { for (auto& s : slots) s(v); }          // 等价 emit clicked(v);
+    void connect(Slot f) { slots.push_back(std::move(f)); }  // 等价 QObject::connect
+    void emit(int v) { for (auto& s : slots) s(v); }         // 等价 emit clicked(v);
 };
 
 class Button {
 public:
-    SignalClick clicked;                    // 等价 signals: void clicked(int);
+    SignalClick clicked;                                     // 等价 signals: void clicked(int);
     void press(int x) { clicked.emit(x); }
 };
 
@@ -387,7 +387,7 @@ public:
 
 int main() {
     Button b; Label l;
-    b.clicked.connect([&l](int x) { l.on_clicked(x); });  // 等价 connect(&b,&Button::clicked,&l,&Label::on_clicked)
+    b.clicked.connect([&l](int x) { l.on_clicked(x); });     // 等价 connect(&b,&Button::clicked,&l,&Label::on_clicked)
     b.press(42);
     return 0;
 }
@@ -451,8 +451,8 @@ Qt 大量使用**隐式共享（copy-on-write）**：`QString`/`QVector`/`QImage
 #include <QString>
 void share() {
     QString a = "hello";
-    QString b = a;            // 共享同一数据（引用计数 +1）
-    b[0] = 'H';               // 此时才 detach 深拷贝 b
+    QString b = a;  // 共享同一数据（引用计数 +1）
+    b[0] = 'H';     // 此时才 detach 深拷贝 b
 }
 ```
 
@@ -460,8 +460,8 @@ void share() {
 ```cpp
 // ⑪ 跨线程信号传大对象：用 const 引用 + 注册元类型，避免不必要拷贝
 #include <QMetaType>
-struct Frame { // 大图像数据
-Q_DECLARE_METATYPE(Frame)    // 让 Frame 可在信号槽中按值传递
+struct Frame {             // 大图像数据
+Q_DECLARE_METATYPE(Frame)  // 让 Frame 可在信号槽中按值传递
 ```
 
 - `[经验]`：跨线程传 `QImage` 等大宗数据用 **指针/智能指针共享** 或 `std::shared_ptr<T>` 注册元类型，而非按值拷贝整帧。
@@ -507,9 +507,9 @@ QString cfg = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 class Bad : public QObject { Q_OBJECT };
 void trap() {
     QThread* t = new QThread;
-    Bad* b = new Bad;          // b 亲和主线程
-    b->moveToThread(t);        // 现在 b 在子线程
-    new Bad(b);                // 危险：在 b 已属子线程后才 new 子，时序错乱
+    Bad* b = new Bad;    // b 亲和主线程
+    b->moveToThread(t);  // 现在 b 在子线程
+    new Bad(b);          // 危险：在 b 已属子线程后才 new 子，时序错乱
 }
 ```
 
@@ -534,10 +534,10 @@ Qt 所有权（父子 `delete`）与标准 C++ RAII（`std::unique_ptr`）是**�
 // ⑭ 混用：用 unique_ptr 管理非 QObject 的纯标准类型，Qt 管 QObject 树
 #include <memory>
 #include <QObject>
-struct Buffer { char* data; ~Buffer(){ // RAII 释放
+struct Buffer { char* data; ~Buffer(){                         // RAII 释放
 class View : public QObject { Q_OBJECT
     std::unique_ptr<Buffer> buf = std::make_unique<Buffer>();  // 标准 RAII 成员
-};   // View 自身由 Qt 父对象管理；buf 随 View 析构由 unique_ptr 释放
+};                                                             // View 自身由 Qt 父对象管理；buf 随 View 析构由 unique_ptr 释放
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准 C++ 关系
@@ -610,8 +610,8 @@ public slots:
 ```cpp
 // ⑰ 贡献规范（示意）：信号命名用过去时、小写开头，便于 on_xxx 槽约定
 signals:
-    void dataReceived(const QByteArray&);   // 好的信号名（事件已发生）
-    void receiveData();                      // 差：像命令不像事件
+    void dataReceived(const QByteArray&);  // 好的信号名（事件已发生）
+    void receiveData();                    // 差：像命令不像事件
 ```
 
 - `[平台·Qt]`：Qt 用 Gerrit + CLA 协议；Qt6 起模块可独立仓库（`qtbase`/`qtshadertools`）。
@@ -631,8 +631,8 @@ signals:
 // ⑱ Boost.Signals2：纯模板、无 moc，但编译期更重、无运行时内省
 #include <boost/signals2.hpp>
 boost::signals2::signal<void(int)> sig;
-sig.connect([](int x){ // 槽
-sig(42);                       // 等价 emit
+sig.connect([](int x){  // 槽
+sig(42);                // 等价 emit
 ```
 
 - `[标准]`：Qt 信号槽的独特点是**与 moc 反射、属性、QML 深度集成**，并对跨线程「开箱即用」。
@@ -671,7 +671,7 @@ sig(42);                       // 等价 emit
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.copy]（拷贝语义）/ Qt 文档 "Object Trees"；cppreference "Rule of three/five" 词条。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
-```
+```text
 ┌───────────────────────┬────────────────────────────────────────────┐
 │ 写法                  │ 等价/说明                                    │
 ├───────────────────────┼────────────────────────────────────────────┤
@@ -740,7 +740,7 @@ struct ProgressSignal {
     void connect(std::function<void(int)> f) { slots.push_back(std::move(f)); }
     // operator()：emit 时逐一调用所有槽 —— 对应 Qt 的 emit signal(args) → activate
     void operator()(int value) const {
-        for (auto& f : slots) f(value);   // Qt 的 QMetaObject::activate 就是遍历连接表
+        for (auto& f : slots) f(value);              // Qt 的 QMetaObject::activate 就是遍历连接表
     }
 };
 
@@ -798,7 +798,7 @@ int main() {
 ## 附录 A：MOC 为什么存在 —— 标准 C++ 尚无法替代 [B: Principle]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：MOC 为什么存在 ——
-```
+```text
 Qt 的 Meta-Object Compiler (MOC) 补充了 C++ 缺失的 4 个核心能力:
 
 1. 运行时类型自省 (introspection)
@@ -861,7 +861,7 @@ int main() {
 | 线程 | QThread::moveToThread | std::thread + std::async | GUI→Qt; 后端→std::thread |
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：Qt vs 标准 C++ 设计权衡 [H: Design]
-```
+```text
 选择建议:
 - 纯后端/CLI → 标准 C++ (无 Qt 依赖, 编译更快)
 - 桌面 GUI → Qt (唯一成熟跨平台 C++ GUI 方案)
@@ -873,7 +873,7 @@ int main() {
 ## 附录 D：面试与 QObject 内存模型 [J: Learning / E: Low-level]
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与 QObject 内
-```
+```text
 面试高频:
 Q: QObject 的 parent-child 内存模型如何工作？
 A: 双向链表: child(QList<QObject*>), parent(单指针)。父析构→遍历子链表→delete
@@ -1051,16 +1051,16 @@ Qt 的父子所有权 = 父 `QObject` 内部维护一张子对象指针表，析
 #include <algorithm>
 
 struct Node {
-    Node* parent = nullptr;                 // 等价 QObject::parent()
-    std::vector<Node*> children;            // 等价 QObject 维护的子对象表
+    Node* parent = nullptr;                            // 等价 QObject::parent()
+    std::vector<Node*> children;                       // 等价 QObject 维护的子对象表
     int id;
     explicit Node(int id, Node* parent = nullptr) : parent(parent), id(id) {
-        if (parent) parent->children.push_back(this);   // 等价 new Child(parent)
+        if (parent) parent->children.push_back(this);  // 等价 new Child(parent)
     }
     // 等价 QObject 析构：递归销毁全部子孙，再把自己从父的子表里移除
     ~Node() {
         std::cout << "dtor node " << id << "\n";
-        for (Node* c : children) delete c;              // 级联释放子孙
+        for (Node* c : children) delete c;             // 级联释放子孙
         if (parent) {
             auto& v = parent->children;
             v.erase(std::remove(v.begin(), v.end(), this), v.end());
@@ -1069,11 +1069,11 @@ struct Node {
 };
 
 int main() {
-    Node* root = new Node(0);              // 菜单
-    Node* sub  = new Node(1, root);        // 子菜单，parent = root
-    new Node(2, sub);                      // 控件，parent = sub
-    new Node(3, root);                     // 另一个子菜单
-    delete root;                           // 一条语句释放整棵 0/1/2/3 树
+    Node* root = new Node(0);                          // 菜单
+    Node* sub  = new Node(1, root);                    // 子菜单，parent = root
+    new Node(2, sub);                                  // 控件，parent = sub
+    new Node(3, root);                                 // 另一个子菜单
+    delete root;                                       // 一条语句释放整棵 0/1/2/3 树
     return 0;
 }
 ```
@@ -1117,9 +1117,9 @@ struct Logger { void persist(int x)  { std::cout << "[LOG] persisted " << x << "
 
 int main() {
     Button b; Label l; Logger g;
-    b.clicked.connect([&l](int x){ l.on_click(x); });   // 槽 1：UI，与槽 2 互不知晓
-    b.clicked.connect([&g](int x){ g.persist(x); });    // 槽 2：日志，多对多解耦
-    b.press(42);                                        // 一次 emit，两个槽都被调用
+    b.clicked.connect([&l](int x){ l.on_click(x); });  // 槽 1：UI，与槽 2 互不知晓
+    b.clicked.connect([&g](int x){ g.persist(x); });   // 槽 2：日志，多对多解耦
+    b.press(42);                                       // 一次 emit，两个槽都被调用
     return 0;
 }
 ```
@@ -1171,9 +1171,9 @@ bool inherits_kind(const Object* o, const Meta* target) {
 
 int main() {
     Widget w; Button b;
-    printf("w is Button? %d\n", inherits_kind(&w, &metaButton)); // 0
-    printf("b is Button? %d\n", inherits_kind(&b, &metaButton)); // 1
-    printf("b is Widget? %d\n", inherits_kind(&b, &metaWidget)); // 1（继承链向上）
+    printf("w is Button? %d\n", inherits_kind(&w, &metaButton));  // 0
+    printf("b is Button? %d\n", inherits_kind(&b, &metaButton));  // 1
+    printf("b is Widget? %d\n", inherits_kind(&b, &metaWidget));  // 1（继承链向上）
     return 0;
 }
 ```
@@ -1205,9 +1205,9 @@ Qt 的 `QueuedConnection` 本质是把 `emit progress(i)` 打包成事件，投�
 #include <chrono>
 int main() {
     std::atomic<int> pct{0};
-    std::thread worker([&]{               // 后台"下载线程"，对应 worker 对象 moveToThread 后
+    std::thread worker([&]{  // 后台"下载线程"，对应 worker 对象 moveToThread 后
         for (int i = 0; i <= 100; i += 10) {
-            pct.store(i);                 // 对应 emit progress(i)
+            pct.store(i);    // 对应 emit progress(i)
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
     });
@@ -1242,14 +1242,14 @@ Qt 的父子所有权 = "父 `QObject` 析构时递归 `delete` 所有子对象"
 #include <iostream>
 #include <vector>
 #include <memory>
-struct Node {                                  // 对应一个 QObject（菜单/子菜单/控件）
-    std::vector<std::unique_ptr<Node>> children; // 独占所有权 => 父析构自动释放全部子孙
-    ~Node() { std::cout << "dtor\n"; }           // 验证：无需手写 delete
+struct Node {                                            // 对应一个 QObject（菜单/子菜单/控件）
+    std::vector<std::unique_ptr<Node>> children;         // 独占所有权 => 父析构自动释放全部子孙
+    ~Node() { std::cout << "dtor\n"; }                   // 验证：无需手写 delete
 };
 int main() {
     auto root = std::make_unique<Node>();
-    root->children.push_back(std::make_unique<Node>()); // 子菜单
-    root->children.push_back(std::make_unique<Node>()); // 子菜单
+    root->children.push_back(std::make_unique<Node>());  // 子菜单
+    root->children.push_back(std::make_unique<Node>());  // 子菜单
     // root 离开作用域时，两个子节点随 vector 一起被析构——正是 Qt parent/child 的语义
     return 0;
 }

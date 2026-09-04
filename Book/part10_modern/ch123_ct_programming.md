@@ -347,10 +347,10 @@ int main() {
 #include <string_view>
 
 consteval std::uint64_t fnv1a(std::string_view s) {
-    std::uint64_t h = 14695981039346656037ULL;   // FNV offset basis
+    std::uint64_t h = 14695981039346656037ULL;  // FNV offset basis
     for (char c : s) {
         h ^= static_cast<std::uint64_t>(static_cast<unsigned char>(c));
-        h *= 1099511628211ULL;                    // FNV prime
+        h *= 1099511628211ULL;                  // FNV prime
     }
     return h;
 }
@@ -385,14 +385,14 @@ int main() {
 consteval int parse_int(std::string_view s) {
     int v = 0;
     for (char c : s) {
-        if (c < '0' || c < '0' || c > '9') { // 简化：假设全数字
+        if (c < '0' || c < '0' || c > '9') {  // 简化：假设全数字
         v = v * 10 + (c - '0');
     }
     return v;
 }
 int main() {
-    constexpr int bufsz = parse_int("4096");     // 编译期得到 4096
-    int arr[bufsz];                               // 合法：编译期常量
+    constexpr int bufsz = parse_int("4096");  // 编译期得到 4096
+    int arr[bufsz];                           // 合法：编译期常量
     static_assert(bufsz == 4096);
     std::cout << sizeof(arr) << "\n";
     return 0;
@@ -483,7 +483,7 @@ int main() {
 下列 `文件：` + `行号：` 取自 GCC 15.3.0 真实 `type_traits` 与 `concepts`（行号随 libstdc++ 版本更新）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 t
-```
+```text
 文件：type_traits                          行号：93
     template<typename _Tp, _Tp __v>
       struct integral_constant {
@@ -502,7 +502,7 @@ int main() {
 - `true_type`/`false_type`（117/120）只是它的两个特化别名。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 t
-```
+```text
 文件：type_traits                          行号：134 / 139 / 2838
     template<bool _Cond, typename _Tp = void> struct enable_if { };
     template<typename _Tp> struct enable_if<true, _Tp> { typedef _Tp type; };
@@ -513,7 +513,7 @@ int main() {
 - `enable_if`（134）是 SFINAE 的"开关"：当 `_Cond` 为真才定义 `::type`，否则**整个模板被静默移出重载集**。`enable_if_t`（2838）是便利别名。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 t
-```
+```text
 文件：type_traits                          行号：467
     template<typename _Tp> struct is_integral : public false_type { };
     // 对各整数类型（bool/char/short/int/...）特化为 true_type
@@ -528,7 +528,7 @@ int main() {
 - `conditional`（2461）把"三元运算符"搬进类型系统：编译期按 `_Cond` 选 `type`。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：libstdc++ 的 t
-```
+```text
 文件：concepts                             行号：109
     template<typename _Tp>
       concept integral = is_integral_v<_Tp>;
@@ -603,13 +603,13 @@ int main() {
 ```cpp
 // C16 面试题第一题的"可运行演示"：三者能力边界
 #include <iostream>
-constexpr int cf(int n) { return n * 2; }     // 可编译期可运行期
-consteval int ce(int n) { return n * 2; }     // 仅编译期
+constexpr int cf(int n) { return n * 2; }  // 可编译期可运行期
+consteval int ce(int n) { return n * 2; }  // 仅编译期
 int main() {
     int r = 5;
-    std::cout << cf(r) << "\n";               // ✅ constexpr 接受运行期实参
+    std::cout << cf(r) << "\n";            // ✅ constexpr 接受运行期实参
     // std::cout << ce(r) << "\n";            // ❌ consteval 拒绝运行期实参 r
-    std::cout << ce(5) << "\n";               // ✅ 字面量常量 OK
+    std::cout << ce(5) << "\n";            // ✅ 字面量常量 OK
     static_assert(cf(3) == 6);
     static_assert(ce(3) == 6);
     return 0;
@@ -708,8 +708,8 @@ int main() {
 #include <iostream>
 constexpr int cube(int n) { return n * n * n; }
 int main() {
-    constexpr int a = cube(3);                // 编译期
-    int x = 4; int b = cube(x);               // 运行期
+    constexpr int a = cube(3);   // 编译期
+    int x = 4; int b = cube(x);  // 运行期
     std::cout << a << " " << b << "\n";
     return 0;
 }
@@ -764,7 +764,7 @@ int main() {
 - 重度 TMP（如 Boost.MPL 风格）曾让单 TU 编译耗时数分钟。
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：编译期快，但翻译期慢 [经验]
-```
+```text
 编译时间成本示意（实测量级，示意）：
   普通函数                     ~0 额外翻译成本
   10 层 TMP 递归实例化         翻译成本 O(深度)，可能 +数百 ms
@@ -779,9 +779,9 @@ int main() {
 constexpr int fib(int n) { return n < 2 ? n : fib(n - 1) + fib(n - 2); }
 int fib_rt(int n) { return n < 2 ? n : fib_rt(n - 1) + fib_rt(n - 2); }
 int main() {
-    static_assert(fib(20) == 6765);           // 编译期已算好
+    static_assert(fib(20) == 6765);  // 编译期已算好
     volatile int sink = 0;
-    sink = fib_rt(20);                         // 运行期真递归（用 volatile 防 DCE）
+    sink = fib_rt(20);               // 运行期真递归（用 volatile 防 DCE）
     std::cout << "rt=" << sink << "\n";
     return 0;
 }
@@ -1195,8 +1195,8 @@ consteval std::array<int, 10> make_table() {
     for (int i = 0; i < 10; ++i) t[i] = i * i;
     return t;
 }
-constexpr std::array<int, 10> kTable = make_table();   // 编译期完成，只读
-int main() { std::cout << kTable[3] << '\n'; }         // 9
+constexpr std::array<int, 10> kTable = make_table();  // 编译期完成，只读
+int main() { std::cout << kTable[3] << '\n'; }        // 9
 ```
 
 <span class="badge badge-std">标准</span> `consteval` 立即函数：调用必须出现在常量表达式中（`[dcl.constexpr]`、`[expr.const]`）；C++20 引入、C++23 强化为泛型立即函数（P1147R1）。

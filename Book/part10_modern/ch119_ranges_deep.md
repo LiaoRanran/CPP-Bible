@@ -83,8 +83,8 @@ auto f = v | std::views::reverse;     // f 是 view，O(1) 构造，不复制 v
 #include <ranges>
 #include <vector>
 std::vector<int> v = {1,2,3,4};
-auto r = std::views::filter(v, [](int i){ return i > 1; });   // 等价写法
-auto r2 = v | std::views::filter([](int i){ return i > 1; }); // 管道写法
+auto r = std::views::filter(v, [](int i){ return i > 1; });    // 等价写法
+auto r2 = v | std::views::filter([](int i){ return i > 1; });  // 管道写法
 ```
 
 - `[标准]`：`range | adaptor` 通过 `operator|` 重载实现，返回新的 view。多个 `|` 从左到右嵌套。
@@ -167,13 +167,13 @@ _Z10use_rangesv:
 #include <ranges>
 #include <vector>
 std::vector<int> v = {1,2,3,4,5,6,7,8};
-auto a = v | std::views::filter([](int i){return i%2;});   // 奇数
-auto b = v | std::views::transform([](int i){return i*i;}); // 平方
-auto c = v | std::views::take(3);                          // 前 3 个
-auto d = v | std::views::drop(2);                          // 跳过前 2
-auto e = v | std::views::reverse;                          // 反转
-auto f = v | std::views::slice(1,4);                       // [1,4)
-auto g = std::views::iota(1, 10);                          // 无限/有限整数序列 1..9
+auto a = v | std::views::filter([](int i){return i%2;});     // 奇数
+auto b = v | std::views::transform([](int i){return i*i;});  // 平方
+auto c = v | std::views::take(3);                            // 前 3 个
+auto d = v | std::views::drop(2);                            // 跳过前 2
+auto e = v | std::views::reverse;                            // 反转
+auto f = v | std::views::slice(1,4);                         // [1,4)
+auto g = std::views::iota(1, 10);                            // 无限/有限整数序列 1..9
 ```
 
 **惰性 view 的代价与能力**。`filter`/`transform`/`take`/`drop`/`reverse`/`slice`/`iota` 都是惰性 view——本身不持有数据，组合也只是几个闭包对象。其中最值得记住的是 `views::iota`：它能构造无限整数序列，再用 `take` 截断成有限区间；这种"无限源 + 截断"的写法在传统迭代器对里根本表达不出来，是 Ranges 把"序列"提升为一等公民的直接体现。
@@ -187,8 +187,8 @@ auto g = std::views::iota(1, 10);                          // 无限/有限整�
 #include <vector>
 #include <algorithm>
 std::vector<int> v = {3,1,2};
-std::ranges::sort(v);                     // 直接传范围
-auto m = std::ranges::max(v);             // 返回元素（非迭代器）
+std::ranges::sort(v);          // 直接传范围
+auto m = std::ranges::max(v);  // 返回元素（非迭代器）
 bool has = std::ranges::any_of(v, [](int i){ return i > 2; });
 ```
 
@@ -205,7 +205,7 @@ bool has = std::ranges::any_of(v, [](int i){ return i > 2; });
 #include <algorithm>
 struct Person { std::string name; int age; };
 std::vector<Person> people = {{"Alice",30},{"Bob",25}};
-std::ranges::sort(people, {}, &Person::age);   // 按 age 排序（投影 &Person::age）
+std::ranges::sort(people, {}, &Person::age);          // 按 age 排序（投影 &Person::age）
 auto p = std::ranges::max(people, {}, &Person::age);  // 年龄最大者
 ```
 
@@ -259,7 +259,7 @@ auto bad() {
 std::vector<int> good() {
     std::vector<int> v = {1,2,3};
     auto r = v | std::views::filter([](int i){ return i > 0; });
-    return std::vector<int>(r.begin(), r.end());  // 物化
+    return std::vector<int>(r.begin(), r.end());                // 物化
 }
 ```
 
@@ -746,9 +746,9 @@ int main() {
     // 用特性测试宏 __cpp_lib_ranges_to_container 判定：有则用标准 to<>()，
     // 否则回退为「迭代器对」构造（iota(1,6) 是 common_range，begin/end 同型，可用）。
 #if defined(__cpp_lib_ranges_to_container) && __cpp_lib_ranges_to_container >= 202202L
-    auto v = sq | std::ranges::to<std::vector<int>>();  // C++23（GCC14+）
+    auto v = sq | std::ranges::to<std::vector<int>>();                 // C++23（GCC14+）
 #else
-    std::vector<int> v(std::ranges::begin(sq), std::ranges::end(sq)); // 回退物化
+    std::vector<int> v(std::ranges::begin(sq), std::ranges::end(sq));  // 回退物化
 #endif
     for(int x:v) std::cout<<x<<" ";
     std::cout<<std::endl;
@@ -933,7 +933,7 @@ projection 让算法"在比较前先抽取键"，免去手写 lambda 比较器�
 struct Person { std::string name; int age; };
 int main() {
     std::vector<Person> people{{"Alice",30},{"Bob",25},{"Carol",35}};
-    std::ranges::sort(people, {}, &Person::age);   // projection: 取 age 作为比较键
+    std::ranges::sort(people, {}, &Person::age);         // projection: 取 age 作为比较键
     for (auto& p : people) std::cout << p.name << '\n';  // Bob Alice Carol
 }
 ```
@@ -1020,11 +1020,11 @@ view 是**惰性**的：`v | views::transform(f)` 只是把"函数 f 与源 v"�
 int main() {
     std::vector<int> v{1,2,3,4,5,6};
     auto r = v | std::views::transform([](int x){
-        std::cout << "eval " << x << '\n';   // side-effect：仅遍历时触发
+        std::cout << "eval " << x << '\n';  // side-effect：仅遍历时触发
         return x * 10;
     });
     std::cout << "pipeline built, nothing evaluated yet\n";
-    for (int x : r) (void)x;                 // 此刻才开始逐元素求值
+    for (int x : r) (void)x;                // 此刻才开始逐元素求值
 }
 ```
 
@@ -1052,8 +1052,8 @@ int main() {
     // 无界 iota → take 截断 → transform 映射；全程惰性、零中间容器
     auto squares = std::views::iota(1) | std::views::take(10)
                  | std::views::transform([](int x){ return x * x; });
-    auto c = std::views::common(squares);   // "迭代器+哨兵" → 同类型迭代器对
-    int sum = std::accumulate(c.begin(), c.end(), 0);   // 1^2+...+10^2 = 385
+    auto c = std::views::common(squares);              // "迭代器+哨兵" → 同类型迭代器对
+    int sum = std::accumulate(c.begin(), c.end(), 0);  // 1^2+...+10^2 = 385
     std::cout << sum << '\n';
 }
 ```
@@ -1080,7 +1080,7 @@ int main() {
 #include <numeric>
 #include <iostream>
 int main() {
-    std::vector<int> v(1'000'000, 2);   // 示例数据
+    std::vector<int> v(1'000'000, 2);                        // 示例数据
     auto r = v | std::views::filter([](int x){ return x % 2 == 0; })
                | std::views::transform([](int x){ return x * x; });
     long long s = std::accumulate(r.begin(), r.end(), 0LL);  // 单遍, 零中间容器

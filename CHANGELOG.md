@@ -4,6 +4,105 @@
 
 ---
 
+### 2026-09-04（续二）围栏题注迁移试点（3 章 184 块）+ 1 处真截断
+- **试点 3 章**（全绿章 ch22/ch24/ch70，跨 part03/part06）：围栏加 `title="示例 N · ★…☆"`，
+  正文题注行保留（badge/主题/版本标注仍在正文渲染）。命中率 184/188，miss 保守跳过。
+- **工具修复 3 处**：`--titles` 难度捕获 `\S+`→`[★☆]+`（原会把 `]`/`</span>` 吃进 title）；
+  `example_exercise_audit.py` / `normalize_comments.py` 的 `fence_lang` 取首 token（防带 title
+  的块被漏计/漏处理）。
+- **全链路验证**：三道门禁全绿、cpp_blocks 7527 不漂、3 章编译保持全绿、exercise_dup_guard
+  614 块正常、站点 `superfences`+`attr_list` 已启用。
+- **连带修复真截断**：ch24 块 #33 `struct Packet { … // …` 缺 `};` → 补闭合，57/0。
+  既存问题（HEAD 同样 fail），PROGRESS 6.1 基线系 07-11 快照。
+- 台账：PROGRESS 6.3 / 7.4 已更新。
+
+### 2026-09-04（续）版式铺开剩余 12 part + 修工具 bug
+- `codeblock_style.py` **修 CRLF 行尾 bug**：原 `split("\n")` 残留 `\r` 再 `replace("\n"→"\r\n")`
+  污染 CRLF 文件为 `\r\r\n`（whitespace 报 W2、gen_metrics 假值）；改 `splitlines()` + `newline.join`。
+- 版式铺开剩余 12 part（part01/02/03/04/05/07/08/09/10/13/15/16，共 107 章）：标签 228 + 对齐 3849；
+  29 处代码性裸围栏人工定点 `text`。从 HEAD 还原 12 part 后修复版重做，全门禁恢复
+  whitespace 0 / consistency 100/100 / cpp_blocks=7527 / d5_coverage=127。README 7534→7527。
+- 教训：批量 `--apply` 后必跑 whitespace+gen_metrics+consistency 三道门禁。
+
+## [Unreleased] - 2026-09-04
+
+本轮主线：**代码块版式统一落 4 章 + 围栏题注规则的解析器硬化**（TEACHING §8 四规则标准定稿）；附带扫清 REAL 桶 6 章 11 块真缺陷。
+
+### 代码块版式工具与标准（用户拍板：范围 = 标准 + 4 章试改）
+- **新工具 `tools/codeblock_style.py`**（字节级读写保留 CRLF/LF，护栏防误伤）：
+  - ① 围栏语言标签统一 + 裸围栏内容信号推断（含「有 `;{}` 却信号不足 → 交人工不误标」保险）；
+  - ② 行尾注释对齐：按显示宽度（CJK=2）对齐到「最长代码行 + 2」，超 76 列整块跳过；护栏覆盖整行注释 / doxygen / URL / 字符串内 `//`；
+  - ③ 围栏题注 `--titles`（默认关闭）；`--list-bare` 列出裸围栏供人工定标签。
+- **试改 4 章**（ch125/ch127/ch133/ch154）：标签 7 处、行尾注释对齐 76 处（diff 83+/83- 纯重排零增删）。编译门禁 ch125 45/0、ch154 41/0、ch127 45/0 无回归；`whitespace 0`、`gen_metrics ✅`（cpp_blocks 未漂移）、`consistency 100/100`。
+- **标准定稿**：TEACHING.md §8 扩为四规则——① 围栏标签（含同义标签归一表）② 注释写法（含新增「行尾注释对齐」机械规则）③ 围栏题注目标规范（注明迁移前置条件已满足、迁移方式、全库 147 章按章推进不铺开）④ 反模式清单更新（不手敲对齐列）。
+
+### 围栏解析器硬化（题注前置，防"假全绿"）
+- 全部 `^```cpp\s*$` 精确匹配与 `findall("```cpp(.*?)```")` 解析器改为接受围栏信息串并跳过信息串行：`chapter_compile_check.py` / `chapter_lint.py` / `compile_run_sanitize_pipeline.py` / `run_cpp_assertions.py`（导入共享常量自动跟随）/ `verify_exercises.py` / `exercise_dup_guard.py`。
+
+### REAL 桶 6 章 11 块真缺陷（ch51/ch68/ch96/ch101/ch127）
+- ch51 8→4：`enable_shared_from_this` 原理块补 `std::` 限定 + `<memory>`；`MatrixBase/Matrix` 补 const 重载与类体闭合；logging 幻影 helper 补定义；运行时选择 `cond?` 顶层语句改 `make(bool)`。
+- ch68 3→1：integer_sequence 顶层调用入 main（真机 `sum=10`）；ECS `TypeList` 全幻影名 → 自包含定义 + `static_assert` 成立。
+- ch96 7→5：中位数练习补初值 + main，且修正 A/B 两法下标不一致（统一上中位数 `a[n/2]`，真机 `medA=medB=5`）；top-k 用法演绎补 `read_million` 桩 + main。
+- ch101 10→7：六类思想总览顶层声明入 main（含递归 lambda 只能在函数内）；两处 STL 衔接片段入 main 并加输出（真机 `9 1`、`find=7 first=7`）。
+- ch127 1→0：`AddExpr` 结构体截断补 `};`。
+
+### part14_perf 全 7 章版式铺开（同批相邻章，低风险）
+- `codeblock_style.py --apply` 覆盖 ch152/153/155/156/157/158（ch154 已先行）：标签 1 + 对齐 64 +
+  人工定点 2 处裸围栏标 `text`（chrono 头文件摘录、SIMD 决策树）。diff 67+/67- 纯重排零增删。
+- 编译门禁新增 5 全绿：**ch152 39/0、ch153 39/0、ch155 50/0、ch157 50/0、ch158 42/0**
+  （ch156 6 处为既存跨块片段/顶层 if/链接错，非本次引入）。`whitespace 0`、`gen_metrics ✅`。
+- 全绿章累计 **21 章**。
+
+### 第三方命名空间 SKIP 决策落地 + 版式铺开 part06/part12
+- 门禁新增 `EXTERNAL_NS_RE`（boost/absl/spdlog/rocksdb/leveldb/folly/llvm/clang/glog/gflags/fmt::，
+  匹配前剔除纯注释行）：part11 台账 ch128 19→1、ch130 11→2、ch131 13→2、ch132 42→10，
+  ch126/ch127 保持 0。原则：第三方生态库代码展示超出本工具链作用域（同 Qt/gtest 先例）。
+- `codeblock_style.py` 安全升级：**绝不自动判 `cpp`**（裸围栏自动 cpp 会漂移 cpp_blocks 并把源码
+  摘录送进门禁）+ text 信号集（Q:/A:/面试/提案号/ASCII）。
+- 版式铺开 part06（13 章）+ part12（9 章）：标签 54（全部 text）+ 对齐 479；part06 已知 8 章基线
+  逐字一致（ch61 23/ch62 0/ch63 1/ch67 2/ch68 1/ch70 0/ch71 5/ch72 18 → 0 回归）；
+  `gen_metrics ✅`、`whitespace 0`。累计版式已覆盖 part11/14/06/12 + 4 试改章（共 31 章）。
+
+### part11 源码摘录结构截断修复 6 块
+- 修 6 块并真机复核：ch124[57] move 构造未闭合、ch128[57] 参数表被 `// s` 吞、ch132[81] main 缺 `}`、
+  ch133[9] Arena if 体未闭合、ch133[10] RedisConn ctor lambda 未闭合、ch134[17] FString8 解码循环
+  未闭合、ch134[31] BeginPlay 缺闭合。削减：ch124 2→1、ch128 20→19、ch132 43→42、ch133 17→15、
+  ch134 13→11。真机：`4` / rc=0 / `5`。余留为第三方生态域（库未装），"第三方命名空间 SKIP"留专项。
+
+### part11_source 全 11 章版式铺开（用户选"第一条"）
+- `codeblock_style.py --apply` 覆盖 part11 全部章：标签 13（全为裸→`text`，含 3 处人工定点 Q&A
+  面试文本）+ 对齐 171。diff 241+/241- 纯重排零增删；`whitespace 0`、`gen_metrics ✅`、
+  `consistency 100/100`。
+- **part11 编译台账首次建档**：ch126 **57/0** 全绿（对齐回归对照组）。其余章为第三方生态源码章
+  （boost/absl/spdlog/rocksdb/leveldb/Qt/Unreal 域），失败多为库未安装的"未声明"——超本门禁
+  工具链作用域（同 Qt/gtest 先例），另藏匿若干源码摘录结构截断候选（ch124[57]/ch128[57]/
+  ch132[81]/ch133[9][10]/ch134[17][31]），留待"第三方命名空间 SKIP + 摘录结构修复"专项。
+- 全绿章累计 **22 章**。
+
+## [Unreleased] - 2026-09-03
+
+本轮主线：**全书 cpp 代码块可编译性攻坚**（门禁规则完善 → 整章清扫 → 散点清扫 → 小推进），另有真机纠偏两处。
+
+### 编译门禁规则完善（`tools/chapter_compile_check.py`）
+- 新增 7 类 SKIP（与既有 fmt / benchmark / POSIX / module 同族，判定原则统一为「只对本可在宿主工具链独立编译的块判失败」）：① 本地自写头 `#include "..."`（跨块复用 / 包消费演示）② 外部框架（Qt / sqlite3 / gtest / doctest / gmock / Catch2）③ `namespace std` 扩展（特化须在全局作用域）④ `std::` 模板全特化（同 formatter）⑤ libstdc++ 源码摘录（首行 `bits/…` 头路径注释）⑥ 顶层 namespace 回指 `::X`（全局限定名教学）⑦ newlib / `_sbrk` / `_ebss` / picolibc 裸机运行桩（并入 BAREMETAL）。
+- `<experimental/scope>` 列入保留头（须全局作用域，ch39 TS `scope_exit` 示例依赖）。
+- 前提：GBK 解码修复后门禁首次具备「看见全部含中文诊断的失败块」的能力，本日清扫全部建立在此之上。
+
+### ch70 标签分发整章清扫（48 blocks → 0 fail）
+- 12 块同源缺陷：函数体写成 `{ // 整型路径` **括号从不闭合**（后续 `template<>` 被吞进函数体，报 `template declaration at block scope`）；`if constexpr` 骨架语法残；跨块标签类型；调用语句散在命名空间作用域。读者复制必编译失败。
+- 修法：骨架体统一闭合为 `{ /* 原注释语义 */ }`；示例 5/25/26 的顶层调用语句入 `main` 并补最小真定义；示例 14/15 补自包含标签结构。围栏数未增删（README `cpp_blocks` 不漂移）。
+- 真机验证：示例 5 打印 `random_access: O(1) 路径`（最具体匹配）、示例 25 `integral 路径`、示例 26 `strong(random_access) 被选中`。
+
+### REAL 桶散点清扫（两批 18 章全扫分诊）
+- **批 1（ch13/16/17/20/23/24/39/42/50）**：ch13 2→**0**、ch16 4→**0**、ch17 1→**0**、ch24 3→**0**、ch42 1→**0**；ch20 7→5、ch23 3→1、ch39 9→1、ch50 17→13。
+- **批 2（ch51/61/68/71/72/81/96/100/101）**：分诊完毕。保留类不予修改——ch61 以**故意二义性错例**（`call of overloaded … is ambiguous`）为主，ch100/ch101/ch72 为「循环体 / 调用体散命名空间 + 类型跨块」的片段式教学。真截断清单锁定：ch51 [3/10/28]、ch81 [11/25]、ch68 [6/19]、ch71 [24/32]、ch96 [40]、ch101 [0]。
+- **小推进**：ch71 7→5（补 `SafeQueue` / `Guarded` 两处类体截断）、ch81 3→1（补 `string_view` 遍历与反向遍历两处闭合）；真机输出 `hello world / hello world / hello`、`olleh`。
+- 累计：本日新达全绿章 **13 章**（ch13/16/17/24/42/62/70 + 早前 ch22/30/31/40/45/46）。
+
+### 真机纠偏（本日两处，均写回正文）
+- **C++23 P2266 抓现行**：`std::string& f(){ std::string s = …; return s; }` 在 `-std=c++23` 下**直接编译错误**（返回语句的局部变量按右值处理，无法绑定非 const 左值引用）；`-std=c++20` 仅 `-Wreturn-local-addr` 警告。ch20 示例 17 改为「注释演示反模式 + 保留 ✅ 版本」，并把这一标准代差写进块内注释。
+- **`float` 的 `has_unique_object_representations` 本机 = 0**：原 ch42 示例 38 注释称「int/float 通常为 1」，实测 `int=1 / float=0 / pad=0`（浮点属实现定义），注释已改为实测值。
+
 ## [Unreleased] - 2026-09-02
 
 本轮主线：**30 章真深耕启动**（叙述密度治理定调）；另有早前批次 Part0 前置篇收官、TEACHING 三气质样板、CI site 修复（见下）。

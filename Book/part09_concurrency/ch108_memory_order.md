@@ -78,8 +78,8 @@ void good() { for (int i = 0; i < 1000000; ++i) counter.fetch_add(1); }
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 sequenced-before
 ```cpp
 // ② sequenced-before：线程内 a 的初始化先于 b 的使用
-int a = compute();      // 求值 E1
-int b = a + 1;          // 求值 E2，E1 sequenced-before E2
+int a = compute();  // 求值 E1
+int b = a + 1;      // 求值 E2，E1 sequenced-before E2
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 sequenced-before
@@ -90,12 +90,12 @@ int b = a + 1;          // 求值 E2，E1 sequenced-before E2
 std::atomic<bool> done{false};
 int result = 0;
 void worker() {
-    result = 7;                 // A
-    done.store(true, std::memory_order_release); // B：release
+    result = 7;                                       // A
+    done.store(true, std::memory_order_release);      // B：release
 }
 void observer() {
-    while (!done.load(std::memory_order_acquire)) {} // C：acquire
-    int r = result;             // D：看到 A 的写入（因为 B happens-before C）
+    while (!done.load(std::memory_order_acquire)) {}  // C：acquire
+    int r = result;                                   // D：看到 A 的写入（因为 B happens-before C）
 }
 ```
 
@@ -175,11 +175,11 @@ struct Payload { int x; };
 std::atomic<Payload*> gp{nullptr};
 void producer_c() {
     Payload* p = new Payload{42};
-    gp.store(p, std::memory_order_release); // ⑤ 发布端仍需 release
+    gp.store(p, std::memory_order_release);           // ⑤ 发布端仍需 release
 }
 void consumer_c() {
-    Payload* p = gp.load(std::memory_order_consume); // ⑤ 已弃用
-    int v = p->x; // ⑤ 依赖链：理论上只同步 p 指向的对象
+    Payload* p = gp.load(std::memory_order_consume);  // ⑤ 已弃用
+    int v = p->x;                                     // ⑤ 依赖链：理论上只同步 p 指向的对象
 }
 ```
 
@@ -229,8 +229,8 @@ void try_lock() {
 #include <atomic>
 std::atomic<int> x{0};
 void f() {
-    x.store(1);                    // ⑦ 等价于 memory_order_seq_cst
-    int v = x.load();              // ⑦ 等价于 memory_order_seq_cst
+    x.store(1);        // ⑦ 等价于 memory_order_seq_cst
+    int v = x.load();  // ⑦ 等价于 memory_order_seq_cst
     (void)v;
 }
 ```
@@ -257,13 +257,13 @@ relaxed 只约束“单个原子变量自身”的修改序，对**其他内存�
 #include <thread>
 std::atomic<int> a{0}, b{0};
 void thread1() {
-    a.store(1, std::memory_order_relaxed); // ⑧
-    b.store(1, std::memory_order_relaxed); // ⑧
+    a.store(1, std::memory_order_relaxed);             // ⑧
+    b.store(1, std::memory_order_relaxed);             // ⑧
 }
 void thread2() {
     // ⑧ 允许观察到 b==1 而 a==0（写被重排，或观察交错）
     if (b.load(std::memory_order_relaxed) == 1) {
-        int seen = a.load(std::memory_order_relaxed); // ⑧ 可能为 0
+        int seen = a.load(std::memory_order_relaxed);  // ⑧ 可能为 0
         (void)seen;
     }
 }
@@ -294,9 +294,9 @@ void push(int v) {
     Node* n = new Node{v, nullptr};
     n->next = head.load(std::memory_order_relaxed);
     while (!head.compare_exchange_weak(n->next, n,
-            std::memory_order_release,        // ⑨ release 发布
+            std::memory_order_release,  // ⑨ release 发布
             std::memory_order_relaxed)) {
-        ; // CAS 失败：n->next 已被刷新为当前头，重试
+        ;                               // CAS 失败：n->next 已被刷新为当前头，重试
     }
 }
 ```
@@ -305,9 +305,9 @@ void push(int v) {
 ```cpp
 // ⑨ pop：acquire 读头并建立同步，保证读到节点及其 next 的已发布内容
 bool pop(int& out) {
-    Node* old = head.load(std::memory_order_acquire);   // ⑨ acquire
+    Node* old = head.load(std::memory_order_acquire);  // ⑨ acquire
     while (old && !head.compare_exchange_weak(old, old->next,
-            std::memory_order_acquire,        // ⑨ acquire
+            std::memory_order_acquire,                 // ⑨ acquire
             std::memory_order_relaxed)) {
         ;
     }
@@ -349,14 +349,14 @@ Dekker 算法用两个标志互相探测，要求对两个变量的写/读在所
 #include <atomic>
 std::atomic<int> flag0{0}, flag1{0};
 void thread_a() {
-    flag0.store(1, std::memory_order_seq_cst);            // ⑩
-    if (flag1.load(std::memory_order_seq_cst) == 0) {     // ⑩ 必与 thread_b 的写形成一致序
+    flag0.store(1, std::memory_order_seq_cst);         // ⑩
+    if (flag1.load(std::memory_order_seq_cst) == 0) {  // ⑩ 必与 thread_b 的写形成一致序
         // 进入临界区（安全：thread_b 不会同时进入）
     }
 }
 void thread_b() {
-    flag1.store(1, std::memory_order_seq_cst);            // ⑩
-    if (flag0.load(std::memory_order_seq_cst) == 0) {     // ⑩
+    flag1.store(1, std::memory_order_seq_cst);         // ⑩
+    if (flag0.load(std::memory_order_seq_cst) == 0) {  // ⑩
         // 进入临界区
     }
 }
@@ -366,8 +366,8 @@ void thread_b() {
 ```cpp
 // ⑩ 若把 store/load 改成 relaxed，两个线程都可能跳过对方的检查 -> 双重进入（bug）
 void thread_a_bad() {
-    flag0.store(1, std::memory_order_relaxed);            // ⑩ 错误示范
-    if (flag1.load(std::memory_order_relaxed) == 0) { // 可能与 B 同时进入
+    flag0.store(1, std::memory_order_relaxed);         // ⑩ 错误示范
+    if (flag1.load(std::memory_order_relaxed) == 0) {  // 可能与 B 同时进入
 }
 ```
 
@@ -382,9 +382,9 @@ void thread_a_bad() {
 ```cpp
 // 文件：Examples/_ch108_seqcst.cpp
 // 行号：7
-x.store(1, std::memory_order_seq_cst); // writer()
+x.store(1, std::memory_order_seq_cst);     // writer()
 // 行号：11
-return x.load(std::memory_order_seq_cst); // reader()
+return x.load(std::memory_order_seq_cst);  // reader()
 ```
 
 ```asm
@@ -405,8 +405,8 @@ _Z6writerv:
 // ⑪ 对比：release 存储在 x86 上连 xchg 都不需要，就是普通 mov（见 ⑬）
 #include <atomic>
 std::atomic<int> g{0};
-void pub(int v) { g.store(v, std::memory_order_release); } // ⑪ 普通 mov
-int  get()      { return g.load(std::memory_order_acquire); } // ⑪ 普通 mov
+void pub(int v) { g.store(v, std::memory_order_release); }     // ⑪ 普通 mov
+int  get()      { return g.load(std::memory_order_acquire); }  // ⑪ 普通 mov
 ```
 
 - `[实现·GCC15]` `[VERIFIED]`：seq_cst 与 release/acquire 在 x86-64 的**运行期差异**主要体现在**存储端**（xchg vs mov），加载端都是 mov（本机 GCC 15.3.0 复编确认）。
@@ -424,14 +424,14 @@ int  get()      { return g.load(std::memory_order_acquire); } // ⑪ 普通 mov
 std::atomic<int> flag{0};
 int data = 0;
 void producer() {
-    data = 42;                                       // ⑫ 普通写
-    std::atomic_thread_fence(std::memory_order_release); // ⑫ 释放屏障
-    flag.store(1, std::memory_order_relaxed);        // ⑫ relaxed 即可
+    data = 42;                                                // ⑫ 普通写
+    std::atomic_thread_fence(std::memory_order_release);      // ⑫ 释放屏障
+    flag.store(1, std::memory_order_relaxed);                 // ⑫ relaxed 即可
 }
 void consumer() {
     if (flag.load(std::memory_order_relaxed)) {
-        std::atomic_thread_fence(std::memory_order_acquire); // ⑫ 获取屏障
-        int r = data;                                // ⑫ 保证看到 42
+        std::atomic_thread_fence(std::memory_order_acquire);  // ⑫ 获取屏障
+        int r = data;                                         // ⑫ 保证看到 42
         (void)r;
     }
 }
@@ -474,8 +474,8 @@ x86 采用 **TSO（Total Store Order）** `[微架构·x86-64 TSO]`：写-写、
 // ⑬ 同一段 release/acquire 代码，两种硬件命运不同
 #include <atomic>
 std::atomic<int> g{0};
-void publish(int v) { g.store(v, std::memory_order_release); } // ⑬
-int consume()       { return g.load(std::memory_order_acquire); } // ⑬
+void publish(int v) { g.store(v, std::memory_order_release); }     // ⑬
+int consume()       { return g.load(std::memory_order_acquire); }  // ⑬
 ```
 
 ```asm
@@ -506,8 +506,8 @@ _Z7consumev:
 int data = 0;
 bool flag = false;
 void producer() {
-    data = 42;       // ⑭ 普通写
-    flag = true;     // ⑭ 编译器/CPU 均可重排到 data 之前
+    data = 42;    // ⑭ 普通写
+    flag = true;  // ⑭ 编译器/CPU 均可重排到 data 之前
 }
 ```
 
@@ -518,8 +518,8 @@ void producer() {
 std::atomic<bool> ready{false};
 int payload = 0;
 void producer_fixed() {
-    payload = 42;                                // ⑭ 必须在 release 之前完成
-    ready.store(true, std::memory_order_release); // ⑭ 编译器不得把 payload 的写移到这里之后
+    payload = 42;                                  // ⑭ 必须在 release 之前完成
+    ready.store(true, std::memory_order_release);  // ⑭ 编译器不得把 payload 的写移到这里之后
 }
 ```
 
@@ -557,12 +557,12 @@ enum class memory_order : // 未指定
 std::atomic<bool> ready{false};
 int payload = 0;
 void producer() {
-    payload = 42;                                 // ⑯ 写数据
-    ready.store(true, std::memory_order_relaxed); // ⑯ 错误：relaxed 不发布 payload
+    payload = 42;                                     // ⑯ 写数据
+    ready.store(true, std::memory_order_relaxed);     // ⑯ 错误：relaxed 不发布 payload
 }
 void consumer() {
-    while (!ready.load(std::memory_order_relaxed)) { // spin
-    int r = payload;                              // ⑯ 可能读到 0（数据写未被同步！）
+    while (!ready.load(std::memory_order_relaxed)) {  // spin
+    int r = payload;                                  // ⑯ 可能读到 0（数据写未被同步！）
     (void)r;
 }
 ```
@@ -572,11 +572,11 @@ void consumer() {
 // ⑯ 修复：把 relaxed 改成 release/acquire，建立真正的同步
 void producer_ok() {
     payload = 42;
-    ready.store(true, std::memory_order_release); // ⑯ release 发布 payload
+    ready.store(true, std::memory_order_release);     // ⑯ release 发布 payload
 }
 void consumer_ok() {
-    while (!ready.load(std::memory_order_acquire)) { // spin
-    int r = payload;                              // ⑯ 现在保证读到 42
+    while (!ready.load(std::memory_order_acquire)) {  // spin
+    int r = payload;                                  // ⑯ 现在保证读到 42
     (void)r;
 }
 ```
@@ -593,9 +593,9 @@ void consumer_ok() {
 // ⑰ 三种序的“写”代价对比（同一变量）
 #include <atomic>
 std::atomic<int> c{0};
-void relaxed_write()  { c.store(1, std::memory_order_relaxed); }  // ⑰ 普通 mov
-void seqcst_write()   { c.store(1, std::memory_order_seq_cst); }  // ⑰ 带锁 xchg
-void relaxed_rmw()    { c.fetch_add(1, std::memory_order_relaxed); } // ⑰ lock add
+void relaxed_write()  { c.store(1, std::memory_order_relaxed); }      // ⑰ 普通 mov
+void seqcst_write()   { c.store(1, std::memory_order_seq_cst); }      // ⑰ 带锁 xchg
+void relaxed_rmw()    { c.fetch_add(1, std::memory_order_relaxed); }  // ⑰ lock add
 ```
 
 ```asm
@@ -624,8 +624,8 @@ _Z3getv:
 // ⑱ ch107 的默认行为：无第二参数 = seq_cst
 #include <atomic>
 std::atomic<int> x{0};
-x.store(1);          // ⑱ == x.store(1, memory_order_seq_cst)
-int v = x.load();    // ⑱ == x.load(memory_order_seq_cst)
+x.store(1);        // ⑱ == x.store(1, memory_order_seq_cst)
+int v = x.load();  // ⑱ == x.load(memory_order_seq_cst)
 (void)v;
 ```
 
@@ -633,8 +633,8 @@ int v = x.load();    // ⑱ == x.load(memory_order_seq_cst)
 ```cpp
 // ⑱ 因此“裸 atomic 变量”是安全的默认：你已自动获得最强序，只是可能不是最快
 std::atomic<bool> done{false};
-void set() { done = true; }                 // ⑱ 默认 seq_cst
-bool is_done() { return done.load(); }      // ⑱ 默认 seq_cst
+void set() { done = true; }             // ⑱ 默认 seq_cst
+bool is_done() { return done.load(); }  // ⑱ 默认 seq_cst
 ```
 
 - `[标准]`：`<atomic>` 中每个操作的重载版本，无 `memory_order` 形参者等价于传入 `seq_cst`（`[atomics.types.operations]`）。
@@ -768,7 +768,7 @@ int main() {
 ## 附录 A：WG21 —— memory_order 的设计哲学 [B: Principle]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：WG21 —— memory_order 的设计哲学 [B: Principle]
-```
+```text
 为什么 C++ 需要 6 种 memory_order，而不是简单的"原子"或"非原子"？
 
 N2427 (Hans Boehm, 2007) 提出 memory_order 的核心论证:
@@ -827,7 +827,7 @@ int main() {
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learning / H: Design]
-```
+```text
 面试高频:
 Q: 默认的 memory_order 是什么？
 A: std::memory_order_seq_cst (最安全，不需要显式指定)
@@ -982,12 +982,12 @@ int main() {
     int data = 0;
     std::atomic<bool> ready{false};
     std::thread producer([&]{
-        data = 42;                                   // ① 普通写
-        ready.store(true, std::memory_order_release); // ② release：① 不会重排到 ② 之后
+        data = 42;                                         // ① 普通写
+        ready.store(true, std::memory_order_release);      // ② release：① 不会重排到 ② 之后
     });
     std::thread consumer([&]{
         while (!ready.load(std::memory_order_acquire)) {}  // ③ acquire
-        assert(data == 42);                          // ④ 一定看到 42
+        assert(data == 42);                                // ④ 一定看到 42
         std::cout << data << '\n';
     });
     producer.join(); consumer.join();
@@ -1176,8 +1176,8 @@ int main() {
     std::atomic<Big*> g{nullptr};
     std::thread pub([&]{
         Big* b = new Big;
-        b->payload = 7;                              // ① 初始化
-        g.store(b, std::memory_order_relaxed);       // ② 错误：relaxed 不保证 ① 先于 ② 可见
+        b->payload = 7;                         // ① 初始化
+        g.store(b, std::memory_order_relaxed);  // ② 错误：relaxed 不保证 ① 先于 ② 可见
     });
     std::thread sub([&]{
         Big* b;
@@ -1186,7 +1186,7 @@ int main() {
         std::cout << b->payload << '\n';
     });
     pub.join(); sub.join();
-    return 0;   // x86 上「碰巧」对，ARM 上可能读到脏值——依赖平台的错误代码
+    return 0;                                   // x86 上「碰巧」对，ARM 上可能读到脏值——依赖平台的错误代码
 }
 ```
 

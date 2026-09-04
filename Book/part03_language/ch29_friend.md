@@ -308,7 +308,7 @@ class Database {
     int conn_id;
     // Q: 何时用 friend class vs friend function?
     // A: 单一操作(friend function)，复杂交互(friend class)
-    friend class QueryExecutor;  // 需要访问多个方法
+    friend class QueryExecutor;      // 需要访问多个方法
     friend void cleanup(Database&);  // 单一操作
 public:
     Database(int id) : conn_id(id) {}
@@ -375,8 +375,8 @@ int read(const Data& d) { return d.value; }  // friend path
 
 int main() {
     Data d;
-    int a = d.get();      // 公共接口访问
-    int b = read(d);       // friend 接口访问
+    int a = d.get();                         // 公共接口访问
+    int b = read(d);                         // friend 接口访问
     // 汇编（GCC -O2）:
     // mov eax, [rdi]     ← 两条路径生成完全相同的指令
     // friend 不增加任何额外的间接调用、跳转或条件判断
@@ -790,8 +790,8 @@ class Box {
 public:
     Box(T x) : v(x) {}
     template <typename U>
-    friend class Box;            // 此处若写 friend class Box<T>; 则仅同 T 友元
-};                                // 简化演示：全部 Box 互为友元；要仅同 T 见下
+    friend class Box;  // 此处若写 friend class Box<T>; 则仅同 T 友元
+};                     // 简化演示：全部 Box 互为友元；要仅同 T 见下
 int main() { Box<int> a(1); Box<double> b(2.0); std::cout << "ok\n"; }
 ```
 
@@ -830,16 +830,16 @@ int main() { Box<int> a(1); std::cout << "ok\n"; }
 #include <memory>
 class Widget {
     int id;
-    Widget(int i) : id(i) {}                 // 私有构造
-    friend class WidgetFactory;              // 仅工厂可访问
+    Widget(int i) : id(i) {}                            // 私有构造
+    friend class WidgetFactory;                         // 仅工厂可访问
 public:
     int get() const { return id; }
 };
 class WidgetFactory {
 public:
-    static Widget make(int i) { return Widget(i); }              // 经友元调用私有构造
+    static Widget make(int i) { return Widget(i); }     // 经友元调用私有构造
     static std::unique_ptr<Widget> make_ptr(int i) {
-        return std::unique_ptr<Widget>(new Widget(i));           // 工厂内可 new
+        return std::unique_ptr<Widget>(new Widget(i));  // 工厂内可 new
     }
 };
 int main() {
@@ -945,12 +945,12 @@ int main() {
 ```cpp
 #include <iostream>
 struct Account {
-    double balance;           // 错误：public 暴露，任何人可任意改
+    double balance;   // 错误：public 暴露，任何人可任意改
     Account(double b) : balance(b) {}
 };
 int main() {
     Account a(100);
-    a.balance = -50;          // 绕过任何校验，不变式被破坏
+    a.balance = -50;  // 绕过任何校验，不变式被破坏
 }
 ```
 
@@ -986,10 +986,10 @@ int main() {
 #include <iostream>
 class Engine {
 public:
-    int rpm;                  // 仅因测试需要而被迫 public
+    int rpm;                            // 仅因测试需要而被迫 public
     Engine() : rpm(0) {}
 };
-int main() { Engine e; e.rpm = 9999; }   // 生产代码也能乱改
+int main() { Engine e; e.rpm = 9999; }  // 生产代码也能乱改
 ```
 
 **修复**：仅对测试夹具类授予 `friend`，内部状态保持 `private`：
@@ -997,17 +997,17 @@ int main() { Engine e; e.rpm = 9999; }   // 生产代码也能乱改
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：friend 与单元测试
 ```cpp
 #include <iostream>
-class TestEngine;             // 前置声明
+class TestEngine;                                            // 前置声明
 class Engine {
     int rpm = 0;
-    friend class TestEngine;  // 仅测试夹具可访问
+    friend class TestEngine;                                 // 仅测试夹具可访问
 public:
     void set_rpm(int r) { rpm = r; }
     int get_rpm() const { return rpm; }
 };
 class TestEngine {
 public:
-    static void inject_rpm(Engine& e, int v) { e.rpm = v; }   // 经友元访问私有
+    static void inject_rpm(Engine& e, int v) { e.rpm = v; }  // 经友元访问私有
     static int read_rpm(const Engine& e) { return e.rpm; }
 };
 int main() {
@@ -1041,9 +1041,9 @@ int main() {
 #include <cstdio>
 class Account {
     long long balance_ = 100;
-    friend long long peek_friend(const Account& a);   // 友元：直访私有成员
+    friend long long peek_friend(const Account& a);  // 友元：直访私有成员
 public:
-    long long balance() const { return balance_; }     // 等价 public 访问器
+    long long balance() const { return balance_; }   // 等价 public 访问器
 };
 long long peek_friend(const Account& a){ return a.balance_; }
 long long peek_getter(const Account& a){ return a.balance(); }

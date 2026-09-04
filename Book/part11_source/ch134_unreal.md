@@ -178,8 +178,8 @@ UE 使用 **标记-清扫（mark-sweep）增量 GC**。可达性从「根集合�
 class UActorStub { public: virtual ~UActorStub()=default; };
 
 class UWeapon : public UActorStub {
-    UPROPERTY() UActorStub* Owner = nullptr;   // GC 沿此指针追踪 Owner
-    UPROPERTY() UActorStub* Ammo  = nullptr;   // 同样被追踪
+    UPROPERTY() UActorStub* Owner = nullptr;  // GC 沿此指针追踪 Owner
+    UPROPERTY() UActorStub* Ammo  = nullptr;  // 同样被追踪
 };
 ```
 
@@ -342,10 +342,12 @@ struct FName {
 #include <string_view>
 #include <cstddef>
 struct FString8 {
-    std::u16string W;                       // 内部 UTF-16
+    std::u16string W;           // 内部 UTF-16
     static FString8 FromUtf8(std::string_view s) {
-        FString8 r; std::size_t i=0;
-        while (i < s.size()) { // UTF-8 解码到 UTF-16，省略
+        FString8 r;
+        for (char ch : s) {     // 真实实现按 UTF-8 码点解码；ASCII 场景此循环等价
+            r.W.push_back(static_cast<char16_t>(static_cast<unsigned char>(ch)));
+        }
         return r;
     }
 };
@@ -564,7 +566,7 @@ struct FSubsystemStub { void Tick() {} };
 // ⑮ 用 AActor 的 BeginPlay 做初始化，而非构造函数（此时 World/组件就绪）
 struct AActorStub2 { virtual void BeginPlay() {} virtual ~AActorStub2()=default; };
 class AMyActor : public AActorStub2 {
-    void BeginPlay() override { // 安全访问 Subsystem/World
+    void BeginPlay() override { /* 安全访问 Subsystem/World */ }
 };
 ```
 
@@ -784,19 +786,19 @@ struct FPropInfo { std::string Name; std::size_t Offset; };
 
 struct FMinimalClass {
     std::string Name;
-    std::vector<FPropInfo> Props;      // 反射属性表：编辑器面板、磁盘序列化、网络复制共用
+    std::vector<FPropInfo> Props;               // 反射属性表：编辑器面板、磁盘序列化、网络复制共用
 };
 
 // 一个"被引擎托管"的对象：持元数据指针 + 注册进全局表（模拟被 GC 根集引用）
 struct FMinimalUObject {
     virtual ~FMinimalUObject() = default;
-    const FMinimalClass* Class = nullptr;   // 对应 UObject::GetClass() 返回的元数据单例
+    const FMinimalClass* Class = nullptr;       // 对应 UObject::GetClass() 返回的元数据单例
     void Register() { gLiveObjects.push_back(this); }
 };
 
 int main() {
     FMinimalClass Pickup{"AHealthPickup"};
-    Pickup.Props.push_back({"HealAmount", 0});   // 等价于写 UPROPERTY() int HealAmount;
+    Pickup.Props.push_back({"HealAmount", 0});  // 等价于写 UPROPERTY() int HealAmount;
     // 反射的价值：下面这一步在 UE 里由序列化/网络复制/细节面板自动完成，无需手写
     for (auto& p : Pickup.Props)
         std::cout << "reflected prop: " << p.Name << "\n";
@@ -916,7 +918,7 @@ int main() {
 ## 附录 A：Unreal Engine C++ 工业实践 [F: Industry / B: Principle]
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：Unreal Engine
-```
+```text
 Unreal Engine C++ 的设计哲学与标准 C++ 的差异:
 
 1. GC (Garbage Collection) → UObject 树, 标记-清除, 替代 shared_ptr
@@ -938,7 +940,7 @@ Unreal Engine C++ 的设计哲学与标准 C++ 的差异:
 ## 附录 B：面试 [J: Learning / H: Design]
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
-```
+```text
 Unreal C++ 面试高频:
 Q: UObject 为什么需要 BeginPlay/Tick/EndPlay？
 A: GActor的生命周期由框架管理, 不是构造函数/析构函数。BeginPlay=创建后初始化, EndPlay=销毁前清理
@@ -1096,13 +1098,13 @@ int main() {
 
 struct UObject {
     bool marked = false;
-    std::vector<UObject*> refs;       // 仅"被 UPROPERTY 注册"的引用参与可达性
+    std::vector<UObject*> refs;          // 仅"被 UPROPERTY 注册"的引用参与可达性
 };
 
 void mark(UObject* root) {
     if (!root || root->marked) return;
     root->marked = true;
-    for (auto* c : root->refs) mark(c);   // 沿强引用递归标记
+    for (auto* c : root->refs) mark(c);  // 沿强引用递归标记
 }
 void sweep(std::vector<UObject*>& all) {
     for (auto* o : all) if (!o->marked) delete o;
@@ -1112,12 +1114,12 @@ int main() {
     UObject* root = new UObject();
     UObject* a = new UObject();
     UObject* b = new UObject();
-    root->refs = { a };                 // a 可达（UPROPERTY 强引用）
+    root->refs = { a };                  // a 可达（UPROPERTY 强引用）
     std::vector<UObject*> all{ root, a, b };
     mark(root);
-    bool b_reachable = b->marked;       // 在 sweep 删除前记录
-    sweep(all);                         // 未标记的 b 被回收
-    delete root; delete a;              // b 已被 sweep 回收；root/a 此时仍存活
+    bool b_reachable = b->marked;        // 在 sweep 删除前记录
+    sweep(all);                          // 未标记的 b 被回收
+    delete root; delete a;               // b 已被 sweep 回收；root/a 此时仍存活
     return b_reachable ? 1 : 0;
 }
 ```
@@ -1146,11 +1148,11 @@ struct UActorComponent {
 };
 
 class AActor {
-    std::vector<UActorComponent*> comps;   // 组件所有权归 Actor
+    std::vector<UActorComponent*> comps;              // 组件所有权归 Actor
 public:
     void Add(UActorComponent* c) { comps.push_back(c); }
-    void Tick() { for (auto* c : comps) c->Tick(); }   // 递归驱动组件
-    ~AActor() { for (auto* c : comps) delete c; }       // Actor 析构连带销毁组件
+    void Tick() { for (auto* c : comps) c->Tick(); }  // 递归驱动组件
+    ~AActor() { for (auto* c : comps) delete c; }     // Actor 析构连带销毁组件
 };
 
 struct Health : UActorComponent { void Tick() override {} };
@@ -1158,7 +1160,7 @@ struct Health : UActorComponent { void Tick() override {} };
 int main() {
     AActor player;
     player.Add(new Health);
-    player.Tick();       // 驱动所有组件
+    player.Tick();                                    // 驱动所有组件
     return 0;
 }
 ```

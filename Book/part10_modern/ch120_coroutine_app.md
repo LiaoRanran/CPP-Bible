@@ -337,7 +337,7 @@ LazyTask lazy_print() { std::cout << "lazy\n"; }
 int main() {
     auto t = lazy_print();  // 协程创建但未启动
     std::cout << "before start\n";
-    t.start();               // 手动启动
+    t.start();              // 手动启动
     return 0;
 }
 ```
@@ -1282,8 +1282,8 @@ struct generator {
 generator iota(int n) { for (long long i = 0; i < n; ++i) co_yield i; }
 int main() {
     long long sum = 0;
-    for (long long x : iota(100000)) sum += x;   // 单线程单栈, O(1) 额外内存
-    std::cout << sum << '\n';                    // 4999950000
+    for (long long x : iota(100000)) sum += x;  // 单线程单栈, O(1) 额外内存
+    std::cout << sum << '\n';                   // 4999950000
 }
 ```
 
@@ -1317,7 +1317,7 @@ struct gen {
         gen get_return_object() { return gen(this); }
         std::suspend_always initial_suspend() noexcept { return {}; }
         std::suspend_always final_suspend() noexcept { return {}; }
-        void unhandled_exception() { ep = std::current_exception(); }   // 捕获协程内异常
+        void unhandled_exception() { ep = std::current_exception(); }    // 捕获协程内异常
         void return_void() {}
         auto yield_value(int v) { cur = v; return std::suspend_always{}; }
     };

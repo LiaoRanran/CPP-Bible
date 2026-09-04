@@ -74,7 +74,7 @@
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
+```text
             ┌──────────── vector<T> ────────────┐
             │  _Vector_impl (_M_impl)            │
             │   _M_start ─┐                      │
@@ -138,7 +138,7 @@ classDiagram
 三指针本身（`_M_start/_M_finish/_M_end_of_storage`）是 `T*`，位于 `vector` 对象内（通常 24 字节：3 指针）。真正元素在**独立堆块**。
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图 / 对象布局
-```
+```text
 sizeof(vector<int>) 在 x86-64 通常为 24 字节（3 个指针，无额外开销）
 元素块：capacity 个 T 连续排布，size 个已构造，剩余未构造（raw）
 
@@ -154,7 +154,7 @@ sizeof(vector<int>) 在 x86-64 通常为 24 字节（3 个指针，无额外开�
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图
-```
+```text
 vector 构造 -> _M_start=_M_finish=_M_end_of_storage=nullptr（空）
   │
 push_back/insert -> 若容量不足先扩容（分配新块+迁移+释放旧块）
@@ -166,7 +166,7 @@ push_back/insert -> 若容量不足先扩容（分配新块+迁移+释放旧块�
 ## ⑨ 调用栈 / 时序图：一次触发扩容的 push_back
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：一次触发扩容的
-```
+```text
 main
  │ v.push_back(e)
  ▼ vector::push_back (stl_vector.h:1276)
@@ -321,7 +321,7 @@ int main() {
     int& r = v[0];
     v.push_back(4); v.push_back(5); v.push_back(6);  // 可能扩容
     // std::cout << r << "\n";   // ❌ r 可能悬垂（旧块已释放）
-    std::cout << "size=" << v.size() << "\n";         // ✅ 用 size 而非失效引用
+    std::cout << "size=" << v.size() << "\n";        // ✅ 用 size 而非失效引用
     return 0;
 }
 ```
@@ -351,8 +351,8 @@ int main() {
 int main() {
     std::vector<bool> vb{true, false};
     // bool& b = vb[0];        // ❌ 编译错：返回的是代理引用，非 bool&
-    bool b = vb[0];            // ✅ 拷贝位值
-    std::cout << "vb[0]=" << b << "\n";     // 1
+    bool b = vb[0];                      // ✅ 拷贝位值
+    std::cout << "vb[0]=" << b << "\n";  // 1
     return 0;
 }
 ```
@@ -367,8 +367,8 @@ int main() {
     // 错误写法：erase 后迭代器已失效却仍用旧 it 比较
     auto it = v.begin();
     // v.erase(it); ++it;      // ❌ erase 使 it 失效后再 ++it 是 UB
-    it = v.erase(v.begin());   // ✅ 用返回值
-    std::cout << "now size=" << v.size() << "\n"; // 2
+    it = v.erase(v.begin());                       // ✅ 用返回值
+    std::cout << "now size=" << v.size() << "\n";  // 2
     return 0;
 }
 ```
@@ -464,9 +464,9 @@ int main() {
     std::vector<int> a, b;
     b.reserve(N);
     auto t0 = std::chrono::steady_clock::now();
-    for (int i = 0; i < N; ++i) a.push_back(i);     // 多次扩容
+    for (int i = 0; i < N; ++i) a.push_back(i);  // 多次扩容
     auto t1 = std::chrono::steady_clock::now();
-    for (int i = 0; i < N; ++i) b.push_back(i);     // 无扩容
+    for (int i = 0; i < N; ++i) b.push_back(i);  // 无扩容
     auto t2 = std::chrono::steady_clock::now();
     auto d1 = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
     auto d2 = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
@@ -600,9 +600,9 @@ int main() {
 int main() {
     std::vector<int> v;
     v.reserve(100);
-    std::cout << "cap=" << v.capacity() << "\n";   // >=100
+    std::cout << "cap=" << v.capacity() << "\n";                          // >=100
     for (int i = 0; i < 100; ++i) v.push_back(i);
-    std::cout << "size=" << v.size() << " cap=" << v.capacity() << "\n"; // 100 >=100
+    std::cout << "size=" << v.size() << " cap=" << v.capacity() << "\n";  // 100 >=100
     return 0;
 }
 ```
@@ -633,8 +633,8 @@ int main() {
 int main() {
     std::vector<int> v{1, 2, 3};
     auto it = v.begin();
-    v.reserve(100);                 // 显式扩容，it 失效
-    std::cout << "after reserve size=" << v.size() << "\n"; // 3（it 不可用但 size 正确）
+    v.reserve(100);                                          // 显式扩容，it 失效
+    std::cout << "after reserve size=" << v.size() << "\n";  // 3（it 不可用但 size 正确）
     return 0;
 }
 ```
@@ -647,8 +647,8 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<std::string> v;
-    v.emplace_back("in-place");     // 直接构造在 vector 内
-    std::cout << v[0] << "\n";      // in-place
+    v.emplace_back("in-place");  // 直接构造在 vector 内
+    std::cout << v[0] << "\n";   // in-place
     return 0;
 }
 ```
@@ -660,11 +660,11 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{1, 2, 3};
-    v.resize(5);                    // 增大，补默认 0
-    for (int x : v) std::cout << x << ' ';  // 1 2 3 0 0
+    v.resize(5);                               // 增大，补默认 0
+    for (int x : v) std::cout << x << ' ';     // 1 2 3 0 0
     std::cout << "\n";
-    v.resize(2);                    // 缩小
-    std::cout << "size=" << v.size() << "\n"; // 2
+    v.resize(2);                               // 缩小
+    std::cout << "size=" << v.size() << "\n";  // 2
     return 0;
 }
 ```
@@ -676,9 +676,9 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v; v.reserve(1000); v.push_back(1);
-    std::cout << "before cap=" << v.capacity() << "\n";   // 1000
+    std::cout << "before cap=" << v.capacity() << "\n";  // 1000
     v.shrink_to_fit();
-    std::cout << "after cap=" << v.capacity() << "\n";    // 实现可降至 ~1
+    std::cout << "after cap=" << v.capacity() << "\n";   // 实现可降至 ~1
     return 0;
 }
 ```
@@ -704,7 +704,7 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{1, 2, 4};
-    v.insert(v.begin() + 2, 3);     // 在 4 前插入 3
+    v.insert(v.begin() + 2, 3);             // 在 4 前插入 3
     for (int x : v) std::cout << x << ' ';  // 1 2 3 4
     std::cout << "\n";
     return 0;
@@ -718,8 +718,8 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{10, 20, 30};
-    auto it = v.erase(v.begin() + 1);   // 删 20，返回指向 30
-    std::cout << "*it=" << *it << " size=" << v.size() << "\n"; // 30 2
+    auto it = v.erase(v.begin() + 1);                            // 删 20，返回指向 30
+    std::cout << "*it=" << *it << " size=" << v.size() << "\n";  // 30 2
     return 0;
 }
 ```
@@ -733,7 +733,7 @@ int main() {
 int main() {
     std::vector<int> v{1, 2, 3, 4, 5};
     v.erase(std::remove(v.begin(), v.end(), 3), v.end());  // 删值 3
-    for (int x : v) std::cout << x << ' ';  // 1 2 4 5
+    for (int x : v) std::cout << x << ' ';                 // 1 2 4 5
     std::cout << "\n";
     return 0;
 }
@@ -801,11 +801,11 @@ int main() {
 #include <iostream>
 int main() {
     const int N = 5;
-    int* raw = new int[N];          // 需手动 delete[]
-    std::vector<int> v(N);          // RAII，自动释放
+    int* raw = new int[N];                                         // 需手动 delete[]
+    std::vector<int> v(N);                                         // RAII，自动释放
     for (int i = 0; i < N; ++i) { raw[i] = i; v[i] = i; }
-    std::cout << "raw[3]=" << raw[3] << " v[3]=" << v[3] << "\n"; // 3 3
-    delete[] raw;                   // 忘写则泄漏；vector 自动管理
+    std::cout << "raw[3]=" << raw[3] << " v[3]=" << v[3] << "\n";  // 3 3
+    delete[] raw;                                                  // 忘写则泄漏；vector 自动管理
     return 0;
 }
 ```
@@ -848,8 +848,8 @@ int main() {
 int main() {
     std::vector<bool> vb(3, false);
     vb[1] = true;
-    bool b = vb[1];                // ✅ 拷贝位值
-    std::cout << "vb[1]=" << b << " size=" << vb.size() << "\n"; // 1 3
+    bool b = vb[1];                                               // ✅ 拷贝位值
+    std::cout << "vb[1]=" << b << " size=" << vb.size() << "\n";  // 1 3
     return 0;
 }
 ```
@@ -864,13 +864,13 @@ int main() {
 int main() {
     std::allocator<int> al;
     using AT = std::allocator_traits<std::allocator<int>>;
-    int* p = al.allocate(3);                       // 1) 分配原始内存
-    AT::construct(al, p,     10);                  // 2) 在 p 构造
+    int* p = al.allocate(3);                                             // 1) 分配原始内存
+    AT::construct(al, p,     10);                                        // 2) 在 p 构造
     AT::construct(al, p + 1, 20);
     AT::construct(al, p + 2, 30);
-    std::cout << "sum=" << (p[0] + p[1] + p[2]) << "\n"; // 60
-    AT::destroy(al, p); AT::destroy(al, p + 1); AT::destroy(al, p + 2); // 3) 析构
-    al.deallocate(p, 3);                           // 4) 释放
+    std::cout << "sum=" << (p[0] + p[1] + p[2]) << "\n";                 // 60
+    AT::destroy(al, p); AT::destroy(al, p + 1); AT::destroy(al, p + 2);  // 3) 析构
+    al.deallocate(p, 3);                                                 // 4) 释放
     return 0;
 }
 ```
@@ -907,11 +907,11 @@ int main() {
 #include <iostream>
 #include <utility>
 struct Safe { Safe() = default; Safe(Safe&&) noexcept { } };
-struct Risky { Risky() = default; Risky(Risky&&) { } };  // 可能抛（非 noexcept）
+struct Risky { Risky() = default; Risky(Risky&&) { } };          // 可能抛（非 noexcept）
 int main() {
-    std::vector<Safe>  a; a.emplace_back();            // 扩容走移动
-    std::vector<Risky> b; b.emplace_back();            // 扩容走拷贝（保强异常安全）
-    std::cout << "a=" << a.size() << " b=" << b.size() << "\n"; // 1 1
+    std::vector<Safe>  a; a.emplace_back();                      // 扩容走移动
+    std::vector<Risky> b; b.emplace_back();                      // 扩容走拷贝（保强异常安全）
+    std::cout << "a=" << a.size() << " b=" << b.size() << "\n";  // 1 1
     return 0;
 }
 ```
@@ -1177,12 +1177,12 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 ```cpp
 [[gnu::noinline]] void push_no_reserve() {
     std::vector<int> v;
-    for (int i = 0; i < 8; ++i) v.push_back(i);   // 不预分配 -> 多次扩容
+    for (int i = 0; i < 8; ++i) v.push_back(i);  // 不预分配 -> 多次扩容
 }
 [[gnu::noinline]] void push_reserved() {
     std::vector<int> v;
     v.reserve(16);
-    for (int i = 0; i < 8; ++i) v.push_back(i);   // 预分配 -> 无扩容
+    for (int i = 0; i < 8; ++i) v.push_back(i);  // 预分配 -> 无扩容
 }
 ```
 
@@ -1306,11 +1306,11 @@ v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x%2==0; }), v.end()
 int main() {
     std::vector<int> v;
     v.reserve(8);
-    std::cout << "cap after reserve = " << v.capacity() << "\n";   // 8
+    std::cout << "cap after reserve = " << v.capacity() << "\n";  // 8
     int buf[] = {1, 2, 3};
-    v.assign(std::begin(buf), std::end(buf));                      // 复用容量, 不分配
+    v.assign(std::begin(buf), std::end(buf));                     // 复用容量, 不分配
     std::cout << "size = " << v.size()
-              << ", cap = " << v.capacity() << "\n";               // 3, 8
+              << ", cap = " << v.capacity() << "\n";              // 3, 8
 }
 ```
 
@@ -1364,8 +1364,8 @@ for (auto& r : source) v.push_back(r);   // 容量 1->2->4->...->1048576, 约 20
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 百万元素构建的性
 ```cpp
-std::vector<Rec> v; v.reserve(source.size());   // 1 次分配到位
-for (auto& r : source) v.push_back(r);          // 零重分配
+std::vector<Rec> v; v.reserve(source.size());  // 1 次分配到位
+for (auto& r : source) v.push_back(r);         // 零重分配
 ```
 
 **步骤 3：用 `emplace_back` 避免临时对象（更快）**
@@ -1769,7 +1769,7 @@ void operator delete(void* p) noexcept { std::free(p); }
 void operator delete(void* p, std::size_t) noexcept { std::free(p); }
 
 int main() {
-    const int N = 1 << 16;  // 65536
+    const int N = 1 << 16;                       // 65536
 
     // 路径 1：不 reserve，push_back 触发多次指数扩容
     g_allocs = 0;

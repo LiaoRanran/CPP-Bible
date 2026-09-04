@@ -116,7 +116,7 @@ int main() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱
-```
+```text
 C++14 补全
 ├─ 泛型 lambda: [](auto x){...}
 ├─ 函数返回类型自动推导(普通函数)
@@ -504,7 +504,7 @@ int main(){print(std::make_integer_sequence<int,5>{});return 0;}
 C++14 被称为"minor release"——但其中两个特性改变了工业 C++ 的日常写法:
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：C++14 工业采纳与标准
-```
+```text
 WG21 提案时间线:
 N3652: constexpr 放宽 (局部变量, if, for, 2013) → C++14
 N3922: auto 返回类型推导 → C++14
@@ -537,7 +537,7 @@ int main() {
 ## 附录 B-1：工业案例 —— 谁还在用 C++14 作为基线 [F: Industry]
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B-1：工业案例 —— 谁还在
-```
+```text
 仍然使用 C++14 作为最低编译器要求的项目:
 - Abseil (Google): LTS release 系列用 C++14 保证最大兼容性
 - Folly (Meta): 部分组件要求 C++14, 部分要求 C++17
@@ -554,7 +554,7 @@ int main() {
 ## 附录 D：面试 [J: Learning]
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试 [J: Learning]
-```
+```text
 面试高频:
 Q: C++14 最大的三个新特性？
 A: generic lambda (auto参数), make_unique, relaxed constexpr (可含循环/if)
@@ -569,7 +569,7 @@ A: 不能用于虚函数, 不能用于递归函数 (除非有明确的返回语�
 ## 附录 L：C++14标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：C++14标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
-```
+```text
 C++14标准库变化:
 - std::make_unique: 补齐C++11遗漏, 消除最后一个裸new的理由
   → 汇编: make_unique = new + constructor → 与new+unique_ptr相同, 但异常安全
@@ -658,9 +658,9 @@ int main() {
 #include <iostream>
 
 template <class T>
-constexpr T pi = T(3.1415926535897932385L);   // C++14 变量模板
+constexpr T pi = T(3.1415926535897932385L);     // C++14 变量模板
 
-auto mid(int a, int b) { return (a + b) / 2; } // C++14 auto 返回类型推导
+auto mid(int a, int b) { return (a + b) / 2; }  // C++14 auto 返回类型推导
 
 int main() {
     std::cout << "mid(3,7) = " << mid(3, 7) << '\n';
@@ -688,7 +688,7 @@ int main() {
     constexpr unsigned READ  = 0b0000'0001;
     constexpr unsigned WRITE = 0b0000'0010;
     constexpr unsigned EXEC  = 0b0000'0100;
-    constexpr unsigned large = 1'000'000;      // 分隔符只为可读，无语义
+    constexpr unsigned large = 1'000'000;                  // 分隔符只为可读，无语义
 
     auto perm = std::make_unique<unsigned>(READ | WRITE);  // C++14 make_unique
     std::cout << "perm = " << *perm << '\n';

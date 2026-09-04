@@ -74,9 +74,9 @@ int main(){ Big x = factory(); (void)x; }
 ```cpp
 // ② 单局部对象同样适用 RVO
 Big make_one() {
-    Big b;          // 这个 b 实际就构造在调用者的返回槽
+    Big b;     // 这个 b 实际就构造在调用者的返回槽
     b.a[0] = 42;
-    return b;       // 无拷贝
+    return b;  // 无拷贝
 }
 ```
 
@@ -93,9 +93,9 @@ Big make_one() {
 #include <cstdio>
 struct Big { long a[8]; Big(){a[0]=0;} Big(const Big&){std::printf("copy\n");} };
 Big build(int n) {
-    Big result;          // 具名返回值
+    Big result;     // 具名返回值
     result.a[0] = n;
-    return result;       // NRVO：result 直接落在返回槽
+    return result;  // NRVO：result 直接落在返回槽
 }
 int main(){ Big x = build(7); (void)x; }
 ```
@@ -131,12 +131,12 @@ int main(){ NonCopyable x = make(); (void)x; }  // 删了拷贝/移动也能编�
 ```cpp
 // 文件：Examples/_ch117_rvo.cpp
 // 行号：10
-Big make() {            // 行号：10
-    Big b;              // 行号：11
-    return b;           // 行号：12  RVO 发生点
+Big make() {         // 行号：10
+    Big b;           // 行号：11
+    return b;        // 行号：12  RVO 发生点
 }
 int main() {
-    Big x = make();     // 行号：16  调用处直接得到构造结果
+    Big x = make();  // 行号：16  调用处直接得到构造结果
     return (int)x.a[0];
 }
 ```
@@ -165,8 +165,8 @@ int main() {
 #include <cstdio>
 struct Big { long a[8]; Big(){a[0]=1;} Big(const Big& o){std::printf("copy ctor!\n"); a[0]=o.a[0];} };
 Big make_forced(const Big& src) {
-    Big b = src;     // 行号：15  必须从实参拷贝构造（不可省略）
-    return b;        // 行号：16  返回 b 可被 NRVO，但 b 本身的构造不能省
+    Big b = src;  // 行号：15  必须从实参拷贝构造（不可省略）
+    return b;     // 行号：16  返回 b 可被 NRVO，但 b 本身的构造不能省
 }
 int main(){ Big x = make_forced(Big{}); (void)x; }
 ```
@@ -199,8 +199,8 @@ int main(){ Big x = make_forced(Big{}); (void)x; }
 #include <cstdio>
 #include <utility>
 struct Big { long a[8]; Big(){a[0]=1;} Big(const Big&){std::printf("copy!\n");} Big(Big&&){std::printf("move!\n");} };
-Big bad()  { Big b; return std::move(b); }   // ❌ 抑制 NRVO -> 移动构造
-Big good() { Big b; return b; }              // ✅ 允许 NRVO -> 零拷贝零移动
+Big bad()  { Big b; return std::move(b); }  // ❌ 抑制 NRVO -> 移动构造
+Big good() { Big b; return b; }             // ✅ 允许 NRVO -> 零拷贝零移动
 int main(){ Big x=bad(); Big y=good(); (void)x;(void)y; }
 ```
 
@@ -218,8 +218,8 @@ int main(){ Big x=bad(); Big y=good(); (void)x;(void)y; }
 struct Big { long a[8]; Big(){a[0]=0;} Big(const Big& o){std::printf("copy!\n");a[0]=o.a[0];} };
 Big pick(bool c) {
     Big a, b;
-    if (c) return a;     // 可能拷贝 a
-    else   return b;     // 可能拷贝 b（与 a 不同地址）
+    if (c) return a;  // 可能拷贝 a
+    else   return b;  // 可能拷贝 b（与 a 不同地址）
 }
 int main(){ Big x = pick(true); (void)x; }
 ```
@@ -245,10 +245,10 @@ Big pick_same(bool c) {
 ```cpp
 // ⑨ 三条通道对比
 #include <utility>
-struct Big { // ...
-Big by_elision() { Big b; return b; }      // 通道A：NRVO（零拷贝零移动）
+struct Big {                                      // ...
+Big by_elision() { Big b; return b; }             // 通道A：NRVO（零拷贝零移动）
 Big by_move()    { Big b; return std::move(b); }  // 通道B：移动构造（有一次 move）
-Big by_value(Big b) { return b; }          // 通道C：取决于调用方实参类别
+Big by_value(Big b) { return b; }                 // 通道C：取决于调用方实参类别
 ```
 
 | 通道 | 机制 | 拷贝次数 | 移动次数 |
@@ -293,10 +293,10 @@ int main(){ f(make_w()); Wrapper w(6); f(w); }
 ```cpp
 // 文件：Examples/_ch117_nrvo.cpp
 // 行号：11
-Big compute(int sel) {           // 行号：11
-    Big result;                   // 行号：12
-    result.a[0] = sel;            // 行号：13
-    return result;                // 行号：14  NRVO 折叠点
+Big compute(int sel) {  // 行号：11
+    Big result;         // 行号：12
+    result.a[0] = sel;  // 行号：13
+    return result;      // 行号：14  NRVO 折叠点
 }
 ```
 
@@ -391,11 +391,11 @@ struct Counter {
     Counter(const Counter&) { ++n; std::printf("copied\n"); }  // 副作用
 };
 int Counter::n = 0;
-Counter make() { Counter c; return c; }   // NRVO：此处 n 不增加
+Counter make() { Counter c; return c; }                        // NRVO：此处 n 不增加
 int main(){
-    Counter x = make();      // 若 NRVO 发生 -> n 仍为 0
-    Counter y = x;           // 显式拷贝 -> n 变为 1
-    std::printf("n=%d\n", Counter::n);   // 值依赖编译器是否做 NRVO！
+    Counter x = make();                                        // 若 NRVO 发生 -> n 仍为 0
+    Counter y = x;                                             // 显式拷贝 -> n 变为 1
+    std::printf("n=%d\n", Counter::n);                         // 值依赖编译器是否做 NRVO！
 }
 ```
 
@@ -453,9 +453,9 @@ Vec make_copy(const Vec& src){ Vec v=src; return v; }  // v 必须从 src 拷贝
 struct Buff { Buff(); Buff(const Buff&); Buff(Buff&&); };
 Buff make() {
     Buff b;
-    if ( // 某些让 NRVO 失败的控制流
-        return Buff{};     // prvalue -> guaranteed elision
-    return b;              // 具名 -> 若 NRVO 成功则零移动；失败则移动构造
+    if (                // 某些让 NRVO 失败的控制流
+        return Buff{};  // prvalue -> guaranteed elision
+    return b;           // 具名 -> 若 NRVO 成功则零移动；失败则移动构造
 }
 ```
 
@@ -489,8 +489,8 @@ int main(){
 ```cpp
 // ⑱ 用 Tracer 验证 std::move 陷阱：bad() 会打印 move#1，good() 静默
 #include <utility>
-Tracer bad()  { Tracer b; return std::move(b); }   // 见 ⑦：触发移动
-Tracer good() { Tracer b; return b; }              // NRVO：静默
+Tracer bad()  { Tracer b; return std::move(b); }  // 见 ⑦：触发移动
+Tracer good() { Tracer b; return b; }             // NRVO：静默
 ```
 
 - `[经验]`：在怀疑 NRVO 失效的函数上加 Tracer，跑一次看 `copies/moves`——若非零，说明省略没发生，再回到 ⑧ 排查控制流。
@@ -500,8 +500,8 @@ Tracer good() { Tracer b; return b; }              // NRVO：静默
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 ```cpp
 // ⑲ 1) 直接返回局部对象，不要用 std::move
-auto f1() { Widget w; // ...
-auto f2() { Widget w; return std::move(w); }        // ❌ 抑制 NRVO
+auto f1() { Widget w;                         // ...
+auto f2() { Widget w; return std::move(w); }  // ❌ 抑制 NRVO
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
@@ -763,7 +763,7 @@ int zmain(){ Z z=zmake(); std::printf("copies=%d\n", Z::k); return z.k; }
 拷贝消除是 C++ 标准化史上最激烈的争议之一——因为它**改变可观察行为**，打破了 C++"as-if"优化的基本契约。
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：WG21 提案与标准演化
-```
+```text
 C++98:    允许 NRVO（Named Return Value Optimization），但非强制
 C++03:    无变化
 C++11:    移动语义引入，RVO/NRVO 仍为"允许但非必须"
@@ -785,18 +785,18 @@ C++26:    P2025 — guaranteed NRVO（方向，未正式进入）
 struct Noisy {
     int v;
     Noisy() : v(0) {}
-    Noisy(const Noisy&) { v = -1; }  // 拷贝标记
+    Noisy(const Noisy&) { v = -1; }      // 拷贝标记
     Noisy(Noisy&&) noexcept { v = -2; }  // 移动标记
 };
 
 Noisy make_nrvo() {
     Noisy n;
     n.v = 42;
-    return n;  // NRVO candidate
+    return n;                            // NRVO candidate
 }
 
 Noisy make_rvo() {
-    return Noisy{};  // RVO (C++17 guaranteed)
+    return Noisy{};                      // RVO (C++17 guaranteed)
 }
 
 // GCC 13 -O2 汇编（x86-64 Intel syntax）:
@@ -830,7 +830,7 @@ struct NonCopyable {
 };
 
 NonCopyable factory() {
-    return NonCopyable(42);  // C++17: 合法！guaranteed copy elision
+    return NonCopyable(42);         // C++17: 合法！guaranteed copy elision
 }
 
 int main() {
@@ -887,8 +887,8 @@ int main() {
 #include <memory>
 #include <string>
 #include <utility>
-#include <fcntl.h>     // open()
-#include <unistd.h>    // close()
+#include <fcntl.h>        // open()
+#include <unistd.h>       // close()
 // 模式1: Builder Pattern + NRVO（Google/Abseil 风格）
 class QueryBuilder {
     std::string table_;
@@ -902,7 +902,7 @@ public:
         for (auto& c : columns_) result += c + ",";
         result.pop_back();
         result += " FROM " + table_;
-        return result;  // NRVO into caller's string
+        return result;    // NRVO into caller's string
     }
 };
 
@@ -940,7 +940,7 @@ int main() {
 拷贝消除不是银弹。以下是 5 个反模式：
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：设计权衡与反模式 [H: Design]
-```
+```text
 反模式1: 在拷贝构造函数中放置关键业务逻辑（引用计数、锁、日志）
   → 拷贝消除让这些逻辑完全消失。用显式的 clone() 或工厂方法替代。
 
@@ -967,7 +967,7 @@ int main() {
 // 反模式3的汇编证据
 struct Big { int data[100]; Big() {} Big(Big&&) noexcept {} };
 Big bad_return(Big&& b) { return std::move(b); }  // 阻止NRVO！
-Big good_return(Big&& b) { return b; }             // 触发NRVO
+Big good_return(Big&& b) { return b; }            // 触发NRVO
 
 int main() {
     Big b;
@@ -980,7 +980,7 @@ int main() {
 ## 附录 F：面试与 FAQ [J: Learning]
 
 > **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：面试与 FAQ [J: Learning]
-```
+```text
 Q1: C++17 guaranteed copy elision 和 C++11 NRVO 有什么区别？
 A: NRVO 是"编译器允许省略"；guaranteed copy elision 是"编译器必须省略"。
    前者是优化（可有可无），后者是语义（必须遵守）。
@@ -1058,11 +1058,11 @@ struct Tracer {
     Tracer(const Tracer& o) : v(o.v) { puts("copy"); }
     Tracer(Tracer&& o) noexcept     : v(o.v) { puts("move"); }
 };
-[[gnu::noinline]] Tracer make_prvalue()  { return Tracer(42); }     // ① 强制消除
-[[gnu::noinline]] Tracer make_nrvo()     { Tracer t(7); return t; } // ② NRVO
-[[gnu::noinline]] Tracer make_nrvo_fail(bool b) {                   // ③ NRVO 失效
+[[gnu::noinline]] Tracer make_prvalue()  { return Tracer(42); }      // ① 强制消除
+[[gnu::noinline]] Tracer make_nrvo()     { Tracer t(7); return t; }  // ② NRVO
+[[gnu::noinline]] Tracer make_nrvo_fail(bool b) {                    // ③ NRVO 失效
     Tracer a(1); Tracer c(2);
-    if (b) return a; else return c;       // 不同返回路径 → 无法合并返回槽
+    if (b) return a; else return c;                                  // 不同返回路径 → 无法合并返回槽
 }
 ```
 
@@ -1168,8 +1168,8 @@ int main() { QueryBuilder q; q.table_ = "users"; q.cols_ = "id"; (void)q.build()
 #include <utility>
 #include <iostream>
 struct Big { Big() {} Big(const Big&) { std::cout << "copy\n"; } Big(Big&&) { std::cout << "move\n"; } };
-Big bad()  { Big b; return std::move(b); }   // ❌ 抑制 NRVO → 移动构造
-Big good() { Big b; return b; }              // ✅ 允许 NRVO → 零拷贝零移动
+Big bad()  { Big b; return std::move(b); }  // ❌ 抑制 NRVO → 移动构造
+Big good() { Big b; return b; }             // ✅ 允许 NRVO → 零拷贝零移动
 int main() { bad(); good(); }
 ```
 
@@ -1258,11 +1258,11 @@ C++17 把返回 prvalue 的复制消除从"允许优化"升级为"语言强制"�
 struct Tracer {
     int v;
     Tracer(int x) : v(x) {}
-    Tracer(const Tracer& o) : v(o.v) { puts("copy"); }   // 若被调用会出现 call puts
+    Tracer(const Tracer& o) : v(o.v) { puts("copy"); }  // 若被调用会出现 call puts
     Tracer(Tracer&& o) noexcept : v(o.v) { puts("move"); }
 };
-Tracer make_prvalue() { return Tracer(42); }   // ① 强制消除
-Tracer make_nrvo()    { Tracer t(7); return t; } // ② NRVO
+Tracer make_prvalue() { return Tracer(42); }            // ① 强制消除
+Tracer make_nrvo()    { Tracer t(7); return t; }        // ② NRVO
 ```
 
 ### 真实汇编：零 copy/move 调用
@@ -1288,9 +1288,9 @@ Tracer make_nrvo()    { Tracer t(7); return t; } // ② NRVO
 struct NoMove {
     NoMove() = default;
     NoMove(const NoMove&) = delete;
-    NoMove(NoMove&&)      = delete;   // 拷贝、移动全删
+    NoMove(NoMove&&)      = delete;        // 拷贝、移动全删
 };
-NoMove make_nomove() { return NoMove{}; }   // C++17 合法! C++14 会编译失败
+NoMove make_nomove() { return NoMove{}; }  // C++17 合法! C++14 会编译失败
 ```
 
 ```asm
@@ -1516,7 +1516,7 @@ struct Counter {
 int Counter::copies = 0;
 int Counter::moves = 0;
 
-Counter make_rvo() { return Counter{42}; }      // 纯 RVO：C++17 语言保证
+Counter make_rvo() { return Counter{42}; }       // 纯 RVO：C++17 语言保证
 Counter make_nrvo() { Counter w{7}; return w; }  // NRVO：优化，非保证
 
 struct CopyOnly {

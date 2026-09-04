@@ -112,12 +112,12 @@ void saxpy(float* __restrict y, const float* __restrict x,
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 循环向量化的必要条件
 ```cpp
 // ④ 条件A：连续内存访问（步长 1）
-void good(float* a, float* b, float* c, int n) {     // ✔ 连续
+void good(float* a, float* b, float* c, int n) {  // ✔ 连续
     for (int i = 0; i < n; ++i) c[i] = a[i] + b[i];
 }
 
 // ④ 条件B：循环迭代间无数据依赖（后可向依赖）
-void bad_dep(float* a, int n) {                       // ✘ 依赖前一项
+void bad_dep(float* a, int n) {                   // ✘ 依赖前一项
     for (int i = 1; i < n; ++i) a[i] = a[i-1] + a[i];
 }
 
@@ -181,11 +181,11 @@ C++ 标准曾以 **DAT（Data-Parallel Types）** 提案把 SIMD 纳入语言，
 #include <experimental/simd>
 namespace stdx = std::experimental;
 void simd_class(float* a, float* b, float* c, int n) {
-    using V = stdx::native_simd<float>;   // 宽度 = 本机最优（通常 8 或 16）
+    using V = stdx::native_simd<float>;  // 宽度 = 本机最优（通常 8 或 16）
     for (int i = 0; i + V::size() <= n; i += V::size()) {
         V va(&a[i], stdx::element_aligned);
         V vb(&b[i], stdx::element_aligned);
-        V vc = va + vb;                    // 一条向量加
+        V vc = va + vb;                  // 一条向量加
         vc.copy_to(&c[i], stdx::element_aligned);
     }
 }
@@ -317,7 +317,7 @@ SIMD 加载/存储有对齐要求：对齐版本（`_mm_load_ps`）要求地址 
 ```cpp
 // ⑨ 对齐加载（要求 16/32/64 字节对齐，否则段错误）
 alignas(16) float a16[4] = {1,2,3,4};
-__m128 va = _mm_load_ps(a16);   // OK：alignas(16)
+__m128 va = _mm_load_ps(a16);       // OK：alignas(16)
 
 // ⑨ 未对齐加载（安全但略慢，通用首选）
 float buf[100];
@@ -372,8 +372,8 @@ void clamp_low(const float* in, float* out, int n, float lo) {
     __m128 vlo = _mm_set1_ps(lo);
     for (int i = 0; i + 4 <= n; i += 4) {
         __m128 v = _mm_loadu_ps(&in[i]);
-        __m128 mask = _mm_cmplt_ps(v, vlo);     // v < lo ? 全1 : 全0
-        __m128 vmax = _mm_max_ps(v, vlo);        // 取较大者，无需分支
+        __m128 mask = _mm_cmplt_ps(v, vlo);  // v < lo ? 全1 : 全0
+        __m128 vmax = _mm_max_ps(v, vlo);    // 取较大者，无需分支
         _mm_storeu_ps(&out[i], vmax);
     }
 }
@@ -386,8 +386,8 @@ void clamp_low(const float* in, float* out, int n, float lo) {
 void avx512_select(const float* a, const float* b, float* out, int n) {
     __m512 va = _mm512_loadu_ps(a);
     __m512 vb = _mm512_loadu_ps(b);
-    __mmask16 m = _mm512_cmp_ps_mask(va, vb, _CMP_LT_OQ); // 比较 -> k-mask
-    __m512 vr = _mm512_mask_mov_ps(vb, m, va);            // m 为真取 va 否则 vb
+    __mmask16 m = _mm512_cmp_ps_mask(va, vb, _CMP_LT_OQ);  // 比较 -> k-mask
+    __m512 vr = _mm512_mask_mov_ps(vb, m, va);             // m 为真取 va 否则 vb
     _mm512_storeu_ps(out, vr);
 }
 ```
@@ -402,9 +402,9 @@ SIMD 是编译器优化栈的**底层执行形态**之一：上层优化（循�
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch156 编译器优化衔接 [标准]
 ```cpp
 // ⑪ 内联 + 常数折叠后，热点才容易被向量化
-inline float op(float x) { return x * 3.0f + 1.0f; }   // 小函数 -> 易内联
+inline float op(float x) { return x * 3.0f + 1.0f; }  // 小函数 -> 易内联
 void transform(float* a, float* b, int n) {
-    for (int i = 0; i < n; ++i) b[i] = op(a[i]);         // 内联后纯算术 -> 可向量化
+    for (int i = 0; i < n; ++i) b[i] = op(a[i]);      // 内联后纯算术 -> 可向量化
 }
 ```
 
@@ -512,11 +512,11 @@ _Z13add_arrays512PfS_S_i:
 ```cpp
 // ⑭ 反例1：步长 != 1（跨步访问）-> 不可向量化
 void stride(float* a, float* b, int n) {
-    for (int i = 0; i < n; i += 2) b[i] = a[i] * 2;   // 隔一个取，破坏连续性
+    for (int i = 0; i < n; i += 2) b[i] = a[i] * 2;    // 隔一个取，破坏连续性
 }
 // ⑭ 反例2：循环携带依赖 -> 必须串行
 void dep(float* a, int n) {
-    for (int i = 1; i < n; ++i) a[i] = a[i-1] + a[i]; // a[i] 依赖 a[i-1]
+    for (int i = 1; i < n; ++i) a[i] = a[i-1] + a[i];  // a[i] 依赖 a[i-1]
 }
 ```
 
@@ -626,10 +626,10 @@ x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，ARM64 默认 128 位 `float32
 #if defined(__aarch64__) || defined(__ARM_NEON)
 #include <arm_neon.h>
 void neon_add(const float* a, const float* b, float* c) {
-    float32x4_t va = vld1q_f32(a);   // 加载 4 个 float
+    float32x4_t va = vld1q_f32(a);  // 加载 4 个 float
     float32x4_t vb = vld1q_f32(b);
     float32x4_t vc = vaddq_f32(va, vb);
-    vst1q_f32(c, vc);                // 写回 4 个结果
+    vst1q_f32(c, vc);               // 写回 4 个结果
 }
 #endif
 ```
@@ -925,7 +925,7 @@ WG21 **P0214** 是标准 SIMD 类型的主线提案，配合编译器 `-O2/-O3` 
 ## 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
-```
+```text
 SIMD设计决策树:
 1. 数据连续？ → 否: 重排数据或用SoA布局; 是: 继续
 2. 对齐？ → 否: movups(未对齐,慢20%); 是: movaps(对齐,最快)

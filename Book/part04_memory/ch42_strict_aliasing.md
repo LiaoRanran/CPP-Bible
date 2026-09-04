@@ -149,8 +149,8 @@
 int main() {
     float f = 3.14f;
     // 把 float 对象的地址 reinterpret 成 int*，再读取
-    int* pi = reinterpret_cast<int*>(&f);   // (ch27) reinterpret_cast 仅改类型，不创建对象
-    int bits = *pi;                          // ❌ UB：glvalue 类型 int 不在合法清单中
+    int* pi = reinterpret_cast<int*>(&f);  // (ch27) reinterpret_cast 仅改类型，不创建对象
+    int bits = *pi;                        // ❌ UB：glvalue 类型 int 不在合法清单中
     std::printf("bits=%d\n", bits);
     return 0;
 }
@@ -175,8 +175,8 @@ void dump_bytes(const void* p, std::size_t n) {
 }
 
 int main() {
-    float f = 1.0f;            // 合法！char/unsigned char/std::byte 是 [basic.lval] 第 8 条例外
-    dump_bytes(&f, sizeof(f)); // 小端下输出：00 00 80 3f
+    float f = 1.0f;             // 合法！char/unsigned char/std::byte 是 [basic.lval] 第 8 条例外
+    dump_bytes(&f, sizeof(f));  // 小端下输出：00 00 80 3f
     return 0;
 }
 ```
@@ -214,21 +214,21 @@ int main() {
 
 std::uint32_t float_to_bits(float f) {
     std::uint32_t u;
-    std::memcpy(&u, &f, sizeof(u));   // ✅ 字节拷贝，类型安全
+    std::memcpy(&u, &f, sizeof(u));                   // ✅ 字节拷贝，类型安全
     return u;
 }
 
 float bits_to_float(std::uint32_t u) {
     float f;
-    std::memcpy(&f, &u, sizeof(f));   // ✅ 反向同样合法
+    std::memcpy(&f, &u, sizeof(f));                   // ✅ 反向同样合法
     return f;
 }
 
 int main() {
     float f = 1.0f;
     std::uint32_t u = float_to_bits(f);
-    std::printf("1.0f bits = 0x%08x\n", u);          // 0x3f800000
-    std::printf("back    = %f\n", bits_to_float(u)); // 1.000000
+    std::printf("1.0f bits = 0x%08x\n", u);           // 0x3f800000
+    std::printf("back    = %f\n", bits_to_float(u));  // 1.000000
     return 0;
 }
 ```
@@ -274,19 +274,19 @@ int main() {
 #include <cstdio>
 
 struct A { int tag; float x; };
-struct B { int tag; int   y; };   // A 与 B 的"共同初始序列"是 int tag
+struct B { int tag; int   y; };                                         // A 与 B 的"共同初始序列"是 int tag
 
-union U { A a; B b; };            // 标准布局 + 共同初始序列
+union U { A a; B b; };                                                  // 标准布局 + 共同初始序列
 
 int read_tag(const U& u) {
-    return u.a.tag;   // ✅ 合法：读取共同初始序列成员 tag
+    return u.a.tag;                                                     // ✅ 合法：读取共同初始序列成员 tag
 }
 
 int main() {
     U u;
     u.a.tag = 42;
     u.a.x   = 3.14f;
-    std::printf("tag via a = %d, tag via b = %d\n", u.a.tag, u.b.tag); // 42, 42
+    std::printf("tag via a = %d, tag via b = %d\n", u.a.tag, u.b.tag);  // 42, 42
     return 0;
 }
 ```
@@ -303,8 +303,8 @@ union U { A a; B b; };
 
 int main() {
     U u;
-    u.a.x = 3.14f;          // 激活 a
-    int bad = u.b.y;        // ❌ UB：读取非共同初始序列的不同成员
+    u.a.x = 3.14f;    // 激活 a
+    int bad = u.b.y;  // ❌ UB：读取非共同初始序列的不同成员
     std::printf("%d\n", bad);
     return 0;
 }
@@ -332,8 +332,8 @@ int main() {
     // 在同一地址构造新对象（旧对象生命周期结束）
     T* q = new (buf) T{20};
     // 必须用 launder，否则编译器可能认为 p 仍指向 v==10 的对象
-    T* q2 = std::launder(reinterpret_cast<T*>(buf));  // ✅ 合法
-    std::printf("p=%d q=%d q2=%d\n", p->v, q->v, q2->v); // 10 20 20
+    T* q2 = std::launder(reinterpret_cast<T*>(buf));      // ✅ 合法
+    std::printf("p=%d q=%d q2=%d\n", p->v, q->v, q2->v);  // 10 20 20
     return 0;
 }
 ```
@@ -547,8 +547,8 @@ typedef int __attribute__((__may_alias__)) int_alias;
 float g(float* q, int_alias* p, int n) {
     float s = 0;
     for (int i = 0; i < n; ++i) {
-        *p += 1;          // 因为 int_alias 带 may_alias，
-        s += *q;          // 编译器不敢假设 *q 不被 *p 改写
+        *p += 1;  // 因为 int_alias 带 may_alias，
+        s += *q;  // 编译器不敢假设 *q 不被 *p 改写
     }
     return s;
 }
@@ -600,11 +600,11 @@ int main() {
 // 【程序 16】asm volatile 编译器屏障（GCC/Clang）
 #include <cstdio>
 
-volatile int mmio_reg = 0;   // 模拟内存映射寄存器
+volatile int mmio_reg = 0;          // 模拟内存映射寄存器
 
 void write_sequence() {
-    mmio_reg = 1;             // 必须按顺序、且不能被消除
-    asm volatile("" ::: "memory");   // 编译器屏障：之后的内存操作不会重排到这之前
+    mmio_reg = 1;                   // 必须按顺序、且不能被消除
+    asm volatile("" ::: "memory");  // 编译器屏障：之后的内存操作不会重排到这之前
     mmio_reg = 2;
     asm volatile("" ::: "memory");
     mmio_reg = 3;
@@ -798,7 +798,7 @@ int main() { std::printf("see build commands in comments\n"); return 0; }
 **[平台·x86-64]** 本机 GCC 13.1.0，CPU 见 `[平台-推断]`，实测数组求和（2000 万元素 × 30 轮，`-O3 -march=native`）：
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 microbenchmark：restrict 的向量化加速量级
-```
+```text
 norestrict : 721.0 ms  (sum sample=40.000000)
 restrict   : 702.5 ms  (speedup = 1.03x)
 ```
@@ -1009,11 +1009,11 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 #include <cstdio>
 
 struct Vec2 { double x, y; };
-struct Vec3 { double x, y, z; };   // Vec2 是 Vec3 前缀？否 —— 标准对"共同初始序列"
+struct Vec3 { double x, y, z; };           // Vec2 是 Vec3 前缀？否 —— 标准对"共同初始序列"
                                     // 要求两者都是同一 union 的成员才享例外
 union Pt {
     struct { double x, y; } a;
-    struct { double x, y; } b;     // a 与 b 拥有共同初始序列 x,y
+    struct { double x, y; } b;             // a 与 b 拥有共同初始序列 x,y
 };
 
 int main() {
@@ -1035,8 +1035,8 @@ int main() {
 
 int main() {
     int x = 5;
-    const int* p = &x;          // ✅ const int 与 int 是 similar（cv 对应）
-    volatile int* q = &x;       // ✅ volatile int 亦是 similar
+    const int* p = &x;     // ✅ const int 与 int 是 similar（cv 对应）
+    volatile int* q = &x;  // ✅ volatile int 亦是 similar
     std::printf("%d %d\n", *p, *q);
     return 0;
 }
@@ -1082,7 +1082,7 @@ struct Base { int a; };
 struct Derived : Base { int b; };
 
 int read_base_a(const Base* p) {
-    return p->a;   // ✅ 基类指针读取派生对象的基类子对象，合法
+    return p->a;                           // ✅ 基类指针读取派生对象的基类子对象，合法
 }
 
 int main() {
@@ -1200,7 +1200,7 @@ std::uint32_t bits_of(float f) {
 
 int main() {
     float f = 1.0f;
-    std::printf("0x%08x\n", bits_of(f));   // 0x3f800000
+    std::printf("0x%08x\n", bits_of(f));             // 0x3f800000
     return 0;
 }
 ```
@@ -1245,9 +1245,9 @@ int main() {
 int main() {
     alignas(4) std::uint32_t raw = 0x40490fdb;  // ≈ 3.14159f 的位模式
     float f;
-    std::memcpy(&f, &raw, sizeof(f));            // ✅ 合法双关
+    std::memcpy(&f, &raw, sizeof(f));           // ✅ 合法双关
     int   i;
-    std::memcpy(&i, &raw, sizeof(i));            // ✅ 合法双关
+    std::memcpy(&i, &raw, sizeof(i));           // ✅ 合法双关
     std::printf("as float=%f  as int=%d\n", f, i);
     return 0;
 }
@@ -1362,7 +1362,7 @@ int main() {
 ## 附录 L：工业严格别名规则 [F: Industry / B: Principle / H: Design]
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 L：工业严格别名规则 [F: Industry / B: Principle / H: Design]
-```
+```text
 为什么存在 strict aliasing? (WG21 + C99 共同决定):
   → 编译器优化: 两个不同类型指针不会指向同一内存 → 可重排读写 → SIMD + 向量化
   → 最关键的优化是 Type-Based Alias Analysis (TBAA, GCC -fstrict-aliasing, 默认开启)
@@ -1380,7 +1380,7 @@ int main() {
 ## 附录 M：面试与工程实践 [J: Learning / I: Practice]
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 M：面试与工程实践 [J: Learning / I: Practice]
-```
+```text
 常见问题与面试:
 Q: 什么是 strict aliasing rule?
 A: 两个不兼容类型的指针不能指向同一内存, 否则UB。例外: char/byte可以别名任何类型
@@ -1447,8 +1447,8 @@ int main(){
     float f = 1.0f;
     // 非法: float* 与 int* 是不同类型, 编译器假定它们不别名 -> UB
     // int bits = *reinterpret_cast<int*>(&f);
-    int bits1; std::memcpy(&bits1, &f, sizeof(bits1));   // 合法: 重解释对象表示
-    int bits2 = std::bit_cast<int>(f);                   // 合法(C++20): 编译期友好
+    int bits1; std::memcpy(&bits1, &f, sizeof(bits1));  // 合法: 重解释对象表示
+    int bits2 = std::bit_cast<int>(f);                  // 合法(C++20): 编译期友好
     (void)bits1; (void)bits2;
 }
 ```
@@ -1594,9 +1594,9 @@ int main() {
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
 ```cpp
 int no_alias(int* pi, float* pf) {
-    *pi = 1;          // 写 int
-    *pf = 2.0f;       // 写 float
-    return *pi;       // 关键: 严格别名下 int/float 不重叠 → 可返回缓存的 1
+    *pi = 1;                       // 写 int
+    *pf = 2.0f;                    // 写 float
+    return *pi;                    // 关键: 严格别名下 int/float 不重叠 → 可返回缓存的 1
 }
 int same_type(int* pi, int* pj) {  // 同类型: 必然可能重叠
     *pi = 1; *pj = 2; return *pi;  // 必须重载内存
@@ -1875,14 +1875,14 @@ flowchart TD
 
 __attribute__((noinline))
 long long count_via_ptr([[maybe_unused]] const int* arr, std::size_t n, int* counter) {
-    for (std::size_t k = 0; k < n; ++k) ++*counter;   // 可别名计数器
+    for (std::size_t k = 0; k < n; ++k) ++*counter;  // 可别名计数器
     return *counter;
 }
 
 __attribute__((noinline))
 long long count_via_local([[maybe_unused]] const int* arr, std::size_t n, int* counter) {
     long long local = 0;
-    for (std::size_t k = 0; k < n; ++k) ++local;      // 局部累加
+    for (std::size_t k = 0; k < n; ++k) ++local;     // 局部累加
     *counter = static_cast<int>(local);
     return local;
 }

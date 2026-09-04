@@ -71,11 +71,11 @@ Node* pop() {
 ```cpp
 // ② 读者线程（无锁）
 Node* p = head.load(std::memory_order_relaxed);
-int v = p->val;            // ② 若写者此时 delete p -> 数据竞争/UAF
+int v = p->val;  // ② 若写者此时 delete p -> 数据竞争/UAF
 
 // ② 写者线程
 Node* old = head.exchange(next);
-delete old;                // ② 与上面 p->val 并发 -> data race
+delete old;      // ② 与上面 p->val 并发 -> data race
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为什么 delete 在并发下危险
@@ -108,8 +108,8 @@ void* protect(atomic<void*>* src, int slot) {
     do {
         p = src->load(acquire);
         g_hp[slot].store(p, seq_cst);   // ③ 登记：我正在用 p
-    } while (p != src->load(acquire));   // ③ 若 p 已被换走则重试
-    return p;                            // ③ 此时 p 受自己 HP 保护
+    } while (p != src->load(acquire));  // ③ 若 p 已被换走则重试
+    return p;                           // ③ 此时 p 受自己 HP 保护
 }
 // ③ 解引用 p 安全：回收者看到 slot 里的 p 就不会 delete 它
 ```
@@ -178,16 +178,16 @@ extern "C" void hp_scan_and_reclaim() {
     while (head) {
         Retired* nxt = head->next;
         bool hazard = false;
-        for (int i = 0; i < MAX_HP; ++i) {           // ⑤ 扫描所有 HP 槽
+        for (int i = 0; i < MAX_HP; ++i) {               // ⑤ 扫描所有 HP 槽
             if (g_hp[i].load(std::memory_order_acquire) == head->ptr) {
-                hazard = true; break;                 // ⑤ 有人保护 -> 本次不删
+                hazard = true; break;                    // ⑤ 有人保护 -> 本次不删
             }
         }
-        if (hazard) { head->next = keep; keep = head; } // ⑤ 放回，下次再判
+        if (hazard) { head->next = keep; keep = head; }  // ⑤ 放回，下次再判
         else { delete static_cast<Node*>(head->ptr); delete head; }
         head = nxt;
     }
-    if (keep) { // ⑤ 把 keep 重新挂回 g_retired 等下一轮
+    if (keep) {                                          // ⑤ 把 keep 重新挂回 g_retired 等下一轮
 }
 ```
 
@@ -246,9 +246,9 @@ std::atomic<Config*> g_config{nullptr};
 
 void rcu_update(int t, int w) {
     Config* old = g_config.load(std::memory_order_acquire);
-    Config* nw  = new Config{t, w};              // ⑦ 复制
-    g_config.store(nw, std::memory_order_release); // ⑦ 替换（原子指针写）
-    delete old;                                  // ⑦ 真实工程里需等宽限期（见 §⑧）
+    Config* nw  = new Config{t, w};                 // ⑦ 复制
+    g_config.store(nw, std::memory_order_release);  // ⑦ 替换（原子指针写）
+    delete old;                                     // ⑦ 真实工程里需等宽限期（见 §⑧）
 }
 ```
 
@@ -281,7 +281,7 @@ RCU 的灵魂是**宽限期（grace period）**：从"写者替换指针"那一�
 void synchronize_rcu(std::atomic<int>* readers, int n) {
     for (int i = 0; i < n; ++i)
         while (readers[i].load(acquire) > 0)  // ⑧ 等第 i 个读者退出临界区
-            ;                                   // ⑧ 真实实现应让出 CPU，而非空转
+            ;                                 // ⑧ 真实实现应让出 CPU，而非空转
 }
 ```
 
@@ -445,13 +445,13 @@ quiescent state（静止态）是"本线程此刻不持有任何被保护指针"
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 检测 [实现·GCC15]
 ```cpp
 // ⑬ QSBR（Quiescent State Based Reclamation）风格：显式声明静止态
-std::atomic<int> qs_counter[N];     // ⑬ 每线程静止态计数
+std::atomic<int> qs_counter[N];                               // ⑬ 每线程静止态计数
 void quiesce(int tid) {
     qs_counter[tid].fetch_add(1, std::memory_order_release);  // ⑬ 我进入静止态
 }
 void my_synchronize_rcu_qsbr() {
     for (int i = 0; i < N; ++i)
-        while (qs_counter[i].load(acquire) == 0) {}  // ⑬ 等每线程至少静止一次
+        while (qs_counter[i].load(acquire) == 0) {}           // ⑬ 等每线程至少静止一次
 }
 ```
 
@@ -739,7 +739,7 @@ struct Guard { int slot; void* p;
 ## 附录 A：工业 RCU/Hazard Pointer [F: Industry / D: stdlib]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业 RCU/Hazard
-```
+```text
 Linux kernel: RCU 的诞生地 (2002, Paul McKenney)。在 Linux 中:
   → rcu_read_lock() / rcu_read_unlock() — zero overhead on reader path
   → synchronize_rcu() — blocking grace period wait (writer path)
@@ -761,7 +761,7 @@ C++ proposal P0566R3 (2020): hazard pointers 进入 C++26 方向
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与设计 [J: Learning / H: Design / I: Practice]
-```
+```text
 面试高频:
 Q: Hazard Pointer 和 RCU 的根本区别？
 A: HP = 每个线程维护 retired list + hazard list; RCU = 全局 grace period + callback
@@ -865,9 +865,9 @@ HP 的核心约定：**读者先登记、再解引用**；**回收者先扫描 H
 #include <atomic>
 #include <iostream>
 struct Node { int v; };
-std::atomic<Node*> g_hp{nullptr};       // 单个全局 hazard 槽
+std::atomic<Node*> g_hp{nullptr};                                 // 单个全局 hazard 槽
 
-bool try_retire(Node* n) {              // 回收者：被 HP 引用则拒绝删除
+bool try_retire(Node* n) {                                        // 回收者：被 HP 引用则拒绝删除
     if (g_hp.load(std::memory_order_acquire) == n) return false;  // 仍被保护
     delete n; return true;
 }
@@ -876,10 +876,10 @@ int main() {
     std::atomic<Node*> shared{n};
 
     Node* p = shared.load(std::memory_order_acquire);
-    g_hp.store(p, std::memory_order_release);      // 读者登记 HP
+    g_hp.store(p, std::memory_order_release);                     // 读者登记 HP
     std::cout << "protected try_retire = " << try_retire(p) << " (0=被拒，正确)\n";
 
-    g_hp.store(nullptr, std::memory_order_release); // 读者用完清除
+    g_hp.store(nullptr, std::memory_order_release);               // 读者用完清除
     std::cout << "unprotected try_retire = " << try_retire(p) << " (1=删除，正确)\n";
     return 0;
 }
@@ -945,18 +945,18 @@ int main() {
 #include <iostream>
 struct Node { int v; };
 constexpr int K = 4;
-std::atomic<Node*> g_hp[K];             // K 个全局 HP 槽
+std::atomic<Node*> g_hp[K];                       // K 个全局 HP 槽
 
 void scan_and_reclaim(std::vector<Node*>& retired) {
-    std::vector<Node*> hazards;         // 收集所有活跃 HP
+    std::vector<Node*> hazards;                   // 收集所有活跃 HP
     for (int i = 0; i < K; ++i)
         if (Node* p = g_hp[i].load(std::memory_order_acquire)) hazards.push_back(p);
     std::vector<Node*> keep;
     for (Node* n : retired) {
         if (std::find(hazards.begin(), hazards.end(), n) != hazards.end())
-            keep.push_back(n);          // 仍被保护，留待下轮
+            keep.push_back(n);                    // 仍被保护，留待下轮
         else
-            delete n;                   // 无人引用，安全删除
+            delete n;                             // 无人引用，安全删除
     }
     retired.swap(keep);
 }
@@ -964,12 +964,12 @@ int main() {
     for (auto& h : g_hp) h.store(nullptr);
     Node* a = new Node{1};
     Node* b = new Node{2};
-    g_hp[0].store(a, std::memory_order_release);   // a 被保护
+    g_hp[0].store(a, std::memory_order_release);  // a 被保护
     std::vector<Node*> retired{a, b};
-    scan_and_reclaim(retired);          // 删 b，保留 a
+    scan_and_reclaim(retired);                    // 删 b，保留 a
     std::cout << "remaining protected = " << retired.size() << " (应为1: a)\n";
-    g_hp[0].store(nullptr);             // a 用完
-    scan_and_reclaim(retired);          // 现在删 a
+    g_hp[0].store(nullptr);                       // a 用完
+    scan_and_reclaim(retired);                    // 现在删 a
     std::cout << "remaining = " << retired.size() << " (应为0)\n";
     return retired.empty() ? 0 : 1;
 }
@@ -998,14 +998,14 @@ RCU 读侧只在进入/退出临界区时各做一个计数操作（真实 RCU �
 #include <vector>
 #include <iostream>
 int main() {
-    std::atomic<int> readers{0};          // 活跃读者计数（模拟宽限期）
+    std::atomic<int> readers{0};                                  // 活跃读者计数（模拟宽限期）
     std::atomic<int*> g{nullptr};
     std::atomic<long> hits{0};
     int a = 1, b = 2;
     g.store(&a, std::memory_order_release);
 
     std::vector<std::thread> rts;
-    for (int i = 0; i < 3; ++i)           // 3 个读者
+    for (int i = 0; i < 3; ++i)                                   // 3 个读者
         rts.emplace_back([&]{
             for (int j = 0; j < 100000; ++j) {
                 readers.fetch_add(1, std::memory_order_acq_rel);  // 进入临界区
@@ -1015,8 +1015,8 @@ int main() {
             }
         });
 
-    g.store(&b, std::memory_order_release);   // copy-update-replace
-    while (readers.load(std::memory_order_acquire) != 0) {}   // 等宽限期
+    g.store(&b, std::memory_order_release);                       // copy-update-replace
+    while (readers.load(std::memory_order_acquire) != 0) {}       // 等宽限期
     std::cout << "grace period 结束，旧版本可安全回收; hits="
               << hits.load() << '\n';
     for (auto& t : rts) t.join();
@@ -1045,7 +1045,7 @@ HP 的不变量是"任何正被解引用的指针，都已在解引用前被某�
 #include <atomic>
 #include <iostream>
 struct Node { int v; Node* next; };
-std::atomic<Node*> g_hp{nullptr};      // 全局 HP 槽（教学简化单槽）
+std::atomic<Node*> g_hp{nullptr};                    // 全局 HP 槽（教学简化单槽）
 
 int main() {
     Node* n3 = new Node{3, nullptr};
@@ -1053,12 +1053,12 @@ int main() {
     Node* n1 = new Node{1, n2};
     Node* cur = n1;
     while (cur) {
-        g_hp.store(cur, std::memory_order_release);   // ① 先登记当前节点
-        std::cout << cur->v << ' ';                   // ② 安全访问（已被保护）
-        cur = cur->next;                              // ③ 读 next（仍未推进）
-        g_hp.store(cur, std::memory_order_release);   // ④ 预登记 next，切换完成
+        g_hp.store(cur, std::memory_order_release);  // ① 先登记当前节点
+        std::cout << cur->v << ' ';                  // ② 安全访问（已被保护）
+        cur = cur->next;                             // ③ 读 next（仍未推进）
+        g_hp.store(cur, std::memory_order_release);  // ④ 预登记 next，切换完成
     }
-    std::cout << '\n';                                // 1 2 3
+    std::cout << '\n';                               // 1 2 3
     return 0;
 }
 ```
@@ -1121,12 +1121,12 @@ int main() {
 
     Table* neo = new Table{2};
     g.store(neo, std::memory_order_release);            // 发布新表
-    delete old;                                          // 错误：读者 reader 仍指向 old → 悬垂
+    delete old;                                         // 错误：读者 reader 仍指向 old → 悬垂
     // std::cout << reader->v;   // ← 若此处访问即 use-after-free
     (void)reader;
     std::cout << "freed too early: reader now dangling\n";
     delete neo;
-    return 0;   // 编译通过；真实并发下读者访问 reader 即 UB
+    return 0;                                           // 编译通过；真实并发下读者访问 reader 即 UB
 }
 ```
 
@@ -1438,13 +1438,13 @@ int main() {
   std::atomic<std::shared_ptr<int>> sp{std::make_shared<int>(5)};
   std::cout << std::boolalpha << sp.is_lock_free() << std::endl;  // false
   auto p = sp.load();
-  std::cout << *p << std::endl;   // 5
+  std::cout << *p << std::endl;                                   // 5
 
   // 标准库内"阻塞等待"替代路线：atomic wait/notify 经 __waiter_pool
   std::atomic<int> flag{0};
   std::thread t([&] { flag.store(1); flag.notify_one(); });
-  flag.wait(0);                   // 值变 1 后返回（不依赖 hazard/RCU）
-  std::cout << flag.load() << std::endl;   // 1
+  flag.wait(0);                                                   // 值变 1 后返回（不依赖 hazard/RCU）
+  std::cout << flag.load() << std::endl;                          // 1
   t.join();
   return 0;
 }
@@ -1537,19 +1537,19 @@ int main() {
 
 int main() {
     int value = 42;
-    int* raw = &value;                       // 裸指针，指向值 42 的对象
-    auto sp = std::make_shared<int>(42);     // shared_ptr，指向值同为 42 的对象
+    int* raw = &value;                    // 裸指针，指向值 42 的对象
+    auto sp = std::make_shared<int>(42);  // shared_ptr，指向值同为 42 的对象
 
     // 读侧：裸指针与 shared_ptr 各解引用一次，应当得到相同的值
     int from_raw = *raw;
     int from_shared = *sp;
-    assert(from_raw == from_shared);         // 两者解引用值相同
+    assert(from_raw == from_shared);      // 两者解引用值相同
 
     // shared_ptr 的"安全读"代价：按值拷贝一次，强引用计数 +1
     long long before = sp.use_count();
-    std::shared_ptr<int> copy = sp;          // 按值拷贝读
+    std::shared_ptr<int> copy = sp;       // 按值拷贝读
     long long after = sp.use_count();
-    assert(after == before + 1);             // 拷贝使 use_count 增加 1
+    assert(after == before + 1);          // 拷贝使 use_count 增加 1
 
     // 拷贝后解引用仍指向同一份值
     assert(*copy == *sp);

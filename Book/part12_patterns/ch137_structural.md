@@ -59,7 +59,7 @@
 **【标准】** `[标准]` GoF《Design Patterns》将以上 7 种列为结构型；C++ 中它们与 RAII、模板、智能指针深度耦合，已远超原书的「纯 OOP」语境。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：结构型模式解决什么
-```
+```text
 ┌──────────────┐   接口适配   ┌──────────────┐
 │  Client      │────────────▶│  Adapter     │
 │  期望接口     │             │  Target      │
@@ -562,7 +562,7 @@ struct CPU { void freeze() { std::cout << "CPU freeze\n"; }
 struct Memory { void load() { std::cout << "Memory load\n"; } };
 struct Disk { void read() { std::cout << "Disk read\n"; } };
 
-struct Computer {                  // 门面
+struct Computer {  // 门面
     void start() {
         cpu_.freeze();
         mem_.load();
@@ -575,7 +575,7 @@ private:
 
 int main() {
     Computer c;
-    c.start();         // 客户端只看到一个高層接口
+    c.start();     // 客户端只看到一个高層接口
 }
 ```
 
@@ -606,16 +606,16 @@ int main() {
 #include <unordered_map>
 #include <map>
 
-struct Glyph {                     // 内在状态 intrinsic
+struct Glyph {                       // 内在状态 intrinsic
     explicit Glyph(char c) : ch_(c) {}
-    void draw(int x, int y) const {     // x,y 为外部状态 extrinsic
+    void draw(int x, int y) const {  // x,y 为外部状态 extrinsic
         std::cout << ch_ << "@(" << x << ',' << y << ")\n";
     }
 private:
     char ch_;
 };
 
-struct GlyphFactory {              // 享元工厂（带缓存）
+struct GlyphFactory {                // 享元工厂（带缓存）
     std::shared_ptr<Glyph> get(char c) {
         auto& p = pool_[c];
         if (!p) p = std::make_shared<Glyph>(c);
@@ -628,7 +628,7 @@ private:
 int main() {
     GlyphFactory f;
     auto a1 = f.get('a');
-    auto a2 = f.get('a');          // 相同字符复用同一对象
+    auto a2 = f.get('a');            // 相同字符复用同一对象
     a1->draw(0, 0);
     a2->draw(5, 5);
 }
@@ -639,7 +639,7 @@ int main() {
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 享元 Flyweight
 ```cpp
 // 享元关键区分：内在状态放进对象，外在状态放进参数
-struct Character {                 // 内在：字体/字号（可共享）
+struct Character {                             // 内在：字体/字号（可共享）
     const Font* font;
     void render(int x, int y, char ch) const;  // 外在：位置/具体字符（调用方给）
 };
@@ -661,9 +661,9 @@ struct Character {                 // 内在：字体/字号（可共享）
 
 struct StringPool {
     std::string_view intern(std::string_view s) {
-        std::string key(s);                          // 统一为 key_type 再查找
+        std::string key(s);                // 统一为 key_type 再查找
         auto it = set_.find(key);
-        if (it != set_.end()) return *it;            // 命中：返回已有存储
+        if (it != set_.end()) return *it;  // 命中：返回已有存储
         auto [ins, _] = set_.emplace(std::move(key));
         return *ins;
     }
@@ -699,9 +699,9 @@ struct Resource {
 };
 
 int main() {
-    std::unique_ptr<Resource> p = std::make_unique<Resource>();   // 代理对象
-    p->use();                 // 通过代理转发到真实对象
-}                            // 离开作用域自动释放（RAII）
+    std::unique_ptr<Resource> p = std::make_unique<Resource>();  // 代理对象
+    p->use();                                                    // 通过代理转发到真实对象
+}                                                                // 离开作用域自动释放（RAII）
 ```
 
 **【源码剖析·libstdc++】** 代理的「转发」本质是一次指针解引用。`std::unique_ptr<T>::operator->` 在 libstdc++ 中直接返回被管理指针，毫无额外开销：
@@ -726,9 +726,9 @@ int main() {
 int main() {
     std::mutex m;
     {
-        std::scoped_lock lk{m};   // 代理：进入作用域即持锁
+        std::scoped_lock lk{m};  // 代理：进入作用域即持锁
         // ... 临界区 ...
-    }                              // 离开作用域代理析构，自动解锁
+    }                            // 离开作用域代理析构，自动解锁
 }
 ```
 
@@ -755,7 +755,7 @@ struct RealImage : Image {
 
 struct ProxyImage : Image {
     void show() const override {
-        if (!real_) real_ = std::make_unique<RealImage>();   // 首次用时才建
+        if (!real_) real_ = std::make_unique<RealImage>();  // 首次用时才建
         real_->show();
     }
 private:
@@ -763,8 +763,8 @@ private:
 };
 
 int main() {
-    ProxyImage img;          // 构造很轻
-    img.show();              // 此刻才真正加载
+    ProxyImage img;                                         // 构造很轻
+    img.show();                                             // 此刻才真正加载
     img.show();
 }
 ```
@@ -798,7 +798,7 @@ struct Subsystem {
     void op() { std::cout << "op\n"; }
 };
 
-class FacadeGuard {                  // 既是门面又是 RAII 代理
+class FacadeGuard {             // 既是门面又是 RAII 代理
 public:
     FacadeGuard(Subsystem& s, std::mutex& m) : s_(s), lk_(m) {}
     void op() { s_.op(); }
@@ -811,7 +811,7 @@ int main() {
     Subsystem sys;
     std::mutex m;
     {
-        FacadeGuard g{sys, m};      // 构造即加锁，析构即解锁
+        FacadeGuard g{sys, m};  // 构造即加锁，析构即解锁
         g.op();
     }
 }
@@ -879,7 +879,7 @@ call    rdx                                  ; 虚分派到 Renderer::render
 **【内存图】** Bridge 对象的真实布局：
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存布局：Bridge 双指针开销
-```
+```text
 Shape 对象:
 ┌──────────────┬─────────────────────────────┐
 │ shared_ptr   │ { ptr_ ─┐ , ctrl_block_* }  │  16B(64位) + 控制块
@@ -917,7 +917,7 @@ int main() {
 **【取证·真实运行】** 对 `Examples/_ch137_decorator_bench.cpp`（叠 5 层 `Deco` 装饰 `Impl::f`，循环 1e7 次取均值），在 mingw-w64 GCC 13.1.0 `-O2` 上**实测输出**：
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能测量：装饰链调用开销
-```
+```text
 5 层装饰开销 ~12.54 ns/调用 (sink=10000005)
 ```
 
@@ -941,7 +941,7 @@ struct Impl : I {
 
 struct Deco : I {
     explicit Deco(std::unique_ptr<I> n) : n_(std::move(n)) {}
-    int f(int x) override { return n_->f(x) + 1; }   // 多一次虚调用 + 包裹
+    int f(int x) override { return n_->f(x) + 1; }         // 多一次虚调用 + 包裹
 private:
     std::unique_ptr<I> n_;
 };
@@ -950,7 +950,7 @@ int main() {
     auto base = std::make_unique<Impl>();
     std::unique_ptr<I> chain = std::move(base);
     for (int i = 0; i < 5; ++i)
-        chain = std::make_unique<Deco>(std::move(chain));   // 叠 5 层装饰
+        chain = std::make_unique<Deco>(std::move(chain));  // 叠 5 层装饰
 
     const int N = 10'000'000;
     auto t0 = std::chrono::steady_clock::now();
@@ -981,7 +981,7 @@ int main() {
 #include <utility>
 #include <map>
 
-struct Font {                                  // Flyweight（内在状态）
+struct Font {          // Flyweight（内在状态）
     explicit Font(std::string n) : name_(std::move(n)) {}
     std::string name_;
 };
@@ -999,26 +999,26 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Font>> pool_;
 };
 
-struct Glyph {                                 // Component（Composite 节点）
+struct Glyph {         // Component（Composite 节点）
     virtual ~Glyph() = default;
     virtual void draw() const = 0;
 };
 
-struct Char : Glyph {                          // Leaf，持有 Flyweight 字体
+struct Char : Glyph {  // Leaf，持有 Flyweight 字体
     Char(char c, Font* f) : ch_(c), font_(f) {}
     void draw() const override { std::cout << "'" << ch_ << "'(" << font_->name_ << ")\n"; }
 private:
     char ch_; Font* font_;
 };
 
-struct Row : Glyph {                           // Composite
+struct Row : Glyph {   // Composite
     void add(std::unique_ptr<Glyph> g) { kids_.push_back(std::move(g)); }
     void draw() const override { for (auto& k : kids_) k->draw(); }
 private:
     std::vector<std::unique_ptr<Glyph>> kids_;
 };
 
-struct Bold : Glyph {                          // Decorator
+struct Bold : Glyph {  // Decorator
     explicit Bold(std::unique_ptr<Glyph> g) : w_(std::move(g)) {}
     void draw() const override { std::cout << "<b>"; w_->draw(); std::cout << "</b>"; }
 private:
@@ -1071,7 +1071,7 @@ int main() {
 **【反模式提醒】** ❌ 不要为「可能以后会扩展」提前套上 Bridge/Decorator——YAGNI；先写最直接的代码，等第二个变化维度真正出现再加模式。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结
-```
+```text
 结构型模式选择速查
 ┌───────────────────┬───────────────────────────────┐
 │ 痛点                │ 选用                          │
@@ -1184,7 +1184,7 @@ int main(){Facade f;f.simple();return 0;}
 ## 附录 A：结构型模式工业实例 [F: Industry / B: Principle]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：结构型模式工业实例 [F: Industry / B: Principle]
-```
+```text
 C++ 标准库中的结构型模式:
 
 Adapter: std::stack, std::queue, std::priority_queue → 适配底层容器(deque/vector)
@@ -1206,7 +1206,7 @@ Proxy: std::vector<bool>::reference → 代理 bit 引用 (非 bool&)
 ## 附录 B：面试 [J: Learning / H: Design]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
-```
+```text
 面试高频:
 Q: Adapter vs Decorator vs Proxy 的区别？
 A: Adapter=改接口(限制/转换); Decorator=加行为(不改接口); Proxy=控制访问(延迟/远程)
@@ -1405,7 +1405,7 @@ int main() { auto img = std::make_shared<Border>(std::make_shared<Raw>()); img->
 struct CelsiusSensor { double readC() const { return 25.0; } };  // 第三方遗留接口
 struct ITemperature { virtual ~ITemperature() = default; virtual double readF() const = 0; };
 
-struct SensorAdapter : ITemperature {   // 把 Celsius 适配到 ITemperature
+struct SensorAdapter : ITemperature {                            // 把 Celsius 适配到 ITemperature
     const CelsiusSensor& s;
     explicit SensorAdapter(const CelsiusSensor& s_) : s(s_) {}
     double readF() const override { return s.readC() * 9.0 / 5.0 + 32.0; }

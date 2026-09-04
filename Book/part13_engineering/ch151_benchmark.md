@@ -60,11 +60,11 @@ int main() {
     const int N = 100'000'000;
     long long sink = 0;
     auto t0 = std::chrono::steady_clock::now();
-    for (int i = 0; i < N; ++i) sink += i;   // 结果从未输出
+    for (int i = 0; i < N; ++i) sink += i;  // 结果从未输出
     auto t1 = std::chrono::steady_clock::now();
     std::printf("dce_trap: elapsed_ms=%.3f (sink hint=%lld)\n",
                 std::chrono::duration<double, std::milli>(t1 - t0).count(),
-                (long long)(sink & 0));       // &0 强制丢弃，暴露 DCE
+                (long long)(sink & 0));     // &0 强制丢弃，暴露 DCE
     return 0;
 }
 ```
@@ -135,12 +135,12 @@ int main() {
     std::vector<long long> v(10'000'000);
     std::iota(v.begin(), v.end(), 1);
     auto t0 = std::chrono::steady_clock::now();
-    volatile long long r = micro_sum(v);              // 仅累加
+    volatile long long r = micro_sum(v);  // 仅累加
     auto t1 = std::chrono::steady_clock::now();
     std::printf("micro: sum_ms=%.3f\n",
                 std::chrono::duration<double, std::milli>(t1 - t0).count());
     auto t2 = std::chrono::steady_clock::now();
-    std::vector<long long> w = v;                      // 宏基准含拷贝
+    std::vector<long long> w = v;         // 宏基准含拷贝
     volatile long long r2 = micro_sum(w); (void)r2; (void)r;
     auto t3 = std::chrono::steady_clock::now();
     std::printf("macro: incl_copy_ms=%.3f\n",
@@ -581,8 +581,8 @@ int main() {
     std::vector<std::vector<int>> m(R, std::vector<int>(C, 1));
     auto t0 = std::chrono::steady_clock::now();
     volatile long long s = 0;
-    for (int i = 0; i < R; ++i)            // 外层行
-        for (int j = 0; j < C; ++j) s += m[i][j];   // 连续内存
+    for (int i = 0; i < R; ++i)                    // 外层行
+        for (int j = 0; j < C; ++j) s += m[i][j];  // 连续内存
     auto t1 = std::chrono::steady_clock::now();
     std::printf("row-major: ms=%.3f s=%lld\n",
                 std::chrono::duration<double, std::milli>(t1 - t0).count(), (long long)s);
@@ -602,8 +602,8 @@ int main() {
     std::vector<std::vector<int>> m(R, std::vector<int>(C, 1));
     auto t0 = std::chrono::steady_clock::now();
     volatile long long s = 0;
-    for (int j = 0; j < C; ++j)            // 外层列
-        for (int i = 0; i < R; ++i) s += m[i][j];   // 跨行跳步
+    for (int j = 0; j < C; ++j)                    // 外层列
+        for (int i = 0; i < R; ++i) s += m[i][j];  // 跨行跳步
     auto t1 = std::chrono::steady_clock::now();
     std::printf("col-major: ms=%.3f s=%lld\n",
                 std::chrono::duration<double, std::milli>(t1 - t0).count(), (long long)s);
@@ -1161,8 +1161,8 @@ static double bench_once() {
     return std::chrono::duration<double, std::milli>(t1 - t0).count();
 }
 int main() {
-    const double BASELINE_MS = 120.0;     // 由历史基线写入 CI 配置
-    const double REGRESS_LIMIT = 1.20;    // 允许 +20% 噪声
+    const double BASELINE_MS = 120.0;   // 由历史基线写入 CI 配置
+    const double REGRESS_LIMIT = 1.20;  // 允许 +20% 噪声
     double ms = bench_once();
     std::printf("ci_bench: current=%.3f baseline=%.3f limit=%.3f\n",
                 ms, BASELINE_MS, BASELINE_MS * REGRESS_LIMIT);
@@ -1289,13 +1289,13 @@ run,ms
 int main() {
     const int WARMUP = 3, RUNS = 11;
     volatile long long sink = 0;
-    for (int w = 0; w < WARMUP; ++w) {            // ① 预热
+    for (int w = 0; w < WARMUP; ++w) {                   // ① 预热
         for (int i = 0; i < 50'000'000; ++i) sink += i;
     }
     double best = 1e9;
-    for (int r = 0; r < RUNS; ++r) {              // ② 多次 + 取 best/median
-        auto t0 = std::chrono::steady_clock::now();   // ③ steady_clock
-        for (int i = 0; i < 50'000'000; ++i) sink += i; // ④ volatile 汇点防 DCE
+    for (int r = 0; r < RUNS; ++r) {                     // ② 多次 + 取 best/median
+        auto t0 = std::chrono::steady_clock::now();      // ③ steady_clock
+        for (int i = 0; i < 50'000'000; ++i) sink += i;  // ④ volatile 汇点防 DCE
         auto t1 = std::chrono::steady_clock::now();
         double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
         if (ms < best) best = ms;
@@ -1633,9 +1633,9 @@ int main() {
     std::vector<int> v(N, 1); std::list<int> l(N, 1);
     volatile long sink = 0;
     auto t0 = std::chrono::high_resolution_clock::now();
-    for (int x : v) sink += x;                // 连续内存：缓存友好
+    for (int x : v) sink += x;  // 连续内存：缓存友好
     auto t1 = std::chrono::high_resolution_clock::now();
-    for (int x : l) sink += x;                // 节点散落：缓存不友好
+    for (int x : l) sink += x;  // 节点散落：缓存不友好
     auto t2 = std::chrono::high_resolution_clock::now();
     std::cout << (t1 - t0).count() << ' ' << (t2 - t1).count() << '\n';
 }
@@ -1687,9 +1687,9 @@ int main() {
 
 int main() {
     std::vector<int> v(1'000'000, 1);
-    volatile long sink = 0;                 // volatile 汇接：阻止编译器删掉循环（防 DCE）
+    volatile long sink = 0;                                 // volatile 汇接：阻止编译器删掉循环（防 DCE）
     auto t0 = std::chrono::steady_clock::now();
-    for (int x : v) sink += x;              // 被计时的真实工作
+    for (int x : v) sink += x;                              // 被计时的真实工作
     auto t1 = std::chrono::steady_clock::now();
     std::cout << (t1 - t0).count() << ' ' << sink << '\n';  // 用掉 sink，避免被优化
 }
@@ -1714,11 +1714,11 @@ int main() {
 #include <vector>
 
 template <class F>
-long long time_best_of(int repeats, F&& f) {   // 取多次中最小耗时，抑制调度噪声
+long long time_best_of(int repeats, F&& f) {  // 取多次中最小耗时，抑制调度噪声
     long long best = -1;
     for (int r = 0; r < repeats; ++r) {
         auto t0 = std::chrono::steady_clock::now();
-        long long s = f();                       // 被测工作；结果被使用，防 DCE
+        long long s = f();                    // 被测工作；结果被使用，防 DCE
         auto t1 = std::chrono::steady_clock::now();
         auto d = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
         if (best < 0 || d < best) best = d;
@@ -1734,7 +1734,7 @@ int main() {
         for (int x : v) s += x;
         return s;
     });
-    std::cout << best << '\n';   // 仅打印骨架耗时，具体数值随环境变化 [UNVERIFIED]
+    std::cout << best << '\n';                // 仅打印骨架耗时，具体数值随环境变化 [UNVERIFIED]
 }
 ```
 

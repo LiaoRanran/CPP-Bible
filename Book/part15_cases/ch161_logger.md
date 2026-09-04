@@ -64,7 +64,7 @@
 > 表注：三者互为补充——可观测回答"现在怎样"，可追责回答"谁干的"，可调试回答"当时发生了什么"。
 
 > **示例 1** [难度 ★★☆☆☆] [主题：概述：日志的价值 <span class="badge badge-exp">经验</span>]
-```
+```text
         业务代码
             │  LOG_INFO / LOG_ERROR
             ▼
@@ -96,13 +96,13 @@ struct Flusher {
 ```cpp
 // ② 级别定义：用连续整数表达"包含关系"
 enum class Level : int {
-    trace    = 0,   // 最吵：逐行跟踪
-    debug    = 1,   // 调试细节
-    info     = 2,   // 正常关键事件（默认起点）
-    warn     = 3,   // 可恢复的异常
-    error    = 4,   // 失败，但进程还能活
-    critical = 5,   // 致命
-    off      = 6     // 全关
+    trace    = 0,  // 最吵：逐行跟踪
+    debug    = 1,  // 调试细节
+    info     = 2,  // 正常关键事件（默认起点）
+    warn     = 3,  // 可恢复的异常
+    error    = 4,  // 失败，但进程还能活
+    critical = 5,  // 致命
+    off      = 6   // 全关
 };
 
 // 门控：msg 级别 >= 阈值 才输出
@@ -243,7 +243,7 @@ struct FileSink {
 `Examples/_ch161_sink_file.cpp` 运行后向 `Examples/_ch161_file.log` 写入两条记录。network sink（如发往 syslog / Kafka / Loki）思路相同，只是把 `write` 换成 socket 发送——本章聚焦于本地可编译验证的部分。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 日志 sink
-```
+```text
         Logger
           │ 分发
   ┌──────┼──────────┐
@@ -686,11 +686,11 @@ struct MultiSink {
 struct RwLogger {
     mutable std::shared_mutex m;
     std::string last;
-    void write(std::string_view msg) {            // 写：独占
+    void write(std::string_view msg) {  // 写：独占
         std::unique_lock lk(m);
         last = std::string(msg);
     }
-    std::string read() const {                     // 读：共享
+    std::string read() const {          // 读：共享
         std::shared_lock lk(m);
         return last;
     }
@@ -723,7 +723,7 @@ final=m3
 ```cpp
 #include <cstdio>
 // ⑨ 编译期阈值；低于它的日志在编译期直接消失
-constexpr int COMPILE_THRESHOLD = 6;  // 6 == Level::off
+constexpr int COMPILE_THRESHOLD = 6;               // 6 == Level::off
 
 template <int L>
 inline void log_if(int, const char* msg) {
@@ -733,9 +733,9 @@ inline void log_if(int, const char* msg) {
     // else 分支：不产生任何指令
 }
 int main() {
-    log_if<0>(0, "trace message (compiled out)");   // 编译期消除
-    log_if<2>(0, "info message (compiled out)");     // 编译期消除
-    log_if<6>(0, "forced critical message");         // 仅这一行落地
+    log_if<0>(0, "trace message (compiled out)");  // 编译期消除
+    log_if<2>(0, "info message (compiled out)");   // 编译期消除
+    log_if<6>(0, "forced critical message");       // 仅这一行落地
 }
 ```
 
@@ -778,7 +778,7 @@ main:
 // 文件：Examples/_ch161_fix8.cpp
 #include <cstdio>
 
-constexpr int THR = 4;  // 4 == error：低于 error 的全部编译期消失
+constexpr int THR = 4;           // 4 == error：低于 error 的全部编译期消失
 
 template <int L>
 inline void log_at(const char* msg) {
@@ -789,9 +789,9 @@ inline void log_at(const char* msg) {
 }
 
 int main() {
-    log_at<0>("compiled out");    // 编译期消除
-    log_at<2>("compiled out");    // 编译期消除
-    log_at<4>("critical kept");   // 仅此行保留
+    log_at<0>("compiled out");   // 编译期消除
+    log_at<2>("compiled out");   // 编译期消除
+    log_at<4>("critical kept");  // 仅此行保留
     return 0;
 }
 ```
@@ -872,9 +872,9 @@ constexpr Lv G_THR = Lv::debug;
 #define LOG_INFO(...)  LOG_LEVEL(Lv::info,  "info",  __VA_ARGS__)
 
 int main() {
-    LOG_TRACE("t=%d\n", 1);   // 被过滤（阈值 debug）
-    LOG_DEBUG("d=%d\n", 2);   // 保留
-    LOG_INFO("i=%d\n", 3);    // 保留
+    LOG_TRACE("t=%d\n", 1);  // 被过滤（阈值 debug）
+    LOG_DEBUG("d=%d\n", 2);  // 保留
+    LOG_INFO("i=%d\n", 3);   // 保留
     return 0;
 }
 ```
@@ -1078,16 +1078,16 @@ spdlog 用法（上游 API 参考，**本机未安装 spdlog 头文件，故不�
 // ⑭ 平台差异：路径分隔符与行尾
 std::string separator() {
 #ifdef _WIN32
-    return "\\";      // Windows 反斜杠
+    return "\\";    // Windows 反斜杠
 #else
-    return "/";       // 类 Unix 正斜杠
+    return "/";     // 类 Unix 正斜杠
 #endif
 }
 std::string line_ending() {
 #ifdef _WIN32
-    return "\r\n";    // Windows 文本模式 CRLF
+    return "\r\n";  // Windows 文本模式 CRLF
 #else
-    return "\n";      // 类 Unix LF
+    return "\n";    // 类 Unix LF
 #endif
 }
 const char* platform_name() {
@@ -1200,7 +1200,7 @@ int main() {
     auto t0 = std::chrono::steady_clock::now();
     for (int i = 0; i < N; ++i) {
         std::lock_guard<std::mutex> lk(g_mtx);
-        g_q.push("x"); g_q.pop();   // 同步：必须等本次写入完成
+        g_q.push("x"); g_q.pop();  // 同步：必须等本次写入完成
     }
     auto t1 = std::chrono::steady_clock::now();
     double sync_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
@@ -1209,7 +1209,7 @@ int main() {
     auto t2 = std::chrono::steady_clock::now();
     for (int i = 0; i < N; ++i) {
         std::lock_guard<std::mutex> lk(g_mtx);
-        g_q.push("x");               // 异步：入队即返回
+        g_q.push("x");             // 异步：入队即返回
     }
     auto t3 = std::chrono::steady_clock::now();
     double async_ms = std::chrono::duration<double, std::milli>(t3 - t2).count();
@@ -1303,14 +1303,14 @@ built 200000 strings in 213.6 ms (sink=6425926)
 #include <string>
 
 enum class Lv { info = 2, off = 5 };
-constexpr Lv THR = Lv::off;  // 生产中可能临时关闭
+constexpr Lv THR = Lv::off;   // 生产中可能临时关闭
 
 inline bool enabled(Lv m) { return static_cast<int>(m) >= static_cast<int>(THR); }
 
 int main() {
     int id = 42;
     double v = 3.14;
-    if (enabled(Lv::info)) {                 // 先判级别，再构建
+    if (enabled(Lv::info)) {  // 先判级别，再构建
         std::string s = "id=" + std::to_string(id) + " val=" + std::to_string(v);
         std::printf("[info] %s\n", s.c_str());
     } else {
@@ -1339,7 +1339,7 @@ enum class Err { ok = 0, not_found = 1, timeout = 2 };
 Err fetch(std::string_view key, std::string& out) {
     if (key.empty()) {
         std::printf("[error] fetch: empty key at %s\n", "fetch");
-        return Err::not_found;          // 错误用返回值传递
+        return Err::not_found;  // 错误用返回值传递
     }
     out = "value-of-" + std::string(key);
     std::printf("[info] fetch: ok key=%s\n", std::string(key).c_str());
@@ -1347,7 +1347,7 @@ Err fetch(std::string_view key, std::string& out) {
 }
 int main() {
     std::string v;
-    Err e = fetch("", v);              // 失败 -> 日志已留痕
+    Err e = fetch("", v);       // 失败 -> 日志已留痕
     if (e != Err::ok) std::printf("caller handles error code=%d\n", (int)e);
     fetch("user42", v);
 }
@@ -1409,7 +1409,7 @@ int main() {
 #include <string_view>
 // ⑲ 真实案例：HTTP 访问日志（按状态码自动分级）
 #include <ctime>
-std::string now() {                       // 缺失符号补定义：返回 HH:MM:SS 时间戳
+std::string now() {                                               // 缺失符号补定义：返回 HH:MM:SS 时间戳
     std::time_t t = std::time(nullptr);
     char buf[32];
     std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));
@@ -1571,7 +1571,7 @@ C++20 的 **P0645（Text Formatting）** 把 {fmt} 的 `{}-占位`、类型安�
 ## 附录 G：日志库工业原理 [B: Principle / D: Stdlib / E: Lowlevel / I: Practice / J: Learning]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 G：日志库工业原理 [B: Principle / D: Stdlib / E: Lowlevel / I: Practice / J: Learning]
-```
+```text
 spdlog (Gabriele Melman, 2014-2024) 设计原理:
 - async logger: 后台线程 + 无锁MPSC队列 → 日志不阻塞业务线程
 - fmtlib集成: 编译期格式字符串验证 → 错误在编译期发现

@@ -62,9 +62,9 @@
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本模板模式速查
 ```cpp
-void f(int);              // 非模板
-template <typename T> void f(T);     // 泛化模板
-template <typename T> void f(T*);    // 更特化的模板
+void f(int);                       // 非模板
+template <typename T> void f(T);   // 泛化模板
+template <typename T> void f(T*);  // 更特化的模板
 ```
 
 ## ③ 核心结构与完整代码实现
@@ -77,13 +77,13 @@ template <typename T> void f(T*);    // 更特化的模板
 // 阶段1：名称查找建立候选集 {log(int)非模板, log(T)泛化, log(T*)更特化}
 // 阶段2：按实参隐式转换可行性筛选可行集
 // 阶段3：可行集中按转换等级/偏序选最佳
-void log(int)          { std::cout << "A:log(int)\n"; }          // (A) 非模板
+void log(int)          { std::cout << "A:log(int)\n"; }             // (A) 非模板
 template <typename T> void log(T)  { std::cout << "B:log(T)\n"; }   // (B) 泛化
-template <typename T> void log(T*) { std::cout << "C:log(T*)\n"; }   // (C) 更特化
+template <typename T> void log(T*) { std::cout << "C:log(T*)\n"; }  // (C) 更特化
 int main() {
     int x = 0;
-    log(42);   // A 非模板优先 → 选 A
-    log(&x);   // A 不可行(int*→int)，B/C 可行，C 更特化 → 选 C
+    log(42);                                                        // A 非模板优先 → 选 A
+    log(&x);                                                        // A 不可行(int*→int)，B/C 可行，C 更特化 → 选 C
 }
 // 输出：A:log(int)  C:log(T*)
 ```
@@ -92,7 +92,7 @@ int main() {
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 优先权规则（非模板 > 模板）
 ```cpp
-void g(int);                  // 非模板 优先
+void g(int);  // 非模板 优先
 template <typename T> void g(T);
 void t() {
     g(1);     // 两个都可行；非模板 g(int) 胜出
@@ -114,24 +114,24 @@ void u() {
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 偏序：谁更特化
 ```cpp
-template <typename T> void f(T);      // F1 泛化
-template <typename T> void f(T*);     // F2 更特化（指针）
+template <typename T> void f(T);   // F1 泛化
+template <typename T> void f(T*);  // F2 更特化（指针）
 // 偏序测试：用 F2 的形参推导 F1 成功，反之用 F1 推导 F2 失败 → F2 更特化
 void k() {
     int x;
-    f(&x);     // 两个都可行；F2 更特化 → 选 F2
+    f(&x);                         // 两个都可行；F2 更特化 → 选 F2
 }
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 偏序：谁更特化
 ```cpp
 // 偏序也适用于多个模板之间
-template <typename T> void p(T, T);           // P1
-template <typename T> void p(T*, T*);         // P2 更特化
+template <typename T> void p(T, T);    // P1
+template <typename T> void p(T*, T*);  // P2 更特化
 void q() {
     int a, b;
-    p(&a, &b);  // P2 更特化胜出
-    p(1, 2);    // 仅 P1 可行
+    p(&a, &b);                         // P2 更特化胜出
+    p(1, 2);                           // 仅 P1 可行
 }
 ```
 
@@ -145,9 +145,9 @@ template <typename T> void f(T) { std::cout << "f(T)\n"; }
 template <typename T> void f(T*) { std::cout << "f(T*)\n"; }
 int main() {
     int x = 0;
-    f(42);    // f(int)
-    f(x);     // f(int)
-    f(&x);    // f(T*)
+    f(42);  // f(int)
+    f(x);   // f(int)
+    f(&x);  // f(T*)
 }
 ```
 
@@ -157,8 +157,8 @@ int main() {
 template <typename T> void g(T) { std::cout << "g(T)\n"; }
 template <typename T> void g(T*) { std::cout << "g(T*)\n"; }
 int main() {
-    int x; g(&x);    // g(T*) 更特化
-    g(1);            // g(T) 唯一可行
+    int x; g(&x);  // g(T*) 更特化
+    g(1);          // g(T) 唯一可行
 }
 ```
 
@@ -408,15 +408,15 @@ void bad(){ int x; k(x); }   // 注意：k(T) 对 int 完全匹配，k(const T&)
 int main() {
     // std::swap：对 std::vector 选中容器特化版（O(1) 交换内部指针）
     std::vector<int> a{1, 2}, b{3, 4};
-    std::swap(a, b);                 // 选中 vector 特化 swap
+    std::swap(a, b);                                                     // 选中 vector 特化 swap
     // std::begin / std::end：对数组、容器、initializer_list 多候选
     int arr[3] = {10, 20, 30};
-    std::cout << *std::begin(arr) << '\n';   // 数组重载 → 10
+    std::cout << *std::begin(arr) << '\n';                               // 数组重载 → 10
     // std::distance：随机迭代器 O(1)
-    std::cout << std::distance(std::begin(arr), std::end(arr)) << '\n'; // 3
+    std::cout << std::distance(std::begin(arr), std::end(arr)) << '\n';  // 3
     // std::forward / std::move：引用折叠 + 重载实现完美转发
     int v = 5;
-    std::cout << std::move(v) << '\n';        // 5
+    std::cout << std::move(v) << '\n';                                   // 5
 }
 // 输出：10  3  5
 ```
@@ -439,11 +439,11 @@ template <typename T> requires std::floating_point<T> void f(T) { std::cout << "
 template <typename T> auto g(T x) -> decltype(x + 0) { return x; }
 // 4) 转发引用重载(T&&)易劫持拷贝构造，需用 enable_if/requires 排除自身类型（见⑬/⑯）
 int main() {
-    proc(tag_int{}, 1);        // int
-    proc(tag_str{}, "hi");     // str
-    f(42);                     // integral
-    f(3.14);                   // floating
-    std::cout << g(7) << '\n'; // 7
+    proc(tag_int{}, 1);         // int
+    proc(tag_str{}, "hi");      // str
+    f(42);                      // integral
+    f(3.14);                    // floating
+    std::cout << g(7) << '\n';  // 7
 }
 // 输出：int  str  integral  floating  7
 ```
@@ -724,7 +724,7 @@ C++98/03 把重载决议与偏序写入标准；C++11 后 `constexpr`、concepts
 ## 附录 A：原理与工业 [B: Principle / F: Industry]
 
 > **示例 66** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：原理与工业 [B: Principle / F: Industry]
-```
+```text
 WG21模板重载决议提案:
 N3291 (C++11): SFINAE正式标准化 → enable_if成为合法的重载控制手段
 P2593R0 (C++23): explicit object parameter (deducing this) → 简化CRTP重载
@@ -850,8 +850,8 @@ int id(int x) { return x + 1; }
 template <class T> T id(T x) { return x; }
 int id(int x) { return x + 1; }
 int main() {
-    std::cout << id(42)   << "\n";   // 非模板：43
-    std::cout << id(3.14) << "\n";   // 模板 T=double：3.14
+    std::cout << id(42)   << "\n";  // 非模板：43
+    std::cout << id(3.14) << "\n";  // 模板 T=double：3.14
 }
 ```
 <span class="badge badge-std">标准</span> 重载决议中，非模板函数比模板实例化更特化，精确匹配胜出。
@@ -866,8 +866,8 @@ int main() {
 
 > **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
-template <class T> void f(T)  { // 通用
-template <class T> void f(T*) { // 指针
+template <class T> void f(T)  {  // 通用
+template <class T> void f(T*) {  // 指针
 ```
 调用 `f((int*)nullptr)` 是否歧义？给出两种消除歧义的写法（`enable_if` 或标签）。
 
@@ -880,17 +880,17 @@ template <class T> void f(T*) { // 指针
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <type_traits>
-template <class T, class = void> void f(T) { // 通用
+template <class T, class = void> void f(T) {                   // 通用
 template <class T>
-void f(T*, std::enable_if_t<std::is_pointer_v<T>, int> = 0) { // 指针
+void f(T*, std::enable_if_t<std::is_pointer_v<T>, int> = 0) {  // 指针
 ```
 
 写法 B——`std::true_type` 标签分发（见 ch70）：
 > **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <type_traits>
-template <class T> void f_impl(T, std::false_type) { // 通用
-template <class T> void f_impl(T*, std::true_type)  { // 指针
+template <class T> void f_impl(T, std::false_type) {   // 通用
+template <class T> void f_impl(T*, std::true_type)  {  // 指针
 template <class T> void f(T v) { f_impl(v, std::is_pointer<T>{}); }
 ```
 
@@ -941,8 +941,8 @@ int main() {
 template <typename T> void f(T)   { std::cout << "template\n"; }
 void               f(int) { std::cout << "int\n"; }
 int main() {
-    f(42);     // 非模板更匹配 -> int
-    f(3.0);    // 仅模板可匹配 -> template
+    f(42);   // 非模板更匹配 -> int
+    f(3.0);  // 仅模板可匹配 -> template
 }
 ```
 
@@ -967,8 +967,8 @@ template <typename T> void g(T)   { std::cout << "T\n"; }
 template <typename T> void g(T*)  { std::cout << "T*\n"; }
 int main() {
     int x = 0;
-    g(&x);          // T* 更特化 -> T*
-    g(1);           // 仅 T 可匹配 -> T
+    g(&x);  // T* 更特化 -> T*
+    g(1);   // 仅 T 可匹配 -> T
 }
 ```
 

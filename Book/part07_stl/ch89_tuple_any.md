@@ -69,7 +69,7 @@ tuple 与 any 常被当成"返回多值 / 装任意类型的小工具"，但它�
 ## ④ 知识图谱（ASCII）<span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）<span class="badge badge-std">标准</span>]
-```
+```text
                          ┌─────────────────────────────────────────────┐
                          │            值语义异构容器家族                │
                          └─────────────────────────────────────────────┘
@@ -155,7 +155,7 @@ classDiagram
 **tuple 的递归继承布局**（libstdc++：`tuple<int,double,std::string>` 实际是 `_Tuple_impl<0,int,_Tuple_impl<1,double,_Tuple_impl<2,std::string>>>`）：
 
 > **示例 2** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
-```
+```text
 内存（x86-64, 对齐8）:
 std::tuple<int, double, std::string>  (sizeof = 8+8+32 = 48, string 内部含指针+size+容量=24~32)
 ┌──────────────────────────────────────────────────────────────┐
@@ -176,7 +176,7 @@ std::tuple<int, double, std::string>  (sizeof = 8+8+32 = 48, string 内部含指
 **any 的 16 字节布局**（文件：`any`，行号：`83-92`、`360-361`）：
 
 > **示例 3** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
-```
+```text
 std::any  (sizeof = 16 在 x86-64)
 ┌─────────────────────────────────────────┐
 │ _M_manager : void(*)(_Op,const any*,_Arg*)  │ 8B 函数指针(类型擦除分派表)
@@ -190,7 +190,7 @@ SBO 阈值: sizeof(Tp) <= sizeof(_Storage)=8 且 alignof(Tp) <= 8  (行号:96)
 **function 的内部**（文件：`bits/std_function.h`，行号：`252-253`、`668`）：
 
 > **示例 4** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
-```
+```text
 std::function<R(Args)>  (sizeof = 32 在 x86-64: 16B _Any_data + 8B manager + 8B invoker 指针)
 ┌──────────────────────────────────────────────────────────┐
 │ _M_functor : _Any_data  (_M_pod_data[sizeof(_Nocopy_types)] = 16B) │
@@ -305,8 +305,8 @@ int main() { std::function<int(int)> f = [](int a){ return a*2; }; return use(f,
 struct ConnectionConfig {
     std::string host;
     int         port;
-    std::optional<int> tls_version;   // 可选
-    std::any    extension;            // 插件自定义（如证书路径对象）
+    std::optional<int> tls_version;        // 可选
+    std::any    extension;                 // 插件自定义（如证书路径对象）
 };
 
 // 模拟从字符串解析；真实场景读 INI/YAML
@@ -315,8 +315,8 @@ parse_connection(const std::string& raw) {
     // 实际项目会用状态机/正则表达式；此处简化
     std::string host = "127.0.0.1";
     int port = 8080;
-    std::optional<int> tls = 1;                 // TLS 1.x
-    std::any ext = std::string("ca.pem");       // 扩展：CA 证书路径
+    std::optional<int> tls = 1;            // TLS 1.x
+    std::any ext = std::string("ca.pem");  // 扩展：CA 证书路径
     return {host, port, tls, ext};
 }
 
@@ -375,7 +375,7 @@ int main() {
 libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 > **示例 9** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
-```
+```text
 文件：tuple
 行号：259   struct _Tuple_impl<size_t _Idx, typename _Head, typename... _Tail>
              : public _Tuple_impl<_Idx+1, _Tail...>,
@@ -390,7 +390,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 **B. any 的类型擦除（文件：`any`，行号：`80`/`96`/`360-361`/`370`/`574`/`402`/`608`）**
 
 > **示例 10** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
-```
+```text
 文件：any
 行号：80    class any { ... void(*_M_manager)(_Op,const any*,_Arg*); _Storage _M_storage; };
 行号：96    _Fits = (sizeof(_Tp) <= sizeof(_Storage)) && (alignof(_Tp) <= alignof(_Storage))
@@ -422,7 +422,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 **D. bind 与占位符（文件：`functional`，行号：`87`/`266`/`294-311`/`881`）**
 
 > **示例 12** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
-```
+```text
 文件：functional
 行号：87    template<int _Num> struct _Placeholder { };
 行号：266   template<typename _Tp> struct is_placeholder;   // 返回占位符编号或 0
@@ -486,10 +486,10 @@ A：用指针形式：
 #include <iostream>
 int main() {
     std::any a = 42;
-    if (auto p = std::any_cast<int>(&a))        // ✅ 指针版本, 不匹配得 nullptr
+    if (auto p = std::any_cast<int>(&a))     // ✅ 指针版本, 不匹配得 nullptr
         std::cout << *p << "\n";
-    if (auto s = std::any_cast<double>(&a))     // 不匹配, s == nullptr
-        std::cout << *s << "\n";                // 不会执行
+    if (auto s = std::any_cast<double>(&a))  // 不匹配, s == nullptr
+        std::cout << *s << "\n";             // 不会执行
     return 0;
 }
 ```
@@ -570,9 +570,9 @@ int main() { return b_style() + l_style(); }
 #include <iostream>
 #include <string>
 int main() {
-    std::cout << "sizeof(any)              = " << sizeof(std::any) << "\n";        // 16
-    std::any a_small = 42;                                  // SBO: int(4B) ≤ 8B 阈值
-    std::any a_big  = std::string("a longer than 8 bytes object"); // 堆: 超阈值
+    std::cout << "sizeof(any)              = " << sizeof(std::any) << "\n";  // 16
+    std::any a_small = 42;                                                   // SBO: int(4B) ≤ 8B 阈值
+    std::any a_big  = std::string("a longer than 8 bytes object");           // 堆: 超阈值
     std::cout << "small has_value=" << a_small.has_value() << "\n";
     std::cout << "big   has_value=" << a_big.has_value() << "\n";
     return 0;
@@ -683,8 +683,8 @@ int main() {
 #include <utility>
 int main() {
     using T = std::tuple<int, double, char>;
-    constexpr std::size_t n = std::tuple_size<T>::value;     // 3
-    using Second = std::tuple_element<1, T>::type;           // double
+    constexpr std::size_t n = std::tuple_size<T>::value;  // 3
+    using Second = std::tuple_element<1, T>::type;        // double
     std::cout << n << " " << std::is_same_v<Second, double> << "\n";
     return 0;
 }
@@ -698,9 +698,9 @@ int main() {
 int main() {
     int a, b;
     std::tie(a, b) = std::make_tuple(10, 20);
-    auto r = std::forward_as_tuple(a, b);    // tuple<int&, int&>
+    auto r = std::forward_as_tuple(a, b);  // tuple<int&, int&>
     std::get<0>(r) = 99;
-    std::cout << a << "\n";                  // 99
+    std::cout << a << "\n";                // 99
     return 0;
 }
 ```
@@ -1003,9 +1003,9 @@ int main() {
     using namespace std::placeholders;
     Foo foo;
     auto g = std::bind(&Foo::add, &foo, _1);
-    std::cout << g(3) << "\n";   // 8
+    std::cout << g(3) << "\n";  // 8
     auto h = std::bind(&Foo::get, &foo);
-    std::cout << h() << "\n";    // 5
+    std::cout << h() << "\n";   // 5
     return 0;
 }
 ```
@@ -1018,9 +1018,9 @@ int main() {
 int op(int a, int b){ return a * b; }
 int main() {
     using namespace std::placeholders;
-    auto by_bind    = std::bind(op, _2, _1);        // 交换
+    auto by_bind    = std::bind(op, _2, _1);                       // 交换
     auto by_lambda = [](int a, int b){ return op(b, a); };
-    std::cout << by_bind(2, 3) << " " << by_lambda(2, 3) << "\n";   // 6 6
+    std::cout << by_bind(2, 3) << " " << by_lambda(2, 3) << "\n";  // 6 6
     return 0;
 }
 ```
@@ -1311,8 +1311,8 @@ int main() {
 #include <iostream>
 #include <any>
 int main() {
-    std::any a = 42;                 // int ≤16B → SBO 内联，无堆分配
-    std::cout << std::any_cast<int>(a) << "\n"; // 42
+    std::any a = 42;                             // int ≤16B → SBO 内联，无堆分配
+    std::cout << std::any_cast<int>(a) << "\n";  // 42
 }
 ```
 

@@ -68,9 +68,9 @@ template <typename T> struct Wrapper { static const char* k() { return "primary"
 template <>           struct Wrapper<int> { static const char* k() { return "full-int"; } };
 template <typename U> struct Wrapper<U*> { static const char* k() { return "ptr"; } };
 int main() {
-    std::cout << Wrapper<double>::k() << '\n';   // primary（主模板）
-    std::cout << Wrapper<int>::k()   << '\n';     // full-int（全特化）
-    std::cout << Wrapper<int*>::k()  << '\n';     // ptr（偏特化）
+    std::cout << Wrapper<double>::k() << '\n';  // primary（主模板）
+    std::cout << Wrapper<int>::k()   << '\n';   // full-int（全特化）
+    std::cout << Wrapper<int*>::k()  << '\n';   // ptr（偏特化）
 }
 ```
 
@@ -82,21 +82,21 @@ int main() {
 template <typename T>
 struct Storage {
     T value;
-    void describe() const { // 通用
+    void describe() const { /* 通用实现 */ }
 };
 
 // 全特化：为 bool 提供位压缩替代（示意）
 template <>
 struct Storage<bool> {
     unsigned bits;
-    void describe() const { // bool 专用
+    void describe() const { /* bool 专用实现 */ }
 };
 
 // 偏特化：指针
 template <typename U>
 struct Storage<U*> {
     U* ptr;
-    void describe() const { // 指针专用
+    void describe() const { /* 指针专用实现 */ }
 };
 ```
 
@@ -152,9 +152,9 @@ template <typename T> struct W { static const char* k() { return "primary"; } };
 template <> struct W<int> { static const char* k() { return "int"; } };
 template <typename U> struct W<U*> { static const char* k() { return "ptr"; } };
 int main() {
-    std::cout << W<double>::k() << '\n';   // primary
-    std::cout << W<int>::k() << '\n';      // int
-    std::cout << W<int*>::k() << '\n';     // ptr
+    std::cout << W<double>::k() << '\n';  // primary
+    std::cout << W<int>::k() << '\n';     // int
+    std::cout << W<int*>::k() << '\n';    // ptr
 }
 ```
 
@@ -203,13 +203,13 @@ int main() { Dispatcher<int> d; d.run(0); std::cout << "ok\n"; }
 #include <vector>
 #include <type_traits>
 template <typename T> struct W { int a; };
-template <> struct W<int> { char a; };                 // 全特化：不同布局（char→size=1，保证与 long 特化大小不同，跨 LP64/LLP64 均成立）
-template <typename U> struct W<U*> { long a; };         // 偏特化：不同布局
-static_assert(sizeof(W<int>)   != sizeof(W<int*>));     // 不同特化是不同类型
+template <> struct W<int> { char a; };                    // 全特化：不同布局（char→size=1，保证与 long 特化大小不同，跨 LP64/LLP64 均成立）
+template <typename U> struct W<U*> { long a; };           // 偏特化：不同布局
+static_assert(sizeof(W<int>)   != sizeof(W<int*>));       // 不同特化是不同类型
 static_assert(!std::is_same_v<W<int>, W<int*>>);
 int main() {
-    std::vector<bool> vb(8);   // 通常只占 1 字节（位域压缩）
-    std::cout << sizeof(vb) << ' ' << vb.size() << '\n';   // 小对象 + 8 位
+    std::vector<bool> vb(8);                              // 通常只占 1 字节（位域压缩）
+    std::cout << sizeof(vb) << ' ' << vb.size() << '\n';  // 小对象 + 8 位
 }
 ```
 
@@ -508,10 +508,18 @@ template <> struct D<void> { };
 // std::vector<bool> 偏特化：位压缩，与普通 vector 布局完全不同
 // std::is_pointer / std::is_array / std::is_const 全靠偏特化实现（见 ch65）
 // std::hash 对每种类型全特化（用户类型须在命名空间 std 内特化）
-template <> struct std::hash<std::string> { std::size_t operator()(const std::string&) const; };
+// ⚠️ 只能特化"自己的类型"；std::string 等库已特化的类型不可重复特化
+#include <functional>
+struct MyId { int v; };
+template <> struct std::hash<MyId> {
+    std::size_t operator()(const MyId& m) const noexcept {
+        return static_cast<std::size_t>(m.v);
+    }
+};
 int main() {
     std::vector<bool> vb(8);
-    std::cout << "vector<bool> size=" << vb.size() << '\n';   // 8（位压缩）
+    std::cout << "vector<bool> size=" << vb.size() << '\n';                 // 8（位压缩）
+    std::cout << "hash(MyId{42})=" << std::hash<MyId>{}(MyId{42}) << '\n';  // 用户类型可哈希
 }
 ```
 
@@ -563,7 +571,9 @@ template <typename T> struct A<const T*> { };
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
 // 反模式3：偏特化写死类型当全特化用，导致永远命中
-template <typename T> struct B<T*> { };   // 若想只针对 int*，应写全特化 B<int*>
+template <typename T> struct B { };      // 主模板（须先声明）
+template <typename T> struct B<T*> { };  // ❌ 想"只针对 int*"，实际命中所有指针
+// ✅ 若只想要 int*：写全特化 template <> struct B<int*> { };（见 ③）
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
@@ -928,8 +938,8 @@ Q: 函数模板可以偏特化吗? A: 不可以(语言限制)。用重载替代�
 ```cpp
 #include <iostream>
 #include <type_traits>
-template<typename T> struct is_pointer: std::false_type {};          // primary
-template<typename T> struct is_pointer<T*>: std::true_type {};       // partial spec
+template<typename T> struct is_pointer: std::false_type {};     // primary
+template<typename T> struct is_pointer<T*>: std::true_type {};  // partial spec
 int main() { std::cout << is_pointer<int*>::value << is_pointer<int>::value << std::endl; return 0; }
 ```
 
@@ -1135,8 +1145,8 @@ template <typename T> struct RemovePtr      { using type = T; };
 template <typename T> struct RemovePtr<T*> { using type = T; };
 template <typename T> using RemovePtr_t = typename RemovePtr<T>::type;
 int main() {
-    RemovePtr_t<int*> a; (void)a;        // int
-    RemovePtr_t<int>  b; (void)b;        // int
+    RemovePtr_t<int*> a; (void)a;  // int
+    RemovePtr_t<int>  b; (void)b;  // int
     std::cout << "ok\n";
 }
 ```

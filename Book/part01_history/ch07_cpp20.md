@@ -120,7 +120,7 @@ int main() {}
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱
-```
+```text
 C++20 四大支柱 + 配套
 ├─ Concepts: template<typename T> requires C<T> / T C
 ├─ Modules: import/export/module (替代头文件文本包含)
@@ -218,11 +218,11 @@ int main() {
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
 传统头文件：每个 TU 重复解析 `include` 的文本。
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
-```
+```text
 TU1.cpp ─┐
 TU2.cpp ─┼─> 全部文本拼入 → 解析(重复)
 TU3.cpp ─┘
-```
+```text
 Modules：编译一次为二进制 BMI，复用：
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
 ```
@@ -521,7 +521,7 @@ int main(){
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ch07_cpp20.md enhanced"<<"\n";return 0;}
-```
+```text
 
 ## 附录 D：C++20 Concepts/Ranges底层
 
@@ -686,7 +686,7 @@ int main() {
               | std::views::filter([](int x){ return x % 2 == 0; })  // 惰性
               | std::views::transform([](int x){ return x * x; });   // 惰性
 
-    for (int x : pipe) std::cout << x << ' ';   // 遍历时才逐元素求值
+    for (int x : pipe) std::cout << x << ' ';                        // 遍历时才逐元素求值
     std::cout << "\n（filter/transform 不生成中间容器，惰性按需计算）\n";
 }
 ```

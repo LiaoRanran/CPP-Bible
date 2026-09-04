@@ -51,7 +51,7 @@ C++ 标准刻意不规定段布局（那是 OS / ABI 的事），只谈"对象�
 `[标准]` C++ 标准本身不规定「虚拟地址空间」——那是操作系统/实现的概念。但标准中的**存储期（storage duration）**、**对象生存期**、**指针**、**对齐**全部建立在一个前提上：**每个进程拥有独立、连续的虚拟地址空间，由操作系统通过 MMU（内存管理单元）映射到物理页框**。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概览：进程虚拟地址空间
-```
+```text
         高地址 0xFFFF'FFFF'FFFF'FFFF
         ┌───────────────────────────┐
         │        内核空间            │  用户态不可访问
@@ -112,7 +112,7 @@ flowchart TD
 #include <cstdio>
 #include <iostream>
 
-int g_data = 1;                 // 见元素 8 段落位
+int g_data = 1;                                                        // 见元素 8 段落位
 
 int main() {
     int local = 2;
@@ -301,14 +301,14 @@ int main() {
 ```cpp
 // P5 (seg_demo.cpp): 各类存储期实体的段落位示例
 #include <thread>
-int g_init = 42;              // 已初始化全局   → .data
-int g_zero;                   // 零初始化全局   → .bss
-const int g_const = 7;        // const 全局     → .rodata / .rdata
-thread_local int g_tls = 9;   // 已初始化 TLS   → .tdata / .tls
-thread_local int g_tls_z;     // 零初始化 TLS   → .tbss  / .tls
+int g_init = 42;             // 已初始化全局   → .data
+int g_zero;                  // 零初始化全局   → .bss
+const int g_const = 7;       // const 全局     → .rodata / .rdata
+thread_local int g_tls = 9;  // 已初始化 TLS   → .tdata / .tls
+thread_local int g_tls_z;    // 零初始化 TLS   → .tbss  / .tls
 int main() {
-    static int s_init = 5;    // 已初始化静态   → .data
-    static int s_zero;        // 零初始化静态   → .bss
+    static int s_init = 5;   // 已初始化静态   → .data
+    static int s_zero;       // 零初始化静态   → .bss
     return g_init + g_zero + g_const + g_tls + g_tls_z + s_init + s_zero;
 }
 // 编译(本机): g++ -std=c++17 -O0 seg_demo.cpp -o seg_demo.exe
@@ -552,7 +552,7 @@ BENCHMARK_MAIN();
 #include <cstddef>
 int main() {
     const size_t GB = (size_t(1) << 30);
-    std::vector<char> big(GB);            // 预留虚拟空间
+    std::vector<char> big(GB);                          // 预留虚拟空间
     std::printf("allocated %zu bytes virtually; press enter to touch...\n", GB);
     getchar();
     for (size_t i = 0; i < GB; i += 1<<16) big[i] = 1;  // 真正访问才分配物理页
@@ -584,12 +584,12 @@ int main() {
 #include <cstdio>
 #include <sys/wait.h>
 int main() {
-    int x = 100;                       // 父子初始共享该页(COW)
+    int x = 100;                                     // 父子初始共享该页(COW)
     pid_t pid = fork();
-    if (pid == 0) { x = 200;           // 子进程写 → 触发复制，不影响父
+    if (pid == 0) { x = 200;                         // 子进程写 → 触发复制，不影响父
         std::printf("child  x=%d @%p\n", x, (void*)&x); _exit(0); }
     wait(nullptr);
-    std::printf("parent x=%d @%p\n", x, (void*)&x);   // 仍为 100
+    std::printf("parent x=%d @%p\n", x, (void*)&x);  // 仍为 100
     return 0;
 }
 // 编译(Linux): g++ -std=c++17 p12.cpp -o p12 && ./p12
@@ -604,7 +604,7 @@ int main() {
 `[平台·Linux]` 经典 x86-64 Linux 进程布局（从高到低）：
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典地址空间布局
-```
+```text
 0xFFFF...  内核
           ┌─────────┐
           │ 栈 stack │  ← 向下增长，每个线程一个栈
@@ -657,10 +657,10 @@ int main() {
 #include <cstdio>
 #include <cstddef>
 int main() {
-    std::printf("alignof(char)     = %zu\n", alignof(char));      // 1
-    std::printf("alignof(short)    = %zu\n", alignof(short));     // 2
-    std::printf("alignof(int)      = %zu\n", alignof(int));       // 4
-    std::printf("alignof(double)   = %zu\n", alignof(double));    // 8
+    std::printf("alignof(char)     = %zu\n", alignof(char));       // 1
+    std::printf("alignof(short)    = %zu\n", alignof(short));      // 2
+    std::printf("alignof(int)      = %zu\n", alignof(int));        // 4
+    std::printf("alignof(double)   = %zu\n", alignof(double));     // 8
     std::printf("alignof(void*)    = %zu\n", alignof(void*));      // 8
     std::printf("alignof(long long)= %zu\n", alignof(long long));  // 8
     return 0;
@@ -673,12 +673,12 @@ int main() {
 // P15: alignas 提升对齐
 #include <cstdio>
 #include <cstddef>
-struct alignas(64) CacheLine { char buf[64]; };   // 强制 64 字节对齐
+struct alignas(64) CacheLine { char buf[64]; };                          // 强制 64 字节对齐
 int main() {
     CacheLine a[4];
-    std::printf("alignof(CacheLine)=%zu\n", alignof(CacheLine));   // 64
-    std::printf("sizeof (CacheLine)=%zu\n", sizeof (CacheLine));   // 64
-    std::printf("&a[1]-&a[0] bytes =%zu\n", (char*)&a[1]-(char*)&a[0]); // 64
+    std::printf("alignof(CacheLine)=%zu\n", alignof(CacheLine));         // 64
+    std::printf("sizeof (CacheLine)=%zu\n", sizeof (CacheLine));         // 64
+    std::printf("&a[1]-&a[0] bytes =%zu\n", (char*)&a[1]-(char*)&a[0]);  // 64
     return 0;
 }
 // 编译: g++ -std=c++17 p15.cpp -o p15 && ./p15
@@ -775,7 +775,7 @@ struct Aligned {
     alignas(std::hardware_destructive_interference_size) int counter;  // 独自占一行
 };
 int main() {
-    Aligned a, b;                       // a.counter 与 b.counter 在不同 cache line
+    Aligned a, b;                                                      // a.counter 与 b.counter 在不同 cache line
     std::thread t1([&]{ for(int i=0;i<100000000;++i) ++a.counter; });
     std::thread t2([&]{ for(int i=0;i<100000000;++i) ++b.counter; });
     t1.join(); t2.join();
@@ -799,7 +799,7 @@ int main() {
 #include <chrono>
 #include <cstdio>
 
-struct Packed   { int a; int b; };                 // a,b 同 cache line → 伪共享
+struct Packed   { int a; int b; };                               // a,b 同 cache line → 伪共享
 struct Isolated {
     alignas(std::hardware_destructive_interference_size) int a;
     alignas(std::hardware_destructive_interference_size) int b;  // 各占一行
@@ -920,8 +920,8 @@ int main() {
 167    _GLIBCXX_USE_NOEXCEPT __attribute__((__externally_visible__));
 168  void operator delete[](void*, std::size_t, std::align_val_t)
 169    _GLIBCXX_USE_NOEXCEPT __attribute__((__externally_visible__));
-170  #endif // __cpp_sized_deallocation
-171  #endif // __cpp_aligned_new
+170  #endif  // __cpp_sized_deallocation
+171  #endif  // __cpp_aligned_new
 ```
 
 逐行解读：
@@ -954,10 +954,10 @@ int main() {
 #include <cstdint>
 struct alignas(64) Node { double x[8]; };
 int main() {
-    Node* p = new Node;                       // 编译器选 operator new(size, align_val_t{64})
+    Node* p = new Node;  // 编译器选 operator new(size, align_val_t{64})
     std::printf("addr=%p aligned64?=%s\n", (void*)p,
                 ((uintptr_t)p % 64 == 0) ? "yes" : "no");
-    delete p;                                // 配对 operator delete(p, align_val_t{64})
+    delete p;            // 配对 operator delete(p, align_val_t{64})
     return 0;
 }
 // 编译: g++ -std=c++17 p20.cpp -o p20 && ./p20
@@ -1016,13 +1016,13 @@ int main() {
 #include <cstdio>
 #include <cstddef>
 #pragma pack(push, 1)
-struct Packed1 { char c; int i; };     // 1 字节打包 → 无填充
+struct Packed1 { char c; int i; };                                 // 1 字节打包 → 无填充
 #pragma pack(pop)
-struct Normal { char c; int i; };      // 默认对齐 → 有 3 字节填充
+struct Normal { char c; int i; };                                  // 默认对齐 → 有 3 字节填充
 int main() {
     std::printf("sizeof Packed1 = %zu (期望 5)\n", sizeof(Packed1));
     std::printf("sizeof Normal  = %zu (期望 8)\n", sizeof(Normal));
-    std::printf("offsetof(Normal,i)=%zu\n", offsetof(Normal, i));   // 4
+    std::printf("offsetof(Normal,i)=%zu\n", offsetof(Normal, i));  // 4
     return 0;
 }
 // 编译: g++ -std=c++17 p22.cpp -o p22 && ./p22
@@ -1098,9 +1098,9 @@ int main() {
 // P24: 排列不同 → sizeof 不同（padding 实战）
 #include <cstdio>
 #include <cstddef>
-struct A { char c; int i; short s; };          // c[1] +pad3 + i[4] + s[2] = 10 → 对齐4 → 12
-struct B { int i; short s; char c; };          // i[4] + s[2] + c[1] +pad1 = 8
-struct C { char c; char d; int i; };           // c,d[2] +pad2 + i[4] = 8
+struct A { char c; int i; short s; };  // c[1] +pad3 + i[4] + s[2] = 10 → 对齐4 → 12
+struct B { int i; short s; char c; };  // i[4] + s[2] + c[1] +pad1 = 8
+struct C { char c; char d; int i; };   // c,d[2] +pad2 + i[4] = 8
 int main() {
     std::printf("sizeof A=%zu B=%zu C=%zu\n", sizeof(A), sizeof(B), sizeof(C));
     std::printf("offsetof A.i=%zu A.s=%zu\n", offsetof(A,i), offsetof(A,s));
@@ -1305,11 +1305,11 @@ public class P29 {
 ```cpp
 // P30: 交叉引用演示 —— ch19 存储期 + ch21 const 协同决定段落位
 #include <cstdio>
-int persistent = 7;              // ch19: 静态存储期 → .data
-const int kReadonly = 99;        // ch21: const → .rodata/.rdata
+int persistent = 7;             // ch19: 静态存储期 → .data
+const int kReadonly = 99;       // ch21: const → .rodata/.rdata
 int main() {
-    static int fn_static = 3;    // ch19: 内部链接静态 → .data
-    const int local_const = 5;   // ch21: 局部 const → 可能进栈或 rodata(优化)
+    static int fn_static = 3;   // ch19: 内部链接静态 → .data
+    const int local_const = 5;  // ch21: 局部 const → 可能进栈或 rodata(优化)
     std::printf("%d %d %d %d\n", persistent, kReadonly, fn_static, local_const);
     return 0;
 }
@@ -1322,11 +1322,11 @@ int main() {
 #include <new>
 #include <cstdio>
 #include <cstdint>
-struct alignas(64) Block { char d[64]; };   // 过对齐 → ch37 对齐 new
+struct alignas(64) Block { char d[64]; };  // 过对齐 → ch37 对齐 new
 int main() {
-    int* heap = new int(1);                 // ch37: operator new
-    Block* b = new Block;                   // ch37+ch18: 对齐 new
-    int stack = 2;                          // ch36: 栈对象
+    int* heap = new int(1);                // ch37: operator new
+    Block* b = new Block;                  // ch37+ch18: 对齐 new
+    int stack = 2;                         // ch36: 栈对象
     std::printf("heap=%p stack=%p blk=%p aligned=%s\n",
                 (void*)heap, (void*)&stack, (void*)b,
                 ((uintptr_t)b % 64 == 0) ? "yes" : "no");
@@ -1524,7 +1524,7 @@ int main() {
 ## 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
-```
+```text
 Linux进程内存布局 (64位):
 
 | 段 | 地址区间 | 内容 | 权限 |
@@ -1546,8 +1546,8 @@ Linux进程内存布局 (64位):
 ```cpp
 #include <iostream>
 #include <cstdlib>
-int global_data = 42;           // .data section
-int global_bss;                 // .bss section (0-initialized)
+int global_data = 42;            // .data section
+int global_bss;                  // .bss section (0-initialized)
 int main() {
     int stack_var = 99;          // stack
     int* heap_var = new int(7);  // heap
@@ -1613,12 +1613,12 @@ int main() {
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
-int g = 1;          // .data
-int gb;             // .bss
+int g = 1;                // .data
+int gb;                   // .bss
 int main() {
-    int l = 2;      // 栈
-    int* h = new int(3);   // 堆
-    static int s = 4;      // .data(已初始化静态)
+    int l = 2;            // 栈
+    int* h = new int(3);  // 堆
+    static int s = 4;     // .data(已初始化静态)
     std::cout << "global .data : " << &g << "\n";
     std::cout << "global .bss  : " << &gb << "\n";
     std::cout << "static .data : " << &s << "\n";

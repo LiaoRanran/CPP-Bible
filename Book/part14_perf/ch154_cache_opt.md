@@ -89,7 +89,7 @@ C++ 不规定缓存——缓存是**目标架构（ISA + 微架构）**的属性
 #include <cstddef>
 
 int main() {
-    constexpr std::size_t N = 1u << 20;          // 1M 节点
+    constexpr std::size_t N = 1u << 20;                  // 1M 节点
     std::vector<std::uint32_t> idx(N);
     for (std::size_t i = 0; i < N; ++i) idx[i] = (std::uint32_t)i;
     // 确定性 xorshift 驱动的 Fisher–Yates 洗牌（禁用 <random>，自带 PRNG）
@@ -102,7 +102,7 @@ int main() {
     std::uint32_t p = 0;
     constexpr std::size_t STEPS = 50'000'000;
     auto t0 = std::chrono::steady_clock::now();
-    for (std::size_t k = 0; k < STEPS; ++k) p = idx[p];   // 每一步都随机跳
+    for (std::size_t k = 0; k < STEPS; ++k) p = idx[p];  // 每一步都随机跳
     auto t1 = std::chrono::steady_clock::now();
     double ns = std::chrono::duration<double, std::nano>(t1 - t0).count() / STEPS;
     std::cout << "pointer-chase ≈ " << ns << " ns/step (acc=" << p << ")\n";
@@ -180,9 +180,9 @@ int main() {
 #include <chrono>
 
 int main() {
-    constexpr int N = 1 << 24;                 // 16M int = 64MB
+    constexpr int N = 1 << 24;     // 16M int = 64MB
     std::vector<int> a(N, 1);
-    constexpr int STEP = 1 << 16;              // 256K int = 1MB 跨步，易撞同组
+    constexpr int STEP = 1 << 16;  // 256K int = 1MB 跨步，易撞同组
     long s = 0;
     auto t0 = std::chrono::steady_clock::now();
     for (int i = 0; i < N; i += STEP) s += a[i];
@@ -257,7 +257,7 @@ x86-64 默认 write-back + write-allocate；`non-temporal` 存储（`_mm_stream_
 两个**本不相关**的变量被不同核频繁写，却恰好落在**同一 cache line**。任一核写入都会让另一核的整行失效（MESI 协议在核间弹来弹去），性能骤降——叫"伪"共享，因为它们逻辑上无共享，却因布局共享了行。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 伪共享（false sharing）
-```
+```text
 ⑧ 伪共享内存图（同一 64B 行被两核各写一个字段）
 ┌─────────────────── cache line (64B) ───────────────────┐
 │ [core0 写] a (8B) │ [core1 写] b (8B) │  填充 48B        │
@@ -307,7 +307,7 @@ int main() {
 同一 benchmark，仅改布局：把 a、b 分到不同 cache line。下面数字为本书在 MinGW GCC 13.1 / -O2 下实测（机器相关，仅作量级参考）：
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实测：伪共享前后耗时对比
-```
+```text
 FALSE_SHARING bad ≈ 2.9× 于 good（同核数、同迭代）
 即把两个原子计数塞在同一行，耗时约为各自独占一行的 2~4 倍（双核争用越狠越大）
 ```
@@ -383,7 +383,7 @@ int main() {
 遍历只取 `x` 时，AoS 每读一个 x 还顺带载入 y、z（浪费 2/3 带宽）；SoA 的 x 连续，预取器一路顺风，且天然对齐向量化。
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · AoS vs SoA 内存布局与向量化/缓存 [实现·GCC15]
-```
+```text
 ⑪ 布局对比（每个元素 12B）
 AoS: [x y z][x y z][x y z]...   取 x 要跳过 y,z
 SoA: [x x x ...][y y y ...][z z z ...]   取 x 全连续
@@ -435,7 +435,7 @@ SoA 的 `for(v:soa.x)` 在 `-O3 -mavx2` 下可自动向量化为 `vmovaps/vaddps
 本书实测（MinGW GCC 13.1 / -O2，N=4'000'000 仅累加 x 字段）：
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实测：AoS vs SoA 遍历耗时
-```
+```text
 AOS_SOA  aos ≈ 1.8× ~ 2.5× 于 soa（仅取单字段时；字段越多差距越大）
 ```
 
@@ -487,11 +487,11 @@ int main() {
     long sr = 0, sc = 0;
 
     auto t0 = std::chrono::steady_clock::now();
-    for (int i = 0; i < M; ++i)                 // 行优先：a[i*M+j] 连续
+    for (int i = 0; i < M; ++i)  // 行优先：a[i*M+j] 连续
         for (int j = 0; j < M; ++j) sr += a[i * M + j];
     auto t1 = std::chrono::steady_clock::now();
 
-    for (int j = 0; j < M; ++j)                 // 列优先：a[i*M+j] 跨行，步长 M*4B
+    for (int j = 0; j < M; ++j)  // 列优先：a[i*M+j] 跨行，步长 M*4B
         for (int i = 0; i < M; ++i) sc += a[i * M + j];
     auto t2 = std::chrono::steady_clock::now();
 
@@ -508,7 +508,7 @@ C++ 未规定"行优先"语义，但内建多维数组 `T a[R][C]` 的下标映�
 本书实测（MinGW GCC 13.1 / -O2，M=4096 整数矩阵）：
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实测：行优先 vs 列优先耗时对比
-```
+```text
 ROW_COL  col ≈ 10× ~ 30× 于 row（列优先几乎每访都 cache miss）
 ```
 
@@ -545,12 +545,12 @@ int main() {
 #include <iostream>
 #include <cstdint>
 
-struct Bad  { char a; int b; char c; int d; };   // 填充多
-struct Good { int b; int d; char a; char c; };   // 紧凑
+struct Bad  { char a; int b; char c; int d; };                      // 填充多
+struct Good { int b; int d; char a; char c; };                      // 紧凑
 
 int main() {
-    std::cout << "Bad =" << sizeof(Bad)  << " (padding wasted)\n";   // 16
-    std::cout << "Good=" << sizeof(Good) << " (packed)\n";           // 12
+    std::cout << "Bad =" << sizeof(Bad)  << " (padding wasted)\n";  // 16
+    std::cout << "Good=" << sizeof(Good) << " (packed)\n";          // 12
     return 0;
 }
 ```
@@ -562,15 +562,15 @@ int main() {
 #include <vector>
 
 struct Particle {
-    float px, py, pz;        // 热：每帧都算
-    char  name[24];          // 冷：几乎不读
+    float px, py, pz;                                // 热：每帧都算
+    char  name[24];                                  // 冷：几乎不读
     int   id;
 };
 
 int main() {
     std::vector<Particle> ps(1'000'000);
     float s = 0;
-    for (auto& p : ps) { s += p.px + p.py + p.pz; }   // 仍会顺带载 name（浪费）
+    for (auto& p : ps) { s += p.px + p.py + p.pz; }  // 仍会顺带载 name（浪费）
     std::cout << "sum=" << s << "\n";
     return 0;
 }
@@ -618,7 +618,7 @@ DOD 不是"反对 OOP"，而是把"频繁一起遍历的数据"放到一起—�
 #include <vector>
 
 int main() {
-    constexpr int N = 512, B = 32;            // B*B*3*4B ≈ 12KB < L1d
+    constexpr int N = 512, B = 32;         // B*B*3*4B ≈ 12KB < L1d
     std::vector<float> A(N * N, 1.0f), Bm(N * N, 1.0f), C(N * N, 0.0f);
     for (int ii = 0; ii < N; ii += B)
         for (int jj = 0; jj < N; jj += B)
@@ -630,7 +630,7 @@ int main() {
                             acc += A[i * N + k] * Bm[k * N + j];
                         C[i * N + j] = acc;
                     }
-    std::cout << "C[0]=" << C[0] << "\n";     // 512
+    std::cout << "C[0]=" << C[0] << "\n";  // 512
     return 0;
 }
 ```
@@ -666,11 +666,11 @@ int main() {
 #include <iostream>
 #include <cstddef>
 
-struct alignas(32) Wide { double d[4]; };   // 整体 32 对齐
+struct alignas(32) Wide { double d[4]; };             // 整体 32 对齐
 
 int main() {
     std::cout << "alignof(Wide)=" << alignof(Wide)
-              << " sizeof=" << sizeof(Wide) << "\n";   // 32 / 32
+              << " sizeof=" << sizeof(Wide) << "\n";  // 32 / 32
     return 0;
 }
 ```
@@ -867,12 +867,12 @@ int main() {
     std::vector<int> m(N * N, 1);
     volatile long long s = 0;
     { auto t0 = std::chrono::steady_clock::now();
-      for (int i = 0; i < N; ++i)           // 行优先（连续访问）
+      for (int i = 0; i < N; ++i)  // 行优先（连续访问）
           for (int j = 0; j < N; ++j) s += m[i * N + j];
       auto t1 = std::chrono::steady_clock::now();
       std::cout << "row-major=" << std::chrono::duration<double, std::milli>(t1 - t0).count() << "ms\n"; }
     { auto t0 = std::chrono::steady_clock::now();
-      for (int j = 0; j < N; ++j)           // 列优先（跨越 4KB 步长）
+      for (int j = 0; j < N; ++j)  // 列优先（跨越 4KB 步长）
           for (int i = 0; i < N; ++i) s += m[i * N + j];
       auto t1 = std::chrono::steady_clock::now();
       std::cout << "col-major=" << std::chrono::duration<double, std::milli>(t1 - t0).count() << "ms\n"; }
@@ -1091,9 +1091,9 @@ AoS 遍历 `x` 时仍把 `y,z` 一起载入缓存行，浪费带宽；SoA 的 `x
 struct Particle { float x, y, z; };
 int main() {
     std::vector<Particle> aos(1'000'000);
-    float sx = 0; for (auto& p : aos) sx += p.x;          // 带走 y,z
+    float sx = 0; for (auto& p : aos) sx += p.x;  // 带走 y,z
     std::vector<float> soa_x(1'000'000);
-    sx = 0; for (float v : soa_x) sx += v;                // 仅 x，缓存高效
+    sx = 0; for (float v : soa_x) sx += v;        // 仅 x，缓存高效
     std::cout << sx << '\n';
 }
 ```

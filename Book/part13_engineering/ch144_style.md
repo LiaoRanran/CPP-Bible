@@ -67,8 +67,8 @@
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ❌ 反例：同一文件里三种命名 + 两种缩进，可读性灾难
-int   userCount;          // 小驼峰
-void Process_Data();      // 大驼峰 + 下划线混杂
+int   userCount;               // 小驼峰
+void Process_Data();           // 大驼峰 + 下划线混杂
 class tcp_server {int Port;};  // 缩进全无
 ```
 
@@ -147,19 +147,19 @@ void messy(int n){
 // ✅ 一致的命名：类型 PascalCase，变量/函数 snake_case，常量 k 前缀
 class ConnectionPool {
 public:
-    static constexpr int kDefaultSize = 16;   // 常量
-    bool acquire(Connection* conn);            // 函数
+    static constexpr int kDefaultSize = 16;  // 常量
+    bool acquire(Connection* conn);          // 函数
 private:
-    int active_count_ = 0;                     // 私有成员尾下划线
+    int active_count_ = 0;                   // 私有成员尾下划线
 };
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名一致性（关联 ch145）
 ```cpp
 // ❌ 反例：同语义的变量用了三种风格
-int UserCount;        // 大驼峰
-int maxConnect;       // 小驼峰
-int DEFAULT_PORT = 80; // 全小写常量
+int UserCount;          // 大驼峰
+int maxConnect;         // 小驼峰
+int DEFAULT_PORT = 80;  // 全小写常量
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名一致性（关联 ch145）
@@ -239,10 +239,10 @@ namespace {
 ```cpp
 // 内联命名空间：让内层符号对外层"透明"，常用于 ABI 版本切换
 inline namespace v2 {
-    void serialize() { // 新格式
+    void serialize() {  // 新格式
 }
 namespace v1 {
-    void serialize() { // 旧格式，仍可显式 net::v1::serialize 调用
+    void serialize() {  // 旧格式，仍可显式 net::v1::serialize 调用
 }
 ```
 
@@ -269,10 +269,10 @@ const 正确性是 C++ 类型系统的核心护栏。`[标准]` const 成员函�
 class Account {
     long balance_ = 0;
 public:
-    void deposit(long n) { balance_ += n; }       // 修改：非 const
-    long balance() const { return balance_; }      // ✅ const：只读
+    void deposit(long n) { balance_ += n; }               // 修改：非 const
+    long balance() const { return balance_; }             // ✅ const：只读
     long&       balance_ref()       { return balance_; }
-    const long& balance_ref() const { return balance_; } // ✅ const 重载
+    const long& balance_ref() const { return balance_; }  // ✅ const 重载
 };
 ```
 
@@ -416,11 +416,11 @@ for (auto it = v.begin(); it != v.end();) { // 漏写 ++it → 死循环
 struct Connection { int fd; explicit Connection(int f) : fd(f) {} };
 
 std::unique_ptr<Connection> open(int fd) {
-    return std::make_unique<Connection>(fd);   // ✅ 工厂返回独占所有权
+    return std::make_unique<Connection>(fd);  // ✅ 工厂返回独占所有权
 }
 void transfer() {
     auto a = open(3);
-    auto b = std::move(a);   // ✅ 所有权转移，a 置空，无拷贝
+    auto b = std::move(a);                    // ✅ 所有权转移，a 置空，无拷贝
 }
 ```
 
@@ -429,8 +429,8 @@ void transfer() {
 // shared_ptr：多所有者共享，注意避免循环引用
 #include <memory>
 struct Node {
-    std::shared_ptr<Node> next;       // ✅ 向下链用 shared_ptr
-    std::weak_ptr<Node>   parent;     // ✅ 回边用 weak_ptr，打破循环
+    std::shared_ptr<Node> next;    // ✅ 向下链用 shared_ptr
+    std::weak_ptr<Node>   parent;  // ✅ 回边用 weak_ptr，打破循环
 };
 ```
 
@@ -455,13 +455,13 @@ delete c;
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常规范（noexcept）
 ```cpp
 #include <vector>
-struct CopyOnly {            // 移动构造非 noexcept → 重分配时拷贝
+struct CopyOnly {      // 移动构造非 noexcept → 重分配时拷贝
     int x;
     CopyOnly(int v) : x(v) {}
     CopyOnly(CopyOnly&&) noexcept(false) = default;
     CopyOnly(const CopyOnly&) = default;
 };
-struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
+struct NoexceptMove {  // 移动构造 noexcept → 重分配时移动
     int x;
     NoexceptMove(int v) : x(v) {}
     NoexceptMove(NoexceptMove&&) noexcept = default;
@@ -493,9 +493,9 @@ struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
 class Buffer {
     std::vector<int> data_;
 public:
-    Buffer(Buffer&&) noexcept = default;        // ✅ 移动不抛
+    Buffer(Buffer&&) noexcept = default;  // ✅ 移动不抛
     Buffer& operator=(Buffer&&) noexcept = default;
-    ~Buffer() noexcept = default;               // ✅ 析构不抛
+    ~Buffer() noexcept = default;         // ✅ 析构不抛
 };
 ```
 
@@ -519,12 +519,12 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noex
 #include <vector>
 std::vector<int> make_buffer() {
     std::vector<int> v(4096, 7);
-    return v;                       // ✅ 保证复制消除/移动，无元素拷贝
+    return v;                // ✅ 保证复制消除/移动，无元素拷贝
 }
 std::vector<int> consume() {
-    auto v = make_buffer();         // ✅ 移动构造（O(1) 指针交换）
+    auto v = make_buffer();  // ✅ 移动构造（O(1) 指针交换）
     v.push_back(1);
-    return v;                       // ✅ 再次移动
+    return v;                // ✅ 再次移动
 }
 ```
 
@@ -543,8 +543,8 @@ std::cout << s;        // ❌ s 处于有效但未指定状态，读取危险
 #include <utility>
 #include <vector>
 // ✅ 仅在"不再使用原对象"时移动；传参用值+移动习惯用法
-void sink(std::vector<int> v) { // 接管所有权
-sink(std::move(local_vec));    // ✅ 明确转让
+void sink(std::vector<int> v) {  // 接管所有权
+sink(std::move(local_vec));      // ✅ 明确转让
 ```
 
 ## ⑫ 模板与 SFINAE 可读性
@@ -696,8 +696,8 @@ auto g = [](auto x) { return x + x; };
 #include <map>
 // C++17：结构化绑定、if 带初始化、折叠表达式、string_view
 std::map<std::string, int> m;
-if (auto [it, ok] = m.try_emplace("k", 1); ok) { // ...
-std::string_view sv = "zero-copy view";   // ✅ 避免临时 string
+if (auto [it, ok] = m.try_emplace("k", 1); ok) {  // ...
+std::string_view sv = "zero-copy view";           // ✅ 避免临时 string
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 现代 C++ 特性取舍
@@ -886,7 +886,7 @@ private:
 代码风格的本质是**一致性工程**。本章取证结论汇总：
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★★☆</span> · 小结
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ 风格门禁清单（落地即强制执行）                                │
 ├─────────────────────────────────────────────────────────────┤
@@ -953,7 +953,7 @@ ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bj
 ## 附录 A：工业代码规范对比 [F: Industry / B: Principle]
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业代码规范对比 [F: Industry / B: Principle]
-```
+```text
 C++ 代码风格——四大工业规范对比:
 
 Google C++ Style Guide (2024版):
@@ -978,7 +978,7 @@ Qt Coding Style:
 ## 附录 B：面试 [J: Learning / H: Design]
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
-```
+```text
 Q: clang-format 团队采纳的最佳实践？
 A: .clang-format 文件入 Git; CI pre-commit hook 自动检查; PR 不接受未格式化代码
 
@@ -1125,11 +1125,11 @@ int main() { Box b; std::cout << b.capacity() << '\n'; }
 
 int main() {
     std::map<std::string, std::vector<int>> m{{"a", {1, 2, 3}}};
-    for (auto const& [key, vals] : m) {  // 结构化绑定 + auto const&：零拷贝、免迭代器样板
+    for (auto const& [key, vals] : m) {     // 结构化绑定 + auto const&：零拷贝、免迭代器样板
         (void)key;
         (void)vals;
     }
-    int id = make_id();  // 必须接收，否则触发 [[nodiscard]] 警告
+    int id = make_id();                     // 必须接收，否则触发 [[nodiscard]] 警告
     (void)id;
 }
 ```
@@ -1151,7 +1151,7 @@ int main() {
 #include <memory>
 #include <utility>
 
-struct Buffer {                 // Rule of Zero：不手写任何特殊成员
+struct Buffer {               // Rule of Zero：不手写任何特殊成员
     std::unique_ptr<int[]> data;
     std::size_t n;
     explicit Buffer(std::size_t size) : data{std::make_unique<int[]>(size)}, n{size} {}
@@ -1161,9 +1161,9 @@ struct Buffer {                 // Rule of Zero：不手写任何特殊成员
 int main() {
     Buffer a{8};
     a[0] = 7;
-    Buffer b = std::move(a);    // unique_ptr 让移动正确，拷贝被自动删除
+    Buffer b = std::move(a);  // unique_ptr 让移动正确，拷贝被自动删除
     (void)b;
-    (void)a;                    // a 处于"合法但未指定"的空态，仅可析构/重新赋值
+    (void)a;                  // a 处于"合法但未指定"的空态，仅可析构/重新赋值
 }
 ```
 
@@ -1382,8 +1382,8 @@ struct Heavy { long long a,b,c,d,e,f,g,h; };
 int main(){
     std::vector<Heavy> v(512); for(int i=0;i<512;i++) v[i].a=i;
     long long acc=0;
-    for (const auto& h : v) acc += h.a;   // 引用：不拷贝
-    for (auto h : v)        acc += h.a;   // 值拷贝：每轮拷 64B
+    for (const auto& h : v) acc += h.a;  // 引用：不拷贝
+    for (auto h : v)        acc += h.a;  // 值拷贝：每轮拷 64B
     printf("acc=%lld\n", acc);
 }
 ```

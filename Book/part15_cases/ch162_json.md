@@ -178,7 +178,7 @@ class Parser {
     size_t pos_ = 0;
 public:
     explicit Parser(std::string_view s) : s_(s) {}
-    Value parse() {               // 顶层：吃掉值 + 尾部空白 + 校验无残留
+    Value parse() {       // 顶层：吃掉值 + 尾部空白 + 校验无残留
         skip_ws();
         Value v = parse_value();
         skip_ws();
@@ -186,7 +186,7 @@ public:
         return v;
     }
 private:
-    Value parse_value();          // 按首字符分派到 6 类
+    Value parse_value();  // 按首字符分派到 6 类
 };
 ```
 
@@ -251,7 +251,7 @@ token 数: 9
 // 文件：Examples/_ch162_json.cpp
 // 行号：236-271（parse_array 与 parse_object）
 Value parse_array() {
-    ++pos_;                       // 跳过 '['
+    ++pos_;  // 跳过 '['
     Array arr;
     skip_ws();
     if (peek() == ']') { ++pos_; return Value(std::move(arr)); }
@@ -267,7 +267,7 @@ Value parse_array() {
 }
 
 Value parse_object() {
-    ++pos_;                       // 跳过 '{'
+    ++pos_;  // 跳过 '{'
     Object obj;
     skip_ws();
     if (peek() == '}') { ++pos_; return Value(std::move(obj)); }
@@ -338,13 +338,13 @@ std::string escape(const std::string& in) {
 // ⑦（续）\uXXXX → UTF-8（含高/低代理合并，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
 // 行号：182-210（parse_unicode_escape 与 codepoint_to_utf8）
-if (cp >= 0xD800 && cp <= 0xDBFF) {            // 高代理
+if (cp >= 0xD800 && cp <= 0xDBFF) {  // 高代理
     // 必须紧跟 \uXXXX 低代理，否则报错
     unsigned lo = parse_low_surrogate();
     if (lo < 0xDC00 || lo > 0xDFFF) fail("代理对不匹配");
     cp = 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00);
 }
-return codepoint_to_utf8(cp);                  // 1/2/3/4 字节 UTF-8 编码
+return codepoint_to_utf8(cp);        // 1/2/3/4 字节 UTF-8 编码
 ```
 
 本机 `Examples/_ch162_escape.cpp` 真实输出：
@@ -405,9 +405,9 @@ std::string write(const Value& v) {
 // 注意：下面代码依赖第三方库，仅作对比展示，非本章自制实现
 #include <nlohmann/json.hpp>
 nlohmann::json j = {{"name", "小明"}, {"age", 30}};
-j["age"] = j["age"].get<int>() + 1;          // 透明下标 + 类型转换
-std::string s = j.dump(2);                    // 美化序列化（缩进 2）
-auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（需宏/特化）
+j["age"] = j["age"].get<int>() + 1;  // 透明下标 + 类型转换
+std::string s = j.dump(2);           // 美化序列化（缩进 2）
+auto obj = j.get<MyStruct>();        // 自动反序列化到 struct（需宏/特化）
 ```
 
 | 维度 | 本章 mini_json（自制） | nlohmann/json（上游） |
@@ -921,7 +921,7 @@ int main() {
 ## 附录 B：底层实现与面试 [E: Low-level / J: Learning / I: Practice]
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：底层实现与面试 [E: Low-level / J: Learning / I: Practice]
-```
+```text
 JSON Parser 实现的关键决策:
 
 1. DOM vs SAX:
@@ -1064,11 +1064,11 @@ g++ -std=c++23 -O2 -Wall -Wextra -o json_demo.exe json_demo.cpp
 #include <memory>
 #include <iostream>
 
-struct Value;                                  // 前置声明，支持递归嵌套
+struct Value;   // 前置声明，支持递归嵌套
 using Array  = std::vector<std::unique_ptr<Value>>;
 using Object = std::vector<std::pair<std::string, std::unique_ptr<Value>>>;
 
-struct Value {                                // JSON 值：类型安全联合体，原生支持嵌套
+struct Value {  // JSON 值：类型安全联合体，原生支持嵌套
     std::variant<std::nullptr_t, bool, double, std::string, Array, Object> data;
 };
 
@@ -1126,7 +1126,7 @@ DOM 易用但占内存、需先全量建树；SAX 边解析边回调，内存恒
 #include <iostream>
 struct Handler {
     void on_key(std::string_view k) {
-        if (k == "level") ++count;     // 只关心 level 键，零拷贝比较
+        if (k == "level") ++count;      // 只关心 level 键，零拷贝比较
     }
     int count = 0;
 };

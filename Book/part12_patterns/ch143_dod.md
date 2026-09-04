@@ -95,9 +95,9 @@ int main() {
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：DOD 是什么
 ```cpp
 // 片段：从“对象”到“列”——DOD 的思维方式转变
-struct Transform { float x, y, rot; };   // 一列变换数据
+struct Transform { float x, y, rot; };         // 一列变换数据
 void advance(Transform* t, int n, float dt) {
-    for (int i = 0; i < n; ++i) t[i].x += dt;   // 顺序、同质、可向量化
+    for (int i = 0; i < n; ++i) t[i].x += dt;  // 顺序、同质、可向量化
 }
 ```
 
@@ -157,7 +157,7 @@ void update_all(Monster* m, int n, float dt) {
 对比要点（后续章节逐一用汇编/计时取证）：
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 与 OOP 对比（缓存/抽象）
-```
+```text
 ┌───────────────────┬─────────────────────────┬─────────────────────────┐
 │ 维度              │ OOP（多态指针数组）      │ DOD（连续数组 + 批处理） │
 ├───────────────────┼─────────────────────────┼─────────────────────────┤
@@ -183,7 +183,7 @@ struct Vec3 { float x, y, z; };   // 12B；两个对象共占 24B < 64B 缓存�
 缓存层级（典型桌面）：
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数据局部性
-```
+```text
 ┌────────────┬───────────┬──────────────┬─────────────┐
 │ 层级       │ 容量      │ 延迟(约)     │ 与 CPU 关系 │
 ├────────────┼───────────┼──────────────┼─────────────┤
@@ -382,7 +382,7 @@ int main() {
 本机实测（GCC 13.1.0, `-O2`, 2,000,000 元素 × 50 轮）：
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构体数组真实基准
-```
+```text
 AoS count(alive)+hp : 0.1308 s  (c=66666650)
 SoA count(alive)+hp : 0.1162 s  (c=66666650)
 ```
@@ -404,13 +404,13 @@ SoA 更快约 **11%**，来源是：AoS 每读一个 `alive`（1B）会顺带把
 #include <string>
 
 // ⑥ 冷热分离：把每帧都要访问的热字段，与很少访问的冷字段拆开
-struct EntityHot {           // 每帧遍历：紧凑、缓存友好
+struct EntityHot {   // 每帧遍历：紧凑、缓存友好
     int   id;
     bool  active;
     float x, y;
 };
 
-struct EntityCold {          // 偶尔访问：可以放指针间接引用，不污染热循环
+struct EntityCold {  // 偶尔访问：可以放指针间接引用，不污染热循环
     std::vector<int> inventory;
     std::string      name;
     int              questState;
@@ -430,10 +430,10 @@ float sum_hot(const EntityHot* e, int n) {
 #include <vector>
 // 片段：把 hot 字段聚到结构前面，冷字段后置或外置
 struct Entity {
-    bool  active;   // 热：每帧判断
-    float x, y;     // 热：每帧积分
+    bool  active;                 // 热：每帧判断
+    float x, y;                   // 热：每帧积分
     // —— 冷字段：仅在事件触发时访问 ——
-    std::vector<int>* inventory;   // 指针间接，不占热循环缓存
+    std::vector<int>* inventory;  // 指针间接，不占热循环缓存
     const char*       name;
 };
 ```
@@ -673,18 +673,18 @@ constexpr int fib(int n) {
     return n < 2 ? n : fib(n - 1) + fib(n - 2);
 }
 
-constexpr int kTableSize = fib(10);   // 55，编译期求得
+constexpr int kTableSize = fib(10);  // 55，编译期求得
 static_assert(kTableSize == 55);
 
 // 编译期生成查表，避免运行期循环
 constexpr int make_table(int i) { return fib(i); }
 
 int use_table() {
-    int arr[kTableSize];              // 栈上定长数组，大小已知
+    int arr[kTableSize];             // 栈上定长数组，大小已知
     for (int i = 0; i < kTableSize; ++i) arr[i] = make_table(i);
     int s = 0;
     for (int i = 0; i < kTableSize; ++i) s += arr[i];
-    return s;                          // 返回已知常数，可被常量折叠
+    return s;                        // 返回已知常数，可被常量折叠
 }
 ```
 
@@ -697,11 +697,11 @@ constexpr int fib(int n) {
 }
 
 consteval int compile_time() {
-    return fib(15);   // 610，编译期定值
+    return fib(15);         // 610，编译期定值
 }
 
 int runtime_use() {
-    return compile_time();   // 期望折叠为常量 mov eax, 610
+    return compile_time();  // 期望折叠为常量 mov eax, 610
 }
 ```
 
@@ -736,13 +736,13 @@ static_assert(make_tab()[2] == 3);
 
 // ⑫ alignas 强制对齐：让对象落在缓存行/页边界，利于 SIMD 与避免 false sharing
 struct Normal {
-    char a;     // 1B
-    int  b;     // 4B，需 4 对齐 -> 插入 3B padding
-    short c;    // 2B
+    char a;              // 1B
+    int  b;              // 4B，需 4 对齐 -> 插入 3B padding
+    short c;             // 2B
 };
 
 struct Aligned {
-    alignas(64) char a;   // 强制 64B 对齐（与缓存行同宽）
+    alignas(64) char a;  // 强制 64B 对齐（与缓存行同宽）
     int  b;
     short c;
 };
@@ -757,7 +757,7 @@ int main() {
 真实运行输出（GCC 15.3.0）：
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存对齐
-```
+```text
 Normal  : sizeof=12 alignof=4
 Aligned : sizeof=64 alignof=64
 ```
@@ -801,8 +801,8 @@ alignas(64) float simd_buf[1024];   // 一条缓存行内 16 个 float 对齐打
 #include <cstdio>
 
 // ⑬ False Sharing：两个线程改写同一缓存行上的不同变量，互相使对方失效
-struct Shared { volatile long a = 0; volatile long b = 0; };   // a、b 同处一个 64B 缓存行
-struct Padded { volatile long a = 0; char pad[64]; volatile long b = 0; }; // b 隔离
+struct Shared { volatile long a = 0; volatile long b = 0; };                // a、b 同处一个 64B 缓存行
+struct Padded { volatile long a = 0; char pad[64]; volatile long b = 0; };  // b 隔离
 
 static const long ITER = 30'000'000;
 
@@ -841,7 +841,7 @@ int main() {
 真实运行输出（双线程，每线程 3e7 次 RMW）：
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 false sharing
-```
+```text
 false-sharing(同线): 0.0452 s  (sum=60000000)
 padded(隔离)      : 0.0149 s  (sum=60000000)
 ```
@@ -877,7 +877,7 @@ perf report
 典型输出（示意，非本机实测）：
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能剖析（perf 命令+典型输出）
-```
+```text
  Performance counter stats for './your_dod_bench':
 
          12,345,678      cache-misses              #  8.1% of all cache refs
@@ -954,7 +954,7 @@ struct Node { int val; Node* next; };
 int sum_list(const Node* head) {
     int s = 0;
     for (const Node* p = head; p; p = p->next)
-        s += p->val;          // 每次 next 都是一次随机内存访问
+        s += p->val;  // 每次 next 都是一次随机内存访问
     return s;
 }
 
@@ -962,7 +962,7 @@ int sum_list(const Node* head) {
 int sum_array(const int* v, int n) {
     int s = 0;
     for (int i = 0; i < n; ++i)
-        s += v[i];            // 顺序访问，可预取、可向量化
+        s += v[i];    // 顺序访问，可预取、可向量化
     return s;
 }
 ```
@@ -990,9 +990,9 @@ int next[1024];   // 图/链表逻辑仍在，但内存连续，遍历连续
 
 // ⑰ 真实案例（物理积分）：对若干刚体做半隐式欧拉积分，纯 SoA + 批处理
 struct Bodies {
-    std::vector<float> x, y;       // 位置
-    std::vector<float> vx, vy;     // 速度
-    std::vector<float> mass;       // 质量
+    std::vector<float> x, y;    // 位置
+    std::vector<float> vx, vy;  // 速度
+    std::vector<float> mass;    // 质量
 };
 
 void integrate(Bodies& b, float dt) {
@@ -1116,7 +1116,7 @@ BENCHMARK_MAIN();
 典型输出（示意，非本机实测）：
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 工具
-```
+```text
 ------------------------------------------------------------------
 Benchmark                        Time             CPU   Iterations
 ------------------------------------------------------------------
@@ -1161,7 +1161,7 @@ template <class F> double time_it(F f, int reps) {
 DOD 不是银弹，而是**在“每帧遍历海量同质数据”的热路径上换取缓存与指令效率**的纪律。一页速记：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 小结
-```
+```text
 ┌───────────────────┬────────────────────────────────────────────┐
 │ 原则              │ 落地手段                                   │
 ├───────────────────┼────────────────────────────────────────────┤
@@ -1395,8 +1395,8 @@ SoA 把同字段聚在一起，顺序遍历的缓存命中率显著提升（关�
 #include <cstdint>
 
 struct AlignedCounters {
-    alignas(64) std::size_t a = 0;   // 计数器 a 独占第 1 个缓存行
-    alignas(64) std::size_t b = 0;   // 计数器 b 独占第 2 个缓存行
+    alignas(64) std::size_t a = 0;  // 计数器 a 独占第 1 个缓存行
+    alignas(64) std::size_t b = 0;  // 计数器 b 独占第 2 个缓存行
 };
 
 int main() {
@@ -1786,10 +1786,10 @@ struct AoS { float x, y; };
 int main() {
     const int N = 1 << 20;
     std::vector<AoS> a(N);
-    std::vector<float> xs(N), ys(N);   // SoA
+    std::vector<float> xs(N), ys(N);          // SoA
     float s = 0;
-    for (int i = 0; i < N; ++i) s += a[i].x;   // AoS: 每行还带 y
-    for (int i = 0; i < N; ++i) s += xs[i];     // SoA: 纯 x，缓存友好
+    for (int i = 0; i < N; ++i) s += a[i].x;  // AoS: 每行还带 y
+    for (int i = 0; i < N; ++i) s += xs[i];   // SoA: 纯 x，缓存友好
     std::cout << s << '\n';
 }
 ```
@@ -1812,8 +1812,8 @@ int main() {
 ```cpp
 #include <iostream>
 #include <vector>
-struct Cold { int meta; };            // 多个冷字段
-struct Entity { int hit; Cold cold; }; // 重构前：热冷同体
+struct Cold { int meta; };                      // 多个冷字段
+struct Entity { int hit; Cold cold; };          // 重构前：热冷同体
 // 重构后：
 // std::vector<int>  hits(N);       // 热数组，遍历只碰 hit
 // std::vector<Cold> colds(N);      // 冷数组，按需访问
@@ -1821,7 +1821,7 @@ int main() {
     const int N = 1 << 20;
     std::vector<Entity> e(N);
     long s = 0;
-    for (int i = 0; i < N; ++i) s += e[i].hit; // 每行还载入整个 Cold
+    for (int i = 0; i < N; ++i) s += e[i].hit;  // 每行还载入整个 Cold
     std::cout << s << '\n';
 }
 ```

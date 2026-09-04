@@ -258,7 +258,7 @@ Clang 对 C++20 模块化、`<ranges>`、concepts 的支持与 GCC 互有快慢�
 // 见 ⑨ 真实汇编：O2 下 caller() 直接 mov eax, 92
 int compute(int x) {
     int a = x * 2;
-    int b = x * 2;   // 与 a 同值（GVN 可复用）
+    int b = x * 2;                   // 与 a 同值（GVN 可复用）
     int c = (x + 1) * (x + 1);
     return a + b + c;
 }
@@ -305,7 +305,7 @@ inline int add_inline(int a, int b) { return a + b; }
 __attribute__((noinline)) int add_noinline(int a, int b) { return a + b; }
 int use_inlined() {
     int s = 0;
-    for (int i = 0; i < 4; ++i) s += add_inline(i, 1); // 期望被内联
+    for (int i = 0; i < 4; ++i) s += add_inline(i, 1);  // 期望被内联
     return s;
 }
 int use_noinline() { return add_noinline(3, 4); }       // noinline：保留真实 call
@@ -649,8 +649,8 @@ LLVM 源码以 `lib/` + `include/` 对应，`XXX.cpp` 实现 `XXX.h` 中声明�
 // ⑳ 一页纸心智模型：C++ 源码经过「Clang 前端 → LLVM IR → Pass 管道 → 后端」
 // 优化发生在 IR 与后端两层；前端只负责「忠实地翻译」（见 ②/⑤/⑧）
 int model(int a, int b) {
-    int t = a + b;     // CreateAdd (⑲)
-    return t * t;      // SCCP/GVN 在常量场景折叠 (⑧⑨)
+    int t = a + b;  // CreateAdd (⑲)
+    return t * t;   // SCCP/GVN 在常量场景折叠 (⑧⑨)
 }
 ```
 
@@ -695,9 +695,9 @@ LLVM 的核心模式之一，是用**标签联合（tagged union）+ 访问者**
 #include <iostream>
 #include <string>
 
-struct Constant { int value; };          // 类比 LLVM 的 ConstantInt
-struct AddExpr  { // 真实 IR 里会递归持有左右子节点
-struct VarRef   { std::string name; };   // 类比 LLVM 的 Argument/GlobalVariable
+struct Constant { int value; };                                 // 类比 LLVM 的 ConstantInt
+struct AddExpr  {};                                             // 真实 IR 里会递归持有左右子节点
+struct VarRef   { std::string name; };                          // 类比 LLVM 的 Argument/GlobalVariable
 
 // 一个 IR 节点：用 variant 表示「这节点可能是常量/加法/变量」——LLVM 的 Value 也是标签联合
 using Node = std::variant<Constant, AddExpr, VarRef>;
@@ -705,14 +705,14 @@ using Node = std::variant<Constant, AddExpr, VarRef>;
 // 访问者：对每种节点类型分派不同行为（类比 LLVM 的 InstVisitor）
 struct Eval {
     int operator()(const Constant& c) const { return c.value; }
-    int operator()(const AddExpr&)    const { return 0; }   // 简化：真实 IR 会递归左右子节点
+    int operator()(const AddExpr&)    const { return 0; }       // 简化：真实 IR 会递归左右子节点
     int operator()(const VarRef&)     const { return 0; }
 };
 
 int main() {
     std::vector<Node> ir{ Constant{42}, VarRef{"x"}, AddExpr{} };
     for (const auto& n : ir)
-        std::cout << "eval=" << std::visit(Eval{}, n) << "\n";   // 遍历并分派到对应重载
+        std::cout << "eval=" << std::visit(Eval{}, n) << "\n";  // 遍历并分派到对应重载
     return 0;
 }
 ```

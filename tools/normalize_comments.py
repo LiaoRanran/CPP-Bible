@@ -248,7 +248,8 @@ def process_file(path: str, apply: bool):
         if m:
             if not in_fence:
                 in_fence = True
-                fence_lang = ln.strip()[3:].strip().lower()
+                _info = ln.strip()[3:].strip().lower()
+                fence_lang = _info.split()[0] if _info else ""  # 取语言首 token（兼容 title="…" 信息串）
                 # 只处理 cpp 块
                 if fence_lang == "cpp":
                     buf = []

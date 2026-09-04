@@ -55,7 +55,8 @@ def audit_file(path):
         if m:
             if not in_fence:
                 in_fence = True
-                fence_lang = m.group(1).strip().lower()
+                _info = m.group(1).strip().lower()
+                fence_lang = _info.split()[0] if _info else ""  # 取语言首 token（兼容 title="…" 信息串）
                 if fence_lang in ('cpp', '') or (fence_lang == '' ):
                     # bare 或 cpp 都算实例候选（bare 多为 cpp 输出/片段）
                     if fence_lang in ('cpp', ''):

@@ -63,7 +63,7 @@
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱（ASCII）
-```
+```text
           非虚继承（菱形）→ B 重复两份
                   A
                 /   \
@@ -122,7 +122,7 @@ classDiagram
 菱形 `B(virtual) ← M1, M2 ← D`（x86-64，Itanium ABI，GCC 布局）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图 / 虚继承对象布局
-```
+```text
         D 对象（地址 base）
         ┌─────────────────────────┐  <- base (M1 子对象头)
         │  vbptr(M1) ──────────┐  │
@@ -150,7 +150,7 @@ classDiagram
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 生命周期图
-```
+```text
 构造 D d（最派生类负责虚基类）：
   D 构造体 ──调──▶ B 构造（虚基类，仅一次，先于所有非虚基类）
        │
@@ -164,7 +164,7 @@ classDiagram
 ## ⑨ 调用栈 / 时序图
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈 / 时序图
-```
+```text
 调用点                    vtable 负区              虚基类子对象
   │                         │                         │
   │── mov rax,[rcx] ─────▶ 取 M1 的 vbptr            │
@@ -236,10 +236,10 @@ _Z10cross_castP2M1:
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-A：iostream
 ```cpp
 // 标准库概念（节选，示意）
-struct ios { // 格式化状态、rdbuf
-struct istream : virtual ios { // >> 运算符
-struct ostream : virtual ios { // << 运算符
-struct iostream : istream, ostream { // 既是输入也是输出，ios 仅一份
+struct ios {                          // 格式化状态、rdbuf
+struct istream : virtual ios {        // >> 运算符
+struct ostream : virtual ios {        // << 运算符
+struct iostream : istream, ostream {  // 既是输入也是输出，ios 仅一份
 ```
 
 【设计要点】若 `istream`/`ostream` 非虚继承 `ios`，则 `iostream` 会有两份 `ios`，`cin.rdbuf()` 等访问产生歧义。虚继承使 `ios` 共享唯一，由 `iostream` 构造。这是虚继承「存在即合理」的少数必要场景之一。
@@ -274,8 +274,8 @@ struct M1 : virtual B {}; struct M2 : virtual B {};
 struct D : M1, M2 {};
 void demo_c() {
     D d;
-    B* viaM1 = static_cast<B*>(static_cast<M1*>(&d)); // 经 M1 路径
-    B* viaM2 = static_cast<B*>(static_cast<M2*>(&d)); // 经 M2 路径
+    B* viaM1 = static_cast<B*>(static_cast<M1*>(&d));  // 经 M1 路径
+    B* viaM2 = static_cast<B*>(static_cast<M2*>(&d));  // 经 M2 路径
     std::printf("%p %p same=%d\n", (void*)viaM1, (void*)viaM2, viaM1 == viaM2);
 }
 ```
@@ -308,9 +308,9 @@ struct D : M1, M2 { D() { std::cout << "D\n"; } };
 #include <cstdio>
 struct A { int a; virtual ~A() = default; };
 struct X : A {}; struct Y : A {};
-struct D_bad : X, Y {};                 // 非虚：两份 A
+struct D_bad : X, Y {};   // 非虚：两份 A
 struct V : virtual A {}; struct W : virtual A {};
-struct D_good : V, W {};                // 虚：一份 A
+struct D_good : V, W {};  // 虚：一份 A
 void demo_f() { std::printf("%zu %zu\n", sizeof(D_bad), sizeof(D_good)); }
 ```
 
@@ -395,9 +395,9 @@ struct Der : BaseCRTP<Der> { void impl() {} };  // 无虚函数/无 vbptr
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 49-O：虚基类 + 普通
 ```cpp
-struct V { virtual ~V() = default; };   // 虚基类
-struct N { int n; };                    // 普通基类
-struct M : virtual V, N {};             // V 唯一，N 按普通继承重复规则
+struct V { virtual ~V() = default; };  // 虚基类
+struct N { int n; };                   // 普通基类
+struct M : virtual V, N {};            // V 唯一，N 按普通继承重复规则
 ```
 
 ### 工业案例 49-P：热路径避免频繁访问虚基类成员
@@ -463,7 +463,7 @@ struct D : M { D() : V(7) {} };   // D 的 V(7) 生效，M 的 V(1) 被忽略
 [标准·Itanium C++ ABI] 含虚基类的子对象 vtable 在「负偏移区」存 virtual base offset table：
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
-```
+```text
 vtable for M1 (在 D 中):
   [-3]  vbase offset (M1 → 虚基类 B 的偏移，即本例 -24 编码值)
   [-2]  vcall offset / 其他
@@ -869,8 +869,8 @@ int good(D& d){ return d.b; }   // 编译器生成 vbptr+vbase offset 访问（�
 ```cpp
 // ❌ 中间类初始化虚基类，但最派生类没初始化 → 若虚基类无默认 ctor 则编译错
 struct V { V(int); };
-struct M : virtual V { M() : V(1) {} };     // 仅中间类初始化
-struct D : M { D() {} };                     // 错：D 必须初始化 V（无默认 ctor）
+struct M : virtual V { M() : V(1) {} };  // 仅中间类初始化
+struct D : M { D() {} };                 // 错：D 必须初始化 V（无默认 ctor）
 ```
 
 【正确示例】
@@ -1064,7 +1064,7 @@ _Z8call_fooP4Base:
 struct A { int a = 1; };
 struct B1 : A {};
 struct B2 : A {};
-struct D : B1, B2 {};            // 两份 A 子对象
+struct D : B1, B2 {};                                // 两份 A 子对象
 int main() {
     D d;
     // d.a;                       // 错误：二义（B1::A 与 B2::A）
@@ -1080,7 +1080,7 @@ int main() {
 struct A { int a = 1; };
 struct B1 : virtual A {};
 struct B2 : virtual A {};
-struct D : B1, B2 {};            // 共享一份 A
+struct D : B1, B2 {};                          // 共享一份 A
 int main() { D d; std::cout << d.a << '\n'; }  // 1，无二义
 ```
 
@@ -1132,9 +1132,9 @@ int main() {
     D d;
     L* pl = &d;
     R* pr = &d;
-    std::cout << (void*)&d << '\n';   // 对象首地址
-    std::cout << (void*)pl << '\n';   // == 首地址（L 是首个基类）
-    std::cout << (void*)pr << '\n';   //!= 首地址（R 子对象有偏移）
+    std::cout << (void*)&d << '\n';  // 对象首地址
+    std::cout << (void*)pl << '\n';  // == 首地址（L 是首个基类）
+    std::cout << (void*)pr << '\n';  // != 首地址（R 子对象有偏移）
 }
 ```
 
@@ -1158,12 +1158,12 @@ int main() {
 struct Top { int t = 0; };
 struct L : Top { };
 struct R : Top { };
-struct D : L, R { };              // 菱形：D 含两个 Top 子对象
+struct D : L, R { };                               // 菱形：D 含两个 Top 子对象
 int main() {
     D d;
-    d.L::t = 1;                   // 必须消歧：指向 L 路径的 Top
-    d.R::t = 2;                   // 指向 R 路径的 Top（独立副本）
-    std::cout << d.L::t << " " << d.R::t << "\n";   // 1 2（两份独立）
+    d.L::t = 1;                                    // 必须消歧：指向 L 路径的 Top
+    d.R::t = 2;                                    // 指向 R 路径的 Top（独立副本）
+    std::cout << d.L::t << " " << d.R::t << "\n";  // 1 2（两份独立）
 }
 ```
 
@@ -1187,11 +1187,11 @@ int main() {
 struct Top { int t = 0; };
 struct L : virtual Top { };
 struct R : virtual Top { };
-struct D : L, R { };              // virtual 继承：共享同一 Top
+struct D : L, R { };                                             // virtual 继承：共享同一 Top
 int main() {
     D d;
-    d.t = 7;                      // 无二义：唯一 Top 子对象
-    std::cout << d.t << " " << d.L::t << " " << d.R::t << "\n";   // 7 7 7
+    d.t = 7;                                                     // 无二义：唯一 Top 子对象
+    std::cout << d.t << " " << d.L::t << " " << d.R::t << "\n";  // 7 7 7
 }
 ```
 
@@ -1247,10 +1247,10 @@ int main() { D d; std::cout << d.a << '\n'; }  // 5，单一状态
 ```cpp
 #include <iostream>
 struct A { int a; A(int v) : a(v) { std::cout << "A(" << v << ")\n"; } };
-struct B1 : virtual A { B1() : A(1) { std::cout << "B1\n"; } };  // A(1) 被忽略
-struct B2 : virtual A { B2() : A(2) { std::cout << "B2\n"; } };  // A(2) 被忽略
+struct B1 : virtual A { B1() : A(1) { std::cout << "B1\n"; } };           // A(1) 被忽略
+struct B2 : virtual A { B2() : A(2) { std::cout << "B2\n"; } };           // A(2) 被忽略
 struct D : B1, B2 { D() : A(99) { std::cout << "D a=" << a << '\n'; } };  // A(99) 生效
-int main() { D d; }   // 输出 A(99) B1 B2 D a=99
+int main() { D d; }                                                       // 输出 A(99) B1 B2 D a=99
 ```
 
 **修复**：虚基类的初始化列表**只写在最派生类**构造函数中（维度⑫ 构造顺序机制）。
@@ -1412,7 +1412,7 @@ flowchart TD
 `basic_iostream` 对象在运行期的布局大致如下（地址由低到高，偏移为示意）：
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 虚基偏移的固定性
-```
+```text
 +---------------------------+  <- &obj  (== &B == &basic_istream 子对象头)
 | basic_istream 子对象       |
 |   vptr_istream (含 vbase  |
@@ -1481,14 +1481,14 @@ int main() {
   D obj;
 
   // 取各子对象地址：B、C 各自独立，但虚基 A 共享同一份
-  A* pa = static_cast<A*>(&obj);          // 经 D 调整指向唯一虚基
+  A* pa = static_cast<A*>(&obj);                    // 经 D 调整指向唯一虚基
   B* pb = static_cast<B*>(&obj);
   C* pc = static_cast<C*>(&obj);
 
   std::cout << "addr D      =" << &obj << std::endl;
   std::cout << "addr B sub  =" << pb << std::endl;
   std::cout << "addr C sub  =" << pc << std::endl;
-  std::cout << "addr A (vb) =" << pa << std::endl;   // 应异于 B、C 的头部
+  std::cout << "addr A (vb) =" << pa << std::endl;  // 应异于 B、C 的头部
 
   // 经不同臂访问同一虚基，数值必须一致 —— 证明共享
   std::cout << "A via B.a   =" << pb->a << std::endl;

@@ -243,8 +243,8 @@ flowchart TD
 #include <iostream>
 int main() {
     std::filesystem::path p = "/var/log";
-    p /= "app";                      // 纯词法：追加分隔符 + "app"
-    std::cout << p.generic_string() << "\n";   // "/var/log/app"
+    p /= "app";                               // 纯词法：追加分隔符 + "app"
+    std::cout << p.generic_string() << "\n";  // "/var/log/app"
     return 0;
 }
 ```
@@ -294,18 +294,18 @@ libstdc++ 中 `operator/=` 调用 `_M_append`：
 #include <chrono>
 namespace fs = std::filesystem;
 int main() {
-    fs::path archive_root = fs::temp_directory_path() / "myapp_logs"; // 词法拼接
+    fs::path archive_root = fs::temp_directory_path() / "myapp_logs";  // 词法拼接
     // 仅当存在时才遍历，避免假设磁盘状态
     if (fs::exists(archive_root)) {
         for (auto& e : fs::recursive_directory_iterator(archive_root)) {
             std::error_code ec;
-            auto wt = fs::last_write_time(e.path(), ec);   // chrono::file_time_type
+            auto wt = fs::last_write_time(e.path(), ec);               // chrono::file_time_type
             if (ec) continue;
             // 用 chrono 计算年龄（见第92章）
             auto now = fs::file_time_type::clock::now();
             auto age = now - wt;
             if (age > std::chrono::hours(24 * 7)) {
-                fs::remove(e.path(), ec);                  // 无异常版
+                fs::remove(e.path(), ec);                              // 无异常版
             }
         }
     } else {
@@ -792,8 +792,8 @@ int main() {
 #include <iostream>
 int main() {
     std::filesystem::path p = "archive.tar.gz";
-    std::cout << "ext   = " << p.extension().generic_string() << "\n";   // ".gz"
-    std::cout << "stem  = " << p.stem().generic_string() << "\n";        // "archive.tar"
+    std::cout << "ext   = " << p.extension().generic_string() << "\n";  // ".gz"
+    std::cout << "stem  = " << p.stem().generic_string() << "\n";       // "archive.tar"
     return 0;
 }
 ```
@@ -932,8 +932,8 @@ int main() {
 #include <iostream>
 int main() {
     std::error_code ec;
-    std::filesystem::create_symlink("target.txt", "link.txt", ec);   // 软链接
-    std::filesystem::create_hard_link("target.txt", "hard.txt", ec); // 硬链接
+    std::filesystem::create_symlink("target.txt", "link.txt", ec);    // 软链接
+    std::filesystem::create_hard_link("target.txt", "hard.txt", ec);  // 硬链接
     std::cout << "link ops attempted (ec=" << ec.message() << ")\n";
     return 0;
 }
@@ -1229,9 +1229,9 @@ int main() {
 int main() {
     namespace fs = std::filesystem;
     fs::path p = "/tmp/data/report.2024.txt";
-    std::cout << p.parent_path() << '\n';   ///tmp/data
-    std::cout << p.stem()       << '\n';    // report.2024
-    std::cout << p.extension()  << '\n';    // .txt
+    std::cout << p.parent_path() << '\n';  // /tmp/data
+    std::cout << p.stem()       << '\n';   // report.2024
+    std::cout << p.extension()  << '\n';   // .txt
 }
 ```
 

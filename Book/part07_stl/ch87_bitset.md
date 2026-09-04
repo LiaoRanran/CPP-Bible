@@ -77,7 +77,7 @@
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）
-```
+```text
                     ┌──────────────────────────────┐
                     │   std::bitset<N>  (编译期定长) │
                     │   大小 N 编码进类型，ABI 固定    │
@@ -144,7 +144,7 @@ classDiagram
 `std::bitset<128>` 在内存中就是**一块连续的 word 数组**，没有虚表、没有指针，大小在编译期完全确定。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
-```
+```text
 std::bitset<128> b(0);   // sizeof = 128/8 = 16 字节 = 2 个 64 位 word
 ┌──────────────────────────────────────────────────────────┐
 │  b  (size = 16 bytes, 无 vptr)                              │
@@ -168,7 +168,7 @@ bit 位置与 word 的映射（libstdc++，_S_wordbits = 64）：
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图
-```
+```text
 构造 std::bitset<64> b(0xF);          // 单 word，_M_w[0] = 0xF
    │
    ▼
@@ -296,9 +296,9 @@ int main() {
     CapMask needWrite = grant({CAP_READ, CAP_WRITE});
 
     std::cout << "admin can write? " << std::boolalpha
-              << authorized(admin, needWrite) << "\n";     // true
+              << authorized(admin, needWrite) << "\n";            // true
     std::cout << "reader can write? "
-              << authorized(reader, needWrite) << "\n";    // false
+              << authorized(reader, needWrite) << "\n";           // false
     std::cout << "admin caps count = " << admin.count() << "\n";  // 4
     return 0;
 }
@@ -617,10 +617,10 @@ int main() {
 int main() {
     std::bitset<8> a(std::string("10101010"));
     std::bitset<8> b(std::string("11001100"));
-    std::cout << (a & b) << "\n";   // 10001000
-    std::cout << (a | b) << "\n";   // 11101110
-    std::cout << (a ^ b) << "\n";   // 01100110
-    std::cout << (~a) << "\n";      // 01010101（取反，8 位内）
+    std::cout << (a & b) << "\n";  // 10001000
+    std::cout << (a | b) << "\n";  // 11101110
+    std::cout << (a ^ b) << "\n";  // 01100110
+    std::cout << (~a) << "\n";     // 01010101（取反，8 位内）
     return 0;
 }
 ```
@@ -632,8 +632,8 @@ int main() {
 #include <iostream>
 int main() {
     std::bitset<8> b(42);
-    std::cout << b.to_string() << "\n";     // 00101010
-    std::cout << b.to_ulong() << "\n";      // 42
+    std::cout << b.to_string() << "\n";  // 00101010
+    std::cout << b.to_ulong() << "\n";   // 42
     return 0;
 }
 ```
@@ -659,9 +659,9 @@ int main() {
 #include <string>
 int main() {
     std::bitset<8> b(std::string("00001111"));
-    b.flip(0);            // 00001110
-    b.reset(4);           // 00000110
-    b.flip();             // 按位取反 11111001
+    b.flip(0);   // 00001110
+    b.reset(4);  // 00000110
+    b.flip();    // 按位取反 11111001
     std::cout << b << "\n";
     return 0;
 }
@@ -674,8 +674,8 @@ int main() {
 #include <iostream>
 int main() {
     std::bitset<8> a, b, c;
-    a.set();                       // 全部置 1
-    b.reset();                     // 全部置 0
+    a.set();                                                            // 全部置 1
+    b.reset();                                                          // 全部置 0
     c.set(2);
     std::cout << std::boolalpha
               << a.all() << " " << b.none() << " " << c.any() << "\n";  // true true true
@@ -691,8 +691,8 @@ int main() {
 #include <string>
 int main() {
     std::bitset<8> b(std::string("00000001"));
-    std::cout << (b << 3) << "\n";   // 00001000
-    std::cout << (b >> 1) << "\n";   // 00000000
+    std::cout << (b << 3) << "\n";  // 00001000
+    std::cout << (b >> 1) << "\n";  // 00000000
     return 0;
 }
 ```
@@ -766,10 +766,10 @@ int main() {
 #include <cstddef>
 int main() {
     constexpr std::size_t PAGES = 1024;
-    std::bitset<PAGES> alloc;          // 0=空闲 1=已分配
-    alloc.set(5); alloc.set(6);        // 分配页 5、6
-    std::cout << "page5 used? " << alloc.test(5) << "\n";   // 1
-    alloc.reset(5);                     // 释放页 5
+    std::bitset<PAGES> alloc;                              // 0=空闲 1=已分配
+    alloc.set(5); alloc.set(6);                            // 分配页 5、6
+    std::cout << "page5 used? " << alloc.test(5) << "\n";  // 1
+    alloc.reset(5);                                        // 释放页 5
     std::cout << "free pages = " << (PAGES - alloc.count()) << "\n";
     return 0;
 }
@@ -785,9 +785,9 @@ constexpr std::size_t operator"" _bits(const char* s, std::size_t) {
     return std::bitset<64>(s).to_ullong();
 }
 int main() {
-    auto flags = "1010"_bits;          // 注意：此处 UDL 用于字符串字面量
+    auto flags = "1010"_bits;        // 注意：此处 UDL 用于字符串字面量
     std::bitset<64> b(flags);
-    std::cout << b.count() << "\n";    // 2
+    std::cout << b.count() << "\n";  // 2
     return 0;
 }
 ```
@@ -799,9 +799,9 @@ int main() {
 #include <iostream>
 int main() {
     std::bitset<8> b;
-    b.set(2, true);    // bit2 = 1
-    b.set(3, false);   // bit3 = 0
-    std::cout << b << "\n";   // 00000100
+    b.set(2, true);          // bit2 = 1
+    b.set(3, false);         // bit3 = 0
+    std::cout << b << "\n";  // 00000100
     return 0;
 }
 ```
@@ -920,12 +920,12 @@ int main() {
 #include <cstddef>
 template<std::size_t N, typename... Pos>
 void set_many(std::bitset<N>& b, Pos... ps) {
-    ((b.set(ps)), ...);   // 逗号折叠：依次置位
+    ((b.set(ps)), ...);              // 逗号折叠：依次置位
 }
 int main() {
     std::bitset<16> b;
     set_many(b, 1, 4, 9, 15);
-    std::cout << b.count() << "\n";   // 4
+    std::cout << b.count() << "\n";  // 4
     return 0;
 }
 ```
@@ -937,9 +937,9 @@ int main() {
 #include <iostream>
 int main() {
     std::bitset<8> b;
-    b[2] = true;            // 通过 reference 代理写入
-    bool x = b[2];          // 通过 reference 代理读出
-    std::cout << x << "\n"; // 1
+    b[2] = true;             // 通过 reference 代理写入
+    bool x = b[2];           // 通过 reference 代理读出
+    std::cout << x << "\n";  // 1
     return 0;
 }
 ```
@@ -964,9 +964,9 @@ int main() {
 #include <iostream>
 int main() {
     std::bitset<8> b;
-    b.set();          // 全 1
+    b.set();                        // 全 1
     std::cout << b.all() << "\n";   // 1
-    b.reset();        // 全 0
+    b.reset();                      // 全 0
     std::cout << b.none() << "\n";  // 1
     return 0;
 }
@@ -1022,8 +1022,8 @@ int main() {
 int main() {
     std::bitset<8> A(std::string("11110000"));
     std::bitset<8> B(std::string("11001100"));
-    std::cout << "A-B = " << (A & ~B) << "\n";   // 00110000
-    std::cout << "sym = " << (A ^ B) << "\n";    // 00111100
+    std::cout << "A-B = " << (A & ~B) << "\n";  // 00110000
+    std::cout << "sym = " << (A ^ B) << "\n";   // 00111100
     return 0;
 }
 ```
@@ -1070,12 +1070,12 @@ int main() {
 #include <stdexcept>
 int main() {
     std::bitset<128> b;
-    b.set(100);                 // 高位已置位
+    b.set(100);                                         // 高位已置位
     try {
-        (void)b.to_ulong();     // 超出 unsigned long 容量
+        (void)b.to_ulong();                             // 超出 unsigned long 容量
         std::cout << "no overflow\n";
     } catch (const std::overflow_error& e) {
-        std::cout << "overflow: " << e.what() << "\n";   // 触发
+        std::cout << "overflow: " << e.what() << "\n";  // 触发
     }
     return 0;
 }
@@ -1139,10 +1139,10 @@ int main() {
 #include <bitset>
 int main() {
     std::bitset<64> caps;
-    caps.set(0); caps.set(3);          // 开启第 0、3 号能力
-    caps |= std::bitset<64>(1) << 7;   // 第 7 号能力
+    caps.set(0); caps.set(3);                        // 开启第 0、3 号能力
+    caps |= std::bitset<64>(1) << 7;                 // 第 7 号能力
     std::cout << "has cap3=" << caps.test(3)
-              << " count=" << caps.count() << "\n"; // 1 3
+              << " count=" << caps.count() << "\n";  // 1 3
 }
 ```
 
@@ -1163,8 +1163,8 @@ int main() {
 #include <iostream>
 #include <bitset>
 int main() {
-    std::bitset<32> active{0b1101};      // 活跃位掩码
-    std::cout << "active=" << active.count() << "\n"; // 3
+    std::bitset<32> active{0b1101};                    // 活跃位掩码
+    std::cout << "active=" << active.count() << "\n";  // 3
 }
 ```
 
@@ -1187,8 +1187,8 @@ int main() {
 #include <bit>
 int main() {
     std::bitset<32> flags{"10000000000000000000000000000010"};
-    unsigned long v = flags.to_ulong();      // 写入报文
-    std::cout << "popcount=" << std::popcount(v) << "\n"; // 2
+    unsigned long v = flags.to_ulong();                    // 写入报文
+    std::cout << "popcount=" << std::popcount(v) << "\n";  // 2
 }
 ```
 
@@ -1214,8 +1214,8 @@ int main() {
 #include <bitset>
 int main() {
     std::bitset<8> b("10110011");
-    std::cout << "count=" << b.count() << "\n";    // 5 (置位个数)
-    std::cout << b.test( 0) << " " << b[2] << "\n";   // 1 1
+    std::cout << "count=" << b.count() << "\n";      // 5 (置位个数)
+    std::cout << b.test( 0) << " " << b[2] << "\n";  // 1 1
 }
 ```
 
@@ -1239,8 +1239,8 @@ int main() {
 #include <bitset>
 int main() {
     std::bitset<8> b(0b11111111);
-    unsigned long long v = b.to_ullong();    // 仅当 bit 数 <= 64 可整体取出
-    std::cout << v << "\n";                   // 255
+    unsigned long long v = b.to_ullong();  // 仅当 bit 数 <= 64 可整体取出
+    std::cout << v << "\n";                // 255
     // bits>64 的 bitset 不能 to_ullong, 须逐位访问或 to_string
 }
 ```
@@ -1344,7 +1344,7 @@ sete   al
 
 // 摘自 libstdc++ 15.3.0：bitset:66（word 数计算）
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 真实源码摘录
-```
+```text
 #define _GLIBCXX_BITSET_BITS_PER_WORD  (__CHAR_BIT__ * __SIZEOF_LONG__)
 #define _GLIBCXX_BITSET_WORDS(__n) \
   ((__n) / _GLIBCXX_BITSET_BITS_PER_WORD + \
@@ -1366,7 +1366,7 @@ sete   al
 
 // 摘自 libstdc++ 15.3.0：bitset:83（word 数组存储与定位）
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<size_t _Nw>
     struct _Base_bitset
     {
@@ -1421,16 +1421,16 @@ int main() {
     std::bitset<10> b;
     b.set(1);
     b.set(3);
-    std::cout << "b = " << b << std::endl;            // 0000001010
-    std::cout << "count = " << b.count() << std::endl; // 2
-    std::cout << "test(3) = " << std::boolalpha << b.test(3) << std::endl; // true
+    std::cout << "b = " << b << std::endl;                                  // 0000001010
+    std::cout << "count = " << b.count() << std::endl;                      // 2
+    std::cout << "test(3) = " << std::boolalpha << b.test(3) << std::endl;  // true
     return 0;
 }
 ```
 
 预期输出：
 > **示例 49** <span class="badge badge-exp">难度 ★★★★★</span> · 可编译验证
-```
+```text
 b = 0000001010
 count = 2
 test(3) = true

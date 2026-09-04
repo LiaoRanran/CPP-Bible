@@ -86,10 +86,10 @@ T sfinae_f(T x) { return x; }
 ```cpp
 // 手写 enable_if（与标准库 <type_traits> 行 106 的 struct enable_if 同构）
 template <bool B, typename T = void>
-struct MyEnableIf {};                       // B==false：无 type 成员
+struct MyEnableIf {};         // B==false：无 type 成员
 
 template <typename T>
-struct MyEnableIf<true, T> {               // B==true：偏特化暴露 type
+struct MyEnableIf<true, T> {  // B==true：偏特化暴露 type
     using type = T;
 };
 template <bool B, typename T = void>
@@ -154,10 +154,10 @@ struct NoType {};
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 替换失败发生的精确位置
 ```cpp
 template <typename T>
-auto f(T t) -> decltype(t.foo()) { return t.foo(); }   // 签名上的替换失败 → SFINAE
+auto f(T t) -> decltype(t.foo()) { return t.foo(); }  // 签名上的替换失败 → SFINAE
 
 template <typename T>
-auto g(T t) { return t.no_such_member(); }             // 函数体内的失败 → 硬错误（SFINAE 无效）
+auto g(T t) { return t.no_such_member(); }            // 函数体内的失败 → 硬错误（SFINAE 无效）
 ```
 
 ## ⑤ 适用场景与选型
@@ -187,9 +187,9 @@ template <typename T, std::enable_if_t<std::is_same_v<T, std::string>, int> = 0>
 void describe(T) { std::cout << "string\n"; }
 
 int main() {
-    describe(42);            // integral
-    describe(3.14);          // floating
-    describe(std::string("x")); // string
+    describe(42);                // integral
+    describe(3.14);              // floating
+    describe(std::string("x"));  // string
 }
 ```
 
@@ -513,9 +513,9 @@ void f(T&&) {}            // f(0) 时 T=int → OK；f(ci)（const int&）时 T=
 // 最佳实践：互斥且完备的一对重载，注释说明分工
 // 整型走 A，非整型（浮点/类）走 B；二者覆盖全集且无交集
 template <typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
-auto dispatch(T) { // 整型
+auto dispatch(T) {  // 整型
 template <typename T, std::enable_if_t<!std::is_integral_v<T>, int> = 0>
-auto dispatch(T) { // 其余
+auto dispatch(T) {  // 其余
 ```
 
 ## ⑲ 性能（编译期 / 运行期）

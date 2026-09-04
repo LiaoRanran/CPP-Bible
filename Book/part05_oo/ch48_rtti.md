@@ -61,7 +61,7 @@ RTTI（运行时类型信息）是大多数 C++ 程序员"知道它贵、却不�
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★★★</span> · 知识图谱（ASCII）
-```
+```text
                        ┌──────── C++ 类型查询 ────────┐
                        │                               │
           ┌────────────┴───────────┐    编译期类型查询  │
@@ -118,7 +118,7 @@ classDiagram
 单继承（x86-64，Itanium ABI，`Base`/`Der` 各含虚函数）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图 / vtable 与 typ
-```
+```text
         Der 对象（地址 base）
         ┌──────────────────────┐  <- base (offset 0)
         │  vptr ─────────────┐ │
@@ -145,7 +145,7 @@ classDiagram
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★★☆</span> · 生命周期图
-```
+```text
 编译期：type_info 对象生成于 .rdata，vtable 槽1 固定指向它
 构造对象 d：vptr 指向 Der vtable ⟶ 间接指向 typeinfo(Der)
 使用期：
@@ -157,7 +157,7 @@ classDiagram
 ## ⑨ 调用栈 / 时序图
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈 / 时序图
-```
+```text
 调用点                  vtable/type_info          运行时支持例程
   │                        │                          │
   │── mov rax,[rcx] ───▶ 取 vptr                      │
@@ -281,8 +281,8 @@ int main() {
 struct A { virtual ~A() = default; };
 struct B : A {};
 void bad(A* p) {
-    if (dynamic_cast<B*>(p)) { }   // ❌ 错：-fno-rtti 禁用 dynamic_cast（多态下行）
-    auto& t = typeid(*p);          // ❌ 错：typeid 对多态对象需 RTTI
+    if (dynamic_cast<B*>(p)) { }  // ❌ 错：-fno-rtti 禁用 dynamic_cast（多态下行）
+    auto& t = typeid(*p);         // ❌ 错：typeid 对多态对象需 RTTI
 }
 ```
 
@@ -305,10 +305,10 @@ struct Poly { virtual ~Poly() = default; };
 struct Drv : Poly {};
 void demo_c() {
     int x = 0;
-    std::cout << (typeid(x) == typeid(int)) << "\n";   // 1：静态类型 int
+    std::cout << (typeid(x) == typeid(int)) << "\n";    // 1：静态类型 int
     Poly* p = new Drv;
-    std::cout << (typeid(*p) == typeid(Drv)) << "\n";  // 1：动态类型 Drv
-    std::cout << (typeid(p) == typeid(Poly*)) << "\n"; // 1：指针取静态类型
+    std::cout << (typeid(*p) == typeid(Drv)) << "\n";   // 1：动态类型 Drv
+    std::cout << (typeid(p) == typeid(Poly*)) << "\n";  // 1：指针取静态类型
 }
 ```
 
@@ -510,9 +510,9 @@ void process(T v) {
 #include <cstddef>
 // libstdc++ <typeinfo>（节选，去注释）
 class type_info {
-  const char* __name;                 // 偏移 0（在 __class_type_info 派生中偏移 8）
+  const char* __name;        // 偏移 0（在 __class_type_info 派生中偏移 8）
 public:
-  const char* name() const;           // 返回 mangled name
+  const char* name() const;  // 返回 mangled name
   bool operator==(const type_info& __arg) const;
   size_t hash_code() const noexcept;
 };
@@ -854,8 +854,8 @@ if (B* b = dynamic_cast<B*>(p)) { // 安全使用 b
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点 B3：-fno-rtti 的
 ```cpp
 // ❌ -fno-rtti 下编译失败
-auto& t = typeid(*polyPtr);        // error: not allowed with -fno-rtti
-auto* d = dynamic_cast<Der*>(p);   // error: likewise
+auto& t = typeid(*polyPtr);       // error: not allowed with -fno-rtti
+auto* d = dynamic_cast<Der*>(p);  // error: likewise
 ```
 
 【正确示例】
@@ -1083,13 +1083,13 @@ int main() {
     Derived d;
     Base* pb = &d;
     if (Derived* pd = dynamic_cast<Derived*>(pb))
-        std::cout << "downcast OK, tag=" << pd->tag << '\n';   // 7
+        std::cout << "downcast OK, tag=" << pd->tag << '\n';  // 7
     Base b;
     Base* pb2 = &b;
     if (auto* pd2 = dynamic_cast<Derived*>(pb2))
         std::cout << pd2->tag << '\n';
     else
-        std::cout << "null: pb2 不指向 Derived\n";             // 走这里
+        std::cout << "null: pb2 不指向 Derived\n";            // 走这里
 }
 ```
 
@@ -1116,9 +1116,9 @@ struct D1 : Base {};
 struct D2 : Base {};
 int main() {
     Base* p = new D1;
-    std::cout << typeid(*p).name() << '\n';   // D1（运行时）
+    std::cout << typeid(*p).name() << '\n';  // D1（运行时）
     p = new D2;
-    std::cout << typeid(*p).name() << '\n';   // D2（运行时）
+    std::cout << typeid(*p).name() << '\n';  // D2（运行时）
 }
 ```
 
@@ -1259,7 +1259,7 @@ int main() { X x; Base* b = &x; b->handle(); }  // 多态分发，无 RTTI
 **常见错误**：源类型不含任何虚函数（非多态），`dynamic_cast` 直接编译失败。
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：对无虚函数类误用 `dynamic_cast`
-```
+```text
 // 错误：A 非多态（无虚函数），dynamic_cast 不允许
 struct A {};
 struct B : A {};

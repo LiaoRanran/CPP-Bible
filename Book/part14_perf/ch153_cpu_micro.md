@@ -223,8 +223,8 @@ int main() { std::cout << pick(1, 10, 20) << "\n"; return 0; }
 #include <iostream>
 struct Pkt { int len; bool valid; };
 int process(const Pkt& p) {
-    if (!p.valid) [[unlikely]] { return -1; }   // 冷路径, 跳走
-    return p.len * 2;                            // 热路径紧挨
+    if (!p.valid) [[unlikely]] { return -1; }  // 冷路径, 跳走
+    return p.len * 2;                          // 热路径紧挨
 }
 int main() {
     Pkt p{100, true};
@@ -580,8 +580,8 @@ int main() {
 #include <iostream>
 int main() {
     int x = -5;
-    int a = (x ^ (x >> 31)) - (x >> 31);   // 依赖算术右移的符号位
-    std::cout << a << "\n";                // 5
+    int a = (x ^ (x >> 31)) - (x >> 31);  // 依赖算术右移的符号位
+    std::cout << a << "\n";               // 5
     return 0;
 }
 ```
@@ -642,10 +642,10 @@ int main() {
     const int N = 1000000;
     std::vector<int> a(N); for (int i = 0; i < N; ++i) a[i] = i;
     long sb = 0; auto t0 = std::chrono::steady_clock::now();
-    for (int i = 0; i < N; ++i) if (a[i] & 1) sb += a[i];        // 有分支
+    for (int i = 0; i < N; ++i) if (a[i] & 1) sb += a[i];    // 有分支
     auto t1 = std::chrono::steady_clock::now();
     long sl = 0; auto t2 = std::chrono::steady_clock::now();
-    for (int i = 0; i < N; ++i) sl += (-(a[i] & 1)) & a[i];      // 无分支
+    for (int i = 0; i < N; ++i) sl += (-(a[i] & 1)) & a[i];  // 无分支
     auto t3 = std::chrono::steady_clock::now();
     std::cout << "branch=" << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count()
               << "ns branchless=" << std::chrono::duration_cast<std::chrono::nanoseconds>(t3 - t2).count()
@@ -685,7 +685,7 @@ int main() {
     auto t = std::make_tuple(1, 2, 3, 4, 5);
     long s = 0;
     std::apply([&](auto... xs) { ((s += xs), ...); }, t);  // 折叠丢弃式累加
-    std::cout << "sum=" << s << "\n";   // 15
+    std::cout << "sum=" << s << "\n";                      // 15
     return 0;
 }
 ```
@@ -909,7 +909,7 @@ int main() {
 int main() {
     int a = 3, b = 7;
     int m1 = (a < b) ? a : b;
-    int m2 = b ^ ((a ^ b) & -(a < b));   // 无分支 min
+    int m2 = b ^ ((a ^ b) & -(a < b));     // 无分支 min
     std::cout << m1 << " " << m2 << "\n";  // 3 3
     return 0;
 }
@@ -1029,9 +1029,9 @@ int main() {
 #include <iostream>
 int main() {
     unsigned long a = 0;
-    for (unsigned i = 0; i < 1000000000u; ++i) a += i;   // 串行依赖链
+    for (unsigned i = 0; i < 1000000000u; ++i) a += i;                  // 串行依赖链
     unsigned long x = 0, y = 0;
-    for (unsigned i = 0; i < 500000000u; ++i) { x += i; y += i * 2u; } // 两条独立链
+    for (unsigned i = 0; i < 500000000u; ++i) { x += i; y += i * 2u; }  // 两条独立链
     std::cout << (a + x + y) << '\n';
 }
 ```
@@ -1297,7 +1297,7 @@ std::size_t compact_if(const std::vector<int>& in, std::vector<int>& out) {
     std::size_t cursor = 0;
     for (int v : in) {
         if (v >= 128) {
-            out[cursor++] = v; // 副作用：存储 + 游标推进
+            out[cursor++] = v;                   // 副作用：存储 + 游标推进
         }
     }
     return cursor;
@@ -1306,7 +1306,7 @@ std::size_t compact_if(const std::vector<int>& in, std::vector<int>& out) {
 int main() {
     std::vector<int> in(4096);
     for (std::size_t i = 0; i < in.size(); ++i) {
-        in[i] = static_cast<int>(i * 37 % 256); // 伪随机 0..255
+        in[i] = static_cast<int>(i * 37 % 256);  // 伪随机 0..255
     }
     std::vector<int> sorted = in;
     std::sort(sorted.begin(), sorted.end());

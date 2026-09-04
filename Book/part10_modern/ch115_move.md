@@ -69,9 +69,9 @@ C++98 是严格的"值语义"：函数按值返回大对象、把临时对象赋
 void take_rref(int&& x) { std::cout << x << "\n"; }
 
 int main() {
-    take_rref(42);                  // ✅ 字面量是 prvalue，可绑定到 int&&
+    take_rref(42);                       // ✅ 字面量是 prvalue，可绑定到 int&&
     // int a = 1; take_rref(a);     // ❌ a 是 lvalue，不能绑定到 int&&
-    int b = 1; take_rref(std::move(b));   // ✅ std::move 把 b 当右值
+    int b = 1; take_rref(std::move(b));  // ✅ std::move 把 b 当右值
     return 0;
 }
 ```
@@ -91,7 +91,7 @@ struct Widget {
 
 int main() {
     Widget w;
-    Widget w2 = std::move(w);       // 调用移动构造（不分配、不拷贝）
+    Widget w2 = std::move(w);                                         // 调用移动构造（不分配、不拷贝）
     std::cout << "ok\n";
     return 0;
 }
@@ -116,9 +116,9 @@ void probe(T&& x) {
 
 int main() {
     int a = 1;
-    probe(a);                 // lvalue
-    probe(2);                 // rvalue（prvalue）
-    probe(std::move(a));      // rvalue（xvalue）
+    probe(a);             // lvalue
+    probe(2);             // rvalue（prvalue）
+    probe(std::move(a));  // rvalue（xvalue）
     return 0;
 }
 ```
@@ -139,8 +139,8 @@ void consume(int& )  { std::cout << "lvalue\n"; }
 void consume(int&& ) { std::cout << "rvalue\n"; }
 
 template <typename T>
-void relay(T&& x) {                       // 万能引用
-    consume(std::forward<T>(x));         // 原样转发值类别
+void relay(T&& x) {               // 万能引用
+    consume(std::forward<T>(x));  // 原样转发值类别
 }
 
 int main() {
@@ -163,11 +163,11 @@ struct Blob {
     ~Blob() { delete p; }
 };
 
-Blob make() { Blob b; return b; }        // ✅ 依赖拷贝消除/隐式移动，勿 std::move
+Blob make() { Blob b; return b; }  // ✅ 依赖拷贝消除/隐式移动，勿 std::move
 
 int main() {
     Blob x = make();
-    std::cout << *x.p << "\n";           // 7（无拷贝）
+    std::cout << *x.p << "\n";     // 7（无拷贝）
     return 0;
 }
 ```
@@ -272,7 +272,7 @@ struct Buf {
 
 int main() {
     Buf a(1000);
-    Buf b = std::move(a);      // ✅ 移动：a.p 置空，b 接管，无分配
+    Buf b = std::move(a);                                              // ✅ 移动：a.p 置空，b 接管，无分配
     // Buf c = a;              // 若 a 仍持有资源则触发拷贝（此处 a 已空）
     std::cout << (a.p == nullptr) << " " << (b.p != nullptr) << "\n";  // 1 1
     return 0;
@@ -318,10 +318,10 @@ flowchart TD
 
 int main() {
     std::string a = "hello";
-    std::string b = std::move(a);        // a 进入有效但未指定状态
-    std::cout << "b=" << b << "\n";      // hello
-    a = "world";                         // ✅ 重新赋值后 a 再次可用
-    std::cout << "a=" << a << "\n";      // world
+    std::string b = std::move(a);    // a 进入有效但未指定状态
+    std::cout << "b=" << b << "\n";  // hello
+    a = "world";                     // ✅ 重新赋值后 a 再次可用
+    std::cout << "a=" << a << "\n";  // world
     return 0;
 }
 ```
@@ -336,7 +336,7 @@ int main() {
 int main() {
     std::vector<int> a = {1, 2, 3};
     std::vector<int> b = std::move(a);
-    std::cout << "b.size=" << b.size() << "\n";   // 3
+    std::cout << "b.size=" << b.size() << "\n";                 // 3
     std::cout << "a.size(未指定,常为空)=" << a.size() << "\n";  // 通常 0
     // 不读取 a 的内容，仅保证可析构
     return 0;
@@ -388,8 +388,8 @@ struct Tracer {
 
 int main() {
     Tracer a;
-    auto&& r = std::move(a);        // ✅ 仅转型，不打印任何 ctor
-    Tracer b = r;                   // ✅ 此处才调用移动构造（r 是右值引用，按右值）
+    auto&& r = std::move(a);  // ✅ 仅转型，不打印任何 ctor
+    Tracer b = r;             // ✅ 此处才调用移动构造（r 是右值引用，按右值）
     return 0;
 }
 ```
@@ -408,7 +408,7 @@ struct Tracer {
 
 int main() {
     Tracer a;
-    Tracer b = a;          // copy（a 是 lvalue）
+    Tracer b = a;             // copy（a 是 lvalue）
     Tracer c = std::move(a);  // move
     return 0;
 }
@@ -494,8 +494,8 @@ int main() {
 int main() {
     auto p = std::make_unique<int>(42);
     // auto q = p;        // ❌ 编译错误：unique_ptr 不可拷贝
-    auto q = std::move(p);          // ✅ 移动：所有权转移，p 变空
-    std::cout << *q << "\n";        // 42
+    auto q = std::move(p);    // ✅ 移动：所有权转移，p 变空
+    std::cout << *q << "\n";  // 42
     return 0;
 }
 ```
@@ -531,14 +531,14 @@ int main() {
 struct Fast {
     int* p;
     Fast() : p(new int(0)) {}
-    Fast(Fast&& o) noexcept : p(o.p) { o.p = nullptr; }   // ✅ noexcept
+    Fast(Fast&& o) noexcept : p(o.p) { o.p = nullptr; }  // ✅ noexcept
     Fast(const Fast&) : p(new int(0)) {}
     ~Fast() { delete p; }
 };
 
 int main() {
     std::vector<Fast> v(3);
-    v.push_back(Fast());          // 触发扩容：用 noexcept 移动构造搬元素
+    v.push_back(Fast());                                 // 触发扩容：用 noexcept 移动构造搬元素
     std::cout << "size=" << v.size() << "\n";
     return 0;
 }
@@ -553,14 +553,14 @@ int main() {
 struct Slow {
     int* p;
     Slow() : p(new int(0)) {}
-    Slow(Slow&& o) : p(o.p) { o.p = nullptr; }   // ❌ 未标 noexcept
+    Slow(Slow&& o) : p(o.p) { o.p = nullptr; }  // ❌ 未标 noexcept
     Slow(const Slow&) : p(new int(0)) {}
     ~Slow() { delete p; }
 };
 
 int main() {
     std::vector<Slow> v(3);
-    v.push_back(Slow());          // 扩容时退回拷贝构造（保证强异常安全）
+    v.push_back(Slow());                        // 扩容时退回拷贝构造（保证强异常安全）
     std::cout << "size=" << v.size() << "\n";
     return 0;
 }
@@ -644,14 +644,14 @@ struct Record {
     std::string name;
     std::string payload;
     Record() = default;
-    Record(Record&&) = default;       // noexcept 移动
+    Record(Record&&) = default;  // noexcept 移动
     Record(const Record&) = default;
 };
 
 Record make_record() {
     Record r;
     r.name = "tx"; r.payload = "big payload";
-    return r;                         // ✅ NRVO/隐式移动，无拷贝
+    return r;                    // ✅ NRVO/隐式移动，无拷贝
 }
 
 int main() {
@@ -784,8 +784,8 @@ int main() {
 struct Holder {
     int* p;
     Holder() : p(new int(0)) {}
-    Holder(Holder&& o) noexcept : p(o.p) { o.p = nullptr; }          // ✅ noexcept
-    Holder& operator=(Holder&& o) noexcept {                         // ✅ noexcept
+    Holder(Holder&& o) noexcept : p(o.p) { o.p = nullptr; }  // ✅ noexcept
+    Holder& operator=(Holder&& o) noexcept {                 // ✅ noexcept
         if (this != &o) { delete p; p = o.p; o.p = nullptr; }
         return *this;
     }
@@ -874,7 +874,7 @@ struct Big { std::vector<int> v; Big() : v(1'000'000) {} };
 int main() {
     Big src;
     auto t0 = std::chrono::steady_clock::now();
-    for (int i = 0; i < 1000; ++i) { Big c = src; (void)c; }   // 拷贝
+    for (int i = 0; i < 1000; ++i) { Big c = src; (void)c; }                 // 拷贝
     auto t1 = std::chrono::steady_clock::now();
     for (int i = 0; i < 1000; ++i) { Big m = std::move(src); src = Big(); }  // 移动
     auto t2 = std::chrono::steady_clock::now();
@@ -924,13 +924,13 @@ struct Request {
     int id = 0;
 };
 
-void handle(Request r) {            // 按值接收 -> 移动构造（零拷贝）
+void handle(Request r) {   // 按值接收 -> 移动构造（零拷贝）
     std::cout << "handle req " << r.id << " body=" << r.body->size() << "\n";
 }
 
 int main() {
     Request r; r.id = 7;
-    handle(std::move(r));           // ✅ 所有权转移，无拷贝百万元素
+    handle(std::move(r));  // ✅ 所有权转移，无拷贝百万元素
     return 0;
 }
 ```
@@ -1028,8 +1028,8 @@ int main() { Doc d = load(); std::cout << d.title << "\n"; return 0; }
 
 int main() {
     std::string x = "resource";
-    std::string y = std::move(x);   // C++ 显式移动（Rust 中 let y = x; 隐式移动）
-    std::cout << y << "\n";         // resource
+    std::string y = std::move(x);  // C++ 显式移动（Rust 中 let y = x; 隐式移动）
+    std::cout << y << "\n";        // resource
     return 0;
 }
 ```
@@ -1046,8 +1046,8 @@ int main() {
     std::vector<int> a = {1, 2, 3};
     std::vector<int> b = std::move(a);
     // Rust 会在此处编译报错若再使用 a；C++ 允许但约定不读 a
-    a = std::vector<int>{9, 8};     // ✅ 重新赋值后再使用（安全的"复活"）
-    std::cout << a[0] << "\n";      // 9
+    a = std::vector<int>{9, 8};  // ✅ 重新赋值后再使用（安全的"复活"）
+    std::cout << a[0] << "\n";   // 9
     return 0;
 }
 ```
@@ -1230,8 +1230,8 @@ struct Big { char* data; size_t sz;
     Big(Big&& o) noexcept : data(o.data), sz(o.sz) { o.data=nullptr; o.sz=0; }
     ~Big() { delete[] data; }
 };
-Big make_big_rvo() { return Big(1024); }              // ① RVO
-void move_into_consume(Big&& src) { consume_big(std::move(src)); } // ② 移动
+Big make_big_rvo() { return Big(1024); }                            // ① RVO
+void move_into_consume(Big&& src) { consume_big(std::move(src)); }  // ② 移动
 ```
 
 ### 真实汇编（GCC 15.3.0 -O2）
@@ -1338,8 +1338,8 @@ struct Request { std::unique_ptr<std::vector<char>> body = std::make_unique<std:
 int main() {
     Request r;
     std::vector<Request> queue;
-    queue.push_back(std::move(r));   // 仅转移内部指针，无百万字节拷贝
-    std::cout << (r.body == nullptr) << '\n';   // 1：移交后源为空壳
+    queue.push_back(std::move(r));             // 仅转移内部指针，无百万字节拷贝
+    std::cout << (r.body == nullptr) << '\n';  // 1：移交后源为空壳
 }
 ```
 
@@ -1364,7 +1364,7 @@ int main() {
 struct Segment {
     std::vector<unsigned char> data;
     Segment(std::size_t n) : data(n) {}
-    Segment(Segment&&) noexcept = default;        // ✅ 关键：noexcept
+    Segment(Segment&&) noexcept = default;                     // ✅ 关键：noexcept
     Segment(const Segment&) = default;
 };
 int main() {
@@ -1465,7 +1465,7 @@ struct Handle {
         std::cout << "move ctor; source now empty=" << o.owner.empty() << '\n';
     }
     Handle& operator=(Handle&& o) noexcept {
-        if (this != &o) owner = std::exchange(o.owner, {});   // 防自赋值
+        if (this != &o) owner = std::exchange(o.owner, {});  // 防自赋值
         return *this;
     }
     Handle(const Handle&) = delete;
@@ -1475,7 +1475,7 @@ int main() {
     Handle a("buffer-A");
     Handle b(std::move(a));
     std::cout << "b.owner=" << b.owner << '\n';
-    a = Handle("buffer-B");   // 复用已置空的 a
+    a = Handle("buffer-B");                                  // 复用已置空的 a
     std::cout << "a.owner=" << a.owner << '\n';
 }
 ```
@@ -1667,7 +1667,7 @@ flowchart TD
 #include <iostream>
 
 int main() {
-    std::vector<int>  v(1 << 20, 7);     // ~1M int
+    std::vector<int>  v(1 << 20, 7);      // ~1M int
     std::string       s(1 << 20, 'x');    // ~1MB，越过 SSO
 
     std::vector<int>  vc = v;             // 深拷贝

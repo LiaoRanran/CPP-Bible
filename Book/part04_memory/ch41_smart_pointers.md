@@ -171,19 +171,19 @@ template <typename _Tp, typename _Dp>
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 示例 01：uniqueptr 基本
 ```cpp
 #include <iostream>
-#include <memory>   // std::unique_ptr / std::make_unique 都在 <memory>
+#include <memory>                                            // std::unique_ptr / std::make_unique 都在 <memory>
 
 struct Widget {
-    Widget()  { std::cout << "Widget()\n"; }   // 构造：资源获取（RAII 的起点）
-    ~Widget() { std::cout << "~Widget()\n"; }   // 析构：资源释放——由智能指针在合适时机自动调用
+    Widget()  { std::cout << "Widget()\n"; }                 // 构造：资源获取（RAII 的起点）
+    ~Widget() { std::cout << "~Widget()\n"; }                // 析构：资源释放——由智能指针在合适时机自动调用
     void use() const { std::cout << "using widget\n"; }
 };
 
 int main() {
     // make_unique 一次性完成"分配 + 构造 + 装入 unique_ptr"，比 `new Widget` 更安全：
     // 它避免了"先 new 再交给 unique_ptr"之间可能因异常而泄漏的窗口（见 ch39 异常安全）。
-    std::unique_ptr<Widget> p = std::make_unique<Widget>(); // C++14 起；C++11 用 unique_ptr<Widget>(new Widget)
-    p->use();                  // 用 -> 像裸指针一样访问，但所有权仍唯一归 p
+    std::unique_ptr<Widget> p = std::make_unique<Widget>();  // C++14 起；C++11 用 unique_ptr<Widget>(new Widget)
+    p->use();                                                // 用 -> 像裸指针一样访问，但所有权仍唯一归 p
     // 关键：p 是栈上对象。main 返回时 p 离开作用域 => 其析构自动 delete 所指 Widget。
     // 即使前面某行抛异常，栈展开也会调用 p 的析构 => 不会泄漏（这是裸 new/delete 做不到的）。
     return 0;
@@ -384,18 +384,18 @@ void reset(pointer __p) noexcept {
 
 int main() {
     std::unique_ptr<int> a = std::make_unique<int>(1);
-    int* raw = a.get();                 // 借用，不转移
-    std::cout << *raw << '\n';         // 1
-    int* leaked = a.release();         // a 置空，*leaked 需手动 delete
+    int* raw = a.get();         // 借用，不转移
+    std::cout << *raw << '\n';  // 1
+    int* leaked = a.release();  // a 置空，*leaked 需手动 delete
     // ... 手动管理 leaked ...
     delete leaked;
 
     std::unique_ptr<int> b = std::make_unique<int>(2);
-    a.reset(new int(3));               // a 重新接管 3（此时 a 本为空）
-    b.reset();                         // b 释放对象，置空
+    a.reset(new int(3));        // a 重新接管 3（此时 a 本为空）
+    b.reset();                  // b 释放对象，置空
     auto c = std::make_unique<int>(4);
     auto d = std::make_unique<int>(5);
-    c.swap(d);                         // 交换所有权
+    c.swap(d);                  // 交换所有权
     return 0;
 }
 ```
@@ -425,20 +425,20 @@ struct StatelessDeleter {
 };
 
 struct StatefulDeleter {
-    int x;   // 有数据成员 -> 非平凡大小
+    int x;                                                   // 有数据成员 -> 非平凡大小
     void operator()(int* p) const { delete p; }
 };
 
 int main() {
-    using A = std::unique_ptr<int>;                       // default_delete（空）
-    using B = std::unique_ptr<int, StatelessDeleter>;     // 空类删除器
-    using C = std::unique_ptr<int, void(*)(int*)>;        // 函数指针（占 8 字节）
-    using D = std::unique_ptr<int, StatefulDeleter>;      // 有状态（占 8 字节）
+    using A = std::unique_ptr<int>;                          // default_delete（空）
+    using B = std::unique_ptr<int, StatelessDeleter>;        // 空类删除器
+    using C = std::unique_ptr<int, void(*)(int*)>;           // 函数指针（占 8 字节）
+    using D = std::unique_ptr<int, StatefulDeleter>;         // 有状态（占 8 字节）
 
-    std::cout << "default_delete  : " << sizeof(A) << '\n'; // 通常 8
-    std::cout << "stateless lambda: " << sizeof(B) << '\n'; // 8（EBO 吃掉）
-    std::cout << "fn ptr deleter  : " << sizeof(C) << '\n'; // 16（指针+指针）
-    std::cout << "stateful deleter: " << sizeof(D) << '\n'; // 16（指针+int）
+    std::cout << "default_delete  : " << sizeof(A) << '\n';  // 通常 8
+    std::cout << "stateless lambda: " << sizeof(B) << '\n';  // 8（EBO 吃掉）
+    std::cout << "fn ptr deleter  : " << sizeof(C) << '\n';  // 16（指针+指针）
+    std::cout << "stateful deleter: " << sizeof(D) << '\n';  // 16（指针+int）
     return 0;
 }
 ```
@@ -458,11 +458,11 @@ int main() {
 // widget.h
 #include <memory>
 class Widget {
-    struct Impl;                          // 仅前向声明
-    std::unique_ptr<Impl> p_;             // 隐藏实现细节
+    struct Impl;               // 仅前向声明
+    std::unique_ptr<Impl> p_;  // 隐藏实现细节
 public:
     Widget();
-    ~Widget();                            // 必须在 .cpp 中定义（见下）
+    ~Widget();                 // 必须在 .cpp 中定义（见下）
     void draw() const;
 };
 
@@ -474,7 +474,7 @@ struct Widget::Impl {
     void draw() const { std::cout << "w=" << w << " h=" << h << '\n'; }
 };
 Widget::Widget() : p_(std::make_unique<Impl>()) {}
-Widget::~Widget() = default;              // 关键：在 Impl 完整类型处析构
+Widget::~Widget() = default;   // 关键：在 Impl 完整类型处析构
 void Widget::draw() const { p_->draw(); }
 ```
 
@@ -542,13 +542,13 @@ template<_Lock_policy _Lp = __default_lock_policy>
   {
   public:
     _Sp_counted_base() noexcept
-    : _M_use_count(1), _M_weak_count(1) { }   // 行 129-130：强=1 弱=1（含自身）
+    : _M_use_count(1), _M_weak_count(1) { }  // 行 129-130：强=1 弱=1（含自身）
 
     // ... _M_dispose() 释放对象；_M_destroy() 释放控制块 ...
 
   private:
-    _Atomic_word  _M_use_count;   // 行 237：#shared
-    _Atomic_word  _M_weak_count;  // 行 238：#weak + (#shared != 0)
+    _Atomic_word  _M_use_count;              // 行 237：#shared
+    _Atomic_word  _M_weak_count;             // 行 238：#weak + (#shared != 0)
   };
 ```
 
@@ -573,13 +573,13 @@ struct X { ~X() { std::cout << "~X()\n"; } };
 
 int main() {
     auto a = std::make_shared<X>();
-    std::cout << "use_count=" << a.use_count() << '\n'; // 1
+    std::cout << "use_count=" << a.use_count() << '\n';      // 1
     {
-        auto b = a;                                     // 拷贝，强计数+1
-        std::cout << "use_count=" << a.use_count() << '\n'; // 2
-    }                                                   // b 析构，强计数-1
-    std::cout << "use_count=" << a.use_count() << '\n'; // 1
-    return 0;                                           // a 析构，强计数=0 -> ~X()
+        auto b = a;                                          // 拷贝，强计数+1
+        std::cout << "use_count=" << a.use_count() << '\n';  // 2
+    }                                                        // b 析构，强计数-1
+    std::cout << "use_count=" << a.use_count() << '\n';      // 1
+    return 0;                                                // a 析构，强计数=0 -> ~X()
 }
 ```
 
@@ -631,10 +631,10 @@ template<typename _Tp, typename _Alloc, typename... _Args>
     auto __guard = std:: __allocate_guarded(__a2);
     _Sp_cp_type* __mem = __guard.get();
     auto __pi = ::new (__mem)
-      _Sp_cp_type(__a._M_a, std::forward<_Args>(__args)...);   // 一次分配
+      _Sp_cp_type(__a._M_a, std::forward<_Args>(__args)...);  // 一次分配
     __guard = nullptr;
     _M_pi = __pi;
-    __p = __pi->_M_ptr();     // 对象指针就在控制块内部
+    __p = __pi->_M_ptr();                                     // 对象指针就在控制块内部
   }
 ```
 
@@ -646,15 +646,15 @@ template<typename _Tp, typename _Alloc, typename... _Args>
 template<typename _Tp, typename _Alloc, _Lock_policy _Lp>
   class _Sp_counted_ptr_inplace final : public _Sp_counted_base<_Lp>
   {
-    class _Impl : _Sp_ebo_helper<0, _Alloc>   // 分配器也走 EBO
+    class _Impl : _Sp_ebo_helper<0, _Alloc>                         // 分配器也走 EBO
     {
       // ...
-      __gnu_cxx::__aligned_buffer<_Tp> _M_storage;  // 行 591：对象内联在此
+      __gnu_cxx::__aligned_buffer<_Tp> _M_storage;                  // 行 591：对象内联在此
     };
     // ...
     _Tp* _M_ptr() noexcept { return _M_impl._M_storage._M_ptr(); }  // 行 650
   private:
-    _Impl _M_impl;   // 行 652
+    _Impl _M_impl;                                                  // 行 652
   };
 ```
 
@@ -676,8 +676,8 @@ int main() {
     // 两次分配：new Big() 一次，控制块 _Sp_counted_ptr 又一次
     std::shared_ptr<Big> b(new Big());
 
-    std::cout << "a.use_count=" << a.use_count() << '\n'; // 1
-    std::cout << "b.use_count=" << b.use_count() << '\n'; // 1
+    std::cout << "a.use_count=" << a.use_count() << '\n';  // 1
+    std::cout << "b.use_count=" << b.use_count() << '\n';  // 1
     return 0;
 }
 ```
@@ -728,7 +728,7 @@ int main() {
     // 走 _Sp_counted_ptr 路径（自定义删除器）
     auto sp = std::shared_ptr<S>(new S, [](S* p){ delete p; });
     // 控制块在此构造，与对象分离
-    sp.reset();                       // 强计数归零 -> 删除器调 -> deletes=1
+    sp.reset();                                  // 强计数归零 -> 删除器调 -> deletes=1
     std::cout << "deletes=" << deletes << '\n';  // 1
     return 0;
 }
@@ -762,13 +762,13 @@ template<>
           {
             // 快路径：强、弱都=1，直接置 0，无 CAS 循环
             _M_weak_count = _M_use_count = 0;
-            _M_dispose();   // 释放对象
-            _M_destroy();   // 释放控制块
+            _M_dispose();                          // 释放对象
+            _M_destroy();                          // 释放控制块
             return;
           }
         if (__gnu_cxx::__exchange_and_add_dispatch(&_M_use_count, -1) == 1)
           [[__unlikely__]]
-          { _M_release_last_use_cold(); return; }   // 慢路径
+          { _M_release_last_use_cold(); return; }  // 慢路径
       }
     else
     if (__gnu_cxx::__exchange_and_add_dispatch(&_M_use_count, -1) == 1)
@@ -784,10 +784,10 @@ template<>
 void _M_release_last_use() noexcept
 {
   _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(&_M_use_count);
-  _M_dispose();   // 释放对象
+  _M_dispose();    // 释放对象
   // ... barrier ...
   if (__gnu_cxx::__exchange_and_add_dispatch(&_M_weak_count, -1) == 1)
-    _M_destroy(); // 弱计数也归零 -> 释放控制块
+    _M_destroy();  // 弱计数也归零 -> 释放控制块
 }
 ```
 
@@ -814,13 +814,13 @@ int main() {
     auto sp = std::make_shared<int>(0);
     std::vector<std::thread> ts;
     for (int i = 0; i < 8; ++i) {
-        ts.emplace_back([sp]() mutable {        // 拷贝 sp，强计数原子+1
-            *sp += 1;                            // 注意：*sp 的读写非原子！
+        ts.emplace_back([sp]() mutable {                  // 拷贝 sp，强计数原子+1
+            *sp += 1;                                     // 注意：*sp 的读写非原子！
         });
     }
     for (auto& t : ts) t.join();
     // 强计数安全回到 1，但 *sp 的累加有数据竞争（仅演示计数安全）
-    std::cout << "use_count=" << sp.use_count() << '\n'; // 1
+    std::cout << "use_count=" << sp.use_count() << '\n';  // 1
     return 0;
 }
 ```
@@ -924,14 +924,14 @@ struct B { std::shared_ptr<A> a; ~B() { std::cout << "~B\n"; } };
 
 int main() {
     {
-        auto pa = std::make_shared<A>();   // A 强=1
-        auto pb = std::make_shared<B>();   // B 强=1
-        pa->b = pb;                        // B 强=2
-        pb->a = pa;                        // A 强=2
-        std::cout << "pa.use=" << pa.use_count()   // 2
+        auto pa = std::make_shared<A>();          // A 强=1
+        auto pb = std::make_shared<B>();          // B 强=1
+        pa->b = pb;                               // B 强=2
+        pb->a = pa;                               // A 强=2
+        std::cout << "pa.use=" << pa.use_count()  // 2
                   << " pb.use=" << pb.use_count() << '\n';
-    }   // pa/pb 析构：A 强=1, B 强=1 —— 仍互相引用，~A/~B 都不调用！
-    std::cout << "main end (leak!)\n";     // 看不到 ~A / ~B
+    }                                             // pa/pb 析构：A 强=1, B 强=1 —— 仍互相引用，~A/~B 都不调用！
+    std::cout << "main end (leak!)\n";            // 看不到 ~A / ~B
     return 0;
 }
 ```
@@ -947,16 +947,16 @@ int main() {
 
 struct A; struct B;
 struct A { std::shared_ptr<B> b; ~A() { std::cout << "~A\n"; } };
-struct B { std::weak_ptr<A> a;   ~B() { std::cout << "~B\n"; } }; // 改 weak_ptr
+struct B { std::weak_ptr<A> a;   ~B() { std::cout << "~B\n"; } };  // 改 weak_ptr
 
 int main() {
-    auto pa = std::make_shared<A>();   // A 强=1
-    auto pb = std::make_shared<B>();   // B 强=1
-    pa->b = pb;                        // B 强=2
-    pb->a = pa;                        // A 强仍=1（weak 不增计数）
-    if (auto sp = pb->a.lock())        // 临时提升为 shared_ptr 访问
+    auto pa = std::make_shared<A>();                               // A 强=1
+    auto pb = std::make_shared<B>();                               // B 强=1
+    pa->b = pb;                                                    // B 强=2
+    pb->a = pa;                                                    // A 强仍=1（weak 不增计数）
+    if (auto sp = pb->a.lock())                                    // 临时提升为 shared_ptr 访问
         std::cout << "A still alive\n";
-    return 0;                          // pb 先析构 -> B 强=0 -> ~B
+    return 0;                                                      // pb 先析构 -> B 强=0 -> ~B
                                        // 接着 pa 析构 -> A 强=0 -> ~A
 }
 ```
@@ -998,16 +998,16 @@ int main() {
     auto sp = std::make_shared<int>(100);
     std::weak_ptr<int> wp = sp;
 
-    if (auto locked = wp.lock())        // 正确：一步原子提升
-        std::cout << *locked << '\n';   // 100
+    if (auto locked = wp.lock())                      // 正确：一步原子提升
+        std::cout << *locked << '\n';                 // 100
 
-    sp.reset();                          // 强计数归零 -> 对象析构
+    sp.reset();                                       // 强计数归零 -> 对象析构
     std::cout << "expired=" << wp.expired() << '\n';  // 1 (true)
 
-    if (auto locked = wp.lock())        // 提升失败
+    if (auto locked = wp.lock())                      // 提升失败
         std::cout << *locked << '\n';
     else
-        std::cout << "object gone\n";   // 打印此行
+        std::cout << "object gone\n";                 // 打印此行
     return 0;
 }
 ```
@@ -1034,16 +1034,16 @@ class enable_shared_from_this
 {
   // ...
   shared_from_this()
-  { return shared_ptr<_Tp>(this->_M_weak_this); }   // 行 934-935：用 weak 构造
+  { return shared_ptr<_Tp>(this->_M_weak_this); }  // 行 934-935：用 weak 构造
   // ...
-  mutable weak_ptr<_Tp>  _M_weak_this;              // 行 972：内部弱引用
+  mutable weak_ptr<_Tp>  _M_weak_this;             // 行 972：内部弱引用
 };
 
 // <bits/shared_ptr_base.h> 行 2171-2218（基类）
 class __enable_shared_from_this
 {
   // ...
-  mutable __weak_ptr<_Tp, _Lp>  _M_weak_this;       // 行 2218
+  mutable __weak_ptr<_Tp, _Lp>  _M_weak_this;      // 行 2218
 };
 ```
 
@@ -1060,13 +1060,13 @@ struct Session : std::enable_shared_from_this<Session> {
     void start() {
         // 已被 shared_ptr 管理后才能调用
         auto self = shared_from_this();
-        std::cout << "self use_count=" << self.use_count() << '\n'; // 2
+        std::cout << "self use_count=" << self.use_count() << '\n';  // 2
     }
 };
 
 int main() {
     auto s = std::make_shared<Session>();
-    s->start();     // OK：s 已是 shared_ptr
+    s->start();                                                      // OK：s 已是 shared_ptr
     return 0;
 }
 ```
@@ -1087,8 +1087,8 @@ struct Bad : std::enable_shared_from_this<Bad> {
 };
 
 int main() {
-    auto b = std::make_shared<Bad>();   // 构造完成、移交 shared_ptr 后
-    b->ok();                            // OK
+    auto b = std::make_shared<Bad>();  // 构造完成、移交 shared_ptr 后
+    b->ok();                           // OK
     return 0;
 }
 ```
@@ -1108,8 +1108,8 @@ int main() {
 // <bits/shared_ptr_base.h> 行 1505-1510（左值引用版别名构造）
 template<typename _Yp>
   __shared_ptr(const __shared_ptr<_Yp, _Lp>& __r, element_type* __p) noexcept
-  : _M_ptr(__p), _M_refcount(__r._M_refcount)   // 关键：接管 r 的控制块
-  { }                                            // _M_ptr 指向别的对象
+  : _M_ptr(__p), _M_refcount(__r._M_refcount)  // 关键：接管 r 的控制块
+  { }                                          // _M_ptr 指向别的对象
 ```
 
 注意只复制 `_M_refcount`（控制块），`_M_ptr` 换成用户给的 `ptr`。这正是 ch39 RAII "延长生命周期" 的精妙应用。
@@ -1130,7 +1130,7 @@ struct Owner {
 
 // 返回 Owner 内部的 score 指针，但共享 Owner 的控制块
 std::shared_ptr<double> get_score(std::shared_ptr<Owner> o) {
-    return std::shared_ptr<double>(o, &o->score);   // 别名构造
+    return std::shared_ptr<double>(o, &o->score);  // 别名构造
 }
 
 int main() {
@@ -1139,11 +1139,11 @@ int main() {
         auto owner = std::make_shared<Owner>(7);
         s = get_score(owner);
         *s = 9.5;
-        std::cout << "score=" << *s << '\n';        // 9.5
-    }   // owner 局部变量析构，但 s 仍引用 -> Owner 未释放
+        std::cout << "score=" << *s << '\n';       // 9.5
+    }                                              // owner 局部变量析构，但 s 仍引用 -> Owner 未释放
     std::cout << "still alive via alias\n";
     // 此处 Owner 仍存活，因为 s 共享其控制块
-    return 0;                                       // s 析构 -> Owner 才释放
+    return 0;                                      // s 析构 -> Owner 才释放
 }
 ```
 
@@ -1168,7 +1168,7 @@ struct Node : std::enable_shared_from_this<Node> {
 int main() {
     auto n = std::make_shared<Node>(42);
     auto vp = n->value_ptr();
-    std::cout << *vp << '\n';    // 42
+    std::cout << *vp << '\n';                   // 42
     n.reset();
     std::cout << "via alias: " << *vp << '\n';  // 42，Node 仍活
     return 0;
@@ -1210,12 +1210,12 @@ int main() {
 #include <iostream>
 
 int main() {
-    std::shared_ptr<int[]> arr = std::make_shared<int[]>(4); // C++17
+    std::shared_ptr<int[]> arr = std::make_shared<int[]>(4);  // C++17
     for (int i = 0; i < 4; ++i) arr[i] = i * 10;
     for (int i = 0; i < 4; ++i) std::cout << arr[i] << ' ';
     std::cout << '\n';
-    std::cout << "use=" << arr.use_count() << '\n';   // 1
-    return 0;                                          // delete[]
+    std::cout << "use=" << arr.use_count() << '\n';           // 1
+    return 0;                                                 // delete[]
 }
 ```
 
@@ -1249,11 +1249,11 @@ template<typename _Tp, _Lock_policy _Lp>
 
 int main() {
     std::shared_ptr<int> a = std::make_shared<int>(5);
-    std::shared_ptr<int> b = std::make_shared<int>(5); // 不同控制块
+    std::shared_ptr<int> b = std::make_shared<int>(5);   // 不同控制块
     std::map<std::shared_ptr<int>, int, std::owner_less<>> m;
     m[a] = 1;
-    m[b] = 2;   // a、b 视为不同键（虽值相同）
-    std::cout << "size=" << m.size() << '\n';   // 2
+    m[b] = 2;                                            // a、b 视为不同键（虽值相同）
+    std::cout << "size=" << m.size() << '\n';            // 2
 
     // 别名：与 a 同控制块
     std::shared_ptr<int> alias(a, a.get());
@@ -1383,13 +1383,13 @@ struct Big { char buf[1 << 20]; Big() { buf[0] = 1; } ~Big() { std::cout << "~Bi
 int main() {
     std::weak_ptr<Big> wp;
     {
-        auto sp = std::make_shared<Big>();    // 对象+控制块 同块分配
+        auto sp = std::make_shared<Big>();               // 对象+控制块 同块分配
         wp = sp;
         // 强计数归零 -> ~Big() 调用，但内存（同块）不回收
     }
     std::cout << "sp gone, but memory held while weak alive\n";
     std::cout << "wp.expired=" << wp.expired() << '\n';  // 1
-    wp.reset();   // 弱计数归零 -> 整块（含 Big 内存）才释放
+    wp.reset();                                          // 弱计数归零 -> 整块（含 Big 内存）才释放
     std::cout << "now memory freed\n";
     return 0;
 }
@@ -1546,8 +1546,8 @@ struct FreeDeleter { void operator()(int* p) const { delete p; } };
 using D2 = std::unique_ptr<int, FreeDeleter>;
 
 int main() {
-    std::cout << "func-ptr deleter size = " << sizeof(D1) << '\n'; // 16：内嵌函数指针
-    std::cout << "functor  deleter size = " << sizeof(D2) << '\n'; // 8 ：EBO 吃掉空删除器
+    std::cout << "func-ptr deleter size = " << sizeof(D1) << '\n';  // 16：内嵌函数指针
+    std::cout << "functor  deleter size = " << sizeof(D2) << '\n';  // 8 ：EBO 吃掉空删除器
     static_assert(std::is_empty_v<FreeDeleter>, "stateless functor is empty");
     return 0;
 }
@@ -1601,7 +1601,7 @@ int main() {
                     new int(2), TaggedDeleter{"B"}));
     for (auto& p : v) std::cout << *p << ' ';
     std::cout << '\n';
-    return 0;   // 依次 free[B]、free[A]
+    return 0;                                       // 依次 free[B]、free[A]
 }
 ```
 
@@ -1623,10 +1623,10 @@ class Cache {
 public:
     std::shared_ptr<Expensive> get(int id) {
         if (auto it = m_.find(id); it != m_.end())
-            if (auto sp = it->second.lock())      // 命中且未失效
+            if (auto sp = it->second.lock())        // 命中且未失效
                 return sp;
-        auto sp = std::make_shared<Expensive>(id); // 重建
-        m_[id] = sp;                              // 存入 weak，不阻止回收
+        auto sp = std::make_shared<Expensive>(id);  // 重建
+        m_[id] = sp;                                // 存入 weak，不阻止回收
         return sp;
     }
 };
@@ -1634,11 +1634,11 @@ public:
 int main() {
     Cache c;
     auto a = c.get(1);
-    auto b = c.get(1);          // 复用同一对象
-    std::cout << (a.get() == b.get()) << '\n';    // 1
-    a.reset(); b.reset();       // 强计数归零 -> 对象析构，缓存项变 expired
-    auto d = c.get(1);          // lock() 失败 -> 重建
-    std::cout << "rebuilt=" << d->id << '\n';     // 1
+    auto b = c.get(1);                              // 复用同一对象
+    std::cout << (a.get() == b.get()) << '\n';      // 1
+    a.reset(); b.reset();                           // 强计数归零 -> 对象析构，缓存项变 expired
+    auto d = c.get(1);                              // lock() 失败 -> 重建
+    std::cout << "rebuilt=" << d->id << '\n';       // 1
     return 0;
 }
 ```
@@ -1813,9 +1813,9 @@ struct IntrusivePtr {
 };
 struct Node : IntrusiveBase { int v = 0; };
 int main() {
-    Node* raw = new Node(); raw->v = 1;       // 单次 new（计数已在 Node 内）
-    IntrusivePtr<Node> a(raw);                // 接管裸指针
-    IntrusivePtr<Node> b = a;                 // 仅 atomic inc，无控制块分配
+    Node* raw = new Node(); raw->v = 1;  // 单次 new（计数已在 Node 内）
+    IntrusivePtr<Node> a(raw);           // 接管裸指针
+    IntrusivePtr<Node> b = a;            // 仅 atomic inc，无控制块分配
     return (int)b->v;
 }
 ```
@@ -1826,7 +1826,7 @@ int main() {
 ## 附录 B：面试与性能 [J: Learning / G: Performance]
 
 > **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：面试与性能 [J: Learning / G: Performance]
-```
+```text
 面试高频:
 Q: unique_ptr 和 shared_ptr 的选择？
 A: unique_ptr: 独占所有权, 零开销 (sizeof=T*); shared_ptr: 共享, 有控制块开销 (16B+)
@@ -2108,8 +2108,8 @@ via_new(int):
 struct Plain   { int x; };                                            // 4B 对照组
 struct WithEsft : std::enable_shared_from_this<WithEsft> { int x; };  // 24B
 
-long long sizeof_plain()     { return sizeof(Plain); }    // → 0x4
-long long sizeof_with_esft() { return sizeof(WithEsft); } // → 0x18（+16B weak_ptr）
+long long sizeof_plain()     { return sizeof(Plain); }                // → 0x4
+long long sizeof_with_esft() { return sizeof(WithEsft); }             // → 0x18（+16B weak_ptr）
 
 std::shared_ptr<WithEsft> grab(WithEsft* p) { return p->shared_from_this(); }
 ```
@@ -2174,8 +2174,8 @@ grab(WithEsft*):                  ; rcx=返回值, rdx=p(this)
 struct Node { int v; };
 std::unique_ptr<Node> make_node(int v) { return std::make_unique<Node>(Node{v}); }
 int main() {
-    auto a = make_node(1);          // 拥有
-    auto b = std::move(a);          // 转移; a 现在为空
+    auto a = make_node(1);  // 拥有
+    auto b = std::move(a);  // 转移; a 现在为空
 }
 ```
 
@@ -2199,9 +2199,9 @@ struct A; struct B;
 struct A { std::shared_ptr<B> b; ~A(){ /* 不会跑 */ } };
 struct B { std::shared_ptr<A> a; };
 int main(){
-auto pa = std::make_shared<A>();   // use_count(A)=1
-auto pb = std::make_shared<B>();   // use_count(B)=1
-pa->b = pb; pb->a = pa;            // 互相 +1 -> 双方引用计数停在有环状态
+auto pa = std::make_shared<A>();  // use_count(A)=1
+auto pb = std::make_shared<B>();  // use_count(B)=1
+pa->b = pb; pb->a = pa;           // 互相 +1 -> 双方引用计数停在有环状态
 // 离开作用域: pa/pb 析构各 -1, 但计数仍 >=1, 对象永不释放 -> 泄漏
 }
 ```
@@ -2264,7 +2264,7 @@ auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
 struct File { char c = 'x'; };
 
 struct FileDeleter {
-    int* count;                                  // 有状态 deleter
+    int* count;  // 有状态 deleter
     void operator()(File* f) const {
         if (f) { ++*count; delete f; }
     }
@@ -2276,7 +2276,7 @@ int main() {
     std::unique_ptr<File> plain(new File);
     std::cout << "deleter-size " << sizeof(f) << " vs plain " << sizeof(plain) << "\n";
     std::cout << f->c << plain->c << "\n";
-    f.reset();                                    // 触发 deleter → released==1
+    f.reset();   // 触发 deleter → released==1
     std::cout << "released=" << released << "\n";
 }
 ```
@@ -2343,8 +2343,8 @@ delete c;                 // 若 use() 内部也 delete -> 双重释放; 若抛�
 auto create_conn(int id) {
     return std::unique_ptr<Connection>(new Connection(id));  // 或 make_unique
 }
-auto c = create_conn(0);   // 离开作用域自动释放, 异常安全
-use(c.get());              // .get() 仅借出裸指针, 不转移所有权
+auto c = create_conn(0);                                     // 离开作用域自动释放, 异常安全
+use(c.get());                                                // .get() 仅借出裸指针, 不转移所有权
 ```
 
 **步骤 3：移动语义转移所有权**
@@ -2401,8 +2401,8 @@ class Connection : public std::enable_shared_from_this<Connection> {
     std::weak_ptr<ConnectionPool> pool_;
 public:
     void return_self() {
-        if (auto p = pool_.lock())            // weak_ptr::lock：池还活着才归还
-            p->release(shared_from_this());   // 从 this 安全取得 shared_ptr
+        if (auto p = pool_.lock())           // weak_ptr::lock：池还活着才归还
+            p->release(shared_from_this());  // 从 this 安全取得 shared_ptr
     }
 };
 // 关键：对象必须已由 shared_ptr 管理(如 make_shared)才能调 shared_from_this；
@@ -2507,9 +2507,9 @@ int main() {
     std::weak_ptr<Foo> wp = sp;
     std::cout << "use_count=" << sp.use_count()
               << " expired=" << std::boolalpha << wp.expired() << std::endl;
-    auto sp2 = sp;                                   // 仅原子 +1，无新控制块
+    auto sp2 = sp;  // 仅原子 +1，无新控制块
     std::cout << "use_count after copy=" << sp.use_count() << std::endl;
-    return 0;                                         // sp/sp2 析构：use_count 归零 → Foo 销毁
+    return 0;       // sp/sp2 析构：use_count 归零 → Foo 销毁
 }
 ```
 

@@ -130,7 +130,7 @@ struct SkipNode {
 
 struct Node {
     int key;
-    std::vector<Node*> next;            // next[0..level]，多层前向指针
+    std::vector<Node*> next;  // next[0..level]，多层前向指针
     Node(int k, int level) : key(k), next(level + 1, nullptr) {}
 };
 
@@ -146,7 +146,7 @@ class SkipList {
 public:
     SkipList(int max_level = 4, float p = 0.5)
         : max_level_(max_level), p_(p), head_(new Node(0, max_level)) {}
-    ~SkipList() {                        // 按 level-0 链表释放全部节点
+    ~SkipList() {             // 按 level-0 链表释放全部节点
         Node* n = head_->next[0];
         delete head_;
         while (n) { Node* t = n->next[0]; delete n; n = t; }
@@ -265,8 +265,8 @@ cf_meta = handles[1]; cf_data = handles[2];
 // ④ Merge 算子：把「读-改-写」变成服务端合并，避免读放大
 // 适合计数器、集合、最高值等场景
 rocksdb::WriteOptions wopt;
-db->Merge(wopt, cf_data, "page_views", "+1");   // 累加合并
-db->Merge(wopt, cf_data, "tags", "rocksdb");     // 集合合并
+db->Merge(wopt, cf_data, "page_views", "+1");  // 累加合并
+db->Merge(wopt, cf_data, "tags", "rocksdb");   // 集合合并
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RocksDB 扩展（列族/合并/压缩） [实现·RocksDB]
@@ -344,17 +344,17 @@ g++ -std=c++17 -O2 -I/opt/leveldb/include ch132_leveldb_demo.cpp \
 // ⑥ 点查：Get 自动走 MemTable -> Immutable -> SSTable
 std::string value;
 leveldb::Status s = db->Get(leveldb::ReadOptions(), "k1", &value);
-if (s.ok()) { // value 可用
-else if (s.IsNotFound()) { // 键不存在
+if (s.ok()) {               // value 可用
+else if (s.IsNotFound()) {  // 键不存在
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 读路径与缓存 [实现·LevelDB]
 ```cpp
 // ⑥ 快照读：保证迭代期间视图不变（SequenceNumber 快照）
 leveldb::ReadOptions ro;
-ro.snapshot = db->GetSnapshot();           // 固定一致视图
+ro.snapshot = db->GetSnapshot();   // 固定一致视图
 // ... 迭代 ...
-db->ReleaseSnapshot(ro.snapshot);          // 用完释放
+db->ReleaseSnapshot(ro.snapshot);  // 用完释放
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 读路径与缓存 [实现·LevelDB]
@@ -398,10 +398,10 @@ db->CompactRange(&begin, &end);   // 合并 [a,z) 覆盖的所有层
 // 行号：约 60（CompactionFilter::Filter 虚函数，上游参考）
 class TtlFilter : public rocksdb::CompactionFilter {
 public:
-    bool Filter(int // level
-                const rocksdb::Slice& // existing_value
-                std::string* // new_value
-        return key.ToString().find("expired:") == 0;   // 丢弃过期键
+    bool Filter(int                                   // level
+                const rocksdb::Slice&                 // existing_value
+                std::string*                          // new_value
+        return key.ToString().find("expired:") == 0;  // 丢弃过期键
     }
     const char* Name() const override { return "TtlFilter"; }
 };
@@ -599,8 +599,8 @@ _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
 ```cpp
 // ⑩ 设置日志级别（RocksDB），定位 Compaction/Flush 卡点
 rocksdb::Options o;
-o.info_log_level = rocksdb::INFO_LEVEL;     // DEBUG/INFO/WARN/ERROR/HEADER
-o.stats_dump_period_sec = 60;               // 每 60s 向 LOG 倾倒统计
+o.info_log_level = rocksdb::INFO_LEVEL;  // DEBUG/INFO/WARN/ERROR/HEADER
+o.stats_dump_period_sec = 60;            // 每 60s 向 LOG 倾倒统计
 ```
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
@@ -640,10 +640,10 @@ LSM 的天性：**顺序写极快，随机点查需跨层**，范围扫描友好
 > **示例 38** [难度 ★☆☆☆☆] [主题：性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
 ```cpp
 // ⑪ 顺序写基准骨架（示意，非本机实测数字）
-#include <benchmark>  // 伪：用循环即可
+#include <benchmark>                         // 伪：用循环即可
 leveldb::WriteOptions w;
 for (int i = 0; i < 1'000'000; ++i) {
-    db->Put(w, std::to_string(i), payload);   // 顺序 key => 顺序写，吞吐最高
+    db->Put(w, std::to_string(i), payload);  // 顺序 key => 顺序写，吞吐最高
 }
 ```
 
@@ -810,8 +810,8 @@ db->Write(w, &batch);
 ```cpp
 // ⑮ 读优化：共享 BlockCache + 布隆过滤器
 leveldb::Options o;
-o.filter_policy = leveldb::NewBloomFilterPolicy(10);   // 每键 ~10bit
-o.block_cache = leveldb::NewLRUCache(128 << 20);        // 128MB
+o.filter_policy = leveldb::NewBloomFilterPolicy(10);  // 每键 ~10bit
+o.block_cache = leveldb::NewLRUCache(128 << 20);      // 128MB
 ```
 
 > **示例 57** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
@@ -826,8 +826,8 @@ rocksdb::Options o = rocksdb::Options::OptimizeForPointLookup(128 // MB cache
 rocksdb::Options o;
 o.max_background_flushes = 2;
 o.max_background_compactions = 4;
-o.level0_slowdown_writes_trigger = 20;   // L0 文件数达此值则前台限流
-o.level0_stop_writes_trigger = 36;       // 达此值直接停写
+o.level0_slowdown_writes_trigger = 20;  // L0 文件数达此值则前台限流
+o.level0_stop_writes_trigger = 36;      // 达此值直接停写
 ```
 
 - `[经验]`：先测后调——用 `db_bench` 跑真实负载，再据 `rocksdb.stats` 调整，不要盲改魔数。
@@ -1250,7 +1250,7 @@ LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtab
 ## 附录 F：LevelDB/RocksDB 工业原理与面试 [B: Principle / D: Stdlib / H: Design / I: Practice / J: Learning]
 
 > **示例 81** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：LevelDB/Rocks
-```
+```text
 LevelDB设计哲学 (Jeff Dean, Sanjay Ghemawat, 2011):
 - LSM Tree: 写优化 → 内存MemTable → 磁盘SST文件 → Compaction合并
 - 为什么不用B-tree? → B-tree随机写慢(寻道~10ms), LSM顺序写快(~100MB/s)
@@ -1362,7 +1362,10 @@ C++20 概念取代 SFINAE 做编译期约束：
 #include <iostream>
 #include <concepts>
 template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; // add(1.0, 2.0) 编译失败
+int main() {
+    std::cout << add(2, 3) << '\n';        // 5
+    // add(1.0, 2.0);    // ❌ double 不满足 std::integral → 编译失败
+}
 ```
 
 <span class="badge badge-std">标准</span> 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
@@ -1387,14 +1390,14 @@ class WalWriter {
 public:
     explicit WalWriter(const char* path) : fp_(std::fopen(path, "ab")) {}
     ~WalWriter() {
-        if (fp_) { std::fflush(fp_); std::fclose(fp_); }   // 析构即释放，异常安全
+        if (fp_) { std::fflush(fp_); std::fclose(fp_); }  // 析构即释放，异常安全
     }
     WalWriter(const WalWriter&) = delete;
     WalWriter& operator=(const WalWriter&) = delete;
     bool ok() const { return fp_ != nullptr; }
     void Append(const std::string& rec) {
         uint32_t n = static_cast<uint32_t>(rec.size());
-        std::fwrite(&n, sizeof n, 1, fp_);                  // 长度前缀，便于重放时定界
+        std::fwrite(&n, sizeof n, 1, fp_);                // 长度前缀，便于重放时定界
         std::fwrite(rec.data(), 1, n, fp_);
     }
 };
@@ -1465,14 +1468,14 @@ LevelDB 的 MemTable 底层是跳表（SkipList），读路径无锁、写路径
 
 struct Node {
     int key;
-    std::atomic<Node*> next;           // 单层后继，发布用 release / 观察用 acquire
+    std::atomic<Node*> next;                         // 单层后继，发布用 release / 观察用 acquire
     explicit Node(int k) : key(k), next(nullptr) {}
 };
 
 // 单层有序插入（演示内存序，不做多层随机高度）
 void insert(Node*& head, int key) {
     Node* n = new Node(key);
-    if (!head || key < head->key) {    // 空表或新最小值 -> 成为新头
+    if (!head || key < head->key) {                  // 空表或新最小值 -> 成为新头
         n->next.store(head, std::memory_order_relaxed);
         head = n;
         return;
@@ -1481,11 +1484,11 @@ void insert(Node*& head, int key) {
     Node* cur = prev->next.load(std::memory_order_acquire);
     while (cur && cur->key < key) { prev = cur; cur = cur->next.load(std::memory_order_acquire); }
     n->next.store(cur, std::memory_order_relaxed);
-    prev->next.store(n, std::memory_order_release);   // 发布：后续 acquire 能看到 n 及之前写入
+    prev->next.store(n, std::memory_order_release);  // 发布：后续 acquire 能看到 n 及之前写入
 }
 
 bool contains(Node* head, int key) {
-    Node* cur = head;                  // 从首节点开始遍历
+    Node* cur = head;                                // 从首节点开始遍历
     while (cur) {
         if (cur->key == key) return true;
         if (cur->key > key) return false;
@@ -1528,7 +1531,7 @@ struct Arena {
     size_t remain_ = 0;
     static constexpr size_t kBlock = 4096;
     void* alloc(size_t n) {
-        if (remain_ < n) {                       // 当前块不够，新开一块
+        if (remain_ < n) {            // 当前块不够，新开一块
             char* b = new char[kBlock];
             blocks_.push_back(b);
             cur_ = b; remain_ = kBlock;
@@ -1543,7 +1546,7 @@ struct Arena {
 int main() {
     Arena a;
     int allocs = 0;
-    for (int i = 0; i < 1000; ++i) {             // 1000 次“逻辑分配”
+    for (int i = 0; i < 1000; ++i) {  // 1000 次“逻辑分配”
         a.alloc(32);
         ++allocs;
     }

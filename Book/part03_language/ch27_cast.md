@@ -123,16 +123,16 @@ struct B { int b; };
 void demo_c_style_ambiguity() {
     // (1) 隐式不允许、但 (T) 允许 → 实际走 static_cast 下行（不检查！）
     A a;
-    B* pb = (B*)(&a);           // 危险：A 与 B 无关，这里其实走了 reinterpret_cast 语义
+    B* pb = (B*)(&a);                  // 危险：A 与 B 无关，这里其实走了 reinterpret_cast 语义
     (void)pb;
 
     // (2) 顺带摘 const —— 命名 cast 会逼你写 const_cast，意图可见
     const int ci = 42;
-    int* p = (int*)(&ci);       // C 风格：静默摘 const；等价于 const_cast<int*>(...)
+    int* p = (int*)(&ci);              // C 风格：静默摘 const；等价于 const_cast<int*>(...)
     (void)p;
 
     // (3) 指针 <-> 整数
-    uintptr_t addr = (uintptr_t)(&a);   // 实际走 reinterpret_cast
+    uintptr_t addr = (uintptr_t)(&a);  // 实际走 reinterpret_cast
     (void)addr;
 }
 
@@ -173,11 +173,11 @@ void take_pixels(Pixels p) { (void)p; }
 
 int main() {
     // 标准转换: int(0) --提升/转换--> double；此处不触发用户转换
-    double d = 3;                  // int→double 标准转换
+    double d = 3;                                           // int→double 标准转换
     assert(d == 3.0);
 
     // 用户定义转换: int --(构造函数 Pixels(int))--> Pixels，前后标准转换为空
-    take_pixels(Pixels(10));       // 显式；若去掉 explicit 则 take_pixels(10) 也合法
+    take_pixels(Pixels(10));                                // 显式；若去掉 explicit 则 take_pixels(10) 也合法
 
     // 临时物化: 字面量 5 是 prvalue，绑定到 const int& 时物化为临时并被延长
     const int& ref_to_tmp = 5;
@@ -231,10 +231,10 @@ int main() {
 #include <iostream>
 
 int main() {
-    const int HARDCODED = 100;     // 很可能落入 .rodata（只读段）
+    const int HARDCODED = 100;       // 很可能落入 .rodata（只读段）
     int* p = const_cast<int*>(&HARDCODED);
     // *p = 200;                   // UB：写只读页 → 段错误。取消注释即崩溃。
-    std::cout << HARDCODED << "\n"; // 读合法
+    std::cout << HARDCODED << "\n";  // 读合法
     (void)p;
     return 0;
 }
@@ -258,9 +258,9 @@ void mutate_through_const_ref(const int& v) {
 }
 
 int main() {
-    int x = 1;                // x 本身非常量
+    int x = 1;         // x 本身非常量
     mutate_through_const_ref(x);
-    assert(x == 999);         // 合法：底层对象可写
+    assert(x == 999);  // 合法：底层对象可写
     return 0;
 }
 ```
@@ -286,12 +286,12 @@ struct Base { int b = 1; virtual ~Base() = default; };
 struct Derived : Base { int d = 2; };
 
 int main() {
-    Base b;                              // 真实类型是 Base，不是 Derived
+    Base b;                                   // 真实类型是 Base，不是 Derived
     Derived* pd = static_cast<Derived*>(&b);  // 编译通过，但下行未检查！
     // pd->d 读到的是 Base 对象后面"不存在"的内存 → 未定义/垃圾
     std::cout << "b.b=" << b.b << " pd->b=" << pd->b << "\n";
     (void)pd;
-    assert(b.b == 1);                    // 仅确认 Base 自身完好
+    assert(b.b == 1);                         // 仅确认 Base 自身完好
     return 0;
 }
 ```
@@ -320,8 +320,8 @@ int main() {
     assert(static_cast<int>(c) == 2);
 
     // void* -> T*：malloc/OS API 返回 void*，需 static_cast 回到具体类型
-    void* mem = reinterpret_cast<void*>(0x1);   // 仅示意；真实代码来自 malloc/new
-    int* ip = static_cast<int*>(mem);           // 合法：void* -> int*
+    void* mem = reinterpret_cast<void*>(0x1);  // 仅示意；真实代码来自 malloc/new
+    int* ip = static_cast<int*>(mem);          // 合法：void* -> int*
     (void)ip;
     return 0;
 }
@@ -344,9 +344,9 @@ struct D : L, R { int d = 30; };
 
 int main() {
     D d;
-    R* pr = static_cast<R*>(&d);   // 编译器自动加偏移 sizeof(L)，把 this 调整到 R 子对象
+    R* pr = static_cast<R*>(&d);                                         // 编译器自动加偏移 sizeof(L)，把 this 调整到 R 子对象
     assert(pr->r == 20);
-    assert(reinterpret_cast<void*>(pr) != reinterpret_cast<void*>(&d)); // 指针值确实不同
+    assert(reinterpret_cast<void*>(pr) != reinterpret_cast<void*>(&d));  // 指针值确实不同
     std::printf("&d=%p pr=%p\n", (void*)&d, (void*)pr);
     return 0;
 }
@@ -390,11 +390,11 @@ struct Dog : Animal { void bark() {} };
 struct Cat : Animal { void meow() {} };
 
 int main() {
-    Animal* a = new Dog;                       // 实际是 Dog
-    Dog* d = dynamic_cast<Dog*>(a);            // 成功
-    Cat* c = dynamic_cast<Cat*>(a);            // 失败 → nullptr
+    Animal* a = new Dog;             // 实际是 Dog
+    Dog* d = dynamic_cast<Dog*>(a);  // 成功
+    Cat* c = dynamic_cast<Cat*>(a);  // 失败 → nullptr
     assert(d != nullptr);
-    assert(c == nullptr);                      // 关键：安全失败而非崩溃
+    assert(c == nullptr);            // 关键：安全失败而非崩溃
     delete a;
     return 0;
 }
@@ -411,15 +411,15 @@ struct Animal { virtual ~Animal() = default; };
 struct Dog : Animal {};
 
 int main() {
-    Animal a;                                  // 实际是 Animal，不是 Dog
+    Animal a;                            // 实际是 Animal，不是 Dog
     bool threw = false;
     try {
-        Dog& d = dynamic_cast<Dog&>(a);        // 失败 → 抛 bad_cast
+        Dog& d = dynamic_cast<Dog&>(a);  // 失败 → 抛 bad_cast
         (void)d;
     } catch (const std::bad_cast&) {
         threw = true;
     }
-    assert(threw);                             // 引用无 nullptr 可返，只能抛异常
+    assert(threw);                       // 引用无 nullptr 可返，只能抛异常
     return 0;
 }
 ```
@@ -437,11 +437,11 @@ int main() {
 struct Base { virtual ~Base() = default; };
 struct Left : Base { int l = 1; };
 struct Right : Base { int r = 2; };
-struct Most : Left, Right {};                  // 多继承：Left、Right 都含 Base
+struct Most : Left, Right {};  // 多继承：Left、Right 都含 Base
 
 int main() {
     Most m;
-    Right* pr = &m;                            // 经上行得 Right*（实际指向 Most）
+    Right* pr = &m;            // 经上行得 Right*（实际指向 Most）
     // 从 Right 经 Base 横向到 Left：static_cast 做不到，必须 dynamic_cast
     Left* pl = dynamic_cast<Left*>(static_cast<Base*>(pr));
     assert(pl != nullptr);
@@ -468,8 +468,8 @@ struct D : B {};
 
 int main() {
     B b;
-    (void)typeid(b);                 // -fno-rtti 时此行无法链接
-    (void)dynamic_cast<D*>(&b);      // 同上
+    (void)typeid(b);             // -fno-rtti 时此行无法链接
+    (void)dynamic_cast<D*>(&b);  // 同上
     return 0;
 }
 ```
@@ -493,9 +493,9 @@ int main() {
 
 int main() {
     int x = 42;
-    uintptr_t bits = reinterpret_cast<uintptr_t>(&x);   // 指针→整数
-    int* p = reinterpret_cast<int*>(bits);              // 整数→指针（同一地址）
-    assert(*p == 42);                                   // 转回原类型：合法
+    uintptr_t bits = reinterpret_cast<uintptr_t>(&x);  // 指针→整数
+    int* p = reinterpret_cast<int*>(bits);             // 整数→指针（同一地址）
+    assert(*p == 42);                                  // 转回原类型：合法
     return 0;
 }
 ```
@@ -592,34 +592,34 @@ int main() {
 #include <cstdint>
 // ⑥-5 STM32F4 真实寄存器布局（节选自 CMSIS stm32f4xx.h，已去 __IO 宏）
 #define __IO volatile
-struct RCC_TypeDef {            // 复位与时钟控制，基地址 0x40023800
-    __IO uint32_t CR;           // 0x00 时钟控制
-    __IO uint32_t PLLCFGR;      // 0x04 PLL 配置
-    __IO uint32_t CFGR;         // 0x08 时钟配置
-    __IO uint32_t CIR;          // 0x0C 时钟中断
-    __IO uint32_t AHB1RSTR;     // 0x10 AHB1 复位
-    __IO uint32_t AHB2RSTR;     // 0x14 AHB2 复位
-    __IO uint32_t AHB3RSTR;     // 0x18 AHB3 复位
-    uint32_t RESERVED0;         // 0x1C 保留
-    __IO uint32_t APB1RSTR;     // 0x20 APB1 复位
-    __IO uint32_t APB2RSTR;     // 0x24 APB2 复位
-    uint32_t RESERVED1[2];      // 0x28-0x2C 保留
-    __IO uint32_t AHB1ENR;      // 0x30 AHB1 外设时钟使能（GPIOAEN=bit0）
+struct RCC_TypeDef {                                 // 复位与时钟控制，基地址 0x40023800
+    __IO uint32_t CR;                                // 0x00 时钟控制
+    __IO uint32_t PLLCFGR;                           // 0x04 PLL 配置
+    __IO uint32_t CFGR;                              // 0x08 时钟配置
+    __IO uint32_t CIR;                               // 0x0C 时钟中断
+    __IO uint32_t AHB1RSTR;                          // 0x10 AHB1 复位
+    __IO uint32_t AHB2RSTR;                          // 0x14 AHB2 复位
+    __IO uint32_t AHB3RSTR;                          // 0x18 AHB3 复位
+    uint32_t RESERVED0;                              // 0x1C 保留
+    __IO uint32_t APB1RSTR;                          // 0x20 APB1 复位
+    __IO uint32_t APB2RSTR;                          // 0x24 APB2 复位
+    uint32_t RESERVED1[2];                           // 0x28-0x2C 保留
+    __IO uint32_t AHB1ENR;                           // 0x30 AHB1 外设时钟使能（GPIOAEN=bit0）
 };
-struct GPIO_TypeDef {           // 通用 IO，GPIOA 基地址 0x40020000
-    __IO uint32_t MODER;        // 0x00 模式（每脚 2 位）
-    __IO uint32_t OTYPER;       // 0x04 输出类型
-    __IO uint32_t OSPEEDR;      // 0x08 速度
-    __IO uint32_t PUPDR;        // 0x0C 上拉下拉
-    __IO uint32_t IDR;          // 0x10 输入数据
-    __IO uint32_t ODR;          // 0x14 输出数据
-    __IO uint32_t BSRR;         // 0x18 位置/复位
+struct GPIO_TypeDef {                                // 通用 IO，GPIOA 基地址 0x40020000
+    __IO uint32_t MODER;                             // 0x00 模式（每脚 2 位）
+    __IO uint32_t OTYPER;                            // 0x04 输出类型
+    __IO uint32_t OSPEEDR;                           // 0x08 速度
+    __IO uint32_t PUPDR;                             // 0x0C 上拉下拉
+    __IO uint32_t IDR;                               // 0x10 输入数据
+    __IO uint32_t ODR;                               // 0x14 输出数据
+    __IO uint32_t BSRR;                              // 0x18 位置/复位
 };
-struct USART_TypeDef {          // 串口，USART2 基地址 0x40004400
-    __IO uint32_t SR;           // 0x00 状态（TXE=bit7, TC=bit6）
-    __IO uint32_t DR;           // 0x04 数据（低 9 位）
-    __IO uint32_t BRR;          // 0x08 波特率
-    __IO uint32_t CR1;          // 0x0C 控制 1（UE=bit13, TE=bit3）
+struct USART_TypeDef {                               // 串口，USART2 基地址 0x40004400
+    __IO uint32_t SR;                                // 0x00 状态（TXE=bit7, TC=bit6）
+    __IO uint32_t DR;                                // 0x04 数据（低 9 位）
+    __IO uint32_t BRR;                               // 0x08 波特率
+    __IO uint32_t CR1;                               // 0x0C 控制 1（UE=bit13, TE=bit3）
 };
 // 真实物理基地址（RM0090 存储器映射表）
 constexpr std::uintptr_t RCC_BASE    = 0x40023800;
@@ -631,15 +631,15 @@ inline GPIO_TypeDef*   GPIOA()  { return reinterpret_cast<GPIO_TypeDef*>(GPIOA_B
 inline USART_TypeDef*  USART2() { return reinterpret_cast<USART_TypeDef*>(USART2_BASE); }
 // 点灯：使能 GPIOA 时钟 -> PA5 配输出 -> 拉高
 void led_on() {
-    RCC()->AHB1ENR |= (1u << 0);                       // RCC_AHB1ENR.GPIOAEN = bit0
-    GPIOA()->MODER = (GPIOA()->MODER & ~(3u << 10))    // 清 MODER5[11:10]
-                   |  (1u << 10);                       // 置 01 = 输出
-    GPIOA()->ODR  |= (1u << 5);                         // PA5 输出高（ODR bit5）
+    RCC()->AHB1ENR |= (1u << 0);                     // RCC_AHB1ENR.GPIOAEN = bit0
+    GPIOA()->MODER = (GPIOA()->MODER & ~(3u << 10))  // 清 MODER5[11:10]
+                   |  (1u << 10);                    // 置 01 = 输出
+    GPIOA()->ODR  |= (1u << 5);                      // PA5 输出高（ODR bit5）
 }
 // 串口发一字节：等发送寄存器空（TXE）再写 DR
 void usart2_send(std::uint8_t b) {
-    while (!(USART2()->SR & (1u << 7))) {}             // SR.TXE = bit7，轮询
-    USART2()->DR = b;                                  // 写数据寄存器即触发发送
+    while (!(USART2()->SR & (1u << 7))) {}           // SR.TXE = bit7，轮询
+    USART2()->DR = b;                                // 写数据寄存器即触发发送
 }
 int main() { led_on(); usart2_send('A'); return 0; }
 ```
@@ -708,11 +708,11 @@ int main() {
 int main() {
     using namespace std::chrono;
     milliseconds ms = 1500ms;
-    seconds s = duration_cast<seconds>(ms);     // 1.5s -> 截断为 1s（向零）
+    seconds s = duration_cast<seconds>(ms);                  // 1.5s -> 截断为 1s（向零）
     assert(s.count() == 1);
 
     seconds s2 = 3s;
-    milliseconds ms2 = duration_cast<milliseconds>(s2);  // 3s -> 3000ms
+    milliseconds ms2 = duration_cast<milliseconds>(s2);      // 3s -> 3000ms
     assert(ms2.count() == 3000);
 
     // 四舍五入需手动：+0.5 周期再 cast（向零截断 → 实现四舍五入）
@@ -805,12 +805,12 @@ int main() {
 #include <type_traits>
 
 struct A {};
-struct B { B(A) {} };                 // A -> B 可隐式构造
+struct B { B(A) {} };                             // A -> B 可隐式构造
 
 int main() {
     static_assert(std::is_convertible_v<int, double>);
-    static_assert(std::is_convertible_v<A, B>);          // 用户定义转换算可转换
-    static_assert(!std::is_convertible_v<B, A>);         // 无反向转换
+    static_assert(std::is_convertible_v<A, B>);   // 用户定义转换算可转换
+    static_assert(!std::is_convertible_v<B, A>);  // 无反向转换
     static_assert(std::is_convertible_v<int, int>);
     // 概念用法（C++20）
     static_assert(std::convertible_to<int, long>);
@@ -884,11 +884,11 @@ int main() {
     constexpr _To
     bit_cast(const _From& __from) noexcept
 #ifdef __cpp_concepts
-    requires (sizeof(_To) == sizeof(_From))               // 84
+    requires (sizeof(_To) == sizeof(_From))    // 84
       && __is_trivially_copyable(_To) && __is_trivially_copyable(_From)
 #endif
     {
-      return __builtin_bit_cast(_To, __from);             // 87
+      return __builtin_bit_cast(_To, __from);  // 87
     }
 ```
 
@@ -909,22 +909,22 @@ int main() {
 // libstdc++ 15.3.0  —— bits/chrono.h:278-296
     template<typename _ToDur, typename _Rep, typename _Period>
       _GLIBCXX_NODISCARD
-      constexpr __enable_if_is_duration<_ToDur>           // 278
+      constexpr __enable_if_is_duration<_ToDur>                               // 278
       duration_cast(const duration<_Rep, _Period>& __d)
       {
 #if __cpp_inline_variables && __cpp_if_constexpr
     if constexpr (is_same_v<_ToDur, duration<_Rep, _Period>>)
-      return __d;                                         // 283 同类型直接返回
+      return __d;                                                             // 283 同类型直接返回
     else
 #endif
         {
-          using __to_period = typename _ToDur::period;    // 293 目标单位（ratio）
-          using __to_rep    = typename _ToDur::rep;       // 288 目标计数类型
-          using __cf = ratio_divide<_Period, __to_period>;            // 289 周期之比
-          using __cr = typename common_type<__to_rep, _Rep, intmax_t>::type; // 290
+          using __to_period = typename _ToDur::period;                        // 293 目标单位（ratio）
+          using __to_rep    = typename _ToDur::rep;                           // 288 目标计数类型
+          using __cf = ratio_divide<_Period, __to_period>;                    // 289 周期之比
+          using __cr = typename common_type<__to_rep, _Rep, intmax_t>::type;  // 290
           using __dc = __duration_cast_impl<_ToDur, __cf, __cr,
-                                    __cf::num == 1, __cf::den == 1>;     // 291-292
-          return __dc::__cast(__d);                       // 293
+                                    __cf::num == 1, __cf::den == 1>;          // 291-292
+          return __dc::__cast(__d);                                           // 293
         }
       }
 ```
@@ -1117,7 +1117,7 @@ BENCHMARK(BM_BitCast); BENCHMARK(BM_Memcpy); BENCHMARK(BM_Reinterpret);
 ### 11.1 内存图：`dynamic_cast` 的多态布局
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：dynamiccast 的多
-```
+```text
 堆/栈布局（多继承 Most : Left, Right，均含 virtual Base）：
 +-----------+      vtable of Most
 | vptr(L)   | ---> +---------------------------+
@@ -1135,7 +1135,7 @@ dynamic_cast<Left*>(pr)：从 Right 子对象经 RTTI 算回 Most 基址，
 ### 11.2 调用栈（一次失败的 `dynamic_cast` 指针）
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈
-```
+```text
 main
 └─ dynamic_cast<Cat*>(Animal*)        // 用户代码
    └─ __dynamic_cast(...)             // libsupc++/libcxxabi
@@ -1374,8 +1374,8 @@ struct C : A {};
 int main() {
     C c;
     A* pa = &c;
-    assert(dynamic_cast<C*>(pa) != nullptr);   // 最派生是 C
-    assert(dynamic_cast<B*>(pa) == nullptr);   // 不是 B
+    assert(dynamic_cast<C*>(pa) != nullptr);  // 最派生是 C
+    assert(dynamic_cast<B*>(pa) == nullptr);  // 不是 B
     return 0;
 }
 ```
@@ -1442,7 +1442,7 @@ int main() {
 
 int main() {
     int x = 99;
-    void* v = &x;                 // 隐式 int* -> void*
+    void* v = &x;                   // 隐式 int* -> void*
     int* p = static_cast<int*>(v);  // void* -> int*（回原类型，合法）
     assert(*p == 99);
     // double* bad = static_cast<double*>(v); // 错：void*->double* 不相关，应 reinterpret
@@ -1525,7 +1525,7 @@ struct Base { virtual ~Base() = default; };
 struct Derived : Base { int tag = 7; };
 int main() {
     Derived d;
-    Base* b = &d;                       // 上行（安全）
+    Base* b = &d;                           // 上行（安全）
     Derived* p = static_cast<Derived*>(b);  // 已知 b 实际指向 Derived → 安全
     assert(p->tag == 7);
     return 0;
@@ -1579,10 +1579,10 @@ int main() {
 int main() {
     using namespace std::chrono;
     duration<double, std::milli> ms_d{1500.0};
-    seconds s = duration_cast<seconds>(ms_d);   // 1.5s -> 1s（向零截断）
+    seconds s = duration_cast<seconds>(ms_d);  // 1.5s -> 1s（向零截断）
     assert(s.count() == 1);
     duration<double> s_d = duration_cast<duration<double>>(ms_d);
-    assert(s_d.count() == 1.5);                 // 浮点 rep 保留小数
+    assert(s_d.count() == 1.5);                // 浮点 rep 保留小数
     return 0;
 }
 ```
@@ -2015,9 +2015,9 @@ _Z24implicit_int_from_doubled:
 > **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 double d = 3.9;
-int a = static_cast<int>(d);   // 3, 截断; -Wfloat-conversion 会警告
+int a = static_cast<int>(d);        // 3, 截断; -Wfloat-conversion 会警告
 int b = 7;
-double e = static_cast<double>(b); // 7.0, 保真
+double e = static_cast<double>(b);  // 7.0, 保真
 ```
 
 <span class="badge badge-std">标准</span> `static_cast` 执行良定义的数值转换；窄化转换在列表初始化 `{ }` 中被禁止，但在 `static_cast` 中允许（仅警告）。
@@ -2064,9 +2064,9 @@ UB 边界：`reinterpret_cast` 得到的指针只有在"该地址确实存在一
 struct B { virtual ~B() = default; };
 struct D1 : B {};
 struct D2 : B {};
-struct Most : D1, D2 {};   // B 被继承两次(非虚)
-B* p = new D2;             // p 指向 D2 那一支的 B 子对象
-D1* q = dynamic_cast<D1*>(p); // nullptr: p 并不指向 D1 分支
+struct Most : D1, D2 {};       // B 被继承两次(非虚)
+B* p = new D2;                 // p 指向 D2 那一支的 B 子对象
+D1* q = dynamic_cast<D1*>(p);  // nullptr: p 并不指向 D1 分支
 ```
 
 <span class="badge badge-std">标准</span> `dynamic_cast` 对指针在失败时为 `nullptr`、对引用抛 `std::bad_cast`；跨虚继承布局需 RTTI 路径解析。
@@ -2135,8 +2135,8 @@ struct Derived : Base { int d = 2; };
 
 int main() {
     Derived d;
-    Base* b = static_cast<Base*>(&d);      // 向上转换: 编译期已知
-    Derived* back = static_cast<Derived*>(b); // 向下: 静态已知布局, 无检查
+    Base* b = static_cast<Base*>(&d);          // 向上转换: 编译期已知
+    Derived* back = static_cast<Derived*>(b);  // 向下: 静态已知布局, 无检查
     std::cout << b->b << " " << back->d << "\n";
 }
 ```
@@ -2373,8 +2373,8 @@ struct D4 : D1 { int id() const override { return 4; } };
 int main() {
     D4 obj;
     Base* p = &obj;
-    D4* sc = static_cast<D4*>(p);      // 编译期偏移，零运行期检查
-    D4* dc = dynamic_cast<D4*>(p);     // RTTI 验证（安全但慢 ~10x）
+    D4* sc = static_cast<D4*>(p);   // 编译期偏移，零运行期检查
+    D4* dc = dynamic_cast<D4*>(p);  // RTTI 验证（安全但慢 ~10x）
     std::cout << "static_cast id=" << sc->id() << " dynamic_cast ok=" << (dc != nullptr) << std::endl;
     return 0;
 }

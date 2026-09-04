@@ -157,17 +157,17 @@ Boost 与标准库是**共生**关系：Boost 先验证，标准后收编。
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准库关系
 ```cpp
 // ③ 同一意图的两种写法：Boost 版 vs 标准版
-#include <boost/shared_ptr.hpp>   // 旧代码
-#include <memory>                 // C++11 起
+#include <boost/shared_ptr.hpp>        // 旧代码
+#include <memory>                      // C++11 起
 boost::shared_ptr<int> b(new int(1));
-std::shared_ptr<int>   s(new int(1));   // 语义等价，接口近似
+std::shared_ptr<int>   s(new int(1));  // 语义等价，接口近似
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准库关系
 ```cpp
 // ③ Filesystem：Boost 先于标准（2003 起），C++17 收编
-#include <boost/filesystem.hpp>   // boost::filesystem
-#include <filesystem>             // std::filesystem (C++17)
+#include <boost/filesystem.hpp>  // boost::filesystem
+#include <filesystem>            // std::filesystem (C++17)
 #include <string>
 namespace fs = std::filesystem;
 std::uintmax_t size_of(const std::string& p){ return fs::file_size(p); }
@@ -336,9 +336,9 @@ void safe() {
 #include <iostream>
 void maybe_throw() {
     try {
-        boost::filesystem::create_directory("/root/no_perm"); // 可能抛
+        boost::filesystem::create_directory("/root/no_perm");  // 可能抛
     } catch (const boost::filesystem::filesystem_error& e) {
-        std::cerr << e.what() << "\n";   // 基本保证：不泄漏，状态可预期
+        std::cerr << e.what() << "\n";                         // 基本保证：不泄漏，状态可预期
     }
 }
 ```
@@ -369,7 +369,7 @@ template <typename Derived>
 struct Addable {
     int value;
     Derived operator+(const Derived& o) const {
-        const auto& self = static_cast<const Derived&>(*this); // 编译期向下转型
+        const auto& self = static_cast<const Derived&>(*this);   // 编译期向下转型
         return Derived{ self.value + o.value };
     }
 };
@@ -377,7 +377,7 @@ struct Vec2 : Addable<Vec2> {
     Vec2() = default;
     explicit Vec2(int v) { value = v; }
 };
-int main() { Vec2 a{3}, b{4}; Vec2 c = a + b; return c.value; } // 7
+int main() { Vec2 a{3}, b{4}; Vec2 c = a + b; return c.value; }  // 7
 ```
 
 ```asm
@@ -428,7 +428,7 @@ public:
     }
     ~my_shared_ptr() {
         if (cb_ && cb_->strong.fetch_sub(1, std::memory_order_acq_rel) == 1) {
-            delete ptr_; delete cb_;   // 最后一个持有者析构对象与控制块
+            delete ptr_; delete cb_;  // 最后一个持有者析构对象与控制块
         }
     }
     int use_count() const noexcept {
@@ -439,8 +439,8 @@ public:
 struct Widget { int id; };
 int main() {
     my_shared_ptr<Widget> a(new Widget{42});
-    my_shared_ptr<Widget> b = a;            // 拷贝：引用计数 +1
-    return a.use_count() + b->id;           // 2 + 42 = 44
+    my_shared_ptr<Widget> b = a;      // 拷贝：引用计数 +1
+    return a.use_count() + b->id;     // 2 + 42 = 44
 }
 ```
 
@@ -886,12 +886,12 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 // 过去用裸指针哨兵：返回 nullptr 表示「没找到」——易与「有效空指针」混淆
 std::optional<std::string> find_user(int id) {
-    if (id == 0) return std::nullopt;            // 明确「无值」，而非假指针
+    if (id == 0) return std::nullopt;                    // 明确「无值」，而非假指针
     return std::string{"user#"} + std::to_string(id);
 }
 
 int main() {
-    if (auto u = find_user(7)) std::cout << *u << "\n";   // 有值才解引用
+    if (auto u = find_user(7)) std::cout << *u << "\n";  // 有值才解引用
     if (!find_user(0))         std::cout << "not found\n";
     return 0;
 }
@@ -1076,7 +1076,7 @@ int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, op
 #include <optional>
 #include <string_view>
 template <class T>
-std::optional<T> maybe_parse(std::string_view // s
+std::optional<T> maybe_parse(std::string_view /* s */) {
     // 真实实现按 T 解析；此处示意：失败返回 nullopt
     return std::nullopt;
 }

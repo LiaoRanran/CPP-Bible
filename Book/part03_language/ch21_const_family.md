@@ -61,7 +61,7 @@
 cv 限定符可以叠加、可以出现在类型的不同位置，组合规则如下：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 在类型系统里的位置
-```
+```text
 T                      // 无 cv
 const T                // 顶层 const：T 本身不可改（对对象类型）
 volatile T             // 顶层 volatile
@@ -90,19 +90,19 @@ const T* const* const* // 任意叠加，从右向左读
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与模板实参推导
 ```cpp
 template<typename T>
-void f(T x);          // T 推导时不带顶层 const
+void f(T x);         // T 推导时不带顶层 const
 
 const int ci = 0;
-f(ci);                // T = int（顶层 const 被丢弃，因为按值拷贝）
+f(ci);               // T = int（顶层 const 被丢弃，因为按值拷贝）
 
 template<typename T>
-void g(const T& x);   // 形参是 const T&
-g(ci);                // T = int，形参类型 const int&（底层 const 保留在形参，T 本身仍无 const）
+void g(const T& x);  // 形参是 const T&
+g(ci);               // T = int，形参类型 const int&（底层 const 保留在形参，T 本身仍无 const）
 
 template<typename T>
 void h(T* p);
 int i = 0; const int* cp = &i;
-h(cp);                // T = const int（底层 const 进入 T，因为指针所指的 const 是类型的一部分）
+h(cp);               // T = const int（底层 const 进入 T，因为指针所指的 const 是类型的一部分）
 ```
 
 规则总结：
@@ -121,8 +121,8 @@ struct Blob {
     const int& get() const { return x_; }  // #2
     int x_;
 };
-Blob b;        b.get();   // 调用 #1（b 是非 const 对象）
-const Blob cb; cb.get();   // 调用 #2（cb 是 const 对象，只能调用 const 成员）
+Blob b;        b.get();                    // 调用 #1（b 是非 const 对象）
+const Blob cb; cb.get();                   // 调用 #2（cb 是 const 对象，只能调用 const 成员）
 ```
 
 决议细节：
@@ -142,12 +142,12 @@ const Blob cb; cb.get();   // 调用 #2（cb 是 const 对象，只能调用 con
 #include <mutex>
 #include <optional>
 class Cache {
-    mutable std::mutex mtx_;        // 逻辑可变：锁不是"业务状态"
-    mutable std::optional<int> val_; // 缓存也不是业务状态
-    int compute() const;            // 耗算
+    mutable std::mutex mtx_;          // 逻辑可变：锁不是"业务状态"
+    mutable std::optional<int> val_;  // 缓存也不是业务状态
+    int compute() const;              // 耗算
 public:
-    int value() const {              // 对调用者表现为 const
-        std::lock_guard lk(mtx_);    // 合法：mtx_ 是 mutable
+    int value() const {               // 对调用者表现为 const
+        std::lock_guard lk(mtx_);     // 合法：mtx_ 是 mutable
         if (!val_) val_ = compute();
         return *val_;
     }
@@ -160,13 +160,13 @@ public:
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
 ```cpp
-const int G = 100;          // 通常落 .rodata（只读段，页属性 R）
-int        H = 200;          // 落 .data（RW）
+const int G = 100;   // 通常落 .rodata（只读段，页属性 R）
+int        H = 200;  // 落 .data（RW）
 ```
 
 内存布局（x86-64 ELF）：
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
-```
+```text
 0x400000 .text    (R-X)  代码
 0x400500 .rodata  (R--)  G=100  ← 写保护页
 0x4b0000 .data    (RW-)  H=200
@@ -209,7 +209,7 @@ public:
 - **const 成员函数影响 mangling**：`void A::g()` 与 `void A::g() const` 修饰不同（const 版本带 `K` 后缀，Itanium ABI）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ABI / Name Mangl
-```
+```text
 _Z1fPi     void f(int*)
 _Z1fPKi    void f(const int*)     // P Ki = pointer to const int
 _ZN1A1gEv  A::g()
@@ -230,9 +230,9 @@ _ZNK1A1gEv A::g() const           // K = const member function
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三个核心概念
 ```cpp
 constexpr int sq(int n) { return n*n; }
-constexpr int a = sq(5);     // sq(5) 是常量表达式 → a 是编译期常量
+constexpr int a = sq(5);  // sq(5) 是常量表达式 → a 是编译期常量
 int r = rand();
-int b = sq(r);               // sq(r) 不是常量表达式，但 sq 声明为 constexpr，
+int b = sq(r);            // sq(r) 不是常量表达式，但 sq 声明为 constexpr，
                              // 允许在运行期退化调用 → b 在运行期求值
 ```
 
@@ -343,8 +343,8 @@ consteval fixed_string<strlen_lit("")> check_ident(const char* s) {
     // 实际需模板化大小，这里示意校验逻辑
     for (size_t i=0; s[i]; ++i)
         if (!(('a'<=s[i]&&s[i]<='z') || ('0'<=s[i]&&s[i]<='9') || s[i]=='_'))
-            throw "invalid identifier char";   // 编译期抛错 → 编译失败
-    return fixed_string<...>{s};  // 实际需配合模板
+            throw "invalid identifier char";  // 编译期抛错 → 编译失败
+    return fixed_string<...>{s};              // 实际需配合模板
 }
 
 // 用法：标识符名在编译期被校验
@@ -377,9 +377,9 @@ C++ 中跨**翻译单元（TU）**的**动态初始化（dynamic initialization�
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 机制
 ```cpp
 // log.cpp
-Logger& get_logger() { static Logger L; return L; }   // Meyers 单例，首次调用构造
+Logger& get_logger() { static Logger L; return L; }  // Meyers 单例，首次调用构造
 // net.cpp
-static Logger& g_log = get_logger();   // 依赖 get_logger，但构造顺序不确定？
+static Logger& g_log = get_logger();                 // 依赖 get_logger，但构造顺序不确定？
 // 用函数内 static → 首次调用时构造，顺序无关 → 根治 SOIF
 ```
 
@@ -390,10 +390,10 @@ static Logger& g_log = get_logger();   // 依赖 get_logger，但构造顺序不
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的精确定义
 ```cpp
 constexpr int f();
-constinit int a = f();        // OK：f() 在常量期求值
+constinit int a = f();  // OK：f() 在常量期求值
 // constinit int b = rand();  // 错误：rand() 不是常量表达式，无法常量期完成
 extern int ext;
-constinit int c = ext;        // 错误：ext 运行期值，无法常量期
+constinit int c = ext;  // 错误：ext 运行期值，无法常量期
 ```
 
 constinit vs constexpr 对比：
@@ -414,7 +414,7 @@ constinit 变量在常量期初始化，main 之前完成，**无并发问题**�
 ### 5.1 `<type_traits>` is_const（偏特化经典）
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <typetraits> iscon
 ```cpp
-template<typename> struct is_const : false_type {};        // 主模板：非 const
+template<typename> struct is_const : false_type {};                // 主模板：非 const
 template<typename _Tp> struct is_const<_Tp const> : true_type {};  // const 特化
 ```
 推导：`is_const<int>` → 主模板 → false；`is_const<const int>` → 匹配 `_Tp const` 特化（`_Tp=int`）→ true。
@@ -452,7 +452,7 @@ template<typename _Tp> inline constexpr _Tp pi_v = _Tp(3.14159265358979323846264
 #include <numeric>
 // ===== const 深度 =====
 // 1. cv 叠加读法
-const int* const* p;          // p: 指向 const 指针，指针指向 const int
+const int* const* p;                                               // p: 指向 const 指针，指针指向 const int
 // 2. const 重载
 struct B { int& g(); const int& g() const; };
 // 3. mutable 缓存
@@ -464,11 +464,11 @@ class Safe { mutable std::atomic<int> n_{0}; public: void inc() const; };
 // 6. const 成员函数锁（线程安全声明）
 class Locked { mutable std::mutex m_; int get() const; };
 // 7. 顶层 const 参数不影响重载
-void f(int); void f(const int); // 重定义错误！顶层 const 不算不同
+void f(int); void f(const int);                                    // 重定义错误！顶层 const 不算不同
 // 8. 底层 const 影响重载/ABI
-void g(int*); void g(const int*); // 合法不同函数
+void g(int*); void g(const int*);                                  // 合法不同函数
 // 9. const 引用延长临时
-const std::string& r = std::string("tmp");  // 临时活到 r 作用域
+const std::string& r = std::string("tmp");                         // 临时活到 r 作用域
 // 10. const 返回值防泄漏
 class Tbl { std::vector<int> d_; public: const int& at(size_t) const; };
 
@@ -529,7 +529,7 @@ constexpr auto crc32_table = [] consteval {
 static_assert(crc32_table[1]==0x77073096u);
 // 31. 编译期 FNV-1a 哈希（用于编译期字符串键）
 constexpr uint64_t fnv1a(const char* s){ uint64_t h=14695981039346656037ULL; for(;*s;++s){h^=uint8_t(*s);h*=1099511628211ULL;} return h; }
-static_assert(fnv1a("key")== // 编译期算出
+static_assert(fnv1a("key")==                                       // 编译期算出
 // 32. 类型安全 printf 替代（C++20 format）
 void log(std::format_string<int,double> fmt, int a, double b){ std::print(fmt, a, b); }
 ```
@@ -543,8 +543,8 @@ void log(std::format_string<int,double> fmt, int a, double b){ std::print(fmt, a
 ```cpp
 #include <benchmark/benchmark.h>
 #include <cstdint>
-constexpr auto table_constexpr = // 256项编译期表
-uint32_t table_runtime()[256] { // 运行期构建
+constexpr auto table_constexpr =  // 256项编译期表
+uint32_t table_runtime()[256] {   // 运行期构建
 
 static void BM_ConstexprTable(benchmark::State& s){ for(auto _:s) benchmark::DoNotOptimize(table_constexpr[0]); }
 static void BM_RuntimeTable(benchmark::State& s){ auto* t=table_runtime(); for(auto _:s) benchmark::DoNotOptimize(t[0]); }
@@ -680,22 +680,22 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 标准条款逐条
 ```cpp
 // [dcl.constexpr] 退化示例：constexpr 函数可在运行期调用
-constexpr int f(int x) { return x + 1; }   // x 非常量表达式也可编译
-static_assert(f(1) == 2);                   // 编译期求值
-int y = f(rand());                          // 运行期调用，完全合法（非 consteval）
+constexpr int f(int x) { return x + 1; }  // x 非常量表达式也可编译
+static_assert(f(1) == 2);                 // 编译期求值
+int y = f(rand());                        // 运行期调用，完全合法（非 consteval）
 
 // [basic.start.static] constinit 消除 SOIF
 extern int a;
-int b = a + 1;          // 可能 SOIF：a 与 b 谁先初始化未知
-constinit int c = 42;   // 静态初始化，绝无 SOIF
+int b = a + 1;                            // 可能 SOIF：a 与 b 谁先初始化未知
+constinit int c = 42;                     // 静态初始化，绝无 SOIF
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 标准条款逐条
 ```cpp
 // [expr.const] 边界：constexpr 函数体内不能含未定义行为，且结果须可求值
-constexpr int div(int x, int y) { return x / y; }   // 函数本身合法
+constexpr int div(int x, int y) { return x / y; }  // 函数本身合法
 // static_assert(div(1, 0) == 0);   // 错误：除以零不是常量表达式
-static_assert(div(10, 2) == 5);                     // 合法：编译期可求值
+static_assert(div(10, 2) == 5);                    // 合法：编译期可求值
 ```
 
 ---
@@ -711,24 +711,24 @@ static_assert(div(10, 2) == 5);                     // 合法：编译期可求�
 > **示例 26** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存与对象生命周期视角
 ```cpp
 // 顶层 const 全局 → .rodata（只读页）
-const int kGlobal = 100;          // 链接后位于 .rodata
+const int kGlobal = 100;        // 链接后位于 .rodata
 // int* p = const_cast<int*>(&kGlobal); *p = 200;  // UB：写只读页，运行期崩溃
 
 // constexpr 可能不占内存
 constexpr int kLit = 7;
-int use() { return kLit + 1; }    // 编译期折叠为 return 8；kLit 无存储
+int use() { return kLit + 1; }  // 编译期折叠为 return 8；kLit 无存储
 
 // mutable 不进只读共享
 struct Counter { int n = 0; mutable int cache = -1; };
-const Counter c;                   // c 在 .rodata，但 cache 字段单独可写（布局上与 n 相邻，整体仍 .rodata 则需谨慎）
+const Counter c;                // c 在 .rodata，但 cache 字段单独可写（布局上与 n 相邻，整体仍 .rodata 则需谨慎）
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存与对象生命周期视角
 ```cpp
 // constexpr 变量未被 ODR 使用时零存储
-constexpr int table_size = 256;          // 可能仅在编译期存在
-unsigned mask = 1u << 7;                 // table_size 未取地址 → 不占内存
-constexpr int used = table_size - 1;     // 编译期折叠为 255
+constexpr int table_size = 256;       // 可能仅在编译期存在
+unsigned mask = 1u << 7;              // table_size 未取地址 → 不占内存
+constexpr int used = table_size - 1;  // 编译期折叠为 255
 static_assert(used == 255);
 ```
 
@@ -748,16 +748,16 @@ static_assert(used == 255);
 template<class T> void g(T x) { static_assert(std::is_same_v<T, int>); }  // 顶层 const 被忽略
 g(42);
 const int ci = 5;
-g(ci);   // 仍推导 T=int，不是 const int（拷贝形参，原 const 无关）
+g(ci);                                                                    // 仍推导 T=int，不是 const int（拷贝形参，原 const 无关）
 
-template<class T> void h(const T& x) { // x 始终 const 引用
+template<class T> void h(const T& x) {                                    // x 始终 const 引用
 int v = 1; const int cv = 2;
-h(v);  h(cv);   // 都合法，T 分别为 int / int，形参加回 const
+h(v);  h(cv);                                                             // 都合法，T 分别为 int / int，形参加回 const
 
 struct S { void f() {} void f() const {} };
 S s; const S cs;
-s.f();    // 选非 const 重载
-cs.f();   // 选 const 重载
+s.f();                                                                    // 选非 const 重载
+cs.f();                                                                   // 选 const 重载
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 模板与 const（cv 在模板推导中的精确行为）
@@ -765,15 +765,15 @@ cs.f();   // 选 const 重载
 // NTTP 与 cv：C++20 允许 const 值类型作为非类型模板参数
 template<const int* P> struct Tag { static constexpr const int* ptr = P; };
 constexpr int g_val = 7;
-Tag<&g_val> t;                      // P 是指向 const int 的指针
+Tag<&g_val> t;  // P 是指向 const int 的指针
 static_assert(*t.ptr == 7);
 
 // 推导中 const 与 volatile 的精确交互
 template<class T> void probe(T);
 int i = 0; const int ci = 0; volatile int vi = 0;
-probe(i);    // T = int
-probe(ci);   // T = int（顶层 const 被忽略）
-probe(vi);   // T = volatile int（volatile 不被忽略）
+probe(i);       // T = int
+probe(ci);      // T = int（顶层 const 被忽略）
+probe(vi);      // T = volatile int（volatile 不被忽略）
 ```
 
 ---
@@ -812,12 +812,12 @@ mov  DWORD PTR [rbp-4], 3   ; y 有真实存储
 #include <vector>
 // constexpr 编译期折叠：运行期零成本
 constexpr unsigned fib(unsigned n) { return n < 2 ? n : fib(n-1) + fib(n-2); }
-static_assert(fib(20) == 6765);            // 编译期算完
-unsigned arr[fib(10)];                     // 编译期确定数组大小
+static_assert(fib(20) == 6765);     // 编译期算完
+unsigned arr[fib(10)];              // 编译期确定数组大小
 
 // const 引用避免大对象拷贝
 std::vector<Big> bigs = make();
-for (const auto& b : bigs) use(b);         // 无拷贝，O(1) 引用遍历
+for (const auto& b : bigs) use(b);  // 无拷贝，O(1) 引用遍历
 ```
 
 ---
@@ -848,24 +848,24 @@ for (const auto& b : bigs) use(b);         // 无拷贝，O(1) 引用遍历
 // 案例 A：const 正确的库接口
 class JsonParser {
 public:
-    Value parse(const std::string& input) const;   // 只读入参 + const 成员
-    const Value& root() const { return root_; }     // 返回内部状态用 const 引用
+    Value parse(const std::string& input) const;  // 只读入参 + const 成员
+    const Value& root() const { return root_; }   // 返回内部状态用 const 引用
 private:
     Value root_;
 };
 
 // 案例 B：constinit 全局注册表
-constinit Registry& g_reg = get_registry();   // 静态初始化，无 SOIF
+constinit Registry& g_reg = get_registry();       // 静态初始化，无 SOIF
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 反模式 E 的修正：第三方接口非 const 正确，用 const_cast 仅当底层可写
-struct Legacy { int value; };          // 未标 const，但文档承诺"不修改"
+struct Legacy { int value; };  // 未标 const，但文档承诺"不修改"
 void observe(const Legacy& l) {
     // 第三方 API 只接受非 const（历史包袱），确认 l 底层可写才去 const
     Legacy& m = const_cast<Legacy&>(l);
-    use_legacy(&m);                      // 仅读，不写
+    use_legacy(&m);            // 仅读，不写
 }
 ```
 
@@ -1018,14 +1018,14 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 #include <vector>
 struct Buffer {
     std::vector<int> v;
-    int& at(size_t i)             { return v.at(i); }       // 非 const: 可修改
-    const int& at(size_t i) const { return v.at(i); }       // const: 只读
+    int& at(size_t i)             { return v.at(i); }  // 非 const: 可修改
+    const int& at(size_t i) const { return v.at(i); }  // const: 只读
 };
 int main(){
     Buffer b; b.v = {1,2,3};
-    b.at(0) = 10;                      // 调用非 const 版本
+    b.at(0) = 10;                                      // 调用非 const 版本
     const Buffer cb = b;
-    int x = cb.at(1);                  // 只能调用 const 版本
+    int x = cb.at(1);                                  // 只能调用 const 版本
     // cb.at(0) = 5;                   // 编译失败: const 对象不可调非 const 成员
 }
 ```
@@ -1049,10 +1049,10 @@ int main(){
 ```cpp
 #include <cstdlib>
 constexpr int sq(int x){ return x*x; }
-static_assert(sq(5) == 25);                 // 编译期求值: 不占运行时指令
+static_assert(sq(5) == 25);     // 编译期求值: 不占运行时指令
 int main(){
-    int y = sq(std::rand());                // 运行期求值: 退化为普通函数调用
-    const int k = std::rand();              // 只读变量, 但值在运行期才确定
+    int y = sq(std::rand());    // 运行期求值: 退化为普通函数调用
+    const int k = std::rand();  // 只读变量, 但值在运行期才确定
     // static_assert(k == 0);               // 编译失败: k 不是常量表达式
 }
 ```
@@ -1075,10 +1075,10 @@ int main(){
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <cstdlib>
-constinit static int g = 42;          // 编译期完成初始化, 零运行时开销, 无 SIOF
-consteval int cube(int x){ return x*x*x; }   // 必须编译期求值
+constinit static int g = 42;                // 编译期完成初始化, 零运行时开销, 无 SIOF
+consteval int cube(int x){ return x*x*x; }  // 必须编译期求值
 int main(){
-    constexpr int c = cube(3);        // OK: 编译期 27
+    constexpr int c = cube(3);              // OK: 编译期 27
     // int bad = cube(std::rand());    // 编译失败: consteval 拒绝运行期参数
 }
 ```
@@ -1115,9 +1115,9 @@ void show_ptr(int* const q) { std::cout << *q << "\n"; }
 int main() {
     int a = 1, b = 2;
     const int* p = &a;
-    p = &b;              // 指向 const: 可改指向
+    p = &b;  // 指向 const: 可改指向
     int* const q = &a;
-    *q = 3;              // 指针 const: 可改指向物
+    *q = 3;  // 指针 const: 可改指向物
     show(p);
     show_ptr(q);
 }
@@ -1177,9 +1177,9 @@ int main() {
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
 int v = 1;
-const int* p = &v;     // 底层 const: 不能经 p 改 *p, 但 p 可指向别处
-int* const q = &v;     // 顶层 const: q 自身不可改(必须初始化), 但 *q 可改
-const int* const r = &v; // 既不能改指向也不能改所指
+const int* p = &v;        // 底层 const: 不能经 p 改 *p, 但 p 可指向别处
+int* const q = &v;        // 顶层 const: q 自身不可改(必须初始化), 但 *q 可改
+const int* const r = &v;  // 既不能改指向也不能改所指
 ```
 
 `const int*` 读作"指向 const int 的指针"——保护的是**数据**；`int* const` 保护的是**指针变量本身**。
@@ -1190,7 +1190,7 @@ const int* const r = &v; // 既不能改指向也不能改所指
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
 struct Cache {
-    mutable std::size_t hits = 0;   // 逻辑 const 豁免: 不影响对外状态
+    mutable std::size_t hits = 0;               // 逻辑 const 豁免: 不影响对外状态
     int compute() const { ++hits; return 42; }  // const 成员却改了 hits -> 合法
 };
 ```
@@ -1203,18 +1203,18 @@ struct Cache {
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
 constexpr int sq(int x){ return x*x; }
-static_assert(sq(5) == 25);          // 编译期: 不生成任何运行时指令
-int get_runtime(){ return 7; }       // 真实运行期函数
-int y = sq(get_runtime());           // 运行期: 退化为普通调用
+static_assert(sq(5) == 25);     // 编译期: 不生成任何运行时指令
+int get_runtime(){ return 7; }  // 真实运行期函数
+int y = sq(get_runtime());      // 运行期: 退化为普通调用
 ```
 
 **步骤 4：constinit / consteval 消除静态初始化灾难**
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — const 的层
 ```cpp
-constexpr int compute(){ return 42; }       // 编译期可求值的初始化器
-constinit static int G = compute();  // 强制编译期初始化 -> 无 SIOF, 零运行时开销
-consteval int tbl(int n){ return n*2; } // 必须编译期: tbl(rand()) 编译失败
+constexpr int compute(){ return 42; }    // 编译期可求值的初始化器
+constinit static int G = compute();      // 强制编译期初始化 -> 无 SIOF, 零运行时开销
+consteval int tbl(int n){ return n*2; }  // 必须编译期: tbl(rand()) 编译失败
 ```
 
 **结论**：`const` = 只读契约；`constexpr` = 可在编译期求值的函数/变量（两用）；
@@ -1374,8 +1374,8 @@ constexpr long long ct_sum(long long n) {
 
 int main() {
     constexpr long long K = 1000;
-    constexpr long long C = ct_sum(K);        // 编译期折叠为常量
-    long long runtime = ct_sum(1000LL);       // 运行期实参：运行期求值
+    constexpr long long C = ct_sum(K);   // 编译期折叠为常量
+    long long runtime = ct_sum(1000LL);  // 运行期实参：运行期求值
     std::cout << "folded ct_sum(1000) = " << C
               << ", runtime ct_sum(1000) = " << runtime << std::endl;
     return 0;

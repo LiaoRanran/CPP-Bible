@@ -64,7 +64,7 @@ lambda 本质仍是"语法糖 + 闭包类"，委员会坚持零开销：不捕�
 lambda 不是"语法糖"，而是一台**编译器在编译期为你合成匿名类（闭包类型）**的机器。把 lambda 当作"语法糖化的函数对象"，本章所有现象立刻自洽：
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 本章地图（先给结论，再击穿）
-```
+```text
 源码                         编译器真实生成
 ─────────────────────────    ──────────────────────────────────────
 auto f = [x](int a){          struct __lambda_1 {        // 闭包类型（匿名/唯一）
@@ -141,10 +141,10 @@ int main() {
 
 int main() {
     int n = 5;
-    auto f = [n]() mutable { return ++n; };   // 捕获可拷 → 闭包可拷
-    auto g = f;                                // ✅ 拷贝构造
-    auto h = std::move(f);                     // ✅ 移动构造
-    std::printf("g=%d h=%d\n", g(), h());      // g=6 h=7
+    auto f = [n]() mutable { return ++n; };  // 捕获可拷 → 闭包可拷
+    auto g = f;                              // ✅ 拷贝构造
+    auto h = std::move(f);                   // ✅ 移动构造
+    std::printf("g=%d h=%d\n", g(), h());    // g=6 h=7
     return 0;
 }
 ```
@@ -185,9 +185,9 @@ int main() {
 #include <cstdio>
 int main() {
     int base = 10;
-    auto f = []() { // 不碰 base
+    auto f = []() {   // 不碰 base
     std::printf("%d\n", f());
-    int (*fp)() = f;                                // 见 ⑭
+    int (*fp)() = f;  // 见 ⑭
     std::printf("via fp: %d\n", fp());
     return 0;
 }
@@ -199,9 +199,9 @@ int main() {
 #include <cstdio>
 int main() {
     int x = 1;
-    auto f = [=]() { return x; };   // 拷贝 x 的当前值（=1）
-    x = 99;                          // 修改外部 x 不影响闭包副本
-    std::printf("%d\n", f());        // 输出 1
+    auto f = [=]() { return x; };  // 拷贝 x 的当前值（=1）
+    x = 99;                        // 修改外部 x 不影响闭包副本
+    std::printf("%d\n", f());      // 输出 1
     return 0;
 }
 ```
@@ -237,12 +237,12 @@ int main() {
 #include <cstdio>
 int main() {
     int a = 3;
-    auto f = [sq = a * a]() { return sq; };   // 成员 sq 用表达式结果初始化
-    std::printf("%d\n", f());                  // 9
+    auto f = [sq = a * a]() { return sq; };  // 成员 sq 用表达式结果初始化
+    std::printf("%d\n", f());                // 9
     int b = 5;
-    auto g = [&ref = b]() { return ref; };      // 引用绑定到 b
+    auto g = [&ref = b]() { return ref; };   // 引用绑定到 b
     b = 50;
-    std::printf("%d\n", g());                   // 50
+    std::printf("%d\n", g());                // 50
     return 0;
 }
 ```
@@ -256,8 +256,8 @@ int main() {
 struct Widget {
     int val = 7;
     void demo() {
-        auto by_ptr = [this]() { return val; };        // 捕获 this 指针（拷贝指针）
-        auto by_val = [*this]() { return val; };        // C++17：拷贝整个 Widget
+        auto by_ptr = [this]() { return val; };                    // 捕获 this 指针（拷贝指针）
+        auto by_val = [*this]() { return val; };                   // C++17：拷贝整个 Widget
         val = 100;
         std::printf("by_ptr=%d by_val=%d\n", by_ptr(), by_val());  // 100 7
     }
@@ -362,9 +362,9 @@ int main() {
 #include <cstdio>
 int main() {
     int n = 0;
-    auto f = [n]() mutable { return ++n; };  // n 是闭包成员副本，mutable 允许改
-    std::printf("%d %d %d\n", f(), f(), f()); // 1 2 3
-    std::printf("外部 n=%d (未变)\n", n);       // 0
+    auto f = [n]() mutable { return ++n; };    // n 是闭包成员副本，mutable 允许改
+    std::printf("%d %d %d\n", f(), f(), f());  // 1 2 3
+    std::printf("外部 n=%d (未变)\n", n);      // 0
     return 0;
 }
 ```
@@ -398,8 +398,8 @@ int main() {
 // prog_13_return_deduced.cpp —— 单 return 自动推导
 #include <cstdio>
 int main() {
-    auto f = [](int x) { return x * 2; };   // 推导返回 int
-    std::printf("%d\n", f(21));              // 42
+    auto f = [](int x) { return x * 2; };  // 推导返回 int
+    std::printf("%d\n", f(21));            // 42
     return 0;
 }
 ```
@@ -480,14 +480,14 @@ int main() {
 #include <cstdio>
 #include <type_traits>
 int main() {
-    auto f = []<typename T>(T x) {            // 显式模板参数
+    auto f = []<typename T>(T x) {        // 显式模板参数
         if constexpr (std::is_pointer_v<T>)
             return *x;
         else
             return x;
     };
     int v = 5;
-    std::printf("%d %d\n", f(v), f(&v));       // 5 5
+    std::printf("%d %d\n", f(v), f(&v));  // 5 5
     return 0;
 }
 ```
@@ -542,8 +542,8 @@ init-capture 的本质精辟概括：**"捕获即声明"**——你不是在列"
 #include <string>
 int main() {
     std::string big = "a very long string that we do not want to copy";
-    auto f = [s = std::move(big)]() { return s.size(); };  // move 进闭包
-    std::printf("len=%zu  outer_empty=%d\n", f(), (int)big.empty()); // len big, outer empty
+    auto f = [s = std::move(big)]() { return s.size(); };             // move 进闭包
+    std::printf("len=%zu  outer_empty=%d\n", f(), (int)big.empty());  // len big, outer empty
     return 0;
 }
 ```
@@ -555,8 +555,8 @@ int main() {
 int square(int x) { return x * x; }
 int main() {
     int a = 4;
-    auto f = [sq = square(a)]() { return sq; };   // 成员 sq = 16
-    std::printf("%d\n", f());                      // 16
+    auto f = [sq = square(a)]() { return sq; };  // 成员 sq = 16
+    std::printf("%d\n", f());                    // 16
     return 0;
 }
 ```
@@ -570,7 +570,7 @@ int main() {
 int main() {
     auto p = std::make_unique<int>(42);
     auto f = [up = std::move(p)]() { return *up; };  // unique_ptr 不可拷，只能 move
-    std::printf("%d\n", f());                         // 42
+    std::printf("%d\n", f());                        // 42
     return 0;
 }
 ```
@@ -584,10 +584,10 @@ int main() {
     std::vector<int> v{1,2,3,4,5};
     int total = 0;
     for (auto x : v)
-        [idx = 0]() mutable { (void)idx; }();   // 不实用；看下面更有用的
+        [idx = 0]() mutable { (void)idx; }();      // 不实用；看下面更有用的
     // 更典型：IILE 里用 init-capture 计数（见 ⑩）
     auto counter = [n = 0]() mutable { return ++n; };
-    std::printf("%d %d\n", counter(), counter()); // 1 2
+    std::printf("%d %d\n", counter(), counter());  // 1 2
     return 0;
 }
 ```
@@ -607,8 +607,8 @@ int main() {
 #include <cstdio>
 int main() {
     constexpr auto sq = [](int x) constexpr { return x * x; };
-    static_assert(sq(5) == 25, "compile-time");   // 编译期求值
-    std::printf("%d\n", sq(6));                    // 36
+    static_assert(sq(5) == 25, "compile-time");  // 编译期求值
+    std::printf("%d\n", sq(6));                  // 36
     return 0;
 }
 ```
@@ -657,12 +657,12 @@ int main() {
 #include <cstdio>
 #include <vector>
 int main() {
-    const std::vector<int> v = []() {            // IILE：立即构造并返回
+    const std::vector<int> v = []() {       // IILE：立即构造并返回
         std::vector<int> t;
         for (int i = 0; i < 5; ++i) t.push_back(i * i);
         return t;
     }();
-    for (int x : v) std::printf("%d ", x);        // 0 1 4 9 16
+    for (int x : v) std::printf("%d ", x);  // 0 1 4 9 16
     std::printf("\n");
     return 0;
 }
@@ -700,9 +700,9 @@ int main() {
 #include <functional>
 int main() {
     std::function<int(int)> f = [](int x) { return x + 1; };
-    std::printf("%d\n", f(41));          // 42
-    f = [](int x) { return x * 2; };     // 重新赋值为另一个 lambda（不同类型！）
-    std::printf("%d\n", f(21));          // 42
+    std::printf("%d\n", f(41));       // 42
+    f = [](int x) { return x * 2; };  // 重新赋值为另一个 lambda（不同类型！）
+    std::printf("%d\n", f(21));       // 42
     return 0;
 }
 ```
@@ -732,9 +732,9 @@ int main() {
 int main() {
     int factor = 3;
     auto f = [factor](int x) { return x * factor; };
-    std::function<int(int)> g = std::ref(f);   // 存引用而非拷贝
+    std::function<int(int)> g = std::ref(f);  // 存引用而非拷贝
     factor = 10;
-    std::printf("%d\n", g(2));                  // 20（改外部 factor 生效）
+    std::printf("%d\n", g(2));                // 20（改外部 factor 生效）
     return 0;
 }
 ```
@@ -753,11 +753,11 @@ lambda 是并发任务的天然载体，但**捕获的生命周期**在异步场
 int main() {
     std::string label = "task";
     auto fut = std::async(std::launch::async,
-        [label]() {                          // 按值捕获，任务独立拥有副本
+        [label]() {                         // 按值捕获，任务独立拥有副本
             std::printf("[%s] running\n", label.c_str());
             return 42;
         });
-    std::printf("result=%d\n", fut.get());   // 42（get() 等待任务结束）
+    std::printf("result=%d\n", fut.get());  // 42（get() 等待任务结束）
     return 0;
 }
 ```
@@ -769,11 +769,11 @@ int main() {
 #include <thread>
 int main() {
     int shared = 0;
-    std::thread t([&shared]() {              // 按引用捕获
+    std::thread t([&shared]() {          // 按引用捕获
         for (int i = 0; i < 5; ++i) ++shared;
     });
-    t.join();                                // 必须 join，且 shared 在 join 前存活
-    std::printf("shared=%d\n", shared);      // 5
+    t.join();                            // 必须 join，且 shared 在 join 前存活
+    std::printf("shared=%d\n", shared);  // 5
     return 0;
 }
 ```
@@ -790,10 +790,10 @@ int main() {
 // prog_33_auto_param_pass.cpp —— 模板函数保留 lambda 类型（零擦除）
 #include <cstdio>
 template <typename F>
-void run(F f) { std::printf("%d\n", f(5)); }     // F 是具体闭包类型，可内联
+void run(F f) { std::printf("%d\n", f(5)); }  // F 是具体闭包类型，可内联
 int main() {
-    run([](int x) { return x * x; });            // 21 被内联
-    run([](int x) { return x + 1; });            // 6
+    run([](int x) { return x * x; });         // 21 被内联
+    run([](int x) { return x + 1; });         // 6
     return 0;
 }
 ```
@@ -808,7 +808,7 @@ int main() {
 下面是我用 **GCC 15.3.0 (x86_64-w64-mingw32, C++17, -O2)** 实测的真实 `sizeof` 数据：
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 捕获的 ABI / 内存布局 / s
-```
+```text
 闭包对象                       sizeof（本机 x64）
 ─────────────────────────────  ──────
 [](){} （无捕获）               1
@@ -857,8 +857,8 @@ int main() {
 // (编译输入 lam_fp.cpp)
 int apply(int (*fp)(int), int v) { return fp(v); }
 int main() {
-    auto twice = [](int x) { return x * 2; };   // 无捕获
-    int (*fp)(int) = twice;                       // 隐式转函数指针
+    auto twice = [](int x) { return x * 2; };  // 无捕获
+    int (*fp)(int) = twice;                    // 隐式转函数指针
     return apply(fp, 21);
 }
 ```
@@ -999,8 +999,8 @@ int main() {
 #include <functional>
 int main() {
     auto add = [](int a, int b) { return a + b; };
-    std::printf("%d\n", std::invoke(add, 3, 4));        // 7
-    std::printf("%d\n", std::invoke([](int x){return x*2;}, 21)); // 42
+    std::printf("%d\n", std::invoke(add, 3, 4));                   // 7
+    std::printf("%d\n", std::invoke([](int x){return x*2;}, 21));  // 42
     return 0;
 }
 ```
@@ -1037,8 +1037,8 @@ lambda 是 STL 算法的"谓词/操作"首选。下面四个程序覆盖 `transf
 int main() {
     std::vector<int> v{1,2,3,4}, out(v.size());
     std::transform(v.begin(), v.end(), out.begin(),
-                   [](int x) { return x * x; });      // 平方映射
-    for (int x : out) std::printf("%d ", x);          // 1 4 9 16
+                   [](int x) { return x * x; });  // 平方映射
+    for (int x : out) std::printf("%d ", x);      // 1 4 9 16
     std::printf("\n");
     return 0;
 }
@@ -1053,8 +1053,8 @@ int main() {
 int main() {
     std::vector<int> v{1,2,3,4};
     int sum = std::accumulate(v.begin(), v.end(), 0,
-                              [](int acc, int x) { return acc + x * x; }); // 平方和
-    std::printf("sum of squares = %d\n", sum);        // 30
+                              [](int acc, int x) { return acc + x * x; });  // 平方和
+    std::printf("sum of squares = %d\n", sum);                              // 30
     return 0;
 }
 ```
@@ -1114,16 +1114,16 @@ std::vector<std::function<void()>> g_tasks;
 struct Worker {
     int value = 42;
     void schedule() {
-        g_tasks.push_back([=, this]() { std::printf("%d\n", value); }); // C++20 推荐：显式捕获 this 指针副本
+        g_tasks.push_back([=, this]() { std::printf("%d\n", value); });  // C++20 推荐：显式捕获 this 指针副本
     }
     ~Worker() { std::printf("Worker destroyed\n"); }
 };
 
 int main() {
     Worker w;
-    w.schedule();          // lambda 持有 w 的 this
+    w.schedule();                                                        // lambda 持有 w 的 this
     // w 在此析构；若之后执行 g_tasks[0]() 将访问已销毁对象 → UB
-    g_tasks.clear();       // 这里先清掉避免 UB；真实 bug 往往忘记
+    g_tasks.clear();                                                     // 这里先清掉避免 UB；真实 bug 往往忘记
     return 0;
 }
 ```
@@ -1149,8 +1149,8 @@ struct Node {
 int main() {
     auto n = std::make_shared<Node>();
     watch = n;
-    n->cb = [n]() { (void)n; };   // ❌ lambda 按值捕获 n → 引用计数 +1，循环
-    n.reset();                     // 外部 reset，但内部 lambda 还持有一份
+    n->cb = [n]() { (void)n; };                     // ❌ lambda 按值捕获 n → 引用计数 +1，循环
+    n.reset();                                      // 外部 reset，但内部 lambda 还持有一份
     std::printf("expired? %d\n", watch.expired());  // 0 → 未销毁，泄漏！
     return 0;
 }
@@ -1168,7 +1168,7 @@ struct Node {
 };
 int main() {
     auto n = std::make_shared<Node>();
-    std::weak_ptr<Node> wn = n;                 // 用 weak_ptr 观察
+    std::weak_ptr<Node> wn = n;                           // 用 weak_ptr 观察
     n->cb = [wn]() { if (auto p = wn.lock()) (void)p; };  // 不增引用计数
     n.reset();
     std::printf("ok, Node destroyed above\n");
@@ -1292,8 +1292,8 @@ union [[gnu::may_alias]] _Any_data
 class _Function_base
 {
 public:
-  static const size_t _M_max_size  = sizeof(_Nocopy_types);   // = 16 (x64)
-  static const size_t _M_max_align = __alignof__(_Nocopy_types); // = 8 (x64)
+  static const size_t _M_max_size  = sizeof(_Nocopy_types);       // = 16 (x64)
+  static const size_t _M_max_align = __alignof__(_Nocopy_types);  // = 8 (x64)
 ```
 
 ### ⑳.2 本地存储 vs 堆分配的分界（std_function.h:120–178，逐行）
@@ -1303,17 +1303,17 @@ public:
 #include <utility>
 // std_function.h:126-130  —— 是否存本地（SBO 判定，四个条件全满足才本地）
 static const bool __stored_locally =
-  (__is_location_invariant<_Functor>::value       // (1) trivially copyable（位置不变）
-   && sizeof(_Functor) <= _M_max_size             // (2) 大小 ≤ 16
-   && __alignof__(_Functor) <= _M_max_align       // (3) 对齐 ≤ 8
-   && (_M_max_align % __alignof__(_Functor) == 0)); // (4) 对齐整除
+  (__is_location_invariant<_Functor>::value                                // (1) trivially copyable（位置不变）
+   && sizeof(_Functor) <= _M_max_size                                      // (2) 大小 ≤ 16
+   && __alignof__(_Functor) <= _M_max_align                                // (3) 对齐 ≤ 8
+   && (_M_max_align % __alignof__(_Functor) == 0));                        // (4) 对齐整除
 
 // std_function.h:150-164  —— 构造：本地 placement-new 或堆 new
 template<typename _Fn> static void _M_create(_Any_data& __dest, _Fn&& __f, true_type)
-{ ::new (__dest._M_access()) _Functor(std::forward<_Fn>(__f)); }   // 本地：placement new
+{ ::new (__dest._M_access()) _Functor(std::forward<_Fn>(__f)); }           // 本地：placement new
 
 template<typename _Fn> static void _M_create(_Any_data& __dest, _Fn&& __f, false_type)
-{ __dest._M_access<_Functor*>() = new _Functor(std::forward<_Fn>(__f)); } // 堆：new
+{ __dest._M_access<_Functor*>() = new _Functor(std::forward<_Fn>(__f)); }  // 堆：new
 ```
 
 ### ⑳.3 调用入口 `_M_invoker` 与构造时绑定（std_function.h:588–594, 433–456）
@@ -1335,13 +1335,13 @@ function(_Functor&& __f)
 noexcept(_Handler<_Functor>::template _S_nothrow_init<_Functor>())
 : _Function_base()
 {
-  static_assert(is_copy_constructible<__decay_t<_Functor>>::value,   // ← prog_31 失败处
+  static_assert(is_copy_constructible<__decay_t<_Functor>>::value,          // ← prog_31 失败处
       "std::function target must be copy-constructible");
   static_assert(is_constructible<__decay_t<_Functor>, _Functor>::value, ...);
   using _My_handler = _Handler<_Functor>;
   if (_My_handler::_M_not_empty_function(__f)) {
-    _My_handler::_M_init_functor(_M_functor, std::forward<_Functor>(__f)); // 本地 or 堆
-    _M_invoker = &_My_handler::_M_invoke;        // 绑定间接调用入口
+    _My_handler::_M_init_functor(_M_functor, std::forward<_Functor>(__f));  // 本地 or 堆
+    _M_invoker = &_My_handler::_M_invoke;                                   // 绑定间接调用入口
     _M_manager = &_My_handler::_M_manager;
   }
 }
@@ -1426,7 +1426,7 @@ noexcept(_Handler<_Functor>::template _S_nothrow_init<_Functor>())
 ### ㉑.4 真实 microbenchmark 结论（见 ⑭，本机 GCC 15.3.0 -O2 x64）
 
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.4 真实 microbenchm
-```
+```asm
 场景                         耗时（200×1,000,000 次）   相对
 ─────────────────────────   ──────────────────────   ────
 模板参数 + lambda             ~53 ms                    1.0×
@@ -1712,8 +1712,8 @@ int main() {
     auto print = []<std::integral T>(T x) {
         std::cout << x << '\n';
     };
-    print(7);        // OK
-    print(3L);       // OK：long 也是 integral
+    print(7);   // OK
+    print(3L);  // OK：long 也是 integral
     // print(2.5);   // 编译失败：double 不满足 std::integral，诊断清晰
 }
 ```
@@ -1737,13 +1737,13 @@ int main() {
 #include <iostream>
 #include <functional>
 template <typename F>
-void apply_gen(F f, int x) { std::cout << f(x) << '\n'; }      // 零开销，内联
+void apply_gen(F f, int x) { std::cout << f(x) << '\n'; }    // 零开销，内联
 void apply_erased(std::function<int(int)> f, int x) { std::cout << f(x) << '\n'; }
 int square(int x) { return x * x; }
 int main() {
-    apply_gen([](int x) { return x * x; }, 5);                 // 内联
-    apply_erased([](int x) { return x * x; }, 5);              // 类型擦除
-    void(*fp)(int) = [](int x) { std::cout << x << '\n'; };    // 无捕获可转函数指针
+    apply_gen([](int x) { return x * x; }, 5);               // 内联
+    apply_erased([](int x) { return x * x; }, 5);            // 类型擦除
+    void(*fp)(int) = [](int x) { std::cout << x << '\n'; };  // 无捕获可转函数指针
     fp(9);
 }
 ```
@@ -1853,10 +1853,10 @@ int main() {
 #include <iostream>
 #include <functional>
 template <typename F>
-void each(F f, int n) { for (int i = 0; i < n; ++i) f(i); }   // 零开销内联
+void each(F f, int n) { for (int i = 0; i < n; ++i) f(i); }  // 零开销内联
 int main() {
     int sum = 0;
-    each([&](int i) { sum += i; }, 4);                        // 编译期展开
+    each([&](int i) { sum += i; }, 4);                       // 编译期展开
     std::cout << sum << '\n';
 }
 ```
@@ -1896,14 +1896,14 @@ int main() {
 #include <iostream>
 #include <memory>
 struct Node {
-    std::weak_ptr<Node> parent;          // 弱引用，打破循环
+    std::weak_ptr<Node> parent;  // 弱引用，打破循环
     void set_parent(std::shared_ptr<Node> p) { parent = p; }
     ~Node() { std::cout << "~Node\n"; }
 };
 int main() {
     auto n = std::make_shared<Node>();
     auto c = std::make_shared<Node>();
-    c->set_parent(n);                     // 仅弱引用，n 析构时引用计数归零
+    c->set_parent(n);            // 仅弱引用，n 析构时引用计数归零
 }
 ```
 
@@ -2047,8 +2047,8 @@ int main() {
     auto lambda = [x](int v) { return x + v; };
 
     std::function<int(int)> f = lambda;
-    std::cout << "f(5)=" << f(5) << std::endl;           // 15
-    std::cout << "sizeof(f)=" << sizeof(f) << std::endl;  // 32 (2 ptrs + 2 func ptrs on x64)
+    std::cout << "f(5)=" << f(5) << std::endl;                     // 15
+    std::cout << "sizeof(f)=" << sizeof(f) << std::endl;           // 32 (2 ptrs + 2 func ptrs on x64)
 
     // empty function
     std::function<int(int)> g;
@@ -2058,13 +2058,13 @@ int main() {
     int y = 20;
     auto add = [y](int a, int b) { return a + b + y; };
     std::function<int(int,int)> h = add;
-    std::cout << "h(1,2)=" << h(1, 2) << std::endl;  // 23
+    std::cout << "h(1,2)=" << h(1, 2) << std::endl;                // 23
 
     // member function
     struct Calc { int mul(int a, int b) const { return a * b; } };
     Calc calc;
     std::function<int(int,int)> m = std::bind(&Calc::mul, &calc, std::placeholders::_1, std::placeholders::_2);
-    std::cout << "m(3,4)=" << m(3, 4) << std::endl;  // 12
+    std::cout << "m(3,4)=" << m(3, 4) << std::endl;                // 12
     return 0;
 }
 ```

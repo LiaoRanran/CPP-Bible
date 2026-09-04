@@ -144,7 +144,7 @@ PRELUDE = """#include <iostream>
 #include <cpuid.h>
 """
 
-CPP_FENCE = re.compile(r"^```cpp\s*$")
+CPP_FENCE = re.compile(r"^```cpp(?:\s.*)?$")   # 允许围栏信息串（title="…"）
 FENCE_END = re.compile(r"^```\s*$")
 POSIX_ONLY_INC = re.compile(
     r"#include\s*<(sys/socket\.h|netinet/in\.h|arpa/inet\.h|unistd\.h|poll\.h|netdb\.h)>")

@@ -57,9 +57,9 @@ STL 算法是一组**与容器解耦**的、以迭代器对 `[first, last)` 为�
 
 void double_evens_algo(std::vector<int>& v) {
     std::for_each(v.begin(), v.end(),
-                  [](int& x) { if (x % 2 == 0) x *= 2; });   // 算法式
+                  [](int& x) { if (x % 2 == 0) x *= 2; });  // 算法式
 }
-void double_evens_hand(std::vector<int>& v) {                 // 手写式
+void double_evens_hand(std::vector<int>& v) {               // 手写式
     for (int& x : v) if (x % 2 == 0) x *= 2;
 }
 // [标准]：两者语义相同；差别只在可读性与后续可组合性。
@@ -142,7 +142,7 @@ std::vector<int> union_sorted(const std::vector<int>& a,
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 算法分类
-```
+```text
 ┌─────────────── 算法六大类（STL）───────────────┐
 │ 非修改   find/count/equal/for_each(read-only)  │
 │ 修改     copy/transform/replace/remove/fill    │
@@ -158,7 +158,7 @@ std::vector<int> union_sorted(const std::vector<int>& a,
 算法对迭代器有最低类别要求。迭代器分五档（C++20 起用 `std::contiguous_iterator` 等概念强化）：
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：迭代器类别与算法要求 <span class="badge badge-std">标准</span>]
-```
+```text
 input ─→ forward ─→ bidirectional ─→ random_access ─→ contiguous
 （只读一次）  （可重复）   （可双向）       （可+/-n跳）     （连续内存）
 ```
@@ -512,7 +512,7 @@ void list_way(std::list<int>& l) { l.sort(); }          // ✅ 成员
 #include <set>
 #include <algorithm>
 bool fast_lookup(const std::set<int>& s, int k) {
-    return s.find(k) != s.end();          // ✅ O(log n)
+    return s.find(k) != s.end();                         // ✅ O(log n)
 }
 bool slow_lookup(const std::set<int>& s, int k) {
     return std::find(s.begin(), s.end(), k) != s.end();  // ❌ O(n)，浪费有序性
@@ -524,7 +524,7 @@ bool slow_lookup(const std::set<int>& s, int k) {
 算法操作会使指向容器的迭代器/引用/指针**失效**，规则由容器决定，不在算法本身。忘记这点是最常见的 UB 来源。
 
 > **示例 25** [难度 ★☆☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌──── 典型失效规则（算法改写区间时）────┐
 │ vector：插入可能整体失效（扩容）      │
 │ vector：erase 使 被删及之后 全部失效  │
@@ -667,10 +667,10 @@ bool in_sorted(const std::vector<int>& v, int k) {
 #include <algorithm>
 #include <vector>
 bool use_binary(const std::vector<int>& v, int k) {
-    return std::binary_search(v.begin(), v.end(), k);   // O(log n)
+    return std::binary_search(v.begin(), v.end(), k);  // O(log n)
 }
 std::vector<int>::const_iterator lower(const std::vector<int>& v, int k) {
-    return std::lower_bound(v.begin(), v.end(), k);     // 首个 >=k
+    return std::lower_bound(v.begin(), v.end(), k);    // 首个 >=k
 }
 ```
 
@@ -736,9 +736,9 @@ void pipe_demo(const std::vector<int>& v) {
 #include <ranges>
 #include <algorithm>
 void unique_in_place(std::vector<int>& v) {
-    std::ranges::sort(v);                 // 先排序，使重复者相邻
-    auto r = std::ranges::unique(v);      // 返回子区间 [new_end, end)
-    v.erase(r.begin(), r.end());          // 真正删除（成员函数）
+    std::ranges::sort(v);             // 先排序，使重复者相邻
+    auto r = std::ranges::unique(v);  // 返回子区间 [new_end, end)
+    v.erase(r.begin(), r.end());      // 真正删除（成员函数）
 }
 ```
 
@@ -803,7 +803,7 @@ void bad_comparator(std::vector<int>& v) {
 #include <vector>
 int median_of_three(std::vector<int>& v) {
     std::nth_element(v.begin(), v.begin() + 1, v.end());  // 第2小归位
-    return v[1];   // 三方取中结果，libstdc++/libc++/MS STL 均成立
+    return v[1];                                          // 三方取中结果，libstdc++/libc++/MS STL 均成立
 }
 // [平台]：差异仅在"跑多快/占多少临时内存"，不在"对不对"。
 ```
@@ -905,7 +905,7 @@ void debug_count_if(const std::vector<int>& v, int d) {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[algorithms]（算法复杂度要求）；cppreference "Algorithm complexity" 词条。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
-```
+```text
 ┌── STL 算法速查（复杂度均为最坏，n=|区间|）──────────────┐
 │ find/find_if          O(n)      非修改，线性扫描          │
 │ count/count_if        O(n)      线性计数                  │
@@ -937,11 +937,11 @@ void debug_count_if(const std::vector<int>& v, int d) {
 #include <iterator>
 int quickcheck() {
     std::vector<int> v = {5,3,8,3,1};
-    std::sort(v.begin(), v.end());                 // O(n log n)，不稳定
-    auto it = std::unique(v.begin(), v.end());      // 去重分区
-    v.erase(it, v.end());                           // 真正去重
-    long s = std::accumulate(v.begin(), v.end(), 0L); // O(n)
-    bool has3 = std::binary_search(v.begin(), v.end(), 3); // O(log n)
+    std::sort(v.begin(), v.end());                          // O(n log n)，不稳定
+    auto it = std::unique(v.begin(), v.end());              // 去重分区
+    v.erase(it, v.end());                                   // 真正去重
+    long s = std::accumulate(v.begin(), v.end(), 0L);       // O(n)
+    bool has3 = std::binary_search(v.begin(), v.end(), 3);  // O(log n)
     return static_cast<int>(s) + (has3 ? 1 : 0);
 }
 ```
@@ -1016,7 +1016,7 @@ int quickcheck() {
 STL 算法在不同标准库实现中的差异：
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业实现对比 [F: Industry / D: stdlib]
-```
+```asm
                     libstdc++ (GCC)       libc++ (Clang)         MS STL
 ─────────────────────────────────────────────────────────────────
 std::sort           introsort             introsort              introsort
@@ -1044,7 +1044,7 @@ int main() {
 ## 附录 B：算法选择决策树 [H: Design]
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：算法选择决策树 [H: Design]
-```
+```text
 选择算法的系统决策流程:
 
 1. 数据是否已排序？
@@ -1096,7 +1096,7 @@ int main() {
 ## 附录 D：常见错误与面试 [I: Practice / J: Learning]
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：常见错误与面试 [I: Practice / J: Learning]
-```
+```text
 算法使用中的5大错误:
 1. 忘记 include <algorithm> — 编译通过但行为未定义 (ADL 可能拉入错误版本)
 2. 用 sort 替代 nth_element — nth_element 是 O(n), sort 是 O(n log n)
@@ -1223,7 +1223,7 @@ int main() {
     // 删除偶数: erase-remove 惯用法
     auto it = std::remove_if(v.begin(), v.end(), [](int x) { return x % 2 == 0; });
     v.erase(it, v.end());
-    for (int x : v) std::cout << x << ' ';   // 1 3 5 7
+    for (int x : v) std::cout << x << ' ';                                // 1 3 5 7
     std::cout << "\n";
 }
 ```
@@ -1286,9 +1286,9 @@ int main() {
     std::vector<double> f{32.0, 68.0, 98.6, 212.0};
     std::vector<double> c(f.size());
     std::transform(f.begin(), f.end(), c.begin(),
-                   [](double x){ return (x - 32.0) * 5.0 / 9.0; });   // 异地变换
+                   [](double x){ return (x - 32.0) * 5.0 / 9.0; });  // 异地变换
     for (double v : c) std::cout << v << ' ';
-    std::cout << '\n';    // 0 20 37 100
+    std::cout << '\n';                                               // 0 20 37 100
 }
 ```
 
@@ -1407,7 +1407,7 @@ graph LR
 `std::sort` 的真实引擎是 **introsort（内省排序）**：
 
 > **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 一句话结论
-```
+```text
 quicksort 主体  +  median-of-three 选轴  +  小数组插入排序  +  递归深度上限 → 退化时转 heap sort
 ```
 
@@ -1429,9 +1429,9 @@ template<typename _RandomAccessIterator, typename _Compare>
     if (__first != __last)
       {
         std::__introsort_loop(__first, __last,
-                              std::__lg(__last - __first) * 2,   // ← 深度上限 = 2·⌊log₂n⌋
+                              std::__lg(__last - __first) * 2,  // ← 深度上限 = 2·⌊log₂n⌋
                               __comp);
-        std::__final_insertion_sort(__first, __last, __comp);    // ← 收尾：插入排序尾巴
+        std::__final_insertion_sort(__first, __last, __comp);   // ← 收尾：插入排序尾巴
       }
   }
 ```
@@ -1494,16 +1494,16 @@ template<typename _RandomAccessIterator, typename _Size, typename _Compare>
   {
     while (__last - __first > int(_S_threshold))
       {
-        if (__depth_limit == 0)                         // ← 深度预算耗尽
+        if (__depth_limit == 0)                                       // ← 深度预算耗尽
           {
-            std::__partial_sort(__first, __last, __last, __comp);  // ← 转 heap sort 保底
+            std::__partial_sort(__first, __last, __last, __comp);     // ← 转 heap sort 保底
             return;
           }
         --__depth_limit;
         _RandomAccessIterator __cut =
           std::__unguarded_partition_pivot(__first, __last, __comp);  // ← median-of-three 选轴+分区
         std::__introsort_loop(__cut, __last, __depth_limit, __comp);  // 递归右段
-        __last = __cut;                                  // 尾递归消除：左段回到循环顶部
+        __last = __cut;                                               // 尾递归消除：左段回到循环顶部
       }
   }
 ```
@@ -1894,13 +1894,13 @@ int main() {
 
     // 谓词包装器机制：默认 < 版 与 comp 版 汇合到同一 __sort 内核
     std::vector<int> v{5, 3, 8, 1, 9, 2};
-    std::sort(v.begin(), v.end());                   // __iter_less_iter()
+    std::sort(v.begin(), v.end());                  // __iter_less_iter()
     for (int x : v) std::cout << x << ' ';
     std::cout << std::endl;
 
     std::vector<int> w{5, 3, 8, 1, 9, 2};
     std::sort(w.begin(), w.end(),
-              [](int p, int q) { return p > q; });    // __iter_comp_iter(comp)
+              [](int p, int q) { return p > q; });  // __iter_comp_iter(comp)
     for (int x : w) std::cout << x << ' ';
     std::cout << std::endl;
     return 0;

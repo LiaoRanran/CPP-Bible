@@ -115,8 +115,8 @@ int main() {
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存分配器接口
 ```cpp
 #include <new>
-void* p = ::operator new(64, std::nothrow);   // [标准] [new.delete.single] 若失败返回 nullptr
-if (!p) { // 处理内存不足，不抛异常
+void* p = ::operator new(64, std::nothrow);  // [标准] [new.delete.single] 若失败返回 nullptr
+if (!p) {                                    // 处理内存不足，不抛异常
 ```
 
 ## ③ 固定大小块池（free list，ASCII 画布局）
@@ -148,12 +148,12 @@ flowchart LR
 class FixedPool {
     struct FreeNode { FreeNode* next; };
     FreeNode* free_list_ = nullptr;
-    std::vector<void*> chunks_;      // 所有大块，析构统一释放
-    size_t block_size_;              // 对齐后的块大小
+    std::vector<void*> chunks_;  // 所有大块，析构统一释放
+    size_t block_size_;          // 对齐后的块大小
     size_t per_chunk_;
     static constexpr size_t kAlign = alignof(std::max_align_t);
 
-    void grow() {                    // 批量申请一大块并切成子块串成链表
+    void grow() {                // 批量申请一大块并切成子块串成链表
         size_t total = block_size_ * per_chunk_;
         void* mem = ::operator new(total);
         chunks_.push_back(mem);
@@ -190,8 +190,8 @@ public:
 ```cpp
 // 文件：Examples/_ch160_union.cpp  （本机 g++ -O2 实测通过）
 union FreeNode {
-    FreeNode* next;   // 块空闲时：指向下一个空闲块
-    char      raw[1]; // 块使用时：用户数据首字节（仅占位，真实大小由池决定）
+    FreeNode* next;    // 块空闲时：指向下一个空闲块
+    char      raw[1];  // 块使用时：用户数据首字节（仅占位，真实大小由池决定）
 };
 
 struct FreeList {
@@ -230,7 +230,7 @@ int main() {
 #include <cstring>
 #include <memory>
 
-struct alignas(64) CacheLinePadded {   // [经验] 缓存行对齐避免 false sharing
+struct alignas(64) CacheLinePadded {  // [经验] 缓存行对齐避免 false sharing
     int value;
     char pad[64 - sizeof(int)];
 };
@@ -244,7 +244,7 @@ int main() {
     constexpr size_t buf_size = 256;
     alignas(std::max_align_t) static unsigned char buf[buf_size];
     void* ptr = buf;
-    size_t space = buf_size;                 // [实现] std::align 要求非 const 引用
+    size_t space = buf_size;          // [实现] std::align 要求非 const 引用
     void* aligned = std::align(64, 32, ptr, space);
     std::printf("std::align -> %p (aligned64=%s)\n", aligned,
                 ((reinterpret_cast<uintptr_t>(aligned) % 64) == 0) ? "yes" : "no");
@@ -634,7 +634,7 @@ class MemoryPool {
     static size_t round_up(size_t v, size_t a) noexcept { return (v + a - 1) & ~(a - 1); }
     void grow() {
         const size_t total = block_size_ * per_chunk_;
-        void* mem = ::operator new(total);     // 可能抛 bad_alloc
+        void* mem = ::operator new(total);                           // 可能抛 bad_alloc
         chunks_.push_back(mem);
         auto* base = static_cast<std::byte*>(mem);
         for (size_t i = 0; i < per_chunk_; ++i) {
@@ -646,7 +646,7 @@ public:
     explicit MemoryPool(size_t block, size_t per_chunk = 8192)
         : block_size_(round_up(std::max(block, sizeof(FreeNode)), kMaxAlign)),
           per_chunk_(per_chunk ? per_chunk : 1) {}
-    MemoryPool(const MemoryPool&) = delete;            // 不可拷贝
+    MemoryPool(const MemoryPool&) = delete;                          // 不可拷贝
     MemoryPool& operator=(const MemoryPool&) = delete;
     ~MemoryPool() { for (void* c : chunks_) ::operator delete(c); }  // 异常安全释放
     void* allocate() {
@@ -732,8 +732,8 @@ _GLIBCXX_NODISCARD void* operator new(std::size_t, const std::nothrow_t&) _GLIBC
 // 文件：Examples/_ch160_debug.cpp  （本机 g++ -O2 实测通过）
 #include <unordered_set>
 #include <mutex>
-#include <cstddef> // std::size_t
-#include <cstdio>  // std::printf
+#include <cstddef>  // std::size_t
+#include <cstdio>   // std::printf
 namespace dbg {
     std::mutex mtx;
     std::unordered_set<void*> live;
@@ -755,7 +755,7 @@ int main() {
     void* b = dbg::alloc(128);
     dbg::free(a);
     // b 故意不释放 -> 泄漏
-    dbg::report();   // 输出: [leak report] live pointers = 1
+    dbg::report();  // 输出: [leak report] live pointers = 1
     return 0;
 }
 ```
@@ -818,7 +818,7 @@ int main() {
 #include <mutex>
 #include <cstdio>
 #include <cstddef>
-#include <cstdlib>   // std::malloc / std::free
+#include <cstdlib>          // std::malloc / std::free
 namespace safe {
     std::mutex mtx;
     std::unordered_set<void*> live;
@@ -835,7 +835,7 @@ namespace safe {
 int main() {
     void* p = safe::malloc_tagged(64);
     safe::free_guarded(p);
-    safe::free_guarded(p);   // 第二次被拦截，不崩溃
+    safe::free_guarded(p);  // 第二次被拦截，不崩溃
     std::printf("antipattern guard OK\n");
     return 0;
 }
@@ -1196,9 +1196,9 @@ int main() {
     std::pmr::monotonic_buffer_resource pool;
     std::pmr::polymorphic_allocator<int> alloc{&pool};
     std::pmr::vector<int> v{alloc};
-    for (int i = 0; i < 1000; ++i) v.push_back(i);   // 全部来自 pool，无逐次 new
+    for (int i = 0; i < 1000; ++i) v.push_back(i);  // 全部来自 pool，无逐次 new
     std::cout << v.size() << '\n';
-}   // pool 析构 → 整块缓冲一次性回收
+}                                                   // pool 析构 → 整块缓冲一次性回收
 ```
 
 <span class="badge badge-std">标准</span> `std::pmr` 定义于 `<memory_resource>`（C++17，[mem.res]）；`monotonic_buffer_resource` 仅整体释放（[mem.res.monotonic.buffer]）。

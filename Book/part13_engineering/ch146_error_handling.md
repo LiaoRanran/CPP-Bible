@@ -57,11 +57,11 @@ C 时代只有两种 primitive：返回码与全局 `errno`（1970s）。`[史]`
 #include <optional>
 #include <expected>
 // 策略一：异常——调用方难以就地恢复、且属于"契约违约"的失败
-double parse_financial(const std::string& s);   // 抛 std::invalid_argument
+double parse_financial(const std::string& s);                   // 抛 std::invalid_argument
 
 // 策略二：返回值/可选项——可预期的常规失败，调用方必须分流
 std::expected<Config, ConfigError> load_config(const Path& p);  // 返回错误而非抛
-std::optional<Row> find_row(Key k);             // "无值"也是合法结果，不是错误
+std::optional<Row> find_row(Key k);                             // "无值"也是合法结果，不是错误
 ```
 
 错误通道的三条硬约束：
@@ -133,11 +133,11 @@ void validate_age(int age) {
 int main() {
     try {
         validate_age(-1);
-    } catch (const std::invalid_argument& e) {   // 更具体的先匹配
+    } catch (const std::invalid_argument& e) {  // 更具体的先匹配
         // e.what() -> "age must be >= 0"
     } catch (const std::out_of_range& e) {
         // 不会被上面的 invalid_argument 触发
-    } catch (const std::exception& e) {           // 基类兜底
+    } catch (const std::exception& e) {         // 基类兜底
         // 捕获其它标准异常
     }
 }
@@ -149,16 +149,16 @@ int main() {
 ```cpp
 // ❌ 反例：基类在前，派生类永远命中不到
 try { may_throw(); }
-catch (const std::exception&) { // 截胡
-catch (const std::runtime_error&) { // 死代码
+catch (const std::exception&) {      // 截胡
+catch (const std::runtime_error&) {  // 死代码
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常机制
 ```cpp
 // ✅ 正例：最派生优先
 try { may_throw(); }
-catch (const std::runtime_error&) { // 具体
-catch (const std::exception&)     { // 兜底
+catch (const std::runtime_error&) {  // 具体
+catch (const std::exception&)     {  // 兜底
 ```
 
 `catch` 的形参用 `const T&` 而非值：避免切片（slicing）且避免额外拷贝。需要重新抛出时写无操作数的 `throw;`（保留原对象类型与信息）。
@@ -167,8 +167,8 @@ catch (const std::exception&)     { // 兜底
 ```cpp
 try { open(); }
 catch (const std::exception& e) {
-    log(e.what());     // 记录后原样向上传播
-    throw;             // 保留完整类型，切勿 throw e;（会切片）
+    log(e.what());  // 记录后原样向上传播
+    throw;          // 保留完整类型，切勿 throw e;（会切片）
 }
 ```
 
@@ -181,10 +181,10 @@ catch (const std::exception& e) {
 #include <iostream>
 struct Guard {
     const char* name;
-    ~Guard() { std::cout << "dtor " << name << '\n'; }   // 展开时自动调用
+    ~Guard() { std::cout << "dtor " << name << '\n'; }  // 展开时自动调用
 };
-void f() { Guard g{"f"}; throw 1; }   // 抛出前 g 一定被析构
-void g() { Guard g{"g"}; f(); }       // f 的异常穿透 g，g 仍被析构
+void f() { Guard g{"f"}; throw 1; }                     // 抛出前 g 一定被析构
+void g() { Guard g{"g"}; f(); }                         // f 的异常穿透 g，g 仍被析构
 ```
 
 `[经验]` 异常安全的根基是 **RAII**：把资源绑定到对象生命周期，让析构函数成为唯一的清理点。这样无论正常返回还是异常展开，资源都不会泄漏。
@@ -194,7 +194,7 @@ void g() { Guard g{"g"}; f(); }       // f 的异常穿透 g，g 仍被析构
 #include <fstream>
 #include <memory>
 void process(const char* path) {
-    std::ifstream in(path);            // RAII：离开作用域自动关闭
+    std::ifstream in(path);                     // RAII：离开作用域自动关闭
     auto buf = std::make_unique<char[]>(4096);  // 异常展开时自动释放
     if (!in) throw std::runtime_error("open failed");
     // 任何异常都会先析构 in 与 buf，再向上传播
@@ -227,8 +227,8 @@ void bad(const char* path) {
 class Buffer {
     std::vector<char> data_;
 public:
-    void clear() noexcept { data_.clear(); }          // 不抛：强/不抛
-    void resize(std::size_t n) { data_.resize(n); }   // 基本保证（可能抛但有效）
+    void clear() noexcept { data_.clear(); }         // 不抛：强/不抛
+    void resize(std::size_t n) { data_.resize(n); }  // 基本保证（可能抛但有效）
 };
 ```
 
@@ -239,11 +239,11 @@ public:
 #include <vector>
 class Widget {
 public:
-    Widget(Widget&&) noexcept = default;     // 标记为不抛，使 vector 重分配走移动
+    Widget(Widget&&) noexcept = default;  // 标记为不抛，使 vector 重分配走移动
     Widget(const Widget&) = default;
 };
 std::vector<Widget> v(1000);
-v.push_back(Widget{});    // 扩容时移动（因 noexcept），否则拷贝
+v.push_back(Widget{});                    // 扩容时移动（因 noexcept），否则拷贝
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全等级
@@ -325,10 +325,10 @@ std::expected<int, std::string> to_int(std::string_view s) {
 #include <expected>
 // 检查与取值
 auto r = to_int("42");
-if (r.has_value())        std::cout << *r << '\n';   // 或 r.value()
+if (r.has_value())        std::cout << *r << '\n';               // 或 r.value()
 else                      std::cout << r.error() << '\n';
 // C++23 单子式接口
-auto doubled = to_int("7").transform([](int x){ return x*2; });   // expected<int,string>
+auto doubled = to_int("7").transform([](int x){ return x*2; });  // expected<int,string>
 auto safe    = to_int("x").or_else([](const std::string& e){
     return std::expected<int,std::string>(std::unexpected(e + " (defaulted)"));
 });
@@ -354,8 +354,8 @@ auto parsed = to_int("x").transform_error([](std::string e){
 #include <optional>
 #include <vector>
 std::optional<int> find_first_even(const std::vector<int>& v) {
-    for (int x : v) if (x % 2 == 0) return x;   // 命中：返回 int
-    return std::nullopt;                        // 未命中：空 optional
+    for (int x : v) if (x % 2 == 0) return x;  // 命中：返回 int
+    return std::nullopt;                       // 未命中：空 optional
 }
 ```
 
@@ -419,10 +419,10 @@ int pop(std::vector<int>& v) [[assert: !v.empty()]] {
 class Handle {
     int fd_ = -1;
 public:
-    ~Handle() noexcept { if (fd_ >= 0) close(fd_); }   // 析构必须 noexcept
+    ~Handle() noexcept { if (fd_ >= 0) close(fd_); }                // 析构必须 noexcept
     Handle(Handle&& o) noexcept : fd_(std::exchange(o.fd_, -1)) {}  // 移动 noexcept
     Handle& operator=(Handle&& o) noexcept {
-        std::swap(fd_, o.fd_); return *this;            // swap  noexcept
+        std::swap(fd_, o.fd_); return *this;                        // swap  noexcept
     }
 };
 ```
@@ -474,7 +474,7 @@ _Z9add_throwii:
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常与性能
 ```cpp
 // 对应源码（节选，完整见 Examples/_ch146_perf.cpp）
-int add_nonthrow(int a, int b) noexcept { return a + b; }   // -> lea
+int add_nonthrow(int a, int b) noexcept { return a + b; }           // -> lea
 int add_throw(int a, int b) { if (b == 0) throw 0; return a / b; }  // -> 冷拆分
 ```
 
@@ -485,12 +485,12 @@ int add_throw(int a, int b) { if (b == 0) throw 0; return a / b; }  // -> 冷拆
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常规范演化
 ```cpp
 // C++98/03 风格（已弃用/移除）
-void old() throw(std::runtime_error);    // 动态规范：只许抛 runtime_error，否则 unexpected
-void old2() throw();                      // 承诺不抛（等价于现在的 noexcept）
+void old() throw(std::runtime_error);       // 动态规范：只许抛 runtime_error，否则 unexpected
+void old2() throw();                        // 承诺不抛（等价于现在的 noexcept）
 
 // C++11 起：静态 noexcept（编译期契约，零运行期检查）
-void modern() noexcept;                  // 不抛；违反 => terminate
-void maybe() noexcept(false);            // 可能抛（默认，可不写）
+void modern() noexcept;                     // 不抛；违反 => terminate
+void maybe() noexcept(false);               // 可能抛（默认，可不写）
 void cond() noexcept(noexcept(some_op()));  // 条件 noexcept
 ```
 
@@ -532,9 +532,9 @@ void load() { throw ParseError("missing [server]"); }
 ```cpp
 // 捕获层次：派生在前
 try { load(); }
-catch (const ParseError& e)    { // 具体
-catch (const ConfigError& e)   { // 父类
-catch (const std::exception& e){ // 通用
+catch (const ParseError& e)    {  // 具体
+catch (const ConfigError& e)   {  // 父类
+catch (const std::exception& e){  // 通用
 ```
 
 `[经验]` 异常类型用**分层继承**而非扁平枚举，能让调用方按"可恢复粒度"捕获；但层次不宜过深（>3 层即过度设计）。给异常加上附加上下文字段（错误码、位置）提升可诊断性。
@@ -554,7 +554,7 @@ struct DbError : std::runtime_error {
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源清理与 finally
 ```cpp
-#include <scope>     // C++20
+#include <scope>                                                     // C++20
 #include <cstdio>
 void process() {
     FILE* f = fopen("log.txt", "w");
@@ -752,8 +752,8 @@ while (true) {
 try { commit(); }
 catch (const std::system_error& e) {
     log(e.what());
-    rollback();          // 恢复一致状态
-    throw;               // 仍上抛，让上层知悉
+    rollback();  // 恢复一致状态
+    throw;       // 仍上抛，让上层知悉
 }
 ```
 
@@ -1100,7 +1100,7 @@ int main() {
 ## 附录 C：WG21 为什么拒绝 Checked Exceptions [B: Principle]
 
 > **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：WG21 为什么拒绝 Checked Exceptions [B: Principle]
-```
+```text
 Java 的 checked exceptions 强制调用方处理或声明异常。C++ 委员会在多个提案中拒绝了类似机制:
 
 P0709R0 (Herb Sutter, 2018): Zero-overhead deterministic exceptions
@@ -1121,7 +1121,7 @@ C++ 错误处理的未来方向:
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
-```
+```text
 错误处理策略选择矩阵:
 
 场景                      推荐                      原因
@@ -1279,7 +1279,7 @@ std::error_code open_file(const std::string&) {
     return std::make_error_code(std::errc::no_such_file_or_directory);  // 示意失败
 }
 int main() {
-    if (auto ec = open_file("x"); ec) { // 跨 ABI 安全：仅传整数码 + 类别
+    if (auto ec = open_file("x"); ec) {                                 // 跨 ABI 安全：仅传整数码 + 类别
 }
 ```
 
@@ -1301,8 +1301,8 @@ int main() {
 #include <mutex>
 std::mutex m;
 void safe() {
-    auto p = std::make_unique<int>(1);     // 若后续抛异常，p 仍被 RAII 释放
-    std::lock_guard<std::mutex> lk(m);     // 锁随作用域自动释放，不依赖手动
+    auto p = std::make_unique<int>(1);  // 若后续抛异常，p 仍被 RAII 释放
+    std::lock_guard<std::mutex> lk(m);  // 锁随作用域自动释放，不依赖手动
     // 不要写 catch(...) {} 吞掉错误
 }
 int main() { safe(); }
@@ -1334,13 +1334,13 @@ std::expected<int, ParseErr> parse_int(std::string const& s) {
         if (c < '0' || c > '9') return std::unexpected(ParseErr::NotDigit);
         v = v * 10 + (c - '0');
     }
-    return v;  // 成功：隐式转 expected<int,ParseErr>
+    return v;                    // 成功：隐式转 expected<int,ParseErr>
 }
 
 int main() {
     auto r = parse_int("123");
-    if (r) { (void)*r; }          // 取值
-    else   { (void)r.error(); }   // 取错误，必须显式处理
+    if (r) { (void)*r; }         // 取值
+    else   { (void)r.error(); }  // 取错误，必须显式处理
 }
 ```
 
@@ -1365,20 +1365,20 @@ int main() {
 struct StrongVec {
     int* data_ = nullptr;
     std::size_t n_ = 0, cap_ = 0;
-    void push_back(int x) {                 // 强异常安全：提交前旧状态完全不变
+    void push_back(int x) {                                                   // 强异常安全：提交前旧状态完全不变
         if (n_ == cap_) {
             std::size_t nc = cap_ ? cap_ * 2 : 1;
             int* nd = static_cast<int*>(::operator new(nc * sizeof(int)));
-            for (std::size_t i = 0; i < n_; ++i) new (nd + i) int(data_[i]); // 可能抛
+            for (std::size_t i = 0; i < n_; ++i) new (nd + i) int(data_[i]);  // 可能抛
             int* old = data_;
-            data_ = nd; cap_ = nc;          // 仅在所有构造成功后"提交"
-            ::operator delete(old);         // int 平凡，无需逐元素析构
+            data_ = nd; cap_ = nc;                                            // 仅在所有构造成功后"提交"
+            ::operator delete(old);                                           // int 平凡，无需逐元素析构
         }
-        new (data_ + n_) int(x);            // 新元素构造若抛，n_ 未增，状态不变
+        new (data_ + n_) int(x);                                              // 新元素构造若抛，n_ 未增，状态不变
         ++n_;
     }
     ~StrongVec() {
-        ::operator delete(data_);  // int 平凡，无需逐元素析构
+        ::operator delete(data_);                                             // int 平凡，无需逐元素析构
     }
 };
 

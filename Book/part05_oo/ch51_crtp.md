@@ -115,7 +115,7 @@ classDiagram
         +impl()
     }
     CrtpBase <|-- Vec3 : 以自身为 Derived
-```
+```text
 
 ## ⑦ ASCII 内存图 / 对象布局
 
@@ -133,7 +133,7 @@ CRTP 基类无虚函数 → 无 vptr：
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★★☆</span> · 生命周期图
-```
+```text
 CRTP 对象是普通派生类对象，无 vtable 注册；构造/析构与普通类一致。
 static_cast<Derived*>(this) 是编译期类型转换（零指令），不触及运行期类型信息。
 ```
@@ -141,7 +141,7 @@ static_cast<Derived*>(this) 是编译期类型转换（零指令），不触及�
 ## ⑨ 调用栈 / 时序图
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图
-```
+```text
 b.interface()（b: CrtpBase<Vec3>&）
 ─────────────────────────────────────
 编译期：interface() 体 = static_cast<Vec3*>(this)->impl() + 1
@@ -221,10 +221,10 @@ class enable_shared_from_this {
     mutable weak_ptr<T> weak_this_;
 public:
     shared_ptr<T> shared_from_this() const {
-        return shared_ptr<T>(weak_this_);          // 基类用 T 构造 shared_ptr
+        return shared_ptr<T>(weak_this_);               // 基类用 T 构造 shared_ptr
     }
 };
-struct Widget : std::enable_shared_from_this<Widget> {   // CRTP：以 Widget 为 T
+struct Widget : std::enable_shared_from_this<Widget> {  // CRTP：以 Widget 为 T
     auto self() { return shared_from_this(); }
 };
 ```
@@ -444,12 +444,12 @@ template<class D> struct Iterable { auto begin(){ return static_cast<D*>(this)->
 ```cpp
 template<typename _Tp>
 class enable_shared_from_this {
-    mutable weak_ptr<_Tp> _M_weak_this;          // 基类的弱引用，靠 _Tp 回填
+    mutable weak_ptr<_Tp> _M_weak_this;        // 基类的弱引用，靠 _Tp 回填
 protected:
     constexpr enable_shared_from_this() noexcept = default;
 public:
     shared_ptr<_Tp> shared_from_this() const {
-        return shared_ptr<_Tp>(_M_weak_this);     // 用 _Tp 实例化 shared_ptr
+        return shared_ptr<_Tp>(_M_weak_this);  // 用 _Tp 实例化 shared_ptr
     }
 };
 ```
@@ -502,9 +502,9 @@ struct Good : Base<Good> { int step(){ return 1; } };
 ```cpp
 template<class D>
 struct Base {
-    void f(){ static_cast<D*>(this)->x = 1; }   // ❌ D 的 x 在 Base 之后定义
+    void f(){ static_cast<D*>(this)->x = 1; }  // ❌ D 的 x 在 Base 之后定义
 };
-struct D : Base<D> { int x; };                   // x 声明在 Base 之后
+struct D : Base<D> { int x; };                 // x 声明在 Base 之后
 // 在 Base 定义点，D 是不完整类型，无法知道 x → 实例化失败
 ```
 
@@ -831,9 +831,9 @@ struct DogCRTP : AnimalCRTP<DogCRTP> { int age; void speak_impl() { age += 1; } 
 struct AnimalVirt { int age; virtual void speak() { age += 1; } virtual ~AnimalVirt() = default; };
 struct DogFinal final : AnimalVirt { void speak() override { age += 2; } };
 
-void crtp_dispatch(DogCRTP& d) { d.speak(); }    // ① CRTP 静态多态
-void virt_dispatch(AnimalVirt* a) { a->speak(); } // ② 虚函数动态多态
-void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
+void crtp_dispatch(DogCRTP& d) { d.speak(); }      // ① CRTP 静态多态
+void virt_dispatch(AnimalVirt* a) { a->speak(); }  // ② 虚函数动态多态
+void final_call(DogFinal* d) { d->speak(); }       // ③ final 类去虚拟化
 ```
 
 ### 真实汇编（GCC15 -O2）
@@ -898,13 +898,13 @@ void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
 #include <iostream>
 template <class D>
 struct Printable {
-    void print() const { static_cast<const D*>(this)->do_print(); }   // 编译期静态分发
+    void print() const { static_cast<const D*>(this)->do_print(); }  // 编译期静态分发
 };
 struct Point : Printable<Point> {
     int x = 3;
     void do_print() const { std::cout << "Point(" << x << ")\n"; }
 };
-int main(){ Point p; p.print(); }   // 调用链在编译期确定, 无 vtable
+int main(){ Point p; p.print(); }                                    // 调用链在编译期确定, 无 vtable
 ```
 
 `Printable<Point>` 把 `print` 转成对 `do_print` 的静态调用，编译器能直接内联、无间接跳转。
@@ -1046,7 +1046,7 @@ struct Op { virtual double eval(double) const = 0; virtual ~Op()=default; };
 struct Square : Op { double eval(double x) const override { return x*x; } };
 int main(){
     Square s;
-    Op* ops[1] = {&s};                     // 实际填充真实算子集合
+    Op* ops[1] = {&s};                        // 实际填充真实算子集合
     double sum = 0;
     for (auto* o : ops) sum += o->eval(2.0);  // 每次 call [vtable], 阻止内联 -> 无法向量化
     (void)sum;
@@ -1063,7 +1063,7 @@ template <class D> struct OpCrtp { double eval(double x) const { return static_c
 struct Square : OpCrtp<Square> { double f(double x) const { return x*x; } };
 int main(){
     Square s;
-    Square sqs[1] = {s};                  // CRTP: 同类型可装同容器
+    Square sqs[1] = {s};                           // CRTP: 同类型可装同容器
     double sum = 0;
     for (const auto& o : sqs) sum += o.eval(2.0);  // static_cast + 内联 -> 循环体融合并可向量化
     (void)sum;
@@ -1079,8 +1079,8 @@ int main(){
 struct Op { virtual double eval(double) const = 0; virtual ~Op()=default; };
 template <class D> struct OpCrtp { double eval(double x) const { return static_cast<const D*>(this)->f(x); } };
 struct Square : OpCrtp<Square> { double f(double x) const { return x*x; } };
-std::vector<Square> sqs;          // CRTP: 容器必须同类型, 不能混存 Cube
-std::vector<Op*> ops;             // 虚函数: 可混存任意派生类 -> 运行时异构
+std::vector<Square> sqs;  // CRTP: 容器必须同类型, 不能混存 Cube
+std::vector<Op*> ops;     // 虚函数: 可混存任意派生类 -> 运行时异构
 ```
 
 CRTP 把类型绑死在编译期，无法把不同算子放进同一个容器；这是它和虚函数最本质的取舍。
@@ -1120,8 +1120,8 @@ struct Square : Shape<Square> {
 
 int main(){
     Circle c; Square s;
-    c.draw();   // 调用 Circle::draw_impl，内联展开
-    s.draw();   // 调用 Square::draw_impl，内联展开
+    c.draw();                                            // 调用 Circle::draw_impl，内联展开
+    s.draw();                                            // 调用 Square::draw_impl，内联展开
 }
 ```
 

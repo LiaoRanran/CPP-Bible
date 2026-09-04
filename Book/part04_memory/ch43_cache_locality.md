@@ -170,11 +170,11 @@ int main() {
 #include <iostream>
 #include <cstddef>
 
-constexpr std::size_t CL = std::hardware_destructive_interference_size; // 本机=64
+constexpr std::size_t CL = std::hardware_destructive_interference_size;  // 本机=64
 
 struct Padded {
     int x;
-    char pad[CL - sizeof(int)];  // 把结构体撑到整整一行
+    char pad[CL - sizeof(int)];                                          // 把结构体撑到整整一行
 };
 
 int main() {
@@ -251,10 +251,10 @@ int main() {
 void stream_write(std::vector<std::int32_t>& dst, std::int32_t val) {
 #if defined(__x86_64__) || defined(_M_X64)
     for (std::size_t i = 0; i < dst.size(); ++i)
-        _mm_stream_si32(reinterpret_cast<int*>(dst.data()) + i, val); // 非时态写
-    _mm_sfence(); // 保证顺序
+        _mm_stream_si32(reinterpret_cast<int*>(dst.data()) + i, val);  // 非时态写
+    _mm_sfence();                                                      // 保证顺序
 #else
-    for (auto& x : dst) x = val; // 其他平台退化
+    for (auto& x : dst) x = val;                                       // 其他平台退化
 #endif
 }
 
@@ -336,15 +336,15 @@ int main() {
 
     auto t0 = std::chrono::steady_clock::now();
     volatile long s = 0;
-    for (std::size_t i = 0; i < N; ++i) s += v[i];      // 顺序
+    for (std::size_t i = 0; i < N; ++i) s += v[i];           // 顺序
     auto t1 = std::chrono::steady_clock::now();
 
     std::vector<std::size_t> idx(N);
     std::iota(idx.begin(), idx.end(), 0);
-    std::shuffle(idx.begin(), idx.end(), std::mt19937{42}); // 随机下标
+    std::shuffle(idx.begin(), idx.end(), std::mt19937{42});  // 随机下标
     auto t2 = std::chrono::steady_clock::now();
     volatile long r = 0;
-    for (std::size_t i = 0; i < N; ++i) r += v[idx[i]]; // 随机
+    for (std::size_t i = 0; i < N; ++i) r += v[idx[i]];      // 随机
     auto t3 = std::chrono::steady_clock::now();
 
     std::cout << "seq  = " << std::chrono::duration<double, std::milli>(t1 - t0).count() << " ms\n";
@@ -470,7 +470,7 @@ int main() {
 
 int main() {
     const unsigned nthreads = std::thread::hardware_concurrency();
-    std::vector<long> local(nthreads, 0); // 每线程写自己的槽
+    std::vector<long> local(nthreads, 0);  // 每线程写自己的槽
     const long iters = 50'000'000;
     auto t0 = std::chrono::steady_clock::now();
     std::vector<std::thread> ts;
@@ -676,12 +676,12 @@ int main() {
 int main() {
     const std::size_t N = 1 << 24;
     std::vector<long> v(N, 1);
-    const int D = 16; // 预取距离（元素数），依计算密度调
+    const int D = 16;                         // 预取距离（元素数），依计算密度调
     auto t0 = std::chrono::steady_clock::now();
     volatile long s = 0;
     for (std::size_t i = 0; i < N; ++i) {
 #if defined(__GNUC__) || defined(__clang__)
-        __builtin_prefetch(&v[i + D], 0, 3); // 读意图，尽量留缓存
+        __builtin_prefetch(&v[i + D], 0, 3);  // 读意图，尽量留缓存
 #endif
         s += v[i];
     }
@@ -772,13 +772,13 @@ int main() {
     volatile long s = 0;
 
     auto t0 = std::chrono::steady_clock::now();
-    for (std::size_t i = 0; i < R; ++i)        // 行主序：连续
+    for (std::size_t i = 0; i < R; ++i)  // 行主序：连续
         for (std::size_t j = 0; j < C; ++j)
             s += a[i * C + j];
     auto t1 = std::chrono::steady_clock::now();
 
     auto t2 = std::chrono::steady_clock::now();
-    for (std::size_t j = 0; j < C; ++j)        // 列主序：跳跃
+    for (std::size_t j = 0; j < C; ++j)  // 列主序：跳跃
         for (std::size_t i = 0; i < R; ++i)
             s += a[i * C + j];
     auto t3 = std::chrono::steady_clock::now();
@@ -858,8 +858,8 @@ struct Particle { float x, y, z; };
 struct ParticlesSoA { std::vector<float> x, y, z; };
 
 ParticlesSoA to_soa(const std::vector<Particle>& in) {
-    ParticlesSoA o;                          // ParticlesSoA 无接受尺寸的构造函数
-    o.x.resize(in.size());                   // 三个平行数组分别预留容量
+    ParticlesSoA o;         // ParticlesSoA 无接受尺寸的构造函数
+    o.x.resize(in.size());  // 三个平行数组分别预留容量
     o.y.resize(in.size());
     o.z.resize(in.size());
     for (std::size_t i = 0; i < in.size(); ++i) {
@@ -908,8 +908,8 @@ int main() {
 #include <vector>
 #include <string>
 
-struct Hot { int state; long last_access; };   // 高频访问
-struct Cold { std::string name; long history[64]; }; // 低频、庞大
+struct Hot { int state; long last_access; };          // 高频访问
+struct Cold { std::string name; long history[64]; };  // 低频、庞大
 
 int main() {
     std::vector<Hot> hot(1 << 16);
@@ -939,9 +939,9 @@ int main() {
 #include <iostream>
 
 int classify(int x) {
-    if (x > 0) [[likely]]        // 绝大多数情况走这条
+    if (x > 0) [[likely]]  // 绝大多数情况走这条
         return 1;
-    else [[unlikely]]            // 错误/异常路径
+    else [[unlikely]]      // 错误/异常路径
         return 0;
 }
 
@@ -1380,14 +1380,14 @@ struct alignas(std::hardware_destructive_interference_size) Slot {
 
 int main() {
     const unsigned n = std::thread::hardware_concurrency();
-    std::vector<Slot> slots(n);              // 每槽独占一行
+    std::vector<Slot> slots(n);                              // 每槽独占一行
     const long iters = 10'000'000;
     std::vector<std::thread> ts;
     for (unsigned t = 0; t < n; ++t)
         ts.emplace_back([&, t] {
             long s = 0;
             for (long i = 0; i < iters; ++i) s += 1;
-            slots[t].v.store(s, std::memory_order_relaxed); // 各自写各自行
+            slots[t].v.store(s, std::memory_order_relaxed);  // 各自写各自行
         });
     for (auto& t : ts) t.join();
     long total = 0;
@@ -1479,7 +1479,7 @@ int main() {
 #include <new>
 #include <iostream>
 #include <cstddef>
-#include <cstdint>   // std::uintptr_t
+#include <cstdint>                // std::uintptr_t
 // 平台差异：Windows CRT（MSVC 与 MinGW）不提供 C11 std::aligned_alloc，
 // 改用 _aligned_malloc / _aligned_free（实参顺序与释放函数都不同）。
 #if defined(_WIN32)
@@ -1792,12 +1792,12 @@ int main() {
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 int main(){
-    static int m[256][256]{};   // static 避免栈溢出; 教学只关心遍历顺序
+    static int m[256][256]{};                                        // static 避免栈溢出; 教学只关心遍历顺序
     long sum = 0;
     // 行优先: 内存连续访问 -> 每次缓存行加载后顺序命中
-    for (int i=0;i<256;++i) for (int j=0;j<256;++j) sum += m[i][j];   // 友好
+    for (int i=0;i<256;++i) for (int j=0;j<256;++j) sum += m[i][j];  // 友好
     // 列优先: 每次跨 256*4B 跳行 -> 几乎每次都 cache miss
-    for (int j=0;j<256;++j) for (int i=0;i<256;++i) sum += m[i][j];   // 不友好
+    for (int j=0;j<256;++j) for (int i=0;i<256;++i) sum += m[i][j];  // 不友好
     (void)sum;
 }
 ```
@@ -1850,7 +1850,7 @@ struct Aligned { alignas(64) long a; alignas(64) long b; };
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 struct P { float x,y,vx,vy; } ps[1024];
-void update_aos(){ for (auto& p: ps) p.x += p.vx; }   // 每读 16B 只用 8B, 浪费一半带宽
+void update_aos(){ for (auto& p: ps) p.x += p.vx; }               // 每读 16B 只用 8B, 浪费一半带宽
 struct Soa { float x[1024],y[1024],vx[1024],vy[1024]; } s;
 void update_soa(){ for (int i=0;i<1024;++i) s.x[i] += s.vx[i]; }  // x/vx 连续, 单指令处理 4/8 个
 ```

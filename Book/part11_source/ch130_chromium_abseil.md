@@ -71,10 +71,10 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 #include "absl/container/flat_hash_map.h"
 #include "base/task/thread_pool/thread_pool.h"
 int bootstrap() {
-    absl::flat_hash_map<int, int> cache;   // Abseil：O(1) 开放寻址哈希表
+    absl::flat_hash_map<int, int> cache;  // Abseil：O(1) 开放寻址哈希表
     cache[1] = 42;
-    base::ThreadPool::PostTask(            // Chromium：把任务丢进线程池
-        FROM_HERE, base::BindOnce([] { // 后台工作
+    base::ThreadPool::PostTask(           // Chromium：把任务丢进线程池
+        FROM_HERE, base::BindOnce([] {    // 后台工作
     return cache.size();
 }
 ```
@@ -188,9 +188,9 @@ log_url(p);
 // ④-b base::Thread：封装一条 OS 线程 + 自带 TaskRunner
 #include "base/threading/thread.h"
 base::Thread worker("io_thread");
-worker.Start();                         // 起线程，内部建 MessageLoop
-worker.task_runner()->PostTask(        // 往该线程投递任务
-    FROM_HERE, base::BindOnce([] { // 在 io_thread 上执行
+worker.Start();                     // 起线程，内部建 MessageLoop
+worker.task_runner()->PostTask(     // 往该线程投递任务
+    FROM_HERE, base::BindOnce([] {  // 在 io_thread 上执行
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 库
@@ -234,8 +234,8 @@ base::ThreadPool::PostTask(
 #include "base/task/sequenced_task_runner.h"
 scoped_refptr<base::SequencedTaskRunner> seq =
     base::ThreadPool::CreateSequencedTaskRunner({});
-seq->PostTask(FROM_HERE, base::BindOnce([] { // 第 1
-seq->PostTask(FROM_HERE, base::BindOnce([] { // 第 2，必在第 1 后
+seq->PostTask(FROM_HERE, base::BindOnce([] {  // 第 1
+seq->PostTask(FROM_HERE, base::BindOnce([] {  // 第 2，必在第 1 后
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 任务系统
@@ -265,9 +265,9 @@ Chromium 默认分配器 `PartitionAlloc` 的核心思想：**按大小分桶(bu
 struct Arena {
     char* begin; char* cur; char* end;
     void init(void* buf, size_t sz) { begin = cur = (char*)buf; end = begin + sz; }
-    void* alloc(size_t sz) {                 // O(1)：仅移动指针
+    void* alloc(size_t sz) {            // O(1)：仅移动指针
         char* p = cur; cur += sz;
-        if (cur > end) return nullptr;       // 简化：忽略对齐与越界细分
+        if (cur > end) return nullptr;  // 简化：忽略对齐与越界细分
         return p;
     }
 };
@@ -312,10 +312,10 @@ Abseil 大量"预览"了后来的标准特性，迁移路径平滑。
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与标准关系：Abseil 先于标准的
 ```cpp
 // ⑦-a string_view：absl 早于 std 多年
-#include "absl/strings/string_view.h"   // 早于 C++17
+#include "absl/strings/string_view.h"  // 早于 C++17
 #include <string_view>
 absl::string_view a = "hi";
-std::string_view b = "hi";              // C++17 同语义
+std::string_view b = "hi";             // C++17 同语义
 static_assert(sizeof(a) == sizeof(b), "布局一致");
 ```
 
@@ -552,9 +552,9 @@ absl::Duration elapsed = absl::Now() - start;     // 同一接口，不同 OS �
 ```cpp
 // ⑬-a 陷阱1：flat_hash_map 的引用/迭代器在 insert 时可能整体失效
 absl::flat_hash_map<int, int> m;
-auto& ref = m[1];          // 拿到引用
-m.reserve(1000000);        // 触发重哈希 -> 底层数组搬迁
-ref = 5;                   // ⚠ 悬垂引用！未定义行为
+auto& ref = m[1];    // 拿到引用
+m.reserve(1000000);  // 触发重哈希 -> 底层数组搬迁
+ref = 5;             // ⚠ 悬垂引用！未定义行为
 ```
 
 > **示例 31** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
@@ -787,7 +787,7 @@ std::span<const int> t = s;      // 布局一致，可互转
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（std::span）/ Abseil 文档；cppreference "std::span" 词条。
 
 > **示例 51** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌──────────────────────────┬────────────────────────────┬──────────────────────┐
 │ 任务                      │ Abseil / Chromium API       │ 标准等价 / 备注       │
 ├──────────────────────────┼────────────────────────────┼──────────────────────┤
@@ -814,11 +814,11 @@ std::span<const int> t = s;      // 布局一致，可互转
 #include "base/task/thread_pool/thread_pool.h"
 
 int quickstart() {
-    absl::flat_hash_map<int, int> m{{1, 10}, {2, 20}};   // 构造即插
+    absl::flat_hash_map<int, int> m{{1, 10}, {2, 20}};  // 构造即插
     int sum = 0;
-    for (auto& kv : m) sum += kv.second;                 // 范围 for
-    base::ThreadPool::PostTask(                           // 后台任务
-        FROM_HERE, base::BindOnce([] { // work
+    for (auto& kv : m) sum += kv.second;                // 范围 for
+    base::ThreadPool::PostTask(                         // 后台任务
+        FROM_HERE, base::BindOnce([] {                  // work
     return sum;
 }
 ```
@@ -1130,12 +1130,12 @@ class FlatMap {
     std::vector<std::optional<Entry>> slots;
     size_t used = 0;
     size_t hash(std::string_view s) const {
-        size_t h = 1469598103934665603ull;          // FNV-1a 雏形
+        size_t h = 1469598103934665603ull;        // FNV-1a 雏形
         for (char c : s) h = (h ^ (unsigned char)c) * 1099511628211ull;
         return h;
     }
     void rehash_if_needed() {
-        if (used * 4 < slots.size() * 3) return;     // 负载因子 0.75
+        if (used * 4 < slots.size() * 3) return;  // 负载因子 0.75
         size_t n = slots.size() * 2;
         std::vector<std::optional<Entry>> old = std::move(slots);
         slots = std::vector<std::optional<Entry>>(n);
@@ -1402,8 +1402,8 @@ vector+二分只在「写极少读极多且已排序」时划算；通用高频�
 #include <string>
 
 int main(){
-    std::unordered_map<std::string,int> m; m["k"]=1;          // 节点堆分配
-    std::vector<std::pair<std::string,int>> v{{ "k",1 }};    // 连续内存
+    std::unordered_map<std::string,int> m; m["k"]=1;       // 节点堆分配
+    std::vector<std::pair<std::string,int>> v{{ "k",1 }};  // 连续内存
     auto it = std::lower_bound(v.begin(), v.end(), std::pair<std::string,int>{"k",0});
     printf("um=%d vec_bsearch=%d\n", m.find("k")!=m.end(), it!=v.end());
 }

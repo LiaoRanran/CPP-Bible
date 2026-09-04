@@ -506,10 +506,10 @@ int main() {
     std::pmr::monotonic_buffer_resource mr(buf, sizeof(buf));
     {
         std::pmr::vector<File> v(&mr);
-        v.emplace_back();   // 分配在 arena
-    }                       // 析构 v：vector 仍会逐个析构成员（元素析构照常）
-    mr.release();           // 仅归还底层缓冲，不影响"已发生的元素析构"
-    return 0;               // ✅ 元素析构在 vector 析构时已发生；release 只是免逐个 free 缓冲
+        v.emplace_back();                             // 分配在 arena
+    }                                                 // 析构 v：vector 仍会逐个析构成员（元素析构照常）
+    mr.release();                                     // 仅归还底层缓冲，不影响"已发生的元素析构"
+    return 0;                                         // ✅ 元素析构在 vector 析构时已发生；release 只是免逐个 free 缓冲
 }
 ```
 
@@ -522,10 +522,10 @@ int main() {
 int main() {
     std::pmr::unsynchronized_pool_resource pool;
     auto worker = [&]() {
-        std::pmr::vector<int> v(&pool);   // ❌ data race：pool 非线程安全
+        std::pmr::vector<int> v(&pool);  // ❌ data race：pool 非线程安全
         for (int i=0;i<10;++i) v.push_back(i);
     };
-    std::thread a(worker), b(worker);     // ✅ 应改用 synchronized_pool_resource
+    std::thread a(worker), b(worker);    // ✅ 应改用 synchronized_pool_resource
     a.join(); b.join();
     return 0;
 }
@@ -542,7 +542,7 @@ int main() {
     std::pmr::monotonic_buffer_resource mr(buf, sizeof(buf));
     std::pmr::vector<int> a(&mr);
     a.push_back(1);
-    std::pmr::vector<int> b(a);           // ✅ 资源不传播：b 用默认资源(new/delete)
+    std::pmr::vector<int> b(a);                                  // ✅ 资源不传播：b 用默认资源(new/delete)
     std::cout << (b.get_allocator().resource() != &mr) << "\n";  // 输出 1
     return 0;
 }
@@ -1234,13 +1234,13 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 ```cpp
 [[gnu::noinline]] void default_push() {
     std::vector<int> v;
-    for (int i = 0; i < 16; ++i) v.push_back(i);   // 增长走 operator new
+    for (int i = 0; i < 16; ++i) v.push_back(i);  // 增长走 operator new
 }
 [[gnu::noinline]] void pmr_push() {
-    char buf[1024];                                  // 栈上预分配 1KB
+    char buf[1024];                               // 栈上预分配 1KB
     std::pmr::monotonic_buffer_resource res{buf, sizeof(buf)};
     std::pmr::vector<int> v{&res};
-    for (int i = 0; i < 16; ++i) v.push_back(i);     // 落在栈缓冲内
+    for (int i = 0; i < 16; ++i) v.push_back(i);  // 落在栈缓冲内
 }
 ```
 
@@ -1322,9 +1322,9 @@ pmr_push():
 int main() {
     char buf[1024];
     std::pmr::monotonic_buffer_resource res(std::data(buf), std::size(buf));
-    std::pmr::vector<int> v(&res);          // vector 从 res 这个 arena 分配
+    std::pmr::vector<int> v(&res);  // vector 从 res 这个 arena 分配
     for (int i = 0; i < 100; ++i) v.push_back(i);
-    std::cout << v.size() << '\n';          // 100, 全程零次 operator new
+    std::cout << v.size() << '\n';  // 100, 全程零次 operator new
 }
 ```
 
@@ -1397,10 +1397,10 @@ int main() {
     char buf[4096];
     std::pmr::monotonic_buffer_resource arena(std::data(buf), std::size(buf));
     std::pmr::polymorphic_allocator<int> pa(&arena);
-    std::pmr::vector<std::pmr::string> vs(pa);   // 命名 allocator 变量, 避免 most-vexing-parse
-    vs.emplace_back("hello");                     // 该 string 也在 arena 上
+    std::pmr::vector<std::pmr::string> vs(pa);  // 命名 allocator 变量, 避免 most-vexing-parse
+    vs.emplace_back("hello");                   // 该 string 也在 arena 上
     vs.emplace_back("world");
-    for (auto& s : vs) std::cout << s << ' ';     // hello world
+    for (auto& s : vs) std::cout << s << ' ';   // hello world
     // arena 析构时, vector 与其所有 string 一起被回收
 }
 ```
@@ -1430,13 +1430,13 @@ int main() {
 #include <memory_resource>
 #include <iostream>
 int main() {
-    std::pmr::unsynchronized_pool_resource pool;   // 块可回收复用的内存池
+    std::pmr::unsynchronized_pool_resource pool;  // 块可回收复用的内存池
     std::pmr::polymorphic_allocator<int> pa(&pool);
     int* a = pa.allocate(16);
     int* b = pa.allocate(16);
     std::cout << (void*)a << ' ' << (void*)b << '\n';
-    pa.deallocate(a, 16);              // 单块回收，回池待复用
-    int* c = pa.allocate(16);          // 大概率复用 a 那块地址
+    pa.deallocate(a, 16);                         // 单块回收，回池待复用
+    int* c = pa.allocate(16);                     // 大概率复用 a 那块地址
     std::cout << (void*)c << '\n';
     pa.deallocate(b, 16);
     pa.deallocate(c, 16);
@@ -1539,8 +1539,8 @@ int main() { serve(); }
 #include <memory_resource>
 #include <vector>
 int main() {
-    std::pmr::unsynchronized_pool_resource pool;   // 按尺寸分桶, 释放后块回到池可复用
-    std::pmr::vector<int> a(&pool), b(&pool);      // a/b 从不同尺寸桶取块, 不回全局堆
+    std::pmr::unsynchronized_pool_resource pool;  // 按尺寸分桶, 释放后块回到池可复用
+    std::pmr::vector<int> a(&pool), b(&pool);     // a/b 从不同尺寸桶取块, 不回全局堆
     for (int i = 0; i < 1000; ++i) { a.push_back(i); b.push_back(i * 2); }
     // pool 析构时统一回收所有桶
 }

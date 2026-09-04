@@ -103,7 +103,7 @@ int main() {
 #include <cassert>
 #include <iostream>
 #ifndef CONTRACT_LEVEL
-#define CONTRACT_LEVEL 1  // 0=off, 1=default, 2=audit
+#define CONTRACT_LEVEL 1       // 0=off, 1=default, 2=audit
 #endif
 #if CONTRACT_LEVEL >= 1
 #define EXPECT(cond) assert(cond)
@@ -1058,7 +1058,7 @@ int element_at(const std::vector<int>& v, std::size_t i)
 #include <stdexcept>
 #include <cassert>
 int parse_int(const std::string& s) {
-    assert(!s.empty());                       // 空串=调用方违反前置, 属 bug → 终止
+    assert(!s.empty());                                         // 空串=调用方违反前置, 属 bug → 终止
     for (char c : s)
         if (c < '0' || c > '9')
             throw std::invalid_argument("non-digit in input");  // 合法输入错误 → 可恢复
@@ -1094,10 +1094,10 @@ int parse_int(const std::string& s) {
 #include <cstddef>
 std::size_t first_nonzero(const int* p, std::size_t n) {
     for (std::size_t i = 0; i < n; ++i) {
-        if (p[i] != 0) [[likely]]      // 绝大多数迭代命中的热路径
+        if (p[i] != 0) [[likely]]  // 绝大多数迭代命中的热路径
             return i;
     }
-    return n;                           // 罕见: 全零
+    return n;                      // 罕见: 全零
 }
 ```
 

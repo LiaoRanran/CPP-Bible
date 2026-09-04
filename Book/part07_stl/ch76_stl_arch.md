@@ -207,16 +207,16 @@ range-based for 对 `vector` 展开后就是指针比较循环，GCC13 `-O2` 下
 template <typename InputIt>
 long long sum_timestamps(InputIt first, InputIt last) {
     long long s = 0;
-    for (auto it = first; it != last; ++it) s += *it;  // 迭代器抽象
+    for (auto it = first; it != last; ++it) s += *it;                    // 迭代器抽象
     return s;
 }
 int main() {
     std::vector<long long> v{100, 200, 300};
     std::deque<long long>  d{10, 20};
     std::list<long long>   l{1, 2, 3};
-    std::cout << "vec="  << sum_timestamps(v.begin(), v.end()) << "\n"; // 600
-    std::cout << "deque="<< sum_timestamps(d.begin(), d.end()) << "\n"; // 30
-    std::cout << "list=" << sum_timestamps(l.begin(), l.end()) << "\n"; // 6
+    std::cout << "vec="  << sum_timestamps(v.begin(), v.end()) << "\n";  // 600
+    std::cout << "deque="<< sum_timestamps(d.begin(), d.end()) << "\n";  // 30
+    std::cout << "list=" << sum_timestamps(l.begin(), l.end()) << "\n";  // 6
     return 0;
 }
 ```
@@ -313,7 +313,7 @@ int main() {
 int main() {
     std::vector<int> v{1, 2, 3};
     auto it = v.begin();
-    v.push_back(4); v.push_back(5);   // 可能触发扩容，it 失效
+    v.push_back(4); v.push_back(5);            // 可能触发扩容，it 失效
     // std::cout << *it << "\n";      // ❌ 失效迭代器解引用 UB
     std::cout << "size=" << v.size() << "\n";  // ✅ 用 size 而非失效 it
     return 0;
@@ -328,12 +328,12 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{10, 20, 30, 40};
-    auto it = v.begin() + 2;          // ✅ random_access: O(1)
-    std::cout << *it << "\n";         // 30
+    auto it = v.begin() + 2;                 // ✅ random_access: O(1)
+    std::cout << *it << "\n";                // 30
     std::list<int> l{10, 20, 30, 40};
     // auto j = l.begin() + 2;        // ❌ list 仅 bidirectional，不能 +2
     auto j = l.begin(); std::advance(j, 2);  // ✅ 用 advance（O(n) 但通用）
-    std::cout << *j << "\n";          // 30
+    std::cout << *j << "\n";                 // 30
     return 0;
 }
 ```
@@ -518,10 +518,10 @@ int main() {
     using LI = std::list<int>::iterator;
     std::cout << "vec is random_access="
               << std::is_same_v<std::iterator_traits<VI>::iterator_category,
-                                std::random_access_iterator_tag> << "\n"; // 1
+                                std::random_access_iterator_tag> << "\n";  // 1
     std::cout << "list is random_access="
               << std::is_same_v<std::iterator_traits<LI>::iterator_category,
-                                std::random_access_iterator_tag> << "\n"; // 0
+                                std::random_access_iterator_tag> << "\n";  // 0
     return 0;
 }
 ```
@@ -545,9 +545,9 @@ void my_advance(It& it, int n) {
 }
 int main() {
     std::vector<int> v{10, 20, 30, 40};
-    auto vi = v.begin(); my_advance(vi, 2); std::cout << *vi << "\n"; // 30
+    auto vi = v.begin(); my_advance(vi, 2); std::cout << *vi << "\n";  // 30
     std::list<int> l{10, 20, 30, 40};
-    auto li = l.begin(); my_advance(li, 2); std::cout << *li << "\n"; // 30
+    auto li = l.begin(); my_advance(li, 2); std::cout << *li << "\n";  // 30
     return 0;
 }
 ```
@@ -561,9 +561,9 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{0, 1, 2, 3, 4};
-    auto vi = v.begin(); std::advance(vi, 3); std::cout << *vi << "\n"; // 3 (O(1))
+    auto vi = v.begin(); std::advance(vi, 3); std::cout << *vi << "\n";  // 3 (O(1))
     std::list<int> l{0, 1, 2, 3, 4};
-    auto li = l.begin(); std::advance(li, 3); std::cout << *li << "\n"; // 3 (O(n))
+    auto li = l.begin(); std::advance(li, 3); std::cout << *li << "\n";  // 3 (O(n))
     return 0;
 }
 ```
@@ -578,8 +578,8 @@ int main() {
 int main() {
     std::vector<int> v{1, 2, 3, 4};
     std::list<int>   l{1, 2, 3, 4};
-    std::cout << "vec dist=" << std::distance(v.begin(), v.end()) << "\n"; // 4
-    std::cout << "list dist=" << std::distance(l.begin(), l.end()) << "\n"; // 4
+    std::cout << "vec dist=" << std::distance(v.begin(), v.end()) << "\n";   // 4
+    std::cout << "list dist=" << std::distance(l.begin(), l.end()) << "\n";  // 4
     return 0;
 }
 ```
@@ -593,9 +593,9 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{5, 3, 8, 1, 9, 2};
-    std::sort(v.begin(), v.end());                     // 算法 + 容器
+    std::sort(v.begin(), v.end());                          // 算法 + 容器
     std::copy(v.begin(), v.end(),
-              std::ostream_iterator<int>(std::cout, " ")); // 适配器 + 仿函数式
+              std::ostream_iterator<int>(std::cout, " "));  // 适配器 + 仿函数式
     std::cout << "\n";
     return 0;
 }
@@ -676,7 +676,7 @@ int main() {
     std::istream_iterator<int> it(iss);
     long long s = 0;
     for (; it != std::default_sentinel; ++it) s += *it;  // 哨兵比较
-    std::cout << "sum=" << s << "\n";                     // 60
+    std::cout << "sum=" << s << "\n";                    // 60
     return 0;
 }
 ```
@@ -769,9 +769,9 @@ int main() {
 #include <iostream>
 int main() {
     std::list<int> l{1, 2, 3};
-    auto it = l.begin();  // 指向 1
-    l.push_front(0);      // list 节点式，it 仍有效
-    std::cout << "*it after push_front=" << *it << "\n"; // 1
+    auto it = l.begin();                                  // 指向 1
+    l.push_front(0);                                      // list 节点式，it 仍有效
+    std::cout << "*it after push_front=" << *it << "\n";  // 1
     return 0;
 }
 ```
@@ -855,7 +855,7 @@ int main() {
 #include <iostream>
 #include <iterator>
 #include <string>
-#include <sstream>   // std::istringstream 定义于此
+#include <sstream>                        // std::istringstream 定义于此
 int main() {
     std::string s = "abc";
     std::istringstream iss(s);
@@ -1161,29 +1161,29 @@ struct FixedBuf {
 // 标签分发：距离计算按迭代器范畴选 O(1) 或 O(n) 实现（编译期多态）
 template <typename It>
 std::ptrdiff_t my_distance(It first, It last, std::random_access_iterator_tag) {
-    return last - first;                                  // O(1) 指针相减
+    return last - first;                                       // O(1) 指针相减
 }
 template <typename It>
 std::ptrdiff_t my_distance(It first, It last, std::input_iterator_tag) {
-    std::ptrdiff_t n = 0;                                 // O(n) 逐次 ++ 计数
+    std::ptrdiff_t n = 0;                                      // O(n) 逐次 ++ 计数
     for (; first != last; ++first) ++n;
     return n;
 }
 template <typename It>
 std::ptrdiff_t my_distance(It first, It last) {
     using cat = typename std::iterator_traits<It>::iterator_category;
-    return my_distance(first, last, cat{});               // 据标签分发
+    return my_distance(first, last, cat{});                    // 据标签分发
 }
 
 int main() {
     FixedBuf<int, 5> buf{{1, 2, 3, 4, 5}};
     std::cout << "random_access distance = "
-              << my_distance(buf.begin(), buf.end()) << "\n";   // 5 (O(1))
+              << my_distance(buf.begin(), buf.end()) << "\n";  // 5 (O(1))
 
     std::istringstream iss("9 8 7");
     std::istream_iterator<int> in(iss), end;
     std::cout << "input distance = "
-              << my_distance(in, end) << "\n";                  // 3 (O(n))
+              << my_distance(in, end) << "\n";                 // 3 (O(n))
     return 0;
 }
 ```
@@ -1231,7 +1231,7 @@ template <typename It, typename Sent>
 It my_find(It first, Sent last, char target) {
     for (; first != last; ++first)
         if (*first == target) return first;
-    return first;  // 抵达哨兵（对 NullSentinel 即遇 '\0'）仍未找到
+    return first;                            // 抵达哨兵（对 NullSentinel 即遇 '\0'）仍未找到
 }
 
 int main() {
@@ -1239,13 +1239,13 @@ int main() {
     CStrView csv{"hello"};
     auto p = my_find(csv.begin(), csv.end(), 'l');
     std::cout << "found 'l' at offset "
-              << (p - csv.begin()) << "\n";           // 2
+              << (p - csv.begin()) << "\n";  // 2
 
     // 场景 B：普通 std::string（end 与 begin 同类型，仍可复用同一 my_find）
     std::string str = "world";
     auto q = my_find(str.begin(), str.end(), 'r');
     std::cout << "found 'r' at offset "
-              << (q - str.begin()) << "\n";           // 2
+              << (q - str.begin()) << "\n";  // 2
     return 0;
 }
 ```
@@ -1286,19 +1286,19 @@ void my_transform(In first, In last, Out dst, int k) {
         // 真实内核可在此用 std::copy + 向量化或 std::transform 的连续特化
     }
     for (; first != last; ++first, ++dst)
-        *dst = (*first) * k;     // 通用、对任意范畴都正确的实现
+        *dst = (*first) * k;                                  // 通用、对任意范畴都正确的实现
 }
 
 int main() {
     std::vector<int> src{1, 2, 3}, out_v; out_v.resize(src.size());
-    my_transform(src.begin(), src.end(), out_v.begin(), 10);   // contiguous 路径
-    for (int x : out_v) std::cout << x << ' ';                  // 10 20 30
+    my_transform(src.begin(), src.end(), out_v.begin(), 10);  // contiguous 路径
+    for (int x : out_v) std::cout << x << ' ';                // 10 20 30
     std::cout << "\n";
 
     std::list<int> l{4, 5, 6};
     std::vector<int> out_l; out_l.resize(l.size());
-    my_transform(l.begin(), l.end(), out_l.begin(), 10);       // 非连续路径同样工作
-    for (int x : out_l) std::cout << x << ' ';                  // 40 50 60
+    my_transform(l.begin(), l.end(), out_l.begin(), 10);      // 非连续路径同样工作
+    for (int x : out_l) std::cout << x << ' ';                // 40 50 60
     std::cout << "\n";
     return 0;
 }
@@ -1336,10 +1336,10 @@ template <typename It>
 std::size_t my_distance(It a, It b) {
     using cat = typename std::iterator_traits<It>::iterator_category;
     if constexpr (std::is_base_of_v<std::random_access_iterator_tag, cat>) {
-        return static_cast<std::size_t>(b - a);          // 随机访问: O(1)
+        return static_cast<std::size_t>(b - a);            // 随机访问: O(1)
     } else {
         std::size_t n = 0;
-        for (; a != b; ++a) ++n;                         // 其他: O(n)
+        for (; a != b; ++a) ++n;                           // 其他: O(n)
         return n;
     }
 }
@@ -1348,7 +1348,7 @@ int main() {
     std::vector<int> v{1,2,3, 4,5};
     std::list<int>   l{1,2,3};
     std::cout << my_distance(v.begin(), v.end()) << " "
-              << my_distance(l.begin(), l.end()) << "\n"; // 5 3
+              << my_distance(l.begin(), l.end()) << "\n";  // 5 3
 }
 ```
 
@@ -1770,13 +1770,13 @@ int main() {
     std::vector<int> v{1,2,3,4,5};
     auto vi = v.begin();
     std::advance(vi, 3);
-    std::cout << *vi << std::endl;                 // 4
+    std::cout << *vi << std::endl;                           // 4
 
     // 4) list 双向 -> 逐次 ++ (O(n))，同样一句 advance
     std::list<int> l{1,2,3,4,5};
     auto li = l.begin();
     std::advance(li, 3);
-    std::cout << *li << std::endl;                 // 4
+    std::cout << *li << std::endl;                           // 4
 
     // 5) distance 同样按标签分发
     std::cout << std::distance(v.begin(), vi) << std::endl;  // 3
@@ -1950,9 +1950,9 @@ int main() {
     std::vector<int> v{10, 20, 30, 40, 50};
     std::list<int>   l{10, 20, 30, 40, 50};
     auto vi = v.begin();
-    std::advance(vi, 3);   // random_access: it += 3 (O(1))
+    std::advance(vi, 3);  // random_access: it += 3 (O(1))
     auto li = l.begin();
-    std::advance(li, 3);   // bidirectional: ++it x 3 (O(n))
+    std::advance(li, 3);  // bidirectional: ++it x 3 (O(n))
     std::cout << "vector advance+3 = " << *vi << std::endl;
     std::cout << "list advance+3   = " << *li << std::endl;
 

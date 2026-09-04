@@ -51,8 +51,8 @@ COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎�
 // ① 最简形态：值语义，拷贝即独立副本
 #include <string>
 std::string a = "hello";
-std::string b = a;          // 深拷贝，b 与 a 相互独立
-b[0] = 'H';                 // 修改 b 不影响 a
+std::string b = a;  // 深拷贝，b 与 a 相互独立
+b[0] = 'H';         // 修改 b 不影响 a
 ```
 
 - `[标准]`：`std::string` 满足 *Cpp17BasicString* 与 *Cpp17ContiguousContainer*（`data()` 返回连续 `char[]`）。
@@ -125,10 +125,10 @@ SSO 的核心是常数容量内联缓冲，避免短串的堆分配。
 #include <iostream>
 int main() {
     std::cout << "sizeof(string)      = " << sizeof(std::string) << "\n";  // 32
-    std::cout << "max SSO size (char) = " << 15 << "\n";  // _S_local_capacity = 15
+    std::cout << "max SSO size (char) = " << 15 << "\n";                   // _S_local_capacity = 15
     // 实测：≤15 字符（含 '\0' 占 16）走内联，≥16 字符走堆
-    std::string s15 = "123456789012345";   // 15 字符：SSO 内联
-    std::string s16 = "1234567890123456";  // 16 字符：堆分配
+    std::string s15 = "123456789012345";                                   // 15 字符：SSO 内联
+    std::string s16 = "1234567890123456";                                  // 16 字符：堆分配
     std::cout << "s15 size=" << s15.size() << " s16 size=" << s16.size() << "\n";
 }
 ```
@@ -144,9 +144,9 @@ int main() {
 #include <string>
 // ⑤ 构造来源多样，生命周期归一到"析构释放一次"
 void f() {
-    std::string a("literal");            // 从 const char* 构造（可能 SSO）
-    std::string b = a.substr(0, 3);      // 子串产生新存储
-    std::string c = std::move(a);        // 移动：窃取存储，a 进入有效但未指定状态
+    std::string a("literal");        // 从 const char* 构造（可能 SSO）
+    std::string b = a.substr(0, 3);  // 子串产生新存储
+    std::string c = std::move(a);    // 移动：窃取存储，a 进入有效但未指定状态
     // a 离开作用域：若仍持有堆块则释放；c 离开时释放其存储
 }
 ```
@@ -177,11 +177,11 @@ SSO 模式的切换靠长度与阈值的比较。
 // ⑦ 拷贝深、移动浅（窃取）
 #include <string>
 #include <utility>
-std::string make() { return "result"; }      // 返回值优化：0 次拷贝
+std::string make() { return "result"; }  // 返回值优化：0 次拷贝
 void g() {
     std::string s = make();
-    std::string cp = s;                        // 深拷贝（堆串 O(n)，SSO 串 O(1) 内存复制）
-    std::string mv = std::move(s);            // O(1)：mv 接管 s 的存储
+    std::string cp = s;                  // 深拷贝（堆串 O(n)，SSO 串 O(1) 内存复制）
+    std::string mv = std::move(s);       // O(1)：mv 接管 s 的存储
 }
 ```
 
@@ -221,9 +221,9 @@ int main() {
 #include <cstring>
 int main() {
     std::string s = "abc";
-    const char* p = s.c_str();     // 传统 C 接口，保证 null 终止
-    const char* d = s.data();      // C++17 起 data() 也可写；均连续
-    return std::strcmp(p, d);      // 等价
+    const char* p = s.c_str();  // 传统 C 接口，保证 null 终止
+    const char* d = s.data();   // C++17 起 data() 也可写；均连续
+    return std::strcmp(p, d);   // 等价
 }
 ```
 
@@ -237,12 +237,12 @@ int main() {
 // ⑩ 链式 operator+ 产生多次临时；+=/append 就地复用
 #include <string>
 std::string slow(const std::string& a, const std::string& b, const std::string& c) {
-    return a + b + c;   // 临时串 1: a+b；临时串 2: (a+b)+c —— 2 次分配
+    return a + b + c;                           // 临时串 1: a+b；临时串 2: (a+b)+c —— 2 次分配
 }
 std::string fast(const std::string& a, const std::string& b, const std::string& c) {
     std::string r;
     r.reserve(a.size() + b.size() + c.size());  // 预分配：0 次重分配
-    r += a; r += b; r += c;                       // 全部就地
+    r += a; r += b; r += c;                     // 全部就地
     return r;
 }
 ```
@@ -258,11 +258,11 @@ std::string fast(const std::string& a, const std::string& b, const std::string& 
 #include <string>
 const char* bad() {
     std::string s = "tmp";
-    return s.c_str();   // 错误：s 销毁，返回悬空指针
+    return s.c_str();  // 错误：s 销毁，返回悬空指针
 }
 const char* good() {
     static std::string s = "keep";
-    return s.c_str();   // 安全：static 生命周期
+    return s.c_str();  // 安全：static 生命周期
 }
 ```
 
@@ -275,14 +275,14 @@ const char* good() {
 // ⑫ string_view 不拥有存储，仅指向现有缓冲区
 #include <string_view>
 #include <string>
-void print(std::string_view sv) {            // 接受 string / char* / 子串，零拷贝
-    for (char c : sv) { // ...
+void print(std::string_view sv) {  // 接受 string / char* / 子串，零拷贝
+    for (char c : sv) {            // ...
 }
 int main() {
     std::string s = "hello world";
-    print(s);                                 // OK，无拷贝
-    print("hello world");                     // OK，字面量
-    print(s.substr(0, 5));                    // OK，string_view 子串 O(1)
+    print(s);                      // OK，无拷贝
+    print("hello world");          // OK，字面量
+    print(s.substr(0, 5));         // OK，string_view 子串 O(1)
     return 0;
 }
 ```
@@ -407,8 +407,8 @@ int main() {
 // S1 多种构造
 #include <string>
 std::string s1 = "abc";
-std::string s2(s1, 1);            // "bc"
-std::string s3(5, 'x');           // "xxxxx"
+std::string s2(s1, 1);                     // "bc"
+std::string s3(5, 'x');                    // "xxxxx"
 std::string s4 = std::string("hi") + "!";  // "hi!"
 ```
 
@@ -419,9 +419,9 @@ std::string s4 = std::string("hi") + "!";  // "hi!"
 #include <iostream>
 int f() {
     std::string s = "hello world";
-    auto pos = s.find("world");            // 6
-    std::string sub = s.substr(pos);       // "world"
-    auto n = s.find_first_of("aeiou");     // 1 ('e')
+    auto pos = s.find("world");         // 6
+    std::string sub = s.substr(pos);    // "world"
+    auto n = s.find_first_of("aeiou");  // 1 ('e')
     return (int)pos + (int)n;
 }
 ```
@@ -432,9 +432,9 @@ int f() {
 #include <string>
 int g() {
     std::string s = "I like C";
-    s.replace(2, 4, "love");               // "I love C"
-    s.insert(0, ">> ");                    // ">> I love C"
-    s.erase(0, 3);                         // "I love C"
+    s.replace(2, 4, "love");  // "I love C"
+    s.insert(0, ">> ");       // ">> I love C"
+    s.erase(0, 3);            // "I love C"
     return (int)s.size();
 }
 ```
@@ -455,9 +455,9 @@ bool cmp() {
 #include <string>
 void h() {
     std::string s = "short";
-    s.resize(20, '.');                     // 扩展到 20，填充 '.'
-    s.resize(5);                           // 截断到 5
-    s.shrink_to_fit();                     // 释放多余容量（长串）
+    s.resize(20, '.');  // 扩展到 20，填充 '.'
+    s.resize(5);        // 截断到 5
+    s.shrink_to_fit();  // 释放多余容量（长串）
 }
 ```
 
@@ -478,9 +478,9 @@ int sum_ascii(const std::string& s) {
 #include <string>
 #include <iostream>
 int conv() {
-    std::string n = std::to_string(2026);   // "2026"
-    int v = std::stoi(n);                    // 2026
-    double d = std::stod("3.14");            // 3.14
+    std::string n = std::to_string(2026);  // "2026"
+    int v = std::stoi(n);                  // 2026
+    double d = std::stod("3.14");          // 3.14
     return v + (int)d;
 }
 ```
@@ -710,7 +710,7 @@ int main(){std::string s;s.reserve(100);s.append(50,'x');std::cout<<s.size()<<st
 ## 附录 E：std::string底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：std::string底层
-```
+```text
 SSO (Short String Optimization) 底层:
 
 libstdc++ (GCC): SSO阈值=15字节 → string s("hello"): 栈上16字节(_M_local_buf)
@@ -729,8 +729,8 @@ MS STL: SSO阈值=15字节 → sizeof=32字节(同libstdc++布局)
 #include <iostream>
 #include <string>
 int main() {
-    std::string s1 = "hello";          // SSO: no heap allocation
-    std::string s2(1000, 'x');         // heap: >15 bytes
+    std::string s1 = "hello";   // SSO: no heap allocation
+    std::string s2(1000, 'x');  // heap: >15 bytes
     std::cout << "sizeof(string)=" << sizeof(std::string) << std::endl;
     std::cout << "s1.capacity()=" << s1.capacity() << " (SSO on stack)" << std::endl;
     std::cout << "s2.capacity()=" << s2.capacity() << " (heap allocated)" << std::endl;
@@ -845,12 +845,12 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码（核心）
 ```cpp
 volatile int g_obs = 0;
-[[gnu::noinline]] void make_short() {                 // 短串 -> SSO
+[[gnu::noinline]] void make_short() {  // 短串 -> SSO
     std::string s("hi");
     g_obs = (int)s.size();
     g_obs = (int)(intptr_t)s.data();   // data() 返回运行时地址, 强制真实构造
 }
-[[gnu::noinline]] void make_long() {                  // 长串 -> 堆
+[[gnu::noinline]] void make_long() {   // 长串 -> 堆
     std::string s("this string is definitely longer than the SSO buffer and must go to the heap");
     g_obs = (int)s.size();
     g_obs = (int)(intptr_t)s.data();
@@ -891,8 +891,8 @@ volatile int g_obs = 0;
 #include <string_view>
 int main() {
     std::string_view s = "hello world";
-    std::string_view w = s.substr(6, 5);       // "world"，不分配
-    std::cout << w << " len=" << w.size() << "\n"; // world len=5
+    std::string_view w = s.substr(6, 5);            // "world"，不分配
+    std::cout << w << " len=" << w.size() << "\n";  // world len=5
 }
 ```
 
@@ -946,8 +946,8 @@ std::string_view dangling() {
 #include <string_view>
 int main() {
     std::string owner = "alive";
-    std::string_view v(owner);     // owner 活到 main 结束，view 安全
-    std::cout << v << "\n";        // alive
+    std::string_view v(owner);  // owner 活到 main 结束，view 安全
+    std::cout << v << "\n";     // alive
 }
 ```
 
@@ -968,9 +968,9 @@ int main() {
 #include <iostream>
 #include <string>
 int main() {
-    std::string s = "hi";                  // 短串: SSO, 存于对象内联缓冲, 无独立堆分配
+    std::string s = "hi";                        // 短串: SSO, 存于对象内联缓冲, 无独立堆分配
     std::cout << "size=" << s.size()
-              << " cstr=" << s.c_str() << "\n";   // size=2 hi
+              << " cstr=" << s.c_str() << "\n";  // size=2 hi
     // 短串容量上限是实现定义(常见 15/22 字节); 不要假设具体值
 }
 ```
@@ -1020,8 +1020,8 @@ int main() {
 void log(std::string_view msg) { std::cout << "[log] " << msg << "\n"; }
 int main() {
     std::string s = "from std::string";
-    log(s);            // 无临时拷贝
-    log("literal");    // 字面量直接构造 view
+    log(s);          // 无临时拷贝
+    log("literal");  // 字面量直接构造 view
 }
 ```
 
@@ -1143,9 +1143,9 @@ pointer _M_local_data()
 int main() {
     std::string s;
     std::cout << "empty capacity (SSO reserve)=" << s.capacity() << "\n";
-    s = "hello";              // len 5 <= 15 → 留在本地缓冲
+    s = "hello";                                            // len 5 <= 15 → 留在本地缓冲
     std::cout << "small len=" << s.size() << " cap=" << s.capacity() << "\n";
-    s = "this string is longer than fifteen characters!!"; // >15 → 堆
+    s = "this string is longer than fifteen characters!!";  // >15 → 堆
     std::cout << "large len=" << s.size() << " cap=" << s.capacity() << "\n";
     return 0;
 }

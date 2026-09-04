@@ -105,7 +105,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 **[实现·GCC15]** GCC 扩展提供了一个真实的 free-list 池分配器 `std::pool_allocator`（在 `ext` 命名空间）。完整源码位于：
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
-```
+```text
 C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/pool_allocator.h
 ```
 
@@ -119,22 +119,22 @@ class __pool_alloc_base
 {
   typedef std::size_t size_t;
 protected:
-  enum { _S_align = 8 };                              // 对齐粒度 8 字节
-  enum { _S_max_bytes = 128 };                        // >128 字节直接走 ::operator new
-  enum { _S_free_list_size = (size_t)_S_max_bytes / (size_t)_S_align }; // 16 个桶
+  enum { _S_align = 8 };                                                 // 对齐粒度 8 字节
+  enum { _S_max_bytes = 128 };                                           // >128 字节直接走 ::operator new
+  enum { _S_free_list_size = (size_t)_S_max_bytes / (size_t)_S_align };  // 16 个桶
 
-  union _Obj                                          // ★ 侵入式：free 块复用自身存储
+  union _Obj                                                             // ★ 侵入式：free 块复用自身存储
   {
-    union _Obj* _M_free_list_link;                    // 空闲时：next 指针
-    char        _M_client_data[1];                    // 占用时：交给用户的数据
+    union _Obj* _M_free_list_link;                                       // 空闲时：next 指针
+    char        _M_client_data[1];                                       // 占用时：交给用户的数据
   };
 
-  static _Obj* volatile _S_free_list[_S_free_list_size];  // 全局分级 free list
-  static char*          _S_start_free;                // chunk 水位线起
-  static char*          _S_end_free;                  // chunk 水位线止
+  static _Obj* volatile _S_free_list[_S_free_list_size];                 // 全局分级 free list
+  static char*          _S_start_free;                                   // chunk 水位线起
+  static char*          _S_end_free;                                     // chunk 水位线止
   static size_t         _S_heap_size;
 
-  size_t _M_round_up(size_t __bytes)                  // 向上舍入到 8 的倍数
+  size_t _M_round_up(size_t __bytes)                                     // 向上舍入到 8 的倍数
   { return ((__bytes + (size_t)_S_align - 1) & ~((size_t)_S_align - 1)); }
   // ... _M_get_free_list / _M_get_mutex / _M_refill / _M_allocate_chunk ...
 };
@@ -153,17 +153,17 @@ protected:
 #include <cstddef>
 // ext/pool_allocator.h:246-263
 if (__bytes > size_t(_S_max_bytes) || _S_force_new > 0)
-  __ret = static_cast<_Tp*>(::operator new(__bytes));   // 大块：直接 new
+  __ret = static_cast<_Tp*>(::operator new(__bytes));              // 大块：直接 new
 else
   {
     _Obj* volatile* __free_list = _M_get_free_list(__bytes);
-    __scoped_lock sentry(_M_get_mutex());               // ★ 单全局锁！
+    __scoped_lock sentry(_M_get_mutex());                          // ★ 单全局锁！
     _Obj* __restrict__ __result = *__free_list;
     if (__builtin_expect(__result == 0, 0))
-      __ret = static_cast<_Tp*>(_M_refill(_M_round_up(__bytes))); // 桶空则补 chunk
+      __ret = static_cast<_Tp*>(_M_refill(_M_round_up(__bytes)));  // 桶空则补 chunk
     else
       {
-        *__free_list = __result->_M_free_list_link;     // O(1) 取表头
+        *__free_list = __result->_M_free_list_link;                // O(1) 取表头
         __ret = reinterpret_cast<_Tp*>(__result);
       }
     if (__ret == 0) std::__throw_bad_alloc();
@@ -195,7 +195,7 @@ __q->_M_free_list_link = *__free_list;                  // O(1) 头插
 **<span class="badge badge-exp">经验</span>** "侵入式"指：当一块**空闲**时，我们借用它**自己的内存**存放 `next` 指针；当它**被分配**后，这块内存完全交给用户，不再需要独立的"块头（block header）"记录大小/下一个。对比"外部元数据"方案：
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 侵入式（Intrusive）为何省去
-```
+```text
 外部元数据（每块多 16 字节头）：
 [ header | user data ][ header | user data ]...
   ^size/next  ^^^^^^^^
@@ -218,7 +218,7 @@ __q->_M_free_list_link = *__free_list;                  // O(1) 头插
 #include <new>
 
 class FixedBlockPool {
-    struct FreeNode { FreeNode* next; };   // 空闲块首部内嵌 next（侵入式）
+    struct FreeNode { FreeNode* next; };  // 空闲块首部内嵌 next（侵入式）
     std::byte*  memory_   = nullptr;
     FreeNode*   free_list_ = nullptr;
     std::size_t block_size_ = 0;
@@ -250,13 +250,13 @@ public:
     FixedBlockPool& operator=(const FixedBlockPool&) = delete;
 
     void* allocate() {
-        if (!free_list_) return nullptr;          // 池满：返回 nullptr（ caller 决定扩容）
-        FreeNode* p = free_list_;                 // O(1)：取表头
+        if (!free_list_) return nullptr;  // 池满：返回 nullptr（ caller 决定扩容）
+        FreeNode* p = free_list_;         // O(1)：取表头
         free_list_ = p->next;
         ++used_;
         return static_cast<void*>(p);
     }
-    void deallocate(void* p) noexcept {           // O(1)：头插
+    void deallocate(void* p) noexcept {   // O(1)：头插
         if (!p) return;
         FreeNode* n = static_cast<FreeNode*>(p);
         n->next = free_list_;
@@ -288,7 +288,7 @@ int main() {
 // 编译: g++ -std=c++17 -O2 program_02_fixed_pool_typed.cpp -o p02
 #include <new>
 #include <utility>
-#include "program_01_fixed_block_pool.cpp"  // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）  // 复用上面的 FixedBlockPool（教学用；与本文件分别编译，或先去掉 program_01 的 main）
+#include "program_01_fixed_block_pool.cpp"               // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）  // 复用上面的 FixedBlockPool（教学用；与本文件分别编译，或先去掉 program_01 的 main）
 
 template <class T>
 class FixedPool {
@@ -300,23 +300,23 @@ public:
     T* construct(Args&&... args) {
         void* p = pool_.allocate();
         if (!p) return nullptr;
-        return ::new(p) T(std::forward<Args>(args)...);   // 构造调用（ch39 RAII）
+        return ::new(p) T(std::forward<Args>(args)...);  // 构造调用（ch39 RAII）
     }
     void destroy(T* p) noexcept {
         if (!p) return;
-        p->~T();                                          // 析构调用
+        p->~T();                                         // 析构调用
         pool_.deallocate(p);
     }
 };
 
 #include <iostream>
 #include <cstddef>
-struct Particle { float x, y; ~Particle() { // 资源清理
+struct Particle { float x, y; ~Particle() {              // 资源清理
 int main() {
     FixedPool<Particle> pool(64);
     Particle* p = pool.construct(1.0f, 2.0f);
     std::cout << p->x << "," << p->y << "\n";
-    pool.destroy(p);       // 显式析构 + 归还块
+    pool.destroy(p);                                     // 显式析构 + 归还块
     return 0;
 }
 ```
@@ -412,7 +412,7 @@ class BitmapPool {
     std::size_t block_size_;
     std::size_t count_;
     std::byte*  base_ = nullptr;
-    std::vector<uint64_t> bits_;   // 每 bit 一槽：1=占用
+    std::vector<uint64_t> bits_;                  // 每 bit 一槽：1=占用
 public:
     BitmapPool(std::size_t block_size, std::size_t count)
         : block_size_(round_up(block_size)), count_(count),
@@ -429,13 +429,13 @@ public:
         for (std::size_t w = 0; w < bits_.size(); ++w) {
             uint64_t free = ~bits_[w];
             if (free) {
-                int bit = __builtin_ctzll(free);   // 首个 0 bit（O(1)）
+                int bit = __builtin_ctzll(free);  // 首个 0 bit（O(1)）
                 bits_[w] |= (uint64_t(1) << bit);
                 std::size_t idx = w * 64 + bit;
                 if (idx < count_) return base_ + idx * block_size_;
             }
         }
-        return nullptr;   // 满
+        return nullptr;                           // 满
     }
     void deallocate(void* p) noexcept {
         std::size_t off = static_cast<std::byte*>(p) - base_;
@@ -484,13 +484,13 @@ public:
     MonotonicAllocator(std::size_t bytes)
         : buf_(static_cast<std::byte*>(::operator new(bytes))), size_(bytes) {}
 
-    ~MonotonicAllocator() { ::operator delete(buf_); }   // 仅此一处释放
+    ~MonotonicAllocator() { ::operator delete(buf_); }  // 仅此一处释放
 
     void* allocate(std::size_t n, std::size_t align = alignof(std::max_align_t)) {
         std::uintptr_t cur = reinterpret_cast<std::uintptr_t>(buf_ + off_);
         std::uintptr_t aligned = (cur + (align - 1)) & ~(std::uintptr_t(align) - 1);
         std::uintptr_t new_off = aligned - reinterpret_cast<std::uintptr_t>(buf_) + n;
-        if (new_off > size_) return nullptr;     // 单调池不支持扩容
+        if (new_off > size_) return nullptr;            // 单调池不支持扩容
         off_ = static_cast<std::size_t>(new_off);
         return reinterpret_cast<void*>(aligned);
     }
@@ -505,7 +505,7 @@ int main() {
     int*  b = static_cast<int*>(ma.allocate(sizeof(int)));
     double* d = static_cast<double*>(ma.allocate(sizeof(double), alignof(double)));
     *a = 1; *b = 2; *d = 2.5;
-    std::cout << "used=" << ma.used() << "\n";   // 单调增长
+    std::cout << "used=" << ma.used() << "\n";          // 单调增长
     return 0;
 }
 ```
@@ -536,11 +536,11 @@ class SegregatedPool {
     struct Node { Node* next; };
     static constexpr std::size_t kMin = 8;
     static constexpr std::size_t kMax = 256;
-    static constexpr std::size_t kStep = 8;                 // 桶间距 8
+    static constexpr std::size_t kStep = 8;         // 桶间距 8
     static constexpr std::size_t kNumBuckets = (kMax - kMin) / kStep + 1;
 
     std::array<Node*, kNumBuckets> buckets_{};
-    std::array<std::byte*, kNumBuckets> chunks_{};          // 各桶的 chunk 来源
+    std::array<std::byte*, kNumBuckets> chunks_{};  // 各桶的 chunk 来源
     std::mutex mtx_;
 
     static std::size_t bucket_index(std::size_t sz) noexcept {
@@ -554,11 +554,11 @@ class SegregatedPool {
     static std::size_t block_size_for(std::size_t idx) noexcept {
         return kMin + idx * kStep;
     }
-    Node* refill(std::size_t idx) {                          // 桶空：向系统要大块切分
+    Node* refill(std::size_t idx) {                 // 桶空：向系统要大块切分
         const std::size_t bsz = block_size_for(idx);
         const std::size_t per_chunk = 64;
         std::byte* mem = static_cast<std::byte*>(::operator new(bsz * per_chunk));
-        chunks_[idx] = mem;                                  // 记录以便将来统一释放
+        chunks_[idx] = mem;                         // 记录以便将来统一释放
         Node* head = reinterpret_cast<Node*>(mem);
         Node* cur = head;
         for (std::size_t i = 1; i < per_chunk; ++i) {
@@ -574,14 +574,14 @@ public:
         std::lock_guard<std::mutex> lk(mtx_);
         Node* p = buckets_[idx];
         if (!p) p = buckets_[idx] = refill(idx);
-        buckets_[idx] = p->next;                             // O(1) 取头
+        buckets_[idx] = p->next;                    // O(1) 取头
         return p;
     }
     void deallocate(void* p, std::size_t n) noexcept {
         std::size_t idx = bucket_index(n);
         std::lock_guard<std::mutex> lk(mtx_);
         Node* q = static_cast<Node*>(p);
-        q->next = buckets_[idx];                             // O(1) 头插
+        q->next = buckets_[idx];                    // O(1) 头插
         buckets_[idx] = q;
     }
     ~SegregatedPool() {
@@ -592,8 +592,8 @@ public:
 #include <iostream>
 int main() {
     SegregatedPool pool;
-    void* a = pool.allocate(10);    // -> 16 桶
-    void* b = pool.allocate(30);    // -> 32 桶
+    void* a = pool.allocate(10);                    // -> 16 桶
+    void* b = pool.allocate(30);                    // -> 32 桶
     pool.deallocate(a, 10);
     pool.deallocate(b, 30);
     std::cout << "segregated ok\n";
@@ -626,15 +626,15 @@ int main() {
 
 class ThreadLocalPool {
     struct Node { Node* next; };
-    static constexpr std::size_t kBatch = 64;     // 批量取还粒度
-    static constexpr std::size_t kBlock = 64;     // 每对象尺寸
+    static constexpr std::size_t kBatch = 64;              // 批量取还粒度
+    static constexpr std::size_t kBlock = 64;              // 每对象尺寸
 
     // 全局中心池（受锁保护）
     static std::vector<Node*>& global_free() { static std::vector<Node*> g; return g; }
     static std::mutex& global_mtx() { static std::mutex m; return m; }
     static std::byte* arena_;
 
-    static Node* alloc_chunk() {                   // 向系统要一大块
+    static Node* alloc_chunk() {                           // 向系统要一大块
         std::byte* mem = static_cast<std::byte*>(::operator new(kBlock * kBatch));
         for (std::size_t i = 0; i < kBatch; ++i)
             reinterpret_cast<Node*>(mem + i*kBlock)->next =
@@ -666,7 +666,7 @@ public:
     }
     static void deallocate(void* p) {
         local_free_.push_back(static_cast<Node*>(p));
-        if (local_free_.size() >= kBatch * 2)            // 积累过多则批量还
+        if (local_free_.size() >= kBatch * 2)              // 积累过多则批量还
             batch_return(local_free_);
     }
 };
@@ -711,22 +711,22 @@ int main() {
 
 template <class T>
 class ObjectPool {
-    std::vector<T>   storage_;            // 预构造的对象
-    std::stack<T*>   free_;               // 空闲指针栈
+    std::vector<T>   storage_;                      // 预构造的对象
+    std::stack<T*>   free_;                         // 空闲指针栈
 public:
     explicit ObjectPool(std::size_t n) {
         storage_.reserve(n);
         for (std::size_t i = 0; i < n; ++i) {
-            storage_.emplace_back();      // 一次性构造
+            storage_.emplace_back();                // 一次性构造
             free_.push(&storage_.back());
         }
     }
-    T* acquire() {                         // 复用已构造对象
+    T* acquire() {                                  // 复用已构造对象
         if (free_.empty()) return nullptr;
         T* p = free_.top(); free_.pop();
         return p;
     }
-    void release(T* p) noexcept { free_.push(p); }   // 仅归还，不析构
+    void release(T* p) noexcept { free_.push(p); }  // 仅归还，不析构
     std::size_t available() const { return free_.size(); }
 };
 
@@ -843,7 +843,7 @@ public:
 };
 
 template <class T>
-class PoolAllocated {                    // 类型化 + 构造/析构
+class PoolAllocated {  // 类型化 + 构造/析构
     static AlignedFixedPool& pool() { static AlignedFixedPool p(sizeof(T), 1024); return p; }
 public:
     static void* operator new(std::size_t) { return pool().alloc(); }
@@ -856,7 +856,7 @@ struct Task : PoolAllocated<Task> { int prio; std::string name; };
 int main() {
     Task* t = new Task{3, "io"};
     std::cout << t->name << "\n";
-    delete t;                            // 走池，不走 ::operator new
+    delete t;          // 走池，不走 ::operator new
     return 0;
 }
 ```
@@ -1200,7 +1200,7 @@ int main() {
 #include <vector>
 #include <chrono>
 #include <cstdlib>
-#include "program_08_thread_local.cpp"   // 复用 ThreadLocalPool（与本文件分别编译，或先去掉 program_08 的 main）
+#include "program_08_thread_local.cpp"              // 复用 ThreadLocalPool（与本文件分别编译，或先去掉 program_08 的 main）
 
 void run_threads(int nthreads, int iters) {
     std::vector<std::thread> ts;
@@ -1218,7 +1218,7 @@ void run_threads(int nthreads, int iters) {
 
 int main() {
     const int iters = 200000;
-    for (int t=1;t<=8;t*=2) run_threads(t, iters);   // 线程数↑ 延迟近似线性增长(无锁)
+    for (int t=1;t<=8;t*=2) run_threads(t, iters);  // 线程数↑ 延迟近似线性增长(无锁)
     return 0;
 }
 ```
@@ -1242,7 +1242,7 @@ int main() {
 #include <cstdint>
 
 template <class T, std::size_t N>
-class ISRSafePool {                        // 无锁、无 new、确定性
+class ISRSafePool {                 // 无锁、无 new、确定性
     struct Link { T obj; Link* next; };
     alignas(T) std::array<std::byte, sizeof(Link)*N> raw_;
     Link* free_ = nullptr;
@@ -1252,10 +1252,10 @@ public:
         for (std::size_t i=0;i<N;++i){ base[i].next = (i+1<N)?&base[i+1]:nullptr; }
         free_ = base;
     }
-    T* alloc() {                            // ISR 内可安全调用
+    T* alloc() {                    // ISR 内可安全调用
         if (!free_) return nullptr;
         Link* l = free_; free_ = l->next;
-        return ::new(&l->obj) T();         // placement new，不触系统分配
+        return ::new(&l->obj) T();  // placement new，不触系统分配
     }
     void free(T* p) noexcept {
         Link* l = reinterpret_cast<Link*>(reinterpret_cast<std::byte*>(p) - offsetof(Link, obj));
@@ -1303,7 +1303,7 @@ int main() {
 
 // 一个"分配器感知"类型（见 uses_allocator.h:61-63 __uses_allocator_helper 探测 allocator_type）
 struct Node {
-    using allocator_type = FixedBlockPool;   // 告诉 traits：我接受该分配器
+    using allocator_type = FixedBlockPool;  // 告诉 traits：我接受该分配器
     int v;
     template <class Alloc>
     Node(std::allocator_arg_t, const Alloc&, int x) : v(x) {}
@@ -1499,7 +1499,7 @@ class Arena {
     std::size_t chunk_size_;
 public:
     explicit Arena(std::size_t chunk = 4096) : chunk_size_(chunk) {}
-    ~Arena() {                                  // ch39：RAII 一次性释放全部
+    ~Arena() {                              // ch39：RAII 一次性释放全部
         for (Block* b = blocks_; b; ) {
             Block* nx = b->next; ::operator delete(b->data); delete b; b = nx;
         }
@@ -1519,7 +1519,7 @@ int main() {
     Arena arena;
     int* x = static_cast<int*>(arena.alloc(sizeof(int)));
     *x = 99;
-    std::cout << "arena x=" << *x << "\n";     // 离开作用域整体释放
+    std::cout << "arena x=" << *x << "\n";  // 离开作用域整体释放
     return 0;
 }
 ```
@@ -1574,16 +1574,16 @@ int main() {
 #include <iostream>
 #include <vector>
 #include <cstddef>
-#include "program_01_fixed_block_pool.cpp"  // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）
+#include "program_01_fixed_block_pool.cpp"                   // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）
 
 int main() {
     // 固定块池：分配 1000 个、释放奇数、再分配 500 个——总能满足（无外部碎片）
     FixedBlockPool pool(sizeof(long), 1000);
     std::vector<void*> h(1000);
     for (auto& p : h) p = pool.allocate();
-    for (size_t i=0;i<h.size();i+=2) pool.deallocate(h[i]);   // 释放一半
+    for (size_t i=0;i<h.size();i+=2) pool.deallocate(h[i]);  // 释放一半
     int reused = 0;
-    for (int i=0;i<500;++i) if (pool.allocate()) ++reused;     // 必能复用空槽
+    for (int i=0;i<500;++i) if (pool.allocate()) ++reused;   // 必能复用空槽
     std::cout << "fixed pool reused slots=" << reused << " (no external fragmentation)\n";
     return reused == 500 ? 0 : 1;
 }
@@ -1790,10 +1790,10 @@ int main(){
 #include <iostream>
 #include <vector>
 #include <cstddef>
-std::size_t size_class(std::size_t n){               // 简化 tcmalloc 8→256 几何
+std::size_t size_class(std::size_t n){        // 简化 tcmalloc 8→256 几何
     if(n<=8) return 8;
     std::size_t c=8;
-    while(c<n) c = (c<128)? c*2 : c+ (c>>1);          // 小对象翻倍，大对象+50%
+    while(c<n) c = (c<128)? c*2 : c+ (c>>1);  // 小对象翻倍，大对象+50%
     return c>256?256:c;
 }
 int main(){
@@ -1840,17 +1840,17 @@ int main(){
 #include <cstddef>
 #include <new>
 #include <iostream>
-#include "program_01_fixed_block_pool.cpp"  // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）
+#include "program_01_fixed_block_pool.cpp"                    // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）
 class SafePool : private FixedBlockPool {
     std::size_t max_;
 public:
     SafePool(std::size_t obj,std::size_t n):FixedBlockPool(obj,n),max_(n){}
     void* alloc(){ void* p=FixedBlockPool::allocate(); if(p) return p;
-        return ::operator new(sizeof(long)); }        // 回退（对照 _S_max_bytes 直走 new）
+        return ::operator new(sizeof(long)); }                // 回退（对照 _S_max_bytes 直走 new）
     void free(void* p){ FixedBlockPool::deallocate(p); }
 };
 int main(){ SafePool p(sizeof(long),4); void* a=p.alloc(); void* b=p.alloc();
-    void* c=p.alloc(); void* d=p.alloc(); void* e=p.alloc(); // 第5个回退 new
+    void* c=p.alloc(); void* d=p.alloc(); void* e=p.alloc();  // 第5个回退 new
     std::cout<<"fallback ok\n"; return 0; }
 ```
 
@@ -1862,13 +1862,13 @@ int main(){ SafePool p(sizeof(long),4); void* a=p.alloc(); void* b=p.alloc();
 // 编译: g++ -std=c++17 -O2 program_38_raii_guard.cpp -o p38
 #include <utility>
 #include <iostream>
-#include "program_01_fixed_block_pool.cpp"  // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）
+#include "program_01_fixed_block_pool.cpp"              // 复用 FixedBlockPool（与本文件分别编译，或先去掉 program_01 的 main）
 template<class T>
 class PoolPtr {
     FixedBlockPool* pool_=nullptr; T* p_=nullptr;
 public:
     PoolPtr(FixedBlockPool& pool, T* p):pool_(&pool),p_(p){}
-    ~PoolPtr(){ if(p_) pool_->deallocate(p_); }       // 连接 ch39 RAII
+    ~PoolPtr(){ if(p_) pool_->deallocate(p_); }         // 连接 ch39 RAII
     T* operator->() const { return p_; }
     T& operator*() const { return *p_; }
     PoolPtr(PoolPtr&& o):pool_(o.pool_),p_(o.p_){o.p_=nullptr;}
@@ -1877,7 +1877,7 @@ public:
 int main(){
     FixedBlockPool pool(sizeof(int),16);
     int* raw=static_cast<int*>(pool.allocate()); *raw=7;
-    { PoolPtr<int> g(pool,raw); std::cout<<*g<<"\n"; } // 自动归还
+    { PoolPtr<int> g(pool,raw); std::cout<<*g<<"\n"; }  // 自动归还
     return 0;
 }
 ```
@@ -2163,11 +2163,11 @@ int main(){
 #include <cstddef>
 template <class Block, std::size_t N>
 struct FixedPool {
-    alignas(Block) char buf[N * sizeof(Block)];   // 预分配一大块
+    alignas(Block) char buf[N * sizeof(Block)];                  // 预分配一大块
     void* free_list[N]; std::size_t head = 0;
     FixedPool(){ for (std::size_t i=0;i<N;++i) free_list[i] = buf + i*sizeof(Block); head = N; }
-    void* alloc(){ return head ? free_list[--head] : nullptr; }   // O(1) 无系统调用
-    void dealloc(void* p){ free_list[head++] = p; }               // O(1) 归还
+    void* alloc(){ return head ? free_list[--head] : nullptr; }  // O(1) 无系统调用
+    void dealloc(void* p){ free_list[head++] = p; }              // O(1) 归还
 };
 ```
 
@@ -2369,11 +2369,11 @@ int main() {
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 实时系统里把 n
 ```cpp
 struct Packet { int seq; };
-void use(Packet*);                   // -c 仅编译不链接, 声明即可
+void use(Packet*);           // -c 仅编译不链接, 声明即可
 void control_loop(){
-    auto* pkt = new Packet;          // 通用分配器: 可能加锁/查找空闲块/系统调用 -> 延迟抖动
+    auto* pkt = new Packet;  // 通用分配器: 可能加锁/查找空闲块/系统调用 -> 延迟抖动
     use(pkt);
-    delete pkt;                      // 释放也可能触发合并/系统归还
+    delete pkt;              // 释放也可能触发合并/系统归还
 }
 // 长期运行: 不同大小对象混用 -> 外部碎片 -> 某次 new 失败 (嵌入式致命)
 ```
@@ -2389,13 +2389,13 @@ template <class T, std::size_t N> struct FixedPool {
     void* alloc();
     void dealloc(void*);
 };
-void use(Packet*);                   // 声明即可(-c 不链接)
-FixedPool<Packet, 256> pool;        // 启动预分配 256 个 Packet 的存储
+void use(Packet*);                    // 声明即可(-c 不链接)
+FixedPool<Packet, 256> pool;          // 启动预分配 256 个 Packet 的存储
 void control_loop(){
-    void* p = pool.alloc();          // O(1), 无系统调用, 延迟确定
-    auto* pkt = ::new(p) Packet;     // 在池块上 placement new 构造
+    void* p = pool.alloc();           // O(1), 无系统调用, 延迟确定
+    auto* pkt = ::new(p) Packet;      // 在池块上 placement new 构造
     use(pkt);
-    pkt->~Packet(); pool.dealloc(p); // 归还, 无外部碎片
+    pkt->~Packet(); pool.dealloc(p);  // 归还, 无外部碎片
 }
 ```
 
@@ -2412,8 +2412,8 @@ struct PoolResource : std::pmr::memory_resource {
     void  do_deallocate(void*, std::size_t, std::size_t) override;
     bool  do_is_equal(const std::pmr::memory_resource&) const noexcept override;
 };
-PoolResource res;                    // 你的池包装成 memory_resource
-std::pmr::vector<Packet> v{&res};    // vector 内存全部来自池, 零系统调用
+PoolResource res;                  // 你的池包装成 memory_resource
+std::pmr::vector<Packet> v{&res};  // vector 内存全部来自池, 零系统调用
 ```
 
 **步骤 4：实时性对照（示意）**

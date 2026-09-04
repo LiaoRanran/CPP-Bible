@@ -69,8 +69,8 @@ TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、�
 ```cpp
 // 速查：TMP 三段式 = 主模板（递归）+ 偏特化（基例）+ 调用点（触发实例化）
 template <int N>
-struct Fib { static constexpr int v = Fib<N-1>::v + Fib<N-2>::v; }; // 递归
-template <> struct Fib<0> { static constexpr int v = 0; };          // 基例
+struct Fib { static constexpr int v = Fib<N-1>::v + Fib<N-2>::v; };  // 递归
+template <> struct Fib<0> { static constexpr int v = 0; };           // 基例
 template <> struct Fib<1> { static constexpr int v = 1; };
 static_assert(Fib<10>::v == 55);                                     // 调用点：编译期求值
 ```
@@ -104,9 +104,9 @@ static_assert(Gcd<48, 36>::value == 12);
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 template <bool B>
-struct SelectT { using type = int; };          // 主模板：默认分支
+struct SelectT { using type = int; };            // 主模板：默认分支
 template <>
-struct SelectT<false> { using type = double; }; // 偏特化：false 分支
+struct SelectT<false> { using type = double; };  // 偏特化：false 分支
 static_assert(sizeof(SelectT<true>::type) == sizeof(int));
 static_assert(sizeof(SelectT<false>::type) == sizeof(double));
 ```
@@ -117,11 +117,11 @@ static_assert(sizeof(SelectT<false>::type) == sizeof(double));
 ```cpp
 #include <cstddef>
 template <typename... Ts> struct TypeList {};
-template <size_t I, typename L> struct At;                  // 前向声明
+template <size_t I, typename L> struct At;               // 前向声明
 template <typename T, typename... Rest>
-struct At<0, TypeList<T, Rest...>> { using type = T; };     // 基例：取第一个
+struct At<0, TypeList<T, Rest...>> { using type = T; };  // 基例：取第一个
 template <size_t I, typename T, typename... Rest>
-struct At<I, TypeList<T, Rest...>>                          // 递归：剥头
+struct At<I, TypeList<T, Rest...>>                       // 递归：剥头
     : At<I - 1, TypeList<Rest...>> {};
 using L = TypeList<int, double, char>;
 static_assert(std::is_same_v<At<0, L>::type, int>);
@@ -145,13 +145,17 @@ static_assert(!IsPrime<15>::value);
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
+#include <cstdio>
+#include <utility>
 template <typename T, T... Is>
 void for_each_is(std::integer_sequence<T, Is...>, auto f) {
-    (f(Is), ...); // 编译期展开为 f(0); f(1); ... f(N-1);
+    (f(Is), ...);   // 编译期展开为 f(0); f(1); ... f(N-1);
 }
-#include <utility>
-int sum = 0;
-for_each_is(std::make_integer_sequence<int, 5>{}, [&](int i){ sum += i; }); // 0+1+2+3+4=10
+int main() {
+    int sum = 0;
+    for_each_is(std::make_integer_sequence<int, 5>{}, [&](int i) { sum += i; }); // 0+1+2+3+4=10
+    std::printf("sum=%d\n", sum);
+}
 ```
 
 ## ④ 实例化机制（实例化点 / 两阶段查找）
@@ -203,10 +207,10 @@ template <int... Is>
 int sum_seq(std::integer_sequence<int, Is...>) { return (0 + ... + Is); }
 
 int main() {
-    std::cout << "Fact<5> = " << Fact<5>::value << "\n";            // 120
-    std::cout << "Word size = " << sizeof(Word<false>::type) << "\n"; // 2
+    std::cout << "Fact<5> = " << Fact<5>::value << "\n";                 // 120
+    std::cout << "Word size = " << sizeof(Word<false>::type) << "\n";    // 2
     std::cout << "sum_seq<0..4> = "
-              << sum_seq(std::make_integer_sequence<int, 5>{}) << "\n"; // 10
+              << sum_seq(std::make_integer_sequence<int, 5>{}) << "\n";  // 10
     static_assert(Fact<5>::value == 120);
     return 0;
 }
@@ -372,9 +376,9 @@ struct fixed_string {
     char buf[N]{};
     constexpr fixed_string(const char (&s)[N]) { for (size_t i = 0; i < N; ++i) buf[i] = s[i]; }
 };
-template <fixed_string S>   // 整个字符串作为 NTTP
+template <fixed_string S>  // 整个字符串作为 NTTP
 struct Tag {};
-using T = Tag<"hello">;     // C++20 起合法：编译期吃进字符串字面量
+using T = Tag<"hello">;    // C++20 起合法：编译期吃进字符串字面量
 ```
 
 ## ⑬ 反模式（anti-patterns）
@@ -404,7 +408,7 @@ struct Wrapper {
 ```cpp
 template <typename T> void g(T x) { f(x); }  // f 依赖，阶段二查找
 namespace N { struct S {}; void f(S) {} }
-int main() { g(N::S{}); }  // 错误：g<S> 实例化时 f(N::S) 不在 ADL 可见集 -> 失败
+int main() { g(N::S{}); }                    // 错误：g<S> 实例化时 f(N::S) 不在 ADL 可见集 -> 失败
 // 修正：在使用前声明 void f(N::S); 或让 f 与 S 同命名空间并通过 ADL 找到
 ```
 
@@ -420,9 +424,9 @@ template <int N> struct Fib { static int run() { return Fib<N-1>::run() + Fib<N-
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 ```cpp
-template <typename T> struct Traits { using type = void; };       // 主
-template <typename T> struct Traits<T*> { using type = T; };      // 偏特化（更特化）
-template <typename T> struct Traits<T*> { using type = int; };    // 重复偏特化 -> 歧义/重定义
+template <typename T> struct Traits { using type = void; };     // 主
+template <typename T> struct Traits<T*> { using type = T; };    // 偏特化（更特化）
+template <typename T> struct Traits<T*> { using type = int; };  // 重复偏特化 -> 歧义/重定义
 // 偏特化必须比主模板"更特化"，且不能重复。
 ```
 
@@ -435,7 +439,7 @@ template <typename T> struct Traits<T*> { using type = int; };    // 重复偏�
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
 ```cpp
-template <int M, int S>            // 米、秒的指数
+template <int M, int S>                             // 米、秒的指数
 struct Unit { static constexpr int meter = M; static constexpr int second = S; };
 template <typename A, typename B>
 struct AddableUnit { static constexpr bool value = (A::meter==B::meter)&&(A::second==B::second); };
@@ -462,6 +466,12 @@ template <State S> void transition() {
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
+#include <cstddef>
+struct Transform {}; struct RigidBody {}; struct Collider {};
+template <typename... Ts>
+struct TypeList { static constexpr std::size_t size = sizeof...(Ts); };
+template <typename... Ts>
+constexpr std::size_t list_size(TypeList<Ts...>) { return sizeof...(Ts); }
 template <typename... Components>
 struct ComponentList { using types = TypeList<Components...>; };
 using MyEcs = ComponentList<Transform, RigidBody, Collider>;
@@ -669,7 +679,7 @@ Boost.MPL（2000s）把 TMP 系统化成「编译期容器与算法」；2015 �
 ## 附录 A：原理与工业 [B: Principle / F: Industry / E: Lowlevel]
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：原理与工业 [B: Principle / F: Industry / E: Lowlevel]
-```
+```text
 WG21 TMP演化:
 N3291 (C++11): constexpr函数 → 替代部分TMP (循环/条件在编译期)
 P0784R7 (C++20): constexpr new/delete → 编译期堆分配

@@ -111,9 +111,9 @@ Sum<A,B> operator+(const Expr<A>& x, const Expr<B>& y) {
 ```cpp
 // 使用：a+b+c 在编译期构建 Sum<Sum<Fast,Fast>,Fast>，赋值才单遍求值
 Fast a(3), b(3), c(3);
-a.p[0]=0; b.p[0]=1; c.p[0]=2;   // ...
+a.p[0]=0; b.p[0]=1; c.p[0]=2;  // ...
 Fast u(3);
-u = a + b + c;                  // 等价 u[i] = a[i]+b[i]+c[i]，零临时
+u = a + b + c;                 // 等价 u[i] = a[i]+b[i]+c[i]，零临时
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
@@ -224,7 +224,7 @@ int main() {
     Fast a(3), b(3), c(3);
     for (int i=0;i<3;++i){ a.p[i]=i; b.p[i]=i+1; c.p[i]=i+2; }
     Fast u(3);
-    u = a + b + c;                       // 单遍：u[i]=a[i]+b[i]+c[i]
+    u = a + b + c;                                                     // 单遍：u[i]=a[i]+b[i]+c[i]
     std::printf("%d %d %d\n", (int)u.p[0], (int)u.p[1], (int)u.p[2]);  // 3 5 7
 }
 ```
@@ -262,9 +262,9 @@ template <typename E> double eval_at(const Expr<E>& e, size_t i) {
 > **示例 11** [难度 ★☆☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
 ```cpp
 // 标准：operator+ 可返回任意类型（包括代理）
-struct Proxy { // ...
+struct Proxy {                          // ...
 struct Vec {
-    Proxy operator+(const Vec&) const;   // 合法：返回代理即 ET 雏形
+    Proxy operator+(const Vec&) const;  // 合法：返回代理即 ET 雏形
 };
 ```
 
@@ -383,8 +383,8 @@ _ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E
 // 对比：valarray 是立即求值（非 ET）
 #include <valarray>
 std::valarray<double> a(3), b(3), c(3);
-auto t = a + b;            // 立即产生新 valarray（临时分配 + 遍历）
-auto u = t + c;            // 又一次分配 + 遍历（共 2 临时，类似朴素 Vec）
+auto t = a + b;  // 立即产生新 valarray（临时分配 + 遍历）
+auto u = t + c;  // 又一次分配 + 遍历（共 2 临时，类似朴素 Vec）
 // ET 版把这两步压缩为单遍（见 ⑩）
 ```
 
@@ -533,10 +533,10 @@ valarray<_Tp>& operator+=(const valarray<_Tp>&);
 ```cpp
 // 易错点：auto 保存代理导致悬垂
 Fast a(3), b(3);
-auto e = a + b;        // e 持有 a/b 引用
+auto e = a + b;  // e 持有 a/b 引用
 // ... 若 a/b 离开作用域或被修改，e[i] 未定义
 Fast u(3);
-u = e;                  // 立即求值，安全（在 a/b 存活时）
+u = e;           // 立即求值，安全（在 a/b 存活时）
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
@@ -572,8 +572,8 @@ u = a + b + c;          // 0 临时、单遍（ET）
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 ```cpp
 // 最佳实践：完整 ET 骨架（Expr + Sum + operator+ + operator=）
-template <typename E> struct Expr { // CRTP 接口
-template <typename A, typename B> struct Sum : Expr<Sum<A,B>> { // 引用 + 递归 []
+template <typename E> struct Expr {                              // CRTP 接口
+template <typename A, typename B> struct Sum : Expr<Sum<A,B>> {  // 引用 + 递归 []
 template <typename A, typename B> Sum<A,B> operator+(const Expr<A>&, const Expr<B>&);
 // Fast::operator=(const Expr<O>&) 单遍求值
 ```
@@ -765,7 +765,7 @@ add rdi, 0x0008           ; 步进 int32
 struct Vec {
     std::vector<double> d;
     Vec(std::size_t n) : d(n, 0) {}
-    Vec(const struct VecAdd& e);          // 前向声明，见下
+    Vec(const struct VecAdd& e);  // 前向声明，见下
     double operator[](std::size_t i) const { return d[i]; }
     double& operator[](std::size_t i) { return d[i]; }
 };
@@ -779,8 +779,8 @@ Vec::Vec(const VecAdd& e) : d(e.a.d.size()) {
 VecAdd operator+(const Vec& a, const Vec& b) { return {a, b}; }
 int main() {
     Vec x(3), y(3); x[0] = 1; y[0] = 2;
-    Vec z = x + y;                        // 仅 1 次遍历，无临时 Vec
-    std::cout << z[0] << "\n";          // 3
+    Vec z = x + y;                // 仅 1 次遍历，无临时 Vec
+    std::cout << z[0] << "\n";    // 3
 }
 ```
 <span class="badge badge-std">标准</span> 代理类型把表达式结构滞留到赋值，合并多次遍历为一次。
@@ -817,8 +817,8 @@ Vec& operator+=(Vec& a, const VecAdd& e) {
 }
 int main() {
     Vec x(3), y(3); x[0] = 1; y[0] = 2;
-    x += (y + y);                         // 原地累加
-    std::cout << x[0] << "\n";          // 1 + (2+2) = 5
+    x += (y + y);               // 原地累加
+    std::cout << x[0] << "\n";  // 1 + (2+2) = 5
 }
 ```
 <span class="badge badge-std">标准</span> 复合赋值直接读代理元素累加，避免生成中间 `Vec`。
@@ -855,8 +855,8 @@ Vec::Vec(const VecAdd& e) : d(e.a.d.size()) {
 VecAdd operator+(const Vec& a, const Vec& b) { return {a, b}; }
 int main() {
     Vec a(3), b(3); a[0] = 1; b[0] = 2;
-    Vec z = a + b;                       // 立即物化，安全
-    std::cout << z[0] << "\n";         // 3
+    Vec z = a + b;              // 立即物化，安全
+    std::cout << z[0] << "\n";  // 3
 }
 ```
 <span class="badge badge-std">标准</span> 表达式模板代理廉价但有寿命约束；跨作用域保存必须物化为具体类型。
@@ -933,8 +933,8 @@ struct Vec {
 int main() {
     Vec a(1, 2, 3), b(4, 5, 6);
     Vec c(0, 0, 0);
-    c = Add<Vec, Vec>{a, b};     // 延迟求值，无临时数组
-    std::cout << c[0] << " " << c[1] << " " << c[2] << "\n";   // 5 7 9
+    c = Add<Vec, Vec>{a, b};                                  // 延迟求值，无临时数组
+    std::cout << c[0] << " " << c[1] << " " << c[2] << "\n";  // 5 7 9
 }
 ```
 
@@ -970,10 +970,10 @@ struct VecAdd { const Vec& a; const Vec& b; double operator[](std::size_t i) con
 Vec::Vec(const VecAdd& e):d(e.a.d.size()){ for(std::size_t i=0;i<d.size();++i) d[i]=e[i]; }
 VecAdd operator+(const Vec& a, const Vec& b) { return {a, b}; }
 int main() { Vec a(3), b(3), c(3); a[0]=1; b[0]=2; c[0]=3;
-    Vec ab = a + b;                       // 先物化 a+b
-    VecAdd e = ab + c;                    // 惰性组合 ab+c，仅记录结构
-    Vec z(3); for (std::size_t i=0;i<3;++i) z[i]=e[i];   // 单次遍历求 (a+b)+c
-    std::cout << z[0] << "\n"; }          // 6
+    Vec ab = a + b;                                     // 先物化 a+b
+    VecAdd e = ab + c;                                  // 惰性组合 ab+c，仅记录结构
+    Vec z(3); for (std::size_t i=0;i<3;++i) z[i]=e[i];  // 单次遍历求 (a+b)+c
+    std::cout << z[0] << "\n"; }                        // 6
 ```
 
 **结论**：表达式模板把"多次遍历+临时"合并为"一次遍历+零分配"，是 Eigen/Blitz++ 的核心加速手段。
@@ -1195,15 +1195,15 @@ int main() {
     std::valarray<int> a = {1, 2, 3, 4};
     std::valarray<int> b = {10, 20, 30, 40};
 
-    std::valarray<int> c = a + b;     // a+b 返回 _Expr，由 valarray 构造器惰性求值
-    std::cout << "a+b[0]=" << c[0] << std::endl;   // 11
-    std::cout << "a+b[3]=" << c[3] << std::endl;   // 44
+    std::valarray<int> c = a + b;                 // a+b 返回 _Expr，由 valarray 构造器惰性求值
+    std::cout << "a+b[0]=" << c[0] << std::endl;  // 11
+    std::cout << "a+b[3]=" << c[3] << std::endl;  // 44
 
-    std::valarray<int> d = a * 2;     // valarray * 标量，同样返回 _Expr
-    std::cout << "a*2[2]=" << d[2] << std::endl;   // 6
+    std::valarray<int> d = a * 2;                 // valarray * 标量，同样返回 _Expr
+    std::cout << "a*2[2]=" << d[2] << std::endl;  // 6
 
     std::valarray<int> e = b - a;
-    std::cout << "b-a[1]=" << e[1] << std::endl;   // 18
+    std::cout << "b-a[1]=" << e[1] << std::endl;  // 18
     return 0;
 }
 ```
@@ -1411,15 +1411,15 @@ int main() {
     Vec x{1.1, 2.2, 3.3, 4.4};
     Vec y{0.1, 0.2, 0.3, 0.4};
 
-    Vec n = naive_add(x, y);          // 朴素：产生临时
-    AddExpr e(x, y);                  // 表达式模板：惰性
-    Vec et;                           // 默认构造即 4 元素
+    Vec n = naive_add(x, y);                                  // 朴素：产生临时
+    AddExpr e(x, y);                                          // 表达式模板：惰性
+    Vec et;                                                   // 默认构造即 4 元素
     for (std::size_t i = 0; i < e.size(); ++i) et[i] = e[i];  // 单循环物化
 
     for (std::size_t i = 0; i < x.size(); ++i) {
         std::cout << "i=" << i << " naive=" << n[i]
                   << " et=" << et[i] << std::endl;
-        assert(n[i] == et[i]);        // 功能正确性：结果一致（绝不断言时间/倍数）
+        assert(n[i] == et[i]);                                // 功能正确性：结果一致（绝不断言时间/倍数）
     }
     return 0;
 }

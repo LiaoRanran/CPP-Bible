@@ -147,7 +147,7 @@ classDiagram
 开链法下，每个元素是一个 `_Hash_node`，含：`_M_next`（下一节点指针）、`_M_hash_code`（缓存的哈希码）、值。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
-```
+```text
 x86-64（指针 8B，哈希码 size_t 8B）：
   _Hash_node<int>:  [ _M_next 8B | _M_hash_code 8B | int value 4B | pad 4B ] = 24B
   桶数组:           _M_buckets -> [ptr, ptr, ..., ptr]  (bucket_count × 8B)
@@ -249,15 +249,15 @@ class SessionTable {
     std::unordered_map<std::string, SessionState> tbl;
 public:
     // 预分配桶，避免运行期频繁 rehash（工业要点！）
-    SessionTable() { tbl.reserve(1 << 16); }   // 预留 ~64k 容量
+    SessionTable() { tbl.reserve(1 << 16); }                       // 预留 ~64k 容量
 
     bool touch(const std::string& sid, int uid) {
         auto it = tbl.find(sid);
         if (it == tbl.end()) {
-            tbl.emplace(sid, SessionState{0, uid});   // 新会话
+            tbl.emplace(sid, SessionState{0, uid});                // 新会话
             return true;
         }
-        it->second.last_seen = 1;                       // 续期
+        it->second.last_seen = 1;                                  // 续期
         return false;
     }
 
@@ -275,9 +275,9 @@ public:
 
 int main() {
     SessionTable t;
-    std::cout << "new=" << t.touch("sess-a1", 1001) << "\n"; // 1
-    std::cout << "again=" << t.touch("sess-a1", 1001) << "\n"; // 0 (已存在)
-    std::cout << "max_bucket_len=" << t.max_bucket_len() << "\n"; // >=1
+    std::cout << "new=" << t.touch("sess-a1", 1001) << "\n";       // 1
+    std::cout << "again=" << t.touch("sess-a1", 1001) << "\n";     // 0 (已存在)
+    std::cout << "max_bucket_len=" << t.max_bucket_len() << "\n";  // >=1
     std::cout << "load_factor=" << t.lf() << "\n";
     return 0;
 }
@@ -391,9 +391,9 @@ int main() {
 #include <iostream>
 int main() {
     std::unordered_set<int> s;
-    s.reserve(2);                       // 仅 2 容量
+    s.reserve(2);                               // 仅 2 容量
     auto it = s.insert(1).first;
-    for (int i = 0; i < 100; ++i) s.insert(i); // 触发多次 rehash
+    for (int i = 0; i < 100; ++i) s.insert(i);  // 触发多次 rehash
     // std::cout << *it << "\n";       // ❌ it 可能已在 rehash 后失效 -> UB
     std::cout << "size=" << s.size() << "\n";   // ✅ 用 size 而非失效迭代器
     return 0;
@@ -405,11 +405,11 @@ int main() {
 // ❌ 错误3：糟糕哈希导致严重碰撞（所有键同桶 -> O(n) 查找）
 #include <unordered_set>
 #include <iostream>
-struct BadHash { size_t operator()(int) const { return 0; } }; // ❌ 全部落同一桶
+struct BadHash { size_t operator()(int) const { return 0; } };  // ❌ 全部落同一桶
 int main() {
     std::unordered_set<int, BadHash> s;
     for (int i = 0; i < 1000; ++i) s.insert(i);
-    std::cout << "max_bucket=" << s.bucket_size(0) << "\n"; // 1000（全挤桶0）
+    std::cout << "max_bucket=" << s.bucket_size(0) << "\n";     // 1000（全挤桶0）
     return 0;
 }
 ```
@@ -461,7 +461,7 @@ int main() {
 #include <cstddef>
 
 struct StrHash {
-    using is_transparent = void;                  // 启用透明
+    using is_transparent = void;                       // 启用透明
     size_t operator()(const std::string& s) const { return std::hash<std::string>{}(s); }
     size_t operator()(std::string_view s) const   { return std::hash<std::string_view>{}(s); }
 };
@@ -473,8 +473,8 @@ struct StrEq {
 };
 int main() {
     std::unordered_set<std::string, StrHash, StrEq> s{"hello", "world"};
-    auto it = s.find(std::string_view("hello"));   // 无临时 string
-    std::cout << (it != s.end() ? *it : "x") << "\n"; // hello
+    auto it = s.find(std::string_view("hello"));       // 无临时 string
+    std::cout << (it != s.end() ? *it : "x") << "\n";  // hello
     return 0;
 }
 ```
@@ -522,8 +522,8 @@ int main() {
     std::unordered_set<int> us; std::set<int> s;
     for (int i = 0; i < N; ++i) { us.insert(i); s.insert(i); }
     long long sum = 0;
-    for (int i = 0; i < N; i += 13) if (us.count(i)) sum += i;   // 平均 O(1)
-    for (int i = 0; i < N; i += 13) if (s.count(i)) sum += i;    // O(log n)
+    for (int i = 0; i < N; i += 13) if (us.count(i)) sum += i;  // 平均 O(1)
+    for (int i = 0; i < N; i += 13) if (s.count(i)) sum += i;   // O(log n)
     std::cout << "sum=" << sum << "\n";
     return 0;
 }
@@ -620,9 +620,9 @@ int main() {
 #include <unordered_set>
 #include <iostream>
 int main() {
-    std::unordered_set<int> s{5, 3, 8, 3, 1};      // 3 重复被忽略
-    std::cout << "size=" << s.size() << "\n";        // 4
-    std::cout << "contains(8)=" << s.contains(8) << "\n"; // 1 (C++20)
+    std::unordered_set<int> s{5, 3, 8, 3, 1};              // 3 重复被忽略
+    std::cout << "size=" << s.size() << "\n";              // 4
+    std::cout << "contains(8)=" << s.contains(8) << "\n";  // 1 (C++20)
     return 0;
 }
 ```
@@ -638,8 +638,8 @@ int main() {
     std::unordered_map<std::string, int> m;
     m["alice"] = 90;
     m["bob"]   = 75;
-    std::cout << "alice=" << m["alice"] << "\n";     // 90
-    std::cout << "size=" << m.size() << "\n";          // 2
+    std::cout << "alice=" << m["alice"] << "\n";  // 90
+    std::cout << "size=" << m.size() << "\n";     // 2
     return 0;
 }
 ```
@@ -653,8 +653,8 @@ int main() {
 #include <map>
 int main() {
     std::unordered_map<int, int> m{{1, 10}};
-    std::cout << "[]=" << m[2] << "\n";               // 0（缺失则插入默认）
-    try { std::cout << "at=" << m.at(99) << "\n"; }   // 抛 out_of_range
+    std::cout << "[]=" << m[2] << "\n";              // 0（缺失则插入默认）
+    try { std::cout << "at=" << m.at(99) << "\n"; }  // 抛 out_of_range
     catch (const std::out_of_range&) { std::cout << "at missing\n"; }
     return 0;
 }
@@ -668,9 +668,9 @@ int main() {
 int main() {
     std::unordered_set<int> s;
     auto r1 = s.insert(7);
-    std::cout << "first=" << r1.second << "\n";       // 1
+    std::cout << "first=" << r1.second << "\n";   // 1
     auto r2 = s.insert(7);
-    std::cout << "second=" << r2.second << "\n";      // 0
+    std::cout << "second=" << r2.second << "\n";  // 0
     return 0;
 }
 ```
@@ -707,9 +707,9 @@ int main() {
 #include <iostream>
 int main() {
     std::unordered_set<int> s;
-    s.max_load_factor(0.5f);                  // 设为 0.5 更易触发 rehash
+    s.max_load_factor(0.5f);                                 // 设为 0.5 更易触发 rehash
     for (int i = 0; i < 100; ++i) s.insert(i);
-    std::cout << "load_factor=" << s.load_factor() << "\n";   // <= 0.5
+    std::cout << "load_factor=" << s.load_factor() << "\n";  // <= 0.5
     std::cout << "bucket_count=" << s.bucket_count() << "\n";
     return 0;
 }
@@ -722,9 +722,9 @@ int main() {
 #include <iostream>
 int main() {
     std::unordered_set<int> s;
-    std::cout << "before=" << s.bucket_count() << "\n";   // 1（初始单桶）
+    std::cout << "before=" << s.bucket_count() << "\n";  // 1（初始单桶）
     s.rehash(1024);
-    std::cout << "after=" << s.bucket_count() << "\n";    // >=1024
+    std::cout << "after=" << s.bucket_count() << "\n";   // >=1024
     return 0;
 }
 ```
@@ -825,9 +825,9 @@ int main() {
 #include <iostream>
 int main() {
     std::unordered_set<int> a{1, 2}, b{2, 3};
-    a.merge(b);                            // 2 已在 a，留在 b
+    a.merge(b);                                                // 2 已在 a，留在 b
     std::cout << "a="; for (int x : a) std::cout << x << ' ';  // 1 2 3
-    std::cout << "\nleft in b=" << b.size() << "\n";            // 1
+    std::cout << "\nleft in b=" << b.size() << "\n";           // 1
     return 0;
 }
 ```
@@ -835,13 +835,13 @@ int main() {
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
 ```cpp
 // U14 equal_range（unordered_multiset 取某键全部）
-#include <unordered_set>   // std::unordered_multiset 定义于此，无独立 <unordered_multiset> 头
-#include <iterator>        // std::distance
+#include <unordered_set>                                                   // std::unordered_multiset 定义于此，无独立 <unordered_multiset> 头
+#include <iterator>                                                        // std::distance
 #include <iostream>
 int main() {
     std::unordered_multiset<int> ms{1, 1, 1, 2, 3};
     auto r = ms.equal_range(1);
-    std::cout << "count(1)=" << std::distance(r.first, r.second) << "\n"; // 3
+    std::cout << "count(1)=" << std::distance(r.first, r.second) << "\n";  // 3
     return 0;
 }
 ```
@@ -857,9 +857,9 @@ int main() {
 int main() {
     std::unordered_map<std::string, size_t> freq;
     const char* words[] = {"a", "b", "a", "c", "b", "a"};
-    for (auto w : words) freq[w]++;          // 简洁写法
+    for (auto w : words) freq[w]++;  // 简洁写法
     for (auto& kv : freq) std::cout << kv.first << ':' << kv.second << ' ';
-    std::cout << "\n";                        // a:3 b:2 c:1
+    std::cout << "\n";               // a:3 b:2 c:1
     return 0;
 }
 ```
@@ -892,12 +892,12 @@ int main() {
     std::unordered_map<std::string, int> cache;
     auto get = [&](const std::string& k) -> int {
         auto it = cache.find(k);
-        if (it != cache.end()) return it->second;   // 命中
-        int v = (int)k.size() * 7;                   // 模拟计算
-        cache[k] = v;                                // 写入
+        if (it != cache.end()) return it->second;                      // 命中
+        int v = (int)k.size() * 7;                                     // 模拟计算
+        cache[k] = v;                                                  // 写入
         return v;
     };
-    std::cout << "v=" << get("page1") << " " << get("page1") << "\n"; // 同值两次
+    std::cout << "v=" << get("page1") << " " << get("page1") << "\n";  // 同值两次
     return 0;
 }
 ```
@@ -909,9 +909,9 @@ int main() {
 #include <iostream>
 int main() {
     std::unordered_set<int> s{1, 2, 3, 4};
-    s.erase(s.find(2));                 // 按迭代器删，仅该迭代器失效
-    std::cout << "after erase: " << s.count(2) << "\n"; // 0
-    std::cout << "erased key 3: " << s.erase(3) << "\n"; // 1
+    s.erase(s.find(2));                                   // 按迭代器删，仅该迭代器失效
+    std::cout << "after erase: " << s.count(2) << "\n";   // 0
+    std::cout << "erased key 3: " << s.erase(3) << "\n";  // 1
     return 0;
 }
 ```
@@ -957,8 +957,8 @@ int main() {
 int main() {
     std::unordered_set<int> s{10, 20, 30};
     auto nh = s.extract(s.find(20));
-    const int& v = nh.value();           // 节点句柄内值
-    std::cout << "extracted=" << v << "\n"; // 20
+    const int& v = nh.value();               // 节点句柄内值
+    std::cout << "extracted=" << v << "\n";  // 20
     return 0;
 }
 ```
@@ -990,8 +990,8 @@ void insert_all(std::unordered_set<int>& s, Ts... xs) {
 }
 int main() {
     std::unordered_set<int> s;
-    insert_all(s, 1, 2, 3, 2);    // 2 重复忽略
-    std::cout << "size=" << s.size() << "\n"; // 3
+    insert_all(s, 1, 2, 3, 2);                 // 2 重复忽略
+    std::cout << "size=" << s.size() << "\n";  // 3
     return 0;
 }
 ```
@@ -1042,8 +1042,8 @@ int main() {
 int main() {
     std::unordered_map<int, std::string> m;
     m.try_emplace(1, "first");
-    m.try_emplace(1, "second");   // 已存在，忽略
-    std::cout << m[1] << "\n";     // first
+    m.try_emplace(1, "second");  // 已存在，忽略
+    std::cout << m[1] << "\n";   // first
     return 0;
 }
 ```
@@ -1101,13 +1101,13 @@ int main() {
 std::unordered_map<std::string, int> g_m;
 std::mutex g_mtx;
 int cached_get(const std::string& k) {
-    std::lock_guard<std::mutex> lk(g_mtx);     // 写路径加锁
+    std::lock_guard<std::mutex> lk(g_mtx);                           // 写路径加锁
     auto it = g_m.find(k);
     if (it != g_m.end()) return it->second;
     int v = (int)k.size() * 3; g_m[k] = v; return v;
 }
 int main() {
-    std::cout << cached_get("x") << " " << cached_get("x") << "\n"; // 同值
+    std::cout << cached_get("x") << " " << cached_get("x") << "\n";  // 同值
     return 0;
 }
 ```
@@ -1190,9 +1190,9 @@ int main() {
     sessions.reserve(1024);
     sessions["s1"] = 1001; sessions["s2"] = 1002;
     if (auto it = sessions.find("s1"); it != sessions.end())
-        std::cout << "uid=" << it->second << "\n";   // 1001
+        std::cout << "uid=" << it->second << "\n";                // 1001
     sessions.erase("s1");
-    std::cout << "after erase size=" << sessions.size() << "\n"; // 1
+    std::cout << "after erase size=" << sessions.size() << "\n";  // 1
     return 0;
 }
 ```
@@ -1306,13 +1306,13 @@ int main() {
 #include <string>
 struct StrHash {
     std::size_t operator()(const std::string& s) const {
-        return std::hash<std::string>{}(s);   // 复用标准哈希
+        return std::hash<std::string>{}(s);                               // 复用标准哈希
     }
 };
 int main() {
     std::unordered_set<std::string, StrHash> us;
     us.insert("alpha");
-    std::cout << "has alpha=" << (us.find("alpha") != us.end()) << "\n"; // 1
+    std::cout << "has alpha=" << (us.find("alpha") != us.end()) << "\n";  // 1
 }
 ```
 
@@ -1364,7 +1364,7 @@ int main() {
     std::list<std::string> lru;
     std::unordered_map<std::string, std::list<std::string>::iterator> cache;
     auto get = [&](const std::string& k) {
-        return cache.find(k) != cache.end();   // O(1) 命中查询
+        return cache.find(k) != cache.end();    // O(1) 命中查询
     };
     lru.push_front("x");
     cache["x"] = lru.begin();

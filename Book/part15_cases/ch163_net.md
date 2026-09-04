@@ -75,8 +75,8 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 // ① 一个 TCP 端点的最小描述（跨平台字段一致）
 #include <cstdint>
 struct Endpoint {
-    uint32_t ipv4;   // 网络字节序的点分地址，inet_pton 填充
-    uint16_t port;   // 主机字节序，htons 转换后写入 sin_port
+    uint32_t ipv4;  // 网络字节序的点分地址，inet_pton 填充
+    uint16_t port;  // 主机字节序，htons 转换后写入 sin_port
 };
 ```
 
@@ -297,7 +297,7 @@ std::string recv_line(SOCKET fd) {
 void blocking_accept_loop(SOCKET lfd) {
     for (;;) {
         SOCKET c = accept(lfd, nullptr, nullptr);  // 无连接时在此睡眠
-        std::thread t([c]{ // 处理 c
+        std::thread t([c]{                         // 处理 c
         t.detach();
     }
 }
@@ -344,8 +344,8 @@ void select_loop(SOCKET lfd) {
     fd_set master; FD_ZERO(&master); FD_SET(lfd, &master);
     for (;;) {
         fd_set read_set = master;
-        int n = select(0, &read_set, nullptr, nullptr, nullptr); // 阻塞等事件
-        for (int i = 0; i < n; ++i) { // 遍历 fd_set 找出就绪者
+        int n = select(0, &read_set, nullptr, nullptr, nullptr);  // 阻塞等事件
+        for (int i = 0; i < n; ++i) {                             // 遍历 fd_set 找出就绪者
     }
 }
 ```
@@ -725,7 +725,7 @@ SSL_CTX* make_ctx() {
 // ⑮ 轻量完整性校验：用 HMAC-SHA256 给消息加签名（示意，需 crypto 库）
 // 思路：发送方附 mac，接收方重算并比对，防篡改（非加密，仅完整性）。
 struct Frame {
-    uint32_t len;        // ⑪ 长度前缀
+    uint32_t len;                // ⑪ 长度前缀
     std::vector<char> payload;
     std::array<uint8_t,32> mac;  // 32 字节 HMAC 摘要
 };
@@ -833,15 +833,15 @@ struct Socket {
 ```cpp
 // ⑱ 网络 TS 拟议接口（示意，非本机 C++23 可编译，仅展示方向）
 #if 0
-#include <net>            // 提案头文件
+#include <net>                 // 提案头文件
 #include <string>
 namespace net = std::net;
 void proposed() {
     net::io_context ctx;
     net::ip::tcp::acceptor acc(ctx, {net::ip::tcp::v4(), 54321});
-    auto sock = acc.accept();                 // 协程式 await 风格
+    auto sock = acc.accept();  // 协程式 await 风格
     std::string line = net::read_until(sock, "\n");
-    net::write(sock, line);                   // 回显
+    net::write(sock, line);    // 回显
 }
 #endif
 ```
@@ -1070,7 +1070,7 @@ int main() {
 ## 附录 C：面试 [J: Learning]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learning]
-```
+```text
 面试高频:
 Q: epoll 的水平触发 (LT) 和边缘触发 (ET) 的区别？
 A: LT = 只要缓冲区有数据就通知 (可重复); ET = 仅状态变化时通知一次 (更高性能，需循环读)
@@ -1080,7 +1080,7 @@ A: Reactor = 事件通知 + 用户自己读写; Proactor = 内核完成 IO + 通
 
 Q: TCP 的 TIME_WAIT 和 SO_REUSEADDR 的作用？
 A: TIME_WAIT = 2MSL 等待 (防止残留报文干扰); SO_REUSEADDR = 允许绑定处于 TIME_WAIT 的端口
-```
+```text
 
 ## 附录 D：编译器与底层网络性能 [C: Compiler / E: Low-level / I: Practice]
 
@@ -1124,7 +1124,7 @@ _Z9sock_recvyPci:
 ## 附录 E：面试补充 [J: Learning]
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：面试补充 [J: Learning]
-```
+```text
 Q: epoll ET vs LT? A: ET=一次通知需循环读(高性能); LT=持续通知(简单,默认)
 Q: sendfile vs mmap? A: sendfile=kernel zero-copy; mmap=映射到userspace(有一次拷贝)
 Q: SO_REUSEPORT? A: 多socket绑定同端口,内核自动负载均衡(Linux 3.9+)
@@ -1133,7 +1133,7 @@ Q: SO_REUSEPORT? A: 多socket绑定同端口,内核自动负载均衡(Linux 3.9+
 ## 附录 F：编译器与底层网络性能 [C: Compiler / E: Lowlevel / I: Practice]
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：编译器与底层网络性能 [C: Compiler / E: Lowlevel / I: Practice]
-```
+```text
 GCC编译选项对网络代码的影响:
 -D_GNU_SOURCE → 启用epoll_create1, accept4, recvmmsg等Linux特有API
 -fno-exceptions → 网络热路径禁异常 (Google风格, ~5% binary缩减)  [量级; 来源: Google C++ Style Guide / 工业经验]
@@ -1261,14 +1261,14 @@ class RingBuffer {
 public:
     explicit RingBuffer(std::size_t cap) : buf_(cap) {}
     bool push(char c) {
-        if (size_ == buf_.size()) return false;     // 满
+        if (size_ == buf_.size()) return false;  // 满
         buf_[tail_] = c;
         tail_ = (tail_ + 1) % buf_.size();
         ++size_;
         return true;
     }
     bool pop(char& c) {
-        if (size_ == 0) return false;               // 空
+        if (size_ == 0) return false;            // 空
         c = buf_[head_];
         head_ = (head_ + 1) % buf_.size();
         --size_;
@@ -1391,8 +1391,8 @@ int main() {
 struct Model { const char* name; int syscall_per_event; int copy_per_event; };
 
 int main() {
-    Model epoll    { "epoll",   1, 1 };   // 每次循环重传 fd 集：1 次调用 + 1 次拷贝
-    Model io_uring { "io_uring",0, 0 };   // 共享环：提交即完成，无每次重传
+    Model epoll    { "epoll",   1, 1 };  // 每次循环重传 fd 集：1 次调用 + 1 次拷贝
+    Model io_uring { "io_uring",0, 0 };  // 共享环：提交即完成，无每次重传
     std::cout << epoll.name    << ": syscall/event=" << epoll.syscall_per_event
               << " copy/event=" << epoll.copy_per_event << '\n';
     std::cout << io_uring.name << ": syscall/event=" << io_uring.syscall_per_event
@@ -1414,10 +1414,10 @@ int main() {
 #include <iostream>
 #include <unordered_map>
 
-struct Conn { int fd; // 读写缓冲、状态机等
+struct Conn { int fd;                     // 读写缓冲、状态机等
 
 int main() {
-    std::unordered_map<int, Conn> conns;          // fd -> 连接元数据
+    std::unordered_map<int, Conn> conns;  // fd -> 连接元数据
     for (int fd = 3; fd < 8; ++fd) conns[fd] = Conn{fd};
     // Reactor 主循环：epoll_wait 拿到就绪 fd 集合，逐个查表分发
     std::cout << "Reactor 监管连接数=" << conns.size() << '\n';

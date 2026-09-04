@@ -71,9 +71,9 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 int main() {
     auto x = 42;
     auto s = std::string("11");
-    std::cout << x << ' ' << s << '\n';          // 42 11
+    std::cout << x << ' ' << s << '\n';     // 42 11
     std::vector<int> v{1,2,3};
-    for (int e : v) std::cout << e << ' ';       // 1 2 3
+    for (int e : v) std::cout << e << ' ';  // 1 2 3
     std::cout << '\n';
 }
 // 输出：42 11 1 2 3
@@ -87,9 +87,9 @@ int main() {
 #include <vector>
 int g(int* p) { return *p; }
 int main() {
-    std::vector<int> v{1,2,3};                   // 统一初始化 {}
+    std::vector<int> v{1,2,3};    // 统一初始化 {}
     int buf[3] = {10,20,30};
-    std::cout << g(buf) << '\n';                 // 10
+    std::cout << g(buf) << '\n';  // 10
 }
 // 输出：10
 ```
@@ -107,10 +107,10 @@ int main() {
 std::vector<int> mk() { return std::vector<int>{1,2}; }
 int main() {
     std::string a = "x";
-    std::string b = std::move(a);                // 移动，非拷贝
-    std::cout << b << '\n';                      // x
+    std::string b = std::move(a);   // 移动，非拷贝
+    std::cout << b << '\n';         // x
     std::vector<int> v = mk();
-    std::cout << v.size() << '\n';               // 2
+    std::cout << v.size() << '\n';  // 2
 }
 // 输出：x 2
 ```
@@ -132,7 +132,7 @@ int main() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱（ASCII）
-```
+```text
 C++11 三大支柱
 ├─ 资源管理革命
 │   ├─ 右值引用 T&&
@@ -222,13 +222,13 @@ int main() {
 
 拷贝（深拷贝，开销大）：
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（移动 vs 拷贝）
-```
+```asm
 src: [ptr→0x5000 数据]
 dst: [ptr→0x6000 数据副本]   // 新分配+逐字节拷贝
 ```
 移动（窃取指针，O(1)）：
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（移动 vs 拷贝）
-```
+```asm
 src: [ptr→ (置空/null)]
 dst: [ptr→0x5000 数据]       // 直接接管
 ```
@@ -242,9 +242,9 @@ class A { int x; public: A():A(0){} A(int v):x(v){} int get() const { return x; 
 class B { public: B(int){} };
 class D : public B { using B::B; };
 int main() {
-    A a(7);                                      // 委托构造
-    D d(9);                                       // 继承构造
-    std::cout << a.get() << '\n';                // 7
+    A a(7);                        // 委托构造
+    D d(9);                        // 继承构造
+    std::cout << a.get() << '\n';  // 7
 }
 // 输出：7
 ```
@@ -262,15 +262,15 @@ void g() noexcept {}
 int main() {
     Dr d;
     Base* p = &d;
-    p->f();                                       // 动态绑定到 Dr::f（override）
-    g();                                          // noexcept
+    p->f();  // 动态绑定到 Dr::f（override）
+    g();     // noexcept
     std::cout << "ok\n";
 }
 // 输出：ok
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（lambda 闭包）
-```
+```text
 调用方 → lambda 闭包对象(含捕获成员) → 调用 operator()
 ```
 > lambda 本质是被编译器生成的**带成员的结构体 + operator()**（ch27）。
@@ -283,9 +283,9 @@ int main() {
 #include <thread>
 #include <future>
 int main() {
-    std::thread th([]{}); th.join();              // 线程
-    int r = std::async([]{ return 1; }).get();    // 异步
-    std::cout << r << '\n';                       // 1
+    std::thread th([]{}); th.join();            // 线程
+    int r = std::async([]{ return 1; }).get();  // 异步
+    std::cout << r << '\n';                     // 1
 }
 // 输出：1
 ```
@@ -318,9 +318,9 @@ int main() {
 #include <vector>
 thread_local int tl = 0;
 int main() {
-    std::vector<int> v = {1,2,3};                 // 初始化列表构造
+    std::vector<int> v = {1,2,3};                // 初始化列表构造
     tl = 42;
-    std::cout << v.size() << ' ' << tl << '\n';   // 3 42
+    std::cout << v.size() << ' ' << tl << '\n';  // 3 42
 }
 // 输出：3 42
 ```
@@ -357,8 +357,8 @@ int main() {
 int main() {
     auto t = std::make_tuple(1, 'a', 2.0);
     auto g = std::bind([](int,int){}, std::placeholders::_1, 1);
-    g(5);                                         // bind 固定第二参数为 1
-    std::cout << std::get<0>(t) << '\n';          // 1
+    g(5);                                 // bind 固定第二参数为 1
+    std::cout << std::get<0>(t) << '\n';  // 1
 }
 // 输出：1
 ```
@@ -595,7 +595,7 @@ int main(){std::vector<Movable> v;v.reserve(10);std::cout<<"noexcept enables mov
 > 本附录为量级估算；精确数值与真实汇编见「附录 H：真实基准/汇编证据」（本机 MinGW GCC 13.1.0 -O2 实测）。硬件级延迟（内存屏障、TLS）平台相关，软件无法干净测得，仅给数量级并标注来源。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：C++11的底层影响 [E: Lowlevel / H: Design]
-```
+```asm
 C++11引入的底层变化:
 1. move语义: 右值引用 → 汇编层面 = 交换 3 个指针(24 字节控制块: start/finish/end_of_storage) vs 深拷贝 N 字节
    std::vector move: 3 指针交换, O(1), 亚纳秒~数纳秒(见附录H asm: 恰为 24 字节块移动);
@@ -723,7 +723,7 @@ int main(){auto p=std::make_unique<int>(42);auto f=[](int x){return x*2;};std::c
 ### H.1 真实基准输出（MinGW GCC 13.1.0 -O2 x86-64, ~2.4GHz）
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实基准输出
-```
+```text
 [TSC] 2.395 GHz
 [vector<int>(1M)]  move(含调用开销上界) = 7.87 ns | copy = 706316 ns
 [vector<int>(1K)]   move(含调用开销上界) = 7.79 ns | copy = 183 ns
@@ -857,12 +857,12 @@ void f(int)        { std::cout << "f(int)\n"; }
 void f(const char*){ std::cout << "f(char*)\n"; }
 
 int main() {
-    std::vector<int> v{3, 1, 4, 1, 5};   // 列表初始化，也是 C++11
+    std::vector<int> v{3, 1, 4, 1, 5};  // 列表初始化，也是 C++11
     int sum = 0;
-    for (auto x : v) sum += x;           // 范围 for + auto
+    for (auto x : v) sum += x;          // 范围 for + auto
     std::cout << "sum = " << sum << '\n';
 
-    f(nullptr);   // 明确调用 f(const char*)；若写 f(0) 会歧义/误入 f(int)
+    f(nullptr);                         // 明确调用 f(const char*)；若写 f(0) 会歧义/误入 f(int)
     std::cout << "nullptr 有独立类型 std::nullptr_t，不会被当成整数 0。\n";
 }
 ```
@@ -880,7 +880,7 @@ int main() {
 ```cpp
 #include <iostream>
 #include <memory>
-#include <utility>   // std::move
+#include <utility>                             // std::move
 
 struct Widget {
     int id;
@@ -892,7 +892,7 @@ int main() {
     auto a = std::make_unique<Widget>(1);
     std::cout << "a owns " << a->id << '\n';
 
-    std::unique_ptr<Widget> b = std::move(a);   // 所有权转移，a 变空
+    std::unique_ptr<Widget> b = std::move(a);  // 所有权转移，a 变空
     std::cout << "after move, a is " << (a ? "non-null" : "null") << '\n';
     std::cout << "b owns " << b->id << '\n';
     // 离开作用域：b 析构一次，不会 double free
@@ -923,11 +923,11 @@ public:
     }
     ~Buffer() { delete[] data_; }
 
-    Buffer(const Buffer& o) : data_(new char[o.n_]), n_(o.n_) {   // 深拷贝
+    Buffer(const Buffer& o) : data_(new char[o.n_]), n_(o.n_) {  // 深拷贝
         std::memcpy(data_, o.data_, n_);
         std::cout << "COPY " << n_ << '\n';
     }
-    Buffer(Buffer&& o) noexcept : data_(o.data_), n_(o.n_) {      // 偷指针
+    Buffer(Buffer&& o) noexcept : data_(o.data_), n_(o.n_) {     // 偷指针
         o.data_ = nullptr; o.n_ = 0;
         std::cout << "MOVE (no alloc)\n";
     }
@@ -936,7 +936,7 @@ public:
 
 int main() {
     Buffer a(1024);
-    Buffer b = std::move(a);              // 触发 MOVE，无新分配
+    Buffer b = std::move(a);                                     // 触发 MOVE，无新分配
     std::cout << "b.size = " << b.size() << ", a.size = " << a.size() << '\n';
 }
 ```
@@ -960,8 +960,8 @@ int main() {
 #include <initializer_list>
 
 int main() {
-    auto a = {1, 2, 3};          // a 的类型是 std::initializer_list<int>，不是数组也不是 vector
-    std::cout << a.size() << '\n';   // initializer_list 有 .size()
+    auto a = {1, 2, 3};             // a 的类型是 std::initializer_list<int>，不是数组也不是 vector
+    std::cout << a.size() << '\n';  // initializer_list 有 .size()
     // auto b[]{1,2,3};          // 这才是真正的数组声明，不能用 auto 推断成数组
     return 0;
 }
@@ -1049,7 +1049,7 @@ int main() {
 
 struct Node {
     std::shared_ptr<Node> next;
-    std::weak_ptr<Node>   prev;   // 关键：反向用 weak_ptr，不增加计数
+    std::weak_ptr<Node>   prev;                              // 关键：反向用 weak_ptr，不增加计数
     ~Node() { std::cout << "~Node\n"; }
 };
 
@@ -1057,9 +1057,9 @@ int main() {
     auto a = std::make_shared<Node>();
     auto b = std::make_shared<Node>();
     a->next = b;
-    b->prev = a;                  // 若这里也用 shared_ptr，a/b 计数永不归零 → 泄漏
-    std::cout << "a.use_count = " << a.use_count() << '\n';   // 1，未被 b 增计
-    std::cout << "b.use_count = " << b.use_count() << '\n';   // 2
+    b->prev = a;                                             // 若这里也用 shared_ptr，a/b 计数永不归零 → 泄漏
+    std::cout << "a.use_count = " << a.use_count() << '\n';  // 1，未被 b 增计
+    std::cout << "b.use_count = " << b.use_count() << '\n';  // 2
     // 离开作用域：两个 ~Node 都能打印，无泄漏
 }
 ```
@@ -1220,7 +1220,7 @@ int main() {
     {
         std::vector<std::string> src;
         for (int i = 0; i < N; ++i) src.emplace_back(16, 'x');
-        std::vector<std::string> dst = src;            // 拷贝构造
+        std::vector<std::string> dst = src;             // 拷贝构造
         assert(dst.size() == N);
     }
     long long allocs_copy = g_allocs;
@@ -1229,13 +1229,13 @@ int main() {
     {
         std::vector<std::string> src;
         for (int i = 0; i < N; ++i) src.emplace_back(16, 'x');
-        std::vector<std::string> dst = std::move(src); // 移动构造
+        std::vector<std::string> dst = std::move(src);  // 移动构造
         assert(dst.size() == N && src.empty());
     }
     long long allocs_move = g_allocs;
     std::cout << "allocs (copy) = " << allocs_copy << std::endl;
     std::cout << "allocs (move) = " << allocs_move << std::endl;
-    assert(allocs_move < allocs_copy);   // 移动路径分配远少于拷贝
+    assert(allocs_move < allocs_copy);                  // 移动路径分配远少于拷贝
     return 0;
 }
 ```

@@ -81,7 +81,7 @@
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
+```text
                         实参
                           │
             ┌─────────────┴──────────────┐
@@ -114,12 +114,12 @@ void probe(T&&) {
     if constexpr (std::is_lvalue_reference_v<T>) std::cout << "lvalue" << std::endl;
     else std::cout << "rvalue" << std::endl;
 }
-void sink(int&&) {}            // 这是右值引用（不是模板 T&&）
+void sink(int&&) {}  // 这是右值引用（不是模板 T&&）
 int main() {
     int x = 0;
-    probe(x);                  // T = int&  → 左值引用
-    probe(42);                 // T = int   → 右值引用
-    sink(42);                  // 右值引用绑右值
+    probe(x);        // T = int&  → 左值引用
+    probe(42);       // T = int   → 右值引用
+    sink(42);        // 右值引用绑右值
     return 0;
 }
 ```
@@ -172,7 +172,7 @@ classDiagram
 考虑 `template<class T> void f(T&& x)`，调用 `int a = 1; f(a);` 与 `f(1);`：
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图：引用折叠如何"编码"值类别
-```
+```text
 调用 f(a) —— a 是左值
   T 被推导为 int&  （注意是左值引用！）
   形参类型 T&& = int& &&  --引用折叠--> int&  （规则①：& && = &）
@@ -203,13 +203,13 @@ classDiagram
 // "cannot declare reference to 'int&'"。引用折叠只在【模板/别名替换】
 // 时发生，因此必须借助别名模板把 T 替换进 T& / T&& 才能观察折叠。
 #include <type_traits>
-template<class T> using LRef = T&;   // T& ：形成"对 T 加左值引用"
-template<class T> using RRef = T&&;  // T&&：形成"对 T 加右值引用"
+template<class T> using LRef = T&;                                    // T& ：形成"对 T 加左值引用"
+template<class T> using RRef = T&&;                                   // T&&：形成"对 T 加右值引用"
 int main() {
-    static_assert(std::is_same_v<LRef<int&>,  int&>,  "&  & = &");  // int& &  -> &
-    static_assert(std::is_same_v<RRef<int&>,  int&>,  "&  && = &");  // int& && -> &
-    static_assert(std::is_same_v<LRef<int&&>, int&>,  "&& & = &");  // int&& & -> &
-    static_assert(std::is_same_v<RRef<int&&>, int&&>, "&& && = &&"); // int&& &&-> &&
+    static_assert(std::is_same_v<LRef<int&>,  int&>,  "&  & = &");    // int& &  -> &
+    static_assert(std::is_same_v<RRef<int&>,  int&>,  "&  && = &");   // int& && -> &
+    static_assert(std::is_same_v<LRef<int&&>, int&>,  "&& & = &");    // int&& & -> &
+    static_assert(std::is_same_v<RRef<int&&>, int&&>, "&& && = &&");  // int&& &&-> &&
     return 0;
 }
 ```
@@ -219,7 +219,7 @@ int main() {
 ## ⑧ 生命周期图：std::move 不延长生命周期
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：std::move 不延
-```
+```asm
 t1: Widget w;
 t2: auto&& r = std::move(w);   // r 仍是 w 的别名，w 仍存活
 t3: 使用 r ...                 // 安全
@@ -236,8 +236,8 @@ t4: } // w 析构。r 在 w 之后失效——move 没做任何"接管所有权"
 #include <iostream>
 int main() {
     std::vector<int> v{1, 2, 3};
-    for (auto&& e : v) {                 // e 是 int&（左值元素）
-        e += 10;                         // 修改原容器
+    for (auto&& e : v) {                        // e 是 int&（左值元素）
+        e += 10;                                // 修改原容器
     }
     for (auto&& e : std::vector<int>{4,5,6}) {  // 右值容器 → e 是 int&&
         (void)e;
@@ -253,7 +253,7 @@ int main() {
 以 `std::vector<Widget>::emplace_back(args...)` 为例：
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：emplace
-```
+```text
 调用方                 vector              allocator   construct       Widget
   │                      │                    │           │              │
   │ emplace_back(a,b) ──>│                    │           │              │
@@ -273,7 +273,7 @@ int main() {
 #include <cstdio>
 struct Widget {
     static int ctors;
-    Widget(int, int) { ctors++; }        // 仅统计"目标构造"
+    Widget(int, int) { ctors++; }       // 仅统计"目标构造"
     Widget(const Widget&) { ctors++; }
     Widget(Widget&&) noexcept { ctors++; }
 };
@@ -281,9 +281,9 @@ int Widget::ctors = 0;
 int main() {
     std::vector<Widget> v;
     v.reserve(3);
-    v.emplace_back(1, 2);                // 1 次构造（原位）
-    v.emplace_back(3, 4);                // 1 次构造（原位）
-    return Widget::ctors == 2 ? 0 : 1;   // 确认没有多余拷贝/移动
+    v.emplace_back(1, 2);               // 1 次构造（原位）
+    v.emplace_back(3, 4);               // 1 次构造（原位）
+    return Widget::ctors == 2 ? 0 : 1;  // 确认没有多余拷贝/移动
 }
 ```
 
@@ -502,8 +502,8 @@ namespace my {
 }
 int main() {
     int a = 1;
-    int& l = my::my_forward<int&>(a);          // 还原左值
-    int&& r = my::my_move(a);                  // 转右值引用
+    int& l = my::my_forward<int&>(a);  // 还原左值
+    int&& r = my::my_move(a);          // 转右值引用
     (void)l; (void)r;
     return 0;
 }
@@ -546,8 +546,8 @@ void show() {
 }
 int main() {
     int x = 0;
-    show<decltype((x))>();            // decltype((x)) = int&
-    show<decltype(42)>();             // = int
+    show<decltype((x))>();  // decltype((x)) = int&
+    show<decltype(42)>();   // = int
     return 0;
 }
 ```
@@ -596,8 +596,8 @@ void dispatch(std::nullptr_t) { std::cout << "nullptr" << std::endl; }
 template <class T>
 void fwd(T&& x) { dispatch(std::forward<T>(x)); }
 int main() {
-    fwd(0);                    // 走 dispatch(int)，永远到不了 nullptr 版
-    fwd(nullptr);              // 显式 nullptr → dispatch(nullptr_t)
+    fwd(0);        // 走 dispatch(int)，永远到不了 nullptr 版
+    fwd(nullptr);  // 显式 nullptr → dispatch(nullptr_t)
     return 0;
 }
 ```
@@ -728,8 +728,8 @@ struct Big {
 int main() {
     std::vector<Big> a, b;
     a.reserve(1); b.reserve(1);
-    a.emplace_back(42);                 // 仅 1 次构造（原位）
-    b.push_back(Big(42));               // 1 次构造 + 1 次移动 = 2 次
+    a.emplace_back(42);    // 仅 1 次构造（原位）
+    b.push_back(Big(42));  // 1 次构造 + 1 次移动 = 2 次
     return a[0].data[0] == 42 ? 0 : 1;
 }
 ```
@@ -836,9 +836,9 @@ void describe(T&& x) {
         std::cout << "meter=" << x.value << "\n";
 }
 int main() {
-    auto d = 10_m;          // 用户定义字面量（带空格分隔）
-    describe(d);            // 左值 → 拷贝类别
-    describe(Meter{20});    // 右值 → 移动类别
+    auto d = 10_m;        // 用户定义字面量（带空格分隔）
+    describe(d);          // 左值 → 拷贝类别
+    describe(Meter{20});  // 右值 → 移动类别
     return 0;
 }
 ```
@@ -853,8 +853,8 @@ template <typename T> const char* category(T&&) {
 }
 int main() {
     int x = 0;
-    std::cout << "f(x): " << category(x) << "\n";       // T=int& → lvalue
-    std::cout << "f(42): " << category(42) << "\n";      // T=int  → rvalue
+    std::cout << "f(x): " << category(x) << "\n";    // T=int& → lvalue
+    std::cout << "f(42): " << category(42) << "\n";  // T=int  → rvalue
     return 0;
 }
 ```
@@ -973,9 +973,9 @@ struct Verbose {
 };
 int main() {
     std::vector<Verbose> v; Verbose x;
-    v.push_back(x);                     // copy
-    v.push_back(std::move(x));          // move
-    v.emplace_back();                   // default（零转发开销）
+    v.push_back(x);             // copy
+    v.push_back(std::move(x));  // move
+    v.emplace_back();           // default（零转发开销）
     return 0;
 }
 ```
@@ -1139,19 +1139,19 @@ int main(){int a=1;g(a);g(2);return 0;}
 > **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 测试源码（核心）
 ```cpp
 int g_l = 0, g_r = 0;
-[[gnu::noinline]] void sink_l(S&)  { g_l = 1; }   // 左值接收端
-[[gnu::noinline]] void sink_r(S&&) { g_r = 1; }   // 右值接收端
+[[gnu::noinline]] void sink_l(S&)  { g_l = 1; }                // 左值接收端
+[[gnu::noinline]] void sink_r(S&&) { g_r = 1; }                // 右值接收端
 
 [[gnu::noinline]] void fwd_lvalue(S& s)  { sink_l(s); }
 [[gnu::noinline]] void fwd_rvalue(S&& s) { sink_r(std::move(s)); }
 
 template <class T>
-[[gnu::noinline]] void fwd_tmpl(T&& s) {            // 完美转发模板
+[[gnu::noinline]] void fwd_tmpl(T&& s) {                       // 完美转发模板
     if constexpr (std::is_lvalue_reference_v<T>) sink_l(s);
     else sink_r(std::move(s));
 }
-template void fwd_tmpl<S&>(S&);   // 左值实例化
-template void fwd_tmpl<S>(S&&);   // 右值实例化
+template void fwd_tmpl<S&>(S&);                                // 左值实例化
+template void fwd_tmpl<S>(S&&);                                // 右值实例化
 
 [[gnu::noinline]] void fwd_val(S s) { sink_r(std::move(s)); }  // 反例：按值传递
 ```
@@ -1295,9 +1295,9 @@ void use(void*) { std::cout << "pointer ok\n"; }
 template <class T>
 void relay(T&& v) {
     if constexpr (std::is_convertible_v<T, void*>)
-        use(std::forward<T>(v));       // nullptr → 可转 void*，正常分发
+        use(std::forward<T>(v));                // nullptr → 可转 void*，正常分发
     else
-        std::cout << "not a pointer: T=int\n";   // 0 → T 推导为 int
+        std::cout << "not a pointer: T=int\n";  // 0 → T 推导为 int
 }
 int main() {
     relay(nullptr);
@@ -1329,8 +1329,8 @@ int main() {
 void consume(std::string&& s) { std::cout << "got [" << s << "]\n"; }
 template <class T>
 void forward_twice(T&& v) {
-    consume(std::forward<T>(v));   // 第一次：右值被移动，payload 被掏空
-    consume(std::forward<T>(v));   // 第二次：源已是空壳，输出 got []
+    consume(std::forward<T>(v));  // 第一次：右值被移动，payload 被掏空
+    consume(std::forward<T>(v));  // 第二次：源已是空壳，输出 got []
 }
 int main() { forward_twice(std::string("payload")); }
 ```
@@ -1503,9 +1503,9 @@ void relay(T&& x) {
 
 int main() {
     int a = 42;
-    relay(a);             // 推导 T=int&：int& && 折叠为 int&
-    relay(7);             // 推导 T=int：转发后仍是右值
-    relay(std::move(a));  // move 产出 xvalue，同样走右值分支
+    relay(a);                  // 推导 T=int&：int& && 折叠为 int&
+    relay(7);                  // 推导 T=int：转发后仍是右值
+    relay(std::move(a));       // move 产出 xvalue，同样走右值分支
     static_assert(std::is_same_v<decltype(std::move(a)), int&&>);
     return 0;
 }
@@ -1632,7 +1632,7 @@ int main() {
 
 struct ExplicitInt {
     int v;
-    explicit ExplicitInt(int x) : v(x) {}   // 显式构造函数
+    explicit ExplicitInt(int x) : v(x) {}                                    // 显式构造函数
 };
 
 int main() {
@@ -1647,16 +1647,16 @@ int main() {
     std::cout << "push_back  -> " << vp.back() << std::endl;
     std::cout << "emplace_bac-> " << ve.back() << std::endl;
     assert(vp.size() == ve.size());
-    assert(vp.back() == ve.back());          // 内容一致
+    assert(vp.back() == ve.back());                                          // 内容一致
 
     // (2) explicit 构造：push_back 不能隐式转换，emplace_back 可原位构造
     std::vector<ExplicitInt> ep, ee;
     // ep.push_back(7);                       // 编译错误：不能隐式 int -> ExplicitInt
-    ep.push_back(ExplicitInt(7));             // 必须显式转换
-    ee.emplace_back(7);                       // emplace 直接转发到 explicit 构造
+    ep.push_back(ExplicitInt(7));                                            // 必须显式转换
+    ee.emplace_back(7);                                                      // emplace 直接转发到 explicit 构造
     std::cout << "push_back(explicit) val: " << ep.back().v << std::endl;
     std::cout << "emplace_back val     : " << ee.back().v << std::endl;
-    assert(ep.back().v == ee.back().v);       // 值正确且一致
+    assert(ep.back().v == ee.back().v);                                      // 值正确且一致
 
     return 0;
 }

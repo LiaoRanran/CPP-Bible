@@ -64,8 +64,8 @@ int f(int a) { return sq(a) + sq(a + 1); }   // O0: 两次 call sq；O2/LTO: 内
 // (a) 局部：常量折叠、代数化简、死代码消除
 // (b) 过程间：内联、尾调用、纯函数消去
 // (c) 循环/向量：展开、向量化、循环交换
-constexpr int k = 1 << 10;            // (a) 编译期折叠为 1024
-int g(int x) { return x + 0; }        // (a) 化简为 return x;
+constexpr int k = 1 << 10;      // (a) 编译期折叠为 1024
+int g(int x) { return x + 0; }  // (a) 化简为 return x;
 ```
 
 > **示例 3** [难度 ★★☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
@@ -77,8 +77,8 @@ int g(int x) { return x + 0; }        // (a) 化简为 return x;
 > **示例 4** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
 ```cpp
 // ① 一个被优化「抹平」的例子：函数可能被彻底消除
-int unused_helper(int x) { return x * 2; }   // 若无调用，O2 直接丢弃（不进目标文件）
-int only_user() { return unused_helper(3); } // 内联后 helper 消失，只剩常量 6
+int unused_helper(int x) { return x * 2; }    // 若无调用，O2 直接丢弃（不进目标文件）
+int only_user() { return unused_helper(3); }  // 内联后 helper 消失，只剩常量 6
 ```
 
 ## ② -O0/-O1/-O2/-O3 差异 <span class="badge badge-std">标准</span>
@@ -132,7 +132,7 @@ double o3_dot(const double* a, const double* b, int n) {
 > **示例 10** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 ```cpp
 // ② 实测内联门槛随等级变化：小函数 -O2 即内联，-O3 内联半径更大
-inline int add1(int x) { return x + 1; }   // inline 只是建议；-O0 仍可能生成独立符号
+inline int add1(int x) { return x + 1; }         // inline 只是建议；-O0 仍可能生成独立符号
 int pipe(int x) { return add1(add1(add1(x))); }  // O2/O3 折叠为常数偏移 +3
 ```
 
@@ -313,8 +313,8 @@ int main(int argc, char**) { return compute(argc); }
 // 普通编译：编译器对分支频率只能瞎猜（默认 50/50）
 // PGO 编译：编译器知道 if (hot) 走了 99%、else 走了 1%
 int classify(int x) {
-    if (x >= 0) return x * 2;        // 训练负载里几乎总走这里
-    return -x;                       // 极少走
+    if (x >= 0) return x * 2;  // 训练负载里几乎总走这里
+    return -x;                 // 极少走
 }
 ```
 
@@ -344,8 +344,8 @@ int cold(int x) { int s = 0; for (int i = 0; i < 64; ++i) s += x; g_sink += s; r
 int process(const int* arr, int n) {
     int sum = 0;
     for (int i = 0; i < n; ++i) {
-        if (arr[i] >= 0) sum += arr[i];   // 热路径：训练数据 ~99% 走这
-        else sum += cold(arr[i]);         // 冷路径：含全局副作用，无法被 cmov 合并
+        if (arr[i] >= 0) sum += arr[i];                              // 热路径：训练数据 ~99% 走这
+        else sum += cold(arr[i]);                                    // 冷路径：含全局副作用，无法被 cmov 合并
     }
     return sum;
 }
@@ -536,8 +536,8 @@ int wrap(int n) {
 ```cpp
 // ⑬ 空指针解引用是 UB：下列判断在 -O2 下可能被直接删成 if(true)
 int* p = nullptr;
-if (p) {                       // 编译器知道 p==nullptr，整个 if 块被视为不可达
-    *p = 42;                   // UB，但优化器可「证明」不会执行 → 删除
+if (p) {      // 编译器知道 p==nullptr，整个 if 块被视为不可达
+    *p = 42;  // UB，但优化器可「证明」不会执行 → 删除
 }
 ```
 
@@ -546,8 +546,8 @@ if (p) {                       // 编译器知道 p==nullptr，整个 if 块被�
 // ⑬ 严格别名违规：通过错误类型读写同一内存是 UB，优化器会缓存到寄存器造成「神秘」结果
 int alias_bad() {
     int x = 0;
-    *(float*)&x = 1.0f;        // 违反严格别名规则（[basic.lval]）
-    return x;                  // 返回值可能是 0（旧值），也可能「计算出的」垃圾
+    *(float*)&x = 1.0f;  // 违反严格别名规则（[basic.lval]）
+    return x;            // 返回值可能是 0（旧值），也可能「计算出的」垃圾
 }
 ```
 
@@ -775,7 +775,7 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ [atomics]（真正同步）/ [dcl.type.cv]（volatile 语义）；cppreference "volatile" 词条。
 
 > **示例 55** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌──────────────────┬───────────────────────────────────────────────┬─────────────────┐
 │ 开关              │ 含义 / 启用的主要优化                          │ 何时用          │
 ├──────────────────┼───────────────────────────────────────────────┼─────────────────┤
@@ -997,8 +997,8 @@ PGO 先以代表性输入跑一遍采集分支/调用热点，再据此布局代
 int main() {
     long hot = 0;
     for (long i = 0; i < 1000000000; ++i) {
-        if (i % 100 == 0) hot += 1;        // 冷路径（~1%）
-        else             hot += 2;          // 热路径（~99%）
+        if (i % 100 == 0) hot += 1;  // 冷路径（~1%）
+        else             hot += 2;   // 热路径（~99%）
     }
     std::cout << hot << '\n';
 }

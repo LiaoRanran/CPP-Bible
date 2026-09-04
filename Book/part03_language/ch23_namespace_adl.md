@@ -58,7 +58,7 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 本章回答四个互相缠绕的问题：**如何把名字分隔开（namespace）**、**如何让名字进入作用域（using）**、**为什么有些名字不需要 using 也能被找到（ADL）**、**如何用 namespace 管控 ABI（inline namespace）**。四者关系如下：
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 本章地图（先给结论，再击穿）
-```
+```text
 namespace ──隔离名字──▶ 避免全局污染 / ODR 冲突
    │
    ├── 无名(匿名) namespace ──替代文件级 static（C++11 起推荐）
@@ -123,9 +123,9 @@ ADL (参数依赖查找) ──隐形查找──▶ 根据实参类型反查其
 #include <cstdio>
 
 namespace geo {
-    inline int area(int r) { return 3 * r * r; }   // 近似圆面积
+    inline int area(int r) { return 3 * r * r; }  // 近似圆面积
 }
-namespace geo {                                     // 合法：扩展已存在的 geo
+namespace geo {                                   // 合法：扩展已存在的 geo
     inline int peri(int r) { return 6 * r; }
 }
 int main() {
@@ -198,11 +198,11 @@ int main() {
 #include <cstdio>
 
 namespace {
-    int secret_counter = 42;                  // 内部链接
+    int secret_counter = 42;             // 内部链接
     int read() { return secret_counter; }
 }
 int main() {
-    std::printf("secret=%d\n", read());      // 输出: secret=42
+    std::printf("secret=%d\n", read());  // 输出: secret=42
     return 0;
 }
 ```
@@ -215,11 +215,11 @@ int main() {
 #include <cstdio>
 
 namespace lib {
-    inline namespace v2 {            // 默认可见：lib::foo 解析到这里
+    inline namespace v2 {               // 默认可见：lib::foo 解析到这里
         inline int foo() { return 2; }
     }
     namespace v1 {
-        inline int foo() { return 1; }   // 必须用 lib::v1::foo 访问
+        inline int foo() { return 1; }  // 必须用 lib::v1::foo 访问
     }
 }
 int main() {
@@ -253,10 +253,10 @@ int main() {
 
 namespace math { inline int add(int a,int b){return a+b;} inline int sub(int a,int b){return a-b;} }
 
-using math::add;                  // 只引入 add
+using math::add;                    // 只引入 add
 
 int main() {
-    std::printf("%d\n", add(3,4));        // OK: 7
+    std::printf("%d\n", add(3,4));  // OK: 7
     // std::printf("%d\n", sub(3,4));     // 错误: sub 未被引入
     return 0;
 }
@@ -274,9 +274,9 @@ int main() {
 namespace N { int x = 5; }
 
 int main() {
-    using namespace N;            // 注入 N::x
-    int x = 99;                   // 局部 x 遮蔽 N::x，不报错！
-    std::printf("%d\n", x);       // 输出 99，并非 5
+    using namespace N;       // 注入 N::x
+    int x = 99;              // 局部 x 遮蔽 N::x，不报错！
+    std::printf("%d\n", x);  // 输出 99，并非 5
     return 0;
 }
 ```
@@ -320,10 +320,10 @@ int main() {
 // prog_10_static_limits.cpp  —— static 不能用于模板类型参数包等
 #include <cstdio>
 
-static int helper() { return 7; }            // OK: 内部链接函数
+static int helper() { return 7; }                // OK: 内部链接函数
 
 namespace {
-    template<typename T> T id(T v){ return v; }   // 匿名 NS 可包模板
+    template<typename T> T id(T v){ return v; }  // 匿名 NS 可包模板
 }
 int main() {
     std::printf("%d %d\n", helper(), id(3));
@@ -338,8 +338,8 @@ int main() {
 // prog_11_anon_vs_static.cpp  —— 等价对比
 #include <cstdio>
 
-static int s_val = 10;            // 内部链接
-namespace { int a_val = 20; }     // 内部链接（C++11 推荐写法）
+static int s_val = 10;         // 内部链接
+namespace { int a_val = 20; }  // 内部链接（C++11 推荐写法）
 
 int main() {
     std::printf("s=%d a=%d\n", s_val, a_val);
@@ -387,7 +387,7 @@ int main() {
 ### 6.3 算法伪代码（可读版）
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 算法伪代码（可读版）
-```
+```text
 function associated_entities(T):
     result = {}
     if T is fundamental: return {}
@@ -458,12 +458,12 @@ int main() {
 // prog_13b_adl_walkthrough.cpp  —— 注释版：手算关联实体
 namespace lib {
     template<typename T>
-    struct Handle {                 // 模板类，定义于 lib
-        T*     ptr;                 // 非静态数据成员 → 关联类含 T 的定义 NS
-        struct Inner { int k; };    // 嵌套类型 → 关联类含 lib::Handle<T>::Inner
-        void   reset(T*);           // 成员函数 → 形参/返回类型继续展开
+    struct Handle {               // 模板类，定义于 lib
+        T*     ptr;               // 非静态数据成员 → 关联类含 T 的定义 NS
+        struct Inner { int k; };  // 嵌套类型 → 关联类含 lib::Handle<T>::Inner
+        void   reset(T*);         // 成员函数 → 形参/返回类型继续展开
     };
-    struct Node { int id; };        // 普通类，定义于 lib
+    struct Node { int id; };      // 普通类，定义于 lib
 }
 // 调用:  void f(lib::Handle<lib::Node>);  f(h);
 // 关联类集合 = { Handle<Node>, Node, Handle<Node>::Inner }
@@ -571,8 +571,8 @@ int main() {
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法与异常安全
 ```cpp
-using std::swap;     // 把 std::swap 引入当前作用域
-swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则用它
+using std::swap;  // 把 std::swap 引入当前作用域
+swap(a, b);       // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则用它
 ```
 
 这条惯用语法的本质是：**先让 `std::swap` 成为候选，再依赖 ADL 把"更特化"的用户 `swap` 优先匹配**——这是实现"异常安全 swap（见 ch19 异常安全）"的基石。
@@ -643,9 +643,9 @@ namespace db {
 }
 int main() {
     db::Connection a{1}, b{2};
-    using std::swap;          // 引入 std::swap 作为回退
-    swap(a, b);               // ADL：db::swap 优先（更匹配 db::Connection）
-    std::printf("a.fd=%d b.fd=%d\n", a.fd, b.fd);   // 输出: a.fd=2 b.fd=1
+    using std::swap;                               // 引入 std::swap 作为回退
+    swap(a, b);                                    // ADL：db::swap 优先（更匹配 db::Connection）
+    std::printf("a.fd=%d b.fd=%d\n", a.fd, b.fd);  // 输出: a.fd=2 b.fd=1
     return 0;
 }
 ```
@@ -656,12 +656,12 @@ int main() {
 #include <utility>
 #include <cstdio>
 
-struct Plain { int v; };      // 无自定义 swap
+struct Plain { int v; };                   // 无自定义 swap
 int main() {
     Plain a{1}, b{2};
-    using std::swap;          // 仅引入 std::swap
-    swap(a, b);               // 用 std::swap（移动三步）
-    std::printf("a=%d b=%d\n", a.v, b.v);   // 输出: a=2 b=1
+    using std::swap;                       // 仅引入 std::swap
+    swap(a, b);                            // 用 std::swap（移动三步）
+    std::printf("a=%d b=%d\n", a.v, b.v);  // 输出: a=2 b=1
     return 0;
 }
 ```
@@ -777,9 +777,9 @@ void f(N::S, double) { std::printf("::f(S,double)\n"); }  // 全局同名为 f
 
 int main() {
     N::S s;
-    f(s, 1);        // ADL 找到 N::f(S,int)；全局 ::f(S,double) 也可见
+    f(s, 1);                                              // ADL 找到 N::f(S,int)；全局 ::f(S,double) 也可见
                     // 重载解析：f(S,int) 更匹配(int 实参) → 打印 N::f(S,int)
-    f(s, 1.0);      // 打印 ::f(S,double)
+    f(s, 1.0);                                            // 打印 ::f(S,double)
     return 0;
 }
 ```
@@ -796,12 +796,12 @@ int main() {
 namespace thirdparty {
     struct Wrapper { int v; };
     void process(Wrapper) { std::printf("thirdparty::process(Wrapper)\n"); }
-    void process(int)     { std::printf("thirdparty::process(int)\n"); } // 同名！
+    void process(int)     { std::printf("thirdparty::process(int)\n"); }  // 同名！
 }
 int main() {
     thirdparty::Wrapper w{5};
-    process(w);      // ADL: 找到 thirdparty::process(Wrapper) + (int)
-    process(7);      // 注意: 即使没有 using，int 版本也被 ADL 拉入（因无实参属 thirdparty?）
+    process(w);                                                           // ADL: 找到 thirdparty::process(Wrapper) + (int)
+    process(7);                                                           // 注意: 即使没有 using，int 版本也被 ADL 拉入（因无实参属 thirdparty?）
                     // 实际: process(7) 实参 int 是基础类型，无关联命名空间 → 找不到 thirdparty::process(int)
                     // 此处会编译失败（除非全局有 process(int)）。证明 ADL 受类型约束。
     return 0;
@@ -870,10 +870,10 @@ int main() {
 
 enum class Color { Red, Green, Blue };
 namespace ui {
-    using enum Color;        // 把 Red/Green/Blue 引入 ui
+    using enum Color;                          // 把 Red/Green/Blue 引入 ui
     const char* name(Color c) {
         switch (c) {
-            case Red:   return "Red";     // 无需 Color::Red
+            case Red:   return "Red";          // 无需 Color::Red
             case Green: return "Green";
             case Blue:  return "Blue";
         }
@@ -881,7 +881,7 @@ namespace ui {
     }
 }
 int main() {
-    std::printf("%s\n", ui::name(ui::Green));   // 输出: Green
+    std::printf("%s\n", ui::name(ui::Green));  // 输出: Green
     return 0;
 }
 ```
@@ -1037,9 +1037,9 @@ namespace net {
 }
 int main() {
     net::Packet a{1}, b{2};
-    using std::swap;             // 精准引入回退
-    swap(a, b);                  // ADL 选中 net::swap
-    std::printf("a=%d b=%d\n", a.seq, b.seq);   // 输出: a=2 b=1
+    using std::swap;                           // 精准引入回退
+    swap(a, b);                                // ADL 选中 net::swap
+    std::printf("a=%d b=%d\n", a.seq, b.seq);  // 输出: a=2 b=1
     return 0;
 }
 ```
@@ -1077,7 +1077,7 @@ int main() {
 
 namespace bench {
     struct Big { long long a[8]; };
-    void swap(Big& x, Big& y) {            // O(1) 句柄交换（假设内部是指针）
+    void swap(Big& x, Big& y) {  // O(1) 句柄交换（假设内部是指针）
         Big t = x; x = y; y = t;
     }
 }
@@ -1085,7 +1085,7 @@ int main() {
     bench::Big x{}, y{};
     auto t0 = std::chrono::steady_clock::now();
     for (int i = 0; i < 100'000'000; ++i) {
-        using std::swap;        // ADL 路径
+        using std::swap;         // ADL 路径
         swap(x, y);
     }
     auto t1 = std::chrono::steady_clock::now();
@@ -1356,13 +1356,13 @@ int main() {
 #include <string>
 struct Buffer {
     std::string* p;
-    void swap(Buffer& o) noexcept { std::swap(p, o.p); }   // 仅交换指针, O(1) 不抛
+    void swap(Buffer& o) noexcept { std::swap(p, o.p); }  // 仅交换指针, O(1) 不抛
 };
-void swap(Buffer& a, Buffer& b) noexcept { a.swap(b); }    // 自由函数 swap 重载
+void swap(Buffer& a, Buffer& b) noexcept { a.swap(b); }   // 自由函数 swap 重载
 int main() {
-    using std::swap;                  // 把 std::swap 引入, 但允许 ADL 找到上面的重载
+    using std::swap;                                      // 把 std::swap 引入, 但允许 ADL 找到上面的重载
     Buffer x{new std::string("x")}, y{new std::string("y")};
-    swap(x, y);                        // ADL 选中 Buffer 的 O(1) swap
+    swap(x, y);                                           // ADL 选中 Buffer 的 O(1) swap
 }
 ```
 
@@ -1382,16 +1382,16 @@ int main() {
 ```cpp
 #include <iostream>
 namespace lib {
-    inline namespace v2 {            // inline: 名字默认"透出"到 lib::, 即 lib::connect == v2::connect
+    inline namespace v2 {  // inline: 名字默认"透出"到 lib::, 即 lib::connect == v2::connect
         void connect() { std::cout << "v2 (new ABI)\n"; }
     }
-    namespace v1 {                   // 非 inline: 旧版仍可显式访问
+    namespace v1 {         // 非 inline: 旧版仍可显式访问
         void connect() { std::cout << "v1 (old ABI)\n"; }
     }
 }
 int main() {
-    lib::connect();                  // 默认 -> v2
-    lib::v1::connect();              // 老代码显式选 v1
+    lib::connect();        // 默认 -> v2
+    lib::v1::connect();    // 老代码显式选 v1
 }
 ```
 
@@ -1421,8 +1421,8 @@ int main() {
 namespace geo {
     int dim = 3;
     namespace detail {
-        int dim = 2;                 // 内层隐藏外层
-        int show() { return dim; }   // 2
+        int dim = 2;                         // 内层隐藏外层
+        int show() { return dim; }           // 2
         int global() { return ::geo::dim; }  // 3
     }
 }
@@ -1516,7 +1516,7 @@ Handle& operator=(Handle o) { delete p; p = o.p; o.p = nullptr; return *this; } 
 #include <string>
 struct Handle {
     std::string* p = new std::string("res");
-    Handle() = default;                                  // 用户声明了拷贝构造 -> 默认构造被抑制, 需显式恢复
+    Handle() = default;                                              // 用户声明了拷贝构造 -> 默认构造被抑制, 需显式恢复
     Handle(const Handle& o) : p(new std::string(*o.p)) {}
     void swap(Handle& o) noexcept { std::swap(p, o.p); }
     Handle& operator=(Handle o) noexcept { swap(o); return *this; }  // copy-and-swap: 强异常安全
@@ -1648,8 +1648,8 @@ namespace foo {
 int main() {
     foo::Item a = {3, 4}, b = {5, 6};
     // 三种调用方式生成相同机器码：
-    printf("ADL: %d\n", compute(a, b));           // ADL
-    printf("qualified: %d\n", foo::compute(a, b)); // 限定
+    printf("ADL: %d\n", compute(a, b));             // ADL
+    printf("qualified: %d\n", foo::compute(a, b));  // 限定
 }
 ```
 

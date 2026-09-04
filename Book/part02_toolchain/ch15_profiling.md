@@ -53,7 +53,7 @@
 没有测量就没有优化。经验直觉常错：你觉得慢的那行，火焰图里可能只占 0.3%；真正的热点藏在缓存未命中与分支预测失败里。性能分析（Profiling）把"感觉慢"变成"数字在哪慢"。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么性能分析
-```
+```text
         ┌─────────────────────────────────────┐
         │  直觉(猜)        vs        测量(证)   │
         │  "for 太慢"                IPC=0.4   │
@@ -228,7 +228,7 @@ int main() {
 #include <cstdio>
 static const long N = 20'000'000;
 int main() {
-    { // 不 reserve：触发多次指数级重新分配 + 元素搬移
+    {  // 不 reserve：触发多次指数级重新分配 + 元素搬移
         std::vector<long> v;
         auto t0 = std::chrono::steady_clock::now();
         for (long i = 0; i < N; ++i) v.push_back(i);
@@ -236,7 +236,7 @@ int main() {
         std::printf("no_reserve   : %8.2f ms\n",
             std::chrono::duration<double, std::milli>(t1 - t0).count());
     }
-    { // 先 reserve(N)：push_back 零重新分配
+    {  // 先 reserve(N)：push_back 零重新分配
         std::vector<long> v; v.reserve(N);
         auto t0 = std::chrono::steady_clock::now();
         for (long i = 0; i < N; ++i) v.push_back(i);
@@ -375,7 +375,7 @@ int main() {
 现代 CPU 是流水线。瓶颈分四类：
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 微架构瓶颈
-```
+```text
 ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌────────┐
 │ 前端 Front│→ │ 后端 Back │→ │ 执行单元  │→ │ 退役    │
 │ 取指/解码 │   │ 调度/发射 │   │ ALU/SIMD │   │ Retire │
@@ -567,7 +567,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
 可复用的七步法：
 
 > **示例 18** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span> 分析流程]
-```
+```text
   ① 定目标(延迟?吞吐?) → ② 建可复现基准
         → ③ perf stat 看 IPC/缓存 → ④ 火焰图定位最宽塔
         → ⑤ 取热点 -S 汇编确认向量化 → ⑥ 改代码
@@ -600,9 +600,9 @@ int main() {
     std::vector<long> v(10'000'000, 1);
     auto t0 = std::chrono::steady_clock::now();
     long s = 0;
-    for (long x : v) s += x;          // 若 s 未使用，-O2 直接删掉整个循环！
+    for (long x : v) s += x;  // 若 s 未使用，-O2 直接删掉整个循环！
     auto t1 = std::chrono::steady_clock::now();
-    std::printf("%ld\n", s);          // 用 volatile 或输出强制保留
+    std::printf("%ld\n", s);  // 用 volatile 或输出强制保留
     return 0;
 }
 ```
@@ -611,9 +611,9 @@ int main() {
 ```cpp
 // ⑯b 陷阱2：false sharing（伪共享）——两线程各写自己的计数器，却在同一缓存行
 #include <thread>
-struct Counters { long a = 0; long b = 0; }; // a 与 b 同缓存行(64B)
+struct Counters { long a = 0; long b = 0; };                // a 与 b 同缓存行(64B)
 Counters c;
-void thread_a() { for (int i=0;i<100'000'000;++i) c.a++; } // 与 c.b 互相 invalidation
+void thread_a() { for (int i=0;i<100'000'000;++i) c.a++; }  // 与 c.b 互相 invalidation
 void thread_b() { for (int i=0;i<100'000'000;++i) c.b++; }
 // 修复：alignas(64) 把 a、b 隔开到不同缓存行
 ```
@@ -670,9 +670,9 @@ wpr -stop out.etl                # 停止并写出 ETL
 #include <chrono>
 void worker(long n, long& out) {
     long s = 0;
-    for (long i=0;i<n;++i) s += i;       // 计算段（时间线里是"忙"）
+    for (long i=0;i<n;++i) s += i;                               // 计算段（时间线里是"忙"）
     out = s;
-    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 阻塞段
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));  // 阻塞段
 }
 ```
 
@@ -795,8 +795,8 @@ struct Mat {
 // P4 false sharing 修复：缓存行隔离
 #include <cstddef>
 struct Aligned {
-    alignas(64) long a = 0;   // 独占一个 64 字节缓存行
-    alignas(64) long b = 0;   // 与 a 不同行，不再互相 invalidation
+    alignas(64) long a = 0;  // 独占一个 64 字节缓存行
+    alignas(64) long b = 0;  // 与 a 不同行，不再互相 invalidation
 };
 ```
 
@@ -868,9 +868,9 @@ long add_all(const long* a, long n) {
 ```cpp
 // P11 cache line 大小感知的字段排布（热字段聚拢）
 struct Hot {
-    long hit_count = 0;     // 频繁访问
-    long last_value = 0;    // 频繁访问（同缓存行，友好）
-    char pad[48];           // 把冷字段推开，减少伪共享/抖动
+    long hit_count = 0;   // 频繁访问
+    long last_value = 0;  // 频繁访问（同缓存行，友好）
+    char pad[48];         // 把冷字段推开，减少伪共享/抖动
     long cold_meta = 0;
 };
 ```
@@ -1064,7 +1064,7 @@ _Z1fv:
 ## 附录 A：工业性能分析与WG21背景
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业性能分析与WG21背景
-```
+```text
 perf (Linux, 2009): perf record -g → perf report → 火焰图(Brendan Gregg,2013)
   → 采样 <5% overhead, Google 强制要求每个perf bug附perf报告
 VTune (Intel, 2005): 微架构分析(uop/BPU/cache), HW counter精度 ~1ms
@@ -1074,7 +1074,7 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 ## 附录 B：性能分析黄金法则与面试
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：性能分析黄金法则与面试
-```
+```text
 黄金法则:
 1. 先测量后优化 (never guess bottleneck)
 2. 真实负载测试 (production data > synthetic)

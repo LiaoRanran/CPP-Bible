@@ -104,8 +104,8 @@ int main() {
 // 指针基础
 #include <cstdio>
 int main() {
-    int v = 42; int* p = &v; // *p == 42
-    std::printf("*p=%d\n", *p);           // 42
+    int v = 42; int* p = &v;     // *p == 42
+    std::printf("*p=%d\n", *p);  // 42
     return 0;
 }
 ```
@@ -174,7 +174,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识图谱（ASCII）
-```
+```text
 [C 语言 1972]
    ├─ 类型系统(int/char/指针/数组/struct)
    ├─ 值语义 + 指针算术
@@ -212,7 +212,7 @@ int main() {
 #include <cstdio>
 #include <cstring>
 int main() {
-    const char* name = "cpp"; // strlen(name)==3
+    const char* name = "cpp";                                    // strlen(name)==3
     std::printf("len=%zu\n", (unsigned long)std::strlen(name));  // 3
     return 0;
 }
@@ -302,8 +302,8 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 // 位运算
 #include <cstdio>
 int main() {
-    unsigned m = 1<<3; // m == 8
-    std::printf("m=%u\n", m);                  // 8：1 左移 3 位
+    unsigned m = 1<<3;         // m == 8
+    std::printf("m=%u\n", m);  // 8：1 左移 3 位
     return 0;
 }
 ```
@@ -321,7 +321,7 @@ int main() {
 
 C 的 struct（POD，无虚函数）：
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图
-```
+```text
 对象 obj @ 0x1000:
 ┌──────────────┬─────────┬──────────┐
 │ int x (4B)   │ int y(4B)│ char[8](8B)│
@@ -330,7 +330,7 @@ C 的 struct（POD，无虚函数）：
 ```
 C with Classes 加入虚函数后（Itanium 风格，标注 `[平台·Linux]`）：
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图
-```
+```text
 对象 circle @ 0x2000:
 ┌──────────────┬────────────┬─────────┐
 │ vptr (8B)    │ double r(8B)│ ...     │
@@ -363,8 +363,8 @@ int main() {
 #include <cstdio>
 class C { int secret; public: int open; };
 int main() {
-    C c; c.open = 1;              // c.secret = 1;  // 编译错误：类外不可访问
-    std::printf("open=%d\n", c.open);          // 1
+    C c; c.open = 1;                   // c.secret = 1;  // 编译错误：类外不可访问
+    std::printf("open=%d\n", c.open);  // 1
     return 0;
 }
 ```
@@ -392,14 +392,14 @@ int main() {
 #include <cstdio>
 class Base { public: int a; }; class Der : public Base { public: int b; };
 int main() {
-    Der d; d.a=1; d.b=2;                         // 派生类含基类成员
-    std::printf("a+b=%d\n", d.a+d.b);           // 3
+    Der d; d.a=1; d.b=2;               // 派生类含基类成员
+    std::printf("a+b=%d\n", d.a+d.b);  // 3
     return 0;
 }
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（CFront 编译模型）
-```
+```text
 [源码 .c/.cpp] → CFront 翻译为 C → C 编译器 → 目标文件 → 链接器 → 可执行
 ```
 > `[实现]`：早期 C++ 编译器 CFront 先把 C++ 翻译成 C，再交给 C 编译器。这保证了与 C 工具链的兼容，也固化了「C++ 编译模型 ≈ C 编译模型」的事实（影响至今：头文件、单独编译、ODR）。
@@ -414,8 +414,8 @@ class Animal { public: virtual void speak(){ std::printf("...\n"); } };
 class Dog:public Animal{ public: void speak() override { std::printf("woof\n"); } };
 int main() {
     Dog d;
-    Animal& r = d;         // 基类引用指向派生对象
-    r.speak();             // woof：运行期经 vtable 分派
+    Animal& r = d;  // 基类引用指向派生对象
+    r.speak();      // woof：运行期经 vtable 分派
     return 0;
 }
 ```
@@ -655,9 +655,9 @@ int main() {
 // 全局对象构造顺序（历史坑）：同一编译单元内按定义顺序初始化（可靠），
 // 跨编译单元顺序未指定 —— 跨 TU 依赖需用函数内静态局部（Meyers 单例）规避。
 #include <cstdio>
-int g1=1; int g2=g1+1; // g2 依赖 g1 初始化序（同 TU 内安全）
+int g1=1; int g2=g1+1;           // g2 依赖 g1 初始化序（同 TU 内安全）
 int main() {
-    std::printf("g2=%d\n", g2);                // 2
+    std::printf("g2=%d\n", g2);  // 2
     return 0;
 }
 ```
@@ -791,10 +791,10 @@ int main() { int r; if (div_c(10, 2, &r) == 0) printf("C: %d\n", r); return 0; }
 // 附录-E: malloc/free vs new/delete vs RAII
 #include <memory>
 #include <cstdio>
-void c_style() { int* p = (int*)malloc(sizeof(int)); *p = 42; free(p); } // manual
-void cpp_style() { auto p = std::make_unique<int>(42); } // RAII auto-cleanup
+void c_style() { int* p = (int*)malloc(sizeof(int)); *p = 42; free(p); }  // manual
+void cpp_style() { auto p = std::make_unique<int>(42); }                  // RAII auto-cleanup
 int main() { c_style(); cpp_style(); printf("RAII: no manual free needed.\n"); return 0; }
-```
+```text
 
 ## 附录 D：C遗产底层与工业影响 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
@@ -846,7 +846,7 @@ int main() {
 ## 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
-```
+```text
 C → C++ 替代对照:
 
 | C代码 | C++替代 | 优势 |
@@ -866,8 +866,8 @@ C → C++ 替代对照:
 #include <iostream>
 #include <array>
 int main() {
-    std::array<int, 5> arr{1,2,3,4,5}; // C: int arr[5]={1,2,3,4,5};
-    std::cout << arr.size() << std::endl; // C: no .size()
+    std::array<int, 5> arr{1,2,3,4,5};     // C: int arr[5]={1,2,3,4,5};
+    std::cout << arr.size() << std::endl;  // C: no .size()
     std::cout << "C++ = C + type safety + RAII + zero-cost abstractions" << std::endl;
     return 0;
 }
@@ -1008,14 +1008,14 @@ C++ 是 C 的**超集但有数十处例外**（本文件第⑯节）。下面用
 void demo_voidptr() {
     void* p = nullptr;
     // int* q = p;                 // C++ 编译错误：void* 不能隐式转 int*
-    int* q = static_cast<int*>(p); // C++ 正确写法（C 写法: int* q = p;）
+    int* q = static_cast<int*>(p);       // C++ 正确写法（C 写法: int* q = p;）
     (void)q;
 }
 
 // ② struct 名称作用域：C 中类型名不进普通命名空间，须写 struct Tag
 // C++ 中 struct/union/enum 名直接进入普通作用域，可直接当类型用
 struct Point { int x, y; };
-int area(Point p) { return p.x * p.y; }   // C++ 直接写 Point；C 须写 struct Point p
+int area(Point p) { return p.x * p.y; }  // C++ 直接写 Point；C 须写 struct Point p
 
 // ③ 字符字面量类型：C 中 'a' 是 int（sizeof==4），C++ 中是 char（sizeof==1）
 int main() {
@@ -1052,14 +1052,14 @@ class Buffer {
     int size_;
     int* data_;
 public:
-    Buffer(int n) : size_(n), data_(new int[n]) {} // 构造函数（C with Classes 1980 已有）
-    ~Buffer() { delete[] data_; }                  // 析构函数（早期手动管理雏形）
+    Buffer(int n) : size_(n), data_(new int[n]) {}  // 构造函数（C with Classes 1980 已有）
+    ~Buffer() { delete[] data_; }                   // 析构函数（早期手动管理雏形）
     int size() const { return size_; }
 };
 
 // extern "C" 导出的符号与 C 自由函数同构：C 链接器无需任何 VM 即可调用
 extern "C" void run_demo() {
-    Buffer buf(8);                       // CFront 时代展开为: Buffer buf; Buffer__init(&buf, 8);
+    Buffer buf(8);                                  // CFront 时代展开为: Buffer buf; Buffer__init(&buf, 8);
     std::printf("buffer size = %d\n", buf.size());
 }
 
@@ -1095,13 +1095,13 @@ int main() {
 // void Counter__inc(Counter* self){ ++(self->value); }
 struct Counter {
     int value;
-    Counter() : value(0) {}   // 构造函数 → CFront 生成的 Counter__init
-    void inc() { ++value; }   // 成员函数 → 普通函数 Counter__inc(this)
+    Counter() : value(0) {}  // 构造函数 → CFront 生成的 Counter__init
+    void inc() { ++value; }  // 成员函数 → 普通函数 Counter__inc(this)
 };
 
 int main() {
-    Counter c;        // CFront: Counter c; Counter__init(&c);
-    c.inc();          // CFront: Counter__inc(&c);
+    Counter c;               // CFront: Counter c; Counter__init(&c);
+    c.inc();                 // CFront: Counter__inc(&c);
     std::printf("count = %d\n", c.value);
     return 0;
 }
@@ -1140,12 +1140,12 @@ C++ 在 1980 年代通过 CFront 把新语法机械展开回 C，因此它刻意
 struct Stack {
     int data[16];
     int top = 0;
-    void push(int v) { if (top < 16) data[top++] = v; }   // 成员函数 → Stack_push(this)
+    void push(int v) { if (top < 16) data[top++] = v; }  // 成员函数 → Stack_push(this)
     int  pop()       { return top ? data[--top] : -1; }
 };
 
 int main() {
-    Stack s;                 // C 中必须写 struct Stack s; C++ 允许省略 struct
+    Stack s;                                             // C 中必须写 struct Stack s; C++ 允许省略 struct
     s.push(7);
     s.push(8);
     std::printf("%d %d\n", s.pop(), s.pop());

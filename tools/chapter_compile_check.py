@@ -120,7 +120,9 @@ PRELUDE = """#include <iostream>
 #include <cpuid.h>       // __get_cpuid_max / __get_cpuid_count (x86 运行时特性检测)
 """
 
-CPP_FENCE = re.compile(r"^```cpp\s*$")
+# 允许围栏信息串（如 ```cpp title="示例 2 · ★★★☆☆"，见 TEACHING.md §8.3）：
+# 语言后跟可选空白+信息串；仅匹配以 cpp 开头的语言，避免误吞 ```cppcon 之类。
+CPP_FENCE = re.compile(r"^```cpp(?:\s.*)?$")
 FENCE_END = re.compile(r"^```\s*$")
 
 # Windows 网络 API（Winsock）章节（如 ch163）的示例依赖 <winsock2.h>/<ws2tcpip.h>
@@ -190,6 +192,13 @@ FMT_RE = re.compile(r'#include\s*<fmt/|\bfmt::|\bFMT_')
 # "declaration of class std::formatter<...> in namespace 'chk_...'" 误报失败。
 # 此类特化示例在全局作用域本可编译，属门禁包裹模型作用域之外，跳过。
 FORMATTER_RE = re.compile(r"template\s*<>\s*struct\s+\w*formatter<")
+# 命名空间 std 内用户类型的全特化（如 `template<> struct std::hash<MyId>`）。
+# 与 std::formatter 同理：特化必须声明于命名空间 std，门禁的 namespace 包裹会
+# 误报 "declaration of ... in namespace 'chk_...' which does not enclose 'std'"。
+# 此类特化在全局作用域本可编译（仅允许针对用户自定义类型），属门禁包裹模型
+# 作用域之外，跳过（不计为失败）。只匹配全特化形态（`template <>` 空参数表），
+# 不匹配 `std::hash` 使用（调用无 `template<>` 前缀）与主模板声明。
+STD_TEMPLATE_SPEC_RE = re.compile(r"template\s*<>\s*(struct|class)\s+std::\w+\s*<")
 # 行号源码列表展示块（如 libstdc++/编译器内部摘录，形如 `  98  #undef calloc`）：
 # 每行以数字行号 + 空格前缀，并非独立可编译代码；属“实现讲解”展示，超出本门禁作用域，
 # 跳过（不计为失败）。判定：块内 >=3 行匹配「可选空白 + 1~4 位数字 + 空格 + 非空」，
@@ -201,7 +210,35 @@ LINE_LISTING_RE = re.compile(r"^\s*\d{1,4}\s+\S")
 # 门禁 namespace 包裹 + 追加 int main() 会与其自定义入口冲突，跳过（不计为失败）。
 BAREMETAL_RE = re.compile(
     r"extern\s+\"C\"\s+.*\b_start\b|\bvoid\s+_start\s*\(|Reset_Handler|arm-none-eabi"
-    r"|riscv|ld\s+-T|linker\s+script|freestanding|kernel\s+entry|\.text\b.*Reset")
+    r"|riscv|ld\s+-T|linker\s+script|freestanding|kernel\s+entry|\.text\b.*Reset"
+    r"|_sbrk\s*\(|_ebss|\bnewlib\b|\bpicolibc\b|__heap_start")
+# 本地自写头文件交叉引用（`#include "xxx.h"`，如 `_ch13_packlib.hpp`、`mylib/widget.h`）：
+# 门禁剥除所有 #include，自定义头不在当前 TU → 类型未定义。属“跨块复用/消费方演示”
+# 教学意图（与 CROSSBLOCK_INC_RE 同理），超出本门禁作用域，跳过。
+LOCAL_INC_RE = re.compile(r'#include\s*"[^"]+"')
+# 外部框架/库示例：Qt（<QPushButton> 等）、sqlite3.h、gtest/doctest/gmock/Catch2 测试
+# 框架。这些不在本 MinGW 工具链（需独立安装/链接），与 benchmark/fmt/POSIX 头同理，
+# 属外部框架示例，超出本门禁作用域，跳过。
+EXTERNAL_SDK_RE = re.compile(
+    r'#include\s*<(Q[A-Z][A-Za-z0-9_]*|sqlite3\.h|gtest[^>]*|doctest[^>]*|gmock[^>]*'
+    r'|Catch2[^>]*|catch2[^>]*)>')
+# 开启 `namespace std { ... }`（向 std 加全特化/扩展，如 is_error_code_enum 特化）：
+# 特化须位于全局作用域，门禁的 namespace 包裹使块内 `namespace std` 变成 `chk::std`
+# 误报；在全局作用域本可编译，与 STD_TEMPLATE_SPEC_RE 同理，跳过（教学示例）。
+STD_NS_OPEN_RE = re.compile(r"^\s*namespace\s+std\s*\{", re.M)
+# 第三方生态命名空间引用（boost::/absl::/spdlog::/rocksdb::/leveldb::/folly::/
+# llvm::/clang::/glog::/gflags:: 等）：对应库不在本 MinGW 工具链，示例须装库才能编译，
+# 属"第三方生态源码章"的库代码展示，超出本门禁作用域，跳过（与 Qt/gtest 同理）。
+# 匹配前剔除纯注释行，降低"正文/行首注释提到 boost"对可独立编译块的误伤；
+# 行尾注释提及属可接受残留（代价仅是该块不被编译验证，无内容危害）。
+EXTERNAL_NS_RE = re.compile(
+    r"\b(boost|absl|spdlog|rocksdb|leveldb|folly|llvm|clang|glog|gflags|fmt)::")
+# libstdc++/编译器头文件源码摘录（首行注释标出 `bits/…` 头路径）：如
+# `// bits/unique_ptr.h:521-523`、`// x86_64-w64-mingw32/bits/error_constants.h:42`。
+# 这类块是库内部成员级摘录（unique_ptr 拷贝构造、errc 枚举体等），不是独立 TU，
+# 本身不可作为用户代码编译；属“实现讲解”展示，超出本门禁作用域，跳过。
+SOURCE_EXCERPT_HEAD_RE = re.compile(
+    r"^//\s*[^\n]*\b(?:[\w.-]+[/\\])?bits[/\\][\w./-]+\.(?:h|hpp|tcc|cc)")
 
 
 
@@ -225,8 +262,11 @@ def sanitize(code: str):
         if s.startswith("#include"):
             # 这些系统头必须置于全局作用域（与 <experimental/simd> 同理，
             # 包进 namespace 会导致名字空间错位 / Windows 宏污染）。
+            # <experimental/scope>：Library Fundamentals TS 的实验头，本机 GCC 提供
+            # 且内容必须在全局作用域（stdexcept 等不在 PRELUDE），ch39 scope_exit 需要。
             if ("experimental/simd" in s or "winsock2.h" in s
-                    or "ws2tcpip.h" in s or "windows.h" in s):
+                    or "ws2tcpip.h" in s or "windows.h" in s
+                    or "experimental/scope" in s):
                 includes.append(line)
             continue
         # 保留 int 返回类型，避免完整程序里的 `return 0;` 在 void 函数报错
@@ -307,6 +347,12 @@ def check_file(path: pathlib.Path, tmpdir: pathlib.Path):
             print(f"[SKIP] {path.name}#{idx}: std::formatter 特化须声明于命名空间 std，"
                   f"门禁 namespace 包裹误报，跳过（教学示例）")
             continue
+        # 命名空间 std 内用户类型全特化（template<> struct std::hash<MyId>）：同理，
+        # 特化须声明于命名空间 std，门禁 namespace 包裹误报失败；在全局作用域可编译，跳过。
+        if STD_TEMPLATE_SPEC_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: std:: 命名空间模板全特化（std::hash 等）须声明于"
+                  f"命名空间 std，门禁 namespace 包裹误报，跳过（教学示例）")
+            continue
         # 行号源码列表展示块：块内 >=3 行以「数字行号 + 空格」前缀（如 libstdc++/编译器
         # 内部摘录），并非独立可编译代码；属“实现讲解”展示，跳过（不计为失败）。
         if sum(1 for ln in code.splitlines() if LINE_LISTING_RE.match(ln)) >= 3:
@@ -314,10 +360,52 @@ def check_file(path: pathlib.Path, tmpdir: pathlib.Path):
                   f"非独立可编译代码，跳过（实现讲解）")
             continue
         # 裸机/嵌入式/内核态片段：自定义入口(_start/Reset_Handler)、交叉链接器、链接脚本、
-        # freestanding 等，本机无 libc/main 无法独立编译，门禁 namespace 包裹会误报，跳过。
+        # freestanding、newlib/_sbrk 运行桩等，本机无 libc/main 无法独立编译，跳过。
         if BAREMETAL_RE.search(code):
-            print(f"[SKIP] {path.name}#{idx}: 裸机/嵌入式/内核态片段（自定义入口/交叉链接），"
-                  f"本机无法独立编译，跳过（硬件/内核教学）")
+            print(f"[SKIP] {path.name}#{idx}: 裸机/嵌入式/内核态片段（自定义入口/交叉链接/"
+                  f"newlib 桩），本机无法独立编译，跳过（硬件/内核教学）")
+            continue
+        # 本地自写头文件交叉引用（`#include "xxx.h"`）：门禁剥除 #include 后自定义头不在
+        # 当前 TU → 未定义。属“跨块复用/包消费方演示”教学意图，跳过。
+        if LOCAL_INC_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: 本地自写头文件引用(#include \"...\")，"
+                  f"门禁剥除后未定义，跳过（跨块复用/包消费演示）")
+            continue
+        # 外部框架/库（Qt/sqlite3/gtest/doctest 等）：不在本 MinGW 工具链，须独立安装，
+        # 与 benchmark/fmt/POSIX 同理，属外部框架示例，跳过。
+        if EXTERNAL_SDK_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: 外部框架/库头(Qt/sqlite3/gtest/doctest 等) "
+                  f"不在本 MinGW 工具链，跳过（外部框架示例）")
+            continue
+        # 开启 namespace std（向 std 扩展/特化）：只能位于全局作用域，门禁 namespace 包裹
+        # 使块内 `namespace std` 误报；在全局作用域本可编译，跳过（教学示例）。
+        if STD_NS_OPEN_RE.search(code):
+            print(f"[SKIP] {path.name}#{idx}: namespace std 扩展须在全局作用域，"
+                  f"门禁 namespace 包裹误报，跳过（教学示例）")
+            continue
+        # 第三方生态命名空间引用（boost::/absl::/spdlog::/llvm::/…）：库不在本工具链，
+        # 块须装库才能编译，属第三方生态源码章库代码展示，跳过（与 Qt/gtest 同理）。
+        code_noncomment = "\n".join(
+            ln for ln in code.splitlines()
+            if ln.strip() and not ln.strip().startswith(("//", "*")))
+        if EXTERNAL_NS_RE.search(code_noncomment):
+            print(f"[SKIP] {path.name}#{idx}: 第三方生态库命名空间引用（boost/absl/spdlog/"
+                  f"rocksdb/leveldb/llvm 等），库不在本 MinGW 工具链，跳过（外部生态示例）")
+            continue
+        # libstdc++/编译器头文件源码摘录（首行注释含 `bits/…` 头路径）：库内部成员级摘录，
+        # 非独立 TU，不可作为用户代码编译；属实现讲解展示，跳过。
+        first_line = next((ln.strip() for ln in code.splitlines() if ln.strip()), "")
+        if SOURCE_EXCERPT_HEAD_RE.match(first_line):
+            print(f"[SKIP] {path.name}#{idx}: libstdc++ 头文件源码摘录首行（bits/… 路径注释），"
+                  f"非独立可编译代码，跳过（实现讲解）")
+            continue
+        # 块内自建顶层 namespace 并回指 ::X（如 `::geo::dim`，示范"全局限定名绕过内层
+        # 隐藏"）：门禁把块包进 chk_ 命名空间后，顶层 `namespace X` 变成 chk::X，`::X`
+        # 全局限定查找落空 → 误报。此类代码在真实全局作用域本可编译，跳过（教学示例）。
+        own_ns = set(re.findall(r"^namespace\s+([A-Za-z_]\w*)\s*\{", code, re.M))
+        if any(re.search(r"::" + re.escape(ns) + r"\b", code) for ns in own_ns):
+            print(f"[SKIP] {path.name}#{idx}: 顶层 namespace 内回指全局 ::{next(n for n in own_ns if re.search(r'::'+re.escape(n)+r'\b', code))}，"
+                  f"门禁 namespace 包裹误报，跳过（全局限定名教学示例）")
             continue
         includes, body = sanitize(code)
         # Winsock 章节（如 ch163）的示例依赖 <winsock2.h>/<ws2tcpip.h> 且需链接

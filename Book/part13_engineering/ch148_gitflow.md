@@ -209,10 +209,10 @@ bool is_valid_feature_branch(const std::string& name) {
 // 正例：拆成两个原子提交，见 Examples/_ch148_atomic_split.cpp
 struct Buffer {
     std::vector<int> data;
-    void reserve(size_t n) { data.reserve(n); }   // 提交 A：只加接口
+    void reserve(size_t n) { data.reserve(n); }  // 提交 A：只加接口
 };
 
-void fill(Buffer& b, int value, size_t count) {    // 提交 B：只改实现
+void fill(Buffer& b, int value, size_t count) {  // 提交 B：只改实现
     b.reserve(count);
     for (size_t i = 0; i < count; ++i) b.data.push_back(value);
 }
@@ -495,7 +495,7 @@ $ git bisect run ./check.sh
 ```cpp
 // ⑫ 冲突时的文件内容（Git 写入的标记）
 <<<<<<< HEAD
-void scheduler::tick() { run_ready_tasks(); }      // 你的改动
+void scheduler::tick() { run_ready_tasks(); }       // 你的改动
 =======
 void scheduler::tick() { drain_expired_timers(); }  // 他人的改动
 >>>>>>> feature/timer-refactor
@@ -507,8 +507,8 @@ void scheduler::tick() { drain_expired_timers(); }  // 他人的改动
 ```cpp
 // ⑫' 解决后：融合两边语义
 void scheduler::tick() {
-    drain_expired_timers();   // 来自 feature 分支
-    run_ready_tasks();        // 来自 main
+    drain_expired_timers();  // 来自 feature 分支
+    run_ready_tasks();       // 来自 main
 }
 ```
 
@@ -866,7 +866,7 @@ int main() {
 ## 附录 B：C++ 项目 Git 反模式 [H: Design / I: Practice]
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B：C++ 项目 Git 反模
-```
+```text
 反模式1: 提交编译产物（.o, .a, .exe, build/）
   → 解决方案: .gitignore 中明确排除，CMake 使用 out-of-source build
 
@@ -921,7 +921,7 @@ int main() {
 ## 附录 D：Git 与 C++ CI/CD 管道 [B: Principle / H: Design]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：Git 与 C++ CI/CD 管道 [B: Principle / H: Design]
-```
+```text
 标准 C++ 项目的 Git + CI 管道（以 LLVM 为参考）:
 
 pre-commit (本地):
@@ -959,7 +959,7 @@ int main() {
 ## 附录 E：Git与C++标准库/构建系统的集成 [D: stdlib / B: Principle / J: Learning]
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：Git与C++标准库/构建
-```
+```text
 WG21与Git的关系: 无直接关系, 但C++标准库的发布周期与Git工作流强相关
 - libstdc++: GCC仓库子目录, 跟随GCC发布 (git clone gcc.gnu.org/git/gcc.git)
 - libc++: LLVM独立仓库 (github.com/llvm/llvm-project/libcxx)
@@ -1130,7 +1130,7 @@ git sparse-checkout set libs/order services/api
 
 struct SemVer { int major = 0, minor = 0, patch = 0; };
 
-SemVer parse(std::string const& s) {             // 解析 "1.4.0"
+SemVer parse(std::string const& s) {  // 解析 "1.4.0"
     SemVer v; int* p[3] = {&v.major, &v.minor, &v.patch};
     std::size_t start = 0, field = 0;
     for (std::size_t k = 0; k <= s.size(); ++k) {
@@ -1171,7 +1171,7 @@ int main() {
 #include <string_view>
 #include <unordered_map>
 
-struct FeatureFlags {                        // 特性开关：主干开发 + 运行期 toggle
+struct FeatureFlags {             // 特性开关：主干开发 + 运行期 toggle
     std::unordered_map<std::string, bool> m_;
     void set(std::string_view k, bool v) { m_[std::string(k)] = v; }
     bool enabled(std::string_view k) const {
@@ -1182,7 +1182,7 @@ struct FeatureFlags {                        // 特性开关：主干开发 + �
 
 int main() {
     FeatureFlags f;
-    f.set("new-checkout", true);            // release 分支按环境开启，无需另开分支
+    f.set("new-checkout", true);  // release 分支按环境开启，无需另开分支
     (void)f.enabled("new-checkout");
 }
 ```

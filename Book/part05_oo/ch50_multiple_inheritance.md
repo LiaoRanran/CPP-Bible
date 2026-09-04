@@ -74,7 +74,7 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱（ASCII）
-```
+```text
         [单继承]                      [多重继承]
    Base    Derived              B1      B2
      |        |                  |        |
@@ -103,7 +103,7 @@ classDiagram
     class Derived { int x; f(); g() }
     B1 <|-- Derived
     B2 <|-- Derived
-```
+```text
 
 ## ⑦ ASCII 内存图 / 对象布局
 
@@ -129,7 +129,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 生命周期图
-```
+```text
 构造顺序：先 B1 子对象（vptr→B1子表），再 B2 子对象（vptr→B2子表），最后 Derived 自身成员。
 析构顺序：逆序。每个基类的虚析构在各自子表的 dtor 槽，B2 侧同样是 thunk（this-=8）。
 ```
@@ -137,7 +137,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 ## ⑨ 调用栈 / 时序图
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图
-```
+```text
 调用 p->g()（p: B2*, 指向 Derived+8）
 ─────────────────────────────────────────────
 1. 取 [p] → B2.vptr
@@ -160,8 +160,8 @@ struct D : B1, B2 {
     void f() override;
     void g() override;
 };
-void D::f() { x = 7; }     // this 指向 D 头（B1 在偏移0）
-void D::g() { x = 9; }     // 经 B2* 调用时 this 指向 D+8，thunk 需 this-=8
+void D::f() { x = 7; }  // this 指向 D 头（B1 在偏移0）
+void D::g() { x = 9; }  // 经 B2* 调用时 this 指向 D+8，thunk 需 this-=8
 void call_b2_g(B2* p) { p->g(); }
 B2* as_b2(D& d) { return &d; }
 int read_x(D* p) { return p->x; }
@@ -251,12 +251,12 @@ _ZThn8_N1D1gEv:                ; thunk（rcx = B2 子对象 = D+8）
 ```cpp
 struct IStartable { virtual void start() = 0; };
 struct IStoppable { virtual void stop() = 0; };
-struct Service : IStartable, IStoppable {        // 多接口实现
-    void start() override { // 启动
-    void stop()  override { // 停止
+struct Service : IStartable, IStoppable {  // 多接口实现
+    void start() override {                // 启动
+    void stop()  override {                // 停止
 };
-void run(IStartable& s){ s.start(); }            // 传 Service&，this 指向首基类 IStartable
-void halt(IStoppable& s){ s.stop(); }            // 传 Service&，this 指向 IStoppable 子对象
+void run(IStartable& s){ s.start(); }      // 传 Service&，this 指向首基类 IStartable
+void halt(IStoppable& s){ s.stop(); }      // 传 Service&，this 指向 IStoppable 子对象
 ```
 
 【案例 B：误用导致 this 错位的崩溃】
@@ -267,8 +267,8 @@ struct A { virtual void fa(); };
 struct B { virtual void fb(); };
 struct C : A, B { void fa() override; void fb() override; };
 C c;
-B* pb = &c;                 // pb 指向 C+8（B 子对象）
-A* pa = &c;                 // pa 指向 C+0（A 子对象）
+B* pb = &c;  // pb 指向 C+8（B 子对象）
+A* pa = &c;  // pa 指向 C+0（A 子对象）
 // 若有人误把 (void*)pb 当 C* 用并调用 fa → this 未调整 → 写到错误偏移
 ```
 
@@ -314,8 +314,8 @@ W* pw = dynamic_cast<W*>(py);                     // nullptr（Y 与 W 无关）
 struct G { int g; virtual ~G() = default; };
 struct L : G {};
 struct R : G {};
-struct Bottom : L, R {};   // 两个 G 子对象：L::G 与 R::G
-Bottom b; b.L::g = 1; b.R::g = 2;   // 两份独立，需消歧
+struct Bottom : L, R {};           // 两个 G 子对象：L::G 与 R::G
+Bottom b; b.L::g = 1; b.R::g = 2;  // 两份独立，需消歧
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
@@ -350,9 +350,9 @@ static_assert(offsetof(D, x) == 16);   // 两 vptr(16) + x@16
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 // 例9：虚析构链在多重继承下按逆序调用
-struct A { virtual ~A() { // A
-struct B { virtual ~B() { // B
-struct D : A, B { ~D() override { // D
+struct A { virtual ~A() {          // A
+struct B { virtual ~B() {          // B
+struct D : A, B { ~D() override {  // D
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
@@ -490,16 +490,16 @@ Itanium ABI 规定，一个类的 vtable 对象由「主虚拟表（primary vtbl
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 ```cpp
 C c; B* pb = &c;
-C* pc = (C*)(void*)pb;          // ❌ this 没调回 C 头，pc 实际指向 C+8
-pc->fa();                        // ❌ 写到错误偏移，UB
+C* pc = (C*)(void*)pb;  // ❌ this 没调回 C 头，pc 实际指向 C+8
+pc->fa();               // ❌ 写到错误偏移，UB
 ```
 
 【正解】用 `static_cast<C*>(pb)` 或 `dynamic_cast`：
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
-C* pc = static_cast<C*>(pb);    // ✅ 编译器插入 this+=8 调整
-pc->fa();                        // ✅ 正确
+C* pc = static_cast<C*>(pb);  // ✅ 编译器插入 this+=8 调整
+pc->fa();                     // ✅ 正确
 ```
 
 【反例 2：多重继承 + 重载歧义】
@@ -516,8 +516,8 @@ D d; d.f(1);                     // ❌ 两个 f 都可见，调用歧义（编�
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 ```cpp
-d.A::f(1);                       // ✅ 指定 A::f
-d.B::f(1.0);                     // ✅ 指定 B::f
+d.A::f(1);    // ✅ 指定 A::f
+d.B::f(1.0);  // ✅ 指定 B::f
 ```
 
 【反例 3：误以为 sizeof 是基类之和】
@@ -887,13 +887,13 @@ thunk 是一小段 `sub` + `jmp`，成本约 0.3 ns（一次 ALU + 一次跳转�
 struct A { int a; };
 struct B : A {};
 struct C : A {};
-struct D : B, C {};             // 非虚: A 被继承两次
+struct D : B, C {};          // 非虚: A 被继承两次
 int main(){
     D d;
-    d.B::a = 1; d.C::a = 2;     // 两份 a, 必须消歧
+    d.B::a = 1; d.C::a = 2;  // 两份 a, 必须消歧
     // d.a = 3;                  // 编译失败: a 有二义性
-    B* pb = &d;                 // 指针需调整指向 B 子对象(= &d)
-    C* pc = &d;                 // 指针需调整指向 C 子对象(= &d + sizeof(B))
+    B* pb = &d;              // 指针需调整指向 B 子对象(= &d)
+    C* pc = &d;              // 指针需调整指向 C 子对象(= &d + sizeof(B))
 }
 ```
 
@@ -917,12 +917,12 @@ int main(){
 struct A { int a; };
 struct B : A {};
 struct C : A {};
-struct D : B, C {};            // 两份 A
+struct D : B, C {};  // 两份 A
 int main(){
     D d;
     // d.a = 1;                  // 二义性: 不知改哪份
-    d.B::a = 1;                 // 消歧: 只改 B 路径那份
-    d.C::a = 2;                 // C 路径那份仍是 2 -> 同一"概念实体"出现两份值
+    d.B::a = 1;      // 消歧: 只改 B 路径那份
+    d.C::a = 2;      // C 路径那份仍是 2 -> 同一"概念实体"出现两份值
 }
 ```
 
@@ -946,11 +946,11 @@ int main(){
 struct A { int a; };
 struct B : virtual A {};
 struct C : virtual A {};
-struct D : B, C {};            // 共享同一份虚基类 A
+struct D : B, C {};  // 共享同一份虚基类 A
 int main(){
     D d;
-    d.a = 1;                   // 无歧义: 只有一份 A
-    A* pa = &d;                // 指向共享虚基类子对象
+    d.a = 1;         // 无歧义: 只有一份 A
+    A* pa = &d;      // 指向共享虚基类子对象
 }
 ```
 
@@ -998,9 +998,9 @@ struct B2 { int b2; virtual ~B2(){} virtual int f2(){return 2;} };
 struct D : B1, B2 {
     int d; explicit D(int v):d(v){}
     int f1() override { return 11; }
-    int f2() override;            // out-of-line key function → 强制生成 vtable+thunk
+    int f2() override;                                                // out-of-line key function → 强制生成 vtable+thunk
 };
-int D::f2() { return d + 22; }    // 读取成员 d（经 this），逼出 this 调整
+int D::f2() { return d + 22; }                                        // 读取成员 d（经 this），逼出 this 调整
 int call_f2_via_b2(B2* b2) { return b2->f2(); }
 long long b2_offset() { D d(0); return (char*)(B2*)&d - (char*)&d; }  // → 0x10
 long long sizeof_D()   { return sizeof(D); }                          // → 0x20
@@ -1143,9 +1143,9 @@ int main() {
 struct A { void f() { std::cout << "A::f\n"; } };
 struct B { void f() { std::cout << "B::f\n"; } };
 struct C : A, B {
-    using A::f;                   // 引入 A::f，消除二义
+    using A::f;             // 引入 A::f，消除二义
 };
-int main() { C c; c.f(); }        // 调用 A::f
+int main() { C c; c.f(); }  // 调用 A::f
 ```
 
 <span class="badge badge-std">标准</span> `using` 声明把基类成员名字引入派生类作用域，遵循名字查找的"最近作用域优先"规则（ISO/IEC 14882 §[namespace.udecl] / 类作用域）；它不改变函数本身，只是让名字可被无歧义地找到。
@@ -1198,10 +1198,10 @@ int main(){
 struct Object { int id; };
 struct Drawable  : virtual Object {};
 struct Clickable : virtual Object {};
-struct Widget : Drawable, Clickable {};     // 共享同一份 Object
+struct Widget : Drawable, Clickable {};  // 共享同一份 Object
 int main(){
     Widget w;
-    w.id = 1;                                    // 无歧义: 只有一份 Object
+    w.id = 1;                            // 无歧义: 只有一份 Object
 }
 ```
 
@@ -1235,7 +1235,7 @@ struct Diamond : Left, Right {};  // 整条继承链只有一份 Base
 int main(){
     Diamond d;
     d.id = 7;                     // 无歧义：virtual 使 Base 唯一
-    std::cout << d.id << "\n";   // 7
+    std::cout << d.id << "\n";    // 7
 }
 ```
 
@@ -1649,8 +1649,8 @@ int main() {
     std::cout << "offset of R subobject : " << off_r << std::endl;
     std::cout << "R needs this-adjust?  : " << (off_r != 0 ? "yes" : "no") << std::endl;
 
-    assert(off_l == 0);   // 第一基类与派生类共享首地址
-    assert(off_r != 0);   // 第二基类必须偏移 —— thunk 存在的根本原因
+    assert(off_l == 0);          // 第一基类与派生类共享首地址
+    assert(off_r != 0);          // 第二基类必须偏移 —— thunk 存在的根本原因
 
     // 2) 经第二基类指针的虚调用仍然正确分派到 M::g（thunk 把 this 调回来）
     std::cout << "pl->f() = " << pl->f() << std::endl;
@@ -1669,7 +1669,7 @@ int main() {
     VB* v_via_r = static_cast<VB*>(static_cast<VR*>(&vd));
     std::cout << "virtual-inherit: same VB? : "
               << (v_via_l == v_via_r ? "yes" : "no") << std::endl;
-    assert(v_via_l == v_via_r);      // 虚基类共享唯一子对象
+    assert(v_via_l == v_via_r);  // 虚基类共享唯一子对象
 
     // 5) 非虚继承：两条路径抵达不同 VB 子对象（菱形歧义的来源）
     ND nd;
@@ -1677,7 +1677,7 @@ int main() {
     VB* n_via_r = static_cast<VB*>(static_cast<NR*>(&nd));
     std::cout << "non-virtual   : same VB? : "
               << (n_via_l == n_via_r ? "yes" : "no") << std::endl;
-    assert(n_via_l != n_via_r);      // 两份独立副本
+    assert(n_via_l != n_via_r);  // 两份独立副本
 
     // 6) 虚继承下改写虚基类成员，两条路径同时可见
     v_via_l->z = 77;

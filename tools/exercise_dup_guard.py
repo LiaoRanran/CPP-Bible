@@ -93,7 +93,7 @@ def extract_exercise_cpp(md_path: str):
     if bounds is None:
         return []
     sec = text[bounds[0]:bounds[1]]
-    blocks = re.findall(r"```cpp(.*?)```", sec, re.S)
+    blocks = re.findall(r"```cpp[^\n]*\n(.*?)```", sec, re.S)  # 跳过围栏信息串行
     out = []
     for b in blocks:
         n = _norm(b)

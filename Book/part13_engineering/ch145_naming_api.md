@@ -54,16 +54,16 @@
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ❌ 反例：名字不揭示意图，调用方必须打开实现才能猜出语义
-void proc(int a, int b);          // proc 做什么？a、b 是什么？
-int f(int x);                     // f 返回什么？x 是输入还是索引？
+void proc(int a, int b);  // proc 做什么？a、b 是什么？
+int f(int x);             // f 返回什么？x 是输入还是索引？
 ```
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
 ```cpp
 #include <cstddef>
 // ✅ 正例：名字揭示意图、参数揭示角色
-void compress_frame(Frame& dst, const Frame& src);   // 动宾 + 方向清晰
-std::size_t byte_size(const Buffer& buf);            // 返回什么一目了然
+void compress_frame(Frame& dst, const Frame& src);  // 动宾 + 方向清晰
+std::size_t byte_size(const Buffer& buf);           // 返回什么一目了然
 ```
 
 好命名的三个收益维度：
@@ -88,16 +88,16 @@ public:
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名基本法则（意图揭示）
 ```cpp
 // ❌ 反例：揭示类型而非意图（改了类型名就过时）
-int data_list_size;          // data_list 是什么列表？
-char* str_ptr;               // str 指向谁的字符串？
+int data_list_size;  // data_list 是什么列表？
+char* str_ptr;       // str 指向谁的字符串？
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名基本法则（意图揭示）
 ```cpp
 #include <string>
 // ✅ 正例：揭示意图，类型信息交给类型系统
-int pending_request_count;   // 意图：待处理请求数
-std::string user_name;       // 意图：用户名，类型由 string 表达
+int pending_request_count;  // 意图：待处理请求数
+std::string user_name;      // 意图：用户名，类型由 string 表达
 ```
 
 二级法则：**长度与可见范围成正比**——作用域越大、生命周期越长，名字应越长越具体；局部短变量可用单字母。
@@ -133,8 +133,8 @@ void dispatch(const Event& e);
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型命名
 ```cpp
-class ConnectionPool { // ...
-struct HttpRequest  { // ...
+class ConnectionPool {                      // ...
+struct HttpRequest  {                       // ...
 enum class ColorSpace { Srgb, DisplayP3 };  // ✅ enum class 成员 PascalCase
 ```
 
@@ -143,11 +143,11 @@ enum class ColorSpace { Srgb, DisplayP3 };  // ✅ enum class 成员 PascalCase
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型命名
 ```cpp
 // ❌ 反例：单字母模板参数，约束意图不清
-template <typename T, typename U> class Pair { // ...
+template <typename T, typename U> class Pair {            // ...
 
 // ✅ 正例：描述性模板参数
-template <typename Key, typename Value> class LruCache { // ...
-template <std::regular T> class RingBuffer { // ...
+template <typename Key, typename Value> class LruCache {  // ...
+template <std::regular T> class RingBuffer {              // ...
 ```
 
 概念（concept）命名用名词或形容词短语，常以 `able`/`ible` 结尾：
@@ -224,10 +224,10 @@ void log(Level lvl, const std::string& msg);
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 变量命名
 ```cpp
 #include <vector>
-int active_connection_count = 0;     // ✅ snake_case
-int activeConnectionCount   = 0;     // ✅ camelCase（选其一，勿混用）
+int active_connection_count = 0;  // ✅ snake_case
+int activeConnectionCount   = 0;  // ✅ camelCase（选其一，勿混用）
 
-std::vector<int> pending_frames;     // ✅ 复数揭示"集合"
+std::vector<int> pending_frames;  // ✅ 复数揭示"集合"
 ```
 
 私有/受保护成员加尾下划线 `_`，与局部变量、参数区分，避免 `this->` 噪声：
@@ -236,7 +236,7 @@ std::vector<int> pending_frames;     // ✅ 复数揭示"集合"
 ```cpp
 #include <cstddef>
 class Buffer {
-    std::size_t capacity_ = 0;       // ✅ 尾下划线：私有成员
+    std::size_t capacity_ = 0;           // ✅ 尾下划线：私有成员
     std::byte*  data_ = nullptr;
 public:
     void reserve(std::size_t capacity);  // 参数无下划线，与成员区分
@@ -336,8 +336,8 @@ namespace myproject {
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 命名空间命名
 ```cpp
 namespace {
-    int g_debug_counter = 0;                 // ✅ 仅本 .cpp 可见
-    void trace_raw(const char* s) { // ...
+    int g_debug_counter = 0;         // ✅ 仅本 .cpp 可见
+    void trace_raw(const char* s) {  // ...
 }
 ```
 
@@ -355,8 +355,8 @@ using namespace std;   // 禁止
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间命名
 ```cpp
 namespace myproject {
-    inline namespace v2 { void serialize(); }   // ✅ 默认可见
-    namespace v1 { void serialize(); }          // 旧版仍可 myproject::v1::serialize()
+    inline namespace v2 { void serialize(); }  // ✅ 默认可见
+    namespace v1 { void serialize(); }         // 旧版仍可 myproject::v1::serialize()
 }
 ```
 
@@ -384,7 +384,7 @@ class Widget {
 Pimpl 是最强的 ABI 防火墙——把数据成员收进不可见的 impl，使"头文件大小"与实现完全解耦。本机真实运行取证（`Examples/_ch145_size.cpp`）：
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
-```
+```text
 sizeof(PimplWidget)=8        // 仅持有一个 unique_ptr（指针=8 字节）
 sizeof(FatWidget) =256       // 直接内联 64 个 long，随实现膨胀
 ```
@@ -413,7 +413,7 @@ extern "C" int myproject_version();
 ABI 稳定性决策框：
 
 > **示例 33** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │ 该符号要进"稳定 ABI"吗？                                   │
 ├──────────────────────────────────────────────────────────┤
@@ -490,7 +490,7 @@ Pimpl（Pointer to Implementation）把数据成员与实现收进一个前向�
 // _ch145_pimpl.cpp 要点（自包含可编译）
 using draw_fn = void(*)(int);
 void draw_impl(int n);
-void use_indirect(draw_fn f, int n) { f(n); }   // 间接：经指针
+void use_indirect(draw_fn f, int n) { f(n); }        // 间接：经指针
 void use_direct(int n)            { draw_impl(n); }  // 直接：可内联
 ```
 
@@ -569,7 +569,7 @@ void open_with_mode(const std::string& path, Mode m);
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重载 vs 命名函数
 ```cpp
 void log(int level, const char* msg);
-void log(const char* msg) { log(0, msg); }   // 重载
+void log(const char* msg) { log(0, msg); }        // 重载
 void log_info(const char* msg)  { log(0, msg); }  // 命名函数，意图更显式
 void log_error(const char* msg) { log(2, msg); }
 ```
@@ -577,8 +577,8 @@ void log_error(const char* msg) { log(2, msg); }
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重载 vs 命名函数
 ```cpp
 int main() {
-    log("hello");        // 解析到 (const char*)
-    log(1, "warn");      // 解析到 (int, const char*)
+    log("hello");    // 解析到 (const char*)
+    log(1, "warn");  // 解析到 (int, const char*)
     log_info("info");
     log_error("boom");
     return 0;
@@ -603,12 +603,12 @@ void open(const std::string& path, int flags = 0);   // 与上一行冲突
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认值与重载顺序
 ```cpp
 #include <string>
-void open(const std::string& path) { // 缺省模式
-void open(const std::string& path, int flags) { // 显式模式
+void open(const std::string& path) {             // 缺省模式
+void open(const std::string& path, int flags) {  // 显式模式
 
 int main() {
-    open("a.txt");          // 唯一匹配 (const string&)
-    open("b.txt", 0644);    // 唯一匹配 (const string&, int)
+    open("a.txt");                               // 唯一匹配 (const string&)
+    open("b.txt", 0644);                         // 唯一匹配 (const string&, int)
     return 0;
 }
 ```
@@ -636,7 +636,7 @@ void configure(int buf = 1024, bool compress = true, int level = 6);
 `[实现·GCC15]` 真实取证：当 `noexcept` 函数体内含 `throw`，g++ 直接给出 `-Wterminate` 警告，证明编译器在 noexcept 契约下改变了分析——它知道此处必终止：
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与异常规范（关联 ch146）
-```
+```text
 _ch145_noexcept2.cpp:3:24: warning: 'throw' will always call 'terminate' [-Wterminate]
     3 | void sink() noexcept { throw 1; }
       |                        ^~~~~~~
@@ -645,8 +645,8 @@ _ch145_noexcept2.cpp:3:24: warning: 'throw' will always call 'terminate' [-Wterm
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与异常规范（关联 ch146）
 ```cpp
 // _ch145_noexcept2.cpp 要点（自包含可编译）
-void sink() noexcept { throw 1; }    // g++ 警告：'throw' will always call 'terminate'
-void boom() { throw 2; }             // 普通函数：保留正常异常抛出路径
+void sink() noexcept { throw 1; }  // g++ 警告：'throw' will always call 'terminate'
+void boom() { throw 2; }           // 普通函数：保留正常异常抛出路径
 ```
 
 `[标准]` `noexcept` 还是条件化的：`noexcept(expr)` 在编译期求值。移动构造/移动赋值/析构/交换应默认 `noexcept`，从而让 `std::vector` 重分配走移动而非拷贝（ch144 已用 libstdc++ 源码佐证此决策）。
@@ -657,10 +657,10 @@ void boom() { throw 2; }             // 普通函数：保留正常异常抛出�
 class Buffer {
     std::vector<int> data_;
 public:
-    Buffer(Buffer&&) noexcept = default;        // ✅ 移动不抛
+    Buffer(Buffer&&) noexcept = default;                    // ✅ 移动不抛
     Buffer& operator=(Buffer&&) noexcept = default;
-    ~Buffer() noexcept = default;               // ✅ 析构不抛
-    void swap(Buffer& o) noexcept { data_.swap(o.data_); }   // ✅ swap 不抛
+    ~Buffer() noexcept = default;                           // ✅ 析构不抛
+    void swap(Buffer& o) noexcept { data_.swap(o.data_); }  // ✅ swap 不抛
 };
 ```
 
@@ -801,11 +801,11 @@ auto area(const T& s) { return s.width * s.height; }   // T 没有 width 时报�
 struct UserId { int64_t v; explicit UserId(int64_t x) : v(x) {} };
 struct OrderId { int64_t v; explicit OrderId(int64_t x) : v(x) {} };
 
-void process(OrderId id);            // UserId 无法冒充 OrderId
+void process(OrderId id);  // UserId 无法冒充 OrderId
 
 struct Meter {
     explicit Meter(double m) : m_(m) {}
-    Meter(int) = delete;             // 禁止 int→Meter，杜绝单位混淆
+    Meter(int) = delete;   // 禁止 int→Meter，杜绝单位混淆
     double m_ = 0;
 };
 ```
@@ -815,8 +815,8 @@ struct Meter {
 int main() {
     UserId u{42}; OrderId o{7};
     // process(u);          // ❌ 编译错误：UserId != OrderId
-    process(o);            // ✅
-    Meter m{1.5};          // ✅
+    process(o);    // ✅
+    Meter m{1.5};  // ✅
     // Meter bad{3};        // ❌ 编译错误：Meter(int) 已删除
     return 0;
 }
@@ -837,14 +837,14 @@ void transfer(UserId from, UserId to, Amount cents);
 ```cpp
 class NonCopyable {
 public:
-    NonCopyable(const NonCopyable&) = delete;       // 禁止拷贝
+    NonCopyable(const NonCopyable&) = delete;  // 禁止拷贝
     NonCopyable& operator=(const NonCopyable&) = delete;
     NonCopyable() = default;
 };
 
 // 禁止 bool 与 int 的歧义重载（经典坑）
 void f(bool);
-void f(int) = delete;     // 只接受显式 bool，杜绝 int→bool 的意外窄化
+void f(int) = delete;                          // 只接受显式 bool，杜绝 int→bool 的意外窄化
 ```
 
 ## ⑰ 版本与弃用（[[deprecated]]，用 g++ 看警告）
@@ -863,7 +863,7 @@ int main() {
     old_api();   // 触发弃用警告
     return 0;
 }
-```
+```text
 
 g++ 真实警告输出：
 
@@ -881,11 +881,11 @@ _ch145_deprecated.cpp:8:12: warning: 'void old_api()' is deprecated:
 ```cpp
 namespace lib {
     inline namespace v2 {
-        void serialize();          // 当前默认
+        void serialize();  // 当前默认
     }
     namespace v1 {
         [[deprecated("use v2::serialize")]]
-        void serialize();          // 旧版，仍可调 lib::v1::serialize
+        void serialize();  // 旧版，仍可调 lib::v1::serialize
     }
 }
 ```
@@ -991,14 +991,14 @@ class ConnectionPool { // ...
 #include <string_view>
 #include <algorithm>
 // 1) 名词类型 PascalCase、自由算法小写 snake（与 std 一致）
-std::vector<int> v;            // 类型 PascalCase
-std::sort(v.begin(), v.end()); // 算法 snake_case
+std::vector<int> v;                // 类型 PascalCase
+std::sort(v.begin(), v.end());     // 算法 snake_case
 
 // 2) "可能失败"用 optional 而非哨兵/errno
 std::optional<int> parse_int(std::string_view s);
 
 // 3) 移动/拷贝语义由类型自身保证，命名不泄露实现
-std::string s = std::move(other);   // move 仅转型，真正搬迁由 string 的移动构造负责
+std::string s = std::move(other);  // move 仅转型，真正搬迁由 string 的移动构造负责
 ```
 
 `[经验]` 模仿标准库：让"类型名表示它是什么、算法名表示它做什么、单例名表示那一个状态"——命名即规范。
@@ -1022,7 +1022,7 @@ std::string s = std::move(other);   // move 仅转型，真正搬迁由 string �
 命名与 API 设计是**接口经济学**：名字是契约、是文档、是防误用的第一道闸门。本章取证结论汇总：
 
 > **示例 74** <span class="badge badge-exp">难度 ★★★★☆</span> · 小结
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │ 命名与 API 设计门禁清单（落地即强制执行）                      │
 ├──────────────────────────────────────────────────────────────┤
@@ -1205,8 +1205,8 @@ int main() { FileCache c; c.Set("a","1"); assert(c.Has("a")); }
 ```cpp
 #include <memory>
 #include <string>
-class FileCache {                       // 头文件只暴露接口与稳定布局
-    struct Impl;                       // 仅前向声明
+class FileCache {  // 头文件只暴露接口与稳定布局
+    struct Impl;   // 仅前向声明
     std::unique_ptr<Impl> p_;
 public:
     FileCache();

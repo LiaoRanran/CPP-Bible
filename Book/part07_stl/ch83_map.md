@@ -89,8 +89,8 @@ int main() {
 int main() {
     std::map<int, int> m = {{1, 10}, {2, 20}, {3, 30}};
     auto it = m.begin();
-    ++it;                       // ✅ 双向迭代器支持 ++ / --
-    std::cout << it->first << "\n";   // 2
+    ++it;                            // ✅ 双向迭代器支持 ++ / --
+    std::cout << it->first << "\n";  // 2
     // it + 1;                  // ❌ 编译错误：双向迭代器无 + 运算
     return 0;
 }
@@ -293,8 +293,8 @@ flowchart TD
 int main() {
     std::map<int, int> m = {{1,10}, {2,20}};
     int& r = m.at(1);
-    m.insert({3,30});            // 插入新节点（可能旋转）
-    std::cout << r << "\n";      // ✅ 仍是 10，引用有效
+    m.insert({3,30});        // 插入新节点（可能旋转）
+    std::cout << r << "\n";  // ✅ 仍是 10，引用有效
     return 0;
 }
 ```
@@ -308,7 +308,7 @@ int main() {
 int main() {
     std::map<int, int> m = {{1,10}, {2,20}, {3,30}};
     auto it2 = m.find(2);
-    m.erase(2);                  // it2 现在失效
+    m.erase(2);                                             // it2 现在失效
     // std::cout << it2->first;  // ❌ 未定义行为：使用已失效迭代器
     std::cout << "after erase, size=" << m.size() << "\n";  // 2
     return 0;
@@ -350,9 +350,9 @@ flowchart TD
 
 int main() {
     std::map<int, int> m = {{1, 10}};
-    int& v = m[2];              // 键 2 不存在 -> 插入 value_type(2, 0)
+    int& v = m[2];                                 // 键 2 不存在 -> 插入 value_type(2, 0)
     v = 20;
-    std::cout << m.size() << " " << m[2] << "\n";   // 2 20
+    std::cout << m.size() << " " << m[2] << "\n";  // 2 20
     return 0;
 }
 ```
@@ -368,7 +368,7 @@ int main() {
     auto it = m.find(2);
     std::cout << (it == m.end() ? "not found" : "found") << "\n";  // not found
     // m.at(2);  // ❌ 抛 std::out_of_range（键不存在时）
-    std::cout << m.size() << "\n";   // 1（未插入）
+    std::cout << m.size() << "\n";                                 // 1（未插入）
     return 0;
 }
 ```
@@ -444,15 +444,15 @@ int main() {
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：map 与家族成员
 ```cpp
 // ⑪-1 map 与 multimap 的差异：multimap 无 operator[]（独立可编译）
-#include <map>          // std::map 与 std::multimap 同在 <map>，无独立 <multimap> 头
+#include <map>                                                  // std::map 与 std::multimap 同在 <map>，无独立 <multimap> 头
 #include <iostream>
 
 int main() {
     std::map<int, int> m;
-    m[1] = 10;                       // ✅ map 有 operator[]
+    m[1] = 10;                                                  // ✅ map 有 operator[]
     std::multimap<int, int> mm;
     mm.insert({1, 10});
-    mm.insert({1, 20});              // ✅ 允许重复 key
+    mm.insert({1, 20});                                         // ✅ 允许重复 key
     auto [lo, hi] = mm.equal_range(1);
     std::cout << "count(1)=" << std::distance(lo, hi) << "\n";  // 2
     return 0;
@@ -545,7 +545,7 @@ int main() {
 
 int main() {
     std::map<unsigned, std::string> routes;
-    routes[0x0A000001u] = "eth0";   // 10.0.0.1
+    routes[0x0A000001u] = "eth0";                                     // 10.0.0.1
     routes[0x0A000002u] = "eth1";
     unsigned dst = 0x0A000002u;
     auto it = routes.find(dst);
@@ -663,9 +663,9 @@ struct Expensive { Expensive() { } std::string buf = "big"; };
 
 int main() {
     std::map<int, Expensive> m;
-    m.try_emplace(1, Expensive{});          // 仅当 1 不存在才构造
-    auto [it, ok] = m.try_emplace(1, Expensive{}); // 已存在 -> 不构造第二个
-    std::cout << "inserted=" << ok << "\n"; // 0（未插入，无额外构造）
+    m.try_emplace(1, Expensive{});                  // 仅当 1 不存在才构造
+    auto [it, ok] = m.try_emplace(1, Expensive{});  // 已存在 -> 不构造第二个
+    std::cout << "inserted=" << ok << "\n";         // 0（未插入，无额外构造）
     return 0;
 }
 ```
@@ -685,7 +685,7 @@ int main() {
 #include <iostream>
 
 struct TransparentLess {
-    using is_transparent = void;            // 关键：声明透明
+    using is_transparent = void;                             // 关键：声明透明
     bool operator()(std::string_view a, std::string_view b) const
     { return a < b; }
 };
@@ -714,8 +714,8 @@ struct TL { using is_transparent = void;
 
 int main() {
     std::map<std::string, int, TL> m = {{"a",1},{"b",2},{"c",3}};
-    auto it = m.lower_bound(std::string_view("b"));   // 不需构造 std::string
-    std::cout << it->first << "\n";   // b
+    auto it = m.lower_bound(std::string_view("b"));  // 不需构造 std::string
+    std::cout << it->first << "\n";                  // b
     return 0;
 }
 ```
@@ -761,9 +761,9 @@ int main() {
 int main() {
     std::vector<int> v = {1, 2, 1, 3, 2, 1};
     std::map<int, int> cnt;
-    for (int x : v) cnt[x]++;                 // operator[] 计数
+    for (int x : v) cnt[x]++;  // operator[] 计数
     for (const auto& kv : cnt) std::cout << kv.first << ":" << kv.second << " ";
-    std::cout << "\n";   // 1:3 2:2 3:1
+    std::cout << "\n";         // 1:3 2:2 3:1
     return 0;
 }
 ```
@@ -780,8 +780,8 @@ int main() {
    #include <iostream>
    int main() {
        std::map<int, int> m = {{1, 10}};
-       if (m[99] == 0) { }          // ❌ 键 99 被插入，value 为 0
-       std::cout << m.size() << "\n";   // 2（而非 1）
+       if (m[99] == 0) { }             // ❌ 键 99 被插入，value 为 0
+       std::cout << m.size() << "\n";  // 2（而非 1）
        return 0;
    }
 ```
@@ -796,10 +796,10 @@ int main() {
 #include <utility>
    int main() {
        std::map<int, int> m = {{1, 10}};
-       auto nh = m.extract(1);        // 摘下节点（不拷贝 value）
-       nh.key() = 2;                  // 改 key
-       m.insert(std::move(nh));       // 重新挂回
-       std::cout << m.count(2) << "\n";   // 1
+       auto nh = m.extract(1);           // 摘下节点（不拷贝 value）
+       nh.key() = 2;                     // 改 key
+       m.insert(std::move(nh));          // 重新挂回
+       std::cout << m.count(2) << "\n";  // 1
        return 0;
    }
 ```
@@ -813,10 +813,10 @@ int main() {
    int main() {
        std::map<int, int> m = {{1,1},{2,2},{3,3}};
        for (auto it = m.begin(); it != m.end(); ) {
-           if (it->first == 2) it = m.erase(it);   // ✅ 用返回值续遍历
+           if (it->first == 2) it = m.erase(it);  // ✅ 用返回值续遍历
            else ++it;
        }
-       std::cout << m.size() << "\n";   // 2
+       std::cout << m.size() << "\n";             // 2
        return 0;
    }
 ```
@@ -861,10 +861,10 @@ int main() {
 #include <iostream>
 int main() {
     std::map<int, int> m = {{1,1},{2,2},{3,3},{4,4},{5,5}};
-    auto lo = m.lower_bound(2);     // 首个 >= 2
-    auto hi = m.upper_bound(4);     // 首个 > 4
+    auto lo = m.lower_bound(2);  // 首个 >= 2
+    auto hi = m.upper_bound(4);  // 首个 > 4
     for (auto it = lo; it != hi; ++it) std::cout << it->first << " ";
-    std::cout << "\n";   // 2 3 4
+    std::cout << "\n";           // 2 3 4
     return 0;
 }
 ```
@@ -879,7 +879,7 @@ int main() {
     std::map<int, std::string> a, b;
     a.emplace(1, "x"); a.emplace(2, "y");
     b.emplace(3, "z");
-    a.merge(b);                    // ✅ 节点平移，不拷贝 value
+    a.merge(b);                                                            // ✅ 节点平移，不拷贝 value
     std::cout << "a.size=" << a.size() << " b.size=" << b.size() << "\n";  // 3 0
     return 0;
 }
@@ -1000,10 +1000,10 @@ int main() {
 int main() {
     std::map<int, int> m = {{1,1},{2,2},{3,3},{4,4}};
     // 等价于 Java: map.subMap(2, true, 3, true);  Rust: map.range(2..=3);
-    auto [lo, hi] = m.equal_range(2);   // 注：equal_range 取"等于2"的范围；范围用 lower/upper
+    auto [lo, hi] = m.equal_range(2);  // 注：equal_range 取"等于2"的范围；范围用 lower/upper
     auto a = m.lower_bound(2), b = m.upper_bound(3);
     for (auto it = a; it != b; ++it) std::cout << it->first << " ";
-    std::cout << "\n";   // 2 3
+    std::cout << "\n";                 // 2 3
     return 0;
 }
 ```
@@ -1016,9 +1016,9 @@ int main() {
 #include <string>
 int main() {
     std::map<std::string, int> m = {{"banana",3},{"apple",1},{"cherry",2}};
-    for (const auto& kv : m)            // 自动按 key 升序（对标 SortedDictionary 枚举）
+    for (const auto& kv : m)  // 自动按 key 升序（对标 SortedDictionary 枚举）
         std::cout << kv.first << " ";
-    std::cout << "\n";   // apple banana cherry
+    std::cout << "\n";        // apple banana cherry
     return 0;
 }
 ```
@@ -1284,9 +1284,9 @@ int main() {
 #include <string>
 int main() {
     std::map<std::string, int> m;
-    m["x"] = 1;                    // [] 缺则插入（值默认构造后赋值）
-    m.insert_or_assign("x", 2);    // 存在则赋，返回 pair<it,bool>
-    std::cout << m.at("x") << "\n"; // 2；at 缺键抛 out_of_range
+    m["x"] = 1;                      // [] 缺则插入（值默认构造后赋值）
+    m.insert_or_assign("x", 2);      // 存在则赋，返回 pair<it,bool>
+    std::cout << m.at("x") << "\n";  // 2；at 缺键抛 out_of_range
 }
 ```
 
@@ -1303,10 +1303,10 @@ int main() {
 #include <map>
 int main() {
     std::map<int, std::string> a{{1, "one"}}, b;
-    auto nh = a.extract(1);         // 取出节点句柄，不拷贝
-    nh.mapped() = "ONE";            // 句柄上可改 key/value
+    auto nh = a.extract(1);        // 取出节点句柄，不拷贝
+    nh.mapped() = "ONE";           // 句柄上可改 key/value
     b.insert(std::move(nh));
-    std::cout << b.at(1) << "\n";   // ONE
+    std::cout << b.at(1) << "\n";  // ONE
 }
 ```
 
@@ -1330,11 +1330,11 @@ int main() {
 #include <string>
 int main() {
     std::map<std::string,int> m;
-    m["a"] = 1;                  // 插入
-    m["b"];                      // 缺失键 -> 插入默认构造的 int(0), 副作用!
-    std::cout << m.size() << "\n"; // 2
+    m["a"] = 1;                                     // 插入
+    m["b"];                                         // 缺失键 -> 插入默认构造的 int(0), 副作用!
+    std::cout << m.size() << "\n";                  // 2
     // 仅查询请用 find/contains, 避免意外插入
-    std::cout << (m.find("b") != m.end()) << "\n"; // 1
+    std::cout << (m.find("b") != m.end()) << "\n";  // 1
 }
 ```
 
@@ -1357,12 +1357,12 @@ int main() {
 #include <iostream>
 #include <map>
 #include <string_view>
-struct Cmp : std::less<> {};          // 透明比较器 (is_transparent)
+struct Cmp : std::less<> {};                                 // 透明比较器 (is_transparent)
 int main() {
     std::map<std::string,int,Cmp> m;
     m["hello"] = 1;
     std::string_view key = "hello";
-    auto it = m.find(key);            // 用 string_view 查 std::string 键, 免构造临时 string
+    auto it = m.find(key);                                   // 用 string_view 查 std::string 键, 免构造临时 string
     std::cout << (it != m.end() ? it->second : -1) << "\n";  // 1
 }
 ```
@@ -1384,13 +1384,13 @@ int main() {
 #include <map>
 #include <string>
 int main() {
-    std::map<int, std::string> im;  // 左闭起点 -> 值
+    std::map<int, std::string> im;     // 左闭起点 -> 值
     im[0] = "low"; im[10] = "mid"; im[20] = "high";
     auto val_at = [&](int x) {
-        auto it = im.upper_bound(x); // 第一个 > x 的起点
-        return std::prev(it)->second; // 前一个区间（x 必在区间内）
+        auto it = im.upper_bound(x);   // 第一个 > x 的起点
+        return std::prev(it)->second;  // 前一个区间（x 必在区间内）
     };
-    std::cout << val_at(15) << "\n";  // mid
+    std::cout << val_at(15) << "\n";   // mid
 }
 ```
 
@@ -1405,8 +1405,8 @@ int main() {
     std::map<int, int> m;
     for (int i = 0; i < 5; ++i) m[i] = i * i;
     long s = 0;
-    for (auto& [k, v] : m) s += v;   // 节点跳变访问
-    std::cout << s << "\n";          // 30
+    for (auto& [k, v] : m) s += v;  // 节点跳变访问
+    std::cout << s << "\n";         // 30
 }
 ```
 ## 附录：std::map 节点布局真机汇编实证（ASM-83-map · GCC 15.3.0 / C++26 / -O2）

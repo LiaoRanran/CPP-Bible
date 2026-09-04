@@ -80,14 +80,14 @@ struct Logger {
 };
 
 struct Service {
-    Logger& log;                       // 依赖通过引用持有（无所有权）
+    Logger& log;          // 依赖通过引用持有（无所有权）
     explicit Service(Logger& l) : log(l) {}
     void handle(const std::string& s) { log.log("handle: " + s); }
 };
 
 int main() {
-    Logger logger;                     // 依赖由“外部”创建并注入
-    Service svc(logger);               // ✅ 构造注入
+    Logger logger;        // 依赖由“外部”创建并注入
+    Service svc(logger);  // ✅ 构造注入
     svc.handle("hello");
 }
 ```
@@ -95,7 +95,7 @@ int main() {
 依赖关系用 ASCII 框线图表示（高层不依赖低层的具体类，只依赖“被注入的端口”）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：DI 是什么
-```
+```text
 ┌────────────┐       注入        ┌────────────┐
 │  Service   │ ───────────────▶ │  Logger    │
 │ (高层逻辑) │  (引用/指针/     │ (被注入的  │
@@ -125,7 +125,7 @@ int main() {
 struct Config { int port{8080}; };
 
 class Server {
-    const Config& cfg_;                // const 引用：构造后不再变化
+    const Config& cfg_;  // const 引用：构造后不再变化
 public:
     explicit Server(const Config& cfg) : cfg_(cfg) {}
     void start() const { std::cout << "listen :" << cfg_.port << "\n"; }
@@ -133,7 +133,7 @@ public:
 
 int main() {
     Config cfg; cfg.port = 9000;
-    Server srv(cfg);                   // 依赖在构造时注入
+    Server srv(cfg);     // 依赖在构造时注入
     srv.start();
 }
 ```
@@ -168,9 +168,9 @@ struct OpenGLRenderer : Renderer { void draw() override { std::cout << "OpenGL\n
 struct VulkanRenderer : Renderer { void draw() override { std::cout << "Vulkan\n"; } };
 
 class Window {
-    Renderer* renderer_ = nullptr;     // 允许为空（可选依赖）
+    Renderer* renderer_ = nullptr;                    // 允许为空（可选依赖）
 public:
-    void setRenderer(Renderer* r) { renderer_ = r; }   // ✅ setter 注入
+    void setRenderer(Renderer* r) { renderer_ = r; }  // ✅ setter 注入
     void render() const { if (renderer_) renderer_->draw(); }
 };
 
@@ -180,7 +180,7 @@ int main() {
     w.setRenderer(&gl);
     w.render();
     VulkanRenderer vk;
-    w.setRenderer(&vk);                // 运行时热替换
+    w.setRenderer(&vk);                               // 运行时热替换
     w.render();
 }
 ```
@@ -212,14 +212,14 @@ struct MockClock  { int now() const { return 0;   } };
 
 template <class Clock>
 class Scheduler {
-    Clock clock_;                      // 依赖类型在编译期确定
+    Clock clock_;            // 依赖类型在编译期确定
 public:
     int tick() const { return clock_.now(); }
 };
 
 int main() {
     Scheduler<RealClock> s;
-    Scheduler<MockClock> m;            // ✅ 同一份代码，绑定不同实现
+    Scheduler<MockClock> m;  // ✅ 同一份代码，绑定不同实现
     std::cout << s.tick() << " " << m.tick() << "\n";
 }
 ```
@@ -305,7 +305,7 @@ int main() {
 #include <string>
 #include <utility>
 
-struct INotifier {                     // 抽象接口（接口隔离）
+struct INotifier {                                      // 抽象接口（接口隔离）
     virtual ~INotifier() = default;
     virtual void send(const std::string&) = 0;
 };
@@ -317,7 +317,7 @@ struct SmsNotifier : INotifier {
 };
 
 class OrderService {
-    std::unique_ptr<INotifier> notifier_;   // 依赖接口，而非具体类
+    std::unique_ptr<INotifier> notifier_;               // 依赖接口，而非具体类
 public:
     explicit OrderService(std::unique_ptr<INotifier> n) : notifier_(std::move(n)) {}
     void place() { notifier_->send("ordered"); }
@@ -417,10 +417,10 @@ struct IUserRepo {
     virtual ~IUserRepo() = default;
     virtual std::string name(int id) = 0;
 };
-struct DbUserRepo : IUserRepo {        // 真实实现（连库）
+struct DbUserRepo : IUserRepo {                         // 真实实现（连库）
     std::string name(int id) override { return "db#" + std::to_string(id); }
 };
-struct FakeUserRepo : IUserRepo {      // 测试替身（test double）
+struct FakeUserRepo : IUserRepo {                       // 测试替身（test double）
     std::string name(int id) override { return "fake#" + std::to_string(id); }
 };
 
@@ -432,7 +432,7 @@ public:
 };
 
 int main() {
-    UserService sut(std::make_unique<FakeUserRepo>());   // ✅ 注入 fake，单测无副作用
+    UserService sut(std::make_unique<FakeUserRepo>());  // ✅ 注入 fake，单测无副作用
     assert(sut.greeting(1) == "Hi fake#1");
 }
 ```
@@ -610,14 +610,14 @@ public:
 
 int main() {
     Repository repo(std::make_unique<Connection>());
-    repo.use();                        // 离开作用域自动 close（无需手动 dispose）
+    repo.use();                         // 离开作用域自动 close（无需手动 dispose）
 }
 ```
 
 【生命周期图】：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期管理（RAII）
-```
+```text
 main ──new Connection──▶ unique_ptr<Connection>
                               │
                 注入到 Repository（转移所有权）
@@ -652,7 +652,7 @@ struct IWork { virtual ~IWork() = default; virtual int run(int x) = 0; };
 struct Square : IWork { int run(int x) override { return x * x; } };  // 无状态→线程安全
 
 class Worker {
-    std::shared_ptr<IWork> work_;      // 共享只读依赖（线程安全）
+    std::shared_ptr<IWork> work_;                                     // 共享只读依赖（线程安全）
 public:
     explicit Worker(std::shared_ptr<IWork> w) : work_(std::move(w)) {}
     int go(int x) const { return work_->run(x); }
@@ -695,17 +695,17 @@ int main() {
 
 struct IStorage { virtual ~IStorage() = default; virtual int get() const = 0; };
 struct MemStorage : IStorage { int get() const override { return 42; } };
-int via_virtual(const IStorage& s) { return s.get(); }      // 经 vtable（除非被去虚化）
+int via_virtual(const IStorage& s) { return s.get(); }  // 经 vtable（除非被去虚化）
 
-struct FastStorage { int get() const { return 42; } };       // 故意无 virtual
+struct FastStorage { int get() const { return 42; } };  // 故意无 virtual
 template <class S>
-int via_template(const S& s) { return s.get(); }             // 直接调用 / 内联
+int via_template(const S& s) { return s.get(); }        // 直接调用 / 内联
 
 int main() {
     MemStorage ms;
     FastStorage fs;
-    volatile int a = via_virtual(ms);    // 间接调用（vtable）
-    volatile int b = via_template(fs);   // 直接内联，无 vtable
+    volatile int a = via_virtual(ms);                   // 间接调用（vtable）
+    volatile int b = via_template(fs);                  // 直接内联，无 vtable
     return a + b;
 }
 ```
@@ -828,11 +828,11 @@ struct PolicyA { static constexpr int factor() { return 2; } };
 struct PolicyB { static constexpr int factor() { return 3; } };
 
 template <class P>
-constexpr int compute(int x) { return x * P::factor(); }   // ✅ constexpr 注入
+constexpr int compute(int x) { return x * P::factor(); }  // ✅ constexpr 注入
 
 int main() {
-    constexpr int r1 = compute<PolicyA>(10);   // 编译期 = 20
-    constexpr int r2 = compute<PolicyB>(10);   // 编译期 = 30
+    constexpr int r1 = compute<PolicyA>(10);              // 编译期 = 20
+    constexpr int r2 = compute<PolicyB>(10);              // 编译期 = 30
     std::cout << r1 << " " << r2 << "\n";
 }
 ```
@@ -867,7 +867,7 @@ struct World {
 };
 
 class MovementSystem {
-    World& world_;                     // 注入 World（组件存储）
+    World& world_;          // 注入 World（组件存储）
 public:
     explicit MovementSystem(World& w) : world_(w) {}
     void step(int i, int dx, int dy) { auto& p = world_.get(i); p.x += dx; p.y += dy; }
@@ -875,7 +875,7 @@ public:
 
 int main() {
     World w; w.positions.push_back({0, 0});
-    MovementSystem sys(w);             // ✅ World 作为依赖注入系统
+    MovementSystem sys(w);  // ✅ World 作为依赖注入系统
     sys.step(0, 1, 2);
     std::cout << w.positions[0].x << "," << w.positions[0].y << "\n";
 }
@@ -962,7 +962,7 @@ int main() {
 
 struct IEventBus { virtual ~IEventBus() = default; virtual void publish(const std::string&) = 0; };
 struct KafkaBus : IEventBus { void publish(const std::string&) override {} };
-struct InMemBus : IEventBus {                                  // 测试用内存总线
+struct InMemBus : IEventBus {     // 测试用内存总线
     std::string last;
     void publish(const std::string& s) override { last = s; }
 };
@@ -977,7 +977,7 @@ public:
 int main() {
     auto mem = std::make_unique<InMemBus>();
     auto* raw = mem.get();
-    Aggregate a(std::move(mem));     // ✅ 注入内存总线，断言可观测
+    Aggregate a(std::move(mem));  // ✅ 注入内存总线，断言可观测
     a.onOrder();
     assert(raw->last == "OrderPlaced");
 }
@@ -1040,7 +1040,7 @@ int main() {
 【选型速查】
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结
-```
+```text
 依赖可热插拔？ ──是──▶ setter 注入（③）
       │否
       ▼

@@ -113,8 +113,8 @@ public:
         : f_(std::fopen(path, mode)) {
         if (!f_) throw std::runtime_error("fopen failed");  // 构造失败→无资源泄漏
     }
-    ~FileRAII() noexcept {                    // 析构 noexcept：异常安全基石
-        if (f_) std::fclose(f_);              // 释放资源
+    ~FileRAII() noexcept {                                  // 析构 noexcept：异常安全基石
+        if (f_) std::fclose(f_);                            // 释放资源
     }
     FILE* get() const noexcept { return f_; }
     // 禁止拷贝（见 Rule of Three），允许移动（见 Rule of Five）
@@ -123,7 +123,7 @@ public:
 };
 
 int main() {
-    FileRAII log("app.log", "w");   // 构造即获取
+    FileRAII log("app.log", "w");                           // 构造即获取
     std::fprintf(log.get(), "hello RAII\n");
     // 离开 main 作用域时 ~FileRAII() 自动 fclose，无需手写清理
 }
@@ -219,9 +219,9 @@ public:
 
 int main() {
     CritSec cs;
-    CritSecGuard g(cs);   // 进入作用域加锁
+    CritSecGuard g(cs);  // 进入作用域加锁
     // ... 临界区 ...
-}                          // 离开作用域自动解锁
+}                        // 离开作用域自动解锁
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源类型全景：不只有内存
@@ -380,7 +380,7 @@ int legacy_open_three_files() {
     FILE* a = std::fopen("a.txt", "w");
     if (!a) return -1;
     FILE* b = std::fopen("b.txt", "w");
-    if (!b) { fclose(a); return -1; }   // 必须记得清理 a
+    if (!b) { fclose(a); return -1; }             // 必须记得清理 a
     FILE* c = std::fopen("c.txt", "w");
     if (!c) { fclose(b); fclose(a); return -1; }  // 清理顺序易错且冗长
     // ... 业务逻辑 ...
@@ -408,9 +408,9 @@ public:
 };
 
 void raii_open_three_files() {
-    F a("a.txt"), b("b.txt"), c("c.txt");   // 三个栈对象
+    F a("a.txt"), b("b.txt"), c("c.txt");  // 三个栈对象
     std::fputs("work", a.get());
-    if (some_error_condition())             // 假设会抛异常
+    if (some_error_condition())            // 假设会抛异常
         throw std::runtime_error("business error");
     // 正常或异常离开，a/b/c 析构逆序调用，三个文件全部关闭
 }
@@ -447,8 +447,8 @@ struct Resource {
 
 struct Holder {
     Resource r1{"r1"};
-    Resource r2{"boom"};   // 构造 r2 时抛异常
-    Resource r3{"r3"};     // 永远不会被构造
+    Resource r2{"boom"};  // 构造 r2 时抛异常
+    Resource r3{"r3"};    // 永远不会被构造
     Holder() { std::printf("Holder fully constructed\n"); }
 };
 
@@ -472,11 +472,11 @@ struct Leaky {
     int* a;
     int* b;
     Leaky() {
-        a = new int[100];            // 资源已获取
-        b = new int[10000000000ULL]; // 抛 std::bad_alloc
+        a = new int[100];                 // 资源已获取
+        b = new int[10000000000ULL];      // 抛 std::bad_alloc
         // 异常时，a 从未交给 RAII 成员，泄漏！Leaky 的析构不会被调用
     }
-    ~Leaky() { delete[] a; delete[] b; }   // 永远到不了
+    ~Leaky() { delete[] a; delete[] b; }  // 永远到不了
 };
 ```
 
@@ -514,7 +514,7 @@ struct Safe {
 #include <cstdio>
 
 struct Bad {
-    ~Bad() noexcept(false) {                 // 显式允许抛异常——危险！
+    ~Bad() noexcept(false) {                      // 显式允许抛异常——危险！
         throw std::runtime_error("dtor throws");
     }
 };
@@ -527,7 +527,7 @@ struct Trigger {
 int main() {
     try {
         Trigger t;
-        throw std::runtime_error("main throws"); // 已有异常在飞
+        throw std::runtime_error("main throws");  // 已有异常在飞
     } catch (...) {
         // 永远到不了：栈展开时 t.~Trigger 抛异常，双重异常 → terminate
     }
@@ -544,7 +544,7 @@ int main() {
 #include <exception>
 
 struct Good {
-    ~Good() noexcept {                 // 隐式 noexcept(true) 也可显式写
+    ~Good() noexcept {                          // 隐式 noexcept(true) 也可显式写
         try {
             // 可能抛的操作...
             throw std::runtime_error("ignored");
@@ -560,7 +560,7 @@ int main() {
         Good g;
         throw std::runtime_error("main throws");
     } catch (const std::exception& e) {
-        std::printf("caught: %s\n", e.what());   // 正常到达，g 已安全析构
+        std::printf("caught: %s\n", e.what());  // 正常到达，g 已安全析构
     }
 }
 ```
@@ -590,14 +590,14 @@ public:
     BadString(const char* s) : data_(new char[std::strlen(s)+1]) {
         std::strcpy(data_, s);
     }
-    ~BadString() { delete[] data_; }        // 自定义析构，但没有自定义拷贝
+    ~BadString() { delete[] data_; }  // 自定义析构，但没有自定义拷贝
     // 编译器生成默认拷贝构造/拷贝赋值 = 浅拷贝！
     const char* c_str() const { return data_; }
 };
 
 int main() {
     BadString a("hello");
-    BadString b = a;        // 浅拷贝：b.data_ == a.data_
+    BadString b = a;                  // 浅拷贝：b.data_ == a.data_
     std::printf("%s %s\n", a.c_str(), b.c_str());
     // 离开作用域：~b() 释放 a.data_，~a() 再释放同一指针 → double free → 崩溃
 }
@@ -636,8 +636,8 @@ public:
 
     // 3) 拷贝赋值（深拷贝 + 自赋值安全 + 释放旧值）
     GoodString& operator=(const GoodString& o) {
-        if (this != &o) {                       // 自赋值检查
-            char* tmp = clone(o.data_);          // 先分配成功再释放旧的（强异常安全）
+        if (this != &o) {                // 自赋值检查
+            char* tmp = clone(o.data_);  // 先分配成功再释放旧的（强异常安全）
             delete[] data_;
             data_ = tmp;
         }
@@ -649,9 +649,9 @@ public:
 
 int main() {
     GoodString a("hello");
-    GoodString b = a;            // 深拷贝：b.data_ 与 a.data_ 不同
+    GoodString b = a;                    // 深拷贝：b.data_ 与 a.data_ 不同
     GoodString c("x");
-    c = a;                       // 拷贝赋值
+    c = a;                               // 拷贝赋值
     std::printf("%s %s %s\n", a.c_str(), b.c_str(), c.c_str());
     // 三个对象析构各自释放自己的堆块，无 double free
 }
@@ -706,16 +706,16 @@ public:
     // 4) 移动构造（窃取）
     Buffer(Buffer&& o) noexcept
         : data_(o.data_), size_(o.size_) {
-        o.data_ = nullptr;   // 置源为空，使其析构无操作
+        o.data_ = nullptr;                   // 置源为空，使其析构无操作
         o.size_ = 0;
     }
 
     // 5) 移动赋值
     Buffer& operator=(Buffer&& o) noexcept {
         if (this != &o) {
-            delete[] data_;          // 释放自身旧资源
+            delete[] data_;                  // 释放自身旧资源
             data_ = o.data_; size_ = o.size_;
-            o.data_ = nullptr; o.size_ = 0;   // 置源为空
+            o.data_ = nullptr; o.size_ = 0;  // 置源为空
         }
         return *this;
     }
@@ -725,7 +725,7 @@ public:
 
 int main() {
     Buffer a("hello");
-    Buffer b = std::move(a);    // 移动构造：a.data_ 被窃取并置空
+    Buffer b = std::move(a);                 // 移动构造：a.data_ 被窃取并置空
     std::printf("b=%s a.empty=%d\n", b.c_str(), a.c_str()[0] == '\0');
     // a 析构时 data_==nullptr → delete[] nullptr 安全无操作
 }
@@ -754,14 +754,14 @@ int main() {
 #include <string>
 #include <utility>
 
-struct Connection {                 // 业务对象，无需手写析构
+struct Connection {                                                      // 业务对象，无需手写析构
     void query() const { std::printf("query\n"); }
 };
 
 class Service {
-    std::unique_ptr<Connection> conn_ = std::make_unique<Connection>(); // 独占资源
-    std::vector<int> cache_;                                          // 自带深拷贝/移动
-    std::string name_ = "svc";                                        // 同上
+    std::unique_ptr<Connection> conn_ = std::make_unique<Connection>();  // 独占资源
+    std::vector<int> cache_;                                             // 自带深拷贝/移动
+    std::string name_ = "svc";                                           // 同上
 public:
     void run() const { conn_->query(); }
     // 无需 ~Service / 拷贝 / 移动：编译器生成的正确版本
@@ -772,7 +772,7 @@ public:
 int main() {
     Service s;
     s.run();
-    auto s2 = std::move(s);   // 移动：资源被转移，原 s 为空壳，析构安全
+    auto s2 = std::move(s);                                              // 移动：资源被转移，原 s 为空壳，析构安全
     s2.run();
 }
 ```
@@ -787,8 +787,8 @@ struct Config { int value = 42; };
 
 int main() {
     auto cfg = std::make_shared<Config>();
-    auto a = cfg;   // 引用计数 +1，共享同一 Config
-    auto b = cfg;   // 引用计数 +1
+    auto a = cfg;  // 引用计数 +1，共享同一 Config
+    auto b = cfg;  // 引用计数 +1
     std::printf("value=%d use_count=%ld\n", a->value, cfg.use_count());
     // a、b、cfg 析构时计数递减，最后一个析构释放 Config —— 无泄漏、无 double free
 }
@@ -801,7 +801,7 @@ int main() {
 #include <cstdio>
 
 class GoodString2 {
-    std::string data_;                 // std::string 自带正确五大函数
+    std::string data_;  // std::string 自带正确五大函数
 public:
     explicit GoodString2(const char* s) : data_(s) {}
     const char* c_str() const { return data_.c_str(); }
@@ -810,9 +810,9 @@ public:
 
 int main() {
     GoodString2 a("hello");
-    GoodString2 b = a;                 // 编译器生成的深拷贝，安全
+    GoodString2 b = a;  // 编译器生成的深拷贝，安全
     GoodString2 c("x");
-    c = a;                             // 安全
+    c = a;              // 安全
     std::printf("%s %s %s\n", a.c_str(), b.c_str(), c.c_str());
 }
 ```
@@ -849,17 +849,17 @@ class MoveOnly {
     int* p_ = new int(0);
 public:
     MoveOnly() = default;
-    ~MoveOnly() noexcept { delete p_; }            // 自定义析构 → 移动本会被 delete
-    MoveOnly(const MoveOnly&) = delete;            // 禁止拷贝
+    ~MoveOnly() noexcept { delete p_; }       // 自定义析构 → 移动本会被 delete
+    MoveOnly(const MoveOnly&) = delete;       // 禁止拷贝
     MoveOnly& operator=(const MoveOnly&) = delete;
-    MoveOnly(MoveOnly&&) noexcept = default;        // =default 重新启用移动
+    MoveOnly(MoveOnly&&) noexcept = default;  // =default 重新启用移动
     MoveOnly& operator=(MoveOnly&&) noexcept = default;
     int get() const { return *p_; }
 };
 
 int main() {
     MoveOnly a;
-    MoveOnly b = std::move(a);    // 编译器生成的移动：逐成员移动 p_ 并置 a.p_ 为 nullptr
+    MoveOnly b = std::move(a);                // 编译器生成的移动：逐成员移动 p_ 并置 a.p_ 为 nullptr
     std::printf("%d\n", b.get());
 }
 ```
@@ -907,10 +907,10 @@ int main() {
 
 int main() {
     std::vector<int> a = {1, 2, 3};
-    std::vector<int> b = std::move(a);    // a 被移动
+    std::vector<int> b = std::move(a);  // a 被移动
     std::printf("b.size=%zu a.size=%zu\n", b.size(), a.size());
     // 实践：a.size()==0；但标准仅保证 a 可析构/可赋值
-    a = std::vector<int>{9, 9};           // 给移后对象赋新值是安全的
+    a = std::vector<int>{9, 9};         // 给移后对象赋新值是安全的
     std::printf("a.size after assign=%zu\n", a.size());
 }
 ```
@@ -1058,12 +1058,12 @@ std::mutex m;
 int flag = 0;
 
 int main() {
-    std::unique_lock<std::mutex> lk(m, std::defer_lock); // 构造时不锁
-    lk.lock();                       // 手动锁
+    std::unique_lock<std::mutex> lk(m, std::defer_lock);  // 构造时不锁
+    lk.lock();                                            // 手动锁
     flag = 1;
-    lk.unlock();                     // 手动解锁（RAII 仍可兜底）
+    lk.unlock();                                          // 手动解锁（RAII 仍可兜底）
     if (lk.owns_lock() == false) std::printf("released manually\n");
-    lk.lock();                       // 再锁
+    lk.lock();                                            // 再锁
     // 离开作用域若仍持有则自动解锁
 }
 ```
@@ -1208,8 +1208,8 @@ int main() {
 std::mutex log_mtx;
 
 void log_lines(const std::vector<std::string>& lines) {
-    std::lock_guard<std::mutex> g(log_mtx);   // RAII 锁
-    std::ofstream out("log.txt", std::ios::app); // RAII 文件
+    std::lock_guard<std::mutex> g(log_mtx);        // RAII 锁
+    std::ofstream out("log.txt", std::ios::app);   // RAII 文件
     for (const auto& l : lines) out << l << '\n';  // vector 自身 RAII
 }
 
@@ -1333,15 +1333,15 @@ unique_ptr& operator=(const unique_ptr&) = delete;
       typedef _Mutex mutex_type;
 
       explicit lock_guard(mutex_type& __m) : _M_device(__m)
-      { _M_device.lock(); }                       // 构造即加锁
+      { _M_device.lock(); }                    // 构造即加锁
 
       lock_guard(mutex_type& __m, adopt_lock_t) noexcept : _M_device(__m)
-      { } // calling thread owns mutex             // 接管已持有的锁
+      { }                                      // calling thread owns mutex             // 接管已持有的锁
 
       ~lock_guard()
-      { _M_device.unlock(); }                     // 析构即解锁
+      { _M_device.unlock(); }                  // 析构即解锁
 
-      lock_guard(const lock_guard&) = delete;     // 不可拷贝
+      lock_guard(const lock_guard&) = delete;  // 不可拷贝
       lock_guard& operator=(const lock_guard&) = delete;
 
     private:
@@ -1368,16 +1368,16 @@ unique_ptr& operator=(const unique_ptr&) = delete;
     {
     public:
       _Sp_counted_base() noexcept
-      : _M_use_count(1), _M_weak_count(1) { }     // 构造时强/弱计数都=1
+      : _M_use_count(1), _M_weak_count(1) { }                  // 构造时强/弱计数都=1
       ...
-      void _M_add_ref_copy()                       // 增加强引用
-      { __gnu_cxx::__atomic_add_dispatch(&_M_use_count, 1); }   // 原子 +1
+      void _M_add_ref_copy()                                   // 增加强引用
+      { __gnu_cxx::__atomic_add_dispatch(&_M_use_count, 1); }  // 原子 +1
       ...
-      void _M_release() noexcept;                 // 释放强引用（见下）
+      void _M_release() noexcept;                              // 释放强引用（见下）
       ...
     private:
-      _Atomic_word  _M_use_count;     // #shared  强引用计数
-      _Atomic_word  _M_weak_count;    // #weak + (#shared != 0)  弱引用计数
+      _Atomic_word  _M_use_count;                              // #shared  强引用计数
+      _Atomic_word  _M_weak_count;                             // #weak + (#shared != 0)  弱引用计数
     };
 ```
 
@@ -1566,8 +1566,8 @@ int main() {
 #include <chrono>
 #include <cstdio>
 
-struct Zero { std::vector<int> v = std::vector<int>(64); };  // Rule of Zero
-struct Manual {                                              // 手写五大
+struct Zero { std::vector<int> v = std::vector<int>(64); };       // Rule of Zero
+struct Manual {                                                   // 手写五大
     int* p = new int[64];
     Manual() = default;
     ~Manual() noexcept { delete[] p; }
@@ -1581,7 +1581,7 @@ const int N = 20'000'000;
 
 int main() {
     auto t0 = std::chrono::steady_clock::now();
-    for (int i = 0; i < N; ++i) { Zero a; Zero b = a; (void)b; }   // 拷贝构造
+    for (int i = 0; i < N; ++i) { Zero a; Zero b = a; (void)b; }  // 拷贝构造
     auto t1 = std::chrono::steady_clock::now();
     for (int i = 0; i < N; ++i) { Manual a; Manual b = a; (void)b; }
     auto t2 = std::chrono::steady_clock::now();
@@ -1985,9 +1985,9 @@ template <class F> ScopeGuard<F> scope_guard(F f){ return ScopeGuard<F>(std::mov
 struct StrongArray {
     std::vector<int> v;
     StrongArray& operator=(const StrongArray& o){
-        StrongArray tmp(o);        // 拷贝可能抛, 但只影响 tmp, *this 不动
-        std::swap(v, tmp.v);       // 交换不抛 -> 提交
-        return *this;              // tmp 析构释放旧资源
+        StrongArray tmp(o);   // 拷贝可能抛, 但只影响 tmp, *this 不动
+        std::swap(v, tmp.v);  // 交换不抛 -> 提交
+        return *this;         // tmp 析构释放旧资源
     }
 };
 ```
@@ -2029,9 +2029,9 @@ struct Session {
 
 int main() {
     auto s = std::make_unique<Session>(7);
-    auto t = std::move(s);         // 所有权转移, s 变空
+    auto t = std::move(s);  // 所有权转移, s 变空
     if (!s) std::cout << "s empty, t->id=" << t->id << "\n";
-    t.reset();                     // 显式释放
+    t.reset();              // 显式释放
 }
 ```
 
@@ -2087,9 +2087,9 @@ int main() {
 ```cpp
 #include <cstdio>
 int main(){
-    FILE* f = std::fopen("a.txt", "r");   // 若下面 throw, fclose 永不调用 -> 句柄泄漏
+    FILE* f = std::fopen("a.txt", "r");  // 若下面 throw, fclose 永不调用 -> 句柄泄漏
     // step_that_may_throw();
-    std::fclose(f);                        // 仅正常路径执行, 异常路径被跳过
+    std::fclose(f);                      // 仅正常路径执行, 异常路径被跳过
 }
 ```
 
@@ -2103,10 +2103,10 @@ int main(){
 struct FileGuard {
     FILE* f;
     FileGuard(const char* p) : f(std::fopen(p, "r")) {}
-    ~FileGuard() { if (f) std::fclose(f); }   // 析构必调用
+    ~FileGuard() { if (f) std::fclose(f); }  // 析构必调用
 };
 int main(){
-    FileGuard fg("a.txt");   // 无论正常/异常, fg 析构自动 fclose -> 全清理
+    FileGuard fg("a.txt");                   // 无论正常/异常, fg 析构自动 fclose -> 全清理
 }
 ```
 
@@ -2121,9 +2121,9 @@ int main(){
 std::mutex m;
 int main(){
     m.lock();
-    auto g = [&]{ m.unlock(); };   // 作用域结束必解锁, 无论怎么退出
+    auto g = [&]{ m.unlock(); };  // 作用域结束必解锁, 无论怎么退出
     // ... 任意路径 ...
-    g();                           // 真实工程用 scope_exit / unique_lock
+    g();                          // 真实工程用 scope_exit / unique_lock
 }
 ```
 
@@ -2261,21 +2261,21 @@ int main() {
     {
         auto p1 = std::make_unique<Resource>(1);
         std::cout << "p1->id=" << p1->id << std::endl;
-        std::cout << "sizeof(p1)=" << sizeof(p1) << std::endl;  // 8 (pointer only, EBO)
-    }  // p1析构, Resource 1 released
+        std::cout << "sizeof(p1)=" << sizeof(p1) << std::endl;             // 8 (pointer only, EBO)
+    }                                                                      // p1析构, Resource 1 released
 
     {
         std::unique_ptr<Resource> p2;
         p2 = std::make_unique<Resource>(2);
-        auto p3 = std::move(p2);  // 转移所有权
+        auto p3 = std::move(p2);                                           // 转移所有权
         std::cout << "p2 is " << (p2 ? "non-null" : "null") << std::endl;  // null
-        std::cout << "p3->id=" << p3->id << std::endl;  // 2
-    }  // p3析构, Resource 2 released
+        std::cout << "p3->id=" << p3->id << std::endl;                     // 2
+    }                                                                      // p3析构, Resource 2 released
 
     // 数组版本
     auto arr = std::make_unique<int[]>(5);
     for (int i = 0; i < 5; ++i) arr[i] = i * 10;
-    std::cout << "arr[3]=" << arr[3] << std::endl;  // 30
+    std::cout << "arr[3]=" << arr[3] << std::endl;                         // 30
     return 0;
 }
 ```
@@ -2526,7 +2526,7 @@ struct BigData {
     int id;
     std::vector<char> buf;
     BigData(int i, std::size_t n) : id(i), buf(n, 'x') {}
-    BigData(const BigData& o) : id(o.id), buf(o.buf) {}          // 深拷贝
+    BigData(const BigData& o) : id(o.id), buf(o.buf) {}                 // 深拷贝
     BigData(BigData&& o) noexcept : id(o.id), buf(std::move(o.buf)) {}  // 浅移动
 };
 
@@ -2534,8 +2534,8 @@ int main() {
     std::vector<BigData> v;
     v.reserve(4);
     BigData a(1, 1024);
-    v.push_back(a);                 // 拷贝：深拷贝 1KB
-    v.push_back(std::move(a));      // 移动：仅转移指针
+    v.push_back(a);                                                     // 拷贝：深拷贝 1KB
+    v.push_back(std::move(a));                                          // 移动：仅转移指针
 
     std::cout << "size=" << v.size() << std::endl;
     std::cout << "a.buf empty after move? " << a.buf.empty() << std::endl;

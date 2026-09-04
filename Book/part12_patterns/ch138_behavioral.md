@@ -126,7 +126,7 @@ struct Pipeline {
 };
 int main() {
     Pipeline p;
-    p.algo = [](int n){ return n & 0xFF; };   // 运行期换策略
+    p.algo = [](int n){ return n & 0xFF; };                 // 运行期换策略
     std::cout << p.go(0x1A2B) << '\n';
 }
 ```
@@ -324,7 +324,7 @@ struct Macro : Cmd {
 #include <iostream>
 struct Algorithm {
     virtual ~Algorithm() = default;
-    void run() {           // 不变骨架
+    void run() {                              // 不变骨架
         init();
         for (int i = 0; i < steps(); ++i) work();
         done();
@@ -332,7 +332,7 @@ struct Algorithm {
     virtual void init() = 0;
     virtual void work() = 0;
     virtual void done() = 0;
-    virtual int  steps() const { return 3; }   // 可覆写也可不覆写的钩子
+    virtual int  steps() const { return 3; }  // 可覆写也可不覆写的钩子
 };
 struct Impl : Algorithm {
     void init() override { std::cout << "init\n"; }
@@ -762,18 +762,18 @@ g++ -std=c++23 -O2 -S -masm=intel -o Examples/_ch138_variant_opaque.asm Examples
 #include <variant>
 // 文件：Examples/_ch138_dispatch.cpp
 // 行号：18
-int via_virtual(const Base& b) { return b.eval(); }   // 虚函数分发
+int via_virtual(const Base& b) { return b.eval(); }  // 虚函数分发
 
 // 文件：Examples/_ch138_dispatch.cpp
 // 行号：21
-int via_variant(const Arith& v) {                      // std::variant + visit 分发
+int via_variant(const Arith& v) {                    // std::variant + visit 分发
     return std::visit([](const auto& x) -> int { return x.eval(); }, v);
 }
 
 // 文件：Examples/_ch138_dispatch.cpp
 // 行号：25
 template <typename T>
-int via_if(const T& t) { return eval_if<T>(t); }       // if constexpr 编译期分发
+int via_if(const T& t) { return eval_if<T>(t); }     // if constexpr 编译期分发
 ```
 
 **取证一：虚函数 = 真实的 vtable 间接跳转**（来自 `Examples/_ch138_dispatch.asm`）：
@@ -913,7 +913,7 @@ main:
 C++ 的行为型模式实现与其他语言有本质区别——模板和静态多态提供了独特的方案：
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 A：行为型模式在 C++ 中的
-```
+```text
 Observer:    Qt 信号/槽 (MOC元对象) vs 标准C++ (std::function + vector)
 Strategy:    编译期 (Policy-Based, std::unique_ptr custom deleter) vs 运行时 (虚函数)
 Command:     std::function<void()> (lambda捕获状态, 零开销) vs Java Command对象 (堆分配)
@@ -942,7 +942,7 @@ int main() {
 ## 附录 B：工业案例 —— Qt / LLVM / Chromium 中的行为型模式 [F: Industry]
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：工业案例 —— Qt / LLVM / Chromium 中的行为型模式 [F: Industry]
-```
+```text
 Qt: Observer = 信号/槽; Command = QAction; State = QStateMachine (SCXML状态机)
     → Qt Creator 的整个 UI 交互层是 Observer 模式的大型实例
     → 每个 widget 既是 Observable (发信号) 又是 Observer (收信号)
@@ -959,7 +959,7 @@ Chromium: Observer = base::ObserverList (线程安全); Task = base::OnceCallbac
 ## 附录 C：面试 [J: Learning]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：面试 [J: Learning]
-```
+```text
 面试高频:
 Q: 行为型模式中最常在 C++ 中见到哪些？
 A: Observer (Qt信号槽), Strategy (std::unique_ptr deleter, Policy-Based), Command (std::function)

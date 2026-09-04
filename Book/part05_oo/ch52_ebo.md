@@ -67,7 +67,7 @@ EBO 的价值要在后续章才完全兑现：**Policy-Based Design（ch71）** 
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
+```text
   空类作成员                      空类作基类（EBO）
   struct AsMember {               struct Derived : Empty {
      Empty e;  // 占 1B+填充            int x;     // x 从 0 起
@@ -100,7 +100,7 @@ classDiagram
         int x
     }
     Empty <|-- Derived : EBO（空基类占 0）
-```
+```text
 
 ## ⑦ ASCII 内存图 / 对象布局
 
@@ -133,7 +133,7 @@ x64 / GCC 15.3.0：
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图
-```
+```text
 空基类子对象随派生类一起构造/析构；EBO 只影响大小与偏移，不改变构造/析构语义。
 空基类若无数据成员，其构造函数是 trivial 的（ch19/ch47 析构需 virtual 仅当被多态使用）。
 ```
@@ -141,7 +141,7 @@ x64 / GCC 15.3.0：
 ## ⑨ 调用栈 / 时序图
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图
-```
+```asm
 读取 Derived::x：
   mov eax, [rcx]      ; rcx=Derived*，x 就在偏移 0
 读取 AsMember::x：
@@ -199,10 +199,10 @@ _Z11read_memberP8AsMember:
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
-struct NoLog  { void log() const {} };        // 空策略
+struct NoLog  { void log() const {} };                     // 空策略
 struct Timer  { int ticks = 0; void tick(){ ++ticks; } };  // 有状态策略
 template<class LogP, class TimeP>
-struct Engine : LogP, TimeP {                  // 两个策略作空基类
+struct Engine : LogP, TimeP {                              // 两个策略作空基类
     void run(){ this->log(); this->tick(); }
 };
 // Engine<NoLog,Timer> ：NoLog 被 EBO 压缩为 0，sizeof=sizeof(Timer)
@@ -227,8 +227,8 @@ struct vector_impl : private Alloc {           // 空 Alloc 被 EBO 抹掉
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 ```cpp
 struct Empty {};
-struct Bad { Empty e; int x; };   // e 作成员 → 占 1B+填充，sizeof=8
-struct Good : Empty { int x; };   // 作基类 → EBO，sizeof=4
+struct Bad { Empty e; int x; };  // e 作成员 → 占 1B+填充，sizeof=8
+struct Good : Empty { int x; };  // 作基类 → EBO，sizeof=4
 // 选 Good 而非 Bad 以压缩大规模对象数组
 ```
 
@@ -529,8 +529,8 @@ GCC/Clang 通常把两个都压到偏移 0（共享地址）；MSVC 历史上第
 #include <chrono>
 #include <cstdio>
 struct Empty {};
-struct Derived : Empty { int x = 1; };   // EBO：空基类被压缩
-struct AsMember { Empty e; int x = 1; }; // 空成员占 1 字节 + 对齐填充
+struct Derived : Empty { int x = 1; };    // EBO：空基类被压缩
+struct AsMember { Empty e; int x = 1; };  // 空成员占 1 字节 + 对齐填充
 int main(){
     printf("sizeof(Empty)=%zu  sizeof(Derived)=%zu  sizeof(AsMember)=%zu\n",
            sizeof(Empty), sizeof(Derived), sizeof(AsMember));
@@ -825,9 +825,9 @@ struct Empty {};
 struct ByBase : Empty { int x; };
 struct ByMember { Empty e; int x; };
 int main() {
-    std::cout << "sizeof(Empty)   = " << sizeof(Empty) << '\n';    // 1
-    std::cout << "sizeof(ByBase)  = " << sizeof(ByBase) << '\n';   // 4  (EBO)
-    std::cout << "sizeof(ByMember)= " << sizeof(ByMember) << '\n'; // 8  (1 + 3 填充 + 4)
+    std::cout << "sizeof(Empty)   = " << sizeof(Empty) << '\n';     // 1
+    std::cout << "sizeof(ByBase)  = " << sizeof(ByBase) << '\n';    // 4  (EBO)
+    std::cout << "sizeof(ByMember)= " << sizeof(ByMember) << '\n';  // 8  (1 + 3 填充 + 4)
 }
 ```
 
@@ -853,8 +853,8 @@ struct E2 {};
 struct D : E1, E2 { int x; };
 struct M { E1 e1; E2 e2; int x; };
 int main() {
-    std::cout << "sizeof(D) = " << sizeof(D) << '\n';   // 4：两个空基类都被优化
-    std::cout << "sizeof(M) = " << sizeof(M) << '\n';   // 12：每空成员 ≥1 字节 + 填充
+    std::cout << "sizeof(D) = " << sizeof(D) << '\n';  // 4：两个空基类都被优化
+    std::cout << "sizeof(M) = " << sizeof(M) << '\n';  // 12：每空成员 ≥1 字节 + 填充
 }
 ```
 
@@ -876,15 +876,15 @@ int main() {
 ```cpp
 #include <iostream>
 template <class AllocPolicy>
-struct Vector : private AllocPolicy {    // 空基类混入：零开销
+struct Vector : private AllocPolicy {                                         // 空基类混入：零开销
     int size() const { return AllocPolicy::capacity(); }
 };
 struct StackAlloc { static int capacity() { return 64; } };
 struct HeapAlloc  { static int capacity() { return 1 << 20; } };
 int main() {
     Vector<StackAlloc> s; Vector<HeapAlloc> h;
-    std::cout << "sizeof(s)=" << sizeof(s) << " s.cap=" << s.size() << '\n'; // 0 状态 + 64
-    std::cout << "sizeof(h)=" << sizeof(h) << " h.cap=" << h.size() << '\n'; // 0 状态 + 1M
+    std::cout << "sizeof(s)=" << sizeof(s) << " s.cap=" << s.size() << '\n';  // 0 状态 + 64
+    std::cout << "sizeof(h)=" << sizeof(h) << " h.cap=" << h.size() << '\n';  // 0 状态 + 1M
 }
 ```
 
@@ -906,11 +906,11 @@ EBO 允许编译器把"空基类子对象"优化为零字节，因为完整对�
 ```cpp
 #include <iostream>
 struct Empty { };
-struct WithBase      : Empty { int x = 0; };   // 空基类：可被压缩
-struct WithMember    { Empty e; int x = 0; };   // 空成员：至少 1 字节 + 填充
+struct WithBase      : Empty { int x = 0; };                      // 空基类：可被压缩
+struct WithMember    { Empty e; int x = 0; };                     // 空成员：至少 1 字节 + 填充
 int main() {
-    std::cout << "WithBase = "    << sizeof(WithBase)   << "\n";   // 典型 4
-    std::cout << "WithMember = "  << sizeof(WithMember) << "\n";   // 典型 8
+    std::cout << "WithBase = "    << sizeof(WithBase)   << "\n";  // 典型 4
+    std::cout << "WithMember = "  << sizeof(WithMember) << "\n";  // 典型 8
 }
 ```
 
@@ -992,7 +992,7 @@ int main() {
 ```cpp
 #include <iostream>
 struct Empty {};
-struct Conflict { Empty e; char c; };   // e 与 c 不能同地址，e 至少占 1 字节
+struct Conflict { Empty e; char c; };                                // e 与 c 不能同地址，e 至少占 1 字节
 int main() {
     std::cout << "sizeof(Conflict) = " << sizeof(Conflict) << '\n';  // 2（非 1）
 }
@@ -1020,15 +1020,15 @@ int main() { std::cout << sizeof(Good) << '\n'; }
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
 ```cpp
-struct Empty {};                        // sizeof == 1（独立时，空类至少 1 字节且本例无子对象，恰为 1）
-struct WithEBO : Empty { int x; };      // 继承空基类 —— EBO 通常使 sizeof == 4（实现许可，非强制）
-struct NoEBO  { Empty e; int x; };      // 空类做成员 —— 无 EBO/[[no_unique_address]]：空成员至少 1B+填充，必然 == 8
+struct Empty {};                                              // sizeof == 1（独立时，空类至少 1 字节且本例无子对象，恰为 1）
+struct WithEBO : Empty { int x; };                            // 继承空基类 —— EBO 通常使 sizeof == 4（实现许可，非强制）
+struct NoEBO  { Empty e; int x; };                            // 空类做成员 —— 无 EBO/[[no_unique_address]]：空成员至少 1B+填充，必然 == 8
 struct NoUniqAddr { [[no_unique_address]] Empty e; int x; };  // C++20：空成员通常也被压到 0，sizeof 通常 == 4
 
-static_assert(sizeof(Empty)      == 1);                    // 空类恰 1 字节（C++ 保证）
-static_assert(sizeof(NoEBO)      == 8);                    // 无优化：空成员 1B+3 填充，必然 8（可移植保证）
-static_assert(sizeof(WithEBO)    < sizeof(NoEBO));         // EBO 生效：继承空基类使其严格小于非优化版
-static_assert(sizeof(NoUniqAddr) < sizeof(NoEBO));         // [[no_unique_address]] 生效：同样严格小于非优化版
+static_assert(sizeof(Empty)      == 1);                       // 空类恰 1 字节（C++ 保证）
+static_assert(sizeof(NoEBO)      == 8);                       // 无优化：空成员 1B+3 填充，必然 8（可移植保证）
+static_assert(sizeof(WithEBO)    < sizeof(NoEBO));            // EBO 生效：继承空基类使其严格小于非优化版
+static_assert(sizeof(NoUniqAddr) < sizeof(NoEBO));            // [[no_unique_address]] 生效：同样严格小于非优化版
 // 注：EBO 与 [[no_unique_address]] 都是"允许"而非"强制"的优化，故不对绝对大小做精确断言，
 // 只断言"优于非优化版"（WithEBO/NoUniqAddr 在主流编译器上通常 == sizeof(int)，但该值随实现而变）。
 ```
@@ -1081,9 +1081,9 @@ C++ 要求**同类型的两个不同对象有不同地址**。若 `NoEBO::e` 占
 #include <cstddef>
 #include <iostream>
 
-struct Empty {};                  // 空类：理论 0 字节，但至少占 1 字节
-struct A : Empty { int x; };     // A 享受 EBO：空基类不占空间
-struct B { Empty e; int x; };    // B 不享受：空成员至少 1 字节 + 对齐 -> 8
+struct Empty {};                                         // 空类：理论 0 字节，但至少占 1 字节
+struct A : Empty { int x; };                             // A 享受 EBO：空基类不占空间
+struct B { Empty e; int x; };                            // B 不享受：空成员至少 1 字节 + 对齐 -> 8
 
 int main(){
     static_assert(sizeof(A) == sizeof(int), "EBO: 空基类子对象零开销");
@@ -1363,8 +1363,8 @@ EBO 生效三条件：**(1) 类型是空类（无非静态数据成员、无虚�
 #include <utility>
 #include <type_traits>
 
-struct Empty { };                 // 空类
-struct FinalEmpty final { };      // final 空类，禁用 EBO
+struct Empty { };                                     // 空类
+struct FinalEmpty final { };                          // final 空类，禁用 EBO
 
 // 自定义继承式 EBO holder：把空策略作为基类压到 0 字节
 template<typename T, typename Policy>
@@ -1389,7 +1389,7 @@ int main() {
     // 只允许 >= 与类型萃取断言。
     static_assert(std::is_empty_v<Empty>);
     static_assert(sizeof(std::tuple<Empty, int>)
-                  <= sizeof(std::pair<Empty, int>));   // tuple 不劣于 pair
+                  <= sizeof(std::pair<Empty, int>));  // tuple 不劣于 pair
     static_assert(sizeof(Holder<int, Empty>) >= sizeof(int));
 
     std::cout << "EBO checks passed (no == on layout)" << std::endl;

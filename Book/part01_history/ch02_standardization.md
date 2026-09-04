@@ -66,7 +66,7 @@ WG21 = ISO/IEC JTC1/SC22/WG21, 即国际标准化组织/国际电工委员会 �
 ## ③ 从提案到标准：6阶段流程
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 从提案到标准：6阶段流程
-```
+```text
 PxxxxR0 提交 → Study Group 初审(6-12月)
 → EWG/LEWG 审设计(12-24月)
 → CWG/LWG 审标准措辞(6-12月)

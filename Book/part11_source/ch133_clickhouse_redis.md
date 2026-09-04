@@ -267,14 +267,14 @@ Redis 主线程是单线程事件循环：把所有 client 的 fd 注册进多�
 ```cpp
 // ④ ae.c 的等价核心结构（上游参考：src/ae.h）
 struct aeFileEvent {
-    int mask;                       // AE_READABLE / AE_WRITABLE
-    aeFileProc* rfileProc;          // 读就绪回调
-    aeFileProc* wfileProc;          // 写就绪回调
+    int mask;                        // AE_READABLE / AE_WRITABLE
+    aeFileProc* rfileProc;           // 读就绪回调
+    aeFileProc* wfileProc;           // 写就绪回调
     void* clientData;
 };
 struct aeEventLoop {
     int maxfd;
-    aeFileEvent events[AE_SETSIZE]; // fd -> 事件
+    aeFileEvent events[AE_SETSIZE];  // fd -> 事件
 };
 ```
 
@@ -376,10 +376,10 @@ ClickHouse 用模板把列类型参数化（`ColumnVector<T>`），用 `Arena` �
 // ⑤ ClickHouse 风格：模板列，零运行时开销的类型分发
 template <typename T>
 class ColumnVector {
-    PODArray<T> data_;           // PODArray 是 ClickHouse 自研连续容器
+    PODArray<T> data_;                             // PODArray 是 ClickHouse 自研连续容器
 public:
     void append(T v) { data_.push_back(v); }
-    const T* raw() const { return data_.data(); }   // 给 SIMD kernel 用
+    const T* raw() const { return data_.data(); }  // 给 SIMD kernel 用
 };
 ```
 
@@ -388,11 +388,13 @@ public:
 #include <cstddef>
 // ⑤ Arena 内存池：bump pointer，O(1) 分配，批量释放（等价 src/Common/Arena.h）
 class Arena {
-    char*  begin_; char* cur_; char* end_;
+    char* begin_ = nullptr; char* cur_ = nullptr; char* end_ = nullptr;
 public:
-    void* alloc(size_t n) {
-        if (cur_ + n > end_) { // 新块
-        void* p = cur_; cur_ += n; return p;   // 只挪指针
+    void* alloc(std::size_t n) {
+        if (cur_ + n > end_) {                // 新块：向系统申请（示意省略）
+            /* 真实实现见 ClickHouse src/Common/Arena.h */
+        }
+        void* p = cur_; cur_ += n; return p;  // 只挪指针
     }
 };
 ```
@@ -401,10 +403,11 @@ public:
 ```cpp
 // ⑤ Redis C++ 客户端（redis-plus-plus）用 unique_ptr 持有连接上下文
 #include <memory>
-struct redisContext { // C 结构
+struct redisContext {};                              // C 结构（真实为不透明句柄）
 struct RedisConn {
     std::unique_ptr<redisContext, void(*)(redisContext*)> ctx;
-    RedisConn() : ctx(nullptr, [](redisContext* c){ // redisFree
+    RedisConn()
+        : ctx(nullptr, [](redisContext* c) { /* redisFree(c)：释放 C 上下文 */ (void)c; }) {}
 };
 ```
 
@@ -542,8 +545,8 @@ void add_buf(float* out, const float* a, const float* b, size_t n) {
 // ⑧ Redis 调试：在事件循环入口打点，观察单线程是否被某回调阻塞
 void aeProcessEvents(aeEventLoop* el, int flags) {
     // redis 用 aeApiPoll 阻塞；若某命令慢，整个循环卡住（单线程代价）
-    int n = aeApiPoll(el, nullptr);   // 调试时在这里计时
-    for (int j=0; j<n; ++j) { // 回调
+    int n = aeApiPoll(el, nullptr);  // 调试时在这里计时
+    for (int j=0; j<n; ++j) {        // 回调
 }
 ```
 
@@ -557,13 +560,13 @@ SIMD 指令集因平台而异：x86 有 SSE/AVX，ARM 有 NEON，POWER 有 AltiV
 ```cpp
 // ⑨ ClickHouse 用宏选不同向量化后端（等价 src/Common/.../Vec.h）
 #if defined(__AVX512F__)
-    using Simd = Avx512;      // 512-bit
+    using Simd = Avx512;  // 512-bit
 #elif defined(__AVX2__)
-    using Simd = Avx2;        // 256-bit
+    using Simd = Avx2;    // 256-bit
 #elif defined(__SSE2__)
-    using Simd = Sse2;        // 128-bit
+    using Simd = Sse2;    // 128-bit
 #elif defined(__ARM_NEON)
-    using Simd = Neon;        // ARM
+    using Simd = Neon;    // ARM
 #endif
 ```
 
@@ -697,8 +700,8 @@ public:
 ```cpp
 // ⑫ 事件回调保持极短，慢任务甩给后台线程/异步
 void on_read(redisClient* c) {
-    read_query(c);            // 快：只解析协议头
-    queue_to_worker(c);       // 慢：交给线程池，主循环立刻返回
+    read_query(c);       // 快：只解析协议头
+    queue_to_worker(c);  // 慢：交给线程池，主循环立刻返回
 }
 ```
 
@@ -853,11 +856,11 @@ public:
 #include <map>
 // ⑯ 场景：高并发网关用单线程事件循环复用连接（Redis 模型）
 class Gateway {
-    std::unordered_map<int, Connection> conns;   // fd -> conn，单线程访问无锁
+    std::unordered_map<int, Connection> conns;  // fd -> conn，单线程访问无锁
 public:
     void on_readable(int fd) {
         auto& c = conns[fd];
-        c.recv();            // 单线程：无需 mutex
+        c.recv();                               // 单线程：无需 mutex
         c.handle();
     }
 };
@@ -1081,7 +1084,7 @@ public:
 
 int main() {
     MiniRedis r;
-    r.set("session", "abc123", 60);     // EX 60：60 秒后自动失效
+    r.set("session", "abc123", 60);                                  // EX 60：60 秒后自动失效
     if (auto v = r.get("session")) std::cout << "session = " << *v << "\n";
     return 0;
 }
@@ -1199,7 +1202,7 @@ int main() {
 ## 附录 E：ClickHouse/Redis 底层与设计
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：ClickHouse/Re
-```
+```text
 ClickHouse: 列存+SIMD向量化, AVX2单核~40GB/s
 Redis: 单线程epoll, 零锁竞争, 100K QPS/core
 RocksDB: LSM Tree+Bloom filter, 写优化10K writes/s
@@ -1289,10 +1292,10 @@ long long sum_column(const std::vector<long long>& col) {
     size_t n = col.size();
     long long acc = 0;
     size_t i = 0;
-    for (; i < (n & ~size_t{3}); i += 4) {        // 4 路主循环，利于自动向量化
+    for (; i < (n & ~size_t{3}); i += 4) {  // 4 路主循环，利于自动向量化
         acc += p[i] + p[i+1] + p[i+2] + p[i+3];
     }
-    for (; i < n; ++i) acc += p[i];               // 尾部标量补齐
+    for (; i < n; ++i) acc += p[i];         // 尾部标量补齐
     return acc;
 }
 
@@ -1333,14 +1336,14 @@ intset 用紧凑数组 + 二分，超阈值/类型不符才升级到哈希表：
 #include <algorithm>
 
 class IntSet {
-    std::vector<int64_t> elems;          // 升序
-    bool upgraded = false;               // 已升级为 hashtable 标记
+    std::vector<int64_t> elems;                           // 升序
+    bool upgraded = false;                                // 已升级为 hashtable 标记
     static constexpr size_t kMaxIntset = 128;
 public:
     bool insert(int64_t v) {
-        if (upgraded) return false;       // 已升级，本练习不实现 HT 分支
+        if (upgraded) return false;                       // 已升级，本练习不实现 HT 分支
         auto it = std::lower_bound(elems.begin(), elems.end(), v);
-        if (it != elems.end() && *it == v) return false;   // 去重
+        if (it != elems.end() && *it == v) return false;  // 去重
         if (elems.size() + 1 > kMaxIntset) { upgraded = true; return true; }
         elems.insert(it, v);
         return true;
@@ -1382,19 +1385,19 @@ int main() {
 struct Bucket { int key; int val; };
 
 class Dict {
-    std::vector<std::optional<Bucket>> ht[2];   // ht[0] 在线, ht[1] 迁移中
-    int rehashidx = -1;                          // -1 = 未 rehash
+    std::vector<std::optional<Bucket>> ht[2];  // ht[0] 在线, ht[1] 迁移中
+    int rehashidx = -1;                        // -1 = 未 rehash
     size_t mask(size_t t) const { return ht[t].size() - 1; }
 public:
-    Dict() { ht[0].resize(4); }                  // 容量恒为 2 的幂
-    void expand() {                              // 触发渐进 rehash
-        ht[1].resize(ht[0].size() * 2);          // 翻倍，仍 2^n
+    Dict() { ht[0].resize(4); }                // 容量恒为 2 的幂
+    void expand() {                            // 触发渐进 rehash
+        ht[1].resize(ht[0].size() * 2);        // 翻倍，仍 2^n
         rehashidx = 0;
     }
-    void rehash_one() {                          // 事件循环每次调用：搬一个桶
+    void rehash_one() {                        // 事件循环每次调用：搬一个桶
         if (rehashidx == -1) return;
         while (rehashidx < (int)ht[0].size() && !ht[0][rehashidx]) ++rehashidx;
-        if (rehashidx >= (int)ht[0].size()) {    // 全部搬完
+        if (rehashidx >= (int)ht[0].size()) {  // 全部搬完
             ht[0].swap(ht[1]); ht[1].clear(); rehashidx = -1; return;
         }
         if (auto& b = ht[0][rehashidx]; b) {

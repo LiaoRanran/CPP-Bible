@@ -62,7 +62,7 @@ int sum_of(const std::vector<int>& v) {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：IDE 在 C++ 工作流中的
-```
+```text
 ┌──────────┐  索引   ┌──────────┐  诊断   ┌──────────┐
 │  编辑器   │ ─────▶ │ 语言服务 │ ─────▶ │ 编译/检查 │
 │ (VSCode/  │ ◀───── │(clangd/  │ ◀───── │(g++/clang │
@@ -376,10 +376,10 @@ double mean(const std::vector<int>& v) {
 std::string before(const std::vector<int>& xs) {
     std::string s;
     for (int i = 0; i < xs.size(); i++) {
-        if (xs[i] > 10) {                       // 魔法数
+        if (xs[i] > 10) {                          // 魔法数
             s += std::to_string(xs[i]); s += ";";
         } else {
-            s += std::to_string(xs[i]); s += ";"; // 与 if 分支重复
+            s += std::to_string(xs[i]); s += ";";  // 与 if 分支重复
         }
     }
     return s;
@@ -775,7 +775,7 @@ int main(){std::cout<<"Profiling: VS Diagnostic Tools, PerfView (Windows), Instr
 ## 附录 A：工业IDE选择与WG21背景 [B: Principle / F: Industry]
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业IDE选择与WG21背
-```
+```text
 C++ IDE 生态的工业现实:
 
 LLVM/Clang 项目 → VS Code + clangd (LSP) / CLion
@@ -797,7 +797,7 @@ Meson: 默认生成 compile_commands.json
 ## 附录 B：面试与权衡 [J: Learning / H: Design]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试与权衡 [J: Learning / H: Design]
-```
+```text
 IDE 选型决策:
 - 新手: VS 2022 Community (Windows) / CLion (跨平台, 开箱即用)
 - 大型项目: VS Code + clangd (轻量, 可定制) / CLion (索引能力强)

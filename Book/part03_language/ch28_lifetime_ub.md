@@ -107,10 +107,10 @@ struct S {
     ~S() { std::cout << "dtor x=" << x << "\n"; }
 };
 int main() {
-    alignas(S) char buf[sizeof(S)];            // 存储已就位, 但 S 尚未"生"
-    S* p = ::new (buf) S(42);                  // 构造完成 -> 生存期开始
-    std::cout << "alive: " << p->x << "\n";    // 合法: 仍在生存期
-    p->~S();                                   // 析构开始 -> 生存期结束
+    alignas(S) char buf[sizeof(S)];          // 存储已就位, 但 S 尚未"生"
+    S* p = ::new (buf) S(42);                // 构造完成 -> 生存期开始
+    std::cout << "alive: " << p->x << "\n";  // 合法: 仍在生存期
+    p->~S();                                 // 析构开始 -> 生存期结束
     // 至此 buf 中已无 S 对象, 但存储仍占用
 }
 ```
@@ -126,13 +126,13 @@ int main() {
 struct T {
     int v;
     T(int x) : v(x) {}
-    ~T() { v = 0xDEAD; }   // 析构里"毒化"成员, 仅演示
+    ~T() { v = 0xDEAD; }        // 析构里"毒化"成员, 仅演示
 };
 int main() {
     alignas(T) char buf[sizeof(T)];
     T* p = ::new (buf) T(7);
-    p->~T();                     // 生存期结束
-    std::cout << p->v << "\n";   // UB! 通过旧指针访问已亡对象
+    p->~T();                    // 生存期结束
+    std::cout << p->v << "\n";  // UB! 通过旧指针访问已亡对象
 }
 ```
 `[标准]` [basic.life]/7：若新对象未在同一存储上被创建，通过指向旧对象的指针/引用访问已结束生存期的对象是 UB（即使读取的字节"恰好还在"）。
@@ -152,9 +152,9 @@ struct A { int id; A(int i):id(i){} ~A(){ std::cout<<"A~"<<id<<"\n"; } };
 int main() {
     alignas(A) char buf[sizeof(A)];
     A* a = ::new (buf) A(1);
-    a->~A();                       // ① 先结束旧对象生存期
-    A* a2 = ::new (buf) A(2);      // ② 同一存储重建
-    std::cout << a2->id << "\n";   // 合法: a2 指向新对象
+    a->~A();                      // ① 先结束旧对象生存期
+    A* a2 = ::new (buf) A(2);     // ② 同一存储重建
+    std::cout << a2->id << "\n";  // 合法: a2 指向新对象
     a2->~A();
 }
 ```
@@ -174,9 +174,9 @@ int main() {
     alignas(C) char buf[sizeof(C)];
     C* c1 = ::new (buf) C(10);
     c1->~C();
-    C* c2 = ::new (buf) C(20);     // 在 const 成员对象存储上重建
-    C* p  = std::launder(c2);      // 正确: 取回指向新对象的指针
-    std::cout << p->tag << "\n";   // 输出 20
+    C* c2 = ::new (buf) C(20);    // 在 const 成员对象存储上重建
+    C* p  = std::launder(c2);     // 正确: 取回指向新对象的指针
+    std::cout << p->tag << "\n";  // 输出 20
     p->~C();
     // 若写成 C* p = c2; 在无 launder 时优化器可能仍按"tag==10"优化 -> UB
 }
@@ -267,11 +267,11 @@ int main() {
 #include <utility>
 int g() { return 1; }
 int& lval() { static int x; return x; }
-int&& rref() { return 0; }     // 返回 xvalue
+int&& rref() { return 0; }                                   // 返回 xvalue
 int main() {
-    static_assert(std::is_same_v<decltype(g()), int>);        // prvalue -> int
-    static_assert(std::is_same_v<decltype(lval()), int&>);    // glvalue
-    static_assert(std::is_same_v<decltype(rref()), int&&>);   // xvalue
+    static_assert(std::is_same_v<decltype(g()), int>);       // prvalue -> int
+    static_assert(std::is_same_v<decltype(lval()), int&>);   // glvalue
+    static_assert(std::is_same_v<decltype(rref()), int&&>);  // xvalue
 }
 ```
 
@@ -280,11 +280,11 @@ int main() {
 // prog_09_materialization.cpp  —— 临时物化时机
 // 编译: g++ -std=c++20 -Wall prog_09_materialization.cpp -o prog_09
 #include <string>
-void take(const std::string&) {}   // 定义, 避免链接错误
+void take(const std::string&) {}           // 定义, 避免链接错误
 int main() {
-    take(std::string("hi"));   // prvalue std::string("hi") 物化为临时,
+    take(std::string("hi"));               // prvalue std::string("hi") 物化为临时,
                                // 绑定到 const& -> 延长(见 §⑤)
-    using T = decltype(std::string("x"));   // 不物化: decltype 仅查询类型
+    using T = decltype(std::string("x"));  // 不物化: decltype 仅查询类型
     (void)sizeof(T);
 }
 ```
@@ -301,8 +301,8 @@ int main() {
 // 编译: g++ -std=c++20 -Wall prog_10_const_ref_extend.cpp -o prog_10
 #include <iostream>
 struct Loud { ~Loud(){ std::cout << "dtor\n"; } };
-const Loud& r = Loud{};        // 临时 Loud{} 活到 main 结束(而非本语句结束)
-int main() { std::cout << "main end\n"; }   // 输出: main end \n dtor
+const Loud& r = Loud{};                    // 临时 Loud{} 活到 main 结束(而非本语句结束)
+int main() { std::cout << "main end\n"; }  // 输出: main end \n dtor
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 临时生命周期延长规则
@@ -312,9 +312,9 @@ int main() { std::cout << "main end\n"; }   // 输出: main end \n dtor
 #include <iostream>
 struct Loud { ~Loud(){ std::cout << "~Loud\n"; } };
 int main() {
-    Loud&& r = Loud{};         // 右值引用绑定 prvalue -> 延长
+    Loud&& r = Loud{};  // 右值引用绑定 prvalue -> 延长
     std::cout << "before scope\n";
-}                             // r 离开作用域 -> dtor 在此
+}                       // r 离开作用域 -> dtor 在此
 ```
 
 ---
@@ -362,8 +362,8 @@ int main() {
 #include <iostream>
 std::vector<int> make() { return {1,2,3}; }
 int main() {
-    for (int x : make()) {            // 临时 vector 在 for 头结束后即亡!
-        std::cout << x;               // 迭代器悬垂 -> UB
+    for (int x : make()) {  // 临时 vector 在 for 头结束后即亡!
+        std::cout << x;     // 迭代器悬垂 -> UB
     }
 }
 ```
@@ -396,8 +396,8 @@ int main() {
 #include <iostream>
 const int& first() {
     std::initializer_list<int> L = {1,2,3};
-    const int& r = *L.begin();   // r 绑定到 L 内部数组元素
-    return r;                    // L 亡 -> 数组亡 -> r 悬垂 (UB)
+    const int& r = *L.begin();  // r 绑定到 L 内部数组元素
+    return r;                   // L 亡 -> 数组亡 -> r 悬垂 (UB)
 }
 ```
 
@@ -443,9 +443,9 @@ int main() {
 #include <iostream>
 std::vector<int> mk() { return {1,2,3}; }
 int main() {
-    const auto& r = mk();               // 注意: 临时绑定到 const& —— 延长的是 r 本身
-    for (int x : r) {                   // 但 r 是 vector 的副本引用, 临时已亡
-        std::cout << x;                 // 等价于 prog_14: 悬垂迭代器
+    const auto& r = mk();  // 注意: 临时绑定到 const& —— 延长的是 r 本身
+    for (int x : r) {      // 但 r 是 vector 的副本引用, 临时已亡
+        std::cout << x;    // 等价于 prog_14: 悬垂迭代器
     }
 }
 ```
@@ -493,8 +493,8 @@ std::string make() { return "hello"; }
 int main() {
     // std::string_view v = make();  // 临时 string 亡 -> v 悬垂
     // std::cout << v;               // UB
-    std::string s = make();           // 正确: 拥有副本
-    std::string_view v = s;           // 安全: s 在作用域内存活
+    std::string s = make();  // 正确: 拥有副本
+    std::string_view v = s;  // 安全: s 在作用域内存活
     std::cout << v;
 }
 ```
@@ -590,8 +590,8 @@ int main() {
 #include <iostream>
 int main() {
     int* p = new int(7);
-    delete p;               // p 成野指针
-    std::cout << *p;        // UB: 释放后使用 (use-after-free)
+    delete p;         // p 成野指针
+    std::cout << *p;  // UB: 释放后使用 (use-after-free)
 }
 ```
 **修复**：`delete` 后立刻 `p = nullptr`；或用智能指针。
@@ -609,7 +609,7 @@ int main() {
 void break_alias() {
     std::uint32_t x = 0x12345678;
     std::uint16_t* p = reinterpret_cast<std::uint16_t*>(&x);  // 别名冲突
-    std::cout << *p;            // UB: 经不兼容类型读取
+    std::cout << *p;                                          // UB: 经不兼容类型读取
 }
 ```
 **修复**：`std::memcpy` / `std::bit_cast`（见 §⑬ prog_42）。
@@ -622,8 +622,8 @@ void break_alias() {
 // 编译: g++ -std=c++20 -Wall prog_28_uninit_read.cpp -o prog_28
 #include <iostream>
 int main() {
-    int x;                  // 未初始化
-    std::cout << x;         // UB: 读取未初始化自动变量
+    int x;           // 未初始化
+    std::cout << x;  // UB: 读取未初始化自动变量
 }
 ```
 **修复**：定义即初始化 `int x{}`。
@@ -636,8 +636,8 @@ int main() {
 // 编译: g++ -std=c++20 -Wall prog_29_shift_neg_or_wide.cpp -o prog_29
 #include <cstdint>
 int main() {
-    std::uint32_t a = 1u << 32;   // UB: 移位量 >= 宽度
-    int b = 1 << -1;              // UB: 负移位
+    std::uint32_t a = 1u << 32;  // UB: 移位量 >= 宽度
+    int b = 1 << -1;             // UB: 负移位
     (void)a; (void)b;
 }
 ```
@@ -667,8 +667,8 @@ int main() {
 // 编译: g++ -std=c++20 -Wall prog_31_int_pointer_reinterpret.cpp -o prog_31
 #include <cstdint>
 int main() {
-    std::uintptr_t n = 0x1234;                 // 任意整数
-    int* p = reinterpret_cast<int*>(n);        // 转换本身"实现定义"
+    std::uintptr_t n = 0x1234;           // 任意整数
+    int* p = reinterpret_cast<int*>(n);  // 转换本身"实现定义"
     // *p = 5;                                 // 解引用 -> UB
     (void)p;
 }
@@ -712,8 +712,8 @@ int main() {
 int main() {
     std::vector<int> v{1,2,3};
     auto it = v.begin();
-    v.push_back(4);            // 可能 realloc -> it 失效
-    std::cout << *it;          // UB: 使用失效迭代器
+    v.push_back(4);    // 可能 realloc -> it 失效
+    std::cout << *it;  // UB: 使用失效迭代器
 }
 ```
 **修复**：`push_back` 后重新取迭代器，或用 `reserve`。
@@ -831,8 +831,8 @@ int main() { std::cout << sizeof(int) << "\n"; }  // 由实现规定(通常 4)
 #include <cstdio>
 int main() {
     int i = 1;
-    while (i > 0) { i += 1; }    // 期望: 溢出后 i 变负, 循环退出
-    printf("i=%d\n", i);         // 实际: 编译器假定 i 永不溢出 -> 循环永不退出
+    while (i > 0) { i += 1; }  // 期望: 溢出后 i 变负, 循环退出
+    printf("i=%d\n", i);       // 实际: 编译器假定 i 永不溢出 -> 循环永不退出
 }
 ```
 
@@ -841,7 +841,7 @@ int main() {
 **`-O2` 汇编**（本机输出，关键行）：
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 有符号溢出把"死循环"优化成真·无限
-```
+```text
 ub_overflow.cpp:5:11: warning: iteration 2147483646 invokes undefined behavior
                                [-Waggressive-loop-optimizations]
 main:
@@ -864,8 +864,8 @@ main:
 #include <cstdlib>
 int* p = nullptr;
 int main() {
-    if (p != nullptr) { return *p; }   // 这个分支本应可达
-    *p = 42;                            // UB: 解引用空指针
+    if (p != nullptr) { return *p; }  // 这个分支本应可达
+    *p = 42;                          // UB: 解引用空指针
     return 0;
 }
 ```
@@ -873,7 +873,7 @@ int main() {
 **`-O2` 汇编**（本机输出，关键行）：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 空指针检查被删除
-```
+```text
 main:
     call    __main
     movq    p(%rip), %rax
@@ -901,11 +901,11 @@ main:
 // 编译: g++ -std=c++20 -O2 -S prog_39b_bounds_elim.cpp -o /tmp/p39b.s
 #include <cstddef>
 extern int arr[16];
-int sum_first(int n) {           // n 由调用者传入, 可能 > 16
+int sum_first(int n) {  // n 由调用者传入, 可能 > 16
     int s = 0;
     for (int i = 0; i < n; ++i)
-        s += arr[i];             // 若编译器假定 n<=16(否则 UB), 此循环无越界
-    return arr[0] + s;           // 此处的访问也被"证明"安全
+        s += arr[i];    // 若编译器假定 n<=16(否则 UB), 此循环无越界
+    return arr[0] + s;  // 此处的访问也被"证明"安全
 }
 ```
 `[实现]` 若 `n` 被上游某个 UB 假设（例如 `n` 来自一处越界写入）污染，GCC/Clang 可能推断 `0<=i<16` 恒成立，于是把 `arr[i]` 编译成无符号扩展/无边界检查的连续加载，并把 `arr[0]` 的读取与前一个循环**合并/重排**。结果：你在一处写的 UB，让**另一处原本安全的代码**被错误优化。这正是 UB "传播性"的可怕之处。
@@ -925,12 +925,12 @@ int sum_first(int n) {           // n 由调用者传入, 可能 > 16
 #include <cstring>
 #include <iostream>
 struct Packed {
-    bool b;        // 1 字节, 但相邻可能有 padding
+    bool b;                            // 1 字节, 但相邻可能有 padding
     int  i;
 };
 int main() {
-    Packed p;                    // p.b, p.i 均未初始化
-    std::cout << p.b;            // UB: bool 的非法位模式 = 陷阱表示
+    Packed p;                          // p.b, p.i 均未初始化
+    std::cout << p.b;                  // UB: bool 的非法位模式 = 陷阱表示
     char buf[sizeof(Packed)];
     std::memcpy(&p, buf, sizeof buf);  // 复制未定义 padding 内容
 }
@@ -947,7 +947,7 @@ int main() {
 // 编译: g++ -std=c++20 -Wall prog_41b_padding_compare.cpp -o prog_41b
 #include <cstring>
 #include <iostream>
-struct Wire { bool flag; int value; };     // 有未初始化的 padding
+struct Wire { bool flag; int value; };              // 有未初始化的 padding
 bool eq(const Wire& a, const Wire& b) {
     char ca[sizeof(Wire)], cb[sizeof(Wire)];
     std::memcpy(ca, &a, sizeof(Wire));
@@ -1050,7 +1050,7 @@ namespace std
   template<typename _Tp>
     [[nodiscard]] constexpr _Tp*
     launder(_Tp* __p) noexcept
-    { return __builtin_launder(__p); }          // 第243行: 体即一个内建调用
+    { return __builtin_launder(__p); }  // 第243行: 体即一个内建调用
 
   // The program is ill-formed if T is a function type or
   // (possibly cv-qualified) void.
@@ -1060,11 +1060,11 @@ namespace std
   template<typename _Ret, typename... _Args _GLIBCXX_NOEXCEPT_PARM>
     void launder(_Ret (*)(_Args......) _GLIBCXX_NOEXCEPT_QUAL) = delete;
 
-  void launder(void*) = delete;                 // 第235行: 阻止对 void* 误用
+  void launder(void*) = delete;         // 第235行: 阻止对 void* 误用
   void launder(const void*) = delete;
   void launder(volatile void*) = delete;
   void launder(const volatile void*) = delete;
-#endif // _GLIBCXX_HAVE_BUILTIN_LAUNDER
+#endif                                  // _GLIBCXX_HAVE_BUILTIN_LAUNDER
 ```
 
 `[实现·GCC15]` 逐行要点：
@@ -1081,21 +1081,21 @@ namespace std
 #include <cstddef>
 // <new> :137-222  (libstdc++ 15.3.0)
 _GLIBCXX_NODISCARD void* operator new(std::size_t) _GLIBCXX_THROW (std::bad_alloc)
-  __attribute__((__externally_visible__));                 // 第137行: 普通 new
+  __attribute__((__externally_visible__));                             // 第137行: 普通 new
 _GLIBCXX_NODISCARD void* operator new[](std::size_t) _GLIBCXX_THROW (std::bad_alloc)
-  __attribute__((__externally_visible__));                 // 第140行: 数组 new
+  __attribute__((__externally_visible__));                             // 第140行: 数组 new
 void operator delete(void*) _GLIBCXX_USE_NOEXCEPT
-  __attribute__((__externally_visible__));                 // 第143行: 普通 delete
+  __attribute__((__externally_visible__));                             // 第143行: 普通 delete
 void operator delete[](void*) _GLIBCXX_USE_NOEXCEPT
-  __attribute__((__externally_visible__));                 // 第145行: 数组 delete
+  __attribute__((__externally_visible__));                             // 第145行: 数组 delete
 // ... sized/aligned/nothrow 重载略 ...
 // Default placement versions of operator new.              第204行起
 _GLIBCXX_NODISCARD inline void* operator new(std::size_t, void* __p) _GLIBCXX_USE_NOEXCEPT
-{ return __p; }                                            // 第206-208行: placement new
+{ return __p; }                                                        // 第206-208行: placement new
 _GLIBCXX_NODISCARD inline void* operator new[](std::size_t, void* __p) _GLIBCXX_USE_NOEXCEPT
 { return __p; }
 // Default placement versions of operator delete.          第216行起
-inline void operator delete  (void*, void*) _GLIBCXX_USE_NOEXCEPT { }   // 第217行: 空
+inline void operator delete  (void*, void*) _GLIBCXX_USE_NOEXCEPT { }  // 第217行: 空
 inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 ```
 
@@ -1113,17 +1113,17 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
   template<typename _Tp>
     inline _GLIBCXX_CONSTEXPR _Tp*
     __addressof(_Tp& __r) _GLIBCXX_NOEXCEPT
-    { return __builtin_addressof(__r); }          // 第53行: 用内建取真实地址
+    { return __builtin_addressof(__r); }         // 第53行: 用内建取真实地址
 
 // <bits/move.h> :176-182
   template<typename _Tp>
     _GLIBCXX_NODISCARD
     inline _GLIBCXX17_CONSTEXPR _Tp*
     addressof(_Tp& __r) noexcept
-    { return std::__addressof(__r); }             // 第177行: 委托给 __addressof
+    { return std::__addressof(__r); }            // 第177行: 委托给 __addressof
 
   template<typename _Tp>
-    const _Tp* addressof(const _Tp&&) = delete;   // 第182行: 禁止对临时调用
+    const _Tp* addressof(const _Tp&&) = delete;  // 第182行: 禁止对临时调用
 ```
 
 `[实现·GCC15]` 逐行要点：
@@ -1186,7 +1186,7 @@ int f() {
 
 `[平台·x86-64]` **本机实测**：在 GCC 15.3.0 上链接 sanitizer 失败：
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 检测
-```
+```asm
 C:/Qt/.../ld.exe: cannot find -lubsan: No such file or directory
 collect2.exe: error: ld returned 1 exit status
 ```
@@ -1206,7 +1206,7 @@ int main() {
 ```
 **典型 UBSan 诊断**（参考输出）：
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 典型输出（有符号溢出，prog22）
-```
+```text
 prog_43_ubsan_demo.cpp:4:38: runtime error: signed integer overflow:
   addition of unsigned value 2147483647 and 1 cannot be represented in type 'int'
 SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior prog_43_ubsan_demo.cpp:4:38
@@ -1227,7 +1227,7 @@ int main() {
 ```
 **典型 ASan 诊断**（参考输出）：
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 典型输出（释放后使用，prog26）
-```
+```text
 ==12345==ERROR: AddressSanitizer: heap-use-after-free on address 0x602...
 READ of size 4 at 0x602... thread T0
     #0 0x... in main prog_44_asan_demo.cpp:6:20
@@ -1250,7 +1250,7 @@ int main() { std::thread a(f), b(f); a.join(); b.join(); }
 ```
 **典型 TSan 诊断**（参考输出）：
 > **示例 61** <span class="badge badge-exp">难度 ★★★★☆</span> · 典型输出（数据竞争，prog25）
-```
+```text
 WARNING: ThreadSanitizer: data race (pid=...)
   Write of size 4 at 0x... by thread T2:
     #0 f() prog_45_tsan_demo.cpp:4
@@ -1298,7 +1298,7 @@ constexpr int bad() {
     return x;
 }
 int main() { constexpr int v = bad(); (void)v; }
-```
+```text
 **典型编译错误**（参考输出）：
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常量表达式中的 UB：constexpr 直接编译失败
 ```
@@ -1318,10 +1318,10 @@ prog_46_constexpr_ub_fail.cpp:4:11: error: overflow in constant expression [-fpe
 // prog_46b_constexpr_runtime_ub.cpp  —— constexpr 不覆盖运行期 UB
 // 编译: g++ -std=c++20 -Wall prog_46b_constexpr_runtime_ub.cpp -o prog_46b  (通过!)
 constexpr int maybe_ub(int n) {
-    return n + 1;            // 若 n==INT_MAX 则 UB, 但 constexpr 不自动"全输入"验证
+    return n + 1;                  // 若 n==INT_MAX 则 UB, 但 constexpr 不自动"全输入"验证
 }
 int main() {
-    int x = maybe_ub(2147483647);   // 运行期实参 -> UB 在运行期发生, 编译期不报错
+    int x = maybe_ub(2147483647);  // 运行期实参 -> UB 在运行期发生, 编译期不报错
     (void)x;
 }
 ```
@@ -1574,12 +1574,12 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 > **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
-const int& bad_ref() { const int x = 5; return x; }   // x 在返回时已亡 -> 悬垂引用 (UB)
-int*      bad_ptr() { int y = 6; return &y; }          // y 已亡 -> 悬垂指针 (UB)
-int       good_val() { int z = 7; return z; }          // 返回值: 拷贝出函数, 安全
+const int& bad_ref() { const int x = 5; return x; }  // x 在返回时已亡 -> 悬垂引用 (UB)
+int*      bad_ptr() { int y = 6; return &y; }        // y 已亡 -> 悬垂指针 (UB)
+int       good_val() { int z = 7; return z; }        // 返回值: 拷贝出函数, 安全
 int main() {
     int v = good_val();
-    std::cout << v << "\n";                            // 7, 安全
+    std::cout << v << "\n";                          // 7, 安全
     // std::cout << bad_ref();   // 悬垂引用, 读取即 UB
     // int* p = bad_ptr();       // 悬垂指针
 }
@@ -1607,8 +1607,8 @@ int main() {
     // std::string_view sv = std::string("y");    // sv 只存指针+长度, 临时 string 立刻消亡 -> 悬垂
     // std::cout << sv;                            // UB: 访问已释放的缓冲区
     std::string s = "y";
-    std::string_view sv(s);                        // 正确: 视图绑定到具名对象 s
-    std::cout << sv << "\n";                       // 安全
+    std::string_view sv(s);   // 正确: 视图绑定到具名对象 s
+    std::cout << sv << "\n";  // 安全
 }
 ```
 
@@ -1631,13 +1631,13 @@ int main() {
 struct T { int v = 0; };
 int main() {
     alignas(T) char buf[sizeof(T)];
-    T* p = new (buf) T();          // 在 buf 上构造第一个 T
+    T* p = new (buf) T();       // 在 buf 上构造第一个 T
     p->v = 10;
     p->~T();
-    T* q = new (buf) T();          // 同一存储重建第二个 T (原对象已亡)
+    T* q = new (buf) T();       // 同一存储重建第二个 T (原对象已亡)
     q->v = 20;
-    T* r = std::launder(q);        // 取回指向新对象(同地址但新"动态类型")的指针
-    std::cout << r->v << "\n";     // 20
+    T* r = std::launder(q);     // 取回指向新对象(同地址但新"动态类型")的指针
+    std::cout << r->v << "\n";  // 20
 }
 ```
 
@@ -1671,7 +1671,7 @@ int main() {
     alignas(Point) unsigned char buf[sizeof(Point)];
     Point* p = std::construct_at(reinterpret_cast<Point*>(buf), 1, 2);  // C++20
     std::cout << p->x << p->y << "\n";
-    std::destroy_at(p);   // 显式结束生命周期
+    std::destroy_at(p);                                                 // 显式结束生命周期
 }
 ```
 
@@ -1733,9 +1733,9 @@ const Config& load_config() {
 #include <iostream>
 #include <string>
 struct Config { std::string path; };
-Config load_config() {                   // 按值返回: NRVO/移动消除多余拷贝
+Config load_config() {  // 按值返回: NRVO/移动消除多余拷贝
     Config c{"cfg.ini"};
-    return c;                            // 调用方拿到独立副本, 安全
+    return c;           // 调用方拿到独立副本, 安全
 }
 int main() { Config c = load_config(); std::cout << c.path << "\n"; }
 ```
@@ -1760,9 +1760,9 @@ log(std::string("temp msg"));   // 临时 string 在语句结束即析构, s 内
 #include <string_view>
 void log(std::string_view s) { std::cout << s << "\n"; }
 int main() {
-    std::string msg = "hello";          // 具名对象, 生命周期覆盖 log 的同步使用
-    log(msg);                            // 视图绑定具名 string, 安全
-    log("literal");                     // 字符串字面量有静态存储期, 同样安全
+    std::string msg = "hello";  // 具名对象, 生命周期覆盖 log 的同步使用
+    log(msg);                   // 视图绑定具名 string, 安全
+    log("literal");             // 字符串字面量有静态存储期, 同样安全
 }
 ```
 

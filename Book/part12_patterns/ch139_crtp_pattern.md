@@ -65,12 +65,12 @@ CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为
 template <typename Derived>
 struct Base {
     void foo() {
-        static_cast<Derived*>(this)->impl();   // 反向调用派生类
+        static_cast<Derived*>(this)->impl();  // 反向调用派生类
     }
 };
 
-struct Derived : Base<Derived> {               // 派生类把“自己”喂回基类
-    void impl() { // ...
+struct Derived : Base<Derived> {              // 派生类把“自己”喂回基类
+    void impl() {                             // ...
 };
 ```
 
@@ -98,7 +98,7 @@ CRTP 不是「设计模式教科书」里凭空发明的，而是 C++ 模板系�
 ```cpp
 // 动态多态：分发在运行时，经虚表
 struct Animal { virtual void speak() const = 0; };
-struct Dog : Animal { void speak() const override { // wang
+struct Dog : Animal { void speak() const override {  // wang
 
 // 静态多态（CRTP）：分发在编译期，经模板实例化
 template <typename D>
@@ -106,7 +106,7 @@ struct Animal2 {
     void speak() const { static_cast<const D*>(this)->speak_impl(); }
 };
 struct Dog2 : Animal2<Dog2> {
-    void speak_impl() const { // wang, 编译期已确定
+    void speak_impl() const {                        // wang, 编译期已确定
 };
 ```
 
@@ -115,12 +115,12 @@ struct Dog2 : Animal2<Dog2> {
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 静态多态原理
 ```cpp
 // 一次调用在两种范式下的语义对照
-void use_dynamic(const Animal& a) { a.speak(); }   // 运行时查表
-void use_static (const Animal2<Dog2>& a) { a.speak(); } // 编译期已定型
+void use_dynamic(const Animal& a) { a.speak(); }         // 运行时查表
+void use_static (const Animal2<Dog2>& a) { a.speak(); }  // 编译期已定型
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 静态多态原理
-```
+```text
 ┌─────────────── 静态多态（CRTP）───────────────┐
 │  Base<Derived>  ──实例化──▶  直接绑定 Derived  │
 │   调用点: static_cast<Derived*>(this)->f()      │
@@ -148,7 +148,7 @@ CRTP 的灵魂是 `static_cast<Derived*>(this)`：基类在**不知道 `Derived`
 template <typename Derived>
 struct Base {
     void interface() {
-        static_cast<Derived*>(this)->impl();   // 静态向下转换
+        static_cast<Derived*>(this)->impl();  // 静态向下转换
     }
 };
 
@@ -161,8 +161,8 @@ struct DerivedB : Base<DerivedB> {
 
 int main() {
     DerivedA a; DerivedB b;
-    a.interface();   // -> DerivedA::impl
-    b.interface();   // -> DerivedB::impl
+    a.interface();                            // -> DerivedA::impl
+    b.interface();                            // -> DerivedB::impl
 }
 ```
 
@@ -434,7 +434,7 @@ struct DenseBase {
     Derived&       derived()       { return static_cast<Derived&>(*this); }
     const Derived& derived() const { return static_cast<const Derived&>(*this); }
 
-    double sum() const {                 // 通用算法放在基类，复用给所有 Derived
+    double sum() const {                            // 通用算法放在基类，复用给所有 Derived
         double s = 0;
         for (int i = 0; i < derived().size(); ++i) s += derived().coeff(i);
         return s;
@@ -475,7 +475,7 @@ CRTP 把「单例样板」收敛到基类，派生类只需声明自身：
 template <typename T>
 struct Singleton {
     static T& instance() {
-        static T inst;          // Meyers 单例，线程安全（C++11 起）
+        static T inst;                // Meyers 单例，线程安全（C++11 起）
         return inst;
     }
     Singleton(const Singleton&) = delete;
@@ -486,7 +486,7 @@ protected:
 
 struct Config : Singleton<Config> {
     int timeout = 30;
-    friend struct Singleton<Config>;   // 允许基类构造
+    friend struct Singleton<Config>;  // 允许基类构造
 protected:
     Config() = default;
 };
@@ -544,8 +544,8 @@ struct Entity : Printable<Entity>, Serializable<Entity> {
 
 int main() {
     Entity e;
-    e.print_type();   // Entity
-    e.save();         // save Entity
+    e.print_type();  // Entity
+    e.save();        // save Entity
 }
 ```
 
@@ -633,16 +633,16 @@ CRTP 基类通常是**空类**（只有方法、无数据）。借助 **EBO（Em
 struct EmptyPolicy {};
 
 struct NoEBO {
-    EmptyPolicy p;   // 作为成员：至少占 1 字节（加上对齐）
+    EmptyPolicy p;         // 作为成员：至少占 1 字节（加上对齐）
     int v;
 };
 
 template <typename Policy>
-struct WithEBO : Policy {   // 作为基类 -> 空基类优化
+struct WithEBO : Policy {  // 作为基类 -> 空基类优化
     int v;
 };
 
-struct MyPolicy {};         // 空类
+struct MyPolicy {};        // 空类
 
 int main() {
     std::cout << "sizeof(NoEBO)=" << sizeof(NoEBO)
@@ -928,9 +928,9 @@ struct X : Base<X> { void impl(){} };   // 唯一正确写法
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式
 ```cpp
 // 错误：策略作成员，对象膨胀
-struct S { SomePolicy p; int x; };     // sizeof 受 p 的对齐拖累
+struct S { SomePolicy p; int x; };  // sizeof 受 p 的对齐拖累
 // 正确：策略作基类（CRTP/EBO）
-struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
+struct S2 : SomePolicy { int x; };  // EBO 压掉空基类
 ```
 
 ---
@@ -1014,7 +1014,7 @@ CRTP（奇异递归模板模式）用「基类以派生类为模板参数」在�
 ## 附录 A：CRTP 工业应用 [F: Industry / B: Principle]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 A：CRTP 工业应用 [F: Industry / B: Principle]
-```
+```text
 CRTP 在工业C++中的关键应用:
 
 Eigen (数值线性代数): MatrixBase<Derived> → 所有矩阵操作在编译期展开
@@ -1036,7 +1036,7 @@ Boost.Operators → CRTP 自动生成运算符
 ## 附录 B：面试 [J: Learning / I: Practice]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 B：面试 [J: Learning / I: Practice]
-```
+```text
 面试高频:
 Q: CRTP 和虚函数的本质区别？
 A: CRTP=编译期多态(static_cast,内联,零开销); 虚函数=运行时多态(vtable,5ns,可扩展)
@@ -1160,9 +1160,9 @@ int main() { Vec2 a, b; std::cout << (a < b) << '\n'; }
 #include <type_traits>
 template <typename D>
 struct ParticleBase {
-    void update() { static_cast<D&>(*this).step(); }   // 编译期绑定，可内联
+    void update() { static_cast<D&>(*this).step(); }  // 编译期绑定，可内联
 };
-struct Fire : ParticleBase<Fire> { void step() { // 推进火焰
+struct Fire : ParticleBase<Fire> { void step() {      // 推进火焰
 static_assert(std::is_empty_v<ParticleBase<Fire>>, "EBO: 空基类不占空间");
 int main() { Fire f; f.update(); std::cout << "ok\n"; }
 ```
@@ -1192,7 +1192,7 @@ struct Monster : Counted<Monster> {};
 struct Tower  : Counted<Tower> {};
 int main() {
     { Monster m1, m2; Tower t; std::cout << Monster::alive << '\n'; }  // 2
-    std::cout << Monster::alive << '\n';                                // 0
+    std::cout << Monster::alive << '\n';                               // 0
 }
 ```
 

@@ -80,11 +80,11 @@ std::atomic<Node*> top{nullptr};
 Node* pop_unsafe() {
     Node* old = top.load(std::memory_order_acquire);
     while (old) {
-        Node* nxt = old->next;                       // ③ 读取 next（此时 old 可能已被别人 delete）
+        Node* nxt = old->next;  // ③ 读取 next（此时 old 可能已被别人 delete）
         if (top.compare_exchange_strong(old, nxt,
                                         std::memory_order_acq_rel,
                                         std::memory_order_acquire))
-            return old;                              // ④ 返回已被回收的悬空节点！
+            return old;         // ④ 返回已被回收的悬空节点！
     }
     return nullptr;
 }
@@ -137,10 +137,10 @@ CAS 的契约是：“若当前值 == 预期值，则替换为新值，返回 tr
 #include <cstdint>
 // ④ tagged pointer 结构：64 位指针 + 64 位版本（Examples/_ch111_tagged.cpp:6）
 struct TaggedPtr {
-    void*        ptr;     // 业务指针
-    std::uint64_t tag;    // 单调递增版本戳
+    void*        ptr;                    // 业务指针
+    std::uint64_t tag;                   // 单调递增版本戳
 };
-static_assert(sizeof(TaggedPtr) == 16);   // ④ 必须占满 16 字节才能做双字 CAS
+static_assert(sizeof(TaggedPtr) == 16);  // ④ 必须占满 16 字节才能做双字 CAS
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 带标签指针解法
@@ -341,13 +341,13 @@ _Z10pop_unsafev:
 Node* pop_safe(HazardSlot& slot) {
     while (true) {
         Node* old = top.load(std::memory_order_acquire);
-        slot.protected_ptr.store(old, std::memory_order_seq_cst);   // ⑨ 先声明“我在用 old”
+        slot.protected_ptr.store(old, std::memory_order_seq_cst);  // ⑨ 先声明“我在用 old”
         if (top.load(std::memory_order_acquire) != old) continue;  // ⑨ 二次确认未被替换
         Node* nxt = old ? old->next : nullptr;
         if (top.compare_exchange_strong(old, nxt,
                                         std::memory_order_acq_rel,
                                         std::memory_order_acquire))
-            return old;   // ⑨ old 已被风险指针保护，回收者不会在此时 delete 它
+            return old;                                            // ⑨ old 已被风险指针保护，回收者不会在此时 delete 它
     }
 }
 ```
@@ -356,8 +356,8 @@ Node* pop_safe(HazardSlot& slot) {
 ```cpp
 // ⑨ 回收侧：retire 而非立刻 delete
 void retire_node(Node* p) {
-    retired_list.push_back(p);                 // ⑨ 暂存
-    for (Node* r : retired_list)               // ⑨ 仅当无 hazard slot 指向 r 时才 delete
+    retired_list.push_back(p);    // ⑨ 暂存
+    for (Node* r : retired_list)  // ⑨ 仅当无 hazard slot 指向 r 时才 delete
         if (!any_hazard_points_to(r)) { delete r; retired_list.remove(r); }
 }
 ```
@@ -396,8 +396,8 @@ delete p;                 // ⑩ ❌ 若 T2 刚 load 了 p 的副本，这里 de
 // ⑪ 用户态 RCU 读侧（示意）：读者几乎免费
 void reader_side(const std::atomic<Node*>& head) {
     // ⑪ 进入宽限期：在支持的机制下“安静”即可，无需原子操作保护
-    Node* p = head.load(std::memory_order_acquire);   // ⑪ 一次性快照
-    (void)p->data;                                     // ⑪ 读，期间不会被回收（宽限期保护）
+    Node* p = head.load(std::memory_order_acquire);  // ⑪ 一次性快照
+    (void)p->data;                                   // ⑪ 读，期间不会被回收（宽限期保护）
 }
 ```
 
@@ -447,11 +447,11 @@ struct Node { int val; Node* next; };
 std::atomic<Node*> head{nullptr};
 
 void reader() {
-    Node* h = head.load(std::memory_order_relaxed);   // ⑬ ❌ relaxed + 可能悬空
+    Node* h = head.load(std::memory_order_relaxed);  // ⑬ ❌ relaxed + 可能悬空
     if (h) (void)h->val;
 }
 void writer() {
-    Node n{42, nullptr};                               // ⑬ ❌ 局部变量地址存入原子指针
+    Node n{42, nullptr};                             // ⑬ ❌ 局部变量地址存入原子指针
     n.next = head.load(std::memory_order_relaxed);
     head.store(&n, std::memory_order_relaxed);
 }
@@ -473,12 +473,12 @@ g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch111_tsan.cpp -o Examples/_ch
 // ⑭ ❌ 误用1：用 relaxed 内存序做无锁栈，且回收不及时
 std::atomic<Node*> t{nullptr};
 Node* bad_pop() {
-    Node* o = t.load(std::memory_order_relaxed);     // ⑭ relaxed 不足以建立同步
+    Node* o = t.load(std::memory_order_relaxed);                     // ⑭ relaxed 不足以建立同步
     while (o && !t.compare_exchange_weak(o, o->next,
-                                         std::memory_order_relaxed,    // ⑭ 太弱
+                                         std::memory_order_relaxed,  // ⑭ 太弱
                                          std::memory_order_relaxed))
         ;
-    return o;   // ⑭ 返回后立刻可能被别的线程 delete
+    return o;                                                        // ⑭ 返回后立刻可能被别的线程 delete
 }
 ```
 
@@ -740,7 +740,7 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 ## 附录 E：ABA问题工业案例 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：ABA问题工业案例 [F: Industry / E: Lowlevel / H: Design / J: Learning]
-```
+```asm
 ABA问题在工业中的真实出现:
 
 Linux内核 (RCU list): ABA发生在节点回收+重用场景
@@ -879,18 +879,18 @@ CAS 只比较「当前值是否等于期望值」，看不到期望值被读取�
 #include <iostream>
 int main() {
     int A = 1, B = 2;
-    std::atomic<int*> head{&A};        // 初始指向 A
-    int* expected = head.load();       // 线程1 读到 &A（准备 CAS）
+    std::atomic<int*> head{&A};   // 初始指向 A
+    int* expected = head.load();  // 线程1 读到 &A（准备 CAS）
 
     // ——此刻线程1 被抢占，其它线程完成 A→B→A——
-    head.store(&B);                    // 变 B
-    head.store(&A);                    // 又变回 A（地址复用！）
+    head.store(&B);               // 变 B
+    head.store(&A);               // 又变回 A（地址复用！）
 
     // 线程1 恢复：CAS 比较 head==expected(&A) 成立 → 误成功
     bool ok = head.compare_exchange_strong(expected, &B);
     std::cout << "CAS " << (ok ? "SUCCESS" : "FAIL")
               << " —— 但中间已发生 A->B->A，逻辑已被破坏\n";
-    return ok ? 0 : 1;                 // ok==true，正是 ABA 陷阱
+    return ok ? 0 : 1;            // ok==true，正是 ABA 陷阱
 }
 ```
 
@@ -926,7 +926,7 @@ int main() {
     // 恢复线程用旧期望 {ver0, A} 做 CAS → 版本不符，失败，成功识破 ABA
     bool ok = tagged.compare_exchange_strong(expected, pack(1, 2));
     std::cout << "tagged CAS " << (ok ? "SUCCESS(漏检)" : "FAIL(正确识破ABA)") << '\n';
-    return ok ? 1 : 0;                 // 期望 FAIL
+    return ok ? 1 : 0;                                                  // 期望 FAIL
 }
 ```
 
@@ -949,7 +949,7 @@ int main() {
 #include <atomic>
 #include <cstdint>
 #include <iostream>
-struct alignas(16) TaggedPtr {          // 16 字节对齐，满足 cmpxchg16b
+struct alignas(16) TaggedPtr {                     // 16 字节对齐，满足 cmpxchg16b
     void* ptr;
     std::uint64_t ver;
 };
@@ -957,7 +957,7 @@ int main() {
     std::atomic<TaggedPtr> head{ TaggedPtr{nullptr, 0} };
     int node = 7;
     TaggedPtr expected = head.load();
-    TaggedPtr desired{ &node, expected.ver + 1 };   // 更新指针并递增版本
+    TaggedPtr desired{ &node, expected.ver + 1 };  // 更新指针并递增版本
     bool ok = head.compare_exchange_strong(expected, desired);
     std::cout << "install " << (ok ? "OK" : "retry")
               << ", ver=" << head.load().ver << '\n';
@@ -1022,7 +1022,7 @@ int main() {
     // 场景 A：无锁计数器 —— 值回到原值，ABA 无害，结果仍正确
     std::atomic<long> counter{0};
     long expected = counter.load();
-    counter.fetch_add(1); counter.fetch_sub(1);          // 中间 +1 -1（"值级 ABA"）
+    counter.fetch_add(1); counter.fetch_sub(1);  // 中间 +1 -1（"值级 ABA"）
     bool ok_a = counter.compare_exchange_strong(expected, expected + 5);
     std::cout << "counter CAS: " << (ok_a ? "成功(结果仍正确)" : "失败") << '\n';
 
@@ -1031,7 +1031,7 @@ int main() {
     Node n1{1}, n2{2};
     std::atomic<Node*> head{&n1};
     Node* exp = head.load();
-    head.store(&n2); head.store(&n1);                   // A->B->A：地址复用
+    head.store(&n2); head.store(&n1);            // A->B->A：地址复用
     bool ok_b = head.compare_exchange_strong(exp, &n2);
     std::cout << "stack CAS: " << (ok_b ? "误成功(ABA!)" : "失败") << '\n';
     return 0;
@@ -1063,13 +1063,13 @@ int main() {
     std::atomic<Node*> head{nullptr};
     Node* a = new Node{1, nullptr};
     head.store(a);
-    Node* old = head.load();            // pop 线程读到 old=a, 准备 CAS(a -> a->next)
+    Node* old = head.load();  // pop 线程读到 old=a, 准备 CAS(a -> a->next)
     // —— 抢占：另一线程 pop 掉 a 并 delete，再 push 一个新节点，new 复用了同一地址 a ——
     // 于是 head 又 == a（地址复用），但 a->next 已是悬垂/错误链
     // pop 线程恢复：CAS(head==a) 成功，却把 head 设成了已释放节点的 next → UB
     bool ok = head.compare_exchange_strong(old, old->next);
     std::cout << "naive pop CAS ok=" << ok << " —— 地址复用下这是 use-after-free 温床\n";
-    return 0;   // 编译通过；多线程 + 回收下为运行期 UB
+    return 0;                 // 编译通过；多线程 + 回收下为运行期 UB
 }
 ```
 
@@ -1373,13 +1373,13 @@ int main() {
   int expected = 7;
   // 这就是 ABA 赖以发生的原语层：CAS 循环
   bool ok = a.compare_exchange_strong(expected, 42);
-  std::cout << ok << ' ' << a.load() << std::endl;   // 1 42
+  std::cout << ok << ' ' << a.load() << std::endl;                // 1 42
 
   // libstdc++ 用低位锁位打包实现 atomic<shared_ptr>，注定非 lock-free
   std::atomic<std::shared_ptr<int>> sp{std::make_shared<int>(99)};
   std::cout << std::boolalpha << sp.is_lock_free() << std::endl;  // false
   auto p = sp.load();
-  std::cout << *p << std::endl;   // 99
+  std::cout << *p << std::endl;                                   // 99
   return 0;
 }
 ```

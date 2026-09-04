@@ -106,13 +106,13 @@ C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**�
 #include <stdexcept>
 
 class Account {
-    long balance_ = 0;                 // 实现细节（private）
+    long balance_ = 0;                         // 实现细节（private）
 public:
-    void deposit(long n) {             // 维持不变量
+    void deposit(long n) {                     // 维持不变量
         if (n < 0) throw std::invalid_argument("negative deposit");
         balance_ += n;
     }
-    void withdraw(long n) {           // 维持不变量
+    void withdraw(long n) {                    // 维持不变量
         if (n > balance_) throw std::runtime_error("insufficient");
         balance_ -= n;
     }
@@ -123,7 +123,7 @@ int main() {
     Account a;
     a.deposit(100);
     a.withdraw(30);
-    printf("%ld\n", a.balance());      // 70
+    printf("%ld\n", a.balance());              // 70
     // 不变量由类自身捍卫，调用方无法让 balance_ 变负
 }
 ```
@@ -151,7 +151,7 @@ int main() {
 #include <cstddef>
 
 class Secret {
-    int hidden_ = 0xDEADBEEF;          // private，但仍在对象内存里
+    int hidden_ = 0xDEADBEEF;   // private，但仍在对象内存里
 public:
     int  get() const { return hidden_; }
     // offsetof 需在成员可访问的上下文求值；这里由类主动暴露自身布局
@@ -163,8 +163,8 @@ int main() {
     // 类暴露了偏移，外部用原始指针直接写入——访问控制是编译期约束，不保护内存
     int* p = reinterpret_cast<int*>(
                  reinterpret_cast<char*>(&s) + Secret::offset());
-    *p = 0x12345678;                   // 绕过了 private 访问控制！
-    printf("%08X\n", s.get());         // 12345678 —— private 已被运行期改写
+    *p = 0x12345678;            // 绕过了 private 访问控制！
+    printf("%08X\n", s.get());  // 12345678 —— private 已被运行期改写
 }
 ```
 
@@ -184,8 +184,8 @@ public:
 int main() {
     Widget w;
     int raw[2] = { 9, 8 };
-    std::memcpy(&w, raw, sizeof(raw)); // 直接覆写对象内存
-    printf("%d %d\n", w.x(), w.y());   // 9 8 —— 私有成员被覆写
+    std::memcpy(&w, raw, sizeof(raw));  // 直接覆写对象内存
+    printf("%d %d\n", w.x(), w.y());    // 9 8 —— 私有成员被覆写
 }
 ```
 
@@ -196,7 +196,7 @@ int main() {
 
 struct Raw { int a, b; };
 class Pair {
-    int a_ = 10, b_ = 20;             // private
+    int a_ = 10, b_ = 20;                  // private
 public:
     int a() const { return a_; }
     int b() const { return b_; }
@@ -232,16 +232,16 @@ int main() {
 
 class Box {
     int w_ = 3, h_ = 4;
-    friend int area(const Box&);       // 仅此函数被授权
+    friend int area(const Box&);             // 仅此函数被授权
 public:
     int  w() const { return w_; }
 };
 
-int area(const Box& b) {              // 非成员函数，却能访问 private
+int area(const Box& b) {                     // 非成员函数，却能访问 private
     return b.w_ * b.h_;
 }
 
-int main() { printf("%d\n", area(Box{})); }   // 12
+int main() { printf("%d\n", area(Box{})); }  // 12
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元：受控破封装，最小化
@@ -256,10 +256,10 @@ class Base {
 
 class FriendOfBase {
 public:
-    static int peek(const Base& b) { return b.secret_; }   // OK
+    static int peek(const Base& b) { return b.secret_; }  // OK
 };
 
-class Derived : public Base {};        // 不继承友元权
+class Derived : public Base {};                           // 不继承友元权
 
 class NotFriend {
 public:
@@ -268,7 +268,7 @@ public:
 
 int main() {
     Base b;
-    printf("%d\n", FriendOfBase::peek(b));   // 42
+    printf("%d\n", FriendOfBase::peek(b));                // 42
     // Derived 没有友元权；NotFriend 也没有
 }
 ```
@@ -281,11 +281,11 @@ int main() {
 class Engine {
     int rpm_ = 0;
 public:
-    int rpm() const { return rpm_; }          // 首选：公开只读接口
+    int rpm() const { return rpm_; }  // 首选：公开只读接口
     void set_rpm(int r) { rpm_ = r; }
 };
 
-class Car {                            // Car 不需要是 Engine 的友元
+class Car {                           // Car 不需要是 Engine 的友元
     Engine engine_;
 public:
     void rev() { engine_.set_rpm(8000); }
@@ -349,12 +349,12 @@ int main() {
 #include <cstdio>
 
 #if 1
-struct Widget {            // 版本 1：protected 名为 'id_'
+struct Widget {                // 版本 1：protected 名为 'id_'
 protected: long id_ = 0;
 public:    long id() const { return id_; }
 };
 #else
-struct Widget {            // 版本 2：基类作者把 id_ 重构成两个字段
+struct Widget {                // 版本 2：基类作者把 id_ 重构成两个字段
 protected: int id_hi_ = 0, id_lo_ = 0;
 public:    long id() const { return (long(id_hi_)<<32)|id_lo_; }
 };
@@ -363,7 +363,7 @@ public:    long id() const { return (long(id_hi_)<<32)|id_lo_; }
 struct Panel : Widget {
     void dump() {
         // 版本 2 下这行直接编译失败：id_ 已不存在
-        printf("%ld\n", id_);   // 版本 2 下这行直接编译失败：id_ 已不存在
+        printf("%ld\n", id_);  // 版本 2 下这行直接编译失败：id_ 已不存在
     }
 };
 
@@ -390,11 +390,11 @@ int main() { Panel p; p.dump(); }
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的唯一区别
 ```cpp
 // [示例 10] 默认成员访问区别
-struct S { int x; };       // x 默认 public
-class  C { int x; };       // x 默认 private
+struct S { int x; };  // x 默认 public
+class  C { int x; };  // x 默认 private
 
 int main() {
-    S s; s.x = 1;          // OK
+    S s; s.x = 1;     // OK
     // C c; c.x = 1;       // 编译错误：'x' is private
 }
 ```
@@ -403,12 +403,12 @@ int main() {
 ```cpp
 // [示例 11] 默认继承方式区别
 struct B { int x; };
-struct D1 : B {};          // struct 默认 public 继承 → D1 是 B 的子类
-class  D2 : B {};          // class  默认 private 继承 → D2 不是 B 的子类（外部）
+struct D1 : B {};   // struct 默认 public 继承 → D1 是 B 的子类
+class  D2 : B {};   // class  默认 private 继承 → D2 不是 B 的子类（外部）
 
 void f(B*) {}
 int main() {
-    D1 d1; f(&d1);         // OK：public 继承，D1* → B* 隐式转换存在
+    D1 d1; f(&d1);  // OK：public 继承，D1* → B* 隐式转换存在
     // D2 d2; f(&d2);      // 编译错误：private 继承，无 D2* → B* 转换
 }
 ```
@@ -438,11 +438,11 @@ int main() {
 #include <cstdio>
 
 struct Animal { void breath() const { printf("breath\n"); } };
-struct Dog : public Animal {};        // Dog 是 Animal
+struct Dog : public Animal {};  // Dog 是 Animal
 
 int main() {
     Dog d;
-    Animal* a = &d;                   // OK：public 继承 → 子类型
+    Animal* a = &d;             // OK：public 继承 → 子类型
     a->breath();
 }
 ```
@@ -453,9 +453,9 @@ int main() {
 #include <cstdio>
 
 struct Base { void f() const { printf("f\n"); } };
-struct Mid : protected Base {};       // 外部看不到 Mid 是 Base
+struct Mid : protected Base {};  // 外部看不到 Mid 是 Base
 struct Leaf : public Mid {
-    void g() const { f(); }           // OK：Mid 内部可见 Base::f（protected）
+    void g() const { f(); }      // OK：Mid 内部可见 Base::f（protected）
 };
 
 int main() {
@@ -508,7 +508,7 @@ struct Stack : public List {
 
 int main() {
     Stack s; s.add(1); s.add(2);
-    printf("%d\n", s.size());   // 2：作为 List 使用完全正常
+    printf("%d\n", s.size());                                // 2：作为 List 使用完全正常
 }
 ```
 
@@ -533,21 +533,21 @@ struct Rectangle {
     int area() const { return w_ * h_; }
 };
 
-struct Square : public Rectangle {    // 表面 is-a，实际破坏契约
-    void width(int w)  override { w_ = h_ = w; }   // 副作用：同时改高
-    void height(int h) override { w_ = h_ = h; }   // 副作用：同时改宽
+struct Square : public Rectangle {                // 表面 is-a，实际破坏契约
+    void width(int w)  override { w_ = h_ = w; }  // 副作用：同时改高
+    void height(int h) override { w_ = h_ = h; }  // 副作用：同时改宽
 };
 
 // 一个“相信” Rectangle 契约的函数
 void enlarge(Rectangle& r) {
     int old = r.area();
-    r.width(r.w_ + 1);                // 契约：仅宽度+1，高度不变
-    assert(r.area() == old + r.h_);   // 对真 Rectangle 成立
+    r.width(r.w_ + 1);                            // 契约：仅宽度+1，高度不变
+    assert(r.area() == old + r.h_);               // 对真 Rectangle 成立
 }
 
 int main() {
     Square s; s.width(2); s.height(2);
-    enlarge(s);                        // 断言失败！Square 破坏了 Rectangle 契约
+    enlarge(s);                                   // 断言失败！Square 破坏了 Rectangle 契约
 }
 ```
 
@@ -592,8 +592,8 @@ struct Rectangle {
 };
 
 struct Square {
-    Rectangle r;                       // 组合：复用 Rectangle 实现
-    void side(int s){ r.width(s); r.height(s); }   // 主动维持不变量
+    Rectangle r;                                               // 组合：复用 Rectangle 实现
+    void side(int s){ r.width(s); r.height(s); }               // 主动维持不变量
     int  area() const { return r.area(); }
 };
 
@@ -624,7 +624,7 @@ int main() { Rect r{3,4}; Sqr s{5}; printf("%d %d\n", r.area(), s.area()); }
 **[平台·Itanium C++ ABI]**　对象布局（Itanium ABI，GCC/Clang 一致）：`Derived` 的地址 == 其首基类的地址（单继承、非虚继承时），派生部分紧随基类子对象之后。
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 切片（slicing）完整机制
-```
+```text
 对象布局（单继承，无虚继承）：
         +-------------------+
         |  Base 子对象       |  <- 偏移 0；若多态则内含 vptr
@@ -646,8 +646,8 @@ struct Derived : Base { int d = 99; };
 
 int main() {
     Derived src;
-    Base sliced = src;                 // 切片！只拷 Base 子对象
-    printf("b=%d\n", sliced.b);        // 1
+    Base sliced = src;           // 切片！只拷 Base 子对象
+    printf("b=%d\n", sliced.b);  // 1
     // 无法访问 sliced.d —— 它从未被拷贝进来
 }
 ```
@@ -665,13 +665,13 @@ struct Derived : Base {
     const char* who() const override { return "Derived"; }
 };
 
-void describe(Base b) {                // 按值传参 → 切片
-    printf("%s\n", b.who());           // 永远输出 Base！
+void describe(Base b) {       // 按值传参 → 切片
+    printf("%s\n", b.who());  // 永远输出 Base！
 }
 
 int main() {
     Derived d;
-    describe(d);                       // 输出 "Base"（动态派发已丢）
+    describe(d);              // 输出 "Base"（动态派发已丢）
 }
 ```
 
@@ -686,8 +686,8 @@ struct Circle : Shape { double r=3; double area() const override { return 3.14*r
 
 int main() {
     std::vector<Shape> v;
-    v.push_back(Circle{});             // 切片！Circle 数据仅 r 丢了
-    printf("%.2f\n", v[0].area());     // 0.00（Shape::area，无 Circle 半径）
+    v.push_back(Circle{});          // 切片！Circle 数据仅 r 丢了
+    printf("%.2f\n", v[0].area());  // 0.00（Shape::area，无 Circle 半径）
 }
 ```
 
@@ -710,9 +710,9 @@ int main() {
 struct Base { virtual const char* who() const { return "Base"; } virtual ~Base()=default; };
 struct Derived : Base { const char* who() const override { return "Derived"; } };
 
-void describe(const Base& b) { printf("%s\n", b.who()); }   // 引用：不切片
+void describe(const Base& b) { printf("%s\n", b.who()); }  // 引用：不切片
 
-int main() { Derived d; describe(d); }                       // Derived
+int main() { Derived d; describe(d); }                     // Derived
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 切片修复：引用 / 指针 / unique_ptr<Base>
@@ -743,9 +743,9 @@ struct Base { virtual void f() const { printf("Base\n"); } virtual ~Base()=defau
 struct Derived : Base { void f() const override { printf("Derived\n"); } };
 
 int main() {
-    Base* p = new Derived;            // 指针：无切片
-    p->f();                           // Derived
-    delete p;                         // 虚析构 → 正确
+    Base* p = new Derived;  // 指针：无切片
+    p->f();                 // Derived
+    delete p;               // 虚析构 → 正确
 }
 ```
 
@@ -805,12 +805,12 @@ int main() { D d; }
 
 struct A { A(const char* s){ printf("%s ctor\n", s);} ~A(){printf("dtor\n");} };
 struct C {
-    A a1{"a1"};                     // 声明序 1
-    A a2{"a2"};                     // 声明序 2
-    C() : a2{"a2"}, a1{"a1"} {}     // 初始化列表乱序不影响构造序
+    A a1{"a1"};                  // 声明序 1
+    A a2{"a2"};                  // 声明序 2
+    C() : a2{"a2"}, a1{"a1"} {}  // 初始化列表乱序不影响构造序
 };
 
-int main() { C c; }                 // a1 ctor → a2 ctor（按声明序）
+int main() { C c; }              // a1 ctor → a2 ctor（按声明序）
 ```
 
 **<span class="badge badge-std">标准</span>**　异常安全：`[class.base.init]` 规定，若构造函数在进入函数体前（成员/基类初始化）抛异常，已构造的子对象会**按构造的逆序自动析构**（不需要函数体里的 `try`）。这与 `ch39`/`ch40` 的 RAII 与异常安全一致——`unique_ptr`/`vector` 等成员若在异常前已构造，会自动释放资源。
@@ -823,14 +823,14 @@ int main() { C c; }                 // a1 ctor → a2 ctor（按声明序）
 
 struct Raii { ~Raii() { printf("cleanup\n"); } };
 struct Thrower {
-    Raii guard;                     // 先构造
+    Raii guard;                        // 先构造
     Thrower() { printf("before throw\n"); throw std::runtime_error("boom"); }
 };
 
 int main() try {
-    Thrower t;                      // guard 已构造，throw 后自动析构 guard
+    Thrower t;                         // guard 已构造，throw 后自动析构 guard
 } catch (const std::exception& e) {
-    printf("caught: %s\n", e.what()); // before throw → cleanup → caught: boom
+    printf("caught: %s\n", e.what());  // before throw → cleanup → caught: boom
 }
 ```
 
@@ -876,12 +876,12 @@ struct Base {
     void f(double) { printf("Base::f(double)\n"); }
 };
 struct Derived : Base {
-    void f(int) { printf("Derived::f(int)\n"); }   // 隐藏 Base::f 全部重载
+    void f(int) { printf("Derived::f(int)\n"); }  // 隐藏 Base::f 全部重载
 };
 
 int main() {
     Derived d;
-    d.f(1.0);                       // 调用 Derived::f(int)！1.0 被截断为 int 1
+    d.f(1.0);                                     // 调用 Derived::f(int)！1.0 被截断为 int 1
     // d.f(1.0) 不会去选 Base::f(double)，因为名字 f 已被隐藏
 }
 ```
@@ -898,15 +898,15 @@ struct Base {
     void f(int)    { printf("Base::f(int)\n"); }
 };
 struct Derived : Base {
-    using Base::f;                  // 把 Base 的 f 重载集引入本作用域
+    using Base::f;  // 把 Base 的 f 重载集引入本作用域
     void f(const char*) { printf("Derived::f(const char*)\n"); }
 };
 
 int main() {
     Derived d;
-    d.f(1.0);                       // 重载解析选中 Base::f(double)
-    d.f(1);                         // Base::f(int)
-    d.f("hi");                      // Derived::f(const char*)
+    d.f(1.0);       // 重载解析选中 Base::f(double)
+    d.f(1);         // Base::f(int)
+    d.f("hi");      // Derived::f(const char*)
 }
 ```
 
@@ -917,18 +917,18 @@ int main() {
 
 struct Base {
     virtual void g(int)    { printf("Base::g(int)\n"); }
-    virtual void g(double) { printf("Base::g(double)\n"); }   // 虚重载
+    virtual void g(double) { printf("Base::g(double)\n"); }  // 虚重载
 };
 struct Derived : Base {
-    void g(int) override { printf("Derived::g(int)\n"); }     // 覆盖（同签名虚函数）
+    void g(int) override { printf("Derived::g(int)\n"); }    // 覆盖（同签名虚函数）
     // Base::g(double) 仍可见（虚函数名字未被隐藏，因为它没被同名非虚遮蔽）
 };
 
 int main() {
     Derived d;
     Base* p = &d;
-    p->g(1);      // Derived::g(int)（动态派发）
-    p->g(1.0);    // Base::g(double)（名字未被隐藏，正常虚调用）
+    p->g(1);                                                 // Derived::g(int)（动态派发）
+    p->g(1.0);                                               // Base::g(double)（名字未被隐藏，正常虚调用）
 }
 ```
 
@@ -953,12 +953,12 @@ int main() {
 struct Base { virtual void draw(int) const { printf("Base::draw\n"); } };
 
 struct Good : Base {
-    void draw(int) const override { printf("Good::draw\n"); }   // OK
+    void draw(int) const override { printf("Good::draw\n"); }  // OK
 };
 
 #if 0
 struct Bad : Base {
-    void draw(double) const override { }   // 编译错误：没有匹配的基类虚函数
+    void draw(double) const override { }                       // 编译错误：没有匹配的基类虚函数
     // 没有 override 时这只会“悄悄”成为新重载而非覆盖
 };
 #endif
@@ -973,17 +973,17 @@ int main() { Good g; const Base& b = g; b.draw(0); }
 
 struct Base { virtual int calc() const { return 1; } };
 struct Mid : Base {
-    int calc() const final override { return 2; }   // final：Leaf 不能再覆盖 calc
+    int calc() const final override { return 2; }  // final：Leaf 不能再覆盖 calc
 };
 #if 0
 struct Leaf : Mid {
-    int calc() const override { return 3; }   // 编译错误：calc 是 final
+    int calc() const override { return 3; }        // 编译错误：calc 是 final
 };
 #endif
 
-struct Sealed final { int x = 0; };            // final 类：不能被继承
+struct Sealed final { int x = 0; };                // final 类：不能被继承
 #if 0
-struct X : Sealed {};                          // 编译错误：Sealed 是 final
+struct X : Sealed {};                              // 编译错误：Sealed 是 final
 #endif
 
 int main() { Mid m; const Base& b = m; printf("%d\n", b.calc()); }
@@ -997,7 +997,7 @@ int main() { Mid m; const Base& b = m; printf("%d\n", b.calc()); }
 struct A { virtual int f() const { return 1; } };
 struct B : A { int f() const final override { return 2; } };  // final → 可去虚化
 
-int call(const B& b) { return b.f(); }   // 编译器知道 B::f 不会被覆盖 → 可能内联为 return 2
+int call(const B& b) { return b.f(); }                        // 编译器知道 B::f 不会被覆盖 → 可能内联为 return 2
 
 int main() { B b; printf("%d\n", call(b)); }
 ```
@@ -1022,15 +1022,15 @@ class Task {
 public:
     // 公有非虚：对外稳定接口，统一前置/后置
     void run() {
-        preConditions();            // 前置：不变量/参数校验/加锁
+        preConditions();                  // 前置：不变量/参数校验/加锁
         auto t0 = now();
-        doRun();                    // 派生定制的核心逻辑（虚）
-        postConditions();           // 后置：不变量恢复/解锁/度量
+        doRun();                          // 派生定制的核心逻辑（虚）
+        postConditions();                 // 后置：不变量恢复/解锁/度量
         printf("elapsed=%lldus\n", (long long)(now()-t0));
     }
     virtual ~Task() = default;
 protected:
-    virtual void doRun() = 0;       // 仅核心，派生实现
+    virtual void doRun() = 0;             // 仅核心，派生实现
     void preConditions()  { printf("[pre] check\n"); }
     void postConditions() { printf("[post] restore\n"); }
 private:
@@ -1052,18 +1052,18 @@ int main() { MyTask t; t.run(); }
 // 反面教材：公有虚函数，派生类可“忘记”前置校验
 class BadTask {
 public:
-    virtual void run() {                // 每个人都要自己记得做前置
+    virtual void run() {           // 每个人都要自己记得做前置
         printf("  doing work...\n");
     }
     virtual ~BadTask() = default;
 };
 struct Sloppy : BadTask {
-    void run() override {               // 忘了做前置检查/度量
+    void run() override {          // 忘了做前置检查/度量
         printf("  doing work (no pre/post)\n");
     }
 };
 
-int main() { Sloppy s; s.run(); }       // 前置/后置被绕过
+int main() { Sloppy s; s.run(); }  // 前置/后置被绕过
 ```
 
 **<span class="badge badge-exp">经验</span>**　NVI 的三个硬收益：① **不变量强制**——前置/后置只在基类一处实现，派生类无法遗漏；② **可观测性**——度量、日志、锁统一加在 NVI 壳里，不影响 `doRun` 逻辑；③ **接口稳定**——`run()` 是非虚的，其签名/契约永不随派生变化，符合「接口稳定、实现可替换」的封装理想。代价是多一点间接调用（现代编译器可内联消除）。
@@ -1164,8 +1164,8 @@ struct my_is_base_of {
 private:
     // 若 D* 能隐式转成 B*（即 D 以 public 方式派生自 B），选 true_type
     template<typename T>
-    static std::true_type  test(const volatile B*);      // 优先匹配（更特化）
-    static std::false_type test(const volatile void*);   // 兜底
+    static std::true_type  test(const volatile B*);     // 优先匹配（更特化）
+    static std::false_type test(const volatile void*);  // 兜底
     // 注意：这里用指针转换，public 继承才可通过 static_cast
 public:
     static constexpr bool value =
@@ -1174,9 +1174,9 @@ public:
 
 struct A {};
 struct C : A {};
-struct D : private A {};          // private 继承：C-style cast 才可行
+struct D : private A {};                                // private 继承：C-style cast 才可行
 int main() {
-    std::cout << my_is_base_of<A, C>::value << "\n";   // 1（public 派生）
+    std::cout << my_is_base_of<A, C>::value << "\n";    // 1（public 派生）
     // my_is_base_of<A, D> 取决于 test 是否能 static_cast（private 派生会失败→0，符合标准 public 语义）
 }
 ```
@@ -1237,9 +1237,9 @@ int main() {
 struct B {};
 struct D : B {};
 int main() {
-    std::cout << std::is_convertible<D*, B*>::value << "\n";   // 1：D* → B*
-    std::cout << std::is_convertible<B*, D*>::value << "\n";   // 0：反向不可
-    std::cout << std::is_base_of<B, D>::value      << "\n";    // 1
+    std::cout << std::is_convertible<D*, B*>::value << "\n";  // 1：D* → B*
+    std::cout << std::is_convertible<B*, D*>::value << "\n";  // 0：反向不可
+    std::cout << std::is_base_of<B, D>::value      << "\n";   // 1
 }
 ```
 
@@ -1316,16 +1316,16 @@ int main() {
 // [示例 43] 触发 -Woverloaded-virtual 的名字隐藏（GCC/Clang 加 -Woverloaded-virtual）
 struct Base {
     virtual void f(int)    { }
-    virtual void f(double) { }      // 虚函数重载
+    virtual void f(double) { }               // 虚函数重载
 };
 struct Derived : Base {
-    void f(int) override { }        // 仅覆盖 f(int)
+    void f(int) override { }                 // 仅覆盖 f(int)
     // 注意：Base::f(double) 仍可见，未隐藏（没有同名非虚遮蔽它）
 };
 
 // 真正触发“重载虚函数被隐藏”告警的情形：
 struct B2 { virtual void g(int){} virtual void g(double){} };
-struct D2 : B2 { void g(int) override {} };   // 安全：虚重载未被隐藏
+struct D2 : B2 { void g(int) override {} };  // 安全：虚重载未被隐藏
 // 若 D2 写 void g(int){}（无 override）且 B2 有 g(double)，某些 -Woverloaded-virtual 形态会告警
 ```
 
@@ -1382,7 +1382,7 @@ struct Derived : Base { double extra = 3.14159; };
 
 int main() {
     Derived d; d.id = 7;
-    std::vector<Base> v; v.push_back(d);     // 切片：extra 丢失
+    std::vector<Base> v; v.push_back(d);                          // 切片：extra 丢失
     printf("id=%d extra_lost=%d\n", v[0].id, (int)sizeof(v[0]));  // id=7，sizeof=Base
 }
 ```
@@ -1423,8 +1423,8 @@ struct Add : Op { int doRun(int x) override { return x+1; } };
 
 int main(){
     Add a;
-    a.run(-5);     // 被前置检查拦截，派生无法绕过
-    a.run(10);     // cost=11
+    a.run(-5);                                                     // 被前置检查拦截，派生无法绕过
+    a.run(10);                                                     // cost=11
 }
 ```
 
@@ -1437,12 +1437,12 @@ struct Base { virtual void tick() { printf("base tick\n"); } virtual ~Base()=def
 
 // 错误示范：本想覆盖，却因签名差异（漏 const）成了新重载
 struct Buggy : Base {
-    void tick() const { printf("buggy tick\n"); }   // 漏 override 且签名多 const → 新重载，未覆盖基类
+    void tick() const { printf("buggy tick\n"); }  // 漏 override 且签名多 const → 新重载，未覆盖基类
 };
 
 int main(){
     Buggy b; Base& r = b;
-    r.tick();     // 输出 "base tick" —— 静默调用了基类版本！
+    r.tick();                                      // 输出 "base tick" —— 静默调用了基类版本！
     // 若写 override 编译器会立刻报错，避免此静默 bug
 }
 ```
@@ -1702,12 +1702,12 @@ struct Base { int b = 1; virtual ~Base() = default; };
 struct Derived : Base { int d = 2; };
 int main() {
     Derived der;
-    Base sliced = der;                       // 切片：仅复制 Base 子对象
-    std::cout << "sliced.b = " << sliced.b << '\n';   // 1，正常
+    Base sliced = der;                                  // 切片：仅复制 Base 子对象
+    std::cout << "sliced.b = " << sliced.b << '\n';     // 1，正常
     // sliced.d 不存在：派生部分已丢失
-    Base& ref = der;                         // 引用保持完整对象
+    Base& ref = der;                                    // 引用保持完整对象
     std::cout << "via ref d = "
-              << static_cast<Derived&>(ref).d << '\n'; // 2
+              << static_cast<Derived&>(ref).d << '\n';  // 2
 }
 ```
 
@@ -1734,7 +1734,7 @@ struct Derived : Base {
 };
 int main() {
     Derived d;
-    d.f(1);    // 调 Derived::f(double)，Base::f(int) 被隐藏（非重载）
+    d.f(1);                                                  // 调 Derived::f(double)，Base::f(int) 被隐藏（非重载）
 }
 ```
 
@@ -1745,13 +1745,13 @@ int main() {
 #include <iostream>
 struct Base { void f(int) { std::cout << "Base::f(int)\n"; } };
 struct Derived : Base {
-    using Base::f;                              // 恢复基类重载集
+    using Base::f;  // 恢复基类重载集
     void f(double) { std::cout << "Derived::f(double)\n"; }
 };
 int main() {
     Derived d;
-    d.f(1);    // Base::f(int)
-    d.f(1.0);  // Derived::f(double)
+    d.f(1);         // Base::f(int)
+    d.f(1.0);       // Derived::f(double)
 }
 ```
 
@@ -1775,9 +1775,9 @@ NVI 把契约（前置条件、后置条件、不变式、日志）收敛在非�
 #include <cassert>
 class Algorithm {
 public:
-    void run() {                     // 非虚公共接口：不变式守卫
+    void run() {  // 非虚公共接口：不变式守卫
         std::cout << "pre\n";
-        doRun();                     // 委托虚步骤
+        doRun();  // 委托虚步骤
         std::cout << "post\n";
         assert(invariant());
     }
@@ -1812,10 +1812,10 @@ int main() { Impl a; a.run(); }
 struct Base { int x = 1; virtual void tag() const { std::cout << "Base\n"; } };
 struct Derived : Base { int y = 2; void tag() const override { std::cout << "Derived\n"; } };
 
-void use(Base b) { b.tag(); }          // 按值：切片，调用 Base::tag
+void use(Base b) { b.tag(); }  // 按值：切片，调用 Base::tag
 int main() {
     Derived d;
-    use(d);                            // 打印 Base，派生数据 y 已丢失
+    use(d);                    // 打印 Base，派生数据 y 已丢失
     std::cout << "Base size=" << sizeof(Base)
               << " Derived size=" << sizeof(Derived) << "\n";
 }
@@ -1888,11 +1888,11 @@ int main() {
 struct Base { int b = 1; virtual ~Base() = default; };
 struct Derived : Base { int d = 2; };
 std::unique_ptr<Base> process(Derived d) {
-    return std::make_unique<Derived>(std::move(d));  // 完整对象经智能指针传递
+    return std::make_unique<Derived>(std::move(d));          // 完整对象经智能指针传递
 }
 int main() {
     auto p = process(Derived{});
-    std::cout << static_cast<Derived*>(p.get())->d << '\n'; // 2，派生部分保留
+    std::cout << static_cast<Derived*>(p.get())->d << '\n';  // 2，派生部分保留
 }
 ```
 
@@ -1913,7 +1913,7 @@ struct Circle : Shape {
 };
 int main() {
     Shape* s = new Circle;
-    s->draw();        // 调 Shape::draw()——本想调 Circle，但签名不符未被覆盖
+    s->draw();                                             // 调 Shape::draw()——本想调 Circle，但签名不符未被覆盖
 }
 ```
 
@@ -2115,12 +2115,12 @@ struct Base {
 
 struct Derived : Base {
     std::string who_virtual() const override { return "Derived"; }
-    std::string who_nonvirtual() const { return "Derived"; } // 名字隐藏，非覆盖
+    std::string who_nonvirtual() const { return "Derived"; }  // 名字隐藏，非覆盖
 };
 
 int main() {
     Derived d;
-    const Base& b = d; // 静态类型 Base，动态类型 Derived
+    const Base& b = d;                                        // 静态类型 Base，动态类型 Derived
 
     // 虚函数：运行期查 vtable，按动态类型选 Derived 版本
     assert(b.who_virtual() == "Derived");

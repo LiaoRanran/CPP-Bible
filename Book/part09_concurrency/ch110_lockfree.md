@@ -299,9 +299,9 @@ struct LockFreeStack {
         Node* n = new Node{v, head_.load(std::memory_order_relaxed)};
         Node* old = head_.load(std::memory_order_relaxed);
         do {
-            n->next = old;                       // 新节点指向当前栈顶
+            n->next = old;                   // 新节点指向当前栈顶
         } while (!head_.compare_exchange_weak(old, n,
-                 std::memory_order_release,       // 发布新节点
+                 std::memory_order_release,  // 发布新节点
                  std::memory_order_relaxed));
     }
 };
@@ -400,7 +400,7 @@ bool MSQueue<T>::dequeue(T& out) {
         Node* next = head->next.load(std::memory_order_acquire);
         if (head == head_.load(std::memory_order_acquire)) {
             if (head == tail) {
-                if (next == nullptr) return false;       // 队列空
+                if (next == nullptr) return false;  // 队列空
                 tail_.compare_exchange_strong(tail, next,
                     std::memory_order_release, std::memory_order_relaxed);
             } else {
@@ -412,7 +412,7 @@ bool MSQueue<T>::dequeue(T& out) {
         }
         head = head_.load(std::memory_order_acquire);
     }
-    return true;   // 真正回收 head 节点需 hazard pointer（见第111章）
+    return true;                                    // 真正回收 head 节点需 hazard pointer（见第111章）
 }
 ```
 
@@ -656,7 +656,7 @@ double bench(F f, intthreads, int iters) {
 定性结论（量级，非固定数字；实测请跑 ⑮ 脚手架）：低竞争时 mutex 胜（无 CAS 重试、缓存友好）；高竞争时 mutex 因阻塞上下文切换而劣，无锁靠自旋胜出；但伪共享会反杀无锁。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 mutex 性能对比 [平台·x86-64]
-```
+```text
 ┌──────────────────┬───────────────┬───────────────┬──────────────────┐
 │ 场景              │ mutex          │ lock-free      │ 胜者             │
 ├──────────────────┼───────────────┼───────────────┼──────────────────┤
@@ -764,14 +764,14 @@ struct SPSCRing {
     bool push(const T& v) {
         std::size_t t = tail_.load(std::memory_order_relaxed);
         if (((t + 1) & (N - 1)) == head_.load(std::memory_order_acquire))
-            return false;                 // 满
+            return false;                                              // 满
         buf_[t] = v;
         tail_.store((t + 1) & (N - 1), std::memory_order_release);
         return true;
     }
     bool pop(T& out) {
         std::size_t h = head_.load(std::memory_order_relaxed);
-        if (h == tail_.load(std::memory_order_acquire)) return false;   // 空
+        if (h == tail_.load(std::memory_order_acquire)) return false;  // 空
         out = buf_[h];
         head_.store((h + 1) & (N - 1), std::memory_order_release);
         return true;
@@ -784,8 +784,8 @@ struct SPSCRing {
 // ⑱ 使用：一个线程 push，另一个线程 pop，无需任何锁
 #include <cassert>
 SPSCRing<int, 1024> ring;
-void producer() { while (!ring.push(42)) { // 满则等待/跳过
-void consumer() { int x; while (ring.pop(x)) { // 处理 x
+void producer() { while (!ring.push(42)) {      // 满则等待/跳过
+void consumer() { int x; while (ring.pop(x)) {  // 处理 x
 ```
 
 - `[标准]`：SPSC 环形缓冲只用 `load/store`（relaxed/acquire/release），是**最强保证**——生产者与消费者各自 wait-free。
@@ -818,7 +818,7 @@ void safe_reader() { volatile int sink = safe_var.load(std::memory_order_relaxed
 动态检测用 ThreadSanitizer：
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证手段（模型检测 / TSan）
-```
+```text
 # 命令（非本章取证文件；示例源码请放 Examples/ 下再编译）：
 g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_demo
 ./_ch110_tsan_demo        # TSan 会精确报告 data race 的读写栈
@@ -857,10 +857,10 @@ g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_
 #include <atomic>
 std::atomic<int> a{0};
 void cheat_sheet() {
-    a.load(std::memory_order_acquire);                       // 读
-    a.store(1, std::memory_order_release);                   // 写
-    a.fetch_add(1, std::memory_order_relaxed);               // wait-free RMW
-    int e = 0; a.compare_exchange_weak(e, 1);                // lock-free RMW（CAS）
+    a.load(std::memory_order_acquire);          // 读
+    a.store(1, std::memory_order_release);      // 写
+    a.fetch_add(1, std::memory_order_relaxed);  // wait-free RMW
+    int e = 0; a.compare_exchange_weak(e, 1);   // lock-free RMW（CAS）
 }
 ```
 
@@ -916,7 +916,7 @@ void cheat_sheet() {
 ## 附录 A：工业无锁数据结构 [F: Industry / B: Principle]
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业无锁数据结构 [F: Industry / B: Principle]
-```
+```asm
 世界级 C++ 项目中的无锁数据结构:
 
 folly::MPMCQueue (Meta):
@@ -1008,7 +1008,7 @@ _ZL11probe_mutexy:
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：面试与设计权衡 [J: Learning / H: Design]
-```
+```text
 面试高频:
 Q: 如何判断一个数据结构是否 lock-free？
 A: 使用 std::atomic<T>::is_always_lock_free 编译期检查。
@@ -1120,8 +1120,8 @@ moodycamel 的「单生产者单消费者（SPSC）段」本质是无锁环形�
 template <typename T, size_t N>
 struct SPSCRing {
     static_assert((N & (N - 1)) == 0, "N 必须 2 的幂");
-    alignas(64) std::atomic<size_t> head_{0};   // 仅生产者写
-    alignas(64) std::atomic<size_t> tail_{0};   // 仅消费者写
+    alignas(64) std::atomic<size_t> head_{0};                              // 仅生产者写
+    alignas(64) std::atomic<size_t> tail_{0};                              // 仅消费者写
     T buf_[N];
     bool push(const T& v) {
         size_t h = head_.load(std::memory_order_relaxed);
@@ -1142,7 +1142,7 @@ int main() {
     SPSCRing<int, 16> q;
     q.push(42);
     int x = 0; q.pop(x);
-    return x;   // 42
+    return x;                                                              // 42
 }
 ```
 
@@ -1195,20 +1195,20 @@ int main() {
 #include <iostream>
 struct SPSC {
     std::vector<int> buf;
-    std::atomic<unsigned> head{0}, tail{0};   // 生产者写 head，消费者写 tail
+    std::atomic<unsigned> head{0}, tail{0};            // 生产者写 head，消费者写 tail
     SPSC(unsigned n) : buf(n) {}
     bool push(int v) {
         unsigned h = head.load(std::memory_order_relaxed);
         unsigned t = tail.load(std::memory_order_acquire);
-        if (h - t == buf.size()) return false;        // 满
+        if (h - t == buf.size()) return false;         // 满
         buf[h % buf.size()] = v;
-        head.store(h + 1, std::memory_order_release); // 发布写
+        head.store(h + 1, std::memory_order_release);  // 发布写
         return true;
     }
     bool pop(int& v) {
         unsigned t = tail.load(std::memory_order_relaxed);
         unsigned h = head.load(std::memory_order_acquire);
-        if (h == t) return false;                     // 空
+        if (h == t) return false;                      // 空
         v = buf[t % buf.size()];
         tail.store(t + 1, std::memory_order_release);
         return true;
@@ -1217,7 +1217,7 @@ struct SPSC {
 int main() {
     SPSC q(4);
     q.push(10); q.push(20);
-    int x; while (q.pop(x)) std::cout << x << ' ';  // 10 20
+    int x; while (q.pop(x)) std::cout << x << ' ';     // 10 20
     std::cout << '\n';
 }
 ```
@@ -1272,7 +1272,7 @@ void push(int x) {
     while (!head.compare_exchange_weak(n->next, n,
                std::memory_order_release, std::memory_order_relaxed)) {}
 }
-int pop() {                                   // 单线程演示；真实多线程需 HP/RCU（ch112）
+int pop() {                                        // 单线程演示；真实多线程需 HP/RCU（ch112）
     Node* old = head.load(std::memory_order_acquire);
     while (old && !head.compare_exchange_weak(old, old->next,
                    std::memory_order_acquire, std::memory_order_relaxed)) {}
@@ -1281,7 +1281,7 @@ int pop() {                                   // 单线程演示；真实多线�
 }
 int main() {
     push(1); push(2); push(3);
-    std::cout << pop() << pop() << pop() << '\n';   // 321
+    std::cout << pop() << pop() << pop() << '\n';  // 321
 }
 ```
 
@@ -1345,15 +1345,15 @@ struct PaddedCounter {
     alignas(std::hardware_destructive_interference_size) std::atomic<long> c{0};
 };
 int main() {
-    std::vector<PaddedCounter> per(4);      // 每个计数器独占 cache line
+    std::vector<PaddedCounter> per(4);        // 每个计数器独占 cache line
     std::vector<std::thread> ts;
     for (int i = 0; i < 4; ++i)
         ts.emplace_back([&, i]{ for (int j = 0; j < 200000; ++j)
                                     per[i].c.fetch_add(1, std::memory_order_relaxed); });
     for (auto& t : ts) t.join();
     long total = 0;
-    for (auto& p : per) total += p.c.load();   // 读侧汇总
-    std::cout << "total=" << total << '\n';    // 800000
+    for (auto& p : per) total += p.c.load();  // 读侧汇总
+    std::cout << "total=" << total << '\n';   // 800000
     return total == 800000 ? 0 : 1;
 }
 ```
@@ -1658,15 +1658,15 @@ flowchart TD
 #include <thread>
 
 int main() {
-    constexpr long long iterations = 1LL << 20;   // 每线程 1,048,576 次
+    constexpr long long iterations = 1LL << 20;  // 每线程 1,048,576 次
 
-    std::atomic<long long> per_thread_total{0};    // (a) 合并后的 per-thread 结果
-    std::atomic<long long> atomic_total{0};        // (b) 共享原子计数器
+    std::atomic<long long> per_thread_total{0};  // (a) 合并后的 per-thread 结果
+    std::atomic<long long> atomic_total{0};      // (b) 共享原子计数器
     std::mutex m;
-    long long mutex_total = 0;                     // (c) mutex 保护计数器
+    long long mutex_total = 0;                   // (c) mutex 保护计数器
 
     auto worker = [&]() {
-        thread_local long long local = 0;          // 每线程独立累加器：无共享写
+        thread_local long long local = 0;        // 每线程独立累加器：无共享写
         for (long long i = 0; i < iterations; ++i) {
             local += 1;
             atomic_total.fetch_add(1, std::memory_order_relaxed);

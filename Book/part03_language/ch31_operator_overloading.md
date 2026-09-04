@@ -139,10 +139,10 @@ int main(){Adder add5{5};std::cout<<add5(10)<<std::endl;return 0;}
 
 struct Probe {
     int v{};
-    Probe& operator++() { ++v; return *this; }        // 前置++ 可重载
-    int operator*() const { return v; }               // 解引用可重载（注意 .* 与成员指针永远内建）
-    int operator[](int i) const { return v + i; }     // 下标可重载
-    int operator()(int x) const { return v * x; }     // 调用可重载
+    Probe& operator++() { ++v; return *this; }     // 前置++ 可重载
+    int operator*() const { return v; }            // 解引用可重载（注意 .* 与成员指针永远内建）
+    int operator[](int i) const { return v + i; }  // 下标可重载
+    int operator()(int x) const { return v * x; }  // 调用可重载
 };
 
 int main() {
@@ -183,7 +183,7 @@ int main(){String s("hello");String t=s;std::cout<<t.b<<std::endl;return 0;}
 
 struct Meters {
     double v;
-    Meters(double x) : v(x) {}                 // 非显式：允许 2.0 隐式转换
+    Meters(double x) : v(x) {}  // 非显式：允许 2.0 隐式转换
     Meters& operator+=(const Meters& o) { v += o.v; return *this; }
 };
 
@@ -192,7 +192,7 @@ Meters operator+(const Meters& a, const Meters& b) { return Meters{a.v + b.v}; }
 int main() {
     Meters m{1.5};
     m += Meters{2.0};
-    Meters s = 2.0 + m;     // 左操作数 2.0 经隐式转换成 Meters：成员版 operator+ 做不到
+    Meters s = 2.0 + m;         // 左操作数 2.0 经隐式转换成 Meters：成员版 operator+ 做不到
     std::cout << s.v << '\n';
     return 0;
 }
@@ -256,7 +256,7 @@ public:
     Vec2(double px, double py) : x(px), y(py) {}
     Vec2& operator+=(const Vec2& o) { x += o.x; y += o.y; return *this; }
     bool operator==(const Vec2&) const = default;
-    auto operator<=>(const Vec2&) const = default;      // 六种比较一次到位（P0515）
+    auto operator<=>(const Vec2&) const = default;        // 六种比较一次到位（P0515）
     friend std::ostream& operator<<(std::ostream& os, const Vec2& v) {
         return os << '(' << v.x << ',' << v.y << ')';
     }
@@ -264,7 +264,7 @@ private:
     double x, y;
 };
 
-Vec2 operator+(Vec2 a, const Vec2& b) { return a += b; }   // 自由函数：对称
+Vec2 operator+(Vec2 a, const Vec2& b) { return a += b; }  // 自由函数：对称
 
 int main() {
     Vec2 a{1, 2}, b{3, 4};
@@ -324,8 +324,8 @@ GCC 的重载决议实现在 `gcc/cp/call.cc`（查找 + 排序 + 诊断一体�
 
 struct Token {
     std::string kind;
-    Token& f() &  { kind = "lvalue"; return *this; }   // 只允许左值调用
-    Token  f() && { return Token{"rvalue"}; }          // 只允许右值调用
+    Token& f() &  { kind = "lvalue"; return *this; }  // 只允许左值调用
+    Token  f() && { return Token{"rvalue"}; }         // 只允许右值调用
 };
 
 int main() {
@@ -467,7 +467,7 @@ struct Price {
 
 int main() {
     Price p{250};
-    std::cout << p << '\n';   // 经 ADL 找到：实参类型 Price → 去 Price 所在作用域找 operator<<
+    std::cout << p << '\n';                                              // 经 ADL 找到：实参类型 Price → 去 Price 所在作用域找 operator<<
     return 0;
 }
 ```
@@ -491,12 +491,12 @@ std::size_t allocs = 0;
 void* operator new(std::size_t n) { ++allocs; return std::malloc(n); }
 void operator delete(void* p) noexcept { std::free(p); }
 
-struct Sum;                                            // 前置声明
+struct Sum;                        // 前置声明
 
 struct Vec {
     std::vector<int> d;
     Vec(std::initializer_list<int> l) : d(l) {}
-    Vec& operator=(const Sum& s);                      // 从代理赋值：此刻才物化
+    Vec& operator=(const Sum& s);  // 从代理赋值：此刻才物化
 };
 
 struct Sum {
@@ -735,7 +735,7 @@ int main(){Json j{42,"hello"};std::cout<<(int)j<<" "<<(std::string)j<<std::endl;
 ## 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
-```
+```text
 标准库中的运算符重载:
 - std::complex<T>: operator+,-,*,/ → libstdc++内联展开为2条addps(SIMD)
 - std::iterator: operator++/-- → 指针运算(vectors)或节点遍历(lists)
@@ -884,7 +884,7 @@ std::ostream& operator<<(std::ostream& os, const Vec2& v){
 }
 int main(){
     Vec2 a{1,2}, b{3,4};
-    std::cout << (a + b) << '\n';   // (4,6)
+    std::cout << (a + b) << '\n';                                   // (4,6)
 }
 ```
 
@@ -908,13 +908,13 @@ int main(){
 #include <compare>
 struct Point {
     int x, y;
-    auto operator<=>(const Point&) const = default;   // 生成 == < > <= >= !=
+    auto operator<=>(const Point&) const = default;  // 生成 == < > <= >= !=
 };
 int main(){
     Point a{1,2}, b{1,3};
-    bool t1 = (a == b);   // false
-    bool t2 = (a <  b);   // true
-    bool t3 = (a != b);   // true (由 == 自动取反)
+    bool t1 = (a == b);                              // false
+    bool t2 = (a <  b);                              // true
+    bool t3 = (a != b);                              // true (由 == 自动取反)
 }
 ```
 
@@ -938,24 +938,24 @@ int main(){
 ```cpp
 #include <utility>
 #include <cstddef>
-struct Matrix {                 // rule of 5
+struct Matrix {                                                             // rule of 5
     size_t n; double* data;
     Matrix(size_t n): n(n), data(new double[n*n]) {}
     ~Matrix(){ delete[] data; }
-    Matrix(const Matrix& o): n(o.n), data(new double[n*n]) {     // 拷贝构造
+    Matrix(const Matrix& o): n(o.n), data(new double[n*n]) {                // 拷贝构造
         for (size_t i=0;i<n*n;++i) data[i]=o.data[i];
     }
-    Matrix& operator=(const Matrix& o){                         // 拷贝赋值
+    Matrix& operator=(const Matrix& o){                                     // 拷贝赋值
         if (this!=&o){
-            double* p = new double[o.n*o.n];       // 先分配再接管：new 抛异常时 *this 不变（强异常安全）
+            double* p = new double[o.n*o.n];                                // 先分配再接管：new 抛异常时 *this 不变（强异常安全）
             for (size_t i=0;i<o.n*o.n;++i) p[i]=o.data[i];
             delete[] data;
             data=p; n=o.n;
         }
         return *this;
     }
-    Matrix(Matrix&& o) noexcept : n(o.n), data(o.data) { o.data=nullptr; }   // 移动构造
-    Matrix& operator=(Matrix&& o) noexcept {                    // 移动赋值
+    Matrix(Matrix&& o) noexcept : n(o.n), data(o.data) { o.data=nullptr; }  // 移动构造
+    Matrix& operator=(Matrix&& o) noexcept {                                // 移动赋值
         if (this!=&o){ delete[] data; data=o.data; n=o.n; o.data=nullptr; }
         return *this;
     }
@@ -1029,16 +1029,16 @@ int main() {
 
 struct Counter {
     int n = 0;
-    Counter& operator++() { ++n; return *this; }       // 前置: 返回引用
+    Counter& operator++() { ++n; return *this; }                    // 前置: 返回引用
     Counter  operator++(int) { Counter t = *this; ++n; return t; }  // 后置: 返回值(旧值)
     int get() const { return n; }
 };
 
 int main() {
     Counter c;
-    Counter d = c++;        // 后置: d=0, c=1
-    Counter e = ++c;        // 前置: e=2, c=2
-    std::cout << d.get() << c.get() << e.get() << "\n";  // 0 2 2
+    Counter d = c++;                                                // 后置: d=0, c=1
+    Counter e = ++c;                                                // 前置: e=2, c=2
+    std::cout << d.get() << c.get() << e.get() << "\n";             // 0 2 2
 }
 ```
 
@@ -1450,8 +1450,8 @@ Vec& operator+=(Vec& a, const Vec& b) { a.x += b.x; a.y += b.y; a.z += b.z; retu
 
 int main() {
     Vec a{ 1, 2, 3 }, b{ 4, 5, 6 }, c{ 7, 8, 9 }, d{ 1, 1, 1 };
-    Vec v1 = a; v1 = v1 + b + c + d;          // 链式（可能生成临时）
-    Vec v2 = a; v2 += b; v2 += c; v2 += d;    // 原地（无临时）
+    Vec v1 = a; v1 = v1 + b + c + d;        // 链式（可能生成临时）
+    Vec v2 = a; v2 += b; v2 += c; v2 += d;  // 原地（无临时）
     std::cout << "chained: " << v1.x << "," << v1.y << "," << v1.z << std::endl;
     std::cout << "in-place: " << v2.x << "," << v2.y << "," << v2.z << std::endl;
     return 0;

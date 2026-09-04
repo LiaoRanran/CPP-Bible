@@ -274,11 +274,11 @@ int main() {
 #include <vector>
 #include <cassert>
 int main() {
-    std::vector<int> v;          // setup
+    std::vector<int> v;  // setup
     v.push_back(1); v.push_back(2); v.push_back(3);
     assert(v.size() == 3);
     assert(v.capacity() >= 3);
-    v.clear();                   // teardown
+    v.clear();           // teardown
     assert(v.empty());
     std::printf("fixture<vector>: size after clear=%zu\n", v.size());
     return 0;
@@ -1005,13 +1005,13 @@ gcc-testsuite-style: vector(5,7) VERIFY OK
 // 见 Examples/_ch150_antipattern.cpp
 #include <cstdio>
 #include <cassert>
-static int g_counter = 0;          // 反模式：共享可变全局状态
+static int g_counter = 0;  // 反模式：共享可变全局状态
 static int next_id() { return ++g_counter; }
 int main() {
     // 若两个测试共享 g_counter 且未重置，则第二个断言会失败
-    g_counter = 0;                  // 正确做法：每个用例前重置
+    g_counter = 0;         // 正确做法：每个用例前重置
     assert(next_id() == 1);
-    g_counter = 0;                  // 必须重置，否则脆弱
+    g_counter = 0;         // 必须重置，否则脆弱
     assert(next_id() == 1);
     std::printf("antipattern: reset global before each case -> stable\n");
     return 0;
@@ -1159,7 +1159,7 @@ ISO C++ 标准不规定测试框架，但 `<random>`、`<chrono>`、`constexpr` 
 ## 附录 E：测试中的编译器/原理/实战 [B: Principle / C: Compiler / I: Practice / J: Learning]
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 E：测试中的编译器/原理/实战
-```
+```asm
 C++测试框架对比:
 Google Test (gtest): 最流行, 宏驱动(TEST/EXPECT_EQ), Google/LLVM使用
 Catch2: 现代风格(BDD-GIVEN/WHEN/THEN), header-only, 单文件启动

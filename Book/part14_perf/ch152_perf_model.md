@@ -179,14 +179,14 @@ flowchart LR
 #include <cstring>
 #include <cstddef>
 int main() {
-    const std::size_t N = 16 * 1024 * 1024;       // 16M 元素
+    const std::size_t N = 16 * 1024 * 1024;      // 16M 元素
     long long* a = new long long[N];
     long long* b = new long long[N];
     auto t0 = std::chrono::steady_clock::now();
-    std::memcpy(b, a, N * sizeof(long long));       // 顺序大块拷贝
+    std::memcpy(b, a, N * sizeof(long long));    // 顺序大块拷贝
     auto t1 = std::chrono::steady_clock::now();
     double sec = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count() / 1e9;
-    double bytes = 2.0 * N * sizeof(long long);     // 读 a + 写 b
+    double bytes = 2.0 * N * sizeof(long long);  // 读 a + 写 b
     std::cout << "bandwidth ~ " << (bytes / sec / 1e9) << " GB/s\n";
     delete[] a; delete[] b;
     return 0;
@@ -416,7 +416,7 @@ int main() {
 `std::chrono::steady_clock` 是"单调、不受系统时间调整影响"的时钟，是基准测量的正确选择（`system_clock` 会因 NTP 回拨产生负值 dt）。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：libstdc++ ste
-```
+```text
 文件：chrono                               行号：130 / 131
       using rep    = system_clock::rep;         // 实际为 long long (纳秒级计数)
       using period = system_clock::period;      // ratio<1, 1000000000> → 纳秒
@@ -739,9 +739,9 @@ int main() {
 // C25: Roofline 分析——给定 FLOP/byte ratio 判断算力或带宽瓶颈
 #include <iostream>
 int main() {
-    double peak_gflops = 100.0;    // 单核峰值 (GFLOPS)
-    double bw_gb_s = 50.0;         // DRAM 带宽 (GB/s)
-    double kernel_ai = 0.5;        // 算术强度 (FLOP / byte)
+    double peak_gflops = 100.0;  // 单核峰值 (GFLOPS)
+    double bw_gb_s = 50.0;       // DRAM 带宽 (GB/s)
+    double kernel_ai = 0.5;      // 算术强度 (FLOP / byte)
     double attainable = (kernel_ai * bw_gb_s < peak_gflops)
                         ? kernel_ai * bw_gb_s : peak_gflops;
     std::cout << "AI=" << kernel_ai << " -> attainable " << attainable << " GFLOPS ("
@@ -1081,11 +1081,11 @@ int main() {
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
 ```cpp
 #include <iostream>
-double amdahl(double p, double n) {        // p=串行比例, n=核数
-    return 1.0 / ((1.0 - p) + p / n);      // 强扩展理论上限
+double amdahl(double p, double n) {    // p=串行比例, n=核数
+    return 1.0 / ((1.0 - p) + p / n);  // 强扩展理论上限
 }
 int main() {
-    double s = amdahl(0.10, 8.0);          // p=10% 串行 -> 上限约 4.7x（非 8x）
+    double s = amdahl(0.10, 8.0);      // p=10% 串行 -> 上限约 4.7x（非 8x）
     std::cout << "strong-scaling speedup = " << s << "x\n";
 }
 ```
@@ -1111,7 +1111,7 @@ const char* bound_by_roofline(double ai, double balance) {
     return ai >= balance ? "compute-bound" : "memory-bound";
 }
 int main() {
-    double balance = 10.0;                 // 某机器平衡点示意值 [UNVERIFIED]
+    double balance = 10.0;                                  // 某机器平衡点示意值 [UNVERIFIED]
     std::cout << bound_by_roofline(25.0, balance) << '\n';  // 25 >= 10 -> compute-bound
 }
 ```

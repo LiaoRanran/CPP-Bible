@@ -75,8 +75,8 @@ int main() {
 ```cpp
 #include <iostream>
 #include <string>
-void sink(std::string s){} // ❌ 按值传参触发拷贝
-void sink_ref(const std::string& s){} // ✅ 常量引用
+void sink(std::string s){}             // ❌ 按值传参触发拷贝
+void sink_ref(const std::string& s){}  // ✅ 常量引用
 int main(){ std::string x="hello";sink_ref(x);std::cout<<x<<std::endl;return 0; }
 ```
 
@@ -650,9 +650,9 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 #include <iostream>
 int main() {
     std::string bad;
-    for (int i = 0; i < 100000; ++i) bad = bad + " " + std::to_string(i); // 反复分配
+    for (int i = 0; i < 100000; ++i) bad = bad + " " + std::to_string(i);     // 反复分配
     std::string good; good.reserve(1'000'000);
-    for (int i = 0; i < 100000; ++i) good += ' ', good += std::to_string(i); // 复用缓冲
+    for (int i = 0; i < 100000; ++i) good += ' ', good += std::to_string(i);  // 复用缓冲
     std::cout << bad.size() << ' ' << good.size() << '\n';
 }
 ```
@@ -679,8 +679,8 @@ int main() {
 int main() {
     std::vector<int> v(1'000'000, 1);
     std::list<int>   l(1'000'000, 1);
-    long sv = 0; for (int x : v) sv += x;     // 连续、缓存友好
-    long sl = 0; for (int x : l) sl += x;     // 指针追逐、缓存不友好
+    long sv = 0; for (int x : v) sv += x;  // 连续、缓存友好
+    long sl = 0; for (int x : l) sl += x;  // 指针追逐、缓存不友好
     std::cout << sv << ' ' << sl << '\n';
 }
 ```
@@ -929,12 +929,12 @@ int main() {
     constexpr int M = 512, N = 512;
     std::vector<int> a(static_cast<std::size_t>(M) * N, 1);
     long long s = 0;
-    for (int i = 0; i < M; ++i)        // 行优先：顺序访问
+    for (int i = 0; i < M; ++i)  // 行优先：顺序访问
         for (int j = 0; j < N; ++j)
             s += a[static_cast<std::size_t>(i) * N + j];
     std::cout << "row-major sum = " << s << std::endl;
     s = 0;
-    for (int j = 0; j < N; ++j)        // 列优先：跨步访问（反模式）
+    for (int j = 0; j < N; ++j)  // 列优先：跨步访问（反模式）
         for (int i = 0; i < M; ++i)
             s += a[static_cast<std::size_t>(i) * N + j];
     std::cout << "column-major sum = " << s << std::endl;

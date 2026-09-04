@@ -212,13 +212,13 @@ struct allocator_traits : __allocator_traits_base
 ```cpp
 // bits/alloc_traits.h:197-225
 using propagate_on_container_copy_assignment
-  = __detected_or_t<false_type, __pocca, _Alloc>;   // 无则 false_type
+  = __detected_or_t<false_type, __pocca, _Alloc>;                       // 无则 false_type
 using propagate_on_container_move_assignment
   = __detected_or_t<false_type, __pocma, _Alloc>;
 using propagate_on_container_swap
   = __detected_or_t<false_type, __pocs, _Alloc>;
 using is_always_equal
-  = typename __detected_or_t<is_empty<_Alloc>, __equal, _Alloc>::type; // 无则 is_empty
+  = typename __detected_or_t<is_empty<_Alloc>, __equal, _Alloc>::type;  // 无则 is_empty
 ```
 
 `rebind_alloc` 的推导（`bits/alloc_traits.h:227-230`）：
@@ -238,9 +238,9 @@ template<typename _Tp>
 ```cpp
 // bits/alloc_traits.h:455-470
 using propagate_on_container_copy_assignment = false_type;
-using propagate_on_container_move_assignment = true_type;   // 见 LWG 2103
+using propagate_on_container_move_assignment = true_type;  // 见 LWG 2103
 using propagate_on_container_swap = false_type;
-using is_always_equal = true_type;                          // 空类，所有实例等价
+using is_always_equal = true_type;                         // 空类，所有实例等价
 template<typename _Up>
   using rebind_alloc = allocator<_Up>;
 ```
@@ -265,8 +265,8 @@ template<typename _Up>
 
 template <typename T>
 struct MinimalAlloc {
-    using value_type = T;                       // 仅此一个类型别名
-    T* allocate(std::size_t n) {                // 仅 allocate/deallocate
+    using value_type = T;         // 仅此一个类型别名
+    T* allocate(std::size_t n) {  // 仅 allocate/deallocate
         return static_cast<T*>(std::malloc(n * sizeof(T)));
     }
     void deallocate(T* p, std::size_t) { std::free(p); }
@@ -469,7 +469,7 @@ long Stats::allocs = 0; long Stats::deallocs = 0;
 template <typename T>
 struct DebugAlloc {
     using value_type = T;
-    DebugAlloc() = default;   // 关键：声明了转换构造函数会抑制隐式默认构造，
+    DebugAlloc() = default;                       // 关键：声明了转换构造函数会抑制隐式默认构造，
                               // 而 vector 默认构造其分配器时需要 DebugAlloc()。
     T* allocate(std::size_t n) {
         ++Stats::allocs;
@@ -486,7 +486,7 @@ bool operator!=(const DebugAlloc<T>&, const DebugAlloc<U>&) noexcept { return fa
 
 int main() {
     std::vector<int, DebugAlloc<int>> v;
-    for (int i = 0; i < 50; ++i) v.push_back(i);   // 多次扩容 → 多次分配
+    for (int i = 0; i < 50; ++i) v.push_back(i);  // 多次扩容 → 多次分配
     v.clear(); v.shrink_to_fit();
     std::cout << "allocs=" << Stats::allocs
               << " deallocs=" << Stats::deallocs << '\n';
@@ -518,11 +518,11 @@ int main() {
 int main() {
     std::pmr::monotonic_buffer_resource mono(
         std::pmr::get_default_resource());
-    std::pmr::vector<int> a(&mono);             // 同一类型 pmr::vector<int>
+    std::pmr::vector<int> a(&mono);  // 同一类型 pmr::vector<int>
     a.push_back(1); a.push_back(2);
 
     std::pmr::unsynchronized_pool_resource pool;
-    std::pmr::vector<int> b(&pool);             // 仍是 pmr::vector<int>
+    std::pmr::vector<int> b(&pool);  // 仍是 pmr::vector<int>
     b.push_back(3); b.push_back(4);
     std::cout << a[0] << a[1] << '|' << b[0] << b[1] << '\n';
     return 0;
@@ -547,7 +547,7 @@ class memory_resource
 public:
   memory_resource() = default;
   memory_resource(const memory_resource&) = default;
-  virtual ~memory_resource();                       // key function
+  virtual ~memory_resource();                                         // key function
 
   [[nodiscard]] void* allocate(size_t __bytes,
                                size_t __alignment = _S_max_align)
@@ -561,7 +561,7 @@ public:
   { return do_is_equal(__other); }
 
 private:
-  virtual void* do_allocate(size_t __bytes, size_t __alignment) = 0;     // 纯虚
+  virtual void* do_allocate(size_t __bytes, size_t __alignment) = 0;  // 纯虚
   virtual void  do_deallocate(void* __p, size_t __bytes, size_t __alignment) = 0;
   virtual bool  do_is_equal(const memory_resource& __other) const noexcept = 0;
 };
@@ -650,8 +650,8 @@ using propagate_on_container_move_assignment = false_type;
 using propagate_on_container_swap = false_type;
 static allocator_type
 select_on_container_copy_construction(const allocator_type&) noexcept
-{ return allocator_type(); }                 // 拷贝构造用默认资源！
-using is_always_equal = false_type;          // 不同资源实例不等价
+{ return allocator_type(); }         // 拷贝构造用默认资源！
+using is_always_equal = false_type;  // 不同资源实例不等价
 ```
 
 > **<span class="badge badge-exp">经验</span>**　这是 PMR 最反直觉之处：`pmr::vector` 拷贝构造时，新容器用的是**默认资源**，而非源容器的资源！因为 `select_on_container_copy_construction` 返回新 `allocator_type()`（取默认资源）。若想保持资源，用 `scoped_allocator_adaptor` 或显式传资源。
@@ -707,17 +707,17 @@ int main() {
 void* do_allocate(size_t __bytes, size_t __alignment) override
 {
   if (__builtin_expect(__bytes == 0, false))
-    __bytes = 1;                          // 保证不返回同一指针两次
+    __bytes = 1;                                        // 保证不返回同一指针两次
   void* __p = std::align(__alignment, __bytes, _M_current_buf, _M_avail);
   if (__builtin_expect(__p == nullptr, false)) {
-    _M_new_buffer(__bytes, __alignment);  // 当前缓冲不够 → 向上游要新缓冲
+    _M_new_buffer(__bytes, __alignment);                // 当前缓冲不够 → 向上游要新缓冲
     __p = _M_current_buf;
   }
-  _M_current_buf = (char*)_M_current_buf + __bytes;  // bump
+  _M_current_buf = (char*)_M_current_buf + __bytes;     // bump
   _M_avail -= __bytes;
   return __p;
 }
-void do_deallocate(void*, size_t, size_t) override { }   // 空！不释放
+void do_deallocate(void*, size_t, size_t) override { }  // 空！不释放
 bool do_is_equal(const memory_resource& __other) const noexcept override
 { return this == &__other; }
 ```
@@ -803,10 +803,10 @@ int main() {
 int main() {
     char stack_buf[4096];
     std::pmr::monotonic_buffer_resource buf(stack_buf, sizeof(stack_buf));
-    std::pmr::vector<int> v(&buf);           // 全部在栈缓冲上 bump
+    std::pmr::vector<int> v(&buf);  // 全部在栈缓冲上 bump
     for (int i = 0; i < 500; ++i) v.push_back(i);
     std::cout << "size=" << v.size() << " back=" << v.back() << '\n';
-    return 0;                               // buf 析构 → 一次性归还，零次 delete
+    return 0;                       // buf 析构 → 一次性归还，零次 delete
 }
 ```
 
@@ -852,8 +852,8 @@ int main() {
         std::pmr::vector<int> v(&mr);
         for (int i = 0; i < 100; ++i) v.push_back(i);
         std::cout << "first pass size=" << v.size() << '\n';
-    }                                          // v 析构但不释放 mr 内存
-    mr.release();                              // 回到初始状态，缓冲可再用
+    }              // v 析构但不释放 mr 内存
+    mr.release();  // 回到初始状态，缓冲可再用
     {
         std::pmr::vector<int> v2(&mr);
         for (int i = 0; i < 10; ++i) v2.push_back(i);
@@ -879,10 +879,10 @@ int main() {
 ```cpp
 #include <cstddef>
 // memory_resource:258-267 —— unsynchronized 的 do_* 直接转私有实现
-void* do_allocate(size_t __bytes, size_t __alignment) override;   // _M_impl 处理
+void* do_allocate(size_t __bytes, size_t __alignment) override;  // _M_impl 处理
 void  do_deallocate(void* __p, size_t __bytes, size_t __alignment) override;
 bool  do_is_equal(const memory_resource& __other) const noexcept override
-{ return this == &__other; }                                      // 仍是 this 比较
+{ return this == &__other; }                                     // 仍是 this 比较
 ```
 
 `synchronized` 多了一层线程特定池（`memory_resource:203-216`）：
@@ -891,9 +891,9 @@ bool  do_is_equal(const memory_resource& __other) const noexcept override
 ```cpp
 // memory_resource:212-216
 __pool_resource _M_impl;
-__gthread_key_t _M_key;                  // 线程局部池 key
+__gthread_key_t _M_key;      // 线程局部池 key
 _TPools* _M_tpools = nullptr;
-mutable shared_mutex _M_mx;              // 多线程锁
+mutable shared_mutex _M_mx;  // 多线程锁
 ```
 
 `pool_options`（`memory_resource:94-109`）调优参数：
@@ -903,8 +903,8 @@ mutable shared_mutex _M_mx;              // 多线程锁
 #include <cstddef>
 // memory_resource:94-109
 struct pool_options {
-  size_t max_blocks_per_chunk = 0;             // 每 chunk 块数上限（0=实现默认）
-  size_t largest_required_pool_block = 0;      // 超过此尺寸的分配直接走上游（0=默认）
+  size_t max_blocks_per_chunk = 0;         // 每 chunk 块数上限（0=实现默认）
+  size_t largest_required_pool_block = 0;  // 超过此尺寸的分配直接走上游（0=默认）
 };
 ```
 
@@ -964,10 +964,10 @@ int main() {
 int main() {
     std::pmr::pool_options opt;
     opt.max_blocks_per_chunk = 64;
-    opt.largest_required_pool_block = 1024;       // >1KB 直接走上游
+    opt.largest_required_pool_block = 1024;  // >1KB 直接走上游
     std::pmr::unsynchronized_pool_resource pool(opt);
     std::pmr::vector<int> v(&pool);
-    std::pmr::string big(4096, 'x', &pool);       // 4KB 字符串很可能绕过池
+    std::pmr::string big(4096, 'x', &pool);  // 4KB 字符串很可能绕过池
     for (int i = 0; i < 100; ++i) v.push_back(i);
     std::cout << "vec=" << v.size() << " big=" << big.size() << '\n';
     return 0;
@@ -1004,10 +1004,10 @@ int main() {
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 全局资源：get/setdefaul
 ```cpp
 // memory_resource:66-83 —— 全局资源相关声明（key function 在库中定义）
-memory_resource* new_delete_resource() noexcept;     // 用 ::operator new/delete
-memory_resource* null_memory_resource() noexcept;     // allocate 永远抛 bad_alloc
+memory_resource* new_delete_resource() noexcept;                       // 用 ::operator new/delete
+memory_resource* null_memory_resource() noexcept;                      // allocate 永远抛 bad_alloc
 memory_resource* set_default_resource(memory_resource* __r) noexcept;  // 替换并返回旧值
-memory_resource* get_default_resource() noexcept;                    // 当前默认
+memory_resource* get_default_resource() noexcept;                      // 当前默认
 ```
 
 - `new_delete_resource()`：返回**静态**资源，永远指向 `::operator new`，**不能 deallocate 别人的内存**（与 `null` 一样用 `this==&other` 等价）。
@@ -1043,10 +1043,10 @@ int main() {
 int main() {
     std::pmr::monotonic_buffer_resource my_mr(std::pmr::new_delete_resource());
     auto* old = std::pmr::set_default_resource(&my_mr);
-    std::pmr::vector<int> v;                  // 无参 → 用 my_mr（当前默认）
+    std::pmr::vector<int> v;              // 无参 → 用 my_mr（当前默认）
     for (int i = 0; i < 10; ++i) v.push_back(i);
     std::cout << "size under custom default = " << v.size() << '\n';
-    std::pmr::set_default_resource(old);      // 还原
+    std::pmr::set_default_resource(old);  // 还原
     return 0;
 }
 ```
@@ -1202,11 +1202,11 @@ construct(_Tp* __p, _Args&&... __args)
 #include <memory>
 #include <iostream>
 int main() {
-    using Inner = std::allocator<char>;                       // 给 string 的字符
-    using Outer = std::allocator<std::string>;                 // 给 vector 的 string
+    using Inner = std::allocator<char>;         // 给 string 的字符
+    using Outer = std::allocator<std::string>;  // 给 vector 的 string
     using Scoped = std::scoped_allocator_adaptor<Outer, Inner>;
     std::vector<std::string, Scoped> v(Scoped{});
-    v.push_back("hello");                                     // string 内部用 Inner
+    v.push_back("hello");                       // string 内部用 Inner
     v.push_back("world");
     for (auto& s : v) std::cout << s << ' ';
     std::cout << '\n';
@@ -1257,10 +1257,10 @@ int main() {
 #include <iostream>
 #include <utility>
 template <typename T> struct A {
-    using value_type = T;                          // T 在此为 std::pair<const int,int>
+    using value_type = T;  // T 在此为 std::pair<const int,int>
     using propagate_on_container_move_assignment = std::true_type;
     using is_always_equal = std::false_type;
-    A() = default;                                 // 容器 rebind 后需默认构造
+    A() = default;         // 容器 rebind 后需默认构造
     template <typename U> A(const A<U>&) noexcept {}
     value_type* allocate(std::size_t n){
         return static_cast<value_type*>(::operator new(n*sizeof(value_type))); }
@@ -1403,9 +1403,9 @@ int main() {
     const int N = 200'000;
     auto t0 = std::chrono::steady_clock::now();
     for (int k = 0; k < 50; ++k) {
-        std::pmr::vector<int> v(&g_mr);             // 全在单调缓冲，无释放
+        std::pmr::vector<int> v(&g_mr);  // 全在单调缓冲，无释放
         for (int i = 0; i < N; ++i) v.push_back(i);
-        g_mr.release();                             // 一次性归还
+        g_mr.release();                  // 一次性归还
     }
     auto t1 = std::chrono::steady_clock::now();
     std::cout << "monotonic: "
@@ -1413,7 +1413,7 @@ int main() {
 
     auto t2 = std::chrono::steady_clock::now();
     for (int k = 0; k < 50; ++k) {
-        std::vector<int> v;                         // 默认 std::allocator（= new/delete）
+        std::vector<int> v;              // 默认 std::allocator（= new/delete）
         for (int i = 0; i < N; ++i) v.push_back(i);
     }
     auto t3 = std::chrono::steady_clock::now();
@@ -1605,7 +1605,7 @@ std::pmr::vector<int> v(&mr);          // 整个 v 的生命周期在 mr 内 bum
 ## 附录 E：Allocator工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：Allocator工业与面
-```
+```text
 C++ Allocator的设计初衷 (SGI STL, 1994):
   → 让STL容器可以切换内存来源(共享内存, 内存池, GPU显存)
   → 设计缺陷: rebind机制过于复杂, C++98的allocator有状态但无状态传播
@@ -1916,13 +1916,13 @@ int main() {
 #include <vector>
 
 int main() {
-    std::pmr::monotonic_buffer_resource mr;      // ① 先创建 resource
+    std::pmr::monotonic_buffer_resource mr;        // ① 先创建 resource
     {
-        std::pmr::vector<int> v(&mr);            // ② 容器引用 resource
+        std::pmr::vector<int> v(&mr);              // ② 容器引用 resource
         for (int i = 0; i < 10; ++i) v.push_back(i);
-        std::cout << v.size() << "\n";           // 容器仍存活, resource 可用
-    }                                            // ③ 容器先析构
-    std::cout << "resource survives container\n"; // ④ resource 最后析构
+        std::cout << v.size() << "\n";             // 容器仍存活, resource 可用
+    }                                              // ③ 容器先析构
+    std::cout << "resource survives container\n";  // ④ resource 最后析构
 }
 ```
 
@@ -2413,11 +2413,11 @@ int main() {
         std::cout << "vector resource == &mbr?   : "
                   << (v.get_allocator().resource() == &mbr ? "yes" : "no") << std::endl;
 
-        assert(inside);                                    // 内存来自预置缓冲区
-        assert(upstream.allocs == 0);                      // 完全没有回落到堆
-        assert(v.get_allocator().resource() == &mbr);      // 分配器携带资源指针
+        assert(inside);                                // 内存来自预置缓冲区
+        assert(upstream.allocs == 0);                  // 完全没有回落到堆
+        assert(v.get_allocator().resource() == &mbr);  // 分配器携带资源指针
         assert(v.size() == static_cast<std::size_t>(N));
-        assert(v[N / 2] == N / 2);                         // 数据正确性
+        assert(v[N / 2] == N / 2);                     // 数据正确性
     }
     // monotonic 只在析构时统一归还，逐个 deallocate 是 no-op
     std::cout << "upstream deallocs (mono)   : " << upstream.deallocs << std::endl;
@@ -2441,8 +2441,8 @@ int main() {
     std::cout << "list upstream allocs direct: " << per_node << std::endl;
     std::cout << "list upstream allocs pooled: " << via_pool << std::endl;
 
-    assert(per_node >= N);        // 逐节点分配：至少 N 次上游请求
-    assert(via_pool < per_node);  // 稳定语义：池化后上游请求次数显著变少
+    assert(per_node >= N);                             // 逐节点分配：至少 N 次上游请求
+    assert(via_pool < per_node);                       // 稳定语义：池化后上游请求次数显著变少
 
     // ---- 3) 分配器相等语义：PMR 靠资源指针判等，与静态类型无关 ----
     std::pmr::monotonic_buffer_resource m1, m2;

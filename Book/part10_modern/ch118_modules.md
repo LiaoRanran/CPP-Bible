@@ -97,13 +97,13 @@ export module A;              // (a) 模块接口单元（本例唯一可独立�
 ```cpp
 // ③ 可导出单个声明、命名空间、或聚合
 export module lib;
-int internal_helper();                  // 不导出（模块私有）
-export int public_api();               // 导出单个函数
-export namespace detail {              // 导出整个命名空间
+int internal_helper();     // 不导出（模块私有）
+export int public_api();   // 导出单个函数
+export namespace detail {  // 导出整个命名空间
     void helper();
 }
 struct Widget { int x; };
-export {                                // 聚合导出块
+export {                   // 聚合导出块
     Widget make_widget();
     extern int global_counter;
 }
@@ -159,8 +159,8 @@ _ZW4math6squarei:
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块分区（partitions） [标准]
 ```cpp
 // ⑥ 大模块拆分为分区，对外仍是一个模块
-export module big;                  // 主接口（本文件）
-export import :io;                 // 聚合分区（:io / :core 在独立文件）
+export module big;  // 主接口（本文件）
+export import :io;  // 聚合分区（:io / :core 在独立文件）
 export import :core;
 // —— 以下在独立文件中 ——
 // export module big:io;            // 分区接口单元
@@ -174,8 +174,8 @@ export import :core;
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 全局模块片段
 ```cpp
 // ⑦ 需要在模块中 #include 传统头时用全局模块片段
-module;                       // 进入全局模块片段
-#include <cstdint>            // 传统头，宏只在本单元可见
+module;             // 进入全局模块片段
+#include <cstdint>  // 传统头，宏只在本单元可见
 export module legacy_wrap;
 export uint32_t pack(uint16_t a, uint16_t b) { return (uint32_t(a)<<16)|b; }
 ```
@@ -203,10 +203,10 @@ export namespace net {
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准库模块 std / std.co
 ```cpp
 // ⑨ C++23 起可用标准库模块，避免包含海量头
-import std;            // 全部标准库（现代写法）
-import std.compat;     // 标准库 + 兼容 C 宏（如 NULL、offsetof）
+import std;                        // 全部标准库（现代写法）
+import std.compat;                 // 标准库 + 兼容 C 宏（如 NULL、offsetof）
 int main() {
-    std::vector<int> v = {1,2,3};   // 无需 #include <vector>
+    std::vector<int> v = {1,2,3};  // 无需 #include <vector>
     return v.size();
 }
 ```
@@ -822,13 +822,13 @@ int main() { return square(add(2, 3)); }
 #include <iostream>
 // 模块里未 export 的 helper 等价于类的 private 实现：
 struct Math {
-    int square(int x) const { return sq(x); }   // 导出 API
+    int square(int x) const { return sq(x); }  // 导出 API
 private:
-    int sq(int x) const { return x * x; }        // 未导出 helper
+    int sq(int x) const { return x * x; }      // 未导出 helper
 };
 int main() {
     Math m;
-    std::cout << m.square(4) << '\n';   // 8
+    std::cout << m.square(4) << '\n';          // 8
     // m.sq(4);  // 错误：sq 不可访问，类比模块未导出符号
 }
 ```
@@ -898,14 +898,14 @@ export int compute();
 #  undef LEGACY_MAGIC
 #endif
 namespace legacy {
-inline constexpr std::uint32_t magic = 0x5A;   // 模块导出常量（对外可见实体）
+inline constexpr std::uint32_t magic = 0x5A;  // 模块导出常量（对外可见实体）
 }
 int main() {
     std::cout << std::hex << legacy::magic << '\n';
 #ifdef LEGACY_MAGIC
-    std::cout << "LEGACY_MAGIC leaked\n";      // 真实 #include 下会走到这
+    std::cout << "LEGACY_MAGIC leaked\n";     // 真实 #include 下会走到这
 #else
-    std::cout << "LEGACY_MAGIC contained\n";   // 模块边界生效
+    std::cout << "LEGACY_MAGIC contained\n";  // 模块边界生效
 #endif
 }
 ```
@@ -932,8 +932,8 @@ int main() {
 #include <vector>
 struct BuildCost {
     std::string model;
-    int tus;      // 受影响 TU 数
-    int lines;    // 每 TU 需重新解析的行数
+    int tus;                                      // 受影响 TU 数
+    int lines;                                    // 每 TU 需重新解析的行数
 };
 long total_reparse(const std::vector<BuildCost>& jobs) {
     long sum = 0;
@@ -941,8 +941,8 @@ long total_reparse(const std::vector<BuildCost>& jobs) {
     return sum;
 }
 int main() {
-    BuildCost header{"#include 模型", 80, 5000};   // 改 core.h 一行 → 80 TU × 5000 行重解析
-    BuildCost module{"模块模型", 1, 500};          // 未导出实现改动 → BMI 不变，只重编实现单元
+    BuildCost header{"#include 模型", 80, 5000};  // 改 core.h 一行 → 80 TU × 5000 行重解析
+    BuildCost module{"模块模型", 1, 500};         // 未导出实现改动 → BMI 不变，只重编实现单元
     std::cout << header.model << ": " << total_reparse({header}) << '\n';
     std::cout << module.model << ": " << total_reparse({module}) << '\n';
 }

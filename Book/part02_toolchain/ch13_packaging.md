@@ -323,7 +323,7 @@ template <class T> class span_view { // 全在头里
 #include <format>
 #include <iostream>
 namespace pkg {
-template <class T> class span_view {           // gsl 风格非拥有视图
+template <class T> class span_view {                           // gsl 风格非拥有视图
     const T* d_ = nullptr; std::size_t n_ = 0;
 public:
     constexpr span_view(const T* p, std::size_t n) noexcept : d_(p), n_(n) {}
@@ -331,7 +331,7 @@ public:
     constexpr const T& operator[](std::size_t i) const noexcept { return d_[i]; }
 };
 template <class... A>
-inline void println(std::format_string<A...> fmt, A&&... a) {   // fmt 风格
+inline void println(std::format_string<A...> fmt, A&&... a) {  // fmt 风格
     std::cout << std::format(fmt, static_cast<A&&>(a)...) << '\n';
 }
 }
@@ -807,7 +807,7 @@ main:
 ## 附录 E：包管理工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：包管理工业与面试 [B: Principle / H: Design / I: Practice / J: Learning]
-```
+```text
 C++包管理的三种范式:
 
 vcpkg (Microsoft):

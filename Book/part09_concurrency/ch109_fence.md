@@ -63,10 +63,10 @@
 #include <cstdio>
 #include <thread>
 
-std::atomic<int> counter{0};          // relaxed 够用：只需要原子性，不需要顺序
-std::atomic<bool> ready{false};       // release/acquire 配对：发布数据
+std::atomic<int> counter{0};                           // relaxed 够用：只需要原子性，不需要顺序
+std::atomic<bool> ready{false};                        // release/acquire 配对：发布数据
 int data = 0;
-std::atomic<int> ticket{0};           // seq_cst：需要全局唯一顺序（如 Peterson/Dekker）
+std::atomic<int> ticket{0};                            // seq_cst：需要全局唯一顺序（如 Peterson/Dekker）
 
 int main() {
     // 1) relaxed：只保证原子性，不建立任何跨线程顺序——计数器的唯一正当用法
@@ -74,8 +74,8 @@ int main() {
 
     // 2) release / acquire 配对：写端发布，读端获取
     std::thread producer([] {
-        data = 42;                                       // 受保护的写
-        ready.store(true, std::memory_order_release);    // 发布：data 的写不会被排到它之后
+        data = 42;                                     // 受保护的写
+        ready.store(true, std::memory_order_release);  // 发布：data 的写不会被排到它之后
     });
     std::thread consumer([] {
         while (!ready.load(std::memory_order_acquire)) { }
@@ -294,8 +294,8 @@ public:
     Peterson() { flag[0].store(false); flag[1].store(false); victim.store(0); }
     void lock(int me) {
         int other = 1 - me;
-        flag[me].store(true, std::memory_order_seq_cst);      // 我要进
-        victim.store(me, std::memory_order_seq_cst);          // 但让对方先
+        flag[me].store(true, std::memory_order_seq_cst);          // 我要进
+        victim.store(me, std::memory_order_seq_cst);              // 但让对方先
         while (flag[other].load(std::memory_order_seq_cst) &&
                victim.load(std::memory_order_seq_cst) == me) { }  // 对方在且我是"让位者" → 等
     }
@@ -305,11 +305,11 @@ public:
 int main() {
     constexpr long N = 200000;
     Peterson pet;
-    long shared = 0;                       // 故意用非原子变量：互斥若失效就会丢更新
+    long shared = 0;                                              // 故意用非原子变量：互斥若失效就会丢更新
     auto worker = [&](int me) {
         for (long i = 0; i < N; ++i) {
             pet.lock(me);
-            ++shared;                      // 临界区
+            ++shared;                                             // 临界区
             pet.unlock(me);
         }
     };
@@ -368,25 +368,25 @@ seqlock 的精髓是**读者永不阻塞写者**：写端用版本号包裹临�
 struct Data { int a = 0, b = 0; };
 
 class SeqLock {
-    std::atomic<unsigned> seq_{0};   // 奇数 = 写进行中
+    std::atomic<unsigned> seq_{0};                                // 奇数 = 写进行中
     Data d_;
 public:
     void write(int a, int b) {
         unsigned s = seq_.load(std::memory_order_relaxed);
-        seq_.store(s + 1, std::memory_order_release);   // 进入临界：奇数
-        d_.a = a; d_.b = b;                             // 受保护的写（普通写即可）
-        seq_.store(s + 2, std::memory_order_release);   // 退出临界：偶数，发布数据
+        seq_.store(s + 1, std::memory_order_release);             // 进入临界：奇数
+        d_.a = a; d_.b = b;                                       // 受保护的写（普通写即可）
+        seq_.store(s + 2, std::memory_order_release);             // 退出临界：偶数，发布数据
     }
     bool read(Data& out) const {
         for (int retry = 0; retry < 100; ++retry) {
             unsigned s1 = seq_.load(std::memory_order_acquire);
-            if (s1 & 1u) continue;                      // 写进行中，重试
-            out.a = d_.a; out.b = d_.b;                 // 读快照
+            if (s1 & 1u) continue;                                // 写进行中，重试
+            out.a = d_.a; out.b = d_.b;                           // 读快照
             std::atomic_thread_fence(std::memory_order_acquire);  // 读端第二道 acquire 栅栏
             unsigned s2 = seq_.load(std::memory_order_relaxed);
-            if (s1 == s2) return true;                  // 版本号未变 → 快照一致
+            if (s1 == s2) return true;                            // 版本号未变 → 快照一致
         }
-        return false;                                   // 重试上限（真实代码可放宽）
+        return false;                                             // 重试上限（真实代码可放宽）
     }
 };
 
@@ -400,13 +400,13 @@ int main() {
     std::atomic<bool> stop{false};
     std::thread writer([&] {
         for (int i = 0; i < 100000 && !stop.load(std::memory_order_relaxed); ++i)
-            sl.write(i, i);                              // 写端不断改写
+            sl.write(i, i);                                       // 写端不断改写
     });
     std::thread reader([&] {
         Data s;
         while (!stop.load(std::memory_order_relaxed)) {
             if (sl.read(s)) {
-                if (s.a != s.b) ++fail;                  // 撕裂：a 与 b 步调不一致
+                if (s.a != s.b) ++fail;                           // 撕裂：a 与 b 步调不一致
                 else ++ok;
             }
         }
@@ -449,8 +449,8 @@ struct Config {
 std::atomic<Config*> g_config{nullptr};
 
 void writer() {
-    Config* fresh = new Config(2, 75);                        // 先完整构造（普通写）
-    g_config.store(fresh, std::memory_order_release);         // release 发布：构造绝不会排到它之后
+    Config* fresh = new Config(2, 75);                           // 先完整构造（普通写）
+    g_config.store(fresh, std::memory_order_release);            // release 发布：构造绝不会排到它之后
 }
 
 void reader() {
@@ -535,9 +535,9 @@ int main() {
 long g;
 
 int main() {
-    __atomic_store_n(&g, 7, __ATOMIC_RELAXED);   // → mov
-    __atomic_store_n(&g, 8, __ATOMIC_RELEASE);   // → mov（release 在 x86 免费）
-    __atomic_store_n(&g, 9, __ATOMIC_SEQ_CST);   // → xchg（带锁）
+    __atomic_store_n(&g, 7, __ATOMIC_RELAXED);  // → mov
+    __atomic_store_n(&g, 8, __ATOMIC_RELEASE);  // → mov（release 在 x86 免费）
+    __atomic_store_n(&g, 9, __ATOMIC_SEQ_CST);  // → xchg（带锁）
     std::printf("g=%ld\n", g);
     return 0;
 }
@@ -611,7 +611,7 @@ int main() {
 
 真机输出（GCC 13.1.0，x86-64）：
 
-```
+```text
 load  seq_cst=0.43 ns  acquire=0.85 ns
 store seq_cst=3.58 ns  relaxed=0.22 ns
 ```
@@ -658,10 +658,10 @@ FAQ「什么时候用 fence 而不用 atomic 操作」的答案一句话：fence
 std::atomic<long> g;
 
 void by_fence() {
-    std::atomic_thread_fence(std::memory_order_seq_cst);   // 顺序化"其后所有原子操作"，不绑定变量
+    std::atomic_thread_fence(std::memory_order_seq_cst);  // 顺序化"其后所有原子操作"，不绑定变量
 }
 void by_atomic() {
-    g.store(1, std::memory_order_seq_cst);                 // 只顺序化"这一个变量 g"
+    g.store(1, std::memory_order_seq_cst);                // 只顺序化"这一个变量 g"
 }
 ```
 
@@ -762,7 +762,7 @@ int main() {
 
 真机输出（GCC 13.1.0 `-O2`，x86-64，单线程无竞争）：
 
-```
+```text
 store : relaxed=0.21  release=0.43  seq_cst=3.29  (ns/op)
 load  : relaxed=0.45  acquire=0.42  seq_cst=0.42  (ns/op)
 fence : acquire=0.21  seq_cst=3.19  (ns/op)
@@ -1148,10 +1148,10 @@ int main() {
     std::atomic<int> a{0}, b{0}, c{0};
     std::atomic<bool> pub{false};
     std::thread w([&]{
-        a.store(1, std::memory_order_relaxed);      // 一批独立 relaxed 写
+        a.store(1, std::memory_order_relaxed);                   // 一批独立 relaxed 写
         b.store(2, std::memory_order_relaxed);
         c.store(3, std::memory_order_relaxed);
-        std::atomic_thread_fence(std::memory_order_release);  // 一次围栏统一发布
+        std::atomic_thread_fence(std::memory_order_release);     // 一次围栏统一发布
         pub.store(true, std::memory_order_relaxed);
     });
     std::thread r([&]{
@@ -1271,11 +1271,11 @@ fence 版自旋锁：`lock()` 用 `locked.exchange(true, relaxed)` 抢锁——e
 struct FenceSpinLock {
     std::atomic<bool> locked{false};
     void lock() {
-        while (locked.exchange(true, std::memory_order_relaxed)) {}   // 抢锁（只保证互斥）
-        std::atomic_thread_fence(std::memory_order_acquire);          // 临界区读不提前
+        while (locked.exchange(true, std::memory_order_relaxed)) {}  // 抢锁（只保证互斥）
+        std::atomic_thread_fence(std::memory_order_acquire);         // 临界区读不提前
     }
     void unlock() {
-        std::atomic_thread_fence(std::memory_order_release);          // 临界区写不推迟
+        std::atomic_thread_fence(std::memory_order_release);         // 临界区写不推迟
         locked.store(false, std::memory_order_relaxed);
     }
 };
@@ -1286,7 +1286,7 @@ int main() {
     for (int i = 0; i < 4; ++i)
         ts.emplace_back([&]{ for (int j = 0; j < 100000; ++j) { sl.lock(); ++shared; sl.unlock(); } });
     for (auto& t : ts) t.join();
-    std::cout << "shared=" << shared << '\n';          // 400000
+    std::cout << "shared=" << shared << '\n';                        // 400000
     return shared == 400000 ? 0 : 1;
 }
 ```
@@ -1365,16 +1365,16 @@ int main() {
     std::atomic<bool> flag{false};
     std::thread prod([&]{
         data.store(42, std::memory_order_relaxed);
-        std::atomic_signal_fence(std::memory_order_release);  // 错误：不生成 CPU 屏障
+        std::atomic_signal_fence(std::memory_order_release);        // 错误：不生成 CPU 屏障
         flag.store(true, std::memory_order_relaxed);
     });
     std::thread cons([&]{
         while (!flag.load(std::memory_order_relaxed)) {}
-        std::atomic_signal_fence(std::memory_order_acquire);  // 错误：跨核不可见性无保证
+        std::atomic_signal_fence(std::memory_order_acquire);        // 错误：跨核不可见性无保证
         std::cout << data.load(std::memory_order_relaxed) << '\n';  // 弱内存平台可能读到 0
     });
     prod.join(); cons.join();
-    return 0;   // 编译通过；x86 碰巧对，ARM 上可能读到旧值
+    return 0;                                                       // 编译通过；x86 碰巧对，ARM 上可能读到旧值
 }
 ```
 

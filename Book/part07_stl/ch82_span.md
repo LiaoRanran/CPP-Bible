@@ -74,9 +74,9 @@ int main() {
     std::vector<int> v = {10, 20, 30};
     std::array<int, 2> a = {100, 200};
 
-    std::span<int> s1{raw};                 // 从 C 数组
-    std::span<int> s2{v};                   // 从 vector
-    std::span<int, 2> s3{a};                // 从 array，静态 extent
+    std::span<int> s1{raw};   // 从 C 数组
+    std::span<int> s2{v};     // 从 vector
+    std::span<int, 2> s3{a};  // 从 array，静态 extent
     std::cout << s1.size() << " " << s2.size() << " " << s3.size() << "\n";
     return 0;
 }
@@ -98,7 +98,7 @@ std::size_t sum(std::span<const int> s) {  // 只读视图，不拷贝
 
 int main() {
     std::vector<int> v = {1, 2, 3, 4, 5};
-    std::cout << sum(v) << "\n";            // 10
+    std::cout << sum(v) << "\n";           // 10
     return 0;
 }
 ```
@@ -355,10 +355,10 @@ flowchart LR
 int main() {
     int arr[6] = {10, 20, 30, 40, 50, 60};
     std::span<int> s{arr};
-    auto mid = s.subspan(2, 3);          // 指向 arr[2..4]
+    auto mid = s.subspan(2, 3);                                         // 指向 arr[2..4]
     std::cout << mid.size() << " " << mid[0] << " " << mid[2] << "\n";  // 3 30 50
-    mid[0] = 999;                         // 写穿到底层 arr
-    std::cout << arr[2] << "\n";          // 999
+    mid[0] = 999;                                                       // 写穿到底层 arr
+    std::cout << arr[2] << "\n";                                        // 999
     return 0;
 }
 ```
@@ -372,9 +372,9 @@ int main() {
 int main() {
     int arr[5] = {1, 2, 3, 4, 5};
     std::span<int> s{arr};
-    auto f = s.first(2);     // {1,2}
-    auto l = s.last(2);      // {4,5}
-    std::cout << f[1] << " " << l[0] << "\n";   // 2 4
+    auto f = s.first(2);                       // {1,2}
+    auto l = s.last(2);                        // {4,5}
+    std::cout << f[1] << " " << l[0] << "\n";  // 2 4
     return 0;
 }
 ```
@@ -589,11 +589,11 @@ int main() {
 
 // 返回写入字节数；用 span 表达"还剩多少空间可写"
 std::size_t write_u32(std::span<std::byte>& out, std::uint32_t v) {
-    if (out.size() < 4) return 0;                      // 空间不足
+    if (out.size() < 4) return 0;  // 空间不足
     unsigned char* p = reinterpret_cast<unsigned char*>(out.data());
     p[0] = v & 0xFF; p[1] = (v >> 8) & 0xFF;
     p[2] = (v >> 16) & 0xFF; p[3] = (v >> 24) & 0xFF;
-    out = out.subspan(4);                              // 推进视图
+    out = out.subspan(4);          // 推进视图
     return 4;
 }
 
@@ -713,8 +713,8 @@ int main() {
 int main() {
     int a[2] = {0x01020304, 0};
     std::span<int> s{a};
-    auto b = std::as_bytes(s);                 // span<const std::byte>
-    std::cout << "bytes=" << b.size() << "\n"; // 8（2*sizeof(int)）
+    auto b = std::as_bytes(s);                  // span<const std::byte>
+    std::cout << "bytes=" << b.size() << "\n";  // 8（2*sizeof(int)）
     return 0;
 }
 ```
@@ -794,9 +794,9 @@ int main() {
    int main() {
        std::vector<int> v = {1,2,3};
        std::span<int> s = v;
-       v.push_back(4);    // 若触发重新分配，s 指向旧内存（UB 风险）
+       v.push_back(4);  // 若触发重新分配，s 指向旧内存（UB 风险）
        // 安全做法：在 v 稳定后再构造 s，或重新取 s = v
-       s = v;             // ✅ 重新绑定
+       s = v;           // ✅ 重新绑定
        return 0;
    }
 ```
@@ -880,8 +880,8 @@ void read_only(std::span<const int> s) { for (int x : s) std::cout << x << " "; 
 
 int main() {
     std::vector<int> v = {1, 2, 3};
-    std::span<int> rw{v};                // 可读写
-    read_only(rw);                       // ✅ 自动退化为 span<const int>
+    std::span<int> rw{v};  // 可读写
+    read_only(rw);         // ✅ 自动退化为 span<const int>
     std::cout << "\n";
     return 0;
 }
@@ -897,8 +897,8 @@ int main() {
 int main() {
     char text[] = "hello";
     std::string_view sv{text};
-    std::span<const char> s{sv.data(), sv.size()};   // ✅ 手动构造
-    std::cout << s.size() << "\n";                    // 5
+    std::span<const char> s{sv.data(), sv.size()};  // ✅ 手动构造
+    std::cout << s.size() << "\n";                  // 5
     return 0;
 }
 ```
@@ -994,7 +994,7 @@ std::size_t sum_span(std::span<const int> s) {
     for (int x : s) r += static_cast<std::size_t>(x);
     return r;
 }
-std::size_t sum_vec(std::vector<int> v) {   // 传值 -> 一次完整拷贝 O(N)
+std::size_t sum_vec(std::vector<int> v) {  // 传值 -> 一次完整拷贝 O(N)
     std::size_t r = 0;
     for (int x : v) r += static_cast<std::size_t>(x);
     return r;
@@ -1003,9 +1003,9 @@ std::size_t sum_vec(std::vector<int> v) {   // 传值 -> 一次完整拷贝 O(N)
 int main() {
     std::vector<int> data(1'000'000, 7);
     auto t0 = std::chrono::steady_clock::now();
-    volatile auto a = sum_span(data);        // ✅ 仅视图，无拷贝
+    volatile auto a = sum_span(data);      // ✅ 仅视图，无拷贝
     auto t1 = std::chrono::steady_clock::now();
-    volatile auto b = sum_vec(data);         // ❌ 拷贝百万 int
+    volatile auto b = sum_vec(data);       // ❌ 拷贝百万 int
     auto t2 = std::chrono::steady_clock::now();
     std::cout << "span=" << (t1-t0).count() << "ns vec_copy=" << (t2-t1).count() << "ns\n";
     return 0;
@@ -1069,8 +1069,8 @@ int main() {
 int main() {
     int a[6] = {0, 1, 2, 3, 4, 5};
     std::span<int> s{a};
-    auto slice = s.subspan(1, 3);     // 等价于 Go 的 s[1:4]
-    for (int x : slice) std::cout << x << " ";   // 1 2 3
+    auto slice = s.subspan(1, 3);               // 等价于 Go 的 s[1:4]
+    for (int x : slice) std::cout << x << " ";  // 1 2 3
     std::cout << "\n";
     return 0;
 }
@@ -1218,9 +1218,9 @@ int main() {
 int main() {
     std::vector<int> v{0, 1, 2, 3, 4, 5};
     std::span<int> sp(v);
-    auto mid = sp.subspan(2, 3);       // [2,3,4]，不拷贝
+    auto mid = sp.subspan(2, 3);  // [2,3,4]，不拷贝
     for (int x : mid) std::cout << x << ' ';
-    std::cout << "\n";                  // 2 3 4
+    std::cout << "\n";            // 2 3 4
 }
 ```
 
@@ -1237,13 +1237,13 @@ int main() {
 #include <span>
 #include <vector>
 int main() {
-    std::vector<int> m{0, 1, 2, 3, 4, 5};   // 2x3
+    std::vector<int> m{0, 1, 2, 3, 4, 5};  // 2x3
     const int cols = 3;
     auto row = [&](int r) -> std::span<int> {
         return std::span<int>(&m[r * cols], cols);
     };
     for (int x : row(1)) std::cout << x << ' ';
-    std::cout << "\n";                        // 3 4 5
+    std::cout << "\n";                     // 3 4 5
 }
 ```
 
@@ -1265,7 +1265,7 @@ int main() {
 #include <span>
 int main() {
     int a[] = {1,2,3,4,5};
-    std::span<int> s(a);                          // 动态 extent
+    std::span<int> s(a);                                        // 动态 extent
     std::cout << s.size() << " " << s.first(3).size() << "\n";  // 5 3
     // s[10] 是未定义行为; 用 first/last/subspan 做有界切片
 }
@@ -1292,8 +1292,8 @@ int main() {
 #include <array>
 int main() {
     std::array<int,4> a{10,20,30,40};
-    std::span<int,4> st(a);                  // 静态 extent, 编译期长度
-    std::cout << st.size() << " " << st[2] << "\n";   // 4 30
+    std::span<int,4> st(a);                          // 静态 extent, 编译期长度
+    std::cout << st.size() << " " << st[2] << "\n";  // 4 30
 }
 ```
 
@@ -1339,10 +1339,10 @@ void read_only(std::span<const int> s) {
 }
 int main() {
     std::vector<int> v{1, 2, 3};
-    read_only(v);                  // span<const int> 可隐式构造
+    read_only(v);  // span<const int> 可隐式构造
     std::span<int> rw(v);
-    rw[0] = 9;                      // 写回
-    read_only(v);                  // 9 2 3
+    rw[0] = 9;     // 写回
+    read_only(v);  // 9 2 3
 }
 ```
 ## 附录：GCC 15.3.0 真机实证 — `std::span` 零成本视图
@@ -1479,20 +1479,20 @@ at_span(std::span<int const, N>, unsigned long long):
 #include <iostream>
 int main() {
     int arr[] = {10, 20, 30, 40, 50};
-    std::span<int, 5> fixed_span(arr);          // 固定 extent
-    std::span<int> dynamic_span(arr, 3);        // 动态 extent
+    std::span<int, 5> fixed_span(arr);                                     // 固定 extent
+    std::span<int> dynamic_span(arr, 3);                                   // 动态 extent
 
-    std::cout << "fixed size=" << fixed_span.size() << std::endl;     // 5
-    std::cout << "dynamic size=" << dynamic_span.size() << std::endl; // 3
-    std::cout << "fixed[0]=" << fixed_span[0] << std::endl;          // 10
-    std::cout << "dynamic[2]=" << dynamic_span[2] << std::endl;      // 30
-    std::cout << "sizeof(fixed)=" << sizeof(fixed_span) << std::endl;   // 8 (x64 指针)
-    std::cout << "sizeof(dynamic)=" << sizeof(dynamic_span) << std::endl; // 16
+    std::cout << "fixed size=" << fixed_span.size() << std::endl;          // 5
+    std::cout << "dynamic size=" << dynamic_span.size() << std::endl;      // 3
+    std::cout << "fixed[0]=" << fixed_span[0] << std::endl;                // 10
+    std::cout << "dynamic[2]=" << dynamic_span[2] << std::endl;            // 30
+    std::cout << "sizeof(fixed)=" << sizeof(fixed_span) << std::endl;      // 8 (x64 指针)
+    std::cout << "sizeof(dynamic)=" << sizeof(dynamic_span) << std::endl;  // 16
 
     // subspan
     auto sub = fixed_span.subspan(1, 3);
-    std::cout << "subspan size=" << sub.size() << std::endl;  // 3
-    std::cout << "subspan[0]=" << sub[0] << std::endl;       // 20
+    std::cout << "subspan size=" << sub.size() << std::endl;               // 3
+    std::cout << "subspan[0]=" << sub[0] << std::endl;                     // 20
     return 0;
 }
 ```

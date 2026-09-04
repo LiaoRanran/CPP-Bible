@@ -234,7 +234,7 @@ public:
 
     // 热点路径：每帧/每包判定准入。contains 是 C++20，O(log n)
     bool admit(unsigned long long cid) const {
-        return ids.contains(cid);          // [C++20] 等价于 find!=end，但语义更清晰
+        return ids.contains(cid);                                       // [C++20] 等价于 find!=end，但语义更清晰
     }
 
     // 运营封禁：移除（返回是否真移除）
@@ -255,12 +255,12 @@ public:
 int main() {
     AllowList wl;
     wl.load({1001ULL, 1002ULL, 2000ULL, 3000ULL});
-    std::cout << "admit 1002 = " << wl.admit(1002) << "\n";   // 1
-    std::cout << "admit 9999 = " << wl.admit(9999) << "\n";   // 0
+    std::cout << "admit 1002 = " << wl.admit(1002) << "\n";             // 1
+    std::cout << "admit 9999 = " << wl.admit(9999) << "\n";             // 0
     wl.ban(1002);
-    std::cout << "after ban, admit 1002 = " << wl.admit(1002) << "\n"; // 0
+    std::cout << "after ban, admit 1002 = " << wl.admit(1002) << "\n";  // 0
     auto seg = wl.range(1500ULL, 3500ULL);
-    std::cout << "range size = " << seg.size() << "\n";        // 2 (2000,3000)
+    std::cout << "range size = " << seg.size() << "\n";                 // 2 (2000,3000)
     return 0;
 }
 ```
@@ -341,11 +341,11 @@ int main() {
 // ❌ 错误1：比较器不满足严格弱序（comp(a,a) 必须为 false）
 #include <set>
 struct BadCmp {
-    bool operator()(int a, int b) const { return a <= b; } // ❌ a<=a 为 true，破坏严格弱序 -> UB
+    bool operator()(int a, int b) const { return a <= b; }  // ❌ a<=a 为 true，破坏严格弱序 -> UB
 };
 // ✅ 正确：用 <
 struct GoodCmp {
-    bool operator()(int a, int b) const { return a < b; }  // ✅ 严格弱序
+    bool operator()(int a, int b) const { return a < b; }   // ✅ 严格弱序
 };
 int main() {
     std::set<int, GoodCmp> s;
@@ -362,9 +362,9 @@ int main() {
 int main() {
     std::set<int> s{1,2,3};
     auto it = s.find(2);
-    auto nh = s.extract(it);     // it 已失效
+    auto nh = s.extract(it);          // it 已失效
     // std::cout << *it << "\n"; // ❌ UB：it 在 extract 后失效
-    std::cout << nh.value() << "\n";   // ✅ 从 node_type 取值
+    std::cout << nh.value() << "\n";  // ✅ 从 node_type 取值
     return 0;
 }
 ```
@@ -389,8 +389,8 @@ int main() {
 #include <string>
 #include <string_view>
 int main() {
-    std::set<std::string, std::less<>> s{"abc"};   // ✅ std::less<> 透明
-    auto it = s.find(std::string_view("abc"));      // ✅ 无需构造临时 string
+    std::set<std::string, std::less<>> s{"abc"};  // ✅ std::less<> 透明
+    auto it = s.find(std::string_view("abc"));    // ✅ 无需构造临时 string
     (void)it;
     return 0;
 }
@@ -428,8 +428,8 @@ int main() {
 #include <thread>
 std::set<int> g_tags;
 std::mutex g_mtx;
-bool is_tracked(int t) {                     // 多线程并发读：安全
-    std::lock_guard<std::mutex> lk(g_mtx);   // 写路径才加锁
+bool is_tracked(int t) {                    // 多线程并发读：安全
+    std::lock_guard<std::mutex> lk(g_mtx);  // 写路径才加锁
     return g_tags.contains(t);
 }
 void track(int t) {
@@ -464,14 +464,14 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{5,3,8,1,9,2};
-    std::sort(v.begin(), v.end());           // 一次性排序 O(n log n)
+    std::sort(v.begin(), v.end());                                           // 一次性排序 O(n log n)
     // 查找：二分，缓存友好
     bool found = std::binary_search(v.begin(), v.end(), 8);
     auto it = std::lower_bound(v.begin(), v.end(), 3);
-    std::cout << "found8=" << found << " lb3=" << (it - v.begin()) << "\n"; // 1, 1
+    std::cout << "found8=" << found << " lb3=" << (it - v.begin()) << "\n";  // 1, 1
     // 插入：O(n) 移动（与 set 的 O(log n) 相反），故只适合"写少读多"
     v.insert(std::lower_bound(v.begin(), v.end(), 4), 4);
-    std::cout << "size=" << v.size() << "\n"; // 7
+    std::cout << "size=" << v.size() << "\n";                                // 7
     return 0;
 }
 ```
@@ -493,8 +493,8 @@ int main() {
     for (int i = 0; i < N; i += 7) if (s.contains(i)) sum += i;
     // vector 二分：连续内存，缓存友好
     for (int i = 0; i < N; i += 7) if (std::binary_search(v.begin(), v.end(), i)) sum += i;
-    std::cout << "sum=" << sum << "\n";   // 防优化，量级: set 与 vector 量级同阶，
-    return 0;                              // 但 vector 在缓存压力下通常更快
+    std::cout << "sum=" << sum << "\n";  // 防优化，量级: set 与 vector 量级同阶，
+    return 0;                            // 但 vector 在缓存压力下通常更快
 }
 ```
 
@@ -588,9 +588,9 @@ int main() {
 #include <set>
 #include <iostream>
 int main() {
-    std::set<int> s{5, 3, 8, 3, 1};          // 3 重复被忽略
-    for (int x : s) std::cout << x << ' ';   // 1 3 5 8（自动有序）
-    std::cout << "\nsize=" << s.size() << "\n"; // 4
+    std::set<int> s{5, 3, 8, 3, 1};              // 3 重复被忽略
+    for (int x : s) std::cout << x << ' ';       // 1 3 5 8（自动有序）
+    std::cout << "\nsize=" << s.size() << "\n";  // 4
     return 0;
 }
 ```
@@ -616,9 +616,9 @@ int main() {
 #include <iostream>
 int main() {
     std::multiset<int> ms{1, 2, 2, 2, 3, 3};
-    std::cout << "count(2)=" << ms.count(2) << "\n";   // 3
-    std::cout << "count(9)=" << ms.count(9) << "\n";   // 0
-    std::cout << "size=" << ms.size() << "\n";         // 6
+    std::cout << "count(2)=" << ms.count(2) << "\n";  // 3
+    std::cout << "count(9)=" << ms.count(9) << "\n";  // 0
+    std::cout << "size=" << ms.size() << "\n";        // 6
     return 0;
 }
 ```
@@ -631,10 +631,10 @@ int main() {
 int main() {
     std::set<int> s;
     auto r1 = s.insert(10);
-    std::cout << "inserted=" << r1.second << "\n";     // 1
+    std::cout << "inserted=" << r1.second << "\n";        // 1
     auto r2 = s.insert(10);
-    std::cout << "inserted_again=" << r2.second << "\n"; // 0（已存在）
-    std::cout << "*it=" << *r2.first << "\n";            // 10
+    std::cout << "inserted_again=" << r2.second << "\n";  // 0（已存在）
+    std::cout << "*it=" << *r2.first << "\n";             // 10
     return 0;
 }
 ```
@@ -661,8 +661,8 @@ int main() {
 #include <iostream>
 int main() {
     std::set<int> s{1, 2, 3};
-    std::cout << "contains(2)=" << s.contains(2) << "\n"; // 1
-    std::cout << "contains(9)=" << s.contains(9) << "\n"; // 0
+    std::cout << "contains(2)=" << s.contains(2) << "\n";  // 1
+    std::cout << "contains(9)=" << s.contains(9) << "\n";  // 0
     if (s.find(3) != s.end()) std::cout << "found 3\n";
     return 0;
 }
@@ -675,11 +675,11 @@ int main() {
 #include <iostream>
 int main() {
     std::set<int> s{10, 20, 20, 30, 40};
-    auto lo = s.lower_bound(20);   // 首 >=20
-    auto hi = s.upper_bound(20);   // 首 >20
-    std::cout << "*lo=" << *lo << " *hi=" << *hi << "\n"; // 20 30
+    auto lo = s.lower_bound(20);                                           // 首 >=20
+    auto hi = s.upper_bound(20);                                           // 首 >20
+    std::cout << "*lo=" << *lo << " *hi=" << *hi << "\n";                  // 20 30
     auto rng = s.equal_range(20);
-    std::cout << "dist=" << std::distance(rng.first, rng.second) << "\n"; // 2
+    std::cout << "dist=" << std::distance(rng.first, rng.second) << "\n";  // 2
     return 0;
 }
 ```
@@ -691,12 +691,12 @@ int main() {
 #include <iostream>
 int main() {
     std::set<int> s{1, 2, 3, 4, 5};
-    s.erase(s.find(3));                    // 按迭代器删
-    std::cout << "after erase it: " << s.count(3) << "\n"; // 0
-    std::cout << "erased key 4: " << s.erase(4) << "\n";   // 1
+    s.erase(s.find(3));                                     // 按迭代器删
+    std::cout << "after erase it: " << s.count(3) << "\n";  // 0
+    std::cout << "erased key 4: " << s.erase(4) << "\n";    // 1
     auto a = s.lower_bound(1), b = s.upper_bound(2);
-    s.erase(a, b);                         // 区间删 [1,2]
-    for (int x : s) std::cout << x << ' '; // 5
+    s.erase(a, b);                                          // 区间删 [1,2]
+    for (int x : s) std::cout << x << ' ';                  // 5
     std::cout << "\n";
     return 0;
 }
@@ -710,10 +710,10 @@ int main() {
 #include <utility>
 int main() {
     std::set<int> s{1, 2, 3};
-    auto nh = s.extract(s.find(2));        // 摘除，不析构值
-    std::cout << "extracted=" << nh.value() << " size=" << s.size() << "\n"; // 2 1
-    s.insert(std::move(nh));               // 重新挂回
-    std::cout << "after reinsert size=" << s.size() << "\n"; // 2 -> 3
+    auto nh = s.extract(s.find(2));                                           // 摘除，不析构值
+    std::cout << "extracted=" << nh.value() << " size=" << s.size() << "\n";  // 2 1
+    s.insert(std::move(nh));                                                  // 重新挂回
+    std::cout << "after reinsert size=" << s.size() << "\n";                  // 2 -> 3
     return 0;
 }
 ```
@@ -727,9 +727,9 @@ int main() {
 int main() {
     std::set<int> s{1, 2, 3};
     std::multiset<int> ms{10, 20};
-    auto nh = s.extract(s.begin());        // 取走最小的 1
-    ms.insert(std::move(nh));              // 迁入 multiset
-    std::cout << "s.size=" << s.size() << " ms.size=" << ms.size() << "\n"; // 2 3
+    auto nh = s.extract(s.begin());                                          // 取走最小的 1
+    ms.insert(std::move(nh));                                                // 迁入 multiset
+    std::cout << "s.size=" << s.size() << " ms.size=" << ms.size() << "\n";  // 2 3
     return 0;
 }
 ```
@@ -741,9 +741,9 @@ int main() {
 #include <iostream>
 int main() {
     std::set<int> a{1, 2, 3}, b{3, 4, 5};
-    a.merge(b);                            // 3 已在 a，留在 b
-    for (int x : a) std::cout << x << ' '; // 1 2 3 4 5
-    std::cout << "\nleft in b: " << b.size() << "\n"; // 1 (仅 3)
+    a.merge(b);                                        // 3 已在 a，留在 b
+    for (int x : a) std::cout << x << ' ';             // 1 2 3 4 5
+    std::cout << "\nleft in b: " << b.size() << "\n";  // 1 (仅 3)
     return 0;
 }
 ```
@@ -756,9 +756,9 @@ int main() {
 #include <string_view>
 #include <iostream>
 int main() {
-    std::set<std::string, std::less<>> s{"alpha", "beta"}; // less<> 透明
-    auto it = s.find(std::string_view("beta"));            // 无临时 string
-    std::cout << (it != s.end() ? *it : "miss") << "\n";  // beta
+    std::set<std::string, std::less<>> s{"alpha", "beta"};  // less<> 透明
+    auto it = s.find(std::string_view("beta"));             // 无临时 string
+    std::cout << (it != s.end() ? *it : "miss") << "\n";    // beta
     return 0;
 }
 ```
@@ -797,8 +797,8 @@ int main() {
 int main() {
     std::multiset<int> ms;
     auto hint = ms.begin();
-    for (int i = 0; i < 3; ++i) hint = ms.insert(hint, i); // 提示位置
-    for (int x : ms) std::cout << x << ' ';  // 0 1 2
+    for (int i = 0; i < 3; ++i) hint = ms.insert(hint, i);  // 提示位置
+    for (int x : ms) std::cout << x << ' ';                 // 0 1 2
     std::cout << "\n";
     return 0;
 }
@@ -842,7 +842,7 @@ int main() {
 int main() {
     std::vector<int> v{4, 2, 4, 1, 3, 2};
     std::set<int> s(v.begin(), v.end());    // 去重并排序
-    for (int x : s) std::cout << x << ' '; // 1 2 3 4
+    for (int x : s) std::cout << x << ' ';  // 1 2 3 4
     std::cout << "\n";
     return 0;
 }
@@ -887,8 +887,8 @@ int main() {
 #include <iostream>
 int main() {
     std::set<int> s;
-    std::cout << "sizeof(set<int>)=" << sizeof(s) << "\n";       // 通常 48（3 ptr 量级）
-    std::cout << "sizeof(int)=" << sizeof(int) << "\n";         // 4
+    std::cout << "sizeof(set<int>)=" << sizeof(s) << "\n";  // 通常 48（3 ptr 量级）
+    std::cout << "sizeof(int)=" << sizeof(int) << "\n";     // 4
     std::cout << "per-node overhead ~= 36 bytes (RB node)\n";
     return 0;
 }
@@ -947,13 +947,13 @@ int main() {
 #include <string_view>
 #include <iostream>
 struct StrLess {
-    using is_transparent = void;                 // 启用异构
+    using is_transparent = void;                       // 启用异构
     bool operator()(std::string_view a, std::string_view b) const { return a < b; }
 };
 int main() {
     std::set<std::string, StrLess> s{"xyz", "abc"};
-    auto it = s.find(std::string_view("abc"));    // 异构，无临时 string
-    std::cout << (it != s.end() ? *it : "x") << "\n"; // abc
+    auto it = s.find(std::string_view("abc"));         // 异构，无临时 string
+    std::cout << (it != s.end() ? *it : "x") << "\n";  // abc
     return 0;
 }
 ```
@@ -965,8 +965,8 @@ int main() {
 #include <iostream>
 int main() {
     std::multiset<int> ms{1, 1, 1, 2, 3};
-    std::cout << "erased=" << ms.erase(1) << "\n"; // 3
-    for (int x : ms) std::cout << x << ' ';        // 2 3
+    std::cout << "erased=" << ms.erase(1) << "\n";  // 3
+    for (int x : ms) std::cout << x << ' ';         // 2 3
     std::cout << "\n";
     return 0;
 }
@@ -980,8 +980,8 @@ int main() {
 int main() {
     std::set<int> s{1, 2, 3};
     auto it = s.find(2);
-    s.insert(99);                 // 插入不使 it 失效
-    std::cout << "it still=" << *it << "\n"; // 2
+    s.insert(99);                             // 插入不使 it 失效
+    std::cout << "it still=" << *it << "\n";  // 2
     return 0;
 }
 ```
@@ -1042,8 +1042,8 @@ struct CiLess {
 };
 int main() {
     std::set<std::string, CiLess> s;
-    s.insert("AbC"); s.insert("abc");     // 视为同一键
-    std::cout << "size=" << s.size() << "\n"; // 1
+    s.insert("AbC"); s.insert("abc");          // 视为同一键
+    std::cout << "size=" << s.size() << "\n";  // 1
     return 0;
 }
 ```
@@ -1058,7 +1058,7 @@ int main() {
 #include <iostream>
 long long operator"" _ms(unsigned long long v) { return (long long)v; }  // 带空格写法
 int main() {
-    auto budget = 100_ms;                 // 用户字面量（带空格写法）
+    auto budget = 100_ms;                                                // 用户字面量（带空格写法）
     std::set<int> s; std::vector<int> v;
     for (int i = 0; i < 1000; ++i) { s.insert(i); v.push_back(i); }
     std::sort(v.begin(), v.end());
@@ -1080,12 +1080,12 @@ int main() {
 #include <iostream>
 template<typename... Ts>
 void insert_all(std::set<int>& s, Ts... xs) {
-    ((s.insert((int)xs)), ...);   // 逗号折叠
+    ((s.insert((int)xs)), ...);                // 逗号折叠
 }
 int main() {
     std::set<int> s;
-    insert_all(s, 1, 2, 3, 2);    // 2 重复被忽略
-    std::cout << "size=" << s.size() << "\n"; // 3
+    insert_all(s, 1, 2, 3, 2);                 // 2 重复被忽略
+    std::cout << "size=" << s.size() << "\n";  // 3
     return 0;
 }
 ```
@@ -1291,7 +1291,7 @@ int main() {
 #include <set>
 int main() {
     std::multiset<int> ms{1,2,2,2,3};
-    std::cout << "count(2)=" << ms.count(2) << "\n";   // 3
+    std::cout << "count(2)=" << ms.count(2) << "\n";           // 3
     auto [a,b] = ms.equal_range(2);
     for (auto it = a; it != b; ++it) std::cout << *it << " ";  // 2 2 2
     std::cout << "\n";
@@ -1314,9 +1314,9 @@ set 的 `begin()` 即最小 key（最近到期），弹出即调度，O(log n) �
 #include <iostream>
 #include <set>
 int main() {
-    std::set<int> due{100, 50, 200, 75};  // 任务到期时刻
-    int next = *due.begin();               // 最小 = 最近到期
-    std::cout << "next due=" << next << "\n"; // 50
+    std::set<int> due{100, 50, 200, 75};       // 任务到期时刻
+    int next = *due.begin();                   // 最小 = 最近到期
+    std::cout << "next due=" << next << "\n";  // 50
     due.erase(due.begin());
 }
 ```
@@ -1452,7 +1452,7 @@ find_loop:  mov    rcx,QWORD PTR [rax+0x10]   ; left  child @ offset 0x10
 
 int main() {
     std::set<int> s{30, 10, 20, 10};
-    for (int x : s) std::cout << x << " ";   // 10 20 30（去重+升序）
+    for (int x : s) std::cout << x << " ";                     // 10 20 30（去重+升序）
     std::cout << std::endl;
     std::cout << "size==3: " << (s.size() == 3) << std::endl;  // 1
     return 0;
@@ -1461,7 +1461,7 @@ int main() {
 
 预期输出：
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译验证
-```
+```text
 10 20 30
 size==3: 1
 ```

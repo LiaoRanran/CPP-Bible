@@ -60,11 +60,11 @@
 #include <vector>
 #include <unordered_set>
 int demo() {
-    std::vector<int> v = {1, 3, 5, 7, 9};      // 已排序
-    auto it = std::lower_bound(v.begin(), v.end(), 5); // 二分：O(log N)
+    std::vector<int> v = {1, 3, 5, 7, 9};               // 已排序
+    auto it = std::lower_bound(v.begin(), v.end(), 5);  // 二分：O(log N)
     auto jt = std::find(v.begin(), v.end(), 5);         // 线性：O(N)
     std::unordered_set<int> s = {1, 3, 5};
-    auto kt = s.find(5);                                 // 哈希：平均 O(1)
+    auto kt = s.find(5);                                // 哈希：平均 O(1)
     return (it == jt) ? 1 : 0;
 }
 ```
@@ -449,20 +449,20 @@ int find_if_not_demo() {
 int main() {
     const int N = 1 << 20;
     std::vector<int> v(N);
-    for (int i = 0; i < N; ++i) v[i] = i * 2;     // 升序偶数
+    for (int i = 0; i < N; ++i) v[i] = i * 2;  // 升序偶数
     std::mt19937 rng(20240707);
     std::uniform_int_distribution<int> dis(0, 2 * N);
     const int reps = 200;
     volatile int sink = 0;
     auto t0 = std::chrono::high_resolution_clock::now();
-    for (int k = 0; k < reps; ++k) {              // 行号：24 std::find 线性查找
+    for (int k = 0; k < reps; ++k) {           // 行号：24 std::find 线性查找
         int target = dis(rng);
         auto it = std::find(v.begin(), v.end(), target);
         sink = static_cast<int>(it - v.begin());
     }
     auto t1 = std::chrono::high_resolution_clock::now();
     auto t2 = std::chrono::high_resolution_clock::now();
-    for (int k = 0; k < reps; ++k) {              // 行号：33 std::lower_bound 二分
+    for (int k = 0; k < reps; ++k) {           // 行号：33 std::lower_bound 二分
         int target = dis(rng);
         auto it = std::lower_bound(v.begin(), v.end(), target);
         sink = static_cast<int>(it - v.begin());
@@ -528,7 +528,7 @@ bool hash_contains_demo() {
 #include <algorithm>
 #include <vector>
 int desc_lower_bound() {
-    std::vector<int> v = {9, 7, 5, 3, 1};          // 降序，必须配 greater
+    std::vector<int> v = {9, 7, 5, 3, 1};     // 降序，必须配 greater
     auto it = std::lower_bound(v.begin(), v.end(), 5, std::greater<int>{});
     return static_cast<int>(it - v.begin());  // 2
 }
@@ -622,10 +622,10 @@ int linear_cost(const std::vector<int>& v, int x) {
 #include <vector>
 enum class How { Linear, Binary, Hash };
 How choose(int n, bool sorted, int queries) {
-    if (!sorted && queries < 64) return How::Linear;     // 小数据/少量查询：直接线性
-    if (sorted)                  return How::Binary;      // 已排序：二分
-    if (queries > n / 4)         return How::Hash;        // 多次单点：哈希更优
-    return How::Linear;                                // 默认兜底
+    if (!sorted && queries < 64) return How::Linear;  // 小数据/少量查询：直接线性
+    if (sorted)                  return How::Binary;  // 已排序：二分
+    if (queries > n / 4)         return How::Hash;    // 多次单点：哈希更优
+    return How::Linear;                               // 默认兜底
 }
 ```
 
@@ -640,9 +640,9 @@ How choose(int n, bool sorted, int queries) {
 #include <algorithm>
 #include <vector>
 int wrong_binary() {
-    std::vector<int> v = {5, 1, 9, 3, 7};   // 未排序！
+    std::vector<int> v = {5, 1, 9, 3, 7};     // 未排序！
     auto it = std::lower_bound(v.begin(), v.end(), 3);
-    return static_cast<int>(it - v.begin()); // 可能返回任意位置，不可信
+    return static_cast<int>(it - v.begin());  // 可能返回任意位置，不可信
 }
 ```
 
@@ -653,9 +653,9 @@ int wrong_binary() {
 #include <vector>
 int right_binary() {
     std::vector<int> v = {5, 1, 9, 3, 7};
-    std::sort(v.begin(), v.end());          // {1,3,5,7,9}
+    std::sort(v.begin(), v.end());            // {1,3,5,7,9}
     auto it = std::lower_bound(v.begin(), v.end(), 3);
-    return static_cast<int>(it - v.begin()); // 1（可信）
+    return static_cast<int>(it - v.begin());  // 1（可信）
 }
 ```
 
@@ -668,7 +668,7 @@ int wrong_desc() {
     std::vector<int> v = {9, 7, 5, 3, 1};     // 降序
     // 默认 std::less：区间内并非 a<b 升序，二分 UB
     auto it = std::lower_bound(v.begin(), v.end(), 5);
-    return static_cast<int>(it - v.begin()); // 不可信
+    return static_cast<int>(it - v.begin());  // 不可信
 }
 ```
 
@@ -689,8 +689,8 @@ int wrong_desc() {
 struct Rec { int id; std::string name; };
 int ranges_find_demo() {
     std::vector<Rec> v = {{1,"a"},{2,"b"},{3,"c"}};
-    auto it = std::ranges::find(v, 2, &Rec::id);   // 投影到 id
-    return it != v.end() ? it->name.size() : -1;   // 1
+    auto it = std::ranges::find(v, 2, &Rec::id);  // 投影到 id
+    return it != v.end() ? it->name.size() : -1;  // 1
 }
 ```
 
@@ -705,7 +705,7 @@ struct Rec { int id; std::string name; };
 int ranges_lower_demo() {
     std::vector<Rec> v = {{1,"a"},{2,"b"},{3,"c"}};  // 按 id 升序
     auto it = std::ranges::lower_bound(v, 2, {}, &Rec::id);
-    return static_cast<int>(it - v.begin());  // 1
+    return static_cast<int>(it - v.begin());         // 1
 }
 ```
 
@@ -814,10 +814,10 @@ int cross_lib() {
 int cheat() {
     std::vector<int> v = {1, 2, 3, 3, 4, 5};
     // 要位置 -> lower_bound；要计数 -> equal_range；要存在 -> binary_search
-    auto pos  = std::lower_bound(v.begin(), v.end(), 3);   // 指向首个 3
-    auto [lo, hi] = std::equal_range(v.begin(), v.end(), 3); // 等价段 [2,4)
-    bool has  = std::binary_search(v.begin(), v.end(), 3);   // true
-    return (pos - v.begin()) + (hi - lo) + (has ? 0 : 100);  // 2+2+0=4
+    auto pos  = std::lower_bound(v.begin(), v.end(), 3);      // 指向首个 3
+    auto [lo, hi] = std::equal_range(v.begin(), v.end(), 3);  // 等价段 [2,4)
+    bool has  = std::binary_search(v.begin(), v.end(), 3);    // true
+    return (pos - v.begin()) + (hi - lo) + (has ? 0 : 100);   // 2+2+0=4
 }
 ```
 
@@ -847,8 +847,8 @@ int s1() {
 int s2() {
     std::vector<int> v = {1, 2, 2, 2, 3};
     auto [lo, hi] = std::equal_range(v.begin(), v.end(), 2);
-    v.erase(lo, hi);                 // 删除全部 2
-    return static_cast<int>(v.size()); // 2
+    v.erase(lo, hi);                    // 删除全部 2
+    return static_cast<int>(v.size());  // 2
 }
 ```
 
@@ -885,9 +885,9 @@ int s4() {
 #include <cassert>
 int s5() {
     std::vector<int> v = {1, 2, 3, 4};
-    assert(std::is_sorted(v.begin(), v.end()));   // 二分前校验
+    assert(std::is_sorted(v.begin(), v.end()));  // 二分前校验
     auto it = std::lower_bound(v.begin(), v.end(), 3);
-    return static_cast<int>(it - v.begin());  // 2
+    return static_cast<int>(it - v.begin());     // 2
 }
 ```
 
@@ -981,7 +981,7 @@ int s8() {
 ## 附录 A：工业查找算法 [F: Industry / B: Principle / G: Performance]
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业查找算法 [F: Industry / B: Principle / G: Performance]
-```
+```text
 工业查找策略对比:
 Redis: 哈希表 (dict) + 跳表 (skiplist, 有序查找)
   → 键查找: O(1) dict; 范围查找: O(log N) skiplist
@@ -996,7 +996,7 @@ LLVM: DenseMap (开放地址哈希) + StringMap (字符串哈希特化)
 ## 附录 B：面试 [J: Learning]
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning]
-```
+```text
 面试高频:
 Q: std::find vs std::binary_search 选择?
 A: find=O(N)无序; binary_search=O(logN)但要求有序(排序代价 O(NlogN)一次性)
@@ -1200,7 +1200,7 @@ int main() {
     v.insert(it, 6);
     std::cout << "has5=" << has << " -> ";
     for (int x : v) std::cout << x << ' ';
-    std::cout << '\n';    // 1 3 5 6 7 9
+    std::cout << '\n';                                      // 1 3 5 6 7 9
 }
 ```
 
@@ -1274,10 +1274,10 @@ int main() {
 #include <algorithm>
 int main() {
     std::vector<int> v(1'000'000);
-    for (int i = 0; i < (int)v.size(); ++i) v[i] = i * 2;  // 偶数序列
+    for (int i = 0; i < (int)v.size(); ++i) v[i] = i * 2;    // 偶数序列
     int key = 1'999'998;
     bool has = std::binary_search(v.begin(), v.end(), key);  // O(log n)
-    std::cout << "binary_search=" << has << "\n";   // true
+    std::cout << "binary_search=" << has << "\n";            // true
 }
 ```
 
@@ -1295,9 +1295,9 @@ int main() {
 #include <vector>
 #include <algorithm>
 int main() {
-    std::vector<int> v{5, 3, 8, 1, 9, 2, 7};   // 未排序
+    std::vector<int> v{5, 3, 8, 1, 9, 2, 7};              // 未排序
     int key = 7;
-    auto it = std::lower_bound(v.begin(), v.end(), key);   // 前置条件违反 -> 结果不可信
+    auto it = std::lower_bound(v.begin(), v.end(), key);  // 前置条件违反 -> 结果不可信
     std::cout << "found=" << (it != v.end() && *it == key) << "\n";
 }
 ```
@@ -1311,7 +1311,7 @@ int main() {
 #include <algorithm>
 int main() {
     std::vector<int> v{5, 3, 8, 1, 9, 2, 7};
-    std::sort(v.begin(), v.end());                       // 二分前必须排序
+    std::sort(v.begin(), v.end());                                   // 二分前必须排序
     int key = 7;
     auto it = std::lower_bound(v.begin(), v.end(), key);
     std::cout << "found=" << (it != v.end() && *it == key) << "\n";  // true
@@ -1575,13 +1575,13 @@ int main() {
     // lower_bound / upper_bound 边界
     auto lo = std::lower_bound(v.begin(), v.end(), 2);
     auto up = std::upper_bound(v.begin(), v.end(), 2);
-    std::cout << (lo - v.begin()) << std::endl;   // 1
-    std::cout << (up - v.begin()) << std::endl;   // 4
+    std::cout << (lo - v.begin()) << std::endl;                           // 1
+    std::cout << (up - v.begin()) << std::endl;                           // 4
 
     // equal_range 双界联动
     auto rng = std::equal_range(v.begin(), v.end(), 2);
     std::cout << (rng.first - v.begin()) << ' '
-              << (rng.second - v.begin()) << std::endl;  // 1 4
+              << (rng.second - v.begin()) << std::endl;                   // 1 4
     return 0;
 }
 ```

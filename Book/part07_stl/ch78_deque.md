@@ -288,19 +288,19 @@ int main() {
 #include <chrono>
 struct TaskQueue {
     std::deque<std::string> q;
-    void submit(const std::string& normal) { q.push_back(normal); }      // 普通任务排队尾
-    void submit_urgent(const std::string& urgent) { q.push_front(urgent); } // 紧急任务插队头
+    void submit(const std::string& normal) { q.push_back(normal); }          // 普通任务排队尾
+    void submit_urgent(const std::string& urgent) { q.push_front(urgent); }  // 紧急任务插队头
     bool drain_one() {
         if (q.empty()) return false;
         std::cout << "run: " << q.front() << "\n";
-        q.pop_front();                       // 从头取（FIFO + 紧急优先）
+        q.pop_front();                                                       // 从头取（FIFO + 紧急优先）
         return true;
     }
 };
 int main() {
     TaskQueue tq;
     tq.submit("jobA"); tq.submit("jobB");
-    tq.submit_urgent("URGENT");              // 插到队头，先执行
+    tq.submit_urgent("URGENT");                                              // 插到队头，先执行
     while (tq.drain_one()) {}
     return 0;
 }
@@ -384,8 +384,8 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 #include <deque>
 int main() {
     std::deque<int> d = {1, 2, 3, 4, 5};
-    int& ref = d[2];                 // 引用第3个元素(值3)
-    d.erase(d.begin() + 1);          // 删除第2个；迭代器失效，但 ref 仍指向原元素
+    int& ref = d[2];         // 引用第3个元素(值3)
+    d.erase(d.begin() + 1);  // 删除第2个；迭代器失效，但 ref 仍指向原元素
     std::cout << "ref still = " << ref << " (元素引用未失效)\n";
     return 0;
 }
@@ -408,8 +408,8 @@ int main() {
 #include <deque>
 int main() {
     std::deque<int> d = {10, 20, 30, 40};
-    auto it = d.begin() + 1;          // 指向 20
-    it = d.erase(it);                 // 正确：接收新迭代器 -> 指向 30
+    auto it = d.begin() + 1;  // 指向 20
+    it = d.erase(it);         // 正确：接收新迭代器 -> 指向 30
     std::cout << "*it after erase = " << *it << "\n";
     return 0;
 }
@@ -457,10 +457,10 @@ int main() {
 #include <deque>
 int main() {
     std::deque<int> q;
-    for (int i = 1; i <= 3; ++i) q.push_back(i);   // 入队尾
+    for (int i = 1; i <= 3; ++i) q.push_back(i);  // 入队尾
     while (!q.empty()) {
-        std::cout << q.front() << " ";              // 取队头
-        q.pop_front();                               // 出队头
+        std::cout << q.front() << " ";            // 取队头
+        q.pop_front();                            // 出队头
     }
     std::cout << "\n";
     return 0;
@@ -673,8 +673,8 @@ int main() {
 int main() {
     std::deque<int> d = {1, 2, 4, 5};
     auto it = d.begin() + 2;
-    d.insert(it, 3);                  // 插到 4 之前
-    for (int x : d) std::cout << x << " ";   // 1 2 3 4 5
+    d.insert(it, 3);                        // 插到 4 之前
+    for (int x : d) std::cout << x << " ";  // 1 2 3 4 5
     std::cout << "\n";
     return 0;
 }
@@ -748,9 +748,9 @@ int main() {
 #include <deque>
 int main() {
     std::deque<int> d = {1, 2, 3};
-    d.resize(5);                 // 补两个 0
-    d.resize(2);                 // 截断到 2
-    for (int x : d) std::cout << x << " ";   // 1 2
+    d.resize(5);                            // 补两个 0
+    d.resize(2);                            // 截断到 2
+    for (int x : d) std::cout << x << " ";  // 1 2
     std::cout << "\n";
     return 0;
 }
@@ -821,8 +821,8 @@ int main() {
 #include <stack>
 #include <queue>
 int main() {
-    std::stack<int> st;            // 默认 std::deque<int> 底层
-    std::queue<int> q;             // 默认 std::deque<int> 底层
+    std::stack<int> st;  // 默认 std::deque<int> 底层
+    std::queue<int> q;   // 默认 std::deque<int> 底层
     st.push(1); q.push(2);
     std::cout << "stack top=" << st.top() << " queue front=" << q.front() << "\n";
     return 0;
@@ -836,8 +836,8 @@ int main() {
 #include <deque>
 int main() {
     std::deque<int> d = {1, 2, 3, 4, 5};
-    auto it = d.begin() + 2;       // 指向 3
-    it = d.erase(it);              // 删除 3，返回指向 4
+    auto it = d.begin() + 2;  // 指向 3
+    it = d.erase(it);         // 删除 3，返回指向 4
     std::cout << "after erase *it=" << *it << "\n";
     return 0;
 }
@@ -867,8 +867,8 @@ int main() {
 #include <deque>
 int main() {
     std::deque<int> a = {1, 2, 3};
-    std::deque<int> b(a);          // 拷贝
-    std::deque<int> c; c = a;      // 赋值
+    std::deque<int> b(a);      // 拷贝
+    std::deque<int> c; c = a;  // 赋值
     std::cout << "b==c? " << std::boolalpha << (b == c) << "\n";
     return 0;
 }
@@ -939,9 +939,9 @@ int main() {
 #include <deque>
 int main() {
     std::deque<int> d;
-    for (int i = 0; i < 1000; ++i) d.push_front(i);   // 跨多个 128 大小 buffer
+    for (int i = 0; i < 1000; ++i) d.push_front(i);  // 跨多个 128 大小 buffer
     std::cout << "front=" << d.front() << " back=" << d.back()
-              << " size=" << d.size() << "\n";          // 999 ... 0, size 1000
+              << " size=" << d.size() << "\n";       // 999 ... 0, size 1000
     return 0;
 }
 ```
@@ -1040,13 +1040,13 @@ int main() {
 #include <cstddef>
 int main() {
     std::vector<int> v = {1, 3, -1, -3, 5, 3, 6, 7};
-    std::deque<int> win;        // 存下标
+    std::deque<int> win;                         // 存下标
     int k = 3;
     for (std::size_t i = 0; i < v.size(); ++i) {
         while (!win.empty() && win.front() <= (long long)(i - k)) win.pop_front();
         win.push_back((int)i);
         if (i >= (std::size_t)(k - 1))
-            std::cout << v[win.front()] << " ";   // 窗口最大值序列
+            std::cout << v[win.front()] << " ";  // 窗口最大值序列
     }
     std::cout << "\n";
     return 0;
@@ -1077,9 +1077,9 @@ int main() {
 int main() {
     std::deque<int> d;
     for (int i = 0; i < 50; ++i) d.push_back(i);
-    int& r = d[10];                 // 引用第 11 个元素
-    for (int i = 0; i < 500; ++i) d.push_front(-i);  // 触发多次 map 扩容
-    std::cout << "ref value still = " << r << " (未失效)\n";   // 仍是 10
+    int& r = d[10];                                           // 引用第 11 个元素
+    for (int i = 0; i < 500; ++i) d.push_front(-i);           // 触发多次 map 扩容
+    std::cout << "ref value still = " << r << " (未失效)\n";  // 仍是 10
     return 0;
 }
 ```
@@ -1213,8 +1213,8 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 ```cpp
 #include <deque>
 std::deque<int> q;
-q.push_back(1); q.push_back(2);   // 入队尾
-int head = q.front(); q.pop_front(); // 出队头 O(1)
+q.push_back(1); q.push_back(2);       // 入队尾
+int head = q.front(); q.pop_front();  // 出队头 O(1)
 ```
 
 <span class="badge badge-std">标准</span> `deque` 由分段连续缓冲区组成（见 ch78 批 L 实证），头/尾插入均摊 O(1)。
@@ -1233,7 +1233,7 @@ int head = q.front(); q.pop_front(); // 出队头 O(1)
 两次内存访问 vs `vector` 一次。故仍是 O(1)，但常数更大、缓存局部性弱于 `vector`。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```
+```text
 block = map[ i >> 7 ];        // 第一跳: 取块基址
 elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 ```
@@ -1255,7 +1255,7 @@ elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 // 维护双端队列存"候选最大值下标", 队首为当前窗口最大
 std::deque<int> dq;
 for (int i = 0; i < n; ++i) {
-    while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back(); // 淘汰更小者
+    while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back();  // 淘汰更小者
     dq.push_back(i);
     if (dq.front() == i - k) dq.pop_front();                    // 移出窗口
     if (i >= k-1) out.push_back(a[dq.front()]);
@@ -1285,9 +1285,9 @@ deque 采用分段连续（chunk/segments）存储：元素是固定大小的块
 #include <deque>
 int main() {
     std::deque<int> d{10, 20, 30};
-    int& mid = d[ 1];                 // 引用指向既有元素(值 20)
-    d.push_front(5);                 // 前端 O(1) 插入
-    std::cout << "mid still = " << mid << "\n";   // 元素未搬迁, 引用仍有效: 20
+    int& mid = d[ 1];                            // 引用指向既有元素(值 20)
+    d.push_front(5);                             // 前端 O(1) 插入
+    std::cout << "mid still = " << mid << "\n";  // 元素未搬迁, 引用仍有效: 20
     // 与 vector 不同: vector 扩容会搬迁全部元素, 引用失效
 }
 ```
@@ -1334,8 +1334,8 @@ int main() {
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 生产者-消费者双
 ```cpp
 std::vector<Task> q;
-q.push_back(t);          // 尾插 O(1)
-q.erase(q.begin());      // 头删 O(n): 后续所有元素前移
+q.push_back(t);      // 尾插 O(1)
+q.erase(q.begin());  // 头删 O(n): 后续所有元素前移
 ```
 
 高吞吐下每次头删都搬动整个队列 → 性能随队列长度线性恶化。
@@ -1345,8 +1345,8 @@ q.erase(q.begin());      // 头删 O(n): 后续所有元素前移
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 生产者-消费者双
 ```cpp
 std::deque<Task> q;
-q.push_back(t);          // 尾 O(1)
-q.pop_front();           // 头 O(1): 仅释放头块一个槽, 不搬移其余元素
+q.push_back(t);  // 尾 O(1)
+q.pop_front();   // 头 O(1): 仅释放头块一个槽, 不搬移其余元素
 ```
 
 deque 的块结构让头删只动"头块"，其余块原地不动——无全局搬迁抖动。
@@ -1447,9 +1447,9 @@ int main() {
     std::deque<int> d;
     for (int i = 1; i <= 5; ++i) d.push_back(i);
     d.push_front(0);
-    std::cout << "d[0]=" << d[0] << std::endl;       // 0 (front)
-    std::cout << "d[5]=" << d[5] << std::endl;       // 5 (back)
-    std::cout << "size=" << d.size() << std::endl;    // 6
+    std::cout << "d[0]=" << d[0] << std::endl;                  // 0 (front)
+    std::cout << "d[5]=" << d[5] << std::endl;                  // 5 (back)
+    std::cout << "size=" << d.size() << std::endl;              // 6
     d.pop_front();
     std::cout << "after pop_front d[0]=" << d[0] << std::endl;  // 1
     return 0;
@@ -1614,8 +1614,8 @@ flowchart TD
 int main() {
     // deque 双端 O(1) 均摊：头尾都能高效插入
     std::deque<int> d;
-    for (int i = 0; i < 5; ++i) d.push_back(i);   // 0..4
-    d.push_front(-1);                              // 头部插入
+    for (int i = 0; i < 5; ++i) d.push_back(i);  // 0..4
+    d.push_front(-1);                            // 头部插入
     std::cout << "deque front : " << d.front() << std::endl;
     std::cout << "deque back  : " << d.back() << std::endl;
     std::cout << "deque size  : " << d.size() << std::endl;

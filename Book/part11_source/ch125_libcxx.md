@@ -95,8 +95,8 @@ libc++ 头文件按「公开头 + 内部细节」分层：`<string>`、`<vector>
 // ② 公开头只转发，真正实现在 __ 前缀实现头（上游参考写法示意）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/string
 // 行号：1
-#include <string>        // 公开头：几乎只 #include <__string> 等实现头
-#include <__string>      // 实现头（双下划线）：不保证跨版本稳定
+#include <string>    // 公开头：几乎只 #include <__string> 等实现头
+#include <__string>  // 实现头（双下划线）：不保证跨版本稳定
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构与模块化
@@ -143,7 +143,7 @@ void may_throw(bool bad) {
 int main() {
     try { may_throw(true); }
     catch (const std::exception& e) {
-        std::printf("caught: %s\n", e.what());   // 走 libc++abi 的异常帧
+        std::printf("caught: %s\n", e.what());  // 走 libc++abi 的异常帧
     }
     return 0;
 }
@@ -330,8 +330,8 @@ libc++ 的 `std::string` 采用**短字符串优化（SSO）**：短串内联进
 #include <string>
 #include <cstdio>
 int main() {
-    std::string s = "1234567890123456789012";   // 22 字节仍在 SSO 内
-    std::printf("cap=%zu\n", s.capacity());      // libc++: 22
+    std::string s = "1234567890123456789012";  // 22 字节仍在 SSO 内
+    std::printf("cap=%zu\n", s.capacity());    // libc++: 22
     return 0;
 }
 ```
@@ -477,13 +477,13 @@ libc++ 是 Apple 平台（macOS/iOS）的**系统默认**标准库；FreeBSD 也
 #include <__config>
 int platform() {
 #if defined(__APPLE__)
-    return 1;   // macOS/iOS：libc++ 为系统默认
+    return 1;  // macOS/iOS：libc++ 为系统默认
 #elif defined(__FreeBSD__)
-    return 2;   // FreeBSD：libc++ 默认
+    return 2;  // FreeBSD：libc++ 默认
 #elif defined(_WIN32)
-    return 3;   // Windows：需自带 libc++abi/libunwind
+    return 3;  // Windows：需自带 libc++abi/libunwind
 #else
-    return 0;   // Linux 等：通常与 libstdc++ 并存
+    return 0;  // Linux 等：通常与 libstdc++ 并存
 #endif
 }
 ```
@@ -811,16 +811,16 @@ libc++ 长期以" aggressively constexpr 的 STL"著称——把更多算法/容
 ```cpp
 // ㉑.2 用标准库复刻 libc++「编译期可求值的 STL」思想（本块可独立编译，GCC 15.3.0 验证）
 #include <vector>
-#include <numeric>     // std::accumulate
+#include <numeric>                                  // std::accumulate
 #include <algorithm>
 
 // libc++ 很早就让 vector/accumulate 可 constexpr；C++20 起这已是标准行为
 constexpr int sum_first(int n) {
-    std::vector<int> v;                  // C++20 起 vector 可 constexpr 构造与扩容
+    std::vector<int> v;                             // C++20 起 vector 可 constexpr 构造与扩容
     for (int i = 1; i <= n; ++i) v.push_back(i);
     return std::accumulate(v.begin(), v.end(), 0);  // 编译期完成求和
 }
-static_assert(sum_first(5) == 15);      // 编译期验证：无需运行即确认正确
+static_assert(sum_first(5) == 15);                  // 编译期验证：无需运行即确认正确
 int main() { return 0; }
 ```
 
@@ -931,7 +931,7 @@ libc++ 的长期标签是 **「最先完整实现新标准」**。它往往早�
 ## 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
-```
+```text
 libc++设计权衡:
 
 SSO (string): 22字节阈值(比libstdc++的15字节大47%)

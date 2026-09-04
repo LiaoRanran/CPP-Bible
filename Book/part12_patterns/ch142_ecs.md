@@ -67,9 +67,9 @@ ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语
 // Entity  : 仅是一个 ID（整型），本身无成员
 // Component: 仅数据，平凡可拷贝（trivially copyable 最佳）
 // System  : 纯函数式算法，输入"组件切片"，输出"修改后的组件切片"
-enum class Comp { Position, Velocity, Render, Health }; // 组件种类（仅标签）
-using Entity = std::uint32_t;                           // 实体即 ID
-void movement_system();                                 // 系统即逻辑（见 ④）
+enum class Comp { Position, Velocity, Render, Health };  // 组件种类（仅标签）
+using Entity = std::uint32_t;                            // 实体即 ID
+void movement_system();                                  // 系统即逻辑（见 ④）
 ```
 
 - `[标准]`：C++ 标准**不规定** ECS；ECS 是用标准库容器、模板、类型系统"搭"出来的架构模式。它依赖 `[basic.types]` 中平凡类型（trivial type）的按位可拷贝性来实现零成本组件存储。
@@ -201,7 +201,7 @@ void movement_system(std::vector<Position>& pos,
 这是 ECS 性能讨论的**核心分叉**。两种把 N 个实体存进内存的方式：
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数据布局：AoS vs SoA [实现·GCC15]
-```
+```text
 ┌───────────────────────── AoS (Array of Structures) ─────────────────────────┐
 │ 实体0: [Pos | Vel | Hp | ...]  实体1: [Pos | Vel | Hp | ...]  实体2: [...]   │
 │            ↑  stride = 整个结构大小（如 128B），相邻实体"整块"排列              │
@@ -216,7 +216,7 @@ void movement_system(std::vector<Position>& pos,
 ```cpp
 // ⑤ AoS：所有组件打包进一个结构体，实体数组按"行"存储
 #include <vector>
-struct Particle { float x, y, z; float vx, vy, vz; };   // 一行 = 一实体
+struct Particle { float x, y, z; float vx, vy, vz; };    // 一行 = 一实体
 void integrate_aos(Particle* p, int n, float dt) {
     for (int i = 0; i < n; ++i) p[i].x += p[i].vx * dt;  // stride = 24B
 }
@@ -242,7 +242,7 @@ void integrate_soa(ParticlesSoA& ps, float dt) {
 下面是用 `std::chrono::steady_clock` 写的真实微基准（`Examples/_ch142_bench.cpp`，本机 GCC 13.1.0 `-O2`，`N=2^18=262144` 实体，每实体 32 个 float=128B，数据集 32MB 超出缓存）。**真实运行结果**：
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好真实基准
-```
+```text
 [场景1] 移动系统访问全部组件
   AoS: 209.399 ms   SoA: 28.547 ms   AoS/SoA = 7.33x
 [场景2] 剔除系统只访问 Position(px,py)
@@ -281,7 +281,7 @@ double bench_soa_partial(std::size_t n, std::size_t iters) {
 **原型（Archetype / 归档）** 的思路：把所有"拥有完全相同组件集合"的实体放进**同一块连续内存**，每个实体占一行（行主序）。这样"查询某组件组合"变成"找到对应原型块"，遍历时组件完全连续。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原型/归档式存储
-```
+```text
 ┌─────────── Archetype[Position,Velocity] ───────────┐
 │ 行0: P0 │ V0    行1: P1 │ V1    行2: P2 │ V2  ...   │
 │ 连续!    连续!                                            │
@@ -319,7 +319,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
 裸 `index` 有个致命问题：**槽位复用**会让"已销毁实体的旧引用"悄悄指向一个新实体。解决：**句柄 = index + version（代际戳）**。销毁时 `version++`，旧句柄的 version 对不上 → 立即识别为悬空。
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体管理与句柄（handle） [实现·GCC15]
-```
+```text
 ┌── 句柄 32 位打包 ──────────────┐      ┌── 存储槽 ──────┐
 │ 31..20 : version (12bit)      │      │ version : uint32│
 │ 19..0  : index   (20bit)      │ ---> │ alive   : bool  │
@@ -357,7 +357,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 系统的并行性来自一个事实：**多数系统只读共享组件、只写自己独占的组件**。把系统排成有向图，无数据依赖的系统可并行跑；有依赖的按拓扑序串行。
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统调度（并行） [实现·GCC15]
-```
+```text
 ┌── 帧调度（拓扑序 + 并行层）─────────────────────────────┐
 │  Layer0: [input_sys]  [network_sys]   (并行，互不写同组件)│
 │     |            |                                      │
@@ -395,7 +395,7 @@ struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
 当世界有**上百万实体**，单块连续内存既放不下也不利于并发。方案：**分块（chunk）**——每块固定容量（如 16k 实体），块内组件连续，块间用数组/链表组织。这把"大数组"切成"缓存友好的小方块"，也便于多线程各拿一块。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ECS 与多叉/分块（chunk） [平台·x86-64]
-```
+```text
 ┌── World ────────────────────────────────────────────┐
 │  Chunk0 [e0..e15 连续]   Chunk1 [e16..e31 连续]  ...  │
 │    ^ 一块一块地遍历，每块正好塞进几行缓存行            │
@@ -573,7 +573,7 @@ void integrate_soa(float* x, const float* vx, int n, float dt) {
 Archetype 是 Unity DOTS / flecs / Bevy 的主流布局：**相同组件组合的实体共享一块连续内存**。好处是"查询即定位块"，遍历零判断；代价是"加/删组件要迁移实体"。
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存布局 Archetype
-```
+```text
 ┌── Archetype A [Position, Velocity] ──┐  ┌── Archetype B [Position, Render] ──┐
 │ e0:P|V  e1:P|V  e2:P|V ... (连续)    │  │ e7:P|R  e8:P|R ... (连续)           │
 └──────────────────────────────────────┘  └────────────────────────────────────┘
@@ -669,10 +669,10 @@ struct GameObject { virtual void update() = 0; float x, y; };
 struct Monster : GameObject { void update() override { x += 1; } };
 
 // ⑯ ❌ 反模式3：map of structs（数据散落哈希表，缓存灾难）
-std::unordered_map<Entity, Monster> g_world;  // 见 ⑪
+std::unordered_map<Entity, Monster> g_world;             // 见 ⑪
 
 // ⑯ ❌ 反模式4：系统里藏全局可变状态（破坏可并行性）
-struct { static std::vector<Entity> cache; } S;  // 并行时数据竞争
+struct { static std::vector<Entity> cache; } S;          // 并行时数据竞争
 ```
 
 > **示例 43** [难度 ★☆☆☆☆] [主题：反模式 <span class="badge badge-exp">经验</span>]
@@ -833,7 +833,7 @@ int main() {
 真实运行输出（`Examples/_ch142_mini_ecs.exe`，GCC 13.1.0 `-O2`）：
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现迷你 ECS
-```
+```text
 entity a: (0.5, 0)
 entity b: (5, 4)
 a alive after destroy? no
@@ -1038,10 +1038,10 @@ struct Mesh { int id; };
 int main() {
     const int N = 100000;
     std::vector<bool> has_transform(N, true), has_mesh(N, false);
-    for (int i = 0; i < N; ++i) has_mesh[i] = (i % 3 == 0);   // 示意：部分实体有 Mesh
+    for (int i = 0; i < N; ++i) has_mesh[i] = (i % 3 == 0);  // 示意：部分实体有 Mesh
     long rendered = 0;
     for (int i = 0; i < N; ++i) if (has_transform[i] && has_mesh[i]) ++rendered;
-    std::cout << rendered << '\n';                              // 仅筛选出的实体被渲染
+    std::cout << rendered << '\n';                           // 仅筛选出的实体被渲染
 }
 ```
 
@@ -1061,14 +1061,14 @@ int main() {
 ```cpp
 #include <iostream>
 #include <vector>
-struct SoA {                                  // 同类字段集中存放
-    std::vector<float> px, py, vx, vy;        // 只更新位置/速度时缓存行全是有效数据
+struct SoA {                                               // 同类字段集中存放
+    std::vector<float> px, py, vx, vy;                     // 只更新位置/速度时缓存行全是有效数据
 };
 int main() {
     const int N = 1 << 20;
     SoA s; s.px.resize(N); s.py.resize(N);
     float sum = 0;
-    for (int i = 0; i < N; ++i) sum += s.px[i] + s.py[i];   // 顺序访问，缓存友好
+    for (int i = 0; i < N; ++i) sum += s.px[i] + s.py[i];  // 顺序访问，缓存友好
     std::cout << sum << '\n';
 }
 ```
@@ -1130,9 +1130,9 @@ AoS（Array of Structures）把每个对象的全部字段打包成一条记录�
 #include <iostream>
 #include <vector>
 
-struct AoS { float x, y, z; };  // 数组 of 结构体：每个对象连续，但遍历单字段跨结构体
+struct AoS { float x, y, z; };       // 数组 of 结构体：每个对象连续，但遍历单字段跨结构体
 
-struct SoA {  // 结构体 of 数组：同字段连续，遍历 x 时缓存友好
+struct SoA {                         // 结构体 of 数组：同字段连续，遍历 x 时缓存友好
     std::vector<float> x, y, z;
 };
 
@@ -1141,7 +1141,7 @@ int main() {
     soa.x.resize(3); soa.y.resize(3); soa.z.resize(3);
     for (size_t i = 0; i < soa.x.size(); ++i) soa.x[i] = static_cast<float>(i);
     float sum = 0.0f;
-    for (float v : soa.x) sum += v;   // 只碰 x 字段，缓存行不浪费
+    for (float v : soa.x) sum += v;  // 只碰 x 字段，缓存行不浪费
     std::cout << "sum_x=" << sum << "\n";
     return 0;
 }
@@ -1172,7 +1172,7 @@ ECS 把"对象"拆成三类：Entity（仅一个整数 id，无数据无方法�
 #include <iostream>
 #include <vector>
 
-using Entity = unsigned int;  // 实体只是整数 id
+using Entity = unsigned int;                                  // 实体只是整数 id
 
 struct Position { float x, y; };
 

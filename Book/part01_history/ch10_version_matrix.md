@@ -743,9 +743,9 @@ struct Adder { int base; int operator()(int x) const { return base + x; } };
 
 int main() {
     Adder a{10};
-    auto f = [a](int x) { return a(x); };   // 替代 std::bind1st(a, 5)
+    auto f = [a](int x) { return a(x); };  // 替代 std::bind1st(a, 5)
     (void)f;
-    (void)std::bind_front(a, 5);            // C++20 替代 std::bind1st
+    (void)std::bind_front(a, 5);           // C++20 替代 std::bind1st
     return 0;
 }
 ```

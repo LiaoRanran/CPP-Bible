@@ -88,10 +88,10 @@ int main() { // 今天写了什么，能编译运行吗？
 #include <thread>
 #include <vector>
 // C++11：现代 C++ 起点，必须熟
-auto x = 5;                       // 类型推导
-std::vector<int> v{1,2,3};        // 统一初始化
-std::shared_ptr<int> p = std::make_shared<int>(1); // 智能指针
-std::thread t([]{ // ...
+auto x = 5;                                         // 类型推导
+std::vector<int> v{1,2,3};                          // 统一初始化
+std::shared_ptr<int> p = std::make_shared<int>(1);  // 智能指针
+std::thread t([]{                                   // ...
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 版本演进（一句话每版必学点）
@@ -128,7 +128,7 @@ std::ranges::sort(d);
 <span class="badge badge-impl">实现</span> 把能力拆成四块，缺哪块补哪块：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★★☆</span> · 核心能力地图（四格）
-```
+```text
 ┌─────────────┬─────────────┐
 │ 语言(Lang)   │ 标准库(STL)  │
 │ 指针/引用    │ 容器/算法    │
@@ -147,8 +147,8 @@ std::ranges::sort(d);
 #include <vector>
 // 自测：下面每样能否 5 分钟内手写？不能就进对应章节
 void self_test() {
-    int* p = new int(1);          // 语言: 指针
-    std::vector<int> v(10);       // STL: 容器
+    int* p = new int(1);     // 语言: 指针
+    std::vector<int> v(10);  // STL: 容器
     // gdb 打断点、sanitizer 跑一遍  // 工具
     // 说清栈/堆/虚表布局            // 系统
     delete p;
@@ -162,9 +162,9 @@ void self_test() {
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 初级→中级路径
 ```cpp
 // 练习1：指针与函数指针（文件 Examples/_ch165_pointer.cpp）
-int (*fp)(int,int) = &add;        // 函数指针
-const int* cp = &x;               // 指向 const
-int* const pc = &x;               // const 指针
+int (*fp)(int,int) = &add;  // 函数指针
+const int* cp = &x;         // 指向 const
+int* const pc = &x;         // const 指针
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 初级→中级路径
@@ -292,12 +292,12 @@ public:
 ```cpp
 #include <vector>
 // 错误示范：面向对象，缓存不友好
-struct Entity { float x,y,z; int hp; // 散落内存
-std::vector<Entity> ents;          // 遍历时大量 cache miss
+struct Entity { float x,y,z; int hp;  // 散落内存
+std::vector<Entity> ents;             // 遍历时大量 cache miss
 
 // 正确示范：结构数组(SoA)
 struct Entities {
-    std::vector<float> x, y, z;     // 连续存储，遍历友好
+    std::vector<float> x, y, z;       // 连续存储，遍历友好
     std::vector<int>   hp;
 };
 ```
@@ -582,8 +582,8 @@ bool can_write_project = (leetcode_count > 300) && (projects == 0); // 仍 false
 #include <memory>
 // 误区2：把 C++ 当 C 用，全程裸指针 + malloc
 // 现实：工程用 RAII + 智能指针防泄漏，裸指针只在底层接口出现
-void bad() { int* p = (int*)malloc(sizeof(int)); // 易忘 free
-void good(){ auto p = std::make_unique<int>(1); } // 离开作用域自动释放
+void bad() { int* p = (int*)malloc(sizeof(int));   // 易忘 free
+void good(){ auto p = std::make_unique<int>(1); }  // 离开作用域自动释放
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见误区（应试 vs 工程，3 条）
@@ -598,7 +598,7 @@ void good(){ auto p = std::make_unique<int>(1); } // 离开作用域自动释放
 <span class="badge badge-exp">经验</span> 两个月 ≈ 60 天，每天 2–3h。下表按周排，具体到动作。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 天计划（暑假紧凑表）
-```
+```text
 ┌──────┬──────────────────────────────┬──────────┐
 │ 周次 │ 动作                         │ 交付物   │
 ├──────┼──────────────────────────────┼──────────┤
@@ -716,7 +716,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 
 ### 等级 1：语言掌握（1-3 个月）
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 等级 1：语言掌握（1-3 个月）
-```
+```text
 必须读完:
 - Effective Modern C++ (Scott Meyers, 2014) — 42个条款, 每个10页
 - C++ Core Guidelines (Bjarne Stroustrup + Herb Sutter, github.com/isocpp/CppCoreGuidelines)
@@ -729,7 +729,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 
 ### 等级 2：专家级（3-12 个月）
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 等级 2：专家级（3-12 个月）
-```
+```text
 阅读顺序:
 1. C++ Concurrency in Action (Anthony Williams, 2nd ed)
    → 读完 ch107-113 后必读: 理解memory_order, lock-free, hazard pointer的工业实现
@@ -749,7 +749,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 
 ### 等级 3：工业贡献（12+ 个月）
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 等级 3：工业贡献（12+ 个月）
-```
+```text
 - 贡献开源: LLVM (添加clang-tidy check), Chromium (fix bug), ClickHouse (add aggregate function)
 - 内部库开发: 类似 folly, Abseil 的基础设施组件
 - 性能工程: perf + VTune + Compiler Explorer 达到专家级
@@ -799,7 +799,7 @@ int main() {
 本书覆盖不全的领域（需要外部补充）：
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：你还需要读什么 [J: Learning]
-```
+```text
 1. 编译原理 (本书: ch11编译器, ch127 LLVM)
    → 补充: Engineering a Compiler (Keith Cooper, 3rd ed)
    → 实践: 用LLVM写一个简单的C++编译器Pass

@@ -58,8 +58,8 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 
 int main() {
     std::vector<int> v = {5, 3, 8, 1, 9, 2};
-    std::ranges::sort(v);                 // 单参数：吃整个 range
-    for (int x : v) std::cout << x << ' '; // 1 2 3 5 8 9
+    std::ranges::sort(v);                   // 单参数：吃整个 range
+    for (int x : v) std::cout << x << ' ';  // 1 2 3 5 8 9
 }
 ```
 
@@ -76,8 +76,8 @@ int main() {
 #include <vector>
 // ② view 不拷贝数据：只记录适配方式
 std::vector<int> src = {1, 2, 3, 4, 5};
-auto r = src | std::views::reverse;      // O(1) 构造，无内存分配
-for (int x : r) std::cout << x << ' ';   // 5 4 3 2 1（遍历时才反向迭代）
+auto r = src | std::views::reverse;     // O(1) 构造，无内存分配
+for (int x : r) std::cout << x << ' ';  // 5 4 3 2 1（遍历时才反向迭代）
 ```
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
@@ -92,7 +92,7 @@ for (int x : r) std::cout << x << ' ';   // 6 5 4 3 2 1（底层变了，view �
 - `[实现·GCC15.3.0]`：libstdc++ 的 `reverse_view` 仅持有两个迭代器（`_M_begin`/`_M_end`），构造等价于一次 `make_reverse_iterator`，不触碰元素。
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌─────────── 底层容器 src ───────────┐
 │ [1][2][3][4][5][6]  (拥有数据)      │
 └───────────────┬───────────────────┘
@@ -113,8 +113,8 @@ for (int x : r) std::cout << x << ' ';   // 6 5 4 3 2 1（底层变了，view �
 #include <algorithm>
 // ③ 旧写法：迭代器对；新写法：单 range 参数
 std::vector<int> v = {1, 2, 3, 4, 5};
-auto it_old = std::find(v.begin(), v.end(), 3);   // 旧算法：两个迭代器
-auto it_new = std::ranges::find(v, 3);            // ranges 算法：单 range
+auto it_old = std::find(v.begin(), v.end(), 3);  // 旧算法：两个迭代器
+auto it_new = std::ranges::find(v, 3);           // ranges 算法：单 range
 ```
 
 > **示例 6** [难度 ★☆☆☆☆] [主题：算法 vs 旧算法 <span class="badge badge-std">标准</span>]
@@ -342,12 +342,12 @@ lazy:  11.2327 ms  sum=49011300
 #include <vector>
 // ⑨ take / drop / slide
 std::vector<int> v = {1, 2, 3, 4, 5};
-for (int x : v | std::views::take(3)) std::cout << x << ' ';   // 1 2 3
+for (int x : v | std::views::take(3)) std::cout << x << ' ';  // 1 2 3
 std::cout << '\n';
-for (int x : v | std::views::drop(2)) std::cout << x << ' ';   // 3 4 5
+for (int x : v | std::views::drop(2)) std::cout << x << ' ';  // 3 4 5
 std::cout << '\n';
-for (auto w : v | std::views::slide(2))                         // 相邻窗口
-    std::cout << w.front() << '-' << w.back() << ' ';           // 1-2 2-3 3-4 4-5
+for (auto w : v | std::views::slide(2))                       // 相邻窗口
+    std::cout << w.front() << '-' << w.back() << ' ';         // 1-2 2-3 3-4 4-5
 ```
 
 > **示例 16** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
@@ -404,9 +404,9 @@ Ranges 完全建立在 STL 迭代器之上，新旧算法可混用；用 `std::r
 #include <algorithm>
 // ⑪ 旧算法照常可用，ranges 与迭代器互操作
 std::vector<int> v = {3, 1, 2};
-std::sort(v.begin(), v.end());                 // 旧算法
-auto b = std::ranges::begin(v);                // ranges 端点接口
-std::cout << *b;                               // 1
+std::sort(v.begin(), v.end());   // 旧算法
+auto b = std::ranges::begin(v);  // ranges 端点接口
+std::cout << *b;                 // 1
 ```
 
 > **示例 20** [难度 ★☆☆☆☆] [主题：与 STL 容器/算法衔接 <span class="badge badge-std">标准</span>]
@@ -431,7 +431,7 @@ for (int x : ev) out.push_back(x);            // out = {1, 3}
 > **示例 21** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>性能：避免临时容器 / 单次]
 ```cpp
 // ⑫ ❌ 旧写法：链式为多个临时 vector，N 次遍历 + N 次分配
-std::vector<int> a = v;                                  // 拷贝1
+std::vector<int> a = v;                                          // 拷贝1
 std::vector<int> b;
 std::copy_if(a.begin(), a.end(), std::back_inserter(b), pred1);  // 遍历1 + 分配
 std::vector<int> c;
@@ -488,10 +488,10 @@ auto safe = store | std::views::reverse;    // ✅ store 比 safe 活得久
 #include <algorithm>
 #include <vector>
 std::vector<int> v(1000, 1);
-for (auto blk : v | std::views::chunk(100)) {            // 10 个大小为 100 的块
+for (auto blk : v | std::views::chunk(100)) {  // 10 个大小为 100 的块
     std::for_each(std::execution::par,
                   blk.begin(), blk.end(),
-                  [](int& x) { x *= 2; });                // 块内并行加倍
+                  [](int& x) { x *= 2; });     // 块内并行加倍
 }
 ```
 
@@ -519,8 +519,8 @@ print_positive(a);                          // 1 3
 ```cpp
 // ⑮ ✅ 管道里把"廉价、强过滤"的 filter 放前面，减少下游元素量
 for (int x : data
-         | std::views::filter([](int n) { return n > 0; })   // 先砍掉一半
-         | std::views::transform(expensive_fn))              // 只对留下的算
+         | std::views::filter([](int n) { return n > 0; })  // 先砍掉一半
+         | std::views::transform(expensive_fn))             // 只对留下的算
     use(x);
 ```
 
@@ -870,7 +870,7 @@ int main() {
 ## 附录 B：工业案例 —— range-v3 与标准 ranges [F: Industry]
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：工业案例 —— range
-```
+```text
 range-v3 (Eric Niebler, 2014-2019) 是 C++20 ranges 的原型库:
 
 工业采纳:
@@ -908,7 +908,7 @@ int main() {
 ## 附录 D：面试 [J: Learning]
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试 [J: Learning]
-```
+```text
 面试高频:
 Q: ranges::sort vs std::sort 的区别？
 A: ranges::sort 接受 range (非迭代器对) + 可选投影。性能相同，接口更现代。
@@ -1025,8 +1025,8 @@ int main() {
 struct Person { std::string name; int age; };
 int main() {
     std::vector<Person> v{{"Bob", 30}, {"Alice", 25}, {"Carol", 35}};
-    auto it = std::ranges::find(v, 25, &Person::age);   // 投影到 age 查找
-    if (it != v.end()) std::cout << "found " << it->name << "\n";   // Alice
+    auto it = std::ranges::find(v, 25, &Person::age);              // 投影到 age 查找
+    if (it != v.end()) std::cout << "found " << it->name << "\n";  // Alice
 }
 ```
 
@@ -1089,10 +1089,10 @@ struct Person { std::string name; int age; };
 int main() {
     // 已按 age 升序（二分前提）
     std::vector<Person> v{{"Alice", 25}, {"Bob", 30}, {"Carol", 35}, {"Dora", 40}};
-    bool has = std::ranges::binary_search(v, 35, {}, &Person::age);   // 找 age==35
-    auto it  = std::ranges::lower_bound(v, 30, {}, &Person::age);     // 第一个 age>=30
+    bool has = std::ranges::binary_search(v, 35, {}, &Person::age);     // 找 age==35
+    auto it  = std::ranges::lower_bound(v, 30, {}, &Person::age);       // 第一个 age>=30
     std::cout << "age35? " << (has ? "yes" : "no") << '\n';
-    if (it != v.end()) std::cout << "first>=30: " << it->name << '\n'; // Bob
+    if (it != v.end()) std::cout << "first>=30: " << it->name << '\n';  // Bob
 }
 ```
 
@@ -1173,8 +1173,8 @@ int main() { (void)make_view(); }
 int main() {
     std::vector<int> v{1, 2, 3, 4};
     auto r = v | std::views::filter([](int x) { return x > 1; });  // 视图绑定 v
-    v.push_back(5);    // 视图随底层容器变化而可见新元素
-    for (int x : r) std::cout << x << ' ';   // 2 3 4 5
+    v.push_back(5);                                                // 视图随底层容器变化而可见新元素
+    for (int x : r) std::cout << x << ' ';                         // 2 3 4 5
     std::cout << "\n";
 }
 ```

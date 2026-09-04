@@ -630,8 +630,8 @@ int main(){
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: 识别优化机会
 ```cpp
 #include <iostream>
-int div_by_pow2(int x){return x/8;} // CE shows: sar eax, 3
-int mul_by_const(int x){return x*10;} // CE shows: lea eax,[rax+rax*4]; add eax,eax
+int div_by_pow2(int x){return x/8;}    // CE shows: sar eax, 3
+int mul_by_const(int x){return x*10;}  // CE shows: lea eax,[rax+rax*4]; add eax,eax
 int main(){std::cout<<div_by_pow2(64)<<" "<<mul_by_const(5)<<std::endl;return 0;}
 ```
 
@@ -989,8 +989,8 @@ int main() {
     for (int i = 0; i < M; ++i) v[i] = (i % 1000) * 0.001;
     double s = 0;
     for (int i = 0; i < M; ++i) s += std::sin(v[i]) * std::cos(v[i]);
-    const double half = static_cast<double>(M) / 2.0;      // 每一项 ∈[-0.5,+0.5]
-    assert(std::isfinite(s) && s > -half - 1.0 && s < half + 1.0); // 结果有界（稳定可断言）
+    const double half = static_cast<double>(M) / 2.0;               // 每一项 ∈[-0.5,+0.5]
+    assert(std::isfinite(s) && s > -half - 1.0 && s < half + 1.0);  // 结果有界（稳定可断言）
     std::cout << "sum = " << s << std::endl;
     return 0;
 }

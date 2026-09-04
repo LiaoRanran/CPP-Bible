@@ -54,18 +54,18 @@
 #include <vector>
 #include <algorithm>
 std::vector<int> h = {5, 3, 8, 1, 9};
-std::make_heap(h.begin(), h.end());   // 建大顶堆 -> 9 在 h[0]
-std::push_heap(h.begin(), h.end());   // 假设已在尾部加了一个新元素
-int top = h.front();                  // 取最大（不弹出）
+std::make_heap(h.begin(), h.end());  // 建大顶堆 -> 9 在 h[0]
+std::push_heap(h.begin(), h.end());  // 假设已在尾部加了一个新元素
+int top = h.front();                 // 取最大（不弹出）
 ```
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：堆（优先队列）<span class="badge badge-std">标准</span>]
 ```cpp
 // ① 适配器版：priority_queue 封装同一套算法
 #include <queue>
-std::priority_queue<int> pq;          // 默认大顶堆
+std::priority_queue<int> pq;  // 默认大顶堆
 pq.push(5); pq.push(3); pq.push(8);
-int t = pq.top();                     // 8，且不弹出
+int t = pq.top();             // 8，且不弹出
 ```
 
 - `[标准]`：堆性质指——对大顶堆，任意节点 `i` 满足 `a[i] >= a[2i+1]` 且 `a[i] >= a[2i+2]`（子节点存在时）。`[alg.heap.operations]` 规定上述四个算法均要求 `[first, last)` 已满足堆性质（除 `make_heap` 负责建立外），否则行为未定义。
@@ -92,9 +92,9 @@ std::make_heap(a.begin(), a.end());   // 大顶堆：a[0]==10
 ```cpp
 #include <vector>
 // ② push_heap：先 push_back 再 push_heap（顺序不能反）
-std::vector<int> b{10, 5, 3, 1};      // 已是堆
+std::vector<int> b{10, 5, 3, 1};     // 已是堆
 b.push_back(8);
-std::push_heap(b.begin(), b.end());   // 8 上浮 -> a[0] 仍为 10
+std::push_heap(b.begin(), b.end());  // 8 上浮 -> a[0] 仍为 10
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · make_heap / push_heap / pop_heap
@@ -102,9 +102,9 @@ std::push_heap(b.begin(), b.end());   // 8 上浮 -> a[0] 仍为 10
 #include <vector>
 // ② pop_heap：极值被移到末尾，需手动 pop_back 才是"弹出"
 std::vector<int> c{10, 5, 3, 1};
-std::pop_heap(c.begin(), c.end());    // 10 与 1 交换，c 前 3 个元素重新成堆
-int top = c.back();                    // top == 10
-c.pop_back();                          // 真正删除
+std::pop_heap(c.begin(), c.end());  // 10 与 1 交换，c 前 3 个元素重新成堆
+int top = c.back();                 // top == 10
+c.pop_back();                       // 真正删除
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · make_heap / push_heap / pop_heap
@@ -112,14 +112,14 @@ c.pop_back();                          // 真正删除
 #include <vector>
 // ② 完整优先队列循环：make -> 反复 push/pop
 std::vector<int> q;
-std::make_heap(q.begin(), q.end());   // 空堆
+std::make_heap(q.begin(), q.end());  // 空堆
 for (int x : {7, 2, 9, 4}) {
     q.push_back(x);
     std::push_heap(q.begin(), q.end());
 }
 while (!q.empty()) {
     std::pop_heap(q.begin(), q.end());
-    q.pop_back();                      // 依次得到 9,7,4,2
+    q.pop_back();                    // 依次得到 9,7,4,2
 }
 ```
 
@@ -131,7 +131,7 @@ while (!q.empty()) {
 堆用**连续数组**实现完全二叉树，节点 `i`（0-based）的亲属映射：
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：堆性质与数组布局 <span class="badge badge-impl">实现</span>]
-```
+```text
 父节点  parent(i) = (i - 1) / 2
 左子    left(i)   = 2*i + 1
 右子    right(i)  = 2*i + 2
@@ -150,7 +150,7 @@ static_assert(parent(3) == 1 && left(1) == 3 && right(1) == 4);
 ```
 
 > **示例 9** [难度 ★★☆☆☆] [主题：堆性质与数组布局 <span class="badge badge-impl">实现</span>]
-```
+```text
           大顶堆（数组下标视图，逻辑完全二叉树）
           ┌──────────────────────────────────────────────┐
   下标:    0      1       2       3       4       5   6
@@ -229,8 +229,8 @@ void do_push(std::vector<int>& v, int x) {
 #include <vector>
 #include <algorithm>
 std::vector<int> a{4, 10, 3, 5, 1};
-std::make_heap(a.begin(), a.end());     // 10 9 ... 成堆
-std::sort_heap(a.begin(), a.end());     // a == {1,3,4,5,10}
+std::make_heap(a.begin(), a.end());  // 10 9 ... 成堆
+std::sort_heap(a.begin(), a.end());  // a == {1,3,4,5,10}
 ```
 
 > **示例 12** [难度 ★☆☆☆☆] [主题：heap：把堆变成有序序列 <span class="badge badge-std">标准</span>]
@@ -416,12 +416,12 @@ int dijkstra(const std::vector<std::vector<Edge>>& g, int src) {
     const int n = (int)g.size();
     std::vector<int> dist(n, std::numeric_limits<int>::max());
     dist[src] = 0;
-    using P = std::pair<int,int>;        // (距离, 节点)
+    using P = std::pair<int,int>;   // (距离, 节点)
     std::priority_queue<P, std::vector<P>, std::greater<P>> pq;
     pq.push({0, src});
     while (!pq.empty()) {
         auto [d, u] = pq.top(); pq.pop();
-        if (d > dist[u]) continue;       // 过期堆条目
+        if (d > dist[u]) continue;  // 过期堆条目
         for (auto& e : g[u]) {
             if (dist[u] + e.w < dist[e.to]) {
                 dist[e.to] = dist[u] + e.w;
@@ -443,11 +443,11 @@ std::vector<int> top_k(const std::vector<int>& a, int k) {
     std::priority_queue<int, std::vector<int>, std::greater<int>> pq;
     for (int x : a) {
         pq.push(x);
-        if ((int)pq.size() > k) pq.pop();   // 溢出则丢弃当前最小
+        if ((int)pq.size() > k) pq.pop();  // 溢出则丢弃当前最小
     }
     std::vector<int> out;
     while (!pq.empty()) { out.push_back(pq.top()); pq.pop(); }
-    return out;                              // 升序的 Top-K
+    return out;                            // 升序的 Top-K
 }
 ```
 
@@ -458,8 +458,8 @@ std::vector<int> top_k(const std::vector<int>& a, int k) {
 #include <vector>
 #include <functional>
 double median_stream(const std::vector<int>& s) {
-    std::priority_queue<int> lo;                                  // 较小半（大顶）
-    std::priority_queue<int, std::vector<int>, std::greater<int>> hi; // 较大半（小顶）
+    std::priority_queue<int> lo;                                       // 较小半（大顶）
+    std::priority_queue<int, std::vector<int>, std::greater<int>> hi;  // 较大半（小顶）
     for (int x : s) {
         lo.push(x);
         hi.push(lo.top()); lo.pop();
@@ -533,13 +533,13 @@ double sift_height(std::size_t n) { return std::floor(std::log2((double)n)); }
 #include <vector>
 #include <algorithm>
 void choose(std::vector<int>& v, bool only_top_k, int k) {
-    if (only_top_k) {                    // 仅 Top-K：堆更省
+    if (only_top_k) {  // 仅 Top-K：堆更省
         std::make_heap(v.begin(), v.end());
         for (int i = 0; i < k && !v.empty(); ++i) {
             std::pop_heap(v.begin(), v.end());
             v.pop_back();
         }
-    } else {                             // 需要全序/频繁查找：sort
+    } else {           // 需要全序/频繁查找：sort
         std::sort(v.begin(), v.end());
     }
 }
@@ -583,26 +583,26 @@ ListNode* merge_k(std::vector<ListNode*>& lists) {
 #include <vector>
 #include <algorithm>
 std::vector<int> v{3, 1, 2};
-std::make_heap(v.begin(), v.end());     // OK：v 现在是堆
-v.push_back(99);                        // 直接尾插但没 push_heap -> v 不再是堆
-std::push_heap(v.begin(), v.end());     // ❌ UB：push_heap 要求 [first,last-1) 已是堆
+std::make_heap(v.begin(), v.end());  // OK：v 现在是堆
+v.push_back(99);                     // 直接尾插但没 push_heap -> v 不再是堆
+std::push_heap(v.begin(), v.end());  // ❌ UB：push_heap 要求 [first,last-1) 已是堆
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
 ```cpp
 // ⑭ ❌ 坑2：pop_heap 后没 pop_back，又直接改了尾部元素
 std::vector<int> w{10, 5, 3};
-std::pop_heap(w.begin(), w.end());      // 10 被换到 w.back()，前段已重排成堆
-w.back() = 7;                           // ❌ 破坏了 [first,last-1) 的堆性质
-std::pop_heap(w.begin(), w.end());      // ❌ UB：区间已不是合法堆
+std::pop_heap(w.begin(), w.end());  // 10 被换到 w.back()，前段已重排成堆
+w.back() = 7;                       // ❌ 破坏了 [first,last-1) 的堆性质
+std::pop_heap(w.begin(), w.end());  // ❌ UB：区间已不是合法堆
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
 ```cpp
 // ⑭ ❌ 坑3：比较器不一致 —— make_heap 用 less，push_heap 用 greater
 std::vector<int> u{5, 2, 8};
-std::make_heap(u.begin(), u.end(), std::less<int>());              // 大顶
-std::push_heap(u.begin(), u.end(), std::greater<int>());           // ❌ UB：比较器必须一致
+std::make_heap(u.begin(), u.end(), std::less<int>());     // 大顶
+std::push_heap(u.begin(), u.end(), std::greater<int>());  // ❌ UB：比较器必须一致
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：在已修改的容器上重复 make_heap → UB
@@ -610,11 +610,11 @@ std::push_heap(u.begin(), u.end(), std::greater<int>());           // ❌ UB：�
 #include <vector>
 // ⑭ ✅ 正确：pop_heap 后务必 pop_back，比较器全程一致
 std::vector<int> ok{10, 5, 3};
-std::make_heap(ok.begin(), ok.end());            // less -> 大顶
+std::make_heap(ok.begin(), ok.end());  // less -> 大顶
 ok.push_back(7);
-std::push_heap(ok.begin(), ok.end());            // ✅ 符合前置条件
-std::pop_heap(ok.begin(), ok.end());             // ✅
-ok.pop_back();                                   // ✅ 真正删除极值
+std::push_heap(ok.begin(), ok.end());  // ✅ 符合前置条件
+std::pop_heap(ok.begin(), ok.end());   // ✅
+ok.pop_back();                         // ✅ 真正删除极值
 ```
 
 - `[标准]`：违反 `[alg.heap.operations]` 前置条件即 **未定义行为（UB）**——可能看似正常，也可能静默产生错误堆、死循环或崩溃。比较器在 `make_heap/push_heap/pop_heap/sort_heap` 间**必须完全相同**。
@@ -652,8 +652,8 @@ jobs.pop_back();
 #include <algorithm>
 #include <ranges>
 std::vector<int> h{9, 7, 8, 1, 3};
-bool ok = std::ranges::is_heap(h);               // h 不是堆 -> false
-auto bad = std::ranges::is_heap_until(h);        // 指向第一个破坏性质的位
+bool ok = std::ranges::is_heap(h);         // h 不是堆 -> false
+auto bad = std::ranges::is_heap_until(h);  // 指向第一个破坏性质的位
 ```
 
 - `[标准]`：ranges 版与经典版语义一致，仅接口更现代（投影、`borrowed_iterator`）；`[alg.heap.operations]` 同样适用。
@@ -676,9 +676,9 @@ std::priority_queue<int> pq;          // 不变量由适配器托管，最不容
 #include <algorithm>
 #include <cstddef>
 void decrease_key(std::vector<int>& h, std::size_t i, int newval) {
-    h[i] = newval;                    // 新值更小（大顶堆）-> 向上 sift
+    h[i] = newval;                                 // 新值更小（大顶堆）-> 向上 sift
     // 裸算法允许"从中间上浮"，priority_queue 不暴露此能力
-    std::push_heap(h.begin(), h.begin() + i + 1); // 仅当 newval 是最右路径上的调整
+    std::push_heap(h.begin(), h.begin() + i + 1);  // 仅当 newval 是最右路径上的调整
 }
 ```
 
@@ -724,7 +724,7 @@ std::make_heap(cross.begin(), cross.end(), std::greater<int>());   // 小顶 -> 
 堆的存储就是底层容器的连续缓冲，无额外节点结构。以 `priority_queue<int>`（默认 `vector<int>`）为例，其内存与 `vector` 完全相同：
 
 > **示例 36** [难度 ★★☆☆☆] [主题：内存布局 <span class="badge badge-impl">实现</span>]
-```
+```text
    priority_queue<int> pq;  push(9) push(7) push(8) 后（大顶堆）
    ┌────────── vector 底层缓冲（连续、可增长）──────────┐
    │  [ 9 | 7 | 8 ]  ← 满足堆性质，首元素即队首         │
@@ -764,9 +764,9 @@ assert(h.size() == 3);
 #include <iostream>
 std::vector<int> h{9, 7, 8, 1, 3};
 std::make_heap(h.begin(), h.end());
-std::cout << std::is_heap(h.begin(), h.end()) << "\n";   // 1（真）
-h.back() = 100;                                          // 模拟错误修改尾部
-std::cout << std::is_heap(h.begin(), h.end()) << "\n";   // 0（假）
+std::cout << std::is_heap(h.begin(), h.end()) << "\n";  // 1（真）
+h.back() = 100;                                         // 模拟错误修改尾部
+std::cout << std::is_heap(h.begin(), h.end()) << "\n";  // 0（假）
 auto it = std::is_heap_until(h.begin(), h.end());
 std::cout << "first broken at index " << (it - h.begin()) << "\n";
 ```
@@ -894,7 +894,7 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 ## 附录 A：工业堆应用 [F: Industry / B: Principle]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业堆应用 [F: Industry / B: Principle]
-```
+```text
 堆在工业项目中的关键应用:
 
 ClickHouse: priority_queue 用于查询调度 (优先级排序, ~500K ops/s per core)
@@ -975,8 +975,8 @@ int main() {
 #include <algorithm>
 int main() {
     std::vector<int> v{5, 3, 8, 1, 9, 2, 7};
-    std::make_heap(v.begin(), v.end());    // 默认最大堆
-    std::sort_heap(v.begin(), v.end());    // 升序
+    std::make_heap(v.begin(), v.end());     // 默认最大堆
+    std::sort_heap(v.begin(), v.end());     // 升序
     for (int x : v) std::cout << x << ' ';  // 1 2 3 5 7 8 9
     std::cout << "\n";
 }
@@ -1004,8 +1004,8 @@ int main() {
     auto push = [&](int x) { h.push_back(x); std::push_heap(h.begin(), h.end()); };
     auto pop  = [&]() { std::pop_heap(h.begin(), h.end()); int t = h.back(); h.pop_back(); return t; };
     push(5); push(3); push(9); push(1);
-    std::cout << "max=" << pop() << "\n";   // 9
-    std::cout << "max=" << pop() << "\n";   // 5
+    std::cout << "max=" << pop() << "\n";  // 9
+    std::cout << "max=" << pop() << "\n";  // 5
 }
 ```
 
@@ -1033,12 +1033,12 @@ int main() {
     std::priority_queue<int, std::vector<int>, std::greater<int>> minheap;  // 最小堆
     for (int x : v) {
         minheap.push(x);
-        if ((int)minheap.size() > K) minheap.pop();   // 保持堆大小 <= K
+        if ((int)minheap.size() > K) minheap.pop();                         // 保持堆大小 <= K
     }
     std::vector<int> topk;
     while (!minheap.empty()) { topk.push_back(minheap.top()); minheap.pop(); }
-    std::sort(topk.begin(), topk.end());              // 升序输出
-    for (int x : topk) std::cout << x << ' ';          // 7 8 9
+    std::sort(topk.begin(), topk.end());                                    // 升序输出
+    for (int x : topk) std::cout << x << ' ';                               // 7 8 9
     std::cout << "\n";
 }
 ```
@@ -1066,12 +1066,12 @@ int main() {
 #include <algorithm>
 int main() {
     std::vector<int> h{9, 7, 8, 3, 1, 5, 6};
-    std::cout << "before: " << std::is_heap(h.begin(), h.end()) << '\n';   // 0（不是堆）
+    std::cout << "before: " << std::is_heap(h.begin(), h.end()) << '\n';  // 0（不是堆）
     std::make_heap(h.begin(), h.end());
-    std::cout << "after : " << std::is_heap(h.begin(), h.end()) << '\n';   // 1
+    std::cout << "after : " << std::is_heap(h.begin(), h.end()) << '\n';  // 1
     auto bad = std::is_heap_until(h.begin(), h.end());
     std::cout << "violation at " << (bad - h.begin())
-              << " (==size 表示全合规)\n";                                  // 7
+              << " (==size 表示全合规)\n";                                // 7
 }
 ```
 
@@ -1101,7 +1101,7 @@ int main() {
 struct Task { int id; int deadline; };
 struct EarlierDeadline {
     bool operator()(const Task& a, const Task& b) const {
-        return a.deadline > b.deadline;    // 反写：让最小 deadline 位于堆顶
+        return a.deadline > b.deadline;  // 反写：让最小 deadline 位于堆顶
     }
 };
 int main() {
@@ -1111,7 +1111,7 @@ int main() {
         auto t = pq.top(); pq.pop();
         std::cout << "task" << t.id << "(dl=" << t.deadline << ") ";
     }
-    std::cout << '\n';    // task2(dl=10) task3(dl=30) task1(dl=50)
+    std::cout << '\n';                   // task2(dl=10) task3(dl=30) task1(dl=50)
 }
 ```
 
@@ -1150,11 +1150,11 @@ int main() {
 #include <iostream>
 #include <queue>
 int main() {
-    std::priority_queue<int> pq;        // 默认最大堆
+    std::priority_queue<int> pq;              // 默认最大堆
     for (int x : {5, 3, 9, 1, 7}) pq.push(x);
-    std::cout << "top=" << pq.top() << "\n";   // 9
+    std::cout << "top=" << pq.top() << "\n";  // 9
     pq.pop();
-    std::cout << "top=" << pq.top() << "\n";   // 7
+    std::cout << "top=" << pq.top() << "\n";  // 7
 }
 ```
 
@@ -1190,8 +1190,8 @@ int main() {
     std::vector<int> h{9, 5, 8, 1, 3};
     std::make_heap(h.begin(), h.end());
     h.push_back(7);
-    std::push_heap(h.begin(), h.end());   // 维护堆性质
-    std::cout << "max=" << h.front() << "\n";   // 9
+    std::push_heap(h.begin(), h.end());        // 维护堆性质
+    std::cout << "max=" << h.front() << "\n";  // 9
 }
 ```
 

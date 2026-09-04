@@ -103,9 +103,9 @@ std::atomic<unsigned>      a_u{1};
 // ② 标准提供的 typedef 别名（与上面等价、可读性更佳）
 #include <atomic>
 #include <cstddef>
-std::atomic_int            ai{0};     // atomic<int>
-std::atomic_bool           ab{false}; // atomic<bool>
-std::atomic_size_t         asz{0};    // atomic<size_t>
+std::atomic_int            ai{0};      // atomic<int>
+std::atomic_bool           ab{false};  // atomic<bool>
+std::atomic_size_t         asz{0};     // atomic<size_t>
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与特化
@@ -133,8 +133,8 @@ int main() {
 // ③ 默认顺序一致的内存序
 #include <atomic>
 std::atomic<int> x{0};
-int read_x() { return x.load(); }                 // = load(seq_cst)
-void write_x(int v) { x.store(v); }               // = store(seq_cst, v)
+int read_x() { return x.load(); }    // = load(seq_cst)
+void write_x(int v) { x.store(v); }  // = store(seq_cst, v)
 ```
 
 > **示例 7** [难度 ★★☆☆☆] [主题：的内存可见性 <span class="badge badge-std">标准</span>]
@@ -244,8 +244,8 @@ bool bump() {
 // ⑥ fetch_add / fetch_sub：返回旧值
 #include <atomic>
 std::atomic<int> c{0};
-int prev = c.fetch_add(5);     // prev == 0, c 现在为 5
-int prev2 = c.fetch_sub(2);    // prev2 == 5, c 现在为 3
+int prev = c.fetch_add(5);   // prev == 0, c 现在为 5
+int prev2 = c.fetch_sub(2);  // prev2 == 5, c 现在为 3
 ```
 
 > **示例 16** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
@@ -264,8 +264,8 @@ void flip_bit0()  { bits.fetch_xor(1u); }
 #include <atomic>
 std::atomic<int> n{0};
 void demo() {
-    int a = ++n;   // a == 1（新值），n == 1
-    int b = n++;   // b == 1（旧值），n == 2  —— 注意后缀返回旧值
+    int a = ++n;  // a == 1（新值），n == 1
+    int b = n++;  // b == 1（旧值），n == 2  —— 注意后缀返回旧值
 }
 ```
 
@@ -375,8 +375,8 @@ int* next_slot() { return p.fetch_add(1); }   // 返回旧指针，p 前进一�
 int buf[4];
 std::atomic<int*> q{buf};
 void advance() {
-    q += 2;                 // 前进 2 个 int（= 8 字节）
-    int* cur = q++;         // 返回当前，再前进（与 fetch_add(1) 语义一致）
+    q += 2;          // 前进 2 个 int（= 8 字节）
+    int* cur = q++;  // 返回当前，再前进（与 fetch_add(1) 语义一致）
     (void)cur;
 }
 ```
@@ -420,8 +420,8 @@ void t2() { (void)x.load(); }
 #include <cstdint>
 std::atomic<int> a{0};
 void ub_alias() {
-    int* raw = reinterpret_cast<int*>(&a);   // 取非原子别名
-    *raw = 5;                                 // data race + 违反严格别名/原子访问规则 => UB
+    int* raw = reinterpret_cast<int*>(&a);  // 取非原子别名
+    *raw = 5;                               // data race + 违反严格别名/原子访问规则 => UB
 }
 ```
 
@@ -601,9 +601,9 @@ struct N { int v; N* next; };
 std::atomic<N*> head{nullptr};
 void buggy_pop() {
     N* old = head.load();
-    N* next = old->next;            // 假设此刻另一线程把它 A->B->A
+    N* next = old->next;                      // 假设此刻另一线程把它 A->B->A
     // 下面 CAS 看到 head 仍是 old(A)，成功——但 next 已是陈旧链路
-    head.compare_exchange_strong(old, next);   // 危险！
+    head.compare_exchange_strong(old, next);  // 危险！
 }
 ```
 
@@ -621,7 +621,7 @@ void buggy_pop() {
 #include <atomic>
 volatile int v = 0;
 std::atomic<int> a{0};
-void volatile_inc() { v++; }                       // 非原子！
+void volatile_inc() { v++; }                                       // 非原子！
 void atomic_inc()  { a.fetch_add(1, std::memory_order_relaxed); }  // 原子
 ```
 
@@ -739,9 +739,9 @@ __int128 get_wide() { return wide.load(std::memory_order_acquire); }
 #include <cstdint>
 struct TaggedPtr {
     void* ptr;
-    std::uint64_t tag;     // 每次 CAS 自增，地址复用也无法骗过比较
+    std::uint64_t tag;               // 每次 CAS 自增，地址复用也无法骗过比较
 };
-std::atomic<__int128> head_pair{0};   // 把 (ptr,tag) 打包进 128 位一次性 CAS
+std::atomic<__int128> head_pair{0};  // 把 (ptr,tag) 打包进 128 位一次性 CAS
 ```
 
 > **示例 43** [难度 ★★☆☆☆] [主题：宽原子与 int128 <span class="badge badge-std">标准</span>]
@@ -765,12 +765,12 @@ void probe_wide() {
 ```cpp
 // ⑲ 被测代码：故意的 data race（用于演示 tsan 报告）
 #include <thread>
-int race = 0;                            // 普通 int，并发写
+int race = 0;     // 普通 int，并发写
 void bad() { for (int i=0;i<100000;++i) ++race; }
 int main() {
     std::thread a(bad), b(bad);
     a.join(); b.join();
-    return race;                          // tsan 会在此类访问上报 data race
+    return race;  // tsan 会在此类访问上报 data race
 }
 ```
 
@@ -821,13 +821,13 @@ std::atomic<int>   cnt{0};
 std::atomic<bool>  flag{false};
 std::atomic_flag   f = ATOMIC_FLAG_INIT;
 void quick() {
-    cnt.fetch_add(1, std::memory_order_relaxed);   // RMW
-    int old = cnt.exchange(0);                      // 读旧写新
+    cnt.fetch_add(1, std::memory_order_relaxed);           // RMW
+    int old = cnt.exchange(0);                             // 读旧写新
     int e = 0;
-    cnt.compare_exchange_weak(e, 1,                 // CAS
+    cnt.compare_exchange_weak(e, 1,                        // CAS
         std::memory_order_acq_rel, std::memory_order_relaxed);
-    flag.store(true, std::memory_order_release);    // 发布
-    (void)flag.load(std::memory_order_acquire);     // 获取
+    flag.store(true, std::memory_order_release);           // 发布
+    (void)flag.load(std::memory_order_acquire);            // 获取
     while (f.test_and_set(std::memory_order_acquire)) { }  // 自旋
     f.clear(std::memory_order_release);
     (void)old;
@@ -849,7 +849,7 @@ void quick() {
 - `[平台·x86-64]`：x86 是强内存模型，`load`/`store` 编译为普通 `mov`，只有 RMW 需要 `lock` 前缀——这是与弱内存架构（ARM）性能差异的根源。
 
 > **示例 47** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌───────────────┬───────────────────────────┬──────────────────────┐
 │ 同步手段       │ 适用场景                   │ 备注                  │
 ├───────────────┼───────────────────────────┼──────────────────────┤
@@ -969,7 +969,7 @@ int main() {
 ## 附录 D：面试与设计权衡 [J: Learning / H: Design]
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：面试与设计权衡 [J: Learning / H: Design]
-```
+```text
 面试高频:
 Q: std::atomic<int> 一定能做到 lock-free 吗？
 A: 标准不保证，但实际: GCC/Clang/MSVC 在 x86/ARM 上对齐的 int 都是 lock-free。
@@ -1130,14 +1130,14 @@ long atomic_fetch_max(std::atomic<long>& a, long v) {
     long cur = a.load(std::memory_order_relaxed);
     while (v > cur && !a.compare_exchange_weak(cur, v,
                std::memory_order_release, std::memory_order_relaxed)) {}
-    return cur;   // cur 被 CAS 失败时自动刷新为最新值
+    return cur;                     // cur 被 CAS 失败时自动刷新为最新值
 }
 int main() {
     std::atomic<long> m{0};
     std::vector<std::thread> ts;
     for (long i = 1; i <= 8; ++i) ts.emplace_back([&, i]{ atomic_fetch_max(m, i * 1000); });
     for (auto& t : ts) t.join();
-    std::cout << m.load() << '\n';   // 8000
+    std::cout << m.load() << '\n';  // 8000
     return m.load() == 8000 ? 0 : 1;
 }
 ```
@@ -1164,17 +1164,17 @@ int main() {
 #include <iostream>
 struct SpinLock {
     std::atomic_flag f = ATOMIC_FLAG_INIT;
-    void lock()   { while (f.test_and_set(std::memory_order_acquire)) { // spin
+    void lock()   { while (f.test_and_set(std::memory_order_acquire)) {  // spin
     void unlock() { f.clear(std::memory_order_release); }
 };
 int main() {
     SpinLock sl;
-    int shared = 0;                       // 普通 int，靠锁保护
+    int shared = 0;                                                      // 普通 int，靠锁保护
     auto work = [&]{ for (int i = 0; i < 100000; ++i) { sl.lock(); ++shared; sl.unlock(); } };
     std::vector<std::thread> ts;
     for (int i = 0; i < 4; ++i) ts.emplace_back(work);
     for (auto& t : ts) t.join();
-    std::cout << shared << '\n';           // 400000
+    std::cout << shared << '\n';                                         // 400000
     return shared == 400000 ? 0 : 1;
 }
 ```
@@ -1244,12 +1244,12 @@ int main() {
     std::thread worker([&]{
         data.store(42, std::memory_order_release);
         ready.store(true, std::memory_order_release);
-        ready.notify_one();                            // 唤醒阻塞中的等待者
+        ready.notify_one();                                                // 唤醒阻塞中的等待者
     });
     // 阻塞直到 ready 变为 true（可配循环防御伪唤醒）
     while (!ready.load(std::memory_order_acquire))
         ready.wait(false, std::memory_order_acquire);
-    std::cout << "data=" << data.load(std::memory_order_acquire) << '\n';   // 42
+    std::cout << "data=" << data.load(std::memory_order_acquire) << '\n';  // 42
     worker.join();
     return 0;
 }
@@ -1289,7 +1289,7 @@ int main() {
     for (int i = 0; i < 8; ++i) ts.emplace_back(bad);
     for (auto& t : ts) t.join();
     std::cout << "bad total = " << c.load() << " (通常 < 800000)\n";  // 丢更新
-    return 0;   // 编译通过，运行期结果错误——典型「原子变量非原子使用」
+    return 0;                                                         // 编译通过，运行期结果错误——典型「原子变量非原子使用」
 }
 ```
 
@@ -1307,11 +1307,11 @@ int main() {
 ```cpp
 #include <atomic>
 #include <iostream>
-struct Config { long a, b, c; };          // 24 字节，超过硬件宽 CAS（16 字节）
+struct Config { long a, b, c; };                                   // 24 字节，超过硬件宽 CAS（16 字节）
 int main() {
     std::atomic<Config> cfg{};
     std::cout << "is_lock_free = " << cfg.is_lock_free() << '\n';  // 多半为 0：内部用锁
-    Config c = cfg.load();                 // 语法合法，但退化为「加锁 memcpy」
+    Config c = cfg.load();                                         // 语法合法，但退化为「加锁 memcpy」
     (void)c;
     return 0;
 }
@@ -1329,8 +1329,8 @@ int main() {
 struct Config { long a, b, c; };
 int main() {
     auto p = std::make_shared<const Config>(Config{1, 2, 3});
-    std::atomic<std::shared_ptr<const Config>> cur{p};   // C++20 原子 shared_ptr
-    auto snap = cur.load();                                // 8 字节原子读，读侧无锁
+    std::atomic<std::shared_ptr<const Config>> cur{p};           // C++20 原子 shared_ptr
+    auto snap = cur.load();                                      // 8 字节原子读，读侧无锁
     std::cout << snap->a << ' ' << snap->b << ' ' << snap->c << '\n';
     cur.store(std::make_shared<const Config>(Config{4, 5, 6}));  // 整体替换
     return 0;

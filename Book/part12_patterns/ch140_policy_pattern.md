@@ -160,12 +160,12 @@ policy 的威力来自"多个正交 policy 同时参与"。一个经典例子是
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多政策组合（模板参数）
 ```cpp
 // ③ 多政策组合：所有权 + 检查 + 存储
-struct RefCounted {            // 所有权 policy：引用计数
+struct RefCounted {  // 所有权 policy：引用计数
     int* rc;
     void acquire(int* p) { rc = p; if (rc) ++*rc; }
     void release(int* p) { if (rc && --*rc == 0) delete p; }
 };
-struct Sole {                  // 所有权 policy：独占
+struct Sole {        // 所有权 policy：独占
     void acquire(int*) {}
     void release(int* p) { delete p; }
 };
@@ -697,12 +697,12 @@ policy 的选择逻辑本身也能放进 `constexpr` 世界：在编译期根据
 ```cpp
 // ⑭ constexpr policy：编译期根据布尔选择实现
 constexpr int select_impl(bool b, int x) {
-    if (b) return x * 2;     // "翻倍 policy"
-    else   return x + 1;     // "加一 policy"
+    if (b) return x * 2;                       // "翻倍 policy"
+    else   return x + 1;                       // "加一 policy"
 }
 constexpr int run_select() {
-    constexpr int a = select_impl(true,  10);   // 20
-    constexpr int b = select_impl(false, 10);   // 11
+    constexpr int a = select_impl(true,  10);  // 20
+    constexpr int b = select_impl(false, 10);  // 11
     return a + b;
 }
 ```
@@ -1083,7 +1083,7 @@ int main() {
 ## 附录 C：Policy 的反模式与面试 [I: Practice / J: Learning]
 
 > **示例 59** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：Policy 的反模式与面
-```
+```text
 反模式1: Policy 参数超过 5 个 → 将相关 Policy 组合为 Bundle struct
 反模式2: Policy 间隐式依赖 → 使用 C++20 concepts 显式约束
 反模式3: 不必要的 Policy (永不变化) → 用常量或普通模板参数替代
@@ -1144,8 +1144,8 @@ A: 零开销——删除器无 vtable，调用可内联。sizeof 与裸指针相
 > **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
 ```cpp
 #include <iostream>
-struct Unique { template<class T> using ptr = T*; };      // 独占：裸指针语义
-struct Shared { template<class T> using ptr = T*; };      // 示意：真实应含引用计数
+struct Unique { template<class T> using ptr = T*; };  // 独占：裸指针语义
+struct Shared { template<class T> using ptr = T*; };  // 示意：真实应含引用计数
 template <typename T, typename Ownership, typename Threading>
 struct SmartPtr {
     typename Ownership::template ptr<T> p{};
@@ -1170,10 +1170,10 @@ int main() { SmartPtr<int, Unique, Shared> sp; std::cout << "ok\n"; }
 ```cpp
 #include <iostream>
 #include <type_traits>
-struct RowMajor; struct ColMajor;        // 布局 policy 标签，须在使用前声明
+struct RowMajor; struct ColMajor;  // 布局 policy 标签，须在使用前声明
 template <int Rows, int Cols, typename Layout>
 struct Mat {
-    double d[Rows * Cols];                              // 示意存储
+    double d[Rows * Cols];         // 示意存储
     int idx(int r, int c) const {
         if constexpr (std::is_same_v<Layout, RowMajor>) return r * Cols + c;
         else                                              return c * Rows + r;
@@ -1203,8 +1203,8 @@ int main() {
 #include <functional>
 struct Json { static void write() { std::cout << "json\n"; } };
 struct Bin  { static void write() { std::cout << "bin\n"; } };
-template <typename Fmt> void save() { Fmt::write(); }          // 编译期 policy
-void save_rt(std::function<void()> f) { f(); }                 // 运行期策略
+template <typename Fmt> void save() { Fmt::write(); }  // 编译期 policy
+void save_rt(std::function<void()> f) { f(); }         // 运行期策略
 int main() { save<Json>(); save_rt(Bin::write); }
 ```
 

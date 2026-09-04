@@ -69,7 +69,7 @@
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
 ```cpp
 // 1) constexpr 函数：可编译期也可运行期求值
-constexpr int square(int x) {          // [标准] constexpr 函数
+constexpr int square(int x) {                  // [标准] constexpr 函数
     return x * x;
 }
 
@@ -82,19 +82,19 @@ constexpr int fact(int n) {
 template <typename T>
 constexpr auto promote(T v) {
     if constexpr (std::is_integral_v<T>) {
-        return static_cast<long long>(v) * 2;   // 整型分支
+        return static_cast<long long>(v) * 2;  // 整型分支
     } else {
-        return v;                                // 非整型分支
+        return v;                              // 非整型分支
     }
 }
 
 // 4) consteval 立即函数（C++20）：调用点必须编译期可求
-consteval int pow2(int n) {            // [标准] consteval
+consteval int pow2(int n) {                    // [标准] consteval
     return 1 << n;
 }
 
 // 5) constinit：静态存储期 + 编译期初始化，不可运行期重初始化
-constinit int g_counter = 1;           // [标准] constinit
+constinit int g_counter = 1;                   // [标准] constinit
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
@@ -102,12 +102,12 @@ constinit int g_counter = 1;           // [标准] constinit
 // constexpr 构造 + 字面类型（literal type）
 struct Point {
     int x, y;
-    constexpr Point(int x_, int y_) : x(x_), y(y_) {}   // constexpr 构造
-    constexpr int manhattan() const { return x + y; }   // constexpr 成员
+    constexpr Point(int x_, int y_) : x(x_), y(y_) {}  // constexpr 构造
+    constexpr int manhattan() const { return x + y; }  // constexpr 成员
 };
 
 constexpr Point origin{0, 0};
-constexpr int d = origin.manhattan();   // 编译期 = 0
+constexpr int d = origin.manhattan();                  // 编译期 = 0
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
@@ -116,11 +116,11 @@ constexpr int d = origin.manhattan();   // 编译期 = 0
 #include <array>
 constexpr std::array<int, 4> make_table() {
     std::array<int, 4> t{};
-    for (int i = 0; i < 4; ++i) t[i] = i * i;   // [实现] C++17 起 operator[] 为 constexpr
+    for (int i = 0; i < 4; ++i) t[i] = i * i;  // [实现] C++17 起 operator[] 为 constexpr
     return t;
 }
-constexpr auto tbl = make_table();          // 编译期生成查找表
-static_assert(tbl[3] == 9);                  // 编译期索引访问
+constexpr auto tbl = make_table();             // 编译期生成查找表
+static_assert(tbl[3] == 9);                    // 编译期索引访问
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
@@ -129,13 +129,13 @@ static_assert(tbl[3] == 9);                  // 编译期索引访问
 #include <type_traits>
 constexpr int chooses(int x) {
     if (std::is_constant_evaluated()) {
-        return x + 1000;          // 编译期走这条
+        return x + 1000;            // 编译期走这条
     } else {
-        return x * 2;             // 运行期走这条
+        return x * 2;               // 运行期走这条
     }
 }
-static_assert(chooses(1) == 1001);          // 编译期
-int runtime = chooses(1);                    // 运行期 = 2
+static_assert(chooses(1) == 1001);  // 编译期
+int runtime = chooses(1);           // 运行期 = 2
 ```
 
 ## ④ 实例化机制（实例化点 / 两阶段查找）
@@ -149,8 +149,8 @@ int runtime = chooses(1);                    // 运行期 = 2
 ```cpp
 // if constexpr 丢弃不成立分支：对 T=std::string 不实例化整型分支
 #include <string>
-static_assert(promote(10) == 20);                  // 整型：long long 20
-static_assert(promote(std::string{"x"}) == std::string{"x"}); // 非整型：原样
+static_assert(promote(10) == 20);                              // 整型：long long 20
+static_assert(promote(std::string{"x"}) == std::string{"x"});  // 非整型：原样
 ```
 
 ## ⑤ 适用场景与选型
@@ -168,9 +168,9 @@ constexpr int  c_log2(int n) { return n <= 1 ? 0 : 1 + c_log2(n / 2); }
 consteval int  e_log2(int n) { return n <= 1 ? 0 : 1 + e_log2(n / 2); }
 
 int x = 16;
-static_assert(c_log2(16) == 4);     // OK 编译期
+static_assert(c_log2(16) == 4);  // OK 编译期
 // int bad = e_log2(x);             // [实现] 错误：consteval 必须编译期可求，x 非常量
-int ok = c_log2(x);                  // OK 运行期也可（c_log2 非 consteval）
+int ok = c_log2(x);              // OK 运行期也可（c_log2 非 consteval）
 ```
 
 ## ⑥ 完整可运行示例（最小）
@@ -186,9 +186,9 @@ consteval int pow2(int n) { return 1 << n; }
 constinit int g = 7;
 
 int main() {
-    constexpr int a = sq(12);          // 144，编译期
-    int b = sq(12);                    // 也可运行期
-    int c = pow2(8);                   // 256，必须编译期
+    constexpr int a = sq(12);  // 144，编译期
+    int b = sq(12);            // 也可运行期
+    int c = pow2(8);           // 256，必须编译期
     std::cout << a << ' ' << b << ' ' << c << ' ' << g << '\n';
     static_assert(a == 144);
     static_assert(pow2(8) == 256);
@@ -258,10 +258,10 @@ static_assert(deep(1000) == 1000);     // 万级步数各编译器均可
 ```cpp
 // constinit 避免 SIOF 示例
 // 文件 A.cpp
-constinit int a_init = compute_at_compile();   // [平台] 静态初始化阶段定值
+constinit int a_init = compute_at_compile();  // [平台] 静态初始化阶段定值
 // 文件 B.cpp
 extern constinit int a_init;
-int b_use = a_init + 1;     // 安全：a_init 已在静态阶段初始化
+int b_use = a_init + 1;                       // 安全：a_init 已在静态阶段初始化
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
@@ -305,8 +305,8 @@ _Z13use_constexprv:
 ```cpp
 // 复用 STL constexpr：编译期 popcount
 #include <bit>
-static_assert(std::popcount(0b1011u) == 3);    // 编译期 = 3
-constexpr unsigned m = std::rotl(0x1u, 4);      // 0x10
+static_assert(std::popcount(0b1011u) == 3);  // 编译期 = 3
+constexpr unsigned m = std::rotl(0x1u, 4);   // 0x10
 static_assert(m == 0x10u);
 ```
 
@@ -441,7 +441,7 @@ struct Matrix {
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits
 // 行号：93（struct integral_constant）
 struct integral_constant {
-    static constexpr _Tp value = __v;   // ← constexpr 静态成员：编译期定值
+    static constexpr _Tp value = __v;                                 // ← constexpr 静态成员：编译期定值
     using value_type = _Tp;
     using type = integral_constant;
     constexpr operator value_type() const noexcept { return value; }  // constexpr 转换
@@ -456,11 +456,11 @@ struct integral_constant {
 // 行号：443（template popcount）
 template <typename _Tp>
 constexpr int popcount(_Tp __x) noexcept {
-    return std::__popcount(__x);          // 行 305：调用 __builtin_popcount
+    return std::__popcount(__x);     // 行 305：调用 __builtin_popcount
 }
 // 行号：305（__popcount）
 constexpr _Tp __popcount(_Tp __x) noexcept {
-    return __builtin_popcount(__x);       // ← 编译器内建，编译期可求
+    return __builtin_popcount(__x);  // ← 编译器内建，编译期可求
 }
 ```
 
@@ -493,8 +493,8 @@ constexpr reference operator[](size_type __n) noexcept {
 ```cpp
 // 易错点：constexpr 函数运行期调用 ≠ 编译期
 constexpr int maybe(int x) { return x + 1; }
-int a = maybe(5);              // 运行期调用，普通函数
-constexpr int b = maybe(5);    // 编译期：常量表达式
+int a = maybe(5);            // 运行期调用，普通函数
+constexpr int b = maybe(5);  // 编译期：常量表达式
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
@@ -524,10 +524,10 @@ int runtime_call = chooses(1);  // 走 x*2 分支 = 2，不是 1001
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 ```cpp
 // FAQ 演示：constexpr 隐含 const，constinit 不隐含 const
-constexpr int k = 10;        // 编译期定值 + 只读
-constinit  int g = 10;       // 编译期初始化，运行期可写
+constexpr int k = 10;   // 编译期定值 + 只读
+constinit  int g = 10;  // 编译期初始化，运行期可写
 // k = 11;                   // 错误：k 是 const
-g = 20;                      // OK：g 运行期可写（初始化已在编译期完成）
+g = 20;                 // OK：g 运行期可写（初始化已在编译期完成）
 ```
 
 ## ⑱ 最佳实践
@@ -586,8 +586,8 @@ int use(int x, int y) { return add(x, y); }   // -O2 下与 x+y 等价
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 ```cpp
 // constexpr 查表 vs 运行期计算
-constexpr int lut(int i) { return i * i * i; }   // 立方表
-int use_lut(int i) { return lut(i); }            // 运行期：普通乘；编译期：立即数
+constexpr int lut(int i) { return i * i * i; }  // 立方表
+int use_lut(int i) { return lut(i); }           // 运行期：普通乘；编译期：立即数
 ```
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
@@ -743,7 +743,7 @@ int fib_rt(int n) { return n <= 1 ? n : fib_rt(n-1) + fib_rt(n-2); }
 constexpr int fib20 = fib_cx(20);
 int main() {
     auto t0 = std::chrono::high_resolution_clock::now();
-    volatile int a = fib20;  // constexpr: compile-time value, runtime = single mov
+    volatile int a = fib20;       // constexpr: compile-time value, runtime = single mov
     auto t1 = std::chrono::high_resolution_clock::now();
     volatile int b = fib_rt(20);  // runtime: recursive computation
     auto t2 = std::chrono::high_resolution_clock::now();
@@ -757,7 +757,7 @@ int main() {
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
-```
+```text
 面试高频:
 Q: constexpr vs consteval vs constinit 的区别？
 A: constexpr = 可能编译期也可能运行时; consteval = 必须编译期; constinit = 静态初始化期确定, 运行时可改
@@ -882,8 +882,8 @@ constexpr int sq(int n) { return n * n; }
 #include <array>
 constexpr int sq(int n) { return n * n; }
 int main() {
-    std::array<int, sq(5)> a{};        // 大小为 25
-    std::cout << a.size() << "\n";    // 25
+    std::array<int, sq(5)> a{};     // 大小为 25
+    std::cout << a.size() << "\n";  // 25
 }
 ```
 <span class="badge badge-std">标准</span> `constexpr` 函数若实参是常量表达式，其调用结果也是常量表达式，可用于模板实参。
@@ -906,8 +906,8 @@ int main() {
 #include <iostream>
 consteval int cube(int n) { return n * n * n; }
 int main() {
-    constexpr int k = cube(3);          // OK：实参是常量表达式
-    std::cout << k << "\n";            // 27
+    constexpr int k = cube(3);  // OK：实参是常量表达式
+    std::cout << k << "\n";     // 27
     // int x = 5; auto y = cube(x);      // 错误：x 非常量表达式
 }
 ```
@@ -946,8 +946,8 @@ auto deref(T v) {
 }
 int main() {
     int n = 7;
-    std::cout << deref(n)  << "\n";    // 7
-    std::cout << deref(&n) << "\n";    // 7
+    std::cout << deref(n)  << "\n";  // 7
+    std::cout << deref(&n) << "\n";  // 7
 }
 ```
 <span class="badge badge-std">标准</span> `if constexpr` 是编译期分支，避免用 SFINAE/tag 表达"类型相关分支"，但要求两分支语法均合法。
@@ -1080,7 +1080,7 @@ constexpr int factorial(int n) {
 }
 
 int main(){
-    static_assert(factorial(5) == 120);   // 编译期求值，不占运行时
+    static_assert(factorial(5) == 120);  // 编译期求值，不占运行时
     std::cout << factorial(5) << "\n";   // 120
 }
 ```

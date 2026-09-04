@@ -155,7 +155,7 @@ hermetic: pinned deps from mirror, no network to pypi/npm
 典型 C++ 流水线由四个阶段串联：**build → test → static → package**。任一阶段失败立即阻断后续，保证“坏提交不向下游蔓延”。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 流水线阶段
-```
+```text
 ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐
 │  push  │──▶│ build  │──▶│  test  │──▶│ static │──▶│package │──▶ artifact
 └────────┘   └────────┘   └────────┘   └────────┘   └────────┘
@@ -1083,7 +1083,7 @@ CI 本身非 ISO C++ 标准，但它与标准工具链深度绑定：**CMake + C
 ## 附录 A：工业 CI/CD 管道 [F: Industry / B: Principle]
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业 CI/CD 管道 [F: Industry / B: Principle]
-```
+```text
 C++ 项目 CI/CD 工业实践:
 
 LLVM (Buildbot + GitHub Actions):
@@ -1108,7 +1108,7 @@ C++ 特有的 CI 挑战:
 ## 附录 E：CI/CD中的C++标准库与构建工具 [D: stdlib / B: Principle / I: Practice]
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：CI/CD中的C++标准库
-```
+```text
 CI中处理标准库差异:
 - libstdc++版本: GCC 13的libstdc++与GCC 9不兼容(ABI break in GCC 5.1)
   → CI矩阵: 测试最低支持GCC版本 + 最新GCC
@@ -1291,11 +1291,11 @@ jobs:
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
 ```cpp
-#include <version>   // C++20 起：集中的标准特性测试宏
+#include <version>               // C++20 起：集中的标准特性测试宏
 #include <cstdio>
 
 int main() {
-#if defined(__cpp_lib_expected)       // 该编译器/库是否支持 std::expected？
+#if defined(__cpp_lib_expected)  // 该编译器/库是否支持 std::expected？
     std::printf("std::expected available\n");
 #else
     std::printf("std::expected unavailable, use fallback\n");

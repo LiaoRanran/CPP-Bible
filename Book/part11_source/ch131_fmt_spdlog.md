@@ -149,7 +149,7 @@ using is_compile_string = std::is_base_of<compile_string, S>;
 spdlog 由三层组成，关注点分离清晰：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构
-```
+```text
 ┌─────────────┐   log()    ┌──────────────┐  sink_it_  ┌──────────────┐
 │   logger    │ ─────────▶ │   registry   │ ─────────▶ │    sink      │
 │ (格式化消息) │            │ (全局单例管理)│            │ (写出目的地)  │
@@ -179,8 +179,8 @@ int main() {
 ```cpp
 // ④ registry：全局单例，按名字查找/登记 logger（上游参考见第 ⑲ 节）
 #include <spdlog/spdlog.h>
-auto existing = spdlog::get("multi");     // 从 registry 取回
-spdlog::set_default_logger(existing);     // 设为默认
+auto existing = spdlog::get("multi");  // 从 registry 取回
+spdlog::set_default_logger(existing);  // 设为默认
 ```
 
 - `[标准]`：`logger` 负责格式化与分发；`registry` 维护名字→logger 映射并管理全局级别/刷新；`sink` 决定消息去向。
@@ -251,7 +251,7 @@ constexpr int count_args(const char* s, int i = 0, int n = 0) {
 }
 
 template <std::size_t N>
-struct fixed_string {                       // 类类型 NTTP（C++20）
+struct fixed_string {                        // 类类型 NTTP（C++20）
     char data[N];
     consteval fixed_string(const char (&s)[N]) {
         for (std::size_t i = 0; i < N; ++i) data[i] = s[i];
@@ -262,12 +262,12 @@ inline void emit(int v)         { std::printf("%d", v); }
 inline void emit(double v)      { std::printf("%g", v); }
 inline void emit(const char* v) { std::printf("%s", v); }
 
-template <fixed_string Fmt, typename... Ts>   // Fmt 在编译期即确定
+template <fixed_string Fmt, typename... Ts>  // Fmt 在编译期即确定
 void safe_fmt(Ts... ts) {
     constexpr int need = count_args(Fmt.data);
     static_assert(need == sizeof...(Ts), "占位符数量与参数数量不匹配（编译期）");
     std::printf("%s", Fmt.data);
-    (emit(ts), ...);                          // 按各实参类型分派 emit
+    (emit(ts), ...);                         // 按各实参类型分派 emit
 }
 
 int demo() { safe_fmt<"pi={} name={} n={}">(3.14, "fmt", 42); return 0; }
@@ -398,16 +398,16 @@ struct fmt::formatter<Point> {
 ```cpp
 // ⑩ 动态调整级别，快速定位问题
 #include <spdlog/spdlog.h>
-spdlog::set_level(spdlog::level::debug);          // 显示 debug 及以上
+spdlog::set_level(spdlog::level::debug);           // 显示 debug 及以上
 spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
-spdlog::debug("trace value={}", expensive_value); // 生产可整体关掉
+spdlog::debug("trace value={}", expensive_value);  // 生产可整体关掉
 ```
 
 > **示例 22** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
 ```cpp
 // ⑩ 强制刷新，避免崩溃丢日志
-spdlog::flush_on(spdlog::level::err);             // err 级自动 flush
-spdlog::flush_every(std::chrono::seconds(3));     // 周期 flush
+spdlog::flush_on(spdlog::level::err);          // err 级自动 flush
+spdlog::flush_every(std::chrono::seconds(3));  // 周期 flush
 ```
 
 - `[经验]`：调试时把级别降到 `debug`/`trace`，配合彩色 pattern；长流程用 `flush_every` 防崩溃丢尾。
@@ -532,8 +532,8 @@ auto async = spdlog::basic_logger_mt<spdlog::async_factory>("a", "log.txt");
 // ⑮ std::format 与 fmt 几乎同构（需要 #include <format>）
 #include <format>
 #include <string>
-std::string s = std::format("{} + {} = {}", 2, 2, 4);   // "2 + 2 = 4"
-std::string u = std::format("{:_>}8", 42);              // 对齐/填充语法一致
+std::string s = std::format("{} + {} = {}", 2, 2, 4);  // "2 + 2 = 4"
+std::string u = std::format("{:_>}8", 42);             // 对齐/填充语法一致
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 std::format 对应
@@ -559,8 +559,8 @@ struct std::formatter<Point> {
 // ⑯ spdlog 以 fmt 为后端：spdlog 的日志宏就是 fmt::format 的薄封装
 // spdlog::info("{}", x)  ≈ fmt::print(fmt::format("{}", x)) + sink
 #include <spdlog/spdlog.h>
-spdlog::set_pattern("%v");                 // %v 即「格式化后的消息体」
-spdlog::info("{:.3f}", 1.0/3.0);           // 复用 fmt 的格式说明符
+spdlog::set_pattern("%v");        // %v 即「格式化后的消息体」
+spdlog::info("{:.3f}", 1.0/3.0);  // 复用 fmt 的格式说明符
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]

@@ -66,7 +66,7 @@ Ranges 常被当成"更简洁的 for 循环 / 算法语法糖"，但它**真正�
 ## ④ 知识图谱（ASCII）<span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★★★★☆] [主题：知识图谱（ASCII）<span class="badge badge-std">标准</span>]
-```
+```text
                          ┌────────────────────────────┐
                          │  range = 能 begin()/end()   │  (concept, ranges_base.h:501)
                          └────────────────────────────┘
@@ -138,7 +138,7 @@ classDiagram
 `std::views::filter(v, pred)` 返回的 `filter_view` **不拷贝 `v` 的任何元素**，只保存「对 `v` 的引用（或 `ref_view`）+ 谓词对象」：
 
 > **示例 2** [难度 ★★★☆☆] [主题：内存图：view 不持有元素 <span class="badge badge-impl">实现</span>
-```
+```text
 std::vector<int> v = {1,2,3,4,5};          // 元素在堆上(25B)
 auto fv = v | views::filter(even);         // filter_view 仅:
 ┌──────────────────────────────────────────────┐
@@ -314,7 +314,7 @@ int main() {
 **A. `range` 概念（文件：`bits/ranges_base.h`，行号：`501`）**
 
 > **示例 6** [难度 ★★★☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
-```
+```text
 文件：bits/ranges_base.h
 行号：501   concept range = requires(_Tp& __t) {
                  ranges::begin(__t);     // 必须能取 begin
@@ -327,7 +327,7 @@ int main() {
 **B. `view` 概念（文件：`bits/ranges_base.h`，行号：`578`）**
 
 > **示例 7** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
-```
+```text
 文件：bits/ranges_base.h
 行号：578   concept view = range<_Tp> && movable<_Tp> && enable_view<_Tp>;
 ```
@@ -337,7 +337,7 @@ int main() {
 **C. `subrange`（`ref_view` 的近亲，文件：`bits/ranges_util.h`，行号：`256`）**
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
-```
+```text
 文件：bits/ranges_util.h
 行号：256   class subrange : public view_interface<subrange<_It,_Sent,_Kind>> { ... };
 ```
@@ -347,7 +347,7 @@ int main() {
 **D. 各 view 类定义（文件：`ranges`，行号见下）**
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
-```
+```text
 文件：ranges
 行号：358    class iota_view   : public view_interface<iota_view<W,B>>    // 数值序列(可无限)
 行号：1134   class ref_view    : public view_interface<ref_view<R>>       // 仅持引用, 永拥有
@@ -441,8 +441,8 @@ int main() {
 int main() {
     std::vector<int> v{1,2,3,4};
     auto c = v | std::views::filter([](int n){ return n > 1; }) | std::views::common;
-    int s = std::reduce(c.begin(), c.end(), 0);   // 旧式算法需要同类型迭代器
-    std::cout << s << "\n";                        // 9
+    int s = std::reduce(c.begin(), c.end(), 0);  // 旧式算法需要同类型迭代器
+    std::cout << s << "\n";                      // 9
     return 0;
 }
 ```
@@ -886,11 +886,11 @@ int main() {
 #include <iostream>
 int main() {
     std::vector<int> v{1,2,3};
-    auto rv = std::views::all(v);          // 左值 -> ref_view, 仅引用不拷贝
+    auto rv = std::views::all(v);            // 左值 -> ref_view, 仅引用不拷贝
     for (int x : rv) std::cout << x << " ";
-    v.push_back(4);                         // 修改底层, view 可见
+    v.push_back(4);                          // 修改底层, view 可见
     std::cout << "| ";
-    for (int x : rv) std::cout << x << " "; // 1 2 3 | 1 2 3 4
+    for (int x : rv) std::cout << x << " ";  // 1 2 3 | 1 2 3 4
     std::cout << "\n";
     return 0;
 }
@@ -945,9 +945,9 @@ int main() {
     auto sorted_view = v | std::views::filter([](int n){ return n > 0; });
     std::vector<int> out;
     std::ranges::copy(sorted_view, std::back_inserter(out));
-    std::sort(out.begin(), out.end());   // 旧式排序接在 view 之后
+    std::sort(out.begin(), out.end());  // 旧式排序接在 view 之后
     for (int x : out) std::cout << x << " ";
-    std::cout << "\n";   // 1 2 3 4 5
+    std::cout << "\n";                  // 1 2 3 4 5
     return 0;
 }
 ```
@@ -1362,7 +1362,7 @@ int main() {
 #include <vector>
 #include <ranges>
 #include <iterator>
-#include <algorithm>   // std::ranges::copy 声明于此（<ranges> 不含算法）
+#include <algorithm>                                         // std::ranges::copy 声明于此（<ranges> 不含算法）
 
 int main() {
     std::vector<int> v{1,2,3,4,5,6,7,8,9,10};
@@ -1372,7 +1372,7 @@ int main() {
         | std::views::transform([](int x){ return x * x; })  // 平方
         | std::views::take(3);                               // 只要前 3
     std::ranges::copy(r, std::back_inserter(out));
-    for (int y : out) std::cout << y << ' ';     // 1 9 25
+    for (int y : out) std::cout << y << ' ';                 // 1 9 25
     std::cout << '\n';
 }
 ```

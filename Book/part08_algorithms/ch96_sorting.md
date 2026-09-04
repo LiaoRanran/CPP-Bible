@@ -54,8 +54,8 @@
 #include <vector>
 int main() {
     std::vector<int> v{5, 2, 9, 1, 5, 6};
-    std::sort(v.begin(), v.end());   // 升序：1 2 5 5 6 9
-    return v.front();                // 1
+    std::sort(v.begin(), v.end());  // 升序：1 2 5 5 6 9
+    return v.front();               // 1
 }
 ```
 
@@ -180,21 +180,21 @@ __introsort_loop(_RandomAccessIterator __first,
 template <typename It, typename Cmp>
 It median3_partition(It first, It last, Cmp cmp) {
     auto mid = first + (last - first) / 2;
-    if (cmp(*mid, *first)) std::iter_swap(mid, first);            // 排首/中
-    if (cmp(*(last - 1), *first)) std::iter_swap(last - 1, first); // 排首/尾
-    if (cmp(*(last - 1), *mid)) std::iter_swap(last - 1, mid);    // 排中/尾
-    std::iter_swap(mid, last - 1);                                // 枢轴放到端点
+    if (cmp(*mid, *first)) std::iter_swap(mid, first);              // 排首/中
+    if (cmp(*(last - 1), *first)) std::iter_swap(last - 1, first);  // 排首/尾
+    if (cmp(*(last - 1), *mid)) std::iter_swap(last - 1, mid);      // 排中/尾
+    std::iter_swap(mid, last - 1);                                  // 枢轴放到端点
     auto pivot = *(last - 1);
     auto i = first;
-    for (auto j = first; j != last - 1; ++j)                      // 无守卫分区
+    for (auto j = first; j != last - 1; ++j)                        // 无守卫分区
         if (cmp(*j, pivot)) std::iter_swap(i++, j);
-    std::iter_swap(i, last - 1);                                  // 枢轴归位
-    return i;                                                     // 枢轴最终位置
+    std::iter_swap(i, last - 1);                                    // 枢轴归位
+    return i;                                                       // 枢轴最终位置
 }
 int main() {
     std::vector<int> v{5, 3, 8, 1, 9, 2, 7};
     auto p = median3_partition(v.begin(), v.end(), std::less<int>{});
-    return *p;   // 枢轴值（7 的某次分区结果）
+    return *p;                                                      // 枢轴值（7 的某次分区结果）
 }
 ```
 
@@ -212,13 +212,13 @@ int main() {
 template <typename It>
 It median_of_three(It a, It b, It c) {
     if (*a < *b) {
-        if (*b < *c) return b;       // a<b<c → b
-        if (*a < *c) return c;       // a<c<=b → c
-        return a;                    // c<=a<b → a
+        if (*b < *c) return b;  // a<b<c → b
+        if (*a < *c) return c;  // a<c<=b → c
+        return a;               // c<=a<b → a
     } else {
-        if (*a < *c) return a;       // b<=a<c → a
-        if (*b < *c) return c;       // b<c<=a → c
-        return b;                    // c<=b<=a → b
+        if (*a < *c) return a;  // b<=a<c → a
+        if (*b < *c) return c;  // b<c<=a → c
+        return b;               // c<=b<=a → b
     }
 }
 ```
@@ -233,7 +233,7 @@ int main() {
     std::vector<int> v(1'000'000);
     long long layers = 0;
     for (auto n = (long long)v.size(); n > 1; n /= 2) ++layers;  // ~log2(N)
-    std::cout << layers << "\n";   // 约 20 层
+    std::cout << layers << "\n";                                 // 约 20 层
     return 0;
 }
 ```
@@ -410,8 +410,8 @@ struct Person { int age; std::string name; };
 bool operator<(const Person& a, const Person& b) { return a.age < b.age; }
 int main() {
     std::vector<Person> v{{30,"a"},{20,"b"},{25,"c"}};
-    std::sort(v.begin(), v.end());   // 按 age 升序
-    return v[0].age;                 // 20
+    std::sort(v.begin(), v.end());  // 按 age 升序
+    return v[0].age;                // 20
 }
 ```
 
@@ -426,7 +426,7 @@ struct ByAgeDesc {
 int main() {
     std::vector<int> v{3,1,2};
     std::sort(v.begin(), v.end(), ByAgeDesc{});
-    return v.front();   // 3
+    return v.front();                                      // 3
 }
 ```
 
@@ -568,9 +568,9 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIP5PointSt6vectorIS2_SaIS2_
 #include <list>
 int main() {
     std::vector<int> v{5,3,8,1};
-    std::sort(v.begin(), v.end());          // 好：随机访问 + 缓存友好
+    std::sort(v.begin(), v.end());  // 好：随机访问 + 缓存友好
     std::list<int> l{5,3,8,1};
-    l.sort();                               // 必须用语成员 sort（bidirectional 迭代器）
+    l.sort();                       // 必须用语成员 sort（bidirectional 迭代器）
     return v.front() + l.front();
 }
 ```
@@ -606,11 +606,11 @@ introsort 在小数组（阈值 ~16）切换插入排序；对已（近似）有
 #include <vector>
 #include <cstddef>
 int main() {
-    std::vector<int> v{1,2,3,4,5,0};   // 几乎有序
+    std::vector<int> v{1,2,3,4,5,0};  // 几乎有序
     for (size_t i = 1; i < v.size(); ++i)
         for (size_t j = i; j > 0 && v[j] < v[j-1]; --j)
-            std::swap(v[j], v[j-1]);    // 仅 1 次搬移
-    return v.front();                   // 0
+            std::swap(v[j], v[j-1]);  // 仅 1 次搬移
+    return v.front();                 // 0
 }
 ```
 
@@ -621,8 +621,8 @@ int main() {
 #include <vector>
 int main() {
     std::vector<int> v(10'000);
-    for (int i = 0; i < (int)v.size(); ++i) v[i] = i;   // 已有序
-    std::sort(v.begin(), v.end());                       // 仍 O(N log N)，但常数极小
+    for (int i = 0; i < (int)v.size(); ++i) v[i] = i;  // 已有序
+    std::sort(v.begin(), v.end());                     // 仍 O(N log N)，但常数极小
     return v.front();
 }
 ```
@@ -644,9 +644,9 @@ struct Rec { int a, b; };
 int main() {
     std::vector<Rec> v{{1,9},{1,2},{2,5}};
     std::sort(v.begin(), v.end(), [](const Rec& x, const Rec& y){
-        return std::tie(x.a, x.b) < std::tie(y.a, y.b);   // a 升序, 然后 b 升序
+        return std::tie(x.a, x.b) < std::tie(y.a, y.b);  // a 升序, 然后 b 升序
     });
-    return v[0].b;   // 2
+    return v[0].b;                                       // 2
 }
 ```
 
@@ -806,8 +806,8 @@ int main() {
 struct Rec { int score; };
 int main() {
     std::vector<Rec> v{{3},{1},{2}};
-    std::ranges::sort(v, std::less{}, &Rec::score);   // 投影到 score 比较
-    return v[0].score;   // 1
+    std::ranges::sort(v, std::less{}, &Rec::score);  // 投影到 score 比较
+    return v[0].score;                               // 1
 }
 ```
 
@@ -819,8 +819,8 @@ int main() {
 int main() {
     std::vector<int> v{3,1,3,2,1,2};
     std::sort(v.begin(), v.end());
-    auto it = std::unique(v.begin(), v.end());   // 依赖已排序
-    v.erase(it, v.end());                         // v == {1,2,3}
+    auto it = std::unique(v.begin(), v.end());  // 依赖已排序
+    v.erase(it, v.end());                       // v == {1,2,3}
     return (int)v.size();
 }
 ```
@@ -957,7 +957,7 @@ int main() {
 ## 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
-```
+```text
 introsort (C++ std::sort): 快速排序 + 堆排序回退 (O(N log N) 保证)
 pdqsort (Rust, 2016): Pattern-Defeating Quicksort → 检测已排序/反向, 比 introsort 快 ~2×
 radix sort (ClickHouse): O(N) 整数排序, 极端场景 std::sort 慢 3-5×
@@ -1088,7 +1088,7 @@ std::stable_sort(v.begin(), v.end(), [](auto&a,auto&b){ return a.first<b.first; 
 避免快排的最坏情况；小区间（如 ≤16）切到 insertion sort（小数据常数更小）。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
-```
+```text
 if (depth_limit == 0)      heap_sort(range);   // 防 O(n^2)
 else if (small(range))     insertion_sort(range);
 else                       quick_sort_partition + recurse(depth_limit-1);
@@ -1149,11 +1149,11 @@ struct Rec { std::string name; int age; };
 int main() {
     std::vector<Rec> v{{"Li", 40}, {"Wang", 30}, {"Li", 25}, {"Zhang", 35}};
     std::sort(v.begin(), v.end(), [](const Rec& a, const Rec& b){
-        if (a.name != b.name) return a.name < b.name;   // 第一键：姓氏升序
-        return a.age < b.age;                           // 第二键：同姓按年龄升序
+        if (a.name != b.name) return a.name < b.name;  // 第一键：姓氏升序
+        return a.age < b.age;                          // 第二键：同姓按年龄升序
     });
     for (auto& r : v) std::cout << r.name << r.age << ' ';
-    std::cout << '\n';    // Li25 Li40 Wang30 Zhang35
+    std::cout << '\n';                                 // Li25 Li40 Wang30 Zhang35
 }
 ```
 
@@ -1182,9 +1182,9 @@ int main() {
 #include <algorithm>
 int main() {
     std::vector<int> lat{12, 3, 45, 8, 30, 2, 19, 6, 23, 7};
-    auto mid = lat.begin() + lat.size() / 2;      // 第 5 个（0 基）
+    auto mid = lat.begin() + lat.size() / 2;  // 第 5 个（0 基）
     std::nth_element(lat.begin(), mid, lat.end());
-    std::cout << "median=" << *mid << '\n';       // 12
+    std::cout << "median=" << *mid << '\n';   // 12
 }
 ```
 
@@ -1516,13 +1516,13 @@ int main() {
     std::vector<int> v{5,3,8,1,9,2,7,4,6,0};
     std::sort(v.begin(), v.end());
     for (int x : v) std::cout << x << ' ';
-    std::cout << std::endl;                 // 0 1 2 3 4 5 6 7 8 9
+    std::cout << std::endl;  // 0 1 2 3 4 5 6 7 8 9
 
     // 堆排兜底对应物：partial_sort 内部 __partial_sort -> __heap_select + __sort_heap
     std::vector<int> w{5,3,8,1,9,2,7,4,6,0};
     std::partial_sort(w.begin(), w.begin() + 3, w.end());
     for (int x : w) std::cout << x << ' ';
-    std::cout << std::endl;                 // 前 3 个最小且有序: 0 1 2 ...
+    std::cout << std::endl;  // 前 3 个最小且有序: 0 1 2 ...
     return 0;
 }
 ```

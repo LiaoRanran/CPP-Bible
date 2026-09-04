@@ -96,8 +96,8 @@ stateDiagram-v2
 // ②A 线程：抢占式、有独立栈、由 OS 调度
 #include <thread>
 void with_thread() {
-    std::thread t([] { // 并发工作
-    t.join();   // 阻塞等待；栈内存 MB 级、切换代价高
+    std::thread t([] {  // 并发工作
+    t.join();           // 阻塞等待；栈内存 MB 级、切换代价高
 }
 ```
 
@@ -115,8 +115,8 @@ void with_callback(auto on_done) {
 ```cpp
 // ②C 协程：写法像同步、无独立栈、由 await 点主动让出
 mini_task with_coroutine() {
-    int r = co_await async_read();   // 挂起，不阻塞线程
-    co_await async_write(r);         // 恢复后继续，线性可读
+    int r = co_await async_read();  // 挂起，不阻塞线程
+    co_await async_write(r);        // 恢复后继续，线性可读
 }
 ```
 
@@ -139,11 +139,11 @@ mini_task with_coroutine() {
 // ③ promise_type 是协程的"控制面板"：每个协程函数必须能找到它
 struct my_coro {
     struct promise_type {
-        my_coro get_return_object() noexcept;   // 决定返回对象
-        std::suspend_always initial_suspend();   // 起始是否挂起
-        std::suspend_always final_suspend() noexcept; // 结束是否挂起
-        void return_void() noexcept;             // co_return; 无值
-        void unhandled_exception();              // 异常出口
+        my_coro get_return_object() noexcept;          // 决定返回对象
+        std::suspend_always initial_suspend();         // 起始是否挂起
+        std::suspend_always final_suspend() noexcept;  // 结束是否挂起
+        void return_void() noexcept;                   // co_return; 无值
+        void unhandled_exception();                    // 异常出口
     };
     std::coroutine_handle<my_coro::promise_type> h;
 };
@@ -152,7 +152,7 @@ struct my_coro {
 协程帧（GCC `-O2` 实测 `range(int)` 帧 56 字节）布局：
 
 > **示例 6** [难度 ★★☆☆☆] [主题：type 与协程帧布局 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌──────────────────────────── 协程帧 (heap) ────────────────────────────┐
 │ [0]  resume/destroy 指针 (actor/destroy 入口，GCC 放帧首)             │
 │ [16] promise_type (含 current_ 等用户状态)                            │
@@ -186,9 +186,9 @@ mini_task await_demo() {
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · co_await / co_yield / co_return 三个关键字
 ```cpp
 // ④B co_yield：产出整数序列（需 promise_type 提供 yield_value）
-struct generator { // 见 ⑥
+struct generator {  // 见 ⑥
 generator seq() {
-    co_yield 1;   // 等价于 co_await promise.yield_value(1)，挂起并产出
+    co_yield 1;     // 等价于 co_await promise.yield_value(1)，挂起并产出
     co_yield 2;
 }
 ```
@@ -213,14 +213,14 @@ mini_task ret_demo() {
 // ⑤ awaiter 三件套：决定"是否立即就绪 / 如何挂起 / 恢复后给什么"
 struct my_awaiter {
     bool await_ready() const noexcept {
-        return false;   // false => 需要挂起；true => 直接 resume，不挂起
+        return false;  // false => 需要挂起；true => 直接 resume，不挂起
     }
     void await_suspend(std::coroutine_handle<> h) const noexcept {
         // 挂起时调用：h 是当前协程句柄
         // 可把 h 存起来交给调度器/IO 完成回调，稍后 h.resume()
     }
     int await_resume() const noexcept {
-        return 42;      // co_await 表达式的求值结果
+        return 42;     // co_await 表达式的求值结果
     }
 };
 ```
@@ -250,11 +250,11 @@ struct generator {
         generator get_return_object() noexcept {
             return generator{std::coroutine_handle<promise_type>::from_promise(*this)};
         }
-        std::suspend_always initial_suspend() noexcept { return {}; } // 首次 next 才启动
+        std::suspend_always initial_suspend() noexcept { return {}; }  // 首次 next 才启动
         std::suspend_always final_suspend() noexcept { return {}; }
         std::suspend_always yield_value(int v) noexcept {
-            current_ = v;          // 把产出值存入帧
-            return {};             // 挂起，等待下次 resume
+            current_ = v;                                              // 把产出值存入帧
+            return {};                                                 // 挂起，等待下次 resume
         }
         void return_void() noexcept {}
         void unhandled_exception() { std::terminate(); }
@@ -264,7 +264,7 @@ struct generator {
     ~generator() { if (h_) h_.destroy(); }
     bool next() {
         if (!h_ || h_.done()) return false;
-        h_.resume();               // 恢复：从上一 yield 点继续
+        h_.resume();                                                   // 恢复：从上一 yield 点继续
         return !h_.done();
     }
     int value() const { return h_.promise().current_; }
@@ -346,8 +346,8 @@ generator default_alloc() { co_yield 0; }
 // ⑧B 自定义分配器：在 promise_type 内提供 static operator new/new[]
 struct pooled_task {
     struct promise_type {
-        void* operator new(std::size_t n) {        // 自定义帧分配
-            return frame_pool::allocate(n);         // 例如线程局部帧池
+        void* operator new(std::size_t n) {  // 自定义帧分配
+            return frame_pool::allocate(n);  // 例如线程局部帧池
         }
         void operator delete(void* p, std::size_t) { frame_pool::deallocate(p); }
         pooled_task get_return_object() noexcept;
@@ -471,7 +471,7 @@ _Z8count_upv:
 无栈协程没有独立栈，挂起时只是"把当前执行点（恢复索引）写进帧、返回调用者"；恢复时从帧读回恢复索引，跳到对应代码位置继续。`std::coroutine_handle::resume()` 即调用 `<func>.Frame.actor`。
 
 > **示例 19** [难度 ★★☆☆☆] [主题：无栈协程的挂起/恢复原理 <span class="badge badge-std">标准</span>]
-```
+```text
 ┌─ 调用者 next() ──────────┐        ┌─ 协程帧 (heap) ──────────────┐
 │ g.next()                 │        │ resume 索引 = 2               │
 │   └─> h_.resume() ───────┼───────>│ actor(rcx=帧指针)              │
@@ -569,8 +569,8 @@ std::suspend_always final_suspend() noexcept { return {}; }
 template <typename T>
 T sync_wait(task<T> t) {
     // 简化示意：反复 resume 直到 final_suspend 挂起（真实实现需事件循环）
-    while (t.resume()) { // 由调度器在 IO 就绪时回调 resume
-    return t.h.promise().val_;   // 取 return_value 结果
+    while (t.resume()) {        // 由调度器在 IO 就绪时回调 resume
+    return t.h.promise().val_;  // 取 return_value 结果
 }
 ```
 
@@ -578,9 +578,9 @@ T sync_wait(task<T> t) {
 ```cpp
 // ⑬B 衔接形态：async_read/async_write 作为 awaiter，协程内线性编排
 task<int> handle_connection() {
-    auto req = co_await async_read();   // 挂起等待 IO，不阻塞线程
+    auto req = co_await async_read();  // 挂起等待 IO，不阻塞线程
     auto resp = transform(req);
-    co_await async_write(resp);         // 恢复后继续
+    co_await async_write(resp);        // 恢复后继续
     co_return resp.code;
 }
 ```
@@ -1028,9 +1028,9 @@ int main() {
 #include <iostream>
 struct ready_value {
     int v;
-    bool await_ready() const noexcept { return true; }          // 立即就绪，不挂起
-    void await_suspend(std::coroutine_handle<>) const noexcept {} // 就绪则不会被调用
-    int await_resume() const noexcept { return v; }             // 产出值
+    bool await_ready() const noexcept { return true; }             // 立即就绪，不挂起
+    void await_suspend(std::coroutine_handle<>) const noexcept {}  // 就绪则不会被调用
+    int await_resume() const noexcept { return v; }                // 产出值
 };
 struct task {
     struct promise_type {
@@ -1042,8 +1042,8 @@ struct task {
     };
 };
 task demo() {
-    int x = co_await ready_value{41};      // await_ready=true → 直接 await_resume 得 41
-    std::cout << "co_await got " << x + 1 << '\n';   // 42
+    int x = co_await ready_value{41};                              // await_ready=true → 直接 await_resume 得 41
+    std::cout << "co_await got " << x + 1 << '\n';                 // 42
 }
 int main() { demo(); return 0; }
 ```
@@ -1089,9 +1089,9 @@ generator words(std::string s) {
     for (char c : s) { std::string one(1, c); co_yield one; }  // one 亦跨挂起点，按值 yield 后立即用
 }
 int main() {
-    auto g = words("abc");                 // 传临时串；按值 → 拷入协程帧，安全
+    auto g = words("abc");                                     // 传临时串；按值 → 拷入协程帧，安全
     while (g.next()) std::cout << g.value();
-    std::cout << '\n';                      // abc
+    std::cout << '\n';                                         // abc
     return 0;
 }
 ```
@@ -1127,7 +1127,7 @@ struct gen {
         std::suspend_always final_suspend() noexcept { return {}; }
         std::suspend_always yield_value(int v) noexcept { cur = v; return {}; }
         void return_void() noexcept {}
-        void unhandled_exception() { eptr = std::current_exception(); }   // 捕获而非 terminate
+        void unhandled_exception() { eptr = std::current_exception(); }  // 捕获而非 terminate
     };
     std::coroutine_handle<promise_type> h;
     explicit gen(std::coroutine_handle<promise_type> hh) : h(hh) {}
@@ -1142,7 +1142,7 @@ struct gen {
 };
 gen seq() {
     co_yield 1;
-    throw std::runtime_error("boom");       // 协程内抛异常
+    throw std::runtime_error("boom");                                    // 协程内抛异常
     co_yield 2;
 }
 int main() {
@@ -1183,9 +1183,9 @@ struct task {
     struct promise_type {
         int result = 0;
         task get_return_object() { return task{std::coroutine_handle<promise_type>::from_promise(*this)}; }
-        std::suspend_never initial_suspend() noexcept { return {}; }   // 立即执行
-        std::suspend_always final_suspend() noexcept { return {}; }    // 末尾挂起以读结果
-        void return_value(int v) noexcept { result = v; }              // co_return v 落点
+        std::suspend_never initial_suspend() noexcept { return {}; }  // 立即执行
+        std::suspend_always final_suspend() noexcept { return {}; }   // 末尾挂起以读结果
+        void return_value(int v) noexcept { result = v; }             // co_return v 落点
         void unhandled_exception() { std::terminate(); }
     };
     std::coroutine_handle<promise_type> h;
@@ -1201,7 +1201,7 @@ task compute(int n) {
 }
 int main() {
     task t = compute(10);
-    std::cout << "sum(1..10)=" << t.get() << '\n';    // 55
+    std::cout << "sum(1..10)=" << t.get() << '\n';                    // 55
     return 0;
 }
 ```
@@ -1284,11 +1284,11 @@ struct task {
     // 错误示范：拷贝构造浅拷贝句柄 → 两个 task 析构各 destroy 一次 → double free
     // task(const task&) = default;   // ← 若允许拷贝即埋雷
     ~task() { if (h) h.destroy(); }
-    task(task&& o) noexcept : h(o.h) { o.h = {}; }   // 正确：移动置空源
+    task(task&& o) noexcept : h(o.h) { o.h = {}; }  // 正确：移动置空源
 };
 task make() { co_return; }
 int main() {
-    task t = make();          // 移动构造，句柄唯一所有权
+    task t = make();                                // 移动构造，句柄唯一所有权
     std::cout << "handle owned uniquely, destroyed once at scope end\n";
     return 0;
 }
@@ -1746,8 +1746,8 @@ int plain_sum(int n) {
 
 int main() {
     int got = 0;
-    coro_sum(100, got);                  // 协程同步执行
-    assert(got == plain_sum(100));       // 功能正确性（绝不断言时间/倍数/sizeof）
+    coro_sum(100, got);             // 协程同步执行
+    assert(got == plain_sum(100));  // 功能正确性（绝不断言时间/倍数/sizeof）
     std::cout << "coroutine sum(100) = " << got << std::endl;
     return 0;
 }

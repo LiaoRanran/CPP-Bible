@@ -130,9 +130,9 @@ class ThreadPool {
 ```cpp
 #include <cstddef>
 // 设计目标量化：用常量表达非功能需求
-constexpr std::size_t kDefaultThreads = 0;   // 0 = 自动取 hardware_concurrency()
-constexpr bool        kAllowResize      = false; // 工业版常支持动态扩缩
-constexpr std::size_t kMaxQueue        = 4096;   // 背压上限（可选）
+constexpr std::size_t kDefaultThreads = 0;        // 0 = 自动取 hardware_concurrency()
+constexpr bool        kAllowResize      = false;  // 工业版常支持动态扩缩
+constexpr std::size_t kMaxQueue        = 4096;    // 背压上限（可选）
 ```
 
 四个核心关注点：
@@ -177,13 +177,13 @@ constexpr std::size_t kMaxQueue        = 4096;   // 背压上限（可选）
 #include <thread>
 #include <functional>
 // 架构骨架：三部分职责分离
-struct Task { std::function<void()> fn; };          // ① 任务封装
-class TaskQueue {                                    // ② 队列（线程安全）
+struct Task { std::function<void()> fn; };  // ① 任务封装
+class TaskQueue {                           // ② 队列（线程安全）
     std::queue<Task> q_; std::mutex m_; std::condition_variable cv_;
 public:
     void push(Task); bool pop(Task&); void shutdown();
 };
-class Worker {                                       // ③ worker
+class Worker {                              // ③ worker
     std::thread t_; TaskQueue* q_;
     void loop();
 };
@@ -201,7 +201,7 @@ class Worker {                                       // ③ worker
 ```cpp
 // C++11：必须手动管理 join，否则析构即 terminate
 #include <thread>
-void hello() { // ...
+void hello() {  // ...
 int main() {
     std::thread t(hello);
     t.join();   // 必须！否则 main 退出时 t 仍 joinable -> terminate
@@ -212,8 +212,8 @@ int main() {
 ```cpp
 #include <thread>
 // 危险：detach 后线程可能与 main 同归于尽（访问已销毁对象）
-std::thread t([] { // 引用了栈上变量
-t.detach();   // 极易悬垂，工业代码应尽量避免
+std::thread t([] {  // 引用了栈上变量
+t.detach();         // 极易悬垂，工业代码应尽量避免
 ```
 
 C++20 的 `std::jthread`（joining thread）在析构时**自动**调用 `request_stop()` 并 `join()`，并原生支持协作式取消：
@@ -306,8 +306,8 @@ auto submit(F&& f, Args&&... args)
 #include <iostream>
 // 调用方用法：Lambda、函数指针、成员函数皆可
 auto f1 = pool.submit([](int x) { return x + 1; }, 41);
-auto f2 = pool.submit(compute, 7);                  // 函数指针
-auto f3 = pool.submit(&Widget::process, &w, arg);   // 成员函数
+auto f2 = pool.submit(compute, 7);                 // 函数指针
+auto f3 = pool.submit(&Widget::process, &w, arg);  // 成员函数
 std::cout << f1.get() << f2.get() << '\n';         // 阻塞取结果
 ```
 
@@ -321,8 +321,8 @@ std::cout << f1.get() << f2.get() << '\n';         // 阻塞取结果
 ```cpp
 // std::async：fire-and-forget 由运行时选线程
 #include <future>
-auto fa = std::async(std::launch::async, compute, 7);  // 真起线程
-auto fd = std::async(std::launch::deferred, compute, 7); // 惰性，get 时才执行
+auto fa = std::async(std::launch::async, compute, 7);     // 真起线程
+auto fd = std::async(std::launch::deferred, compute, 7);  // 惰性，get 时才执行
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · task / std::async
@@ -331,8 +331,8 @@ auto fd = std::async(std::launch::deferred, compute, 7); // 惰性，get 时才�
 // std::packaged_task：把任务与 future 显式绑定（线程池内部就用它）
 std::packaged_task<int(int)> pt(compute);
 std::future<int> f = pt.get_future();
-pt(9);                          // 手动执行（线程池里由 worker 执行）
-std::cout << f.get() << '\n';   // -> 81
+pt(9);                         // 手动执行（线程池里由 worker 执行）
+std::cout << f.get() << '\n';  // -> 81
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · task / std::async
@@ -397,8 +397,8 @@ std::jthread t(worker, 1);   // jthread 自动把 stop_token 注入首参
 ```cpp
 // 用 stop_callback 在取消时做清理（如flush日志）
 std::jthread t([](std::stop_token st) {
-    std::stop_callback cb(st, [] { // 取消时执行一次
-    while (!st.stop_requested()) { // ...
+    std::stop_callback cb(st, [] {  // 取消时执行一次
+    while (!st.stop_requested()) {  // ...
 });
 ```
 
@@ -470,9 +470,9 @@ void parallel_for(std::size_t n, std::size_t workers, auto&& fn) {
 ```cpp
 // work-stealing 概念骨架（不阻塞中心队列）
 struct Worker {
-    std::deque<Task> local_;        // 自己的双端队列
+    std::deque<Task> local_;     // 自己的双端队列
     // 空闲时：从其他 worker 的 local_ 尾部偷任务
-    bool try_steal(Task& out) { // pop_back from victim
+    bool try_steal(Task& out) {  // pop_back from victim
 };
 ```
 
@@ -882,8 +882,8 @@ void bad() {
 std::mutex m;
 void bad_worker() {
     std::lock_guard<std::mutex> lk(m);
-    heavy_compute();          // 持锁期间别人全阻塞
-    tasks.push(...);           // 还顺手持锁操作队列
+    heavy_compute();  // 持锁期间别人全阻塞
+    tasks.push(...);  // 还顺手持锁操作队列
 }
 ```
 
@@ -894,7 +894,7 @@ void bad_worker() {
 void good_worker() {
     Task t;
     { std::lock_guard<std::mutex> lk(m); t = pop(); }  // 立刻解锁
-    t.fn();                                                 // 锁外执行
+    t.fn();                                            // 锁外执行
 }
 ```
 
@@ -902,7 +902,7 @@ void good_worker() {
 ```cpp
 // 反模式 C：析构前未 notify_all，worker 永久阻塞在 cv_.wait -> 程序挂死
 ~ThreadPool_bad() {
-    stop_ = true;                 // 忘了 cv_.notify_all();
+    stop_ = true;                       // 忘了 cv_.notify_all();
     for (auto& w : workers_) w.join();  // 永远等不到唤醒
 }
 ```
@@ -938,9 +938,9 @@ void good_worker() {
 ```cpp
 #include <iostream>
 // 一句话最小可用（基于 ⑰ 完整实现）
-ThreadPool pool;                          // 自动取 hardware_concurrency()
+ThreadPool pool;               // 自动取 hardware_concurrency()
 auto f = pool.submit([](int x){ return x*x; }, 21);
-std::cout << f.get() << '\n';            // 441，worker 在后台执行
+std::cout << f.get() << '\n';  // 441，worker 在后台执行
 // 离开作用域自动 stop + join，绝不泄漏线程
 ```
 
@@ -1042,7 +1042,7 @@ int main() {
 ## 附录 C：设计权衡与面试 [H: Design / J: Learning]
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：设计权衡与面试 [H: Design / J: Learning]
-```
+```text
 面试高频:
 Q: 线程池 vs std::async 的区别？
 A: std::async 每次创建/销毁线程（或从全局池取，实现定义）；线程池预创建并复用线程。
@@ -1250,14 +1250,14 @@ int main() {
 #include <chrono>
 int main() {
     std::jthread t{ [](std::stop_token st) {
-        while (!st.stop_requested()) {                  // 协作取消
+        while (!st.stop_requested()) {  // 协作取消
             std::cout << "working...\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         std::cout << "stopped cleanly\n";
     }};
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
-    t.request_stop();   // 析构前主动请求，jthread 自动 join
+    t.request_stop();                   // 析构前主动请求，jthread 自动 join
 }
 ```
 
@@ -1279,7 +1279,7 @@ int main() {
 ```cpp
 #include <atomic>
 #include <iostream>
-#include <thread>   // std::jthread 定义于此（C++20）
+#include <thread>                           // std::jthread 定义于此（C++20）
 int main() {
     std::atomic<unsigned long> enq{0};      // 无锁计数器替代"加锁计数"
     auto producer = [&] { for (int i = 0; i < 100000; ++i) enq.fetch_add(1, std::memory_order_relaxed); };

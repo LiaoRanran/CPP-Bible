@@ -72,11 +72,11 @@ void print_all(Ts... args) {
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
-template <typename... Ts>        // Ts：类型包
+template <typename... Ts>  // Ts：类型包
 struct Tuple { };
 
-template <typename... Ts>        // 值包
-void f(Ts... args) {             // args：函数参数包
+template <typename... Ts>  // 值包
+void f(Ts... args) {       // args：函数参数包
     // 包展开位点
 }
 ```
@@ -473,10 +473,10 @@ template <typename... Ts> constexpr auto arr(Ts... ts) { return std::array{ts...
 template <typename... Ts> constexpr bool any_same = (std::is_same_v<Ts, int> || ...);
 int main() {
     Holder<std::string> h("hi");
-    std::cout << h.obj << '\n';                          // hi
-    log(1, 2.14, 'z'); std::cout << '\n';                // 1 2.14 z
+    std::cout << h.obj << '\n';                                         // hi
+    log(1, 2.14, 'z'); std::cout << '\n';                               // 1 2.14 z
     auto a = arr(10, 20, 30);
-    std::cout << a.size() << '\n';                       // 3
+    std::cout << a.size() << '\n';                                      // 3
     std::cout << std::boolalpha << any_same<int, double, int> << '\n';  // true
 }
 // 输出：hi  1 2.14 z  3  true
@@ -528,10 +528,21 @@ template <typename... Ts> std::string format_str(const char* fmt, Ts&&... ts) {
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 ```cpp
+// 案例：日志库——按级别把任意参数折叠转发到 sink 后端
+#include <iostream>
 #include <utility>
-// 案例：日志库
-template <typename... Ts> void log(Level lvl, Ts&&... ts) {
-    (sink(lvl, std::forward<Ts>(ts)...), ...);
+enum class Level { Info, Warn };
+template <typename... Ts>
+void sink(Level lvl, Ts&&... ts) {              // 写入后端（示意：接 stdout）
+    std::cout << (lvl == Level::Info ? "[I] " : "[W] ");
+    ((std::cout << std::forward<Ts>(ts) << ' '), ...);
+    std::cout << '\n';
+}
+template <typename... Ts>
+void log(Level lvl, Ts&&... ts) { sink(lvl, std::forward<Ts>(ts)...); }
+int main() {
+    log(Level::Info, "user", 42, "login");
+    log(Level::Warn, "disk", "low");
 }
 ```
 
@@ -767,7 +778,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, std::index_sequence<I...>) {
 ## 附录 A：底层与原理 [B: Principle / E: Lowlevel]
 
 > **示例 71** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：底层与原理 [B: Principle / E: Lowlevel]
-```
+```text
 WG21可变参数模板提案:
 N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
   → 解决: C++03的"最多N个参数"限制 (Boost.MPL用15层宏模拟)
@@ -1123,7 +1134,7 @@ graph LR
 
 // 摘自 libstdc++ 15.3.0：tuple:280（_Tuple_impl 递归继承展开参数包）
 > **示例 81** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<size_t _Idx, typename _Head, typename... _Tail>
     struct _Tuple_impl<_Idx, _Head, _Tail...>
     : public _Tuple_impl<_Idx + 1, _Tail...>,   // 剥离头部，递归余下
@@ -1136,7 +1147,7 @@ graph LR
 
 // 摘自 libstdc++ 15.3.0：tuple:546（递归基：单元素终止特化）
 > **示例 82** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<size_t _Idx, typename _Head>
     struct _Tuple_impl<_Idx, _Head>
     : private _Head_base<_Idx, _Head>
@@ -1185,7 +1196,7 @@ int main() {
 
 预期输出：
 > **示例 84** <span class="badge badge-exp">难度 ★★★★☆</span> · 可编译验证
-```
+```text
 42
 3.14
 hi

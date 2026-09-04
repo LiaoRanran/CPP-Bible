@@ -107,11 +107,11 @@ flowchart TD
 // 根基：integral_constant 的完整手写形态（标准库 ~<type_traits> 行 93）
 template <class T, T v>
 struct integral_constant {
-    static constexpr T value = v;          // 值通道
+    static constexpr T value = v;                                       // 值通道
     using value_type = T;
-    using type = integral_constant<T, v>;  // 类型通道（自引用，便于 ::type 链）
-    constexpr operator value_type() const noexcept { return value; }  // 隐式转 bool/整型
-    constexpr value_type operator()() const noexcept { return value; } // C++14 函数对象式
+    using type = integral_constant<T, v>;                               // 类型通道（自引用，便于 ::type 链）
+    constexpr operator value_type() const noexcept { return value; }    // 隐式转 bool/整型
+    constexpr value_type operator()() const noexcept { return value; }  // C++14 函数对象式
 };
 using true_type  = integral_constant<bool, true>;
 using false_type = integral_constant<bool, false>;
@@ -200,8 +200,8 @@ int main() {
     static_assert(!std::is_pointer_v<int>);
     static_assert(std::is_same_v<std::remove_reference_t<int&>, int>);
     std::cout << std::boolalpha
-              << std::is_const_v<const int> << '\n'     // true
-              << std::is_lvalue_reference_v<int&> << '\n'; // true
+              << std::is_const_v<const int> << '\n'         // true
+              << std::is_lvalue_reference_v<int&> << '\n';  // true
 }
 ```
 
@@ -303,14 +303,14 @@ void bad(T v) {
     if (std::is_pointer_v<T>) {
         std::printf("%p\n", v);
     } else {
-        std::printf("%d\n", *v);   // 当 T=int 时 *v 不合法，编译失败
+        std::printf("%d\n", *v);  // 当 T=int 时 *v 不合法，编译失败
     }
 }
 // ✅ 正解：if constexpr 只实例化命中分支
 template <class T>
 void good(T v) {
     if constexpr (std::is_pointer_v<T>) std::printf("%p\n", v);
-    else std::printf("%d\n", v);   // T=int 时此分支不实例化
+    else std::printf("%d\n", v);  // T=int 时此分支不实例化
 }
 ```
 
@@ -424,8 +424,8 @@ static_assert(!my_is_array_v<int>);
 // negation 手写：逻辑非
 template <class T> struct my_negation : bool_constant<!T::value> {};
 template <class T> inline constexpr bool my_negation_v = my_negation<T>::value;
-static_assert(my_negation_v<std::is_pointer<int>>);      //!false = true
-static_assert(!my_negation_v<std::is_pointer<int*>>);    //!true = false
+static_assert(my_negation_v<std::is_pointer<int>>);    // !false = true
+static_assert(!my_negation_v<std::is_pointer<int*>>);  // !true = false
 ```
 
 > **示例 21** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
@@ -491,11 +491,11 @@ static_assert(std::is_trivially_copyable_v<Pod>);
 // libstdc++ 风格（简化，非逐字节）：指针偏特化命中 -> true_type
 template<typename _Tp>
   struct is_pointer
-  : public false_type { };                      // 主模板
+  : public false_type { };  // 主模板
 
 template<typename _Tp>
   struct is_pointer<_Tp*>
-  : public true_type { };                       // 偏特化
+  : public true_type { };   // 偏特化
 
 // 变量模板语法糖（C++17）
 template<typename _Tp>
@@ -541,15 +541,15 @@ static_assert(std::is_trivially_copyable_v<int>);  // 三编译器一致 true
 #include <type_traits>
 #include <chrono>
 #include <cstdio>
-int trait_path(int x) { return x * 2; }       // 编译期已确定走此分支
+int trait_path(int x) { return x * 2; }                               // 编译期已确定走此分支
 int main() {
     auto t0 = std::chrono::high_resolution_clock::now();
     volatile int sink = 0;
     for (int i = 0; i < 100000000; ++i) {
-        if constexpr (std::is_integral_v<int>) sink = trait_path(i); // 完全内联
+        if constexpr (std::is_integral_v<int>) sink = trait_path(i);  // 完全内联
     }
     auto t1 = std::chrono::high_resolution_clock::now();
-    std::printf("%lld ns\n", (long long)(t1 - t0).count()); // 接近纯算术
+    std::printf("%lld ns\n", (long long)(t1 - t0).count());           // 接近纯算术
 }
 ```
 
@@ -622,8 +622,8 @@ void describe(T v) { describe(v, my_is_pointer<T>{}); }
 
 int main() {
     int x = 0;
-    describe(&x);   // pointer
-    describe(x);    // not pointer
+    describe(&x);  // pointer
+    describe(x);   // not pointer
 }
 ```
 
@@ -1050,7 +1050,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:92（integral_constant——所有 trait 基石）
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<typename _Tp, _Tp __v>
     struct integral_constant
     {
@@ -1069,7 +1069,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:2458（conditional 编译期三元）
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<bool _Cond, typename _Iftrue, typename _Iffalse>
     struct conditional
     { using type = _Iftrue; };
@@ -1081,7 +1081,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:132（enable_if SFINAE 开关）
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<bool, typename _Tp = void>
     struct enable_if
     { };
@@ -1093,7 +1093,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:1538（is_same 类型相等判定）
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
-```
+```text
   template<typename _Tp, typename _Up>
     struct is_same : public false_type { };
 
@@ -1147,7 +1147,7 @@ int main() {
 
 预期输出：
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
-```
+```text
 true
 false
 true
@@ -1400,13 +1400,13 @@ N=1'000'000（拷贝元素），VN=200'000（vector push_back）。`sizeof Trivi
 #include <type_traits>
 #include <cstring>
 
-struct TrivialPod { int a, b, c; };          // trivially copyable
+struct TrivialPod { int a, b, c; };            // trivially copyable
 struct NonTrivial { NonTrivial(const NonTrivial&); int a, b, c; };
 
 template <typename T>
 void copy_dispatch(T* dst, const T* src, std::size_t n) {
     if constexpr (std::is_trivially_copyable_v<T>)
-        std::memcpy(dst, src, n * sizeof(T));   // 编译期选定
+        std::memcpy(dst, src, n * sizeof(T));  // 编译期选定
     else
         for (std::size_t i = 0; i < n; ++i) dst[i] = src[i];
 }

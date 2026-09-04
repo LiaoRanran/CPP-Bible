@@ -69,7 +69,7 @@ Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要�
 由此引出一组 cascade 的后果，本章逐一"击穿"：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章地图（先给结论，再击穿）
-```
+```text
 引用 T&                                       指针 T*
 ─────────────────────────                     ─────────────────────────
 非对象(无身份)                                 对象(有自己地址, 可 sizeof)
@@ -105,8 +105,8 @@ sizeof(T&) == sizeof(T)                          sizeof(T*) == 8(64位)
 
 int main() {
     int a = 10, b = 20;
-    int& r = a;            // r 绑定 a
-    r = b;                 // ⚠ 这是 *把 b 的值赋给 a*，不是让 r 改指 b
+    int& r = a;  // r 绑定 a
+    r = b;       // ⚠ 这是 *把 b 的值赋给 a*，不是让 r 改指 b
     std::printf("a=%d b=%d r-alias-of-a? %s\n",
                 a, b, (&r == &a ? "yes" : "no"));
     // 输出: a=20 b=20 r-alias-of-a? yes
@@ -123,15 +123,15 @@ int main() {
 struct Node { int id; };
 Node na{1}, nb{2};
 
-void use(Node* cur) {                 // 必须改用指针才能"重指"
-    cur = &nb;                        // 仅改局部副本，调用方看不到
+void use(Node* cur) {  // 必须改用指针才能"重指"
+    cur = &nb;         // 仅改局部副本，调用方看不到
     std::printf("inside: cur->id=%d\n", cur->id);
 }
 int main() {
     Node* p = &na;
     use(p);
     std::printf("caller: p->id=%d (仍 na, 因按值传指针)\n", p->id);
-    p = &nb;                          // 真正重指
+    p = &nb;           // 真正重指
     std::printf("caller after rebind: p->id=%d\n", p->id);
     return 0;
 }
@@ -150,9 +150,9 @@ struct Big { char buf[4096]; };
 int main() {
     Big big;
     Big& rbig = big;
-    std::printf("sizeof(Big)=%zu\n", sizeof(Big));      // 4096
-    std::printf("sizeof(Big&)=%zu\n", sizeof(Big&));    // 4096 (不是 8!)
-    std::printf("sizeof(Big*)=%zu\n", sizeof(Big*));    // 8 (64位)
+    std::printf("sizeof(Big)=%zu\n", sizeof(Big));    // 4096
+    std::printf("sizeof(Big&)=%zu\n", sizeof(Big&));  // 4096 (不是 8!)
+    std::printf("sizeof(Big*)=%zu\n", sizeof(Big*));  // 8 (64位)
     // 关键: 无法"取引用自身大小", 因为引用没有自身实体
     return 0;
 }
@@ -177,12 +177,12 @@ int main() {
     // 替代方案 A: reference_wrapper 数组 (可拷贝可存储, 见 §⑤)
     std::reference_wrapper<int> rw[3] = {x, y, z};
     rw[0].get() = 100;
-    std::printf("x now=%d\n", x);   // x 被改: 100
+    std::printf("x now=%d\n", x);  // x 被改: 100
 
     // 替代方案 B: tuple of refs (类型安全, 异构)
     std::tuple<int&, int&, int&> t(x, y, z);
     std::get<1>(t) = 200;
-    std::printf("y now=%d\n", y);   // 200
+    std::printf("y now=%d\n", y);  // 200
     return 0;
 }
 ```
@@ -201,14 +201,14 @@ int main() {
     int& r = a;
 
     // int&* ppr = &r;   // ❌ 非法: pointer to reference
-    int* p = &r;         // ✅ &r 实际取的是 a 的地址 (r 是 a 的别名)
+    int* p = &r;  // ✅ &r 实际取的是 a 的地址 (r 是 a 的别名)
     std::printf("*p=%d  (&r==&a? %s)\n", *p, (&r == &a ? "yes" : "no"));
     // 输出 *p=5  (&r==&a? yes)  —— &r 返回被引用对象地址, 而非"引用变量"地址
 
     // 若真要 typedef 出"指向引用的指针"概念, 语法上只能退化成 T*
     using RefToInt = int&;
     // RefToInt* q;      // ❌ 仍是 pointer to reference
-    int* q = &a;         // ✅ 唯一合法形态
+    int* q = &a;  // ✅ 唯一合法形态
     return 0;
 }
 ```
@@ -336,9 +336,9 @@ first(int&, int&):
 #include <cstdio>
 
 struct WithRef {
-    int& r;                 // 成员引用
+    int& r;                                                 // 成员引用
     int  v;
-    WithRef(int& x) : r(x) {}   // 必须在成员初始化列表绑定
+    WithRef(int& x) : r(x) {}                               // 必须在成员初始化列表绑定
 };
 struct Plain {
     int v;
@@ -346,11 +346,11 @@ struct Plain {
 int main() {
     int x = 0;
     std::printf("sizeof(WithRef)=%zu\n", sizeof(WithRef));  // 通常 16 (8 ref + 4 v + 对齐)
-    std::printf("sizeof(Plain)=%zu\n",   sizeof(Plain));     // 4
+    std::printf("sizeof(Plain)=%zu\n",   sizeof(Plain));    // 4
     // 证据: 成员引用 r 在对象里占了一个指针大小的槽
     WithRef wr(x);
     std::printf("address of wr.r slot = %p, &x = %p\n",
-                (void*)&wr.r, (void*)&x);   // 两者相等, 证明 r 槽里存的就是 &x
+                (void*)&wr.r, (void*)&x);                   // 两者相等, 证明 r 槽里存的就是 &x
     return 0;
 }
 ```
@@ -385,7 +385,7 @@ int main() {
 ### 4.1 规则全景（直接绑定 vs 间接绑定）
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 规则全景（直接绑定 vs 间接绑定）
-```
+```text
 延长成立：  const T& r = prvalue/临时;          // 直接绑定 → 延长
 延长成立：  T&&    r = prvalue/临时;          // 右值引用直接绑定 → 延长 (ch115)
 不延长①：  返回 const T& 指向局部临时          // 临时在返回点析构 → 悬垂
@@ -403,15 +403,15 @@ int main() {
 #include <cstdio>
 
 void use(const std::string& s) {
-    std::printf("len=%zu\n", s.size());   // s 引用的是调用方栈帧里的临时
+    std::printf("len=%zu\n", s.size());               // s 引用的是调用方栈帧里的临时
 }
 int main() {
-    use(std::string("hello"));   // 临时 string 生命延长到 use() 返回
+    use(std::string("hello"));                        // 临时 string 生命延长到 use() 返回
     // 等价于:
     {
         const std::string& s = std::string("world");  // 临时延长到块结束
         std::printf("s=%s\n", s.c_str());
-    }  // ← 此处临时才析构
+    }                                                 // ← 此处临时才析构
     return 0;
 }
 ```
@@ -424,12 +424,12 @@ int main() {
 #include <string>
 
 struct Holder {
-    const std::string& r;          // 成员引用
+    const std::string& r;               // 成员引用
     Holder(const std::string& s) : r(s) {}
 };
 
 Holder make() {
-    return Holder(std::string("tmp"));   // ⚠ 临时 string 绑定到成员 r,
+    return Holder(std::string("tmp"));  // ⚠ 临时 string 绑定到成员 r,
                                           // 但成员引用不延长 → r 悬垂
 }
 // 调用方拿到 Holder 后访问 r 即 UB
@@ -446,8 +446,8 @@ Holder make() {
 int main() {
     // 临时数组(纯右值)绑定到 const 引用 —— 整个临时数组的生命期被延长到该引用作用域
     const int (&tmp)[3] = {10, 20, 30};
-    const int& ok = tmp[1];        // 安全: 数组随 tmp 延长, 元素引用不悬垂
-    std::printf("%d\n", ok);       // 20
+    const int& ok = tmp[1];   // 安全: 数组随 tmp 延长, 元素引用不悬垂
+    std::printf("%d\n", ok);  // 20
     return 0;
 }
 ```
@@ -481,11 +481,11 @@ const std::string& bad() {
 
 std::string& build_bad() {
     std::string local = "HTTP/1.1 200";
-    return local;            // ❌ local 在返回点析构
+    return local;          // ❌ local 在返回点析构
 }
 std::string& build_ok(std::string& out) {
-    out = "HTTP/1.1 200";    // ✅ 改写入参(长生命)
-    return out;              // ✅ 返回入参引用
+    out = "HTTP/1.1 200";  // ✅ 改写入参(长生命)
+    return out;            // ✅ 返回入参引用
 }
 ```
 
@@ -503,11 +503,11 @@ void bad() {
     // ⚠ 范围 for 展开: auto&& __range = snapshot();
     // 临时 vector 在"完整表达式结束"析构, 而 __range 仍引用它 → 悬垂
     for (int x : snapshot()) {
-        std::printf("%d ", x);   // UB: 遍历已析构的 vector
+        std::printf("%d ", x);                     // UB: 遍历已析构的 vector
     }
 }
 void ok() {
-    std::vector<int> data = snapshot();   // 具名变量, 生命覆盖循环
+    std::vector<int> data = snapshot();            // 具名变量, 生命覆盖循环
     for (int x : data) std::printf("%d ", x);
 }
 ```
@@ -561,12 +561,12 @@ void ok_pattern() {
 #include <utility>
 #include <cstdio>
 
-void consume(std::string&& s) { // 接管 s
+void consume(std::string&& s) {  // 接管 s
 
 void bad() {
     std::string s = "data";
     std::string& r = s;
-    consume(std::move(s));     // s 被移走, 内容有效但处于"有效但未指定"状态
+    consume(std::move(s));       // s 被移走, 内容有效但处于"有效但未指定"状态
     // r 仍绑定 s, 但 s 内容已被掏空 → 通过 r 访问得到空串(逻辑错误, 非 UB 但危险)
     // std::printf("%s\n", r.c_str());  // 可能打印空
 }
@@ -588,26 +588,26 @@ void bad() {
   // [refwrap] —— 主模板
   template<typename _Tp>
     class reference_wrapper
-    : public _Reference_wrapper_base<__remove_cv_t<_Tp>>   // ① 萃取可调用/成员特征
+    : public _Reference_wrapper_base<__remove_cv_t<_Tp>>      // ① 萃取可调用/成员特征
     {
-      _Tp* _M_data;                                        // ② 内部就是个指针!
+      _Tp* _M_data;                                           // ② 内部就是个指针!
 
     public:
       using type = _Tp;
 
-      reference_wrapper(_Tp& __ref) noexcept               // ③ 只能从左值引用构造
-      : _M_data(std::__addressof(__ref)) { }               // ④ addressof 防 operator& 重载
+      reference_wrapper(_Tp& __ref) noexcept                  // ③ 只能从左值引用构造
+      : _M_data(std::__addressof(__ref)) { }                  // ④ addressof 防 operator& 重载
 
-      reference_wrapper(const reference_wrapper&) = default;   // ⑤ 可拷贝(有对象身份)
+      reference_wrapper(const reference_wrapper&) = default;  // ⑤ 可拷贝(有对象身份)
 
       reference_wrapper& operator=(const reference_wrapper&) = default;
 
-      operator _Tp&() const noexcept { return *_M_data; }      // ⑥ 隐式转回 T&
-      _Tp& get() const noexcept { return *_M_data; }           // ⑦ 显式取引用
+      operator _Tp&() const noexcept { return *_M_data; }     // ⑥ 隐式转回 T&
+      _Tp& get() const noexcept { return *_M_data; }          // ⑦ 显式取引用
 
       template<typename... _Args>
         typename result_of<_Tp&(_Args&&...)>::type
-        operator()(_Args&&... __args) const                    // ⑧ 可调用(若 _Tp 可调用)
+        operator()(_Args&&... __args) const                   // ⑧ 可调用(若 _Tp 可调用)
         { return __invoke(get(), std::forward<_Args>(__args)...); }
     };
 ```
@@ -651,15 +651,15 @@ void bad() {
 
 int main() {
     int x = 10;
-    std::reference_wrapper<int> r = x;   // 隐式构造
-    r.get() = 42;                        // 经 get() 修改被引对象：x 变为 42
+    std::reference_wrapper<int> r = x;       // 隐式构造
+    r.get() = 42;                            // 经 get() 修改被引对象：x 变为 42
     // 关键澄清：reference_wrapper 没有接受 T 的 operator=。
     // 它的 operator= 只用于"重新绑定"到另一个 reference_wrapper<int>，
     // 写 r = 100; 无法编译（no match for 'operator=' ... and 'int'）。
     // 隐式转换 operator T& 只在"读取/传参"时触发，不会把赋值转发给被引对象。
     // 要改被引对象，必须显式经 .get()：
-    r.get() = 100;                       // x 被改为 100
-    std::printf("x=%d  r=%d\n", x, (int)r);   // x=100 r=100
+    r.get() = 100;                           // x 被改为 100
+    std::printf("x=%d  r=%d\n", x, (int)r);  // x=100 r=100
     return 0;
 }
 ```
@@ -682,10 +682,10 @@ void monitor(const std::vector<std::reference_wrapper<Socket>>& socks) {
 int main() {
     Socket a{3, true}, b{4, false};
     std::vector<std::reference_wrapper<Socket>> watch;
-    watch.push_back(a);   // 隐式 reference_wrapper
+    watch.push_back(a);  // 隐式 reference_wrapper
     watch.push_back(b);
     monitor(watch);
-    a.alive = false;      // 改原对象, watch 中可见
+    a.alive = false;     // 改原对象, watch 中可见
     monitor(watch);
     return 0;
 }
@@ -705,9 +705,9 @@ void worker(int& counter) { for (int i = 0; i < 3; ++i) ++counter; }
 int main() {
     int n = 0;
     // std::thread t(worker, n);          // ❌ 默认按值拷贝 n → 主线程 n 不变
-    std::thread t(worker, std::ref(n));   // ✅ 按引用传 n
+    std::thread t(worker, std::ref(n));  // ✅ 按引用传 n
     t.join();
-    std::cout << "n=" << n << '\n';        // n=3
+    std::cout << "n=" << n << '\n';      // n=3
     return 0;
 }
 ```
@@ -722,8 +722,8 @@ int main() {
 
 int add(int a, int b) { return a + b; }
 int main() {
-    std::reference_wrapper<int(int,int)> f = add;   // 包函数
-    std::cout << f(2, 3) << '\n';                    // 5, 直接调用
+    std::reference_wrapper<int(int,int)> f = add;  // 包函数
+    std::cout << f(2, 3) << '\n';                  // 5, 直接调用
     return 0;
 }
 ```
@@ -741,8 +741,8 @@ int main() {
 // prog_24_bench_pass.cpp  —— 编译: g++ -O2 -std=c++20 prog_24_bench_pass.cpp -lbenchmark -lpthread
 #include <benchmark/benchmark.h>
 
-struct Small { int x, y; };            // 8 字节, 小平凡类型
-struct Big   { char buf[4096]; };      // 4KB, 大对象
+struct Small { int x, y; };        // 8 字节, 小平凡类型
+struct Big   { char buf[4096]; };  // 4KB, 大对象
 
 void by_value_small(Small b)      { benchmark::DoNotOptimize(b); }
 void by_ref_small(const Small& b) { benchmark::DoNotOptimize(b); }
@@ -825,15 +825,15 @@ int main() {
 #include <cstdio>
 
 void parse(const char* pkt, int len) {
-    const char* p = pkt;                 // 数组名衰减为指针
-    while (p < pkt + len) {              // p + len: 偏移 len*sizeof(char)
+    const char* p = pkt;     // 数组名衰减为指针
+    while (p < pkt + len) {  // p + len: 偏移 len*sizeof(char)
         std::printf("%c", *p);
-        ++p;                             // p = p + 1
+        ++p;                 // p = p + 1
     }
 }
 int main() {
     char msg[] = "ACK";
-    parse(msg, 3);                       // msg 衰减为 char*
+    parse(msg, 3);           // msg 衰减为 char*
     return 0;
 }
 ```
@@ -852,8 +852,8 @@ int main() {
     int a[3] = {1,2,3};
     int b[3] = {4,5,6};
 
-    int* p = a + 3;                 // past-the-end (合法, 可比较不可解引用)
-    bool ok = (p == a + 3);         // ✅ 同数组, 良定义
+    int* p = a + 3;          // past-the-end (合法, 可比较不可解引用)
+    bool ok = (p == a + 3);  // ✅ 同数组, 良定义
 
     // ❌ UB: 比较指向不同数组的指针
     // bool bad = (a + 1) < (b + 1);   // 未指定/UB, 切勿用于排序或边界判断
@@ -876,10 +876,10 @@ int main() {
 
 int main() {
     int v = 0x1234;
-    void* vp = &v;                  // ✅ 任意对象地址可存入 void*
+    void* vp = &v;                    // ✅ 任意对象地址可存入 void*
     // *vp = 1;                     // ❌ 不能解引用 void*
     // vp + 1;                      // ❌ 不能算术(void 无大小)
-    int* ip = static_cast<int*>(vp); // ✅ 转回具体类型
+    int* ip = static_cast<int*>(vp);  // ✅ 转回具体类型
     std::printf("v=%x\n", *ip);
     return 0;
 }
@@ -949,8 +949,8 @@ int main() {
 
 const std::string& bad() {
     std::string s = "x";
-    return s;          // GCC -Wreturn-local-addr / Clang -Wreturn-stack-address 警告
-}                      // MSVC /Wall 可能不报 → 体现诊断差异
+    return s;  // GCC -Wreturn-local-addr / Clang -Wreturn-stack-address 警告
+}              // MSVC /Wall 可能不报 → 体现诊断差异
 int main() { (void)bad(); return 0; }
 ```
 
@@ -1070,9 +1070,9 @@ bool is_allowed(const ServerConfig& cfg, const std::string& peer) {
 
 int main() {
     std::vector<int> v{10, 20, 30};
-    int& first = v.front();     // 返回容器首元素引用
-    first = 999;                // 修改回写容器内
-    std::printf("v[0]=%d\n", v[0]);   // 999
+    int& first = v.front();          // 返回容器首元素引用
+    first = 999;                     // 修改回写容器内
+    std::printf("v[0]=%d\n", v[0]);  // 999
     return 0;
 }
 ```
@@ -1085,9 +1085,9 @@ int main() {
 #include <string>
 
 std::string& registry(const std::string& key) {
-    static std::string store;   // ✅ 静态对象生命长于函数
+    static std::string store;  // ✅ 静态对象生命长于函数
     store = key;
-    return store;               // 安全: 返回既有长生命对象引用
+    return store;              // 安全: 返回既有长生命对象引用
 }
 // 对照 prog_15 build_bad(): 返回局部 = 悬垂
 ```
@@ -1100,8 +1100,8 @@ std::string& registry(const std::string& key) {
 #include <array>
 #include <cstdio>
 
-void calibrate(std::array<double, 4>& samples) {   // 数组本身按引用传
-    for (auto& s : samples)        // s 是对每个元素的引用 → 修改回写
+void calibrate(std::array<double, 4>& samples) {  // 数组本身按引用传
+    for (auto& s : samples)                       // s 是对每个元素的引用 → 修改回写
         s = (s - 0.5) * 1.02;
     // 若写 for (auto s : samples) 则只改副本, 原数组不变 (经典 bug)
 }
@@ -1283,11 +1283,11 @@ int main() {
 #include <memory>
 // 反模式：裸指针持有所有权，易漏释放/重复释放
 struct Widget { int* buf = new int[1024]; ~Widget() { delete[] buf; } };
-Widget w; int* p = w.buf;   // p 与 w 共享所有权，语义不清
+Widget w; int* p = w.buf;             // p 与 w 共享所有权，语义不清
 
 // 正解：所有权归 unique_ptr，接口用裸指针/引用表达"观察"
 struct Widget2 { std::unique_ptr<int[]> buf = std::make_unique<int[]>(1024); };
-Widget2 w2; int* obs = w2.buf.get();   // obs 明确是观察者，不负责释放
+Widget2 w2; int* obs = w2.buf.get();  // obs 明确是观察者，不负责释放
 ```
 
 **重构范式：多返回用结构化绑定（引用实现）**
@@ -1450,8 +1450,8 @@ GCC 15.3.0 下 `r = 10` 编译为 `mov DWORD PTR [rbp-4], 10`，与直接写 `x`
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 int x = 5; int& r = x; int* p = &x;
-r = 10;      // mov DWORD PTR [rbp-4], 10
-*p = 20;     // mov DWORD PTR [rbp-4], 20
+r = 10;   // mov DWORD PTR [rbp-4], 10
+*p = 20;  // mov DWORD PTR [rbp-4], 20
 ```
 
 <span class="badge badge-std">标准</span> 标准不规定引用的实现，但要求其与对象行为等价；主流 ABI 直接用指针底层实现，优化后常完全消除。
@@ -1470,17 +1470,17 @@ r = 10;      // mov DWORD PTR [rbp-4], 10
 ```cpp
 template <class T>
 struct optional_ref {
-    T* p;                              // 非空 invariant
+    T* p;                            // 非空 invariant
     explicit optional_ref(T& r) : p(&r) {}
     bool has_value() const { return p != nullptr; }
-    T& value() const { return *p; }    // 前置条件: has_value()
-    void reset() { p = nullptr; }      // 破坏 invariant!
+    T& value() const { return *p; }  // 前置条件: has_value()
+    void reset() { p = nullptr; }    // 破坏 invariant!
 };
 int main() {
     int x = 1;
     optional_ref<int> o(x);
-    o.reset();                         // 误用: 此后 p==nullptr
-    (void)o.value();                  // UB: 解引用空指针
+    o.reset();                       // 误用: 此后 p==nullptr
+    (void)o.value();                 // UB: 解引用空指针
 }
 ```
 
@@ -1572,8 +1572,8 @@ int main() {
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
-Config load_config();              // 返回副本: 大对象拷贝 + 可能异常
-Config c = load_config();          // 一次完整拷贝
+Config load_config();      // 返回副本: 大对象拷贝 + 可能异常
+Config c = load_config();  // 一次完整拷贝
 ```
 
 问题：每次调用都拷贝整个 `Config`（可能有数百字段/嵌套容器），且若函数内部抛异常，半构造副本难处理。
@@ -1582,8 +1582,8 @@ Config c = load_config();          // 一次完整拷贝
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
-const Config& load_config();       // 若内部返回局部变量的引用 -> 悬垂!
-const Config& c = load_config();   // c 指向已销毁对象 -> UB
+const Config& load_config();      // 若内部返回局部变量的引用 -> 悬垂!
+const Config& c = load_config();  // c 指向已销毁对象 -> UB
 ```
 
 陷阱：引用必须绑定到**调用方或更长生命周期**的对象。返回局部变量引用是经典 UB。
@@ -1592,9 +1592,9 @@ const Config& c = load_config();   // c 指向已销毁对象 -> UB
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
-Config* load_config();             // nullptr 表示"未找到/失败"
+Config* load_config();  // nullptr 表示"未找到/失败"
 Config* c = load_config();
-if (c) use(*c);                    // 调用方必须判空
+if (c) use(*c);         // 调用方必须判空
 ```
 
 指针的语义是"可能没有"，调用方被迫判空——适合"查找可能失败"的场景。
@@ -1603,8 +1603,8 @@ if (c) use(*c);                    // 调用方必须判空
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 返回引用还是指针
 ```cpp
-std::unique_ptr<Config> load_config();   // 转移所有权, 零拷贝, 无悬垂
-auto c = load_config();                  // 拥有, 离开作用域自动释放
+std::unique_ptr<Config> load_config();  // 转移所有权, 零拷贝, 无悬垂
+auto c = load_config();                 // 拥有, 离开作用域自动释放
 if (c) use(*c);
 ```
 
@@ -1778,8 +1778,8 @@ double by_cref(const Big& b) { double s = 0; for (double x : b.a) s += x; return
 
 int main() {
     Big b{1, 2, 3, 4, 5, 6, 7, 8};
-    double s1 = by_value(b);   // 调用点发生 64 字节栈拷贝
-    double s2 = by_cref(b);    // 仅传指针
+    double s1 = by_value(b);  // 调用点发生 64 字节栈拷贝
+    double s2 = by_cref(b);   // 仅传指针
     std::cout << "by_value sum = " << s1 << ", by_cref sum = " << s2 << std::endl;
     return 0;
 }

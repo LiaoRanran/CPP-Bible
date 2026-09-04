@@ -65,8 +65,8 @@
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本模板模式速查
 ```cpp
-template <typename T>          // 模板参数列表：T 是类型参数
-T max_val(T a, T b) {          // 函数模板
+template <typename T>  // 模板参数列表：T 是类型参数
+T max_val(T a, T b) {  // 函数模板
     return (a < b) ? b : a;
 }
 ```
@@ -93,13 +93,13 @@ struct Holder { Container<T> c; };
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
 ```cpp
 #include <cstddef>
-template <int I>            struct A {};   // 整数
-template <bool B>           struct B {};   // 布尔
-template <char C>           struct C {};   // 字符
-template <std::size_t N>    struct D {};   // 整数类型
-template <auto V>           struct E {};   // C++17 起：任意可以作 NTTP 的值（指针/引用/成员指针/枚举/整数）
-template <int* P>           struct F {};   // 指针（需链接期常数地址）
-template <const char* S>    struct G {};   // 字符串字面量地址可作 NTTP（C++20 改进）
+template <int I>            struct A {};  // 整数
+template <bool B>           struct B {};  // 布尔
+template <char C>           struct C {};  // 字符
+template <std::size_t N>    struct D {};  // 整数类型
+template <auto V>           struct E {};  // C++17 起：任意可以作 NTTP 的值（指针/引用/成员指针/枚举/整数）
+template <int* P>           struct F {};  // 指针（需链接期常数地址）
+template <const char* S>    struct G {};  // 字符串字面量地址可作 NTTP（C++20 改进）
 ```
 
 ## ④ 实例化机制（实例化点 / 两阶段查找）
@@ -110,9 +110,9 @@ template <typename T>
 void f(T x) {
     // 两阶段查找：
     // Phase 1（不依赖 T）：下面 unqualified 名字在定义点绑定
-    ::global_helper();        // 不依赖 T，定义点即查
+    ::global_helper();  // 不依赖 T，定义点即查
     // Phase 2（依赖 T）：dependent name 在实例化点再查
-    x.foo();                  // 依赖 T，实例化点查 T::foo
+    x.foo();            // 依赖 T，实例化点查 T::foo
 }
 ```
 
@@ -145,9 +145,9 @@ template <typename T>
 T max_val(T a, T b) { return (a < b) ? b : a; }
 
 int main() {
-    std::cout << max_val(3, 7) << '\n';        // 7
-    std::cout << max_val(1.5, 2.5) << '\n';    // 2.5
-    std::cout << max_val('a', 'z') << '\n';    // z
+    std::cout << max_val(3, 7) << '\n';      // 7
+    std::cout << max_val(1.5, 2.5) << '\n';  // 2.5
+    std::cout << max_val('a', 'z') << '\n';  // z
 }
 ```
 
@@ -241,13 +241,13 @@ _Z7max_valIdET_S0_S0_:
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
-template <typename T> void f(T) {}        // 主模板
+template <typename T> void f(T) {}   // 主模板
 // 隐式实例化：调用处触发
-void a() { f(1); }                          // 实例化 f<int>
+void a() { f(1); }                   // 实例化 f<int>
 // 显式实例化定义：强制生成
-template void f<double>(double);           // 发射 f<double>
+template void f<double>(double);     // 发射 f<double>
 // 显式实例化声明：抑制本 TU 生成（extern template）
-extern template void f<char>(char);        // 不生成，期望别处提供
+extern template void f<char>(char);  // 不生成，期望别处提供
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -267,14 +267,14 @@ template class std::vector<int>;           // 强制实例化整个 vector<int>
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
-int g(int);                       // 非依赖
+int g(int);                   // 非依赖
 template <typename T>
 void use(T x) {
-    g(1);                         // Phase1：不依赖 T，绑定 ::g(int)
-    g(x);                         // Phase2：依赖 T，实例化点查 g(T)
+    g(1);                     // Phase1：不依赖 T，绑定 ::g(int)
+    g(x);                     // Phase2：依赖 T，实例化点查 g(T)
 }
 namespace N { struct X {}; void g(N::X); }
-void test() { use(N::X{}); }      // 实例化点 ADL 找到 N::g
+void test() { use(N::X{}); }  // 实例化点 ADL 找到 N::g
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -333,9 +333,9 @@ template <typename T> auto u(T x) -> std::enable_if_t<sizeof(T) == 4> { } // 依
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识点深挖（模板B）
 ```cpp
 template <int N> struct Ctx { static constexpr int n = N; };
-Ctx<3> c;                                   // OK：字面量
+Ctx<3> c;  // OK：字面量
 constexpr int k = 5;
-Ctx<k> d;                                   // OK：常量表达式
+Ctx<k> d;  // OK：常量表达式
 int x = 6;
 // Ctx<x> e;                                // 错误：x 非编译期常量
 ```
@@ -344,8 +344,8 @@ int x = 6;
 ```cpp
 // C++20 字符串字面量作 NTTP（需 static 存储期）
 template <const char* S> struct Lit {};
-extern const char hello[] = "hi";          // 具链接期地址
-Lit<hello> l;                              // OK（C++20 放宽）
+extern const char hello[] = "hi";  // 具链接期地址
+Lit<hello> l;                      // OK（C++20 放宽）
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -428,8 +428,8 @@ template <typename T, typename U> auto add(T a, U b) { return a + b; }
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 ```cpp
 // 错误：模板定义与声明参数不一致
-extern template void f<int>(int);          // 声明
-template void f<int>(double);              // 错误：实参类型不匹配
+extern template void f<int>(int);  // 声明
+template void f<int>(double);      // 错误：实参类型不匹配
 ```
 
 ## ⑪ STL 中的该模式
@@ -452,8 +452,8 @@ int main() {
     static_assert(std::is_same_v<decltype(vi), std::vector<int>>);
 
     // ② 函数模板：按实参推导，max<int> 与 max<double> 各自生成
-    auto m = std::max(3, 7);        // 推导为 max<int>
-    auto n = std::max(1.0, 2.0);    // 推导为 max<double>
+    auto m = std::max(3, 7);      // 推导为 max<int>
+    auto n = std::max(1.0, 2.0);  // 推导为 max<double>
     static_assert(std::is_same_v<decltype(m), int>);
     static_assert(std::is_same_v<decltype(n), double>);
 
@@ -488,7 +488,7 @@ template <typename T> using Vec = std::vector<T>;
 
 // ③ 默认模板参数
 template <typename T, typename Alloc = std::allocator<T>>
-struct MyVector { // ...
+struct MyVector {                // ...
 
 // ④ 模板参数包
 template <typename... Ts> struct Tuple { };
@@ -498,10 +498,10 @@ template <std::integral T> T add(T a, T b) { return a + b; }
 
 int main() {
     static_assert(align<int> == alignof(int));
-    Vec<int> v{1, 2, 3};                     // 等价于 std::vector<int>
-    MyVector<double> mv;                     // 用默认分配器
-    Tuple<int, double, char> t;              // 异质包
-    auto s = add(3, 4);                      // 约束为 integral
+    Vec<int> v{1, 2, 3};         // 等价于 std::vector<int>
+    MyVector<double> mv;         // 用默认分配器
+    Tuple<int, double, char> t;  // 异质包
+    auto s = add(3, 4);          // 约束为 integral
     std::cout << "align<int>=" << align<int>
               << " v=" << v.size() << " add=" << s << "\n";
     return 0;
@@ -525,14 +525,14 @@ int main() {
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 int main() {
     int i = 1, j = 2;
-    int bad = MAX(i++, j++);   // 展开为 (((i++)>(j++)) ? (i++) : (j++))
+    int bad = MAX(i++, j++);  // 展开为 (((i++)>(j++)) ? (i++) : (j++))
     // 条件与分支各求值一次 → 被选中者再 +1，i、j 至少各 +1
     std::cout << "after macro: i=" << i << " j=" << j << " bad=" << bad << "\n";
 
     // 正确做法：函数模板 / lambda，参数只求值一次
     auto good = [](auto a, auto b) { return (a > b) ? a : b; };
     int x = 1, y = 2;
-    int ok = good(x++, y++);   // x、y 各增一次
+    int ok = good(x++, y++);  // x、y 各增一次
     std::cout << "after lambda: x=" << x << " y=" << y << " ok=" << ok << "\n";
     return 0;
 }
@@ -569,8 +569,8 @@ struct Matrix { Scalar coeff[Rows * Cols]; };
 
 // std::array 用 NTTP 定长，替代 C 数组，带 .size()/.at()
 int main() {
-    Matrix<float, 3, 3> m;          // 编译期定维，无动态分配
-    std::array<int, 8> buf;         // 等价于 int[8]，但有接口
+    Matrix<float, 3, 3> m;   // 编译期定维，无动态分配
+    std::array<int, 8> buf;  // 等价于 int[8]，但有接口
     static_assert(sizeof(m.coeff) == 3 * 3 * sizeof(float));
     static_assert(buf.size() == 8);
     std::cout << "Matrix coeffs=" << (sizeof(m.coeff) / sizeof(float))
@@ -652,9 +652,9 @@ template <typename T> T tmax(T a, T b) { return (a < b) ? b : a; }
 
 int main() {
     int i = 1, j = 2;
-    int m1 = MAX(i++, j++);     // 宏：i、j 各增两次（见 ⑬ 反模式）
+    int m1 = MAX(i++, j++);   // 宏：i、j 各增两次（见 ⑬ 反模式）
     int x = 1, y = 2;
-    int m2 = tmax(x++, y++);    // 模板：x、y 各增一次
+    int m2 = tmax(x++, y++);  // 模板：x、y 各增一次
     std::cout << "m1=" << m1 << " i=" << i << " j=" << j
               << " m2=" << m2 << " x=" << x << " y=" << y << "\n";
     return 0;
@@ -715,11 +715,11 @@ struct Arr {
 template <typename T> T max_val(T a, T b) { return (a < b) ? b : a; }
 
 int main() {
-    static_assert(Arr<int, 4>::size() == 4);          // 编译期常量
-    int buf[Arr<int, 4>::size()];                     // 等价于 int buf[4]
+    static_assert(Arr<int, 4>::size() == 4);  // 编译期常量
+    int buf[Arr<int, 4>::size()];             // 等价于 int buf[4]
     static_assert(sizeof(buf) == 4 * sizeof(int));
 
-    int x = max_val(3, 7);                            // 与手写 int max 同速
+    int x = max_val(3, 7);                    // 与手写 int max 同速
     std::cout << "size=" << Arr<int, 4>::size() << " max=" << x << "\n";
     return 0;
 }
@@ -1035,8 +1035,8 @@ int main() {
 template <typename T> T max(T a, T b) { return a > b ? a : b; }
 template <typename T> struct Wrapper { T v; };
 int main() {
-    std::cout << max(3, 7) << "\n";             // 推导 T = int
-    Wrapper<int> w{42};                          // 显式指定 T = int
+    std::cout << max(3, 7) << "\n";  // 推导 T = int
+    Wrapper<int> w{42};              // 显式指定 T = int
     std::cout << w.v << "\n";
 }
 ```
@@ -1214,8 +1214,8 @@ void probe(T&& x) {
 
 int main() {
     int a = 42;
-    probe(a);          // 左值 -> T=int&
-    probe(123);        // 右值 -> T=int
+    probe(a);    // 左值 -> T=int&
+    probe(123);  // 右值 -> T=int
     // move 恒转右值引用
     static_assert(std::is_rvalue_reference<decltype(std::move(a))>::value);
     std::cout << "moved value = " << std::move(a) << std::endl;

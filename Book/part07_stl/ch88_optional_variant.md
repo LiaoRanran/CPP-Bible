@@ -51,7 +51,7 @@
 #include <expected>
 #include <variant>
 #include <string>
-std::optional<int>  maybe_int();      // 可能有，可能无
+std::optional<int>  maybe_int();           // 可能有，可能无
 std::expected<int, std::string> result();  // 有值，或带错误信息
 std::variant<int, double, std::string> v;  // 三种类型之一
 ```
@@ -108,12 +108,12 @@ a = 5;                                // 赋值设值
 #include <optional>
 #include <iostream>
 int use(std::optional<int> o) {
-    if (o) return *o;                  // 隐式 bool 转换
+    if (o) return *o;          // 隐式 bool 转换
     if (o.has_value()) return o.value();
-    return o.value_or(0);              // 空时返回默认值
+    return o.value_or(0);      // 空时返回默认值
 }
 int use2(std::optional<int> o) {
-    try { return o.value(); }          // 空时抛 bad_optional_access
+    try { return o.value(); }  // 空时抛 bad_optional_access
     catch (const std::bad_optional_access&) { return -1; }
 }
 ```
@@ -156,8 +156,8 @@ _Z12use_optionalv:
 #include <optional>
 #include <memory>
 struct Config { int timeout = 0; };
-std::optional<Config> parse();   // 可选返回：要么有 Config，要么无
-Config*               parse_p(); // 等价但：可能返回 nullptr，需文档约定
+std::optional<Config> parse();    // 可选返回：要么有 Config，要么无
+Config*               parse_p();  // 等价但：可能返回 nullptr，需文档约定
 ```
 
 - `[经验]`：当"缺失"是合法业务状态、且类型可值语义持有，用 `optional` 比指针更清晰、更安全（无空解引用、明确所有权）。
@@ -178,8 +178,8 @@ std::expected<int, std::string> divide(int a, int b) {
 }
 int use() {
     auto r = divide(10, 2);
-    if (r) return *r;                       // 成功
-    return -1;                              // r.error() 含 "div by zero"
+    if (r) return *r;  // 成功
+    return -1;         // r.error() 含 "div by zero"
 }
 ```
 
@@ -216,10 +216,10 @@ int main() {
 #include <variant>
 #include <string>
 #include <iostream>
-std::variant<int, double, std::string> v = 10;     // 当前持有 int
-v = 3.14;                                          // 改为 double
-v = std::string("hi");                             // 改为 string
-std::cout << v.index();                            // 2（当前是 string）
+std::variant<int, double, std::string> v = 10;  // 当前持有 int
+v = 3.14;                                       // 改为 double
+v = std::string("hi");                          // 改为 string
+std::cout << v.index();                         // 2（当前是 string）
 ```
 
 - `[标准]`：`std::variant<...>` 是类型安全 union；`index()` 返回活跃类型索引；`std::get<Index/I>(v)` 取值（类型错抛 `bad_variant_access`）。
@@ -256,8 +256,8 @@ void handle2(const std::variant<int, double>& v) {
 struct Throws { Throws(const Throws&){ throw 1; } };
 void f() {
     std::variant<int, Throws> v = 1;
-    try { v = Throws{}; }          // 若 Throws 拷贝抛异常
-    catch (...) { // v 保持原 int(1) 或 valueless_by_exception
+    try { v = Throws{}; }                    // 若 Throws 拷贝抛异常
+    catch (...) {                            // v 保持原 int(1) 或 valueless_by_exception
     bool lost = v.valueless_by_exception();  // 极端情况：两类型都不可构造
 }
 ```
@@ -308,9 +308,9 @@ std::variant<std::monostate, NoDefault> v;   // 默认构造 -> 持有 monostate
 #include <optional>
 #include <expected>
 #include <string>
-int  legacy(int a, int b, bool& ok);                       // 错误码（输出参数）
-int  with_exc(int a, int b);                               // 异常（正常返回即成功）
-std::expected<int,std::string> with_exp(int a, int b);    // expected（显式通道）
+int  legacy(int a, int b, bool& ok);                    // 错误码（输出参数）
+int  with_exc(int a, int b);                            // 异常（正常返回即成功）
+std::expected<int,std::string> with_exp(int a, int b);  // expected（显式通道）
 ```
 
 | 方式 | 优点 | 缺点 |
@@ -622,7 +622,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 optional 和 variant 是 C++17 从 Boost 引入的两个最重要的类型安全容器:
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：WG21 —— optional/variant 的标准化之路 [B: Principle]
-```
+```asm
 std::optional (P0220R1, 2016, Fernando Cacciola):
   → 源自 Boost.Optional (2003), 经过 13 年社区验证后标准化
   → 设计目标: 替代 sentinel values (-1, nullptr, empty string)
@@ -694,7 +694,7 @@ int main() {
 ## 附录 D：面试 [J: Learning]
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 D：面试 [J: Learning]
-```
+```text
 面试高频:
 Q: optional vs unique_ptr 的选择？
 A: optional = 值语义 (拷贝, 栈分配); unique_ptr = 引用语义 (堆分配, movable-only)
@@ -958,10 +958,10 @@ int main() {
 #include <optional>
 int main() {
     std::optional<int> o;
-    std::cout << o.value_or(42) << "\n";   // 无值取默认 42
+    std::cout << o.value_or(42) << "\n";  // 无值取默认 42
     o = 7;
-    std::cout << o.value_or(42) << "\n";   // 有值取 7
-    std::cout << o.has_value() << "\n";     // 1
+    std::cout << o.value_or(42) << "\n";  // 有值取 7
+    std::cout << o.has_value() << "\n";   // 1
 }
 ```
 
@@ -986,10 +986,10 @@ int main() {
 #include <string>
 int main() {
     std::variant<int, std::string> v = "hi";
-    std::cout << std::holds_alternative<std::string>(v) << "\n"; // 1
+    std::cout << std::holds_alternative<std::string>(v) << "\n";  // 1
     std::visit([](auto&& x){ std::cout << x << "\n"; }, v);       // hi
     const std::string* p = std::get_if<std::string>(&v);
-    std::cout << (p ? *p : "?") << "\n";                         // hi
+    std::cout << (p ? *p : "?") << "\n";                          // hi
 }
 ```
 
@@ -1118,17 +1118,17 @@ struct _Variant_storage<false, _Types...>
 int main() {
     // 1) variant：_M_index 反映活跃 alternative
     std::variant<int, std::string> v = 42;
-    std::cout << "index=" << v.index() << "\n";          // 0
+    std::cout << "index=" << v.index() << "\n";                              // 0
     v = std::string("hi");
-    std::cout << "index after string=" << v.index() << "\n";        // 1
+    std::cout << "index after string=" << v.index() << "\n";                 // 1
     std::cout << "valueless=" << std::boolalpha
-              << v.valueless_by_exception() << "\n";     // false（常态无异常）
+              << v.valueless_by_exception() << "\n";                         // false（常态无异常）
 
     // 2) optional：_M_engaged 标志（源码 optional:291）
     std::optional<int> o;
-    std::cout << "optional engaged=" << o.has_value() << "\n";       // false
+    std::cout << "optional engaged=" << o.has_value() << "\n";               // false
     o = 7;
-    std::cout << "optional engaged after assign=" << o.has_value() << "\n"; // true
+    std::cout << "optional engaged after assign=" << o.has_value() << "\n";  // true
     return 0;
 }
 ```
@@ -1342,18 +1342,18 @@ using Var = std::variant<A, B>;
 int main() {
     Var v = A{};
     int r1 = std::visit([](const auto& x) { return x.op(); }, v);
-    assert(r1 == 1);                       // visit 正确分发到 A
+    assert(r1 == 1);            // visit 正确分发到 A
 
     v = B{};
     int r2 = std::visit([](const auto& x) { return x.op(); }, v);
-    assert(r2 == 2);                       // visit 正确分发到 B
+    assert(r2 == 2);            // visit 正确分发到 B
 
     std::optional<int> some = 42;
     assert(some.has_value());
-    assert(*some == 42);                   // 非空 optional 取值正确
+    assert(*some == 42);        // 非空 optional 取值正确
 
     std::optional<int> none;
-    assert(!none.has_value());             // 空 optional 语义正确
+    assert(!none.has_value());  // 空 optional 语义正确
     std::cout << "visit dispatch OK: " << r1 << "," << r2 << std::endl;
     std::cout << "optional nonempty=" << *some << " empty=" << (none.has_value() ? 1 : 0) << std::endl;
     return 0;

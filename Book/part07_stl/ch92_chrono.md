@@ -221,7 +221,7 @@ flowchart TD
 #include <iostream>
 int main() {
     using namespace std::chrono;
-    milliseconds ms = 1500ms;                 // 1500 毫秒
+    milliseconds ms = 1500ms;                     // 1500 毫秒
     seconds     s  = duration_cast<seconds>(ms);  // 截断为 1 秒
     std::cout << "ms=" << ms.count() << " s=" << s.count() << "\n";
     return 0;
@@ -322,7 +322,7 @@ int main() {
 int main() {
     using namespace std::chrono;
     using namespace std::chrono_literals;
-    constexpr auto frame = 16ms;   // 60 FPS 目标
+    constexpr auto frame = 16ms;                                            // 60 FPS 目标
     for (int i = 0; i < 3; ++i) {
         auto start = steady_clock::now();
         // render_frame();
@@ -463,8 +463,8 @@ int main() {
 #include <iostream>
 int main() {
     using namespace std::chrono_literals;
-    auto d = 5s;                 // duration<long long, seconds>
-    auto x = d * 1000;           // ❌ 结果仍是 seconds（5000s），不是毫秒！
+    auto d = 5s;        // duration<long long, seconds>
+    auto x = d * 1000;  // ❌ 结果仍是 seconds（5000s），不是毫秒！
     std::cout << x.count() << "\n";
     return 0;
 }
@@ -555,8 +555,8 @@ int main() {
 #include <thread>
 int main() {
     using namespace std::chrono_literals;
-    std::this_thread::sleep_for(250ms);     // 单位写在字面量里，绝无歧义
-    auto d = 1h + 30min + 15s;              // 编译期可加
+    std::this_thread::sleep_for(250ms);  // 单位写在字面量里，绝无歧义
+    auto d = 1h + 30min + 15s;           // 编译期可加
     std::cout << std::chrono::duration_cast<std::chrono::seconds>(d).count() << " s\n";
     return 0;
 }
@@ -766,8 +766,8 @@ int main() {
 int main() {
     using namespace std::chrono;
     milliseconds ms(1500);
-    std::cout << floor<seconds>(ms).count() << " "   // 1
-              << round<seconds>(ms).count() << " "   // 2
+    std::cout << floor<seconds>(ms).count() << " "    // 1
+              << round<seconds>(ms).count() << " "    // 2
               << ceil<seconds>(ms).count()  << "\n";  // 2
     return 0;
 }
@@ -837,8 +837,8 @@ int main() {
     using namespace std::chrono;
     using namespace std::chrono_literals;
     year_month_day ymd = 2024y / February / 29d;
-    sys_days sd = sys_days{ymd};                 // 转 day-point
-    year_month_day back = year_month_day{sd};    // 转回
+    sys_days sd = sys_days{ymd};               // 转 day-point
+    year_month_day back = year_month_day{sd};  // 转回
     std::cout << (unsigned)back.month() << "/" << (unsigned)back.day() << "\n";
     return 0;
 }
@@ -880,8 +880,8 @@ int main() {
 int main() {
     using namespace std::chrono;
     try {
-        const time_zone* tz = locate_zone("UTC");          // 读 IANA tzdata
-        zoned_time zt{ tz, system_clock::now() };           // 绑定 UTC 时区
+        const time_zone* tz = locate_zone("UTC");  // 读 IANA tzdata
+        zoned_time zt{ tz, system_clock::now() };  // 绑定 UTC 时区
         std::cout << "zone=" << tz->name() << "\n";
     } catch (const std::exception& e) {
         std::cout << "tzdb unavailable: " << e.what() << "\n";
@@ -899,9 +899,9 @@ int main() {
 int main() {
     using namespace std::chrono;
     std::error_code ec;
-    auto ft = std::filesystem::last_write_time(".", ec);     // file_time_type
+    auto ft = std::filesystem::last_write_time(".", ec);  // file_time_type
     if (!ec) {
-        auto st = clock_cast<system_clock>(ft);              // 转 system_clock
+        auto st = clock_cast<system_clock>(ft);           // 转 system_clock
         std::cout << "file mtime as sys epoch sec = "
                   << duration_cast<seconds>(st.time_since_epoch()).count() << "\n";
     }
@@ -916,8 +916,8 @@ int main() {
 #include <iostream>
 int main() {
     using namespace std::chrono;
-    using eighth = duration<int, std::ratio<1, 8>>;    // 1/8 秒为一刻度
-    eighth e(8);                                  // 8 个 1/8 秒 = 1 秒
+    using eighth = duration<int, std::ratio<1, 8>>;  // 1/8 秒为一刻度
+    eighth e(8);                                     // 8 个 1/8 秒 = 1 秒
     std::cout << duration_cast<seconds>(e).count() << " s\n";
     return 0;
 }
@@ -1196,10 +1196,10 @@ int main() {
 int main() {
     using namespace std::chrono;
     using centi = duration<long long, std::ratio<1, 100>>;
-    centi c = seconds{2};                  // 2 s == 200 centi（精确放大）
-    std::cout << c.count() << '\n';       // 200
+    centi c = seconds{2};                   // 2 s == 200 centi（精确放大）
+    std::cout << c.count() << '\n';         // 200
     auto floor_ms = floor<milliseconds>(c);
-    std::cout << floor_ms.count() << '\n'; // 2000
+    std::cout << floor_ms.count() << '\n';  // 2000
 }
 ```
 

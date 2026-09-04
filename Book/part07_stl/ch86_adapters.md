@@ -82,7 +82,7 @@ STL 早已有了 `deque`、`vector`、`list`，但很多算法只想要"后进�
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
+```text
                         ┌─────────────────────────────┐
                         │   Container Adaptor  (包装)   │
                         │   只暴露受限接口，无迭代器     │
@@ -170,7 +170,7 @@ classDiagram
 `std::stack<int>` 对象在内存中**只包含它包装的底层容器 `c`**（`deque<int>` 实例），自身没有任何虚表、没有任何额外指针——这是"零开销抽象"的直接体现。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
-```
+```text
 stack<int> s;            // 对象 s 占用的内存 = 一个 deque<int> 实例的大小
 ┌──────────────────────────────────────────────────────────┐
 │  s  (size = sizeof(deque<int>), 无 vptr, 无额外字段)        │
@@ -198,7 +198,7 @@ priority_queue<int> q;    // 对象 q = vector<int> c + 比较器 comp(空对象
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图
-```
+```text
 构造 stack<int> s;
    │  构造底层 deque<int> c  (无元素)
    ▼
@@ -305,7 +305,7 @@ sequenceDiagram
 #include <utility>
 
 struct Request {
-    int priority;          // 数值越大越紧急
+    int priority;                           // 数值越大越紧急
     unsigned long conn_id;
     std::string payload;
 };
@@ -313,7 +313,7 @@ struct Request {
 // 比较器：priority 大者优先（大顶堆语义）。注意 comp(a,b) 返回 true 表示 a 应排在 b 之后。
 struct ByPriority {
     bool operator()(const Request& a, const Request& b) const {
-        return a.priority < b.priority;   // less -> 大顶堆
+        return a.priority < b.priority;     // less -> 大顶堆
     }
 };
 
@@ -323,10 +323,10 @@ using RequestQueue = std::priority_queue<Request, std::vector<Request>, ByPriori
 void dispatch_loop() {
     RequestQueue q;
     q.push(Request{1, 1001, "data"});
-    q.push(Request{9, 1002, "heartbeat"});   // 心跳优先级最高
+    q.push(Request{9, 1002, "heartbeat"});  // 心跳优先级最高
     q.push(Request{5, 1003, "control"});
     while (!q.empty()) {
-        Request r = std::move(q.top());      // 取最高优先级
+        Request r = std::move(q.top());     // 取最高优先级
         q.pop();
         std::cout << "conn=" << r.conn_id << " prio=" << r.priority << "\n";
     }
@@ -466,8 +466,8 @@ int main() { return 0; }
   #include <iostream>
   int bad() {
       std::stack<int> s;
-      s.pop();            // UB：空栈 pop
-      return s.top();     // UB：空栈 top
+      s.pop();         // UB：空栈 pop
+      return s.top();  // UB：空栈 top
   }
   int main() { return bad(); }
 ```
@@ -568,9 +568,9 @@ int main() { return 0; }
 int bench() {
     const int N = 1000000;
     std::stack<int> s;
-    for (int i = 0; i < N; ++i) s.push(i);     // 经 deque::push_back
+    for (int i = 0; i < N; ++i) s.push(i);       // 经 deque::push_back
     std::deque<int> d;
-    for (int i = 0; i < N; ++i) d.push_back(i); // 直接 deque::push_back
+    for (int i = 0; i < N; ++i) d.push_back(i);  // 直接 deque::push_back
     // 示意：二者耗时在同一量级（stack 仅多一次内联转发，已被优化掉）
     return (int)(s.size() + d.size());
 }
@@ -679,9 +679,9 @@ int main() { return bench(); }
 #include <vector>
 #include <iostream>
 int main() {
-    std::stack<int> s;                                   // 默认 deque<int>
-    std::queue<int> q;                                   // 默认 deque<int>
-    std::priority_queue<int> pq;                         // 默认 vector<int> + less -> 大顶堆
+    std::stack<int> s;            // 默认 deque<int>
+    std::queue<int> q;            // 默认 deque<int>
+    std::priority_queue<int> pq;  // 默认 vector<int> + less -> 大顶堆
     (void)s; (void)q; (void)pq;
     return 0;
 }
@@ -741,9 +741,9 @@ int main() {
 int main() {
     std::queue<int> q;
     q.push(1); q.push(2); q.push(3);
-    std::cout << "front=" << q.front() << " back=" << q.back() << "\n"; // 1 3
+    std::cout << "front=" << q.front() << " back=" << q.back() << "\n";  // 1 3
     q.pop();
-    std::cout << "front=" << q.front() << "\n";                        // 2
+    std::cout << "front=" << q.front() << "\n";                          // 2
     return 0;
 }
 ```
@@ -822,8 +822,8 @@ int main() {
 #include <iostream>
 int main() {
     std::stack<std::string> s;
-    s.emplace("direct", 3);          // 在栈内直接构造 "dir"
-    std::cout << s.top() << "\n";    // dir
+    s.emplace("direct", 3);        // 在栈内直接构造 "dir"
+    std::cout << s.top() << "\n";  // dir
     return 0;
 }
 ```
@@ -849,9 +849,9 @@ int main() {
 #include <vector>
 #include <iostream>
 int main() {
-    std::stack<int, std::vector<int>> s;   // 合法：vector 有 back/push_back/pop_back
+    std::stack<int, std::vector<int>> s;  // 合法：vector 有 back/push_back/pop_back
     s.push(1); s.push(2);
-    std::cout << s.top() << "\n";          // 2
+    std::cout << s.top() << "\n";         // 2
     return 0;
 }
 ```
@@ -863,9 +863,9 @@ int main() {
 #include <list>
 #include <iostream>
 int main() {
-    std::stack<int, std::list<int>> s;     // 合法：list 有 back/push_back/pop_back
+    std::stack<int, std::list<int>> s;  // 合法：list 有 back/push_back/pop_back
     s.push(7); s.push(8);
-    std::cout << s.top() << "\n";          // 8
+    std::cout << s.top() << "\n";       // 8
     return 0;
 }
 ```
@@ -981,13 +981,13 @@ int topK(std::initializer_list<int> xs, int k) {
     std::priority_queue<int, std::vector<int>, std::greater<int>> pq;
     for (int x : xs) {
         pq.push(x);
-        if ((int)pq.size() > k) pq.pop();   // 维持堆大小 = k，top 为当前第 k 大
+        if ((int)pq.size() > k) pq.pop();                                // 维持堆大小 = k，top 为当前第 k 大
     }
     int sum = 0;
     while (!pq.empty()) { sum += pq.top(); pq.pop(); }
-    return sum;   // 返回最大 k 个之和
+    return sum;                                                          // 返回最大 k 个之和
 }
-int main() { std::cout << topK({5,1,9,3,7,2,8}, 3) << "\n"; return 0; } // 9+8+7=24
+int main() { std::cout << topK({5,1,9,3,7,2,8}, 3) << "\n"; return 0; }  // 9+8+7=24
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 更多完
@@ -1008,9 +1008,9 @@ int dijkstra_demo() {
     while (!pq.empty()) {
         auto [d, n] = pq.top(); pq.pop();
         best = d;
-        if (n == 2) break;     // 到达目标
-        pq.push({d + 3, 1});   // 到节点1
-        pq.push({d + 1, 2});   // 到节点2
+        if (n == 2) break;    // 到达目标
+        pq.push({d + 3, 1});  // 到节点1
+        pq.push({d + 1, 2});  // 到节点2
     }
     return best;
 }
@@ -1110,12 +1110,12 @@ int main() {
 #include <iostream>
 template<typename T>
 struct MyStack : std::stack<T> {
-    std::deque<T>& raw() { return this->c; }   // 访问受保护成员 c
+    std::deque<T>& raw() { return this->c; }            // 访问受保护成员 c
 };
 int main() {
     MyStack<int> s;
     s.push(1); s.push(2); s.push(3);
-    std::cout << "bottom=" << s.raw().front() << "\n";   // 1（栈底）
+    std::cout << "bottom=" << s.raw().front() << "\n";  // 1（栈底）
     return 0;
 }
 ```
@@ -1192,7 +1192,7 @@ int main() {
 #include <iostream>
 template<typename T, typename... Ts>
 void push_all(std::stack<T>& s, Ts&&... xs) {
-    (s.push(std::forward<Ts>(xs)), ...);   // 逗号折叠
+    (s.push(std::forward<Ts>(xs)), ...);                          // 逗号折叠
 }
 int main() {
     std::stack<int> s;
@@ -1255,11 +1255,11 @@ int main() {
 #include <vector>
 #include <queue>
 int main() {
-    std::stack<int, std::vector<int>> st;   // 底层 vector
+    std::stack<int, std::vector<int>> st;               // 底层 vector
     st.push(1); st.push(2);
     std::queue<int> q; q.push(1); q.push(2);
     std::cout << "stack.top=" << st.top()
-              << " queue.front=" << q.front() << "\n"; // 2 1
+              << " queue.front=" << q.front() << "\n";  // 2 1
 }
 ```
 
@@ -1279,7 +1279,7 @@ int main() {
 int main() {
     std::priority_queue<int, std::vector<int>, std::greater<int>> pq;  // 最小堆
     for (int x : {3, 1, 2}) pq.push(x);
-    std::cout << "min=" << pq.top() << "\n";  // 1
+    std::cout << "min=" << pq.top() << "\n";                           // 1
 }
 ```
 
@@ -1296,14 +1296,14 @@ int main() {
 #include <queue>
 #include <vector>
 int main() {
-    std::priority_queue<int> pq;             // 最大堆
+    std::priority_queue<int> pq;  // 最大堆
     for (int x : {5, 1, 9, 2, 7}) pq.push(x);
     std::cout << "top3: ";
     for (int i = 0; i < 3 && !pq.empty(); ++i) {
         std::cout << pq.top() << ' ';
         pq.pop();
     }
-    std::cout << "\n";                        // 9 7 5
+    std::cout << "\n";            // 9 7 5
 }
 ```
 
@@ -1328,7 +1328,7 @@ int main() {
 int main() {
     std::priority_queue<int, std::vector<int>, std::greater<int>> pq;  // 最小堆
     for (int x : {3,1,2}) pq.push(x);
-    std::cout << "min=" << pq.top() << "\n";  // 1
+    std::cout << "min=" << pq.top() << "\n";                           // 1
 }
 ```
 
@@ -1352,7 +1352,7 @@ int main() {
 #include <stack>
 #include <vector>
 int main() {
-    std::stack<int, std::vector<int>> st;   // 以 vector 为底层容器
+    std::stack<int, std::vector<int>> st;     // 以 vector 为底层容器
     st.push(1); st.push(2);
     std::cout << "top=" << st.top() << "\n";  // 2
 }
@@ -1403,10 +1403,10 @@ int main() {
 #include <functional>
 struct Task { int pri; int id; };
 int main() {
-    auto cmp = [](const Task& a, const Task& b) { return a.pri < b.pri; }; // 大顶堆
+    auto cmp = [](const Task& a, const Task& b) { return a.pri < b.pri; };  // 大顶堆
     std::priority_queue<Task, std::vector<Task>, decltype(cmp)> pq(cmp);
     pq.push({1, 100}); pq.push({5, 200});
-    std::cout << "top pri=" << pq.top().pri << "\n";  // 5
+    std::cout << "top pri=" << pq.top().pri << "\n";                        // 5
 }
 ```
 ## 附录：GCC 15.3.0 真机实证 — `std::priority_queue` 零开销上浮代价
@@ -1644,7 +1644,7 @@ int main() {
     pq.push(2);
     std::cout << "priority_queue pop order: ";
     while (!pq.empty()) {
-        std::cout << pq.top() << " ";   // 3 2 1（默认大顶堆）
+        std::cout << pq.top() << " ";                                     // 3 2 1（默认大顶堆）
         pq.pop();
     }
     std::cout << std::endl;
@@ -1654,7 +1654,7 @@ int main() {
 
 预期输出：
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译验证
-```
+```text
 stack top after push 1,2 = 2
 stack top after pop = 1
 priority_queue pop order: 3 2 1

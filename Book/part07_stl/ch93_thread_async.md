@@ -295,8 +295,8 @@ int main() {
     for (int i = 0; i < 4; ++i)
         fs.push_back(std::async(std::launch::async, [i] { return i * i; }));
     int total = 0;
-    for (auto& f : fs) total += f.get();   // 顺序 get，全部结果求和
-    std::cout << "sum of squares = " << total << "\n";   // 0+1+4+9=14
+    for (auto& f : fs) total += f.get();                // 顺序 get，全部结果求和
+    std::cout << "sum of squares = " << total << "\n";  // 0+1+4+9=14
     return 0;
 }
 ```
@@ -422,9 +422,9 @@ class _State_baseV2 {
 #include <future>
 int main() {
     std::future<int> f = std::async(std::launch::async, [] { return 1; });
-    std::cout << f.get() << "\n";         // OK: 第一次
+    std::cout << f.get() << "\n";      // OK: 第一次
     try {
-        std::cout << f.get() << "\n";     // 第二次 -> no_state
+        std::cout << f.get() << "\n";  // 第二次 -> no_state
     } catch (const std::future_error& e) {
         std::cout << "err: " << e.code().message() << "\n";
     }
@@ -512,9 +512,9 @@ int main() {
     std::promise<std::unique_ptr<int>> p;
     std::future<std::unique_ptr<int>> f = p.get_future();
     std::thread t([p = std::move(p)]() mutable {
-        p.set_value(std::make_unique<int>(123));   // 移动进共享状态
+        p.set_value(std::make_unique<int>(123));  // 移动进共享状态
     });
-    std::unique_ptr<int> ptr = f.get();             // 移动出
+    std::unique_ptr<int> ptr = f.get();           // 移动出
     std::cout << "*ptr = " << *ptr << "\n";
     t.join();
     return 0;
@@ -668,8 +668,8 @@ int main() {
     std::thread t([] {
         for (int i = 0; i < 3; ++i) std::cout << "bg " << i << "\n";
     });
-    t.detach();                    // 交还 OS，主线程不等待
-    std::this_thread::sleep_for(std::chrono::milliseconds(50)); // 给后台时间
+    t.detach();                                                  // 交还 OS，主线程不等待
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));  // 给后台时间
     return 0;
 }
 ```
@@ -698,9 +698,9 @@ int main() {
 void append(std::string& s) { s += "!"; }
 int main() {
     std::string s = "hi";
-    std::thread t(append, std::ref(s));   // 显式 ref
+    std::thread t(append, std::ref(s));  // 显式 ref
     t.join();
-    std::cout << s << "\n";               // hi!
+    std::cout << s << "\n";              // hi!
     return 0;
 }
 ```
@@ -1248,8 +1248,8 @@ int main(){
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 void fire_and_forget(){
-    std::async(std::launch::async, [](){ heavy_work(); }); // future 是临时对象
-} // 此处 future 析构 -> 阻塞等待 heavy_work 完成! 本想异步, 实际变同步
+    std::async(std::launch::async, [](){ heavy_work(); });  // future 是临时对象
+}                                                           // 此处 future 析构 -> 阻塞等待 heavy_work 完成! 本想异步, 实际变同步
 ```
 
 `std::async` 的 `future` 析构会等待共享状态就绪（标准规定），所以上面"即发即忘"反而同步了。
@@ -1270,8 +1270,8 @@ void fire_and_forget(){
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
 ```cpp
 #include <atomic>
-std::atomic<int> counter{0};                 // 原子 RMW, 无竞争
-void worker(){ for(int i=0;i<100000;++i) ++counter; } // 正确累加到 200000
+std::atomic<int> counter{0};                           // 原子 RMW, 无竞争
+void worker(){ for(int i=0;i<100000;++i) ++counter; }  // 正确累加到 200000
 ```
 
 `++counter`（非原子）是"读-改-写"三步，线程交错导致写覆盖 → 丢失更新。
@@ -1715,17 +1715,17 @@ int main() {
     auto s = def.wait_for(std::chrono::milliseconds(10));
     std::cout << "deferred wait_for is deferred="
               << (s == std::future_status::deferred ? 1 : 0) << std::endl;  // 1
-    std::cout << "deferred result=" << def.get() << std::endl;  // 49
+    std::cout << "deferred result=" << def.get() << std::endl;              // 49
 
     std::vector<std::future<int>> fs;
     for (int i = 0; i < 4; ++i)
         fs.push_back(std::async(std::launch::async, work, i + 1));
     int sum = 0;
     for (auto& f : fs) sum += f.get();
-    std::cout << "async sum of squares 1..4=" << sum << std::endl;  // 30
+    std::cout << "async sum of squares 1..4=" << sum << std::endl;          // 30
 
     auto dft = std::async(work, 3);
-    std::cout << "default policy result=" << dft.get() << std::endl;  // 9
+    std::cout << "default policy result=" << dft.get() << std::endl;        // 9
     return 0;
 }
 ```
@@ -1921,13 +1921,13 @@ flowchart TD
 int main() {
     auto f = std::async(std::launch::async, [] { return 6 * 7; });
     int r = f.get();
-    assert(r == 42);                       // async 返回值正确
+    assert(r == 42);  // async 返回值正确
 
     bool ran = false;
     auto fd = std::async(std::launch::deferred, [&] { ran = true; return 1; });
-    assert(!ran);                          // get() 之前尚未执行
+    assert(!ran);     // get() 之前尚未执行
     int rd = fd.get();
-    assert(ran);                           // 直到 get() 才真正执行
+    assert(ran);      // 直到 get() 才真正执行
     assert(rd == 1);
     std::cout << "async result=" << r << " deferred ran=" << (ran ? 1 : 0) << std::endl;
     return 0;

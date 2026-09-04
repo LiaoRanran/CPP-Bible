@@ -671,8 +671,8 @@ int main() { std::wstring w = to_w("hi"); return (int)w.size(); }
 #include <string>
 #include <cstdio>
 int main() {
-    std::string a = "123456789012345";      // 15 字节：仍在本地
-    std::string b = a + "6";                 // 16 字节：转堆
+    std::string a = "123456789012345";  // 15 字节：仍在本地
+    std::string b = a + "6";            // 16 字节：转堆
     std::printf("a=%s b=%s\n", a.c_str(), b.c_str());
     return 0;
 }
@@ -854,10 +854,10 @@ MS STL 的一大特色是 Debug 构建下默认开启**迭代器越界检查**�
 #include <iostream>
 
 template <class T>
-struct CheckedVector {                    // 类比 MSVC 在 /MDd 下对迭代器做运行期越界校验
+struct CheckedVector {         // 类比 MSVC 在 /MDd 下对迭代器做运行期越界校验
     std::vector<T> data;
     T& at(std::size_t i) {
-        if (i >= data.size())             // MSVC Debug 构建会在这一步插入运行期检查
+        if (i >= data.size())  // MSVC Debug 构建会在这一步插入运行期检查
             throw std::out_of_range("iterator out of range");
         return data[i];
     }
@@ -977,7 +977,7 @@ MS STL 的覆盖由「Windows 生态」定义，凡用 MSVC 编译的本地代�
 ## 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
-```
+```text
 Microsoft STL 的关键设计决策:
 
 1. 开源 (Apache 2.0, 2017): 从MSVC内部分离, GitHub上维护
@@ -1002,7 +1002,7 @@ Microsoft STL 的关键设计决策:
 ## 附录 E：MS STL工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：MS STL工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
-```
+```text
 MS STL设计权衡:
 
 开源(2017): Apache 2.0, GitHub microsoft/STL

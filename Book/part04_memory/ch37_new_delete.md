@@ -91,7 +91,7 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 void* operator new(std::size_t size) {
     std::printf("[global operator new] 请求 %zu 字节\n", size);
     void* p = std::malloc(size);
-    if (!p) throw std::bad_alloc();   // [标准] 默认行为就是失败抛 bad_alloc
+    if (!p) throw std::bad_alloc();  // [标准] 默认行为就是失败抛 bad_alloc
     return p;
 }
 
@@ -107,8 +107,8 @@ struct Widget {
 };
 
 int main() {
-    Widget* w = new Widget(42);   // 先 operator new，再 Widget::Widget
-    delete w;                     // 先 ~Widget，再 operator delete
+    Widget* w = new Widget(42);      // 先 operator new，再 Widget::Widget
+    delete w;                        // 先 ~Widget，再 operator delete
     return 0;
 }
 ```
@@ -116,7 +116,7 @@ int main() {
 编译运行（本机 MinGW GCC 13.1.0）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 一个反直觉的分离：new 表达式 ≠
-```
+```text
 [global operator new] 请求 4 字节
 [Widget 构造] v=42 @0x...
 [Widget 析构] v=42 @0x...
@@ -274,9 +274,9 @@ void* operator new(std::size_t sz) {
     if (sz == 0) sz = 1;
     while ((p = ::malloc(sz)) == nullptr) {
         std::new_handler handler = std::get_new_handler();
-        if (!handler)                                  // 没有 handler → 抛
+        if (!handler)  // 没有 handler → 抛
             __throw_bad_alloc();
-        handler();                                     // 有 handler → 调用它
+        handler();     // 有 handler → 调用它
         // handler 返回后继续循环重试（它可能释放了内存）
     }
     return p;
@@ -312,10 +312,10 @@ void operator delete(void* ptr) noexcept {
 
 int main() {
     void* m = std::malloc(64);
-    void* n = ::operator new(64);     // 直接调函数（不经过 new 表达式的构造）
+    void* n = ::operator new(64);  // 直接调函数（不经过 new 表达式的构造）
     std::printf("malloc=%p  operator new=%p\n", m, n);
     std::free(m);
-    ::operator delete(n);             // 直接调函数释放，不涉及析构
+    ::operator delete(n);          // 直接调函数释放，不涉及析构
     return 0;
 }
 ```
@@ -333,13 +333,13 @@ int main() {
 // new:55-71 —— bad_alloc
 class bad_alloc : public exception {
 public:
-    bad_alloc() throw() { }                              // new:58
+    bad_alloc() throw() { }                            // new:58
 #if __cplusplus >= 201103L
-    bad_alloc(const bad_alloc&) = default;              // new:61
-    bad_alloc& operator=(const bad_alloc&) = default;   // new:62
+    bad_alloc(const bad_alloc&) = default;             // new:61
+    bad_alloc& operator=(const bad_alloc&) = default;  // new:62
 #endif
-    virtual ~bad_alloc() throw();                       // new:67
-    virtual const char* what() const throw();           // new:70
+    virtual ~bad_alloc() throw();                      // new:67
+    virtual const char* what() const throw();          // new:70
 };
 
 // new:73-86 —— bad_array_new_length（C++11）
@@ -432,7 +432,7 @@ new_handler set_new_handler(new_handler) throw();
 回到 37.3 的 `[实现-推断]` 循环：
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 循环重试模型
-```
+```text
 while ((p = malloc(sz)) == nullptr) {
     handler = get_new_handler();
     if (!handler) __throw_bad_alloc();   // 分支 A
@@ -468,7 +468,7 @@ void my_handler() {
         g_cache->clear();
     } else {
         std::printf("[new_handler] 无缓存可释放，抛出 bad_alloc\n");
-        throw std::bad_alloc();   // 没有可释放资源就抛
+        throw std::bad_alloc();        // 没有可释放资源就抛
     }
 }
 
@@ -477,7 +477,7 @@ int main() {
     // 先吃掉 512MB 缓存，制造"内存紧张"
     for (int i = 0; i < 128; ++i) g_cache->push_back(std::malloc(4 * 1024 * 1024));
 
-    std::set_new_handler(my_handler);   // 注册
+    std::set_new_handler(my_handler);  // 注册
     std::printf("当前 handler 是否非空: %s\n",
                 std::get_new_handler() ? "是" : "否");
 
@@ -489,7 +489,7 @@ int main() {
     } catch (const std::bad_alloc& e) {
         std::printf("最终仍失败: %s\n", e.what());
     }
-    std::set_new_handler(nullptr);   // 复位
+    std::set_new_handler(nullptr);     // 复位
     delete g_cache;
     return 0;
 }
@@ -597,8 +597,8 @@ extern const nothrow_t nothrow;
 #include <cstddef>
 // [实现-推断] new_opnt.cc
 void* operator new(std::size_t sz, const std::nothrow_t&) noexcept {
-    try { return ::operator new(sz); }   // 内部会抛 bad_alloc
-    catch (...) { return nullptr; }      // 任何异常都吞掉返回空
+    try { return ::operator new(sz); }  // 内部会抛 bad_alloc
+    catch (...) { return nullptr; }     // 任何异常都吞掉返回空
 }
 ```
 
@@ -683,13 +683,13 @@ void* operator new(std::size_t, void* p) noexcept { return p; }
 struct Point { int x, y; Point(int a, int b):x(a),y(b){} };
 
 int main() {
-    alignas(Point) char buf[sizeof(Point)];   // 用户提供的存储（栈上）
+    alignas(Point) char buf[sizeof(Point)];  // 用户提供的存储（栈上）
     std::memset(buf, 0, sizeof(Point));
 
-    Point* p = new (buf) Point(3, 4);         // 在 buf 上构造
+    Point* p = new (buf) Point(3, 4);        // 在 buf 上构造
     std::printf("Point @%p = (%d,%d)\n", (void*)p, p->x, p->y);
 
-    p->~Point();                              // 必须手动析构
+    p->~Point();                             // 必须手动析构
     // 注意：不能 delete p；buf 是栈数组，离开作用域自动回收
     return 0;
 }
@@ -772,7 +772,7 @@ public:
     ~Pool() { for (char* c : chunks_) delete[] c; }
 
     void* alloc() {
-        if (!free_list_) return nullptr;   // 池满
+        if (!free_list_) return nullptr;                  // 池满
         Block* b = free_list_;
         free_list_ = b->next;
         return b;
@@ -786,7 +786,7 @@ public:
     T* construct(Args&&... args) {
         void* mem = alloc();
         if (!mem) return nullptr;
-        return new (mem) T(std::forward<Args>(args)...);   // placement new
+        return new (mem) T(std::forward<Args>(args)...);  // placement new
     }
     template<typename T>
     void destroy(T* p) { p->~T(); dealloc(p); }
@@ -820,13 +820,13 @@ int head = 0;
 
 int* ring_push(int v) {
     void* slot = &ring[head];
-    int* p = new (slot) int(v);        // placement
+    int* p = new (slot) int(v);    // placement
     head = (head + 1) % CAP;
     return p;
 }
 
 int main() {
-    for (int i = 0; i < 6; ++i) {     // 多于一圈，旧对象被原地覆盖
+    for (int i = 0; i < 6; ++i) {  // 多于一圈，旧对象被原地覆盖
         int* p = ring_push(i * 10);
         std::printf("写入 %d @%p\n", *p, (void*)p);
     }
@@ -992,10 +992,10 @@ struct Align64 { alignas(64) int v; Align64():v(0){} };
 static_assert(alignof(Align64) == 64, "");
 
 int main() {
-    Align64* p = new Align64();   // 因 alignof==64 > 16，自动走对齐 new
+    Align64* p = new Align64();  // 因 alignof==64 > 16，自动走对齐 new
     std::printf("p=%p  地址模64=%zu\n", (void*)p,
                 reinterpret_cast<std::size_t>(p) % 64);
-    delete p;                     // 自动走对齐 delete
+    delete p;                    // 自动走对齐 delete
     return 0;
 }
 ```
@@ -1008,10 +1008,10 @@ int main() {
 #include <cstddef>
 
 int main() {
-    void* p = ::operator new(128, std::align_val_t(64));   // 显式 64 字节对齐
+    void* p = ::operator new(128, std::align_val_t(64));  // 显式 64 字节对齐
     std::printf("对齐分配 p=%p 模64=%zu\n", p,
                 reinterpret_cast<std::size_t>(p) % 64);
-    ::operator delete(p, std::align_val_t(64));            // 必须对应对齐 delete
+    ::operator delete(p, std::align_val_t(64));           // 必须对应对齐 delete
     return 0;
 }
 ```
@@ -1028,7 +1028,7 @@ int main() {
 struct alignas(64) Counter { std::atomic<int> v{0}; };  // 独占缓存行
 
 int main() {
-    Counter* c = new Counter();   // 对齐到缓存行，避免与邻数据 false share
+    Counter* c = new Counter();                         // 对齐到缓存行，避免与邻数据 false share
     std::printf("Counter @%p 模64=%zu\n", (void*)c,
                 reinterpret_cast<std::size_t>(c) % 64);
     delete c;
@@ -1094,7 +1094,7 @@ int main() {
 #include <cstddef>
 
 class StackOnly {
-    static void* operator new(std::size_t) = delete;     // 删除 → 编译期禁止
+    static void* operator new(std::size_t) = delete;  // 删除 → 编译期禁止
     static void* operator new[](std::size_t) = delete;
 public:
     int v;
@@ -1102,7 +1102,7 @@ public:
 };
 
 int main() {
-    StackOnly s(5);            // OK：栈上
+    StackOnly s(5);                                   // OK：栈上
     // StackOnly* p = new StackOnly(5);   // 编译错误：operator new 已 delete
     std::printf("s.v=%d\n", s.v);
     return 0;
@@ -1130,9 +1130,9 @@ struct Guarded {
         std::size_t total = sz + 2 * PAD;
         char* raw = static_cast<char*>(std::malloc(total));
         if (!raw) throw std::bad_alloc();
-        std::memset(raw, 0xCD, PAD);                 // 前哨兵
-        std::memset(raw + PAD + sz, 0xCD, PAD);      // 后哨兵
-        return raw + PAD;                            // 返回用户区起点
+        std::memset(raw, 0xCD, PAD);             // 前哨兵
+        std::memset(raw + PAD + sz, 0xCD, PAD);  // 后哨兵
+        return raw + PAD;                        // 返回用户区起点
     }
     static void operator delete(void* p, std::size_t sz) noexcept {
         char* raw = static_cast<char*>(p) - PAD;
@@ -1221,10 +1221,10 @@ class Resource {
     Resource() { std::printf("Resource 构造\n"); }
 public:
     int id;
-    static Resource* create(int i) {            // 唯一创建入口
+    static Resource* create(int i) {  // 唯一创建入口
         Resource* r = static_cast<Resource*>(std::malloc(sizeof(Resource)));
         if (!r) throw std::bad_alloc();
-        new (r) Resource();                     // placement，调用私有构造
+        new (r) Resource();           // placement，调用私有构造
         r->id = i;
         return r;
     }
@@ -1294,12 +1294,12 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 
 int main() {
     std::allocator<int> alc;
-    int* p = alc.allocate(10);          // 内部调 ::operator new(40)
-    for (int i = 0; i < 10; ++i) new (&p[i]) int(i * i);   // placement 构造
+    int* p = alc.allocate(10);                            // 内部调 ::operator new(40)
+    for (int i = 0; i < 10; ++i) new (&p[i]) int(i * i);  // placement 构造
     std::printf("p[5]=%d\n", p[5]);
     // int 是平凡类型，其伪析构对 placement-new 的对象无实际动作，可直接省略；
     // 注意 p[i].~int(); 这种伪析构写法在此处并不合法，勿照抄。
-    alc.deallocate(p, 10);             // 内部调 ::operator delete
+    alc.deallocate(p, 10);                                // 内部调 ::operator delete
     return 0;
 }
 ```
@@ -1399,14 +1399,14 @@ struct Intrusive {
     // 注意返回类型 void，参数为 destroying_delete_t
     static void operator delete(Intrusive* p, std::destroying_delete_t) {
         std::printf("destroying-delete: 先析构再释放 tag=%d\n", p->tag);
-        p->~Intrusive();              // 必须手动析构
-        std::free(p);                 // 再释放
+        p->~Intrusive();  // 必须手动析构
+        std::free(p);     // 再释放
     }
 };
 
 int main() {
     Intrusive* o = new Intrusive(7);
-    delete o;    // 调用的是 destroying_delete 版 operator delete，对象仍完整
+    delete o;             // 调用的是 destroying_delete 版 operator delete，对象仍完整
     return 0;
 }
 ```
@@ -1515,8 +1515,8 @@ int main() {
 struct S { int x; };
 
 int main() {
-    S* p = new S();     ///Zc:throwingNew 下编译器不插入 if(!p) 检查
-    p->x = 1;           // 直接解引用，假设 new 已抛或成功
+    S* p = new S();  // /Zc:throwingNew 下编译器不插入 if(!p) 检查
+    p->x = 1;        // 直接解引用，假设 new 已抛或成功
     std::printf("%d\n", p->x);
     delete p;
     return 0;
@@ -1814,12 +1814,12 @@ int main() {
     // 用 `::new` 显式走全局作用域的 placement new 才正确。
     alignas(Particle) char buf[sizeof(Particle)];
     Particle* q = ::new (buf) Particle(3.0f, 4.0f);
-    Particle* qf = std::launder(q);     // 取"新鲜"指针
+    Particle* qf = std::launder(q);  // 取"新鲜"指针
     std::printf("q=(%.1f,%.1f) live=%ld\n", qf->px, qf->py, Particle::live);
 
     // 3) 手动析构 placement 对象，不能 delete
     q->~Particle();
-    delete p;                            // 普通对象正常 delete
+    delete p;                        // 普通对象正常 delete
 
     std::printf("最终 live=%ld（应为 0）\n", Particle::live);
     return 0;
@@ -1883,9 +1883,9 @@ operator new 的内部实现:
 
 GCC (libstdc++):
   void* operator new(size_t n) {
-    if (n == 0) n = 1;              // 不允许零大小
+    if (n == 0) n = 1;       // 不允许零大小
     if (void* p = malloc(n)) return p;
-    throw std::bad_alloc();          // 分配失败抛异常
+    throw std::bad_alloc();  // 分配失败抛异常
   }
   → 实质是malloc + 异常包装
   → 可通过set_new_handler注册自定义OOM处理器
@@ -2064,9 +2064,9 @@ placement new 的 `new(p) T(args)` 形式在已存在的内存 `p` 上构造对�
 struct Point { int x, y; Point(int a, int b) : x(a), y(b) {} };
 int main() {
     alignas(Point) static char pool[sizeof(Point) * 4];  // 预分配内存池
-    Point* p = new (pool) Point(1, 2);     // placement new: 在 pool 上构造
+    Point* p = new (pool) Point(1, 2);                   // placement new: 在 pool 上构造
     std::cout << p->x << "," << p->y << "\n";
-    p->~Point();                           // 必须手动析构(placement new 不自动)
+    p->~Point();                                         // 必须手动析构(placement new 不自动)
 }
 ```
 
@@ -2106,8 +2106,8 @@ Node* Node::free_head = nullptr;
 int main() {
     Node* a = new Node{1, nullptr};
     Node* b = new Node{2, nullptr};
-    delete a; delete b;        // 回收进空闲链表
-    Node* c = new Node{3, nullptr};   // 复用 b 的块
+    delete a; delete b;              // 回收进空闲链表
+    Node* c = new Node{3, nullptr};  // 复用 b 的块
     std::cout << "reused node v=" << c->v << "\n";
 }
 ```
@@ -2209,9 +2209,9 @@ delete p;          // 错误: 应 delete[] p; 否则 UB(仅释放首元素或破
 #include <memory>
 #include <vector>
 int main() {
-    int* a = new int[10]; delete[] a;          // 配对
-    auto b = std::make_unique<int[]>(10);       // 智能指针, 自动 delete[]
-    std::vector<int> v(10);                      // 容器, 自动管理
+    int* a = new int[10]; delete[] a;      // 配对
+    auto b = std::make_unique<int[]>(10);  // 智能指针, 自动 delete[]
+    std::vector<int> v(10);                // 容器, 自动管理
     std::cout << "ok: 配对 new[]+delete[] 或 vector\n";
 }
 ```
@@ -2339,9 +2339,9 @@ struct Widget {
 int main() {
     // placement new：在栈缓冲上构造
     alignas(Widget) unsigned char buf[sizeof(Widget)];
-    Widget* w = new (buf) Widget(7);   // 调用 operator new(size_t, void*)
+    Widget* w = new (buf) Widget(7);  // 调用 operator new(size_t, void*)
     std::cout << "w->id = " << w->id << std::endl;
-    w->~Widget();                      // 手动析构（placement 无自动 delete）
+    w->~Widget();                     // 手动析构（placement 无自动 delete）
 
     // 常规 new/delete
     Widget* h = new Widget(99);

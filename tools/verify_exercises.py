@@ -33,7 +33,7 @@ def collect_blocks(md_path):
     if idx < 0:
         return []
     sec = text[idx:]
-    blocks = re.findall(r"```cpp(.*?)```", sec, re.S)
+    blocks = re.findall(r"```cpp[^\n]*\n(.*?)```", sec, re.S)  # 跳过围栏信息串行
     out = []
     for i, b in enumerate(blocks, 1):
         src = b.strip() + "\n"

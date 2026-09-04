@@ -229,8 +229,8 @@ std::vector<int> make() { return {1, 2, 3}; }
 ```cpp
 // ⑤ 链接期解析符号：未定义引用(ld: undefined reference) 即"声明有、定义无"
 // 典型：只在头里声明 void foo(); 但没在任何 TU 定义 -> 链接失败
-extern void foo();          // 声明
-int use_foo() { foo(); return 0; }   // 若 foo 无定义 -> 链接错误
+extern void foo();                  // 声明
+int use_foo() { foo(); return 0; }  // 若 foo 无定义 -> 链接错误
 ```
 
 - `[标准]`：翻译单元（TU）是预处理后的单文件；ODR（单一定义规则）约束每个实体在每个 TU 内至多一个定义。`[标准·basic.def.odr]`
@@ -261,10 +261,10 @@ int g(int x) { return x + 1; }
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标文件格式：ELF / COFF
 ```cpp
 // ⑥ 段的意义：下列变量被放入不同段
-int      init_var = 42;     // .data  (已初始化)
-int      zero_var;          // .bss   (零初始化，不占文件空间)
-const int k = 7;            // .rodata(只读) / .rdata(Windows)
-char     buf[1024];         // .bss
+int      init_var = 42;  // .data  (已初始化)
+int      zero_var;       // .bss   (零初始化，不占文件空间)
+const int k = 7;         // .rodata(只读) / .rdata(Windows)
+char     buf[1024];      // .bss
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目标文件格式：ELF / COFF
@@ -282,7 +282,7 @@ int g(int, double) { return 0; }
 **名字改编（name mangling）** 是把 C++ 函数签名（作用域、参数类型、const/volatile、模板实参）编码成链接器能容纳的**唯一字符串**的机制。C++ 允许函数重载与命名空间，但链接器只认"扁平名字"，于是编译器把签名压成一段字符串。Itanium C++ ABI（GCC/Clang/ICC 通用）的编码规则：
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
-```
+```text
 _Z  <编码长度+名字>   <参数编码...>
   └ 前缀：_Z = 非限定函数
      _ZN ... E = 嵌套(N=namespace/class, E=end)
@@ -986,7 +986,7 @@ int trivia(int x) { return x; }
 ## 附录 E：编译器面试与设计 [B: Principle / H: Design / I: Practice / J: Learning]
 
 > **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：编译器面试与设计 [B: Principle / H: Design / I: Practice / J: Learning]
-```
+```text
 C++编译器选择的工业现实:
 
 Google: GCC (Linux) + Clang (macOS) + MSVC (Windows)
@@ -1091,8 +1091,8 @@ int f(int)       { return 0; }
 double f(double) { return 0.0; }
 
 int main() {
-    using Fi = decltype(f(0));     // 解析到 f(int)
-    using Fd = decltype(f(0.0));   // 解析到 f(double)
+    using Fi = decltype(f(0));    // 解析到 f(int)
+    using Fd = decltype(f(0.0));  // 解析到 f(double)
     std::cout << "f(int)    -> " << typeid(Fi).name() << "\n";
     std::cout << "f(double) -> " << typeid(Fd).name() << "\n";
     std::cout << "源里都叫 f，但 mangling 后变成 _Z1fi / _Z1fd 等不同符号。\n";
@@ -1113,8 +1113,8 @@ int main() {
 ```cpp
 #include <iostream>
 
-extern "C" void c_linked() { }   // C 链接：符号就是 c_linked
-void cpp_linked() { }            // C++ 链接：符号被 mangling
+extern "C" void c_linked() { }  // C 链接：符号就是 c_linked
+void cpp_linked() { }           // C++ 链接：符号被 mangling
 
 int main() {
     std::cout << "extern \"C\" void c_linked(); // C 链接，符号=c_linked\n";
@@ -1199,11 +1199,11 @@ C++14 起的标准属性 `[[deprecated("reason")]]` 被所有主流编译器识�
 ```cpp
 #include <iostream>
 
-[[nodiscard]]            // 标准属性：忽略返回值会告警
+[[nodiscard]]                        // 标准属性：忽略返回值会告警
 int compute() { return 42; }
 
 int main() {
-    std::cout << compute() << '\n';   // 使用了返回值，无告警
+    std::cout << compute() << '\n';  // 使用了返回值，无告警
     return 0;
 }
 ```
@@ -1250,7 +1250,7 @@ int main() {
 ```cpp
 #include <iostream>
 
-extern "C" void old_init() { // 真实工程中由 C 静态库 libold.a 提供，此处占位以便独立编译
+extern "C" void old_init() {  // 真实工程中由 C 静态库 libold.a 提供，此处占位以便独立编译
 }
 
 int main() {

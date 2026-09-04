@@ -103,13 +103,13 @@ int main() {
 ```cpp
 // ③ 复刻 <vector> 的核心包含顺序（节选自真实 vector:60-80）
 #include <bits/requires_hosted.h>
-#include <bits/stl_algobase.h>     // 基础算法/迭代器
-#include <bits/allocator.h>        // std::allocator
+#include <bits/stl_algobase.h>  // 基础算法/迭代器
+#include <bits/allocator.h>     // std::allocator
 #include <bits/stl_construct.h>
 #include <bits/stl_uninitialized.h>
-#include <bits/stl_vector.h>       // vector 类本体
-#include <bits/stl_bvector.h>      // vector<bool> 特化
-#include <bits/range_access.h>     // begin/end/size
+#include <bits/stl_vector.h>    // vector 类本体
+#include <bits/stl_bvector.h>   // vector<bool> 特化
+#include <bits/range_access.h>  // begin/end/size
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 阅读入口
@@ -313,12 +313,12 @@ int main() {
 #include <string>
 int sum_vector(const std::vector<int>& v) {
     int s = 0;
-    for (int x : v) s += x;     // 期望被内联
+    for (int x : v) s += x;  // 期望被内联
     return s;
 }
 std::string make_greeting(const char* name) {
     std::string g = "Hello, ";
-    g += name;                  // 触发 SSO 分支 / _M_mutate
+    g += name;               // 触发 SSO 分支 / _M_mutate
     return g;
 }
 int main() {
@@ -422,10 +422,10 @@ libstdc++ 头文件与 ISO C++ 条款一一对应：`<vector>`→[sequence.reqmt
 #include <cassert>
 int main() {
     std::vector<int> v;
-    v.push_back(1);            // [vector.modifiers]
+    v.push_back(1);             // [vector.modifiers]
     assert(v.size() == 1);
-    assert(v.capacity() >= 1); // [vector.capacity]
-    assert(v[0] == 1);         // [vector.element]
+    assert(v.capacity() >= 1);  // [vector.capacity]
+    assert(v[0] == 1);          // [vector.element]
     return 0;
 }
 ```
@@ -562,8 +562,8 @@ int main() { return (int)foo().size(); }
 extern "C" int make_greeting_c(const char* name, char* out, int cap);
 int wrap() {
     char buf[64];
-    std::string s = "hi";                 // 内部用 std
-    return make_greeting_c(s.c_str(), buf, sizeof buf); // 边界转 C 字符串
+    std::string s = "hi";                                // 内部用 std
+    return make_greeting_c(s.c_str(), buf, sizeof buf);  // 边界转 C 字符串
 }
 ```
 
@@ -671,8 +671,8 @@ int use() { std::vector<long> v; return (int)v.size(); }
 #include <string>
 #include <cstdio>
 int main() {
-    std::string a = "123456789012345";          // 15 字节：仍在本地
-    std::string b = a + "6";                     // 16 字节：转堆
+    std::string a = "123456789012345";  // 15 字节：仍在本地
+    std::string b = a + "6";            // 16 字节：转堆
     std::printf("a=%s b=%s\n", a.c_str(), b.c_str());
     return 0;
 }
@@ -877,7 +877,7 @@ libstdc++ 让你无需换编译器就能改变容器的内存去处——标准�
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：用
 ```cpp
 // ㉑.2 用标准库 std::pmr 复刻「libstdc++ 让容器可替换内存来源」的机制（本块可独立编译，GCC 15.3.0 验证）
-#include <memory_resource>   // std::pmr 是标准库一部分，libstdc++/libc++ 都自带
+#include <memory_resource>                        // std::pmr 是标准库一部分，libstdc++/libc++ 都自带
 #include <vector>
 #include <iostream>
 
@@ -887,7 +887,7 @@ int main() {
     std::pmr::monotonic_buffer_resource pool{buf, sizeof(buf)};
     // 显式用 memory_resource* 构造多态分配器，再交给 vector（避免隐式转换歧义）
     std::pmr::polymorphic_allocator<int> alloc{&pool};
-    std::pmr::vector<int> v{alloc};          // std::pmr::vector == std::vector<..., polymorphic_allocator>
+    std::pmr::vector<int> v{alloc};               // std::pmr::vector == std::vector<..., polymorphic_allocator>
     for (int i = 0; i < 10; ++i) v.push_back(i);  // 内存来自 buf，热路径零堆竞争
     for (int x : v) std::cout << x << ' ';
     std::cout << "\n";
@@ -1035,7 +1035,7 @@ int main() {
 ## 附录 B：源码阅读导航 [F: Industry / I: Practice]
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：源码阅读导航 [F: Industry / I: Practice]
-```
+```text
 libstdc++ 源码阅读路径 (难度递增):
 
 1. <type_traits>: 纯模板，零运行时 → 最佳入门
@@ -1053,7 +1053,7 @@ libstdc++ 源码阅读路径 (难度递增):
 ## 附录 C：面试 [J: Learning]
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：面试 [J: Learning]
-```
+```text
 Q: libstdc++ 和 libc++ 可以互换使用吗？
 A: 可以 (Linux x86-64 ABI兼容)。Clang Linux 默认用 libstdc++，macOS 用 libc++
 
@@ -1192,8 +1192,8 @@ Code Review 清单：
 struct Tracer { Tracer() = default; Tracer(Tracer&&) { std::cout << "move\n"; } Tracer(const Tracer&) { std::cout << "copy\n"; } };
 int main() {
     Tracer a;
-    auto&& r = std::move(a);        // 仅转型，不打印任何 ctor
-    Tracer b = r;                   // 此处才调用移动构造
+    auto&& r = std::move(a);  // 仅转型，不打印任何 ctor
+    Tracer b = r;             // 此处才调用移动构造
     (void)b;
 }
 ```
@@ -1218,15 +1218,16 @@ int main() {
 #include <iostream>
 struct Slow {
     int* p = new int(0);
-    Slow() = default;                          // 需默认构造以构造/扩容
-    Slow(Slow&&) { // 未标 noexcept
-    Slow(const Slow&) {}
+    Slow() = default;     // 需默认构造以构造/扩容
+    Slow(Slow&& o) : p(o.p) { o.p = nullptr; }   // 未标 noexcept → 扩容退回拷贝
+    Slow(const Slow& o) : p(new int(*o.p)) {}    // 深拷贝兜底（强异常安全依赖）
+    Slow& operator=(const Slow&) = delete;
     ~Slow() { delete p; }
 };
 int main() {
     std::vector<Slow> v(3);
-    v.push_back(Slow());          // 扩容时退回拷贝构造
-    std::cout << v.size() << '\n';
+    v.push_back(Slow());  // move 非 noexcept → move_if_noexcept 选深拷贝
+    std::cout << v.size() << '\n';               // 4
 }
 ```
 
@@ -1485,10 +1486,10 @@ int main()
 #include <cassert>
 
 int main() {
-    std::string a(15, 'x');   // 在 libstdc++ SSO 容量内
-    std::string b(40, 'x');   // 超出 SSO → 堆分配
-    std::string c = a;        // SSO 内拷贝：零分配
-    std::string d = b;        // 堆拷贝：深拷贝
+    std::string a(15, 'x');  // 在 libstdc++ SSO 容量内
+    std::string b(40, 'x');  // 超出 SSO → 堆分配
+    std::string c = a;       // SSO 内拷贝：零分配
+    std::string d = b;       // 堆拷贝：深拷贝
     assert(c == a && d == b);
     std::cout << "a.size=" << a.size() << " b.size=" << b.size() << std::endl;
     return 0;

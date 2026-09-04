@@ -63,8 +63,8 @@
 // ① 框架在概念上对"应用"的抽象：框架拥有主循环，应用只提供回调
 // 应用代码从不写 main 的轮询，而是注册 handler 等框架回调。
 struct App {
-    void on_start() { // 框架在启动时调用你，而非你调用框架
-    void on_tick(int t) { // 框架在每帧调用你
+    void on_start() {      // 框架在启动时调用你，而非你调用框架
+    void on_tick(int t) {  // 框架在每帧调用你
 };
 ```
 
@@ -120,12 +120,12 @@ void lib_style() {
 // ② 框架风格：你注册回调，主循环由框架写（控制反转 IoC）
 // runloop() 内部会反过来调用你提供的 on_frame。
 struct Game {
-    void on_frame() { // 框架每帧回调这里，你只写业务
+    void on_frame() {                      // 框架每帧回调这里，你只写业务
 };
 void framework_style(Game& g) {
     Framework fw;
-    fw.on("frame", [&]{ g.on_frame(); });   // 注册而非调用
-    fw.runloop();                            // 框架拥有循环
+    fw.on("frame", [&]{ g.on_frame(); });  // 注册而非调用
+    fw.runloop();                          // 框架拥有循环
 }
 ```
 
@@ -404,19 +404,19 @@ int main() {
 #include <unordered_map>
 #include <map>
 
-struct IStorage {                       // 接口层：极少改动
+struct IStorage {                  // 接口层：极少改动
     virtual ~IStorage() = default;
     virtual bool save(const std::string& k, const std::string& v) = 0;
     virtual std::string load(const std::string& k) = 0;
 };
-struct MemoryStorage : IStorage {       // 实现层：可独立替换/测试
+struct MemoryStorage : IStorage {  // 实现层：可独立替换/测试
     std::unordered_map<std::string, std::string> data;
     bool save(const std::string& k, const std::string& v) override { data[k] = v; return true; }
     std::string load(const std::string& k) override {
         auto it = data.find(k); return it == data.end() ? "" : it->second;
     }
 };
-void use(IStorage& s) {                 // 消费者只认接口
+void use(IStorage& s) {            // 消费者只认接口
     s.save("user", "alice");
     std::cout << "[module] load(user) = " << s.load("user") << "\n";
 }

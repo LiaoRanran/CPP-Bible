@@ -92,7 +92,7 @@ T twice2(T x) { return x + x; }
 ```cpp
 // 1) 简单约束：直接写类型/表达式，合法即满足
 template <typename T>
-concept HasSize = requires(T t) { t.size(); };        // t.size() 可调用即可
+concept HasSize = requires(T t) { t.size(); };    // t.size() 可调用即可
 
 // 2) 类型约束：要求某个嵌套类型存在
 template <typename T>
@@ -104,7 +104,7 @@ concept BooleanConvertible = requires(T t) { { !t } -> std::convertible_to<bool>
 
 // 4) 嵌套/局部参数约束：在 requires 内再声明局部变量
 template <typename T>
-concept Addable = requires(T a, T b) { a + b; };       // 要求 a+b 合法
+concept Addable = requires(T a, T b) { a + b; };  // 要求 a+b 合法
 ```
 
 concept 的组合（与/或/非）：
@@ -129,11 +129,11 @@ concept 失败与 SFINAE 失败**同一机制**：约束不满足 → 该候选�
 ```cpp
 template <typename T>
 requires std::integral<T>
-T pick(T x) { return x * 2; }      // 约束 A
+T pick(T x) { return x * 2; }  // 约束 A
 
 template <typename T>
 requires (!std::integral<T>)
-T pick(T x) { return x; }          // 约束 B（与 A 互斥且完备）
+T pick(T x) { return x; }      // 约束 B（与 A 互斥且完备）
 
 // pick(21) 命中 A；pick(2.5) 命中 B；二者覆盖全集且无交集
 ```
@@ -190,8 +190,8 @@ concept Addable = requires(T a, T b) { a + b; };
 template <Addable T>
 T add_twice(T x) { return x + x; }
 
-static_assert(Addable<int>);        // true
-static_assert(!Addable<std::ostream>); // ostream 不可加 → false
+static_assert(Addable<int>);            // true
+static_assert(!Addable<std::ostream>);  // ostream 不可加 → false
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
@@ -336,8 +336,8 @@ void visit(T) {}
 > **示例 22** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 ```cpp
 // 更受约束者优先：两个重载都满足 int，但 SignedIntegral 比 Integral 更受约束
-template <std::integral T>      void h(T) {}   // 较泛
-template <std::signed_integral T> void h(T) {} // 更受约束 → int 调用命中此
+template <std::integral T>      void h(T) {}    // 较泛
+template <std::signed_integral T> void h(T) {}  // 更受约束 → int 调用命中此
 ```
 
 ## ⑨ 内存 / 对象模型
@@ -444,14 +444,14 @@ concept AllIntegral = (std::integral<Ts> && ...);
 ```cpp
 // 反模式 1：在 concept 里写「运行期逻辑」——concept 只能含编译期可求值表达式
 template <typename T>
-concept Bad = requires(T t) { t.some_method(); } && (sizeof(T) > 4); // OK，但别塞运行期状态
+concept Bad = requires(T t) { t.some_method(); } && (sizeof(T) > 4);  // OK，但别塞运行期状态
 
 // 反模式 2：约束互斥但不完备 → 某些类型全失败 → 硬错误
 // 应保证「覆盖全集」或显式给出兜底重载
 
 // 反模式 3：用 requires 表达式却没「消参」——无参 requires 应直接写类型约束
 template <typename T>
-concept HasType = requires { typename T::value_type; };   // 正确：无参用 typename
+concept HasType = requires { typename T::value_type; };               // 正确：无参用 typename
 ```
 
 ## ⑭ 工业案例
@@ -498,7 +498,7 @@ template<typename _Tp, typename _Up>
 // 易错：把 concept 当 bool 值传入 enable_if（C++20 仍可混用，但语义冗余）
 template <typename T, std::enable_if_t<std::integral<T>, int> = 0>  // 旧写法
 void g(T);
-template <std::integral T>                                            // 新写法：直接用 concept
+template <std::integral T>                                          // 新写法：直接用 concept
 void g(T);
 ```
 
@@ -522,10 +522,10 @@ void g(T);
 template <typename T>
 concept Numeric = std::integral<T> || std::floating_point<T>;
 
-template <Numeric T>        // 数值走这里
+template <Numeric T>    // 数值走这里
 T process(T x) { return x; }
 template <typename T>
-requires (!Numeric<T>)      // 非数值兜底，保证完备
+requires (!Numeric<T>)  // 非数值兜底，保证完备
 T process(T x) { return x; }
 ```
 
@@ -765,7 +765,7 @@ int main() {
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
-```
+```text
 面试高频:
 Q: concept 和 SFINAE 的根本区别？
 A: concept = explicit constraint declaration；SFINAE = implicit substitution failure exploit
@@ -1013,8 +1013,8 @@ concept Addable = requires(T a, T b) {
 template <Addable T> T twice(T x) { return x + x; }
 
 int main(){
-    static_assert(Addable<int>);                 // int 满足
-    static_assert(!Addable<const char*>);        // 指针相加结果不是同类型 -> 不满足
+    static_assert(Addable<int>);           // int 满足
+    static_assert(!Addable<const char*>);  // 指针相加结果不是同类型 -> 不满足
     (void)twice(21);
 }
 ```

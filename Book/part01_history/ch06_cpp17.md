@@ -113,7 +113,7 @@ int main() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱
-```
+```text
 C++17 生产力
 ├─ 结构化绑定: auto [a,b] = pair/struct/tuple
 ├─ if/switch 初始化语句
@@ -217,7 +217,7 @@ void s(){ std::vector<int> v(4); std::sort(std::execution::par, v.begin(), v.end
 
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（编译期分支与折叠）
-```
+```text
 string_view sv:
 ┌──────────┬──────────┐
 │ ptr(8B)  │ size(8B) │  ← 只指向他人内存
@@ -525,7 +525,7 @@ int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
 ## 附录 C：C++17底层与工业采纳 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：C++17底层与工业采纳
-```
+```text
 C++17关键特性底层分析:
 
 结构化绑定: auto [x,y,z] = point → 编译器生成隐藏临时变量 + 引用绑定
@@ -709,8 +709,8 @@ int main() {
 #include <string>
 
 std::optional<int> lookup(const std::string& k) {
-    if (k == "answer") return 42;      // 有值
-    return std::nullopt;               // 无值，语义明确
+    if (k == "answer") return 42;  // 有值
+    return std::nullopt;           // 无值，语义明确
 }
 
 int main() {
@@ -740,7 +740,7 @@ int main() {
 
 template <class T>
 std::string stringify(const T& x) {
-    if constexpr (std::is_same_v<T, bool>)          // 编译期择一分支
+    if constexpr (std::is_same_v<T, bool>)     // 编译期择一分支
         return x ? "true" : "false";
     else if constexpr (std::is_arithmetic_v<T>)
         return std::to_string(x);
@@ -749,7 +749,7 @@ std::string stringify(const T& x) {
 }
 
 template <class... Ts>
-auto sum(Ts... xs) { return (xs + ... + 0); }       // 折叠表达式
+auto sum(Ts... xs) { return (xs + ... + 0); }  // 折叠表达式
 
 int main() {
     std::cout << stringify(true)  << '\n';
@@ -810,14 +810,14 @@ int main() {
 #include <string_view>
 #include <string>
 
-void log(std::string_view s) {               // 零拷贝：只存指针+长度
+void log(std::string_view s) {  // 零拷贝：只存指针+长度
     std::cout << "[" << s.size() << "] " << s << '\n';
 }
 
 int main() {
-    log("hello");                            // 字面量直接构造，无分配
+    log("hello");               // 字面量直接构造，无分配
     std::string name = "world";
-    log(name);                               // string 也能直接转成 view
+    log(name);                  // string 也能直接转成 view
     return 0;
 }
 ```
@@ -1049,7 +1049,7 @@ int main() {
     std::string a = h.substr(0, 5);
     // string_view：仅记录 (指针, 长度)，不分配
     std::string_view b(h.data(), 5);
-    assert(a == b);                 // 内容等价
+    assert(a == b);                // 内容等价
     assert(a.size() == 5 && b.size() == 5);
     std::cout << "substr  : " << a << std::endl;
     std::cout << "view    : " << b << std::endl;

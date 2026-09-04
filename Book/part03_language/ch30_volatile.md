@@ -140,7 +140,7 @@ int main(){volatile const int ROM=0xDEAD;std::cout<<"ROM value:"<<ROM<<std::endl
 #include <atomic>
 #include <thread>
 
-volatile int bad_counter = 0;   // 多线程不安全：++ 是三步骤（读-改-写），volatile 不原子化
+volatile int bad_counter = 0;      // 多线程不安全：++ 是三步骤（读-改-写），volatile 不原子化
 std::atomic<int> good_counter{0};  // 安全：fetch_add 是原子的
 
 void inc_bad() { for (int i = 0; i < 100000; ++i) ++bad_counter; }
@@ -169,12 +169,12 @@ int main() {
 
 // 假设内存映射地址（真实嵌入式代码使用链接器脚本定义）
 struct UART_Regs {
-    volatile uint32_t DR;    // Data Register
-    volatile uint32_t SR;    // Status Register (TXE=bit7, RXNE=bit5)
-    volatile uint32_t CR1;   // Control Register 1
+    volatile uint32_t DR;            // Data Register
+    volatile uint32_t SR;            // Status Register (TXE=bit7, RXNE=bit5)
+    volatile uint32_t CR1;           // Control Register 1
     volatile uint32_t CR2;
     volatile uint32_t CR3;
-    volatile uint32_t BRR;   // Baud Rate Register
+    volatile uint32_t BRR;           // Baud Rate Register
 };
 
 // 真实代码: UART_Regs* usart2 = reinterpret_cast<UART_Regs*>(0x40004400);
@@ -185,11 +185,11 @@ alignas(64) static UART_Regs mock_uart;
 template<typename Regs>
 void uart_write(Regs* uart, char c) {
     while (!(uart->SR & (1 << 7)));  // wait TXE
-    uart->DR = c;                     // volatile write → 编译器必须生成 store 指令
+    uart->DR = c;                    // volatile write → 编译器必须生成 store 指令
 }
 
 int main() {
-    mock_uart.SR |= (1 << 7);  // set TXE for demo
+    mock_uart.SR |= (1 << 7);        // set TXE for demo
     uart_write(&mock_uart, 'A');
     std::cout << "UART sent: " << (char)mock_uart.DR << std::endl;
     std::cout << "Pattern: reinterpret_cast<volatile Regs*>(BASE_ADDR) → register access without optimizer interference.\n";
@@ -288,7 +288,7 @@ std::atomic<bool> safe_ready{false};
 void bad_pattern() {
     int x = 42;
     volatile int* p = &x;
-    *p = 100;  // OK: volatile 写入
+    *p = 100;                 // OK: volatile 写入
     // 但编译器可能仍缓存 x 的值（因为 x 本身不是 volatile）
 }
 
@@ -382,8 +382,8 @@ int main() {
 #include <iostream>
 #include <chrono>
 
-volatile int g_vol = 0;       // 全局 volatile
-int g_plain = 0;              // 全局非 volatile
+volatile int g_vol = 0;                     // 全局 volatile
+int g_plain = 0;                            // 全局非 volatile
 alignas(64) volatile int g_cachelined = 0;  // 避免 false sharing
 
 int main() {
@@ -822,8 +822,8 @@ int main() {
 #include <iostream>
 #include <thread>
 #include <vector>
-volatile int counter = 0;                 // 缺陷：非原子、非同步
-void worker() { for (int i = 0; i < 100000; ++i) ++counter; }   // 数据竞争
+volatile int counter = 0;                                      // 缺陷：非原子、非同步
+void worker() { for (int i = 0; i < 100000; ++i) ++counter; }  // 数据竞争
 int main() {
     std::vector<std::thread> ts;
     for (int i = 0; i < 4; ++i) ts.emplace_back(worker);
@@ -909,14 +909,14 @@ int main() {
 #include <iostream>
 
 struct Hw {
-    int value() volatile { return reg; }        // volatile 版本
-    int value() const { return reg; }           // const 版本
+    int value() volatile { return reg; }  // volatile 版本
+    int value() const { return reg; }     // const 版本
     int reg = 7;
 };
 
 int main() {
     volatile Hw h;
-    std::cout << h.value() << "\n";   // 调用 volatile 版本
+    std::cout << h.value() << "\n";       // 调用 volatile 版本
 }
 ```
 
@@ -955,8 +955,8 @@ int main() {
 #include <cstdint>
 int main() {
     volatile std::uint32_t* reg = reinterpret_cast<volatile std::uint32_t*>(0x40021000);
-    std::uint32_t v = *reg;               // 真实读，不优化
-    *reg = v | 0x1u;                      // 真实写
+    std::uint32_t v = *reg;  // 真实读，不优化
+    *reg = v | 0x1u;         // 真实写
     std::cout << "mmio accessed\n";
 }
 ```
@@ -974,8 +974,8 @@ int main() {
 #include <iostream>
 #include <thread>
 #include <vector>
-volatile int g = 0;                        // 非原子
-void f() { for (int i = 0; i < 100000; ++i) ++g; }   // 数据竞争
+volatile int g = 0;                                 // 非原子
+void f() { for (int i = 0; i < 100000; ++i) ++g; }  // 数据竞争
 int main() {
     std::vector<std::thread> ts;
     for (int i = 0; i < 4; ++i) ts.emplace_back(f);

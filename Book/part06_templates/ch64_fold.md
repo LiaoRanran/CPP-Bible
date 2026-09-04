@@ -83,15 +83,15 @@ template <typename... Ts> auto left_init(Ts... ts) { return (0 + ... + ts); }
 template <typename... Ts> auto right_init(Ts... ts) { return (ts + ... + 0); }
 
 // 支持所有可折叠二元运算符：+ - * / % & | ^ && || , .* ->*
-template <typename... Ts> auto land(Ts... ts) { return (... && ts); }   // 逻辑与
-template <typename... Ts> auto lor(Ts... ts)  { return (... || ts); }   // 逻辑或
-template <typename... Ts> auto comma(Ts... ts){ (ts , ...); }           // 逗号序列
+template <typename... Ts> auto land(Ts... ts) { return (... && ts); }        // 逻辑与
+template <typename... Ts> auto lor(Ts... ts)  { return (... || ts); }        // 逻辑或
+template <typename... Ts> auto comma(Ts... ts){ (ts , ...); }                // 逗号序列
 
 #include <iostream>
 int main() {
-    std::cout << "left(1,2,3)=" << left(1,2,3) << "\n";            // 6
-    std::cout << "right_init(1,2,3)=" << right_init(1,2,3) << "\n"; // 6
-    std::cout << "land(true,false,true)=" << land(true,false,true) << "\n"; // 0
+    std::cout << "left(1,2,3)=" << left(1,2,3) << "\n";                      // 6
+    std::cout << "right_init(1,2,3)=" << right_init(1,2,3) << "\n";          // 6
+    std::cout << "land(true,false,true)=" << land(true,false,true) << "\n";  // 0
 }
 ```
 
@@ -176,7 +176,7 @@ void demo_types(Ts... values) {
     std::cout << "x is int=" << std::is_same_v<decltype(x), int>
               << " y is double=" << std::is_same_v<decltype(y), double> << "\n";
 }
-int main() { demo_types(1, 2, 3); }   // x is int=1 y is double=1
+int main() { demo_types(1, 2, 3); }  // x is int=1 y is double=1
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
@@ -502,7 +502,7 @@ int main() {
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <algorithm>    // std::min({...}) 初始化列表重载
+#include <algorithm>                                             // std::min({...}) 初始化列表重载
 // 编译期全谓词
 template <typename... Ts> constexpr bool all_same = (std::is_same_v<Ts, int> && ...);
 
@@ -524,9 +524,9 @@ template <typename... Rows> auto flatten(Rows... rows) { return ( (rows + ... ) 
 
 int main() {
     static_assert(all_same<int, int, int>);
-    std::cout << "cat(1,'a',2.5)=" << cat(1, 'a', 2.5) << "\n"; // 1a2.5
-    std::cout << "min_of(3,1,4)=" << min_of(3,1,4) << "\n";    // 1
-    std::cout << "has_neg(1,2,-3)=" << has_neg(1,2,-3) << "\n"; // 1
+    std::cout << "cat(1,'a',2.5)=" << cat(1, 'a', 2.5) << "\n";  // 1a2.5
+    std::cout << "min_of(3,1,4)=" << min_of(3,1,4) << "\n";      // 1
+    std::cout << "has_neg(1,2,-3)=" << has_neg(1,2,-3) << "\n";  // 1
 }
 ```
 
@@ -586,7 +586,7 @@ int main() {
     sink(std::cout, "log:", 1, 2.5); std::cout << "\n";
     int a = 1; int* p = &a; int* q = nullptr;
     std::cout << "valid(p,q)=" << valid(p, q) << "\n";           // 0
-    std::cout << "mean(2,4,6)=" << mean(2.0, 4.0, 6.0) << "\n"; // 4
+    std::cout << "mean(2,4,6)=" << mean(2.0, 4.0, 6.0) << "\n";  // 4
 }
 ```
 
@@ -799,7 +799,7 @@ int main() {
 ## 附录 A：WG21 提案 [B: Principle]
 
 > **示例 80** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：WG21 提案 [B: Principle]
-```
+```text
 折叠表达式 (Fold Expressions) 的标准化历程:
 
 N4191 (2014): 初始提案，探索四种折叠形式 (unary/binary × left/right)
@@ -867,7 +867,7 @@ int main() {
 ## 附录 D：面试与常见错误 [J: Learning / I: Practice]
 
 > **示例 83** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：面试与常见错误 [J: Learning / I: Practice]
-```
+```text
 面试高频:
 Q: 四种折叠表达式的语法?  (pack op ...) ( ... op pack) (pack op ... op init) (init op ... op pack)
 A: unary left=(... + pack); unary right=(pack + ...); binary left=(0 + ... + pack); binary right=(pack + ... + 0)
@@ -1038,9 +1038,9 @@ bool all_true(Ts... xs) { return (... && xs); }
 template <typename... Ts>
 void ignore(Ts&&...) {}
 int main() {
-    std::cout << all_true(true, 1, 2) << " "      // 1
-              << all_true(true, false) << "\n";    // 0
-    ignore(std::cout << "side-effect ", 42);       // 触发副作用
+    std::cout << all_true(true, 1, 2) << " "     // 1
+              << all_true(true, false) << "\n";  // 0
+    ignore(std::cout << "side-effect ", 42);     // 触发副作用
 }
 ```
 
@@ -1094,8 +1094,8 @@ template <typename P, typename... Ts> bool any_of(P p, Ts... xs) { return (p(xs)
 
 int main() {
     std::cout << std::boolalpha
-              << all_of([](auto){ return true; }) << ' '   // true（空包 &&）
-              << any_of([](auto){ return false; }) << '\n'; // false（空包 ||）
+              << all_of([](auto){ return true; }) << ' '     // true（空包 &&）
+              << any_of([](auto){ return false; }) << '\n';  // false（空包 ||）
 }
 ```
 

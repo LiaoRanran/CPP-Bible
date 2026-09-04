@@ -148,9 +148,9 @@ int main() {
     // 1. 默认构造
     std::vector<int> v1;
     // 2. 指定大小
-    std::vector<int> v2(5);              // 5 个 0
+    std::vector<int> v2(5);      // 5 个 0
     // 3. 指定大小 + 初值
-    std::vector<int> v3(5, 42);          // 5 个 42
+    std::vector<int> v3(5, 42);  // 5 个 42
     // 4. initializer_list
     std::vector<int> v4{1, 2, 3, 4, 5};
     // 5. 拷贝
@@ -281,14 +281,14 @@ int main() {
 struct Foo {};
 void mvp_demo() {
     // Foo f();  // 声明函数 f 返回 Foo，不是创建对象！
-    Foo f{};    // 正确：创建对象
+    Foo f{};                                         // 正确：创建对象
     (void)f;
 }
 
 // 陷阱2: initializer_list 优先劫持
 void il_trap() {
-    std::vector<int> v1(10, 2);   // 期望: 10 个 2 → 正确
-    std::vector<int> v2{10, 2};   // 期望: 同? → 错误! {10,2} = 2个元素
+    std::vector<int> v1(10, 2);                      // 期望: 10 个 2 → 正确
+    std::vector<int> v2{10, 2};                      // 期望: 同? → 错误! {10,2} = 2个元素
 }
 
 // 陷阱3: 类的成员初始化顺序 ≠ 初始化列表顺序
@@ -315,14 +315,14 @@ int main() {
 #include <iostream>
 #include <string>
 struct Data {
-    int a = 10;           // NSDMI（Non-Static Data Member Initializer）
+    int a = 10;         // NSDMI（Non-Static Data Member Initializer）
     double b = 3.14;
     std::string s{"hello"};
 };
 int main() {
-    Data d1;              // 使用所有 NSDMI 默认值
-    Data d2{20};          // a=20, b=3.14, s="hello"（只覆盖前 N 个成员）
-    Data d3{20, 2.71};   // a=20, b=2.71, s="hello"
+    Data d1;            // 使用所有 NSDMI 默认值
+    Data d2{20};        // a=20, b=3.14, s="hello"（只覆盖前 N 个成员）
+    Data d3{20, 2.71};  // a=20, b=2.71, s="hello"
 
     std::cout << "d1: " << d1.a << "," << d1.b << std::endl;
     std::cout << "d2: " << d2.a << "," << d2.b << std::endl;
@@ -349,7 +349,7 @@ int main() {
 
 // 法则1: 首选 {} 统一初始化（防窄化、防 MVP）
 struct Config { int port = 8080; std::string host = "0.0.0.0"; };
-Config cfg1{3000, "::1"};  // OK
+Config cfg1{3000, "::1"};              // OK
 // Config cfg2 = {3000, "::1"};  // 也可以，但在 explicit ctor 下受限
 
 // 法则2: NSDMI 提供合理的默认值（不要留未初始化的内置类型）
@@ -657,8 +657,8 @@ int main(){Demo d{42,3.14};Demo e{};std::cout<<d.a<<" "<<e.a<<std::endl;return 0
 #include <iostream>
 struct Foo{};
 int main(){
-    Foo f(); // DANGER: declares function, NOT object!
-    Foo f2{}; // Correct: value-initialized object
+    Foo f();   // DANGER: declares function, NOT object!
+    Foo f2{};  // Correct: value-initialized object
     std::cout<<"MVP: Foo f(); is function declaration, use Foo f{} instead.\n";
     return 0;
 }
@@ -777,11 +777,11 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 #include <vector>
 #include <initializer_list>
 int main() {
-    std::vector<int> a(10);          // 10 个 0
-    std::vector<int> b{10};          // 1 个元素 10（initializer_list 构造）
-    std::vector<int> c{1, 2, 3};     // 3 个元素
+    std::vector<int> a(10);       // 10 个 0
+    std::vector<int> b{10};       // 1 个元素 10（initializer_list 构造）
+    std::vector<int> c{1, 2, 3};  // 3 个元素
     std::cout << "a.size=" << a.size() << " b.size=" << b.size() << " c.size=" << c.size() << '\n';
-    auto il = {1, 2, 3};             // 推导为 std::initializer_list<int>
+    auto il = {1, 2, 3};          // 推导为 std::initializer_list<int>
     std::cout << "il.size=" << il.size() << '\n';
 }
 ```
@@ -803,12 +803,12 @@ int main() {
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
 ```cpp
 #include <iostream>
-struct Point { int x; int y; int z; };    // 聚合体
+struct Point { int x; int y; int z; };                     // 聚合体
 int main() {
-    Point p{.x = 1, .z = 3};              // 指定初始化；y 被值初始化为零
-    std::cout << p.x << ',' << p.y << ',' << p.z << '\n';   // 1,0,3
-    Point q{};                            // 值初始化：全部零
-    std::cout << q.x << ',' << q.y << ',' << q.z << '\n';   // 0,0,0
+    Point p{.x = 1, .z = 3};                               // 指定初始化；y 被值初始化为零
+    std::cout << p.x << ',' << p.y << ',' << p.z << '\n';  // 1,0,3
+    Point q{};                                             // 值初始化：全部零
+    std::cout << q.x << ',' << q.y << ',' << q.z << '\n';  // 0,0,0
 }
 ```
 
@@ -832,8 +832,8 @@ int main() {
 #include <array>
 #include <vector>
 int main() {
-    std::array<int, 3> a{1, 2, 3};        // 栈上定长，无堆分配，可 constexpr
-    std::vector<int>   v{1, 2, 3};        // 堆分配 3 个元素
+    std::array<int, 3> a{1, 2, 3};  // 栈上定长，无堆分配，可 constexpr
+    std::vector<int>   v{1, 2, 3};  // 堆分配 3 个元素
     int s = 0;
     for (std::size_t i = 0; i < a.size(); ++i) s += a[i];
     std::cout << "sum=" << s << " a.size=" << a.size() << '\n';
@@ -866,10 +866,10 @@ int main() {
 struct S { int a; double b; };
 
 int main() {
-    S s1;            // 默认初始化: 内置成员未初始化
+    S s1;       // 默认初始化: 内置成员未初始化
     (void)s1;
-    S s2{};          // 值初始化: a=0, b=0.0
-    S s3 = {};       // 同上
+    S s2{};     // 值初始化: a=0, b=0.0
+    S s3 = {};  // 同上
     (void)s3;
     int x{};
     std::cout << s2.a << s2.b << x << "\n";
@@ -902,7 +902,7 @@ int main() {
 struct Widget {
     int a;
     int b;
-    Widget(int v) : a(v + 1), b(v) {}   // 按声明顺序 a→b 初始化
+    Widget(int v) : a(v + 1), b(v) {}  // 按声明顺序 a→b 初始化
 };
 
 int main() {
@@ -930,8 +930,8 @@ int main() {
 #include <iostream>
 #include <vector>
 int main() {
-    std::vector<int> v{10};               // 误以为 10 个 0，实际是 1 个元素 10
-    std::cout << "size=" << v.size() << " elem0=" << v[0] << '\n';   // size=1, elem0=10
+    std::vector<int> v{10};                                         // 误以为 10 个 0，实际是 1 个元素 10
+    std::cout << "size=" << v.size() << " elem0=" << v[0] << '\n';  // size=1, elem0=10
 }
 ```
 
@@ -942,8 +942,8 @@ int main() {
 #include <iostream>
 #include <vector>
 int main() {
-    std::vector<int> fill(10);            // 圆括号：10 个 0
-    std::vector<int> list{1, 2, 3};       // 花括号：3 个元素
+    std::vector<int> fill(10);       // 圆括号：10 个 0
+    std::vector<int> list{1, 2, 3};  // 花括号：3 个元素
     std::cout << "fill.size=" << fill.size() << " list.size=" << list.size() << '\n';
 }
 ```
@@ -974,10 +974,10 @@ int main() {
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：聚合初始化与指定初始化器的
 ```cpp
 #include <iostream>
-struct Config { int port; bool tls; char host[8]; };   // 仍是聚合
+struct Config { int port; bool tls; char host[8]; };                  // 仍是聚合
 int main() {
-    Config c{.port = 8080, .tls = true};               // 指定初始化；host 自动零
-    std::cout << c.port << ',' << c.tls << ',' << c.host[0] << '\n';   // 8080,1,0
+    Config c{.port = 8080, .tls = true};                              // 指定初始化；host 自动零
+    std::cout << c.port << ',' << c.tls << ',' << c.host[0] << '\n';  // 8080,1,0
 }
 ```
 
@@ -1024,7 +1024,7 @@ std::initializer_list<int> dangling_il() {
 GCC 直接告警：
 
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：std::initialize
-```
+```asm
 warning: returning temporary 'initializer_list' does not extend the lifetime of the underlying array [-Winit-list-lifetime]
 ```
 
@@ -1529,22 +1529,22 @@ struct Point { int x, y, z; };
 
 int main() {
     // 聚合初始化 vs 构造函数初始化（语义等价）
-    Point a{1, 2, 3};                 // 聚合
-    Point b(1, 2, 3);                 // 构造函数（等价）
+    Point a{1, 2, 3};         // 聚合
+    Point b(1, 2, 3);         // 构造函数（等价）
     std::cout << "a=(" << a.x << "," << a.y << "," << a.z << ")"
               << " b=(" << b.x << "," << b.y << "," << b.z << ")" << std::endl;
 
     // 零初始化 vs 默认初始化（trivial 数组）
-    int zeroed[4]{};                  // 全部清零
-    int def[4];                       // 默认初始化：内容未指定（不读写）
+    int zeroed[4]{};          // 全部清零
+    int def[4];               // 默认初始化：内容未指定（不读写）
     std::cout << "zeroed[0]=" << zeroed[0] << " default[0]=" << def[0] << std::endl;
 
     // 值初始化结构体
-    Point v{};                        // x=y=z=0
+    Point v{};                // x=y=z=0
     std::cout << "value-init v.z=" << v.z << std::endl;
 
     // 指定成员初始化
-    Point p{.x = 5, .z = 7};          // y 被值初始化为 0
+    Point p{.x = 5, .z = 7};  // y 被值初始化为 0
     std::cout << "designated p=(" << p.x << "," << p.y << "," << p.z << ")" << std::endl;
 
     std::cout << "sizeof(Point)=" << sizeof(Point) << std::endl;

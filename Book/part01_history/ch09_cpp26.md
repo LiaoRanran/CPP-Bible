@@ -114,7 +114,7 @@ int main() {}
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
-```
+```text
 C++26 (方向)
 ├─ 静态反射: std::meta / 反射运算符 (^^ / [: :] 提案)
 ├─ Contracts: pre/post/assert(回归, 曾被 C++20 移除)
@@ -466,7 +466,7 @@ int main(){std::cout<<"std::simd: explicit SIMD vectors without intrinsics, port
 ## 附录 C：C++26底层影响与工业前瞻 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：C++26底层影响与工业前
-```
+```text
 C++26关键特性及其工程影响:
 
 Contracts (P2900R7):
@@ -646,10 +646,10 @@ C++23 的痛点：每一步都要手动嵌套回调，错误与取消需自建�
 void pipeline(int input,
               std::function<void(int)> on_done,
               std::function<void(const std::string&)> on_error) {
-    int raw = input;                 // ① 读取
-    int parsed = raw + 1;            // ② 解析（真实场景再嵌一层回调）
+    int raw = input;         // ① 读取
+    int parsed = raw + 1;    // ② 解析（真实场景再嵌一层回调）
     if (parsed < 0) { on_error("parse failed"); return; }
-    int saved = parsed * 2;          // ③ 落盘
+    int saved = parsed * 2;  // ③ 落盘
     on_done(saved);
 }
 
@@ -694,10 +694,10 @@ C++23 用手工 `if/throw` 模拟契约——能编译，但检查是"手写的�
 #include <stdexcept>
 
 int clamp_cpp23(int x, int lo, int hi) {
-    if (!(lo <= hi))                 // 前置条件（手写）
+    if (!(lo <= hi))            // 前置条件（手写）
         throw std::invalid_argument("pre: lo <= hi");
     int r = x < lo ? lo : (x > hi ? hi : x);
-    if (!(r >= lo && r <= hi))       // 后置条件（手写）
+    if (!(r >= lo && r <= hi))  // 后置条件（手写）
         throw std::logic_error("post: lo <= r <= hi");
     return r;
 }

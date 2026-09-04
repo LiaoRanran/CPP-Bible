@@ -1,6 +1,7 @@
 # PROGRESS — 章节完成度矩阵
 
-> 最后更新: 2026-07-11 | 全书 147 章 / 126K+ 行 / 6500+ cpp
+> 最后更新: 2026-09-03 | 全书 147 章 / 126K+ 行 / 6500+ cpp
+> 编译口径见文末「Phase 6：编译门禁实测状态（2026-09-03）」（取代上方矩阵的粗口径「编译 ✓」）。
 > 关联: ⟶ TASKS.md ⟶ ISSUES.md ⟶ REVIEW.md ⟶ CROSSREF.md
 
 ## 完成度速览
@@ -207,3 +208,130 @@
 - 判定：147 章中已含 Mermaid 的 39 章不再注入（防重复注水）；仅向"缺图且架构含量高的 10 章"注入。
 - 清单：ch11_compilers / ch35_memory_layout / ch39_raii_rule / ch41_smart_pointers / ch65_type_traits / ch81_string / ch107_atomic / ch113_coroutine / ch118_modules / ch135_patterns_intro；各 1 块，幂等（`inject_mermaid.py` 检测已存在则 SKIP），自包含离线零外部依赖。
 - 门禁：`consistency_check.py` 仍 **100/100**（` ```mermaid ` 不计入 cpp 阈值）。
+
+---
+
+## Phase 6：编译门禁实测状态（2026-09-04 更新）
+
+> 本节为**编译门禁实测台账**，只登记 `tools/chapter_compile_check.py` 的实测结果。
+> 判定原则：**只有本可在宿主工具链独立编译的块才算失败**——跨块连续讲解、故意编译错示范、
+> 外部框架/裸机域、库源码摘录一律 SKIP 或不计，避免"为刷绿而破坏教学结构"。
+
+### 6.1 全绿章（0 fail，22 章）
+
+| 章 | blocks | 章 | blocks |
+|---|---|---|---|
+| ch13_packaging | 54 | ch42_strict_aliasing | 52 |
+| ch16_ide | 50 | ch45_oop_object_model | 60 |
+| ch17_crosscompile | 47 | ch46_encapsulation | 66 |
+| ch22_auto_decltype | 53 | ch30_volatile | 57 |
+| ch24_enum | 57 | ch31_operator_overloading | 54 |
+| ch40_exception_safety | 58 | ch62_specialization | 85 |
+| ch70_tag_dispatch | 48 | ch125_libcxx | 45 |
+| ch127_llvm | 45 | ch154_cache_opt | 41 |
+| ch152_perf_model | 39 | ch155_simd | 50 |
+| ch153_cpu_micro | 39 | ch157_compiler_explorer | 50 |
+| ch158_perf_antipatterns | 42 | ch126_msstl | 57 |
+
+### 6.2 残留失败（已判定非缺陷，不改）
+
+| 章 | 剩余 | 类别 |
+|---|---|---|
+| ch61 | 23 | 故意二义性错例（`call of overloaded … is ambiguous`，章节主题即重载决议） |
+| ch100 / ch101 | 19 / 10 | `for`/`if` 散在命名空间作用域 + 类型跨块（片段式教学） |
+| ch72 | 18 | 跨块类型（Fast / Expr / Vec 在更早块定义） |
+| ch50 | 13 | 工业案例「例 N」循环体/调用体片段 + 跨块类型 |
+| ch52 / ch48 / ch41 | 9 / 9 / 6 | 跨块连续讲解（Addable / Base / Connection 等） |
+| ch20 | 5 | Config 用法演绎（假设类型）+ 练习片段 |
+| ch51 / ch71 / ch47 | 4 / 5 / 5 | 混合：多为跨块片段（CrtpBase/Base 在更早块） |
+| ch96 / ch101 | 5 / 7 | 跨块片段（introsort-lite 在更早块）+ 循环体散命名空间 |
+| ch67 / ch39 / ch23 / ch63 / ch81 | 2 / 1 / 1 / 1 / 1 | 跨块概念 / 跨块宏 / 故意错例 / 跨块片段 |
+| ch68 | 1 | 故意重复偏特化错例（注释明示"重复→重定义"） |
+| ch156 | 6 | 跨块片段（g_sink/cheap/do_work 在更早块）+ 顶层 if/链接错 |
+| ch132 / ch133 / ch134 / ch131 / ch130 / ch128 | 10 / 15 / 11 / 2 / 2 / 1 | 第三方生态源码章：库未装（超门禁作用域），SKIP 后余量 |
+
+### 6.3 真截断候选（2026-09-04 状态：已清空）
+
+- **已清**：ch51 [1][3][16][17]（`std::` 限定 / Matrix 类体闭合 / 幻影 helper）、ch68 [6][22]、
+  ch96 [40][43]、ch101 [0][17][22]、ch127 [39]（`AddExpr` 截断）——6 章 11 块全部修复并真机复核
+  （`sum=10` / `medA=medB=5` / `9 1` / `find=7 first=7`）。
+- 原清单中 ch68 [19]（重复偏特化）与 ch51 [10][23][28][30]、ch96 [3] 经复核为**故意错例 / 跨块片段**，非缺陷。
+- **形态学**（诊断手册，沿用）：`// …` 截断标记后收尾括号未补；类体/函数体缺闭合；虚函数只声明未定义
+  （链接错）；同一块内重复偏特化；命名空间级 lambda 带捕获默认值；顶层调用语句未入 main。
+- **修复法**：补 `}` 并把注释改写成 `{ /* … */ }`；链接错补内联定义；幻影名补最小真定义；
+  **围栏数不得增删**（README `cpp_blocks` 写死，只替换块内容）。
+- **2026-09-04 追加**：ch24 块 #33（`struct Packet { PktFlag flags; // …` 缺 `};`）——题注迁移
+  试点编译复验时暴露，HEAD 同样 fail（既存，非版式/题注引入）；补 `/* … */ };` 后 57/0。
+
+### 6.4 SKIP 规则台账
+
+- **既有**：POSIX 网络头 / libstdc++ 保留名 / C++23 特性（`<print>` 等）/ Google Benchmark /
+  跨块 `#include "program_NN_*.cpp"` / 可替换全局 operator new-delete / modules / fmt /
+  std::formatter / 行号源码列表 / 裸机嵌入式。
+- **2026-09-03 新增**：本地自写头 `#include "..."`、`std::` 模板全特化、`namespace std` 扩展、
+  libstdc++ 源码摘录（首行 `bits/…`）、顶层 namespace 回指 `::X`、newlib 裸机桩
+  （`_sbrk` / `_ebss` / picolibc）、外部框架（Qt / sqlite3 / gtest / doctest / gmock / Catch2）。
+- **2026-09-04 新增**：第三方生态命名空间 `EXTERNAL_NS_RE`（boost/absl/spdlog/rocksdb/leveldb/
+  folly/llvm/clang/glog/gflags/fmt::，匹配前剔除纯注释行）。
+
+---
+
+## Phase 7：代码块版式统一（2026-09-04 收官）
+
+> 目标：全库 147 章统一围栏语言标签 + 行尾注释对齐。标准定稿于 `docs/references/TEACHING.md` §8，
+> 用户问卷拍板四项统一（标签 / 对齐 / 题注 / 注释写法），题注与注释写法属判断性工作未铺开（见 7.4）。
+
+### 7.1 工具与护栏
+
+- `tools/codeblock_style.py`（字节级读写，保留 CRLF/LF）：
+  - **标签统一**：别名归一（`c++/cc/cxx→cpp`、`output/console→text`、`sh→bash`）+ 裸围栏推断
+    （text 信号集：Q:/A:/面试/提案号/ASCII 图；含 `;{}` 但信号不足 → 返回 `None` 交人工，
+    **绝不自动判 cpp**，防指标漂移、防源码摘录误入门禁）。
+  - **行尾注释对齐**：显示宽度（CJK=2）对齐到「最长代码行 + 2 空格」，>76 列整块跳过；
+    护栏：整行注释 / `///` / URL / 字符串内 `//`（引号奇偶计数）不参与。
+  - `--list-bare` 裸围栏清点；`--titles` 题注（默认关闭）。
+- **围栏解析器硬化（题注前置，防假全绿）**：6 个按 `^```cpp\s*$` 精确匹配的仓库工具
+  （chapter_compile_check / chapter_lint / compile_run_sanitize_pipeline / run_cpp_assertions /
+  verify_exercises / exercise_dup_guard）改为接受围栏信息串并跳过信息串行。
+
+### 7.2 铺开记录（按轮）
+
+| 轮次 | 范围 | 标签 | 对齐 | 人工定点裸→text |
+|---|---|---|---|---|
+| 试改 | ch125/127/133/154 | 7 | 76 | — |
+| part06+part12 | 22 章 | 54 | 479 | — |
+| part14 | 7 章 | 1 | 64 | 2 |
+| part11 | 11 章 | 13 | 171 | 3 |
+| 剩余 12 part | 107 章（part01/02/03/04/05/07/08/09/10/13/15/16） | 228 | 3849 | 29 |
+
+- 每轮 diff 均为「纯重排零增删」口径复核；编译门禁对照组（ch126 57/0、ch125/127/152~155/157/158）
+  全程 0 回归。
+
+### 7.3 收官状态
+
+- **裸围栏（S3）：全书 329 → 0 清零**（`--list-bare` 实测 0，含 29 处含 `;` 的代码性围栏人工判 `text`）。
+- 指标：`cpp_blocks` 7534 → 7527（README 已同步），`d5_coverage` 127 不变；gen_metrics ✅。
+- 门禁：whitespace 0 / consistency 100/100。
+- **工具 bug 修复**：CRLF 文件被 `split("\n")` 残留 `\r` 污染成 `\r\r\n`（30 文件 whitespace 报 W2、
+  ch50 行数翻倍）→ 改 `splitlines()` + `newline.join`；修复后从 HEAD 还原重做，门禁全恢复。
+  教训：批量 `--apply` 后必跑 whitespace + gen_metrics + consistency 三道门禁。
+
+### 7.4 题注迁移（TEACHING §8.4）——试点完成 2026-09-04，待逐章铺开
+
+- **试点 3 章 184 块**（全绿章 ch22 53 / ch24 57 / ch70 48，跨 part03/part06 双格式验证）：
+  围栏加 `title="示例 N · ★…☆"`，**正文题注行保留**（徽章 `<span class="badge">` / 主题文字 /
+  实现版本标注仍在正文渲染，不搬进 title——attribute 里放 HTML 会丢渲染）。命中率 184/188
+  （题注后 ≤3 行即遇 ```cpp；4 处 miss 为题注后隔叙述，保守跳过）。
+- **工具修复 3 处**：`codeblock_style.py --titles` 难度捕获 `\S+` → `[★☆]+`
+  （原会把 `]`/`</span>` 吃进 title）；`example_exercise_audit.py` 与 `normalize_comments.py`
+  的 `fence_lang` 改取首 token（否则带 title 的块被漏计/漏处理——同 chapter_lint 兜底修过的坑）。
+- **全链路验证**：三道门禁全绿且 **cpp_blocks 7527 不漂**（metrics_snapshot 的 `FENCE_RE`
+  语言组 `[A-Za-z0-9_+.-]*` 天然兼容 info 串）；3 章编译门禁保持全绿（53/57/48 blocks 0 fail）；
+  `exercise_dup_guard` 614 块提取正常；站点侧 `pymdownx.superfences` + `attr_list` 均已启用
+  （title 渲染原生支持，全站 strict build 由 CI site job 兜底）。
+- **试点连带修复 1 处真截断**（PROGRESS 6.3 口径）：ch24 块 #33（示例 39 协议标志位）
+  `struct Packet { PktFlag flags; // …` 缺 `};` 闭合 → 补 `/* … */ };`；复验 57/0。
+  该失败为**既存问题**（HEAD 同样 fail；6.1 基线 57/0 系 07-11 快照，8–9 月深度改写引入后未复验）。
+- **铺开方式**：`python tools/codeblock_style.py --apply --titles <章>`，逐章推进；
+  miss 的 4 类块（题注后隔叙述）人工补 title 或保留原样。
+- **④ 注释写法统一**（中文注释、圈号引导、去冗余、标点）：机械规则无法完全覆盖，随改随清。

@@ -67,7 +67,7 @@ C 数组有两个老毛病：一是作为参数时会悄悄**退化为指针**�
 #include <iostream>
 
 int main() {
-    std::array<int, 3> a{1, 2, 3};      // 聚合初始化
+    std::array<int, 3> a{1, 2, 3};                 // 聚合初始化
     std::cout << a.size() << " " << a[0] << "\n";  // 3 1
     return 0;
 }
@@ -210,8 +210,8 @@ flowchart TD
 int main() {
     std::array<int, 4> a{};
     int                c[4]{};
-    std::cout << "sizeof(array)= " << sizeof(a) << "\n";   // 16
-    std::cout << "sizeof(Carr)= " << sizeof(c) << "\n";    // 16（相等）
+    std::cout << "sizeof(array)= " << sizeof(a) << "\n";  // 16
+    std::cout << "sizeof(Carr)= " << sizeof(c) << "\n";   // 16（相等）
     std::cout << "alignof(array)= " << alignof(decltype(a)) << "\n";
     return 0;
 }
@@ -261,9 +261,9 @@ int main() {
     std::array<int, 3> a{1, 2, 3};
     {
         std::array<int, 2> b{9, 8};
-        std::cout << b[0] << "\n";   // 9
-    }                                // b 在此析构，内存回收
-    std::cout << a[0] << "\n";       // 1（a 仍存活）
+        std::cout << b[0] << "\n";  // 9
+    }                               // b 在此析构，内存回收
+    std::cout << a[0] << "\n";      // 1（a 仍存活）
     return 0;
 }
 ```
@@ -276,9 +276,9 @@ int main() {
 
 int main() {
     std::array<int, 3> a{1, 2, 3};
-    auto b = a;                       // ✅ 值拷贝，b 与 a 独立
+    auto b = a;                                // ✅ 值拷贝，b 与 a 独立
     b[0] = 99;
-    std::cout << a[0] << " " << b[0] << "\n";   // 1 99（互不影响）
+    std::cout << a[0] << " " << b[0] << "\n";  // 1 99（互不影响）
     return 0;
 }
 ```
@@ -308,9 +308,9 @@ flowchart LR
 #include <iostream>
 
 int main() {
-    std::array<int, 3> a{1, 2, 3};        // ✅ 省略内层花括号
-    std::array<int, 3> b{{1, 2, 3}};      // ✅ 等价
-    std::cout << (a == b) << "\n";        // 1（相等）
+    std::array<int, 3> a{1, 2, 3};    // ✅ 省略内层花括号
+    std::array<int, 3> b{{1, 2, 3}};  // ✅ 等价
+    std::cout << (a == b) << "\n";    // 1（相等）
     return 0;
 }
 ```
@@ -404,8 +404,8 @@ int main() {
     std::array<int, 3> a{1, 2, 3};
     // a.push_back(4);   // ❌ 编译错误：array 无 push_back，长度固定
     std::vector<int> v{1, 2, 3};
-    v.push_back(4);      // ✅ vector 可增长
-    std::cout << v.size() << "\n";   // 4
+    v.push_back(4);                 // ✅ vector 可增长
+    std::cout << v.size() << "\n";  // 4
     return 0;
 }
 ```
@@ -420,7 +420,7 @@ void by_value(std::array<int, 3> a) { std::cout << a.size() << "\n"; }  // 保�
 
 int main() {
     std::array<int, 3> a{1, 2, 3};
-    by_value(a);          // ✅ 拷贝整个数组，size() 仍是 3
+    by_value(a);                                                        // ✅ 拷贝整个数组，size() 仍是 3
     return 0;
 }
 ```
@@ -441,7 +441,7 @@ int main() {
 #include <cstdint>
 #include <iostream>
 
-using MacHeader = std::array<std::uint8_t, 12>;   // 定长以太网头
+using MacHeader = std::array<std::uint8_t, 12>;          // 定长以太网头
 
 std::uint16_t ethertype(const MacHeader& h) {
     return (std::uint16_t(h[12 - 2]) << 8) | h[12 - 1];  // 末 2 字节
@@ -449,7 +449,7 @@ std::uint16_t ethertype(const MacHeader& h) {
 
 int main() {
     MacHeader h{};
-    h[10] = 0x08; h[11] = 0x00;     // 模拟 EtherType = 0x0800 (IPv4)
+    h[10] = 0x08; h[11] = 0x00;                          // 模拟 EtherType = 0x0800 (IPv4)
     std::cout << "ethertype=0x" << std::hex << ethertype(h) << "\n";
     return 0;
 }
@@ -568,10 +568,10 @@ int main() { return 0; }
 
 int main() {
     std::array<int, 3> a{10, 20, 30};
-    auto& [x, y, z] = a;             // 结构化绑定（tuple 接口）
-    std::cout << x << " " << y << " " << z << "\n";   // 10 20 30
-    y = 99;                          // 通过绑定修改原 array
-    std::cout << a[1] << "\n";       // 99
+    auto& [x, y, z] = a;                             // 结构化绑定（tuple 接口）
+    std::cout << x << " " << y << " " << z << "\n";  // 10 20 30
+    y = 99;                                          // 通过绑定修改原 array
+    std::cout << a[1] << "\n";                       // 99
     return 0;
 }
 ```
@@ -629,8 +629,8 @@ int main() {
 
 int main() {
     int raw[] = {1, 2, 3, 4};
-    auto a = std::to_array(raw);          // C++20：array<int,4>
-    std::cout << a.size() << " " << a[3] << "\n";   // 4 4
+    auto a = std::to_array(raw);                   // C++20：array<int,4>
+    std::cout << a.size() << " " << a[3] << "\n";  // 4 4
     return 0;
 }
 ```
@@ -643,8 +643,8 @@ int main() {
 
 int main() {
     char name[] = {'a', 'b', 'c', '\0'};
-    auto a = std::to_array(name);          // array<char,4>
-    std::cout << a.size() << "\n";         // 4
+    auto a = std::to_array(name);   // array<char,4>
+    std::cout << a.size() << "\n";  // 4
     return 0;
 }
 ```
@@ -774,8 +774,8 @@ int main() {
 #include <iostream>
 int main() {
     std::array<int, 4> a{};
-    a.fill(5);                        // 填全部 4 个，不是只填首元素
-    for (int x : a) std::cout << x << " ";   // 5 5 5 5
+    a.fill(5);                              // 填全部 4 个，不是只填首元素
+    for (int x : a) std::cout << x << " ";  // 5 5 5 5
     std::cout << "\n";
     return 0;
 }
@@ -853,14 +853,14 @@ int main() {
     auto t0 = std::chrono::steady_clock::now();
     { volatile int sink = 0;
       for (int i = 0; i < 100000; ++i) {
-          std::array<int, N> a{};          // 栈上分配（约 1KB）
+          std::array<int, N> a{};    // 栈上分配（约 1KB）
           sink += a[0];
       }
     }
     auto t1 = std::chrono::steady_clock::now();
     { volatile int sink = 0;
       for (int i = 0; i < 100000; ++i) {
-          std::vector<int> v(N, 0);        // 每次堆分配 + 释放
+          std::vector<int> v(N, 0);  // 每次堆分配 + 释放
           sink += v[0];
       }
     }
@@ -929,9 +929,9 @@ int main() {
 
 int main() {
     std::array<int, 3> a{1, 2, 3};
-    auto b = a;                 // ✅ 值拷贝（同 Go 的 [3]int 赋值即拷贝）
+    auto b = a;                                // ✅ 值拷贝（同 Go 的 [3]int 赋值即拷贝）
     b[0] = 9;
-    std::cout << a[0] << " " << b[0] << "\n";   // 1 9
+    std::cout << a[0] << " " << b[0] << "\n";  // 1 9
     return 0;
 }
 ```
@@ -945,8 +945,8 @@ int main() {
 
 int main() {
     std::array<int, 4> a{1, 2, 3, 4};
-    std::span<int> s = a;        // C++ 的"借用视图"等价于 Rust &[i32]
-    std::cout << s.size() << "\n";   // 4
+    std::span<int> s = a;           // C++ 的"借用视图"等价于 Rust &[i32]
+    std::cout << s.size() << "\n";  // 4
     return 0;
 }
 ```
@@ -1053,9 +1053,9 @@ int main() {
 #include <array>
 int main() {
     int c[] = {1, 2, 3, 4};
-    auto a = std::to_array(c);                // std::array<int, 4>
+    auto a = std::to_array(c);                        // std::array<int, 4>
     std::cout << "size=" << a.size()
-              << " data[2]=" << a.data()[2] << "\n"; // size=4 data[2]=3
+              << " data[2]=" << a.data()[2] << "\n";  // size=4 data[2]=3
 }
 ```
 
@@ -1073,9 +1073,9 @@ int main() {
 #include <tuple>
 int main() {
     std::array<int, 3> a{10, 20, 30};
-    auto [x, y, z] = a;                        // 结构化绑定
+    auto [x, y, z] = a;                   // 结构化绑定
     std::cout << x << y << z << ' '
-              << std::get<1>(a) << "\n";       // 102030 20
+              << std::get<1>(a) << "\n";  // 102030 20
 }
 ```
 
@@ -1091,9 +1091,9 @@ int main() {
 #include <iostream>
 #include <array>
 int main() {
-    alignas(32) std::array<float, 8> buf{};   // 32 字节对齐，适配 AVX
+    alignas(32) std::array<float, 8> buf{};    // 32 字节对齐，适配 AVX
     for (int i = 0; i < 8; ++i) buf[i] = static_cast<float>(i);
-    std::cout << "buf[7]=" << buf[7] << "\n"; // 7
+    std::cout << "buf[7]=" << buf[7] << "\n";  // 7
 }
 ```
 
@@ -1142,9 +1142,9 @@ int main() {
 #include <array>
 int main() {
     std::array<int, 4> a{0,1,2,3};
-    std::cout << "size=" << a.size() << "\n";   // 编译期常量 4
+    std::cout << "size=" << a.size() << "\n";  // 编译期常量 4
     // a[100] 是未定义行为(无边界检查); 下标须来自编译期或经显式校验
-    std::cout << a[2] << "\n";                   // 2
+    std::cout << a[2] << "\n";                 // 2
 }
 ```
 
@@ -1335,17 +1335,17 @@ ret
 
 int main() {
     std::array<int, 3> a{10, 20, 30};
-    std::cout << "size=" << a.size() << std::endl;                          // 3
-    std::cout << "&a[1]-&a[0]=" << (&a[1] - &a[0]) << std::endl;           // 1（证连续）
+    std::cout << "size=" << a.size() << std::endl;                // 3
+    std::cout << "&a[1]-&a[0]=" << (&a[1] - &a[0]) << std::endl;  // 1（证连续）
     std::cout << "sizeof==N*sizeof(int): "
-              << (sizeof(a) == sizeof(int) * 3) << std::endl;             // 1
+              << (sizeof(a) == sizeof(int) * 3) << std::endl;     // 1
     return 0;
 }
 ```
 
 预期输出：
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
-```
+```text
 size=3
 &a[1]-&a[0]=1
 sizeof==N*sizeof(int): 1
@@ -1558,8 +1558,8 @@ flowchart TD
 int main() {
     // 1) 布局：array 不携带隐藏指针，元素直接内嵌
     std::array<int, 8> a{1, 2, 3, 4, 5, 6, 7, 8};
-    static_assert(sizeof(a) == sizeof(int) * 8); // 聚合布局 == 裸元素总大小
-    assert(static_cast<void*>(&a) == static_cast<void*>(a.data())); // 首元素就在对象开头
+    static_assert(sizeof(a) == sizeof(int) * 8);                     // 聚合布局 == 裸元素总大小
+    assert(static_cast<void*>(&a) == static_cast<void*>(a.data()));  // 首元素就在对象开头
 
     // 对照：vector 对象本体不含元素（句柄 + 堆数据）
     std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8};
@@ -1574,7 +1574,7 @@ int main() {
     // 3) .at() 越界抛异常，operator[] 不检查
     bool caught = false;
     try {
-        (void)a.at(8); // 越界
+        (void)a.at(8);                                               // 越界
     } catch (const std::out_of_range&) {
         caught = true;
     }

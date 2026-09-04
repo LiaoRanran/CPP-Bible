@@ -101,16 +101,16 @@ C++ 在对象模型上做了两个反潮流的选择：其一是**值语义优�
 #include <cstdio>
 
 class Account {
-    int balance_ = 0;          // private：编译期拒绝类外直接访问
+    int balance_ = 0;                       // private：编译期拒绝类外直接访问
 public:
-    void deposit(int n) { balance_ += n; }   // public 接口是契约
+    void deposit(int n) { balance_ += n; }  // public 接口是契约
     int  balance() const { return balance_; }
 };
 
 int main() {
     Account a;
     a.deposit(100);
-    printf("%d\n", a.balance());   // OK：100
+    printf("%d\n", a.balance());            // OK：100
     // a.balance_ = 999999;        // 编译错误：'balance_' is private within this context
 }
 ```
@@ -162,7 +162,7 @@ int main() {
 template <class T>
 class Stack : private std::vector<T> {
 public:
-    using std::vector<T>::push_back;     // 选择性公开个别接口
+    using std::vector<T>::push_back;  // 选择性公开个别接口
     using std::vector<T>::back;
     using std::vector<T>::pop_back;
     using std::vector<T>::empty;
@@ -172,7 +172,7 @@ int main() {
     Stack<int> s;
     s.push_back(1);
     s.push_back(2);
-    printf("%d\n", s.back());   // 2
+    printf("%d\n", s.back());         // 2
 }
 ```
 
@@ -186,12 +186,12 @@ int main() {
 #include <cstdio>
 
 struct Animal { int legs = 4; };
-struct Dog : Animal { int bark_vol = 99; };   // 额外字段
+struct Dog : Animal { int bark_vol = 99; };  // 额外字段
 
 int main() {
     Dog d;
-    Animal a = d;                 // 切片：只拷贝 Animal 子对象
-    printf("legs=%d\n", a.legs);  // 4（派生部分 bark_vol 已丢失）
+    Animal a = d;                            // 切片：只拷贝 Animal 子对象
+    printf("legs=%d\n", a.legs);             // 4（派生部分 bark_vol 已丢失）
     // a.bark_vol;                // 错误：基类视角看不到派生成员
     printf("sizeof(Animal)=%zu sizeof(Dog)=%zu\n", sizeof(Animal), sizeof(Dog));
 }
@@ -222,16 +222,16 @@ int main() { Derive d; }
 
 struct Base {
     void f()        { printf("Base::f()\n"); }
-    void f(int)     { printf("Base::f(int)\n"); }   // 重载
+    void f(int)     { printf("Base::f(int)\n"); }  // 重载
 };
 struct Derive : Base {
-    void f()        { printf("Derive::f()\n"); }    // 遮蔽 Base 的全部 f 重载
+    void f()        { printf("Derive::f()\n"); }   // 遮蔽 Base 的全部 f 重载
     // using Base::f;   // 取消注释可同时可见 Base::f(int)
 };
 
 int main() {
     Derive d;
-    d.f();           // Derive::f()
+    d.f();                                         // Derive::f()
     // d.f(1);        // 错误：Base::f(int) 被名字隐藏遮蔽
 }
 ```
@@ -261,14 +261,14 @@ int main() {
 #include <cstdio>
 
 void log_val(int v)    { printf("int: %d\n", v); }
-void log_val(double v) { printf("double: %f\n", v); }   // 重载：编译期选择
+void log_val(double v) { printf("double: %f\n", v); }  // 重载：编译期选择
 
 template <class T>
-void print(const T& v) { log_val(v); }                  // 模板：编译期实例化
+void print(const T& v) { log_val(v); }                 // 模板：编译期实例化
 
 int main() {
-    print(42);      // 调用 log_val(int)
-    print(3.14);    // 调用 log_val(double)
+    print(42);                                         // 调用 log_val(int)
+    print(3.14);                                       // 调用 log_val(double)
 }
 ```
 
@@ -292,8 +292,8 @@ struct Square : ShapeBase<Square> {
 
 int main() {
     Circle c; Square s;
-    c.draw();   // Circle（编译期绑定，无 vtable）
-    s.draw();   // Square
+    c.draw();  // Circle（编译期绑定，无 vtable）
+    s.draw();  // Square
 }
 ```
 
@@ -338,18 +338,18 @@ int main() {
 #include <cstddef>
 
 struct S {
-    char  a;    // 偏移 0
-    int   b;    // 偏移 4（char 后填充 3 字节对齐到 int）
-    char  c;    // 偏移 8
-    double d;   // 偏移 16（char 后填充 7 字节对齐到 double）
-};              // 总 sizeof = 24（末尾填充到 double 对齐 8 的倍数）
+    char  a;                                           // 偏移 0
+    int   b;                                           // 偏移 4（char 后填充 3 字节对齐到 int）
+    char  c;                                           // 偏移 8
+    double d;                                          // 偏移 16（char 后填充 7 字节对齐到 double）
+};                                                     // 总 sizeof = 24（末尾填充到 double 对齐 8 的倍数）
 
 int main() {
     printf("sizeof(S)      = %zu\n", sizeof(S));
-    printf("offsetof a     = %zu\n", offsetof(S, a));   // 0
-    printf("offsetof b     = %zu\n", offsetof(S, b));   // 4
-    printf("offsetof c     = %zu\n", offsetof(S, c));   // 8
-    printf("offsetof d     = %zu\n", offsetof(S, d));   // 16
+    printf("offsetof a     = %zu\n", offsetof(S, a));  // 0
+    printf("offsetof b     = %zu\n", offsetof(S, b));  // 4
+    printf("offsetof c     = %zu\n", offsetof(S, c));  // 8
+    printf("offsetof d     = %zu\n", offsetof(S, d));  // 16
 }
 ```
 
@@ -365,12 +365,12 @@ int main() {
 #include <cstdio>
 #include <cstddef>
 
-struct Bad  { char a; int b; char c; int d; };   // 4+4+4+4 = 16（大量 padding）
-struct Good { int b; int d; char a; char c; };    // 4+4+1+1 + 2 填充 = 12
+struct Bad  { char a; int b; char c; int d; };  // 4+4+4+4 = 16（大量 padding）
+struct Good { int b; int d; char a; char c; };  // 4+4+1+1 + 2 填充 = 12
 
 int main() {
-    printf("Bad  = %zu\n", sizeof(Bad));    // 16
-    printf("Good = %zu\n", sizeof(Good));   // 12（省 25%）
+    printf("Bad  = %zu\n", sizeof(Bad));        // 16
+    printf("Good = %zu\n", sizeof(Good));       // 12（省 25%）
 }
 ```
 
@@ -390,15 +390,15 @@ int main() {
 
 struct B1 { int x; };
 struct B2 { int y; };
-struct D  : B1, B2 { int z; };          // B1 在前，B2 其次，D 自身字段最后
+struct D  : B1, B2 { int z; };                         // B1 在前，B2 其次，D 自身字段最后
 
 int main() {
-    printf("offsetof B1::x = %zu\n", offsetof(D, x));   // 0
-    printf("offsetof B2::y = %zu\n", offsetof(D, y));   // 4
-    printf("offsetof D::z  = %zu\n", offsetof(D, z));   // 8
-    printf("sizeof(D)      = %zu\n", sizeof(D));         // 12
+    printf("offsetof B1::x = %zu\n", offsetof(D, x));  // 0
+    printf("offsetof B2::y = %zu\n", offsetof(D, y));  // 4
+    printf("offsetof D::z  = %zu\n", offsetof(D, z));  // 8
+    printf("sizeof(D)      = %zu\n", sizeof(D));       // 12
 }
-```
+```text
 
 多重继承内存布局 ASCII（本机 GCC x86-64，`[平台·x86-64]`）：
 
@@ -430,12 +430,12 @@ D : B1, B2 { int z; }
 // [示例 9] 空类 sizeof == 1，空类数组每个元素占 1 字节
 #include <cstdio>
 
-struct Empty {};                 // 没有任何非静态成员
+struct Empty {};                                          // 没有任何非静态成员
 
 int main() {
     Empty a, b;
-    printf("sizeof(Empty)   = %zu\n", sizeof(Empty));   // 1
-    printf("不同地址? %s\n", (&a != &b) ? "yes" : "no"); // yes
+    printf("sizeof(Empty)   = %zu\n", sizeof(Empty));     // 1
+    printf("不同地址? %s\n", (&a != &b) ? "yes" : "no");  // yes
     Empty arr[10];
     printf("空类数组大小   = %zu\n", sizeof(arr));        // 10
 }
@@ -447,15 +447,15 @@ int main() {
 ```cpp
 // [示例 10] EBO：空基类不占派生对象空间
 #include <cstdio>
-#include <cstddef>   // offsetof 宏定义于此（也可来自 <cstddef>/<stddef.h>）
+#include <cstddef>                                                 // offsetof 宏定义于此（也可来自 <cstddef>/<stddef.h>）
 
 struct Empty {};
-struct Derived : Empty { int x; };       // 空基类被优化掉
+struct Derived : Empty { int x; };                                 // 空基类被优化掉
 
 int main() {
-    printf("sizeof(Empty)        = %zu\n", sizeof(Empty));    // 1
-    printf("sizeof(Derived)      = %zu\n", sizeof(Derived));  // 4（无 EBO 惩罚）
-    printf("offsetof x           = %zu\n", offsetof(Derived, x)); // 0
+    printf("sizeof(Empty)        = %zu\n", sizeof(Empty));         // 1
+    printf("sizeof(Derived)      = %zu\n", sizeof(Derived));       // 4（无 EBO 惩罚）
+    printf("offsetof x           = %zu\n", offsetof(Derived, x));  // 0
 }
 ```
 
@@ -483,8 +483,8 @@ struct Widget {
 
 int main() {
     Widget w{42};
-    w.show();                       // this == &w
-    printf("&w  =%p\n", (void*)&w); // 与上面打印相同
+    w.show();                                         // this == &w
+    printf("&w  =%p\n", (void*)&w);                   // 与上面打印相同
 }
 ```
 
@@ -515,8 +515,8 @@ struct C { void f() {} };
 
 int main() {
     // auto p = &C{}.f;          // 错误：不能取成员函数的对象绑定指针
-    void (C::*pmf)() = &C::f;    // OK：指向成员的指针（不绑定对象）
-    C c; (c.*pmf)();             // 通过对象间接调用
+    void (C::*pmf)() = &C::f;  // OK：指向成员的指针（不绑定对象）
+    C c; (c.*pmf)();           // 通过对象间接调用
 }
 ```
 
@@ -573,10 +573,10 @@ struct Foo {
 };
 
 int main() {
-    printf("sizeof(Foo)        = %zu\n", sizeof(Foo));   // 4（仅数据成员）
+    printf("sizeof(Foo)        = %zu\n", sizeof(Foo));  // 4（仅数据成员）
     Foo a{1}, b{2};
     // a.big_method 与 b.big_method 是同一份代码；this 区分对象
-    printf("&a=%p &b=%p\n", (void*)&a, (void*)&b);       // 不同对象，不同地址
+    printf("&a=%p &b=%p\n", (void*)&a, (void*)&b);      // 不同对象，不同地址
 }
 ```
 
@@ -587,8 +587,8 @@ int main() {
 // [示例 16] 有无虚函数的 sizeof 差异：虚函数引入 vptr
 #include <cstdio>
 
-struct Plain  { int x; };                 // 无虚函数
-struct Virts  { int x; virtual ~Virts(){} }; // 有虚函数 → 多一个 vptr
+struct Plain  { int x; };                     // 无虚函数
+struct Virts  { int x; virtual ~Virts(){} };  // 有虚函数 → 多一个 vptr
 
 int main() {
     printf("Plain = %zu\n", sizeof(Plain));   // 4
@@ -610,11 +610,11 @@ int main() {
 #include <cstdio>
 
 struct Counter {
-    int        inst;             // 非静态：每个对象一份
-    static int total;            // 静态：全类一份，在 .data/.bss
+    int        inst;                                     // 非静态：每个对象一份
+    static int total;                                    // 静态：全类一份，在 .data/.bss
 };
 
-int Counter::total = 0;          // 唯一定义，在数据段
+int Counter::total = 0;                                  // 唯一定义，在数据段
 
 int main() {
     Counter a{1}, b{2};
@@ -639,14 +639,14 @@ int main() {
 #include <cstddef>
 
 struct Flags {
-    unsigned int a : 1;   // 1 位
-    unsigned int b : 1;   // 1 位
-    unsigned int c : 2;   // 2 位
-    unsigned int d : 4;   // 4 位（共 8 位 = 1 字节）
+    unsigned int a : 1;                              // 1 位
+    unsigned int b : 1;                              // 1 位
+    unsigned int c : 2;                              // 2 位
+    unsigned int d : 4;                              // 4 位（共 8 位 = 1 字节）
 };
 
 int main() {
-    printf("sizeof(Flags) = %zu\n", sizeof(Flags));   // 通常 4（底层 int；本机 GCC=4）
+    printf("sizeof(Flags) = %zu\n", sizeof(Flags));  // 通常 4（底层 int；本机 GCC=4）
     Flags f{};
     f.a = 1; f.d = 0xF;
     printf("a=%u d=%u\n", f.a, f.d);
@@ -674,14 +674,14 @@ int main() {
 
 class Secret {
     int key_ = 42;
-    friend void peek(const Secret& s);   // 仅此函数可访问 private
+    friend void peek(const Secret& s);          // 仅此函数可访问 private
 };
 
 void peek(const Secret& s) {
-    printf("friend 看到 key_ = %d\n", s.key_);   // 合法访问 private
+    printf("friend 看到 key_ = %d\n", s.key_);  // 合法访问 private
 }
 
-int main() { Secret s; peek(s); }   // 输出 42
+int main() { Secret s; peek(s); }               // 输出 42
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 封装的真实边界：private 与友
@@ -723,7 +723,7 @@ public:
     // static void see2(const Base& b) { printf("%d\n", b.x); } // 错误：friend 不可继承
 };
 
-int main() { Base b; FriendOfBase::see(b); }   // 输出 1
+int main() { Base b; FriendOfBase::see(b); }                 // 输出 1
 ```
 
 **<span class="badge badge-exp">经验</span>**　友元最小化原则：能用 `public` getter/setter 就别用 `friend`；能用 `protected` 就别用 `friend` 类。友元是**白名单**式破封装，一旦授予无法收回，需谨慎。
@@ -737,7 +737,7 @@ int main() { Base b; FriendOfBase::see(b); }   // 输出 1
 #include <cstring>
 
 class Box {
-    int secret_ = 0;            // private 成员
+    int secret_ = 0;                                   // private 成员
 public:
     void set(int v) { secret_ = v; }
     int  get() const { return secret_; }
@@ -746,8 +746,8 @@ public:
 int main() {
     Box a, b;
     a.set(999);
-    std::memcpy(&b, &a, sizeof(Box));   // 同类型 memcpy：直接复制内存，绕过 private
-    printf("b.secret_ (via memcpy) = %d\n", b.get());   // 999
+    std::memcpy(&b, &a, sizeof(Box));                  // 同类型 memcpy：直接复制内存，绕过 private
+    printf("b.secret_ (via memcpy) = %d\n", b.get());  // 999
 }
 ```
 
@@ -772,7 +772,7 @@ struct Point { int x, y; };
 
 int main() {
     Point a{1, 2};
-    Point b = a;          // 值拷贝：b 是 a 的独立副本
+    Point b = a;                                          // 值拷贝：b 是 a 的独立副本
     b.x = 99;
     printf("a=(%d,%d) b=(%d,%d)\n", a.x, a.y, b.x, b.y);  // a=(1,2) b=(99,2)
 }
@@ -787,10 +787,10 @@ struct Point { int x, y; };
 
 int main() {
     Point* a = new Point{1, 2};
-    Point* b = a;          // 引用/指针共享：b 与 a 指向同一对象
+    Point* b = a;                           // 引用/指针共享：b 与 a 指向同一对象
     b->x = 99;
-    printf("a.x=%d b.x=%d\n", a->x, b->x);   // 都是 99（共享）
-    delete a;             // 注意：Java 由 GC 回收，C++ 必须手动/RAII
+    printf("a.x=%d b.x=%d\n", a->x, b->x);  // 都是 99（共享）
+    delete a;                               // 注意：Java 由 GC 回收，C++ 必须手动/RAII
 }
 ```
 
@@ -808,8 +808,8 @@ int main() {
     std::vector<std::reference_wrapper<int>> refs;  // 容器存「引用」而非拷贝
     refs.push_back(x);
     refs.push_back(y);
-    refs[0].get() = 100;                  // 修改穿透到 x
-    printf("x=%d\n", x);                  // 100（x 被改）
+    refs[0].get() = 100;                            // 修改穿透到 x
+    printf("x=%d\n", x);                            // 100（x 被改）
 }
 ```
 
@@ -832,12 +832,12 @@ int main() {
 // [示例 26] 唯一区别：默认访问
 #include <cstdio>
 
-class C { int x; };            // 默认 private
-struct S { int x; };           // 默认 public
+class C { int x; };   // 默认 private
+struct S { int x; };  // 默认 public
 
 int main() {
     // C c; c.x = 1;          // 错误：C::x 默认 private
-    S s; s.x = 1;             // OK：S::x 默认 public
+    S s; s.x = 1;     // OK：S::x 默认 public
     printf("%d\n", s.x);
 }
 ```
@@ -850,11 +850,11 @@ int main() {
 struct Base { int x; };
 class  BaseC { public: int x; };
 
-struct D1 : Base  {};          // 默认 public 继承 → x 在 D1 中 public
-class  D2 : BaseC {};          // 默认 private 继承 → x 在 D2 中不可访问（对外）
+struct D1 : Base  {};  // 默认 public 继承 → x 在 D1 中 public
+class  D2 : BaseC {};  // 默认 private 继承 → x 在 D2 中不可访问（对外）
 
 int main() {
-    D1 d1; d1.x = 1;           // OK
+    D1 d1; d1.x = 1;   // OK
     // D2 d2; d2.x = 1;        // 错误：private 继承使 x 对外不可访问
     printf("%d\n", d1.x);
 }
@@ -877,15 +877,15 @@ int main() {
 #include <cstddef>
 
 struct Layout {
-    char  c;     // 0
-    int   i;     // 4
-    double d;    // 8
+    char  c;                                      // 0
+    int   i;                                      // 4
+    double d;                                     // 8
 };
 
 int main() {
     printf("c=%zu i=%zu d=%zu size=%zu\n",
            offsetof(Layout, c), offsetof(Layout, i),
-           offsetof(Layout, d), sizeof(Layout));   // 0 4 8 16
+           offsetof(Layout, d), sizeof(Layout));  // 0 4 8 16
 }
 ```
 
@@ -1082,7 +1082,7 @@ int main() {
     void
     __uses_allocator_construct_impl(__uses_alloc0 __a, _Tp* __ptr,
                                     _Args&&... __args) {
-      ::new((void*)__ptr) _Tp(std::forward<_Args>(__args)...);          // 无分配器
+      ::new((void*)__ptr) _Tp(std::forward<_Args>(__args)...);             // 无分配器
     }
 
   template<typename _Alloc, typename _Tp, typename... _Args>
@@ -1090,14 +1090,14 @@ int main() {
     __uses_allocator_construct_impl(__uses_alloc1<_Alloc> __a, _Tp* __ptr,
                                     _Args&&... __args) {
       ::new((void*)__ptr) _Tp(allocator_arg, *__a._M_a,
-                               std::forward<_Args>(__args)...);          // allocator_arg 形式
+                               std::forward<_Args>(__args)...);            // allocator_arg 形式
     }
 
   template<typename _Alloc, typename _Tp, typename... _Args>
     void
     __uses_allocator_construct_impl(__uses_alloc2<_Alloc> __a, _Tp* __ptr,
                                     _Args&&... __args) {
-      ::new((void*)__ptr) _Tp(std::forward<_Args>(__args)..., *__a._M_a); // 尾置分配器
+      ::new((void*)__ptr) _Tp(std::forward<_Args>(__args)..., *__a._M_a);  // 尾置分配器
     }
 ```
 
@@ -1122,9 +1122,9 @@ struct Aware {
 
 int main() {
     printf("uses_allocator<Plain> = %d\n",
-        std::uses_allocator_v<Plain, std::allocator<int>>);   // 0
+        std::uses_allocator_v<Plain, std::allocator<int>>);  // 0
     printf("uses_allocator<Aware> = %d\n",
-        std::uses_allocator_v<Aware, std::allocator<int>>);   // 1
+        std::uses_allocator_v<Aware, std::allocator<int>>);  // 1
 }
 ```
 
@@ -1179,15 +1179,15 @@ int main() {
 #include <cstdio>
 #include <vector>
 
-struct Bad  { char a; int b; char c; int d; };   // sizeof 16
-struct Good { int b; int d; char a; char c; };    // sizeof 12
+struct Bad  { char a; int b; char c; int d; };                     // sizeof 16
+struct Good { int b; int d; char a; char c; };                     // sizeof 12
 
 int main() {
     const int N = 1'000'000;
     std::vector<Bad>  vb(N);
     std::vector<Good> vg(N);
     printf("Bad  总内存 = %zu 字节\n", vb.size() * sizeof(Bad));   // 16 MB
-    printf("Good 总内存 = %zu 字节\n", vg.size() * sizeof(Good)); // 12 MB
+    printf("Good 总内存 = %zu 字节\n", vg.size() * sizeof(Good));  // 12 MB
     // 仅 padding 多耗 ~4 MB（约 25%），且缓存命中率 Good 更高
 }
 ```
@@ -1201,14 +1201,14 @@ int main() {
 #include <vector>
 #include <chrono>
 
-struct Big { long long buf[64]; };    // 512 字节
+struct Big { long long buf[64]; };                    // 512 字节
 
 int main() {
     const int N = 200'000;
     std::vector<Big> src(N);
 
     auto t0 = std::chrono::steady_clock::now();
-    std::vector<Big> copied = src;     // 值语义：N 次 512 字节深拷贝
+    std::vector<Big> copied = src;                    // 值语义：N 次 512 字节深拷贝
     auto t1 = std::chrono::steady_clock::now();
 
     std::vector<Big*> shared(N);
@@ -1341,7 +1341,7 @@ int main() {
 以下为单继承、含虚函数时的常见布局（本机 GCC x86-64，`[平台·x86-64]`；AS 表示对齐填充）：
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★★☆</span> · 典型对象内存布局 ASCII 图
-```
+```text
 派生对象 Derived : Base, 含 int a; 虚函数 f()
 =================================================
   +0   [Base 子对象]                         <- 基类在前（核心知识点 #4）
@@ -1606,9 +1606,9 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 #include <cstddef>
 struct Packed { char a; int b; char c; };
 int main() {
-    std::cout << "sizeof   = " << sizeof(Packed) << '\n';       // 12
-    std::cout << "offsetof(b) = " << offsetof(Packed, b) << '\n'; // 4
-    std::cout << "offsetof(c) = " << offsetof(Packed, c) << '\n'; // 8
+    std::cout << "sizeof   = " << sizeof(Packed) << '\n';          // 12
+    std::cout << "offsetof(b) = " << offsetof(Packed, b) << '\n';  // 4
+    std::cout << "offsetof(c) = " << offsetof(Packed, c) << '\n';  // 8
 }
 ```
 
@@ -1631,15 +1631,15 @@ int main() {
 #include <iostream>
 struct S {
     int x = 0;
-    static int shared;   // 在 .data/.bss，不占对象字节
+    static int shared;                                 // 在 .data/.bss，不占对象字节
 };
 int S::shared = 0;
 int main() {
     S a{1}, b{2};
     S::shared = 9;
-    std::cout << "sizeof(S) = " << sizeof(S) << '\n';   // 4
+    std::cout << "sizeof(S) = " << sizeof(S) << '\n';  // 4
     std::cout << "a.x=" << a.x << " b.x=" << b.x
-              << " shared=" << S::shared << '\n';        // 1 2 9
+              << " shared=" << S::shared << '\n';      // 1 2 9
 }
 ```
 
@@ -1664,9 +1664,9 @@ struct Empty {};
 struct Derived : Empty { int x; };
 struct AsMember { Empty e; int x; };
 int main() {
-    std::cout << "sizeof(Empty)    = " << sizeof(Empty) << '\n';    // 1
-    std::cout << "sizeof(Derived)  = " << sizeof(Derived) << '\n';  // 4  (EBO)
-    std::cout << "sizeof(AsMember) = " << sizeof(AsMember) << '\n'; // 8  (1 + 3 填充 + 4)
+    std::cout << "sizeof(Empty)    = " << sizeof(Empty) << '\n';     // 1
+    std::cout << "sizeof(Derived)  = " << sizeof(Derived) << '\n';   // 4  (EBO)
+    std::cout << "sizeof(AsMember) = " << sizeof(AsMember) << '\n';  // 8  (1 + 3 填充 + 4)
 }
 ```
 
@@ -1774,11 +1774,11 @@ struct Big { int data[1024] = {}; };
 Big good() {
     Big b{};
     b.data[0] = 42;
-    return b;              // 值返回：NRVO 或移动，无拷贝开销
+    return b;                        // 值返回：NRVO 或移动，无拷贝开销
 }
 int main() {
     Big v = good();
-    std::cout << v.data[0] << '\n';   // 42，安全
+    std::cout << v.data[0] << '\n';  // 42，安全
 }
 ```
 
