@@ -103,17 +103,56 @@ PY
   # cd 进 parts 使 `../assets` 命中 build/pdf/assets/（由 rewrite_links --mode pdf 复制）。
   # 输出用 $ROOT 绝对路径，避免 cd 影响落点。
   # mermaid-filter 依赖 Chromium；若其渲染崩溃则整 job 红，故失败时降级为纯代码块重试。
+  # 诊断增强（2026-09-04）：CI 日志匿名不可读（API 403 / 网页要求登录），pandoc/xelatex
+  # 的错误行曾是排障盲区（exit 43 黑盒）。改为逐卷收集失败（一卷失败不再中断后续卷），
+  # 把 `!` 错误行写入 GITHUB_STEP_SUMMARY（check-runs API 匿名可读 output.summary，
+  # mypy 步骤已验证该通道）+ ::error annotation，一轮 CI 即可拿到全部失败卷的报错。
   build_part_pdf() {
     local filter="$1"
-    ( cd "$OUTPUT_DIR/parts" && \
-      for pf in part*.md; do
-        base="$(basename "$pf" .md)"
-        echo "  → $base.pdf"
-        pandoc "$pf" -o "$ROOT/$OUTPUT_DIR/$base.pdf" "${PANDOC_COMMON[@]}" $filter
-      done )
+    local fail_total=0
+    local summary="${GITHUB_STEP_SUMMARY:-}"
+    cd "$OUTPUT_DIR/parts" || return 1
+    for pf in part*.md; do
+      base="$(basename "$pf" .md)"
+      errf="$ROOT/$OUTPUT_DIR/$base.pandoc.err"
+      echo "  → $base.pdf"
+      set +e
+      pandoc "$pf" -o "$ROOT/$OUTPUT_DIR/$base.pdf" "${PANDOC_COMMON[@]}" $filter &> "$errf"
+      rc=$?
+      set -e
+      if [ "$rc" -eq 0 ]; then
+        rm -f "$errf"
+        continue
+      fi
+      fail_total=$((fail_total + 1))
+      echo "[error] $base 构建失败 (pandoc exit=$rc)" >&2
+      if [ -n "$summary" ]; then
+        {
+          echo "## PDF 构建失败：$base（pandoc exit=$rc）"
+          echo ''
+          echo '```text'
+          grep -E '^!|^l\.[0-9]+|LaTeX Error|Emergency stop|Fatal error' "$errf" | head -50 || true
+          echo '```'
+        } >> "$summary"
+      fi
+      if grep -qE '^!' "$errf" 2>/dev/null; then
+        export PDF_LATEX_ERR=1
+        first_err="$(grep -E '^!' "$errf" | head -1 | cut -c1-200 | tr -d '%' || true)"
+        if [ -n "$first_err" ]; then
+          echo "::error title=PDF $base::$first_err"
+        fi
+      fi
+    done
+    cd "$ROOT" >/dev/null || return 1
+    if [ "$fail_total" -gt 0 ]; then return 1; fi
+    return 0
   }
   if [ -n "$MERMAID_FILTER" ]; then
     if ! build_part_pdf "$MERMAID_FILTER"; then
+      if [ "${PDF_LATEX_ERR:-0}" = "1" ]; then
+        echo "[error] 存在 LaTeX 层错误（非 mermaid 渲染问题），跳过降级重试；错误行见 Step Summary。" >&2
+        exit 1
+      fi
       echo "[warn] mermaid-filter 渲染失败（Chromium 缺失/崩溃），降级为纯代码块重试..." >&2
       build_part_pdf ""
     fi
