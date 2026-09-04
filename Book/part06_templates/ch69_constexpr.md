@@ -27,7 +27,7 @@
 
 - <span class="badge badge-history">史</span> `constexpr` 的放宽史是一条「逐步攻城」的线：C++11 函数体只能单 return；C++14 放开局部变量与循环；C++20 让 `constexpr` 虚函数、`std::vector`/`std::string` 的「编译期可销毁」部分开始松动（P1002 等提案允许编译期 `new`/`delete` 被实现内部消化）。
 
-- <span class="badge badge-history">史</span> C++23 进一步把更多标准库类型标成 `constexpr`（`std::optional`、`std::variant`、部分 `<algorithm>`），并引入 `std::is_constant_evaluated()` 让函数「感知自己是否在被编译期求值」，从而写一份代码两用。
+- <span class="badge badge-history">史</span> C++20 引入 `std::is_constant_evaluated()`（P0595），让函数「感知自己是否在被编译期求值」，从而写一份代码两用；C++23 再进一步把更多标准库类型标成 `constexpr`（`std::optional`、`std::variant`、部分 `<algorithm>`）。
 
 - <span class="badge badge-comment">评</span> 「标准库常量化」是自觉运动：委员会逐年把容器与算法升级为可用在常量表达式里，目标之一是让 `std::array` 之外也能在编译期构造真正的动态结构——代价是与老 ABI/运行时实现长期并存。
 
@@ -234,7 +234,7 @@ static_assert(name_of<1>() == std::string_view{"one"}); // [实现] C++17 起字
 
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-- **GCC**：`constexpr` 求值器（"constant expression evaluator"）对递归深度与步数有内部上限（受 `-fconstexpr-depth`/`constexpr 循环上限` 控制，默认约 65536 步）。超界报 `constexpr call overflow` / `exceeded constexpr step limit`。
+- **GCC**：两个独立上限——`-fconstexpr-depth`（常量表达式递归/嵌入深度，默认 512）与 `-fconstexpr-ops-limit`（常量求值的总操作步数，默认 33 554 432，见 ⑬ 示例 19 的线性反设）。递归过深报 `constexpr depth exceeds 512`，操作步数超限报 `constexpr operation count exceeds`——两者是不同的耗尽方式，写大常量表看后者、写深递归看前者。
 - **Clang**：`-fconstexpr-steps` 默认 1048576 步；诊断信息更详细，常给出"constexpr evaluation exceeded step limit"并指向具体步骤。
 - **MSVC**：较旧版本对 `constexpr` 支持滞后（VS2017 起完善），`consteval`/`constinit` 需 VS2019 16.10+；对循环内 `constexpr` 支持较新。**<span class="badge badge-platform">平台</span>** 跨编译器项目应将复杂 `constexpr` 控制在一定步数内（< 10000）以保证可移植。
 - **`__builtin_constant_p`**：GCC/Clang 内建，类似 `is_constant_evaluated` 但属编译器扩展；标准代码优先用 `std::is_constant_evaluated()`。
@@ -296,10 +296,7 @@ _Z13use_constexprv:
 
 ## ⑪ STL 中的该模式
 
-- **`std::integral_constant`**（`type_traits`）：`static constexpr value_type value = v;` 是类型萃取常量的值载体根基（ch65/68 复用），所有 `true_type`/`false_type`、标签分发（ch70）都源自它。
-- **`std::array::operator[]`**（`array` 头，C++17 起 non-const 版本 constexpr）：允许编译期随机访问，是 `make_table()`（③）能编译期建表的关键。
-- **`std::popcount` / `std::rotl`**（`bit` 头，C++20 constexpr）：位运算包装编译器内建 `__builtin_popcount`，可在编译期求值（见 ⑮）。
-- **`std::string_view` 比较**（`char_traits` constexpr）：C++17 起 `operator==` 为 constexpr，支持 `name_of<1>() == "one"` 这类编译期字符串比较。
+标准库把 constexpr 用一个递进的序列铺进日常代码，理解这条序列就能看懂它是怎么让"值在编译期可用"的：**先说值从哪来**——`std::integral_constant` 用 `static constexpr value_type value = v;` 当"萃取常量的值载体"，`true_type`/`false_type`（ch65/68 复用）与标签分发（ch70）都源自它；**再说值怎么被容器读**——`std::array::operator[]`（C++17 起 non-const 版本 constexpr）放开了编译期随机访问，这是 ③ `make_table()` 能编译期建表的开关；**接着是值怎么被算**——`std::popcount`/`std::rotl`（`<bit>`，C++20 constexpr）把位运算包在 `__builtin_popcount` 之上，让运算也能在编译期求值（见 ⑮）；**最后是值怎么被比**——`string_view` 的 `operator==`（C++17 起 constexpr）支撑 `name_of<1>() == "one"` 这类编译期字符串比较。四者首尾相衔：载体给值立足、容器给值容器、运算给值算法、比较给值判据。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
 ```cpp title="示例 13 · ★★☆☆☆"
@@ -312,10 +309,7 @@ static_assert(m == 0x10u);
 
 ## ⑫ 变体（variant patterns）
 
-- **constexpr lambda**（C++17）：lambda 闭包类型默认字面类型，可 `constexpr`，常用于编译期变换。
-- **constexpr 虚函数**（C++20）：允许在字面类型中声明 `constexpr virtual`，但调用若经运行期动态派发则非 constexpr。
-- **constexpr 与 TMP 混合**：`constexpr` 函数内部可调用 TMP 类型萃取（`if constexpr (std::is_pointer_v<T>)`），两范式互补。
-- **`consteval` 链**：`consteval` 函数只能调 `consteval`/`constexpr`（后者在常量上下文）；形成"强制编译期"计算链。
+"变体"不是并列的四个零散特性，而是四条路把 constexpr 的覆盖面从"普通函数"补向"原本够不到的地方"：**函数对象由 constexpr lambda**（C++17，闭包类型默认字面类型）提供，常用在编译期变换；**多态由 constexpr 虚函数**（C++20）提供，可以声明在字面类型里——但一旦经运行期动态派发就退化为非 constexpr；**新旧范式由「constexpr 内嵌 TMP」衔接**，`constexpr` 函数体内可调类型萃取（`if constexpr (std::is_pointer_v<T>)`），两范式互补而非取代；**强制链条由 `consteval` 链闭环**——`consteval` 只能调 `consteval`/`constexpr`（后者须在常量上下文），从而保证"必须编译期"的承诺一路传到底。四条合起来覆盖了：普通函数、对象、多态、类型系统、强制语义——几乎每种代码形态都能在前移求值的框架下有一席之地。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
 ```cpp title="示例 14 · ★★★☆☆"
@@ -674,7 +668,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 - **`std::is_constant_evaluated()` 误用**：在非常量分支里调用它可能给出反直觉结果，需谨慎区分「编译期求值」与「运行期求值」两路径。
 
 ### ㉒.4 与标准的互动：`constexpr` 的「逐步攻城」
-`constexpr` 的放宽史是一条逐步攻城的线：C++11 函数体只能单 return；C++14 放开局部变量与循环；C++17 加入 `if constexpr`；C++20 让 `constexpr` 虚函数、编译期 `new`/`delete`（P1002）成为可能，并引入 `consteval`/`constinit`；C++23 把更多标准库类型标成 `constexpr` 并引入 `std::is_constant_evaluated()`。「标准库常量化」是自觉运动，目标是在编译期也能构造真正的动态结构——代价是与老 ABI/运行时实现长期并存。
+`constexpr` 的放宽史是一条逐步攻城的线：C++11 函数体只能单 return；C++14 放开局部变量与循环；C++17 加入 `if constexpr`；C++20 让 `constexpr` 虚函数、编译期 `new`/`delete`（P1002）成为可能，并引入 `consteval`/`constinit` 与 `std::is_constant_evaluated()`（P0595）；C++23 把更多标准库类型标成 `constexpr`（`is_constant_evaluated` 早在 C++20 落地）。「标准库常量化」是自觉运动，目标是在编译期也能构造真正的动态结构——代价是与老 ABI/运行时实现长期并存。
 - **修订链（真实）**：**`consteval`（立即函数）** 经 **P1073R0 → P1073R3** 定稿（关键字由早期 `constexpr!` 改定为 `consteval`，随 **C++20** 落地，[P1073R3](https://wg21.link/P1073R3)）；**`constinit`** 经 **P1143R0 → P1143R2** 定稿，同样进 **C++20**（[P1143R2](https://wg21.link/P1143R2)）。
 - **ISO 条款与理由**：常量求值规则在 **[expr.const]**；委员会引入 `constinit` 是为根治「静态初始化顺序灾难（SIOF）」——它只要求常量初始化、不要求不可变，从而在不牺牲灵活性的前提下消除跨 TU 的初始化竞态；`consteval` 则把「必须编译期」语义从 `constexpr` 的「可能编译期」中剥离出来，专门替代函数式宏。
 
@@ -725,6 +719,8 @@ int main() {
 ```
 
 ## 附录 C：asm 证据 —— constexpr vs runtime [E: Low-level / G: Performance]
+
+> 诚实标注：下方 `mov eax, 6765` 等汇编行是**示意**，非真实产物——同一结论（`fib_cx(20)` 编译期折叠成单条 `mov`、运行期版本真实递归分支）的 **GCC 15.3.0 -O2 真实 objdump** 见附录 F「ASM-69-constexpr」；以那里的 `mov eax,0x1a6d`（=6765）为准。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：asm 证据 —— constexpr vs runtime [E: Low-level / G: Performance]
 ```cpp title="示例 38 · ★★★★☆"
@@ -796,28 +792,15 @@ A: 编译时间显著增加 (模板实例化级), 但生成代码更优 (编译�
 
 ## 附录 E（工业级 constexpr 实战）
 
-> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+> 下列项目都在生产代码中使用该特性，源码可各自公开仓库核查；与其背公司名，不如按「constexpr 在他们那里承担什么」分三类理解——这是它能在工业界扎根的钥匙，也是 ⑬/⑭ 那两条主线的落地验证。
 
-- **Google** — Abseil `absl::Hash` 用 `constexpr` 做编译期哈希
-- **LLVM** — libc++ `<array>` 大量 `constexpr` 成员函数
-- **Chromium** — base::Time 常量以 `constexpr` 定义
-- **Boost** — Boost.Math 用 `constexpr` 实现编译期特殊函数
-- **Qt ** — QPoint 用 `constexpr` 构造编译期坐标
-- **Eigen** — 矩阵编译期运算全程 `constexpr`
-- **folly** — folly 用 `constexpr` 位运算工具
-- **ClickHouse** — 解析器用 `constexpr` 表驱动词法
-- **RocksDB** — 选项默认值以 `constexpr` 声明
-- **V8** — Torque 生成 `constexpr` 内置表
-- **gRPC** — 状态码以 `constexpr` 枚举表示
-- **spdlog** — 日志级别以 `constexpr` 编译期确定
-- **fmt** — C++20 起 `fmt` 用 `constexpr` 格式化
-- **Unreal** — UE 数学库用 `constexpr` 常量
-- **WebKit** — WTF 用 `constexpr` 工具函数
-- **Mozilla** — MFBT 用 `constexpr` 算法
-- **Abseil** — Abseil `absl::Constexpr` 工具集
-- **Blink** — Blink 用 `constexpr` 计算样式常量
-- **Chromium** — base 用 `constexpr` 定义功能开关默认值
-- **Boost** — Boost.TypeTraits 用 `constexpr` 萃取
+**第一类：把"运行期反复计算"前移为"编译期产物"。** 这里的 constexpr 只回答一个问题：值只算一次，所以前移。数学库最典型——Boost.Math 用它实现编译期特殊函数，Eigen 让矩阵编译期运算全程 constexpr，Unreal 数学库把常量交给它，Qt 的 QPoint 用它做编译期坐标构造；哈希与位运算也走同一路径，Google Abseil 的 `absl::Hash` 用它做编译期哈希、folly 用它做位运算工具。共同机理是：入参在编译期已知，就把结果算进 `.rodata`，运行期只剩一次读取——正是 ⑬/⑲「前移求值时刻」主线在真实代码里的兑现。
+
+**第二类：把"编译期类型信息 / 常量载体"固化。** 这里的 constexpr 承担的是元信息而非数值：LLVM 的 libc++ 给 `<array>` 大量成员函数标 constexpr，使容器可编译期构造；Boost.TypeTraits 用它做类型萃取的值载体（回看 ⑪ 的 `integral_constant`）；gRPC 用 constexpr 枚举表示状态码，RocksDB 把选项默认值声明为编译期常量——其共性是趁编译期钉死"类型/配置/协议"的边界，让越界与错误无法拖到运行期才暴露（⑭ 的「早失败」）。
+
+**第三类：用 constexpr 表驱动动态内容。** 这里是"数据"而非"单点计算"：V8 的 Torque 生成 constexpr 内置表，ClickHouse 解析器用 constexpr 表驱动词法，spdlog 在编译期确定日志级别，fmt（C++20 起）用 constexpr 做格式化字符串校验与编译期规约，Chromium 的 base::Time 常量与功能开关默认值、WebKit WTF、Mozilla MFBT、Blink 的样式常量也归入此类——把"配置、词法、格式"这些本可在编译期钉死的东西 table 化，而不是留到运行期才解析出错。
+
+> 判读：以上是代表性而非穷尽列举，具体怎么用、深度如何，以各自仓库为准；真正有迁移价值的是抽出规律而非记住某一家的写法——三类都归于同一个判断：**入参编译期已知、结果后续不变，就前移。**
 
 ## 附录 F：GCC 15.3.0 真机汇编实证（ASM-69-constexpr）[E: Low-level / G: Performance]
 
@@ -1389,7 +1372,7 @@ int main() {
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 
-> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_69_constexpr.cpp` 真实生成（节选自 main::{lambda()#1}::operator()() const [clone .isra.0]）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_69_constexpr.cpp` 真实生成（节选自 main::{lambda()#1}::operator()() const [clone .isra.0]）。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
 
 ```asm
 ; main::{lambda()#1}::operator()() const [clone .isra.0]  (58 条指令)
