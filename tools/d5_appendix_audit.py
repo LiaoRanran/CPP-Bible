@@ -160,7 +160,7 @@ def audit_region(lines, chapter):
             if m:
                 if not in_fence:
                     in_fence = True
-                    fence_lang = m.group(2).strip()
+                    fence_lang = m.group(2).strip().split()[0] if m.group(2).strip() else ''
                     if fence_lang == 'cpp':
                         cpp_count += 1
                 else:

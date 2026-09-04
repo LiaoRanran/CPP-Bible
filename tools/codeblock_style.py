@@ -32,6 +32,7 @@ import argparse
 import pathlib
 import re
 import sys
+from typing import Any
 
 # --- 同义标签归一表 -------------------------------------------------------
 LANG_ALIAS = {
@@ -75,7 +76,8 @@ def split_fences(lines):
         j = i + 1
         body = []
         while j < n and not re.match(r"^\s*```\s*$", lines[j]):
-            body.append(lines[j]); j += 1
+            body.append(lines[j])
+            j += 1
         blocks.append([i, j, lang, info, body, indent])
         i = j + 1
     return blocks
@@ -148,7 +150,8 @@ def align_block(body):
     out, changed = [], 0
     for ln, p in zip(body, parsed):
         if not p:
-            out.append(ln); continue
+            out.append(ln)
+            continue
         code, comment = p
         comment = re.sub(r"^//\s*", "// ", comment)      # 规范化 // 后空白
         new = code + " " * (target - display_width(code)) + comment
@@ -170,7 +173,7 @@ def list_bare(path: pathlib.Path):
         print(f"{path.name}:{open_i + 1}  推断={guess or '未知'}")
         for h in head:
             print(f"      | {h[:96]}")
-    return len([1 for _o, _c, l, _i, _b, _n in blocks if not l])
+    return len([1 for _o, _c, lang, _i, _b, _n in blocks if not lang])
 
 
 def process_file(path: pathlib.Path, apply: bool, titles: bool):
@@ -178,7 +181,7 @@ def process_file(path: pathlib.Path, apply: bool, titles: bool):
     text = raw.decode("utf-8")
     newline = "\r\n" if b"\r\n" in raw else "\n"
     lines = text.splitlines()  # 自动剥离 \r，避免 CRLF 残留
-    stats = {"file": str(path), "tag": 0, "align": 0, "title": 0, "bare_unknown": 0}
+    stats: dict[str, Any] = {"file": str(path), "tag": 0, "align": 0, "title": 0, "bare_unknown": 0}
     out = list(lines)
 
     blocks = split_fences(lines)
@@ -239,7 +242,7 @@ def main():
     ap.add_argument("--list-bare", action="store_true", help="列出裸围栏位置与内容（供人工定标签）")
     args = ap.parse_args()
 
-    total = {"tag": 0, "align": 0, "title": 0, "bare_unknown": 0}
+    total: dict[str, Any] = {"tag": 0, "align": 0, "title": 0, "bare_unknown": 0}
     for f in args.files:
         p = pathlib.Path(f)
         if not p.exists():
