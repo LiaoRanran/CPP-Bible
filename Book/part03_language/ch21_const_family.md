@@ -608,35 +608,21 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 
 ## ⑩ 易错点（深度）
 
-1. **const 误以为不可变**：见 §1.5，去 const 写真 const 对象 = UB。
-2. **const 误以为线程安全**：见 §1.6。
-3. **auto 吞顶层 const**：`auto x = ci;` x 是 int；要保留用 `const auto&`。
-4. **constexpr 取地址失去消除**：odr-use 迫使存储（§2.6）。
-5. **consteval 用在运行期直接编译失败**（不像 constexpr 退化）。
-6. **constinit 用于局部**：非法，仅静态存储期有意义。
-7. **constexpr 函数体内 C++11 限制**：旧代码用 TMP 模拟，现代不必。
-8. **跨编译器 constexpr 差异**：MSVC 旧版拒某些 constexpr（§8）。
-9. **const 成员返回非 const 引用**：泄漏可变性，破坏封装（应 const T&）。
-10. **底层 const 进入模板 T**：`h(const int*)` 推 T=const int，易误以为是 int。
+const 家族的易错点，多半源于把"语法上写 const"当成"对象真的不可变"。**「const 误以为不可变」**是头号误区：`const_cast` 去掉 const 后去写真正声明为 `const` 的对象是 UB（见 §1.5），而普通对象经 const 引用去 const 再写则是合法的——区别只在底层对象是否真的 const。**「const 误以为线程安全」**紧随其后（见 §1.6）：const 只管"不修改"，不管"并发访问"，mutable 字段更是完全不受 const 保护。
+
+推导与类型系统层面的坑同样密集。**`auto` 会吞掉顶层 const**：`auto x = ci;` 让 `x` 退化成 `int`，想保留要写 `const auto&`。**`constexpr` 一旦取地址就失去消除**：odr-use 会迫使对象物化出存储（§2.6）。**`consteval` 用于运行期直接编译失败**，不像 `constexpr` 那样优雅退化为普通调用——这是它的设计意图，但也是新手的撞墙点。**`constinit` 只能用于静态存储期**，用在局部是非法。还有两类历史与实现相关的坑：**C++11 时代 constexpr 函数体内的限制**（旧代码用 TMP 绕过，现代不必），以及**跨编译器 constexpr 差异**（MSVC 旧版会拒绝某些 constexpr，见 §8）。
+
+接口设计侧的易错点体现为**封装泄漏**与**推导误导**。**const 成员返回非 const 引用**会向外泄漏可变性、破坏封装——正确写法是返回 `const T&`；**底层 const 进入模板形参 T** 则更隐蔽：`h(const int*)` 会推出 `T=const int`，容易误以为是 `int` 而写出错误的重载或假想（详见 ⑯）。
 
 ---
 
 ## ⑪ FAQ（14 问）
 
-- **Q：const 真帮优化吗？** A：主要价值正确性与契约；优化提示有限，现代优化器常自行推断。
-- **Q：何时 constinit 不 constexpr？** A：初值依赖运行期函数但需常量期完成（顺序敏感）。
-- **Q：constexpr 能调非 constexpr？** A：真正常量求值路径中禁止；运行期退化调用不强制。
-- **Q：const 与 volatile 叠加？** A：能，`const volatile int` 用于只读硬件寄存器（值可变代码不改）。
-- **Q：constexpr lambda？** A：C++17 起隐式 constexpr（满足约束时）。
-- **Q：为什么 const 成员返回 T& 危险？** A：泄漏内部可变性。
-- **Q：constexpr 递归深度有限？** A：实现定义（数百层），过深编译超时。
-- **Q：constinit 能被 constexpr 读？** A：能，常量初始化对 constexpr 可见。
-- **Q：怎么测某式是否常量表达式？** A：`static_assert(requires{ constexpr auto x = expr; });`。
-- **Q：const 对象与 mutable 并发？** A：mutable 不受 const 保护，需同步。
-- **Q：consteval 与 concepts？** A：配合在编译期校验类型（§3.4）。
-- **Q：const 参数不影响重载为什么？** A：按值拷贝，顶层 const 无关（§1.7）。
-- **Q：constexpr 表进 .rodata 好处？** A：零运行期计算 + 多进程共享只读页省 RSS。
-- **Q：C++23 对 constexpr 还有什么？** A：optional/variant constexpr 化、更多算法（§2.3）。
+这 14 个高频问题，把 const 家族的语义边界问圆了。**「const 真帮优化吗？」**——主要价值在正确性与契约，优化提示很有限，现代优化器常自行推断 const 性；过度依赖 const 提速是误区。**「const 参数为什么不影响重载？」**——因为按值传参时顶层 const 只约束局部拷贝、与调用方无关（见 §1.7），这与 `auto` 吞顶层 const 同源，也和 ⑯ 的模板推导互为印证。
+
+「编译期求值队伍」的内部界线靠这几个问题厘清。**「何时 constinit 不 constexpr？」**——初值依赖运行期函数、却要保证在常量期顺序完成时，`constinit` 也能上台（它只要求静态初始化，不要求值是常量表达式）。**「constexpr 能调非 constexpr 吗？」**——在真正常量求值路径上禁止；一旦退化为普通运行期调用就不强制，这正是它的"可退化"设计。**「constexpr lambda？」**——C++17 起在满足约束时隐式 constexpr。**「C++23 对 constexpr 还有什么？」**——optional/variant 的 constexpr 化、更多算法进入常量求值（§2.3）。**「constinit 能被 constexpr 读吗？」**——能，常量初始化的结果对 constexpr 语境可见。**「怎么测某式是否常量表达式？」**——用 `static_assert(requires{ constexpr auto x = expr; });` 一把探明。
+
+最后是杂项边界。**「const 与 volatile 叠加？」**——能，`const volatile int` 正是只读硬件寄存器的模型：值会被硬件改、代码不许改。**「const 对象与 mutable 并发？」**——mutable 不受 const 保护，并发写它仍需显式同步（呼应 ⑩ 的「const 不保证线程安全」）。**「consteval 与 concepts？」**——配合可在编译期校验类型性质（§3.4）。**「constexpr 递归深度有限吗？」**——实现定义（通常数百层），过深会编译超时。**「const 成员返回 T& 为什么危险？」**——把内部可变性泄漏给了调用方（见 ⑩）。**「constexpr 表进 `.rodata` 的好处？」**——零运行期计算 + 多进程共享只读页省 RSS，正是 ⑮ 说的"段属性"收益。
 
 ---
 
@@ -645,25 +631,19 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 [第144章 代码风格与规范（C++）](../part13_engineering/ch144_style.md)（代码风格）—— const 正确性是风格契约的核心护栏
 [第69章　编译期计算：constexpr / consteval / constinit](../part06_templates/ch69_constexpr.md)（编译期计算 constexpr/consteval/constinit）—— 编译期计算的落地写法
 
-1. 能 constexpr 的常量/小函数就 constexpr（零运行期 + 隐式 inline 防 ODR）。
-2. 接口只读参数用 `const T&`；只读成员标 const；返回内部引用用 `const T&`。
-3. 全局/静态状态用 constinit/constexpr 防 SOIF。
-4. 强制编译期求值（类型安全格式、编译期 DSL）用 consteval。
-5. 范围 for 只读遍历用 `for (const auto& x : c)` 避免拷贝。
-6. 库中 traits 用 constexpr 支持 if constexpr 分支。
-7. 跨平台用 `#ifdef _MSC_VER` 守卫降级旧 constexpr 特性。
-8. mutable 只用于锁/缓存，禁用于业务字段。
-9. const 不保证线程安全，需要时显式同步并注释。
-10. 不要为"显得 const 正确"给每个局部加 const——只在接口边界和真不可变数据使用。
+把易错点反过来，就是一套可照抄的**最佳实践**，按"编译期 vs 接口边界 vs 风格护栏"三层组织。**编译期层**：能 `constexpr` 的常量与小函数就 `constexpr`（零运行期 + 隐式 `inline` 防 ODR）；全局/静态状态用 `constinit`/`constexpr` 根治 SOIF；要强制编译期求值（类型安全格式、编译期 DSL）就用 `consteval`；库内 traits 也用 `constexpr` 支撑 `if constexpr` 分支（对照 [第69章 编译期计算](../part06_templates/ch69_constexpr.md) 的落地写法）。
+
+**接口边界层**：只读参数用 `const T&`，只读成员标 `const`，返回内部引用用 `const T&`；范围 for 只读遍历用 `for (const auto& x : c)` 避免无谓拷贝——这四条是杜绝「封装泄漏」(⑩) 的正面做法。
+
+**风格护栏层**：`mutable` 只允许锁/缓存，禁用于业务字段；const 不保证线程安全，需要时显式同步并注释；跨平台用 `#ifdef _MSC_VER` 守卫降级旧 constexpr 特性；最后也是最反直觉的一条——**不要为"显得 const 正确"给每个局部变量加 const**，只在接口边界和真不可变数据上使用（否则反而降低可读性）。这套写法正是 [第144章 代码风格规范](../part13_engineering/ch144_style.md) 里 const 正确性护栏的落地样本。
 
 ---
 
 ## ⑬ 与其他语言对比
 
-- **Rust**：`mut` 默认可变，`let` 默认不可变——与 C++ 相反（C++ 默认可变，const 显式）。Rust 的借用检查器在编译期保证 const 安全性，C++ 靠约定。
-- **Java/C#**：`final` 类似 const，但无 constexpr/consteval 的编译期求值体系（Java `final` 字段可运行期赋值，C++ constexpr 必须编译期已知）。
-- **D**：`immutable`/`const` 与 `enum` 编译期求值，最接近 C++ constexpr 哲学。
-- **Go**：`const` 仅限基本类型（无 const 函数/consteval），编译期能力远弱于 C++。
+把 const 体系放进别的语言坐标系里，才能看清 C++ 的取舍。**Rust** 与 C++ 立场相反：Rust 的 `let` 默认不可变、`mut` 显式可变（C++ 是默认可变、const 显式），且借用检查器在编译期就把"const 安全"变硬保证，C++ 则只能靠程序员约定 + 类型系统提示。**Java/C#** 的 `final` 语义接近 const，却缺了 constexpr/consteval 这套**编译期求值**体系——Java 的 `final` 字段仍可运行期赋值，而 C++ 的 `constexpr` 要求翻译期已知。
+
+**D** 语言最接近 C++ 哲学：`immutable`/`const` 之外还有 `enum` 做编译期求值，二者在对"不可变性 + 编译期运算"的追求上一脉相承。**Go** 则走得很远：`const` 仅限基本类型、没有 const 函数或 consteval，编译期能力远弱于 C++。总的看，只有 Rust 用类型系统把 const 做成硬保证，其余语言多停留在"提示 + 约定"——这正是 C++ const 家族"灵活但全靠纪律"这枚硬币的另一面。
 
 ---
 
@@ -702,11 +682,9 @@ static_assert(div(10, 2) == 5);                    // 合法：编译期可求�
 
 ## ⑮ 内存与对象生命周期视角（const 在存储中的真实归宿）<span class="badge badge-impl">实现</span>[平台·x86-64]
 
-`const` 不只是"编译期约束"，它直接决定数据放在哪个段。
+`const` 不只是"编译期约束"，它直接决定数据落在哪个段——这是理解 `const_cast` 危险的硬件底座。**全局 `const` 进 `.rodata`**：顶层 const 全局/静态对象在 ELF/PE 里进入只读数据段，硬件 MMU 把它标成只读页，运行期试图写入便触发 `SIGSEGV`（POSIX）/`ACCESS_VIOLATION`（Windows）——这正是 `const_cast` 去掉 const 后去写**真正 const 对象**是 UB 的硬件根因（与 ch27 §①.2 互证）。
 
-1. **全局 `const` → `.rodata`**：在 ELF/PE 中，顶层 `const` 全局/静态对象进入只读数据段，硬件 MMU 标记为只读页——运行期试图写会触发 `SIGSEGV`（POSIX）/`ACCESS_VIOLATION`（Windows）。这正是 `const_cast` 去 const 后写入**真正 const 对象**是 UB 的硬件根因（与 ch27 §①.2 互证）。
-2. **`constexpr` → 可能零存储**：纯编译期常量若未被 ODR 使用，编译器完全可以不为它分配任何内存（直接内联进立即数）；只有取地址/绑定到引用时才"物化"为对象（见 ch27 §①.2）。
-3. **`mutable` 突破 const 成员**：`mutable` 成员即使对象被 `const` 限定也可修改，且**不**进入 `.rodata` 共享——常用于缓存/锁字段（见 §⑫ 最佳实践第 8 条）。
+**`constexpr` 则可能零存储**：纯编译期常量若从未被 odr-use（取地址/绑引用），编译器可不为它分配任何内存、直接内联成立即数；只有被 odr-use 时才"物化"成对象（见 ch27 §①.2）。**`mutable` 是突破 const 成员的后门**：即便对象被 `const` 限定，其 `mutable` 成员仍可改，且**不**因 const 被放入只读共享页（常用于缓存/锁字段，呼应 §⑫ 第 8 条）。三者并看，"const 决定段归属、段归属决定 UB 触发器"这条因果链就清晰了。
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存与对象生命周期视角
 ```cpp title="示例 26 · ★★★★☆"
@@ -738,10 +716,9 @@ static_assert(used == 255);
 
 模板把 const 的语义复杂度放大，是面试题与实战双重高发区。
 
-1. **顶层 const 在推导中被忽略**：`template<class T> void g(T)` 调用 `g(42)` 推导 `T=int`（不是 `const int`）；`g(const int&)` 才推导 `T=const int&`。这是"函数参数按值传时顶层 const 不参与推导"的模板版（与 ch20 §⑪、ch22 auto 忽略顶层 const 同源）。
-2. **`const T&` 转发保留 cv**：`template<class T> void h(const T&)` 中 `T` 推导为实参的退化类型，`const` 由形参显式加回，故 `h(x)` 与 `h(const_x)` 都走 `const T&`，安全。
-3. **非类型模板参数（NTTP）与 cv**：C++20 允许 `template<auto V>` 把 const 值类型作为 NTTP；`template<const int* P>` 要求实参是指向 const 的指针。
-4. **const 成员函数与重载**：`struct S { void f(); void f() const; };` 按对象 cv 限定选择，是"const 正确接口"的核心（见 ch20 §⑪.2）。
+**模板是 const 语义的放大镜**——同一套 cv 规则进了模板推导就多出几处隐蔽拐点。**顶层 const 在推导中被忽略**：`template<class T> void g(T)` 传 `g(42)` 推 `T=int`（不是 `const int`），只有 `g(const int&)` 才推 `T=const int` 这类引用情形——这正是"按值传参时顶层 const 不参与推导"的模板版，与 ch20 §⑪、ch22 auto 忽略顶层 const 同源。
+
+**`const T&` 转发能保留 cv**：形参显式加上 const，模板只管推导实参退化类型，于是 `h(x)` 与 `h(const_x)` 都安全走 `const T&`（示例 28）。**非类型模板参数（NTTP）与 cv**：C++20 允许 `template<auto V>` 把 const 值类型作 NTTP，`template<const int* P>` 则要求实参是指向 const 的指针（示例 29 用 `Tag<&g_val>` 演示）。**const 成员函数与重载**：`struct S { void f(); void f() const; }` 按对象 cv 限定选择重载，正是"const 正确接口"能在编译期生效的核心机制（见 ch20 §⑪.2）。这四条合起来，"推导丢 const、转发保 const、NTTP 刻 const、成员分 const"便是模板里的 const 全貌。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板与 const（cv 在模板推导中的精确行为）
 ```cpp title="示例 28 · ★★☆☆☆"
@@ -803,9 +780,9 @@ mov  DWORD PTR [rbp-4], 3   ; y 有真实存储
 [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— const 的优化收益有限，主价值是契约
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 性能须微基准量化，勿凭印象
 
-1. **`constexpr` 编译期折叠省运行期**：常量计算（如编译期斐波那契、查表生成）在翻译期完成，运行期只剩结果——零成本（见 ch60 §⑱、ch65 §⑱）。
-2. **const 引用延长减少拷贝**：`for (const auto& x : c)` 避免每个元素的拷贝构造，对大对象/非平凡类型显著省时（ch20 §⑩、ch25 §）。
-3. **const 帮助别名分析**：给优化器更多"该内存不会被别名修改"的信息，便于循环不变外提、向量化（ch43 §）。但**过度 const 局部变量无收益**——只在接口边界和真不可变数据使用（§⑫ 第 10 条）。
+const 的性能收益集中在三处，且都不该靠"印象"下结论。**`constexpr` 编译期折叠省掉运行期计算**：常量计算（编译期斐波那契、查表生成）在翻译期完成，运行期只留结果——零成本（见 ch60 §⑱、ch65 §⑱，示例 30 用 `static_assert(fib(20)==6765)` 演示）。
+
+**const 引用遍历省掉拷贝**：`for (const auto& x : c)` 避免每个元素的拷贝构造，对大对象/非平凡类型显著省时（ch20 §⑩）。**const 帮助别名分析**：给优化器"这块内存不会被别名修改"的信息，利于循环不变外提与向量化（ch43）。但必须清醒：**过度 const 局部变量无收益**——成熟优化器本就自行推断 const 性（呼应 ⑪ 的第一个 FAQ），滥用只徒增噪音。所以"const 能优化"的结论要精确为"编译期求值省运行期 + 接口 const 助别名分析"，而非"处处 const 更快"。若想量化，应参照 [第156章 编译器优化](../part14_perf/ch156_compiler_opt.md) 与 [第153章 CPU 微架构](../part14_perf/ch153_cpu_micro.md) 的微基准方法验证。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
 ```cpp title="示例 30 · ★★☆☆☆"
