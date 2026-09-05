@@ -4,7 +4,7 @@
 
 > **标准**：C++20 `[basic.lval]`（p11 "If a program attempts to access the stored value of an object through a glvalue of other than the following types the behavior is undefined..."）
 > **实现**：GCC/LLVM/MSVC 三编译器对 `-fstrict-aliasing` / `/d2StrictAlias` 的处理不同
-> **平台**：本机 MinGW‑w64 GCC 13.1.0，libstdc++ 头文件位于 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`
+> **平台**：取证编译器（历史基线）MinGW‑w64 GCC 13.1.0，libstdc++ 头文件位于 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`（项目当前标准基线为 GCC 15.3.0，见 CONVENTIONS §1.1）
 > **经验**：严格别名既是"正确性的护城河"也是"性能的来源"；违反它得到的是**未定义行为（UB）**，往往不崩溃、而是给出静默错误结果——比崩溃更危险。
 
 ---
