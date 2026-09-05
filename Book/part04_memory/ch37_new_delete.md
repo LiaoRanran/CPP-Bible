@@ -2266,18 +2266,62 @@ delete p;          // 错误: 应 delete[] p; 否则 UB(仅释放首元素或破
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：new / delete
 
 ```cpp title="示例 59 · ★★☆☆☆"
-#include <iostream>
+// 真机实证：替换全局 operator new/delete 做计数，把「配对」变成可验证数字
+// 完整源码：Examples/_ch37_new_delete.cpp（GCC 15.3.0 -std=c++23 -O2 实测）
+#include <cstdio>
+#include <cstdlib>
 #include <memory>
 #include <vector>
+#include <new>
+static long g_new = 0, g_del = 0, g_live = 0;
+static std::size_t g_bytes = 0;
+void* operator new(std::size_t sz) {
+    void* p = std::malloc(sz ? sz : 1);
+    if (!p) throw std::bad_alloc();
+    ++g_new; ++g_live; g_bytes += sz;
+    return p;
+}
+void* operator new[](std::size_t sz) { return operator new(sz); }
+void operator delete(void* p, std::size_t) noexcept {
+    if (p) { ++g_del; --g_live; }
+    std::free(p);
+}
+void operator delete(void* p) noexcept {
+    if (p) { ++g_del; --g_live; }
+    std::free(p);
+}
+void operator delete[](void* p, std::size_t sz) noexcept { operator delete(p, sz); }
+void operator delete[](void* p) noexcept { operator delete(p); }
+static void reset() { g_new = g_del = g_live = 0; g_bytes = 0; }
+static void report(const char* tag) {   // 先取快照再打印：避免 printf 自身分配污染计数
+    long n = g_new, d = g_del, l = g_live;
+    std::size_t b = g_bytes;
+    std::printf("%-26s 分配=%ld 释放=%ld live=%ld 字节=%zu\n", tag, n, d, l, b);
+}
 int main() {
-    int* a = new int[10]; delete[] a;      // 配对
-    auto b = std::make_unique<int[]>(10);  // 智能指针, 自动 delete[]
-    std::vector<int> v(10);                // 容器, 自动管理
-    std::cout << "ok: 配对 new[]+delete[] 或 vector\n";
+    reset(); { int* a = new int[10]; delete[] a; }                 report("裸 new[] + delete[]");
+    reset(); { int* leak = new int[10]; (void)leak; }              report("裸 new[] 忘记释放");
+    reset(); { auto u = std::make_unique<int[]>(10); (void)u; }    report("unique_ptr<int[]>");
+    reset(); { std::vector<int> v(10); }                           report("vector<int>(10)");
+    reset(); { std::vector<int> v;
+               for (int i = 0; i < 1000; ++i) v.push_back(i); }    report("vector push_back x1000");
+    return 0;
 }
 ```
 
 **结论**：裸数组 `new[]` 极易配错；`std::vector` / `std::unique_ptr<T[]>` 把数组生命周期交给 RAII，从根上消除配对错误。
+
+**真机输出**（GCC 15.3.0 `-std=c++23 -O2`，源码见 `Examples/_ch37_new_delete.cpp`）：
+
+```text
+裸 new[] + delete[]       分配=1 释放=1 live=0 字节=40
+裸 new[] 忘记释放         分配=1 释放=0 live=1 字节=40
+unique_ptr<int[]>         分配=1 释放=1 live=0 字节=40
+vector<int>(10)           分配=1 释放=1 live=0 字节=40
+vector push_back x1000    分配=11 释放=11 live=0 字节=8188
+```
+
+`live` 是“已分配且未释放”的块数：忘记释放时它停在 1，泄漏一眼可见；而 `unique_ptr<int[]>` 与 `vector` 的版本在离开作用域时自动归零，不需要你记得写 `delete[]`。末行是同一台机器上“逐个 `push_back` 到 1000”的代价——**11 次分配、累计 8188 字节**，而一次性 `vector<int>(1000)` 只需 1 次分配；这正是 `reserve()` 存在的理由（分配次数与字节数随标准库实现而异，此处为 libstdc++）。
 
 ### 演绎 2：高频小对象 → 对象池 / placement new 降碎片
 
