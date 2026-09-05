@@ -51,6 +51,7 @@ C++ 的版本演进本身，就是一份"学习路线困惑史"。1998 年 C++98
 > **一句话结论**：C++ 进阶路线图：按「语言核心 → 标准库 → 系统与性能 → 源码与工程」四层递进，配合动手实现而非只读不写，才是真正的内化。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 史料补遗与持续编年
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // 验证本章示例的编译器（本机已取证）
 // C:/Qt/Tools/mingw1310_64/bin/g++.exe  版本 13.1.0
@@ -63,6 +64,7 @@ C++ 的版本演进本身，就是一份"学习路线困惑史"。1998 年 C++98
 <span class="badge badge-exp">经验</span> 大二只会应试语法 ≠ 能写工程代码。招聘看**项目 + 底层理解**，不是卷面分。两个月的核心 KPI：
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么需要路线图
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 // KPI 量化：暑假结束你应当能交出
 enum SummerKPI { ThreadPool=1, MemPool=2, Logger=4, JsonParser=8, NetServer=16 };
@@ -73,6 +75,7 @@ enum SummerKPI { ThreadPool=1, MemPool=2, Logger=4, JsonParser=8, NetServer=16 }
 - 正确姿势：能编译的小项目驱动，遇到不会的语法再回查。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么需要路线图
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // 每天最小产出：1 个能跑的 .cpp
 int main() { /* 今天写了什么，能编译运行吗？ */ }
@@ -83,6 +86,7 @@ int main() { /* 今天写了什么，能编译运行吗？ */ }
 <span class="badge badge-std">标准</span> 不必追新特性全貌，按"够用 + 面试常考"取舍。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 版本演进（一句话每版必学点）
+
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <memory>
 #include <thread>
@@ -95,12 +99,14 @@ std::thread t([]{                                   // ...
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 版本演进（一句话每版必学点）
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // C++14：泛型 lambda / 返回值推导（几乎白送）
 auto f = [](auto a, auto b) { return a + b; };
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 版本演进（一句话每版必学点）
+
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <string>
 #include <string_view>
@@ -112,6 +118,7 @@ std::string_view sv = "no copy"; (void)sv;
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 版本演进（一句话每版必学点）
+
 ```cpp title="示例 7 · ★★☆☆☆"
 #include <vector>
 #include <ranges>
@@ -128,6 +135,7 @@ std::ranges::sort(d);
 <span class="badge badge-impl">实现</span> 把能力拆成四块，缺哪块补哪块：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★★☆</span> · 核心能力地图（四格）
+
 ```text
 ┌─────────────┬─────────────┐
 │ 语言(Lang)   │ 标准库(STL)  │
@@ -143,6 +151,7 @@ std::ranges::sort(d);
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心能力地图（四格）
+
 ```cpp title="示例 9 · ★★☆☆☆"
 #include <vector>
 // 自测：下面每样能否 5 分钟内手写？不能就进对应章节
@@ -160,6 +169,7 @@ void self_test() {
 <span class="badge badge-impl">实现</span> 每天 2–3h，第 1–2 周目标：能写 RAII、能熟练用 STL。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 初级→中级路径
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // 练习1：指针与函数指针（文件 Examples/_ch165_pointer.cpp）
 int (*fp)(int,int) = &add;  // 函数指针
@@ -168,6 +178,7 @@ int* const pc = &x;         // const 指针
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 初级→中级路径
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 #include <utility>
 #include <vector>
@@ -177,6 +188,7 @@ std::vector<int> w = std::move(v); // 移动而非拷贝
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 初级→中级路径
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 #include <string>
 #include <map>
@@ -188,6 +200,7 @@ std::map<std::string,int> m; m["k"]=1;
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 初级→中级路径
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 #include <iostream>
 // 练习4：类与构造/析构顺序
@@ -203,6 +216,7 @@ struct B { A a; B(){std::cout<<"B";} ~B(){std::cout<<"~B";} };
 <span class="badge badge-impl">实现</span> 第 3–5 周目标：能写模板、能写线程安全代码、看得懂 STL 源码片段。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中级→高级路径
+
 ```cpp title="示例 14 · ★★☆☆☆"
 #include <iostream>
 // 练习5：模板与特化（文件 Examples/_ch165_template.cpp）
@@ -212,12 +226,14 @@ template<typename... Ts> void print(Ts... xs){ ((std::cout<<xs<<" "),...); }
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中级→高级路径
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // 练习6：concepts 约束（文件 Examples/_ch165_concept.cpp）
 template<std::integral T> T square(T x){ return x*x; }
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中级→高级路径
+
 ```cpp title="示例 16 · ★★☆☆☆"
 #include <mutex>
 // 练习7：并发与原子（文件 Examples/_ch165_concurrency.cpp）
@@ -226,6 +242,7 @@ std::atomic<int> ac{0}; ++ac;     // 无锁计数
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 中级→高级路径
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 // 练习8：内存对齐与 placement new（文件 Examples/_ch165_memory.cpp）
 struct Align16 { alignas(16) int x; };
@@ -239,6 +256,7 @@ int* p = new (buf) int(99);       // 在指定缓冲区构造
 <span class="badge badge-platform">平台</span> 后端路线核心。先吃透三个系统调用层概念：文件描述符、进程/线程、I/O 多路复用。
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统编程方向
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 #include <cstdint>
 #include <cstddef>
@@ -250,6 +268,7 @@ bool decode(const std::vector<uint8_t>& buf, size_t& pos, std::string& out);
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统编程方向
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // 项目名：单线程 Reactor 回声服务器（epoll / IOCP）
 // 关键文件落点：见第163章 网络（事件循环 + 非阻塞 socket）
@@ -263,6 +282,7 @@ class Reactor { // add_event / del_event / loop
 <span class="badge badge-platform">平台</span> 嵌入式不追 C++ 高级特性，重"确定性与内存可控"。用 STM32CubeMX 生成工程后，用 C++ 写驱动类。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 嵌入式方向
+
 ```cpp title="示例 20 · ★★★☆☆"
 #include <cstdint>
 // 嵌入式片段：用类封装 LED（无堆分配、无异常、无 RTTI）
@@ -276,6 +296,7 @@ public:
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 嵌入式方向
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // FreeRTOS 练手：创建两个任务交替翻转
 // xTaskCreate(led_task, "led", 128, nullptr, 1, nullptr);
@@ -289,6 +310,7 @@ public:
 <span class="badge badge-impl">实现</span> 性能路线的关键不是"多开线程"，而是**数据局部性（DOD）**。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 高性能 / 游戏方向
+
 ```cpp title="示例 22 · ★★☆☆☆"
 #include <vector>
 // 错误示范：面向对象，缓存不友好
@@ -303,6 +325,7 @@ struct Entities {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 高性能 / 游戏方向
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ECS 最小骨架（见第142章 ECS）
 struct Position { float x, y; };
@@ -317,6 +340,7 @@ struct Velocity { float dx, dy; };
 <span class="badge badge-std">标准</span> 想进基础架构岗，必须会读标准库与编译器源码。路线：先 STL 实现，再 LLVM/模板元编程。
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器 / 库开发方向（读源码路径）
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <cstddef>
 #include <vector>
@@ -332,6 +356,7 @@ struct Velocity { float dx, dy; };
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器 / 库开发方向（读源码路径）
+
 ```cpp title="示例 25 · ★★☆☆☆"
 #include <cstddef>
 // 读源码练习：自己实现简化 vector（文件见第159章 练习载体）
@@ -353,6 +378,7 @@ public:
 <span class="badge badge-exp">经验</span> 按"先肌肉记忆、后原理"顺序，不要从厚到薄死读。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 必读书单（务实 4 本，含先读哪章）
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // 阅读顺序（暑假可执行版）
 const char* order[] = {
@@ -369,6 +395,7 @@ const char* order[] = {
 - 《深度探索 C++ 对象模型》（Inside the C++ Object Model）：虚函数、多重继承布局必读。
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 必读书单（务实 4 本，含先读哪章）
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // 读书产出检验：能否默写对象内存布局？
 struct Base { virtual void f(); int a; };
@@ -381,6 +408,7 @@ struct Der : Base { int b; };
 <span class="badge badge-impl">实现</span> 这是简历核心。每个项目给出工时与落点章。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 必做项目
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // 项目1：线程池（见第159章 线程池，文件 Examples/_ch165_threadpool.cpp）
 // 工时：3 天。落点：mutex + condition_variable + 任务队列
@@ -388,6 +416,7 @@ ThreadPool pool(4); pool.submit([]{ // job
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 必做项目
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // 项目2：内存池（见第160章 内存池，文件 Examples/_ch165_mempool.cpp）
 // 工时：2 天。落点：定长块 freelist，减少 new/delete 碎片
@@ -395,6 +424,7 @@ FixedPool pool(sizeof(int)); void* p = pool.alloc(); pool.free(p);
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 必做项目
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // 项目3：日志库（见第161章 日志，文件 Examples/_ch165_log.cpp）
 // 工时：2 天。落点：级别 + 时间搓 + 线程安全 + 文件滚动
@@ -402,6 +432,7 @@ Logger log("app.log"); log.info("server start");
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 必做项目
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // 项目4：JSON 解析器（见第162章 JSON，文件 Examples/_ch165_json.cpp）
 // 工时：4 天。落点：递归下降 + variant 值模型
@@ -409,6 +440,7 @@ Logger log("app.log"); log.info("server start");
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★★☆</span> · 必做项目
+
 ```cpp title="示例 32 · ★★★★☆"
 // 项目5：网络框架（见第163章 网络，文件 Examples/_ch165_network.cpp）
 // 工时：1 周。落点：Reactor + 长度前缀帧 + 连接管理
@@ -442,6 +474,7 @@ perf report                 # 看哪行最耗时 / cache-miss
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工具链精通
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // sanitizer 实战：这段会被 AddressSanitizer 抓到堆溢出
 int* a = new int[4];
@@ -454,6 +487,7 @@ delete[] a;
 <span class="badge badge-std">标准</span> 不必逐条读提案，但要知道"去哪看"。
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准跟进
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // 关注方式（务实）
 // 1) WG21 提案站: 搜 "PxxxxRy <特性名>" 看动机与示例
@@ -462,6 +496,7 @@ delete[] a;
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准跟进
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <expected>
 // 看提案学会的最小能力：读懂特性示例
@@ -477,6 +512,7 @@ delete[] a;
 <span class="badge badge-exp">经验</span> 直接读大厂代码比看教程快。按关键词搜：
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 社区与开源
+
 ```cpp title="示例 36 · ★★☆☆☆"
 // GitHub 搜索语法（直接可用）
 // language:C++ stars:>5000 topic:networking
@@ -487,6 +523,7 @@ delete[] a;
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 社区与开源
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // 贡献路径：先 fork → 修一个文档 typo → 再修 good-first-issue
 // 哪怕只合进一个 typo PR，简历也能写"参与开源"
@@ -499,6 +536,7 @@ delete[] a;
 <span class="badge badge-exp">经验</span> 校招 C++ 后端高频题，按出现频率排序。配 cpp 自测能否手写。
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试考点地图（基础弱→重点补）
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // 高频1：指针与引用区别
 // 指针可空可重指有独立地址；引用必绑对象、无独立对象语义
@@ -506,6 +544,7 @@ int a=1; int& r=a; int* p=&a; (void)r; (void)p;
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试考点地图（基础弱→重点补）
+
 ```cpp title="示例 39 · ★★★☆☆"
 // 高频2：虚函数与多态（对象模型第10节）
 struct B { virtual void f() {} virtual ~B(){} };
@@ -515,12 +554,14 @@ delete b;
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试考点地图（基础弱→重点补）
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // 高频3：STL 底层（vector 扩容 / map 红黑树 / unordered_map 哈希）
 // 见第159章：手写 vector 与红黑树即为此题答案
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试考点地图（基础弱→重点补）
+
 ```cpp title="示例 41 · ★★☆☆☆"
 #include <memory>
 // 高频4：智能指针区别
@@ -531,6 +572,7 @@ std::weak_ptr<int> w = s;   // 不增计数
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试考点地图（基础弱→重点补）
+
 ```cpp title="示例 42 · ★★☆☆☆"
 // 高频5：并发（互斥/死锁/原子内存序）
 // 死锁根因：两锁获取顺序不一致 → 统一加锁顺序或用 std::lock
@@ -544,6 +586,7 @@ std::lock(m1, m2);          // 同时锁，避免死锁
 <span class="badge badge-exp">经验</span> 考研与就业不冲突，C++ 主要用在**数据结构与算法（408 之一）**和**机试**。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 考研方向
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 // 408 四门优先级（对 C++ 就业者）
 // 数据结构(最相关,用C++写算法题) > 计算机组成(理解底层) >
@@ -551,6 +594,7 @@ std::lock(m1, m2);          // 同时锁，避免死锁
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 考研方向
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <vector>
 // 机试练手：用 C++ STL 刷基础题（不碰高级特性，求稳）
@@ -571,6 +615,7 @@ void qsort(std::vector<int>& a, int l, int r) {
 <span class="badge badge-exp">经验</span> 你最可能在这些坑里浪费时间：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见误区（应试 vs 工程，3 条）
+
 ```cpp title="示例 45 · ★★☆☆☆"
 // 误区1：刷题多 = 能写项目
 // 现实：刷 300 道 LeetCode 仍写不出线程池。项目与算法是两套能力。
@@ -578,6 +623,7 @@ bool can_write_project = (leetcode_count > 300) && (projects == 0); // 仍 false
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见误区（应试 vs 工程，3 条）
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <memory>
 // 误区2：把 C++ 当 C 用，全程裸指针 + malloc
@@ -587,6 +633,7 @@ void good(){ auto p = std::make_unique<int>(1); }  // 离开作用域自动释�
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见误区（应试 vs 工程，3 条）
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 // 误区3：追最新标准特性，忽略基础
 // 现实：面试考虚表布局/内存对齐，不考 std::print
@@ -598,6 +645,7 @@ void good(){ auto p = std::make_unique<int>(1); }  // 离开作用域自动释�
 <span class="badge badge-exp">经验</span> 两个月 ≈ 60 天，每天 2–3h。下表按周排，具体到动作。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 天计划（暑假紧凑表）
+
 ```text
 ┌──────┬──────────────────────────────┬──────────┐
 │ 周次 │ 动作                         │ 交付物   │
@@ -613,6 +661,7 @@ void good(){ auto p = std::make_unique<int>(1); }  // 离开作用域自动释�
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 天计划（暑假紧凑表）
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 // 每天固定节奏（2-3h）
 // 1h 读书/看源码 → 1h 写当天 cpp → 0.5h 跑 sanitizer+单测 → 0.5h 记笔记
@@ -626,6 +675,7 @@ struct Day { bool read, code, test, note; };
 <span class="badge badge-exp">经验</span> 以下名字直接搜即得，无空泛推荐。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 // B站 UP 主（搜名字）
 // 侯捷：C++ 面向对象/STL/内存模型系列（配第10节读书）
@@ -635,6 +685,7 @@ struct Day { bool read, code, test, note; };
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 // 书籍（见第⑩节顺序）
 // C++ Primer / Effective C++ / STL源码剖析 / 深度探索C++对象模型
@@ -642,6 +693,7 @@ struct Day { bool read, code, test, note; };
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 // 练手项目名（直接搜）
 // muduo（网络）、tinyhttpd（HTTP）、redis（数据结构/网络）
@@ -650,6 +702,7 @@ struct Day { bool read, code, test, note; };
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
+
 ```cpp title="示例 53 · ★☆☆☆☆"
 // 求职/刷题
 // LeetCode（算法）、牛客网（C++ 面经）、GitHub trending(C++)
@@ -716,6 +769,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 
 ### 等级 1：语言掌握（1-3 个月）
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 等级 1：语言掌握（1-3 个月）
+
 ```text
 必须读完:
 - Effective Modern C++ (Scott Meyers, 2014) — 42个条款, 每个10页
@@ -729,6 +783,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 
 ### 等级 2：专家级（3-12 个月）
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 等级 2：专家级（3-12 个月）
+
 ```text
 阅读顺序:
 1. C++ Concurrency in Action (Anthony Williams, 2nd ed)
@@ -749,6 +804,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 
 ### 等级 3：工业贡献（12+ 个月）
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 等级 3：工业贡献（12+ 个月）
+
 ```text
 - 贡献开源: LLVM (添加clang-tidy check), Chromium (fix bug), ClickHouse (add aggregate function)
 - 内部库开发: 类似 folly, Abseil 的基础设施组件
@@ -757,6 +813,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 等级 3：工业贡献（12+ 个月）
+
 ```cpp title="示例 57 · ★☆☆☆☆"
 #include <iostream>
 int main() {
@@ -777,6 +834,7 @@ int main() {
 | 考研408 | ch01 C历史, ch04/ch06/ch07 版本演进, ch95-101 算法, ch35-47 内存+OOP | 王道考研408系列, 数据结构(严蔚敏) | 408真题 (C++实现版) |
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：嵌入式/后端/考研 三条路
+
 ```cpp title="示例 58 · ★★☆☆☆"
 #include <iostream>
 int main() {
@@ -799,6 +857,7 @@ int main() {
 本书覆盖不全的领域（需要外部补充）：
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：你还需要读什么 [J: Learning]
+
 ```text
 1. 编译原理 (本书: ch11编译器, ch127 LLVM)
    → 补充: Engineering a Compiler (Keith Cooper, 3rd ed)
@@ -822,6 +881,7 @@ int main() {
 ```
 
 > **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：你还需要读什么 [J: Learning]
+
 ```cpp title="示例 60 · ★★★☆☆"
 #include <iostream>
 int main() {
@@ -912,6 +972,7 @@ jl  .older
 使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
 
 > **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 重构建议（学习路径迭代）
+
 ```cpp title="示例 61 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
@@ -930,6 +991,7 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 用 `operator[]` 做边界检查并在越界时抛异常，演示“早失败、定位准”比“裸数组悄悄越界”安全。
 
 > **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 62 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -972,6 +1034,7 @@ int main() {
 让日志自动携带调用点位置，是现代化诊断的基础。
 
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 63 · ★☆☆☆☆"
 #include <iostream>
 #include <source_location>
@@ -998,6 +1061,7 @@ int main() {
 请用 `std::lower_bound` 找到“第一个失败提交”的索引。
 
 > **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 64 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1027,6 +1091,7 @@ int main() {
 **落地**：
 
 > **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：把“90 天计划”落到具体
+
 ```cpp title="示例 65 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1058,6 +1123,7 @@ int main() {
 **落地**：
 
 > **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：如何读 WG21 提案——
+
 ```cpp title="示例 66 · ★★☆☆☆"
 #include <iostream>
 #include <string>

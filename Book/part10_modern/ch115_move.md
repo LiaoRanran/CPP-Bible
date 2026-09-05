@@ -61,6 +61,7 @@ C++98 是严格的"值语义"：函数按值返回大对象、把临时对象赋
 - **vector 扩容、失效、allocator** ⟶ `Book/part07_stl/ch77_vector.md`：vector 扩容时如何"搬元素"直接取决于元素移动构造是否 `noexcept`（§⑫）。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ②-1 前置：右值引用绑定到临时（独立可编译）
 #include <iostream>
@@ -77,6 +78,7 @@ int main() {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 前置知识
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // ②-2 前置：移动构造让"返回值"免拷贝（独立可编译，演示思想）
 #include <iostream>
@@ -100,6 +102,7 @@ int main() {
 ---
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识
+
 ```cpp title="示例 3 · ★★★☆☆"
 // ②-3 值类别可用类型特性在编译期识别（独立可编译）
 #include <type_traits>
@@ -130,6 +133,7 @@ int main() {
 - **cast** ⟶ `Book/part03_language/ch27_cast.md`：`std::move` 的本质是 `static_cast<T&&>`，属于 `static_cast` 的合法用法。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后续依赖
+
 ```cpp title="示例 4 · ★★☆☆☆"
 // ③-1 后续：移动 + 完美转发组合（独立可编译，演示）
 #include <iostream>
@@ -151,6 +155,7 @@ int main() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 后续依赖
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // ③-2 后续：拷贝消除与移动的关系（独立可编译，return 局部触发 NRVO/移动）
 #include <iostream>
@@ -177,6 +182,7 @@ int main() {
 ## ④ 知识图谱（ASCII）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
+
 ```mermaid
 flowchart TD
   T["表达式的值类别（C++17）"]
@@ -236,6 +242,7 @@ classDiagram
 ## ⑦ ASCII 内存图：移动 = 指针转移，而非字节拷贝
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：移动 = 指针转移，而非字节
+
 ```mermaid
 flowchart LR
   subgraph PH1 [移动前]
@@ -256,6 +263,7 @@ flowchart LR
 - `[经验]`：移动的成本是**常数级**（几次指针赋值），与对象大小无关；拷贝的成本是 `O(大小)`（逐字节/逐元素）。对持有堆资源的对象，差距可达数量级。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：移动 = 指针转移，而非字节
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // ⑦-1 移动窃取指针，拷贝逐元素（独立可编译，演示思想）
 #include <iostream>
@@ -286,6 +294,7 @@ int main() {
 移动后，源对象仍然存在（直到其作用域结束），但处于**"有效但未指定（valid but unspecified）"**状态——可以安全析构或赋值，但不可假设其内容。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：移动后源对象的状态
+
 ```mermaid
 flowchart TD
   T["时间轴 ──►"]
@@ -310,6 +319,7 @@ flowchart TD
 - `[经验]`：实用准则——移动后把源对象当"空壳"，要么重新赋值再使用，要么不再使用直到析构。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：移动后源对象的状态
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑧-1 移动后源对象可重新赋值、可安全析构（独立可编译）
 #include <iostream>
@@ -327,6 +337,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：移动后源对象的状态
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑧-2 移动后源的"内容未指定"（独立可编译，仅展示可析构）
 #include <iostream>
@@ -350,6 +361,7 @@ int main() {
 最常见的误解：`std::move(x)` 会"移动 x"。**真相**：它只是把 `x` 强制转换成右值引用类型（`static_cast<T&&>`），真正的移动发生在随后调用的移动构造/赋值里。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：std::mov
+
 ```mermaid
 flowchart LR
   subgraph C1 [调用方]
@@ -375,6 +387,7 @@ flowchart LR
 - `[经验]`：记住口头禅——"move 不移动，它只是允许移动"。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：std::mov
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑨-1 演示：std::move 本身不触达任何成员（独立可编译）
 #include <iostream>
@@ -395,6 +408,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：std::mov
+
 ```cpp title="示例 14 · ★★★☆☆"
 // ⑨-2 对比：不 move 则拷贝（独立可编译）
 #include <iostream>
@@ -445,6 +459,7 @@ int main() {
 - `[标准]`：这正是移动语义把"深拷贝"降级为"指针转移"的性能收益来源。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编分析：移动 vs 拷贝
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑩-1 被测代码（与上方 asm 对应）：Buf 的移动/拷贝赋值（独立可编译）
 #include <utility>
@@ -486,6 +501,7 @@ int main() {
 - `[经验]`：自己写的资源管理类（RAII）必须提供 `noexcept` 移动，才能享受与标准库同等的性能（见 §⑫）。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系：移动语义贯穿整个标准库
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑪-1 unique_ptr 只可移动不可拷贝（独立可编译）
 #include <memory>
@@ -501,6 +517,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系：移动语义贯穿整个标准库
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑪-2 string 移动窃取缓冲区（独立可编译）
 #include <string>
@@ -522,6 +539,7 @@ int main() {
 `std::vector` 扩容（reallocation）需要把旧元素搬到新内存。它**优先用移动构造**，但前提是移动构造**不抛异常（`noexcept`）**——因为一旦在搬移中途抛异常，vector 无法回滚到旧状态（旧元素已被搬走）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动决定 vector 扩容走"移动
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑫-1 noexcept 移动：vector 扩容用移动，O(N) 仅指针搬运（独立可编译）
 #include <vector>
@@ -545,6 +563,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移动决定 vector 扩容走"移动
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // ⑫-2 非 noexcept 移动：vector 退回拷贝（更安全但更慢，独立可编译）
 #include <vector>
@@ -578,6 +597,7 @@ int main() {
 ### 13.1 std::move 的本质
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的本质
+
 ```cpp title="示例 20 · ★★★☆☆"
 #include <utility>
 // ⑬-1a libstdc++ 源码摘录（文件：bits/move.h，行号：104）
@@ -593,6 +613,7 @@ int main() { return 0; }
 ### 13.2 move_if_noexcept（vector 扩容决策）
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · ifnoexcept
+
 ```cpp title="示例 21 · ★★★☆☆"
 #include <utility>
 // ⑬-2a libstdc++ 源码摘录（文件：bits/move.h，行号：125）
@@ -608,6 +629,7 @@ int main() { return 0; }
 ### 13.3 vector 的移动构造/赋值
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的移动构造/赋值
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // ⑬-3a libstdc++ 源码摘录（文件：bits/stl_vector.h，行号：615 / 761）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -634,6 +656,7 @@ int main() { return 0; }
 - `[经验]`：现代 C++ 的 RAII + 移动语义组合（见 `Book/part04_memory/ch39_raii_rule.md`）是"零泄漏 + 零拷贝"的工程基石。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 提案背景
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑭-1 工业：工厂函数返回大对象，靠移动/拷贝消除免拷贝（独立可编译）
 #include <iostream>
@@ -687,6 +710,7 @@ int main() {
    → `[标准]` 独占所有权语义：拷贝会导致双释放，故删除拷贝、仅留移动（§⑪）。
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑮-1 面试题实战：vector 扩容的移动/拷贝路径（独立可编译）
 #include <vector>
@@ -715,6 +739,7 @@ int main() {
 
 1. **`std::move` 具名右值引用却被当右值用**
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
    ```cpp title="示例 25 · ★☆☆☆☆"
    // ❌ 逻辑错误（编译通过，实际拷贝而非移动）
    #include <iostream>
@@ -731,6 +756,7 @@ int main() {
 
 2. **对 `const` 对象 move 退化为拷贝**
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
    ```cpp title="示例 26 · ★☆☆☆☆"
    // ⑯-1 const 对象被 move 实际拷贝（独立可编译，演示）
    #include <iostream>
@@ -745,6 +771,7 @@ int main() {
 
 3. **`return std::move(local);` 阻碍 RVO**
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
    ```cpp title="示例 27 · ★☆☆☆☆"
    // ⑯-2 错误写法：显式 move 阻止 NRVO（独立可编译，对比）
    #include <iostream>
@@ -757,6 +784,7 @@ int main() {
 
 4. **移动后继续读源对象**
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
    ```cpp title="示例 28 · ★☆☆☆☆"
    // ⑯-3 错误：移动后使用源对象内容（独立可编译，安全写法对照）
    #include <iostream>
@@ -775,6 +803,7 @@ int main() {
    → 见 §⑫：非 noexcept 移动使 vector 扩容退回拷贝。务必 `= default` 或显式 `noexcept`。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑯-4 正确：移动构造/赋值都 noexcept（独立可编译，推荐写法）
 #include <iostream>
@@ -808,6 +837,7 @@ int main() { Holder a; Holder b = std::move(a); std::cout << "ok\n"; return 0; }
 7. **容器存大对象时，确保元素可 `noexcept` 移动**，扩容才走移动而非拷贝 `[经验]`。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // ⑰-1 最佳实践：Rule of Five 显式声明（独立可编译）
 #include <iostream>
@@ -829,6 +859,7 @@ int main() { Buffer a(1), b; b = std::move(a); std::cout << "ok\n"; return 0; }
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑰-2 最佳实践：返回局部对象、放入容器都靠移动（独立可编译）
 #include <vector>
@@ -862,6 +893,7 @@ int main() {
 ### 18.2 microbenchmark 量级
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 量级
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑱-1 量级对照：拷贝 vs 移动一个大对象（独立可编译，计时骨架）
 #include <vector>
@@ -912,6 +944,7 @@ int main() {
 请求处理对象（持有连接、缓冲区）在 IO 线程解析后，整体 `std::move` 交给工作线程，避免跨线程拷贝大缓冲。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：所有权转移与容器化大对象
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // ⑲-1 unique_ptr 跨线程/跨作用域转移所有权（独立可编译，模拟逻辑）
 #include <memory>
@@ -940,6 +973,7 @@ int main() {
 写缓冲（WAL 段）作为大对象在"生产者"与"刷盘器"之间用移动传递，避免每批数据深拷贝。
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：所有权转移与容器化大对象
+
 ```cpp title="示例 34 · ★★☆☆☆"
 // ⑲-2 大对象容器：vector 存可移动 Buffer（独立可编译，模拟逻辑）
 #include <vector>
@@ -969,6 +1003,7 @@ int main() {
 编译器可在返回处直接构造（NRVO）或隐式移动，使"返回大对象"与"返回 int"成本相当（见 §⑭、§⑯）。
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：所有权转移与容器化大对象
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑲-3 工厂返回大对象（独立可编译）
 #include <string>
@@ -1020,6 +1055,7 @@ int main() { Doc d = load(); std::cout << d.title << "\n"; return 0; }
 - `[经验]`：从 Rust 转来的工程师会觉得 C++ 移动"不够安全但有更多控制"；从 Java/C# 转来的会觉得"C++ 终于能避免深拷贝了"。无论背景，都应把"移动后源对象当空壳"刻进肌肉记忆。
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：移动语义
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑳-1 跨语言映射：Rust 的 let y = x;（移动）在 C++ 用 std::move 表达（独立可编译）
 #include <iostream>
@@ -1035,6 +1071,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：移动语义
+
 ```cpp title="示例 37 · ★★☆☆☆"
 // ⑳-2 跨语言映射：C++ 的"移动后有效但未指定" vs Rust 的编译期禁止 use-after-move
 // （C++ 无法在编译期阻止，需纪律；独立可编译的"安全用法"示范）
@@ -1095,6 +1132,7 @@ C++ 没有走 Rust 那条"移动后旧绑定编译期不可用"的路，而是�
 1. 实现一个 `String` 类（动态 `char*` 缓冲），给出完整 Rule of Five（析构、拷贝构造、拷贝赋值、移动构造、移动赋值），全部 `noexcept` 适配移动，并写测试验证移动后源为空。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习题
+
 ```cpp title="示例 38 · ★★☆☆☆"
 // 练习①参考实现：Rule of Five String 类，noexcept 移动
 #include <iostream>
@@ -1155,6 +1193,7 @@ int main() {
 ## 附录: Move 语义深度
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: Move 语义深度
+
 ```cpp title="示例 39 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
@@ -1165,6 +1204,7 @@ int main(){Buffer a(10);Buffer b=std::move(a);std::cout<<b.n<<std::endl;return 0
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1173,6 +1213,7 @@ int main(){std::vector<int> a{1,2,3};auto b=std::move(a);std::cout<<b.size()<<" 
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1181,6 +1222,7 @@ int main(){auto p1=std::make_unique<int>(42);auto p2=std::move(p1);std::cout<<*p
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
@@ -1189,6 +1231,7 @@ int main(){std::string s1="hello";std::string s2=std::move(s1);std::cout<<s2<<st
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: Move 语义深度
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <utility>
@@ -1223,6 +1266,7 @@ int main(){std::cout<<"std::move is a cast to rvalue reference. It does NOT move
 ### 测试源码
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
+
 ```cpp title="示例 44 · ★★★☆☆"
 struct Big { char* data; size_t sz;
     Big(size_t n): data(new char[n]), sz(n) { memset(data, 0, n); }
@@ -1329,6 +1373,7 @@ RVO 不产生函数调用在调用方生成对象。编译器在函数签名层�
 `std::unique_ptr` 只能移动、不能拷贝（Rule of Five 中拷贝构造/赋值被 `=delete`）。用 `std::move` 把所有权从解析线程移交到任务队列，零拷贝：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <memory>
 #include <vector>
@@ -1357,6 +1402,7 @@ int main() {
 `std::vector` 扩容前用 `std::move_if_noexcept` 决策：移动构造 `noexcept` 才移动，否则为强异常安全退回拷贝：
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 #include <vector>
 #include <utility>
@@ -1389,6 +1435,7 @@ int main() {
 直接返回局部对象名字（或 prvalue），让 NRVO/强制消除生效；绝不对局部对象 `std::move`：
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <string>
 #include <utility>
@@ -1420,6 +1467,7 @@ int main() { Config c = load_config(); (void)c; }
 下面用可跟踪构造的类型演示这一重载决议过程——`sink(std::move(cref))` 打印的是 copy 而非 move：
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <string>
@@ -1454,6 +1502,7 @@ int main() {
 moved-from 对象的"可复用性"是移动语义的隐含契约：它必须仍可析构、可重新赋值。下面的 `a` 被 move 到 `b` 后成为空壳，随后 `a = Handle("buffer-B")` 直接复用它——这正是容器/队列里"先移出、再回填"惯用法的底层保证。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <iostream>
 #include <string>
@@ -1660,6 +1709,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <vector>
 #include <string>

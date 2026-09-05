@@ -50,6 +50,7 @@ fmt 对 `iostream`/`printf` 之争的答案是"类型安全 + 性能好 + 语法
 `fmt`（原 cppformat）是现代 C++ 的**类型安全、快速、小而全**的文本格式化库；`spdlog` 是建立在 fmt 之上的**高性能、仅头文件**日志库。二者共同解决了传统 `<iostream>`（慢、冗长）与 `printf`（无类型安全、格式串与参数易错位）的痛点。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：fmt / spdlog
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① fmt：类型安全、位置无关占位符 {}
 #include <fmt/core.h>
@@ -61,6 +62,7 @@ int main() {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：fmt / spdlog
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ① spdlog：一行级别化日志，底层用 fmt 做格式化
 #include <spdlog/spdlog.h>
@@ -74,6 +76,7 @@ int main() {
 - `[经验]`：二者 API 稳定、头文件即可用；新项目默认用 fmt 做格式化、spdlog 做日志，替代手写 `printf`/`std::cout`。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：fmt / spdlog
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ① 二者关系：spdlog 1.x 默认以 fmt 为格式化后端
 // spdlog::info(...) 内部即 fmt::format(...) + sink 写出
@@ -88,6 +91,7 @@ fmt 的核心不在「运行期拼字符串」，而在**编译期**对格式串
 3. 运行期按预解析结果把参数经 `formatter<T>` 特化写入输出缓冲，避免重复扫描格式串。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · fmt 格式化原理（编译期格式串解析） [实现·fmt]
+
 ```cpp title="示例 4 · ★★★☆☆"
 // ② 等价思路：编译期统计占位符数（fmt 在编译期做更强的事——类型检查）
 constexpr int count_braces(const char* s, int i = 0, int n = 0) {
@@ -99,6 +103,7 @@ static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · fmt 格式化原理（编译期格式串解析） [实现·fmt]
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // ② fmt 把「字面量」升级为「类型安全的格式描述」
 // fmt::format("{}", x) 中 "{}" 的类型是 format_string<T>，
@@ -112,6 +117,7 @@ static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 > 本机未装 fmt，以下引用上游固定 tag 源码做剖析，标注「上游参考」。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·fmt] 源码剖析：upstream basic_format_string / 编译期检查 [实现·fmt]
+
 ```cpp title="示例 6 · ★★★☆☆"
 // 文件：https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/format.h
 // 行号：4050
@@ -128,6 +134,7 @@ class basic_format_string {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·fmt] 源码剖析：upstream basic_format_string / 编译期检查 [实现·fmt]
+
 ```cpp title="示例 7 · ★★★☆☆"
 // 文件：https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/core.h
 // 行号：748
@@ -149,6 +156,7 @@ using is_compile_string = std::is_base_of<compile_string, S>;
 spdlog 由三层组成，关注点分离清晰：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构
+
 ```text
 ┌─────────────┐   log()    ┌──────────────┐  sink_it_  ┌──────────────┐
 │   logger    │ ─────────▶ │   registry   │ ─────────▶ │    sink      │
@@ -162,6 +170,7 @@ spdlog 由三层组成，关注点分离清晰：
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ④ 创建带自定义 sink 的 logger（架构落地的关键 API）
 #include <spdlog/spdlog.h>
@@ -176,6 +185,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ④ registry：全局单例，按名字查找/登记 logger（上游参考见第 ⑲ 节）
 #include <spdlog/spdlog.h>
@@ -191,6 +201,7 @@ spdlog::set_default_logger(existing);  // 设为默认
 fmt 快在三点：
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：比 iostream / printf 快的原因 [实现·fmt]
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // ⑤ 对比：iostream 的 operator<< 链式调用 + 锁 + 临时对象开销大
 #include <iostream>
@@ -200,6 +211,7 @@ void fmt_way() { fmt::print("x={} y={}\n", 3.14, 42); }
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能：比 iostream / printf 快的原因 [实现·fmt]
+
 ```cpp title="示例 12 · ★★★☆☆"
 // ⑤ fmt 用连续内存缓冲 + 整数/浮点专用快速路径，避免 locale 反复查询
 // 并可在编译期决定格式布局，运行期直接写缓冲（见第 ⑦ 节汇编证据）
@@ -213,6 +225,7 @@ fmt::format_to(std::back_inserter(buf), "{}", 123456789);  // 整数快速路径
 ## ⑥ 类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>
 
 > **示例 13** [难度 ★★☆☆☆] [主题：类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑥ 类型安全：占位符与参数类型在编译期核对
 fmt::format("{} {}", 1, "s");     // OK：int + const char*
@@ -221,6 +234,7 @@ fmt::format("{} {}", 1, "s");     // OK：int + const char*
 ```
 
 > **示例 14** [难度 ★★☆☆☆] [主题：类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑥ 运行期格式串（用户输入）必须显式声明，关闭编译期检查
 #include <fmt/format.h>
@@ -237,6 +251,7 @@ std::string dyn = fmt::format(fmt::runtime(user_pattern), arg);
 fmt 未安装，下面用 **GCC 15.3.0 真实编译**一个**自包含**示例，等价复现 fmt 的两大机制（编译期格式串解析 + 类型安全分派），并取真实汇编。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★★☆</span> · [实现·fmt] 真实：编译自包含格
+
 ```cpp title="示例 15 · ★★★★☆"
 // 文件：Examples/_ch131_format_check.cpp（自包含，无需 fmt）
 // 真实编译命令（MinGW GCC 15.3.0）：
@@ -308,6 +323,7 @@ pi={} name={} n={}3.14fmt42
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·fmt] 真实：编译自包含格
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑦ 对应 fmt 写法（典型输出：fmt 会真正替换占位符，而非原样输出）
 // 典型输出： pi=3.14 name=fmt n=42
@@ -324,6 +340,7 @@ fmt::print("pi={} name={} n={}\n", 3.14, "fmt", 42);
 fmt 在格式错误时抛 `fmt::format_error`（继承 `std::runtime_error`）；spdlog 默认不抛、且可切换为「异常模式」。
 
 > **示例 17** [难度 ★☆☆☆☆] [主题：异常策略 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑧ fmt：格式错误抛 fmt::format_error
 #include <fmt/format.h>
@@ -337,6 +354,7 @@ try {
 ```
 
 > **示例 18** [难度 ★☆☆☆☆] [主题：异常策略 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑧ spdlog：默认吞错；设为异常模式后，sink 失败抛 spdlog::spdlog_ex
 #include <spdlog/spdlog.h>
@@ -356,6 +374,7 @@ try {
 为用户类型提供 `fmt::formatter<T>` 特化，即可被 `{}` 直接格式化——这是 fmt 可扩展性的核心。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自定义格式化
+
 ```cpp title="示例 19 · ★★★☆☆"
 // ⑨ 为 Point 提供 formatter 特化（fmt 10 写法）
 #include <fmt/format.h>
@@ -371,6 +390,7 @@ struct fmt::formatter<Point> {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自定义格式化
+
 ```cpp title="示例 20 · ★★★☆☆"
 // ⑨ 带格式选项：支持 {:?} 之类自定义说明符
 template <>
@@ -395,6 +415,7 @@ struct fmt::formatter<Point> {
 ## ⑩ 调试 <span class="badge badge-exp">经验</span>
 
 > **示例 21** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑩ 动态调整级别，快速定位问题
 #include <spdlog/spdlog.h>
@@ -404,6 +425,7 @@ spdlog::debug("trace value={}", expensive_value);  // 生产可整体关掉
 ```
 
 > **示例 22** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // ⑩ 强制刷新，避免崩溃丢日志
 spdlog::flush_on(spdlog::level::err);          // err 级自动 flush
@@ -416,6 +438,7 @@ spdlog::flush_every(std::chrono::seconds(3));  // 周期 flush
 ## ⑪ 跨平台 [平台·Windows]
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑪ 按平台选 sink：Windows 用 msvc 颜色，POSIX 用 ansi 颜色
 #include <spdlog/spdlog.h>
@@ -431,6 +454,7 @@ auto logger = std::make_shared<spdlog::logger>("plat", sink);
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑪ 文件 sink 跨平台路径统一用 std::filesystem
 #include <spdlog/sinks/basic_file_sink.h>
@@ -446,6 +470,7 @@ auto s = std::make_shared<spdlog::sinks::basic_file_sink_mt>(f);
 ## ⑫ 常见陷阱：格式化用户类型需特化 <span class="badge badge-exp">经验</span>
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经验]
+
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑫ 陷阱1：未特化 formatter 的用户类型无法用 {} 格式化（编译失败）
 struct Widget { int id; };
@@ -453,6 +478,7 @@ struct Widget { int id; };
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经验]
+
 ```cpp title="示例 26 · ★★☆☆☆"
 #include <string>
 // ⑫ 陷阱2：悬空引用——format 的参数若绑定临时对象要注意生命周期
@@ -462,6 +488,7 @@ fmt::format("hi {}", name);          // OK：值/引用都安全（fmt 拷贝必
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：格式化用户类型需特化 [经验]
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑫ 陷阱3：spdlog 默认按引用捕获参数？不会——它立即格式化，无悬空风险
 spdlog::info("v={}", compute());     // 立即求值并格式化，安全
@@ -473,6 +500,7 @@ spdlog::info("v={}", compute());     // 立即求值并格式化，安全
 ## ⑬ 演进 <span class="badge badge-std">标准</span>
 
 > **示例 28** [难度 ★★★☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 28 · ★★★☆☆"
 #include <string_view>
 // ⑬ fmt 5：引入 FMT_STRING 宏做编译期检查（C++11 兼容）
@@ -482,6 +510,7 @@ spdlog::info("v={}", compute());     // 立即求值并格式化，安全
 ```
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑬ spdlog 1.0：基础同步/异步；1.5+：结构化日志雏形；1.13：C++20 友好
 #include <spdlog/spdlog.h>
@@ -494,6 +523,7 @@ spdlog::info("fmt backend version aligned with {}.{}", 10, 2);
 ## ⑭ 最佳实践 <span class="badge badge-exp">经验</span>
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑭ 用命名参数提升可读性（fmt 10 的 fmt::arg）
 fmt::print("{}: score={}\n",
@@ -502,6 +532,7 @@ fmt::print("{}: score={}\n",
 ```
 
 > **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑭ 高频路径避免重复分配：复用 memory_buffer
 fmt::memory_buffer buf;
@@ -512,6 +543,7 @@ for (int i = 0; i < N; ++i) {
 ```
 
 > **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑭ 异步日志：spdlog 异步 sink 解耦 I/O 与业务线程
 #include <spdlog/async.h>
@@ -528,6 +560,7 @@ auto async = spdlog::basic_logger_mt<spdlog::async_factory>("a", "log.txt");
 `std::format`（C++20）在设计上**直接借鉴 fmt**：占位符语法、`formatter` 特化、`format_to`、编译期格式串检查几乎一致。fmt 是 `std::format` 的事实标准先行者。
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 std::format 对应
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // ⑮ std::format 与 fmt 几乎同构（需要 #include <format>）
 #include <format>
@@ -537,6 +570,7 @@ std::string u = std::format("{:_>}8", 42);             // 对齐/填充语法一
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 std::format 对应
+
 ```cpp title="示例 34 · ★★★☆☆"
 // ⑮ 自定义类型：std::formatter<T> 特化语法与 fmt 一致
 #include <format>
@@ -555,6 +589,7 @@ struct std::formatter<Point> {
 ## ⑯ 跨库 <span class="badge badge-exp">经验</span>
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑯ spdlog 以 fmt 为后端：spdlog 的日志宏就是 fmt::format 的薄封装
 // spdlog::info("{}", x)  ≈ fmt::print(fmt::format("{}", x)) + sink
@@ -564,6 +599,7 @@ spdlog::info("{:.3f}", 1.0/3.0);  // 复用 fmt 的格式说明符
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑯ 同一用户类型：fmt::formatter<Point> 特化后，spdlog 也能直接打
 spdlog::info("point={}", Point{3, 4});     // 走同一 formatter 特化
@@ -575,6 +611,7 @@ spdlog::info("point={}", Point{3, 4});     // 走同一 formatter 特化
 ## ⑰ 贡献 <span class="badge badge-exp">经验</span>
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑰ 向 fmt/spdlog 贡献的最小闭环（流程示意，非本机命令）
 // git clone https://github.com/fmtlib/fmt && cd fmt
@@ -583,6 +620,7 @@ spdlog::info("point={}", Point{3, 4});     // 走同一 formatter 特化
 ```
 
 > **示例 38** [难度 ★★★☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 38 · ★★★☆☆"
 // ⑰ 贡献一个自定义 sink（spdlog）的骨架：继承 base_sink
 #include <spdlog/sinks/base_sink.h>
@@ -604,6 +642,7 @@ class my_sink : public spdlog::sinks::base_sink<Mutex> {
 ## ⑱ 性能对比（bench 思路 / 数字量级） <span class="badge badge-exp">经验</span>
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能对比
+
 ```cpp title="示例 39 · ★★☆☆☆"
 // ⑱ 微基准思路：固定消息模板，循环 1e6 次，测吞吐（条/秒）
 #include <fmt/core.h>
@@ -617,6 +656,7 @@ void bench() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能对比
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // ⑱ 等价 iostream / printf 对照，便于横向比较量级
 void bench_ios() {
@@ -634,6 +674,7 @@ void bench_ios() {
 > 本机未装 fmt/spdlog，以下按上游固定 tag 给出阅读路线与关键位置（上游参考）。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读 [实现·fmt]
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // 文件：https://github.com/gabime/spdlog/blob/v1.13.0/include/spdlog/logger.h
 // 行号：95
@@ -643,6 +684,7 @@ void logger::log_(const source_loc& loc, level::level_enum lvl,
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读 [实现·fmt]
+
 ```cpp title="示例 42 · ★★☆☆☆"
 #include <memory>
 #include <string>
@@ -656,6 +698,7 @@ class SPDLOG_API registry {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读 [实现·fmt]
+
 ```cpp title="示例 43 · ★★☆☆☆"
 // ⑲ 阅读顺序建议（硬核路线）
 // 1) fmt/core.h：compile_string / format_string_checker（编译期检查）
@@ -685,6 +728,7 @@ class SPDLOG_API registry {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[thread]/[atomics]（底层并发原语）/ fmt + spdlog 文档；cppreference。
 
 > **示例 44** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 // ⑳ fmt 常用格式说明符速查
 // {}            默认格式
@@ -697,6 +741,7 @@ class SPDLOG_API registry {
 ```
 
 > **示例 45** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 45 · ★★☆☆☆"
 // ⑳ spdlog 级别速查（低->高）
 // trace < debug < info < warn < error < critical < off
@@ -704,6 +749,7 @@ class SPDLOG_API registry {
 ```
 
 > **示例 46** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 // ⑳ 一句话对照（记忆锚点）
 // fmt  = 类型安全的 sprintf（还能打自定义类型）
@@ -749,6 +795,7 @@ class SPDLOG_API registry {
 fmt 最值得学的机制——**类型安全 + 编译期格式串检查**——已经被 C++20 直接吸收为 `std::format`。下面用纯标准库复刻一节开头那个例子：
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：用
+
 ```cpp title="示例 47 · ★★☆☆☆"
 // ㉑.2 用标准 C++20 std::format 复刻 fmt 的核心（本块可独立编译，GCC 15.3.0 验证）
 #include <format>
@@ -774,6 +821,7 @@ int main() {
 下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 API 长什么样
+
 ```cpp title="示例 48 · ★★☆☆☆"
 // ㉑.3 真实 fmt / spdlog 写法（仅注释演示，需链接 fmt / spdlog；本门禁按空块编译通过）：
 // #include <fmt/core.h>
@@ -875,6 +923,7 @@ fmt(P0645R10): C++20 std::format前身; 编译期格式验证; 比cout快5-10x(�
 spdlog: async logger, 后台线程+MPSC队列, ~300ns/msg vs cout~1us
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：fmt/spdlog工业
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"fmt=5-10x faster than cout; spdlog=300ns/msg async"<<std::endl;return 0;}
@@ -951,6 +1000,7 @@ spdlog 异步 logger 用有界 MPSC 队列。队列满时的 **设计权衡** �
 函数模板按实参推导类型；`std::format` 在编译期校验格式串、类型安全，避免 `printf` 的实参与格式符不匹配：
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 50 · ★★☆☆☆"
 #include <format>
 #include <string>
@@ -974,6 +1024,7 @@ int main() { return show(42) == "value=42" ? 0 : 1; }
 C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
+
 ```cpp title="示例 51 · ★★☆☆☆"
 #include <concepts>
 template <std::integral T>
@@ -996,6 +1047,7 @@ int main() { return set_level(2) == 2 ? 0 : 1; }
 `constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；格式宽度预计算可避免运行期分支：
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★）
+
 ```cpp title="示例 52 · ★★★☆☆"
 constexpr int field_width(int n) { return n < 0 ? -n : n; }  // 示意：计算整数字段宽度
 static_assert(field_width(120) == 120);
@@ -1178,6 +1230,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 #include <format>

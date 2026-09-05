@@ -47,6 +47,7 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 **知识图谱（前置→本章→后续）**：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章地图（先给结论，再击穿）
+
 ```mermaid
 flowchart LR
   C19["ch19 存储期"]
@@ -97,6 +98,7 @@ flowchart LR
 ### 2.1 生存期起于构造完成、止于析构开始
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生存期起于构造完成、止于析构开始
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // prog_01_lifetime_begin_end.cpp
 // 编译: g++ -std=c++20 -Wall prog_01_lifetime_begin_end.cpp -o prog_01
@@ -119,6 +121,7 @@ int main() {
 ### 2.2 存储未释放但对象已亡 → 访问即 UB
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 存储未释放但对象已亡 → 访问即 U
+
 ```cpp title="示例 3 · ★★★☆☆"
 // prog_02_dead_object_access.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_02_dead_object_access.cpp -o prog_02
@@ -144,6 +147,7 @@ int main() {
 `[标准]` [basic.life]/8：若在同一存储上创建了**与旧对象相似类型**的新对象，且旧对象已结束生存期，则可通过适当方式访问新对象。重建前**必须**先结束旧对象生存期（显式调析构），否则旧对象析构会被跳过或重复。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 在同一存储重建对象（先显式析构）
+
 ```cpp title="示例 4 · ★★☆☆☆"
 // prog_03_placement_new_rebuild.cpp  —— 正确示例
 // 编译: g++ -std=c++20 -Wall prog_03_placement_new_rebuild.cpp -o prog_03
@@ -164,6 +168,7 @@ int main() {
 `[标准]` [ptr.launder]：当新对象与旧对象类型**不相似**，或编译器"已知"指针源自旧对象时，直接复用旧指针是 UB；`std::launder(p)` 是一个优化屏障，返回指向 *p 所指向对象* 的指针。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 在优化后取回指针（C++17）
+
 ```cpp title="示例 5 · ★★★☆☆"
 // prog_04_launder_needed.cpp  —— 错误 vs 正确 (const 对象重建)
 // 编译: g++ -std=c++20 -Wall prog_04_launder_needed.cpp -o prog_04
@@ -192,6 +197,7 @@ int main() {
 ### 3.1 自动存储期（块作用域）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 自动存储期（块作用域）
+
 ```cpp title="示例 6 · ★★★★☆"
 // prog_05_auto_vs_static.cpp
 // 编译: g++ -std=c++20 -Wall prog_05_auto_vs_static.cpp -o prog_05
@@ -221,6 +227,7 @@ _Z8good_ptrv:
 `[标准]` [basic.stc.thread]：声明为 `thread_local` 的对象，其存储在**每个线程**首次使用前创建、线程结束时销毁——生存期绑定到线程而非块或程序。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★★☆</span> · 线程存储期（threadlocal）
+
 ```cpp title="示例 7 · ★★★★☆"
 // prog_06_thread_local_lifetime.cpp
 // 编译: g++ -std=c++20 -Wall -pthread prog_06_thread_local_lifetime.cpp -o prog_06
@@ -239,6 +246,7 @@ int main() {
 `[标准]` [basic.stc.dynamic]：由 `new` 分配的存储持续到 `delete`。**生存期**在构造完成起、析构开始止；但**存储期**持续到 `delete`。悬空指针/引用来自"存储已释放但指针仍在用"（见 §⑦、§⑧ prog_26）。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 动态存储期（new/delete）
+
 ```cpp title="示例 8 · ★★★☆☆"
 // prog_07_dynamic_lifetime.cpp
 // 编译: g++ -std=c++20 -Wall prog_07_dynamic_lifetime.cpp -o prog_07
@@ -260,6 +268,7 @@ int main() {
 `[实现·GCC15]` 关键：`prvalue` 本身**不是对象**，只是一个"待计算的值"；只有当它被绑定到引用、作为函数实参、被 `decltype`/`static_cast` 等需要时，才**物化**为临时对象（RVO/NRVO 与物化可消除临时——这是优化的来源，见 ch27/ch42 交叉）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 临时对象生命周期：值类别、临时物化
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // prog_08_value_categories.cpp
 // 编译: g++ -std=c++20 -Wall prog_08_value_categories.cpp -o prog_08
@@ -276,6 +285,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 临时对象生命周期：值类别、临时物化
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // prog_09_materialization.cpp  —— 临时物化时机
 // 编译: g++ -std=c++20 -Wall prog_09_materialization.cpp -o prog_09
@@ -296,6 +306,7 @@ int main() {
 `[标准]` [class.temporary]/6：当 **`const` 左值引用或右值引用**绑定到一个 prvalue（临时）时，该临时对象（及其完整子对象）的生命周期被**延长**至该引用的作用域结束。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 临时生命周期延长规则
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // prog_10_const_ref_extend.cpp  —— 正确: const& 延长临时
 // 编译: g++ -std=c++20 -Wall prog_10_const_ref_extend.cpp -o prog_10
@@ -306,6 +317,7 @@ int main() { std::cout << "main end\n"; }  // 输出: main end \n dtor
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 临时生命周期延长规则
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // prog_11_rvalue_ref_extend.cpp  —— 右值引用同样延长
 // 编译: g++ -std=c++20 -Wall prog_11_rvalue_ref_extend.cpp -o prog_11
@@ -326,6 +338,7 @@ int main() {
 ### 6.1 绑定到成员变量 → 不延长
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 绑定到成员变量 → 不延长
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // prog_12_member_binding_no_extend.cpp  —— 错误示例 (悬垂成员引用)
 // 编译: g++ -std=c++20 -Wall prog_12_member_binding_no_extend.cpp -o prog_12
@@ -341,6 +354,7 @@ int main() {
 ### 6.2 绑定到数组元素 → 不延长
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 绑定到数组元素 → 不延长
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // prog_13_array_elem_no_extend.cpp  —— 错误示例
 // 编译: g++ -std=c++20 -Wall prog_13_array_elem_no_extend.cpp -o prog_13
@@ -355,6 +369,7 @@ int main() {
 ### 6.3 range-for 遍历临时容器 → 不延长（迭代器悬垂）
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 遍历临时容器 → 不延长
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // prog_14_range_for_temp_no_extend.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_14_range_for_temp_no_extend.cpp -o prog_14
@@ -374,6 +389,7 @@ int main() {
 `[标准]` 延长只作用于**初始化引用时的直接绑定**。返回 `const T&` 时，临时在 `return` 表达式结束时已亡，返回的引用天然悬垂。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 函数返回 const T& → 不延
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // prog_15_return_const_ref_no_extend.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_15_return_const_ref_no_extend.cpp -o prog_15
@@ -389,6 +405,7 @@ int main() {
 `[标准]` [dcl.init.list]/6：array 成员（以及其元素引用）的生命周期与 `initializer_list` 对象本身一致。绑定到 `initializer_list<T>` 的临时数组在 list 析构后消亡。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · list 的元素在 list 结束后
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // prog_16_init_list_no_extend.cpp  —— 错误示例 (悬垂)
 // 编译: g++ -std=c++20 -Wall prog_16_init_list_no_extend.cpp -o prog_16
@@ -410,6 +427,7 @@ const int& first() {
 ### 7.1 返回局部变量的引用
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 返回局部变量的引用
+
 ```cpp title="示例 18 · ★★☆☆☆"
 #include <iostream>
 // prog_17_return_local_ref.cpp  —— 错误示例 (UB, 经典)
@@ -423,6 +441,7 @@ int main() {
 ### 7.2 返回局部变量的指针
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 返回局部变量的指针
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // prog_18_return_local_ptr.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_18_return_local_ptr.cpp -o prog_18
@@ -436,6 +455,7 @@ int main() {
 ### 7.3 range-for 遍历临时 → 迭代器悬垂
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 遍历临时 → 迭代器悬垂
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // prog_19_range_for_temp_dangling.cpp  —— 错误示例 (UB, 对应 prog_14)
 // 编译: g++ -std=c++20 -Wall prog_19_range_for_temp_dangling.cpp -o prog_19
@@ -452,6 +472,7 @@ int main() {
 `[经验]` 把 `mk()` 的结果赋给**命名变量**再遍历：
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 遍历临时 → 迭代器悬垂
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // prog_19_fix.cpp
 // 编译: g++ -std=c++20 -Wall prog_19_fix.cpp -o prog_19_fix
@@ -467,6 +488,7 @@ int main() {
 ### 7.4 initializer_list 悬垂
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · list 悬垂
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // prog_20_init_list_dangling.cpp  —— 错误示例 (UB, 对应 prog_16)
 // 编译: g++ -std=c++20 -Wall prog_20_init_list_dangling.cpp -o prog_20
@@ -483,6 +505,7 @@ int main() { (void)build(); }
 `[平台][经验]` `std::string_view` 是"非拥有"视图（ch20），绑定到临时 `std::string` 时，临时在语句结束即亡，view 悬垂。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · view 绑定临时 string →
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // prog_21_string_view_temp.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_21_string_view_temp.cpp -o prog_21
@@ -526,6 +549,7 @@ int main() {
 ### 8.1 有符号整数溢出（UB）
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 有符号整数溢出（UB）
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // prog_22_signed_overflow.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_22_signed_overflow.cpp -o prog_22
@@ -541,6 +565,7 @@ int main() {
 ### 8.2 空指针解引用（UB）
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 空指针解引用（UB）
+
 ```cpp title="示例 25 · ★★☆☆☆"
 // prog_23_null_deref.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_23_null_deref.cpp -o prog_23
@@ -553,6 +578,7 @@ int main() {
 ### 8.3 数组越界（UB）
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数组越界（UB）
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // prog_24_oob_array.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_24_oob_array.cpp -o prog_24
@@ -568,6 +594,7 @@ int main() {
 ### 8.4 数据竞争（UB）
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★★☆</span> · 数据竞争（UB）
+
 ```cpp title="示例 27 · ★★★★☆"
 // prog_25_data_race.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall -pthread prog_25_data_race.cpp -o prog_25
@@ -584,6 +611,7 @@ int main() {
 ### 8.5 解引用野指针 / 释放后使用（UB）
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 解引用野指针 / 释放后使用（UB）
+
 ```cpp title="示例 28 · ★★★☆☆"
 // prog_26_wild_ptr_deref.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_26_wild_ptr_deref.cpp -o prog_26
@@ -601,6 +629,7 @@ int main() {
 `[标准]` [basic.lval]/11：通过不兼容类型（除 `char*`/`unsigned char*`/signed char*）的 glvalue 读取对象是 UB。交叉 ch27/ch42。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 严格别名违反（UB）
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // prog_27_strict_aliasing.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall -fstrict-aliasing prog_27_strict_aliasing.cpp -o prog_27
@@ -617,6 +646,7 @@ void break_alias() {
 ### 8.7 读取未初始化对象（UB）
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 读取未初始化对象（UB）
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // prog_28_uninit_read.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_28_uninit_read.cpp -o prog_28
@@ -631,6 +661,7 @@ int main() {
 ### 8.8 移位为负或超宽（UB）
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 移位为负或超宽（UB）
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // prog_29_shift_neg_or_wide.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_29_shift_neg_or_wide.cpp -o prog_29
@@ -645,6 +676,7 @@ int main() {
 ### 8.9 有符号左移溢出（UB）
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 有符号左移溢出（UB）
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // prog_30_signed_lshift_overflow.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_30_signed_lshift_overflow.cpp -o prog_30
@@ -662,6 +694,7 @@ int main() {
 `[标准]` [expr.reinterpret.cast]/5：把整数转成指针后解引用，除非该整数源自同一指针的 `reinterpret_cast`，否则是 UB（且结果可能不对齐）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ↔指针 reinterpretcas
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // prog_31_int_pointer_reinterpret.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_31_int_pointer_reinterpret.cpp -o prog_31
@@ -679,6 +712,7 @@ int main() {
 `[标准]` [basic.def.odr]：同一实体的多个定义若不一致或跨 TU 冲突是 UB。
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 同一变量多重定义
+
 ```cpp title="示例 34 · ★★☆☆☆"
 // prog_32_multiple_definition.cpp  —— 错误示例 (UB, 需两个 TU 触发, 此处示意)
 // 编译: 两个文件分别定义 int g=1; int g=2; 链接 -> ODR 违反
@@ -689,6 +723,7 @@ int main() {
 ### 8.12 在 const 对象上写（UB）
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 在 const 对象上写（UB）
+
 ```cpp title="示例 35 · ★★☆☆☆"
 // prog_33_write_const.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_33_write_const.cpp -o prog_33
@@ -704,6 +739,7 @@ int main() {
 ### 8.13 迭代器失效后使用（UB）
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 迭代器失效后使用（UB）
+
 ```cpp title="示例 36 · ★★☆☆☆"
 // prog_34_iterator_invalidation.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_34_iterator_invalidation.cpp -o prog_34
@@ -723,6 +759,7 @@ int main() {
 `[标准]` [except.spec]/5：若异常试图离开 `noexcept` 函数，调用 `std::terminate`。严格说是"实现必须调用 terminate"，非纯 UB，但等价于程序失控。
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常穿透 noexcept
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // prog_35_exception_noexcept.cpp  —— 错误示例 (std::terminate)
 // 编译: g++ -std=c++20 -Wall prog_35_exception_noexcept.cpp -o prog_35
@@ -734,6 +771,7 @@ int main() { f(); }
 ### 8.15 同存储两次构造无析构（UB）
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 同存储两次构造无析构（UB）
+
 ```cpp title="示例 38 · ★★★☆☆"
 // prog_36_double_construct_no_dtor.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_36_double_construct_no_dtor.cpp -o prog_36
@@ -789,6 +827,7 @@ int main() {
 `[经验]` 未指定/实现定义**不会**让程序崩溃或"任意行为"，只是结果可变；UB 让**整个程序**从首个 UB 起语义失效（"鼻恶魔"）。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与"未指定 / 实现定义 / 良构"
+
 ```cpp title="示例 39 · ★★☆☆☆"
 // prog_37_unspecified_order.cpp  —— 未指定, 非 UB
 // 编译: g++ -std=c++20 -Wall prog_37_unspecified_order.cpp -o prog_37
@@ -799,6 +838,7 @@ int main() { int r = a() + b(); (void)r; }   // 打印 "ab" 或 "ba" 都合法
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与"未指定 / 实现定义 / 良构"
+
 ```cpp title="示例 40 · ★★☆☆☆"
 // prog_38_impl_defined_sizeof.cpp  —— 实现定义, 非 UB
 // 编译: g++ -std=c++20 -Wall prog_38_impl_defined_sizeof.cpp -o prog_38
@@ -825,6 +865,7 @@ int main() { std::cout << sizeof(int) << "\n"; }  // 由实现规定(通常 4)
 源程序：
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 有符号溢出把"死循环"优化成真·无限
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // prog_39_overflow_loop_weaponized.cpp
 // 编译: g++ -std=c++20 -O2 -S prog_39_overflow_loop_weaponized.cpp -o /tmp/p39.s
@@ -841,6 +882,7 @@ int main() {
 **`-O2` 汇编**（本机输出，关键行）：
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 有符号溢出把"死循环"优化成真·无限
+
 ```text
 ub_overflow.cpp:5:11: warning: iteration 2147483646 invokes undefined behavior
                                [-Waggressive-loop-optimizations]
@@ -858,6 +900,7 @@ main:
 源程序：
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 空指针检查被删除
+
 ```cpp title="示例 43 · ★★★☆☆"
 // prog_40_null_check_deleted.cpp
 // 编译: g++ -std=c++20 -O2 -S prog_40_null_check_deleted.cpp -o /tmp/p40.s
@@ -873,6 +916,7 @@ int main() {
 **`-O2` 汇编**（本机输出，关键行）：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 空指针检查被删除
+
 ```text
 main:
     call    __main
@@ -896,6 +940,7 @@ main:
 `[实现·GCC15]` 严格别名/未定义行为的"传染性"不止于本语句：一旦编译器在某个循环里"证明"索引不会越界（因为它假定你不会写 UB），它就可以**删掉同一函数里另一处对同一个/同形数组的边界检查**。这叫"去相关（disambiguation）"。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数组越界让编译器删掉"别的"边界检查
+
 ```cpp title="示例 45 · ★★☆☆☆"
 // prog_39b_bounds_elim.cpp  —— 优化武器化: 越界假设消除边界检查
 // 编译: g++ -std=c++20 -O2 -S prog_39b_bounds_elim.cpp -o /tmp/p39b.s
@@ -919,6 +964,7 @@ int sum_first(int n) {  // n 由调用者传入, 可能 > 16
 `[标准]` [dcl.init]/12：读取未初始化的对象，若该类型有**陷阱表示（trap representation）**，则读取本身是 UB。标量类型如 `bool` 只能取 `true`/`false`（`[basic.fundamental]`），`float` 有 NaN 陷阱位——读了"非法位模式"的 `bool`/`float` 即 UB，且 `memcpy` 复制 padding 也可能触发。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 未初始化读与 padding：陷阱表
+
 ```cpp title="示例 46 · ★★☆☆☆"
 // prog_41_trap_representation.cpp  —— 错误示例 (UB)
 // 编译: g++ -std=c++20 -Wall prog_41_trap_representation.cpp -o prog_41
@@ -942,6 +988,7 @@ int main() {
 `[平台·x86-64]` 下面的结构体在 x86-64 上 `sizeof` 通常是 8（`bool` 占 1 字节 + 3 字节 padding + `int` 4 字节），那 3 字节 padding **内容未指定**。若你 `memcpy` 整个结构体去比较/传输，padding 字节可能含栈上残留——跨进程/跨机比较会"相等但字节不同"。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与位域：跨平台不可移植陷阱
+
 ```cpp title="示例 47 · ★★★☆☆"
 // prog_41b_padding_compare.cpp  —— 错误示例 (依赖 padding 内容)
 // 编译: g++ -std=c++20 -Wall prog_41b_padding_compare.cpp -o prog_41b
@@ -974,6 +1021,7 @@ int main() {
 `[实现]` 关闭严格别名用 `-fno-strict-aliasing`（GCC/Clang 默认**开启**）；MSVC 的 `/Oa`（已废弃）语义不同。合法重解释用 `std::bit_cast`（C++20，看 ch27）：
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 严格别名与 UB
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 // prog_42_bit_cast_legal.cpp  —— 正确: 绕过严格别名
 // 编译: g++ -std=c++20 -Wall prog_42_bit_cast_legal.cpp -o prog_42
@@ -996,6 +1044,7 @@ int main() {
 1. **`__attribute__((may_alias))`（GCC/Clang）**：给类型加此属性后，**该类型的指针可被当作"可别名任意对象"** 处理，编译器不再对它做激进的别名假设。常用于 `typedef float m128f __attribute__((may_alias));` 让向量指针能安全别名普通 `float[]`。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 当别名豁免不够用：attribute
+
 ```cpp title="示例 49 · ★★☆☆☆"
 // prog_42b_may_alias.cpp  —— 用 may_alias 合法化跨类型访问
 // 编译: g++ -std=c++20 -Wall -fstrict-aliasing prog_42b_may_alias.cpp -o prog_42b
@@ -1013,6 +1062,7 @@ int main() {
 2. **`[[noalias]]`（C++23 标准属性）**：给函数参数标注"此指针不别名其他参数"，让优化器放心地做重排（与 C 的 `restrict` 等价）。`[实现]` Clang 完整支持；GCC 13.x 会发 `-Wattributes` 警告并**忽略**该属性（语义上仍合法，只是未获优化）。这是"反向"工具——它**声明无别名**以换取优化，而非放宽别名规则。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 当别名豁免不够用：attribute
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 // prog_42c_noalias.cpp  —— [[noalias]] 声明无别名以助优化
 // 编译: g++ -std=c++23 -Wall prog_42c_noalias.cpp -o prog_42c
@@ -1039,6 +1089,7 @@ int main() { int a=0,b=0; (void)f(&a,&b); }
 文件 `<new>`（即上面路径下的 `new`）：
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · std::launder
+
 ```cpp title="示例 51 · ★★★★☆"
 // <new> :228-246  (libstdc++ 15.3.0, MinGW GCC 15.3.0)
 #if __cplusplus >= 201703L
@@ -1077,6 +1128,7 @@ namespace std
 ### 14.2 `operator new` / `operator delete`（`<new>`：137–222）
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · operator new / ope
+
 ```cpp title="示例 52 · ★★☆☆☆"
 #include <cstddef>
 // <new> :137-222  (libstdc++ 15.3.0)
@@ -1108,6 +1160,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 ### 14.3 `std::addressof`（`<bits/move.h>`：52–53 与 176–182）
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::addressof
+
 ```cpp title="示例 53 · ★★★☆☆"
 // <bits/move.h> :52-53  (libstdc++ 15.3.0)
   template<typename _Tp>
@@ -1160,6 +1213,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 `[平台·Windows]` Windows 下 MSVC 的 `/permissive-` 能关掉大量"历史兼容"许可（如非标准的范围 for 临时、隐式 `int`、两阶段查找放松）。它虽不直接检测 UB，但能**消除"因编译器宽容而看起来正常"的危险写法**：
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · /permissive- 与 -We
+
 ```cpp title="示例 54 · ★☆☆☆☆"
 // prog_47_permissive_example.cpp  —— MSVC 下 /permissive- 暴露问题
 // 编译(MSVC): cl /std:c++20 /permissive- /W4 prog_47_permissive_example.cpp
@@ -1186,6 +1240,7 @@ int f() {
 
 `[平台·x86-64]` **本机实测**：在 GCC 15.3.0 上链接 sanitizer 失败：
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 检测
+
 ```text
 C:/Qt/.../ld.exe: cannot find -lubsan: No such file or directory
 collect2.exe: error: ld returned 1 exit status
@@ -1195,6 +1250,7 @@ collect2.exe: error: ld returned 1 exit status
 ### 16.1 UBSan 典型输出（有符号溢出，prog_22）
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 典型输出（有符号溢出，prog22）
+
 ```cpp title="示例 56 · ★★☆☆☆"
 // prog_43_ubsan_demo.cpp  —— 对应 prog_22, 用 UBSan 跑
 // 编译(Clang/Linux): clang++ -std=c++20 -fsanitize=undefined prog_43_ubsan_demo.cpp -o prog_43
@@ -1206,6 +1262,7 @@ int main() {
 ```
 **典型 UBSan 诊断**（参考输出）：
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 典型输出（有符号溢出，prog22）
+
 ```text
 prog_43_ubsan_demo.cpp:4:38: runtime error: signed integer overflow:
   addition of unsigned value 2147483647 and 1 cannot be represented in type 'int'
@@ -1215,6 +1272,7 @@ SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior prog_43_ubsan_demo.cpp:4
 ### 16.2 ASan 典型输出（释放后使用，prog_26）
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 典型输出（释放后使用，prog26）
+
 ```cpp title="示例 58 · ★★☆☆☆"
 // prog_44_asan_demo.cpp  —— 对应 prog_26, 用 ASan 跑
 // 编译: clang++ -std=c++20 -fsanitize=address prog_44_asan_demo.cpp -o prog_44
@@ -1227,6 +1285,7 @@ int main() {
 ```
 **典型 ASan 诊断**（参考输出）：
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 典型输出（释放后使用，prog26）
+
 ```text
 ==12345==ERROR: AddressSanitizer: heap-use-after-free on address 0x602...
 READ of size 4 at 0x602... thread T0
@@ -1240,6 +1299,7 @@ freed by thread T0 here:
 ### 16.3 TSan 典型输出（数据竞争，prog_25）
 
 > **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 典型输出（数据竞争，prog25）
+
 ```cpp title="示例 60 · ★★☆☆☆"
 // prog_45_tsan_demo.cpp  —— 对应 prog_25, 用 TSan 跑
 // 编译: clang++ -std=c++20 -fsanitize=thread -pthread prog_45_tsan_demo.cpp -o prog_45
@@ -1250,6 +1310,7 @@ int main() { std::thread a(f), b(f); a.join(); b.join(); }
 ```
 **典型 TSan 诊断**（参考输出）：
 > **示例 61** <span class="badge badge-exp">难度 ★★★★☆</span> · 典型输出（数据竞争，prog25）
+
 ```text
 WARNING: ThreadSanitizer: data race (pid=...)
   Write of size 4 at 0x... by thread T2:
@@ -1289,6 +1350,7 @@ set(CMAKE_EXE_LINKER_FLAGS_SANITIZE
 `[标准]` [expr.const]：常量表达式求值中若出现 UB（溢出、空解引用、越界等），则**该表达式不是常量表达式**，含有它的 `constexpr` 变量/函数**直接编译失败**——这是 constexpr 的"免费 UB 检测"。
 
 > **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常量表达式中的 UB：constexpr 直接编译失败
+
 ```cpp title="示例 62 · ★★★☆☆"
 // prog_46_constexpr_ub_fail.cpp  —— 编译失败示例 (constexpr 中 UB)
 // 编译: g++ -std=c++20 -Wall prog_46_constexpr_ub_fail.cpp -o prog_46  (报错)
@@ -1301,6 +1363,7 @@ int main() { constexpr int v = bad(); (void)v; }
 ```
 **典型编译错误**（参考输出）：
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常量表达式中的 UB：constexpr 直接编译失败
+
 ```text
 prog_46_constexpr_ub_fail.cpp: In function 'constexpr int bad()':
 prog_46_constexpr_ub_fail.cpp:4:11: error: overflow in constant expression [-fpermissive]
@@ -1314,6 +1377,7 @@ prog_46_constexpr_ub_fail.cpp:4:11: error: overflow in constant expression [-fpe
 `[标准]` 需要清醒：`constexpr` 只挡住"恰好发生在常量求值路径上"的 UB。若 UB 发生在**运行期分支**（仅当非常量实参才触发），编译器**不会**为它报错——它只在你用常量实参调用时才求值。因此 `constexpr` 是**必要不充分**的 UB 防护。
 
 > **示例 64** <span class="badge badge-exp">难度 ★★★☆☆</span> · 中 UB 的"边界"：并非所有 UB
+
 ```cpp title="示例 64 · ★★★☆☆"
 // prog_46b_constexpr_runtime_ub.cpp  —— constexpr 不覆盖运行期 UB
 // 编译: g++ -std=c++20 -Wall prog_46b_constexpr_runtime_ub.cpp -o prog_46b  (通过!)
@@ -1495,6 +1559,7 @@ LLVM PR-41379: clang自身在-dump-tokens中use-after-free
 C++26 contracts(P2900): pre/post在debug自动检查
 
 > **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：生命周期工业案例
+
 ```cpp title="示例 65 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"UB=compiler weapons. ASan=use-after-free, UBSan=overflow."<<std::endl;return 0;}
@@ -1505,6 +1570,7 @@ int main(){std::cout<<"UB=compiler weapons. ASan=use-after-free, UBSan=overflow.
 ## 附录 F：UB面试
 
 > **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：UB面试
+
 ```cpp title="示例 66 · ★★☆☆☆"
 #include <iostream>
 int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detects it. No diagnostic required by standard."<<std::endl;return 0;}
@@ -1572,6 +1638,7 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 <details><summary>答案与解析</summary>
 
 > **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 67 · ★★☆☆☆"
 #include <iostream>
 const int& bad_ref() { const int x = 5; return x; }  // x 在返回时已亡 -> 悬垂引用 (UB)
@@ -1598,6 +1665,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 68** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 68 · ★★☆☆☆"
 #include <iostream>
 #include <string>
@@ -1625,6 +1693,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 69** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 69 · ★★★☆☆"
 #include <iostream>
 #include <new>
@@ -1661,6 +1730,7 @@ int main() {
 实现与边界：漏掉 `destroy_at` 只对平凡析构类型无害（如 `int`/`Point`），对持有资源的类型（`std::string`、`FILE*`）则泄漏；反之，在 `construct_at` 前对旧对象再次 construct 而没 destroy，是「重开生命周期」的 UB（需要 `launder` 取新指针，见练习 3）。替代方案：标准容器替你管生命周期，手写构造/析构只应出现在池、mmap、共享内存等「自定义存储」场景。
 
 > **示例 73** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+
 ```cpp title="示例 73 · ★★★☆☆"
 #include <iostream>
 #include <memory>
@@ -1695,6 +1765,7 @@ int main() {
 实现与边界：短路既是性能优化（跳过昂贵求值）也是安全机制（`p && p->flag` 防空指针）。何时失效：若把条件抽成 `f1(arr, idx) && f2(idx)`，`f2` 是否执行仍由短路决定，但依赖「`f1` 内部改了 `idx`」的推理会让维护者头大。替代方案：有副作用的操作（自增/赋值）不要藏在条件表达式里，先算好再比较，可读性与可审计性同时提升。
 
 > **示例 74** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
 ```cpp title="示例 74 · ★★☆☆☆"
 #include <iostream>
 
@@ -1729,6 +1800,7 @@ const Config& load_config() {
 
 **修复**：
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：函数返回大对象——优先返回
+
 ```cpp title="示例 70 · ★★☆☆☆"
 #include <iostream>
 #include <string>
@@ -1754,6 +1826,7 @@ log(std::string("temp msg"));   // 临时 string 在语句结束即析构, s 内
 
 **修复**：
 > **示例 71** <span class="badge badge-exp">难度 ★★★★★</span> · 演绎 2：stringview 形参
+
 ```cpp title="示例 71 · ★★★★★"
 #include <iostream>
 #include <string>
@@ -1947,6 +2020,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 72** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 72 · ★★★☆☆"
 #include <cstdio>
 #include <memory>

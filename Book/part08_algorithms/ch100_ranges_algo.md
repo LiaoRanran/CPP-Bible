@@ -49,6 +49,7 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 **Ranges** 是一套以"范围（range）"为一等公民的标准库抽象：一个 range 由迭代器对（`begin`/`end`）定义，算法直接吃"整个容器/视图"而不是两个迭代器。`[标准]`：Ranges 由 P0896R4（C++20）引入，核心位于 `<ranges>`，复用 `<iterator>` 的 `std::input_iterator` 等概念。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：C++20 Ranges [标准]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① ranges 算法直接接受容器，无需 begin()/end()
 #include <algorithm>
@@ -71,6 +72,7 @@ int main() {
 `view` 是对底层数据的**轻量、非拥有（non-owning）视图**：构造几乎零开销，不拷贝元素，只记录"如何遍历"。遍历时才逐元素计算——这就是**惰性求值（lazy evaluation）**。
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -81,6 +83,7 @@ for (int x : r) std::cout << x << ' ';  // 5 4 3 2 1（遍历时才反向迭代�
 ```
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
 // ② view 可被多次遍历，且始终反映底层最新状态
@@ -92,6 +95,7 @@ for (int x : r) std::cout << x << ' ';   // 6 5 4 3 2 1（底层变了，view �
 - `[实现·GCC15.3.0]`：libstdc++ 的 `reverse_view` 仅持有两个迭代器（`_M_begin`/`_M_end`），构造等价于一次 `make_reverse_iterator`，不触碰元素。
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
+
 ```text
 ┌─────────── 底层容器 src ───────────┐
 │ [1][2][3][4][5][6]  (拥有数据)      │
@@ -107,6 +111,7 @@ for (int x : r) std::cout << x << ' ';   // 6 5 4 3 2 1（底层变了，view �
 旧算法（`std::sort`、`std::find`）需要显式传迭代器对；range 算法（`std::ranges::sort`、`std::ranges::find`）吃整个 range，并**返回 `borrowed_iterator`**——对临时 range 也安全。
 
 > **示例 5** [难度 ★★☆☆☆] [主题：算法 vs 旧算法 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 5 · ★★☆☆☆"
 #include <vector>
 #include <ranges>
@@ -118,6 +123,7 @@ auto it_new = std::ranges::find(v, 3);           // ranges 算法：单 range
 ```
 
 > **示例 6** [难度 ★☆☆☆☆] [主题：算法 vs 旧算法 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -137,6 +143,7 @@ if (pos != std::ranges::end(data)) std::cout << *pos; // 20
 `operator|` 把 range 喂给 range adaptor（视图工厂），形成"数据流水线"。`r | adaptor1 | adaptor2` 等价于 `adaptor2(adaptor1(r))`，但可读性更好。
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：管道操作符 | <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -149,6 +156,7 @@ for (int x : v | filter([](int n) { return n % 2 == 0; })
 ```
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：管道操作符 | <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <vector>
 // ④ 管道可把一个 adaptor 的输出直接作为另一算法输入
@@ -166,6 +174,7 @@ for (int x : w | views::filter([](int n) { return n > 2; }))
 **投影（projection）** 是传给算法的"取值函数"：算法先对元素应用投影，再比较投影结果。排序按某成员、查找按某键，都无需手写比较器或改元素类型。
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：投影 projection <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <vector>
 #include <string>
@@ -179,6 +188,7 @@ std::ranges::sort(ps, {}, &Person::age);          // 按 age 升序
 ```
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：投影 projection <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 #include <vector>
 #include <ranges>
@@ -196,6 +206,7 @@ auto it = std::ranges::find(people, 'B', &Person::name); // 投影取 name[0] �
 用 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch100_sort.cpp`。`ranges::sort(v, less{}, proj)` 底层仍是 libstdc++ 的 **introsort（`__introsort_loop`）**，但多了一个投影闭包。
 
 > **示例 11** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：ranges::sor]
+
 ```cpp title="示例 11 · ★★★☆☆"
 #include <vector>
 #include <ranges>
@@ -234,6 +245,7 @@ _Z11sort_by_absRSt6vectorIiSaIiEE:
 - `views::transform(fn)`：把每个元素映射为 `fn(x)`（同样惰性）。
 
 > **示例 12** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -245,6 +257,7 @@ for (int x : v | std::views::filter([](int n) { return n > 1; })
 ```
 
 > **示例 13** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -263,6 +276,7 @@ for (auto s : names | std::views::transform([](const std::string& n) { return n.
 同样用真实编译与 chrono 实测。先给源码，再给真实汇编，最后给实测数据。
 
 > **示例 14** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：惰性管道 vs 及早旧]
+
 ```cpp title="示例 14 · ★★★☆☆"
 // 文件：Examples/_ch100_bench.cpp
 // 行号：20（eager 临时容器 pos）/ 37（lazy 块：v | filter | transform 累加）
@@ -337,6 +351,7 @@ lazy:  11.2327 ms  sum=49011300
 - `views::slide(n)`：产生长度为 `n` 的滑动窗口（每个窗口本身是个 range）。
 
 > **示例 15** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -351,6 +366,7 @@ for (auto w : v | std::views::slide(2))                       // 相邻窗口
 ```
 
 > **示例 16** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -369,6 +385,7 @@ for (int x : data | std::views::filter([](int n) { return n > 3; })
 不一定非要手写整套 `view_interface`——用标准 adaptor 包装业务逻辑，是最常用、可编译、零依赖的"自定义 view"。下面这段代码在 GCC 15.3.0 下 `-std=c++23 -O2` 真实编译通过。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自定义 view
+
 ```cpp title="示例 17 · ★★★☆☆"
 // 文件：Examples/_ch100_custom_view.cpp
 // 行号：9（scale 定义）/ 16（main：v | scale(10)）
@@ -381,6 +398,7 @@ auto scale(T factor) {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义 view
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -397,6 +415,7 @@ for (int x : v | scale(10)) std::cout << x << ' ';   // 10 20 30 40
 Ranges 完全建立在 STL 迭代器之上，新旧算法可混用；用 `std::ranges::begin/end` 取范围端点，用 `views::all` 把任意 range 统一成 view。
 
 > **示例 19** [难度 ★☆☆☆☆] [主题：与 STL 容器/算法衔接 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -410,6 +429,7 @@ std::cout << *b;                 // 1
 ```
 
 > **示例 20** [难度 ★☆☆☆☆] [主题：与 STL 容器/算法衔接 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <vector>
 #include <ranges>
@@ -429,6 +449,7 @@ for (int x : ev) out.push_back(x);            // out = {1, 3}
 惰性管道的核心收益有两点：**省去临时容器（无堆分配）**与**单次遍历（而非多次）**。
 
 > **示例 21** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>性能：避免临时容器 / 单次]
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑫ ❌ 旧写法：链式为多个临时 vector，N 次遍历 + N 次分配
 std::vector<int> a = v;                                          // 拷贝1
@@ -451,6 +472,7 @@ for (int x : v | std::views::filter(pred1)
 view **不拥有底层数据**。指向局部/临时容器的 view 是悬垂（dangling），访问即 UB。C++20 对此有**编译期防护**。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：悬垂 view / dang
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // ⑬ ❌ 悬垂：返回引用局部容器的 view
 auto dangling_demo() {
@@ -460,6 +482,7 @@ auto dangling_demo() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑：悬垂 view / dang
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑬ ranges 对"临时 range 上调算法"返回 std::ranges::dangling 作编译期护栏
 auto it = std::ranges::find(std::vector<int>{1, 2, 3}, 2);
@@ -467,6 +490,7 @@ auto it = std::ranges::find(std::vector<int>{1, 2, 3}, 2);
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑：悬垂 view / dang
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <vector>
 // ⑬ ✅ 让 view 存活期覆盖底层：底层在外层作用域
@@ -482,6 +506,7 @@ auto safe = store | std::views::reverse;    // ✅ store 比 safe 活得久
 `views::chunk(n)` 把 range 切成大小为 `n` 的连续块；每块是子 range，可交给 `std::execution::par` 并行处理（注意：view 本身不是线程安全的，分块后各块独立处理即可）。
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与并行：views::chunk + par
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑭ chunk 分块 + 并行策略：每块内部并行
 #include <execution>
@@ -501,6 +526,7 @@ for (auto blk : v | std::views::chunk(100)) {  // 10 个大小为 100 的块
 ## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
 > **示例 26** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 26 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -516,6 +542,7 @@ print_positive(a);                          // 1 3
 ```
 
 > **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑮ ✅ 管道里把"廉价、强过滤"的 filter 放前面，减少下游元素量
 for (int x : data
@@ -543,6 +570,7 @@ for (int x : data
 view 链是"运行时才展开"的惰性结构，单步调试时你看到的是一堆迭代器包装，而非直观的中间结果。
 
 > **示例 28** [难度 ★☆☆☆☆] [主题：调试：view 链难调试 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
@@ -569,6 +597,7 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 在 C++20 之前，**range-v3**（Eric Niebler，Ranges 提案作者）是事实标准。`<ranges>` 在设计上与其高度兼容，迁移成本低。
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：跨库：range-v3 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑲ range-v3 写法（需 #include <range/v3/all.hpp>，命名空间 ranges::v3）
 // #include <range/v3/all.hpp>
@@ -577,6 +606,7 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 ```
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：跨库：range-v3 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <ranges>
 #include <algorithm>
@@ -625,6 +655,7 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 ## 补充完整可编译示例（ranges）
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // R1 ranges::sort 基础排序
 #include <algorithm>
@@ -634,6 +665,7 @@ void r1(std::vector<int>& v) { std::ranges::sort(v); }
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <vector>
 #include <ranges>
@@ -643,6 +675,7 @@ void r2(std::vector<int>& v) { std::ranges::sort(v, std::ranges::greater{}); }
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // R3 投影排序：按字符串长度
 #include <string>
@@ -655,6 +688,7 @@ void r3(std::vector<std::string>& vs) {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // R4 filter 取偶数
 #include <iostream>
@@ -666,6 +700,7 @@ void r4(const std::vector<int>& v) {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -677,6 +712,7 @@ void r5(const std::vector<int>& v) {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -689,6 +725,7 @@ void r6(const std::vector<int>& v) {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -699,6 +736,7 @@ void r7(const std::vector<int>& v) {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -709,6 +747,7 @@ void r8(const std::vector<int>& v) {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -719,6 +758,7 @@ void r9(const std::vector<int>& v) {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -730,6 +770,7 @@ void r10(const std::vector<int>& v) {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -741,6 +782,7 @@ void r11(const std::vector<int>& v) {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -755,6 +797,7 @@ void r12(const std::vector<std::string>& vs) {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <ranges>
@@ -767,6 +810,7 @@ void r13(std::ranges::input_range auto&& r) {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <vector>
 // R14 物化 view 到新容器
@@ -779,6 +823,7 @@ std::vector<int> r14(const std::vector<int>& v) {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（ranges）
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 // R15 并行：chunk + par 加倍
 #include <execution>
@@ -849,6 +894,7 @@ Ranges 算法是 C++20 对 STL 算法库最重大的升级：
 | 返回值 | 通常是输出迭代器 | 返回 borrowed_iterator_t (含范围信息) |
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：Ranges 算法 vs
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 #include <ranges>
@@ -870,6 +916,7 @@ int main() {
 ## 附录 B：工业案例 —— range-v3 与标准 ranges [F: Industry]
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：工业案例 —— range
+
 ```text
 range-v3 (Eric Niebler, 2014-2019) 是 C++20 ranges 的原型库:
 
@@ -888,6 +935,7 @@ range-v3 提供但标准尚未包含的:
 ## 附录 C：性能分析 —— Ranges vs 手写循环 [E: Low-level / G: Performance]
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C：性能分析 —— Range
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <algorithm>
@@ -908,6 +956,7 @@ int main() {
 ## 附录 D：面试 [J: Learning]
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试 [J: Learning]
+
 ```text
 面试高频:
 Q: ranges::sort vs std::sort 的区别？
@@ -964,6 +1013,7 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 <details><summary>答案与解析</summary>
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -991,6 +1041,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1017,6 +1068,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1047,6 +1099,7 @@ int main() {
 边界条件与工程决策：若统计之后还要"拿过滤后的元素继续处理"，应改用 `views::filter(...)` 惰性视图——它不物化且可继续 `|` 管道；若只求个数，`count_if` 更直白、无视图状态。注意投影每次比较都会调用：昂贵投影（如解析字符串）在百万级数据上是热点，此时可先 `transform` 成廉价键再统计。
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 59 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1080,6 +1133,7 @@ int main() {
 边界条件与失效场景：若区间并未真的按该投影排序，二分结果**未定义**——排序与查找必须使用同一投影，否则会拿到任意元素。另外 `binary_search` 只回答"存在"，要拿位置或计数须用 `lower_bound`/`upper_bound`（见 ch97）；键有重复时 `lower_bound` 返回第一个副本，`upper_bound` 返回最后一个副本的下一个，`equal_range` 一步取到全区间。
 
 > **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 60 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -1111,6 +1165,7 @@ int main() {
 **常见错误（text）**：
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：多步处理——views 管
+
 ```cpp title="示例 53 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1130,6 +1185,7 @@ int main() {
 **修复（cpp）**：用 `views` 惰性管道，零中间容器、单次遍历。
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：多步处理——views 管
+
 ```cpp title="示例 54 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1152,6 +1208,7 @@ int main() {
 **常见错误（text）**：
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：视图不拥有数据——悬垂视图
+
 ```cpp title="示例 55 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1166,6 +1223,7 @@ int main() { (void)make_view(); }
 **修复（cpp）**：视图绑定到生命周期更长的底层范围；在同一作用域内使用，且底层容器变化对视图可见。
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：视图不拥有数据——悬垂视图
+
 ```cpp title="示例 56 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -1324,6 +1382,7 @@ flowchart TD
 ### D4.4 第一方可编译验证（ranges::sort 带投影）
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
+
 ```cpp title="示例 57 · ★★☆☆☆"
 #include <algorithm>
 #include <iostream>
@@ -1461,6 +1520,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 58 · ★★☆☆☆"
 #include <algorithm>
 #include <cassert>

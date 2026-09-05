@@ -51,6 +51,7 @@ C++ 标准刻意不规定段布局（那是 OS / ABI 的事），只谈"对象�
 `[标准]` C++ 标准本身不规定「虚拟地址空间」——那是操作系统/实现的概念。但标准中的**存储期（storage duration）**、**对象生存期**、**指针**、**对齐**全部建立在一个前提上：**每个进程拥有独立、连续的虚拟地址空间，由操作系统通过 MMU（内存管理单元）映射到物理页框**。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概览：进程虚拟地址空间
+
 ```text
         高地址 0xFFFF'FFFF'FFFF'FFFF
         ┌───────────────────────────┐
@@ -106,6 +107,7 @@ flowchart TD
 `[实现·GCC15]` 是否启用 5 级页表（57 位 LA57）由内核引导参数决定；用户态程序无需关心——`uintptr_t` 在 x86-64 上恒为 64 位，`sizeof(void*)==8`。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的 48 位虚拟地址与用户/内核划分
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // P1: 验证指针宽度为 64 位，并观察地址落在用户空间低半区
 #include <cstdint>
@@ -140,6 +142,7 @@ int main() {
 `[平台·x86-64]` 观察 ASLR：连续运行两次，栈/堆地址会改变。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 地址空间布局随机化
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // P2: 观察 ASLR —— 同一程序两次运行的栈/堆地址不同
 #include <cstdio>
@@ -165,6 +168,7 @@ int main() {
 `[平台·x86-64]` **PIE（Position-Independent Executable）** 让可执行文件本身也能被加载到随机基址。现代发行版默认 `-fpie -pie`。
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与「可打印指针」
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // P3: PIE vs -no-pie 对函数/全局地址可重定位性的影响
 #include <cstdio>
@@ -274,6 +278,7 @@ Idx Name          Size      VMA               LMA               File off  Algn
 - 栈/堆默认 `RW-`；现代系统默认**栈不可执行（NX bit）**，杜绝 shellcode 注入。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 段权限 R/W/X 与 MMU
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // P4: 试图修改 .rodata 中的 const 全局 → 未定义行为，运行时通常 SIGSEGV
 #include <iostream>
@@ -298,6 +303,7 @@ int main() {
 `[实现·GCC15]` 下面这个程序包含每种存储类别的实体，编译后用 `objdump -h` / `readelf`（ELF）确认落点。本机 MinGW 产物为 PE，故用 `objdump -h`（见元素 6 输出）。Linux 下用 `readelf -S` 会得到 `.text/.data/.bss/.rodata/.tdata/.tbss`。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实实验：C++ 实体 → 段的映射
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // P5 (seg_demo.cpp): 各类存储期实体的段落位示例
 #include <thread>
@@ -344,6 +350,7 @@ int main() {
 3. **共享库加载** —— 动态链接器 `mmap` `.so`/`.dll` 的代码节（R-X）与数据节（RW），多进程共享同一份代码物理页。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存映射、共享库、文件映射
+
 ```cpp title="示例 7 · ★★☆☆☆"
 // P6: POSIX 文件映射（Linux/macOS）[平台-推断: 本机 MinGW 无 mmap，见下方 Windows 等价]
 #include <fcntl.h>
@@ -365,6 +372,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存映射、共享库、文件映射
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // P7: Windows 等价 —— CreateFileMapping / MapViewOfFile [平台-推断]
 #include <windows.h>
@@ -402,6 +410,7 @@ $ cat /proc/$(pidof a.out)/maps
 每行 6 字段：范围、权限（`rwx` + `p`私有/`s`共享）、文件偏移、设备、inode、映射源。权限位 `p`(PROT_EXEC 在 r-x 行) 正对应元素 7 的 R/W/X；`[heap]`/`[stack]`/`libc.so.6` 直观印证元素 14 的经典布局；多个进程映射同一 `.so` 的 `r-x` 行共享同一物理页，即元素 13 的 COW/共享库机制。
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 观测进程的虚拟内存布局：`/proc/<pid>/maps` 与 `pmap`
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // P35: 打印自身 maps 路径，配合外部 `cat /proc/self/maps` 观察（Linux）[平台-推断]
 #include <cstdio>
@@ -425,6 +434,7 @@ int main() {
 `[平台·x86-64][标准]` 虚拟地址空间被切成固定大小的**页（page）**，物理内存被切成**页框（page frame）**。x86-64 常用 **4 KiB 页**（也有 2 MiB / 1 GiB 大页）。页表记录「虚拟页号 → 物理页框号」映射。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分页与页表：虚拟 → 物理
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // P8: 4 KiB 页下，把虚拟地址拆成 VPN(高52位) 与 offset(低12位)
 #include <cstdint>
@@ -444,6 +454,7 @@ int main() {
 `[平台·x86-64]` **x86-64 4 级页表**：CR3 → PML4 → PDPT → PD → PT，每级 9 位索引、末级 12 位页内偏移，共 9+9+9+9+12 = 48 位。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分页与页表：虚拟 → 物理
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // P9: 演示 4 级页表索引划分 (9/9/9/9/12)
 #include <cstdint>
@@ -479,6 +490,7 @@ int main() {
   4. 若是 COW 写保护页 → 复制一份解除保护（见元素 16）。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与缺页中断
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // P10: microbenchmark —— 顺序访问(良好 TLB/预取) vs 跨大步访问(频繁 TLB miss)
 #include <chrono>
@@ -510,6 +522,7 @@ int main() {
 `[实现·GCC15]` 上面的手搓计时只是直觉验证。生产级 microbenchmark 应使用 Google Benchmark（需 `-lbenchmark -lpthread`）：
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 Google Benchmark
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // P36: Google Benchmark 版 TLB/cache 步长扫描（需 Google Benchmark 库）
 #include <benchmark/benchmark.h>
@@ -544,6 +557,7 @@ BENCHMARK_MAIN();
 `[标准][平台·x86-64]` 进程启动时，操作系统**不会**真的把 `.bss`、堆、`mmap` 区域一次性全填好物理页。只有当代码/数据**第一次访问**某页时才分配物理页（清零或换入）。这叫 demand paging。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++ 程序的内存模型与操作系统视角
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // P11: demand paging 直觉 —— 分配 1 GiB 但不访问，RSS 不会真占 1 GiB [平台-推断: Linux]
 #include <cstdio>
@@ -578,6 +592,7 @@ int main() {
 - `std::string` SSO 之外、`fork`、私有文件映射都用到 COW。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · C++ 程序的内存模型与操作系统视角
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // P12: fork + COW 演示 [平台-推断: POSIX/Linux]
 #include <unistd.h>
@@ -604,6 +619,7 @@ int main() {
 `[平台·Linux]` 经典 x86-64 Linux 进程布局（从高到低）：
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典地址空间布局
+
 ```text
 0xFFFF...  内核
           ┌─────────┐
@@ -620,6 +636,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典地址空间布局
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // P13: 打印各区域地址，直观感受「栈高、堆中、代码低、全局低」
 #include <cstdio>
@@ -652,6 +669,7 @@ int main() {
 - `std::alignment_of<T>` —— 等同 `integral_constant<size_t, alignof(T)>`（见元素 18 真实源码）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对齐基础：alignof / alignas
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // P14: alignof 各基础类型的对齐（x86-64 System V ABI）
 #include <cstdio>
@@ -669,6 +687,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对齐基础：alignof / alignas
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // P15: alignas 提升对齐
 #include <cstdio>
@@ -693,6 +712,7 @@ int main() {
 `[平台·x86-64]` x86-64 对**自然对齐**的标量访问是原子的（硬件容忍未对齐访问但有性能代价）；某些架构（ARM 部分、旧 RISC）对未对齐访问直接抛出总线错误。更关键的是 **cache line**：x86-64 典型 **64 字节**缓存行。两个独立变量若落在同一 cache line，多核并发修改会引发 **false sharing（伪共享）**——虽无逻辑竞争，却因缓存一致性协议（MESI）反复使对方行失效而严重降速。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 硬件对齐要求与 cache line
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // P16: 观测 cache line 大小（x86-64 通常 64）
 #include <cstdio>
@@ -722,6 +742,7 @@ int main() { std::printf("assumed cache line = %d bytes\n", CACHE_LINE); return 
 `[实现·GCC15]` 源文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，**行号：210–214**：
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码
+
 ```cpp title="示例 21 · ★★☆☆☆"
 #include <cstddef>
 210  #ifdef __GCC_DESTRUCTIVE_SIZE
@@ -742,6 +763,7 @@ int main() { std::printf("assumed cache line = %d bytes\n", CACHE_LINE); return 
 `[实现·GCC15]` 特性宏在 `<version>`（同目录 `version` 文件）第 125–127 行也有记录：
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 125  #ifdef __GCC_DESTRUCTIVE_SIZE
 126  # define __cpp_lib_hardware_interference_size 201703L
@@ -751,6 +773,7 @@ int main() { std::printf("assumed cache line = %d bytes\n", CACHE_LINE); return 
 `[实现·GCC15]` **本机实测**（MinGW GCC 13.1.0）：
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ 源码
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 #include <new>
 #include <iostream>
@@ -765,6 +788,7 @@ int main(){
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ 源码
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // P17: 用 destructive size 隔离两个线程的热变量，避免 false sharing
 #include <new>
@@ -792,6 +816,7 @@ int main() {
 `[实现·GCC15]` 下面用单头文件风格（Google Benchmark 风格主循环）对比「同行（伪共享）」与「不同行（对齐隔离）」两种布局：
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的真实量级
+
 ```cpp title="示例 25 · ★★★☆☆"
 // P18: false sharing microbenchmark（对比 同行 vs 不同行）
 #include <new>
@@ -843,6 +868,7 @@ int main() {
 `[实现·GCC15]` 用 Google Benchmark 同时测两种布局，输出更可信：
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 版 false-sharing 对比
+
 ```cpp title="示例 26 · ★★★☆☆"
 // P37: Google Benchmark 对比 伪共享 vs 隔离（需 -lbenchmark -lpthread）
 #include <benchmark/benchmark.h>
@@ -876,6 +902,7 @@ BENCHMARK_MAIN();
 `[标准]` 当类型的对齐 > `alignof(std::max_align_t)`（x86-64 为 16，因 `long double`/`__m128` 需 16 字节），称为**过对齐类型（over-aligned type）**。普通 `::operator new(size)` 只保证 `alignof(std::max_align_t)` 对齐——它**不保证** 64 字节对齐，因此对过对齐类型会出错。
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 过对齐类型与对齐分配
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // P19: 过对齐类型的对齐 > max_align_t
 #include <cstddef>
@@ -896,6 +923,7 @@ int main() {
 `[实现·GCC15]` 文件 `.../include/c++/new`，**行号：148–171**（由 `#if __cpp_aligned_new` 守护）：
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ <new>
+
 ```cpp title="示例 28 · ★★☆☆☆"
 #include <cstddef>
 148  #if __cpp_aligned_new
@@ -937,6 +965,7 @@ int main() {
 `[标准]` `align_val_t` 的定义见同文件 **行号：88–90**：
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实 libstdc++ <new>
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 #include <cstddef>
 88  #if __cpp_aligned_new
@@ -947,6 +976,7 @@ int main() {
 即 `align_val_t` 是 `size_t` 底层的**强类型枚举**，用于在对齐分配函数的重载集合中区分「对齐 new」与普通 new，避免与普通 `(size_t)` new 歧义。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ <new>
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // P20: 用对齐 new 分配 64 字节对齐对象（C++17）
 #include <new>
@@ -966,6 +996,7 @@ int main() {
 `[标准]` C 层用 `std::aligned_alloc(alignment, size)`（C11，声明于 `<cstdlib>`）或 POSIX `posix_memalign`。注意 `aligned_alloc` 要求 **size 是对齐的整数倍**（C11 约束）。
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实 libstdc++ <new>
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // P21: C11 aligned_alloc（size 须为 alignment 的整数倍）
 #include <cstdlib>
@@ -1011,6 +1042,7 @@ int main() {
 `[实现-推断]` GCC 与 Clang（均用 LLVM 后端时）在 Linux 上段语义一致；MSVC 因 PE-COFF 与 Windows ABI 差异，使用 `.rdata` 而非 `.rodata`，并提供独有的 `/Zp`（默认 ` /Zp8`，即默认 8 字节打包）与 `/align`（节对齐）。
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三编译器对比：GCC / Clang
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // P22: #pragma pack 对结构体布局的影响（MSVC/GCC/Clang 通用语）
 #include <cstdio>
@@ -1060,6 +1092,7 @@ int main() {
 `[实现-推断]` 三家的**值都是 64**（x86-64 主流 cache line），但**旧版本根本不声明这两个常量**——这是工程陷阱：用 `#ifdef __cpp_lib_hardware_interference_size` 守护，缺失时回退到硬编码 64（或平台探测）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 三 STL 对比：libstdc++ / libc++ / MS STL
+
 ```cpp title="示例 33 · ★★★☆☆"
 // P23: 可移植地取 interference size（缺失时回退 64）
 #include <cstddef>
@@ -1094,6 +1127,7 @@ int main() {
 - `sizeof(struct)` 是其对齐的整数倍。
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与结构体 padding
+
 ```cpp title="示例 34 · ★★☆☆☆"
 // P24: 排列不同 → sizeof 不同（padding 实战）
 #include <cstdio>
@@ -1113,6 +1147,7 @@ int main() {
 `[经验]` 把大对齐/大尺寸成员放前、小成员聚尾，可减 padding；但胜于一切的是**把跨缓存行/跨页的字段按访问频率分组**（热/冷分离），见 ch44 内存池。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与结构体 padding
+
 ```cpp title="示例 35 · ★★★☆☆"
 // P25: __attribute__((packed)) 消除填充（GCC/Clang；MSVC 用 #pragma pack）
 #include <cstdio>
@@ -1158,6 +1193,7 @@ _Z7set_tagP6Packetc:
 `[实现·GCC15]` 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，**行号：1345–1352**：
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · of（<typetraits>）真实
+
 ```cpp title="示例 36 · ★★☆☆☆"
 #include <cstddef>
 1345  /// alignment_of
@@ -1180,6 +1216,7 @@ _Z7set_tagP6Packetc:
 `[标准]` 变量模板 `alignment_of_v<T>`（同文件第 3331 行 `inline constexpr size_t alignment_of_v = alignment_of<_Tp>::value;`）是便捷形式。
 
 > **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · of（<typetraits>）真实
+
 ```cpp title="示例 37 · ★★★☆☆"
 // P26: 使用 std::alignment_of / alignment_of_v
 #include <type_traits>
@@ -1302,6 +1339,7 @@ public class P29 {
 | 模板对齐 trait | ch60 | 复用 `alignment_of`/对齐元函数做编译期布局计算 |
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章与全书的交叉引用
+
 ```cpp title="示例 38 · ★★☆☆☆"
 // P30: 交叉引用演示 —— ch19 存储期 + ch21 const 协同决定段落位
 #include <cstdio>
@@ -1317,6 +1355,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章与全书的交叉引用
+
 ```cpp title="示例 39 · ★★☆☆☆"
 // P31: 交叉引用演示 —— ch36 栈堆 + ch37 对齐 new
 #include <new>
@@ -1337,6 +1376,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章与全书的交叉引用
+
 ```cpp title="示例 40 · ★★☆☆☆"
 // P32: 交叉引用演示 —— ch38 allocator 的对齐（std::allocator 保证自然对齐）
 #include <memory>
@@ -1353,6 +1393,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 本章与全书的交叉引用
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // P33: 交叉引用演示 —— ch44 内存池用 interference size 隔离热变量
 #include <new>
@@ -1371,6 +1412,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 本章与全书的交叉引用
+
 ```cpp title="示例 42 · ★★★☆☆"
 // P34: 交叉引用演示 —— ch60 模板对齐 trait（复用 alignment_of）
 #include <type_traits>
@@ -1524,6 +1566,7 @@ int main() {
 ## 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
+
 ```text
 Linux进程内存布局 (64位):
 
@@ -1543,6 +1586,7 @@ Linux进程内存布局 (64位):
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：内存布局面试与工业 [B: Principle / H: Design / I: Practice / J: Learning]
+
 ```cpp title="示例 44 · ★★☆☆☆"
 #include <iostream>
 #include <cstdlib>
@@ -1611,6 +1655,7 @@ int main() {
 地址数值受 ASLR 随机化影响，但各存储期的相对区间稳定：代码与只读常量在最底；已初始化全局/静态在 .data、零初始化在 .bss；堆从低向高增长；栈从高向低增长，因此栈地址通常高于堆。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 int g = 1;                // .data
@@ -1643,6 +1688,7 @@ int main() {
 对齐要求（alignment）使编译器在成员间插入填充（padding），保证每个成员按其对齐边界存放；`sizeof` 还需是整体对齐的倍数。
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 #include <iostream>
 #include <cstddef>
@@ -1670,6 +1716,7 @@ int main() {
 局部变量 `b` 的地址通常低于 `a`（栈向下增长）；`new` 得到的 `p2` 通常高于 `p1`（堆向上增长）。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 int main() {
@@ -1702,6 +1749,7 @@ int main() {
 实现与边界：读偏移结果若发现 `x` 偏移 8、`sizeof(Base)` 16，那是本机 Itanium ABI 的常见结果 [UNVERIFIED 具体数值]；换个 ABI/对齐设置数字就变。何时失效：把该布局直接 `memcpy`/`fwrite` 出对象（二进制持久化）在 ABI 迁移后必然读错——只能序列化数据成员而非对象整体。替代方案：需要稳定二进制布局时用无虚函数的 POD 结构体 + 手动 tag（见 ch24 枚举状态码）、或明确序列化协议（练习 2 的 padding 管控同理）。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+
 ```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 #include <cstddef>
@@ -1739,6 +1787,7 @@ int main() {
 实现与边界：`alignas` 指定值必须是 2 的幂且不小于自然对齐；比自然对齐小则被忽略。注意练习 2 的「重排成员减 padding」与这里的「`alignas` 主动加 padding」是相反方向的两个旋钮——网络协议头要求**紧凑**，SIMD/原子类型要求**对齐**，按场景选。替代方案：`#pragma pack` 系列可压小（非标准、慎用）；对大型对齐需求更常用「结构体 `alignas(16)` + 成员按需排布」，让编译器算总账。
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 5（难度 ★★）
+
 ```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <cstddef>
@@ -1780,6 +1829,7 @@ void rx_task() {
 **修复**：把大缓冲提升为全局或静态，使其进入 .bss（启动即分配、不占栈）；或放进链接脚本指定的特定 RAM 区。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：嵌入式固件如何规划 RAM
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <cstddef>
@@ -1807,6 +1857,7 @@ void deep(int n){ deep(n+1); }  // 无终止递归, 必然溢出
 **修复**：大对象改放堆（`std::vector`/智能指针，堆上只存 24B 句柄）；递归确保有终止条件；开 `-fstack-protector-strong` 让栈金丝雀在返回前检测破坏。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：栈溢出的检测与规避
+
 ```cpp title="示例 49 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -2057,6 +2108,7 @@ flowchart TD
 ### D5.3 验证 demo
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
+
 ```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 #include <cstddef>

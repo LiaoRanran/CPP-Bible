@@ -112,6 +112,7 @@ flowchart TD
 程序员写下的 `(T)x` **没有记录它到底走了哪条路**，reviewer 也无法 grep 出来"这里是不是在摘 const"。这正是 C++ 引入四种命名 cast 的根本动机（<span class="badge badge-exp">经验</span>）。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 风格 (T)expr 是"语义黑洞"
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // prog_01_c_style_ambiguity.cpp  —— C 风格强转的歧义演示
 // 编译: g++ -std=c++20 -Wall -Wextra prog_01_c_style_ambiguity.cpp -o prog_01
@@ -162,6 +163,7 @@ int main() { demo_c_style_ambiguity(); return 0; }
 <span class="badge badge-std">标准</span> [dcl.init]/[temp.deduct]：**临时物化（temporary materialization）**——当需要把纯右值（prvalue）当作泛左值（glvalue）时，编译器"物化"出一个临时对象。这对 cast 很关键：`const T& r = expr;` 把 prvalue 物化成临时并由 `r` 延长生命（详见 ch20 §④、ch21）。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 隐式转换序列
+
 ```cpp title="示例 4 · ★★☆☆☆"
 // prog_02_implicit_conversion_seq.cpp —— 隐式转换三段式演示
 // 编译: g++ -std=c++20 -Wall prog_02_implicit_conversion_seq.cpp -o prog_02
@@ -197,6 +199,7 @@ int main() {
 `const_cast` **只能**添加或移除 `const`/`volatile` 限定符，且只能用于指针/引用/成员指针。它"不产生新对象"——返回的指针/引用与原指针/引用指向**同一块存储**。任何同时改变类型（除 cv 外）的尝试都是**非良构**（ill-formed），会被编译器拒绝。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 语义边界
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // prog_03_const_cast_add_cv.cpp —— 加 cv（合法且常用）
 // 编译: g++ -std=c++20 -Wall prog_03_const_cast_add_cv.cpp -o prog_03
@@ -224,6 +227,7 @@ int main() {
 <span class="badge badge-std">标准</span> [dcl.type.cv]：试图通过去 const 后的访问路径修改一个**被声明为 const 的对象**，是**未定义行为**。`[平台·x86-64]` 在典型 ELF/PE 可执行文件中，被 `const` 初始化的全局/静态对象放进 `.rodata`（只读数据段），由 **MMU 映射到只读页**。一旦去 const 写它，CPU 触发页保护故障 → POSIX 下 `SIGSEGV`、Windows 下 `0xC0000005` 访问冲突。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 去 const 写"真 const 对象" = UB（硬件层解释）
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // prog_04_const_ub_rodata.cpp —— 去 const 写真 const 对象（UB，运行时崩溃示意）
 // 编译: g++ -std=c++20 -O2 prog_04_const_ub_rodata.cpp -o prog_04
@@ -247,6 +251,7 @@ int main() {
 <span class="badge badge-std">标准</span> 关键区分：UB 仅当"底层对象本身被声明为 const"。若对象原本**不是** const，只是你通过 `const T&`/`const T*` 看到它，则去 const 后写入**良构且合法**——这是 const-correct 库接口与可写实现解耦的惯用法。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 去 const 写"通过 const 引用看到的非常量对象" = 合法
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // prog_05_const_cast_legal_write.cpp —— 去 const 写非常量底层对象（合法）
 // 编译: g++ -std=c++20 -Wall prog_05_const_cast_legal_write.cpp -o prog_05
@@ -276,6 +281,7 @@ int main() {
 <span class="badge badge-std">标准</span> [expr.static.cast]：派生类→基类（上行）总是安全且可能调整 this 指针（多继承/虚继承下偏移修正由编译器在编译期算好）。基类→派生类（下行）**编译通过但运行期不检查**——若原对象其实不是该派生类，结果是悬挂/错乱的指针（无崩溃、静默错误，比崩溃更糟）。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 上行安全，下行不检查
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // prog_06_static_downcast_unsafe.cpp —— 下行不检查（静默错误，并非崩溃）
 // 编译: g++ -std=c++20 -Wall prog_06_static_downcast_unsafe.cpp -o prog_06
@@ -301,6 +307,7 @@ int main() {
 ### 4.2 数值转换、enum↔整数、void\*↔T\*
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数值转换、enum↔整数、void*
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // prog_07_static_numeric_enum_void.cpp —— 数值/枚举/void* 转换
 // 编译: g++ -std=c++20 -Wall prog_07_static_numeric_enum_void.cpp -o prog_07
@@ -332,6 +339,7 @@ int main() {
 ### 4.3 派生→基类安全（含 this 指针调整）
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 派生→基类安全
+
 ```cpp title="示例 10 · ★★☆☆☆"
 // prog_08_static_upcast_this_adjust.cpp —— 多继承下 this 指针调整
 // 编译: g++ -std=c++20 -Wall prog_08_static_upcast_this_adjust.cpp -o prog_08
@@ -380,6 +388,7 @@ int main() {
 ### 5.3 指针失败返 nullptr / 引用失败抛 bad_cast
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 指针失败返 nullptr / 引用
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // prog_09_dynamic_ptr_ok_fail.cpp —— 指针失败返 nullptr
 // 编译: g++ -std=c++20 -Wall prog_09_dynamic_ptr_ok_fail.cpp -o prog_09
@@ -401,6 +410,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 指针失败返 nullptr / 引用
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // prog_10_dynamic_ref_bad_cast.cpp —— 引用失败抛 std::bad_cast
 // 编译: g++ -std=c++20 -Wall prog_10_dynamic_ref_bad_cast.cpp -o prog_10
@@ -429,6 +439,7 @@ int main() {
 <span class="badge badge-std">标准</span> `dynamic_cast` 支持从一个基类子对象**横向**转换到另一个兄弟基类（cross-cast），这只有运行期 RTTI 能做，`static_cast` 无法表达。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 交叉转换
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // prog_11_dynamic_cross_cast.cpp —— 交叉转换（cross-cast）
 // 编译: g++ -std=c++20 -Wall prog_11_dynamic_cross_cast.cpp -o prog_11
@@ -457,6 +468,7 @@ int main() {
 - **MSVC**：`/GR`（默认开）启用 RTTI；`/GR-` 等价 `-fno-rtti`。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · -fno-rtti / /GR：RT
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // prog_12_fno_rtti_break.cpp —— -fno-rtti 下 dynamic_cast 会失败/无法链接
 // 编译(A): g++ -std=c++20 -fno-rtti prog_12_fno_rtti_break.cpp -o prog_12a   // 链接失败
@@ -485,6 +497,7 @@ int main() {
 `reinterpret_cast` 把"操作数的位模式"重新解释为另一种类型。常见合法用途：**指针 ↔ 整数**（`uintptr_t`）、**指针 ↔ 函数指针**、**对象指针 ↔ `void*`** 再转回。它**不移动/转换任何比特**，只是告诉编译器"用另一种类型解读这块地址"。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 语义：比特重解释
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // prog_13_reinterpret_ptr_int.cpp —— 指针 <-> 整数（硬件映射/哈希常用）
 // 编译: g++ -std=c++20 -Wall prog_13_reinterpret_ptr_int.cpp -o prog_13
@@ -511,6 +524,7 @@ int main() {
 **核心禁令**：不能把 `float` 对象当 `int` 读来"解释其比特"，即使地址相同。这是编译器做**基于类型的别名分析（TBAA）**并激进优化（如把两个不同类型的访问重排、缓存到寄存器）的合法依据（关联 ch42）。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [basic.lval] 的别名规则
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // prog_14_reinterpret_strict_aliasing_ub.cpp —— 违反 strict aliasing（UB）
 // 编译: g++ -std=c++20 -O2 -Wall prog_14_reinterpret_strict_aliasing_ub.cpp -o prog_14
@@ -535,6 +549,7 @@ int main() {
 <span class="badge badge-std">标准</span> 关键豁免：**只要最终转回原动态类型（或相似类型），往返合法**（§12.3 注）。但"读"必须用兼容类型。要安全地观察对象的比特表示，用 `std::bit_cast`（§7.1）或经 `unsigned char`/`std::byte` 逐字节拷贝（合法别名）。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 转过去再转回原类型 = 合法；读不兼
+
 ```cpp title="示例 17 · ★★★☆☆"
 // prog_15_reinterpret_roundtrip_legal.cpp —— 转回原类型合法
 // 编译: g++ -std=c++20 -Wall prog_15_reinterpret_roundtrip_legal.cpp -o prog_15
@@ -561,6 +576,7 @@ int main() {
 - **`std::launder`**（C++17，P0137R1）：当对象的存储被复用（placement new 覆盖）后，**旧指针/引用因严格别名与"对象同一性"规则失效**，`launder` 返回一个"指向新对象"的合规指针。<span class="badge badge-std">标准</span> [ptr.launder]：用于对象生存期结束又在同一地址新建对象后取新对象指针。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · `may_alias` / `[[noalias]]` / `std::launder`
+
 ```cpp title="示例 18 · ★★★☆☆"
 // prog_16_launder_example.cpp —— std::launder 处理存储复用
 // 编译: g++ -std=c++20 -Wall prog_16_launder_example.cpp -o prog_16
@@ -588,6 +604,7 @@ int main() {
 `reinterpret_cast` 在嵌入式里最正经的用途是**内存映射 IO（MMIO）**：把芯片手册里写死的寄存器物理地址，重新解释成结构体指针，于是 `reg->FIELD` 直接落到正确的字节偏移。下面用 **STM32F407（RM0090 参考手册）** 的真实基地址与寄存器布局——本机可编译（裸 `volatile` 结构体，无 CMSIS 依赖）。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★★☆</span> · 实战：reinterpretcast
+
 ```cpp title="示例 19 · ★★★★☆"
 #include <cstdint>
 // ⑥-5 STM32F4 真实寄存器布局（节选自 CMSIS stm32f4xx.h，已去 __IO 宏）
@@ -663,6 +680,7 @@ int main() { led_on(); usart2_send('A'); return 0; }
 <span class="badge badge-std">标准</span> [bit.cast]：`std::bit_cast<To>(from)` 返回与 `from` **对象表示完全相同比特**的 `To` 值；要求 `To` 与 `From` **大小相同且都可平凡复制（trivially copyable）**。它是 `reinterpret_cast` 做"类型双关"的**类型安全替代**——不产生 UB，且 `constexpr` 友好。实现见 §8.2。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::bitcast
+
 ```cpp title="示例 20 · ★★★☆☆"
 // prog_17_bit_cast_protocol.cpp —— 协议解析用 bit_cast（网络大端 -> 主机序处理函数）
 // 编译: g++ -std=c++20 -Wall prog_17_bit_cast_protocol.cpp -o prog_17
@@ -699,6 +717,7 @@ int main() {
 <span class="badge badge-std">标准</span> [time.duration.cast]：在 `duration` 间做类型安全的单位转换，处理 ratio 整除/截断（见 §8.3 真实源码）。**截断向零**（整数），浮点 `duration` 才保留小数。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::chrono::durat
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // prog_18_duration_cast_trunc.cpp —— 秒<->毫秒 + 截断行为
 // 编译: g++ -std=c++20 -Wall prog_18_duration_cast_trunc.cpp -o prog_18
@@ -733,6 +752,7 @@ int main() {
 <span class="badge badge-std">标准</span> [util.smartptr.shared.cast]：对 `shared_ptr` 做安全的上行/下行转换，自动管理引用计数，避免裸 `dynamic_cast` 后手动 `new` 的计数错乱。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · std::staticpointer
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // prog_19_shared_ptr_cast.cpp —— shared_ptr 安全下行
 // 编译: g++ -std=c++20 -Wall prog_19_shared_ptr_cast.cpp -o prog_19
@@ -760,6 +780,7 @@ int main() {
 <span class="badge badge-exp">经验</span> 不是标准设施（Boost 提供）。语义：`assert(dynamic_cast<Derived*>(p) == p)` 后用 `static_cast` 下行——**debug 下触发断言、release 下零成本**。是"我知道类型、但要 debug 校验"的最佳实践。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::polymorphicdo
+
 ```cpp title="示例 23 · ★★★☆☆"
 // prog_20_polymorphic_downcast.cpp —— boost::polymorphic_downcast 的等效实现
 // 编译: g++ -std=c++20 -Wall prog_20_polymorphic_downcast.cpp -o prog_20
@@ -797,6 +818,7 @@ int main() {
 <span class="badge badge-std">标准</span> [meta.rel]：`std::is_convertible<From, To>` 在 `From` 可隐式转换为 `To`（含函数返回场景）时为真；C++20 概念 `std::convertible_to<From, To>`（`[concept.convertible_to]`）是 `is_convertible` + "转换结果可用作 To" 的更强约束，用于模板约束（见 ch60）。真实实现见 §8.1。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · std::isconvertible
+
 ```cpp title="示例 24 · ★★★☆☆"
 // prog_21_is_convertible_trait.cpp —— traits 在编译期判定可转换性
 // 编译: g++ -std=c++20 -Wall prog_21_is_convertible_trait.cpp -o prog_21
@@ -823,6 +845,7 @@ int main() {
 <span class="badge badge-impl">实现</span>（GCC/Clang）：`-Wold-style-cast` 把每个 C 风格强转标为警告，是强制标准库风格的第一道防线。
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 避免 C 风格 (T)x：用 -Wo
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // prog_22_old_style_cast_warn.cpp —— 触发 -Wold-style-cast
 // 编译: g++ -std=c++20 -Wold-style-cast prog_22_old_style_cast_warn.cpp -o prog_22
@@ -851,6 +874,7 @@ int main() {
 文件：`type_traits`，行号：**1564–1610**。
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · <typetraits> 的 isc
+
 ```cpp title="示例 26 · ★★★☆☆"
 // libstdc++ 15.3.0  —— type_traits:1564-1567（现代 GCC 走 __is_convertible 内置）
 #if __has_builtin(__is_convertible)
@@ -877,6 +901,7 @@ int main() {
 文件：`bit`，行号：**78–98**。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · <bit> 的 std::bitca
+
 ```cpp title="示例 27 · ★★★☆☆"
 // libstdc++ 15.3.0  —— bit:89-96
   template<typename _To, typename _From>
@@ -905,6 +930,7 @@ int main() {
 文件：`bits/chrono.h`（被 `chrono` 包含），行号：**278–296**（主函数）+ **184–243**（`__duration_cast_impl` 特化）。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · `<chrono>` 的 `duration_cast`
+
 ```cpp title="示例 28 · ★★★☆☆"
 // libstdc++ 15.3.0  —— bits/chrono.h:278-296
     template<typename _ToDur, typename _Rep, typename _Period>
@@ -932,6 +958,7 @@ int main() {
 `__duration_cast_impl` 四个偏特化（**184–243**）按 `num==1`/`den==1` 组合优化：
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `<chrono>` 的 `duration_cast`
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // bits/chrono.h:184-194  （num!=1 且 den!=1：通用"先乘后除"路径，截断向零）
   return _ToDur(static_cast<__to_rep>(static_cast<_CR>(__d.count())
@@ -974,6 +1001,7 @@ int main() {
 - **ARM（AArch32/ARM64）**：硬件**强制对齐**，未对齐访问直接触发 `SIGBUS`（崩溃）。因此同一段违反 strict aliasing 的代码在 x86 静默错误、在 ARM 立刻崩溃。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · reinterpretcast 在
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // prog_23_reinterpret_unaligned_arm_x86.cpp —— 同一 UB 在两架构表现不同（[平台-推断]）
 // 编译: g++ -std=c++20 -O2 prog_23_reinterpret_unaligned_arm_x86.cpp -o prog_23
@@ -1010,6 +1038,7 @@ int main() {
 ### 10.1 `dynamic_cast` vs `static_cast` vs 虚函数调用
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · `dynamic_cast` vs `static_cast` vs 虚函数调用
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // prog_24_bench_cast.cpp —— Google Benchmark：三种多态下行
 // 编译: g++ -std=c++20 -O2 prog_24_bench_cast.cpp -lbenchmark -lpthread -o prog_24
@@ -1076,6 +1105,7 @@ BENCHMARK(BM_VirtualCall); BENCHMARK(BM_StaticDown); BENCHMARK(BM_DynamicDown);
 ### 10.2 `bit_cast` vs `memcpy` vs `reinterpret_cast` 双关
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★★☆</span> · bitcast vs memcpy
+
 ```cpp title="示例 32 · ★★★★☆"
 // prog_25_bench_bitcast.cpp —— Google Benchmark：三种"位重解释"
 // 编译: g++ -std=c++20 -O2 prog_25_bench_bitcast.cpp -lbenchmark -lpthread -o prog_25
@@ -1117,6 +1147,7 @@ BENCHMARK(BM_BitCast); BENCHMARK(BM_Memcpy); BENCHMARK(BM_Reinterpret);
 ### 11.1 内存图：`dynamic_cast` 的多态布局
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：dynamiccast 的多
+
 ```text
 堆/栈布局（多继承 Most : Left, Right，均含 virtual Base）：
 +-----------+      vtable of Most
@@ -1135,6 +1166,7 @@ dynamic_cast<Left*>(pr)：从 Right 子对象经 RTTI 算回 Most 基址，
 ### 11.2 调用栈（一次失败的 `dynamic_cast` 指针）
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈
+
 ```text
 main
 └─ dynamic_cast<Cat*>(Animal*)        // 用户代码
@@ -1167,6 +1199,7 @@ testq  %rax, %rax       ; 判空
 ### 案例 A：多态下行转换安全包装（返回错误码，避免每帧 dynamic_cast）
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 案例 A：多态下行转换安全包装
+
 ```cpp title="示例 35 · ★★★☆☆"
 // prog_26_safe_downcast_wrapper.cpp —— 工业级下行安全包装
 // 编译: g++ -std=c++20 -Wall prog_26_safe_downcast_wrapper.cpp -o prog_26
@@ -1200,6 +1233,7 @@ int main() {
 ### 案例 B：序列化里的位重解释（对象内存布局写出）
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 案例 B：序列化里的位重解释
+
 ```cpp title="示例 36 · ★★☆☆☆"
 // prog_27_serialize_bitcast.cpp —— 用 bit_cast 安全提取对象比特用于序列化
 // 编译: g++ -std=c++20 -Wall prog_27_serialize_bitcast.cpp -o prog_27
@@ -1227,6 +1261,7 @@ int main() {
 ### 案例 C：协议解析用 bit_cast（从字节流解析定长字段）
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 案例 C：协议解析用 bitcast
+
 ```cpp title="示例 37 · ★★☆☆☆"
 // prog_28_protocol_parse.cpp —— 网络协议固定头解析
 // 编译: g++ -std=c++20 -Wall prog_28_protocol_parse.cpp -o prog_28
@@ -1254,6 +1289,7 @@ int main() {
 ### 案例 D：传感器数据 reinterpret（寄存器映射，嵌入式）
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 案例 D：传感器数据 reinter
+
 ```cpp title="示例 38 · ★★★☆☆"
 // prog_29_sensor_reinterpret.cpp —— 内存映射寄存器读取（嵌入式示意）
 // 编译: g++ -std=c++20 -Wall prog_29_sensor_reinterpret.cpp -o prog_29
@@ -1282,6 +1318,7 @@ int main() {
 `[平台·Linux]` 在 Linux 动态库（`.so`）里做 `dynamic_cast`，若主程序与库用**不同 `-fvisibility`** 或 `typeid` 未合并，typeinfo 指针比较失败→转换意外返回 `nullptr`/抛异常。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 案例 E：跨模块 RTTI 崩溃的工
+
 ```cpp title="示例 39 · ★★☆☆☆"
 // prog_30_rtti_visibility.cpp —— 跨模块 RTTI 安全：用类型标签替代 dynamic_cast
 // 编译: g++ -std=c++20 -Wall prog_30_rtti_visibility.cpp -o prog_30
@@ -1307,6 +1344,7 @@ int main() {
 ### 案例 F：避免 C 风格 cast 的代码评审护栏
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 案例 F：避免 C 风格 cast
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // prog_31_no_c_style_guard.cpp —— CI 中强制 -Wold-style-cast 的示例（见 §7.6）
 // 编译: g++ -std=c++20 -Werror=old-style-cast prog_31_no_c_style_guard.cpp -o prog_31
@@ -1329,6 +1367,7 @@ int main() {
 > 以下为独立可编译程序，覆盖更多边界；与 §2–§12 的示例合计 ≥30 个完整程序。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // prog_32_const_cast_volatile.cpp —— 加/去 volatile
 // 编译: g++ -std=c++20 -Wall prog_32_const_cast_volatile.cpp -o prog_32
@@ -1344,6 +1383,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 42 · ★★★☆☆"
 // prog_33_static_enum_class_roundtrip.cpp —— enum class 与底层类型互转
 // 编译: g++ -std=c++20 -Wall prog_33_static_enum_class_roundtrip.cpp -o prog_33
@@ -1362,6 +1402,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 // prog_34_dynamic_most_derived.cpp —— most-derived 类型转换
 // 编译: g++ -std=c++20 -Wall prog_34_dynamic_most_derived.cpp -o prog_34
@@ -1381,6 +1422,7 @@ int main() {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 // prog_35_reinterpret_fn_ptr.cpp —— 函数指针重解释（回调桥接，工业少见但合法）
 // 编译: g++ -std=c++20 -Wall prog_35_reinterpret_fn_ptr.cpp -o prog_35
@@ -1399,6 +1441,7 @@ int main() {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 // prog_36_bit_cast_custom_struct.cpp —— bit_cast 自定义平凡可复制结构
 // 编译: g++ -std=c++20 -Wall prog_36_bit_cast_custom_struct.cpp -o prog_36
@@ -1419,6 +1462,7 @@ int main() {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 46 · ★★☆☆☆"
 // prog_37_constexpr_bit_cast.cpp —— 编译期 bit_cast（C++20 constexpr）
 // 编译: g++ -std=c++20 -Wall prog_37_constexpr_bit_cast.cpp -o prog_37
@@ -1435,6 +1479,7 @@ int main() {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 47 · ★★☆☆☆"
 // prog_38_static_void_roundtrip.cpp —— void* 往返转换（必须回到原类型）
 // 编译: g++ -std=c++20 -Wall prog_38_static_void_roundtrip.cpp -o prog_38
@@ -1451,6 +1496,7 @@ int main() {
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 // prog_39_implicit_user_defined.cpp —— 用户定义转换序列
 // 编译: g++ -std=c++20 -Wall prog_39_implicit_user_defined.cpp -o prog_39
@@ -1466,6 +1512,7 @@ int main() {
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 // prog_40_dynamic_pointer_nullptr.cpp —— dynamic_pointer_cast 失败返空
 // 编译: g++ -std=c++20 -Wall prog_40_dynamic_pointer_nullptr.cpp -o prog_40
@@ -1483,6 +1530,7 @@ int main() {
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 // prog_41_reinterpret_byte_alias_ok.cpp —— 经 std::byte 合法别名遍历
 // 编译: g++ -std=c++20 -Wall prog_41_reinterpret_byte_alias_ok.cpp -o prog_41
@@ -1501,6 +1549,7 @@ int main() {
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 // prog_42_const_cast_through_chain.cpp —— 经多级 const 引用去 const 写（合法）
 // 编译: g++ -std=c++20 -Wall prog_42_const_cast_through_chain.cpp -o prog_42
@@ -1516,6 +1565,7 @@ int main() {
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 // prog_43_static_base_to_derived_safe.cpp —— 已知类型时 static_cast 下行（安全）
 // 编译: g++ -std=c++20 -Wall prog_43_static_base_to_derived_safe.cpp -o prog_43
@@ -1533,6 +1583,7 @@ int main() {
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 53 · ★☆☆☆☆"
 // prog_44_dynamic_virtual_inheritance.cpp —— 虚继承下的 dynamic_cast
 // 编译: g++ -std=c++20 -Wall prog_44_dynamic_virtual_inheritance.cpp -o prog_44
@@ -1552,6 +1603,7 @@ int main() {
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 54 · ★☆☆☆☆"
 // prog_45_may_alias_struct.cpp —— 用 may_alias 合规做协议视图（GCC/Clang）
 // 编译: g++ -std=c++20 -Wall prog_45_may_alias_struct.cpp -o prog_45
@@ -1569,6 +1621,7 @@ int main() {
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 55 · ★★☆☆☆"
 // prog_46_duration_cast_float.cpp —— 浮点 duration 保留小数
 // 编译: g++ -std=c++20 -Wall prog_46_duration_cast_float.cpp -o prog_46
@@ -1588,6 +1641,7 @@ int main() {
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 56 · ★★★☆☆"
 // prog_47_convertible_to_constraint.cpp —— 概念约束模板参数
 // 编译: g++ -std=c++20 -Wall prog_47_convertible_to_constraint.cpp -o prog_47
@@ -1605,6 +1659,7 @@ int main() {
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 57 · ★★☆☆☆"
 // prog_48_const_cast_and_constexpr.cpp —— const_cast 不在常量求值中（编译失败演示）
 // 编译(应失败): g++ -std=c++20 -Wall prog_48_const_cast_and_constexpr.cpp -o prog_48
@@ -1621,6 +1676,7 @@ int main() {
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 58 · ★☆☆☆☆"
 // prog_49_reinterpret_to_integer_hash.cpp —— 指针作为哈希键（合法用途）
 // 编译: g++ -std=c++20 -Wall prog_49_reinterpret_to_integer_hash.cpp -o prog_49
@@ -1639,6 +1695,7 @@ int main() {
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实可编译完整程序集
+
 ```cpp title="示例 59 · ★☆☆☆☆"
 // prog_50_static_cast_bool.cpp —— 数值到 bool 的标准转换经 static_cast
 // 编译: g++ -std=c++20 -Wall prog_50_static_cast_bool.cpp -o prog_50
@@ -1869,6 +1926,7 @@ C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：能去 const、能做�
 ### 测试源码
 
 > **示例 60** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
+
 ```cpp title="示例 60 · ★★★☆☆"
 // _asm_demo/ch27_cast_test.cpp
 #include <cstdint>
@@ -2013,6 +2071,7 @@ _Z24implicit_int_from_doubled:
 `double→int` 是收缩，**截断小数**且可能溢出——这是唯一的信息/UB 风险点，应开 `-Wfloat-conversion -Wconversion`。
 
 > **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 61 · ★☆☆☆☆"
 double d = 3.9;
 int a = static_cast<int>(d);        // 3, 截断; -Wfloat-conversion 会警告
@@ -2035,6 +2094,7 @@ double e = static_cast<double>(b);  // 7.0, 保真
 内存映射寄存器地址是硬件固定的整数，必须用 `reinterpret_cast` 把整数地址转为指针：
 
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 62 · ★★☆☆☆"
 volatile uint32_t* const STATUS = reinterpret_cast<volatile uint32_t*>(0x4002'1000);
 uint32_t s = *STATUS;          // 读硬件寄存器
@@ -2060,6 +2120,7 @@ UB 边界：`reinterpret_cast` 得到的指针只有在"该地址确实存在一
 返回 `nullptr` 的典型情况：基类指针实际指向一个**不相关分支**的对象。
 
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 63 · ★★☆☆☆"
 struct B { virtual ~B() = default; };
 struct D1 : B {};
@@ -2089,6 +2150,7 @@ D1* q = dynamic_cast<D1*>(p);  // nullptr: p 并不指向 D1 分支
 实现与边界：安全用例：① 对象原本非 const，只是经 const 引用/指针到达（可用 `std::is_const_v<decltype(obj)>` 辅助推理）；② 接口保证不写。危险用例：对字面量、`const` 全局、`const` 成员经 cast 后写——立即 UB。替代方案：接口签名本来就没 const，可在封装层改签名或提供非 const 重载；`const_cast` 是最后手段，不是性能技巧。
 
 > **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 69 · ★★☆☆☆"
 #include <iostream>
 #include <cstring>
@@ -2127,6 +2189,7 @@ int main() {
 实现与边界：向下转型三问：① 有虚函数/RTTI 可用吗？② 转换失败代价多大？③ 类型集合是否静态已知？集合已知且不变量成立 → `static_cast`；运行期可能变体 → `dynamic_cast`。替代方案：避免向下转型的根治法是多态接口/`std::visit`（见 ch25）；必须转时优先 `dynamic_cast` 保安全，或用 `static_cast` + `assert` 双保险。
 
 > **示例 70** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 70 · ★★★☆☆"
 #include <iostream>
 
@@ -2154,6 +2217,7 @@ int main() {
 **步骤 1：错误——通过 union 双关（UB）**
 
 > **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 类型双关的正确与错误姿势
+
 ```cpp title="示例 64 · ★★☆☆☆"
 union U { float f; uint32_t u; };
 U x; x.f = 1.0f;
@@ -2165,6 +2229,7 @@ uint32_t bits = x.u;             // C++ 中读取非活跃成员是未定义行�
 **步骤 2：错误——`reinterpret_cast` 强转指针（违反严格别名）**
 
 > **示例 65** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 类型双关的正确与错误姿势
+
 ```cpp title="示例 65 · ★★☆☆☆"
 float f = 1.0f;
 uint32_t bits = *reinterpret_cast<uint32_t*>(&f);  // 违反严格别名 -> UB, -fstrict-aliasing 下可能被优化错
@@ -2175,6 +2240,7 @@ uint32_t bits = *reinterpret_cast<uint32_t*>(&f);  // 违反严格别名 -> UB, 
 **步骤 3：正确——`std::memcpy`（零开销且标准合法）**
 
 > **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 类型双关的正确与错误姿势
+
 ```cpp title="示例 66 · ★☆☆☆☆"
 float f = 1.0f; uint32_t bits;
 std::memcpy(&bits, &f, sizeof(bits));   // 标准明确允许, 编译器优化为单条 mov
@@ -2185,6 +2251,7 @@ std::memcpy(&bits, &f, sizeof(bits));   // 标准明确允许, 编译器优化�
 **步骤 4：正确——`std::bit_cast`（C++20，最优雅）**
 
 > **示例 67** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 类型双关的正确与错误姿势
+
 ```cpp title="示例 67 · ★★★☆☆"
 uint32_t bits = std::bit_cast<uint32_t>(1.0f);   // 编译期可求值, 类型安全
 ```
@@ -2363,6 +2430,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 68** <span class="badge badge-exp">难度 ★★★★★</span> · 可复现 demo
+
 ```cpp title="示例 68 · ★★★★★"
 #include <iostream>
 

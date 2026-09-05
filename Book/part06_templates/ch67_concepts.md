@@ -71,6 +71,7 @@ Concepts 常被当成"给模板加类型检查的语法糖"，但**它真正的�
 手写一个 concept（语法糖，底层仍是「constexpr bool 谓词」）：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
+
 ```cpp title="示例 1 · ★★★☆☆"
 // 手写 concept：等价于一个编译期 bool 变量模板
 template <typename T>
@@ -89,6 +90,7 @@ T twice2(T x) { return x + x; }
 `requires` 表达式四类约束：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
+
 ```cpp title="示例 2 · ★★★☆☆"
 // 1) 简单约束：直接写类型/表达式，合法即满足
 template <typename T>
@@ -110,6 +112,7 @@ concept Addable = requires(T a, T b) { a + b; };  // 要求 a+b 合法
 concept 的组合（与/或/非）：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
+
 ```cpp title="示例 3 · ★★★☆☆"
 template <typename T>
 concept SignedIntegral = std::integral<T> && std::signed_integral<T>;
@@ -126,6 +129,7 @@ concept NotPointer = !std::is_pointer_v<T>;
 concept 失败与 SFINAE 失败**同一机制**：约束不满足 → 该候选从重载集剔除（非错误）。只有「全部候选约束都不满足」才升级为硬错误。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的精确求值时机
+
 ```cpp title="示例 4 · ★★★☆☆"
 template <typename T>
 requires std::integral<T>
@@ -141,6 +145,7 @@ T pick(T x) { return x; }      // 约束 B（与 A 互斥且完备）
 与 SFINAE 关键差异：**约束失败的报错位置在「约束处」而非「深层替换处」**，错误信息短而准（对比 ch66 的 SFINAE 报错，见 ch67）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的精确求值时机
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // 约束失败：编译器直接说 "constraints not satisfied"，而非 mangled 崩溃
 // pick("str") → 两个 requires 都不满足 → 清晰报告 "no matching overload"
@@ -159,6 +164,7 @@ T pick(T x) { return x; }      // 约束 B（与 A 互斥且完备）
 ## ⑥ 完整可运行示例（最小）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
+
 ```cpp title="示例 6 · ★★★☆☆"
 #include <concepts>
 #include <iostream>
@@ -182,6 +188,7 @@ int main() {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
+
 ```cpp title="示例 7 · ★★★☆☆"
 // 自定义 concept：可调用且其参数可加
 template <typename T>
@@ -195,6 +202,7 @@ static_assert(!Addable<std::ostream>);  // ostream 不可加 → false
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // 标准库 concept 链式组合
 template <std::signed_integral T>
@@ -204,6 +212,7 @@ T abs_clamp(T x) { return x < 0 ? -x : x; }   // 仅接受有符号整型
 ### ⑥ 补充：更多可编译实据
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 9 · ★★★☆☆"
 // 用 concept 约束只移动类型
 struct OnlyMove { OnlyMove()=default; OnlyMove(const OnlyMove&)=delete; OnlyMove(OnlyMove&&)=default; };
@@ -212,6 +221,7 @@ OnlyMove wrap_move(T&&) { return {}; }
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 10 · ★★★☆☆"
 #include <vector>
 // 探测「是否有 value_type」——concept 版（与 ch66 的 void_t 等价但可读）
@@ -222,6 +232,7 @@ static_assert(!HasValueType<int>);
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // 尾置 requires 的 negate（与 SFINAE 对称）
 template <typename T>
@@ -233,6 +244,7 @@ T negate(T x) { return x; }
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // 仅「可递增」类型启用（标准库 std::incrementable）
 template <std::incrementable T>
@@ -240,6 +252,7 @@ void bump(T& x) { ++x; }
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 13 · ★★☆☆☆"
 #include <cstddef>
 #include <vector>
@@ -250,6 +263,7 @@ static_assert(Indexable<std::vector<int>>);
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 14 · ★★☆☆☆"
 #include <string>
 #include <type_traits>
@@ -263,6 +277,7 @@ struct ArithmeticOnly { T v; };
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 15 · ★★★☆☆"
 #include <string>
 // 返回不同类型的两份重载（concept 约束）
@@ -274,6 +289,7 @@ std::string label(T) { return "other"; }
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // detection 用 concept 重写
 template <typename T>
@@ -281,6 +297,7 @@ concept HasDeref = requires(T t) { *t; };
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // concept 约束「可调用且返回 bool」
 template <typename F>
@@ -288,6 +305,7 @@ concept Predicate = requires(F f) { { f() } -> std::convertible_to<bool>; };
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // 可变参数 concept：包内每个类型都可加
 template <typename... Ts>
@@ -295,6 +313,7 @@ concept AllAddable = (Addable<Ts> && ...);
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // concept 约束「可比较相等」
 template <typename T>
@@ -302,6 +321,7 @@ concept EqualityComparable = requires(T a, T b) { { a == b } -> std::convertible
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // 简化版 input_iterator concept
 template <typename T>
@@ -309,6 +329,7 @@ concept MyInputIt = requires(T it) { *it; ++it; it != it; };
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：更多可编译实据
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // 兜底重载保证完备（约束版）
 // 注：C++ 标准库没有 std::pointer 概念——"是指针"须用类型萃取 std::is_pointer_v 表达。
@@ -334,6 +355,7 @@ void visit(T) {}
 - **报错可读性**：Clang/GCC 对 concept 失败给出「`T` does not satisfy `integral`」；MSVC 早期版本仍可能回落到 SFINAE 式长错。
 
 > **示例 22** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // 更受约束者优先：两个重载都满足 int，但 SignedIntegral 比 Integral 更受约束
 template <std::integral T>      void h(T) {}    // 较泛
@@ -345,6 +367,7 @@ template <std::signed_integral T> void h(T) {}  // 更受约束 → int 调用�
 concept 是**纯编译期**实体：它不产生运行期对象、不占内存，编译后彻底消失。`Addable<int>` 求值为 `true` 常量，与 `std::is_integral_v<int>` 同构。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存 / 对象模型
+
 ```cpp title="示例 23 · ★★★★☆"
 static_assert(sizeof(std::integral<int>) == 1, "concept 本身不占内存");
 static_assert(std::integral<int> == true, "concept 折叠为编译期 bool 常量");
@@ -415,6 +438,7 @@ _Z9add_twiceIiET_S0_:              ; add_twice<int>：Addable 约束命中，x+x
 - `std::sort` 对 `random_access_iterator` 约束的算法，约束失败时报「不满足 random_access_iterator」而非深藏的 mangled 错。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 标准库风格：用 concept 约束算法入参
 template <std::random_access_iterator It>
@@ -424,6 +448,7 @@ void my_sort(It first, It last) { /* ... */ }
 ## ⑫ 变体（variant patterns）
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
+
 ```cpp title="示例 25 · ★★★☆☆"
 // 变体 A：requires 表达式内做「返回类型约束」
 template <typename T>
@@ -441,6 +466,7 @@ concept AllIntegral = (std::integral<Ts> && ...);
 ## ⑬ 反模式（anti-patterns）
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 反模式（anti-patterns）
+
 ```cpp title="示例 26 · ★★★☆☆"
 // 反模式 1：在 concept 里写「运行期逻辑」——concept 只能含编译期可求值表达式
 template <typename T>
@@ -461,6 +487,7 @@ concept HasType = requires { typename T::value_type; };               // 正确�
 - **Eigen/glm 现代化**：用 concept 约束「必须是某 CRTP 派生类」，语义比 `enable_if` 直白。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 27 · ★★☆☆☆"
 #include <string>
 // 工业：序列化按 concept 择路，报错可读
@@ -474,6 +501,7 @@ std::string to_json(const T& v) { return v.serialize(); }
 `std::integral` / `std::same_as` 的真实定义（文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/concepts`，行号：109 `integral` / 64 `same_as`）：
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
+
 ```cpp title="示例 28 · ★★★☆☆"
 // <concepts> 行 100：integral 建立在 is_integral_v 之上
 template<typename _Tp>
@@ -494,6 +522,7 @@ template<typename _Tp, typename _Up>
 - **`&&` 短路**：concept 组合里的 `&&` 是编译期短路，某子约束非法时整条约束失败（静默剔除，非错误）。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点
+
 ```cpp title="示例 29 · ★★★☆☆"
 // 易错：把 concept 当 bool 值传入 enable_if（C++20 仍可混用，但语义冗余）
 template <typename T, std::enable_if_t<std::integral<T>, int> = 0>  // 旧写法
@@ -517,6 +546,7 @@ void g(T);
 - 用 concept 组合（`&&`/`||`/`!`）表达复杂约束，比层层嵌套 `enable_if_t` 可读性高一个量级。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践
+
 ```cpp title="示例 30 · ★★★☆☆"
 // 最佳实践：语义化 concept + 完备约束
 template <typename T>
@@ -535,6 +565,7 @@ T process(T x) { return x; }
 - **编译期**：concept 的「约束缓存」通常比反复 `enable_if` 替换更快收敛；更受约束的偏序决议也比 SFINAE 候选枚举更高效。
 
 > **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能（编译期 / 运行期）
+
 ```cpp title="示例 31 · ★★★☆☆"
 // 运行期零差异验证：concept 版与手写版生成相同指令
 static_assert(std::integral<int> == true);   // 编译期常量，无运行期成本
@@ -650,6 +681,7 @@ concepts 的正式落地走得很长：从 2003 年 Bjarne 的「concepts lite�
 ## 附录: Concepts 深度
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: Concepts 深度
+
 ```cpp title="示例 32 · ★★☆☆☆"
 #include <iostream>
 #include <concepts>
@@ -658,6 +690,7 @@ int main(){std::cout<<add(10,20)<<std::endl;return 0;}
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: Concepts 深度
+
 ```cpp title="示例 33 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -667,6 +700,7 @@ int main(){std::cout<<sum(3,4)<<std::endl;return 0;}
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: Concepts 深度
+
 ```cpp title="示例 34 · ★★☆☆☆"
 #include <iostream>
 #include <concepts>
@@ -675,6 +709,7 @@ int main(){only_int(42);return 0;}
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: Concepts 深度
+
 ```cpp title="示例 35 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -684,6 +719,7 @@ int main(){show(99);return 0;}
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: Concepts 深度
+
 ```cpp title="示例 36 · ★★☆☆☆"
 #include <iostream>
 #include <concepts>
@@ -704,6 +740,7 @@ Concepts 是 C++ 历史上等待最久的特性——从最初提案到进入标
 | P2424R0 | 2021 | C++23 | 允许 auto 占位符在函数参数中推导 concept |
 
 > **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：WG21 —— Conce
+
 ```cpp title="示例 37 · ★★★☆☆"
 #include <iostream>
 int main() {
@@ -722,6 +759,7 @@ int main() {
 ## 附录 B：工业案例 —— Concepts 在实际项目中的应用 [F: Industry]
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：工业案例 —— Conce
+
 ```cpp title="示例 38 · ★★★☆☆"
 #include <iostream>
 int main() {
@@ -743,6 +781,7 @@ int main() {
 ## 附录 C：概念 vs SFINAE —— 汇编与错误信息 [E: Low-level / G: Performance]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：概念 vs SFINAE
+
 ```cpp title="示例 39 · ★★★★☆"
 // concepts 和 SFINAE 在汇编层面完全相同——都是编译期选择，零运行时开销
 // 关键在于错误信息的质量和编译速度
@@ -765,6 +804,7 @@ int main() {
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
+
 ```text
 面试高频:
 Q: concept 和 SFINAE 的根本区别？
@@ -823,6 +863,7 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 <details><summary>答案与解析</summary>
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -848,6 +889,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 42 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -874,6 +916,7 @@ int main() { report(21); }
 <details><summary>答案与解析</summary>
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 43 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -900,6 +943,7 @@ int main() { std::cout << to_string(42) << ' ' << to_string(3.14) << '\n'; }
 Concepts（C++20）把"类型需满足的条件"显式命名，约束写在签名上。不满足约束的重载被直接移除（或报错），错误信息远比 SFINAE 清晰，且约束可组合、可读。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+
 ```cpp title="示例 49 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -925,6 +969,7 @@ int main() { std::cout << add(2, 3) << "\n"; }
 Concepts 可用逻辑运算符自由组合：`||` 表示"满足其一"，`&&` 表示"须同时满足"。组合出的概念仍是概念，可像基本约束一样使用，把复杂条件收敛成名字。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -959,6 +1004,7 @@ template <typename T> concept Addable = requires(T a, T b) { a + b };   // 漏�
 **修复**：`requires` 体内的要求子句以分号结尾：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：requires 表达式的
+
 ```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -981,6 +1027,7 @@ int main() { report(21); }
 **对比**：SFINAE 失败时通常报"无匹配重载"或一长串候选；concept 失败直接指出"实参不满足 integral 概念"。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：概念约束的诊断远优于 SFINAE
+
 ```cpp title="示例 45 · ★★★☆☆"
 #include <iostream>
 #include <concepts>
@@ -1000,6 +1047,7 @@ int main() {
 下例自定义 `Addable` concept，并用 `static_assert` 验证其对类型的满足情况：
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补例：自包含可编译验证
+
 ```cpp title="示例 46 · ★★★☆☆"
 #include <concepts>
 #include <type_traits>
@@ -1081,6 +1129,7 @@ template<typename _Tp>
 ### D4.4 可编译验证
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
+
 ```cpp title="示例 47 · ★★★☆☆"
 #include <concepts>
 #include <iostream>
@@ -1265,6 +1314,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
+
 ```cpp title="示例 48 · ★★★★☆"
 #include <iostream>
 #include <type_traits>

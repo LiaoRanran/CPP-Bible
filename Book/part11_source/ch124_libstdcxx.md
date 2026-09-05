@@ -49,6 +49,7 @@ libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）
 libstdc++（全称 *The GNU C++ Library*）是 GCC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>` 等标准容器/算法/迭代器/本地化/IO。它与 `libgcc`（底层运行时）协同：标准库负责 C++ 抽象，运行时负责异常、RTTI、`new` 等。每个 GCC 版本绑定一个 libstdc++ 版本（GCC 13.1.0 → libstdc++ 13）。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：libstdc++ 是 GCC 的 C++ 标准库
+
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 最小可编译程序：仅依赖 libstdc++ 的 <vector>
 #include <vector>
@@ -82,6 +83,7 @@ libstdc++ 头文件按职责分层：顶层是用户可见的 `<vector>` 等；`
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 目录结构
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ② 用宏确认本机 libstdc++ 版本（来自 c++config.h 的 __GLIBCXX__）
 #include <version>
@@ -100,6 +102,7 @@ int main() {
 想读懂 `std::vector`，入口是顶层 `<vector>`：它几乎不实现逻辑，只串起一堆 `bits/` 头，真正定义落在 `bits/stl_vector.h`（类模板）与 `bits/vector.tcc`（成员函数实现）。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 阅读入口
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // ③ 复刻 <vector> 的核心包含顺序（节选自真实 vector:60-80）
 #include <bits/requires_hosted.h>
@@ -113,6 +116,7 @@ int main() {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 阅读入口
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ③ 阅读顺序建议：先看 _Vector_base（内存拥有者），再看 vector（接口）
 #include <vector>
@@ -124,6 +128,7 @@ int main() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 阅读入口
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ③ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/vector
 // 行号：66
@@ -137,6 +142,7 @@ int main() {
 GCC 的 `std::string` 采用 **SSO（Small String Optimization）**：短字符串（≤15 字节）存于对象内部的 `_M_local_buf`，免堆分配。`_S_local_capacity` 是容量常量，定义如下。
 
 > **示例 6** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // ④ SSO 行为：短串不触发 new
 #include <string>
@@ -150,6 +156,7 @@ int main() {
 ```
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ④ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 // 行号：213
@@ -158,6 +165,7 @@ int main() {
 ```
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ④ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 // 行号：217
@@ -172,6 +180,7 @@ int main() {
 `std::allocator` 是标准默认分配器；`__gnu_cxx` 命名空间承载 GNU 扩展（如 `__gnu_cxx::__alloc_traits`，对 `std::allocator_traits` 做补充）。理解分配器是读懂容器内存管理的前提。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // ⑤ 标准 allocator 用法
 #include <vector>
@@ -186,6 +195,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/allocator.h
 // 行号：130
@@ -194,6 +204,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/alloc_traits.h
 // 行号：36
@@ -202,6 +213,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/alloc_traits.h
 // 行号：45
@@ -217,6 +229,7 @@ int main() {
 libstdc++ 对「强异常安全」与 `noexcept` 移动构造极度重视——这直接决定容器在扩容/排序时的性能（见 ⑭）。`basic_string` 的移动构造是 `noexcept`，因此 `vector<string>` 扩容走移动而非拷贝。
 
 > **示例 13** [难度 ★★★☆☆] [主题：异常安全与 noexcept <span class="badge badge-std">标准</span>
+
 ```cpp title="示例 13 · ★★★☆☆"
 // ⑥ noexcept 移动带来的性能差异
 #include <vector>
@@ -232,6 +245,7 @@ int main() {
 ```
 
 > **示例 14** [难度 ★☆☆☆☆] [主题：异常安全与 noexcept <span class="badge badge-std">标准</span>
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑥ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 // 行号：678
@@ -246,6 +260,7 @@ int main() {
 RTTI（`typeid`/`dynamic_cast`）依赖 `<typeinfo>` 中的 `std::type_info`。在 libstdc++ 中，`type_info` 的派生类（`__class_type_info` 等）定义在 `libstdc++` 的 `typeinfo` 头，真正比较两个对象类型由 `libsupc++`/核心运行时完成。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现 [实现·libstdc++]
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑦ typeid 返回 type_info 引用
 #include <typeinfo>
@@ -260,6 +275,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现 [实现·libstdc++]
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑦ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/typeinfo
 // 行号：92
@@ -274,6 +290,7 @@ int main() {
 libstdc++ 用 **符号版本（symbol versioning）** 维持向后兼容：同一 `libstdc++.so` 可同时导出旧版与新版符号（如 `GLIBCXX_3.4` 与 `CXXABI_1.3`）。GCC 5 引入新 ABI（`__cxx11`），`std::string`/`std::list` 等布局改变，旧 ABI 用 `std::string`（COW）区分。
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑧ 切换 ABI 的宏（默认值来自 c++config.h）
 #define _GLIBCXX_USE_CXX11_ABI 1   // 1=新 ABI(__cxx11)  0=旧 ABI(COW)
@@ -285,6 +302,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑧ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：338
@@ -293,6 +311,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // ⑧ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：341
@@ -307,6 +326,7 @@ int main() {
 用真实 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch124_vector.cpp`，可见 libstdc++ 的关键事实：**vector 的遍历被完全内联**（无函数调用），而 `std::string` 的 `+=` 因 SSO 分支仍生成对 `_M_mutate` 的调用。
 
 > **示例 20** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：编译用 <vector]
+
 ```cpp title="示例 20 · ★★★☆☆"
 // ⑨ 文件：Examples/_ch124_vector.cpp（已真实编译取证）
 #include <vector>
@@ -358,6 +378,7 @@ int main() {
 调试标准库 bug 时，给自己的代码加 `-g`，并把 libstdc++ 源码路径指给调试器，即可单步进入 `bits/vector.tcc` 内部。
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码级调试
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑩ 用 -g 编译以便步入 libstdc++ 模板实现
 #include <vector>
@@ -384,6 +405,7 @@ gdb dbg.exe
 每个 `std::vector<T, A>` / `std::string` 实例化都会在目标文件生成一族符号。`nm -C` 可直观看到这些实例化产物——这是「模板代码膨胀」的量化入口。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板实例化体积
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // ⑪ 同样的代码，nm 能看到 vector/base/string 的实例化符号
 #include <vector>
@@ -416,6 +438,7 @@ T std::__cxx11::basic_string<...>::_M_mutate(unsigned long, unsigned long, char 
 libstdc++ 头文件与 ISO C++ 条款一一对应：`<vector>`→[sequence.reqmts]/[vector]，`<string>`→[basic.string]，`<memory>`→[allocator.requirements]。阅读源码时应拿标准条款作「规格」，拿实现作「落实」。
 
 > **示例 23** [难度 ★☆☆☆☆] [主题：与 C++ 标准条款对应 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑫ 标准条款要求的 vector 接口（节选自 [vector]）
 #include <vector>
@@ -437,6 +460,7 @@ int main() {
 新 ABI（`__cxx11`）自 GCC 5 起默认。它通过 `inline namespace __cxx11` 把新布局类型放进独立命名空间，使新旧 `std::string` 在同一进程可并存而不冲突；旧代码可 `-D_GLIBCXX_USE_CXX11_ABI=0` 回退。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
+
 ```cpp title="示例 24 · ★★★☆☆"
 // ⑬ 验证当前处于哪个 ABI 命名空间
 #include <string>
@@ -454,6 +478,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑬ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：348
@@ -462,6 +487,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // ⑬ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
 // 行号：417
@@ -476,6 +502,7 @@ int main() {
 经验规律（非本机基准数字，量级示意）：vector 遍历/随机访问被内联为指针算术（见 ⑨），接近裸数组；`std::string` 短串零分配（SSO），长串走堆；链表/树容器缓存局部性差。异常安全（`noexcept` 移动，⑥）让扩容走移动。
 
 > **示例 27** [难度 ★☆☆☆☆] [主题：性能特征 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑭ reserve 避免反复扩容（减少 allocate/copy）
 #include <vector>
@@ -494,6 +521,7 @@ int main() {
 `debug/`（即 `__gnu_debug`）提供带越界/迭代器失效检查的「调试版」容器；`profile/` 统计操作开销；`parallel/` 用 OpenMP 并行化算法。它们通过宏（如 `_GLIBCXX_DEBUG`）切换，不影响发布构建。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 扩展（__gnu_cxx 调试容器） [实现·libstdc++]
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑮ 调试模式：越界访问会触发断言（需 -D_GLIBCXX_DEBUG 编译）
 #define _GLIBCXX_DEBUG
@@ -506,6 +534,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩展（__gnu_cxx 调试容器） [实现·libstdc++]
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑮ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/debug/string
 // 行号：77
@@ -520,6 +549,7 @@ int main() {
 同一份 libstdc++ 源码跨平台，但**二进制 ABI 仅在同 GCC 版本+同目标三元组间兼容**。MinGW-w64（win64）、Cygwin、Linux(x86-64) 各自编译，目标文件/动态库**不可混链**。
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑯ 跨平台可移植写法（避免平台特定假设）
 #include <vector>
@@ -538,6 +568,7 @@ int cross(const std::vector<int>& v) {
 最典型陷阱：**混用不同 GCC/不同 `_GLIBCXX_USE_CXX11_ABI` 编译的 TU/库**。链接器报 `undefined reference to std::string::...` 或 `...cxx11...`，本质是新旧 ABI 符号名不匹配。
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见陷阱
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑰ 危险：libA 用旧 ABI(_GLIBCXX_USE_CXX11_ABI=0)，main 用新 ABI
 // libA 导出 std::string foo();        // 旧 ABI 名：_Z3foov（不带 cxx11）
@@ -555,6 +586,7 @@ int main() { return (int)foo().size(); }
 **绝不要在一个二进制里混链多个 C++ 标准库实现**（libstdc++ vs libc++ vs MSVC STL）。即便都能编译，跨标准库传递 `std::string`/`std::vector` 会因内存布局与分配器不同而崩溃。
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践（混合标准库的危害） <span class="badge badge-exp">经验</span>
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // ⑱ 正确：用 C ABI（POD/指针）做库边界，std 类型留在模块内部
 #include <string>
@@ -574,6 +606,7 @@ int wrap() {
 想深入或修 libstdc++：源码在 GCC 仓库 `libstdc++-v3/`；本地可用本机 `include/c++/` 直接读。报告 bug 用 libstdc++ Bugzilla，最小复现用 `-std=c++23` + 预处理后的 `.ii`（`g++ -E`）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试/贡献 [平台·x86-64]
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // ⑲ 生成预处理文件便于向上游报 bug
 #include <vector>
@@ -639,6 +672,7 @@ g++ -std=c++23 -E Examples/_ch124_vector.cpp -o repro.ii
 ## 补充：完整可编译示例（libstdc++）
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // S1 最小 vector + 输出（对应 ①）
 #include <vector>
@@ -651,6 +685,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // S2 打印 libstdc++ 版本（对应 ②）
 #include <version>
@@ -659,6 +694,7 @@ int main() { std::printf("%ld\n", (long)__GLIBCXX__); return 0; }
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // S3 模拟 <vector> 包含顺序（对应 ③）：公开头 <vector> 会拉入 bits/stl_vector.h 完成定义
 #include <vector>
@@ -666,6 +702,7 @@ int use() { std::vector<long> v; return (int)v.size(); }
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 37 · ★★☆☆☆"
 // S4 SSO 阈值探测（对应 ④）
 #include <string>
@@ -679,6 +716,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 38 · ★★★☆☆"
 // S5 自定义分配器接入（对应 ⑤）
 #include <vector>
@@ -696,6 +734,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 39 · ★★☆☆☆"
 // S6 noexcept 移动静态断言（对应 ⑥）
 #include <string>
@@ -707,6 +746,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // S7 typeid 与 name（对应 ⑦）
 #include <typeinfo>
@@ -719,6 +759,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // S8 旧 ABI 回退宏（对应 ⑧⑬）
 #define _GLIBCXX_USE_CXX11_ABI 0
@@ -727,6 +768,7 @@ int main() { std::string s = "legacy"; return (int)s.size(); }
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 // S9 还原 ⑨ 取证程序（真实编译过）
 #include <vector>
@@ -744,6 +786,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 // S10 步入 vector.tcc（对应 ⑩）
 #include <vector>
@@ -751,6 +794,7 @@ int main() { std::vector<int> v{1,2}; return (int)v.at(0); }
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 // S11 reserve 预分配（对应 ⑭）
 #include <vector>
@@ -758,6 +802,7 @@ int main() { std::vector<int> v; v.reserve(8); for (int i=0;i<8;++i) v.push_back
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 // S12 调试模式开关（对应 ⑮）
 #define _GLIBCXX_DEBUG
@@ -766,6 +811,7 @@ int main() { std::vector<int> v{1,2,3}; return (int)v.size(); }
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 // S13 跨平台可移植函数（对应 ⑯）
 #include <vector>
@@ -778,6 +824,7 @@ int cross(const std::vector<int>& v) {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 // S14 C ABI 边界封装（对应 ⑱）
 #include <string>
@@ -787,6 +834,7 @@ int main() { std::string s = "boundary"; return len_c(s.c_str()); }
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 // S15 预处理文件生成（对应 ⑲）
 #include <vector>
@@ -794,6 +842,7 @@ int main() { std::vector<int> v{1}; return (int)v.size(); }
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 // S16 string 与 vector 混用（综合）
 #include <vector>
@@ -807,6 +856,7 @@ int main() {
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 50 · ★★☆☆☆"
 // S17 用 std::array 对比 vector（无堆分配）
 #include <array>
@@ -820,6 +870,7 @@ int main() {
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 51 · ★★☆☆☆"
 // S18 allocator_traits 取 rebound（对应 ⑤）
 #include <memory>
@@ -833,6 +884,7 @@ int main() {
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 52 · ★★☆☆☆"
 // S19 用 nm 思想：template 实例化计数（对应 ⑪）
 #include <vector>
@@ -842,6 +894,7 @@ int main() { std::vector<int> a{1,2}; std::vector<double> b{1.0}; return (int)(c
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充：完整可编译示例
+
 ```cpp title="示例 53 · ★☆☆☆☆"
 // S20 断言 SSO 存在：短串地址 == 对象内（对应 ④，实现相关）
 #include <string>
@@ -875,6 +928,7 @@ int main() {
 libstdc++ 让你无需换编译器就能改变容器的内存去处——标准库自带的 `std::pmr` 正是同一机制。下面用纯标准库复刻"把 vector 的内存全部取自我的栈缓冲池"：
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.2 标准 C++ 等价实现：用
+
 ```cpp title="示例 54 · ★★☆☆☆"
 // ㉑.2 用标准库 std::pmr 复刻「libstdc++ 让容器可替换内存来源」的机制（本块可独立编译，GCC 15.3.0 验证）
 #include <memory_resource>                        // std::pmr 是标准库一部分，libstdc++/libc++ 都自带
@@ -903,6 +957,7 @@ int main() {
 下面才是你在工程里**真正会写的 libstdc++ 相关代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 libstdc++ 长
+
 ```cpp title="示例 55 · ★★☆☆☆"
 // ㉑.3 真实工程里常见的 libstdc++ 用法（仅注释演示，门禁按空块编译通过）：
 //// 1) 查询 libstdc++ 版本：__GLIBCXX__ 是一个日期，如 20250627
@@ -1021,6 +1076,7 @@ libstdc++ 与 WG21 的关系分两层：**吸收标准** 与 **暴露特性测�
 | ranges 支持 | GCC 13+ 完整 | Clang 16+ 完整 | VS 2022 17.8+ 完整 |
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：libstdc++ vs
+
 ```cpp title="示例 56 · ★☆☆☆☆"
 #include <iostream>
 int main() {
@@ -1035,6 +1091,7 @@ int main() {
 ## 附录 B：源码阅读导航 [F: Industry / I: Practice]
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：源码阅读导航 [F: Industry / I: Practice]
+
 ```text
 libstdc++ 源码阅读路径 (难度递增):
 
@@ -1053,6 +1110,7 @@ libstdc++ 源码阅读路径 (难度递增):
 ## 附录 C：面试 [J: Learning]
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：面试 [J: Learning]
+
 ```text
 Q: libstdc++ 和 libc++ 可以互换使用吗？
 A: 可以 (Linux x86-64 ABI兼容)。Clang Linux 默认用 libstdc++，macOS 用 libc++
@@ -1186,6 +1244,7 @@ Code Review 清单：
 `std::move` 只是一次 `static_cast`，编译期转型、运行期无指令（GCC 13 在 `bits/move.h:104`）：
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 59 · ★★☆☆☆"
 #include <utility>
 #include <iostream>
@@ -1212,6 +1271,7 @@ int main() {
 `vector` 用 `std::move_if_noexcept`：移动构造 `noexcept` 才移动，否则为强异常安全退回拷贝：
 
 > **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 60 · ★★☆☆☆"
 #include <vector>
 #include <utility>
@@ -1245,6 +1305,7 @@ int main() {
 GCC 5 起 libstdc++ 引入新 ABI：`std::string` 改为 SSO 内联存储、用 `std::basic_string` 的 `std::__cxx11` inline namespace 隔离。旧 ABI 的 `std::string` 是 `std::basic_string<char>` 的 `std::string`（COW 外置缓冲）：
 
 > **示例 61** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 61 · ★★★★☆"
 #include <string>
 #include <type_traits>
@@ -1436,6 +1497,7 @@ libstdc++ 的头文件几乎全部以 `bits/c++config.h` 与 `bits/version.h` �
 ### 可编译实证
 
 > **示例 62** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 可编译实证
+
 ```cpp title="示例 62 · ★☆☆☆☆"
 #include <version>
 #include <iostream>
@@ -1480,6 +1542,7 @@ int main()
 ### D5.3 可复现 demo
 
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 63 · ★★☆☆☆"
 #include <iostream>
 #include <string>

@@ -61,6 +61,7 @@ C 数组有两个老毛病：一是作为参数时会悄悄**退化为指针**�
 - **span 与裸数组视图** ⟶ `Book/part07_stl/ch82_span.md`：`std::array` 可一键转 `std::span`（静态或动态 extent），把"定长视图"传给算法层。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ②-1 前置：array 是定长值语义容器（独立可编译）
 #include <array>
@@ -74,6 +75,7 @@ int main() {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ②-2 前置：array 与 span 互转（独立可编译）
 #include <array>
@@ -100,6 +102,7 @@ int main() {
 - **ranges 与 views** ⟶ `Book/part07_stl/ch90_ranges.md`：`array` 满足 `contiguous_range`，可直接喂给 `std::ranges` 算法。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ③-1 后续：array 作为 ranges 算法的连续区间（独立可编译）
 #include <array>
@@ -117,6 +120,7 @@ int main() {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ③-2 后续：array 的 fill / swap 等顺序容器接口（独立可编译）
 #include <array>
@@ -136,6 +140,7 @@ int main() {
 ## ④ 知识图谱（ASCII）
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）
+
 ```mermaid
 flowchart TD
     Root["定长连续序列（编译期 N 已知）"] --> C["裸 C 数组 T[N]: 值? 退化指针 / 无 .size() / 无 at 检查"]
@@ -191,6 +196,7 @@ classDiagram
 `std::array<T,N>` 内部只含一个成员 `_M_elems[N]`，**没有任何额外指针或大小字段**。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：array 与 C 数组布局
+
 ```mermaid
 flowchart TD
     A["栈上的 std::array<int,4>（x86-64，sizeof = 16）"] --> B["std::array<int,4>: e0 e1 e2 e3 连续排布 (int=4B) ; _M_elems[0..3] 无隐藏字段"]
@@ -202,6 +208,7 @@ flowchart TD
 - `[标准]`：因为布局一致，`std::array` 与 C 数组可在 ABI 层面等价传递（例如作为 `extern "C"` 结构字段）。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图：array 与 C 数组布局
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑦-1 验证 array 与 C 数组布局完全相同（独立可编译）
 #include <array>
@@ -218,6 +225,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：array 与 C 数组布局
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // ⑦-2 array 与 vector 对象大小对比（独立可编译）
 #include <array>
@@ -240,6 +248,7 @@ int main() {
 `std::array` 元素随对象整体在其声明的作用域内存活，无需构造/析构堆、无扩容搬迁。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图：栈上定长，无堆管理
+
 ```mermaid
 flowchart TD
     T["时间轴"] --> F["void f() { std::array<int,3> a{1,2,3}; // 元素在栈帧内连续构造 }"]
@@ -252,6 +261,7 @@ flowchart TD
 - `[经验]`：定长、大小适中（几十到几千字节）的数据放 `array` 在栈上，缓存友好且无分配成本；过大的 `array`（如 `array<char, 1<<20>`）会爆栈，应改 `vector`。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：栈上定长，无堆管理
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑧-1 生命周期：array 在作用域结束自动释放（独立可编译）
 #include <array>
@@ -269,6 +279,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：栈上定长，无堆管理
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑧-2 值语义：array 拷贝是逐元素拷贝（独立可编译）
 #include <array>
@@ -290,6 +301,7 @@ int main() {
 `std::array` 是聚合类型，因此它**允许省略内层花括号**：`array<int,3> a{1,2,3}` 与 `array<int,3> a{{1,2,3}}` 等价——初始化列表直接包给内部 `_M_elems`。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图：聚合初始化的"省
+
 ```mermaid
 flowchart LR
     Caller["调用方"] -->|"std::array<int,3> a{1,2,3}"| Obj["array 对象"]
@@ -302,6 +314,7 @@ flowchart LR
 - `[经验]`：省略内层花括号更简洁；但在多维 `array<array<int,3>,2>` 时，保留内层花括号可读性更好。
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：聚合初始化的"省
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑨-1 省略内层花括号 vs 不省略（独立可编译）
 #include <array>
@@ -316,6 +329,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈 / 时序图：聚合初始化的"省
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑨-2 多维 array：保留内层花括号更清晰（独立可编译）
 #include <array>
@@ -335,6 +349,7 @@ int main() {
 `std::array` 的 `operator[]`/`at()` 在 `-O2` 下与裸 C 数组访问生成**完全相同的指令**——因为 `_M_elems` 就是数组本身，没有间接层。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：array 访问与 C 数
+
 ```cpp title="示例 15 · ★★★☆☆"
 // ⑩-1 被测代码（array 与 C 数组访问对照）
 #include <array>
@@ -365,6 +380,7 @@ _Z9sum_arrayRSt5arrayIiLm4EE:
 - `[标准]`：这正是 `array` 作为"零开销抽象"的体现——它只是给 C 数组披上值语义与接口的外衣。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编分析：array 访问与 C 数
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑩-2 验证：at 在调试构建下边界检查、发布构建消失（独立可编译）
 #include <array>
@@ -394,6 +410,7 @@ int main() {
 - `[实现]`：`array` 的迭代器就是裸指针（连续），`begin()`/`end()` 返回 `T*`，与 C 数组遍历一致。
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：array 在容器家族中的位置
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑪-1 与 vector 对比：array 不能扩容（独立可编译）
 #include <array>
@@ -411,6 +428,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：array 在容器家族中的位置
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑪-2 与 C 数组对比：array 不退化为指针（独立可编译）
 #include <array>
@@ -434,6 +452,7 @@ int main() {
 协议帧头往往是固定字节数（如 12 字节以太网头）。用 `std::array<std::byte, 12>` 表达"定长头"，值语义便于整体拷贝与传递，且无堆分配。
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：协议头、固定尺寸缓冲、查表
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // ⑫-1 协议定长头用 array（独立可编译，模拟逻辑）
 #include <array>
@@ -460,6 +479,7 @@ int main() {
 固定映射表（如 opcode -> 处理函数索引）用 `constexpr std::array` 声明，放在只读段，查找 `O(1)` 且零运行时构造。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：协议头、固定尺寸缓冲、查表
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // ⑫-2 constexpr array 作编译期查表（独立可编译）
 #include <array>
@@ -480,6 +500,7 @@ int main() {
 DSP/图像处理常把固定块（如 8×8 DCT 块）表示为 `array<array<float,8>,8>`，栈上连续、缓存友好。
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：协议头、固定尺寸缓冲、查表
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑫-3 固定尺寸块：8x8 DCT 块（独立可编译，模拟逻辑）
 #include <array>
@@ -510,6 +531,7 @@ int main() {
 ### 13.1 聚合定义与唯一成员
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 聚合定义与唯一成员
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // ⑬-1a libstdc++ 源码摘录（文件：array，行号：94 / 109）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -523,6 +545,7 @@ int main() { return 0; }
 ### 13.2 访问函数
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 访问函数
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑬-2a libstdc++ 源码摘录（文件：array，行号：200-208 / 217-227 / 240-281）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -540,6 +563,7 @@ int main() { return 0; }
 ### 13.3 tuple 接口与 to_array
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 接口与 toarray
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <utility>
 // ⑬-3a libstdc++ 源码摘录（文件：array，行号：384-411 / 418 / 433 / 461 / 466）
@@ -561,6 +585,7 @@ int main() { return 0; }
 因为 `std::array` 特化了 `std::tuple_size` / `std::tuple_element` 并提供 `std::get`，它可直接用于**结构化绑定**——把定长序列解包成具名变量，比下标更易读、更安全。
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构化绑定与 tuple 接口
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑭-1 结构化绑定解包 array（独立可编译）
 #include <array>
@@ -577,6 +602,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 结构化绑定与 tuple 接口
+
 ```cpp title="示例 26 · ★★★☆☆"
 // ⑭-2 用 std::get 按编译期索引取元素（独立可编译）
 #include <array>
@@ -595,6 +621,7 @@ int main() {
 - `[经验]`：长度 ≤ 5 且语义清晰的定长数据（如 RGB 三元组、3D 坐标）非常适合用 `array` + 结构化绑定，兼顾性能与可读性。
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 结构化绑定与 tuple 接口
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑭-3 工业：用 array 表达 RGB 颜色并结构化绑定（独立可编译）
 #include <array>
@@ -622,6 +649,7 @@ int main() {
 - `[经验]`：任何"长度编译期已知且不大"的缓冲，优先 `std::array` 而非 `std::vector`；仅在需要增长或太大（栈风险）时才用 `vector`。
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案背景
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // ⑮-1 to_array：从 C 数组提升为 array（独立可编译）
 #include <array>
@@ -636,6 +664,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案背景
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑮-2 to_array 也支持字符数组（独立可编译）
 #include <array>
@@ -675,6 +704,7 @@ int main() {
    → 长度编译期已知且不大 → `array`（栈、零分配、缓存友好）；需增长或太大 → `vector`（§⑲）。
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑯-1 面试题实战：array<T,0> 特例（独立可编译）
 #include <array>
@@ -688,6 +718,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试题
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑯-2 面试题实战：array 与 vector 都能 sort，但 array 在栈上（独立可编译）
 #include <array>
@@ -711,6 +742,7 @@ int main() {
 
 1. **把过大的 `array` 放在栈上导致栈溢出**
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
    ```cpp title="示例 32 · ★☆☆☆☆"
    // ❌ 逻辑错误演示（编译通过，运行期可能爆栈）
    #include <array>
@@ -723,6 +755,7 @@ int main() {
 
 2. **误以为 `array` 有 `push_back` / 可扩容**
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
    ```cpp title="示例 33 · ★★☆☆☆"
    // ✅ 正确写法对照（独立可编译）
    #include <array>
@@ -740,6 +773,7 @@ int main() {
 
 3. **`[]` 越界是 UB（别指望抛异常）**
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
    ```cpp title="示例 34 · ★★☆☆☆"
    // ❌ 错误预期：希望 a[10] 抛异常（编译通过，UB）
    #include <array>
@@ -754,6 +788,7 @@ int main() {
 
 4. **多维 array 忘记内层类型**
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
    ```cpp title="示例 35 · ★☆☆☆☆"
    // ✅ 正确：array<array<int,3>,2> 是 2 行 3 列（独立可编译）
    #include <array>
@@ -768,6 +803,7 @@ int main() {
 5. **把 `array` 当 `span` 返回后底层悬垂？** —— 不会：`array` 拥有元素且随对象存活；但若返回指向其 `data()` 的裸指针/span 且 `array` 是局部变量，则悬垂（同 §⑧ 的视图规则，见 `Book/part07_stl/ch82_span.md`）。
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑰-1 易错点：fill 全部元素（常被误以为只填首元素，独立可编译）
 #include <array>
@@ -794,6 +830,7 @@ int main() {
 7. **多维定长 → `array<array<T,M>,N>`**，注意行/列维度顺序与内层花括号。
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑱-1 最佳实践：array -> span 传给只读算法（独立可编译）
 #include <array>
@@ -813,6 +850,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 38 · ★★☆☆☆"
 // ⑱-2 最佳实践：constexpr 查表 + 二分（独立可编译）
 #include <array>
@@ -841,6 +879,7 @@ int main() {
 ### 19.2 栈 vs 堆：microbenchmark 量级
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 栈 vs 堆：microbenchm
+
 ```cpp title="示例 39 · ★★☆☆☆"
 // ⑲-1 量级对照：array（栈）构造 vs vector（堆）构造（独立可编译，计时骨架）
 #include <array>
@@ -922,6 +961,7 @@ int main() {
 - `[经验]`：从 Java 转来的工程师要注意——Java 的数组是**堆对象引用**，`std::array` 才是真正栈内联的值语义（类似 Java 基本类型数组但更通用）。
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：定长数组
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // ⑳-1 跨语言映射：Go [N]T 值语义拷贝 ↔ C++ array 拷贝（独立可编译）
 #include <array>
@@ -937,6 +977,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：定长数组
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // ⑳-2 跨语言映射：Rust &[T] 视图 ↔ C++ span（独立可编译，见 ch82）
 #include <array>
@@ -1048,6 +1089,7 @@ int main() {
 **真实场景：嵌入式查表——把 C 数组零开销桥接进类型安全容器。** 固件里一个 `int[4]` 查找表要传给只接受 `std::array` 的算法，且长度须编译期固定、可无缝传给 C API（`.data()`）。请用 `std::to_array` 构造并演示 `.size()`/`.data()`。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 #include <array>
@@ -1067,6 +1109,7 @@ int main() {
 **真实场景：协议头解析——把固定 3 字段报文头解构到具名变量。** 网络协议头 `array<byte,3>` 用结构化绑定避免魔法下标，并用 `std::get<N>` 做编译期下标访问。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <array>
@@ -1087,6 +1130,7 @@ int main() {
 **真实场景：SIMD 批处理缓冲——栈上定长 32 字节对齐数组喂 AVX。** 信号处理用 `array<float,8>` 配 `alignas(32)` 直接做 AVX 加载，零堆分配、生命周期随作用域结束。
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 #include <array>
@@ -1110,6 +1154,7 @@ int main() {
 `std::array<T,N>` 的长度是**类型的一部分**（`N` 是模板非类型参数），这带来两个后果：① 它不会像裸数组那样在传参时退化成 `T*`（退化会丢掉 `N`，引发越界风险）；② `.size()` 是编译期常量、零开销。要交给 C ABI，应使用 `.data()` 取首元素指针，并单独显式传递 `.size()`——长度既在类型里也在运行时可见，绝不靠"猜"。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 #include <array>
@@ -1137,6 +1182,7 @@ int main() {
 `std::array::operator[]` 与 `a[N]` 同样对下标不做运行时检查（实现通常只 `assert` 或完全放开），越界是 UB——这正是它保留"C 数组性能"的代价。需要运行时边界保护时，要么改用 `std::vector::at()`（抛 `std::out_of_range`），要么确保下标来自编译期常量（如 `std::get<N>`）。`array` 的长度 `N` 是类型级事实，因此"长度正确性"最好在编译期通过模板参数保证，而非运行时防御。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 #include <array>
@@ -1160,6 +1206,7 @@ int main() {
 用立即调用 lambda 在编译期填满 array，运行期查表零成本。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：编译期查表
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 #include <array>
@@ -1177,6 +1224,7 @@ int main() {
 array 是字面量类型，可在 `constexpr` 函数中构造与下标访问，参与编译期断言。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：array 作为聚合参与
+
 ```cpp title="示例 46 · ★★★★☆"
 #include <iostream>
 #include <array>
@@ -1328,6 +1376,7 @@ ret
 ### D4.4 可编译验证
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 可编译验证
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 // D4-verify：验证 array 的聚合/零开销/连续布局（独立可编译）
 #include <array>
@@ -1345,6 +1394,7 @@ int main() {
 
 预期输出：
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
+
 ```text
 size=3
 &a[1]-&a[0]=1
@@ -1546,6 +1596,7 @@ flowchart TD
 下面的独立程序不测时间，验证的是本章可移植的稳定语义：`std::array` 无隐藏开销的布局特征、值语义深拷贝、以及 `.at()` 的越界保护行为。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 49 · ★★★☆☆"
 // demo_d5_ch80.cpp
 // g++ -O2 -std=c++23 demo_d5_ch80.cpp && ./a.out

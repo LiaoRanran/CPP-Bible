@@ -43,6 +43,7 @@ Modules 入标只是起点，真正的硬仗在"工具链落地"与"生态迁移
 传统 C++ 用 `#include` 做**文本包含**——预处理器把整个头文件复制粘贴进每个翻译单元，导致重复解析、宏泄漏、编译慢。Modules 提供**语义导入单元**，只暴露声明、按需编译一次、无宏污染。
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Modules 要解决什么 [标准]
+
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 模块接口单元：导出声明
 // 文件：math.ixx（或 .cppm）
@@ -54,6 +55,7 @@ export namespace geom {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：Modules 要解决什么 [标准]
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ① 模块使用单元：导入而非包含
 import math;
@@ -82,6 +84,7 @@ flowchart TD
 ## ② 模块单元的类型 <span class="badge badge-std">标准</span>
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：模块单元的类型 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ② 三种基本单元（三者各自是独立文件/翻译单元，不能写在同一文件）
 export module A;              // (a) 模块接口单元（本例唯一可独立编译的单元）
@@ -94,6 +97,7 @@ export module A;              // (a) 模块接口单元（本例唯一可独立�
 ## ③ export 的粒度 <span class="badge badge-std">标准</span>
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：的粒度 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ③ 可导出单个声明、命名空间、或聚合
 export module lib;
@@ -114,6 +118,7 @@ export {                   // 聚合导出块
 ## ④ import 与作用域 <span class="badge badge-std">标准</span>
 
 > **示例 5** [难度 ★☆☆☆☆] [主题：与作用域 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
 // ④ import 引入的导出名字进入当前作用域（不污染全局宏）
@@ -126,6 +131,7 @@ int main() { return std::cout ? 0 : 1; }
 ## ⑤ 真实汇编：模块符号与零包含开销 [实现·GCC15.3.0]
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实汇编：模块符号与零包含开销 [实现·GCC15.3.0]
+
 ```cpp title="示例 6 · ★★★★☆"
 // 文件：Examples/_mod_use.cpp，行号：8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）
 // 编译：g++ 15.3.0 -std=c++23 -O2 -fmodules-ts -S -masm=intel _mod_use.cpp -o _mod_use.asm
@@ -157,6 +163,7 @@ _ZW4math6squarei:
 ## ⑥ 模块分区（partitions） <span class="badge badge-std">标准</span>
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块分区（partitions） [标准]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑥ 大模块拆分为分区，对外仍是一个模块
 export module big;  // 主接口（本文件）
@@ -172,6 +179,7 @@ export import :core;
 ## ⑦ 全局模块片段（global module fragment） <span class="badge badge-std">标准</span>
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 全局模块片段
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ⑦ 需要在模块中 #include 传统头时用全局模块片段
 module;             // 进入全局模块片段
@@ -185,6 +193,7 @@ export uint32_t pack(uint16_t a, uint16_t b) { return (uint32_t(a)<<16)|b; }
 ## ⑧ 模块与名称查找 <span class="badge badge-std">标准</span>
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：模块与名称查找 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑧ 模块名字与命名空间独立
 export module networking;
@@ -201,6 +210,7 @@ export namespace net {
 ## ⑨ 标准库模块 std / std.compat <span class="badge badge-std">标准</span>
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准库模块 std / std.co
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑨ C++23 起可用标准库模块，避免包含海量头
 import std;                        // 全部标准库（现代写法）
@@ -216,6 +226,7 @@ C++23 提供两个命名模块：`std` 与 `std.compat`，后者额外暴露 C �
 ## ⑩ 模块与头文件的互操作 <span class="badge badge-std">标准</span>
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：模块与头文件的互操作 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑩ 导入传统头也可（作为头单元）
 import <vector>;       // 把传统头当作头单元导入（C++20 头单元）
@@ -227,6 +238,7 @@ import <vector>;       // 把传统头当作头单元导入（C++20 头单元）
 ## ⑪ 模块符号与 ABI <span class="badge badge-impl">实现</span>
 
 > **示例 12** [难度 ★☆☆☆☆] [主题：模块符号与 ABI <span class="badge badge-impl">实现</span>]
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑪ 模块不影响 ABI：导出函数仍是普通 C++ 函数符号
 // 模块 math 的 square(int) 在目标文件中：_ZW4math6squarei
@@ -239,6 +251,7 @@ import <vector>;       // 把传统头当作头单元导入（C++20 头单元）
 ## ⑫ 模块与构建系统 <span class="badge badge-exp">经验</span>
 
 > **示例 13** [难度 ★☆☆☆☆] [主题：模块与构建系统 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑫ 构建系统需先编译模块接口生成 BMI（.o / .gcm），再编译使用者
 // CMake 例：
@@ -251,6 +264,7 @@ Modules 给构建系统加了一道硬约束：必须先编译模块接口生成
 ## ⑬ 模块的典型陷阱 <span class="badge badge-exp">经验</span>
 
 > **示例 14** [难度 ★★★☆☆] [主题：模块的典型陷阱 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 14 · ★★★☆☆"
 // ⑬ 陷阱1：在模块接口里忘记 export -> 导出不可见
 export module m;
@@ -291,6 +305,7 @@ GCC 15.3.0 用 `-fmodules-ts` 支持这条流程；`use_mod` 最终生成 `mov e
 ## ⑯ 模块与模板 <span class="badge badge-std">标准</span>
 
 > **示例 15** [难度 ★★☆☆☆] [主题：模块与模板 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑯ 模板也能导出（接口单元直接 export template）
 export module tmpl;
@@ -306,6 +321,7 @@ T max_of(T a, T b) { return a < b ? b : a; }
 ## ⑰ 模块与内联/constexpr <span class="badge badge-std">标准</span>
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模块与内联/constexpr [标准]
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑰ inline / constexpr 在模块中照常工作
 export module consts;
@@ -328,6 +344,7 @@ export inline int twice(int x) { return x * 2; }
 ## ⑲ microbenchmark：模块对编译时间的收益 <span class="badge badge-exp">经验</span>
 
 > **示例 17** [难度 ★★★☆☆] [主题：模块对编译时间的收益 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 17 · ★★★☆☆"
 // ⑲ 单 TU 运行期开销：模块函数 = 普通函数（零差）
 // 编译期收益（量级，非本机实测数字示意）：
@@ -427,6 +444,7 @@ C++ Modules 补齐了与 Rust/Java/C# 同级的语义化模块能力，同时保
 ## 附录 A: 深度构建集成
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: 深度构建集成
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // A-1 CMakeLists.txt: C++20 模块工程模板
 // cmake_minimum_required(VERSION 3.28)
@@ -440,6 +458,7 @@ int main(){std::cout<<"CMake 3.28+ supports CXX_MODULES file set for automatic B
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: 深度构建集成
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // A-2 GCC 13 模块编译完整命令行
 // g++ -std=c++23 -fmodules-ts -xc++-system-header iostream  (预编译系统头)
@@ -451,6 +470,7 @@ int main(){std::cout<<"GCC module compilation: -fmodules-ts + .cppm extension.\n
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: 深度构建集成
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 // A-3 验证符号表：nm 输出证明模块符号独立
 // nm math.o | grep square
@@ -463,6 +483,7 @@ int main(){std::cout<<"nm output: module symbol _ZW4math6squarei vs non-module _
 ## 附录 B: 模块迁移实战模式
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 模块迁移实战模式
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // B-1 模式 1: 内部库全量模块化（一次性）
 // 旧: #include \"mylib/vector_math.hpp\"
@@ -472,6 +493,7 @@ int main(){std::cout<<"Pattern 1: full migration, drop includes.\n";return 0;}
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 模块迁移实战模式
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // B-2 模式 2: 混合模式（模块+头文件共存过渡期）
 // export module mylib;
@@ -482,6 +504,7 @@ int main(){std::cout<<"Pattern 2: hybrid mode, wrap headers as module exports.\n
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 模块迁移实战模式
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // B-3 模式 3: 仅标准库模块化（最小迁移，最大收益）
 // 改 #include <vector> 为 import std;
@@ -493,6 +516,7 @@ int main(){std::cout<<"Pattern 3: import std; only, minimal migration.\n";return
 ## 附录 C: 模块分区深度剖析
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C: 模块分区深度剖析
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // C-1 大型模块拆分为接口分区+实现分区（各单元独立文件）
 // file: big.cppm (主接口)
@@ -511,6 +535,7 @@ export import :core;
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C: 模块分区深度剖析
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // C-2 实现分区（不导出，仅供同模块内使用）
 // file: big_impl.cpp
@@ -524,6 +549,7 @@ int main(){std::cout<<"Implementation partitions hide internal details from impo
 ## 附录 D: 模块与编译性能的量化分析
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: 模块与编译性能的量化分析
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // D-1 编译时间对比模拟器
 #include <iostream>
@@ -541,6 +567,7 @@ int main(){
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: 模块与编译性能的量化分析
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // D-2 模块的零运行时开销证明
 #include <iostream>
@@ -555,6 +582,7 @@ int main(){
 ## 补充完整可编译示例（modules）
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // M1 模块接口导出多个函数
 export module calc;
@@ -563,6 +591,7 @@ export int sub(int a, int b) { return a - b; }
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // M2 模块分区：接口分区 + 主接口聚合（每个分区是独立文件）
 export module big:io;          // 分区接口单元（本文件）
@@ -573,6 +602,7 @@ export void log(const char*);
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <vector>
 // M3 导入标准库模块
@@ -584,6 +614,7 @@ int use_std() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // M4 全局模块片段封装传统头
 module;
@@ -593,6 +624,7 @@ export uint32_t pack(uint16_t a, uint16_t b) { return (uint32_t(a) << 16) | b; }
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // M5 模块内导出模板
 export module tm;
@@ -601,6 +633,7 @@ T max_of(T a, T b) { return a < b ? b : a; }
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // M6 模块内 constexpr / inline
 export module c;
@@ -609,6 +642,7 @@ export inline int twice(int x) { return x * 2; }
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // M7 模块与命名空间
 export module net;
@@ -619,6 +653,7 @@ export namespace net {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <vector>
 // M8 头单元：import 传统头
@@ -630,6 +665,7 @@ int use_header_unit() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // M9 模块内结构体导出
 export module geom;
@@ -638,6 +674,7 @@ export Point origin() { return {0, 0}; }
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // M10 聚合导出块
 export module lib;
@@ -649,6 +686,7 @@ export {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // M11 模块实现单元（不导出）
 module impl_only;
@@ -656,6 +694,7 @@ int internal() { return 42; }   // 仅本模块可见
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 // M12 模块符号命名示意（链接期）
 // 模块 math 的 square(int) 在目标文件编码为 _ZW4math6squarei
@@ -663,6 +702,7 @@ int internal() { return 42; }   // 仅本模块可见
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例（modules）
+
 ```cpp title="示例 40 · ★★★☆☆"
 // M13 模块 + 概念（C++20）导出受约束接口
 export module mathc;
@@ -818,6 +858,7 @@ int main() { return square(add(2, 3)); }
 这正好是"头文件包含"的反面：传统头文件把 `sq` 的**定义**文本塞进每个 TU，改 `sq` 任一行所有包含者全重编。下面用普通类演示同一封装边界（可编译）：
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 // 模块里未 export 的 helper 等价于类的 private 实现：
@@ -889,6 +930,7 @@ export int compute();
 普通 C++ 无法表达"真模块"，但可以用"包含即 `#undef`"在单文件里模拟同一边界：把 `#define` 产生的宏在边界处清掉，模块对外只导出 `constexpr` 常量。对比实验（注释掉的 `#ifdef` 分支）可直观看到：若不做清理，宏会泄漏到 main 里，这正是文本包含的原始问题。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 #include <cstdint>
@@ -926,6 +968,7 @@ int main() {
 把两种模型参数化成"受影响 TU 数 × 每 TU 解析行数"做乘法，即可量化差异：头文件模型 = 80 × 5000 行，模块模型 = 1 × 500 行（只重编实现单元）。这正是 CI 里模块化后"改一行从分钟级降到秒级"的机制来源——注意模型里"行数"是语义化估计，真实收益还取决于 BMI 解析速度与分区粒度。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <string>
@@ -1168,6 +1211,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 42 · ★★☆☆☆"
 // 模块无法写成「单文件可运行」demo：它天然是多翻译单元 + 模块编译管线（GCC 15 需 -fmodules）。
 // 复现步骤（CI 编译门禁按 MODULE 模式显式豁免本块，不单独编译运行）：

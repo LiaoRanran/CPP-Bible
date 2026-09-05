@@ -79,6 +79,7 @@ deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来�
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
+
 ```mermaid
 flowchart TD
     D["std::deque<T>"] --> M["map(中控) T** 指针数组"]
@@ -149,6 +150,7 @@ classDiagram
 ## ⑦ ASCII 内存图：分段连续与四指针 [实现·GCC15]
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ASCII 内存图：分段连续与四指针 [实现·GCC15]
+
 ```mermaid
 flowchart TD
     Deque["deque 对象（栈/堆）"] --> Map["_M_map (T** 指针数组), _M_map_size = 8"]
@@ -182,6 +184,7 @@ flowchart TD
 ## ⑧ 生命周期图：中控扩容不搬运元素 <span class="badge badge-std">标准</span>
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：中控扩容不搬运元素 [标准]
+
 ```mermaid
 flowchart TD
     Init["初始: map 容量 8, 仅用中间若干槽"] --> Grow["push_front/push_back 反复增长..."]
@@ -201,6 +204,7 @@ flowchart TD
 ## ⑨ 调用栈/时序图：operator[] 的跨段定位 [实现·GCC15]
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈/时序图：operator[]
+
 ```mermaid
 flowchart TD
     A["访问 d[k]"] --> B["_M_start 迭代器 + k"]
@@ -215,6 +219,7 @@ flowchart TD
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★★☆</span> · 调用栈/时序图：operator[]
+
 ```cpp title="示例 6 · ★★★★☆"
 // ⑨ 随机访问跨段：operator[] 直接下标（完整可编译）
 #include <iostream>
@@ -259,6 +264,7 @@ int main() {
 - `std::deque` 满足 *Erasable*/*DefaultInsertable* 等容器要求，可用于大多数接受序列容器的泛型算法。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · STL 联系：deque 与算法/适配器 [标准]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑪ deque 可直接用 std::sort（随机访问迭代器，完整可编译）
 #include <iostream>
@@ -280,6 +286,7 @@ int main() {
 交易/网络引擎常用 deque 做"工作窃取"或"双端缓冲"：新任务从一端压入，worker 从另一端取；偶发的"插队优先级任务"从同端头插。下面是可运行骨架（真实场景配锁/无锁，见 [第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)）。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：高吞吐任务队列
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // ⑫ 工业：双端任务缓冲（完整可编译骨架）
 #include <iostream>
@@ -378,6 +385,7 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 7. **deque 有 `data()` 返回连续数组吗？** → 没有（不像 vector/array），因为它不是整体连续。
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑮ 面试题佐证：erase 使迭代器失效但元素引用不失效（结构演示，完整可编译）
 #include <iostream>
@@ -402,6 +410,7 @@ int main() {
 - **频繁跨段随机访问热点** → 若访问模式高度随机且跨段多，`vector` 的单一连续访问可能更稳更快。
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑯ 易错：erase 后旧迭代器失效（用返回值才正确，完整可编译）
 #include <iostream>
@@ -428,6 +437,7 @@ int main() {
 **Q：deque 能用于 `std::vector`-style 的 `data()` 接口吗？** A：不能；它不是连续单块。需要连续内存请用 `vector`/`array`/`span`（[第80章　array 与固定数组](../part07_stl/ch80_array.md)、[第82章　span 与裸数组视图](../part07_stl/ch82_span.md)）。
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑰ FAQ 佐证：deque 无 data()，但可正常遍历（完整可编译）
 #include <iostream>
@@ -451,6 +461,7 @@ int main() {
 5. 高频随机访问且不需双端插入 → 仍用 `vector`（更连续、更快、更省内存）。
 
 > **示例 12** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑱ 最佳实践：deque 作 FIFO 队列（完整可编译）
 #include <iostream>
@@ -481,6 +492,7 @@ int main() {
 | 缓存局部性 | 段内好、段间跳 | 整体好 | 差（节点散列） |
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑲ microbenchmark：push_front 的 deque vs vector（量级示意，完整可编译）
 #include <iostream>
@@ -624,6 +636,7 @@ graph TD
 下面 D1–D34 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // D1 基本构造 + 首尾推入 + 遍历
 #include <iostream>
@@ -638,6 +651,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // D2 随机访问 operator[] 与 at()
 #include <iostream>
@@ -652,6 +666,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // D3 头插大量元素（deque 的强项）
 #include <iostream>
@@ -666,6 +681,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 // D4 中间插入 insert
 #include <iostream>
@@ -681,6 +697,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // D5 删除 erase（用返回值刷新迭代器）
 #include <iostream>
@@ -699,6 +716,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // D6 就地构造 emplace_front / emplace_back
 #include <iostream>
@@ -715,6 +733,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 // D7 弹出 pop_front / pop_back
 #include <iostream>
@@ -729,6 +748,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // D8 访问 front / back / at / 下标
 #include <iostream>
@@ -742,6 +762,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // D9 resize（扩大填默认值，缩小丢弃）
 #include <iostream>
@@ -757,6 +778,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // D10 clear / empty / size
 #include <iostream>
@@ -771,6 +793,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // D11 assign（覆盖赋值）
 #include <iostream>
@@ -785,6 +808,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // D12 swap 两个 deque
 #include <iostream>
@@ -800,6 +824,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // D13 deque 作栈（尾插尾出）
 #include <iostream>
@@ -814,6 +839,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // D14 deque 是 std::stack / std::queue 的默认底层（完整可编译）
 #include <iostream>
@@ -830,6 +856,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // D15 迭代器失效：erase 后旧迭代器失效（接收返回值）
 #include <iostream>
@@ -844,6 +871,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // D16 与 vector 对比：遍历打印
 #include <iostream>
@@ -861,6 +889,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // D17 拷贝构造与赋值
 #include <iostream>
@@ -875,6 +904,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // D18 范围构造（迭代器区间）
 #include <iostream>
@@ -890,6 +920,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // D19 deque 存自定义类型
 #include <iostream>
@@ -906,6 +937,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // D20 反向迭代（rbegin/rend）
 #include <iostream>
@@ -919,6 +951,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // D21 索引遍历 + size / max_size
 #include <iostream>
@@ -933,6 +966,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // D22 push_front 跨多 buffer 仍正常（验证分段）
 #include <iostream>
@@ -947,6 +981,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // D23 二维 deque（matrix 风格，段内连续）
 #include <iostream>
@@ -960,6 +995,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // D24 用 std::find 查找元素
 #include <iostream>
@@ -974,6 +1010,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // D25 用 std::sort 排序（deque 支持随机访问）
 #include <iostream>
@@ -990,6 +1027,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 // D26 反向 + 旋转等算法
 #include <iostream>
@@ -1005,6 +1043,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // D27 比较 deque（== / <）
 #include <iostream>
@@ -1018,6 +1057,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // D28 shrink_to_fit 提示（非绑定）
 #include <iostream>
@@ -1032,6 +1072,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 42 · ★★☆☆☆"
 // D29 用 deque 实现滑动窗口最大值骨架
 #include <iostream>
@@ -1054,6 +1095,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 // D30 与 list 对比：deque 可随机访问，list 不能
 #include <iostream>
@@ -1070,6 +1112,7 @@ int main() {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 // D31 元素引用在 map 扩容后不失效（结构演示）
 #include <iostream>
@@ -1085,6 +1128,7 @@ int main() {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 // D32 用 std::accumulate 求和
 #include <iostream>
@@ -1098,6 +1142,7 @@ int main() {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 // D33 首尾交替操作（双端特性综合）
 #include <iostream>
@@ -1115,6 +1160,7 @@ int main() {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录A：30+ 完整可编译示例
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 // D34 容量相关：deque 没有 capacity/reserve（完整可编译验证）
 #include <iostream>
@@ -1210,6 +1256,7 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 必要时分配新块 → **摊还 O(1)**。`deque` 天然适合双端队列。
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 #include <deque>
 std::deque<int> q;
@@ -1233,6 +1280,7 @@ int head = q.front(); q.pop_front();  // 出队头 O(1)
 两次内存访问 vs `vector` 一次。故仍是 O(1)，但常数更大、缓存局部性弱于 `vector`。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```text
 block = map[ i >> 7 ];        // 第一跳: 取块基址
 elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
@@ -1251,6 +1299,7 @@ elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 <details><summary>答案与解析</summary>
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 // 维护双端队列存"候选最大值下标", 队首为当前窗口最大
 std::deque<int> dq;
@@ -1280,6 +1329,7 @@ for (int i = 0; i < n; ++i) {
 deque 采用分段连续（chunk/segments）存储：元素是固定大小的块，块之间用中控数组指针连接。因此两端 `push_front`/`push_back`/`pop_front`/`pop_back` 只会影响被插入/删除的那个元素所在的块，既有的其他元素对象在内存中不会搬迁，其引用/指针保持有效；只有被删元素自身的引用才失效。这与 vector 相反：vector 后端扩容会把全部元素整体搬迁到新缓冲，所有引用/指针一并失效。
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 56 · ★☆☆☆☆"
 #include <iostream>
 #include <deque>
@@ -1307,6 +1357,7 @@ int main() {
 两者 `operator[]` 都是 O(1) 随机访问，但成本模型不同：vector 是单一连续缓冲，`[]` 只是一次指针偏移加一次访存，缓存友好；deque 要先算出"第 i 个元素落在哪个块、块内偏移"，存在一次额外的间接寻址（通过中控数组找到对应块），且各块在堆上分散，缓存局部性明显弱于 vector。因此"元素数很少或需要频繁两端增删"用 deque，"纯随机访问且追求极致缓存"用 vector。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 57 · ★★★☆☆"
 #include <iostream>
 #include <deque>
@@ -1332,6 +1383,7 @@ int main() {
 **步骤 1：若误用 `vector`（头部删除 O(n)）**
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 生产者-消费者双
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 std::vector<Task> q;
 q.push_back(t);      // 尾插 O(1)
@@ -1343,6 +1395,7 @@ q.erase(q.begin());  // 头删 O(n): 后续所有元素前移
 **步骤 2：改用 `deque`（头尾均摊 O(1)）**
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — 生产者-消费者双
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 std::deque<Task> q;
 q.push_back(t);  // 尾 O(1)
@@ -1354,6 +1407,7 @@ deque 的块结构让头删只动"头块"，其余块原地不动——无全局
 **步骤 3：何时 deque 反而**不如** vector？**
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 生产者-消费者双
+
 ```cpp title="示例 53 · ★★★☆☆"
 // 随机访问密集 + 缓存敏感的数值计算:
 for (size_t i=0;i<n;++i) sum += q[i];   // deque 每次访问 2 次间接(map查块+块内)
@@ -1440,6 +1494,7 @@ deque 通过一个指针数组（map）管理多个固定大小的 chunk（缓�
 ### D4.6 编译验证
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
+
 ```cpp title="示例 54 · ★★☆☆☆"
 #include <deque>
 #include <iostream>
@@ -1605,6 +1660,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 55 · ★★☆☆☆"
 #include <deque>
 #include <vector>

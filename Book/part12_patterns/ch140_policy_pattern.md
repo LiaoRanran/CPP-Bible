@@ -76,6 +76,7 @@ Policy-Based Design（基于策略的设计，也称 policy-based class design�
 与传统的"继承 + 虚函数"扩展方式相比，policy 的扩展发生在**编译期**，因此不付出运行期虚表/间接调用代价。下面是最朴素的一种 policy 形态：
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Policy-Based De
+
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 最简 policy：用模板参数选择"校验策略"
 struct AllowNegative { static bool ok(long v) { return true; } };
@@ -91,6 +92,7 @@ struct Amount {
 把 `Amount<AllowNegative>` 与 `Amount<NonNegative>` 视为**两个完全不同的类型**：它们不共享基类、不共享虚表，这正是 policy 设计的"正交组合"本质。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：Policy-Based De
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // ① 两种组装产生两种不同的静态类型
 using A = Amount<AllowNegative>;
@@ -114,6 +116,7 @@ static_assert(!std::is_same_v<A, B>);  // 编译期即知二者不同
 > 表注（②）：四种形态可按「有无状态 / 是否双向依赖」正交组合；libstdc++ 的 `_Vector_base<_Tp,_Alloc>` 即模板 policy + 成员组合的工业范例（见 §② 末）。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策类基本形态
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ② 形态一：静态成员函数 policy
 struct LoggingOff { static void log(const char*) {} };
@@ -121,6 +124,7 @@ struct LoggingOn  { static void log(const char* m) { // 写日志
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策类基本形态
+
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <vector>
 // ② 形态二：嵌套类型 policy（决定存储布局）
@@ -132,6 +136,7 @@ struct UseDeque  { using storage = std::deque<T>; };
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策类基本形态
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // ② 形态三：带状态的成员 policy（policy 拥有自己的数据）
 template <typename Counter>
@@ -143,6 +148,7 @@ struct PlainCounter { int n = 0; };
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策类基本形态
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // ② 形态四：模板 policy（接收宿主类型，实现互递归）
 template <typename Host>
@@ -158,6 +164,7 @@ struct Mutator {
 policy 的威力来自"多个正交 policy 同时参与"。一个经典例子是 Alexandrescu 的 `SmartPtr`：它由"所有权策略、转换策略、检查策略、存储策略"等多个 policy 模板参数组合而成。下面用一个可编译的最小版演示多政策正交组合。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多政策组合（模板参数）
+
 ```cpp title="示例 7 · ★★☆☆☆"
 // ③ 多政策组合：所有权 + 检查 + 存储
 struct RefCounted {  // 所有权 policy：引用计数
@@ -172,6 +179,7 @@ struct Sole {        // 所有权 policy：独占
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多政策组合（模板参数）
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ③ 检查 policy 与存储 policy
 struct Checked  { static void check(int* p) { if (!p) throw "null"; } };
@@ -181,6 +189,7 @@ struct ByRef    { int*& p; };
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 多政策组合（模板参数）
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // ③ 宿主：三政策正交组合
 template <typename Ownership, typename Checking, typename Storage>
@@ -195,6 +204,7 @@ public:
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多政策组合（模板参数）
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ③ 不同的 policy 三元组 => 完全不同的类型与语义
 using RcChecked   = Handle<RefCounted, Checked,   ByValue>;
@@ -209,6 +219,7 @@ static_assert(!std::is_same_v<RcChecked, SoleUnchecked>);
 当大多数用户只关心少数 policy 时，应为不常用的 policy 提供**默认模板参数**，降低使用成本。C++ 允许非尾随的默认参数从某一位置开始向右延伸，但被默认的参数之后的参数也必须全部有默认值。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认政策与缺省模板参数
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // ④ 为检查/存储 policy 提供默认值，使用方只需指定所有权
 template <typename Ownership,
@@ -224,6 +235,7 @@ using SafeRc = Handle2<RefCounted>;   // 其余 policy 取默认
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认政策与缺省模板参数
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // ④ 更常见的写法：Host 提供一个"便利别名"默认全部 policy
 template <typename T, typename Storage = int>
@@ -239,6 +251,7 @@ int use_default() {
 <span class="badge badge-std">标准</span> 缺省模板实参可以依赖前面的模板参数，例如 `template <typename T, typename Alloc = std::allocator<T>>` —— `Alloc` 的默认实参用到了前面的 `T`，这是合法的（[temp.param]）。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 默认政策与缺省模板参数
+
 ```cpp title="示例 13 · ★★☆☆☆"
 #include <vector>
 // ④ 默认 policy 也可以依赖宿主类型（member policy 的常见做法）
@@ -254,6 +267,7 @@ struct Container {
 当 policy 以**枚举/值**而非类型表达时，可用 `if constexpr` 在编译期消除无关分支，生成无运行期判断的代码。这与"类型 policy"互补：类型 policy 通过不同实例化分发，值 policy 通过 `if constexpr` 分发。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策选择编译期分发
+
 ```cpp title="示例 14 · ★★★☆☆"
 // ⑤ 值 policy：用枚举在编译期选择后端
 enum class Backend { CPU, GPU };
@@ -269,6 +283,7 @@ void compute() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策选择编译期分发
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑤ 用法：两个不同实例化 => 两段互不相同的机器码
 void run_both() {
@@ -280,6 +295,7 @@ void run_both() {
 [实现·GCC15] `if constexpr` 保证被丢弃的分支**不会被实例化**，因此分支内即使存在对当前类型非法的表达式也不会报错。这是 `if constexpr` 相对运行期 `if` 的本质区别（[stmt.if] §2）。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策选择编译期分发
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑤ 与类型 policy 配合：先按类型分，再按值细调
 template <typename Precision>
@@ -297,6 +313,7 @@ void kernel() {
 traits（特征类）与 policy 关系密切：traits 通常**只读地描述"类型是什么"**，而 policy **主动地定义"行为怎么做"**。二者可组合——用 traits 推导出某个 policy，再交给宿主使用。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与 traits
+
 ```cpp title="示例 17 · ★★★☆☆"
 // ⑥ traits：描述数值类型的"零值"与"标签"
 template <typename T> struct ZeroTraits;
@@ -305,6 +322,7 @@ template <> struct ZeroTraits<double>  { static constexpr double value = 0.0; };
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 traits
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑥ 把 traits 当作"只读 policy"喂给宿主
 template <typename T, typename Z = ZeroTraits<T>>
@@ -315,6 +333,7 @@ struct Scalar {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与 traits
+
 ```cpp title="示例 19 · ★★★☆☆"
 // ⑥ traits 推导 policy：根据迭代器类别选择不同拷贝策略
 template <typename It>
@@ -335,6 +354,7 @@ void copy_range(It first, It last) {
 CRTP（Curiously Recurring Template Pattern，见第139章）让基类在编译期获知派生类类型；把 CRTP 与 policy 结合，可以让 policy **以静态多态方式回调宿主**，既保留零开销又获得"基类复用代码"的好处。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 CRTP 结合
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // ⑦ CRTP + policy：基类借助派生类型实现静态接口
 template <typename Derived>
@@ -349,6 +369,7 @@ struct IntVal : Comparable<IntVal> {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 CRTP 结合
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑦ policy 作为 CRTP 基类，宿主继承它，复用实现
 template <typename T, typename Ordering>
@@ -360,6 +381,7 @@ struct Desc { template <typename U> bool before(U a, U b) const { return a > b; 
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 CRTP 结合
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // ⑦ 组合结果：不同 Ordering policy => 不同排序语义，零虚函数
 template <typename T, typename Ordering>
@@ -375,6 +397,7 @@ bool ordered(T a, T b, const Wrapper<T, Ordering>& w) {
 最贴近标准库的 policy 实例是 **`std::vector`/`std::list` 的分配器（Allocator）参数**与 **`std::unique_ptr` 的删除器（Deleter）参数**。二者本质都是 policy：决定"内存如何申请/释放"或"对象如何销毁"。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计实例：智能指针 / 分配器
+
 ```cpp title="示例 23 · ★★☆☆☆"
 #include <cstddef>
 // ⑧ 分配器 policy 的最小化演示（malloc vs operator new）
@@ -389,6 +412,7 @@ struct NewAlloc {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计实例：智能指针 / 分配器
+
 ```cpp title="示例 24 · ★★☆☆☆"
 #include <cstddef>
 // ⑧ 宿主以 policy 决定底层分配机制
@@ -406,6 +430,7 @@ public:
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策设计实例：智能指针 / 分配器
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑧ 同一宿主、两种分配 policy => 两套独立的机器码（见 ⑮ 代码膨胀）
 int use_podvector() {
@@ -423,6 +448,7 @@ int use_podvector() {
 C++20 `concepts` 可用来**约束 policy 必须提供哪些接口**，把"模板实例化时的丑陋报错"前移到接口声明处，大幅提升可组合性。这是现代 C++ 对 policy 设计最自然的增强。
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与编译期约束（concepts）
+
 ```cpp title="示例 26 · ★★★☆☆"
 // ⑨ 用 concept 约束 policy 必须提供静态 check(int)
 template <typename P>
@@ -433,6 +459,7 @@ struct Bad {};                 // 不提供 check，不满足 concept
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与编译期约束（concepts）
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑨ 只有满足 CheckPolicy 的 policy 才能实例化宿主
 template <CheckPolicy P>
@@ -442,6 +469,7 @@ struct Widget9 {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与编译期约束（concepts）
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑨ 编译期即拦截不合规 policy
 int use_concept() {
@@ -459,6 +487,7 @@ int use_concept() {
 这是 policy 设计最常被问到的问题。**Policy-Based Design 是编译期组合（静态多态）；策略模式（Strategy Pattern）是运行期组合（动态多态，靠虚函数）。** 二者语义等价，但开销天差地别。下面用同一份逻辑分别给出两种实现，并用 `-O2` 汇编取证。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策 vs 策略模式
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑩ 策略模式（运行期）：基类 + 虚函数
 struct Strategy {
@@ -478,6 +507,7 @@ struct StrategyWidget {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策 vs 策略模式
+
 ```cpp title="示例 30 · ★★★☆☆"
 // ⑩ Policy-Based（编译期）：模板参数选择行为
 template <typename CheckingPolicy>
@@ -491,6 +521,7 @@ struct NoCheck    { static void check(int)   {} };
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★★★★</span> · 政策 vs 策略模式
+
 ```cpp title="示例 31 · ★★★★★"
 // ⑩ 两个待比较的入口函数
 int strategy_demo(int x, const Strategy* s) {
@@ -570,6 +601,7 @@ _Z13strategy_demoiPK8Strategy:          ; strategy_demo(int, Strategy const*)
 当 policy 数量很多、且需要在其上做"查找/筛选/转换"时，可以用 **typelist**（编译期类型链表）把 policy 集合当数据来操作。typelist 本身是 policy 的"元容器"。
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与类型列表（typelist）
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑪ typelist：编译期类型链表
 template <typename... Ts> struct TypeList {};
@@ -579,6 +611,7 @@ struct Front<TypeList<H, T...>> { using type = H; };
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策与类型列表（typelist）
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // ⑪ 取首个 policy 作为默认
 struct A; struct B;
@@ -587,6 +620,7 @@ using DefaultPolicy = Front<Policies>::type;   // == A
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与类型列表（typelist）
+
 ```cpp title="示例 34 · ★★★☆☆"
 #include <cstddef>
 // ⑪ 在 typelist 上做"长度"与"索引"元函数
@@ -608,6 +642,7 @@ struct At<TypeList<H, T...>, I> { using type = typename At<TypeList<T...>, I-1>:
 在 `concepts` 出现之前，约束 policy 接口靠 **SFINAE**（Substitution Failure Is Not An Error）。它让宿主只在 policy 提供特定成员时才启用某些功能，实现"能力探测（detection idiom）"。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 SFINAE
+
 ```cpp title="示例 35 · ★★☆☆☆"
 // ⑫ 检测 policy 是否提供静态 foo()
 template <typename T, typename = void>
@@ -617,6 +652,7 @@ struct HasFoo<T, std::void_t<decltype(&T::foo)>> : std::true_type {};
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 SFINAE
+
 ```cpp title="示例 36 · ★★☆☆☆"
 // ⑫ 仅当 policy 有 foo() 时启用增强接口
 template <typename Policy>
@@ -630,6 +666,7 @@ struct WithoutFoo {};
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 政策与 SFINAE
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑫ 用法：能力探测决定接口可用性
 int use_sfinae() {
@@ -653,6 +690,7 @@ int use_sfinae() {
 下面以 libstdc++ 13.1.0 的 `std::unique_ptr` 删除器 policy 做**源码剖析**（真实路径与行号）：
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计真实案例
+
 ```cpp title="示例 38 · ★★★☆☆"
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：288
@@ -664,6 +702,7 @@ int use_sfinae() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计真实案例
+
 ```cpp title="示例 39 · ★★★☆☆"
 // ⑬ 复刻 unique_ptr 的删除器 policy：删除行为是可替换的 policy
 template <typename T, typename Deleter>
@@ -678,6 +717,7 @@ struct FreeDeleter { void operator()(int* p) const { std::free(p); } };
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计真实案例
+
 ```cpp title="示例 40 · ★★☆☆☆"
 // ⑬ 用法：同一指针类型，不同销毁 policy
 int use_deleter() {
@@ -694,6 +734,7 @@ int use_deleter() {
 policy 的选择逻辑本身也能放进 `constexpr` 世界：在编译期根据常量条件选出 policy 对应的计算结果，甚至让 policy 的"装配"发生在 `constexpr` 函数里。
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与 constexpr
+
 ```cpp title="示例 41 · ★★☆☆☆"
 // ⑭ constexpr policy：编译期根据布尔选择实现
 constexpr int select_impl(bool b, int x) {
@@ -708,6 +749,7 @@ constexpr int run_select() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与 constexpr
+
 ```cpp title="示例 42 · ★★★☆☆"
 // ⑭ 用 constexpr 变量模板充当"编译期 policy 开关"
 template <bool UseSIMD>
@@ -729,6 +771,7 @@ constexpr int c14 = Algo<true>::step(5) + Algo<false>::step(5);  // 20 + 10
 policy 的代价是**代码膨胀（code bloat）**：每套不同的 policy 组合都会独立实例化一份机器码。多 policy 正交组合时，组合数呈乘法增长。用 `nm` 可以直观看到每种组合生成的符号。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 政策与代码膨胀（模板实例化成本）
+
 ```cpp title="示例 43 · ★★★★☆"
 // ⑮ N 个二元 policy 组合 => C(N,2) 份独立实例化
 template <typename P1, typename P2>
@@ -759,6 +802,7 @@ template struct Combo<C,D>;
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与代码膨胀（模板实例化成本）
+
 ```cpp title="示例 44 · ★★☆☆☆"
 #include <cstddef>
 // ⑮ 缓解手段一：把"稳定逻辑"下沉为非模板自由函数，只模板化薄壳
@@ -774,6 +818,7 @@ int combo_thin() { return combo_core(sizeof(P1), sizeof(P2)); }
 C++11 可变参数模板让 policy 集合可以**任意长度**：用 `template <typename... Policies>` 收集一组 policy，再用折叠表达式/`index_sequence` 逐个应用。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策与可变参数
+
 ```cpp title="示例 45 · ★★★☆☆"
 #include <cstddef>
 // ⑯ 可变参数 policy 集合
@@ -786,6 +831,7 @@ constexpr std::size_t np = PolicySet<P1, P2, P3>::n;   // 3
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与可变参数
+
 ```cpp title="示例 46 · ★★☆☆☆"
 // ⑯ 用折叠表达式让每个 policy 依次"初始化"
 template <typename... Steps>
@@ -800,6 +846,7 @@ struct S3 { void apply() {} };
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策与可变参数
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <cstddef>
 #include <utility>
@@ -819,6 +866,7 @@ struct Bundle {
 错误地使用 policy 会引入维护灾难。以下为常见反模式与修正。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计反模式
+
 ```cpp title="示例 48 · ★★☆☆☆"
 // ⑰ 反模式一：policy 之间隐含耦合（顺序敏感却无文档）
 template <typename A, typename B>
@@ -826,6 +874,7 @@ struct Bad { // A 必须在 B 之前初始化，否则 UB，但接口看不出�
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计反模式
+
 ```cpp title="示例 49 · ★★☆☆☆"
 // ⑰ 反模式二：policy 暴露运行期状态却声称"零开销"
 template <typename P>
@@ -833,6 +882,7 @@ struct Host { P policy; };   // 若 P 有大数据成员，每个宿主实例都
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 政策设计反模式
+
 ```cpp title="示例 50 · ★★☆☆☆"
 // ⑰ 反模式三：组合爆炸且无共享实现
 template <typename X, typename Y, typename Z>
@@ -840,6 +890,7 @@ struct Explode { // 三层嵌套各 4 选 1 => 64 份实例化
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 政策设计反模式
+
 ```cpp title="示例 51 · ★★★☆☆"
 // ⑰ 修正：用 concept 显式约定 policy 契约，减少隐含耦合
 template <typename P>
@@ -859,6 +910,7 @@ struct GoodPipeline {
 policy 设计的口号是"零开销抽象"，但必须用工具验证、不能空口断言。下面把 ⑩ 的结论量化：policy 版 `set` 在 `-O2` 下与"手写内联版本"生成的机器码**逐条相同**，而虚函数版多出 vtable 间接调用与对象布局（vptr）开销。
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能：零开销验证
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 // ⑱ 手写（无 policy、无虚函数）基线版本
 struct HandWritten {
@@ -870,6 +922,7 @@ int hand_demo(int x) { HandWritten w; w.set(x); return w.get(); }
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能：零开销验证
+
 ```cpp title="示例 53 · ★★★☆☆"
 // ⑱ policy 版（RangeCheck 与基线逻辑一致）
 int policy_demo2(int x) { PolicyWidget<RangeCheck> w; w.set(x); return w.get(); }
@@ -921,6 +974,7 @@ C++20 并没有"取代"policy，而是**让 policy 更易写、更易约束**：
 - `requires` 表达式让 policy 契约一目了然。
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 现代 C++ 对政策设计的替代
+
 ```cpp title="示例 54 · ★★★☆☆"
 // ⑲ 现代写法：concept 约束 + if constexpr 分发，取代手工 typelist 特化
 template <typename P>
@@ -938,6 +992,7 @@ struct JsonPolicy { void to(std::ostream&) const {} };
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 现代 C++ 对政策设计的替代
+
 ```cpp title="示例 55 · ★★☆☆☆"
 #include <variant>
 // ⑲ 运行时仍需要动态切换时，可把 policy 对象存为 std::variant
@@ -1032,6 +1087,7 @@ Policy（策略）把「可替换的行为维度」做成模板/运行时参数�
 Eigen 是 Policy-Based Design 在数值线性代数领域的旗舰实现：
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 A：工业案例 —— Eigen
+
 ```cpp title="示例 56 · ★★★☆☆"
 // Eigen Matrix 接受 6 个 Policy 维度的模板参数
 // template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
@@ -1042,6 +1098,7 @@ Eigen 是 Policy-Based Design 在数值线性代数领域的旗舰实现：
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业案例 —— Eigen
+
 ```cpp title="示例 57 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1069,6 +1126,7 @@ int main() {
 | WG21 态度 | 无需语言支持 (模板已足够) | 核心语言特性 (virtual/override) |
 
 > **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：Policy vs 继承
+
 ```cpp title="示例 58 · ★★★☆☆"
 #include <iostream>
 int main() {
@@ -1083,6 +1141,7 @@ int main() {
 ## 附录 C：Policy 的反模式与面试 [I: Practice / J: Learning]
 
 > **示例 59** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 C：Policy 的反模式与面
+
 ```text
 反模式1: Policy 参数超过 5 个 → 将相关 Policy 组合为 Bundle struct
 反模式2: Policy 间隐式依赖 → 使用 C++20 concepts 显式约束
@@ -1142,6 +1201,7 @@ A: 零开销——删除器无 vtable，调用可内联。sizeof 与裸指针相
 <details><summary>答案与解析</summary>
 
 > **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 60 · ★★☆☆☆"
 #include <iostream>
 struct Unique { template<class T> using ptr = T*; };  // 独占：裸指针语义
@@ -1167,6 +1227,7 @@ int main() { SmartPtr<int, Unique, Shared> sp; std::cout << "ok\n"; }
 <details><summary>答案与解析</summary>
 
 > **示例 61** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 61 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -1198,6 +1259,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 62 · ★★★☆☆"
 #include <iostream>
 #include <functional>
@@ -1312,6 +1374,7 @@ int main() {
 可复现基准（自包含、可编译）：
 
 > **示例 63** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实性能基准：Policy-Base
+
 ```cpp title="示例 63 · ★★★★☆"
 // g++ -std=c++23 -O2 ch140_bench.cpp
 #include <chrono>
@@ -1457,6 +1520,7 @@ template / if constexpr 策略在 `-O2` 下被完全内联，循环退化为常�
 ### D5.3 可复现 demo
 
 > **示例 64** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
+
 ```cpp title="示例 64 · ★★★★☆"
 #include <cstdio>
 

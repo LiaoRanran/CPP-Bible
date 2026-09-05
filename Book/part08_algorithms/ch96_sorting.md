@@ -48,6 +48,7 @@
 排序是算法库最常用的一组：无序转有序，使二分查找、去重、归并、集合运算成为可能。`<algorithm>` 提供 `std::sort`、`std::stable_sort`、`std::partial_sort`、`std::nth_element`、`std::stable_partition` 等，全部作用于**有序区间**（[first, last)），比较默认用 `operator<`（严格弱序）。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：排序在 <algorithm>
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 最小可编译示例：对 vector 升序排序
 #include <algorithm>
@@ -60,6 +61,7 @@ int main() {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：排序在 <algorithm>
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // ① 降序：用 std::greater（需 <functional>）
 #include <algorithm>
@@ -90,6 +92,7 @@ introsort(arr, depth_limit = 2·⌊log2 N⌋):
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的实现：introsort
+
 ```cpp title="示例 3 · ★★★☆☆"
 // ② 一个可编译的 introsort-lite，演示三阶段组合（仅示意，非标准库实现）
 #include <algorithm>
@@ -115,6 +118,7 @@ void introsort(It first, It last, int depth, Cmp cmp) {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 的实现：introsort
+
 ```cpp title="示例 4 · ★★★☆☆"
 // ② 使用上面的 introsort-lite（与 std::sort 语义一致：不稳定）
 #include <vector>
@@ -172,6 +176,7 @@ __introsort_loop(_RandomAccessIterator __first,
 下面把 libstdc++ 的「三点取中 + 无守卫分区」落成**本机可编译**的最小范式，返回枢轴最终位置（与 ② 的 introsort-lite 可拼成完整排序）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 自包含可编译：median-of-t
+
 ```cpp title="示例 5 · ★★★☆☆"
 #include <algorithm>
 #include <iterator>
@@ -205,6 +210,7 @@ int main() {
 `std::sort` 要求 **O(N·log N)** 平均与最坏。枢纽选择决定快排段质量，libstdc++ 用 **三点取中（median-of-three）** 降低坏分区概率：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 复杂度与枢纽（pivot）选择 [标准]
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // ③ 三点取中：取首、中、尾的中位数作为枢纽（libstdc++ 思路的简化版）
 #include <algorithm>
@@ -224,6 +230,7 @@ It median_of_three(It a, It b, It c) {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 复杂度与枢纽（pivot）选择 [标准]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ③ 复杂度直觉：N 次 logN 层比较 — 用 std::distance 验证规模
 #include <algorithm>
@@ -246,6 +253,7 @@ int main() {
 `std::stable_sort` 保证**相等元素保持原相对顺序**，且复杂度 O(N·log N)；当额外内存充足时用归并，内存不足时降级为 **就地归并**（更慢，但仍稳定）。
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：sort：归并排序（稳定） <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ④ stable_sort 用法：保留相等元素的原始次序
 #include <algorithm>
@@ -262,6 +270,7 @@ int main() {
 ```
 
 > **示例 9** [难度 ★★★☆☆] [主题：sort：归并排序（稳定） <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 9 · ★★★☆☆"
 // ④ 一个可编译的归并排序（演示 stable 的本质：合并时左段优先）
 #include <algorithm>
@@ -288,6 +297,7 @@ void merge_sort(It first, It last, Cmp cmp) {
 不需要全序时，部分排序更快：`partial_sort` 让前 k 个最小元素就位（且有序）；`nth_element` 仅让第 n 个就位（左边都 ≤、右边都 ≥），均摊 O(N)。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · partial_sort / nth_element：部分排序
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑤ partial_sort：只保证前 3 个最小且有序，其余无序
 #include <algorithm>
@@ -301,6 +311,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · partial_sort / nth_element：部分排序
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑤ nth_element：找第 4 小（下标 3），线性期望 O(N)
 #include <algorithm>
@@ -320,6 +331,7 @@ int main() {
 用 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch96_sort_asm.cpp`，在产物中能直接看到 libstdc++ 的 `std::__introsort_loop` 实例化符号——这是对"② introsort"的**真实取证**。
 
 > **示例 12** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span> 真实：sort 调用的汇编]
+
 ```cpp title="示例 12 · ★★★☆☆"
 #include <algorithm>
 // 文件：Examples/_ch96_sort_asm.cpp
@@ -366,6 +378,7 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 比较器正确性：严格弱序
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑦ 正确比较器：严格弱序（用 < 比较单一字段）
 #include <algorithm>
@@ -380,6 +393,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 比较器正确性：严格弱序
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑦ 致命错误：用 <= 作为比较器违反了"非自反"与"非对称" → 未定义行为
 // ⚠ 此代码语义非法（UB），仅用于对照，切勿使用
@@ -401,6 +415,7 @@ int main() {
 自定义类型排序有三种惯用法：重载 `operator<`、传函数对象、传 lambda。
 
 > **示例 15** [难度 ★☆☆☆☆] [主题：自定义类型排序 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑧ 方式一：为类型提供 operator<（满足严格弱序）
 #include <algorithm>
@@ -416,6 +431,7 @@ int main() {
 ```
 
 > **示例 16** [难度 ★☆☆☆☆] [主题：自定义类型排序 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑧ 方式二：函数对象（可携带状态，比裸函数指针更易内联）
 #include <algorithm>
@@ -431,6 +447,7 @@ int main() {
 ```
 
 > **示例 17** [难度 ★☆☆☆☆] [主题：自定义类型排序 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑧ 方式三：lambda（最常用，见 ⑪ 它会被内联进排序循环）
 #include <algorithm>
@@ -450,6 +467,7 @@ int main() {
 `std::sort` 本身**单线程串行**。C++17 起可用**执行策略**让 `std::sort(std::execution::par, ...)` 并行，但 `std::execution::par` 在 libstdc++ 需要 TBB 后端，且并行排序**不保证稳定**。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 排序与并行：标准 std::sort
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑨ 串行排序（基准，单线程）
 #include <algorithm>
@@ -462,6 +480,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 排序与并行：标准 std::sort
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // ⑨ C++17 执行策略并行排序（需后端；不稳定，仅示意 API）
 #include <algorithm>
@@ -483,6 +502,7 @@ int main() {
 不稳定排序会打乱相等元素原序。当"先按主键排、再按主键的次序展示"时，不稳定会破坏预期。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 稳定性陷阱：何时"不稳定"会咬你 [经验]
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // ⑩ 陷阱演示：unstable sort 后，相等 key 的插入次序被打乱
 #include <algorithm>
@@ -499,6 +519,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性陷阱：何时"不稳定"会咬你 [经验]
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑩ 修复：需要保序时用 stable_sort
 #include <algorithm>
@@ -521,6 +542,7 @@ int main() {
 仍以 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch96_lambda_inline.cpp`（用无状态 lambda）。产物中比较器**没有独立函数调用**，而是直接内联成 `cmp DWORD PTR 8[rax], ecx`——证明 lambda 比较器被展开进 `__introsort_loop`。
 
 > **示例 22** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span> 真实：自定义比较器被内联进]
+
 ```cpp title="示例 22 · ★★★☆☆"
 #include <algorithm>
 // 文件：Examples/_ch96_lambda_inline.cpp
@@ -561,6 +583,7 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIP5PointSt6vectorIS2_SaIS2_
 排序是内存密集型：比较与交换会随机访问区间。连续存储（`vector`/`array`）远快于链表；分段友好（cache line 64 字节 ≈ 16 个 int）。
 
 > **示例 23** [难度 ★☆☆☆☆] [主题：大规模排序与缓存局部性 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑫ 优先对连续容器排序；避免对 list 用 std::sort
 #include <algorithm>
@@ -576,6 +599,7 @@ int main() {
 ```
 
 > **示例 24** [难度 ★☆☆☆☆] [主题：大规模排序与缓存局部性 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑫ 间接排序：对"大对象"排序时排索引而非对象，减少搬移
 #include <algorithm>
@@ -600,6 +624,7 @@ int main() {
 introsort 在小数组（阈值 ~16）切换插入排序；对已（近似）有序区间，插入排序接近 O(N)。这也是为什么"先大体快排、再小段插入"高效。
 
 > **示例 25** [难度 ★☆☆☆☆] [主题：几乎有序数组：插入排序优化 <span class="badge badge-impl">实现</span>]
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑬ 插入排序对小/近似有序数据极快（libstdc++ 在阈值内用它收尾）
 #include <algorithm>
@@ -615,6 +640,7 @@ int main() {
 ```
 
 > **示例 26** [难度 ★☆☆☆☆] [主题：几乎有序数组：插入排序优化 <span class="badge badge-impl">实现</span>]
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // ⑬ 用 std::sort 处理近乎有序数据同样高效（introsort 自动受益）
 #include <algorithm>
@@ -635,6 +661,7 @@ int main() {
 多关键字排序：用 `std::tie` 生成元组比较（按字段优先级），或"先排次键、再用 `stable_sort` 排主键"（稳定保序）。
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多字段排序：std::tie 与稳定
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑭ 方式一：std::tie 一次性定义多字段优先级（a 升序，再 b 降序需反转）
 #include <algorithm>
@@ -651,6 +678,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多字段排序：std::tie 与稳定
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // ⑭ 方式二：混合升降序 —— 用 tuple 取反（C++20 可 ranges，这里用经典写法）
 #include <algorithm>
@@ -675,6 +703,7 @@ int main() {
 用 `std::chrono` 实测 `std::sort` 在不同规模下的耗时（MinGW GCC 15.3.0，`-O2`，本机实测，非编造）：
 
 > **示例 29** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span> 性能实测：chrono 取]
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑮ 性能取证代码（见 Examples/_ch96_bench.cpp）
 #include <algorithm>
@@ -713,6 +742,7 @@ N=1000000 sort耗时=87.2073 ms 已序校验=1
 最经典的排序 bug：比较器写成 `>=`、`<=`、或"相等时也返回 true"，直接触发**未定义行为**——`std::sort` 可能死循环或崩溃。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见 bug：比较器不满足严格弱序
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // ⑯ bug：用 <= 作比较器 → 违反非自反/非对称 → UB（切勿使用）
 #include <algorithm>
@@ -726,6 +756,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见 bug：比较器不满足严格弱序
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑯ bug：浮点 NaN 比较 a<b 与 b<a 都为 false → 等价类断裂 → UB 风险
 #include <algorithm>
@@ -740,6 +771,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见 bug：比较器不满足严格弱序
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // ⑯ 修复：用严格 <；浮点先处理 NaN（如把 NaN 视为最大/最小）
 #include <algorithm>
@@ -765,6 +797,7 @@ int main() {
 `std::stable_partition` 把满足谓词的元素移到前端、其余置后，**保持各组内部原相对顺序**，且是稳定的。常用于"按条件分组但保序"。
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 stable_partition：把"满足谓词"的元素前置
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // ⑰ stable_partition：偶数前置，且保持原次序
 #include <algorithm>
@@ -780,6 +813,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 stable_partition：把"满足谓词"的元素前置
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // ⑰ 与 sort 的关系：partition 不排序，只分组；要"分组且组内有序"需两步
 #include <algorithm>
@@ -798,6 +832,7 @@ int main() {
 ## ⑱ 最佳实践清单 <span class="badge badge-exp">经验</span>
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：最佳实践清单 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑱ 用投影（C++20 ranges）让比较更直白（需 <ranges>）
 #include <algorithm>
@@ -812,6 +847,7 @@ int main() {
 ```
 
 > **示例 36** [难度 ★★☆☆☆] [主题：最佳实践清单 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 36 · ★★☆☆☆"
 // ⑱ 排序后去重：必须先用 sort 让相等元素相邻，再 unique
 #include <algorithm>
@@ -848,6 +884,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库差异：libstdc++ / l
+
 ```cpp title="示例 37 · ★★☆☆☆"
 // ⑲ 行为一致性的可移植写法：只依赖标准契约，不依赖实现细节
 #include <algorithm>
@@ -893,6 +930,7 @@ int main() {
 ```
 
 > **示例 38** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑳ 一句话回顾：选算法先看"要不要稳定/要不要全序/要不要并行"
 #include <algorithm>
@@ -957,6 +995,7 @@ int main() {
 ## 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
+
 ```text
 introsort (C++ std::sort): 快速排序 + 堆排序回退 (O(N log N) 保证)
 pdqsort (Rust, 2016): Pattern-Defeating Quicksort → 检测已排序/反向, 比 introsort 快 ~2×
@@ -968,6 +1007,7 @@ C++ proposal P1273R0: 提议加入 pdqsort, 未通过 (委员会认为 introsort
 ## 附录 B：性能与面试 [G/J]
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 B：性能与面试 [G/J]
+
 ```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 #include <algorithm>
@@ -1065,6 +1105,7 @@ jge .ok
 `(18,"Zoe"), (20,"Ann"), (20,"Bob)`（Ann 仍在 Bob 前）；`sort` 可能变成 `(20,"Bob"),(20,"Ann")`。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 std::vector<std::pair<int,std::string>> v{{20,"Bob"},{20,"Ann"},{18,"Zoe"}};
 std::stable_sort(v.begin(), v.end(), [](auto&a,auto&b){ return a.first<b.first; });
@@ -1088,6 +1129,7 @@ std::stable_sort(v.begin(), v.end(), [](auto&a,auto&b){ return a.first<b.first; 
 避免快排的最坏情况；小区间（如 ≤16）切到 insertion sort（小数据常数更小）。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```text
 if (depth_limit == 0)      heap_sort(range);   // 防 O(n^2)
 else if (small(range))     insertion_sort(range);
@@ -1108,6 +1150,7 @@ else                       quick_sort_partition + recurse(depth_limit-1);
 <details><summary>答案与解析</summary>
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 // 方法 A: partial_sort -> O(n log k), 这里 k=n/2
 std::vector<int> a = // ...
@@ -1140,6 +1183,7 @@ int medB = b[b.size()/2];
 边界条件与失效场景：若比较器只比 `name` 而不处理同名，标准只要求"等价元素任意顺序"，不算 UB——但若第一键相等时返回 `false` 的同时另一方向也返回 `false`（等价），结果虽合法却不满足"同姓按年龄排"的产品需求。真正危险的是写 `>=` 或"返回 true 又返回 true"的非严格弱序，会导致排序产生未定义行为（见练习 2）。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1176,6 +1220,7 @@ int main() {
 边界条件与失效场景：`nth_element` 不保证前 k 个有序——若下游期望有序 Top-K 则误用；它也不稳定。中位数这种"单点查询"是它的典型场景；当 k 接近 n 时 nth_element 几乎退化，此时直接 `sort` 或 `partial_sort` 常数更优。重复执行 `nth_element` 也不保持上次划分，每轮都是 O(n)。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -1201,6 +1246,7 @@ int main() {
 **步骤 1：朴素全排序（O(n log n)，绝大多数工作白做）**
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — top-k 与中
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 std::vector<int> a = read_million();
 std::sort(a.begin(), a.end());          // 全部排好, 但只想要前 100 / 中间 1 个
@@ -1211,6 +1257,7 @@ int median = a[a.size()/2];
 **步骤 2：`std::partial_sort`（只排前 k，O(n log k)）**
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：用法演绎 — top-k 与中
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 std::partial_sort(a.begin(), a.begin()+100, a.end()); // 前 100 就位且有序, 其余无序
 // 比全排序少排 n-100 个元素
@@ -1219,6 +1266,7 @@ std::partial_sort(a.begin(), a.begin()+100, a.end()); // 前 100 就位且有序
 **步骤 3：`std::nth_element`（只分区，O(n) — top-k 与中位数的最优解）**
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — top-k 与中
+
 ```cpp title="示例 46 · ★★☆☆☆"
 // 找中位数: 只保证第 n/2 个就位, 左边都 <= 它, 右边都 >= 它
 std::nth_element(a.begin(), a.begin()+a.size()/2, a.end());
@@ -1507,6 +1555,7 @@ introsort 对大区间用快排递归，但当子区间长度降到 `_S_threshol
 ### D4.7 第一方可编译验证（introsort + 堆排兜底）
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <algorithm>
@@ -1637,6 +1686,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <algorithm>

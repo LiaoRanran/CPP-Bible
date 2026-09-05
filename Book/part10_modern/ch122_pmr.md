@@ -79,6 +79,7 @@ PMR 常被当成"另一种分配器"来用，但**它真正的本质是"把分�
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
+
 ```mermaid
 flowchart TD
   M["std::pmr::memory_resource (抽象基类) allocate() / deallocate() / is_equal() 虚: do_allocate / do_deallocate / do_is_equal"]
@@ -169,6 +170,7 @@ classDiagram
 `[实现·libstdc++]` `monotonic_buffer_resource` 持有一条缓冲链表（`_Chunk* _M_head`），当前指针 `_M_current_buf` 与剩余量 `_M_avail`；分配时仅推进指针，不释放。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：monotonicbuffe
+
 ```mermaid
 flowchart TD
   I1["初始: upstream 提供 1KB"]
@@ -188,6 +190,7 @@ flowchart TD
 ## ⑧ 生命周期图：request-local arena
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：request-loca
+
 ```mermaid
 flowchart TD
   R1["请求到达"]
@@ -211,6 +214,7 @@ flowchart TD
 ## ⑨ 调用栈 / 时序图：池资源分配
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图：池资源分配
+
 ```mermaid
 flowchart LR
   subgraph C1 [调用方]
@@ -495,6 +499,7 @@ struct pool_options {
 ## ⑯ 易错点
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // ⑯-1 ❌ 误以为 monotonic_buffer_resource 会逐个析构元素
 #include <memory_resource>
@@ -514,6 +519,7 @@ int main() {
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // ⑯-2 ❌ 把 unsynchronized_pool_resource 用于多线程
 #include <memory_resource>
@@ -532,6 +538,7 @@ int main() {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
 ```cpp title="示例 7 · ★★☆☆☆"
 // ⑯-3 ✅ 正确：拷贝容器不传播资源
 #include <memory_resource>
@@ -562,6 +569,7 @@ int main() {
   A：见下例。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // ⑰ 验证全局资源为单例
 #include <memory_resource>
@@ -588,6 +596,7 @@ int main() {
 - `[经验]`：arena 中只放**平凡析构或析构代价可忽略**的对象；有外部资源的对象用普通分配。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // ⑱ set_default_resource 切换全局默认资源（调试/发行）
 #include <memory_resource>
@@ -619,6 +628,7 @@ int main() {
 `[经验]` 下面基准对比"100 万元素 push_back"在 `new_delete` 默认资源 vs `unsynchronized_pool_resource` 的耗时。量级为该机器示意（i7-11800H，Release -O2）。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存池性能证据
+
 ```cpp title="示例 10 · ★★☆☆☆"
 // ⑲-1 pool vs new：大量小对象分配的耗时对照
 #include <memory_resource>
@@ -672,6 +682,7 @@ int main() {
 `[实现]` `monotonic_buffer_resource` 顺序推进指针，使同一请求内的对象**物理相邻**，遍历时 prefetch 友好、false sharing 低（`[第 43 章　CPU 缓存体系与内存局部性](../part04_memory/ch43_cache_locality.md)`）。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // 19-a 请求级 arena 的完整请求/释放周期
 #include <memory_resource>
@@ -691,6 +702,7 @@ int main() {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // 19-b counting_resource：统计分配次数与字节数
 #include <memory_resource>
@@ -719,6 +731,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // 19-c unsynchronized_pool_resource 快速分配（单线程安全）
 #include <memory_resource>
@@ -736,6 +749,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // 19-d null_memory_resource：任何分配都抛 std::bad_alloc
 #include <memory_resource>
@@ -752,6 +766,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // 19-e new_delete_resource 作为默认 upstream
 #include <memory_resource>
@@ -766,6 +781,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // 19-f 两层 arena：下层做大缓冲，上层分配池
 #include <memory_resource>
@@ -783,6 +799,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // 19-g scoped_arena RAII 辅助——析构自动 release
 #include <memory_resource>
@@ -804,6 +821,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // 19-h pool_options 调参：largest_required_pool_block
 #include <memory_resource>
@@ -822,6 +840,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // 19-i 用 PMR 的多级上游链（chain of upstreams）
 #include <memory_resource>
@@ -841,6 +860,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // 19-j PMR vector vs 默认 vector：分配器传播对比
 #include <memory_resource>
@@ -858,6 +878,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // 19-k 安全擦除（winking out）：arena 上的敏感数据可整块清零
 #include <memory_resource>
@@ -874,6 +895,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // 19-l PMR 在请求处理中的性能模拟（vs 默认 allocator 思路）
 #include <memory_resource>
@@ -897,6 +919,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // 19-m 标准 vector vs pmr::vector 共存示例
 #include <memory_resource>
@@ -914,6 +937,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 19-n polymorphic_allocator 与 std::string 组合
 #include <memory_resource>
@@ -930,6 +954,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // 19-o PMR deque：双向队列的 arena 分配
 #include <memory_resource>
@@ -947,6 +972,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好性
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // 19-p 对比 idea：同等逻辑下 malloc vs PMR arena 的思考
 #include <memory_resource>
@@ -1010,6 +1036,7 @@ int main() {
 - `[经验]`：从 Rust/Go 来的工程师会自然寻找 "arena"；PMR 就是 C++ 的答案，且粒度更细（可精确到某个容器而非全局）。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：Arena / 多态分配
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑳ 用 PMR 模拟 Rust bumpalo 风格的 arena 计数分配
 #include <memory_resource>
@@ -1100,6 +1127,7 @@ PMR 把「分配策略」从全局 `operator new` 提升为「每个容器可携
 ## 附录B: 补充可编译示例
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // 补-R pmr 基本 vector 使用
 #include <memory_resource>
@@ -1109,6 +1137,7 @@ int main() { char buf[512]; std::pmr::monotonic_buffer_resource mr(buf,sizeof(bu
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // 补-S 确认 pmr 分配器与默认分配器的差异
 #include <memory_resource>
@@ -1117,6 +1146,7 @@ int main() { auto* def=std::pmr::get_default_resource(); std::cout<<"default res
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录B: 补充可编译示例
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // 补-T 极简 counting_resource 复用
 #include <memory_resource>
@@ -1127,6 +1157,7 @@ int main(){Count c;std::pmr::vector<int>v(&c);v.push_back(1);std::cout<<"allocs=
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // 补-U pool_resource 不指定 upstream 时默认用 get_default_resource
 #include <memory_resource>
@@ -1135,6 +1166,7 @@ int main() { std::pmr::synchronized_pool_resource pool; void*p=pool.allocate(64,
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录B: 补充可编译示例
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // 补-V unsynchronized_pool：单线程的快速池
 #include <memory_resource>
@@ -1143,6 +1175,7 @@ int main() { std::pmr::unsynchronized_pool_resource pool; void*p=pool.allocate(3
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // 补-W pmr::vector vs std::vector 的 sizeof 差异
 #include <memory_resource>
@@ -1152,6 +1185,7 @@ int main() { std::cout<<"std::vector<int>="<<sizeof(std::vector<int>)<<" pmr::ve
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录B: 补充可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // 补-X PMR 一句话总结
 #include <iostream>
@@ -1161,6 +1195,7 @@ int main() { std::cout<<"PMR: runtime-polymorphic allocators, arena/pool pattern
 ## 附录: PMR 深度
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <memory_resource>
@@ -1170,6 +1205,7 @@ int main(){std::array<std::byte,1024> buf;std::pmr::monotonic_buffer_resource po
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 #include <memory_resource>
@@ -1178,6 +1214,7 @@ int main(){std::pmr::unsynchronized_pool_resource pool;std::pmr::vector<int> v(&
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: PMR 深度
+
 ```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <memory_resource>
@@ -1185,6 +1222,7 @@ int main(){std::pmr::monotonic_buffer_resource pool(1024);void*p=pool.allocate(6
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 #include <memory_resource>
@@ -1193,6 +1231,7 @@ int main(){std::pmr::synchronized_pool_resource pool;std::pmr::vector<std::pmr::
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: PMR 深度
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in replacement for std::allocator."<<std::endl;return 0;}
@@ -1231,6 +1270,7 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 ### 测试源码（节选）
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 测试源码（节选）
+
 ```cpp title="示例 40 · ★★★★☆"
 [[gnu::noinline]] void default_push() {
     std::vector<int> v;
@@ -1315,6 +1355,7 @@ pmr_push():
 <details><summary>答案与解析</summary>
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 41 · ★★☆☆☆"
 #include <memory_resource>
 #include <vector>
@@ -1347,6 +1388,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 42 · ★★☆☆☆"
 #include <memory_resource>
 #include <vector>
@@ -1388,6 +1430,7 @@ arena 的"整体回收"是关键：它不追踪每块单独释放，只在 `mono
 `polymorphic_allocator` 在构造嵌套元素时会把**自身的 `memory_resource*` 传给元素**，所以 `pmr::vector<pmr::string>` 的 `string` 元素自动用同一个 arena——这就是"分配器传播"：
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 43 · ★★☆☆☆"
 #include <memory_resource>
 #include <vector>
@@ -1426,6 +1469,7 @@ int main() {
 代价与边界：`unsynchronized_pool_resource` 明确**非线程安全**——多线程共用同一资源需外部加锁，或换成 `synchronized_pool_resource`（内部上锁、换取安全但多一点开销）。这是"性能 vs 线程安全"的典型权衡：单线程热路径用 unsynchronized，跨线程才付锁的代价。默认上游是 `new_delete_resource`，即池子从全局堆拿整块再切分。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <memory_resource>
 #include <iostream>
@@ -1459,6 +1503,7 @@ int main() {
 计数器资源是"先实现、后统计"的通用套路：真实分配仍转交 `::operator new/delete`（带对齐版本），只是外层记账。把它作为上游接进 `pmr::vector`，就能精确回答"向量扩容触发了多少次分配、累计多大"——这对验证 arena/pool 的分配次数（练习 1/2/4 的零次/复用）尤其有用。注意对齐版本的 `operator new` 需要 `<new>` 的 `std::align_val_t`。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 49 · ★★★☆☆"
 #include <memory_resource>
 #include <vector>
@@ -1507,6 +1552,7 @@ int main() {
 **修复（落地）。** 每请求建一个 `monotonic_buffer_resource` arena，所有临时结构放其上，请求末 arena 析构一次性回收：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：每请求海量临时对象 → A
+
 ```cpp title="示例 44 · ★★☆☆☆"
 #include <memory_resource>
 #include <vector>
@@ -1535,6 +1581,7 @@ int main() { serve(); }
 **修复（落地）。** 用 `unsynchronized_pool_resource`（线程内池，按尺寸分桶复用）或 `monotonic_buffer_resource`（若同批同生命周期）：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：高频小对象 → 池资源
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <memory_resource>
 #include <vector>
@@ -1877,6 +1924,7 @@ flowchart TD
 ### D4.7 第一方可编译验证（PMR 内存资源）
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 第一方可编译验证（PMR 内存资源）
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 #include <memory_resource>
@@ -2015,6 +2063,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <list>

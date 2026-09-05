@@ -52,6 +52,7 @@
 `[经验]` 一条被工业界反复验证的共识：**名字是写给"调用方"的注释，而不是写给"实现者"的备忘录**。API 的可学习性（learnability）几乎完全由命名质量决定。
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ❌ 反例：名字不揭示意图，调用方必须打开实现才能猜出语义
 void proc(int a, int b);  // proc 做什么？a、b 是什么？
@@ -59,6 +60,7 @@ int f(int x);             // f 返回什么？x 是输入还是索引？
 ```
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <cstddef>
 // ✅ 正例：名字揭示意图、参数揭示角色
@@ -73,6 +75,7 @@ std::size_t byte_size(const Buffer& buf);           // 返回什么一目了然
 - **可演进性**：稳定的命名边界让实现可重构而不破坏调用方。
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // 命名稳定的 API：内部可随意重构，调用方零改动
 class ConnectionPool {
@@ -86,6 +89,7 @@ public:
 `[经验]` 命名的第一法则：**揭示意图，而非揭示类型或实现**。名字要回答"这是什么 / 做什么"，而不是"它存了几个字节"。
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名基本法则（意图揭示）
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ❌ 反例：揭示类型而非意图（改了类型名就过时）
 int data_list_size;  // data_list 是什么列表？
@@ -93,6 +97,7 @@ char* str_ptr;       // str 指向谁的字符串？
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名基本法则（意图揭示）
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <string>
 // ✅ 正例：揭示意图，类型信息交给类型系统
@@ -103,6 +108,7 @@ std::string user_name;      // 意图：用户名，类型由 string 表达
 二级法则：**长度与可见范围成正比**——作用域越大、生命周期越长，名字应越长越具体；局部短变量可用单字母。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 命名基本法则（意图揭示）
+
 ```cpp title="示例 6 · ★★☆☆☆"
 #include <cstddef>
 // 短作用域：单字母足够
@@ -117,6 +123,7 @@ namespace telemetry {
 `[经验]` 避免"双重否定"与"模糊动词"：`disable_not_cache` 应写作 `enable_cache`；`handle(x)` 应写作 `process(x)` 或 `dispatch(x)`。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名基本法则（意图揭示）
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ❌ 反例：双重否定 + 模糊动词
 bool disable_not_cache = false;
@@ -132,6 +139,7 @@ void dispatch(const Event& e);
 `[标准·惯例]` 用户自定义类型（class / struct / enum / typedef / concept / 模板）统一用 **PascalCase**（大驼峰），与标准库 `std::string`、`std::vector` 的命名风格一致，使自定义类型"看起来像类型"。
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型命名
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 class ConnectionPool {                      // ...
 struct HttpRequest  {                       // ...
@@ -141,6 +149,7 @@ enum class ColorSpace { Srgb, DisplayP3 };  // ✅ enum class 成员 PascalCase
 模板参数用描述性名字，避免单字母 `T`（除非极其通用）：
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型命名
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // ❌ 反例：单字母模板参数，约束意图不清
 template <typename T, typename U> class Pair {            // ...
@@ -153,6 +162,7 @@ template <std::regular T> class RingBuffer {              // ...
 概念（concept）命名用名词或形容词短语，常以 `able`/`ible` 结尾：
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型命名
+
 ```cpp title="示例 10 · ★★☆☆☆"
 template <typename T>
 concept RandomAccess = requires(T t) { t[0]; t.size(); };   // ✅ 形容词性概念
@@ -161,6 +171,7 @@ concept RandomAccess = requires(T t) { t[0]; t.size(); };   // ✅ 形容词性�
 `[标准]` 类型别名用 `using`（而非 `typedef`）更易读，且支持模板别名：
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型命名
+
 ```cpp title="示例 11 · ★★☆☆☆"
 #include <memory>
 #include <vector>
@@ -173,6 +184,7 @@ template <typename T> using Vec = std::vector<T>;
 `[经验]` 函数命名用**动词或动宾短语**，因为函数"做某事"。查询类（纯读）可用名词，命令类（有副作用）必须动词。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 函数命名（动词/动宾）
+
 ```cpp title="示例 12 · ★★☆☆☆"
 #include <cstddef>
 // ✅ 命令（有副作用）：动词开头
@@ -189,6 +201,7 @@ const Config& config() const;
 返回布尔值的谓词统一 `is_`/`has_`/`can_` 前缀，使 `if (is_open())` 读起来像自然语言：
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 函数命名（动词/动宾）
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 bool has_permission(User u, Permission p);
 bool can_write() const;
@@ -197,6 +210,7 @@ bool can_write() const;
 `[经验]` 避免"动词+ing"和"模糊 get"：
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 函数命名（动词/动宾）
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ❌ 反例
 void processing();        // 是开始处理还是正在处理？
@@ -210,6 +224,7 @@ int retry_count() const;  // 明确得到什么
 重载函数名应保持一致，仅参数不同；若语义不同，应改名而非重载（见第⑪节）。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 函数命名（动词/动宾）
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 #include <string>
 // ✅ 同名重载：语义一致，仅参数形态不同
@@ -222,6 +237,7 @@ void log(Level lvl, const std::string& msg);
 `[经验]` 变量（含函数局部、成员、命名空间级非类型）命名二选一并与项目基线统一：**snake_case**（C++ 社区/Google/LLVM 主流）或 **camelCase**（Microsoft 风格）。关键是全仓库只有一个真相。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 变量命名
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 #include <vector>
 int active_connection_count = 0;  // ✅ snake_case
@@ -233,6 +249,7 @@ std::vector<int> pending_frames;  // ✅ 复数揭示"集合"
 私有/受保护成员加尾下划线 `_`，与局部变量、参数区分，避免 `this->` 噪声：
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 变量命名
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 #include <cstddef>
 class Buffer {
@@ -246,6 +263,7 @@ public:
 `[经验]` 避免"匈牙利命名"冗余（`strName`、`nCount`、`pBuf`）——类型已由声明给出，前缀只增加噪音且与重构冲突。
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 变量命名
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ❌ 反例：匈牙利命名，类型变了前缀就错
 int    nCount;
@@ -258,6 +276,7 @@ std::string user_name;
 循环/临时短变量可用单字母，但含义要局部自明：
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 变量命名
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 for (const auto& [key, value] : registry) { // key/value 局部自明
 ```
@@ -267,6 +286,7 @@ for (const auto& [key, value] : registry) { // key/value 局部自明
 `[经验]` 编译期常量用 `kPascalCase`（Google 风）或 `k_snake_case`，贯穿 `constexpr`/`const` 静态成员/枚举值；宏用全大写 `UPPER_SNAKE_CASE`（必须与普通标识符视觉隔离，因宏无视作用域）。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常量与宏命名
+
 ```cpp title="示例 20 · ★★☆☆☆"
 #include <cstddef>
 class Config {
@@ -280,6 +300,7 @@ inline constexpr double kPi = 3.141592653589793;
 宏必须全大写，且加项目前缀避免碰撞：
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常量与宏命名
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 #define PROJECT_LOG_LEVEL 3            // ✅ 全大写 + 前缀
 #define PROJECT_HAS_FEATURE_X 1
@@ -290,6 +311,7 @@ inline constexpr double kPi = 3.141592653589793;
 枚举值命名与常量一致（C++11 起 `enum class` 作用域隔离，但仍推荐 `k` 前缀或全大写）：
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常量与宏命名
+
 ```cpp title="示例 22 · ★★☆☆☆"
 enum class LogLevel { kTrace, kInfo, kWarn, kError };   // ✅ 作用域枚举 + k 前缀
 ```
@@ -297,6 +319,7 @@ enum class LogLevel { kTrace, kInfo, kWarn, kError };   // ✅ 作用域枚举 +
 `[经验]` 能用 `constexpr`/`const`/`enum` 就绝不用 `#define`——宏无类型、无视命名空间、难调试：
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常量与宏命名
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // ❌ 反例
 #define MAX_SIZE 1024
@@ -309,6 +332,7 @@ inline constexpr std::size_t kMaxSize = 1024;
 `[经验]` 命名空间用小写短名，避免与类型（PascalCase）"撞脸"，并体现模块边界。顶层命名空间通常就是项目/库名。
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间命名
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 namespace myproject {
     namespace net {          // ✅ 小写短名子模块
@@ -323,6 +347,7 @@ namespace myproject {
 实现细节放进 `detail` 子命名空间或匿名命名空间，向调用方声明"这是内部，随时可改"：
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间命名
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 namespace myproject {
     namespace detail {       // ✅ 明确内部实现，API 稳定性不保证
@@ -334,6 +359,7 @@ namespace myproject {
 匿名命名空间（翻译单元内部链接）替代 `static`，隐藏 `.cpp` 内辅助符号：
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 命名空间命名
+
 ```cpp title="示例 26 · ★★☆☆☆"
 namespace {
     int g_debug_counter = 0;         // ✅ 仅本 .cpp 可见
@@ -344,6 +370,7 @@ namespace {
 `[经验]` 禁止在头文件作用域 `using namespace`——它会泄漏给所有包含方，制造难以追踪的名字冲突（见第⑧节 ABI/API 边界）。
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间命名
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ❌ 反例：头文件顶层 using，污染所有包含者
 // widget.h
@@ -353,6 +380,7 @@ using namespace std;   // 禁止
 内联命名空间用于**版本化 ABI**（详见第⑰节）：
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 命名空间命名
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 namespace myproject {
     inline namespace v2 { void serialize(); }  // ✅ 默认可见
@@ -372,6 +400,7 @@ namespace myproject {
 - 改变函数签名（改变名字修饰）。
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ❌ 反例：在类中部插入成员，破坏所有调用方 ABI
 class Widget {
@@ -384,12 +413,14 @@ class Widget {
 Pimpl 是最强的 ABI 防火墙——把数据成员收进不可见的 impl，使"头文件大小"与实现完全解耦。本机真实运行取证（`Examples/_ch145_size.cpp`）：
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+
 ```text
 sizeof(PimplWidget)=8        // 仅持有一个 unique_ptr（指针=8 字节）
 sizeof(FatWidget) =256       // 直接内联 64 个 long，随实现膨胀
 ```
 
 > **示例 31** [难度 ★★☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+
 ```cpp title="示例 31 · ★★☆☆☆"
 #include <memory>
 // Pimpl：调用方看到的头文件大小恒为 8 字节，与 FatImpl 多胖无关
@@ -405,6 +436,7 @@ public:
 `[平台]` 名字修饰（name mangling）把 C++ 重载/命名空间编码进符号名，是 ABI 的一部分且**各编译器不兼容**。用 `extern "C"` 暴露稳定 C ABI 给跨语言/跨编译器调用：
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // 稳定的 C ABI：名字不修饰，调用约定显式，跨编译器可用
 extern "C" int myproject_version();
@@ -413,6 +445,7 @@ extern "C" int myproject_version();
 ABI 稳定性决策框：
 
 > **示例 33** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+
 ```text
 ┌──────────────────────────────────────────────────────────┐
 │ 该符号要进"稳定 ABI"吗？                                   │
@@ -428,6 +461,7 @@ ABI 稳定性决策框：
 `[经验]` 好接口遵循**最小完备（minimal & complete）**：提供完成任务所需的**最少**函数，但又不缺必需的那几个。多一个函数就多一份维护与 ABI 负担；少一个则逼用户绕过封装。
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 接口设计原则（最小完备）
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // ❌ 反例：接口过度暴露，调用方可篡改内部不变量
 class Stack {
@@ -438,6 +472,7 @@ public:
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 接口设计原则（最小完备）
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <cstddef>
 #include <vector>
@@ -460,6 +495,7 @@ private:
 - **后置 `noexcept`/`constexpr`**：见第⑬、⑩节。
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 接口设计原则（最小完备）
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <cstddef>
 // ✅ 自由函数 + const，对称且低耦合
@@ -470,6 +506,7 @@ std::size_t hash_value(const Stack& s);
 避免"为了对称堆砌重载"——只提供真正被使用的形态：
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 接口设计原则（最小完备）
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ❌ 反例：用户其实只需要 (const char*)，却提供了 6 个重载
 void set_name(const char*);
@@ -486,6 +523,7 @@ Pimpl（Pointer to Implementation）把数据成员与实现收进一个前向�
 `[实现·GCC15]` 关键成本模型：Pimpl 调用需经指针进入 impl，等价于一次**间接分支**。本机 g++ 取证（`Examples/_ch145_pimpl.asm`）对比"经函数指针的间接调用"与"直接调用"：
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 惯用法
+
 ```cpp title="示例 38 · ★★★☆☆"
 // _ch145_pimpl.cpp 要点（自包含可编译）
 using draw_fn = void(*)(int);
@@ -511,6 +549,7 @@ _Z10use_directi:
 结论真实可复现：**间接调用（jmp rax）无法像直接调用那样被内联进调用方**——这正是 Pimpl 的运行时代价。它用"一次指针间接 + 失去跨 TU 内联"换取"ABI 稳定 + 编译防火墙"，是典型工程权衡。
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <memory>
 // Pimpl 头文件：调用方只看到指针，实现彻底隐藏
@@ -526,6 +565,7 @@ public:
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惯用法
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <memory>
 // Widget 实现（widget.cpp）：所有数据成员与逻辑在这里，改它不触发调用方重编
@@ -543,6 +583,7 @@ int  Widget::metric() const { return impl_->w * impl_->h; }
 `[经验]` 重载适合"同一操作、不同参数形态"；当语义其实不同，**命名函数比重载更安全**——重载解析在隐式转换下可能产生反直觉的匹配。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重载 vs 命名函数
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 #include <string_view>
 // ✅ 重载合理：语义一致，仅参数形态不同
@@ -554,6 +595,7 @@ void print(double value);
 当调用方意图差异大，命名函数消除歧义：
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重载 vs 命名函数
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 // ❌ 反例：用重载表达两种不同语义，易误用
 void open(const std::string& path);          // 读
@@ -567,6 +609,7 @@ void open_with_mode(const std::string& path, Mode m);
 本机编译取证（`Examples/_ch145_overload.cpp`，`-Wall -Wextra` 零警告）展示重载解析按参数形态选择：
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重载 vs 命名函数
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 void log(int level, const char* msg);
 void log(const char* msg) { log(0, msg); }        // 重载
@@ -575,6 +618,7 @@ void log_error(const char* msg) { log(2, msg); }
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重载 vs 命名函数
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 int main() {
     log("hello");    // 解析到 (const char*)
@@ -592,6 +636,7 @@ int main() {
 `[经验]` 默认参数与重载混用是歧义高发区：**有默认参数的重载，在省略实参处会与无默认版本冲突**。优先用"纯重载分层"替代"默认参数拼装大接口"。
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认值与重载顺序
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 // ❌ 反例：两版在 open("x") 处二义
 void open(const std::string& path);
@@ -601,6 +646,7 @@ void open(const std::string& path, int flags = 0);   // 与上一行冲突
 本机编译取证（`Examples/_ch145_defaults.cpp`，warnings clean）给出正例：
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认值与重载顺序
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 #include <string>
 void open(const std::string& path) { /* 缺省模式 */ }
@@ -620,6 +666,7 @@ int main() {
 - 需要"可选尾参"且形态单一时，默认参数可接受；多可选参数且语义不同，用重载。
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认值与重载顺序
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 // ✅ 默认参数用于真正"可选且语义一致"的尾参
 void connect(const Endpoint& ep, Duration timeout = Duration::seconds(5));
@@ -636,6 +683,7 @@ void configure(int buf = 1024, bool compress = true, int level = 6);
 `[实现·GCC15]` 真实取证：当 `noexcept` 函数体内含 `throw`，g++ 直接给出 `-Wterminate` 警告，证明编译器在 noexcept 契约下改变了分析——它知道此处必终止：
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与异常规范（关联 ch146）
+
 ```text
 _ch145_noexcept2.cpp:3:24: warning: 'throw' will always call 'terminate' [-Wterminate]
     3 | void sink() noexcept { throw 1; }
@@ -643,6 +691,7 @@ _ch145_noexcept2.cpp:3:24: warning: 'throw' will always call 'terminate' [-Wterm
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与异常规范（关联 ch146）
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 // _ch145_noexcept2.cpp 要点（自包含可编译）
 void sink() noexcept { throw 1; }  // g++ 警告：'throw' will always call 'terminate'
@@ -652,6 +701,7 @@ void boom() { throw 2; }           // 普通函数：保留正常异常抛出路
 `[标准]` `noexcept` 还是条件化的：`noexcept(expr)` 在编译期求值。移动构造/移动赋值/析构/交换应默认 `noexcept`，从而让 `std::vector` 重分配走移动而非拷贝（ch144 已用 libstdc++ 源码佐证此决策）。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与异常规范（关联 ch146）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 #include <vector>
 class Buffer {
@@ -665,6 +715,7 @@ public:
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与异常规范（关联 ch146）
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 // ❌ 反例：应在 noexcept 却未标，vector 重分配将退化为拷贝（见 ch144）
 struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实为 noexcept，
@@ -684,6 +735,7 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实为 noex
 `[实现·GCC15]` 真实取证（`Examples/_ch145_return.asm`）对比三种返回：
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★★☆</span> · 返回值策略
+
 ```cpp title="示例 52 · ★★★★☆"
 #include <optional>
 struct Big { long a[8]; };
@@ -720,6 +772,7 @@ _Z7use_refRK3Big:
 结论真实可复现：**`by_ref` 仅把指针交还（O(1)），`by_value` 则需把对象写入调用方缓冲（与大小成正比，除非被优化掉）**。经验法则：
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 返回值策略
+
 ```cpp title="示例 53 · ★★☆☆☆"
 #include <cstdint>
 #include <memory>
@@ -736,6 +789,7 @@ std::optional<Record> find(std::uint64_t id) const;
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 返回值策略
+
 ```cpp title="示例 54 · ★★☆☆☆"
 // ❌ 反例：返回局部对象的引用（悬垂！）
 const std::string& bad() { std::string s = "x"; return s; }  // 返回后 s 已销毁
@@ -748,6 +802,7 @@ const std::string& bad() { std::string s = "x"; return s; }  // 返回后 s 已�
 本机编译取证（`Examples/_ch145_concepts.cpp`，`-Wall -Wextra` 零警告）：
 
 > **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概念约束
+
 ```cpp title="示例 55 · ★★★☆☆"
 template <typename T>
 concept Arithmetic = std::integral<T> || std::floating_point<T>;
@@ -765,6 +820,7 @@ struct Circle { void draw() const {} };   // 满足 Drawable 概念（含 draw()
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概念约束
+
 ```cpp title="示例 56 · ★☆☆☆☆"
 int main() {
     clamp(5L, 0L, 10L);   // ✅ long 满足 Arithmetic
@@ -776,6 +832,7 @@ int main() {
 `[经验]` 把 concept 当作"命名化的接口契约"——`Arithmetic`、`Drawable`、`Readable` 比 `typename T` 表达力强百倍，且调用方违反时得到指向 concept 的清晰报错。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概念约束
+
 ```cpp title="示例 57 · ★★☆☆☆"
 // ✅ 多约束组合，意图自解释
 template <typename T>
@@ -785,6 +842,7 @@ concept Serializable = std::semiregular<T> && requires(T t, std::ostream& os) {
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概念约束
+
 ```cpp title="示例 58 · ★★☆☆☆"
 // ❌ 反例：无约束模板，误用时报错指向深层实现细节
 template <typename T>
@@ -798,6 +856,7 @@ auto area(const T& s) { return s.width * s.height; }   // T 没有 width 时报�
 本机编译取证（`Examples/_ch145_strong.cpp`，warnings clean）展示两者：
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 防误用设计
+
 ```cpp title="示例 59 · ★★☆☆☆"
 #include <cstdint>
 struct UserId { int64_t v; explicit UserId(int64_t x) : v(x) {} };
@@ -813,6 +872,7 @@ struct Meter {
 ```
 
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 防误用设计
+
 ```cpp title="示例 60 · ★☆☆☆☆"
 int main() {
     UserId u{42}; OrderId o{7};
@@ -827,6 +887,7 @@ int main() {
 `[经验]` 用强类型把"单位/ID/标签"变成类型，让编译器替你挡住 `process(user_id, order_id)` 这类颠倒参数的 bug：
 
 > **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 防误用设计
+
 ```cpp title="示例 61 · ★★☆☆☆"
 // ✅ 强类型让"参数顺序"由类型系统校验
 void transfer(UserId from, UserId to, Amount cents);
@@ -836,6 +897,7 @@ void transfer(UserId from, UserId to, Amount cents);
 `= delete` 还能删除危险隐式转换与拷贝：
 
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 防误用设计
+
 ```cpp title="示例 62 · ★★☆☆☆"
 class NonCopyable {
 public:
@@ -856,6 +918,7 @@ void f(int) = delete;                          // 只接受显式 bool，杜绝 
 `[实现·GCC15]` 真实取证（`Examples/_ch145_deprecated.cpp`，`-Wall -Wextra`）：
 
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本与弃用
+
 ```cpp title="示例 63 · ★☆☆☆☆"
 // _ch145_deprecated.cpp 要点
 [[deprecated("use new_api() instead; removed in v3")]]
@@ -870,6 +933,7 @@ int main() {
 g++ 真实警告输出：
 
 > **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本与弃用
+
 ```text
 _ch145_deprecated.cpp:8:12: warning: 'void old_api()' is deprecated:
     use new_api() instead; removed in v3 [-Wdeprecated-declarations]
@@ -880,6 +944,7 @@ _ch145_deprecated.cpp:8:12: warning: 'void old_api()' is deprecated:
 `[经验]` 弃用流程：先 `[[deprecated]]` + 警告（保留 N 个版本）→ 再删。绝不"静默删除"破坏调用方。配合内联命名空间做 ABI 版本切换（第⑦节）：
 
 > **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本与弃用
+
 ```cpp title="示例 65 · ★☆☆☆☆"
 namespace lib {
     inline namespace v2 {
@@ -893,6 +958,7 @@ namespace lib {
 ```
 
 > **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本与弃用
+
 ```cpp title="示例 66 · ★☆☆☆☆"
 #include <cstddef>
 #include <span>
@@ -906,6 +972,7 @@ void process(const int* data, std::size_t n);
 `[经验]` 文档是 API 契约的一部分。**公开接口的每个函数都应有 Doxygen 注释**：说明做什么、参数约束、返回值语义、异常/不变量、线程安全。
 
 > **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 文档（Doxygen）
+
 ```cpp title="示例 67 · ★★☆☆☆"
 /**
  * @brief 从连接池获取一个空闲连接
@@ -925,6 +992,7 @@ Connection* acquire(int timeout_ms);
 - 内部 `detail::` 符号可不文档化，但公开符号必须。
 
 > **示例 68** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 文档（Doxygen）
+
 ```cpp title="示例 68 · ★★☆☆☆"
 #include <string>
 /// @warning 返回的引用在对象析构后悬垂，调用方不得长期持有。
@@ -932,6 +1000,7 @@ const std::string& name() const;
 ```
 
 > **示例 69** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 文档（Doxygen）
+
 ```cpp title="示例 69 · ★☆☆☆☆"
 // 组命令标记便于生成模块页
 /// @defgroup pool Connection Pool
@@ -950,6 +1019,7 @@ class ConnectionPool { // ...
 `std::move` 不"移动"任何东西，只是把左值转为右值引用——名字直白。而 `move_if_noexcept` 的命名直接编码了第⑬节的异常安全策略："若移动不抛则移动，否则退化为 const 引用（拷贝）"。
 
 > **示例 70** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
+
 ```cpp title="示例 70 · ★☆☆☆☆"
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h
 // 行号：109-125
@@ -962,6 +1032,7 @@ class ConnectionPool { // ...
 `vector.tcc` 用 `_S_use_relocate()` 决定"能否整体搬迁元素"，否则走 `__uninitialized_move_if_noexcept_a`——命名把"异常安全下的搬迁策略"暴露在每一行。
 
 > **示例 71** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
+
 ```cpp title="示例 71 · ★☆☆☆☆"
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc
 // 行号：478-515
@@ -975,6 +1046,7 @@ class ConnectionPool { // ...
 `optional<T>` 用类型本身表达"结果可能缺席"，比返回裸指针或哨兵自文档化得多；`nullopt` 这个单例名字清晰表达"空状态"。
 
 > **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例
+
 ```cpp title="示例 72 · ★★☆☆☆"
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/optional
 // 行号：705, 89
@@ -985,6 +1057,7 @@ class ConnectionPool { // ...
 `[标准]` 从标准库命名可提炼三条 API 经验：
 
 > **示例 73** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
+
 ```cpp title="示例 73 · ★☆☆☆☆"
 #include <utility>
 #include <vector>
@@ -1024,6 +1097,7 @@ std::string s = std::move(other);  // move 仅转型，真正搬迁由 string �
 命名与 API 设计是**接口经济学**：名字是契约、是文档、是防误用的第一道闸门。本章取证结论汇总：
 
 > **示例 74** <span class="badge badge-exp">难度 ★★★★☆</span> · 小结
+
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │ 命名与 API 设计门禁清单（落地即强制执行）                      │
@@ -1077,6 +1151,7 @@ v2(2018+): class Pass<IRUnitT,PreservedAnalysesT> → 返回丰富类型+模板�
 | 虚接口 | 仅TU~10s | +5ns |
 
 > **示例 75** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能
+
 ```cpp title="示例 75 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1178,6 +1253,7 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 <details><summary>答案与解析</summary>
 
 > **示例 76** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 76 · ★☆☆☆☆"
 #include <string>
 #include <cassert>
@@ -1204,6 +1280,7 @@ int main() { FileCache c; c.Set("a","1"); assert(c.Has("a")); }
 <details><summary>答案与解析</summary>
 
 > **示例 77** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 77 · ★★☆☆☆"
 #include <memory>
 #include <string>
@@ -1230,6 +1307,7 @@ public:
 <details><summary>答案与解析</summary>
 
 > **示例 78** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 78 · ★☆☆☆☆"
 #include <iostream>
 struct UserId  { int v; };
@@ -1251,6 +1329,7 @@ int main() { assign(UserId{1}, OrderId{2}); }      // 写反类型则编译失�
 <details><summary>答案与解析</summary>
 
 > **示例 80** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 80 · ★★☆☆☆"
 #include <string>
 
@@ -1281,6 +1360,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 81** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 81 · ★★★☆☆"
 #include <memory>
 #include <optional>
@@ -1322,6 +1402,7 @@ int main() {
 下面一段自包含程序演示本章核心命名规则：布尔谓词用 `Is`/`Has` 前缀、获取器用 `GetX`、可失败调用用 `[[nodiscard]]`、修改器 `SetX` 标脏。用 `assert` 在运行期自检命名契约：
 
 > **示例 79** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补例：命名约定的自验证
+
 ```cpp title="示例 79 · ★★☆☆☆"
 #include <string>
 #include <cassert>

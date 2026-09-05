@@ -68,6 +68,7 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 ## ③ 核心结构与完整代码实现
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
+
 ```cpp title="示例 1 · ★★★☆☆"
 #include <type_traits>
 
@@ -85,6 +86,7 @@ void dispatch(T v) {
 ```
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
+
 ```cpp title="示例 2 · ★★★☆☆"
 // 空 struct 自定义标签（不依赖 type_traits）
 struct fast_path {};
@@ -100,6 +102,7 @@ void run(T v) { algo(v, fast_path{}); }   // 显式选 fast
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心结构与完整代码实现
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // 迭代器标签分发（STL 范式）
 #include <iterator>
@@ -114,6 +117,7 @@ void adv_dispatch(It it) {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 核心结构与完整代码实现
+
 ```cpp title="示例 4 · ★★★☆☆"
 // 标签作为返回类型萃取（integral_constant 作编译期 bool 载体）
 template <typename T>
@@ -133,6 +137,7 @@ void process(T v) {
 - **两阶段查找**：`impl`/`adv` 依赖 `std::is_integral<T>::type`、`iterator_traits<It>::iterator_category` 为依赖型名字，按 ch60 ④ 两阶段规则解析。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实例化机制
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // 标签层级：random_access 既能匹配 random_access 重载，也能匹配 input 重载（向上转型）
 // 重载决议选最具体的 random_access 版本 → O(1) 路径
@@ -161,6 +166,7 @@ int main() {
 - **vs Concepts**：Concepts 用 `requires` 约束，编译器更早发现错误；标签分发无约束语法，靠重载集与标签类型匹配。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 适用场景与选型
+
 ```cpp title="示例 6 · ★★★☆☆"
 // 选型：同一算法用标签分发（C++11）与 if constexpr（C++17）两种写法
 #include <type_traits>
@@ -187,6 +193,7 @@ void f_ce(T v) {
 ## ⑥ 完整可运行示例（最小）
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
+
 ```cpp title="示例 7 · ★★★☆☆"
 // 编译：g++ -std=c++23 -O2 tag_demo.cpp -o tag_demo
 #include <iostream>
@@ -212,6 +219,7 @@ int main() {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 完整可运行示例（最小）
+
 ```cpp title="示例 8 · ★★★☆☆"
 // 迭代器标签分发最小示例
 #include <iostream>
@@ -240,6 +248,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 完整可运行示例（最小）
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // 自定义标签类型
 struct optimized {};
@@ -264,6 +273,7 @@ template <typename T> void work(T v) { work(v, optimized{}); }
 - **C++11 兼容**：标签分发是 C++11 起标准，无需 Concepts（C++20）或 `if constexpr`（C++17），跨老标准可移植性最好。
 
 > **示例 10** [难度 ★★★☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+
 ```cpp title="示例 10 · ★★★☆☆"
 // 各编译器对标签分发的符号生成一致（-O0 下都产生 impl<T,Tag> 实例化）
 // GCC:   _Z4implIiEvT_St17integral_constantIbLb1EE
@@ -278,6 +288,7 @@ template <typename T> void work(T v) { work(v, optimized{}); }
 据此，**分派在运行期不携带任何数据**：`dispatch(T)` 在编译期就已确定标签类型并把对应 `impl` 内联，运行期既没有标签对象、也不做虚表查表。每次分派留下的唯一痕迹是**实例化符号**——每个 `<T,Tag>` 组合有独立 mangled 符号（④），给代码段各增加一份实例化体，这正是"标签分发运行期零分支、体积极小代价"的来源。而纯粹的**静态存储**上，标签类型本身不占任何静态存储，真正占用 `.text` 的只有 `impl` 的实例化函数体。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存 / 对象模型
+
 ```cpp title="示例 11 · ★★★☆☆"
 // 标签对象是空类型：本地空类 MyTag 不携带数据。
 // 空基类（EBO）在所有主流编译器上都被压缩为 0 字节；而 std::true_type 内部结构
@@ -339,6 +350,7 @@ STL 把标签分发用到了"性能要命"的地方。**`std::advance` / `std::d
 type traits 则是布尔标签分发的源头：`std::is_integral` 等输出 `::type` 为 `true_type`/`false_type`，恰好就是两个现成的布尔标签；**`std::enable_if`（ch66）与标签搭配**形成分工——SFINAE 决定重载"是否参与"绑定，标签在参与之后再"路由到哪条实现"。示例 12 演示了 `std::distance` 如何按迭代器类别得到 O(1) 与 O(n) 两种复杂度，并顺带指出 `ptrdiff_t` 的跨平台不变量（只能断言等于 `std::ptrdiff_t`，不能断言具体是 `long` 还是 `long long`）。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 中的该模式
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // 复用 STL 标签：distance 按类别分发
 #include <iterator>
@@ -367,6 +379,7 @@ static_assert(std::is_same_v<decltype(dl), std::ptrdiff_t>);
 **与 Concepts（ch67）**：Concepts 用 `requires` 约束语义更可读、错误更早，但标签分发不要求 C++20，维护老代码时仍是主力。**与 CRTP（ch51）**：二者可叠加——基类用标签分发选实现，派生类经 CRTP 静态多态回调派生方法（示例 14）。最后，**标签可作为编译期策略键**：结合 ch71 的 Policy-Based，把标签类型当作策略模板参数传递，`Algorithm<optimized>` 与 `Algorithm<generic>` 便是两种由标签键驱动的实现（示例 15）。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 变体
+
 ```cpp title="示例 13 · ★★★☆☆"
 // 变体：迭代器层级只能用标签表达（if constexpr 无法"向上匹配基标签"）
 template <typename It>
@@ -382,6 +395,7 @@ void advance_ce(It& it, int n) {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // 变体：标签 + CRTP 静态多态
 struct fast_path {};
@@ -397,6 +411,7 @@ struct Fast : Base<Fast> {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变体
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // 变体：标签作为策略键（衔接 ch71）
 struct optimized {};
@@ -416,6 +431,7 @@ using OptB = Algorithm<generic>;
 第二类是**标签歧义**：自定义标签继承链设计不当（特别是多重继承，示例 16 的 `E : C, D` 注释）会让两个重载"同样具体"，编译期直接二义性报错。第三类是**忘了 `typename` + `::type`**：`std::is_integral<T>::type` 的 `::type` 是依赖型名字，模板内漏 `typename` 就报"需要 typename"，示例 17 对比了 `bad`/`good` 两种写法。最后一类偏语义：**标签类型在运行期构造却无意义**——`true_type{}` 只是路由键，不该在运行期读取其值，否则混淆"标签是类型、凭重载决议选路"这一本质意图。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // 反模式：标签歧义（两个重载同样具体 → 二义）
 struct A {};
@@ -426,6 +442,7 @@ void f(B) {}            // OK：B 比 A 具体，无歧义
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // 反模式：漏 typename
 // template <typename T>
@@ -435,6 +452,7 @@ void good(T v) { impl(v, typename std::is_integral<T>::type{}); }
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★★☆</span> · 反模式（anti-patterns）
+
 ```cpp title="示例 18 · ★★★★☆"
 // 反模式：用虚函数替代编译期标签分发（运行期开销）
 struct VBase { virtual void run() = 0; };
@@ -448,6 +466,7 @@ struct VInt : VBase { void run() override { /* 整型 */ } };
 **数值算法调度**与之同源：像 `std::inner_product` 这类算法，对 `random_access` 迭代器加向量化提示、对输入迭代器回退朴素循环。**Eigen 的表达式标签**把触角伸到表达式模板（ch72）：用标签区分标量/向量/表达式节点，在编译期选最优求值路径，避免生成临时对象。最后是**容器 `assign`/`insert`** 的内部分派：按迭代器类别决定走范围构造还是逐元素插入——例 24 提醒，自定义迭代器若忘了定义 `iterator_category`，这些优化路径就会静默落到最弱标签。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // 工业案例：按算术类型标签选编码
 #include <type_traits>
@@ -460,6 +479,7 @@ void encode(T v) { encode(v, typename std::is_arithmetic<T>::type{}); }
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 20 · ★★☆☆☆"
 #include <algorithm>
 // 工业案例：按迭代器类别选拷贝策略
@@ -474,6 +494,7 @@ void copy_range(It first, It last, int* out, std::input_iterator_tag) {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
+
 ```cpp title="示例 21 · ★★★☆☆"
 // 工业案例：编译期策略选择（标签作 key）
 struct SimdOn {}; struct SimdOff {};
@@ -488,6 +509,7 @@ void transform(T* p, int n, SimdOff) { for (int i = 0; i < n; ++i) p[i] *= 2; }
 **剖析 1：迭代器标签的空 struct 继承链**（`bits/stl_iterator_base_types.h`）
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析（libstdc++ 相关）
+
 ```cpp title="示例 22 · ★★★☆☆"
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/stl_iterator_base_types.h
 // 行号：93（input_iterator_tag）
@@ -508,6 +530,7 @@ struct iterator_traits<_Tp*> {
 **剖析 2：`true_type`/`false_type` 即 `integral_constant` 别名**（`type_traits`）
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码剖析（libstdc++ 相关）
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits
 // 行号：82（true_type）
@@ -529,6 +552,7 @@ struct integral_constant {
 **继承链方向**是设计标签层级时的规矩：派生标签"更具体"，更强能力的标签应**继承**较弱标签（`random_access` 继承 `bidirectional`），重载决议才会自动选最具体重载。**`iterator_category` 与 `iterator_traits`** 的坑则在自定义迭代器上：必须正确定义 `iterator_category`，否则分派落到错误路径（示例 24 的 `MyIt` 若漏定义，会被当成 `input` 走 O(n)）。最后，标签对象要"实例化成对象才能作实参"——`impl(42, std::true_type{});` 合法，`impl(42, std::true_type);` 则是把类型当值传（编译错误），示例 25 把这两句并排摆出对比。
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 易错点：自定义迭代器忘定义 category → 落 input 路径
 struct MyIt {
@@ -538,6 +562,7 @@ struct MyIt {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // 易错点：标签是"类型"，须实例化成对象才能作实参
 #include <iostream>
@@ -557,6 +582,7 @@ int main() {
 **"有运行期开销吗？"**——没有。`-O2` 下标签路由被完全内联消除（⑩），运行期只是常量搬运；唯一代价是每个 `<T,Tag>` 组合多一份实例化（代码体积）。**"C++20 还用标签分发吗？"**——新代码优先 Concepts（ch67），但标签分发仍广泛活跃：一则标准库要保 C++11 兼容，二则"最具体匹配"语义（迭代器层级）是 Concepts/`if constexpr` 都无法替代的。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // FAQ 演示：继承链使 derived 标签可匹配 base 重载（选最具体）
 #include <iostream>
@@ -579,6 +605,7 @@ int main() {
 **自定义标签层级用空 struct 继承表达能力强弱**，遵循 STL 的 `input→…→random_access` 方向（示例 28 复用 `iterator_traits` 取类别，而非自建）。最后是**语言版本取舍**：新项目优先 Concepts（ch67）+ `if constexpr`（ch69），维护 C++11/14 代码或需要"最具体匹配"语义时再落回标签分发。五条合起来，就是"入口收敛、复用库内标签、层级方向标准、按预算选语言"的稳健姿态。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // 最佳实践：公共入口 + impl 重载
 template <typename T> void impl(T, std::true_type);
@@ -588,6 +615,7 @@ void api(T v) { impl(v, typename std::is_integral<T>::type{}); }
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // 最佳实践：复用 STL 标签而非自建
 template <typename It>
@@ -603,6 +631,7 @@ void algo(It first, It last) {
 **代码体积**是唯一要付的代价：每个 `<T,Tag>` 组合一份 `impl` 实例化（④ mangled 符号），复杂分发可能明显增大 `.text`。**对比虚函数**是最终的落点：虚函数运行期 vtable 查表 + 间接跳转且不可跨 TU 内联（示例 29 的 `use_poly`），标签分发则能完全内联消除（示例 30 的 `use_tag_fast` 与两次 `dispatch` 等价）——同样是"选实现"，一个把代价摊销在编译期、一个把代价留在每次调用。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // 性能对比：标签分发 vs 虚函数（-O2 下标签分发内联消除，虚函数保留间接调用）
 struct Poly { virtual int op() const = 0; };
@@ -611,6 +640,7 @@ int use_poly(const Poly& p) { return p.op(); }   // 间接调用，无法内联�
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // 标签分发编译期确定路径，use_tag 全内联（见 ⑩ 的 lea edx,101）
 int use_tag_fast() { int c=0; c+=1; c+=100; return c; }  // 与 dispatch(42)+dispatch(2.5) 等价
@@ -652,30 +682,35 @@ int use_tag_fast() { int c=0; c+=1; c+=100; return c; }  // 与 dispatch(42)+dis
 ## 补充分编可编译示例
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch70_tag_dispatch."<<std::endl;return 0;}
 ```
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch70_tag_dispatch."<<std::endl;return 0;}
 ```
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch70_tag_dispatch."<<std::endl;return 0;}
 ```
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch70_tag_dispatch."<<std::endl;return 0;}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -733,6 +768,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 ## 附录 F：Tag Dispatch工业
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：Tag Dispatch工
+
 ```cpp title="示例 36 · ★★☆☆☆"
 #include <iostream>
 #include <iterator>
@@ -763,6 +799,7 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();my_advance(it,2);std::cou
 | if constexpr | C++17 | 快(单函数) | 清晰 |
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：Tag vs Concep
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Tag dispatch=simplest, fastest. Use when category is fixed at compile time."<<std::endl;return 0;}
@@ -774,6 +811,7 @@ std::advance: iterator_category tag → vector(+=O(1)) vs list(++循环O(N))
 std::destroy: trivial_destructor tag → 不调用析构(memcpy替代)
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 H：Tag Dispatch工
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 #include <iterator>
@@ -795,6 +833,7 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 ## 附录 J：Tag vs Concepts vs SFINAE对比
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 J：Tag vs Concep
+
 ```cpp title="示例 39 · ★★☆☆☆"
 #include <iostream>
 #include <iterator>
@@ -875,6 +914,7 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 <summary>参考答案</summary>
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 40 · ★★☆☆☆"
 #include <iostream>
 struct fast {};
@@ -900,6 +940,7 @@ int main() {
 <summary>参考答案</summary>
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 #include <iterator>
@@ -936,6 +977,7 @@ int main() {
 <summary>参考答案</summary>
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 42 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -959,6 +1001,7 @@ int main() { process(42); process(3.14); }
 标签分发（tag dispatch）用"空结构体"区分策略，借重载决议在编译期选中对应实现。相比运行期 `if`，它零分支、可被内联，是 Concepts 之前编译期分流的经典手法（`std::advance` 即如此）。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+
 ```cpp title="示例 47 · ★★★☆☆"
 #include <iostream>
 struct fast { };
@@ -985,6 +1028,7 @@ int main() { do_copy<fast>(1); do_copy<safe>(2); }
 把 traits 的 `true_type`/`false_type` 作为标签，可在编译期按"类型性质"分流。`std::is_trivial_v<T>` 在编译期给出布尔，对应两个标签重载，从而把"是否平凡"直接转化为"调用哪个函数"。
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 48 · ★★★☆☆"
 #include <iostream>
 #include <string>
@@ -1021,6 +1065,7 @@ template <class It> void my_advance(It& it, int n, bool random) {
 **修复**：用标签重载，让编译器在编译期选对版本（见练习 2）。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：标签分发消除运行期分支
+
 ```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 #include <iterator>
@@ -1043,6 +1088,7 @@ int main() { std::vector<int> v(5); auto it=v.begin(); my_advance(it,2);
 **修复示例**：当分支依赖**类型类别**（如 iterator_category）且需与重载/ADL 交互时，标签仍是标准库首选；纯"类型布尔属性"分支用 `if constexpr` 更简洁：
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：标签分发 vs if constexpr
+
 ```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -1248,6 +1294,7 @@ int main() { std::cout << pick(41) << "\n"; }
 ### D4.8 编译验证
 
 > **示例 45** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译验证
+
 ```cpp title="示例 45 · ★★★☆☆"
 #include <iterator>
 #include <list>
@@ -1475,6 +1522,7 @@ flowchart TD
 下面的独立程序不测时间，验证的是本章可移植的稳定语义：标签分发在编译期按迭代器类别选中不同实现，且空标签类的传递不增加对象大小负担。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 46 · ★★★☆☆"
 // demo_d5_ch70.cpp
 // g++ -O2 -std=c++23 demo_d5_ch70.cpp && ./a.out

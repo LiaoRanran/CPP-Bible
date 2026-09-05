@@ -53,6 +53,7 @@
 没有测量就没有优化。经验直觉常错：你觉得慢的那行，火焰图里可能只占 0.3%；真正的热点藏在缓存未命中与分支预测失败里。性能分析（Profiling）把"感觉慢"变成"数字在哪慢"。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么性能分析
+
 ```text
         ┌─────────────────────────────────────┐
         │  直觉(猜)        vs        测量(证)   │
@@ -65,6 +66,7 @@
 - `[经验]`：先有可复现的基准，再谈优化；否则你在优化噪声。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：为什么性能分析
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // ① 一个"看起来无辜、实则热点"的函数：累加 5000 万元素
 #include <vector>
@@ -99,6 +101,7 @@ perf report
 - `[经验]`：采样频率 `-F 9999` ≈ 每秒 1 万次；太高会扰动程序，太低丢细节，9999 是常用甜点。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // ② 一个适合被 perf 采样的程序骨架
 #include <vector>
@@ -135,6 +138,7 @@ perf stat -e instructions,cycles ./app
 - `[经验]`：**先算 IPC**。IPC≈3–4 说明算得快、等内存；IPC<1 说明指令供给或串行依赖是瓶颈。
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 硬件计数器
+
 ```cpp title="示例 4 · ★★★☆☆"
 // ③ 缓存不友好：随机跳跃访问 -> 高 cache-miss
 #include <vector>
@@ -168,6 +172,7 @@ perf script | ./stackcollapse-perf.pl > out.folded
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 火焰图生成
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // ④ 一个能产生"深调用栈"的工作负载，便于火焰图展示
 #include <vector>
@@ -220,6 +225,7 @@ int main() {
 **实测**。程序 `Examples/_ch15_vector_reserve.cpp` 用 `std::chrono` 测量 N=20,000,000 次 `push_back`，对比"不 reserve"与"先 reserve(N)"：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·GCC15] 真实微基准：v
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // 文件：Examples/_ch15_vector_reserve.cpp
 // 行号：11（no_reserve 段）/ 21（with_reserve 段）
@@ -266,6 +272,7 @@ with_reserve :    32.90 ms   size=20000000
 Intel VTune Profiler 是图形化、微架构级分析器（Windows/Linux 均可用），比 `perf` 更"会说话"：它直接告诉你 "Memory Bound"、"Front-End Bound"、"Bad Speculation" 占比。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 简介
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑥ 一个 VTune "Memory Bound" 视角会标红的工作负载
 #include <vector>
@@ -291,6 +298,7 @@ int main() {
 [Godbolt](https://godbolt.org) 是浏览器内编译器，输入 C++ 即时看汇编。用途：**确认你的优化有没有真的落到汇编**（比如 `-O2` 是否向量化了）。
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 用法
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ⑦ 把这段代码贴进 Godbolt，选 x86-64 gcc 13.1 -O2，看 sum() 是否被 vectorize
 long sum(const long* a, long n) {
@@ -308,6 +316,7 @@ long sum(const long* a, long n) {
 手写 `chrono` 微基准容易踩坑（见 ⑯）。Google Benchmark 提供：多次迭代取中位数、自动剔除首尾、统计方差。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准框架 Google Benchm
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // ⑧a 用 Google Benchmark 重写 reserve 对比（需链接 benchmark 库）
 #include <benchmark/benchmark.h>
@@ -352,6 +361,7 @@ g++ -std=c++23 -O2 bench.cpp -lbenchmark -lpthread -o bench
 3. **下钻**：对热点函数取 `-S` 汇编，确认是否向量化 / 有无冗余。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 热点识别方法
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 #include <vector>
 // ⑨ 把"疑似热点"用 __attribute__((noinline)) 隔离，便于单独剖析
@@ -375,6 +385,7 @@ int main() {
 现代 CPU 是流水线。瓶颈分四类：
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 微架构瓶颈
+
 ```text
 ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌────────┐
 │ 前端 Front│→ │ 后端 Back │→ │ 执行单元  │→ │ 退役    │
@@ -392,6 +403,7 @@ int main() {
   - **Bad Speculation**：分支预测失败 → 减少不可预测分支。
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 微架构瓶颈
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑩ 内存 bound 典型：顺序流访问，受带宽限制（非计算受限）
 #include <vector>
@@ -408,6 +420,7 @@ double stream_add(const std::vector<double>& a, const std::vector<double>& b) {
 **实测**。程序 `Examples/_ch15_scalar_vs_accum.cpp` 对比两个求和算法，并取真实 `-O2` 汇编。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15] 真实：-O2
+
 ```cpp title="示例 13 · ★★★☆☆"
 // 文件：Examples/_ch15_scalar_vs_accum.cpp
 // 行号：14（scalar_sum）/ 21（four_acc_sum）
@@ -489,6 +502,7 @@ _Z12four_acc_sumPKll:
 缓存层级：L1（~1ns）→ L2（~4ns）→ L3（~10ns）→ DRAM（~100ns）。**缓存友好 = 顺序、局部、紧凑**。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存命中分析
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 #include <cstddef>
 #include <vector>
@@ -501,6 +515,7 @@ void row_major(const std::vector<std::vector<double>>& m, double& s) {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存命中分析
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 #include <cstddef>
 #include <vector>
@@ -524,6 +539,7 @@ void col_major(const std::vector<std::vector<double>>& m, double& s) {
 | 插桩 (Instrument) | 编译期注入计数器 | 精确、全覆盖 | 显著慢、改二进制 |
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 采样 vs 插桩
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑬ 插桩视角：手动计数器（简化版"插桩"）
 #include <unordered_map>
@@ -542,6 +558,7 @@ void api_b() { COUNT(); api_a(); }
 把性能守卫写进 CI：跑基准，对比基线，超阈值就红。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 CI 集成
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑭a 用 Google Benchmark 的阈值断言（回归捕获）
 #include <benchmark/benchmark.h>
@@ -567,6 +584,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
 可复用的七步法：
 
 > **示例 18** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span> 分析流程]
+
 ```text
   ① 定目标(延迟?吞吐?) → ② 建可复现基准
         → ③ perf stat 看 IPC/缓存 → ④ 火焰图定位最宽塔
@@ -575,6 +593,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
 ```
 
 > **示例 19** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span> 分析流程]
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 #include <vector>
 // ⑮ 把"优化前后"做成同一基准的两种实现，便于对比
@@ -591,6 +610,7 @@ struct Algo {
 ## ⑯ 常见误区（微基准陷阱 / 温度计效应）
 
 > **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见误区
+
 ```cpp title="示例 20 · ★★★☆☆"
 // ⑯a 陷阱1：死代码被优化掉——基准测了个寂寞
 #include <vector>
@@ -608,6 +628,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见误区
+
 ```cpp title="示例 21 · ★★★★☆"
 // ⑯b 陷阱2：false sharing（伪共享）——两线程各写自己的计数器，却在同一缓存行
 #include <thread>
@@ -629,6 +650,7 @@ void thread_b() { for (int i=0;i<100'000'000;++i) c.b++; }
 - **Visual Studio Profiler**：CPU Usage / Instrumentation，GUI 火焰图。
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台工具
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // ⑰ 同一段热点代码，跨平台都成立；只是"怎么测"不同
 #include <vector>
@@ -663,6 +685,7 @@ wpr -stop out.etl                # 停止并写出 ETL
 3. **Diff 火焰图**：优化前后减法，直接看"哪块塔矮了"。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可视化
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑱ 多线程时间线视角：各线程忙等 vs 真正计算
 #include <thread>
@@ -682,6 +705,7 @@ void worker(long n, long& out) {
 ## ⑲ 最佳实践
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑲ 把热点数据做成"对 cache 友好 + 对编译器友好"的形态
 #include <vector>
@@ -720,6 +744,7 @@ long fast_sum(const long* data, long n) {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[dcl.fct.spec]（inline 说明符）；cppreference "inline" 词条。
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
+
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑳ 一键自查：你的微基准是否"诚实"？
 // 1) 结果是否被使用/打印？ 2) 是否多次取中位数？
@@ -751,6 +776,7 @@ bool honest_benchmark(long result_used, int iterations, bool checked_asm) {
 ## 补充完整可编译示例（profiling）
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // P1 手动计时模板（避免重复 boilerplate）
 #include <chrono>
@@ -764,6 +790,7 @@ double time_ms(F f) {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // P2 锚定结果，防 -O2 删循环（用 volatile 输出）
 #include <vector>
@@ -778,6 +805,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // P3 扁平矩阵（连续内存，利于缓存与向量化）
 #include <vector>
@@ -791,6 +819,7 @@ struct Mat {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // P4 false sharing 修复：缓存行隔离
 #include <cstddef>
@@ -801,6 +830,7 @@ struct Aligned {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // P5 用 std::accumulate 的"看起来不同、其实一样"的写法
 #include <vector>
@@ -811,6 +841,7 @@ long acc_sum(const std::vector<long>& v) {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // P6 测"分配器压力"：频繁小对象 new/delete
 #include <vector>
@@ -825,6 +856,7 @@ long alloc_pressure(long n) {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // P7 分支预测友好的查表替代（去分支）
 #include <array>
@@ -834,6 +866,7 @@ long lut_pick(const std::array<long,4>& t, int k) {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // P8 多线程热点（tbb 风格思路，纯 std 实现）
 #include <thread>
@@ -847,6 +880,7 @@ void parallel_sum(const std::vector<long>& v, long& out, size_t lo, size_t hi) {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // P9 让函数不被内联，便于 perf 单独采样
 __attribute__((noinline)) long isolated(long n) {
@@ -855,6 +889,7 @@ __attribute__((noinline)) long isolated(long n) {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 35 · ★★☆☆☆"
 // P10 取汇编的极简驱动（配合 g++ -S）
 long add_all(const long* a, long n) {
@@ -865,6 +900,7 @@ long add_all(const long* a, long n) {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 36 · ★★☆☆☆"
 // P11 cache line 大小感知的字段排布（热字段聚拢）
 struct Hot {
@@ -876,6 +912,7 @@ struct Hot {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // P12 基准前"热身"：把数据拉进缓存，避免冷启动噪声
 #include <vector>
@@ -887,6 +924,7 @@ void warmup(std::vector<long>& v) {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 38 · ★★☆☆☆"
 // P13 端到端：构建可复现基准的最小骨架
 #include <vector>
@@ -1021,6 +1059,7 @@ int main() {
 最小可复现版（基线 vs 循环内取时），编译 `g++ -O2 -std=c++23`。完整版见库根 `_bench_d5_15_profiling.cpp`。
 
 > **示例** [主题：now() 调用开销]
+
 ```cpp
 #include <chrono>
 #include <iostream>
@@ -1064,6 +1103,7 @@ _Z1fv:
 ## 附录 A：工业性能分析与WG21背景
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：工业性能分析与WG21背景
+
 ```text
 perf (Linux, 2009): perf record -g → perf report → 火焰图(Brendan Gregg,2013)
   → 采样 <5% overhead, Google 强制要求每个perf bug附perf报告
@@ -1074,6 +1114,7 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 ## 附录 B：性能分析黄金法则与面试
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：性能分析黄金法则与面试
+
 ```text
 黄金法则:
 1. 先测量后优化 (never guess bottleneck)
@@ -1131,6 +1172,7 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 **真实场景：海量日志写入的扩容抖动。** 你往 `vector` 里逐条 push 百万条日志，发布前想确认扩容开销。请用微基准对比"预 reserve"与"不 reserve"的耗时差异，写程序体现 `std::vector::push_back` 在容量不足时重新分配并拷贝的代价。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1157,6 +1199,7 @@ int main() {
 **真实场景：数值热点的向量化。** 一段求和热循环在采样里占比很高，你想确认编译器是否把它向量化、以及多累加器能否提 IPC。请写程序用"单累加器"和"四路累加器"两种写法，说明多累加器如何缓解流水线依赖、提升 IPC（可用 Compiler Explorer 比对 `-O2` 汇编码）。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1180,6 +1223,7 @@ int main() {
 **真实场景：图像处理内核的缓存友好性。** 你对一个大矩阵（图像/张量）做逐元素运算，希望避免跨行大 stride 访问拖慢热点。请写程序对比"行优先（cache 友好）"与"列优先（跨行跳跃）"遍历，说明 stride 过大为何触发更多 cache miss。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1209,6 +1253,7 @@ int main() {
 `std::vector::reserve` 一次性把底层容量提到目标大小，后续 `push_back` 不再触发扩容，把 O(n²) 的渐进拷贝降为 O(n)。这正是"先测后改"——profiler 指出扩容热点后才动手。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 46 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -1237,6 +1282,7 @@ int main() {
 `[[likely]]`/`[[unlikely]]` 把"这条分支大概率/小概率命中"的语义告诉编译器，便于排布基本块与预测；但它只是提示，真正的精准分布仍要靠 PGO（基于采样的训练）来定。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 47 · ★★★☆☆"
 #include <iostream>
 
@@ -1272,6 +1318,7 @@ perf report                   # 按自身+子函数耗时排序，锁定热点�
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 perf 定位热点再针
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1288,6 +1335,7 @@ int main() { std::vector<int> v(1'000'000, 1); long long s = 0; for (int x : v) 
 **修复**：把函数贴进 Godbolt，选 GCC/Clang + `-O2`，直接看是否出现 `ymm`/`zmm` 向量指令；
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：用 Compiler Ex
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 int main() { long long s = 0; for (int i = 0; i < 1000; ++i) s += i; std::cout << s << "\n"; }

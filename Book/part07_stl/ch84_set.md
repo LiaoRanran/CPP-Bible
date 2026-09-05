@@ -76,6 +76,7 @@
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
+
 ```mermaid
 flowchart TD
     A["Associative Container<br/>(有序，key==value)"]
@@ -143,6 +144,7 @@ classDiagram
 `set<int>` 每个节点 = `_Rb_tree_node_base` + `int` 值。x86-64 下（指针 8 字节，对齐 8）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局
+
 ```mermaid
 flowchart TD
     %% 注：省略部分细节（内存偏移表见正文）。set<int> 节点布局与堆示意
@@ -158,6 +160,7 @@ flowchart TD
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 生命周期图
+
 ```mermaid
 flowchart TD
     A["构造 set"]
@@ -173,6 +176,7 @@ flowchart TD
 ## ⑨ 调用栈 / 时序图（一次 `set::insert`）
 
 > **示例 4** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈 / 时序图
+
 ```mermaid
 flowchart TD
     A["调用方"]
@@ -219,6 +223,7 @@ flowchart TD
 场景：游戏/IM 网关按**客户端连接 ID 白名单**做准入控制，需高频 `contains` 判定且支持热更新（运营临时封禁/解封）。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务器访问控制允许列表
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // 工业案例 C1：网关连接允许列表（白名单准入）
 #include <set>
@@ -272,6 +277,7 @@ int main() {
 `std::set` 是 `_Rb_tree` 的薄封装（`bits/stl_set.h:94` `class set`，组合成员 `_Rep_type _M_t`）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析（libstdc++ 逐行）
+
 ```cpp title="示例 6 · ★★★☆☆"
 // 文件：bits/stl_set.h   行号：94, 156
 // 94:  class set
@@ -293,6 +299,7 @@ int main() {
 底层 `_Rb_tree`（`bits/stl_tree.h:427 class _Rb_tree`）：
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++ 逐行）
+
 ```cpp title="示例 7 · ★★☆☆☆"
 // 文件：bits/stl_tree.h   行号：99, 101, 410, 417, 1048, 1052, 1378
 // 99:  enum _Rb_tree_color { _S_red = false, _S_black = true };
@@ -337,6 +344,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // ❌ 错误1：比较器不满足严格弱序（comp(a,a) 必须为 false）
 #include <set>
@@ -355,6 +363,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // ❌ 错误2：用 extract 后继续使用被摘除的迭代器
 #include <set>
@@ -370,6 +379,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ❌ 错误3：multiset 误用 insert 返回值当成 pair
 #include <set>
@@ -383,6 +393,7 @@ int main() {
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ❌ 错误4：透明比较要求 hasher/comparator 有 is_transparent，否则 find(其它类型) 不编译
 #include <set>
@@ -421,6 +432,7 @@ int main() {
 7. 并发：多个线程同时 `const` 读安全；有写则需 `std::mutex`（见下例）。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // 最佳实践 B1：并发读安全，写加锁
 #include <set>
@@ -457,6 +469,7 @@ int main() {
 - `[平台·x86-64]`：ABI 稳定——`std::set` 的 `_Rb_tree` 布局跨 GCC 版本基本兼容，但跨编译器（libstdc++/libc++/MS STL）**不保证**二进制兼容，跨模块传递需用 C 接口或序列化。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // 性能 P1：sorted vector 模拟 flat_set（GCC13 无 <flat_set>，用 vector+sort+二分）
 #include <vector>
@@ -477,6 +490,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // 性能 P2：microbenchmark 量级（示意，-O2）。演示 set 与 sorted-vector 查找的循环结构
 #include <set>
@@ -583,6 +597,7 @@ int main() {
 以下为第84章完整可编译示例集（每块独立、自带 `#include` 与 `int main`，经 `g++ -std=c++23 -O2 -Wall -Wextra` 校验）。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // S1 基础：set 创建、有序遍历、唯一性
 #include <set>
@@ -596,6 +611,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // S2 自定义降序比较器
 #include <set>
@@ -610,6 +626,7 @@ int main() {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 // S3 multiset 基础与计数
 #include <set>
@@ -624,6 +641,7 @@ int main() {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // S4 insert 返回值：set 返回 pair<iterator,bool>
 #include <set>
@@ -640,6 +658,7 @@ int main() {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // S5 emplace 原地构造
 #include <set>
@@ -655,6 +674,7 @@ int main() {
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 // S6 contains (C++20) 与 find
 #include <set>
@@ -669,6 +689,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // S7 lower_bound / upper_bound / equal_range（set）
 #include <set>
@@ -685,6 +706,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // S8 删除：按迭代器 / 按键 / 按区间
 #include <set>
@@ -703,6 +725,7 @@ int main() {
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // S9 extract 节点句柄 + 重新挂回（零拷贝）
 #include <set>
@@ -719,6 +742,7 @@ int main() {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // S10 extract 跨容器迁移 set -> multiset
 #include <set>
@@ -735,6 +759,7 @@ int main() {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // S11 merge 合并（C++17）：仅搬不重复节点
 #include <set>
@@ -749,6 +774,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // S12 透明比较器：find 不必构造临时 string
 #include <set>
@@ -764,6 +790,7 @@ int main() {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // S13 反向遍历（有序性的红利）
 #include <set>
@@ -777,6 +804,7 @@ int main() {
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // S14 multiset equal_range 统计某键全部出现
 #include <set>
@@ -790,6 +818,7 @@ int main() {
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // S15 multiset 插入提示（hint）优化连续插入
 #include <set>
@@ -805,6 +834,7 @@ int main() {
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // S16 set 交换（O(1) 指针交换）
 #include <set>
@@ -818,6 +848,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // S17 set 存自定义类型（提供 operator<）
 #include <set>
@@ -834,6 +865,7 @@ int main() {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // S18 set 去重 + 排序（经典用法）
 #include <vector>
@@ -849,6 +881,7 @@ int main() {
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // S19 算法：set_union / set_intersection（区间须已排序）
 #include <set>
@@ -868,6 +901,7 @@ int main() {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // S20 计数不同元素数量
 #include <set>
@@ -881,6 +915,7 @@ int main() {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // S21 节点内存开销实测（sizeof 与节点估算）
 #include <set>
@@ -895,6 +930,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // S22 工业：日志级别过滤器（枚举 + set）
 #include <set>
@@ -912,6 +948,7 @@ int main() {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // S23 工业：请求 ID 去重计数（multiset 当频率表）
 #include <set>
@@ -925,6 +962,7 @@ int main() {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // S24 工业：URL 路由前缀白名单（有序便于按段审查）
 #include <set>
@@ -940,6 +978,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 // S25 透明比较 + 自定义 KeyEqual 结构（完整异构查找）
 #include <set>
@@ -959,6 +998,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // S26 multiset 删除全部某键（erase(key) 返回删除个数）
 #include <set>
@@ -973,6 +1013,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // S27 迭代器失效验证：插入不影响其它迭代器
 #include <set>
@@ -987,6 +1028,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 // S28 异常安全演示： insert 强异常保证（值类型构造抛异常不破坏容器）
 #include <set>
@@ -1006,6 +1048,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 // S29 版本宏：C++20 contains 可用性探测
 #include <set>
@@ -1022,6 +1065,7 @@ int main() {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 44 · ★★☆☆☆"
 // S30 自定义 KeyEqual 与 comparator 组合（大小写不敏感 set）
 #include <set>
@@ -1049,6 +1093,7 @@ int main() {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 45 · ★★☆☆☆"
 // S31 用用户定义字面量计时（UDL 带空格写法）+ 与 sorted vector 对比调度
 #include <set>
@@ -1074,6 +1119,7 @@ int main() {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 46 · ★★☆☆☆"
 // S32 折叠表达式配合 set（包展开打印，演示 C++17 折叠）
 #include <set>
@@ -1091,6 +1137,7 @@ int main() {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 // S33 工业：配置项 key 集合与差异对比
 #include <set>
@@ -1110,6 +1157,7 @@ int main() {
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 // S34 比较器严格弱序的单元测试桩（断言 comp(a,a)==false）
 #include <set>
@@ -1126,6 +1174,7 @@ int main() {
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录：练习题 / 思考题 / 源码阅
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 // S35 内存图验证：递归打印 set 中序（即有序）以佐证 RB 中序=升序
 #include <set>
@@ -1190,6 +1239,7 @@ int main() {
 **真实场景：去重已成交订单号并有序输出。** 结算系统把重复成交单号 `set` 去重并按升序导出（红黑树天然有序唯一）。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 #include <set>
@@ -1208,6 +1258,7 @@ int main() {
 **真实场景：行情序列最长无重复窗口——有序结构做窗口去重。** 维护滑动窗口内的最长无重复子数组长度，`count`/`lower_bound` 为 O(log n)；若只需去重不计序可换 `unordered_set`。
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 #include <iostream>
 #include <set>
@@ -1234,6 +1285,7 @@ int main() {
 **真实场景：频次统计——统计各档位挂单笔数。** 用 `multiset` 统计某价格出现次数（带频次的集合），区别于 `set` 的唯一性。
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 #include <iostream>
 #include <set>
@@ -1259,6 +1311,7 @@ int main() {
 `set` 保持有序，因此"按值而非按迭代器"删除一段可以用 `lower_bound(low)`（首个 ≥ low）与 `upper_bound(high)`（首个 > high）拼出半开区间 `[low, high)`，直接 `erase(first, last)` 一次性删除，复杂度是该区间内元素数级 O(k) 加 O(log n) 定位——比"先查再逐个 erase"更清晰且不易错。注意 `erase(iterator)` 与 `erase(range)` 的返回不同。
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 58 · ★☆☆☆☆"
 #include <iostream>
 #include <set>
@@ -1286,6 +1339,7 @@ int main() {
 `count(key)` 直接给出重复计数（O(log n + count)）；`equal_range(key)` 返回 `[first, last)` 的迭代器对，既告诉你有多少重复（distance），又能直接遍历这段——比"先 count 再反复 find"更不易出错，也更高效（一次定位）。对 `multiset`，插入相同键不会覆盖，仅是计数增加，删除也只删一个相等元素。
 
 > **示例 59** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 59 · ★★★☆☆"
 #include <iostream>
 #include <set>
@@ -1310,6 +1364,7 @@ int main() {
 set 的 `begin()` 即最小 key（最近到期），弹出即调度，O(log n) 增删查。
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：用 set 维护任务调度的
+
 ```cpp title="示例 53 · ★☆☆☆☆"
 #include <iostream>
 #include <set>
@@ -1325,6 +1380,7 @@ int main() {
 元素少且需要有序时用 set；元素多且只判存在时用 unordered_set（均摊 O(1)）。
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：set 与 unordered_set 的小规模性能拐点
+
 ```cpp title="示例 54 · ★★★☆☆"
 #include <iostream>
 #include <set>
@@ -1445,6 +1501,7 @@ find_loop:  mov    rcx,QWORD PTR [rax+0x10]   ; left  child @ offset 0x10
 ### D4.4 可编译验证
 
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 可编译验证
+
 ```cpp title="示例 55 · ★☆☆☆☆"
 // D4-verify：验证 set 去重+升序与 size（独立可编译）
 #include <set>
@@ -1461,6 +1518,7 @@ int main() {
 
 预期输出：
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译验证
+
 ```text
 10 20 30
 size==3: 1
@@ -1665,6 +1723,7 @@ flowchart TD
 ### D5.3 可复现演示
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现演示
+
 ```cpp title="示例 57 · ★★☆☆☆"
 // D5-demo：set/multiset vs sorted vector 功能等价性与内存对比（独立可编译）
 #include <set>

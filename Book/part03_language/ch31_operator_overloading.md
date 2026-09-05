@@ -53,6 +53,7 @@
 ## ② 加法运算符重载 <span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：加法运算符重载 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
 struct Vec2{int x,y;Vec2 operator+(const Vec2& o)const{return{x+o.x,y+o.y};}};
@@ -62,6 +63,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 ## ③ 比较运算符 <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：比较运算符 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 #include <compare>
@@ -72,6 +74,7 @@ int main(){Point a{1,2},b{1,3};std::cout<<(a<b)<<std::endl;return 0;}
 ## ④ 前置/后置自增 <span class="badge badge-std">标准</span>
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：前置/后置自增 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
 struct Counter{int v;Counter&operator++(){++v;return*this;}Counter operator++(int){Counter t=*this;++v;return t;}};
@@ -81,6 +84,7 @@ int main(){Counter c{0};std::cout<<(++c).v<<" "<<(c++).v<<" "<<c.v<<std::endl;re
 ## ⑤ operator<< 输出 <span class="badge badge-std">标准</span>
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：<< 输出 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 #include <iostream>
 struct Vec{int x,y;friend std::ostream&operator<<(std::ostream&os,const Vec&v){return os<<v.x<<","<<v.y;}};
@@ -90,6 +94,7 @@ int main(){Vec v{10,20};std::cout<<v<<std::endl;return 0;}
 ## ⑥ 赋值运算符（拷贝/移动）<span class="badge badge-std">标准</span>
 
 > **示例 5** [难度 ★★☆☆☆] [主题：赋值运算符（拷贝/移动）<span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 5 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
@@ -101,6 +106,7 @@ int main(){Buffer a(10),b(5);b=std::move(a);std::cout<<b.n<<std::endl;return 0;}
 ## ⑦ 类型转换运算符 <span class="badge badge-std">标准</span>
 
 > **示例 6** [难度 ★☆☆☆☆] [主题：类型转换运算符 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
 struct Rational{int n,d;explicit operator double()const{return(double)n/d;}};
@@ -110,6 +116,7 @@ int main(){Rational r{3,4};std::cout<<(double)r<<std::endl;return 0;}
 ## ⑧ 下标运算符 <span class="badge badge-std">标准</span>
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：下标运算符 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
 #include <cstddef>
@@ -120,6 +127,7 @@ int main(){Array a{1,2,3,4,5};std::cout<<a[2]<<std::endl;return 0;}
 ## ⑨ 函数调用运算符 <span class="badge badge-std">标准</span>
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：函数调用运算符 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
 struct Adder{int base;int operator()(int x)const{return base+x;}};
@@ -159,6 +167,7 @@ int main() {
 ## 补充完整可编译示例
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 #include <iostream>
 struct CVec{double x,y;};CVec operator*(const CVec&a,double s){return{a.x*s,a.y*s};}
@@ -166,6 +175,7 @@ int main(){CVec c{1,2};auto d=c*2;std::cout<<d.x<<","<<d.y<<std::endl;return 0;}
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 #include <iostream>
 #include <cstring>
@@ -201,6 +211,7 @@ int main() {
 真机输出：`5.5`。若把 `operator+` 写成 `Meters` 的成员，`2.0 + m` 直接编译失败（成员版的左操作数必须是 `Meters` 本身，不参与用户定义转换）——这就是「对称二元运算符用自由函数」的机器级理由。
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 #include <iostream>
 struct Space{int m;bool operator!()const{return m==0;}};
@@ -208,6 +219,7 @@ int main(){Space s{0};std::cout<<!s<<std::endl;return 0;}
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 #include <iostream>
 struct Vec3{int x,y,z;bool operator==(const Vec3&o)const=default;};
@@ -215,6 +227,7 @@ int main(){Vec3 a{1,2,3},b{1,2,3};std::cout<<(a==b)<<std::endl;return 0;}
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 #include <iostream>
 struct Logger{Logger&operator<<(const char*s){std::cout<<s;return*this;}};
@@ -222,6 +235,7 @@ int main(){Logger log;log<<"hello "<<"world\n";return 0;}
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 #include <iostream>
 struct Matrix{int m[2][2];int&operator()(int i,int j){return m[i][j];}};
@@ -229,6 +243,7 @@ int main(){Matrix mat{{{1,2},{3,4}}};std::cout<<mat(0,1)<<std::endl;return 0;}
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 17 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -237,6 +252,7 @@ int main(){Ptr ptr{std::make_unique<int>(42)};std::cout<<*ptr<<std::endl;return 
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 #include <iostream>
 struct Bool{bool v;operator bool()const{return v;}};
@@ -279,6 +295,7 @@ int main() {
 
 ## ⑪ STL 联系 <span class="badge badge-std">标准</span>
 > **示例 20** [难度 ★☆☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <iostream>
 #include <algorithm>
@@ -643,6 +660,7 @@ C++ 早期 `operator+`/`[]`/`()` 等成形并约定"成员 vs 非成员"规则�
 | && \|\| , (逻辑/逗号) | 不推荐重载 | 丢失短路求值语义 |
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: 运算符重载速查表
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 struct Complex{double r,i;Complex operator+(double s)const{return{r+s,i};}friend Complex operator+(double s,const Complex&c){return{c.r+s,c.i};}};
@@ -652,6 +670,7 @@ int main(){Complex c{1,2};auto d=c+3.0;auto e=3.0+c;std::cout<<d.r<<","<<e.r<<st
 ## 附录 B: <=> 三路比较深度
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: <=> 三路比较深度
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 #include <compare>
@@ -660,6 +679,7 @@ int main(){Date d1{2024,1,1},d2{2025,6,15};auto cmp=d1<=>d2;if(cmp<0)std::cout<<
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: <=> 三路比较深度
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 #include <compare>
@@ -670,6 +690,7 @@ int main(){Ord a{10},b{20};std::cout<<(a<b)<<" "<<(a>b)<<std::endl;return 0;}
 ## 附录 C: 表达式模板与延迟求值
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: 表达式模板与延迟求值
+
 ```cpp title="示例 34 · ★★☆☆☆"
 #include <iostream>
 template<typename L,typename R>struct AddExpr{L l;R r;auto eval()const{return l.eval()+r.eval();}};
@@ -681,6 +702,7 @@ int main(){Vec a{10},b{20};std::cout<<(a+b).eval()<<std::endl;return 0;}
 ## 附录 D: 常见错误与修复
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: 常见错误与修复
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 int main(){
@@ -693,6 +715,7 @@ int main(){
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: 常见错误与修复
+
 ```cpp title="示例 36 · ★★☆☆☆"
 #include <iostream>
 struct SafeAssign{int*v;SafeAssign(int x):v(new int(x)){}~SafeAssign(){delete v;}SafeAssign&operator=(const SafeAssign&o){if(this==&o)return*this;int*t=new int(*o.v);delete v;v=t;return*this;}int get()const{return*v;}};
@@ -702,6 +725,7 @@ int main(){SafeAssign a(10),b(20);a=b;std::cout<<a.get()<<std::endl;return 0;}
 ## 附录 E: 自定义迭代器与智能指针
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 struct Range{int lo,hi;struct It{int v;int operator*()const{return v;}It&operator++(){++v;return*this;}bool operator!=(const It&o)const{return v!=o.v;}};It begin()const{return{lo};}It end()const{return{hi};}};
@@ -709,6 +733,7 @@ int main(){Range r{1,5};int s=0;for(int x:r)s+=x;std::cout<<s<<std::endl;return 
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
+
 ```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -718,6 +743,7 @@ int main(){Ptr p(99);std::cout<<p->get()<<std::endl;return 0;}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 struct Mat{int d[2][2];int*operator[](int i){return d[i];}};
@@ -725,6 +751,7 @@ int main(){Mat m{{{1,2},{3,4}}};std::cout<<m[0][1]<<std::endl;return 0;}
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: 自定义迭代器与智能指针
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
@@ -735,6 +762,7 @@ int main(){Json j{42,"hello"};std::cout<<(int)j<<" "<<(std::string)j<<std::endl;
 ## 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
+
 ```text
 标准库中的运算符重载:
 - std::complex<T>: operator+,-,*,/ → libstdc++内联展开为2条addps(SIMD)
@@ -773,6 +801,7 @@ WG21从未单独标准化运算符重载——它是C++78(C with Classes)的原�
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 汇编验证
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -797,6 +826,7 @@ Q: 为什么不要重载operator&&和operator||? A: 它们会失去短路求值(
 ## 附录 H：运算符重载面试
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：运算符重载面试
+
 ```cpp title="示例 43 · ★★☆☆☆"
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -825,6 +855,7 @@ operator+的name mangling: GCC: _ZplRK4Vec2S1_ (operator+ for Vec2)
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：运算符ABI
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -873,6 +904,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 <details><summary>答案与解析</summary>
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 struct Vec2 {
@@ -904,6 +936,7 @@ int main(){
 <details><summary>答案与解析</summary>
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 #include <compare>
 struct Point {
@@ -935,6 +968,7 @@ int main(){
 <details><summary>答案与解析</summary>
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <utility>
 #include <cstddef>
@@ -985,6 +1019,7 @@ struct Matrix {                                                             // r
 实现与边界：`+` 若不复用 `+=` 而各自实现，字段多了极易不一致；若 `+=` 返回值而非引用，`(a += b) += c` 会就地改临时对象而非 `a`，破坏链式语义。注意 `+` 返回的 `Vec2` 是拷贝——对大对象这是代价，可用移动语义缓解（`r` 是局部对象，编译器多半 NRVO/移动）。替代方案：只提供 `+=`（标量/位运算场景），对外 `+` 由调用方组合，减少 API 面。
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 54 · ★★☆☆☆"
 #include <iostream>
 
@@ -1024,6 +1059,7 @@ int main() {
 实现与边界：后置实现先 `Counter t = *this; ++n; return t;`——若类型不可拷贝则后置无法实现（此时只提供前置）。`operator++(int)` 的参数类型**必须**是 `int`（恰好是内置约定），不能改成别的类型。替代方案：对纯计数器可只提供前置；语义需要「旧值」时用 `(void)++c;` 先自增再取旧值的方式规避后置拷贝（现代代码常见手法）。
 
 > **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 55 · ★★★☆☆"
 #include <iostream>
 
@@ -1055,6 +1091,7 @@ int main() {
 **步骤 1：朴素裸指针（漏析构 → 泄漏）**
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 从 rule o
+
 ```cpp title="示例 48 · ★★☆☆☆"
 struct MyString {
     char* data; size_t len;
@@ -1068,6 +1105,7 @@ struct MyString {
 **步骤 2：rule of 3（深拷贝补全）**
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 从 rule o
+
 ```cpp title="示例 49 · ★★☆☆☆"
 struct MyString {                       // rule of 3: 管理资源的类必须给出三者
     char* data; std::size_t len;
@@ -1086,6 +1124,7 @@ struct MyString {                       // rule of 3: 管理资源的类必须�
 **步骤 3：vector 扩容的性能坑（移动未 noexcept → 退化拷贝）**
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录：用法演绎 — 从 rule o
+
 ```cpp title="示例 50 · ★★☆☆☆"
 #include <vector>
 #include <cstring>
@@ -1107,6 +1146,7 @@ int main(){
 **步骤 4：rule of 5（加 noexcept 移动）**
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录：用法演绎 — 从 rule o
+
 ```cpp title="示例 51 · ★★★☆☆"
 #include <vector>
 #include <cstring>
@@ -1391,6 +1431,7 @@ void operator delete[](void*) _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
 ### 可编译实证
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可编译实证
+
 ```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1441,6 +1482,7 @@ int main() {
 ### D5.3 可复现 demo
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 

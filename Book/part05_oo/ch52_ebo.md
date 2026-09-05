@@ -67,6 +67,7 @@ EBO 的价值要在后续章才完全兑现：**Policy-Based Design（ch71）** 
 ## ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
+
 ```text
   空类作成员                      空类作基类（EBO）
   struct AsMember {               struct Derived : Empty {
@@ -105,6 +106,7 @@ classDiagram
 ## ⑦ ASCII 内存图 / 对象布局
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存图 / 对象布局
+
 ```text
 x64 / GCC 15.3.0：
   struct Empty {};                    // 空类
@@ -133,6 +135,7 @@ x64 / GCC 15.3.0：
 ## ⑧ 生命周期图
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图
+
 ```text
 空基类子对象随派生类一起构造/析构；EBO 只影响大小与偏移，不改变构造/析构语义。
 空基类若无数据成员，其构造函数是 trivial 的（ch19/ch47 析构需 virtual 仅当被多态使用）。
@@ -141,6 +144,7 @@ x64 / GCC 15.3.0：
 ## ⑨ 调用栈 / 时序图
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调用栈 / 时序图
+
 ```asm
 读取 Derived::x：
   mov eax, [rcx]      ; rcx=Derived*，x 就在偏移 0
@@ -154,6 +158,7 @@ x64 / GCC 15.3.0：
 【测试源 `Examples/_asm_ebo.cpp`】
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析
+
 ```cpp title="示例 5 · ★★★☆☆"
 #include <cstddef>
 struct Empty {};
@@ -198,6 +203,7 @@ _Z11read_memberP8AsMember:
 【案例 A：压缩策略对象（Policy-Based Design 雏形）】
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 6 · ★★☆☆☆"
 struct NoLog  { void log() const {} };                     // 空策略
 struct Timer  { int ticks = 0; void tick(){ ++ticks; } };  // 有状态策略
@@ -211,6 +217,7 @@ struct Engine : LogP, TimeP {                              // 两个策略作空
 【案例 B：std::vector 的 allocator 零开销（原理示意）】
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
+
 ```cpp title="示例 7 · ★★★☆☆"
 #include <cstddef>
 #include <vector>
@@ -225,6 +232,7 @@ struct vector_impl : private Alloc {           // 空 Alloc 被 EBO 抹掉
 【案例 C：误用导致 EBO 失效】
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 struct Empty {};
 struct Bad { Empty e; int x; };  // e 作成员 → 占 1B+填充，sizeof=8
@@ -235,6 +243,7 @@ struct Good : Empty { int x; };  // 作基类 → EBO，sizeof=4
 【增补可编译示例（真实，印证 EBO 各点）】
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // 例1：基本 EBO —— 空基类占 0
 struct Empty {};
@@ -243,6 +252,7 @@ static_assert(sizeof(Derived) == sizeof(int));
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // 例2：作成员不享受 EBO
 struct AsMember { Empty e; int x; };
@@ -250,6 +260,7 @@ static_assert(sizeof(AsMember) == 2 * sizeof(int));   // 8（含占位+填充）
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // 例3：offsetof 证明 x 在偏移 0
 #include <cstddef>
@@ -258,6 +269,7 @@ static_assert(offsetof(AsMember, x) == 4);
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // 例4：空基类有 static 成员不影响大小
 struct E { static int cnt; };
@@ -265,6 +277,7 @@ struct D : E { int x; };   // sizeof(D)==4（static 在对象外）
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // 例5：多个空基类
 struct E1 {}; struct E2 {};
@@ -272,6 +285,7 @@ struct D : E1, E2 { int x; };   // GCC/Clang: sizeof=4（均压到 0）
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // 例6：含虚函数的「空类」非真空
 struct E { virtual void f() = 0; };
@@ -279,6 +293,7 @@ struct D : E { int x; };   // sizeof(D)==16（vptr@0 + x@8）
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // 例7：[[no_unique_address]] 压缩空成员（C++20）
 struct E {};
@@ -286,6 +301,7 @@ struct S { [[no_unique_address]] E e; int x; };   // sizeof==4（等价于 EBO�
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // 例8：std::unique_ptr 空删除器压缩
 #include <memory>
@@ -294,6 +310,7 @@ static_assert(sizeof(std::unique_ptr<int, Noop>) == sizeof(int*));   // 无额�
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // 例9：策略混入（Policy-Based 雏形）
 struct NoLog { void log() const {} };
@@ -301,6 +318,7 @@ struct Eng : NoLog, std::integral_constant<int,0> { int x=0; };   // 两空基�
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // 例10：EBO 压缩容器元素
 #include <vector>
@@ -309,24 +327,28 @@ struct Blob : std::allocator<int> { int* d; size_t n; };   // allocator 作为�
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // 例11：空基类地址 == 派生类地址
 D d; void* pb = static_cast<Empty*>(&d); void* pd = &d;   // 可能相等
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 // 例12：EBO 与缓存密度
 Derived arr[100];   // 占 400B；AsMember arr2[100] 占 800B
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // 例13：boost::compressed_pair 思路
 template<class T1, class T2> struct CPair : T1, T2 { /* 空成员也压 */ };
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // 例14：空基类 + 对齐
 struct E {};
@@ -334,6 +356,7 @@ struct D : E { alignas(16) int x; };   // 整体对齐 16，x 仍在 0（EBO 后
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // 例15：空基类作 tag
 struct InputTag {};
@@ -341,6 +364,7 @@ struct Iter : InputTag { int* p; };   // InputTag 占 0
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 例16：std::chrono::duration 的 Period 空基类
 #include <chrono>
@@ -348,6 +372,7 @@ using S = std::chrono::seconds;   // Period 是编译期空类型，作为空基
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例
+
 ```cpp title="示例 25 · ★★★☆☆"
 // 例17：EBO 与虚继承（ch49）
 struct G {};
@@ -355,6 +380,7 @@ struct D : virtual G { int x; };   // 虚继承引入 vbptr，布局变化
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // 例18：EBO 失败——空基类后有命名空基类但编译器不压
 struct E1 {}; struct E2 {};
@@ -362,6 +388,7 @@ struct D2 : E1, E2 {};   // 部分 MSVC 旧版：sizeof(D2)==2（各占1）
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // 例19：用 std::is_empty 检测空类
 #include <type_traits>
@@ -370,18 +397,21 @@ static_assert(!std::is_empty_v<Derived>);
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // 例20：空基类 + 数据成员顺序影响
 struct A { int a; }; struct B : Empty { int b; };   // B 的 b@0（EBO），A 的 a@0 正常
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // 例21：EBO 与标准布局
 struct E {}; struct D : E { int x; };   // D 仍是标准布局（首成员为 x）
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // 例22：new 空基类对象最小 1 字节
 E* e = new E();   // 仍分配 ≥1 字节块（operator new 最小单位）
@@ -419,6 +449,7 @@ EBO 不是某个提案"发明"的特性，而是 **C++98 就写进标准的 ABI/
 【反例 1：以为空成员也占 0】
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 struct Empty {};
 struct S { Empty e; int x; };
@@ -428,6 +459,7 @@ static_assert(sizeof(S) == 4);   // ❌ 失败：实际 8（e 占位 1B + 3 填�
 【正解】改为基类：
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 struct S : Empty { int x; };
 static_assert(sizeof(S) == 4);   // ✅ EBO 生效
@@ -436,6 +468,7 @@ static_assert(sizeof(S) == 4);   // ✅ EBO 生效
 【反例 2：多个空基类不全压缩】
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 struct E1 {}; struct E2 {};
 struct D : E1, E2 { int x; };    // E1、E2 都可能被压缩，但需看编译器
@@ -446,6 +479,7 @@ struct D : E1, E2 { int x; };    // E1、E2 都可能被压缩，但需看编译
 【反例 3：依赖空基类地址唯一】
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 struct E {}; struct D : E { int x; };
 D d;
@@ -524,6 +558,7 @@ GCC/Clang 通常把两个都压到偏移 0（共享地址）；MSVC 历史上第
 - **microbenchmark（GCC 15.3.0 实测，自包含、可编译）**：
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
+
 ```cpp title="示例 35 · ★★☆☆☆"
 // g++ -std=c++23 -O2 ch52_bench.cpp
 #include <chrono>
@@ -699,6 +734,7 @@ EBO 的坑都围绕同一件事：**它是"允许"而非"强制"，且只对基�
 ## 附录: EBO 深度
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: EBO 深度
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 struct Empty{};struct NonEmpty:Empty{int x;};
@@ -706,6 +742,7 @@ int main(){std::cout<<sizeof(Empty)<<" "<<sizeof(NonEmpty)<<std::endl;return 0;}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: EBO 深度
+
 ```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <functional>
@@ -715,6 +752,7 @@ int main(){std::unique_ptr<int,Delete> p(new int(42));std::cout<<*p<<std::endl;r
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: EBO 深度
+
 ```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
@@ -723,6 +761,7 @@ int main(){std::cout<<"EBO: empty base class occupies zero bytes in derived. Sav
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: EBO 深度
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 #include <tuple>
@@ -731,6 +770,7 @@ int main(){std::tuple<int,int,int> t{1,2,3};std::cout<<std::get<0>(t)<<std::endl
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: EBO 深度
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 struct Tag1{};struct Tag2{};struct Combined:Tag1,Tag2{int v;};
@@ -755,6 +795,7 @@ EBO=空基类不占空间。C++20 [[no_unique_address]]扩展到空成员变量�
 ### 工业案例: unique_ptr的EBO
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例: uniqueptr的EB
+
 ```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -819,6 +860,7 @@ int main(){std::cout<<sizeof(std::unique_ptr<int>)<<" bytes (EBO=默认deleter�
 C++ 要求每个完整对象具有唯一地址，故空成员至少 1 字节；空基类子对象在满足不与首个非空成员同地址冲突时，编译器可优化为零字节。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <iostream>
 struct Empty {};
@@ -846,6 +888,7 @@ int main() {
 多个空基类子对象都可被优化为零；但多个空成员各自至少 1 字节并参与填充，尺寸显著增大。
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 struct E1 {};
@@ -873,6 +916,7 @@ int main() {
 策略类无数据成员时作空基类混入，宿主类自身零状态开销（基类被 EBO）。这正是 `std::vector` 分配器、`std::map` 比较器的实现思路。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 template <class AllocPolicy>
@@ -903,6 +947,7 @@ int main() {
 EBO 允许编译器把"空基类子对象"优化为零字节，因为完整对象必须有唯一地址，但空基类子对象可以与第一个非静态数据成员共用地址。而空**成员**无法被优化——它必须拥有自己的存储，且为对齐常带来填充。这正是 `std::vector` 能"免费"携带空分配器的原因。
 
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 53 · ★★☆☆☆"
 #include <iostream>
 struct Empty { };
@@ -929,6 +974,7 @@ int main() {
 把多个类型作为基类混入（而非成员），可让其中任意空类型被 EBO 压缩。当两个/多个基类之一为空时，整体尺寸可缩减到只剩非空成员。这就是 `std::vector`/`std::tuple` 用空基类混入实现零开销策略组合的原理。
 
 > **示例 54** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 54 · ★★★☆☆"
 #include <iostream>
 struct EmptyTag { };
@@ -957,6 +1003,7 @@ int main() {
 **常见错误**：把策略类作为**成员**字段，即使策略无状态也至少占 1 字节并产生填充，容器尺寸膨胀。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：空策略类当成员导致尺寸膨胀
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 template <class P> struct W { P policy; int x; };
@@ -970,6 +1017,7 @@ int main() {
 **修复**：私有继承策略类（空基类混入），触发 EBO，宿主零状态开销。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：空策略类当成员导致尺寸膨胀
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 template <class P> struct W : private P { int x; };
@@ -989,6 +1037,7 @@ int main() {
 **常见错误**：认为空基类**永远**零开销，忽略"空基类若与首个非静态数据成员同地址冲突，编译器须插入至少 1 字节区分"，EBO 不保证绝对零。
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：误以为 EBO 在任何情况
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 #include <iostream>
 struct Empty {};
@@ -1001,6 +1050,7 @@ int main() {
 **修复**：在目标平台用 `static_assert` 锁定期望尺寸；设计上让空基类排在最前且无同地址冲突的成员。
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：误以为 EBO 在任何情况
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 #include <iostream>
 struct Empty {};
@@ -1019,6 +1069,7 @@ int main() { std::cout << sizeof(Good) << '\n'; }
 ### 测试源码
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 测试源码
+
 ```cpp title="示例 49 · ★★★☆☆"
 struct Empty {};                                              // sizeof == 1（独立时，空类至少 1 字节且本例无子对象，恰为 1）
 struct WithEBO : Empty { int x; };                            // 继承空基类 —— EBO 通常使 sizeof == 4（实现许可，非强制）
@@ -1077,6 +1128,7 @@ C++ 要求**同类型的两个不同对象有不同地址**。若 `NoEBO::e` 占
 下例用 `static_assert` 把正文结论变成编译期可验证事实：
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补例：自包含可编译验证
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <cstddef>
 #include <iostream>
@@ -1357,6 +1409,7 @@ EBO 生效三条件：**(1) 类型是空类（无非静态数据成员、无虚�
 ### D4.6 第一方可编译验证（tuple vs pair 空成员布局 + 自定义 EBO holder）
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 第一方可编译验证
+
 ```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 #include <tuple>
@@ -1492,6 +1545,7 @@ int main() {
 ### D5.3 验证 demo
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 验证 demo
+
 ```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <memory>

@@ -52,6 +52,7 @@ C 时代只有两种 primitive：返回码与全局 `errno`（1970s）。`[史]`
 `[经验]` 工业界的共识是：**异常用于"真正异常、且调用方通常无法就地恢复"的失败；返回值/可选项用于"可预期的、调用方应当处理的常规失败"**。把"文件不存在"当异常抛出，是在用控制流模拟返回码；把"空指针解引用"用返回值掩盖，是在丢弃本可立即崩溃的定位信息。
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：错误处理策略 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <string>
 #include <optional>
@@ -71,6 +72,7 @@ std::optional<Row> find_row(Key k);                             // "无值"也�
 - **可分类**：错误必须能被调用方区分"可重试 / 可降级 / 致命"，而非只有一个 bool。
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：错误处理策略 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 enum class Outcome { Ok, Retryable, Fatal };   // 错误分类是策略的一部分
 struct Result { Outcome o; std::error_code ec; };
@@ -81,6 +83,7 @@ struct Result { Outcome o; std::error_code ec; };
 `[标准]` C++ 提供三类错误表征原语：① 返回码/枚举（同步、零开销、调用方显式检查）；② 异常（异步展开、强类型、可跨多层跳过）；③ 值域包装（`std::optional` / `std::expected`，介于两者之间，把"结果或错误"作为值本身）。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误表征：返回值 vs 异常 vs
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <cstddef>
 // A) 裸返回码（C 风格，易漏检）
@@ -88,6 +91,7 @@ int read_packet(int fd, char* buf, size_t n);   // 返回 -1 表示失败，errn
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误表征：返回值 vs 异常 vs
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 #include <cstddef>
 // B) 强类型枚举错误（自描述，无需全局 errno）
@@ -97,6 +101,7 @@ ReadResult read_packet(int fd, char* buf, size_t n);   // 调用方必须读 err
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误表征：返回值 vs 异常 vs
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <vector>
 // C) 异常（失败时直接展开，调用方用 try/catch 捕获）
@@ -111,6 +116,7 @@ Packet read_packet(int fd);   // 失败时抛 std::system_error
 - 库边界（尤其跨语言/跨 ABI）优先返回码或 `std::error_code`，异常跨 ABI 不安全（第⑯节）。
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误表征：返回值 vs 异常 vs
+
 ```cpp title="示例 6 · ★☆☆☆☆"
 // 性能热点：返回码零开销，异常会污染分支预测与代码布局
 [[nodiscard]] bool try_pop(LockFreeQueue& q, T& out) noexcept;
@@ -121,6 +127,7 @@ Packet read_packet(int fd);   // 失败时抛 std::system_error
 `[标准]` 异常由 `throw` 触发、`try` 捕获、`catch` 处理。`catch` 按**最派生类型优先**匹配，捕获顺序决定行为；`catch(...)` 捕获一切但拿不到对象。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常机制
+
 ```cpp title="示例 7 · ★★☆☆☆"
 #include <stdexcept>
 #include <string>
@@ -146,6 +153,7 @@ int main() {
 `[标准]` `catch` 按声明顺序匹配，因此**派生类必须写在基类之前**，否则被基类"截胡"。
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常机制
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ❌ 反例：基类在前，派生类永远命中不到
 try { may_throw(); }
@@ -154,6 +162,7 @@ catch (const std::runtime_error&) {  // 死代码
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常机制
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ✅ 正例：最派生优先
 try { may_throw(); }
@@ -164,6 +173,7 @@ catch (const std::exception&)     {  // 兜底
 `catch` 的形参用 `const T&` 而非值：避免切片（slicing）且避免额外拷贝。需要重新抛出时写无操作数的 `throw;`（保留原对象类型与信息）。
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常机制
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 try { open(); }
 catch (const std::exception& e) {
@@ -177,6 +187,7 @@ catch (const std::exception& e) {
 `[标准]` 抛出异常后，运行时沿调用栈**反向展开（stack unwinding）**，对每个已构造的局部对象调用其析构函数，再进入匹配的 `catch`。展开过程中若析构函数再抛异常，程序立即 `std::terminate`。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 栈展开与 RAII（异常安全）
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 #include <iostream>
 struct Guard {
@@ -190,6 +201,7 @@ void g() { Guard g{"g"}; f(); }                         // f 的异常穿透 g�
 `[经验]` 异常安全的根基是 **RAII**：把资源绑定到对象生命周期，让析构函数成为唯一的清理点。这样无论正常返回还是异常展开，资源都不会泄漏。
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 栈展开与 RAII（异常安全）
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 #include <fstream>
 #include <memory>
@@ -202,6 +214,7 @@ void process(const char* path) {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 栈展开与 RAII（异常安全）
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ❌ 反例：裸指针 + 手动清理，异常会绕过 delete
 void bad(const char* path) {
@@ -221,6 +234,7 @@ void bad(const char* path) {
 4. **不泄漏（nothrow）**：析构与 swap 等必须 noexcept。
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全等级
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 #include <cstddef>
 #include <vector>
@@ -235,6 +249,7 @@ public:
 `[标准]` `noexcept` 是函数契约也是优化提示：标准库容器在元素类型 `move` 为 `noexcept` 时才使用移动而非拷贝（否则为强保证退化成拷贝）。
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全等级
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 #include <vector>
 class Widget {
@@ -247,6 +262,7 @@ v.push_back(Widget{});                    // 扩容时移动（因 noexcept）�
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全等级
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // swap 必须 noexcept：它是强保证回滚的基石
 void swap(Buffer& a, Buffer& b) noexcept { a.data_.swap(b.data_); }
@@ -257,6 +273,7 @@ void swap(Buffer& a, Buffer& b) noexcept { a.data_.swap(b.data_); }
 `[标准]` `std::error_code` 是一个轻量值类型（含 `int value` + `const error_category*`），用**零开销**表征系统/库错误，可跨函数返回而不展开栈。它不等于异常：调用方必须显式检查 `if (ec)`。
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · code / std::errorc
+
 ```cpp title="示例 17 · ★☆☆☆☆"
 #include <system_error>
 #include <iostream>
@@ -270,6 +287,7 @@ int main() {
 `[实现]` `error_category` 的虚函数是整个机制的扩展点。本机 libstdc++（GCC 13.1.0）中，关键虚函数声明如下（源码剖析）：
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · code / std::errorc
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 #include <string>
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/system_error
@@ -286,6 +304,7 @@ int main() {
 自定义类别只需覆写 `name()`、`message()`，即可把任意枚举接入 `std::error_code` 体系（完整可编译示例见 `Examples/_ch146_errorcode.cpp`，本机运行输出 `db:1 connection timeout`）。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · code / std::errorc
+
 ```cpp title="示例 19 · ★★☆☆☆"
 #include <string>
 enum class io_err { ok = 0, eof = 1, broken = 2 };
@@ -306,6 +325,7 @@ namespace std { template<> struct is_error_code_enum<io_err> : std::true_type {}
 `[标准]` `std::expected<T, E>` 是一个"要么有值 `T`，要么有错误 `E`"的 discriminated union，是异常的**零开销替代**：失败不展开栈、不分配，且强制调用方处理。C++23 引入。
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误处理
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <expected>
 #include <string>
@@ -319,6 +339,7 @@ std::expected<int, std::string> to_int(std::string_view s) {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误处理
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
@@ -337,6 +358,7 @@ auto safe    = to_int("x").or_else([](const std::string& e){
 `[标准]` 与 `std::optional` 的区别：`expected` 携带**错误原因**，`optional` 只表示"无值"。需要诊断信息时优先 `expected`。
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误处理
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 #include <string>
 // 错误链：map 错误类型
@@ -350,6 +372,7 @@ auto parsed = to_int("x").transform_error([](std::string e){
 `[标准]` `std::optional<T>` 表示"可能有值也可能没有"，适合**结果缺失是合法语义**的场景（如查找未命中）。它不携带错误原因——若失败需要原因，改用 `expected`。
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 表征"无值"
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 #include <optional>
 #include <vector>
@@ -360,6 +383,7 @@ std::optional<int> find_first_even(const std::vector<int>& v) {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 表征"无值"
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
 auto r = find_first_even({1,3,4,7});
@@ -370,6 +394,7 @@ int v = find_first_even({1,3}).value_or(-1);    // -> -1
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 表征"无值"
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ❌ 反例：用 optional 表达"失败原因"——信息丢失
 std::optional<Config> load();   // 返回 nullopt 但调用方不知为何失败
@@ -382,6 +407,7 @@ std::expected<Config, LoadErr> load_ex();
 `[标准]` `assert(cond)`（`<cassert>`）在 `NDEBUG` 未定义时对失败条件调用 `abort`，用于捕捉**不应发生的编程错误**（前置/不变量）。发布构建定义 `NDEBUG` 后断言被完全移除，因此断言内的表达式**不得有副作用**。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 断言 assert / contra
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 #include <cassert>
 double divide(double a, double b) {
@@ -391,6 +417,7 @@ double divide(double a, double b) {
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 断言 assert / contra
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ❌ 反例：断言含副作用，NDEBUG 下被删除导致逻辑错误
 assert(close(fd) == 0);   // 发布版本不会关闭 fd！
@@ -401,6 +428,7 @@ int rc = close(fd); assert(rc == 0);
 `[标准]` C++20 引入**契约（contracts）**提案方向（`pre`/`post`/`assert` 属性），但 GCC 13 仍以传统 `assert` 为主。契约用于"可被静态证明或运行期检查的接口前提"。
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 断言 assert / contra
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 #include <vector>
 // C++20 契约（方向，GCC 13 支持有限；此处为语义示意）
@@ -414,6 +442,7 @@ int pop(std::vector<int>& v) [[assert: !v.empty()]] {
 `[标准]` `noexcept` 既是契约（违反则 `terminate`）也是优化器许可（可省略异常展开簿记）。错误处理与 `noexcept` 强相关：**析构函数、swap、移动操作应默认 noexcept**，否则破坏异常安全且拖慢容器。
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误处理与 noexcept
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 #include <utility>
 class Handle {
@@ -428,6 +457,7 @@ public:
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 错误处理与 noexcept
+
 ```cpp title="示例 30 · ★★☆☆☆"
 #include <utility>
 // 条件 noexcept：仅当成员移动不抛时才 noexcept
@@ -442,6 +472,7 @@ public:
 `[经验]` 规则：**任何可能从异常路径被调用的清理函数都标 `noexcept`**；反之，会重新分配/可能抛的函数（如 `vector::push_back`）不要标 noexcept。
 
 > **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 错误处理与 noexcept
+
 ```cpp title="示例 31 · ★★★☆☆"
 // ❌ 反例：析构抛异常 => 栈展开中再抛 => terminate
 ~Widget() { if (flush() == false) throw std::runtime_error("flush failed"); }
@@ -472,6 +503,7 @@ _Z9add_throwii:
 `[实现]` 取证结论：① `add_nonthrow` 编译为单条 `lea eax,[rcx+rdx]`，happy path 与"是否启用异常"无关；② `add_throw` 的抛出分支被优化器**冷拆分（cold split）**到独立的 `_Z9add_throwii.part.0`，使主路径保持精简。异常只在抛出的瞬间才有成本，符合"零开销抽象"原则。
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常与性能
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // 对应源码（节选，完整见 Examples/_ch146_perf.cpp）
 int add_nonthrow(int a, int b) noexcept { return a + b; }           // -> lea
@@ -483,6 +515,7 @@ int add_throw(int a, int b) { if (b == 0) throw 0; return a / b; }  // -> 冷拆
 `[标准]` C++98 的**动态异常规范** `throw(T1, T2)` 在运行期检查、且必须被携带到类型系统，开销大、收益小；C++11 起弃用，C++17 移除（仅保留 `noexcept` 与 `noexcept(...)`）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常规范演化
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // C++98/03 风格（已弃用/移除）
 void old() throw(std::runtime_error);       // 动态规范：只许抛 runtime_error，否则 unexpected
@@ -495,6 +528,7 @@ void cond() noexcept(noexcept(some_op()));  // 条件 noexcept
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常规范演化
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // 演进对比：noexcept 可被重载决议利用，throw() 不能
 void f() noexcept;          // 优先匹配（移动/交换场景）
@@ -504,6 +538,7 @@ void f() noexcept(false);
 `[经验]` 现代代码：**不要用 `throw()` 动态规范**，统一用 `noexcept`。`noexcept` 让优化器移除展开信息，并让标准库在重分配时选择移动语义。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常规范演化
+
 ```cpp title="示例 35 · ★★☆☆☆"
 // ❌ 反例：动态异常规范（C++17 起非法）
 void legacy() throw(std::exception);
@@ -516,6 +551,7 @@ void modern() noexcept(false);
 `[标准]` 自定义异常应继承自 `std::exception`（或其子类如 `std::runtime_error`），以接入统一捕获点 `catch (const std::exception&)`。区分**逻辑错误（logic_error，可避免）**与**运行时错误（runtime_error，不可控）**。
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义异常层次
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <stdexcept>
 #include <string>
@@ -529,6 +565,7 @@ void load() { throw ParseError("missing [server]"); }
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义异常层次
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // 捕获层次：派生在前
 try { load(); }
@@ -540,6 +577,7 @@ catch (const std::exception& e){  // 通用
 `[经验]` 异常类型用**分层继承**而非扁平枚举，能让调用方按"可恢复粒度"捕获；但层次不宜过深（>3 层即过度设计）。给异常加上附加上下文字段（错误码、位置）提升可诊断性。
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义异常层次
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <string>
 struct DbError : std::runtime_error {
@@ -553,6 +591,7 @@ struct DbError : std::runtime_error {
 `[标准]` C++ 没有 `finally` 关键字，但 **RAII + 析构** 实现等价语义。C++20 进一步提供 `<scope>` 的 `std::scope_exit` / `scope_success` / `scope_fail`（手动管理清理的轻量工具）。
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源清理与 finally
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <scope>                                                     // C++20
 #include <cstdio>
@@ -564,6 +603,7 @@ void process() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 资源清理与 finally
+
 ```cpp title="示例 40 · ★★☆☆☆"
 #include <functional>
 // 手写 RAII 等价 finally（兼容 C++11）
@@ -581,6 +621,7 @@ void demo() {
 `[经验]` 优先用**确定性 RAII**（智能指针、容器、lock_guard），`scope_exit` 仅用于无法包装成类型的临时清理（如 C API 句柄、事务回滚）。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源清理与 finally
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // 事务：成功提交，异常回滚
 auto rollback = std::scope_fail([&]{ tx.rollback(); });
@@ -592,6 +633,7 @@ tx.commit();   // 若此前抛异常，scope_fail 触发回滚
 `[经验]` 沿调用栈向上传播错误时，应**保留并叠加上下文**，否则排障时只剩一句"open failed"无法定位。C++ 异常天然携带类型与 `what()`；`error_code`/返回值则需手动串联。
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误传播（链式）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <string>
 // 异常链式：捕获后包裹更上层语义再抛出
@@ -604,6 +646,7 @@ void open_db() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误传播（链式）
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <expected>
 // error_code 链式：把底层 ec 透传并附加上层枚举
@@ -617,6 +660,7 @@ std::expected<Row, DbError> query(Id id) {
 `[标准]` `std::nested_exception` 与 `std::throw_with_nested` 允许在重新抛出的同时保留原始异常链，供 `std::current_exception` 遍历。
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 错误传播（链式）
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <exception>
 void inner() { throw std::runtime_error("root cause"); }
@@ -631,6 +675,7 @@ void outer() {
 `[平台·Windows]` 异常是**实现细节耦合**的：Itanium ABI 与 MSVC 的异常处理模型不同，不同编译器/不同异常模型（SJLJ vs SEH vs DWARF）混链会 `terminate`。因此**跨 ABI / 跨语言 / 插件边界严禁抛异常穿越**。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨 ABI 错误处理 [平台·Windows]
+
 ```cpp title="示例 45 · ★★☆☆☆"
 // ❌ 危险：异常从 DLL(MSVC) 抛到 EXE(MinGW) 边界 => 未定义行为
 extern "C" void plugin_entry();   // 插件绝不能让 C++ 异常逃逸
@@ -646,6 +691,7 @@ extern "C" int plugin_entry_safe(int* out) noexcept {
 `[平台·Windows]` 在 Windows SEH 与 C++ 异常混合场景，用结构化异常处理捕获系统级故障（访问违例）时需隔离——C++ `catch(...)` 不一定捕获 SEH 异常，除非启用 `/EHa`（MSVC）或编译器特定选项。跨 ABI 边界统一用 `noexcept` + 返回码最稳妥。
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 ABI 错误处理 [平台·Windows]
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 // 跨边界契约：所有导出 C 函数 noexcept，错误用 int 码
 extern "C" int api_init() noexcept;
@@ -657,6 +703,7 @@ extern "C" int api_run(double* result) noexcept;
 `[经验]` 错误与日志是孪生：捕获错误时**记录足够上下文**（错误码、参数、调用位置、时间），但**不要在库内部擅自终止进程**——把"是否 fatal"的决定留给调用方。日志格式应机器可解析，错误对象应可序列化为 `error_code`。
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 日志与错误（预告 ch161）
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 #include <system_error>
 #include <iostream>
@@ -671,6 +718,7 @@ void report(const std::error_code& ec, const char* where) {
 关于结构化日志、日志级别、异步 sink 与性能化的深入实现，将在第161章（日志与可观测性）系统展开，本章仅给出"错误必须可观测"的最小约定。
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 日志与错误（预告 ch161）
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 #include <string>
 // 错误 -> 结构化字段（为第161章日志打基础）
@@ -683,6 +731,7 @@ void emit(const ErrRecord& r);   // 由日志层统一落盘/上报
 `[实现]` 下面用本机 `g++ -std=c++23 -O2 -Wall -Wextra` 编译并运行 `Examples/_ch146_errorcode.cpp`（自定义 `std::error_code` 类别），验证：① `error_code` 可隐式由枚举构造；② `category().name()`/`message()` 来自自定义虚函数；③ `if (ec)` 判定错误态。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实案例
+
 ```cpp title="示例 49 · ★★★☆☆"
 #include <string>
 // Examples/_ch146_errorcode.cpp（节选，完整见文件）
@@ -722,6 +771,7 @@ error=not an int: oops
 `[经验]` 最危险的反模式是**吞掉异常**，它让故障静默、把可恢复错误变成数据损坏。
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（吞异常/空 catch）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 // ❌ 反例 1：空 catch 吞掉一切
 try { commit(); }
@@ -729,6 +779,7 @@ catch (...) { // 什么都不做：故障消失，事务状态未知
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（吞异常/空 catch）
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 // ❌ 反例 2：catch 后忽略，继续执行（逻辑已不一致）
 try { load_config(); }
@@ -736,6 +787,7 @@ catch (const std::exception&) { // 继续用默认配置？还是已损坏？
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（吞异常/空 catch）
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 // ❌ 反例 3：用异常做正常控制流（异常应为异常路径）
 while (true) {
@@ -747,6 +799,7 @@ while (true) {
 `[经验]` 正确做法：① 只在**确实能恢复**时才 `catch`；② 恢复不了就 `throw;` 原样上抛；③ 库代码默认不 `catch`，把决策权交给调用方；④ 必须兜底时记录日志并转为明确的错误码/返回状态。
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（吞异常/空 catch）
+
 ```cpp title="示例 53 · ★☆☆☆☆"
 // ✅ 正例：要么恢复，要么透传并记录
 try { commit(); }
@@ -758,6 +811,7 @@ catch (const std::system_error& e) {
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（吞异常/空 catch）
+
 ```cpp title="示例 54 · ★☆☆☆☆"
 // ✅ 用 optional 表达"空"而非异常控制流
 while (auto x = pop()) consume(*x);   // 自然终止，无异常
@@ -946,6 +1000,7 @@ flowchart TD
 最小可复现版（仅 error-code 成功路径对比，编译 `g++ -O2 -std=c++23`）。完整四路径版见库根 `_bench_d5_146_error.cpp`。
 
 > **示例** [主题：error-code 成功路径计时]
+
 ```cpp
 #include <chrono>
 #include <iostream>
@@ -1034,6 +1089,7 @@ ret
 | Qt | 信号/槽 + 错误码 | `QString::arg()`, `errorString()` | 无需异常 (跨语言绑定)，GUI 框架天然异步 |
 
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A：工业错误处理范式对比 [F: Industry]
+
 ```cpp title="示例 55 · ★☆☆☆☆"
 #include <iostream>
 int main() {
@@ -1049,6 +1105,7 @@ int main() {
 ## 附录 B：异常 vs 错误码 —— 汇编层面的真实代价 [E: Low-level / G: Performance]
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：异常 vs 错误码 ——
+
 ```cpp title="示例 56 · ★★☆☆☆"
 // 异常 vs 错误码的汇编对比（GCC -O2 x86-64）
 int divide_error_code(int a, int b, int* out) {
@@ -1068,6 +1125,7 @@ int divide_exception(int a, int b) {
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：异常 vs 错误码 ——
+
 ```cpp title="示例 57 · ★★☆☆☆"
 #include <iostream>
 #include <chrono>
@@ -1100,6 +1158,7 @@ int main() {
 ## 附录 C：WG21 为什么拒绝 Checked Exceptions [B: Principle]
 
 > **示例 58** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 C：WG21 为什么拒绝 Checked Exceptions [B: Principle]
+
 ```text
 Java 的 checked exceptions 强制调用方处理或声明异常。C++ 委员会在多个提案中拒绝了类似机制:
 
@@ -1121,6 +1180,7 @@ C++ 错误处理的未来方向:
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
+
 ```text
 错误处理策略选择矩阵:
 
@@ -1136,6 +1196,7 @@ C API 包装                error_code → 异常转换       C 调用方不理�
 ```
 
 > **示例 60** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D：面试与设计权衡 [H: Design / J: Learning]
+
 ```cpp title="示例 60 · ★★☆☆☆"
 #include <iostream>
 #include <expected>
@@ -1247,6 +1308,7 @@ call __cxa_throw          ; 触发展开
 <details><summary>答案与解析</summary>
 
 > **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 61 · ★☆☆☆☆"
 #include <expected>
 #include <string>
@@ -1272,6 +1334,7 @@ std::expected<int, ParseErr> parse_int(const std::string& s) {
 <details><summary>答案与解析</summary>
 
 > **示例 62** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 62 · ★☆☆☆☆"
 #include <system_error>
 #include <string>
@@ -1296,6 +1359,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 63** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 63 · ★★☆☆☆"
 #include <memory>
 #include <mutex>
@@ -1321,6 +1385,7 @@ int main() { safe(); }
 <details><summary>答案与解析</summary>
 
 > **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 64 · ★★☆☆☆"
 #include <expected>
 #include <string>
@@ -1357,6 +1422,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 65** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 65 · ★★★☆☆"
 #include <cstddef>
 #include <new>

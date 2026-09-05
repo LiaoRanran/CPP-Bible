@@ -59,6 +59,7 @@
 **框架（framework）**和**库（library）**的本质区别在控制权流向。库是你调用它；框架是它调用你——这就是著名的"好莱坞原则"（Don't call us, we'll call you）。**<span class="badge badge-exp">经验</span>** 亲手写一个迷你框架，价值不在于"再造一个 Boost"，而在于看清 Asio / Qt / 第141章依赖注入容器 这些成熟抽象到底替你屏蔽了什么：对象生命周期、插件装载、事件调度、配置注入。
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：从零写框架的意义 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 框架在概念上对"应用"的抽象：框架拥有主循环，应用只提供回调
 // 应用代码从不写 main 的轮询，而是注册 handler 等框架回调。
@@ -69,6 +70,7 @@ struct App {
 ```
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：从零写框架的意义 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <string>
 // ① 一个框架骨架的最小接口：组件 + 事件 + 生命周期三件套
@@ -81,6 +83,7 @@ struct IComponent {
 ```
 
 > **示例 3** [难度 ★★☆☆☆] [主题：概述：从零写框架的意义 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // ① 框架元信息：把"我是谁/版本"当成一等数据，便于 ⑰ 文档生成
 #include <string>
@@ -105,6 +108,7 @@ flowchart TD
 两者都是"可复用的代码"，但耦合方向不同。下面两段等价功能的代码，直观显示差异。
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架 vs 库
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ② 库风格：你主动调用，控制流在你手里
 // render() 是"被你调用"的普通函数。
@@ -116,6 +120,7 @@ void lib_style() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架 vs 库
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ② 框架风格：你注册回调，主循环由框架写（控制反转 IoC）
 // runloop() 内部会反过来调用你提供的 on_frame。
@@ -130,6 +135,7 @@ void framework_style(Game& g) {
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 框架 vs 库
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // ② 框架通过"工厂"持有子系统，应用只传工厂而非实例（依赖倒置）
 #include <functional>
@@ -148,6 +154,7 @@ struct Context {
 插件架构让"框架核心"与"业务功能"在编译期解耦：核心只认接口，插件在运行时（甚至运行后）挂进来。**<span class="badge badge-exp">经验</span>** 跨平台最稳妥的插件机制不是 `LoadLibrary`/`dlopen`，而是**静态初始化期自注册**——插件编译进同一二进制，靠全局对象的构造把自己登记进注册表。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 插件架构（动态加载）
+
 ```cpp title="示例 7 · ★★☆☆☆"
 // ③ 跨平台自注册插件（本机实测通过：Examples/_ch164_plugin.cpp）
 #include <iostream>
@@ -222,6 +229,7 @@ FreeLibrary(h);   // 注意：跨模块 new/delete 必须同一 CRT，否则堆�
 事件循环是框架的心脏。**<span class="badge badge-impl">实现</span>** 最经典的两种模式：**reactor**（同步，就绪事件到来后由你同步处理）与 **proactor**（异步，内核完成 I/O 后回调你，如 Windows IOCP）。本章用 reactor 做一个零依赖的单线程事件总线。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 事件循环
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // ④ reactor 事件总线（本机实测通过：Examples/_ch164_eventloop.cpp）
 #include <iostream>
@@ -258,6 +266,7 @@ int main() {
 ```
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 事件循环
+
 ```cpp title="示例 9 · ★★☆☆☆"
 #include <string>
 #include <functional>
@@ -295,6 +304,7 @@ flowchart LR
 框架应允许用一份配置文件驱动行为，而非硬编码。**<span class="badge badge-exp">经验</span>** INI 风格（`key = value`）足够覆盖 90% 的框架配置场景，且手写解析仅 20 行；JSON/YAML 适合嵌套结构，但需要第三方库。本章内置 INI 解析。
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 配置系统
+
 ```cpp title="示例 10 · ★★☆☆☆"
 // ⑤ 配置解析（本机实测通过：Examples/_ch164_config.cpp，配套 Examples/mini.conf）
 #include <iostream>
@@ -348,6 +358,7 @@ int main() {
 依赖注入（DI）把"对象去哪里拿依赖"从硬编码改成"由容器按接口解析"。框架启动时把服务注册进容器，业务代码只声明"我要一个 `IService`"，不关心具体实现是谁。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 依赖注入容器
+
 ```cpp title="示例 11 · ★★★☆☆"
 // ⑥ DI 容器（本机实测通过：Examples/_ch164_di.cpp）
 #include <iostream>
@@ -396,6 +407,7 @@ int main() {
 模块化的铁律：**框架与业务都只依赖稳定的接口，不依赖易变的具体类**。这样实现可以替换、可以单独测试、可以并行开发。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模块化（接口+实现分离）
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑦ 接口与实现分离（本机实测通过：Examples/_ch164_module.cpp）
 #include <iostream>
@@ -424,6 +436,7 @@ int main() { MemoryStorage store; use(store); return 0; }
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块化（接口+实现分离）
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑦ 依赖方向：业务 → 接口 ← 实现，箭头不越过接口（编译防火墙雏形）
 // 进一步可用 PIMPL（⑭）把实现藏进 .cpp，接口头零实现依赖。
@@ -442,6 +455,7 @@ struct ITask { virtual ~ITask() = default; virtual void run() = 0; };
 框架里大量"注册一个组件"是重复样板。**<span class="badge badge-exp">经验</span>** 用 X 宏 / 注册宏把"声明类 + 写工厂 + 登记"三件事压成一行，既减少手误也提升可读性。这与第148章（宏与代码生成/工具链）的"用代码生成消灭样板"一脉相承。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宏与代码生成
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑧ 注册宏生成组件（本机实测通过：Examples/_ch164_macro.cpp）
 #include <iostream>
@@ -497,6 +511,7 @@ int main() {
 下面就是本章的**核心**：一个自包含、单文件、可编译运行的迷你框架 `MiniFW`。它把前面的注册表、事件总线、配置、DI、生命周期全部串起来。本机 `g++ -std=c++23 -O2` 一次编译通过并跑出完整启动/注册/运行/关闭轨迹。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实完整实现
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑨ 自包含迷你框架 MiniFW（本机 g++ -std=c++23 -O2 可编译运行，单文件可跑）
 // 文件：Examples/_ch164_framework.cpp
@@ -664,6 +679,7 @@ int main(int argc, char** argv) {
 **[实现·GCC15]** 注意 `MINIFW_REGISTER` 借助静态对象构造在 `main` 之前完成自注册——这是静态初始化顺序问题（SIOF）的安全写法，因为 `registry()` 用函数内 `static` 局部变量保证只构造一次且线程安全（C++11 起）。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实完整实现
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑨ 启动前即可枚举已注册组件（自注册的副作用可被观测，便于排错）
 #include <iostream>
@@ -678,6 +694,7 @@ void list_registered() {
 框架对资源的"生与死"必须确定。**<span class="badge badge-std">标准</span>** C++ 用 RAII（Resource Acquisition Is Initialization，[class.dtor]）把"释放"绑定到"离开作用域"，这是异常安全的核心保证。框架应为每个子系统提供 RAII 包装。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 生命周期管理（RAII）
+
 ```cpp title="示例 17 · ★★★☆☆"
 // ⑩ RAII 生命周期（本机实测通过：Examples/_ch164_raii.cpp）
 #include <iostream>
@@ -722,6 +739,7 @@ int main() {
 好框架的标准是"对扩展开放、对修改封闭"（OCP）。给出明确的扩展点（此处用责任链 / 中间件管道），业务方在运行时挂节点，框架核心不动。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 扩展点设计
+
 ```cpp title="示例 18 · ★★★☆☆"
 // ⑪ 扩展点：中间件管道（本机实测通过：Examples/_ch164_extpoint.cpp）
 #include <iostream>
@@ -776,6 +794,7 @@ false
 框架要可测，就必须把"测试"当成一等公民。**<span class="badge badge-exp">经验</span>** 内置一个最小测试运行器，让每个扩展点都能跑回归，比依赖外部框架更易落地。这与第150章（测试）的"把测试钩子植入框架生命周期"一致。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 测试钩子（关联 第150章 测试）
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // ⑫ 内置最小测试运行器（本机实测通过：Examples/_ch164_test.cpp）
 #include <iostream>
@@ -821,6 +840,7 @@ int main() {
 框架的每个 tick 都要尽量便宜。**[实现·GCC15]** 下面是 `vector_push_back` 与空 lambda 的本机 `-O2` 微基准；同时用 `g++ -O2 -S -masm=intel` 看 `Ring::push` 里 `tail=(tail+1)%16` 的真实产物——编译器用 `cdq; shr edx,28; and eax,15` 把取模优化成"符号修正后的位与"，因为 16 是 2 的幂。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能考量（关联 第151章 性能）
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // ⑬ 微基准（本机实测通过：Examples/_ch164_perf.cpp）
 #include <iostream>
@@ -847,6 +867,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能考量（关联 第151章 性能）
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑬ 汇编取证片段（Examples/_ch164_asm_demo.cpp，配套 _ch164_framework_rb.asm）
 struct Ring {
@@ -860,6 +881,7 @@ void Ring::push(char c) {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★★☆</span> · 性能考量（关联 第151章 性能）
+
 ```cpp title="示例 22 · ★★★★☆"
 // ⑬ 编译期确定环形缓冲容量（constexpr），避免运行期 malloc
 #include <cstddef>
@@ -897,6 +919,7 @@ _ZN4Ring4pushEc:
 **[平台·Windows]** 框架要跨平台，必须把"平台差异"收口到一个 PAL（Platform Abstraction Layer）。用编译期宏把 `os_name`、`path_sep`、`sleep` 等差异隔离，业务代码永远看不到 `#ifdef`。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 平台抽象层（PAL）[平台·Windows]
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑭ PAL（本机实测通过：Examples/_ch164_pal.cpp，本机走 _WIN32 分支）
 #include <iostream>
@@ -957,6 +980,7 @@ flowchart TD
 **<span class="badge badge-std">标准</span>** C++ 生态里成熟的框架各有侧重：Boost 提供库集合（Asio/DI/Spirit），Qt 提供完整应用框架（信号槽/元对象/moc），Google 的 Abseil 提供基础组件。下面是对比（上游参考，非本章自实现）：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与现有框架对比（上游参考）
+
 ```cpp title="示例 24 · ★★★☆☆"
 #include <memory>
 // ⑮ 上游框架接口示意（仅对比，非本机编译目标）
@@ -991,6 +1015,7 @@ flowchart TD
 **<span class="badge badge-exp">经验</span>** 框架作者最容易犯的错是"为不存在的变化点提前抽象"。三层继承只为打印一行、通用 Visitor 只为两个类型——这些都是噪音，增加阅读与编译成本，却从不兑现"未来可扩展"的承诺。
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（过度抽象）
+
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑯ 反模式 vs 正解（本机实测通过：Examples/_ch164_antipattern.cpp）
 #include <iostream>
@@ -1013,6 +1038,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（过度抽象）
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // ⑯ 另一个反模式：框架暴露"上帝接口"——把所有方法塞进一个虚基类
 // ❌ 错误：IComponent 里硬塞渲染/网络/存储方法，导致每个组件都空实现大部分。
@@ -1031,6 +1057,7 @@ hi
 框架的 API 面就是它的契约。**<span class="badge badge-exp">经验</span>** 把"能自省"做进框架：让组件自己报告名字/描述，文档可由程序生成，而非人肉维护。这与第145章（文档与 API）的"API 即文档"一致。
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 文档与 API
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑰ API 自省 + 文档生成雏形（本机可编译，关联 第145章 文档与 API）
 #include <iostream>
@@ -1062,6 +1089,7 @@ int main() {
 **<span class="badge badge-impl">实现</span>** 真实项目里可让 `MINIFW_REGISTER` 宏同时接收描述字符串，自动 `declare` 进 `ApiRegistry`，做到"注册即文档"。配合 Doxygen 即可生成完整 API 手册。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 文档与 API
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑰ Doxygen 风格 API 注释（真实可解析，关联 第145章 文档与 API）
 /// @brief 启动框架并进入主循环
@@ -1116,6 +1144,7 @@ int run_framework(int ticks);
 框架要可交付，必须有可重复的编译与测试流水线。**<span class="badge badge-exp">经验</span>** 用 CI 在每次提交后自动 `g++ -std=c++23 -O2 -Wall -Wextra` 编译全部示例并跑测试，比人工验证可靠。这与第149章（发布与 CI）的"编译即门禁"一致。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 发布与 CI
+
 ```cpp title="示例 29 · ★★★☆☆"
 // ⑲ 本机编译命令（即取证命令，可放进 CI 脚本；非 cpp 运行逻辑，仅展示）
 // g++ -std=c++23 -O2 -Wall -Wextra Examples/_ch164_framework.cpp -o fw && ./fw mini.conf
@@ -1138,6 +1167,7 @@ flowchart LR
 **<span class="badge badge-impl">实现</span>** 本机取证即等价于上述第一步：`g++ -std=c++23 -O2 -Wall -Wextra` 对 13 个 `_ch164_*.cpp` 全部零警告通过，且运行时输出与本章一致。
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 发布与 CI
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // ⑲ 编译期标准版本自检（放进 CI 的"编译即门禁"）
 #if __cplusplus < 202302L
@@ -1165,6 +1195,7 @@ flowchart LR
 从"好莱坞原则"到自注册插件，从 reactor 事件循环到 RAII 生命周期，本章把**一个工业级迷你框架的骨架从零搭了一遍**，并用本机 `g++ 13.1.0 -std=c++23 -O2` 的真实编译运行做了端到端取证。核心结论：**<span class="badge badge-exp">经验</span>** 写框架的目的不是取代 Boost/Qt，而是让你彻底理解它们——自注册解决了"组件怎么来"，事件总线解决了"组件怎么被通知"，DI 解决了"组件怎么拿依赖"，RAII 解决了"资源怎么不死"，PAL 解决了"平台差异怎么藏"。**<span class="badge badge-std">标准</span>** 这些机制背后全是 C++ 标准保证的基石：虚函数分派（[class.virtual]）、lambda（[expr.prim.lambda]）、`std::shared_ptr` 类型擦除（[util.smartptr]）、静态局部变量线程安全初始化（[stmt.dcl]）。**[平台·Windows]** 而 `LoadLibrary`/`dlopen`、`Sleep`/`usleep` 这类差异，必须收口到 PAL，绝不该泄漏进业务。最后记住一条铁律：**<span class="badge badge-exp">经验</span>** 框架的价值在于"恰到好处的抽象"——过度抽象（⑯）比不抽象更危险。
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 小结
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 #include <string>
 // ⑳ 收尾：把全章知识点合成一个"可复用框架入口"示意
@@ -1179,6 +1210,7 @@ struct MiniFWApp {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 小结
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // ⑳ 收尾辅助：统计当前已注册组件数（自注册可观测性，呼应 ⑨）
 #include <cstddef>
@@ -1188,18 +1220,21 @@ std::size_t component_count() { return registry().all().size(); }
 ## 补充分编可编译示例
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch164_framework."<<std::endl;return 0;}
 ```
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch164_framework."<<std::endl;return 0;}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1225,6 +1260,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 | 日志集成 | ch161(logger) | 从零项目组装完整系统 |
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 项目学习地图：迷你框架 → 全书知识
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Framework=ch47+ch93+ch141+ch88+ch161"<<std::endl;return 0;}
@@ -1366,6 +1402,7 @@ call [rdx]
 在命名空间作用域定义 `AutoReg<Component>` 的全局/静态实例，其构造函数于程序启动的静态初始化阶段执行，把工厂存入全局 `Registry`；`main` 里 `start()` 时直接遍历 Registry 即可。
 
 > **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 37 · ★★★☆☆"
 #include <map>
 #include <string>
@@ -1397,6 +1434,7 @@ int main() { reg.facts.at("PluginA")(); }
 DI 容器在启动时注册各组件的构造方式，运行时按类型返回同一单例，服务只声明"我要 Logger"而不关心谁创建。下面用 `type_index`+`any` 按类型索引。
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★）
+
 ```cpp title="示例 38 · ★★☆☆☆"
 #include <any>
 #include <map>
@@ -1429,6 +1467,7 @@ int main() { Container c; c.get<Logger>().log(); }
 事件总线把"事件名 → 一组回调"建表，发布时遍历调用；组件无需互相持有指针。风险：某个 handler 抛异常会打断后续 handler，故需在分发处捕获并隔离（或要求 handler 自身不抛）。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 39 · ★★★☆☆"
 #include <unordered_map>
 #include <vector>
@@ -1579,6 +1618,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★★☆</span> · 可复现 demo
+
 ```cpp title="示例 40 · ★★★★☆"
 #include <cstdio>
 

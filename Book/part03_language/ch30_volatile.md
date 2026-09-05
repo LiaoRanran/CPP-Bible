@@ -55,6 +55,7 @@
 ## ② volatile 基本语义 <span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：基本语义 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
 volatile int sensor = 0;
@@ -64,6 +65,7 @@ int main(){sensor=42;std::cout<<sensor<<std::endl;return 0;}
 ## ③ MMIO 读写 [平台·x86-64]
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 读写 [平台·x86-64]
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 struct Device{volatile unsigned int status;volatile unsigned int data;};
@@ -73,6 +75,7 @@ int main(){Device dev;dev.status=0;dev.data=42;std::cout<<"MMIO mapped\n";return
 ## ④ volatile 不能替代 atomic <span class="badge badge-std">标准</span>
 
 > **示例 3** [难度 ★★☆☆☆] [主题：不能替代 atomic <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 3 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -83,6 +86,7 @@ int main(){safe.store(1);std::cout<<safe.load()<<std::endl;return 0;}
 ## ⑤ 信号处理中的 volatile [平台·x86-64]
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 信号处理中的 volatile [平台·x86-64]
+
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <iostream>
 #include <csignal>
@@ -93,6 +97,7 @@ int main(){flag=1;std::cout<<(int)flag<<std::endl;return 0;}
 ## ⑥ setjmp/longjmp 中的 volatile [平台·x86-64]
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · setjmp/longjmp 中的 volatile [平台·x86-64]
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\n";return 0;}
@@ -101,6 +106,7 @@ int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\
 ## ⑦ 编译器屏障 [实现·GCC15.3.0]
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器屏障 [实现·GCC15.3.0]
+
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
 int main(){int x=0;asm volatile("":::"memory");x=1;std::cout<<x<<std::endl;return 0;}
@@ -109,6 +115,7 @@ int main(){int x=0;asm volatile("":::"memory");x=1;std::cout<<x<<std::endl;retur
 ## ⑧ volatile 指针 [平台·x86-64]
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 指针 [平台·x86-64]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
 int main(){int val=0;volatile int* p=&val;*p=42;std::cout<<val<<std::endl;return 0;}
@@ -117,6 +124,7 @@ int main(){int val=0;volatile int* p=&val;*p=42;std::cout<<val<<std::endl;return
 ## ⑨ volatile 成员函数 <span class="badge badge-std">标准</span>
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：成员函数 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
 struct Reg{volatile int v;int read()volatile{return v;}void write(int x)volatile{v=x;}};
@@ -126,6 +134,7 @@ int main(){Reg r;r.write(7);std::cout<<r.read()<<std::endl;return 0;}
 ## ⑩ volatile 与 const <span class="badge badge-std">标准</span>
 
 > **示例 9** [难度 ★☆☆☆☆] [主题：与 const <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile const int ROM=0xDEAD;std::cout<<"ROM value:"<<ROM<<std::endl;return 0;}
@@ -134,6 +143,7 @@ int main(){volatile const int ROM=0xDEAD;std::cout<<"ROM value:"<<ROM<<std::endl
 ## ⑪ STL 联系：atomic 与 volatile 的严格分工 <span class="badge badge-std">标准</span>
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 联系：atomic 与 volati
+
 ```cpp title="示例 10 · ★★★★☆"
 // ⑪ volatile 不保证原子性；atomic 不阻止寄存器优化——两者各司其职
 #include <iostream>
@@ -162,6 +172,7 @@ int main() {
 ## ⑫ 工业案例：嵌入式 MMIO 寄存器模板 <span class="badge badge-exp">经验</span>
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★★☆</span> · 工业案例：嵌入式 MMIO 寄存器模
+
 ```cpp title="示例 11 · ★★★★☆"
 // ⑫ 实际嵌入式代码中 volatile 的标准写法：reinterpret_cast 到 volatile 结构体
 #include <iostream>
@@ -202,6 +213,7 @@ int main() {
 ## ⑬ 源码分析：GCC 内部 volatile 处理 [实现·GCC15.3.0]
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC 内部 volati
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑬ GCC/LLVM 编译器内部如何对待 volatile
 #include <iostream>
@@ -226,6 +238,7 @@ int main() {
 ## ⑭ WG21 关键提案与演变 <span class="badge badge-std">标准</span>
 
 > **示例 13** [难度 ★★☆☆☆] [主题：关键提案与演变 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑭ volatile 的标准化历史中最重要的两个提案
 #include <iostream>
@@ -252,6 +265,7 @@ int main() {
 ## ⑮ 面试题精选 <span class="badge badge-exp">经验</span>
 
 > **示例 14** [难度 ★★★☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 14 · ★★★☆☆"
 // ⑮ 嵌入式/C++ 后台面试中 volatile 的 5 道高频题
 #include <iostream>
@@ -275,6 +289,7 @@ int main() {
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 > **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 15 · ★★★★☆"
 // ⑯ volatile 的 5 个最常见误用
 #include <iostream>
@@ -312,6 +327,7 @@ int main() {
 ## ⑰ FAQ：嵌入式实战常见问题 <span class="badge badge-exp">经验</span>
 
 > **示例 16** [难度 ★★★★☆] [主题：嵌入式实战常见问题 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 16 · ★★★★☆"
 // ⑰ 实际开发中关于 volatile 的高频问答
 #include <iostream>
@@ -342,6 +358,7 @@ int main() {
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 > **示例 17** [难度 ★★★☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 17 · ★★★☆☆"
 // ⑱ volatile 使用的 6 条黄金法则
 #include <iostream>
@@ -377,6 +394,7 @@ int main() {
 ## ⑲ 性能分析：volatile 访问的真实成本 [平台·x86-64]
 
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析：volatile 访问的真
+
 ```cpp title="示例 18 · ★★★☆☆"
 // ⑲ volatile 访问 = 强制穿透缓存层次 → 真实代价取决于内存位置
 #include <iostream>
@@ -443,6 +461,7 @@ int main() {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "std::atomic" 词条。
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★★☆</span> · 跨语言对比：volatile 语义全
+
 ```cpp title="示例 19 · ★★★★☆"
 // ⑳ 各语言中 volatile/并发可见性机制的精确对比
 #include <iostream>
@@ -470,6 +489,7 @@ int main() {
 ## 补充完整可编译示例
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <iostream>
 volatile int tick=0;void isr(){tick++;}
@@ -477,6 +497,7 @@ int main(){tick=10;std::cout<<tick<<std::endl;return 0;}
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 #include <iostream>
 struct UART{volatile unsigned DR;};
@@ -484,6 +505,7 @@ int main(){UART u;u.DR='A';std::cout<<(char)u.DR<<std::endl;return 0;}
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 22 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -491,12 +513,14 @@ int main(){std::atomic<int> a{5};volatile int v=5;std::cout<<a.load()<<" "<<v<<s
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile const int ROM=0xDEAD;std::cout<<ROM<<std::endl;return 0;}
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
 struct GPIO{volatile unsigned OUT;volatile unsigned IN;};
@@ -504,18 +528,21 @@ int main(){GPIO g;g.OUT=0xFF;std::cout<<g.OUT<<std::endl;return 0;}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 int main(){int x;volatile int* volatile p=nullptr;(void)x;(void)p;std::cout<<"volatile pointer to volatile data\n";return 0;}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile bool ready=false;ready=true;std::cout<<ready<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 27 · ★★☆☆☆"
 #include <iostream>
 template<typename T>struct VolatilePtr{T*volatile ptr;};
@@ -523,6 +550,7 @@ int main(){int x=5;VolatilePtr<int> v{&x};std::cout<<*v.ptr<<std::endl;return 0;
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 struct Timer{volatile unsigned counter;};Timer t;
@@ -530,24 +558,28 @@ int main(){t.counter=0;while(t.counter<3)t.counter++;std::cout<<t.counter<<std::
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile int* p=new volatile int(42);std::cout<<*p<<std::endl;delete p;return 0;}
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile unsigned* reg=(volatile unsigned*)0x1000;(void)reg;std::cout<<"MMIO pattern\n";return 0;}
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile int counter=0;for(int i=0;i<5;++i)counter++;std::cout<<counter<<std::endl;return 0;}
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 struct HW{volatile unsigned ctrl;volatile unsigned status;};
@@ -555,6 +587,7 @@ int main(){HW h{};h.ctrl=1;std::cout<<h.status<<std::endl;return 0;}
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 33 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -562,18 +595,21 @@ int main(){std::atomic<int> a;volatile int v;a.store(1);v=1;std::cout<<a.load()<
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile bool flag=false;flag=true;std::cout<<std::boolalpha<<flag<<std::endl;return 0;}
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
 int main(){int data=0;volatile int& ref=data;ref=99;std::cout<<data<<std::endl;return 0;}
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 struct alignas(64) CacheAligned{volatile int val;};
@@ -581,12 +617,14 @@ int main(){CacheAligned c;c.val=7;std::cout<<c.val<<std::endl;return 0;}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile const int ROM_DATA=0xBEEF;std::cout<<ROM_DATA<<std::endl;return 0;}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std::endl;delete[]ptr;return 0;}
@@ -642,6 +680,7 @@ int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std
 | 开销 | 强制内存访问 | 取决于 memory_order |
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A: volatile 与 a
+
 ```cpp title="示例 39 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -655,6 +694,7 @@ int main(){
 ## 附录 B: 真实嵌入式的 MMIO 模式
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 B: 真实嵌入式的 MMIO
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <cstdint>
@@ -666,6 +706,7 @@ int main(){std::cout<<"Real embedded: cast memory address to volatile struct*, r
 ## 附录 C: volatile 与优化器的交互
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: volatile 与优化
+
 ```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 int main(){
@@ -679,6 +720,7 @@ int main(){
 ## 附录 D: volatile 汇编证据
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: volatile 汇编证
+
 ```cpp title="示例 42 · ★★☆☆☆"
 // volatile forces memory reload each access
 #include <iostream>
@@ -688,12 +730,14 @@ int main(){g_flag = 1; int local = g_flag; std::cout<<local<<std::endl;return 0;
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: volatile 汇编证
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"volatile vs asm volatile('':::'memory'): volatile = per-variable; asm barrier = full compiler fence."<<std::endl;return 0;}
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: volatile 汇编证
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 // volatile + const = ROM-mapped data, read-only after init
@@ -701,6 +745,7 @@ int main(){volatile const int ROM=0xBEEF;std::cout<<ROM<<std::endl;return 0;}
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: volatile 汇编证
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 struct alignas(64) CacheLine{volatile int val; char pad[60];};
@@ -708,6 +753,7 @@ int main(){CacheLine c{42};std::cout<<c.val<<std::endl;return 0;}
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: volatile 汇编证
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"volatile总结: 用于MMIO/信号/isr。不是同步原语,多线程用atomic!"<<std::endl;return 0;}
@@ -763,6 +809,7 @@ int main(){std::cout<<"volatile总结: 用于MMIO/信号/isr。不是同步原�
 MMIO 寄存器是硬件地址，`volatile` 保证每次访问都真正发生（不被缓存到寄存器）：
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 #include <iostream>
 #include <cstdint>
@@ -790,6 +837,7 @@ int main() {
 `sig_atomic_t` 保证读写是原子的；`volatile` 保证不被优化掉：
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <csignal>
@@ -818,6 +866,7 @@ int main() {
 `volatile` 只挡住编译器优化，不挡住 CPU 重排/撕裂读写，多线程 `++` 仍是数据竞争：
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★★☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 49 · ★★★★☆"
 #include <iostream>
 #include <thread>
@@ -835,6 +884,7 @@ int main() {
 正确版本用 `std::atomic<int>`（或 `fetch_add`）提供原子性与顺序保证：
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 50 · ★★☆☆☆"
 #include <iostream>
 #include <thread>
@@ -870,6 +920,7 @@ int main() {
 实现与边界：`memcpy` 需要目标与源都满足对齐/尺寸要求，`sizeof snapshot` 明确写出避免拷多拷少。何时失效：若「快照」用于跨线程同步则不够——`volatile` + `memcpy` 都不提供原子性/顺序（见练习 3），快照只能当「那一刻的位模式」用。替代方案：`std::atomic` 的 `load` 带 `memory_order_relaxed` 可快照且原子；纯位运算用 `std::bit_cast`（ch42）。
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 56 · ★★☆☆☆"
 #include <iostream>
 #include <cstdint>
@@ -905,6 +956,7 @@ int main() {
 实现与边界：多数类不会同时写 `volatile` 与普通两个版本（普通版本往往就是默认），但硬件封装常「一个对象两种视图」。注意 `volatile` 成员函数体里的每个成员读写都要承受 volatile 语义，能不用就别整类 volatile——通常只在「寄存器描述符」这类薄壳类型上使用。替代方案：把寄存器指针存成 `volatile T*` 成员，方法保持普通成员函数（数据 volatile 而非对象 volatile），更精确、侵入更小。
 
 > **示例 57** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 57 · ★★★☆☆"
 #include <iostream>
 
@@ -935,6 +987,7 @@ int main() {
 **常见错误**：以为"线程安全"就够，用 `std::atomic` 访问 MMIO，反而引入不属于硬件语义的原子/屏障，且 `atomic` 在某些模式下的 load/store 序列与硬件预期不符：
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：嵌入式 MMIO 为何必须
+
 ```cpp title="示例 51 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -950,6 +1003,7 @@ int main() {
 **修复**：MMIO 用 `volatile` 限定指针，保证每次访问按序真实发生：
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 1：嵌入式 MMIO 为何必须
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 #include <iostream>
 #include <cstdint>
@@ -970,6 +1024,7 @@ int main() {
 **常见错误**：用 `volatile int` 当"线程安全计数器"，以为 `volatile` 足以同步，结果因非原子 `++` 与缺少顺序保证产生数据竞争（UB），计数不准：
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★★☆</span> · 演绎 2：volatile 不能替代
+
 ```cpp title="示例 53 · ★★★★☆"
 #include <iostream>
 #include <thread>
@@ -987,6 +1042,7 @@ int main() {
 **修复**：用 `std::atomic` 提供原子操作与内存顺序：
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：volatile 不能替代
+
 ```cpp title="示例 54 · ★★☆☆☆"
 #include <iostream>
 #include <thread>
@@ -1314,6 +1370,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 55 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>

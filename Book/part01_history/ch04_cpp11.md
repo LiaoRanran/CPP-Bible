@@ -64,6 +64,7 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 带着这几笔账往下读，每一节都会回到它们：⑩ 用 GCC 15.3 汇编对比 `copy`/`move` 构造的真实省代差，⑤ 把"移动语义数据流向"画成 Mermaid 让你一眼看懂；附录 D5 把拷贝/移动构造的真实基准摊到台面上。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 我们正在回答的问题
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
@@ -82,6 +83,7 @@ int main() {
 ## ② 前置知识
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置知识
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -99,6 +101,7 @@ int main() {
 ## ③ 后续依赖
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 后续依赖
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
@@ -120,6 +123,7 @@ int main() {
 ## ④ 知识图谱（ASCII）
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII）
+
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -132,6 +136,7 @@ int main() {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱（ASCII）
+
 ```text
 C++11 三大支柱
 ├─ 资源管理革命
@@ -166,6 +171,7 @@ C++11 三大支柱
 ## ⑤ Mermaid（移动语义数据流向）
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Mermaid 图解
+
 ```cpp title="示例 6 · ★★☆☆☆"
 #include <iostream>
 int main() {
@@ -192,6 +198,7 @@ flowchart LR
 ## ⑥ UML（不适用）
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · UML 图解
+
 ```cpp title="示例 7 · ★★☆☆☆"
 #include <iostream>
 constexpr int sq(int x) { return x*x; }
@@ -208,6 +215,7 @@ int main() {
 ## ⑦ ASCII 内存图（移动 vs 拷贝）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图（移动 vs 拷贝）
+
 ```cpp title="示例 8 · ★★☆☆☆"
 #include <iostream>
 constexpr int fact(int n) { return n<=1?1:n*fact(n-1); }
@@ -222,12 +230,14 @@ int main() {
 
 拷贝（深拷贝，开销大）：
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（移动 vs 拷贝）
+
 ```asm
 src: [ptr→0x5000 数据]
 dst: [ptr→0x6000 数据副本]   // 新分配+逐字节拷贝
 ```
 移动（窃取指针，O(1)）：
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存图（移动 vs 拷贝）
+
 ```asm
 src: [ptr→ (置空/null)]
 dst: [ptr→0x5000 数据]       // 直接接管
@@ -236,6 +246,7 @@ dst: [ptr→0x5000 数据]       // 直接接管
 ## ⑧ 生命周期
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 #include <iostream>
 class A { int x; public: A():A(0){} A(int v):x(v){} int get() const { return x; } };
@@ -254,6 +265,7 @@ int main() {
 ## ⑨ 调用栈（lambda 闭包）
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（lambda 闭包）
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 #include <iostream>
 class Base { public: virtual void f(){} };
@@ -270,6 +282,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调用栈（lambda 闭包）
+
 ```text
 调用方 → lambda 闭包对象(含捕获成员) → 调用 operator()
 ```
@@ -278,6 +291,7 @@ int main() {
 ## ⑩ 汇编（移动构造省去分配）
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编（移动构造省去分配）
+
 ```cpp title="示例 14 · ★★☆☆☆"
 #include <iostream>
 #include <thread>
@@ -295,6 +309,7 @@ int main() {
 ## ⑪ STL 联系
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 #include <iostream>
 auto add(int x, int y) -> int { return x+y; }
@@ -313,6 +328,7 @@ int main() {
 ## ⑫ 工业案例
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
+
 ```cpp title="示例 16 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -332,6 +348,7 @@ int main() {
 ## ⑬ 源码分析（libstdc++ 智能指针）
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析
+
 ```cpp title="示例 17 · ★★★☆☆"
 #include <iostream>
 constexpr long double operator"" _km(long double x){ return x*1000; }
@@ -350,6 +367,7 @@ int main() {
 ## ⑭ WG21 提案（关键）<span class="badge badge-std">标准</span>
 
 > **示例 18** [难度 ★☆☆☆☆] [主题：提案（关键）<span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 #include <iostream>
 #include <tuple>
@@ -381,6 +399,7 @@ int main() {
 ## ⑮ 面试题
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 #include <iostream>
 enum class E : unsigned char { A, B };
@@ -401,6 +420,7 @@ int main() {
 ## ⑯ 易错点
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <iostream>
 #include <array>
@@ -420,6 +440,7 @@ int main() {
 ## ⑰ FAQ
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -440,6 +461,7 @@ int main() {
 ## ⑱ 最佳实践
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 22 · ★★☆☆☆"
 #include <iostream>
 #include <utility>
@@ -462,6 +484,7 @@ int main() {
 ## ⑲ 性能分析
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析
+
 ```cpp title="示例 23 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -497,6 +520,7 @@ int main() {
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权与不可拷贝）；cppreference "std::unique_ptr" 词条。
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习题 + 思考题 + 源码阅读路线
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // 智能指针数组
 #include <memory>
@@ -558,6 +582,7 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 ## 附录: C++11 核心特性速查
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++11 核心特性速查
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
 #include <memory>
@@ -567,6 +592,7 @@ int main(){std::vector<int>v{1,2,3,4,5};int s=0;for(auto x:v)s+=x;std::cout<<"su
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++11 核心特性速查
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 #include <memory>
 #include <iostream>
@@ -575,6 +601,7 @@ int main(){auto p=std::make_unique<int>(42);std::cout<<*p<<std::endl;return 0;}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: C++11 核心特性速查
+
 ```cpp title="示例 27 · ★★☆☆☆"
 #include <iostream>
 // constexpr 编译期斐波那契
@@ -583,6 +610,7 @@ int main(){constexpr int f=fib(20);std::cout<<f<<std::endl;return 0;}
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: C++11 核心特性速查
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -595,6 +623,7 @@ int main(){std::vector<Movable> v;v.reserve(10);std::cout<<"noexcept enables mov
 > 本附录为量级估算；精确数值与真实汇编见「附录 H：真实基准/汇编证据」（本机 MinGW GCC 13.1.0 -O2 实测）。硬件级延迟（内存屏障、TLS）平台相关，软件无法干净测得，仅给数量级并标注来源。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：C++11的底层影响 [E: Lowlevel / H: Design]
+
 ```asm
 C++11引入的底层变化:
 1. move语义: 右值引用 → 汇编层面 = 交换 3 个指针(24 字节控制块: start/finish/end_of_storage) vs 深拷贝 N 字节
@@ -619,6 +648,7 @@ C++11引入的底层变化:
 ## 附录追加：工业底层与面试
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录追加：工业底层与面试
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // noexcept move 让 vector realloc 时"移动"而非"拷贝"元素(强异常安全)
 #include <iostream>
@@ -662,6 +692,7 @@ unique_ptr: sizeof=8(EBO), dereference=mov 同裸指针, 零开销（见 ch115�
 
 真实可运行基准（输出实测值，非估算；完整源与汇编见 Examples/_ch04_move_perf.{cpp,asm}）:
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 F：move底层与工业
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // 编译运行: g++ -O2 -std=c++17 _ch04_move_perf.cpp -o _ch04_move_perf && ./_ch04_move_perf
 #include <iostream>
@@ -699,6 +730,7 @@ noexcept move 为何重要? vector realloc 时允许浅移动而非深拷贝(强
 ## 附录 G：C++11面试速查
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：C++11面试速查
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
 #include <memory>
@@ -723,6 +755,7 @@ int main(){auto p=std::make_unique<int>(42);auto f=[](int x){return x*2;};std::c
 ### H.1 真实基准输出（MinGW GCC 13.1.0 -O2 x86-64, ~2.4GHz）
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实基准输出
+
 ```text
 [TSC] 2.395 GHz
 [vector<int>(1M)]  move(含调用开销上界) = 7.87 ns | copy = 706316 ns
@@ -849,6 +882,7 @@ _Z8null_ptrv:
 **真实场景：老代码现代化。** 你把一个 C++98 的 `std::vector` 统计循环（手写迭代器 + `NULL` 哨兵）升级到 C++11。请用 `auto`、范围 for、`nullptr` 重写"遍历容器并统计"的逻辑，并说明 `nullptr` 相比 `NULL`/`0` 的类型安全优势（避免重载决议把 `0` 当成 `int`）。
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -877,6 +911,7 @@ int main() {
 **真实场景：工厂返回独占资源。** 你写一个 `open_connection()` 工厂，返回一条连接/文件句柄；调用方拿到后独占使用、用完即释放，绝不能有两个持有者。请用 `std::unique_ptr` 演示所有权从工厂转移到调用方，并解释为何它能安全替代大多数裸 `new`/`delete`（离开作用域自动释放，无泄漏）。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 35 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -909,6 +944,7 @@ int main() {
 **真实场景：图像/缓冲解码返回大对象。** 你的解码函数产出一个持有大堆缓冲的 `Buffer`，若按值返回走深拷贝会极慢；应让返回"偷走"内部指针。请为 `Buffer` 实现移动构造/移动赋值，用计数证明移动"偷取指针"而非深拷贝，并说明 `noexcept` 对 `std::vector` 扩容时选择移动还是拷贝的影响。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 36 · ★★☆☆☆"
 #include <iostream>
 #include <cstring>
@@ -955,6 +991,7 @@ int main() {
 `auto` 的标准推导规则里，单元素花括号 `{...}` 会被匹配为 `std::initializer_list`，而不是数组或 `std::vector`。这是 C++11 为了支持"统一初始化"而引入的特殊规则，初学者极易踩坑。
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 39 · ★★★☆☆"
 #include <iostream>
 #include <initializer_list>
@@ -982,6 +1019,7 @@ int main() {
 C++11 的 lambda 能在调用点就地定义可调用对象，配合 `std::sort` 等算法即可零成本地表达"一次性比较器"，免去了 C++98 必须写 functor 类或函数指针的样板。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 #include <vector>
@@ -1014,6 +1052,7 @@ int main() {
 **落地**：
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：lambda + std::function —— 可存储的回调
+
 ```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <functional>
@@ -1043,6 +1082,7 @@ int main() {
 **落地**：
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：sharedptr 共享所
+
 ```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1201,6 +1241,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 41 · ★★☆☆☆"
 #include <iostream>
 #include <vector>

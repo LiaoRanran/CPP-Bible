@@ -53,6 +53,7 @@
 ## ③ 契约三要素 <span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：契约三要素 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ③-a assert 等价体——手动前置/后置条件
 #include <cassert>
@@ -72,6 +73,7 @@ int main() {
 ## ④ C++26 P2900 语法展望 <span class="badge badge-std">标准</span>
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++26 P2900 语法展望 [标准/预览]
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // ④-a 模拟 C++26 契约语法（GCC13 不支持，仅示意）
 #include <iostream>
@@ -98,6 +100,7 @@ int main() {
 ## ⑤ Level & Role 机制 <span class="badge badge-std">标准</span>
 
 > **示例 3** [难度 ★★☆☆☆] [主题：& Role 机制 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // ⑤-a 模拟 audit/default 级别——编译期可选开关
 #include <cassert>
@@ -120,6 +123,7 @@ int main() {
 ## ⑥ 契约 vs 异常 <span class="badge badge-std">标准</span>
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：契约 vs 异常 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ⑥-a 契约是"程序员错误"，异常是"运行时错误"
 #include <iostream>
@@ -145,6 +149,7 @@ int main() {
 ## ⑦ 编译期契约 <span class="badge badge-std">标准</span>
 
 > **示例 5** [难度 ★★★☆☆] [主题：编译期契约 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 5 · ★★★☆☆"
 // ⑦-a constexpr 函数中的契约——编译期检测数组越界
 #include <iostream>
@@ -164,6 +169,7 @@ int main() {
 ## ⑧ GCC13 宏模拟 [实现·GCC15]
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宏模拟 [实现·GCC15]
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // ⑧-a 完整的宏契约系统（pre/post/inv）
 #include <cassert>
@@ -192,6 +198,7 @@ int main() {
 ## ⑨ 契约与优化 [实现·GCC15]
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 契约与优化 [实现·GCC15]
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑨-a 契约信息辅助编译器优化（假设推断）
 #include <iostream>
@@ -215,6 +222,7 @@ int main() {
 > 关键修正：第⑧⑨⑬ 节基于 GCC 13.1「未实现契约、用 assert/宏模拟」；但 **GCC 15.3.0 已原生支持契约**（实验性，旧式 `[[pre:]]` / `[[post:]]` / `[[assert:]]` 语法 + `-fcontracts`），下面用真实编译产物展示其代码生成。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 真实汇编：GCC 15.3.0 原生
+
 ```cpp title="示例 8 · ★★★☆☆"
 // ⑩ 原生契约：precondition 由编译器原生识别（GCC 15.3.0 -std=c++2c -fcontracts）
 // 编译：g++ 15.3.0 -std=c++2c -fcontracts -O2 -S -masm=intel
@@ -267,6 +275,7 @@ _Z4useri:
 ## ⑪ STL 联系：契约在标准库中的应用 <span class="badge badge-std">标准</span>
 
 > **示例 9** [难度 ★★★☆☆] [主题：联系：契约在标准库中的应用 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 9 · ★★★☆☆"
 // ⑪ STL 中内置的契约检查
 #include <iostream>
@@ -301,6 +310,7 @@ int main() {
 ## ⑫ 工业案例：安全关键系统中的契约 <span class="badge badge-exp">经验</span>
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：安全关键系统中的契约 [经验]
+
 ```cpp title="示例 10 · ★★★☆☆"
 // ⑫ DO-178C 航空软件中的契约检查模式
 #include <iostream>
@@ -340,6 +350,7 @@ int main() {
 ## ⑬ 源码分析：assert 和 static_assert 的编译器实现 [实现·GCC15]
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：assert 和 static_assert 的编译器实现 [实现·GCC15]
+
 ```cpp title="示例 11 · ★★★☆☆"
 // ⑬ GCC 中 assert 宏和 static_assert 的实现路径
 #include <iostream>
@@ -368,6 +379,7 @@ int main() {
 ## ⑭ WG21 关键提案：P2900 Contracts <span class="badge badge-std">标准</span>
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 关键提案：P2900 Contrac
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑭ C++26 Contracts (P2900) 的完整语义
 #include <iostream>
@@ -396,6 +408,7 @@ int main() {
 ## ⑮ 面试题精选：契约 5 问 <span class="badge badge-exp">经验</span>
 
 > **示例 13** [难度 ★★★☆☆] [主题：面试题精选：契约 5 问 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 13 · ★★★☆☆"
 // ⑮ 契约相关的高频面试题
 #include <iostream>
@@ -424,6 +437,7 @@ int main() {
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 > **示例 14** [难度 ★★★★★] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 14 · ★★★★★"
 // ⑯ assert/contract 的 5 大陷阱
 #include <iostream>
@@ -456,6 +470,7 @@ int main() {
 ## ⑰ FAQ：契约实战常见问题 <span class="badge badge-exp">经验</span>
 
 > **示例 15** [难度 ★★☆☆☆] [主题：契约实战常见问题 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑰ 工程实战中关于契约的高频问答
 #include <iostream>
@@ -490,6 +505,7 @@ int main() {
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 > **示例 16** [难度 ★★★☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 16 · ★★★☆☆"
 // ⑱ 契约使用的 6 条黄金法则
 #include <iostream>
@@ -542,6 +558,7 @@ int main() {
 ## ⑲ 性能分析：assert 的真实开销 [平台·x86-64]
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：assert 的真实开销
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑲ assert 检查的性能量化分析
 #include <iostream>
@@ -605,6 +622,7 @@ int main() {
 | Go | `if` + `panic`（无原生契约） |
 
 > **示例 18** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑩-a Eiffel 风格的 DbC 模拟
 #include <iostream>
@@ -618,6 +636,7 @@ int main() {
 ## 补充完整可编译示例
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // 补-A 前置+后置+不变式三重检查
 #include <cassert>
@@ -635,6 +654,7 @@ int main() { BoundedCounter c(0, 10, 5); std::cout << c.inc() << std::endl; retu
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 // 补-B NDEBUG 下契约全部移除——release 无开销
 #include <cassert>
@@ -651,6 +671,7 @@ int main() {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // 补-C 自定义契约宏——带文件名+行号的诊断信息
 #include <iostream>
@@ -664,6 +685,7 @@ int main() {
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // 补-D 契约组合——多个前置条件
 #include <cassert>
@@ -678,6 +700,7 @@ int main() { int a = 100, b = 0; transfer(a, b, 30); std::cout << a << " " << b 
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 23 · ★★★☆☆"
 // 补-E constexpr 契约——编译期捕获越界
 #include <iostream>
@@ -689,6 +712,7 @@ int main() { constexpr int r = bounded_div(10, 2); std::cout << r << std::endl; 
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 补-F 多态下的契约——基类 virtual 函数的前置/后置
 #include <iostream>
@@ -699,6 +723,7 @@ int main() { Base* b = new Derived; std::cout << b->scale(5) << std::endl; delet
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // 补-G 契约的不可恢复性——违反即 abort（不是异常）
 #include <cassert>
@@ -711,6 +736,7 @@ int main() {
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 26 · ★☆☆☆☆"
 // 补-H 契约 + noexcept——两者互补
 #include <iostream>
@@ -723,6 +749,7 @@ int main() { std::cout << add(5, 10) << std::endl; return 0; }
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 27 · ★★★☆☆"
 // 补-I 在模板中使用契约——类型级断言
 #include <iostream>
@@ -736,6 +763,7 @@ int main() { std::cout << twice(21) << std::endl; return 0; }
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // 补-J 范围契约——最小/最大值保护
 #include <cassert>
@@ -748,6 +776,7 @@ int main() { set_volume(75); return 0; }
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // 补-K Eiffel 风格 invariant——每次公开方法调用后检查
 #include <cassert>
@@ -764,6 +793,7 @@ int main() { Account a(100); a.deposit(50); std::cout << a.balance() << std::end
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 30 · ★★★☆☆"
 // 补-L 契约级别选择——默认/审计/关闭
 #include <iostream>
@@ -780,6 +810,7 @@ int main() {
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // 补-M 指针非空契约——最常用的前置条件之一
 #include <cassert>
@@ -792,6 +823,7 @@ int main() { std::cout << strlen_safe("hello") << std::endl; return 0; }
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // 补-N 后置条件保障——返回值满足约束
 #include <cassert>
@@ -807,6 +839,7 @@ int main() { std::cout << clamped_add(5, 10, 12) << std::endl; return 0; }
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // 补-O 不变式在构造/析构中的检查
 #include <cassert>
@@ -819,6 +852,7 @@ int main() { Range r(0, 100); std::cout << r.contains(50) << std::endl; return 0
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // 补-P 多参数契约——precondition 组合
 #include <cassert>
@@ -832,6 +866,7 @@ int main() { std::cout << safe_div(10.0, 3.0) << std::endl; return 0; }
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // 补-Q contract violation 的不可恢复性——选择 abort 而非异常
 #include <iostream>
@@ -844,6 +879,7 @@ int main() {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 36 · ★★★☆☆"
 // 补-R 编译期 static_assert 作为类型级契约
 #include <iostream>
@@ -855,6 +891,7 @@ int main() { Buffer<int, 16> b; std::cout << "Buffer OK\n"; return 0; }
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // 补-S 嵌套契约——外层和内层都检查
 #include <cassert>
@@ -865,6 +902,7 @@ int main() { std::cout << outer(5) << std::endl; return 0; }
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // 补-T 契约的文档化价值——即使用 assert，也比无检查的 bare 函数好
 #include <iostream>
@@ -875,6 +913,7 @@ int main() { std::cout << "Pre/post conditions serve as machine-checked docs.\n"
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 // 补-U 单条 assert 验证多个条件（AND 语义）
 #include <cassert>
@@ -889,6 +928,7 @@ int main() { set_date(2026, 7, 9); return 0; }
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // 补-V NDEBUG 下无开销的提示
 #include <iostream>
@@ -914,6 +954,7 @@ int main() {
 | axiom | 永不检查 | 0 | 定理证明器输入 |
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：contracts设计权衡
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++26 contracts(P2900): proof-carrying code for safety-critical systems."<<std::endl;return 0;}
@@ -1014,6 +1055,7 @@ int main(){std::cout<<"C++26 contracts(P2900): proof-carrying code for safety-cr
 **当下可编译版本（`assert`）**：
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 #include <vector>
 #include <cassert>
@@ -1053,6 +1095,7 @@ int element_at(const std::vector<int>& v, std::size_t i)
 <details><summary>答案与解析</summary>
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <string>
 #include <stdexcept>
@@ -1090,6 +1133,7 @@ int parse_int(const std::string& s) {
 **当下可编译版本（用 `[[unlikely]]` 提示热点）**：
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <cstddef>
 std::size_t first_nonzero(const int* p, std::size_t n) {
@@ -1130,6 +1174,7 @@ std::size_t len(const int* p)
 这与 C++26 契约（P2900）的 class invariant 机制同构：契约把不变量声明为语言特性、按构建模式统一管控；当下没有该语法时，`assert` + 统一检查点是等价且可移植的替代。注意 trade-off：检查必须能整体关掉（`NDEBUG`），因此**不变量检查里绝不能有副作用**——它只验证事实，不修数据。
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 49 · ★★☆☆☆"
 #include <vector>
 #include <cassert>
@@ -1167,6 +1212,7 @@ int main() { BoundedBuffer b(3); b.push(1); b.push(2); b.push(3); std::cout << b
 因此工程红线是：`[[assume]]` 只能用于**确定成立且你愿意为它承担 UB 后果**的不变量，最好由上层显式契约背书；拿不准就用 `assert` 守住、让优化器自己推断。典型场景是性能热路径里"索引已被检查过/由调用协议保证"的访存。GCC 13 起支持 `[[assume]]`（C++23 模式），与 C++26 契约在"向优化器暴露不变量"这一点上目标一致。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <cstddef>
 #include <iostream>
@@ -1194,6 +1240,7 @@ int main() { int a[4] = {10, 20, 30, 40}; std::cout << fetch(a, 4, 2) << '\n'; }
 **修复（落地）。** 用前置契约快速失败；release 下契约可保留为轻量边界检查（而非剔除），越界即终止进入安全状态：
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：安全关键系统 → 契约而非
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <cstddef>
 #include <cassert>
@@ -1216,6 +1263,7 @@ C++26 等价（```text）：`int sample(const int* buf, size_t i, size_t n) pre 
 **修复（落地）。** 用契约/`assume` 告诉优化器"此不变式成立"，删除冗余分支（C++26 语法见练习 3 ```text）：
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演绎 2：性能热点 → 契约驱动去分
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 #include <cstddef>
 double inv(double x) {
@@ -1251,6 +1299,7 @@ double inv(double x) {
 可复现基准（自包含、可编译，建模 enforced 契约）：
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★★☆</span> · 真实性能基准：契约强制检查的运行期代价
+
 ```cpp title="示例 47 · ★★★★☆"
 // g++ -std=c++23 -O2 ch121_bench.cpp
 #include <chrono>
@@ -1380,6 +1429,7 @@ GCC 15.3.0 原生支持 `-fcontracts`（P2900 草案），`[[assert: x >= 0]]` �
 ### D5.3 可复现 demo
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <cstdio>
 #include <cassert>

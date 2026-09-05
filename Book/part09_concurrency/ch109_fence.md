@@ -57,6 +57,7 @@
 ## ② memory_order 六态 <span class="badge badge-std">标准</span>
 
 > **示例 1** [难度 ★★☆☆☆] [主题：order 六态 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 六种内存序不是强度刻度，而是"各自解决什么问题"——一个程序把它们摆在同一张桌上
 #include <atomic>
@@ -102,6 +103,7 @@ int main() {
 ## ③ relaxed 语义 <span class="badge badge-std">标准</span>
 
 > **示例 2** [难度 ★★☆☆☆] [主题：语义 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 2 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -112,6 +114,7 @@ int main(){x.store(42,std::memory_order_relaxed);std::cout<<x.load(std::memory_o
 ## ④ acquire-release 配对 <span class="badge badge-std">标准</span>
 
 > **示例 3** [难度 ★★☆☆☆] [主题：配对 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 3 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -125,6 +128,7 @@ int main(){std::thread p(producer),c(consumer);p.join();c.join();return 0;}
 ## ⑤ seq_cst 全局序 <span class="badge badge-std">标准</span>
 
 > **示例 4** [难度 ★★☆☆☆] [主题：cst 全局序 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -135,6 +139,7 @@ int main(){a.store(1,std::memory_order_seq_cst);b.store(1,std::memory_order_seq_
 ## ⑥ atomic_thread_fence <span class="badge badge-std">标准</span>
 
 > **示例 5** [难度 ★★☆☆☆] [主题：threadfence <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 5 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -190,6 +195,7 @@ void consume_load() { v = g.load(std::memory_order_consume); }
 ## ⑧ memory_order_consume <span class="badge badge-std">标准</span>
 
 > **示例 7** [难度 ★★☆☆☆] [主题：orderconsume <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 7 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -234,6 +240,7 @@ int main() {
 ## ⑩ 跨语言对比：内存模型 <span class="badge badge-exp">经验</span>
 
 > **示例 9** [难度 ★★☆☆☆] [主题：跨语言对比：内存模型 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 9 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxed/SeqCst): identical semantics.\n";return 0;}
@@ -242,6 +249,7 @@ int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxe
 ## 补充完整可编译示例
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 10 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -252,6 +260,7 @@ int main(){std::thread t1(inc),t2(inc);t1.join();t2.join();std::cout<<counter.lo
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 11 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -260,6 +269,7 @@ int main(){int expected=0;flag.compare_exchange_strong(expected,1,std::memory_or
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 12 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -268,6 +278,7 @@ int main(){Padded p;p.v.store(7,std::memory_order_relaxed);std::cout<<p.v.load()
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 13 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -422,6 +433,7 @@ int main() {
 真机输出：`read ok: a=1 b=2`、`一致快照=112692654  撕裂=0`——读端在 300 ms 内拿到一亿多次一致快照，一次撕裂都没有。注意读端的**第二道 `acquire` 栅栏**夹在「读数据」与「复查版本号」之间：少了它，编译器/CPU 可能把版本号复查排到读数据之前，从而读到撕裂的快照还以为一致。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 17 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -474,6 +486,7 @@ int main() {
 真机输出：`config v=1 threshold=50`（读到的是构造完成的对象）。若把读端改成 `relaxed`，读者就可能看到「指针已更新、但对象字段还是未初始化内存」——这正是 ⑯ 易错点里"relaxed 用在有依赖的数据 = UB"的具体形态。RCU 真正的难点在**旧对象的回收时机**（宽限期/grace period），见 ch112（hazard pointer / RCU）。
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"fence总结: seq_cst最安全也最贵, acquire-release足够大多数场景, relaxed仅计数器。"<<std::endl;return 0;}
@@ -481,6 +494,7 @@ int main(){std::cout<<"fence总结: seq_cst最安全也最贵, acquire-release�
 
 ## ⑪ STL 联系 <span class="badge badge-std">标准</span>
 > **示例 20** [难度 ★★☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 20 · ★★☆☆☆"
 #include <iostream>
 #include <atomic>
@@ -794,12 +808,14 @@ RMW   : fetch_add relaxed=3.15  seq_cst=3.16  (ns/op)
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（围栏 vs 操作级顺序）；cppreference "Memory ordering" 词条。
 
 > **示例 29** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 29 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxed/SeqCst): identical semantics.\n";return 0;}
 ```
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consume. Profile target arch."<<std::endl;return 0;}
@@ -864,6 +880,7 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 | seq_cst | ~10ns (mfence) | ~20ns (dmb) | Dekker, seqlock writer |
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A: 六种 memoryord
+
 ```cpp title="示例 31 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -873,6 +890,7 @@ int main(){std::cout<<"x86 acquire=free (TSO model). ARM acquire=ldar instructio
 ## 附录 B: seqlock 完整实现
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B: seqlock 完整实现
+
 ```cpp title="示例 32 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -887,6 +905,7 @@ int main(){SeqLock sl;sl.write(10,20);int a,b;sl.read(a,b);std::cout<<a<<" "<<b<
 ## 附录 C: MESI 缓存一致性协议
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: MESI 缓存一致性协议
+
 ```cpp title="示例 33 · ★★☆☆☆"
 #include <iostream>
 int main(){
@@ -900,6 +919,7 @@ int main(){
 ## 附录 D: 跨平台 memory_order 开销
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: 跨平台 memoryor
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 int main(){
@@ -912,6 +932,7 @@ int main(){
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 D: 跨平台 memoryor
+
 ```cpp title="示例 35 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -929,6 +950,7 @@ int main(){
 ## 附录 E: Lock-free 栈实战模式
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E: Lock-free 栈实
+
 ```cpp title="示例 36 · ★★★☆☆"
 #include <atomic>
 #include <iostream>
@@ -937,12 +959,14 @@ int main(){LFStack<int> s;s.push(1);s.push(2);int v;s.pop(v);std::cout<<v<<std::
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E: Lock-free 栈实
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"LF patterns: CAS loop + acq_rel. Hazard pointers/RCU for safe reclamation beyond fences."<<std::endl;return 0;}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: Lock-free 栈实
+
 ```cpp title="示例 38 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -950,6 +974,7 @@ int main(){std::atomic<int>x{0};x.store(42,std::memory_order_release);std::atomi
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: Lock-free 栈实
+
 ```cpp title="示例 39 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"fence vs atomic: fence orders ALL subsequent ops, atomic orders just that variable."<<std::endl;return 0;}
@@ -966,6 +991,7 @@ int main(){std::cout<<"fence vs atomic: fence orders ALL subsequent ops, atomic 
 ## 附录 F：fence工业与面试
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 F：fence工业与面试
+
 ```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 #include <atomic>
@@ -993,6 +1019,7 @@ dmb ishld  ; 只阻止load-load和load-store重排, 不阻止store-store
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 G：fence设计权衡 [H: Design / E: Lowlevel]
+
 ```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 int main(){std::cout<<"x86 mfence=10ns(seq_cst); ARM dmb=2-5ns(acquire/release)"<<std::endl;return 0;}
@@ -1101,6 +1128,7 @@ _Z13release_fencev:
 独立 fence 把「序」从具体原子操作里剥离出来：release fence 挡住其**前**的写被重排到其后的 relaxed store 之后；acquire fence 挡住其**后**的读被重排到其前的 relaxed load 之前。两者配对等价于 release/acquire 操作序。
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 42 · ★★☆☆☆"
 #include <atomic>
 #include <thread>
@@ -1140,6 +1168,7 @@ int main() {
 操作自带序只作用于**该操作本身**的那一次访问；独立 fence 作用于**当前线程该 fence 前/后的所有原子操作**，粒度更粗、影响更广。当你需要「一批 relaxed 操作整体对外发布一次」时，用一个 release fence 比给每个操作都升级序更省。
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 43 · ★★☆☆☆"
 #include <atomic>
 #include <thread>
@@ -1181,6 +1210,7 @@ int main() {
 `atomic_signal_fence` 只阻止**编译器**在当前线程内的重排（针对同线程异步信号/中断），不生成任何 CPU 屏障指令，因此零运行时开销；`atomic_thread_fence` 还会生成硬件屏障用于**跨线程/跨核**可见性。信号处理器与被中断代码在同一核同一线程上下文，只需防编译器重排。
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 44 · ★★☆☆☆"
 #include <atomic>
 #include <csignal>
@@ -1221,6 +1251,7 @@ int main() {
 边界条件与失效场景：seq_cst fence 只保证"fence 参与 S"的操作间全序，不延伸到 fence 外的 relaxed 操作与其它变量的自由重排。性能上 seq_cst 是最贵的序——只有"需要全局一致视角"（IRIW 类悖论）才用；大多数同步用 release/acquire 对就够，不要为"看起来更安全"一律 seq_cst。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <atomic>
 #include <thread>
@@ -1263,6 +1294,7 @@ fence 版自旋锁：`lock()` 用 `locked.exchange(true, relaxed)` 抢锁——e
 边界条件与失效场景：fence 的粒度是"线程内 fence 前后的所有操作"，比单操作序更宽——滥用会让本不需同步的操作也被排序，牺牲一点重排自由度。自旋锁本身对单核系统是活锁源（无其他线程释放锁），生产还要加 `yield`/`_mm_pause`；长临界区、进程间、IO 等待场景应换 `std::mutex`。fence 版适合"不想逐操作标注"的批量临界区。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 51 · ★★★☆☆"
 #include <atomic>
 #include <thread>
@@ -1308,6 +1340,7 @@ int main() {
 **常见错误**：对「单操作即可有序」的场景滥用独立 fence，代码更啰嗦且易漏配对。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：该用独立 fence 还是
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <atomic>
 #include <thread>
@@ -1330,6 +1363,7 @@ int main() {
 **修复**：单点发布直接让操作自带序，去掉 fence：
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：该用独立 fence 还是
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <atomic>
 #include <thread>
@@ -1356,6 +1390,7 @@ int main() {
 **常见错误**：跨线程用 `atomic_signal_fence`。
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：atomicsignalf
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <atomic>
 #include <thread>
@@ -1476,6 +1511,7 @@ int main() {
 ### D4.9 编译验证（Dekker 风格双线程 + seq_cst fence）
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译验证
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <atomic>
 #include <iostream>
@@ -1683,6 +1719,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <thread>

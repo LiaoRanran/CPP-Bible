@@ -103,6 +103,7 @@ flowchart TD
 - **`void_t<Ts...>`**：C++17 引入的平凡工具，展开 `Ts` 时若均合法则产生 `void`，用于探测成员是否存在。
 
 > **示例 1** [难度 ★★★☆☆] [主题：核心定义与术语表 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 1 · ★★★☆☆"
 // 根基：integral_constant 的完整手写形态（标准库 ~<type_traits> 行 93）
 template <class T, T v>
@@ -149,6 +150,7 @@ using false_type = integral_constant<bool, false>;
 - **`is_complete_type` 类探测**：Clang 的 `__is_complete_type` 比 GCC 的 `__is_array` 系列更全。
 
 > **示例 2** [难度 ★★★☆☆] [主题：实现差异 <span class="badge badge-impl">实现</span>]
+
 ```cpp title="示例 2 · ★★★☆☆"
 // MSVC 风格的 is_base_of 必须依赖内建（库实现无法判断 private 继承）
 template <class B, class D>
@@ -164,6 +166,7 @@ struct my_is_base_of {
 type trait 是**纯编译期**机制：它不产生任何运行期对象、不占内存。`is_pointer<int>::value` 在编译后彻底消失，不存在 `value` 的存储。唯一例外是 `integral_constant` 的 `operator bool()` 可在运行期调用，但其返回值本身就是常量。
 
 > **示例 3** [难度 ★★★★☆] [主题：内存布局与对象表示 <span class="badge badge-impl">实现</span>]
+
 ```cpp title="示例 3 · ★★★★☆"
 // 编译期常量的"零内存"：sizeof 不计入 trait 实例，因为根本不会实例化
 static_assert(sizeof(std::is_pointer<int*>) == 1, "trait 是空类，size==1（受 EBO 影响）");
@@ -191,6 +194,7 @@ _Z10use_traitsv:
 ## ⑨ 完整可编译示例（最小可运行） <span class="badge badge-std">标准</span>
 
 > **示例 4** [难度 ★★☆☆☆] [主题：完整可编译示例（最小可运行） <span class="badge badge-std">标准</span>
+
 ```cpp title="示例 4 · ★★☆☆☆"
 // 文件名：trait_min.cpp —— 用 g++ -std=c++23 -O2 trait_min.cpp 直接编译运行
 #include <type_traits>
@@ -210,6 +214,7 @@ int main() {
 **场景**：序列化库 `serialize(T)` 需要根据 `T` 是否为基础类型选择快速路径或反射路径。用 trait 在编译期分派，避免运行期 `typeid` 与虚表。
 
 > **示例 5** [难度 ★★★☆☆] [主题：真实业务场景案例 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 5 · ★★★☆☆"
 #include <type_traits>
 #include <string>
@@ -237,6 +242,7 @@ void serialize(const T& v) {
 **形态 A：布尔 trait（最基础）** —— 用偏特化把"是某类型"分流到 `true_type`。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 四种形态
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // 手写 is_pointer：主模板 false，指针偏特化 true
 template <class T> struct my_is_pointer      : false_type {};
@@ -248,6 +254,7 @@ static_assert(!my_is_pointer<int>::value);
 **形态 B：值 trait（携带常量）** —— 如 `extent`、`rank` 用递归模板携带数组维度。
 
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 四种形态
+
 ```cpp title="示例 7 · ★★☆☆☆"
 #include <cstddef>
 // 手写 rank：数组层数
@@ -261,6 +268,7 @@ static_assert(my_rank<int[10][20][30]>::value == 3);
 **形态 C：类型变换 trait** —— `type` 成员暴露新类型，标准库统一用 `_t` 别名简化。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 四种形态
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // 手写 remove_const
 template <class T> struct my_remove_const          { using type = T; };
@@ -272,6 +280,7 @@ static_assert(std::is_same_v<my_remove_const_t<const int>, int>);
 **形态 D：关系 trait（依赖内建）** —— `is_base_of` 等必须靠编译器内建，不可纯库实现。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 四种形态
+
 ```cpp title="示例 9 · ★★★☆☆"
 template <class B, class D>
 struct my_is_base_of {
@@ -296,6 +305,7 @@ static_assert(!my_is_base_of<Der, Base>::value);
 10. **`conjunction` 当普通 `&&`**：`conjunction<A,B>` 短路（B 在 A 失败时不实例化），普通 `&&` 会强制两遍实例化导致 SFINAE 误伤。
 
 > **示例 10** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 10 · ★★★☆☆"
 // ❌ 反模式：运行期 if 两分支都须合法，下面第二分支对 int 非法 → 硬错
 template <class T>
@@ -315,6 +325,7 @@ void good(T v) {
 ```
 
 > **示例 11** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // 手写 is_lvalue_reference：主模板 false，左值引用偏特化 true
 template <class T> struct my_is_lvalue_reference       : false_type {};
@@ -325,6 +336,7 @@ static_assert(!my_is_lvalue_reference<int>::value);
 ```
 
 > **示例 12** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 12 · ★★★☆☆"
 #include <cstddef>
 // 手写 extent<T,N=0>：非数组为 0；数组第 0 维为元素数
@@ -342,6 +354,7 @@ static_assert(my_extent<int, 0>::value == 0);
 ```
 
 > **示例 13** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // void_t 探测 size() 成员存在性
 template <class T, class = void> struct has_size : false_type {};
@@ -353,6 +366,7 @@ static_assert(!has_size_v<int>);
 ```
 
 > **示例 14** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 14 · ★★★☆☆"
 // if constexpr + is_integral 分派的 to_string
 #include <string>
@@ -365,6 +379,7 @@ std::string to_string_v3(T v) {
 ```
 
 > **示例 15** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 15 · ★★★☆☆"
 // conjunction 短路：B 在 A 失败时不被实例化（避免 SFINAE 误伤）
 template <class A, class B>
@@ -378,6 +393,7 @@ static_assert(!ok_t<int>::value);   // int 是 integral 但非 pointer，短路�
 ```
 
 > **示例 16** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 16 · ★★★☆☆"
 // remove_cv 手写：剥除 const/volatile
 template <class T> struct my_remove_cv                     { using type = T; };
@@ -389,6 +405,7 @@ static_assert(std::is_same_v<my_remove_cv_t<const volatile int>, int>);
 ```
 
 > **示例 17** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // add_pointer 手写：加一层指针
 template <class T> struct my_add_pointer { using type = T*; };
@@ -398,6 +415,7 @@ static_assert(std::is_same_v<my_add_pointer_t<int*>, int**>);
 ```
 
 > **示例 18** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // is_function 手写：用 SFINAE 探测能否声明函数指针
 template <class T> struct my_is_function : false_type {};
@@ -408,6 +426,7 @@ static_assert(!my_is_function_v<int>);
 ```
 
 > **示例 19** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 19 · ★★☆☆☆"
 #include <cstddef>
 // is_array 手写：主模板 false，数组偏特化 true
@@ -420,6 +439,7 @@ static_assert(!my_is_array_v<int>);
 ```
 
 > **示例 20** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 20 · ★★★☆☆"
 // negation 手写：逻辑非
 template <class T> struct my_negation : bool_constant<!T::value> {};
@@ -429,6 +449,7 @@ static_assert(!my_negation_v<std::is_pointer<int*>>);  // !true = false
 ```
 
 > **示例 21** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 21 · ★★★☆☆"
 // 编译期类型分发：根据 is_arithmetic 选不同算法
 template <class T>
@@ -440,6 +461,7 @@ T clamp(T v, T lo, T hi) { return clamp_impl(v, lo, hi, std::is_arithmetic<T>{})
 ```
 
 > **示例 22** [难度 ★☆☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // rank + extent 组合查询多维数组形状
 static_assert(std::rank_v<int[2][3][4]> == 3);
@@ -447,6 +469,7 @@ static_assert(std::extent_v<int[2][3][4], 2> == 4);
 ```
 
 > **示例 23** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // enable_if 作为返回类型的惯用法（C++11 风格）
 template <class T>
@@ -456,6 +479,7 @@ static_assert(make_zero<int>() == 0);
 ```
 
 > **示例 24** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // bool_constant 简化：避免 integral_constant<bool, X> 冗长
 template <bool B> using my_bool_constant = std::integral_constant<bool, B>;
@@ -463,6 +487,7 @@ static_assert(my_bool_constant<(2 > 1)>::value);
 ```
 
 > **示例 25** [难度 ★★☆☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 25 · ★★☆☆☆"
 // 手写 is_const
 template <class T> struct my_is_const        : false_type {};
@@ -472,6 +497,7 @@ static_assert(!my_is_const_v<int>);
 ```
 
 > **示例 26** [难度 ★★★☆☆] [主题：十大易错点与反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 26 · ★★★☆☆"
 // 用 trait 驱动的编译期断言表（工业库常用）
 template <class T>
@@ -487,6 +513,7 @@ static_assert(std::is_trivially_copyable_v<Pod>);
 标准库 `<type_traits>` 中 `is_pointer` 的真实骨架（libstdc++ 摘录，行号指 `_bits/type_traits.h` 区块）：
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析 [实现·libstdc++]
+
 ```cpp title="示例 27 · ★★★☆☆"
 // libstdc++ 风格（简化，非逐字节）：指针偏特化命中 -> true_type
 template<typename _Tp>
@@ -517,6 +544,7 @@ template<typename _Tp>
 `type_traits` 属标准强约束区，三编译器结论一致率 >99% [UNVERIFIED]。分歧仅在极少数内建 trait（如 `is_trivially_constructible` 对含 `volatile` 成员的类）。工程建议：跨编译器库用标准 trait 而非编译器内建宏。
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 GCC / Clang / MSVC 一致性
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 // 跨平台写法：优先标准 trait
 #if defined(_MSC_VER)
@@ -536,6 +564,7 @@ static_assert(std::is_trivially_copyable_v<int>);  // 三编译器一致 true
 | `typeid().name()` | 字符串比较 | 0 | 含 RTTI 段 |
 
 > **示例 29** [难度 ★★★☆☆] [主题：性能基准（零开销证据） <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 29 · ★★★☆☆"
 // microbenchmark：trait 分派 vs RTTI 分派（10^8 次）
 #include <type_traits>
@@ -556,6 +585,7 @@ int main() {
 ## ⑰ 编译期失误排查（trait 不触发） <span class="badge badge-exp">经验</span>
 
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译期失误排查（trait 不触发）
+
 ```cpp title="示例 30 · ★★☆☆☆"
 // ❌ 症状：enable_if 版本全部被剔除，无匹配重载
 template <class T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
@@ -578,6 +608,7 @@ static_assert(std::is_integral_v<int>);
 6. trait 仅用于编译期；运行期分支用 `if constexpr` 而非运行期 `if`。
 
 > **示例 31** [难度 ★★★☆☆] [主题：工业级最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 31 · ★★★☆☆"
 // 现代写法：void_t 探测成员 has_serialize
 template <class T, class = void>
@@ -595,6 +626,7 @@ static_assert(!has_serialize_v<int>);
 ## ⑲ 综合实战：手写 `is_same` + 标签分发 + `conditional` <span class="badge badge-std">标准</span>
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 综合实战：手写 issame + 标
+
 ```cpp title="示例 32 · ★★★☆☆"
 #include <type_traits>
 #include <iostream>
@@ -703,6 +735,7 @@ int main() {
 ## 附录: type_traits 深度
 
 > **示例 33** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录: typetraits 深度
+
 ```cpp title="示例 33 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -711,6 +744,7 @@ int main(){check<int>();check<double>();return 0;}
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
+
 ```cpp title="示例 34 · ★★☆☆☆"
 #include <iostream>
 #include <type_traits>
@@ -719,6 +753,7 @@ int main(){std::cout<<halve(10)<<std::endl;return 0;}
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
+
 ```cpp title="示例 35 · ★★☆☆☆"
 #include <iostream>
 #include <type_traits>
@@ -726,6 +761,7 @@ int main(){std::cout<<std::is_same_v<int,int><<" "<<std::is_same_v<int,float><<s
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
+
 ```cpp title="示例 36 · ★★☆☆☆"
 #include <iostream>
 #include <type_traits>
@@ -734,6 +770,7 @@ int main(){std::cout<<std::is_same_v<S,T><<std::endl;return 0;}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: typetraits 深度
+
 ```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <type_traits>
@@ -834,6 +871,7 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 <details><summary>答案与解析</summary>
 
 > **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 38 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -861,6 +899,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 39 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -890,6 +929,7 @@ int main() { std::cout << to_string(42) << ' ' << to_string("hi") << '\n'; }
 <details><summary>答案与解析</summary>
 
 > **示例 40** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 40 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -925,6 +965,7 @@ int main() {
 类型特性（type traits）在编译期回答"这个类型具备什么性质"。`if constexpr` 根据常量布尔丢弃不满足的分支，只实例化通过的分支——这是现代 C++ 取代 SFINAE 的"编译期 if"。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -952,6 +993,7 @@ int main() { describe(1); describe(1.0); describe("s"); }
 自定义 trait 通常是一个继承自 `true_type`/`false_type` 的类模板，依靠偏特化"按类型结构分流"。这正是 `std::is_pointer` 等标准 trait 的实现手法，把问答搬到编译期、零运行期成本。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -988,6 +1030,7 @@ to_string(T v);   // 可行，但返回类型冗长
 **修复**：用 `enable_if_t` + 默认模板参数，签名更干净且仍走 SFINAE：
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 1：enableif 放返回类
+
 ```cpp title="示例 41 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -1021,6 +1064,7 @@ struct has_serialize<T, std::void_t<decltype(&T::serialize)>> : std::true_type {
 **修复**：用表达式 `decltype(std::declval<T>().serialize())` 探测"可调用"：
 
 > **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：voidt 探测成员函数
+
 ```cpp title="示例 42 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -1050,6 +1094,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:92（integral_constant——所有 trait 基石）
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++ 真实源码摘录
+
 ```text
   template<typename _Tp, _Tp __v>
     struct integral_constant
@@ -1069,6 +1114,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:2458（conditional 编译期三元）
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
+
 ```text
   template<bool _Cond, typename _Iftrue, typename _Iffalse>
     struct conditional
@@ -1081,6 +1127,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:132（enable_if SFINAE 开关）
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
+
 ```text
   template<bool, typename _Tp = void>
     struct enable_if
@@ -1093,6 +1140,7 @@ int main() {
 
 // 摘自 libstdc++ 15.3.0：type_traits:1538（is_same 类型相等判定）
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
+
 ```text
   template<typename _Tp, typename _Up>
     struct is_same : public false_type { };
@@ -1128,6 +1176,7 @@ int main() {
 ### D4.4 可编译验证
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
+
 ```cpp title="示例 47 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>
@@ -1147,6 +1196,7 @@ int main() {
 
 预期输出：
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
+
 ```text
 true
 false
@@ -1395,6 +1445,7 @@ N=1'000'000（拷贝元素），VN=200'000（vector push_back）。`sizeof Trivi
 ### D5.3 可复现演示
 
 > **示例 49** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
+
 ```cpp title="示例 49 · ★★★☆☆"
 #include <iostream>
 #include <type_traits>

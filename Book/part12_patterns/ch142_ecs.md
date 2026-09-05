@@ -61,6 +61,7 @@ ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语
 > 【定义】ECS 由三个正交概念构成：**Entity（实体）** = 一个不携带数据的稳定 ID；**Component（组件）** = 纯数据（无逻辑）；**System（系统）** = 批量遍历"拥有特定组件集合"的实体并施加逻辑。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：ECS 是什么（游戏/仿真）
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <cstdint>
 // ① ECS 三元组的本质区别（观念先行，具体实现见 ② ③ ④）
@@ -76,6 +77,7 @@ void movement_system();                                  // 系统即逻辑（�
 - `[经验]`：ECS 不是"面向对象的替代糖"，而是**面向数据（DOD，见 ⑱）** 在游戏/仿真领域的落地形态——核心动机是**缓存局部性**与**并行化**，而非代码复用。
 
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：ECS 是什么（游戏/仿真）
+
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <span>
 // ① 经典 OOP 的"对象=数据+行为" vs ECS 的"数据归数据、行为归系统"
@@ -90,6 +92,7 @@ void movement_system();                                  // 系统即逻辑（�
 Entity 在本质上只是一个**稳定、可复用的整型句柄**。它不指向任何对象，只是"在存储里的一把钥匙"。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // ② 最简实体：32 位整型即实体；0 约定为"空实体"
 #include <cstdint>
@@ -101,6 +104,7 @@ int main() { Entity e = 1; return (int)e; }
 真实编译产物（`Examples/_ch142_entity.asm`，GCC 15.3.0 `-O2`）：`main` 直接返回常量 `1`，实体没有任何运行时开销——它**就是**一个整数。
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ② 实体生成器：用一个空闲列表（free list）复用槽位，避免频繁分配
 #include <cstdint>
@@ -117,6 +121,7 @@ std::uint32_t create() {                 // 返回一个 index（version 见 ⑧
 - `[经验]`：永远用 `NULL_ENTITY`（或 `entt::null`）表示"无"，不要用 `-1` 或随机魔法值；否则系统遍历时会因"到底有没有这个实体"而分支出 bug。
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ② 实体不应持有任何成员函数或虚表：下面这样写就违背了 ECS 信条
 // ❌ struct Entity { virtual ~Entity(); std::uint32_t id; };  // 虚表 + 行为，错！
@@ -127,6 +132,7 @@ std::uint32_t create() {                 // 返回一个 index（version 见 ⑧
 Component 是**无逻辑、最好平凡可拷贝**的数据包。它不继承、不虚函数、不持有资源（资源用句柄/ID 引用，而非组件本身持有）。
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 6 · ★☆☆☆☆"
 // ③ 纯数据组件：三个 float，trivially copyable，可 memcpy、可 vector 存储
 #include <cstdint>
@@ -136,6 +142,7 @@ struct Tag      { std::uint32_t id; };   // 标签组件：几乎零数据，仅
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ③ 组件必须"瘦"：把逻辑塞进组件是反模式（见 ⑯）
 // ❌ struct Bad { virtual void update(); int hp; };   // 有虚函数 = 非平凡 = 破坏布局
@@ -146,6 +153,7 @@ struct Tag      { std::uint32_t id; };   // 标签组件：几乎零数据，仅
 - `[经验]`：把**资源**（纹理、网格、音频）放进组件时，组件只存 `std::uint32_t asset_id`，真正的资源由外部资源管理器按 ID 取——这叫"组件瘦化"。
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ③ 用 std::span 表达"一批同类组件的连续切片"，是系统输入的标准形态
 #include <span>
@@ -160,6 +168,7 @@ void render_system(std::span<const Position> pos, std::span<const Tag> visible) 
 System 是**纯算法**：它声明"我需要哪些组件"，引擎把满足条件的实体批次喂给它，它就地变换组件。System 之间不直接通信，只通过共享的组件存储间接耦合。
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ④ 移动系统：声明依赖 [Position, Velocity]，批量积分
 #include <vector>
@@ -177,6 +186,7 @@ void movement_system(std::vector<Position>& pos,
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 #include <vector>
 // ④ 系统应该是"无状态函数"：所有状态都在组件里，便于并行（见 ⑨ ⑮）
@@ -188,6 +198,7 @@ void movement_system(std::vector<Position>& pos,
 - `[经验]`：系统的顺序即"帧的逻辑顺序"（输入→物理→AI→动画→渲染）。把顺序做成**显式调度表**（见 ⑨），而非隐式依赖全局初始化顺序。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实体组件系统 ECS
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // ④ 系统可以"查询"而非"持有"：用组件的有无组合出行为
 // [Position, Velocity]        -> 移动
@@ -201,6 +212,7 @@ void movement_system(std::vector<Position>& pos,
 这是 ECS 性能讨论的**核心分叉**。两种把 N 个实体存进内存的方式：
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 数据布局：AoS vs SoA [实现·GCC15]
+
 ```text
 ┌───────────────────────── AoS (Array of Structures) ─────────────────────────┐
 │ 实体0: [Pos | Vel | Hp | ...]  实体1: [Pos | Vel | Hp | ...]  实体2: [...]   │
@@ -213,6 +225,7 @@ void movement_system(std::vector<Position>& pos,
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数据布局：AoS vs SoA [实现·GCC15]
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑤ AoS：所有组件打包进一个结构体，实体数组按"行"存储
 #include <vector>
@@ -223,6 +236,7 @@ void integrate_aos(Particle* p, int n, float dt) {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 数据布局：AoS vs SoA [实现·GCC15]
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑤ SoA：每个组件是独立数组，实体按"列"存储
 #include <vector>
@@ -242,6 +256,7 @@ void integrate_soa(ParticlesSoA& ps, float dt) {
 下面是用 `std::chrono::steady_clock` 写的真实微基准（`Examples/_ch142_bench.cpp`，本机 GCC 13.1.0 `-O2`，`N=2^18=262144` 实体，每实体 32 个 float=128B，数据集 32MB 超出缓存）。**真实运行结果**：
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存友好真实基准
+
 ```text
 [场景1] 移动系统访问全部组件
   AoS: 209.399 ms   SoA: 28.547 ms   AoS/SoA = 7.33x
@@ -251,6 +266,7 @@ void integrate_soa(ParticlesSoA& ps, float dt) {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 缓存友好真实基准
+
 ```cpp title="示例 16 · ★★☆☆☆"
 #include <cstddef>
 // ⑥ 基准核心：用 volatile 累加防止编译器把"无用循环"优化成 0ms 假象
@@ -281,6 +297,7 @@ double bench_soa_partial(std::size_t n, std::size_t iters) {
 **原型（Archetype / 归档）** 的思路：把所有"拥有完全相同组件集合"的实体放进**同一块连续内存**，每个实体占一行（行主序）。这样"查询某组件组合"变成"找到对应原型块"，遍历时组件完全连续。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原型/归档式存储
+
 ```text
 ┌─────────── Archetype[Position,Velocity] ───────────┐
 │ 行0: P0 │ V0    行1: P1 │ V1    行2: P2 │ V2  ...   │
@@ -290,6 +307,7 @@ double bench_soa_partial(std::size_t n, std::size_t iters) {
 ```
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原型/归档式存储
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑦ 极简原型存储：一块 buffer 行主序存放"组件集"，alive 位标记删除
 #include <cstddef>
@@ -303,6 +321,7 @@ constexpr std::size_t row_size(std::size_t a, std::size_t b) { return a + b; }
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 原型/归档式存储
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 #include <cstddef>
 // ⑦ 取第 i 个实体、偏移 off 的组件（原型内随机访问是 O(1) 指针算术）
@@ -319,6 +338,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
 裸 `index` 有个致命问题：**槽位复用**会让"已销毁实体的旧引用"悄悄指向一个新实体。解决：**句柄 = index + version（代际戳）**。销毁时 `version++`，旧句柄的 version 对不上 → 立即识别为悬空。
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体管理与句柄（handle） [实现·GCC15]
+
 ```text
 ┌── 句柄 32 位打包 ──────────────┐      ┌── 存储槽 ──────┐
 │ 31..20 : version (12bit)      │      │ version : uint32│
@@ -328,6 +348,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实体管理与句柄（handle） [实现·GCC15]
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑧ 打包句柄：高 12 位版本 + 低 20 位索引（也可拆成两个字段，见 mini ECS ⑲）
 #include <cstdint>
@@ -339,6 +360,7 @@ constexpr std::uint32_t gen_of(std::uint32_t h) { return h >> 20; }
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实体管理与句柄（handle） [实现·GCC15]
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 #include <cstdint>
 #include <vector>
@@ -357,6 +379,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 系统的并行性来自一个事实：**多数系统只读共享组件、只写自己独占的组件**。把系统排成有向图，无数据依赖的系统可并行跑；有依赖的按拓扑序串行。
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统调度（并行） [实现·GCC15]
+
 ```text
 ┌── 帧调度（拓扑序 + 并行层）─────────────────────────────┐
 │  Layer0: [input_sys]  [network_sys]   (并行，互不写同组件)│
@@ -368,6 +391,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统调度（并行） [实现·GCC15]
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑨ 用 std::jthread 并行跑"无写冲突"的系统组（C++20，见 part09 并发章）
 #include <thread>
@@ -380,6 +404,7 @@ void run_parallel(std::vector<std::function<void()>> systems) {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统调度（并行） [实现·GCC15]
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑨ 依赖声明：用组件读写集合推导系统图（简化示意）
 struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
@@ -395,6 +420,7 @@ struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
 当世界有**上百万实体**，单块连续内存既放不下也不利于并发。方案：**分块（chunk）**——每块固定容量（如 16k 实体），块内组件连续，块间用数组/链表组织。这把"大数组"切成"缓存友好的小方块"，也便于多线程各拿一块。
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ECS 与多叉/分块（chunk） [平台·x86-64]
+
 ```text
 ┌── World ────────────────────────────────────────────┐
 │  Chunk0 [e0..e15 连续]   Chunk1 [e16..e31 连续]  ...  │
@@ -403,6 +429,7 @@ struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ECS 与多叉/分块（chunk） [平台·x86-64]
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑩ 固定容量分块：偏移 = i * 每块字节，连续、可预测、缓存友好
 #include <cstddef>
@@ -416,6 +443,7 @@ constexpr std::size_t offset_of(std::size_t i) { return i * CHUNK_COMPONENT_BYTE
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ECS 与多叉/分块（chunk） [平台·x86-64]
+
 ```cpp title="示例 28 · ★★☆☆☆"
 #include <cstddef>
 #include <span>
@@ -436,6 +464,7 @@ void process_chunks(std::span<Chunk> chunks, float dt) {
 标准库是 ECS 的"建材"。最朴素实现：`unordered_map<Entity, ComponentBundle>`。但它把"数据布局"交给哈希表，**缓存不友好**，只适合原型验证。
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++ 标准库
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑪ 入门级 ECS：map 把实体映射到组件包（"map of structs"，见 ⑯ 反模式）
 #include <unordered_map>
@@ -448,6 +477,7 @@ std::unordered_map<Entity, Transform> g_transforms;
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++ 标准库
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑪ 遍历：哈希表节点散落，缓存命中率低（对比 SoA 的连续遍历）
 float sum_x() {
@@ -461,6 +491,7 @@ float sum_x() {
 - `[经验]`：工业 ECS **几乎不用** `unordered_map` 做主存储，而是用"定长数组 + 版本槽"（⑧）或"原型块"（⑭）。`unordered_map` 仅用于**稀疏、少量**的编辑器/调试元数据。
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++ 标准库
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑪ 用 std::span 让系统签名与"底层怎么存"解耦（SoA/AoS/Archetype 都可喂入）
 #include <span>
@@ -475,6 +506,7 @@ void sys(std::span<float> x, std::span<float> vx, float dt) {
 把实体的 `index/version` 打包做成 `constexpr`，可在编译期完成实体定义并参与 `static_assert` 静态检查——适用于"场景里固定存在的少数关键实体"（玩家、摄像机、灯光）。
 
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 constexpr 编译期实体
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑫ 编译期实体：打包/解包全是 constexpr，可在编译期求值
 #include <cstdint>
@@ -487,6 +519,7 @@ static_assert(PLAYER != CAMERA);
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 constexpr 编译期实体
+
 ```cpp title="示例 33 · ★★☆☆☆"
 #include <cstdint>
 // ⑫ 编译期实体可进模板/数组维度，甚至做编译期存在性校验
@@ -499,6 +532,7 @@ static_assert(sizeof(SCENE) / sizeof(SCENE[0]) == 3);
 - `[实现·GCC15]`：真实汇编（`Examples/_ch142_constexpr_entity.asm`）中 `main` 直接 `mov eax, 4194319`——`PLAYER+CAMERA` 已被**完全常量折叠**（4194319 = 0x400007 = (3<<20|7)+(1<<20|8)），运行时零成本。这正是 constexpr 的承诺。
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 constexpr 编译期实体
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <cstdint>
 // ⑫ 对比：运行期实体走运行时分配（见 ⑧ ⑨），二者可共存
@@ -510,6 +544,7 @@ std::uint32_t runtime_player = create();   // 运行期分配 index
 下面用**真实汇编**证明 AoS 与 SoA 的访存模式差异。两者皆 GCC 13.1.0 `-O2 -masm=intel`。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能剖析
+
 ```cpp title="示例 35 · ★★★☆☆"
 // 文件：Examples/_ch142_aos.cpp
 // 行号：5
@@ -539,6 +574,7 @@ _Z13integrate_aosP8Particleif:
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能剖析
+
 ```cpp title="示例 36 · ★★★☆☆"
 // 文件：Examples/_ch142_soa.cpp
 // 行号：5
@@ -573,6 +609,7 @@ void integrate_soa(float* x, const float* vx, int n, float dt) {
 Archetype 是 Unity DOTS / flecs / Bevy 的主流布局：**相同组件组合的实体共享一块连续内存**。好处是"查询即定位块"，遍历零判断；代价是"加/删组件要迁移实体"。
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存布局 Archetype
+
 ```text
 ┌── Archetype A [Position, Velocity] ──┐  ┌── Archetype B [Position, Render] ──┐
 │ e0:P|V  e1:P|V  e2:P|V ... (连续)    │  │ e7:P|R  e8:P|R ... (连续)           │
@@ -581,6 +618,7 @@ Archetype 是 Unity DOTS / flecs / Bevy 的主流布局：**相同组件组合�
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局 Archetype
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑭ 用"组件位掩码"做原型键，相同掩码的实体归同一块
 #include <cstdint>
@@ -598,6 +636,7 @@ std::unordered_map<ArchKey, Archetype> g_archetypes;
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存布局 Archetype
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <cstdint>
 // ⑭ 迁移：实体从 [P,V] 变 [P,V,R] 时，从 A 块搬到 B 块（拷贝组件、更新句柄）
@@ -615,6 +654,7 @@ void migrate(std::uint32_t entity, ArchKey from, ArchKey to) {
 ECS 的天然并行点：**只读共享组件的系统**可以无锁并发读。只要没有写者在同一帧改同一组件，读者之间就完全无竞争。写者则常用 `std::atomic` 做"版本戳"式无锁发布。
 
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ECS 与多线程（无锁读） [平台·x86-64]
+
 ```cpp title="示例 40 · ★★☆☆☆"
 // ⑮ 无锁读：读线程只 load 一个 atomic，无需加锁
 #include <atomic>
@@ -629,6 +669,7 @@ bool is_alive(const EntityRecord& r) {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★★★☆☆</span> · ECS 与多线程（无锁读） [平台·x86-64]
+
 ```cpp title="示例 41 · ★★★☆☆"
 // ⑮ 写：先释放式置否，再 relaxed 递增版本（发布-订阅式）
 void kill(EntityRecord& r) {
@@ -660,6 +701,7 @@ _Z4killR12EntityRecord:
 把 ECS 写成"换皮 OOP"是最常见的失败。下面逐一对照。
 
 > **示例 42** [难度 ★★★☆☆] [主题：反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 42 · ★★★☆☆"
 // ⑯ ❌ 反模式1：组件里塞逻辑/虚函数（破坏"纯数据"）
 struct BadComponent { virtual void update(); int hp; };  // 非平凡、带虚表
@@ -676,6 +718,7 @@ struct { static std::vector<Entity> cache; } S;          // 并行时数据竞�
 ```
 
 > **示例 43** [难度 ★☆☆☆☆] [主题：反模式 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <vector>
 // ⑯ ✅ 对应正解：数据归组件、逻辑归系统、存储连续
@@ -712,6 +755,7 @@ void monster_system(std::vector<MonsterData>& m) {
 > 表注：选型权衡——自研迷你 ECS（⑲）适学习/嵌入式；EnTT 适稳定 API；Unity DOTS/Bevy 适对应引擎（见 <span class="badge badge-exp">经验</span>）。
 
 > **示例 44** [难度 ★★☆☆☆] [主题：真实库（EnTT 上游参考） <span class="badge badge-impl">实现</span>
+
 ```cpp title="示例 44 · ★★☆☆☆"
 // ⑰ EnTT sparse set 的极简还原（示意其"双数组"思想，可编译）
 #include <cstdint>
@@ -739,6 +783,7 @@ struct SparseSet {
 ECS 是 **Data-Oriented Design（面向数据设计，DOD）** 在"实体-组件"领域的具体架构。DOD 的核心信条（由 Tony Can 在 PS3 时代系统化）：**先想数据如何流动与布局，再想对象是什么**。
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 DOD 衔接
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 // ⑱ DOD 心法：把"对数据的操作"按"访问模式"分组，而非按"对象"分组
 // OOP 视角: for obj in world: obj.update();        // 对象驱动，访存跳
@@ -753,6 +798,7 @@ ECS 是 **Data-Oriented Design（面向数据设计，DOD）** 在"实体-组件
 下面是一份**自包含、可编译、可运行**的迷你 ECS（`Examples/_ch142_mini_ecs.cpp`），含 entity（句柄）/ component（纯数据）/ system（逻辑）三件套，约 120 行，已用 GCC 13.1.0 验证。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 实现迷你 ECS
+
 ```cpp title="示例 46 · ★★★☆☆"
 // 文件：Examples/_ch142_mini_ecs.cpp
 // 行号：9
@@ -782,6 +828,7 @@ void destroy_entity(Entity e) {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现迷你 ECS
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <cstdint>
 #include <vector>
@@ -805,6 +852,7 @@ void add_velocity(World& w, Entity e, Velocity v) {
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实现迷你 ECS
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 #include <cstddef>
@@ -833,6 +881,7 @@ int main() {
 真实运行输出（`Examples/_ch142_mini_ecs.exe`，GCC 13.1.0 `-O2`）：
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现迷你 ECS
+
 ```text
 entity a: (0.5, 0)
 entity b: (5, 4)
@@ -1029,6 +1078,7 @@ ECS（Entity-Component-System）用「数据表 + 系统遍历」取代深层对
 <details><summary>答案与解析</summary>
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 50 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1058,6 +1108,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1086,6 +1137,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 52 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1424,6 +1476,7 @@ flowchart TD
 ### D5.3 可复现演示
 
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现演示
+
 ```cpp title="示例 53 · ★★★☆☆"
 #include <iostream>
 #include <cstdint>

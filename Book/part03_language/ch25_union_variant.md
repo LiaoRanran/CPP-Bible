@@ -69,6 +69,7 @@ union 用"内存复用"换安全；variant 用"一点控制块开销"换"永远�
 union 的大小等于其最大成员的大小（需考虑对齐）。所有成员从同一地址开始。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 风格 union 基础
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // 示例 1：最基础的 union，大小 = max(成员)
 #include <cstdio>
@@ -106,6 +107,7 @@ union 也可以是类的成员、可以带成员函数（包括构造函数、�
 3. 若用普通赋值写入某个成员 `u.m = v`，则 `m` 成为活跃成员（会结束旧成员的"生命周期"，开始新成员的生命周期——对平凡类型这通常只是改写字节；对非平凡类型必须配合构造/析构）。
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · [class.union] 核心规则
+
 ```cpp title="示例 2 · ★★★☆☆"
 // 示例 2：读非活跃成员是 UB（编译期不报错，运行期后果未定义）
 #include <cstdio>
@@ -135,6 +137,7 @@ int main() {
 经典例子（类型双关的"合法"特例）：
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 例外——极易错
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // 示例 3：common initial sequence 例外——读"相似类型"的公共前缀是允许的
 #include <cstdio>
@@ -167,6 +170,7 @@ void f() {
 - 或经 `unsigned char`/`char` 缓冲的 `memcpy`（strict aliasing 下唯一安全的"中间人"）。
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型双关的合法替代
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // 示例 4：用 std::bit_cast 做类型双关（合法，C++20）
 #include <bit>
@@ -191,6 +195,7 @@ int main() {
 > `[标准]` [class.union]/2：如果 union 含有带非平凡默认构造、拷贝/移动构造、拷贝/移动赋值或析构的成员，则这些特殊成员函数在 union 中**被隐式删除**，用户必须自定义。
 
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · C++11 起：union 可含非平凡成员
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // 示例 5：union 含 std::string（非平凡），必须手动构造/析构
 #include <string>
@@ -221,6 +226,7 @@ int main() {
 裸 union 没有"当前哪个成员有效"的记录，因此工程上往往**自己加一个 tag（枚举）**，并用 placement new 在切换成员时构造、在离开时析构。这其实就是 `std::variant` 的"手写版"。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 手动管理 active member
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // 示例 6：手写"tagged union"——用 placement new 管理 active member
 #include <string>
@@ -280,6 +286,7 @@ int main() {
 > `[标准]` [class.union.anon]：匿名 union 不能含非静态数据成员的默认成员初始化器以外的非公开成员；其成员拥有与外层相同的访问权限，并被注入外层作用域。匿名 union **不定义新类型**，只是把成员"别名"进外层。
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 匿名 union
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // 示例 7：匿名 union —— 同一存储的多种视图
 #include <cstdio>
@@ -303,6 +310,7 @@ int main() {
 匿名 union 也可用于在函数/块作用域里"节省空间"地复用一段存储（同一时刻只用一个变量）：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 匿名 union
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // 示例 8：局部作用域的 union 复用存储（含非平凡成员的手动生命期）
 #include <cstdio>
@@ -344,6 +352,7 @@ void process(bool use_str) {
   - 读 union 的非活跃成员（UB）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 strict aliasing
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // 示例 9：strict aliasing 违规（UB）—— 不要这样写
 #include <cstdio>
@@ -352,6 +361,7 @@ float g = 3.14f;
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 strict aliasing
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // 示例 10：合法的 memcpy 双关
 #include <cstdint>
@@ -382,6 +392,7 @@ int main() {
 6. **constant expression 中读非活跃成员**（甚至活跃成员的"生命周期外"）：编译期 UB。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 未定义行为陷阱总结
+
 ```cpp title="示例 11 · ★★★☆☆"
 // 示例 11：陷阱——切成员前忘记析构旧成员（资源泄漏）
 #include <string>
@@ -414,6 +425,7 @@ int main() {
 > `[标准]` [variant.overview]：模板参数必须非空、无引用、无 `void`、无数组。若首个 alternative 可默认构造，则 `variant` 可默认构造，默认持有 index 0。
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述与类型安全
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // 示例 12：最简单的 variant
 #include <variant>
@@ -441,6 +453,7 @@ variant 的**大小** = 最大 alternative 的大小 + 足以容纳 index 的整
 ### 10.1 index() 与 holds_alternative()
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 holdsalternative
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // 示例 13：index() 与 holds_alternative()
 #include <variant>
@@ -464,6 +477,7 @@ int main() {
 真实 libstdc++ 源码（`variant` 行 1188-1230）：
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · get / get_if
+
 ```cpp title="示例 14 · ★★★☆☆"
 #include <cstddef>
 // libstdc++ 15.3.0 <variant> 行 1188-1199（节选，已 Read 探测）
@@ -483,6 +497,7 @@ template<size_t _Np, typename... _Types>
 > `[实现]` `get_if` 先 `static_assert` 索引合法与类型非 `void`，再在运行期判 `index()==_Np`，命中才取地址；否则返回 `nullptr`。而 `get`（行 1787-1792）在 `index()!=_Np` 时调用 `__throw_bad_variant_access`，区分 valueless 与 wrong-index 的错误信息。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · get / get_if
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // 示例 14：get / get_if 用法
 #include <variant>
@@ -509,6 +524,7 @@ int main() {
 `std::visit(visitor, variants...)` 对 variant 当前活跃的成员（多 variant 时为笛卡尔积）调用 visitor。visitor 可以是函数对象、lambda、或聚合多个可调用体的对象。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 visitor 模式
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // 示例 15：基本 visit
 #include <variant>
@@ -529,6 +545,7 @@ int main() {
 `std::variant` 没有内置"按类型分派的不同处理"，经典技巧是用 `std::overload` 把多个 lambda 合成为一个带多个 `operator()` 的重载集：
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 技巧
+
 ```cpp title="示例 17 · ★★★☆☆"
 // 示例 16：std::overload 聚合 lambda —— 实现"按类型分派"
 #include <variant>
@@ -554,6 +571,7 @@ int main() {
 ### 11.2 多 variant 访问（笛卡尔积分派）
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多 variant 访问
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // 示例 17：访问两个 variant（双重分派）
 #include <variant>
@@ -586,6 +604,7 @@ variant **承诺"从不部分构造"**：当一次赋值/emplace 在构造新 al
 触发典型路径（真实源码 `variant` 行 1575-1640 的 `emplace` 与复制/移动赋值）：当被 emplace 的类型**不是** `_Never_valueless_alt`（即不是"足够小且平凡可复制"），且构造可能抛异常时，进入基本保证分支，可能 valueless。
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 何时进入 valueless
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // 示例 18：构造抛异常 → variant 进入 valueless_by_exception
 #include <variant>
@@ -614,6 +633,7 @@ int main() {
 libstdc++ 用 `_Never_valueless_alt`（真实源码 `variant` 行 439-441）：
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 保证
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // libstdc++ 15.3.0 <variant> 行 439-441（本机 GCC 15.3.0 实测）
 template<typename _Tp>
@@ -624,6 +644,7 @@ template<typename _Tp>
 > `[实现]` 当 alternative 满足 `sizeof <= 256` 且 trivially copyable 时，`_Never_valueless_alt<_Tp>` 为真；进而 `__never_valueless<_Types...>()`（`variant` 行 454-458）若为真，整个 variant 永不 valueless——赋值/构造时先在栈上构造临时对象，再 `memcpy`/`move` 到位（行 1620-1622 的 `emplace` 分支），提供**强异常安全保证**。
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 保证
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // 示例 19：never-empty 类型永不 valueless
 #include <variant>
@@ -646,6 +667,7 @@ int main() {
 若 variant 的第一个 alternative 不可默认构造（如含引用或删除默认构造的类型），则 variant 本身**不可默认构造**。`std::monostate` 是一个空类型，默认可构造，把它作为**第一个** alternative 即可让 variant 默认构造——它代表"尚无有效值"的占位。
 
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 解决"无默认构造 alternati
+
 ```cpp title="示例 22 · ★☆☆☆☆"
 // 示例 20：用 monostate 让 variant 可默认构造
 #include <variant>
@@ -675,6 +697,7 @@ variant 不能直接递归包含自身（无限大小）。经典技巧：用 `s
 > `[标准]` variant 的 alternative 必须是完整类型（除极少数特例）；递归类型通过"间接层（指针/容器）"打破循环依赖。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 递归 variant 与前向声明技巧
+
 ```cpp title="示例 23 · ★★★☆☆"
 // 示例 21：递归 variant 表示算术表达式 AST
 #include <variant>
@@ -719,6 +742,7 @@ int main() {
 另一个常见写法（指针版，避免 vector 开销）：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 递归 variant 与前向声明技巧
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 示例 22：unique_ptr<variant<...>> 的递归
 #include <variant>
@@ -749,6 +773,7 @@ int main() {
 ### 15.1 存储：_Variadic_union（递归 union）
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 存储：Variadicunion
+
 ```cpp title="示例 25 · ★★★☆☆"
 #include <utility>
 #include <cstddef>
@@ -773,6 +798,7 @@ template<typename _First, typename... _Rest>
 ### 15.2 存储包装 _Uninitialized（平凡析构时直接放对象）
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 存储包装 Uninitialized
+
 ```cpp title="示例 26 · ★★★☆☆"
 #include <utility>
 // <variant> 行 224-310（已 Read 探测，节选）
@@ -793,6 +819,7 @@ template<typename _Type>
 ### 15.3 index 管理与 _Variant_storage
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 管理与 Variantstorage
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // <variant> 行 511-513（本机 GCC 15.3.0 实测）
 _Variadic_union<_Types...> _M_u;
@@ -808,6 +835,7 @@ __index_type _M_index;
 这是 `std::visit` 的核心。真实源码：
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 表驱动分派：Multiarray 与
+
 ```cpp title="示例 28 · ★★★☆☆"
 #include <cstddef>
 // <variant> 行 894-920（本机 GCC 15.3.0 实测）
@@ -837,6 +865,7 @@ template<typename _Ret, typename _Visitor, typename... _Variants,
 variant 的拷贝/移动由多个 CRTP 层（`_Copy_ctor_base` → `_Move_ctor_base` → `_Copy_assign_base` → `_Move_assign_base` → `_Variant_base`）实现，每一层根据 `_Traits` 决定用"用户定义版本"还是"继承 default 版本"（行 576-757）。而是否**启用**某特殊成员，由 `_Enable_copy_move`（真实源码 `bits/enable_special_members.h` 行 89-92、135-311）通过"把对应构造函数 `= delete`"来控制。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 特殊成员开关：Enablecopym
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // bits/enable_special_members.h 行 89-92（本机 GCC 15.3.0 实测）
 template<bool _Copy, bool _CopyAssignment,
@@ -870,6 +899,7 @@ template<bool _Copy, bool _CopyAssignment,
 真实 libstdc++ `__do_visit`（行 1925-1960）的分派策略：
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★★★</span> · 实现与 O(1) 分派、表大小
+
 ```cpp title="示例 30 · ★★★★★"
 #include <utility>
 #include <cstddef>
@@ -900,6 +930,7 @@ if constexpr (sizeof...(_Variants) > 1 || __n > __max) {
 ### 18.1 variant vs 手写 union+enum tag
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 手写 union+enum tag
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // 示例 23：benchmark 框架——variant vs tagged union（手写）
 #include <variant>
@@ -930,6 +961,7 @@ BENCHMARK(BM_TaggedAccess);
 ### 18.2 std::visit 分派 vs 虚函数调用
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 分派 vs 虚函数调用
+
 ```cpp title="示例 32 · ★★★☆☆"
 // 示例 24：visit vs virtual 调用 benchmark
 #include <variant>
@@ -958,6 +990,7 @@ BENCHMARK(BM_Virtual);
 ### 18.3 variant vs std::any（类型擦除开销）
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · union 与 std::variant 深度详解
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // 示例 25：variant vs any 访问 benchmark
 #include <variant>
@@ -1077,6 +1110,7 @@ double eval(Expr e) {
 ### 20.1 解析器 AST 节点（递归 variant）
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 解析器 AST 节点
+
 ```cpp title="示例 34 · ★★★☆☆"
 // 示例 29：JSON 风格值的 AST（递归 variant）
 #include <variant>
@@ -1132,6 +1166,7 @@ int main() {
 ### 20.2 协议消息（判别联合 + 序列化）
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 协议消息（判别联合 + 序列化）
+
 ```cpp title="示例 35 · ★★☆☆☆"
 // 示例 30：网络协议消息（variant + 序列化/反序列化）
 #include <variant>
@@ -1167,6 +1202,7 @@ int main() {
 ### 20.3 状态机（variant 表示状态）
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★☆☆</span> · 状态机（variant 表示状态）
+
 ```cpp title="示例 36 · ★★★☆☆"
 // 示例 31：用 variant 建模状态机（编译期限定状态集合）
 #include <variant>
@@ -1212,6 +1248,7 @@ int main() {
 ### 20.4 嵌入式寄存器视图（匿名 union + bit field）
 
 > **示例 37** <span class="badge badge-exp">难度 ★★★☆☆</span> · 嵌入式寄存器视图
+
 ```cpp title="示例 37 · ★★★☆☆"
 // 示例 32：嵌入式寄存器：匿名 union + 位域 + 整体 raw
 #include <cstdint>
@@ -1242,6 +1279,7 @@ int main() {
 ### 20.5 更多可编译片段（补充计数用）
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // 示例 33：variant 的 emplace（避免临时拷贝，强异常安全）
 #include <variant>
@@ -1255,6 +1293,7 @@ int main() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 // 示例 34：index() 与 variant_npos
 #include <variant>
@@ -1267,6 +1306,7 @@ int main() {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // 示例 35：get_if 在循环/hot path 中避免异常
 #include <variant>
@@ -1282,6 +1322,7 @@ int main() {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // 示例 36：visit 返回不同类型需统一（用 std::common_type 或 variant 自身）
 #include <variant>
@@ -1296,6 +1337,7 @@ int main() {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 // 示例 37：std::monostate 作为返回类型占位
 #include <variant>
@@ -1307,6 +1349,7 @@ int main() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 43 · ★★☆☆☆"
 // 示例 38：variant 之间的赋值（带类型转换）
 #include <variant>
@@ -1325,6 +1368,7 @@ int main() {
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★★☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 44 · ★★★★☆"
 // 示例 39：递归 variant 遍历（统计节点数）
 #include <variant>
@@ -1362,6 +1406,7 @@ int main() {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 45 · ★★☆☆☆"
 // 示例 40：用 overload 处理 variant 的错误恢复
 #include <variant>
@@ -1380,6 +1425,7 @@ int main() {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 // 示例 41：variant 与 std::holds_alternative 在分支里安全 get
 #include <variant>
@@ -1393,6 +1439,7 @@ int main() {
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 47 · ★☆☆☆☆"
 // 示例 42：variant 的 swap
 #include <variant>
@@ -1406,6 +1453,7 @@ int main() {
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 // 示例 43：valueless 后 visit 抛异常（必须预处理）
 #include <variant>
@@ -1421,6 +1469,7 @@ int main() {
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 // 示例 44：用 std::visit<R> 显式指定返回类型
 #include <variant>
@@ -1434,6 +1483,7 @@ int main() {
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 50 · ★★☆☆☆"
 // 示例 45：variant 与 constexpr（C++20）
 #include <variant>
@@ -1446,6 +1496,7 @@ int main() { std::printf("%d\n", f()); }
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 51 · ★☆☆☆☆"
 // 示例 46：构造时指定 alternative（in_place_type / in_place_index）
 #include <variant>
@@ -1460,6 +1511,7 @@ int main() {
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 52 · ★☆☆☆☆"
 // 示例 47：compare（C++20，variant 支持 <=>）
 #include <variant>
@@ -1471,6 +1523,7 @@ int main() {
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 53 · ★☆☆☆☆"
 // 示例 48：variant 作为 map 的值（多类型配置）
 #include <variant>
@@ -1487,6 +1540,7 @@ int main() {
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 54 · ★★☆☆☆"
 // 示例 49：手写 union 的 placement new 复用（与 variant 对照，见 §5）
 #include <string>
@@ -1501,6 +1555,7 @@ int main() {
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 55 · ★★☆☆☆"
 // 示例 50：common initial sequence 完整演示（对照 §3.2）
 #include <cstdio>
@@ -1515,6 +1570,7 @@ int main() {
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 56 · ★★☆☆☆"
 // 示例 51：bit_cast 在协议里的字段重组（对照 §3.3）
 #include <bit>
@@ -1533,6 +1589,7 @@ int main() {
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 57 · ★★☆☆☆"
 // 示例 52：匿名 union 在局部作用域压缩存储（对照 §6）
 #include <new>
@@ -1549,6 +1606,7 @@ int main() { f(true); f(false); }
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 58 · ★☆☆☆☆"
 // 示例 53：variant vs optional 语义区别
 #include <variant>
@@ -1562,6 +1620,7 @@ int main() {
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 59 · ★☆☆☆☆"
 // 示例 54：多 variant visit —— 表达式求值引擎雏形
 #include <variant>
@@ -1576,6 +1635,7 @@ int main() {
 ```
 
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 60 · ★☆☆☆☆"
 // 示例 55：monostate + variant 做"可重置结果"
 #include <variant>
@@ -1591,6 +1651,7 @@ int main() {
 ```
 
 > **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 61 · ★★☆☆☆"
 // 示例 56：variant 持有不可拷贝类型（移动语义，见 ch115）
 #include <variant>
@@ -1605,6 +1666,7 @@ int main() {
 ```
 
 > **示例 62** <span class="badge badge-exp">难度 ★★★☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 62 · ★★★☆☆"
 // 示例 57：用 if constexpr 替代 overload（C++17 单 lambda 分派）
 #include <variant>
@@ -1622,6 +1684,7 @@ int main() {
 ```
 
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 63 · ★☆☆☆☆"
 // 示例 58：valueless_by_exception 的恢复（赋值一个新值）
 #include <variant>
@@ -1638,6 +1701,7 @@ int main() {
 ```
 
 > **示例 64** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 64 · ★★☆☆☆"
 // 示例 59：寄存器位域 vs 掩码（可移植写法）
 #include <cstdint>
@@ -1652,6 +1716,7 @@ int main() { std::printf("0x%08x\n", set_mode(0, 0b101)); }
 > `[经验]` 示例 61 用显式掩码替代位域，端序/ABI 无关，是嵌入式可移植首选（对照示例 32 的位域风险）。
 
 > **示例 65** <span class="badge badge-exp">难度 ★★★☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 65 · ★★★☆☆"
 // 示例 60：variant 在事件系统中的分发
 #include <variant>
@@ -1678,6 +1743,7 @@ int main() {
 ```
 
 > **示例 66** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 66 · ★★☆☆☆"
 // 示例 61：union 与 active member 的"平凡切换"（平凡类型无 UB 风险）
 #include <cstdio>
@@ -1691,6 +1757,7 @@ int main() {
 > `[经验]` 对**全部平凡成员**的 union，写任一成员即安全切换（没有资源需析构）；UB 风险主要来自"读非活跃成员"，而非"写"。
 
 > **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 更多可编译片段（补充计数用）
+
 ```cpp title="示例 67 · ★★☆☆☆"
 // 示例 62：手写 tagged union 的"完整五法则"（对照 §5，强调正确性）
 #include <string>
@@ -1828,6 +1895,7 @@ C++98 对含非平凡构造类型的 union 限制极严；C++11 放宽但仍是"
 ## 附录 F：union/variant工业与面试
 
 > **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：union/variant
+
 ```cpp title="示例 68 · ★☆☆☆☆"
 #include <iostream>
 #include <variant>
@@ -1849,6 +1917,7 @@ int main(){std::variant<int,double,std::string> v="hello";std::visit([](auto x){
 
 variant使用indexed union结构:
 > **示例 69** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 G：std::variant的
+
 ```cpp title="示例 69 · ★★★★☆"
 // 简化实现: variant<int,double,string>
 // 内部存储: union{int_i;double_d;string_s;}+int index(0/1/2)
@@ -1873,6 +1942,7 @@ je      .L17                   ; 命中 alternative 2 → 直接处理分支
 ```
 
 > **示例 70** <span class="badge badge-exp">难度 ★★★★☆</span> · 附录 G：std::variant的
+
 ```cpp title="示例 70 · ★★★★☆"
 #include <iostream>
 #include <variant>
@@ -1900,6 +1970,7 @@ call    [QWORD PTR [rax]]            ; 间接调用虚函数
 ```
 
 > **示例 71** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：variant vs vi
+
 ```cpp title="示例 71 · ★★☆☆☆"
 #include <iostream>
 #include <variant>
@@ -1926,6 +1997,7 @@ variant<int,double,string> 内部布局:
 ```
 
 > **示例 72** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 I：variant存储布局
+
 ```cpp title="示例 72 · ★☆☆☆☆"
 #include <iostream>
 #include <variant>
@@ -2012,6 +2084,7 @@ int main(){std::variant<int,double> v;std::cout<<sizeof(v)<<std::endl;v=3.14;std
 <details><summary>答案与解析</summary>
 
 > **示例 73** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 73 · ★★☆☆☆"
 #include <iostream>
 #include <variant>
@@ -2040,6 +2113,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 74** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 74 · ★★☆☆☆"
 #include <iostream>
 #include <variant>
@@ -2068,6 +2142,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 75** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 75 · ★★★☆☆"
 #include <iostream>
 #include <variant>
@@ -2106,6 +2181,7 @@ int main() {
 实现与边界：匿名 union 不记录当前类型（无 tag），切错就静默读到错值；调试成本随字段数上升。替代方案：需要类型跟踪就用 `std::variant`（练习 1/2），需要底层复用但可容忍 tag 就用「enum tag + union」的经典组合。匿名 union 最适合「同解释不同视角」的透明别名，而不是「不知道现在是哪种」。
 
 > **示例 83** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 83 · ★★☆☆☆"
 #include <iostream>
 
@@ -2147,6 +2223,7 @@ int main() {
 实现与边界：`emplace` 比「赋值临时量」省一次移动，但对平凡标量可忽略；对 `std::string`/`vector` 这类有堆缓冲的类型，省一次分配/释放往往有意义。`std::get<I>` 在类型不匹配时抛 `std::bad_variant_access`，配合 `holds_alternative`（练习 1）或 `std::visit`（练习 2）读取更稳。替代方案：类型列表静态可知时，`std::visit` + `overload` 依旧是最可维护的分派方式。
 
 > **示例 84** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 84 · ★★★☆☆"
 #include <iostream>
 #include <variant>
@@ -2184,6 +2261,7 @@ enum { T_INT, T_STR } tag;
 
 **修复**：
 > **示例 76** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：替代"union + 手写
+
 ```cpp title="示例 76 · ★★☆☆☆"
 #include <iostream>
 #include <variant>
@@ -2210,6 +2288,7 @@ using Event = std::variant<std::string, int>;   // 默认构造会去构造 std:
 
 **修复**：
 > **示例 77** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：需要"无值也可默认构造"—
+
 ```cpp title="示例 77 · ★★☆☆☆"
 #include <iostream>
 #include <variant>
@@ -2246,6 +2325,7 @@ graph LR
 
 // 摘自 libstdc++ 15.3.0：variant:398（_Variadic_union 递归 union 共享存储）
 > **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · ++ 真实源码摘录
+
 ```cpp title="示例 78 · ★★★☆☆"
   template<bool __trivially_destructible, typename _First, typename... _Rest>
     union _Variadic_union<__trivially_destructible, _First, _Rest...>
@@ -2271,6 +2351,7 @@ graph LR
 
 // 摘自 libstdc++ 15.3.0：variant:470（_Variant_storage 持 union + index 判别式）
 > **示例 79** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 真实源码摘录
+
 ```text
   template<typename... _Types>
     struct _Variant_storage<false, _Types...>
@@ -2307,6 +2388,7 @@ graph LR
 ### D4.4 可编译验证
 
 > **示例 80** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 可编译验证
+
 ```cpp title="示例 80 · ★☆☆☆☆"
 #include <iostream>
 #include <variant>
@@ -2329,6 +2411,7 @@ int main() {
 
 预期输出：
 > **示例 81** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可编译验证
+
 ```text
 0
 42
@@ -2441,6 +2524,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 82** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 82 · ★★★☆☆"
 #include <iostream>
 #include <variant>

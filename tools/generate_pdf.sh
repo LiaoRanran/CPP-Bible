@@ -81,6 +81,19 @@ by_part = {}
 for meta in idx.values():
     by_part.setdefault(meta["part"], []).append(meta)
 outdir = pathlib.Path("build/pdf/parts"); outdir.mkdir(parents=True, exist_ok=True)
+
+def _strip_fence_title(t: str) -> str:
+    # pandoc 不支持 `title="…"` 围栏属性（mkdocs superfences 专有）：任何非法属性
+    # 都会让 pandoc 拒绝识别整个代码块（0 Verbatim），代码沦为散文，其内的 \n、
+    # %s 等反斜杠序列进入 LaTeX → ! Undefined control sequence（exit 43）。
+    # PDF 渲染不需要 title（题注行已含标题信息），构建期统一清洗为裸 ```lang。
+    cleaned = []
+    for ln in t.split("\n"):
+        if ln.startswith("```") and " " in ln:
+            ln = "```" + ln[3:].split()[0]
+        cleaned.append(ln)
+    return "\n".join(cleaned)
+
 total_anchored = 0
 for part, metas in sorted(by_part.items(), key=lambda kv: int(re.match(r"part(\d+)", kv[0]).group(1))):
     metas.sort(key=lambda m: m["num"])
@@ -93,7 +106,8 @@ for part, metas in sorted(by_part.items(), key=lambda kv: int(re.match(r"part(\d
         nc, subs = inject_chapter_anchor(nc, m["slug"])
         anchored += subs
         parts.append(nc)
-    (outdir / f"{part}.md").write_text("\n\n\\newpage\n\n".join(parts), encoding="utf-8")
+    (outdir / f"{part}.md").write_text(
+        _strip_fence_title("\n\n\\newpage\n\n".join(parts)), encoding="utf-8")
     total_anchored += anchored
     print(f"  卷 {part}: {len(metas)} 章 · 注入锚点 {anchored}")
 print(f"[by-part] 合计注入 H1 锚点 {total_anchored}/{len(idx)}")
@@ -137,7 +151,9 @@ PY
       fi
       if grep -qE '^!' "$errf" 2>/dev/null; then
         export PDF_LATEX_ERR=1
-        first_err="$(grep -E '^!' "$errf" | head -1 | cut -c1-200 | tr -d '%' || true)"
+        # 带上下文（-B1 取上一行 / -A3 取错误命令名与 l.NNN 行号），压平为单行
+        # 写入 annotation message（API 可返回完整 message，是匿名可见的取证通道）。
+        first_err="$( { grep -m1 -B1 -A3 -E '^!' "$errf" || true; } | tr '\n' ' ' | tr -s ' ' | cut -c1-600 | tr -d '%' || true)"
         if [ -n "$first_err" ]; then
           echo "::error title=PDF $base::$first_err"
         fi

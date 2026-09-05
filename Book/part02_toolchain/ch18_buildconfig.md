@@ -51,6 +51,7 @@
 构建配置决定**同一份源码**生成的可执行文件在体积、速度、可调试性、安全性上的差异。它不是语言特性，而是"编译器 + 链接器 + 库 + 标志"的组合。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：构建配置维度
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 同一个函数，四种构建配置下产物天差地别
 int workload(int x) {
@@ -63,6 +64,7 @@ int workload(int x) {
 构建配置的核心维度（每个维度都是一个旋钮）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：构建配置维度
+
 ```text
 ┌───────────────┬───────────────────────────┬──────────────────────────┐
 │ 维度          │ Debug 端                   │ Release 端               │
@@ -86,6 +88,7 @@ int workload(int x) {
 Debug 与 Release 的本质区别只有两点被标准定义：**`NDEBUG` 宏**和**未指定行为的优化自由度**；其余（优化级别、符号）都是约定俗成。
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构建配置：Debug / Release / LTO / PGO
+
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ② <cassert> 的 assert 宏在 NDEBUG 定义后被整体替换为空
 // Debug（无 NDEBUG）：
@@ -97,6 +100,7 @@ int divide(int a, int b) {
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构建配置：Debug / Release / LTO / PGO
+
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <cassert>
 // ② Release：g++ -DNDEBUG 后，assert 展开为空语句
@@ -105,6 +109,7 @@ int divide(int a, int b) {
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构建配置：Debug / Release / LTO / PGO
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ② 自己实现"永不被 NDEBUG 关闭"的检查（Release 也需要防御时）
 #include <cstdio>
@@ -126,6 +131,7 @@ int divide_safe(int a, int b) {
 GCC 优化级别是递进的（每组开启上一级全部 + 新增 pass）：
 
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 优化级别 -O0/-O1/-O2/-
+
 ```cpp title="示例 6 · ★★☆☆☆"
 // ③ 这些级别只改变"是否/如何变换"，不改变程序语义（只要无 UB）
 // -O0  逐语句翻译，便于单步调试（默认）
@@ -136,6 +142,7 @@ GCC 优化级别是递进的（每组开启上一级全部 + 新增 pass）：
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化级别 -O0/-O1/-O2/-
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ③ 一个能被 -O2 完全消除的平凡例子
 int identity(int x) { return x; }      // -O2 下调用点被直接替换
@@ -159,6 +166,7 @@ int twice(int x)    { return x + x; }  // -O2：lea eax,[rcx+rcx]
 取证源（本机真实编译，逐字反汇编）：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实：-O0 v
+
 ```cpp title="示例 8 · ★★★☆☆"
 // 文件：Examples/_ch18_opt.cpp
 // 行号：4
@@ -223,6 +231,7 @@ _Z4mul3i:
 `-Ofast` = `-O3` 再加 `-ffast-math`，后者**放宽 IEEE-754 语义**以换取速度。
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与浮点不严谨
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑤ -ffast-math 下，编译器可假设 x+x+x == 3*x、0.0 不会是负零、
 // 且 (a+b)+c == a+(b+c)（即忽略舍入误差与 NaN/Inf 规则）
@@ -235,6 +244,7 @@ double dot(const double* a, const double* b, int n) {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与浮点不严谨
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑤ 需要严格 IEEE 行为的场景（金融、科学），务必关掉 fast-math
 // 用 #pragma STDC FENV_ACCESS 声明要访问浮点环境
@@ -253,6 +263,7 @@ double careful_div(double a, double b) {
 LTO（Link-Time Optimization）把"中间表示（GIMPLE）"而非机器码存进目标文件，链接阶段才能看到**整个程序**做内联/去虚拟化/死代码消除。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 链接时优化
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑥ 典型多 TU 场景：定义与调用分属不同翻译单元
 // lib.cpp
@@ -279,6 +290,7 @@ g++ -O2 -flto main.o lib.o -o app        # 链接期才做全程序优化
 PGO（Profile-Guided Optimization）= 先插桩跑一遍**真实负载**收集热点，再据剖面二次编译。它让优化器知道"哪条分支热、哪段循环被反复执行"。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 流程
+
 ```cpp title="示例 12 · ★★☆☆☆"
 #include <cstddef>
 // ⑦ 被剖面的函数：真实负载下 p[i] > 0 几乎总成立
@@ -310,6 +322,7 @@ g++ -std=c++23 -O2 -fprofile-use -o app Examples/_ch18_pgo.cpp
 取证源（本机真实编译 + `objdump -d`，逐字）：
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·GCC15]真实：-flto
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // 文件：Examples/_ch18_lib.cpp
 // 行号：2
@@ -319,6 +332,7 @@ int compute(int a) { return helper(a) + helper(a); }
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实：-flto
+
 ```cpp title="示例 14 · ★★★☆☆"
 // 文件：Examples/_ch18_main.cpp
 // 行号：4
@@ -379,6 +393,7 @@ _Z6driveri:
 `assert` 是 C 遗留的运行时检查；C++ 正走向**契约**（Contracts，C++20 被推迟，后续标准重启）。
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 断言与契约
+
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑨ 经典 assert：前置条件（Debug 拦截非法调用）
 #include <cassert>
@@ -389,6 +404,7 @@ double sqrt_pos(double x) {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 断言与契约
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 #include <vector>
 // ⑨ C++26 方向（契约，语法示意，非 GCC13 默认可用）：
@@ -399,6 +415,7 @@ double sqrt_pos(double x) {
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 断言与契约
+
 ```cpp title="示例 17 · ★★☆☆☆"
 #include <cassert>
 // ⑨ 用类型系统把"不可能越界"编码进契约（比运行时 assert 更强）
@@ -417,6 +434,7 @@ int use(NonNull n) { return *n.p; }   // 调用方无法传入 nullptr
 调试符号 `-g` 让文件巨大但可调试；发布用 `strip` 去除。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 符号与剥离
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑩ 同一份代码，带符号与剥离后的体积差可达数倍到数十倍
 #include <vector>
@@ -435,6 +453,7 @@ ls -l app_dbg app_rel app_rel_stripped        # 体积依次骤降
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 符号与剥离
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // ⑩ 控制导出符号：隐藏内部细节，既缩体积又防 ABI 误用
 // Linux/ELF：默认隐藏，只导出显式可见
@@ -451,6 +470,7 @@ __attribute__((visibility("hidden")))  int internal_impl(int x);
 同一实现可打包成静态库 `.a`（归档）或动态库（Linux `.so` / Windows `.dll`）。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 静态 / 动态链接取舍
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // 文件：Examples/_ch18_mylib.cpp
 // 行号：2
@@ -485,6 +505,7 @@ nm libch18.a | grep engine
 加固三件套提升对抗内存破坏的能力：
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构建配置：Debug / Release / LTO / PGO
+
 ```text
 ┌────────────────────┬─────────────────────────────┬──────────────────────┐
 │ 加固项             │ 作用                        │ GCC 标志              │
@@ -497,6 +518,7 @@ nm libch18.a | grep engine
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构建配置：Debug / Release / LTO / PGO
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // ⑫ 触发栈保护：含被取地址/较大局部数组的函数会被 -fstack-protector-strong 保护
 #include <cstddef>
@@ -522,6 +544,7 @@ g++ -std=c++23 -O2 -fstack-protector-strong -fPIE -pie \
 取证源（本机真实编译，逐字反汇编）：
 
 > **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15]真实：-fsta
+
 ```cpp title="示例 23 · ★★★☆☆"
 #include <cstddef>
 // 文件：Examples/_ch18_stack.cpp
@@ -578,6 +601,7 @@ _Z5parsePKcy:
 警告是编译器替你做的免费 code review；把警告当错误能防止劣质代码入库。
 
 > **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 警告等级 -Wall / -Wext
+
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑭ -Wall 能抓的典型问题：未初始化、符号比较、未用变量
 #include <vector>
@@ -591,6 +615,7 @@ int suspect(const std::vector<int>& v) {
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 警告等级 -Wall / -Wext
+
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑭ -Wextra 进一步：参数未使用、有符号/无符号细节
 int handler(int // unused
@@ -609,6 +634,7 @@ g++ -std=c++23 -Wall -Wextra -Wshadow -Wconversion -Werror -c app.cpp
 Sanitizer 在**测试期**插入运行时检测，抓 UBSan/ASan/TSan 类 bug，代价是大幅变慢与膨胀——只用于 Debug 测试，绝不进发布。
 
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 集成（-fsanitize）
+
 ```cpp title="示例 26 · ★★★☆☆"
 // ⑮ 一个 ASan 能当场抓出的堆缓冲区溢出
 #include <cstddef>
@@ -629,6 +655,7 @@ g++ -std=c++23 -O1 -g -fsanitize=address -fno-omit-frame-pointer \
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 集成（-fsanitize）
+
 ```cpp title="示例 27 · ★★★☆☆"
 // ⑮ UBSan：抓整数溢出、空指针解引用、未对齐等未定义行为
 // -fsanitize=undefined 编译后，下面的有符号溢出会被标记
@@ -687,6 +714,7 @@ strip app.exe
 ## ⑱ 常见坑
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
+
 ```cpp title="示例 28 · ★☆☆☆☆"
 #include <cassert>
 // ⑱ 坑1：在 assert 里放副作用，Release 下消失
@@ -696,6 +724,7 @@ int rc = load_config();  assert(rc == 0);
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见坑
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑱ 坑2：开发期 -O0 隐藏 UB，发布 -O2 直接崩
 int* p = nullptr;
@@ -704,6 +733,7 @@ int x = *p;                    // UB；-O0 可能"恰好"段错误，-O2 可能�
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑱ 坑3：混用 LTO 与非 LTO 目标文件
 // g++ -O2 -flto -c a.cpp -o a.o   +   g++ -O2 -c b.cpp -o b.o
@@ -712,6 +742,7 @@ int x = *p;                    // UB；-O0 可能"恰好"段错误，-O2 可能�
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑱ 坑4：PGO 用错负载，优化器被误导
 // 用单元测试的随机输入做剖面 → 生产真实分布完全不同 → 分支布局变负优化
@@ -719,6 +750,7 @@ int x = *p;                    // UB；-O0 可能"恰好"段错误，-O2 可能�
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // ⑱ 坑5：-ffast-math 污染了需要 IEEE 语义的数值代码
 double inverse(double x){ return 1.0 / x; }   // -ffast-math 下 x=NaN 可能被化简
@@ -730,6 +762,7 @@ double inverse(double x){ return 1.0 / x; }   // -ffast-math 下 x=NaN 可能被
 ## ⑲ 最佳实践
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // ⑲ 实践1：用 static_assert 把不变式前移到编译期（零运行时成本）
 template <typename T>
@@ -740,12 +773,14 @@ T clamp(T v, T lo, T hi) {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // ⑲ 实践2：关键函数标 [[gnu::always_inline]] / inline 以助 LTO 前的内联
 [[gnu::always_inline]] inline int hot_add(int a, int b) { return a + b; }
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
+
 ```cpp title="示例 35 · ★★☆☆☆"
 // ⑲ 实践3：发布保留调试符号的独立副本，分发 strip 版
 // objcopy --only-keep-debug app app.debug
@@ -782,6 +817,7 @@ ccache g++ -std=c++23 -O2 -flto -c app.cpp -o app.o
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.replace]（宏替换与参数求值）；cppreference "Replacing text macros" 词条。
 
 > **示例 36** <span class="badge badge-exp">难度 ★★★★☆</span> · 速查表
+
 ```text
 ┌──────────────────────────┬───────────────────────────────────────────────┐
 │ 目标                     │ 推荐标志（GCC 13 / C++23）                      │
@@ -861,12 +897,14 @@ ccache g++ -std=c++23 -O2 -flto -c app.cpp -o app.o
 ## 附录: CMake 构建配置实战
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: CMake 构建配置实战
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"CMakeLists: cmake_minimum_required(VERSION 3.20); project(App LANGUAGES CXX); set(CMAKE_CXX_STANDARD 20)."<<std::endl;return 0;}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: CMake 构建配置实战
+
 ```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <string>
@@ -874,12 +912,14 @@ int main(){std::cout<<"Makefile: CXX=g++, CXXFLAGS=-std=c++20 -O2 -Wall, LDLIBS=
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: CMake 构建配置实战
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Conan/vcpkg: package managers for C++. conan install .. --build=missing."<<std::endl;return 0;}
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: CMake 构建配置实战
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -887,6 +927,7 @@ int main(){std::vector<int> v;v.push_back(1);std::cout<<v[0]<<std::endl;return 0
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: CMake 构建配置实战
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Ninja: faster than make. cmake -G Ninja -B build. CCache: compiler cache for rebuilds."<<std::endl;return 0;}
@@ -903,6 +944,7 @@ int main(){std::cout<<"Ninja: faster than make. cmake -G Ninja -B build. CCache:
 ## 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
+
 ```text
 Debug vs Release 编译器差异:
 
@@ -923,6 +965,7 @@ Google/LLVM/Chromium 实践:
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 int main() {
@@ -967,6 +1010,7 @@ int main() {
 **真实场景：发布二进制里的断言成本。** 你在性能敏感的发布路径上用 `assert` 做开发期不变量校验，但担心它留在发布二进制里拖慢。请用程序说明断言在 Debug/Release 下的行为差异（靠 `NDEBUG` 整体编译掉）。
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 #include <cassert>
@@ -987,6 +1031,7 @@ int main() {
 **真实场景：跨文件的内联与去虚化。** 你的库把 `square()` 放在头、调用方在另一个 TU，想让发布构建跨文件内联掉这层调用。请用 `constexpr` 体现"编译期可知"的优化前提，并写出开启 LTO 的命令。
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 
@@ -1011,6 +1056,7 @@ g++ -std=c++23 -flto -O2 a.o b.o -o app
 **真实场景：用真实负载喂出最优布局。** 你的服务有典型的请求分布，想让发布二进制按真实热点重排代码。请用 PGO（剖面引导优化）先收集热点再重优化：写程序并用命令示意两阶段流程。
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★★）
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1043,6 +1089,7 @@ g++ -std=c++23 -fprofile-use -O2 app.cpp -o app          # 阶段2：按热点�
 `assert` 在定义 `NDEBUG`（Release 惯例）时被展开为空，零运行期开销；它是 C/C++ 标准约定的"调试期契约"，比手写 `if(!cond) abort()` 更简洁且可一键全局关闭。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★）
+
 ```cpp title="示例 50 · ★★★☆☆"
 #include <iostream>
 #include <cassert>
@@ -1074,6 +1121,7 @@ int main() {
 `constexpr` 把计算标记为"可在编译期求值"，编译器（尤其开了 LTO 时）可将其折叠为常数，避免运行期开销；PGO 则依据真实运行剖面做过程间优化，二者层次不同、互为补充。
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 51 · ★★★☆☆"
 #include <iostream>
 
@@ -1107,6 +1155,7 @@ g++ -std=c++23 -D_GGLIBCXX_ASSERTIONS -O2 app.cpp -o app
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 1：Debug 用 GLIBC
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1129,6 +1178,7 @@ g++ -std=c++23 -fprofile-use -O2 bench.cpp -o bench
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演绎 2：把 PGO 接进 CI 做
+
 ```cpp title="示例 48 · ★★☆☆☆"
 #include <iostream>
 int main() { std::cout << "PGO + 基准门禁 = 性能回归早知道\n"; }
@@ -1337,6 +1387,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 49 · ★★☆☆☆"
 #include <iostream>
 #include <vector>

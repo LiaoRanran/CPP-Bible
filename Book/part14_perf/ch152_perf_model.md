@@ -63,6 +63,7 @@
 本章是 part14 的方法论总纲，它站在五块前置知识的肩膀上，缺一块就建不起模型：**内存层次与 cache（ch154）**提供带宽/延迟的硬件来源（含 false sharing），**CPU 微架构（ch153）**决定单条指令的成本（流水线、乱序执行、分支预测），**编译器优化（ch156）**会改写你"以为"测到的代码（`-O2/-O3/LTO/PGO`），**Benchmark 方法论（ch151）**给出测试框架、Fixture 与统计报告，而 **SIMD（ch155）**直接改变算术强度——把每指令处理的数据量翻倍，等于把 Roofline 上的点往右推、可能从带宽斜坡一侧推到算力屋顶一侧。读下面之前，这几块概念要先就位。
 
 > **示例 2** [难度 ★★☆☆☆] [主题：前置知识 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // C2 前置示例：重复 N 次求平均，体现"多次测量"的雏形
 #include <iostream>
@@ -95,6 +96,7 @@ int main() {
 ## ④ 知识图谱（ASCII）<span class="badge badge-exp">经验</span>
 
 > **示例 3** [难度 ★★★☆☆] [主题：知识图谱（ASCII）<span class="badge badge-exp">经验</span>]
+
 ```mermaid
 flowchart LR
     m["建模: Amdahl / Gustafson / Roofline"]
@@ -159,6 +161,7 @@ classDiagram
 ## ⑦ ASCII 内存图：带宽与延迟的硬件来源 [平台·x86-64]
 
 > **示例 4** [难度 ★★☆☆☆] [主题：内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
+
 ```mermaid
 flowchart LR
     cpu["CPU (算力/FLOPS)"]
@@ -172,6 +175,7 @@ flowchart LR
 ```
 
 > **示例 5** [难度 ★★☆☆☆] [主题：内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
+
 ```cpp title="示例 5 · ★★☆☆☆"
 // C3 带宽直觉：拷贝大数组，估算 GB/s（示意量级）
 #include <iostream>
@@ -196,6 +200,7 @@ int main() {
 ## ⑧ 生命周期图：一次测量的时间线 [实现·GCC15]
 
 > **示例 6** [难度 ★☆☆☆☆] [主题：生命周期图：一次测量的时间线 <span class="badge badge-impl">实现</span>
+
 ```mermaid
 flowchart LR
     t0["t0"]
@@ -212,6 +217,7 @@ flowchart LR
 ## ⑨ 调用栈/时序图：steady_clock 的系统路径 [平台·x86-64]
 
 > **示例 7** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调用栈/时序图：steadycloc
+
 ```mermaid
 flowchart TD
     app["应用: steady_clock::now()"]
@@ -227,6 +233,7 @@ flowchart TD
 若基准结果"没被使用"，编译器会把整个被测循环删掉，测出 0 ns——这是最经典的陷阱。
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 汇编分析：防止死代码消除（DCE）[实现·GCC15]
+
 ```cpp title="示例 8 · ★★★☆☆"
 // C4 错误示范（被优化的基准）：结果未使用，编译器可删掉 work
 #include <iostream>
@@ -254,6 +261,7 @@ int main() {
 **正确做法**：用 `volatile` 接收结果，或用内联汇编 `black_box` 强制"使用"。
 
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 汇编分析：防止死代码消除（DCE）[实现·GCC15]
+
 ```cpp title="示例 9 · ★★☆☆☆"
 // C5 正确示范：volatile 接收，阻止 DCE
 #include <iostream>
@@ -270,6 +278,7 @@ int main() {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 汇编分析：防止死代码消除（DCE）[实现·GCC15]
+
 ```cpp title="示例 10 · ★★★★☆"
 // C6 内联汇编 black_box：强制"使用"变量且不引入真实存储（比 volatile 更狠）
 #include <iostream>
@@ -290,6 +299,7 @@ int main() {
 ## ⑪ STL 联系：accumulate vs 手写求和 <span class="badge badge-exp">经验</span>
 
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 联系：accumulate vs 手
+
 ```cpp title="示例 11 · ★★★☆☆"
 // C7 std::accumulate 与手写循环：二者在 -O2 下通常生成相同汇编，但写法影响可读与编译器优化
 #include <iostream>
@@ -320,6 +330,7 @@ int main() {
 线上性能**不能只看平均值**——p99/p999 决定尾部用户体验。下例模拟从采样数组算分位数。
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // C8 中位数 / 分位数计算：先排序再取位置
 #include <iostream>
@@ -339,6 +350,7 @@ int main() {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // C9 服务端延迟采样：warmup 后反复测一个 handler，报告 p50/p95/p99
 #include <iostream>
@@ -367,6 +379,7 @@ int main() {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // C10 Amdahl 定律：并行化占比 f，加速比 S = 1 / ((1-f) + f/p)
 #include <iostream>
@@ -381,6 +394,7 @@ int main() {
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
+
 ```cpp title="示例 15 · ★☆☆☆☆"
 // C11 Gustafson 定律：固定时间，扩大规模，总工作量随核数线性增
 #include <iostream>
@@ -393,6 +407,7 @@ int main() {
 ```
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例：服务端请求延迟分位数 [经验]
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // C12 Roofline：给定算力上限与带宽，算术强度决定能否喂饱 CPU
 #include <iostream>
@@ -416,6 +431,7 @@ int main() {
 `std::chrono::steady_clock` 是"单调、不受系统时间调整影响"的时钟，是基准测量的正确选择（`system_clock` 会因 NTP 回拨产生负值 dt）。
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：libstdc++ ste
+
 ```text
 文件：chrono                               行号：130 / 131
       using rep    = system_clock::rep;         // 实际为 long long (纳秒级计数)
@@ -427,6 +443,7 @@ int main() {
 > `[实现·GCC15]` 在 MinGW/Win 上 `steady_clock::now()` 通常落到 `QueryPerformanceCounter`；在 Linux 落到 `clock_gettime(CLOCK_MONOTONIC)`。无论哪种，它都**保证单调递增**，这正是基准需要的（避免 NTP 跳变污染数据）。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：libstdc++ ste
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // C13 steady_clock 精度查询：duration 的 ticks 每 period 多少
 #include <iostream>
@@ -462,6 +479,7 @@ int main() {
 3. Amdahl 与 Gustafson 为什么给出不同结论？
 
 > **示例 19** [难度 ★★☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // C14 面试题2演示：system_clock 可能因 NTP 回拨给出"负耗时"
 #include <iostream>
@@ -481,6 +499,7 @@ int main() {
 ```
 
 > **示例 20** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 // C15 面试题3演示：Amdahl 上限不可突破，Gustafson 因放大问题而更乐观
 #include <iostream>
@@ -496,6 +515,7 @@ int main() {
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 
 > **示例 21** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 21 · ★★☆☆☆"
 // C16 易错点1：未预热——前几次含冷启动开销，污染中位数
 #include <iostream>
@@ -515,6 +535,7 @@ int main() {
 ```
 
 > **示例 22** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // C17 易错点2：被测函数太短，时钟开销占比过高
 #include <iostream>
@@ -535,6 +556,7 @@ int main() {
 ```
 
 > **示例 23** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // C18 易错点3：优化级别不一致——Debug 基准无意义
 // 必须用与目标一致的 -O2/-O3 测；-O0 的"慢"不代表发布版慢。
@@ -567,6 +589,7 @@ int main() {
 因为 `-O3` 的激进优化各自都有代价：过度循环展开会胀 I-cache（取指变慢）、提高寄存器压力可能触发溢出（spill）、自动向量化在对齐不佳或别名不明时反而要加运行时检查与兜底路径。这些代价在特定代码上可能超过收益。所以**优化级别不是越高越好，必须实测**——这也正是 ⑱ 强调"用与目标一致的优化级别测量"的原因（⟶ ch156 逐项看各优化标志的实际影响）。
 
 > **示例 24** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // C19 FAQ演示：rdtsc 原生写法（需 #include <x86intrin.h>，[实现·平台]）
 // 注意：本章可编译块用内联汇编版本（C20），此处仅作对照说明。
@@ -579,6 +602,7 @@ unsigned long long t = __rdtsc();
 ```
 
 > **示例 25** [难度 ★★★☆☆] [主题：<span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 25 · ★★★☆☆"
 // C20 可编译 rdtsc：用 GCC 内联汇编实现（等价于 __rdtsc，无额外头文件）
 #include <iostream>
@@ -612,6 +636,7 @@ int main() {
 **多次重复取中位数 + MAD**，报告方差而非单次：中位数抗调度抖动（离群的 200 被压住，示例 C21），MAD 量化稳定性。"warmup → 防 DCE → 多次取中位"三者缺一，数字就不可复现。
 
 > **示例 26** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // C21 最佳实践2：取中位数 + MAD（中位绝对偏差）量化稳定性
 #include <iostream>
@@ -632,6 +657,7 @@ int main() {
 ```
 
 > **示例 27** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 27 · ★★★☆☆"
 // C22 最佳实践3：最小基准框架（warmup + repeat + 中位数），可复用于多函数对比
 #include <iostream>
@@ -666,6 +692,7 @@ int main() {
 下例把 Amdahl 上限与 Roofline 算术强度量化，给出"该优化什么"的结论。
 
 > **示例 28** [难度 ★★☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // C23 模型量化：当算术强度低，优化方向是"减少内存访问"而非"加算力"
 #include <iostream>
@@ -687,6 +714,7 @@ int main() {
 ```
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 29 · ★☆☆☆☆"
 // C24 Roofline 增幅：提高算术强度（一次加载复用多次）可脱离带宽斜坡
 #include <iostream>
@@ -705,6 +733,7 @@ int main() {
 > `[经验]` 实测若 `axpy bandwidth` 接近 DRAM 上限（~50GB/s），说明已 memory-bound——此时加核/加 SIMD 提升有限，**应改数据布局（结构体数组→数组结构体、提高缓存命中）**（⟶ `Book/part14_perf/ch154_cache_opt.md`）。
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // C23: Amdahl 定律计算器——给定串行占比 s，N 核加速比
 #include <iostream>
@@ -720,6 +749,7 @@ int main() {
 ```
 
 > **示例 31** [难度 ★☆☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // C24: Gustafson 定律——固定总工作量，增核加速（弱缩放）
 #include <iostream>
@@ -735,6 +765,7 @@ int main() {
 ```
 
 > **示例 32** [难度 ★★☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 32 · ★★☆☆☆"
 // C25: Roofline 分析——给定 FLOP/byte ratio 判断算力或带宽瓶颈
 #include <iostream>
@@ -751,6 +782,7 @@ int main() {
 ```
 
 > **示例 33** [难度 ★★☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // C26: Google Benchmark 等价体——手动 warmup + iteration 计时
 #include <iostream>
@@ -798,6 +830,7 @@ int main() {
 | Zig | `std.time` / `stdx.benchmark` | 内建 `std.testing` | `perf` |
 
 > **示例 34** [难度 ★★☆☆☆] [主题：跨语言对比：基准与剖析生态 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 34 · ★★☆☆☆"
 // C25 跨语言对照：C 风格基准（C++ 可编译）——用 clock() 测 CPU 时间（示意）
 #include <iostream>
@@ -813,6 +846,7 @@ int main() {
 ```
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：跨语言对比：基准与剖析生态 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // C26 确定性数据：因 <random> 不在自检 PRELUDE，用内联 xorshift 生成可复现样本
 #include <iostream>
@@ -901,24 +935,28 @@ C++11 的 `<chrono>` 与 `steady_clock` 给性能建模提供了可移植的单�
 ## 补充分编可编译示例
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch152_perf_model."<<std::endl;return 0;}
 ```
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch152_perf_model."<<std::endl;return 0;}
 ```
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch152_perf_model."<<std::endl;return 0;}
 ```
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
@@ -1007,6 +1045,7 @@ add rdi, 0x0040              ; 步进一个缓存行
 Amdahl 定律：`S(n) = 1 / ((1 - p) + p / n)`，其中 `p` 为可并行比例，`n` 为核数。
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 int main() {
@@ -1033,6 +1072,7 @@ int main() {
 算术强度 `I ≈ 2N³ / (3N²·8) = N/12`。N=1024 时 `I ≈ 85 FLOP/Byte`，远高于典型带宽墙拐点（约 1–10），属**算力 bound**，应优先加 SIMD 与核数；向量加法 `I≈1/8`，属**带宽 bound**，加核不如优化缓存/访存。
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 #include <iostream>
 int main() {
@@ -1057,6 +1097,7 @@ int main() {
 Gustafson 定律假设问题规模随核数增大：`S(n) = p + (1-p)·n`。`p=0.8, n=16` → `0.8 + 0.2·16 = 4.0` 倍（固定时间下的吞吐）；`n` 越大越接近线性——串行部分被摊薄到更大的总工作量上。
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 42 · ★★☆☆☆"
 #include <iostream>
 int main() {
@@ -1079,6 +1120,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 4（难度 ★★★）
+
 ```cpp title="示例 43 · ★★★☆☆"
 #include <iostream>
 double amdahl(double p, double n) {    // p=串行比例, n=核数
@@ -1103,6 +1145,7 @@ int main() {
 <details><summary>答案与解析</summary>
 
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 练习 5（难度 ★★★）
+
 ```cpp title="示例 44 · ★★★☆☆"
 #include <iostream>
 // Roofline 定性：ai=算术强度(FLOPs/Byte)；balance=机器平衡点=峰值算力/峰值带宽
@@ -1262,6 +1305,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可复现 demo
+
 ```cpp title="示例 45 · ★★☆☆☆"
 #include <iostream>
 #include <chrono>

@@ -51,6 +51,7 @@ SIMD（单指令多数据）的动机来自"对一大堆数据做同一件事"�
 **SIMD**（Single Instruction, Multiple Data，单指令多数据）指一条指令同时对一组（向量）数据做相同运算。对比 SISD（标量，一次一个数据），SIMD 用更少的指令完成批量同构计算，是多媒体、数值、AI 推理的核心加速手段。
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：SIMD 是什么 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 标量：一次加一个 float（4 字节）
 float scalar_add(float a, float b) { return a + b; }
@@ -75,6 +76,7 @@ x86 向量指令集按寄存器宽度代际演进，宽度翻倍 = 同一条指�
 | AVX-512 | 2017 | zmm0–31 | 512 | 16 |
 
 > **示例 2** [难度 ★★★☆☆] [主题：演进与寄存器宽度 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 2 · ★★★☆☆"
 // ② 寄存器宽度决定每轮处理的元素数（float，4 字节）
 // SSE  xmm: 16B / 4B = 4 个 float
@@ -93,6 +95,7 @@ constexpr int floats_per_avx512= 64 / 4;  // 16
 编译器能在满足约束时，把普通标量循环**自动改写**为向量指令，无需手写 intrinsics。
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器自动向量化
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // ③ 这段代码在 -O3 -mavx2 下会被 GCC 自动向量化为 vaddps ymm（见 ⑧ 真实汇编）
 void saxpy(float* __restrict y, const float* __restrict x,
@@ -110,6 +113,7 @@ void saxpy(float* __restrict y, const float* __restrict x,
 向量化的充要条件，缺一不可：
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 循环向量化的必要条件
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ④ 条件A：连续内存访问（步长 1）
 void good(float* a, float* b, float* c, int n) {  // ✔ 连续
@@ -126,6 +130,7 @@ void bad_dep(float* a, int n) {                   // ✘ 依赖前一项
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 循环向量化的必要条件
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ④ 条件D：指针不可别名（用 __restrict 或不同数组证明无重叠）
 void no_alias(float* __restrict out, const float* __restrict in, int n) {
@@ -141,6 +146,7 @@ void no_alias(float* __restrict out, const float* __restrict in, int n) {
 函数级或循环级强制提示编译器向量化。
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · pragma GCC optimiz
+
 ```cpp title="示例 6 · ★☆☆☆☆"
 // ⑤ 函数级：强制对该函数开向量化（即便全局 -O2）
 #pragma GCC optimize("O3","tree-vectorize")
@@ -150,6 +156,7 @@ void forced(float* a, float* b, float* c, int n) {
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · pragma GCC optimiz
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑤ OpenMP 的 simd 指示：告诉编译器循环可矢量化，并允许忽略某些依赖假设
 #include <omp.h>
@@ -160,6 +167,7 @@ void omp_simd(float* a, float* b, float* c, int n) {
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · pragma GCC optimiz
+
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ⑤ 还有 GCC 专用循环 pragma（需配合 -O3 才生效）
 void gcc_pragma(float* a, float* b, float* c, int n) {
@@ -176,6 +184,7 @@ void gcc_pragma(float* a, float* b, float* c, int n) {
 C++ 标准曾以 **DAT（Data-Parallel Types）** 提案把 SIMD 纳入语言，`<experimental/simd>` 是其 TS 实现（GCC/libstdc++ 提供）。
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · SIMD / AVX 向量化
+
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑥ 用 std::experimental::simd 表达"对 N 个 float 同时运算"
 #include <experimental/simd>
@@ -192,6 +201,7 @@ void simd_class(float* a, float* b, float* c, int n) {
 ```
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · SIMD / AVX 向量化
+
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑥ 常见算法：可以一次做多条（本块自含 DAT 头与命名空间别名，可独立编译）
 #include <experimental/simd>
@@ -214,6 +224,7 @@ void simd_math(float* x, float* y, int n) {
 intrinsics 是编译器内建函数，名字直接对应一条汇编指令，完全可控但要手写寄存器编排。
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · mmaddps / mm256loa
+
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑦ SSE：128 位，一次 4 个 float
 #include <immintrin.h>
@@ -226,6 +237,7 @@ void sse_add(const float* a, const float* b, float* c) {
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · mmaddps / mm256loa
+
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑦ AVX2：256 位，一次 8 个 float
 void avx2_add(const float* a, const float* b, float* c) {
@@ -237,6 +249,7 @@ void avx2_add(const float* a, const float* b, float* c) {
 ```
 
 > **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · mmaddps / mm256loa
+
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑦ AVX-512：512 位，一次 16 个 float
 void avx512_add(const float* a, const float* b, float* c) {
@@ -248,6 +261,7 @@ void avx512_add(const float* a, const float* b, float* c) {
 ```
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · mmaddps / mm256loa
+
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑦ FMA：乘加合一（a*b+c），AVX2+FMA，减少一条指令、更高精度
 void fma_demo(const float* a, const float* b, const float* c, float* d) {
@@ -267,6 +281,7 @@ void fma_demo(const float* a, const float* b, const float* c, float* d) {
 先给出自动向量化的**真实汇编**（GCC 13.1.0，`-O3 -mavx2`）。源码剖析：
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·GCC15] 真实汇编：标量
+
 ```cpp title="示例 15 · ★★★☆☆"
 // 文件：Examples/_ch155_simd.cpp
 // 行号：4
@@ -314,6 +329,7 @@ _Z12load_alignedPKfS0_Pf:
 SIMD 加载/存储有对齐要求：对齐版本（`_mm_load_ps`）要求地址 16 字节对齐，未对齐版本（`_mm_loadu_ps`）任意对齐均可，但可能有极小的跨 cache-line  penalties。
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存对齐与 mmloadu
+
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑨ 对齐加载（要求 16/32/64 字节对齐，否则段错误）
 alignas(16) float a16[4] = {1,2,3,4};
@@ -327,6 +343,7 @@ __m128 vb = _mm_loadu_ps(&buf[3]);  // 任意地址 OK
 源码剖析（真实 intrinsics 汇编，区分对齐/未对齐）：
 
 > **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存对齐与 mmloadu
+
 ```cpp title="示例 17 · ★★★☆☆"
 // 文件：Examples/_ch155_align.cpp
 // 行号：5
@@ -366,6 +383,7 @@ _Z14load_unalignedPKfS0_Pf:
 向量比较产生**掩码（mask）**，每条 lane 置全 1（真）或全 0（假），用于条件选择/过滤。
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与比较指令 [实现·GCC15]
+
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑩ SSE 比较：_mm_cmplt_ps 产生每 lane 的 mask（0xFFFFFFFF 或 0）
 void clamp_low(const float* in, float* out, int n, float lo) {
@@ -380,6 +398,7 @@ void clamp_low(const float* in, float* out, int n, float lo) {
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与比较指令 [实现·GCC15]
+
 ```cpp title="示例 19 · ★★☆☆☆"
 // ⑩ AVX-512 用真正的 16 位/32 位 k-mask 寄存器（k1..k7），语义更清晰
 #include <immintrin.h>
@@ -400,6 +419,7 @@ void avx512_select(const float* a, const float* b, float* out, int n) {
 SIMD 是编译器优化栈的**底层执行形态**之一：上层优化（循环交换、标量替换、函数内联）决定了能否暴露出"可向量化内核"，下层再由向量化器生成 SIMD。
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch156 编译器优化衔接 [标准]
+
 ```cpp title="示例 20 · ★☆☆☆☆"
 // ⑪ 内联 + 常数折叠后，热点才容易被向量化
 inline float op(float x) { return x * 3.0f + 1.0f; }  // 小函数 -> 易内联
@@ -417,6 +437,7 @@ void transform(float* a, float* b, int n) {
 - **SoA**（Struct of Arrays）：字段各自成数组，同类数据连续。
 
 > **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 数据布局：AoS vs SoA 对向
+
 ```cpp title="示例 21 · ★★★☆☆"
 // ⑫ AoS：x/y/z 交错，向量化需跨步/广播，浪费 lane
 struct Vec3 { float x, y, z; };
@@ -474,6 +495,7 @@ _Z9aos_scaleP4Vec3if:
 AVX-512 寄存器宽、FMA 密，功耗与发热陡增，很多 CPU 在执行 512 位指令时会**降频（throttling）**，单核频率回落。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与降频（throttling）代价
+
 ```cpp title="示例 22 · ★★★☆☆"
 // ⑬ 运行时检测 AVX-512 是否可用（避免在不支持机器上 SIGILL）
 #include <immintrin.h>
@@ -509,6 +531,7 @@ _Z13add_arrays512PfS_S_i:
 ## ⑭ 误用：非连续 / 带分支的循环无法向量化 [实现·GCC15]
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 误用：非连续 / 带分支的循环无法向
+
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑭ 反例1：步长 != 1（跨步访问）-> 不可向量化
 void stride(float* a, float* b, int n) {
@@ -523,6 +546,7 @@ void dep(float* a, int n) {
 源码剖析（真实汇编，仍是标量 `vaddss`）：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 误用：非连续 / 带分支的循环无法向
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 文件：Examples/_ch155_dep.cpp
 // 行号：4
@@ -554,6 +578,7 @@ _Z13add_dependentPfi:
 ## ⑮ 性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
 
 > **示例 25** [难度 ★★☆☆☆] [主题：性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
+
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑮ 朴素基准框架（计时用 std::chrono），对比标量 / AVX2
 #include <chrono>
@@ -570,6 +595,7 @@ static double bench(void(*f)(float*,float*,float*,int),
 ```
 
 > **示例 26** [难度 ★★☆☆☆] [主题：性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // ⑮ 标量版
 void scalar(float* a, float* b, float* c, int n) {
@@ -601,6 +627,7 @@ g++ -std=c++23 -O3 -mavx2 -fopt-info-vec -fopt-info-vec-missed \
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试：查看 asm 是否真的向量化
+
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑯ 也可在代码里用 builtin 辅助诊断（编译期确认宽度）
 #include <immintrin.h>
@@ -616,6 +643,7 @@ static_assert(lanes_avx2 == 8, "AVX2 width");
 x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，ARM64 默认 128 位 `float32x4_t`）。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑰ x86 AVX2 已在 ⑦/⑳ 的 v_avx2 中实现，下面给出 ARM 等价
 // ⑰ ARM NEON 等价（ARM64，GCC/Clang 均支持）
@@ -640,6 +668,7 @@ void neon_add(const float* a, const float* b, float* c) {
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
 > **示例 29** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑱ 1) 先保证连续、无别名、无依赖，让 -O3 自动向量化
 void best(float* __restrict a, float* __restrict b,
@@ -702,6 +731,7 @@ g++ -std=c++23 -O3 -mavx2 -fopt-info-vec-all=vec.log Examples/_ch155_simd.cpp
 | 跨平台 | x86↔ARM 不互通 intrinsics | NEON `vaddq_f32` |
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑳ 一页速记：从标量到 AVX2 的进化（同一语义，宽度递增）
 void v_sse (const float* a, const float* b, float* c) { // 4-wide
@@ -718,6 +748,7 @@ void v_auto(float* __restrict a, float* __restrict b, float* __restrict c, int n
 ## 补充完整可编译示例（simd）
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 31 · ★☆☆☆☆"
 // S1 基本标量加（对照基线）
 void base_add(float* a, float* b, float* c, int n) {
@@ -726,6 +757,7 @@ void base_add(float* a, float* b, float* c, int n) {
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 32 · ★☆☆☆☆"
 // S2 __restrict 消除别名假设
 void ra_add(float* __restrict a, float* __restrict b,
@@ -735,6 +767,7 @@ void ra_add(float* __restrict a, float* __restrict b,
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 33 · ★☆☆☆☆"
 // S3 #pragma omp simd 显式提示
 #include <omp.h>
@@ -745,6 +778,7 @@ void omp_add(float* a, float* b, float* c, int n) {
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 34 · ★☆☆☆☆"
 // S4 SSE 4-wide 乘
 void sse_mul(const float* a, const float* b, float* c) {
@@ -754,6 +788,7 @@ void sse_mul(const float* a, const float* b, float* c) {
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 35 · ★☆☆☆☆"
 // S5 AVX2 8-wide 乘
 void avx2_mul(const float* a, const float* b, float* c) {
@@ -763,6 +798,7 @@ void avx2_mul(const float* a, const float* b, float* c) {
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 // S6 AVX-512 16-wide 乘
 void avx512_mul(const float* a, const float* b, float* c) {
@@ -772,6 +808,7 @@ void avx512_mul(const float* a, const float* b, float* c) {
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 37 · ★☆☆☆☆"
 // S7 FMA 融合乘加（需 -mfma）
 void fma_op(const float* a, const float* b, const float* c, float* d) {
@@ -781,6 +818,7 @@ void fma_op(const float* a, const float* b, const float* c, float* d) {
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 38 · ★☆☆☆☆"
 // S8 对齐加载（要求 alignas(32)）
 alignas(32) float ga[8] = {1,2,3,4,5,6,7,8};
@@ -791,6 +829,7 @@ void aligned_load() {
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 // S9 向量比较 + max（无分支 clamp）
 void v_clamp(const float* in, float* out, int n, float lo) {
@@ -803,6 +842,7 @@ void v_clamp(const float* in, float* out, int n, float lo) {
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 // S10 SoA 三分量缩放（最优布局）
 void soa(float* x, float* y, float* z, int n, float s) {
@@ -811,6 +851,7 @@ void soa(float* x, float* y, float* z, int n, float s) {
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 41 · ★☆☆☆☆"
 // S11 AoS（次优布局，对照）
 struct V3 { float x, y, z; };
@@ -820,6 +861,7 @@ void aos(V3* p, int n, float s) {
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 42 · ★☆☆☆☆"
 // S12 运行时检测 AVX2
 #include <immintrin.h>
@@ -833,6 +875,7 @@ bool have_avx2() {
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 // S13 跨平台抽象（自动向量化版，x86/ARM 都编译）
 void portable(float* __restrict a, float* __restrict b,
@@ -842,6 +885,7 @@ void portable(float* __restrict a, float* __restrict b,
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 44 · ★★☆☆☆"
 // S14 尾部收尾：向量主循环 + 标量补齐余数（避免越界）
 void with_tail(const float* a, const float* b, float* c, int n) {
@@ -855,6 +899,7 @@ void with_tail(const float* a, const float* b, float* c, int n) {
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 // S15 std::experimental::simd 抽象版（需 <experimental/simd>）
 #include <experimental/simd>
@@ -869,6 +914,7 @@ void dat_add(const float* a, const float* b, float* c, int n) {
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例（simd）
+
 ```cpp title="示例 46 · ★☆☆☆☆"
 // S16 用 std::chrono 计时（与 ⑮ 一致）
 #include <chrono>
@@ -925,6 +971,7 @@ WG21 **P0214** 是标准 SIMD 类型的主线提案，配合编译器 `-O2/-O3` 
 ## 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
 
 > **示例 47** <span class="badge badge-exp">难度 ★★★☆☆</span> · 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
+
 ```text
 SIMD设计决策树:
 1. 数据连续？ → 否: 重排数据或用SoA布局; 是: 继续
@@ -1009,6 +1056,7 @@ SIMD设计决策树:
 连续数组 + 简单累加 + 无数据依赖分支，是最易被自动向量化的形态。编译器在 `-O3` 下会把循环展开并对多个元素并行 `vaddps`。
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 48 · ★☆☆☆☆"
 #include <numeric>
 #include <vector>
@@ -1035,6 +1083,7 @@ int main() {
 `std::execution::par` 把归约拆到多线程，库实现底层通常会结合向量化；相对 OpenMP 的 `#pragma omp simd`，它是标准库设施、可移植性更好，但优化力度依赖标准库后端。
 
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 2（难度 ★★）
+
 ```cpp title="示例 49 · ★☆☆☆☆"
 #include <numeric>
 #include <vector>
@@ -1062,6 +1111,7 @@ int main() {
 纯标准 C++ 只能写出"对编译器友好、等待其自动向量化"的代码（如练习 1 的连续循环）；要精确控制 AVX/AVX-512 指令必须 `#include <immintrin.h>`，这属于实现特定头，会破坏"仅 std::"的 CI 门禁，因此本手册练习不纳入。
 
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 50 · ★★☆☆☆"
 #include <vector>
 #include <iostream>
@@ -1308,6 +1358,7 @@ flowchart TD
 ### D5.3 可复现 demo
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 51 · ★★★☆☆"
 // 本 demo 只需 g++ -O2 -std=c++23，不需要 -mavx2，可移植
 #include <cassert>

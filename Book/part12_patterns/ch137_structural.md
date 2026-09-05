@@ -59,6 +59,7 @@
 **【标准】** `[标准]` GoF《Design Patterns》将以上 7 种列为结构型；C++ 中它们与 RAII、模板、智能指针深度耦合，已远超原书的「纯 OOP」语境。
 
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：结构型模式解决什么
+
 ```text
 ┌──────────────┐   接口适配   ┌──────────────┐
 │  Client      │────────────▶│  Adapter     │
@@ -82,6 +83,7 @@
 **【对象适配器】** 用组合持有被适配者，推荐方式（不引入多重继承，耦合更弱）：
 
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适配器 Adapter（类/对象）
+
 ```cpp title="示例 2 · ★★☆☆☆"
 // 文件: Examples/_ch137_adapter.cpp
 // 对象适配器：把 LegacyRectangle 适配成客户期望的 Rectangle 接口
@@ -119,6 +121,7 @@ int main() {
 **【类适配器】** 用私有继承复用实现、公有继承目标接口。注意它引入多重继承，**【经验】** 现代 C++ 更偏向对象适配器，因为被适配者可以是运行期注入的任意实例：
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适配器 Adapter（类/对象）
+
 ```cpp title="示例 3 · ★★☆☆☆"
 // 文件: Examples/_ch137_adapter_class.cpp
 // 类适配器：用 private 继承复用被适配者实现，public 继承目标接口
@@ -150,6 +153,7 @@ int main() {
 **【错误示例】** ❌ 用值语义接收被适配者会发生**对象切片**，适配器内部持有的是拷贝且丢失动态类型：
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适配器 Adapter（类/对象）
+
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ❌ 错误：按值持有 Adaptee 会切片，且无法转发到派生实现
 struct BadAdapter : Target {
@@ -162,6 +166,7 @@ struct BadAdapter : Target {
 **【正确示例】** ✅ 用引用或指针（智能指针）持有，转发调用，**零拷贝**、保留动态类型：
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适配器 Adapter（类/对象）
+
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ✅ 正确：引用/指针持有，仅做转发
 struct GoodAdapter : Target {
@@ -176,6 +181,7 @@ struct GoodAdapter : Target {
 **【定义】** C++ 的「适配器」概念被标准库发扬光大：任何提供 `begin()/end()` 的类型都能用于**范围 for**，因此适配一个 C 风格数组只需补上迭代器接口。
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 适配器与范围 for / 迭代器适配
+
 ```cpp title="示例 6 · ★★★☆☆"
 // 文件: Examples/_ch137_adapter_rangefor.cpp
 // 迭代器适配器：让 C 风格数组支持范围 for（提供 begin/end）
@@ -201,6 +207,7 @@ int main() {
 **【标准】** `[标准]` 范围 for 在 `[stmt.ranged]` 中定义为对 `begin/end`（或成员 `begin/end`）的等价展开；这正是「迭代器适配」的合法接口契约。`std::back_inserter`、`std::front_inserter` 也是典型的**输出迭代器适配器**：
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适配器与范围 for / 迭代器适配
+
 ```cpp title="示例 7 · ★☆☆☆☆"
 // 把「赋值即追加」适配成输出迭代器，使 std::copy 能填满 vector
 #include <algorithm>
@@ -223,6 +230,7 @@ int main() {
 **【实现·GCC13】** 运行期桥接经典写法：
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 桥接 Bridge（抽象与实现分离）
+
 ```cpp title="示例 8 · ★★☆☆☆"
 // 文件: Examples/_ch137_bridge.cpp
 // Bridge：抽象（Shape）与实现（Renderer）解耦，运行时通过组合选择实现
@@ -276,6 +284,7 @@ int main() {
 **【编译期桥接】** 把实现作为模板实参，分发在编译期完成，**零 vptr、零堆分配、可完全内联**：
 
 > **示例 9** <span class="badge badge-exp">难度 ★★★★☆</span> · 编译期 vs 运行期
+
 ```cpp title="示例 9 · ★★★★☆"
 // 文件: Examples/_ch137_bridge_ct.cpp
 // 编译期桥接：把 Renderer 作为模板实参，分发在编译期完成（无 vptr/堆分配）
@@ -303,6 +312,7 @@ int main() {
 **【运行期桥接】** 当实现需按配置/输入在运行期决定时，回到虚函数 + `shared_ptr`：
 
 > **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译期 vs 运行期
+
 ```cpp title="示例 10 · ★★☆☆☆"
 // 文件: Examples/_ch137_bridge_rt.cpp
 // 运行期桥接：依据配置在运行时选择实现，抽象与实现两维独立变化
@@ -331,6 +341,7 @@ int main() {
 **【定义】** 组合让单个对象和对象容器（「部分—整体」）对客户端**透明**——客户端用同一接口处理叶子与容器。
 
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 组合 Composite
+
 ```cpp title="示例 11 · ★★☆☆☆"
 // 文件: Examples/_ch137_composite.cpp
 // Composite：叶子节点与容器节点统一接口，客户端无差别对待
@@ -370,6 +381,7 @@ int main() {
 **【工业案例】** 文件系统目录树就是天然的组合结构：目录（容器）和文件（叶子）都暴露统一的「列举/大小」接口。下面是贴近真实的目录大小统计骨架（非 Hello World）：
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 组合 Composite
+
 ```cpp title="示例 12 · ★★☆☆☆"
 // 工业版组合：目录(容器)与文件(叶子)统一 size() 接口
 #include <cstdint>
@@ -411,6 +423,7 @@ private:
 **【定义】** 组合的核心价值在于「客户端不必知道树深」，递归遍历逻辑集中在容器节点的 `operation()` 内。
 
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与递归遍历
+
 ```cpp title="示例 13 · ★★☆☆☆"
 // 文件: Examples/_ch137_composite_recursive.cpp
 // Composite 递归遍历：统计整棵树的叶子数量
@@ -457,6 +470,7 @@ int main() {
 **【定义】** 装饰器动态地给一个对象添加职责，是「继承为扩展」的**组合替代方案**——避免子类爆炸，且可在运行期任意叠加。
 
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器 Decorator
+
 ```cpp title="示例 14 · ★★☆☆☆"
 // 文件: Examples/_ch137_decorator.cpp
 // Decorator：用组合而非继承，运行时动态叠加职责
@@ -502,6 +516,7 @@ int main() {
 **【实现·GCC13】** 装饰链用 `std::make_unique` 嵌套构造，注意 `std::move` 的所有权转移：
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器 Decorator
+
 ```cpp title="示例 15 · ★★☆☆☆"
 #include <memory>
 // 等价链式构造：由内向外包裹；每层拿到内部 unique_ptr 的所有权
@@ -514,6 +529,7 @@ auto drink = std::make_unique<Sugar>(std::make_unique<Milk>(std::make_unique<Sim
 **【定义】** 标准库的**容器适配器（container adapter）** `std::stack` / `std::queue` / `std::priority_queue` 本质上是装饰器：它们在底层序列容器（`vector`/`deque`/`list`）之上「裁剪」出受限接口。
 
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器与 std::stack/容器
+
 ```cpp title="示例 16 · ★★☆☆☆"
 // 文件: Examples/_ch137_decorator_stack.cpp
 // 容器适配器 std::stack 本质是一种 Decorator：在底层序列容器上裁剪出栈语义
@@ -535,6 +551,7 @@ int main() {
 **【标准】** `[标准]` `[container.adaptors]` 规定 `std::stack` 的底层容器默认 `std::deque`，可替换；这正是「用一个对象包装另一个、改变其暴露的接口形态」的装饰器语义。同理 `std::priority_queue` 在 `std::vector` 上施加堆序约束：
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 装饰器与 std::stack/容器
+
 ```cpp title="示例 17 · ★★☆☆☆"
 // priority_queue 也是装饰器：在随机访问容器上叠加「堆」语义
 #include <queue>
@@ -552,6 +569,7 @@ int main() {
 **【定义】** 外观为复杂子系统提供一个**统一、简单的入口**，降低客户端与子系统的耦合。
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 外观 Facade
+
 ```cpp title="示例 18 · ★★☆☆☆"
 // 文件: Examples/_ch137_facade.cpp
 // Facade：为复杂子系统提供统一、简单的入口接口
@@ -582,6 +600,7 @@ int main() {
 **【工业案例】** `std::filesystem` 就是文件系统调用的门面：把平台相关的 `CreateFile`/`open`/`stat` 等封装成跨平台接口。客户端写：
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 外观 Facade
+
 ```cpp title="示例 19 · ★☆☆☆☆"
 // std::filesystem 是 OS 文件 API 的门面（跨平台统一）
 #include <filesystem>
@@ -598,6 +617,7 @@ int main() {
 **【定义】** 享元通过**共享**大量细粒度对象的「内在状态（intrinsic）」，把内存占用从 O(N) 降到 O(去重后)，仅把「外在状态（extrinsic）」由调用方按次传入。
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 享元 Flyweight
+
 ```cpp title="示例 20 · ★★☆☆☆"
 // 文件: Examples/_ch137_flyweight.cpp
 // Flyweight：共享内在状态，外部状态由调用方按次传入
@@ -637,6 +657,7 @@ int main() {
 **【经验】** 享元的收益前提：对象数量巨大、内在状态占比高、外在状态可外提。否则共享本身的控制块/哈希表开销反而得不偿失。用代码区分两种状态：
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 享元 Flyweight
+
 ```cpp title="示例 21 · ★☆☆☆☆"
 // 享元关键区分：内在状态放进对象，外在状态放进参数
 struct Character {                             // 内在：字体/字号（可共享）
@@ -650,6 +671,7 @@ struct Character {                             // 内在：字体/字号（可�
 **【定义】** 字符串驻留（string interning）是享元的经典应用：相等的字符串字面量指向**同一份存储**，既省内存又让 `==` 退化为指针比较。
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 享元与 string interni
+
 ```cpp title="示例 22 · ★★☆☆☆"
 // 文件: Examples/_ch137_flyweight_intern.cpp
 // string interning 思路：相等字符串字面量指向同一份存储
@@ -686,6 +708,7 @@ int main() {
 **【定义】** 代理为另一个对象提供**替身**，以控制对真实对象的访问（延迟创建、权限、引用计数、远程调用等）。最日常的代理就是 `std::unique_ptr` / `std::shared_ptr`：它们封装所有权并转发访问。
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理 Proxy（智能指针即代理）
+
 ```cpp title="示例 23 · ★★☆☆☆"
 // 文件: Examples/_ch137_proxy.cpp
 // Proxy：std::unique_ptr 是最常用的代理——封装所有权并对真实对象转发访问
@@ -707,6 +730,7 @@ int main() {
 **【源码剖析·libstdc++】** 代理的「转发」本质是一次指针解引用。`std::unique_ptr<T>::operator->` 在 libstdc++ 中直接返回被管理指针，毫无额外开销：
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理 Proxy（智能指针即代理）
+
 ```cpp title="示例 24 · ★★☆☆☆"
 // 文件：Examples/_ch137_proxy.cpp
 // 行号：14
@@ -719,6 +743,7 @@ int main() {
 **【经验】** 代理与智能指针是「同一枚硬币」：RAII 管理器（`std::lock_guard`、`std::scoped_lock`、`std::fstream`）都可视为对「资源/锁/文件句柄」的代理，构造时获取、析构时释放：
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理 Proxy（智能指针即代理）
+
 ```cpp title="示例 25 · ★★☆☆☆"
 // std::scoped_lock 是「锁代理」：构造加锁、析构解锁，异常安全
 #include <mutex>
@@ -737,6 +762,7 @@ int main() {
 **【定义】** 虚拟代理（Virtual Proxy）把昂贵对象的创建推迟到**首次真正使用**时，构造期几乎零成本，适合大图、远端对象、懒连接等。
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 代理与延迟加载
+
 ```cpp title="示例 26 · ★★☆☆☆"
 // 文件: Examples/_ch137_proxy_lazy.cpp
 // Virtual Proxy：延迟加载昂贵资源，仅在首次使用时创建真实对象
@@ -772,6 +798,7 @@ int main() {
 **【经验】** `std::function` 也是一种「调用代理」：它包装任意可调用对象，运行期可替换目标，常用于回调注册：
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代理与延迟加载
+
 ```cpp title="示例 27 · ★☆☆☆☆"
 // std::function 是「可调用对象代理」：统一接口、运行期改目标
 #include <functional>
@@ -788,6 +815,7 @@ int main() {
 **【定义】** C++ 的杀手锏是 RAII：「资源获取即初始化，释放即析构」。把结构型模式（门面/代理）与 RAII 结合，可在**构造即加锁、析构即解锁**的语义下提供统一接口。
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结构型模式与 RAII 结合
+
 ```cpp title="示例 28 · ★★☆☆☆"
 // 文件: Examples/_ch137_raii.cpp
 // 结构型模式与 RAII 结合：门面同时充当加锁代理，构造加锁、析构解锁
@@ -824,6 +852,7 @@ int main() {
 **【定义】** 用 CRTP（Curiously Recurring Template Pattern）做**编译期装饰**：装饰逻辑作为基类模板，被装饰类型作实参，分发在编译期完成，**零虚函数、可被完全内联**。
 
 > **示例 29** <span class="badge badge-exp">难度 ★★★★☆</span> · 模板 + 结构型（CRTP 装饰）
+
 ```cpp title="示例 29 · ★★★★☆"
 // 文件: Examples/_ch137_crtp_decorator.cpp
 // CRTP Decorator：编译期静态组合装饰，零虚函数、可被完全内联
@@ -879,6 +908,7 @@ call    rdx                                  ; 虚分派到 Renderer::render
 **【内存图】** Bridge 对象的真实布局：
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存布局：Bridge 双指针开销
+
 ```text
 Shape 对象:
 ┌──────────────┬─────────────────────────────┐
@@ -894,6 +924,7 @@ Shape 对象:
 用 `sizeof` 实测布局（验证「双指针」在对象本身占多大）：
 
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存布局：Bridge 双指针开销
+
 ```cpp title="示例 31 · ★★☆☆☆"
 // Bridge 抽象侧持智能指针，对象本体即一个 shared_ptr（64 位下通常 16 字节）
 #include <memory>
@@ -917,11 +948,13 @@ int main() {
 **【取证·真实运行】** 对 `Examples/_ch137_decorator_bench.cpp`（叠 5 层 `Deco` 装饰 `Impl::f`，循环 1e7 次取均值），在 mingw-w64 GCC 13.1.0 `-O2` 上**实测输出**：
 
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能测量：装饰链调用开销
+
 ```text
 5 层装饰开销 ~12.54 ns/调用 (sink=10000005)
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能测量：装饰链调用开销
+
 ```cpp title="示例 33 · ★★☆☆☆"
 // 文件: Examples/_ch137_decorator_bench.cpp
 // 装饰链调用开销微基准（std::chrono）：逐层叠加 Decorator 测单次调用延迟
@@ -970,6 +1003,7 @@ int main() {
 **【定义】** 真实系统很少只用一种模式。下面把 **Composite（文档树）+ Decorator（样式）+ Flyweight（字体）** 组合成一个迷你文本排版内核：字符是叶子、行是容器（Composite），加粗是装饰（Decorator），字体对象在工厂里共享（Flyweight）。
 
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式组合实例
+
 ```cpp title="示例 34 · ★★☆☆☆"
 // 文件: Examples/_ch137_pattern_combo.cpp
 // 模式组合：Composite(文档树) + Decorator(样式) + Flyweight(字体) 协同
@@ -1071,6 +1105,7 @@ int main() {
 **【反模式提醒】** ❌ 不要为「可能以后会扩展」提前套上 Bridge/Decorator——YAGNI；先写最直接的代码，等第二个变化维度真正出现再加模式。
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 小结
+
 ```text
 结构型模式选择速查
 ┌───────────────────┬───────────────────────────────┐
@@ -1140,6 +1175,7 @@ int main() {
 ## 附录: 结构型模式 C++ 实现
 
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 结构型模式 C++ 实现
+
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
 class Adaptee{public:void specific(){std::cout<<"adaptee"<<std::endl;}};
@@ -1149,6 +1185,7 @@ int main(){Adapter ad;ad.request();return 0;}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 结构型模式 C++ 实现
+
 ```cpp title="示例 37 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1159,6 +1196,7 @@ int main(){std::cout<<"Composite: tree structure. Leaf + Composite share interfa
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录: 结构型模式 C++ 实现
+
 ```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1168,12 +1206,14 @@ int main(){Proxy p;p.work();return 0;}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 结构型模式 C++ 实现
+
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Decorator: wrap objects to add behavior. Bridge: separate interface from implementation."<<std::endl;return 0;}
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 结构型模式 C++ 实现
+
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <iostream>
 class Subsystem{public:void op1(){std::cout<<"op1 ";}void op2(){std::cout<<"op2"<<std::endl;}};
@@ -1184,6 +1224,7 @@ int main(){Facade f;f.simple();return 0;}
 ## 附录 A：结构型模式工业实例 [F: Industry / B: Principle]
 
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 A：结构型模式工业实例 [F: Industry / B: Principle]
+
 ```text
 C++ 标准库中的结构型模式:
 
@@ -1206,6 +1247,7 @@ Proxy: std::vector<bool>::reference → 代理 bit 引用 (非 bool&)
 ## 附录 B：面试 [J: Learning / H: Design]
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 B：面试 [J: Learning / H: Design]
+
 ```text
 面试高频:
 Q: Adapter vs Decorator vs Proxy 的区别？
@@ -1230,6 +1272,7 @@ A: std::async = Facade for thread creation + future + promise; 和 std::for_each
 ## 附录 F：结构型模式
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 F：结构型模式
+
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <iostream>
 #include <stack>
@@ -1248,6 +1291,7 @@ int main(){std::stack<int,std::vector<int>> s;s.push(42);std::cout<<s.top()<<std
 | Facade | 简化复杂系统 | 可能过于简化 | 直接使用子系统 |
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G：结构型模式设计权衡 [H: Design]
+
 ```cpp title="示例 44 · ★☆☆☆☆"
 #include <iostream>
 int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=control access; Facade=simplify"<<std::endl;return 0;}
@@ -1313,6 +1357,7 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 <details><summary>答案与解析</summary>
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 练习 1（难度 ★★）
+
 ```cpp title="示例 45 · ★☆☆☆☆"
 #include <iostream>
 #include <string>
@@ -1338,6 +1383,7 @@ int main() { Adapter a; a.send("u", "b"); }
 <details><summary>答案与解析</summary>
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 2（难度 ★★★）
+
 ```cpp title="示例 46 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1363,6 +1409,7 @@ int main() { Panel p; p.add(std::make_unique<Button>()); p.apply_theme(); }
 <details><summary>答案与解析</summary>
 
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 练习 3（难度 ★★★）
+
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <iostream>
 #include <memory>
@@ -1628,6 +1675,7 @@ CRTP 装饰器在编译期展开为直接调用链，零运行期开销。但 CR
 ### D5.3 可复现 demo
 
 > **示例 48** <span class="badge badge-exp">难度 ★★★☆☆</span> · 可复现 demo
+
 ```cpp title="示例 48 · ★★★☆☆"
 #include <cstdio>
 
