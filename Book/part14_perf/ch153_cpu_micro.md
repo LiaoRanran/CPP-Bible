@@ -134,12 +134,12 @@ classDiagram
 
 ```mermaid
 flowchart TD
-    subgraph S1 [依赖链 (关键路径=各延迟之和)]
+    subgraph S1 ["依赖链 (关键路径=各延迟之和)"]
         da0["t0: a = a + x0"]
         da1["t1: a = a + x1 (每个加法等上一个 a 就绪, ALU 延迟 ~1 周期, 但发射受限于就绪)"]
         da2["t2: a = a + x2 => 3 周期才完成 3 次加法 (ILP=1)"]
     end
-    subgraph S2 [无关链 (ILP 可被压榨)]
+    subgraph S2 ["无关链 (ILP 可被压榨)"]
         ib0["t0: s0 = s0 + x0"]
         ib1["t1: s1 = s1 + y0"]
         ib2["t2: s2 = s2 + z0 => 3 加法 ~1 周期完成 (受端口/寄存器压力限制)"]

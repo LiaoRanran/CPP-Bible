@@ -137,7 +137,7 @@ int main() {
 }
 ```
 
-- `[实现]`：`bits/basic_string.h:213` 定义 `enum { _S_local_capacity = 15 / sizeof(_CharT) }`；`217` 定义 `_M_local_buf[_S_local_capacity + 1]`。对 `char` 而言内联缓冲可容纳 **15 个字符 + 1 个 '\0'**。
+- `[实现]`：`bits/basic_string.h:213` 定义 `enum { _S_local_capacity = 15 / sizeof(_CharT) }`；`217` 定义 `_M_local_buf[_S_local_capacity + 1]`。对 `char` 而言内联缓冲可容纳 **15 个字符 + 1 个 `'\0'`**。
 - `[实现-推断]`：MSVC 的 SSO 容量为 **15 字节**，Clang/libc++ 为 **22 字节**（容量因实现而异，但机制相同）。
 
 ## ⑤ 构造 / 赋值 / 析构的生命周期 <span class="badge badge-std">标准</span>

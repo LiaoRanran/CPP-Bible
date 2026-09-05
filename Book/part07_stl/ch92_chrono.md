@@ -1188,7 +1188,7 @@ int main() {
 
 <span class="badge badge-std">标准</span> `sleep_until(tp)` 睡到绝对时刻，配合"每次重新计算 `now()+周期`"可消除 `sleep_for` 的调度/执行漂移；`100ms` 是 C++14 起的字面量运算符（`std::chrono_literals`）。
 
-<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.duration]（时长字面量 `100ms`）与 §[thread.this]（`sleep_until`）；消除漂移的定时循环见 cppreference "chrono/operator\"\"ms" 与 "thread/sleep_until"。
+<span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[time.duration]（时长字面量 `100ms`）与 §[thread.this]（`sleep_until`）；消除漂移的定时循环见 cppreference `chrono/operator""ms` 与 `thread/sleep_until`。
 
 </details>
 

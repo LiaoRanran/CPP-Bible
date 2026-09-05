@@ -161,7 +161,7 @@ flowchart LR
         src["stop_source: _M_state"]
         tok["stop_token: _M_state"]
     end
-    subgraph S2 [_Stop_state (堆)]
+    subgraph S2 ["_Stop_state (堆)"]
         st["_Stop_state (堆): _M_value : atomic<uint32_t>; bit0 = stop_possible (可取消?); bit1 = stop_requested (已请求?); _M_head : _Stop_cb*"]
         cblist["[cb0] -> [cb1] -> [cb2] -> nullptr: each: _M_callback + _M_next/_M_prev"]
     end

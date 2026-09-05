@@ -279,15 +279,6 @@ int main() {
 theme: neutral
 ---
 classDiagram
-classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
-classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
-classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
-classDef uarch fill:#d62728,stroke:#a11414,color:#fff
-classDef algo  fill:#9467bd,stroke:#513470,color:#fff
-classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
-classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
-classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
-classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
     class Shape {
         +virtual double area()
         +virtual void draw()

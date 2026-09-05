@@ -249,7 +249,7 @@ flowchart LR
     S1["Source: [_data] ──────► [堆: 100万个 int]"]
     T1["Target: [_data] ──────► nullptr"]
   end
-  subgraph PH2 [执行 Target = std::move(Source)（移动赋值）]
+  subgraph PH2 ["执行 Target = std::move(Source)（移动赋值）"]
     S2["Source: [_data] ──────► nullptr （资源被「偷走」，置空）"]
     T2["Target: [_data] ──────► [堆: 100万个 int]（现在 Target 拥有）"]
   end

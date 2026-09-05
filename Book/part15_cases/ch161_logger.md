@@ -140,6 +140,7 @@ int main() {
 [critical] event
 ```
 
+```cpp
 // ② 级别 → 颜色码（终端着色示意，真实可编译）
 const char* color_of(Level l) {
     switch (l) {
@@ -149,6 +150,7 @@ const char* color_of(Level l) {
         default:              return "\033[0m";
     }
 }
+```
 
 // ② 运行时动态过滤：把阈值提到 warn，低级别静默丢弃（真实可编译，Examples/_ch161_fix1.cpp）
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 日志级别
@@ -935,12 +937,14 @@ Examples/_ch161_loc.cpp:14 deep_call : inside deep_call
 
 **<span class="badge badge-impl">实现</span>** `__FILE__` 默认是**完整路径**，会让日志又长又噪。生产库会做 `filename(__FILE__)` 只取 basename，或编译期用 `std::string_view` + 取最后一段。
 
+```cpp
 // ⑪ 只保留文件名（裁掉完整路径噪声）：编译期友好写法
 constexpr std::string_view filename(std::string_view path) {
     std::size_t pos = path.find_last_of("/\\");
     return pos == std::string_view::npos ? path : path.substr(pos + 1);
 }
 // filename("/a/b/c.cpp") -> "c.cpp"
+```
 
 // ⑪ 源码定位（二）：C++20 std::source_location 直接拿到文件/行/函数，免去手写 __FILE__/__LINE__ 宏（真实可编译，Examples/_ch161_fix10.cpp）
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码定位（FILE/LINE）
