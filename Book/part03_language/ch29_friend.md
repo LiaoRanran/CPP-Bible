@@ -244,18 +244,20 @@ int main() {
 > **示例 13** [难度 ★★★☆☆] [主题：关键提案 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 13 · ★★★☆☆"
-// ⑭ friend 相关的标准演化与提案
-#include <iostream>
+// ⑭ friend 的标准演化 —— 真机验证 C++11「模板类型参数作友元」
+#include <cstdio>
+template <typename T>
+struct Passkey {
+    friend T;                                       // C++11 起：类型参数 T 可直接作友元
+    static int token;
+};
+template <typename T> int Passkey<T>::token = 7;
+struct Client { void use() { std::printf("token=%d（Client 是 Passkey<Client> 友元，可读其私有成员）\n", Passkey<Client>::token); } };
 int main() {
-    std::cout << "P2893R0: Variadic friend declarations (C++26 direction)\n";
-    std::cout << "  → friend Ts...; // 批量声明模板参数包为友元\n";
-    std::cout << "  → solves: template<class...Ts> class X { friend Ts...; }; currently rejected\n\n";
-    std::cout << "Historical notes:\n";
-    std::cout << "C++98: friend class F; (basic form)\n";
-    std::cout << "C++11: friend T; (type parameter as friend)\n";
-    std::cout << "C++20: no changes to friend mechanism\n";
-    std::cout << "C++23: no changes\n";
-    std::cout << "C++26: P2893 variadic friend targeted\n";
+    Client c; c.use();
+    // C++26 方向 P2893R0：template<class...Ts> struct X { friend Ts...; };
+    // 批量友元参数包 —— GCC 15.3.0 尚不支持（历史对照，取消注释即编译失败）：
+    // template<class...Ts> struct X { friend Ts...; };
     return 0;
 }
 ```
