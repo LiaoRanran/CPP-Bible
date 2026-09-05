@@ -4,6 +4,26 @@
 
 ---
 
+### 2026-09-05 CI 全绿收口：PDF 构建根因修复 + Book 外死引用清零 + ASM 口径披露
+- **PDF 根因修复（终结 #520–#541 连续 22 个 run 失败，#542 success）**：①题注行
+  `> **示例 N**` 紧邻 ``` 围栏，被 CommonMark lazy continuation 吞进引用段落 →
+  7963 处/147 章的代码块在 PDF/站点/EPUB 沦为散文，代码中的 `\n` 直接进 LaTeX 报
+  `! Undefined control sequence`（exit 43）；修复 = 题注行与围栏之间补空行。
+  ②pandoc 不认围栏 `title="…"` 属性（mkdocs superfences 专有）→ 整块代码被拒识；
+  修复 = `generate_pdf.sh` 分卷生成期清洗为裸 `​```lang`（零源文件 diff）。
+  本地 WSL（Ubuntu 24.04 = pandoc 3.1.3 + TL2023，与 CI runner 同代）16/16 卷
+  全绿验证后推送。
+- **Book 外死引用清零（质量分析工程①）**：FAQ / Interview / WG21 / Part0 / CROSSREF
+  共 61 处死章号引用 + 9 处错指（RAII→ch39、智能指针→ch41、切片→ch46 等按现章
+  语义逐条纠正，非机械按号映射）；chapter_mapping / CHANGELOG / ROADMAP 等
+  记录性文档的空号属历史事实，保留不改。Book 外扫描 84 → 32（余量全为记录性）。
+- **ASM 证据口径披露（工程②）**：README 新增如实口径——513 个 asm 块中 203 个
+  已锚定真实产物（与 `Examples/*.asm` 符号逐一比对，DRIFT=0，机校门禁守护），
+  其余 310 个为教学示意 / 节选（含 27 空占位块）；各章"本章所有汇编均为真实产物"
+  全称声明经机校 **0 矛盾**（所在章 asm 块全部已锚定）。
+- **占位目录清理（工程④）**：删除 Exercises / Solutions / ReadingRoadmap / Projects /
+  Performance 共 5 个 0 文件空目录（未被 git 跟踪、无文档引用）。
+
 ### 2026-09-04（续五）ch32 初始化 真机实证深耕（L2 主线）
 - **病灶**：ch32 总 59 cpp 块、1570 行，散文密度 75.1%（骨架不贫血），但 **10 个块把散文/跨语言对比/面试题塞进 `std::cout`**（赝品，如 `cout<<"Trap 1: ..."`、`cout<<"Q1: ... 答: ..."`、编造汇编 `cout<<"Assembly (GCC -O2): brace = movaps..."`）。另 #59 玩具块打印一句英文建议。
 - **选章依据（避开 prose_density 误伤）**：用 `cout<<"` 玩具代码扫描（ch32=96 处，全库最高之一）定位真稀薄，而非按密度升序（ch71/ch70/ch19 曾误伤深章）。
