@@ -83,13 +83,14 @@ int main() { std::cout << sum(100) << std::endl; return 0; }
 > **示例 4** [难度 ★☆☆☆☆] [主题：查看汇编的五种方式 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 4 · ★☆☆☆☆"
+// 看汇编的五种方式: 1) godbolt.org  2) g++ -S -fverbose-asm  3) objdump -d a.exe
+// 4) perf record + perf annotate  5) c++filt 还原 mangled 符号名
 #include <iostream>
+void hot_path(int&) {}                    // 在 -S 输出里重点观察的符号
 int main() {
-    std::cout << "1. godbolt.org (online)\n";
-    std::cout << "2. g++ -S -fverbose-asm\n";
-    std::cout << "3. objdump -d a.exe\n";
-    std::cout << "4. perf record + perf annotate\n";
-    std::cout << "5. Compiler Explorer CLI: c++filt\n";
+    int x = 0;
+    hot_path(x);
+    std::cout << "symbol=" << reinterpret_cast<void*>(&hot_path) << "\n";
     return 0;
 }
 ```
@@ -199,22 +200,13 @@ int main() {
 > **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例：CI/CD 中集成 CE
 
 ```cpp title="示例 12 · ★★★☆☆"
-// ⑫ 使用 Compiler Explorer API 自动化汇编回归测试
+// ⑫ CE API 回归模式: POST source → 取回 asm 数组 → 与基线 diff → 关键函数变长即报警
+// 工业实践: Bloomberg 周度 asm diff | MongoDB CI 门槛 | 游戏引擎 SIMD 指令校验
 #include <iostream>
-#include <string>
-
-// 模拟 CE API 的伪代码（实际通过 HTTP POST 调用 godbolt.org/api/compiler/compile）
+int probe() { return 42 * 42; }           // 回归系统重点盯住的"指纹"函数
 int main() {
-    std::cout << "CE API Integration Pattern:\n";
-    std::cout << "1. POST /api/compiler/<compiler-id>/compile\n";
-    std::cout << "   body: {source, options: {userArguments: '-O2'}}\n\n";
-    std::cout << "2. Parse response: extract 'asm' array of {text, source}\n";
-    std::cout << "3. Diff: compare today's asm vs baseline asm\n";
-    std::cout << "4. Alert: if critical function gained instructions → performance regression\n\n";
-    std::cout << "Real use cases:\n";
-    std::cout << "- Bloomberg: weekly asm diff on trading engine hot paths\n";
-    std::cout << "- MongoDB: CI gate checks that critical loops stay < N instructions\n";
-    std::cout << "- Game engines: verify SIMD intrinsics generate expected instructions\n";
+    std::cout << "probe()=" << probe()
+              << " addr=" << reinterpret_cast<void*>(&probe) << "\n";
     return 0;
 }
 ```
@@ -252,19 +244,17 @@ int main() {
 > **示例 14** [难度 ★★★★☆] [主题：关联提案 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 14 · ★★★★☆"
-// ⑭ 影响汇编质量的 C++ 标准提案
+// ⑭ 影响汇编质量的提案: P2300(execution) P2809(平凡无限循环 UB→defined)
+// P1144(trivially relocatable: vector realloc → memcpy vs move) P2996(reflection)
 #include <iostream>
-#include <vector>
+#include <type_traits>
+struct P1144Victim { int* p;                                  // 自定义拷贝/移动 →
+    P1144Victim(const P1144Victim& o) : p(o.p) {}             // 非 trivially copyable，
+    P1144Victim(P1144Victim&& o) : p(o.p) {}                  // realloc 只能逐元素 move
+};
 int main() {
-    std::cout << "Proposals that change what you see on Compiler Explorer:\n\n";
-    std::cout << "P2300R7 (std::execution): sender/receiver model → new asm patterns\n";
-    std::cout << "  → async task graphs compile to dispatch chains visible in CE\n\n";
-    std::cout << "P2809R3 (trivial infinite loops): UB→defined → loop asm changes\n";
-    std::cout << "  → C++26: while(true){} no longer UB → compiler can't delete it\n\n";
-    std::cout << "P1144R8 (trivially relocatable): std::vector realloc → memcpy vs move\n";
-    std::cout << "  → CE shows: with trivially_relocatable → memmove, without → loop of moves\n\n";
-    std::cout << "P2996R5 (reflection): generates code at compile time → asm varies wildly\n";
-    std::cout << "Check these proposals on godbolt to see standard→machine implications.\n";
+    std::cout << "trivially_copyable="
+              << std::is_trivially_copyable_v<P1144Victim> << "\n";   // 0
     return 0;
 }
 ```
@@ -296,22 +286,14 @@ int main() {
 > **示例 16** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 16 · ★★★★☆"
-// ⑯ 使用 CE 时的 5 大陷阱
+// ⑯ CE 五大陷阱: 1) -O0 几乎无优化，看效果必须 -O2/-O3  2) DCE 会删掉未用函数
+// 3) 编译器/版本间策略不同  4) AT&T(src,dst) 与 Intel(dst,src) 操作数相反
+// 5) 默认只编译单 TU，跨 TU 优化需 -flto
 #include <iostream>
+int test() { return 42 * 42; }
 int main() {
-    std::cout << "Trap 1: 用 -O0 看优化效果 → -O0 几乎不做优化，必须用 -O2/-O3\n\n";
-    std::cout << "Trap 2: 死代码消除 (DCE) 删除被测试函数\n";
-    std::cout << "   int test() { return 42*42; } → DCE 删除整个函数因为结果未使用\n";
-    std::cout << "   修复: 用 volatile 或 benchmark::DoNotOptimize 或 printf\n\n";
-    std::cout << "Trap 3: 不同编译器不同版本的 asm 差异\n";
-    std::cout << "   GCC 15 和 Clang 17 对同一代码的优化策略不同\n";
-    std::cout << "   修复: 同时检查 GCC/Clang/MSVC，选择最保守的写法\n\n";
-    std::cout << "Trap 4: 混淆 AT&T 和 Intel 语法\n";
-    std::cout << "   AT&T: movl %eax, %ebx (src, dst 相反)\n";
-    std::cout << "   Intel: mov ebx, eax (dst, src)\n";
-    std::cout << "   修复: CE 设置 → 'Intel syntax'\n\n";
-    std::cout << "Trap 5: 忽略链接器优化 (LTO)\n";
-    std::cout << "   CE 默认只编译单个 TU。跨 TU 优化需要 LTO 标志 (-flto)\n";
+    volatile int sink = test();           // volatile/DoNotOptimize 防 DCE 整体删除
+    std::cout << "test()=" << sink << "\n";   // 1764
     return 0;
 }
 ```
