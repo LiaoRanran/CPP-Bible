@@ -1029,16 +1029,27 @@ public:
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 34 · ★☆☆☆☆"
+#include <cstddef>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch160_mempool."<<std::endl;return 0;}
+int main() {
+    std::cout << "max_align=" << alignof(std::max_align_t) << "\n";   // 16（池块对齐上限）
+    return 0;
+}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch160_mempool."<<std::endl;return 0;}
+#include <new>
+int main() {
+    using Int = int;                                  // 伪析构调用须经 typedef 名
+    alignas(Int) unsigned char buf[sizeof(Int) * 4];  // 预分配大块（池）
+    Int* p = new (buf) Int(7);                        // placement new：不分配，只构造
+    std::cout << "v=" << *p
+              << " in_buf=" << (static_cast<void*>(p) == static_cast<void*>(buf)) << "\n";  // 1
+    p->~Int();                                        // 只析构，不释放（内存归还给池）
+    return 0;
+}
 ```
 
 ## 联合使用场景

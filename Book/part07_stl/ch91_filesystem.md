@@ -1065,9 +1065,16 @@ int main() {
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 39 · ★☆☆☆☆"
+#include <filesystem>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch91_filesystem."<<std::endl;return 0;}
+int main() {
+    std::filesystem::path p = "/a/b/c.txt";
+    std::cout << "stem=" << p.stem().string()              // c
+              << " ext=" << p.extension().string()         // .txt
+              << " parent=" << p.parent_path().string()    // /a/b
+              << "\n";
+    return 0;
+}
 ```
 
 ## 联合使用场景

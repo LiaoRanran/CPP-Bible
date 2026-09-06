@@ -966,7 +966,7 @@ int main() {
 #include <iostream>
 int main() {
     auto t0 = std::chrono::steady_clock::now();
-    long s = 0;
+    long long s = 0;                                // LLP64 下 long 仅 4 字节，累加会溢出
     for (int i = 0; i < 1000000; ++i) s += i;       // 被测代码
     auto t1 = std::chrono::steady_clock::now();
     std::cout << "sum=" << s << " ns="

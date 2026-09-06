@@ -669,8 +669,13 @@ static_assert(std::is_same_v<Front<int, double>::type, int>);
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch68_tmp."<<std::endl;return 0;}
+template <int N> struct Fib { static constexpr int value = Fib<N - 1>::value + Fib<N - 2>::value; };
+template <> struct Fib<0> { static constexpr int value = 0; };
+template <> struct Fib<1> { static constexpr int value = 1; };
+int main() {
+    std::cout << "Fib<10>=" << Fib<10>::value << "\n";   // 55（模板递归在编译期展开）
+    return 0;
+}
 ```
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 

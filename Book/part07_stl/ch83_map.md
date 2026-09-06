@@ -1125,15 +1125,28 @@ int main() {
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch83_map."<<std::endl;return 0;}
+#include <map>
+int main() {
+    std::map<int, int> m{{3, 30}, {1, 10}, {2, 20}};   // 乱序插入
+    for (const auto& [k, v] : m) std::cout << k << ":" << v << " ";   // 按键升序输出
+    std::cout << "\n";
+    return 0;
+}
 ```
 > **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 39 · ★★★☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch83_map."<<std::endl;return 0;}
+#include <map>
+#include <string>
+int main() {
+    std::map<std::string, int> m;
+    std::cout << "before=" << m.size() << " ";
+    (void)m["missing"];                                  // operator[] 会插入默认值！
+    std::cout << "after=" << m.size()                    // 1（size 被改了）
+              << " v=" << m["missing"] << "\n";          // 0（默认构造的值）
+    return 0;
+}
 ```
 ## 附录 E：红黑树 vs flat_map 性能对比
 

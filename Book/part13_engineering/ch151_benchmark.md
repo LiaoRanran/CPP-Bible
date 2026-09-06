@@ -1447,9 +1447,17 @@ int main() {
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 35 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch151_benchmark."<<std::endl;return 0;}
+int main() {
+    volatile long long sink = 0;          // volatile 阻止编译器把整个循环优化掉
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < 1000000; ++i) sink += i;
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "ns=" << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count()
+              << " sink=" << sink << "\n";   // 499999500000
+    return 0;
+}
 ```
 
 ## 联合使用场景

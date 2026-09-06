@@ -655,22 +655,36 @@ int use_lut(int i) { return lut(i); }           // 运行期：普通乘；编�
 
 ```cpp title="示例 33 · ★★☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch69_constexpr."<<std::endl;return 0;}
+constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
+int main() {
+    static_assert(fact(5) == 120);                // 编译期完成求值，不成立则编译失败
+    std::cout << "fact(5)=" << fact(5) << "\n";   // 120
+    return 0;
+}
 ```
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 34 · ★★☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch69_constexpr."<<std::endl;return 0;}
+constexpr int square(int x) { return x * x; }
+int main() {
+    constexpr int a = square(5);                // 编译期常量
+    int arr[a];                                  // 可用作数组长度
+    std::cout << "a=" << a
+              << " sizeof(arr)=" << sizeof(arr) << "\n";   // 100（25 × 4）
+    return 0;
+}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 35 · ★★☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch69_constexpr."<<std::endl;return 0;}
+consteval int cube(int x) { return x * x * x; }
+int main() {
+    constexpr int c = cube(3);                // consteval：必须编译期求值，否则编译失败
+    std::cout << "cube(3)=" << c << "\n";     // 27
+    return 0;
+}
 ```
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
