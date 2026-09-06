@@ -122,9 +122,8 @@ PxxxxR0 提交 → Study Group 初审(6-12月)
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
 int main() {
-    std::cout << "WG21 = ISO/IEC JTC1/SC22/WG21, ~400 members" << std::endl;
-    std::cout << "3 annual meetings, ~5 years from proposal to standard" << std::endl;
-    std::cout << "Key: PxxxxRnn = proposal; Nxxxx = working draft" << std::endl;
+    std::cout << "__cplusplus = " << __cplusplus << "\n";          // 本构建的标准年份
+    static_assert(__cplusplus >= 202002, "need at least C++20");  // 编译期确认标准
     return 0;
 }
 ```
@@ -369,9 +368,11 @@ WG21下设多个Study Group(SG), 每个聚焦特定领域:
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
+#include <ranges>
 int main() {
-    std::cout << "SG1=concurrency, SG7=reflection, SG14=low-latency, SG21=contracts" << std::endl;
-    std::cout << "Each SG reviews proposals in its domain before EWG/LEWG" << std::endl;
+    std::cout << "__cpp_concepts    = " << __cpp_concepts << "\n";     // SG9 概念
+    std::cout << "__cpp_consteval   = " << __cpp_consteval << "\n";    // SG7 编译期求值
+    std::cout << "__cpp_lib_ranges  = " << __cpp_lib_ranges << "\n";   // SG9 范围库
     return 0;
 }
 ```
@@ -407,8 +408,7 @@ WG21提案有严格的格式要求:
 ```cpp title="示例 10 · ★☆☆☆☆"
 #include <iostream>
 int main() {
-    std::cout << "ISO ballot: each country gets 1 vote. Veto delays 6-12 months." << std::endl;
-    std::cout << "France vetoed C++20 modules design → 3 months revision" << std::endl;
+    std::cout << "__VERSION__ = " << __VERSION__ << "\n";   // 编译器版本串
     return 0;
 }
 ```
@@ -521,8 +521,8 @@ int main(){std::cout<<"C++ standardization: ISO/WG21, 3-year cadence, 400+ membe
 ```cpp title="示例 11 · ★☆☆☆☆"
 #include <iostream>
 int main() {
-    std::cout << "ISO/IEC 14882: C++ standard" << std::endl;
-    std::cout << "WG21: ~400 members, 3-year cadence" << std::endl;
+    std::cout << "__cplusplus     = " << __cplusplus << "\n";
+    std::cout << "__cpp_consteval = " << __cpp_consteval << "\n";  // C++23 consteval
     return 0;
 }
 ```
@@ -535,7 +535,7 @@ ISO/IEC 14882约2200页。stable name: [alg.sort]/1=第25章第7.1节第1段。
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 #include <iostream>
-int main(){std::cout<<"ISO 14882: ~2200 pages. Stable names for cross-ref."<<std::endl;return 0;}
+int main(){std::cout<<"__cplusplus = "<<__cplusplus<<"\n";return 0;}
 ```
 
 | 章节 | 内容 | 页数 |
@@ -556,7 +556,7 @@ ISO ballot=任何国家一票否决 | train model=2012年起每3年一版
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 #include <iostream>
-int main(){std::cout<<"C++=ISO14882, WG21, 3yr cadence, 400+ members"<<std::endl;return 0;}
+int main(){std::cout<<"__cpp_concepts = "<<__cpp_concepts<<"\n";return 0;}
 ```
 
 ## 附录 T：WG21参与指南
