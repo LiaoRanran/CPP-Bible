@@ -572,15 +572,18 @@ filesystem: 跨平台统一, 替代boost::filesystem
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 C：C++17底层与工业采纳
 
 ```cpp title="示例 33 · ★☆☆☆☆"
+#include <filesystem>
 #include <iostream>
 #include <optional>
 #include <string_view>
-#include <filesystem>
 int main() {
-    std::optional<int> opt = 42;
-    std::string_view sv = "hello world";
-    auto cwd = std::filesystem::current_path();
-    std::cout << "C++17: optional+string_view+filesystem = productivity trifecta" << std::endl;
+    std::optional<int> opt = 42;                      // 替代 sentinel（-1/nullptr）
+    std::string_view sv = "hello world";              // 零拷贝视图，不拥有数据
+    std::cout << "opt=" << *opt                                                  // 42
+              << " sv=" << sv                                                    // hello world
+              << " sv.size=" << sv.size()                                        // 11
+              << " has_root=" << std::filesystem::path("/tmp").has_root_path()   // 1
+              << "\n";
     return 0;
 }
 ```

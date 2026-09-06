@@ -557,11 +557,20 @@ N3649: 泛型 lambda → C++14
 
 ```cpp title="示例 32 · ★★★☆☆"
 #include <iostream>
+#include <memory>
+constexpr int sum_to(int n) {          // C++14 relaxed constexpr：允许局部变量与循环
+    int s = 0;
+    for (int i = 1; i <= n; ++i) s += i;
+    return s;
+}
 int main() {
-    std::cout << "C++14's key contribution: made C++11 features practical.\n";
-    std::cout << "make_unique: 消除了最后一个使用 new 的理由\n";
-    std::cout << "generic lambda: 使 STL 算法的 lambda 参数真正无痛\n";
-    std::cout << "relaxed constexpr: 使编译期计算从玩具变为工具\n";
+    auto p = std::make_unique<int>(42);                 // C++14 make_unique
+    auto twice = [](auto x) { return x + x; };          // C++14 generic lambda
+    std::cout << "make_unique=" << *p                   // 42
+              << " twice(21)=" << twice(21)             // 42（同一 lambda 处理 int）
+              << " twice(2.5)=" << twice(2.5)           // 5（也可处理 double）
+              << " sum_to(10)=" << sum_to(10) << "\n";  // 55
+    static_assert(sum_to(10) == 55);                    // 编译期完成求值
     return 0;
 }
 ```

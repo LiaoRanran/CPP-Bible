@@ -514,10 +514,19 @@ std::execution (P2300R7):
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 #include <iostream>
+#include <version>
 int main() {
-    std::cout << "C++26 = Contracts + Reflection + std::execution = trifecta" << std::endl;
-    std::cout << "Contracts: P2900R7 approved Feb 2024, Hagenberg. GCC15/Clang20 target." << std::endl;
-    std::cout << "Reflection: P2996R5, ~500 pages spec, largest single proposal in C++ history." << std::endl;
+    std::cout << "__cplusplus=" << __cplusplus << "\n";   // 202302
+#ifdef __cpp_contracts
+    std::cout << "contracts=" << __cpp_contracts << "\n";
+#else
+    std::cout << "contracts=not exposed\n";               // 本构建尚未实现 P2900
+#endif
+#ifdef __cpp_lib_execution
+    std::cout << "lib_execution=" << __cpp_lib_execution << "\n";   // 201902
+#else
+    std::cout << "lib_execution=not exposed\n";
+#endif
     return 0;
 }
 ```
