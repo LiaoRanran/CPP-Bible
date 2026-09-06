@@ -505,15 +505,6 @@ WG21维护测试套件: https://github.com/cplusplus/CWG. 每个编译器需通�
 
 ## 附录 Q：标准化速查
 
-## cpp-block-count-fix
-
-This section exists to meet the minimum cpp block threshold.
-
-## cpp
-
-#include <iostream>
-int main(){std::cout<<"C++ standardization: ISO/WG21, 3-year cadence, 400+ members"<<std::endl;return 0;}
-
 ## 附录 R：C++标准化代码示例
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 R：C++标准化代码示例

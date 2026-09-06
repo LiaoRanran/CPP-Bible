@@ -859,13 +859,12 @@ extern "C": 不name-mangling, 不异常处理, 不重载
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D：C遗产底层与工业影响 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
 ```cpp title="示例 47 · ★☆☆☆☆"
-#include <iostream>
 #include <cstring>
+#include <iostream>
 int main() {
-    char buf[64]; std::strcpy(buf, "C legacy");
-    std::cout << buf << std::endl;
-    std::cout << "C built the foundation. C++ built the skyscraper on top." << std::endl;
-    std::cout << "C++ calls any C library via extern C - 100% backward compatible." << std::endl;
+    char buf[64];
+    std::strcpy(buf, "C legacy");                                       // C 库函数，经 <cstring> 直接可用
+    std::cout << "buf=" << buf << " len=" << std::strlen(buf) << "\n";  // C legacy / 8
     return 0;
 }
 ```
@@ -903,12 +902,11 @@ C → C++ 替代对照:
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 
 ```cpp title="示例 49 · ★☆☆☆☆"
-#include <iostream>
 #include <array>
+#include <iostream>
 int main() {
-    std::array<int, 5> arr{1,2,3,4,5};     // C: int arr[5]={1,2,3,4,5};
-    std::cout << arr.size() << std::endl;  // C: no .size()
-    std::cout << "C++ = C + type safety + RAII + zero-cost abstractions" << std::endl;
+    std::array<int, 5> arr{1,2,3,4,5};            // C: int arr[5]={1,2,3,4,5};
+    std::cout << "size=" << arr.size() << "\n";   // 5（C 数组没有 .size()）
     return 0;
 }
 ```
