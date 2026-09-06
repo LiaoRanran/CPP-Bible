@@ -921,36 +921,72 @@ int main() {
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch154_cache_opt."<<std::endl;return 0;}
+#include <new>
+struct alignas(std::hardware_destructive_interference_size) Aligned { int v; };
+int main() {
+    std::cout << "alignof=" << alignof(Aligned)          // 64
+              << " sizeof=" << sizeof(Aligned) << "\n";  // 64（占满一整条缓存行）
+    return 0;
+}
 ```
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch154_cache_opt."<<std::endl;return 0;}
+struct Shared { int a, b; };                                // 同一缓存行 → 可能伪共享
+struct Padded { alignas(64) int a; alignas(64) int b; };    // 分行存放 → 消除伪共享
+int main() {
+    std::cout << "shared=" << sizeof(Shared)        // 8
+              << " padded=" << sizeof(Padded) << "\n";  // 128（用空间换同步）
+    return 0;
+}
 ```
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 38 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
 #include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch154_cache_opt."<<std::endl;return 0;}
+int main() {
+    std::vector<int> v(1 << 20, 1);
+    long sum = 0;
+    auto t0 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < v.size(); ++i) sum += v[i];       // 步长 1：连续访问，缓存友好
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "stride1=" << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count()
+              << "ns sum=" << sum << "\n";
+    return 0;
+}
 ```
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 39 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
 #include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch154_cache_opt."<<std::endl;return 0;}
+int main() {
+    std::vector<int> v(1 << 20, 1);
+    long sum = 0;
+    auto t0 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < v.size(); i += 16) sum += v[i];   // 跨步访问：每次都换缓存行
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "stride16=" << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count()
+              << "ns sum=" << sum << "\n";
+    return 0;
+}
 ```
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 40 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 for ch154_cache_opt."<<std::endl;return 0;}
+int main() {
+    std::cout << "period=" << std::chrono::steady_clock::period::num << "/"
+              << std::chrono::steady_clock::period::den                  // 1/1000000000（纳秒）
+              << " is_steady=" << std::chrono::steady_clock::is_steady   // 1（单调，适合计时）
+              << "\n";
+    return 0;
+}
 ```
 
 ## 联合使用场景

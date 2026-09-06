@@ -851,29 +851,51 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch162_json."<<std::endl;return 0;}
+#include <string>
+int main() {
+    std::string s = "3.14";
+    std::cout << "stod=" << std::stod(s) << "\n";   // 3.14（JSON number 的最简解析）
+    return 0;
+}
 ```
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch162_json."<<std::endl;return 0;}
+#include <string>
+int main() {
+    std::string s = "a\\\"b";                                          // 含转义 \" 的字符串
+    std::cout << "has_escape=" << (s.find('\\') != std::string::npos)  // 1
+              << " len=" << s.size() << "\n";                          // 4
+    return 0;
+}
 ```
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 26 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch162_json."<<std::endl;return 0;}
+#include <string>
+int main() {
+    std::string t = "true", f = "false";
+    std::cout << "true?=" << (t == "true")      // 1
+              << " false?=" << (f == "true")    // 0
+              << "\n";
+    return 0;
+}
 ```
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 27 · ★☆☆☆☆"
+#include <charconv>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch162_json."<<std::endl;return 0;}
+int main() {
+    const char* p = "42";
+    int v = 0;
+    auto r = std::from_chars(p, p + 2, v);                 // 无异常、无内存分配
+    std::cout << "v=" << v                                 // 42
+              << " ok=" << (r.ec == std::errc{}) << "\n";  // 1
+    return 0;
+}
 ```
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动

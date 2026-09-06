@@ -1222,23 +1222,41 @@ std::size_t component_count() { return registry().all().size(); }
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 33 · ★☆☆☆☆"
+#include <functional>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch164_framework."<<std::endl;return 0;}
+#include <string>
+int main() {
+    std::function<void(const std::string&)> on_event = [](const std::string& s) {
+        std::cout << "event=" << s << "\n";        // 框架回调点
+    };
+    on_event("start");
+    return 0;
+}
 ```
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch164_framework."<<std::endl;return 0;}
+struct Plugin { virtual const char* name() const = 0; virtual ~Plugin() = default; };
+struct A : Plugin { const char* name() const override { return "A"; } };
+int main() {
+    A a;
+    Plugin* p = &a;                                 // 面向接口编程
+    std::cout << "plugin=" << p->name() << "\n";    // A
+    return 0;
+}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 35 · ★☆☆☆☆"
+#include <any>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch164_framework."<<std::endl;return 0;}
+int main() {
+    std::any a = 42;
+    std::cout << "has_value=" << a.has_value()            // 1
+              << " v=" << std::any_cast<int>(a) << "\n";  // 42
+    return 0;
+}
 ```
 
 ## 联合使用场景

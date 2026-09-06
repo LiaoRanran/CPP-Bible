@@ -937,30 +937,55 @@ C++11 的 `<chrono>` 与 `steady_clock` 给性能建模提供了可移植的单�
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 36 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch152_perf_model."<<std::endl;return 0;}
+int main() {
+    std::cout << "hr_steady=" << std::chrono::high_resolution_clock::is_steady   // 0（libstdc++ 上非单调）
+              << " steady=" << std::chrono::steady_clock::is_steady << "\n";     // 1（基准应选它）
+    return 0;
+}
 ```
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 37 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch152_perf_model."<<std::endl;return 0;}
+int main() {
+    auto t0 = std::chrono::steady_clock::now();
+    auto t1 = std::chrono::steady_clock::now();     // 背靠背取样
+    std::cout << "min_delta="
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count()
+              << "ns\n";                            // 单次 now() 的开销下限
+    return 0;
+}
 ```
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 38 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch152_perf_model."<<std::endl;return 0;}
+int main() {
+    auto t0 = std::chrono::steady_clock::now();
+    long s = 0;
+    for (int i = 0; i < 1000000; ++i) s += i;       // 被测代码
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "sum=" << s << " ns="
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count() << "\n";
+    return 0;
+}
 ```
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 39 · ★☆☆☆☆"
+#include <chrono>
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch152_perf_model."<<std::endl;return 0;}
+int main() {
+    auto d = std::chrono::milliseconds(1500);
+    std::cout << "ms=" << d.count()                                                    // 1500
+              << " s=" << std::chrono::duration_cast<std::chrono::seconds>(d).count()  // 1（向零截断）
+              << "\n";
+    return 0;
+}
 ```
 
 ## 联合使用场景
