@@ -501,12 +501,12 @@
           "has_main": true
         },
         {
-          "block": 18,
+          "block": 19,
           "error": "'log_if' was not declared in this scope",
           "has_main": true
         },
         {
-          "block": 30,
+          "block": 32,
           "error": "'g_mtx' was not declared in this scope",
           "has_main": true
         }

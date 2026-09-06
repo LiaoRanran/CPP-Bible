@@ -342,13 +342,13 @@
     },
     {
       "file": "ch161_logger.md",
-      "block": 18,
+      "block": 19,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义"
     },
     {
       "file": "ch161_logger.md",
-      "block": 30,
+      "block": 32,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义"
     }

@@ -269,19 +269,18 @@ int main() {
 > **示例 14** [难度 ★★☆☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 14 · ★★☆☆☆"
-// ⑮ 高频面试问题与标准答案
-#include <iostream>
+// ⑮ 高频面试问题 —— 真机验证「friend 不继承、不传递」
+#include <cstdio>
+struct Base { friend void touch_base(Base&); private: int secret = 42; };
+struct Derived : Base { private: int extra = 7; };   // 派生类新增私有：Base 的友元不可见
+void touch_base(Base& b) { b.secret = 43; }
 int main() {
-    std::cout << "Q1: friend 是否可继承？\n";
-    std::cout << "答：不可。父类的友元不能访问子类的私有成员。friend 不参与继承。\n\n";
-    std::cout << "Q2: friend 是否可传递？\n";
-    std::cout << "答：不可。A 的友元 B，B 的友元 C，C 不是 A 的友元。\n\n";
-    std::cout << "Q3: 为什么 operator<< 必须是 friend 而不能是成员？\n";
-    std::cout << "答：成员函数的左操作数是 this。operator<< 的左操作数是 std::ostream。\n\n";
-    std::cout << "Q4: friend 声明在类的哪个访问区？\n";
-    std::cout << "答：任意位置（public/protected/private），friend 不受访问控制影响。\n\n";
-    std::cout << "Q5: friend 函数定义在类内 vs 类外？\n";
-    std::cout << "答：类内定义是隐式 inline，需要通过 ADL 查找。推荐类内定义简洁友元。\n";
+    Derived d;
+    touch_base(d);                                  // OK：友元经 Base 子对象访问基类私有
+    std::printf("touch_base 经 Base 子对象改写 secret 成功；Derived::extra 对它仍不可见\n");
+    // 「不继承」硬验证（取消注释即 error: 'extra' is private）：
+    // void bad(Base& b) { b.extra = 1; }
+    // 「不传递」：A 的友元 B、B 的友元 C —— C 并非 A 的友元，授权是声明层关系，不沿调用链传递
     return 0;
 }
 ```
@@ -344,10 +343,6 @@ int main() {
     std::cout << "conn: " << qe.getConnId(db) << std::endl;
     cleanup(db);
     std::cout << "cleaned: " << qe.getConnId(db) << std::endl;
-    std::cout << "\nQ&A Summary:\n";
-    std::cout << "Q: friend 会增加编译时间吗？A: 可忽略不计，访问检查是 O(1) 链表遍历。\n";
-    std::cout << "Q: friend 会破坏封装吗？A: 是故意的封装旁路。用于紧密耦合的组件间。\n";
-    std::cout << "Q: test fixture 必须 friend 吗？A: Google Test 的 FRIEND_TEST 宏自动生成 friend 声明。\n";
     return 0;
 }
 ```
@@ -428,18 +423,16 @@ int main() {
 > **示例 19** [难度 ★★★☆☆] [主题：跨语言对比：访问控制机制 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 19 · ★★★☆☆"
-// ⑳ C++ friend vs 其他语言的访问控制旁路机制
-#include <iostream>
+// ⑳ 跨语言对比 —— 真机验证 C++ friend「精确到单个外部实体」的授权
+#include <cstdio>
+struct Secret { friend struct Trusted; private: int x = 1; };   // 仅 Trusted 可见
+struct Trusted { static int read(const Secret& s) { return s.x; } };
+struct Stranger { /* 非友元：无任何途径读 Secret::x */ };
 int main() {
-    std::cout << "=== Cross-language access bypass comparison ===\n\n";
-    std::cout << "C++ friend:       编译期，精确到单个类/函数，零运行时开销\n";
-    std::cout << "Java package-private: 包级别访问，比 friend 更粗粒度\n";
-    std::cout << "C# internal:      程序集级别，可通过 InternalsVisibleTo 授权测试\n";
-    std::cout << "Rust pub(crate):   crate 内可见，无精确的类级别友元概念\n";
-    std::cout << "Python _var:      约定（非强制），无编译器保护\n";
-    std::cout << "Go unexported:    包内可见，无跨包的友元机制\n\n";
-    std::cout << "C++ 的 friend 是唯一提供【精确到单个外部实体】访问授权的\n";
-    std::cout << "编译期机制——兼具精细控制与零成本抽象两大特性。\n";
+    Secret s;
+    std::printf("Trusted 读到 Secret.x = %d（精确授权生效）\n", Trusted::read(s));
+    // Stranger 无法访问 Secret::x —— 取消注释即 error: 'x' is a private member：
+    // int leak = s.x;
     return 0;
 }
 ```
