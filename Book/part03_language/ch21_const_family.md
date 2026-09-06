@@ -927,36 +927,74 @@ struct Formatted { static constexpr int len = N; };
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch21_const_family."<<std::endl;return 0;}
+struct Counter {
+    int get() const { return n; }      // const 成员：this 为 const Counter*
+    void inc() { ++n; }                 // 非 const 成员
+    mutable int debug = 0;              // mutable：即使在 const 对象上也可改
+private:
+    int n = 0;
+};
+int main() {
+    const Counter c;                    // const 对象
+    // c.inc();                         // 错误：const 对象不能调非 const 成员
+    std::cout << c.get() << "\n";       // OK：const 成员函数可读
+    return 0;
+}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch21_const_family."<<std::endl;return 0;}
+constexpr int sq(int x) { return x * x; }
+int main() {
+    constexpr int a = sq(7);            // 编译期求值：a 是编译期常量
+    int b = 3;
+    int c = sq(b);                      // 运行期：参数是运行期值，退化为普通调用
+    std::cout << a << " " << c << "\n"; // 49 9
+    static_assert(a == 49);             // 编译期断言：证明 a 在编译期已算出
+    return 0;
+}
 ```
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch21_const_family."<<std::endl;return 0;}
+#include <string>
+int main() {
+    const std::string& r = std::string("hello"); // const 引用延长临时对象寿命至 r 作用域
+    std::cout << r << "\n";                       // hello（临时未被立即销毁）
+    return 0;
+}
 ```
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch21_const_family."<<std::endl;return 0;}
+int main() {
+    int x = 10;                          // x 本身非 const
+    const int* p = &x;                   // 经 const 视图观察
+    int* q = const_cast<int*>(p);        // 合法：原对象从未是 const
+    *q = 20;                             // OK：x 确实可写
+    std::cout << x << "\n";              // 20
+    return 0;
+}
 ```
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 for ch21_const_family."<<std::endl;return 0;}
+struct Vec {
+    int& operator[](int i) { return d[i]; }              // 非 const：返回可写引用
+    const int& operator[](int i) const { return d[i]; }  // const：返回只读引用
+    int d[3] = {1, 2, 3};
+};
+int main() {
+    Vec v;
+    v[0] = 9;                           // 调非 const 重载
+    const Vec cv;
+    std::cout << cv[0] << "\n";         // 调 const 重载，不可写
+    return 0;
+}
 ```
 
 ## 联合使用场景
