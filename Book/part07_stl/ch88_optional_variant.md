@@ -587,36 +587,59 @@ struct Connection {
 
 ```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch88_optional_variant."<<std::endl;return 0;}
+#include <optional>
+int main() {
+    std::cout << "sizeof(optional<int>)=" << sizeof(std::optional<int>)   // 8
+              << " sizeof(int)=" << sizeof(int) << "\n";                  // 4
+    return 0;
+}
 ```
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch88_optional_variant."<<std::endl;return 0;}
+#include <optional>
+int main() {
+    std::optional<int> o;                                    // 无值
+    std::cout << "has_value=" << o.has_value()               // 0
+              << " value_or=" << o.value_or(42) << "\n";     // 42
+    return 0;
+}
 ```
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch88_optional_variant."<<std::endl;return 0;}
+#include <variant>
+int main() {
+    std::variant<int, double> v = 3.14;                       // 当前持有 double
+    std::cout << "index=" << v.index()                        // 1
+              << " holds_double=" << std::holds_alternative<double>(v) << "\n";  // 1
+    return 0;
+}
 ```
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch88_optional_variant."<<std::endl;return 0;}
+#include <variant>
+int main() {
+    std::variant<int, double> v = 3.14;
+    std::cout << "get<double>=" << std::get<double>(v) << "\n";   // 3.14
+    return 0;
+}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 for ch88_optional_variant."<<std::endl;return 0;}
+#include <optional>
+int main() {
+    std::optional<int> o;                      // 无值
+    try { (void)o.value(); }                   // 空 optional 取值 → 抛异常
+    catch (const std::bad_optional_access& e) { std::cout << "caught=" << e.what() << "\n"; }
+    return 0;
+}
 ```
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动

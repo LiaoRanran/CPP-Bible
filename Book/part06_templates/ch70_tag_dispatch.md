@@ -685,36 +685,78 @@ int use_tag_fast() { int c=0; c+=1; c+=100; return c; }  // 与 dispatch(42)+dis
 
 ```cpp title="示例 31 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch70_tag_dispatch."<<std::endl;return 0;}
+#include <iterator>
+#include <type_traits>
+int main() {
+    using Cat = std::iterator_traits<int*>::iterator_category;    // 指针也是迭代器
+    std::cout << "int* random="
+              << std::is_same_v<Cat, std::random_access_iterator_tag> << "\n";   // 1
+    return 0;
+}
 ```
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch70_tag_dispatch."<<std::endl;return 0;}
+#include <forward_list>
+#include <iterator>
+#include <type_traits>
+int main() {
+    using Cat = std::iterator_traits<std::forward_list<int>::iterator>::iterator_category;
+    std::cout << "flist forward="
+              << std::is_same_v<Cat, std::forward_iterator_tag> << "\n";    // 1
+    return 0;
+}
 ```
 > **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 33 · ★☆☆☆☆"
 #include <iostream>
 #include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch70_tag_dispatch."<<std::endl;return 0;}
+#include <list>
+#include <iterator>
+#include <type_traits>
+int main() {
+    using VCat = std::iterator_traits<std::vector<int>::iterator>::iterator_category;
+    using LCat = std::iterator_traits<std::list<int>::iterator>::iterator_category;
+    std::cout << "vector random=" << std::is_same_v<VCat, std::random_access_iterator_tag>   // 1
+              << " list random="  << std::is_same_v<LCat, std::random_access_iterator_tag>   // 0
+              << "\n";
+    return 0;
+}
 ```
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch70_tag_dispatch."<<std::endl;return 0;}
+#include <type_traits>
+template <class T>
+void dispatch(std::true_type)  { std::cout << "integral path\n"; }
+template <class T>
+void dispatch(std::false_type) { std::cout << "generic path\n"; }
+template <class T>
+void f() { dispatch<T>(std::is_integral<T>{}); }
+int main() {
+    f<int>();        // integral path
+    f<double>();     // generic path
+    return 0;
+}
 ```
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 for ch70_tag_dispatch."<<std::endl;return 0;}
+#include <type_traits>
+template <class T>
+void pick() {
+    if constexpr (std::is_integral_v<T>) std::cout << "constexpr integral\n";
+    else std::cout << "constexpr generic\n";
+}
+int main() {
+    pick<int>();       // constexpr integral
+    pick<double>();    // constexpr generic
+    return 0;
+}
 ```
 
 ## 联合使用场景

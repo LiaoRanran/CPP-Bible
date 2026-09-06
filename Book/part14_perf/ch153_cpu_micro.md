@@ -975,8 +975,13 @@ int main() {
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <iostream>
-#include <vector>
-int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch153_cpu_micro."<<std::endl;return 0;}
+#include <new>
+int main() {
+    std::cout << "cacheline=" << std::hardware_constructive_interference_size   // 64
+              << " "          << std::hardware_destructive_interference_size    // 64
+              << "\n";
+    return 0;
+}
 ```
 
 ## 联合使用场景
