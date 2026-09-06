@@ -216,25 +216,15 @@ int main() {
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：GCC -S 输出结构解析
 
 ```cpp title="示例 13 · ★★★☆☆"
-// ⑬ 理解 GCC 汇编输出的每个部分
+// ⑬ GCC -S 输出解剖: .text(代码段) .globl _Z6squarei(导出符号=mangled 名)
+// .seh_*(Windows SEH 元数据) imul eax,ecx(实际指令) .LFE0(函数结束标记) .ident(版本戳)
+// 可读性 flags: -fno-asynchronous-unwind-tables 去 .cfi_* 噪声 | -fno-exceptions 去 landing pad
+// | -fverbose-asm 源码注释 | -masm=intel Intel 语法
 #include <iostream>
-int square(int x) { return x * x; }
-
+int square(int x) { return x * x; }       // -S 输出里的符号就是 _Z6squarei:
 int main() {
-    std::cout << "GCC -S -masm=intel output anatomy:\n";
-    std::cout << "   .text           → code section\n";
-    std::cout << "   .globl _Z6squarei → export symbol (mangled name)\n";
-    std::cout << "   _Z6squarei:     → function entry point\n";
-    std::cout << "   .seh_*          → Windows exception handling metadata\n";
-    std::cout << "   imul eax, ecx   → actual instruction: eax = ecx * eax\n";
-    std::cout << "   ret             → return\n\n";
-    std::cout << "   .LFE0:          → end of function marker\n";
-    std::cout << "   .ident \"GCC:...\"→ compiler version stamp\n\n";
-    std::cout << "Key GCC flags for readable asm:\n";
-    std::cout << "   -fno-asynchronous-unwind-tables → remove .cfi_* noise\n";
-    std::cout << "   -fno-exceptions → remove landing pad tables\n";
-    std::cout << "   -fverbose-asm   → add C++ source as comments\n";
-    std::cout << "   -masm=intel     → Intel syntax (more readable than AT&T)\n";
+    std::cout << "r=" << square(6)                                   // 36
+              << " symbol=" << reinterpret_cast<void*>(&square) << "\n";
     return 0;
 }
 ```
@@ -264,19 +254,13 @@ int main() {
 > **示例 15** [难度 ★★★☆☆] [主题：面试题精选：读汇编 5 问 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 15 · ★★★☆☆"
-// ⑮ Compiler Explorer 相关面试问题
+// ⑮ 面试要点: jmp(无返回地址) vs call(压返回地址) | 内联证据=无 call 直接 imul
+// | volatile 每次访问独立 mov 不缓存 | 尾调用=末尾 call 变 jmp | -O0 逐语句 vs -O2 折叠/DCE/内联
 #include <iostream>
+inline int sq(int x) { return x * x; }    // -O2 内联后调用点无 'call sq'
 int main() {
-    std::cout << "Q1: x86 jmp vs call 的区别？\n";
-    std::cout << "答: jmp = 简单跳转（无返回地址）; call = 压入返回地址 + 跳转。call 是函数调用。\n\n";
-    std::cout << "Q2: 如何从汇编判断函数是否被内联？\n";
-    std::cout << "答: 如果调用方没有 'call square' 而是直接出现 'imul eax,ecx'，说明被内联。\n\n";
-    std::cout << "Q3: volatile 在汇编中如何体现？\n";
-    std::cout << "答: 每次访问都是独立的 mov 指令，不经过寄存器缓存。\n\n";
-    std::cout << "Q4: 如何判断编译器做了尾调用优化？\n";
-    std::cout << "答: 函数末尾的 call 被 jmp 替代。jmp 到 callee，callee 的 ret 直接返回给原始 caller。\n\n";
-    std::cout << "Q5: -O0 vs -O2 的主要区别？\n";
-    std::cout << "答: -O0 每个语句生成对应指令; -O2 应用常量折叠、死代码消除、内联、循环优化。指令数通常减 10-50x。\n";
+    volatile int x = 7;                    // volatile 阻止常量折叠，保留真实调用点
+    std::cout << "sq=" << sq(x) << "\n";   // 49
     return 0;
 }
 ```
@@ -330,22 +314,12 @@ int main() {
 > **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践：CE 工作流黄金法则 [经验]
 
 ```cpp title="示例 18 · ★★★☆☆"
-// ⑱ Compiler Explorer 高效使用的 6 条规则
+// ⑱ CE 黄金法则: 1) 基线用 -O2 2) 对比 GCC/Clang/MSVC 3) noinline 隔离单函数
+// 4) -fno-asynchronous-unwind-tables 去 .cfi_* 噪声 5) 注释定位 asm↔源码 6) Diff 视图对比
 #include <iostream>
+__attribute__((noinline)) int add3(int a, int b, int c) { return a + b + c; }
 int main() {
-    std::cout << "CE Best Practices:\n\n";
-    std::cout << "1. Always start with -O2 (not -O0, not -O3) as your baseline\n";
-    std::cout << "   -O2 is the 'standard' optimization level for production.\n\n";
-    std::cout << "2. Compare 3 compilers: GCC, Clang, MSVC\n";
-    std::cout << "   If only one compiler optimizes well, your code is fragile.\n\n";
-    std::cout << "3. Use __attribute__((noinline)) to isolate a single function\n";
-    std::cout << "   Prevents the function from blending into the caller's asm.\n\n";
-    std::cout << "4. Strip noise: -fno-asynchronous-unwind-tables -fno-exceptions\n";
-    std::cout << "   Removes .cfi_* directives and exception tables from output.\n\n";
-    std::cout << "5. Annotate with #line or comments to map asm back to source\n";
-    std::cout << "   CE's color-coded mapping makes this easier.\n\n";
-    std::cout << "6. Diff mode: use CE's 'Diff' view to compare two compilations side by side.\n";
-    std::cout << "   Invaluable for understanding what a code change does to the generated code.\n";
+    std::cout << "add3=" << add3(1, 2, 3) << "\n";   // 6（noinline 强制保留 call add3）
     return 0;
 }
 ```
@@ -355,25 +329,18 @@ int main() {
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：CE 编译延迟及其影响 [平台·x86-64]
 
 ```cpp title="示例 19 · ★★☆☆☆"
-// ⑲ CE 编译性能与本地编译的对比
-#include <iostream>
+// ⑲ CE vs 本地: godbolt API ~500ms-2s(网络+排队)，本地 -S ~100-500ms
+// 选型: CE 快速探索/分享/对比编译器；本地批量/CI/大模板分析
+// 批量模式: for f in *.cpp; do g++ -O2 -S -masm=intel $f; done → grep -c 'call|jmp' 统计
 #include <chrono>
-#include <cstdlib>
-
+#include <iostream>
 int main() {
-    std::cout << "CE vs Local compilation latency:\n\n";
-    std::cout << "godbolt.org API:      ~500ms-2s per compilation (network + queue)\n";
-    std::cout << "Local gcc -O2 -S:     ~100-500ms (depends on template depth)\n";
-    std::cout << "Local gcc -O2 -c:     ~200-800ms (+ assembler pass)\n\n";
-
-    std::cout << "When to use CE vs local:\n";
-    std::cout << "CE:  quick exploration, sharing, teaching, comparing compilers\n";
-    std::cout << "Local: bulk checks, CI pipeline, analyzing large templates\n\n";
-
-    std::cout << "Local batch check pattern:\n";
-    std::cout << "  for f in *.cpp; do g++ -O2 -S -masm=intel $f -o $f.asm; done\n";
-    std::cout << "  grep -c 'call' *.asm → count external function calls per file\n";
-    std::cout << "  grep -c 'jmp' *.asm  → count jumps (potential inlines become jmp)\n";
+    auto t0 = std::chrono::steady_clock::now();    // 本地真正能实测的是运行期耗时
+    long long s = 0;
+    for (int i = 0; i < 100000; ++i) s += i;
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "loop=" << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count()
+              << "ns sum=" << s << "\n";           // sum=4999950000
     return 0;
 }
 ```
@@ -397,24 +364,14 @@ int main() {
 > **示例 20** [难度 ★★☆☆☆] [主题：跨语言对比：汇编探索工具全景 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 20 · ★★☆☆☆"
-// ⑳ 各语言的编译器资源管理器等价工具
+// ⑳ 各语言汇编工具: C++ godbolt | Rust godbolt/cargo-asm | Go gcflags=-S
+// Java JITWatch(JIT 模型) | C# sharplab.io | Python dis(仅字节码，无原生编译)
+// C++ 独有优势: 编译期即产出原生汇编——constexpr 在 -O2 汇编里只剩常量
 #include <iostream>
+constexpr int fib(int n) { return n < 2 ? n : fib(n - 1) + fib(n - 2); }
 int main() {
-    std::cout << "=== Assembly exploration tools by language ===\n\n";
-    std::cout << "C++:   godbolt.org (gcc/clang/msvc/icc/zig)\n";
-    std::cout << "       → The gold standard. C++ community standard tool.\n\n";
-    std::cout << "Rust:  godbolt.org (rustc via -C opt-level=3)\n";
-    std::cout << "       cargo asm (cargo-show-asm crate) → local equivalent\n\n";
-    std::cout << "Go:    godbolt.org (gc via -gcflags=-S)\n";
-    std::cout << "       go tool compile -S → local asm output\n\n";
-    std::cout << "Java:  JITWatch (analyzes JIT compiler output)\n";
-    std::cout << "       → Different model: JIT compiles at runtime, not compile-time\n\n";
-    std::cout << "C#:    sharplab.io → Roslyn + JIT asm viewer\n";
-    std::cout << "       godbolt.org (mono/.NET)\n\n";
-    std::cout << "Python: dis module → bytecode, not native asm\n";
-    std::cout << "         → CPython is interpreter, no native compilation\n\n";
-    std::cout << "Unique to C++: CE is deeply integrated into the development culture.\n";
-    std::cout << "CppCon/MeetingC++ talks routinely include live CE demos.\n";
+    static_assert(fib(10) == 55);          // 编译期算完：汇编里只剩 mov eax,55，无 call
+    std::cout << "fib(10)=" << fib(10) << "\n";
     return 0;
 }
 ```
@@ -640,10 +597,14 @@ ISO C++ 只定义抽象机语义，不规定汇编形态；但 `noexcept`、内�
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 A: CE 工作流实战
 
 ```cpp title="示例 41 · ★☆☆☆☆"
+// CE 工作流: 1) 粘贴代码 2) 选编译器 3) -O2 4) 找 jmp/call/循环开销
+// 关键: -O2 输出里函数若"消失"，就是被 DCE 优化掉了
 #include <iostream>
-int main(){
-    std::cout<<"CE Workflow: 1) paste code 2) select compiler 3) pick -O2 4) look for jmp/call/loop overhead\n";
-    std::cout<<"Key insight: if function disappears in -O2 output, it was optimized away.\n";
+int visible() { return 1; }                       // 被 volatile sink 使用 → 保留 call
+[[maybe_unused]] int unused_fn() { return 2; }    // 无人调用 → -O2 输出无此符号
+int main() {
+    volatile int sink = visible();
+    std::cout << "visible=" << sink << "\n";      // 1（CE 汇编中可见 call visible）
     return 0;
 }
 ```
@@ -675,10 +636,14 @@ int main(){std::cout<<squares(10)<<std::endl;return 0;}
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 D: CE API 自动化
 
 ```cpp title="示例 44 · ★☆☆☆☆"
+// CE API 自动化: POST godbolt.org/api/compiler/compile 做回归
+// CI 用例: 每次提交后检查关键热路径是否仍被内联
 #include <iostream>
-int main(){
-    std::cout<<"CE API: POST to godbolt.org/api/compiler/compile for automated regression testing.\n";
-    std::cout<<"Use case: CI pipeline checks that critical hot path inlines correctly after each commit.\n";
+inline int hot(int x) { return x + 1; }    // CI 关注点：调用点是否内联（无 call hot）
+int main() {
+    int r = 0;
+    for (int i = 0; i < 3; ++i) r = hot(r);   // -O2 下通常完全内联折叠为 r=3
+    std::cout << "r=" << r << "\n";           // 3
     return 0;
 }
 ```
@@ -688,11 +653,19 @@ int main(){
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 E: 常见误读
 
 ```cpp title="示例 45 · ★★☆☆☆"
+// 误读澄清: 汇编更少≠更快(向量化代码更长但可 4x)；-O3 不总优于 -O2(I-cache 膨胀)
+// 结论: CE 分析必须配合真实 benchmark，不能只看汇编
+#include <chrono>
 #include <iostream>
-int main(){
-    std::cout<<"Myth: fewer asm lines = faster. Reality: vectorized code may be longer but 4x faster.\n";
-    std::cout<<"Myth: -O3 always better. Reality: -O3 aggressive inlining can bloat I-cache.\n";
-    std::cout<<"Key: always BENCHMARK alongside CE analysis, never rely on asm inspection alone.\n";
+#include <vector>
+int main() {
+    std::vector<int> v(1 << 16, 2);
+    auto t0 = std::chrono::steady_clock::now();
+    long long s = 0;
+    for (int e : v) s += e;               // -O2 下被向量化：汇编更长但更快
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "sum=" << s
+              << " ns=" << std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count() << "\n";
     return 0;
 }
 ```
