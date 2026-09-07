@@ -215,20 +215,15 @@ int main() {
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC 内部 volati
 
 ```cpp title="示例 12 · ★★☆☆☆"
-// ⑬ GCC/LLVM 编译器内部如何对待 volatile
+// ⑬ GCC: volatile 限定进 TREE_THIS_VOLATILE; GIMPLE 带 TREE_SIDE_EFFECTS 阻止 DCE;
+// CSE 跳过 volatile; RTL 上 MEM_VOLATILE_P 强制生成 load/store
+// LLVM: LoadInst/StoreInst::setVolatile(true), DeadStoreElimination/LICM/GVN 均尊重 volatile
+// volatile 是唯一在 GIMPLE/LLVM-IR 层面改变优化器行为的关键字,不是"提示"
 #include <iostream>
 int main() {
-    std::cout << "GCC volatile handling (gcc/gimplify.cc + gcc/expr.cc):\n";
-    std::cout << "1. AST: volatile qualifier stored in TREE_READONLY/TREE_THIS_VOLATILE flags\n";
-    std::cout << "2. GIMPLE: volatile accesses marked with TREE_SIDE_EFFECTS → prevents DCE\n";
-    std::cout << "3. CSE: Common Subexpression Elimination skips volatile refs\n";
-    std::cout << "4. RTL: MEM_VOLATILE_P flag on memory operands → forces load/store emission\n\n";
-    std::cout << "LLVM volatile handling (llvm/IR/Instructions.h):\n";
-    std::cout << "1. LoadInst::setVolatile(true) / StoreInst::setVolatile(true)\n";
-    std::cout << "2. passes skip volatile ops: DeadStoreElimination, LICM, GVN all respect volatile\n";
-    std::cout << "3. CodeGen: volatile load = explicit ldr, volatile store = explicit str (ARM)\n\n";
-    std::cout << "Key insight: volatile is the ONLY C++ keyword that changes optimizer behavior\n";
-    std::cout << "at the fundamental GIMPLE/LLVM-IR level — it is not sugar.\n";
+    volatile int v = 0;
+    for (int i = 0; i < 3; ++i) v = i;   // volatile: 3 次写入都真正发生,不会被合并/删除
+    std::cout << "v=" << v << "\n";       // 2
     return 0;
 }
 ```
@@ -240,22 +235,14 @@ int main() {
 > **示例 13** [难度 ★★☆☆☆] [主题：关键提案与演变 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 13 · ★★☆☆☆"
-// ⑭ volatile 的标准化历史中最重要的两个提案
+// ⑭ P1152R4(C++20) 废弃 volatile 复合赋值; P2327R1(C++23) 为嵌入式/MMIO 场景反废弃;
+// P1382R1 引入 volatile_load/volatile_store(实际少用, reinterpret_cast 仍是工业主流)
+// C++11 起与 C 分歧: volatile 不再建议用于并发,改用 std::atomic
 #include <iostream>
 int main() {
-    std::cout << "=== volatile 标准演变 ===\n\n";
-    std::cout << "P1152R4 (C++20): Deprecate volatile compound assignments\n";
-    std::cout << "  → v += 1;  // 被废弃：读-改-写不是单次 volatile 访问\n";
-    std::cout << "  → 修复: v = v + 1;  // 显式两次 volatile 访问（读 + 写）\n\n";
-    std::cout << "P2327R1 (C++23 direction): De-deprecate volatile for specific uses\n";
-    std::cout << "  → 承认嵌入式场景的合理需求：volatile |= mask; 在 MMIO 中常见且正确\n";
-    std::cout << "  → 方向：不废弃复合赋值，但要求语义上等同于分解后的 load-op-store\n\n";
-    std::cout << "P1382R1: volatile_load<T> / volatile_store<T> (C++20 adopted)\n";
-    std::cout << "  → std::volatile_load 标准库函数，替代 reinterpret_cast<volatile T*> 模式\n";
-    std::cout << "  → 实际：少有人用，reinterpret_cast 模式仍是工业主流\n\n";
-    std::cout << "历史：C 和 C++ 的 volatile 语义最初相同。C++11 后分歧：\n";
-    std::cout << "  C: volatile 保留所有语义\n";
-    std::cout << "  C++: volatile 逐步缩小范围（不建议用于并发，C++11 起推荐 std::atomic）\n";
+    volatile int v = 1;
+    v = v + 1;                    // P1152 推荐写法: 显式两次 volatile 访问(读 + 写)
+    std::cout << "v=" << v << "\n";   // 2
     return 0;
 }
 ```
@@ -267,21 +254,18 @@ int main() {
 > **示例 14** [难度 ★★★☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 14 · ★★★☆☆"
-// ⑮ 嵌入式/C++ 后台面试中 volatile 的 5 道高频题
+// ⑮ 面试要点: Q1 volatile 不能做线程同步(不保证原子性/happens-before/CPU 乱序)
+// Q2 const volatile = 只读硬件寄存器 Q3 int* volatile(指针本身) vs volatile int*(指向的数据)
+// Q4 -O2 可能把多次 MMIO 写合并成一次,volatile 阻止合并
+// Q5 volatile 是变量级; asm volatile("":::"memory") 是编译器级全量内存屏障
 #include <iostream>
+#include <type_traits>
 int main() {
-    std::cout << "Q1: volatile 能用于线程同步吗？\n";
-    std::cout << "答：不能。volatile 不保证原子性、不建立 happens-before 关系、不阻止 CPU 乱序。\n";
-    std::cout << "   Java 的 volatile 可以，但 C++ 的 volatile ≠ Java volatile。\n\n";
-    std::cout << "Q2: const volatile 是什么？何时使用？\n";
-    std::cout << "答：只读硬件寄存器。如状态寄存器（CPU 可读不可写）。const 阻止写，volatile 阻止缓存。\n\n";
-    std::cout << "Q3: volatile 指针 vs 指向 volatile 的指针？\n";
-    std::cout << "答：int* volatile p; (指针本身 volatile) vs volatile int* p; (指向 volatile 的数据)。\n";
-    std::cout << "   volatile int* volatile p; (两者都 volatile，如 MMIO 基址寄存器)。\n\n";
-    std::cout << "Q4: 优化器真的会删除 MMIO 写操作吗？\n";
-    std::cout << "答：会。for(i=0;i<10;i++) REG=0; 在 -O2 下可能被优化为 REG=0 一次。volatile 阻止此行为。\n\n";
-    std::cout << "Q5: volatile 与 asm volatile('':::'memory') 的区别？\n";
-    std::cout << "答：volatile 是变量级别的；asm barrier 是编译器级别的全量内存屏障（所有变量都刷新）。\n";
+    int x = 0;
+    int* volatile p1 = &x;                  // 指针本身 volatile
+    volatile int* p2 = &x;                  // 指向 volatile 数据
+    std::cout << "ptr_volatile=" << std::is_volatile_v<decltype(p1)>
+              << " pointee_volatile=" << std::is_volatile_v<std::remove_pointer_t<decltype(p2)>> << "\n";
     return 0;
 }
 ```
@@ -291,35 +275,25 @@ int main() {
 > **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 15 · ★★★★☆"
-// ⑯ volatile 的 5 个最常见误用
-#include <iostream>
+// ⑯ 五大误用: 1) 用 volatile 做线程标志(应用 atomic) 2) 以为 volatile 加在"值"上(实际作用于对象)
+// 3) const_cast 丢弃 volatile 后访问 = UB 4) 非 volatile 对象上调 volatile 成员函数无效
+// 5) lambda 按值捕获会丢失 volatile(用 [&] 或 std::ref)
 #include <atomic>
+#include <iostream>
 
-// 错误1: 用 volatile 做多线程标志
-volatile bool ready = false;  // 错误！CPU 乱序不可见，多线程用 atomic<bool> + memory_order
-std::atomic<bool> safe_ready{false};
+std::atomic<bool> safe_ready{false};        // 正确: 多线程标志用 atomic(volatile 不够)
 
-// 错误2: volatile 写入时仍可被优化掉的错误模式
-void bad_pattern() {
-    int x = 42;
-    volatile int* p = &x;
-    *p = 100;                 // OK: volatile 写入
-    // 但编译器可能仍缓存 x 的值（因为 x 本身不是 volatile）
-}
-
-// 错误3: 取 volatile 变量的地址给非 volatile 指针
-void cast_away() {
-    volatile int v = 0;
-    // int* p = &v;  // 编译错误：不能丢弃 volatile 限定符
-    // int* p = const_cast<int*>(&v);  // UB：通过非 volatile 指针访问 volatile 变量
+void volatile_write() {
+    volatile int v = 0;                     // volatile 加在对象上,不是加在"值"上
+    volatile int* p = &v;
+    *p = 100;                               // volatile 写入真正发生
+    std::cout << "v=" << v << " ";          // 100
 }
 
 int main() {
-    std::cout << "Pitfall 1: volatile != thread-safe. Use atomic for concurrency.\n";
-    std::cout << "Pitfall 2: volatile applies to the OBJECT, not the VALUE. x is non-volatile, *p acts volatile but x may be cached.\n";
-    std::cout << "Pitfall 3: const_cast removes volatile → UB if accessed without volatile.\n";
-    std::cout << "Pitfall 4: volatile member functions on non-volatile object don't take effect.\n";
-    std::cout << "Pitfall 5: volatile in lambda capture → capture by value loses volatile (use [&] or std::ref).\n";
+    volatile_write();
+    safe_ready.store(true);
+    std::cout << "atomic_ready=" << safe_ready.load() << "\n";
     return 0;
 }
 ```
@@ -329,28 +303,24 @@ int main() {
 > **示例 16** [难度 ★★★★☆] [主题：嵌入式实战常见问题 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 16 · ★★★★☆"
-// ⑰ 实际开发中关于 volatile 的高频问答
-#include <iostream>
+// ⑰ 实战 Q&A: volatile sig_atomic_t 用于信号处理器(写入不会被优化掉,但不保证跨上下文顺序);
+// MMIO 地址可用 constexpr uintptr_t + reinterpret_cast<volatile T*>;
+// volatile 每次访问直达内存(不可寄存器缓存); P2327 方向是保留嵌入式用法
 #include <csignal>
+#include <iostream>
 
 volatile sig_atomic_t g_exit_flag = 0;
 
 void signal_handler(int) {
-    g_exit_flag = 1;  // OK: sig_atomic_t 保证在信号处理中安全
+    g_exit_flag = 1;      // OK: sig_atomic_t + volatile 在信号处理器中安全
 }
 
 int main() {
-    std::cout << "Q: volatile sig_atomic_t → 信号处理器安全吗？\n";
-    std::cout << "A: sig_atomic_t + volatile 保证信号处理器中的写入不会被优化掉。\n";
-    std::cout << "   但 volatile 不保证在信号处理器和主程序间的可见性顺序（C 和 C++ 都不保证）。\n\n";
-    std::cout << "Q: MMIO 地址可以 constexpr 吗？\n";
-    std::cout << "A: constexpr uintptr_t UART2_BASE = 0x40004400;\n";
-    std::cout << "   auto* uart = reinterpret_cast<volatile UART_Regs*>(UART2_BASE);\n\n";
-    std::cout << "Q: volatile 影响性能吗？\n";
-    std::cout << "A: 每次访问必须抵达内存（不可寄存器缓存）→ ~5-10ns L1 缓存 vs ~100ns 主存访问。\n";
-    std::cout << "   在 MMIO 场景下这是必须的；在普通数据上使用 volatile 会显著降低性能。\n\n";
-    std::cout << "Q: C++26 的 volatile 会变化吗？\n";
-    std::cout << "A: P2327 方向是保留 volatile 用于嵌入式场景，同时移除用于并发的误导性语义。\n";
+    g_exit_flag = 0;
+    signal_handler(0);                       // 模拟信号到达
+    while (g_exit_flag) g_exit_flag = 0;     // volatile: 每次都真正访存
+    std::cout << "flag=" << g_exit_flag
+              << " sizeof(sig_atomic_t)=" << sizeof(sig_atomic_t) << "\n";   // 0 4
     return 0;
 }
 ```
@@ -380,13 +350,9 @@ std::atomic<int> thread_shared_counter{0};
 // 法则6: volatile 跟变量，不跟值 —— int* volatile p; vs volatile int* p;
 
 int main() {
-    std::cout << "Los 6 mandamientos del volatile:\n";
-    std::cout << "1. MMIO registers → volatile struct*\n";
-    std::cout << "2. Signal handlers → volatile sig_atomic_t\n";
-    std::cout << "3. Concurrency → atomic<T> (NEVER volatile)\n";
-    std::cout << "4. setjmp/longjmp → volatile locals\n";
-    std::cout << "5. Read-only HW → const volatile\n";
-    std::cout << "6. Pointer vs pointee: know which is volatile\n";
+    std::cout << "sizeof(Gpio)=" << sizeof(Gpio)                                // 24（6×uint32_t,无填充）
+              << " atomic_lock_free=" << thread_shared_counter.is_lock_free()   // 1
+              << " signal_received=" << signal_received << "\n";                // 0
     return 0;
 }
 ```
@@ -463,23 +429,18 @@ int main() {
 > **示例 19** <span class="badge badge-exp">难度 ★★★★☆</span> · 跨语言对比：volatile 语义全
 
 ```cpp title="示例 19 · ★★★★☆"
-// ⑳ 各语言中 volatile/并发可见性机制的精确对比
+// ⑳ 跨语言: C/C++ volatile=编译器级(仅禁止重排 volatile 访问,不保证 CPU 可见性)
+// Java volatile ≈ C++ atomic<T>(seq_cst)(线程级协议,保证可见性+禁止重排+原子性)
+// C# volatile 接近 Java 但较弱(acquire/release); Rust 无关键字,用 ptr::read_volatile/write_volatile
+// 核心: C++ volatile 是硬件级(强制访存), Java/C# volatile 是线程级协议——跨语言迁移第一大坑
+#include <atomic>
 #include <iostream>
 int main() {
-    std::cout << "=== Cross-language volatile semantics ===\n\n";
-    std::cout << "C volatile:       禁止编译器重排 volatile 访问。不保证 CPU 乱序可见。\n";
-    std::cout << "                   用途：MMIO、信号处理、setjmp/longjmp。同 C++。\n\n";
-    std::cout << "C++ volatile:     与 C 完全相同。C++11 起明确：不用于线程同步。\n";
-    std::cout << "                   多线程用 std::atomic<T>。\n\n";
-    std::cout << "Java volatile:    完全不同的语义！Java volatile = C++ atomic<T>(seq_cst)。\n";
-    std::cout << "                   保证可见性 + 禁止重排 + 原子性（对 long/double 除外）。\n";
-    std::cout << "                   这是最常见的跨语言陷阱：C++ volatile ≠ Java volatile！\n\n";
-    std::cout << "C# volatile:      接近 Java volatile，但弱于 Java（acquire/release 语义）。\n\n";
-    std::cout << "Rust:             无 volatile 关键字。MMIO 用 ptr::read_volatile/write_volatile。\n";
-    std::cout << "                   并发用 AtomicBool(Ordering::SeqCst) → 同 C++ atomic。\n\n";
-    std::cout << "Python/Go/JS:     无 volatile。GC 语言不暴露硬件访问抽象。\n\n";
-    std::cout << "核心结论：C++ volatile 是硬件级指令（强制内存访问），Java/C# volatile 是线程级协议。\n";
-    std::cout << "从 Java 转 C++ 的开发者的最大陷阱：误以为 volatile 能保证线程安全。\n";
+    std::atomic<int> a{0};            // C++ 线程同步用 atomic,而非 volatile
+    volatile int v = 0;               // MMIO/信号用 volatile
+    std::cout << "atomic_lock_free=" << a.is_lock_free()          // 1（atomic 才提供同步语义）
+              << " sizeof(atomic<int>)=" << sizeof(a)             // 4
+              << " sizeof(volatile int)=" << sizeof(v) << "\n";   // 4
     return 0;
 }
 ```
@@ -708,11 +669,13 @@ int main(){std::cout<<"Real embedded: cast memory address to volatile struct*, r
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 C: volatile 与优化
 
 ```cpp title="示例 41 · ★★☆☆☆"
+// 无 volatile: 优化器可能把值缓存在寄存器,漏掉 MMIO 的变化
+// 有 volatile: 每次读直达内存,每次写真正写回; -O2 视其为可观察副作用(如 IO)
 #include <iostream>
-int main(){
-    std::cout<<"Without volatile: optimizer may cache register value, miss MMIO changes.\n";
-    std::cout<<"With volatile: every read goes to memory, every write stores to memory.\n";
-    std::cout<<"GCC -O2 treats volatile accesses as observable side effects (like IO).\n";
+int main() {
+    volatile int v = 0;
+    for (int i = 0; i < 5; ++i) v = v + 1;   // 每次都读改写,不会被折叠成 v=5
+    std::cout << "v=" << v << "\n";          // 5
     return 0;
 }
 ```

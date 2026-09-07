@@ -447,15 +447,13 @@ int main() { pipeline(); return 0; }
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析：GCC coroutine
 
 ```cpp title="示例 11 · ★★☆☆☆"
-// ⑬ GCC 的协程变换在 gcc/cp/coroutines.cc 中完成
+// ⑬ GCC 协程变换(gcc/cp/coroutines.cc): 解析 co_await/co_yield → morph_fn_to_coro 生成
+// frame/promise/状态机 → 局部变量提升到堆 frame → final_suspend 后 destroy → resume 经 handle 分派
+#include <coroutine>
 #include <iostream>
 int main() {
-    std::cout << "GCC coroutine transform pipeline:\n";
-    std::cout << "1. Parser: co_await/co_yield → COROUTINE_AWAIT_EXPR\n";
-    std::cout << "2. morph_fn_to_coro: 生成 coroutine frame struct + promise + state machine\n";
-    std::cout << "3. actgr 升降: 将 frame 变量从局部提升到堆分配的 frame\n";
-    std::cout << "4. destroy: 生成清理逻辑, 在 final_suspend 后调用\n";
-    std::cout << "5. resume: 通过 coroutine_handle::resume() 跳转到 state dispatch\n";
+    std::cout << "sizeof(coroutine_handle)=" << sizeof(std::coroutine_handle<>)   // 8
+              << " sizeof(void*)=" << sizeof(void*) << "\n";   // 8（handle 只是一个指针）
     return 0;
 }
 ```
@@ -465,14 +463,21 @@ int main() {
 > **示例 12** [难度 ★☆☆☆☆] [主题：关键提案 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 12 · ★☆☆☆☆"
-// ⑭ 协程相关的 5 个核心提案
+// ⑭ 协程核心提案: P0912R5(TS→C++20 基础) P2502R2(std::generator, C++23)
+// P2564R3(consteval 传播) P2882R1(同步协程改善可调试性) P3019R1(ranges 间接 co_await)
 #include <iostream>
+#include <version>
 int main() {
-    std::cout << "P0912R5: Coroutines TS → C++20 (the foundation)\n";
-    std::cout << "P2502R2: std::generator<T> for C++23\n";
-    std::cout << "P2564R3: consteval propagation in coroutines\n";
-    std::cout << "P2882R1: synchronous coroutine (improve debugabiity)\n";
-    std::cout << "P3019R1: indirect co_await for ranges\n";
+#ifdef __cpp_coroutines
+    std::cout << "__cpp_coroutines=" << __cpp_coroutines << "\n";
+#else
+    std::cout << "__cpp_coroutines=not exposed (older GCC needs -fcoroutines)\n";
+#endif
+#ifdef __cpp_lib_generator
+    std::cout << "lib_generator=" << __cpp_lib_generator << "\n";   // 202207
+#else
+    std::cout << "lib_generator=not exposed\n";
+#endif
     return 0;
 }
 ```
@@ -482,14 +487,20 @@ int main() {
 > **示例 13** [难度 ★★☆☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 13 · ★★☆☆☆"
-// ⑮ 高频协程面试问题（含答案）
+// ⑮ 面试要点: Q1 sizeof(handle)==sizeof(void*),指向堆上 frame
+// Q2 co_yield=产出值并挂起 / co_return=结束协程 Q3 suspend_always=立即挂起 / suspend_never=直达首个 co_await
+// Q4 frame 默认非线程安全,需外部同步 Q5 frame 由编译器插入 operator new 在堆上分配(可定制)
+#include <coroutine>
 #include <iostream>
+#include <type_traits>
+struct P {
+    std::suspend_never  initial_suspend() { return {}; }         // 立即执行到首个 co_await
+    std::suspend_always final_suspend() noexcept { return {}; }  // 结束时挂起,需手动 destroy
+};
 int main() {
-    std::cout << "Q1: coroutine_handle size? A: sizeof(void*), points to heap frame.\n";
-    std::cout << "Q2: co_yield vs co_return? A: yield = produce value + resume; return = end coroutine.\n";
-    std::cout << "Q3: suspend_always vs suspend_never? A: always = pause immediately; never = run to first co_await.\n";
-    std::cout << "Q4: is coroutine thread-safe? A: frame is not thread-safe by default; external synchronization needed.\n";
-    std::cout << "Q5: where is coroutine frame allocated? A: heap via compiler-inserted operator new (customizable).\n";
+    std::cout << "sizeof(handle)=" << sizeof(std::coroutine_handle<>)
+              << " init_never=" << std::is_same_v<decltype(P{}.initial_suspend()), std::suspend_never>
+              << " final_always=" << std::is_same_v<decltype(P{}.final_suspend()), std::suspend_always> << "\n";
     return 0;
 }
 ```
@@ -499,15 +510,27 @@ int main() {
 > **示例 14** [难度 ★★★☆☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 14 · ★★★☆☆"
-// ⑯ 协程中 5 个最常见的 UB/陷阱
-#include <iostream>
+// ⑯ 五大陷阱: 1) 引用捕获在协程销毁后悬垂 2) 忘记 destroy 每次调用都泄漏
+// 3) done() 后仍 resume = UB 4) noexcept 上下文中抛异常 → terminate 5) co_await 临时对象生命周期
 #include <coroutine>
+#include <iostream>
+struct Task {
+    struct promise_type {
+        Task get_return_object() { return {std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_always initial_suspend() { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void return_void() {}
+        void unhandled_exception() {}
+    };
+    std::coroutine_handle<promise_type> h;
+};
+Task simple() { co_return; }
 int main() {
-    std::cout << "Pitfall 1: reference capture → dangling after coroutine destruction\n";
-    std::cout << "Pitfall 2: forget handle.destroy() → memory leak per invocation\n";
-    std::cout << "Pitfall 3: resume() after done() → UB (use handle before checking)\n";
-    std::cout << "Pitfall 4: exception in noexcept context → std::terminate\n";
-    std::cout << "Pitfall 5: co_await temporary → lifetime ends before resume\n";
+    Task t = simple();
+    std::cout << "done=" << t.h.done() << "\n";   // 0（initial_suspend 后尚未结束）
+    t.h.resume();
+    std::cout << "done=" << t.h.done() << "\n";   // 1（已到 final_suspend,不可再 resume）
+    t.h.destroy();                                 // 陷阱2: 必须手动销毁,否则泄漏
     return 0;
 }
 ```
@@ -517,18 +540,36 @@ int main() {
 > **示例 15** [难度 ★★☆☆☆] [主题：协程实战常见问题 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 15 · ★★☆☆☆"
-// ⑰ 来自真实项目的协程 Q&A
+// ⑰ 实战 Q&A: std::generator 是否可用取决于 __cpp_lib_generator; 构造函数不能是协程;
+// 调试可打印 handle.address(); 协程创建/恢复的代价远低于线程上下文切换
+#include <coroutine>
 #include <iostream>
+#include <version>
+struct Gen {
+    struct promise_type {
+        int cur{};
+        Gen get_return_object() { return {std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_always initial_suspend() { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(int v) { cur = v; return {}; }
+        void return_void() {}
+        void unhandled_exception() {}
+    };
+    std::coroutine_handle<promise_type> h;
+    ~Gen() { if (h) h.destroy(); }        // RAII: 析构自动 destroy,避免每次调用泄漏
+};
+Gen range(int n) { for (int i = 0; i < n; ++i) co_yield i; }
 int main() {
-    std::cout << "Q: Why hand-rolled generator over std::generator?\n";
-    std::cout << "A: GCC13 doesn't implement std::generator yet (P2502, C++23).\n\n";
-    std::cout << "Q: Can I use co_await in constructor?\n";
-    std::cout << "A: No. Constructors cannot be coroutines.\n\n";
-    std::cout << "Q: How to debug coroutine frame?\n";
-    std::cout << "A: GDB 'info coroutines' (GCC13+), or print handle.address().\n\n";
-    std::cout << "Q: Coroutine vs thread cost?\n";
-    std::cout << "A: Coroutine resume+yield ~4.4ns/step, create ~56ns (GCC13.1 x86-64, measured).\n";
-    std::cout << "   Thread ctx switch ~14us/switch (mutex+cv, this box); bare switch lit ~1-10us.\n";
+#ifdef __cpp_lib_generator
+    std::cout << "lib_generator=" << __cpp_lib_generator << "\n";   // 202207（本构建已提供）
+#endif
+    auto g = range(3);
+    while (!g.h.done()) {
+        g.h.resume();                                  // 推进到下一个 co_yield
+        if (g.h.done()) break;
+        std::cout << g.h.promise().cur << " ";         // 0 1 2
+    }
+    std::cout << "\n";
     return 0;
 }
 ```
@@ -538,15 +579,32 @@ int main() {
 > **示例 16** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 16 · ★★☆☆☆"
-// ⑱ 协程使用的 6 条黄金法则
+// ⑱ 黄金法则: 1) RAII 包装 handle 2) suspend_always 做惰性求值 3) 移动构造标 noexcept
+// 4) generator 优先 co_return void 5) 按值捕获避免悬垂 6) resume 前必查 done()
+#include <coroutine>
 #include <iostream>
+#include <type_traits>
+struct Lazy {
+    struct promise_type {
+        Lazy get_return_object() { return {}; }
+        std::suspend_always initial_suspend() { return {}; }        // 惰性: 创建即挂起
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void return_void() {}
+        void unhandled_exception() {}
+    };
+};
+struct Eager {
+    struct promise_type {
+        Eager get_return_object() { return {}; }
+        std::suspend_never initial_suspend() { return {}; }         // 立即执行到首个 co_await
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void return_void() {}
+        void unhandled_exception() {}
+    };
+};
 int main() {
-    std::cout << "1. Always RAII-wrap coroutine_handle (unique_ptr + custom deleter)\n";
-    std::cout << "2. Use suspend_always for lazy evaluation patterns\n";
-    std::cout << "3. Mark move constructor noexcept for container compatibility\n";
-    std::cout << "4. Prefer co_return void over co_return value for generators\n";
-    std::cout << "5. Capture by value in coroutine lambdas (avoid dangling refs)\n";
-    std::cout << "6. Check handle.done() before resume() — every single time\n";
+    std::cout << "lazy(always)=" << std::is_same_v<decltype(Lazy::promise_type{}.initial_suspend()), std::suspend_always>
+              << " eager(never)=" << std::is_same_v<decltype(Eager::promise_type{}.initial_suspend()), std::suspend_never> << "\n";
     return 0;
 }
 ```
@@ -601,13 +659,14 @@ int main() {
 > **示例 18** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 18 · ★★☆☆☆"
-// ⑩-a C++ 无栈协程 vs Go goroutine 的哲学差异
+// ⑩-a C++ 无栈协程(编译器生成状态机,零开销抽象,无 runtime 调度)
+// vs Go goroutine(runtime 调度,GOMAXPROCS 控制并行)
+// C++ 适合 HFT/游戏引擎等不可容忍调度延迟的场景; Go 适合 IO 密集型并发服务
+#include <coroutine>
 #include <iostream>
 int main() {
-    std::cout << "C++: 零开销抽象，编译器生成状态机\n";
-    std::cout << "Go:  runtime 调度 goroutine，GOMAXPROCS 控制并行\n";
-    std::cout << "C++: 适合 HFT/游戏引擎等不可有调度延迟的场景\n";
-    std::cout << "Go:  适合 IO 密集型并发服务\n";
+    std::cout << "sizeof(coroutine_handle)=" << sizeof(std::coroutine_handle<>)   // 8
+              << " sizeof(void*)=" << sizeof(void*) << "\n";  // 8（无栈:状态在堆 frame,handle 只是指针）
     return 0;
 }
 ```
@@ -796,11 +855,16 @@ int main() { auto g = first_n(4); while (g.next()) std::cout << g.get() << " "; 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 
 ```cpp title="示例 26 · ★☆☆☆☆"
-// 补-H 使用 std::generator（C++23，GCC13 未实现，手写等价体）
+// 补-H std::generator (P2502, C++23): 是否可用取决于工具链,先探测再决定用手写等价体
+// 注: 本机 GCC 15.3.0 已提供 std::generator（__cpp_lib_generator=202207）
 #include <iostream>
+#include <version>
 int main() {
-    std::cout << "std::generator in C++23/P2502; GCC13 not implemented.\n";
-    std::cout << "Use hand-rolled generator as shown in sections above.\n";
+#ifdef __cpp_lib_generator
+    std::cout << "lib_generator=" << __cpp_lib_generator << "\n";   // 202207
+#else
+    std::cout << "lib_generator=not exposed: use hand-rolled generator\n";
+#endif
     return 0;
 }
 ```
