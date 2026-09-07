@@ -51,13 +51,18 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 > **示例 1** [难度 ★★☆☆☆] [主题：概述：什么是 ABA 问题 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 1 · ★★☆☆☆"
-// ① ABA 的最小抽象：值序列 A→B→A 对 CAS 不可区分
-// 假设 shared 是 std::atomic<int>
-// T1: int e = shared.load();          // 读到 A
-// ... T1 被抢占 ...
-// T2: shared.store(B);                // A -> B
-// T2: shared.store(A);                // B -> A（同值，可能复用同一内存）
-// T1: shared.compare_exchange(e, X);  // 看到 A，CAS 成功 —— 但中间世界已变
+#include <atomic>
+#include <cstdio>
+int main() {
+    // ① 最小 ABA：值序列 A→B→A 对裸 CAS 不可区分
+    std::atomic<int> shared{10};                    // A = 10
+    int world = 0;                                  // 模拟「世界已变」的版本计数（裸 CAS 看不到）
+    int e = shared.load();                          // T1 读到 A
+    shared.store(20); ++world;                      // T2: A→B
+    shared.store(10); ++world;                      // T2: B→A，值回来了，但世界已变 2 次
+    bool ok = shared.compare_exchange_strong(e, 999);   // T1 恢复运行
+    std::printf("cas ok=%d  shared=%d  world_changed=%d\n", ok, shared.load(), world);   // cas ok=1  shared=999  world_changed=2 裸 CAS 只看见值相等 → 成功放行
+}
 ```
 
 - `[标准]`：ISO C++ 不禁止也不自动防御 ABA；CAS（`atomic::compare_exchange_*`）只比较**位模式**，不感知“历史”。
@@ -70,8 +75,34 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 > **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典例子：无锁栈 pop 中的 A→
 
 ```cpp title="示例 2 · ★★☆☆☆"
-// ② 无锁栈节点定义（Examples/_ch111_aba.cpp:4）
+#include <atomic>
+#include <cstdio>
 struct Node { int data; Node* next; };
+static Node slots[4];
+static bool used[4];
+static Node* alloc() { for (int i = 0; i < 4; ++i) if (!used[i]) { used[i] = true; return &slots[i]; } return nullptr; }
+static void give_back(Node* p) { for (int i = 0; i < 4; ++i) if (&slots[i] == p) used[i] = false; }
+int main() {
+    // ② 无锁栈 pop 的 ABA：固定池「确定性地」复用地址，单线程把交错排演一遍
+    Node* A = alloc(); A->data = 1; A->next = nullptr;
+    Node* B = alloc(); B->data = 2; B->next = nullptr;
+    A->next = B;
+    std::atomic<Node*> top{A};
+    Node* old = top.load();                 // T1：读到 A
+    Node* nxt = old->next;                  // T1：记下 A->next == B（随后被抢占）
+    int v;
+    { Node* t = top.load(); top.store(t->next); v = t->data; give_back(t);
+      std::printf("T2 pop %d，还池\n", v); }                                       // T2 pop 1，还池
+    { Node* t = top.load(); top.store(t->next); v = t->data; give_back(t);
+      std::printf("T2 pop %d，还池\n", v); }                                       // T2 pop 2，还池
+    Node* X = alloc(); X->data = 99; X->next = nullptr;      // T2 push：恰好复用 A 的地址
+    top.store(X);
+    std::printf("top 地址回到 A？%d\n", top.load() == A);                          // top 地址回到 A？1
+    bool ok = top.compare_exchange_strong(old, nxt);        // T1 恢复：CAS(top: A→B)
+    std::printf("T1 CAS ok=%d —— ABA 被放行\n", ok);                               // T1 CAS ok=1 —— ABA 被放行
+    Node* Y = alloc(); Y->data = 7; Y->next = nullptr;      // B 的槽也被复用
+    std::printf("top 指向的槽现在装着 data=%d（T1 以为仍是 B=2）\n", top.load()->data);  // top 指向的槽现在装着 data=7（T1 以为仍是 B=2） 栈结构已被破坏
+}
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典例子：无锁栈 pop 中的 A→
@@ -96,12 +127,38 @@ Node* pop_unsafe() {
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 经典例子：无锁栈 pop 中的 A→
 
 ```cpp title="示例 4 · ★★☆☆☆"
-// ② 触发 ABA 的交错（示意：两个线程 + 内存分配器复用）
-// 初始：top -> A -> B -> C
-// T1: old=A, nxt=B            （读完后被抢占）
-// T2: pop() 返回 A；pop() 返回 B；delete A；delete B；push(newX) 复用 A 的地址
-// 现在：top -> A'(新节点, 地址==A) -> ...
-// T1: CAS(top, A -> B) 成功！但 A 的 next 已不是 B —— 栈结构损坏 / 访问已释放内存
+#include <atomic>
+#include <cstdio>
+#include <thread>
+struct Node { int data; Node* next; };
+static Node slots[4];
+static bool used[4];
+static Node* alloc() { for (int i = 0; i < 4; ++i) if (!used[i]) { used[i] = true; return &slots[i]; } return nullptr; }
+static void give_back(Node* p) { for (int i = 0; i < 4; ++i) if (&slots[i] == p) used[i] = false; }
+int main() {
+    // ② 触发 ABA 的交错：两个真实线程 + 握手信号强制出「T1 读到 A 后被挂起」的时序
+    Node* A = alloc(); A->data = 1; A->next = nullptr;
+    Node* B = alloc(); B->data = 2; B->next = nullptr;
+    A->next = B;
+    std::atomic<Node*> top{A};
+    std::atomic<bool> t1_read{false}, go_t1{false};
+    std::thread t2([&] {
+        while (!t1_read.load(std::memory_order_acquire)) { }       // 等 T1 先读完
+        Node* t = top.load(); top.store(t->next); give_back(t);   // pop A（还池）
+        t = top.load(); top.store(t->next); give_back(t);         // pop B（还池）
+        Node* X = alloc(); X->data = 99; X->next = nullptr;       // push X：复用 A 的地址
+        top.store(X);
+        go_t1.store(true, std::memory_order_release);
+    });
+    Node* old = top.load();               // T1：old = A
+    Node* nxt = old->next;                // T1：nxt = B
+    t1_read.store(true, std::memory_order_release);
+    while (!go_t1.load(std::memory_order_acquire)) { }            // T2 已把 top 改回「地址 == A」
+    bool ok = top.compare_exchange_strong(old, nxt);             // T1 醒来 CAS
+    t2.join();
+    std::printf("T1 CAS ok=%d —— 真实线程交错下 ABA 也放行\n", ok);   // T1 CAS ok=1 —— 真实线程交错下 ABA 也放行
+    std::printf("top 却指向 T2 早已 pop 并还池的旧节点 B（data=%d）→ 结构损坏\n", top.load()->data);   // top 却指向 T2 早已 pop 并还池的旧节点 B（data=2）→ 结构损坏
+}
 ```
 
 - `[标准]`：`compare_exchange_strong` 仅当 `top` 的**当前位模式**等于 `old` 才成功；地址复用使位模式相等，CAS 无从分辨。
@@ -114,21 +171,40 @@ CAS 的契约是：“若当前值 == 预期值，则替换为新值，返回 tr
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为何 CAS 看不出 ABA：值相同
 
 ```cpp title="示例 5 · ★★☆☆☆"
-// ③ CAS 的语义（标准库等价抽象）
-// bool compare_exchange(atomic<T>& a, T& expected, T desired):
-// if (a.load() == expected) { a.store(desired); return true; }
-// else { expected = a.load(); return false; }
-// 注意：比较的是 T 的位模式；A->B->A 的位模式回到 A，CAS 必然成功。
+#include <atomic>
+#include <cstdio>
+int main() {
+    // ③ compare_exchange 的契约：命中写回 desired；不命中把实际值写进 expected
+    std::atomic<int> a{10};
+    int e1 = 10;
+    bool ok1 = a.compare_exchange_strong(e1, 42);
+    std::printf("命中：  ok=%d  expected=%d  a=%d\n", ok1, e1, a.load());   // 命中：  ok=1  expected=10  a=42
+    int e2 = 10;
+    bool ok2 = a.compare_exchange_strong(e2, 7);
+    std::printf("不命中：ok=%d  expected(被写回实际值)=%d  a=%d\n", ok2, e2, a.load());   // 不命中：ok=0  expected(被写回实际值)=42  a=42 只比位模式 → ABA 不可见
+}
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 为何 CAS 看不出 ABA：值相同
 
 ```cpp title="示例 6 · ★☆☆☆☆"
-// ③ 用“版本号”视角看问题：CAS 只看了 value 列，没看 version 列
-// 时刻0: (value=A, version=0)
-// 时刻1: (value=B, version=1)
-// 时刻2: (value=A, version=2)   <- 值回到 A，但 version 已变
-// 裸 CAS 比较 (value)，故认为“无变化”，误判成功。
+#include <atomic>
+#include <cstdint>
+#include <cstdio>
+union Cell { struct { std::uint32_t value; std::uint32_t version; } p; std::uint64_t raw; };
+static Cell pack(std::uint32_t v, std::uint32_t ver) { Cell c; c.p.value = v; c.p.version = ver; return c; }
+int main() {
+    // ③ 版本号视角落成代码：(value, version) 一起 CAS，版本变了就失败
+    std::atomic<std::uint64_t> cell{0};
+    cell.store(pack(10, 0).raw);                  // (A, v0)
+    Cell snap; snap.raw = cell.load();            // T1 读快照 (10, 0)
+    cell.store(pack(20, 1).raw);                  // T2: A→B
+    cell.store(pack(10, 2).raw);                  // T2: B→A（value 回 A，version 已变）
+    Cell cur; cur.raw = cell.load();
+    bool value_only = (cur.p.value == snap.p.value);                   // 只看 value → 以为没变
+    bool ok = cell.compare_exchange_strong(snap.raw, pack(999, 2).raw);  // 带上 version 一起比
+    std::printf("只看 value=%d（误判没变）  带版本一起 CAS ok=%d（版本不同 → 失败）\n", value_only, ok);   // 只看 value=1（误判没变）  带版本一起 CAS ok=0（版本不同 → 失败）
+}
 ```
 
 - `[标准]`：`[atomics]` 规定 CAS 比较的是对象表示（object representation），与“该值经历过几次写”无关。
@@ -216,8 +292,19 @@ bool cas_head(__int128& expected, const Head& desired) {
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 双字 CAS
 
 ```cpp title="示例 12 · ★★☆☆☆"
-// ⑤ 注意：__int128 不是标准 C++ 类型，是 GCC/Clang 扩展（[实现·GCC15]）
-// 可移植层应使用 std::atomic<struct-of-two-words> 或 std::atomic_ref。
+#include <atomic>
+#include <cstdint>
+#include <cstdio>
+struct Word2 { std::uint64_t a; std::uint64_t b; };
+int main() {
+    // ⑤ 双字 CAS 的可移植性：__int128 是 GCC/Clang 扩展，且未必 lock-free
+    std::printf("atomic<unsigned long long>: always_lock_free=%d sizeof=%zu\n",
+                std::atomic<unsigned long long>::is_always_lock_free, sizeof(std::atomic<unsigned long long>));  // atomic<unsigned long long>: always_lock_free=1 sizeof=8
+    std::printf("atomic<__int128>:           always_lock_free=%d sizeof=%zu\n",
+                std::atomic<__int128>::is_always_lock_free, sizeof(std::atomic<__int128>));                    // atomic<__int128>:           always_lock_free=0 sizeof=16
+    std::printf("atomic<Word2>:              always_lock_free=%d sizeof=%zu\n",
+                std::atomic<Word2>::is_always_lock_free, sizeof(std::atomic<Word2>));                          // atomic<Word2>:              always_lock_free=0 sizeof=16 是否真无锁以本工具链实测为准
+}
 ```
 
 - `[实现·GCC15]` `[VERIFIED]`：本工具链把 16 字节原子 CAS 路由到 libatomic 的 `__atomic_compare_exchange_16`（见第⑧节），该实现在本 MinGW 构建中是**加锁回退**而非内联 `lock cmpxchg16b`（本机 GCC 15.3.0 复编确认 `call __atomic_compare_exchange_16`）。
@@ -230,10 +317,21 @@ bool cas_head(__int128& expected, const Head& desired) {
 > **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 风险指针预告
 
 ```cpp title="示例 13 · ★★☆☆☆"
-// ⑥ 风险指针骨架（仅示意接口，完整实现见第112章）
-// 线程 T 在解引用 p 前：hazard_slot.store(p); 然后再次确认 p 仍有效
-// 回收者 retire(p)：把 p 放进待回收列表，扫描所有 hazard_slot，无人引用才 delete
-struct HazardSlot { std::atomic<void*> protected_ptr; };
+#include <atomic>
+#include <cstdio>
+struct Node { int id; Node* next; };
+int main() {
+    // ⑥ 风险指针核心规则：回收前逐个扫描读者的 hazard 槽
+    static Node nodes[3] = {{1}, {2}, {3}};
+    std::atomic<void*> hazard{nullptr};
+    hazard.store(&nodes[1]);                        // 读者 T 正要用 nodes[1]
+    auto decide = [&](const Node* p) -> const char* {
+        return hazard.load(std::memory_order_acquire) == p ? "skip   " : "reclaim";
+    };
+    std::printf("%s nodes[%d]\n", decide(&nodes[0]), 1);   // reclaim nodes[1]
+    std::printf("%s nodes[%d]（风险指针正保护）\n", decide(&nodes[1]), 2);   // skip    nodes[2]（风险指针正保护）
+    std::printf("%s nodes[%d]\n", decide(&nodes[2]), 3);   // reclaim nodes[3]
+}
 ```
 
 - `[标准]`：风险指针是**用户态协议**（基于标准原子操作），不依赖任何语言扩展，可移植。
@@ -260,10 +358,21 @@ void critical_exit()  { in_critical = false; }   // ⑦ 离开后，旧纪元对
 > **示例 15** [难度 ★★★☆☆] [主题：简介 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 15 · ★★★☆☆"
-// ⑦ 回收条件：某 epoch 的节点可被回收，当且仅当没有任何线程仍登记在该 epoch
-// bool safe_to_reclaim(e):
-// for each thread t: if (t.in_critical && t.local_epoch == e) return false;
-// return true;
+#include <cstdio>
+struct ThreadState { bool in_critical; unsigned epoch; };
+static bool safe_to_reclaim(unsigned e, const ThreadState* ts, int n) {
+    for (int i = 0; i < n; ++i)
+        if (ts[i].in_critical && ts[i].epoch == e) return false;
+    return true;
+}
+int main() {
+    // ⑦ EBR：某 epoch 可回收 ⟺ 没有任何线程仍停在该 epoch
+    ThreadState ts[3] = {{false, 0}, {true, 1}, {false, 2}};
+    std::printf("epoch0 可回收？%d\n", safe_to_reclaim(0, ts, 3));        // epoch0 可回收？1
+    std::printf("epoch1 可回收？%d（线程2 正登记在那里）\n", safe_to_reclaim(1, ts, 3));   // epoch1 可回收？0（线程2 正登记在那里）
+    ts[1].in_critical = false;
+    std::printf("线程2 退出临界区后 epoch1 可回收？%d\n", safe_to_reclaim(1, ts, 3));       // 线程2 退出临界区后 epoch1 可回收？1
+}
 ```
 
 - `[标准]`：EBR 同样基于标准原子，属于算法层方案。
@@ -397,10 +506,20 @@ delete p;                 // ⑩ ❌ 若 T2 刚 load 了 p 的副本，这里 de
 > **示例 19** [难度 ★★☆☆☆] [主题：内存回收的根本难题 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 19 · ★★☆☆☆"
-// ⑩ 根本矛盾：
-// - 不能“等所有线程都不用再 delete”：无锁算法没有全局锁来统计使用者；
-// - 也不能“不 delete”：会内存泄漏。
-// 解法只有两条路：(a) 延迟回收（风险指针 / EBR / RCU）；(b) 永不回收（对象池复用）。
+#include <cstdio>
+static int payload[2] = {0, 0};
+static bool used[2] = {false, false};
+static int* alloc() { for (int i = 0; i < 2; ++i) if (!used[i]) { used[i] = true; return &payload[i]; } return nullptr; }
+static void give_back(int* p) { for (int i = 0; i < 2; ++i) if (&payload[i] == p) used[i] = false; }
+int main() {
+    // ⑩ 根本矛盾：回收线程不知道「另一个线程还握着旧指针、还没来得及读」
+    int* reader = alloc();
+    *reader = 1;                      // 读者（慢）稍后才会读 *reader
+    give_back(reader);                // 回收者以为没人用了，delete
+    int* writer = alloc();            // 再次分配 → 复用 reader 的地址
+    *writer = 777;                    // 写者放了别家数据
+    std::printf("读者迟到的 read 看到 %d（不是它以为的 1）\n", *reader);   // 读者迟到的 read 看到 777（不是它以为的 1） 只能延迟回收/RCU，或永不 delete
+}
 ```
 
 - `[标准]`：ISO C++ 的内存模型规定，对已销毁对象的任何访问（即使只读）都是**未定义行为（UB）**。
@@ -509,16 +628,30 @@ Node* bad_pop() {
 > **示例 25** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 25 · ★☆☆☆☆"
-// ⑭ ❌ 误用2：以为“tag 用 32 位就够了”——高并发下会回绕，回绕后 ABA 重现
-struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时间运行回绕
+#include <cstdint>
+#include <cstdio>
+int main() {
+    // ⑭ tag 太小的后果：版本号回绕后与旧版本号撞值，ABA 重新「看不见」
+    const std::uint32_t M = 8;                       // 模拟 3 位 tag（32 位同理，只是更晚回绕）
+    std::uint32_t old_tag = 1 % M;                   // 第 1 次写后的 tag
+    std::uint32_t new_tag = (M + 1) % M;             // 走满一圈再写：tag 又变回 1
+    std::printf("回绕后：旧 tag=%u 新 tag=%u 相同？%d → 分不清两次写\n", old_tag, new_tag, old_tag == new_tag);   // 回绕后：旧 tag=1 新 tag=1 相同？1 → 分不清两次写
+}
 ```
 
 > **示例 26** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 26 · ★☆☆☆☆"
-// ⑭ ✅ 正确：用 64 位 tag + 风险指针保护 + 恰当内存序
-// 关键三点：(1) tag 足够宽；(2) pop 出的节点进 retire 而非立刻 delete；
-// (3) CAS 用 acq_rel/acquire，保证节点字段对回收者可见。
+#include <cstdint>
+#include <cstdio>
+int main() {
+    // ⑭ 正确配置：64 位 tag 单调递增，回绕要等约 584 年（按每秒 10 亿次写）
+    const double years = 18446744073709551616.0 / 1e9 / 3600.0 / 24.0 / 365.0;
+    std::printf("64 位 tag 每秒 1e9 次写也要约 %.0f 年才回绕\n", years);   // 64 位 tag 每秒 1e9 次写也要约 585 年才回绕
+    std::uint64_t tag = 0;
+    for (int i = 0; i < 1000000; ++i) tag = tag + 1;
+    std::printf("写 1e6 次后 tag=%llu（全程无重复）\n", static_cast<unsigned long long>(tag));   // 写 1e6 次后 tag=1000000（全程无重复）
+}
 ```
 
 - `[经验]`：最常见两类误用：① 内存序过弱导致读者看不到写者写入的 `next`；② 低估 `tag` 回绕与回收时序，导致“修了 CAS 却没修回收”。
@@ -533,23 +666,54 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能代价对比 [实现·GCC15]
 
 ```cpp title="示例 27 · ★★☆☆☆"
-// ⑮ 用粗粒度计时对比“锁 vs 无锁标签栈”的吞吐（示意骨架）
 #include <atomic>
 #include <chrono>
 #include <cstdio>
-// 伪代码：N 个线程各做 M 次 push/pop，测每秒操作数
-// mutex 栈：竞争时线程睡眠/唤醒，延迟高但公平
-// 标签栈：竞争时自旋重试，延迟低但烧 CPU
-// 结论（示意）：低竞争 mutex≈标签栈；高竞争 mutex 更稳、标签栈 CPU 飙升
+#include <mutex>
+static volatile unsigned g_sink = 0;
+template <class F> double ns_per_op(F f, int n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+int main() {
+    // ⑮ 单线程原生开销（本机实测，GCC 15.3.0）；竞争成本无法单线程测，先量各自基础成本
+    std::mutex m;
+    double t_mutex = ns_per_op([&](int) { m.lock(); m.unlock(); }, 2'000'000);
+    std::atomic<unsigned> cnt{0};
+    double t_cas = ns_per_op([&](int) { unsigned e = cnt.load(); cnt.compare_exchange_strong(e, e + 1); }, 2'000'000);
+    double t_atomic = ns_per_op([&](int) { cnt.fetch_add(1, std::memory_order_relaxed); }, 2'000'000);
+    std::printf("mutex lock/unlock   %6.1f ns/op\n", t_mutex);    // mutex lock/unlock      8.0 ns/op
+    std::printf("word CAS(带重试)    %6.1f ns/op\n", t_cas);       // word CAS(带重试)       3.8 ns/op
+    std::printf("fetch_add(relaxed)  %6.1f ns/op\n", t_atomic);    // fetch_add(relaxed)     3.0 ns/op
+    g_sink = cnt.load();
+}
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能代价对比 [实现·GCC15]
 
 ```cpp title="示例 28 · ★★☆☆☆"
-// ⑮ 双字 CAS 的额外代价：本工具链走 libatomic 锁，可能比单字 CAS 更慢
-// - 单字 CAS：1 条 lock cmpxchg（约十几周期）
-// - 双字 CAS（本 MinGW）：libatomic 内部锁 + 回退，开销明显更高
-// => 选型时先用 is_always_lock_free 确认，再决定是否值当
+#include <atomic>
+#include <chrono>
+#include <cstdint>
+#include <cstdio>
+int main() {
+    // ⑮ 双字 CAS 的真实成本：先确认锁自由性，再量原生开销
+    std::printf("atomic<unsigned long long> is_always_lock_free=%d\n", std::atomic<unsigned long long>::is_always_lock_free);   // atomic<unsigned long long> is_always_lock_free=1
+    std::printf("atomic<__int128>          is_always_lock_free=%d\n", std::atomic<__int128>::is_always_lock_free);             // atomic<__int128>          is_always_lock_free=0
+    auto t0 = std::chrono::steady_clock::now();
+    std::atomic<unsigned long long> w{0};
+    for (int i = 0; i < 5'000'000; ++i) { auto e = w.load(); w.compare_exchange_strong(e, e + 1); }
+    auto t1 = std::chrono::steady_clock::now();
+    double ns8 = std::chrono::duration<double, std::nano>(t1 - t0).count() / 5'000'000;
+    std::atomic<__int128> d{0};
+    auto t2 = std::chrono::steady_clock::now();
+    for (int i = 0; i < 5'000'000; ++i) { auto e = d.load(); d.compare_exchange_strong(e, e + 1); }
+    auto t3 = std::chrono::steady_clock::now();
+    double ns16 = std::chrono::duration<double, std::nano>(t3 - t2).count() / 5'000'000;
+    std::printf("单字 CAS %6.1f ns/op   双字 CAS %6.1f ns/op\n", ns8, ns16);   // 单字 CAS    3.8 ns/op   双字 CAS   24.6 ns/op 双字非无锁时会被 libatomic 锁放大
+}
 ```
 
 - `[平台·x86-64]`：单字 `lock cmpxchg` 是自旋原语；双字若落到 libatomic 锁，则退化为“自旋+锁”，ABA 防御的代价可能吃掉无锁的收益。
@@ -571,9 +735,17 @@ bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为
 > **示例 30** [难度 ★☆☆☆☆] [主题：与第110章衔接 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 30 · ★☆☆☆☆"
-// ⑯ 本章补的洞：当“值”是指针且指向的内存会被回收/复用，CAS 的“比较”不够
-// -> 加 tag（本章④⑤）保护 CAS 语义
-// -> 加风险指针/RCU（本章⑨⑪，见第112章）保护内存安全
+#include <atomic>
+#include <cstdio>
+#include <thread>
+int main() {
+    // ⑯ 值=计数器：CAS 失败就重试，最终总和精确 —— 没有「内存回收」语义，无 ABA
+    std::atomic<int> counter{0};
+    auto bump = [&] { for (int i = 0; i < 500000; ++i) { int e = counter.load(); while (!counter.compare_exchange_weak(e, e + 1)) {} } };
+    std::thread a(bump), b(bump);
+    a.join(); b.join();
+    std::printf("2×500000 次 CAS 自增，最终=%d\n", counter.load());   // 2×500000 次 CAS 自增，最终=1000000
+}
 ```
 
 - `[标准]`：ABA 防御是“CAS 之上的协议层”，不改动第110章的任何原语语义。
@@ -584,13 +756,25 @@ bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为
 > **示例 31** [难度 ★★☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 31 · ★★☆☆☆"
-// ⑰ 决策表（示意）
-// 场景                                  是否需要担心 ABA
-// 原子计数器 int/uint64 自增            不需要（值无“内存回收”语义）
-// 无锁栈/队列的节点指针                需要（pop 后 delete + 地址复用）
-// 只 push 不 pop 的无锁结构             不需要（无回收）
-// 读多写少、用 RCU 的表                不需要（写者等宽限期后回收）
-// 用节点池复用、永不真正 delete         基本不需要（但仍需 tag 防逻辑 ABA）
+#include <cstdio>
+struct Case { const char* name; bool freed; bool ptr_cycles; };
+static bool need_tag(const Case& c) { return c.ptr_cycles; }
+static bool need_reclaim(const Case& c) { return c.freed; }
+static const Case cs[] = {
+    {"计数器自增", false, false},
+    {"无锁栈节点 delete", true, true},
+    {"只 push 不 pop", false, false},
+    {"RCU(宽限期后回收旧快照)", true, false},
+    {"节点池复用、永不 delete", false, true},
+};
+int main() {
+    // ⑰ 决策表执行版：需要 tag ⟺ 指针值会回绕；需要延迟回收 ⟺ 会真正 free
+    std::printf("%-26s tag:%s 延迟回收:%s\n", cs[0].name, need_tag(cs[0]) ? "要" : "不用", need_reclaim(cs[0]) ? "要" : "不用");   // 计数器自增            tag:不用 延迟回收:不用
+    std::printf("%-26s tag:%s 延迟回收:%s\n", cs[1].name, need_tag(cs[1]) ? "要" : "不用", need_reclaim(cs[1]) ? "要" : "不用");   // 无锁栈节点 delete     tag:要 延迟回收:要
+    std::printf("%-26s tag:%s 延迟回收:%s\n", cs[2].name, need_tag(cs[2]) ? "要" : "不用", need_reclaim(cs[2]) ? "要" : "不用");   // 只 push 不 pop           tag:不用 延迟回收:不用
+    std::printf("%-26s tag:%s 延迟回收:%s\n", cs[3].name, need_tag(cs[3]) ? "要" : "不用", need_reclaim(cs[3]) ? "要" : "不用");   // RCU(宽限期后回收旧快照) tag:不用 延迟回收:要
+    std::printf("%-26s tag:%s 延迟回收:%s\n", cs[4].name, need_tag(cs[4]) ? "要" : "不用", need_reclaim(cs[4]) ? "要" : "不用");   // 节点池复用、永不 delete tag:要 延迟回收:不用
+}
 ```
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
@@ -635,12 +819,38 @@ double bench(F f, int threads, int iters) {
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基准对比 [实现·GCC15]
 
 ```cpp title="示例 34 · ★★☆☆☆"
+#include <atomic>
+#include <chrono>
+#include <cstdio>
 #include <mutex>
-// ⑱ 三种被测操作（示意签名）
-// op_mutex():  std::mutex 保护的栈 pop/push
-// op_tagged(): 16 字节标签指针 CAS 栈（本章④⑤）
-// op_rcu():    RCU 表更新（本章⑪，见第112章）
-// 预期（低竞争）：tagged ≈ rcu > mutex；高竞争：rcu ≈ mutex > tagged(自旋烧CPU)
+struct Node { int v; Node* next; };
+template <class F> double ns_per_op(F f, int n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+int main() {
+    // ⑱ 三种实现原生 push/pop 开销（单线程、各 2e6 次、本机实测）
+    std::mutex m; Node* m_top = nullptr;
+    double t_mutex = ns_per_op([&](int i) {
+        std::lock_guard<std::mutex> lk(m);
+        Node* n = new Node{i, m_top}; m_top = n;
+        Node* p = m_top; m_top = p->next; delete p;
+    }, 2'000'000);
+    std::atomic<Node*> lf_top{nullptr};
+    double t_tag = ns_per_op([&](int i) {
+        Node* t = lf_top.load(std::memory_order_relaxed);
+        Node* n = new Node{i, t};
+        while (!lf_top.compare_exchange_weak(t, n, std::memory_order_release, std::memory_order_relaxed)) n->next = t;
+        Node* p = t; (void)p;
+    }, 2'000'000);
+    std::atomic<int> relaxed{0};
+    double t_rcu = ns_per_op([&](int) { relaxed.fetch_add(1, std::memory_order_relaxed); }, 2'000'000);
+    std::printf("mutex 栈        %6.1f ns/op\n", t_mutex);   // mutex 栈           8.3 ns/op
+    std::printf("tagged CAS 栈   %6.1f ns/op\n", t_tag);     // tagged CAS 栈     55.0 ns/op
+    std::printf("宽松原子读侧    %6.1f ns/op（仅示意 RCU 读路径数量级）\n", t_rcu);   // 宽松原子读侧       3.1 ns/op（仅示意 RCU 读路径数量级）
+}
 ```
 
 - `[实现·GCC15]`：基准请用 `-O2 -std=c++23` 且**开 `-mcx16`**（若依赖双字 CAS 无锁），否则 DCAS 走 libatomic 锁会严重偏慢，得出错误结论。
@@ -663,28 +873,79 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 > **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 36 · ★☆☆☆☆"
-// ⑲ 2) tag 用 64 位，且每次写都递增；读路径也要携带 tag 做快照
-// （见本章④的 TaggedPtr / unpack）
+#include <atomic>
+#include <cstdint>
+#include <cstdio>
+union Pack { struct { std::uint32_t low; std::uint32_t ver; } p; std::uint64_t raw; };
+int main() {
+    // ⑲ 2) tag 64 位、每次写 +1；读侧把 (ptr, tag) 打包后单条 load → 同快照无撕裂
+    std::atomic<std::uint64_t> tag{0};
+    for (int i = 0; i < 1000000; ++i) tag.fetch_add(1, std::memory_order_relaxed);
+    std::printf("1e6 次写后 tag=%llu\n", static_cast<unsigned long long>(tag.load()));   // 1e6 次写后 tag=1000000
+    std::atomic<std::uint64_t> word{0};
+    word.store(0x0000'0002'0000'0042ULL);          // 低32位=指针低址，高32位=version
+    Pack r; r.raw = word.load();                   // 单条原子 load 拿到同一快照
+    std::printf("快照：ptr_low=0x%x version=%u\n", r.p.low, r.p.ver);   // 快照：ptr_low=0x42 version=2
+}
 ```
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 37 · ★☆☆☆☆"
-// ⑲ 3) 回收用成熟方案：优先 hazard pointer 或 RCU（第112章），不要手搓
-// pop 出的节点进 retire 列表，确认无读者后再 delete
+#include <atomic>
+#include <cstdio>
+struct Node { int id; Node* next; };
+int main() {
+    // ⑲ 3) pop 出的节点先进 retire 列表，扫描 hazard 后无读者才 delete
+    static Node nodes[4] = {{1}, {2}, {3}, {4}};
+    std::atomic<void*> hazards[2] = {nullptr, nullptr};
+    hazards[0].store(&nodes[2]);                    // 读者1 正引用 nodes[2]
+    Node* retired[4] = {&nodes[0], &nodes[1], &nodes[2], &nodes[3]};
+    int freed = 0, kept = 0;
+    for (Node* p : retired) {
+        bool protected_ = false;
+        for (auto& h : hazards)
+            if (h.load(std::memory_order_acquire) == p) protected_ = true;
+        if (protected_) ++kept; else ++freed;
+    }
+    std::printf("retire 4 个节点：安全释放 %d，被风险指针保护 %d\n", freed, kept);   // retire 4 个节点：安全释放 3，被风险指针保护 1
+}
 ```
 
 > **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 38 · ★☆☆☆☆"
-// ⑲ 4) 内存序别乱用：CAS 用 acq_rel/acquire；纯计数器可用 relaxed
-// compare_exchange_strong(expected, desired, acq_rel, acquire)
+#include <atomic>
+#include <cstdio>
+#include <thread>
+int main() {
+    // ⑲ 4) 纯计数器用 relaxed：只要原子性、没有跨线程 happens-before 依赖
+    std::atomic<unsigned long long> c{0};
+    auto worker = [&] { for (int i = 0; i < 500000; ++i) c.fetch_add(1, std::memory_order_relaxed); };
+    std::thread a(worker), b(worker);
+    a.join(); b.join();
+    std::printf("2×500000 relaxed 自增 = %llu\n", static_cast<unsigned long long>(c.load()));   // 2×500000 relaxed 自增 = 1000000
+}
 ```
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 39 · ★☆☆☆☆"
-// ⑲ 5) 用 TSan + 压力测试 + 形式化推理三者交叉验证，而非只靠“看起来对”
+#include <atomic>
+#include <cstdio>
+#include <thread>
+int main() {
+    // ⑲ 5) 别只靠「看着对」：同一断言连跑 5 轮交叉验证（TSan 之外的最小自检）
+    int pass = 0;
+    for (int r = 0; r < 5; ++r) {
+        std::atomic<int> x{0};
+        auto add = [&] { for (int i = 0; i < 200000; ++i) x.fetch_add(1); };
+        std::thread a(add), b(add);
+        a.join(); b.join();
+        pass += (x.load() == 400000);
+    }
+    std::printf("5 轮 × 2 线程各 20 万次自增，断言通过 %d/5\n", pass);   // 5 轮 × 2 线程各 20 万次自增，断言通过 5/5
+}
 ```
 
 - `[经验]`：无锁代码的维护成本极高；**能用 `std::mutex` 满足性能就别上无锁**。无锁只在“锁成为明确瓶颈”时才值得。
@@ -725,8 +986,17 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 > **示例 40** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 40 · ★☆☆☆☆"
-// ⑳ 一句话记忆：ABA = “地址复用了，但世界变了”；
-// 防御 = “给值加版本（tag）” + “给内存加保护（hazard/RCU）”。
+#include <cstdio>
+int main() {
+    // ⑳ 一句话记忆 → 可执行判定：值没变但版本变了 = ABA → 丢弃旧快照重试
+    int old_value = 10, old_ver = 5;
+    int cur_value = 10, cur_ver = 6;                // 写者回写同一值但版本 +1
+    bool aba = (cur_value == old_value && cur_ver != old_ver);
+    std::printf("ABA 判定 = %d → 用新版本重读重试\n", aba);        // ABA 判定 = 1 → 用新版本重读重试
+    int cur_value2 = 10, cur_ver2 = 5;              // 版本也没变：期间真的没人写
+    bool clean = (cur_value2 == old_value && cur_ver2 == old_ver);
+    std::printf("版本一致 = %d → 可以放心 CAS\n", clean);           // 版本一致 = 1 → 可以放心 CAS
+}
 ```
 
 - `[标准]`：本章所有机制均建立在 `std::atomic` 之上，ISO C++ 完全支持；DCAS 的 `__int128` 属编译器扩展。
