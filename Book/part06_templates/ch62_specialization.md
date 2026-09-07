@@ -271,8 +271,14 @@ template <> struct A<int> { int v; void f(){} };   // 全特化 int
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 11 · ★★☆☆☆"
-template <typename T, typename U> struct B {};
-template <> struct B<int, double> {};              // 双参数全特化
+#include <iostream>
+#include <type_traits>
+template <typename T, typename U> struct B { static const char* name() { return "primary"; } };
+template <> struct B<int, double> { static const char* name() { return "full<int,double>"; } };
+int main() {
+    std::cout << B<char, char>::name() << ' ' << B<int, double>::name() << '\n';  // primary full<int,double>
+    std::cout << std::is_same_v<B<int, double>, B<double, int>> << '\n';          // 0 全特化按实参逐个固定
+}
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -306,9 +312,13 @@ template <> void E<bool>::f() {};                   // 类外定义全特化成�
 > **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 16 · ★★☆☆☆"
-// 全特化必须匹配主模板参数数目
-template <typename T, typename U> struct F {};
-// template <> struct F<int> {};   // 错误：参数数不匹配
+#include <iostream>
+template <typename T, typename U> struct F { static constexpr int arity = 2; };
+template <> struct F<int, double> { static constexpr int arity = 0; };  // 全特化：两个实参全部写死
+// template <> struct F<int> {};   // 错误：主模板要 2 个实参，只给 1 个 → 参数数不匹配
+int main() {
+    std::cout << F<char, char>::arity << ' ' << F<int, double>::arity << '\n';  // 2 0
+}
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -348,59 +358,98 @@ template <> template <typename U> void H<int>::m(U) {}
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 21 · ★★☆☆☆"
-template <typename T> struct P { };
-template <typename T> struct P<T*> { };        // 指针偏特化
+#include <iostream>
+template <typename T> struct P { static constexpr const char* kind = "primary"; };
+template <typename T> struct P<T*> { static constexpr const char* kind = "partial-ptr"; };
+int main() {
+    std::cout << P<int>::kind << ' ' << P<int*>::kind << ' ' << P<double*>::kind << '\n';  // primary partial-ptr partial-ptr
+}
 ```
 
 > **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 22 · ★★☆☆☆"
-template <typename T> struct Q { };
-template <typename T> struct Q<T&> { };         // 左值引用偏特化
+#include <iostream>
+template <typename T> struct Q { static constexpr const char* kind = "primary"; };
+template <typename T> struct Q<T&> { static constexpr const char* kind = "partial-lvalue-ref"; };
+int main() {
+    std::cout << Q<int>::kind << ' ' << Q<int&>::kind << ' ' << Q<double&>::kind << '\n';  // primary partial-lvalue-ref partial-lvalue-ref
+}
 ```
 
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 23 · ★★☆☆☆"
-template <typename T> struct R { };
-template <typename T> struct R<T&&> { };        // 右值引用偏特化
+#include <iostream>
+template <typename T> struct R { static constexpr const char* kind = "primary"; };
+template <typename T> struct R<T&&> { static constexpr const char* kind = "partial-rvalue-ref"; };
+int main() {
+    std::cout << R<int>::kind << ' ' << R<int&&>::kind << ' ' << R<double&&>::kind << '\n';  // primary partial-rvalue-ref partial-rvalue-ref
+}
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 24 · ★★☆☆☆"
 #include <cstddef>
-template <typename T> struct S { };
-template <typename T, std::size_t N> struct S<T[N]> { };  // 数组偏特化
+#include <iostream>
+template <typename T> struct S_ { static constexpr const char* kind = "primary"; };
+template <typename T, std::size_t N> struct S_<T[N]> {
+    static constexpr const char* kind = "partial-array";
+    static constexpr std::size_t extent = N;
+};
+int main() {
+    std::cout << S_<int>::kind << ' ' << S_<int[4]>::kind << ' ' << S_<double[8]>::extent << '\n';  // primary partial-array 8
+}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 25 · ★★☆☆☆"
-template <typename T> struct V { };
-template <typename T> struct V<const T> { };     // const 偏特化
+#include <iostream>
+template <typename T> struct V { static constexpr const char* kind = "primary"; };
+template <typename T> struct V<const T> { static constexpr const char* kind = "partial-const"; };
+int main() {
+    std::cout << V<int>::kind << ' ' << V<const int>::kind << ' ' << V<const double>::kind << '\n';  // primary partial-const partial-const
+}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 26 · ★★☆☆☆"
-template <typename T> struct W { };
-template <typename T> struct W<volatile T> { };  // volatile 偏特化
+#include <iostream>
+template <typename T> struct W { static constexpr const char* kind = "primary"; };
+template <typename T> struct W<volatile T> { static constexpr const char* kind = "partial-volatile"; };
+int main() {
+    std::cout << W<int>::kind << ' ' << W<volatile int>::kind << ' ' << W<volatile char>::kind << '\n';  // primary partial-volatile partial-volatile
+}
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 27 · ★★☆☆☆"
-template <typename T> struct X { };
-template <template <typename> class C, typename T> struct X<C<T>> { };  // 模板模板偏特化
+#include <iostream>
+template <typename T> struct Box { };                       // 单参数模板，用作模板模板实参
+template <typename T> struct X { static constexpr const char* kind = "primary"; };
+template <template <typename> class C, typename T> struct X<C<T>> {
+    static constexpr const char* kind = "partial-template-template";
+};
+int main() {
+    std::cout << X<int>::kind << ' ' << X<Box<int>>::kind << ' ' << X<Box<double>>::kind << '\n';  // primary partial-template-template partial-template-template
+}
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 28 · ★★☆☆☆"
+#include <iostream>
 #include <vector>
-template <typename T> struct Y { };
-template <typename T> struct Y<std::vector<T>> { };  // 具体模板实例偏特化
+template <typename T> struct Y { static constexpr const char* kind = "primary"; };
+template <typename T> struct Y<std::vector<T>> { static constexpr const char* kind = "partial-vector"; };
+int main() {
+    std::cout << Y<int>::kind << ' ' << Y<std::vector<int>>::kind << ' '
+              << Y<std::vector<double>>::kind << '\n';  // primary partial-vector partial-vector
+}
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -460,23 +509,42 @@ template <typename T> struct D<const T&> { };   // const T& 更特化？注意�
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 35 · ★★☆☆☆"
-template <typename T> struct is_pointer : std::false_type {};
-template <typename T> struct is_pointer<T*> : std::true_type {};
+#include <iostream>
+#include <type_traits>
+template <typename T> struct is_pointer_ : std::false_type {};
+template <typename T> struct is_pointer_<T*> : std::true_type {};
+int main() {
+    std::cout << is_pointer_<int>::value << ' ' << is_pointer_<int*>::value << ' '
+              << is_pointer_<const char*>::value << '\n';  // 0 1 1
+    static_assert(is_pointer_<int*>::value && !is_pointer_<int>::value);
+}
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 36 · ★★☆☆☆"
-template <typename T> struct is_const : std::false_type {};
-template <typename T> struct is_const<const T> : std::true_type {};
+#include <iostream>
+#include <type_traits>
+template <typename T> struct is_const_ : std::false_type {};
+template <typename T> struct is_const_<const T> : std::true_type {};
+int main() {
+    std::cout << is_const_<int>::value << ' ' << is_const_<const int>::value << ' '
+              << is_const_<const int*>::value << '\n';  // 0 1 0 顶层 const 才算；const int* 自身非 const
+}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 37 · ★★☆☆☆"
 #include <cstddef>
-template <typename T> struct is_array : std::false_type {};
-template <typename T, std::size_t N> struct is_array<T[N]> : std::true_type {};
+#include <iostream>
+#include <type_traits>
+template <typename T> struct is_array_ : std::false_type {};
+template <typename T, std::size_t N> struct is_array_<T[N]> : std::true_type {};
+int main() {
+    std::cout << is_array_<int>::value << ' ' << is_array_<int[3]>::value << ' '
+              << is_array_<int*>::value << '\n';  // 0 1 0
+}
 ```
 
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -510,32 +578,51 @@ template <typename T> struct A<const T*> { };
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 41 · ★★☆☆☆"
-// 错误：偏特化参数必须从主模板「可推导」
-template <typename T> struct B { };
-// template <typename T> struct B<T*> { };   // OK
-// template <typename T> struct B<int> { };   // 错：偏特化不能写死非参数，那是全特化写法但形式不对
+#include <iostream>
+template <typename T> struct B { static constexpr const char* kind = "primary"; };
+template <typename T> struct B<T*> { static constexpr const char* kind = "partial-ptr"; };  // 模式：T 可推导
+template <> struct B<char*> { static constexpr const char* kind = "full-charptr"; };        // 写死类型 = 全特化
+// template <typename T> struct B<char*> {};  // 错误：偏特化实参里 T 不在可推导上下文
+int main() {
+    std::cout << B<int>::kind << ' ' << B<int*>::kind << ' ' << B<char*>::kind << '\n';  // primary partial-ptr full-charptr
+}
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 42 · ★★☆☆☆"
-// 错误：主模板未声明就特化
-// template <> struct C<int> {};   // 必须先有 template <typename T> struct C {}
+#include <iostream>
+// template <> struct C<int> {};                                            // 错误：C 尚未声明
+template <typename T> struct C { static constexpr const char* kind = "primary"; };  // ① 先主模板
+template <> struct C<int> { static constexpr const char* kind = "full-int"; };      // ② 再全特化
+int main() {
+    std::cout << C<double>::kind << ' ' << C<int>::kind << '\n';  // primary full-int
+}
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 43 · ★★☆☆☆"
-// 正确：先主后特
-template <typename T> struct D { };
-template <> struct D<void> { };
+#include <iostream>
+template <typename T> struct D { T a; T b; };            // 主模板：两个 T
+template <> struct D<void> { int tag = 7; };             // 全特化：成员集完全重写
+int main() {
+    std::cout << sizeof(D<double>) << ' ' << sizeof(D<void>) << ' ' << D<void>{}.tag << '\n';  // 16 4 7
+}
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 44 · ★★☆☆☆"
-// 错误：函数模板偏特化非法
-// template <typename T> void f<T*>(T*) {}   // 非法；用重载或类模板包装
+#include <iostream>
+// template <typename T> void f<T*>(T*) {}     // 错误：函数模板不能偏特化
+template <typename T> void f(T) { std::cout << "overload-generic\n"; }
+template <typename T> void f(T*) { std::cout << "overload-ptr\n"; }   // 用重载代替
+int main() {
+    int x = 0;
+    f(x);    // overload-generic
+    f(&x);   // overload-ptr 偏序选更特化的 f(T*)
+}
 ```
 
 ## ⑪ STL 中的该模式
@@ -610,31 +697,67 @@ template <typename T> struct A<const T*> { };
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 48 · ★★☆☆☆"
+#include <cstddef>
+#include <iostream>
 #include <vector>
-// 反模式2：在命名空间 std 里特化非用户定义的模板（仅允许对用户类型特化 std 模板）
-// template <> struct std::less<MyType> {};  // OK（用户类型）
-// template <> struct std::vector<int> {};   // 错误：不能特化标准模板
+// 反模式：给标准类型特化 std 模板（std::hash<std::vector<int>>）→ 未定义行为
+// 正解：自定义哈希策略放进自己的命名空间，作为模板实参传给容器
+struct VecHash {
+    std::size_t operator()(const std::vector<int>& v) const noexcept {
+        std::size_t h = 1469598103934665603ull;
+        for (int x : v) h = (h ^ static_cast<std::size_t>(x)) * 1099511628211ull;
+        return h;
+    }
+};
+int main() {
+    std::vector<int> a{1, 2, 3}, b{1, 2, 3}, c{1, 2, 4};
+    VecHash hv;
+    std::cout << (hv(a) == hv(b)) << ' ' << (hv(a) == hv(c)) << '\n';  // 1 0
+}
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 49 · ★★☆☆☆"
-// 反模式3：偏特化写死类型当全特化用，导致永远命中
-template <typename T> struct B { };      // 主模板（须先声明）
-template <typename T> struct B<T*> { };  // ❌ 想"只针对 int*"，实际命中所有指针
-// ✅ 若只想要 int*：写全特化 template <> struct B<int*> { };（见 ③）
+#include <iostream>
+template <typename T> struct B { static constexpr const char* kind = "primary"; };
+template <typename T> struct B<T*> { static constexpr const char* kind = "partial-ALL-pointers"; };  // 命中所有指针
+template <> struct B<int*> { static constexpr const char* kind = "full-intptr"; };                   // 只针对 int*
+int main() {
+    std::cout << B<char*>::kind << ' ' << B<int*>::kind << '\n';  // partial-ALL-pointers full-intptr 想只拦 int*，结果 char* 也被拦
+}
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 50 · ★☆☆☆☆"
-// 反模式4：函数模板想偏特化 → 用类模板包装
+#include <iostream>
+// 反模式：template <typename T> void log<T*>(T*) {}  —— 函数模板不能偏特化
+// 正解：类模板包装 + 偏特化，函数只做转发
+template <typename T> struct LogImpl { static void run() { std::cout << "generic\n"; } };
+template <typename T> struct LogImpl<T*> { static void run() { std::cout << "pointer\n"; } };
+template <typename T> void log() { LogImpl<T>::run(); }
+int main() {
+    log<int>();    // generic
+    log<int*>();   // pointer
+}
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 51 · ★★☆☆☆"
-// 反模式5：特化改变接口契约，调用方依赖主模板成员名 → 运行期/编译期错配
+#include <iostream>
+template <typename T> struct Store { void put(T v) { std::cout << "put primary " << v << '\n'; } };
+// 反模式：全特化把 put 改名 set → 泛型调用方编译期崩
+template <> struct Store<bool> { void set(bool v) { std::cout << "set bool " << v << '\n'; } };
+// 正解：特化保留同名同签名，只换实现
+template <> struct Store<char> { void put(char v) { std::cout << "put char " << v << '\n'; } };
+template <typename T> void use_put(T v) { Store<T> s; s.put(v); }
+int main() {
+    use_put(7);      // put primary 7
+    use_put('A');    // put char A
+    // use_put(true);  // 错误：Store<bool> 没有 put()
+}
 ```
 
 ## ⑭ 工业案例
@@ -691,37 +814,90 @@ int main() {
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 54 · ★☆☆☆☆"
-// 1) 偏特化必须从主模板推导参数，不能写死（写死应全特化）
+#include <iostream>
+template <typename T> struct P { static constexpr int v = 0; };
+// template <typename T> struct P<T> {};       // 错误：与主模板同形，未特化任何实参
+template <typename T> struct P<const T> { static constexpr int v = 1; };  // 确实更特化才行
+int main() {
+    std::cout << P<int>::v << ' ' << P<const int>::v << '\n';  // 0 1
+}
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 55 · ★☆☆☆☆"
-// 2) 函数模板不能偏特化，用重载或类模板包装
+#include <iostream>
+template <typename T> void g(T) { std::cout << "template\n"; }
+void g(int) { std::cout << "non-template\n"; }   // 非模板优先于模板（哪怕模板更匹配）
+int main() {
+    g(1);        // non-template
+    g(1.0);      // template
+    g<int>(1);   // template 显式指定模板实参 → 强制走模板
+}
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 56 · ★☆☆☆☆"
-// 3) 全特化是独立模板，可改成员集，但与主模板「同名不同类型」
+#include <iostream>
+#include <type_traits>
+template <typename T> struct E { void only_in_primary() {} };
+template <> struct E<bool> { void only_in_full() {} };   // 全特化：成员集完全独立
+template <typename T, typename = void> struct HasPrimaryMember : std::false_type {};
+template <typename T>
+struct HasPrimaryMember<T, std::void_t<decltype(std::declval<T&>().only_in_primary())>> : std::true_type {};
+int main() {
+    std::cout << HasPrimaryMember<E<int>>::value << ' '
+              << HasPrimaryMember<E<bool>>::value << '\n';  // 1 0 主模板成员在特化里不存在
+}
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 57 · ★☆☆☆☆"
-// 4) 多份偏特化同样特化 → 二义
+#include <iostream>
+template <typename T> struct A { static constexpr const char* kind = "primary"; };
+template <typename T> struct A<T*> { static constexpr const char* kind = "ptr"; };
+template <typename T> struct A<const T*> { static constexpr const char* kind = "const-ptr"; };  // 比 A<T*> 更特化
+// template <typename T> struct A<T* const> {};  // 与 A<const T*> 同等级 → A<const int* const> 二义
+int main() {
+    std::cout << A<int*>::kind << ' ' << A<const int*>::kind << '\n';  // ptr const-ptr
+}
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 58 · ★☆☆☆☆"
-// 5) 在命名空间 std 只能为用户类型特化标准模板
+#include <iostream>
+#include <functional>
+#include <unordered_set>
+struct Key { int a; int b; };
+// 用户类型：允许在命名空间 std 内特化标准模板
+template <> struct std::hash<Key> {
+    std::size_t operator()(const Key& k) const noexcept {
+        return std::hash<int>{}(k.a) ^ (std::hash<int>{}(k.b) << 1);
+    }
+};
+bool operator==(const Key& x, const Key& y) { return x.a == y.a && x.b == y.b; }
+int main() {
+    std::unordered_set<Key> s;      // 未特化 hash 时这里会编译失败
+    s.insert(Key{1, 2});
+    s.insert(Key{1, 2});
+    s.insert(Key{3, 4});
+    std::cout << s.size() << '\n';  // 2 去重生效 → 特化被真正使用
+}
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 59 · ★☆☆☆☆"
-// 6) 特化需可见（通常放头文件），否则 ODR 违规
+#include <iostream>
+template <typename T> struct Cfg { static constexpr int value = 0; };
+int use_before() { return Cfg<int>::value; }   // 此处 Cfg<int> 已被隐式实例化
+// template <> struct Cfg<int> { static constexpr int value = 1; };  // 错误：实例化之后才特化
+int main() {
+    std::cout << use_before() << '\n';  // 0 特化必须在首次实例化点之前可见（放头文件）
+}
 ```
 
 ## ⑰ FAQ
@@ -729,37 +905,71 @@ int main() {
 > **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 60 · ★☆☆☆☆"
-// Q：全特化与偏特化区别？
-// A：全特化实参完全固定（一份具体类型）；偏特化仍留参数给一类类型。
+#include <iostream>
+template <typename T> struct Trait { static constexpr int id = 0; };      // 主模板：兜底
+template <typename T> struct Trait<T*> { static constexpr int id = 1; };  // 偏特化：一族（所有指针）
+template <> struct Trait<char*> { static constexpr int id = 2; };         // 全特化：唯一（char*）
+int main() {
+    std::cout << Trait<int>::id << ' ' << Trait<double*>::id << ' ' << Trait<char*>::id << '\n';  // 0 1 2
+}
 ```
 
 > **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 61 · ★☆☆☆☆"
-// Q：为什么不能直接偏特化函数模板？
-// A：标准未提供；用重载（决议能选更特化）或类模板静态成员替代。
+#include <iostream>
+#include <type_traits>
+// 函数模板不能偏特化 → 用「类模板静态成员 + 偏特化」承载分支，函数只转发
+template <typename T> struct Which { static constexpr const char* tag = "value"; };
+template <typename T> struct Which<T*> { static constexpr const char* tag = "pointer"; };
+template <typename T> const char* which() { return Which<std::remove_cv_t<T>>::tag; }
+int main() {
+    std::cout << which<int>() << ' ' << which<int*>() << ' ' << which<const double*>() << '\n';  // value pointer pointer
+}
 ```
 
 > **示例 62** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 62 · ★☆☆☆☆"
-// Q：偏序怎么比？
-// A：用一份特化的形参去推导另一份，能单向推导者更特化。
+#include <iostream>
+// 偏序：拿 B 的实参去推 A 的参数，能单向推导成功者更特化
+template <typename T> struct Probe { static constexpr int id = 0; };             // 主模板
+template <typename T> struct Probe<T*> { static constexpr int id = 1; };         // A：T*
+template <typename T> struct Probe<const T*> { static constexpr int id = 2; };   // B：const T*
+// B 的 const U* 能推出 A 的 T*（T = const U）；反过来 A 的 U* 推不出 B 的 const T* → B 更特化
+int main() {
+    std::cout << Probe<int*>::id << ' ' << Probe<const int*>::id << '\n';  // 1 2
+}
 ```
 
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 63 · ★☆☆☆☆"
+#include <iostream>
+#include <type_traits>
 #include <vector>
-// Q：std::vector<bool> 为什么奇怪？
-// A：它是主模板的偏特化，用位压缩，operator[] 返回代理而非 bool&。
+int main() {
+    std::cout << sizeof(std::vector<bool>) << ' ' << sizeof(std::vector<char>) << '\n';  // 40 24 布局就不同
+    std::vector<bool> vb(8);
+    std::vector<char> vc(8);
+    auto proxy = vb[0];
+    std::cout << std::boolalpha
+              << std::is_same_v<decltype(proxy), bool&> << ' '
+              << std::is_same_v<decltype(vc[0]), char&> << '\n';  // false true operator[] 返回代理而非 bool&
+}
 ```
 
 > **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 64 · ★☆☆☆☆"
-// Q：特化能改成员吗？
-// A：全特化可以；偏特化也可以（它仍是独立定义）。但接口契约应保持一致。
+#include <cstddef>
+#include <iostream>
+template <typename T> struct Repo { static constexpr int slots = 4; using id_t = int; };
+template <> struct Repo<bool> { static constexpr int slots = 1; using id_t = unsigned; };  // 成员可改
+int main() {
+    std::cout << Repo<int>::slots << ' ' << Repo<bool>::slots << ' '
+              << sizeof(Repo<int>::id_t) << ' ' << sizeof(Repo<bool>::id_t) << '\n';  // 4 1 4 4
+}
 ```
 
 ## ⑱ 最佳实践
@@ -767,31 +977,85 @@ int main() {
 > **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 65 · ★☆☆☆☆"
-// 1) trait 用偏特化萃取，全特化铺叶子类型（int/long/...）
+#include <iostream>
+#include <type_traits>
+// 全特化铺叶子类型，偏特化写通用规则（剥 cv 后复用）
+template <typename T> struct is_num : std::false_type {};
+template <> struct is_num<int> : std::true_type {};
+template <> struct is_num<long> : std::true_type {};
+template <typename T> struct is_num<const T> : is_num<T> {};
+int main() {
+    std::cout << is_num<int>::value << ' ' << is_num<const int>::value << ' '
+              << is_num<double>::value << '\n';  // 1 1 0
+}
 ```
 
 > **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 66 · ★☆☆☆☆"
-// 2) 需要「改成员集」用全特化；只是「换实现」用偏特化
+#include <iostream>
+#include <vector>
+template <typename T> struct Sink { static void put(const T& v) { std::cout << "generic " << v << '\n'; } };
+// 只换实现 → 偏特化（一族类型）
+template <typename T> struct Sink<std::vector<T>> {
+    static void put(const std::vector<T>& v) { std::cout << "vector size=" << v.size() << '\n'; }
+};
+// 改成员集 → 全特化（唯一类型）
+template <> struct Sink<bool> {
+    static constexpr const char* tag = "full-spec";
+    static void put(const bool& v) { std::cout << std::boolalpha << "bool " << v << '\n'; }
+};
+int main() {
+    Sink<int>::put(3);                       // generic 3
+    Sink<std::vector<int>>::put({1, 2, 3});  // vector size=3
+    Sink<bool>::put(true);                   // bool true
+    std::cout << Sink<bool>::tag << '\n';    // full-spec 主模板没有 tag
+}
 ```
 
 > **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 67 · ★☆☆☆☆"
-// 3) 避免二义：偏特化层次保持严格更特化关系
+#include <iostream>
+template <typename, typename> struct Bi { static constexpr const char* k = "primary"; };
+template <typename T> struct Bi<T, int> { static constexpr const char* k = "second-is-int"; };
+template <typename T> struct Bi<int, T> { static constexpr const char* k = "first-is-int"; };
+// Bi<int, int> 二义：两份偏特化同样特化 → error: ambiguous partial specializations
+int main() {
+    std::cout << Bi<double, int>::k << ' ' << Bi<int, double>::k << '\n';  // second-is-int first-is-int 严格更特化才不二义
+}
 ```
 
 > **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 68 · ★☆☆☆☆"
-// 4) 命名空间 std 仅特化用户类型；其余放进自己命名空间
+#include <format>
+#include <iostream>
+struct Point { int x; int y; };
+// ✅ 用户类型：允许（也必须）在命名空间 std 内特化 std::formatter
+template <> struct std::formatter<Point> {
+    constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+    auto format(const Point& p, std::format_context& ctx) const {
+        return std::format_to(ctx.out(), "({}, {})", p.x, p.y);
+    }
+};
+int main() {
+    std::cout << std::format("p={}", Point{1, 2}) << '\n';  // p=(1, 2)
+}
 ```
 
 > **示例 69** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 69 · ★★☆☆☆"
-// 5) 用 Concepts（ch67）替代 enable_if 偏特化，可读性更好
+#include <concepts>
+#include <iostream>
+#include <string>
+template <typename T> struct Desc { static constexpr const char* k = "other"; };
+template <std::integral T> struct Desc<T> { static constexpr const char* k = "integral"; };
+template <std::floating_point T> struct Desc<T> { static constexpr const char* k = "floating"; };
+int main() {
+    std::cout << Desc<std::string>::k << ' ' << Desc<int>::k << ' ' << Desc<double>::k << '\n';  // other integral floating
+}
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
@@ -801,21 +1065,62 @@ int main() {
 > **示例 70** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 
 ```cpp title="示例 70 · ★★☆☆☆"
+#include <cstddef>
+#include <iostream>
+#include <new>
 #include <vector>
-// 特化选择纯编译期；选中后类型独立，零运行期分支
-// std::vector<bool> 偏特化以空间换时间（位压缩省内存，访问多一次位运算）
+static std::size_t g_bytes = 0;
+template <typename T> struct CountingAlloc {
+    using value_type = T;
+    CountingAlloc() = default;
+    template <typename U> CountingAlloc(const CountingAlloc<U>&) {}
+    T* allocate(std::size_t n) {
+        g_bytes += n * sizeof(T);
+        return static_cast<T*>(::operator new(n * sizeof(T)));
+    }
+    void deallocate(T* p, std::size_t) { ::operator delete(p); }
+    template <typename U> bool operator==(const CountingAlloc<U>&) const { return true; }
+};
+int main() {
+    constexpr std::size_t N = 1000000;
+    g_bytes = 0;
+    { std::vector<char, CountingAlloc<char>> v(N, 0); }
+    std::cout << "vector<char> alloc=" << g_bytes << '\n';  // vector<char> alloc=1000000
+    g_bytes = 0;
+    { std::vector<bool, CountingAlloc<bool>> v(N, false); }
+    std::cout << "vector<bool> alloc=" << g_bytes << '\n';  // vector<bool> alloc=125000 位压缩：约 1/8
+}
 ```
 
 > **示例 71** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（编译期 / 运行期）
 
 ```cpp title="示例 71 · ★☆☆☆☆"
-// 实例化成本：每份特化 = 一份类型定义；收敛方式同 ch60（extern template 不适用全特化但适用主模板）
+#include <iostream>
+template <typename T> struct Impl { static int calls; static T twice(T v) { ++calls; return v + v; } };
+template <typename T> int Impl<T>::calls = 0;
+int main() {
+    Impl<int>::twice(1);
+    Impl<int>::twice(2);
+    Impl<double>::twice(0.5);
+    std::cout << Impl<int>::calls << ' ' << Impl<double>::calls << '\n';  // 2 1 每份特化有独立静态数据/代码
+}
 ```
 
 > **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 
 ```cpp title="示例 72 · ★★☆☆☆"
-// trait 偏特化多在编译期 ::value 求值，无运行期开销
+#include <iostream>
+#include <type_traits>
+template <typename T> struct is_ptr_ : std::false_type {};
+template <typename T> struct is_ptr_<T*> : std::true_type {};
+template <typename T> constexpr int dispatch() {   // if constexpr：分支在编译期裁掉
+    if constexpr (is_ptr_<T>::value) return 1;
+    else return 0;
+}
+int main() {
+    std::cout << dispatch<int>() << ' ' << dispatch<int*>() << '\n';  // 0 1
+    static_assert(dispatch<int*>() == 1);                             // 常量求值 → 零运行期开销
+}
 ```
 
 ### ⑲.1 真实基准：特化的快路径与编译期分发（GCC 15.3.0 -O2）
