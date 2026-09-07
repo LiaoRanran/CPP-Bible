@@ -277,32 +277,32 @@ _Z4useri:
 > **示例 9** [难度 ★★★☆☆] [主题：联系：契约在标准库中的应用 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 9 · ★★★☆☆"
-// ⑪ STL 中内置的契约检查
+// ⑪ STL 契约: 窄契约(operator[]/*opt)违反即 UB; 宽契约(at()/value())给出定义行为
+// 经验: API 边界用宽契约, 内部热路径用窄契约
 #include <iostream>
-#include <vector>
-#include <cassert>
 #include <optional>
+#include <vector>
 
-// std::vector::operator[] vs at() — 隐式契约 vs 显式契约
+// 宽契约: 越界即抛 std::out_of_range（把未定义行为转成可诊断错误）
 void vector_contracts() {
     std::vector<int> v{1, 2, 3};
-    // v[100];          // 隐式契约：调用者保证索引有效 → UB if violated
-    // v.at(100);        // 显式契约：库检查 → throws std::out_of_range
+    try { (void)v.at(100); }                       // 显式检查 → 抛异常
+    catch (const std::out_of_range& e) {
+        std::cout << "at() throws: " << e.what() << "\n";
+    }
 }
 
-// std::optional::value() vs operator* — 同样的设计
 void optional_contracts() {
-    std::optional<int> opt;
-    // *opt;            // 隐式契约：调用者保证 has_value() → UB
-    // opt.value();     // 显式契约：库检查 → throws std::bad_optional_access
+    std::optional<int> opt;                        // 无值
+    try { (void)opt.value(); }                     // 显式检查 → 抛异常
+    catch (const std::bad_optional_access& e) {
+        std::cout << "value() throws: " << e.what() << "\n";
+    }
 }
 
 int main() {
     vector_contracts();
     optional_contracts();
-    std::cout << "STL contract principle: narrow contracts (operator[]) = UB on violation.\n";
-    std::cout << "Wide contracts (at(), value()) = defined error (exception/terminate).\n";
-    std::cout << "Rule of thumb: use wide contracts at API boundaries, narrow in internal hot paths.\n";
     return 0;
 }
 ```
@@ -352,26 +352,19 @@ int main() {
 > **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析：assert 和 static_assert 的编译器实现 [实现·GCC15]
 
 ```cpp title="示例 11 · ★★★☆☆"
-// ⑬ GCC 中 assert 宏和 static_assert 的实现路径
-#include <iostream>
+// ⑬ assert 宏: NDEBUG 下展开为 ((void)0) 完全剥离; 否则 __assert_fail(#expr,__FILE__,__LINE__)
+// static_assert 在 gcc/cp/decl.cc (finish_static_assert) 立即求值: 失败即 error_at 停止编译,
+// 成功则任何优化级别都不产生代码; __builtin_trap() → ud2 → SIGILL(freestanding 替代 abort)
 #include <cassert>
+#include <iostream>
 int main() {
-    std::cout << "=== assert() implementation (GCC libstdc++) ===\n\n";
-    std::cout << "Source: libstdc++-v3/include/cassert → <assert.h>\n";
-    std::cout << "Macro expansion (simplified):\n";
-    std::cout << "#ifdef NDEBUG\n";
-    std::cout << "  #define assert(expr) ((void)0)  // stripped entirely!\n";
-    std::cout << "#else\n";
-    std::cout << "  #define assert(expr) ((expr) ? (void)0 : __assert_fail(#expr,__FILE__,__LINE__))\n";
-    std::cout << "#endif\n\n";
-    std::cout << "Compiler internals:\n";
-    std::cout << "  static_assert: parsed in gcc/cp/decl.cc (finish_static_assert)\n";
-    std::cout << "  → immediate evaluation. If fails, error_at() + stop compilation.\n";
-    std::cout << "  → if succeeds, zero code emitted at any optimization level.\n\n";
-    std::cout << "  __builtin_trap(): GCC intrinsic → ud2 instruction (x86) → SIGILL\n";
-    std::cout << "  Used by __assert_fail when abort() is unavailable (freestanding).\n\n";
-    std::cout << "Bottom line: assert = O(0) in release, O(~3ns) in debug.\n";
-    std::cout << "static_assert = O(0) always. Contract checks (P2900) = configurable.\n";
+    static_assert(sizeof(int) == 4, "32-bit int required");   // 编译期:失败即编译失败
+    assert(1 + 1 == 2);                                       // 运行时:debug 生效,release 剥离
+#ifdef NDEBUG
+    std::cout << "NDEBUG=1: assert stripped, static_assert still on\n";
+#else
+    std::cout << "NDEBUG=0: assert active, static_assert always on\n";
+#endif
     return 0;
 }
 ```
@@ -381,26 +374,18 @@ int main() {
 > **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 关键提案：P2900 Contrac
 
 ```cpp title="示例 12 · ★★☆☆☆"
-// ⑭ C++26 Contracts (P2900) 的完整语义
+// ⑭ P2900R7: [[pre]]/[[post r:]]/[[assert:]] 三类契约断言
+// 违反语义: default=abort | audit=仅记录 | axiom=无运行时(供静态分析)
+// 构建模式: off(全关) / default(默认级) / audit(含审计级)
 #include <iostream>
+#include <version>
 int main() {
-    std::cout << "=== P2900R7: Contracts for C++26 ===\n\n";
-    std::cout << "Three contract assertions:\n";
-    std::cout << "  pre:  [[pre: x > 0]]           // precondition  — caller must ensure\n";
-    std::cout << "  post: [[post r: r > 0]]        // postcondition — callee must ensure\n";
-    std::cout << "  assert: [[assert: invariant]]  // invariant     — any point check\n\n";
-    std::cout << "Violation semantics (three levels):\n";
-    std::cout << "  default:  std::abort() — terminate (no recovery)\n";
-    std::cout << "  audit:    logging only — for expensive checks\n";
-    std::cout << "  axiom:    no runtime — for static analyzers only\n\n";
-    std::cout << "Usage example:\n";
-    std::cout << "int sqrt(int x) [[pre: x >= 0]] [[post r: r*r <= x && (r+1)*(r+1) > x]];\n\n";
-    std::cout << "Three build modes:\n";
-    std::cout << "  off:        no checks (like NDEBUG today)\n";
-    std::cout << "  default:    default-level checks only\n";
-    std::cout << "  audit:      all checks including audit-level\n\n";
-    std::cout << "Status: P2900R7 approved for C++26 (Feb 2024, Hagenberg meeting).\n";
-    std::cout << "Implementation: GCC/Clang targeting GCC15/Clang20 for full support.\n";
+    std::cout << "__cplusplus=" << __cplusplus << "\n";   // 202302
+#ifdef __cpp_contracts
+    std::cout << "contracts=" << __cpp_contracts << "\n";
+#else
+    std::cout << "contracts=not exposed by this build\n";  // 本构建尚未实现 P2900
+#endif
     return 0;
 }
 ```
@@ -410,26 +395,18 @@ int main() {
 > **示例 13** [难度 ★★★☆☆] [主题：面试题精选：契约 5 问 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 13 · ★★★☆☆"
-// ⑮ 契约相关的高频面试题
-#include <iostream>
+// ⑮ 面试要点: Q1 assert=运行时(NDEBUG 剥离) vs static_assert=编译期(永不剥离)
+// Q2 assert 内禁副作用(NDEBUG 下 ++i 不执行) Q3 contract=bug(终止) vs exception=外部错误(可恢复)
+// Q4 Contracts 三级检查+可继承+语言级; assert 仅开关两态且不参与重载解析
+// Q5 static_assert 只能查编译期量(类型大小/常量表达式/模板参数),查不了运行时的值
 #include <cassert>
+#include <iostream>
+static_assert(sizeof(int) == 4, "32-bit int required");   // 编译期:不成立则编译失败
 int main() {
-    std::cout << "Q1: assert vs static_assert 的区别？\n";
-    std::cout << "答: assert = 运行时检查（NDEBUG 时消除）；static_assert = 编译期检查（永不被消除）。\n";
-    std::cout << "   static_assert(sizeof(int) == 4, \"32-bit int required\"); // 编译期\n";
-    std::cout << "   assert(ptr != nullptr);                                   // 运行时\n\n";
-    std::cout << "Q2: 为什么 assert 中不能有副作用？\n";
-    std::cout << "答: NDEBUG 版本中 assert 展开为 ((void)0)，副作用被完全移除。\n";
-    std::cout << "   错误写法: assert(++i < 10) → 发布版 i 不会递增！\n\n";
-    std::cout << "Q3: Contract 和 exception 何时用哪个？\n";
-    std::cout << "答: Contract = 程序员的 bug（不可恢复，终止）; Exception = 外部错误（可恢复）。\n";
-    std::cout << "    sqrt(-1) = contract violation (调用者逻辑错误)\n";
-    std::cout << "    fopen(\"nonexistent\") = exception (文件不存在是外部因素)\n\n";
-    std::cout << "Q4: C++26 Contracts 和 assert 有何不同？\n";
-    std::cout << "答: Contracts 有三级检查(default/audit/axiom)、继承（虚函数）、更精确(pre/post)。\n";
-    std::cout << "   assert 只有开/关两态，且不参与重载解析。Contracts 是语言级，不是宏。\n\n";
-    std::cout << "Q5: static_assert 能检查什么？不能检查什么？\n";
-    std::cout << "答: 能：类型大小、常量表达式、模板参数。不能：运行时的值、函数参数的值。\n";
+    int i = 0;
+    ++i;                      // 副作用必须放在 assert 之外,否则 NDEBUG 下被整体剥离
+    assert(i == 1);           // 运行时检查
+    std::cout << "i=" << i << " sizeof(int)=" << sizeof(int) << "\n";
     return 0;
 }
 ```
@@ -439,30 +416,23 @@ int main() {
 > **示例 14** [难度 ★★★★★] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 14 · ★★★★★"
-// ⑯ assert/contract 的 5 大陷阱
-#include <iostream>
+// ⑯ 五大陷阱: 1) assert 内禁副作用(NDEBUG 下被剥离) 2) 析构函数中的 assert 抛异常 → terminate
+// 3) 编译期用 static_assert、运行时用 assert，勿混用
+// 4) assert 只表达 bug，不能替代错误处理(用异常/错误码) 5) 头文件包含 <cassert> 会污染使用方 NDEBUG
 #include <cassert>
+#include <iostream>
 
 int g_counter = 0;
 int increment_and_check() {
-    // 陷阱1: assert 内包含副作用
-    // assert(++g_counter < 100);  // 错误！NDEBUG 版本中 g_counter 不递增！
-    ++g_counter;
-    assert(g_counter < 100);        // 正确：副作用在 assert 之外
+    ++g_counter;                  // 陷阱1: 副作用必须在 assert 之外
+    assert(g_counter < 100);      // NDEBUG 下整句消失，但 ++g_counter 仍然执行
     return g_counter;
 }
 
-// 陷阱2: 在析构函数中使用可能抛异常的 assert
-// 陷阱3: 混淆编译期和运行时契约
-// 陷阱4: 过度依赖 assert 替代错误处理
-// 陷阱5: 在头文件中使用 assert（NDEBUG 状态由包含方决定，不一致）
-
 int main() {
-    std::cout << "Trap 1: No side effects inside assert() → stripped in release.\n";
-    std::cout << "Trap 2: assert in destructors → terminate if throws (double exception).\n";
-    std::cout << "Trap 3: static_assert for compile-time, assert for runtime. Don''t mix.\n";
-    std::cout << "Trap 4: assert is for bugs, NOT for handling user errors (use exceptions/error codes).\n";
-    std::cout << "Trap 5: Header files that include <cassert> affect client''s NDEBUG state.\n";
+    int a = increment_and_check();
+    int b = increment_and_check();
+    std::cout << "a=" << a << " b=" << b << "\n";   // 1 2（计数在 release 下同样递增）
     return 0;
 }
 ```
@@ -624,11 +594,19 @@ int main() {
 > **示例 18** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 18 · ★☆☆☆☆"
-// ⑩-a Eiffel 风格的 DbC 模拟
+// ⑩-a Eiffel DbC: require(前置)/ensure(后置) → C++ 用 assert 前后夹
+// Java 的 @Contract 仅静态分析,无运行时检查
+#include <cassert>
+#include <cmath>
 #include <iostream>
+double dbc_sqrt(double x) {
+    assert(x >= 0.0);                            // require
+    double r = std::sqrt(x);
+    assert(std::fabs(r * r - x) < 1e-9);         // ensure
+    return r;
+}
 int main() {
-    std::cout << "Eiffel's require/ensure mapped to C++ assert macros.\n";
-    std::cout << "Java uses @Contract annotations (static analysis), no runtime.\n";
+    std::cout << "dbc_sqrt(9)=" << dbc_sqrt(9.0) << "\n";   // 3
     return 0;
 }
 ```
@@ -725,12 +703,18 @@ int main() { Base* b = new Derived; std::cout << b->scale(5) << std::endl; delet
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 
 ```cpp title="示例 25 · ★☆☆☆☆"
-// 补-G 契约的不可恢复性——违反即 abort（不是异常）
-#include <cassert>
+// 补-G 契约违反=不可恢复(terminate/abort); 异常=可恢复(外部错误)
+// 区分标准: 调用方的逻辑错误用契约, 环境导致的失败用可恢复返回值
 #include <iostream>
+#include <optional>
+std::optional<int> find_even(const int* a, int n) {   // 可恢复: 找不到即 nullopt
+    for (int i = 0; i < n; ++i) if (a[i] % 2 == 0) return a[i];
+    return std::nullopt;
+}
 int main() {
-    std::cout << "Contract violations are NOT exceptions — they abort.\n";
-    std::cout << "Use exceptions for recoverable errors, contracts for bugs.\n";
+    int a[]{1, 3, 5};
+    auto r = find_even(a, 3);
+    std::cout << "found=" << r.has_value() << "\n";   // 0（无偶数属环境结果,非 bug）
     return 0;
 }
 ```
@@ -868,12 +852,15 @@ int main() { std::cout << safe_div(10.0, 3.0) << std::endl; return 0; }
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充完整可编译示例
 
 ```cpp title="示例 35 · ★☆☆☆☆"
-// 补-Q contract violation 的不可恢复性——选择 abort 而非异常
+// 补-Q 契约违反直接 abort(不可被 catch); 运行期错误才用异常(可被 catch)
 #include <iostream>
-#include <cstdlib>
+#include <stdexcept>
 int main() {
-    std::cout << "Contracts abort on violation — NOT exception-throwing.\n";
-    std::cout << "This is by design: contracts catch programmer bugs, not runtime errors.\n";
+    try {
+        throw std::runtime_error("recoverable: file not found");   // 可恢复 → 异常
+    } catch (const std::exception& e) {
+        std::cout << "caught=" << e.what() << "\n";                // 可被捕获处理
+    }
     return 0;
 }
 ```
