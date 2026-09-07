@@ -269,6 +269,7 @@ template <typename... Ts> auto j(Ts... ts) { ( (std::cout << ts), ... ); } // �
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 17 · ★★☆☆☆"
+#include <algorithm>
 template <typename... Ts> auto k(Ts... ts) { return (std::max({ts...})); } // 折叠 + 初始化列表
 ```
 
@@ -307,8 +308,16 @@ template <typename... Ts> auto t_mul(Ts... ts) { return (1 * ... * ts); }  // �
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 23 · ★★☆☆☆"
-// 错误：一元 + 空包
-// template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }  // 空包 ill-formed
+#include <iostream>
+// 一元折叠空包：仅 && (true) / || (false) / 逗号 (void()) 有恒等元，其余 ill-formed
+// requires 表达式能把「空包非法」变成可诊断的编译期分支（GCC 15.3.0 实测有效）
+template <typename... Ts> auto safe_sum(Ts... ts) {
+    if constexpr (requires { (... + ts); }) return (... + ts);   // 非空包：一元折叠
+    else return 0;                                               // 空包：替换失败 → 退回恒等元
+}
+int main() {
+    std::cout << safe_sum(1, 2, 3) << ' ' << safe_sum() << '\n';  // 6 0
+}
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -392,7 +401,15 @@ template <typename... Ts> bool in_range(Ts... ts) { return (... && (ts < 100)); 
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 35 · ★☆☆☆☆"
-// 短路在 && 中：首 false 后续 fold 项不实例化求值（运行期）
+#include <iostream>
+static int g_evals = 0;
+struct Probe { bool v; bool get() const { ++g_evals; return v; } };
+template <typename... Ps> bool all_ok(Ps... ps) { return (... && ps.get()); }   // && 折叠：短路
+int main() {
+    std::cout << std::boolalpha << all_ok(Probe{true}, Probe{false}, Probe{true}) << " evals=" << g_evals << '\n';  // false evals=2 首 false 即停
+    g_evals = 0;
+    std::cout << all_ok(Probe{true}, Probe{true}, Probe{true}) << " evals=" << g_evals << '\n';  // true evals=3 全真才求值 3 次
+}
 ```
 
 > **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -405,6 +422,7 @@ static_assert((false && true) == false);  // 编译期即 false（短路：首 f
 > **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 37 · ★★☆☆☆"
+#include <type_traits>
 // 折叠 + 短路做「全部满足」断言
 template <typename... Ts> constexpr bool all_ptr(Ts... ts) { return (... && std::is_pointer_v<Ts>); }
 ```
@@ -450,37 +468,90 @@ template <typename T, typename... R> void rprint(T f, R... r){ std::cout<<f; rpr
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 42 · ★☆☆☆☆"
-// 折叠免基线、免多份实例化（递归需 N+1 份）
+#include <iostream>
+// 递归版：基线 + 递归步，两份定义
+template <typename T> T sum_rec(T x) { return x; }
+template <typename T, typename... R> auto sum_rec(T x, R... r) { return x + sum_rec(r...); }
+// 折叠版：一个函数，初值天然兜住空包
+template <typename... Ts> auto sum_fold(Ts... ts) { return (0 + ... + ts); }
+int main() {
+    std::cout << sum_rec(1, 2, 3, 4) << ' ' << sum_fold(1, 2, 3, 4) << '\n';  // 10 10
+    std::cout << sum_fold() << '\n';  // 0 空包也有值；sum_rec() 无基线 → 编译失败
+}
 ```
 
 > **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 43 · ★☆☆☆☆"
-// 性能：折叠通常单函数 + 加法链；递归 N+1 个函数体
+#include <iostream>
+#include <utility>
+template <int N> struct Depth { static constexpr int value = Depth<N - 1>::value + 1; };
+template <> struct Depth<0> { static constexpr int value = 0; };
+template <std::size_t... I> constexpr long fold_sum(std::index_sequence<I...>) { return (0L + ... + long(I)); }
+int main() {
+    std::cout << Depth<400>::value << ' ' << fold_sum(std::make_index_sequence<1000>{}) << '\n';  // 400 499500 折叠不受实例化深度约束
+    // Depth<1000> / 递归求和 1000 项：error: template instantiation depth exceeds maximum of 900
+}
 ```
 
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 44 · ★☆☆☆☆"
-// 可读性：折叠一行 vs 递归两函数
+#include <iostream>
+// 递归版：基线 + 递归步两份样板
+template <typename... Ts> constexpr bool all_true_rec() { return true; }
+template <typename T, typename... R> constexpr bool all_true_rec(T f, R... r) { return bool(f) && all_true_rec(r...); }
+// 折叠版：一个 shape，换运算符即换语义
+template <typename... Ts> constexpr bool all_true(Ts... ts) { return (true && ... && ts); }
+template <typename... Ts> constexpr bool any_true(Ts... ts) { return (false || ... || ts); }
+int main() {
+    std::cout << std::boolalpha << all_true_rec(true, 1, 'x') << ' ' << all_true(true, 1, 'x') << '\n';  // true true
+    std::cout << all_true(true, 1, 0) << ' ' << any_true(false, 0, 'a') << '\n';  // false true 同一 shape 的两种语义
+}
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 45 · ★☆☆☆☆"
-// 二义：二者不可混用同名的危险（决议选更匹配）
+#include <iostream>
+template <typename T> T sum(T x) { return x; }
+template <typename T, typename... R> auto sum(T x, R... r) { return x + sum(r...); }   // 递归版
+// template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }  // 错误：与上面二义（call of overloaded 'sum(...)' is ambiguous）
+template <typename... Ts> auto sum_f(Ts... ts) { return (0 + ... + ts); }              // 折叠版改名共存
+int main() {
+    std::cout << sum(1, 2, 3) << ' ' << sum_f(1, 2, 3) << '\n';  // 6 6
+}
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 46 · ★★☆☆☆"
-// 编译期：折叠与递归在 constexpr 下都折叠为常量
+#include <array>
+#include <iostream>
+template <typename... Ts> constexpr int fold_sum(Ts... ts) { return (0 + ... + ts); }
+template <typename T> constexpr int rec_sum(T x) { return x; }
+template <typename T, typename... R> constexpr int rec_sum(T x, R... r) { return x + rec_sum(r...); }
+int main() {
+    std::array<int, fold_sum(1, 2, 3)> a{};   // 折叠版常量作模板实参
+    std::array<int, rec_sum(1, 2, 3)> b{};    // 递归版同样常量折叠
+    std::cout << a.size() << ' ' << b.size() << '\n';  // 6 6
+    static_assert(fold_sum(1, 2, 3) == rec_sum(1, 2, 3));
+}
 ```
 
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 47 · ★☆☆☆☆"
-// 推荐：新代码一律折叠，递归仅用于 C++14 兼容或需要「中间状态」的复杂逻辑
+#include <iostream>
+#if defined(__cpp_fold_expressions)
+template <typename... Ts> auto total(Ts... ts) { return (0 + ... + ts); }   // C++17+：折叠
+#else
+template <typename T> auto total(T x) { return x; }                          // C++14 回退：递归
+template <typename T, typename... R> auto total(T x, R... r) { return x + total(r...); }
+#endif
+int main() {
+    std::cout << total(1, 2, 3, 4) << " __cplusplus=" << __cplusplus << '\n';  // 10 __cplusplus=202302
+}
 ```
 
 **B5 错误与正确对照 <span class="badge badge-exp">经验</span>**
@@ -497,14 +568,30 @@ template <typename... Ts> auto ok(Ts... ts) { return (0 + ... + ts); }
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 49 · ★★☆☆☆"
-// 错误：折叠非二元运算符
-// template <typename... Ts> auto bad(Ts... ts) { return (... = ts); }  // = 不可折叠（需二元左值）
+#include <iostream>
+struct S { int m; };
+// 可折叠运算符是标准列出的那张二元运算符表；`.` `->` `[]` `()` 不在表内
+// template <typename... Ts> auto bad(Ts... ts) { return (... .m); }   // 错误：expected binary operator before '.' token
+// ⚠️ `=` 其实在表内（GCC 15.3.0 实测可编译），但它是右结合赋值链，可读性极差，别用
+template <typename... Ts> auto& assign_chain(Ts&... ts) { return (... = ts); }
+int main() {
+    int a = 1, b = 2, c = 3;
+    assign_chain(a, b, c);                       // ((a = b) = c)：a 先被赋 2，再被赋 3
+    std::cout << a << ' ' << b << ' ' << c << '\n';  // 3 2 3
+}
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 50 · ★☆☆☆☆"
-// 错误：在 C++14 用折叠（需 C++17）
+#include <iostream>
+#if __cplusplus < 201703L
+#error "fold expressions require C++17 or later"
+#endif
+template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }
+int main() {
+    std::cout << "__cplusplus=" << __cplusplus << " sum=" << sum(1, 2, 3) << '\n';  // __cplusplus=202302 sum=6
+}
 ```
 
 > **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识点深挖（模板B）
@@ -517,7 +604,16 @@ template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 知识点深挖（模板B）
 
 ```cpp title="示例 52 · ★☆☆☆☆"
-// 错误：误以为折叠会遍历「引用」修改原值——折叠求值不改原包
+#include <iostream>
+template <typename... Ts> void bump_copy(Ts... ts) { ((ts = ts + 1), ...); }   // 按值：改的是副本
+template <typename... Ts> void bump_ref(Ts&... ts) { ((ts = ts + 1), ...); }   // 按引用：改原值
+int main() {
+    int a = 1, b = 2;
+    bump_copy(a, b);
+    std::cout << a << ' ' << b << '\n';  // 1 2 折叠只是求值，不是「遍历引用」
+    bump_ref(a, b);
+    std::cout << a << ' ' << b << '\n';  // 2 3 只有引用包才能写回
+}
 ```
 
 ## ⑪ STL 中的该模式
@@ -589,32 +685,85 @@ int main() {
 > **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 55 · ★☆☆☆☆"
-// 反模式1：能用折叠却用递归，实例化多、代码长
+#include <iostream>
+// 反模式：从 sum 复制粘贴成 product，空包基线忘了从 0 改成 1
+int prod_rec() { return 0; }
+template <typename T, typename... R> auto prod_rec(T x, R... r) { return x * prod_rec(r...); }
+// 正解：折叠把「初值」与「运算符」绑在一处，改一处即可
+template <typename... Ts> auto prod(Ts... ts) { return (1 * ... * ts); }
+int main() {
+    std::cout << prod_rec(2, 3, 4) << ' ' << prod(2, 3, 4) << '\n';  // 0 24 递归基线漏改 → 24 变 0
+}
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 56 · ★☆☆☆☆"
-// 反模式2：一元折叠 + 不可空运算符 + 可能空包 → 编译失败
-// 改二元折叠带初值
+#include <iostream>
+#include <string>
+// 反模式：可能零实参却用一元折叠
+// template <typename... Ts> std::string join(Ts... ts) { return (... + ts); }   // 错误：空包无恒等元
+template <typename... Ts> std::string join(Ts... ts) { return (std::string{} + ... + ts); }
+int main() {
+    std::cout << '[' << join() << ']' << '[' << join("a", "b") << "]\n";  // [][ab] 空包退化为初值
+}
 ```
 
 > **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 57 · ★☆☆☆☆"
-// 反模式3：在折叠里放有副作用且依赖短路的表达式，可读性差、易错
+#include <iostream>
+static int g = 0;
+template <typename... Fs> bool all_and(Fs... fs) { return (... && fs()); }   // && 有短路
+template <typename... Fs> bool all_bit(Fs... fs) { return (... & fs()); }    // & 无短路
+int main() {
+    auto t = [] { ++g; return true; };
+    auto f = [] { ++g; return false; };
+    g = 0;
+    std::cout << all_and(t, f, t) << " calls=" << g << '\n';  // 0 calls=2 && 遇到 false 就停，副作用次数不确定
+    g = 0;
+    std::cout << all_bit(t, f, t) << " calls=" << g << '\n';  // 0 calls=3 & 全部求值，次数确定
+}
 ```
 
 > **示例 58** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 58 · ★☆☆☆☆"
-// 反模式4：逗号折叠忘 (void) 转换，旧编译器告警
+#include <iostream>
+struct Noisy { int v; };
+void operator,(const Noisy&, const Noisy&) { std::cout << "[hijacked,]\n"; }   // 危险：重载了逗号
+template <typename... Ts> void bad(Ts... ts) { (ts, ...); }         // 反模式：会被自定义 operator, 劫持
+template <typename... Ts> void good(Ts... ts) { ((void)ts, ...); }  // 正解：先转 void，杜绝重载参与
+int main() {
+    std::cout << "bad:\n";                   // bad:
+    bad(Noisy{1}, Noisy{2}, Noisy{3});       // [hijacked,] 折叠调用了自定义 operator,
+    std::cout << "good:\n";                  // good:
+    good(Noisy{1}, Noisy{2}, Noisy{3});      // (void) 之后：无输出
+    std::cout << "end\n";                    // end
+}
 ```
 
 > **示例 59** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 59 · ★★☆☆☆"
-// 反模式5：用折叠替代需要「早退返回」的复杂逻辑——此时 if constexpr 更合适
+#include <iostream>
+static int g_steps = 0;
+template <typename... Ts> int first_even_fold(Ts... ts) {   // 反模式：折叠无法早退
+    int found = -1;
+    ( ((void)(++g_steps), (ts % 2 == 0 && found < 0) ? (void)(found = ts) : (void)0), ... );
+    return found;
+}
+template <typename... Ts> int first_even_loop(Ts... ts) {   // 正解：需要早退就用循环 / if constexpr
+    const int a[] = {ts...};
+    for (int v : a) { ++g_steps; if (v % 2 == 0) return v; }
+    return -1;
+}
+int main() {
+    g_steps = 0;
+    std::cout << first_even_fold(1, 3, 5, 8, 9) << " steps=" << g_steps << '\n';  // 8 steps=5 折叠走完全部 5 个
+    g_steps = 0;
+    std::cout << first_even_loop(1, 3, 5, 8, 9) << " steps=" << g_steps << '\n';   // 8 steps=4 循环早退，4 步就返回
+}
 ```
 
 ## ⑭ 工业案例
@@ -678,37 +827,82 @@ int main() {
 > **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点
 
 ```cpp title="示例 62 · ★★☆☆☆"
-// 1) 一元折叠空包除 &&/||/逗号 外非法 → 加初值
+#include <iostream>
+template <typename... Ts> constexpr bool and_all(Ts... ts) { return (... && ts); }  // 空包 => true
+template <typename... Ts> constexpr bool or_all(Ts... ts) { return (... || ts); }   // 空包 => false
+template <typename... Ts> void each(Ts... ts) { ((void)ts, ...); }                  // 空包 => void()
+template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }             // 空包 => 初值
+// template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }   // 错误：+ 无恒等元，空包 ill-formed
+int main() {
+    std::cout << std::boolalpha << and_all() << ' ' << or_all() << ' ' << sum() << '\n';  // true false 0
+    each();                                                                               // 空包合法，什么都不做
+}
 ```
 
 > **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 63 · ★☆☆☆☆"
-// 2) 折叠只接受「二元运算符」，= 等不可
+#include <iostream>
+template <typename... Ts> auto f_plus(Ts... ts) { return (0 + ... + ts); }
+template <typename... Ts> auto f_shl(Ts... ts) { return (1 << ... << ts); }   // 位运算也在可折叠表内
+template <typename... Ts> bool f_eq(Ts... ts) { return (... == ts); }         // ⚠️ 链式比较陷阱
+int main() {
+    std::cout << f_plus(1, 2, 3) << ' ' << f_shl(1, 2) << ' '
+              << std::boolalpha << f_eq(5, 5, 5) << ' ' << f_eq(5, 5, 1) << '\n';  // 6 8 false true (5==5)==1 → true，数学上却是假
+}
 ```
 
 > **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 64 · ★☆☆☆☆"
-// 3) 仅 C++17 起可用
+#include <iostream>
+#ifndef __cpp_fold_expressions
+#error "fold expressions unavailable: need C++17 (__cpp_fold_expressions)"
+#endif
+static_assert(__cpp_fold_expressions >= 201603L);
+template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }
+int main() {
+    std::cout << "__cpp_fold_expressions=" << __cpp_fold_expressions << " sum=" << sum(1, 2, 3) << '\n';  // __cpp_fold_expressions=201603 sum=6
+}
 ```
 
 > **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 65 · ★☆☆☆☆"
-// 4) 折叠不修改原包，是求值不是遍历
+#include <iostream>
+template <typename... Ts> auto left_sub(Ts... ts) { return (... - ts); }   // 左折叠：((10-3)-2)
+template <typename... Ts> auto right_sub(Ts... ts) { return (ts - ...); }  // 右折叠：(10-(3-2))
+int main() {
+    std::cout << left_sub(10, 3, 2) << ' ' << right_sub(10, 3, 2) << '\n';  // 5 9 结合方向不同，结果不同
+}
 ```
 
 > **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 66 · ★☆☆☆☆"
-// 5) 逗号折叠在老 MSVC 需 (void)
+#include <iostream>
+template <typename... Ts> int print_count(Ts... ts) {
+    return (0 + ... + ((std::cout << ts << ';'), 1));   // 逗号折叠返回 void；要计数就配一个二元 +
+}
+int main() {
+    int n = print_count(1, 2, 3);              // 1;2;3;
+    std::cout << "\ncount=" << n << '\n';      // count=3
+}
 ```
 
 > **示例 67** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点
 
 ```cpp title="示例 67 · ★☆☆☆☆"
-// 6) 结果类型由初值/运算符决定，注意提升
+#include <iostream>
+#include <type_traits>
+template <typename... Ts> auto sum_int(Ts... ts) { return (0 + ... + ts); }
+template <typename... Ts> auto sum_dbl(Ts... ts) { return (0.0 + ... + ts); }
+int main() {
+    char c1 = 100, c2 = 100;
+    std::cout << sizeof(sum_int(c1, c2)) << ' ' << sum_int(c1, c2) << '\n';    // 4 200 char 先整型提升 → 4 字节、200 不溢出
+    std::cout << sizeof(sum_dbl(1, 2, 3)) << ' ' << sum_dbl(1, 2, 3) << '\n';  // 8 6 初值决定结果类型
+    static_assert(std::is_same_v<decltype(sum_int(c1, c2)), int>);
+}
 ```
 
 ## ⑰ FAQ
@@ -716,36 +910,63 @@ int main() {
 > **示例 68** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 68 · ★☆☆☆☆"
-// Q：一元 vs 二元折叠选哪个？
-// A：可能空包就用二元（带初值），否则一元更简洁。
+#include <iostream>
+template <typename... Ts> auto left_sum(Ts... ts) { return (... + ts); }    // 一元左
+template <typename... Ts> auto right_sum(Ts... ts) { return (ts + ...); }   // 一元右
+template <typename... Ts> auto bi_sum(Ts... ts) { return (0 + ... + ts); }  // 二元左（带初值）
+int main() {
+    std::cout << left_sum(1, 2, 3) << ' ' << right_sum(1, 2, 3) << ' '
+              << bi_sum(1, 2, 3) << ' ' << bi_sum() << '\n';  // 6 6 6 0 可能空包就一律二元
+}
 ```
 
 > **示例 69** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 69 · ★☆☆☆☆"
-// Q：折叠有短路吗？
-// A：&&/|| 折叠保留短路语义。
+#include <iostream>
+template <typename... Ts> constexpr bool safe_div(Ts... ts) { return (... && (ts != 0 && 100 / ts > 1)); }
+int main() {
+    std::cout << std::boolalpha << safe_div(5, 0, 3) << '\n';  // false && 折叠确实短路：0 不参与除法，无 UB
+}
 ```
 
 > **示例 70** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 70 · ★☆☆☆☆"
-// Q：空包 && 为什么是 true？
-// A：逻辑与的恒等式：无操作数视为「真」（同 std::conjunction 空包为 true）。
+#include <iostream>
+#include <type_traits>
+template <typename... Ts> constexpr bool and_all(Ts... ts) { return (... && ts); }
+template <typename... Ts> constexpr bool or_all(Ts... ts) { return (... || ts); }
+int main() {
+    std::cout << std::boolalpha << and_all() << ' ' << or_all() << ' '
+              << std::conjunction<>::value << ' ' << std::disjunction<>::value << '\n';  // true false true false 与 std 的合取/析取空包一致
+    static_assert(and_all() && !or_all());
+}
 ```
 
 > **示例 71** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 71 · ★☆☆☆☆"
-// Q：折叠能替代所有递归吗？
-// A：纯归约可以；需要「携带状态/早退/复杂控制流」的递归仍需保留。
+#include <iostream>
+#include <utility>
+// 值级归约 → 折叠能替代递归；但「包从哪来」仍是递归/编译器内建的活
+template <std::size_t... I> int sum_idx(std::index_sequence<I...>) { return (0 + ... + int(I)); }
+int main() {
+    std::cout << sum_idx(std::make_index_sequence<5>{}) << '\n';  // 10 消费包用折叠，生产包靠 make_index_sequence
+}
 ```
 
 > **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · FAQ 问答
 
 ```cpp title="示例 72 · ★★☆☆☆"
-// Q：折叠性能如何？
-// A：编译期展开，常折叠为常量或加法链，优于递归实例化。
+#include <iostream>
+#include <utility>
+template <std::size_t... I> constexpr long fold_sum(std::index_sequence<I...>) { return (0L + ... + long(I)); }
+int main() {
+    constexpr long v = fold_sum(std::make_index_sequence<1000>{});
+    std::cout << v << '\n';  // 499500 1000 项在编译期算完，运行期只读一个常量
+    static_assert(v == 499500);
+}
 ```
 
 ## ⑱ 最佳实践
@@ -753,31 +974,67 @@ int main() {
 > **示例 73** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 73 · ★☆☆☆☆"
-// 1) 归约一律折叠，递归仅 C++14 兼容场景保留
+#include <iostream>
+template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }
+template <typename... Ts> auto prod(Ts... ts) { return (1 * ... * ts); }
+template <typename... Ts> bool all_true(Ts... ts) { return (true && ... && ts); }
+template <typename... Ts> bool any_true(Ts... ts) { return (false || ... || ts); }
+int main() {
+    std::cout << sum(1, 2, 3, 4) << ' ' << prod(1, 2, 3, 4) << ' '
+              << std::boolalpha << all_true(true, 1, 'x') << ' ' << any_true(false, 0, 'a') << '\n';  // 10 24 true true
+}
 ```
 
 > **示例 74** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 74 · ★☆☆☆☆"
-// 2) 可能空包用二元折叠带初值
+#include <iostream>
+#include <string>
+template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }               // 加法恒等元 0
+template <typename... Ts> auto prod(Ts... ts) { return (1 * ... * ts); }              // 乘法恒等元 1
+template <typename... Ts> auto join(Ts... ts) { return (std::string{} + ... + ts); }  // 串接恒等元 ""
+int main() {
+    std::cout << sum() << ' ' << prod() << " [" << join() << "]\n";  // 0 1 [] 初值 = 该运算的恒等元
+}
 ```
 
 > **示例 75** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 75 · ★☆☆☆☆"
-// 3) 逻辑判断用 && / || 折叠，天然短路
+#include <iostream>
+template <typename... Ps> bool all_positive(Ps... ps) { return (... && (ps != nullptr && *ps > 0)); }
+int main() {
+    int a = 1;
+    int* nul = nullptr;
+    std::cout << std::boolalpha << all_positive(&a, nul) << '\n';  // false 短路让空指针不会被解引用
+}
 ```
 
 > **示例 76** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 76 · ★☆☆☆☆"
-// 4) 需要 void 转换的逗号折叠加 (void)
+#include <iostream>
+template <typename... Ts> void emit(Ts... ts) {
+    ((void)(std::cout << ts << ';'), ...);   // ✅ 每个元素先转 void，再进逗号折叠
+}
+int main() {
+    emit(1, 2, 3);          // 1;2;3;
+    std::cout << '\n';      // 收尾换行
+}
 ```
 
 > **示例 77** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 77 · ★☆☆☆☆"
-// 5) traits 组合用折叠最简洁（all_integral 等）
+#include <iostream>
+#include <type_traits>
+template <typename... Ts> constexpr bool all_integral = (std::is_integral_v<Ts> && ...);
+template <typename... Ts> constexpr bool any_pointer = (std::is_pointer_v<Ts> || ...);
+int main() {
+    std::cout << std::boolalpha << all_integral<int, long, char> << ' ' << all_integral<int, double> << ' '
+              << any_pointer<int, char*> << '\n';  // true false true
+    static_assert(all_integral<int, long, char> && !all_integral<int, double>);
+}
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
@@ -788,15 +1045,32 @@ int main() {
 > **示例 78** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能（编译期 / 运行期）
 
 ```cpp title="示例 78 · ★★★☆☆"
-// 折叠完全编译期展开；(0+...+ts) 在 -O2 成单加法链或常量
-// use_fold 实测退化为 mov eax,39（见⑩），零运行期计算
-// 相比递归：单函数体 + 无 N+1 实例化，编译更快、体积更小
+#include <iostream>
+#include <utility>
+template <std::size_t... I> constexpr long fold_sum(std::index_sequence<I...>) { return (0L + ... + long(I)); }
+int main() {
+    constexpr long v = fold_sum(std::make_index_sequence<1000>{});
+    std::cout << v << ' ' << __builtin_constant_p(v) << '\n';  // 499500 1 GCC 认为它是编译期常量 → 零运行期计算
+}
 ```
 
 > **示例 79** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（编译期 / 运行期）
 
 ```cpp title="示例 79 · ★☆☆☆☆"
-// 代价：展开后加法链长度 = 包大小，巨型包可能指令较长（但通常仍内联优化）
+#include <iostream>
+#include <utility>
+template <std::size_t... I> constexpr long fold_sum(std::index_sequence<I...>) { return (0L + ... + long(I)); }
+constexpr long loop_sum(int n) {   // C++20 起 constexpr 函数里可以写循环
+    long s = 0;
+    for (int i = 0; i < n; ++i) s += i;
+    return s;
+}
+int main() {
+    constexpr long a = fold_sum(std::make_index_sequence<2000>{});
+    constexpr long b = loop_sum(2000);
+    std::cout << a << ' ' << b << '\n';  // 1999000 1999000 巨型包：结果与 constexpr 循环相同，后者不复制 N 份表达式
+    static_assert(a == b);
+}
 ```
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
