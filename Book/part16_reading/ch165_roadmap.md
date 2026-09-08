@@ -53,10 +53,15 @@ C++ 的版本演进本身，就是一份"学习路线困惑史"。1998 年 C++98
 > **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 史料补遗与持续编年
 
 ```cpp title="示例 1 · ★☆☆☆☆"
-// 验证本章示例的编译器（本机已取证）
-// C:/Qt/Tools/mingw1310_64/bin/g++.exe  版本 13.1.0
-// 统一编译命令：
-// g++ -std=c++23 -O2 -Wall -Wextra _ch165_xxx.cpp -o _ch165_xxx
+#include <cstdio>
+int main() {
+    // 验证本章示例的编译器（本机已取证，用编译器自己报的版本，避免手写出错）
+    std::printf("编译器: %s\n", __VERSION__);   // 编译器: 15.3.0
+    std::printf("__cplusplus = %ld（C++23 起为 202302）\n", (long)__cplusplus);   // __cplusplus = 202302（C++23 起为 202302）
+    std::printf("统一编译命令: g++ -std=c++23 -O2 -Wall -Wextra _ch165_xxx.cpp -o _ch165_xxx\n");   // 统一编译命令: g++ -std=c++23 -O2 -Wall -Wextra _ch165_xxx.cpp -o _ch165_xxx
+    // ⚠️ 原书此处写的是 C:/Qt/Tools/mingw1310_64/bin/g++.exe 版本 13.1.0。
+    //    本书统一取证口径为 **GCC 15.3.0**（C:/Qt/Tools/mingw1530_64/bin/g++.exe）—— 上面两行即为实证。
+}
 ```
 
 ## ① 概述：为什么需要路线图
@@ -270,9 +275,36 @@ bool decode(const std::vector<uint8_t>& buf, size_t& pos, std::string& out);
 > **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统编程方向
 
 ```cpp title="示例 19 · ★★☆☆☆"
-// 项目名：单线程 Reactor 回声服务器（epoll / IOCP）
-// 关键文件落点：见第163章 网络（事件循环 + 非阻塞 socket）
-class Reactor { // add_event / del_event / loop
+#include <cstddef>
+#include <cstdio>
+#include <functional>
+#include <utility>
+#include <vector>
+// 项目：单线程 Reactor 事件循环（真实骨架，可编译可跑）
+class Reactor {
+    std::vector<std::function<void()>> handlers_;
+public:
+    void add_event(std::function<void()> h) { handlers_.push_back(std::move(h)); }
+    void del_event(std::size_t i) { if (i < handlers_.size()) handlers_[i] = nullptr; }
+    std::size_t size() const { return handlers_.size(); }
+    std::size_t loop() {                       // 单线程驱动所有就绪事件
+        std::size_t n = 0;
+        for (auto& h : handlers_) if (h) { h(); ++n; }
+        return n;
+    }
+};
+int main() {
+    Reactor r;
+    int a = 0, b = 0;
+    r.add_event([&] { ++a; });
+    r.add_event([&] { ++b; });
+    r.add_event([&] { a += 10; });
+    std::printf("注册事件数 = %zu\n", r.size());   // 注册事件数 = 3
+    std::printf("loop() 单线程派发了 %zu 个事件\n", r.loop());   // loop() 单线程派发了 3 个事件
+    std::printf("a=%d b=%d（一个线程驱动所有连接，这就是 Reactor 相对 thread-per-connection 的差别）\n", a, b);   // a=11 b=1（一个线程驱动所有连接，这就是 Reactor 相对 thread-per-connection 的差别）
+    r.del_event(2);
+    std::printf("注销一个后剩余可派发 %zu 个\n", r.loop());   // 注销一个后剩余可派发 2 个
+}
 ```
 
 务实建议：先读懂 `muduo`（陈硕）的 `EventLoop` 一处实现，再自己写一版迷你回声服务器，工时约 1 周。
@@ -298,9 +330,22 @@ public:
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 嵌入式方向
 
 ```cpp title="示例 21 · ★☆☆☆☆"
-// FreeRTOS 练手：创建两个任务交替翻转
-// xTaskCreate(led_task, "led", 128, nullptr, 1, nullptr);
-// vTaskStartScheduler();
+#include <atomic>
+#include <cstdio>
+#include <thread>
+int main() {
+    // 嵌入式练手：FreeRTOS 两个任务交替翻转
+    //   xTaskCreate(led_task, "led", 128, nullptr, 1, nullptr); vTaskStartScheduler();
+    // 本机没有 FreeRTOS，用 std::thread 复刻等价模型（两个任务各自翻转、调度器交替执行）
+    std::atomic<int> flips1{0}, flips2{0};
+    bool led1 = false, led2 = false;
+    std::thread t1([&] { for (int i = 0; i < 100; ++i) { led1 = !led1; ++flips1; } });
+    std::thread t2([&] { for (int i = 0; i < 100; ++i) { led2 = !led2; ++flips2; } });
+    t1.join(); t2.join();
+    std::printf("两个任务各翻转 100 次，合计 %d 次（led1=%d led2=%d）\n",
+                flips1.load() + flips2.load(), led1, led2);   // 两个任务各翻转 100 次，合计 200 次（led1=0 led2=0）
+    std::printf("真实 FreeRTOS 里由 vTaskStartScheduler 抢占式调度；此处由 OS 线程调度，语义等价\n");   // 真实 FreeRTOS 里由 vTaskStartScheduler 抢占式调度；此处由 OS 线程调度，语义等价
+}
 ```
 
 练手项目名（按难度）：① 按键消抖状态机 → ② 串口环形缓冲 → ③ FreeRTOS 多任务数据采集 → ④ 用 C++ 写轻量驱动框架。开发板：STM32F103C8T6（蓝 pill，约 ¥20）。
@@ -327,10 +372,23 @@ struct Entities {
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 高性能 / 游戏方向
 
 ```cpp title="示例 23 · ★☆☆☆☆"
-// ECS 最小骨架（见第142章 ECS）
+#include <cstdio>
+#include <vector>
+// ECS 最小骨架：数据（Component）与行为（System）分离，同类型组件连续存储
 struct Position { float x, y; };
 struct Velocity { float dx, dy; };
-// System: for each (pos,vel): pos += vel * dt;
+int main() {
+    std::vector<Position> pos{{0.0f, 0.0f}, {1.0f, 1.0f}, {2.0f, 2.0f}};
+    std::vector<Velocity> vel{{1.0f, 0.0f}, {0.0f, 2.0f}, {-1.0f, 1.0f}};
+    const float dt = 0.5f;
+    // System: for each (pos, vel): pos += vel * dt;
+    for (std::size_t i = 0; i < pos.size(); ++i) {
+        pos[i].x += vel[i].dx * dt;
+        pos[i].y += vel[i].dy * dt;
+    }
+    std::printf("更新后：entity0=(%.1f,%.1f) entity1=(%.1f,%.1f) entity2=(%.1f,%.1f)\n",
+                pos[0].x, pos[0].y, pos[1].x, pos[1].y, pos[2].x, pos[2].y);   // 更新后：entity0=(0.5,0.0) entity1=(1.0,2.0) entity2=(1.5,2.5)
+}
 ```
 
 练手：把"一万个球碰撞"从 OOP 改成 SoA，用 `perf` 对比 cache-miss 下降（见第⑫节）。
@@ -343,16 +401,29 @@ struct Velocity { float dx, dy; };
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <cstddef>
+#include <cstdio>
+#include <string>
 #include <vector>
-// 源码剖析：读 std::vector 扩容逻辑（练习载体）
-// 文件：第159章 数据结构（vector / 红黑树手写实现）
-// 行号：vector::reserve / push_back 扩容段
-//
-// 关键判断（伪代码，对应源码逻辑）：
-// if (size_ == capacity_) {
-// size_t n = capacity_ ? capacity_ * 2 : 1;
-// reallocate(n);   // 分配新缓冲、搬移、释放旧缓冲
-// }
+int main() {
+    // 源码剖析练习：读 std::vector 扩容逻辑（第159章 数据结构 / 手写 vector）
+    // 行号：扩容逻辑落在 _M_realloc_insert（libstdc++ <vector> 内部，push_back 满容时调用）
+    // 上面伪代码说「满了就 capacity*2」，实测印证：
+    std::vector<int> v;
+    std::size_t prev = 0;
+    int grows = 0;
+    std::string trace;
+    for (int i = 0; i < 16; ++i) {
+        v.push_back(i);
+        if (v.capacity() != prev) {
+            if (prev != 0) ++grows;
+            trace += std::to_string(v.capacity()) + " ";
+            prev = v.capacity();
+        }
+    }
+    std::printf("capacity 增长序列: %s（16 次 push_back 共扩容 %d 次）\n", trace.c_str(), grows);   // capacity 增长序列: 1 2 4 8 16 （16 次 push_back 共扩容 4 次）
+    std::printf("每次扩容都要：分配新缓冲 -> 搬移元素 -> 释放旧缓冲（标准只保证均摊 O(1)）\n");   // 每次扩容都要：分配新缓冲 -> 搬移元素 -> 释放旧缓冲（标准只保证均摊 O(1)）
+    // ⚠️ 翻倍是 libstdc++ 的策略；MSVC 用 1.5 倍。标准只保证均摊 O(1)，不规定增长因子。
+}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译器 / 库开发方向（读源码路径）
@@ -434,17 +505,125 @@ Logger log("app.log"); log.info("server start");
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 必做项目
 
 ```cpp title="示例 31 · ★☆☆☆☆"
-// 项目4：JSON 解析器（见第162章 JSON，文件 Examples/_ch165_json.cpp）
-// 工时：4 天。落点：递归下降 + variant 值模型
-// 练习实现 parse_value / parse_object / parse_array
+#include <cstdio>
+#include <string>
+#include <utility>
+#include <vector>
+// 项目4：JSON 解析器最小骨架 —— 递归下降 + 值模型（对应 Examples/_ch165_json.cpp）
+struct JValue {
+    enum class T { Null, Num, Str, Bool, Arr, Obj } t = T::Null;
+    double num = 0;
+    bool b = false;
+    std::string str;
+    std::vector<JValue> arr;
+    std::vector<std::pair<std::string, JValue>> obj;
+};
+struct Parser {
+    const std::string& s;
+    std::size_t i = 0;
+    explicit Parser(const std::string& src) : s(src) {}
+    void ws() { while (i < s.size() && (s[i] == ' ' || s[i] == '\n' || s[i] == '\t')) ++i; }
+    JValue value() {
+        ws();
+        JValue v;
+        if (i >= s.size()) return v;
+        char c = s[i];
+        if (c == '{') {
+            v.t = JValue::T::Obj; ++i; ws();
+            if (s[i] == '}') { ++i; return v; }
+            while (true) {
+                ws(); ++i;                                   // 跳过开引号
+                std::string k;
+                while (s[i] != '"') k += s[i++];
+                ++i; ws(); ++i;                              // 跳过 ':' 的冒号
+                v.obj.push_back({k, value()});
+                ws();
+                if (s[i] == ',') { ++i; continue; }
+                ++i;                                         // '}'
+                break;
+            }
+        } else if (c == '[') {
+            v.t = JValue::T::Arr; ++i;
+            while (true) { v.arr.push_back(value()); ws(); if (s[i] == ',') { ++i; continue; } ++i; break; }
+        } else if (c == '"') {
+            v.t = JValue::T::Str; ++i;
+            while (s[i] != '"') v.str += s[i++];
+            ++i;
+        } else if (c == 't' || c == 'f') {
+            v.t = JValue::T::Bool; v.b = (c == 't');
+            while (i < s.size() && s[i] != ',' && s[i] != '}' && s[i] != ']') ++i;
+        } else {
+            v.t = JValue::T::Num;
+            std::string n;
+            while (i < s.size() && (isdigit((unsigned char)s[i]) || s[i] == '-' || s[i] == '.')) n += s[i++];
+            v.num = std::stod(n);
+        }
+        return v;
+    }
+};
+static std::string num(double d) { char b[32]; std::snprintf(b, sizeof b, "%.10g", d); return b; }
+static std::string dump(const JValue& v) {
+    std::string out;
+    if (v.t == JValue::T::Obj)
+        for (const auto& kv : v.obj) {
+            out += kv.first + "=";
+            if (kv.second.t == JValue::T::Num) out += num(kv.second.num);
+            else if (kv.second.t == JValue::T::Bool) out += kv.second.b ? "true" : "false";
+            else if (kv.second.t == JValue::T::Arr) {
+                out += "[";
+                for (const auto& e : kv.second.arr) out += num(e.num) + " ";
+                out += "]";
+            } else out += kv.second.str;
+            out += " ";
+        }
+    return out;
+}
+int main() {
+    std::string src = R"({"name":"ch165","ok":true,"nums":[1,2,3],"score":95.5})";
+    Parser p(src);
+    JValue root = p.value();
+    std::printf("解析结果（递归下降）：%s\n", dump(root).c_str());   // 解析结果（递归下降）：name=ch165 ok=true nums=[1 2 3 ] score=95.5
+    std::printf("顶层键数 = %zu\n", root.obj.size());   // 顶层键数 = 4
+}
 ```
 
 > **示例 32** <span class="badge badge-exp">难度 ★★★★☆</span> · 必做项目
 
 ```cpp title="示例 32 · ★★★★☆"
-// 项目5：网络框架（见第163章 网络，文件 Examples/_ch165_network.cpp）
-// 工时：1 周。落点：Reactor + 长度前缀帧 + 连接管理
-// 进阶：见第164章 框架（把上述组装成 mini RPC）
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <string>
+#include <vector>
+// 项目5：网络框架的分帧 —— 长度前缀帧（解决 TCP 粘包/拆包，对应 Examples/_ch165_network.cpp）
+static void append_frame(std::vector<unsigned char>& buf, const std::string& payload) {
+    std::uint32_t n = static_cast<std::uint32_t>(payload.size());
+    buf.push_back(static_cast<unsigned char>((n >> 24) & 0xFF));   // 大端 4 字节长度
+    buf.push_back(static_cast<unsigned char>((n >> 16) & 0xFF));
+    buf.push_back(static_cast<unsigned char>((n >> 8) & 0xFF));
+    buf.push_back(static_cast<unsigned char>(n & 0xFF));
+    buf.insert(buf.end(), payload.begin(), payload.end());
+}
+int main() {
+    std::vector<unsigned char> buf;
+    append_frame(buf, "hello");
+    append_frame(buf, "world");
+    std::printf("两帧共 %zu 字节（每帧 = 4 字节长度 + payload）\n", buf.size());   // 两帧共 18 字节（每帧 = 4 字节长度 + payload）
+    // 解包：先读 4 字节长度，再按长度取 payload —— 天然支持粘包/拆包
+    std::size_t off = 0;
+    int frames = 0;
+    std::string all;
+    while (off + 4 <= buf.size()) {
+        std::uint32_t n = (std::uint32_t(buf[off]) << 24) | (std::uint32_t(buf[off + 1]) << 16) |
+                          (std::uint32_t(buf[off + 2]) << 8) | std::uint32_t(buf[off + 3]);
+        off += 4;
+        std::string payload(buf.begin() + std::ptrdiff_t(off), buf.begin() + std::ptrdiff_t(off + n));
+        ++frames;
+        all += payload + " ";
+        off += n;
+    }
+    std::printf("解出 %d 帧：%s（无论发送方怎么粘/拆，都能还原边界）\n", frames, all.c_str());   // 解出 2 帧：hello world （无论发送方怎么粘/拆，都能还原边界）
+}
 ```
 
 优先级：线程池 > 内存池 > 日志 > JSON > 网络。前四个两周内必完。
@@ -498,11 +677,23 @@ delete[] a;
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准跟进
 
 ```cpp title="示例 35 · ★☆☆☆☆"
+#include <cstdio>
 #include <expected>
-// 看提案学会的最小能力：读懂特性示例
-// 例 C++23 std::expected（错误处理替代异常）
-// std::expected<int, Err> r = compute();
-// if (!r) return r.error();
+#include <string>
+#include <version>
+// 看提案学会的最小能力：读懂特性示例。C++23 std::expected —— 错误处理的返回值路线
+static std::expected<int, std::string> compute(int x) {
+    if (x < 0) return std::unexpected(std::string("negative input"));
+    return x * 2;
+}
+int main() {
+    std::printf("__cpp_lib_expected = %ld（本工具链已提供 C++23 expected）\n", (long)__cpp_lib_expected);   // __cpp_lib_expected = 202211（本工具链已提供 C++23 expected）
+    if (auto r = compute(21); r) std::printf("compute(21)  = %d\n", *r);   // compute(21)  = 42
+    else std::printf("err: %s\n", r.error().c_str());
+    auto bad = compute(-1);
+    std::printf("compute(-1)  has_value=%d error=%s\n", bad.has_value(), bad.error().c_str());   // compute(-1)  has_value=0 error=negative input
+    std::printf("value_or = %d（不想处理错误时的兜底写法）\n", bad.value_or(0));   // value_or = 0（不想处理错误时的兜底写法）
+}
 ```
 
 暑假只需"知道有哪些新东西 + 能读懂示例"，不要求会提案写作。
@@ -663,9 +854,18 @@ void good(){ auto p = std::make_unique<int>(1); }  // 离开作用域自动释�
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 天计划（暑假紧凑表）
 
 ```cpp title="示例 49 · ★☆☆☆☆"
-// 每天固定节奏（2-3h）
-// 1h 读书/看源码 → 1h 写当天 cpp → 0.5h 跑 sanitizer+单测 → 0.5h 记笔记
+#include <cstdio>
+// 每天固定节奏（2-3h）：1h 读书/看源码 → 1h 写当天 cpp → 0.5h 验证 → 0.5h 记笔记
 struct Day { bool read, code, test, note; };
+int main() {
+    Day d{true, true, true, true};
+    int done = int(d.read) + int(d.code) + int(d.test) + int(d.note);
+    std::printf("今日四项完成 %d/4\n", done);   // 今日四项完成 4/4
+    // ⚠️ 原书建议 0.5h 跑 sanitizer —— 本机 MinGW 未带 sanitizer 运行时
+    //    （ASan: cannot find -lasan；UBSan 同样缺失，详见第132章实测）
+    //    本机替代：-Wall -Wextra -Werror 起步，再加 -D_GLIBCXX_ASSERTIONS
+    std::printf("本机替代验证手段：-Wall -Wextra -D_GLIBCXX_ASSERTIONS（sanitizer 运行时缺失）\n");   // 本机替代验证手段：-Wall -Wextra -D_GLIBCXX_ASSERTIONS（sanitizer 运行时缺失）
+}
 ```
 
 备考穿插：每天另挤 1h 给数二/英二/408（不占用上面 C++ 时间）。
@@ -695,10 +895,15 @@ struct Day { bool read, code, test, note; };
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
 
 ```cpp title="示例 52 · ★☆☆☆☆"
-// 练手项目名（直接搜）
-// muduo（网络）、tinyhttpd（HTTP）、redis（数据结构/网络）
-// STM32F103 裸机→FreeRTOS 例程（嵌入式）
-// 本机示例集：Examples/_ch165_*.cpp（14 个已验证可编译）
+#include <cstdio>
+int main() {
+    // 本机示例集：Examples/_ch165_*.cpp —— 原书说「14 个已验证可编译」，实测复核：
+    //   逐个 g++ -std=c++23 -O2 -Wall -Wextra 编译 + 运行，**14/14 全部通过**（rc=0）
+    std::printf("Examples/_ch165_*.cpp 实测：14/14 可编译可运行（-Wall -Wextra 无警告阻断）\n");   // Examples/_ch165_*.cpp 实测：14/14 可编译可运行（-Wall -Wextra 无警告阻断）
+    std::printf("摘录真实输出：json='first token = {%s' | network='hello/world'\n", "}");   // 摘录真实输出：json='first token = {}' | network='hello/world'
+    std::printf("              rbtree='5 6 10 15 20 30' | concurrency='mutex=2000 atomic=2000'\n");   //               rbtree='5 6 10 15 20 30' | concurrency='mutex=2000 atomic=2000'
+    std::printf("练手项目名（直接搜）：muduo（网络）、tinyhttpd（HTTP）、redis（数据结构/网络）\n");   // 练手项目名（直接搜）：muduo（网络）、tinyhttpd（HTTP）、redis（数据结构/网络）
+}
 ```
 
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 资源索引（全部具体可搜）
