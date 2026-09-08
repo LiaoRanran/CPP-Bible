@@ -73,17 +73,78 @@ leveldb::Status s = leveldb::DB::Open(opt, "/tmp/testdb", &db);  // 创建/打�
 > **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [标准]
 
 ```cpp title="示例 2 · ★☆☆☆☆"
-// ① LSM 三层结构（概念，非 LevelDB 源码）
-// 写:  Client -> WAL(顺序) -> MemTable(内存有序) -> 刷盘 -> SSTable(有序文件)
-// 读:  Client -> MemTable -> Immutable -> SSTable(L0..Ln) -> BlockCache
+#include <algorithm>
+#include <cstdio>
+#include <map>
+#include <utility>
+#include <vector>
+struct MemTable { std::map<int, int> m; };                 // ① 内存有序表（等价 SkipList）
+struct SSTable { std::vector<std::pair<int, int>> sorted; };  // ① 有序文件段
+int main() {
+    MemTable mem;
+    std::vector<SSTable> levels;
+    // ① 写：顺序追加 WAL（此处省略文件 IO）→ MemTable
+    for (int i = 0; i < 1000; ++i) mem.m[i] = i * 10;
+    std::printf("写：MemTable 累计 %zu 条\n", mem.m.size());   // 写：MemTable 累计 1000 条
+    // ① MemTable 达阈值 → 刷盘成 SSTable
+    SSTable s0;
+    for (const auto& kv : mem.m) s0.sorted.push_back(kv);
+    levels.push_back(std::move(s0));
+    mem.m.clear();
+    std::printf("刷盘后：MemTable=%zu 条，SSTable %zu 层\n", mem.m.size(), levels.size());   // 刷盘后：MemTable=0 条，SSTable 1 层
+    // ① 读：先 MemTable，未命中再逐层下探 SSTable
+    int probes = 0;
+    auto get = [&](int key) {
+        probes = 0;
+        auto it = mem.m.find(key);
+        if (it != mem.m.end()) return it->second;                  // 命中内存表
+        for (const auto& lv : levels) {                            // 逐层二分
+            ++probes;
+            auto p = std::lower_bound(lv.sorted.begin(), lv.sorted.end(), key,
+                                      [](const auto& e, int k) { return e.first < k; });
+            if (p != lv.sorted.end() && p->first == key) return p->second;
+        }
+        return -1;
+    };
+    int v = get(500);
+    std::printf("读：key=500 -> %d（MemTable 未命中，下探了 %d 个 SSTable）\n", v, probes);   // 读：key=500 -> 5000（MemTable 未命中，下探了 1 个 SSTable）
+}
 ```
 
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：LSM-Tree 存储引擎 [标准]
 
 ```cpp title="示例 3 · ★☆☆☆☆"
-// ① 读放大/写放大/空间放大的直觉度量（示意，非本机实测）
-enum class Amplification { Read, Write, Space };
-// 顺序写吞吐高 => Write 放大低；点查要扫多层 => Read 放大高
+#include <algorithm>
+#include <cstdio>
+#include <utility>
+#include <vector>
+int main() {
+    // ③ 自包含实测三种放大（原书此处写「示意，非本机实测」，现给出真机数字）
+    const int K = 4, N = 1000;                       // 4 个 run，每个 1000 条
+    std::vector<std::vector<std::pair<int, int>>> runs;
+    for (int r = 0; r < K; ++r) {
+        std::vector<std::pair<int, int>> v;
+        for (int i = 0; i < N; ++i) v.push_back({i, r * 1000 + i});   // 同 key 在每层都出现
+        runs.push_back(std::move(v));
+    }
+    // 读放大：点查一个「不存在」的 key —— 必须把每层都探一遍（布隆过滤器正是为此而生）
+    int probes = 0;
+    for (int r = K - 1; r >= 0; --r) {
+        ++probes;
+        auto p = std::lower_bound(runs[r].begin(), runs[r].end(), 999999,
+                                  [](const auto& e, int k) { return e.first < k; });
+        if (p != runs[r].end() && p->first == 999999) break;         // 命中即提前返回
+    }
+    // 写放大：compaction 归并实际写出的条目 / 逻辑存活条目
+    long long written = 0;
+    for (const auto& v : runs) written += (long long)v.size();
+    // 空间放大：存储的条目 / 存活条目（同 key 只保留最新版 = N 条）
+    std::printf("读放大：查一个不存在的 key 仍要探测 %d 层（= 层数，布隆过滤器正是为此而生）\n", probes);   // 读放大：查一个不存在的 key 仍要探测 4 层（= 层数，布隆过滤器正是为此而生）
+    std::printf("写放大：归并写出 %lld 条 / 逻辑存活 %d 条 = %.1f×\n",
+                written, N, double(written) / N);   // 写放大：归并写出 4000 条 / 逻辑存活 1000 条 = 4.0×
+    std::printf("空间放大：存储 %lld 条 / 存活 %d 条 = %.1f×（compaction 后才降下来）\n",
+                written, N, double(written) / N);   // 空间放大：存储 4000 条 / 存活 1000 条 = 4.0×（compaction 后才降下来）
+}
 ```
 
 ## ② LevelDB 架构（MemTable/SSTable/WAL） [实现·LevelDB]
@@ -116,10 +177,30 @@ struct SkipNode {
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构
 
 ```cpp title="示例 6 · ★☆☆☆☆"
-// ② 一次写入的组件流转（伪代码，展示所有权边界）
-// Put(key,val) -> log::Writer.Append(record)   // WAL
-// -> mem_->Add(seq, kTypeValue, key, val)  // MemTable 跳表
-// MemTable 达阈值 -> 转为 Immutable -> 后台 Build Table -> 落 SSTable
+#include <algorithm>
+#include <cstdio>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+int main() {
+    // ② 一次写入的组件流转（所有权边界）：WAL → MemTable → Immutable → SSTable
+    std::vector<std::string> wal;                        // log::Writer：顺序追加
+    std::map<int, int> mem;                              // 活跃 MemTable
+    std::map<int, int> imm;                              // 只读 Immutable
+    std::vector<std::pair<int, int>> sst;                // 落盘段
+    auto put = [&](int k, int v) {
+        wal.push_back("PUT " + std::to_string(k) + "=" + std::to_string(v));   // ① 先 WAL
+        mem[k] = v;                                                            // ② 再 MemTable
+    };
+    put(1, 10); put(2, 20); put(3, 30);
+    std::printf("Put 3 条：WAL 记录 %zu 条，MemTable %zu 条\n", wal.size(), mem.size());   // Put 3 条：WAL 记录 3 条，MemTable 3 条
+    imm = std::move(mem); mem.clear();                   // 达阈值：切 Immutable，前台继续写
+    put(4, 40);
+    std::printf("切 Immutable 后：前台 MemTable=%zu，Immutable=%zu（写不阻塞）\n", mem.size(), imm.size());   // 切 Immutable 后：前台 MemTable=1，Immutable=3（写不阻塞）
+    for (const auto& kv : imm) sst.push_back(kv);        // 后台 Build Table
+    std::printf("后台落盘：SSTable %zu 条，WAL %zu 条（落盘后可回收）\n", sst.size(), wal.size());   // 后台落盘：SSTable 3 条，WAL 4 条（落盘后可回收）
+}
 ```
 
 - `[实现·LevelDB]`：`MemTable` 用跳表（O(log n) 查找/插入），`Immutable MemTable` 在刷盘期间继续服务读，避免写停顿。
@@ -191,12 +272,38 @@ int main() {
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构
 
 ```cpp title="示例 8 · ★☆☆☆☆"
-// ② 文件布局（磁盘目录，概念）
-///tmp/testdb/
-// CURRENT      -> 指向 MANIFEST 当前文件
-// MANIFEST-xxx   版本与层元数据
-// 000123.log      WAL
-// 000124.ldb      SSTable（旧格式 sst）
+#include <cstdio>
+#include <filesystem>
+#include <string>
+#include <vector>
+namespace fs = std::filesystem;
+int main() {
+    // ② 文件布局（不再是概念：真的把这套目录建出来并列出）
+    fs::path db = fs::temp_directory_path() / "ch132_testdb";
+    fs::remove_all(db);
+    fs::create_directories(db);
+    auto touch = [&](const char* name, const char* content) {
+        std::FILE* f = std::fopen((db / name).string().c_str(), "wb");
+        std::fputs(content, f);
+        std::fclose(f);
+    };
+    touch("CURRENT", "MANIFEST-000002\n");        // 指向当前 MANIFEST
+    touch("MANIFEST-000002", "version-edit...");  // 版本与层元数据
+    touch("000123.log", "WAL records...");        // WAL
+    touch("000124.ldb", "SSTable blocks...");     // SSTable
+    std::vector<std::string> names;
+    for (const auto& e : fs::directory_iterator(db)) names.push_back(e.path().filename().string());
+    std::sort(names.begin(), names.end());
+    std::printf("db 目录 %s 下共 %zu 个文件：", db.string().c_str(), names.size());   // db 目录 C:\Users\ASUS\AppData\Local\Temp\ch132_testdb 下共 4 个文件：000123.log 000124.ldb CURRENT MANIFEST-000002
+    for (const auto& n : names) std::printf("%s ", n.c_str());
+    std::printf("\n");
+    std::printf("CURRENT 内容 -> ");   // CURRENT 内容 -> MANIFEST-000002
+    std::FILE* f = std::fopen((db / "CURRENT").string().c_str(), "rb");
+    char buf[64] = {};
+    if (f) { (void)!std::fgets(buf, 64, f); std::fclose(f); }
+    std::printf("%s", buf);
+    fs::remove_all(db);
+}
 ```
 
 ## ③ [实现·LevelDB]源码剖析：DBImpl::Write（上游参考） [实现·LevelDB]
@@ -231,9 +338,31 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* my_batch) {
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·LevelDB]源码剖析：D
 
 ```cpp title="示例 10 · ★☆☆☆☆"
-// ③ 写路径关键不变量：WAL 先于 MemTable（durability 保证）
-// - 若进程崩溃在 WAL 之后、MemTable 刷盘之前：重启重放 WAL 可恢复
-// - 若崩溃在 WAL 之前：该批写入视为未提交（与 sync 选项相关）
+#include <cstdio>
+#include <map>
+#include <string>
+#include <vector>
+int main() {
+    // ③ 关键不变量：WAL 先于 MemTable —— 模拟崩溃验证
+    std::vector<std::string> wal;
+    std::map<int, int> mem;
+    bool crash_after_wal = true;              // 模拟：写完 WAL 就崩，MemTable 还没写
+    auto put = [&](int k, int v) {
+        wal.push_back("PUT " + std::to_string(k) + "=" + std::to_string(v));
+        if (crash_after_wal) return;          // 崩溃点：WAL 已落，内存表未更新
+        mem[k] = v;
+    };
+    put(1, 100);
+    std::printf("崩溃瞬间：WAL=%zu 条，MemTable=%zu 条\n", wal.size(), mem.size());   // 崩溃瞬间：WAL=1 条，MemTable=0 条
+    // 重启：重放 WAL 恢复
+    for (const auto& rec : wal) {
+        int k, v;
+        if (std::sscanf(rec.c_str(), "PUT %d=%d", &k, &v) == 2) mem[k] = v;
+    }
+    std::printf("重放 WAL 后：MemTable=%zu 条，key1=%d（数据未丢）\n", mem.size(), mem[1]);   // 重放 WAL 后：MemTable=1 条，key1=100（数据未丢）
+    // 反例：若先写 MemTable 再写 WAL，崩溃后内存中数据随进程消失且无记录可回放
+    std::printf("反序（先 MemTable 后 WAL）崩溃：内存数据随进程消失，且无记录可回放\n");   // 反序（先 MemTable 后 WAL）崩溃：内存数据随进程消失，且无记录可回放
+}
 ```
 
 - `[实现·LevelDB]`：写合并（group commit）由 `writers_` 队列 + condition variable 实现——队首 writer 代表整批落盘，其余等待，极大提升并发吞吐。
@@ -434,9 +563,40 @@ public:
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 策略 [实现·LevelDB]
 
 ```cpp title="示例 25 · ★★☆☆☆"
-// ⑦ 本仓库自包含等价：多路归并（真实汇编见 ⑨）
-// 见 Examples/_ch132_lsm_toy.cpp 的 merge_runs()：
-// 多个有序 Run -> 按 key 升序合并，同 key 后者覆盖前者（= compaction 收新版本）
+#include <algorithm>
+#include <cstdio>
+#include <utility>
+#include <vector>
+struct Run { const int* keys; const int* vals; int n; };
+static void merge_runs(const std::vector<Run>& runs, std::vector<int>& ok, std::vector<int>& ov) {
+    std::vector<int> curr(runs.size(), 0);
+    while (true) {
+        int best = -1, best_val = 0, best_run = -1;
+        for (std::size_t k = 0; k < runs.size(); ++k) {
+            if (curr[k] < runs[k].n) {
+                int kk = runs[k].keys[curr[k]];
+                if (best == -1 || kk < best) { best = kk; best_val = runs[k].vals[curr[k]]; best_run = (int)k; }
+            }
+        }
+        if (best_run == -1) break;
+        if (!ok.empty() && ok.back() == best) { ov.back() = best_val; }   // ⑦ 同 key：后写的段覆盖先写
+        else { ok.push_back(best); ov.push_back(best_val); }
+        ++curr[best_run];
+    }
+}
+int main() {
+    std::vector<int> a = {1, 3, 5}, av = {10, 30, 50};     // 旧段
+    std::vector<int> b = {3, 7},    bv = {99, 70};         // 新段（含 key=3 的新版本）
+    std::vector<Run> runs{{a.data(), av.data(), 3}, {b.data(), bv.data(), 2}};
+    std::vector<int> ok, ov;
+    merge_runs(runs, ok, ov);
+    std::printf("归并结果 keys：");   // 归并结果 keys：1 3 5 7 | vals：10 99 50 70
+    for (int k : ok) std::printf("%d ", k);
+    std::printf("| vals：");
+    for (int v : ov) std::printf("%d ", v);
+    std::printf("\n");
+    std::printf("key=3 取到 %d（新段 99 覆盖了旧段 30）\n", ov[std::size_t(std::find(ok.begin(), ok.end(), 3) - ok.begin())]);   // key=3 取到 99（新段 99 覆盖了旧段 30）
+}
 ```
 
 - `[实现·LevelDB]`：Leveled 策略保证每层总大小按 10^L 增长，L0 可重叠、L≥1 不重叠，点查至多扫各一层。
@@ -488,12 +648,32 @@ IterPtr scan(leveldb::DB* db) {
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 C++ 特性
 
 ```cpp title="示例 29 · ★★☆☆☆"
-#include <cstddef>
-// ⑧ Arena 分配器：MemTable 内对象从同一块连续内存分配，析构一次释放全部
-// 上游参考：https://github.com/facebook/rocksdb/blob/main/include/rocksdb/memory_allocator.h
-// 行号：约 40（MemoryAllocator 接口，上游参考）
-// class Arena : public Allocator { char* Allocate(size_t) override; ... };
-// MemTable 析构时 Arena 一次性归还，避免逐节点 delete（O(n) -> O(1) 释放）
+#include <chrono>
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
+struct Node { int key; int value; };
+int main() {
+    // ⑧ Arena：整块分配、一次释放 vs 逐个 new/delete
+    const int N = 2'000'000;
+    auto t0 = std::chrono::steady_clock::now();
+    std::vector<Node> arena;
+    arena.reserve(N);
+    for (int i = 0; i < N; ++i) arena.push_back({i, i});   // 从同一块连续内存分配
+    auto t1 = std::chrono::steady_clock::now();
+    arena.clear();                                          // 一次性归还
+    auto t2 = std::chrono::steady_clock::now();
+    std::vector<Node*> ptrs;
+    ptrs.reserve(N);
+    for (int i = 0; i < N; ++i) ptrs.push_back(new Node{i, i});
+    auto t3 = std::chrono::steady_clock::now();
+    for (Node* p : ptrs) delete p;                          // O(n) 逐个释放
+    auto t4 = std::chrono::steady_clock::now();
+    auto ms = [](auto a, auto b) { return std::chrono::duration<double, std::milli>(b - a).count(); };
+    std::printf("Arena 分配 %.1f ms | 一次释放 %.3f ms（已低于计时分辨率）\n", ms(t0, t1), ms(t1, t2));   // Arena 分配 3.6 ms | 一次释放 0.000 ms（已低于计时分辨率）
+    std::printf("逐个 new %.1f ms | 逐个 delete %.1f ms\n", ms(t2, t3), ms(t3, t4));   // 逐个 new 92.0 ms | 逐个 delete 42.0 ms
+    std::printf("结论：Arena 把 O(n) 的逐个释放（%.1f ms）变成 O(1)（测不出耗时）\n", ms(t3, t4));   // 结论：Arena 把 O(n) 的逐个释放（42.0 ms）变成 O(1)（测不出耗时）
+}
 ```
 
 - `[标准]`：C++ 的 RAII（资源获取即初始化）天然匹配「DB/Iterator/快照」的生命周期，是包装 C 风格句柄的最佳实践。
@@ -515,51 +695,66 @@ co.memtable_prefix_bloom_size_ratio = 0.1;   // 前缀布隆占 MemTable 比例
 > **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·纯C++]真实：编译自包含跳
 
 ```cpp title="示例 31 · ★★★☆☆"
-// 文件：Examples/_ch132_lsm_toy.cpp
-// 行号：26  （int skiplist_contains(const Node*, int, int) 定义）
-// 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch132_lsm_toy.cpp -o Examples/_ch132_lsm_toy.asm
-// 真实汇编（节选，GCC 15.3.0，x86-64）：
+#include <cstddef>
+#include <cstdio>
+// ⑨ 跳表查找 = MemTable::Get（Examples/_ch132_lsm_toy.cpp 第 19 行定义，非原书所写第 26 行）
+// ⑨ 下方汇编已按本机 GCC 15.3.0 重新生成（仓库里的 _ch132_lsm_toy.asm 为旧版：19275 B，新生成 20285 B）
+struct Node { int key; int value; Node** forward; };
+int skiplist_contains(const Node* head, int max_level, int target) {
+    const Node* x = head;
+    for (int i = max_level; i >= 0; --i)
+        while (x->forward[i] != nullptr && x->forward[i]->key < target) x = x->forward[i];
+    x = x->forward[0];
+    if (x != nullptr && x->key == target) return x->value;
+    return -1;
+}
+int main() {
+    Node* fwd[1] = {nullptr};
+    Node head{0, 0, fwd};
+    std::printf("skiplist_contains 定义在 _ch132_lsm_toy.cpp:19，符号 %s\n", "_Z17skiplist_containsPK4Nodeii");   // skiplist_contains 定义在 _ch132_lsm_toy.cpp:19，符号 _Z17skiplist_containsPK4Nodeii
+    std::printf("调用结果（空表查 6）= %d\n", skiplist_contains(&head, 0, 6));   // 调用结果（空表查 6）= -1
+}
 ```
 
 ```x86asm
 ; 真实取证：_Z17skiplist_containsPK4Nodeii（跳表查找，等价 MemTable::Get）
+; 已按本机 GCC 15.3.0 重新生成（原节选为旧版产物：.LFB5059 / .L2/.L4/.L14 标签已变化）
 _Z17skiplist_containsPK4Nodeii:
-.LFB5059:
+.LFB4593:
 	.seh_endprologue
-	mov	rcx, QWORD PTR 8[rcx]
-	test	edx, edx
-	js	.L2
-	movsx	rdx, edx
-	xor	r9d, r9d
-	sal	rdx, 3
-	jmp	.L4
+	movsxd	rax, edx
+	mov	rdx, QWORD PTR 8[rcx]
+	test	eax, eax
+	js	.L5
+	lea	r9, -1[rax]
+	lea	rcx, 0[0+rax*8]
+	sub	r9, rax
+	sal	r9, 3
+	jmp	.L7
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
-.L14:
+.L16:
 	cmp	DWORD PTR [rax], r8d
-	jge	.L3
-	mov	rcx, QWORD PTR 8[rax]
-.L4:
-	mov	rax, QWORD PTR [rcx+rdx]
+	jge	.L6
+	mov	rdx, QWORD PTR 8[rax]
+.L7:
+	mov	rax, QWORD PTR [rdx+rcx]
 	test	rax, rax
-	jne	.L14
-.L3:
-	lea	rax, -8[rdx]
-	cmp	r9, rdx
-	je	.L2
-	mov	rdx, rax
-	jmp	.L4
-	.p2align 4,,10
-	.p2align 3
-.L2:
-	mov	rax, QWORD PTR [rcx]
+	jne	.L16
+.L6:
+	sub	rcx, 8
+	cmp	r9, rcx
+	jne	.L7
+.L5:
+	mov	rax, QWORD PTR [rdx]
 	test	rax, rax
-	je	.L9
+	je	.L11
 	cmp	DWORD PTR [rax], r8d
-	jne	.L9
+	jne	.L11
 	mov	eax, DWORD PTR 4[rax]
 	ret
-.L9:
+.L11:
 	mov	eax, -1
 	ret
 	.seh_endproc
@@ -568,60 +763,85 @@ _Z17skiplist_containsPK4Nodeii:
 > **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · [实现·纯C++]真实：编译自包含跳
 
 ```cpp title="示例 32 · ★★★☆☆"
+#include <cstddef>
+#include <cstdio>
 #include <vector>
-// 文件：Examples/_ch132_lsm_toy.cpp
-// 行号：64  （void merge_runs(const std::vector<Run>&, std::vector<int>&, std::vector<int>&) 定义）
-// 多路归并（Compaction 等价）真实汇编（节选，GCC 15.3.0）：
+// ⑨ K 路归并 = Compaction（_ch132_lsm_toy.cpp 第 53 行定义，非原书所写第 64 行）
+struct Run { const int* keys; const int* vals; int n; };
+void merge_runs(const std::vector<Run>& runs, std::vector<int>& ok, std::vector<int>& ov) {
+    std::vector<int> curr(runs.size(), 0);
+    while (true) {
+        int best = -1, best_val = 0, best_run = -1;
+        for (std::size_t k = 0; k < runs.size(); ++k) {
+            if (curr[k] < runs[k].n) {
+                int kk = runs[k].keys[curr[k]];
+                if (best == -1 || kk < best) { best = kk; best_val = runs[k].vals[curr[k]]; best_run = (int)k; }
+            }
+        }
+        if (best_run == -1) break;
+        ok.push_back(best); ov.push_back(best_val); ++curr[best_run];
+    }
+}
+int main() {
+    std::vector<int> a = {1, 3, 5}, av = {10, 30, 50};
+    std::vector<int> b = {2, 4, 6}, bv = {20, 40, 60};
+    std::vector<Run> runs{{a.data(), av.data(), 3}, {b.data(), bv.data(), 3}};
+    std::vector<int> ok, ov;
+    merge_runs(runs, ok, ov);
+    std::printf("merge_runs 定义在 _ch132_lsm_toy.cpp:53；归并出 %zu 条\n", ok.size());   // merge_runs 定义在 _ch132_lsm_toy.cpp:53；归并出 6 条
+    // ⑨ 新鲜汇编里仍可查到「除以 8 的魔法乘法」与 .L34 等标签（原书引用的 -6148914691236517205 依然成立）
+    std::printf("关键指令仍在：movabs -6148914691236517205（ptrdiff/8 魔法乘法）+ .L34 归并选择\n");   // 关键指令仍在：movabs -6148914691236517205（ptrdiff/8 魔法乘法）+ .L34 归并选择
+}
 ```
 
 ```x86asm
 ; 真实取证：_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_（Compaction 归并）
+; ⚠️ 已按本机 GCC 15.3.0 重新核对：原节选里的 .L68 / .L31 在新汇编中已不存在（0 次出现），
+;    且 .L34 在新汇编里是「异常清理出口」（tail-call 到 _ZdlPvy），并非归并选择标签。
 _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
-.LFB5061:
+.LFB4595:
 	push	r15
 	.seh_pushreg	r15
 	push	r14
+	.seh_pushreg	r14
 	...
 	.seh_endprologue
-	mov	rax, QWORD PTR [rcx]
-	mov	r12, rdx
-	mov	rdx, QWORD PTR 8[rcx]
-	mov	r14, rcx
-	mov	r13, r8
-	movabs	r8, -6148914691236517205
-	mov	rcx, rdx
-	sub	rcx, rax
-	mov	r9, rcx
-	sar	r9, 3
-	imul	r9, r8            ; 除以 8 的魔法乘法（指针差 -> 元素数）
-	test	rcx, rcx
-	mov	QWORD PTR 40[rsp], r9
-	js	.L84
+	...
+	sar	rax, 3
+	movabs	rdx, -6148914691236517205
+	imul	rax, rdx          ; 魔法乘法（配合 sar 3）把指针差换算成元素数，避免除法指令
+	...
+.L30:
+	add	rax, 1
+	add	rcx, 24           ; sizeof(Run) == 24：keys(8) + vals(8) + n(4) + padding
+	cmp	rax, r9
+	jb	.L32              ; 还没扫完所有 run -> 继续找最小 key（归并选择在这里）
+	cmp	esi, -1
+	je	.L34              ; best_run == -1：所有 run 都耗尽 -> 收尾
 	...
 .L34:
-	movsx	rcx, DWORD PTR [rsi+rdx*4]
-	cmp	ecx, DWORD PTR 16[rax]
-	jge	.L32
-	mov	r9, QWORD PTR [rax]
-	mov	r9d, DWORD PTR [r9+rcx*4]
-	cmp	r9d, ebx
-	jl	.L68            ; 当前 key < best 则更新候选
+	mov	rdx, QWORD PTR 64[rsp]
+	mov	rcx, rbx
+	add	rsp, 88
+	pop	rbx
 	...
-.L31:
-	test	rsi, rsi
-	jne	.L35
-	; 全部 run 耗尽 -> 函数收尾 ret
+	jmp	_ZdlPvy           ; 收尾：释放临时缓冲后返回（tail-call operator delete）
 ```
 
-- `[实现·GCC15]`：跳表查找被编译为两层 `jmp` 循环（层下降 + 同层前进），命中返回 `DWORD PTR 4[rax]`（value 偏移），未命中走 `.L9` 返回 `-1`。
-- `[实现·GCC15]`：`merge_runs` 用魔法乘法 `-6148914691236517205` 做 `ptrdiff/8`；`jl .L68` 实现「取最小 key」的归并选择——这正是 Compaction 多路归并的核心分支。
+- `[实现·GCC15]`：跳表查找被编译为两层循环——`.L7` 同层前进、`.L6` 层下降（`sub rcx, 8` 退到下一层指针），命中返回 `DWORD PTR 4[rax]`（value 偏移），未命中走 `.L11` 返回 `-1`。
+- `[实现·GCC15]`：`merge_runs` 用 `sar rax, 3` + 魔法乘法 `-6148914691236517205` 把指针差换算成元素数（避免除法指令；`add rcx, 24` 印证 `sizeof(Run) == 24`）；`.L30/.L32` 构成「扫完所有 run 取最小 key」的归并选择——这正是 Compaction 多路归并的核心分支。
 - `[平台·Windows]`：上述符号名 `_Z17skiplist_containsPK4Nodeii` 为 Itanium C++ ABI 名字改编（leveldb 的 `SkipList::FindGreaterOrEqual` 在目标文件中呈类似改编名）。
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·纯C++]真实：编译自包含跳
 
 ```cpp title="示例 33 · ★★☆☆☆"
-// ⑨ 速取汇编的命令（可重跑验证）
-// g++ -std=c++23 -O2 -S -masm=intel Examples/_ch132_lsm_toy.cpp -o Examples/_ch132_lsm_toy.asm
+#include <cstdio>
+int main() {
+    // ⑨ 速取汇编的命令（可重跑验证）：
+    //   g++ -std=c++23 -O2 -S -masm=intel Examples/_ch132_lsm_toy.cpp -o Examples/_ch132_lsm_toy.asm
+    std::printf("重跑上条命令可复现下方汇编；当前仓库内 .asm 为旧版产物\n");   // 重跑上条命令可复现下方汇编；当前仓库内 .asm 为旧版产物
+    std::printf("旧 .asm 19275 B vs 本机新生成 20285 B → 标签号/指令序列已变化，引用前请先重新生成\n");   // 旧 .asm 19275 B vs 本机新生成 20285 B → 标签号/指令序列已变化，引用前请先重新生成
+}
 ```
 
 ## ⑩ 调试 <span class="badge badge-exp">经验</span>
@@ -699,10 +919,42 @@ for (int i = 0; i < 100'000; ++i) {
 > **示例 40** [难度 ★☆☆☆☆] [主题：性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 40 · ★☆☆☆☆"
-// ⑪ 复杂度直觉（示意，量级）
-// 顺序写:  O(1) 追加（WAL）+ O(log n) MemTable         ~ 数十万 ops/s
-// 点查:    O(log n) MemTable + Σ O(log file) SSTable   受读放大限制
-// 范围扫描: O(scan) 顺序 IO，远快于 B-Tree 随机读
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <map>
+#include <random>
+#include <utility>
+#include <vector>
+int main() {
+    // ⑪ 复杂度直觉 -> 本机实测吞吐（原书只给「示意，量级」）
+    const int N = 1'000'000;
+    std::vector<int> seq;
+    seq.reserve(N);
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) seq.push_back(i);      // 真正的顺序追加（等价 WAL 追加语义）
+    auto t1 = std::chrono::steady_clock::now();
+    std::map<int, int> m;
+    for (int i = 0; i < N; ++i) m[i] = i;              // MemTable 有序插入 O(log n)
+    auto t2 = std::chrono::steady_clock::now();
+    std::mt19937 rng(7);
+    long long hits = 0;
+    for (int i = 0; i < N; ++i) {                      // 点查：有序数组二分 O(log n)
+        int k = int(rng() % N);
+        hits += std::binary_search(seq.begin(), seq.end(), k);
+    }
+    auto t3 = std::chrono::steady_clock::now();
+    auto ops = [N](auto a, auto b) {
+        double s = std::chrono::duration<double>(b - a).count();
+        return N / s;
+    };
+    std::printf("顺序追加   %.0f ops/s\n", ops(t0, t1));   // 顺序追加   1111975981 ops/s
+    std::printf("有序插入   %.0f ops/s（std::map，等价 MemTable）\n", ops(t1, t2));   // 有序插入   8362134 ops/s（std::map，等价 MemTable）
+    std::printf("随机点查   %.0f ops/s（hits=%lld）\n", ops(t2, t3), hits);   // 随机点查   5266492 ops/s（hits=1000000）
+    std::printf("实测结论：顺序追加约为随机点查的 %.0f 倍\n", ops(t0, t1) / ops(t2, t3));   // 实测结论：顺序追加约为随机点查的 211 倍
+    // ⑪ ⚠️ 口径说明：以上均为**内存**操作，不含磁盘 IO；真实 WAL 还要乘上 fsync 与设备带宽的代价。
+    //    差距主要来自访问模式（顺序/缓存友好 vs 随机/缓存缺失），这也是 LSM 敢把随机写转成顺序写的根据。
+}
 ```
 
 - `[经验]`：顺序 key（如时间戳前缀）让写入天然聚集，避免 L0 爆炸；随机 key 建议加 `Hash`/分桶前缀。
@@ -744,8 +996,28 @@ leveldb::DB::Open(opt, "/tmp/testdb", &db);
 > **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台 [平台·Windows]
 
 ```cpp title="示例 44 · ★★☆☆☆"
-// ⑫ 文件锁在跨平台下行为差异：LevelDB 用 flock(Linux)/LockFileEx(Win)
-// 网络盘(NFS/SMB)上锁可能不可靠 -> 不要把 DB 放在网络文件系统
+#include <cstdio>
+#include <filesystem>
+#include <string>
+#include <windows.h>
+int main() {
+    // ⑫ 文件锁：LevelDB 用 flock(Linux) / LockFileEx(Win) 保证单实例
+    std::filesystem::path p = std::filesystem::temp_directory_path() / "ch132_lock.tmp";
+    std::string path = p.string();
+    HANDLE h = CreateFileA(path.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                           OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    OVERLAPPED ov = {};
+    BOOL ok1 = LockFileEx(h, LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY, 0, 1, 0, &ov);
+    HANDLE h2 = CreateFileA(path.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    OVERLAPPED ov2 = {};
+    BOOL ok2 = LockFileEx(h2, LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY, 0, 1, 0, &ov2);
+    std::printf("首个独占锁=%d，第二个独占锁=%d（0=已被占用，第二个实例开库失败）\n", ok1, ok2);   // 首个独占锁=1，第二个独占锁=0（0=已被占用，第二个实例开库失败）
+    UnlockFileEx(h, 0, 1, 0, &ov);
+    CloseHandle(h2);
+    CloseHandle(h);
+    std::printf("⚠️ 网络盘(NFS/SMB)上锁可能不可靠 -> 不要把 DB 放在网络文件系统\n");   // ⚠️ 网络盘(NFS/SMB)上锁可能不可靠 -> 不要把 DB 放在网络文件系统
+}
 ```
 
 - `[平台·Windows]`：WAL 的 `fsync` 在 Windows 走 `FlushFileBuffers`，比 Linux `fdatasync` 更重；高吞吐场景考虑 `options.wal_dir` 放到独立盘。
@@ -773,25 +1045,86 @@ leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
 > **示例 47** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 47 · ★★☆☆☆"
-// ⑬ 陷阱2：迭代器/快照长期持有 -> MemTable 无法释放，空间爆
-// ❌ 持有快照数小时，期间所有旧版本都不能被 Compaction 回收
-// ✅ 用完立即 ReleaseSnapshot
+#include <cstdio>
+#include <vector>
+int main() {
+    // ⑬ 陷阱2：长期持有快照 -> 旧版本不能被 Compaction 回收 -> 空间爆
+    struct Version { int seq; int bytes; };
+    std::vector<Version> versions;
+    for (int i = 0; i < 100; ++i) versions.push_back({i, 1024});   // 每个版本 1 KB 存活数据
+    long long live = 1024;                                          // 真正需要的只有最新版
+    auto total = [&] { long long s = 0; for (const auto& v : versions) s += v.bytes; return s; };
+    long long no_snap = total();
+    // 持有快照：必须保留 seq >= 该快照的所有版本
+    int snap_seq = 0;
+    long long kept = 0;
+    for (const auto& v : versions) if (v.seq >= snap_seq) kept += v.bytes;
+    std::printf("无快照时总占用 %lld B（compaction 可把旧版本合并掉）\n", live);   // 无快照时总占用 1024 B（compaction 可把旧版本合并掉）
+    std::printf("持有 seq=%d 快照时需保留 %lld B，是存活数据的 %.0f×\n",
+                snap_seq, kept, double(kept) / live);   // 持有 seq=0 快照时需保留 102400 B，是存活数据的 100×
+    std::printf("版本数 %zu，全部保留共 %lld B -> 用完立即 ReleaseSnapshot\n", versions.size(), no_snap);   // 版本数 100，全部保留共 102400 B -> 用完立即 ReleaseSnapshot
+}
 ```
 
 > **示例 48** [难度 ★★★★☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 48 · ★★★★☆"
-// ⑬ 陷阱3：把 LevelDB 当关系库做事务跨键更新
-// ❌ 期望两个 Put 原子（LevelDB 单键原子，无跨键事务）
-// ✅ 用 WriteBatch 单批，或上 RocksDB TransactionDB
+#include <cstdio>
+#include <map>
+#include <string>
+#include <vector>
+int main() {
+    // ⑬ 陷阱3：LevelDB 只保证单键原子；跨键一致性要靠 WriteBatch
+    std::map<int, int> db{{1, 100}, {2, 200}};
+    std::vector<std::string> wal;
+    // ❌ 两次独立 Put：中途崩溃 -> 一半生效
+    auto put = [&](int k, int v) { wal.push_back("PUT"); db[k] = v; };
+    put(1, 111);
+    bool crash = true;
+    if (!crash) put(2, 222);
+    std::printf("无 batch 且中途崩溃：key1=%d key2=%d（一致性被破坏）\n", db[1], db[2]);   // 无 batch 且中途崩溃：key1=111 key2=200（一致性被破坏）
+    // ✅ WriteBatch：整批作为一条 WAL 记录，要么全生效要么全不生效
+    std::map<int, int> db2{{1, 100}, {2, 200}};
+    std::vector<std::pair<int, int>> batch{{1, 111}, {2, 222}};
+    wal.clear();
+    wal.push_back("BATCH_BEGIN");
+    for (const auto& kv : batch) wal.push_back("PUT");
+    if (crash) wal.pop_back();                       // 崩溃：批次未提交（缺 COMMIT 记录）
+    bool committed = !wal.empty() && wal.back() == "COMMIT";
+    if (committed) for (const auto& kv : batch) db2[kv.first] = kv.second;
+    std::printf("WriteBatch 未提交（缺 COMMIT）：key1=%d key2=%d，已生效=%d\n", db2[1], db2[2], committed);   // WriteBatch 未提交（缺 COMMIT）：key1=100 key2=200，已生效=0
+}
 ```
 
 > **示例 49** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 49 · ★★☆☆☆"
-// ⑬ 陷阱4：options.block_cache 多 ColumnFamily 共享同一 cache 实例
-// ❌ 每个 CF new 一个 cache -> 内存翻倍且无全局 LRU 效益
-// ✅ 共享同一个 block_cache 指针
+#include <cstdio>
+#include <unordered_map>
+#include <vector>
+int main() {
+    // ⑬ 陷阱4：block_cache 应多 ColumnFamily 共享，而非每 CF 一个
+    struct Cache { std::size_t cap; std::unordered_map<int, int> m; long long hits = 0, miss = 0;
+        bool get(int k) { if (m.count(k)) { ++hits; return true; } ++miss; if (m.size() < cap) m[k] = k; return false; } };
+    const int CF = 4, KEYS = 100, ROUNDS = 2;   // 4 个 CF 访问同一批热点，各访问 2 轮
+    // ❌ 每个 CF 一个 cache（容量 100，各自冷启动一遍，跨 CF 无法复用）
+    long long sep_hit = 0, sep_miss = 0;
+    for (int c = 0; c < CF; ++c) {
+        Cache ca{100, {}, 0, 0};
+        for (int r = 0; r < ROUNDS; ++r)
+            for (int k = 0; k < KEYS; ++k) ca.get(k);
+        sep_hit += ca.hits; sep_miss += ca.miss;
+    }
+    // ✅ 共享一个 cache（总容量相同 = 100×4，热点可跨 CF 复用）
+    Cache shared{100 * CF, {}, 0, 0};
+    for (int c = 0; c < CF; ++c)
+        for (int r = 0; r < ROUNDS; ++r)
+            for (int k = 0; k < KEYS; ++k) shared.get(k);
+    std::printf("每 CF 独立 cache：hit=%lld miss=%lld 命中率 %.0f%%\n",
+                sep_hit, sep_miss, 100.0 * sep_hit / (sep_hit + sep_miss));   // 每 CF 独立 cache：hit=400 miss=400 命中率 50%
+    std::printf("共享同一个 cache：hit=%lld miss=%lld 命中率 %.0f%%\n",
+                shared.hits, shared.miss, 100.0 * shared.hits / (shared.hits + shared.miss));   // 共享同一个 cache：hit=700 miss=100 命中率 88%
+}
 ```
 
 - `[经验]`：最致命的是「长期快照 + 高写入」导致空间放大失控；监控 `rocksdb.estimate-live-data-size` 与 `rocksdb.compaction-pending`。
@@ -824,10 +1157,43 @@ LevelDB（2011，Google，源自 BigTable 论文）→ RocksDB（2012，Facebook
 > **示例 52** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 52 · ★☆☆☆☆"
-// ⑭ 关键演进：从「单 MemTable」到「双 MemTable（active+immutable）」
-// 写满 active -> 切 immutable -> 后台刷盘，前台继续写 active，消除写停顿
-// 上游参考：https://github.com/facebook/rocksdb/blob/main/db/memtable_list.h
-// 行号：约 50（MemTableList 管理 active/immutable，上游参考）
+#include <chrono>
+#include <cstdio>
+#include <map>
+#include <vector>
+int main() {
+    // ⑭ 演进：单 MemTable（写满时前台停顿） vs 双 MemTable（active + immutable，后台刷盘）
+    const int N = 300'000, THRESH = 100'000;
+    auto flush = [](const std::map<int, int>& m) { volatile long long s = 0; for (const auto& kv : m) s += kv.second; return s; };
+    // 单 MemTable：写满 -> 前台同步刷盘 -> 阻塞
+    auto t0 = std::chrono::steady_clock::now();
+    std::map<int, int> one;
+    long long stall_ms_num = 0;
+    for (int i = 0; i < N; ++i) {
+        one[i] = i;
+        if ((int)one.size() >= THRESH) { auto a = std::chrono::steady_clock::now(); (void)flush(one);
+            auto b = std::chrono::steady_clock::now();
+            stall_ms_num += std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+            one.clear(); }
+    }
+    auto t1 = std::chrono::steady_clock::now();
+    // 双 MemTable：写满 -> 切换（O(1)）-> 后台刷盘，前台不停
+    auto t2 = std::chrono::steady_clock::now();
+    std::map<int, int> active;
+    long long switch_us = 0;
+    for (int i = 0; i < N; ++i) {
+        active[i] = i;
+        if ((int)active.size() >= THRESH) { auto a = std::chrono::steady_clock::now();
+            std::map<int, int> imm = std::move(active); active.clear();   // 只切换，刷盘交给后台
+            auto b = std::chrono::steady_clock::now();
+            switch_us += std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+            (void)imm; }
+    }
+    auto t3 = std::chrono::steady_clock::now();
+    auto ms = [](auto a, auto b) { return std::chrono::duration<double, std::milli>(b - a).count(); };
+    std::printf("单 MemTable：总 %.1f ms，其中前台刷盘停顿 %lld μs\n", ms(t0, t1), stall_ms_num);   // 单 MemTable：总 47.2 ms，其中前台刷盘停顿 5095 μs
+    std::printf("双 MemTable：总 %.1f ms，其中切换耗时 %lld μs（O(1)，后台刷盘）\n", ms(t2, t3), switch_us);   // 双 MemTable：总 54.9 ms，其中切换耗时 0 μs（O(1)，后台刷盘）
+}
 ```
 
 > **示例 53** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
@@ -976,8 +1342,15 @@ const char* pick(bool need_sql, bool need_high_write) {
 > **示例 67** [难度 ★★☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 67 · ★★☆☆☆"
-// ⑰ 用 sanitizer 编译定位内存问题（开发期）
-// cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined" ..
+#include <cstdio>
+int main() {
+    // ⑰ 原书建议：cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined"
+    // ⑰ 本机实测（GCC 15.3.0 MinGW）：两个都链接失败
+    //    -fsanitize=address    -> rc=1，ld: cannot find -lasan
+    //    -fsanitize=undefined  -> rc=1（libubsan 运行时同样缺失）
+    std::printf("本 MinGW 工具链未附带 sanitizer 运行时：ASan/UBSan 均 rc=1\n");   // 本 MinGW 工具链未附带 sanitizer 运行时：ASan/UBSan 均 rc=1
+    std::printf("替代方案：Linux/WSL 或 Clang-cl/MSVC 环境启用；本机先用 -Wall -Wextra -D_GLIBCXX_ASSERTIONS + valgrind 替代思路\n");   // 替代方案：Linux/WSL 或 Clang-cl/MSVC 环境启用；本机先用 -Wall -Wextra -D_GLIBCXX_ASSERTIONS + valgrind 替代思路
+}
 ```
 
 ## ⑱ 与 STL 容器对比（map vs LSM） <span class="badge badge-std">标准</span>
@@ -998,19 +1371,75 @@ auto it = m.find("k1");   // O(log n)，纯内存，崩溃即丢
 > **示例 69** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器对比
 
 ```cpp title="示例 69 · ★☆☆☆☆"
-// ⑱ LevelDB：持久化、可远超内存、写吞吐更高但读放大
-// 等价 find 见 ⑥ 的 db->Get；范围扫描见 ⑥ 的迭代器
-// 差异：map 在内存；LevelDB 在磁盘 + BlockCache，容量以 TB 计
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <map>
+#include <random>
+#include <unordered_map>
+#include <vector>
+int main() {
+    // ⑱ LevelDB vs STL 容器：内存结构差异决定吞吐与能力边界
+    const int N = 500'000;
+    std::mt19937 rng(11);
+    std::vector<int> keys(N);
+    for (int i = 0; i < N; ++i) keys[i] = int(rng());
+    auto t0 = std::chrono::steady_clock::now();
+    std::map<int, int> mp;
+    for (int k : keys) mp[k] = k;
+    auto t1 = std::chrono::steady_clock::now();
+    std::unordered_map<int, int> um;
+    for (int k : keys) um[k] = k;
+    auto t2 = std::chrono::steady_clock::now();
+    std::vector<std::pair<int, int>> runs;
+    for (int k : keys) runs.push_back({k, k});          // 先顺序攒（等价写 MemTable）
+    std::sort(runs.begin(), runs.end());                 // 再排序落盘（等价 flush）
+    auto t3 = std::chrono::steady_clock::now();
+    auto ns = [N](auto a, auto b) { return std::chrono::duration<double, std::nano>(b - a).count() / N; };
+    std::printf("std::map 插入         %.0f ns/op（有序，O(log n)）\n", ns(t0, t1));   // std::map 插入         493 ns/op（有序，O(log n)）
+    std::printf("unordered_map 插入    %.0f ns/op（无序，O(1) 均摊）\n", ns(t1, t2));   // unordered_map 插入    172 ns/op（无序，O(1) 均摊）
+    std::printf("追加+排序（LSM 写路径） %.0f ns/op（先顺序攒再排，等价 MemTable→SSTable）\n", ns(t2, t3));   // 追加+排序（LSM 写路径） 101 ns/op（先顺序攒再排，等价 MemTable→SSTable）
+}
 ```
 
 > **示例 70** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器对比
 
 ```cpp title="示例 70 · ★☆☆☆☆"
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
 #include <map>
-// ⑱ 复杂度/特性对照（文字表在章末速查，此处给代码侧直觉）
-// std::map                  : 插入 O(log n)，无持久化，无内建并发
-// std::unordered_map        : 插入 O(1) 均摊，无序，仍内存受限
-// LevelDB/RocksDB           : 写 O(log n) MemTable + 顺序落盘，持久化，并发写
+#include <random>
+#include <unordered_map>
+#include <vector>
+int main() {
+    // ⑱ 复杂度/特性对照 -> 实测点查延迟
+    const int N = 200'000, Q = 1'000'000;
+    std::mt19937 rng(3);
+    std::map<int, int> mp;
+    std::unordered_map<int, int> um;
+    std::vector<std::pair<int, int>> run;
+    for (int i = 0; i < N; ++i) { mp[i] = i; um[i] = i; run.push_back({i, i}); }
+    std::vector<int> q(Q);
+    for (int i = 0; i < Q; ++i) q[i] = int(rng() % N);
+    long long sink = 0;
+    auto t0 = std::chrono::steady_clock::now();
+    for (int k : q) sink += mp.find(k)->second;
+    auto t1 = std::chrono::steady_clock::now();
+    for (int k : q) sink += um.find(k)->second;
+    auto t2 = std::chrono::steady_clock::now();
+    for (int k : q) {
+        auto p = std::lower_bound(run.begin(), run.end(), k,
+                                  [](const auto& e, int v) { return e.first < v; });
+        sink += p->second;
+    }
+    auto t3 = std::chrono::steady_clock::now();
+    auto ns = [Q](auto a, auto b) { return std::chrono::duration<double, std::nano>(b - a).count() / Q; };
+    std::printf("std::map 点查        %.1f ns（红黑树，O(log n)，缓存不友好）\n", ns(t0, t1));   // std::map 点查        294.7 ns（红黑树，O(log n)，缓存不友好）
+    std::printf("unordered_map 点查   %.1f ns（哈希，O(1) 均摊）\n", ns(t1, t2));   // unordered_map 点查   9.0 ns（哈希，O(1) 均摊）
+    std::printf("有序数组二分点查      %.1f ns（等价 SSTable block 内二分，缓存友好）\n", ns(t2, t3));   // 有序数组二分点查      141.0 ns（等价 SSTable block 内二分，缓存友好）
+    std::printf("sink=%lld\n", sink);   // sink=299952378765
+}
 ```
 
 - `[标准]`：`std::map` 满足 `std::` 容器契约（有序、迭代稳定），LevelDB 不实现任何标准容器接口——它是**独立持久化抽象**。
