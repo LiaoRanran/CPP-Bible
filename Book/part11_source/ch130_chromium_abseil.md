@@ -11,12 +11,22 @@
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · Chromium / Abseil 基础设施
 
 ```cpp title="示例 1 · ★★☆☆☆"
-// ① 本章两条主线对应的"最小可用心智模型"
-// Abseil  = Google 开源的 C++ 基础库（容器/字符串/时间/同步），标准库的"预演场"
-// Chromium base = Chromium 的底层基础设施（任务/线程/内存/字符串），浏览器级工程的底座
-#include <cstddef>
+#include <cstdio>
+// ① 本章两条主线的「最小可用心智模型」
 struct MentalModel { const char* abseil; const char* chromium_base; };
-// 典型组合：业务代码用 absl::flat_hash_map 存数据，用 base::ThreadPool 跑任务
+int main() {
+    MentalModel m{"Google 开源 C++ 基础库（容器/字符串/时间/同步），标准库的预演场",
+                  "Chromium 底层基础设施（任务/线程/内存/字符串），浏览器级工程底座"};
+    std::printf("Abseil        : %s\n", m.abseil);   // Abseil        : Google 开源 C++ 基础库（容器/字符串/时间/同步），标准库的预演场
+    std::printf("Chromium base : %s\n", m.chromium_base);   // Chromium base : Chromium 底层基础设施（任务/线程/内存/字符串），浏览器级工程底座
+#if __has_include(<absl/container/flat_hash_map.h>)
+    int has_absl = 1;
+#else
+    int has_absl = 0;
+#endif
+    std::printf("__has_include(<absl/container/flat_hash_map.h>) = %d → 本机未装 Abseil，\n", has_absl);   // __has_include(<absl/container/flat_hash_map.h>) = 0 → 本机未装 Abseil，
+    std::printf("故本章改用「标准库 + 手写等价实现」取证（机制一致，不含上游 SIMD 优化）\n");   // 故本章改用「标准库 + 手写等价实现」取证（机制一致，不含上游 SIMD 优化）
+}
 ```
 
 ## ⓪ 历史动机：Chromium / Abseil 的来龙去脉
@@ -160,12 +170,67 @@ consume(arr);   // 零拷贝视图
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·Abseil]源码剖析：上游
 
 ```cpp title="示例 8 · ★★☆☆☆"
-// ③ 下游真正干活的是 raw_hash_map（Swiss Table / 开放寻址 + 元数据字节）
-// 文件：https://github.com/abseil/abseil-cpp/blob/master/absl/container/internal/raw_hash_map.h
-// 行号：65
-// 上游参考：raw_hash_map 持有一块"控制字节(ctrl) + slot"的连续数组；
-// ctrl[i] 编码本槽状态（Empty/Deleted/Full + 7 位哈希片段 H2），
-// 查找时先用 H1 定位组(group)，再用 SIMD 比较 ctrl 与 H2，命中后再比 key。
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <functional>
+#include <vector>
+// ③ Swiss Table 核心机制的最小复刻：控制字节(ctrl) + 开放寻址 + 7 位哈希片段 H2
+//    上游用 SIMD 一次比一组(16 槽)，这里用线性探测表达同样思想
+class SwissMini {
+    static constexpr unsigned char EMPTY = 0x80, DELETED = 0xFE;
+    std::vector<unsigned char> ctrl_;                  // 每槽 1 字节状态
+    std::vector<std::pair<int, int>> slots_;           // 连续存储的键值对
+    std::size_t mask_ = 0;
+    static std::uint64_t h(std::int64_t k) { return std::hash<std::int64_t>()(k); }
+public:
+    explicit SwissMini(std::size_t cap_pow2) : ctrl_(cap_pow2, EMPTY), slots_(cap_pow2), mask_(cap_pow2 - 1) {}
+    void insert(int k, int v) {
+        std::size_t i = (h(k) >> 7) & mask_;           // H1 定位起始槽
+        unsigned char h2 = static_cast<unsigned char>(h(k) & 0x7F);   // H2 存进 ctrl
+        for (std::size_t p = 0; p <= mask_; ++p) {
+            std::size_t idx = (i + p) & mask_;
+            if (ctrl_[idx] == EMPTY || ctrl_[idx] == DELETED) {
+                ctrl_[idx] = h2; slots_[idx] = {k, v}; return;
+            }
+        }
+    }
+    bool find(int k, int& v) const {
+        std::size_t i = (h(k) >> 7) & mask_;
+        unsigned char h2 = static_cast<unsigned char>(h(k) & 0x7F);
+        for (std::size_t p = 0; p <= mask_; ++p) {
+            std::size_t idx = (i + p) & mask_;
+            if (ctrl_[idx] == EMPTY) return false;                     // 探到空槽即可断定不存在
+            if (ctrl_[idx] == h2 && slots_[idx].first == k) { v = slots_[idx].second; return true; }
+        }
+        return false;
+    }
+    void erase(int k) {
+        std::size_t i = (h(k) >> 7) & mask_;
+        unsigned char h2 = static_cast<unsigned char>(h(k) & 0x7F);
+        for (std::size_t p = 0; p <= mask_; ++p) {
+            std::size_t idx = (i + p) & mask_;
+            if (ctrl_[idx] == EMPTY) return;
+            if (ctrl_[idx] == h2 && slots_[idx].first == k) { ctrl_[idx] = DELETED; return; }
+        }
+    }
+    std::size_t count_state(unsigned char st) const {
+        std::size_t n = 0;
+        for (unsigned char c : ctrl_) if (c == st) ++n;
+        return n;
+    }
+    std::size_t capacity() const { return ctrl_.size(); }
+};
+int main() {
+    SwissMini t(2048);
+    for (int i = 0; i < 1000; ++i) t.insert(i * 7, i);
+    int hits = 0;
+    for (int i = 0; i < 1000; ++i) { int v = -1; if (t.find(i * 7, v) && v == i) ++hits; }
+    std::printf("插入 1000 键后查找命中 %d/1000（容量 %zu）\n", hits, t.capacity());   // 插入 1000 键后查找命中 1000/1000（容量 2048）
+    std::printf("ctrl 字节统计：Empty=%zu Deleted=%zu\n", t.count_state(0x80), t.count_state(0xFE));   // ctrl 字节统计：Empty=1048 Deleted=0
+    t.erase(0); t.erase(7);
+    std::printf("删 2 个后 Deleted=%zu（墓碑：删除用标记而非真清空，否则探测链会断）\n", t.count_state(0xFE));   // 删 2 个后 Deleted=2（墓碑：删除用标记而非真清空，否则探测链会断）
+}
 ```
 
 - `[实现·Abseil]`：Abseil 的核心技巧是**控制字节(ctrl)与数据(slot)分离存储**——用一条 `pcmpeqb`/`movmask` 即可一次比较一组 16 个槽的 H2，避免逐槽解引用，这是 `flat_hash_map` 比链表式 `unordered_map` 快的根本原因。
@@ -512,13 +577,53 @@ std::string dbg = absl::StrCat("id=", 7, " state=", "run");
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：flathashmap vs
 
 ```cpp title="示例 24 · ★★☆☆☆"
-// ⑪-a 基准思路：same workload，换容器，比 ns/op
-#include <unordered_map>
-#include <string>
+#include <chrono>
+#include <cstdio>
+#include <functional>
 #include <map>
-std::unordered_map<std::string, int> um;
-absl::flat_hash_map<std::string, int> fm;
-// 统一插入 1e6 个 key，测总耗时与缓存未命中数
+#include <unordered_map>
+#include <vector>
+// ⑪-a 基准：同一 workload 换容器比 ns/op（Abseil 未安装，用最小开放寻址表代表 flat_hash_map 的机制）
+struct FlatMini {
+    std::vector<int> keys, vals;
+    std::vector<unsigned char> used;
+    std::size_t mask;
+    explicit FlatMini(std::size_t cap_pow2) : keys(cap_pow2), vals(cap_pow2), used(cap_pow2, 0), mask(cap_pow2 - 1) {}
+    void insert(int k, int v) {
+        std::size_t i = (std::size_t)std::hash<int>()(k) & mask;
+        while (used[i]) i = (i + 1) & mask;
+        used[i] = 1; keys[i] = k; vals[i] = v;
+    }
+    int find(int k) const {
+        std::size_t i = (std::size_t)std::hash<int>()(k) & mask;
+        while (used[i]) { if (keys[i] == k) return vals[i]; i = (i + 1) & mask; }
+        return -1;
+    }
+};
+int main() {
+    constexpr int N = 200'000, Q = 2'000'000;
+    std::vector<int> keys(N);
+    for (int i = 0; i < N; ++i) keys[i] = i * 2654435761 % N;
+    std::unordered_map<int, int> um;
+    std::map<int, int> tree;
+    FlatMini flat(1 << 20);
+    for (int k : keys) { um[k] = k; tree[k] = k; flat.insert(k, k); }
+    std::vector<int> q(Q);
+    for (int i = 0; i < Q; ++i) q[i] = keys[i % N];
+    long long sink = 0;
+    auto t0 = std::chrono::steady_clock::now();
+    for (int k : q) sink += um.find(k)->second;
+    auto t1 = std::chrono::steady_clock::now();
+    for (int k : q) sink += tree.find(k)->second;
+    auto t2 = std::chrono::steady_clock::now();
+    for (int k : q) sink += flat.find(k);
+    auto t3 = std::chrono::steady_clock::now();
+    auto ns = [Q](auto a, auto b) { return std::chrono::duration<double, std::nano>(b - a).count() / Q; };
+    std::printf("std::unordered_map 查找 %.1f ns/op（节点式，指针追逐）\n", ns(t0, t1));   // std::unordered_map 查找 8.1 ns/op（节点式，指针追逐）
+    std::printf("std::map 查找          %.1f ns/op（红黑树）\n", ns(t1, t2));   // std::map 查找          145.7 ns/op（红黑树）
+    std::printf("开放寻址(flat 机制)     %.1f ns/op（连续内存）\n", ns(t2, t3));   // 开放寻址(flat 机制)     4.9 ns/op（连续内存）
+    std::printf("sink=%lld（三者结果一致，只比速度）\n", sink);   // sink=599997000000（三者结果一致，只比速度）
+}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能：flathashmap vs
@@ -533,10 +638,37 @@ for (int i = 0; i < (1 << 20); ++i) m[i] = i;
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能：flathashmap vs
 
 ```cpp title="示例 26 · ★★☆☆☆"
-// ⑪-c 测量缓存行为（perf 思路，非本机运行）
-// perf stat -e cache-misses,instructions ./bench_flat
-// perf stat -e cache-misses,instructions ./bench_unordered
-// 典型结论：flat_hash_map 的 cache-misses 显著更低（连续内存）
+#include <cstdio>
+#include <cstdlib>
+#include <new>
+#include <unordered_map>
+#include <vector>
+static long long g_bytes = 0, g_allocs = 0;
+void* operator new(std::size_t n) { g_bytes += (long long)n; ++g_allocs; void* p = std::malloc(n); return p; }
+void operator delete(void* p) noexcept { std::free(p); }
+void operator delete(void* p, std::size_t) noexcept { std::free(p); }
+// ⑪-c 缓存/内存行为：连续内存（开放寻址）vs 节点式（每元素一个节点）
+struct FlatMini {
+    std::vector<int> keys, vals;
+    explicit FlatMini(std::size_t n) : keys(n), vals(n) {}
+};
+int main() {
+    constexpr int N = 100'000;
+    g_bytes = 0; g_allocs = 0;
+    {
+        std::unordered_map<int, int> um;
+        for (int i = 0; i < N; ++i) um[i] = i;
+        std::printf("unordered_map %d 元素：分配 %lld 次 / %lld 字节（每元素一个节点）\n", N, g_allocs, g_bytes);   // unordered_map 100000 元素：分配 100014 次 / 4326480 字节（每元素一个节点）
+    }
+    g_bytes = 0; g_allocs = 0;
+    {
+        FlatMini flat(N * 2);
+        for (int i = 0; i < N; ++i) { flat.keys[i] = i; flat.vals[i] = i; }
+        std::printf("开放寻址     %d 元素：分配 %lld 次 / %lld 字节（两块连续数组）\n", N, g_allocs, g_bytes);   // 开放寻址     100000 元素：分配 2 次 / 1600000 字节（两块连续数组）
+    }
+    std::printf("→ 连续内存既省分配次数也省指针追逐，这正是 flat_hash_map 缓存友好的根源\n");   // → 连续内存既省分配次数也省指针追逐，这正是 flat_hash_map 缓存友好的根源
+    std::printf("（上游用 perf stat -e cache-misses 量化；本机无 perf，改用分配次数/字节数佐证）\n");   // （上游用 perf stat -e cache-misses 量化；本机无 perf，改用分配次数/字节数佐证）
+}
 ```
 
 - `[标准]`：标准未规定 `unordered_map` 的内部结构，多数实现是"桶数组 + 链表/指针"，每次探测追指针，缓存不友好。
@@ -600,8 +732,26 @@ for (auto it = m.begin(); it != m.end(); ) {
 > **示例 32** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 32 · ★★☆☆☆"
-// ⑬-c 陷阱3：key 类型必须稳定 hash/eq；用 mutable 字段做 key 会破坏查找
-struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出 bug
+#include <cstdio>
+#include <functional>
+#include <unordered_map>
+// ⑬-c 陷阱：参与 hash/eq 的字段必须稳定；mutable 字段进 hash 会直接破坏查找
+struct BadKey { int id; mutable int cached; };
+struct BadHash { std::size_t operator()(const BadKey& k) const {
+    return std::hash<int>()(k.id ^ k.cached); } };            // ⚠ cached 参与 hash
+struct BadEq { bool operator()(const BadKey& a, const BadKey& b) const {
+    return a.id == b.id && a.cached == b.cached; } };
+int main() {
+    std::unordered_map<BadKey, int, BadHash, BadEq> m;
+    m[{1, 0}] = 100;
+    auto before = m.find({1, 0}) != m.end();
+    const BadKey& k = m.begin()->first;   // key 在 map 里是 const…
+    k.cached = 7;                          // …但 mutable 让它可以被改 → 桶位置失效
+    auto after = m.find({1, 0}) != m.end();
+    std::printf("插入后 find({1,0}) = %d\n", before);   // 插入后 find({1,0}) = 1
+    std::printf("改 mutable 字段后 find({1,0}) = %d（键已不可达，且清理时行为未定义）\n", after);   // 改 mutable 字段后 find({1,0}) = 0（键已不可达，且清理时行为未定义）
+    std::printf("正确做法：hash/eq 只用不可变字段（此处只应看 id）\n");   // 正确做法：hash/eq 只用不可变字段（此处只应看 id）
+}
 ```
 
 - `[经验]`：与 `std::unordered_map`（节点式，引用稳定）相反，`flat_hash_map` 是**值连续存储**，任何可能 rehash 的操作都会让所有引用/迭代器失效。需要稳定句柄时改用 `unordered_map` 或用 `absl::flat_hash_set` 存 `std::unique_ptr<T>`。
@@ -621,17 +771,54 @@ struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出
 > **示例 34** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 34 · ★☆☆☆☆"
+#include <cstdio>
+#include <string>
 #include <string_view>
-// ⑭-b Abseil 的 "absl::string_view" 在 C++17 后建议改用 std::string_view
-// 迁移：using string_view = std::string_view;  // 逐步去 absl 依赖
+#include <version>
+// ⑭-b absl::string_view → C++17 起用 std::string_view（Abseil 自己也在推动这次迁移）
+int main() {
+    std::string s = "hello world, abseil";
+    std::string_view sv(s);
+    std::printf("__cpp_lib_string_view = %ld（标准已提供，无需 absl::string_view）\n",
+                (long)__cpp_lib_string_view);   // __cpp_lib_string_view = 201803（标准已提供，无需 absl::string_view）
+    std::printf("view = \"%.*s\" size=%zu（不拥有数据、零拷贝切片）\n",
+                (int)sv.size(), sv.data(), sv.size());   // view = "hello world, abseil" size=19（不拥有数据、零拷贝切片）
+    std::printf("sizeof(std::string)=%zu sizeof(std::string_view)=%zu（只含指针+长度）\n",
+                sizeof(s), sizeof(sv));   // sizeof(std::string)=32 sizeof(std::string_view)=16（只含指针+长度）
+    std::string_view sub = sv.substr(0, 5);
+    std::printf("substr(0,5) = \"%.*s\"（切片不复制底层字符）\n", (int)sub.size(), sub.data());   // substr(0,5) = "hello"（切片不复制底层字符）
+}
 ```
 
 > **示例 35** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 35 · ★☆☆☆☆"
-// ⑭-c Chromium 正在把 base::Callback 迁移到 base::OnceCallback/RepeatingCallback
-// 旧：base::Callback<void()> cb = base::Bind([]{});  // 已弃用
-// 新：base::OnceClosure cb = base::BindOnce([]{});
+#include <cstdio>
+#include <functional>
+#include <utility>
+#include <version>
+// ⑭-c base::Callback → OnceCallback/RepeatingCallback；标准侧对应：
+//     OnceCallback      ↔ C++23 std::move_only_function（只能移动，语义=「只能执行一次」）
+//     RepeatingCallback ↔ std::function（可拷贝、可重复执行）
+int main() {
+#ifdef __cpp_lib_move_only_function
+    std::printf("__cpp_lib_move_only_function = %ld（标准已有 OnceCallback 的等价物）\n",
+                (long)__cpp_lib_move_only_function);   // __cpp_lib_move_only_function = 202110（标准已有 OnceCallback 的等价物）
+#else
+    std::printf("__cpp_lib_move_only_function = 未定义\n");
+#endif
+    int calls = 0;
+    std::move_only_function<void()> once = [&calls] { ++calls; };
+    once();
+    // auto copy = once;      // ❌ 编译错误：move_only_function 不可拷贝（等同 OnceCallback 的约束）
+    auto moved = std::move(once);
+    moved();
+    std::function<void()> repeat = [&calls] { ++calls; };
+    auto r2 = repeat;         // ✅ 可拷贝（等同 RepeatingCallback）
+    r2(); r2();
+    std::printf("调用次数 = %d（once 转移后调用 + repeat 拷贝后两次）\n", calls);   // 调用次数 = 4（once 转移后调用 + repeat 拷贝后两次）
+    std::printf("迁移建议：新代码直接用 std::function / std::move_only_function，减少 base:: 依赖\n");   // 迁移建议：新代码直接用 std::function / std::move_only_function，减少 base:: 依赖
+}
 ```
 
 - `[经验]`：两套库都在"向标准靠拢"——新代码优先标准类型，老代码用别名逐步去依赖，降低长期维护成本。
@@ -670,11 +857,37 @@ base::ThreadPool::PostTask(
 > **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 39 · ★☆☆☆☆"
+#include <chrono>
+#include <cstdio>
+#include <functional>
 #include <map>
-// ⑮-d 容器选型表（速查，详见第⑳节）
-// 需要稳定引用       -> std::unordered_map / std::map
-// 需要极致查找性能   -> absl::flat_hash_map
-// 需要有序遍历       -> std::map / absl::btree_map
+#include <unordered_map>
+#include <vector>
+// ⑮-d 容器选型表 —— 执行版（按需求挑容器，并附本机实测的查找延迟）
+static const char* pick(bool stable_refs, bool ordered, bool max_speed) {
+    if (ordered) return "std::map / absl::btree_map（有序遍历）";
+    if (max_speed) return "absl::flat_hash_map（开放寻址，极致查找）";
+    if (stable_refs) return "std::unordered_map（节点式，引用稳定）";
+    return "std::unordered_map";
+}
+int main() {
+    std::printf("需要稳定引用     -> %s\n", pick(true, false, false));   // 需要稳定引用     -> std::unordered_map（节点式，引用稳定）
+    std::printf("需要有序遍历     -> %s\n", pick(false, true, false));   // 需要有序遍历     -> std::map / absl::btree_map（有序遍历）
+    std::printf("需要极致查找性能 -> %s\n", pick(false, false, true));   // 需要极致查找性能 -> absl::flat_hash_map（开放寻址，极致查找）
+    // 本机实测（20 万元素 / 200 万次查找，见示例 24）：unordered_map 节点式 vs 开放寻址
+    constexpr int N = 200'000, Q = 1'000'000;
+    std::unordered_map<int, int> um;
+    std::vector<int> keys(N);
+    for (int i = 0; i < N; ++i) { keys[i] = i * 2654435761 % N; um[keys[i]] = i; }
+    long long sink = 0;
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < Q; ++i) sink += um.find(keys[i % N])->second;
+    auto t1 = std::chrono::steady_clock::now();
+    std::printf("实测 std::unordered_map 查找 %.1f ns/op（开放寻址版见示例 24，通常更快且更省内存）\n",
+                std::chrono::duration<double, std::nano>(t1 - t0).count() / Q);   // 实测 std::unordered_map 查找 10.0 ns/op（开放寻址版见示例 24，通常更快且更省内存）
+    std::printf("⚠️ 代价：开放寻址在 rehash / 删除时可能失效引用，故「引用稳定」场景不能用它\n");   // ⚠️ 代价：开放寻址在 rehash / 删除时可能失效引用，故「引用稳定」场景不能用它
+    std::printf("sink=%lld\n", sink);   // sink=99999500000
+}
 ```
 
 - `[经验]`：先想"接口边界用 std，内部热点用 absl"；`absl::Status` + `string_view` + `flat_hash_map` 是 Abseil 的黄金三件套。
