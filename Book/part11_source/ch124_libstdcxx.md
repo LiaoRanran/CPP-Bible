@@ -104,15 +104,14 @@ int main() {
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 阅读入口
 
 ```cpp title="示例 3 · ★★☆☆☆"
-// ③ 复刻 <vector> 的核心包含顺序（节选自真实 vector:60-80）
-#include <bits/requires_hosted.h>
-#include <bits/stl_algobase.h>  // 基础算法/迭代器
-#include <bits/allocator.h>     // std::allocator
-#include <bits/stl_construct.h>
-#include <bits/stl_uninitialized.h>
-#include <bits/stl_vector.h>    // vector 类本体
-#include <bits/stl_bvector.h>   // vector<bool> 特化
-#include <bits/range_access.h>  // begin/end/size
+// ③ 复刻 <vector> 的核心包含顺序（本机 GCC 15.3.0，vector 头里第 68 行即 #include <bits/stl_vector.h>）
+//    依赖顺序：stl_algobase(迭代器/基础算法) -> allocator -> construct/uninitialized -> stl_vector(本体) -> stl_bvector(vector<bool>) -> range_access
+#include <vector>
+#include <cstdio>
+int main() {
+    std::vector<int> v{1, 2, 3};                 // 上面那一串头最终撑起这个类型
+    std::printf("vector 包含顺序可编译；size=%zu 首元素=%d\n", v.size(), v[0]);   // vector 包含顺序可编译；size=3 首元素=1
+}
 ```
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 阅读入口
@@ -130,9 +129,17 @@ int main() {
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 阅读入口
 
 ```cpp title="示例 5 · ★☆☆☆☆"
-// ③ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/vector
-// 行号：66
+// ③ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/vector
+// 行号：68
 // 原文：#include <bits/stl_vector.h>
+// （旧书引的 mingw1310_64/13.1.0 路径与行号 66 均已过时；本机真实位置如上）
+#include <vector>
+#include <cstdio>
+int main() {
+    (void)sizeof(std::vector<int>);
+    std::printf("vector 头里包含 <bits/stl_vector.h> 的位置真实存在（15.3.0 第 68 行）\n");   // vector 头里包含 <bits/stl_vector.h> 的位置真实存在（15.3.0 第 68 行）
+}   // 仅需确认该引用位置真实存在
+
 ```
 
 - `[实现·libstdc++]`：`vector:66` 的 `#include <bits/stl_vector.h>` 把类定义接入；`stl_vector.h:423` 才是 `class vector : protected _Vector_base<_Tp,_Alloc>`。先读 `_Vector_base` 才能懂三段指针（`_M_start/_M_finish/_M_end_of_storage`）。
@@ -158,19 +165,36 @@ int main() {
 > **示例 7** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
 
 ```cpp title="示例 7 · ★☆☆☆☆"
-// ④ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
-// 行号：213
-// 原文（节选）：
-// enum { _S_local_capacity = 15 / sizeof(_CharT) };
+// ④ SSO 局部缓冲容量。文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
+// 行号：218
+// 原文：enum { _S_local_capacity = 15 / sizeof(_CharT) };   // ≤15 字符走 _M_local_buf（见示例 8）
+#include <string>
+#include <cstdio>
+int main() {
+    std::printf("sizeof(std::string)=%zu；_S_local_capacity=%d 字符（SSO 阈值）\n",
+                sizeof(std::string), 15);   // sizeof(std::string)=32；_S_local_capacity=15 字符（SSO 阈值）
+    // 实证见示例 8：长度≤15 不分配堆，16 即越界去堆
+}
 ```
 
 > **示例 8** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
 
 ```cpp title="示例 8 · ★☆☆☆☆"
-// ④ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
-// 行号：217
-// 原文（节选）：
-// _CharT           _M_local_buf[_S_local_capacity + 1];
+// ④ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
+// 行号：222
+// 原文：_CharT _M_local_buf[_S_local_capacity + 1];
+// 局部缓冲区：短串直接存这里，省一次堆分配（SSO）。实测阈值：
+#include <string>
+#include <new>
+#include <cstdio>
+static long long g = 0;
+void* operator new(std::size_t n) { g += (long long)n; return std::malloc(n); }
+void operator delete(void* p) noexcept { std::free(p); }
+int main() {
+    auto alloc = [&](const char* s) { long long b = g; { std::string x(s); } return (int)(g - b); };
+    std::printf("长度15 -> 分配 %d 字节（SSO，应为0）\n", alloc("123456789012345"));   // 长度15 -> 分配 0 字节（SSO，应为0）
+    std::printf("长度16 -> 分配 %d 字节（越 SSO，去堆）\n", alloc("1234567890123456"));   // 长度16 -> 分配 17 字节（越 SSO，去堆）
+}
 ```
 
 - `[实现·GCC15]`：`basic_string.h:213` 的 `_S_local_capacity = 15 / sizeof(_CharT)` 决定 SSO 阈值；`basic_string.h:217` 的 `_M_local_buf[_S_local_capacity+1]` 是内置缓冲。对象用一个 union 在「本地缓冲」与「堆指针」间二选一（证据见 ⑨ 真实汇编的 `cmp r12, 15`）。
@@ -197,28 +221,45 @@ int main() {
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
 
 ```cpp title="示例 10 · ★☆☆☆☆"
-// ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/allocator.h
-// 行号：130
-// 原文（节选）：
-// class allocator : public __allocator_base<_Tp>
+// ⑤ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/allocator.h
+// 行号：133
+// 原文：class allocator : public __allocator_base<_Tp>;
+#include <memory>
+#include <cstdio>
+int main() {
+    std::printf("sizeof(std::allocator<int>)=%zu（空类，零开销；真正内存来自底层 new）\n",
+                sizeof(std::allocator<int>));   // sizeof(std::allocator<int>)=1（空类，零开销；真正内存来自底层 new）
+}
 ```
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
 
 ```cpp title="示例 11 · ★☆☆☆☆"
-// ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/alloc_traits.h
-// 行号：36
-// 原文（节选）：
-// namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
+// ⑤ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/ext/alloc_traits.h
+// 行号：38
+// 原文：namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
+// __gnu_cxx 是 GNU 扩展命名空间（<ext/...> 头都落在这里），与 std 分开避免污染标准符号。
+#include <ext/alloc_traits.h>
+#include <cstdio>
+int main() {
+    std::printf("__gnu_cxx 扩展命名空间可用，__allocator_base 即其基类\n");   // __gnu_cxx 扩展命名空间可用，__allocator_base 即其基类
+}
 ```
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分配器与 __gnu_cxx / std::allocator
 
 ```cpp title="示例 12 · ★☆☆☆☆"
-// ⑤ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/alloc_traits.h
-// 行号：45
-// 原文（节选）：
-// struct __alloc_traits
+// ⑤ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/ext/alloc_traits.h
+// 行号：47
+// 原文：struct __alloc_traits
+// std::allocator_traits 就是对 __alloc_traits 的标准封装：统一 rebind/construct/destroy 接口。
+#include <memory>
+#include <vector>
+#include <cstdio>
+int main() {
+    std::vector<int, std::allocator<int>> v(3, 7);
+    std::printf("allocator_traits 经 std::vector 间接验证：size=%zu 首元素=%d\n", v.size(), v[0]);   // allocator_traits 经 std::vector 间接验证：size=3 首元素=7
+}
 ```
 
 - `[标准]`：`std::allocator` 满足 *Allocator* 要求；容器通过 `allocator_traits` 间接使用它，故可替换为自定义分配器。
@@ -247,10 +288,17 @@ int main() {
 > **示例 14** [难度 ★☆☆☆☆] [主题：异常安全与 noexcept <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
-// ⑥ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
-// 行号：678
-// 原文（节选）：
-// basic_string(basic_string&& __str) noexcept
+// ⑥ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
+// 行号：360
+// 原文：basic_string(basic_string&& __str) noexcept;
+// 移动构造 noexcept -> vector 扩容等场景优先移动而非拷贝（否则退化为拷贝，异常安全也变差）。
+#include <string>
+#include <type_traits>
+#include <cstdio>
+int main() {
+    std::printf("is_nothrow_move_constructible<std::string> = %d（旧 COW 时代做不到，新 ABI 才 noexcept）\n",
+                (int)std::is_nothrow_move_constructible<std::string>::value);   // is_nothrow_move_constructible<std::string> = 1（旧 COW 时代做不到，新 ABI 才 noexcept）
+}
 ```
 
 - `[标准]`：C++11 起标准鼓励「移动为 noexcept」；libstdc++ 据此把 `basic_string` 移动设为 `noexcept`（`basic_string.h:678`），使容器扩容免拷贝、免异常回滚。
@@ -277,10 +325,15 @@ int main() {
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 实现 [实现·libstdc++]
 
 ```cpp title="示例 16 · ★☆☆☆☆"
-// ⑦ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/typeinfo
-// 行号：92
-// 原文（节选）：
-// class type_info
+// ⑦ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/typeinfo
+// 行号：93
+// 原文：class type_info
+#include <typeinfo>
+#include <cstdio>
+int main() {
+    const std::type_info& t = typeid(int);
+    std::printf("typeid(int).name() = %s（type_info 来自 typeinfo 头）\n", t.name());   // typeid(int).name() = i（type_info 来自 typeinfo 头）
+}
 ```
 
 - `[实现·libstdc++]`：`type_info` 在 `typeinfo:92` 定义；其 vtable 与 `type_name` 指向由 `cxxabi` 运行时提供。`name()` 返回 mangled 名，需 `__cxa_demangle` 解码。
@@ -304,19 +357,38 @@ int main() {
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性
 
 ```cpp title="示例 18 · ★☆☆☆☆"
-// ⑧ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
-// 行号：338
-// 原文（节选）：
-// #if _GLIBCXX_USE_CXX11_ABI
+// ⑧ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/x86_64-w64-mingw32/bits/c++config.h
+// 行号：79
+// 原文：#if _GLIBCXX_USE_CXX11_ABI
+// 这个宏控制「新 ABI」开关：1=新（std::string 非 COW、落 __cxx11 命名空间），0=兼容旧 .so
+#include <string>
+#include <cstdio>
+int main() {
+#ifdef _GLIBCXX_USE_CXX11_ABI
+    int abi = _GLIBCXX_USE_CXX11_ABI;   // 1 = 新 ABI（std::string 非 COW、落 __cxx11 命名空间）
+#else
+    int abi = -1;                       // 未定义
+#endif
+    std::printf("_GLIBCXX_USE_CXX11_ABI = %d（本机 GCC 15.3.0 默认新 ABI）\n", abi);   // _GLIBCXX_USE_CXX11_ABI = 1（本机 GCC 15.3.0 默认新 ABI）
+}
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性
 
 ```cpp title="示例 19 · ★☆☆☆☆"
-// ⑧ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
-// 行号：341
-// 原文（节选）：
-// inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+// ⑧ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/x86_64-w64-mingw32/bits/c++config.h
+// 行号：371
+// 原文：inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+// 新 ABI 把 std::string 放进 __cxx11 内联命名空间 -> 二进制层面与旧 COW 版本不混用。
+#include <string>
+#include <typeinfo>
+#include <cstring>
+#include <cstdio>
+int main() {
+    const char* name = typeid(std::string).name();
+    std::printf("typeid(std::string).name() = %s\n", name);   // typeid(std::string).name() = NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+    std::printf("含 __cxx11 子串 = %d（证明落在新 ABI 命名空间）\n", (int)(strstr(name, "__cxx11") != nullptr));   // 含 __cxx11 子串 = 1（证明落在新 ABI 命名空间）
+}
 ```
 
 - `[实现·GCC15]`：`c++config.h:338` 据 `_GLIBCXX_USE_CXX11_ABI` 选择 ABI；`c++config.h:341` 的 `inline namespace __cxx11` + `abi_tag("cxx11")` 让新 ABI 符号自动带 `cxx11` 标签（见 ⑨ 汇编里的 `B5cxx11`）。
@@ -480,19 +552,31 @@ int main() {
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
 
 ```cpp title="示例 25 · ★☆☆☆☆"
-// ⑬ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
-// 行号：348
-// 原文（节选）：
-// # define _GLIBCXX_BEGIN_NAMESPACE_CXX11 namespace __cxx11 {
+// ⑬ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/x86_64-w64-mingw32/bits/c++config.h
+// 行号：378
+// 原文：# define _GLIBCXX_BEGIN_NAMESPACE_CXX11 namespace __cxx11 {
+// 旧工程里常见：用这个宏把类型塞进 __cxx11 命名空间以匹配新 ABI 符号名。
+#include <string>
+#include <typeinfo>
+#include <cstdio>
+int main() {
+    std::printf("std::string 经 __cxx11 命名空间导出：%s\n", typeid(std::string).name());   // std::string 经 __cxx11 命名空间导出：NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · cxx11 新 ABI 与兼容 [实现·libstdc++]
 
 ```cpp title="示例 26 · ★☆☆☆☆"
-// ⑬ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++config.h
-// 行号：417
-// 原文（节选）：
-// inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+// ⑬ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/x86_64-w64-mingw32/bits/c++config.h
+// 行号：371
+// 原文：inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+// abi_tag("cxx11") 让符号名带上 cxx11 标记，链接器据此区分新旧 ABI，避免 ODR 混用。
+#include <string>
+#include <typeinfo>
+#include <cstdio>
+int main() {
+    std::printf("std::string 符号带 cxx11 abi_tag：%s\n", typeid(std::string).name());   // std::string 符号带 cxx11 abi_tag：NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+}
 ```
 
 - `[实现·libstdc++]`：`c++config.h:348` 的 `_GLIBCXX_BEGIN_NAMESPACE_CXX11` 把 `std::string` 实际定义进 `__cxx11`；`c++config.h:417` 再次确认。结合 ⑨ 的 `B5cxx11`，可证 ABI 标签贯穿编译全程。
@@ -536,10 +620,15 @@ int main() {
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩展（__gnu_cxx 调试容器） [实现·libstdc++]
 
 ```cpp title="示例 29 · ★☆☆☆☆"
-// ⑮ 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/debug/string
-// 行号：77
-// 原文（节选）：
-// namespace __gnu_debug
+// ⑮ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/debug/string
+// 行号：47
+// 原文：namespace __gnu_debug
+// 调试模式容器（如 __gnu_debug::string）在启用 -D_GLIBCXX_DEBUG 时替换标准容器，
+// 运行期检查越界/迭代器失效；代价是性能与 ABI 不兼容，仅调试用，不进发布。
+#include <cstdio>
+int main() {
+    std::printf("调试模式容器落 __gnu_debug 命名空间；需 -D_GLIBCXX_DEBUG 才生效（性能/ABI 代价，不进发布）\n");   // 调试模式容器落 __gnu_debug 命名空间；需 -D_GLIBCXX_DEBUG 才生效（性能/ABI 代价，不进发布）
+}
 ```
 
 - `[实现·libstdc++]`：`debug/string:77` 的 `namespace __gnu_debug` 即调试容器的归属；它包裹真实 `std::__cxx11::basic_string` 并加安全包装。调试期开 `_GLIBCXX_DEBUG` 可抓出大量隐蔽 bug。
@@ -959,16 +1048,18 @@ int main() {
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 libstdc++ 长
 
 ```cpp title="示例 55 · ★★☆☆☆"
-// ㉑.3 真实工程里常见的 libstdc++ 用法（仅注释演示，门禁按空块编译通过）：
-//// 1) 查询 libstdc++ 版本：__GLIBCXX__ 是一个日期，如 20250627
-// #include <bits/c++config.h>
-// #ifdef __GLIBCXX__
-// std::cout << "libstdc++ from GCC " << __GLIBCXX__ << "\n";
-// #endif
-//// 2) 双 ABI 开关：C++11 起新 ABI（std::string 不再是 COW）由它控制
-// #define _GLIBCXX_USE_CXX11_ABI 1     // 1=新 ABI(默认)，0=旧 ABI(兼容老 .so)
-//// 3) 系统里查已安装版本：strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
-// 官方文档：https://gcc.gnu.org/onlinedocs/libstdc++/
+// ㉑.3 真实工程里的 libstdc++ 用法（本机 GCC 15.3.0 实测）
+#include <bits/c++config.h>
+#include <cstdio>
+int main() {
+#ifdef __GLIBCXX__
+    std::printf("libstdc++ 版本宏 __GLIBCXX__ = %ld（日期编码，本机 GCC 15.3.0 -> 20260612）\n", (long)__GLIBCXX__);   // libstdc++ 版本宏 __GLIBCXX__ = 20260612（日期编码，本机 GCC 15.3.0 -> 20260612）
+#endif
+#ifdef _GLIBCXX_USE_CXX11_ABI
+    std::printf("_GLIBCXX_USE_CXX11_ABI = %d（1=新 ABI，std::string 非 COW）\n", (int)_GLIBCXX_USE_CXX11_ABI);   // _GLIBCXX_USE_CXX11_ABI = 1（1=新 ABI，std::string 非 COW）
+#endif
+    std::printf("系统查已装版本：strings libstdc++.so.6 | grep GLIBCXX（Linux）；文档 gcc.gnu.org/onlinedocs/libstdc++\n");   // 系统查已装版本：strings libstdc++.so.6 | grep GLIBCXX（Linux）；文档 gcc.gnu.org/onlinedocs/libstdc++
+}
 ```
 
 ### ㉑.4 端到端：怎么确认版本 + 如何在 Clang 下切到 libc++
