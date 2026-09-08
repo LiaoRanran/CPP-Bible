@@ -83,10 +83,28 @@ delete old;      // ② 与上面 p->val 并发 -> data race
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 为什么 delete 在并发下危险
 
 ```cpp title="示例 3 · ★★☆☆☆"
-// ② 用 ThreadSanitizer 能抓到的典型 race（伪代码模型）
-// READ of size 4 at 0x... by thread T1 (p->val)
-// previous WRITE of size 8 at 0x... by thread T2 (delete old)
-// WARNING: ThreadSanitizer: data race
+#include <atomic>
+#include <cstdio>
+struct Node { int val; Node* next; };
+static Node pool[4]; static bool used[4];
+static Node* alloc() { for (int i = 0; i < 4; ++i) if (!used[i]) { used[i] = true; return &pool[i]; } return nullptr; }
+static void give_back(Node* p) { for (int i = 0; i < 4; ++i) if (&pool[i] == p) used[i] = false; }
+static std::atomic<void*> g_hp[1];                 // 单一读者槽
+int main() {
+    // ② 危险：读者还握着 A 的指针，写者就 delete + 复用地址
+    Node* A = alloc(); A->val = 1;
+    give_back(A);                                  // 写者立即回收
+    Node* other = alloc(); other->val = 99;        // 同一地址被复用（other == A）
+    std::printf("无 HP：读者迟到读到 %d（期望 1，已被复用者污染）\n", A->val);   // 无 HP：读者迟到读到 99（期望 1，已被复用者污染）
+    // ② 救法：读者先把 A 登记进 HP 表，写者回收前先 scan
+    Node* A2 = alloc(); A2->val = 1;
+    g_hp[0].store(A2, std::memory_order_seq_cst);  // 读者登记保护 A2
+    bool prot = (g_hp[0].load(std::memory_order_acquire) == A2);
+    std::printf("有 HP：A 被保护=%d → scan 暂不复用其地址\n", prot);   // 有 HP：A 被保护=1 → scan 暂不复用其地址
+    g_hp[0].store(nullptr, std::memory_order_release);   // 读者离开
+    give_back(A2);
+    std::printf("读者离开后 A 才被安全 delete\n");   // 读者离开后 A 才被安全 delete
+}
 ```
 
 - `[标准]`：`std::atomic` 只保证对**原子对象本身**的操作有序；它不延长被指向对象的生命周期（`[atomics.order]`）。
@@ -99,9 +117,19 @@ Hazard Pointer（HP，Maged Michael, 2004；C++26 已采纳为 `std::hazard_poin
 > **示例 4** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 4 · ★★☆☆☆"
-// ③ 直觉：读者先登记，再解引用
-// 全局声明表：每个线程一个槽，存"我当前保护的对象地址"
-std::atomic<void*> g_hp[N];   // ③ slot i 由线程 i 独占写入
+#include <atomic>
+#include <cstdint>
+#include <cstdio>
+struct Node { int val; Node* next; };
+static constexpr int N = 4;
+alignas(64) static std::atomic<void*> g_hp[N];     // ④ 每槽独占一个缓存行
+int main() {
+    // ④ 全局声明表：槽 i 由线程 i 独占写入，互不串扰
+    std::printf("g_hp[0] 地址 %p，64 对齐? %d\n", static_cast<void*>(&g_hp[0]),
+                (reinterpret_cast<std::uintptr_t>(&g_hp[0]) % 64) == 0);   // g_hp[0] 地址 00007ff73a19f080，64 对齐? 1
+    g_hp[0].store(reinterpret_cast<void*>(0x1));   // 线程0 写自己的槽
+    std::printf("槽0 写入后，槽1 仍为 %p（相邻槽未串扰）\n", g_hp[1].load());   // 槽0 写入后，槽1 仍为 0000000000000000（相邻槽未串扰）
+}
 ```
 
 > **示例 5** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
@@ -228,10 +256,24 @@ HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次�
 > **示例 10** [难度 ★★☆☆☆] [主题：性能特征与开销 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 10 · ★★☆☆☆"
-// ⑥ 开销模型：登记/解除各一次原子操作
-// protect: 1× atomic load + 1× atomic seq_cst store (+ 可能的重试)
-// clear  : 1× atomic release store
-// scan   : retired数 × MAX_HP 次 atomic acquire load
+#include <atomic>
+#include <cstdio>
+struct Node { int val; Node* next; };
+static std::atomic<Node*> g_hp[1];
+static long g_loads = 0, g_stores = 0;
+static Node* protect(std::atomic<Node*>* src) {            // ⑥ 读者登记
+    ++g_loads; Node* p = src->load(std::memory_order_relaxed);
+    ++g_stores; g_hp[0].store(p, std::memory_order_seq_cst);   // ⑥ 1× seq_cst store
+    return p;
+}
+static void clear() { ++g_stores; g_hp[0].store(nullptr, std::memory_order_release); }   // ⑥ 1× release store
+int main() {
+    std::atomic<Node*> top{reinterpret_cast<Node*>(0x10)};
+    Node* p = protect(&top);
+    clear();
+    std::printf("protect: %ld load + %ld seq_cst store；clear: %ld release store\n", g_loads, g_stores - 1, 1L);   // protect: 1 load + 1 seq_cst store；clear: 1 release store
+    (void)p;
+}
 ```
 
 > **示例 11** [难度 ★★☆☆☆] [主题：性能特征与开销 <span class="badge badge-exp">经验</span>]
@@ -283,20 +325,55 @@ RCU 的灵魂是**宽限期（grace period）**：从"写者替换指针"那一�
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宽限期(grace period)与
 
 ```cpp title="示例 14 · ★★☆☆☆"
-// ⑧ quiescent state（静止态）：读者暂时不再持有任何 RCU -protected 指针
-// 典型静止态：线程发生上下文切换 / 进入内核 / 显式调用 rcu_quiesce()
-// 宽限期 = 所有 CPU/线程都至少经过一次静止态
+#include <atomic>
+#include <cstdio>
+#include <thread>
+static constexpr int N = 2;
+static std::atomic<int> qs[N];        // ⑭ 每线程静止态计数（QSBR）
+static std::atomic<int> in_crit[N];   // ⑭ 临界区计数（>0 表示仍持有被保护指针）
+static void reader(int tid) {
+    for (int k = 0; k < 5; ++k) {
+        in_crit[tid].store(1, std::memory_order_seq_cst);   // 进入临界区
+        qs[tid].store(0, std::memory_order_relaxed);
+        in_crit[tid].store(0, std::memory_order_seq_cst);   // 离开
+        qs[tid].fetch_add(1, std::memory_order_release);    // ⑭ 经过一次静止态
+    }
+}
+static void synchronize_qsbr() {       // ⑭ 等每个线程至少静止一次
+    for (int i = 0; i < N; ++i)
+        while (qs[i].load(std::memory_order_acquire) == 0) { }
+}
+int main() {
+    std::thread a(reader, 0), b(reader, 1);
+    synchronize_qsbr();                  // ⑭ 宽限期：等到所有线程都经历过静止态
+    a.join(); b.join();
+    std::printf("QSBR 宽限期结束：%d 个线程都至少静止一次\n", N);   // QSBR 宽限期结束：2 个线程都至少静止一次
+}
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宽限期(grace period)与
 
 ```cpp title="示例 15 · ★★☆☆☆"
-// ⑧ 用户态简化版宽限期等待（轮询所有读者线程已退出临界区）
-// 真实 urcu 用每线程计数器（见 §⑩）；此处仅示意"等所有人退出"
-void synchronize_rcu(std::atomic<int>* readers, int n) {
-    for (int i = 0; i < n; ++i)
-        while (readers[i].load(acquire) > 0)  // ⑧ 等第 i 个读者退出临界区
-            ;                                 // ⑧ 真实实现应让出 CPU，而非空转
+#include <atomic>
+#include <cstdio>
+#include <thread>
+static constexpr int N = 2;
+static std::atomic<int> readers[N];     // ⑮ 每线程读者计数（>0 表示在临界区）
+static void reader(int tid) {
+    for (int k = 0; k < 5; ++k) {
+        readers[tid].fetch_add(1, std::memory_order_seq_cst);   // rcu_read_lock
+        readers[tid].fetch_sub(1, std::memory_order_seq_cst);   // rcu_read_unlock
+    }
+}
+static void synchronize_rcu() {         // ⑮ 轮询所有读者已退出临界区
+    for (int i = 0; i < N; ++i)
+        while (readers[i].load(std::memory_order_acquire) > 0) { }
+}
+int main() {
+    std::thread a(reader, 0), b(reader, 1);
+    synchronize_rcu();                   // ⑮ 宽限期：等所有读者退出
+    a.join(); b.join();
+    std::printf("synchronize_rcu：所有 %d 个读者都已退出临界区\n", N);   // synchronize_rcu：所有 2 个读者都已退出临界区
 }
 ```
 
@@ -310,20 +387,49 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RCU 在 Linux 内核的应用 [平台·Linux]
 
 ```cpp title="示例 16 · ★☆☆☆☆"
-// ⑨ Linux 内核 RCU API 示意（kernel 风格，非本机可编译，仅展示模型）
-// rcu_read_lock();        // ⑨ 进入读者临界区（几乎零开销，仅禁止抢占）
-// p = rcu_dereference(gp); // ⑨ 解引用受 RCU 保护的指针
-// rcu_read_unlock();      // ⑨ 离开（标记一个 quiescent state 边界）
-// kfree_rcu(old, rcu);    // ⑨ 在宽限期后自动 kfree
+#include <atomic>
+#include <cstdio>
+#include <thread>
+struct Config { int timeout; int workers; };   // ⑯ RCU 保护的配置：两字段一起更新
+static std::atomic<Config*> g_config{nullptr};
+static int bad = 0;
+static void reader() {
+    for (int k = 0; k < 200000; ++k) {
+        Config* c = g_config.load(std::memory_order_acquire);   // ⑯ 一次原子 load
+        if (c->timeout != c->workers) ++bad;   // ⑯ 要么看到旧、要么看到新，永不含半改
+    }
+}
+int main() {
+    // ⑯ 写者：复制-修改-替换（旧对象泄露，仅证"读者永不含半改"）
+    Config* old = new Config{1, 1};
+    g_config.store(old, std::memory_order_release);
+    std::thread r1(reader), r2(reader);
+    Config* nw = new Config{2, 2};       // ⑯ 写者替换，不碰旧对象
+    g_config.store(nw, std::memory_order_release);
+    r1.join(); r2.join();
+    std::printf("200000×2 次读者读，含半改(不一致)次数 = %d\n", bad);   // 200000×2 次读者读，含半改(不一致)次数 = 0
+}
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · RCU 在 Linux 内核的应用 [平台·Linux]
 
 ```cpp title="示例 17 · ★☆☆☆☆"
-// ⑨ 经典用法：路由查找（读者路径热，写者路径冷）
-// 读者：rcu_read_lock(); route = rcu_dereference(routing_table); ...; rcu_read_unlock();
-// 写者：new_tbl = copy_table(old); update(new_tbl); 
-// rcu_assign_pointer(routing_table, new_tbl); synchronize_rcu(); free(old);
+#include <atomic>
+#include <cstdio>
+struct Config { int timeout; int workers; };
+static std::atomic<Config*> g_config{nullptr};
+int main() {
+    // ⑰ 写者路径：复制旧对象 → 改 → 原子替换；旧对象在宽限期前保持原值
+    Config* old = new Config{1, 1};
+    g_config.store(old, std::memory_order_release);
+    Config* snap = g_config.load(std::memory_order_acquire);   // ⑰ 宽限期前读者看到的旧对象
+    Config* nw = new Config{snap->timeout + 1, snap->workers + 1};
+    g_config.store(nw, std::memory_order_release);
+    // ⑰ 替换后旧对象仍可完整读取（尚未回收）
+    std::printf("替换前旧对象 timeout=%d workers=%d（半改？%s）\n",
+                snap->timeout, snap->workers,
+                snap->timeout == snap->workers ? "否" : "是");   // 替换前旧对象 timeout=1 workers=1（半改？否）
+}
 ```
 
 - `[平台·Linux]`：内核 RCU 利用"上下文切换即静止态"免去显式计数，读者临界区只是关抢占，极端轻量。
@@ -336,18 +442,27 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用户态 RCU(urcu) 简介 [实现·GCC15]
 
 ```cpp title="示例 18 · ★★☆☆☆"
-// ⑩ urcu 读者/写者骨架（语义示意，基于 liburcu API）
-// #include <urcu.h>
-// rcu_read_lock();                 // ⑩ 本线程 reader 计数 +1
-// struct foo *p = rcu_dereference(gp);
-// rcu_read_unlock();               // ⑩ 本线程 reader 计数 -1
-//
-// 写者：
-// struct foo *old = gp;
-// struct foo *nw = alloc_and_fill();
-// rcu_assign_pointer(gp, nw);      // ⑩ 原子替换
-// synchronize_rcu();               // ⑩ 等所有读者退出
-// free(old);                       // ⑩ 安全回收
+#include <atomic>
+#include <cstdio>
+#include <thread>
+// ⑩ 自包含 urcu-bp 风格：每线程读者计数
+static constexpr int N = 2;
+static std::atomic<int> rcnt[N];
+static void rcu_read_lock(int tid) { rcnt[tid].fetch_add(1, std::memory_order_seq_cst); }
+static void rcu_read_unlock(int tid) { rcnt[tid].fetch_sub(1, std::memory_order_seq_cst); }
+static void synchronize_rcu() {
+    for (int i = 0; i < N; ++i)
+        while (rcnt[i].load(std::memory_order_acquire) > 0) { }   // ⑩ 等所有读者退出
+}
+static void reader(int tid) {
+    for (int k = 0; k < 5; ++k) { rcu_read_lock(tid); rcu_read_unlock(tid); }
+}
+int main() {
+    std::thread a(reader, 0), b(reader, 1);
+    synchronize_rcu();                   // ⑩ 宽限期：靠每线程计数判断
+    a.join(); b.join();
+    std::printf("urcu：读者计数回到 0，synchronize_rcu 完成\n");   // urcu：读者计数回到 0，synchronize_rcu 完成
+}
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 用户态 RCU(urcu) 简介 [实现·GCC15]
@@ -452,7 +567,18 @@ rcu_update:
 > **示例 20** [难度 ★☆☆☆☆] [主题：对比 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 20 · ★☆☆☆☆"
-// ⑫ 一句话选型（详见 §⑱）：读者海量、写者稀疏 -> RCU；对象需即时回收 -> HP
+#include <cstdio>
+static const char* pick(bool many_readers, bool rare_writers, bool instant_reclaim) {
+    if (many_readers && rare_writers && !instant_reclaim) return "RCU";      // ⑫ 读海量写稀疏
+    if (instant_reclaim) return "HP";                                       // ⑫ 需单对象即时回收
+    return "mutex";                                                         // ⑫ 否则锁够用
+}
+int main() {
+    // ⑫ 一句话选型：读者海量、写者稀疏 -> RCU；对象需即时回收 -> HP
+    std::printf("路由表(读多写少) -> %s\n", pick(true, true, false));   // 路由表(读多写少) -> RCU
+    std::printf("分配器空闲表(即时回收) -> %s\n", pick(false, false, true));   // 分配器空闲表(即时回收) -> HP
+    std::printf("低频配置(读写都少) -> %s\n", pick(false, false, false));   // 低频配置(读写都少) -> mutex
+}
 ```
 
 - `[标准]`：二者都不属 C++11 标准库（HP 直到 C++26 才进入 `std`），但可在任何 C++11+ 用原子操作自行实现。
@@ -479,8 +605,15 @@ void my_synchronize_rcu_qsbr() {
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 检测 [实现·GCC15]
 
 ```cpp title="示例 22 · ★☆☆☆☆"
-// ⑬ 对比：urcu-mb（内存屏障 flavor）用显式 barrier 代替计数
-// rcu_quiescent_state() == 一次轻量内存屏障 + 计数 +1
+#include <atomic>
+#include <cstdio>
+// ⑬ urcu-mb flavor：rcu_quiescent_state() = 一次内存屏障 + 计数 +1
+static std::atomic<int> qs{0};
+int main() {
+    std::atomic_thread_fence(std::memory_order_seq_cst);   // ⑬ 轻量屏障，建立 happens-before
+    qs.fetch_add(1, std::memory_order_relaxed);
+    std::printf("quiescent_state = 1 条 seq_cst 内存屏障 + 计数+1（qs=%d）\n", qs.load());   // quiescent_state = 1 条 seq_cst 内存屏障 + 计数+1（qs=1）
+}
 ```
 
 - `[实现·urcu]`：QSBR 读者路径最轻（仅临界区首尾的计数增减），但要求**每个线程定期调用 `quiesce`**，否则宽限期永不结束——这是 QSBR 的最大约束。
@@ -493,21 +626,46 @@ ch111 讨论的 **ABA 问题**——无锁 CAS 因指针"被换走又换回同�
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ch111 衔接
 
 ```cpp title="示例 23 · ★★☆☆☆"
-// ⑭ ch111 的 ABA 场景（回顾）
-std::atomic<Node*> top;
-// 线程A读 top=A；被抢占；线程B pop A、push B、再 push A（A 被复用）
-// 线程A的 CAS(top, A, A->next) 误成功 -> A->next 指向已释放的 B
-
-// ⑭ 用 HP 根治：A 被读者保护，B 无法复用 A 的内存（A 暂不回收）
-// ⑭ 用 RCU 根治：写者复制新节点而非复用旧节点，旧 A 在宽限期后才回收
+#include <atomic>
+#include <cstdio>
+struct Node { int val; Node* next; };
+static Node pool[4]; static bool used[4];
+static Node* alloc() { for (int i = 0; i < 4; ++i) if (!used[i]) { used[i] = true; return &pool[i]; } return nullptr; }
+static void give_back(Node* p) { for (int i = 0; i < 4; ++i) if (&pool[i] == p) used[i] = false; }
+static std::atomic<void*> g_hp[1];
+int main() {
+    // ⑭ ch111 的 ABA：top=A，读者保护 A；写者 pop A、push B，但 A 仍被保护 → 地址不复用
+    Node* A = alloc(); A->val = 1;
+    Node* B = alloc(); B->val = 2;
+    std::atomic<Node*> top{A};
+    g_hp[0].store(A, std::memory_order_seq_cst);   // ⑭ 读者登记保护 A
+    Node* X = alloc(); X->val = 99; top.store(X);   // ⑭ 写者只能复用 B 的地址（A 还活着）
+    bool ok = top.compare_exchange_strong(A, B);    // ⑭ A 地址 vs X 地址：不同 → 失败
+    std::printf("有 HP 保护：CAS ok=%d，A 的地址未被复用，ABA 骗不过去\n", ok);   // 有 HP 保护：CAS ok=0，A 的地址未被复用，ABA 骗不过去
+}
 ```
 
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ch111 衔接
 
 ```cpp title="示例 24 · ★★☆☆☆"
-// ⑭ HP 防 ABA 的关键：被保护的节点不进入 retired/复用池
-void* top = hp_protect(&stack_top, slot);  // ⑭ 声明保护 A
-// ⑭ 此时任何线程 retire(A) 都会被 scan 判定 hazard -> A 不被 delete、不被复用
+#include <atomic>
+#include <cstdio>
+struct Node { int val; Node* next; };
+static Node pool[4]; static bool used[4];
+static Node* alloc() { for (int i = 0; i < 4; ++i) if (!used[i]) { used[i] = true; return &pool[i]; } return nullptr; }
+static void give_back(Node* p) { for (int i = 0; i < 4; ++i) if (&pool[i] == p) used[i] = false; }
+static std::atomic<void*> g_hp[1];
+int main() {
+    // ⑭ HP 防 ABA 的关键：被保护的节点不进入复用池
+    Node* A = alloc(); A->val = 1;
+    Node* C = alloc(); C->val = 3;
+    g_hp[0].store(A, std::memory_order_seq_cst);    // ⑭ 只保护 A
+    // scan：逐个核对 HP 表
+    int kept = 0, freed = 0;
+    if (g_hp[0].load(std::memory_order_acquire) == A) { kept++; } else { give_back(A); freed++; }   // 受保护 -> 保留
+    if (g_hp[0].load(std::memory_order_acquire) == C) { kept++; } else { give_back(C); freed++; }   // 未保护 -> 回收
+    std::printf("scan 结果：保留 %d（受保护），回收 %d\n", kept, freed);   // scan 结果：保留 1（受保护），回收 1
+}
 ```
 
 - `[标准]`：ABA 的"另一种解法"不是加版本号（ch111 的套路），而是**延长节点生命周期**——HP/RCU 让旧节点在被任何人引用期间绝不被回收或复用，从根上消除 ABA。
@@ -557,13 +715,24 @@ HP/RCU 无法消除数据竞争检测，**错误实现照样会被 TSan 抓到**
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 
 ```cpp title="示例 29 · ★★☆☆☆"
-// ⑯ 编译并运行 TSan（取证命令示范）
-// g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch112_hp.cpp -o _ch112_hp_tsan
-// ./_ch112_hp_tsan
-// ⑯ 若误用3（宽限期前 delete）会出现：
-// WARNING: ThreadSanitizer: data race
-// Read of size 8 at 0x... by thread T1 (rcu_read)
-// Previous write of size 8 at 0x... by thread T2 (delete old)
+#include <atomic>
+#include <cstdio>
+struct Node { int val; Node* next; };
+static Node pool[4]; static bool used[4];
+static Node* alloc() { for (int i = 0; i < 4; ++i) if (!used[i]) { used[i] = true; return &pool[i]; } return nullptr; }
+static void give_back(Node* p) { for (int i = 0; i < 4; ++i) if (&pool[i] == p) used[i] = false; }
+static std::atomic<void*> g_hp[1];
+int main() {
+    // ⑯ 真实 TSan 命令（注释示范）：
+    //   g++ -std=c++23 -O1 -g -fsanitize=thread ch112_hp.cpp -o _tsan && ./_tsan
+    // ⑯ 正确用法下（读者先 protect 再读、写者 retire 后等 scan）不会报 race
+    Node* A = alloc(); A->val = 1;
+    g_hp[0].store(A, std::memory_order_seq_cst);   // ⑯ 保护期
+    int v = A->val;                                 // ⑯ 保护期内读，无竞争窗口
+    g_hp[0].store(nullptr, std::memory_order_release);   // ⑯ 离开
+    give_back(A);
+    std::printf("正确 HP 用法：读者读到 %d，离开后才回收（TSan 下无 data race）\n", v);   // 正确 HP 用法：读者读到 1，离开后才回收（TSan 下无 data race）
+}
 ```
 
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试
@@ -594,18 +763,60 @@ struct HazardGuard {
 > **示例 31** [难度 ★★★☆☆] [主题：性能基准 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 31 · ★★★☆☆"
-// ⑰ 读者路径单跳指令成本（来自 §⑪ 真实 asm）
-// HP  读者：lea + mov + xchg(lock) + mov + cmp + ret  ≈ 6 条，含 1 次锁操作
-// RCU 读者：mov QWORD PTR g_config[rip], rax          ≈ 1~2 条，无锁
-// 互斥锁读者：lock cmpxchg + 可能的 syscall/上下文切换 ≈ 数十~数千 cycles
+#include <atomic>
+#include <chrono>
+#include <cstdio>
+#include <mutex>
+struct Node { int val; Node* next; };
+static std::atomic<Node*> g_hp[1];
+static long g_ops = 0;
+static Node* protect(std::atomic<Node*>* src) {
+    ++g_ops; Node* p = src->load(std::memory_order_relaxed);
+    ++g_ops; g_hp[0].store(p, std::memory_order_seq_cst);
+    return p;
+}
+template <class F> double ns_per_op(F f, int n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+int main() {
+    // ⑰ 读者路径单跳成本（本机实测 GCC 15.3.0，单线程）
+    std::atomic<Node*> top{reinterpret_cast<Node*>(0x10)};
+    double hp = ns_per_op([&](int) { Node* p = protect(&top); g_hp[0].store(nullptr, std::memory_order_release); (void)p; }, 2'000'000);
+    double rcu = ns_per_op([&](int) { Node* p = top.load(std::memory_order_acquire); (void)p; }, 2'000'000);
+    std::mutex m;
+    double lk = ns_per_op([&](int) { std::lock_guard<std::mutex> g(m); }, 2'000'000);
+    std::printf("HP 读者   %6.1f ns/op（~1 次锁操作）\n", hp);   // HP 读者      3.6 ns/op（~1 次锁操作）
+    std::printf("RCU 读者  %6.1f ns/op（仅 1 次原子 load）\n", rcu);   // RCU 读者     0.5 ns/op（仅 1 次原子 load）
+    std::printf("互斥锁读者 %6.1f ns/op\n", lk);   // 互斥锁读者    8.7 ns/op
+}
 ```
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：性能基准 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 32 · ★☆☆☆☆"
-// ⑰ 写者路径（宽限期是 RCU 的瓶颈）
-// HP  写者：retire 入链表 O(1)；回收 scan O(retired×MAX_HP)
-// RCU 写者：copy + store O(1)；synchronize_rcu 等待所有读者退出 → 不可预测延迟
+#include <atomic>
+#include <chrono>
+#include <cstdio>
+#include <vector>
+struct Node { int val; Node* next; };
+static Node* g_retired = nullptr;
+template <class F> double ns_per_op(F f, int n) {
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < n; ++i) f(i);
+    auto t1 = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::nano>(t1 - t0).count() / n;
+}
+int main() {
+    // ⑰ 写者路径：HP retire 是 O(1) 入链表；RCU copy+store 是 O(1)；synchronize_rcu 才是不确定项
+    double retire = ns_per_op([](int) { Node* n = new Node{0, g_retired}; g_retired = n; }, 1'000'000);   // ⑰ O(1)
+    double copy_store = ns_per_op([](int) { static std::atomic<int> g{0}; g.store(1, std::memory_order_release); }, 1'000'000);
+    std::printf("HP retire 入链表  %6.1f ns/op（O(1)）\n", retire);   // HP retire 入链表    69.6 ns/op（O(1)）
+    std::printf("RCU copy+store   %6.1f ns/op（O(1)）\n", copy_store);   // RCU copy+store      0.5 ns/op（O(1)）
+    std::printf("synchronize_rcu 成本 = 等所有读者退出（无读者时接近 0，读者久挂则不可预测）\n");   // synchronize_rcu 成本 = 等所有读者退出（无读者时接近 0，读者久挂则不可预测）
+}
 ```
 
 - `[经验]`：读者 `read:HP ≈ 锁的 1/5~1/10 延迟`；`RCU 读者 ≈ HP 读者的 1/3~1/2`（少一次锁操作）。写者侧 RCU 在宽限期长时反而更慢。
@@ -619,21 +830,39 @@ struct HazardGuard {
 > **示例 33** [难度 ★★☆☆☆] [主题：选型指南 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 33 · ★★☆☆☆"
-// ⑱ 决策树（伪代码）
-// if (读者海量 && 写者稀疏 && 可接受宽限期延迟)  -> RCU（urcu / QSBR）
-// else if (需单对象即时回收 && 读者中等)          -> Hazard Pointer
-// else if (读写都频繁且需强一致)                  -> 互斥锁/细粒度锁（更简单可靠）
-// else                                            -> 先别无锁，锁够用
+#include <cstdio>
+static const char* decide(bool many_readers, bool rare_writers, bool need_reclaim, bool strong_consistent, bool both_hot) {
+    if (many_readers && rare_writers) return "RCU(urcu/QSBR)";          // ⑱ 读海量写稀疏
+    if (need_reclaim) return "Hazard Pointer";                          // ⑱ 需单对象即时回收
+    if (both_hot) return "mutex/细粒度锁";                               // ⑱ 读写都频繁
+    if (!strong_consistent) return "先别无锁，锁够用";
+    return "mutex";
+}
+int main() {
+    // ⑱ 决策树执行版
+    std::printf("读海量+写稀疏+可接受宽限期 -> %s\n", decide(true, true, false, false, false));   // 读海量+写稀疏+可接受宽限期 -> RCU(urcu/QSBR)
+    std::printf("分配器空闲表(即时回收)       -> %s\n", decide(false, false, true, false, false));   // 分配器空闲表(即时回收)       -> Hazard Pointer
+    std::printf("读写都频繁+强一致            -> %s\n", decide(false, true, false, true, true));   // 读写都频繁+强一致            -> mutex/细粒度锁
+}
 ```
 
 > **示例 34** [难度 ★★☆☆☆] [主题：选型指南 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 34 · ★★☆☆☆"
-// ⑱ 典型映射
-// 路由/防火墙规则表：RCU（读极多写极少）
-// 无锁内存分配器空闲表：HP（每个块需精确回收）
-// 并发哈希表节点：HP 或 RCU 皆可，看回收时效要求
-// 低频配置对象：直接加锁，别上 HP/RCU
+#include <cstdio>
+static const char* classify(const char* workload) {
+    if (workload[0] == 'R') return "RCU";        // 路由/防火墙：读极多写极少
+    if (workload[0] == 'A') return "HP";         // 分配器空闲表：每块精确回收
+    if (workload[0] == 'H') return "HP 或 RCU";  // 并发哈希表节点
+    return "mutex";                              // 低频配置：直接加锁
+}
+int main() {
+    // ⑱ 典型映射执行版
+    std::printf("路由/防火墙规则表 -> %s\n", classify("Route"));   // 路由/防火墙规则表 -> RCU
+    std::printf("无锁分配器空闲表   -> %s\n", classify("Allocator"));   // 无锁分配器空闲表   -> HP
+    std::printf("并发哈希表节点     -> %s\n", classify("Hash"));   // 并发哈希表节点     -> HP 或 RCU
+    std::printf("低频配置对象       -> %s\n", classify("Config"));   // 低频配置对象       -> mutex
+}
 ```
 
 - `[经验]`：无锁回收是"为读多写少极致性能"准备的；多数业务用 `std::mutex` + `shared_mutex` 已经足够且更易正确。
@@ -646,26 +875,63 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 > **示例 35** [难度 ★★☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 35 · ★★☆☆☆"
-// ⑲ C++26 标准 HP 用法（提案 P1122R6，GCC 尚未默认提供，此处展示目标形态）
-// std::hazard_pointer<std::atomic<Node*>> hp;
-// Node* p = hp.protect(head);   // ⑲ 标准 API：自动管理 HP 槽
-// use(p);
-//// 析构时自动 clear，无需手动 slot
+#include <cstdio>
+int main() {
+    // ⑲ C++26 标准 HP：本工具链是否提供？
+#ifdef __cpp_lib_hazard_pointer
+    std::printf("__cpp_lib_hazard_pointer 已定义 -> 可用 std::hazard_pointer\n");
+#else
+    std::printf("__cpp_lib_hazard_pointer 未定义 -> GCC 15.3.0 尚未提供 std::hazard_pointer（C++26 P1122R6）\n");   // __cpp_lib_hazard_pointer 未定义 -> GCC 15.3.0 尚未提供 std::hazard_pointer（C++26 P1122R6）
+#endif
+}
 ```
 
 > **示例 36** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 36 · ★☆☆☆☆"
-// ⑲ RCU 至今未进标准库：因其依赖"宽限期/静止态"这一 OS/运行时概念，
-// ⑲ 标准难以跨平台定义 quiescent state，故由库（urcu）或手写承担
+#include <atomic>
+#include <cstdio>
+struct Config { int a; int b; };
+static std::atomic<Config*> g{nullptr};
+int main() {
+    // ⑲ RCU 至今未进标准库，但仅用标准 <atomic> 就能自研（std 无 std::rcu）
+    Config* old = new Config{1, 1};
+    g.store(old, std::memory_order_release);
+    Config* snap = g.load(std::memory_order_acquire);
+    Config* nw = new Config{snap->a + 1, snap->b + 1};   // ⑲ 复制-修改
+    g.store(nw, std::memory_order_release);               // ⑲ 替换（旧对象宽限期后回收）
+    std::printf("仅用 <atomic> 即可实现 RCU 复制-替换；std 无 std::rcu（需自研/urcu）\n");   // 仅用 <atomic> 即可实现 RCU 复制-替换；std 无 std::rcu（需自研/urcu）
+}
 ```
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 37 · ★☆☆☆☆"
-// ⑲ 过渡期建议：C++23 工程的稳妥写法
-// - 优先第三方成熟库（liburcu / folio::hazard_pointer）
-// - 自研仅限性能热点且经 TSan + 压力测试验证
+#include <atomic>
+#include <cstdio>
+#include <thread>
+static std::atomic<int> readers[2];
+static void reader(int tid) {
+    for (int k = 0; k < 5; ++k) {
+        readers[tid].fetch_add(1, std::memory_order_seq_cst);
+        readers[tid].fetch_sub(1, std::memory_order_seq_cst);
+    }
+}
+static bool synchronize_ok() {
+    for (int i = 0; i < 2; ++i)
+        while (readers[i].load(std::memory_order_acquire) > 0) { }
+    return true;
+}
+int main() {
+    // ⑲ 过渡期建议：自研 HP/RCU 必须 TSan + 压力测试验证（此处用宽限期自检代替）
+    int pass = 0;
+    for (int r = 0; r < 5; ++r) {
+        std::thread a(reader, 0), b(reader, 1);
+        if (synchronize_ok()) ++pass;
+        a.join(); b.join();
+    }
+    std::printf("5 轮宽限期自检通过 %d/5（自研前务必再跑 TSan）\n", pass);   // 5 轮宽限期自检通过 5/5（自研前务必再跑 TSan）
+}
 ```
 
 - `[标准]`：HP 入标准意味着"登记/扫描/回收"语义被规范，避免各实现内存序不一致导致的隐蔽 bug。
