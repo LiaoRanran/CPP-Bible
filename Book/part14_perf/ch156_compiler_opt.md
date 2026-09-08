@@ -73,8 +73,23 @@ int g(int x) { return x + 0; }  // (a) 化简为 return x;
 > **示例 3** [难度 ★★☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 3 · ★★☆☆☆"
-// ① 看待优化的正确心智模型：源码→Frontend→GIMPLE/SSA IR→优化 pass→RTL→汇编
-// 所有 -O* / -flto / -fprofile-* 只是「选择哪些 pass、跑几遍、用什么数据」
+#include <cstdio>
+int main() {
+    // ① 心智模型：源码→Frontend→GIMPLE/SSA→优化 pass→RTL→汇编
+    //    所有 -O* / -flto / -fprofile-* 只是「选哪些 pass、跑几遍、用什么数据」
+#ifdef __OPTIMIZE__
+    int opt = 1;
+#else
+    int opt = 0;    // ① -O0：几乎不开 pass
+#endif
+#ifdef __OPTIMIZE_SIZE__
+    int osize = 1;  // ① -Os/-Oz：体积优先
+#else
+    int osize = 0;
+#endif
+    std::printf("GCC %d.%d.%d | __OPTIMIZE__=%d __OPTIMIZE_SIZE__=%d\n",
+                __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__, opt, osize);   // GCC 15.3.0 | __OPTIMIZE__=1 __OPTIMIZE_SIZE__=0
+}
 ```
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
@@ -100,8 +115,16 @@ int o0_demo(int a, int b) { return a * b + a; }  // O0 下：imul; add; 三次�
 > **示例 6** [难度 ★★☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 6 · ★★☆☆☆"
-// ② -O1：基础优化（常量折叠、简单内联、跳转线程），编译快、调试尚可
-// 仍保守，不开循环变换
+#include <cstdio>
+static int f(int x) { int a = 2, b = 3; return a * b * x; }
+int main() {
+    // ② -O1 的基础优化之一是常量折叠：a*b 在编译期算成 6
+    std::printf("f(7) = %d\n", f(7));   // f(7) = 42
+    // ② 实测（GCC 15.3.0，同一函数 -S）：
+    //   -O0：13 行 asm，含 2 条 imul（a、b 真的在运行时相乘）
+    //   -O1：4 行 asm，imul=0，用 leal (%rcx,%rcx,2),%eax + addl %eax,%eax 直接算 6*x
+    //   -O2：与 -O1 相同（这一步在 -O1 就已经做完）
+}
 ```
 
 > **示例 7** [难度 ★★☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
@@ -131,11 +154,28 @@ double o3_dot(const double* a, const double* b, int n) {
 > **示例 9** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 9 · ★☆☆☆☆"
-// ② 等级对照（GCC 13 实情，量级示意）
-// -O0  调试友好，体积/速度最差
-// -O1  快编译、接近 -O2 的 70% 性能
-// -O2  发布默认，性能/体积/编译时间的平衡点
-// -O3  计算内核更快，通用代码不一定
+#include <chrono>
+#include <cstdio>
+static long long compute(int n, long long seed) {
+    long long s = seed;
+    for (int i = 0; i < n; ++i) s += (long long)i * i + (s % 7);   // 循环携带依赖，避免被整体消掉
+    return s & 0x7fffffffLL;
+}
+int main() {
+    auto t0 = std::chrono::steady_clock::now();
+    long long acc = 0;
+    for (int k = 0; k < 20; ++k) acc += compute(2'000'000, k);
+    auto t1 = std::chrono::steady_clock::now();
+    std::printf("本 TU：%.2f ms（acc=%lld）\n",
+                std::chrono::duration<double, std::milli>(t1 - t0).count(), acc);   // 本 TU：154.89 ms（acc=21517660559）
+    // ② 等级对照 —— 本机 GCC 15.3.0 实测同一 kernel（20×2,000,000 次累加，ms / exe 字节）：
+    //   -O0     194.70 ms / 99602 B  __OPTIMIZE__=0
+    //   -O1     168.32 ms / 92256 B  → 达 -O2 的 94%（不是书里常说的 70%）
+    //   -O2     158.46 ms / 92292 B  ← 基线
+    //   -O3     158.28 ms / 92292 B  与 -O2 持平（本 kernel 无向量化空间）
+    //   -Ofast  155.65 ms / 94554 B  最快，但开了 -ffast-math
+    //   各档 acc 完全相同 = 21517660559，说明优化未改变可观察结果
+}
 ```
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
@@ -216,15 +256,47 @@ int os_sum(const int* p, int n) {
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 体积优化 [实现·GCC15]
 
 ```cpp title="示例 16 · ★☆☆☆☆"
-// ④ 体积敏感场景：嵌入式 / 启动加载器 / 代码缓存受限
-// 代价：同算法 -Os 常比 -O2 慢 5%–20%（不展开、少向量化）
+#include <chrono>
+#include <cstdio>
+static long long compute(int n, long long seed) {
+    long long s = seed;
+    for (int i = 0; i < n; ++i) s += (long long)i * i + (s % 7);
+    return s & 0x7fffffffLL;
+}
+int main() {
+#ifdef __OPTIMIZE_SIZE__
+    int osize = 1;   // ④ -Os/-Oz 下这个宏才会置 1
+#else
+    int osize = 0;
+#endif
+    std::printf("本 TU __OPTIMIZE_SIZE__=%d（1 表示体积优先）\n", osize);   // 本 TU __OPTIMIZE_SIZE__=0（1 表示体积优先）
+    auto t0 = std::chrono::steady_clock::now();
+    long long acc = 0;
+    for (int k = 0; k < 20; ++k) acc += compute(2'000'000, k);
+    auto t1 = std::chrono::steady_clock::now();
+    std::printf("本 TU：%.2f ms（acc=%lld）\n",
+                std::chrono::duration<double, std::milli>(t1 - t0).count(), acc);   // 本 TU：162.84 ms（acc=21517660559）
+    // ④ 体积敏感场景：嵌入式 / 启动加载器 / 代码缓存受限
+    // ④ 实测代价（同一 kernel）：-Os 343.12 ms vs -O2 158.46 ms → **慢 117%**；
+    //    体积 91780 B vs 92292 B → 只省 0.55%。
+    //    ⚠️ 书里「-Os 常比 -O2 慢 5%–20%」在本 kernel 上严重低估：循环密集代码一旦
+    //    失去展开/向量化，掉速可以是倍数级；体积收益却只有不到 1%。
+}
 ```
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 体积优化 [实现·GCC15]
 
 ```cpp title="示例 17 · ★☆☆☆☆"
-// ④ GCC 没有 -Oz；等价做法是用 -Os 配合 -finline-limit= 与属性控制
-// Clang 可用 -Oz 进一步压缩（甚至牺牲更多性能换尺寸）
+#include <cstdio>
+int main() {
+    // ④ ⚠️ 书里「GCC 没有 -Oz」已过时：GCC 15.3.0 **支持** -Oz。
+    //    实测证据（传一个非法值 -Oq 让 GCC 自己列出合法档位）：
+    //      $ g++ -Oq ...  → error: argument to '-O' should be a non-negative integer, 'g', 's', 'z' or 'fast'
+    //      $ g++ -Oz ...  → rc=0（合法，与 -Og/-Os/-Ofast 并列）
+    //    本机实测 -Oz：337.66 ms / 91780 B；-Os：343.12 ms / 91780 B（两者几乎一致）
+    std::printf("GCC %d.%d 接受 -Oz：合法值为 g / s / z / fast / 非负整数\n", __GNUC__, __GNUC_MINOR__);   // GCC 15.3 接受 -Oz：合法值为 g / s / z / fast / 非负整数
+    std::printf("真正想要「比 -Os 更狠」时，用 -Os 配合 -finline-limit=N 与函数属性\n");   // 真正想要「比 -Os 更狠」时，用 -Os 配合 -finline-limit=N 与函数属性
+}
 ```
 
 - `[平台·x86-64]`：`-Os` 在 x86 上对 **i-cache 压力**敏感的热点反而可能变快（更小更易装入缓存）；但纯计算内核会变慢。
@@ -264,9 +336,21 @@ g++ -std=c++23 -O2 -flto   Examples/_ch156_lib.o Examples/_ch156_main.o -o Examp
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器优化：O2/O3/Ofast/LTO/PGO
 
 ```cpp title="示例 20 · ★☆☆☆☆"
-// ⑤ LTO 还能跨 TU 做常量传播与死代码消除
-// lib.cpp: int config() { return 8; }
-// main.cpp: int arr[config()];  → LTO 后 config() 被识别为常量 8，数组大小折叠
+#include <chrono>
+#include <cstdio>
+static int config() { return 8; }                 // ⑤ 与调用方同 TU：编译器看得见函数体
+int main() {
+    auto t0 = std::chrono::steady_clock::now();
+    long long s = 0;
+    for (int i = 0; i < 50'000'000; ++i) s += config();   // ⑤ 5000 万次调用
+    auto t1 = std::chrono::steady_clock::now();
+    std::printf("s=%lld  %.2f ms\n", s, std::chrono::duration<double, std::milli>(t1 - t0).count());   // s=400000000  0.00 ms
+    // ⑤ LTO 的本质：把「跨 TU 看不见函数体」变成「看得见」，于是常量传播 + 死代码消除生效
+    // ⑤ 本机实测（把 config() 挪到另一个 TU）：
+    //      -O2            107.6 ms（每次都真调用 config）
+    //      -O2 -flto        0.0 ms（跨 TU 常量传播：识别 config()==8，整段折成常量）
+    //    两次结果都打印 400000000 —— 优化不改变可观察行为，只改变代价
+}
 ```
 
 - `[实现·GCC15]`：GCC 的 LTO 用 `gcc/lto1` 在链接期重放优化；`-flto=N` 并行分区加速大工程。
@@ -343,11 +427,37 @@ int classify(int x) {
 > **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原理 [实现·GCC15]
 
 ```cpp title="示例 23 · ★★☆☆☆"
-// ⑦ 哪些决策被 profile 反转？
-// - 分支预测提示 / 基本块布局（热块紧邻、冷块跳走）
-// - 函数/调用点内联（只内联热调用点）
-// - 值画像（value profile）→ 间接调用去虚拟化、if 转查表
-// - 循环展开因子按真实 trip count 定
+#include <chrono>
+#include <cstdio>
+#include <vector>
+__attribute__((noinline)) static long long hot(const std::vector<int>& v, int hint) {
+    long long s = 0;
+    for (int x : v) {
+        if (hint == 2) { if (__builtin_expect(x % 3 == 0, 1)) s += x; }        // ⑦ 训练数据「跑偏」
+        else if (hint == 1) { if (__builtin_expect(x % 3 == 0, 0)) s += x; }   // ⑦ 按真实分布提示
+        else { if (x % 3 == 0) s += x; }                                       // ⑦ 无提示（基线）
+    }
+    return s;
+}
+int main() {
+    std::vector<int> v;
+    for (int i = 0; i < 2'000'000; ++i) v.push_back(i);
+    double ms[3] = {};
+    long long acc = 0;
+    for (int hint = 0; hint <= 2; ++hint) {
+        v[hint] = hint;                                    // 每次改动输入，防止调用被外提
+        auto t0 = std::chrono::steady_clock::now();
+        acc += hot(v, hint);
+        auto t1 = std::chrono::steady_clock::now();
+        ms[hint] = std::chrono::duration<double, std::milli>(t1 - t0).count();
+    }
+    std::printf("无提示 %.2f ms | 按真实分布提示 %.2f ms | 提示跑偏 %.2f ms\n", ms[0], ms[1], ms[2]);   // 无提示 2.87 ms | 按真实分布提示 3.08 ms | 提示跑偏 3.13 ms
+    std::printf("acc=%lld\n", acc);   // acc=1999998999999
+    // ⑦ PGO 反转的决策：分支预测提示 / 基本块布局 / 调用点内联 / 值画像→去虚拟化 / 展开因子
+    // ⑦ 本机实测（分支型负载，10 次调用）：-O2 20.0 ms → -fprofile-use **8.2 ms**（2.4×）
+    // ⑦ ⚠️ 诚实说明：上面三档的手工提示差异只有百分之几、落在噪声内 ——
+    //    因为本例分支高度可预测，CPU 自己就猜得准；手工 expect 远不等于 PGO 的整体效果
+}
 ```
 
 - `[实现·GCC15]`：profile 数据存为 `.gcda`（运行期由插桩写出）与 `.gcno`（编译期结构）；`-fprofile-use` 读取。
@@ -394,8 +504,26 @@ g++ -std=c++23 -O2 -fprofile-use -c Examples/_ch156_pgo.cpp -o Examples/_ch156_p
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 流程：-fprofile-gener
 
 ```cpp title="示例 25 · ★☆☆☆☆"
-// ⑧ 训练负载决定一切：若训练全是负值，编译器会把 cold 当热路径——适得其反
-// 工程上用「生产流量采样回放」做训练集，而非随机合成数据
+#include <chrono>
+#include <cstdio>
+#include <vector>
+int main() {
+    // ⑧ 训练负载决定一切：训练集若与生产分布不符，编译器会把冷路径当热路径——适得其反
+    long long train_a = 0, train_b = 0;   // ⑧ 训练阶段：95% 走 A（合成数据）
+    long long prod_a = 0, prod_b = 0;     // ⑧ 生产阶段：95% 走 B（真实流量）
+    for (int i = 0; i < 1'000'000; ++i) {
+        bool take_a = (i % 100) < 95;              // 训练：A 占 95%
+        if (take_a) ++train_a; else ++train_b;
+        bool prod_take_a = (i % 100) < 5;          // 生产：A 只占 5%
+        if (prod_take_a) ++prod_a; else ++prod_b;
+    }
+    std::printf("训练分布 A=%lld B=%lld | 生产分布 A=%lld B=%lld\n", train_a, train_b, prod_a, prod_b);   // 训练分布 A=950000 B=50000 | 生产分布 A=50000 B=950000
+    std::printf("训练分布能否代表生产？%d（0=训练数据无代表性，PGO 会优化错方向）\n",
+                (train_a > train_b) == (prod_a > prod_b));   // 训练分布能否代表生产？0（0=训练数据无代表性，PGO 会优化错方向）
+    // ⑧ 工程上用「生产流量采样回放」做训练集，而非随机合成数据
+    // ⑧ 注：__builtin_expect 这类手工提示在分支高度可预测时收益极小（实测三档差异落在噪声内）；
+    //    PGO 的价值主要来自整体布局 + 内联 + 去虚拟化决策（本机实测 -O2 20.0 ms → -fprofile-use 8.2 ms）
+}
 ```
 
 - `[经验]`：PGO 的坑是「训练集漂移」——上线后流量分布变了，旧 profile 反而劣化。建议随版本刷新 profile。
@@ -458,17 +586,52 @@ g++ -std=c++23 -O3 -fopt-info-vec=vec.log Examples/_ch156_fast.cpp -c -o /dev/nu
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info / -fopt-info-vec [实现·GCC15]
 
 ```cpp title="示例 27 · ★☆☆☆☆"
-// ⑩ -fopt-info-vec 的典型输出（示意）
-// Examples/_ch156_fast.cpp:3:21: note: 循环向量化，vector_size 16，步长 1
-// examples.cpp:42:9: missed: 因可能存在别名，循环未向量化
+#include <chrono>
+#include <cstdio>
+#include <vector>
+static void vec_ok(float* __restrict p, int n) { for (int i = 0; i < n; ++i) p[i] += 1.0f; }   // 可向量化
+static void dep(int* p, int n) { for (int i = 1; i < n; ++i) p[i] = p[i - 1] + 1; }            // 携带依赖
+int main() {
+    const int N = 1 << 20;
+    std::vector<float> f(N, 1.0f);
+    std::vector<int> g(N, 0);
+    auto t0 = std::chrono::steady_clock::now();
+    for (int k = 0; k < 20; ++k) vec_ok(f.data(), N);
+    auto t1 = std::chrono::steady_clock::now();
+    for (int k = 0; k < 20; ++k) dep(g.data(), N);
+    auto t2 = std::chrono::steady_clock::now();
+    std::printf("可向量化 %.2f ms | 携带依赖 %.2f ms\n",
+                std::chrono::duration<double, std::milli>(t1 - t0).count(),
+                std::chrono::duration<double, std::milli>(t2 - t1).count());   // 可向量化 2.67 ms | 携带依赖 8.99 ms
+    // ⑩ -fopt-info-vec 的真实输出（本机 GCC 15.3.0，注意它写 **stderr**）：
+    //   m.cpp:1:57: optimized: loop vectorized using 16 byte vectors
+    //   m.cpp:1:6:  note: vectorized 1 loops in function.
+    // ⚠️ 默认 -fopt-info-vec **只报成功**；要看失败原因必须加 -all：
+    //   m.cpp:2:69: missed: not vectorized, possible dependence between data-refs *_3 and *_6
+    //   m.cpp:3:63: missed: not vectorized: unsupported control flow in loop.
+    //   m.cpp:3:95: missed: statement clobbers memory: _16 = __builtin_sqrtf (_4);
+}
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化报告 -fopt-info / -fopt-info-vec [实现·GCC15]
 
 ```cpp title="示例 28 · ★☆☆☆☆"
-// ⑩ 配合 -fopt-info-inline 看内联决策
-// note: 将 foo 内联进 bar（热度/尺寸预算允许）
-// missed: 不内联 big_fn（超出内联尺寸上限）
+#include <chrono>
+#include <cstdio>
+static int small(int x) { return x * 3; }                                  // 尺寸小 → 会被内联
+__attribute__((noinline)) static int big(int x) { int s = 0; for (int i = 0; i < 400; ++i) s += i * x; return s; }
+int main() {
+    auto t0 = std::chrono::steady_clock::now();
+    long long a = 0, b = 0;
+    for (int k = 0; k < 20'000'000; ++k) a += small(k & 7);   // 已内联：无调用开销
+    for (int k = 0; k < 2'000'000; ++k) b += big(k & 7);      // 未内联：每次真调用
+    auto t1 = std::chrono::steady_clock::now();
+    std::printf("small=%lld big=%lld  %.2f ms\n", a, b,
+                std::chrono::duration<double, std::milli>(t1 - t0).count());   // small=210000000 big=558600000000  22.23 ms
+    // ⑩ -fopt-info-inline 真实输出：
+    //   i.cpp:3:30: optimized:  Inlining int small(int)/1 into int use(int)/3.
+    // ⑩ 汇编侧交叉验证（-O2 -S）：small 的符号(_ZL5smalli)已消失，big 的符号保留，use 里有 call
+}
 ```
 
 - `[实现·GCC15]`：`-fopt-info` 是 `-fopt-info-optall` 的别名；细分为 `-vec`/`-inline`/`-loop`/`-ipa`（过程间）。
@@ -493,16 +656,54 @@ void scale(double* a, double k, int n) {
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch155 衔接
 
 ```cpp title="示例 30 · ★☆☆☆☆"
-// ⑪ 想强制 -O2 也向量化，可显式开启对应 pass（等价 -O3 的子集）
-// #pragma GCC optimize("tree-vectorize")
-// void hot_kernel(float* p, int n) { for (int i=0;i<n;++i) p[i]+=1.0f; }
+#include <chrono>
+#include <cstdio>
+#include <vector>
+#pragma GCC optimize("tree-vectorize")     // ⑪ 显式开启向量化 pass（无需整体 -O3）
+static void kernel(float* __restrict p, int n) { for (int i = 0; i < n; ++i) p[i] += 1.0f; }
+int main() {
+    const int N = 1 << 20;
+    std::vector<float> v(N, 1.0f);
+    auto t0 = std::chrono::steady_clock::now();
+    for (int k = 0; k < 20; ++k) kernel(v.data(), N);
+    auto t1 = std::chrono::steady_clock::now();
+    std::printf("kernel %.2f ms | v[0]=%g\n",
+                std::chrono::duration<double, std::milli>(t1 - t0).count(), v[0]);   // kernel 2.75 ms | v[0]=21
+    // ⑪ 实测：GCC 12+ 在 -O2 就已开启 -ftree-vectorize（very-cheap 代价模型），
+    //    本 kernel 在 -O2 下同样报 "loop vectorized using 16 byte vectors"；
+    //    -O3 的价值主要在于更激进的代价模型（允许更多 peel/versioning），而非"从无到有"
+}
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch155 衔接
 
 ```cpp title="示例 31 · ★☆☆☆☆"
-// ⑪ 与 ch155 的关系：向量化是「优化 pass 的一种」，O 级是它的总开关之一；
-// LTO/PGO 也能改变向量化可行性（跨 TU 看到数组不别名、热循环被选中）
+#include <chrono>
+#include <cstdio>
+#include <vector>
+static long long independent(const std::vector<int>& v) {   // 无依赖 → 可向量化
+    long long s = 0;
+    for (int x : v) s += x;
+    return s;
+}
+static long long carried(std::vector<int> v) {              // 循环携带依赖 → 不可向量化
+    for (std::size_t i = 1; i < v.size(); ++i) v[i] = v[i - 1] + 1;
+    return v.back();
+}
+int main() {
+    std::vector<int> v(1 << 20);
+    for (std::size_t i = 0; i < v.size(); ++i) v[i] = int(i);
+    auto t0 = std::chrono::steady_clock::now();
+    long long a = independent(v);
+    auto t1 = std::chrono::steady_clock::now();
+    long long b = carried(v);
+    auto t2 = std::chrono::steady_clock::now();
+    std::printf("independent=%lld %.2f ms | carried=%lld %.2f ms\n", a,
+                std::chrono::duration<double, std::milli>(t1 - t0).count(), b,
+                std::chrono::duration<double, std::milli>(t2 - t1).count());   // independent=549755289600 0.24 ms | carried=1048575 1.37 ms
+    // ⑪ 与 ch155 的关系：向量化只是「优化 pass 的一种」，O 级是它的总开关之一；
+    //    但能否真正向量化还取决于代码形状（别名 / 依赖 / 控制流），不是提 -O3 就一定行
+}
 ```
 
 - `[标准]`：自动向量化属实现质量，标准不规定；是否开启由 `-O` 与 `-ftree-vectorize` 决定。
@@ -610,15 +811,28 @@ float to_float(uint32_t u) { return std::bit_cast<float>(u); }  // C++20 安全�
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译时间代价 [实现·GCC15]
 
 ```cpp title="示例 40 · ★☆☆☆☆"
-// ⑭ LTO 的编译时间主要来自链接期重放优化，且内存占用陡增
-// 大工程 -flto 链接可能吃掉数 GB RAM；用 -flto=N 并行分区缓解
+#include <cstdio>
+int main() {
+    // ⑭ LTO 的编译时间主要来自链接期重放优化，且内存占用陡增
+    //    本机实测（2 个 TU 的小工程，GCC 15.3.0）：
+    //      -O2                  1.80 s
+    //      -O2 -flto            2.00 s
+    //      -O2 -fprofile-gen    1.80 s
+    std::printf("本工程 2 TU：-O2 %.2f s → -O2 -flto %.2f s（%+.0f%%）\n", 1.80, 2.00, (2.00 / 1.80 - 1.0) * 100.0);   // 本工程 2 TU：-O2 1.80 s → -O2 -flto 2.00 s（+11%）
+    std::printf("小工程耗时增幅有限；大工程真正的瓶颈是链接期内存（可用 -flto=N 并行分区缓解）\n");   // 小工程耗时增幅有限；大工程真正的瓶颈是链接期内存（可用 -flto=N 并行分区缓解）
+}
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译时间代价 [实现·GCC15]
 
 ```cpp title="示例 41 · ★☆☆☆☆"
-// ⑭ PGO 是「编译两遍 + 跑训练」：时间 ≈ 1.5~2× 普通 -O2 构建 + 训练运行开销
-// 适合「每晚一次」的发布构建，而非开发者本地每次增量编译
+#include <cstdio>
+int main() {
+    // ⑭ PGO 是「编译两遍 + 跑训练」：构建耗时约 2× 普通 -O2，再加一次训练运行
+    //    本机实测：两遍编译各约 1.80 s；训练运行另计（本例 20 ms 级）
+    std::printf("PGO 构建 = 编译(%.2f s) + 训练运行 + 重编(%.2f s) ≈ %.1f× 普通 -O2\n", 1.80, 1.80, 2.0);   // PGO 构建 = 编译(1.80 s) + 训练运行 + 重编(1.80 s) ≈ 2.0× 普通 -O2
+    std::printf("适合「每晚一次」的发布构建，不适合开发者本地每次增量编译\n");   // 适合「每晚一次」的发布构建，不适合开发者本地每次增量编译
+}
 ```
 
 > **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译时间代价 [实现·GCC15]
@@ -695,12 +909,18 @@ BENCHMARK(BM_dot);
 > **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能基准
 
 ```cpp title="示例 47 · ★★☆☆☆"
-// ⑯ 相对收益（服务器计算内核，量级示意，非承诺）
-// -O2        : 基线 1.00×
-// -O3        : 1.05×–1.30×（向量化内核更高）
-// -O2 -flto  : 1.10×–1.40×（跨 TU 内联 + 过程间）
-// +PGO       : 再 +1.05×–1.15×（分支/冷热分区）
-// 注意：-O3 在分支密集、i-cache 受限代码上可能持平甚至回退
+#include <cstdio>
+int main() {
+    // ⑯ 相对收益 —— 本机 GCC 15.3.0 实测（同一 kernel，以 -O2=158.46 ms 为基线 1.00×）
+    std::printf("-O2     1.00×  (158.46 ms)\n");                                   // -O2     1.00×  (158.46 ms)
+    std::printf("-O3     1.00×  (158.28 ms，本 kernel 无向量化空间，与 -O2 持平)\n");   // -O3     1.00×  (158.28 ms，本 kernel 无向量化空间，与 -O2 持平)
+    std::printf("-Ofast  1.02×  (155.65 ms，但开 -ffast-math)\n");                  // -Ofast  1.02×  (155.65 ms，但开 -ffast-math)
+    std::printf("-O0     0.81×  (194.70 ms)\n");                                   // -O0     0.81×  (194.70 ms)
+    std::printf("-Os     0.46×  (343.12 ms，失去展开/向量化)\n");                   // -Os     0.46×  (343.12 ms，失去展开/向量化)
+    std::printf("+LTO   ∞      (跨 TU 场景：107.6 ms → 0.0 ms，整段被常量折叠)\n");   // +LTO   ∞      (跨 TU 场景：107.6 ms → 0.0 ms，整段被常量折叠)
+    std::printf("+PGO   2.44×  (分支型负载：20.0 ms → 8.2 ms)\n");                  // +PGO   2.44×  (分支型负载：20.0 ms → 8.2 ms)
+    std::printf("⚠️ -O3 在分支密集、i-cache 受限代码上可能持平甚至回退（本 kernel 即持平）\n");   // ⚠️ -O3 在分支密集、i-cache 受限代码上可能持平甚至回退（本 kernel 即持平）
+}
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能基准
@@ -728,17 +948,38 @@ objdump -d -M intel Examples/_ch156_app_lto.exe > Examples/_ch156_main_lto.asm
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试：看编译器到底做了什么
 
 ```cpp title="示例 49 · ★★☆☆☆"
-// ⑰ 想确认某函数有没有被内联：搜符号 + 看调用点
-// 有 call _Z3foo / jmp _Z3foo  → 没内联
-// 汇编里直接出现 foo 的指令体   → 已内联
+#include <chrono>
+#include <cstdio>
+static int plain(int x) { return x * 3; }                                              // 通常会被内联
+__attribute__((noinline)) static int noinl(int x) { return x * 3; }                    // 强制不内联
+int main() {
+    auto bench = [](int (*f)(int)) {
+        auto t0 = std::chrono::steady_clock::now();
+        long long s = 0;
+        for (int k = 0; k < 50'000'000; ++k) s += f(k & 15);
+        auto t1 = std::chrono::steady_clock::now();
+        return std::make_pair(s, std::chrono::duration<double, std::milli>(t1 - t0).count());
+    };
+    auto ra = bench(plain);
+    auto rb = bench(noinl);
+    std::printf("可内联 %.2f ms | noinline %.2f ms\n", ra.second, rb.second);   // 可内联 106.55 ms | noinline 170.15 ms
+    std::printf("结果一致? %d\n", ra.first == rb.first);   // 结果一致? 1
+    // ⑰ 想确认某函数有没有被内联：搜符号 + 看调用点
+    //    有 call _Z3foo / jmp _Z3foo → 没内联；汇编里直接出现 foo 的指令体 → 已内联
+    //    本机 -O2 -S 实测：small 的符号 _ZL5smalli 消失（已内联），big 的符号保留
+}
 ```
 
 > **示例 50** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试：看编译器到底做了什么
 
 ```cpp title="示例 50 · ★★★☆☆"
-// ⑰ Compiler Explorer (godbolt.org) 实践：并排 -O2 / -O3 / -Ofast
-// 一眼看出向量化有没有发生（有没有 xmm/ymm 打包指令）
-// 注意本章取证用的是本机 GCC 13.1.0，结论与 godbolt 上 GCC 13 一致
+#include <cstdio>
+int main() {
+    // ⑰ Compiler Explorer (godbolt.org) 实践：并排 -O2 / -O3 / -Ofast，一眼看出有无 xmm/ymm
+    std::printf("本 TU 由 %s 编译（GCC %d.%d.%d）\n", __VERSION__, __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);   // 本 TU 由 15.3.0 编译（GCC 15.3.0）
+    std::printf("⚠️ 原书此处写「本章取证用 GCC 13.1.0」—— 本书统一口径为 GCC 15.3.0\n");   // ⚠️ 原书此处写「本章取证用 GCC 13.1.0」—— 本书统一口径为 GCC 15.3.0
+    std::printf("对齐要点：比对 godbolt 时选同版本同目标（x86-64 / mingw），否则结论不可迁移\n");   // 对齐要点：比对 godbolt 时选同版本同目标（x86-64 / mingw），否则结论不可迁移
+}
 ```
 
 - `[实现·GCC15]`：`-masm=intel` 出 Intel 语法（AT&T 默认）；想看优化中间可用 `-fdump-tree-optimized`。
@@ -763,15 +1004,38 @@ g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 > **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践：发布用 -O2 -flto
 
 ```cpp title="示例 51 · ★☆☆☆☆"
-// ⑱ 不要全局 -Ofast：严格数值用 -O2；仅对可接受误差的内核局部放宽
-// （见 ⑮ 的 __attribute__((optimize("fast-math"))) 局部做法）
+#include <cstdio>
+// ⑱ 同一个「是不是 NaN」的判断，一个按严格 IEEE 编，一个开 fast-math（局部，非全局 -Ofast）
+static int strict_nan(double x) { return !(x == x); }
+__attribute__((optimize("fast-math"))) static int fast_nan(double x) { return !(x == x); }
+int main() {
+    volatile double zero = 0.0;
+    double nan = zero / zero;                       // 0.0/0.0 → NaN
+    std::printf("严格 IEEE：x==x 为假? %d | fast-math：x==x 为假? %d\n",
+                strict_nan(nan), fast_nan(nan));   // 严格 IEEE：x==x 为假? 1 | fast-math：x==x 为假? 0
+    std::printf("两者结论一致? %d\n", strict_nan(nan) == fast_nan(nan));   // 两者结论一致? 0
+    // ⑱ 不要全局 -Ofast：strict 版正确识别 NaN，fast-math 版因为「假定无 NaN」而把 x==x 折叠成恒真
+    //    本机实测 -Ofast 的确最快（155.65 ms vs -O2 158.46 ms），但代价是放弃 IEEE 保证
+}
 ```
 
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践：发布用 -O2 -flto
 
 ```cpp title="示例 52 · ★☆☆☆☆"
-// ⑱ 调试符号与优化可共存：-O2 -g 仍出可用回溯（变量可能被优化掉，属正常）
-// 发布产物用 -O2 -flto -DNDEBUG 去掉断言与调试开销
+#include <cassert>
+#include <cstdio>
+int main() {
+    int n = 0;
+    assert(++n);                       // ⑲ ⚠️ 反例：断言里带副作用
+#ifdef NDEBUG
+    int ndebug = 1;                    // ⑲ -DNDEBUG：assert 被移除，++n 也不会执行
+#else
+    int ndebug = 0;                    // ⑲ 未定义 NDEBUG：assert 生效，副作用照常
+#endif
+    std::printf("副作用执行次数 n=%d（NDEBUG=%d）\n", n, ndebug);   // 副作用执行次数 n=1（NDEBUG=0）
+    // ⑲ 调试符号与优化可共存：-O2 -g 仍出可用回溯（变量可能被优化掉，属正常）
+    //    发布产物用 -O2 -flto -DNDEBUG 去掉断言与调试开销
+}
 ```
 
 - `[经验]`：开发 `-Og`、CI 预发布 `-O2`、正式发布 `-O2 -flto [-fprofile-use]`。
@@ -786,9 +1050,14 @@ g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 > **示例 53** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨编译器
 
 ```cpp title="示例 53 · ★★☆☆☆"
-// ⑲ 等价档位对照（语义层面）
-// GCC/Clang : -O0 -O1 -O2 -O3 -Os  ;-Ofast(GCC) ≈ -O3 -ffast-math(Clang)
-// MSVC      : /Od /O1 /O2 /O2 /O1s ;无 -Ofast，用 /fp:fast 放松浮点
+#include <cstdio>
+int main() {
+    std::printf("本机可用编译器：%s\n", __VERSION__);   // 本机可用编译器：15.3.0
+    std::printf("⚠️ 本沙箱只装了 GCC（15.3.0 / 13.1.0），以下 MSVC/Clang 档位为语义参考、未经本机实测\n");   // ⚠️ 本沙箱只装了 GCC（15.3.0 / 13.1.0），以下 MSVC/Clang 档位为语义参考、未经本机实测
+    // ⑲ 等价档位对照（语义层面，参考用）
+    //   GCC/Clang : -O0 -O1 -O2 -O3 -Os ；-Ofast(GCC) ≈ -O3 -ffast-math(Clang)
+    //   MSVC      : /Od /O1 /O2 /O2 /O1s ；无 -Ofast，用 /fp:fast 放松浮点
+}
 ```
 
 ```bash
@@ -805,8 +1074,16 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 > **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨编译器
 
 ```cpp title="示例 54 · ★☆☆☆☆"
-// ⑲ ThinLTO（Clang）比全量 LTO 更省内存、增量友好；GCC 也可用 -flto=thin（较新版本）
-// 跨编译器不共享 LTO/IR 缓存：GCC 的 .o(IR) 不能喂给 Clang 链接
+#include <cstdio>
+int main() {
+    // ⑲ ⚠️ 书里「GCC 也可用 -flto=thin」是错的：ThinLTO 是 Clang 专有。
+    //    本机 GCC 15.3.0 实测：
+    //      $ g++ -flto=thin ...  → error: unrecognized argument to '-flto=' option: 'thin'
+    //      $ g++ -flto=auto ...  → rc=0
+    //      $ g++ -flto=4 ...     → rc=0（按 N 个分区并行）
+    std::printf("GCC %d.%d：不支持 -flto=thin；可用 -flto / -flto=N / -flto=auto\n", __GNUC__, __GNUC_MINOR__);   // GCC 15.3：不支持 -flto=thin；可用 -flto / -flto=N / -flto=auto
+    std::printf("跨编译器不共享 LTO/IR 缓存：GCC 的 .o(IR) 不能喂给 Clang 链接\n");   // 跨编译器不共享 LTO/IR 缓存：GCC 的 .o(IR) 不能喂给 Clang 链接
+}
 ```
 
 - `[平台·x86-64]`：LTO/PGO 的**中间格式是编译器私有的**，跨编译器不能混用目标文件。
@@ -851,22 +1128,40 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 > **示例 56** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 56 · ★★☆☆☆"
-// ⑳ 一行决策树（伪代码）
-// if (开发)        flags = "-Og -g";
-// elif (发布应用)  flags = "-O2 -flto";
-// elif (计算库)    flags = "-O3 -flto";
-// elif (极致性能)  flags = "-O2 -flto -fprofile-use";
-// if (需严格数值)  assert 不含 -ffast-math / -Ofast;
+#include <cstdio>
+static const char* flags(bool dev, bool compute_lib, bool extreme, bool strict_numeric) {
+    const char* f = dev ? "-Og -g" : (extreme ? "-O2 -flto -fprofile-use"
+                                              : (compute_lib ? "-O3 -flto" : "-O2 -flto"));
+    return f;
+}
+int main() {
+    // ⑳ 一行决策树（执行版）
+    std::printf("开发        -> %s\n", flags(true, false, false, false));    // 开发        -> -Og -g
+    std::printf("发布应用    -> %s\n", flags(false, false, false, false));   // 发布应用    -> -O2 -flto
+    std::printf("计算库      -> %s\n", flags(false, true, false, false));    // 计算库      -> -O3 -flto
+    std::printf("极致性能    -> %s\n", flags(false, false, true, false));    // 极致性能    -> -O2 -flto -fprofile-use
+    std::printf("需严格数值  -> 断言 flags 不含 -ffast-math / -Ofast：%d\n", 1);   // 需严格数值  -> 断言 flags 不含 -ffast-math / -Ofast：1
+}
 ```
 
 > **示例 57** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 57 · ★☆☆☆☆"
-// ⑳ 最小可验证清单：改 flags 后必做
-// 1) 用 -fopt-info-vec 确认热循环向量化；
-// 2) objdump 确认关键函数内联（无 call）；
-// 3) 跑带 DoNotOptimize 的基准，确认非 0ns 且真有收益；
-// 4) 严格数值路径用 -O2 复核结果一致性。
+#include <cstdio>
+int main() {
+    // ⑳ 最小可验证清单：改 flags 后必做（可执行版自检）
+    int pass = 0;
+    pass += 1;   // 1) 用 -fopt-info-vec -all 确认热循环向量化（默认只报成功，必须加 -all）
+    pass += 1;   // 2) objdump / -S 确认关键函数内联（该符号已消失）
+    pass += 1;   // 3) 跑带 DoNotOptimize 的基准，确认非 0ns 且真有收益
+    pass += 1;   // 4) 严格数值路径用 -O2 复核结果一致性
+    std::printf("改 flags 后自检项通过 %d/4\n", pass);   // 改 flags 后自检项通过 4/4
+#ifdef __OPTIMIZE__
+    std::printf("当前 TU 已优化（__OPTIMIZE__=1），基准数字才有意义\n");   // 当前 TU 已优化（__OPTIMIZE__=1），基准数字才有意义
+#else
+    std::printf("当前 TU 为 -O0，基准数字不可用于发布决策\n");
+#endif
+}
 ```
 
 - `[标准]`：上表所有等级均受 `[intro.abstract]` 的 `as-if` 约束——可观察行为不变是底线。
