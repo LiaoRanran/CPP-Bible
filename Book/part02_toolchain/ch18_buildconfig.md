@@ -734,11 +734,12 @@ int x = *p;                    // UB；-O0 可能"恰好"段错误，-O2 可能�
 
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
 
-```cpp title="示例 30 · ★☆☆☆☆"
-// ⑱ 坑3：混用 LTO 与非 LTO 目标文件
-// g++ -O2 -flto -c a.cpp -o a.o   +   g++ -O2 -c b.cpp -o b.o
-// g++ -flto a.o b.o -o app        # b.o 是普通 .o，无法被跨 TU 优化
-// ✅ 所有参与 LTO 的 TU 都用 -flto 编译
+```bash
+# ⑱ 坑3：混用 LTO 与非 LTO 目标文件
+# b.o 是普通 .o（未加 -flto），无法参与跨 TU 优化——所有参与 LTO 的 TU 都要用 -flto 编译
+g++ -O2 -flto -c a.cpp -o a.o
+g++ -O2 -c b.cpp -o b.o
+g++ -flto a.o b.o -o app
 ```
 
 > **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑
@@ -781,11 +782,11 @@ T clamp(T v, T lo, T hi) {
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 
-```cpp title="示例 35 · ★★☆☆☆"
-// ⑲ 实践3：发布保留调试符号的独立副本，分发 strip 版
-// objcopy --only-keep-debug app app.debug
-// strip --strip-debug app
-// objcopy --add-gnu-debuglink=app.debug app
+```bash
+# ⑲ 实践3：发布保留调试符号的独立副本，分发 strip 版
+objcopy --only-keep-debug app app.debug
+strip --strip-debug app
+objcopy --add-gnu-debuglink=app.debug app
 ```
 
 ```bash
