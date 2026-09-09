@@ -44,7 +44,7 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 
 > 元数据：标准基 C++98（核心）/C++11（override/final）/C++20（更优去虚化） · 预计阅读 120 min · 前置 ch19(存储期)/ch35(.rodata)/ch39(析构noexcept)/ch45(对象模型)/ch46(继承) · 后续 ch48(RTTI)/ch49(虚继承)/ch50(CRTP/EBO)/ch14(性能) · 难度 高级
 
-## ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
+### ① 我们真正要回答的问题 <span class="badge badge-std">标准</span>
 
 [第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)
 [第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](../part05_oo/ch48_rtti.md)
@@ -63,7 +63,7 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 
 ## ③ 后续依赖 ⟶ ch48(RTTI 依赖 vtable 负偏移) · ch49(虚继承扩展 vtable) · ch50(CRTP 静态替代) · ch14(去虚化属于性能优化)
 
-## ④ 知识图谱（ASCII）
+### ④ 知识图谱（ASCII）
 
 > **示例 1** <span class="badge badge-exp">难度 ★★★★★</span> · 知识图谱（ASCII）
 
@@ -225,12 +225,12 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_ctor_vptr.cpp -o _asm_ctor_vptr.asm
 - 标准库容器（vector/map…）的析构依赖基类 `std::allocator_traits` 与虚析构无关，但 **`std::exception` 及派生异常类必须用虚析构**（否则 `catch` 捕获基类指针 delete 时泄漏——见 ⑬）。
 - `std::ios_base` 的格式化状态、流缓冲区 `std::streambuf` 均依赖虚函数实现可替换后端。
 
-## ⑫ 工业案例
+### ⑫ 工业案例
 
 [第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](../part05_oo/ch51_crtp.md)（CRTP 与静态多态）—— 用静态多态替代虚接口规避虚调用开销
 [第50章　多重继承与对象模型（Multiple Inheritance）](../part05_oo/ch50_multiple_inheritance.md)（多重继承与对象模型）—— 插件后端常用多重接口组合
 
-### 工业案例 47-A：插件式渲染后端（虚接口 + RAII）
+#### 工业案例 47-A：插件式渲染后端（虚接口 + RAII）
 
 > 场景：图形引擎支持运行时切换 Vulkan/D3D/OpenGL 后端
 > 构建：`g++ -std=c++23 -O2 -Wall case47_plugin.cpp -o case47_plugin`
@@ -277,7 +277,7 @@ int main() {
 
 【设计要点】`IRenderBackend` 的虚析构保证：即使通过 `unique_ptr<IRenderBackend>` 析构，也会调用正确派生析构（先派生后基类），释放后端专属资源。`= 0` 纯虚强制每个后端实现 `draw`。`override` 关键字让编译器校验签名匹配（防误写）。
 
-### 工业案例 47-B：错误示范——基类非虚析构导致泄漏/UB
+#### 工业案例 47-B：错误示范——基类非虚析构导致泄漏/UB
 
 > **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-B：错误示范——基类
 
@@ -300,7 +300,7 @@ struct GoodBase { virtual ~GoodBase() = default; };
 struct GoodDerived : GoodBase { int* buf = new int[1024]; ~GoodDerived() override { delete[] buf; } };
 ```
 
-### 工业案例 47-C：同类型对象共享同一份 vtable（vptr 相同）
+#### 工业案例 47-C：同类型对象共享同一份 vtable（vptr 相同）
 
 > **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-C：同类型对象共享同
 
@@ -315,7 +315,7 @@ void demo_c() {
 }
 ```
 
-### 工业案例 47-D：override 误写（签名不匹配导致不是覆盖）
+#### 工业案例 47-D：override 误写（签名不匹配导致不是覆盖）
 
 > **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-D：override
 
@@ -327,7 +327,7 @@ struct Der : Base {
 };
 ```
 
-### 工业案例 47-E：final 封闭类/方法（去虚化 + 禁继承）
+#### 工业案例 47-E：final 封闭类/方法（去虚化 + 禁继承）
 
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-E：final 封闭
 
@@ -337,7 +337,7 @@ struct Leaf final : Base { int f() const override { return 2; } };
 // struct Bad : Leaf {};  // ❌ 编译错误：Leaf 是 final，不可继承
 ```
 
-### 工业案例 47-F：含纯虚函数的类不可实例化
+#### 工业案例 47-F：含纯虚函数的类不可实例化
 
 > **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-F：含纯虚函数的类不
 
@@ -347,7 +347,7 @@ struct Abstract { virtual void f() = 0; virtual ~Abstract() = default; };
 struct Concrete : Abstract { void f() override {} };
 ```
 
-### 工业案例 47-G：协变返回类型（covariant return）
+#### 工业案例 47-G：协变返回类型（covariant return）
 
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-G：协变返回类型
 
@@ -356,7 +356,7 @@ struct Base { virtual ~Base() = default; virtual Base* clone() const { return ne
 struct Der : Base { Der* clone() const override { return new Der(*this); } };  // 返回派生指针
 ```
 
-### 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
+#### 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
 
 > **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
 
@@ -367,7 +367,7 @@ struct D : L, R { int lf() const override { return 3; } int rf() const override 
 // 经 R* 调 rf 时 this 需从 D 头调整到 R 子对象（thunk，见 ⑪/⑲）
 ```
 
-### 工业案例 47-I：切片丢失多态
+#### 工业案例 47-I：切片丢失多态
 
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-I：切片丢失多态
 
@@ -380,7 +380,7 @@ void demo_i() {
 }
 ```
 
-### 工业案例 47-J：虚函数默认参数静态绑定（陷阱）
+#### 工业案例 47-J：虚函数默认参数静态绑定（陷阱）
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-J：虚函数默认参数静
 
@@ -390,7 +390,7 @@ struct Der : Base { void f(int x = 2) const override { (void)x; } };
 // 经 Base* 调 f() 用 Base 默认值 1（静态类型），非 Der 的 2 —— 避免虚函数默认参数
 ```
 
-### 工业案例 47-K：构造期调用虚函数不下降到派生
+#### 工业案例 47-K：构造期调用虚函数不下降到派生
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-K：构造期调用虚函数
 
@@ -399,7 +399,7 @@ struct Base { Base() { show(); } virtual void show() const {} virtual ~Base() = 
 struct Der : Base { Der() : Base() {} void show() const override {} };  // Base 构造期调 Base::show
 ```
 
-### 工业案例 47-L：析构期同理不下降到派生
+#### 工业案例 47-L：析构期同理不下降到派生
 
 > **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-L：析构期同理不下降
 
@@ -408,7 +408,7 @@ struct Base { virtual ~Base() { cleanup(); } virtual void cleanup() const {} };
 struct Der : Base { void cleanup() const override {} };  // 基类析构时调 Base::cleanup
 ```
 
-### 工业案例 47-M：模板成员不可为虚函数
+#### 工业案例 47-M：模板成员不可为虚函数
 
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例 47-M：模板成员不可为虚
 
@@ -417,7 +417,7 @@ struct Base { virtual ~Base() = default; };
 // template<class T> virtual void f(T);  // ❌ 编译错误：模板成员不可为 virtual
 ```
 
-### 工业案例 47-N：NVI（非虚接口）模式
+#### 工业案例 47-N：NVI（非虚接口）模式
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-N：NVI模式
 
@@ -431,7 +431,7 @@ protected:
 struct Der : Base { void do_run() override {} };
 ```
 
-### 工业案例 47-O：去虚化后虚函数可内联
+#### 工业案例 47-O：去虚化后虚函数可内联
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-O：去虚化后虚函数可
 
@@ -441,7 +441,7 @@ struct Der : Base { int f() const override { return 2; } };
 void demo_o(Der& d) { d.f(); }  // d 静态类型 Der，编译器可能内联 Der::f
 ```
 
-### 工业案例 47-P：接口类（纯虚 + 虚析构）
+#### 工业案例 47-P：接口类（纯虚 + 虚析构）
 
 > **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-P：接口类
 
@@ -453,7 +453,7 @@ struct IShape {
 };
 ```
 
-### 工业案例 47-Q：CRTP 静态替代（对比 ⑲ benchmark）
+#### 工业案例 47-Q：CRTP 静态替代（对比 ⑲ benchmark）
 
 > **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 47-Q：CRTP 静态替
 
@@ -463,7 +463,7 @@ struct CrtpBase { int f() const { return static_cast<const D*>(this)->f_impl(); 
 struct CrtpDer : CrtpBase<CrtpDer> { int f_impl() const { return 2; } };  // 无 vtable
 ```
 
-### 工业案例 47-R：虚析构确保经基类指针 delete 安全（回顾 ⑫-B）
+#### 工业案例 47-R：虚析构确保经基类指针 delete 安全（回顾 ⑫-B）
 
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 47-R：虚析构确保经基类
 
@@ -473,12 +473,12 @@ struct D : B { int* p = new int[8]; ~D() override { delete[] p; } };
 void demo_r() { B* b = new D; delete b; }  // 正确：先 ~D 再 ~B
 ```
 
-## ⑬ 源码分析
+### ⑬ 源码分析
 
 [第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](../part05_oo/ch48_rtti.md)（RTTI 与 type_info）—— 虚表负偏移区存放 type_info 与 top_offset
 [第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)（对象模型基础）—— vtable 在对象布局中的相对位置
 
-### 源码剖析 1：虚析构与 vtable 生成 @ Itanium C++ ABI（规范层）
+#### 源码剖析 1：虚析构与 vtable 生成 @ Itanium C++ ABI（规范层）
 
 > 文件：`https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）
 > 行号：§2.6.2 vtable 布局（规范文本，非行号）
@@ -504,7 +504,7 @@ vtable for C:
 2. `typeinfo`：指向 `std::type_info` 对象，供 `typeid`/`dynamic_cast` 使用（ch48）。位于 vtable 负偏移方向（实际布局中 typeinfo 指针在虚函数槽之前，逻辑上「槽1」）。
 3. 基类虚函数槽位固定在前，派生覆盖**替换同槽**而非新增；派生新增虚函数追加在末尾。这保证「基类指针调用虚函数」在派生对象上仍走同一槽位，分派正确。
 
-#### 源码剖析 2：纯虚调用终止 @ libstdc++
+##### 源码剖析 2：纯虚调用终止 @ libstdc++
 
 > 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（声明 `__cxa_pure_virtual`）
 > 行号：约 `extern "C" void __cxa_pure_virtual();`
@@ -522,11 +522,11 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 1. 纯虚函数（`= 0`）的 vtable 槽填入指向 `__cxa_pure_virtual` 的桩。若因「在构造/析构期间调用纯虚函数」或「意外调用未覆盖的纯虚」而进入该槽，程序 `std::terminate()`（非返回），避免在未定义状态继续。
 2. 这解释了「构造函数内调用纯虚函数」为何必然终止：构造期 vptr 指向当前构造类的 vtable，其纯虚槽指向 `__cxa_pure_virtual`。
 
-#### 源码剖析 3：vtable 落位（真实编译器行为）
+##### 源码剖析 3：vtable 落位（真实编译器行为）
 
 [实现·GCC/Clang] vtable 默认置于 `.rodata`（只读数据段，ch35），因为虚函数地址在链接后固定且不应被写。这带来安全收益（防代码篡改）但意味着同一类型的所有对象**共享一份** vtable（每对象仅存一个 vptr 指针，8 字节，不随虚函数数量增长）。
 
-## ⑭ WG21 提案
+### ⑭ WG21 提案
 
 | 提案 | 标题 | 动机 | 影响 |
 |---|---|---|---|
@@ -535,7 +535,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 | P1133r0 (C++20) | 更激进的去虚化 | 编译器利用 `final`/PGO 将虚调用转直接调用并内联 | 性能（见 ⑲） |
 | N4849 [class.virtual] | 虚函数语义条款 | 规定 vtable/覆盖/纯虚/协变返回类型 | 本标准章依据 |
 
-## ⑮ 面试题（≥10）
+### ⑮ 面试题（≥10）
 
 1. 一个空类 `struct A { virtual void f(); };` 的 `sizeof` 是多少？为什么？（答：x86-64 上 = 8，因含 vptr；空类无 vptr 时 = 1）[UNVERIFIED]
 2. 基类析构不是 virtual，通过基类指针 `delete` 派生对象会怎样？（答：UB，派生析构不调用，资源泄漏）
@@ -550,7 +550,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 11. `final` 如何帮助性能？（答：编译器确定目标唯一，去虚化为直接调用并可内联）
 12. 虚函数与 RTTI 的关系？（答：vtable 内含 typeinfo，typeid/dynamic_cast 依赖之，ch48）
 
-## ⑯ 易错点
+### ⑯ 易错点
 
 - **基类析构漏 `virtual`**：通过基类指针 delete 派生对象 → UB/泄漏（面试最高频）。
 - **构造/析构期调虚函数不下降**：误以为会调派生覆盖版本。
@@ -559,7 +559,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 - **切片丢失多态**：`Base b = derived;` 拷贝仅基类部分，vptr 被基类覆盖（ch46）。
 - **多重继承 thunk 隐藏成本**：未察觉 this 调整开销。
 
-## ⑰ FAQ（≥10）
+### ⑰ FAQ（≥10）
 
 1. **Q：虚函数真的很慢吗？** A：单次虚调用比非虚多一次内存取（vptr→vtable槽）与一次间接跳转，约数纳秒；瓶颈常在「阻碍内联导致的后续优化丢失」，而非指令本身。
 2. **Q：能否让虚函数零开销？** A：用 `final` 类/方法或 PGO 去虚化后等同直接调用；或改用 CRTP 静态多态（ch50）彻底无 vtable。
@@ -572,7 +572,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 9. **Q：多继承两个基类都有虚函数，对象有几个 vptr？** A：Itanium ABI 下通常每个有虚函数的基类子对象一个 vptr（见 ch49 多重继承布局）。
 10. **Q：虚函数与 ABI 稳定吗？** A：vtable 布局是 ABI 一部分；跨编译器/版本混链可能崩溃，故 C++ 无稳定 ABI（见 ch20）。
 
-## ⑱ 最佳实践
+### ⑱ 最佳实践
 
 - 多态基类的析构函数**必须** `virtual`（或 `= default` 显式虚）。
 - 覆盖虚函数一律加 `override`；不希望被覆盖则加 `final`。
@@ -581,7 +581,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 - 不在构造/析构函数中依赖虚函数分派到派生版本。
 - 避免虚函数默认参数。
 
-## ⑲ 性能分析
+### ⑲ 性能分析
 
 [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](../part14_perf/ch156_compiler_opt.md)（编译器优化）—— 去虚化(devirtualization)依赖别名分析与 PGO
 [第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](../part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 间接跳转对分支预测/I-cache 的影响
@@ -615,7 +615,7 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 
 【ABI】vtable 布局属 ABI；跨模块须同一编译器/标准库版本。
 
-## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
+### ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
 **练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
 
@@ -649,9 +649,9 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 
 ---
 
-## 附录：知识点深挖（模板 B，23 项）
+### 附录：知识点深挖（模板 B，23 项）
 
-### 知识点 B1：vtable 布局与覆盖语义
+#### 知识点 B1：vtable 布局与覆盖语义
 
 【定义】每个含虚函数的类有一份 vtable（函数指针数组，存于 .rodata）；对象头部含 vptr 指向它。覆盖虚函数替换同槽位，新增虚函数追加。
 
@@ -723,7 +723,7 @@ struct Der : Base { int f() override { return 2; } };  // 替换 Base::f 的槽
 【例 9】协变返回：`Base* clone()` 可被 `Derived* clone()` 覆盖。
 【例 10】虚析构在 vtable 占一个槽，保证 delete 正确分派。
 
-### 知识点 B2：构造期 vptr 重写（为何构造内虚调用不下降）
+#### 知识点 B2：构造期 vptr 重写（为何构造内虚调用不下降）
 
 【定义】构造函数在执行用户代码前，将对象 vptr 设为「当前正在构造的类」的 vtable；逐层构造使 vptr 从基类 vtable 逐级重写为派生 vtable。
 
@@ -796,7 +796,7 @@ Der d; d.init();  // 显式调用，打印 "der"
 【例 9】`-O2` 下 vptr 写可能合并进构造 prologue。
 【例 10】跨 DLL 边界构造需同一 CRT，否则 vtable 地址错位。
 
-### 知识点 B3：虚析构必须 virtual（对象生命周期与 ABI）
+#### 知识点 B3：虚析构必须 virtual（对象生命周期与 ABI）
 
 【定义】若类可能被多态使用（经基类指针/引用 delete 或析构），其析构必须 virtual，否则 delete 基类指针只调基类析构，派生部分不释放 → UB/泄漏。
 
@@ -869,7 +869,7 @@ Shape* s=new Circle; delete s;               // 正确：先 ~Circle 再 ~Shape
 【例 9】`~Base() = default;` 在头文件可能引出 ODR 问题（用 `= default` 于实现文件）。
 【例 10】虚析构使 `sizeof` 至少含 vptr。
 
-### 知识点 B4：多重继承的 this 指针调整（thunk）
+#### 知识点 B4：多重继承的 this 指针调整（thunk）
 
 【定义】多继承下，非首基类子对象位于派生对象内部偏移处；经该基类指针调用虚函数/访问成员时，需把 this 调整（加/减偏移）到对应子对象起始。
 
@@ -947,7 +947,7 @@ B2* p = &d; D* q = static_cast<D*>(p);  // 编译器插入 -8 调整
 【例 9】`sizeof(D)` = sizeof(B1)+sizeof(B2)+padding。
 【例 10】性能敏感避免深多继承链（thunk 累积）。
 
-### 知识点 B5：动态分派成本与去虚化（devirtualization）
+#### 知识点 B5：动态分派成本与去虚化（devirtualization）
 
 【定义】去虚化是编译器确定虚调用目标后，转为直接调用并内联的优化；触发条件含 `final` 类/方法、PGO 热点、静态分析证明目标唯一。
 
@@ -1021,7 +1021,7 @@ struct Leaf final : Node { int cost() const final; };
 
 > 本章示例/知识点累计：工业案例 2 + 模板 B 知识点 5（各含 ≥10 例，累计 ≥30）+ 面试题 12 + FAQ 10 + 练习题 3，满足整章 ≥30 可编译示例（见 `Examples/_asm_vcall.cpp`、`Examples/case47_plugin.cpp`）。
 
-## 附录: 虚函数深度
+### 附录: 虚函数深度
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录: 虚函数深度
 
@@ -1065,7 +1065,7 @@ struct Base{int n;Base(int x):n(x){}virtual~Base(){}};struct Derived:Base{Derive
 int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;return 0;}
 ```
 
-## 联合使用场景
+### 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
@@ -1075,15 +1075,15 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 | [第48章](../part05_oo/ch48_rtti.md) | 泛型库/编译期计算 | 本章提供概念，第48章提供实现 |
 | [第49章](../part05_oo/ch49_virtual_inheritance.md) | 资源管理/事务回滚 | 本章提供概念，第49章提供实现 |
 
-## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+### ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
 > 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
 
-### ㉒.1 历史渊源补强：虚函数的来龙去脉
+#### ㉒.1 历史渊源补强：虚函数的来龙去脉
 
 <span class="badge badge-history">史</span> 虚函数机制源自 **Simula 67 的「动态方法分派」**，C++ 在 1980 年代用 **vtable（虚函数表）+ 对象首部隐藏指针** 把它落地为「运行时零额外存储、调用仅多一次间接跳转」的实现——这一布局后来被 **Itanium C++ ABI（1990 年代末）** 标准化（第 ⑩ 节汇编实证）。<span class="badge badge-anecdote">轶</span> Bjarne Stroustrup 在 *Design and Evolution* 中坦言，虚函数曾考虑过「按类收税（每类一份开销）」vs「按对象收税（每对象一个 vptr）」，最终选了后者，因为它对「大多数类无虚函数」的 C++ 程序更省——这是「值语义优先」哲学的延伸。<span class="badge badge-history">史</span> **C++11 引入 `final`/`override`** 让虚重写可被编译器校验，并让 `final` 成为去虚化（devirtualization，第 ⑲ 节）优化的线索；而 **CRTP（ch51）** 作为「编译期静态多态」早在 1990 年代模板成熟后即被广泛使用，用以规避虚调用开销。
 
-### ㉒.2 真实工程坐标：虚函数活在哪里
+#### ㉒.2 真实工程坐标：虚函数活在哪里
 
 下表把「虚函数」拉成「扩展点机制」与「性能约束」的张力。
 
@@ -1100,19 +1100,19 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 
 **一条判读**：用虚函数的判据是「要稳定 ABI 的可扩展点，且调用不在最热路径」。GUI / 框架 / 插件 / 音频 / 科学计算都符合 → 默认用虚函数；但当调用每帧每实体、虚表访存成为缓存瓶颈（游戏热路径）时，改用 CRTP（编译期多态）或函数指针。LLVM 的「虚函数 + 去虚化」是折中范本：开发期用虚函数保可扩展，编译期把已知类型内联掉保性能。
 
-### ㉒.3 生产踩坑：虚函数的常见误用
+#### ㉒.3 生产踩坑：虚函数的常见误用
 
 - **基类析构非虚 → 未定义行为**：删除指向派生类的基类指针时，若基类析构非 `virtual`，只调基类析构、派生部分泄漏/未清理（第 ⑫ 节相关）；任何「 intended to be polymorphic」的基类析构必须 `virtual`。
 - **构造函数/析构函数里调用虚函数不按预期**：在构造期对象尚未成为完整派生类型，虚调用落到当前构造中的类版本（非最终覆盖），常导致「初始化未就绪就被用」的 bug（第 ⑯ 节易错点）。
 - **虚调用 + 缓存未命中拖垮热路径**：第 ⑲ 节基准表明，虚调用除间接跳转外还伴随 vtable 访存，在紧密循环里打乱指令/数据缓存；高频路径应改用 CRTP（ch51）或 `final` 去虚化。
 - **`override` 缺失导致静默重载**：第 ⑯ 节，派生类想覆盖却写错签名，编译器当作新重载而非错误，接口升级后行为悄悄改变——必须标 `override`。
 
-### ㉒.4 与标准的互动：虚函数与 WG21 演进
+#### ㉒.4 与标准的互动：虚函数与 WG21 演进
 
 <span class="badge badge-history">史</span> C++98 固化虚函数与 vtable 语义；**C++11 的 `override`/`final`**（第 ⑮ 节，ch46）让重写可校验，且 `final` 给编译器去虚化依据（第 ⑲ 节）。<span class="badge badge-history">史</span> **WG21 的「去虚化」是优化方向而非语言特性**——Link-Time Optimization（LTO）与 PGO 可把 `final`/单实现类型的虚调用内联掉；同时 **C++20 concepts（ch67）** 与 CRTP（ch51）提供「编译期多态」以在性能关键处替代虚函数。<span class="badge badge-comment">评</span> WG21 并未计划改变虚函数这一核心机制（它仍是 C++ 运行时多态的基石），而是围绕它提供「能省则省」的工具：`final` 去虚化、CRTP 静态分派、`std::variant`+`std::visit` 的「封闭多态」替代方案（ch14）。标准的态度是「虚函数该用就用，热路径才需要逃逸到静态分发」。
 - <span class="badge badge-history">史</span> 虚函数机制自 C++98 由 ISO 条款 `[class.virtual]` 固化，vtable 的具体布局由 **Itanium C++ ABI**（GCC/Clang）与 MSVC 各自的 ABI 规定，标准只保证「虚调用分派到最终覆盖」的语义、不规定偏移。WG21 并未改变这一核心，而是围绕它提供 `final` 去虚化（LTO/PGO 可把单实现虚调用内联掉）与 `std::variant`+`std::visit` 的「封闭多态」替代——委员会态度是「虚函数该用就用，热路径才逃逸到静态分发」，而非另起炉灶。
 
-### ㉒.5 权威引用
+#### ㉒.5 权威引用
 
 - [Itanium C++ ABI（vtable 布局规范）](https://itanium-cxx-abi.github.io/cxx-abi/abi.html) — vtable 与 thunk 的权威布局（第 ⑩ 节）
 - [cppreference: virtual functions](https://en.cppreference.com/w/cpp/language/virtual) — 虚函数语义、覆盖与 `final`
@@ -1120,7 +1120,7 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 - [cppreference: devirtualization（编译器优化）](https://en.cppreference.com/w/cpp/language/virtual.html) — 去虚化的语义前提（第 ⑲ 节）
 - [WG21 方向参考：静态多态与 concepts（C++20）](https://en.cppreference.com/w/cpp/language/constraints) — 编译期多态替代虚调用（ch51/ch67）
 
-## 真实开源项目参考（可查证链接）
+### 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。
 
@@ -1141,7 +1141,7 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 
 > 交叉引用：对象模型见 [ch45](../part05_oo/ch45_oop_object_model.md)；CRTP 见 [ch51](../part05_oo/ch51_crtp.md)。
 
-## 相关章节（交叉引用）
+### 相关章节（交叉引用）
 
 - **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)—— 对象模型的 vtable 指针即虚函数的存储落点
 - **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](../part05_oo/ch46_encapsulation_inheritance.md)—— 虚函数经继承体系重写，override/final 约束重写
@@ -1151,7 +1151,7 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 - **跨模块**：[第91章 文件系统 filesystem](../part07_stl/ch91_filesystem.md)—— filesystem 大量使用虚接口抽象
 - **跨模块**：[第92章 时间库 chrono](../part07_stl/ch92_chrono.md)—— chrono 的时钟/时区用虚接口多态
 
-## 附录 G（虚函数与 thunk）
+### 附录 G（虚函数与 thunk）
 
 虚调用经 vtable 间接寻址，多继承引入 this 调整 thunk。
 
@@ -1163,18 +1163,18 @@ sub rdi, 0x0008           ; thunk 调整 this
 call [rcx]
 ```
 
-### 布局
+#### 布局
 
 - 主 vptr `0x0000`；次级 vptr `0x0008`；槽位 `0x0000/0x0008/0x0010/0x0018`
 - thunk 段位于 `0x0020`；虚继承 vbptr `0x0008`
 
-### 量级（3.2GHz）
+#### 量级（3.2GHz）
 
 - 虚调用 ≈ 3.2ns；非虚 ≈ 0.5ns；thunk 调整 ≈ 0.3ns
 - L1 ≈ 1.0ns，L2 ≈ 4.0ns，L3 ≈ 12ns，主存 ≈ 100ns
 - `std::mutex` 无争用加解锁 ≈ 22ns
 
-### 编译器与标准
+#### 编译器与标准
 
 - GCC 15.3.0 / Clang 19 / MSVC 19.4x 生成 vtable
 - `__cplusplus` = 202302L；`__attribute__((noinline))` 强制虚分发
@@ -1200,7 +1200,7 @@ call rax                ; 间接跳转，目标运行期才定
 
 <span class="badge badge-std">标准</span> 虚析构自 `C++98`；`override` / `final` 自 `C++11`；`consteval` 自 `C++20`。
 
-## 附录 E：编译实证——虚调用的真实汇编代价 [E: Low-level]
+### 附录 E：编译实证——虚调用的真实汇编代价 [E: Low-level]
 
 > 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-rtti -fno-exceptions`
 
@@ -1233,7 +1233,7 @@ int call_virtual(int n) {                // 工厂→必须 vtable
 int crtp_call() { StaticDerived d; return d.value(); }
 ```
 
-### 汇编输出（-O2）逐指令对比
+#### 汇编输出（-O2）逐指令对比
 
 **场景 0：CRTP 静态多态 — 零指令开销**
 ```asm
@@ -1282,7 +1282,7 @@ call_virtual(int):
 ```
 > 只做一次 `call *%rax`（间跳）——**无多次链式穿透**。vtable 是数组：`[0]=&value, [1]=&typeinfo(nullptr), [2]=&dtor`。调用只需两步：（1）`movq (%obj), vptr` 取表地址，（2）`call *(vptr + offset)` 取函数指针并跳转。
 
-### 虚调用代价分层总结
+#### 虚调用代价分层总结
 
 | 场景 | 指令开销 | 条件 |
 |------|---------|------|
@@ -1294,13 +1294,13 @@ call_virtual(int):
 
 结论：**虚调用比想象的便宜**——它不是虚函数指针的链式穿透，只是一次 load + 一次间跳。`-O2` 下的去虚拟化可把它压到等价于直接调用。
 
-## 附录 F：编译实证——虚调用 vs CRTP 静态分发（循环优化边界）[E: Low-level / C: Compiler]
+### 附录 F：编译实证——虚调用 vs CRTP 静态分发（循环优化边界）[E: Low-level / C: Compiler]
 
 > 编译：`g++ -std=c++26 -O2 -c ch47_vs_51_dispatch_test.cpp`（GCC 15.3.0 / Win64 ABI），`objdump -d -M intel -C`。
 > 本附录采用 **Intel 语法**（与 附录 E 的 AT&T 对照，结论一致），聚焦 附录 E / ch51 附录 H 未覆盖的**循环内分派**视角：虚调用之所以“慢”，本质是优化器看不见调用目标，从而**无法内联、无法跨调用边界优化**。
 > 完整源码：`_asm_demo/ch47_vs_51_dispatch_test.cpp`。
 
-### 测试源码（节选）
+#### 测试源码（节选）
 
 > **示例 43** <span class="badge badge-exp">难度 ★★★★☆</span> · 测试源码（节选）
 
@@ -1327,7 +1327,7 @@ template<typename D> [[gnu::noinline]] long c_loop(const D* arr, int n) {
 }
 ```
 
-### 真实汇编（GCC15 -O2，Intel 语法）
+#### 真实汇编（GCC15 -O2，Intel 语法）
 
 **① 单点虚调用 `v_dispatch` —— 2 指令**
 ```asm
@@ -1382,7 +1382,7 @@ long c_loop<RectC>(RectC const*, int):
 ```
 > 两个实例化都把派生 `area_impl` 完全内联进循环，**循环体内无任何 `call`**。类型在编译期钉死，优化器拥有完整视野，可自由做常量传播/向量化/冗余消除。
 
-### 代价分层（优化边界视角）
+#### 代价分层（优化边界视角）
 
 | 场景 | 调用边界 | 循环体是否内联 | 关键指令 |
 |------|----------|----------------|----------|
@@ -1393,13 +1393,13 @@ long c_loop<RectC>(RectC const*, int):
 
 **结论**：虚调用的真实成本不是“一次间跳有多慢”，而是**它把调用目标对优化器隐藏**，使整个调用子树无法被内联、常量传播、向量化或融合——在热循环里这个代价被放大 N 倍。CRTP / 具体类型把类型钉死在编译期，优化器得以看穿边界。本附录与 附录 E（逐指令代价 / 去虚拟化）、ch51 附录 H（单点 CRTP/final 对比）三角互补。
 
-## 附录：GCC 15.3.0 真机汇编实证——虚析构 deleting destructor（ASM-47-deleting_dtor）[E: Low-level]
+### 附录：GCC 15.3.0 真机汇编实证——虚析构 deleting destructor（ASM-47-deleting_dtor）[E: Low-level]
 
 > 编译器: GCC 15.3.0 (mingw64, x86-64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
 > 证据: `_asm_demo/ch47_deleting_dtor_test.cpp` → `ch47_deleting_dtor_test.s`
 > 核心结论: 有虚析构的类，vtable 前两槽是 complete(D1)/deleting(D0) 析构。**`delete Base*` = `mov vptr; jmp [vtable+8]`（槽 +8 即 D0），D0 = 完整析构链（派生 D1 内联基类 D1）+ `mov edx,0x10` + `operator delete`。** 直接 `delete Derived*` 时 GCC 还能对析构做 devirtualization。
 
-### 测试源码（节选）
+#### 测试源码（节选）
 
 > **示例 55** <span class="badge badge-exp">难度 ★★★☆☆</span> · ASM-47-deleting_dtor 测试源码
 
@@ -1414,7 +1414,7 @@ void destroy_base(Base* p)       { delete p; }  // 经基类指针
 void destroy_derived(Derived* p) { delete p; }  // 直接派生指针
 ```
 
-### 真实片段（节选）
+#### 真实片段（节选）
 
 ```asm
 Base::~Base()       ; D1 complete:  add [g_calls],1 ; ret
@@ -1440,23 +1440,23 @@ destroy_derived(Derived*):
 L_fallback: jmp rax                 ;   否则回退间接跳转
 ```
 
-### 解读
+#### 解读
 
 - vtable 布局：槽 0 = complete 析构 D1，槽 1（+8）= deleting 析构 D0，槽 2 起才是普通虚函数（对照 ch50 的 `jmp [vtable+0x10]` 的 f2 槽）。
 - D0 职责 = **D1（析构）+ `operator delete(this, sizeof)`**；`mov edx,0x10` 传的就是 `sizeof(Derived)=16`（`int d` 复用 Base 尾填，故两类型同为 16B）。
 - `destroy_base` 经 Base* 看不到具体类型，只能 `jmp [vtable+8]` 间接调用，运行时落到派生 D0；`destroy_derived` 已知精确类型，GCC 用 `cmp vtable_slot == &Derived::D0` 做投机去虚化并保留间接回退。
 
-### 非显然事实与工程警示
+#### 非显然事实与工程警示
 
 1. **`delete` 的“间接”才是虚析构的价值**：无虚析构时 `delete Base*` 直接 `call Base::~Base` + `operator delete(sizeof Base)`——用**错的 size 去 free 派生对象**是未定义行为（堆破坏）。虚析构把“析构 + 正确 size 的 delete”都委托给运行时 vtable，一次间跳换来内存安全。
 2. **D0 与 D1 分离是有原因的**：栈上对象或 `p->~Derived()` 只走 D1（析构不释放）；只有 `delete` 表达式走 D0。编译器需要两个入口，才能让“析构”与“析构+释放”两件事都不多不少。
 3. **析构链是编译期内联的**：本例 `Derived::~Derived()` 的 D1 直接把 `Base::~Base()` 体内联（`g_calls += 1+2`），不是两次间接调用——虚析构只在**释放入口**间接一次，链内仍是静态内联。
 
-## 自测练习（Exercises）
+### 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
-### 练习 1（难度 ★★）
+#### 练习 1（难度 ★★）
 
 **真实场景：游戏渲染管线的"可绘制对象"异构集合。** 你的引擎把玩家、地形、特效都当作 `Drawable`，统一存进 `std::vector<std::unique_ptr<Drawable>>`，每帧只调用 `draw()` 而不关心具体类型——这正是运行期多态的典型战场。请写一个基类 `Shape` 含 `virtual double area()`，派生 `Circle` 与 `Rect`，用基类指针容器演示多态分发，并结合本书实证说明：一次虚调用在汇编层发生了什么（vtable 查找）。
 
@@ -1488,7 +1488,7 @@ int main(){
 
 </details>
 
-### 练习 2（难度 ★★★）
+#### 练习 2（难度 ★★★）
 
 **真实场景：基类构造函数里初始化子系统，却"调不到派生配置"。** 你写一个 `DatabaseConnection` 基类，构造时调用 `virtual void setupOptions()` 来应用派生类（MySQL/Postgres）特有的连接选项；但发现无论派生什么，永远只执行基类默认版本，连接参数从未被定制。请解释为何在**构造函数体内**调用虚函数不会触发动态绑定，给出输出并说明：这正是为何"构造期配置"必须改走 NVI/工厂两阶段构造。
 
@@ -1512,7 +1512,7 @@ int main(){ Der d; }   // 输出 "Base::f", 不是 "Der::f"
 
 </details>
 
-### 练习 3（难度 ★★★★）
+#### 练习 3（难度 ★★★★）
 
 **真实场景：数值内核的"零开销加法算子" vs 插件滤镜的"运行时可替换算法"。** 性能敏感的线性代数库（Eigen 风格）希望 `add` 完全内联、无间接跳转；而图像处理滤镜框架希望运行期按用户选择替换算法（异构容器）。请对比 CRTP 静态多态 vs 虚函数动态多态：各写一个 `add` 示例，指出前者零虚表开销但失去运行时异构，并说明何时选哪个。
 
@@ -1536,7 +1536,7 @@ struct IntA : AddableCrtp<IntA> { int impl(int x){ return x+1; } };
 
 </details>
 
-### 练习 4（难度 ★★）
+#### 练习 4（难度 ★★）
 
 **真实场景：你在设计一个克隆接口，希望派生类返回的是"本类型"而非基类。** 请写出代码：基类 `clone()` 返回 `Base*`，派生类覆写时返回 `Derived*`（协变返回类型）；并演示这正是 `override` 允许放宽返回类型为派生指针的原因。
 
@@ -1566,7 +1566,7 @@ int main() {
 
 </details>
 
-### 练习 5（难度 ★★★）
+#### 练习 5（难度 ★★★）
 
 **真实场景：你用基类指针 `delete` 一个派生对象，却怀疑派生部分的析构没被调用。** 请写出代码：基类无 `virtual` 析构时 `delete` 经基类指针导致未定义行为；加上 `virtual`（或 `= default`）析构后，派生析构被正确调用。
 
@@ -1593,7 +1593,7 @@ int main() {
 
 </details>
 
-## 附录：用法演绎 — 设计一个可扩展的插件系统
+### 附录：用法演绎 — 设计一个可扩展的插件系统
 
 > 场景：主程序要在**运行时**按名字加载不同算法实现（图像处理滤镜、压缩器等），且易于第三方扩展。
 
@@ -1653,7 +1653,7 @@ struct GrayscaleS : FilterCrtp<GrayscaleS> { Image impl(const Image&) const { //
 
 ---
 
-## 附录 J：虚函数与多态决策流（D3 维度）
+### 附录 J：虚函数与多态决策流（D3 维度）
 
 ```mermaid
 flowchart TD
@@ -1692,7 +1692,7 @@ flowchart TD
 
 > 决策流说明：需要运行时多态时，基类析构必须为 virtual，否则多态 delete 泄漏；多重继承下虚调用伴随 thunk（this 调整）。若类型在编译期已知，用 CRTP 消除 vtable 与 this 调整获得零开销；热点虚调用可用 final/封闭类帮助去虚化。跨虚基类的调用则涉及 vbptr 调整（见 ch49）。
 
-## 附录 K：虚函数知识图谱（D6 维度）
+### 附录 K：虚函数知识图谱（D6 维度）
 
 ```mermaid
 flowchart TD
@@ -1713,7 +1713,7 @@ flowchart TD
     V7 --> V12
 ```
 
-### K.1 概念依赖逐边解读
+#### K.1 概念依赖逐边解读
 
 | 边 | 起点 → 终点 | 依赖含义 |
 |---|---|---|
@@ -1733,7 +1733,7 @@ flowchart TD
 | 14 | V5 → V11 | 虚析构保证 delete 经正确动态类型路径析构 |
 | 15 | V7 → V12 | 多重继承与虚继承在布局上叠加（thunk + vbptr） |
 
-### K.2 跨章闭环表
+#### K.2 跨章闭环表
 
 | 目标章 | 关联主题 | 闭环关系 |
 |---|---|---|
@@ -1746,7 +1746,7 @@ flowchart TD
 | ch43 | 缓存局部性 | vtable 取指走 I-cache，去虚化改善指令缓存命中 |
 | ch52 | 空基类优化 EBO | 空基类子对象布局不受 vptr 影响，EBO 仍成立 |
 
-## 附录 D4：libstdc++ 15.3.0 源码解析 — 虚函数运行时支撑（三标准库对比）[E: Low-level / H: Design]
+### 附录 D4：libstdc++ 15.3.0 源码解析 — 虚函数运行时支撑（三标准库对比）[E: Low-level / H: Design]
 
 > 本附录源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
 >（`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。
@@ -1755,7 +1755,7 @@ flowchart TD
 > `objdump` 反汇编/重定位记录实证，绝不虚构"源码"。libc++ / MSVC 仅给出
 > "已知公开实现行为"对比，非逐字摘录。
 
-### D4.1 纯虚兜底函数的真实声明（cxxabi.h L147-152）
+#### D4.1 纯虚兜底函数的真实声明（cxxabi.h L147-152）
 
 ```text
 // cxxabi.h L147-152  (GCC 15.3.0)
@@ -1771,7 +1771,7 @@ flowchart TD
 - C++11 的 `= delete` 虚函数同理由 `__cxa_deleted_virtual` 兜底。
 - 注意：正文 ⑬ 中的 `{ std::terminate(); }` 是**语义示意**；此处才是随包头文件的逐字声明——实现体在 libsupc++ 的二进制库中，随包不发布其 `.cc` 源。
 
-### D4.2 `std::type_info`：每个多态类 vtable 都指向它（typeinfo L93-148）
+#### D4.2 `std::type_info`：每个多态类 vtable 都指向它（typeinfo L93-148）
 
 ```text
 // typeinfo L93-148  (GCC 15.3.0, 节选)
@@ -1821,7 +1821,7 @@ flowchart TD
 3. **`__do_catch`/`__do_upcast` 是异常匹配与 `dynamic_cast` 的底座**：`catch(Base&)` 能接住 `Derived` 异常、交叉转型能横跨继承格，全部经由这两个虚函数在 `__class_type_info` 派生体系中的重写实现。
 4. **返回的 `name()` 是 mangled 名**（如 `7Derived`），跨编译器不可移植；可读名需 `abi::__cxa_demangle`。
 
-### D4.3 vtable 本体实证（真实 GCC 15.3.0 objdump）
+#### D4.3 vtable 本体实证（真实 GCC 15.3.0 objdump）
 
 对最小样例（`Base{f,g,~} / Derived{override f}`，`g++ -std=c++23 -O1 -fno-inline`）取证，
 源码与编译产物见 `Examples/_ch47_d4_vtable.cpp` 与 `Examples/_ch47_d4_vtable.asm`（GCC 15.3.0）。
@@ -1850,7 +1850,7 @@ OFFSET           TYPE                      VALUE
 
 逐字段对照 Itanium ABI：偏移 0 是 offset-to-top（值 0，无重定位）；偏移 8 指向 D4.2 的 `type_info` 派生对象（`typeid`/`dynamic_cast` 的数据源）；偏移 16 起才是函数指针数组——vptr 指向偏移 16（address point），所以槽位 0 的 `f` 用 `call [rax]` 零偏移即中。析构分裂为 D1（不 `delete`）/D0（含 `delete`）双入口。
 
-### D4.4 跨实现对比
+#### D4.4 跨实现对比
 
 | 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
 |------|------------------------|---------------|----------|
@@ -1862,7 +1862,7 @@ OFFSET           TYPE                      VALUE
 
 > libc++/MSVC 行为为**公开实现常识**（llvm-project libc++abi 与 MSVC 文档可核实），非逐字摘录。
 
-### D4.5 第一方可编译验证（type_info 三能力）
+#### D4.5 第一方可编译验证（type_info 三能力）
 
 > **示例 51** <span class="badge badge-exp">难度 ★★★★☆</span> · 第一方可编译验证
 
@@ -1889,12 +1889,12 @@ int main() {
 
 `typeid(b)` 对多态左值求值时，编译器生成的正是 D4.3 中"取 vptr → 读偏移 8 处 typeinfo 指针"的代码；`ti == typeid(Derived)` 命中 D4.2 的 `operator==` 快路径。三个输出均为 1，`name()` 输出 `7Derived`（GCC mangling，跨编译器不可移植）。
 
-## 附录 D5：真实基准与性能分析 — 虚调用 vs CRTP 的真实价格（GCC 15.3.0）
+### 附录 D5：真实基准与性能分析 — 虚调用 vs CRTP 的真实价格（GCC 15.3.0）
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；编译命令 `g++ -O2 -std=c++17`；计时用 `steady_clock` 跑 5 轮取中位数；结果经 volatile sink 防 DCE。测试规模 1M 对象 × 16 轮 = 1600 万次调用，返回值形成数据依赖链 `s=f(s)` 防闭式求值；两派生类各半随机排列 vs 全同型。绝对毫秒数随机器而变，**只有比值才可移植**。
 > **绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果 [VERIFIED]
+#### D5.1 基准结果 [VERIFIED]
 
 | 场景 | 耗时 (ms) | 相对 |
 | --- | --- | --- |
@@ -1905,7 +1905,7 @@ int main() {
 | sizeof 证据：多态类 D1 = 8（含 vptr） | — | — |
 | sizeof 证据：CRTP 类 C1 = 1（无 vptr） | — | — |
 
-#### 可视化速读（D5.1 数据图·双面板）
+##### 可视化速读（D5.1 数据图·双面板）
 
 <svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
   <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
@@ -1971,7 +1971,7 @@ int main() {
 
 > 图注：虚调用在「目标类型恒定」时仅慢 1.93×（间接跳转可预测、BTB 命中）；一旦类型随机混排、间接跳转不可预测，暴涨到 **7.14×**（vs CRTP 静态分发）；去虚拟化失败是主要代价。
 
-### D5.2 非显然结论
+#### D5.2 非显然结论
 
 1. **CRTP = 直接调用（20.42 vs 20.42 ms）**：静态分发在编译期定型、全内联，零成本抽象实测成立。
 2. **虚调用的成本分两层**：**机制层**（vtable 两次间接寻址 + 不可内联）≈ 1.93×；**预测层**（`call [rax]` 的间接分支目标混乱 → BTB 失准）把它抬到 7.14×。教学点：微基准常只测同型数组，给出「虚调用只贵一点」的乐观数——真实多态容器（异型混排）才是 3.7× 的额外预测惩罚。
@@ -1979,7 +1979,7 @@ int main() {
 4. **按类型分桶**（把混排变同型批处理）可白拿 3.69×——不改任何调用机制，只改遍历顺序。这是数据导向设计（DOD）的核心论据之一。
 
 基准源码见库根 `_bench_d5_47_virt.cpp`。
-### 下一节 可复现 demo
+#### 下一节 可复现 demo
 
 > **示例 52** <span class="badge badge-exp">难度 ★★★☆☆</span> · 下一节 可复现 demo
 
@@ -2054,11 +2054,11 @@ int main() {
 }
 ```
 
-### 最后 方法学注
+#### 最后 方法学注
 
 本基准的 1600 万次调用返回值串成数据依赖链 `s=f(s)`，目的正是**防闭式求值**——早期版本不带依赖链时，`-O2` 直接把 direct / CRTP 两次调用求成闭式常量传播，测得 0.000 ms，使 CRTP 的「零成本」失真成「零时间」假象。只有当每个结果都喂给下一次调用、且最终落到 volatile sink 时，编译器才被迫产生真实的分发代码。记住：**绝对毫秒随机器而变，只有比值（1.00× / 1.93× / 7.14×）才可移植**。
 
-### D5.5 汇编实证 (GCC 15.3.0)
+#### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_47_virt.cpp` 真实生成（节选热函数 `D1::f` / `D2::f`）。它们是基准里「虚调用」路径实际执行的虚函数体，各自被折叠成**单条 `lea`**；而「CRTP 静态分发」对应的 `C1::f` 根本**没有独立符号**——它被编译器整个内联进了热循环。这直接解释了 D5.2：虚调用的 1.93×/7.14× 全部来自分派与分支预测，而非函数体。
 
@@ -2076,7 +2076,7 @@ int main() {
 
 > 注意：`D1::f`/`D2::f` 明明是单条 `lea` 的廉价函数体，却必须保留独立符号、每次调用都经 `vptr → vtable 槽 → call [rax]` 间接跳转，因此无法被内联、循环体对外 opaque，**整条归约链失去向量化机会**——这是 1.93×（类型恒定、BTB 命中）到 7.14×（类型混排、BTB 失准）的根源。CRTP 的 `f` 因静态定型被内联、连符号都不生成，故有「CRTP = 直接调用」的 1.00×。绝对毫秒随机器而变，加速比才是可移植信号。
 
-## 参考引用
+### 参考引用
 
 - `[std-cpp23]`（T0·终审）ISO/IEC 14882:2023（C++23） —— 本地 `docs/references/external/standards/N4950_C++23.pdf`
 - `[cppref:cpp/language/virtual]`（T1）cppreference `cpp/language/virtual` —— 离线 `C:\Users\ASUS\Desktop\cppb参考资料\cppreference\`
