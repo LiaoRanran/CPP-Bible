@@ -117,9 +117,16 @@ TARGETS = [
 
 
 def git(*args: str) -> str:
+    """仓库内执行 git；失败返回空串，绝不抛异常。
+
+    errors="replace" 必须带：历史提交信息有 GBK 落库的（PowerShell 中文提交），
+    `git log` 会输出非 UTF-8 字节；strict 解码会让 subprocess 读者线程崩掉
+    （traceback 非致命，但该指标静默变 0——如 commits-since-CHANGELOG）。
+    """
     try:
         r = subprocess.run(["git", *args], cwd=str(ROOT),
-                           capture_output=True, text=True, encoding="utf-8")
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace")
         return r.stdout.strip()
     except Exception:
         return ""
