@@ -60,10 +60,10 @@ Repository = "https://github.com/LiaoRanran/CPP-Bible"
 py-modules = ["tools.cppbible"]
 
 [tool.cppbible]
-# 工具链配置：可被 tools/cppbible.py 读取
-# Windows 默认使用本机已验证的 MinGW GCC 15.3.0
-python = "C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.*/python.exe"
-gcc = "C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+# ⚠️ 工具链**不由本段决定**：唯一事实源是仓库根 toolchain.toml
+# （由 tools/toolchain.py 解析：prefer 列表 → PATH 回退 → 内置兜底，缺配置永不崩）。
+# 此处原先硬编码的本机绝对路径（C:/Users/...、C:/Qt/...）无任何代码读取（死配置），
+# 只会误导读者以为换机器要改这里，已移除；换机器请改 toolchain.toml 或设环境变量。
 clang = "clang++"
 parallel_workers = 8
 compile_std = "c++23"
@@ -96,3 +96,8 @@ target-version = "py311"
 python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tools"]   # 与 tests/conftest.py 的 sys.path 注入等效（pytest>=7）
+addopts = "-q"

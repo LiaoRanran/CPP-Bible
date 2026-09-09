@@ -18,7 +18,9 @@
 退出码：0 = 全通过；非 0 = 有块失败。
 """
 from __future__ import annotations
+import os
 import re
+import shutil
 import sys
 import subprocess
 import tempfile
@@ -32,7 +34,11 @@ ensure_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / "Book"
-MMDC = "C:/Users/ASUS/AppData/Roaming/npm/mmdc.cmd"
+# 可移植：环境变量 > PATH 探测 > 空（未安装则由调用方跳过，不再硬编码本机路径）
+MMDC = (os.environ.get("MMDC")
+        or shutil.which("mmdc")
+        or shutil.which("mmdc.cmd")
+        or "")
 
 VALID_HEADERS = (
     "flowchart", "graph", "classDiagram", "sequenceDiagram",
@@ -129,7 +135,10 @@ def render_check(b) -> str | None:
 def parse_check_node() -> tuple[int, str]:
     """调用 tools/mermaid_parse_check.mjs 用 mermaid 官方 parser 真实解析。
     返回 (exit_code, 输出尾部)。"""
-    node = "C:/Users/ASUS/.workbuddy/binaries/node/versions/22.22.2/node.exe"
+    node = (os.environ.get("NODE_EXE")
+            or shutil.which("node")
+            or shutil.which("node.exe")
+            or "")
     script = ROOT / "tools" / "mermaid_parse_check.mjs"
     try:
         r = subprocess.run([node, str(script)], capture_output=True,

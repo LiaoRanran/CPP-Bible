@@ -64,6 +64,8 @@ def load_patch(patch_file: Path) -> list[dict[str, Any]]:
 
 
 def apply_patch(path: Path, patch: list[dict[str, Any]], do_write: bool) -> int:
+    if not path.is_file():
+        raise SystemExit(f"目标文件不存在: {path}")
     raw = path.read_bytes()
     ending = b"\r\n" if b"\r\n" in raw else b"\n"
     text = raw.decode("utf-8")

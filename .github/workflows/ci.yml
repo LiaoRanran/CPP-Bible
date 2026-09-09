@@ -7,12 +7,18 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+# 同一 ref 上多次 push 时取消在跑的旧 run（省 runner 分钟，避免结果互相覆盖）
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 30   # 防止门禁挂死占满 runner（quality 正常 <5min）
     strategy:
       matrix:
         python-version: ['3.11']
@@ -81,6 +87,15 @@ jobs:
       run: |
         python3 tools/star_h2_audit.py check --star
         python3 tools/star_h2_audit.py h2-check
+      continue-on-error: false
+
+    - name: Pytest (工具链回归测试)
+      # 工具链的单元测试：锁定真实发生过的回归（git() 非 UTF-8 崩溃、
+      # patch_blocks stale-span、triage 路径分隔符、run_expected PATH 注入、
+      # gen_metrics 行尾伪 diff、star_h2 分类）。新增工具请补对应测试。
+      run: |
+        python3 -m pip install --quiet pytest
+        python3 -m pytest tests/ -q
       continue-on-error: false
 
     - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)

@@ -14,6 +14,7 @@ Hy3 接手后第一条命令。6 项检查，纯读取，不改任何文件。
 
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import os
@@ -90,8 +91,12 @@ def main():
         print(f"  ✅ {py_ver}")
         print(f"  ✅ G++ {gpp_ver}")
 
-        venv_mkdocs = "C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/mkdocs.exe"
-        if pathlib.Path(venv_mkdocs).exists():
+        # 可移植：环境变量 > PATH 探测 > 已知 venv 位置（不再硬编码单一本机路径）
+        venv_mkdocs = (os.environ.get("MKDOCS_EXE")
+                       or shutil.which("mkdocs")
+                       or shutil.which("mkdocs.exe")
+                       or "")
+        if venv_mkdocs and pathlib.Path(venv_mkdocs).exists():
             print("  ✅ mkdocs-material venv 就绪")
         else:
             print("  ⚠️  mkdocs venv 未找到（站点构建不可用）")

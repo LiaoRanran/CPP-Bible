@@ -75,7 +75,9 @@ def _h2_title(raw: str) -> str:
     """H2 标题去圈号编号 / badge / 括号补充，取语义主干。"""
     t = re.sub(r"^[①-㉟]+[\.\d]*\s*", "", raw)   # 圈号前缀 ①②③…㉑
     t = re.sub(r"^\d+(\.\d+)*\s*", "", t)         # 阿拉伯编号
-    t = re.sub(r"<[^>]+>", "", t)                 # span/badge
+    # badge 整体（含其可见文字「经验/标准/实现/平台…」）都是元信息，一并剥离：
+    # 否则「关键提案 <span…>标准</span>」会留下「标准」二字污染语义主干。
+    t = re.sub(r"<span[^>]*>.*?</span>", "", t)
     t = re.split(r"[（(]", t)[0].strip()
     return t
 
