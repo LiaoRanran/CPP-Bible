@@ -70,15 +70,15 @@ def apply_patch(path: Path, patch: list[dict[str, Any]], do_write: bool) -> int:
     lines = [ln.rstrip("\r") for ln in text.split("\n")]
     spans = _split_blocks(text)
 
-    target = sorted((p["block"], p) for p in patch)
     max_block = max(p["block"] for p in patch)
     if max_block > len(spans):
         raise SystemExit(f"block#{max_block} 越界（本章共 {len(spans)} 个 cpp/c++ 块）")
 
     fence_swaps = 0
-    for num, item in target:
-        if num != int(item["block"]):
-            pass
+    # 必须降序（从大到小）：spans 是原始文本的行号，若升序处理且前一块正文行数
+    # 发生变化，后续块的 stale span 会打到别的块上（实测：把闭合围栏替换成正文，
+    # cpp 块数错乱）。降序时后位块替换不影响前位块的原始行号。
+    for _num, item in sorted(((p["block"], p) for p in patch), reverse=True):
         s, e = spans[int(item["block"]) - 1]
         want = str(item.get("fence", "cpp")).lower()
         nb = item["body"].rstrip("\n").split("\n")
