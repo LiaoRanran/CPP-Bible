@@ -677,11 +677,11 @@ sig(42);                // 等价 emit
 
 > **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 
-```cpp title="示例 34 · ★☆☆☆☆"
-// ⑲ 阅读入口：先把你的 .h 跑一遍 moc，对比生成 cpp，立刻看懂元对象机制
-// 命令（本机真实可用）：
-// moc -I<qt include> myclass.h -o moc_myclass.cpp
-// # 然后读 moc_myclass.cpp 中的 staticMetaObject / qt_static_metacall
+```bash
+# ⑲ 阅读入口：先把你的 .h 跑一遍 moc，对比生成 cpp，立刻看懂元对象机制
+# 本机未装 Qt（moc 不在 PATH），命令作参考、无自验输出：
+#   moc -I<qt include> myclass.h -o moc_myclass.cpp
+# 然后读 moc_myclass.cpp 中的 staticMetaObject / qt_static_metacall
 ```
 
 - `[上游参考]` 信号槽引擎入口 `QMetaObject::activate`：`// 文件：https://github.com/qt/qtbase/blob/6.8/src/corelib/kernel/qobject.cpp` `// 行号：3895`。
@@ -803,23 +803,70 @@ int main() {
 > **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 Qt API 长什么样
 
 ```cpp title="示例 38 · ★★☆☆☆"
-// ㉑.3 真实 Qt 6 写法（仅注释演示，需 Qt 链接；本门禁按空块编译通过）：
-// #include <QCoreApplication>
-// #include <QObject>
-// #include <QTimer>
-// class Downloader : public QObject {
-// Q_OBJECT
-// signals:
-// void progress(int pct);                 // 后台线程 emit progress(i)
-// public slots:
-// void onProgress(int pct) {             // UI 线程槽：更新 QProgressBar
-// ui->bar->setValue(pct);
-// }
-// };
-//// 跨线程安全连接：自动排队到接收者所在线程的事件循环（代替手写互斥+条件变量）
-// connect(&dl, &Downloader::progress, &win, &Window::onProgress,
-// Qt::QueuedConnection);
-// 官方文档：https://doc.qt.io/qt-6/signalsandslots.html
+// ㉑.3 真实 Qt API 的语义等价实证（__has_include 确证 Qt 缺席，标准库演示 queued 连接语义）
+#include <condition_variable>
+#include <functional>
+#include <iostream>
+#include <mutex>
+#include <queue>
+#include <thread>
+
+#if __has_include(<QObject>)   // 确证缺席：真 Qt 在时此分支生效
+#include <QObject>
+#include <QTimer>
+constexpr bool kHasQt = true;
+#else
+constexpr bool kHasQt = false;
+#endif
+
+// 等价 Qt::QueuedConnection：emit 只入队，接收者线程事件循环取出槽执行
+// —— 把「手写互斥 + 条件变量 + 队列」样板自动化为框架语义
+class EventLoop {
+public:
+    void post(std::function<void()> f) {       // 等价 queued connect 的投递
+        {
+            std::lock_guard<std::mutex> lk(m_);
+            q_.push(std::move(f));
+        }
+        cv_.notify_one();
+    }
+    void run() {                                // 等价接收者线程事件循环
+        std::unique_lock<std::mutex> lk(m_);
+        for (;;) {
+            cv_.wait(lk, [&] { return !q_.empty(); });
+            auto f = std::move(q_.front());
+            q_.pop();
+            if (!f) break;                      // 空回调 = 退出信号
+            lk.unlock();
+            f();
+            lk.lock();
+        }
+    }
+
+private:
+    std::mutex m_;
+    std::condition_variable cv_;
+    std::queue<std::function<void()>> q_;
+};
+
+int main() {
+    if constexpr (kHasQt) {
+        std::cout << "Qt 在：真实 connect 已可用\n";
+    } else {
+        std::cout << "Qt 缺席：用标准库实证 Qt::QueuedConnection（emit 入队 + 接收者线程执行）\n";
+        //@ Qt 缺席：用标准库实证 Qt::QueuedConnection（emit 入队 + 接收者线程执行）
+    }
+    EventLoop ui;
+    std::thread t([&] { ui.run(); });           // 接收者（UI）线程
+    // 等价：connect(&dl, &Downloader::progress, &win, &Window::onProgress, Qt::QueuedConnection)
+    ui.post([] { std::cout << "[UI线程] onProgress(42)\n"; });
+    ui.post([] { std::cout << "[UI线程] onProgress(99)\n"; });
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    ui.post({});                                // 空回调令事件循环退出
+    t.join();
+    //@ [UI线程] onProgress(42)
+    //@ [UI线程] onProgress(99)
+}
 ```
 
 ### ㉑.4 一个 Qt 6 工程到底怎么跑起来（端到端步骤）
