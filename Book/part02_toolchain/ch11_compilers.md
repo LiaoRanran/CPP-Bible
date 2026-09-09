@@ -156,9 +156,16 @@ int add(int a, int b) { return a + b; }
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · Clang/LLVM 架构：模块化、libclang、LLVM IR
 
 ```cpp title="示例 6 · ★☆☆☆☆"
-// ③ 用 libclang 做 AST 遍历（仅示意 API 调用骨架，非完整可编译工程）
-// clang_getCursorKind / clang_visitChildren —— IDE 精确补全即源于此
-// 工程价值：静态检查、自定义 lint、代码迁移工具
+// ③ libclang 的 AST 遍历支撑静态检查/自定义 lint；标准 C++ 已暴露同类能力：
+// __PRETTY_FUNCTION__ 暴露模板实参（IDE 精确补全即源于 AST 解析），typeid 暴露类型名。
+#include <iostream>
+#include <typeinfo>
+template<class T> void probe(T) { std::cout << __PRETTY_FUNCTION__ << "\n"; }
+struct Widget { int id; };
+int main() {
+    probe(Widget{});
+    std::cout << "typeid(Widget).name() = " << typeid(Widget).name() << "\n";  //@ 6Widget
+}
 ```
 
 - `[实现·LLVM]`：LLVM IR 是文本可读的（`.ll`），区别于 GCC 完全内部的 GIMPLE/RTL，极大便利了教学与研究。
@@ -331,22 +338,39 @@ template<typename T> T id(T);        // -> _Z2idIiET_S0_ (id<int>)
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 
 ```cpp title="示例 18 · ★☆☆☆☆"
-// ⑦ 编码拆解：_Z1ksPil
-// _Z : 非限定函数
-// 1k : 名字 "k" (长度1)
-// s  : short
-// P  : pointer  (指向 int)
-// i  : int      (指针所指)
-// l  : long     (第三个参数)
-// 注意顺序：参数按声明顺序，指针先标 P 再标所指类型
+// ⑦ Itanium C++ ABI 名字改编（mangling）：_Z1ksPil 逐段含义见下，用编译器自报验证。
+#include <typeinfo>
+#include <cxxabi.h>
+#include <cstdio>
+int k(short, int*, long);                  // 期望改编为 _Z1ksPil
+namespace ns { int q(int); }               // 期望改编为 _ZN2ns1qEi
+int main() {
+    const char* m1 = typeid(&k).name();      // 形如 _Z1ksPil
+    const char* m2 = typeid(&ns::q).name();  // 形如 _ZN2ns1qEi
+    char* d1 = abi::__cxa_demangle(m1, 0, 0, 0);   //@ k(short, int*, long)
+    char* d2 = abi::__cxa_demangle(m2, 0, 0, 0);   //@ ns::q(int)
+    std::printf("mangled  : %s\n", m1);            //@ _Z1ksPil
+    std::printf("demangled: %s\n", d1);            //@ k(short, int*, long)
+    std::printf("mangled  : %s\n", m2);            //@ _ZN2ns1qEi
+    std::printf("demangled: %s\n", d2);            //@ ns::q(int)
+}
 ```
 
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 
 ```cpp title="示例 19 · ★☆☆☆☆"
-// ⑦ c++filt 还原命令（本机已装，真实可用）
-// c++filt _Z1ksPil   ->  k(short, int*, long)
-// c++filt _ZN2ns1qEi ->  ns::q(int)
+// ⑦ c++filt 还原改编名（本机已装，真实可用）；下面用 ABI 反改编 API 直接演示同一件事。
+#include <typeinfo>
+#include <cxxabi.h>
+#include <cstdio>
+int k(short, int*, long);
+namespace ns { int q(int); }
+int main() {
+    char* a = abi::__cxa_demangle(typeid(&k).name(), 0, 0, 0);     //@ k(short, int*, long)
+    char* b = abi::__cxa_demangle(typeid(&ns::q).name(), 0, 0, 0); //@ ns::q(int)
+    std::printf("c++filt _Z1ksPil   -> %s\n", a);   //@ k(short, int*, long)
+    std::printf("c++filt _ZN2ns1qEi -> %s\n", b);   //@ ns::q(int)
+}
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ ABI 与名字改编
@@ -442,18 +466,37 @@ int risky(bool b) {
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 
 ```cpp title="示例 25 · ★☆☆☆☆"
-// ⑨ MSVC 异常变体（真实命令，非本机 MSVC 环境，标注"典型输出"）
-// cl /EHsc main.cpp   -> 同步 C++ 异常（不捕获 SEH）
-// cl /EHa main.cpp    -> 同时捕获异步 SEH（代价更高）
-// 典型输出：/EHa 下 try { *(int*)0 = 0; } catch(...) {} 能吞掉访问违规(AV)
+// ⑨ MSVC 用 /EHsc（同步 C++ 异常）、/EHa（连同异步 SEH）控制异常模型；
+// GCC 下 throw 与 Windows SEH 是两套体系，-fnon-call-exceptions 才让部分异步信号变 C++ 异常。
+// 下面演示同步 C++ 异常被 catch(...) 捕获（与 /EHsc 行为一致）：
+#include <iostream>
+int main() {
+    try {
+        throw 42;
+    } catch (...) {
+        std::cout << "caught by catch(...) (sync C++ exception)\n";   //@ caught by catch(...)
+    }
+    // 注：默认 GCC 不会把 SIGSEGV 这类访问违规变成 C++ 异常（不同于 MSVC /EHa）
+}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常处理模型：Itanium zero-cost vs Windows SEH
 
 ```cpp title="示例 26 · ★★☆☆☆"
-// ⑨ 跨模型陷阱：在 MinGW(GCC) 下 throw 与 Windows SEH 是两套体系，
-// 用 -fnon-call-exceptions 才能让某些 async 信号被 C++ 异常捕获
-// GCC 默认不会把 SIGSEGV 变成 C++ 异常——这与 MSVC /EHa 行为不同！
+// ⑨ 跨模型陷阱：MinGW(GCC) 下 throw 与 Windows SEH 是两套体系；
+// -fnon-call-exceptions 才能让某些 async 信号被 C++ 异常捕获，GCC 默认不会把
+// SIGSEGV 变成 C++ 异常——这与 MSVC /EHa 行为不同。
+// 用 type_index 印证“异常对象有真实类型”，可被子类化捕获：
+#include <iostream>
+#include <typeinfo>
+#include <stdexcept>
+int main() {
+    try {
+        throw std::runtime_error("async-like fault");
+    } catch (const std::exception& e) {
+        std::cout << "caught: " << typeid(e).name() << " | " << e.what() << "\n";  //@ St13runtime_error | async-like fault
+    }
+}
 ```
 
 - `[平台·Windows]`：MinGW-w64 的 GCC 现在默认生成 **SEH** 展开信息（`-mseh`/`posix-seh` 构建），而非旧的 `setjmp`/`sjlj` 慢速模型。
@@ -638,9 +681,14 @@ int add_one(int x) { return x + 1; }
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联与优化管道
 
 ```cpp title="示例 38 · ★☆☆☆☆"
-// ⑫ Link-Time Optimization(LTO)：跨 TU 内联，需 -flto 与配套链接
-// g++ -O2 -flto a.cpp b.cpp -o app   (a/b 间也能内联)
-// clang++ -O2 -flto=thin ...         (ThinLTO 增量)
+// ⑫ LTO（Link-Time Optimization）：-flto 让跨 TU 也能内联/整程优化；下面演示
+// 编译器在 -O2 已能做的“编译期求值/内联”前身——跨 TU 只是把它扩展到整个程序。
+#include <iostream>
+constexpr int sq(int x) { return x * x; }   // 编译期可求值的纯函数
+int main() {
+    std::cout << sq(7) << "\n";                        //@ 49
+    std::cout << __builtin_constant_p(sq(7)) << "\n";  //@ 1  (1 = 编译器证实为编译期常量)
+}
 ```
 
 > **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内联与优化管道
@@ -720,27 +768,43 @@ auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 > **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 
 ```cpp title="示例 44 · ★☆☆☆☆"
-// ⑭ GCC 经典报错（较"朴素"，但 13 已大幅改善）：
-// error: no matching function for call to 'max_of(int, double)'
-// note: candidate template ignored: deduced conflicting types for parameter 'T'
-// （信息正确，但缺"可视化对比箭头"）
+// ⑭ GCC 经典报错（较朴素，13 已大幅改善）：对 max_of(T,T) 传入 int/double 会报
+//   error: no matching function for call to 'max_of(int, double)'
+//   note: candidate template ignored: deduced conflicting types for parameter 'T'
+// 修复：用 std::common_type_t 把两实参归一为同一类型，使推导不再冲突：
+#include <iostream>
+#include <type_traits>
+template<class A, class B>
+std::common_type_t<A, B> max_of(A a, B b) { return a > b ? a : b; }
+int main() {
+    std::cout << max_of(3, 4.5) << "\n";   //@ 4.5  (int 与 double 归一为 double)
+}
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 
 ```cpp title="示例 45 · ★☆☆☆☆"
-// ⑭ Clang 经典报错（带 ~~~ 下划线与"期望/实际"对照）：
-// note: candidate template ignored: deduced type 'int' for parameter 'T'
-// does not match deduced type 'double' for parameter 'T'
-// （多出代码片段高亮，定位更快）
+// ⑭ Clang 经典报错（带 ~~~ 下划线与“期望/实际”对照）；用 concepts 可让报错从
+// “deduced conflicting types”变成可读的约束失败：
+#include <iostream>
+#include <concepts>
+template<std::integral T> T max_of(T a, T b) { return a > b ? a : b; }
+int main() {
+    std::cout << max_of(7, 3) << "\n";   //@ 7
+    // max_of(7, 3.0);  // 触发：'double' 不满足 integral —— 诊断直接定位到参数类型
+}
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 诊断与报错质量对比
 
 ```cpp title="示例 46 · ★☆☆☆☆"
-// ⑭ MSVC 经典报错（编号体系，需查 MSDN）：
-// error C2782: 'T max_of(T,T)' : template parameter 'T' is ambiguous
-// 编号化便于检索文档，但信息密度低
+// ⑭ MSVC 经典报错（编号体系，需查 MSDN）：error C2782 'T max_of(T,T)' :
+// template parameter 'T' is ambiguous。编号便于检索但信息密度低；显式指定 T 消除歧义：
+#include <iostream>
+template<class T> T max_of(T a, T b) { return a > b ? a : b; }
+int main() {
+    std::cout << max_of<int>(3, 4) << "\n";   //@ 4  (显式 T=int 消除歧义)
+}
 ```
 
 - `[经验]`：Clang 的报错/警告最友好（含修复建议 `-fixits`）；GCC 13 已追平大部分；MSVC 报错偏 terse 且用编号。CI 里同时跑 GCC + Clang 可互补抓出对方漏报的警告。
@@ -933,9 +997,13 @@ int choose() { return 0; }
 > **示例 62** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 
 ```cpp title="示例 62 · ★★☆☆☆"
-// ⑲ 团队工具链统一原则：锁版本！
-// 例：CMakePresets.json 固定 compiler + version，避免"我机器能编"问题
-// { "cacheVariables": { "CMAKE_CXX_COMPILER": "g++-13" } }
+// ⑲ 团队工具链统一原则：锁版本！CMakePresets.json 固定 compiler + version，
+// 避免“我机器能编”问题。下面打印当前编译器与标准版本，即被锁定的事实：
+#include <iostream>
+int main() {
+    std::cout << "GCC " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__ << "\n";  //@ GCC 15.3.0
+    std::cout << "C++ standard __cplusplus = " << __cplusplus << "\n";  //@ 202302
+}
 ```
 
 - `[经验]`：CI 同时跑 GCC + Clang 可互补抓警告/UB；但**发布二进制只认一种编译器**，避免混链不同 STL 引发的 ODR/ABI 灾难。
