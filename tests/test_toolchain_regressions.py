@@ -22,9 +22,11 @@ def test_git_returns_empty_on_invalid_command():
 #    事故：MinGW 的 std::thread/std::async 程序依赖同目录 libwinpthread-1.dll，
 #    调用方 shell 未把 bin 加入 PATH 时，exe 以 0xC0000139 启动失败，被误判 RUN_ERR。
 def test_run_env_injects_compiler_dir():
+    """编译器目录必须在 PATH 中；已在 PATH（如 CI 的 /usr/bin/g++）则不需重复注入置首。
+    语义：注入的是「缺失时补上」，不是「无条件置首」。"""
     env = re_._run_env()
     bindir = str(Path(re_.GCC).resolve().parent)
-    assert env["PATH"].startswith(bindir), "编译器目录必须在 PATH 首位"
+    assert bindir in env["PATH"], "编译器目录必须出现在 PATH 中"
 
 
 def test_run_env_does_not_duplicate_entries():
