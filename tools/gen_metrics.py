@@ -14,8 +14,11 @@
 
 设计取舍
 ========
-- **散文文档只校验、不改写**。README / NEXT_LLM 的数字嵌在叙述里，程序
-  改写极易破坏语义与语气；漂移时指名文件与行号报错，由人确认后改。
+- **散文文档的统计块数字可 `--fix` 回填，叙述内数字仍只校验不改写**。
+  README / NEXT_LLM 顶部「N 章 · M 个 cpp 代码块 · …」是结构化统计块，
+  `--fix` 仅替换 checks 正则锚定的数字位（其余文字/行尾不动），安全；真正
+  嵌在叙述句子里的数字不会进入 checks，故不会被改写。漂移时 `--fix` 一键
+  回填；若属文档结构变化（正则失配）会告警，请更新 metrics.schema.json。
 - **机器自有的 JSON 字段才 `--sync` 自动回写**（STATE.json 的
   `last_commit` / `last_updated` / `total_chapters`）——这些字段本身已在
   `fact_source` 里声明由事实源派生，回写它们不算「改写内容」。
@@ -28,6 +31,7 @@
     python tools/gen_metrics.py             # 打印字段取值 + 校验结果
     python tools/gen_metrics.py --check     # 任一漂移即 exit 1（CI 用）
     python tools/gen_metrics.py --sync      # 回写 STATE.json 的派生字段
+    python tools/gen_metrics.py --fix       # 一键回填：STATE.json + 散文统计块数字，再复核
 """
 from __future__ import annotations
 
@@ -153,6 +157,48 @@ def _write_json(path: Path, data: Any) -> None:
             f.write("\n")
 
 
+def _fix_prose(schema: dict, values: dict[str, Any]) -> list[str]:
+    """把 checks 声明的散文文档写死数字回填为事实源值。
+
+    仅替换正则匹配到的数字位；读取/写回均走「原始字节」（`bytes.decode` 不做换行
+    翻译），未触及区域的行尾（CRLF/LF 混用）与末尾换行原样保留，绝不产出伪 diff。
+    同一文件的多处 edits 在「原文」上算好偏移、按右→左回贴，互不串位。
+    返回变更描述（含未匹配到正则的告警，便于发现文档结构漂移）。
+    """
+    by_file: dict[str, list[dict]] = {}
+    for chk in schema["checks"]:
+        by_file.setdefault(chk["file"], []).append(chk)
+
+    changed: list[str] = []
+    for rel, checks in by_file.items():
+        path = ROOT / rel
+        if not path.is_file():
+            continue
+        raw = path.read_bytes()
+        text = raw.decode("utf-8")  # 不翻译换行：\r\n 与 \n 均原样保留
+        edits: list[tuple[int, int, str]] = []
+        for chk in checks:
+            m = re.search(chk["regex"], text)
+            if not m:
+                changed.append(f"{rel}: 未匹配 {chk['regex']!r}，跳过（请更新 schema）")
+                continue
+            for i, field in enumerate(chk["expect"], start=1):
+                expected = values.get(field)
+                if expected is None:
+                    continue
+                got = m.group(i)
+                if got != str(expected):
+                    edits.append((m.start(i), m.end(i), str(expected)))
+        if not edits:
+            continue
+        for s, e, new in sorted(edits, reverse=True):
+            text = text[:s] + new + text[e:]
+        if text.encode("utf-8") != raw:
+            path.write_bytes(text.encode("utf-8"))
+            changed.append(f"{rel}: 回填 {len(edits)} 处数字")
+    return changed
+
+
 def run_sync(schema: dict, values: dict[str, Any]) -> list[str]:
     """把 schema.sync 声明的机器自有字段回写到目标 JSON。返回变更描述。"""
     by_file: dict[str, list[dict]] = {}
@@ -190,6 +236,8 @@ def main() -> int:
                     help="任一文档数字与事实源不一致即退出 1（CI 用）")
     ap.add_argument("--sync", action="store_true",
                     help="把 metrics.schema.json 的 sync 字段回写到目标 JSON")
+    ap.add_argument("--fix", action="store_true",
+                    help="一键修复：回填 STATE.json 派生字段 + 散文文档统计块数字，再复核")
     ap.add_argument("--quiet", action="store_true", help="只打印结论行")
     args = ap.parse_args()
 
@@ -209,11 +257,14 @@ def main() -> int:
         for name in schema["fields"]:
             print(f"  {name:<24} {values.get(name)}")
 
-    problems = run_checks(schema, values)
-
-    if args.sync:
+    if args.fix or args.sync:
         for line in run_sync(schema, values):
             print(f"  sync  {line}")
+    if args.fix:
+        for line in _fix_prose(schema, values):
+            print(f"  fix   {line}")
+
+    problems = run_checks(schema, values)
 
     if problems:
         print(f"\n[gen-metrics] ✗ {len(problems)} 处数字与事实源不一致：")
