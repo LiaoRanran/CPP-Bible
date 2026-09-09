@@ -137,6 +137,13 @@ python tools/compile_all.py --only Book/partX/chYY.md --json _t.json   # 也支�
 python tools/compile_all.py --main-only --parallel --workers 16        # 重算全量基线（CI）
 python tools/compile_all.py --only Book/partX/chYY.md --no-cache       # 绕过按章缓存（验证用）
 # 注：确需覆盖全量基线（重算）时，显式加 --baseline；否则局部扫描永不碰 compile_report.json
+
+# 6) 回归 triage（compile_triage.py，R5）：局部扫描后一键分清「预存坏块 vs 我的回归」
+python tools/compile_triage.py --check                  # 比对全量基线，有 NEW 回归即 exit 1（可挂 CI）
+python tools/compile_triage.py --before old.json --after new.json   # 任意两份报告比对
+# 分类：NEW=当前失败/基线未失败（我的回归，红）· PREEXISTING=两边都失败（预存）·
+#       FIXED=基线失败/当前通过（我修好，绿）。--strict 把预存也当失败。
+# 注：partial 的 --main-only 须与基线 scope 一致，否则全量预存非-main 坏块会误报 NEW
 ```
 
 - patch.json 格式：`[{"block":24,"fence":"cpp","body":"#include ...\n..."}, {"block":27,"fence":"bash","body":"# 命令\ncmake ..."}]`
