@@ -6,10 +6,10 @@
 [第 45 章　C++ 面向对象总览与对象模型基础](../part05_oo/ch45_oop_object_model.md)
 
 > **取证说明（真实工具链，非臆测）**
-> - 编译器：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
+> - 编译器：`g++.exe (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0`（`C:/Qt/Tools/mingw1530_64/bin/g++.exe`）；凡"验证编译器/标准"的示例一律用 `__VERSION__` / `__cplusplus` 自报，不手写版本号。历史取证记录中的 13.1.0 数据按 CONVENTIONS §1.1「取证基线／当前基线」双轨规则原样保留。
 > - 标准：`g++ -std=c++23 -O2 -Wall -Wextra`；汇编取证用 `g++ -std=c++23 -O2 -S -masm=intel`，对照用 `-O0`。
-> - 全部示例位于 `Examples/_ch141_*.cpp`，均经上述命令**真实编译通过**（0 错误 0 警告），对应 `.asm` 由同一条命令生成，文中汇编片段逐行取自真实输出，未做任何臆造。
-> - 源码剖析取自本机 libstdc++ 13.1.0：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h`。
+> - 全部示例位于 `Examples/_ch141_*.cpp`，均经上述命令**真实编译通过**（0 错误 0 警告）；对应 `.asm` 由同一条命令生成并存于 `Examples/`，本章正文未直接摘录汇编片段。
+> - 源码剖析取自本机 libstdc++ 15.3.0：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/unique_ptr.h`（13.1.0 时代的 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/...` 路径已随工具链升级失效）。
 
 ---
 
@@ -148,8 +148,32 @@ int main() {
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 构造函数注入
 
 ```cpp title="示例 4 · ★★☆☆☆"
-// 反例：依赖在对象构造后处于“半初始化”状态
-// ❌ 未注入 cfg 时 start() 解引用空引用 → 未定义行为
+
+#include <iostream>
+#include <type_traits>
+
+struct ILog { virtual ~ILog() = default; virtual void w(const char*) = 0; };
+struct StdLog : ILog { void w(const char* s) override { std::cout << s; } };
+
+struct SvcRef {                       // 引用注入：依赖不可为空
+    ILog& log_;
+    explicit SvcRef(ILog& l) : log_(l) {}
+};
+struct SvcPtr {                       // 指针注入：允许"忘记注入"
+    ILog* log_ = nullptr;
+    void start() const { if (log_) log_->w("go"); else std::cout << "skipped"; }
+};
+
+int main() {
+    // 引用版没有默认构造 —— "忘记注入"在编译期就被挡住
+    std::cout << "ref: default_constructible=" << std::is_default_constructible_v<SvcRef> << "\n";
+    std::cout << "ptr: default_constructible=" << std::is_default_constructible_v<SvcPtr> << "\n";
+    SvcPtr half;                      // 半初始化：编译能过，运行才暴露
+    std::cout << "half-initialized -> ";
+    half.start();                     // 守卫兜底：静默跳过，既没崩也没日志
+    std::cout << "\n";
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 当依赖是**必需且不可变**时，优先构造注入；当依赖**可选或可热插拔**时，才考虑 setter 注入（见 ③）。
@@ -195,8 +219,30 @@ int main() {
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 注入
 
 ```cpp title="示例 6 · ★☆☆☆☆"
-// 常见守卫：访问前判空，避免解引用空端口
-// ✅ if (renderer_) renderer_->draw();
+
+#include <iostream>
+
+struct Renderer { virtual ~Renderer() = default; virtual void draw() = 0; };
+struct GLRenderer : Renderer { static int drawn; void draw() override { ++drawn; } };
+int GLRenderer::drawn = 0;
+
+class Screen {                        // setter 注入：可选依赖
+    Renderer* renderer_ = nullptr;
+public:
+    void setRenderer(Renderer* r) { renderer_ = r; }
+    void render() const { if (renderer_) renderer_->draw(); }   // 守卫判空
+};
+
+int main() {
+    Screen s;
+    for (int i = 0; i < 3; ++i) s.render();
+    std::cout << "before inject: calls=3 drawn=" << GLRenderer::drawn << "\n";
+    GLRenderer gl;
+    s.setRenderer(&gl);
+    for (int i = 0; i < 3; ++i) s.render();
+    std::cout << "after  inject: calls=3 drawn=" << GLRenderer::drawn << "\n";
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 游戏/UI 引擎常在运行时切换渲染后端，setter 注入在此类场景比构造注入更自然。
@@ -236,9 +282,25 @@ int main() {
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模板参数注入（编译期绑定）
 
 ```cpp title="示例 8 · ★☆☆☆☆"
-// 静态多态约束：依赖只需“长得像”，无需继承同一接口
-struct AnotherClock { int now() const { return 7; } };  // 没继承任何基类也能注入
-// Scheduler<AnotherClock> ok;   // ✅ 编译通过
+
+#include <iostream>
+#include <concepts>
+
+struct AnotherClock { int now() const { return 7; } };   // 没继承任何基类
+struct BadClock { int ticks() const { return 0; } };     // 名字不对，长得不像
+
+template <class C>
+concept ClockLike = requires(C c) { { c.now() } -> std::convertible_to<int>; };
+
+template <ClockLike C>                // 结构化约束：不要求继承同一接口
+class Scheduler { C clock_; public: int tick() const { return clock_.now(); } };
+
+int main() {
+    std::cout << "AnotherClock satisfies ClockLike=" << ClockLike<AnotherClock> << "\n";
+    std::cout << "BadClock     satisfies ClockLike=" << ClockLike<BadClock> << "\n";
+    std::cout << "Scheduler<AnotherClock>.tick=" << Scheduler<AnotherClock>{}.tick() << "\n";
+}
+
 ```
 
 <span class="badge badge-std">标准</span> 这是“**概念（concepts，C++20）**”天然守护的场景：可用 `template <Clock C>` 约束 `C` 必须提供 `int now() const`，把“鸭子类型”错误提前到编译期（[temp.concept]）。
@@ -294,8 +356,48 @@ int main() {
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 容器（手写简易）
 
 ```cpp title="示例 10 · ★☆☆☆☆"
-// 进阶：带自动按构造签名解析的容器（Boost.DI 思路，见 ⑨）
-// 核心难点是“根据被构造类型的构造函数形参，递归解析其依赖”。
+
+#include <iostream>
+#include <memory>
+#include <string>
+#include <functional>
+#include <stdexcept>
+#include <typeindex>
+#include <unordered_map>
+
+struct IRepo { virtual ~IRepo() = default; virtual std::string load() = 0; };
+struct DbRepo : IRepo { std::string load() override { return "db#7"; } };
+
+class Container {                     // 按"类型"登记工厂，而非按字符串名字
+    std::unordered_map<std::type_index, std::function<std::shared_ptr<void>()>> f_;
+public:
+    template <class T, class F> void reg(F&& make) {
+        f_[std::type_index(typeid(T))] = [m = std::forward<F>(make)] {
+            return std::static_pointer_cast<void>(m());
+        };
+    }
+    template <class T> std::shared_ptr<T> resolve() {
+        auto it = f_.find(std::type_index(typeid(T)));
+        if (it == f_.end()) throw std::runtime_error("not registered");
+        return std::static_pointer_cast<T>(it->second());
+    }
+};
+
+struct Service { std::shared_ptr<IRepo> repo; std::string greeting() { return "Hi " + repo->load(); } };
+
+int main() {
+    Container c;
+    c.reg<IRepo>([] { return std::make_shared<DbRepo>(); });
+    c.reg<Service>([&c] {              // 递归解析：Service 的依赖由容器补齐
+        auto s = std::make_shared<Service>();
+        s->repo = c.resolve<IRepo>();
+        return s;
+    });
+    std::cout << c.resolve<Service>()->greeting() << "\n";
+    try { c.resolve<int>(); }
+    catch (const std::exception& e) { std::cout << "missing -> " << e.what() << "\n"; }
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 中小项目往往**不需要完整容器**；一个 `make_app()` 自由函数或 `std::unique_ptr` 链就足够。容器在依赖图深、需按配置切换实现的框架级代码里才划算。
@@ -346,8 +448,32 @@ int main() {
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与接口（抽象基类）
 
 ```cpp title="示例 12 · ★☆☆☆☆"
-// ❌ 漏写 virtual 析构：delete 基类指针不会调用派生析构
-struct BadIface { // 无 virtual ~BadIface()
+
+#include <iostream>
+#include <memory>
+#include <type_traits>
+
+struct BadIface  { virtual void f() = 0; };                          // ❌ 漏写 virtual ~
+struct GoodIface { virtual ~GoodIface() = default; virtual void f() = 0; };
+struct ImplBad  : BadIface  { static int dtors; ~ImplBad()  { ++dtors; } void f() override {} };
+struct ImplGood : GoodIface { static int dtors; ~ImplGood() { ++dtors; } void f() override {} };
+int ImplBad::dtors = 0;
+int ImplGood::dtors = 0;
+
+int main() {
+    std::cout << "has_virtual_destructor<BadIface>=" << std::has_virtual_destructor_v<BadIface> << "\n";
+    std::cout << "has_virtual_destructor<GoodIface>=" << std::has_virtual_destructor_v<GoodIface> << "\n";
+    {                                  // ⚠️ 未定义行为：经无虚析构的基类指针释放派生对象
+        std::unique_ptr<BadIface> bad(new ImplBad);
+        bad.reset();                   // GCC 15.3.0 实测：派生析构未被调用
+    }
+    std::cout << "unique_ptr<BadIface> : derived dtor called=" << ImplBad::dtors << "\n";
+    {
+        std::shared_ptr<GoodIface> good = std::make_shared<ImplGood>();
+    }                                  // make_shared 记住真实类型，析构正确
+    std::cout << "shared_ptr<GoodIface>: derived dtor called=" << ImplGood::dtors << "\n";
+}
+
 ```
 
 [实现·GCC15] 接口注入会在目标文件里生成 vtable（如 `_ZTV8IStorage`、RTTI `_ZTI8IStorage`）；这带来轻微代码体积与间接调用成本，详见 ⑭ 取证。
@@ -397,17 +523,30 @@ int main() {
 > **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 std::uniqueptr 所
 
 ```cpp title="示例 14 · ★★☆☆☆"
+#include <memory>
+#include <type_traits>
 #include <utility>
-// 文件：bits/unique_ptr.h（libstdc++ 13.1.0）
-// 行号：505
-      _GLIBCXX23_CONSTEXPR
-      void
-      reset(pointer __p = pointer()) noexcept
-      {
-	static_assert(__is_invocable<deleter_type&, pointer>::value,
-		      "unique_ptr's deleter must be invocable with a pointer");
-	_M_t.reset(std::move(__p));        // 转移所有权：旧指针的 deleter 被调用
-      }
+// 文件：bits/unique_ptr.h（libstdc++ 15.3.0）
+// 行号：526
+// libstdc++ 的 reset 片段；为便于独立编译，补上它所在类的最小骨架
+template <class T, class D = std::default_delete<T>>
+class MiniUniquePtr {
+    using pointer = T*;
+    using deleter_type = D;
+    struct Tuple { void reset(pointer) noexcept {} } _M_t{};   // 对应 _M_t（指针+删除器）
+public:
+    void reset(pointer __p = pointer()) noexcept
+    {
+        static_assert(std::is_invocable<deleter_type&, pointer>::value,
+                      "unique_ptr's deleter must be invocable with a pointer");
+        _M_t.reset(std::move(__p));        // 转移所有权：旧指针的 deleter 被调用
+    }
+};
+
+int main() {
+    MiniUniquePtr<int> p;
+    p.reset(new int(7));                   // 旧资源先被 deleter 释放，再接管新资源
+}
 ```
 
 <span class="badge badge-std">标准</span> `reset` 为 `noexcept`（[unique.ptr.single.modifiers]）；它先 `static_assert` 校验删除器可调用，再调用内部 `_M_t.reset` 释放旧资源。这正是 DI 中“容器把依赖交出去后自己不再持有”的底层机制。
@@ -457,8 +596,32 @@ int main() {
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与测试（mock 注入）
 
 ```cpp title="示例 16 · ★☆☆☆☆"
-// 用 GoogleTest/gMock 时，mock 同样通过“注入接口实现”接入，本质一致
-// EXPECT_CALL(*mock, name(1)).WillOnce(Return("fake#1"));
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+struct IUserRepo { virtual ~IUserRepo() = default; virtual std::string name(int) = 0; };
+
+struct MockRepo : IUserRepo {          // 手写 mock：没有 gMock 也能做期望校验
+    std::vector<int> calls;            // 记录调用参数（EXPECT_CALL 的雏形）
+    std::vector<std::string> returns;  // WillOnce 的返回值队列
+    std::size_t idx = 0;
+    std::string name(int id) override {
+        calls.push_back(id);
+        return idx < returns.size() ? returns[idx++] : std::string("<unexpected>");
+    }
+};
+
+int main() {
+    MockRepo m;
+    m.returns = {"fake#1", "fake#2"};  // WillOnce(Return(...)) 两次
+    std::cout << "first  =" << m.name(1) << "\n";
+    std::cout << "second =" << m.name(1) << "\n";
+    std::cout << "call_count=" << m.calls.size()
+              << " all_args_are_1=" << (m.calls.size() == 2 && m.calls[0] == 1 && m.calls[1] == 1) << "\n";
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 每个对外端口（DB、消息总线、时钟、文件系统）都应是接口，便于在测试中换成内存实现（见 ⑲）。
@@ -512,7 +675,32 @@ int main() {
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架对比
 
 ```cpp title="示例 18 · ★☆☆☆☆"
-// Examples/_ch141_boost_di_mimic.cpp 完整版（含头文件，已通过 -std=c++23 编译）
+
+#include <iostream>
+#include <memory>
+
+struct IRepository { virtual ~IRepository() = default; virtual int id() = 0; };
+struct Repository : IRepository { int id() override { return 1; } };
+
+struct Service {                       // 依赖写在构造签名里
+    std::unique_ptr<IRepository> repo;
+    explicit Service(std::unique_ptr<IRepository> r) : repo(std::move(r)) {}
+    int run() { return repo->id(); }
+};
+
+class Injector {                       // 模仿 Boost.DI 的 make_injector().create<Service>()
+public:                                // "按构造签名自动 new 依赖"
+    std::unique_ptr<Service> create() {
+        return std::make_unique<Service>(std::make_unique<Repository>());
+    }
+};
+
+int main() {                           // 完整版见 Examples/_ch141_boost_di_mimic.cpp
+    Injector inj;                      // GCC 15.3.0 实测输出：1
+    auto s = inj.create();
+    std::cout << s->run() << "\n";
+}
+
 ```
 
 【对比】主流 C++ DI 方案：
@@ -562,8 +750,26 @@ int main() {
 > **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 编译期 DI
 
 ```cpp title="示例 20 · ★★☆☆☆"
-// 进一步：把开关交给编译宏，做到“同份代码、零成本切换实现”
-// template <int Env = BUILD_ENV> struct Backend { ... };
+
+#include <iostream>
+#include <type_traits>
+
+struct DevBackend  { static constexpr const char* name() { return "dev";  } };
+struct ProdBackend { static constexpr const char* name() { return "prod"; } };
+
+template <int Env = 0>                // 开关交给非类型模板参数（也可来自宏）
+struct Backend {
+    using type = std::conditional_t<Env == 0, DevBackend, ProdBackend>;
+    static constexpr const char* name() { return type::name(); }
+};
+
+int main() {
+    std::cout << "Env=0 -> " << Backend<0>::name() << "\n";
+    std::cout << "Env=1 -> " << Backend<1>::name() << "\n";
+    std::cout << "is_polymorphic=" << std::is_polymorphic_v<Backend<0>>
+              << " sizeof=" << sizeof(Backend<0>) << "\n";
+}
+
 ```
 
 <span class="badge badge-std">标准</span> `if constexpr` 属 [stmt.if]；其未取分支中的 `return` 类型可不一致，因为不会被实例化——这是它优于普通 `if` 的关键。
@@ -600,9 +806,29 @@ int main() {
 > **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与单例（替代，关联 ch136）
 
 ```cpp title="示例 22 · ★☆☆☆☆"
+
+#include <iostream>
 #include <memory>
-// 单例 + DI 的折中：用 shared_ptr 在组装根共享一份，业务方通过构造函数注入拿到
-// auto cfg = std::make_shared<Config>();  A a(cfg); B b(cfg);  // 同一份，但可测
+
+struct Config { int port{8080}; };
+class A { std::shared_ptr<Config> cfg_; public:
+    explicit A(std::shared_ptr<Config> c) : cfg_(std::move(c)) {}
+    const Config* get() const { return cfg_.get(); } };
+class B { std::shared_ptr<Config> cfg_; public:
+    explicit B(std::shared_ptr<Config> c) : cfg_(std::move(c)) {}
+    const Config* get() const { return cfg_.get(); } };
+
+int main() {
+    auto cfg = std::make_shared<Config>();   // 组装根只造一份
+    A a(cfg); B b(cfg);
+    std::cout << "same_instance=" << (a.get() == b.get()) << " use_count=" << cfg.use_count() << "\n";
+    cfg->port = 9090;                        // 改一处，两处同时生效
+    std::cout << "a.port=" << a.get()->port << " b.port=" << b.get()->port << "\n";
+    auto fake = std::make_shared<Config>();  // 但测试时可整体换成 fake（单例做不到）
+    fake->port = 1;
+    std::cout << "swappable_for_test=" << (fake->port == 1) << "\n";
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 经验上：**能用“注入的共享对象”就不要用“全局单例”**。关联 ch136 对单例模式有专门剖析。
@@ -654,7 +880,30 @@ main ──new Connection──▶ unique_ptr<Connection>
 > **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期管理（RAII）
 
 ```cpp title="示例 25 · ★☆☆☆☆"
-// 多依赖时，构造顺序=成员声明顺序，析构顺序相反；RAII 保证逆序安全释放
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+std::vector<std::string> trace_;
+struct Dep {                           // 依赖的构造/析构都留下痕迹
+    const char* n;
+    explicit Dep(const char* s) : n(s) { trace_.push_back(std::string("ctor ") + s); }
+    ~Dep() { trace_.push_back(std::string("dtor ") + n); }
+};
+
+class App {                            // 构造顺序 = 成员声明顺序，析构相反
+    Dep a_{"A"};
+    Dep b_{"B"};
+    Dep c_{"C"};
+};
+
+int main() {
+    { App app; }
+    for (const auto& s : trace_) std::cout << s << " ";
+    std::cout << "\n";
+}
+
 ```
 
 ---
@@ -698,8 +947,33 @@ int main() {
 > **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与多线程
 
 ```cpp title="示例 27 · ★★☆☆☆"
-// 若依赖自身有状态，注入的是“每线程实例”而非共享实例：
-// thread_local Worker tl_worker(make_stateful());
+
+#include <iostream>
+#include <thread>
+#include <vector>
+#include <atomic>
+
+constexpr int N = 500000;
+volatile int shared_counter = 0;       // 有状态依赖被"共享"
+thread_local int tl_counter = 0;       // 每线程一份
+std::atomic<long long> total{0};
+
+void bump_shared() { for (int i = 0; i < N; ++i) shared_counter = shared_counter + 1; }
+void bump_tl() { for (int i = 0; i < N; ++i) tl_counter = tl_counter + 1; total += tl_counter; }
+
+int main() {
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 4; ++i) ts.emplace_back(bump_shared);
+    for (auto& t : ts) t.join();
+    const long long expect = 4LL * N;
+    std::cout << "shared(volatile, no atomic): lost_updates=" << (shared_counter != expect) << "\n";
+    ts.clear(); total = 0;
+    for (int i = 0; i < 4; ++i) ts.emplace_back(bump_tl);
+    for (auto& t : ts) t.join();
+    std::cout << "thread_local: expect=" << expect << " total=" << total.load()
+              << " exact=" << (total.load() == expect ? 1 : 0) << "\n";
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 经验上：DI 让“线程安全边界”显式化——无状态依赖可以安全地 `shared_ptr` 广播；有状态依赖应“每线程一份”或内部自保。
@@ -835,9 +1109,31 @@ int main() {
 > **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式
 
 ```cpp title="示例 30 · ★☆☆☆☆"
-// ❌ Service Locator 反模式（隐式耦合）
-// struct Locator { static ILog& log(); };
-// void f() { Locator::log().w(); }   // 测试无法注入，调用点散落全局
+
+#include <iostream>
+#include <string>
+
+struct ILog { virtual ~ILog() = default; virtual std::string tag() const = 0; };
+struct ProdLog : ILog { std::string tag() const override { return "prod"; } };
+struct FakeLog : ILog { std::string tag() const override { return "fake"; } };
+
+struct Locator {                       // ❌ 反模式：全局静态，调用点隐式耦合
+    static ILog& log() { static ProdLog l; return l; }
+};
+class Injected {                       // ✅ 正解：依赖显式传入
+    const ILog& log_;
+public:
+    explicit Injected(const ILog& l) : log_(l) {}
+    std::string who() const { return log_.tag(); }
+};
+
+int main() {
+    std::cout << "locator : " << Locator::log().tag() << " " << Locator::log().tag() << "  (cannot swap)\n";
+    ProdLog p; FakeLog f;
+    Injected a(p), b(f);
+    std::cout << "injected: " << a.who() << " " << b.who() << "  (swappable)\n";
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 经验上：凡是“测试时还要去改全局状态”的注入，都是假 DI。
@@ -873,8 +1169,23 @@ int main() {
 > **示例 32** <span class="badge badge-exp">难度 ★★★★☆</span> · 与 constexpr
 
 ```cpp title="示例 32 · ★★★★☆"
-// constexpr 注入也可用于“编译期配置表”：
-// template <auto Config> struct Engine { static constexpr int max = Config.max_threads; };
+
+#include <iostream>
+
+struct Cfg { int max_threads; double scale; };      // 配置也是依赖
+
+template <auto C>                      // C++20 起类类型可作非类型模板参数
+struct Engine {
+    static constexpr int max = C.max_threads;
+    static constexpr double scale_v = C.scale;
+};
+
+int main() {
+    std::cout << "max_threads=" << Engine<Cfg{8, 1.5}>::max << "\n";
+    std::cout << "compile_time_constant=" << __builtin_constant_p(Engine<Cfg{8, 1.5}>::max) << "\n";
+    std::cout << "sizeof(Engine<Cfg{8,1.5}>)=" << sizeof(Engine<Cfg{8, 1.5}>) << "\n";
+}
+
 ```
 
 [实现·GCC15] 该例在 `-O2` 下 `r1`/`r2` 完全折叠为立即数，与 ⑭ 模板注入的“无虚调用 + 常量折叠”一脉相承。
@@ -919,8 +1230,30 @@ int main() {
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ECS 衔接（预告 ch142）
 
 ```cpp title="示例 34 · ★★☆☆☆"
-// ECS 中 System 常以模板/接口注入多种 Component 视图（只读/可写），与 ④ 模板注入同构
-// class RenderSystem { template<class View> void run(View v); };
+
+#include <iostream>
+#include <span>
+#include <type_traits>
+#include <vector>
+
+struct Position { int x, y; };
+struct ReadOnlyView { std::span<const Position> items;
+    int sum_x() const { int s = 0; for (const auto& p : items) s += p.x; return s; } };
+struct WritableView { std::span<Position> items;
+    void move(int dx) { for (auto& p : items) p.x += dx; } };
+
+struct RenderSystem { template <class View> void run(View v) { std::cout << "readonly sum=" << v.sum_x() << "\n"; } };
+struct MoveSystem   { template <class View> void run(View v) { v.move(1); std::cout << "moved, first.x=" << v.items[0].x << "\n"; } };
+
+int main() {
+    std::vector<Position> pos{{1, 0}, {2, 0}};
+    ReadOnlyView ro{pos};              // 只给系统它需要的那部分（最小权限）
+    WritableView wo{pos};
+    std::cout << "readonly element is const=" << std::is_const_v<std::remove_reference_t<decltype(ro.items[0])>> << "\n";
+    RenderSystem r; r.run(ro);
+    MoveSystem m; m.run(wo);
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 经验上：DI 是 ECS 的“装配哲学”前身——预告 ch142 将展开 ECS 的组件存储与系统调度，本章的接口/模板/容器技术可直接复用。
@@ -974,8 +1307,39 @@ int main() {
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 
 ```cpp title="示例 36 · ★☆☆☆☆"
-// 工厂注入（惰性创建重依赖），完整版见 Examples/_ch141_factory.cpp
-// class Pool { ConnectionFactory& f_; explicit Pool(ConnectionFactory& f):f_(f){} };
+
+#include <iostream>
+#include <memory>
+#include <vector>
+
+struct Connection { static int made; int id; explicit Connection(int i) : id(i) { ++made; } };
+int Connection::made = 0;
+
+struct ConnectionFactory { int seq = 0;
+    std::unique_ptr<Connection> make() { return std::make_unique<Connection>(++seq); } };
+
+class Pool {                           // 注入"工厂"而非实例：惰性创建
+    ConnectionFactory& f_;
+    std::vector<std::unique_ptr<Connection>> held_;
+public:
+    explicit Pool(ConnectionFactory& f) : f_(f) {}
+    void lease() { held_.push_back(f_.make()); }
+};
+
+int main() {
+    ConnectionFactory f;
+    Pool lazy(f);                      // 注入工厂：此刻一个连接都还没建
+    std::cout << "lazy  after ctor : made=" << Connection::made << "\n";
+    lazy.lease();
+    std::cout << "lazy  after lease: made=" << Connection::made << "\n";
+    Connection::made = 0;              // 对照：预创建 4 个，实际只用 1 个
+    {
+        std::vector<std::unique_ptr<Connection>> eager;
+        for (int i = 0; i < 4; ++i) eager.push_back(std::make_unique<Connection>(i + 1));
+        std::cout << "eager after ctor : made=" << Connection::made << " used=" << eager[0]->id << "\n";
+    }
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 经验上：金融/交易系统对“可替换数据源 + 可测”诉求极高，DI 几乎是标配；但热路径上的 `IMarketData::price` 仍建议用模板注入或去虚化（见 ⑭）以压低延迟。
@@ -1033,9 +1397,23 @@ int main() {
 > **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 测试策略
 
 ```cpp title="示例 38 · ★☆☆☆☆"
-// 时钟也要注入，否则“依赖 now() 的逻辑”无法稳定测试：
-// struct IClock { virtual int now() const = 0; };
-// 注入 FakeClock{now()=固定值} → 时间相关断言可复现
+
+#include <iostream>
+
+struct IClock { virtual ~IClock() = default; virtual long long now() const = 0; };
+struct FakeClock : IClock { long long v; explicit FakeClock(long long t) : v(t) {}
+    long long now() const override { return v; } };
+
+struct Deadline { long long at; };
+bool expired(const IClock& c, Deadline d) { return c.now() >= d.at; }   // 时间逻辑依赖注入
+
+int main() {
+    Deadline d{1000};
+    FakeClock early(500), late(1500);  // 固定时钟 → 断言可复现
+    std::cout << "now=500  -> expired=" << expired(early, d) << "\n";
+    std::cout << "now=1500 -> expired=" << expired(late, d) << "\n";
+}
+
 ```
 
 <span class="badge badge-exp">经验</span> 经验上：每个“不可控的外部边界”都应是接口；测试性不是事后补丁，而是 DI 的一等公民。
