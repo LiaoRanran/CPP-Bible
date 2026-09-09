@@ -4,9 +4,9 @@
   "platform": "windows",
   "flags": "-std=c++23 -O0 -fsyntax-only",
   "baseline": "M2 全库铺示例标题(7751)+主题清理(1453)；ch124#4 代码已修复(私有类型static_assert→公开接口)故移出豁免；ch118#42 实测可编译(冗余)移出；其余 61 失败块沿用既有豁免分类(MODULE/MULTI_FILE/POSIX/MSVC/EXT_LIB/CROSS_BLOCK/INTENTIONAL_ERROR)",
-  "total": 61,
+  "total": 58,
   "by_status": {
-    "OK": 61
+    "OK": 58
   },
   "results": [
     {
@@ -37,36 +37,6 @@
       "status": "OK",
       "passed": false,
       "error": "fmt/core.h: No such file or directory",
-      "has_main": true
-    },
-    {
-      "file": "ch13_packaging.md",
-      "block": 1,
-      "reason": "MULTI_FILE",
-      "note": "",
-      "status": "OK",
-      "passed": false,
-      "error": "fmt/core.h: No such file or directory",
-      "has_main": true
-    },
-    {
-      "file": "ch13_packaging.md",
-      "block": 2,
-      "reason": "MULTI_FILE",
-      "note": "",
-      "status": "OK",
-      "passed": false,
-      "error": "fmt/core.h: No such file or directory",
-      "has_main": true
-    },
-    {
-      "file": "ch13_packaging.md",
-      "block": 18,
-      "reason": "MULTI_FILE",
-      "note": "",
-      "status": "OK",
-      "passed": false,
-      "error": "_ch13_packlib.hpp: No such file or directory",
       "has_main": true
     },
     {
@@ -601,7 +571,7 @@
     },
     {
       "file": "ch161_logger.md",
-      "block": 18,
+      "block": 19,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
       "status": "OK",
@@ -611,7 +581,7 @@
     },
     {
       "file": "ch161_logger.md",
-      "block": 30,
+      "block": 32,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
       "status": "OK",

@@ -45,8 +45,8 @@
 | 门禁 | 命令 | 当前结果 |
 |------|------|----------|
 | 一致性检查 | `python tools/consistency_check.py` | ERROR=0 / WARN=0 |
-| 全量编译 | `python tools/compile_all.py --main-only` | 147 章，114 章自包含通过 |
-| 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（66 设计性豁免块） |
+| 全量编译 | `python tools/compile_all.py --main-only` | 147 章，115 章自包含通过 |
+| 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（58 设计性豁免块） |
 | 密度审计 v3 | `python tools/density_audit.py --json` | 均分 25.7/30，浅章 0 |
 | 交叉引用 | `python tools/crossref_audit.py` | 0 断链 |
 | D5 性能附录 | `python tools/d5_gap_scanner.py` | 127/147 章（86%，口径已统一），结构 ERROR=0 / WARN=3（措辞建议，不阻断） |

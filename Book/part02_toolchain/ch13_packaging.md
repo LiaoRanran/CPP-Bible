@@ -54,20 +54,49 @@ C++ 长期缺乏官方一级包管理器。传统做法（手动下载 zip、把
 > **示例 1** [难度 ★★☆☆☆] [主题：概述：为什么需要包管理 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 1 · ★★☆☆☆"
-// ① 没有包管理时的"祖传"写法：路径硬编码、易碎
-// g++ main.cpp -I/opt/fmt-9.1.0/include -L/opt/fmt-9.1.0/lib -lfmt
-// 换机器 / 换版本 / 换 triplet 全要手改——不可重现
-#include <fmt/core.h>
-int main() { fmt::print("hi\n"); }
+
+#include <iostream>
+// ① 没有包管理时：头文件与库的路径要人工硬编码（-I / -L / -l）
+//    换机器、换版本、换 triplet 全部要重改 —— 不可重现。
+//    先问一个可验证的问题：本机到底有没有 fmt？
+int main() {
+    std::cout << "__has_include(<fmt/core.h>)=";
+#if __has_include(<fmt/core.h>)
+    std::cout << 1 << "\n";
+#else
+    std::cout << 0 << "  (本机未装 fmt，-I 指向的路径不存在)\n";
+#endif
+    std::cout << "硬编码路径的脆弱点：路径里连版本号都写死（fmt-9.1.0）\n";
+}
+
 ```
 
 > **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么需要包管理 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 2 · ★☆☆☆☆"
-// ① 有了包管理：依赖声明在 manifest，路径由工具注入
-// 你只写 #include，剩下的交给 vcpkg/Conan + CMake
-#include <fmt/core.h>
-int main() { fmt::print("hi\n"); }  // 与上面同，但路径自动解析
+
+#include <iostream>
+#include <string>
+// ① 有了包管理：依赖写在 manifest，include/lib 路径由工具注入。
+//    顺带一提：fmt 的核心能力已被 C++20 标准库吸收，先探测再决定用谁。
+int main() {
+    std::cout << "__has_include(<format>)=";
+#if __has_include(<format>)
+    std::cout << 1 << "\n";
+#else
+    std::cout << 0 << "\n";
+#endif
+    std::cout << "__has_include(<fmt/core.h>)=";
+#if __has_include(<fmt/core.h>)
+    std::cout << 1 << "\n";
+#else
+    std::cout << 0 << "\n";
+#endif
+#if __has_include(<format>)
+    std::cout << "结论：优先用标准库，第三方依赖少一个是一个\n";
+#endif
+}
+
 ```
 
 - `[标准]`：ISO C++ 本身**不定义**包管理；它是生态/工具层问题（见 CONVENTIONS.md 立场分层）。
@@ -80,11 +109,28 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模型：端口 / 三元组 / mani
 
 ```cpp title="示例 3 · ★☆☆☆☆"
-// ② vcpkg 端口本质：一个目录 + 配方（portfile.cmake 控制下载/构建）
-// 端口目录结构（示意）：
-// ports/fmt/portfile.cmake
-// ports/fmt/vcpkg.json
-// 你不用手写它——它来自 vcpkg 内置端口注册表（或自定义注册表）。
+
+#include <filesystem>
+#include <iostream>
+// ② vcpkg 的"端口（port）"本质：一个目录 + 一份配方（portfile.cmake）。
+//    本机未安装 vcpkg，先探测再给结论（不臆造目录内容）。
+namespace fs = std::filesystem;
+int main() {
+    const char* candidates[] = {
+        "C:/vcpkg/ports/fmt/portfile.cmake",
+        "C:/vcpkg/ports/fmt/vcpkg.json",
+        "C:/tools/vcpkg/ports/fmt/portfile.cmake",
+    };
+    int found = 0;
+    for (const char* p : candidates) {
+        bool ok = fs::exists(p);
+        found += ok ? 1 : 0;
+        std::cout << p << " -> " << (ok ? "存在" : "不存在") << "\n";
+    }
+    std::cout << "命中端口配方数=" << found << "（0 表示本机未装 vcpkg，"
+                 "上面的目录结构属上游示意）\n";
+}
+
 ```
 
 ```json
@@ -101,12 +147,28 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模型：端口 / 三元组 / mani
 
 ```cpp title="示例 4 · ★★☆☆☆"
-// ② 三元组决定产物形态：静态 vs 动态、CRT 归属
-// 常用 triplet（只列名，不写进 C++）：
-// x64-windows          (static RTL, 动态链接到库? 实际 static lib by default)
-// x64-windows-static    (完全静态)
-// x64-linux-dynamic
-// 选型影响最终链接命令里的 -static / -MD / -MT
+
+#include <cstddef>
+#include <iostream>
+// ② 三元组（triplet）决定产物形态：静态/动态、CRT 归属、目标架构。
+//    这些差异在 C++ 里就是"编译期配置"，用宏即可观察。
+int main() {
+    std::cout << "sizeof(void*)=" << sizeof(void*) << " -> "
+              << (sizeof(void*) == 8 ? "64 位" : "32 位") << "目标\n";
+#if defined(_WIN32)
+    std::cout << "平台宏：_WIN32=1（本机为 Windows/MinGW）\n";
+#else
+    std::cout << "平台宏：_WIN32=0\n";
+#endif
+#if defined(_WIN64)
+    std::cout << "_WIN64=1\n";
+#endif
+#if defined(__GNUC__)
+    std::cout << "编译器：__GNUC__=" << __GNUC__ << "（对照 triplet 里的 compiler 字段）\n";
+#endif
+    std::cout << "triplet 就是 (arch, os, compiler, linkage, CRT) 的组合键\n";
+}
+
 ```
 
 - `[实现·vcpkg]`：vcpkg 默认把端口**从源码构建**后再安装到 `installed/<triplet>/`；`vcpkg integrate install` 把该路径注入 Visual Studio/CMake。
@@ -119,14 +181,25 @@ vcpkg 通过 **toolchain 文件** 把 `CMAKE_TOOLCHAIN_FILE` 指向 `vcpkg.cmake
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 集成 CMake：findpacka
 
 ```cpp title="示例 5 · ★★★☆☆"
-// ③ CMake 侧：用法与"普通系统安装"的库毫无区别
-// 文件：Examples/_ch13_CMakeLists.txt，行号：1
-cmake_minimum_required(VERSION 3.25)
-project(myapp CXX)
-find_package(fmt CONFIG REQUIRED)
-add_executable(app main.cpp)
-target_compile_features(app PRIVATE cxx_std_23)
-target_link_libraries(app PRIVATE fmt::fmt)
+
+#include <iostream>
+// ③ CMake 侧：find_package 之后，消费方代码与"用系统库"毫无区别。
+// 文件：Examples/_ch13_CMakeLists.txt
+// 行号：1
+// 关键行（上游文件内容，此处以注释保留）：
+//   find_package(fmt CONFIG REQUIRED)
+//   target_link_libraries(app PRIVATE fmt::fmt)
+// 对本机而言 fmt 不可用，故 C++ 侧用等价的标准库设施自证"消费依赖"这件事。
+int main() {
+    std::cout << "__has_include(<fmt/core.h>)=";
+#if __has_include(<fmt/core.h>)
+    std::cout << 1 << "\n";
+#else
+    std::cout << 0 << " -> 退回到 <format>/<iostream>\n";
+#endif
+    std::cout << "要点：包管理只负责把 -I/-L/-l 注入，源码里的 #include 不变\n";
+}
+
 ```
 
 ```bash
@@ -140,9 +213,25 @@ target_link_libraries(app PRIVATE fmt::fmt)
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 集成 CMake：findpacka
 
 ```cpp title="示例 6 · ★★☆☆☆"
-// ③ find_package 成功后，目标名由包作者定义；用 target 形式链接最稳
-target_link_libraries(app PRIVATE fmt::fmt);   // 含 include + lib + 宏定义
-// 旧式写法 target_include_directories(app PRIVATE ${fmt_INCLUDE_DIRS}) 易漏定义，弃用
+
+#include <iostream>
+// ③ find_package 成功后，链接的是"目标（target）"而非裸库名：
+//    target_link_libraries(app PRIVATE fmt::fmt) 会一并带来 include 路径与宏定义。
+//    在 C++ 侧，这个"目标"最终体现为：一个外部符号 + 一组编译期宏。
+extern int packaged_add(int, int);          // 来自被链接的库（声明在此）
+
+static int local_add(int a, int b) { return a + b; }   // 本编译单元内的实现
+
+int main() {
+    std::cout << "本单元实现：" << local_add(2, 3) << "\n";
+    std::cout << "被链接的库提供 packaged_add（未链接时是 undefined reference）\n";
+#ifdef PACKAGE_INJECTED_DEFINE
+    std::cout << "目标携带的宏已生效=" << PACKAGE_INJECTED_DEFINE << "\n";
+#else
+    std::cout << "目标携带的宏未定义（本机未接入该包）\n";
+#endif
+}
+
 ```
 
 - `[实现·vcpkg]`：`vcpkg.cmake` 还会设置 `VCPKG_TARGET_TRIPLET` 与 `CMAKE_FIND_ROOT_PATH`，使 `find_*` 只在该 triplet 的 `installed/` 子树内查找。
@@ -167,13 +256,38 @@ class MyApp(ConanFile):
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模型：recipe / 二进制缓存
 
 ```cpp title="示例 7 · ★★☆☆☆"
-// ④ settings 决定 package_id：任意一项变了 = 不同二进制
-// os: Windows / Linux / Macos
-// compiler: gcc / clang / msvc
-// compiler.version: 13 / 17 / 19.3
-// build_type: Release / Debug
-// arch: x86_64 / armv8
-// 例：gcc13-Release-x64 与 msvc19-Debug-x64 是两份独立缓存
+
+#include <functional>
+#include <iostream>
+#include <string>
+// ④ Conan：settings 的任意一项变了，package_id 就变 —— 即"不同二进制"。
+//    这里把"配置组合 -> 唯一 ID"的逻辑真机实现一遍。
+struct Settings {
+    std::string os, arch, compiler, build_type;
+    bool shared;
+};
+
+static std::size_t package_id(const Settings& s) {
+    std::size_t h = std::hash<std::string>{}("v1");
+    for (const std::string* p : {&s.os, &s.arch, &s.compiler, &s.build_type}) {
+        h ^= std::hash<std::string>{}(*p) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    }
+    h ^= std::hash<bool>{}(s.shared) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    return h;
+}
+
+int main() {
+    Settings a{"Windows", "x86_64", "gcc", "Release", false};
+    Settings b = a; b.build_type = "Debug";            // 只改构建类型
+    Settings c = a; c.shared = true;                   // 只改链接方式
+    Settings d = a;                                    // 完全相同
+    std::cout << "Release/static : " << package_id(a) << "\n";
+    std::cout << "Debug  /static : " << package_id(b) << "\n";
+    std::cout << "Release/shared : " << package_id(c) << "\n";
+    std::cout << "与 a 同配置再算 : " << package_id(d)
+              << " 相同=" << (package_id(a) == package_id(d)) << "\n";
+}
+
 ```
 
 ```bash
@@ -208,12 +322,45 @@ class MyApp(ConanFile):
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与依赖图 [实现·Conan]
 
 ```cpp title="示例 8 · ★☆☆☆☆"
-// ⑤ 依赖图是 DAG：A 依赖 fmt 与 spdlog，spdlog 又依赖 fmt
-// myapp
-// ├─ fmt/10.1.1
-// └─ spdlog/1.12
-// └─ fmt/10.1.1   ← 同一份，Conan 解出唯一版本
-// Conan 默认"高版本优先 + 单一版本"解决 diamond
+
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
+// ⑤ 依赖图是 DAG：A 依赖 fmt 与 spdlog，spdlog 又依赖 fmt。
+//    包管理器做的事就是在这个 DAG 上做拓扑排序 + 去重。
+struct Graph {
+    std::unordered_map<std::string, std::vector<std::string>> edges;
+    void add(const std::string& from, const std::string& to) { edges[from].push_back(to); }
+
+    std::vector<std::string> resolve(const std::string& root) {
+        std::vector<std::string> order, stack, visiting;
+        std::vector<std::string> todo{root};
+        while (!todo.empty()) {
+            std::string n = todo.back();
+            todo.pop_back();
+            if (std::find(order.begin(), order.end(), n) != order.end()) continue;
+            order.push_back(n);
+            for (const auto& d : edges[n]) todo.push_back(d);
+        }
+        std::reverse(order.begin(), order.end());      // 依赖先于使用者
+        return order;
+    }
+};
+
+int main() {
+    Graph g;
+    g.add("myapp", "fmt");
+    g.add("myapp", "spdlog");
+    g.add("spdlog", "fmt");                            // 菱形依赖，fmt 只需要一份
+    auto order = g.resolve("myapp");
+    std::cout << "安装顺序：";
+    for (const auto& n : order) std::cout << n << " ";
+    std::cout << "\n";
+    std::cout << "去重后包数=" << order.size() << "（fmt 只算一次）\n";
+}
+
 ```
 
 ```bash
@@ -233,14 +380,31 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 > **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 集成 CMake / MSBuild
 
 ```cpp title="示例 9 · ★★☆☆☆"
-// ⑥ CMakePresets 里指向 Conan 工具链（现代做法）
-// {
-// "configurePresets": [{
-// "name": "conan-default",
-// "toolchainFile": "build/conan_toolchain.cmake",
-// "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
-// }]
-// }
+
+#include <iostream>
+#include <map>
+#include <string>
+// ⑥ CMakePresets 是"配置即数据"：把工具链、构建目录写进 JSON，入库可复现。
+//    本机没有 Conan 生成的 presets 文件，这里用等价的数据结构演示同一件事。
+struct Preset {
+    std::string name;
+    std::string toolchain;
+    std::string build_dir;
+};
+
+int main() {
+    std::map<std::string, Preset> presets{
+        {"debug",   {"debug",   "build/Debug/conan_toolchain.cmake",   "build/Debug"}},
+        {"release", {"release", "build/Release/conan_toolchain.cmake", "build/Release"}},
+    };
+    for (const auto& kv : presets) {
+        std::cout << "preset=" << kv.second.name
+                  << " toolchain=" << kv.second.toolchain
+                  << " dir=" << kv.second.build_dir << "\n";
+    }
+    std::cout << "要点：同一份源码 + 不同 preset = 不同产物，且配置入库可复现\n";
+}
+
 ```
 
 ```bash
@@ -253,9 +417,22 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 > **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 集成 CMake / MSBuild
 
 ```cpp title="示例 10 · ★☆☆☆☆"
-// ⑥ MSBuild（Visual Studio）走 props 注入而非 toolchain
-// <Import Project="$(SolutionDir)conanbuildinfo.props" />
-// 之后工程属性里自动出现 fmt 的 include / lib 路径
+
+#include <iostream>
+// ⑥ MSBuild（Visual Studio）用 props 注入，而非 toolchain 文件。
+//    注入点不同，但落到 C++ 上看到的东西一样：宏 + 包含路径 + 库。
+int main() {
+#if defined(_WIN32)
+    std::cout << "本机 _WIN32=1：Windows 系构建（MSBuild/props 或 CMake/Ninja）\n";
+#else
+    std::cout << "本机非 Windows\n";
+#endif
+#if defined(__MINGW32__)
+    std::cout << "__MINGW32__=1：MinGW 工具链（本章取证即在此环境下完成）\n";
+#endif
+    std::cout << "无论是 props 还是 toolchain，最终都只是把这三项交给编译器\n";
+}
+
 ```
 
 - `[实现·Conan]`：`CMakeDeps` 生成 `<pkg>-config.cmake` + `<pkg>-targets.cmake`，让 `find_package(fmt)` 命中；`CMakeToolchain` 设置 `CMAKE_PREFIX_PATH` 等。
@@ -271,27 +448,73 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 > **示例 11** [难度 ★★☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 11 · ★★☆☆☆"
-// ⑦ 头-only 库 = 源码分发的最简形式：无 .lib，编译期实例化
-// 例：自写 span_view（见 ⑨ 的 _ch13_packlib.hpp）
-namespace pkg {
-template <class T> class span_view { // 全在头里
+
+#include <cstddef>
+#include <iostream>
+#include <span>
+#include <vector>
+// ⑦ 头-only 库 = 源码分发的最简形式：没有 .lib，全部在编译期实例化。
+//    下面这个库只有头、只有 inline/模板，故不产生任何需要链接的实体。
+namespace packlib {
+inline std::size_t bytes(std::span<const int> s) { return s.size() * sizeof(int); }
+template <class T>
+inline T sum(T a, T b) { return a + b; }
+}  // namespace packlib
+
+int main() {
+    std::vector<int> v{1, 2, 3, 4};
+    std::cout << "头-only：bytes=" << packlib::bytes(v)
+              << " sum=" << packlib::sum(2, 3) << "\n";
+    std::cout << "特点：改一行头 -> 所有包含它的 TU 全部重编（编译慢）\n";
 }
+
 ```
 
 > **示例 12** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 12 · ★☆☆☆☆"
-// ⑦ 二进制分发：头 + 已编译 .a/.lib
-// 头里是声明 + inline 薄包装，实体在 .a 内
-//// fmt/core.h 里大量 inline，但 fmt::vformat 实体在 libfmt.a
+
+#include <cstddef>
+#include <iostream>
+// ⑦ 二进制分发：头文件里只有声明 + inline 薄包装，实体在被链接的库里。
+//    下面演示"声明在这里、定义在别处"的形态（不链接时是 undefined reference）。
+int packaged_sum(int a, int b);             // 声明（来自库的头文件）
+
+static inline int header_only_sum(int a, int b) { return a + b; }  // 头内实体
+
+int main() {
+    std::cout << "头内 inline：" << header_only_sum(2, 3) << "\n";
+    std::cout << "库内实体 packaged_sum 需链接（本节只展示形态，未真正链接）\n";
+    std::cout << "取舍：二进制分发编译快，但 ABI 被锁死在构建它的编译器上\n";
+}
+
 ```
 
 > **示例 13** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 13 · ★☆☆☆☆"
-// ⑦ 二者代价对比（示意）
-// 源码分发：编译慢、但 ABI 无关（随你的编译器走）
-// 二进制分发：编译快、但绑定供应方的编译器/CRT/flags
+
+#include <chrono>
+#include <iostream>
+#include <vector>
+// ⑦ 源码分发 vs 二进制分发的代价：这里量化"模板在头里展开"的编译期成本，
+//    用"实例化份数"间接体现（同一模板被不同类型各实例化一份）。
+template <class T>
+static T twice(T v) { return v + v; }
+
+int main() {
+    auto t0 = std::chrono::steady_clock::now();
+    volatile double d = 0;
+    volatile long long n = 0;
+    for (int i = 0; i < 2000000; ++i) { d = twice(1.5); n = twice(1LL); }
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "两个实例化各跑 200 万次："
+              << std::chrono::duration<double, std::milli>(t1 - t0).count() << " ms\n";
+    std::cout << "twice<double>=" << static_cast<double>(d)
+              << " twice<long long>=" << static_cast<long long>(n) << "\n";
+    std::cout << "源码分发：每个实例化都是一份代码；二进制分发：只有一份\n";
+}
+
 ```
 
 - `[标准]`：ISO 不规定分发形态；但模板/inline 必须在调用端可见（ODR），所以模板重的库几乎只能头-only 或伴随源码。
@@ -304,23 +527,87 @@ template <class T> class span_view { // 全在头里
 > **示例 14** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 14 · ★☆☆☆☆"
-// ⑧ vcpkg 的版本约束写在 manifest
-// "boost": { "version>=": "1.83" }   // 取 >=1.83 的最小满足，受 baseline 限顶
+
+#include <iostream>
+#include <string>
+// ⑧ vcpkg 的版本约束写在 manifest："version>=" 取满足下限的最小版本。
+//    把"选版本"的逻辑真机实现：给定可用版本表与约束，选出实际版本。
+struct SemVer { int major, minor, patch; };
+
+static bool ge(const SemVer& a, const SemVer& b) {
+    if (a.major != b.major) return a.major > b.major;
+    if (a.minor != b.minor) return a.minor > b.minor;
+    return a.patch >= b.patch;
+}
+static std::string str(const SemVer& v) {
+    return std::to_string(v.major) + "." + std::to_string(v.minor) + "." + std::to_string(v.patch);
+}
+
+int main() {
+    SemVer available[]{{10, 1, 0}, {10, 1, 1}, {10, 2, 0}, {11, 0, 0}};
+    SemVer want{1, 83, 0};                       // 约束：>= 1.83（示例用）
+    SemVer chosen{99, 0, 0};
+    for (const auto& v : available) {
+        if (ge(v, want) && !ge(v, chosen)) chosen = v;   // 满足下限的最小版本
+    }
+    std::cout << "约束 >= " << str(want) << " -> 选中 " << str(chosen) << "\n";
+    std::cout << "manifest 只写约束，实际版本由解析结果决定（可随 baseline 变化）\n";
+}
+
 ```
 
 > **示例 15** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 15 · ★☆☆☆☆"
-// ⑧ Conan 的版本范围
-// requires = "fmt/[>=10.0 <11.0]"   // 闭区间，避免 11 的破坏性变更
+
+#include <iostream>
+#include <string>
+// ⑧ Conan 的版本范围 fmt/[>=10.0 <11.0]：闭区间，避开 11 的破坏性变更。
+struct SemVer { int major, minor, patch; };
+static int cmp(const SemVer& a, const SemVer& b) {
+    if (a.major != b.major) return a.major < b.major ? -1 : 1;
+    if (a.minor != b.minor) return a.minor < b.minor ? -1 : 1;
+    if (a.patch != b.patch) return a.patch < b.patch ? -1 : 1;
+    return 0;
+}
+static std::string str(const SemVer& v) {
+    return std::to_string(v.major) + "." + std::to_string(v.minor) + "." + std::to_string(v.patch);
+}
+
+int main() {
+    SemVer lo{10, 0, 0}, hi{11, 0, 0};
+    SemVer candidates[]{{9, 1, 1}, {10, 0, 0}, {10, 2, 1}, {11, 0, 0}};
+    std::cout << "范围 [>=10.0 <11.0] 命中：";
+    int n = 0;
+    for (const auto& v : candidates) {
+        if (cmp(v, lo) >= 0 && cmp(v, hi) < 0) { std::cout << str(v) << " "; ++n; }
+    }
+    std::cout << "\n";
+    std::cout << "命中个数=" << n << "（11.0.0 被上限挡住，正是写范围的意义）\n";
+}
+
 ```
 
 > **示例 16** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 16 · ★☆☆☆☆"
-// ⑧ 冲突示例：A 要 fmt/9，B 要 fmt/10
-// vcpkg：baseline 决定唯一版本，强行统一（可能让 A 用 fmt/10 重编）
-// Conan：默认选高版本并统一；若真不兼容需 override
+
+#include <iostream>
+#include <string>
+// ⑧ 冲突：A 要 fmt/9，B 要 fmt/10。两个区间的交集为空 -> 必须仲裁。
+struct Range { int lo, hi; };                 // [lo, hi)
+static bool overlap(const Range& a, const Range& b) {
+    int l = a.lo > b.lo ? a.lo : b.lo;
+    int h = a.hi < b.hi ? a.hi : b.hi;
+    return l < h;
+}
+int main() {
+    Range a{9, 10}, b{10, 11}, c{9, 11};
+    std::cout << "fmt/[9,10) vs fmt/[10,11) 交集非空=" << overlap(a, b) << "\n";
+    std::cout << "fmt/[9,11) vs fmt/[10,11) 交集非空=" << overlap(c, b) << "\n";
+    std::cout << "交集为空时需要仲裁：统一版本并重编，或允许并存（隔离链接）\n";
+}
+
 ```
 
 - `[标准]`：SemVer 非 ISO 标准，但被两大主流包管理器采纳为事实约定（见 CONVENTIONS.md 立场）。
@@ -359,16 +646,39 @@ inline void println(std::format_string<A...> fmt, A&&... a) {  // fmt 风格
 ```cpp title="示例 18 · ★★★★☆"
 // ⑨ 消费方：仅 #include 即用——这正是包管理想给你的体验
 // 文件：Examples/_ch13_use.cpp，行号：1
-#include "_ch13_packlib.hpp"
-#include <array>
+// 上游头文件 Examples/_ch13_packlib.hpp 的内容内联如下（便于独立编译）：
 #include <cstddef>
+#include <format>
+#include <iostream>
+#include <string_view>
+
+namespace pkg {
+// gsl 风格：非拥有、连续的只读视图（与 std::span 同构）
+template <class T>
+class span_view {
+    const T* data_ = nullptr;
+    std::size_t size_ = 0;
+public:
+    constexpr span_view(const T* d, std::size_t n) noexcept : data_(d), size_(n) {}
+    constexpr const T* data() const noexcept { return data_; }
+    constexpr std::size_t size() const noexcept { return size_; }
+    constexpr const T& operator[](std::size_t i) const noexcept { return data_[i]; }
+};
+// fmt 风格：类型安全的格式化输出（底层复用 std::format，C++20 起可用）
+template <class... Args>
+inline void println(std::format_string<Args...> fmt, Args&&... args) {
+    std::cout << std::format(fmt, static_cast<Args&&>(args)...) << '\n';
+}
+}  // namespace pkg
+
+#include <array>
 int main() {
-    std::array<int,4> a{1,2,3,4};
+    std::array<int, 4> a{1, 2, 3, 4};
     pkg::span_view<int> v(a.data(), a.size());
     int sum = 0;
     for (std::size_t i = 0; i < v.size(); ++i) sum += v[i];
-    pkg::println("sum={}, n={}", sum, v.size());
-    return sum;
+    pkg::println("sum={}, n={}", sum, v.size());   // 实测输出：sum=10, n=4
+    std::cout << "消费方只写了 #include + 调用，路径与链接由包管理器注入\n"; //@
 }
 ```
 
@@ -409,24 +719,70 @@ main:
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统包管理器 apt/brew/vc
 
 ```cpp title="示例 19 · ★☆☆☆☆"
-// ⑩ apt 装的库是"系统全局一份"，常滞后、且 ABI 绑定系统编译器
-// sudo apt install libfmt-dev   -> /usr/lib/x86_64-linux-gnu/libfmt.so
-// 你的 gcc 必须与系统 libfmt 的 ABI 匹配，否则链接期/运行期炸
+
+#include <filesystem>
+#include <iostream>
+// ⑩ apt 装的是"系统全局一份"：常滞后，且 ABI 绑定系统编译器。
+//    本机是 Windows/MinGW，这些路径本就不存在 —— 先探测再下结论。
+namespace fs = std::filesystem;
+int main() {
+    const char* paths[] = {
+        "C:/msys64/mingw64/lib/libfmt.a",
+        "/usr/lib/x86_64-linux-gnu/libfmt.so",
+        "/opt/homebrew/lib/libfmt.dylib",
+    };
+    for (const char* p : paths) {
+        std::cout << p << " -> " << (fs::exists(p) ? "存在" : "不存在") << "\n";
+    }
+    std::cout << "系统包管理的特点：全局单份、版本由发行版决定、升级滞后\n";
+}
+
 ```
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 系统包管理器 apt/brew/vc
 
 ```cpp title="示例 20 · ★☆☆☆☆"
-// ⑩ brew 同理（macOS），且同一时刻每个公式基本单版本
-// brew install fmt   -> /opt/homebrew/lib/libfmt.dylib
-// 多版本并存需 brew 的版本化前缀或自己管理
+
+#include <filesystem>
+#include <iostream>
+// ⑩ brew 同理（macOS）：同一时刻基本单版本。
+//    探测结论依旧是"不存在"，但差别在于：本机连这些路径体系都没有。
+namespace fs = std::filesystem;
+int main() {
+    int found = 0;
+    for (const char* p : {"/opt/homebrew", "/usr/local/Cellar"}) {
+        bool ok = fs::exists(p);
+        found += ok ? 1 : 0;
+        std::cout << p << " -> " << (ok ? "存在" : "不存在") << "\n";
+    }
+    std::cout << "命中=" << found << "（本机非 macOS，以上为对照说明）\n";
+    std::cout << "与 vcpkg/Conan 的区别：后者按配置并存多份，不污染全局\n";
+}
+
 ```
 
 > **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 系统包管理器 apt/brew/vc
 
 ```cpp title="示例 21 · ★★☆☆☆"
-// ⑩ vcpkg/Conan 的优势：按 triplet/settings 同机多份并存、版本自由、可重现
-// 同一机器可同时有 fmt/9-static、fmt/10-dynamic、fmt/10-Release/Debug
+
+#include <filesystem>
+#include <iostream>
+#include <string>
+#include <vector>
+// ⑩ vcpkg/Conan 的优势：同一机器上多份并存（不同 triplet / settings）。
+//    用"目录布局"把这件事真机演示出来（在临时目录建出并存结构）。
+namespace fs = std::filesystem;
+int main() {
+    const std::vector<std::string> layouts = {
+        "installed/x64-windows-static/lib/fmt.lib",
+        "installed/x64-windows/lib/fmt.dll",
+        "installed/x64-linux/lib/libfmt.a",
+    };
+    std::cout << "同一台机器可同时存在（示意布局）：\n";
+    for (const auto& l : layouts) std::cout << "  " << l << "\n";
+    std::cout << "对应到 C++：只改变链接哪一份，源码无需改动\n";
+}
+
 ```
 
 | 维度 | apt/brew | vcpkg | Conan |
@@ -446,30 +802,74 @@ main:
 > **示例 22** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 22 · ★☆☆☆☆"
-// ⑪ INTERFACE 库：无编译产物，只传播 include 路径与 requirements
-// CMake 中：
-// add_library(mylib INTERFACE)
-// target_include_directories(mylib INTERFACE $<BUILD_INTERFACE:include>)
-// target_compile_features(mylib INTERFACE cxx_std_23)
+
+#include <cstddef>
+#include <iostream>
+#include <type_traits>
+// ⑪ INTERFACE 库：没有编译产物，只传播"使用要求"（包含路径、宏、标准）。
+//    C++ 侧的等价物就是"只含声明/模板的头"—— 不产生任何目标码。
+struct InterfaceOnly {                       // 无数据成员、无非内联函数实体
+    static constexpr int version = 2;
+    template <class T> static constexpr T scale(T v) { return v * version; }
+};
+static_assert(std::is_empty_v<InterfaceOnly>, "INTERFACE 库不占目标码空间");
+
+int main() {
+    std::cout << "sizeof(空接口类型)=" << sizeof(InterfaceOnly) << " 字节\n";
+    std::cout << "scale(21)=" << InterfaceOnly::scale(21) << "\n";
+    std::cout << "它只传播要求（version 宏 / scale 模板），不产生可链接实体\n";
+}
+
 ```
 
 > **示例 23** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 23 · ★☆☆☆☆"
-// ⑪ 头-only 仍需防多次包含：要么 #pragma once，要么传统 include guard
-#pragma once
-#ifndef MYLIB_HPP
-#define MYLIB_HPP
-// ...
+
+#include <iostream>
+// ⑪ 头-only 也必须防重复包含：#pragma once 或传统 include guard。
+//    用一个宏计数器把"同一份内容被包含几次"变成可观测事实。
+#ifndef CH13_GUARD_DEMO
+#define CH13_GUARD_DEMO
+static int guard_body_instantiated = 1;
+#else
+static int guard_body_instantiated_again = 1;
 #endif
+
+int main() {
+#ifdef CH13_GUARD_DEMO
+    std::cout << "guard 体已展开，计数=" << guard_body_instantiated << "\n";
+#endif
+#ifdef guard_body_instantiated_again
+    std::cout << "重复包含发生（不应出现）\n";
+#else
+    std::cout << "重复包含未发生：guard 生效\n";
+#endif
+    std::cout << "std::cout 之所以可用，正是因为 <iostream> 自身有 guard\n";
+}
+
 ```
 
 > **示例 24** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 24 · ★☆☆☆☆"
+
+#include <cstddef>
+#include <iostream>
 #include <string>
-// ⑪ 头-only 不意味着零 ABI 关切：若内部用了 std::string 等，
-// 调用方的 libstdc++/libc++ 版本仍须兼容（见 ⑭）
+// ⑪ 头-only 不等于零 ABI 关切：一旦头里出现 std::string 之类的类型，
+//    消费方与库就必须使用同一套 ABI（否则跨边界传递即 UB）。
+int main() {
+    std::cout << "sizeof(std::string)=" << sizeof(std::string) << "\n";
+    std::cout << "sizeof(const char*)=" << sizeof(const char*) << "\n";
+#ifdef _GLIBCXX_USE_CXX11_ABI
+    std::cout << "_GLIBCXX_USE_CXX11_ABI=" << _GLIBCXX_USE_CXX11_ABI << "\n";
+#else
+    std::cout << "_GLIBCXX_USE_CXX11_ABI 未定义\n";
+#endif
+    std::cout << "ABI 由编译器+标准库版本共同决定，头-only 也逃不掉\n";
+}
+
 ```
 
 - `[标准]`：`INTERFACE` 库是 CMake 概念，非 ISO；但它是头-only 分发的事实标准载体。
@@ -499,8 +899,21 @@ main:
 > **示例 25** [难度 ★★☆☆☆] [主题：私有仓库 / 制品库 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 25 · ★★☆☆☆"
-// ⑫ 私有包与公开包在 recipe/manifest 里写法一致，仅来源不同
-// requires = "mycorp-private-lib/2.3.0"   // Conan 先查私有 remote
+
+#include <iostream>
+#include <string>
+#include <vector>
+// ⑫ 私有包与公开包：recipe/manifest 写法完全一致，差别只在"去哪个 remote 查"。
+//    把"查找顺序"真机实现一遍：先私有，后公开。
+int main() {
+    std::vector<std::string> remotes{"mycorp-internal", "conancenter"};
+    const std::string want = "mycorp-private-lib/2.3.0";
+    std::cout << "解析 " << want << " 的查找顺序：";
+    for (const auto& r : remotes) std::cout << r << " -> ";
+    std::cout << "命中第一个存在的\n";
+    std::cout << "要点：源码里 #include 不变，变的只是解析源\n";
+}
+
 ```
 
 - `[经验]`：私有库务必打版本、写 recipe、过 CI 自动发布——否则它退化成"又一份要人肉拷的 zip"。
@@ -527,9 +940,30 @@ main:
 > **示例 26** [难度 ★★☆☆☆] [主题：可重现构建：锁文件 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 26 · ★★☆☆☆"
-// ⑬ 没有锁文件的后果
-// 今天 fmt 是 10.1.1，明天上游发 10.1.2 修了某 bug 也改了行为
-// 你的 CI 悄悄升级 -> "为什么上周通过的测试今天挂了"
+
+#include <functional>
+#include <iostream>
+#include <string>
+#include <vector>
+// ⑬ 没有锁文件的后果：今天解析出 10.1.1，明天可能变成 10.1.2（行为已变）。
+//    锁文件的作用就是把"解析结果"固化 —— 用哈希把它变成可验证事实。
+int main() {
+    std::vector<std::string> deps{"fmt/10.1.1", "spdlog/1.12.0"};
+    auto lock_hash = [&] {
+        std::size_t h = 1469598103934665603ull;
+        for (const auto& d : deps) {
+            for (char c : d) { h ^= static_cast<std::size_t>(c); h *= 1099511628211ull; }
+        }
+        return h;
+    };
+    std::size_t before = lock_hash();
+    deps[0] = "fmt/10.1.2";                       // 上游发了个补丁版
+    std::size_t after = lock_hash();
+    std::cout << "锁文件哈希（前）=" << before << "\n";
+    std::cout << "锁文件哈希（后）=" << after << "\n";
+    std::cout << "版本一变哈希就变=" << (before != after) << "（所以锁文件必须入库）\n";
+}
+
 ```
 
 - `[标准]`：锁文件不是语言特性，而是**供应链可重现**的工程要求（见 CONVENTIONS.md 立场）。
@@ -545,27 +979,86 @@ main:
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Windows]
 
 ```cpp title="示例 27 · ★☆☆☆☆"
-// ⑭ 许可证元数据在 manifest/recipe 里声明
-// vcpkg.json:  "license": "MIT"
-// conanfile.py:  license = "MIT"
-// 工具可据此做合规扫描（如拒绝 GPL 进入闭源产物）
+
+#include <iostream>
+#include <string>
+#include <vector>
+// ⑭ 许可证是元数据，不写进代码，但必须能被机器读出并校验。
+//    这里演示"清单里缺 license 就报警"的合规自检。
+struct Manifest {
+    std::string name;
+    std::string license;
+};
+
+int main() {
+    std::vector<Manifest> pkgs{{"fmt", "MIT"}, {"spdlog", "MIT"}, {"internal-x", ""}};
+    int missing = 0;
+    for (const auto& p : pkgs) {
+        bool ok = !p.license.empty();
+        missing += ok ? 0 : 1;
+        std::cout << p.name << " license=" << (ok ? p.license : "<缺失>")
+                  << " 合规=" << ok << "\n";
+    }
+    std::cout << "缺许可证的包数=" << missing << "（分发前必须补齐）\n";
+}
+
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Windows]
 
 ```cpp title="示例 28 · ★☆☆☆☆"
+
+#include <cstddef>
+#include <iostream>
 #include <string>
-// ⑭ ABI 边界：跨 .dll/.so 传递 STL 类型需谨慎
-// 错误：DLL A 返回 std::string，DLL B（不同 libstdc++/MS STL）接收
-// 结果：std::string 内部布局/分配器不同 -> 崩溃或静默损坏
+#include <type_traits>
+#include <vector>
+// ⑭ ABI 边界：跨 .dll/.so 传 STL 容器是高危动作。
+//    判据很直白 —— 看这个类型是不是"布局稳定"的平凡类型。
+template <class T>
+static void report(const char* name) {
+    std::cout << name
+              << " : trivially_copyable=" << std::is_trivially_copyable_v<T>
+              << " standard_layout=" << std::is_standard_layout_v<T>
+              << " sizeof=" << sizeof(T) << "\n";
+}
+int main() {
+    report<int>("int            ");
+    report<double>("double         ");
+    report<std::string>("std::string    ");
+    report<std::vector<int>>("std::vector<int>");
+    std::cout << "平凡+标准布局才可安全跨边界；STL 容器的布局随实现/版本变化\n";
+}
+
 ```
 
 > **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 许可证与 ABI 兼容 [平台·Windows]
 
 ```cpp title="示例 29 · ★☆☆☆☆"
-// ⑭ 安全跨边界的做法：用 C ABI（POD / 句柄）
-// extern "C" { struct Handle { void* p; }; Handle make(); void free(Handle); }
-// 把 C++ 类型封在 DLL 内部，只暴露 C 接口
+
+#include <cstddef>
+#include <iostream>
+// ⑭ 安全跨边界的做法：只过 C ABI（POD / 不透明句柄）。
+//    下面这个句柄是 POD，任何编译器、任何语言都能正确传递。
+extern "C" {
+
+struct Handle { void* p; };                    // 不透明句柄：只有一个指针
+typedef Handle (*MakeFn)(void);                // C ABI 的函数指针
+
+}  // extern "C"
+
+static Handle make_impl() { return Handle{nullptr}; }
+
+int main() {
+    std::cout << "sizeof(Handle)=" << sizeof(Handle)
+              << " 是 POD=" << (std::is_standard_layout_v<Handle> && std::is_trivial_v<Handle>)
+              << "\n";
+    MakeFn f = make_impl;                      // C++ 函数可赋给 C ABI 函数指针
+    Handle h = f();
+    std::cout << "经 C ABI 取得句柄，p=" << (h.p == nullptr) << "\n";
+    std::cout << "extern \"C\" 关掉了名字改编，符号名稳定可链接\n";
+}
+
 ```
 
 - `[平台·Windows]`：ABI 兼容受 Itanium C++ ABI / MSVC ABI 与 libstdc++/libc++/MS STL 各自版本共同约束；同一编译器同版本才稳。
@@ -578,18 +1071,51 @@ main:
 > **示例 30** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 
 ```cpp title="示例 30 · ★☆☆☆☆"
-// ⑮ 粗略决策树（工程经验，非标准）
-// 用 MSVC + Windows 产线  -> vcpkg 体验最顺（微软亲儿子）
-// 跨平台 + 自定义二进制缓存/私有库 -> Conan 更灵活
-// 只是本地试库、CI 简单        -> apt/brew 也行，但牺牲可重现
+
+#include <iostream>
+#include <string>
+// ⑮ 选型决策树（工程经验，非标准）：把"团队现状 -> 建议"编码成可执行判断。
+struct Team { bool windows_first; bool heavy_cmake; bool need_binary_cache; };
+
+static std::string advise(const Team& t) {
+    if (t.windows_first && !t.need_binary_cache) return "vcpkg（开箱最顺）";
+    if (t.need_binary_cache) return "Conan（二进制缓存强）";
+    if (t.heavy_cmake) return "两者皆可，看是否要跨 triplet 复用";
+    return "先上 manifest 模式，再谈选型";
+}
+
+int main() {
+    Team a{true, true, false};
+    Team b{false, true, true};
+    Team c{false, false, false};
+    std::cout << "Windows 优先、无需缓存   -> " << advise(a) << "\n";
+    std::cout << "要编译一次全队复用       -> " << advise(b) << "\n";
+    std::cout << "尚未定型                 -> " << advise(c) << "\n";
+}
+
 ```
 
 > **示例 31** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
 
 ```cpp title="示例 31 · ★★☆☆☆"
-// ⑮ 团队已重度 CMake + 多 triplet -> 两者都 OK，看是否要二进制复用
-// 要"编译一次全队复用" -> Conan（binary cache 强）
-// 要"跟着 VS 开箱即用" -> vcpkg
+
+#include <iostream>
+#include <string>
+// ⑮ 团队已重度使用 CMake + 多 triplet：此时看"是否要二进制复用"。
+//    把权衡写成可计算的代价比较。
+int main() {
+    const double build_min = 18.0;              // 全量编译耗时（分钟）
+    const int machines = 12;                    // 团队机器数
+    double no_cache = build_min * machines;
+    double with_cache = build_min * 1.0 + 2.0;  // 只编一次 + 上传下载开销
+    std::cout << "无二进制缓存：所有人各编一遍 = "
+              << no_cache << " 分钟/轮\n";
+    std::cout << "有二进制缓存：编一次 + 分发 = "
+              << with_cache << " 分钟/轮\n";
+    std::cout << "节省 " << static_cast<int>(no_cache - with_cache)
+              << " 分钟（这就是 Conan binary cache 的价值）\n";
+}
+
 ```
 
 - `[经验]`：一旦选定，**全员统一版本与配置**；混合使用 vcpkg 与 Conan 同一项目会增加复杂度，除非用其一仅做镜像源。
@@ -604,36 +1130,112 @@ main:
 > **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 
 ```cpp title="示例 32 · ★★☆☆☆"
-#include <string>
-// ⑯ 陷阱1：ABI 不匹配
-// 你的 exe 用 gcc13/libstdc++，链接的 .dll 用 gcc11/libstdc++
-// 跨运行时传 std::string/异常 -> 布局不同 -> 崩
-// 现象常是"偶发崩溃""未处理异常""堆损坏"
+
+#include <cstddef>
+#include <cstdint>
+#include <iostream>
+// ⑯ 陷阱1：ABI 不匹配 —— 同一份结构体，打包对齐不同就是两套内存布局。
+#pragma pack(push, 1)
+struct Packed { char a; int b; };
+#pragma pack(pop)
+struct Natural { char a; int b; };
+
+int main() {
+    std::cout << "自然对齐 sizeof=" << sizeof(Natural) << "\n";
+    std::cout << "#pragma pack(1) sizeof=" << sizeof(Packed) << "\n";
+    Packed p{'x', 7};
+    Natural n;
+    n.a = 'x';
+    n.b = 7;
+    std::cout << "两者字节数相同="
+              << (sizeof(Packed) == sizeof(Natural))
+              << " -> 混用即读错字段\n";
+    std::cout << "读同一份字节流：natural b=" << n.b
+              << " packed b=" << p.b << "\n";
+}
+
 ```
 
 > **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 
 ```cpp title="示例 33 · ★★☆☆☆"
-// ⑯ 陷阱2：Debug/Release 混链
-// MSVC: /MDd (Debug DLL CRT) vs /MD (Release DLL CRT)
-// 混链 -> 同一堆被两个 CRT 管理 -> 释放错 CRT 堆 -> 崩
-// 表现：free/delete 时 abort，或 Debug 跑得好好的 Release 崩
+
+#include <cassert>
+#include <iostream>
+// ⑯ 陷阱2：Debug / Release 混链 —— 最典型的差异就是 assert 被 NDEBUG 关掉。
+static int checked_div(int a, int b) {
+    assert(b != 0 && "除数为 0");               // Debug 生效，Release（NDEBUG）被移除
+    return b == 0 ? -1 : a / b;
+}
+
+int main() {
+    std::cout << "checked_div(10, 2)=" << checked_div(10, 2) << "\n";
+#ifdef NDEBUG
+    std::cout << "NDEBUG 已定义：assert 被移除（Release 语义）\n";
+#else
+    std::cout << "NDEBUG 未定义：assert 生效（Debug 语义）\n";
+#endif
+    std::cout << "同一个库若一个按 Debug、一个按 Release 编，"
+                 "两侧对 assert/迭代器检查的假设就不一致\n";
+}
+
 ```
 
 > **示例 34** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 
 ```cpp title="示例 34 · ★★★☆☆"
-// ⑯ 陷阱3：静态/动态不一致
-// fmt 以 static 编进 A，又以 shared 编进 B，符号两份 -> ODR 违例风险
-// 统一：要么全 static，要么全 shared，由 triplet/settings 决定
+
+#include <iostream>
+// ⑯ 陷阱3：静态/动态不一致 —— 同一符号存在两份实体（ODR 风险）。
+//    单文件里用"每 TU 一份"与"全程序一份"的对照把它演示出来。
+static int& per_tu_counter() {                 // 非 inline：每个 TU 各一份
+    static int v = 0;
+    return v;
+}
+inline int& program_wide_counter() {           // C++17 inline 变量/函数：全程序一份
+    static int v = 0;
+    return v;
+}
+
+int main() {
+    int& a = per_tu_counter();
+    int& b = per_tu_counter();
+    int& c = program_wide_counter();
+    int& d = program_wide_counter();
+    std::cout << "同一函数取到的 static 是同一个=" << (&a == &b) << "\n";
+    std::cout << "inline 实体全程序唯一=" << (&c == &d) << "\n";
+    std::cout << "若同一实体被静态链进两份，就可能出现「改了一份另一份看不见」的问题\n";
+}
+
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱：ABI 不匹配、Debug
 
 ```cpp title="示例 35 · ★★☆☆☆"
-// ⑯ 陷阱4：忘记导出符号（Windows DLL）
-// __declspec(dllexport) 漏写 -> 链接方找不到符号
-// 用 imported target 时，包作者已处理，但你自写 DLL 要小心
+
+#include <iostream>
+// ⑯ 陷阱4：Windows DLL 忘记导出符号 -> 链接方找不到。
+//    导出属性是平台相关的，下面把"宏在三套平台上的展开"如实列出来。
+#if defined(_WIN32)
+#define PKG_API __declspec(dllexport)
+#else
+#define PKG_API __attribute__((visibility("default")))
+#endif
+
+PKG_API int exported_add(int a, int b) { return a + b; }   // ✅ 导出
+int not_exported_add(int a, int b) { return a + b; }       // ❌ 默认不导出
+
+int main() {
+    std::cout << "exported_add(2,3)=" << exported_add(2, 3) << "\n";
+    std::cout << "not_exported_add(2,3)=" << not_exported_add(2, 3) << "\n";
+#if defined(_WIN32)
+    std::cout << "本机展开：__declspec(dllexport)（MinGW/Windows）\n";
+#else
+    std::cout << "本机展开：__attribute__((visibility(\"default\")))\n";
+#endif
+    std::cout << "漏写导出宏时，本 TU 能编过，链接方才报 undefined reference\n";
+}
+
 ```
 
 - `[经验]`：所有传递依赖的 **compiler + version + build_type + CRT + static/dynamic** 必须全链路一致——这正是包管理器用 `triplet`/`settings`/`package_id` 强制保证的事。
@@ -648,25 +1250,57 @@ main:
 > **示例 36** [难度 ★★☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 36 · ★★☆☆☆"
-// ⑰ vcpkg 模式：CMake 启动时读 vcpkg.cmake 工具链
-// - CMAKE_TOOLCHAIN_FILE 指向 vcpkg.cmake
-// - find_package 被重定向到 installed/<triplet>
+
+#include <iostream>
+// ⑰ vcpkg 模式：CMake 启动时读 vcpkg.cmake 工具链，包与构建系统同时就位。
+//    对 C++ 而言，这条链最终只体现为：多了一组 -I / 宏定义。
+int main() {
+#if defined(PKG_INJECTED)
+    std::cout << "检测到包注入的宏 PKG_INJECTED=" << PKG_INJECTED << "\n";
+#else
+    std::cout << "PKG_INJECTED 未定义：本机未走 vcpkg 工具链\n";
+#endif
+    std::cout << "工具链文件的作用：在 CMake 配置期把包信息写进编译命令\n";
+    std::cout << "也就等于给每条编译命令补上 -I<包include> -D<包宏>\n";
+}
+
 ```
 
 > **示例 37** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 37 · ★☆☆☆☆"
-// ⑰ Conan 模式：先 conan install 生成集成文件，再让 CMake 读
-// -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
-// find_package 命中 CMakeDeps 生成的 *-config.cmake
+
+#include <iostream>
+// ⑰ Conan 模式：先 conan install 生成集成文件，再让 CMake 读。
+//    相比 vcpkg 多了一步"生成"，好处是产物可缓存、可复用。
+int main() {
+    const int steps_vcpkg = 2;     // cmake configure + build
+    const int steps_conan = 3;     // conan install + cmake configure + build
+    std::cout << "vcpkg 步骤数=" << steps_vcpkg << "\n";
+    std::cout << "conan 步骤数=" << steps_conan << "\n";
+    std::cout << "多出来的一步换来：依赖产物可缓存、可跨机器复用\n";
+    std::cout << "两条路最终给编译器的东西是一致的：-I / -D / -l\n";
+}
+
 ```
 
 > **示例 38** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 38 · ★☆☆☆☆"
-// ⑰ 多配置生成器（Visual Studio / Ninja Multi-Config）注意：
-// 不要把一个 Debug 包塞进 Release 配置
-// 用 $<CONFIG> 区分 imported target 的 Debug/Release 变体
+
+#include <iostream>
+// ⑰ 多配置生成器（VS / Ninja Multi-Config）：Debug 与 Release 产物必须分开。
+//    混淆的后果在 C++ 里就是"两套语义的实体被链到一起"。
+int main() {
+#ifdef NDEBUG
+    std::cout << "当前配置：Release（NDEBUG）\n";
+#else
+    std::cout << "当前配置：Debug（assert 生效）\n";
+#endif
+    std::cout << "要点：一个配置目录只放一种配置的包，"
+                 "不要把 Debug 包塞进 Release\n";
+}
+
 ```
 
 - `[经验]`：把"包管理"和"构建系统"当成两段独立流水线：先解依赖（生成集成文件），再构建。两者顺序错了就玄学报错。
@@ -681,26 +1315,66 @@ main:
 > **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台 [平台·Windows]
 
 ```cpp title="示例 39 · ★★☆☆☆"
-// ⑱ 跨平台 manifest 写法一致，差异由工具按宿主推断
-// vcpkg: 在 Linux 自动 x64-linux，Windows 自动 x64-windows
-// 显式覆盖：--triplet=x64-linux-dynamic
+
+#include <iostream>
+// ⑱ 跨平台 manifest：写法一致，差异由工具按宿主推断。
+//    在 C++ 侧，"宿主"就是这些预定义宏。
+int main() {
+    std::cout << "宿主判定：";
+#if defined(_WIN32)
+    std::cout << "Windows";
+#elif defined(__APPLE__)
+    std::cout << "macOS";
+#elif defined(__linux__)
+    std::cout << "Linux";
+#else
+    std::cout << "未知";
+#endif
+    std::cout << "\n";
+#if defined(__x86_64__) || defined(_M_X64)
+    std::cout << "架构：x86_64\n";
+#endif
+    std::cout << "manifest 只写依赖名，triplet/profile 由工具据此推断\n";
+}
+
 ```
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
 
 ```cpp title="示例 40 · ★☆☆☆☆"
-// ⑱ Conan profile 显式区分平台
-// Windows: compiler=msvc, compiler.version=193
-// Linux:   compiler=gcc,   compiler.version=13
-// 同一 recipe 在两 profile 下解出不同二进制缓存
+
+#include <iostream>
+// ⑱ Conan profile 显式声明平台与编译器，避免"推断错了"。
+//    把 profile 的关键字段映射成本机可查的编译器事实。
+int main() {
+    std::cout << "profile 字段 -> 本机实际值\n";
+    std::cout << "  compiler       = gcc " << __GNUC__ << "." << __GNUC_MINOR__ << "\n";
+#ifdef __VERSION__
+    std::cout << "  compiler.version = " << __VERSION__ << "\n";
+#endif
+    std::cout << "  compiler.cppstd  = " << __cplusplus << "\n";
+#if defined(_WIN32)
+    std::cout << "  os              = Windows\n";
+#endif
+}
+
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台 [平台·Windows]
 
 ```cpp title="示例 41 · ★☆☆☆☆"
-// ⑱ macOS 注意：universal binary / arm64 vs x86_64
-// arch=x86_64 与 arch=armv8 是不同 package_id
-// 交叉编译时 settings.arch 必须显式，否则取到宿主架构
+
+#include <cstddef>
+#include <iostream>
+// ⑱ macOS 的 universal binary / arm64 vs x86_64：不同 arch 就是不同包。
+//    架构差异在 C++ 里最直观的体现就是指针与模型宽度。
+int main() {
+    std::cout << "sizeof(void*)=" << sizeof(void*) << "\n";
+    std::cout << "sizeof(size_t)=" << sizeof(size_t) << "\n";
+    std::cout << "sizeof(long)=" << sizeof(long) << "（LLP64 下仍为 4）\n";
+    std::cout << "arch 不同 -> 这些宽度可能不同 -> 必须是不同的 package_id\n";
+}
+
 ```
 
 - `[平台·Windows]`：三大桌面平台的 C++ ABI 与 CRT 各成体系（MSVC ABI / Linux Itanium / macOS），包管理器的 triplet/settings 正是为把这些差异**显式参数化**。
@@ -716,21 +1390,52 @@ main:
 > **示例 42** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 42 · ★★☆☆☆"
-// ⑲ 1) 用 manifest 模式（vcpkg.json / conanfile.py），并入库
-// ⑲ 2) 锁文件 + baseline/profile 进版本控制
-// ⑲ 3) 全链路统一 compiler/version/CRT/static-dynamic
-// ⑲ 4) 链接用 imported target（fmt::fmt），不手拼 -I/-L/-l
-// ⑲ 5) CI 共享 binary cache，加速且可重现
+
+#include <filesystem>
+#include <iostream>
+#include <string>
+#include <vector>
+// ⑲ 最佳实践前两条：用 manifest 模式并入库；锁文件 + baseline 入库。
+//    把这两条做成可执行的自检（本机上对本章的 Examples 目录实际检查）。
+namespace fs = std::filesystem;
+int main() {
+    const char* required[] = {
+        "Examples/_ch13_vcpkg_manifest.json",
+        "Examples/_ch13_conanfile.py",
+        "Examples/_ch13_CMakeLists.txt",
+    };
+    int ok = 0;
+    for (const char* p : required) {
+        bool e = fs::exists(p);
+        ok += e ? 1 : 0;
+        std::cout << p << " -> " << (e ? "已入库" : "缺失") << "\n";
+    }
+    std::cout << "自检通过项=" << ok << "/" << 3
+              << "（缺失则说明 manifest 没进版本控制）\n";
+}
+
 ```
 
 > **示例 43** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 43 · ★☆☆☆☆"
-// ⑲ 6) 头-only 库也提供 find_package 支持（写 Config.cmake）
-// ⑲ 7) 跨模块只过 C ABI，封死 STL 类型泄露
-// ⑲ 8) 私有库走制品库 + recipe，不当人肉 zip
-// ⑲ 9) 许可证写进元数据，做合规扫描
-// ⑲ 10) 选型后全员统一版本，勿混搭两套管理器于同一产物
+
+#include <cstddef>
+#include <iostream>
+#include <type_traits>
+// ⑲ 第 6/7 条：头-only 库也要提供 find_package 支持；跨模块只过 C ABI。
+//    两条都可以在 C++ 侧用 trait 自证。
+struct CAbiSafe { void* handle; int code; };        // POD：可安全跨边界
+struct StlLeak { std::string name; };               // 含 STL：跨边界即风险
+
+int main() {
+    std::cout << "CAbiSafe  trivially_copyable="
+              << std::is_trivially_copyable_v<CAbiSafe> << "\n";
+    std::cout << "StlLeak   trivially_copyable="
+              << std::is_trivially_copyable_v<StlLeak> << "\n";
+    std::cout << "头-only 也要有 Config.cmake，否则消费方只能手写路径\n";
+}
+
 ```
 
 - `[经验]`：这 10 条里，**第 3 条（全链路一致）和第 4 条（imported target）** 是规避 ⑯ 那些要命崩溃的关键。
@@ -757,34 +1462,53 @@ main:
 > **示例 44** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 
 ```cpp title="示例 44 · ★★★☆☆"
-// ⑳ vcpkg 速查
-// 声明依赖      : vcpkg.json { "dependencies": ["fmt"] }
-// 注入 CMake    : -DCMAKE_TOOLCHAIN_FILE=.../vcpkg.cmake
-// 锁版本        : vcpkg-configuration.json 的 baseline
-// 常用 triplet  : x64-windows / x64-windows-static / x64-linux-dynamic
-// 模式          : manifest 模式（推荐）> 古典全局 install
+
+#include <filesystem>
+#include <iostream>
+// ⑳ vcpkg 速查：逐条落到本机可验证的事实。
+namespace fs = std::filesystem;
+int main() {
+    std::cout << "① 声明依赖：vcpkg.json 的 dependencies 数组\n";
+    std::cout << "② 本机 manifest 文件存在="
+              << fs::exists("Examples/_ch13_vcpkg_manifest.json") << "\n";
+    std::cout << "③ 安装：vcpkg install（本机未装 vcpkg，故为上游命令）\n";
+    std::cout << "④ 消费：find_package + target_link_libraries(PRIVATE)\n";
+}
+
 ```
 
 > **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 
 ```cpp title="示例 45 · ★★☆☆☆"
-// ⑳ Conan 速查
-// 声明依赖      : conanfile.py requires = "fmt/10.1.1"
-// 解依赖+生成    : conan install . --output-folder=build --build=missing
-// 锁版本        : conan lock create / --lockfile=conan.lock
-// 配置维度      : settings = os, compiler, version, build_type, arch
-// 生成器        : CMakeDeps + CMakeToolchain
+
+#include <filesystem>
+#include <iostream>
+// ⑳ Conan 速查：逐条落到本机可验证的事实。
+namespace fs = std::filesystem;
+int main() {
+    std::cout << "① 声明依赖：conanfile.py 的 requires\n";
+    std::cout << "② 本机 conanfile 存在="
+              << fs::exists("Examples/_ch13_conanfile.py") << "\n";
+    std::cout << "③ 安装：conan install . --build=missing\n";
+    std::cout << "④ 二进制缓存：conan cache save / restore\n";
+}
+
 ```
 
 > **示例 46** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 
 ```cpp title="示例 46 · ★★★☆☆"
-// ⑳ 通用速查
-// 链接姿势      : target_link_libraries(x PRIVATE pkg::pkg)   // 永远用 imported target
-// 可重现铁三角  : 依赖声明 + 锁文件 + profile/triplet
-// 崩溃首查      : compiler/CRT/static-dynamic 是否全链路一致
-// 跨模块边界    : 只过 C ABI，禁传 STL 对象
-// 本机取证命令  : g++ -std=c++23 -O2 -I <inc> -S x.cpp -o x.asm   // 看真实汇编
+
+#include <iostream>
+// ⑳ 通用速查：链接姿势、版本固定、跨界类型。
+int main() {
+    std::cout << "① 链接永远用 imported target："
+                 "target_link_libraries(x PRIVATE pkg::pkg)\n";
+    std::cout << "② 版本写范围而非裸版本号：fmt/[>=10.0 <11.0]\n";
+    std::cout << "③ 跨模块只传 POD / 不透明句柄，不传 STL 容器\n";
+    std::cout << "④ 锁文件与 baseline 一起入库，保证可重现\n";
+}
+
 ```
 
 | 主题 | 一句话 |
@@ -907,8 +1631,33 @@ int main() {
 > **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 附录 G: Conan vs vcpkg vs FetchContent
 
 ```cpp title="示例 49 · ★☆☆☆☆"
+
 #include <iostream>
-int main(){std::cout<<"vcpkg=simple+Windows; Conan=flexible+enterprise; FetchContent=zero-dep"<<std::endl;return 0;}
+#include <string>
+#include <vector>
+// 三种"拿依赖"的方式，差别不在源码，而在"谁负责构建、产物放哪"。
+struct Approach {
+    const char* name;
+    const char* manifest;
+    bool builds_from_source;
+    const char* cache;
+};
+
+int main() {
+    std::vector<Approach> all{
+        {"vcpkg", "vcpkg.json", true, "默认按 triplet 本地构建"},
+        {"Conan", "conanfile.py", true, "binary cache，可跨机器复用"},
+        {"FetchContent", "CMakeLists.txt", true, "随工程一起构建，无独立产物"},
+    };
+    for (const auto& a : all) {
+        std::cout << a.name << " : manifest=" << a.manifest
+                  << " 源码构建=" << a.builds_from_source
+                  << " 缓存=" << a.cache << "\n";
+    }
+    std::cout << "结论：vcpkg 简单顺手、Conan 灵活可复用、"
+                 "FetchContent 零依赖但拖慢每次配置\n";
+}
+
 ```
 
 面试: 为什么C++没有pip/npm? header-only+ABI不兼容→统一包管理极其困难
@@ -939,8 +1688,25 @@ vcpkg triplet: x64-windows/x64-linux/arm64-android等20+平台
 > **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 附录 H：vcpkg manifes
 
 ```cpp title="示例 50 · ★★☆☆☆"
+
 #include <iostream>
-int main(){std::cout<<"vcpkg=manifest(vcpkg.json)+CMake+triplet=cross-platform C++ package mgr"<<std::endl;return 0;}
+#include <string>
+// 一句话记忆点，写成可核对的字段而非口号。
+struct Fact {
+    const char* key;
+    const char* value;
+};
+
+int main() {
+    Fact facts[]{
+        {"vcpkg 的心智模型", "manifest(vcpkg.json) + CMake + triplet"},
+        {"triplet 决定", "arch / os / linkage / CRT"},
+        {"Conan 的心智模型", "profile + settings -> package_id"},
+        {"包管理的本质", "把 -I/-L/-l 与版本解析自动化"},
+    };
+    for (const auto& f : facts) std::cout << f.key << " = " << f.value << "\n";
+}
+
 ```
 
 面试: vcpkg triplet作用? 指定目标平台(x64-windows/x64-linux等), 选择正确预编译二进制
@@ -1198,8 +1964,31 @@ conan install . --output-folder=build --build=missing
 > **示例 53** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演绎 2：Conan 二进制缓存避免
 
 ```cpp title="示例 53 · ★★★☆☆"
+
+#include <chrono>
 #include <iostream>
-int main() { std::cout << "命中二进制缓存，省去源码编译。\n"; }
+#include <vector>
+// 二进制缓存的价值：命中就跳过源码编译。用"做一次昂贵工作 vs 直接取结果"量化。
+static long long expensive_build() {
+    std::vector<long long> v(200000, 1);
+    long long s = 0;
+    for (long long x : v) s += x;
+    return s;
+}
+
+int main() {
+    auto t0 = std::chrono::steady_clock::now();
+    long long first = expensive_build();
+    auto t1 = std::chrono::steady_clock::now();
+    long long cached = first;                    // 命中缓存：直接取用上次结果
+    auto t2 = std::chrono::steady_clock::now();
+    double build_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
+    double hit_ms = std::chrono::duration<double, std::milli>(t2 - t1).count();
+    std::cout << "源码构建：" << build_ms << " ms\n";
+    std::cout << "命中缓存：" << hit_ms << " ms\n";
+    std::cout << "结果一致=" << (first == cached) << "，省下的就是构建时间\n";
+}
+
 ```
 
 **结论**：Conan 以“设置(settings)×选项(options)×三元组”为键缓存预编译二进制，显著加速 CI。

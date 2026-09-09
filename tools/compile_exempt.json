@@ -33,21 +33,6 @@
       "reason": "MULTI_FILE"
     },
     {
-      "file": "ch13_packaging.md",
-      "block": 1,
-      "reason": "MULTI_FILE"
-    },
-    {
-      "file": "ch13_packaging.md",
-      "block": 2,
-      "reason": "MULTI_FILE"
-    },
-    {
-      "file": "ch13_packaging.md",
-      "block": 18,
-      "reason": "MULTI_FILE"
-    },
-    {
       "file": "ch14_debugging.md",
       "block": 11,
       "reason": "GUARDED_COMPILE",
@@ -355,5 +340,5 @@
   ],
   "audited_at": "2026-08-14",
   "audited_against": "M2 全库铺示例标题(7751)+主题清理(1453)；ch124#4 代码已修复(私有类型static_assert→公开接口)故移出豁免；ch118#42 实测可编译(冗余)移出；其余 61 失败块沿用既有豁免分类(MODULE/MULTI_FILE/POSIX/MSVC/EXT_LIB/CROSS_BLOCK/INTENTIONAL_ERROR)",
-  "exempt_count": 61
+  "exempt_count": 58
 }

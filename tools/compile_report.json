@@ -4,10 +4,10 @@
   "main_only": true,
   "partial": false,
   "total_chapters": 147,
-  "passed_chapters": 114,
-  "failed_chapters": 33,
-  "total_blocks_checked": 4229,
-  "failed_blocks": 61,
+  "passed_chapters": 115,
+  "failed_chapters": 32,
+  "total_blocks_checked": 4553,
+  "failed_blocks": 58,
   "failures": [
     {
       "file": "ch11_compilers.md",
@@ -32,27 +32,6 @@
         {
           "block": 21,
           "error": "fmt/core.h: No such file or directory",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch13_packaging.md",
-      "path": "Book/part02_toolchain\\ch13_packaging.md",
-      "failures": [
-        {
-          "block": 1,
-          "error": "fmt/core.h: No such file or directory",
-          "has_main": true
-        },
-        {
-          "block": 2,
-          "error": "fmt/core.h: No such file or directory",
-          "has_main": true
-        },
-        {
-          "block": 18,
-          "error": "_ch13_packlib.hpp: No such file or directory",
           "has_main": true
         }
       ]
