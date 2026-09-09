@@ -50,6 +50,21 @@ SKIP_FILES = {"SUMMARY.md", "GLOSSARY.md", "PREREQUISITES.md", "INDEX.md", "MANI
 GCC = resolve_gcc(None)
 FLAGS = "-std=c++23 -O2"
 TIMEOUT = 15
+
+
+def _run_env() -> dict:
+    """子进程运行环境：把编译器所在目录注入 PATH。
+
+    MinGW 的 std::thread/std::async 程序运行时依赖同目录的
+    libwinpthread-1.dll 等；若调用方 shell 未把 bin 加入 PATH，
+    直接跑 exe 会 0xC0000139(ENTRYPOINT_NOT_FOUND)。编译器与运行器
+    同源，PATH 注入可让 run_expected 与调用 shell 无关地稳定跑通。
+    """
+    env = os.environ.copy()
+    bindir = str(Path(GCC).resolve().parent)
+    if bindir not in env.get("PATH", ""):
+        env["PATH"] = bindir + os.pathsep + env.get("PATH", "")
+    return env
 MARKER_RE = re.compile(r"//@\s*(.*)$")
 MAIN_RE = re.compile(r"\bint\s+main\s*\(")
 
@@ -159,7 +174,8 @@ def run_one(blk: Block) -> Block:
             blk.detail = (first[0][:160] if first else "unknown")
             return blk
         try:
-            r = subprocess.run([str(exe)], capture_output=True, timeout=TIMEOUT)
+            r = subprocess.run([str(exe)], capture_output=True, timeout=TIMEOUT,
+                               env=_run_env())
         except subprocess.TimeoutExpired:
             blk.status = RUN_ERR
             blk.detail = "运行超时(>15s)"
