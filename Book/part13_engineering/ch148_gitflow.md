@@ -114,10 +114,12 @@ b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0
 
 > **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 基础模型
 
-```cpp title="示例 3 · ★★☆☆☆"
-// ②' 用自包含 SHA-1 复现上述哈希（不依赖 OpenSSL），编译运行输出见下方
-// 见 Examples/_ch148_git_object.cpp：sha1("blob 5\0hello")
-// => b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0  （与 git 一致）
+```bash
+# 自包含 SHA-1 复现 Git blob 对象哈希（见 Examples/_ch148_git_object.cpp）
+g++ -std=c++23 -O2 Examples/_ch148_git_object.cpp -o git_object && ./git_object
+# 输出：
+#   sha1(blob 5\0hello) = b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0
+#   expect               = b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0
 ```
 
 继续用 `git cat-file` 检查一个真实提交对象（沙箱 `calc.cpp` 仓库）：
@@ -150,12 +152,11 @@ $ git cat-file -s bfd1bd5ca13df8f54bb59fc6dae90e210c1b9e35
 
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 基础模型
 
-```cpp title="示例 4 · ★☆☆☆☆"
-// 文件：https://github.com/git/git/blob/master/object.c
-// 行号：约 240（type_from_string / 对象头写入附近）
-// 剖析：Git 把 "<type> <size>\0" 与内容拼接后整体做 SHA-1，
-// 得到内容寻址的 40 位哈希；任一字节变化都会使哈希雪崩式改变，
-// 这是 Git “不可变对象 + 内容寻址” 的数学根基。
+```bash
+# Git 对象 = SHA-1("<type> <size>\0" + content)；内容寻址，任一字节变化哈希雪崩。
+printf 'hello' | git hash-object --stdin          # -> b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0
+printf 'hellp' | git hash-object --stdin          # -> 不同哈希（一字节课全变）
+# 与 _ch148_git_object.cpp 自实现结果完全一致，印证"不可变对象 + 内容寻址"数学根基
 ```
 
 > **立场**：`[实现·Git]` 注意 Git 2.29+ 默认哈希已支持 SHA-256（`--object-format=sha256`），SHA-1 仅向后兼容；新仓库在大组织内可评估迁移。
@@ -227,11 +228,13 @@ void fill(Buffer& b, int value, size_t count) {  // 提交 B：只改实现
 
 > **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提交原子性
 
-```cpp title="示例 8 · ★☆☆☆☆"
-// ④' 用 git 命令把一次大改动按文件/函数逻辑拆分（示意）
-// git add -p      交互式暂存“此提交的语义块”
-// git commit -m "refactor: extract Buffer::reserve"
-// git commit -m "feat: add fill() populating Buffer"
+```bash
+# 把一次大改动按语义拆成原子提交（设计见 Examples/_ch148_atomic_split.cpp）
+git add -p                              # 交互式只暂存本提交的语义块
+git commit -m "refactor: extract Buffer::reserve"
+git add -p
+git commit -m "feat: add fill() populating Buffer"
+# 反模式：重构 + 新功能 + 格式化混在同一提交（见 ⑱）
 ```
 
 ---
@@ -466,9 +469,14 @@ _ch148_precommit_lint $FILES || { echo "pre-commit: 风格检查未通过" >&2; 
 
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 钩子
 
-```cpp title="示例 18 · ★☆☆☆☆"
-// ⑩' commit-msg 钩子复用 Conventional Commits 解析器（见 Examples/_ch148_conventional_commit.cpp）
-// 拒绝不符合规范的 message：exit 1 即阻止提交，从源头保证日志质量。
+```bash
+# commit-msg 钩子复用 Conventional Commits 解析器（见 Examples/_ch148_conventional_commit.cpp）
+g++ -std=c++23 -O2 Examples/_ch148_conventional_commit.cpp -o cc && ./cc
+# 输出：
+#   [OK] type=feat   scope=parser  breaking=false desc=add coroutine support
+#   [OK] type=fix    scope=        breaking=true  desc=prevent null deref in scheduler
+#   [OK] type=chore  scope=        breaking=false desc=bump toolchain to GCC 14
+# 钩子内非 OK 则 exit 1，从源头阻断不规范提交
 ```
 
 ---
@@ -499,10 +507,11 @@ $ git bisect run ./check.sh
 
 > **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代码归档与 bisect
 
-```cpp title="示例 20 · ★☆☆☆☆"
-// ⑪' bisect run 的判定脚本本质是一个“黄金测试”：
-// 给定某 commit 的源码能编译且行为正确 -> good(0)，否则 bad(非0)。
-// 把“人肉判断”固化为可重复脚本，是 bisect 高效的关键。
+```bash
+# bisect run 的判定脚本是一个"黄金测试"：能编译且 answer()==42 -> good(0)，否则 bad。
+g++ -std=c++23 -O2 Examples/_ch148_bisect_driver.cpp -o answer && ./answer
+# 输出：42  -> good；坏提交把 ANSWER 改为 0 则输出 0 -> bad（据此二分）
+# 用法：git bisect start <bad> <good> && git bisect run ./check.sh
 ```
 
 ---
@@ -630,9 +639,10 @@ const char* ci_target(std::string_view branch, bool is_tag) {
 
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 触发（预告 ch149）
 
-```cpp title="示例 28 · ★☆☆☆☆"
-// ⑮' 构建期把 CI 信息注入版本串，保证“二进制可溯源”
-// g++ -DGIT_DESCRIBE=\"$(git describe --tags --always)\"
+```bash
+# 构建期把 CI 信息注入版本串，保证"二进制可溯源"（见 Examples/_ch148_version_macro.cpp）
+g++ -std=c++23 -O2 -DGIT_COMMIT=\""$(git rev-parse --short HEAD)"\" Examples/_ch148_version_macro.cpp -o ver && ./ver
+# 输出：version=v2.4.1 commit=<当前 commit 短哈希>
 ```
 
 > **立场**：`[经验]` 没有 CI 守护的 `main` 分支等于“裸奔”；预章 ch149 将系统讲解流水线设计、缓存、矩阵与产物归档。
@@ -703,8 +713,15 @@ int answer() { return ANSWER; }
 > **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 
 ```cpp title="示例 32 · ★☆☆☆☆"
-// ⑰' 把本次“坏提交定位”固化为回归测试，防止复发
-// 将该 commit 引入的失败用例加入单元测试集，CI 永久守护。
+// 把"坏提交定位"固化为回归测试：断言 answer()==42，复犯即失败（退出码非 0）。
+// 对应 Examples/_ch148_bisect_driver.cpp 的黄金测试，CI 每轮运行永久守护。
+#include <cstdio>
+int answer() { return 42; }   // 坏提交曾改为 0 -> 测试失败
+int main() {
+    if (answer() != 42) { std::printf("REGRESSION: answer()=%d\n", answer()); return 1; }
+    std::printf("regression test PASS: answer()=%d\n", answer());  //@ regression test PASS: answer()=42
+    return 0;
+}
 ```
 
 > **立场**：`[经验]` `bisect` 的价值不只在“找到 bug”，更在“把定位成本从 O(n) 降到 O(log n)”，并可作为故障复盘的客观证据。

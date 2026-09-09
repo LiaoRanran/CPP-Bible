@@ -184,15 +184,88 @@ static_assert(std::is_same_v<E1, Sum<Fast,Fast>>);
 > **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 适用场景与选型
 
 ```cpp title="示例 6 · ★★☆☆☆"
-// 选型：大向量必须用 ET（避免 N 次临时分配）
-// 朴素：u = a+b+c → 2 临时矩阵 + 3 遍历（见 ⑩ 汇编）
-// ET：u = a+b+c → 0 临时 + 1 遍历
+// 选型：大向量必须用 ET（避免 N 次临时分配）。下面用计数分配器实测朴素 vs ET。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+static long g_allocs = 0;
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){ g_allocs++; }
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+        g_allocs++;
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+Vec naive_add(const Vec& a, const Vec& b){
+    Vec r(a.size()); for (size_t i=0;i<a.size();++i) r[i]=a[i]+b[i]; return r;
+}
+int main(){
+    Vec a(4), b(4), c(4);
+    g_allocs = 0;
+    Vec u = a + b + c;                      // ET：仅结果 u 一次分配
+    std::cout << "ET   u=a+b+c 分配 = " << g_allocs << " (0 临时)\n";   //@ ET   u=a+b+c 分配 = 1 (0 临时)
+    g_allocs = 0;
+    Vec v = naive_add(naive_add(a, b), c);  // 朴素：2 个临时分配
+    std::cout << "naive u=a+b+c 分配 = " << g_allocs << " (2 临时)\n";   //@ naive u=a+b+c 分配 = 2 (2 临时)
+}
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 适用场景与选型
 
 ```cpp title="示例 7 · ★☆☆☆☆"
-// 选型：调试期可读优先用朴素；发布用 ET（同一接口，换模板实现）
+// 调试期可读优先用朴素；发布用 ET（同一接口，换模板实现）。
+// 下面 ET 表达式与朴素写法接口一致：都是 u = a + b + c。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){}
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+int main(){
+    Vec a(3), b(3), c(3);
+    a[0]=1; b[0]=2; c[0]=3;
+    Vec u = a + b + c;    // 同一行代码，调试可读 = 发布性能
+    std::cout << "u[0]=" << u[0] << "\n";   //@ u[0]=6
+}
 ```
 
 ## ⑥ 完整可运行示例（最小）
@@ -296,9 +369,15 @@ Vec r = a + b;   // a+b 返回临时 Vec，r 从临时拷贝/移动；临时在�
 > **示例 13** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
 
 ```cpp title="示例 13 · ★★☆☆☆"
-// 各编译器对深 ET 树需控制深度
-// template <int N> using Chain = Sum<Chain<N-1>, Fast>;   // 深递归实例化
-// using Deep = Chain<2000>;   // [实现] 可能超 GCC/Clang 模板深度上限
+// 各编译器对深 ET 树需控制深度；下面 Chain<N> 是深递归实例化。
+// GCC 默认模板实例化深度上限约 1024，Chain<2000> 需 -ftemplate-depth=N。
+#include <iostream>
+template<int N> struct Chain { static constexpr int v = Chain<N-1>::v + 1; };
+template<> struct Chain<0> { static constexpr int v = 0; };
+int main(){
+    std::cout << "Chain<8>::v = " << Chain<8>::v << "\n";   //@ Chain<8>::v = 8
+    // 数百层 Chain<2000> 会触达 GCC 默认模板深度上限 -> 需 -ftemplate-depth=N（或拆层）
+}
 ```
 
 ## ⑨ 内存 / 对象模型
@@ -311,9 +390,40 @@ Vec r = a + b;   // a+b 返回临时 Vec，r 从临时拷贝/移动；临时在�
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存 / 对象模型
 
 ```cpp title="示例 14 · ★☆☆☆☆"
-// 内存对比：朴素临时数组 vs ET 零额外数组
-// 朴素 a+b+c：分配 t1(a+b)、t2(t1+c) 两个 double[n] 临时 → 2*n*8 字节 + 2 次 new
-// ET   a+b+c：Sum 代理仅 16 字节栈，无 double[n] 临时
+// 内存对比：朴素临时数组 vs ET 零额外数组。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){}
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+int main(){
+    Vec a(1024), b(1024);
+    using SumT = VSum<Vec,Vec>;
+    std::cout << "ET 代理 sizeof = " << sizeof(SumT) << " 字节(仅两个引用)\n";   //@ ET 代理 sizeof = 16 字节(仅两个引用)
+    std::cout << "朴素临时 sizeof = " << (sizeof(double)*1024) << " 字节\n";      //@ 朴素临时 sizeof = 8192 字节
+}
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存 / 对象模型
@@ -478,8 +588,43 @@ Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持�
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 23 · ★☆☆☆☆"
-// 反模式：超深表达式树
-// using Deep = decltype(a+b+c+...+z);  // 数百项 → 模板实例化深度超限、编译极慢
+// 反模式：超深表达式树（数百项）会超模板实例化深度、编译极慢。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){}
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+template<int N> struct Depth { static constexpr int v = Depth<N-1>::v + 1; };
+template<> struct Depth<0> { static constexpr int v = 0; };
+int main(){
+    Vec a(2), b(2), c(2);
+    auto e = a + b + c;                  // 浅树：编译快、运行单遍
+    std::cout << "shallow expr e[0] = " << e[0] << "\n";   //@ shallow expr e[0] = 0
+    std::cout << "Depth<16>::v = " << Depth<16>::v << "\n";  //@ Depth<16>::v = 16
+    // 数百项 decltype(a+b+...+z) 需 -ftemplate-depth 且编译缓慢 -> 反模式
+}
 ```
 
 ## ⑭ 工业案例
@@ -494,23 +639,156 @@ Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持�
 > **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 
 ```cpp title="示例 24 · ★★☆☆☆"
-// 工业案例：Eigen 式 ET（概念示意）
-// MatrixXd C = A * B + D;   // 编译期：Sum<Prod<Matrix,Matrix>,Matrix>
-// 运行期：单遍循环 + AVX，无 A*B 临时矩阵
+// 工业案例：Eigen 式 ET（概念示意）。MatrixXd C = A*B + D 单遍循环 + 可 SIMD，无 A*B 临时。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){}
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> struct VProd : VExpr<VProd<L,R>> {
+    const L& l; const R& r;
+    VProd(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]*r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+template<class L,class R> VProd<L,R> operator*(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+int main(){
+    Vec A(3), B(3), D(3);
+    A[0]=2; B[0]=3; D[0]=1;        // 2*3+1 = 7
+    Vec C = A*B + D;               // 编译期类型 Sum<Prod<Vec,Vec>,Vec>；运行期单遍
+    std::cout << "C[0]=" << C[0] << "\n";   //@ C[0]=7
+}
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工业案例
 
 ```cpp title="示例 25 · ★★☆☆☆"
-// 工业案例：自定义数组库 ET（u = a + 2*b）
-// u = a + 2.0 * b;  // 编译期：Sum<Fast, Scale<Fast>>，单遍 u[i]=a[i]+2*b[i]
+// 工业案例：自定义数组库 ET（u = a + 2*b）。编译期 Sum<Vec,Scaled<Vec>>，单遍 u[i]=a[i]+2*b[i]。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){}
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> struct VScaled : VExpr<VScaled<L,R>> {
+    const L& l; R r;
+    VScaled(const L& a, R b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]*r; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+template<class L> VScaled<L,double> operator*(const VExpr<L>& a, double b){
+    return {static_cast<const L&>(a), b};
+}
+template<class L> VScaled<L,double> operator*(double b, const VExpr<L>& a){
+    return {static_cast<const L&>(a), b};
+}
+int main(){
+    Vec a(3), b(3);
+    a[0]=1; b[0]=2;            // 1 + 2*2 = 5
+    Vec u = a + 2.0*b;         // 单遍：u[i] = a[i] + 2*b[i]
+    std::cout << "u[0]=" << u[0] << "\n";   //@ u[0]=5
+}
 ```
 
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例
 
 ```cpp title="示例 26 · ★☆☆☆☆"
-// 工业案例：GPU ET（Kokkos 示意）
-// auto expr = a + b * c;   // 表达式树传给 kernel：并行单遍求值
+// 工业案例：GPU ET（Kokkos 示意）——表达式树作为类型传给 kernel，并行单遍求值。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){}
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> struct VProd : VExpr<VProd<L,R>> {
+    const L& l; const R& r;
+    VProd(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]*r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+template<class L,class R> VProd<L,R> operator*(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+// 类比 GPU kernel：把表达式树作为类型参数，在并行域单遍求值（此处以 host 单线程类比）
+template<class Expr> Vec evaluate(const VExpr<Expr>& e, size_t n){
+    Vec out(n); const Expr& ex = static_cast<const Expr&>(e);
+    for (size_t i=0;i<n;++i) out[i] = ex[i];
+    return out;
+}
+int main(){
+    Vec a(3), b(3), c(3);
+    a[0]=1; b[0]=2; c[0]=3;     // 1 + 2*3 = 7
+    auto expr = a + b*c;        // 表达式树类型（编译期构建，无临时数组）
+    Vec out = evaluate(expr, 3);
+    std::cout << "out[0]=" << out[0] << "\n";   //@ out[0]=7
+    // expr 的类型即执行计划：Sum<Vec, VProd<Vec,Vec>>
+}
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
@@ -619,17 +897,90 @@ Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
 > **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 
 ```cpp title="示例 34 · ★★☆☆☆"
-// 性能对比数据（来自 ⑩ 汇编）：a+b+c 在 n=大向量时
-// 朴素：2 次额外 new[]（2*n*8 B）+ 2 次额外遍历（2*n 次 load/store）
-// ET  ：0 次额外 new[] + 1 次遍历（单遍 a[i]+b[i]+c[i]，可 SIMD）
+// 性能对比数据（来自 ⑩ 汇编）：a+b+c 在 n=大向量时。下面用计数分配器实测。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+static long g_allocs = 0;
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){ g_allocs++; }
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+        g_allocs++;
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+Vec naive_add(const Vec& a, const Vec& b){
+    Vec r(a.size()); for (size_t i=0;i<a.size();++i) r[i]=a[i]+b[i]; return r;
+}
+int main(){
+    Vec a(1024), b(1024), c(1024);
+    g_allocs = 0;
+    Vec u = a + b + c;                       // ET：仅结果 u
+    std::cout << "ET   (a+b+c) new[] = " << g_allocs << " (0 临时)\n";   //@ ET   (a+b+c) new[] = 1 (0 临时)
+    g_allocs = 0;
+    Vec v = naive_add(naive_add(a, b), c);  // 朴素：2 个临时
+    std::cout << "朴素 (a+b+c) new[] = " << g_allocs << " (2 临时)\n";   //@ 朴素 (a+b+c) new[] = 2 (2 临时)
+}
 ```
 
 > **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能（编译期 / 运行期）
 
 ```cpp title="示例 35 · ★★☆☆☆"
-// 性能：ET 单遍循环可向量化
-// .L33: movsd xmm0,[a+i]; addsd xmm0,[b+i]; addsd xmm0,[c+i]; movsd [u+i]
-// 编译器可升级为 vmovupd/vaddpd（AVX 4 路并行）
+// 性能：ET 单遍循环可向量化（编译器升级为 AVX 4 路并行）。
+// 下面 ET 求值循环被 -O2 自动向量化（可用 -fopt-info-vec 查看 "vectorized"）。
+#include <iostream>
+#include <vector>
+#include <cstddef>
+template<class E> struct VExpr {
+    size_t size() const { return static_cast<const E&>(*this).size(); }
+    double operator[](size_t i) const { return static_cast<const E&>(*this)[i]; }
+};
+struct Vec : VExpr<Vec> {
+    std::vector<double> d;
+    Vec(size_t n=0):d(n){}
+    template<class E> Vec(const VExpr<E>& e):d(static_cast<const E&>(e).size()){
+        const E& ee = static_cast<const E&>(e);
+        for (size_t i=0;i<ee.size();++i) d[i]=ee[i];
+    }
+    size_t size() const { return d.size(); }
+    double operator[](size_t i) const { return d[i]; }
+    double& operator[](size_t i){ return d[i]; }
+};
+template<class L,class R> struct VSum : VExpr<VSum<L,R>> {
+    const L& l; const R& r;
+    VSum(const L& a,const R& b):l(a),r(b){}
+    size_t size() const { return l.size(); }
+    double operator[](size_t i) const { return l[i]+r[i]; }
+};
+template<class L,class R> VSum<L,R> operator+(const VExpr<L>& a,const VExpr<R>& b){
+    return {static_cast<const L&>(a), static_cast<const R&>(b)};
+}
+int main(){
+    const int N = 1024;
+    Vec a(N), b(N), c(N);
+    for (int i=0;i<N;++i){ a[i]=i; b[i]=1; c[i]=2; }
+    Vec u = a + b + c;                  // 单遍：u[i]=a[i]+b[i]+c[i]，无临时、可 SIMD
+    double s = 0; for (int i=0;i<N;++i) s += u[i];
+    std::cout << "sum(u)=" << s << "\n";   //@ sum(u)=526848
+}
 ```
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）

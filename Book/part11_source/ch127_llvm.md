@@ -136,23 +136,51 @@ extern "C" int g(int* p, long n) { return (int)(p[0] + n); }
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架与优化管道 [实现·LLVM]
 
 ```cpp title="示例 5 · ★☆☆☆☆"
-// ④ 现代 PassManager 的 C++ 入口（上游典型结构，非可独立编译）
-// 文件：llvm/lib/Passes/PassBuilder.cpp（上游参考）
-// 行号：约 900（PassBuilder::buildPerModuleDefaultPipeline）
-// PipelineTuningOptions 决定哪些 Pass 进入 O2/O3 管道
-// ModulePassManager MPM = PB.buildPerModuleDefaultPipeline(Level);
-// MPM.run(M, MAM);   // M = Module&, MAM = ModuleAnalysisManager&
+// ④ 现代 PassManager 的 C++ 入口（教学用最小实现，类比 LLVM PassBuilder，非上游源码）。
+// PipelineTuningOptions 决定哪些 Pass 进入管道；下面用玩具 Module/Pass 演示同构结构。
+#include <iostream>
+#include <vector>
+#include <string>
+struct Module { int functions = 3; };
+struct Pass { std::string name; };
+struct ModulePassManager {
+    std::vector<Pass> passes;
+    void addPass(Pass p) { passes.push_back(p); }
+    void run(Module& m) {
+        std::cout << "ModulePassManager: run " << passes.size() << " passes on module("
+                  << m.functions << " fns)\n";
+        for (auto& p : passes) std::cout << "  - " << p.name << "\n";
+    }
+};
+int main() {
+    Module m;
+    ModulePassManager MPM;
+    MPM.addPass({"inline"});
+    MPM.addPass({"gvn"});
+    MPM.run(m);
+}
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 框架与优化管道 [实现·LLVM]
 
 ```cpp title="示例 6 · ★☆☆☆☆"
-// ④ 一个最小「自定义 Pass」骨架（适配新 PassManager）
-// 文件：llvm/include/llvm/IR/PassManager.h（上游参考）
-// 行号：约 200（PassConcept / AnalysisManager 定义）
-// struct MyPass : PassInfoMixin<MyPass> {
-// PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
-// };
+// ④ 一个最小「自定义 Pass」骨架（教学用，类比 LLVM PassInfoMixin，非上游源码）。
+#include <iostream>
+#include <string>
+struct PreservedAnalyses { /* 标记哪些分析被保留 */ };
+template<class T> struct PassInfoMixin { using pass_type = T; };
+struct Function { std::string name = "foo"; };
+struct MyPass : PassInfoMixin<MyPass> {
+    PreservedAnalyses run(Function& F) {
+        std::cout << "MyPass: analyze function '" << F.name << "'\n";
+        return {};
+    }
+};
+int main() {
+    Function f;
+    MyPass p;
+    p.run(f);
+}
 ```
 
 - `[实现·LLVM]`：Pass 必须是**幂等、可组合**的；优化器通过 `AnalysisManager` 缓存（如 DominatorTree）避免重复计算。
@@ -165,30 +193,41 @@ Clang 把 AST 翻译成 IR 的核心在 `clang/lib/CodeGen/`。`CodeGenFunction`
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [实现·LLVM] 源码剖析：Clang CodeGen 如何发射函数 [实现·LLVM]
 
 ```cpp title="示例 7 · ★☆☆☆☆"
-// ⑤ 源码剖析（上游参考）
-// 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CodeGenFunction.h
-// 行号：约 450（class CodeGenFunction：持有 Builder、CurFn、CGM 等）
-// class CodeGenFunction {
-// CodeGenModule &CGM;            // 模块级上下文
-// llvm::IRBuilder<> Builder;     // 往当前 BasicBlock 追加 IR
-// llvm::Function *CurFn;         // 当前正在发射的函数
-// void EmitStmt(const Stmt *S);  // 语句分派
-// };
+// ⑤ CodeGenFunction：持有 Builder/CurFn，按语句类型分派发射（教学用最小实现，非上游源码）。
+#include <iostream>
+#include <string>
+struct IRBuilder { void emitAdd() { std::cout << "  emit add\n"; } };
+struct Function { std::string name = "bar"; };
+struct Stmt { std::string kind; };
+struct CodeGenFunction {
+    IRBuilder Builder;
+    Function* CurFn = nullptr;
+    void EmitStmt(const Stmt& s) {
+        std::cout << "EmitStmt(" << s.kind << ") in " << CurFn->name << "\n";
+        if (s.kind == "add") Builder.emitAdd();
+    }
+};
+int main() {
+    Function f; CodeGenFunction CGF; CGF.CurFn = &f;
+    CGF.EmitStmt({"add"});
+}
 ```
 
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·LLVM] 源码剖析：Clang CodeGen 如何发射函数 [实现·LLVM]
 
 ```cpp title="示例 8 · ★★☆☆☆"
-// ⑤ 源码剖析（上游参考）：循环发射
-// 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CGStmt.cpp
-// 行号：约 700（CodeGenFunction::EmitForStmt：为 for/range 发射前/条件/增量基本块）
-// void CodeGenFunction::EmitForStmt(const ForStmt &S,
-// ArrayRef<const Attr *> Attrs) {
-//// 1. 发射 init  2. 建条件块/体块/增量块  3. 用 Builder.CreateBr 串联
-// }
-//
-// 对应我们在 ⑨ 看到的：for 循环在 IR 层是 BasicBlock 的 CFG，
-// 优化器（LoopSimplify/Unroll）才有机会将其展开为常量（mov eax,10）。
+// ⑤ 循环发射：for 在 IR 层是 BasicBlock 的 CFG；优化器可将其展开为常量（如 mov eax,45）。
+// 下面演示：编译期已知上界的累加被折叠为常量（对应 -O2 的 LoopUnroll/ConstProp）。
+#include <iostream>
+constexpr int loop_sum() {
+    int s = 0;
+    for (int i = 0; i < 10; ++i) s += i;   // 0+1+...+9 = 45
+    return s;
+}
+int main() {
+    std::cout << "sum(0..9) = " << loop_sum() << "\n";   //@ sum(0..9) = 45
+    std::cout << "__builtin_constant_p(loop_sum()) = " << __builtin_constant_p(loop_sum()) << "\n";  //@ 1
+}
 ```
 
 `IRBuilder` 不是「写文本」而是构造 `llvm::Value*` 对象图——Clang 每 emit 一条表达式就拿一个 `Value*` 供父节点复用，这正是 GVN 能去重的基础（见 ⑧）；上述路径是上游 `main` 分支，具体行号随版本漂移，引用时务必带 commit/分支。
@@ -281,11 +320,22 @@ int caller() { return compute(7); }  // SCCP: 全部代入 -> 常量
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化管道：SCCP / GVN / 循环优化 [实现·LLVM]
 
 ```cpp title="示例 14 · ★☆☆☆☆"
-// ⑧ GVN 去重：两个 x*2 在 IR 中合并为单个 mul
-// 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/Transforms/Scalar/GVN.cpp
-// 行号：约 1100（GVN::processNonLocalLoad / performGVN 主循环，上游参考）
-// if (VN.lookup(Expr)->hasValue())  // 同值编号已存在 -> 替换
-// replaceAllUsesWith(Existing);
+// ⑧ GVN 去重：两个相同表达式在 IR 中合并为单个求值（教学用值编号演示，非上游 GVN.cpp）。
+#include <iostream>
+#include <map>
+#include <string>
+int main() {
+    std::map<std::string,int> vn;
+    auto number = [&](const std::string& expr, int value){
+        auto it = vn.find(expr);
+        if (it != vn.end()) { std::cout << expr << " -> 复用编号 #" << it->second << " (GVN 去重)\n"; return it->second; }
+        int id = (int)vn.size() + 1; vn[expr] = id;
+        std::cout << expr << " -> 新编号 #" << id << " = " << value << "\n"; return id;
+    };
+    number("a*2", 10);          //@ a*2 -> 新编号 #1 = 10
+    number("a*2", 10);          //@ a*2 -> 复用编号 #1 (GVN 去重)
+    number("b+1", 7);           //@ b+1 -> 新编号 #2 = 7
+}
 ```
 
 > **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 优化管道：SCCP / GVN / 循环优化 [实现·LLVM]
@@ -420,11 +470,14 @@ int bench_inline() {
 > **示例 20** [难度 ★☆☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 20 · ★☆☆☆☆"
-// ⑪ LTO：跨翻译单元的内联（典型输出，需 clang/llvm 工具链）
-// clang++ -O2 -flto -c a.cpp -o a.o
-// clang++ -O2 -flto -c b.cpp -o b.o
-// clang++ -O2 -flto a.o b.o -o app   ; 链接期再跑一次全程序优化
-// GCC 等价：g++ -O2 -flto ...（本机 GCC 13 支持，但未在此章实测）
+// ⑪ LTO：跨翻译单元的内联（需 clang/llvm 工具链）。下面用 __builtin_constant_p 演示
+// 编译器在单 TU 已能做的"跨过程常量传播"前身——LTO 只是把它扩展到整个程序。
+#include <iostream>
+constexpr int square(int x) { return x * x; }
+int main() {
+    std::cout << square(9) << "\n";                       //@ 81
+    std::cout << __builtin_constant_p(square(9)) << "\n"; //@ 1
+}
 ```
 
 绝大多数项目 `-O2` 性价比最高；`-O3` 对向量化友好但可能增大代码体积导致 icache 抖动。Clang 与 GCC 在 `-O2` 下生成代码的性能差距通常在个位数百分比，选熟悉的即可。
@@ -590,11 +643,17 @@ static_assert(lookup_size(7) == 50);
 > **示例 33** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 33 · ★☆☆☆☆"
-// ⑰ 贡献最小示例：加一个 Clang 警告选项骨架（上游典型位置）
-// 文件：https://github.com/llvm/llvm-project/blob/main/clang/include/clang/Basic/DiagnosticGroups.td
-// 行号：约 600（def 一个诊断组，上游参考）
-// def MyNewWarn : DiagGroup<"my-new-warn">;   // 然后在 Sema 中 Emit 它
-// 配套：clang/lib/Sema/SemaXXX.cpp 中 Diag(Loc, diag::warn_my_new_warn);
+// ⑰ 贡献最小示例：加一个 Clang 警告选项骨架（教学用最小实现，非上游 DiagnosticGroups.td）。
+#include <iostream>
+#include <string>
+enum class DiagID { warn_my_new_warn, err_something };
+struct DiagGroup { std::string name; };
+DiagGroup MyNewWarn{"my-new-warn"};
+void Emit(DiagID id) {
+    if (id == DiagID::warn_my_new_warn)
+        std::cout << "warning: " << MyNewWarn.name << ": suspicious construct\n";   //@ warning: my-new-warn: suspicious construct
+}
+int main() { Emit(DiagID::warn_my_new_warn); }
 ```
 
 LLVM 代码风格要求 80 列、2 空格缩进、`[Reference]` 注释风格，PR 前务必 `clang-format` 与 `ninja check-all`；所有讨论在 GitHub 与 Discourse（llvm-dev）进行，RFC 先于大改动。
@@ -630,24 +689,32 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读 [实现·LLVM]
 
 ```cpp title="示例 36 · ★☆☆☆☆"
-// ⑲ 源码阅读锚点（上游参考）
-// 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/IR/IRBuilder.cpp
-// 行号：约 1500（IRBuilderBase::CreateAdd：所有 '+' 在 IR 层的统一入口）
-// Value *IRBuilderBase::CreateAdd(Value *LHS, Value *RHS, const Twine &Name,
-// bool HasNUW, bool HasNSW) {
-// return Insert(BinaryOperator::CreateAdd(LHS, RHS, Name), ...);
-// }
-// 结论：C++ 里任何整数 '+' 最终都经 CreateAdd -> BinaryOperator::CreateAdd
+// ⑲ IRBuilder::CreateAdd 是所有整数 '+' 在 IR 层的统一入口（教学用最小实现，非上游源码）。
+#include <iostream>
+struct Value { int v; };
+struct IRBuilder {
+    Value CreateAdd(Value a, Value b) {
+        std::cout << "CreateAdd(" << a.v << "," << b.v << ")\n";   //@ CreateAdd(2,3)
+        return {a.v + b.v};
+    }
+};
+int main() {
+    IRBuilder B;
+    Value r = B.CreateAdd({2}, {3});   // 任何 int '+' 都经此处
+    std::cout << "result=" << r.v << "\n";   //@ result=5
+}
 ```
 
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读 [实现·LLVM]
 
 ```cpp title="示例 37 · ★☆☆☆☆"
-// ⑲ 源码阅读锚点（上游参考）：诊断发出
-// 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/Sema/Sema.cpp
-// 行号：约 800（Sema::Diag：Clang 所有诊断的统一入口，对应 ⑦ 的友好报错）
-// DiagnosticBuilder Sema::Diag(SourceLocation Loc, unsigned DiagID);
-// 想理解「为什么报这个错」，从 Diag(..., diag::err_xxx) 反向追 AST 检查点
+// ⑲ Sema::Diag 是 Clang 所有诊断的统一入口（教学用最小实现，非上游源码）。
+#include <iostream>
+struct SourceLocation { int line; };
+void Diag(SourceLocation loc, unsigned id) {
+    std::cout << "diag@" << loc.line << ": err_" << id << " (反向追 AST 检查点)\n";  //@ diag@42: err_7 (反向追 AST 检查点)
+}
+int main() { Diag({42}, 7); }
 ```
 
 LLVM 源码以 `lib/` + `include/` 对应，`XXX.cpp` 实现 `XXX.h` 中声明的接口，阅读时「先接口后实现」最高效；不要试图通读——带着具体问题（「加号怎么变成 IR？」「这个警告在哪发出？」）去读，命中即止。
@@ -766,18 +833,28 @@ int main() {
 > **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 LLVM API 长什
 
 ```cpp title="示例 41 · ★★☆☆☆"
-// ㉑.3 真实 LLVM 用法（仅注释演示，门禁按空块编译通过）：
-// #include <llvm/IR/LLVMContext.h>
-// #include <llvm/IR/Module.h>
-// #include <llvm/IR/IRBuilder.h>
-// #include <llvm/IR/PassManager.h>
-// using namespace llvm;
-// LLVMContext Ctx;
-// Module M("demo", Ctx);                       // 一个翻译单元（.ll/.bc 的容器）
-// IRBuilder<> B(Ctx);
-// Function* F = Function::Create(...);         // 用 IRBuilder 生成基本块与指令
-//// 跑一遍优化：ModulePassManager MPM; MPM.addPass(...); MPM.run(M, MAM);
-// 官方文档：https://llvm.org/docs/
+// ㉑.3 真实 LLVM 用法的最小自包含类比（本机无 LLVM 库，用同构玩具演示 API 形态）。
+// 对应上游：LLVMContext / Module / IRBuilder / Function / ModulePassManager。
+#include <iostream>
+#include <vector>
+#include <string>
+struct LLVMContext { /* 全局上下文 */ };
+struct Function { std::string name; Function(std::string n):name(n){} };
+struct Module {
+    std::string name; std::vector<Function> fns;
+    Module(std::string n, LLVMContext&):name(n){}
+    Function& createFunction(std::string n){ fns.emplace_back(n); return fns.back(); }
+};
+struct IRBuilder { /* 往当前 BasicBlock 追加 IR */ };
+struct PassManager { void run(Module& m){ std::cout << "optimize module " << m.name << " (" << m.fns.size() << " fns)\n"; } };
+int main() {
+    LLVMContext Ctx;
+    Module M("demo", Ctx);
+    Function& F = M.createFunction("add");
+    IRBuilder B;
+    PassManager MPM; MPM.run(M);   //@ optimize module demo (1 fns)
+    std::cout << "built function: " << F.name << "\n";   //@ built function: add
+}
 ```
 
 ### ㉑.4 端到端：怎么把 LLVM 接进你的工程
