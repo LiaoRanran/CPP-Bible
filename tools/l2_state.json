@@ -1,405 +1,405 @@
 {
  "schema": "cppbible-l2-state/1.0",
  "updated": "2026-09-09",
- "commit": "57d6d2b",
+ "commit": "ed27d01",
  "chapters": {
   "part01_history/ch05_cpp14.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part01_history/ch06_cpp17.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part01_history/ch07_cpp20.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part02_toolchain/ch12_buildsystems.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part02_toolchain/ch16_ide.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part02_toolchain/ch17_crosscompile.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part02_toolchain/ch18_buildconfig.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part03_language/ch25_union_variant.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part03_language/ch28_lifetime_ub.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part04_memory/ch37_new_delete.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part04_memory/ch40_exception_safety.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part04_memory/ch41_smart_pointers.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part04_memory/ch44_memory_pool.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part05_oo/ch45_oop_object_model.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part05_oo/ch49_virtual_inheritance.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part06_templates/ch60_template_basics.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part06_templates/ch67_concepts.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part06_templates/ch69_constexpr.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part06_templates/ch70_tag_dispatch.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part06_templates/ch71_policy.md": {
    "pure": 5,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part07_stl/ch76_stl_arch.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part07_stl/ch77_vector.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part07_stl/ch81_string.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part07_stl/ch84_set.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part07_stl/ch88_optional_variant.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part08_algorithms/ch100_ranges_algo.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part08_algorithms/ch95_algo_overview.md": {
-   "pure": 5,
+   "pure": 3,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part08_algorithms/ch99_numeric.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part09_concurrency/ch108_memory_order.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part09_concurrency/ch113_coroutine.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part10_modern/ch117_copy_elision.md": {
    "pure": 3,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part10_modern/ch118_modules.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part10_modern/ch119_ranges_deep.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part11_source/ch125_libcxx.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part11_source/ch128_boost.md": {
    "pure": 9,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part11_source/ch129_qt.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part11_source/ch130_chromium_abseil.md": {
    "pure": 6,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part11_source/ch132_leveldb_rocksdb.md": {
    "pure": 8,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part11_source/ch134_unreal.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part12_patterns/ch135_patterns_intro.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part12_patterns/ch136_creational.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part12_patterns/ch137_structural.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part12_patterns/ch139_crtp_pattern.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part12_patterns/ch140_policy_pattern.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part12_patterns/ch142_ecs.md": {
    "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part13_engineering/ch144_style.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part13_engineering/ch147_code_review.md": {
-   "pure": 5,
+   "pure": 4,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part13_engineering/ch149_ci_cd.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part13_engineering/ch150_testing.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part13_engineering/ch151_benchmark.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part14_perf/ch152_perf_model.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part15_cases/ch159_threadpool.md": {
    "pure": 3,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part15_cases/ch160_mempool.md": {
    "pure": 3,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part15_cases/ch161_logger.md": {
    "pure": 2,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part15_cases/ch163_net.md": {
    "pure": 3,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part15_cases/ch164_framework.md": {
    "pure": 1,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part16_reading/ch165_roadmap.md": {
    "pure": 9,
    "status": "remaining",
    "cleared_commit": null,
-   "seen_commit": "57d6d2b",
+   "seen_commit": "ed27d01",
    "opened_commit": "40fdd26"
   },
   "part02_toolchain/ch11_compilers.md": {

@@ -926,18 +926,20 @@ void debug_count_if(const std::vector<int>& v, int d) {
 
 > **示例 51** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
 
-```cpp title="示例 51 · ★★☆☆☆"
-// ⑲-B 用 _GLIBCXX_DEBUG（GCC）在运行期捕获迭代器失效/越界（发布构建移除以保性能）
-// 编译：g++ -D_GLIBCXX_DEBUG -std=c++23 _dbg.cpp -o _dbg
-// 一旦算法操作了失效迭代器，会立即 abort 并给出精确位置——比"偶发崩溃"好定位。
+```bash
+# ⑲-B 用 _GLIBCXX_DEBUG（GCC）在运行期捕获迭代器失效/越界（发布构建移除以保性能）
+# 一旦算法操作了失效迭代器，会立即 abort 并给出精确位置——比“偶发崩溃”好定位
+# 编译后直接运行 _dbg 即可复现（libc++ 对应 _LIBCPP_HARDENING_MODE）
+g++ -D_GLIBCXX_DEBUG -std=c++23 _dbg.cpp -o _dbg
+./_dbg
 ```
 
 > **示例 52** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
 
-```cpp title="示例 52 · ★★☆☆☆"
-// ⑲-C 用 Compiler Explorer 风格 -S 比对：怀疑某算法没内联时，看汇编有无 call
-// g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm
-// 若热点算法仍出现 call 到 std:: 函数，多半是谓词阻止了内联（如捕获了状态且过大）。
+```bash
+# ⑲-C 用 -S 比对看内联：怀疑某算法没内联时，看汇编有无 call
+# 若热点算法仍出现 call 到 std:: 函数，多半是谓词阻止了内联（如捕获了状态且过大）
+g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm
 ```
 
 ## ⑳ 速查表

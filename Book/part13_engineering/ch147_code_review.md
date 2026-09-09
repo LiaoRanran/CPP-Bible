@@ -238,10 +238,10 @@ const std::string& bad() {
 
 > **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 编译器警告
 
-```cpp title="示例 16 · ★☆☆☆☆"
-// 把警告当错误：任何 -Wall -Wextra 警告都让 CI 编译失败
-// 编译命令：g++ -std=c++23 -Wall -Wextra -Werror <src>
-// 上例任一文件在此命令下将直接报 error 而非 warning，阻断合入。
+```bash
+# 把警告当错误：任何 -Wall -Wextra 警告都让 CI 编译失败
+# 上例任一文件在此命令下将直接报 error 而非 warning，阻断合入
+g++ -std=c++23 -Wall -Wextra -Werror <src>
 ```
 
 ## ⑤ 重构与坏味道（code smell）
