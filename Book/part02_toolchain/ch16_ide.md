@@ -221,7 +221,8 @@ int main() {
     Button b;
     b.connect_str("onClicked", [] { std::cout << "clicked!\n"; });
     b.click_str("onClicked");   //@ clicked!
-    b.click_str("onClciked");   //@ runtime miss: no slot 'onClciked'   拼错：旧式只运行期暴露
+    b.click_str("onClciked");   //@ runtime miss: no slot 'onClciked'
+    // 上面故意拼错槽名：旧式字符串 connect 只在运行期暴露（编译期不查）
 }
 ```
 

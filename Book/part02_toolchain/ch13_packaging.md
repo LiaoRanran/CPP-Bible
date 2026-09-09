@@ -678,7 +678,7 @@ int main() {
     int sum = 0;
     for (std::size_t i = 0; i < v.size(); ++i) sum += v[i];
     pkg::println("sum={}, n={}", sum, v.size());   // 实测输出：sum=10, n=4
-    std::cout << "消费方只写了 #include + 调用，路径与链接由包管理器注入\n"; //@
+    std::cout << "消费方只写了 #include + 调用，路径与链接由包管理器注入\n";
 }
 ```
 

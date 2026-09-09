@@ -588,8 +588,10 @@ Sum<A,B> operator+(...) { return Sum<A,B>(...); }   // 按值返回代理（持�
 > **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式（anti-patterns）
 
 ```cpp title="示例 23 · ★☆☆☆☆"
-// 反模式：超深表达式树（数百项）会超模板实例化深度、编译极慢。
+// 反模式警示：表达式树要“当句消费”。auto 保留树型、拖到后续语句再读，中间的临时
+// （如 (a+b) 的 VSum）已析构 -> 悬垂引用(UB)。标准做法：类型级观察 + 立即物化。
 #include <iostream>
+#include <type_traits>
 #include <vector>
 #include <cstddef>
 template<class E> struct VExpr {
@@ -620,10 +622,12 @@ template<int N> struct Depth { static constexpr int v = Depth<N-1>::v + 1; };
 template<> struct Depth<0> { static constexpr int v = 0; };
 int main(){
     Vec a(2), b(2), c(2);
-    auto e = a + b + c;                  // 浅树：编译快、运行单遍
-    std::cout << "shallow expr e[0] = " << e[0] << "\n";   //@ shallow expr e[0] = 0
+    using E = decltype(a + b + c);                           // 类型级观察：两层嵌套 Sum
+    static_assert(std::is_same_v<E, VSum<VSum<Vec, Vec>, Vec>>);
+    Vec r = a + b + c;                                       // 立即物化：单遍、无临时数组
+    std::cout << "r[0] = " << r[0] << "\n";                  //@ r[0] = 0
     std::cout << "Depth<16>::v = " << Depth<16>::v << "\n";  //@ Depth<16>::v = 16
-    // 数百项 decltype(a+b+...+z) 需 -ftemplate-depth 且编译缓慢 -> 反模式
+    // 反模式：auto e = a+b+c; 之后再用 e —— 中间 VSum 临时已析构(UB)
 }
 ```
 
@@ -740,6 +744,7 @@ int main(){
 ```cpp title="示例 26 · ★☆☆☆☆"
 // 工业案例：GPU ET（Kokkos 示意）——表达式树作为类型传给 kernel，并行单遍求值。
 #include <iostream>
+#include <type_traits>
 #include <vector>
 #include <cstddef>
 template<class E> struct VExpr {
@@ -784,10 +789,11 @@ template<class Expr> Vec evaluate(const VExpr<Expr>& e, size_t n){
 int main(){
     Vec a(3), b(3), c(3);
     a[0]=1; b[0]=2; c[0]=3;     // 1 + 2*3 = 7
-    auto expr = a + b*c;        // 表达式树类型（编译期构建，无临时数组）
-    Vec out = evaluate(expr, 3);
-    std::cout << "out[0]=" << out[0] << "\n";   //@ out[0]=7
-    // expr 的类型即执行计划：Sum<Vec, VProd<Vec,Vec>>
+    using ExprT = decltype(a + b * c);              // 类型即执行计划：Sum<Vec, VProd<Vec,Vec>>
+    static_assert(std::is_same_v<ExprT, VSum<Vec, VProd<Vec, Vec>>>);
+    // 整棵表达式“当句”传给 kernel（临时活过整个调用）；勿 auto 留存到后续语句再用
+    Vec out = evaluate(a + b * c, 3);
+    std::cout << "out[0]=" << out[0] << "\n";       //@ out[0]=7
 }
 ```
 

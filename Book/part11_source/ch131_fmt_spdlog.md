@@ -760,17 +760,18 @@ int main() {
 > **示例 44** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 44 · ★☆☆☆☆"
-// ⑳ fmt 常用格式说明符速查——std::format 同款语法，直接实证输出：
+// ⑳ fmt 常用格式说明符速查——std::format 同款语法，逐行打印“值 + 含义”：
 #include <format>
 #include <iostream>
 int main() {
-    std::cout << std::format("[{}]", 42) << "\n";            //@ [42]         默认格式
-    std::cout << std::format("[{:>8}]", 42) << "\n";         //@ [      42]   右对齐宽 8
-    std::cout << std::format("[{:.2f}]", 3.14159) << "\n";   //@ [3.14]       定点 2 位小数
-    std::cout << std::format("[{:06d}]", 42) << "\n";        //@ [000042]     补零至 6 位
-    std::cout << std::format("[{:.3e}]", 12345.0) << "\n";   //@ [1.235e+04]  科学计数
-    std::cout << std::format("[{:#x}]", 255) << "\n";        //@ [0xff]       0x 前缀十六进制
-    std::cout << std::format("[{:>8.2f}]", 3.14159) << "\n"; //@ [    3.14]   宽 8 右对齐 + 2 位小数
+    std::cout << std::format("[{}]", 42)          << "  # 默认格式\n";       //@ [42]  # 默认格式
+    std::cout << std::format("[{:>8}]", 42)       << "  # 右对齐宽 8\n";     //@ [      42]  # 右对齐宽 8
+    std::cout << std::format("[{:.2f}]", 3.14159) << "  # 定点 2 位小数\n";  //@ [3.14]  # 定点 2 位小数
+    std::cout << std::format("[{:06d}]", 42)      << "  # 补零至 6 位\n";    //@ [000042]  # 补零至 6 位
+    // {:.3e}：12345.0 = 1.2345e4 -> 1.234e+04（GCC std::format 按 round-half-even 舍入）
+    std::cout << std::format("[{:.3e}]", 12345.0) << "  # 科学计数\n";       //@ [1.234e+04]  # 科学计数
+    std::cout << std::format("[{:#x}]", 255)      << "  # 0x 前缀十六进制\n"; //@ [0xff]  # 0x 前缀十六进制
+    std::cout << std::format("[{:>8.2f}]", 3.14159) << "  # 宽 8 右对齐 + 2 位小数\n";  //@ [    3.14]  # 宽 8 右对齐 + 2 位小数
 }
 ```
 

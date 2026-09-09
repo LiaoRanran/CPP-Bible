@@ -158,9 +158,9 @@ int main() {
 int main() {
     std::string s;
     for (int i = 0; i < 5; ++i)  s.push_back('x');
-    std::cout << "cap(5)  = " << s.capacity() << "\n";   //@ cap(5)  = 15   (SSO 内缓冲)
-    for (int i = 5; i < 16; ++i) s.push_back('x');
-    std::cout << "cap(16) = " << s.capacity() << "\n";   //@ cap(16) = 30   (转堆分配)
+    std::cout << "cap(5)  = " << s.capacity() << "\n";   //@ cap(5)  = 15
+    for (int i = 5; i < 16; ++i) s.push_back('x');       // 超过 SSO 缓冲触发转堆
+    std::cout << "cap(16) = " << s.capacity() << "\n";   //@ cap(16) = 30
 }
 ```
 

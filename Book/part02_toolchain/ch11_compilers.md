@@ -338,36 +338,36 @@ template<typename T> T id(T);        // -> _Z2idIiET_S0_ (id<int>)
 > **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
 
 ```cpp title="示例 18 · ★☆☆☆☆"
-// ⑦ Itanium C++ ABI 名字改编（mangling）：_Z1ksPil 逐段含义见下，用编译器自报验证。
-#include <typeinfo>
-#include <cxxabi.h>
-#include <cstdio>
-int k(short, int*, long);                  // 期望改编为 _Z1ksPil
-namespace ns { int q(int); }               // 期望改编为 _ZN2ns1qEi
-int main() {
-    const char* m1 = typeid(&k).name();      // 形如 _Z1ksPil
-    const char* m2 = typeid(&ns::q).name();  // 形如 _ZN2ns1qEi
-    char* d1 = abi::__cxa_demangle(m1, 0, 0, 0);   //@ k(short, int*, long)
-    char* d2 = abi::__cxa_demangle(m2, 0, 0, 0);   //@ ns::q(int)
-    std::printf("mangled  : %s\n", m1);            //@ _Z1ksPil
-    std::printf("demangled: %s\n", d1);            //@ k(short, int*, long)
-    std::printf("mangled  : %s\n", m2);            //@ _ZN2ns1qEi
-    std::printf("demangled: %s\n", d2);            //@ ns::q(int)
-}
-```
-
-> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
-
-```cpp title="示例 19 · ★☆☆☆☆"
-// ⑦ c++filt 还原改编名（本机已装，真实可用）；下面用 ABI 反改编 API 直接演示同一件事。
+// ⑦ Itanium C++ ABI 名字改编：typeid 自报的是 itanium mangled 类型名。注意 &f 得到
+// 的是“函数指针类型”（PF… 前缀），与函数自身符号 _Z1ksPil 编码同一份参数签名。
 #include <typeinfo>
 #include <cxxabi.h>
 #include <cstdio>
 int k(short, int*, long);
 namespace ns { int q(int); }
 int main() {
-    char* a = abi::__cxa_demangle(typeid(&k).name(), 0, 0, 0);     //@ k(short, int*, long)
-    char* b = abi::__cxa_demangle(typeid(&ns::q).name(), 0, 0, 0); //@ ns::q(int)
+    const char* m1 = typeid(&k).name();          // 形如 PFisPilE
+    const char* m2 = typeid(&ns::q).name();      // 形如 PFiiE
+    char* d1 = abi::__cxa_demangle(m1, 0, 0, 0);
+    char* d2 = abi::__cxa_demangle(m2, 0, 0, 0);
+    std::printf("mangled  : %s\n", m1);          //@ PFisPilE
+    std::printf("demangled: %s\n", d1);          //@ int (*)(short, int*, long)
+    std::printf("mangled  : %s\n", m2);          //@ PFiiE
+    std::printf("demangled: %s\n", d2);          //@ int (*)(int)
+    // 函数符号名本身（_Z1ksPil / _ZN2ns1qEi）由 nm 可见，c++filt 还原见下一块
+}
+```
+
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ ABI 与名字改编
+
+```cpp title="示例 19 · ★☆☆☆☆"
+// ⑦ c++filt 还原改编名：abi::__cxa_demangle 与其同源。把符号表里的真实改编名
+// （nm 可核）直接反改编回源码签名：
+#include <cxxabi.h>
+#include <cstdio>
+int main() {
+    char* a = abi::__cxa_demangle("_Z1ksPil", 0, 0, 0);
+    char* b = abi::__cxa_demangle("_ZN2ns1qEi", 0, 0, 0);
     std::printf("c++filt _Z1ksPil   -> %s\n", a);   //@ k(short, int*, long)
     std::printf("c++filt _ZN2ns1qEi -> %s\n", b);   //@ ns::q(int)
 }
@@ -687,7 +687,8 @@ int add_one(int x) { return x + 1; }
 constexpr int sq(int x) { return x * x; }   // 编译期可求值的纯函数
 int main() {
     std::cout << sq(7) << "\n";                        //@ 49
-    std::cout << __builtin_constant_p(sq(7)) << "\n";  //@ 1  (1 = 编译器证实为编译期常量)
+    // 1 = 编译器证实 sq(7) 为编译期常量（LTO 前身），数值稳定可断言
+    std::cout << __builtin_constant_p(sq(7)) << "\n";  //@ 1
 }
 ```
 
@@ -777,7 +778,7 @@ auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 template<class A, class B>
 std::common_type_t<A, B> max_of(A a, B b) { return a > b ? a : b; }
 int main() {
-    std::cout << max_of(3, 4.5) << "\n";   //@ 4.5  (int 与 double 归一为 double)
+    std::cout << max_of(3, 4.5) << "\n";   //@ 4.5
 }
 ```
 
@@ -803,7 +804,8 @@ int main() {
 #include <iostream>
 template<class T> T max_of(T a, T b) { return a > b ? a : b; }
 int main() {
-    std::cout << max_of<int>(3, 4) << "\n";   //@ 4  (显式 T=int 消除歧义)
+    // 显式指定 T=int，从源头消除推导歧义
+    std::cout << max_of<int>(3, 4) << "\n";   //@ 4
 }
 ```
 

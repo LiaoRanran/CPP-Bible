@@ -119,12 +119,21 @@ python tools/comment_blocks.py scan --chapter ch42 --all-block# 全块概览核�
 # 2) 替换：按 patch JSON 安全批量改块正文（dry 默认 / --apply 落盘）
 python tools/patch_blocks.py Book/partX/chYY.md patch.json
 python tools/patch_blocks.py --apply Book/partX/chYY.md patch.json
+
+# 3) 运行期输出断言：跑含 //@ 的 main 块，stdout 与期望逐条比对（可 --check 挂 CI）
+python tools/run_expected.py --all
+python tools/run_expected.py --chapter ch42
+python tools/run_expected.py --changed
 ```
 
 - patch.json 格式：`[{"block":24,"fence":"cpp","body":"#include ...\n..."}, {"block":27,"fence":"bash","body":"# 命令\ncmake ..."}]`
 - `fence:"bash"` 会把该块围栏换成 ```bash（工具命令块转真命令），自动报告 cpp 块数净减。
 - 安全保证：保持原行尾(CRLF/LF)、从大到小替换、先拼 payload 再单次写盘、正文含 ``` 起始行即告警。
 - 块数净减后必须同步 README 顶部写死的 cpp 块数（跑 `gen_metrics.py --check` 会给精确新值）。
+- **//@ 契约（run_expected 强制）**：`//@` 只能放在「会产生输出的一句」之后；`//@` 到行尾的文本
+  必须是 stdout 的连续子串（空白折叠比对、按序各匹配一次）；**禁止夹带注记/解释**（放代码上方
+  `//` 行或去掉）；`//@` 后为空 = 无效标记。数值是四舍五入/机器相关时先实跑再写期望
+  （例：`{:.3e}` 的 1.2345 实际按 round-half-even 得 1.234，不是 1.235）。
 
 **策略分级（A/B/C）**：纯注释块 ≠ 全是赝品。
 - A 源码锚点/标准库行为可实证 → 转自包含 C++ 实测（价值最高）
