@@ -69,5 +69,9 @@ Thumbs.db
 # 审计/软门禁临时输出（dangling_ref_linter / prereq_topo_check 等）
 outputs/
 
+# compile_all R2 局部扫描/按章缓存临时产物（不入库）
+tools/.compile_report_partial.json
+tools/.compile_cache.json
+
 # 外部参考范式手册（本机参考，未随仓库推送）
 docs/references/external/

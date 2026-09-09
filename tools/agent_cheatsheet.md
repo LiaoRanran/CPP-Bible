@@ -129,6 +129,14 @@ python tools/run_expected.py --changed
 python tools/l2_state.py sync        # 测量并写入；章清到 0 时记 cleared_commit
 python tools/l2_state.py check       # 与快照比对，漂移退出码 1（可挂 CI）
 python tools/l2_state.py report      # 看板：残留 Top + 已清零章(含 commit)
+
+# 5) 编译验证（compile_all.py，R2 已防污染 + 增量缓存）
+python tools/compile_all.py --only Book/partX/chYY.md          # 局部扫描：报告自动改写到
+                                                              #   tools/.compile_report_partial.json，全量基线不动
+python tools/compile_all.py --only Book/partX/chYY.md --json _t.json   # 也支持显式落盘
+python tools/compile_all.py --main-only --parallel --workers 16        # 重算全量基线（CI）
+python tools/compile_all.py --only Book/partX/chYY.md --no-cache       # 绕过按章缓存（验证用）
+# 注：确需覆盖全量基线（重算）时，显式加 --baseline；否则局部扫描永不碰 compile_report.json
 ```
 
 - patch.json 格式：`[{"block":24,"fence":"cpp","body":"#include ...\n..."}, {"block":27,"fence":"bash","body":"# 命令\ncmake ..."}]`

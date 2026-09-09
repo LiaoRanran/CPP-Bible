@@ -37,6 +37,19 @@ Options:
   --changed      only compile Book/*.md changed vs git base (incremental;
                  auto-falls back to full when nothing changed)
   --base REF     git base ref for --changed (default: origin/master, else HEAD~1)
+  --baseline     force writing tools/compile_report.json (canonical baseline)
+                 even for a scoped run; without it, scoped runs (--only /
+                 --changed / --quick) that did not pass --json are redirected
+                 to tools/.compile_report_partial.json so the full baseline
+                 cannot be clobbered by accident.
+  --no-cache     bypass the per-chapter result cache
+
+v4 changes (2026-09-09, R2 管线加固):
+  - 基线防污染：--only/--changed/--quick 未显式给 --json 时改写到
+    tools/.compile_report_partial.json；全量基线只在全量运行或显式 --baseline 时更新。
+  - 按章增量缓存：缓存键 = 章节文件内容 sha256，meta = (gcc, flags, main_only, quick)；
+    meta 变化整体失效。未变更章节直接复用上次的失败清单与已检块数，报告结构与不缓存时
+    完全一致（供 compile_gate 增量比对用）。缓存文件 tools/.compile_cache.json 不入库。
 """
 
 import os
@@ -76,9 +89,7 @@ if '--workers' in sys.argv:
         WORKERS = int(sys.argv[sys.argv.index('--workers') + 1])
     except Exception:
         WORKERS = None
-OUT_JSON = 'tools/compile_report.json'
-if '--json' in sys.argv:
-    OUT_JSON = sys.argv[sys.argv.index('--json') + 1]
+# (OUT_JSON 见下：R2 之后需在作用域判定完成后再决定，避免局部扫描覆盖全量基线)
 
 # --- incremental / scoped selection (T2) ---------------------------------
 CHANGED = '--changed' in sys.argv
@@ -94,6 +105,23 @@ if '--only' in sys.argv:
     while i < len(sys.argv) and not sys.argv[i].startswith('--'):
         ONLY.append(sys.argv[i])
         i += 1
+
+# --- R2 (2026-09-09): 基线防污染 + 按章增量缓存 ---------------------------
+# 历史事故：--only / --changed / --quick 这类局部扫描会把结果直接覆盖
+# tools/compile_report.json（全量基线），导致后续增量验证失能。现在：
+#   * 未显式给 --json 的局部扫描 -> 改写到 SCRATCH_JSON，基线不动；
+#   * 确需覆盖基线（如重算全量基线）-> 显式加 --baseline；
+#   * --no-cache 可绕过按章缓存（用于验证/故障排查）。
+JSON_EXPLICIT = '--json' in sys.argv
+OUT_JSON = 'tools/compile_report.json'
+if JSON_EXPLICIT:
+    OUT_JSON = sys.argv[sys.argv.index('--json') + 1]
+BASELINE_FORCED = '--baseline' in sys.argv
+NO_CACHE = '--no-cache' in sys.argv
+SCRATCH_JSON = 'tools/.compile_report_partial.json'
+CACHE_JSON = 'tools/.compile_cache.json'
+# --quick 只查前 3 块，结果不构成有效基线，同样视为局部扫描
+PARTIAL_SCOPE = bool(ONLY) or QUICK or CHANGED
 
 
 def extract_blocks(text, max_blocks=None):
@@ -264,6 +292,54 @@ def collect_changed(book_root, base=None):
     return {p for p in results if p.startswith("Book/") and p.endswith(".md")}
 
 
+def _file_hash(path):
+    """章节文件内容哈希（缓存键：内容变了必然重编）。"""
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        h.update(f.read())
+    return h.hexdigest()
+
+
+def _cache_meta():
+    """缓存有效性元信息：编译器/标志/筛选模式任一变化即整体失效。"""
+    return {'version': 1, 'gcc': GCC, 'flags': FLAGS,
+            'main_only': bool(MAIN_ONLY), 'quick': bool(QUICK)}
+
+
+def load_cache():
+    meta = _cache_meta()
+    if NO_CACHE:
+        return {'meta': meta, 'entries': {}}
+    try:
+        data = json.load(open(CACHE_JSON, encoding='utf-8'))
+    except Exception:
+        return {'meta': meta, 'entries': {}}
+    if not isinstance(data, dict) or data.get('meta') != meta:
+        return {'meta': meta, 'entries': {}}
+    return data
+
+
+def save_cache(cache):
+    if NO_CACHE:
+        return
+    try:
+        with open(CACHE_JSON, 'w', encoding='utf-8', newline="\n") as f:
+            json.dump(cache, f, indent=1, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+def result_from_cache(path, entry):
+    """把缓存条目还原为 compile_chapter() 形状的结果字典。"""
+    failures = entry.get('failures', [])
+    return {'path': path,
+            'passed': 0 if failures else 1,
+            'failed': 1 if failures else 0,
+            'failures': failures,
+            'blocks_checked': entry.get('blocks_checked', 0)}
+
+
 def dump_report(total_chapters, passed_chapters, failed_chapters,
                 total_blocks, failed_blocks, all_failures,
                 processed_paths=None, partial=True):
@@ -338,18 +414,47 @@ def main():
         partial_run = False
     paths = targets
 
+    # --- R2: 局部扫描不得默默覆盖全量基线 -------------------------------
+    global OUT_JSON
+    if (PARTIAL_SCOPE or partial_run) and not JSON_EXPLICIT and not BASELINE_FORCED:
+        OUT_JSON = SCRATCH_JSON
+        print(f"[!] 局部扫描：报告改写到 {OUT_JSON}（全量基线未被覆盖）；"
+              f"确需覆盖基线请显式加 --baseline")
+
+    # --- R2: 按章增量缓存（内容哈希 + 工具链 meta 命中即跳过重编译） ----
+    cache = load_cache()
+    cached_map = {}
+    to_compile = []
+    for p in paths:
+        e = cache['entries'].get(p)
+        if e is not None and e.get('hash') == _file_hash(p):
+            cached_map[p] = e
+        else:
+            to_compile.append(p)
+    if cached_map:
+        print(f"[cache] 命中 {len(cached_map)} 章（跳过重编译），待编译 {len(to_compile)} 章")
+
     if PARALLEL:
         # --- parallel-by-part branch (no resume; always fresh) -----------
-        groups = group_by_part(paths)
+        groups = group_by_part(to_compile)
         part_args = [{'paths': pl, 'quick': QUICK, 'main_only': MAIN_ONLY,
                       'gcc': GCC} for pl in groups.values()]
         workers = WORKERS or min(len(part_args), (os.cpu_count() or 4))
         workers = max(workers, 1)
         print(f"[*] --parallel: {len(groups)} parts, {workers} workers")
         chap_results = []
+        for p in sorted(cached_map):
+            chap_results.append(result_from_cache(p, cached_map[p]))
         with ProcessPoolExecutor(max_workers=workers) as ex:
             for part_res in ex.map(compile_part, part_args):
                 chap_results.extend(part_res)
+        for cr in chap_results:
+            if cr['path'] not in cached_map:
+                cache['entries'][cr['path']] = {
+                    'hash': _file_hash(cr['path']),
+                    'blocks_checked': cr['blocks_checked'],
+                    'failures': cr['failures'],
+                }
         (total_chapters, passed_chapters, failed_chapters,
          total_blocks, failed_blocks, all_failures, processed) = \
             _merge_chapter_results(chap_results)
@@ -383,7 +488,13 @@ def main():
         for path in paths:
             if RESUME and path in done_paths:
                 continue
-            cr = compile_chapter(path)
+            if path in cached_map:
+                cr = result_from_cache(path, cached_map[path])
+            else:
+                cr = compile_chapter(path)
+                cache['entries'][path] = {'hash': _file_hash(path),
+                                          'blocks_checked': cr['blocks_checked'],
+                                          'failures': cr['failures']}
             total_chapters += 1
             total_blocks += cr['blocks_checked']
             failed_blocks += len(cr['failures'])
@@ -425,6 +536,8 @@ def main():
         }
         with open(OUT_JSON, 'w', encoding='utf-8', newline="\n") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
+
+    save_cache(cache)
 
     print('\n--- Compile Summary ---')
     print(f'Chapters : {total_chapters} '
