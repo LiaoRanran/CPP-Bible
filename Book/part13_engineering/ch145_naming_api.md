@@ -552,7 +552,7 @@ _Z10use_directi:
 
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <memory>
-// Pimpl 头文件：调用方只看到指针，实现彻底隐藏
+// Pimpl 头文件（调用方只看到指针，实现彻底隐藏）
 class Widget {
     struct Impl;
     std::unique_ptr<Impl> impl_;
@@ -1021,10 +1021,30 @@ class ConnectionPool { // ...
 > **示例 70** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 
 ```cpp title="示例 70 · ★☆☆☆☆"
-// 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h
-// 行号：109-125
-// struct __move_if_noexcept_cond        // 109: 判断"移动是否 noexcept"的特质
-// move_if_noexcept(_Tp& __x) noexcept    // 125: 不抛则返回 T&&，否则 const T&
+// 文件锚点内化为行为实证：__move_if_noexcept_cond 判断"移动是否 noexcept"，是则返回
+// T&&、否则退回 const T&。标准库 std::move_if_noexcept 同款语义，直接可测：
+#include <iostream>
+#include <utility>
+#include <type_traits>
+struct NoexceptMover {
+    NoexceptMover() = default;
+    NoexceptMover(const NoexceptMover&) { std::cout << "  copy\n"; }
+    NoexceptMover(NoexceptMover&&) noexcept { std::cout << "  move\n"; }
+};
+struct ThrowingMover {
+    ThrowingMover() = default;
+    ThrowingMover(const ThrowingMover&) { std::cout << "  copy\n"; }
+    ThrowingMover(ThrowingMover&&) noexcept(false) { std::cout << "  move\n"; }
+};
+template<class T> void classify(const char* tag) {
+    using R = decltype(std::move_if_noexcept(std::declval<T&>()));
+    std::cout << tag << " -> "
+              << (std::is_rvalue_reference_v<R> ? "T&& (move)" : "const T& (copy)") << "\n";
+}
+int main() {
+    classify<NoexceptMover>("noexcept-move ");   //@ noexcept-move  -> T&& (move)
+    classify<ThrowingMover>("throwing-move ");   //@ throwing-move -> const T& (copy)
+}
 ```
 
 **案例 B：`std::vector` 重分配的 `relocate` vs `move_if_noexcept`**
@@ -1034,11 +1054,26 @@ class ConnectionPool { // ...
 > **示例 71** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 真实案例
 
 ```cpp title="示例 71 · ★☆☆☆☆"
-// 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc
-// 行号：478-515
-// 478: if _GLIBCXX17_CONSTEXPR (_S_use_relocate())
-// 492:     = std::__uninitialized_move_if_noexcept_a(...)   // 否则退化为拷贝
-// 515: if _GLIBCXX17_CONSTEXPR (!_S_use_relocate())
+// vector 扩容走 __uninitialized_move_if_noexcept_a：move 不抛则搬、会抛则退化为拷贝。
+// 下面用 copy/move 计数实证：扩容时 ThrowingMover 走拷贝而非搬移。
+#include <iostream>
+#include <vector>
+struct Tracer {
+    static long copies, moves;
+    Tracer() = default;
+    Tracer(const Tracer&) { ++copies; }
+    Tracer(Tracer&&) noexcept(false) { ++moves; }
+};
+long Tracer::copies = 0, Tracer::moves = 0;
+int main() {
+    std::vector<Tracer> v;
+    v.reserve(1);
+    v.emplace_back();                 // 元素 0 就地构造
+    v.emplace_back();                 // 触发扩容：搬移已有元素
+    std::cout << "copies=" << Tracer::copies << " moves=" << Tracer::moves << "\n";
+    //@ copies=1 moves=0
+    // move 声明为 noexcept(false) -> vector 扩容保守拷贝（_S_use_relocate 为假）
+}
 ```
 
 **案例 C：`std::optional` 的命名——"可能无值"的显式类型**
@@ -1048,10 +1083,20 @@ class ConnectionPool { // ...
 > **示例 72** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实案例
 
 ```cpp title="示例 72 · ★★☆☆☆"
-// 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/optional
-// 行号：705, 89
-// 705: class optional                          // 公开类型，PascalCase
-// 89: inline constexpr nullopt_t nullopt      // 空状态单例，自解释命名
+// 公开类型 PascalCase（optional）、空态单例 snake_case（nullopt）——标准库命名惯例实证：
+#include <iostream>
+#include <optional>
+struct Widget { int id; };
+std::optional<Widget> find(int id) {
+    if (id == 7) return Widget{7};   // 有值
+    return std::nullopt;             // 空态单例（自解释命名）
+}
+int main() {
+    auto a = find(7), b = find(1);
+    std::cout << "a.has_value=" << a.has_value() << " id=" << a->id << "\n";  //@ a.has_value=1 id=7
+    std::cout << "b.has_value=" << b.has_value() << " (nullopt)\n";           //@ b.has_value=0 (nullopt)
+    // nullopt 是 inline constexpr nullopt_t 实例：类型 PascalCase、实例 snake_case
+}
 ```
 
 `[标准]` 从标准库命名可提炼三条 API 经验：

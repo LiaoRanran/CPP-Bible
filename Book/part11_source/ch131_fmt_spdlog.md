@@ -78,8 +78,16 @@ int main() {
 > **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：fmt / spdlog
 
 ```cpp title="示例 3 · ★☆☆☆☆"
-// ① 二者关系：spdlog 1.x 默认以 fmt 为格式化后端
-// spdlog::info(...) 内部即 fmt::format(...) + sink 写出
+// ① 二者关系：spdlog 1.x 默认以 fmt 为格式化后端。fmt/spdlog 未安装，但 std::format
+// 是 fmt 的标准化形态（C++20 进入标准）——下面实证"格式化 + 写出"即 spdlog::info 的内部动作。
+#include <format>
+#include <iostream>
+#include <string>
+int main() {
+    std::string msg = std::format("loaded {} entries in {} ms", 1024, 7);  // fmt::format 同款
+    std::cout << "[info] " << msg << "\n";   //@ [info] loaded 1024 entries in 7 ms
+    // spdlog::info(同参) 内部就是这行 fmt::format + 交给 sink 写出
+}
 ```
 
 ## ② fmt 格式化原理（编译期格式串解析） [实现·fmt]
@@ -105,9 +113,15 @@ static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 > **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · fmt 格式化原理（编译期格式串解析） [实现·fmt]
 
 ```cpp title="示例 5 · ★★☆☆☆"
-// ② fmt 把「字面量」升级为「类型安全的格式描述」
-// fmt::format("{}", x) 中 "{}" 的类型是 format_string<T>，
-// 其构造在编译期完成占位符校验（见第 ③ 节源码剖析）。
+// ② fmt 把「字面量」升级为「类型安全的格式描述」：占位符与参数在编译期逐一核对，
+// 参数个数/类型不符直接编译错误（fmt::format 与 std::format 同一设计）。
+#include <format>
+#include <iostream>
+int main() {
+    // format_string 的构造在编译期完成占位符校验：个数/类型错 = 编译错误
+    std::cout << std::format("{} + {} = {}", 1, 2, 3) << "\n";   //@ 1 + 2 = 3
+    // std::format("{}", 1, 2);   // 编译错误：占位符 1 个，参数给了 2 个
+}
 ```
 
 - `[实现·fmt]`：编译期校验使得**格式串/参数错位**从运行期 bug 变成编译错误——这是 fmt 相对 printf 的本质优势。
@@ -613,10 +627,20 @@ spdlog::info("point={}", Point{3, 4});     // 走同一 formatter 特化
 > **示例 37** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 37 · ★☆☆☆☆"
-// ⑰ 向 fmt/spdlog 贡献的最小闭环（流程示意，非本机命令）
+// ⑰ 向 fmt/spdlog 贡献的最小闭环：clone -> cmake 构建 -> ctest 回归（命令见下，
+// 本机未装 fmt/spdlog，故以 std::format 的自包含自检演示"测试先绿再提 PR"）。
+#include <cassert>
+#include <format>
+#include <iostream>
+#include <string>
 // git clone https://github.com/fmtlib/fmt && cd fmt
 // cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
-// ctest --test-dir build        # 跑回归测试后再提 PR
+// ctest --test-dir build              # 跑回归测试后再提 PR
+int main() {
+    std::string s = std::format("{:#x}", 255);   // 假设这是你的新格式化改动
+    assert(s == "0xff");               // 回归自检：ctest 中失败即拦下 PR
+    std::cout << "regression self-check PASS: " << s << "\n";   //@ regression self-check PASS: 0xff
+}
 ```
 
 > **示例 38** [难度 ★★★☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
@@ -700,12 +724,18 @@ class SPDLOG_API registry {
 > **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读 [实现·fmt]
 
 ```cpp title="示例 43 · ★★☆☆☆"
-// ⑲ 阅读顺序建议（硬核路线）
-// 1) fmt/core.h：compile_string / format_string_checker（编译期检查）
-// 2) fmt/format.h：basic_format_string + formatter 主流程
-// 3) spdlog/logger.h：log_ 如何调 fmt 并分发到 sinks
-// 4) spdlog/details/registry.h：名字管理与默认 logger
-// 5) spdlog/sinks/base_sink.h：sink_it_/flush_ 契约
+// ⑲ 阅读 fmt 的编译期检查，可理解"占位符为何编译期报错"：
+// fmt/core.h 的 compile_string / format_string_checker 在构造期扫格式串。
+// std::format 与 fmt 同源实现，实证"格式说明符由编译器在编译期确认"：
+#include <format>
+#include <iostream>
+// 想读的源码锚点（fmt/spdlog 未安装，不可直接打开）：
+// fmt/core.h -> format_string_checker；fmt/format.h -> formatter 主流程
+// spdlog/logger.h -> log_ 调 fmt 分发 sinks；spdlog/details/registry.h -> logger 名管理
+int main() {
+    std::cout << std::format("{:.2f}", 3.14159) << "\n";   //@ 3.14
+    // 占位符 {:.2f} 的合法性由 format_string_checker 在编译期确认
+}
 ```
 
 - `[实现·fmt]`：fmt 的「编译期检查」与「运行期格式化」是解耦的两套代码；spdlog 的 `logger` 薄、真正的复杂度在 sink 与 registry。
@@ -730,31 +760,65 @@ class SPDLOG_API registry {
 > **示例 44** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 44 · ★☆☆☆☆"
-// ⑳ fmt 常用格式说明符速查
-// {}            默认格式
-// {:>8}         右对齐宽 8
-// {:.2f}        定点 2 位小数
-// {:06d}        补零至 6 位
-// {:.3e}        科学计数
-// {:#x}         0x 前缀十六进制
-// {:>8.2f}      宽8右对齐+2位小数
+// ⑳ fmt 常用格式说明符速查——std::format 同款语法，直接实证输出：
+#include <format>
+#include <iostream>
+int main() {
+    std::cout << std::format("[{}]", 42) << "\n";            //@ [42]         默认格式
+    std::cout << std::format("[{:>8}]", 42) << "\n";         //@ [      42]   右对齐宽 8
+    std::cout << std::format("[{:.2f}]", 3.14159) << "\n";   //@ [3.14]       定点 2 位小数
+    std::cout << std::format("[{:06d}]", 42) << "\n";        //@ [000042]     补零至 6 位
+    std::cout << std::format("[{:.3e}]", 12345.0) << "\n";   //@ [1.235e+04]  科学计数
+    std::cout << std::format("[{:#x}]", 255) << "\n";        //@ [0xff]       0x 前缀十六进制
+    std::cout << std::format("[{:>8.2f}]", 3.14159) << "\n"; //@ [    3.14]   宽 8 右对齐 + 2 位小数
+}
 ```
 
 > **示例 45** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 45 · ★★☆☆☆"
-// ⑳ spdlog 级别速查（低->高）
-// trace < debug < info < warn < error < critical < off
-// spdlog::set_level(spdlog::level::info);  // info 及以上可见
+// ⑳ spdlog 级别速查（trace < debug < info < warn < error < critical < off）——
+// 最小 logger 实证级别过滤（set_level(info) 即 info 及以上可见）。
+#include <iostream>
+#include <string_view>
+enum class Level { trace, debug, info, warn, error, critical, off };
+static constexpr const char* level_name(Level l) {
+    constexpr const char* n[] = {"trace","debug","info","warn","error","critical","off"};
+    return n[static_cast<int>(l)];
+}
+struct MiniLogger {
+    Level threshold = Level::info;                 // spdlog::set_level 的迷你版
+    void log(Level l, std::string_view msg) {
+        if (l >= threshold && l != Level::off)
+            std::cout << "[" << level_name(l) << "] " << msg << "\n";
+    }
+};
+int main() {
+    MiniLogger lg;                                  // 默认 info 及以上可见
+    lg.log(Level::trace, "detail");                 // 隐藏（< info）
+    lg.log(Level::info,  "app started");            //@ [info] app started
+    lg.log(Level::warn,  "cache nearly full");      //@ [warn] cache nearly full
+}
 ```
 
 > **示例 46** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 46 · ★☆☆☆☆"
-// ⑳ 一句话对照（记忆锚点）
-// fmt  = 类型安全的 sprintf（还能打自定义类型）
-// spdlog = 用 fmt 打日志的 logger/registry/sink 三件套
-// std::format = 进了标准的 fmt（C++20）
+// ⑳ 一句话对照：fmt = 类型安全的 sprintf（还能打自定义类型）；std::format = 进了标准的 fmt。
+// 实证"打自定义类型"：特化 std::formatter 即可，无需字符串拼接。
+#include <format>
+#include <iostream>
+#include <string>
+struct Point { int x, y; };
+template<> struct std::formatter<Point> {
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+    auto format(const Point& p, format_context& ctx) const {
+        return std::format_to(ctx.out(), "({},{})", p.x, p.y);
+    }
+};
+int main() {
+    std::cout << std::format("{}", Point{3, 4}) << "\n";   //@ (3,4)
+}
 ```
 
 | 维度 | fmt | spdlog | std::format |
@@ -823,16 +887,20 @@ int main() {
 > **示例 48** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 API 长什么样
 
 ```cpp title="示例 48 · ★★☆☆☆"
-// ㉑.3 真实 fmt / spdlog 写法（仅注释演示，需链接 fmt / spdlog；本门禁按空块编译通过）：
-// #include <fmt/core.h>
-// #include <spdlog/spdlog.h>
-//// ① fmt：类型安全占位符，参数按序填入
-// fmt::print("Hello, {}! you are {}\n", "world", 21);
-// std::string s = fmt::format("{0} + {0} = {1}", 2, 4);   // "2 + 2 = 4"
-//// ② spdlog：级别化日志，底层用 fmt 做格式化（见第④/⑯节）
-// spdlog::info("loaded {} entries in {} ms", 1024, 7);
-// spdlog::warn("cache nearly full: {:.1f}%", 92.3);
-// 官方文档：https://fmt.dev/latest/  |  https://github.com/gabime/spdlog
+// ㉑.3 真实 fmt/spdlog 写法的最小自包含实证（fmt/spdlog 未安装；std::format 是 fmt 的
+// 标准形态，API 同源；std::print = fmt::print 的 C++23 标准化，此处用 format+cout 等价输出）。
+#include <format>
+#include <iostream>
+#include <string>
+int main() {
+    // ① fmt：类型安全占位符，参数按序填入（fmt::print 同款）
+    std::cout << std::format("Hello, {}! you are {}\n", "world", 21);   //@ Hello, world! you are 21
+    std::string s = std::format("{0} + {0} = {1}", 2, 4);              // "2 + 2 = 4"
+    std::cout << s << "\n";                                            //@ 2 + 2 = 4
+    // ② spdlog：级别化日志，底层用 fmt 格式化（见 ⑳ 迷你 logger）
+    // spdlog::info("loaded {} entries in {} ms", 1024, 7);
+    // spdlog::warn("cache nearly full: {:.1f}%", 92.3);
+}
 ```
 
 ### ㉑.4 端到端：怎么把它接进你的工程

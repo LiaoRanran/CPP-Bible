@@ -442,8 +442,17 @@ int main() {
 > **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · [[nodiscard]] 的位置
 
 ```cpp title="示例 14 · ★☆☆☆☆"
-// 示例 13：[[nodiscard]] 防止误用
-// (a | b);   // 若 operator| 标了 [[nodiscard]]，此行产生警告：结果被丢弃
+// 示例 13：[[nodiscard]] 防止误用——若 operator| 标了它，丢弃结果会产生警告。
+#include <iostream>
+enum class Flag { A = 1, B = 2 };
+[[nodiscard]] Flag operator|(Flag x, Flag y) {
+    return static_cast<Flag>(static_cast<int>(x) | static_cast<int>(y));
+}
+int main() {
+    Flag f = Flag::A | Flag::B;      // 用了结果，无警告
+    std::cout << "val=" << static_cast<int>(f) << "\n";   //@ val=3
+    // Flag::A | Flag::B;             // 丢弃 [[nodiscard]] 结果 -> 编译警告(-Wunused-result)
+}
 ```
 
 ### 与 `std::formatter` 特化（C++20）<span class="badge badge-exp">经验</span>
@@ -501,9 +510,14 @@ enum class ForwardDecl : int { A, B };  // 定义须与声明底层类型一致
 > **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 枚举前向声明（C++11）[K15]
 
 ```cpp title="示例 17 · ★★☆☆☆"
-// 示例 16：非法前向声明（不指定底层类型）
-// enum ForwardDecl;      // 错误：不固定底层类型不能前向声明
-// enum class Bad;        // 错误：scoped 也必须指定底层类型才能前向声明
+// 示例 16：不固定底层类型不能前向声明；指定底层类型（C++11 起）即可前向声明：
+#include <iostream>
+enum class Color : int;            // 合法：固定底层类型后可前向声明
+enum class Color : int { Red, Green };
+// enum class Bad;                  // 错误：未指定底层类型不能前向声明
+int main() {
+    std::cout << static_cast<int>(Color::Green) << "\n";   //@ 1
+}
 ```
 
 **<span class="badge badge-std">标准</span>** 前向声明与定义的底层类型必须一致，否则 ill-formed。
@@ -901,20 +915,23 @@ int main(){
 > **示例 29** <span class="badge badge-exp">难度 ★★★☆☆</span> · C++26 静态反射预览 std::meta::enumerators_of
 
 ```cpp title="示例 29 · ★★★☆☆"
-// 示例 22：C++26 静态反射（预览语法，编译器支持前无法编译）
-// #include <meta>  // C++26
-// enum class Color { Red, Green, Blue };
-//
-// constexpr void dump() {
-// template for (auto e : std::meta::enumerators_of(^^Color)) {
-//// e 是枚举符的元对象；std::meta::name_of(e) 是 "Red" 等
-//// std::meta::value_of(e) 是 Color::Red
-// }
-// }
-//
-//// 现代写法可生成一个名字<->值映射，无需手写：
-// constexpr auto names = std::meta::enumerators_of(^^Color)
-// | std::views::transform([](auto e){ return std::meta::name_of(e); });
+// 示例 22：C++26 静态反射（std::meta 预览语法，GCC 15 未实现，无法编译）。
+// 其目标产物的手写版：名字<->值双向映射，无需任何反射即可先跑起来。
+#include <iostream>
+#include <string_view>
+#include <array>
+enum class Color { Red, Green, Blue };
+constexpr std::array<std::string_view, 3> color_names = {"Red", "Green", "Blue"};
+constexpr std::string_view name_of(Color c) { return color_names[static_cast<int>(c)]; }
+constexpr Color value_of(std::string_view s) {
+    for (int i = 0; i < 3; ++i) if (color_names[i] == s) return static_cast<Color>(i);
+    return Color::Red;
+}
+int main() {
+    std::cout << name_of(Color::Green) << "\n";                //@ Green
+    std::cout << static_cast<int>(value_of("Blue")) << "\n";   //@ 2
+    // C++26: std::meta::enumerators_of(^^Color) 自动生成上表，免手写
+}
 ```
 
 **[讲解]** 反射把“枚举名字字符串”从**运行时手写表**变成**编译期编译器直接提供**，彻底消除名字数组与枚举定义不同步的 bug。截至 C++23 尚未合并，语法可能在 C++26 调整。
@@ -1307,10 +1324,17 @@ int main() { (void)g_min_level; }
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 枚举与第 19 章存储期关联
 
 ```cpp title="示例 48 · ★☆☆☆☆"
-// 示例 45：匿名枚举常量在头文件多 TU 中的内部链接
-// header.h:
-// enum { kMax = 256 };   // 每个 TU 独立，互不冲突（内部链接语义）
-// 多个 .cpp 包含不会 ODR 冲突（因为它是值，不是有链接对象）
+// 示例 45：匿名枚举常量是编译期值（无链接对象），多 TU 各自独立、互不冲突。
+// 实证：它可作常量表达式用在任意处，且因"无对象"不会有跨 TU 符号问题。
+#include <iostream>
+enum { kMax = 256 };          // 匿名枚举：kMax 是编译期常量，无链接
+int cap(int v) { return v > kMax ? kMax : v; }   // 用作常量表达式
+int main() {
+    constexpr int buf[kMax / 8] = {};            // 编译期数组大小（同 header 用法）
+    std::cout << "kMax=" << kMax
+              << " cap(999)=" << cap(999)
+              << " buf=" << sizeof(buf) / sizeof(buf[0]) << "\n";   //@ kMax=256 cap(999)=256 buf=32
+}
 ```
 
 ---
