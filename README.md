@@ -54,7 +54,8 @@
 | 交叉引用 | `python tools/crossref_audit.py` | 0 断链 |
 | D5 性能附录 | `python tools/d5_gap_scanner.py` | 127/147 章（86%，口径已统一），结构 ERROR=0 / WARN=3（措辞建议，不阻断） |
 | 本地 pre-push | `python tools/prepush_check.py` | push 前一键复跑上述快校验 + 仓库卫生（`--install-hook` 可装钩子） |
-| 结构审计 | `python tools/structure_audit.py check --star` | 示例头星级格 100% 统一（span 5 格制）+ H2 基线防恶化 |
+| 结构审计 | `python tools/structure_audit.py --check` | 标题大纲缺陷（stray H1 / 跳级）+ 参差表格：0 命中 |
+| 星级格 / H2 | `python tools/star_h2_audit.py check --star` | 示例头星级格 100% 统一（span 5 格制）+ H2 基线防恶化 |
 
 > **豁免说明**：`tools/compile_exempt.json` 中的 66 个失败块均为**设计性不可单编**内容
 > （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、

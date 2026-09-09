@@ -71,14 +71,16 @@ jobs:
       run: python3 tools/gen_metrics.py --check
       continue-on-error: false
 
-    - name: Structure Audit (示例头星级格统一 / H2 基线防恶化)
+    - name: Star / H2 Audit (示例头星级格 + H2 基线防恶化)
       # 星级规范：示例头统一 span badge 5 格制（方括号风格 842 处已归一，回潮即红）；
       # 练习标题实心个数制（1..5，不含 ☆）；围栏 title 星级与同号头行一致。
-      # H2：structure_state.json 冻结 147 章基线，仅拦截「数量增加（恶化）」，
+      # H2：h2_state.json 冻结 147 章基线，仅拦截「数量增加（恶化）」，
       # 内容级主线/扩展分层重构由写作波次推进（改善后 h2-sync 更新基线）。
+      # 注意：tools/structure_audit.py 是另一套既有门禁（stray H1/跳级/参差表格），
+      # 由本 job 的 Structure 项调用，勿与之混淆或覆盖。
       run: |
-        python3 tools/structure_audit.py check --star
-        python3 tools/structure_audit.py h2-check
+        python3 tools/star_h2_audit.py check --star
+        python3 tools/star_h2_audit.py h2-check
       continue-on-error: false
 
     - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)

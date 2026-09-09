@@ -556,7 +556,7 @@ int range_sum(const std::vector<int>& a, int l, int r) {
 
 ## ⑬ <span class="badge badge-exp">经验</span>选型：何时用 STL 算法 vs 自写 <span class="badge badge-exp">经验</span>
 
-> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型：何时用 STL 算法 
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型：何时用 STL 算法
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑬ 默认路径：先 STL，再 profile，最后自写

@@ -40,6 +40,8 @@ CORE = [
     ("compile_gate",  ["tools/compile_gate.py"]),
     ("exempt_audit",  ["tools/exempt_audit.py", "--check"]),
     ("expected(changed)", ["tools/run_expected.py", "--changed", "--check"]),
+    # 星级格/结构：示例头 span 5 格制回潮即拦（与 CI 的 Star / H2 Audit 步骤对齐）
+    ("star_h2",       ["tools/star_h2_audit.py", "check", "--star"]),
 ]
 
 # --compile 额外项：增量编译变更章 + 对照基线 triage（抓「我的回归」）。
