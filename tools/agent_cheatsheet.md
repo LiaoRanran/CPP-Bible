@@ -144,6 +144,11 @@ python tools/compile_triage.py --before old.json --after new.json   # 任意两�
 # 分类：NEW=当前失败/基线未失败（我的回归，红）· PREEXISTING=两边都失败（预存）·
 #       FIXED=基线失败/当前通过（我修好，绿）。--strict 把预存也当失败。
 # 注：partial 的 --main-only 须与基线 scope 一致，否则全量预存非-main 坏块会误报 NEW
+
+# 7) 一键数字修复（gen_metrics.py --fix，R4）+ pre-push 门禁（prepush_check.py，R6）
+python tools/gen_metrics.py --fix       # 回写 STATE.json 派生字段 + 回填 README/散文统计块数字，再复核
+python tools/prepush_check.py           # push 前本地跑全部快门禁 + 仓库卫生；--compile 加编译回归检查
+python tools/prepush_check.py --install-hook   # 装 .git/hooks/pre-push（找不到 python 自动放行）
 ```
 
 - patch.json 格式：`[{"block":24,"fence":"cpp","body":"#include ...\n..."}, {"block":27,"fence":"bash","body":"# 命令\ncmake ..."}]`

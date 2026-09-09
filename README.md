@@ -47,9 +47,13 @@
 | 一致性检查 | `python tools/consistency_check.py` | ERROR=0 / WARN=0 |
 | 全量编译 | `python tools/compile_all.py --main-only` | 147 章，115 章自包含通过 |
 | 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（58 设计性豁免块） |
+| `//@` 输出断言 | `python tools/run_expected.py --all --check` | 65 块全 PASS（关键块运行期输出与注释逐字比对） |
+| 覆盖状态机 | `python tools/l2_state.py check` | 57 章 / 139 块纯注释全为审计保留 C 类，无漂移 |
+| 编译回归 triage | `python tools/compile_triage.py --check` | 预存坏块 vs 新增回归自动分账，NEW=0 |
 | 密度审计 v3 | `python tools/density_audit.py --json` | 均分 25.7/30，浅章 0 |
 | 交叉引用 | `python tools/crossref_audit.py` | 0 断链 |
 | D5 性能附录 | `python tools/d5_gap_scanner.py` | 127/147 章（86%，口径已统一），结构 ERROR=0 / WARN=3（措辞建议，不阻断） |
+| 本地 pre-push | `python tools/prepush_check.py` | push 前一键复跑上述快校验 + 仓库卫生（`--install-hook` 可装钩子） |
 
 > **豁免说明**：`tools/compile_exempt.json` 中的 66 个失败块均为**设计性不可单编**内容
 > （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、
