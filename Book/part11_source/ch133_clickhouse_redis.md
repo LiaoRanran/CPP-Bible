@@ -4,7 +4,7 @@
 
 [第77章　vector：扩容、失效、allocator 协作](../part07_stl/ch77_vector.md)
 
-> 真实编译器：MinGW GCC 13.1.0（`g++ -std=c++20 -O3 -march=native -S -masm=intel`）。
+> 真实编译器：MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/bin/g++.exe`，`g++ -std=c++23 -O3 -march=native -S -masm=intel`）。凡"验证编译器"的示例一律用 `__VERSION__` 自报，不手写版本号；历史取证记录中的 13.1.0 数据按 CONVENTIONS §1.1 双轨规则保留。
 > 源码根：本机未安装 ClickHouse / Redis，本章源码剖析均引用**上游仓库**真实 URL + 行号，标注「上游参考」。
 > 自行编译证据见 `Examples/_ch133_vectorize.cpp` 与 `Examples/_ch133_eventloop.cpp`（本章自包含示例）。
 
@@ -54,11 +54,30 @@ ClickHouse 是**列存 OLAP**数据库，核心卖点是「一整列数据连续
 > **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：ClickHouse/Redis
 
 ```cpp title="示例 1 · ★★☆☆☆"
+
 #include <cstddef>
-// ① ClickHouse 列的直觉：一列 float 是连续数组，而非 (a,b,c) 行的数组
+#include <iostream>
+
+// ① 行存：一条记录的字段挨在一起；取"价格"这一列要跨过整行
+struct Row { long long id; double price; int qty; };
+// ① 列存：一列就是一个连续数组（ClickHouse 的直觉）
 struct ColumnFloat64 { double* data; size_t size; };
-// ① Redis 的直觉：一个事件 = (fd, 回调)，单线程轮询
+// ① Redis 的直觉：一个就绪事件 = (fd, 关注的事件位)
 struct FiredEvent { int fd; int mask; };
+
+int main() {
+    std::cout << "sizeof(Row)=" << sizeof(Row) << "  (含对齐填充)\n";
+    Row rows[4]{};
+    double prices[4]{};
+    auto step_row = reinterpret_cast<const char*>(&rows[1].price)
+                  - reinterpret_cast<const char*>(&rows[0].price);
+    auto step_col = reinterpret_cast<const char*>(&prices[1])
+                  - reinterpret_cast<const char*>(&prices[0]);
+    std::cout << "行存：相邻两行的 price 步长=" << step_row << " 字节\n";
+    std::cout << "列存：相邻两个 price 步长=" << step_col << " 字节\n";
+    std::cout << "sizeof(FiredEvent)=" << sizeof(FiredEvent) << "\n";
+}
+
 ```
 
 OLAP 读多列聚合（SUM/AVG）天然适配列存；KV 点查（GET/SET）天然适配哈希表 + 单线程。看一个 C++ 系统性能，先看它「喂给 CPU 的数据布局」与「喂给线程的并发模型」——这两点决定 80% 的成败。
@@ -271,6 +290,12 @@ Redis 主线程是单线程事件循环：把所有 client 的 fd 注册进多�
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 事件循环
 
 ```cpp title="示例 6 · ★☆☆☆☆"
+#include <cstddef>
+// 上游 ae.h 的前置依赖（补足以便独立编译）
+struct aeEventLoop;
+typedef void (*aeFileProc)(aeEventLoop*);
+constexpr int AE_SETSIZE = 10240;
+
 // ④ ae.c 的等价核心结构（上游参考：src/ae.h）
 struct aeFileEvent {
     int mask;                        // AE_READABLE / AE_WRITABLE
@@ -287,6 +312,14 @@ struct aeEventLoop {
 > **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 事件循环
 
 ```cpp title="示例 7 · ★★☆☆☆"
+#include <cstddef>
+// 上游依赖的最小定义（补足以便独立编译）
+constexpr int AE_SETSIZE = 10240;
+constexpr int AE_ALL_EVENTS = 3;
+struct aeFileEvent { int mask; };
+struct aeEventLoop { int stop; aeFileEvent events[AE_SETSIZE]; };
+void aeProcessEvents(aeEventLoop*, int);      // 定义见上游 src/ae.c
+
 // ④ 单线程主循环（等价 src/ae.c 的 aeMain / aeProcessEvents）
 void aeMain(aeEventLoop* el) {
     el->stop = 0;
@@ -300,6 +333,14 @@ void aeMain(aeEventLoop* el) {
 > **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 事件循环
 
 ```cpp title="示例 8 · ★★☆☆☆"
+#include <cstddef>
+// ④ 多路复用器封装：对外的统一接口，底层是 epoll/kqueue/evport/select
+constexpr int AE_SETSIZE = 10240;
+struct aeEventLoop;
+struct timeval;
+#if defined(__linux__)
+#include <sys/epoll.h>
+
 // ④ 多路复用器封装：对外的统一接口，底层是 epoll/kqueue/evport/select
 typedef struct aeApiState { int epfd; struct epoll_event* events; } aeApiState;
 int aeApiPoll(aeEventLoop* el, struct timeval* tvp) {
@@ -307,6 +348,14 @@ int aeApiPoll(aeEventLoop* el, struct timeval* tvp) {
     int n = epoll_wait(s->epfd, s->events, AE_SETSIZE, tvp ? tvp->tv_usec/1000 : -1);
     return n;   // 返回就绪 fd 数，主循环逐个回调
 }
+
+#else
+// 本机（MinGW/Windows）没有 epoll：ae 的设计正是"接口不变、后端可换"，
+// 这里落到 select 后端（只给接口，实现见上游 ae_select.c）
+typedef struct aeApiState { int setsize; void* events; } aeApiState;
+int aeApiPoll(aeEventLoop*, struct timeval*);
+#endif
+
 ```
 
 ### ④-2 上游参考：aeProcessEvents 真实源码逐行（src/ae.c）
@@ -382,6 +431,18 @@ ClickHouse 用模板把列类型参数化（`ColumnVector<T>`），用 `Arena` �
 > **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 C++ 特性：模板 / 智能指针
 
 ```cpp title="示例 9 · ★★★☆☆"
+#include <cstddef>
+#include <vector>
+// PODArray：ClickHouse 自研的连续容器，这里给出等价最小实现以便独立编译
+template <typename T>
+class PODArray {
+    std::vector<T> v_;
+public:
+    void push_back(T v) { v_.push_back(v); }
+    const T* data() const { return v_.data(); }
+    size_t size() const { return v_.size(); }
+};
+
 // ⑤ ClickHouse 风格：模板列，零运行时开销的类型分发
 template <typename T>
 class ColumnVector {
@@ -507,6 +568,9 @@ call    rax                 ; 单线程串行分发回调，无锁、无上下�
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 #include <cstddef>
+struct Row { long long id; double price; int qty; };   // 行存：price 被夹在字段中间
+
+#include <cstddef>
 // ⑦ 行存求和：编译器难以向量化（stride 不规则）
 double sum_row(const struct Row* r, size_t n) {
     double s = 0; for (size_t i=0;i<n;++i) s += r[i].price; return s;
@@ -560,12 +624,18 @@ void add_buf(float* out, const float* a, const float* b, size_t n) {
 > **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试
 
 ```cpp title="示例 18 · ★★☆☆☆"
+#include <cstddef>
+struct aeEventLoop;
+int aeApiPoll(aeEventLoop*, void*);     // 上游实现：阻塞于 epoll_wait
+
 // ⑧ Redis 调试：在事件循环入口打点，观察单线程是否被某回调阻塞
 void aeProcessEvents(aeEventLoop* el, int flags) {
     // redis 用 aeApiPoll 阻塞；若某命令慢，整个循环卡住（单线程代价）
     int n = aeApiPoll(el, nullptr);  // 调试时在这里计时
     for (int j=0; j<n; ++j) {        // 回调
 }
+}
+
 ```
 
 `-fopt-info-vec` 在 MinGW GCC 13 同样有效；Windows 下用 WinDbg/VS 看寄存器 `zmm0` 即可确认是否真在跑 AVX-512。
@@ -577,6 +647,12 @@ SIMD 指令集因平台而异：x86 有 SSE/AVX，ARM 有 NEON，POWER 有 AltiV
 > **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台
 
 ```cpp title="示例 19 · ★☆☆☆☆"
+// 上游各 SIMD 后端类型的最小占位（真实定义在 src/Common/.../Vec.h）
+struct Avx512 {};
+struct Avx2 {};
+struct Sse2 {};
+struct Neon {};
+
 // ⑨ ClickHouse 用宏选不同向量化后端（等价 src/Common/.../Vec.h）
 #if defined(__AVX512F__)
     using Simd = Avx512;  // 512-bit
@@ -605,6 +681,9 @@ bool has_avx2() {
 
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑨ 跨平台事件多路复用抽象（Redis ae.c 正是这么做的）
+struct EpollMux {};
+struct KqueueMux {};
+struct SelectMux {};
 #if defined(__linux__)
     #include <sys/epoll.h>
     using Multiplexer = EpollMux;
@@ -612,9 +691,10 @@ bool has_avx2() {
     #include <sys/event.h>
     using Multiplexer = KqueueMux;
 #else
-    #include <sys/select.h>
+    // MinGW/Windows 没有 sys/select.h（select 声明在 winsock2.h 里），此处只做类型选择
     using Multiplexer = SelectMux;
 #endif
+
 ```
 
 写跨平台 SIMD 的代码，**永远优先用编译器自动向量化 + `alignas`**，而非手撸 intrinsics——除非 profiling 证明某热点需要。
@@ -650,11 +730,43 @@ void good(float* __restrict out, const float* __restrict a,
 > **示例 24** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见陷阱
 
 ```cpp title="示例 24 · ★★★★☆"
-// ⑩ 陷阱3：Redis 单线程里跑慢命令（如 KEYS *）阻塞整个实例
-// 等价：在事件循环回调中做 O(N) 全表扫描 -> 所有其他 client 饿死
-void on_command_slow(redisClient* c) {
-    // for (every_key) ...  ; 单线程下这会卡住整个服务
+
+#include <chrono>
+#include <iostream>
+#include <vector>
+
+using Client = int;
+
+// ⑩ 陷阱3：Redis 单线程里跑慢命令（如 KEYS *）会阻塞整个实例
+static long long slow_command(Client, int n) {          // O(N) 全表扫描
+    long long acc = 0;
+    std::vector<int> keys(static_cast<size_t>(n));
+    for (int i = 0; i < n; ++i) { keys[static_cast<size_t>(i)] = i; acc += keys[static_cast<size_t>(i)]; }
+    return acc;
 }
+static long long fast_command(Client, int) { return 1; } // O(1) 点查
+
+int main() {
+    const int REPS = 200;
+    long long sink = 0;
+
+    auto t0 = std::chrono::steady_clock::now();          // 基线：N 个快回调
+    for (int i = 0; i < REPS; ++i) sink += fast_command(i, 0);
+    auto t1 = std::chrono::steady_clock::now();
+    double fast_us = std::chrono::duration<double, std::micro>(t1 - t0).count();
+
+    auto t2 = std::chrono::steady_clock::now();          // 事件循环里插一个慢命令
+    sink += slow_command(0, 200000);
+    for (int i = 0; i < REPS; ++i) sink += fast_command(i, 0);
+    auto t3 = std::chrono::steady_clock::now();
+    double slow_us = std::chrono::duration<double, std::micro>(t3 - t2).count();
+
+    std::cout << REPS << " 个快回调：" << fast_us << " us\n";
+    std::cout << "插入 1 个慢命令后同一批回调：" << slow_us << " us\n";
+    std::cout << "慢命令把整批回调拖慢 " << static_cast<int>(slow_us / fast_us) << " 倍\n";
+    std::cout << "sink=" << sink << "\n";
+}
+
 ```
 
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 常见陷阱
@@ -675,36 +787,113 @@ void slow(const std::function<float(float)>& f, float* out, const float* a, size
 > **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演进
 
 ```cpp title="示例 26 · ★★★☆☆"
+
 #include <cstddef>
-// ⑪ ClickHouse 早期用 SSE2，后逐步引入 AVX/AVX2/AVX-512；代码靠宏分层
-// 等价：同一算法多份实现，编译期选最优
+#include <cstdint>
+#include <iostream>
+
+// ⑪ ClickHouse 早期 SSE2，后逐步引入 AVX/AVX2/AVX-512，代码靠宏分层
+enum class SimdBackend { Scalar, Sse2, Avx2, Avx512 };
+
+static SimdBackend detect() {                 // 运行时探测，避免不支持时 SIGILL
+    if (__builtin_cpu_supports("avx512f") != 0) return SimdBackend::Avx512;
+    if (__builtin_cpu_supports("avx2") != 0) return SimdBackend::Avx2;
+    if (__builtin_cpu_supports("sse2") != 0) return SimdBackend::Sse2;
+    return SimdBackend::Scalar;
+}
+static const char* name(SimdBackend b) {
+    switch (b) {
+        case SimdBackend::Avx512: return "Avx512";
+        case SimdBackend::Avx2:   return "Avx2";
+        case SimdBackend::Sse2:   return "Sse2";
+        default:                  return "Scalar";
+    }
+}
 template <SimdBackend B>
-void scatter_add(float* base, const int* idx, const float* v, size_t n);
-// 特化：Sse2 / Avx2 / Avx512 各一份 kernel
+void scatter_add(float* base, const int* idx, const float* v, size_t n) {
+    for (size_t i = 0; i < n; ++i) base[idx[i]] += v[i];   // 各后端 kernel 形态相同
+}
+
+int main() {
+    std::cout << "sse2=" << (__builtin_cpu_supports("sse2") != 0)
+              << " avx=" << (__builtin_cpu_supports("avx") != 0)
+              << " avx2=" << (__builtin_cpu_supports("avx2") != 0)
+              << " avx512f=" << (__builtin_cpu_supports("avx512f") != 0) << "\n";
+    constexpr SimdBackend chosen = SimdBackend::Sse2;      // 最低基线：所有 x86-64 都有
+    std::cout << "编译期选择的最低后端=" << name(chosen) << " 本机实际可选=" << name(detect()) << "\n";
+    float base[4]{1, 2, 3, 4};
+    const int idx[4]{0, 1, 2, 3};
+    const float v[4]{1, 1, 1, 1};
+    scatter_add<chosen>(base, idx, v, 4);
+    std::cout << "scatter_add 结果=" << base[0] << " " << base[3] << "\n";
+}
+
 ```
 
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进
 
 ```cpp title="示例 27 · ★☆☆☆☆"
+
+#include <cstddef>
+#include <iostream>
+
 // ⑪ Redis 事件库早期只支持 select，后加 kqueue/epoll/evport
-// 等价演进：多路复用器可插拔（ae_evport / ae_kqueue / ae_epoll / ae_select）
+struct aeEventLoop;                                   // 前向声明
 struct aeApiState;
 typedef struct aeApiState* (*aeApiCreateFn)(aeEventLoop*);
+typedef int (*aeApiPollFn)(aeEventLoop*, long long);
+
+struct Multiplexer {                                  // 可插拔的多路复用后端
+    const char* name;
+    aeApiCreateFn create;
+    aeApiPollFn poll;
+};
+
+#if defined(__linux__)
+static constexpr const char* kBackend = "epoll";
+#elif defined(__APPLE__)
+static constexpr const char* kBackend = "kqueue";
+#else
+static constexpr const char* kBackend = "select";     // Windows/MinGW 落到 select
+#endif
+
+int main() {
+    std::cout << "后端选择顺序：evport -> epoll -> kqueue -> select\n";
+    std::cout << "本机（MinGW/Windows）实际可用后端=" << kBackend << "\n";
+    std::cout << "函数指针表大小=" << sizeof(Multiplexer) << " 字节（每后端一份常量表）\n";
+}
+
 ```
 
 > **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演进
 
 ```cpp title="示例 28 · ★★★☆☆"
+
 #include <cstddef>
-// ⑪ C++ 侧：用 if constexpr 替代宏做编译期后端选择（C++17 起）
+#include <iostream>
+#include <type_traits>
+#include <vector>
+
+// ⑪ C++ 侧：用 if constexpr 替代宏做编译期后端选择
 template <typename T>
 void kernel(T* out, const T* a, const T* b, size_t n) {
     if constexpr (std::is_same_v<T, double>) {
-        // double 专用路径
+        for (size_t i = 0; i < n; ++i) out[i] = a[i] + b[i];   // double 专用路径
     } else {
-        // 通用路径
+        for (size_t i = 0; i < n; ++i) out[i] = a[i] * b[i];   // 通用路径
     }
 }
+
+int main() {
+    std::vector<double> a{1, 2, 3}, b{10, 20, 30}, od(3);
+    std::vector<int> ia{2, 3, 4}, ib{5, 6, 7}, oi(3);
+    kernel(od.data(), a.data(), b.data(), od.size());
+    kernel(oi.data(), ia.data(), ib.data(), oi.size());
+    std::cout << "double 路径（加）：" << od[0] << " " << od[2] << "\n";
+    std::cout << "int 路径（乘）：" << oi[0] << " " << oi[2] << "\n";
+    std::cout << "走的是同一份模板、两个不同实例\n";
+}
+
 ```
 
 `if constexpr`（C++17）让「编译期后端分发」比宏更类型安全、更易读。
@@ -728,6 +917,10 @@ public:
 > **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践
 
 ```cpp title="示例 30 · ★★☆☆☆"
+struct redisClient;
+void read_query(redisClient*);        // 快：只解析协议头
+void queue_to_worker(redisClient*);   // 慢：交给线程池
+
 // ⑫ 事件回调保持极短，慢任务甩给后台线程/异步
 void on_read(redisClient* c) {
     read_query(c);       // 快：只解析协议头
@@ -797,8 +990,40 @@ public:
 > **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器对比
 
 ```cpp title="示例 35 · ★☆☆☆☆"
-// ⑬ 事件循环用裸数组而非 vector：fd 是整数索引，数组 O(1) 命中
+
+#include <chrono>
+#include <cstddef>
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+
+struct aeFileEvent { int mask; };
+constexpr int AE_SETSIZE = 10240;
+
+// ⑬ 事件循环用裸数组：fd 是整数索引，O(1) 命中
 struct aeEventLoop { aeFileEvent events[AE_SETSIZE]; };
+
+int main() {
+    static aeEventLoop el{};                       // 静态区，避免栈上 100KB+
+    std::unordered_map<int, aeFileEvent> table;
+    for (int fd = 0; fd < AE_SETSIZE; ++fd) table[fd] = aeFileEvent{1};
+
+    const int LOOKUPS = 2000000;
+    long long sink = 0;
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < LOOKUPS; ++i) sink += el.events[static_cast<size_t>(i % AE_SETSIZE)].mask;
+    auto t1 = std::chrono::steady_clock::now();
+    for (int i = 0; i < LOOKUPS; ++i) sink += table[i % AE_SETSIZE].mask;
+    auto t2 = std::chrono::steady_clock::now();
+
+    double arr = std::chrono::duration<double, std::nano>(t1 - t0).count() / LOOKUPS;
+    double map = std::chrono::duration<double, std::nano>(t2 - t1).count() / LOOKUPS;
+    std::cout << "裸数组 events[fd]   : " << arr << " ns/次\n";
+    std::cout << "unordered_map[fd]   : " << map << " ns/次\n";
+    std::cout << "数组快 " << static_cast<int>(map / arr) << " 倍（通用性服从性能）\n";
+    std::cout << "sink=" << sink << "\n";
+}
+
 ```
 
 STL 容器通用但为安全付出代价（边界检查、构造/析构、迭代器抽象）。hot path 上 ClickHouse 自己写 PODArray、Redis 用裸数组——**通用性服从性能**。
@@ -808,6 +1033,12 @@ STL 容器通用但为安全付出代价（边界检查、构造/析构、迭代
 > **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 
 ```cpp title="示例 36 · ★☆☆☆☆"
+#include <string>
+class Connection {                    // 上游客户端连接的最小替身
+public:
+    void send_column(const std::string&, const double*, size_t) {}
+};
+
 #include <vector>
 // ⑭ ClickHouse 客户端（clickhouse-cpp）用连续 buffer 批量写列
 // 等价：把一行行的 INSERT 改成整列批量
@@ -820,6 +1051,10 @@ void send_block(Connection& c, const std::vector<double>& prices) {
 > **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库
 
 ```cpp title="示例 37 · ★☆☆☆☆"
+struct redisContext;
+void redisAppendCommand(redisContext*, const char*);
+void* redisGetReply(redisContext*, void**);
+
 // ⑭ Redis C++ 客户端（hiredis / redis-plus-plus）单连接串行发命令
 // 等价：pipeline 把多条命令攒一批，减少事件循环往返
 void pipeline(redisContext* c) {
@@ -861,12 +1096,46 @@ struct AggregateSum {
 > **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 贡献
 
 ```cpp title="示例 40 · ★★☆☆☆"
+
+#include <chrono>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+
 // ⑮ Redis 贡献范式：新命令是事件循环里的一个回调，必须 O(1)/O(log N)
-// 等价：命令处理函数签名固定，单线程内执行
-void mycommandCommand(client* c) {
-    // 只能做常数/对数级工作，否则阻塞全实例
-    addReply(c, shared.ok);
+struct Shared { std::string ok{"+OK\r\n"}; };
+struct Client { std::string reply; };
+static Shared shared;
+static void addReply(Client* c, const std::string& s) { c->reply = s; }
+
+static std::unordered_map<std::string, std::string> g_store;
+
+static void getCommand(Client* c, const std::string& key) {     // ✅ O(1)
+    auto it = g_store.find(key);
+    addReply(c, it == g_store.end() ? "$-1\r\n" : it->second);
 }
+static void keysCommand(Client* c) {                            // ❌ O(N)
+    std::string out;
+    for (const auto& kv : g_store) out += kv.first + " ";
+    addReply(c, out);
+}
+
+int main() {
+    for (int i = 0; i < 100000; ++i) g_store["k" + std::to_string(i)] = "v";
+    Client c;
+    const int N = 200000;
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) getCommand(&c, "k1");
+    auto t1 = std::chrono::steady_clock::now();
+    keysCommand(&c);
+    auto t2 = std::chrono::steady_clock::now();
+    double one = std::chrono::duration<double, std::nano>(t1 - t0).count() / N;
+    double all = std::chrono::duration<double, std::nano>(t2 - t1).count();
+    std::cout << "GET（O(1)）：" << one << " ns/次\n";
+    std::cout << "KEYS *（O(N)，10 万键）：" << all / 1000.0 << " us/次\n";
+    std::cout << "一次 KEYS ≈ " << static_cast<int>(all / one) << " 次 GET 的时间\n";
+}
+
 ```
 
 给这类项目提 PR，最易被拒的理由是「引入分支打断向量化」或「回调变慢」。贡献前先用 `-fopt-info-vec` 自证没退化。
@@ -895,6 +1164,13 @@ public:
 > **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工程应用
 
 ```cpp title="示例 42 · ★★☆☆☆"
+#include <unordered_map>
+class Connection {                    // 上游连接对象的最小替身
+public:
+    void recv() {}
+    void handle() {}
+};
+
 #include <map>
 // ⑯ 场景：高并发网关用单线程事件循环复用连接（Redis 模型）
 class Gateway {
@@ -953,9 +1229,54 @@ double par_sum(const std::vector<double>& v) {
 > **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能对比
 
 ```cpp title="示例 46 · ★★☆☆☆"
-// ⑰ Redis vs 多线程 KV：单线程无锁，但受单核限制
-// 等价对比：单线程事件循环 QPS 上限 ≈ 单核 IPC / 每条命令周期数
-// 多线程 KV 上限 ≈ 核数 × 单核，但需锁/无锁结构（如分片哈希）
+
+#include <atomic>
+#include <chrono>
+#include <iostream>
+#include <thread>
+#include <unordered_map>
+#include <vector>
+
+// ⑰ 单线程无锁 KV vs 多线程分片 KV
+using Clock = std::chrono::steady_clock;
+constexpr int OPS = 400000;
+
+static long long single_threaded() {
+    std::unordered_map<int, int> m;
+    long long sink = 0;
+    auto t0 = Clock::now();
+    for (int i = 0; i < OPS; ++i) { m[i % 1000] = i; sink += m[i % 1000]; }
+    auto t1 = Clock::now();
+    std::cout << "单线程无锁：" << std::chrono::duration<double, std::nano>(t1 - t0).count() / OPS
+              << " ns/op\n";
+    return sink;
+}
+
+struct Shard { std::unordered_map<int, int> m; };
+
+int main() {
+    long long sink = single_threaded();
+    const int T = 4;
+    std::vector<Shard> shards(static_cast<size_t>(T));   // 分片：每线程一个子表，无共享
+    std::atomic<long long> total{0};
+    auto worker = [&](int t) {
+        long long s = 0;
+        for (int i = 0; i < OPS / T; ++i) {
+            shards[static_cast<size_t>(t)].m[i % 1000] = i;
+            s += shards[static_cast<size_t>(t)].m[i % 1000];
+        }
+        total += s;
+    };
+    auto t0 = Clock::now();
+    std::vector<std::thread> ts;
+    for (int t = 0; t < T; ++t) ts.emplace_back(worker, t);
+    for (auto& t : ts) t.join();
+    auto t1 = Clock::now();
+    std::cout << "4 线程分片：" << std::chrono::duration<double, std::nano>(t1 - t0).count() / OPS
+              << " ns/op\n";
+    std::cout << "sink=" << (sink != 0) << " total=" << (total.load() != 0) << "\n";
+}
+
 ```
 
 向量化解决「单核算力利用率」，单线程事件循环解决「并发正确性」；二者正交，可叠加（ClickHouse 既向量化又多线程分片）。
@@ -965,30 +1286,140 @@ double par_sum(const std::vector<double>& v) {
 > **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 
 ```cpp title="示例 47 · ★☆☆☆☆"
-// ⑱ 读 ClickHouse 源码路径（上游参考）：从 IColumn 入手
-// src/Columns/IColumn.h        —— 列抽象
-// src/Columns/ColumnVector.cpp —— 具体列 + 向量化 kernel 入口
-// src/Interpreters/ExpressionActions.cpp —— 向量化调度
-// 读法：先跟一个 SELECT 的列如何被切成 Block，再到 executeOnColumn。
+
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+
+// ⑱ 读 ClickHouse 源码的入口是 src/Columns/IColumn.h；本机未安装其源码，
+//    这里给出等价的最小模型：一个 Block 由若干"列"拼成，聚合按列批量走。
+struct IColumn {
+    virtual ~IColumn() = default;
+    virtual std::string name() const = 0;
+    virtual size_t size() const = 0;
+};
+template <typename T>
+struct ColumnVector : IColumn {
+    std::string n;
+    std::vector<T> data;
+    ColumnVector(std::string name_, std::vector<T> d) : n(std::move(name_)), data(std::move(d)) {}
+    std::string name() const override { return n; }
+    size_t size() const override { return data.size(); }
+};
+
+struct Block {                                   // Block = 一批行的"列切片"
+    std::vector<std::unique_ptr<IColumn>> cols;
+    size_t rows() const { return cols.empty() ? 0 : cols[0]->size(); }
+};
+
+static double sum_column(const std::vector<double>& c) {   // 向量化 kernel 入口形态
+    double s = 0;
+    for (double v : c) s += v;
+    return s;
+}
+
+int main() {
+    Block b;
+    b.cols.push_back(std::make_unique<ColumnVector<double>>("price", std::vector<double>{1, 2, 3, 4}));
+    b.cols.push_back(std::make_unique<ColumnVector<int>>("qty", std::vector<int>{10, 20, 30, 40}));
+    std::cout << "Block 列数=" << b.cols.size() << " 行数=" << b.rows() << "\n";
+    for (const auto& c : b.cols) std::cout << "  列 " << c->name() << " size=" << c->size() << "\n";
+    const auto& price = static_cast<ColumnVector<double>&>(*b.cols[0]).data;
+    std::cout << "SUM(price)=" << sum_column(price) << "\n";
+}
+
 ```
 
 > **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 / 源码阅读
 
 ```cpp title="示例 48 · ★☆☆☆☆"
-// ⑱ 读 Redis 源码路径（上游参考）：从 aeMain 入手
-// src/ae.c / src/ae.h          —— 事件循环
-// src/server.c                 —— 主函数调 aeMain
-// src/networking.c             —— 命令读取与回复
-// 读法：跟一个 GET 命令从 epoll_wait 就绪到 call 回调再到 addReply。
+
+#include <functional>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+// ⑱ 读 Redis 源码的入口是 src/ae.c 的 aeMain；本机未安装其源码，
+//    这里给出等价的最小模型：注册 fd -> 回调，循环取出就绪事件并分发。
+struct EventLoop {
+    std::unordered_map<int, std::function<void(int)>> read_handlers;
+    std::vector<int> fired;                      // 就绪队列（等价 aeApiPoll 的结果）
+
+    void on_read(int fd, std::function<void(int)> h) { read_handlers[fd] = std::move(h); }
+    void fire(int fd) { fired.push_back(fd); }
+    int process() {                              // 单线程：串行分发
+        int n = 0;
+        for (int fd : fired) {
+            auto it = read_handlers.find(fd);
+            if (it != read_handlers.end()) { it->second(fd); ++n; }
+        }
+        fired.clear();
+        return n;
+    }
+};
+
+int main() {
+    EventLoop el;
+    std::unordered_map<std::string, std::string> store{{"k", "v"}};
+    std::string out;
+    // 真实 RESP 是 "$1\r\nv\r\n"；这里用 | 代替换行，便于直接打印
+    el.on_read(3, [&](int) { out = "$1|" + store["k"] + "|"; });   // 一个 GET
+    el.fire(3);
+    el.fire(4);                                  // 无处理器的 fd：被忽略
+    int handled = el.process();
+    std::cout << "本轮就绪事件=2 实际分发=" << handled << "\n";
+    std::cout << "GET k 的回复（RESP）：" << out << "\n";
+}
+
 ```
 
 > **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读
 
 ```cpp title="示例 49 · ★★☆☆☆"
-// ⑱ 本地用 perf（Linux）看是否真向量化
-// perf record ./clickhouse ...
-// perf annotate -> 找 vaddps/vmulps 即证明向量化命中
-// Windows 等价：VTune / 看寄存器 zmm0 是否被写
+
+#include <chrono>
+#include <cstddef>
+#include <iostream>
+#include <vector>
+
+// ⑱ 本机没有 perf/VTune，用 GCC 自带的 -fopt-info-vec 取证：
+//    g++ -std=c++23 -O3 -march=native -fopt-info-vec -c kernel.cpp
+//    实测输出：optimized: loop vectorized using 64 byte vectors
+//              optimized:  loop versioned for vectorization because of possible aliasing
+//    第二行说明编译器因为"可能的别名"额外生成了运行时检查版本。
+static void fma_vec(const double* __restrict a, const double* __restrict b,
+                    double* __restrict out, size_t n) {
+    for (size_t i = 0; i < n; ++i) out[i] = a[i] * b[i] + a[i];
+}
+
+#pragma GCC push_options
+#pragma GCC optimize("O2", "no-tree-vectorize")
+static void fma_novec(const double* __restrict a, const double* __restrict b,
+                      double* __restrict out, size_t n) {
+    for (size_t i = 0; i < n; ++i) out[i] = a[i] * b[i] + a[i];
+}
+#pragma GCC pop_options
+
+int main() {
+    const size_t N = 1024;                       // 8KB，驻留 L1
+    std::vector<double> a(N), b(N, 2.0), o(N);
+    for (size_t i = 0; i < N; ++i) a[i] = 1.0 + (i % 7) * 0.01;
+    double sink = 0;
+    constexpr int R = 300000;
+    auto bench = [&](const char* tag, void (*f)(const double*, const double*, double*, size_t)) {
+        auto t0 = std::chrono::steady_clock::now();
+        for (int r = 0; r < R; ++r) { f(a.data(), b.data(), o.data(), N); sink += o[0]; }
+        auto t1 = std::chrono::steady_clock::now();
+        std::cout << tag << std::chrono::duration<double, std::nano>(t1 - t0).count()
+                         / static_cast<double>(R * N) << " ns/elem\n";
+    };
+    bench("向量化（-O3 -march=native）  ：", fma_vec);
+    bench("禁用向量化（no-tree-vectorize）：", fma_novec);
+    std::cout << "sink=" << static_cast<long long>(sink) << "\n";
+}
+
 ```
 
 源码阅读顺序决定理解速度——**先数据结构（IColumn / aeFileEvent），后控制流（executeOnColumn / aeMain）**。
@@ -998,11 +1429,46 @@ double par_sum(const std::vector<double>& v) {
 > **示例 50** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
 
 ```cpp title="示例 50 · ★★☆☆☆"
-// ⑲ 选型决策：用列存向量化还是单线程事件？看瓶颈在哪
+
+#include <chrono>
+#include <iostream>
+#include <vector>
+
+// ⑲ 选型决策：瓶颈决定用列存向量化还是单线程事件循环
 enum class Bottleneck { CPU_COMPUTE, IO_CONCURRENCY, BOTH };
-// CPU_COMPUTE 重（分析、聚合）   -> ClickHouse 式列存 + SIMD
-// IO_CONCURRENCY 重（海量连接）  -> Redis 式单线程事件循环
-// BOTH                           -> 两者组合，或 ClickHouse 多线程分片
+
+static const char* advice(Bottleneck b) {
+    switch (b) {
+        case Bottleneck::CPU_COMPUTE:    return "列存 + SIMD（ClickHouse 式）";
+        case Bottleneck::IO_CONCURRENCY: return "单线程事件循环（Redis 式）";
+        default:                         return "组合：列存 + 多线程分片";
+    }
+}
+
+int main() {
+    std::vector<double> data(1 << 20, 1.0);
+    auto t0 = std::chrono::steady_clock::now();
+    double s = 0;
+    for (double v : data) s += v;                // 计算密集：内存带宽/算力打满
+    auto t1 = std::chrono::steady_clock::now();
+    double compute_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
+
+    // 模拟 IO 密集：大量"连接"但每个只做极少工作
+    const int CONN = 200000;
+    auto t2 = std::chrono::steady_clock::now();
+    long long acc = 0;
+    for (int i = 0; i < CONN; ++i) acc += i % 2;
+    auto t3 = std::chrono::steady_clock::now();
+    double io_ms = std::chrono::duration<double, std::milli>(t3 - t2).count();
+
+    Bottleneck b = (compute_ms > io_ms) ? Bottleneck::CPU_COMPUTE : Bottleneck::IO_CONCURRENCY;
+    std::cout << "扫描 1M 个 double：" << compute_ms << " ms\n";
+    std::cout << "20 万次极短回调：" << io_ms << " ms\n";
+    std::cout << "判定瓶颈=" << (b == Bottleneck::CPU_COMPUTE ? "CPU_COMPUTE" : "IO_CONCURRENCY")
+              << " -> " << advice(b) << "\n";
+    std::cout << "sink=" << static_cast<long long>(s) + acc << "\n";
+}
+
 ```
 
 > **示例 51** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
@@ -1019,8 +1485,45 @@ bool should_vectorize(size_t n, bool branchy) {
 > **示例 52** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
 
 ```cpp title="示例 52 · ★★☆☆☆"
-// ⑲ 不要为「看起来省事」盲目上多线程：Redis 证明单线程也能极高吞吐
-// 等价：若状态共享简单，单线程事件循环比无锁并发更易写对
+
+#include <atomic>
+#include <chrono>
+#include <iostream>
+#include <mutex>
+#include <thread>
+#include <vector>
+
+// ⑲ 不要盲目上多线程：状态共享简单时，单线程比"加锁的多线程"更快
+constexpr int N = 400000;
+
+int main() {
+    long long sink = 0;
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) sink += i % 7;               // 单线程：无锁
+    auto t1 = std::chrono::steady_clock::now();
+    double st = std::chrono::duration<double, std::nano>(t1 - t0).count() / N;
+
+    std::mutex mu;
+    long long shared_sum = 0;
+    auto worker = [&] {
+        for (int i = 0; i < N / 4; ++i) {
+            std::lock_guard<std::mutex> g(mu);                // 每次更新都要加锁
+            shared_sum += i % 7;
+        }
+    };
+    auto t2 = std::chrono::steady_clock::now();
+    std::vector<std::thread> ts;
+    for (int t = 0; t < 4; ++t) ts.emplace_back(worker);
+    for (auto& t : ts) t.join();
+    auto t3 = std::chrono::steady_clock::now();
+    double mt = std::chrono::duration<double, std::nano>(t3 - t2).count() / N;
+
+    std::cout << "单线程无锁      ：" << st << " ns/op\n";
+    std::cout << "4 线程 + mutex  ：" << mt << " ns/op\n";
+    std::cout << "加锁版反而慢 " << static_cast<int>(mt / st) << " 倍\n";
+    std::cout << "两者都完成 40 万次更新=" << (sink != 0 && shared_sum != 0) << "\n";
+}
+
 ```
 
 列存向量化与单线程事件循环是两种「用约束换性能」的哲学——前者约束数据布局，后者约束并发模型。选型时先认清你的约束。
@@ -1044,45 +1547,173 @@ bool should_vectorize(size_t n, bool branchy) {
 > **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表
 
 ```cpp title="示例 53 · ★☆☆☆☆"
-// ⑳ ClickHouse 向量化速查
-// - 数据按列连续存放（ColumnVector<T>），不用 struct-of-row
-// - hot loop 无分支、无别名（用 __restrict）、对齐 64B
-// - 用 -O3 -march=native -fopt-info-vec 验证是否被向量化
-// - 上游入口：src/Columns/IColumn.h / ColumnVector.cpp / ExpressionActions.cpp
+
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <iostream>
+#include <vector>
+
+// ⑳ ClickHouse 向量化速查，逐条落到可验证的事实
+struct alignas(64) AlignedBlock { double v[8]; };
+
+// 用"无循环依赖 + 数据驻留 L1"的 kernel，分支代价才不会被带宽掩盖
+static void kernel_nobranch(const double* a, const double* b, double* out, size_t n) {
+    for (size_t i = 0; i < n; ++i) out[i] = a[i] + b[i];
+}
+static void kernel_branch(const double* a, const double* b, double* out, size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+        if (a[i] > 1.0) out[i] = a[i] + b[i];      // 分支打断 SIMD
+        else            out[i] = a[i] - b[i];
+    }
+}
+
+int main() {
+    AlignedBlock blk;
+    std::cout << "① 列连续：alignas(64) 后地址 %64 = "
+              << reinterpret_cast<std::uintptr_t>(&blk) % 64 << "\n";
+    std::cout << "   sizeof(AlignedBlock)=" << sizeof(AlignedBlock)
+              << " alignof=" << alignof(AlignedBlock) << "\n";
+
+    const size_t N = 1024;                        // 8KB，驻留 L1
+    std::vector<double> a(N), b(N, 2.0), o(N);
+    for (size_t i = 0; i < N; ++i) a[i] = (i % 2 == 0) ? 2.0 : 0.5;
+    volatile double sink = 0;
+    constexpr int R = 200000;
+    auto bench = [&](const char* tag, void (*f)(const double*, const double*, double*, size_t)) {
+        auto t0 = std::chrono::steady_clock::now();
+        for (int r = 0; r < R; ++r) { f(a.data(), b.data(), o.data(), N); sink += o[0]; }
+        auto t1 = std::chrono::steady_clock::now();
+        std::cout << tag << std::chrono::duration<double, std::nano>(t1 - t0).count()
+                         / static_cast<double>(R * N) << " ns/elem\n";
+    };
+    bench("② 无分支循环：", kernel_nobranch);
+    bench("③ 带分支循环：", kernel_branch);
+    std::cout << "④ 取证命令：-O3 -march=native -fopt-info-vec（看是否 loop vectorized）\n";
+    std::cout << "sink=" << static_cast<long long>(sink) << "\n";
+}
+
 ```
 
 > **示例 54** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 
 ```cpp title="示例 54 · ★★☆☆☆"
-// ⑳ Redis 事件循环速查
-// - 单线程 aeMain 循环，epoll/kqueue/select 多路复用
-// - 每个 fd 一个 aeFileEvent{ rfileProc, wfileProc }
-// - 回调必须 O(1)/O(log N)，慢命令阻塞整个实例
-// - 上游入口：src/ae.c / src/ae.h / src/server.c
+
+#include <chrono>
+#include <iostream>
+#include <vector>
+
+// ⑳ Redis 事件循环速查，落到可跑的最小模型
+struct Handler { int fd; unsigned long long calls; void (*fn)(int); };
+static unsigned long long g_work = 0;
+static void on_read(int fd) { g_work += static_cast<unsigned long long>(fd); }   // 回调必须极短
+
+int main() {
+    std::vector<Handler> handlers;
+    for (int fd = 1; fd <= 1000; ++fd) handlers.push_back(Handler{fd, 0, on_read});
+    std::vector<int> fired;
+    for (int fd = 1; fd <= 1000; ++fd) fired.push_back(fd);
+
+    auto t0 = std::chrono::steady_clock::now();
+    for (int round = 0; round < 1000; ++round) {
+        for (int fd : fired) {                                  // 单线程串行分发
+            handlers[static_cast<size_t>(fd - 1)].fn(fd);
+            ++handlers[static_cast<size_t>(fd - 1)].calls;
+        }
+    }
+    auto t1 = std::chrono::steady_clock::now();
+    double per = std::chrono::duration<double, std::nano>(t1 - t0).count() / (1000.0 * 1000.0);
+    std::cout << "① 单线程分发 100 万次事件：" << per << " ns/次\n";
+    std::cout << "② 每个 fd 一个处理器，调用次数="
+              << handlers[0].calls << " " << handlers[999].calls << "\n";
+    std::cout << "③ 回调体只做一次加法，故能跑到 " << per << " ns/次\n";
+    std::cout << "④ 上游入口：src/ae.c（aeMain / aeProcessEvents）\n";
+}
+
 ```
 
 > **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表
 
 ```cpp title="示例 55 · ★★☆☆☆"
-// ⑳ 本机可复现实证命令（GCC 13.1.0）
-// g++ -std=c++20 -O3 -march=native -S -masm=intel \
-// Examples/_ch133_vectorize.cpp -o Examples/_ch133_vectorize.asm
-// g++ -std=c++20 -O2 -S -masm=intel \
-// Examples/_ch133_eventloop.cpp -o Examples/_ch133_eventloop.asm
-// 关键汇编：vaddps zmm / vmulps zmm / vfmadd231ss（向量化）
-// call rax（事件循环回调分发）
+
+#include <iostream>
+
+// ⑳ 本章取证命令（GCC 15.3.0，路径 C:/Qt/Tools/mingw1530_64/bin/g++.exe）：
+//    g++ -std=c++23 -O3 -march=native -fopt-info-vec -S -masm=intel Examples/_ch133_vectorize.cpp -o Examples/_ch133_vectorize.asm
+//    g++ -std=c++23 -O2 -S -masm=intel Examples/_ch133_eventloop.cpp -o Examples/_ch133_eventloop.asm
+// 实测 -fopt-info-vec 的真实输出（column_add 循环体）：
+//    optimized: loop vectorized using 64 byte vectors
+//    optimized:  loop versioned for vectorization because of possible aliasing
+//    optimized: loop vectorized using 32 byte vectors
+//    optimized: loop vectorized using 16 byte vectors
+// 关键汇编特征：vaddps / vmulps / vfmadd231ps（向量化命中）
+//              call rax（事件循环的回调分发）
+// 注：本章正文不直接摘录汇编片段，汇编产物存于 Examples/ 供自行比对。
+int main() {
+    std::cout << "取证编译器：";
+#ifdef __VERSION__
+    std::cout << __VERSION__ << "\n";
+#endif
+    std::cout << "本章 asm 产物：Examples/_ch133_vectorize.asm、"
+                 "Examples/_ch133_eventloop.asm\n";
+}
+
 ```
 
 > **示例 56** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表
 
 ```cpp title="示例 56 · ★★★☆☆"
+
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <iostream>
+#include <memory>
 #include <span>
-// ⑳ C++ 特性映射
-// 模板       -> ColumnVector<T> 零开销类型分发
-// 智能指针   -> 连接/资源 RAII（hot path 避免 shared_ptr）
-// 内存池     -> Arena bump-pointer 批量分配/释放
-// std::span  -> 零拷贝列视图（C++20）
-// if constexpr-> 编译期 SIMD 后端选择（C++17）
+#include <vector>
+
+// ⑳ C++ 特性到上游用法的映射，逐条给出可观测证据
+struct Arena {                                   // bump pointer：O(1) 分配，批量释放
+    std::vector<char> buf;
+    size_t off = 0;
+    explicit Arena(size_t n) : buf(n) {}
+    void* alloc(size_t n) {
+        void* p = buf.data() + off;
+        off += n;
+        return p;
+    }
+};
+
+template <typename T>
+static constexpr const char* column_kind() {      // 模板：零开销类型分发
+    if constexpr (sizeof(T) == 8) return "8 字节列";
+    else return "其他宽度列";
+}
+
+int main() {
+    std::cout << "智能指针：sizeof(unique_ptr<int>)=" << sizeof(std::unique_ptr<int>)
+              << " vs sizeof(shared_ptr<int>)=" << sizeof(std::shared_ptr<int>) << "\n";
+
+    std::vector<double> col(1000, 1.0);
+    std::span<double> view(col.data(), col.size());   // 零拷贝列视图
+    std::cout << "std::span：sizeof=" << sizeof(view) << " 元素数=" << view.size() << "\n";
+
+    const int N = 200000;
+    volatile std::uintptr_t keep = 0;             // 防止分配被整体优化掉
+    auto t0 = std::chrono::steady_clock::now();
+    Arena arena(static_cast<size_t>(N) * 32);
+    for (int i = 0; i < N; ++i) keep += reinterpret_cast<std::uintptr_t>(arena.alloc(32));
+    auto t1 = std::chrono::steady_clock::now();
+    auto t2 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) { auto* p = new char[32]; keep += reinterpret_cast<std::uintptr_t>(p); }
+    auto t3 = std::chrono::steady_clock::now();
+    std::cout << "Arena bump 分配 " << N << " 次："
+              << std::chrono::duration<double, std::milli>(t1 - t0).count() << " ms\n";
+    std::cout << "逐个 new 同次数："
+              << std::chrono::duration<double, std::milli>(t3 - t2).count() << " ms\n";
+    std::cout << "模板分发：" << column_kind<double>() << " / " << column_kind<int>() << "\n";
+}
+
 ```
 
 记不住细节就看速查表的四行——**列连续、循环无分支、单线程无锁、先 profile 再优化**。
@@ -1156,18 +1787,51 @@ int main() {
 > **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ㉑.3 真实 API 长什么样
 
 ```cpp title="示例 58 · ★★☆☆☆"
-// ㉑.3 真实 Redis / ClickHouse C++ 客户端写法（仅注释演示，需链接 redis++/hiredis / clickhouse-cpp；本门禁按空块编译通过）：
-//// ① Redis（redis-plus-plus，基于 hiredis）
-// #include <sw/redis++/redis++.h>
-// sw::redis::Redis r("tcp://127.0.0.1:6379");
-// r.set("session", "abc123");          // SET
-// r.expire("session", 60);             // EXPIRE 60 秒
-// auto v = r.get("session");           // GET -> std::optional<std::string>
-//// ② ClickHouse（clickhouse-cpp，按列批量发送）
-// #include <clickhouse/client.h>
-// clickhouse::Client c(clickhouse::ClientOptions().SetHost("localhost"));
-// c.Execute("INSERT INTO hits VALUES", clickhouse::Values{1, "alice", 3.14});
-// 官方文档：https://github.com/sewenew/redis-plus-plus  |  https://github.com/ClickHouse/clickhouse-cpp
+
+#include <cstddef>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+// ㉑.3 真实客户端（redis-plus-plus / clickhouse-cpp）本机未安装，先探测再降级
+int main() {
+    std::cout << "__has_include(<sw/redis++/redis++.h>)=";
+#if __has_include(<sw/redis++/redis++.h>)
+    std::cout << 1 << "\n";
+#else
+    std::cout << 0 << "\n";
+#endif
+    std::cout << "__has_include(<clickhouse/client.h>)=";
+#if __has_include(<clickhouse/client.h>)
+    std::cout << 1 << "\n";
+#else
+    std::cout << 0 << "\n";
+#endif
+    std::cout << "__has_include(<hiredis/hiredis.h>)=";
+#if __has_include(<hiredis/hiredis.h>)
+    std::cout << 1 << "\n";
+#else
+    std::cout << 0 << "\n";
+#endif
+
+    // 未安装时的等价替代：① 解析 RESP 回复；② 按列批量序列化（ClickHouse 的块写入思想）
+    // 真实 RESP 以 \r\n 分隔（"$3\r\nval\r\n"）；这里用 | 代替，便于直接打印
+    std::string reply = "$3|val|";
+    std::istringstream is(reply);
+    std::string len_line, body;
+    std::getline(is, len_line, '|');
+    std::getline(is, body, '|');
+    std::cout << "RESP 解析：长度标记=" << len_line << " 值=" << body << "\n";
+
+    std::vector<double> price{1.5, 2.5, 3.5};
+    std::vector<int> qty{10, 20, 30};
+    std::ostringstream os;
+    for (size_t i = 0; i < price.size(); ++i) os << price[i] << "\t" << qty[i] << "\n";
+    std::cout << "按列批量序列化（TabSeparated）行数=" << price.size()
+              << " 字节数=" << os.str().size() << "\n";
+}
+
 ```
 
 ### ㉑.4 端到端：怎么把它接进你的工程
