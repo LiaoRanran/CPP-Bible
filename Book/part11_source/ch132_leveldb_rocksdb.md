@@ -154,12 +154,32 @@ LevelDB 的单库由下列部件组成，全部是 C++ 类，体现 RAII 与明�
 > **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 架构
 
 ```cpp title="示例 4 · ★★☆☆☆"
-// ② 核心类（上游参考，类名与 leveldb 1.23 一致）
-// DBImpl        : 引擎门面，持有 MemTable / 版本集 / 后台线程
-// MemTable      : 内存跳表（SkipList），提供 Insert/Get
-// VersionSet    : 管理各层 SSTable 的元数据（MANIFEST）
-// Table / TableBuilder : SSTable 读写（block + 索引 + 布隆）
-// log::Writer   : WAL，顺序追加写入
+// ② 核心类（上游 leveldb 1.23 类名）：用 unique_ptr 实证「RAII 与明确所有权」
+#include <cstdio>
+#include <memory>
+#include <string>
+#include <vector>
+
+struct MemTable { int entries = 0; void Add(int) { ++entries; } };          // MemTable：内存跳表（此处以计数表征 Insert）
+struct VersionSet { std::vector<std::string> levels; };                     // VersionSet：各层 SSTable 元数据（MANIFEST）
+struct LogWriter { long long bytes = 0;                                     // log::Writer：WAL 顺序追加
+                   void Append(const std::string& rec) { bytes += static_cast<long long>(rec.size()) + 1; } };
+
+struct DBImpl {                                                             // 引擎门面：独占持有全部部件
+    std::unique_ptr<MemTable>   mem  = std::make_unique<MemTable>();
+    std::unique_ptr<VersionSet> vers = std::make_unique<VersionSet>();
+    std::unique_ptr<LogWriter>  wal  = std::make_unique<LogWriter>();
+};  // 门面析构 => 按声明逆序释放部件（RAII）
+
+int main() {
+    DBImpl impl;
+    impl.mem->Add(1);
+    impl.wal->Append("PUT 1=1");
+    impl.vers->levels = {"L0", "L1", "L2", "L3", "L4", "L5", "L6"};         // LevelDB 共 7 层
+    std::printf("DBImpl 持有 mem=%d 条 / WAL=%lld B / %zu 层 SSTable\n",
+                impl.mem->entries, impl.wal->bytes, impl.vers->levels.size());
+    //@ DBImpl 持有 mem=1 条 / WAL=8 B / 7 层 SSTable
+}
 ```
 
 > **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 架构
@@ -371,11 +391,31 @@ int main() {
 > **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · [实现·LevelDB]源码剖析：D
 
 ```cpp title="示例 11 · ★★☆☆☆"
-// ③ MaybeScheduleCompaction 触发后台线程（后台 Compaction 总览）
-// 上游参考：https://github.com/google/leveldb/blob/main/db/db_impl.cc
-// 行号：约 1100（BackgroundCompaction 入口，上游参考）
-// if (imm_ != nullptr) { CompactMemTable(); }   // 内存表落盘
-// else { DoCompactionWork(...); }               // 层间合并
+// ③ MaybeScheduleCompaction 触发策略（上游 db/db_impl.cc；kL0_CompactionTrigger=4 为上游常量）
+#include <cstdio>
+
+struct Engine {
+    int imm_memtables = 0;   // immutable memtable 数（写满切出后待刷）
+    int l0_files = 0;        // L0 SSTable 数
+
+    const char* maybe_schedule() const {
+        if (imm_memtables > 0) return "CompactMemTable：先刷 immutable 内存表落盘";
+        if (l0_files >= 4) return "DoCompactionWork：L0 文件达 kL0_CompactionTrigger(4)，层间合并";
+        return "不调度：无积压";
+    }
+};
+
+int main() {
+    Engine e;
+    std::printf("%s\n", e.maybe_schedule());
+    //@ 不调度：无积压
+    e.l0_files = 5;
+    std::printf("%s\n", e.maybe_schedule());
+    //@ DoCompactionWork：L0 文件达 kL0_CompactionTrigger(4)，层间合并
+    e.imm_memtables = 1;   // immutable 优先级最高：先刷盘，再层间合并
+    std::printf("%s\n", e.maybe_schedule());
+    //@ CompactMemTable：先刷 immutable 内存表落盘
+}
 ```
 
 ## ④ RocksDB 扩展（列族/合并/压缩） [实现·RocksDB]
@@ -1311,21 +1351,21 @@ const char* pick(bool need_sql, bool need_high_write) {
 
 > **示例 64** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 
-```cpp title="示例 64 · ★☆☆☆☆"
-// ⑰ LevelDB 从源码构建（上游参考，非本机命令输出）
-// git clone https://github.com/google/leveldb.git
-// cd leveldb && mkdir -p build && cd build
-// cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . -j
-// 产物：libleveldb.a / libleveldb.so
+```bash
+# ⑰ LevelDB 从源码构建（上游官方命令；本机未构建，无自验输出）
+git clone https://github.com/google/leveldb.git
+cd leveldb && mkdir -p build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . -j
+# 产物：build/libleveldb.a（静态）与 libleveldb.so（动态）
 ```
 
 > **示例 65** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
 
-```cpp title="示例 65 · ★☆☆☆☆"
-// ⑰ RocksDB 从源码构建（上游参考）
-// git clone https://github.com/facebook/rocksdb.git
-// cd rocksdb && mkdir -p build && cd build
-// cmake -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=OFF .. && cmake --build . -j
+```bash
+# ⑰ RocksDB 从源码构建（上游官方命令；本机未构建，无自验输出）
+git clone https://github.com/facebook/rocksdb.git
+cd rocksdb && mkdir -p build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=OFF .. && cmake --build . -j
 ```
 
 > **示例 66** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
@@ -1485,11 +1525,13 @@ db->GetProperty("rocksdb.cfstats", &h);     // 每列族详细统计
 
 > **示例 74** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
 
-```cpp title="示例 74 · ★☆☆☆☆"
-// ⑲ 断点建议：在 DBImpl::Write / MemTable::Add / Compaction 入口下断
-// 用 gdb 看真实的 SequenceNumber 推进与 writers_ 队列合并
-// (gdb) b leveldb::DBImpl::Write
-// (gdb) r
+```bash
+# ⑲ 断点：DBImpl::Write / MemTable::Add / Compaction 入口（gdb 批处理形式）
+gdb -q -batch \
+    -ex "break leveldb::DBImpl::Write" \
+    -ex "break leveldb::MemTable::Add" \
+    -ex run ./your_db_tool
+# 观察点：SequenceNumber 推进、writers_ 队列合并
 ```
 
 - `[经验]`：先读 `doc/` 与 `README` 再读 `db_impl.cc`；跳表与 SSTable 是两块独立易读代码，优先攻克。
@@ -1650,26 +1692,50 @@ int main() {
 > **示例 80** <span class="badge badge-exp">难度 ★★★☆☆</span> · ㉑.3 真实 API 长什么样
 
 ```cpp title="示例 80 · ★★★☆☆"
-// ㉑.3 真实 LevelDB / RocksDB 写法（仅注释演示，需链接 leveldb / rocksdb；本门禁按空块编译通过）：
-// #include <leveldb/db.h>
-// #include <rocksdb/db.h>
-//// ① 打开（LevelDB）
-// leveldb::DB* db = nullptr;
-// leveldb::Options opt; opt.create_if_missing = true;
-// leveldb::DB::Open(opt, "/tmp/testdb", &db);
-//// ② 原子批量写（WAL 单条 record，要么全见要么全不见）
-// leveldb::WriteBatch batch;
-// batch.Put("a", "1"); batch.Put("b", "2"); batch.Delete("c");
-// db->Write(leveldb::WriteOptions(), &batch);
-//// ③ 范围扫描（LevelDB 合并各层形成有序视图）
-// leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
-// for (it->Seek("a"); it->Valid() && it->key().ToString() < "z"; it->Next()) { }
-// delete it;
-//// ④ RocksDB 对应：Open 多一个 ColumnFamilyHandle 参数（见第④节）
-// rocksdb::DB* rdb; std::vector<rocksdb::ColumnFamilyHandle*> hs;
-// rocksdb::DB::Open(rocksdb::DBOptions(), "/tmp/rdb",
-// {rocksdb::ColumnFamilyDescriptor{"default", rocksdb::ColumnFamilyOptions{}}}, &hs, &rdb);
-// 官方文档：https://github.com/google/leveldb  |  https://rocksdb.org/docs/
+// ㉑.3 真实 API 的语义等价实证（上游签名见注释；本机未装库，走标准库等价路线）
+#include <cstdio>
+#include <map>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#if __has_include(<leveldb/db.h>)   // 确证缺席：真库在时此分支生效
+#include <leveldb/db.h>
+constexpr bool kHasLeveldb = true;
+#else
+constexpr bool kHasLeveldb = false;
+#endif
+
+// leveldb::WriteBatch：批量要么全见要么全不见（单条 WAL record 原子提交）
+struct WriteBatch {
+    std::vector<std::pair<std::string, std::optional<std::string>>> ops;   // nullopt = Delete
+    void Put(std::string k, std::string v) { ops.emplace_back(std::move(k), std::move(v)); }
+    void Delete(std::string k) { ops.emplace_back(std::move(k), std::nullopt); }
+};
+
+int main() {
+    std::printf("leveldb 头文件：%s\n", kHasLeveldb ? "在" : "缺席（走标准库等价实证）");
+    //@ leveldb 头文件：缺席（走标准库等价实证）
+    std::map<std::string, std::string> db{{"a", "old"}, {"c", "3"}};
+    WriteBatch b;
+    b.Put("a", "1");
+    b.Put("b", "2");
+    b.Delete("c");
+    for (const auto& [k, v] : b.ops) {          // 应用批次：等价 db->Write(WriteOptions(), &batch)
+        if (v) db[k] = *v;
+        else db.erase(k);
+    }
+    std::printf("批次应用后 size=%zu\n", db.size());
+    //@ 批次应用后 size=2
+    for (const auto& [k, v] : db) std::printf("%s=%s\n", k.c_str(), v.c_str());
+    //@ a=1
+    //@ b=2
+    // 范围扫描：NewIterator + Seek("a") 合并各层有序视图 -> map 天然有序，lower_bound 等价
+    auto it = db.lower_bound("a");
+    std::printf("Seek(a) 首键=%s\n", it->first.c_str());
+    //@ Seek(a) 首键=a
+}
 ```
 
 ### ㉑.4 端到端：怎么把它接进你的工程
