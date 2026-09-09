@@ -58,7 +58,7 @@
 
 **框架（framework）**和**库（library）**的本质区别在控制权流向。库是你调用它；框架是它调用你——这就是著名的"好莱坞原则"（Don't call us, we'll call you）。**<span class="badge badge-exp">经验</span>** 亲手写一个迷你框架，价值不在于"再造一个 Boost"，而在于看清 Asio / Qt / 第141章依赖注入容器 这些成熟抽象到底替你屏蔽了什么：对象生命周期、插件装载、事件调度、配置注入。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：从零写框架的意义 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：从零写框架的意义 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 框架在概念上对"应用"的抽象：框架拥有主循环，应用只提供回调
@@ -69,7 +69,7 @@ struct App {
 };
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：从零写框架的意义 <span class="badge badge-exp">经验</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：从零写框架的意义 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <string>
@@ -82,7 +82,7 @@ struct IComponent {
 };
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：概述：从零写框架的意义 <span class="badge badge-exp">经验</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：从零写框架的意义 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 3 · ★★☆☆☆"
 // ① 框架元信息：把"我是谁/版本"当成一等数据，便于 ⑰ 文档生成

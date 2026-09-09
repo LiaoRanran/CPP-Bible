@@ -47,7 +47,7 @@
 
 无锁数据结构（无锁栈/队列/哈希表）的核心矛盾是：**读者正拿着一个节点的指针，写者想把它 `delete`**——没有互斥锁保护"谁还在用"，直接 `delete` 会造成悬垂指针（use-after-free），另一个线程随后解引用即未定义行为。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：并发内存回收的难题 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：并发内存回收的难题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 经典困境：pop 取出节点后能否立即 delete？
@@ -114,7 +114,7 @@ int main() {
 
 Hazard Pointer（HP，Maged Michael, 2004；C++26 已采纳为 `std::hazard_pointer`，见 §⑲）的核心是：**每个读者在解引用共享指针前，先把自己的意图写进一张全局"声明表"**，声明"我正在用这个地址，谁都别动它"。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <atomic>
@@ -132,7 +132,7 @@ int main() {
 }
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原理（读者登记正在用的指针） <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 // ③ 读者协议（伪代码）
@@ -253,7 +253,7 @@ extern "C" void hp_scan_and_reclaim() {
 
 HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次原子写（清除）+ 回收者 O(retired × HP槽) 的扫描**。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：性能特征与开销 <span class="badge badge-exp">经验</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能特征与开销 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 #include <atomic>
@@ -276,7 +276,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：性能特征与开销 <span class="badge badge-exp">经验</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能特征与开销 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ⑥ false sharing 缓解：错位到独立缓存行
@@ -291,7 +291,7 @@ alignas(64) std::atomic<void*> g_hp[MAX_HP];  // ⑥ 每槽占满 64B 缓存行
 
 RCU（Read-Copy-Update，McKenney）走另一条路：**读者完全免锁，只做一次原子指针读；写者不原地改，而是复制一份新对象、改完、再用一次原子写替换指针**。旧对象等"所有正在读的读者都退出了"之后才回收。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：原理：读侧免锁、写侧复制替换 <span class="badge badge-std">标准</span>
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原理：读侧免锁、写侧复制替换 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑦ 写者：复制-修改-替换（不碰旧对象）
@@ -306,7 +306,7 @@ void rcu_update(int t, int w) {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：原理：读侧免锁、写侧复制替换 <span class="badge badge-std">标准</span>
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原理：读侧免锁、写侧复制替换 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑦ 读者：免锁，仅一次原子 load，绝不阻塞
@@ -564,7 +564,7 @@ rcu_update:
 | 适用读者数 | 中（受 HP 槽数限制） | 极大（无上限） |
 | 内存 Peak | 较低（立即回收） | 较高（宽限期内双份共存） |
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：对比 <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对比 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <cstdio>
@@ -673,7 +673,7 @@ int main() {
 
 ## ⑮ 误用案例 <span class="badge badge-exp">经验</span>
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 误用案例 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑮ 误用1：登记后忘记 clear -> 该 HP 槽永远"保护"某地址 -> 内存永漏
@@ -682,7 +682,7 @@ use(p);
 // ❌ 漏写 hp_clear(slot);  -> 此后 p 永不回收
 ```
 
-> **示例 26** [难度 ★★★★☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★★★☆</span> · 误用案例 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★★★★☆"
 // ⑮ 误用2：用普通指针而非原子 load 读共享槽 -> 数据竞争
@@ -690,7 +690,7 @@ use(p);
 Node* raw = reinterpret_cast<Node*>(const_cast<void*>(g_hp[slot].load()));  // ❌ 漏 memory_order
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 误用案例 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑮ 误用3：RCU 写者在宽限期前就 delete 旧对象 -> 读者 UAF
@@ -699,7 +699,7 @@ g_config.store(new Config{...}, release);
 delete old;          // ❌ 应 synchronize_rcu() 之后才 delete
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 误用案例 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑮ 误用4：HP 槽数小于并发读者数 -> 多读者共用一槽 -> 互相覆盖保护
@@ -760,7 +760,7 @@ struct HazardGuard {
 
 以下为**量级示意**（真实数字依赖硬件/负载，本机 GCC 15.3.0 + x86-64 取证的是指令成本，非吞吐）[UNVERIFIED]。
 
-> **示例 31** [难度 ★★★☆☆] [主题：性能基准 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能基准 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★★★☆☆"
 #include <atomic>
@@ -794,7 +794,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：性能基准 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能基准 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★☆☆☆☆"
 #include <atomic>
@@ -827,7 +827,7 @@ int main() {
 [第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)（无锁编程）—— 先确认是否真需无锁再选回收机制
 [第111章　ABA 问题与解决（C++11）](../part09_concurrency/ch111_aba.md)（ABA 问题与解决）—— 选型须评估 ABA 风险等级
 
-> **示例 33** [难度 ★★☆☆☆] [主题：选型指南 <span class="badge badge-exp">经验</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 选型指南 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 33 · ★★☆☆☆"
 #include <cstdio>
@@ -846,7 +846,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：选型指南 <span class="badge badge-exp">经验</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 选型指南 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 34 · ★★☆☆☆"
 #include <cstdio>
@@ -872,7 +872,7 @@ int main() {
 
 C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实现。C++26 已采纳 Hazard Pointer 进入标准库。
 
-> **示例 35** [难度 ★★☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++ 标准方向(无内建) <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 35 · ★★☆☆☆"
 #include <cstdio>
@@ -886,7 +886,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 标准方向(无内建) <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <atomic>
@@ -904,7 +904,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) <span class="badge badge-std">标准</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++ 标准方向(无内建) <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <atomic>
@@ -967,7 +967,7 @@ int main() {
 | 调试 | TSan 抓错误实现 | `-fsanitize=thread` |
 | 标准方向 | HP 进 C++26，RCU 仍靠库 | `std::hazard_pointer` |
 
-> **示例 38** [难度 ★★★☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 38 · ★★★☆☆"
 // ⑳ 最小正确 HP 使用范式（RAII，杜绝误用）

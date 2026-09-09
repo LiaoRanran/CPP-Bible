@@ -78,7 +78,7 @@ deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来�
 
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart TD
@@ -384,7 +384,7 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 6. **deque 的 buffer 大小怎么定？** → 每个 buffer 至少 512 字节（libstdc++），T 小则多装，T 大则每 buffer 一个。
 7. **deque 有 `data()` 返回连续数组吗？** → 没有（不像 vector/array），因为它不是整体连续。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑮ 面试题佐证：erase 使迭代器失效但元素引用不失效（结构演示，完整可编译）
@@ -409,7 +409,7 @@ int main() {
 - **把 deque 当"线程安全队列"** → 不是；需 `mutex`（[第93章　线程与异步：thread / future / async](../part07_stl/ch93_thread_async.md)）。
 - **频繁跨段随机访问热点** → 若访问模式高度随机且跨段多，`vector` 的单一连续访问可能更稳更快。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑯ 易错：erase 后旧迭代器失效（用返回值才正确，完整可编译）
@@ -436,7 +436,7 @@ int main() {
 
 **Q：deque 能用于 `std::vector`-style 的 `data()` 接口吗？** A：不能；它不是连续单块。需要连续内存请用 `vector`/`array`/`span`（[第80章　array 与固定数组](../part07_stl/ch80_array.md)、[第82章　span 与裸数组视图](../part07_stl/ch82_span.md)）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑰ FAQ 佐证：deque 无 data()，但可正常遍历（完整可编译）
@@ -460,7 +460,7 @@ int main() {
 4. 迭代器失效后务必用 `erase`/`insert` 的返回值刷新；不要缓存迭代器跨修改使用。
 5. 高频随机访问且不需双端插入 → 仍用 `vector`（更连续、更快、更省内存）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑱ 最佳实践：deque 作 FIFO 队列（完整可编译）

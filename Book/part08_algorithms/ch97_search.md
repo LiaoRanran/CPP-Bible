@@ -53,7 +53,7 @@
 - **二分查找**：`lower_bound` / `upper_bound` / `equal_range` / `binary_search`，**要求区间已按比较器升序**，复杂度 O(log N)。
 - **哈希查找**：`std::unordered_*` 的 `find` / `count`，平均 O(1)，但不保序、需可哈希。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：查找算法的分类与定位 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：查找算法的分类与定位 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 三族查找的"门面"对比
@@ -77,7 +77,7 @@ int demo() {
 
 `std::find(first, last, value)` 从头到尾逐个比较 `==`，返回首个相等元素的迭代器，找不到返回 `last`。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：线性查找 std::find <span class="badge badge-std">标准</span>
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 线性查找 std::find <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ② 基本用法：返回首个等于 value 的迭代器
@@ -91,7 +91,7 @@ int find_basic() {
 }
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：线性查找 std::find <span class="badge badge-std">标准</span>
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 线性查找 std::find <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ② 找不到时返回 last（必须判等，绝不可解引用）
@@ -104,7 +104,7 @@ bool find_missing() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：线性查找 std::find <span class="badge badge-std">标准</span>
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 线性查找 std::find <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ② find_first_of：在 [first,last) 中找"任一"目标集合元素
@@ -191,7 +191,7 @@ int count_via_bounds() {
 
 `std::binary_search` 是 `lower_bound` 的薄封装：找到 `lower_bound`，再判断该位置是否等于 value。复杂度 O(log N)，但**只返回 bool**。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：search <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · search <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ④ binary_search：仅回答"在不在"
@@ -203,7 +203,7 @@ bool contains_demo() {
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：search <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · search <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ④ 等价展开：binary_search 约等于 lower_bound 后比较
@@ -270,7 +270,7 @@ _Z15lower_bound_idxPKiii:
 
 `<algorithm>` 提供一组**要求两区间都已排序**的集合算法，输出到 `result`，复杂度 O(N+M)。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 有序区间算法：集合操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑥ set_union：并集（已排序两区间 -> 合并）
@@ -286,7 +286,7 @@ std::vector<int> union_demo() {
 }
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 有序区间算法：集合操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑥ set_intersection：交集
@@ -302,7 +302,7 @@ std::vector<int> inter_demo() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 有序区间算法：集合操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑥ includes：a 是否包含 b 的全部元素（返回 bool）
@@ -314,7 +314,7 @@ bool includes_demo() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 有序区间算法：集合操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑥ merge：稳定归并两个有序区间（std::sort 的归并步）
@@ -547,7 +547,7 @@ bool hash_contains_demo() {
 
 二分算法依赖**严格弱序**（strict weak ordering）：`comp(a,b)` 必须满足非自反、非对称、传递，且等价（equivalence）`!comp(a,b) && !comp(b,a)` 是等价关系。默认 `comp = std::less`（即 `<`）。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：比较器与等价关系 <span class="badge badge-std">标准</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 比较器与等价关系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 // ⑫ 降序区间必须用同一比较器，否则二分 UB
@@ -560,7 +560,7 @@ int desc_lower_bound() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：比较器与等价关系 <span class="badge badge-std">标准</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 比较器与等价关系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑫ 等价关系：用 < 定义"相等"——两者都不小于对方即等价
@@ -580,7 +580,7 @@ bool approx_equiv(double a, double b, double eps) {
 
 当查找条件不是"相等"而是"满足某属性"，用谓词；当比较的是对象的某成员，用投影或自定义比较器，避免手写 lambda 包一层。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：自定义查找（谓词 / 投影） <span class="badge badge-std">标准</span>
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义查找（谓词 / 投影） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 28 · ★☆☆☆☆"
 // ⑬ 用 find_if + lambda 按成员查找
@@ -595,7 +595,7 @@ int find_by_age(const std::vector<Person>& v, int a) {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：自定义查找（谓词 / 投影） <span class="badge badge-std">标准</span>
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义查找（谓词 / 投影） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑬ 自定义二分：在按 .age 排序的区间里定位
@@ -627,7 +627,7 @@ int lower_by_age(const std::vector<Person>& v, int a) {
 | `set_union` 等 | O(N+M) | O(N+M) | 两区间已排序 |
 | `unordered::find` | 平均 O(1) / 最坏 O(N) | O(N) | 可哈希 |
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：复杂度汇总 <span class="badge badge-std">标准</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 复杂度汇总 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑭ 复杂度直觉：线性查找的"比较次数"随 N 线性增长
@@ -645,7 +645,7 @@ int linear_cost(const std::vector<int>& v, int x) {
 
 ## ⑮ 选型经验：何时用哪种查找 <span class="badge badge-exp">经验</span>
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：选型经验：何时用哪种查找 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 选型经验：何时用哪种查找 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑮ 决策骨架：依据"有序? 多次? 要序?"
@@ -713,7 +713,7 @@ int wrong_desc() {
 
 `std::ranges::` 版查找支持**投影**（projection）、返回 `borrowed_iterator`、可直接吃容器，不必写 `begin()/end()`。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：与 C++20 Ranges <span class="badge badge-std">标准</span>
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++20 Ranges <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑰ ranges::find：直接传容器，按成员投影
@@ -729,7 +729,7 @@ int ranges_find_demo() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：与 C++20 Ranges <span class="badge badge-std">标准</span>
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++20 Ranges <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑰ ranges::lower_bound：同样支持投影
@@ -745,7 +745,7 @@ int ranges_lower_demo() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：与 C++20 Ranges <span class="badge badge-std">标准</span>
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++20 Ranges <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑰ ranges::binary_search：投影版存在性判断
@@ -764,7 +764,7 @@ bool ranges_bs_demo() {
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑱ 优先 lower_bound 而非 binary_search：一次定位即得位置，避免二次二分
@@ -776,7 +776,7 @@ bool exists_via_lower(const std::vector<int>& v, int x) {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 39 · ★☆☆☆☆"
 // ⑱ 用 equal_range 做"计数 + 遍历等价段"，不要手动 while
@@ -846,7 +846,7 @@ int cross_lib() {
 | 有序集合并/交/差 | `set_union` 等 | O(N+M) | 两区间已排序 |
 | 已哈希单点查询 | `unordered_*` | 平均 O(1) | 可哈希 |
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 41 · ★☆☆☆☆"
 // ⑳ 速查示例：一行选对 API

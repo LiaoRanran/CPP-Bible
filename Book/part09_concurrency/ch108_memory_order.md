@@ -50,7 +50,7 @@
 
 `std::memory_order` 就是用来告诉编译器与硬件：**这次原子操作周围，允许/禁止哪些重排**。它不影响“原子性”，只影响“顺序与同步”。
 
-> **示例 1** [难度 ★★★★☆] [主题：概述：内存序解决什么问题 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 概述：内存序解决什么问题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★★★★☆"
 // ① 没有原子性 + 没有内存序：典型数据竞争（UB）
@@ -58,7 +58,7 @@ int shared = 0;
 void bad() { for (int i = 0; i < 1000000; ++i) ++shared; } // 数据竞争
 ```
 
-> **示例 2** [难度 ★★★★☆] [主题：概述：内存序解决什么问题 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★★★☆</span> · 概述：内存序解决什么问题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★★★☆"
 // ① 仅用原子性（默认 seq_cst）消除数据竞争，但不约束“共享数据”的可见顺序
@@ -140,7 +140,7 @@ void on_request() {
 - **release**（写端）：该操作之前的所有内存写，对随后执行对应 **acquire**（读端）并读到该值的线程**可见**。
 - 二者必须**配对**：release 的写被 acquire 读到 → 建立 synchronizes-with → happens-before。
 
-> **示例 7** [难度 ★★☆☆☆] [主题：语义与同步关系 <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 语义与同步关系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★★☆☆☆"
 // ④ release 发布：写数据在先，release 标志在后
@@ -153,7 +153,7 @@ void publish() {
 }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：语义与同步关系 <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 语义与同步关系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★★☆☆☆"
 #include <string>
@@ -202,7 +202,7 @@ void consumer_c() {
 
 `acq_rel` 用于**读-改-写（RMW）**操作（如 `compare_exchange`、`fetch_add`）：它同时具有 acquire（读侧）与 release（写侧）语义——对读到的值表现 acquire，对写入的新值表现 release。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：order::acqrel <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · order::acqrel <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 // ⑥ acq_rel 用于 RMW：既是读也是写
@@ -214,7 +214,7 @@ void advance() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：order::acqrel <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · order::acqrel <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ⑥ CAS 分别指定成功/失败内存序：成功走 acq_rel，失败只需 acquire
@@ -234,7 +234,7 @@ void try_lock() {
 
 `memory_order::seq_cst` 是**所有原子操作的默认序**，也是最强序：在 acquire/release 的基础上，额外要求所有线程对同一组 seq_cst 操作观察到**同一个单一全序（single total order）**。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：cst（默认）与单一总序 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · cst（默认）与单一总序 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑦ 不写第二参数即默认 seq_cst
@@ -247,7 +247,7 @@ void f() {
 }
 ```
 
-> **示例 13** [难度 ★★☆☆☆] [主题：cst（默认）与单一总序 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · cst（默认）与单一总序 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑦ 两个变量的 seq_cst 操作，所有线程看到一致的全序
@@ -677,7 +677,7 @@ bool is_done() { return done.load(); }  // ⑱ 默认 seq_cst
 
 内存序 bug 是**偶发、不可复现、只在特定硬件/优化级别出现**的硬骨头。以下手段定位它：
 
-> **示例 34** [难度 ★★★★☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★★★★☆</span> · 调试技巧 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 34 · ★★★★☆"
 // ⑲ 技巧1：用 ThreadSanitizer 编译运行，捕获数据竞争与缺失同步
@@ -685,21 +685,21 @@ bool is_done() { return done.load(); }  // ⑱ 默认 seq_cst
 // ./misuse_tsan   -> 报告 ready/payload 之间的 race（relaxed 未建立 happens-before）
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试技巧 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★★☆☆☆"
 // ⑲ 技巧2：把可疑原子全部升回 seq_cst，若 bug 消失则证明是内存序问题
 // 用 sed/宏把 relaxed/acquire/release 统一替换为 memory_order_seq_cst 做对照实验
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试技巧 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑲ 技巧3：在弱内存平台或 QEMU(ARM) 上复跑；x86 上“好好的”在 ARM 常立刻出错
 // 交叉编译示意：aarch64-linux-gnu-g++ -std=c++23 -O2 -S -masm=intel ...
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：调试技巧 <span class="badge badge-exp">经验</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试技巧 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 37 · ★★☆☆☆"
 // ⑲ 完整可编译的“正确版”对照（release/acquire 修复），供 TSan 验证无 race
@@ -745,7 +745,7 @@ int main() {
 | `acq_rel` | 有 | RMW 两侧 | 两侧 | CAS / fetch_* | `lock cmpxchg` / `lock add` |
 | `seq_cst` | 有 | 全同步 | 单一全序 S | 默认、需要全局一致 | 加载 `mov` / 存储 `xchg`(带锁) |
 
-> **示例 38** [难度 ★★☆☆☆] [主题：速查表（6 种序对照） <span class="badge badge-std">标准</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表（6 种序对照） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 38 · ★★☆☆☆"
 // ⑳ 一图流：按“是否需要跨线程同步”选序

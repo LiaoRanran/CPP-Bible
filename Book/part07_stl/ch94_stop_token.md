@@ -74,7 +74,7 @@ C++11 的 `std::thread` 没有安全取消手段：你既不能从外部强行 `
 
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart TD
@@ -434,7 +434,7 @@ bool _M_request_stop() noexcept {
 6. **`request_stop()` 返回 false 意味着？** → 停止请求之前已发出过（或 source 不可取消），本次无效。
 7. **`stop_callback` 的析构是否从链表移除？** → 是（行号：`610` `_M_remove_callback`），且会等待正在执行的回调完成。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑮ 面试题佐证：request_stop 只生效一次（完整可编译）
@@ -459,7 +459,7 @@ int main() {
 - **`stop_callback` 析构与 `request_stop` 并发** → 标准保证析构会等正在执行的回调完成（行号：`263` 同步），但回调本身不应长时间持有锁。
 - **拷贝 `stop_source` 还是 `stop_token`？** → 通常持有 `stop_source`（能发令）并分发 `stop_token`（听令）；`stop_source` 也可拷贝（共享同一 state）。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 // ⑯ 易错：线程从不检查 stop_requested -> join 永远阻塞（仅示意，请勿这样写）
@@ -493,7 +493,7 @@ int main() {
 
 **Q：与 `std::condition_variable_any` 配合的 `stop_error`？** A：可中断等待在停止被请求且谓词不满足时抛 `std::stop_error`；可捕获后清理。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑰ FAQ 佐证：stop_token 可拷贝共享同一 state（完整可编译）
@@ -520,7 +520,7 @@ int main() {
 4. 拆分"发令"与"听令"：`stop_source` 留在控制方，`stop_token` 传给工作方；必要时把 `get_stop_token()` 继续下传。
 5. `stop_callback` 的回调要**快进快出**——它在 `request_stop` 调用栈里同步执行，别在回调里做重活或二次加锁。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑱ 最佳实践：stop_callback + condition_variable_any 实现可中断等待（完整可编译）

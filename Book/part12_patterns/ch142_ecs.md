@@ -700,7 +700,7 @@ _Z4killR12EntityRecord:
 
 把 ECS 写成"换皮 OOP"是最常见的失败。下面逐一对照。
 
-> **示例 42** [难度 ★★★☆☆] [主题：反模式 <span class="badge badge-exp">经验</span>]
+> **示例 42** <span class="badge badge-exp">难度 ★★★☆☆</span> · 反模式 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 42 · ★★★☆☆"
 // ⑯ ❌ 反模式1：组件里塞逻辑/虚函数（破坏"纯数据"）
@@ -717,7 +717,7 @@ std::unordered_map<Entity, Monster> g_world;             // 见 ⑪
 struct { static std::vector<Entity> cache; } S;          // 并行时数据竞争
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：反模式 <span class="badge badge-exp">经验</span>]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 反模式 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 43 · ★☆☆☆☆"
 #include <vector>
@@ -754,7 +754,7 @@ void monster_system(std::vector<MonsterData>& m) {
 
 > 表注：选型权衡——自研迷你 ECS（⑲）适学习/嵌入式；EnTT 适稳定 API；Unity DOTS/Bevy 适对应引擎（见 <span class="badge badge-exp">经验</span>）。
 
-> **示例 44** [难度 ★★☆☆☆] [主题：真实库（EnTT 上游参考） <span class="badge badge-impl">实现</span>
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 真实库（EnTT 上游参考） <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 44 · ★★☆☆☆"
 // ⑰ EnTT sparse set 的极简还原（示意其"双数组"思想，可编译）

@@ -583,7 +583,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
 
 可复用的七步法：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span> 分析流程]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span> 分析流程
 
 ```text
   ① 定目标(延迟?吞吐?) → ② 建可复现基准
@@ -592,7 +592,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
         → ⑦ 重测，确认提升且无误回归
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span> 分析流程]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span> 分析流程
 
 ```cpp title="示例 19 · ★☆☆☆☆"
 #include <vector>

@@ -62,7 +62,7 @@
 
 本章是 part14 的方法论总纲，它站在五块前置知识的肩膀上，缺一块就建不起模型：**内存层次与 cache（ch154）**提供带宽/延迟的硬件来源（含 false sharing），**CPU 微架构（ch153）**决定单条指令的成本（流水线、乱序执行、分支预测），**编译器优化（ch156）**会改写你"以为"测到的代码（`-O2/-O3/LTO/PGO`），**Benchmark 方法论（ch151）**给出测试框架、Fixture 与统计报告，而 **SIMD（ch155）**直接改变算术强度——把每指令处理的数据量翻倍，等于把 Roofline 上的点往右推、可能从带宽斜坡一侧推到算力屋顶一侧。读下面之前，这几块概念要先就位。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：前置知识 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 前置知识 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★☆☆☆"
 // C2 前置示例：重复 N 次求平均，体现"多次测量"的雏形
@@ -95,7 +95,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）<span class="badge badge-exp">经验</span>
 
-> **示例 3** [难度 ★★★☆☆] [主题：知识图谱（ASCII）<span class="badge badge-exp">经验</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）<span class="badge badge-exp">经验</span>
 
 ```mermaid
 flowchart LR
@@ -160,7 +160,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：带宽与延迟的硬件来源 [平台·x86-64]
 
-> **示例 4** [难度 ★★☆☆☆] [主题：内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
 
 ```mermaid
 flowchart LR
@@ -174,7 +174,7 @@ flowchart LR
     %% 越往外越慢、越宽 (带宽高但延迟大)；Roofline 的"屋顶"=算力, "斜坡"=带宽 [微架构·x86-64][UNVERIFIED]
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图：带宽与延迟的硬件来源 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 // C3 带宽直觉：拷贝大数组，估算 GB/s（示意量级）
@@ -199,7 +199,7 @@ int main() {
 
 ## ⑧ 生命周期图：一次测量的时间线 [实现·GCC15]
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：生命周期图：一次测量的时间线 <span class="badge badge-impl">实现</span>
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 生命周期图：一次测量的时间线 <span class="badge badge-impl">实现</span>
 
 ```mermaid
 flowchart LR
@@ -478,7 +478,7 @@ int main() {
 2. `steady_clock` 与 `system_clock` 测基准有何区别？
 3. Amdahl 与 Gustafson 为什么给出不同结论？
 
-> **示例 19** [难度 ★★☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 19 · ★★☆☆☆"
 // C14 面试题2演示：system_clock 可能因 NTP 回拨给出"负耗时"
@@ -498,7 +498,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 // C15 面试题3演示：Amdahl 上限不可突破，Gustafson 因放大问题而更乐观
@@ -514,7 +514,7 @@ int main() {
 
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 
-> **示例 21** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 21 · ★★☆☆☆"
 // C16 易错点1：未预热——前几次含冷启动开销，污染中位数
@@ -534,7 +534,7 @@ int main() {
 // ✅ 正确做法：循环开始前先跑 100 次 warmup（见 C9）。
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 22 · ★★☆☆☆"
 // C17 易错点2：被测函数太短，时钟开销占比过高
@@ -555,7 +555,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 23 · ★★☆☆☆"
 // C18 易错点3：优化级别不一致——Debug 基准无意义
@@ -588,7 +588,7 @@ int main() {
 
 因为 `-O3` 的激进优化各自都有代价：过度循环展开会胀 I-cache（取指变慢）、提高寄存器压力可能触发溢出（spill）、自动向量化在对齐不佳或别名不明时反而要加运行时检查与兜底路径。这些代价在特定代码上可能超过收益。所以**优化级别不是越高越好，必须实测**——这也正是 ⑱ 强调"用与目标一致的优化级别测量"的原因（⟶ ch156 逐项看各优化标志的实际影响）。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // C19 FAQ演示：rdtsc 原生写法（需 #include <x86intrin.h>，[实现·平台]）
@@ -601,7 +601,7 @@ unsigned long long t = __rdtsc();
 // 换算：cycles / (CPU Hz) = 秒；如 3.0GHz → 1 cycle ≈ 0.333 ns
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：<span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★★★☆☆"
 // C20 可编译 rdtsc：用 GCC 内联汇编实现（等价于 __rdtsc，无额外头文件）
@@ -635,7 +635,7 @@ int main() {
 
 **多次重复取中位数 + MAD**，报告方差而非单次：中位数抗调度抖动（离群的 200 被压住，示例 C21），MAD 量化稳定性。"warmup → 防 DCE → 多次取中位"三者缺一，数字就不可复现。
 
-> **示例 26** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 // C21 最佳实践2：取中位数 + MAD（中位绝对偏差）量化稳定性
@@ -656,7 +656,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★★★☆☆"
 // C22 最佳实践3：最小基准框架（warmup + repeat + 中位数），可复用于多函数对比
@@ -691,7 +691,7 @@ int main() {
 
 下例把 Amdahl 上限与 Roofline 算术强度量化，给出"该优化什么"的结论。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：从模型到数字 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 28 · ★★☆☆☆"
 // C23 模型量化：当算术强度低，优化方向是"减少内存访问"而非"加算力"
@@ -713,7 +713,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析：从模型到数字 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // C24 Roofline 增幅：提高算术强度（一次加载复用多次）可脱离带宽斜坡
@@ -732,7 +732,7 @@ int main() {
 
 > `[经验]` 实测若 `axpy bandwidth` 接近 DRAM 上限（~50GB/s），说明已 memory-bound——此时加核/加 SIMD 提升有限，**应改数据布局（结构体数组→数组结构体、提高缓存命中）**（⟶ `Book/part14_perf/ch154_cache_opt.md`）。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析：从模型到数字 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 // C23: Amdahl 定律计算器——给定串行占比 s，N 核加速比
@@ -748,7 +748,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能分析：从模型到数字 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★☆☆☆☆"
 // C24: Gustafson 定律——固定总工作量，增核加速（弱缩放）
@@ -764,7 +764,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：从模型到数字 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 // C25: Roofline 分析——给定 FLOP/byte ratio 判断算力或带宽瓶颈
@@ -781,7 +781,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：性能分析：从模型到数字 <span class="badge badge-exp">经验</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析：从模型到数字 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 33 · ★★☆☆☆"
 // C26: Google Benchmark 等价体——手动 warmup + iteration 计时
@@ -829,7 +829,7 @@ int main() {
 | Java | `System.nanoTime()` | JMH（注解驱动） | JFR / VisualVM |
 | Zig | `std.time` / `stdx.benchmark` | 内建 `std.testing` | `perf` |
 
-> **示例 34** [难度 ★★☆☆☆] [主题：跨语言对比：基准与剖析生态 <span class="badge badge-std">标准</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：基准与剖析生态 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 34 · ★★☆☆☆"
 // C25 跨语言对照：C 风格基准（C++ 可编译）——用 clock() 测 CPU 时间（示意）
@@ -845,7 +845,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：跨语言对比：基准与剖析生态 <span class="badge badge-std">标准</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比：基准与剖析生态 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // C26 确定性数据：因 <random> 不在自检 PRELUDE，用内联 xorshift 生成可复现样本

@@ -133,7 +133,7 @@ int main() {
 
 `load()` 读、`store()` 写是原子的基本操作。它们都接受 `memory_order` 参数，默认 `memory_order_seq_cst`（顺序一致，最严格也最慢）：
 
-> **示例 6** [难度 ★★☆☆☆] [主题：的内存可见性 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的内存可见性 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 // ③ 默认顺序一致的内存序
@@ -143,7 +143,7 @@ int read_x() { return x.load(); }    // = load(seq_cst)
 void write_x(int v) { x.store(v); }  // = store(seq_cst, v)
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：的内存可见性 <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的内存可见性 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★★☆☆☆"
 // ③ 放宽内存序：relaxed 只保证原子性，不保证其他内存的可见顺序
@@ -153,7 +153,7 @@ void inc_relaxed() { c.fetch_add(1, std::memory_order_relaxed); }
 int  read_relaxed() { return c.load(std::memory_order_relaxed); }
 ```
 
-> **示例 8** [难度 ★★☆☆☆] [主题：的内存可见性 <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的内存可见性 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★★☆☆☆"
 // ③ 生产者-消费者用 acquire/release 配对传递"数据已就绪"信号
@@ -172,7 +172,7 @@ void consumer() { while (!ready.load(std::memory_order_acquire)) ; int v = paylo
 
 `exchange(desired, order)` 原子地"写入新值并返回旧值"，是一个不可分割的读-改-写，常用于**状态切换 / 所有权转移**：
 
-> **示例 9** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★★☆☆☆"
 // ④ exchange：写入新值、原子返回旧值
@@ -181,7 +181,7 @@ std::atomic<int> flag{0};
 int take_old() { return flag.exchange(1, std::memory_order_acq_rel); }  // 返回 0，留下 1
 ```
 
-> **示例 10** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 // ④ 用 exchange 实现简单的"一次性触发"哨兵
@@ -190,7 +190,7 @@ std::atomic<bool> fired{false};
 bool try_fire() { return !fired.exchange(true); }   // 仅第一个调用者得到 true
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ④ 与 store 的区别：store 丢弃旧值；exchange 暴露旧值
@@ -253,7 +253,7 @@ bool bump() {
 
 读-改-写（Read-Modify-Write）族提供"读旧值 + 写新值"不可分割组合：`fetch_add` / `fetch_sub` / `fetch_and` / `fetch_or` / `fetch_xor`，以及前缀自增 `++`/`--`（对原子整型即 `fetch_add(1)`）：
 
-> **示例 15** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · add 等 RMW 操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑥ fetch_add / fetch_sub：返回旧值
@@ -263,7 +263,7 @@ int prev = c.fetch_add(5);   // prev == 0, c 现在为 5
 int prev2 = c.fetch_sub(2);  // prev2 == 5, c 现在为 3
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · add 等 RMW 操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑥ 位运算 RMW：原子按位与/或/异或
@@ -274,7 +274,7 @@ void set_bit5()   { bits.fetch_or(1u << 5); }
 void flip_bit0()  { bits.fetch_xor(1u); }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · add 等 RMW 操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑥ 前缀 ++/-- 等价于 fetch_add(1)/fetch_sub(1)，但返回的是"新值"
@@ -286,7 +286,7 @@ void demo() {
 }
 ```
 
-> **示例 18** [难度 ★★☆☆☆] [主题：add 等 RMW 操作 <span class="badge badge-std">标准</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · add 等 RMW 操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑥ fetch_add 对浮点原子也支持（C++20 起）
@@ -302,7 +302,7 @@ void add_double(double d) { acc.fetch_add(d, std::memory_order_relaxed); }
 
 `std::atomic<T>::is_always_lock_free`（静态）和 `is_lock_free()`（运行期）揭示该原子是否真的无锁。硬件原子指令要求对象**自然对齐**：
 
-> **示例 19** [难度 ★★★☆☆] [主题：lockfree 与对齐要求 <span class="badge badge-std">标准</span>
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · lockfree 与对齐要求 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 19 · ★★★☆☆"
 // ⑦ 运行期与编译期 lock-free 查询（C++17 起 is_always_lock_free）
@@ -316,7 +316,7 @@ void probe() {
 }
 ```
 
-> **示例 20** [难度 ★★☆☆☆] [主题：lockfree 与对齐要求 <span class="badge badge-std">标准</span>
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · lockfree 与对齐要求 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★★☆☆☆"
 // ⑦ 对齐要求：原子对象必须按 T 的自然对齐，否则退化为加锁实现
@@ -326,7 +326,7 @@ struct Aligned { alignas(std::atomic<int>) std::atomic<int> a; };
 static_assert(alignof(std::atomic<int>) == alignof(int), "atomic<int> 对齐 = int");
 ```
 
-> **示例 21** [难度 ★★☆☆☆] [主题：lockfree 与对齐要求 <span class="badge badge-std">标准</span>
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · lockfree 与对齐要求 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑦ 宽类型往往不是 lock-free（64 位平台上一半以上的字宽会加锁）
@@ -345,7 +345,7 @@ void wide() {
 
 `std::atomic_flag` 是最小原子类型：**只有** `test_and_set` 和 `clear`，且**保证 lock-free**。它常被当作无锁自旋锁/Token 的基石。本节附真实汇编。
 
-> **示例 22** [难度 ★★★☆☆] [主题：flag 与无锁自旋 <span class="badge badge-std">标准</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · flag 与无锁自旋 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 22 · ★★★☆☆"
 // 文件：Examples/_ch107_atomic_flag.cpp
@@ -381,7 +381,7 @@ _Z7releasev:
 
 `std::atomic<T*>` 提供原子指针，RMW 以**字节**为单位（受对象大小影响），`fetch_add`/`fetch_sub` 按 `sizeof(T)` 步进，并支持 `+=`/`-=` 与 `++`/`--`：
 
-> **示例 23** [难度 ★★☆☆☆] [主题：原子指针 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原子指针 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑨ 原子指针：fetch_add 按元素大小步进
@@ -391,7 +391,7 @@ std::atomic<int*> p{arr};
 int* next_slot() { return p.fetch_add(1); }   // 返回旧指针，p 前进一个 int
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：原子指针 <span class="badge badge-std">标准</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原子指针 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑨ 原子指针的 += 与后缀 ++
@@ -405,7 +405,7 @@ void advance() {
 }
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：原子指针 <span class="badge badge-std">标准</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 原子指针 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑨ 用原子指针实现无锁单生产者游标
@@ -525,7 +525,7 @@ _Z4readv:
 
 CAS 可构造无锁（或自旋）互斥。下面 `spinlock` 用 `atomic<bool>` + `compare_exchange_weak` 实现；成功地把 `false` 改成 `true` 即获得锁。本节附真实汇编。
 
-> **示例 30** [难度 ★★★☆☆] [主题：用 CAS 实现自旋锁 <span class="badge badge-std">标准</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 用 CAS 实现自旋锁 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 30 · ★★★☆☆"
 // 文件：Examples/_ch107_spinlock.cpp
@@ -562,7 +562,7 @@ _Z6unlockv:
 	ret
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：用 CAS 实现自旋锁 <span class="badge badge-std">标准</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 用 CAS 实现自旋锁 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑫ RAII 封装自旋锁，避免忘记 unlock
@@ -585,7 +585,7 @@ struct spinlock {
 
 用 `atomic<Node*>` 头指针 + CAS 即可写出无锁 push：循环读取当前头，构造新节点指向头，再 CAS 把头换成新节点。
 
-> **示例 32** [难度 ★★☆☆☆] [主题：无锁栈雏形（push） <span class="badge badge-std">标准</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁栈雏形（push） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑬ 无锁栈 push（CAS 循环，注意仍受 ABA 限制，见 ⑭）
@@ -602,7 +602,7 @@ void push(int v) {
 }
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：无锁栈雏形（push） <span class="badge badge-std">标准</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁栈雏形（push） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 33 · ★★☆☆☆"
 // ⑬ 配套的（可能不安全的）pop 雏形：演示 CAS 在链表上的用法
@@ -626,7 +626,7 @@ int pop_unsafe() {
 
 CAS 只比较"值相等"，不感知"中间发生过什么"。若指针 `A→B→A`（被弹出又分配同地址），CAS 误以为无变化而成功，却带着失效的 `next` 链路——这就是 **ABA**。第111章（无锁编程进阶）会给出带**标签指针（tagged pointer）**、`hazard pointer`、RCU 等完整解法。本章先记住结论：
 
-> **示例 34** [难度 ★★☆☆☆] [主题：问题预告 <span class="badge badge-std">标准</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 问题预告 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 34 · ★★☆☆☆"
 // ⑭ ABA 示意：CAS 无法发现中间被改回"相同值"
@@ -763,7 +763,7 @@ Padded g_p;
 
 128 位整数 `__int128` 可作为 `std::atomic<__int128>` 使用，但在多数 64 位平台**不是 lock-free**（需内部加锁），除非目标支持 `cmpxchg16b` 双字 CAS。
 
-> **示例 41** [难度 ★★☆☆☆] [主题：宽原子与 int128 <span class="badge badge-std">标准</span>]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宽原子与 int128 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 41 · ★★☆☆☆"
 // ⑱ 128 位原子：可移植但多数平台非 lock-free
@@ -773,7 +773,7 @@ void set_wide(__int128 v) { wide.store(v, std::memory_order_release); }
 __int128 get_wide() { return wide.load(std::memory_order_acquire); }
 ```
 
-> **示例 42** [难度 ★★☆☆☆] [主题：宽原子与 int128 <span class="badge badge-std">标准</span>]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宽原子与 int128 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 42 · ★★☆☆☆"
 // ⑱ 用 128 位原子做"序列号 + 数据"的带标签指针（缓解 ABA，见 ⑭）
@@ -786,7 +786,7 @@ struct TaggedPtr {
 std::atomic<__int128> head_pair{0};  // 把 (ptr,tag) 打包进 128 位一次性 CAS
 ```
 
-> **示例 43** [难度 ★★☆☆☆] [主题：宽原子与 int128 <span class="badge badge-std">标准</span>]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 宽原子与 int128 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 43 · ★★☆☆☆"
 // ⑱ 检查平台是否 lock-free
@@ -858,7 +858,7 @@ g++ -std=c++23 -O1 -g -fsanitize=thread _ch107_tsan_demo.cpp -o tsan_demo
    - <span class="badge badge-std">标准</span> fetch_add/exchange 等是原子 RMW；在多线程竞争下结果正确且单一。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics]（RMW 操作）；cppreference "std::atomic::fetch_add" 词条。
 
-> **示例 46** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 46 · ★★☆☆☆"
 // ⑳ 最小可编译回顾：把本章要点串成一段代码
@@ -894,7 +894,7 @@ void quick() {
 - `[经验]`：能用 `atomic_flag` 就不上互斥；临界区长用 `std::mutex`；写完无锁代码必跑 ThreadSanitizer（见 ⑲）。
 - `[平台·x86-64]`：x86 是强内存模型，`load`/`store` 编译为普通 `mov`，只有 RMW 需要 `lock` 前缀——这是与弱内存架构（ARM）性能差异的根源。
 
-> **示例 47** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```text
 ┌───────────────┬───────────────────────────┬──────────────────────┐

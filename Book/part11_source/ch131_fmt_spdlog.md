@@ -238,7 +238,7 @@ fmt::format_to(std::back_inserter(buf), "{}", 123456789);  // 整数快速路径
 
 ## ⑥ 类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>
 
-> **示例 13** [难度 ★★☆☆☆] [主题：类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑥ 类型安全：占位符与参数类型在编译期核对
@@ -247,7 +247,7 @@ fmt::format("{} {}", 1, "s");     // OK：int + const char*
 // fmt::format("{:d}", "s");      // 编译失败：字符串不能用 :d 整数格式
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型安全：编译期检查格式串 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑥ 运行期格式串（用户输入）必须显式声明，关闭编译期检查
@@ -353,7 +353,7 @@ fmt::print("pi={} name={} n={}\n", 3.14, "fmt", 42);
 
 fmt 在格式错误时抛 `fmt::format_error`（继承 `std::runtime_error`）；spdlog 默认不抛、且可切换为「异常模式」。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：异常策略 <span class="badge badge-std">标准</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常策略 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑧ fmt：格式错误抛 fmt::format_error
@@ -367,7 +367,7 @@ try {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：异常策略 <span class="badge badge-std">标准</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常策略 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑧ spdlog：默认吞错；设为异常模式后，sink 失败抛 spdlog::spdlog_ex
@@ -428,7 +428,7 @@ struct fmt::formatter<Point> {
 
 ## ⑩ 调试 <span class="badge badge-exp">经验</span>
 
-> **示例 21** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑩ 动态调整级别，快速定位问题
@@ -438,7 +438,7 @@ spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
 spdlog::debug("trace value={}", expensive_value);  // 生产可整体关掉
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 22 · ★☆☆☆☆"
 // ⑩ 强制刷新，避免崩溃丢日志
@@ -513,7 +513,7 @@ spdlog::info("v={}", compute());     // 立即求值并格式化，安全
 
 ## ⑬ 演进 <span class="badge badge-std">标准</span>
 
-> **示例 28** [难度 ★★★☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 28 · ★★★☆☆"
 #include <string_view>
@@ -523,7 +523,7 @@ spdlog::info("v={}", compute());     // 立即求值并格式化，安全
 // fmt 10：与 std::format 高度对齐，formatter 特化语法统一
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑬ spdlog 1.0：基础同步/异步；1.5+：结构化日志雏形；1.13：C++20 友好
@@ -536,7 +536,7 @@ spdlog::info("fmt backend version aligned with {}.{}", 10, 2);
 
 ## ⑭ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑭ 用命名参数提升可读性（fmt 10 的 fmt::arg）
@@ -545,7 +545,7 @@ fmt::print("{}: score={}\n",
            fmt::arg("score", 99));      // 输出 name: score=99
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑭ 高频路径避免重复分配：复用 memory_buffer
@@ -556,7 +556,7 @@ for (int i = 0; i < N; ++i) {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑭ 异步日志：spdlog 异步 sink 解耦 I/O 与业务线程
@@ -602,7 +602,7 @@ struct std::formatter<Point> {
 
 ## ⑯ 跨库 <span class="badge badge-exp">经验</span>
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑯ spdlog 以 fmt 为后端：spdlog 的日志宏就是 fmt::format 的薄封装
@@ -612,7 +612,7 @@ spdlog::set_pattern("%v");        // %v 即「格式化后的消息体」
 spdlog::info("{:.3f}", 1.0/3.0);  // 复用 fmt 的格式说明符
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑯ 同一用户类型：fmt::formatter<Point> 特化后，spdlog 也能直接打
@@ -624,7 +624,7 @@ spdlog::info("point={}", Point{3, 4});     // 走同一 formatter 特化
 
 ## ⑰ 贡献 <span class="badge badge-exp">经验</span>
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑰ 向 fmt/spdlog 贡献的最小闭环：clone -> cmake 构建 -> ctest 回归（命令见下，
@@ -643,7 +643,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★★★☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★★★☆☆"
 // ⑰ 贡献一个自定义 sink（spdlog）的骨架：继承 base_sink
@@ -757,7 +757,7 @@ int main() {
    - <span class="badge badge-std">标准</span> 无直接标准对应；异步/多 sink 是库设计，可结合线程与无锁队列（[atomics]/[thread]）。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[thread]/[atomics]（底层并发原语）/ fmt + spdlog 文档；cppreference。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 44 · ★☆☆☆☆"
 // ⑳ fmt 常用格式说明符速查——std::format 同款语法，逐行打印“值 + 含义”：
@@ -775,7 +775,7 @@ int main() {
 }
 ```
 
-> **示例 45** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 45** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 45 · ★★☆☆☆"
 // ⑳ spdlog 级别速查（trace < debug < info < warn < error < critical < off）——
@@ -802,7 +802,7 @@ int main() {
 }
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 46** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 46 · ★☆☆☆☆"
 // ⑳ 一句话对照：fmt = 类型安全的 sprintf（还能打自定义类型）；std::format = 进了标准的 fmt。

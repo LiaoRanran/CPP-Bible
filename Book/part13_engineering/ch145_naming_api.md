@@ -51,7 +51,7 @@
 
 `[经验]` 一条被工业界反复验证的共识：**名字是写给"调用方"的注释，而不是写给"实现者"的备忘录**。API 的可学习性（learnability）几乎完全由命名质量决定。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：好命名的价值 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ❌ 反例：名字不揭示意图，调用方必须打开实现才能猜出语义
@@ -59,7 +59,7 @@ void proc(int a, int b);  // proc 做什么？a、b 是什么？
 int f(int x);             // f 返回什么？x 是输入还是索引？
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：好命名的价值 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <cstddef>
@@ -74,7 +74,7 @@ std::size_t byte_size(const Buffer& buf);           // 返回什么一目了然
 - **可防误用**：类型名与单位名直接消除"该传什么"的歧义；
 - **可演进性**：稳定的命名边界让实现可重构而不破坏调用方。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：概述：好命名的价值 <span class="badge badge-exp">经验</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：好命名的价值 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // 命名稳定的 API：内部可随意重构，调用方零改动
@@ -399,7 +399,7 @@ namespace myproject {
 - 增删虚函数（改变 vtable 布局）；
 - 改变函数签名（改变名字修饰）。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ❌ 反例：在类中部插入成员，破坏所有调用方 ABI
@@ -412,14 +412,14 @@ class Widget {
 
 Pimpl 是最强的 ABI 防火墙——把数据成员收进不可见的 impl，使"头文件大小"与实现完全解耦。本机真实运行取证（`Examples/_ch145_size.cpp`）：
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
 
 ```text
 sizeof(PimplWidget)=8        // 仅持有一个 unique_ptr（指针=8 字节）
 sizeof(FatWidget) =256       // 直接内联 64 个 long，随实现膨胀
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 #include <memory>
@@ -435,7 +435,7 @@ public:
 
 `[平台]` 名字修饰（name mangling）把 C++ 重载/命名空间编码进符号名，是 ABI 的一部分且**各编译器不兼容**。用 `extern "C"` 暴露稳定 C ABI 给跨语言/跨编译器调用：
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 32 · ★☆☆☆☆"
 // 稳定的 C ABI：名字不修饰，调用约定显式，跨编译器可用
@@ -444,7 +444,7 @@ extern "C" int myproject_version();
 
 ABI 稳定性决策框：
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 稳定性（ABI/API 边界）<span class="badge badge-platform">平台</span>
 
 ```text
 ┌──────────────────────────────────────────────────────────┐

@@ -56,7 +56,7 @@
 
 ## ② 不必要的堆分配 <span class="badge badge-exp">经验</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：不必要的堆分配 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 不必要的堆分配 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
@@ -72,7 +72,7 @@ int main() {
 
 ## ③ 隐式拷贝与临时对象 <span class="badge badge-exp">经验</span>
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：隐式拷贝与临时对象 <span class="badge badge-exp">经验</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 隐式拷贝与临时对象 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
@@ -84,7 +84,7 @@ int main(){ std::string x="hello";sink_ref(x);std::cout<<x<<std::endl;return 0; 
 
 ## ④ std::endl vs `'\n'` <span class="badge badge-exp">经验</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：std::endl 与换行刷新 <span class="badge badge-exp">经验</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · std::endl 与换行刷新 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
@@ -97,7 +97,7 @@ int main(){
 
 ## ⑤ 虚函数间接调用 <span class="badge badge-exp">经验</span>
 
-> **示例 4** [难度 ★★★★☆] [主题：虚函数间接调用 <span class="badge badge-exp">经验</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★★★★☆</span> · 虚函数间接调用 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 4 · ★★★★☆"
 #include <iostream>
@@ -134,7 +134,7 @@ _Z12compute_areaRK5Shape:
 
 ## ⑥ 异常在热路径 <span class="badge badge-exp">经验</span>
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：异常在热路径 <span class="badge badge-exp">经验</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常在热路径 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
@@ -144,7 +144,7 @@ int main(){ std::cout<<div_nothrow(10,2)<<std::endl;return 0; }
 
 ## ⑦ false sharing <span class="badge badge-exp">经验</span>
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
@@ -155,7 +155,7 @@ int main(){ Slot s{}; s.v=42;std::cout<<s.v<<std::endl;return 0; }
 
 ## ⑧ 缓存不友好遍历 <span class="badge badge-exp">经验</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：缓存不友好遍历 <span class="badge badge-exp">经验</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缓存不友好遍历 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
@@ -168,7 +168,7 @@ int main(){
 
 ## ⑨ std::regex 构造开销 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：构造开销 <span class="badge badge-exp">经验</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造开销 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
@@ -182,7 +182,7 @@ int main(){
 
 ## ⑩ std::function 类型擦除 <span class="badge badge-exp">经验</span>
 
-> **示例 9** [难度 ★★☆☆☆] [主题：类型擦除 <span class="badge badge-exp">经验</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 类型擦除 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 9 · ★★☆☆☆"
 #include <iostream>
@@ -193,7 +193,7 @@ int main(){call([]{std::cout<<"zero-erase\n";});return 0;}
 
 ## ⑪ reserve 缺失 <span class="badge badge-exp">经验</span>
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：缺失 <span class="badge badge-exp">经验</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 缺失 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 #include <iostream>
@@ -208,7 +208,7 @@ int main(){
 
 ## ⑫ 移动语义未触发 <span class="badge badge-exp">经验</span>
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：移动语义未触发 <span class="badge badge-exp">经验</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 移动语义未触发 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 #include <iostream>
@@ -226,7 +226,7 @@ int main(){
 
 ## ⑬ 过度模板实例化 <span class="badge badge-exp">经验</span>
 
-> **示例 12** [难度 ★★★☆☆] [主题：过度模板实例化 <span class="badge badge-exp">经验</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 过度模板实例化 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 12 · ★★★☆☆"
 #include <iostream>
@@ -237,7 +237,7 @@ int main(){ std::cout<<Fact<5>::v<<std::endl;return 0; }
 
 ## ⑭ 分支预测失败 <span class="badge badge-exp">经验</span>
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：分支预测失败 <span class="badge badge-exp">经验</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 分支预测失败 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 #include <iostream>
@@ -255,7 +255,7 @@ int main(){std::vector<int>v(10000);for(int i=0;i<10000;++i)v[i]=i%2;std::sort(v
 | Go | defer 热路径、interface{} boxing、GC pressure |
 | Java | auto-boxing、String concatenation、unnecessary synchronization |
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 #include <iostream>
@@ -264,7 +264,7 @@ int main(){std::cout<<"Cross-language: all languages have unique perf pitfalls.\
 
 ## ⑯ WG21 与标准演进 <span class="badge badge-std">标准</span>
 
-> **示例 15** [难度 ★★☆☆☆] [主题：与标准演进 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与标准演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑯ 标准中消除性能反模式的关键提案
@@ -284,7 +284,7 @@ int main() {
 
 ## ⑰ FAQ：性能诊断实战 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★☆☆☆] [主题：性能诊断实战 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能诊断实战 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑰ 性能反模式的诊断与修复问答
@@ -307,7 +307,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑱ 性能优化的 6 条铁律
@@ -350,7 +350,7 @@ int main() {
 
 ## ⑲ 性能数据参考：反模式代价量化 <span class="badge badge-exp">经验</span>
 
-> **示例 18** [难度 ★★☆☆☆] [主题：性能数据参考：反模式代价量化 <span class="badge badge-exp">经验</span>
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能数据参考：反模式代价量化 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑲ 常见反模式的量化性能数据
@@ -394,7 +394,7 @@ int main() {
    - <span class="badge badge-std">标准</span> 动态分配（`new`/`delete`）由实现提供，频繁调用有成本；可用定制分配器或 arena 降低。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.stc.dynamic] / [new.delete]（动态存储）/ [allocator.requirements]（定制分配器）；cppreference。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：源码阅读路线 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码阅读路线 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 19 · ★★☆☆☆"
 // ⑳ 学习性能优化的开源项目阅读路线

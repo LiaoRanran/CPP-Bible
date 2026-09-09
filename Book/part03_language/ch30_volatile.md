@@ -54,7 +54,7 @@
 
 ## ② volatile 基本语义 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：基本语义 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 基本语义 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
@@ -74,7 +74,7 @@ int main(){Device dev;dev.status=0;dev.data=42;std::cout<<"MMIO mapped\n";return
 
 ## ④ volatile 不能替代 atomic <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★★☆☆☆] [主题：不能替代 atomic <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 不能替代 atomic <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★★☆☆☆"
 #include <iostream>
@@ -123,7 +123,7 @@ int main(){int val=0;volatile int* p=&val;*p=42;std::cout<<val<<std::endl;return
 
 ## ⑨ volatile 成员函数 <span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：成员函数 <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 成员函数 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
@@ -133,7 +133,7 @@ int main(){Reg r;r.write(7);std::cout<<r.read()<<std::endl;return 0;}
 
 ## ⑩ volatile 与 const <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与 const <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 const <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
@@ -232,7 +232,7 @@ int main() {
 
 ## ⑭ WG21 关键提案与演变 <span class="badge badge-std">标准</span>
 
-> **示例 13** [难度 ★★☆☆☆] [主题：关键提案与演变 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 关键提案与演变 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑭ P1152R4(C++20) 废弃 volatile 复合赋值; P2327R1(C++23) 为嵌入式/MMIO 场景反废弃;
@@ -251,7 +251,7 @@ int main() {
 
 ## ⑮ 面试题精选 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★★☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题精选 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★★★☆☆"
 // ⑮ 面试要点: Q1 volatile 不能做线程同步(不保证原子性/happens-before/CPU 乱序)
@@ -272,7 +272,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★★★☆</span> · 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 15 · ★★★★☆"
 // ⑯ 五大误用: 1) 用 volatile 做线程标志(应用 atomic) 2) 以为 volatile 加在"值"上(实际作用于对象)
@@ -300,7 +300,7 @@ int main() {
 
 ## ⑰ FAQ：嵌入式实战常见问题 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★★★☆] [主题：嵌入式实战常见问题 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★★★☆</span> · 嵌入式实战常见问题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★★★★☆"
 // ⑰ 实战 Q&A: volatile sig_atomic_t 用于信号处理器(写入不会被优化掉,但不保证跨上下文顺序);
@@ -327,7 +327,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★★☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★★☆☆"
 // ⑱ volatile 使用的 6 条黄金法则

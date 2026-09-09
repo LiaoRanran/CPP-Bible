@@ -676,7 +676,7 @@ int main() {
 
 ## ⑫ 跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑫-a Chromium 的平台宏（BUILDFLAG），避免手写 #ifdef 散落
@@ -688,7 +688,7 @@ const char* kSep = "/";
 #endif
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑫-b 跨平台睡眠/线程
@@ -696,7 +696,7 @@ const char* kSep = "/";
 base::PlatformThread::Sleep(base::Seconds(1));   // Windows/ Linux/ macOS 统一
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨平台：宏、线程、文件 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑫-c Abseil 的跨平台时间/时钟
@@ -709,7 +709,7 @@ absl::Duration elapsed = absl::Now() - start;     // 同一接口，不同 OS �
 
 ## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 30** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★★☆☆☆"
 // ⑬-a 陷阱1：flat_hash_map 的引用/迭代器在 insert 时可能整体失效
@@ -719,7 +719,7 @@ m.reserve(1000000);  // 触发重哈希 -> 底层数组搬迁
 ref = 5;             // ⚠ 悬垂引用！未定义行为
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑬-b 陷阱2：遍历时 erase 要用返回的新迭代器（两容器规则类似）
@@ -729,7 +729,7 @@ for (auto it = m.begin(); it != m.end(); ) {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 #include <cstdio>
@@ -759,7 +759,7 @@ int main() {
 
 ## ⑭ 演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 33 · ★☆☆☆☆"
 #include <string>
@@ -768,7 +768,7 @@ int main() {
 // 新：absl::flat_hash_map<std::string, int> m;
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <cstdio>
@@ -790,7 +790,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进：从内部库到开源标准 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <cstdio>
@@ -826,14 +826,14 @@ int main() {
 
 ## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑮-a 用 string_view 做函数参数，避免无谓拷贝
 void handle(absl::string_view text) { (void)text; }   // 接受 string/char*/字面量
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑮-b 用 absl::Status 代替异常/错误码混用（Google 统一错误模型）
@@ -844,7 +844,7 @@ absl::Status open(const char* path) {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑮-c 任务用 TaskTraits 明确语义，别用默认
@@ -854,7 +854,7 @@ base::ThreadPool::PostTask(
     base::BindOnce(work));
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <chrono>
@@ -930,7 +930,7 @@ widgets.emplace(1, std::make_unique<Widget>());
 
 ## ⑰ 贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>
 
-> **示例 43** [难度 ★★☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 43 · ★★☆☆☆"
 // ⑰-a Abseil 补丁示例：给 flat_hash_map 加一个 helper（伪代码草图）
@@ -941,7 +941,7 @@ widgets.emplace(1, std::make_unique<Widget>());
 // }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
+> **示例 44** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 44 · ★☆☆☆☆"
 // ⑰-b Chromium 用 Gerrit + tryjob：CL 描述需含 bug 号与测试说明
@@ -950,7 +950,7 @@ widgets.emplace(1, std::make_unique<Widget>());
 // （非 C++，是贡献流程约定）
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献：如何向上游提补丁 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 45 · ★☆☆☆☆"
 // ⑰-c 贡献代码必须遵守风格：clang-format + 无裸循环（用 STL 算法）
@@ -1049,7 +1049,7 @@ std::span<const int> t = s;      // 布局一致，可互转
    - <span class="badge badge-std">标准</span> C++20 起标准提供 `std::span`：连续序列的非拥有视图。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[views.span]（std::span）/ Abseil 文档；cppreference "std::span" 词条。
 
-> **示例 51** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```text
 ┌──────────────────────────┬────────────────────────────┬──────────────────────┐
@@ -1071,7 +1071,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 └──────────────────────────┴────────────────────────────┴──────────────────────┘
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 52 · ★★☆☆☆"
 // ⑳ 30 秒上手指纹：最小可用代码片段（合法 C++，需对应头文件/链接）

@@ -48,7 +48,7 @@
 
 C++ 是「抽象零开销」语言，但裸写的源码离机器码中间隔着一整套**中间表示（IR）优化流水线**。优化开关 `-O0..-Ofast` 决定这条流水线开多少遍、开哪些 pass；`-flto` 把流水线延伸到链接期；`-fprofile-*` 用运行期数据反哺决策。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：编译器优化层级 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 同一段语义，不同 -O 等级生成天差地别的代码
@@ -59,7 +59,7 @@ int f(int a) { return sq(a) + sq(a + 1); }   // O0: 两次 call sq；O2/LTO: 内
 - `[标准]`：优化等级是「实现质量」范畴，标准只规定「`as-if` 规则」——只要可观察行为一致，编译器可任意改写（[intro.abstract]）。
 - `[经验]`：永远不要假设「源码逐行对应汇编」；优化器按值流而非按语句工作。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：编译器优化层级 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★☆☆☆"
 // ① 优化器的三块主战场
@@ -70,7 +70,7 @@ constexpr int k = 1 << 10;      // (a) 编译期折叠为 1024
 int g(int x) { return x + 0; }  // (a) 化简为 return x;
 ```
 
-> **示例 3** [难度 ★★☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：编译器优化层级 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★★☆☆☆"
 #include <cstdio>
@@ -92,7 +92,7 @@ int main() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：编译器优化层级 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ① 一个被优化「抹平」的例子：函数可能被彻底消除
@@ -104,7 +104,7 @@ int only_user() { return unused_helper(3); }  // 内联后 helper 消失，只�
 
 四个等级是优化**强度与耗时**的单调递增档位，GCC 用 `-O2` 作为「发布默认甜点」。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ② -O0：几乎不做优化，逐语句翻译，便于逐行调试
@@ -112,7 +112,7 @@ int only_user() { return unused_helper(3); }  // 内联后 helper 消失，只�
 int o0_demo(int a, int b) { return a * b + a; }  // O0 下：imul; add; 三次内存往返
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 #include <cstdio>
@@ -127,7 +127,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★★☆☆☆"
 // ② -O2：发布默认。开启绝大多数「安全且通常盈利」的优化，含函数内联、
@@ -139,7 +139,7 @@ int o2_sum(const int* p, int n) {
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ② -O3：在 -O2 之上加更激进的 loop 变换——多层展开、向量化、循环分布/ interchange
@@ -151,7 +151,7 @@ double o3_dot(const double* a, const double* b, int n) {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <chrono>
@@ -178,7 +178,7 @@ int main() {
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ② 实测内联门槛随等级变化：小函数 -O2 即内联，-O3 内联半径更大
@@ -186,7 +186,7 @@ inline int add1(int x) { return x + 1; }         // inline 只是建议；-O0 �
 int pipe(int x) { return add1(add1(add1(x))); }  // O2/O3 折叠为常数偏移 +3
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：差异 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ② -O0 与 -O2 对同一函数体生成的指令数差异（示意）
@@ -1105,7 +1105,7 @@ int main() {
    - <span class="badge badge-std">标准</span> `volatile` 仅约束对抽象机的可观测访问顺序，不保证跨线程可见性或原子性；同步须用原子/互斥。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ [atomics]（真正同步）/ [dcl.type.cv]（volatile 语义）；cppreference "volatile" 词条。
 
-> **示例 55** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 55** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```text
 ┌──────────────────┬───────────────────────────────────────────────┬─────────────────┐
@@ -1125,7 +1125,7 @@ int main() {
 └──────────────────┴───────────────────────────────────────────────┴─────────────────┘
 ```
 
-> **示例 56** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 56** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 56 · ★★☆☆☆"
 #include <cstdio>
@@ -1144,7 +1144,7 @@ int main() {
 }
 ```
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 57 · ★☆☆☆☆"
 #include <cstdio>

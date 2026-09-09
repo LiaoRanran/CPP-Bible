@@ -50,7 +50,7 @@ SIMD（单指令多数据）的动机来自"对一大堆数据做同一件事"�
 
 **SIMD**（Single Instruction, Multiple Data，单指令多数据）指一条指令同时对一组（向量）数据做相同运算。对比 SISD（标量，一次一个数据），SIMD 用更少的指令完成批量同构计算，是多媒体、数值、AI 推理的核心加速手段。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：SIMD 是什么 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：SIMD 是什么 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 标量：一次加一个 float（4 字节）
@@ -75,7 +75,7 @@ x86 向量指令集按寄存器宽度代际演进，宽度翻倍 = 同一条指�
 | AVX2 | 2013 | ymm0–15 | 256 | 8（整数也向量化） |
 | AVX-512 | 2017 | zmm0–31 | 512 | 16 |
 
-> **示例 2** [难度 ★★★☆☆] [主题：演进与寄存器宽度 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 演进与寄存器宽度 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★★☆☆"
 // ② 寄存器宽度决定每轮处理的元素数（float，4 字节）
@@ -577,7 +577,7 @@ _Z13add_dependentPfi:
 
 ## ⑮ 性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
 
-> **示例 25** [难度 ★★☆☆☆] [主题：性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑮ 朴素基准框架（计时用 std::chrono），对比标量 / AVX2
@@ -594,7 +594,7 @@ static double bench(void(*f)(float*,float*,float*,int),
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能基准（标量 vs 向量） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 // ⑮ 标量版
@@ -667,7 +667,7 @@ void neon_add(const float* a, const float* b, float* c) {
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 29** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑱ 1) 先保证连续、无别名、无依赖，让 -O3 自动向量化
@@ -730,7 +730,7 @@ g++ -std=c++23 -O3 -mavx2 -fopt-info-vec-all=vec.log Examples/_ch155_simd.cpp
 | 取证 | 看 asm / 看原因 | `-S -masm=intel` / `-fopt-info-vec` |
 | 跨平台 | x86↔ARM 不互通 intrinsics | NEON `vaddq_f32` |
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑳ 一页速记：从标量到 AVX2 的进化（同一语义，宽度递增）

@@ -150,7 +150,7 @@ int main() {
 
 ## ⑥ UML / 结构图（特性关系）<span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★★☆☆☆] [主题：结构图（特性关系）<span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 结构图（特性关系）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★★☆☆☆"
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]

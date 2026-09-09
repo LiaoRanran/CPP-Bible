@@ -192,7 +192,7 @@ int main() {
 
 ## ⑤ co_await 三段式协议 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★★☆☆☆] [主题：await 三段式协议 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · await 三段式协议 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★★☆☆☆"
 // ⑤-a 自定义 awaitable：三段式 co_await 协议全流程
@@ -227,7 +227,7 @@ int main() {
 
 ## ⑥ 异步 I/O 仿真 <span class="badge badge-exp">经验</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：异步 I/O 仿真 <span class="badge badge-exp">经验</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异步 I/O 仿真 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 // ⑥-a 用协程消除回调地狱——异步读写的同步写法
@@ -267,7 +267,7 @@ int main() {
 
 ## ⑦ 错误处理与异常 <span class="badge badge-std">标准</span>
 
-> **示例 6** [难度 ★★☆☆☆] [主题：错误处理与异常 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 错误处理与异常 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 // ⑦-a 协程中异常通过 promise_type::unhandled_exception 传播
@@ -353,7 +353,7 @@ int main() {
 
 ## ⑨ 协程与多线程 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★★☆☆☆] [主题：协程与多线程 <span class="badge badge-exp">经验</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 协程与多线程 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 8 · ★★☆☆☆"
 // ⑨-a 协程在不同线程上 resume（每个协程帧本身非线程安全）
@@ -400,7 +400,7 @@ int main() {
 
 ## ⑪ STL 联系 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑪ 协程与 ranges 的组合模式
@@ -460,7 +460,7 @@ int main() {
 
 ## ⑭ WG21 关键提案 <span class="badge badge-std">标准</span>
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：关键提案 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 关键提案 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑭ 协程核心提案: P0912R5(TS→C++20 基础) P2502R2(std::generator, C++23)
@@ -484,7 +484,7 @@ int main() {
 
 ## ⑮ 面试题精选 <span class="badge badge-exp">经验</span>
 
-> **示例 13** [难度 ★★☆☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试题精选 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑮ 面试要点: Q1 sizeof(handle)==sizeof(void*),指向堆上 frame
@@ -507,7 +507,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★★☆☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★★★☆☆"
 // ⑯ 五大陷阱: 1) 引用捕获在协程销毁后悬垂 2) 忘记 destroy 每次调用都泄漏
@@ -537,7 +537,7 @@ int main() {
 
 ## ⑰ FAQ：协程实战常见问题 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★☆☆☆] [主题：协程实战常见问题 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 协程实战常见问题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑰ 实战 Q&A: std::generator 是否可用取决于 __cpp_lib_generator; 构造函数不能是协程;
@@ -576,7 +576,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑱ 黄金法则: 1) RAII 包装 handle 2) suspend_always 做惰性求值 3) 移动构造标 noexcept
@@ -656,7 +656,7 @@ int main() {
 | Python | `async`/`await` + event loop | 堆 | 单线程异步，基于生成器演化 |
 | C# | `async`/`await` + Task | 堆 | 状态机变换，与 C++ 最接近 |
 
-> **示例 18** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑩-a C++ 无栈协程(编译器生成状态机,零开销抽象,无 runtime 调度)

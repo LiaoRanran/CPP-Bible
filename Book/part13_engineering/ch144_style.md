@@ -64,7 +64,7 @@
 
 > **<span class="badge badge-exp">经验</span>** 一条被反复验证的共识：**风格本身没有绝对对错，但"不一致"几乎总是错**。Google、Microsoft、LLVM 风格彼此冲突，但各自内部高度一致——这正是它们能规模化的根本原因。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ❌ 反例：同一文件里三种命名 + 两种缩进，可读性灾难
@@ -73,7 +73,7 @@ void Process_Data();           // 大驼峰 + 下划线混杂
 class tcp_server {int Port;};  // 缩进全无
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么代码风格重要 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ✅ 正例：统一 snake_case 函数/变量、PascalCase 类型、2 空格缩进

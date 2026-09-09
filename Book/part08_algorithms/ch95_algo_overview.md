@@ -49,7 +49,7 @@ STL 算法是一组**与容器解耦**的、以迭代器对 `[first, last)` 为�
 - **零开销抽象** `[标准]`：算法在 `-O2` 下被内联为与手写循环等价的机器码（见第⑤节真实汇编）。
 - **复杂度契约**：每个算法在标准中写明最坏/平均复杂度，使用者可据此推理。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：STL 算法设计哲学 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：STL 算法设计哲学 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 算法与手写循环语义等价：写一个"把偶数翻倍"的需求
@@ -165,7 +165,7 @@ std::vector<int> union_sorted(const std::vector<int>& a,
 
 算法对迭代器有最低类别要求。迭代器分五档（C++20 起用 `std::contiguous_iterator` 等概念强化）：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：迭代器类别与算法要求 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 迭代器类别与算法要求 <span class="badge badge-std">标准</span>
 
 ```text
 input ─→ forward ─→ bidirectional ─→ random_access ─→ contiguous
@@ -175,7 +175,7 @@ input ─→ forward ─→ bidirectional ─→ random_access ─→ contiguous
 - `std::find` 只需 **input**；`std::reverse` 需 **bidirectional**；`std::sort` 需 **random_access**。
 - `[标准]`：给错类别在编译期（concept）或实例化期报错，而非运行期崩溃。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：迭代器类别与算法要求 <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 迭代器类别与算法要求 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 // ③-A 用 C++20 概念显式表达"排序要求随机访问迭代器"
@@ -195,7 +195,7 @@ void demo() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：迭代器类别与算法要求 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 迭代器类别与算法要求 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ③-B 迭代器 category 标签（traits 历史写法，仍常见于老代码/库）
@@ -213,7 +213,7 @@ static_assert(std::is_same_v<
 - **摊销（amortized）**：单次可能贵，但均摊到多次操作是常数。典型：`std::vector::push_back` 扩容时 `O(n)`，但均摊 `O(1)`。
 - `[标准]`：`std::sort` 最坏 `O(n log n)`（内省排序，见第⑤节）；`std::unordered_set::find` 平均 `O(1)`、最坏 `O(n)`（哈希退化）。
 
-> **示例 12** [难度 ★★★☆☆] [主题：复杂度记号与摊销 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · 复杂度记号与摊销 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★★★☆☆"
 // ④ 用计数直观感受复杂度档次（非基准，仅说明"量级"）
@@ -234,7 +234,7 @@ int count_inversions_quadratic(const std::vector<int>& v) {  // O(n^2) 示例
 
 取证目标：证明 `std::for_each` + lambda 在 `-O2` 下被完全内联，不产生任何函数调用——零开销抽象不是口号。
 
-> **示例 13** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：编译一个算法调用看内联]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span>真实：编译一个算法调用看内联
 
 ```cpp title="示例 13 · ★★★☆☆"
 #include <vector>
@@ -276,7 +276,7 @@ _Z14sum_of_squaresRKSt6vectorIiSaIiEE:
 - `[实现·GCC15.3.0]`：循环里只有 `imul`/`add`，**没有任何 `call`**——`std::for_each` 与 lambda 被彻底内联。与手写 `for (int x : v) s += (long)x*x;` 生成的汇编逐条对应。
 - `[标准]`：这正是"零开销抽象"的可验证含义：高层抽象在优化后不残留运行时痕迹。
 
-> **示例 14** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：编译一个算法调用看内联]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span>真实：编译一个算法调用看内联
 
 ```cpp title="示例 14 · ★★★☆☆"
 #include <vector>
@@ -384,7 +384,7 @@ void unstable_demo(std::vector<int>& v) {
 - **比较器（Comparator）**：接受两元素返回 `bool` 的可调用对象，约定 `comp(a,b)==true` 表示"a 应排在 b 前"，且必须严格弱序（strict weak ordering）。
 - **谓词（Predicate）**：接受元素返回 `bool`，用于 `find_if`/`count_if`/`remove_if` 等。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：比较器与谓词 <span class="badge badge-std">标准</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 比较器与谓词 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑦-A 自定义比较器：按绝对值排序（严格弱序：|a|<|b|）
@@ -398,7 +398,7 @@ void sort_by_abs(std::vector<int>& v) {
 // [标准]：比较器必须满足 非自反/非对称/传递/等价传递，否则 sort 行为未定义。
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：比较器与谓词 <span class="badge badge-std">标准</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 比较器与谓词 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑦-B 谓词：count_if 统计满足条件的元素
@@ -410,7 +410,7 @@ long count_div(const std::vector<int>& v, int d) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：比较器与谓词 <span class="badge badge-std">标准</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 比较器与谓词 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 19 · ★☆☆☆☆"
 // ⑦-C 函数对象 vs lambda：std::greater<> 是标准提供的比较器
@@ -426,7 +426,7 @@ void sort_desc_std(std::vector<int>& v) {
 
 C++11 引入 **move iterator**：解引用返回右值引用，使算法"搬移"而非"拷贝"元素。适用于元素移动成本低、且源不再使用的场景（如 `vector` → `vector` 重排）。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 左值/右值迭代器与移动 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 // ⑧-A make_move_iterator：把元素移动进目标，而非拷贝
@@ -444,7 +444,7 @@ std::vector<std::string> move_all(std::vector<std::string>& src) {
 // [标准]：std::move 是"把迭代器包成 move iterator"，算法内部 *it 得到右值。
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 <span class="badge badge-std">标准</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 左值/右值迭代器与移动 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑧-B 用 make_move_iterator 显式驱动算法移动语义
@@ -518,7 +518,7 @@ _Z12par_for_eachRSt6vectorIdSaIdEE:
 | `list`/`forward_list` 排序 | `std::list::sort` ✅（成员，不搬移节点） | 不要用 `std::sort`（需随机访问） |
 | 关联/无序容器查找 | `std::find` ❌（线性 O(n)） | `c.find()` ✅（O(log n)/O(1)） |
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法与容器成员函数取舍 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑩-A 优先用成员 sort（list 节点不搬移，O(n log n) 且保结构）
@@ -529,7 +529,7 @@ void list_way(std::list<int>& l) { l.sort(); }          // ✅ 成员
 // void list_wrong(std::list<int>& l){ std::sort(l.begin(), l.end()); } // ❌ 需随机访问
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 <span class="badge badge-std">标准</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法与容器成员函数取舍 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑩-B 关联容器用成员 find，复杂度 O(log n) 而非 O(n)
@@ -547,7 +547,7 @@ bool slow_lookup(const std::set<int>& s, int k) {
 
 算法操作会使指向容器的迭代器/引用/指针**失效**，规则由容器决定，不在算法本身。忘记这点是最常见的 UB 来源。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 失效迭代器规则 <span class="badge badge-std">标准</span>
 
 ```text
 ┌──── 典型失效规则（算法改写区间时）────┐
@@ -558,7 +558,7 @@ bool slow_lookup(const std::set<int>& s, int k) {
 └──────────────────────────────────────┘
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 失效迭代器规则 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 // ⑪-A 危险：在 vector 上边遍历边用算法插入（可能失效）
@@ -571,7 +571,7 @@ void danger(std::vector<int>& v) {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 失效迭代器规则 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑪-B 正确：erase-remove 惯用法，先用算法分区再用成员 erase
@@ -583,7 +583,7 @@ void erase_zero(std::vector<int>& v) {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：失效迭代器规则 <span class="badge badge-std">标准</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 失效迭代器规则 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 28 · ★☆☆☆☆"
 // ⑪-C list 删除安全：erase 只失效被删迭代器
@@ -598,7 +598,7 @@ void safe_list_erase(std::list<int>& l) {
 
 算法不关心容器，只关心迭代器接口。标准提供多种**迭代器适配器**，把"写入目标/输入源"伪装成迭代器：
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 <span class="badge badge-std">标准</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义迭代器适配 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑫-A back_inserter：算法写入时自动 push_back
@@ -614,7 +614,7 @@ std::vector<int> times_two(const std::vector<int>& v) {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 <span class="badge badge-std">标准</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义迭代器适配 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑫-B ostream_iterator：把算法输出直接流向 cout
@@ -628,7 +628,7 @@ void print_all(const std::vector<int>& v) {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：自定义迭代器适配 <span class="badge badge-std">标准</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义迭代器适配 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑫-C 自定义输入迭代器：从生成函数产生序列（简化 legacy-input-iterator）
@@ -695,7 +695,7 @@ bool in_sorted(const std::vector<int>& v, int k) {
 
 选算法的优先级：**先利用容器/区间的有序性或哈希性，再考虑通用算法**。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑭-A 已排序区间：用二分系列（O(log n) / O(log n)+线性）
@@ -709,7 +709,7 @@ std::vector<int>::const_iterator lower(const std::vector<int>& v, int k) {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑭-B 无序但需去重：先 sort 再 unique（O(n log n)），而非嵌套 find（O(n^2)）
@@ -722,7 +722,7 @@ void dedupe(std::vector<int>& v) {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型：按数据结构与前提选算法
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑭-C 海量数据取 Top-K：partial_sort / nth_element 比全排序省
@@ -784,14 +784,14 @@ void unique_in_place(std::vector<int>& v) {
 
 ## ⑯ 常见误用 <span class="badge badge-exp">经验</span>
 
-> **示例 41** [难度 ★★☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见误用 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 41 · ★★☆☆☆"
 // ⑯-A ❌ 对 list 用 std::sort（需随机访问，编译期即失败）
 // 正确见 ⑩-A：l.sort();
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见误用 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 42 · ★☆☆☆☆"
 // ⑯-B ❌ erase 后继续使用失效迭代器
@@ -805,7 +805,7 @@ void use_after_erase(std::vector<int>& v) {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见误用 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 43 · ★☆☆☆☆"
 // ⑯-C ✅ remove_if 的正确配套写法（erase-remove 惯用法）
@@ -818,7 +818,7 @@ void keep_positive(std::vector<int>& v) {
 }
 ```
 
-> **示例 44** [难度 ★★☆☆☆] [主题：常见误用 <span class="badge badge-exp">经验</span>]
+> **示例 44** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见误用 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 44 · ★★☆☆☆"
 // ⑯-D ❌ 比较器不满足严格弱序（返回 a<=b 而非 a<b）→ sort 未定义行为
@@ -840,7 +840,7 @@ void bad_comparator(std::vector<int>& v) {
 | libc++（Clang） | 类似 | 同理 | 符号名不同但算法一致 |
 | MS STL（MSVC） | 类似 | 同理 | `/std:c++20` 起 |
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：跨 STL 实现差异 <span class="badge badge-platform">平台</span>]
+> **示例 45** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨 STL 实现差异 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 45 · ★☆☆☆☆"
 // ⑰-A 跨实现一致：无论哪套标准库，下列调用语义与复杂度契约相同
@@ -853,7 +853,7 @@ int median_of_three(std::vector<int>& v) {
 // [平台]：差异仅在"跑多快/占多少临时内存"，不在"对不对"。
 ```
 
-> **示例 46** [难度 ★★☆☆☆] [主题：跨 STL 实现差异 <span class="badge badge-platform">平台</span>]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨 STL 实现差异 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 46 · ★★☆☆☆"
 // ⑰-B 调试模式差异：libstdc++ 的 _GLIBCXX_DEBUG 会额外检查迭代器失效
@@ -863,7 +863,7 @@ int median_of_three(std::vector<int>& v) {
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 47** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 47 · ★☆☆☆☆"
 // ⑱-A 优先算法而非手写循环：可读性 + 易优化 + 易并行（加 execution::par）
@@ -877,7 +877,7 @@ long sum_par(const std::vector<int>& v) {
 }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 48** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 48 · ★☆☆☆☆"
 // ⑱-B 优先成员函数：关联容器用 find，list 用 sort（见 ⑩）
@@ -888,7 +888,7 @@ bool set_member(const std::unordered_set<int>& s, int k) {
 }
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 49** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 49 · ★☆☆☆☆"
 // ⑱-C 用算法返回值驱动后续操作，避免重复遍历
@@ -904,7 +904,7 @@ std::vector<int> keep_matches(const std::vector<int>& v, int mod) {
 
 ## ⑲ 调试手段 <span class="badge badge-exp">经验</span>
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
+> **示例 50** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试手段 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 50 · ★☆☆☆☆"
 // ⑲-A 用"带追踪的谓词"在 debug 构建打印算法内部行为（仅调试，不参与复杂度）
@@ -924,7 +924,7 @@ void debug_count_if(const std::vector<int>& v, int d) {
 }
 ```
 
-> **示例 51** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
+> **示例 51** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试手段 <span class="badge badge-exp">经验</span>
 
 ```bash
 # ⑲-B 用 _GLIBCXX_DEBUG（GCC）在运行期捕获迭代器失效/越界（发布构建移除以保性能）
@@ -934,7 +934,7 @@ g++ -D_GLIBCXX_DEBUG -std=c++23 _dbg.cpp -o _dbg
 ./_dbg
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试手段 <span class="badge badge-exp">经验</span>
 
 ```bash
 # ⑲-C 用 -S 比对看内联：怀疑某算法没内联时，看汇编有无 call

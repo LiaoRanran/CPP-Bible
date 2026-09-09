@@ -985,7 +985,7 @@ export int answer() { return 42; }
 
 选型没有银弹，按场景决策。
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
+> **示例 61** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型建议
 
 ```cpp title="示例 61 · ★☆☆☆☆"
 // ⑲ 场景 → 推荐（经验法则，非铁律）
@@ -996,7 +996,7 @@ export int answer() { return 42; }
 int choose() { return 0; }
 ```
 
-> **示例 62** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
+> **示例 62** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span>选型建议
 
 ```cpp title="示例 62 · ★★☆☆☆"
 // ⑲ 团队工具链统一原则：锁版本！CMakePresets.json 固定 compiler + version，

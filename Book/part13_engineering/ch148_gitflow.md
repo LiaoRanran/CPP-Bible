@@ -64,7 +64,7 @@
 
 > 表注（①）：四维度共同把“协作约定”沉淀为可机械验证的流程；可追溯/可审计是后续 bisect 与 CI 的前提。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：版本控制价值 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：版本控制价值 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 版本可追溯性的最小体现：构建产物自带版本与 commit 标识

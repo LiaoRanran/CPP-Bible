@@ -56,7 +56,7 @@
 
 ## ② memory_order 六态 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★☆☆☆] [主题：order 六态 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · order 六态 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 六种内存序不是强度刻度，而是"各自解决什么问题"——一个程序把它们摆在同一张桌上
@@ -102,7 +102,7 @@ int main() {
 
 ## ③ relaxed 语义 <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：语义 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 语义 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★☆☆☆"
 #include <atomic>
@@ -113,7 +113,7 @@ int main(){x.store(42,std::memory_order_relaxed);std::cout<<x.load(std::memory_o
 
 ## ④ acquire-release 配对 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★★☆☆☆] [主题：配对 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 配对 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★★☆☆☆"
 #include <atomic>
@@ -127,7 +127,7 @@ int main(){std::thread p(producer),c(consumer);p.join();c.join();return 0;}
 
 ## ⑤ seq_cst 全局序 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★★☆☆☆] [主题：cst 全局序 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · cst 全局序 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★★☆☆☆"
 #include <atomic>
@@ -138,7 +138,7 @@ int main(){a.store(1,std::memory_order_seq_cst);b.store(1,std::memory_order_seq_
 
 ## ⑥ atomic_thread_fence <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：threadfence <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · threadfence <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 #include <atomic>
@@ -194,7 +194,7 @@ void consume_load() { v = g.load(std::memory_order_consume); }
 
 ## ⑧ memory_order_consume <span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★★☆☆☆] [主题：orderconsume <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · orderconsume <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★★☆☆☆"
 #include <atomic>
@@ -205,7 +205,7 @@ int main(){int v=42;ptr.store(&v,std::memory_order_release);int*p=ptr.load(std::
 
 ## ⑨ 跨语言对比 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★★★☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>
 
 三句话讲清 C++ 内存模型在语言谱系里的位置：① **C++ 与 C11 共享同一套 `memory_order` 语义**（同名枚举、同一套获取/释放规则，`_Atomic` 与 `std::atomic` 一一对应）；② **Rust 的 `Ordering` 与 C++ 几乎一一对应**（Acquire/Release/Relaxed/SeqCst 同名同义）；③ **Java 的 `volatile` 是"全序可见 + 禁止重排"的强保证，没有 `relaxed` 这种"只原子、不排序"档位**——下面是 C++ 独有、Java 写不出的"弱"用法：
 
@@ -239,7 +239,7 @@ int main() {
 
 ## ⑩ 跨语言对比：内存模型 <span class="badge badge-exp">经验</span>
 
-> **示例 9** [难度 ★★☆☆☆] [主题：跨语言对比：内存模型 <span class="badge badge-exp">经验</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：内存模型 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 9 · ★★☆☆☆"
 #include <iostream>
@@ -493,7 +493,7 @@ int main(){std::cout<<"fence总结: seq_cst最安全也最贵, acquire-release�
 ```
 
 ## ⑪ STL 联系 <span class="badge badge-std">标准</span>
-> **示例 20** [难度 ★★☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★★☆☆☆"
 #include <iostream>
@@ -502,7 +502,7 @@ int main(){std::atomic<int> x;x.store(1);std::cout<<x.load()<<std::endl;return 0
 ```
 
 ## ⑫ 工业案例 <span class="badge badge-exp">经验</span>
-> **示例 21** [难度 ★★★☆☆] [主题：工业案例 <span class="badge badge-exp">经验</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★★★☆☆</span> · 工业案例 <span class="badge badge-exp">经验</span>
 
 工业级并发代码的内存序选择是"按访问性质分级"：引用计数用 **relaxed 增 + acq_rel 减**（Chrome `base::AtomicRefCount`、`std::shared_ptr` 控制块同款），发布-订阅用 **release/acquire**（Linux RCU 读侧、示例 18），只有需要全局全序才上 seq_cst。下面把引用计数那一级落到真机：
 
@@ -567,7 +567,7 @@ int main() {
 也就是说：`std::atomic<T>::store(x, seq_cst)` 与手写 `__atomic_store_n(&x, x, __ATOMIC_SEQ_CST)` 是**同一道带锁交换**，没有魔法——你写的 `memory_order` 直接决定 GCC 选 `mov` 还是 `xchg`。这也解释了为什么 §① 附录 D5 测到 seq_cst 写是 relaxed 的十几倍：代价来自指令本身，不是库开销。
 
 ## ⑭ WG21 提案 <span class="badge badge-std">标准</span>
-> **示例 23** [难度 ★★★☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 提案 <span class="badge badge-std">标准</span>
 
 P0668 提议废弃 `memory_order_consume`，理由就在编译器的实际行为里——**主流实现一律把它当 acquire 处理**，承诺的"只排序有依赖的读"从未真正落地：
 
@@ -590,7 +590,7 @@ int main() {
 真机输出：`*p=42`；而 `g++ -O2 -S` 显示 `load(consume)` 生成的是与 `load(acquire)` **完全相同的 `mov`**（见示例 6 指令对照表末行）。也就是说：consume 的语义从未被实现出来，它只是"写起来更唬人的 acquire"。因此工程结论很干脆——**不要用 consume**，需要顺序就用 acquire/release。至于 P2892（扩展 atomic 支持非平凡类型），那是另一条仍在推进的线。
 
 ## ⑮ 面试题 <span class="badge badge-exp">经验</span>
-> **示例 24** [难度 ★★★☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题 <span class="badge badge-exp">经验</span>
 
 面试题"acquire 和 seq_cst 差在哪"的标准答案是：acquire 是单向屏障（只挡它之前的读不与其他读重排），seq_cst 是全局唯一总序（所有线程对顺序看法一致）。但**代价**必须用真机数说话，不能停在标准语义：
 
@@ -633,7 +633,7 @@ store seq_cst=3.58 ns  relaxed=0.22 ns
 给面试官的两条真结论：① **x86 上贵的是 seq_cst 的「写」与「全栅栏」，不是读**——两种 load 都 ~0.4–0.9 ns（TSO 下都是 `mov`），而 seq_cst 写是 relaxed 的 **16×**（3.58 vs 0.22，指令是 `xchg`）。② ARM 上 acquire 读也变贵（约 5 ns 的 `ldar`），但那是因为 ARM 是弱内存模型——**本机数字是 x86 口径，移植目标架构必须重新测**（与示例 6、⑲ 的结论互相印证）。
 
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
-> **示例 25** [难度 ★★★☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 三个经典坑里，"relaxed 发布指针"最隐蔽——它在本机**往往能跑**，却是未定义行为：
 
@@ -661,7 +661,7 @@ int main() {
 注意：x86-64 是 TSO，`relaxed` 写/读不会被重排成"读到非空指针却字段未初始化"——所以**本机永远输出 1 2，让你以为代码对**。但搬到 ARM/POWER 这类弱内存模型，读端完全可能观察到 `g_ptr` 非空、而 `g_payload.a/b` 还是旧值（发布写与指针写被重排），读到的就是撕裂/未初始化数据，且这种 bug 不可复现、极难调。三个坑的正确方子：① 有依赖的数据用 **release/acquire**（不是 relaxed，见示例 18）；② seqlock 读端**两道 acquire 栅栏**都不能省（示例 16 已验证缺一道就读到撕裂）；③ **consume 不要碰**（示例 23：实现直接当 acquire，写了也白写）。
 
 ## ⑰ FAQ <span class="badge badge-exp">经验</span>
-> **示例 26** [难度 ★★★☆☆] [主题：<span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-exp">经验</span>
 
 FAQ「什么时候用 fence 而不用 atomic 操作」的答案一句话：fence 顺序化「其后所有原子操作」、不绑定任何变量；atomic 操作只顺序化「这一个变量」。这句话落到指令上最直观——两者在 GCC 下生成**完全不同的指令**：
 
@@ -689,7 +689,7 @@ void by_atomic() {
 所以判据很硬：**要同步的是「一个变量」→ 用它的 atomic 内存序；要同步的是「一组成片的代码边界」（如 CAS 发布路径、锁的获取/释放、seqlock 读写端、UMA 下设备-主机可见性）→ 用一道 fence 一次讲清**。把 fence 当「更贵的 atomic」是错的——它们是不同维度：fence 是位置、atomic 是变量。
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
-> **示例 27** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 "从 seq_cst 起步，证明安全后再放宽"不是空话，真机量化就是：热点能 relaxed 就 relaxed，**只在真正需要全局全序的"边界"放一道 `fence(seq_cst)`**，而不是每个操作都付 seq_cst 的 `xchg` 税：
 
@@ -807,14 +807,14 @@ RMW   : fetch_add relaxed=3.15  seq_cst=3.16  (ns/op)
    - <span class="badge badge-std">标准</span> 用单独围栏可减少对每个原子操作标注内存顺序的麻烦，但可能施加更广的屏障。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（围栏 vs 操作级顺序）；cppreference "Memory ordering" 词条。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 29 · ★★☆☆☆"
 #include <iostream>
 int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxed/SeqCst): identical semantics.\n";return 0;}
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <iostream>

@@ -51,7 +51,7 @@ C++ 的 `private` / `public` 访问控制继承自 Simula 67 的"数据隐藏"�
 
 ## ② 友元函数 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：友元函数 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元函数 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
@@ -62,7 +62,7 @@ int main(){Point p(3,4);std::cout<<p<<std::endl;return 0;}
 
 ## ③ 友元类 <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：友元类 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元类 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
@@ -73,7 +73,7 @@ int main(){Engine e;Mechanic m;m.tune(e);return 0;}
 
 ## ④ 友元成员函数 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：友元成员函数 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元成员函数 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
@@ -85,7 +85,7 @@ int main(){Safe s;Key k;k.unlock(s);return 0;}
 
 ## ⑤ 友元不可传递 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：友元不可传递 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元不可传递 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 #include <iostream>
@@ -97,7 +97,7 @@ int main(){A a;B b;std::cout<<"friend not transitive\n";return 0;}
 
 ## ⑥ 友元不可继承 <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：友元不可继承 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 友元不可继承 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
@@ -109,7 +109,7 @@ int main(){Base b;Derived d;Viewer v;v.show(b);return 0;}
 
 ## ⑦ 模板友元 <span class="badge badge-std">标准</span>
 
-> **示例 6** [难度 ★★☆☆☆] [主题：模板友元 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板友元 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 #include <iostream>
@@ -131,7 +131,7 @@ int main(){Vec3 v(1,2,3);std::cout<<v<<std::endl;return 0;}
 
 ## ⑨ friend 的替代方案 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：的替代方案 <span class="badge badge-exp">经验</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的替代方案 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
@@ -141,7 +141,7 @@ int main(){Widget w;w.set(42);std::cout<<w.get()<<std::endl;return 0;}
 
 ## ⑩ friend 与单元测试 <span class="badge badge-exp">经验</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与单元测试 <span class="badge badge-exp">经验</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与单元测试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
@@ -241,7 +241,7 @@ int main() {
 
 ## ⑭ WG21 关键提案 <span class="badge badge-std">标准</span>
 
-> **示例 13** [难度 ★★★☆☆] [主题：关键提案 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 关键提案 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★★☆☆"
 // ⑭ friend 的标准演化 —— 真机验证 C++11「模板类型参数作友元」
@@ -266,7 +266,7 @@ int main() {
 
 ## ⑮ 面试题精选 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★☆☆☆] [主题：面试题精选 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试题精选 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑮ 高频面试问题 —— 真机验证「friend 不继承、不传递」
@@ -289,7 +289,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★★☆☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 15 · ★★★☆☆"
 // ⑯ 5 个最常见的 friend 使用错误
@@ -316,7 +316,7 @@ int main() {
 
 ## ⑰ FAQ：工程实战常见问题 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★☆☆☆] [主题：工程实战常见问题 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 工程实战常见问题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑰ 来自实际项目的 friend 使用问答
@@ -349,7 +349,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑱ friend 使用的 6 条黄金法则
@@ -420,7 +420,7 @@ int main() {
    - <span class="badge badge-std">标准</span> 友元关系不可传递、不可继承，需显式声明每一授予。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[class.friend]；cppreference "friend#Inheritance" 词条。
 
-> **示例 19** [难度 ★★★☆☆] [主题：跨语言对比：访问控制机制 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比：访问控制机制 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 19 · ★★★☆☆"
 // ⑳ 跨语言对比 —— 真机验证 C++ friend「精确到单个外部实体」的授权

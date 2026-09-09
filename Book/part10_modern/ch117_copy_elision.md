@@ -469,7 +469,7 @@ Vec make_copy(const Vec& src){ Vec v=src; return v; }  // v 必须从 src 拷贝
 
 移动语义（ch115）是拷贝消除**失效时的退路**，二者构成「免复制双保险」：
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：与 ch115 移动语义衔接 <span class="badge badge-std">标准</span>
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ch115 移动语义衔接 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑰ 省略优先，移动兜底：同一返回语句的两种命运

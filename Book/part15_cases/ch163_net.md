@@ -60,7 +60,7 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 
 网络编程的本质是**让两个进程通过文件描述符/套接字交换字节流**。C++ 标准库至 `C++23` 都没有把 socket 纳入标准（**<span class="badge badge-std">标准</span>** 这一点与 Java 的 `java.net`、Go 的 `net` 包不同），因此工业级 C++ 网络栈要么基于操作系统 API（Berkeley Socket / Winsock），要么基于库（Boost.Asio、libuv、libevent）。**[实现·GCC15]** 本章选择"从零实现"路线：用手写 socket 把 TCP、缓冲、协议、并发、序列化全部打通，让你看清 Asio 这类库在底层到底替你做了什么。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：C++ 网络编程 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：C++ 网络编程 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 网络分层到 C++ 概念的映射（自上而下）
@@ -71,7 +71,7 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 // 关键认知：TCP 是"字节流"不是"消息流"——一次 send 与一次 recv 不保证一一对应。
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：C++ 网络编程 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：C++ 网络编程 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ① 一个 TCP 端点的最小描述（跨平台字段一致）
@@ -82,7 +82,7 @@ struct Endpoint {
 };
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：概述：C++ 网络编程 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：C++ 网络编程 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ① Winsock2 的最小初始化包装（RAII 风格，后续每个示例都依赖它）
@@ -864,7 +864,7 @@ struct Socket {
 
 **<span class="badge badge-std">标准</span>** WG21 长期推进 **Networking TS**（基于 Asio 抽象），目标是在某版 C++（曾展望 C++23/26，目前仍未合并入标准）提供 `std::net`。下面用**示意 API**展示其方向——注意这是提案形态，并非本机可编译的 C++23 代码。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：++26 网络 TS 前瞻 <span class="badge badge-std">标准</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ++26 网络 TS 前瞻 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑱ 网络 TS 拟议接口（示意，非本机 C++23 可编译，仅展示方向）
@@ -882,7 +882,7 @@ void proposed() {
 #endif
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：++26 网络 TS 前瞻 <span class="badge badge-std">标准</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · ++26 网络 TS 前瞻 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 37 · ★★☆☆☆"
 // ⑱ 与之配套的执行器（executor）概念——把"在哪里跑回调"显式化

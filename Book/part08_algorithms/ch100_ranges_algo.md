@@ -71,7 +71,7 @@ int main() {
 
 `view` 是对底层数据的**轻量、非拥有（non-owning）视图**：构造几乎零开销，不拷贝元素，只记录"如何遍历"。遍历时才逐元素计算——这就是**惰性求值（lazy evaluation）**。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惰性求值 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
@@ -82,7 +82,7 @@ auto r = src | std::views::reverse;     // O(1) 构造，无内存分配
 for (int x : r) std::cout << x << ' ';  // 5 4 3 2 1（遍历时才反向迭代）
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惰性求值 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
@@ -94,7 +94,7 @@ for (int x : r) std::cout << x << ' ';   // 6 5 4 3 2 1（底层变了，view �
 - `[标准]`：`std::ranges::view` 概念要求 `view` 满足 `range` 且**可廉价拷贝/移动**（通常只持有迭代器/指针，`sizeof` 很小）。
 - `[实现·GCC15.3.0]`：libstdc++ 的 `reverse_view` 仅持有两个迭代器（`_M_begin`/`_M_end`），构造等价于一次 `make_reverse_iterator`，不触碰元素。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：惰性求值 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惰性求值 <span class="badge badge-std">标准</span>
 
 ```text
 ┌─────────── 底层容器 src ───────────┐
@@ -110,7 +110,7 @@ for (int x : r) std::cout << x << ' ';   // 6 5 4 3 2 1（底层变了，view �
 
 旧算法（`std::sort`、`std::find`）需要显式传迭代器对；range 算法（`std::ranges::sort`、`std::ranges::find`）吃整个 range，并**返回 `borrowed_iterator`**——对临时 range 也安全。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：算法 vs 旧算法 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 算法 vs 旧算法 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 #include <vector>
@@ -122,7 +122,7 @@ auto it_old = std::find(v.begin(), v.end(), 3);  // 旧算法：两个迭代器
 auto it_new = std::ranges::find(v, 3);           // ranges 算法：单 range
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：算法 vs 旧算法 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 算法 vs 旧算法 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
@@ -142,7 +142,7 @@ if (pos != std::ranges::end(data)) std::cout << *pos; // 20
 
 `operator|` 把 range 喂给 range adaptor（视图工厂），形成"数据流水线"。`r | adaptor1 | adaptor2` 等价于 `adaptor2(adaptor1(r))`，但可读性更好。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：管道操作符 | <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 管道操作符 | <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
@@ -155,7 +155,7 @@ for (int x : v | filter([](int n) { return n % 2 == 0; })
     std::cout << x << ' ';   // 20 40（偶数 ×10）
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：管道操作符 | <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 管道操作符 | <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <vector>
@@ -173,7 +173,7 @@ for (int x : w | views::filter([](int n) { return n > 2; }))
 
 **投影（projection）** 是传给算法的"取值函数"：算法先对元素应用投影，再比较投影结果。排序按某成员、查找按某键，都无需手写比较器或改元素类型。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：投影 projection <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 投影 projection <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <vector>
@@ -187,7 +187,7 @@ std::ranges::sort(ps, {}, &Person::age);          // 按 age 升序
 // ps: Bob(20) Cy(25) Ann(30)
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：投影 projection <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 投影 projection <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 #include <vector>
@@ -205,7 +205,7 @@ auto it = std::ranges::find(people, 'B', &Person::name); // 投影取 name[0] �
 
 用 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch100_sort.cpp`。`ranges::sort(v, less{}, proj)` 底层仍是 libstdc++ 的 **introsort（`__introsort_loop`）**，但多了一个投影闭包。
 
-> **示例 11** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：ranges::sor]
+> **示例 11** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span>真实：ranges::sor
 
 ```cpp title="示例 11 · ★★★☆☆"
 #include <vector>
@@ -244,7 +244,7 @@ _Z11sort_by_absRSt6vectorIiSaIiEE:
 - `views::filter(pred)`：只保留谓词为真的元素（惰性、单次遍历）。
 - `views::transform(fn)`：把每个元素映射为 `fn(x)`（同样惰性）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 #include <iostream>
@@ -256,7 +256,7 @@ for (int x : v | std::views::filter([](int n) { return n > 1; })
     std::cout << x << ' ';        // 4 9 16
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 #include <iostream>
@@ -275,7 +275,7 @@ for (auto s : names | std::views::transform([](const std::string& n) { return n.
 
 同样用真实编译与 chrono 实测。先给源码，再给真实汇编，最后给实测数据。
 
-> **示例 14** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：惰性管道 vs 及早旧]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span>真实：惰性管道 vs 及早旧
 
 ```cpp title="示例 14 · ★★★☆☆"
 // 文件：Examples/_ch100_bench.cpp
@@ -350,7 +350,7 @@ lazy:  11.2327 ms  sum=49011300
 - `views::drop(n)`：跳过前 `n` 个。
 - `views::slide(n)`：产生长度为 `n` 的滑动窗口（每个窗口本身是个 range）。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 #include <iostream>
@@ -365,7 +365,7 @@ for (auto w : v | std::views::slide(2))                       // 相邻窗口
     std::cout << w.front() << '-' << w.back() << ' ';         // 1-2 2-3 3-4 4-5
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 #include <iostream>
@@ -414,7 +414,7 @@ for (int x : v | scale(10)) std::cout << x << ' ';   // 10 20 30 40
 
 Ranges 完全建立在 STL 迭代器之上，新旧算法可混用；用 `std::ranges::begin/end` 取范围端点，用 `views::all` 把任意 range 统一成 view。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：与 STL 容器/算法衔接 <span class="badge badge-std">标准</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器/算法衔接 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 19 · ★☆☆☆☆"
 #include <iostream>
@@ -428,7 +428,7 @@ auto b = std::ranges::begin(v);  // ranges 端点接口
 std::cout << *b;                 // 1
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：与 STL 容器/算法衔接 <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 STL 容器/算法衔接 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <vector>
@@ -448,7 +448,7 @@ for (int x : ev) out.push_back(x);            // out = {1, 3}
 
 惰性管道的核心收益有两点：**省去临时容器（无堆分配）**与**单次遍历（而非多次）**。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>性能：避免临时容器 / 单次]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>性能：避免临时容器 / 单次
 
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑫ ❌ 旧写法：链式为多个临时 vector，N 次遍历 + N 次分配
@@ -525,7 +525,7 @@ for (auto blk : v | std::views::chunk(100)) {  // 10 个大小为 100 的块
 
 ## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 26** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★★★☆☆"
 #include <iostream>
@@ -541,7 +541,7 @@ std::vector<int> a = {1, -2, 3};
 print_positive(a);                          // 1 3
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑮ ✅ 管道里把"廉价、强过滤"的 filter 放前面，减少下游元素量
@@ -569,7 +569,7 @@ for (int x : data
 
 view 链是"运行时才展开"的惰性结构，单步调试时你看到的是一堆迭代器包装，而非直观的中间结果。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：调试：view 链难调试 <span class="badge badge-exp">经验</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试：view 链难调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 28 · ★☆☆☆☆"
 #include <iostream>
@@ -596,7 +596,7 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 
 在 C++20 之前，**range-v3**（Eric Niebler，Ranges 提案作者）是事实标准。`<ranges>` 在设计上与其高度兼容，迁移成本低。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：跨库：range-v3 <span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库：range-v3 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑲ range-v3 写法（需 #include <range/v3/all.hpp>，命名空间 ranges::v3）
@@ -605,7 +605,7 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 // | v3::views::transform([](int n){return n*2;}), 0);
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：跨库：range-v3 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库：range-v3 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <ranges>

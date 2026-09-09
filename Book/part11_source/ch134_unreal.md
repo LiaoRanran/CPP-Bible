@@ -448,7 +448,7 @@ _Z9NewObjectPK6FClass:
 
 ## ⑩ 调试 <span class="badge badge-exp">经验</span>
 
-> **示例 21** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑩ 用 ensure/check 宏替代裸 assert，能触发编辑器断点与调用栈
@@ -460,7 +460,7 @@ int ComputeDamage(int base) {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 22 · ★☆☆☆☆"
 // ⑩ 调试时打印 UObject 信息：GetName/GetClass()->GetName 是常用入口
@@ -477,7 +477,7 @@ void Dump(const DbgObj& o) {
 
 ## ⑪ 性能 <span class="badge badge-exp">经验</span>
 
-> **示例 23** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑪ TArray 预分配：避免多次 realloc（与 std::vector::reserve 同义）
@@ -488,7 +488,7 @@ Positions.reserve(1024);     // 一次性预留，热路径零分配
 for (int i=0;i<1024;++i) Positions.push_back((float)i);
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑪ 避免在热循环里创建 FString：用栈缓冲 / 数值直传
@@ -592,7 +592,7 @@ struct FSubsystemStub { void Tick() {} };
 
 ## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★☆☆☆☆"
 // ⑮ 用 AActor 的 BeginPlay 做初始化，而非构造函数（此时 World/组件就绪）
@@ -602,7 +602,7 @@ class AMyActor : public AActorStub2 {
 };
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 33 · ★☆☆☆☆"
 // ⑮ 用 UPROPERTY(EditAnywhere) 暴露给编辑器，减少硬编码
@@ -613,7 +613,7 @@ class USettings {
 };
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 34 · ★★☆☆☆"
 // ⑮ 用 const 引用传大对象，避免 UObject 上的不必要拷贝
@@ -628,7 +628,7 @@ int Sum(const TArray<int32_t>& xs) { int s=0; for(int x:xs) s+=x; return s; }
 
 ## ⑯ 跨库 <span class="badge badge-exp">经验</span>
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑯ 引入第三方库（如 rapidjson）时，用模块 Build.cs 的 PublicDependencyModuleNames
@@ -638,7 +638,7 @@ int Sum(const TArray<int32_t>& xs) { int s=0; for(int x:xs) s+=x; return s; }
 std::string ToStd(const char* u8) { return std::string(u8); }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑯ 与标准库共存：UE 容器与 STL 可混用，注意边界转换成本
@@ -656,7 +656,7 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 
 ## ⑰ 贡献 <span class="badge badge-exp">经验</span>
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑰ 贡献引擎代码的典型改动点：在 Runtime/CoreUObject 下修改，保持 UHT 宏一致
@@ -667,7 +667,7 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 // 行号：312
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑰ 自测：新增类型应满足最小不变量（等价引擎内的 check 断言）
@@ -688,7 +688,7 @@ void Validate(const FContrib& c) { check(c.Id >= 0); }
 | Godot | `Object`/`Ref` | 内建 | 引用计数 | GDScript |
 | CryEngine | `IEntity`/`IComponent` | 有限 | 手动/引用 | Lua |
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：与游戏引擎对比 <span class="badge badge-std">标准</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与游戏引擎对比 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 39 · ★☆☆☆☆"
 // ⑱ Unity 用 C# 对象；UE 用 C++ UObject——生命周期模型根本不同
@@ -705,7 +705,7 @@ EngineDiff Diffs[4] = {
 
 ## ⑲ 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 40 · ★☆☆☆☆"
 // ⑲ 阅读引擎源码的入口：从 UObject 派生类的构造函数反向追 UClass 构建
@@ -716,7 +716,7 @@ EngineDiff Diffs[4] = {
 int ReadEntry() { return 1; }   // 占位：提示读者去上游该位置阅读
 ```
 
-> **示例 41** [难度 ★★☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
+> **示例 41** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 41 · ★★☆☆☆"
 // ⑲ 用条件断点观察 GC：在 MarkReachable 等价函数上断住，查看可达集合增长
@@ -757,7 +757,7 @@ void InspectGC(const TArray<void*>& reachables) { (void)reachables; }
 | 弱引用(UObject) | `TWeakObjectPtr` | — | GC 回收自动空 |
 | 软引用 | `FSoftObjectPath` | 路径字符串 | 延迟加载 |
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 42** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 42 · ★☆☆☆☆"
 // ⑳ 一页速记：UObject 派生类型的最小骨架（空宏 shim 可编译）
@@ -778,7 +778,7 @@ public:
 };
 ```
 
-> **示例 43** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 43 · ★★☆☆☆"
 // ⑳ 选择指南（编译期决策树，ASCII 框线）

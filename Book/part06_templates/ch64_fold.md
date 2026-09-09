@@ -99,7 +99,7 @@ int main() {
 
 ## ④ 空包处理规则 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★★☆☆☆] [主题：空包处理规则 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 空包处理规则 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★★☆☆☆"
 // 一元折叠空包：除 &&(true) / ||(false) / 逗号(void()) 外均为错误
@@ -154,7 +154,7 @@ int main() {
 
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 #include <iostream>

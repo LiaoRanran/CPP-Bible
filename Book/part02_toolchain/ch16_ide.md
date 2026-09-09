@@ -362,7 +362,7 @@ clang-tidy -p build src/app.cpp --checks='-*,performance-*,modernize-*'
 
 不同工具的重构**安全级别**不同：语义级（基于 AST）跨文件可靠，文本级（正则）易漏捕获列表/宏。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：重构能力对比 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重构能力对比 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑩ 重命名场景：把 'count' 改为 'total'，语义级工具会同时改 Lambda 捕获
@@ -375,7 +375,7 @@ int count_em(const std::vector<int>& v) {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：重构能力对比 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 重构能力对比 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑩ 提取函数场景：把内联逻辑抽成独立函数，依赖精确的类型推导
@@ -455,7 +455,7 @@ std::string after(const std::vector<int>& xs) {
 
 调试器（gdb/lldb）通过 **DAP（Debug Adapter Protocol）** 或 MI 接入 IDE。核心能力：断点、单步、监视变量、调用栈、条件断点。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：调试器集成 <span class="badge badge-std">标准</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试器集成 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑫ 条件断点示例：只在 i==5 时停（IDE 里右键断点设条件，无需改代码）
@@ -469,7 +469,7 @@ int sum_to(std::vector<int>& v) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：调试器集成 <span class="badge badge-std">标准</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试器集成 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 19 · ★☆☆☆☆"
 // ⑫ 监视"被优化掉"的变量：务必 -O0 -g，否则看到 <optimized out>
@@ -518,7 +518,7 @@ int main() { return has_print ? 0 : 1; }
 
 IDE 把测试框架（GoogleTest / Catch2 / doctest）的**发现与单跑**做成一键。底层仍是编译器把测试编成可执行文件再运行。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：单元测试集成 <span class="badge badge-std">标准</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 单元测试集成 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑭ GoogleTest 风格（需 gtest 头；语义自洽示例）
@@ -530,7 +530,7 @@ TEST(Math, AddPositive) {
 }
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：单元测试集成 <span class="badge badge-std">标准</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 单元测试集成 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 22 · ★★★☆☆"
 // ⑭ doctest 极简风格：单头文件，IDE 配一个 main 即可
@@ -562,7 +562,7 @@ snippet 把**高频样板**缩成几个字符触发。VSCode 的 `*.code-snippet
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：代码模板 / snippet <span class="badge badge-exp">经验</span>
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 代码模板 / snippet <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑮ 展开后实际得到的代码（snippet 产物）
@@ -580,7 +580,7 @@ int main() {
 
 批量改名的利器：VSCode/CLion 的**多光标**选中所有同名出现；VIM 的 `qq` 录宏对不规则重复最高效。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：多光标 / 宏 / 批量 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多光标 / 宏 / 批量 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 #include <cstddef>
@@ -594,7 +594,7 @@ struct Config {
 };
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：多光标 / 宏 / 批量 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 多光标 / 宏 / 批量 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 #include <cstddef>
@@ -615,7 +615,7 @@ struct Config {
 
 没有"最好"的 IDE，只有"最契合工作流"的。按场景给硬建议：
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型建议
 
 ```cpp title="示例 26 · ★☆☆☆☆"
 // ⑰ 用枚举表达选型维度（仅为说明，非运行必需）
@@ -646,7 +646,7 @@ const char* advise(User u) {
 
 踩坑集：每个都是"编辑器红、g++ 能编"或"调试看到幽灵值"的真实来源。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见配置坑 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑱ 坑1：includePath 设了但 -std 没设 → 编辑器把 C++23 特性标红
@@ -654,7 +654,7 @@ const char* advise(User u) {
 int f() { std::print("hi\n"); return 0; }   // c_cpp_properties 没 c++23 就误报
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见配置坑 <span class="badge badge-exp">经验</span>
 
 ```bash
 # 坑：compile_commands.json 里的 -I 多为构建目录的相对路径；clangd 工作目录不对
@@ -663,7 +663,7 @@ clangd --compile-commands-dir=build
 # 排查：clangd --check=src/app.cpp 一次性 CLI 诊断，可复现同一 include 错误
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见配置坑 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑱ 坑3：-O2 调试，变量被优化，监视窗显示 <optimized out>（见⑫）
@@ -680,7 +680,7 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 
 把上面零散建议收敛为可执行的清单：
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-std">标准</span>
 
 ```bash
 # 实践1：始终用 compile_commands.json 驱动 clangd（CMake 一行导出）
@@ -688,7 +688,7 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
 # 生成 build/compile_commands.json；clangd / 其它 LSP 客户端从该文件取编译参数
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-std">标准</span>
 
 ```bash
 # 实践2：保存即格式化 + 提交前 clang-tidy；CI 兜底 -Wall -Wextra -Wconversion
@@ -697,7 +697,7 @@ clang-tidy -p build src/app.cpp --checks='-*,modernize-*'
 g++ -std=c++23 -Wall -Wextra -Wconversion -c app.cpp -o app.o
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-std">标准</span>
 
 ```bash
 # 实践3：调试用 -O0 -g；发布可 -O2 -g 保可调试性
@@ -724,7 +724,7 @@ g++ -std=c++23 -O2 -g -c app.cpp -o app_rel.o  # 发布构建（优化但保留�
    - <span class="badge badge-std">标准</span> 宏是纯文本替换，其参数在替换列表中被逐字展开（含 `#`/`##` 运算符），不参与语言级作用域重命名。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[cpp.replace]（宏替换与 #、## 运算符）；cppreference "Replacing text macros" 词条。
 
-> **示例 33** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```bash
 # 一行速记：各工具核心命令（复制即用）
@@ -736,7 +736,7 @@ g++ -std=c++23 -O0 -g -c src/app.cpp -o src/app.o
 g++ -std=c++23 -O2 -S -masm=intel src/app.cpp -o app.asm
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 // ⑳ 速查：IDE ↔ 引擎 ↔ 协议 映射

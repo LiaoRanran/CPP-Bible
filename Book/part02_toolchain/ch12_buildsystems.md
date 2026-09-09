@@ -55,7 +55,7 @@ C++ 是**翻译单元（translation unit，TU）**模型：每个 `.cpp` 独立�
 2. **调度执行**——按依赖图顺序调用编译器，并尽可能并行。
 3. **产物管理**——输出可执行文件、静态库（`.a`/`.lib`）、动态库（`.so`/`.dll`）。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：构建系统解决什么 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 一个最小的、被构建系统反复编译的翻译单元
@@ -70,7 +70,7 @@ int main() {
 - `[标准]`：C++ 标准只规定"一个程序由若干翻译单元链接而成"（[lex.phases]、[basic.link]），**不规定如何驱动编译**——构建系统是工程层。
 - `[经验]`：项目从 1 个文件增长到 1000 个文件时，手工敲 `g++ *.cpp` 会崩溃（重复全量编译、无法增量）；构建系统把"哪些要重编"变成图上问题。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：构建系统解决什么 <span class="badge badge-std">标准</span>
 
 ```text
 ┌──────────────── 构建流水线（单 TU）────────────────┐
@@ -115,7 +115,7 @@ foo.o: foo.cpp        # 头改动时此规则触发重编
 
 模式规则（pattern rule）用 `%` 通配，避免为每个 `.cpp` 写一条规则；Make 内置函数（`wildcard`/`patsubst`/`addprefix`）做批量推导。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：模式规则与函数 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式规则与函数 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ③ 多个同构源：calc.cpp / emit.cpp 各自可被同一模式规则处理
@@ -202,7 +202,7 @@ target_link_libraries(app PRIVATE mylib)   # 依赖关系即依赖图
 
 CMake 有两类"变量"：**普通变量**（函数/目录作用域）与 **缓存变量（cache entry）**（`set(... CACHE ...)`，跨配置持久、可被 `-D` 覆盖）。`option()` 是布尔缓存变量的语法糖。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：变量/缓存/option <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 变量/缓存/option <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★★☆☆☆"
 // ⑥ 受 CMake option 控制的源：USE_SSE 决定走哪条路径
@@ -265,7 +265,7 @@ target_link_libraries(app PRIVATE
 
 `install()` 把产物与头拷到前缀目录；`install(EXPORT)` 生成 **目标导出集（`.cmake`）**，让别的工程能 `find_package` 找到你（闭环到 ⑯）。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：安装/导出/包配置 <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 安装/导出/包配置 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 // ⑧ 要被导出的库接口（头与 inline 必须随包分发）
@@ -359,7 +359,7 @@ cc_binary(
 
 增量构建的正确性 = "**依赖闭包任何一处变化，相关 TU 必须重编**"。头被多个 TU 包含，于是头变了要重编所有包含它的 TU——这正是 `-MMD` 输出 `.d` 的根本动机。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑪ 头依赖示意：config.h 被 a.cpp / b.cpp 同时包含
@@ -368,7 +368,7 @@ cc_binary(
 constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头文件依赖与增量构建原理 <span class="badge badge-std">标准</span>
 
 ```text
 ┌──────── 头依赖传播（增量边界）─────────┐
@@ -387,7 +387,7 @@ constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 
 **预编译头（Precompiled Header, PCH）** 把"庞大且稳定"的头（如 `<vector>`、Qt、Boost）先编译成二进制缓存，后续 TU 直接复用，省去重复解析。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：预编译头 PCH <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 预编译头 PCH <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑫ PCH 的"稳定大头"：pch.h（内容很少变动）
@@ -399,7 +399,7 @@ constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 #include <memory>
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：预编译头 PCH <span class="badge badge-std">标准</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 预编译头 PCH <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑫ 业务 TU：首行强制包含 PCH（GCC/Clang 用 -include pch.h）
@@ -466,7 +466,7 @@ Unity：1 个合并 TU 编译       =>  合计  0.54 s
 
 **交叉编译（cross-compile）**：在 x86-64 主机上生成 ARM/嵌入式目标代码。CMake 用**工具链文件（toolchain file）** 指定 `CMAKE_CXX_COMPILER`、目标 sysroot、目标 triple。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 交叉编译工具链文件 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 // ⑭ 交叉编译的目标程序：跑在 ARM 板上的控制循环
@@ -545,7 +545,7 @@ g++ -std=c++23 _ch12_use_lib.cpp -L. -lch12 -o _ch12_use_lib_shared.exe
 
 `find_package(Foo)` 让 CMake 定位已安装的第三方库，并导入其**导入目标（imported target）** 如 `Foo::Foo`，从而复用对方的 include/编译选项，无需手写 `-I`/`-L`。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：package 与包查找 <span class="badge badge-std">标准</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · package 与包查找 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑯ 使用被 find_package 导入的目标提供的接口
@@ -714,7 +714,7 @@ inline int g_counter = 0;          // ✅ inline 变量：ODR 允许多 TU 同�
 | 嵌入式 / 交叉编译 | CMake + 工具链文件 | `CMAKE_FIND_ROOT_PATH` 控依赖 |
 | Windows 原生重度 IDE | MSBuild / VS 工程 | 与 Visual Studio 集成最深 |
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型建议
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑲ 选型落地的最小可演进骨架（CMake 起手）

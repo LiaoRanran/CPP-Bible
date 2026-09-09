@@ -77,7 +77,7 @@
 
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart LR
@@ -237,7 +237,7 @@ list 遍历每次迭代都要**通过指针加载下一个节点地址**（一�
 - `list` 可作 `std::queue`/`std::stack` 底层（指定第二模板参数），但默认仍是 deque。
 - `forward_list` 与 `<algorithm>` 的前向迭代器算法（如 `std::find`、`std::for_each`）兼容。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：联系：与算法、适配器 <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系：与算法、适配器 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑪ list 用成员 sort（不能用 std::sort，完整可编译）
@@ -343,7 +343,7 @@ struct _List_node_base {
 6. **list 与 vector 遍历谁快？** → vector/deque 快得多（连续预取）；list 缓存不友好。
 7. **哪个容器 erase 后只有被删迭代器失效？** → list / forward_list（其余稳定）。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑮ 面试题佐证：forward_list 没有 size()，用 distance 求长度（完整可编译）
@@ -368,7 +368,7 @@ int main() {
 - **erase 后继续用旧迭代器** → 只有被删的那个失效，但初学常误以为"全部失效"而过度重建。
 - **大链表高频遍历追求性能** → list 缓存差，考虑 deque/vector 或 SoA 布局。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑯ 易错：forward_list 用 before_begin 才能插到首元素前（完整可编译）
@@ -395,7 +395,7 @@ int main() {
 
 **Q：list 能 `reserve` 吗？** A：不能，链表无连续容量概念（同 deque）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑰ FAQ 佐证：splice 零拷贝搬移整段（完整可编译）
@@ -422,7 +422,7 @@ int main() {
 4. 需要排序的链表 → 用成员 `list::sort`；`forward_list` 无成员 sort，需手动归并或先转 `vector`。
 5. **遍历是热点** → 优先考虑 `vector`/`deque`；list 仅在"增删多+引用稳定+遍历少"时胜出。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑱ 最佳实践：list 的 unique / reverse / remove_if（完整可编译）

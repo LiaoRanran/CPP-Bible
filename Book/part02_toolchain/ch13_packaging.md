@@ -51,7 +51,7 @@ C++ 包管理的根本难点是**二进制兼容性**：同一份源码在不同
 
 C++ 长期缺乏官方一级包管理器。传统做法（手动下载 zip、把 `.h`/`.lib` 拖进工程、`-I`/`-L` 手工配路径）在依赖一多即崩溃：版本错配、ABI 不一致、Debug/Release 混链、传递依赖爆炸。包管理器的价值是**把"找库、下库、配路径、解依赖、保证可重现"自动化**。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：为什么需要包管理 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：为什么需要包管理 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 
@@ -71,7 +71,7 @@ int main() {
 
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么需要包管理 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：为什么需要包管理 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 
@@ -445,7 +445,7 @@ int main() {
 
 包两种形态：**源码分发**（只发 `.h`/`.cpp`/构建脚本，消费端现编）与**二进制分发**（发 `.lib/.a/.dll/.so` + 头）。C++ 因 ABI 脆弱，**二进制分发必须保证编译器/标准库/flags 全一致**。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 
@@ -470,7 +470,7 @@ int main() {
 
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 
@@ -490,7 +490,7 @@ int main() {
 
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分发 vs 二进制分发 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 
@@ -524,7 +524,7 @@ int main() {
 
 依赖图里同一库出现多版本时，解析器需仲裁。**语义化版本 (SemVer)** 是通用约定：`MAJOR.MINOR.PATCH`，MAJOR 不兼容、MINOR 向后兼容、PATCH 修复。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本解析与冲突解决 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 
@@ -556,7 +556,7 @@ int main() {
 
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本解析与冲突解决 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 
@@ -588,7 +588,7 @@ int main() {
 
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：版本解析与冲突解决 <span class="badge badge-std">标准</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 版本解析与冲突解决 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 
@@ -799,7 +799,7 @@ int main() {
 
 头-only 库（Eigen、fmt 的接口部分、大多数模板库）分发约定相对宽松：**整个库即一个 `.hpp` 集合 + `CMake` 的 `INTERFACE` 库**。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头-only 库分发约定 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 22 · ★☆☆☆☆"
 
@@ -822,7 +822,7 @@ int main() {
 
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头-only 库分发约定 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 
@@ -850,7 +850,7 @@ int main() {
 
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：头-only 库分发约定 <span class="badge badge-std">标准</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 头-only 库分发约定 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 
@@ -896,7 +896,7 @@ int main() {
 // }
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：私有仓库 / 制品库 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 私有仓库 / 制品库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★★☆☆☆"
 
@@ -937,7 +937,7 @@ int main() {
 // 后续 conan install --lockfile=conan.lock  -> 版本不再漂移
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：可重现构建：锁文件 <span class="badge badge-std">标准</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 可重现构建：锁文件 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 
@@ -1068,7 +1068,7 @@ int main() {
 
 没有"最好"的包管理器，只有"最适合你约束"的。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型建议
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 
@@ -1095,7 +1095,7 @@ int main() {
 
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型建议]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span>选型建议
 
 ```cpp title="示例 31 · ★★☆☆☆"
 
@@ -1247,7 +1247,7 @@ int main() {
 
 包管理器不替代 CMake/Ninja/MSBuild，而是**喂给**它们正确的 include/lib/宏。理解这条边界能少踩 80% 的坑。
 
-> **示例 36** [难度 ★★☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与构建系统协作 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★★☆☆☆"
 
@@ -1266,7 +1266,7 @@ int main() {
 
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统协作 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 
@@ -1284,7 +1284,7 @@ int main() {
 
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：与构建系统协作 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与构建系统协作 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 
@@ -1387,7 +1387,7 @@ int main() {
 
 把上面散点收敛成可执行的清单。
 
-> **示例 42** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 42** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 42 · ★★☆☆☆"
 
@@ -1416,7 +1416,7 @@ int main() {
 
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 43** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 43 · ★☆☆☆☆"
 

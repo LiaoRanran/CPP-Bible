@@ -40,7 +40,7 @@ Compiler Explorer 背后是一种"去神秘化"的立场：编译器输出不是
 
 ## ① Compiler Explorer 核心工作流 <span class="badge badge-exp">经验</span>
 
-> **示例 1** [难度 ★★☆☆☆] [主题：核心工作流 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 核心工作流 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 #include <iostream>
@@ -80,7 +80,7 @@ int main() { std::cout << sum(100) << std::endl; return 0; }
 
 ## ④ 查看汇编的五种方式 <span class="badge badge-exp">经验</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：查看汇编的五种方式 <span class="badge badge-exp">经验</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 查看汇编的五种方式 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // 看汇编的五种方式: 1) godbolt.org  2) g++ -S -fverbose-asm  3) objdump -d a.exe
@@ -109,7 +109,7 @@ int main() { std::cout << add(1,2,3,4,5,6,7,8) << std::endl; return 0; }
 
 ## ⑥ 防止编译器消除死代码 <span class="badge badge-exp">经验</span>
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：防止编译器消除死代码 <span class="badge badge-exp">经验</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 防止编译器消除死代码 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
@@ -122,7 +122,7 @@ int main() { benchmark(); std::cout << "DCE prevented by volatile\n"; return 0; 
 
 ## ⑦ 识别关键路径与循环 <span class="badge badge-exp">经验</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：识别关键路径与循环 <span class="badge badge-exp">经验</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 识别关键路径与循环 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
@@ -231,7 +231,7 @@ int main() {
 
 ## ⑭ WG21 关联提案 <span class="badge badge-std">标准</span>
 
-> **示例 14** [难度 ★★★★☆] [主题：关联提案 <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★★★☆</span> · 关联提案 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★★★★☆"
 // ⑭ 影响汇编质量的提案: P2300(execution) P2809(平凡无限循环 UB→defined)
@@ -251,7 +251,7 @@ int main() {
 
 ## ⑮ 面试题精选：读汇编 5 问 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★★☆☆] [主题：面试题精选：读汇编 5 问 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题精选：读汇编 5 问 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 15 · ★★★☆☆"
 // ⑮ 面试要点: jmp(无返回地址) vs call(压返回地址) | 内联证据=无 call 直接 imul
@@ -267,7 +267,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★★★☆</span> · 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★★★★☆"
 // ⑯ CE 五大陷阱: 1) -O0 几乎无优化，看效果必须 -O2/-O3  2) DCE 会删掉未用函数
@@ -284,7 +284,7 @@ int main() {
 
 ## ⑰ FAQ：CE 实战问题 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★☆☆☆] [主题：实战问题 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 实战问题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑰ Compiler Explorer 高频使用问答
@@ -361,7 +361,7 @@ int main() {
    - <span class="badge badge-std">标准</span> 标准库内部布局（如 string/vector 表示）是实现细节，跨实现/版本可不同。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[strings]（实现细节）/ [container.requirements]；cppreference。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：跨语言对比：汇编探索工具全景 <span class="badge badge-exp">经验</span>
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：汇编探索工具全景 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 20 · ★★☆☆☆"
 // ⑳ 各语言汇编工具: C++ godbolt | Rust godbolt/cargo-asm | Go gcflags=-S

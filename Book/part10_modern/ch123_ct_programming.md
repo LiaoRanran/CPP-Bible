@@ -63,7 +63,7 @@
 - **constexpr 家族（ch21/ch69）**：`constexpr`/`consteval`/`constinit`（ch21）把函数值计算搬进翻译期。
 - **移动语义（ch115）/完美转发（ch116）**：编译期生成的代码仍需与运行期对象模型配合。
 
-> **示例 2** [难度 ★★★☆☆] [主题：前置知识 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 前置知识 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★★☆☆"
 // C2 前置示例：一个简单的函数模板——模板是 CTP 的最小单元
@@ -95,7 +95,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）<span class="badge badge-exp">经验</span>
 
-> **示例 3** [难度 ★★★★★] [主题：知识图谱（ASCII）<span class="badge badge-exp">经验</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★★★★</span> · 知识图谱（ASCII）<span class="badge badge-exp">经验</span>
 
 ```mermaid
 flowchart TD
@@ -592,7 +592,7 @@ int main() {
 
 > `[标准]` 静态反射（P2996）是 CTP 的"下一站"：今天我们用 `consteval` + 字符串哈希只能处理**字面量字符串**；P2996 之后，编译器可在编译期暴露"某 struct 有哪些成员、各自什么类型"，从而自动生成 `operator==`、`to_json`、`visit` 等样板，彻底消灭手写反射。
 
-> **示例 23** [难度 ★★★☆☆] [主题：提案：CTP 的演进方向 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 提案：CTP 的演进方向 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★★★☆☆"
 // C15 P2996 方向的"玩具反射"：现在用 traits 手动枚举成员（未来由编译器生成）
@@ -621,7 +621,7 @@ int main() {
 2. 为什么 `constexpr` 函数还能在运行期调用，而 `consteval` 不行？
 3. SFINAE 是什么？为什么 C++20 推荐用 Concepts 取代它？
 
-> **示例 24** [难度 ★★☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // C16 面试题第一题的"可运行演示"：三者能力边界
@@ -639,7 +639,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★★★☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★★★☆☆"
 // C17 面试题第三题：同一约束，SFINAE vs Concepts 两种写法
@@ -663,7 +663,7 @@ int main() {
 
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
 
-> **示例 26** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 // C18 易错点1：consteval 只能吃编译期常量——下面这行若取消注释会编译失败
@@ -678,7 +678,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★★★☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★★★☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★★★☆☆"
 // C19 易错点2：if constexpr 的"两个分支都必须能实例化"
@@ -703,7 +703,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 28 · ★★☆☆☆"
 // C20 易错点3：constexpr 函数里调用了非 constexpr 的东西 → 无法编译期求值
@@ -729,7 +729,7 @@ int main() {
 - **Q：编译期计算会让二进制变大吗？** 会，如果同一 constexpr 函数被不同常量实参实例化多次（生成多份代码）。但单常量实参通常被折叠为立即数，几乎不增代码。
 - **Q：TMP 现在还要学吗？** 要。纯类型计算（typelist、类型映射）仍靠 TMP；但值计算应优先 constexpr。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 29 · ★★☆☆☆"
 // C21 FAQ 演示：同一 constexpr 函数既编译期也运行期
@@ -750,7 +750,7 @@ int main() {
 3. **`if constexpr` 替代运行时 `if` + traits 分支**，让编译器把死分支整个删掉。
 4. **编译期字符串用 `std::string_view` 作 `consteval` 实参**（C++20 起允许），避免 `char...` 包展开样板。
 
-> **示例 30** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★★★☆☆"
 // C22 最佳实践2：用 concept 约束，错误可读
@@ -765,7 +765,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★★★☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★★★☆☆"
 // C23 最佳实践3：if constexpr 消除运行期死分支

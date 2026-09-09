@@ -52,7 +52,7 @@
 
 ## ② 加法运算符重载 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：加法运算符重载 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 加法运算符重载 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
@@ -62,7 +62,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 ## ③ 比较运算符 <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：比较运算符 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 比较运算符 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
@@ -73,7 +73,7 @@ int main(){Point a{1,2},b{1,3};std::cout<<(a<b)<<std::endl;return 0;}
 
 ## ④ 前置/后置自增 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：前置/后置自增 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 前置/后置自增 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
@@ -83,7 +83,7 @@ int main(){Counter c{0};std::cout<<(++c).v<<" "<<(c++).v<<" "<<c.v<<std::endl;re
 
 ## ⑤ operator<< 输出 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：<< 输出 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · << 输出 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 #include <iostream>
@@ -93,7 +93,7 @@ int main(){Vec v{10,20};std::cout<<v<<std::endl;return 0;}
 
 ## ⑥ 赋值运算符（拷贝/移动）<span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★★☆☆☆] [主题：赋值运算符（拷贝/移动）<span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 赋值运算符（拷贝/移动）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 #include <iostream>
@@ -105,7 +105,7 @@ int main(){Buffer a(10),b(5);b=std::move(a);std::cout<<b.n<<std::endl;return 0;}
 
 ## ⑦ 类型转换运算符 <span class="badge badge-std">标准</span>
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：类型转换运算符 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型转换运算符 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★☆☆☆☆"
 #include <iostream>
@@ -115,7 +115,7 @@ int main(){Rational r{3,4};std::cout<<(double)r<<std::endl;return 0;}
 
 ## ⑧ 下标运算符 <span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：下标运算符 <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 下标运算符 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
@@ -126,7 +126,7 @@ int main(){Array a{1,2,3,4,5};std::cout<<a[2]<<std::endl;return 0;}
 
 ## ⑨ 函数调用运算符 <span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：函数调用运算符 <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 函数调用运算符 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 #include <iostream>
@@ -136,7 +136,7 @@ int main(){Adder add5{5};std::cout<<add5(10)<<std::endl;return 0;}
 
 ## ⑩ 不可重载的运算符 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：不可重载的运算符 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 不可重载的运算符 <span class="badge badge-std">标准</span>
 
 红线名单：`.`、`.*`、`::`、`?:`、`sizeof`、`typeid` 与四个命名 cast（`const_cast`/`static_cast`/`dynamic_cast`/`reinterpret_cast`）不可重载；注意解引用 `*` 可以重载，但成员指针解引用 `.*` 永远内建。红线之外的可重载面有多大，一个类就能串起来：
 
@@ -294,7 +294,7 @@ int main() {
 真机输出：`(4,6) eq=1 lt=1`。这一屏就是 §⑱ 最佳实践的可编译形态：`operator+` 用 `+=` 实现（值入参，无重复代码）；`<=>` defaulted 让 `!=`/`<`/`<=`/`>`/`>=` 全部自动生成；`<<` 是隐藏友元（见示例 27 的 ADL 分析）。
 
 ## ⑪ STL 联系 <span class="badge badge-std">标准</span>
-> **示例 20** [难度 ★☆☆☆☆] [主题：联系 <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 联系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 #include <iostream>
@@ -304,7 +304,7 @@ int main(){S arr[]{{3},{1},{2}};std::sort(std::begin(arr),std::end(arr));std::co
 ```
 
 ## ⑫ 工业案例 <span class="badge badge-exp">经验</span>
-> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例 <span class="badge badge-exp">经验</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工业案例 <span class="badge badge-exp">经验</span>
 
 工业库的两块地基——用户定义字面量与类型化算术——几行就能立起来：
 
@@ -355,7 +355,7 @@ int main() {
 真机输出：`lvalue rvalue`。具名变量 `t` 是左值走 `f() &`，临时量 `Token{}` 是右值走 `f() &&`——同一名字、同一实参个数，决议靠**隐式对象参数的值类别**分派。这就是 `std::string` 能对右值做移动式 `operator=` 的机制底层。
 
 ## ⑭ WG21 提案 <span class="badge badge-std">标准</span>
-> **示例 23** [难度 ★☆☆☆☆] [主题：提案 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案 <span class="badge badge-std">标准</span>
 
 P0515（三路比较）落地后的第一个惊喜是成员逐位比较的语义——**不是字符串词典序**：
 
@@ -379,7 +379,7 @@ int main() {
 真机输出：`1.4 < 1.10 (按数值)`。字符串比较里 `"1.4" > "1.10"`（'4' > '1'），defaulted `<=>` 按成员数值逐个比，版本号语义自动正确——这正是 `<=>` 相对手写六个比较的收益。
 
 ## ⑮ 面试题 <span class="badge badge-exp">经验</span>
-> **示例 24** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题 <span class="badge badge-exp">经验</span>
 
 「后置 ++ 返回副本」不必背，用拷贝计数器抓现行：
 
@@ -410,7 +410,7 @@ int main() {
 真机输出：`3 次前置++ 拷贝=0；1 次后置++ 拷贝=1`。前置零拷贝、后置至少一次——`for (auto it = v.begin(); it != v.end(); ++it)` 用前置不是风格洁癖，是省一次拷贝（迭代器重的场景是实打实的开销）。
 
 ## ⑯ 易错点 <span class="badge badge-exp">经验</span>
-> **示例 25** [难度 ★☆☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 「重载 `&&`/`||` 丢失短路」是本领域最危险的一条，真机抓现行：
 
@@ -442,7 +442,7 @@ int main() {
 真机输出顺序：`check(lhs=false)` → `check(rhs)` → `(operator&& 两侧都已求值)` → `result=0`。**左操作数已是 false，右操作数照样执行**——重载后运算符退化为普通函数调用，两个实参都必须先算完。若 `check("rhs")` 是有副作用的守卫（加锁、除法、解引用），这就是 UB 工厂。结论：永远不重载 `&&`/`||`/`,`。
 
 ## ⑰ FAQ <span class="badge badge-exp">经验</span>
-> **示例 26** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>
 
 「`operator<<` 为什么不能是你的成员」——因为成员版的左操作数是 `*this`，而 `os << m` 的左操作数是 `std::ostream`，你无法给标准库的类新增成员。正确形态是友元自由函数：
 
@@ -467,7 +467,7 @@ int main() {
 真机输出：`1.99 CNY`。同理，右移 `>>` 读取流也是这个形态；想让流操作可扩展、可继承返回 `std::ostream&` 即可对接任意流层级。
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
-> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 把最佳实践再收紧一档：流输出等二元友元写成**隐藏友元**（hidden friend）——定义在类内，不在类外作用域暴露，只能经 ADL 找到：
 
@@ -558,7 +558,7 @@ int main() {
    - <span class="badge badge-std">标准</span> 字面量运算符以 `_` 前缀命名，使 `1.0_km` 形式可读且可参与编译期计算。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[over.literal]（字面量运算符）；cppreference "User-defined_literals" 词条。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>
 
 跨语言对比的实质不是语法糖形状（Rust `std::ops` trait、Python `__add__`），而是**零开销的编译期类型安全**——C++ 用重载决议在编译期拒绝量纲错配：
 
@@ -581,7 +581,7 @@ int main() {
 
 真机输出：`speed = 61.75 m/s`。`Meters + Seconds` 连编译都过不了——没有那个重载，也没有到 `double` 的隐式后门（构造函数 `explicit`）。Python 的 dunder 在运行期抛 `TypeError`，C++ 在编译期拒绝且运行时零装箱——这是本节跨语言对比的可执行版结论。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>
 
 收尾用一个反面教材实证「保留原始语义」为什么排第一——一个隐式 `operator bool` 的泄漏面：
 

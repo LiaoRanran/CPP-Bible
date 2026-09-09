@@ -330,7 +330,7 @@ A：不能通用（⟶ `Book/part14_perf/ch152_perf_model.md` ⑰）。只在固
 - **无分支 vs 分支**：数据均匀时 `cmov`/位运算可能因「两路都算」而更慢；数据不可预测时更稳更快——**以测量为准**。
 - 以下示例给出可复现的对比骨架（数值为示意量级，实机请自行跑）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：性能分析（实测对比）<span class="badge badge-exp">经验</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析（实测对比）<span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 // ⑲ 实测骨架: 串行依赖 vs 4 路无关链 (示意量级)

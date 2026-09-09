@@ -55,7 +55,7 @@ xUnit 的核心取舍是"隔离 + 断言 + 可重复"：每个测试独立、快
 
 测试金字塔（Test Pyramid）是测试策略的全局权衡框架：底层是大量的**单元测试**（快、稳定、廉价），中层是较少的**集成测试**（验证模块协作），顶层是更少的**端到端测试**（慢、易碎、昂贵）。C++ 因编译/链接重、平台耦合强，更应避免把逻辑验证压在端到端层。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：测试金字塔 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：测试金字塔 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 测试金字塔：单元/集成/端到端的比例经验值
@@ -946,7 +946,7 @@ warmup: round1=11.984 ms round2=10.366 ms (discard round1)
 
 C++ 代码常因平台（Windows / Linux / macOS）在类型宽度、对齐、系统 API 上分叉。测试应随编译宏选择断言路径，并在 CI 矩阵里覆盖多平台。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：平台相关测试 <span class="badge badge-platform">平台</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 平台相关测试 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑯ 平台相关测试：依据编译宏选择断言路径（本机为 Windows/MinGW）

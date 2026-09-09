@@ -134,7 +134,7 @@ int use_std() {
 
 libc++ 负责「标准库」（容器、算法、IO），而**异常展开（unwinding）、RTTI、`__cxa_` 运行时符号、虚表、demangle** 由独立的 **libc++abi** 提供。两者关系类似 libstdc++ 与 libgcc_s / libstdc++'s `libsupc++` 的分工。抛异常时 libc++ 调用 libc++abi 的 `__cxa_throw`，栈展开由 libunwind 完成。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：与 libc++abi 关系 <span class="badge badge-std">标准</span>
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 libc++abi 关系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ③ libc++ 抛异常最终落到 libc++abi 的 __cxa_throw（上游参考）
@@ -154,7 +154,7 @@ int main() {
 }
 ```
 
-> **示例 6** [难度 ★★☆☆☆] [主题：与 libc++abi 关系 <span class="badge badge-std">标准</span>
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 libc++abi 关系 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 // ③ demangle 依赖 libc++abi 的 __cxa_demangle（上游参考）
@@ -217,7 +217,7 @@ int main() {
 
 最易踩坑的差异在**名字空间（inline namespace）** 与**特征值**。libstdc++ 新 ABI 把所有标准类型放进 `__cxx11` inline namespace，mangled 名形如 `_ZNSt7__cxx1112basic_string...`；libc++ 放进 `std::__1`（双下划线 + 数字 `1`）。二者符号不兼容，**混链会直接报未定义符号或 ODR 违规**。
 
-> **示例 9** [难度 ★★☆☆☆] [主题：与 libstdc++ 差异 <span class="badge badge-std">标准</span>
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 libstdc++ 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★★☆☆☆"
 // ⑤ 同一个 std::string，在两个实现下 mangled 名不同（ABI 不兼容根因）
@@ -228,7 +228,7 @@ std::string make();          // 两库导出的符号串不同 -> 不能跨库�
 int main() { auto s = make(); return (int)s.size(); }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：与 libstdc++ 差异 <span class="badge badge-std">标准</span>
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 libstdc++ 差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑤ 特征宏差异速判当前实现
@@ -252,7 +252,7 @@ inline namespace 是标准特性；但各实现选用的名字（`__cxx11` vs `_
 
 libc++ 默认开启异常与 RTTI（`-fexceptions -frtti`）。它用 libc++abi 的 `__cxa_throw`/`__cxa_begin_catch` 做展开；`std::exception_ptr`、`<exception>`、`std::current_exception()` 均在 libc++abi 中实现。可用 `-fno-exceptions` 构建「无异常」版本（此时 `throw` 变为 `__builtin_unreachable` 并触发编译错误）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：异常 / RTTI <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常 / RTTI <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑥ 异常路径：libc++ 借 libc++abi 展开（上游参考）
@@ -271,7 +271,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：异常 / RTTI <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 异常 / RTTI <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑥ RTTI：typeid / dynamic_cast 由 libc++abi 提供实现
@@ -293,7 +293,7 @@ int main() {
 
 libc++ 完整实现 C++17 的 `<memory_resource>`：`std::pmr::memory_resource`、`std::pmr::polymorphic_allocator`、`std::pmr::monotonic_buffer_resource`、`std::pmr::unsynchronized_pool_resource` 等。容器可通过 `std::pmr::vector<T>`（别名模板）使用多态分配器，从而在「栈上缓冲区」零碎片分配，是 libc++ 性能优势的常见来源。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：内存资源 pmr <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存资源 pmr <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑦ monotonic_buffer_resource：在栈缓冲区上零系统调用分配
@@ -310,7 +310,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：内存资源 pmr <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存资源 pmr <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑦ 自定义 memory_resource（上游参考接口）
@@ -419,7 +419,7 @@ g++ -std=c++23 -O2 -S -masm=intel Examples/_ch125_sso.cpp -o Examples/_ch125_sso
 
 libc++ 提供 `LIBCXX_DEBUG` 宏开启**迭代器/容器合法性检查**（越界、失效迭代器、非法比较会断言），等价于 libstdc++ 的 `_GLIBCXX_DEBUG`。注意：开启调试模式的库**与普通模式不 ABI 兼容**，必须全工程一致。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 19 · ★☆☆☆☆"
 // ⑩ 开启 LIBCXX_DEBUG 后，迭代器失效会被断言捕获（libc++ 典型输出）
@@ -437,7 +437,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 // ⑩ 用 __builtin_addressof / 地址观察窥探实现差异（仅调试辅助，非生产）
@@ -456,7 +456,7 @@ int main() {
 
 libc++ 的常见性能优势来源：更大的 SSO（22 vs 15）、`std::pmr` 与栈缓冲区的零碎片分配、`__compressed_pair` 压缩空基类、`std::string` 的 `constexpr` 化、以及 Clang 更激进的 inline。下列对比展示 `reserve` 与 `pmr` 的收益。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 21 · ★☆☆☆☆"
 // ⑪ 预分配避免多次扩容（两库通用，但扩容阈值/策略不同）
@@ -469,7 +469,7 @@ int sum(std::vector<int>& v) {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 22 · ★★☆☆☆"
 // ⑪ pmr 栈缓冲：热点内临时分配绕开 malloc 锁
@@ -528,7 +528,7 @@ int main() {
 
 ## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 25** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑬ 陷阱1：在 noexcept 函数里抛异常 -> 直接 std::terminate
@@ -537,7 +537,7 @@ void bad() noexcept { throw std::runtime_error("x"); }  // 违例 -> terminate
 int main() { bad(); return 0; }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 #include <string>
@@ -547,7 +547,7 @@ int main() { bad(); return 0; }
 // 正确：整个工程统一一种标准库
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑬ 陷阱3：调试模式只对开启的 TU 生效 -> 仅部分 TU 开 LIBCXX_DEBUG 会崩溃
@@ -590,7 +590,7 @@ Clang 对 libc++ 的模块、`std::ranges`、sanitizer 集成最完整；GCC 用
 
 libc++ 通常**率先实现**新标准特性（如 `<print>`、`std::expected`、`std::mdspan`、`std::ranges` 扩展、`std::flat_map`）。可用特征宏/特性测试宏确认支持度。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：演进（C++23 支持度） <span class="badge badge-std">标准</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（C++23 支持度） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑮ C++23 <print>：libc++ 较早支持（上游参考）
@@ -604,7 +604,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：演进（C++23 支持度） <span class="badge badge-std">标准</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（C++23 支持度） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 // ⑮ 用特性测试宏确认当前实现支持度（两库通用写法）
@@ -624,7 +624,7 @@ int main() {
 
 ## ⑯ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑯ 优先用 std::string_view 避免不必要的字符串拷贝（两库均支持）
@@ -639,7 +639,7 @@ size_t count(char c, std::string_view sv) {
 int main() { return (int)count('a', std::string("banana")); }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑯ 用 pmr + 栈缓冲做函数内临时分配，减少碎片（libc++ 强项）
@@ -654,7 +654,7 @@ int work() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 33 · ★☆☆☆☆"
 // ⑯ 避免从异常规约/虚函数里泄露实现信息；统一工程标准库
@@ -671,7 +671,7 @@ int guard() { return 0; }
 
 libc++ 是 LLVM 子项目，贡献走 GitHub `llvm/llvm-project` 的 `libcxx/`、`libcxxabi/` 目录。流程：Fork → 改 `libcxx/include/...` 或 `libcxx/src/...` → 补 `libcxx/test/` 下的 libc++ 测试（`// XFAIL`/`// REQUIRES` 注解）→ `ninja check-cxx` 跑测试 → 发 Phabricator/PR。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 // ⑰ 一个最小测试示例（libc++ 风格 lit 测试，上游参考）
@@ -687,7 +687,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★★☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★★☆☆☆"
 // ⑰ 修复补丁常见形态：改实现头 + 加测试（示意）
@@ -716,7 +716,7 @@ libc++ 对测试覆盖率要求高——任何行为改动都必须带回归测�
 | 调试宏 | `_LIBCXX_DEBUG` | `_GLIBCXX_DEBUG` | `_ITERATOR_DEBUG_LEVEL` |
 | 模块 `import std` | Clang 最成熟 | GCC 实验 | MSVC 成熟 |
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：跨库对比（三套 STL） <span class="badge badge-std">标准</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库对比（三套 STL） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑱ 用特征宏做「三库识别」的 portable 探针
@@ -736,7 +736,7 @@ const char* which_stdlib() {
 int main() { std::printf("%s\n", which_stdlib()); return 0; }
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：跨库对比（三套 STL） <span class="badge badge-std">标准</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库对比（三套 STL） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 37 · ★★☆☆☆"
 // ⑱ 三库都实现的 C++17 特性（语义一致，可安全跨库迁移）
@@ -764,7 +764,7 @@ int main() {
 #   grep -rn "basic_string" C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 ```
 
-> **示例 38** [难度 ★★☆☆☆] [主题：调试 / 源码阅读 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 / 源码阅读 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★★☆☆☆"
 // ⑲ 用 static_assert 验证实现行为（跨库可复现的小探针）
@@ -805,7 +805,7 @@ libc++ 源码注释极全，配合 `libcxx/docs/DesignDocs/` 是最快理解路�
 | 平台 | macOS/FreeBSD 默认；Linux/Win 显式 | ⑫ |
 | 贡献 | 改 `libcxx/` + 补 `libcxx/test/` | ⑰ |
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 39 · ★☆☆☆☆"
 // ⑳ 一页式探针：确认本机实现与关键常量

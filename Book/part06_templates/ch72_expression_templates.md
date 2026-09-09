@@ -342,7 +342,7 @@ template <typename E> double eval_at(const Expr<E>& e, size_t i) {
 - `[temp.inst]`：表达式树每个节点（`Sum<...>`）是独立模板实例化，深树触发多次实例化（见 ⑲ 编译时间代价）。
 - **`valarray` 语义**：标准规定 `valarray` 二元运算符返回**新的 `valarray`**（立即求值），并非 ET；这是 ET 在标准库中的"反面参照"（⑪/⑮）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准规定 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // 标准：operator+ 可返回任意类型（包括代理）
@@ -352,7 +352,7 @@ struct Vec {
 };
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 标准规定 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 // 标准：临时对象生命周期（朴素实现的问题根源）
@@ -366,7 +366,7 @@ Vec r = a + b;   // a+b 返回临时 Vec，r 从临时拷贝/移动；临时在�
 - **内联/向量化**：三编译器都能将 ET 的 `operator=` 单遍循环**自动向量化**（SSE/AVX），Eigen 的 ET + SIMD 在此达成（ch19/43）。
 - **符号名长度**：ET 类型 mangled 名极长（`Sum<Sum<...>>`），MSVC 装饰名可能超 `MAX_PATH` 相关限制，建议控制树深。
 
-> **示例 13** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // 各编译器对深 ET 树需控制深度；下面 Chain<N> 是深递归实例化。

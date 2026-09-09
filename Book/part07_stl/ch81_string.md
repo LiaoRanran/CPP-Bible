@@ -80,7 +80,7 @@ flowchart TD
 2. **SSO（Small String Optimization，短字符串优化）**：GCC 5.1 起默认，已被所有主流实现采用。
 3. **总是堆指针（无优化）**：少数嵌入式实现。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：三种存储策略的历史演进 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 三种存储策略的历史演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★☆☆☆"
 #include <string>
@@ -121,7 +121,7 @@ libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 
 
 SSO 的核心是常数容量内联缓冲，避免短串的堆分配。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：短字符串优化：阈值与内联缓冲 <span class="badge badge-impl">实现</span>
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 短字符串优化：阈值与内联缓冲 <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 4 · ★★☆☆☆"
 // ④ SSO 容量：libstdc++ 固定 15 字节（char）
@@ -197,7 +197,7 @@ void g() {
 
 ## ⑧ 扩容策略与迭代器失效 <span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：扩容策略与迭代器失效 <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 扩容策略与迭代器失效 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ⑧ push_back/append 触发扩容，容量按几何增长（通常 ×2）
@@ -392,7 +392,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 ## ⑲ microbenchmark：SSO 命中 vs 堆分配 <span class="badge badge-exp">经验</span>
 
-> **示例 18** [难度 ★★☆☆☆] [主题：命中 vs 堆分配 <span class="badge badge-exp">经验</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 命中 vs 堆分配 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑲ 实测：短串（SSO）构造远快于长串（堆分配）

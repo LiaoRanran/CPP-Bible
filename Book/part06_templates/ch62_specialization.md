@@ -189,7 +189,7 @@ int main() {
 
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-> **示例 8** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 8 · ★★☆☆☆"
 // 三者在偏序与 SFINAE 上基本一致（现代 MSVC 已修复旧版宽松两阶段）

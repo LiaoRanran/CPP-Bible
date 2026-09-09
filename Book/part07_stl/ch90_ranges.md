@@ -65,7 +65,7 @@ Ranges 常被当成"更简洁的 for 循环 / 算法语法糖"，但它**真正�
 
 ## ④ 知识图谱（ASCII）<span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★★★☆] [主题：知识图谱（ASCII）<span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 知识图谱（ASCII）<span class="badge badge-std">标准</span>
 
 ```text
                          ┌────────────────────────────┐
@@ -138,7 +138,7 @@ classDiagram
 
 `std::views::filter(v, pred)` 返回的 `filter_view` **不拷贝 `v` 的任何元素**，只保存「对 `v` 的引用（或 `ref_view`）+ 谓词对象」：
 
-> **示例 2** [难度 ★★★☆☆] [主题：内存图：view 不持有元素 <span class="badge badge-impl">实现</span>
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 内存图：view 不持有元素 <span class="badge badge-impl">实现</span>
 
 ```text
 std::vector<int> v = {1,2,3,4,5};          // 元素在堆上(25B)
@@ -318,7 +318,7 @@ int main() {
 
 **A. `range` 概念（文件：`bits/ranges_base.h`，行号：`501`）**
 
-> **示例 6** [难度 ★★★☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 6** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```text
 文件：bits/ranges_base.h
@@ -332,7 +332,7 @@ int main() {
 
 **B. `view` 概念（文件：`bits/ranges_base.h`，行号：`578`）**
 
-> **示例 7** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 7** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```text
 文件：bits/ranges_base.h
@@ -343,7 +343,7 @@ int main() {
 
 **C. `subrange`（`ref_view` 的近亲，文件：`bits/ranges_util.h`，行号：`256`）**
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```text
 文件：bits/ranges_util.h
@@ -354,7 +354,7 @@ int main() {
 
 **D. 各 view 类定义（文件：`ranges`，行号见下）**
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```text
 文件：ranges
@@ -423,7 +423,7 @@ A：可用，本章所有 C++23 view 示例均通过 `-std=c++23 -O2` 编译（G
 
 1. **优先管道组合**而非嵌套 `std::copy_if` + 临时 `vector`：
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ✅ 惰性管道，零中间容器
@@ -441,7 +441,7 @@ int main() {
 
 2. **需要传统 `begin()/end()` 同类型（如传旧 API）时用 `views::common`**：
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ✅ 把 view 变成 common_range（begin/end 同类型）
@@ -471,7 +471,7 @@ int main() {
 
 **惰性 vs 急切（副作用计数）**：
 
-> **示例 12** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // 演示惰性：transform 的副作用仅在迭代时发生，且仅对「被拉取」的元素

@@ -57,7 +57,7 @@ CI（Continuous Integration，持续集成）指开发者频繁把代码合并�
 
 对 C++ 这类“编译慢、链接重、平台耦合强”的工程，CI/CD 的价值更突出：一次本地能过的代码，到了干净环境可能因缺头文件、缺库、ABI 不一致而失败，唯有自动化流水线能复现。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 最小 CI 冒烟程序：构建通过即说明工具链可用
@@ -77,7 +77,7 @@ $ ./_ch149_hello
 CI pipeline: build OK
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：CI/CD 是什么 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ①' 构建信息固化：版本与 commit 由 CI 注入，保证可复现

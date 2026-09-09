@@ -53,7 +53,7 @@ C 的初始化靠 `=`、`()`（构造）、aggregate 大括号 `{ }`，各自规
 
 ## ② 六种初始化语法 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：六种初始化语法 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 六种初始化语法 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <iostream>
@@ -63,7 +63,7 @@ int main(){S a{1};S b={2};S c=S{3};auto d=S{4};S e(5);S f;std::cout<<a.x<<b.x<<c
 
 ## ③ 列表初始化与窄化 <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：列表初始化与窄化 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 列表初始化与窄化 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 #include <iostream>
@@ -72,7 +72,7 @@ int main(){int x{42};double d=3.14;int y{static_cast<int>(d)};std::cout<<x<<" "<
 
 ## ④ std::initializer_list <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：list <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · list <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 #include <iostream>
@@ -82,7 +82,7 @@ int main(){std::initializer_list<int> il={1,2,3,4,5};int s=0;for(int x:il)s+=x;s
 
 ## ⑤ 默认/值/零初始化 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：默认/值/零初始化 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 默认/值/零初始化 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 #include <iostream>
@@ -92,7 +92,7 @@ int main(){std::cout<<a.x<<" "<<b.x<<std::endl;return 0;}
 
 ## ⑥ 聚合初始化 <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：聚合初始化 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 聚合初始化 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
@@ -113,7 +113,7 @@ int main(){V v1(1,2);std::cout<<"ctor chosen when () used\n";return 0;}
 
 ## ⑧ 静态初始化与动态初始化 <span class="badge badge-std">标准</span>
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：静态初始化与动态初始化 <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 静态初始化与动态初始化 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 #include <iostream>
@@ -123,7 +123,7 @@ int main(){std::cout<<x<<std::endl;return 0;}
 
 ## ⑨ 跨语言对比：初始化语法 <span class="badge badge-exp">经验</span>
 
-> **示例 8** [难度 ★★☆☆☆] [主题：跨语言对比：初始化语法 <span class="badge badge-exp">经验</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨语言对比：初始化语法 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 8 · ★★☆☆☆"
 #include <iostream>
@@ -132,7 +132,7 @@ int main(){std::cout<<"C++ brace init vs Rust let x:Type=... vs Go x:=... vs Jav
 
 ## ⑩ 初始化与移动语义 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：初始化与移动语义 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 初始化与移动语义 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 #include <iostream>
@@ -143,7 +143,7 @@ int main(){std::string a="hello";std::string b=std::move(a);std::cout<<b<<std::e
 
 ## ⑪ STL 联系：容器初始化全景 <span class="badge badge-std">标准</span>
 
-> **示例 10** [难度 ★★☆☆☆] [主题：联系：容器初始化全景 <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 联系：容器初始化全景 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 // ⑫ 使用 initializer_list 实现声明式配置
@@ -206,7 +206,7 @@ int main() {
 
 ## ⑭ WG21 关键提案：初始化演进史 <span class="badge badge-std">标准</span>
 
-> **示例 13** [难度 ★★☆☆☆] [主题：关键提案：初始化演进史 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 关键提案：初始化演进史 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★☆☆☆"
 // ⑮ 初始化相关的 5 道高频面试题（关键差异真机演示）
@@ -224,7 +224,7 @@ int main() {
 
 ## ⑮ 面试题精选：初始化 5 问 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★☆☆☆] [主题：面试题精选：初始化 5 问 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 面试题精选：初始化 5 问 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑯ 初始化的 5 大陷阱
@@ -271,7 +271,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★★★☆] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★★★☆</span> · 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 15 · ★★★★☆"
 // ⑰ 实际开发中的初始化高频问答
@@ -292,7 +292,7 @@ int main() {
 
 ## ⑰ FAQ：初始化实战问题 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★☆☆☆] [主题：初始化实战问题 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 初始化实战问题 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑱ 初始化的 6 条黄金法则
@@ -310,7 +310,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践总结 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑲ 不同初始化方式的汇编对比
@@ -336,7 +336,7 @@ int main() {
 
 ## ⑲ 性能分析：初始化的运行时开销 [平台·x86-64]
 
-> **示例 18** [难度 ★★★☆☆] [主题：性能分析：初始化的运行时开销 <span class="badge badge-platform">平台</span>
+> **示例 18** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能分析：初始化的运行时开销 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 18 · ★★★☆☆"
 // ⑳ 各语言初始化语义对比（C++ 特有的三种初始化）
@@ -365,7 +365,7 @@ int main() {
    - <span class="badge badge-std">标准</span> 常量初始化（constant-initialization）属于静态初始化子阶段，先于动态初始化，避免 SIOF。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.start.static]；cppreference "Initialization#Non-local_variables" 词条。
 
-> **示例 19** [难度 ★★★☆☆] [主题：跨语言对比：初始化语法全景 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 跨语言对比：初始化语法全景 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 19 · ★★★☆☆"
 // 补充示例：列表初始化 + 范围 for

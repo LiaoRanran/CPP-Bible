@@ -272,7 +272,7 @@ template <typename T> void work(T v) { work(v, optimized{}); }
 - **`iterator_traits` 对 `T*` 的特化**：所有实现都让原生指针的 `iterator_category == random_access_iterator_tag`，故 `int*`/`char*` 走 O(1) 路径。
 - **C++11 兼容**：标签分发是 C++11 起标准，无需 Concepts（C++20）或 `if constexpr`（C++17），跨老标准可移植性最好。
 
-> **示例 10** [难度 ★★★☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★★☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 10 · ★★★☆☆"
 // 各编译器对标签分发的符号生成一致（-O0 下都产生 impl<T,Tag> 实例化）

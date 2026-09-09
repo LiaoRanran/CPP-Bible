@@ -48,7 +48,7 @@
 
 堆（heap）是二叉**最大/最小堆**的数组实现——逻辑上是一棵完全二叉树，物理上是一段连续数组。C++ 标准库把"堆"建模成一段 `[first, last)` 区间上满足**堆性质**（heap property）的序列，并通过 `std::make_heap / push_heap / pop_heap / sort_heap` 四种算法维护它；`std::priority_queue` 则是建立在 `std::vector` 之上的容器适配器（container adapter），把堆封装成"只暴露队首"的优先队列。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：堆（优先队列）<span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：堆（优先队列）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 裸算法版：用 vector 当堆存储
@@ -60,7 +60,7 @@ std::push_heap(h.begin(), h.end());  // 假设已在尾部加了一个新元素
 int top = h.front();                 // 取最大（不弹出）
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：堆（优先队列）<span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：堆（优先队列）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ① 适配器版：priority_queue 封装同一套算法
@@ -136,7 +136,7 @@ while (!q.empty()) {
 
 堆用**连续数组**实现完全二叉树，节点 `i`（0-based）的亲属映射：
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：堆性质与数组布局 <span class="badge badge-impl">实现</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 堆性质与数组布局 <span class="badge badge-impl">实现</span>
 
 ```text
 父节点  parent(i) = (i - 1) / 2
@@ -146,7 +146,7 @@ while (!q.empty()) {
 
 这意味着堆不需要任何指针/next 字段——索引即"指针"，空间开销为 0（仅元素本身），且对缓存极度友好（顺序访问）。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：堆性质与数组布局 <span class="badge badge-impl">实现</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆性质与数组布局 <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 8 · ★★☆☆☆"
 // ③ 数组布局：完全二叉树的下标亲子公式（无指针、连续内存）
@@ -157,7 +157,7 @@ constexpr std::size_t right (std::size_t i) { return 2 * i + 2; }
 static_assert(parent(3) == 1 && left(1) == 3 && right(1) == 4);
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：堆性质与数组布局 <span class="badge badge-impl">实现</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 堆性质与数组布局 <span class="badge badge-impl">实现</span>
 
 ```text
           大顶堆（数组下标视图，逻辑完全二叉树）
@@ -233,7 +233,7 @@ void do_push(std::vector<int>& v, int x) {
 
 `sort_heap(first, last)` 重复 `pop_heap`：`[first,last)` 已是堆时，每次把当前极值换到末尾、区间缩一，循环 `n-1` 次后得到升序序列。总复杂度 O(n log n)。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：heap：把堆变成有序序列 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · heap：把堆变成有序序列 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ⑤ sort_heap：堆 -> 完全有序（升序，因大顶堆每次把最大沉到尾）
@@ -244,7 +244,7 @@ std::make_heap(a.begin(), a.end());  // 10 9 ... 成堆
 std::sort_heap(a.begin(), a.end());  // a == {1,3,4,5,10}
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：heap：把堆变成有序序列 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · heap：把堆变成有序序列 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 #include <vector>
@@ -373,7 +373,7 @@ int do_pop(std::vector<int>& v) {
 
 堆的"顶"由比较器决定：`less<T>`（默认）→ 大顶堆（最大在 `a[0]`）；`greater<T>` → 小顶堆（最小在 `a[0]`）。比较器的契约：**它必须是对 `<` 的严格弱序（strict weak ordering）**，且 `comp(a,b)==true` 表示"a 应排在 b 之下"（即 b 更靠近堆顶）。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑧ 小顶堆：用 greater<int>
@@ -384,7 +384,7 @@ std::vector<int> a{5, 3, 8, 1, 9};
 std::make_heap(a.begin(), a.end(), std::greater<int>());  // a[0]==1（最小）
 ```
 
-> **示例 16** [难度 ★★☆☆☆] [主题：自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑧ priority_queue 小顶堆
@@ -396,7 +396,7 @@ minpq.push(5); minpq.push(1); minpq.push(3);
 int t = minpq.top();                    // t == 1
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 自定义比较器（大顶 / 小顶）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑧ 自定义类型 + 自定义比较器（按得分降序的玩家堆）
@@ -496,7 +496,7 @@ double median_stream(const std::vector<int>& s) {
 
 堆算法**不稳定**：`push_heap/pop_heap` 只依据比较器决定位置，相等元素（比较器返回 `false` 双方）的相对顺序不保证保留；且 sift 过程中相等元素可能被交换。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：稳定性与堆 <span class="badge badge-std">标准</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 稳定性与堆 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑩ 不稳定演示：相等优先级的任务，出堆顺序不保证原入堆顺序
@@ -526,7 +526,7 @@ q.push({"A", "t1"}); q.push({"A", "t2"}); q.push({"A", "t3"});
 | 完全排序 | `sort_heap` | — | O(n log n) |
 | 任意查找 | 线性扫描 | — | O(n)（堆不支持二分） |
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：性能 O(log n) <span class="badge badge-std">标准</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能 O(log n) <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 22 · ★☆☆☆☆"
 // ⑪ 复杂度直觉：sift 路径长度 = 树高 = floor(log2(n))
@@ -549,7 +549,7 @@ double sift_height(std::size_t n) { return std::floor(std::log2((double)n)); }
 | 增量插入 | O(log n) 直接 push | 需重排，O(n log n) |
 | 完全有序 | sort_heap 额外 O(n log n) | 已有序 |
 
-> **示例 23** [难度 ★★☆☆☆] [主题：与 sort 取舍 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 sort 取舍 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑫ 选择依据：只取少量极值 -> 堆；要全序或频繁查询 -> sort
@@ -573,7 +573,7 @@ void choose(std::vector<int>& v, bool only_top_k, int k) {
 
 ## ⑬ 场景：何时用堆 <span class="badge badge-exp">经验</span>
 
-> **示例 24** [难度 ★★☆☆☆] [主题：场景：何时用堆 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 场景：何时用堆 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑬ 场景A：合并 K 个有序链表（LeetCode 23）——小顶堆按节点值取最小
@@ -652,7 +652,7 @@ ok.pop_back();                         // ✅ 真正删除极值
 
 C++20 起 `<algorithm>` 提供 ranges 版堆算法：`std::ranges::make_heap / push_heap / pop_heap / sort_heap / is_heap / is_heap_until`，返回 `borrowed_iterator`（便于在 `|` 管道中衔接），并支持**投影（projection）**。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：与 ranges（C++20）<span class="badge badge-std">标准</span>
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ranges（C++20）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑮ ranges::make_heap + 投影：直接按成员排序，不必写比较器
@@ -664,7 +664,7 @@ std::vector<Job> jobs{{1, 3}, {2, 9}, {3, 5}};
 std::ranges::make_heap(jobs, {}, &Job::prio);    // 按 prio 建大顶堆 -> jobs[0].id==2
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：与 ranges（C++20）<span class="badge badge-std">标准</span>
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 ranges（C++20）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <ranges>
@@ -675,7 +675,7 @@ std::ranges::pop_heap(jobs, {}, &Job::prio);
 jobs.pop_back();
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：与 ranges（C++20）<span class="badge badge-std">标准</span>
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ranges（C++20）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑮ ranges::is_heap / is_heap_until：调试与校验堆性质（见 §⑲）
@@ -692,7 +692,7 @@ auto bad = std::ranges::is_heap_until(h);  // 指向第一个破坏性质的位
 
 ## ⑯ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑯ 实践1：优先用 priority_queue 而非裸算法，除非需要中断式遍历
@@ -701,7 +701,7 @@ auto bad = std::ranges::is_heap_until(h);  // 指向第一个破坏性质的位
 std::priority_queue<int> pq;          // 不变量由适配器托管，最不容易踩 §⑭ 的 UB
 ```
 
-> **示例 33** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 33 · ★★☆☆☆"
 // ⑯ 实践2：需要随机访问堆中间（如"减小 key"）时，用裸 vector + 下标管理
@@ -715,7 +715,7 @@ void decrease_key(std::vector<int>& h, std::size_t i, int newval) {
 }
 ```
 
-> **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 34 · ★★☆☆☆"
 #include <vector>
@@ -734,7 +734,7 @@ struct MinHeap {
 
 三套标准库对堆算法的**语义完全一致**（都遵循 `[alg.heap.operations]`），差异只在：`sift-down` 实现策略、`is_heap` 辅助、以及 `priority_queue` 默认容器/比较器默认值。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：跨库差异 <span class="badge badge-platform">平台</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库差异 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑰ 跨库行为一致的最小复现：下列代码在 libstdc++/libc++/MS STL 结果相同
@@ -758,7 +758,7 @@ std::make_heap(cross.begin(), cross.end(), std::greater<int>());   // 小顶 -> 
 
 堆的存储就是底层容器的连续缓冲，无额外节点结构。以 `priority_queue<int>`（默认 `vector<int>`）为例，其内存与 `vector` 完全相同：
 
-> **示例 36** [难度 ★★☆☆☆] [主题：内存布局 <span class="badge badge-impl">实现</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存布局 <span class="badge badge-impl">实现</span>
 
 ```text
    priority_queue<int> pq;  push(9) push(7) push(8) 后（大顶堆）
@@ -769,7 +769,7 @@ std::make_heap(cross.begin(), cross.end(), std::greater<int>());   // 小顶 -> 
    容量增长时整体 realloc（倍增策略），所以 push 均摊 O(1)
 ```
 
-> **示例 37** [难度 ★★☆☆☆] [主题：内存布局 <span class="badge badge-impl">实现</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存布局 <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 37 · ★★☆☆☆"
 // ⑱ 内存连续性验证：底层 vector 的 data() 即堆的连续存储
@@ -793,7 +793,7 @@ assert(h.size() == 3);
 
 验证"区间是否仍是合法堆"是排查堆 UB 的第一手段；C++ 提供 `std::is_heap` / `std::is_heap_until`，前者返回布尔，后者返回第一个破坏堆性质的迭代器。
 
-> **示例 38** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★★☆☆☆"
 // ⑲ 调试1：用 is_heap 校验不变量（定位 §⑭ 的 UB 现场）
@@ -809,7 +809,7 @@ auto it = std::is_heap_until(h.begin(), h.end());
 std::cout << "first broken at index " << (it - h.begin()) << "\n";
 ```
 
-> **示例 39** [难度 ★★★☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★★★☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 39 · ★★★☆☆"
 // ⑲ 调试2：封装一个带断言的 safe_pop，开发期捕获 UB
@@ -823,7 +823,7 @@ void safe_pop(std::vector<int>& h) {
 }
 ```
 
-> **示例 40** [难度 ★★☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 40 · ★★☆☆☆"
 // ⑲ 调试3：dump 堆为层序，肉眼核对父子关系

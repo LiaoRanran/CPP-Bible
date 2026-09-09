@@ -237,7 +237,7 @@ int main() {
 - **符号修饰**：GCC/Clang 用 Itanium mangling（`_Z...`），MSVC 用 `@`-风格修饰名（`?Fact@$0?...`）。递归实例化的展开符号在三者都存在，但命名不同。
 - **`integer_sequence` 实现**：三者都基于偏特化增量构造（`integer_sequence<T, Is..., N>` 追加），无运行时代码。
 
-> **示例 10** [难度 ★★★★☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 10 · ★★★★☆"
 // GCC 提高递归深度上限的编译选项（跨平台章节仅供认知，不滥用）

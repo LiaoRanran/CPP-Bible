@@ -48,7 +48,7 @@
 
 `<numeric>` 提供一组**归约（reduction）**与**扫描（scan）**算法，以及一组独立的数学工具。它们与 `<algorithm>` 的 `for_each`/`transform` 不同：核心是**把一段输入折叠成一个标量**，或**把前缀状态逐位置展开**。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：数值算法 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：数值算法 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 头文件与最重要的一组接口（C++17 起成熟，C++20/23 扩展）
@@ -71,7 +71,7 @@ int main() {
 
 `std::accumulate` 自 C++98 起存在，严格顺序；`std::reduce` 自 C++17 起，允许任意结合顺序，因而可并行。
 
-> **示例 2** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span>真实：reduce 内联/向
 
 ```cpp title="示例 2 · ★★★☆☆"
 // 文件：Examples/_ch99_accumulate.cpp
@@ -184,7 +184,7 @@ _Z10reduce_dblPKdy:
 
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-impl">实现</span>真实：reduce 内联/向
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ② reduce 与 accumulate 在"整数 + 结合律"下结果一致，但语义不同
@@ -200,7 +200,7 @@ int demo_diff() {
 }
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：reduce 内联/向]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-impl">实现</span>真实：reduce 内联/向
 
 ```cpp title="示例 4 · ★★☆☆☆"
 // ② 初值类型陷阱：用 0（int）会先把元素截断成 int 再累加 -> 溢出/截断
@@ -409,7 +409,7 @@ double l2_norm(const std::vector<double>& a) {
 
 用与第②节相同的真实工具链编译 `transform_reduce`，看它到底有没有被向量化。
 
-> **示例 14** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：transformre]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span>真实：transformre
 
 ```cpp title="示例 14 · ★★★☆☆"
 // 文件：Examples/_ch99_transform_reduce.cpp
@@ -572,7 +572,7 @@ _Z9tr_squarePKdy:
 
 ```
 
-> **示例 15** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：transformre]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-impl">实现</span>真实：transformre
 
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑥ 把上面两个编译结果落到"可读结论"：想要 SIMD，需要 -O3 + 合适 ISA + FP 重排许可
@@ -588,7 +588,7 @@ inline bool vectorized_only_at_o3() { return true; }   // 占位：结论见汇�
 
 C++17 引入 `std::execution`：`seq`/`par`/`par_unseq`/`unseq`。归约类算法（reduce/transform_reduce/scan 家族）接受策略参数即可并行化**计算**，但前提是**归约运算可结合+可交换**且**没有数据竞争**。
 
-> **示例 16** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★★☆☆☆"
 // ⑦ 正确并行：归约内部无共享写，天然无数据竞争
@@ -600,7 +600,7 @@ double par_sum(const std::vector<double>& a) {
 }
 ```
 
-> **示例 17** [难度 ★★★★☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★★★☆</span> · 并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★★★☆"
 // ⑦ 危险并行：在 op 里写共享状态 -> 数据竞争（UB）
@@ -616,7 +616,7 @@ double par_with_race(const std::vector<double>& a, double& side_effect) {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑦ 安全替代：把副作用移出归约（先算值，再单独处理）
@@ -630,7 +630,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 }
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 并行执行策略与数据竞争 <span class="badge badge-exp">经验</span>
 
 ```text
 ┌──────────── 并行归约的线程划分（概念）────────────┐

@@ -249,7 +249,7 @@ static_assert(name_of<1>() == std::string_view{"one"}); // [实现] C++17 起字
 - **MSVC**：较旧版本对 `constexpr` 支持滞后（VS2017 起完善），`consteval`/`constinit` 需 VS2019 16.10+；对循环内 `constexpr` 支持较新。**<span class="badge badge-platform">平台</span>** 跨编译器项目应将复杂 `constexpr` 控制在一定步数内（< 10000）以保证可移植。
 - **`__builtin_constant_p`**：GCC/Clang 内建，类似 `is_constant_evaluated` 但属编译器扩展；标准代码优先用 `std::is_constant_evaluated()`。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // 各编译器对 constexpr 步数限制的差异（演示：控制递归深度）

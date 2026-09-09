@@ -52,7 +52,7 @@
 
 ## ③ 契约三要素 <span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：契约三要素 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 契约三要素 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ③-a assert 等价体——手动前置/后置条件
@@ -99,7 +99,7 @@ int main() {
 
 ## ⑤ Level & Role 机制 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★★☆☆☆] [主题：& Role 机制 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · & Role 机制 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 3 · ★★☆☆☆"
 // ⑤-a 模拟 audit/default 级别——编译期可选开关
@@ -122,7 +122,7 @@ int main() {
 
 ## ⑥ 契约 vs 异常 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：契约 vs 异常 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 契约 vs 异常 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ⑥-a 契约是"程序员错误"，异常是"运行时错误"
@@ -148,7 +148,7 @@ int main() {
 
 ## ⑦ 编译期契约 <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★★★☆☆] [主题：编译期契约 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 编译期契约 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 5 · ★★★☆☆"
 // ⑦-a constexpr 函数中的契约——编译期检测数组越界
@@ -274,7 +274,7 @@ _Z4useri:
 
 ## ⑪ STL 联系：契约在标准库中的应用 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★★★☆☆] [主题：联系：契约在标准库中的应用 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 联系：契约在标准库中的应用 <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 9 · ★★★☆☆"
 // ⑪ STL 契约: 窄契约(operator[]/*opt)违反即 UB; 宽契约(at()/value())给出定义行为
@@ -392,7 +392,7 @@ int main() {
 
 ## ⑮ 面试题精选：契约 5 问 <span class="badge badge-exp">经验</span>
 
-> **示例 13** [难度 ★★★☆☆] [主题：面试题精选：契约 5 问 <span class="badge badge-exp">经验</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 面试题精选：契约 5 问 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 13 · ★★★☆☆"
 // ⑮ 面试要点: Q1 assert=运行时(NDEBUG 剥离) vs static_assert=编译期(永不剥离)
@@ -413,7 +413,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★★★★] [主题：易错点与陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★★★★</span> · 易错点与陷阱 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 14 · ★★★★★"
 // ⑯ 五大陷阱: 1) assert 内禁副作用(NDEBUG 下被剥离) 2) 析构函数中的 assert 抛异常 → terminate
@@ -439,7 +439,7 @@ int main() {
 
 ## ⑰ FAQ：契约实战常见问题 <span class="badge badge-exp">经验</span>
 
-> **示例 15** [难度 ★★☆☆☆] [主题：契约实战常见问题 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 契约实战常见问题 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑰ 工程实战中关于契约的高频问答
@@ -474,7 +474,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 <span class="badge badge-exp">经验</span>
 
-> **示例 16** [难度 ★★★☆☆] [主题：最佳实践总结 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★★★☆☆</span> · 最佳实践总结 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 16 · ★★★☆☆"
 // ⑱ 契约使用的 6 条黄金法则
@@ -591,7 +591,7 @@ int main() {
 | Java | `assert` + JML / `@Contract` annotation |
 | Go | `if` + `panic`（无原生契约） |
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：跨语言对比 <span class="badge badge-exp">经验</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨语言对比 <span class="badge badge-exp">经验</span>]
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑩-a Eiffel DbC: require(前置)/ensure(后置) → C++ 用 assert 前后夹

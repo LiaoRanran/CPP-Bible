@@ -195,7 +195,7 @@ int main() {
 
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-> **示例 10** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 #include <iostream>
@@ -211,7 +211,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // MSVC 旧版在「依赖基类成员函数」决议上更宽松；GCC/Clang 更严

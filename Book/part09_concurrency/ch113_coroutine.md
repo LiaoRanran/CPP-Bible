@@ -92,7 +92,7 @@ stateDiagram-v2
 
 三者解决同一问题：**异步/可暂停的控制流**，但代价与写法天差地别。
 
-> **示例 2** [难度 ★★☆☆☆] [主题：协程 vs 线程 vs 回调 <span class="badge badge-std">标准</span>
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 协程 vs 线程 vs 回调 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★☆☆☆"
 // ②A 线程：抢占式、有独立栈、由 OS 调度
@@ -103,7 +103,7 @@ void with_thread() {
 }
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：协程 vs 线程 vs 回调 <span class="badge badge-std">标准</span>
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 协程 vs 线程 vs 回调 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ②B 回调：无栈、但"回调地狱"、控制流碎片化
@@ -114,7 +114,7 @@ void with_callback(auto on_done) {
 }
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：协程 vs 线程 vs 回调 <span class="badge badge-std">标准</span>
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 协程 vs 线程 vs 回调 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★★☆☆☆"
 // ②C 协程：写法像同步、无独立栈、由 await 点主动让出
@@ -138,7 +138,7 @@ mini_task with_coroutine() {
 
 编译器把协程变换为：在堆上分配一块**协程帧**，内含 `promise_type` 对象、参数拷贝、局部变量、以及**恢复索引（resume index）**。函数的返回对象由 `promise.get_return_object()` 产出。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：type 与协程帧布局 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · type 与协程帧布局 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ③ promise_type 是协程的"控制面板"：每个协程函数必须能找到它
@@ -156,7 +156,7 @@ struct my_coro {
 
 协程帧（GCC `-O2` 实测 `range(int)` 帧 56 字节）布局：
 
-> **示例 6** [难度 ★★☆☆☆] [主题：type 与协程帧布局 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · type 与协程帧布局 <span class="badge badge-std">标准</span>
 
 ```text
 ┌──────────────────────────── 协程帧 (heap) ────────────────────────────┐
@@ -488,7 +488,7 @@ _Z8count_upv:
 
 无栈协程没有独立栈，挂起时只是"把当前执行点（恢复索引）写进帧、返回调用者"；恢复时从帧读回恢复索引，跳到对应代码位置继续。`std::coroutine_handle::resume()` 即调用 `<func>.Frame.actor`。
 
-> **示例 19** [难度 ★★☆☆☆] [主题：无栈协程的挂起/恢复原理 <span class="badge badge-std">标准</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无栈协程的挂起/恢复原理 <span class="badge badge-std">标准</span>
 
 ```text
 ┌─ 调用者 next() ──────────┐        ┌─ 协程帧 (heap) ──────────────┐
@@ -502,7 +502,7 @@ _Z8count_upv:
                                      └──────────────────────────────┘
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：无栈协程的挂起/恢复原理 <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 无栈协程的挂起/恢复原理 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 // ⑩ 手动驱动：resume 即跳到 actor 状态机，从恢复索引续跑
@@ -587,7 +587,7 @@ std::suspend_always final_suspend() noexcept { return {}; }
 
 协程的价值在**应用模式**层爆发：用 `task<T>` + IO 多路复用可写出"看起来同步、实际非阻塞"的网络/文件服务器，这正是第 120 章（异步 IO 与完成模型）的核心衔接点。下面给出一个**不依赖任何外部库**的驱动骨架。
 
-> **示例 25** [难度 ★★★☆☆] [主题：与 ch120 应用模式衔接 <span class="badge badge-exp">经验</span>
+> **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · 与 ch120 应用模式衔接 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★★★☆☆"
 // ⑬ sync_wait：在调用线程上驱动一棵协程树直到完成（顶层入口）
@@ -599,7 +599,7 @@ T sync_wait(task<T> t) {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：与 ch120 应用模式衔接 <span class="badge badge-exp">经验</span>
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与 ch120 应用模式衔接 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 // ⑬B 衔接形态：async_read/async_write 作为 awaiter，协程内线性编排
@@ -679,7 +679,7 @@ void leak() { auto g = range(10); // 未 next 也未显式 destroy 路径
 
 协程调试难点在于"控制流被切成状态机"。实用手段：
 
-> **示例 31** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试手段 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑯A 在 promise 内插桩：每次挂起/恢复打印（生产可换成 trace 点）
@@ -697,7 +697,7 @@ struct traced_task {
 };
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：调试手段 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 调试手段 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 #include <cstdio>
@@ -757,7 +757,7 @@ struct logging_awaiter {
 
 ## ⑲ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑲A 始终 RAII 包装 handle：析构 destroy，杜绝帧泄漏（见 ⑮）
@@ -774,7 +774,7 @@ struct safe_task {
 };
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 // ⑲B 高频协程用帧池：重载 promise operator new（见 ⑧B），避免热路径 new

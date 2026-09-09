@@ -71,6 +71,16 @@ jobs:
       run: python3 tools/gen_metrics.py --check
       continue-on-error: false
 
+    - name: Structure Audit (示例头星级格统一 / H2 基线防恶化)
+      # 星级规范：示例头统一 span badge 5 格制（方括号风格 842 处已归一，回潮即红）；
+      # 练习标题实心个数制（1..5，不含 ☆）；围栏 title 星级与同号头行一致。
+      # H2：structure_state.json 冻结 147 章基线，仅拦截「数量增加（恶化）」，
+      # 内容级主线/扩展分层重构由写作波次推进（改善后 h2-sync 更新基线）。
+      run: |
+        python3 tools/structure_audit.py check --star
+        python3 tools/structure_audit.py h2-check
+      continue-on-error: false
+
     - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)
       # 纯 Python 零依赖，秒级扫描全书标题/表格/正文里 fenced code 之外的
       # 裸反斜杠序列（如 '\n'），这类字符会让 pdf job 的 xelatex 报

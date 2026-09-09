@@ -191,7 +191,7 @@ int main() { Fixed<int, 4> f; static_assert(f.size() == 4); }
 
 ## ⑧ GCC / Clang / MSVC 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
-> **示例 9** [难度 ★★★☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 9 · ★★★☆☆"
 // MSVC 老前端（<=19.1x）对两阶段查找不严：dependent name 在定义点即查
@@ -200,7 +200,7 @@ template <typename T>
 void buggy(T x) { undefined_helper(x); }   // GCC/Clang：dependent，实例化才报；MSVC 可能定义点就报
 ```
 
-> **示例 10** [难度 ★★★★☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★★★☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 10 · ★★★★☆"
 // Mangling 差异：GCC/Clang 用 Itanium ABI；MSVC 用自己的一套（?max_val@@...）

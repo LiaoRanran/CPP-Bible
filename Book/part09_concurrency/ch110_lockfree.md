@@ -48,7 +48,7 @@
 
 无锁数据结构保证：即使某个线程被操作系统任意延迟、挂起甚至被杀，其他线程仍能在有限步骤内推进系统整体进度。它不是"更快"的代名词，而是一种**进度保证（progress guarantee）**。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：无锁编程动机 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：无锁编程动机 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 // ① 朴素互斥计数器：正确性易保证，但持锁线程被抢占会拖垮所有写者
@@ -122,7 +122,7 @@ void waitfree_add(int x) {
 
 **lock-free**（无锁）的精确定义：系统的**总操作数**不断增长——即"只要系统整体在跑，就至少有一个操作能在有限步内完成"。注意它**不保证**某个具体线程能完成：一个线程可能反复 CAS 失败（被别人一直抢先），从而"饿死"，但系统没有死锁、没有全体停滞。
 
-> **示例 5** [难度 ★★☆☆☆] [主题：的进度保证 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的进度保证 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★★☆☆☆"
 // ③ 典型的 lock-free 模式：CAS 循环，old 自动被刷新为最新值
@@ -261,7 +261,7 @@ static_assert(is_lock_free_v<unsigned long long>);
 
 `compare_exchange_weak/strong` 是无锁算法的核心。语义：**若当前值 == expected，则写入 desired 并返回 true；否则把 expected 刷新为当前实际值并返回 false**。循环时 `expected` 已被硬件更新，无需重新 load。
 
-> **示例 13** [难度 ★★★☆☆] [主题：循环标准模板 <span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 循环标准模板 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★★☆☆"
 // ⑦ 标准 CAS 循环骨架（weak 版，循环内用 weak 更高效）
@@ -274,7 +274,7 @@ bool cas_loop(std::atomic<T>& a, T& expected, T desired) {
 }
 ```
 
-> **示例 14** [难度 ★★☆☆☆] [主题：循环标准模板 <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 循环标准模板 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑦ 完整模板：读-改-写（RMW）无锁更新
@@ -443,7 +443,7 @@ bool MSQueue<T>::dequeue(T& out) {
 
 计数器是无锁最经典的练兵场。两种实现：CAS 循环（通用但慢）与 `fetch_add`（wait-free、单条指令）。
 
-> **示例 21** [难度 ★★☆☆☆] [主题：无锁计数器 <span class="badge badge-std">标准</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁计数器 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑩ 实现 A：CAS 循环（lock-free，可移植，但有重试开销）
@@ -457,7 +457,7 @@ void inc_cas() {
 }
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：无锁计数器 <span class="badge badge-std">标准</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁计数器 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 22 · ★★☆☆☆"
 // ⑩ 实现 B：fetch_add（wait-free，硬件单指令，首选）
@@ -470,7 +470,7 @@ void inc_fetch() {
 
 下面是无锁计数器的**真实汇编取证**（`-O2`）：当 `fetch_add(1)` 的返回值不被使用时，GCC 直接生成 `lock add` 而非 `lock xadd`——因为结果无需写回寄存器。
 
-> **示例 23** [难度 ★★★☆☆] [主题：无锁计数器 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★★☆☆</span> · 无锁计数器 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★★★☆☆"
 // 文件：Examples/_ch110_counter.cpp
@@ -539,7 +539,7 @@ _Z4pushi:
 
 CAS 只看"值相等"，不看"值的历史"。若某指针 `A` 被弹出、节点被回收、又被分配回同地址 `A` 并压回，CAS 会误以为"没变过"而成功——但中间语义已错。这就是 **ABA 问题**。
 
-> **示例 25** [难度 ★★☆☆☆] [主题：问题预告（指第111章） <span class="badge badge-std">标准</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 问题预告（指第111章） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 25 · ★★☆☆☆"
 // ⑫ ABA 演示：地址复用导致 CAS 误判
@@ -555,7 +555,7 @@ void danger() {
 }
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：问题预告（指第111章） <span class="badge badge-std">标准</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 问题预告（指第111章） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 26 · ★★☆☆☆"
 // ⑫ 缓解思路之一：带标签指针（tagged pointer）——把版本号打包进同一原子
@@ -616,7 +616,7 @@ constexpr std::size_t CACHELINE = std::hardware_destructive_interference_size;
 
 lock-free 保证系统前进，但**不保证公平**。两个线程反复 CAS 互相把对方挤出、谁都完不成，就是**活锁（livelock）**；某线程长期被别人抢先而饿死，是**饥饿（starvation）**。无锁 ≠ 无等待。
 
-> **示例 30** [难度 ★★☆☆☆] [主题：无锁的陷阱：活锁 / 饥饿 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁的陷阱：活锁 / 饥饿 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★★☆☆☆"
 // ⑭ 活锁倾向：高竞争下两个写者反复失败重试，CPU 空转
@@ -633,7 +633,7 @@ void hot_loop() {
 }
 ```
 
-> **示例 31** [难度 ★★☆☆☆] [主题：无锁的陷阱：活锁 / 饥饿 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁的陷阱：活锁 / 饥饿 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑭ 缓解：加入指数退避 / yield，降低冲突概率
@@ -659,7 +659,7 @@ void backoff_loop() {
 
 无锁不是银弹。引入前先问：竞争强度？临界区长度？对尾延迟的敏感度？**先用基准测试证明 mutex 真的不够**，再上无锁。
 
-> **示例 32** [难度 ★★★☆☆] [主题：何时用无锁（先基准测试） <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★★☆☆</span> · 何时用无锁（先基准测试） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★★☆☆"
 // ⑮ 基准测试脚手架：对比 mutex 与 atomic 计数（用 <chrono> 计时）
@@ -785,7 +785,7 @@ _Z7swap_dwyy:
 
 **单生产者单消费者（SPSC）** 场景可彻底避免 CAS：生产者只动 `tail`、消费者只动 `head`，二者各写各的缓存行，天然无锁且 wait-free。常见于音频、网络 IO、日志。
 
-> **示例 38** [难度 ★★★☆☆] [主题：无锁环形缓冲 <span class="badge badge-std">标准</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★★★☆☆</span> · 无锁环形缓冲 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 38 · ★★★☆☆"
 // ⑱ SPSC 无锁环形缓冲（容量 N 为 2 的幂，用位与代替取模）
@@ -817,7 +817,7 @@ struct SPSCRing {
 };
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：无锁环形缓冲 <span class="badge badge-std">标准</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 无锁环形缓冲 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 39 · ★★☆☆☆"
 // ⑱ 使用：一个线程 push，另一个线程 pop，无需任何锁
@@ -893,7 +893,7 @@ g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_
 | wait-free | 每线程有界完成 | 有界步数 | `lock xadd` 等单指令 | 难构造 |
 | 内存回收 | — | — | — | ABA、悬垂指针 |
 
-> **示例 43** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 43** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 43 · ★★☆☆☆"
 // ⑳ 一页速记：四类原子操作对应四种保证强度

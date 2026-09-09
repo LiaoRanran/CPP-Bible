@@ -50,7 +50,7 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 
 调试不是"找 bug"的代名词，而是**把程序的可观察行为对齐到设计意图**的闭环。C++ 的典型故障分层：
 
-> **示例 1** [难度 ★★★★★] [主题：概述：调试的目标与分层 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★★</span> · 概述：调试的目标与分层 <span class="badge badge-std">标准</span>
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -65,7 +65,7 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 └─────────────────────────────────────────────────────────────┘
 ```
 
-> **示例 2** [难度 ★★★☆☆] [主题：概述：调试的目标与分层 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★★☆☆</span> · 概述：调试的目标与分层 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★★☆☆"
 // ① 同一段代码，无插桩时静默出错，加诊断后暴露问题
@@ -652,7 +652,7 @@ int main() {
 
 结构化策略胜过"逐行 println"。通用下钻法：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>调试策略]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>调试策略
 
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑮ 二分定位：用一个可控的 flag 快速缩小问题区间
@@ -671,7 +671,7 @@ int main() {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>调试策略]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>调试策略
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑮ 最小复现：把 bug 从大系统抽离成 20 行可编译样本
@@ -837,7 +837,7 @@ _Z6sum_toi:
 
 把"防 bug"前置到编码习惯，比事后调试更省成本：
 
-> **示例 24** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑲ 用 std::lock 一次性锁多把锁，消除 ABBA（对应 ⑯ 死锁修复）
@@ -861,7 +861,7 @@ int main() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑲ 用 span 把"裸指针+长度"变成带边界检查的接口

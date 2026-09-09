@@ -57,7 +57,7 @@
 
 一个最小但完整的「策略」雏形：
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：什么是设计模式 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：什么是设计模式 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <cstdio>
@@ -74,7 +74,7 @@ void show(const Format& f, int v) { f.render(v); } // 通过基类接口调用
 
 与之等价、但零运行时开销的**静态策略**（见第⑭节）写法：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：什么是设计模式 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：什么是设计模式 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★★☆☆☆"
 #include <cstdio>
@@ -231,7 +231,7 @@ int f(const Op& o){ return o.do_(1,2); }   // 必须经 vtable（见第⑮节实
 - **运行时多态**（虚函数）：行为在运行期确定，对象可跨 API 边界、可序列化、可被插件 DLL 提供。
 - **编译期多态**（模板/CRTP）：行为在编译期确定，零间接、可被内联与常量折叠，但类型必须在编译期可知。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：模板元编程 vs 运行时多态 <span class="badge badge-std">标准</span>
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板元编程 vs 运行时多态 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // 运行时多态：接口在 .h 暴露，实现可在另一 TU（甚至另一 DLL）
@@ -243,7 +243,7 @@ template <typename S> double area_of(const S& s) { return s.area(); }
 
 当行为集合**封闭**且**编译期可知**时，优先模板；当行为需**插件式扩展**或跨 ABI 时，才用虚函数。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：模板元编程 vs 运行时多态 <span class="badge badge-std">标准</span>
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模板元编程 vs 运行时多态 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 #include <cstdio>
@@ -405,7 +405,7 @@ double integrate(std::function<double(double)> f, double a, double b){
 
 过度设计反例（应避免）：
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：何时不该用模式（过度设计） <span class="badge badge-exp">经验</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 何时不该用模式（过度设计） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 21 · ★☆☆☆☆"
 // 反模式：为单一固定行为建立三层抽象
@@ -416,7 +416,7 @@ struct LoggerFactory { static ILogger* create(); };     // 多余
 
 直接写法更优：
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：何时不该用模式（过度设计） <span class="badge badge-exp">经验</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 何时不该用模式（过度设计） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 22 · ★☆☆☆☆"
 #include <cstdio>
@@ -441,7 +441,7 @@ void log_to_console() { std::printf("log\n"); }  // 一个函数足矣
 
 用模板表达"依赖倒置"且零成本：
 
-> **示例 23** [难度 ★★☆☆☆] [主题：模式与 SOLID 原则 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式与 SOLID 原则 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★★☆☆☆"
 template <typename Storage>
@@ -454,7 +454,7 @@ struct MemStore { void write(int, int) {} };
 
 违反 LSP 的信号——基类契约被派生类破坏：
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：模式与 SOLID 原则 <span class="badge badge-std">标准</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式与 SOLID 原则 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 struct Bird { virtual void fly() {} };
@@ -704,7 +704,7 @@ int main(){ constexpr const char* d = describe<long long>(); std::printf("%s\n",
 
 组合示例：用 `std::function`（Command/Strategy 容器）实现 `Observer`：
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：模式组合与重构 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模式组合与重构 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <vector>
@@ -725,7 +725,7 @@ int main(){
 
 重构路径（从坏到好）：
 
-> **示例 36** [难度 ★★☆☆☆] [主题：模式组合与重构 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模式组合与重构 <span class="badge badge-exp">经验</span>
 
 ```text
 裸指针 + 手动 delete  →  unique_ptr 返回所有权   →  进一步用值语义/optional
@@ -822,7 +822,7 @@ extern "C" {
 
 后续章节索引（仅章号与主题，不含跨章链接）：
 
-> **示例 40** [难度 ★★☆☆☆] [主题：本章小结与索引 <span class="badge badge-std">标准</span>]
+> **示例 40** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 本章小结与索引 <span class="badge badge-std">标准</span>
 
 ```text
 ch136  创建型模式（Factory/Builder/Prototype/Singleton 现代写法）

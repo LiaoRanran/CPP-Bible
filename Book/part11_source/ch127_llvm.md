@@ -100,7 +100,7 @@ LLVM IR 是**强类型、SSA 形式、低级但机器无关**的中间表示—�
 
 **SSA 的"良构"比"语法合法"更严**。例如 `%x = add i32 1, %x` 语法上没问题，但**不是良构 IR**——因为 `%x` 的定义没有支配（dominate）它的所有使用。LLVM 提供 Verifier pass 专门查这类问题，它会在 parser 读完输入之后、以及优化器输出 bitcode 之前**自动运行** `[llvm:langref]`。由此也带来一条 PHI 约束：函数**入口块没有前驱，因此不能包含任何 PHI 节点**；而 PHI 必须为每个前驱各准备一项。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：表示 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 表示 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ③ 与 C++ 对应的 IR 直觉（典型输出，clang 未本机安装）
@@ -113,7 +113,7 @@ LLVM IR 是**强类型、SSA 形式、低级但机器无关**的中间表示—�
 int add(int a, int b) { return a + b; }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：表示 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 表示 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ③ IR 中类型是一等公民：i1/i8/i32/i64/ptr/<数组>/<结构体>
@@ -453,7 +453,7 @@ GCC 对应物是 `g++ -S -fverbose-asm`（看汇编）与内部 GIMPLE（无公�
 
 LLVM 优化是**编译时间 ↔ 运行时间**的权衡。`-O0` 几乎不优化（快编译、慢运行），`-O2/-O3` 投入更多 Pass，`-Os` 偏向尺寸，LTO/PGO 跨 TU 进一步优化。
 
-> **示例 19** [难度 ★★★☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★★☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 19 · ★★★☆☆"
 // ⑪ 微基准直觉：优化把「运行期计算」搬到「编译期」
@@ -467,7 +467,7 @@ int bench_inline() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 20 · ★☆☆☆☆"
 // ⑪ LTO：跨翻译单元的内联（需 clang/llvm 工具链）。下面用 __builtin_constant_p 演示
@@ -511,7 +511,7 @@ RISC-V 后端在 LLVM 中成熟度近年快速上升，常被用作教学后端�
 
 ## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 23** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 23 · ★★☆☆☆"
 // ⑬ 陷阱1：依赖未定义行为，优化后结果「诡异」
@@ -519,7 +519,7 @@ RISC-V 后端在 LLVM 中成熟度近年快速上升，常被用作教学后端�
 int trap_ub(int x) { while (x + 1 > x) ++x; return x; } // 可能死循环或被删
 ```
 
-> **示例 24** [难度 ★★★★☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★★★☆"
 // ⑬ 陷阱2：volatile 不是同步原语，也不是优化开关
@@ -528,7 +528,7 @@ volatile int flag = 0;
 int spin() { while (!flag) {} return flag; } // 不是正确的线程同步
 ```
 
-> **示例 25** [难度 ★★★★☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★★★★☆"
 // ⑬ 陷阱3：把 IR 当「稳定 ABI」
@@ -573,7 +573,7 @@ void unused_warn(int x) { int y = x; (void)y; } // -Wunused 两边都会报
 
 Clang 通常**最快**跟进新标准特性（因 AST/Sema 模块化好）；GCC 随后追赶。C++20 的 modules/concepts/ranges、C++23 的 `std::expected`/deducing-this 均已在 Clang 主线可用。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：演进：C++ 标准支持 <span class="badge badge-std">标准</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 演进：C++ 标准支持 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑮ C++20 concepts：Clang 的 Sema 在实例化前即检查约束（见 ⑥/⑦）
@@ -583,7 +583,7 @@ T square(T x) { return x * x; }
 static_assert(std::is_same_v<decltype(square(3)), int>);
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：演进：C++ 标准支持 <span class="badge badge-std">标准</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进：C++ 标准支持 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑮ C++20 模块（Clang 用 -fmodules，GCC 用 -fmodules-ts，参见 ch118）
@@ -597,7 +597,7 @@ WG21 提案在 Clang 的 `clang/test/CXX/` 与 GCC 的 `testsuite/` 都有 confo
 
 ## ⑯ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 30 · ★★☆☆☆"
 // ⑯ 实践1：用 -O2 起步，profiling 驱动优化（不要盲上 -O3）
@@ -605,7 +605,7 @@ WG21 提案在 Clang 的 `clang/test/CXX/` 与 GCC 的 `testsuite/` 都有 confo
 int hot(int* p, int n) { int s=0; for(int i=0;i<n;++i) s+=p[i]; return s; }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★☆☆☆☆"
 // ⑯ 实践2：用 [[likely]]/[[unlikely]] 给分支预测提示（C++20，IR 会带 !prof 元数据）
@@ -615,7 +615,7 @@ int classify(int x) {
 }
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★★☆☆☆"
 // ⑯ 实践3：把「编译期可定」的计算标 constexpr，给优化器最大空间
@@ -640,7 +640,7 @@ static_assert(lookup_size(7) == 50);
 # ninja -C build check-clang  # 跑 Clang 回归测试
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 33** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 33 · ★☆☆☆☆"
 // ⑰ 贡献最小示例：加一个 Clang 警告选项骨架（教学用最小实现，非上游 DiagnosticGroups.td）。
@@ -748,7 +748,7 @@ LLVM 源码以 `lib/` + `include/` 对应，`XXX.cpp` 实现 `XXX.h` 中声明�
 | 源码入口 | `clang/lib/CodeGen/` | AST→IR 发射（见 ⑤） |
 | 诊断入口 | `clang/lib/Sema/Sema.cpp::Diag` | 所有报错统一出口（见 ⑲） |
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑳ 一页纸心智模型：C++ 源码经过「Clang 前端 → LLVM IR → Pass 管道 → 后端」
@@ -759,7 +759,7 @@ int model(int a, int b) {
 }
 ```
 
-> **示例 39** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 39 · ★★☆☆☆"
 // ⑳ 与上章（ch118 Modules）的承接：模块只改「编译组织」，不改「优化机制」

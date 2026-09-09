@@ -63,7 +63,7 @@
 
 > 表注：三者互为补充——可观测回答"现在怎样"，可追责回答"谁干的"，可调试回答"当时发生了什么"。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：日志的价值 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：日志的价值 <span class="badge badge-exp">经验</span>
 
 ```text
         业务代码

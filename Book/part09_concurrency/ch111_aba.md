@@ -48,7 +48,7 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 
 **ABA 问题**发生在基于**比较并交换（CAS）**的无锁（lock-free）算法中：一个共享变量的值从 `A` 变成 `B`，又变回 `A`，于是 CAS 看到“值还是 A”便误以为“什么都没发生”，从而**错误地成功**。但中间状态（`A→B→A`）往往伴随**被回收/被复用的内存**，导致逻辑被破坏。
 
-> **示例 1** [难度 ★★☆☆☆] [主题：概述：什么是 ABA 问题 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：什么是 ABA 问题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★★☆☆☆"
 #include <atomic>
@@ -341,7 +341,7 @@ int main() {
 
 **基于纪元回收（EBR, Epoch-Based Reclamation）**是另一条回收主线：全局维护一个“纪元（epoch）”计数器；线程进入临界区时登记当前纪元，退出时清除。当所有线程都离开了“旧纪元”，该纪元内 retire 的节点才可被安全回收。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：简介 <span class="badge badge-std">标准</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 简介 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 #include <cstdint>
@@ -355,7 +355,7 @@ void critical_enter() { local_epoch = global_epoch.load(); in_critical = true; }
 void critical_exit()  { in_critical = false; }   // ⑦ 离开后，旧纪元对象可被回收
 ```
 
-> **示例 15** [难度 ★★★☆☆] [主题：简介 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 简介 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★★★☆☆"
 #include <cstdio>
@@ -495,7 +495,7 @@ void retire_node(Node* p) {
 
 无锁数据结构真正的硬骨头不是“怎么改”，而是“**什么时候能 delete**”。在并发下，`delete p` 之后，另一个线程可能正拿着 `p` 的副本走进 `p->next`——于是立刻是**释放后使用（use-after-free）** 或**野指针解引用**。
 
-> **示例 18** [难度 ★★★★☆] [主题：内存回收的根本难题 <span class="badge badge-std">标准</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★★★★☆</span> · 内存回收的根本难题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 18 · ★★★★☆"
 // ⑩ 错误：pop 后立刻 delete（另一个线程可能正持有该指针）
@@ -503,7 +503,7 @@ Node* p = pop_unsafe();
 delete p;                 // ⑩ ❌ 若 T2 刚 load 了 p 的副本，这里 delete 后 T2 解引用即 UB
 ```
 
-> **示例 19** [难度 ★★☆☆☆] [主题：内存回收的根本难题 <span class="badge badge-std">标准</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存回收的根本难题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 19 · ★★☆☆☆"
 #include <cstdio>
@@ -529,7 +529,7 @@ int main() {
 
 **RCU（Read-Copy-Update）** 是 Linux 内核的标志性回收技术：读者侧**零同步开销**（只禁止抢占/调度），写者侧“复制新版本、原子切换指针、等待所有读者退出宽限期（grace period）后再回收旧版本”。第112章将给出用户态 RCU 的最小实现。
 
-> **示例 20** [难度 ★★☆☆☆] [主题：预告（指 ch112） <span class="badge badge-std">标准</span>]
+> **示例 20** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 预告（指 ch112） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 20 · ★★☆☆☆"
 // ⑪ 用户态 RCU 读侧（示意）：读者几乎免费
@@ -547,7 +547,7 @@ void reader_side(const std::atomic<Node*>& head) {
 
 C++ 标准**至今没有**内建的 ABA 防御或安全回收原语。相关能力分散在：
 
-> **示例 21** [难度 ★★☆☆☆] [主题：语言级支持现状：无标准方案 <span class="badge badge-std">标准</span>]
+> **示例 21** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 语言级支持现状：无标准方案 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 21 · ★★☆☆☆"
 // ⑫ 标准提供“积木”，不提供“方案”
@@ -558,7 +558,7 @@ C++ 标准**至今没有**内建的 ABA 防御或安全回收原语。相关能�
 static_assert(std::atomic<__int128>::is_always_lock_free || true, "DCAS 未必无锁");
 ```
 
-> **示例 22** [难度 ★★★☆☆] [主题：语言级支持现状：无标准方案 <span class="badge badge-std">标准</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · 语言级支持现状：无标准方案 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 22 · ★★★☆☆"
 // ⑫ 用 is_always_lock_free 探测平台能力（而不是假设）
@@ -610,7 +610,7 @@ g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch111_tsan.cpp -o Examples/_ch
 
 ## ⑭ 误用案例 <span class="badge badge-exp">经验</span>
 
-> **示例 24** [难度 ★★☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 误用案例 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑭ ❌ 误用1：用 relaxed 内存序做无锁栈，且回收不及时
@@ -625,7 +625,7 @@ Node* bad_pop() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 误用案例 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 #include <cstdint>
@@ -639,7 +639,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：误用案例 <span class="badge badge-exp">经验</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 误用案例 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 26 · ★☆☆☆☆"
 #include <cstdint>
@@ -723,7 +723,7 @@ int main() {
 
 第110章讲了 `std::atomic`、CAS 与无锁编程基础。本章是它天然的延伸：**CAS 能成立的前提是“值没被偷偷换过”**，而 ABA 正是这一前提在“带回收的指针”场景下的塌方。
 
-> **示例 29** [难度 ★★☆☆☆] [主题：与第110章衔接 <span class="badge badge-std">标准</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 与第110章衔接 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑯ 第110章的 CAS 模板（回顾）：compare_exchange 只比较“当前值 vs 预期值”
@@ -732,7 +732,7 @@ int expected = 0;
 bool ok = a.compare_exchange_strong(expected, 1);   // ⑯ 仅当 a==0 才改为 1
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：与第110章衔接 <span class="badge badge-std">标准</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与第110章衔接 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 30 · ★☆☆☆☆"
 #include <atomic>
@@ -753,7 +753,7 @@ int main() {
 
 ## ⑰ 何时需要担心 ABA <span class="badge badge-exp">经验</span>
 
-> **示例 31** [难度 ★★☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 何时需要担心 ABA <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 #include <cstdio>
@@ -777,7 +777,7 @@ int main() {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：何时需要担心 ABA <span class="badge badge-exp">经验</span>]
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 何时需要担心 ABA <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★☆☆☆☆"
 // ⑰ 经验法则：只要“CAS 的值”是其底层内存可能被释放并复用的指针，就该担心
@@ -861,7 +861,7 @@ int main() {
 [第112章　Hazard Pointer 与 RCU（C++11/实践）](../part09_concurrency/ch112_hazard_rcu.md)（Hazard Pointer 与 RCU）—— 生产级回收用风险指针/RCU 而非裸 delete
 [第110章　无锁编程：lock-free / wait-free（C++11）](../part09_concurrency/ch110_lockfree.md)（无锁编程 lock-free/wait-free）—— 先确认真有无锁收益再上
 
-> **示例 35** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★★☆☆☆"
 #include <cstdint>
@@ -870,7 +870,7 @@ int main() {
 static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <atomic>
@@ -889,7 +889,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 #include <atomic>
@@ -912,7 +912,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 #include <atomic>
@@ -928,7 +928,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <atomic>
@@ -983,7 +983,7 @@ int main() {
 | 性能 | 低竞争无锁占优；高竞争自旋烧 CPU | ⑮⑱ |
 | 最佳实践 | 先确认无锁+无 ABA，再上；优先成熟库 | ⑲ |
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <cstdio>

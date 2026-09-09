@@ -64,7 +64,7 @@ std::variant<int, double, std::string> v;  // 三种类型之一
 
 `std::optional<T>` 把"是否已设值"标志与 `T` 放在同一块存储（联合），无独立堆分配。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存模型：标志 + 值 联合 <span class="badge badge-impl">实现</span>
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 内存模型：标志 + 值 联合 <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ② 概念布局（libstdc++）
@@ -87,7 +87,7 @@ int main() {
 
 ## ③ 构造与设值 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：构造与设值 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 构造与设值 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ③ 多种构造方式
@@ -155,7 +155,7 @@ _Z12use_optionalv:
 
 ## ⑥ std::optional 与指针的取舍 <span class="badge badge-exp">经验</span>
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：与指针的取舍 <span class="badge badge-exp">经验</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与指针的取舍 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 6 · ★☆☆☆☆"
 // ⑥ optional 优于裸指针的场景
@@ -173,7 +173,7 @@ Config*               parse_p();  // 等价但：可能返回 nullptr，需文�
 
 `std::expected<T,E>` 携带 `T` 或错误 `E`，替代异常做"可恢复错误"的显式传达。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：值的携带错误通道 <span class="badge badge-std">标准</span>]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 值的携带错误通道 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ⑦ expected 基本用法
@@ -195,7 +195,7 @@ int use() {
 
 ## ⑧ std::expected 的内存布局 <span class="badge badge-impl">实现</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：的内存布局 <span class="badge badge-impl">实现</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的内存布局 <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ⑧ 概念布局
@@ -218,7 +218,7 @@ int main() {
 
 ## ⑨ std::variant：类型安全的联合体 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：类型安全的联合体 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 类型安全的联合体 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑨ variant 持有若干类型之一，索引在运行期
@@ -236,7 +236,7 @@ std::cout << v.index();                         // 2（当前是 string）
 
 ## ⑩ variant 访问：visit 与 get <span class="badge badge-std">标准</span>
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：访问：visit 与 get <span class="badge badge-std">标准</span>
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 访问：visit 与 get <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑩ 用 std::visit 穷尽处理所有备选类型
@@ -258,7 +258,7 @@ void handle2(const std::variant<int, double>& v) {
 
 ## ⑪ variant 的"值语义"与异常 <span class="badge badge-std">标准</span>
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：的"值语义"与异常 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的"值语义"与异常 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑪ variant 的赋值异常安全：二阶段拷贝
@@ -278,7 +278,7 @@ void f() {
 
 ## ⑫ optional / expected / variant 的组合 <span class="badge badge-exp">经验</span>
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：的组合 <span class="badge badge-exp">经验</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的组合 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑫ 三者可组合表达复杂状态
@@ -315,7 +315,7 @@ std::variant<std::monostate, NoDefault> v;   // 默认构造 -> 持有 monostate
 
 ## ⑭ 与异常、错误码的对比 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：与异常、错误码的对比 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与异常、错误码的对比 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑭ 三种错误处理范式
@@ -390,7 +390,7 @@ std::expected<int,std::string> with_exp(int a, int b);  // expected（显式通�
 
 ## ⑲ microbenchmark：optional 的零开销验证 <span class="badge badge-exp">经验</span>
 
-> **示例 18** [难度 ★★☆☆☆] [主题：的零开销验证 <span class="badge badge-exp">经验</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 的零开销验证 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 18 · ★★☆☆☆"
 // ⑲ optional 设值 vs 裸 int：性能几乎无差

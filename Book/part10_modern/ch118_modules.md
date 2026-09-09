@@ -83,7 +83,7 @@ flowchart TD
 
 ## ② 模块单元的类型 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：模块单元的类型 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块单元的类型 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ② 三种基本单元（三者各自是独立文件/翻译单元，不能写在同一文件）
@@ -96,7 +96,7 @@ export module A;              // (a) 模块接口单元（本例唯一可独立�
 
 ## ③ export 的粒度 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：的粒度 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的粒度 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ③ 可导出单个声明、命名空间、或聚合
@@ -117,7 +117,7 @@ export {                   // 聚合导出块
 
 ## ④ import 与作用域 <span class="badge badge-std">标准</span>
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：与作用域 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与作用域 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 #include <iostream>
@@ -192,7 +192,7 @@ export uint32_t pack(uint16_t a, uint16_t b) { return (uint32_t(a)<<16)|b; }
 
 ## ⑧ 模块与名称查找 <span class="badge badge-std">标准</span>
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：模块与名称查找 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块与名称查找 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑧ 模块名字与命名空间独立
@@ -225,7 +225,7 @@ C++23 提供两个命名模块：`std` 与 `std.compat`，后者额外暴露 C �
 
 ## ⑩ 模块与头文件的互操作 <span class="badge badge-std">标准</span>
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：模块与头文件的互操作 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块与头文件的互操作 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★☆☆☆☆"
 // ⑩ 导入传统头也可（作为头单元）
@@ -237,7 +237,7 @@ import <vector>;       // 把传统头当作头单元导入（C++20 头单元）
 
 ## ⑪ 模块符号与 ABI <span class="badge badge-impl">实现</span>
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：模块符号与 ABI <span class="badge badge-impl">实现</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块符号与 ABI <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑪ 模块不影响 ABI：导出函数仍是普通 C++ 函数符号
@@ -250,7 +250,7 @@ import <vector>;       // 把传统头当作头单元导入（C++20 头单元）
 
 ## ⑫ 模块与构建系统 <span class="badge badge-exp">经验</span>
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：模块与构建系统 <span class="badge badge-exp">经验</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 模块与构建系统 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑫ 构建系统需先编译模块接口生成 BMI（.o / .gcm），再编译使用者
@@ -263,7 +263,7 @@ Modules 给构建系统加了一道硬约束：必须先编译模块接口生成
 
 ## ⑬ 模块的典型陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★★☆☆] [主题：模块的典型陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模块的典型陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★★★☆☆"
 // ⑬ 陷阱1：在模块接口里忘记 export -> 导出不可见
@@ -304,7 +304,7 @@ GCC 15.3.0 用 `-fmodules-ts` 支持这条流程；`use_mod` 最终生成 `mov e
 
 ## ⑯ 模块与模板 <span class="badge badge-std">标准</span>
 
-> **示例 15** [难度 ★★☆☆☆] [主题：模块与模板 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 模块与模板 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★★☆☆☆"
 // ⑯ 模板也能导出（接口单元直接 export template）
@@ -343,7 +343,7 @@ export inline int twice(int x) { return x * 2; }
 
 ## ⑲ microbenchmark：模块对编译时间的收益 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★★☆☆] [主题：模块对编译时间的收益 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★★☆☆</span> · 模块对编译时间的收益 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★★☆☆"
 // ⑲ 单 TU 运行期开销：模块函数 = 普通函数（零差）

@@ -321,7 +321,7 @@ int main() {
 C++ 标准文本（ISO/IEC 14882）与 WG21 提案、编译器前端实现共同构成「规范级源码」；研读草案比二手博客更可靠。
 ## ⑭ WG21 提案背景 <span class="badge badge-std">标准</span>
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：提案背景 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案背景 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // [merged] ## ⑭ WG21 提案背景 [标准]

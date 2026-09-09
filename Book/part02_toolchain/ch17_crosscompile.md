@@ -51,7 +51,7 @@
 
 **交叉编译（cross compilation）** = 在**宿主机（host，如 x86-64 Windows）**上编译出运行在**目标机（target，如 ARM Cortex-M）**上的可执行代码。与之相对的是**原生编译（native compilation）**：host == target。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：什么是交叉编译 <span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：什么是交叉编译 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 // ① 一个完全可移植的“Hello 资源占用”目标程序——它不关心谁编译它
@@ -102,7 +102,7 @@ int main() {
 
 **sysroot** 是交叉工具链的“目标系统根目录”，内含目标专用的头文件与库（如 `sysroot/usr/include`、`sysroot/lib`）。编译器用 `--sysroot=<dir>` 把它当作逻辑 `/`。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：与库 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与库 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ③ 交叉编译时，#include <cstdio> 解析到“目标 sysroot 里的 libc++/libstdc++ 头”
@@ -111,7 +111,7 @@ int main() {
 int main() { std::printf("built for target\n"); return 0; }
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：与库 <span class="badge badge-std">标准</span>]
+> **示例 5** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与库 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 5 · ★☆☆☆☆"
 // ③ 指定 sysroot 的编译调用（arm-none-eabi-gcc 本机未装，仅示意）
@@ -126,7 +126,7 @@ int main() { std::printf("built for target\n"); return 0; }
 
 两类目标差异巨大：`bare-metal`（无 OS，自己写启动/向量表）与 `Linux`（有内核、libc、动态链接器）。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 // ④ 裸机程序：必须自己定义入口，不能有 main 依赖 libc 的初始化
@@ -136,7 +136,7 @@ extern "C" void _start() {  // 复位向量跳到这里
 // 链接：arm-none-eabi-ld -T script.ld -o fw.elf start.o
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 裸机 vs Linux 目标 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ④ Linux 目标：可以正常用 main + libc + 系统调用
@@ -225,7 +225,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 交叉编译工具链文件 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑦ 业务代码完全不感知交叉：CMakeLists 里照常 add_executable
@@ -243,7 +243,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 裸机没有 glibc（它依赖 Linux 系统调用），于是用 **newlib**（经典）或 **picolibc**（更轻、面向嵌入式）作为 C/C++ 运行时。它们把 `read/write/_sbrk` 等留给用户实现的 **syscall 桩（syscall stubs）**。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：对比 <span class="badge badge-platform">平台</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 对比 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ⑧ newlib 需要一个 _sbrk 桩来支撑 malloc/自由存储（否则 new 也会失败）
@@ -258,7 +258,7 @@ extern "C" {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：对比 <span class="badge badge-platform">平台</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 对比 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 12 · ★☆☆☆☆"
 // ⑧ picolibc 更小：可裁剪 printf 浮点支持，适合 32KB RAM 的 MCU
@@ -274,7 +274,7 @@ int diag() { return std::snprintf(nullptr, 0, "%d", 42); }  // 尺寸敏感
 
 **QEMU** 能无需真实硬件就跑目标二进制：`qemu-arm` 做用户态模拟（系统调用转译到宿主），`qemu-system-arm` 模拟整块板子。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：用户态模拟运行 <span class="badge badge-platform">平台</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 用户态模拟运行 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 // ⑨ 一个普通的 Linux 目标程序，既能真机跑，也能 qemu 跑
@@ -298,7 +298,7 @@ int main() {
 
 裸机最终产物是 **ELF**（含调试信息）与烧录用的 **bin/hex（纯机器码 + 加载地址）**。工具链用 `objcopy` 抽取，用链接脚本定地址。
 
-> **示例 14** [难度 ★★☆☆☆] [主题：固件/镜像生成 <span class="badge badge-platform">平台</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 固件/镜像生成 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑩ 复位向量表：第一项 SP 初值，第二项 Reset_Handler 入口
@@ -359,7 +359,7 @@ _Z9manhattan5Point:
 
 **端序（endianness）**决定多字节数在内存的字节序；**对齐（alignment）**决定对象允许的内存地址模数。二者都会让“同样代码、不同目标”产生不同行为或性能。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：大小端/对齐差异 <span class="badge badge-std">标准</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 大小端/对齐差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑫ 端序探测：小端机 0x01020304 在内存为 04 03 02 01
@@ -370,7 +370,7 @@ bool is_little_endian() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：大小端/对齐差异 <span class="badge badge-std">标准</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 大小端/对齐差异 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑫ 对齐：alignas 提升对齐以满足 SIMD 加载要求（如 AVX 需 32 字节）
@@ -499,7 +499,7 @@ void* operator new(std::size_t n) {        // 极简静态分配器示意
 
 ## ⑯ 常见坑 <span class="badge badge-exp">经验</span>
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑯ 坑1：FPU 选项与固件不一致 -> 一进浮点就 HardFault
@@ -507,14 +507,14 @@ void* operator new(std::size_t n) {        // 极简静态分配器示意
 float scale(float x) { return x * 3.14f; }   // 需 FPU 已使能
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑯ 坑2：链接脚本的 _ebss/_estack 与启动代码符号名对不上 -> 堆栈/堆错位
 extern char _ebss;    // 启动文件里若叫 __bss_end__，这里就链接失败或堆错位
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：常见坑 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 常见坑 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑯ 坑3：int 宽度假设。x86/ARM 桌面与 Cortex-M 的 int 都是 32 位，
@@ -555,7 +555,7 @@ int main() {
 
 ## ⑱ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 27** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★★☆☆☆"
 // ⑱ 实践1：平台相关代码集中到 arch_xxx 命名空间 + 编译期分发，避免散落 ifdef
@@ -572,7 +572,7 @@ namespace arch {
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 28** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 28 · ★★☆☆☆"
 // ⑱ 实践2：对所有外设寄存器用 volatile 且显式宽度，杜绝“优化掉 MMIO”
@@ -581,7 +581,7 @@ volatile uint32_t& GPIOA_ODR = *reinterpret_cast<uint32_t*>(0x40020014u);
 void set_led(bool on) { if (on) GPIOA_ODR |= (1u<<5); else GPIOA_ODR &= ~(1u<<5); }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 29** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 29 · ★☆☆☆☆"
 // ⑱ 实践3：用 static_assert 固化跨平台假设，趁早 fail
@@ -603,7 +603,7 @@ static_assert(alignof(double) <= 8, "double 对齐超预期");
 | ARM64 Linux | `aarch64-linux-gnu` | libstdc++/glibc | `-O2` | ❌ 未装 |
 | RISC-V 32 裸机 | `riscv32-unknown-elf` | newlib | `-Os -gc-sections` | ❌ 未装 |
 
-> **示例 30** [难度 ★★☆☆☆] [主题：跨平台构建矩阵 <span class="badge badge-platform">平台</span>]
+> **示例 30** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨平台构建矩阵 <span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 30 · ★★☆☆☆"
 // ⑲ 矩阵里每个目标共享同一份业务逻辑，仅编译标志/标准库不同
@@ -637,7 +637,7 @@ constexpr Firmware kMatrix[] = {
    - <span class="badge badge-std">标准</span> 可用 `alignof` 查询类型对齐、`alignas` 增强声明对齐；实际分配须由支持该对齐的分配器提供。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[basic.align] / [dcl.align]（对齐与 alignas）；cppreference "alignof / alignas" 词条。
 
-> **示例 31** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 31 · ★★☆☆☆"
 // ⑳ 三元组 → 工具链前缀 速查（编译时 -target / 工具链文件里设置）

@@ -256,7 +256,7 @@ int main() {
 - `[class.template]`：策略若本身为类模板（如 `NewCreator<T>`），在宿主内通过 `Policy<T>::method()` 调用，依赖名需 `typename`/`template` 消歧（③、④）。
 - **分配器/删除器要求**：`Allocator` 须满足 `Cpp17Allocator`（`allocate`/`deallocate`/`value_type`），`Deleter` 须可调用 `d(ptr)`——这些是策略类的"概念契约"（衔接 ch67）。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 标准规定 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // 标准：模板模板参数语法（C++17 起可用 typename 替代 class）
@@ -264,7 +264,7 @@ template <typename T, template <typename> typename CP>   // C++17 typename 等�
 struct Host { using R = decltype(CP<T>::create()); };
 ```
 
-> **示例 12** [难度 ★★☆☆☆] [主题：标准规定 <span class="badge badge-std">标准</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 标准规定 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // 标准：依赖名消歧（template 关键字）
@@ -278,7 +278,7 @@ void f() { auto p = CP::template create<T>(); (void)p; }
 - **代码体积**：策略组合多时，MSVC 的 COMDAT 折叠（/OPT:ICF）与 GCC/Clang 的 `--gc-sections` 都能剔除未用实例化；但组合爆炸仍会膨胀 `.text`。
 - **模板模板参数匹配**：C++17 起模板模板参数可用 `typename`；旧 MSVC 对"默认模板实参一致性"检查更严，跨编译器策略类建议显式默认实参一致。
 
-> **示例 13** [难度 ★★★☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 13 · ★★★☆☆"
 // 各编译器对策略组合的实例化符号一致（Itanium ABI）

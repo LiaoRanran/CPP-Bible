@@ -63,7 +63,7 @@ auto even = v | std::views::filter([](int i){ return i % 2 == 0; });
 
 ## ② View 概念：轻量、非拥有、可组合 <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概念：轻量、非拥有、可组合 <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概念：轻量、非拥有、可组合 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 // ② view 是 O(1) 可拷贝的"适配器"，不持有元素
@@ -79,7 +79,7 @@ auto f = v | std::views::reverse;     // f 是 view，O(1) 构造，不复制 v
 
 ## ③ 管道运算符 `|` 的本质 <span class="badge badge-std">标准</span>
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：管道运算符 | 的本质 <span class="badge badge-std">标准</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 管道运算符 | 的本质 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 3 · ★☆☆☆☆"
 // ③ v | adaptor 等价于 adaptor(v)
@@ -95,7 +95,7 @@ auto r2 = v | std::views::filter([](int i){ return i > 1; });  // 管道写法
 
 ## ④ 惰性求值：不立即计算 <span class="badge badge-std">标准</span>
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：惰性求值：不立即计算 <span class="badge badge-std">标准</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 惰性求值：不立即计算 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 4 · ★☆☆☆☆"
 // ④ view 不存储结果，遍历时才计算
@@ -166,7 +166,7 @@ _Z10use_rangesv:
 
 ## ⑥ 常用 view 适配器 <span class="badge badge-std">标准</span>
 
-> **示例 6** [难度 ★★☆☆☆] [主题：常用 view 适配器 <span class="badge badge-std">标准</span>]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常用 view 适配器 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 6 · ★★☆☆☆"
 // ⑥ 常见 views
@@ -203,7 +203,7 @@ bool has = std::ranges::any_of(v, [](int i){ return i > 2; });
 
 ## ⑧ 投影（projection） <span class="badge badge-std">标准</span>
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：投影（projection） <span class="badge badge-std">标准</span>
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 投影（projection） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ⑧ 算法支持投影：对元素成员操作
@@ -255,7 +255,7 @@ static_assert(std::ranges::range<Count>);   // Count 满足 range 概念
 
 ## ⑩ view 的 dangling 风险 <span class="badge badge-std">标准</span>
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：的 dangling 风险 <span class="badge badge-std">标准</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 的 dangling 风险 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 10 · ★☆☆☆☆"
 // ⑩ 返回 view 引用了临时范围 -> 悬空
@@ -341,7 +341,7 @@ use(cached); use(cached);
 
 ## ⑮ microbenchmark：惰性 vs 手写循环 <span class="badge badge-exp">经验</span>
 
-> **示例 14** [难度 ★★☆☆☆] [主题：惰性 vs 手写循环 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 惰性 vs 手写循环 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★★☆☆☆"
 // ⑮ 量级：ranges 链 ≈ 手写单循环（惰性融合后无中间容器）
@@ -367,7 +367,7 @@ int hand_way(std::vector<int>& v) {
 
 ## ⑯ Ranges 与并行/执行策略 <span class="badge badge-std">标准</span>
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：与并行/执行策略 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与并行/执行策略 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑯ ranges 算法可配执行策略（C++20 起部分支持）
@@ -384,7 +384,7 @@ std::ranges::sort(std::execution::par, v);   // 并行排序（注意迭代器�
 
 ## ⑰ Ranges 与协程/生成器 <span class="badge badge-std">标准</span>
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：与协程/生成器 <span class="badge badge-std">标准</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与协程/生成器 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑰ 协程生成器可与 ranges 组合（C++20/23）
@@ -398,7 +398,7 @@ std::ranges::sort(std::execution::par, v);   // 并行排序（注意迭代器�
 
 ## ⑱ Ranges 常见陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 17** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑱ 陷阱1：filter 后不是随机访问 -> 不能 O(1) 下标
@@ -413,7 +413,7 @@ auto bad = v | std::views::transform([](int i){ return std::to_string(i); });
 
 ## ⑲ Ranges 工程应用模式 <span class="badge badge-exp">经验</span>
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：工程应用模式 <span class="badge badge-exp">经验</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 工程应用模式 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 // ⑲ 管道式数据清洗（工业常见）

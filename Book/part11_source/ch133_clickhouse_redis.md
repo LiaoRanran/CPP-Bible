@@ -1426,7 +1426,7 @@ int main() {
 
 ## ⑲ <span class="badge badge-exp">经验</span>选型
 
-> **示例 50** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span>选型
 
 ```cpp title="示例 50 · ★★☆☆☆"
 
@@ -1471,7 +1471,7 @@ int main() {
 
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-exp">经验</span>选型
 
 ```cpp title="示例 51 · ★☆☆☆☆"
 #include <cstddef>
@@ -1482,7 +1482,7 @@ bool should_vectorize(size_t n, bool branchy) {
 }
 ```
 
-> **示例 52** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span>选型]
+> **示例 52** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span>选型
 
 ```cpp title="示例 52 · ★★☆☆☆"
 

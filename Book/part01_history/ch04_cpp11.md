@@ -366,7 +366,7 @@ int main() {
 
 ## ⑭ WG21 提案（关键）<span class="badge badge-std">标准</span>
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：提案（关键）<span class="badge badge-std">标准</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 提案（关键）<span class="badge badge-std">标准</span>
 
 ```cpp title="示例 18 · ★☆☆☆☆"
 #include <iostream>

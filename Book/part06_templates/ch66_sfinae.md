@@ -351,7 +351,7 @@ void visit(T) {}
 - **默认模板参数孔位的多 enable_if**：MSVC 19.2x 之前对「同一参数位多个 enable_if」的支持有 bug（需拆到不同参数位），GCC/Clang 无此问题。
 - **`void_t` 探测的 SFINAE 方向**：Clang 曾出现过「优先级反转」的边界 bug（已被 WG21 用例覆盖），生产代码建议用偏特化主-from-void 写法（见 ⑬）。
 
-> **示例 22** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 22 · ★★☆☆☆"
 // MSVC 19.1x 坑：两个 enable_if 放同一孔位会误报

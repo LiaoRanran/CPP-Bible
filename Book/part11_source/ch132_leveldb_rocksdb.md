@@ -888,7 +888,7 @@ int main() {
 
 引擎内置日志与统计，是排查「为什么这么慢/为什么空间暴涨」的主力。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 34** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 34 · ★☆☆☆☆"
 // ⑩ 设置日志级别（RocksDB），定位 Compaction/Flush 卡点
@@ -897,7 +897,7 @@ o.info_log_level = rocksdb::INFO_LEVEL;  // DEBUG/INFO/WARN/ERROR/HEADER
 o.stats_dump_period_sec = 60;            // 每 60s 向 LOG 倾倒统计
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 #include <string>
@@ -907,7 +907,7 @@ db->GetProperty("rocksdb.stats", &stats);    // 返回多行文本统计
 // 关键行：compaction.pending; cur-size-active-mem-table; background-errors
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★☆☆☆☆"
 #include <string>
@@ -919,7 +919,7 @@ db->GetProperty("leveldb.sstables", &out);   // 列出各层文件与范围
 - `[经验]`：慢查询先看 `rocksdb.dbstats` 的 `get.from.memtable / .from.block.cache / .from.sst` 占比——若大量 `from.sst` 说明 BlockCache 太小或布隆缺失。
 - `[经验]`：磁盘满/权限错常表现为 `Status::IOError`，优先看 `<db>/LOG` 文件而非 stdout。
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：调试 <span class="badge badge-exp">经验</span>]
+> **示例 37** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 37 · ★☆☆☆☆"
 // ⑩ 把统计打到自定义 logger（RocksDB：实现 Logger 接口）
@@ -934,7 +934,7 @@ class MyLogger : public rocksdb::Logger {
 
 LSM 的天性：**顺序写极快，随机点查需跨层**，范围扫描友好。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑪ 顺序写基准骨架（示意，非本机实测数字）
@@ -945,7 +945,7 @@ for (int i = 0; i < 1'000'000; ++i) {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
+> **示例 39** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 39 · ★☆☆☆☆"
 #include <string>
@@ -956,7 +956,7 @@ for (int i = 0; i < 100'000; ++i) {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
+> **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 40 · ★☆☆☆☆"
 #include <algorithm>
@@ -1000,7 +1000,7 @@ int main() {
 - `[经验]`：顺序 key（如时间戳前缀）让写入天然聚集，避免 L0 爆炸；随机 key 建议加 `Hash`/分桶前缀。
 - `[平台·Windows]`：SSD 上 Compaction 的写放大比 HDD 更可接受；但 NAND 有擦除寿命，高写入仍需注意。
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
+> **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能（顺序写 vs 随机读） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 41 · ★☆☆☆☆"
 // ⑪ RocksDB 直接读（跳过 MemTable 的读路径统计）用于隔离测量
@@ -1074,7 +1074,7 @@ o.use_direct_io_for_flush_and_compaction = true;
 
 ## ⑬ 常见陷阱 <span class="badge badge-exp">经验</span>
 
-> **示例 46** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 46** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 46 · ★★☆☆☆"
 // ⑬ 陷阱1：忘记 delete iterator -> 内存泄漏
@@ -1082,7 +1082,7 @@ leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
 // ... 使用后必须有 delete it;   => 用 ⑧ 的 IterPtr 封装避免
 ```
 
-> **示例 47** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 47** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 47 · ★★☆☆☆"
 #include <cstdio>
@@ -1106,7 +1106,7 @@ int main() {
 }
 ```
 
-> **示例 48** [难度 ★★★★☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 48** <span class="badge badge-exp">难度 ★★★★☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 48 · ★★★★☆"
 #include <cstdio>
@@ -1136,7 +1136,7 @@ int main() {
 }
 ```
 
-> **示例 49** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 49** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 49 · ★★☆☆☆"
 #include <cstdio>
@@ -1170,7 +1170,7 @@ int main() {
 - `[经验]`：最致命的是「长期快照 + 高写入」导致空间放大失控；监控 `rocksdb.estimate-live-data-size` 与 `rocksdb.compaction-pending`。
 - `[经验]`：LevelDB 默认 `create_if_missing=false` 时要先确认目录存在，否则 `Open` 返回 `NotFound`。
 
-> **示例 50** [难度 ★★☆☆☆] [主题：常见陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 50** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 常见陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 50 · ★★☆☆☆"
 #include <string>
@@ -1184,7 +1184,7 @@ db->Get(ro, key, &v);     // ✅ 复制到 std::string
 
 LevelDB（2011，Google，源自 BigTable 论文）→ RocksDB（2012，Facebook 分支）→ 持续迭代至今。
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+> **示例 51** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 51 · ★☆☆☆☆"
 // ⑭ 版本能力里程碑（文字，非代码）
@@ -1194,7 +1194,7 @@ LevelDB（2011，Google，源自 BigTable 论文）→ RocksDB（2012，Facebook
 // RocksDB 7.x  : 全速落盘、背压、更好默认参数
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+> **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 52 · ★☆☆☆☆"
 #include <chrono>
@@ -1236,7 +1236,7 @@ int main() {
 }
 ```
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+> **示例 53** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 53 · ★☆☆☆☆"
 // ⑭ RocksDB 默认参数随版本变优：新版本常「开箱即接近最优」
@@ -1247,7 +1247,7 @@ rocksdb::Options o = rocksdb::Options::OptimizeForSmallDb();   // 小库预设
 - `[标准]`：演进是工程实践驱动，非 ISO 标准；API 大体向后兼容，但默认行为会改。
 - `[经验]`：升级大版本务必对比 `LOG` 起始段的「SST 格式版本」，跨大版本升级前先做 Compaction 到最新格式。
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：演进 <span class="badge badge-std">标准</span>]
+> **示例 54** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 54 · ★☆☆☆☆"
 #include <string>
@@ -1258,7 +1258,7 @@ db->GetProperty("rocksdb.format-version", &fmt);
 
 ## ⑮ 最佳实践 <span class="badge badge-exp">经验</span>
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 55** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 55 · ★☆☆☆☆"
 // ⑮ 写优化：批量 + 关 sync（可容忍丢最近写时）
@@ -1267,7 +1267,7 @@ w.sync = false;             // 异步 WAL，吞吐高；崩溃可能丢最后几
 db->Write(w, &batch);
 ```
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 56 · ★☆☆☆☆"
 // ⑮ 读优化：共享 BlockCache + 布隆过滤器
@@ -1276,14 +1276,14 @@ o.filter_policy = leveldb::NewBloomFilterPolicy(10);  // 每键 ~10bit
 o.block_cache = leveldb::NewLRUCache(128 << 20);      // 128MB
 ```
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 57** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 57 · ★☆☆☆☆"
 // ⑮ RocksDB 针对点查的预设（一行到位）
 rocksdb::Options o = rocksdb::Options::OptimizeForPointLookup(128 // MB cache
 ```
 
-> **示例 58** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 58** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 58 · ★★☆☆☆"
 // ⑮ 控制写放大：限制后台线程，避免 Compaction 抢前台 IO
@@ -1297,7 +1297,7 @@ o.level0_stop_writes_trigger = 36;      // 达此值直接停写
 - `[经验]`：先测后调——用 `db_bench` 跑真实负载，再据 `rocksdb.stats` 调整，不要盲改魔数。
 - `[经验]`：键设计影响巨大：定长、带前缀、避免过长 value（大 value 用 BlobDB / 外置）。
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 59** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 59 · ★☆☆☆☆"
 // ⑮ 大 value 外置（RocksDB BlobDB / 或自行把 value 存对象存储，key 存定位符）
@@ -1308,7 +1308,7 @@ co.min_blob_size = 1024;     // 大于 1KB 的 value 进 blob 文件
 
 ## ⑯ 跨库 <span class="badge badge-exp">经验</span>
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 60** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 60 · ★☆☆☆☆"
 // ⑯ LevelDB vs RocksDB API 相似度（迁移成本低）
@@ -1317,14 +1317,14 @@ co.min_blob_size = 1024;     // 大于 1KB 的 value 进 blob 文件
 // 主要差异：RocksDB 多 ColumnFamilyHandle 参数，几乎所有方法多一个 handle
 ```
 
-> **示例 61** [难度 ★★☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 61** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 61 · ★★☆☆☆"
 // ⑯ 与 LMDB（B+Tree，mmap）对比：LMDB 读无拷贝、事务强，但写单线程
 // LevelDB/RocksDB：写并发高、Compaction 自管；LMDB：读极致、写受锁
 ```
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 62** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 62 · ★☆☆☆☆"
 // ⑯ 与 SQLite 对比：SQLite 单文件关系库，LevelDB 仅有序 KV，无 SQL/索引
@@ -1334,7 +1334,7 @@ co.min_blob_size = 1024;     // 大于 1KB 的 value 进 blob 文件
 - `[经验]`：同进程多引擎共存常见（RocksDB 存 KV、SQLite 存元数据）；但别让两者抢同一块磁盘 IO。
 - `[经验]`：Redis 是内存 KV，可做 LevelDB 的上层缓存；二者常组合（热在 Redis，全量在 RocksDB）。
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：跨库 <span class="badge badge-exp">经验</span>]
+> **示例 63** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨库 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 63 · ★☆☆☆☆"
 // ⑯ 简单选型函数（示意）
@@ -1349,7 +1349,7 @@ const char* pick(bool need_sql, bool need_high_write) {
 
 要改引擎，先能自构建。两者均用 CMake，跨平台一条命令。
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 64** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```bash
 # ⑰ LevelDB 从源码构建（上游官方命令；本机未构建，无自验输出）
@@ -1359,7 +1359,7 @@ cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . -j
 # 产物：build/libleveldb.a（静态）与 libleveldb.so（动态）
 ```
 
-> **示例 65** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 65** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```bash
 # ⑰ RocksDB 从源码构建（上游官方命令；本机未构建，无自验输出）
@@ -1368,7 +1368,7 @@ cd rocksdb && mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=OFF .. && cmake --build . -j
 ```
 
-> **示例 66** [难度 ★☆☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 66** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 66 · ★☆☆☆☆"
 // ⑰ 贡献流程：fork -> 分支 -> 单测(gtest) -> 跑 db_bench -> 提 PR
@@ -1379,7 +1379,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DWITH_TESTS=OFF .. && cmake --build . -j
 - `[经验]`：改核心路径（Compaction / MemTable）务必补 `db_test` 与 `compaction_test`，并跑 `make check`。
 - `[平台·Windows]`：Windows 用 Visual Studio 的 CMake 预设；Linux/macOS 用 Ninja 更快。
 
-> **示例 67** [难度 ★★☆☆☆] [主题：贡献 <span class="badge badge-exp">经验</span>]
+> **示例 67** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 贡献 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 67 · ★★☆☆☆"
 #include <cstdio>
@@ -1502,7 +1502,7 @@ public:
 
 ## ⑲ 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
-> **示例 72** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
+> **示例 72** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 72 · ★☆☆☆☆"
 // ⑲ 阅读入口（上游参考，标注上游参考，行号对应 release 标签）
@@ -1513,7 +1513,7 @@ public:
 // RocksDB : db/memtable.cc           MemTable 实现
 ```
 
-> **示例 73** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
+> **示例 73** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 73 · ★☆☆☆☆"
 #include <string>
@@ -1523,7 +1523,7 @@ db->GetProperty("rocksdb.cfstats", &h);     // 每列族详细统计
 // 关注：rw-per-query( GET )、compaction times、memtable hit
 ```
 
-> **示例 74** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
+> **示例 74** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
 ```bash
 # ⑲ 断点：DBImpl::Write / MemTable::Add / Compaction 入口（gdb 批处理形式）
@@ -1537,7 +1537,7 @@ gdb -q -batch \
 - `[经验]`：先读 `doc/` 与 `README` 再读 `db_impl.cc`；跳表与 SSTable 是两块独立易读代码，优先攻克。
 - `[平台·Windows]`：源码用 `port/` 目录隔离平台差异（atomic、mutex、env），阅读时对应自己平台实现。
 
-> **示例 75** [难度 ★☆☆☆☆] [主题：调试/源码阅读 <span class="badge badge-exp">经验</span>]
+> **示例 75** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 调试/源码阅读 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 75 · ★☆☆☆☆"
 // ⑲ 用 LOG 文件定位「为何某 key 读慢」：对比 memtable/blockcache/sst 占比
@@ -1560,7 +1560,7 @@ gdb -q -batch \
    - <span class="badge badge-std">标准</span> 与 C++17 `std::string_view` 一样是非拥有视图语义，但 Slice 是库类型。
    - <span class="badge badge-ref">引用</span> ISO/IEC 14882:2023 §[string.view]（视图语义）/ LevelDB `Slice` 文档；cppreference "std::string_view" 词条。
 
-> **示例 76** [难度 ★★★☆☆] [主题：速查表 <span class="badge badge-exp">经验</span>]
+> **示例 76** <span class="badge badge-exp">难度 ★★★☆☆</span> · 速查表 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 76 · ★★★☆☆"
 #include <vector>
@@ -1602,7 +1602,7 @@ for (auto* it = db->NewIterator(leveldb::ReadOptions()); it->Valid(); it->Next()
 └───────────────────────┴─────────────────────────────┴──────────────────────────┘
 ```
 
-> **示例 77** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-exp">经验</span>]
+> **示例 77** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 77 · ★☆☆☆☆"
 // ⑳ 常见 GetProperty 键速查（RocksDB）
@@ -1616,7 +1616,7 @@ for (auto* it = db->NewIterator(leveldb::ReadOptions()); it->Valid(); it->Next()
 - `[经验]`：三个最该盯的属性：`num-immutable-mem-table`（写积压）、`compaction-pending`（合并滞后）、`estimate-live-data-size`（空间放大）。
 - `[平台·Windows]`：所有属性名在 `include/rocksdb/db.h` 的 `GetProperty` 文档注释列出（上游参考）。
 
-> **示例 78** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-exp">经验</span>]
+> **示例 78** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 78 · ★☆☆☆☆"
 // ⑳ 一行健康判断（示意）

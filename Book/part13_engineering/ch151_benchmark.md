@@ -50,7 +50,7 @@
 
 基准测试（benchmarking）的目标是用可重复的数字回答"这段代码的真实开销是多少"。但 C++ 基准测试的陷阱远超直觉：**优化器会删除你以为在测的代码**、**时钟分辨率会给你 0**、**缓存预热会在首批样本里污染结果**、**平台/编译器差异会让数字完全不可比**。一条不可信的基准，比没有基准更危险——它会把错误的优化方向"焊死"进代码库。
 
-> **示例 1** [难度 ★★★★☆] [主题：概述：基准测试陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★★★☆</span> · 概述：基准测试陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★★★★☆"
 // ① 致命陷阱：结果未"被观察" → 整个循环被死代码消除（DCE）
@@ -89,7 +89,7 @@ call    _ZNSt6chrono3_V212steady_clock3nowEv   ; t1
 
 正确做法是用 `volatile` 汇点强制结果"被观察"（见第③节），本机真实耗时约 `53.661 ms`：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：概述：基准测试陷阱 <span class="badge badge-exp">经验</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 概述：基准测试陷阱 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 2 · ★★☆☆☆"
 // ①' 正确做法：volatile 汇点防止 DCE

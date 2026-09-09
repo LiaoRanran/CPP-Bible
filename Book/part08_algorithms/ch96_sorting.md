@@ -252,7 +252,7 @@ int main() {
 
 `std::stable_sort` 保证**相等元素保持原相对顺序**，且复杂度 O(N·log N)；当额外内存充足时用归并，内存不足时降级为 **就地归并**（更慢，但仍稳定）。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：sort：归并排序（稳定） <span class="badge badge-std">标准</span>]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · sort：归并排序（稳定） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ④ stable_sort 用法：保留相等元素的原始次序
@@ -269,7 +269,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★★★☆☆] [主题：sort：归并排序（稳定） <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★★★☆☆</span> · sort：归并排序（稳定） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★★★☆☆"
 // ④ 一个可编译的归并排序（演示 stable 的本质：合并时左段优先）
@@ -330,7 +330,7 @@ int main() {
 
 用 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch96_sort_asm.cpp`，在产物中能直接看到 libstdc++ 的 `std::__introsort_loop` 实例化符号——这是对"② introsort"的**真实取证**。
 
-> **示例 12** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span> 真实：sort 调用的汇编]
+> **示例 12** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span> 真实：sort 调用的汇编
 
 ```cpp title="示例 12 · ★★★☆☆"
 #include <algorithm>
@@ -414,7 +414,7 @@ int main() {
 
 自定义类型排序有三种惯用法：重载 `operator<`、传函数对象、传 lambda。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：自定义类型排序 <span class="badge badge-std">标准</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义类型排序 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ⑧ 方式一：为类型提供 operator<（满足严格弱序）
@@ -430,7 +430,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：自定义类型排序 <span class="badge badge-std">标准</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义类型排序 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑧ 方式二：函数对象（可携带状态，比裸函数指针更易内联）
@@ -446,7 +446,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：自定义类型排序 <span class="badge badge-std">标准</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 自定义类型排序 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 17 · ★☆☆☆☆"
 // ⑧ 方式三：lambda（最常用，见 ⑪ 它会被内联进排序循环）
@@ -541,7 +541,7 @@ int main() {
 
 仍以 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch96_lambda_inline.cpp`（用无状态 lambda）。产物中比较器**没有独立函数调用**，而是直接内联成 `cmp DWORD PTR 8[rax], ecx`——证明 lambda 比较器被展开进 `__introsort_loop`。
 
-> **示例 22** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span> 真实：自定义比较器被内联进]
+> **示例 22** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span> 真实：自定义比较器被内联进
 
 ```cpp title="示例 22 · ★★★☆☆"
 #include <algorithm>
@@ -582,7 +582,7 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIP5PointSt6vectorIS2_SaIS2_
 
 排序是内存密集型：比较与交换会随机访问区间。连续存储（`vector`/`array`）远快于链表；分段友好（cache line 64 字节 ≈ 16 个 int）。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：大规模排序与缓存局部性 <span class="badge badge-exp">经验</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 大规模排序与缓存局部性 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑫ 优先对连续容器排序；避免对 list 用 std::sort
@@ -598,7 +598,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：大规模排序与缓存局部性 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 大规模排序与缓存局部性 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★☆☆☆☆"
 // ⑫ 间接排序：对"大对象"排序时排索引而非对象，减少搬移
@@ -623,7 +623,7 @@ int main() {
 
 introsort 在小数组（阈值 ~16）切换插入排序；对已（近似）有序区间，插入排序接近 O(N)。这也是为什么"先大体快排、再小段插入"高效。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：几乎有序数组：插入排序优化 <span class="badge badge-impl">实现</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 几乎有序数组：插入排序优化 <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑬ 插入排序对小/近似有序数据极快（libstdc++ 在阈值内用它收尾）
@@ -639,7 +639,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：几乎有序数组：插入排序优化 <span class="badge badge-impl">实现</span>]
+> **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 几乎有序数组：插入排序优化 <span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 26 · ★☆☆☆☆"
 // ⑬ 用 std::sort 处理近乎有序数据同样高效（introsort 自动受益）
@@ -702,7 +702,7 @@ int main() {
 
 用 `std::chrono` 实测 `std::sort` 在不同规模下的耗时（MinGW GCC 15.3.0，`-O2`，本机实测，非编造）：
 
-> **示例 29** [难度 ★★☆☆☆] [主题：<span class="badge badge-exp">经验</span> 性能实测：chrono 取]
+> **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-exp">经验</span> 性能实测：chrono 取
 
 ```cpp title="示例 29 · ★★☆☆☆"
 // ⑮ 性能取证代码（见 Examples/_ch96_bench.cpp）
@@ -831,7 +831,7 @@ int main() {
 
 ## ⑱ 最佳实践清单 <span class="badge badge-exp">经验</span>
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：最佳实践清单 <span class="badge badge-exp">经验</span>]
+> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践清单 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 35 · ★☆☆☆☆"
 // ⑱ 用投影（C++20 ranges）让比较更直白（需 <ranges>）
@@ -846,7 +846,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★★☆☆☆] [主题：最佳实践清单 <span class="badge badge-exp">经验</span>]
+> **示例 36** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践清单 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 36 · ★★☆☆☆"
 // ⑱ 排序后去重：必须先用 sort 让相等元素相邻，再 unique
@@ -929,7 +929,7 @@ int main() {
 └──────────────────┴──────────┴────────────┴──────────────────────────────┘
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
+> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 速查表 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 38 · ★☆☆☆☆"
 // ⑳ 一句话回顾：选算法先看"要不要稳定/要不要全序/要不要并行"

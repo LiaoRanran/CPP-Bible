@@ -68,7 +68,7 @@ tuple 与 any 常被当成"返回多值 / 装任意类型的小工具"，但它�
 
 ## ④ 知识图谱（ASCII）<span class="badge badge-std">标准</span>
 
-> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）<span class="badge badge-std">标准</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★★★☆☆</span> · 知识图谱（ASCII）<span class="badge badge-std">标准</span>
 
 ```text
                          ┌─────────────────────────────────────────────┐
@@ -155,7 +155,7 @@ classDiagram
 
 **tuple 的递归继承布局**（libstdc++：`tuple<int,double,std::string>` 实际是 `_Tuple_impl<0,int,_Tuple_impl<1,double,_Tuple_impl<2,std::string>>>`）：
 
-> **示例 2** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局 <span class="badge badge-impl">实现</span>
 
 ```text
 内存（x86-64, 对齐8）:
@@ -177,7 +177,7 @@ std::tuple<int, double, std::string>  (sizeof = 8+8+32 = 48, string 内部含指
 
 **any 的 16 字节布局**（文件：`any`，行号：`83-92`、`360-361`）：
 
-> **示例 3** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
+> **示例 3** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局 <span class="badge badge-impl">实现</span>
 
 ```text
 std::any  (sizeof = 16 在 x86-64)
@@ -192,7 +192,7 @@ SBO 阈值: sizeof(Tp) <= sizeof(_Storage)=8 且 alignof(Tp) <= 8  (行号:96)
 
 **function 的内部**（文件：`bits/std_function.h`，行号：`252-253`、`668`）：
 
-> **示例 4** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 <span class="badge badge-impl">实现</span>]
+> **示例 4** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 内存图 / 对象布局 <span class="badge badge-impl">实现</span>
 
 ```text
 std::function<R(Args)>  (sizeof = 32 在 x86-64: 16B _Any_data + 8B manager + 8B invoker 指针)
@@ -382,7 +382,7 @@ int main() {
 
 libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
-> **示例 9** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 9** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```text
 文件：tuple
@@ -398,7 +398,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **B. any 的类型擦除（文件：`any`，行号：`80`/`96`/`360-361`/`370`/`574`/`402`/`608`）**
 
-> **示例 10** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```text
 文件：any
@@ -415,7 +415,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **C. function 的 SBO + 擦除（文件：`bits/std_function.h`，行号：`117`/`124`/`334`/`591`）**
 
-> **示例 11** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 文件：bits/std_function.h
@@ -432,7 +432,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **D. bind 与占位符（文件：`functional`，行号：`87`/`266`/`294-311`/`881`）**
 
-> **示例 12** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）<span class="badge badge-impl">实现</span>
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 源码分析（libstdc++）<span class="badge badge-impl">实现</span>
 
 ```text
 文件：functional
@@ -491,7 +491,7 @@ A：不能。`any` 存的是**值**；要「持有引用」请用 `std::referenc
 **Q：如何避免 `any_cast` 抛异常？**
 A：用指针形式：
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 13** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★☆☆☆☆"
 // 安全 any_cast：类型不符返回 nullptr，不抛
@@ -517,7 +517,7 @@ A：可以，`auto&` / `const auto&` 绑定到原 tuple 元素，修改会反映
 
 1. **多返回值优先 `tuple` + 结构化绑定**，而非输出参数：
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ✅ 清晰、值语义、可 std::move
@@ -533,7 +533,7 @@ int main() {
 
 2. **`bind` 默认拷贝实参；需引用时显式 `std::ref`**：
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 15** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 15 · ★☆☆☆☆"
 // ❌ 误：bind 拷贝了 counter，外部看不到自增
@@ -551,7 +551,7 @@ int main() {
 
 3. **现代优先 lambda 而非 `bind`**（可读性 + 可内联，见 ⑲/⑳）：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 // bind 写法（旧）
@@ -579,7 +579,7 @@ int main() { return b_style() + l_style(); }
 
 **B. `any` 的 SBO 零分配验证**：
 
-> **示例 17** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // any 小对象(≤8B) 全息：无堆分配；大对象走堆
@@ -600,7 +600,7 @@ int main() {
 
 **C. `function` 间接调用开销量级**（示意，x86-64）：
 
-> **示例 18** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
+> **示例 18** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 18 · ★★☆☆☆"
 // 调用开销示意：function 比直接 lambda 多一次间接跳转 + 可能的分配
@@ -633,7 +633,7 @@ int main() { return bench() > 0 ? 0 : 1; }
 
 **D. `apply`/`make_from_tuple` 编译期展开零开销**：
 
-> **示例 19** [难度 ★★☆☆☆] [主题：性能分析 <span class="badge badge-exp">经验</span>]
+> **示例 19** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能分析 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 19 · ★★☆☆☆"
 // apply 在 -O2 下完全内联（见 ⑩ 示例 A 的汇编）

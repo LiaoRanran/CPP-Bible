@@ -354,7 +354,7 @@ void visit(T) {}
 - **偏序规则**：当 `C1` 蕴含 `C2` 时，`C1` 比 `C2` 更受约束，重载决议优先 `C1`——三编译器一致。
 - **报错可读性**：Clang/GCC 对 concept 失败给出「`T` does not satisfy `integral`」；MSVC 早期版本仍可能回落到 SFINAE 式长错。
 
-> **示例 22** [难度 ★★☆☆☆] [主题：行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 行为差异 <span class="badge badge-impl">实现</span><span class="badge badge-platform">平台</span>
 
 ```cpp title="示例 22 · ★★☆☆☆"
 // 更受约束者优先：两个重载都满足 int，但 SignedIntegral 比 Integral 更受约束

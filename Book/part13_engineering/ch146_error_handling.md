@@ -51,7 +51,7 @@ C 时代只有两种 primitive：返回码与全局 `errno`（1970s）。`[史]`
 
 `[经验]` 工业界的共识是：**异常用于"真正异常、且调用方通常无法就地恢复"的失败；返回值/可选项用于"可预期的、调用方应当处理的常规失败"**。把"文件不存在"当异常抛出，是在用控制流模拟返回码；把"空指针解引用"用返回值掩盖，是在丢弃本可立即崩溃的定位信息。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：错误处理策略 <span class="badge badge-exp">经验</span>]
+> **示例 1** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：错误处理策略 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 1 · ★☆☆☆☆"
 #include <string>
@@ -71,7 +71,7 @@ std::optional<Row> find_row(Key k);                             // "无值"也�
 - **不泄漏**：任何失败路径都必须释放已获资源（第④节 RAII）；
 - **可分类**：错误必须能被调用方区分"可重试 / 可降级 / 致命"，而非只有一个 bool。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：错误处理策略 <span class="badge badge-exp">经验</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 概述：错误处理策略 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 2 · ★☆☆☆☆"
 enum class Outcome { Ok, Retryable, Fatal };   // 错误分类是策略的一部分

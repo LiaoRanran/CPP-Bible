@@ -148,7 +148,7 @@ int main() {
 
 GCC 的 `std::string` 采用 **SSO（Small String Optimization）**：短字符串（≤15 字节）存于对象内部的 `_M_local_buf`，免堆分配。`_S_local_capacity` 是容量常量，定义如下。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
+> **示例 6** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-impl">实现</span>真实：读 local bit
 
 ```cpp title="示例 6 · ★★☆☆☆"
 // ④ SSO 行为：短串不触发 new
@@ -162,7 +162,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
+> **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-impl">实现</span>真实：读 local bit
 
 ```cpp title="示例 7 · ★☆☆☆☆"
 // ④ SSO 局部缓冲容量。文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
@@ -177,7 +177,7 @@ int main() {
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：<span class="badge badge-impl">实现</span>真实：读 local bit]
+> **示例 8** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <span class="badge badge-impl">实现</span>真实：读 local bit
 
 ```cpp title="示例 8 · ★☆☆☆☆"
 // ④ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
@@ -269,7 +269,7 @@ int main() {
 
 libstdc++ 对「强异常安全」与 `noexcept` 移动构造极度重视——这直接决定容器在扩容/排序时的性能（见 ⑭）。`basic_string` 的移动构造是 `noexcept`，因此 `vector<string>` 扩容走移动而非拷贝。
 
-> **示例 13** [难度 ★★★☆☆] [主题：异常安全与 noexcept <span class="badge badge-std">标准</span>
+> **示例 13** <span class="badge badge-exp">难度 ★★★☆☆</span> · 异常安全与 noexcept <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 13 · ★★★☆☆"
 // ⑥ noexcept 移动带来的性能差异
@@ -285,7 +285,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：异常安全与 noexcept <span class="badge badge-std">标准</span>
+> **示例 14** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 异常安全与 noexcept <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 14 · ★☆☆☆☆"
 // ⑥ 文件：C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/basic_string.h
@@ -397,7 +397,7 @@ int main() {
 
 用真实 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch124_vector.cpp`，可见 libstdc++ 的关键事实：**vector 的遍历被完全内联**（无函数调用），而 `std::string` 的 `+=` 因 SSO 分支仍生成对 `_M_mutate` 的调用。
 
-> **示例 20** [难度 ★★★☆☆] [主题：<span class="badge badge-impl">实现</span>真实：编译用 <vector]
+> **示例 20** <span class="badge badge-exp">难度 ★★★☆☆</span> · <span class="badge badge-impl">实现</span>真实：编译用 <vector
 
 ```cpp title="示例 20 · ★★★☆☆"
 // ⑨ 文件：Examples/_ch124_vector.cpp（已真实编译取证）
@@ -509,7 +509,7 @@ T std::__cxx11::basic_string<...>::_M_mutate(unsigned long, unsigned long, char 
 
 libstdc++ 头文件与 ISO C++ 条款一一对应：`<vector>`→[sequence.reqmts]/[vector]，`<string>`→[basic.string]，`<memory>`→[allocator.requirements]。阅读源码时应拿标准条款作「规格」，拿实现作「落实」。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：与 C++ 标准条款对应 <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 与 C++ 标准条款对应 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 // ⑫ 标准条款要求的 vector 接口（节选自 [vector]）
@@ -585,7 +585,7 @@ int main() {
 
 经验规律（非本机基准数字，量级示意）：vector 遍历/随机访问被内联为指针算术（见 ⑨），接近裸数组；`std::string` 短串零分配（SSO），长串走堆；链表/树容器缓存局部性差。异常安全（`noexcept` 移动，⑥）让扩容走移动。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：性能特征 <span class="badge badge-exp">经验</span>]
+> **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能特征 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 27 · ★☆☆☆☆"
 // ⑭ reserve 避免反复扩容（减少 allocate/copy）
@@ -674,7 +674,7 @@ int main() { return (int)foo().size(); }
 
 **绝不要在一个二进制里混链多个 C++ 标准库实现**（libstdc++ vs libc++ vs MSVC STL）。即便都能编译，跨标准库传递 `std::string`/`std::vector` 会因内存布局与分配器不同而崩溃。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践（混合标准库的危害） <span class="badge badge-exp">经验</span>
+> **示例 32** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践（混合标准库的危害） <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 32 · ★☆☆☆☆"
 // ⑱ 正确：用 C ABI（POD/指针）做库边界，std 类型留在模块内部

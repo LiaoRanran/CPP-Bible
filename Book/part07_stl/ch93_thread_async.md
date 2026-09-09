@@ -77,7 +77,7 @@
 
 ## ④ 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
-> **示例 2** [难度 ★★☆☆☆] [主题：知识图谱（ASCII） <span class="badge badge-std">标准</span>]
+> **示例 2** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 知识图谱（ASCII） <span class="badge badge-std">标准</span>
 
 ```mermaid
 flowchart TD
@@ -422,7 +422,7 @@ class _State_baseV2 {
 7. **`launch::deferred` 何时执行？** → 在 `get()`/`wait()` 处、在**调用 `get()` 的线程**上同步执行。
 8. **`packaged_task` 与 `async` 区别？** → 前者是"可手动调用的任务对象"（可延迟、可放进队列），后者是"立即/惰性启动的工厂"。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：面试题 <span class="badge badge-std">标准</span>]
+> **示例 9** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 面试题 <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 9 · ★☆☆☆☆"
 // ⑮ 面试题佐证：future 第二次 get() 抛 no_state（完整可编译）
@@ -451,7 +451,7 @@ int main() {
 - **`future` 跨 `get()` 持有共享状态引用却提前析构** → 若仍有线程在写，状态生命周期依赖 `shared_ptr`，一般安全；但 `async` 的 future 析构会阻塞，小心 RAII 作用域。
 - **移动-only 类型（如 `std::unique_ptr`）直接传 thread** → 必须 `std::move`，否则拷贝失败。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：易错点 <span class="badge badge-exp">经验</span>]
+> **示例 10** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 易错点 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 10 · ★★☆☆☆"
 // ⑯ 易错：deferred 在调用线程同步执行（完整可编译，注意计数线程id）
@@ -484,7 +484,7 @@ int main() {
 
 **Q：为什么 `future` 不能拷贝？** A：共享状态只有一份结果，"单一消费者"语义保证 `get()` 的一次性；多消费者请用 `shared_future`。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：<span class="badge badge-std">标准</span>]
+> **示例 11** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 11 · ★★☆☆☆"
 // ⑰ FAQ 佐证：packaged_task 通过 get_future 取结果（完整可编译）
@@ -510,7 +510,7 @@ int main() {
 5. 异常必须经由 `set_exception` 传播，不要在线程函数里吞异常（那会导致 `future.get()` 永远阻塞）。
 6. 真实高并发请用线程池 + 任务队列，而非每任务 `async`。
 
-> **示例 12** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 12** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 12 · ★★☆☆☆"
 // ⑱ 最佳实践：移动-only 结果经 promise 跨线程传递（完整可编译）

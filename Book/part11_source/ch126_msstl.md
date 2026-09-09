@@ -391,7 +391,7 @@ int main() { return buggy(); }
 
 经验规律（非本机基准数字，量级示意）：容器遍历/随机访问被内联为指针算术（见 ⑧ 真实汇编的 `.L3` 循环）；`std::string` 短串零分配（SSO），长串走堆；并行算法仅大数据有收益（见 ⑦）。主要陷阱是「未 reserve」「热循环隐式分配」「按值传大对象」。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 16** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 16 · ★☆☆☆☆"
 // ⑪ reserve 避免反复扩容（减少 allocate/copy）
@@ -404,7 +404,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★★☆☆☆] [主题：性能 <span class="badge badge-exp">经验</span>]
+> **示例 17** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 性能 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 17 · ★★☆☆☆"
 // ⑪ noexcept 移动让扩容走移动而非拷贝（basic_string 移动 noexcept）
@@ -485,7 +485,7 @@ extern "C" int make_c(const char* in, char* out, int cap) {
 
 MS STL 在 VS 17.8+ 基本完备支持 C++23：`std::print`/`<print>`、`std::expected`/`<expected>`、`std::ranges` 增强、`std::mdspan`、修复 `std::ranges` 适配。特性由 `yvals.h` 的 `_HAS_CXX23`（见 ④）与 `/std:c++latest` 开启。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：演进（C++23 支持） <span class="badge badge-std">标准</span>]
+> **示例 22** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（C++23 支持） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 22 · ★☆☆☆☆"
 // ⑭ C++23 <print> 与 <expected>（需 /std:c++latest 开启 _HAS_CXX23）
@@ -498,7 +498,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：演进（C++23 支持） <span class="badge badge-std">标准</span>]
+> **示例 23** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（C++23 支持） <span class="badge badge-std">标准</span>
 
 ```cpp title="示例 23 · ★☆☆☆☆"
 // MS STL ranges 入口在 namespace std::ranges；C++23 下本机同构可用。filter/transform/take 管道实证：
@@ -524,7 +524,7 @@ int main() {
 
 跨模块/跨库时，把标准库类型留在模块内部，边界用 C ABI（POD/句柄/字符串）。整工程统一 MSVC 版本、`/MD`、标准等级。第三方库用同工具链源码重编，避免二进制 STL 混链。
 
-> **示例 24** [难度 ★★☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 24** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 24 · ★★☆☆☆"
 // ⑮ 边界用不透明句柄，MS STL 对象封装在 .cpp 内
@@ -538,7 +538,7 @@ extern "C" int  widget_sum(Widget* w) {
 extern "C" void widget_free(Widget* w) { delete w; }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-exp">经验</span>]
+> **示例 25** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 最佳实践 <span class="badge badge-exp">经验</span>
 
 ```cpp title="示例 25 · ★☆☆☆☆"
 // ⑮ 统一标准等级 + CRT 的编译指示（CMake/MSBuild 等价）
