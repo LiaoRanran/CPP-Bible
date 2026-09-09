@@ -4,6 +4,29 @@
 
 ---
 
+### 2026-09-09 L2 真机实证收官 + 工程突破 R1–R6 + 工具自愈三连（09-06～09-09）
+
+- **赝品清零战役收官**：全书 prose-fake/占位符块清零（`23b78ee` 起 repo-wide zero）——
+  ch61/62/63/64/111/112/120/121/157 等数十章"陈述块→真机实证"批量落地；**10 章纯注释
+  块清零**（ch11/13/24/42/72/126/127/131/145/148）。
+- **L2 覆盖终态**：剩余 57 章 / 139 块**全部为审计判定的 C 类有意保留**（负面/错误示范、
+  编译器报错文字、`文件:行号` libstdc++/上游源码锚点、roadmap/选型/贡献流程、需第三方头
+  的 API 参考）——判据沉淀：能实证→A（真机+`//@` 断言）、纯命令序列→B（bash 归位）、
+  需第三方头/报错演示/量级声明→C 不转。
+- **工程突破六连**：
+  - **R1** `//@` 期望输出真值化（`run_expected.py`，全库 65 块断言全 PASS）；
+  - **R3** L2 覆盖状态机（`l2_state.py`，摆脱文本记账，回潮即红）；
+  - **R2** 编译基线防污染 + 按章增量缓存（`compile_all.py --only` 写 scratch 不碰基线）；
+  - **R5** 编译回归 triage（`compile_triage.py --check`，预存坏块 vs 我的回归一眼分清）；
+  - **R4** README/散文统计块一键修复（`gen_metrics.py --fix`，原始字节读写防行尾伪 diff）；
+  - **R6** 本地/pre-push 快速门禁（`prepush_check.py`，快校验+仓库卫生+`--install-hook`）。
+- **工具自愈三连（均由自检抓出）**：`metrics_snapshot git()` 缺 `errors="replace"` 致
+  commits-since-CHANGELOG 指标静默归 0（真值 63，本次补记后归 0 属正常）；`patch_blocks`
+  多块补丁 stale-span 错位；`run_expected` 运行 exe 未注入编译器 PATH，std::thread 块
+  在无 PATH shell 下误报 0xC0000139。
+- 门禁：quality 17/17 · consistency 147 章 ERROR=0 WARN=0 · gen_metrics ✅ ·
+  compile_gate PASS · exempt_audit PASS · l2_state 无漂移 · run_expected 65/65 PASS。
+
 ### 2026-09-05（续三）L2 深耕 ch37 首块真机实证 + 选章方法论修正
 - **L2 重启**：工程类 4 项收口后回到主线（L2 已 18 章）。选章改用「纯赝品」精准判据
   （打印中文结论但**无格式占位符** = 零可验证输出；含 `%zu/%p` 的事件追踪属合法演示，
