@@ -124,6 +124,11 @@ python tools/patch_blocks.py --apply Book/partX/chYY.md patch.json
 python tools/run_expected.py --all
 python tools/run_expected.py --chapter ch42
 python tools/run_expected.py --changed
+
+# 4) 覆盖状态机：纯注释块存量落 tools/l2_state.json（回潮/新增可检出）
+python tools/l2_state.py sync        # 测量并写入；章清到 0 时记 cleared_commit
+python tools/l2_state.py check       # 与快照比对，漂移退出码 1（可挂 CI）
+python tools/l2_state.py report      # 看板：残留 Top + 已清零章(含 commit)
 ```
 
 - patch.json 格式：`[{"block":24,"fence":"cpp","body":"#include ...\n..."}, {"block":27,"fence":"bash","body":"# 命令\ncmake ..."}]`
@@ -134,6 +139,9 @@ python tools/run_expected.py --changed
   必须是 stdout 的连续子串（空白折叠比对、按序各匹配一次）；**禁止夹带注记/解释**（放代码上方
   `//` 行或去掉）；`//@` 后为空 = 无效标记。数值是四舍五入/机器相关时先实跑再写期望
   （例：`{:.3e}` 的 1.2345 实际按 round-half-even 得 1.234，不是 1.235）。
+
+**覆盖记账**：每波结束跑 `l2_state.py sync` 落快照；提交前 `l2_state.py check`（回潮即红）。
+已清零章由快照记录 cleared_commit，不再靠手记；种子数据在 `tools/l2_state.json`。
 
 **策略分级（A/B/C）**：纯注释块 ≠ 全是赝品。
 - A 源码锚点/标准库行为可实证 → 转自包含 C++ 实测（价值最高）
