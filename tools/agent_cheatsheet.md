@@ -102,3 +102,31 @@ Book/part14_perf/ch152_perf_model.md
 3. **__rdtsc** 需要 `#include <x86intrin.h>`（不是 `<immintrin.h>`）。
 4. **std::hardware_destructive_interference_size** 在 GCC13 `<new>` 中已定义，可直接用。
 5. **constexpr 函数内禁止** `std::cout` → 用 `static_assert` 验证编译期结果。
+
+---
+
+## 七、L2 深耕工具（注释型空块清理管线）
+
+> 真机实证深耕时不再手写临时脚本，用下列两条命令替代（block 号 = compile_all 报告号）。
+
+```
+# 1) 盘点：全库或单章纯注释 cpp 块（只认 ```cpp 围栏，与 CI 编译编号一致）
+python tools/comment_blocks.py scan --all
+python tools/comment_blocks.py scan --chapter ch42            # 单章嫌疑块清单
+python tools/comment_blocks.py scan --chapter ch42 --dump     # + 打印正文供判 A/B/C
+python tools/comment_blocks.py scan --chapter ch42 --all-block# 全块概览核对编号
+
+# 2) 替换：按 patch JSON 安全批量改块正文（dry 默认 / --apply 落盘）
+python tools/patch_blocks.py Book/partX/chYY.md patch.json
+python tools/patch_blocks.py --apply Book/partX/chYY.md patch.json
+```
+
+- patch.json 格式：`[{"block":24,"fence":"cpp","body":"#include ...\n..."}, {"block":27,"fence":"bash","body":"# 命令\ncmake ..."}]`
+- `fence:"bash"` 会把该块围栏换成 ```bash（工具命令块转真命令），自动报告 cpp 块数净减。
+- 安全保证：保持原行尾(CRLF/LF)、从大到小替换、先拼 payload 再单次写盘、正文含 ``` 起始行即告警。
+- 块数净减后必须同步 README 顶部写死的 cpp 块数（跑 `gen_metrics.py --check` 会给精确新值）。
+
+**策略分级（A/B/C）**：纯注释块 ≠ 全是赝品。
+- A 源码锚点/标准库行为可实证 → 转自包含 C++ 实测（价值最高）
+- B 工具命令块 → 转 `bash` 真实命令
+- C 参考文本（选型/里程碑/治理/工具映射表/读书清单）→ **保留不转**
