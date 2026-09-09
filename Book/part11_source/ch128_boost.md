@@ -324,14 +324,26 @@ int main() {
 > **示例 15** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析
 
 ```cpp title="示例 15 · ★★★☆☆"
-// ④ 文件：https://github.com/boostorg/asio/blob/develop/include/boost/asio/basic_socket.hpp
-// 行号：256
-// 上游参考：async_ 系列把回调 + executor 打包进 operation 对象
-//
-// template <typename Handler, typename IoExecutor>
-// void async_connect(...) {
-// ... // 由 service 在 IO 线程完成，回调经 executor 派发
-// }
+// ④ asio 的 async_ 把回调 + executor 打包进 operation 对象、由 executor 派发（上游 basic_socket.hpp 思想）
+#include <cstdio>
+#include <functional>
+#include <utility>
+#include <vector>
+
+struct Executor {                  // 简化版 proactor：operation 入队，run() 取出执行
+    std::vector<std::function<void()>> q;
+    void post(std::function<void()> f) { q.push_back(std::move(f)); }
+    void run() { for (auto& f : q) f(); }   // 等价 io_context::run() 派发完成回调
+};
+
+int main() {
+    Executor ex;
+    ex.post([] { std::puts("async_connect 完成 -> 回调经 executor 派发"); });
+    ex.post([] { std::puts("async_read 完成 -> 回调经 executor 派发"); });
+    ex.run();
+    //@ async_connect 完成 -> 回调经 executor 派发
+    //@ async_read 完成 -> 回调经 executor 派发
+}
 ```
 
 ## ⑤ 编译与 B2 / CMake
@@ -823,12 +835,11 @@ Boost 正从"单一巨库"走向**模块化**：自 Boost 1.73 起采用模块�
 
 > **示例 40** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（模块化 Boost）
 
-```cpp title="示例 40 · ★☆☆☆☆"
-// ⑭ 现代用法：只取需要的子模块，显式声明依赖（Boost.Deprecated 会被剔除）
-// 例如只要 Asio + System，不拉整个 Boost：
-// git clone --depth 1 https://github.com/boostorg/asio
-// git clone --depth 1 https://github.com/boostorg/system
-// + 依赖的 config / core / preprocessor / assert / throw_exception ...
+```bash
+# ⑭ 只取需要的 Boost 子模块（上游官方做法；本机未装，无自验输出）
+git clone --depth 1 https://github.com/boostorg/asio
+git clone --depth 1 https://github.com/boostorg/system
+# + 依赖：config / core / preprocessor / assert / throw_exception ...
 ```
 
 > **示例 41** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 演进（模块化 Boost）
@@ -1173,14 +1184,38 @@ int main() {
 > **示例 56** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 Boost API 长
 
 ```cpp title="示例 56 · ★☆☆☆☆"
-// ㉑.3 真实 Boost 用法（仅注释演示，门禁按空块编译通过）：
-// #include <boost/asio.hpp>                  // 网络/异步 I/O（标准网络 TS 的源头）
-// #include <boost/graph/adjacency_list.hpp>  // 图算法
-// boost::asio::io_context io;
-// boost::asio::steady_timer t(io, std::chrono::seconds(1));
-// t.async_wait([](const boost::system::error_code&){ /* 到期回调 */ });
-// io.run();                                  // 解决「事件循环 + 异步完成」这一真实痛点
-// 官方文档：https://www.boost.org/doc/
+// ㉑.3 真实 Boost API 的语义等价实证（__has_include 确证 Boost 缺席，标准库演示 async 完成回调）
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <thread>
+
+#if __has_include(<boost/asio.hpp>)   // 确证缺席：真库在时此分支生效
+#include <boost/asio.hpp>
+constexpr bool kHasBoost = true;
+#else
+constexpr bool kHasBoost = false;
+#endif
+
+int main() {
+    std::cout << "Boost 头：";
+    if constexpr (kHasBoost) {
+        std::cout << "在\n";
+    } else {
+        std::cout << "缺席（走标准库等价实证）\n";
+        //@ Boost 头：缺席（走标准库等价实证）
+    }
+    // Boost 痛点：事件循环 + 异步完成回调，由 io_context.run() 驱动
+    // 等价：std::async 在后台线程完成后经 future 把“回调”派发出去
+    auto fut = std::async(std::launch::async, [] {
+        std::this_thread::sleep_for(std::chrono::seconds(1));   // 模拟 async_wait 到期
+        return 42;
+    });
+    std::cout << "io.run() 等价：等待异步完成...";
+    int result = fut.get();   // 等价 io.run() 取出完成的 operation 并执行回调
+    std::cout << " 回调收到结果=" << result << "\n";
+    //@ io.run() 等价：等待异步完成... 回调收到结果=42
+}
 ```
 
 ### ㉑.4 端到端：怎么把 Boost 接进你的工程
