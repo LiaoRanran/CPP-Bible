@@ -202,8 +202,27 @@ void wire(QPushButton* btn) {
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · IDE 与编辑器：VSCode / CLion / QtCreator / VIM
 
 ```cpp title="示例 7 · ★☆☆☆☆"
-// ⑤ 旧语法 connect：运行时按字符串匹配，IDE 补全弱、易在运行期才炸
-// connect(btn, SIGNAL(clicked()), this, SLOT(onClicked()));  // 拼错 SLOT 名编译不报错
+// 旧式 connect 运行时按字符串匹配槽，拼错只在运行期才炸；类型化 connect 编译期即查。
+// 用迷你信号槽实证两类绑定的差异：
+#include <functional>
+#include <iostream>
+#include <map>
+#include <string>
+struct Button {
+    std::map<std::string, std::function<void()>> slots;
+    bool connect_str(const std::string& slot, std::function<void()> f) { return slots.emplace(slot, f).second; }
+    void click_str(const std::string& slot) {
+        auto it = slots.find(slot);
+        if (it != slots.end()) it->second();
+        else std::cout << "runtime miss: no slot '" << slot << "'\n";
+    }
+};
+int main() {
+    Button b;
+    b.connect_str("onClicked", [] { std::cout << "clicked!\n"; });
+    b.click_str("onClicked");   //@ clicked!
+    b.click_str("onClciked");   //@ runtime miss: no slot 'onClciked'   拼错：旧式只运行期暴露
+}
 ```
 
 - `[平台·Windows]`：QtCreator 的 `.ui` 设计器生成 `ui_*.h`，由 **uic** 在构建前生成，IDE 内实时预览。
@@ -636,9 +655,11 @@ int f() { std::print("hi\n"); return 0; }   // c_cpp_properties 没 c++23 就误
 
 > **示例 28** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
 
-```cpp title="示例 28 · ★☆☆☆☆"
-// ⑱ 坑2：compile_commands.json 路径是构建目录的相对路径，clangd 找不到 include
-// command 里写 "-Ibuild/gen" 但 clangd 工作目录不对 → 全部头找不到（红波浪）
+```bash
+# 坑：compile_commands.json 里的 -I 多为构建目录的相对路径；clangd 工作目录不对
+# -> 全部系统头找不到（红波浪）。固定读取目录即可：
+clangd --compile-commands-dir=build
+# 排查：clangd --check=src/app.cpp 一次性 CLI 诊断，可复现同一 include 错误
 ```
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：常见配置坑 <span class="badge badge-exp">经验</span>]
@@ -660,23 +681,27 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 
 > **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
 
-```cpp title="示例 30 · ★☆☆☆☆"
-// ⑲ 实践1：始终用 compile_commands.json 驱动 clangd（CMake 一行导出）
-// cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+```bash
+# 实践1：始终用 compile_commands.json 驱动 clangd（CMake 一行导出）
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+# 生成 build/compile_commands.json；clangd / 其它 LSP 客户端从该文件取编译参数
 ```
 
 > **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
 
-```cpp title="示例 31 · ★☆☆☆☆"
-// ⑲ 实践2：保存即格式化 + 提交前 clang-tidy，CI 兜底 -Wall -Wextra -Wconversion
-// g++ -std=c++23 -Wall -Wextra -Wconversion -c app.cpp -o app.o
+```bash
+# 实践2：保存即格式化 + 提交前 clang-tidy；CI 兜底 -Wall -Wextra -Wconversion
+clang-format -i src/*.cpp
+clang-tidy -p build src/app.cpp --checks='-*,modernize-*'
+g++ -std=c++23 -Wall -Wextra -Wconversion -c app.cpp -o app.o
 ```
 
 > **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 <span class="badge badge-std">标准</span>]
 
-```cpp title="示例 32 · ★☆☆☆☆"
-// ⑲ 实践3：调试用 -O0 -g；发布可 -O2 -g 保可调试性
-// g++ -std=c++23 -O0 -g -c app.cpp -o app.o
+```bash
+# 实践3：调试用 -O0 -g；发布可 -O2 -g 保可调试性
+g++ -std=c++23 -O0 -g -c app.cpp -o app.o      # 调试构建（不优化、全符号）
+g++ -std=c++23 -O2 -g -c app.cpp -o app_rel.o  # 发布构建（优化但保留符号）
 ```
 
 - `[标准]`：这些实践的底层是**可重复、可机器执行**——不依赖某个人"记得格式化"。
@@ -700,14 +725,14 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 
 > **示例 33** [难度 ★★☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]
 
-```cpp title="示例 33 · ★★☆☆☆"
-// ⑳ 一行速记：各工具的核心命令（复制即用）
-// 生成编译数据库: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
-// 跑 clangd:      clangd --background-index --clang-tidy
-// 跑 clang-tidy:  clang-tidy -p build src/app.cpp --checks='-*,modernize-*'
-// 格式化:         clang-format -i src/app.cpp
-// 调试编译:       g++ -std=c++23 -O0 -g -c src/app.cpp -o src/app.o
-// 取真实汇编:     g++ -std=c++23 -O2 -S -masm=intel src/app.cpp -o app.asm
+```bash
+# 一行速记：各工具核心命令（复制即用）
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+clangd --background-index --clang-tidy
+clang-tidy -p build src/app.cpp --checks='-*,modernize-*'
+clang-format -i src/app.cpp
+g++ -std=c++23 -O0 -g -c src/app.cpp -o src/app.o
+g++ -std=c++23 -O2 -S -masm=intel src/app.cpp -o app.asm
 ```
 
 > **示例 34** [难度 ★☆☆☆☆] [主题：速查表 <span class="badge badge-std">标准</span>]

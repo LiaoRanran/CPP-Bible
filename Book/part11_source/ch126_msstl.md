@@ -112,11 +112,16 @@ int use_stl() {
 > **示例 4** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 开源 STL repo
 
 ```cpp title="示例 4 · ★☆☆☆☆"
-// ③ 上游仓库典型结构与对应公开头
-// stl/inc/vector   -> <vector>
-// stl/inc/xstring  -> <string> 的实现核心
-// stl/inc/yvals.h   -> 特性宏（_HAS_CXX17/_HAS_CXX20/_HAS_CXX23）
-// stl/src/xlocale.cpp -> <locale> 的少量非模板实现
+// MS STL 仓库 stl/inc/{vector,xstring,yvals.h} 对应本机 libstdc++ 各公开头；
+// 实现不同但公开 API 语义一致——同一份源码两种标准库都能编。用 SSO 可观测面印证：
+#include <iostream>
+#include <string>
+#include <vector>
+int main() {
+    std::string s = "hello";            // 短串走内部缓冲（MS STL _Buf / libstdc++ SSO 同构）
+    std::vector<int> v{1, 2, 3};
+    std::cout << "s=" << s << " v.size=" << v.size() << "\n";   //@ s=hello v.size=3
+}
 ```
 
 - `[平台·Windows]`：`git clone https://github.com/microsoft/STL` 即可本地阅读；CI 跑全套 conformance 测试，是贡献入口（见 ⑰）。
@@ -129,31 +134,52 @@ int use_stl() {
 > **示例 5** <span class="badge badge-exp">难度 ★★★☆☆</span> · 源码剖析
 
 ```cpp title="示例 5 · ★★★☆☆"
-// ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/vector
-// 行号：36
-// 上游参考（随提交浮动）：class vector 的前向与 allocator_type 别名
-// template <class _Ty, class _Alloc = allocator<_Ty>>
-// class vector { ... };
+// MS STL stl/inc/vector 开头是 class vector 前向 + allocator_type 别名（上游随提交浮动）；
+// 同构别名在本机 libstdc++ 同样存在，直接可查：
+#include <iostream>
+#include <vector>
+#include <type_traits>
+int main() {
+    using A = std::vector<int>::allocator_type;
+    std::cout << "allocator_type == allocator<int>: "
+              << std::is_same_v<A, std::allocator<int>> << "\n";   //@ allocator_type == allocator<int>: 1
+    std::vector<int> v{7, 8, 9};
+    std::cout << "sum=" << (v[0] + v[1] + v[2]) << "\n";   //@ sum=24
+}
 ```
 
 > **示例 6** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析
 
 ```cpp title="示例 6 · ★☆☆☆☆"
-// ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/xstring
-// 行号：1860
-// 上游参考（随提交浮动）：basic_string 的 SSO 缓冲字段 _Bx
-// union _Bx { _Elem _Buf[_BUF_SIZE]; _Elem* _Ptr; } _Bx;
-// 短串用 _Buf，长串用 _Ptr（与 libstdc++ 同构，见 ⑧）
+// MS STL xstring 的 SSO 联合 _Bx（短串 _Buf / 长串 _Ptr）与 libstdc++ SSO 同构；
+// 用 capacity 可观测 SSO 缓冲边界（短串不分配，越界才转堆）：
+#include <iostream>
+#include <string>
+int main() {
+    std::string s;
+    for (int i = 0; i < 5; ++i)  s.push_back('x');
+    std::cout << "cap(5)  = " << s.capacity() << "\n";   //@ cap(5)  = 15   (SSO 内缓冲)
+    for (int i = 5; i < 16; ++i) s.push_back('x');
+    std::cout << "cap(16) = " << s.capacity() << "\n";   //@ cap(16) = 30   (转堆分配)
+}
 ```
 
 > **示例 7** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 源码剖析
 
 ```cpp title="示例 7 · ★☆☆☆☆"
-// ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/yvals.h
-// 行号：540
-// 上游参考（随提交浮动）：特性宏开关
-// #define _HAS_CXX23 1   // C++23 特性总开关（影响 <print>/<expected> 等）
-// #define _HAS_STATIC_RTTI 1
+// MS STL yvals.h 的 _HAS_CXX20/_HAS_CXX23 总开关；GCC 侧等价物是 #if __cplusplus 分级，
+// 让同一份源码按标准等级选实现：
+#include <iostream>
+int main() {
+#if __cplusplus >= 202302L
+    std::cout << "build: C++23 mode\n";   //@ build: C++23 mode
+#elif __cplusplus >= 202002L
+    std::cout << "build: C++20 mode\n";
+#else
+    std::cout << "build: C++17 mode\n";
+#endif
+    std::cout << "__cplusplus = " << __cplusplus << "\n";   //@ __cplusplus = 202302
+}
 ```
 
 - `[实现·MSVC]`：`vector` 类是模板，定义在头内；`basic_string` 用 union `_Bx` 在「本地缓冲」与「堆指针」间二选一，即 SSO（见 ⑧）。
@@ -247,10 +273,20 @@ int p() {
 > **示例 12** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 并行算法
 
 ```cpp title="示例 12 · ★☆☆☆☆"
-// ⑦ 真实 g++ 编译后的实例化符号（nm -C _ch126_parallel.o 节选，证明 API 可编译）
-// void std::__introsort_loop<...>(...)   // 顺序回退路径被实例化
-// void std::__insertion_sort<...>(...)   // 小段插入排序被实例化
-// MS STL 有 TBB 时上述会改为调用 parallel_for 分块调度
+// MS STL 在 TBB 下把 sort 交给并行调度；libstdc++（本机）顺序 introsort（实例化
+// __introsort_loop + __insertion_sort，见 <bits/stl_algo.h>）。实测逆序百万输入仍保全序，
+// 无朴素快排的 O(n^2) 退化（introsort 分区失衡转堆排）：
+#include <algorithm>
+#include <iostream>
+#include <numeric>
+#include <vector>
+int main() {
+    std::vector<int> v(1'000'000);
+    std::iota(v.rbegin(), v.rend(), 0);      // 逆序输入（朴素快排的最坏情形）
+    std::sort(v.begin(), v.end());
+    std::cout << "sorted(1M reverse)=" << std::is_sorted(v.begin(), v.end()) << "\n";
+    //@ sorted(1M reverse)=1
+}
 ```
 
 - `[实现·MSVC]`：并行算法默认拉起 TBB worker 线程池；`/openmp` 与 TBB 并存时需注意线程池争用。
@@ -465,10 +501,20 @@ int main() {
 > **示例 23** [难度 ★☆☆☆☆] [主题：演进（C++23 支持） <span class="badge badge-std">标准</span>]
 
 ```cpp title="示例 23 · ★☆☆☆☆"
-// ⑭ ranges 在 MS STL 的实现入口（上游参考）
-// 文件：https://github.com/microsoft/STL/blob/main/stl/inc/ranges
-// 行号：40
-// 上游参考（随提交浮动）：namespace std::ranges 的 view 适配起点
+// MS STL ranges 入口在 namespace std::ranges；C++23 下本机同构可用。filter/transform/take 管道实证：
+#include <algorithm>
+#include <iostream>
+#include <ranges>
+#include <vector>
+int main() {
+    std::vector<int> v{1, 2, 3, 4, 5, 6};
+    int sum = 0;
+    for (int x : v | std::views::filter([](int x) { return x % 2 == 0; })) sum += x;
+    std::cout << "sum(even 1..6)=" << sum << "\n";   //@ sum(even 1..6)=12
+    for (int x : v | std::views::transform([](int x) { return x * x; }) | std::views::take(3))
+        std::cout << x << " ";
+    std::cout << "\n";                              //@ 1 4 9
+}
 ```
 
 - `[标准]`：C++23 条款规定 `print`/`expected`/`ranges` 行为；MS STL 是达标实现之一（与 libstdc++/libc++ 对照见 ⑱）。
@@ -524,11 +570,13 @@ int cross(const std::vector<int>& v) {
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 跨编译器 [平台·Windows]
 
 ```cpp title="示例 27 · ★☆☆☆☆"
-// ⑯ 统一标准等级命令对照（典型输出，未在本机运行 MSVC）
-// MSVC: cl /std:c++20 /EHsc ...
-// GCC:  g++ -std=c++20 -O2 ...
-// Clang:clang++ -std=c++20 -O2 ...
-// 三者头文件语义一致，但导出的 std 符号名不同（_Z vs ? / mangled 差异）
+// 统一标准等级：MSVC(cl /std:c++20)、GCC(g++ -std=c++20)、Clang(clang++ -std=c++20)
+// 编同一源码语义一致（导出符号名不同）。本机 g++ 实证 C++20 特性可用：
+#include <iostream>
+int main() {
+    auto twice = []<class T>(T x) { return x * 2; };   // C++20 模板 lambda
+    std::cout << "generic lambda(21) = " << twice(21) << "\n";   //@ generic lambda(21) = 42
+}
 ```
 
 - `[平台·Windows]`：`clang-cl` 在 Windows 上可复用 MS STL（用 `/clang:` 透传），是 MSVC 生态内最接近二进制兼容的替代前端。
@@ -932,16 +980,22 @@ int main() {
 > **示例 52** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · ㉑.3 真实 MSVC/Window
 
 ```cpp title="示例 52 · ★☆☆☆☆"
-// ㉑.3 真实 MSVC/Windows 用法（仅注释演示，门禁按空块编译通过）：
-//// 1) 检测 MSVC 编译器版本
-// #include <yvals.h>
-// #ifdef _MSC_VER
-// std::cout << "MSVC " << _MSC_VER << "\n";   // 如 1930 = VS2022 17.0
-// #endif
-//// 2) 运行期选择（/MD 动态 CRT vs /MT 静态 CRT）由编译器开关决定，非代码
-////   动态: /MD(/MDd)  静态: /MT(/MTd) —— 二者不可混链，否则 CRT 状态冲突
-//// 3) 常用安全扩展：_s 家族，如 errno_t strcpy_s(char*, rsize_t, const char*)
-// 官方文档：https://learn.microsoft.com/cpp/standard-library/
+// ㉑.3 编译器版本检测：MSVC 用 _MSC_VER（<yvals.h>），GCC 用 __GNUC__。本机按编译宏分流：
+#include <iostream>
+#ifdef _MSC_VER
+int main() {
+    std::cout << "MSVC " << _MSC_VER << "\n";   // 如 1930 = VS2022 17.0
+    return 0;
+}
+#else
+int main() {
+    std::cout << "GCC " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__ << "\n";
+    //@ GCC 15.3.0
+    // MSVC 专属开关：/MD 动态 CRT vs /MT 静态 CRT（不可混链）、strcpy_s 等 _s 安全扩展——
+    // GCC/MinGW 无对应机制，故此处仅 GCC 分支可跑。
+    return 0;
+}
+#endif
 ```
 
 ### ㉑.4 端到端：运行时开关与 Redistributable 怎么选

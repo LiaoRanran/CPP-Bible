@@ -919,18 +919,18 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 > **示例 25** <span class="badge badge-exp">难度 ★★★☆☆</span> · <bit> 的 bitcast
 
 ```cpp title="示例 25 · ★★★☆☆"
-// 路径: .../include/c++/bit
-// 78  template<typename _To, typename _From>
-// 79    [[nodiscard]]
-// 80    constexpr _To
-// 81    bit_cast(const _From& __from) noexcept
-// 82  #ifdef __cpp_concepts
-// 83    requires (sizeof(_To) == sizeof(_From))
-// 84      && __is_trivially_copyable(_To) && __is_trivially_copyable(_From)
-// 85  #endif
-// 86    {
-// 87      return __builtin_bit_cast(_To, __from);
-// 88    }
+// 路径锚点内化为实证：libstdc++ 的 std::bit_cast 即 __builtin_bit_cast——
+// 类型双关的安全路径。实测 float↔uint32 的位模式重解释：
+#include <bit>
+#include <cstdint>
+#include <iostream>
+int main() {
+    std::uint32_t u = std::bit_cast<std::uint32_t>(1.0f);   // 0x3F800000
+    std::cout << "bit_cast<float->u32>(1.0f) = 0x" << std::hex << u << std::dec << "\n";  //@ bit_cast<float->u32>(1.0f) = 0x3f800000
+    float back = std::bit_cast<float>(u);
+    std::cout << "bit_cast<u32->float>      = " << back << "\n";   //@ bit_cast<u32->float>      = 1
+    // 约束：sizeof(_To)==sizeof(_From) 且二者都 trivially copyable（bit 头里的 requires）
+}
 ```
 
 > **[实现·GCC15]** 注意：**libstdc++ 13.1.0 直接用 `__builtin_bit_cast`**，而非"memcpy + `is_constant_evaluated`"老式写法。`__builtin_bit_cast` 由前端保证编译期/运行期都正确；`requires` 子句（`#ifdef __cpp_concepts`）在编译期强制"大小相等 + 平凡可拷贝"。
@@ -940,9 +940,18 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 > **示例 26** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <cstring> 的 memcpy
 
 ```cpp title="示例 26 · ★☆☆☆☆"
-// 路径: .../include/c++/cstring
-// 79    using ::memcpy;
-// 80    using ::memmove;
+// libstdc++ <cstring> 用 using ::memcpy 把 C 函数引入 std——类型双关须走字节拷贝，
+// 而非 reinterpret_cast。memcpy 是标准给出的唯一可移植双关路径：
+#include <cstring>
+#include <cstdint>
+#include <iostream>
+int main() {
+    std::uint32_t u = 0x3F800000;
+    float f;
+    std::memcpy(&f, &u, sizeof f);     // 逐字节拷贝：合法、无别名违规
+    std::cout << "memcpy(u32->float) = " << f << "\n";   //@ memcpy(u32->float) = 1
+    // 直接 *(float*)&u 读是严格别名违规(UB)；memcpy/memmove 是正解
+}
 ```
 
 > **[实现·GCC15]** 真正的 C 原型 `void* memcpy(void* dest, const void* src, size_t count);` 来自宿主 C 库（`<string.h>`），libstdc++ 通过 `using ::memcpy;` 把它拉入 `std` 命名空间。优化器会把小尺寸 `memcpy` 内联为寄存器操作。
@@ -952,10 +961,17 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 > **示例 27** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <bits/chartraits.h
 
 ```cpp title="示例 27 · ★☆☆☆☆"
-// 路径: .../include/c++/bits/char_traits.h
-// 276    __builtin_memcpy(__s1, __s2, __n * sizeof(char_type));   // char_traits<char>::copy
-// 445    return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n)); // char_traits<char>::copy
-// 257    __builtin_memmove(__s1, __s2, __n * sizeof(char_type));  // char_traits<...>::move
+// libstdc++ char_traits<char>::copy/move 直接调 __builtin_memcpy/memmove：
+// copy 要求区间不重叠，move 允许重叠（memmove 语义）。
+#include <string>
+#include <iostream>
+int main() {
+    char s1[] = "hello", s2[6] = {};
+    std::char_traits<char>::copy(s2, s1, 6);        // 等价 memcpy
+    std::cout << "copy  -> " << s2 << "\n";         //@ copy  -> hello
+    std::char_traits<char>::move(s1, s1 + 1, 4);    // 重叠区间走 memmove
+    std::cout << "move  -> " << s1 << "\n";         //@ move  -> elloo
+}
 ```
 
 > **[实现·GCC15]** `std::char_traits<char>::copy/assign/move` 全部用 `__builtin_memcpy`/`__builtin_memmove` 实现字节级拷贝——这正是 `char`/`unsigned char` 别名例外的标准库内部应用。通过字节视角操作任意 `char_type` 完全合法（见第 2、3 节）。
@@ -965,13 +981,16 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 > **示例 28** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · <bits/stdfunction.
 
 ```cpp title="示例 28 · ★☆☆☆☆"
-// 路径: .../include/c++/bits/std_function.h
-// 83    union [[gnu::may_alias]] _Any_data
-// 84    {
-// 85      void*       _M_access()       noexcept { return &_M_pod_data[0]; }
-// ...
-// 99      char _M_pod_data[sizeof(_Nocopy_types)];
-// 100   };
+// libstdc++ std::function 用 union [[gnu::may_alias]] _Any_data 存小可调用对象，
+// 规避严格别名下的类型双关；可观测面是它无需堆分配即可持有小 lambda（SSO）：
+#include <functional>
+#include <iostream>
+int main() {
+    auto lm = [](int x) { return x * 2; };
+    std::function<int(int)> f = lm;          // 小对象装入内联存储，无堆分配
+    std::cout << "f(21) = " << f(21) << "\n";  //@ f(21) = 42
+    std::cout << "sizeof(std::function<int(int)>) = " << sizeof(f) << "\n";  //@ sizeof(std::function<int(int)>) = 32
+}
 ```
 
 > **[实现·GCC15]** `std::function` 的内部存储联合 `_Any_data` 标了 `[[gnu::may_alias]]`，确保通过不同成员（函数指针 / 对象指针 / POD 字节）访问该联合时不触发严格别名 UB。这是库作者用 `may_alias` 类型属性保护内部双关的真实范例。
@@ -981,12 +1000,18 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 > **示例 29** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <experimental/bits
 
 ```cpp title="示例 29 · ★★☆☆☆"
-// 路径: .../include/c++/experimental/bits/simd.h
-// 807  // __may_alias{{{
-// 813  template <typename _Tp>
-// 814    using __may_alias [[__gnu__::__may_alias__]] = _Tp;
-// ...
-// 1653   return reinterpret_cast<const __may_alias<_To>&>(__v);
+// libstdc++ 实验性 simd 用 __may_alias（[[gnu::may_alias]] 别名）安全读浮点位表示；
+// 对读者更普适的是 memcpy 路径：读出与写入两不违规。
+#include <cstdint>
+#include <cstring>
+#include <iostream>
+int main() {
+    float f = 1.0f;                        // 0x3F800000
+    std::uint32_t u;
+    std::memcpy(&u, &f, sizeof u);
+    std::cout << "f=" << f
+              << " bits=0x" << std::hex << u << std::dec << "\n";   //@ f=1 bits=0x3f800000
+}
 ```
 
 > **[实现·GCC15]** SIMD 库需要把一个向量按另一种元素类型"逐通道"读取。它定义 `__may_alias<_Tp>` 别名模板，再 `reinterpret_cast` 到该类型——因为带 `may_alias`，编译器不对此做严格别名优化，保证逐元素访问正确。
@@ -996,20 +1021,17 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 > **示例 30** <span class="badge badge-exp">难度 ★★★☆☆</span> · <typetraits> 的 has
 
 ```cpp title="示例 30 · ★★★☆☆"
-// 路径: .../include/c++/type_traits
-// 3377  #ifdef _GLIBCXX_HAVE_BUILTIN_HAS_UNIQ_OBJ_REP
-// 3378  # define __cpp_lib_has_unique_object_representations 201606L
-// 3381  template<typename _Tp>
-// 3382    struct has_unique_object_representations
-// 3383    : bool_constant<__has_unique_object_representations(
-// 3384      remove_cv_t<remove_all_extents_t<_Tp>>
-// 3385      )>
-// 3386    {
-// 3387      static_assert(std::__is_complete_or_unbounded(__type_identity<_Tp>{}),
-// 3388        "template argument must be a complete class or an unbounded array");
-// 3389    };
-// 3393    inline constexpr bool has_unique_object_representations_v
-// 3394      = has_unique_object_representations<_Tp>::value;
+// libstdc++ has_unique_object_representations 走内建——语义：类型的每个不同逻辑值
+// 是否都有唯一对象表示（无 padding 位/字节）。它决定能否用 memcmp 等价判断相等。
+#include <iostream>
+#include <type_traits>
+struct HasPad { int a; char b; };        // int+char 后对齐填充 -> 对象表示不唯一
+struct Char4  { char c[4]; };            // 无填充
+int main() {
+    std::cout << "int          : " << std::has_unique_object_representations_v<int> << "\n";   //@ int          : 1
+    std::cout << "HasPad{int,ch}: " << std::has_unique_object_representations_v<HasPad> << "\n";  //@ HasPad{int,ch}: 0
+    std::cout << "Char4        : " << std::has_unique_object_representations_v<Char4> << "\n";    //@ Char4        : 1
+}
 ```
 
 > **<span class="badge badge-std">标准</span>** `has_unique_object_representations`（C++17，`[meta.unary.prop]`）：若类型的每个**对象表示（object representation）**都对应唯一**值表示（value representation）**（即没有"填充位导致同值多表示"），则为 `true`。这与别名/对象表示直接相关——`memcpy` 双关安全的前提是"对象表示可逐字节复制"，而该 trait 用于判断"逐字节比较是否等价于值比较"（见 ch27、ch28）。
@@ -1019,11 +1041,20 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 > **示例 31** <span class="badge badge-exp">难度 ★★☆☆☆</span> · <new> 的 std::laund
 
 ```cpp title="示例 31 · ★★☆☆☆"
-// 路径: .../include/c++/new
-// 189  #define __cpp_lib_launder 201606L
-// 190  /// Pointer optimization barrier [ptr.launder]
-// 193    launder(_Tp* __p) noexcept
-// 194    { return __builtin_launder(__p); }
+// libstdc++ launder 即 __builtin_launder：优化屏障。placement-new 复用同一存储后，
+// 经旧指针访问新对象是非透明替换，需 std::launder(p) 告知编译器。
+#include <new>
+#include <iostream>
+struct Obj { int v; };
+int main() {
+    alignas(Obj) unsigned char buf[sizeof(Obj)];
+    Obj* p = new (buf) Obj{1};
+    std::cout << "p->v=" << p->v << "\n";          //@ p->v=1
+    p->~Obj();
+    Obj* q = new (buf) Obj{2};                      // 复用同一存储（非透明替换点）
+    Obj* lq = std::launder(p);                      // 新对象经旧指针须 launder
+    std::cout << "q->v=" << q->v << " launder(p)->v=" << lq->v << "\n";  //@ q->v=2 launder(p)->v=2
+}
 ```
 
 > **[实现·GCC15]** `std::launder` 直接转发到 `__builtin_launder`，是一个编译期常量求值安全的"指针洗涤"原语（见第 8 节程序 7）。
