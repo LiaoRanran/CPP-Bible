@@ -44,8 +44,8 @@ def test_parse_frontmatter_real_card_shapes():
     assert str(meta["command"]).startswith("g++ -std=c++23")     # block scalar（|）保换行
     assert str(meta["artifact_sha256"]).startswith("d8b6b18d")
     assert str(meta["artifact_compiler"]) == "GCC 15.3.0 (MinGW-w64)"   # 哈希归属声明
-    assert meta["artifact_assert"][0]["symbols"][0] == "malloc"        # 跨平台合并计数
-    assert meta["artifact_assert"][1]["text"] == "_ZL8g_allocs"
+    assert meta["artifact_assert"][0]["text"] == "_ZL8g_allocs"        # 源码结构决定，跨编译器稳定
+    assert meta["artifact_assert"][1]["texts"][0] == "_Znay"           # 平台差异用 contains_any 吸收
     run_keys = [k for k in meta["actual"] if k.startswith("run")]
     assert len(run_keys) == 6, "6 组矩阵实测"
     assert str(meta["hypothesis"]).startswith("对含堆缓冲的类型")  # 折叠 scalar（>-）

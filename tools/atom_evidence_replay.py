@@ -376,19 +376,27 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
     （"降级"是换成另一种真实校验，不是逃生舱）。
 
     支持 kind：
-      - `call_count`    `{kind: call_count, symbol: malloc, count: 3}`  全文 `call <symbol>` 计数
       - `contains`      `{kind: contains, text: "_Znwy"}`              必须出现
       - `contains_any`  `{kind: contains_any, texts: ["call\tmalloc", "call\t_Znwm"]}`
-                       任候出现即可——**跨平台首选形态**：同一逻辑在 MinGW 编译成
-                       `call malloc`（operator new 是 `jmp malloc` 跳板），在 Linux
-                       编译成 `call _Znwm@PLT`，写死单一名会让断言只在一种平台上成立。
+                       任候出现即可——**跨平台/跨版本首选形态**（符号名与拼写差异都吸收掉）
       - `absent`        `{kind: absent, text: "call _Znwm"}`            必须不出现（反例路径）
+      - `call_count`    `{kind: call_count, symbols: ["malloc"], count: 3}`  调用计数
+                        ⚠️ 调用点数量随编译器的内联决策变化（实测同一夹具 GCC 15.3 = 3 次、
+                        GCC 13.1 = 4 次），**只在单一编译器平台的卡上使用**；跨编译器卡请改用
+                        符号存在性断言，把"次数"语义交给运行层 run_match（跨平台稳定）。
+
+    文本比较前做**空白归一**（`\t` → 空格，含卡里字面写的 `\t`）：不同平台/编译器的汇编用
+    不同空白分隔（`call\tmalloc` vs `call malloc`），归一后断言才可比。
     """
     rules = meta.get("artifact_assert")
     rules = [r for r in rules if isinstance(r, dict)] if isinstance(rules, list) else []
     if not rules:
         return False, ["卡缺 artifact_assert[]：编译器不匹配时无可用校验"]
-    text = art_path.read_text(encoding="utf-8", errors="replace")
+    text = art_path.read_text(encoding="utf-8", errors="replace").replace("\t", " ")
+
+    def _norm(s: str) -> str:
+        """卡里的断言按可读写法书写（`\\t` 是两个字面字符），归一成单空格。"""
+        return s.replace("\\t", " ").replace("\t", " ")
     lines: list[str] = []
     ok = True
     for r in rules:
@@ -407,13 +415,13 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
                          f" 期望 {want} 实得 {got}")
         elif kind == "contains_any":
             texts = [str(t) for t in (r.get("texts") or [])]
-            seen = {t: text.count(t) for t in texts}
+            seen = {t: text.count(_norm(t)) for t in texts}
             hit = any(n > 0 for n in seen.values())
             detail = ", ".join(f"{t!r}:{n}" for t, n in seen.items())
             lines.append(f"    {'✅' if hit else '❌'} contains_any 任一出现（{detail}）")
         elif kind in ("contains", "absent"):
             lit = str(r.get("text") or "")
-            got = text.count(lit)
+            got = text.count(_norm(lit))
             hit = (got > 0) if kind == "contains" else (got == 0)
             verb = "出现" if kind == "contains" else "不得出现"
             lines.append(f"    {'✅' if hit else '❌'} {kind} {lit!r} {verb}（实得 {got} 次）")

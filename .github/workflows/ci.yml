@@ -101,13 +101,17 @@ jobs:
       # 跨编译器分流（2026-09-10 修 CI 红因）：sha 只在**同一编译器（含平台）**下可复算，本步在
       # Ubuntu 系统 g++ 上跑，与卡归属的 MinGW GCC 15.3 字节天然不同 → 工具自动改判
       # `artifact_assert[]` 结构断言（断言缺失/不满足仍红），故本步在 CI 是**真实校验**而非跳过。
-      # 失败时把输出写入 GITHUB_STEP_SUMMARY：本仓库 job 日志需 admin 权限（实测 API 403），
-      # summary 可经 check-runs API 读取，绕过该限制（同上方 mypy 步骤的既有做法）。
+      # 失败时的可读性：本仓库 job 日志下载需 admin 权限（实测 API 403），step summary 只有 UI
+      # 可见（API 读不到）。故把失败日志再输出为 **error 注解**——注解经 check-runs API 的
+      # /annotations 端点可公开读取，无 admin 也能定位红因（2026-09-10 #550/#551 两次盲查的教训）。
       run: |
         python3 tools/atom_evidence_replay.py --check 2>&1 | tee /tmp/replay.log
         rc="${PIPESTATUS[0]}"
-        if [ "$rc" != "0" ]; then cat /tmp/replay.log >> "$GITHUB_STEP_SUMMARY"; fi
-        exit "$rc"
+        if [ "$rc" != "0" ]; then
+          cat /tmp/replay.log >> "$GITHUB_STEP_SUMMARY"
+          while IFS= read -r ln; do printf '::error::%s\n' "$ln"; done < <(head -n 30 /tmp/replay.log)
+          exit 1
+        fi
       continue-on-error: false
 
     - name: Gate Engine (M4 规则引擎：事实门禁 block + 双清单收敛)
