@@ -136,6 +136,10 @@ kind: asm                        # run|asm|layout|abi|symbol|bench|sanitizer|god
 command: g++ -std=c++17 -O2 -S -masm=intel move_demo.cpp -o move_demo.asm
 artifact: Examples/_move_demo.asm
 artifact_sha256: <内容寻址哈希，用于复算比对>
+artifact_compiler: GCC 15.3.0 (MinGW-w64)   # 该哈希归属的编译器：跨编译器字节不同，勿在异环境比字节
+artifact_assert:            # 跨编译器可移植结构断言（身份不匹配时启用；缺失/不满足即 refute，见 M2 §1）
+  - {kind: call_count, symbol: malloc, count: 3}
+  - {kind: contains, text: "_ZL8g_allocs"}
 matrix: {compiler: GCC 15.3.0, std: c++17, opt: -O2, arch: x86-64}
 reproduce: tools/...（一键复现脚本或命令）
 expected: 移动构造处出现 call 到移动构造符号，无拷贝分配

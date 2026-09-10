@@ -19,6 +19,8 @@
 | `falsification` | ✅ | **让它失败的对照实验**及其结果 |
 | `depth_layer` | ✅ | 本证据钻到 6 层中的哪层 |
 | `artifact` / `artifact_sha256` | ✅ | 产物路径与内容哈希（可复算比对） |
+| `artifact_compiler` | ✅ | **该哈希归属的编译器**（如 `GCC 15.3.0 (MinGW-w64)`）；跨编译器/跨平台字节不同，须声明 |
+| `artifact_assert[]` | ✅ | 跨编译器**可移植结构断言**（身份不匹配时的替代校验）：`call_count` / `contains` / `absent` |
 
 > 【`command` 书写规范 = 机器执行契约（2026-09-10 定，`tools/atom_evidence_replay.py` 依此执行）】
 > ① 多行 = 多条命令；同一行内多步用 `&&` 串联；② 路径一律**正斜杠**（POSIX 语义，两平台可执行；
@@ -26,6 +28,16 @@
 > pre-push 卫生拦；④ **不支持管道/重定向/通配/变量展开**（遇到工具直接报 unsupported，不猜）；
 > ⑤ 生成 `artifact` 的那条命令必须出现在 `command` 里（工具据此"删旧工件→重生成→比 sha256"）。
 > 复算四项校验任一不过即 `refute`（exit 1）：compile_rc / run_match / artifact_sha / sanitizer。
+
+> 【双轨校验（2026-09-10 CI 红因修复，勿回退）】`artifact_sha256` 的"工件同代"承诺**只在同一
+> 编译器（含平台）下成立**：实测同一夹具 MinGW GCC 15.3 与 GCC 13.1 产出的 `.asm` 字节完全不同
+> （`d8b6b18d…` vs `cc446339…`），CI 在 Ubuntu 系统 g++ 上重生成必然 mismatch——**这不是工件过期，
+> 是跨编译器天然差异**。故工具按编译器身份分流（`tools/atom_evidence_replay.py`）：
+> ① 身份**匹配**（本地解析 == 卡 `artifact_compiler`）→ 强制比 `sha256`（原承诺不变）；
+> ② 身份**不匹配** → 改判 `artifact_assert[]` 逐条实测；**断言缺失或任一条不满足仍判 refute**
+> （"降级"是换成另一种真实校验，不是逃生舱）。
+> 写卡要求：两个字段必须同时给，且 `artifact_assert` 必须是**跨编译器稳定**的形态——指令/符号
+> 计数（`call_count`）、符号存在性（`contains`）、反例路径不存在（`absent`），**不要**拿字节片段当断言。
 
 ## 2. 实验矩阵：两档与选取规则
 

@@ -43,6 +43,9 @@ def test_parse_frontmatter_real_card_shapes():
     assert meta["matrix"]["std"] == ["c++23", "c++17"]          # flow 序列 + 尾注释剥离
     assert str(meta["command"]).startswith("g++ -std=c++23")     # block scalar（|）保换行
     assert str(meta["artifact_sha256"]).startswith("d8b6b18d")
+    assert str(meta["artifact_compiler"]) == "GCC 15.3.0 (MinGW-w64)"   # 哈希归属声明
+    assert meta["artifact_assert"][0]["symbols"][0] == "malloc"        # 跨平台合并计数
+    assert meta["artifact_assert"][1]["text"] == "_ZL8g_allocs"
     run_keys = [k for k in meta["actual"] if k.startswith("run")]
     assert len(run_keys) == 6, "6 组矩阵实测"
     assert str(meta["hypothesis"]).startswith("对含堆缓冲的类型")  # 折叠 scalar（>-）
@@ -63,11 +66,12 @@ def test_missing_field_refutes(tmp_path: Path):
 
 
 # ── 3~5. 真编译三类结局 ────────────────────────────────────────────────────
-def _make_card(tmp_path: Path, *, expect: str, sha: str) -> Path:
+def _make_card(tmp_path: Path, *, expect: str, sha: str, extra: str = "") -> Path:
     """造一张自包含卡：fixture 打印 A/B 两行，artifact 为 -S 产物。
 
     `command` 用**裸 `g++`**——与真实卡（EV-MEM-001）格式一致。2026-09-10 监工抓到的
     "毒样例 3/3 是假阳性"正是因为旧版测试卡写了完整路径 g++，绕过了裸名校验路径。
+    `extra` 追加额外 frontmatter 行（用于编译器身份/结构断言的场景）。
     """
     fx = tmp_path / "fx.cpp"
     fx.write_text('#include <cstdio>\nint main(){ std::printf("A\\nB\\n"); }\n',
@@ -88,7 +92,8 @@ def _make_card(tmp_path: Path, *, expect: str, sha: str) -> Path:
         + "".join(f"  {ln}\n" for ln in command.split("\n")) +
         f"artifact: {asm.as_posix()}\n"
         f"artifact_sha256: {sha}\n"
-        "fixture: " + fx.as_posix() + "\n"
+        + extra
+        + "fixture: " + fx.as_posix() + "\n"
         "actual:\n"
         f'  run_case: "{expect.replace(chr(10), " | ")}"\n'
         "---\n",
@@ -128,6 +133,73 @@ def test_confirm_when_artifact_and_output_match(tmp_path: Path):
     card = _make_card(tmp_path, expect="A\nB", sha=real)
     verdict, log = rp.replay_card(card, do_sanitizer=False)
     assert verdict == "confirm", log
+
+
+# ── 5.5 跨编译器分流（2026-09-10 修 CI 红因的回归锁）────────────────────────
+# 背景：sha256 只在同一编译器（含平台）下可复算；实测同一夹具 MinGW GCC 15.3 与 13.1 的
+# .asm 字节完全不同，CI（Ubuntu 系统 g++）重生成必然 mismatch。分流后：身份不匹配 →
+# 改判 artifact_assert[] 结构断言；**断言缺失或不满足仍 refute**（不是逃生舱）。
+def test_check_artifact_assert_kinds(tmp_path: Path):
+    """纯函数：三种 kind 的判定，以及未知 kind / 空断言的失败处置。"""
+    art = tmp_path / "a.asm"
+    art.write_text("main:\n\tcall\tmalloc\n\tcall\tmalloc\n\tcall\tfree\n", encoding="utf-8")
+    ok, lines = rp.check_artifact_assert({"artifact_assert": [
+        {"kind": "call_count", "symbol": "malloc", "count": 2},
+        {"kind": "contains", "text": "call\tfree"},
+        {"kind": "absent", "text": "call\tnew"},
+    ]}, art)
+    assert ok and len(lines) == 3, lines
+    # 多符号**求和**（跨平台同一语义）+ contains_any（任一候选）
+    ok2, l2 = rp.check_artifact_assert({"artifact_assert": [
+        {"kind": "call_count", "symbols": ["malloc", "free"], "count": 3},
+        {"kind": "contains_any", "texts": ["nope", "call\tfree"]},
+    ]}, art)
+    assert ok2 and len(l2) == 2, l2
+    assert not rp.check_artifact_assert(
+        {"artifact_assert": [{"kind": "contains_any", "texts": ["nope"]}]}, art)[0]
+    assert not rp.check_artifact_assert({"artifact_assert": [{"kind": "wat"}]}, art)[0]
+    assert not rp.check_artifact_assert({}, art)[0], "缺断言必须判失败"
+
+
+@needs_gpp
+def test_cross_compiler_falls_back_to_artifact_assert(tmp_path: Path):
+    """身份不匹配时 sha 不比字节，改判结构断言并通过（CI 实际走的就是这条路）。"""
+    card = _make_card(tmp_path, expect="A\nB", sha="0" * 64,
+                      extra='artifact_compiler: "GCC 0.0.0 (Mars)"\n'
+                            "artifact_assert:\n"
+                            '  - {kind: contains, text: "main"}\n')
+    verdict, log = rp.replay_card(card, do_sanitizer=False)
+    assert verdict == "confirm", log
+    assert any("改判结构断言" in ln for ln in log)
+
+
+@needs_gpp
+def test_cross_compiler_assert_failure_refutes(tmp_path: Path):
+    """断言不满足 → refute：降级是"换一种真校验"，不是放行。"""
+    card = _make_card(tmp_path, expect="A\nB", sha="0" * 64,
+                      extra='artifact_compiler: "GCC 0.0.0 (Mars)"\n'
+                            "artifact_assert:\n"
+                            "  - {kind: call_count, symbol: no_such_symbol, count: 1}\n")
+    verdict, log = rp.replay_card(card, do_sanitizer=False)
+    assert verdict == "refute:artifact_assert_failed", log
+
+
+@needs_gpp
+def test_cross_compiler_missing_assert_refutes(tmp_path: Path):
+    """身份不匹配但卡没写 artifact_assert → 仍 refute（防"降级"被当逃生舱）。"""
+    card = _make_card(tmp_path, expect="A\nB", sha="0" * 64,
+                      extra='artifact_compiler: "GCC 0.0.0 (Mars)"\n')
+    verdict, log = rp.replay_card(card, do_sanitizer=False)
+    assert verdict == "refute:artifact_assert_failed", log
+    assert any("无可用校验" in ln for ln in log)
+
+
+@needs_gpp
+def test_toolchain_id_shape():
+    """编译器身份形如 `GCC 15.3.0 (MinGW-w64)`：比 sha 前必须先能说清"是谁生成的"。"""
+    cid = rp._current_toolchain_id()
+    assert cid.startswith(("GCC ", "Clang ")), cid
+    assert cid.endswith(")"), cid
 
 
 # ── 6. 不支持的 shell 特性必须诚实报错（不猜） ─────────────────────────────

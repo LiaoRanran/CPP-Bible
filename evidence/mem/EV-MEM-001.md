@@ -17,6 +17,16 @@ command: |          # POSIX 语义；产物必须写 build/（仓库源只读，
   g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_move_alloc.cpp -o Examples/_atom_move_alloc.asm
 artifact: Examples/_atom_move_alloc.asm
 artifact_sha256: d8b6b18dd8e955e8183a4dd5e13133688627261a0724805925216f769aafc62b
+# 该哈希**归属哪个编译器**必须声明：同一夹具在 MinGW GCC 15.3 与 GCC 13.1 下产出的
+# .asm 字节完全不同（实测 cc446339…），跨平台更甚。故 sha 只在身份匹配的机器上比字节；
+# CI（Ubuntu 系统 g++）走下面的结构断言，见 M2 §1「双轨校验」。
+artifact_compiler: GCC 15.3.0 (MinGW-w64)
+artifact_assert:            # 跨编译器可移植的结构断言（身份不匹配时的替代校验，不满足即 refute）
+  # 分配入口调用恰 3 次（构造 1 + 拷贝 1 + 假移动对照 1）。符号名**跨平台不同**：
+  # MinGW 的 operator new 是 `jmp malloc` 跳板 → `call malloc`；Linux 是弱符号 → `call _Znwm@PLT`，
+  # 故列出全部候选求和（同一语义），写死单一名会让断言只在一种平台上成立（2026-09-10 CI 修）。
+  - {kind: call_count, symbols: ["malloc", "_Znwm", "_Znwy"], count: 3}
+  - {kind: contains, text: "_ZL8g_allocs"}         # volatile 计数器未被常量折叠（纵深证据）
 # 2026-09-10 重生成：旧值 460c3981…4002f 是"加入证伪对照之前"的过期工件（main 中仅 2 次
 # malloc、无对照分配）。**工件必须与断言同代**——改了 .cpp 或改了卡里的计数，就要重生成并换
 # 哈希；否则卡里描述的是一个不存在的工件（监工验收抓到，闭环断裂）。

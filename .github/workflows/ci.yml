@@ -98,7 +98,16 @@ jobs:
     - name: Evidence Replay (证据卡机器复算：工件同代 / 输出逐字 / sanitizer)
       # 契约见 docs/kernel/M2_empirical.md §1：任一 refute 即 exit 1。
       # 核心校验 artifact_sha：重生成工件后必须与卡同代——"工件过期"由此从人工发现变机器拦截。
-      run: python3 tools/atom_evidence_replay.py --check
+      # 跨编译器分流（2026-09-10 修 CI 红因）：sha 只在**同一编译器（含平台）**下可复算，本步在
+      # Ubuntu 系统 g++ 上跑，与卡归属的 MinGW GCC 15.3 字节天然不同 → 工具自动改判
+      # `artifact_assert[]` 结构断言（断言缺失/不满足仍红），故本步在 CI 是**真实校验**而非跳过。
+      # 失败时把输出写入 GITHUB_STEP_SUMMARY：本仓库 job 日志需 admin 权限（实测 API 403），
+      # summary 可经 check-runs API 读取，绕过该限制（同上方 mypy 步骤的既有做法）。
+      run: |
+        python3 tools/atom_evidence_replay.py --check 2>&1 | tee /tmp/replay.log
+        rc="${PIPESTATUS[0]}"
+        if [ "$rc" != "0" ]; then cat /tmp/replay.log >> "$GITHUB_STEP_SUMMARY"; fi
+        exit "$rc"
       continue-on-error: false
 
     - name: Gate Engine (M4 规则引擎：事实门禁 block + 双清单收敛)

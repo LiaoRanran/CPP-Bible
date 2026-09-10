@@ -160,7 +160,9 @@ def _parse_block(lines: Sequence[str], i: int, indent: int) -> tuple[Any, int]:
                 continue
             if _indent(ln) < indent or not ln.strip().startswith("- "):
                 break
-            content = ln.strip()[2:]
+            # 列表项也要剥行尾注释（2026-09-10 暴露：`- {kind: call_count, ...}  # 说明`
+            # 因尾部注释而不以 `}` 结尾 → 退化成字符串，flow map 内容全丢）。引号内的 # 受保护。
+            content = _strip_comment(ln.strip()[2:]).strip()
             if content.startswith("{") and content.endswith("}"):
                 items.append(_parse_flow_map(content))
                 i += 1
@@ -322,6 +324,106 @@ def _sha256(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
+def _platform_tag() -> str:
+    """平台标签：工件字节与平台强相关（同为 GCC 15，MinGW 与 Linux 的 .asm 也不同）。"""
+    if sys.platform == "win32":
+        return "MinGW-w64"
+    if sys.platform.startswith("linux"):
+        return "Linux"
+    if sys.platform == "darwin":
+        return "macOS"
+    return sys.platform
+
+
+def _compiler_id(gpp: str) -> str:
+    """返回 `GCC 15.3.0 (MinGW-w64)` 形式的编译器身份；解析失败返回 ""。
+
+    `-dumpfullversion` 优先（GCC 7+ 的 `-dumpversion` 只给 major），失败再退回。
+    """
+    if not gpp:
+        return ""
+    ver = ""
+    for flag in ("-dumpfullversion", "-dumpversion"):
+        try:
+            r = subprocess.run([gpp, flag], capture_output=True, text=True, timeout=30)
+        except (OSError, subprocess.SubprocessError):
+            return ""
+        ver = (r.stdout or "").strip().splitlines()[0] if r.stdout.strip() else ""
+        if ver:
+            break
+    if not ver:
+        return ""
+    name = "Clang" if "clang" in Path(gpp).name.lower() else "GCC"
+    return f"{name} {ver} ({_platform_tag()})"
+
+
+def _current_toolchain_id() -> str:
+    """当前环境实际生成工件所用的编译器身份（与卡 `artifact_compiler` 比对）。"""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from toolchain import resolve_gpp
+        return _compiler_id(resolve_gpp())
+    except Exception:                                     # pragma: no cover
+        return ""
+
+
+def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, list[str]]:
+    """跨编译器可移植的**结构断言**（编译产物内容级，不依赖字节哈希）。
+
+    为何需要：`artifact_sha256` 只能在同一编译器（含平台）下复算——实测同一夹具
+    MinGW GCC 15.3 与 GCC 13.1 产出的 .asm 字节完全不同（2026-09-10 CI 红因）。
+    故工件归属编译器与当前环境不符时，改判本函数；**断言缺失或不满足仍判 refute**
+    （"降级"是换成另一种真实校验，不是逃生舱）。
+
+    支持 kind：
+      - `call_count`    `{kind: call_count, symbol: malloc, count: 3}`  全文 `call <symbol>` 计数
+      - `contains`      `{kind: contains, text: "_Znwy"}`              必须出现
+      - `contains_any`  `{kind: contains_any, texts: ["call\tmalloc", "call\t_Znwm"]}`
+                       任候出现即可——**跨平台首选形态**：同一逻辑在 MinGW 编译成
+                       `call malloc`（operator new 是 `jmp malloc` 跳板），在 Linux
+                       编译成 `call _Znwm@PLT`，写死单一名会让断言只在一种平台上成立。
+      - `absent`        `{kind: absent, text: "call _Znwm"}`            必须不出现（反例路径）
+    """
+    rules = meta.get("artifact_assert")
+    rules = [r for r in rules if isinstance(r, dict)] if isinstance(rules, list) else []
+    if not rules:
+        return False, ["卡缺 artifact_assert[]：编译器不匹配时无可用校验"]
+    text = art_path.read_text(encoding="utf-8", errors="replace")
+    lines: list[str] = []
+    ok = True
+    for r in rules:
+        kind = str(r.get("kind") or "")
+        if kind == "call_count":
+            syms = [str(s) for s in (r.get("symbols") or [])] or \
+                   ([str(r["symbol"])] if r.get("symbol") else [])
+            want = int(r.get("count") or 0)
+            # 多符号**求和**：同一逻辑在不同平台走不同入口（MinGW 的 operator new 是
+            # `jmp malloc` 跳板 → `call malloc`；Linux 是弱符号 → `call _Znwm@PLT`），
+            # 而"分配入口被调用几次"这一语义跨平台一致。
+            got = sum(1 for ln in text.split("\n")
+                      if any(re.search(rf"\bcall\s+{re.escape(s)}\b", ln) for s in syms))
+            hit = got == want
+            lines.append(f"    {'✅' if hit else '❌'} call_count {'/'.join(syms)}"
+                         f" 期望 {want} 实得 {got}")
+        elif kind == "contains_any":
+            texts = [str(t) for t in (r.get("texts") or [])]
+            seen = {t: text.count(t) for t in texts}
+            hit = any(n > 0 for n in seen.values())
+            detail = ", ".join(f"{t!r}:{n}" for t, n in seen.items())
+            lines.append(f"    {'✅' if hit else '❌'} contains_any 任一出现（{detail}）")
+        elif kind in ("contains", "absent"):
+            lit = str(r.get("text") or "")
+            got = text.count(lit)
+            hit = (got > 0) if kind == "contains" else (got == 0)
+            verb = "出现" if kind == "contains" else "不得出现"
+            lines.append(f"    {'✅' if hit else '❌'} {kind} {lit!r} {verb}（实得 {got} 次）")
+        else:
+            hit = False
+            lines.append(f"    ❌ 未知断言 kind：{kind!r}（不猜，判失败）")
+        ok = ok and hit
+    return ok, lines
+
+
 def _compiler_env() -> dict:
     """把编译器目录注入 PATH（MinGW 的 exe/sanitizer 运行期依赖同目录 DLL）。"""
     env = dict(os.environ)
@@ -437,16 +539,37 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         log.append(f"  ✅ run_match    输出 {len(got)} 行与 run_* 逐字一致（行序归一化）")
 
         # ④ artifact_sha：重生成后的工件必须与卡同代
+        # 分流（2026-09-10 CI 红因修复）：sha 只在**同一编译器（含平台）**下可复算——
+        # 实测同一夹具 MinGW GCC 15.3 与 GCC 13.1 产出的 .asm 字节完全不同，CI 跑在
+        # Ubuntu（系统 g++ ≠ 卡归属的 MinGW 15.3）时必然 mismatch。故：
+        #   编译器身份**匹配**   → 强制 sha256（"工件同代"原承诺不变）
+        #   编译器身份**不匹配** → 改判 artifact_assert[] 结构断言（真实内容校验）；
+        #                          断言缺失或不满足仍 refute——"降级"是换一种真校验，
+        #                          不是逃生舱。
         if not art_path.exists():
             log.append(f"  ❌ artifact_sha  重生成后工件不存在：{art_rel}")
             return "refute:artifact_absent", log
         got_sha = _sha256(art_path)
-        if got_sha != want_sha:
+        owner = str(meta.get("artifact_compiler") or "").strip()
+        cur_id = _current_toolchain_id()
+        if got_sha == want_sha:
+            log.append(f"  ✅ artifact_sha  {got_sha[:16]}… == 卡值（归属 {owner or '未声明'}）")
+        elif owner and cur_id and owner != cur_id:
+            log.append(f"  ⏭ artifact_sha  编译器不匹配，改判结构断言"
+                       f"（本地 {cur_id} vs 卡归属 {owner}）")
+            a_ok, a_lines = check_artifact_assert(meta, art_path)
+            log.extend(a_lines)
+            if not a_ok:
+                log.append("  ❌ artifact_assert  跨编译器替代校验未通过")
+                return "refute:artifact_assert_failed", log
+            log.append(f"  ✅ artifact_assert  {len(a_lines)} 条结构断言全部满足"
+                       f"（字节差异属跨编译器正常）")
+        else:
             log.append("  ❌ artifact_sha  工件与卡不同代（过期工件或卡写错）")
             log.append(f"      期望 {want_sha}")
             log.append(f"      实际 {got_sha}")
+            log.append(f"      归属 {owner or '未声明'} · 本地 {cur_id or '未知'}")
             return "refute:sha256_mismatch", log
-        log.append(f"  ✅ artifact_sha  {got_sha[:16]}… == 卡值")
 
         # ⑤ sanitizer
         if do_sanitizer:
