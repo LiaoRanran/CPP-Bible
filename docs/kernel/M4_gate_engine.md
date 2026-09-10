@@ -46,6 +46,7 @@
 | `ATOM-REL-DAG` | 学习路径 DAG 成环 | M1 §3（环路=内容切分有问题） |
 | `ATOM-SUPERIORITY-WORDS` | superiority 命中禁词表 | M3 §4 |
 | `ATOM-GRAY-ZONE` | UB 域原子未标 `gray_zone` 五类 | M2 §7 决策树 |
+| `ATOM-MISCONCEPTION-LEVELS` | 误解未分层（非结构化/层非法）/ **deep 类反例 <2** | G1_layout §3（调研核心结论：surface 一次纠正即可，deep 须 ≥2 独立反例） |
 | `EV-FM-REQUIRED` | 证据卡必填字段缺失 / `kind` 越界 | M2 §1 |
 | `EV-FALSIFICATION` | 缺证伪对照（恒真测试） | M2 §3 证伪导向 |
 | `EV-MATRIX` | `matrix` 缺 compiler/std/opt | M2 §2 两档与选取规则 |

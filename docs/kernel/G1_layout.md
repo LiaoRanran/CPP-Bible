@@ -66,9 +66,12 @@ depth:                     # ④ 纵深穿透：钻到哪一层
   drill_note: 移动构造调用点见 EV-MEM-002 的 call 指令对照
 pedagogy:                  # ⑤ 教学封装
   motivation: 为什么需要"可析构但不可读值"这条中间态？
-  misconception:
-    - "std::move 会移动对象"
-    - "移动后源对象为空字符串/空容器"
+  misconception:           # 强制分层：surface（一次纠正即可）/ deep（结构性误解，须 ≥2 反例）
+    - level: surface
+      text: "std::move 会移动对象"
+    - level: deep
+      text: "移动后源对象一定是空的，可以当空容器用"
+      refutations: [EV-MEM-001]     # deep 类必填，且 ≥2 个独立反例
   socratic:
     - "如果把源对象当作空容器使用，什么场景会炸？"
   predict_first: 移动后再调用 size() 会输出什么？（先预测，再看实验）
@@ -104,7 +107,7 @@ pedagogy:                  # ⑤ 教学封装
 | `first_hand` | bool | ✅ | 是否一手实证 |
 | `superiority` | str | ✅ | 逐来源写"多给了什么" |
 | `depth.layer` | enum | ✅ | 6 层之一 |
-| `pedagogy` | obj | ✅ | `motivation`/`misconception[]`/`socratic[]`/`predict_first` |
+| `pedagogy` | obj | ✅ | `motivation`/`misconception[]`/`socratic[]`/`predict_first`；**`misconception` 每项须标 `level: surface\|deep`，`deep` 类必带 `refutations[]` ≥2**（依据：surface 一次纠正即可；deep 是结构性误解，须 ≥2 个独立反例才可能纠偏）。概念混淆/边界误判/工具误用只作**内容组织参考**，不强制为字段 |
 
 **硬约束**（门禁点）：`status: verified` ⟹ `evidence[]` 非空 ∧ `first_hand == true` ∧ `superiority` 非空。这三条是 S2"声明-证据绑定"的最小落地。
 

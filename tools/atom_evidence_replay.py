@@ -135,7 +135,9 @@ def _read_block_scalar(lines: Sequence[str], i: int, indent: int, fold: bool) ->
 def _parse_flow_map(raw: str) -> dict[str, Any]:
     inner = raw.strip()[1:-1]
     out: dict[str, Any] = {}
-    for part in inner.split(","):
+    # 必须用 _split_flow（顶层逗号）而非裸 split(",")：否则 `{refutations: [EV-1, EV-2]}`
+    # 会被内层逗号切断，只读到 1 个元素（2026-09-10 由误解分层测试暴露）。
+    for part in _split_flow(inner):
         if ":" in part:
             k, v = part.split(":", 1)
             out[k.strip()] = _scalar(v)

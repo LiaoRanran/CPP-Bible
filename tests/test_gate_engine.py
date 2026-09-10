@@ -146,6 +146,28 @@ def test_matrix_missing_keys_blocks(sandbox: Path):
     assert ge.check_evidence_matrix() == []
 
 
+def test_misconception_levels_blocks_and_passes(sandbox: Path):
+    """误解分层：非结构化项 / 层非法 / deep 反例不足 → block；合规 → 放行。
+
+    deep 须 ≥2 反例是调研核心结论（surface 一次纠正即可），故为 block 而非 advice。
+    """
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                pedagogy="\n  misconception:\n    - \"std::move 会移动对象\"")
+    assert any(h.rule_id == "ATOM-MISCONCEPTION-LEVELS"
+               for h in ge.check_misconception_levels()), "字符串列表必须被拦"
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                pedagogy="\n  misconception:\n    - {level: deep, text: 移动后源一定是空的}")
+    hits = ge.check_misconception_levels()
+    assert any("反例不足" in h.message for h in hits), "deep 无反例必须被拦"
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                pedagogy=("\n  misconception:\n    - {level: surface, text: move 会移动对象}\n"
+                          "    - {level: deep, text: 移动后源一定是空的, "
+                          "refutations: [EV-MEM-001, EV-MEM-002]}"))
+    assert ge.check_misconception_levels() == [], "合规分层必须放行"
+
+
 def test_ub_atom_requires_gray_zone(sandbox: Path):
     _write_atom(sandbox, "ATOM-UB-ALIAS-001.md", "ub", id="ATOM-UB-ALIAS-001",
                 domain="UB", type="pitfall")

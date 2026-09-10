@@ -286,6 +286,36 @@ def check_evidence_frontmatter() -> list[Finding]:
     return out
 
 
+def check_misconception_levels() -> list[Finding]:
+    """教学封装：误解必须**分层标注** surface/deep，deep 类须 ≥2 个独立反例。
+
+    依据（2026-09-10 调研核心结论）：surface 误解一次纠正即可；deep 是结构性误解，
+    不给足 ≥2 个独立反例纠不过来。故 `misconception[]` 是结构化项而非字符串列表：
+    `{level: surface|deep, text: ..., refutations: [EV-…]}（deep 必填 ≥2）`。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        ped = _meta(p).get("pedagogy") or {}
+        if not isinstance(ped, dict):
+            continue
+        for item in _as_list(ped.get("misconception")):
+            if not isinstance(item, dict):
+                out.append(Finding("ATOM-MISCONCEPTION-LEVELS", "block", _rel(p),
+                                   f"误解项不是结构化字段（缺 level/text）：{str(item)[:40]!r}",
+                                   "写成 {level: surface|deep, text: ...}（见 G1_layout §3）"))
+                continue
+            lvl = str(item.get("level") or "")
+            if lvl not in ("surface", "deep"):
+                out.append(Finding("ATOM-MISCONCEPTION-LEVELS", "block", _rel(p),
+                                   f"误解层非法或缺失：{lvl or '空'}（应 surface|deep）",
+                                   "surface=一次纠正即可；deep=结构性误解"))
+            elif lvl == "deep" and len(_as_list(item.get("refutations"))) < 2:
+                out.append(Finding("ATOM-MISCONCEPTION-LEVELS", "block", _rel(p),
+                                   f"deep 类误解反例不足（{len(_as_list(item.get('refutations')))}/2）",
+                                   "补 refutations[]（≥2 个独立反例，指向证据卡 ID）"))
+    return out
+
+
 def check_evidence_falsification() -> list[Finding]:
     """M2 §3 证伪导向：每个论断必须配一个「让它失败」的对照，只演示成立=恒真测试。"""
     out: list[Finding] = []
@@ -507,6 +537,8 @@ def _register_all() -> None:
          check_evidence_falsification),
         ("EV-MATRIX", "版本矩阵字段完整", "evidence", check_evidence_matrix),
         ("ATOM-GRAY-ZONE", "UB 域原子标注灰色地带类别", "atom", check_atom_gray_zone),
+        ("ATOM-MISCONCEPTION-LEVELS", "误解分层 surface/deep（deep 须 ≥2 反例）", "atom",
+         check_misconception_levels),
         ("EV-SERVES-EXIST", "证据服务的原子存在", "evidence", check_evidence_serves_exist),
         ("DOC-ZERO-PLACEHOLDER", "新体系零占位符", "repo", check_zero_placeholder),
         ("META-MANIFEST", "双清单一致（ADR-0004）", "repo", check_manifest_consistency),
