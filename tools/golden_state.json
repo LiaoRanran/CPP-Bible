@@ -1,14 +1,14 @@
 {
  "schema": "cppbible-golden-lock/1.0",
- "updated": "2026-09-10",
+ "updated": "2026-09-11",
  "commit": "",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 5,
+  "warn_findings": 7,
   "atoms_total": 3,
-  "evidence_total": 6,
+  "evidence_total": 8,
   "verified_atoms": 3,
-  "replay_confirm": 6
+  "replay_confirm": 8
  },
  "accepted": [
   {
@@ -35,6 +35,13 @@
   {
    "ts": "2026-09-10T22:43:11",
    "reason": "G4 样板 C 的配套证据卡 EV-HIST-001 / EV-MEM-003 服务于 ATOM-HIST-AUTOPTR-001，该原子按 0.1 阶段门需人审通过后才锻造；EV-SERVES-EXIST 的 warn 是预期中间态（规则自注 G4 锻造该原子后此债自动清零）。按门制不得提前原子化，显式接受 warn_findings 5->7",
+   "worse": [
+    "warn_findings: 5 → 7"
+   ]
+  },
+  {
+   "ts": "2026-09-11T00:41:57",
+   "reason": "EV-MEM-004/005 的 serves 指向 ATOM-MEM-RVREF-001（G5 MEM 域第一批，此刻在 goldens/ 待人审、尚未锻造）。这是 G5 流水线必然的中间态：证据先于原子入库；原子化后 EV-SERVES-EXIST 债自动清零（此前 A/B/C 三样板均如此）。",
    "worse": [
     "warn_findings: 5 → 7"
    ]

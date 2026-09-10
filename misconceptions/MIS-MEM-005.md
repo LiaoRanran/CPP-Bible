@@ -10,7 +10,7 @@ refutations:
   - "具名的右值引用**是左值**（有名字就能取地址），T y = x 触发拷贝；要移动须再写 std::move(x)"
   - "这是 move 只做类型转换的直接后果：类型与值类别是两件事"
 source: ch115_move.md ⑯ 易错点 1
-related_atoms: [ATOM-MEM-MOVE-002]
+related_atoms: [ATOM-MEM-MOVE-002, ATOM-MEM-RVREF-001]
 ---
 
 # MIS-MEM-005 · 函数里拿到 T&& 具名参数后直接用它就会自动移动
