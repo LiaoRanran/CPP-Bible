@@ -95,6 +95,12 @@ jobs:
       run: python3 tools/atom_coverage_map.py --check --check-doc
       continue-on-error: false
 
+    - name: Evidence Replay (证据卡机器复算：工件同代 / 输出逐字 / sanitizer)
+      # 契约见 docs/kernel/M2_empirical.md §1：任一 refute 即 exit 1。
+      # 核心校验 artifact_sha：重生成工件后必须与卡同代——"工件过期"由此从人工发现变机器拦截。
+      run: python3 tools/atom_evidence_replay.py --check
+      continue-on-error: false
+
     - name: Gray-zone Matrix (求值顺序 unspecified：GCC/Clang 对照留痕)
       # 只留痕、不判"顺序"红绿：unspecified 的两种求值顺序都合法，机器不能断言"必须右→左"。
       # 编译失败仍会红（夹具必须在两编译器下都可编）。MSVC 无路径，按 M2 §2 永久边界以标准条文代替。

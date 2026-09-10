@@ -20,6 +20,13 @@
 | `depth_layer` | ✅ | 本证据钻到 6 层中的哪层 |
 | `artifact` / `artifact_sha256` | ✅ | 产物路径与内容哈希（可复算比对） |
 
+> 【`command` 书写规范 = 机器执行契约（2026-09-10 定，`tools/atom_evidence_replay.py` 依此执行）】
+> ① 多行 = 多条命令；同一行内多步用 `&&` 串联；② 路径一律**正斜杠**（POSIX 语义，两平台可执行；
+> 反斜杠会被 argv 解析吞掉）；③ 编译产物**必须写 `build/`**——仓库源只读，根级 exe 泄漏会被
+> pre-push 卫生拦；④ **不支持管道/重定向/通配/变量展开**（遇到工具直接报 unsupported，不猜）；
+> ⑤ 生成 `artifact` 的那条命令必须出现在 `command` 里（工具据此"删旧工件→重生成→比 sha256"）。
+> 复算四项校验任一不过即 `refute`（exit 1）：compile_rc / run_match / artifact_sha / sanitizer。
+
 ## 2. 实验矩阵：两档与选取规则
 
 - **最小充分档（默认，每次提交都跑）**：`{GCC 15.3 × c++23 × -O2}` + `{GCC 15.3 × c++23 × -O0}`。
