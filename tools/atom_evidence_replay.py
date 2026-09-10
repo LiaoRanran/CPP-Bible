@@ -274,7 +274,12 @@ def _pin_compiler(argv: list[str]) -> list[str]:
             sys.path.insert(0, str(Path(__file__).resolve().parent))
             from toolchain import resolve_gpp
             resolved = resolve_gpp()
-            if resolved and Path(resolved).name.lower() != base:
+            # 判据是"解析结果与命令行**字面量**不同"，不是"basename 不同"（2026-09-10 CI 修）：
+            # Linux 上 resolve_gpp() 回退 PATH 得 `/usr/bin/g++`，其 basename 恰为 `g++`，
+            # 旧判据据此认为"无需替换"而保留裸名——该环境恰好可用，但**行为随平台漂移**
+            # （Windows 换 basename 则替换）。统一为：解析到任何与字面量不同的路径就替换，
+            # 使最终执行与调用者 PATH 无关，语义也不依赖平台。
+            if resolved and resolved != argv[0]:
                 return [resolved, *argv[1:]]
         except Exception:                                   # pragma: no cover
             pass

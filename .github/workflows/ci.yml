@@ -147,9 +147,17 @@ jobs:
       # 工具链的单元测试：锁定真实发生过的回归（git() 非 UTF-8 崩溃、
       # patch_blocks stale-span、triage 路径分隔符、run_expected PATH 注入、
       # gen_metrics 行尾伪 diff、star_h2 分类）。新增工具请补对应测试。
+      # 失败时的可读性：与 Evidence Replay 步同法——job 日志下载需 admin（实测 API 403），
+      # 故把失败摘要输出为 **error 注解**（经 check-runs /annotations 端点可公开读取）。
       run: |
         python3 -m pip install --quiet pytest
-        python3 -m pytest tests/ -q
+        python3 -m pytest tests/ -q 2>&1 | tee /tmp/pytest.log
+        rc="${PIPESTATUS[0]}"
+        if [ "$rc" != "0" ]; then
+          cat /tmp/pytest.log >> "$GITHUB_STEP_SUMMARY"
+          while IFS= read -r ln; do printf '::error::%s\n' "$ln"; done < <(tail -n 40 /tmp/pytest.log)
+          exit 1
+        fi
       continue-on-error: false
 
     - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)
