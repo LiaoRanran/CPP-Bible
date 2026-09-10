@@ -61,6 +61,13 @@ BANNED_SUPERIORITY = ("讲解更详细", "更通俗易懂", "更全面", "更加
 # （证据卡 `## 待补`、M2「待确认」都是显式记账，不是未填内容），误报会逼人删掉真信息。
 PLACEHOLDER_RE = re.compile(r"(TODO|TBD|FIXME|XXX|占位|placeholder)", re.I)
 
+# ── G5 新增：全局误解库 + 认知适切维度 ──────────────────────────────────────
+MISCONCEPTIONS = ROOT / "misconceptions"
+AUDIENCES = {"beginner", "intermediate", "expert"}
+COGNITIVE_LOADS = {"low", "medium", "high"}
+# beginner 原子须给直觉入口：正文里应能找到类比/直觉类表述，而不是只有形式化定义
+ANALOGY_RE = re.compile(r"(类比|直觉|打个比方|好比|就像|想象一下|可以理解为)")
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -316,6 +323,122 @@ def check_misconception_levels() -> list[Finding]:
     return out
 
 
+def _mis_ids() -> set[str]:
+    return {str(_meta(p).get("id") or "") for p in _cards(MISCONCEPTIONS, "MIS-*.md")}
+
+
+def check_mis_library() -> list[Finding]:
+    """误解库自身合规：字段齐全 · level 合法 · **deep 类 refutations ≥2** · 有出处。
+
+    为什么单列：误解库是 G5 大规模生产的前置资产——1300 个原子都要引用它，
+    条目本身写歪（level 乱标、deep 只有 1 条反例）会污染全库。故库与原子**双向**校验。
+    """
+    out: list[Finding] = []
+    for p in _cards(MISCONCEPTIONS, "MIS-*.md"):
+        meta = _meta(p)
+        if not str(meta.get("id") or ""):
+            out.append(Finding("MIS-LIBRARY", "block", _rel(p), "缺 id",
+                               "补 id: MIS-{域}-{序号}"))
+        if not str(meta.get("name") or ""):
+            out.append(Finding("MIS-LIBRARY", "block", _rel(p), "缺 name",
+                               "name 必须是**错误说法本身**，不是正确结论或元描述"))
+        lvl = str(meta.get("level") or "")
+        if lvl not in ("surface", "deep"):
+            out.append(Finding("MIS-LIBRARY", "block", _rel(p),
+                               f"level 非法或缺失：{lvl or '空'}（应 surface|deep）",
+                               "surface=一次纠正即可；deep=结构性误解"))
+        elif lvl == "deep" and len(_as_list(meta.get("refutations"))) < 2:
+            out.append(Finding("MIS-LIBRARY", "block", _rel(p),
+                               f"deep 类反例不足（{len(_as_list(meta.get('refutations')))}/2）",
+                               "补 ≥2 条**独立**反例，且从不同角度打（标准怎么说 / 实测后果）"))
+        if not str(meta.get("source") or ""):
+            out.append(Finding("MIS-LIBRARY", "warn", _rel(p), "缺 source（出处）",
+                               "填 Book 章节或三样板，保证每条可回溯、不是凭空编的"))
+    return out
+
+
+def check_misconception_ref() -> list[Finding]:
+    """原子引用的误解 ID 必须存在（G5：误解抽成全局库，原子只引用 ID）。
+
+    为什么是 block：引用不存在的 ID 等于"引用了一个不存在的反例"——教学封装那一项
+    实际是空的，却又通过了五重剖面检查。
+    """
+    known = _mis_ids()
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        ped = _meta(p).get("pedagogy") or {}
+        if not isinstance(ped, dict):
+            continue
+        for mid in _as_list(ped.get("misconceptions")):
+            if str(mid) not in known:
+                out.append(Finding("ATOM-MISCONCEPTION-REF", "block", _rel(p),
+                                   f"引用的误解 ID 不存在：{mid}",
+                                   "先在 misconceptions/ 建该条，或改用已有 ID"))
+    return out
+
+
+def check_audience() -> list[Finding]:
+    """认知适切：audience / cognitive_load 必须合法且声明；beginner 正文须有类比/直觉段。
+
+    依据（G5 指令 §2.2）：原子此前默认读者是"懂 C++ 基础的进阶者"，没有显式声明，
+    G5 涉及入门章节后会导致认知负荷错配。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        # 缺失 → **warn（记债）**；写了但值非法 → block。分级理由：G5 要迁移 1300 个原子，
+        # 渐进标注是现实路径；**未标注**的后果只是"学习路径排序缺依据"，不损害断言可信度；
+        # 而**标错**（如 audience: novice）会让路径排序拿到非法值，是硬错。
+        aud = str(meta.get("audience") or "")
+        if not aud:
+            out.append(Finding("ATOM-AUDIENCE", "warn", _rel(p),
+                               "缺 audience（认知适切维度未标注）",
+                               f"取值 {sorted(AUDIENCES)}（见 G1_layout §3）"))
+        elif aud not in AUDIENCES:
+            out.append(Finding("ATOM-AUDIENCE", "block", _rel(p),
+                               f"audience 非法：{aud}", f"取值 {sorted(AUDIENCES)}"))
+        cl = str(meta.get("cognitive_load") or "")
+        if not cl:
+            out.append(Finding("ATOM-AUDIENCE", "warn", _rel(p),
+                               "缺 cognitive_load（认知负荷预算未标注）",
+                               f"取值 {sorted(COGNITIVE_LOADS)}"))
+        elif cl not in COGNITIVE_LOADS:
+            out.append(Finding("ATOM-AUDIENCE", "block", _rel(p),
+                               f"cognitive_load 非法：{cl}",
+                               f"取值 {sorted(COGNITIVE_LOADS)}"))
+        if aud == "beginner" and not ANALOGY_RE.search(
+                p.read_text(encoding="utf-8", errors="replace")):
+            out.append(Finding("ATOM-AUDIENCE", "warn", _rel(p),
+                               "beginner 原子正文缺类比/直觉段",
+                               "入门读者需要直觉入口，不能只有形式化定义"))
+    return out
+
+
+def check_prereq_readable() -> list[Finding]:
+    """`prerequisites_readable` 声明须与**实算**一致（relations 中 prerequisite 目标都已锻造）。
+
+    为什么机器可查：学习路径装配时若按声明把原子排到前置之前，读者会遇到未定义术语。
+    声明与实算不符 = 路径排序依据失真。
+    """
+    existing = {str(_meta(p).get("id") or "") for p in _cards(ATOMS, "ATOM-*.md")}
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        declared = meta.get("prerequisites_readable")
+        if declared is None:
+            continue
+        rels = [r for r in _as_list(meta.get("relations")) if isinstance(r, dict)]
+        prereqs = [str(r.get("target")) for r in rels if str(r.get("type")) == "prerequisite"]
+        actual = all(t in existing for t in prereqs) if prereqs else True
+        want = declared if isinstance(declared, bool) else str(declared).lower() == "true"
+        if want != actual:
+            out.append(Finding("ATOM-PREREQ-READABLE", "warn", _rel(p),
+                               f"prerequisites_readable={want} 与实算不符"
+                               f"（实算 {actual}；前置 {prereqs or '无'}）",
+                               "改声明，或先锻造缺失的前置原子"))
+    return out
+
+
 def check_evidence_falsification() -> list[Finding]:
     """M2 §3 证伪导向：每个论断必须配一个「让它失败」的对照，只演示成立=恒真测试。"""
     out: list[Finding] = []
@@ -539,6 +662,13 @@ def _register_all() -> None:
         ("ATOM-GRAY-ZONE", "UB 域原子标注灰色地带类别", "atom", check_atom_gray_zone),
         ("ATOM-MISCONCEPTION-LEVELS", "误解分层 surface/deep（deep 须 ≥2 反例）", "atom",
          check_misconception_levels),
+        ("MIS-LIBRARY", "误解库自身合规（level 合法 / deep≥2 反例 / 有出处）", "atom",
+         check_mis_library),
+        ("ATOM-MISCONCEPTION-REF", "原子引用的误解 ID 必须存在", "atom",
+         check_misconception_ref),
+        ("ATOM-AUDIENCE", "认知适切：audience/cognitive_load 合法 + beginner 须有类比段",
+         "atom", check_audience),
+        ("ATOM-PREREQ-READABLE", "前置可读声明与实算一致", "atom", check_prereq_readable),
         ("EV-SERVES-EXIST", "证据服务的原子存在", "evidence", check_evidence_serves_exist),
         ("DOC-ZERO-PLACEHOLDER", "新体系零占位符", "repo", check_zero_placeholder),
         ("META-MANIFEST", "双清单一致（ADR-0004）", "repo", check_manifest_consistency),

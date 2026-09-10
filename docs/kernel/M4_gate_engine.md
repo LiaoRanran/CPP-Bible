@@ -47,6 +47,10 @@
 | `ATOM-SUPERIORITY-WORDS` | superiority 命中禁词表 | M3 §4 |
 | `ATOM-GRAY-ZONE` | UB 域原子未标 `gray_zone` 五类 | M2 §7 决策树 |
 | `ATOM-MISCONCEPTION-LEVELS` | 误解未分层（非结构化/层非法）/ **deep 类反例 <2** | G1_layout §3（调研核心结论：surface 一次纠正即可，deep 须 ≥2 独立反例） |
+| `MIS-LIBRARY` | 误解库自身：字段齐 / level 合法 / **deep 反例 ≥2**；缺出处 warn | misconceptions/README.md（G5 前置资产，条目写歪会污染全库，故与原子双向校验） |
+| `ATOM-MISCONCEPTION-REF` | 原子引用的误解 ID 必须存在 | G1_layout §3（引用不存在的 ID = 引用了不存在的反例） |
+| `ATOM-AUDIENCE` | 认知适切：值非法 block；**缺失 warn**（渐进标注）；beginner 缺类比段 warn | G5 指令 §2.2（未标注只影响路径排序，不损害断言可信度） |
+| `ATOM-PREREQ-READABLE` | `prerequisites_readable` 声明与实算一致（relations 中 prerequisite 目标是否已锻造） | G1_layout §3（声明失真会让学习路径把原子排到前置之前） |
 | `EV-FM-REQUIRED` | 证据卡必填字段缺失 / `kind` 越界 | M2 §1 |
 | `EV-FALSIFICATION` | 缺证伪对照（恒真测试） | M2 §3 证伪导向 |
 | `EV-MATRIX` | `matrix` 缺 compiler/std/opt | M2 §2 两档与选取规则 |

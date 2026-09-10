@@ -39,6 +39,10 @@ title: 移动后源对象处于有效但未指定状态
 domain: MEM
 type: mechanism            # concept|mechanism|rule|idiom|anti_pattern|pitfall|contrast|evolution|decision|experiment
 status: draft              # draft|verified|rejected（唯人可置 verified）
+# ---- 认知适切维度（G5 新增，见 §3）----
+audience: intermediate     # beginner|intermediate|expert：本原子的默认读者是谁
+cognitive_load: medium     # low|medium|high：认知负荷预算
+prerequisites_readable: true  # 前置原子是否已锻造（机器可查：relations 中 prerequisite 目标是否都已存在）
 claim: >                   # 一原子=一可独立证伪断言（唯一，单句）
   对含堆指针的类型，std::move 之后源对象仍处于有效状态：可安全析构或赋新值，
   但其值不可依赖（libstdc++ / C++17 / -O2）。
@@ -66,12 +70,14 @@ depth:                     # ④ 纵深穿透：钻到哪一层
   drill_note: 移动构造调用点见 EV-MEM-002 的 call 指令对照
 pedagogy:                  # ⑤ 教学封装
   motivation: 为什么需要"可析构但不可读值"这条中间态？
-  misconception:           # 强制分层：surface（一次纠正即可）/ deep（结构性误解，须 ≥2 反例）
+  # G5 起**新原子必须引用全局误解库**（misconceptions/，见该目录 README），不内联文本：
+  # 同一误解在全库只写一次，反例强度统一，避免 1300 原子各写各的。
+  misconceptions: [MIS-MEM-001, MIS-MEM-002]
+  # 兼容旧内联写法（已有原子逐步迁移，非新原子范式）：misconception[] 每项须标
+  # level: surface|deep，deep 类必带 refutations[] ≥2。二者可并存，但**新原子只用引用**。
+  misconception:
     - level: surface
       text: "std::move 会移动对象"
-    - level: deep
-      text: "移动后源对象一定是空的，可以当空容器用"
-      refutations: [EV-MEM-001]     # deep 类必填，且 ≥2 个独立反例
   socratic:
     - "如果把源对象当作空容器使用，什么场景会炸？"
   predict_first: 移动后再调用 size() 会输出什么？（先预测，再看实验）
@@ -107,7 +113,10 @@ pedagogy:                  # ⑤ 教学封装
 | `first_hand` | bool | ✅ | 是否一手实证 |
 | `superiority` | str | ✅ | 逐来源写"多给了什么" |
 | `depth.layer` | enum | ✅ | 6 层之一 |
-| `pedagogy` | obj | ✅ | `motivation`/`misconception[]`/`socratic[]`/`predict_first`；**`misconception` 每项须标 `level: surface\|deep`，`deep` 类必带 `refutations[]` ≥2**（依据：surface 一次纠正即可；deep 是结构性误解，须 ≥2 个独立反例才可能纠偏）。概念混淆/边界误判/工具误用只作**内容组织参考**，不强制为字段 |
+| `audience` | enum | ⚠️ | `beginner`/`intermediate`/`expert`——**认知适切**维度：本原子的默认读者是谁（G5 新增）。学习路径按此排序：beginner → intermediate → expert。**缺失记债（warn）、值非法阻断（block）**——G5 要迁移 1300 个原子，渐进标注是现实路径；未标注的后果只是"路径排序缺依据"，不损害断言可信度 |
+| `cognitive_load` | enum | ⚠️ | `low`/`medium`/`high`：认知负荷预算。同一 audience 下高负荷原子应拆或前置。分级同 `audience` |
+| `prerequisites_readable` | bool | ✅ | 前置原子是否已锻造。**机器可查**：`relations[]` 中 `type: prerequisite` 的 target 是否都已存在于 `atoms/`；声明与实算不一致门禁会报（`ATOM-PREREQ-READABLE`） |
+| `pedagogy` | obj | ✅ | `motivation`/`misconceptions[]`/`socratic[]`/`predict_first`；**`misconceptions[]` 引用 `misconceptions/MIS-*.md` 的 ID**（G5 起新原子强制，引用的 ID 必须存在 → `ATOM-MISCONCEPTION-REF`）。兼容旧内联 `misconception[]`：每项须标 `level: surface\|deep`，`deep` 类必带 `refutations[]` ≥2（依据：surface 一次纠正即可；deep 是结构性误解，须 ≥2 个独立反例才可能纠偏）。概念混淆/边界误判/工具误用只作**内容组织参考**，不强制为字段 |
 
 **硬约束**（门禁点）：`status: verified` ⟹ `evidence[]` 非空 ∧ `first_hand == true` ∧ `superiority` 非空。这三条是 S2"声明-证据绑定"的最小落地。
 

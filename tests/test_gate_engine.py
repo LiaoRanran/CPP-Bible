@@ -41,9 +41,109 @@ def _write_atom(base: Path, name: str, domain_dir: str, **over: str) -> Path:
 def sandbox(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setattr(ge, "ATOMS", tmp_path / "atoms")
     monkeypatch.setattr(ge, "EVIDENCE", tmp_path / "evidence")
+    monkeypatch.setattr(ge, "MISCONCEPTIONS", tmp_path / "misconceptions")
     (tmp_path / "atoms").mkdir()
     (tmp_path / "evidence").mkdir()
+    (tmp_path / "misconceptions").mkdir()
     return tmp_path
+
+
+def _write_mis(base: Path, mid: str, **over: str) -> Path:
+    d = base / "misconceptions"
+    d.mkdir(parents=True, exist_ok=True)
+    fields = {
+        "id": mid, "name": "某误解", "level": "deep", "domain": "MEM",
+        "trigger_patterns": '\n  - "触发 1"',
+        "refutations": '\n  - "反例 1"\n  - "反例 2"',
+        "source": "ch1.md ⑯",
+        "related_atoms": "[]",
+    }
+    fields.update(over)
+    p = d / f"{mid}.md"
+    p.write_text("---\n" + "".join(_kv(k, v) for k, v in fields.items()) + "---\n",
+                 encoding="utf-8")
+    return p
+
+
+# ── G5：全局误解库 + 认知适切维度的回归锁 ──────────────────────────────────
+def test_mis_library_deep_needs_two_refutations(sandbox: Path):
+    """误解库自身：deep 类反例 <2 / level 非法 → block；合规 → 放行。
+
+    误解库是 G5 大规模生产的前置资产，条目写歪会污染全库，故与原子**双向**校验。
+    """
+    _write_mis(sandbox, "MIS-MEM-001", refutations='\n  - "只有一条反例"')
+    hits = ge.check_mis_library()
+    assert any(h.rule_id == "MIS-LIBRARY" and "反例不足" in h.message for h in hits), \
+        "deep 类只有 1 条反例必须被拦"
+
+    _write_mis(sandbox, "MIS-MEM-001", level="wat")
+    assert any("level 非法" in h.message for h in ge.check_mis_library())
+
+    _write_mis(sandbox, "MIS-MEM-001", source="")            # 缺出处 → warn（不阻断）
+    assert any(h.severity == "warn" and "source" in h.message
+               for h in ge.check_mis_library())
+
+    _write_mis(sandbox, "MIS-MEM-001")
+    assert ge.check_mis_library() == [], "合规条目必须放行"
+
+
+def test_misconception_ref_must_exist(sandbox: Path):
+    """原子引用的误解 ID 必须存在——引用不存在的 ID 等于引用了一个不存在的反例。"""
+    _write_mis(sandbox, "MIS-MEM-001")
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                pedagogy="\n  misconceptions: [MIS-MEM-001, MIS-MEM-999]")
+    hits = ge.check_misconception_ref()
+    assert len(hits) == 1 and "MIS-MEM-999" in hits[0].message
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                pedagogy="\n  misconceptions: [MIS-MEM-001]")
+    assert ge.check_misconception_ref() == []
+
+
+def test_audience_required_and_beginner_needs_analogy(sandbox: Path):
+    """认知适切：audience / cognitive_load 必须合法声明；beginner 正文须有类比/直觉段。"""
+    # 缺失 → 记债（warn）：G5 迁移期渐进标注，未标注不该阻断最小合规原子
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem")     # 两者都缺
+    hits = ge.check_audience()
+    assert sum(h.rule_id == "ATOM-AUDIENCE" for h in hits) == 2, "缺两个字段应报两条"
+    assert all(h.severity == "warn" for h in hits), "缺失只记债、不阻断"
+
+    # 写了但值非法 → block（路径排序会拿到非法值）
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                audience="novice", cognitive_load="medium")
+    assert any(h.severity == "block" for h in ge.check_audience())
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                audience="intermediate", cognitive_load="medium")
+    assert ge.check_audience() == [], "合规声明必须放行"
+
+    p = _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                    audience="beginner", cognitive_load="low")
+    assert any(h.severity == "warn" and "类比" in h.message
+               for h in ge.check_audience()), "beginner 无直觉入口应告警"
+
+    p.write_text(p.read_text(encoding="utf-8") + "\n## 类比\n把它想象成搬家。\n",
+                 encoding="utf-8")
+    assert ge.check_audience() == [], "补上类比段后应放行"
+
+
+def test_prereq_readable_declaration_must_match_reality(sandbox: Path):
+    """`prerequisites_readable` 声明须与实算一致——否则学习路径排序依据失真。"""
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                prerequisites_readable="true",
+                relations="\n  - {type: prerequisite, target: ATOM-MEM-VALUE-001}")
+    hits = ge.check_prereq_readable()
+    assert len(hits) == 1 and "与实算不符" in hits[0].message, "声明可读但前置未锻造须报"
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                prerequisites_readable="false",
+                relations="\n  - {type: prerequisite, target: ATOM-MEM-VALUE-001}")
+    assert ge.check_prereq_readable() == [], "诚实声明 false 应放行"
+
+    # 前置被锻造后，实算翻为 True —— 仍声明 false 就又不一致了（双向都查）
+    _write_atom(sandbox, "ATOM-MEM-VALUE-001.md", "mem", id="ATOM-MEM-VALUE-001")
+    hits = ge.check_prereq_readable()
+    assert len(hits) == 1 and "与实算不符" in hits[0].message, "实算翻正后旧声明须报"
 
 
 # ── 必填字段：正例触发 / 反例不触发 ────────────────────────────────────────

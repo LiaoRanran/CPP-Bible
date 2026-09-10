@@ -8,6 +8,10 @@ gray_zone: ub                  # 五类单值归属（M2 §7）：本原子域�
 status: verified               # 唯人可置 verified（S1 三权分立）
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期（第 2 轮人审通过）
+# ---- 认知适切（G5 新增字段）----
+audience: intermediate         # 默认读者：写过 C++ 但没系统区分过 unspecified / UB 的进阶者
+cognitive_load: high           # 需同时持有"测序关系 / 版本边界 / 优化器利用"三条线索
+prerequisites_readable: false  # 前置 ATOM-UB-DEF-001 尚未锻造（relations 已登记意图）
 claim: >-
   `f(g(), h())` 的实参求值顺序是**未指定**（unspecified）：两种顺序都合法、程序不会崩，但不可依赖；
   **未测序（unsequenced）的同一标量修改**（如 `i = i++ + ++i`）与**通过不兼容类型指针访问对象**
@@ -49,16 +53,8 @@ depth:
     顺序（`@L70`/`@L72`/`@L76`），它是实现的选择、不保证。
 pedagogy:
   motivation: 为什么标准要区分"未指定"和"未定义"？合起来叫"不确定"不就完了？
-  misconception:
-    - level: surface
-      text: "函数参数的求值顺序是未定义行为"（C++17 起实参初始化是 indeterminately sequenced：顺序不可依赖，但既不重叠、也不是 UB）
-    - level: surface
-      text: "f(i++, i++) 是未定义行为"（C++11/14 确实如此，**C++17 起已是 unspecified**——"用旧规则套新标准"的典型误判）
-    - level: surface
-      text: "同一段代码在多个编译器/版本下结果一致，说明标准规定了顺序"
-    - level: deep
-      text: "只要我这台机器、这个编译器上结果稳定，就可以依赖这个行为"
-      refutations: [EV-UB-001, EV-UB-002]
+  # G5：误解统一引用全局库（level 与反例以库为准，见 misconceptions/README.md）
+  misconceptions: [MIS-UB-014, MIS-UB-013, MIS-UB-015, MIS-UB-001]
   socratic:
     - "同一段代码在 GCC 8.1 到 15.3 上跑了一致结果——这能证明标准规定了顺序吗？"
     - "如果标准说'未定义'，编译器能不能假设这段代码永远不会执行？"

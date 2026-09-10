@@ -6,6 +6,10 @@ type: mechanism
 status: verified               # 唯人可置 verified（S1 三权分立）
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期
+# ---- 认知适切（G5 新增字段）----
+audience: intermediate         # 默认读者：懂 C++ 基础、但尚未建立值类别/重载决议概念的进阶者
+cognitive_load: high           # 需同时持有"类型转换 / 重载决议 / 汇编层搬运量"三条线索
+prerequisites_readable: false  # 前置 ATOM-MEM-VALUE-001 尚未锻造（relations 已登记意图）
 claim: >-
   std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载；
   移动构造的收益来自**掏空源对象**，因此源对象没有可掏空的间接资源时，移动退化为拷贝。
@@ -39,14 +43,8 @@ depth:
     FixedBuf<8> 的移动必须搬 32 字节且源分毫未动（EV-MEM-002 的 movaps 断面：`@L136`/`@L143`）。
 pedagogy:
   motivation: 为什么标准要给一个"不搬东西"的函数起名叫 move？
-  misconception:
-    - level: surface
-      text: "std::move 会移动对象"
-    - level: surface
-      text: "移动之后源对象变成空的，可以当空对象继续用"
-    - level: deep
-      text: "移动一定比拷贝快，所以到处加 std::move 准没错"
-      refutations: [EV-MEM-001, EV-MEM-002]
+  # G5：误解统一引用全局库（level 与反例以库为准，见 misconceptions/README.md）
+  misconceptions: [MIS-MEM-001, MIS-MEM-002, MIS-MEM-012]
   socratic:
     - "如果 std::move 只是类型转换，那么真正决定'省不省'的是什么？"
     - "std::array<int, 1000> 的移动和拷贝，在机器码上有什么区别？"

@@ -6,6 +6,10 @@ type: evolution
 status: verified               # 唯人可置 verified（S1 三权分立）
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期（人审通过，授予 5 分）
+# ---- 认知适切（G5 新增字段）----
+audience: intermediate         # 默认读者：用现代 C++ 但需要读/维护 C++98 代码库的进阶者
+cognitive_load: medium         # 主线是"语言能力如何塑造库设计"的单线索叙事，配可验证判据
+prerequisites_readable: true   # 无 prerequisite 型前置（relations 为 evolved_to / contrasts，目标已存在）
 claim: >-
   std::auto_ptr 的"拷贝构造"签名是 auto_ptr(auto_ptr&)（非 const 左值引用）：它**不满足**
   CopyConstructible，却能从非 const 对象"拷贝"，且拷贝后**源被清空**（转移所有权）。
@@ -45,14 +49,8 @@ depth:
     伪装成一次普通拷贝（四条 static_assert 双向锁定，编译期判定、零 flake）。
 pedagogy:
   motivation: 一个"智能指针"为什么把拷贝做成转移？这不是 bug——那是当年唯一能表达它的语法。
-  misconception:
-    - level: surface
-      text: "auto_ptr 和 unique_ptr 差不多，只是名字旧一点"
-    - level: surface
-      text: "auto_ptr 反正被移除了，C++17 里编译不过"（实测：GCC 15.3 的 libstdc++ 在 c++17/c++23 下仍提供它）
-    - level: deep
-      text: "auto_ptr 被移除是因为它有 bug / 实现得不好"
-      refutations: [EV-HIST-001, EV-MEM-003]
+  # G5：误解统一引用全局库（level 与反例以库为准，见 misconceptions/README.md）
+  misconceptions: [MIS-HIST-001, MIS-HIST-002, MIS-HIST-003]
   socratic:
     - "如果 C++98 没有移动语义，一个库作者要怎么表达'把所有权交出去'？"
     - "为什么 unique_ptr 禁止拷贝是优点，而 auto_ptr 允许拷贝是灾难？"
