@@ -66,8 +66,11 @@ depth:                     # ④ 纵深穿透：钻到哪一层
   drill_note: 移动构造调用点见 EV-MEM-002 的 call 指令对照
 pedagogy:                  # ⑤ 教学封装
   motivation: 为什么需要"可析构但不可读值"这条中间态？
-  misconception[]: ["std::move 会移动对象", "移动后源对象为空字符串/空容器"]
-  socratic[]: ["如果把源对象当作空容器使用，什么场景会炸？"]
+  misconception:
+    - "std::move 会移动对象"
+    - "移动后源对象为空字符串/空容器"
+  socratic:
+    - "如果把源对象当作空容器使用，什么场景会炸？"
   predict_first: 移动后再调用 size() 会输出什么？（先预测，再看实验）
 ---
 

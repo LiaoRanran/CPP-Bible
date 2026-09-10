@@ -52,7 +52,7 @@
 - 统一写法：`const` / `constexpr` / `consteval` / `constinit`（代码标识符**一律不译**，散文里用中文注解）
 - 禁用：把 `constexpr` 说成"编译期 const"；把 `consteval` 与 `constexpr` 混为一谈
 - 判定：`const`=运行期只读承诺；`constexpr`=可用于常量表达式（**不保证**一定在编译期求值）；`consteval`=必须在编译期求值；`constinit`=保证静态初始化在编译期完成（变量非常量）
-- 证据：ch21_const_family 为专门一章【事实】；四词在书内共现强度**待 G3 门禁首跑实测**（本轮未单独取数，不臆造）
+- 证据：ch21_const_family 为专门一章【事实】；四词共现强度（`Select-String \b` 词界实测，2026-09-10）：`const` **6632**、`constexpr` **2975**、`consteval` **384**、`constinit` **240**。consteval/constinit 与 constexpr 的量级差（≈1:8、1:12）说明高级别常量性工具曝光低，最易被笼统说成"编译期 const"。
 
 ## 3. 命名与书写约定（全局）
 
