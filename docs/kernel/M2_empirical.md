@@ -46,6 +46,12 @@
 - **全量档（每个原子至少跑一次，进库前）**：编译器 `{GCC 15.3, GCC 13.1, Clang 19}` × std `{c++17, c++20, c++23}` × opt `{O0, O2}` + sanitizer `{ASan, UBSan}`（并发类加 TSan）。
 - **选取规则**：论断涉及"标准版本差异" → 全量跑 std 维；涉及"实现细节/ABI" → 全量跑编译器维；涉及"性能" → 加 `-O3` 与基准（用 `Benchmarks/` 与 `_bench_d5_*` 现成夹具）；涉及 UB → 必跑 sanitizer 维。
 
+> 【UB 类证据卡的额外要求（2026-09-10 落地）】UB 类（含灰色地带）证据卡除矩阵要求外，
+> **必须在 Linux 侧过一遍 sanitizer**：证据卡的 `sanitizer` 校验在 Windows（MinGW 无 ASan/UBSan）
+> 会 **skip**，只在 Linux 真跑。样板 B 的严格别名夹具正是**在 WSL 侧才被 UBSan 抓到自身的整数
+> 溢出**（连踩三次：`int` 宽度 → LLP64 下 `long` 仍是 32 位 → `int + int` 在 int 域内先溢出）。
+> Windows 单侧开发会把"实验代码自身带 UB"整类漏检。分布与细节见 §7。
+
 > 【本机能力，已实测】GCC 15.3.0 / 13.1.0 / 8.1.0（`C:/Qt/Tools/mingw*_64`）；**无 Clang 与 MSVC**，
 > CI 的 Clang-19 job 是唯一补齐路径（本机不伪造）。
 > 【夹具 ↔ std 绑定（复跑前必看）】GCC 8.1.0 **不支持 `-std=c++23`**（`unrecognized command line
@@ -139,11 +145,15 @@ Clang 列（CI Gray-zone 步，notice 注解留痕）：输出 g / h / f(1,2) �
      不得宣称"三编译器对照已完备"。
 ```
 
-> 【⚠️ 高频定性错误（2026-09-10 样板 B 红队抓到）】`f(g(), h())` 是 **unspecified**，但
-> **`f(i++, i++)` 是 UB**——同一标量 `i` 在两处未测序地各改一次（[intro.execution]）。
-> "顺序未指定"与"是不是 UB"是**两件事**：判据不是"顺序确定不确定"，而是
-> **"标准有没有给出合法结果的集合"**（有集合 = unspecified；连集合都没有 = UB）。
-> 这条连不少资料都写错，是本项目灰区判定里最容易被误判的一类。
+> 【⚠️ 灰区判据与版本边界（2026-09-10 样板 B 经"纠错 → 被纠正"往返后定稿）】判据不是
+> "顺序确定不确定"，而是**两个副作用处于哪种关系**：
+>   * **_unsequenced_**（**可能重叠**）→ 命中 UB 条款 → **UB**；
+>   * **_indeterminately sequenced_**（**不保证顺序、但绝不重叠**）→ **unspecified**。
+> **版本边界（最容易踩的坑）**：C++17（P0145R3）把**函数参数初始化**从 unsequenced 改为
+> indeterminately sequenced ⇒ `f(i++, i++)` **C++11/14 是 UB、C++17 起是 unspecified**；
+> 而**运算符操作数仍是 unsequenced** ⇒ `i = i++ + ++i` 在所有版本都是 UB。
+> 执行方曾把 `f(i++, i++)` 一律判成 UB（**用旧版本规则套新标准**），由人审纠正并留痕。
+> **规则：凡涉及测序/求值顺序的论断，必须写明标准版本。**
 
 > 【⚠️ Sanitizer 覆盖不对称（2026-09-10 落地）】证据卡的 `sanitizer` 校验在 **Windows 上会 skip**
 > （MinGW 无 ASan）、**只在 Linux 上真跑**。样板 B 的严格别名夹具正是**在 WSL 侧才被 UBSan 抓到
