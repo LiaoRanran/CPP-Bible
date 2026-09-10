@@ -3,7 +3,9 @@ id: ATOM-MEM-MOVE-002
 title: 用 std::move 申报所有权转移，真正的搬运发生在移动构造里
 domain: MEM
 type: mechanism
-status: draft                  # draft|verified|rejected（**唯人可置 verified**：见下方"签收"）
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-10        # 签署日期
 claim: >-
   std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载；
   移动构造的收益来自**掏空源对象**，因此源对象没有可掏空的间接资源时，移动退化为拷贝。
@@ -130,4 +132,5 @@ array    拷贝分配=0 移动分配=0 移动后源完好=是       ← 标准�
 
 - 人审记录（四步流程：平庸版 → 红队 → 5 分候选 → 人审）：`goldens/A_move.md`（监工质检报告
   2026-09-10：五重剖面 5/5、证据双 confirm、汇编行号硬校验通过、建议授予 5 分）。
-- 本原子当前为 `draft`：**`verified` 须由人签署**（`verified_by: human:*`），Agent 不自置。
+- **签署记录**：`status: verified` · `verified_by: human:liaoranran` · `verified_at: 2026-09-10`
+  —— 由人签署（Agent 未自置，守 S1 三权分立）。
