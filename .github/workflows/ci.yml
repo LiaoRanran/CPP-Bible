@@ -139,13 +139,13 @@ jobs:
         echo "== GCC =="
         g++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_gcc && /tmp/gz_gcc > /tmp/gz_gcc.txt 2>&1
         cat /tmp/gz_gcc.txt
-        echo "::notice::Gray-zone GCC 求值顺序 = $(tr '\n' '/' < /tmp/gz_gcc.txt)"
+        echo "::notice::Gray-zone GCC 求值顺序 = $(tr '\n' '/' < /tmp/gz_gcc.txt) [$(g++ --version | head -1)]"
         echo "== Clang =="
         if command -v clang++ >/dev/null 2>&1; then
           clang++ --version | head -1
           clang++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_clang && /tmp/gz_clang > /tmp/gz_clang.txt 2>&1
           cat /tmp/gz_clang.txt
-          echo "::notice::Gray-zone Clang 求值顺序 = $(tr '\n' '/' < /tmp/gz_clang.txt)"
+          echo "::notice::Gray-zone Clang 求值顺序 = $(tr '\n' '/' < /tmp/gz_clang.txt) [$(clang++ --version | head -1)]"
         else
           echo "clang++ N/A on this runner"
           echo "::warning::runner 无 clang++ → 样板 B 的 Clang 列须降级为'标准条文代替'并标'部分达成'"
