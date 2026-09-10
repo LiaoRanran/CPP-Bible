@@ -218,8 +218,38 @@ def _split_argv(cmd: str) -> list[list[str]] | None:
     return out or None
 
 
+def _pin_compiler(argv: list[str]) -> list[str]:
+    """把 argv[0] 的**裸编译器名**钉到 `toolchain` 解析出的完整路径。
+
+    为何必须（2026-09-10 监工复现的假阳性）：Windows 多 MinGW 环境下 CreateProcess 按 PATH
+    解析裸 `g++` —— 本机 PATH 里是 mingw**1310**（13.1.0），它在 subprocess 环境里找不到
+    cc1plus，报 `fatal error: cannot execute 'cc1plus'`。此前工具只因调用者 PATH 恰好前置了
+    1530 才"通过"，一旦换环境即 `refute:compile_failed`。钉死后结果与调用者 PATH 无关。
+    """
+    if not argv:
+        return argv
+    base = Path(argv[0]).name.lower()
+    if base in ("g++", "gcc", "c++", "cc", "g++.exe", "gcc.exe"):
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            from toolchain import resolve_gpp
+            resolved = resolve_gpp()
+            if resolved and Path(resolved).name.lower() != base:
+                return [resolved, *argv[1:]]
+        except Exception:                                   # pragma: no cover
+            pass
+    elif base in ("clang++", "clang", "clang++.exe", "clang.exe"):
+        found = shutil.which(base) or shutil.which(base.replace(".exe", ""))
+        if found:
+            return [found, *argv[1:]]
+    return argv
+
+
 def run_commands(lines: Sequence[str], cwd: Path, env: dict) -> tuple[list[tuple[str, int, str]], str]:
-    """逐行执行命令（`&&` 拆段、不经 shell）。返回 ([(cmd, rc, stderr)], 合并 stdout)。"""
+    """逐行执行命令（`&&` 拆段、不经 shell、裸编译器名钉完整路径）。
+
+    返回 ([(cmd, rc, stderr)], 合并 stdout)。`&&` 语义保留：同段内前一条失败即短路。
+    """
     results: list[tuple[str, int, str]] = []
     stdout_parts: list[str] = []
     for raw in lines:
@@ -230,12 +260,23 @@ def run_commands(lines: Sequence[str], cwd: Path, env: dict) -> tuple[list[tuple
         if argv_list is None:
             results.append((cmd, 127, "含不支持的 shell 特性（管道/重定向/通配/变量）"))
             continue
+        failed = False
         for argv in argv_list:
-            r = subprocess.run(argv, cwd=str(cwd), capture_output=True,
-                               text=True, errors="replace", timeout=600, env=env)
-            results.append((cmd, r.returncode, (r.stderr or "").strip()[:400]))
-            if r.stdout:
-                stdout_parts.append(r.stdout)
+            if failed:                                      # `&&` 短路
+                break
+            argv = _pin_compiler(argv)
+            try:
+                r = subprocess.run(argv, cwd=str(cwd), capture_output=True, text=True,
+                                   errors="replace", timeout=600, env=env)
+                rc, err, out = r.returncode, (r.stderr or "").strip()[:400], r.stdout or ""
+            except FileNotFoundError:                       # 编译失败后 exe 不存在 → 不崩溃
+                rc, err, out = 127, f"可执行文件不存在或不可执行：{argv[0]}", ""
+            except subprocess.TimeoutExpired:
+                rc, err, out = 124, f"命令超时（600s）：{argv[0]}", ""
+            results.append((cmd, rc, err))
+            if out:
+                stdout_parts.append(out)
+            failed = rc != 0
     return results, "\n".join(stdout_parts)
 
 

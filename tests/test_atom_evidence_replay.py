@@ -64,8 +64,11 @@ def test_missing_field_refutes(tmp_path: Path):
 
 # ── 3~5. 真编译三类结局 ────────────────────────────────────────────────────
 def _make_card(tmp_path: Path, *, expect: str, sha: str) -> Path:
-    """造一张自包含卡：fixture 打印 A/B 两行，artifact 为 -S 产物。"""
-    gpp = _compiler()
+    """造一张自包含卡：fixture 打印 A/B 两行，artifact 为 -S 产物。
+
+    `command` 用**裸 `g++`**——与真实卡（EV-MEM-001）格式一致。2026-09-10 监工抓到的
+    "毒样例 3/3 是假阳性"正是因为旧版测试卡写了完整路径 g++，绕过了裸名校验路径。
+    """
     fx = tmp_path / "fx.cpp"
     fx.write_text('#include <cstdio>\nint main(){ std::printf("A\\nB\\n"); }\n',
                   encoding="utf-8")
@@ -75,8 +78,8 @@ def _make_card(tmp_path: Path, *, expect: str, sha: str) -> Path:
     def q(p: object) -> str:
         """卡内路径一律正斜杠（M2 command 契约）。"""
         return '"' + str(p).replace("\\", "/") + '"'
-    command = (f'{q(gpp)} -std=c++17 -O2 {q(fx)} -o {q(exe)} && {q(exe)}\n'
-               f'{q(gpp)} -std=c++17 -O2 -S {q(fx)} -o {q(asm)}')
+    command = (f'g++ -std=c++17 -O2 {q(fx)} -o {q(exe)} && {q(exe)}\n'
+               f'g++ -std=c++17 -O2 -S {q(fx)} -o {q(asm)}')
     card = tmp_path / "EV-T-002.md"
     card.write_text(
         "---\n"
@@ -132,3 +135,59 @@ def test_unsupported_shell_feature_is_reported():
     assert rp._split_argv("g++ a.cpp | tee log") is None
     assert rp._split_argv("g++ a.cpp > out.txt") is None
     assert rp._split_argv('g++ a.cpp -o b.exe && b.exe') is not None
+
+
+# ── 7. 裸编译器名必须被钉到完整路径（监工缺陷 1 的回归锁） ──────────────────
+def test_bare_compiler_name_is_pinned_to_resolved_path():
+    """本机 PATH 里的 g++ 是 mingw1310（13.1.0，缺 cc1plus）；裸名必须被替换成
+    `resolve_gpp()` 的完整路径，否则编译失败——工具不得依赖调用者 PATH。"""
+    from toolchain import resolve_gpp
+    argv = rp._pin_compiler(["g++", "-std=c++17", "x.cpp"])
+    assert argv[0] != "g++", "裸名必须替换为完整路径"
+    assert Path(argv[0]).name.lower() == Path(resolve_gpp()).name.lower()
+    assert argv[1:] == ["-std=c++17", "x.cpp"], "其余参数原样保留"
+    # 已是完整路径时不重复改写
+    pinned = rp._pin_compiler([resolve_gpp(), "x.cpp"])
+    assert pinned[0] == resolve_gpp()
+
+
+def test_missing_executable_does_not_crash(tmp_path: Path):
+    """缺陷 2 的回归锁：编译失败后执行不存在的 exe → rc=127 且不抛异常。"""
+    fx = tmp_path / "broken.cpp"
+    fx.write_text("int main(){ this is not c++ }\n", encoding="utf-8")
+    exe = (tmp_path / "nope.exe").as_posix()
+    card = tmp_path / "EV-T-003.md"
+    card.write_text(
+        "---\n"
+        "id: EV-T-003\n"
+        "command: |\n"
+        f'  g++ -std=c++17 {fx.as_posix()} -o "{exe}"\n'
+        f'  "{exe}"\n'
+        f"artifact: {fx.as_posix()}\n"
+        f"artifact_sha256: {'0' * 64}\n"
+        "actual:\n"
+        '  run_case: "A"\n'
+        "---\n", encoding="utf-8")
+    verdict, log = rp.replay_card(card, do_sanitizer=False)
+    assert verdict == "refute:compile_failed", log
+    assert any("可执行文件不存在" in ln or "rc=127" in ln for ln in log), log
+
+
+# ── 8. `&&` 语义：同段前一条失败则短路，不误跑后续 ───────────────────────────
+@needs_gpp
+def test_and_and_short_circuits_after_failure(tmp_path: Path):
+    card = tmp_path / "EV-T-004.md"
+    card.write_text(
+        "---\n"
+        "id: EV-T-004\n"
+        "command: |\n"
+        f'  g++ -std=c++17 {tmp_path.as_posix()}/nope.cpp -o "{tmp_path.as_posix()}/x.exe" '
+        f'&& "{tmp_path.as_posix()}/x.exe"\n'
+        f"artifact: {tmp_path.as_posix()}/x.exe\n"
+        f"artifact_sha256: {'0' * 64}\n"
+        "actual:\n"
+        '  run_case: "A"\n'
+        "---\n", encoding="utf-8")
+    verdict, log = rp.replay_card(card, do_sanitizer=False)
+    assert verdict == "refute:compile_failed", log
+    assert len([ln for ln in log if "rc=" in ln]) == 1, "&& 短路后不应再执行第二段"
