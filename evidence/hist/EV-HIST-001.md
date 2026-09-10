@@ -37,6 +37,7 @@ actual:                      # 逐项实测（2026-09-10）
   impl_GCC15.3_cxx14: "同夹具可编译、运行输出如上"
   impl_GCC15.3_cxx17: "-std=c++17 下**仍可编译**（rc=0）——libstdc++ 保留了已从标准移除的 auto_ptr"
   impl_GCC15.3_cxx23: "-std=c++23 下**仍可编译**（rc=0）"
+  impl_Clang18.1.3_CI: "CI（Ubuntu, clang 18.1.3, 默认 libstdc++）：编译通过、四条 static_assert 全过、三行运行输出与 GCC 逐字一致（notice 注解留痕）"
 verdict: confirm
 falsification: >-
   若拷贝后源**未**被清空（`a.get() != nullptr`），则"拷贝即转移"被推翻；若从容器读出元素后
@@ -66,8 +67,10 @@ reproduce: 见 command 两行；三档标准版本可用性用同一最小夹具
 - 引用纪律：本卡因此**不写"C++17 下会编译失败"**（实测不成立），只写"标准自 C++17 移除；
   GCC 15.3 实现仍保留（实测），libc++/MSVC 已移除"。
 
-## 待补（人审通过后）
+## 边界与待补
 
-- Clang 列：Linux 的 `clang++` 默认使用 **libstdc++**，预期同样可用；由 CI 的夹具步骤留痕
-  （与样板 B 同法，走 `::notice::` 注解公开可读）。
-- MSVC 列：按 M2 §2 永久边界以标准条文代替（无可用路径）。
+- **Clang 列已实测**（CI `Cross-check Matrix` 步，notice 注解公开可读）：clang 18.1.3 + libstdc++
+  下编译通过、四条 `static_assert` 全过、运行输出与 GCC **逐字一致** → 满足 M2 §2 双编译器边界，
+  **无需豁免票**。
+- **MSVC 列**：MSVC 已移除 `auto_ptr` 且本项目无任何可用路径 → 按 M2 §2 永久边界以标准条文代替。
+  准确表述是 **"GCC + Clang 双编译器实测 + MSVC 标准条文"**，不得写成"三编译器全部实测"。

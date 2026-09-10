@@ -311,15 +311,19 @@ GCC 实现仍保留；libc++/MSVC 已移除"——**这构成一个可移植性�
 3. **"标准移除 ≠ 实现删除"** 是否应作为独立知识点（GCC 保留 / libc++ 与 MSVC 移除），
    还是并入本原子的"边界"节即可？
 
-## Clang 列处置（按任务书路线）
+## Clang 列处置（按任务书路线 —— 结果：**实测通过，无需降级**）
 
-- **路线**：CI 夹具步骤编译运行 `Examples/_atom_auto_ptr.cpp`（`-std=c++14`），结果经
-  `::notice::` 注解留痕（job 日志需 admin 权限，注解可公开读取）。
-  Linux 的 `clang++` 默认配 **libstdc++**，预期同样可编译并通过四条 `static_assert` → 满足
-  M2 §2 "GCC + Clang 双编译器"边界。
-- **若 CI 侧不可用**（如 runner 无 `clang++`）：降级为"标准条文代替"并标"**部分达成**"，
-  登记豁免票（`owner: human:liaoranran`，30 天）——与样板 B 的处置路径一致。
-- **本机不装 Clang / 不装 MSVC**；MSVC 按永久边界以标准条文代替。
+- 为 CI 的矩阵步骤（原 `Gray-zone Matrix`，现扩为 **`Cross-check Matrix`**）追加了 auto_ptr 夹具的
+  GCC/Clang 编译运行，结果经 `::notice::` 注解留痕（job 日志需 admin 权限，注解可公开读取）。
+- **CI 实测输出**（quality job 全绿）：
+  ```text
+  [notice] Evolution GCC auto_ptr   = auto_ptr 拷贝后源为空=是 目标值=42/从容器读元素后源为空=是 偷到值=7/unique_ptr 移动后源为空=是 目标值=9/ [g++ (Ubuntu 13.3.0) 13.3.0]
+  [notice] Evolution Clang auto_ptr = 同上三行，逐字一致 [Ubuntu clang version 18.1.3 (1ubuntu1)]
+  ```
+- **结论**：Linux 的 `clang++` 默认配 **libstdc++**，同样提供 `auto_ptr` 且四条 `static_assert`
+  全部通过、三行运行输出与 GCC **逐字一致** → **满足 M2 §2 "GCC + Clang 双编译器"边界，
+  不登记豁免票、不标"部分达成"**。
+- **本机不装 Clang / 不装 MSVC**；MSVC 已移除 `auto_ptr` 且无任何可用路径，按永久边界以标准条文代替。
 
 ## rubric 自评（从几分升到几分，具体补了什么）
 
