@@ -66,13 +66,47 @@ def _strip_comment(s: str) -> str:
     return "".join(out).rstrip()
 
 
+def _split_flow(inner: str) -> list[str]:
+    """按顶层逗号切分 flow 内容（不切 `{}`/`[]` 内部）。"""
+    out: list[str] = []
+    depth = 0
+    cur: list[str] = []
+    for ch in inner:
+        if ch in "[{":
+            depth += 1
+        elif ch in "]}":
+            depth -= 1
+        if ch == "," and depth == 0:
+            out.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+    if cur:
+        out.append("".join(cur))
+    return out
+
+
 def _scalar(raw: str) -> Any:
     s = raw.strip()
     if len(s) >= 2 and s[0] == s[-1] and s[0] in "\"'":
         return s[1:-1]
+    low = s.lower()
+    if low in ("true", "yes"):               # YAML 布尔（否则 first_hand 会变成字符串）
+        return True
+    if low in ("false", "no"):
+        return False
     if s.startswith("[") and s.endswith("]"):
         inner = s[1:-1].strip()
-        return [x.strip() for x in inner.split(",")] if inner else []
+        if not inner:
+            return []
+        items: list[Any] = []
+        for x in _split_flow(inner):
+            x = x.strip()
+            # `relations: [{type: prerequisite, target: X}]` 是 G1_layout 模板的标准写法，
+            # 内联 flow map 必须解析成 dict，否则关系规则全部读不到边。
+            items.append(_parse_flow_map(x) if x.startswith("{") and x.endswith("}")
+                         else _scalar(x))
+        return items
     return s
 
 

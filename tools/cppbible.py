@@ -229,6 +229,7 @@ def cmd_check(args: argparse.Namespace) -> int:
             ("Atom Coverage", [PYTHON_EXE, "tools/atom_coverage_map.py", "--check",
                                "--check-doc"]),
             ("Evidence Replay", [PYTHON_EXE, "tools/atom_evidence_replay.py", "--check"]),
+            ("Gate Engine", [PYTHON_EXE, "tools/gate_engine.py", "--check"]),
             ("Fence Sweep", [PYTHON_EXE, "tools/sweep_fences.py", "--check"]),
             ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
             ("S10 Verify", [PYTHON_EXE, "tools/s10_verify_mark.py", "--check"]),

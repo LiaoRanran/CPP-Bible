@@ -101,6 +101,12 @@ jobs:
       run: python3 tools/atom_evidence_replay.py --check
       continue-on-error: false
 
+    - name: Gate Engine (M4 规则引擎：事实门禁 block + 双清单收敛)
+      # 规则全集见 docs/kernel/M4_gate_engine.md；block 级违规即红，warn 记债不红，
+      # advice（教学/文学）只建议不改文。规则可实现按 ADR-0004 挂在 cmd_check 上。
+      run: python3 tools/gate_engine.py --check
+      continue-on-error: false
+
     - name: Gray-zone Matrix (求值顺序 unspecified：GCC/Clang 对照留痕)
       # 只留痕、不判"顺序"红绿：unspecified 的两种求值顺序都合法，机器不能断言"必须右→左"。
       # 编译失败仍会红（夹具必须在两编译器下都可编）。MSVC 无路径，按 M2 §2 永久边界以标准条文代替。
