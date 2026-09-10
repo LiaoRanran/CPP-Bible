@@ -5,9 +5,9 @@
  "metrics": {
   "block_findings": 0,
   "warn_findings": 5,
-  "atoms_total": 1,
+  "atoms_total": 2,
   "evidence_total": 4,
-  "verified_atoms": 1,
+  "verified_atoms": 2,
   "replay_confirm": 4
  },
  "accepted": [
