@@ -95,6 +95,8 @@ def _scalar(raw: str) -> Any:
         return True
     if low in ("false", "no"):
         return False
+    if s.startswith("{") and s.endswith("}"):     # 内联 flow map 作为值（actual/matrix）
+        return _parse_flow_map(s)
     if s.startswith("[") and s.endswith("]"):
         inner = s[1:-1].strip()
         if not inner:

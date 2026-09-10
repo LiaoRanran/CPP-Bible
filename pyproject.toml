@@ -91,6 +91,9 @@ quality_gates = [
     "tools/atom_coverage_map.py --check --check-doc",
     "tools/atom_evidence_replay.py --check",
     "tools/gate_engine.py --check",
+    "tools/golden_lock.py check",
+    "tools/debt_ledger.py check",
+    "tools/poison_drill.py",
 ]
 
 [tool.ruff]

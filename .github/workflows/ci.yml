@@ -107,6 +107,15 @@ jobs:
       run: python3 tools/gate_engine.py --check
       continue-on-error: false
 
+    - name: S1-S6 Controls (黄金锁 / 债务台账 / 毒样例演练)
+      # S4 黄金锁：质量指标恶化即红（改善提示 sync）；S5 债务台账：豁免到期/负债率超限即红；
+      # S6 毒样例演练：注入假论断/过期工件/缺反例，制衡层必须全部拦截（阴性对照必须放行）。
+      run: |
+        python3 tools/golden_lock.py check
+        python3 tools/debt_ledger.py check
+        python3 tools/poison_drill.py
+      continue-on-error: false
+
     - name: Gray-zone Matrix (求值顺序 unspecified：GCC/Clang 对照留痕)
       # 只留痕、不判"顺序"红绿：unspecified 的两种求值顺序都合法，机器不能断言"必须右→左"。
       # 编译失败仍会红（夹具必须在两编译器下都可编）。MSVC 无路径，按 M2 §2 永久边界以标准条文代替。

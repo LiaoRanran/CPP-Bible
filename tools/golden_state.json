@@ -1,0 +1,14 @@
+{
+ "schema": "cppbible-golden-lock/1.0",
+ "updated": "2026-09-10",
+ "commit": "",
+ "metrics": {
+  "block_findings": 0,
+  "warn_findings": 1,
+  "atoms_total": 0,
+  "evidence_total": 1,
+  "verified_atoms": 0,
+  "replay_confirm": 1
+ },
+ "accepted": []
+}

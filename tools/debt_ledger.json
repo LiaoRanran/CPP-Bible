@@ -1,0 +1,14 @@
+{
+ "schema": "cppbible-debt-ledger/1.0",
+ "tickets": [
+  {
+   "id": "DEBT-001",
+   "cause": "compile_exempt.json 63 条历史豁免未票据化（无原因/风险/到期字段）",
+   "risk": "豁免可能过期未清理，掩盖真实回归",
+   "compensation": "G5 迁移波次逐条转正式票据或修复",
+   "owner": "human:liaoranran",
+   "opened": "2026-09-10",
+   "due": "2026-10-10"
+  }
+ ]
+}

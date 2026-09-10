@@ -331,6 +331,71 @@ def check_atom_gray_zone() -> list[Finding]:
     return out
 
 
+# ── 制衡层 S1/S2/S3（机器可判定部分；S4/S5/S6 为独立工具）──────────────────
+def check_s1_human_signoff() -> list[Finding]:
+    """S1 三权分立：Agent 无权定 golden —— verified 必须带人工签收。"""
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        if str(meta.get("status")) != "verified":
+            continue
+        by = str(meta.get("verified_by") or "")
+        if not by.startswith("human:"):
+            out.append(Finding("S1-AUTHOR-SELF-VERIFY", "block", _rel(p),
+                               "status=verified 但缺 verified_by: human:*（Agent 无权自证）",
+                               "由人复核后写入 verified_by / verified_at"))
+    return out
+
+
+def check_s2_evidence_verdict() -> list[Finding]:
+    """S2 声明-证据绑定：verified 原子引用的证据必须 verdict=confirm（作者自述无效）。"""
+    verdicts = {str(_meta(p).get("id") or p.stem): str(_meta(p).get("verdict") or "")
+                for p in _cards(EVIDENCE, "EV-*.md")}
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        if str(_meta(p).get("status")) != "verified":
+            continue
+        for ev in _as_list(_meta(p).get("evidence")):
+            key = str(ev)
+            v = verdicts.get(key)
+            if v is None:
+                out.append(Finding("S2-EVIDENCE-VERDICT", "block", _rel(p),
+                                   f"引用的证据卡不存在：{key}",
+                                   "补卡或改引用（不许引用不存在的证据）"))
+            elif v != "confirm":
+                out.append(Finding("S2-EVIDENCE-VERDICT", "block", _rel(p),
+                                   f"证据 {key} verdict={v or '空'}（verified 只能绑 confirm）",
+                                   "证据被 refute 时原子必须回到 draft"))
+    return out
+
+
+def check_s3_hardcoded_expected() -> list[Finding]:
+    """S3 伪证据检测：期望输出**硬编码进夹具字符串字面量**（打印常量冒充观测）→ 作弊级阻断。
+
+    只查字符串字面量：`//@ 注释`与 printf 的 %ld 格式串都不含"带实测数字"的片段，不误报。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        fixture = meta.get("fixture")
+        actual = meta.get("actual")
+        if not fixture or not isinstance(actual, dict):
+            continue
+        fx = ROOT / str(fixture)
+        if not fx.is_file():
+            continue
+        src = fx.read_text(encoding="utf-8", errors="replace")
+        literals = [m.group(1) for m in re.finditer(r'"([^"\n]*)"', src)]
+        for v in actual.values():
+            for seg in (t.strip() for t in str(v).split("|")):
+                if len(seg) >= 6 and any(seg in lit for lit in literals):
+                    out.append(Finding("S3-EXPECTED-HARDCODED", "block", _rel(p),
+                                       f"期望片段被硬编码进夹具字面量：{seg[:40]!r}",
+                                       "观测必须来自运行时（计数器/输出），打印常量=伪证据"))
+                    break
+    return out
+
+
 def check_evidence_serves_exist() -> list[Finding]:
     """证据服务的原子应存在（G4 前原子未锻造 → warn，不阻断）。"""
     ids = {str(_meta(p).get("id") or p.stem) for p in _cards(ATOMS, "ATOM-*.md")}
@@ -445,6 +510,12 @@ def _register_all() -> None:
         ("EV-SERVES-EXIST", "证据服务的原子存在", "evidence", check_evidence_serves_exist),
         ("DOC-ZERO-PLACEHOLDER", "新体系零占位符", "repo", check_zero_placeholder),
         ("META-MANIFEST", "双清单一致（ADR-0004）", "repo", check_manifest_consistency),
+        ("S1-AUTHOR-SELF-VERIFY", "verified 须人工签收（Agent 无权定 golden）", "atom",
+         check_s1_human_signoff),
+        ("S2-EVIDENCE-VERDICT", "verified 只绑 verdict=confirm 的证据", "atom",
+         check_s2_evidence_verdict),
+        ("S3-EXPECTED-HARDCODED", "期望硬编码进夹具=伪证据", "evidence",
+         check_s3_hardcoded_expected),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn"}
