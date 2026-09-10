@@ -132,14 +132,23 @@ jobs:
     - name: Gray-zone Matrix (求值顺序 unspecified：GCC/Clang 对照留痕)
       # 只留痕、不判"顺序"红绿：unspecified 的两种求值顺序都合法，机器不能断言"必须右→左"。
       # 编译失败仍会红（夹具必须在两编译器下都可编）。MSVC 无路径，按 M2 §2 永久边界以标准条文代替。
+      # 结果同时输出为 ::notice:: 注解：本仓 job 日志需 admin 权限（API 403），而注解可经
+      # check-runs /annotations 公开读取——G4 样板 B 的"Clang 列实测留痕"（M2 §2 双编译器边界）
+      # 依赖这里，否则无权限者无法复核 Clang 侧是否真的跑了。
       run: |
         echo "== GCC =="
-        g++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_gcc && /tmp/gz_gcc
+        g++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_gcc && /tmp/gz_gcc > /tmp/gz_gcc.txt 2>&1
+        cat /tmp/gz_gcc.txt
+        echo "::notice::Gray-zone GCC 求值顺序 = $(tr '\n' '/' < /tmp/gz_gcc.txt)"
         echo "== Clang =="
         if command -v clang++ >/dev/null 2>&1; then
-          clang++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_clang && /tmp/gz_clang
+          clang++ --version | head -1
+          clang++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_clang && /tmp/gz_clang > /tmp/gz_clang.txt 2>&1
+          cat /tmp/gz_clang.txt
+          echo "::notice::Gray-zone Clang 求值顺序 = $(tr '\n' '/' < /tmp/gz_clang.txt)"
         else
           echo "clang++ N/A on this runner"
+          echo "::warning::runner 无 clang++ → 样板 B 的 Clang 列须降级为'标准条文代替'并标'部分达成'"
         fi
       continue-on-error: false
 

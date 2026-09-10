@@ -479,8 +479,17 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
     return "ok", "无 sanitizer 报错"
 
 
-def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False) -> tuple[str, list[str]]:
-    """执行四项校验。返回 (verdict, 日志行)。verdict ∈ confirm / refute:<reason>。"""
+def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
+                restore_artifact: bool = True) -> tuple[str, list[str]]:
+    """执行四项校验。返回 (verdict, 日志行)。verdict ∈ confirm / refute:<reason>。
+
+    `restore_artifact`（默认 True）：校验结束后把仓库里的 `artifact` 还原成本次运行前的字节。
+    为什么需要（2026-09-10 踩坑）：校验流程是「删旧工件 → 重生成 → 比 sha256」，这在**同一编译器
+    环境**下无害；但在**异构环境**（如 WSL/Linux 上跑，而卡声明 MinGW 归属）会把仓库工件**静默
+    改写成异平台产物**——实测一次 WSL 复算就把 4 份 `.asm` 全换成 ELF/Linux 版（汇编里出现
+    `endbr64` / `__printf_chk@PLT`），而卡里的 sha256 仍是 MinGW 的 → 仓库工件与卡**不同代**。
+    校验工具是只读角色，不该改写被校验对象；要留调试痕迹时用 `--no-restore`。
+    """
     try:                                   # 卡可能不在仓库内（--card 指向临时路径）
         shown = path.relative_to(ROOT).as_posix()
     except ValueError:
@@ -511,6 +520,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     env = _compiler_env()
     (ROOT / "build").mkdir(exist_ok=True)      # 卡命令产物约定写 build/（仓库源只读）
     tmp = Path(tempfile.mkdtemp(prefix="replay_"))
+    original = art_path.read_bytes() if art_path.exists() else None   # 校验前快照（见 docstring）
     try:
         # 工件生成命令 = 命令行里出现 artifact 路径的那条（从卡推导，不硬编码）
         gen = [ln for ln in cmd_lines if ln.strip() and art_rel in ln]
@@ -595,6 +605,8 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             log.append("  ⏭ sanitizer    已按 --no-sanitizer 跳过")
         return "confirm", log
     finally:
+        if restore_artifact and original is not None:
+            art_path.write_bytes(original)     # 还原：校验工具不改写被校验对象（见 docstring）
         if not keep_tmp:
             shutil.rmtree(tmp, ignore_errors=True)
 
@@ -609,6 +621,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--check", action="store_true", help="任一 refute 即 exit 1")
     ap.add_argument("--no-sanitizer", action="store_true", help="跳过 sanitizer 校验")
     ap.add_argument("--keep-tmp", action="store_true", help="保留临时目录")
+    ap.add_argument("--no-restore", action="store_true",
+                    help="校验后不还原仓库工件（默认还原：校验不应改写被校验对象）")
     a = ap.parse_args(argv)
 
     cards = [Path(c) if Path(c).is_absolute() else ROOT / c for c in a.card] or find_cards()
@@ -619,7 +633,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     n_ok = n_bad = 0
     for card in cards:
         verdict, log = replay_card(card, do_sanitizer=not a.no_sanitizer,
-                                   keep_tmp=a.keep_tmp)
+                                   keep_tmp=a.keep_tmp,
+                                   restore_artifact=not a.no_restore)
         ok = verdict == "confirm"
         n_ok += ok
         n_bad += not ok

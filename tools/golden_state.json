@@ -4,11 +4,11 @@
  "commit": "",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 3,
+  "warn_findings": 5,
   "atoms_total": 1,
-  "evidence_total": 2,
+  "evidence_total": 4,
   "verified_atoms": 1,
-  "replay_confirm": 2
+  "replay_confirm": 4
  },
  "accepted": [
   {
@@ -23,6 +23,13 @@
    "reason": "原子化 ATOM-MEM-MOVE-002 后的预期中间态：① 该原子 relations 指向尚未锻造的 ATOM-MEM-VALUE-001 / ATOM-MEM-PERF-001，ATOM-REL-TARGET 规则自注『尚未锻造的先记债』，属 G5 迁移前债务；② EV-MEM-002 的 EV-SERVES-EXIST 债已因原子化自动清零（规则自注行为）。净 warn 2->3，显式接受",
    "worse": [
     "warn_findings: 2 → 3"
+   ]
+  },
+  {
+   "ts": "2026-09-10T21:54:44",
+   "reason": "G4 样板 B 的配套证据卡 EV-UB-001 / EV-UB-002 服务于 ATOM-UB-GRAY-001，该原子按 0.1 阶段门需人审通过后才锻造；EV-SERVES-EXIST 的 warn 是预期中间态（规则自注 G4 锻造该原子后此债自动清零）。按门制不得提前原子化，显式接受 warn_findings 3->5",
+   "worse": [
+    "warn_findings: 3 → 5"
    ]
   }
  ]

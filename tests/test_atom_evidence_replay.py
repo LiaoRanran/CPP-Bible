@@ -195,6 +195,21 @@ def test_cross_compiler_missing_assert_refutes(tmp_path: Path):
 
 
 @needs_gpp
+def test_artifact_restored_after_replay():
+    """校验不应改写被校验对象：跑完 replay 后仓库工件字节必须与跑前一致。
+
+    背景（2026-09-10 实测踩坑）：复算流程是「删旧工件 → 重生成 → 比 sha256」，在**异构环境**
+    下（在 WSL/Linux 跑、而卡归属 MinGW）会把仓库工件静默改写成 Linux 产物（汇编里出现
+    `endbr64` / `__printf_chk@PLT`），而卡里的 sha256 仍是 MinGW 的 → 仓库工件与卡不同代。
+    校验工具是只读角色，跑完必须还原。这个测试就是那次事故的回归锁。
+    """
+    art = rp.ROOT / "Examples/_atom_move_alloc.asm"
+    before = art.read_bytes()
+    rp.replay_card(REAL_CARD, do_sanitizer=False)
+    assert art.read_bytes() == before, "复算改写了仓库工件（异构环境会静默污染）"
+
+
+@needs_gpp
 def test_toolchain_id_shape():
     """编译器身份形如 `GCC 15.3.0 (MinGW-w64)`：比 sha 前必须先能说清"是谁生成的"。"""
     cid = rp._current_toolchain_id()
