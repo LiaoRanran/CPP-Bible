@@ -226,6 +226,8 @@ def cmd_check(args: argparse.Namespace) -> int:
             ("ASM Evidence", [PYTHON_EXE, "tools/verify_asm_evidence.py", "--root", "Book", "--examples", "Examples"]),
             ("Book ASM Freshness", [PYTHON_EXE, "tools/book_asm_freshness.py"]),
             ("Structure", [PYTHON_EXE, "tools/structure_audit.py", "--check"]),
+            ("Atom Coverage", [PYTHON_EXE, "tools/atom_coverage_map.py", "--check",
+                               "--check-doc"]),
             ("Fence Sweep", [PYTHON_EXE, "tools/sweep_fences.py", "--check"]),
             ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
             ("S10 Verify", [PYTHON_EXE, "tools/s10_verify_mark.py", "--check"]),

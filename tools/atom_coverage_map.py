@@ -112,13 +112,147 @@ def _agg(rows: Sequence[dict]) -> dict[str, dict]:
                   "verified", "unverified"):
             s[k] += (1 if k == "chapters" else r[k])
     for s in out.values():
-        s["unverified_density"] = round(s["unverified"] / max(1, s["cpp_blocks"]), 4)
+        # 存原始比值，聚合期不提前舍入：round(x, 4) 会把 0.10748792 变成 0.1075，
+        # 再经 :.1% 进位成 10.8%（文档手算为 10.7%）。舍入统一留在显示层。
+        s["unverified_density"] = s["unverified"] / max(1, s["cpp_blocks"])
     return out
+
+
+# ── 文档勾稽（把人工"逐列相加"的审计动作固化成机器门禁）──────────────────
+# 背景（2026-09-10 监工验收）：G1_knowledge_map.md 合计行"纯注释 148"与官方口径实算
+# 139 不符（同表 16 域明细加总也是 139）——根因是文档表格手抄、无机器勾稽，`--check`
+# 只查覆盖率所以放行。以下为对策：文档域表逐格 vs 实算比对，并可 --fix-doc 回填。
+DOC_DEFAULT = ROOT / "docs" / "kernel" / "G1_knowledge_map.md"
+COLS = ("chapters", "cpp_blocks", "with_main", "pure_comment", "verified", "unverified")
+
+
+def _header_index(lines: Sequence[str]) -> int | None:
+    """定位第 3 节域表表头行（`| 域 | 章数 | cpp 块 | … | UNVERIFIED |`）。"""
+    for i, ln in enumerate(lines):
+        if ln.startswith("| 域 |") and "cpp" in ln and "UNVERIFIED" in ln:
+            return i
+    return None
+
+
+def _split_cells(ln: str) -> list[str] | None:
+    s = ln.strip()
+    if not s.startswith("|"):
+        return None
+    cells = [c.strip() for c in s.strip("|").split("|")]
+    return cells if len(cells) >= 7 else None
+
+
+def _doc_nums(cells: list[str]) -> list[int] | None:
+    try:
+        return [int(c.replace("*", "").strip()) for c in cells[1:7]]
+    except ValueError:
+        return None
+
+
+def _totals(rows: Sequence[dict], unmapped: Sequence[str]) -> list[int]:
+    return ([len(rows) + len(unmapped)]
+            + [sum(r[k] for r in rows) for k in COLS[1:]])
+
+
+def doc_diff(path: Path, agg: dict[str, dict], rows: Sequence[dict],
+             unmapped: Sequence[str]) -> list[str]:
+    """文档域表 vs 实算逐格比对，返回差异描述（空列表 = 一致）。"""
+    lines = path.read_bytes().decode("utf-8").split("\n")
+    hi = _header_index(lines)
+    if hi is None:
+        return [f"未找到域表（表头 `| 域 | … | UNVERIFIED |`）：{path}"]
+    diff: list[str] = []
+    seen: set[str] = set()
+    total_doc: list[int] | None = None
+    for ln in lines[hi + 2:]:
+        cells = _split_cells(ln)
+        if cells is None:
+            if ln.strip():
+                break                      # 表格结束
+            continue
+        key = cells[0].replace("*", "").strip()
+        nums = _doc_nums(cells)
+        if nums is None:
+            continue
+        if key == "合计":
+            total_doc = nums
+            continue
+        seen.add(key)
+        if key not in agg:
+            diff.append(f"文档多出域 {key}")
+            continue
+        live = [agg[key][k] for k in COLS]
+        for k, a, b in zip(COLS, live, nums):
+            if a != b:
+                diff.append(f"{key}.{k}: 文档 {b} vs 实算 {a}")
+    for d in agg:
+        if d not in seen:
+            diff.append(f"文档缺域 {d}")
+    if total_doc is None:
+        diff.append("文档缺合计行")
+    else:
+        for k, a, b in zip(COLS, _totals(rows, unmapped), total_doc):
+            if a != b:
+                diff.append(f"合计.{k}: 文档 {b} vs 实算 {a}")
+    return diff
+
+
+def fix_doc(path: Path, agg: dict[str, dict], rows: Sequence[dict],
+            unmapped: Sequence[str]) -> int:
+    """按实算回填文档域表（字节安全、保留行尾）。返回改动行数，-1 = 未找到表。
+
+    行尾铁律（2026-09-10 实测踩坑）：**必须在 bytes 层按真实 eol 切分**
+    （`raw.split(eol)`），不可 `raw.decode().split("\\n")` 再用 eol join——
+    CRLF 文件经后者会在每行尾留 `\\r`，join 时产出 `\\r\\r\\n`，整文件伪 diff
+    （实测 126 处双回车，diff 全文件 130 行）。
+    """
+    raw = path.read_bytes()
+    eol = b"\r\n" if b"\r\n" in raw else b"\n"
+    blines = raw.split(eol)
+    texts = [b.decode("utf-8") for b in blines]
+    hi = _header_index(texts)
+    if hi is None:
+        return -1
+    total_now = _totals(rows, unmapped)
+    changed = 0
+    for i in range(hi + 2, len(blines)):
+        cells = _split_cells(texts[i])
+        if cells is None:
+            if texts[i].strip():
+                break
+            continue
+        key = cells[0].replace("*", "").strip()
+        nums: list[int] | None = None
+        if key == "合计":
+            nums = total_now
+        elif key in agg:
+            nums = [agg[key][k] for k in COLS]
+        if nums is None:
+            continue
+        # 只替换数字值，**逐格保留原有加粗**：域行可能只加粗 UNVERIFIED 一列（强调
+        # 最薄弱项）、合计行整行加粗——无条件重写整行会抹掉作者的排版意图（实测踩坑）。
+        new_cells = [cells[0]]
+        for idx, n in enumerate(nums):
+            mark = "**" if "**" in cells[idx + 1] else ""
+            new_cells.append(f"{mark}{n}{mark}")
+        new = "| " + " | ".join(new_cells) + " |"
+        if texts[i] != new:
+            blines[i] = new.encode("utf-8")
+            texts[i] = new
+            changed += 1
+    if changed:
+        path.write_bytes(eol.join(blines))
+    return changed
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="原子知识地图：域统计与覆盖率门禁")
     ap.add_argument("--check", action="store_true", help="存在未映射章即 exit 1")
+    ap.add_argument("--check-doc", action="store_true",
+                    help="知识地图文档域表数字 vs 实算逐格比对，不一致 exit 1")
+    ap.add_argument("--fix-doc", action="store_true", help="按实算回填知识地图文档域表")
+    ap.add_argument("--doc", type=Path, default=DOC_DEFAULT,
+                    help=f"知识地图路径（默认 docs/kernel/{DOC_DEFAULT.name}）")
     ap.add_argument("--json", dest="json_path")
     a = ap.parse_args(argv)
 
@@ -147,9 +281,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             ensure_ascii=False, indent=1), encoding="utf-8")
         print(f"\n[coverage-map] JSON → {a.json_path}")
 
+    if a.fix_doc:
+        n = fix_doc(a.doc, agg, rows, unmapped)
+        if n < 0:
+            print(f"[coverage-map] ✗ 未找到域表：{a.doc}")
+            return 1
+        print(f"[coverage-map] {'✅ 文档域表已与实算一致' if n == 0 else f'✍️ 回填 {n} 行'}"
+              f"：{a.doc}")
     if a.check and (unmapped or rate < 1.0):
         print("[coverage-map] ✗ 覆盖率未达 100%")
         return 1
+    if a.check and a.check_doc:
+        diffs = doc_diff(a.doc, agg, rows, unmapped)
+        if diffs:
+            print("[coverage-map] ✗ 文档域表与实算不一致（手抄漂移）：")
+            for d in diffs[:20]:
+                print(f"    {d}")
+            return 1
+        print("[coverage-map] ✅ 文档域表与实算逐格一致")
     if a.check:
         print("[coverage-map] ✅ 覆盖率 100%")
     return 0

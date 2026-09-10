@@ -108,6 +108,21 @@ pedagogy:                  # ⑤ 教学封装
 
 **硬约束**（门禁点）：`status: verified` ⟹ `evidence[]` 非空 ∧ `first_hand == true` ∧ `superiority` 非空。这三条是 S2"声明-证据绑定"的最小落地。
 
+### 3.1 统计口径（同一名字有三个数时以本节为准）
+
+G1 监工验收暴露过"同一个词三套口径"的困惑，此处定死并实测备案（2026-09-10）：
+
+| 名字 | 数值 | 口径定义 |
+|---|---|---|
+| UNVERIFIED（**权威块口径**） | **298** | `metrics.content.verification.unverified`：一个含标记的 cpp 块计 1，块内含多个标记仍计 1 |
+| `[UNVERIFIED]` 严格标记 | 298 | 全库精确匹配 `[UNVERIFIED]` 的出现数 |
+| `[UNVERIFIED …]` 含变体 | **301** | 另有 3 处方括号内含补充文字（如 `[UNVERIFIED 具体数值]`），语义仍是"未验证"，统计时按标记计 |
+| 裸词 UNVERIFIED | 1 | `ch09_cpp26.md:187` 代码注释内"见下文 UNVERIFIED 节"，**非标记、不计入** |
+| cpp 块（**CI 编译口径**） | **7572** | `comment_blocks.parse` = `compile_all` = CI 编译报告口径，**认缩进围栏**（`^\s*```cpp`） |
+| cpp 块（metrics 统计口径） | 7515 | `metrics_snapshot` 只认顶格围栏；缩进块盲区 57 个（0.75%），移交工具修复波 |
+
+**原子缺口密度 D 的分母取 7572**（原子要验证的是 CI 会编译的块）。引用任何数字必须注明口径。
+
 ## 4. 证据文件模板（`evidence/{domain}/EV-{DOMAIN}-{NNN}.md`）
 
 ```markdown

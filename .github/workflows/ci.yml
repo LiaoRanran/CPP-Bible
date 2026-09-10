@@ -89,6 +89,12 @@ jobs:
         python3 tools/star_h2_audit.py h2-check
       continue-on-error: false
 
+    - name: Atom Coverage Map Gate (16 域覆盖率 + 知识地图数字勾稽)
+      # --check：147 章全部落域（未映射即红）；--check-doc：知识地图域表逐格 vs 实算，
+      # 防"手抄数字漂移"（2026-09-10 监工验收抓到合计行 148 vs 实算 139 后固化为门禁）。
+      run: python3 tools/atom_coverage_map.py --check --check-doc
+      continue-on-error: false
+
     - name: Pytest (工具链回归测试)
       # 工具链的单元测试：锁定真实发生过的回归（git() 非 UTF-8 崩溃、
       # patch_blocks stale-span、triage 路径分隔符、run_expected PATH 注入、
