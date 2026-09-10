@@ -16,15 +16,20 @@ command: |
   g++ -std=c++23 -O2 Examples/_atom_move_alloc.cpp -o a.exe && ./a.exe
   g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_move_alloc.cpp -o Examples/_atom_move_alloc.asm
 artifact: Examples/_atom_move_alloc.asm
-artifact_sha256: 460c39814167f8aee7d95b0a59076de0c69c7134adba79b49bde00bdd7b4002f
+artifact_sha256: d8b6b18dd8e955e8183a4dd5e13133688627261a0724805925216f769aafc62b
+# 2026-09-10 重生成：旧值 460c3981…4002f 是"加入证伪对照之前"的过期工件（main 中仅 2 次
+# malloc、无对照分配）。**工件必须与断言同代**——改了 .cpp 或改了卡里的计数，就要重生成并换
+# 哈希；否则卡里描述的是一个不存在的工件（监工验收抓到，闭环断裂）。
 expected:
   run: 主实验 构造分配=1 拷贝分配=1 移动分配=0；证伪对照 假移动分配=1
   asm: main 中 call malloc 恰好 3 次 = Buf 构造 1 + Buf 拷贝 1 + 证伪对照 BadBuf 假移动 1；
        真实移动（Buf 移动构造）路径分配 0 次
-actual:
-  run_GCC15.3_O2: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
-  run_GCC15.3_O0: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
-  run_GCC13.1_O2: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
+actual:                      # 6 组 = 3 编译器版本 × {-O0, -O2}，逐组实测（2026-09-10 复跑）
+  run_GCC15.3_O0_cxx23: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
+  run_GCC15.3_O2_cxx23: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
+  run_GCC13.1_O0_cxx23: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
+  run_GCC13.1_O2_cxx23: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
+  run_GCC8.1_O0_cxx17: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
   run_GCC8.1_O2_cxx17: "构造分配=1 拷贝分配=1 移动分配=0 | 证伪对照(假移动)分配=1"
   asm_GCC15.3_O2: "main 中 call malloc 3 次（构造 1 + 拷贝 1 + 假移动对照 1），真实移动路径 0 次"
 verdict: confirm

@@ -777,7 +777,7 @@ int main(){
     try {
         std::sort(v.begin(), v.end(), [](int a,int b){
             if (a==2) throw std::runtime_error("cmp throws"); return a<b; });
-    } catch(...) { /* v 仍合法（无泄漏），但顺序未定义 */ }
+    } catch(...) { /* v 仍合法（无泄漏），但顺序未指定（unspecified） */ }
 }
 ```
 
@@ -800,7 +800,7 @@ int main(){
 | `v.resize(n)` | **basic/strong** | 新增/销毁元素；异常时状态合法 |
 | `v.clear()` | **noexcept** | 仅析构，析构不抛 |
 | `v.erase(p)` 单元素 | **strong** | 其余元素前移 |
-| `std::sort(first,last)` | **basic** | 比较器抛→序列合法但顺序未定义 |
+| `std::sort(first,last)` | **basic** | 比较器抛→序列合法但顺序未指定（unspecified） |
 | `std::find` / `std::for_each` | **strong** | 算法本身不修改（只读） |
 | `std::vector` 移动构造/赋值 | **noexcept**（默认分配器） | O(1) 指针接管 |
 | `std::unordered_map::rehash` | **basic** | 重哈希中抛→部分迁移，无泄漏 |

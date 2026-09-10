@@ -95,6 +95,20 @@ jobs:
       run: python3 tools/atom_coverage_map.py --check --check-doc
       continue-on-error: false
 
+    - name: Gray-zone Matrix (求值顺序 unspecified：GCC/Clang 对照留痕)
+      # 只留痕、不判"顺序"红绿：unspecified 的两种求值顺序都合法，机器不能断言"必须右→左"。
+      # 编译失败仍会红（夹具必须在两编译器下都可编）。MSVC 无路径，按 M2 §2 永久边界以标准条文代替。
+      run: |
+        echo "== GCC =="
+        g++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_gcc && /tmp/gz_gcc
+        echo "== Clang =="
+        if command -v clang++ >/dev/null 2>&1; then
+          clang++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_clang && /tmp/gz_clang
+        else
+          echo "clang++ N/A on this runner"
+        fi
+      continue-on-error: false
+
     - name: Pytest (工具链回归测试)
       # 工具链的单元测试：锁定真实发生过的回归（git() 非 UTF-8 崩溃、
       # patch_blocks stale-span、triage 路径分隔符、run_expected PATH 注入、
