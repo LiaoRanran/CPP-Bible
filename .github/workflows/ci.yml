@@ -129,7 +129,7 @@ jobs:
         python3 tools/poison_drill.py
       continue-on-error: false
 
-    - name: Gray-zone Matrix (求值顺序 unspecified：GCC/Clang 对照留痕)
+    - name: Cross-check Matrix (求值顺序 unspecified + auto_ptr 演化：GCC/Clang 对照留痕)
       # 只留痕、不判"顺序"红绿：unspecified 的两种求值顺序都合法，机器不能断言"必须右→左"。
       # 编译失败仍会红（夹具必须在两编译器下都可编）。MSVC 无路径，按 M2 §2 永久边界以标准条文代替。
       # 结果同时输出为 ::notice:: 注解：本仓 job 日志需 admin 权限（API 403），而注解可经
@@ -149,6 +149,21 @@ jobs:
         else
           echo "clang++ N/A on this runner"
           echo "::warning::runner 无 clang++ → 样板 B 的 Clang 列须降级为'标准条文代替'并标'部分达成'"
+        fi
+        # 演化类夹具（样板 C）：auto_ptr 已从标准移除，钉 -std=c++14；Clang 侧失败不阻塞
+        # （降级为"标准条文代替 + 部分达成"），但必须留下 warning 以便后续补实测。
+        echo "== Evolution: auto_ptr =="
+        g++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/_atom_auto_ptr.cpp -o /tmp/ev_gcc && /tmp/ev_gcc > /tmp/ev_gcc.txt 2>&1
+        cat /tmp/ev_gcc.txt
+        echo "::notice::Evolution GCC auto_ptr = $(tr '\n' '/' < /tmp/ev_gcc.txt) [$(g++ --version | head -1)]"
+        if command -v clang++ >/dev/null 2>&1; then
+          if clang++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/_atom_auto_ptr.cpp -o /tmp/ev_clang > /tmp/ev_clang.txt 2>&1; then
+            /tmp/ev_clang > /tmp/ev_clang_run.txt 2>&1
+            cat /tmp/ev_clang_run.txt
+            echo "::notice::Evolution Clang auto_ptr = $(tr '\n' '/' < /tmp/ev_clang_run.txt) [$(clang++ --version | head -1)]"
+          else
+            echo "::warning::Clang 下 auto_ptr 夹具编译失败（部分达成）→ 样板 C 的 Clang 列降级为标准条文代替；编译输出：$(head -c 400 /tmp/ev_clang.txt | tr '\n' '/')"
+          fi
         fi
       continue-on-error: false
 
