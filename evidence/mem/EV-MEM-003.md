@@ -22,6 +22,8 @@ artifact: Examples/_atom_auto_ptr.asm
 artifact_sha256: b4f993189459e84031d2a6b37f5bf04da88c140c637cb2c37fb7357f6dfdd691
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
+  # 同 EV-HIST-001：`_ZNSt8auto_ptr` 前缀命中的是**析构**符号（D1）；拷贝构造被 -O2 内联、
+  # 无独立符号。断言只锚定符号存在性（与内联决策无关），故跨编译器稳定。
   - {kind: contains, text: "_ZNSt8auto_ptr"}
 expected:
   run: 三行观测与 EV-HIST-001 一致；关键对照是第 ②/④ 行的**语法差异**：auto_ptr 直接拷贝即可

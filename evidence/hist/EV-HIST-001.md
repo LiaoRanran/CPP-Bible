@@ -24,13 +24,21 @@ artifact_sha256: b4f993189459e84031d2a6b37f5bf04da88c140c637cb2c37fb7357f6dfdd69
 # 2026-09-10 重生成：旧值 76440eef… 是"尚未加 unique_ptr 移动对照"的版本（见 actual 第三行）。
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:            # 跨编译器可移植的结构断言（身份不匹配时的替代校验）
-  - {kind: contains, text: "_ZNSt8auto_ptr"}   # auto_ptr 的拷贝构造符号（Itanium mangling，平台一致）
+  # auto_ptr **实例化出的成员函数符号**（析构 `_ZNSt8auto_ptrIiED1Ev.isra.0`，D1=destructor）。
+  # 注意：**拷贝构造没有独立符号**——-O2 把它内联进了 main（人审指出，2026-09-10 核正）；
+  # 该断言只锚定"符号存在"，与调用次数/内联决策无关，故跨编译器稳定（MinGW / Linux 均实测通过）。
+  - {kind: contains, text: "_ZNSt8auto_ptr"}
 expected:
   run: >-
     `auto_ptr 拷贝后源为空=是`（拷贝即转移）；`从容器读元素后源为空=是`（容器语义冲突）；
     `unique_ptr 移动后源为空=是`（对照：同一效果，但必须显式 `std::move`）。
     三项都是确定性观测，不依赖 UB。
-  asm: 工件含 `auto_ptr` 的拷贝构造符号（`_ZNSt8auto_ptr…`），证明"转移"逻辑进入了生成代码。
+  asm: >-
+    工件含 auto_ptr 实例化出的成员函数符号（`_ZNSt8auto_ptr` 前缀）——**具体是析构**
+    `_ZNSt8auto_ptrIiED1Ev.isra.0`（`D1` = destructor；`.isra.0` 是 GCC 常量传播生成的克隆），
+    并在汇编中被 `call` 多次（每个 auto_ptr 生命周期结束都要析构）。
+    **拷贝构造没有独立符号**：`-O2` 把它内联进 `main` 了——所以"转移"在汇编层的可见形态
+    是"源指针被写成 0"，而不是一次 `call`（与样板 A/B 同型的教训：**别预设汇编里应该有什么**）。
 actual:                      # 逐项实测（2026-09-10）
   run_GCC15.3_cxx14_O2: "auto_ptr 拷贝后源为空=是 目标值=42 | 从容器读元素后源为空=是 偷到值=7 | unique_ptr 移动后源为空=是 目标值=9"
   # ↓ 实现事实（非 run_*，不参与 run_match）：标准移除 ≠ 实现删除
