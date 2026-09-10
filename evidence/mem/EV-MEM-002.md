@@ -12,10 +12,12 @@ controlled_vars: >-
 matrix:
   compiler: [GCC 15.3.0]
   std: [c++23]
-  opt: [-O2]
+  opt: [-O0, -O2]
   arch: [x86-64]
 fixture: Examples/_atom_move_no_gain.cpp
 command: |          # POSIX 语义；产物必须写 build/（仓库源只读）
+  # 注：机器复算契约是「一条 command 的 stdout ↔ 一组 run_* 值」，故 command 只跑主档 -O2；
+  #     -O0 档为**同夹具人工实测**（数据见 actual.run_GCC15.3_O0_cxx23），与 EV-MEM-001 同法。
   g++ -std=c++23 -O2 Examples/_atom_move_no_gain.cpp -o build/_replay_nogain.exe && ./build/_replay_nogain.exe
   g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_move_no_gain.cpp -o Examples/_atom_move_no_gain.asm
 artifact: Examples/_atom_move_no_gain.asm
@@ -32,7 +34,10 @@ expected:
     main 内 call malloc 恰 1 次（HeapBuf 的拷贝构造），移动路径无分配调用；
     纯值组出现 32 字节 SIMD 搬运（std::array<int,8> = 32 字节）
 actual:                      # 逐项实测（2026-09-10）
+  # -O0 与 -O2 输出**逐字一致** —— 本论断不是优化器的假象（这才是补 -O0 档要回答的问题）。
   run_GCC15.3_O2_cxx23: "HeapBuf  拷贝分配=1 移动分配=0 移动后源被掏空=是 | FixedBuf 拷贝分配=0 移动分配=0 移动后源完好=是 | array    拷贝分配=0 移动分配=0 移动后源完好=是"
+  run_GCC15.3_O0_cxx23: "HeapBuf  拷贝分配=1 移动分配=0 移动后源被掏空=是 | FixedBuf 拷贝分配=0 移动分配=0 移动后源完好=是 | array    拷贝分配=0 移动分配=0 移动后源完好=是"
+  # 两组值逐字相同 ⇒ 工具判为「同一变体」，不触发 ambiguous（这也是"跨档位一致"的机器体现）。
   asm_GCC15.3_O2: "main: call malloc ×1 (L117) + call free ×1 (L126)；pshufd + movaps XMMWORD PTR [rsp+80]/[rsp+96] = 32 字节搬运；volatile 读回 mov r15d,[rcx] (L144) 与 cmp/cmove 运行时判定"
 verdict: confirm
 falsification: >-
@@ -85,6 +90,12 @@ reproduce: 见 command 两行，无外部依赖
 
 ## 待补（人审通过后的扩展项）
 
+- ~~`-O0` 档~~ → **已补**（2026-09-10，人审放行条件之一）：`-O0` 与 `-O2` 输出**逐字一致**，
+  说明"移动无收益"**不是优化器的假象**（这是补这一档真正要回答的问题，而非走形式）。
+  该档为**同夹具人工实测**（数据见 `actual.run_GCC15.3_O0_cxx23`）——因为机器复算契约是
+  「一条 `command` 的 stdout ↔ 一组 `run_*` 值」，两档并入同一 command 会让输出累积成 6 行、
+  无法逐字比对（实测 `refute:run_mismatch`），与 EV-MEM-001 的处理方式一致。
+- **工具契约边界（建议纳入工具修复波）**：多档位实验目前只能"主档进 command + 其余人工跑"。
+  若未来多档位实验变多，可考虑让 `atom_evidence_replay.py` 支持「多组 run_* ↔ 多段输出」的
+  映射（例如按 `expected_key` 列表分段比对），使 `-O0/-O2` 这类正交维度也能全自动复算。
 - Clang 列：本机无 Clang；CI 的 Clang-19 矩阵为 `continue-on-error`，可在 G4 后续补一列对照。
-- `-O0` 档：本卡只跑 `-O2`（收益消失的场景在 `-O0` 同样成立但观测量更啰嗦）；按 M2 §2 最小充分档，
-  原子入库时应补 `-O0`。
