@@ -1,0 +1,5 @@
+{
+  "schema": "cppbible-atom-migrations/1.0",
+  "note": "ID 迁移表：拆分/合并/重命名时记录新旧映射。原子 ID 入库后永久不变；改 ID 必须在此登记。",
+  "migrations": []
+}
