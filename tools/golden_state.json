@@ -4,11 +4,11 @@
  "commit": "",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 4,
+  "warn_findings": 10,
   "atoms_total": 19,
-  "evidence_total": 40,
+  "evidence_total": 42,
   "verified_atoms": 19,
-  "replay_confirm": 40
+  "replay_confirm": 42
  },
  "accepted": [
   {
@@ -100,6 +100,20 @@
    "reason": "G5 MEM 批量生产 ALIGN-001：EV-MEM-019/020 服务 goldens/ 草稿 ALIGN-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
    "worse": [
     "warn_findings: 20 → 22"
+   ]
+  },
+  {
+   "ts": "2026-09-11T22:44:35",
+   "reason": "S6 新增 P4-P7 四条 warn 规则（判别力类）；命中 4 张历史卡 falsification 无量化取值（真债，列入下批修订）",
+   "worse": [
+    "warn_findings: 4 → 8"
+   ]
+  },
+  {
+   "ts": "2026-09-11T23:28:45",
+   "reason": "PERF-003 新增两卡（evidence/replay +2）；warn +2 为判别力类预期债（EV-FALSIFICATION-QUANT 等对历史卡的持续可见）",
+   "worse": [
+    "warn_findings: 8 → 10"
    ]
   }
  ]
