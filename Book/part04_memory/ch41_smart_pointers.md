@@ -1701,7 +1701,7 @@ int main() {
 
 ### 调试与诊断技巧
 
-- **AddressSanitizer / LeakSanitizer**：`-fsanitize=address` 可检测循环引用泄漏（对象未被释放会在退出时报告）。本机 MinGW GCC 13.1.0 支持 ASan。
+- **AddressSanitizer / LeakSanitizer**：`-fsanitize=address` **可能**报出循环引用泄漏，但**不能把"没报"当成"没泄漏"**——退出码与 stderr 都不携带泄漏信号（泄漏进程照常 `return 0`、无错误输出）；实测同一份泄漏代码在 `-O0` 的极简两节点环上报告 80 字节 / 2 次分配、`-O2` 下不报，换到树形结构（`vector` 子树 + 导航边）则 `-O0`/`-O1` 不报、`-O2`（构树函数标 `noinline` 隔离后）报 224 字节 / 4 次分配——**能否报告取决于优化档与对象存活位置**（构树被内联时，堆块仍被活栈帧/寄存器引用，会被判定为"仍可达"）。平台差异同样要注意：**MinGW 侧没有 ASan/LSan 运行时，本机（GCC 15.3.0）跑 sanitizer 会直接 skip**。故工程上应保留一条**零依赖信号**（析构计数 / `use_count()` / `weak_ptr::expired()`）与 sanitizer 并用。
 - **`use_count()` 仅诊断**：线上不要用它做逻辑判断（值非原子快照，且别名构造会令人困惑）。
 - **`std::enable_shared_from_this` 误用**：构造期调用会抛 `std::bad_weak_ptr`（libstdc++ 行 158-159 `_M_add_ref_lock` 抛异常路径）。注意这是 **C++17 起的良定义行为**，并非未定义行为；若标称标准退回 C++14 及更早，则属 UB。
 - **控制块地址**：`printf("%p\n", (void*)sp.get());` 无法直接取控制块；可通过 `owner_less`/`owner_before` 间接判断两 `shared_ptr` 是否同属一个控制块（元素 18）。
