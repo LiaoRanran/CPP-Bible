@@ -20,10 +20,10 @@ artifact: Examples/_atom_new_array.asm
 artifact_sha256: 360a35729ac710c564df754bfa1fbda73089efaaf5848547be9b15f81f1241d5
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
-  - {kind: contains, text: "_Znay"}    # operator new[] 进入工件（数组分配层真实存在）
+  - {kind: contains_any, texts: ["_Znay", "_Znam"]}  # operator new[] 进入工件：MinGW 标 _Znay、GCC14 标 _Znam，任一即证数组分配层真实存在
 expected:
   run: new[] 调一次、delete[] 调一次（配对）；nothrow 大分配失败返回 null=1
-  asm: operator new[](_Znay) 调用点真实存在
+  asm: operator new[] 调用点真实存在（MinGW 归 _Znay / Linux GCC 归 _Znam，断言语义相同）
 actual:
   run_cxx23_O2: "array new[] calls=1|array delete[] calls=1|nothrow huge returned null=1"
 verdict: confirm
@@ -44,3 +44,10 @@ reproduce: 见 command 两行，无外部依赖
 1. **配对可数**：new[]/delete[] 各触发一次 operator new[]/delete[]（volatile 计数），证明"数组分配是独立一层"。
 2. **nothrow 行为实测**：约 400GB 分配必然失败，nothrow 返回 null=1（不抛异常）——直接区分 new 与 new(nothrow)。
 3. **与 RAII-001 衔接**：裸 new[]/delete[] 一旦漏写 delete[] 即泄漏（EV-MEM-009 的裸路径同构），故优先容器/智能指针。
+
+## 修订记录
+
+- **2026-09-11 · gcc-14 兼容性修复（A 方向，verified 状态保留）**
+  同 EV-MEM-008：`contains "_Znay"` 在 Linux GCC 上不命中（`size_t` 宽度差异 ⇒ `_Znam`）。
+  实测：`_Znam` 在 g++-14.2 / g++-13.3 工件中均出现 5 次，`_Znay` 0 次 ⇒
+  断言改 `contains_any ["_Znay", "_Znam"]`。claim 与 run_match 未变，`artifact_sha256` 未变。

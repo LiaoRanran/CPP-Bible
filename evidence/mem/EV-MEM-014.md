@@ -19,6 +19,7 @@ command: |
 artifact: Examples/_atom_shared_cycle.asm
 artifact_sha256: 343c5003d45ea7635712c27ef9bb0b685ac3889f9feb0212026b3e52b77a7656
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
+expected_sanitizer: [leak]   # 本卡演示循环引用泄漏：sanitizer 命中类型为 leak 时计入 confirm（反向证 claim），不计 refute；其余类型仍 refute
 artifact_assert:
   - {kind: contains, text: "destroyed"}    # "nodes destroyed count=" 进入工件（泄漏可观测）
 expected:
@@ -44,3 +45,12 @@ reproduce: 见 command 两行，无外部依赖
 1. **证伪对照自带**：卡内即"shared_ptr 在循环引用下泄漏"的反例，直接推翻"shared 总是安全"的错觉。
 2. **负观测诚实**：泄漏的证据是 `destroyed count=0`（析构 0 次），不是"没看到就当没事"。
 3. **指向修复路径**：明确给出"用 weak_ptr 打破循环"（ATOM-MEM-WEAK-001），使证伪同时给出解法。
+
+## 修订记录
+
+- **2026-09-11 · gcc-14 兼容性修复（A 方向，verified 状态保留）**
+  背景：本卡演示"循环引用泄漏"。asm 断言 `contains "destroyed"` 在 gcc-14 下仍命中（实测 1 次），
+  真正红因在 sanitizer 步——ASan 运行命中 LeakSanitizer，被工具按"未声明豁免"判成
+  `refute:sanitizer_reported`。本卡是**有意泄漏**的演示卡，泄漏报错正是 claim 的反向证据。
+  修复：新增 `expected_sanitizer: [leak]` 声明（工具 `check_sanitizer` 新增支持：命中类型**全部**
+  落在声明内才折算为 confirm，声明外类型仍判 refute）。`artifact_sha256` 未变。

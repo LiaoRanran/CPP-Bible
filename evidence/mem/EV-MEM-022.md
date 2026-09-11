@@ -21,8 +21,8 @@ artifact: Examples/_atom_fwd_count.asm
 artifact_sha256: 0df0508167b3f71db6ff8279218a6d76155f42ae865ae4009a88cddac4b092f4
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
-  - {kind: contains, text: "wrap_forward"}   # 转发链进入工件（forward 路径真实存在）
-  - {kind: contains, text: "wrap_bare"}      # 省略 forward 的对照路径进入工件
+  - {kind: contains_any, texts: ["wrap_forward", "forward rvalue: copies="]}   # forward 路径进工件：MinGW 留函数符号、GCC14 内联仅留打印串，任一即证路径存在
+  - {kind: contains_any, texts: ["wrap_bare", "no-forward rvalue: copies="]}    # 省略 forward 对照路径进工件（两条路径都需有可见证据）
 expected:
   run: forward 右值 copies=0 moves=1；forward 左值 copies=1 moves=0；省略 forward 右值 copies=1 moves=0
   asm: 两个转发包装函数的符号名进入工件（forward/省略两条路径真实存在）
@@ -63,3 +63,14 @@ reproduce: 见 command 两行，无外部依赖
   Clang 列由 CI Cross-check 回填。
 - 机器实测仅 c++23 单档；夹具仅用 C++11 起即有的特性（std::forward/引用折叠/noexcept 移动），
   跨档可编译，类别语义自 C++11 起稳定（输出与优化档无关的运行计数口径，见 run_cxx23_O0/O2）。
+
+## 修订记录
+
+- **2026-09-11 · gcc-14 兼容性修复（A 方向，verified 状态保留）**
+  背景：CI 默认 g++ 14.2 下 `contains "wrap_forward"` / `contains "wrap_bare"` 不命中——两个包装
+  函数在 -O2 下被内联，符号名不进工件；但两条路径的**打印串**仍在（观测通路活着，符合
+  "证明某事发生的同时已证观测点可达"的纪律）。claim 未变。
+  实测：`forward rvalue: copies=` 2 次、`no-forward rvalue: copies=` 1 次；`wrap_forward` /
+  `wrap_bare` 均 0 次（g++-14.2 与 g++-13.3 一致）⇒ 两条断言各改 `contains_any`
+  （`["wrap_forward", "forward rvalue: copies="]` / `["wrap_bare", "no-forward rvalue: copies="]`），
+  仍要求**两条路径各自**有可见证据，不因放宽形态而合并成一条。`artifact_sha256` 未变。

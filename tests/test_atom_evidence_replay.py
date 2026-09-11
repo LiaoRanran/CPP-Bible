@@ -278,3 +278,53 @@ def test_and_and_short_circuits_after_failure(tmp_path: Path):
     verdict, log = rp.replay_card(card, do_sanitizer=False)
     assert verdict == "refute:compile_failed", log
     assert len([ln for ln in log if "rc=" in ln]) == 1, "&& 短路后不应再执行第二段"
+
+
+# ── 9. sanitizer 预期内豁免（2026-09-11 gcc-14 CI 红修复的回归锁）───────────────
+# 背景：EV-MEM-014 是"循环引用泄漏"演示卡——ASan 跑出的 LeakSanitizer 报错**正是它的 claim**
+# （泄漏可观测），旧工具一律判 refute:sanitizer_reported，使该卡在 CI 永远红。新增
+# `expected_sanitizer` 声明后：命中类型全部落在声明内 → 折算 expected（计入 confirm）；
+# 声明外类型仍 refute——豁免不是逃生舱。
+LEAK_BLOB = """=================================================================
+==12345==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 96 byte(s) in 2 object(s) allocated from:
+    #0 0x7f in operator new(unsigned long) (/lib/libasan.so+0x1)
+    #1 0x55 in main (/tmp/a.out+0x1)
+
+SUMMARY: AddressSanitizer: 96 byte(s) leaked in 2 allocation(s).
+"""
+OVERFLOW_BLOB = """=================================================================
+==12345==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x603000000010
+WRITE of size 4 at 0x603000000010 thread T0
+    #0 0x55 in main (/tmp/a.out+0x1)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /tmp/fx.cpp:5
+"""
+
+
+def test_expected_sanitizer_passes():
+    """声明 [leak] 且实测就是 leak ⇒ 折算 expected（计入 confirm），不再 refute。
+
+    注意 LSan 的总结行写作 `SUMMARY: AddressSanitizer: ... leaked`（复用 ASan 的总结格式）——
+    若按"命中了哪条子串"判定，这条附属信号会把 leak 误判成未声明的 address 类型而继续 refute；
+    故判定按**类型**归并（leak 只认 LeakSanitizer，address 只认 ERROR: AddressSanitizer）。
+    """
+    assert rp.sanitizer_kinds(LEAK_BLOB) == ["leak"], rp.sanitizer_kinds(LEAK_BLOB)
+    st, why = rp.classify_sanitizer(LEAK_BLOB, ["leak"])
+    assert st == "expected", why
+    # 声明字段的形态兼容：全名 / 短别名 / 单串 / true（全部类型）
+    assert rp.expected_sanitizer_kinds("LeakSanitizer") == {"leak"}
+    assert rp.expected_sanitizer_kinds(["lsan"]) == {"leak"}
+    assert rp.expected_sanitizer_kinds(True) == {"leak", "thread", "ub", "address"}
+
+
+def test_unexpected_sanitizer_still_refutes():
+    """声明 [leak] 但实测是 ASan 堆溢出 ⇒ 仍判 refute（豁免只覆盖声明的那一类）。"""
+    assert rp.sanitizer_kinds(OVERFLOW_BLOB) == ["address"]
+    st, why = rp.classify_sanitizer(OVERFLOW_BLOB, ["leak"])
+    assert st == "reported", why
+    assert "address" in why
+    # 未声明（None）→ 任何命中都算未预期；干净输出 → ok（门禁不得恒红）
+    assert rp.classify_sanitizer(LEAK_BLOB)[0] == "reported"
+    assert rp.classify_sanitizer("clean run\n")[0] == "ok"

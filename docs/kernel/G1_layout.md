@@ -149,6 +149,8 @@ artifact_compiler: GCC 15.3.0 (MinGW-w64)   # 该哈希归属的编译器：跨�
 artifact_assert:            # 跨编译器可移植结构断言（身份不匹配时启用；缺失/不满足即 refute，见 M2 §1）
   - {kind: call_count, symbol: malloc, count: 3}
   - {kind: contains, text: "_ZL8g_allocs"}
+  - {kind: contains_any, texts: ["_Znay", "_Znam"]}   # 符号名有平台拼写差异时用 contains_any 吸收
+expected_sanitizer: [leak]  # 可选，仅演示卡：声明预期内的 sanitizer 报错类型，命中全部在声明内才折算 confirm（见 M2 §1）
 matrix: {compiler: GCC 15.3.0, std: c++17, opt: -O2, arch: x86-64}
 reproduce: tools/...（一键复现脚本或命令）
 expected: 移动构造处出现 call 到移动构造符号，无拷贝分配

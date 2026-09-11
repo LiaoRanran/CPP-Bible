@@ -20,7 +20,8 @@
 | `depth_layer` | ✅ | 本证据钻到 6 层中的哪层 |
 | `artifact` / `artifact_sha256` | ✅ | 产物路径与内容哈希（可复算比对） |
 | `artifact_compiler` | ✅ | **该哈希归属的编译器**（如 `GCC 15.3.0 (MinGW-w64)`）；跨编译器/跨平台字节不同，须声明 |
-| `artifact_assert[]` | ✅ | 跨编译器**可移植结构断言**（身份不匹配时的替代校验）：`call_count` / `contains` / `absent` |
+| `artifact_assert[]` | ✅ | 跨编译器**可移植结构断言**（身份不匹配时的替代校验）：`call_count` / `contains` / `contains_any` / `absent` |
+| `expected_sanitizer` | 可选 | 仅**演示卡**可声明"本卡演示的就是这类报错"（如 `[leak]`）：命中类型全部在声明内时 sanitizer 步折算 confirm，声明外类型仍 refute——不是豁免通道 |
 
 > 【`command` 书写规范 = 机器执行契约（2026-09-10 定，`tools/atom_evidence_replay.py` 依此执行）】
 > ① 多行 = 多条命令；同一行内多步用 `&&` 串联；② 路径一律**正斜杠**（POSIX 语义，两平台可执行；
@@ -37,7 +38,15 @@
 > ② 身份**不匹配** → 改判 `artifact_assert[]` 逐条实测；**断言缺失或任一条不满足仍判 refute**
 > （"降级"是换成另一种真实校验，不是逃生舱）。
 > 写卡要求：两个字段必须同时给，且 `artifact_assert` 必须是**跨编译器稳定**的形态——指令/符号
-> 计数（`call_count`）、符号存在性（`contains`）、反例路径不存在（`absent`），**不要**拿字节片段当断言。
+> 计数（`call_count`）、符号存在性（`contains` / `contains_any`）、反例路径不存在（`absent`），
+> **不要**拿字节片段当断言；符号名跨平台有拼写差异（如 `size_t` 宽度差异使 operator new[] 在
+> MinGW 记 `_Znay`、Linux GCC 记 `_Znam`）时用 `contains_any` 吸收，勿写死单一拼写。
+
+> 【sanitizer 预期内报错（2026-09-11 落地，gcc-14 CI 红修复）】演示"坏行为"的卡（如 EV-MEM-014
+> 循环引用泄漏）在 Linux 侧跑 ASan 时**必然**命中 LeakSanitizer——那是 claim 的**反向证据**，
+> 不是卡出错。工具改按**类型**判定（卡的 `expected_sanitizer: [leak]`）：命中类型全部在声明内
+> → 折算 `expected` 计入 confirm；未声明、或命中声明外类型 → 仍判 refute。注意 LSan 的总结行
+> 复用 `SUMMARY: AddressSanitizer` 格式，故不能按"命中哪条子串"豁免（会把 leak 误判成 address）。
 
 ## 2. 实验矩阵：两档与选取规则
 

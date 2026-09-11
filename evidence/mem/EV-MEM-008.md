@@ -20,11 +20,11 @@ artifact: Examples/_atom_perf_move.asm
 artifact_sha256: fb588ba4ce07f41f348d528247706c04818548975c9f2dec6e9528e227576f78
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
-  - {kind: contains, text: "_Znay"}                                  # operator new[] 编译进工件（堆组分配路径真实存在）
+  - {kind: contains_any, texts: ["_Znay", "_Znam"]}  # operator new[] 编译进工件：MinGW 标 _Znay、GCC14 标 _Znam（size_t 拼写差异），任一即证数组分配层真实存在
   - {kind: contains_any, texts: ["movaps", "vmovaps", "movdqu", "QWORD PTR"]}  # 值类型/堆移动确有字节搬运
 expected:
   run: Value32 sizeof=32 且移动==拷贝字节；heap 拷贝分配=1、移动分配=0；值类型移动后源完好
-  asm: main 内 _Znay 恰 2 次调用（h 构造 + hc 拷贝），hm 移动路径 0 次调用（只偷指针）；值类型逐字节搬
+  asm: main 内 operator new[]（MinGW 归 _Znay / Linux GCC 归 _Znam）恰 2 次调用（h 构造 + hc 拷贝），hm 移动路径 0 次调用（只偷指针）；值类型逐字节搬
 actual:
   run_cxx23_O2: "Value32 sizeof=32 move_eq_copy_bytes|heap copy_allocs=1 move_allocs=0|value move source intact=1"
   run_cxx23_O0: "Value32 sizeof=32 move_eq_copy_bytes|heap copy_allocs=1 move_allocs=0|value move source intact=1"
@@ -56,3 +56,14 @@ reproduce: 见 command 两行，无外部依赖
 - `EV-MEM-002`（纯值类型移动无收益）提供 32 字节 SIMD 搬运断面；本卡用同结论的 Value32 组补一个
   `-O0/-O2` 双跑的量化版本，并加入 heap 组的指针窃取对照。
 - 三卡共同服务 `ATOM-MEM-PERF-001`（本卡为专属新卡），并互为 `ATOM-MEM-MOVE-002` 的量化支撑。
+
+## 修订记录
+
+- **2026-09-11 · gcc-14 兼容性修复（A 方向，verified 状态保留）**
+  背景：CI `quality` job 跑 `ubuntu-latest` 默认 g++（已升 14.2），本卡跨编译器断言
+  `contains "_Znay"` 不命中——MinGW 的 `size_t` = `unsigned long long`（operator new[] 记为
+  `_Znay`），Linux GCC 的 `size_t` = `unsigned long`（记为 `_Znam`）。claim 与 run_match 未变
+  （运行层计数在 gcc-14 下逐字一致）。
+  实测（`-std=c++23 -O2 -S -masm=intel`）：`_Znam` 在 g++-14.2 / g++-13.3 工件中均出现 4 次，
+  `_Znay` 均 0 次 ⇒ 断言改 `contains_any ["_Znay", "_Znam"]` 覆盖两平台拼写。
+  `artifact_sha256` 未变：它锚定 MinGW 15.3.0 归属，同编译器下走 sha 强校验，跨编译器才走本断言。

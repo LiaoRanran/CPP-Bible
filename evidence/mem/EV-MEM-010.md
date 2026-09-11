@@ -20,7 +20,7 @@ artifact: Examples/_atom_raii_order.asm
 artifact_sha256: fcd2b8d90bfa27074fb944c0faf8a56a347f09561d531fbeeb0ab8c6b4a862fa
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
-  - {kind: contains, text: "dtor C"}
+  - {kind: contains_any, texts: ["dtor C", "_ZN3TagD2Ev", "_ZN3TagD1Ev", "Tag::~Tag"]}  # 析构路径进工件：MinGW 留 "dtor C" 串、GCC14 内联为 mangled 析构符号，任一即证展开路径真实存在
 expected:
   run: 构造序 A B C，异常展开后析构序 C B A（逆序）
   asm: 析构调用（字符串 "dtor C" 等）进入工件，证明展开路径真实存在
@@ -43,3 +43,12 @@ reproduce: 见 command 两行，无外部依赖
    证明 RAII 清理不依赖"谁捕获异常"，只依赖"对象离开作用域"。
 2. **与 EV-MEM-009 互证**：EV-MEM-009 证"异常路径析构被调用（不泄漏）"，本卡证"多个对象按逆序析构
    （清理顺序确定）"——二者合起来覆盖 RAII 机制的两个关键性质（会被调用 + 顺序确定）。
+
+## 修订记录
+
+- **2026-09-11 · gcc-14 兼容性修复（A 方向，verified 状态保留）**
+  背景：CI 默认 g++ 14.2 下 `contains "dtor C"` 不命中——MinGW 把析构函数体的打印串留在工件里，
+  Linux GCC 上该串随函数一起被内联，只剩 mangled 析构符号。claim 与 run_match 未变。
+  实测：`_ZN3TagD2Ev` 9 次 / `_ZN3TagD1Ev` 5 次（g++-14.2 与 g++-13.3 一致），`dtor C` 0 次 ⇒
+  断言改 `contains_any ["dtor C", "_ZN3TagD2Ev", "_ZN3TagD1Ev", "Tag::~Tag"]`，四候选覆盖
+  MinGW 字符串形态 + 两平台 Itanium ABI 符号形态。`artifact_sha256` 未变。

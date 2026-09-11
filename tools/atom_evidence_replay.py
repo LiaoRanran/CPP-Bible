@@ -12,7 +12,9 @@
                         多组 `run_*` 值不一致时须用 `expected_key` 指明，否则判 ambiguous）
     3. artifact_sha  —— **删旧工件 → 重跑生成命令 → sha256 必须等于卡的 `artifact_sha256`**
                         （"工件必须与断言同代"的机器化核心：重生成不一致 = 工件过期或卡写错）
-    4. sanitizer     —— ASan+UBSan 复编运行无新增报错；工具链不支持则 skip（不算 refute）
+    4. sanitizer     —— ASan+UBSan 复编运行无新增报错；工具链不支持则 skip（不算 refute）。
+                        卡可声明 `expected_sanitizer`（如 `[leak]`）：命中的报错类型**全部**在
+                        声明内时计入 confirm（演示卡的反向证据），声明外类型仍 refute。
 
 用法：
     python tools/atom_evidence_replay.py                 # 扫描 evidence/**/EV-*.md
@@ -40,6 +42,25 @@ ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "evidence"
 SANITIZER_SIGNS = ("ERROR: AddressSanitizer", "runtime error:", "LeakSanitizer",
                    "ERROR: ThreadSanitizer", "SUMMARY: AddressSanitizer")
+
+# sanitizer 报错**类型**判定（2026-09-11 CI gcc-14 红修复）。
+# 为何不能按"命中了 SANITIZER_SIGNS 里哪几条"直接豁免：LeakSanitizer 的总结行会同时含
+# `SUMMARY: AddressSanitizer`（LSan 复用 ASan 的总结格式，实测 WSL g++-14 输出），
+# 于是 `[leak]` 声明会被 "SUMMARY: AddressSanitizer" 这条附属信号带偏、判成未声明类型。
+# 故按**类型**归并：address 只认 `ERROR: AddressSanitizer`（ASan 真报错），
+# leak 只认 `LeakSanitizer`——两者互不串味。
+SANITIZER_KIND_SIGNS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("leak", ("LeakSanitizer",)),
+    ("thread", ("ERROR: ThreadSanitizer",)),
+    ("ub", ("runtime error:",)),
+    ("address", ("ERROR: AddressSanitizer",)),
+)
+SANITIZER_KIND_ALIASES: dict[str, str] = {
+    "leak": "leak", "lsan": "leak", "leaksanitizer": "leak",
+    "address": "address", "asan": "address", "addresssanitizer": "address",
+    "thread": "thread", "tsan": "thread", "threadsanitizer": "thread",
+    "ub": "ub", "ubsan": "ub", "undefined": "ub",
+}
 
 
 # ── 最小 YAML frontmatter 解析（零第三方依赖：只覆盖证据卡用到的形态）──────────
@@ -451,8 +472,61 @@ def _compiler_env() -> dict:
     return env
 
 
+def sanitizer_kinds(blob: str) -> list[str]:
+    """从 sanitizer 输出里判定报错**类型**（leak/thread/ub/address，按固定顺序）。
+
+    纯函数（不跑编译器），使豁免判定可被单元测试直接锁定——本机 MinGW 无 sanitizer 运行时，
+    若把判定逻辑埋在 subprocess 之后，这条契约就只能在 Linux 上被测试覆盖（覆盖不对称）。
+    """
+    return [k for k, signs in SANITIZER_KIND_SIGNS if any(s in blob for s in signs)]
+
+
+def expected_sanitizer_kinds(exp: Any) -> set[str]:
+    """把卡的 `expected_sanitizer` 声明规范化为类型集合（`true` = 全部类型）。
+
+    接受列表（`[leak]` / `[address, ub]`）或单个字符串；别名（`lsan`/`asan`/`ubsan`…）归一到
+    类型名。未识别的词原样保留——它不会匹配任何实测类型，于是该卡仍判 refute（不静默放行）。
+    """
+    if exp is True:
+        return {k for k, _ in SANITIZER_KIND_SIGNS}
+    if isinstance(exp, str):
+        exp = [exp]
+    if not isinstance(exp, (list, tuple)):
+        return set()
+    out: set[str] = set()
+    for raw in exp:
+        w = str(raw).strip().lower()
+        if w:
+            out.add(SANITIZER_KIND_ALIASES.get(w, w))
+    return out
+
+
+def classify_sanitizer(blob: str, expected: Any = None) -> tuple[str, str]:
+    """纯函数：把 sanitizer 输出判成 ok / expected / reported（+ 说明）。
+
+    check_sanitizer 只负责"跑出 blob"，判定收敛在此处——本机 MinGW 无 sanitizer 运行时，
+    若判定埋在 subprocess 之后，这条豁免契约就只能在 Linux 上被测到（覆盖不对称）。
+    """
+    if not any(s in blob for s in SANITIZER_SIGNS):
+        return "ok", "无 sanitizer 报错"
+    kinds = sanitizer_kinds(blob) or ["unknown"]
+    allow = expected_sanitizer_kinds(expected)
+    unexpected = [k for k in kinds if k not in allow]
+    if allow and not unexpected:
+        return "expected", f"命中 {', '.join(kinds)}（卡预期内演示性报错，反向证 claim）"
+    why = f"命中 {', '.join(kinds)}"
+    if allow and unexpected:
+        why += f"（未在 expected_sanitizer 声明：{', '.join(unexpected)}）"
+    return "reported", why
+
+
 def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str, str]:
-    """返回 (状态, 说明)：ok / reported / skipped。"""
+    """返回 (状态, 说明)：ok / expected / reported / skipped。
+
+    `expected_sanitizer`（卡可选字段）声明"本卡演示的就是这类报错"：命中类型**全部**落在声明内
+    时返回 `expected`（计入 confirm——它反向证成了 claim，如循环引用泄漏演示卡）；未声明、或
+    命中了声明外的类型，一律 `reported` → refute（豁免不是逃生舱）。
+    """
     fixture = meta.get("fixture")
     if not fixture or not (ROOT / str(fixture)).is_file():
         return "skipped", f"fixture 不存在：{fixture}"
@@ -470,13 +544,19 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
                        capture_output=True, text=True, errors="replace", timeout=300, env=env)
     if c.returncode != 0:
         return "skipped", f"工具链不支持 ASan/UBSan：{(c.stderr or '').strip()[:120]}"
+    # ASan 的分配器对"超过上限的分配请求"默认**abort 报 OOM**（`allocator_may_return_null=0`），
+    # 而真实运行时同一请求只是**分配失败**——对 `new (std::nothrow) T[huge]` 这类"故意让分配失败"
+    # 的演示卡（EV-MEM-018：约 400GB 请求 ⇒ 期望返回 nullptr），默认行为把"预期返回 null"误判成
+    # refute:sanitizer(address)。注入标准选项 `allocator_may_return_null=1` 让 ASan 回归真实语义
+    # （分配失败返回 null），而**越界/泄漏/UB 的检测能力一条不减**——这是"换一种真校验"，不是豁免通道
+    # （2026-09-11 gcc-14 CI 红修复，实测注入后 EV-MEM-018 输出与卡 run_* 逐字一致）。
+    san_env = dict(env)
+    san_env["ASAN_OPTIONS"] = (san_env.get("ASAN_OPTIONS", "") +
+                               ":allocator_may_return_null=1").lstrip(":")
     r = subprocess.run([str(exe)], capture_output=True, text=True, errors="replace",
-                       timeout=300, env=env)
+                       timeout=300, env=san_env)
     blob = (r.stderr or "") + (r.stdout or "")
-    hit = [s for s in SANITIZER_SIGNS if s in blob]
-    if hit:
-        return "reported", f"命中 {hit[0]!r}"
-    return "ok", "无 sanitizer 报错"
+    return classify_sanitizer(blob, meta.get("expected_sanitizer"))
 
 
 def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
@@ -600,7 +680,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             if st == "reported":
                 log.append(f"  ❌ sanitizer    {why}")
                 return "refute:sanitizer_reported", log
-            log.append(f"  {'✅' if st == 'ok' else '⏭'} sanitizer    {why}")
+            log.append(f"  {'✅' if st in ('ok', 'expected') else '⏭'} sanitizer    {why}")
         else:
             log.append("  ⏭ sanitizer    已按 --no-sanitizer 跳过")
         return "confirm", log
