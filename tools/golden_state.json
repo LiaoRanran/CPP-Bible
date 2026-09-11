@@ -4,11 +4,11 @@
  "commit": "",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 5,
+  "warn_findings": 7,
   "atoms_total": 4,
-  "evidence_total": 8,
+  "evidence_total": 10,
   "verified_atoms": 4,
-  "replay_confirm": 8
+  "replay_confirm": 10
  },
  "accepted": [
   {
@@ -42,6 +42,13 @@
   {
    "ts": "2026-09-11T00:41:57",
    "reason": "EV-MEM-004/005 的 serves 指向 ATOM-MEM-RVREF-001（G5 MEM 域第一批，此刻在 goldens/ 待人审、尚未锻造）。这是 G5 流水线必然的中间态：证据先于原子入库；原子化后 EV-SERVES-EXIST 债自动清零（此前 A/B/C 三样板均如此）。",
+   "worse": [
+    "warn_findings: 5 → 7"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:10:23",
+   "reason": "G5 MEM 批量生产 VALUE-001：EV-MEM-006/007 服务 goldens/ 草稿 VALUE-001，EV-SERVES-EXIST 属预期债务，原子化(草稿移 atoms/)后清零，同 RVREF-001 流程",
    "worse": [
     "warn_findings: 5 → 7"
    ]
