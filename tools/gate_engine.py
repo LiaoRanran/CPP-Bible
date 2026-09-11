@@ -450,6 +450,120 @@ def check_evidence_falsification() -> list[Finding]:
     return out
 
 
+# ── S6 毒样例 P4–P7 对应的四条规则 ─────────────────────────────────────────
+# 2026-09-11 第四批：把第三批红队抓到的**真实漏网**变成机器可判的结构性质疑。
+# 统一取 warn 级：它们指向「断言/证伪/观测/矩阵」的**判别力**问题，而非形式缺失
+# （形式缺失已由 EV-FM-REQUIRED / EV-FALSIFICATION 等 block 规则覆盖）。
+_SELF_SATISFIED_PREFIXES = ("_Zn", "_Zd")      # Itanium ABI：operator new / operator delete 家族
+_TRIVIAL_OBS_PATTERNS = (
+    r"!= nullptr", r"not null=1", r"is null=0",
+)
+
+
+def _assert_candidates(raw: str) -> list[str]:
+    """抓 `artifact_assert` 段里的候选字符串（不依赖 meta 的 YAML 解析形态）。"""
+    if "artifact_assert:" not in raw:
+        return []
+    seg = raw.split("artifact_assert:", 1)[1]
+    for stop in ("\nexpected", "\nactual", "\nverdict", "\n---"):
+        seg = seg.split(stop, 1)[0]
+    return re.findall(r'"([^"]+)"', seg)
+
+
+def check_evidence_self_satisfied_assert() -> list[Finding]:
+    """P4 自证断言：夹具自己定义了 operator new/delete ⇒ 工件里**必然**出现其符号（定义处），
+    此时任何存在性断言（`contains`/`contains_any` 命中 `_Zn*`/`_Zd*`）都不再区分
+    「定义存在」与「调用点存在」——零调用点也恒真。
+
+    第三批实例：EV-MEM-032 初版 `contains_any ["_ZdaPv","_ZdaPvy"]`，而夹具自己重载了
+    `operator delete[]`（工件里只有定义、没有 `call`）。修法是改用调用点计数，或在卡内
+    写明调用点口径（`grep -c 'call _Znw'` 的实测条数）。
+    """
+    import re as _re
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        fixture = str(meta.get("fixture") or "")
+        fx = ROOT / fixture if fixture else None
+        if fx is None or not fx.is_file():
+            continue
+        code = "\n".join(ln for ln in fx.read_text(encoding="utf-8", errors="replace").split("\n")
+                         if not ln.lstrip().startswith("//"))
+        if not _re.search(r"operator\s+(new|delete)", code):
+            continue                              # 夹具未自定义分配/释放 ⇒ 无自证风险
+        raw = p.read_text(encoding="utf-8", errors="replace")
+        if "调用点" in raw:
+            continue                              # 卡内已注明调用点口径（含 grep 条数）⇒ 视为已处置
+        hit = [t for t in _assert_candidates(raw)
+               if t.startswith(_SELF_SATISFIED_PREFIXES)]
+        if hit:
+            out.append(Finding("EV-SELF-SATISFIED-ASSERT", "warn", _rel(p),
+                               f"夹具自定义了 operator new/delete，而断言做存在性匹配：{hit[:3]}"
+                               "（命中定义处即通过，不区分调用点）",
+                               "改用 call_count 锚调用点，或在卡内写明调用点 N 处与统计口径"))
+    return out
+
+
+def check_evidence_falsification_quantified() -> list[Finding]:
+    """P5 伪证伪：`falsification` 只有「若…则应…」的假设句、**无任何量化对照值** ⇒ 无法判真伪。
+
+    与 EV-FALSIFICATION（block，管"缺失"）互补：本条管"有但不可判"。
+    真对照必须给出两个取值（如 `destroyed` 3 vs 0），否则读者无法复核"结论错了会怎样"。
+    """
+    import re as _re
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        f = str(_meta(p).get("falsification") or "").strip()
+        if f and not _re.search(r"\d", f):
+            out.append(Finding("EV-FALSIFICATION-QUANT", "warn", _rel(p),
+                               "falsification 无任何量化对照值（纯假设句，不可复核）",
+                               "写入「让它失败」的实验的两个取值（如 3 vs 0）"))
+    return out
+
+
+def check_evidence_trivial_observation() -> list[Finding]:
+    """P6 恒真观测：`actual` 里出现「同型自比 / 存在性」观测——对 claim 的关键变量零响应。
+
+    第三批实例：SHARED-002 初版 `use_count after join=1`（join 后任何实现都读到 1，
+    对"计数原子/非原子"零判别力）。此类读数只能当烟测，不能承担证伪主证责任。
+    """
+    import re as _re
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        raw = p.read_text(encoding="utf-8", errors="replace")
+        seg = raw.split("actual:", 1)[1].split("\nverdict", 1)[0] if "actual:" in raw else ""
+        hit = [pat for pat in _TRIVIAL_OBS_PATTERNS if _re.search(pat, seg)]
+        if hit:
+            out.append(Finding("EV-TRIVIAL-OBSERVATION", "warn", _rel(p),
+                               f"actual 含疑似恒真观测：{hit[:3]}（同型自比/存在性判断，"
+                               "对关键变量无响应）",
+                               "降级为烟测并在卡内声明，补一条对关键变量有响应的对照读数"))
+    return out
+
+
+def check_evidence_matrix_backed() -> list[Finding]:
+    """P7 无留痕矩阵：`matrix.compiler` 声明了多个编译器，但只有一个工件、且卡内无外部留痕说明。
+
+    诚实的多编译器声明必须写清"哪个有工件、哪个是外部复跑/标准条文"。第三批实例：
+    EV-MEM-037 引用了 gcc-14 的三档标定数字，但仓内无该工件——卡内已如实标注
+    "外部复跑留痕"，本规则正是把这种标注变成**强制项**。
+    """
+    import re as _re
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        raw = p.read_text(encoding="utf-8", errors="replace")
+        m = _re.search(r"compiler:\s*\[([^\]]*)\]", raw)
+        if not m:
+            continue
+        comps = [c.strip().strip('"\'') for c in m.group(1).split(",") if c.strip()]
+        if len(comps) > 1 and not any(k in raw for k in ("外部", "留痕", "待 CI", "CI 回填")):
+            out.append(Finding("EV-MATRIX-UNBACKED", "warn", _rel(p),
+                               f"matrix 声明 {len(comps)} 个编译器，但卡内无外部留痕说明"
+                               f"（{', '.join(comps)}）",
+                               "注明哪个编译器有仓内工件、哪个为外部复跑/标准条文边界"))
+    return out
+
+
 def check_evidence_matrix() -> list[Finding]:
     """版本矩阵：matrix 必须写清 compiler/std/opt（M2 §2 两档与选取规则）。"""
     out: list[Finding] = []
@@ -678,9 +792,20 @@ def _register_all() -> None:
          check_s2_evidence_verdict),
         ("S3-EXPECTED-HARDCODED", "期望硬编码进夹具=伪证据", "evidence",
          check_s3_hardcoded_expected),
+        ("EV-SELF-SATISFIED-ASSERT", "断言不得被夹具自身定义满足（P4 自证断言）", "evidence",
+         check_evidence_self_satisfied_assert),
+        ("EV-FALSIFICATION-QUANT", "证伪对照须含量化取值（P5 伪证伪）", "evidence",
+         check_evidence_falsification_quantified),
+        ("EV-TRIVIAL-OBSERVATION", "actual 禁恒真观测承担主证（P6）", "evidence",
+         check_evidence_trivial_observation),
+        ("EV-MATRIX-UNBACKED", "多编译器矩阵须有留痕说明（P7）", "evidence",
+         check_evidence_matrix_backed),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
-           "META-MANIFEST": "warn"}
+           "META-MANIFEST": "warn",
+           # S6 P4–P7（2026-09-11 第四批）：判别力类问题，warn 级——不阻断但在门禁可见
+           "EV-SELF-SATISFIED-ASSERT": "warn", "EV-FALSIFICATION-QUANT": "warn",
+           "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn"}
     for rid, title, scope, fn in fact:
         register(Rule(rid, title, "fact", "programmatic", sev.get(rid, "block"), scope,
                       check=fn))

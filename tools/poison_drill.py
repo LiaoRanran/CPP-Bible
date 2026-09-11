@@ -5,6 +5,12 @@
     P1 假论断    —— status=verified 但证据空、无人工签收 → S1 + ATOM-VERIFIED-BOUND
     P2 过期工件  —— 证据卡 sha256 与重新生成的工件不符     → replay refute:sha256_mismatch
     P3 缺反例    —— 证据卡无 falsification                → EV-FALSIFICATION
+    P4 自证断言  —— 夹具自定义 operator new/delete，而断言只做存在性匹配（命中定义处即通过）
+                   → EV-SELF-SATISFIED-ASSERT（第三批实例：`contains_any ["_ZdaPv","_ZdaPvy"]`）
+    P5 伪证伪    —— falsification 是纯假设句、无任何量化对照值 → EV-FALSIFICATION-QUANT
+    P6 恒真观测  —— actual 里是存在性判断（对关键变量零响应）  → EV-TRIVIAL-OBSERVATION
+                   （第三批实例：`use_count after join=1`）
+    P7 无留痕矩阵—— matrix 声明多编译器但只有一个工件、无外部留痕说明 → EV-MATRIX-UNBACKED
     阴性对照     —— 干净原子 + 干净证据卡                 → 0 block 且 replay confirm
 
 实现要点：
@@ -136,6 +142,121 @@ def drill() -> int:
         results.append(("P3 缺反例（无证伪对照）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"
                         + ("" if subprocess_done.returncode == 0 else " · 夹具生成失败")))
+
+    # ── P4 自证断言：夹具自定义 operator delete[]，而断言只做存在性匹配 ───────
+    # 第三批真实案例（UNIQUE-002 初版）：`contains_any ["_ZdaPv","_ZdaPvy"]` 被夹具自身的
+    # `operator delete[]` **定义**满足——工件里既没有 call 点也照样通过 ⇒ 断言恒真。
+    with sandbox() as tmp:
+        fx4 = ge.EVIDENCE / "_fx_selfsat.cpp"
+        fx4.parent.mkdir(parents=True, exist_ok=True)
+        fx4.write_text(
+            "#include <cstdio>\n#include <cstdlib>\n"
+            "void* operator new[](std::size_t n) { return std::malloc(n); }\n"
+            "void  operator delete[](void* p) noexcept { std::free(p); }\n"
+            "void  operator delete[](void*, std::size_t) noexcept {}\n"
+            "int main() { auto p = new int[4]; delete[] p; std::printf(\"A\\n\"); return 0; }\n",
+            encoding="utf-8")
+        asm4 = ge.EVIDENCE / "fx_selfsat.asm"
+        subprocess.run([resolve_gpp(), "-std=c++17", "-O2", "-S", str(fx4), "-o", str(asm4)],
+                       capture_output=True, text=True, errors="replace", timeout=300)
+        subprocess_done = subprocess.run(
+            [resolve_gpp(), "-std=c++17", "-O2", "-S", str(fx4), "-o", str(asm4)],
+            capture_output=True, text=True, errors="replace", timeout=300)
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-SELFSAT.md", {
+            "id": "EV-MEM-SELFSAT", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": (f'"{gpp_posix}" -std=c++17 -O2 -S "{fx4.as_posix()}" '
+                        f'-o "{asm4.as_posix()}"'),
+            "fixture": fx4.as_posix(), "artifact": asm4.as_posix(),
+            "artifact_sha256": hashlib.sha256(asm4.read_bytes()).hexdigest(),
+            "actual": "{run_case: A}", "kind": "asm", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            # ← 毒点：夹具自带 operator delete[] 定义，此断言在零调用点下也恒真
+            "artifact_assert": '\n  - {kind: contains_any, texts: ["_ZdaPvy", "_ZdaPv"]}',
+            "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_self_satisfied_assert()})
+        ok = "EV-SELF-SATISFIED-ASSERT" in who
+        results.append(("P4 自证断言（断言被夹具自身定义满足）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"
+                        + ("" if subprocess_done.returncode == 0 else " · 夹具生成失败")))
+
+    # ── P5 伪证伪：falsification 是纯假设句、无任何量化对照值 ────────────────
+    with sandbox() as tmp:
+        fx5 = ge.EVIDENCE / "_fx_weak.cpp"
+        fx5.parent.mkdir(parents=True, exist_ok=True)
+        fx5.write_text('#include <cstdio>\nint main(){ std::printf("A\\n"); }\n',
+                       encoding="utf-8")
+        asm5 = ge.EVIDENCE / "fx_weak.asm"
+        subprocess.run([resolve_gpp(), "-std=c++17", "-O2", "-S", str(fx5), "-o", str(asm5)],
+                       capture_output=True, text=True, errors="replace", timeout=300)
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-WEAKFALS.md", {
+            "id": "EV-MEM-WEAKFALS", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": (f'"{gpp_posix}" -std=c++17 -O2 -S "{fx5.as_posix()}" '
+                        f'-o "{asm5.as_posix()}"'),
+            "fixture": fx5.as_posix(), "artifact": asm5.as_posix(),
+            "artifact_sha256": hashlib.sha256(asm5.read_bytes()).hexdigest(),
+            "actual": "{run_case: A}", "kind": "run", "verdict": "confirm",
+            # ← 毒点：只有"若…则应…"的假设句，读者无法复核"结论错了会怎样"
+            "falsification": "若结论不成立，则对照组的输出会与实验组不同",
+            "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_falsification_quantified()})
+        ok = "EV-FALSIFICATION-QUANT" in who
+        results.append(("P5 伪证伪（无量化对照值，不可复核）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P6 恒真观测：actual 里的存在性判断对 claim 关键变量零响应 ─────────────
+    # 第三批真实案例（SHARED-002 初版）：`use_count after join=1`——join 之后任何实现都读到 1。
+    with sandbox() as tmp:
+        fx6 = ge.EVIDENCE / "_fx_trivial.cpp"
+        fx6.parent.mkdir(parents=True, exist_ok=True)
+        fx6.write_text('#include <cstdio>\nint main(){ std::printf("A\\n"); }\n',
+                       encoding="utf-8")
+        asm6 = ge.EVIDENCE / "fx_trivial.asm"
+        subprocess.run([resolve_gpp(), "-std=c++17", "-O2", "-S", str(fx6), "-o", str(asm6)],
+                       capture_output=True, text=True, errors="replace", timeout=300)
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-TRIVIAL.md", {
+            "id": "EV-MEM-TRIVIAL", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": (f'"{gpp_posix}" -std=c++17 -O2 -S "{fx6.as_posix()}" '
+                        f'-o "{asm6.as_posix()}"'),
+            "fixture": fx6.as_posix(), "artifact": asm6.as_posix(),
+            "artifact_sha256": hashlib.sha256(asm6.read_bytes()).hexdigest(),
+            # ← 毒点：存在性判断（指针非空）——无论被测机制是否成立都恒为该值
+            "actual": "{run_case: observer != nullptr}",
+            "kind": "run", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_trivial_observation()})
+        ok = "EV-TRIVIAL-OBSERVATION" in who
+        results.append(("P6 恒真观测（存在性判断无判别力）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P7 无留痕矩阵：声明多编译器但只有一个工件、且无外部留痕说明 ──────────
+    with sandbox() as tmp:
+        fx7 = ge.EVIDENCE / "_fx_matrix.cpp"
+        fx7.parent.mkdir(parents=True, exist_ok=True)
+        fx7.write_text('#include <cstdio>\nint main(){ std::printf("A\\n"); }\n',
+                       encoding="utf-8")
+        asm7 = ge.EVIDENCE / "fx_matrix.asm"
+        subprocess.run([resolve_gpp(), "-std=c++17", "-O2", "-S", str(fx7), "-o", str(asm7)],
+                       capture_output=True, text=True, errors="replace", timeout=300)
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-MATRIX.md", {
+            "id": "EV-MEM-MATRIX", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": (f'"{gpp_posix}" -std=c++17 -O2 -S "{fx7.as_posix()}" '
+                        f'-o "{asm7.as_posix()}"'),
+            "fixture": fx7.as_posix(), "artifact": asm7.as_posix(),
+            "artifact_sha256": hashlib.sha256(asm7.read_bytes()).hexdigest(),
+            "actual": "{run_case: A}", "kind": "run", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            # ← 毒点：声明三个编译器，但仓内只有一个工件、卡内也无"外部留痕"说明
+            "matrix": "\n  compiler: [GCC 15.3.0, Clang 19.1.0, MSVC 19.4]"
+                      "\n  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_matrix_backed()})
+        ok = "EV-MATRIX-UNBACKED" in who
+        results.append(("P7 无留痕矩阵（多编译器声明无工件支撑）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
