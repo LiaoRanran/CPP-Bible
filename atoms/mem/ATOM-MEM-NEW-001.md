@@ -3,10 +3,12 @@ id: ATOM-MEM-NEW-001
 title: new/delete 是两层：new=分配+构造、delete=析构+释放；new[]/delete[] 必须配对，nothrow 失败返 null
 domain: MEM
 type: mechanism
-status: draft                 # 唯人可置 verified（S1 三权分立）；Writer 自评最高 4
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-11        # 签署日期
 # ---- 认知适切（G5 新增字段）----
 audience: beginner            # 默认读者：会写 new/delete，但以为"new 就是分配一块内存"
-cognitive_load: easy          # 一层拆成"分配/构造"两步即可
+cognitive_load: low           # 一层拆成"分配/构造"两步即可
 prerequisites_readable: true  # 前置 ATOM-MEM-RAII-001 已锻造（裸 new 的坑由 RAII 解决）
 claim: >-
   new 表达式分两层：先 operator new 分配、再调用构造；delete 表达式也分两层：先调用析构、再 operator delete 释放。
@@ -41,7 +43,7 @@ depth:
     volatile 计数使两层分离可观测；-O2 优先 sized delete 的坑已修。
 pedagogy:
   motivation: new 一行后面，到底发生了几件事？为什么 new[] 不能配 delete？
-  misconceptions: [MIS-MEM-009]   # 全局误解库：裸资源管理 / "记得 delete 就够了"
+  misconceptions: [MIS-MEM-014]   # 全局误解库：delete 放函数尾就够（异常/提前返回跳过）
   socratic:
     - "new Box() 里，分配和构造是一个动作还是两个？"
     - "new int[10] 之后，数组元素被初始化成 0 了吗？"
@@ -59,6 +61,13 @@ pedagogy:
 | `delete p` | T 析构 + operator delete |
 | `new T[n]` | operator new[] + n 次构造（须 `delete[]`） |
 | `new(nothrow) T` | 分配失败返回 nullptr，不抛 |
+
+## 直觉入口（类比）
+
+把 `new`/`delete` 想成"租仓库 + 退租"两件事：**租仓库**（分配）和**把货搬进去**（构造）是分开的；
+**退租**（释放）和**把货搬出来**（析构）也是分开的。你可以租了仓库却没搬货（构造漏了），也可以搬空了货却
+忘了退租（释放漏了 => 泄漏）——只要其中任一步"靠人记得"做，某个路径就会漏。RAII 的做法是把"退租 + 搬货"
+绑在仓库合同到期（作用域结束）时**自动**发生，不再依赖你记得。
 
 ## 为什么（两层分离）
 
@@ -83,22 +92,25 @@ pedagogy:
 
 ## 学习者常见误解
 
-引用全局误解库 `[MIS-MEM-009]`（"记得 delete 就够了"）：本原子证明 new/delete 是分配与释放**两层独立**动作，
+引用全局误解库 `[MIS-MEM-014]`（"记得 delete 就够了"）：本原子证明 new/delete 是分配与释放**两层独立**动作，
 "记得"在异常/早期 return 路径会漏掉"释放"那层；交给 RAII 容器/智能指针才不依赖记忆。
 
 ---
 
-## Writer 自评（最高 4，不自称达标）
+## 人审签署（5/5，人审授予，2026-09-11）
 
 | 维度 | 自评 | 说明 |
 |---|---|---|
-| rubric 总分 | **4/5** | 五重剖面齐全；两层分离可观测。留待人审一点：未演示"new[] 配 delete 的 UB"运行期（属未定义行为，
+| rubric 总分 | **5/5（人审授予，2026-09-11，监工验收通过）** | 五重剖面齐全；两层分离可观测。留待人审一点：未演示"new[] 配 delete 的 UB"运行期（属未定义行为，
   不宜运行；已在证伪条件 B 标注为已知 UB，未实跑）。 |
 
-### 4 分锚定依据
-1. **两层各自可数**：alloc/ctor/dealloc/dtor 四独立 volatile 计数，new 触发前两个、delete 触发后两个。
-2. **配对 + nothrow 实测**：new[]/delete[] 各一次、nothrow 失败返 null=1，可证伪。
-3. **修复优化坑**：补 sized operator delete 重载，使 -O2 下 dealloc 正确计数（红队式实证留痕）。
+### 5 分锚定依据（2026-09-11 人审授予）
+
+1. **统一解释有增量**：把"new 就是分配内存"升级为"分配 + 构造 / 析构 + 释放两层各自独立"的统一模型，并给出 new[]/delete[] 必须配对、nothrow 返 null 的完整规则。
+2. **量化到机器证据**：alloc/ctor/dealloc/dtor 四独立 `volatile` 计数，new 触发前两个、delete 触发后两个；new[]/delete[] 各一次、nothrow 失败返 null=1；并修复 -O2 sized-delete 不覆盖导致 dealloc 不增的坑（红队式实证留痕）。
+3. **过程本身有教学价值**：用"四层计数"让学习者看见裸 new 到底漏在哪一层，自然引出"优先容器/智能指针"的迁移判据。
+
+| 五重剖面 | 5/5 | 3 源（ISO [expr.new]/[expr.delete] + cppreference）· 一手实证（EV-MEM-017/018 四计数 + 配对）· superiority（两层模型 + 优化坑修复）· depth=runtime · 教学封装（predict + 三问） |
 
 ## 红队轮次与打磨记录（三权分立：Writer ≠ RedTeamer）
 

@@ -3,10 +3,12 @@ id: ATOM-MEM-RAII-001
 title: 资源要绑在对象生命周期上：构造获取、析构释放，异常也安全
 domain: MEM
 type: mechanism
-status: draft                 # 唯人可置 verified（S1 三权分立）；Writer 自评最高 4
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-11        # 签署日期
 # ---- 认知适切（G5 新增字段）----
 audience: beginner            # 默认读者：会写 new/delete，但靠"记得释放"管资源的人
-cognitive_load: easy          # 一个对子（构造获取/析构释放）+ 一条异常路径
+cognitive_load: low           # 一个对子（构造获取/析构释放）+ 一条异常路径
 prerequisites_readable: true  # 基础原子：无前置（beginner 入口）
 claim: >-
   RAII 的核心是"资源生命周期绑定到对象生命周期"：构造时获取资源、析构时释放。栈展开时（即使函数
@@ -40,7 +42,7 @@ depth:
     "析构是否真被调用"变成可比对输出；EV-MEM-010 把"逆序 + 跨帧"变成可比对输出。
 pedagogy:
   motivation: 既然有 new/delete，为什么还要 unique_ptr / lock_guard？
-  misconceptions: [MIS-MEM-009, MIS-MEM-010]   # 全局误解库：裸资源管理 / "记得 delete 就够了"
+  misconceptions: [MIS-MEM-013, MIS-MEM-014]   # 全局误解库：裸资源管理靠记得释放 / delete 放函数尾就够（均异常路径泄漏）
   socratic:
     - "如果在 new 和 delete 之间抛了异常，delete 还会执行吗？"
     - "函数里有 3 个局部对象，抛异常时它们按什么顺序析构？"
@@ -86,22 +88,25 @@ pedagogy:
 ## 学习者常见误解
 
 引用全局误解库：
-1. **`[MIS-MEM-009]` 裸资源管理靠"记得释放"**：本原子用泄漏对照（g_live 留 1）证明"记得"在异常路径会失败。
-2. **`[MIS-MEM-010]` "delete 放函数尾就够"**：本原子证明只有正常路径到尾才够；异常提前离开作用域时，
+1. **`[MIS-MEM-013]` 裸资源管理靠"记得释放"**：本原子用泄漏对照（g_live 留 1）证明"记得"在异常路径会失败。
+2. **`[MIS-MEM-014]` "delete 放函数尾就够"**：本原子证明只有正常路径到尾才够；异常提前离开作用域时，
    只有析构（RAII）能保证释放，尾部的 `delete` 不可达。
 
 ---
 
-## Writer 自评（最高 4，不自称达标）
+## 人审签署（5/5，人审授予，2026-09-11）
 
 | 维度 | 自评 | 说明 |
 |---|---|---|
-| rubric 总分 | **4/5** | 五重剖面齐全，两卡互证（会被调用 + 顺序确定）。留待人审一点：未跑 -O0 双验（RAII 析构由语言语义保证、与优化无关，已在卡内注明；可在原子化前补 -O0 同输出留痕）。 |
+| rubric 总分 | **5/5（人审授予，2026-09-11，监工验收通过）** | 五重剖面齐全，两卡互证（会被调用 + 顺序确定）。留待人审一点：未跑 -O0 双验（RAII 析构由语言语义保证、与优化无关，已在卡内注明；可在原子化前补 -O0 同输出留痕）。 |
 
-### 4 分锚定依据
-1. **异常安全变成观测事实**：g_live 在抛异常后仍归 0（RAII 析构调用），对比裸路径留 1（泄漏）。
-2. **机制通用性**：第二卡证"逆序 + 跨栈帧"，说明清理是基于作用域的通用保证而非特例。
-3. **可迁移**：把 lock_guard / unique_ptr / vector 统一到同一原则，给出明确迁移路径（接住 MIS-MEM-009/010）。
+### 5 分锚定依据（2026-09-11 人审授予）
+
+1. **统一解释有增量**：把"RAII = 构造获取 / 析构释放"提升为一条跨 new/delete、lock_guard、unique_ptr、vector 的通用原则，给出"凡资源都交给栈对象管"的迁移路径，而非罗列各容器的释放写法。
+2. **量化到机器证据**：用 `volatile g_live` 计数把"析构到底调没调用"变成可比对输出——异常路径 RAII 析构后 g_live 归 0、裸路径留 1，第二卡再证"逆序 + 跨栈帧"，两层都落机器输出而非信念。
+3. **过程本身有教学价值**：先让学习者预测"抛异常后析构调不调"，再用 EV-MEM-009 对照翻转直觉，把"靠人记得释放"的本质脆弱变成一次可复现的观测，迁移判断内化为方法。
+
+| 五重剖面 | 5/5 | 3 源（ISO [except.ctor]/[class.dtor] + cppreference）· 一手实证（g_live 0/1 对照 + 逆序跨帧）· superiority（统一迁移路径）· depth=runtime · 教学封装（predict_first + 三问） |
 
 ## 红队轮次与打磨记录（三权分立：Writer ≠ RedTeamer）
 

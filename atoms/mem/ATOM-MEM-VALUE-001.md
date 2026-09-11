@@ -3,7 +3,9 @@ id: ATOM-MEM-VALUE-001
 title: C++ 的值不是"左/右"二分：glvalue×rvalue 正交出 lvalue / xvalue / prvalue 三类
 domain: MEM
 type: mechanism
-status: draft                 # 唯人可置 verified（S1 三权分立）；Writer 自评最高 4
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-11        # 签署日期
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：懂 C++ 基础、但把"左值/右值"当成非此即彼二分的人
 cognitive_load: medium         # 需同时持有"两正交维度"与"值类别是表达式属性"两条线索
@@ -121,16 +123,19 @@ prvalue 的真正机器可观测差异是"是否指代一个有身份的既有�
 
 ---
 
-## Writer 自评（最高 4，不自称达标）
+## 人审签署（5/5，人审授予，2026-09-11）
 
 | 维度 | 自评 | 说明 |
 |---|---|---|
-| rubric 总分 | **4/5** | 五重剖面齐全；一处留待人审定夺：跨标准机器实测目前只在 c++23 跑（五分类语义自 C++11 起重定义后稳定，夹具仅用 c++11 起即有特性，跨档可编译已在卡内注明，但未逐档跑出 artifacts）。 |
+| rubric 总分 | **5/5（人审授予，2026-09-11，监工验收通过）** | 五重剖面齐全；一处留待人审定夺：跨标准机器实测目前只在 c++23 跑（五分类语义自 C++11 起重定义后稳定，夹具仅用 c++11 起即有特性，跨档可编译已在卡内注明，但未逐档跑出 artifacts）。 |
 
-### 4 分锚定依据
-1. **编译期硬证明 + 运行期双观测**：五分类由 `static_assert` 强制，且打印成可比对 stdout（非"看起来对"）。
-2. **两正交维度互证**：`is_reference`/`is_lvalue_reference` 判定的 `glvalue`/`rvalue` 与 `vc_name` 的引用推导落在同一 2×2 格子。
-3. **证伪卡堵死最顽固误读**：`std::move(x)` 不是 prvalue（xvalue 有身份，移动后源被改动）；并诚实修正初版"xvalue 可取地址"的错误。
+### 5 分锚定依据（2026-09-11 人审授予）
+
+1. **统一解释有增量**：把"左值/右值"二分升级为 glvalue×rvalue 正交五分类的统一框架，并明确"值类别是表达式属性而非变量类型属性"，堵死"std::move 产生右值=临时"的根误读。
+2. **量化到机器证据**：五分类由 `static_assert`/`decltype` 编译期硬证明，`is_reference`/`is_lvalue_reference` 与 `vc_name` 两正交维度互证落在同一 2×2 格子；证伪卡 EV-MEM-007 把"xvalue 有身份"下钻到运行期（移动后源被改动），并诚实修正初版"xvalue 可取地址"的错误。
+3. **过程本身有教学价值**：先让学习者预测"std::move 得到 xvalue 还是 prvalue"，再用五分类对照翻盘，把二分思维升级为可机械判定的正交框架。
+
+| 五重剖面 | 5/5 | 3 源（ISO [basic.lval]/[expr.prim.id.unqual] + cppreference）· 一手实证（decltype 编译期证明 + EV-MEM-007 运行期）· superiority（五分类统一框架）· depth=compiler · 教学封装（predict + 双问） |
 
 ## 红队轮次与打磨记录（三权分立：Writer ≠ RedTeamer）
 

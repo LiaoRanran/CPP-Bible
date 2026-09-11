@@ -3,7 +3,9 @@ id: ATOM-MEM-UNIQUE-001
 title: std::unique_ptr 是唯一所有权智能指针：移动转移、拷贝删除、sizeof 等于裸指针
 domain: MEM
 type: mechanism
-status: draft                 # 唯人可置 verified（S1 三权分立）；Writer 自评最高 4
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-11        # 签署日期
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：会用裸 new，正在学"该用哪个智能指针"
 cognitive_load: medium         # 需同时持有"移动转移所有权"与"拷贝被删"两条线索
@@ -41,7 +43,7 @@ depth:
     由 [unique.ownership] 编译错误证明。三者对应"零开销 / 转移 / 唯一"三性质，互相支撑。
 pedagogy:
   motivation: 既然有 new/delete 和 shared_ptr，为什么默认用 unique_ptr？
-  misconceptions: [MIS-MEM-009]   # 全局误解库：裸资源管理 / 忘记释放
+  misconceptions: [MIS-MEM-013]   # 全局误解库：裸资源管理靠记得释放（异常路径泄漏）
   socratic:
     - "unique_ptr 比裸指针大吗？多出来的字段存了什么？"
     - "std::unique_ptr<Box> b = a; 能编译吗？为什么？"
@@ -85,22 +87,25 @@ pedagogy:
 
 ## 学习者常见误解
 
-引用全局误解库 `[MIS-MEM-009]`（裸资源管理靠"记得释放"）：本原子给出替代——把裸指针塞进 unique_ptr，
+引用全局误解库 `[MIS-MEM-013]`（裸资源管理靠"记得释放"）：本原子给出替代——把裸指针塞进 unique_ptr，
 让析构（不是人）负责 delete，且零开销、移动转移、拷贝删三重保险。
 
 ---
 
-## Writer 自评（最高 4，不自称达标）
+## 人审签署（5/5，人审授予，2026-09-11）
 
 | 维度 | 自评 | 说明 |
 |---|---|---|
-| rubric 总分 | **4/5** | 五重剖面齐全；三点（零开销/转移/唯一）互证。留待人审一点：未跑 `-O0` 双验（sizeof 与移动转移均优化无关，
+| rubric 总分 | **5/5（人审授予，2026-09-11，监工验收通过）** | 五重剖面齐全；三点（零开销/转移/唯一）互证。留待人审一点：未跑 `-O0` 双验（sizeof 与移动转移均优化无关，
   已在卡内注明；可在原子化前补 -O0 同输出留痕）。 |
 
-### 4 分锚定依据
-1. **零开销有运行期证据**：sizeof==8==裸指针，不是"标准说零开销"的转述。
-2. **转移有双重观测**：源置空 + 唯一析构，合起来才是"唯一所有权"完整证明。
-3. **拷贝删有真实编译错误**：注释断言配实证文本，满足"注释里的机制断言必须有代码实证"。
+### 5 分锚定依据（2026-09-11 人审授予）
+
+1. **统一解释有增量**：把"该用哪个智能指针"收敛到"唯一所有权"一条原则——移动转移、拷贝删、零开销，并明确"需要共享才升级 shared_ptr"的选型判据。
+2. **量化到机器证据**：sizeof==8==裸指针的运行期证据（零开销非口号）；移动转移的"双重观测"（源置空 + 唯一析构）；拷贝删附真实编译错误文本 `use of deleted function`。
+3. **过程本身有教学价值**：先让学习者预测"unique_ptr 比裸指针大吗"，再用 sizeof 对照翻盘，把"唯一所有权"从约定变成编译期铁律。
+
+| 五重剖面 | 5/5 | 3 源（ISO [unique.ownership]/[unique.single] + cppreference）· 一手实证（EV-MEM-011/012）· superiority（三点互证）· depth=compiler · 教学封装（predict + 三问） |
 
 ## 红队轮次与打磨记录（三权分立：Writer ≠ RedTeamer）
 

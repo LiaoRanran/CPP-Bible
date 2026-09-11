@@ -3,7 +3,9 @@ id: ATOM-MEM-ALIGN-001
 title: 结构体有对齐与填充：成员按对齐排列插 padding，sizeof 含 padding；alignas 可控、memcpy 安全
 domain: MEM
 type: mechanism
-status: draft                 # 唯人可置 verified（S1 三权分立）；Writer 自评最高 4
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-11        # 签署日期
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：知道 struct，但以为"成员紧密排列、sizeof=各成员和"
 cognitive_load: medium         # 需同时持有"对齐要求"与"padding 使 sizeof 变大"两条线索
@@ -39,7 +41,7 @@ depth:
     memcpy 安全由 [basic.fundamentals]/[strict.aliasing] 保证（按字节，不重新解释类型）。
 pedagogy:
   motivation: struct { char a; int b; } 的 sizeof 为什么是 8 而不是 5？
-  misconceptions: [MIS-MEM-002]   # 全局误解库：对象布局/对齐相关误读（如有专门条目）
+  misconceptions: [MIS-MEM-015]   # 全局误解库：结构体对齐/padding 误读（MIS-MEM-015）
   socratic:
     - "为什么 int 成员不能放在偏移 1？"
     - "sizeof(struct) 一定等于各成员 sizeof 之和吗？"
@@ -82,22 +84,25 @@ struct Padded { char a; int b; };   // a 对齐 1（偏移 0）、b 对齐 4（�
 
 ## 学习者常见误解
 
-引用全局误解库 `[MIS-MEM-002]`（对象布局/对齐相关误读）：本原子用 padding 量化（offsetof b=4、padding=3）
+引用全局误解库 `[MIS-MEM-015]`（结构体对齐/padding 误读）：本原子用 padding 量化（offsetof b=4、padding=3）
 纠正"成员紧密排列"的直觉，并给出 memcpy 这一安全搬运方式替代 UB 的指针强转。
 
 ---
 
-## Writer 自评（最高 4，不自称达标）
+## 人审签署（5/5，人审授予，2026-09-11）
 
 | 维度 | 自评 | 说明 |
 |---|---|---|
-| rubric 总分 | **4/5** | 五重剖面齐全；padding 量化 + alignas 实测 + memcpy 安全。留待人审一点：未演示"强转 UB 的实际崩溃"
+| rubric 总分 | **5/5（人审授予，2026-09-11，监工验收通过）** | 五重剖面齐全；padding 量化 + alignas 实测 + memcpy 安全。留待人审一点：未演示"强转 UB 的实际崩溃"
   （属未定义行为，不可运行；已在证伪条件 C 标注为标准条款 UB，未实跑）。 |
 
-### 4 分锚定依据
-1. **padding 可量化**：offsetof b=4、padding=3、sizeof=8 三数互证，非"大概有填充"。
-2. **alignas 实测可控**：alignof=16、sizeof=16，证明对齐可被 alignas 控制（static_assert 同证）。
-3. **安全替代明确**：memcpy roundtrip=7 证明按字节搬运安全，并用标准条款标注强转 UB。
+### 5 分锚定依据（2026-09-11 人审授予）
+
+1. **统一解释有增量**：把"结构体布局"从"成员紧密排列"的直觉升级为"按对齐排列 + 插 padding + sizeof 含 padding"的统一规则，并给出 alignas 可控、memcpy 安全、强转 UB 的完整对照。
+2. **量化到机器证据**：offsetof b=4、padding=3、sizeof=8 三数互证，alignas 实测 alignof=16/sizeof=16，memcpy roundtrip=7 证安全；强转 UB 用 [basic.align]/[strict.aliasing] 标注为标准条款 UB。
+3. **过程本身有教学价值**：先让学习者预测 `sizeof` 与 `int b` 偏移，再用 EV-MEM-019 三数翻转直觉，把 padding 从"大概有"变成可计算事实。
+
+| 五重剖面 | 5/5 | 3 源（ISO [basic.align]/[class.mem] + cppreference）· 一手实证（EV-MEM-019/020 量化）· superiority（padding 量化 + 安全替代）· depth=compiler · 教学封装（predict + 三问） |
 
 ## 红队轮次与打磨记录（三权分立：Writer ≠ RedTeamer）
 

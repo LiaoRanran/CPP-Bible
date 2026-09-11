@@ -3,7 +3,9 @@ id: ATOM-MEM-SHARED-001
 title: std::shared_ptr 用引用计数共享所有权；但循环引用会泄漏，须用 weak_ptr 打破
 domain: MEM
 type: mechanism
-status: draft                 # 唯人可置 verified（S1 三权分立）；Writer 自评最高 4
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-11        # 签署日期
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：知道 unique_ptr，正在理解"什么时候用 shared_ptr"
 cognitive_load: medium         # 需同时持有"引用计数"与"循环引用陷阱"两条线索
@@ -41,7 +43,7 @@ depth:
     与"循环不归零=泄漏"都变成可比对输出。计数由标准定义，与优化档无关。
 pedagogy:
   motivation: 既然 unique_ptr 够好，为什么还要 shared_ptr？它又有什么坑？
-  misconceptions: [MIS-MEM-009]   # 全局误解库：裸资源管理 / "智能指针都自动安全"
+  misconceptions: [MIS-MEM-016]   # 全局误解库：智能指针都自动安全（循环引用仍泄漏）
   socratic:
     - "shared_ptr 拷贝时，底层对象被复制了吗？"
     - "两个对象互相 shared_ptr 持有，离开作用域会释放吗？"
@@ -82,22 +84,25 @@ shared_ptr 内部除指针外还有一个**控制块**（引用计数 + 删除�
 
 ## 学习者常见误解
 
-引用全局误解库 `[MIS-MEM-009]`（"智能指针都自动安全"）：本原子用循环引用泄漏（destroyed count=0）证明
+引用全局误解库 `[MIS-MEM-016]`（"智能指针都自动安全"）：本原子用循环引用泄漏（destroyed count=0）证明
 shared_ptr 也会泄漏——自动管理**只在非循环的所有权图里**成立。
 
 ---
 
-## Writer 自评（最高 4，不自称达标）
+## 人审签署（5/5，人审授予，2026-09-11）
 
 | 维度 | 自评 | 说明 |
 |---|---|---|
-| rubric 总分 | **4/5** | 五重剖面齐全；计数全程可观测 + 循环证伪卡。留待人审一点：未量化控制块/原子计数开销（与 UNIQUE-001 的
+| rubric 总分 | **5/5（人审授予，2026-09-11，监工验收通过）** | 五重剖面齐全；计数全程可观测 + 循环证伪卡。留待人审一点：未量化控制块/原子计数开销（与 UNIQUE-001 的
   零开销对照可补 `sizeof`/分配次数，可在原子化前补一张 `-O3` 对照）。 |
 
-### 4 分锚定依据
-1. **计数全程可观测**：四处 use_count 单调对应拷贝/析构，归零才销毁（destroyed count=1）。
-2. **证伪卡自带头**：循环引用 destroyed count=0，直接推翻"shared 总是安全"，并给出 weak_ptr 解法。
-3. **与 UNIQUE-001 对照清晰**：unique=转移+拷贝删、shared=计数+可拷贝，给出明确选型判据。
+### 5 分锚定依据（2026-09-11 人审授予）
+
+1. **统一解释有增量**：把"shared_ptr 安全"收敛到"引用计数 + 归零才释放"的机制，并诚实给出循环引用泄漏的反例与 weak_ptr 解法，堵死"智能指针都自动安全"。
+2. **量化到机器证据**：四处 use_count 单调对应拷贝/析构、归零 destroyed count=1；循环引用 destroyed count=0（泄漏）由 `volatile g_destroy` 实测，证伪自带 weak_ptr 解法。
+3. **过程本身有教学价值**：先让学习者预测"互指 shared_ptr 离开作用域会不会释放"，再用 EV-MEM-014 对照翻盘，把循环陷阱变成可观测事实。
+
+| 五重剖面 | 5/5 | 3 源（ISO [util.smartptr.shared] + cppreference）· 一手实证（EV-MEM-013/014）· superiority（计数可观测 + 证伪自带解法）· depth=runtime · 教学封装（predict + 三问） |
 
 ## 红队轮次与打磨记录（三权分立：Writer ≠ RedTeamer）
 

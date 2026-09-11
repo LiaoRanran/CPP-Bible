@@ -4,10 +4,10 @@
  "commit": "",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 22,
-  "atoms_total": 4,
+  "warn_findings": 4,
+  "atoms_total": 12,
   "evidence_total": 23,
-  "verified_atoms": 4,
+  "verified_atoms": 12,
   "replay_confirm": 23
  },
  "accepted": [

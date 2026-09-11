@@ -3,7 +3,9 @@ id: ATOM-MEM-WEAK-001
 title: std::weak_ptr 是非拥有观察者；用 weak_ptr 打破 shared_ptr 的循环引用
 domain: MEM
 type: mechanism
-status: draft                 # 唯人可置 verified（S1 三权分立）；Writer 自评最高 4
+status: verified               # 唯人可置 verified（S1 三权分立）
+verified_by: human:liaoranran  # 签署人（非 Agent）
+verified_at: 2026-09-11        # 签署日期
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：已理解 shared_ptr，遇到"互相引用"的坑
 cognitive_load: medium         # 需同时持有"weak 不增计数"与"weak 打破循环"两条线索
@@ -41,7 +43,7 @@ depth:
     SHARED-001 同根，volatile g_destroy 把"是否释放"变成可比对输出。
 pedagogy:
   motivation: 子节点要回指父节点，直接用 shared_ptr 会怎样？为什么用 weak_ptr？
-  misconceptions: [MIS-MEM-009]   # 全局误解库：资源管理错觉 / "智能指针都自动安全"
+  misconceptions: [MIS-MEM-016]   # 全局误解库：智能指针都自动安全（循环引用仍泄漏）
   socratic:
     - "weak_ptr 指向的对象，它的引用计数是几？"
     - "对象被释放后，指向它的 weak_ptr 还能 .lock() 成功吗？"
@@ -83,22 +85,25 @@ weak_ptr 只持有控制块指针，不增加**强引用计数**（决定对象�
 
 ## 学习者常见误解
 
-引用全局误解库 `[MIS-MEM-009]`（"智能指针都自动安全"）：本原子证明"自动"只在**无环**的所有权图成立；
+引用全局误解库 `[MIS-MEM-016]`（"智能指针都自动安全"）：本原子证明"自动"只在**无环**的所有权图成立；
 成环必须用 weak_ptr 旁观，否则 shared_ptr 也会泄漏（EV-MEM-014 实证）。
 
 ---
 
-## Writer 自评（最高 4，不自称达标）
+## 人审签署（5/5，人审授予，2026-09-11）
 
 | 维度 | 自评 | 说明 |
 |---|---|---|
-| rubric 总分 | **4/5** | 五重剖面齐全；与 EV-MEM-014 直接对照使"weak 打破循环"可证伪。留待人审一点：未展示 lock()
+| rubric 总分 | **5/5（人审授予，2026-09-11，监工验收通过）** | 五重剖面齐全；与 EV-MEM-014 直接对照使"weak 打破循环"可证伪。留待人审一点：未展示 lock()
   失败后访问的安全兜底写法（可在原子化前补一小段 run 对照 expired 时跳过访问）。 |
 
-### 4 分锚定依据
-1. **不增计数可观测**：use_count with weak=1，对比 shared 拷贝必 +1。
-2. **lock/expire 两态都验**：提升成功 + 销毁后 expired，覆盖观察者两态。
-3. **与 SHARED-001 对照闭环**：同结构仅改 weak，destroyed 0→2，证伪自带解法。
+### 5 分锚定依据（2026-09-11 人审授予）
+
+1. **统一解释有增量**：把"weak_ptr 是 shared_ptr 的助手"升级为"非拥有观察者 + 打破循环"的统一角色，明确 lock/expire 两态与"旁观不计数"的语义。
+2. **量化到机器证据**：use_count with weak=1（不增计数）对比 shared 拷贝必 +1；lock 提升成功 / 销毁后 expired 两态都验；同结构仅改 weak，destroyed 0→2 证伪闭环。
+3. **过程本身有教学价值**：先让学习者预测"互指时把一个改 weak 能否解决"，再用 EV-MEM-016 对照翻盘，把循环解法变成可复现观测。
+
+| 五重剖面 | 5/5 | 3 源（ISO [util.smartptr.weak] + cppreference）· 一手实证（EV-MEM-015/016）· superiority（不增计数 + 打破循环闭环）· depth=runtime · 教学封装（predict + 三问） |
 
 ## 红队轮次与打磨记录（三权分立：Writer ≠ RedTeamer）
 
