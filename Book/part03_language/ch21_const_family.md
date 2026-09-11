@@ -928,22 +928,26 @@ struct Formatted { static constexpr int len = N; };
 ```cpp title="示例 34 · ★☆☆☆☆"
 #include <iostream>
 struct Counter {
-    int get() const { return n; }      // const 成员：this 为 const Counter*
-    void inc() { ++n; }                 // 非 const 成员
-    mutable int debug = 0;              // mutable：即使在 const 对象上也可改
+    int get() const { ++debug; return n; }   // const 成员：this 为 const Counter*，
+                                             // 但仍可写 mutable 的 debug（逻辑 const 的实证）
+    void inc() { ++n; }                      // 非 const 成员
+    mutable int debug = 0;                   // mutable：即使在 const 对象上也可改
 private:
     int n = 0;
 };
 int main() {
     const Counter c;                    // const 对象
     // c.inc();                         // 错误：const 对象不能调非 const 成员
-    std::cout << c.get() << "\n";       // OK：const 成员函数可读
+    std::cout << c.get() << " debug=" << c.debug << "\n";  // 0 debug=1：const 成员里改了 mutable
+    // 反例（可自行编译验证）：把上面 debug 声明的 mutable 去掉，get() 里的 ++debug 变成
+    //   error: increment of member 'Counter::debug' in read-only object
+    // —— "mutable 允许 const 成员写它"这条断言由上面那行输出实证，不是口头声明。
     return 0;
 }
 ```
-> **示例 35** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+> **示例 35** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充分编可编译示例
 
-```cpp title="示例 35 · ★☆☆☆☆"
+```cpp title="示例 35 · ★★☆☆☆"
 #include <iostream>
 constexpr int sq(int x) { return x * x; }
 int main() {
@@ -979,9 +983,9 @@ int main() {
     return 0;
 }
 ```
-> **示例 38** <span class="badge badge-exp">难度 ★☆☆☆☆</span> · 补充分编可编译示例
+> **示例 38** <span class="badge badge-exp">难度 ★★☆☆☆</span> · 补充分编可编译示例
 
-```cpp title="示例 38 · ★☆☆☆☆"
+```cpp title="示例 38 · ★★☆☆☆"
 #include <iostream>
 struct Vec {
     int& operator[](int i) { return d[i]; }              // 非 const：返回可写引用
@@ -992,7 +996,8 @@ int main() {
     Vec v;
     v[0] = 9;                           // 调非 const 重载
     const Vec cv;
-    std::cout << cv[0] << "\n";         // 调 const 重载，不可写
+    std::cout << v[0] << " " << cv[0] << "\n";   // 9 1：v 调非 const 重载（写入生效），
+                                                 // cv 调 const 重载（保持初值 1）——重载分流肉眼可辨
     return 0;
 }
 ```
