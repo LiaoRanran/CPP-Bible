@@ -8,11 +8,11 @@ hypothesis: >-
   **C++20 起（P0527R1 / P1825R0 把右值引用形参纳入 return 的隐式移动）是移动**。
   故"返回形参必须写 std::move"是**前 C++20** 的处方。
 controlled_vars: 唯一变量 = `return x;` vs `return std::move(x);`；标准档是**分层变量**（非受控）
-# 三档实测（2026-09-10）：本卡的"档位"就是**分层变量**，三档结果不同，
-# 详见 `actual` 与正文表格。
+# 五档实测（2026-09-11，红队第 2 轮 S2-1 处置：原"三档"口径过期）：本卡的"档位"就是
+# **分层变量**，c++11/14/17 与 c++20/23 结果不同，详见 `actual` 与正文表格。
 matrix:
   compiler: [GCC 15.3.0]
-  std: [c++17, c++20, c++23]
+  std: [c++11, c++14, c++17, c++20, c++23]
   opt: [-O2]
   arch: [x86-64]
 fixture: Examples/_atom_rvref_return.cpp
@@ -33,14 +33,17 @@ expected_key: run_GCC15.3_O2_cxx23
 expected:
   run: "ret_plain copy=0 move=1 / ret_moved copy=0 move=1"
 actual:
-  # ⚠️ 本卡的 actual **故意不一致**：三档结果不同，这正是本卡要记录的**版本边界**事实。
-  # 主档（c++23，command 用的那档）与 expected 一致；另两档为人工实测留痕。
+  # ⚠️ 本卡的 actual **故意不一致**：五档分两组结果，这正是本卡要记录的**版本边界**事实。
+  # 主档（c++23，command 用的那档）与 expected 一致；另四档为人工实测留痕。
+  run_GCC15.3_O2_cxx11: "ret_plain copy=1 move=0 / ret_moved copy=0 move=1"   # ← 拷贝（隐式移动尚未引入）
+  run_GCC15.3_O2_cxx14: "ret_plain copy=1 move=0 / ret_moved copy=0 move=1"   # ← 拷贝（同上）
   run_GCC15.3_O2_cxx17: "ret_plain copy=1 move=0 / ret_moved copy=0 move=1"   # ← 拷贝！旧规则
   run_GCC15.3_O2_cxx20: "ret_plain copy=0 move=1 / ret_moved copy=0 move=1"   # ← 隐式移动已生效
+  run_GCC15.3_O0_cxx20: "ret_plain copy=0 move=1 / ret_moved copy=0 move=1"   # ← 与优化档无关（红队 B4）
   run_GCC15.3_O2_cxx23: "ret_plain copy=0 move=1 / ret_moved copy=0 move=1"
 verdict: confirm
 falsification: >-
-  若三档都输出 `ret_plain copy=1 move=0`（或都为 `copy=0 move=1`），则"版本边界"不成立，
+  若五档都输出 `ret_plain copy=1 move=0`（或都为 `copy=0 move=1`），则"版本边界"不成立，
   本卡作废。实测 c++17 与 c++20/23 **不同** → 边界真实存在。
   另：若 `ret_moved` 在任何一档出现 `copy=1`，说明 std::move 没生效 → 实验无区分力。
 depth_layer: compiler
@@ -58,9 +61,12 @@ reproduce: 见 command 两行；换 `-std=` 即可复现三档差异
 
 | 标准档 | `return x;`（x 是 T&& 形参） | `return std::move(x);` |
 |---|---|---|
+| c++11 / c++14 | `copy=1 move=0` → **拷贝** | `copy=0 move=1` |
 | c++17 | `copy=1 move=0` → **拷贝** | `copy=0 move=1` |
 | **c++20** | `copy=0 move=1` → **已隐式移动** | `copy=0 move=1`（冗余但无害） |
 | c++23 | `copy=0 move=1` | `copy=0 move=1` |
+
+（另实测 c++20 × -O0 同为移动——隐式移动与优化档无关，2026-09-11 补测。）
 
 **结论**：写 `std::move` 在 C++20 起**不是必需的**（也不算错，只是冗余）；但在 C++17 及更早
 **必需**——不写就是一次静默拷贝。跨版本代码库里这条差异最容易埋雷。
@@ -76,4 +82,5 @@ reproduce: 见 command 两行；换 `-std=` 即可复现三档差异
 ## 待补
 
 - Clang / MSVC 两列（尤其 MSVC 对 P0527R1 的实现时机可能不同）。
-- c++11 / c++14 两档：预期与 c++17 相同（隐式移动当时尚未纳入右值引用形参），待实测。
+  （c++11 / c++14 两档已于 2026-09-11 实测完毕并录入 `actual`，红队 S2-1 指出的
+  "卡内自相矛盾"即此处未同步——已清除。）

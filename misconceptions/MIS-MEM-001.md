@@ -7,7 +7,7 @@ trigger_patterns:
   - "std::move(x) 之后 x 就被搬空了"
   - "move 就是 memcpy"
 refutations:
-  - "std::move 只是 static_cast<T&&>(x)，本身不生成任何指令 [xvalue.cast]"
+  - "std::move 只是 static_cast<T&&>(x)，本身不生成任何指令 [expr.static.cast]"
   - "移动是否发生取决于重载决议是否选中移动构造；源对象仅保证有效但未指定 [lib.types.movedfrom]"
 source: ch115_move.md ⑯ 易错点 / 三样板 A
 related_atoms: [ATOM-MEM-MOVE-002]
@@ -22,7 +22,7 @@ related_atoms: [ATOM-MEM-MOVE-002]
 - move 就是 memcpy
 
 ## 为什么它不成立
-1. std::move 只是 static_cast<T&&>(x)，本身不生成任何指令 [xvalue.cast]
+1. std::move 只是 static_cast<T&&>(x)，本身不生成任何指令 [expr.static.cast]
 2. 移动是否发生取决于重载决议是否选中移动构造；源对象仅保证有效但未指定 [lib.types.movedfrom]
 
 ## 出处与关联

@@ -27,7 +27,7 @@ evidence:
   - EV-MEM-001
   - EV-MEM-002
 sources:
-  - {kind: iso, ref: "ISO/IEC 14882:2023 [xvalue.cast]（std::move 与 static_cast 明文等价）", independent: true}
+  - {kind: iso, ref: "ISO/IEC 14882:2023 [expr.static.cast]（std::move 与 static_cast 明文等价）", independent: true}
   - {kind: iso, ref: "ISO/IEC 14882:2023 [lib.types.movedfrom]（移动后源对象有效但未指定）", independent: true}
   - {kind: cppreference, ref: "std::move", independent: true}
 first_hand: true
@@ -56,10 +56,10 @@ pedagogy:
 **用 `std::move` 申报所有权转移，别指望它自己搬东西。**
 
 `std::move` 是 C++ 里最容易读错的命名之一：它被调用之后并没有任何东西被搬走。标准明文规定
-它与一次类型转换完全等价（[xvalue.cast]）：
+它与一次类型转换完全等价（[expr.static.cast]）：
 
 ```cpp
-// 标准 [xvalue.cast] 的等价关系（可编译互证）
+// 标准 [expr.static.cast] 的等价关系（可编译互证）
 std::move(x)  ≡  static_cast<std::remove_reference_t<decltype(x)>&&>(x)
 ```
 

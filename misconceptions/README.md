@@ -21,7 +21,7 @@ domain: MEM
 trigger_patterns:                  # 触发模式：学习者常这么说 / 这么写（≥1 条）
   - "std::move(x) 之后 x 就被搬空了"
 refutations:                       # 反例（deep 必须 ≥2 条，surface ≥1 条）
-  - "std::move 只是 static_cast<T&&>(x)，不生成任何指令 [xvalue.cast]"
+  - "std::move 只是 static_cast<T&&>(x)，不生成任何指令 [expr.static.cast]"
   - "源对象有效但未指定 [lib.types.movedfrom]"
 source: ch115_move.md ⑯ 易错点      # 出处（Book 章节 / 三样板），可追溯
 related_atoms: [ATOM-MEM-MOVE-002] # 引用了本条误解的原子（可为空）

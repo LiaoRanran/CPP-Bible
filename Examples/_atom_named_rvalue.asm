@@ -4,19 +4,18 @@
 	.section .rdata,"dr"
 	.align 8
 .LC0:
-	.ascii "as_is copy=%d move=%d / moved copy=%d move=%d\12\0"
+	.ascii "as_is copy=%d move=%d / moved copy=%d move=%d / copyonly copy=%d\12\0"
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB127:
+.LFB134:
 	sub	rsp, 56
 	.seh_stackalloc	56
 	.seh_endprologue
 	call	__main
-	lea	rcx, .LC0[rip]
 	mov	DWORD PTR _ZN5Probe6copiesE[rip], 0
 	mov	DWORD PTR _ZN5Probe5movesE[rip], 0
 	mov	eax, DWORD PTR _ZN5Probe6copiesE[rip]
@@ -30,15 +29,26 @@ main:
 	add	eax, 1
 	mov	DWORD PTR _ZN5Probe5movesE[rip], eax
 	mov	r9d, DWORD PTR _ZN5Probe6copiesE[rip]
-	mov	eax, DWORD PTR _ZN5Probe5movesE[rip]
-	mov	DWORD PTR 32[rsp], eax
+	mov	ecx, DWORD PTR _ZN5Probe5movesE[rip]
+	mov	DWORD PTR _ZN8CopyOnly6copiesE[rip], 0
+	mov	eax, DWORD PTR _ZN8CopyOnly6copiesE[rip]
+	mov	DWORD PTR 32[rsp], ecx
+	lea	rcx, .LC0[rip]
+	add	eax, 1
+	mov	DWORD PTR _ZN8CopyOnly6copiesE[rip], eax
+	mov	eax, DWORD PTR _ZN8CopyOnly6copiesE[rip]
+	mov	DWORD PTR 40[rsp], eax
 	call	__mingw_printf
 	xor	eax, eax
 	add	rsp, 56
 	ret
 	.seh_endproc
-	.globl	_ZN5Probe5movesE
+	.globl	_ZN8CopyOnly6copiesE
 	.bss
+	.align 4
+_ZN8CopyOnly6copiesE:
+	.space 4
+	.globl	_ZN5Probe5movesE
 	.align 4
 _ZN5Probe5movesE:
 	.space 4

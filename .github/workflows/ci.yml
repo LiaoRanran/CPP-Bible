@@ -165,6 +165,25 @@ jobs:
             echo "::warning::Clang 下 auto_ptr 夹具编译失败（部分达成）→ 样板 C 的 Clang 列降级为标准条文代替；编译输出：$(head -c 400 /tmp/ev_clang.txt | tr '\n' '/')"
           fi
         fi
+        # G5 首个原子（ATOM-MEM-RVREF-001）：具名右值引用是左值 + return 隐式移动的版本边界。
+        # 两只夹具都是纯语言行为（无平台 API），Clang 侧预期与 GCC 逐字一致（M2 §2 双编译器边界）。
+        echo "== Pitfall: named-rvalue-ref =="
+        g++ -std=c++17 -O2 Examples/_atom_named_rvalue.cpp -o /tmp/rv_gcc && /tmp/rv_gcc > /tmp/rv_gcc.txt 2>&1
+        cat /tmp/rv_gcc.txt
+        echo "::notice::RVREF GCC 具名右值引用 = $(tr '\n' '/' < /tmp/rv_gcc.txt) [$(g++ --version | head -1)]"
+        g++ -std=c++17 -O2 Examples/_atom_rvref_return.cpp -o /tmp/rvr_gcc && /tmp/rvr_gcc > /tmp/rvr_gcc.txt 2>&1
+        cat /tmp/rvr_gcc.txt
+        echo "::notice::RVREF-RET GCC return 边界 = $(tr '\n' '/' < /tmp/rvr_gcc.txt) [$(g++ --version | head -1)]"
+        if command -v clang++ >/dev/null 2>&1; then
+          clang++ -std=c++17 -O2 Examples/_atom_named_rvalue.cpp -o /tmp/rv_clang && /tmp/rv_clang > /tmp/rv_clang.txt 2>&1
+          cat /tmp/rv_clang.txt
+          echo "::notice::RVREF Clang 具名右值引用 = $(tr '\n' '/' < /tmp/rv_clang.txt) [$(clang++ --version | head -1)]"
+          clang++ -std=c++17 -O2 Examples/_atom_rvref_return.cpp -o /tmp/rvr_clang && /tmp/rvr_clang > /tmp/rvr_clang.txt 2>&1
+          cat /tmp/rvr_clang.txt
+          echo "::notice::RVREF-RET Clang return 边界 = $(tr '\n' '/' < /tmp/rvr_clang.txt) [$(clang++ --version | head -1)]"
+        else
+          echo "::warning::runner 无 clang++ → G5 原子 RVREF 的 Clang 列须降级为'标准条文代替'并标'部分达成'"
+        fi
       continue-on-error: false
 
     - name: Pytest (工具链回归测试)

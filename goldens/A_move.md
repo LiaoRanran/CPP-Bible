@@ -137,7 +137,7 @@ evidence:
   - EV-MEM-001
   - EV-MEM-002
 sources:
-  - {kind: iso, ref: "ISO/IEC 14882:2023 [xvalue.cast]（std::move 与 static_cast 明文等价）", independent: true}
+  - {kind: iso, ref: "ISO/IEC 14882:2023 [expr.static.cast]（std::move 与 static_cast 明文等价）", independent: true}
   - {kind: iso, ref: "ISO/IEC 14882:2023 [lib.types.movedfrom]（移动后源有效但未指定）", independent: true}
   - {kind: cppreference, ref: "std::move", independent: true}
 first_hand: true
@@ -173,10 +173,10 @@ pedagogy:
 
 `std::move` 这个名字是 C++ 里最容易被误读的命名之一：它被调用之后并没有任何东西被"搬走"。
 真正让人困惑的是这句话的矛盾感——**标准明文规定 `std::move(x)` 与一次类型转换完全等价**
-（[xvalue.cast]）：
+（[expr.static.cast]）：
 
 ```cpp
-// 标准 [xvalue.cast] 的等价关系（可编译互证）
+// 标准 [expr.static.cast] 的等价关系（可编译互证）
 std::move(x)  ≡  static_cast<std::remove_reference_t<decltype(x)>&&>(x)
 ```
 
@@ -273,7 +273,7 @@ array    拷贝分配=0 移动分配=0 移动后源完好=是       ← 标准�
 本条作为 **G4 后续样板（B/C）的 5 分口径**，三条不可省：
 
 1. **统一解释有增量**——不是把 cppreference 的说法换个措辞，而是把标准里两条**分离**的事实
-   （"move 只是类型转换" [xvalue.cast] 与"源对象有效但未指定" [lib.types.movedfrom]）接成
+   （"move 只是类型转换" [expr.static.cast] 与"源对象有效但未指定" [lib.types.movedfrom]）接成
    一条**可操作判据**：「移动的收益来自掏空源对象」→ 有间接资源则有收益，无则退化为拷贝。
 2. **量化到机器证据**——把"更快/更省"这类形容词换成数字：汇编层**字节搬运量**对比
    （移动只搬 8 字节指针并置空源 vs 纯值组必搬 32 字节 SIMD 且源分毫未动），

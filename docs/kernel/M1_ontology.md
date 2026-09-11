@@ -42,7 +42,7 @@
 | `realizes` | A 是 B 的一种具体实现 | A→B | **是** | 如 libstdc++ 的 vector 实现 realizes `vector 扩容机制` |
 | `evolved_from` | A 由 B 演化而来 | A→B | **是** | `unique_ptr` evolved_from `auto_ptr` |
 | `supersedes` | A 取代 B（B 已过时/废弃） | A→B | 否 | 与 evolved_from 区别：supersedes 带"别再用 B"的规范性 |
-| `equivalent` | A 与 B 语义等价（可替换） | 双向 | 否 | 如"`std::move(x)` ≡ `static_cast<std::remove_reference_t<decltype(x)>&&>(x)`"（标准 [xvalue.cast] 明文等价，可编译互证） |
+| `equivalent` | A 与 B 语义等价（可替换） | 双向 | 否 | 如"`std::move(x)` ≡ `static_cast<std::remove_reference_t<decltype(x)>&&>(x)`"（标准 [expr.static.cast] 明文等价，可编译互证） |
 | `contradicts` | A 与 B 结论冲突 | 双向 | 否 | **触发"争议档案"**（G2.2），必须人工仲裁 |
 | `causes` | A 导致 B（因果，非先后） | A→B | 否 | 如"迭代器失效" causes "UB" |
 | `contrasts` | A 与 B 对照（取舍关系） | 双向 | 否 | 横向对比原子的主边 |

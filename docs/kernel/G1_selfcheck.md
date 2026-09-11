@@ -20,7 +20,7 @@
 | `G1_layout.md` frontmatter 示例用了非法 YAML 键 `misconception[]`（行家一眼挑出的硬伤） | 改为合法 YAML 序列 | layout 4→5 |
 | cpp 块 7572 vs 7515 口径差标"待确认"未定死 | 实测定性：`parse`/CI 编译口径认**缩进围栏**（10 文件 51 个 + 连锁 6），`metrics_snapshot` 只认顶格；**定死 D 的分母 = 7572 口径**（原子验证对象 = CI 会编译的块）；缩进盲区移交工具修复波 | map 4→5 |
 | P0 阈值 `D ≥ 9%` 无依据（拍脑袋嫌疑） | 锚定为 **2× 全书均值（3.94%）≈ 8%**，并验证定级结果与 9% 完全一致（结论对阈值不敏感） | map（合并上条） |
-| `M1_ontology.md` 的 `equivalent` 例子不干净（表达式级、不可验证） | 换成标准明文等价 `std::move(x) ≡ static_cast<remove_reference_t<decltype(x)>&&>(x)`（[xvalue.cast]，可编译互证） | ontology 4→5 |
+| `M1_ontology.md` 的 `equivalent` 例子不干净（表达式级、不可验证） | 换成标准明文等价 `std::move(x) ≡ static_cast<remove_reference_t<decltype(x)>&&>(x)`（[expr.static.cast]，可编译互证） | ontology 4→5 |
 | `G1_terminology.md` 组 6（const 家族）无计数证据 | 词界实测：const 6632 / constexpr 2975 / consteval 384 / constinit 240 | terminology 4→5 |
 
 ## 2. 验收门第 2 条演示：3 个知识点完整判定
