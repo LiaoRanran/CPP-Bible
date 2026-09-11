@@ -1,6 +1,6 @@
 ---
 id: EV-MEM-002
-serves: [ATOM-MEM-MOVE-002]      # G4 人审通过、样板原子化时启用；本卡为 A 样板的 deep 误解反例证据
+serves: [ATOM-MEM-MOVE-002, ATOM-MEM-PERF-001]      # MOVE-002（G4 样板）+ PERF-001（G5 批量生产，量化支撑）
 status: example                  # example：G4 样板配套证据，随样板一并人审（非已验收原子的正式证据）
 kind: asm                        # run（分配计数）+ asm（字节搬运）双观测
 hypothesis: >-

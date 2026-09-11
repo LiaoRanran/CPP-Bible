@@ -4,11 +4,11 @@
  "commit": "",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 7,
+  "warn_findings": 10,
   "atoms_total": 4,
-  "evidence_total": 10,
+  "evidence_total": 11,
   "verified_atoms": 4,
-  "replay_confirm": 10
+  "replay_confirm": 11
  },
  "accepted": [
   {
@@ -51,6 +51,13 @@
    "reason": "G5 MEM 批量生产 VALUE-001：EV-MEM-006/007 服务 goldens/ 草稿 VALUE-001，EV-SERVES-EXIST 属预期债务，原子化(草稿移 atoms/)后清零，同 RVREF-001 流程",
    "worse": [
     "warn_findings: 5 → 7"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:15:34",
+   "reason": "G5 MEM 批量生产 PERF-001：EV-MEM-008 及 EV-MEM-001/002(扩展 serves) 服务 goldens/ 草稿 PERF-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 7 → 10"
    ]
   }
  ]

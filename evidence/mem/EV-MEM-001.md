@@ -1,6 +1,6 @@
 ---
 id: EV-MEM-001
-serves: [ATOM-MEM-MOVE-001]      # 该原子在 G4 正式锻造，此处为 G2 示范证据
+serves: [ATOM-MEM-MOVE-001, ATOM-MEM-PERF-001]      # MOVE-001（G4 示范）+ PERF-001（G5 批量生产，量化扩展）
 status: example                  # example：G2 方法示范，非已验收原子的正式证据
 kind: run                        # run|asm|layout|abi|symbol|bench|sanitizer|godbolt|traceable_argument
 hypothesis: >-
