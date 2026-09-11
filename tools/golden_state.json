@@ -5,10 +5,10 @@
  "metrics": {
   "block_findings": 0,
   "warn_findings": 4,
-  "atoms_total": 12,
-  "evidence_total": 23,
-  "verified_atoms": 12,
-  "replay_confirm": 23
+  "atoms_total": 16,
+  "evidence_total": 34,
+  "verified_atoms": 16,
+  "replay_confirm": 34
  },
  "accepted": [
   {
