@@ -12,6 +12,7 @@ controlled_vars: 唯一变量 = `return x;` vs `return std::move(x);`；标准�
 # **分层变量**，c++11/14/17 与 c++20/23 结果不同，详见 `actual` 与正文表格。
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++11, c++14, c++17, c++20, c++23]
   opt: [-O2]
   arch: [x86-64]

@@ -8,6 +8,7 @@ hypothesis: >-
 controlled_vars: 同一 Node 类型、同一编译器、同一 -O2；唯一变量 = 是否形成互相持有（循环引用）
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]

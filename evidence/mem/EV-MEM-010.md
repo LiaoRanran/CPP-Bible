@@ -8,6 +8,7 @@ hypothesis: >-
 controlled_vars: 同一函数、同一编译器、同一 -O2；唯一变量 = 是否触发异常展开（触发后观察析构顺序）
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]

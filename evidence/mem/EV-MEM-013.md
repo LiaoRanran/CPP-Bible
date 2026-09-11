@@ -8,6 +8,7 @@ hypothesis: >-
 controlled_vars: 同一 Box 类型、同一编译器、同一 -O2；唯一变量 = 持有 shared_ptr 的个数（make / copy / 作用域进出）
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]

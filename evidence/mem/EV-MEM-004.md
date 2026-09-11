@@ -12,6 +12,7 @@ controlled_vars: >-
   类型、编译器、标准档、优化档在同一档内固定。
 matrix:                          # ⚠️ 笛卡尔声明 ≠ 实测组数：GCC 13.1 只跑了 {c++17 × -O2} 一组
   compiler: [GCC 15.3.0, GCC 13.1.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++11, c++14, c++17, c++20, c++23]
   opt: [-O0, -O2]
   arch: [x86-64]

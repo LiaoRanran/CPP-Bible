@@ -10,6 +10,7 @@ hypothesis: >-
 controlled_vars: 同一 TU、同一编译器、同一优化档；变量 = 被比较的智能指针类型（auto_ptr vs unique_ptr）
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++14]
   opt: [-O2]
   arch: [x86-64]

@@ -11,6 +11,7 @@ controlled_vars: >-
   vs FixedBuf/std::array 栈上定长数组）
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++23]
   opt: [-O0, -O2]
   arch: [x86-64]

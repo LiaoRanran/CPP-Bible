@@ -8,6 +8,7 @@ hypothesis: >-
 controlled_vars: 同一 TU、同一编译器、同一 -O2；唯一变量 = 类型是否持有动态资源（Value32 栈上定长 vs HeapBuf 堆指针）
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++23]
   opt: [-O0, -O2]
   arch: [x86-64]

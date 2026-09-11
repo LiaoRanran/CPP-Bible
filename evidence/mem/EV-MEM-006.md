@@ -9,6 +9,7 @@ hypothesis: >-
 controlled_vars: 同一 TU、同一编译器、同一 -O2；唯一变量 = 被测表达式的形式（具名变量 / std::move / 字面量 / 具名右值引用 / 临时）
 matrix:
   compiler: [GCC 15.3.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]

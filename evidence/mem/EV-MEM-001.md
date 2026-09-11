@@ -8,6 +8,7 @@ hypothesis: >-
 controlled_vars: 同一 Buf 类型、同一编译器、同一 -O2；唯一变量 = 拷贝构造 vs 移动构造
 matrix:
   compiler: [GCC 15.3.0, GCC 13.1.0, GCC 8.1.0]
+  # Clang 列待 CI Cross-check 步回填（GCC 15.3.0 已实测）
   std: [c++23, c++17]        # 8.1.0 不支持 c++23，其两档改用 c++17（见 M2 §2 夹具↔std 绑定）
   opt: [-O0, -O2]
   arch: [x86-64]
