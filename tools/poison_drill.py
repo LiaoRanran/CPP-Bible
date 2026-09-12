@@ -326,6 +326,24 @@ def drill() -> int:
         results.append(("P10 伪证据（期望值硬编码进夹具字面量）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P11 零诊断判据无 -Werror（W3）─────────────────────────────────────────
+    # 371 报告 W3：compile_rc 只看退出码，警告不影响 rc ⇒「无警告/零诊断」类判据
+    # 不加 -Werror 时**不可机器判定**（判据漂亮但机器看不见）。本样例验证新规则能拦下。
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-ZD.md", {
+            "id": "EV-MEM-ZD", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "g++ -std=c++17 -Wall -c x.cpp -o x.o",          # ← 毒点：无 -Werror
+            "fixture": "x.cpp", "artifact": "x.o",
+            "artifact_sha256": "0" * 64, "actual": "{k: 1}",
+            "kind": "run", "verdict": "confirm",
+            "falsification": "若编译产生任何警告（非零诊断）→ 判 refute",
+            "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_zero_diag_werror()})
+        ok = "EV-ZERO-DIAG-WERROR" in who
+        results.append(("P11 零诊断判据缺 -Werror", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"

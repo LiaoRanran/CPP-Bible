@@ -763,6 +763,35 @@ def check_evidence_matrix_backed() -> list[Finding]:
     return out
 
 
+_ZERO_DIAG_RE = re.compile(
+    r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
+
+
+def check_evidence_zero_diag_werror() -> list[Finding]:
+    """P11 零诊断类判据须 `-Werror`（371 报告 W3，红队发现）。
+
+    为何：replay 的 `compile_rc` **只看退出码**，而**警告不影响 rc** ⇒ "无警告/零诊断"
+    这类 `falsification` 在不加 `-Werror` 时**不可机器判定**（判据形同虚设：编译器发了
+    警告也照样 confirm）。补 `-Werror` 后警告即 rc≠0，判据才真正落地。
+
+    实测口径（2026-09-12 全库排查）：falsification 含此类措辞者仅 1 张（EV-LANG-001），
+    且已带 `-Werror` —— 本规则为**防回归**（该体裁洞此前是隐性的：判据写得漂亮，
+    机器却看不见）。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        hits = sorted(set(_ZERO_DIAG_RE.findall(str(meta.get("falsification") or ""))))
+        if not hits:
+            continue
+        if "-Werror" not in str(meta.get("command") or ""):
+            out.append(Finding("EV-ZERO-DIAG-WERROR", "warn", _rel(p),
+                               f"falsification 含零诊断措辞 {hits}，但 command 无 -Werror"
+                               f"——警告不影响 rc，该判据不可机器判定",
+                               "command 补 -Werror；或把判据改写为可观测读数（rc/输出）"))
+    return out
+
+
 def check_evidence_matrix() -> list[Finding]:
     """版本矩阵：matrix 必须写清 compiler/std/opt（M2 §2 两档与选取规则）。"""
     out: list[Finding] = []
@@ -1079,12 +1108,17 @@ def _register_all() -> None:
          check_evidence_trivial_observation),
         ("EV-MATRIX-UNBACKED", "多编译器矩阵须有留痕说明（P7）", "evidence",
          check_evidence_matrix_backed),
+        ("EV-ZERO-DIAG-WERROR", "零诊断类判据须 -Werror（W3）", "evidence",
+         check_evidence_zero_diag_werror),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn",
            # S6 P4–P7（2026-09-11 第四批）：判别力类问题，warn 级——不阻断但在门禁可见
            "EV-SELF-SATISFIED-ASSERT": "warn", "EV-FALSIFICATION-QUANT": "warn",
-           "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn"}
+           "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn",
+           # 2026-09-12（W3）：零诊断类判据缺 -Werror —— 判据可判定性问题，warn 级
+           # （不阻断存量，但在门禁可见；漏登记会默认 block，与 Finding 实际级别不符）
+           "EV-ZERO-DIAG-WERROR": "warn"}
     for rid, title, scope, fn in fact:
         register(Rule(rid, title, "fact", "programmatic", sev.get(rid, "block"), scope,
                       check=fn))
