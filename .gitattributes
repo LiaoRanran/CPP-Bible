@@ -1,0 +1,24 @@
+# 行尾与文本属性（2026-09-12 引入 · 修 A1「行尾不统一」）
+#
+# 原则（三条，各有理由）：
+#   1. 手写文本统一 LF：跨平台一致（Windows/WSL 双环境同仓工作，CRLF 漂移曾导致
+#      WSL 侧 437 个 Examples/*.cpp 假 M + gate 检查恒红的隐患）。
+#   2. Windows 脚本保留 CRLF：cmd.exe / PowerShell 对批处理的 CRLF 有依赖。
+#   3. 证据工件（.asm/.out 等）**声明为 binary，永久禁转换**：字节即身份——
+#      replay 的 artifact_sha256 强校验与 run_match 逐字比对都基于工作树字节，
+#      任何行尾转换都会让全库 refute。（2026-09-12 盘点：316 个索引侧 CRLF 中
+#      含 64 个 .asm，若不加本条，一次 renormalize 即毁掉全部工件证据。）
+
+* text=auto eol=lf
+
+# Windows 脚本：行为依赖 CRLF
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# 证据工件：字节即身份（本条必须晚于上面的通配，且以具体模式覆盖）
+*.asm  -text
+*.out  -text
+*.o    -text
+*.obj  -text
+*.exe  -text
