@@ -525,8 +525,8 @@ def drill() -> int:
         dup = [f for f in ge.check_evidence_id_unique() if "重复" in f.message]
         ok = "EV-ID-UNIQUE" in who and bool(dup)
         results.append(("P17 证据 id 重复（373-N2 同 id 双卡）", ok,
-                        f"拦截者 {', '.join(sorted(who)) or '（漏网！）'}"
-                        f" · 重复判定 {len(dup)} 条"))
+                        (f"拦截者 {', '.join(sorted(who)) or '（漏网！）'}"
+                         f" · 重复判定 {len(dup)} 条")))
     with sandbox() as tmp:
         _write(ge.EVIDENCE / "mem" / "EV-MEM-UNIQ.md", {**base, "id": "EV-MEM-UNIQ"})
         results.append(("P17-阴 唯一且 stem==id 必须放行",

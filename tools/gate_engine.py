@@ -1110,8 +1110,7 @@ def check_evidence_artifact_producer() -> list[Finding]:
         # 只取 argv[0] 的**程序名**：容忍带引号的完整路径（`"C:/.../g++.exe"`）与 `.exe` 后缀
         argv = prod.split()
         prog = argv[0].strip("\"'").replace("\\", "/").rsplit("/", 1)[-1] if argv else ""
-        if prog.endswith(".exe"):
-            prog = prog[:-4]
+        prog = prog.removesuffix(".exe")
         if prog.lower() not in _COMPILER_PROGS:
             out.append(Finding("EV-ARTIFACT-PRODUCER", "block", _rel(p),
                                f"artifact_producer 的 argv[0]={prog or '空'} 不是编译器"
