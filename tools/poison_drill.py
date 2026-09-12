@@ -309,5 +309,22 @@ def drill() -> int:
     return 0 if passed == len(results) else 1
 
 
+def rule_coverage() -> tuple[int, int, list[str]]:
+    """RULE-COVERAGE: gate rules covered by poison samples (DO-178C TQL)."""
+    import re as _re
+    ge_src = Path(ge.__file__).read_text(encoding="utf-8")
+    all_rules = set(_re.findall(r'Finding\("([A-Z][A-Z0-9-]+)"', ge_src))
+    drill_src = Path(__file__).read_text(encoding="utf-8")
+    covered = set(_re.findall(r'"([A-Z][A-Z0-9-]+)" in who', drill_src))
+    uncovered = sorted(all_rules - covered)
+    return len(covered), len(all_rules), uncovered
+
+
 if __name__ == "__main__":
+    rc = rule_coverage()
+    print(f"[poison] RULE-COVERAGE: {rc[0]}/{rc[1]} gate rules covered by poison samples")
+    if rc[2]:
+        print(f"[poison] UNCOVERED ({len(rc[2])}): {', '.join(rc[2])}")
+        print("[poison] Note: uncovered != bug -- META-MANIFEST/DOC-ZERO-PLACEHOLDER not适合毒样例; but must register exemption explicitly")
     raise SystemExit(drill())
+

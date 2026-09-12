@@ -318,3 +318,107 @@ def test_duplicate_rule_registration_rejected():
 def test_manifest_has_no_drift_in_repo():
     assert ge.check_manifest_consistency() == [], \
         "pyproject:quality_gates 与 cppbible cmd_check 必须一一对应（ADR-0004）"
+
+
+# ── G6：四级状态 + DAL（「放权」体系的三条反作弊锁，解锁前必须先上锁）───────
+_PROMOTED = ("\n  - {level: draft, at: legacy, by: writer:agent}"
+             "\n  - {level: machine-verified, at: 2026-09-12, by: machine:gate}"
+             "\n  - {level: human-verified, at: 2026-09-12, by: human:liaoranran}")
+
+
+def _verified_atom(base: Path, name: str = "ATOM-MEM-MOVE-001.md", **over: str) -> Path:
+    """一颗「本应放行」的人级原子；各用例只改一个字段演反例。"""
+    fields: dict[str, str] = {
+        "status": "human-verified", "evidence": "[EV-1]", "first_hand": "true",
+        "superiority": "s", "dal": "B", "human_review": "required",
+        "status_history": _PROMOTED, "verified_by": "human:liaoranran",
+    }
+    fields.update(over)
+    return _write_atom(base, name, "mem", **fields)
+
+
+def test_status_enum_single_source_of_truth():
+    """枚举单点化：`verified` 是历史别名 = human-verified；三级都算「已验证」。
+
+    这条锁的是**静默失效**——散落的 `status == "verified"` 在新枚举下不报错、
+    直接不拦，等于把 S1/S2/证据边界一起关掉。
+    """
+    assert ge.is_verified({"status": "verified"}), "历史别名必须等价 human-verified"
+    assert ge.is_verified({"status": "machine-verified"})
+    assert ge.is_verified({"status": "red-team-verified"})
+    assert not ge.is_verified({"status": "draft"})
+    assert ge.level_of({"status": "verified"}) == ge.level_of({"status": "human-verified"}) == 3
+
+
+def test_status_value_pair(sandbox: Path):
+    """枚举外取值必须显式拦（它会让所有等值判断静默漏过）。"""
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="wat")
+    assert any(h.rule_id == "ATOM-STATUS-VALUE" for h in ge.check_status_value())
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="draft")
+    assert ge.check_status_value() == []
+
+
+def test_status_transition_pair(sandbox: Path):
+    """跃迁链：草稿免报；缺链/链尾不符/前缀不符/人级无机器前驱 → block。"""
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="draft")
+    assert ge.check_status_transition() == [], "草稿不要求晋升历史"
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="machine-verified")
+    assert any("无 status_history" in h.message for h in ge.check_status_transition())
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="human-verified",
+                status_history="\n  - {level: draft, at: legacy, by: writer:agent}"
+                               "\n  - {level: human-verified, at: 2026-09-12, by: human:liaoranran}")
+    assert any("无 machine/red-team 级" in h.message for h in ge.check_status_transition()), \
+        "人级直签（跳过全部非人级核查）必须拦"
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="red-team-verified",
+                status_history=_PROMOTED)
+    assert any("链尾" in h.message for h in ge.check_status_transition())
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="human-verified",
+                status_history=_PROMOTED.replace("human:liaoranran", "writer:agent"))
+    assert any("by 前缀" in h.message for h in ge.check_status_transition()), \
+        "人级由 Agent 签必须拦"
+
+    _verified_atom(sandbox)
+    assert ge.check_status_transition() == [], "合规链（含 draft legacy）必须放行"
+
+
+def test_dal_match_pair(sandbox: Path):
+    """DAL：已入库必填；A/B 须人级 + human_review；C/D/E 免人审但**须人签豁免**。"""
+    _verified_atom(sandbox, dal="")
+    assert any("缺合法 dal" in h.message for h in ge.check_dal_match())
+
+    _verified_atom(sandbox, human_review="optional")
+    assert any("human_review: required" in h.message for h in ge.check_dal_match())
+
+    _verified_atom(sandbox, status="machine-verified", verified_by="machine:gate")
+    assert any("须 human-verified" in h.message for h in ge.check_dal_match()), \
+        "DAL A/B 停机器级 = 未人审即入库"
+
+    _verified_atom(sandbox, dal="C", human_review="optional", status="machine-verified",
+                   verified_by="machine:gate")
+    assert any("dal_reviewed_by" in h.message for h in ge.check_dal_match()), \
+        "Writer 自定 dal: C 绕过人审必须拦（放权不得变权力反转）"
+
+    _verified_atom(sandbox, dal="C", human_review="optional", status="machine-verified",
+                   verified_by="machine:gate", dal_reviewed_by="human:liaoranran")
+    assert ge.check_dal_match() == [], "人签豁免后 C 级放行"
+
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="draft")
+    assert ge.check_dal_match() == [], "草稿期不要求分级"
+
+
+def test_s1_signoff_prefix_matches_level(sandbox: Path):
+    """S1 级别化：前缀须与状态级别匹配；人级的「唯人可置」语义不变。"""
+    _verified_atom(sandbox, status="machine-verified", verified_by="machine:gate")
+    assert ge.check_s1_human_signoff() == []
+
+    _verified_atom(sandbox, status="machine-verified", verified_by="human:liaoranran")
+    assert any(h.rule_id == "S1-AUTHOR-SELF-VERIFY" for h in ge.check_s1_human_signoff())
+
+    _verified_atom(sandbox, verified_by="machine:gate")
+    assert any(h.rule_id == "S1-AUTHOR-SELF-VERIFY" for h in ge.check_s1_human_signoff()), \
+        "人级却由机器签必须拦"

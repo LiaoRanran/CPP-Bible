@@ -8,7 +8,11 @@
     warn_findings    warn 级命中数（↑ = 记债增加 → 红）
     atoms_total      原子数（↓ = 回滚 → 红）
     evidence_total   证据卡数（↓ = 证据被删 → 红）
-    verified_atoms   verified 原子数（↓ = 降级 → 红）
+    verified_atoms   已验证原子总数（三级合计，↓ = 降级 → 红）
+    human_verified   human-verified 级（含历史别名 verified）（↓ = 降级 → 红）
+    red_team_verified red-team-verified 级（↓ = 降级 → 红）
+    machine_verified machine-verified 级（↓ = 降级 → 红）
+    dal_gap          DAL A/B 却非人级验证的原子数（↑ = 越权放行 → 红）
     replay_confirm   证据卡机器复算通过数（↓ = 证据失效 → 红）
 
 语义：
@@ -45,6 +49,13 @@ WORSE: dict[str, bool] = {
     "evidence_total": False,
     "verified_atoms": False,
     "replay_confirm": False,
+    # G6 四级状态（2026-09-12）：按级别分列——任一级下降即降级 = 恶化。
+    # 只盯总数会被"人级掉 1 / 红队级涨 1"这类置换掩盖（总数不变、保证级别其实降了）。
+    "human_verified": False,
+    "red_team_verified": False,
+    "machine_verified": False,
+    # DAL A/B 却非人级验证 = 硬约束破口，上升即恶化（放权不得从这条缝漏出去）
+    "dal_gap": True,
 }
 
 
@@ -65,6 +76,26 @@ def measure() -> dict[str, int]:
         except ValueError:
             return ""
 
+    def _dal(p: Path) -> str:
+        try:
+            return str(replay.parse_frontmatter(
+                p.read_text(encoding="utf-8", errors="replace")).get("dal") or "").strip().upper()
+        except ValueError:
+            return ""
+
+    # 级别分列口径与 gate_engine 保持一致（`verified` = 历史别名 → human 级）
+    tier_of = {"human-verified": "human", "verified": "human",
+               "red-team-verified": "redteam", "machine-verified": "machine"}
+    tiers = {"human": 0, "redteam": 0, "machine": 0}
+    dal_gap = 0
+    for p in atoms:
+        tier = tier_of.get(_status(p))
+        if not tier:
+            continue
+        tiers[tier] += 1
+        if tier != "human" and _dal(p) in ("A", "B"):
+            dal_gap += 1
+
     confirm = 0
     for p in evids:
         verdict, _ = replay.replay_card(p, do_sanitizer=False)
@@ -76,7 +107,11 @@ def measure() -> dict[str, int]:
         "warn_findings": sum(1 for f in findings if f.severity == "warn"),
         "atoms_total": len(atoms),
         "evidence_total": len(evids),
-        "verified_atoms": sum(1 for p in atoms if _status(p) == "verified"),
+        "verified_atoms": sum(tiers.values()),
+        "human_verified": tiers["human"],
+        "red_team_verified": tiers["redteam"],
+        "machine_verified": tiers["machine"],
+        "dal_gap": dal_gap,
         "replay_confirm": confirm,
     }
 

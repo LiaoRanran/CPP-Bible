@@ -68,6 +68,29 @@ COGNITIVE_LOADS = {"low", "medium", "high"}
 # beginner 原子须给直觉入口：正文里应能找到类比/直觉类表述，而不是只有形式化定义
 ANALOGY_RE = re.compile(r"(类比|直觉|打个比方|好比|就像|想象一下|可以理解为)")
 
+# ── G6 四级状态 + 失效后果分级 DAL（2026-09-12，References/300 落地）──────────
+# 状态链：draft → machine-verified → red-team-verified → human-verified
+#   `verified` = 四级体系启用前的历史取值，语义等价 human-verified（兼容别名，存量沿用）
+# 三条防"放权变降标"的铁律（缺一条则放权 = 静默降标）：
+#   ① **判断单点化**：任何"是否已验证"必须走 is_verified()/level_of()，禁止散落
+#      `status == "verified"` —— 新枚举会让写死比较**静默跳过**（不报错、不拦截）。
+#   ② **人级须有非人级前驱**：人只能签"已被机器验过"的东西；链中必须含 machine 或
+#      red-team 级，否则 draft 直签人级 = 未验证内容入库。
+#   ③ **免人审本身必须人签**：DAL C/D/E 意味着豁免人审，这是放权决定而非写作决定，
+#      须 `dal_reviewed_by: human:*`；否则 Writer 自填 `dal: C` 即可绕过人审（权力反转）。
+ATOM_STATUSES = ("draft", "machine-verified", "red-team-verified", "human-verified",
+                 "verified", "rejected")
+HUMAN_STATUSES = ("human-verified", "verified")
+VERIFIED_STATUSES = ("machine-verified", "red-team-verified") + HUMAN_STATUSES
+STATUS_LEVEL = {"draft": 0, "machine-verified": 1, "red-team-verified": 2,
+                "human-verified": 3, "verified": 3}
+LEVEL_PRINCIPALS = {"draft": (), "machine-verified": ("machine:",),
+                    "red-team-verified": ("redteam:",),
+                    "human-verified": ("human:",), "verified": ("human:",)}
+DAL_LEVELS = ("A", "B", "C", "D", "E")
+DAL_HUMAN_REVIEW = ("A", "B")     # 必须人审签署；C/D/E 红队通过即可（须人签豁免）
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -137,6 +160,20 @@ def _as_list(v: Any) -> list[Any]:
     return v if isinstance(v, list) else [v]
 
 
+def level_of(meta: dict[str, Any]) -> int | None:
+    """状态级别序数（draft=0 / machine=1 / red-team=2 / human=3）；枚举外 → None。"""
+    return STATUS_LEVEL.get(str(meta.get("status") or "").strip().lower())
+
+
+def is_verified(meta: dict[str, Any]) -> bool:
+    """是否属「已验证」三级（机器 / 红队 / 人）——**唯一判断点**。
+
+    散落的 `status == "verified"` 在新枚举下会静默跳过（不报错、不拦截），
+    等于把 S1/S2/证据边界三条硬约束一起关掉。新增状态一律改这里。
+    """
+    return str(meta.get("status") or "").strip().lower() in VERIFIED_STATUSES
+
+
 # ── FACT 规则（程序化）────────────────────────────────────────────────────
 def check_atom_frontmatter() -> list[Finding]:
     out: list[Finding] = []
@@ -181,11 +218,11 @@ def check_atom_id_format() -> list[Finding]:
 
 
 def check_verified_bound() -> list[Finding]:
-    """G1_layout 硬约束：status=verified ⟹ evidence 非空 ∧ first_hand ∧ superiority 非空。"""
+    """G1_layout 硬约束：status 属已验证三级 ⟹ evidence 非空 ∧ first_hand ∧ superiority。"""
     out: list[Finding] = []
     for p in _cards(ATOMS, "ATOM-*.md"):
         meta = _meta(p)
-        if str(meta.get("status")) != "verified":
+        if not is_verified(meta):
             continue
         gaps = []
         if not _as_list(meta.get("evidence")):
@@ -196,7 +233,7 @@ def check_verified_bound() -> list[Finding]:
             gaps.append("superiority 为空")
         if gaps:
             out.append(Finding("ATOM-VERIFIED-BOUND", "block", _rel(p),
-                               "status=verified 但 " + "；".join(gaps),
+                               f"status={meta.get('status')} 但 " + "；".join(gaps),
                                "补证据或降级 status=draft（S2 声明-证据绑定）"))
     return out
 
@@ -210,6 +247,130 @@ def check_no_unverified_status() -> list[Finding]:
             out.append(Finding("ATOM-NO-UNVERIFIED", "block", _rel(p),
                                f"status={st} 违规（新原子禁未验证）",
                                "完成验证置 verified，或标 draft/rejected"))
+    return out
+
+
+def check_status_value() -> list[Finding]:
+    """status 必须是四级体系枚举内取值（枚举外 = 检查会静默漏过，故显式拦）。"""
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        st = str(meta.get("status") or "").strip()
+        if st and st.lower() not in ATOM_STATUSES:
+            out.append(Finding("ATOM-STATUS-VALUE", "block", _rel(p),
+                               f"status 非法：{st}",
+                               "取值 " + " / ".join(ATOM_STATUSES)))
+    return out
+
+
+def check_status_transition() -> list[Finding]:
+    """状态跃迁可证：非 draft/rejected 的原子必须带合法 `status_history` 链。
+
+    校验（全部机器可判）：
+      * 链首 = draft；级别单调不减；链尾 = 当前 status；
+      * `at` 为 ISO 日期、`by` 前缀与该级执行者匹配（machine:* / redteam:* / human:*）；
+      * **人级必须链上含非人级前驱**（人只能签已被机器或红队验过的东西）。
+
+    不强制逐级（draft→machine→red-team→human 每步 +1）：逐级对历史原子不可回溯，
+    硬要求只会逼人**编造**红队记录——规则若要求机器无法核实的历史，就是在生产假记录。
+    因此只拦风险实质：绕过全部非人级检查直接由人签字。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        st = str(meta.get("status") or "").strip().lower()
+        if st not in STATUS_LEVEL:
+            continue                                    # 枚举外 → ATOM-STATUS-VALUE 管
+        hist = _as_list(meta.get("status_history"))
+        if not hist:
+            if STATUS_LEVEL[st] > 0:
+                out.append(Finding("ATOM-STATUS-TRANSITION", "block", _rel(p),
+                                   f"status={st} 但无 status_history（晋升路径不可证）",
+                                   "补 status_history: [{level, at, by}]，链尾=当前状态"))
+            continue
+        steps: list[tuple[int, str]] = []
+        bad: list[str] = []
+        for h in hist:
+            if not isinstance(h, dict):
+                bad.append("存在非结构化项（须 {level, at, by}）")
+                continue
+            lv = str(h.get("level") or "").strip().lower()
+            if lv not in STATUS_LEVEL:
+                bad.append(f"level 非法：{lv or '空'}")
+                continue
+            at, by = str(h.get("at") or "").strip(), str(h.get("by") or "").strip()
+            # `at: legacy` 仅限 draft 级：起草时间未留记录是历史事实，逼填日期 = 逼造数据
+            if at == "legacy" and lv != "draft":
+                bad.append(f"{lv} 不得用 at: legacy（该级须有真实签署日期）")
+            elif at != "legacy" and not DATE_RE.match(at):
+                bad.append(f"{lv} 的 at 须为 ISO 日期或 draft 级 legacy：{at or '空'}")
+            need = LEVEL_PRINCIPALS.get(lv, ())
+            if need and not by.startswith(need):
+                bad.append(f"{lv} 的 by 前缀应为 {'/'.join(need)}（当前：{by or '空'}）")
+            elif not need and not by:
+                bad.append(f"{lv} 缺 by")
+            steps.append((STATUS_LEVEL[lv], lv))
+        if bad:
+            out.append(Finding("ATOM-STATUS-TRANSITION", "block", _rel(p),
+                               "status_history 不合法：" + "；".join(bad),
+                               "按 docs/kernel/G6_status_levels.md §2 修链"))
+            continue
+        levels = [lv for lv, _ in steps]
+        if levels[0] != 0:
+            out.append(Finding("ATOM-STATUS-TRANSITION", "block", _rel(p),
+                               f"status_history 链首必须是 draft（当前：{steps[0][1]}）",
+                               "链首补 {level: draft, at: …, by: writer:…}"))
+        elif any(b < a for a, b in zip(levels, levels[1:])):
+            out.append(Finding("ATOM-STATUS-TRANSITION", "block", _rel(p),
+                               f"status_history 级别回退未留痕：{[s[1] for s in steps]}",
+                               "回退须在链尾追加低级别步骤（保留历史，不删记录）"))
+        elif levels[-1] != STATUS_LEVEL[st]:
+            out.append(Finding("ATOM-STATUS-TRANSITION", "block", _rel(p),
+                               f"status_history 链尾({steps[-1][1]}) ≠ status({st})",
+                               "链尾须等于当前状态"))
+        # 必须是 machine(1)/red-team(2) 级**具体存在**，不是"级别 ≥1"——否则
+        # draft→human 这种 0→3 的直签会被 level>=1 误判成合规（0→3 里 3 也 ≥1）
+        elif st in HUMAN_STATUSES and not any(lv in (1, 2) for lv in levels):
+            out.append(Finding("ATOM-STATUS-TRANSITION", "block", _rel(p),
+                               "人级签署但链上无 machine/red-team 级（未过机器验证即签）",
+                               "先过门禁晋升 machine-verified / 红队晋升 red-team-verified"))
+    return out
+
+
+def check_dal_match() -> list[Finding]:
+    """失效后果分级（DAL）与人审要求一致（G6，References/300 §3）。
+
+    * 已入库原子必须有 `dal ∈ A–E`；
+    * DAL A/B ⟹ `human_review: required` 且状态必须是人级；
+    * DAL C/D/E ⟹ 豁免人审，但**豁免决定须人签** `dal_reviewed_by: human:*`
+      （否则 Writer 自填 `dal: C` 即可绕过人审 = 放权变权力反转）。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        if not is_verified(meta):
+            continue                                    # 草稿期不要求分级
+        dal = str(meta.get("dal") or "").strip().upper()
+        if dal not in DAL_LEVELS:
+            out.append(Finding("ATOM-DAL-MATCH", "block", _rel(p),
+                               f"已入库原子缺合法 dal（当前：{dal or '空'}）",
+                               "标 A–E + human_review；C/D/E 须 human:* 签 dal_reviewed_by"))
+            continue
+        hr = str(meta.get("human_review") or "").strip().lower()
+        st = str(meta.get("status") or "").strip().lower()
+        if dal in DAL_HUMAN_REVIEW:
+            if hr != "required":
+                out.append(Finding("ATOM-DAL-MATCH", "block", _rel(p),
+                                   f"DAL {dal} 须 human_review: required（当前：{hr or '空'}）",
+                                   "A/B 级失效后果必须人审签署"))
+            if st not in HUMAN_STATUSES:
+                out.append(Finding("ATOM-DAL-MATCH", "block", _rel(p),
+                                   f"DAL {dal} 须 human-verified（当前：{st}）",
+                                   "先人审签署再入库，或人签下调 DAL"))
+        elif not str(meta.get("dal_reviewed_by") or "").strip().startswith("human:"):
+            out.append(Finding("ATOM-DAL-MATCH", "block", _rel(p),
+                               f"DAL {dal} 豁免人审但无 dal_reviewed_by: human:*",
+                               "豁免人审是放权决定：须人签（同批可一次签分级表）"))
     return out
 
 
@@ -600,27 +761,35 @@ def check_atom_gray_zone() -> list[Finding]:
 
 # ── 制衡层 S1/S2/S3（机器可判定部分；S4/S5/S6 为独立工具）──────────────────
 def check_s1_human_signoff() -> list[Finding]:
-    """S1 三权分立：Agent 无权定 golden —— verified 必须带人工签收。"""
+    """S1 三权分立：签署人须与状态级别匹配（人级唯人可签，Agent 不得自证）。
+
+    G6 起级别化：machine-verified → `machine:*`（门禁自动晋升）、
+    red-team-verified → `redteam:*`（红队晋升）、human-verified/verified → `human:*`。
+    人级的"唯人可置"语义**不变**——变的只是它不再是唯一的已验证状态。
+    """
     out: list[Finding] = []
     for p in _cards(ATOMS, "ATOM-*.md"):
         meta = _meta(p)
-        if str(meta.get("status")) != "verified":
+        st = str(meta.get("status") or "").strip().lower()
+        if st not in VERIFIED_STATUSES:
             continue
+        need = LEVEL_PRINCIPALS.get(st, ())
         by = str(meta.get("verified_by") or "")
-        if not by.startswith("human:"):
+        if not by.startswith(need):
             out.append(Finding("S1-AUTHOR-SELF-VERIFY", "block", _rel(p),
-                               "status=verified 但缺 verified_by: human:*（Agent 无权自证）",
-                               "由人复核后写入 verified_by / verified_at"))
+                               f"status={st} 但 verified_by 前缀应为 {'/'.join(need)}"
+                               f"（当前：{by or '空'}）",
+                               "人级由人复核后写 human:*；机器晋升 machine:*；红队 redteam:*"))
     return out
 
 
 def check_s2_evidence_verdict() -> list[Finding]:
-    """S2 声明-证据绑定：verified 原子引用的证据必须 verdict=confirm（作者自述无效）。"""
+    """S2 声明-证据绑定：已验证原子引用的证据必须 verdict=confirm（作者自述无效）。"""
     verdicts = {str(_meta(p).get("id") or p.stem): str(_meta(p).get("verdict") or "")
                 for p in _cards(EVIDENCE, "EV-*.md")}
     out: list[Finding] = []
     for p in _cards(ATOMS, "ATOM-*.md"):
-        if str(_meta(p).get("status")) != "verified":
+        if not is_verified(_meta(p)):
             continue
         for ev in _as_list(_meta(p).get("evidence")):
             key = str(ev)
@@ -765,6 +934,10 @@ def _register_all() -> None:
         ("ATOM-VERIFIED-BOUND", "verified ⟹ 证据+一手+superiority", "atom",
          check_verified_bound),
         ("ATOM-NO-UNVERIFIED", "新原子禁未验证状态", "atom", check_no_unverified_status),
+        ("ATOM-STATUS-VALUE", "status 取值限于四级枚举", "atom", check_status_value),
+        ("ATOM-STATUS-TRANSITION", "状态跃迁可证（status_history 链）", "atom",
+         check_status_transition),
+        ("ATOM-DAL-MATCH", "DAL 分级与人审要求一致", "atom", check_dal_match),
         ("ATOM-REL-TARGET", "关系目标存在", "atom", check_relations_target_exists),
         ("ATOM-REL-DAG", "学习路径 DAG 无环", "atom", check_relations_dag),
         ("ATOM-SUPERIORITY-WORDS", "superiority 禁词表", "atom",
