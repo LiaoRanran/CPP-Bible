@@ -24,6 +24,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import shutil
 import subprocess
 import sys
@@ -33,6 +34,7 @@ from pathlib import Path
 from typing import Iterator
 
 ROOT = Path(__file__).resolve().parent.parent
+EXEMPTIONS = ROOT / "tools" / "poison_exemptions.yaml"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay  # noqa: E402
@@ -278,6 +280,52 @@ def drill() -> int:
         results.append(("P8 身份漂移（stem≠id / id 重复）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P9 证据失配：verified 原子引用 verdict=refute 的证据卡（S2）────────────
+    # 369 任务4：S2 此前无毒样例——"被反驳的证据仍撑着 verified"是最高危失配。
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-S2.md", {
+            "id": "ATOM-MEM-S2", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "verified", "claim": "c", "claim_boundary": "b",
+            "relations": "[]", "evidence": "[EV-MEM-REFUTED]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "true", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p",
+        })
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-REFUTED.md", {
+            "id": "EV-MEM-REFUTED", "serves": "[ATOM-MEM-S2]", "hypothesis": "h",
+            "command": "true", "fixture": "x.cpp", "artifact": "x.asm",
+            "artifact_sha256": "0" * 64, "actual": "{run_case: A}",
+            "kind": "run", "verdict": "refute",                       # ← 毒点
+            "falsification": "对照输出 1",
+            "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_s2_evidence_verdict()})
+        ok = "S2-EVIDENCE-VERDICT" in who
+        results.append(("P9 证据失配（verified 绑 refute 证据）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P10 伪证据：期望值被硬编码进夹具字面量（S3）───────────────────────────
+    # 369 任务4：S3 此前无毒样例——"打印常量冒充观测"是伪证据的最短路径。
+    with sandbox() as tmp:
+        fx = ge.EVIDENCE / "_fx_s3.cpp"
+        fx.parent.mkdir(parents=True, exist_ok=True)
+        fx.write_text('#include <cstdio>\n'
+                      'int main(){ std::printf("single_total=100000\\n"); }\n',
+                      encoding="utf-8")
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-S3.md", {
+            "id": "EV-MEM-S3", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "true", "fixture": fx.as_posix(), "artifact": "x.asm",
+            "artifact_sha256": "0" * 64,
+            "actual": "{single_total: 100000}",                        # ← 毒点
+            "kind": "run", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_s3_hardcoded_expected()})
+        ok = "S3-EXPECTED-HARDCODED" in who
+        results.append(("P10 伪证据（期望值硬编码进夹具字面量）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -329,22 +377,52 @@ def drill() -> int:
     return 0 if passed == len(results) else 1
 
 
+_EXEMPT_LINE = re.compile(
+    r'^\s*-\s*\{\s*id:\s*([A-Z][A-Z0-9-]+)\s*,\s*reason:\s*"?(.*?)"?\s*,\s*'
+    r'date:\s*(\d{4}-\d{2}-\d{2})\s*\}\s*$')
+
+
+def load_exemptions() -> dict[str, str]:
+    """S6 毒样例豁免台账 `tools/poison_exemptions.yaml` → {规则 ID: "日期 · 原因"}。
+
+    **零依赖解析**（不引 PyYAML，与 gate_engine 复用 replay 解析器的零依赖口径一致）：
+    台账只允许单行 flow 映射 `- {id: X, reason: "...", date: YYYY-MM-DD}`。
+
+    fail-closed：台账缺失/解析不到 → 返回空 dict —— 未覆盖规则**一律算欠账**，
+    不因台账丢失而静默放行（368 P1-2 的反面：旧实现只打印、永不红）。
+    """
+    if not EXEMPTIONS.is_file():
+        return {}
+    out: dict[str, str] = {}
+    for ln in EXEMPTIONS.read_text(encoding="utf-8", errors="replace").split("\n"):
+        m = _EXEMPT_LINE.match(ln)
+        if m:
+            out[m.group(1)] = f"{m.group(3)} · {m.group(2).strip()}"
+    return out
+
+
 def rule_coverage() -> tuple[int, int, list[str]]:
-    """RULE-COVERAGE: gate rules covered by poison samples (DO-178C TQL)."""
-    import re as _re
-    ge_src = Path(ge.__file__).read_text(encoding="utf-8")
-    all_rules = set(_re.findall(r'Finding\("([A-Z][A-Z0-9-]+)"', ge_src))
+    """RULE-COVERAGE: 已覆盖 / **注册规则数**（分母单点化为 `gate_engine.RULES`）。
+
+    旧口径（368 P1-2）：分母取 gate 源码 `Finding("...")` 正则去重数，与注册规则数
+    互不认账（实测 32 vs 37），且未覆盖只打印、不影响退出码——台账不存在＝永久免检。
+    新口径：分母取注册规则；未覆盖且未登记豁免 → 返回非空，`__main__` 据此 exit 1。
+    """
+    all_rules = {r.id for r in ge.RULES}
     drill_src = Path(__file__).read_text(encoding="utf-8")
-    covered = set(_re.findall(r'"([A-Z][A-Z0-9-]+)" in who', drill_src))
-    uncovered = sorted(all_rules - covered)
+    covered = set(re.findall(r'"([A-Z][A-Z0-9-]+)" in who', drill_src))
+    exempt = set(load_exemptions())
+    uncovered = sorted(all_rules - covered - exempt)
     return len(covered), len(all_rules), uncovered
 
 
 if __name__ == "__main__":
-    rc = rule_coverage()
-    print(f"[poison] RULE-COVERAGE: {rc[0]}/{rc[1]} gate rules covered by poison samples")
-    if rc[2]:
-        print(f"[poison] UNCOVERED ({len(rc[2])}): {', '.join(rc[2])}")
-        print("[poison] Note: uncovered != bug -- META-MANIFEST/DOC-ZERO-PLACEHOLDER not适合毒样例; but must register exemption explicitly")
-    raise SystemExit(drill())
+    covered, total, uncovered = rule_coverage()
+    print(f"[poison] RULE-COVERAGE: {covered}/{total} 注册规则被毒样例覆盖"
+          f"（另登记豁免 {len(load_exemptions())} 条）")
+    if uncovered:
+        print(f"[poison] 未覆盖且未豁免（{len(uncovered)}）: {', '.join(uncovered)}")
+        print("[poison] 二选一：补毒样例，或在 tools/poison_exemptions.yaml 登记"
+              "（规则 ID + 原因 + 日期）——本项为硬门禁（CI 红）")
+    raise SystemExit(drill() or (1 if uncovered else 0))
 
