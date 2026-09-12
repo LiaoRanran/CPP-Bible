@@ -33,6 +33,8 @@ command: |
   g++ -O2 -std=c++23 -Wall -Wextra -Werror -c Examples/atoms/_atom_inline_odr_b.cpp -o build/_replay_odr_diag_b.o
   g++ -O2 -std=c++23 -Wall -Wextra -Werror -c Examples/atoms/_atom_inline_odr_main.cpp -o build/_replay_odr_diag_main.o
   g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_a.cpp -o Examples/atoms/_atom_inline_odr_a.asm
+  g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_b.cpp -o Examples/atoms/_atom_inline_odr_b.asm
+  g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_main.cpp -o Examples/atoms/_atom_inline_odr_main.asm
 artifact: Examples/atoms/_atom_inline_odr_a.asm
 artifact_sha256: 63c7e3b73ea9646cbad081ba6b8c0a5ad6e5b77f780aebf944ffd65ba15fbc9f
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
@@ -78,6 +80,9 @@ artifact_assert:
   - {kind: absent_in, symbol: "_Z10tu_a_valuev", text: "call"}
   - {kind: contains_in, symbol: "_Z11tu_a_stablev", text: "movl $42, %eax"}
   - {kind: call_count, symbols: ["_Z10tu_a_valuev", "_Z11tu_a_stablev"], max: 0}
+artifacts:
+  - {path: Examples/atoms/_atom_inline_odr_b.asm, sha256: bc9c1ee45dad3bd0e4b843542b69b96eb4b010797ddb346ed06e2dfdc5dcb704}
+  - {path: Examples/atoms/_atom_inline_odr_main.asm, sha256: 34183ea9f66aa1e2d1e9409e29d2209c2970ca7f46453925221103530d5dd645}
 falsification: |
   若以下任一发生，判 refute：
   1. 「零诊断」由 `-Werror` 承担：三条 `-Wall -Wextra -Werror` 编译**任一 rc≠0**（即编译器发出警告或
@@ -139,6 +144,12 @@ expected: |
 **内联了自己看到的定义**（与 E3 的 `tu_a=1` 互证）；`_b.asm` 同位置为 `movl $2`（对应 `tu_b=2`）。
 `_atom_inline_odr_main.asm` 的 `main` 对四个包装函数各有一条 `call`（跨 TU 调用未内联），是"观测点不在
 同一 TU"的结构证据。
+
+> **多产物登记（2026-09-12，W1 修复）**：本卡 `command` 现生成全部三个 `.asm`（a/b/main），
+> 并由 `artifacts[]` **逐个登记 sha256**——此前 `_b.asm`/`_main.asm` 是"**孤儿工件**"：
+> 被正文引用、存在仓库里，但不在任何 command 里生成、无任何机器校验（实测二者恰好同代，
+> 属运气而非保证）。现在 replay 会删除→重生成→逐个复算字节，失配即 refute。
+> 跨编译器时副产物不校验字节（无结构断言机制），replay 会显式标注该残留风险。
 
 > **本卡机器断言的判别力声明（2026-09-12 W2 修复后重写）**：`artifact_assert` 四条——
 > ① `contains_in … "movl $1, %eax"`：TU A 中 `odr_fn()` 被常量折叠并**内联**进 `tu_a_value` 的

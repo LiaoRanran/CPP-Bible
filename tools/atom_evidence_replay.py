@@ -421,6 +421,14 @@ def _sha256(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
+def _shown_path(p: Path) -> str:
+    """仓库内路径的展示形式（仓库外原样返回）——多产物日志用。"""
+    try:
+        return p.relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(p)
+
+
 def _platform_tag() -> str:
     """平台标签：工件字节与平台强相关（同为 GCC 15，MinGW 与 Linux 的 .asm 也不同）。"""
     if sys.platform == "win32":
@@ -781,6 +789,16 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     art_rel = str(meta["artifact"])
     art_path = ROOT / art_rel
     want_sha = str(meta["artifact_sha256"]).strip().lower()
+    # 多产物登记（2026-09-12，W1）：可选 `artifacts: [{path: …, sha256: …}, …]` ——
+    # 同一 `command` 产出的其它工件。多 TU 场景一次构建产 a/b/main 三个 .asm，主字段
+    # 只能锚一个，其余此前**无字段可登记、无人校验**（本批实测：`_b.asm`/`_main.asm`
+    # 被卡正文引用却不在任何 command 里生成，属"孤儿工件"——它们恰好同代，但无机器保证）。
+    # 校验口径：同编译器下逐个复算 sha；跨编译器时副产物**不校验字节**（它们没有结构
+    # 断言机制、字节必不同）——如实标注残留风险，不静默放行。
+    extra_arts: list[tuple[Path, str]] = []
+    for _it in (meta.get("artifacts") or []):
+        if isinstance(_it, dict) and _it.get("path") and _it.get("sha256"):
+            extra_arts.append((ROOT / str(_it["path"]), str(_it["sha256"]).strip().lower()))
     cmd_lines = str(meta["command"]).split("\n")
 
     env = _compiler_env()
@@ -798,6 +816,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     (ROOT / "build").mkdir(exist_ok=True)      # 卡命令产物约定写 build/（仓库源只读）
     tmp = Path(tempfile.mkdtemp(prefix="replay_"))
     original = art_path.read_bytes() if art_path.exists() else None   # 校验前快照（见 docstring）
+    original_extra = [(p, p.read_bytes() if p.exists() else None) for p, _ in extra_arts]
     try:
         # 工件生成命令 = 命令行里出现 artifact 路径的那条（从卡推导，不硬编码）
         gen = [ln for ln in cmd_lines if ln.strip() and art_rel in ln]
@@ -809,6 +828,8 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         # 注意：工件**不存在**是合法场景（新卡首次复算）——由下面的命令生成，
         # 生成后仍缺失才判 artifact_absent（曾误判，2026-09-10 由测试暴露）。
         art_path.unlink(missing_ok=True)
+        for _p, _ in extra_arts:
+            _p.unlink(missing_ok=True)        # 副产物同样先删：重生成才算数（W1）
 
         results, stdout_all = run_commands(cmd_lines, ROOT, env)
         bad = [r for r in results if r[1] != 0]
@@ -915,6 +936,27 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             log.append(f"      归属 {owner or '未声明'} · 本地 {cur_id or '未知'}")
             return "refute:sha256_mismatch", log
 
+        # ④b 多产物校验（W1）：副产物只有字节锚（无结构断言）——
+        #     同编译器（主产物 sha 命中）：逐个复算，失配即 refute；
+        #     跨编译器：字节必不同且无替代断言 → 跳过并**如实标注**残留风险（不静默放行）。
+        if extra_arts:
+            if got_sha == want_sha:
+                for _p, _want in extra_arts:
+                    _shown = _shown_path(_p)
+                    if not _p.exists():
+                        log.append(f"  ❌ artifacts  {_shown} 重生成后不存在")
+                        return "refute:artifact_absent", log
+                    _got = _sha256(_p)
+                    if _got != _want:
+                        log.append(f"  ❌ artifacts  {_shown} 与卡不同代（多产物 sha 失配）")
+                        log.append(f"      期望 {_want}")
+                        log.append(f"      实际 {_got}")
+                        return "refute:sha256_mismatch", log
+                    log.append(f"  ✅ artifacts  {_shown} {_got[:16]}… == 卡值")
+            else:
+                log.append(f"  ⏭ artifacts  {len(extra_arts)} 个副产物跨编译器不校验字节"
+                           f"（无结构断言机制；残留风险见 371 报告 W1）")
+
         # ⑤ sanitizer
         if do_sanitizer:
             st, why = check_sanitizer(meta, tmp, env)
@@ -926,8 +968,12 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             log.append("  ⏭ sanitizer    已按 --no-sanitizer 跳过")
         return "confirm", log
     finally:
-        if restore_artifact and original is not None:
-            art_path.write_bytes(original)     # 还原：校验工具不改写被校验对象（见 docstring）
+        if restore_artifact:
+            if original is not None:
+                art_path.write_bytes(original)     # 还原：校验工具不改写被校验对象（见 docstring）
+            for _p, _b in original_extra:          # 副产物同款还原（W1：只读契约覆盖多产物）
+                if _b is not None:
+                    _p.write_bytes(_b)
         if not keep_tmp:
             shutil.rmtree(tmp, ignore_errors=True)
 

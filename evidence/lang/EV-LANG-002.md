@@ -23,6 +23,8 @@ command: |
   g++ build/_replay_odr_a_O2.o build/_replay_odr_b_O2.o build/_replay_odr_main_O2.o -o build/_replay_odr_ab_O2.exe && ./build/_replay_odr_ab_O2.exe o2_
   g++ build/_replay_odr_b_O2.o build/_replay_odr_a_O2.o build/_replay_odr_main_O2.o -o build/_replay_odr_ba_O2.exe && ./build/_replay_odr_ba_O2.exe o2b_
   g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_a.cpp -o Examples/atoms/_atom_inline_odr_a.asm
+  g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_b.cpp -o Examples/atoms/_atom_inline_odr_b.asm
+  g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_main.cpp -o Examples/atoms/_atom_inline_odr_main.asm
 artifact: Examples/atoms/_atom_inline_odr_a.asm
 artifact_sha256: 63c7e3b73ea9646cbad081ba6b8c0a5ad6e5b77f780aebf944ffd65ba15fbc9f
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
@@ -51,6 +53,9 @@ actual:
     - o2b_tu_b
 artifact_assert:
   - {kind: contains, text: "_Z10tu_a_valuev"}
+artifacts:
+  - {path: Examples/atoms/_atom_inline_odr_b.asm, sha256: bc9c1ee45dad3bd0e4b843542b69b96eb4b010797ddb346ed06e2dfdc5dcb704}
+  - {path: Examples/atoms/_atom_inline_odr_main.asm, sha256: 34183ea9f66aa1e2d1e9409e29d2209c2970ca7f46453925221103530d5dd645}
 falsification: |
   若以下任一发生，判 refute：
   1. `-O0` 两链接顺序输出相同（ab_tu_a == ba_tu_a）→「未内联时链接器取其一」被否；

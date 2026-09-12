@@ -524,6 +524,56 @@ def test_contains_in_scoped_to_symbol_body(tmp_path: Path):
     assert not _run_assert(art, {"kind": "absent_in", "symbol": "_Z1fv", "text": "call"})[0]
 
 
+# ── 11. 多产物登记（W1）────────────────────────────────────────────────────
+@needs_gpp
+def test_multi_artifacts_sha_verified_and_restored(tmp_path: Path):
+    """W1：`artifacts[]` 副产物逐个复算 sha；失配 refute；跑后原样还原（只读契约）。
+
+    背景：多 TU 卡一次构建产多个 .asm，主字段只能锚一个，其余此前无字段可登记
+    （本批实测 `_b.asm`/`_main.asm` 被正文引用却不在任何 command 里生成）。
+    """
+    gpp = _compiler()
+    fx = tmp_path / "fx.cpp"
+    fx.write_text('#include <cstdio>\nint main(){ std::printf("A\\n"); }\n', encoding="utf-8")
+    exe = tmp_path / "fx.exe"
+    asm_a, asm_b = tmp_path / "fx_a.asm", tmp_path / "fx_b.asm"
+
+    def q(p: object) -> str:
+        return '"' + str(p).replace("\\", "/") + '"'
+    for out in (asm_a, asm_b):
+        subprocess.run([gpp, "-std=c++17", "-O2", "-S", fx.as_posix(), "-o", out.as_posix()],
+                       check=True, capture_output=True)
+    sha_a = hashlib.sha256(asm_a.read_bytes()).hexdigest()
+    sha_b = hashlib.sha256(asm_b.read_bytes()).hexdigest()
+    orig_a, orig_b = asm_a.read_bytes(), asm_b.read_bytes()
+
+    def _card(sha_b_entry: str) -> Path:
+        p = tmp_path / "EV-T-MULTI.md"
+        p.write_text(
+            "---\nid: EV-T-MULTI\ncommand: |\n"
+            f"  g++ -std=c++17 -O2 {q(fx)} -o {q(exe)} && {q(exe)}\n"
+            f"  g++ -std=c++17 -O2 -S {q(fx)} -o {q(asm_a)}\n"
+            f"  g++ -std=c++17 -O2 -S {q(fx)} -o {q(asm_b)}\n"
+            f"artifact: {asm_a.as_posix()}\n"
+            f"artifact_sha256: {sha_a}\n"
+            "actual:\n"
+            '  run_case: "A"\n'
+            "artifacts:\n"
+            f"  - {{path: {asm_b.as_posix()}, sha256: {sha_b_entry}}}\n"
+            "---\n", encoding="utf-8")
+        return p
+
+    verdict, log = rp.replay_card(_card(sha_b), do_sanitizer=False)
+    assert verdict == "confirm", log
+    assert any("artifacts" in ln and "✅" in ln for ln in log), log
+    assert asm_a.read_bytes() == orig_a and asm_b.read_bytes() == orig_b, \
+        "只读契约：多产物跑后必须原样还原"
+
+    verdict2, log2 = rp.replay_card(_card("0" * 64), do_sanitizer=False)
+    assert verdict2 == "refute:sha256_mismatch", log2
+    assert any("多产物 sha 失配" in ln for ln in log2), log2
+
+
 def test_parse_flow_map_quoted_comma():
     """引号内的逗号不得切断值（W2 实跑暴露：`movl $1, %eax` 曾被截成 `\"movl $1`）。
 
