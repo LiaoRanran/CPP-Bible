@@ -25,7 +25,7 @@
 | 0 | `draft` | Writer（Agent） | — | 草稿；**不得被内容层引用** |
 | 1 | `machine-verified` | 门禁/CI（自动） | `machine:` | 全部机器判据通过（gate 无 block、evidence replay confirm、poison 通过） |
 | 2 | `red-team-verified` | 红队 Agent（独立上下文） | `redteam:` | 独立子 agent 盲读夹具+工件，再对照卡；阻断项已处置 |
-| 3 | `human-verified` | **人**（`human:liaoranran`） | `human:` | 监工签署；`verified` 为四级前历史别名，**语义等价**（存量沿用，不强制改名） |
+| 3 | `human-verified` | **人**（在册维护者，见 §5-4） | `human:<实名>` | 监工签署；`verified` 为四级前历史别名，**语义等价**（存量沿用，不强制改名） |
 | — | `rejected` | 任一方 | — | 证伪/撤回；保留文件与历史，不删除 |
 
 **唯一判断点**：代码里判断"是否已验证"必须走 `gate_engine.is_verified()` / `level_of()`。
@@ -80,9 +80,9 @@
 | 规则 | 级别 | 判据 |
 |---|---|---|
 | `ATOM-STATUS-VALUE` | block | `status` ∈ 枚举（枚举外取值会让等值比较静默漏过，故显式拦） |
-| `ATOM-STATUS-TRANSITION` | block | 非 draft ⟹ `status_history` 合法：链首/链尾/单调/格式/前缀，**人级须含非人级前驱** |
-| `ATOM-DAL-MATCH` | block | 已入库原子须有合法 `dal`；A/B ⟹ `human_review: required` 且状态为人级；C/D/E ⟹ 须 `dal_reviewed_by: human:*` |
-| `S1-AUTHOR-SELF-VERIFY` | block | `verified_by` 前缀与状态级别匹配（人级唯人，Agent 不得自证；机器/红队级各自留痕） |
+| `ATOM-STATUS-TRANSITION` | block | 非 draft ⟹ `status_history` 合法：链首/链尾/单调/格式/**署名实名**，**人级须含非人级前驱** |
+| `ATOM-DAL-MATCH` | block | 已入库原子须有合法 `dal`；A/B ⟹ `human_review: required` 且状态为人级；C/D/E ⟹ 须 `dal_reviewed_by: human:<实名>` |
+| `S1-AUTHOR-SELF-VERIFY` | block | `verified_by` **前缀 + 实名**与状态级别匹配（人级唯人且在册，Agent 不得自证；机器/红队级各自留痕） |
 
 `golden_lock` 同步分列计数：`human_verified` / `red_team_verified` / `machine_verified`
 + `dal_gap`（DAL A/B 却非人级 = 越权放行，**上升即恶化**）。只盯总数会被
@@ -128,11 +128,18 @@ DAL C 不豁免它们，只是不再需要人审签字。
 - 出口码细分（0 全绿 / 2 仅环境故障 / 3 混合）**刻意未做**：当前所有调用方（`cppbible.py`、
   CI、`prepush_check.py`）只判 `!= 0`，多一套码值是无消费者的复杂度；需要"自动重试"时再引入。
 
-## 5. 反作弊约束（三条铁律）
+## 5. 反作弊约束（四条铁律）
 
 1. **判断单点化**：新增状态只改 `is_verified()`/`STATUS_LEVEL`，不改调用点。
 2. **人级须有非人级前驱**：堵住 draft 直签人级。
 3. **免人审须人签**：堵住 Writer 自定 `dal` 绕过人审。
+4. **署名须实名且在册**（2026-09-12 补，依据 373 独立对抗渗透实测）：三处签署判定
+   原先都只做 `startswith("human:")`，于是 `by: human:`（**空名**）、`by: human:   `
+   （纯空格）、`verified_by: human:attacker` 全部放行 —— 这不是"防护有限"，而是**完全不设防**：
+   任意方（含 Writer 自己）可一步伪造「人已复核」，而人级是放权体系里唯一的真人授权来源。
+   现三处统一走 `gate_engine.principal_ok()`：前缀命中 + **实名非空** + 人级实名 ∈
+   `HUMAN_PRINCIPALS`（名册单点；新增维护者只改这一处常量）。
+   `tools/debt_ledger.py` 的 `owner: human:*` 同源漏洞一并收紧为 `owner_ok()`（实名非空）。
 
 抽查机制（人工，非门禁）：每批随机抽 1 颗 DAL C/D/E 原子做全量人读，
 错判计入该批质量问题；连续两批抽查不合格则**回收该批的自主晋升权**。
@@ -146,6 +153,7 @@ DAL C 不豁免它们，只是不再需要人审签字。
 | F3 | §3.1 DAL 定义「继承自 296」 | **不成立**：296 的 DAL 语义是"claim 被证伪的知识后果"，300 是"读者侧失效后果"，同名异物。本规范统一为后者并登记（§3.1 末） |
 | F4 | 未写 DAL 由谁定 | 300 §1.2 把"严重度"列为机器不擅长，却让分级决定"谁需要人审"——**循环**。补 §3.1：免人审须人签 |
 | F5 | §2.2「禁止跳级」 | 终态无法证明路径（草稿在 `goldens/` 不进扫描），且强制逐级会逼造假记录。改为"人级须含非人级前驱"（§2.2） |
+| F6 | 369 P0-2「签字仅 `human:` 前缀」的分析 | 方向正确（前缀 ≠ 身份），但**漏掉空名这一最短路径**：`human:`（无名字）本身即放行。故 373-P0-B9 已按 §5-4 修复。369 立项的「CI git 作者白名单」（按 commit author 判身份）仍属第二批 M 项，与本条**互补**：本条挡"空/冒名署名"，白名单挡"本人账号代签" |
 
 ## 7. 存量兼容（2026-09-12 落地时）
 
@@ -161,5 +169,6 @@ DAL C 不豁免它们，只是不再需要人审签字。
 - 新增一个状态取值却不改 `is_verified()` → 相关硬约束静默失效，**不合格**。
 - `status: human-verified` 而 `status_history` 只有 `draft → human-verified` → 未过机器验证即人签，**不合格**。
 - `dal: C` 无 `dal_reviewed_by: human:*` → Writer 自评豁免人审，**不合格**。
+- `by: human:`（空名）、`by: human:   `（纯空格）、`verified_by: human:张三`（不在册）→ 伪造人签，**不合格**。
 - 用 `status: machine-verified` 就跳过 `evidence[]`/`first_hand`/`superiority` → **不合格**（绑定对三级同时生效）。
 - 把 `dal` 当作"重要性/篇幅/难度"来标 → 语义漂移，**不合格**（它只描述"错了的后果"）。

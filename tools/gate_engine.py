@@ -91,6 +91,42 @@ DAL_LEVELS = ("A", "B", "C", "D", "E")
 DAL_HUMAN_REVIEW = ("A", "B")     # 必须人审签署；C/D/E 红队通过即可（须人签豁免）
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
+# ── 署名实名制（373-P0-B9，2026-09-12 独立对抗渗透实测逃逸）────────────────────
+# 逃逸：三处签署判定都只做 `startswith("human:")` —— 前缀命中即放行，于是
+#   `by: human:`（空名）、`by: human:   `（纯空格）、`verified_by: human:attacker`
+#   全部通过。等于任意一方（含 Writer 自己）可一步伪造「人已复核」，而人级是
+#   放权体系里**唯一**的真人授权来源 ⇒ 放权根基被架空（最高危，故列 P0）。
+# 修法：三处统一走 principal_ok() —— 前缀命中 + **实名非空** + 人级署名**在册**。
+HUMAN_PRINCIPALS = ("liaoranran",)   # 在册人级署名（存量 51 处 human:liaoranran 同源）
+
+
+def principal_name(by: str, need: Sequence[str]) -> str | None:
+    """从 `前缀:实名` 署名取实名；前缀不命中 → None（区分「前缀错」与「名空」）。"""
+    s = (by or "").strip()
+    for pre in need:
+        if s.startswith(pre):
+            return s[len(pre):].strip()
+    return None
+
+
+def principal_ok(by: str, need: Sequence[str]) -> tuple[bool, str]:
+    """署名合法性**单点判定**（373-P0-B9）。返回 (是否合法, 不合格原因)。
+
+    `need` 为空元组 = draft 级：不限定前缀，但**必须留下非空署名**。
+    人级（`human:`）额外要求实名在 `HUMAN_PRINCIPALS` 名册内——非空只是必要条件，
+    `human:随便谁` 同样能把人级签出去。
+    """
+    if not need:
+        return (bool((by or "").strip()), "缺署名留痕（draft 也要 by）")
+    name = principal_name(by, need)
+    if name is None:
+        return False, f"前缀应为 {'/'.join(need)}"
+    if not name:
+        return False, f"前缀后缺实名（空名/纯空格不算签署，须 {'/'.join(need)}<实名>）"
+    if need[0] == "human:" and name.lower() not in HUMAN_PRINCIPALS:
+        return False, f"署名 {name!r} 不在人级名册（须 {'/'.join(HUMAN_PRINCIPALS)}）"
+    return True, ""
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -331,10 +367,9 @@ def check_status_transition() -> list[Finding]:
             elif at != "legacy" and not DATE_RE.match(at):
                 bad.append(f"{lv} 的 at 须为 ISO 日期或 draft 级 legacy：{at or '空'}")
             need = LEVEL_PRINCIPALS.get(lv, ())
-            if need and not by.startswith(need):
-                bad.append(f"{lv} 的 by 前缀应为 {'/'.join(need)}（当前：{by or '空'}）")
-            elif not need and not by:
-                bad.append(f"{lv} 缺 by")
+            p_ok, p_why = principal_ok(by, need)
+            if not p_ok:
+                bad.append(f"{lv} 的 by {p_why}（当前：{by or '空'}）")
             steps.append((STATUS_LEVEL[lv], lv))
         if bad:
             out.append(Finding("ATOM-STATUS-TRANSITION", "block", _rel(p),
@@ -393,10 +428,14 @@ def check_dal_match() -> list[Finding]:
                 out.append(Finding("ATOM-DAL-MATCH", "block", _rel(p),
                                    f"DAL {dal} 须 human-verified（当前：{st}）",
                                    "先人审签署再入库，或人签下调 DAL"))
-        elif not str(meta.get("dal_reviewed_by") or "").strip().startswith("human:"):
-            out.append(Finding("ATOM-DAL-MATCH", "block", _rel(p),
-                               f"DAL {dal} 豁免人审但无 dal_reviewed_by: human:*",
-                               "豁免人审是放权决定：须人签（同批可一次签分级表）"))
+        else:
+            drb = str(meta.get("dal_reviewed_by") or "")
+            d_ok, d_why = principal_ok(drb, ("human:",))
+            if not d_ok:
+                out.append(Finding("ATOM-DAL-MATCH", "block", _rel(p),
+                                   f"DAL {dal} 豁免人审但无有效 dal_reviewed_by（{d_why}）"
+                                   f"（当前：{drb or '空'}）",
+                                   "豁免人审是放权决定：须人签**实名**（同批可一次签分级表）"))
     return out
 
 
@@ -888,11 +927,11 @@ def check_s1_human_signoff() -> list[Finding]:
             continue
         need = LEVEL_PRINCIPALS.get(st, ())
         by = str(meta.get("verified_by") or "")
-        if not by.startswith(need):
+        p_ok, p_why = principal_ok(by, need)
+        if not p_ok:
             out.append(Finding("S1-AUTHOR-SELF-VERIFY", "block", _rel(p),
-                               f"status={st} 但 verified_by 前缀应为 {'/'.join(need)}"
-                               f"（当前：{by or '空'}）",
-                               "人级由人复核后写 human:*；机器晋升 machine:*；红队 redteam:*"))
+                               f"status={st} 但 verified_by {p_why}（当前：{by or '空'}）",
+                               "人级由人复核后写 human:<实名>（须在册）；机器 machine:*；红队 redteam:*"))
     return out
 
 

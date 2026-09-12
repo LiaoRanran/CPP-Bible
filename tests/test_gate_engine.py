@@ -555,3 +555,48 @@ def test_s1_signoff_prefix_matches_level(sandbox: Path):
     _verified_atom(sandbox, verified_by="machine:gate")
     assert any(h.rule_id == "S1-AUTHOR-SELF-VERIFY" for h in ge.check_s1_human_signoff()), \
         "人级却由机器签必须拦"
+
+
+# ── 373-P0-B9：署名实名制（前缀命中 ≠ 实名签署）───────────────────────────
+def test_principal_ok_is_single_point():
+    """实名制单点判定：前缀 + 非空实名 + 人级在册，三个条件缺一不可。"""
+    assert ge.principal_ok("machine:gate", ("machine:",))[0]
+    assert not ge.principal_ok("machine:", ("machine:",))[0], "空名不算签署"
+    assert ge.principal_ok("writer:agent", ())[0], "draft 级只要求非空留痕"
+    assert not ge.principal_ok("", ())[0], "draft 级也不能空"
+    assert not ge.principal_ok("human:   ", ("human:",))[0], "纯空格不算签署"
+    assert not ge.principal_ok("human:attacker", ("human:",))[0], "不在册不得签人级"
+    assert ge.principal_ok("human:liaoranran", ("human:",))[0]
+
+
+def test_signoff_requires_real_name_not_just_prefix(sandbox: Path):
+    """S1：`human:` 前缀命中不等于实名签署（373 实测逃逸的最短路径）。"""
+    for bad in ("human:", "human:   ", "human:attacker"):
+        _verified_atom(sandbox, verified_by=bad)
+        assert any(h.rule_id == "S1-AUTHOR-SELF-VERIFY"
+                   for h in ge.check_s1_human_signoff()), \
+            f"verified_by={bad!r} 必须拦（前缀命中 ≠ 实名签署）"
+
+    _verified_atom(sandbox)
+    assert ge.check_s1_human_signoff() == [], "在册实名仍须放行（不得误伤存量）"
+
+
+def test_status_history_and_dal_signoff_require_real_name(sandbox: Path):
+    """B9 同源另两处：status_history 的 by、DAL 豁免的人签，都必须实名。"""
+    empty_tail = ("\n  - {level: draft, at: legacy, by: writer:agent}"
+                  "\n  - {level: machine-verified, at: 2026-09-12, by: machine:gate}"
+                  "\n  - {level: human-verified, at: 2026-09-12, by: human:}")
+    _verified_atom(sandbox, status_history=empty_tail)
+    assert any("缺实名" in h.message for h in ge.check_status_transition()), \
+        "status_history 里 by: human:（空名）必须拦"
+
+    _verified_atom(sandbox, dal="C", human_review="optional",
+                   status="machine-verified", verified_by="machine:gate",
+                   dal_reviewed_by="human:")
+    assert any("dal_reviewed_by" in h.message for h in ge.check_dal_match()), \
+        "DAL C/D/E 豁免人审的人签为空名必须拦"
+
+    _verified_atom(sandbox, dal="C", human_review="optional",
+                   status="machine-verified", verified_by="machine:gate",
+                   dal_reviewed_by="human:liaoranran")
+    assert ge.check_dal_match() == [], "人签实名后 C 级仍须放行"

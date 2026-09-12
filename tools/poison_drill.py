@@ -365,6 +365,45 @@ def drill() -> int:
         results.append(("P12 留痕锚自证（锚仅在 actual 段）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P13 空名签收：`human:` 前缀命中但**无实名**（373-P0-B9）──────────────────
+    # 373 独立对抗渗透实测逃逸：三处签署判定原先只做 `startswith("human:")`，
+    # `by: human:`（空名）、`by: human:   `（纯空格）、`verified_by: human:attacker`
+    # 全部放行 ⇒ 任意方（含 Writer）可一步伪造「人已复核」，而人级是放权体系里唯一
+    # 的真人授权来源。本样例验证实名制修法在**三处**同时生效（任一处漏 = 又一条逃生舱）。
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-EMPTYSIGN.md", {
+            "id": "ATOM-MEM-EMPTYSIGN", "title": "t", "domain": "MEM",
+            "type": "mechanism", "status": "human-verified", "claim": "c",
+            "claim_boundary": "b", "relations": "[]", "evidence": "[EV-MEM-X]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "true", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p", "dal": "B", "human_review": "required",
+            "status_history": ("\n  - {level: draft, at: legacy, by: writer:agent}"
+                               "\n  - {level: machine-verified, at: 2026-09-12, by: machine:gate}"
+                               "\n  - {level: human-verified, at: 2026-09-12, by: human:}"),
+            "verified_by": "human:",                                # ← 毒点（空名）
+        })
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-EMPTYDAL.md", {
+            "id": "ATOM-MEM-EMPTYDAL", "title": "t", "domain": "MEM",
+            "type": "mechanism", "status": "machine-verified", "claim": "c",
+            "claim_boundary": "b", "relations": "[]", "evidence": "[EV-MEM-X]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "true", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p", "dal": "C", "human_review": "optional",
+            "status_history": ("\n  - {level: draft, at: legacy, by: writer:agent}"
+                               "\n  - {level: machine-verified, at: 2026-09-12, by: machine:gate}"),
+            "verified_by": "machine:gate",
+            "dal_reviewed_by": "human:",                            # ← 毒点（空名）
+        })
+        who = sorted({f.rule_id for f in ge.check_s1_human_signoff()}
+                     | {f.rule_id for f in ge.check_status_transition()}
+                     | {f.rule_id for f in ge.check_dal_match()})
+        want = ["ATOM-DAL-MATCH", "ATOM-STATUS-TRANSITION", "S1-AUTHOR-SELF-VERIFY"]
+        ok = who == want
+        results.append(("P13 空名签收（human: 前缀无实名，三处）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"
+                        + ("" if ok else f" · 期望 {', '.join(want)}")))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"

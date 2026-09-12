@@ -35,6 +35,18 @@ QUALITY_GATES = 20          # 与 cppbible cmd_check 的 quality 项数一致（
 REQUIRED = ("id", "cause", "risk", "compensation", "owner", "opened", "due")
 
 
+def owner_ok(owner: str) -> bool:
+    """owner 须 `human:<实名>`——**实名非空**（373-P0-B9 同源漏洞）。
+
+    `startswith("human:")` 单独用是无效防线：`--owner human:`（或纯空格）同样通过，
+    等于 Agent 一步自批豁免（S5 债务票据的"人"成了空字符串）。实名**在册**校验的
+    单点在 `gate_engine.principal_ok()`；此处只判非空（债台账 owner 是操作者姓名留痕，
+    不参与人级晋升判定，故不引名册耦合）。
+    """
+    s = (owner or "").strip()
+    return s.startswith("human:") and bool(s[len("human:"):].strip())
+
+
 def _load() -> dict[str, Any]:
     if not LEDGER.exists():
         return {"schema": SCHEMA, "tickets": []}
@@ -61,8 +73,8 @@ def cmd_check() -> int:
         if miss:
             problems.append(f"{tid} 缺字段：{', '.join(miss)}")
         owner = str(t.get("owner") or "")
-        if owner and not owner.startswith("human:"):
-            problems.append(f"{tid} owner 非人工（{owner}）——Agent 不得自批（S1）")
+        if owner and not owner_ok(owner):
+            problems.append(f"{tid} owner 非人工或缺实名（{owner or '空'}）——Agent 不得自批（S1）")
         try:
             opened = _dt.date.fromisoformat(str(t["opened"]))
             due = _dt.date.fromisoformat(str(t["due"]))
@@ -82,8 +94,8 @@ def cmd_check() -> int:
 
 
 def cmd_add(a: argparse.Namespace) -> int:
-    if not a.owner.startswith("human:"):
-        print("[debt] ✗ owner 必须 human:*（Agent 不得自批豁免）")
+    if not owner_ok(a.owner):
+        print("[debt] ✗ owner 必须 human:<实名>（空名不算签署；Agent 不得自批豁免）")
         return 2
     state = _load()
     today = _today()
