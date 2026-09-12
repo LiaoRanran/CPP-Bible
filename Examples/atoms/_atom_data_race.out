@@ -1,0 +1,6 @@
+single_total=100000
+race_ops_total=200000
+safe_ops_total=200000
+safe_final=200000
+scenario=single|race|safe
+kIters=100000
