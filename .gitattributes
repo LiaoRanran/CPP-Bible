@@ -22,3 +22,15 @@
 *.o    -text
 *.obj  -text
 *.exe  -text
+
+# ── 已知漂移与迁移策略（2026-09-13，监工裁决「暂不 renormalize」）────────────
+# 现状：437 个 Examples/*.cpp 的**工作树是 CRLF、索引里是 LF**（d647849 行尾统一
+# 之后未做批量 renormalize 留下的漂移）。Windows 侧 git stat 缓存让它不可见，
+# WSL checkout 则显示为一堆假 M。
+#
+# 裁决：不做一次性 renormalize。理由：①437 个文件的假 M 会淹没真实改动，等于给
+# 下一次真实回归提供藏身处；②历史上它曾让工作树清洁检查恒红，使门禁沦为"狼来了"。
+#
+# 策略 = **碰到即转**（逐步迁移）：谁修改某个 .cpp，谁顺手把它转成 LF 一并提交；
+# 新文件一律 LF（由上面的 `* text=auto eol=lf` 保证）。漂移清理进度由
+# `tools/debt_ledger.json` 的 DEBT-002 跟踪（票到期即停线，避免无限期挂着）。

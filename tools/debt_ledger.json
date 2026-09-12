@@ -9,6 +9,24 @@
    "owner": "human:liaoranran",
    "opened": "2026-09-10",
    "due": "2026-10-10"
+  },
+  {
+   "id": "DEBT-002",
+   "cause": "437 个 Examples/*.cpp 工作树 CRLF 与索引 LF 漂移（d647849 行尾统一后未批量 renormalize）",
+   "risk": "WSL checkout 显示一堆假 M；批量 renormalize 又会淹没真实改动、历史上曾让工作树清洁检查恒红（门禁狼来了）",
+   "compensation": "监工裁决：暂不批量 renormalize；策略=碰到即转（谁改谁顺手转 LF），新文件一律 LF（.gitattributes 已声明）。进度随本票跟踪",
+   "owner": "human:liaoranran",
+   "opened": "2026-09-13",
+   "due": "2026-11-12"
+  },
+  {
+   "id": "DEBT-003",
+   "cause": "373 新规则暴露的存量债（聚合）：artifact_producer 缺 56 张 / .out 未声明读数键 6 张 / 多编译器留痕不足 16 张 / EV-MEM-017 断言拼写(_Znwm vs _Znwy) / Book-原子双向标注缺失 1217 处",
+   "risk": "新规则只 warn 不 block，存量债若无限期挂着等于规则名存实亡；EV-MEM-017 的断言在 Windows 侧从未被评估（走 sha 比对），双平台 confirm 掩盖了它",
+   "compensation": "迁移期名单 tools/artifact_producer_exempt.txt 逐张消化；其余按清单补声明（属内容改动，本批铁律禁止）；Golden Lock 的 warn 8→31 需维护者 --accept 留痕（S4 认可权唯人，Agent 不得代签）",
+   "owner": "human:liaoranran",
+   "opened": "2026-09-13",
+   "due": "2026-12-12"
   }
  ]
 }
