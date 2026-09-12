@@ -12,11 +12,11 @@ matrix:
   std: [c++23, c++17]        # 8.1.0 不支持 c++23，其两档改用 c++17（见 M2 §2 夹具↔std 绑定）
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_move_alloc.cpp
+fixture: Examples/atoms/_atom_move_alloc.cpp
 command: |          # POSIX 语义；产物必须写 build/（仓库源只读，防根级 exe 泄漏被 pre-push 拦）
-  g++ -std=c++23 -O2 Examples/_atom_move_alloc.cpp -o build/_replay_move.exe && ./build/_replay_move.exe
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_move_alloc.cpp -o Examples/_atom_move_alloc.asm
-artifact: Examples/_atom_move_alloc.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_move_alloc.cpp -o build/_replay_move.exe && ./build/_replay_move.exe
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_move_alloc.cpp -o Examples/atoms/_atom_move_alloc.asm
+artifact: Examples/atoms/_atom_move_alloc.asm
 artifact_sha256: d8b6b18dd8e955e8183a4dd5e13133688627261a0724805925216f769aafc62b
 # 该哈希**归属哪个编译器**必须声明：同一夹具在 MinGW GCC 15.3 与 GCC 13.1 下产出的
 # .asm 字节完全不同（实测 cc446339…），跨平台更甚。故 sha 只在身份匹配的机器上比字节；

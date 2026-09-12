@@ -12,11 +12,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_weak_obs.cpp
+fixture: Examples/atoms/_atom_weak_obs.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_weak_obs.cpp -o Examples/_atom_weak_obs.asm
-  g++ -std=c++23 -O2 Examples/_atom_weak_obs.cpp -o build/_replay_wobs.exe && ./build/_replay_wobs.exe
-artifact: Examples/_atom_weak_obs.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_weak_obs.cpp -o Examples/atoms/_atom_weak_obs.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_weak_obs.cpp -o build/_replay_wobs.exe && ./build/_replay_wobs.exe
+artifact: Examples/atoms/_atom_weak_obs.asm
 artifact_sha256: cf0453ebd15e23434daefcf4a28c33e381dee95f3871c20a581857b6fb7b3230
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

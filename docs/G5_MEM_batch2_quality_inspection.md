@@ -1,6 +1,6 @@
 # 红队报告 + 质检报告 · G5 MEM 域第二批批量生产（4 原子）
 
-> Writer 执行 Agent 产出 · 2026-09-11 · 范围：goldens/mem/ATOM-MEM-{VALUE-002,RAII-002,ALLOC-001,PERF-002}_draft.md × 4 + evidence/mem/EV-MEM-021..031 × 11（新卡）+ misconceptions/MIS-MEM-017..023 × 7 + Examples/_atom_*.cpp × 12（11 主夹具 + 1 ASan 第二证据腿）
+> Writer 执行 Agent 产出 · 2026-09-11 · 范围：goldens/mem/ATOM-MEM-{VALUE-002,RAII-002,ALLOC-001,PERF-002}_draft.md × 4 + evidence/mem/EV-MEM-021..031 × 11（新卡）+ misconceptions/MIS-MEM-017..023 × 7 + Examples/atoms/_atom_*.cpp × 12（11 主夹具 + 1 ASan 第二证据腿）
 > 三权分立状态：Writer 完成 → RedTeamer（独立子 agent）两轮攻击/复核完毕 → Gatekeeper 机器门禁自报如下。**未原子化、未置 verified、未 commit/push，待人审签署**（人审后按 Step 4 执行 git mv + 签署 + golden_lock sync）。
 
 ---
@@ -60,7 +60,7 @@
 | EV-MEM-021 | VALUE-002 | compiler（static_assert + 推导观测） | 折叠 4 规则全绿；万能引用左值 T=int&/右值 T=int；const T&& 只接右值 |
 | EV-MEM-022 | VALUE-002 | runtime（-O0/-O2 双跑一致） | forward 右值 copies=0 moves=1；forward 左值 copies=1；省略 forward copies=1 moves=0 |
 | EV-MEM-023 | RAII-002 | runtime | move_constructible=1 copy_constructible=0；owner_changed=1；allocs=1 dtors=1 frees=1 |
-| EV-MEM-024 | RAII-002 | runtime + WSL ASan 旁证 | buggy allocs=1 same_ptr=1 dtor_runs=2；correct allocs=2 same_ptr=0；ASan 实报 attempting double-free（第二证据腿源码已入库：Examples/_atom_rule_three_bug_asan.cpp:14） |
+| EV-MEM-024 | RAII-002 | runtime + WSL ASan 旁证 | buggy allocs=1 same_ptr=1 dtor_runs=2；correct allocs=2 same_ptr=0；ASan 实报 attempting double-free（第二证据腿源码已入库：Examples/atoms/_atom_rule_three_bug_asan.cpp:14） |
 | EV-MEM-025 | RAII-002 | runtime（-O0/-O2 一致） | noexcept 组 copies=0 moves=4；漏标组 copies=4 moves=0 |
 | EV-MEM-026 | ALLOC-001 | runtime（-O0/-O2 一致） | allocate: allocs=1 ctors=0；construct ctors=2；destroy dtors=2；deallocate frees=1 |
 | EV-MEM-027 | ALLOC-001 | runtime（-O0/-O2 一致） | arena calls=5 bytes=124 heap_new=0；std 组 heap_new=5（同构对照） |
@@ -92,7 +92,7 @@
 2. **Clang 列**：11 卡均标注"待 CI Cross-check 步回填"（本机无 Clang，M2 边界）；PERF-002 的 libc++/MSVC 参数为文档值口径并已显式标注。
 3. **EV-MEM-025 -O0 口径**：双跑逐字一致（recorded in run_cxx23_O0）；replay 机器口径为 -O2（EV-MEM-008 先例）。
 4. **推送前**：须先跑 WSL `ci_local_precheck.py`（Evidence Replay 步在 WSL 必失败为已知边界，Windows 侧 confirm 全绿即可放行）；提交用 `git commit -F` UTF-8 文件。
-5. **本批临时探针已清理**（build/_probe_pmr.*、build/_find_hardcoded.py、build/_double_free_asan.*），ASan 正式夹具已入库 Examples/_atom_rule_three_bug_asan.cpp。
+5. **本批临时探针已清理**（build/_probe_pmr.*、build/_find_hardcoded.py、build/_double_free_asan.*），ASan 正式夹具已入库 Examples/atoms/_atom_rule_three_bug_asan.cpp。
 
 ---
 

@@ -10,8 +10,8 @@
 | `docs/kernel/M2_empirical.md` | 实验卡 14 字段 / 矩阵两档 / 证伪导向 / 观测分层 8 种 / 防折叠规则 / 纵深链 6 层 / 灰色地带五类判定流程 / 不可实证类 / 反例自检 | 已修订（3 处口径） |
 | `docs/kernel/M3_sources.md` | 来源分级权重 / 置信可计算 / 争议档案 / superiority 强制 + 禁词表 / 版权红线 / 溯源图 | 已修订（2 处歧义定死） |
 | `evidence/mem/EV-MEM-001.md` | 机制类示范证据卡（run + asm 双层证据 + 证伪对照） | 已修正 |
-| `Examples/_atom_move_alloc.cpp` `_atom_move_alloc.asm` | 机制类夹具 + 汇编产物（sha256 留存） | 已复跑 |
-| `Examples/_atom_eval_order.cpp` | 灰色地带夹具（求值顺序 unspecified） | 已复跑 |
+| `Examples/atoms/_atom_move_alloc.cpp` `_atom_move_alloc.asm` | 机制类夹具 + 汇编产物（sha256 留存） | 已复跑 |
+| `Examples/atoms/_atom_eval_order.cpp` | 灰色地带夹具（求值顺序 unspecified） | 已复跑 |
 | `tools/gray_zone_scan.py` | 灰色地带五类句子级初筛 + 疑似误分类告警 | 已复跑 |
 
 ## 2. 验收门达成度

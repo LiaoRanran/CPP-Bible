@@ -6,6 +6,12 @@ type: experiment                  # 性能量化实验（M1_ontology 10 类；�
 status: verified                  # 人审通过（2026-09-12）
 verified_by: human:liaoranran     # 人审签署（S1 三权分立：唯人可置 verified）
 verified_at: 2026-09-12           # 签署日期
+dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审
+human_review: required            # DAL A/B ⟹ 强制人审（G6）
+status_history:                   # 四级晋升链（G6 §2），链尾须等于 status
+  - {level: draft, at: legacy, by: writer:agent}
+  - {level: machine-verified, at: 2026-09-12, by: machine:gate}
+  - {level: human-verified, at: 2026-09-12, by: human:liaoranran}
 depth: runtime                    # 证据层：运行期读数（阈值扫描/分配次数/耗时），非汇编层
 pedagogy: >-
   先摆出两个"都看起来很确定"的数字（SSO 阈值 15、池分配器更快），再用**同一份夹具**在两个平台上
@@ -132,7 +138,7 @@ superiority: >-
 未看本卡自述。结论：**阻断 2 条 / 高 10 条 / 建议 6 条**。关键条目：
 
 **阻断级**
-1. **比值与中位数基数不一致**（`Examples/_atom_allocator_bench.cpp:101` vs `.out`）：夹具把**原始插入序**的第 4 个样本用作"谁更快"的比较基数，而打印的 `_median_ns` 是**排序后**的中位数 ⇒ 卡里列的中位数与卡里引的比值算不到一起（如卡写"4.1×"只能由中位数得出，而 `211` 只能由单样本得出）。红队用 `.out` 逐行核对证明。
+1. **比值与中位数基数不一致**（`Examples/atoms/_atom_allocator_bench.cpp:101` vs `.out`）：夹具把**原始插入序**的第 4 个样本用作"谁更快"的比较基数，而打印的 `_median_ns` 是**排序后**的中位数 ⇒ 卡里列的中位数与卡里引的比值算不到一起（如卡写"4.1×"只能由中位数得出，而 `211` 只能由单样本得出）。红队用 `.out` 逐行核对证明。
 2. **断言里含工件中不存在的字面量**（`EV-MEM-038`）：`contains_any ["heap_at_len16=", …]` 中 `heap_at_len16=` 在 `.asm` 里零命中（运行时格式串是 `heap_at_len%zu=`），而 `contains_any` 是"任一命中即过"⇒ 该半条断言被**静默吞掉**、未验证任何东西。
 
 **高级（节选，全部为真）**

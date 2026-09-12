@@ -79,7 +79,7 @@
 **规则**：每个论断必须配一个**让它失败的对照**（`falsification` 字段），且对照必须真的失败。
 只演示成立的实验 = 恒真测试 = 伪证据（S3）。
 
-真实样本（`Examples/_atom_move_alloc.cpp`）：
+真实样本（`Examples/atoms/_atom_move_alloc.cpp`）：
 - 正确实现 `Buf(Buf&&) noexcept : p(o.p)`（偷指针）→ **移动分配 = 0**
 - 证伪对照 `BadBuf(BadBuf&&) : n(o.n) { p = new int[n]; }`（假移动，又分配一次）→ **假移动分配 = 1**
 - 若对照也输出 0，说明计数器没接上或实验被折叠，实验无效。

@@ -9,7 +9,7 @@
 >
 > **配套证据**：`evidence/ub/EV-UB-001.md`（求值顺序：6 组矩阵实测）、
 > `evidence/ub/EV-UB-002.md`（严格别名：UB 被优化器利用 + 汇编铁证）；
-> 夹具 `Examples/_atom_eval_order.cpp` · `Examples/_atom_strict_alias.cpp`（含 `.asm` 工件）。
+> 夹具 `Examples/atoms/_atom_eval_order.cpp` · `Examples/atoms/_atom_strict_alias.cpp`（含 `.asm` 工件）。
 
 ---
 

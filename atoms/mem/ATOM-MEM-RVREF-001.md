@@ -9,6 +9,12 @@ prerequisites_readable: true   # 前置 ATOM-MEM-MOVE-002 已锻造（relations 
 status: verified               # 人审通过（2026-09-11，监工验收放行）
 verified_by: human:liaoranran
 verified_at: 2026-09-11
+dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审
+human_review: required            # DAL A/B ⟹ 强制人审（G6）
+status_history:                   # 四级晋升链（G6 §2），链尾须等于 status
+  - {level: draft, at: legacy, by: writer:agent}
+  - {level: machine-verified, at: 2026-09-11, by: machine:gate}
+  - {level: human-verified, at: 2026-09-11, by: human:liaoranran}
 claim: >-
   函数形参声明为 `T&&` 时，形参名在函数体内是**左值**：`T y = x;` 触发拷贝构造；
   只有 `T y = std::move(x);` 把 x 变成 xvalue，才会选中移动构造；而对**无移动构造**的类型，

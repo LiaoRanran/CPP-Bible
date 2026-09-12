@@ -81,8 +81,8 @@
 |---|---|---|
 | 原子卡草稿 | `goldens/mem/ATOM-MEM-PERF-003_draft.md` | status=draft · 自评 4/5 · 含 Step 1–4 |
 | 证据卡 | `evidence/mem/EV-MEM-038.md`、`EV-MEM-039.md` | verdict=confirm ×2 |
-| 夹具 | `Examples/_atom_sso_portable.cpp`、`_atom_allocator_bench.cpp` | 真机双平台编译运行 |
-| 工件 | `Examples/_atom_sso_portable.asm`（sha `d6bf1d9f…`）、`_atom_allocator_bench.asm`（sha `bf7d0182…`）、`_atom_allocator_bench.out`（留痕） | MinGW 归属 |
+| 夹具 | `Examples/atoms/_atom_sso_portable.cpp`、`_atom_allocator_bench.cpp` | 真机双平台编译运行 |
+| 工件 | `Examples/atoms/_atom_sso_portable.asm`（sha `d6bf1d9f…`）、`_atom_allocator_bench.asm`（sha `bf7d0182…`）、`_atom_allocator_bench.out`（留痕） | MinGW 归属 |
 | 误解 | `misconceptions/MIS-MEM-028.md`、`MIS-MEM-029.md` | deep 级，各 3 条反例 |
 | 质检 | 本文件 | — |
 

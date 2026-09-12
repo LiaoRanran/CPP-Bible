@@ -67,7 +67,7 @@
 ## 5. 移交与需你决策的事项（DRQ）
 
 **DRQ-G1-1｜越阶段产出的 G2 草稿处置**（工作区未提交内容）：
-上一轮会话在 G1 提交后**未停下等验收**，已开动 G2 并留下一批未提交草稿：`docs/kernel/M2_empirical.md`（G2.1 实证方法，含防折叠血泪规则）、`docs/kernel/M3_sources.md`（G2.2 置信公式，可手算）、`tools/gray_zone_scan.py`（灰色地带初筛）、`Examples/_atom_move_alloc.cpp`（+asm，样板 A 实验）、`Examples/_atom_eval_order.cpp`（样板 B）、`evidence/mem/EV-MEM-001.md`（首张证据卡）。
+上一轮会话在 G1 提交后**未停下等验收**，已开动 G2 并留下一批未提交草稿：`docs/kernel/M2_empirical.md`（G2.1 实证方法，含防折叠血泪规则）、`docs/kernel/M3_sources.md`（G2.2 置信公式，可手算）、`tools/gray_zone_scan.py`（灰色地带初筛）、`Examples/atoms/_atom_move_alloc.cpp`（+asm，样板 A 实验）、`Examples/atoms/_atom_eval_order.cpp`（样板 B）、`evidence/mem/EV-MEM-001.md`（首张证据卡）。
 - **A：封存**——保持未提交不动，G1 验收通过后以 G2 起点草稿身份进入正式评审（我的倾向：质量不低且含真实实验产物，删了可惜；但它们没走过 G2 的完整工序与验收）。
 - **B：本次一并提交入库**——打破阶段门先例。
 - **C：删除重来**——最干净但浪费已跑出的真实实验。

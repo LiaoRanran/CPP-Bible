@@ -14,11 +14,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_rule_three_bug.cpp
+fixture: Examples/atoms/_atom_rule_three_bug.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_rule_three_bug.cpp -o Examples/_atom_rule_three_bug.asm
-  g++ -std=c++23 -O2 Examples/_atom_rule_three_bug.cpp -o build/_replay_rtb.exe && ./build/_replay_rtb.exe
-artifact: Examples/_atom_rule_three_bug.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_rule_three_bug.cpp -o Examples/atoms/_atom_rule_three_bug.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_rule_three_bug.cpp -o build/_replay_rtb.exe && ./build/_replay_rtb.exe
+artifact: Examples/atoms/_atom_rule_three_bug.asm
 artifact_sha256: 09892f2e6ae5f048fac1d72826aca895858550adc528803c177bd3f1782d2582
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 expected_sanitizer: [leak]   # 观测型析构只计数不释放（有意设计，见 drill_note）：ASan 下必然命中 LeakSanitizer，属 claim 的预期内反向证据
@@ -41,13 +41,13 @@ drill_note: >-
   观测纪律：析构为**观测型**（只计数不释放），把 double-destruct 变成可重复、不崩溃的确定观测
   （若析构真 delete，第二次释放即 UB，MinGW release 下行为不定，无法作为 run_match 依据）。
   真实 double-free 由 ASan 在 WSL（Ubuntu g++ 13.3.0，与 CI 同版）捕获，第二证据腿源码已入库：
-  `Examples/_atom_rule_three_bug_asan.cpp`（与主夹具 Buggy 同型、唯一差异是析构真释放），复现命令
-  `g++ -std=c++11 -g -fsanitize=address Examples/_atom_rule_three_bug_asan.cpp -o build/_rtb_asan
+  `Examples/atoms/_atom_rule_three_bug_asan.cpp`（与主夹具 Buggy 同型、唯一差异是析构真释放），复现命令
+  `g++ -std=c++11 -g -fsanitize=address Examples/atoms/_atom_rule_three_bug_asan.cpp -o build/_rtb_asan
   && ./build/_rtb_asan`，运行报 "ERROR: AddressSanitizer: attempting double-free ... #1 ... in
-  Buggy::~Buggy() Examples/_atom_rule_three_bug_asan.cpp:14"——释放点栈帧直指入库文件的析构函数，
+  Buggy::~Buggy() Examples/atoms/_atom_rule_three_bug_asan.cpp:14"——释放点栈帧直指入库文件的析构函数，
   实锤"浅拷贝 → 析构两次 → double free"因果链，人审可从仓库直接复算。Windows MinGW 工具链无
   ASan（replay sanitizer 步 skip，属既有 M2 边界）。
-reproduce: 见 command 两行（Windows 计数口径）+ WSL 复现命令（Examples/_atom_rule_three_bug_asan.cpp，见 drill_note）
+reproduce: 见 command 两行（Windows 计数口径）+ WSL 复现命令（Examples/atoms/_atom_rule_three_bug_asan.cpp，见 drill_note）
 ---
 
 ## 为什么这个证据可信

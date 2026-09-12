@@ -6,6 +6,12 @@ type: mechanism
 status: verified               # 唯人可置 verified（S1 三权分立）
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
+dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审
+human_review: required            # DAL A/B ⟹ 强制人审（G6）
+status_history:                   # 四级晋升链（G6 §2），链尾须等于 status
+  - {level: draft, at: legacy, by: writer:agent}
+  - {level: machine-verified, at: 2026-09-11, by: machine:gate}
+  - {level: human-verified, at: 2026-09-11, by: human:liaoranran}
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：知道 struct，但以为"成员紧密排列、sizeof=各成员和"
 cognitive_load: medium         # 需同时持有"对齐要求"与"padding 使 sizeof 变大"两条线索

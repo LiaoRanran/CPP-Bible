@@ -14,12 +14,12 @@ matrix:
   std: [c++17]
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_eval_order.cpp
+fixture: Examples/atoms/_atom_eval_order.cpp
 command: |          # POSIX 语义；产物必须写 build/（仓库源只读）
   # command 只跑主档（GCC 15.3 × -O2）；其余 5 组为同夹具人工补跑（见 actual）。
-  g++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o build/_replay_eval.exe && ./build/_replay_eval.exe
-  g++ -std=c++17 -O2 -S -masm=intel Examples/_atom_eval_order.cpp -o Examples/_atom_eval_order.asm
-artifact: Examples/_atom_eval_order.asm
+  g++ -std=c++17 -O2 Examples/atoms/_atom_eval_order.cpp -o build/_replay_eval.exe && ./build/_replay_eval.exe
+  g++ -std=c++17 -O2 -S -masm=intel Examples/atoms/_atom_eval_order.cpp -o Examples/atoms/_atom_eval_order.asm
+artifact: Examples/atoms/_atom_eval_order.asm
 artifact_sha256: 7122e45d05e3c8e05b5e24fa71d5661f33e02754108233f283d0716a9f8bcb76
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:            # 跨编译器可移植的结构断言（身份不匹配时的替代校验）

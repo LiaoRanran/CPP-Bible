@@ -6,6 +6,12 @@ type: mechanism
 status: verified               # 唯人可置 verified（S1 三权分立）
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期
+dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审
+human_review: required            # DAL A/B ⟹ 强制人审（G6）
+status_history:                   # 四级晋升链（G6 §2），链尾须等于 status
+  - {level: draft, at: legacy, by: writer:agent}
+  - {level: machine-verified, at: 2026-09-10, by: machine:gate}
+  - {level: human-verified, at: 2026-09-10, by: human:liaoranran}
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：懂 C++ 基础、但尚未建立值类别/重载决议概念的进阶者
 cognitive_load: high           # 需同时持有"类型转换 / 重载决议 / 汇编层搬运量"三条线索
@@ -82,8 +88,8 @@ std::move(x)  ≡  static_cast<std::remove_reference_t<decltype(x)>&&>(x)
 | 层 | 证据 | 观测 |
 |---|---|---|
 | 运行层 | `EV-MEM-001`（6 组矩阵 + 证伪对照） | 构造 1 次分配 / 拷贝 1 次 / **移动 0 次**；假移动对照 1 次 |
-| 汇编层 | `Examples/_atom_move_alloc.asm` | `main` 内 `call malloc` 恰 3 次（`@L109` `@L117` `@L144`），移动路径 0 次 |
-| 汇编层 | `Examples/_atom_move_no_gain.asm` | `call malloc` 仅 1 次（`@L117`，HeapBuf 的拷贝）；纯值组走 `pshufd` + `movaps XMMWORD PTR`（`@L136` `@L143`）= **32 字节搬运** |
+| 汇编层 | `Examples/atoms/_atom_move_alloc.asm` | `main` 内 `call malloc` 恰 3 次（`@L109` `@L117` `@L144`），移动路径 0 次 |
+| 汇编层 | `Examples/atoms/_atom_move_no_gain.asm` | `call malloc` 仅 1 次（`@L117`，HeapBuf 的拷贝）；纯值组走 `pshufd` + `movaps XMMWORD PTR`（`@L136` `@L143`）= **32 字节搬运** |
 
 两层的意义不同：运行层证明"移动确实没分配"，汇编层证明"移动**做了什么**"——这正是把
 "移动更快"这种模糊说法换成可检验机制的抓手。

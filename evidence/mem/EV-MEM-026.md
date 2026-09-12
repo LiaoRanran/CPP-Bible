@@ -13,11 +13,11 @@ matrix:
   std: [c++23]
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_alloc_basic.cpp
+fixture: Examples/atoms/_atom_alloc_basic.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_alloc_basic.cpp -o Examples/_atom_alloc_basic.asm
-  g++ -std=c++23 -O2 Examples/_atom_alloc_basic.cpp -o build/_replay_alloc_basic.exe && ./build/_replay_alloc_basic.exe
-artifact: Examples/_atom_alloc_basic.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_alloc_basic.cpp -o Examples/atoms/_atom_alloc_basic.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_alloc_basic.cpp -o build/_replay_alloc_basic.exe && ./build/_replay_alloc_basic.exe
+artifact: Examples/atoms/_atom_alloc_basic.asm
 artifact_sha256: 595e63f3fde699a83ad6f1a4a4bbde8f0dcafaa34c9c14cb68c1457284b44559
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

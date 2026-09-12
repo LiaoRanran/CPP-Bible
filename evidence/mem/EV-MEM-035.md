@@ -13,11 +13,11 @@ matrix:
   std: [c++23]
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_unique_noatomic.cpp
+fixture: Examples/atoms/_atom_unique_noatomic.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_unique_noatomic.cpp -o Examples/_atom_unique_noatomic.asm
-  g++ -std=c++23 -O2 Examples/_atom_unique_noatomic.cpp -o build/_replay_unique_noatomic.exe && ./build/_replay_unique_noatomic.exe
-artifact: Examples/_atom_unique_noatomic.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_unique_noatomic.cpp -o Examples/atoms/_atom_unique_noatomic.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_unique_noatomic.cpp -o build/_replay_unique_noatomic.exe && ./build/_replay_unique_noatomic.exe
+artifact: Examples/atoms/_atom_unique_noatomic.asm
 artifact_sha256: 94e96313b81f7d8180adf56c6177f0338c49e4804c73cf9face96478a8ce82ed
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

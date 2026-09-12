@@ -15,17 +15,17 @@ matrix:
   arch: [x86-64]
   # 外部复跑留痕（libc++ 列）：**libc++-18 / WSL g++-14 驱动 / 现场复跑，待 CI 回填**；仓内工件为 MinGW 归属，
   #   非仓内工件——按 M2 §2 双编译器边界的"外部留痕"口径登记。
-  #   命令：`g++-14 -std=c++23 -O2 -nostdinc++ -isystem /usr/include/c++/v1 Examples/_atom_sso_portable.cpp -lc++ -lc++abi`
+  #   命令：`g++-14 -std=c++23 -O2 -nostdinc++ -isystem /usr/include/c++/v1 Examples/atoms/_atom_sso_portable.cpp -lc++ -lc++abi`
   #   **红队修正（高级 4）**：初版把该列写作 "Clang 18.1.3 + libc++-18"，但驱动实际是 **g++-14**
   #   （仓内无任何 Clang 编译记录）——已如实改为"GCC 14.2.0 + libc++-18"。
   #   **同驱动对照（红队高级 5 的修法）**：初版的 libstdc++ 列取自 MinGW，与 libc++ 列**同时**变了
   #   驱动与平台，因果无法归到 stdlib；现补 WSL 侧**同一条 g++-14 驱动**对 libstdc++ 的实测
   #   （见正文"同驱动对照"表）⇒ 两列之间唯一变量 = 标准库实现。
-fixture: Examples/_atom_sso_portable.cpp
+fixture: Examples/atoms/_atom_sso_portable.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_sso_portable.cpp -o Examples/_atom_sso_portable.asm
-  g++ -std=c++23 -O2 Examples/_atom_sso_portable.cpp -o build/_replay_sso_portable.exe && ./build/_replay_sso_portable.exe
-artifact: Examples/_atom_sso_portable.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_sso_portable.cpp -o Examples/atoms/_atom_sso_portable.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_sso_portable.cpp -o build/_replay_sso_portable.exe && ./build/_replay_sso_portable.exe
+artifact: Examples/atoms/_atom_sso_portable.asm
 artifact_sha256: d6bf1d9febd2021bcd61eafdc672dcf0001e560b0cea2e99cec6c9124f4222fd
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
@@ -84,7 +84,7 @@ drill_note: >-
 | 边界逐点 | len14/15=0、len16/17=1 | len21/22=0、len23/24=1 |
 
 复跑命令（本轮实测，非仓内工件）：
-`g++-14 -std=c++23 -O2 -nostdinc++ -isystem /usr/include/c++/v1 Examples/_atom_sso_portable.cpp -lc++ -lc++abi -o /tmp/sso_libcxx2`
+`g++-14 -std=c++23 -O2 -nostdinc++ -isystem /usr/include/c++/v1 Examples/atoms/_atom_sso_portable.cpp -lc++ -lc++abi -o /tmp/sso_libcxx2`
 
 ### 同驱动对照（红队高级 5 的修法：把"编译器/平台"从变量里消掉）
 

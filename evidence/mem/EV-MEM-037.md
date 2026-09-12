@@ -16,11 +16,11 @@ matrix:
   opt: [-O0, -O2]
   arch: [x86-64]
   sanitizer: ["ASan/LSan（Linux/WSL 侧）：-O0/-O1 不报、-O2（noinline 隔离）报 224 B；本机 MinGW 侧 skip"]
-fixture: Examples/_atom_leak_tree_bug.cpp
+fixture: Examples/atoms/_atom_leak_tree_bug.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_leak_tree_bug.cpp -o Examples/_atom_leak_tree_bug.asm
-  g++ -std=c++23 -O2 Examples/_atom_leak_tree_bug.cpp -o build/_replay_leak_bug.exe && ./build/_replay_leak_bug.exe
-artifact: Examples/_atom_leak_tree_bug.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_leak_tree_bug.cpp -o Examples/atoms/_atom_leak_tree_bug.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_leak_tree_bug.cpp -o build/_replay_leak_bug.exe && ./build/_replay_leak_bug.exe
+artifact: Examples/atoms/_atom_leak_tree_bug.asm
 artifact_sha256: e5a31cca38b9b908028db444fe00e83b06762451f2fadcf287ad82d1ba197db6
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

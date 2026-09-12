@@ -1,0 +1,25 @@
+# === 复跑命令（第三方可照抄）===
+# g++-14 -std=c++23 -O1 -g -fsanitize=address,undefined Examples/_atom_leak_detection.cpp -o /tmp/ld_asan
+# ASAN_OPTIONS=allocator_may_return_null=1 /tmp/ld_asan
+# === stdout ===
+# === stderr（原文，零报告时为空）===
+
+=================================================================
+==24==ERROR: LeakSanitizer: detected memory leaks
+
+Indirect leak of 64 byte(s) in 2 object(s) allocated from:
+    #0 0x71ecf4cfe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x5c80aa9f1dc6 in allocate /usr/include/c++/14/bits/new_allocator.h:151
+    #2 0x5c80aa9f1dc6 in allocate /usr/include/c++/14/bits/allocator.h:196
+    #3 0x5c80aa9f1dc6 in allocate /usr/include/c++/14/bits/alloc_traits.h:478
+    #4 0x5c80aa9f1dc6 in __allocate_guarded<std::allocator<std::_Sp_counted_ptr_inplace<(anonymous namespace)::Node, std::allocator<void>, (__gnu_cxx::_Lock_policy)2> > > /usr/include/c++/14/bits/allocated_ptr.h:98
+    #5 0x5c80aa9f1dc6 in __shared_count<(anonymous namespace)::Node, std::allocator<void> > /usr/include/c++/14/bits/shared_ptr_base.h:967
+    #6 0x5c80aa9f1dc6 in __shared_ptr<std::allocator<void> > /usr/include/c++/14/bits/shared_ptr_base.h:1713
+    #7 0x5c80aa9f1dc6 in shared_ptr<std::allocator<void> > /usr/include/c++/14/bits/shared_ptr.h:463
+    #8 0x5c80aa9f1dc6 in make_shared<(anonymous namespace)::Node> /usr/include/c++/14/bits/shared_ptr.h:1008
+
+SUMMARY: AddressSanitizer: 64 byte(s) leaked in 2 allocation(s).
+# === stderr 字节数 ===
+1258
+# === LeakSanitizer 命中行数 ===
+1

@@ -16,11 +16,11 @@ matrix:                          # ⚠️ 笛卡尔声明 ≠ 实测组数：GCC
   std: [c++11, c++14, c++17, c++20, c++23]
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_named_rvalue.cpp
+fixture: Examples/atoms/_atom_named_rvalue.cpp
 command: |          # 产物 exe 必须写 build/（防根级 exe 泄漏被 pre-push 拦）；asm 入库以便比 sha
-  g++ -std=c++17 -O2 Examples/_atom_named_rvalue.cpp -o build/_atom_named_rvalue.exe && ./build/_atom_named_rvalue.exe
-  g++ -std=c++17 -O2 -S -masm=intel Examples/_atom_named_rvalue.cpp -o Examples/_atom_named_rvalue.asm
-artifact: Examples/_atom_named_rvalue.asm
+  g++ -std=c++17 -O2 Examples/atoms/_atom_named_rvalue.cpp -o build/_atom_named_rvalue.exe && ./build/_atom_named_rvalue.exe
+  g++ -std=c++17 -O2 -S -masm=intel Examples/atoms/_atom_named_rvalue.cpp -o Examples/atoms/_atom_named_rvalue.asm
+artifact: Examples/atoms/_atom_named_rvalue.asm
 artifact_sha256: f9804693137251177c83dea01bab17886ca0ef5f9e88889b07c4c85267f38ab4
 # 2026-09-11 四改：加第三组对照（CopyOnly，无移动构造类型）→ 工件重生成、哈希同步换。
 artifact_compiler: GCC 15.3.0 (MinGW-w64)

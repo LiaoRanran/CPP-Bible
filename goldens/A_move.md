@@ -9,7 +9,7 @@
 >
 > **配套证据**：`evidence/mem/EV-MEM-001.md`（移动构造不分配，6 组矩阵 + 证伪对照）、
 > `evidence/mem/EV-MEM-002.md`（移动收益来自掏空源对象，纯值类型无收益）、
-> 夹具 `Examples/_atom_move_alloc.cpp` · `Examples/_atom_move_no_gain.cpp`（含 `.asm` 工件）。
+> 夹具 `Examples/atoms/_atom_move_alloc.cpp` · `Examples/atoms/_atom_move_no_gain.cpp`（含 `.asm` 工件）。
 
 ---
 
@@ -121,7 +121,8 @@ id: ATOM-MEM-MOVE-002
 title: 用 std::move 申报所有权转移，真正的搬运发生在移动构造里
 domain: MEM
 type: mechanism
-status: draft                  # draft|verified|rejected（唯人可置 verified）
+status: draft                  # draft|machine-verified|red-team-verified|human-verified|rejected
+                               # （G6 四级；`verified` 为历史别名。唯人可置人级）
 claim: >-
   std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载；
   移动构造的收益来自**掏空源对象**，因此源对象没有可掏空的间接资源时，移动退化为拷贝。
@@ -201,8 +202,8 @@ std::move(x)  ≡  static_cast<std::remove_reference_t<decltype(x)>&&>(x)
 | 层 | 证据 | 观测 |
 |---|---|---|
 | 运行层 | `EV-MEM-001`（6 组矩阵 + 证伪对照） | 构造 1 次分配 / 拷贝 1 次 / **移动 0 次**；假移动对照 1 次 |
-| 汇编层 | `Examples/_atom_move_alloc.asm` | `main` 内 `call malloc` 恰 3 次（`@L109` `@L117` `@L144`），移动路径 0 次 |
-| 汇编层 | `Examples/_atom_move_no_gain.asm` | `call malloc` 仅 1 次（`@L117`，HeapBuf 拷贝）；纯值组走 `pshufd` + `movaps XMMWORD PTR`（`@L136` `@L143`）= **32 字节搬运** |
+| 汇编层 | `Examples/atoms/_atom_move_alloc.asm` | `main` 内 `call malloc` 恰 3 次（`@L109` `@L117` `@L144`），移动路径 0 次 |
+| 汇编层 | `Examples/atoms/_atom_move_no_gain.asm` | `call malloc` 仅 1 次（`@L117`，HeapBuf 拷贝）；纯值组走 `pshufd` + `movaps XMMWORD PTR`（`@L136` `@L143`）= **32 字节搬运** |
 
 两层的意义不同：运行层证明"移动确实没分配"，汇编层证明"移动**做了什么**"——这正是把
 "移动更快"这种模糊说法换成可检验机制的抓手。

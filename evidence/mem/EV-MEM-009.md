@@ -12,11 +12,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_raii.cpp
+fixture: Examples/atoms/_atom_raii.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_raii.cpp -o Examples/_atom_raii.asm
-  g++ -std=c++23 -O2 Examples/_atom_raii.cpp -o build/_replay_raii.exe && ./build/_replay_raii.exe
-artifact: Examples/_atom_raii.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_raii.cpp -o Examples/atoms/_atom_raii.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_raii.cpp -o build/_replay_raii.exe && ./build/_replay_raii.exe
+artifact: Examples/atoms/_atom_raii.asm
 artifact_sha256: 7bba13b03d736f5a1e9d5cd767ab91fd53ab651ca48f688054fdd913bafa7720
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

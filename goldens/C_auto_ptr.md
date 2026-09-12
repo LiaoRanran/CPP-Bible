@@ -10,7 +10,7 @@
 >
 > **配套证据**：`evidence/hist/EV-HIST-001.md`（拷贝即转移 + 容器冲突 + 三档实现可用性）、
 > `evidence/mem/EV-MEM-003.md`（类型系统对照：`CopyConstructible` vs 移动语义）；
-> 夹具 `Examples/_atom_auto_ptr.cpp`（含 `.asm` 工件）。
+> 夹具 `Examples/atoms/_atom_auto_ptr.cpp`（含 `.asm` 工件）。
 
 ---
 

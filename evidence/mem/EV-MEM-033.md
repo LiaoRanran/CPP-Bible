@@ -15,11 +15,11 @@ matrix:
   std: [c++23]
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_shared_deleter_erase.cpp
+fixture: Examples/atoms/_atom_shared_deleter_erase.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_shared_deleter_erase.cpp -o Examples/_atom_shared_deleter_erase.asm
-  g++ -std=c++23 -O2 Examples/_atom_shared_deleter_erase.cpp -o build/_replay_sderase.exe && ./build/_replay_sderase.exe
-artifact: Examples/_atom_shared_deleter_erase.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_shared_deleter_erase.cpp -o Examples/atoms/_atom_shared_deleter_erase.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_shared_deleter_erase.cpp -o build/_replay_sderase.exe && ./build/_replay_sderase.exe
+artifact: Examples/atoms/_atom_shared_deleter_erase.asm
 artifact_sha256: a26740cd570112fd429b27c01d43601d28a2d1f7d17899e871ef69f8bdd1dd25
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

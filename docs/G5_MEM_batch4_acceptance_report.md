@@ -19,7 +19,7 @@
 
 | 裁决 | 落地内容 |
 |---|---|
-| **1 · 断言锚分层确认** | `actual` 锚**不扩大**（仍 4 行：`iters_per_round`/`rounds`/`block_bytes`/`sink_nonzero`）；新增卡内**「完整原始输出」节**：Windows 三资源 × 7 轮逐轮样本（771200…/154700…/253900…）+ 中位数/min/max + 比值，Linux 侧中位数与比值；**Linux 逐轮样本当时未采集，已如实标注"未采集、不编造"**（铁律 7）。完整数据同时落盘 `Examples/_atom_allocator_bench.out` |
+| **1 · 断言锚分层确认** | `actual` 锚**不扩大**（仍 4 行：`iters_per_round`/`rounds`/`block_bytes`/`sink_nonzero`）；新增卡内**「完整原始输出」节**：Windows 三资源 × 7 轮逐轮样本（771200…/154700…/253900…）+ 中位数/min/max + 比值，Linux 侧中位数与比值；**Linux 逐轮样本当时未采集，已如实标注"未采集、不编造"**（铁律 7）。完整数据同时落盘 `Examples/atoms/_atom_allocator_bench.out` |
 | **2 · 误解编号处理** | `MIS-MEM-029` 由内容类**改写为方法论类**（触发词改为性能/基准/benchmark/平台相关/未标版本/控制变量）；三条反例：① 双平台排序相反实测；② 初版对照组三变量同变被红队拆掉；③ 顺序效应伪装成策略优势（global 首轮 771200 vs 后续 47–49 万）。`MIS-MEM-023` 未动 |
 | **3 · libc++ 列处理** | matrix 如实改为「libc++-18 / WSL g++-14 驱动 / **现场复跑，待 CI 回填**」；`EV-MEM-038` 新增**「待办」节**：CI Cross-check 步补 Clang + libc++ `::notice::` 回填（仿 B/C 样板先例）；MSVC 列保持**未实测**、不写数字 |
 

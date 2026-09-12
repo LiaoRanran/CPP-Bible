@@ -14,11 +14,11 @@ matrix:
   std: [c++23]
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_sso_cost.cpp
+fixture: Examples/atoms/_atom_sso_cost.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_sso_cost.cpp -o Examples/_atom_sso_cost.asm
-  g++ -std=c++23 -O2 Examples/_atom_sso_cost.cpp -o build/_replay_sso_cost.exe && ./build/_replay_sso_cost.exe
-artifact: Examples/_atom_sso_cost.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_sso_cost.cpp -o Examples/atoms/_atom_sso_cost.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_sso_cost.cpp -o build/_replay_sso_cost.exe && ./build/_replay_sso_cost.exe
+artifact: Examples/atoms/_atom_sso_cost.asm
 artifact_sha256: 06579f60872a4111e9ff4a9531e30e1925a54507bafa7e09e329f7cfa754d77e
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

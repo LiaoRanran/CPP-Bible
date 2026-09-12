@@ -16,11 +16,11 @@ matrix:
   std: [c++11, c++14, c++17, c++20, c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_rvref_return.cpp
+fixture: Examples/atoms/_atom_rvref_return.cpp
 command: |          # 主档取 **c++23**：复算契约是「一条 command 的 stdout ↔ expected」
-  g++ -std=c++23 -O2 Examples/_atom_rvref_return.cpp -o build/_rvref_return.exe && ./build/_rvref_return.exe
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_rvref_return.cpp -o Examples/_atom_rvref_return.asm
-artifact: Examples/_atom_rvref_return.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_rvref_return.cpp -o build/_rvref_return.exe && ./build/_rvref_return.exe
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_rvref_return.cpp -o Examples/atoms/_atom_rvref_return.asm
+artifact: Examples/atoms/_atom_rvref_return.asm
 artifact_sha256: 2a834e60d6a2a738512f8e08d8a9d1f898fb19d591a2dc8ee0baf80a7c8f57ed
 # ⚠️ 工件必须与 **command 里的标准档**同代：初版用 c++17 生成了 asm，而 command 是 c++23
 # → replay 重生成后字节不同 → refute:sha256_mismatch（实测教训：**生成工件时的档位要和

@@ -12,11 +12,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_new_array.cpp
+fixture: Examples/atoms/_atom_new_array.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_new_array.cpp -o Examples/_atom_new_array.asm
-  g++ -std=c++23 -O2 Examples/_atom_new_array.cpp -o build/_replay_narr.exe && ./build/_replay_narr.exe
-artifact: Examples/_atom_new_array.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_new_array.cpp -o Examples/atoms/_atom_new_array.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_new_array.cpp -o build/_replay_narr.exe && ./build/_replay_narr.exe
+artifact: Examples/atoms/_atom_new_array.asm
 artifact_sha256: 360a35729ac710c564df754bfa1fbda73089efaaf5848547be9b15f81f1241d5
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

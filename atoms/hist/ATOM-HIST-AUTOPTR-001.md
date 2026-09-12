@@ -6,6 +6,12 @@ type: evolution
 status: verified               # 唯人可置 verified（S1 三权分立）
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期（人审通过，授予 5 分）
+dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审
+human_review: required            # DAL A/B ⟹ 强制人审（G6）
+status_history:                   # 四级晋升链（G6 §2），链尾须等于 status
+  - {level: draft, at: legacy, by: writer:agent}
+  - {level: machine-verified, at: 2026-09-10, by: machine:gate}
+  - {level: human-verified, at: 2026-09-10, by: human:liaoranran}
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：用现代 C++ 但需要读/维护 C++98 代码库的进阶者
 cognitive_load: medium         # 主线是"语言能力如何塑造库设计"的单线索叙事，配可验证判据

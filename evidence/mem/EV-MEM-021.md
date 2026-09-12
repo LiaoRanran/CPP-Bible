@@ -14,11 +14,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_fwd_fold.cpp
+fixture: Examples/atoms/_atom_fwd_fold.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_fwd_fold.cpp -o Examples/_atom_fwd_fold.asm
-  g++ -std=c++23 -O2 Examples/_atom_fwd_fold.cpp -o build/_replay_fold.exe && ./build/_replay_fold.exe
-artifact: Examples/_atom_fwd_fold.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_fwd_fold.cpp -o Examples/atoms/_atom_fwd_fold.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_fwd_fold.cpp -o build/_replay_fold.exe && ./build/_replay_fold.exe
+artifact: Examples/atoms/_atom_fwd_fold.asm
 artifact_sha256: 59fc71f41e0389963bc6ea0577cdb75035f8e84a16f77a7e98a23d55fe773d45
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

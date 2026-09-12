@@ -12,11 +12,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_shared_count.cpp
+fixture: Examples/atoms/_atom_shared_count.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_shared_count.cpp -o Examples/_atom_shared_count.asm
-  g++ -std=c++23 -O2 Examples/_atom_shared_count.cpp -o build/_replay_scnt.exe && ./build/_replay_scnt.exe
-artifact: Examples/_atom_shared_count.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_shared_count.cpp -o Examples/atoms/_atom_shared_count.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_shared_count.cpp -o build/_replay_scnt.exe && ./build/_replay_scnt.exe
+artifact: Examples/atoms/_atom_shared_count.asm
 artifact_sha256: 323623959ff3114bda64896bd95f6ccb94326123adca0189e0127282473c594e
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

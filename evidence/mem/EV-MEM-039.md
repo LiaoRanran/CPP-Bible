@@ -20,11 +20,11 @@ matrix:
   # 断言锚与留痕分离（两轮红队逼出来的纪律）：默认输出**只留跨环境稳定量**（常量 + 活性对照）；
   #   时序数据与**对比结论**都在 `-DBENCH_FULL` 下打印并落 .out（对比结论在 Linux 上会翻转，
   #   见下方双平台表）。
-fixture: Examples/_atom_allocator_bench.cpp
+fixture: Examples/atoms/_atom_allocator_bench.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_allocator_bench.cpp -o Examples/_atom_allocator_bench.asm
-  g++ -std=c++23 -O2 Examples/_atom_allocator_bench.cpp -o build/_replay_alloc_bench.exe && ./build/_replay_alloc_bench.exe
-artifact: Examples/_atom_allocator_bench.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_allocator_bench.cpp -o Examples/atoms/_atom_allocator_bench.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_allocator_bench.cpp -o build/_replay_alloc_bench.exe && ./build/_replay_alloc_bench.exe
+artifact: Examples/atoms/_atom_allocator_bench.asm
 artifact_sha256: bf7d01826185a168c385702b3cc0c2def902601312052bffaa47c6d4e2c629f9
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
@@ -53,7 +53,7 @@ falsification: >-
   比值 ×1000（Windows）：`monotonic/global=226`、`pool/global=509`、`pool/monotonic=2252`；
   （Linux）：`monotonic/global=1918`、`pool/global=1372`、`pool/monotonic=715`。
   **连排序都翻转**：Windows 是 `monotonic < pool < global`，Linux 是 `global < pool < monotonic`。
-  逐轮样本见 `Examples/_atom_allocator_bench.out`（Windows，`-DBENCH_FULL`）。
+  逐轮样本见 `Examples/atoms/_atom_allocator_bench.out`（Windows，`-DBENCH_FULL`）。
   **为什么不当断言**：同一次运行里 Windows 的 global max（771200）已是 min（476700）的 1.6 倍、
   monotonic 的 max/min 差 1.56 倍——方差本身就说明这些数携带"当时机器状态"；
   跨平台更是量级翻转。可复现的是**因果链**与**方法论**，不是数字。
@@ -97,7 +97,7 @@ drill_note: >-
 
 ## 完整原始输出（人审裁决 1：不得只留摘要）
 
-**Windows / MinGW 15.3.0 / libstdc++ / -O2 / 10000×7**（`-DBENCH_FULL`，同时落盘 `Examples/_atom_allocator_bench.out`）
+**Windows / MinGW 15.3.0 / libstdc++ / -O2 / 10000×7**（`-DBENCH_FULL`，同时落盘 `Examples/atoms/_atom_allocator_bench.out`）
 
 | 策略 | 逐轮样本 (ns) | 中位数 | min | max |
 |---|---|---|---|---|

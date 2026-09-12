@@ -14,12 +14,12 @@ matrix:
   std: [c++14]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_auto_ptr.cpp
+fixture: Examples/atoms/_atom_auto_ptr.cpp
 command: |          # POSIX 语义；产物必须写 build/（仓库源只读）
   # 同一夹具（内含 auto_ptr/unique_ptr 双向 static_assert），故与 EV-HIST-001 共用工件。
-  g++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/_atom_auto_ptr.cpp -o build/_replay_autoptr.exe && ./build/_replay_autoptr.exe
-  g++ -std=c++14 -Wno-deprecated-declarations -O2 -S -masm=intel Examples/_atom_auto_ptr.cpp -o Examples/_atom_auto_ptr.asm
-artifact: Examples/_atom_auto_ptr.asm
+  g++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/atoms/_atom_auto_ptr.cpp -o build/_replay_autoptr.exe && ./build/_replay_autoptr.exe
+  g++ -std=c++14 -Wno-deprecated-declarations -O2 -S -masm=intel Examples/atoms/_atom_auto_ptr.cpp -o Examples/atoms/_atom_auto_ptr.asm
+artifact: Examples/atoms/_atom_auto_ptr.asm
 artifact_sha256: b4f993189459e84031d2a6b37f5bf04da88c140c637cb2c37fb7357f6dfdd691
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

@@ -13,11 +13,11 @@ matrix:
   std: [c++23]
   opt: [-O0, -O2]
   arch: [x86-64]
-fixture: Examples/_atom_leak_tree_ok.cpp
+fixture: Examples/atoms/_atom_leak_tree_ok.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_leak_tree_ok.cpp -o Examples/_atom_leak_tree_ok.asm
-  g++ -std=c++23 -O2 Examples/_atom_leak_tree_ok.cpp -o build/_replay_leak_ok.exe && ./build/_replay_leak_ok.exe
-artifact: Examples/_atom_leak_tree_ok.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_leak_tree_ok.cpp -o Examples/atoms/_atom_leak_tree_ok.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_leak_tree_ok.cpp -o build/_replay_leak_ok.exe && ./build/_replay_leak_ok.exe
+artifact: Examples/atoms/_atom_leak_tree_ok.asm
 artifact_sha256: 0fd4a1acb85f83b5bd27c62c4022a9085e9b2ad36401ceb8f36b5c10825649f0
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

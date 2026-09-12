@@ -38,7 +38,13 @@ id: ATOM-MEM-MOVE-001
 title: 移动后源对象处于有效但未指定状态
 domain: MEM
 type: mechanism            # concept|mechanism|rule|idiom|anti_pattern|pitfall|contrast|evolution|decision|experiment
-status: draft              # draft|verified|rejected（唯人可置 verified）
+status: draft              # draft|machine-verified|red-team-verified|human-verified|rejected
+                           # （`verified` = 四级体系前的历史别名，等价 human-verified；见 G6_status_levels.md）
+dal: C                     # A|B|C|D|E 失效后果分级；A/B ⟹ human_review: required；C/D/E 须人签 dal_reviewed_by
+human_review: optional     # required|optional：人审是否强制（须与 dal 一致，机器复查）
+status_history:            # 四级晋升链（非 draft 必填；链尾必须等于 status）
+  - {level: draft, at: legacy, by: writer:agent}
+  - {level: machine-verified, at: 2026-09-12, by: machine:gate}
 # ---- 认知适切维度（G5 新增，见 §3）----
 audience: intermediate     # beginner|intermediate|expert：本原子的默认读者是谁
 cognitive_load: medium     # low|medium|high：认知负荷预算
@@ -104,7 +110,10 @@ pedagogy:                  # ⑤ 教学封装
 | `title` | str | ✅ | 一句话标题 |
 | `domain` | enum | ✅ | 16 域之一 |
 | `type` | enum | ✅ | 10 类原子类型之一 |
-| `status` | enum | ✅ | `draft`/`verified`/`rejected`；**新原子禁止停留在 unverified**（DRQ-4 红线） |
+| `status` | enum | ✅ | `draft`/`machine-verified`/`red-team-verified`/`human-verified`/`rejected`（**G6 四级**，见 `G6_status_levels.md`；`verified` 为历史别名 = human-verified）；**新原子禁止停留在 unverified**（DRQ-4 红线） |
+| `dal` | enum | ✅ | `A`/`B`/`C`/`D`/`E` **失效后果分级**（G6）：决定人审是否强制。A/B ⟹ 必须人审签署；C/D/E ⟹ 红队通过即可，但**豁免人审须人签** `dal_reviewed_by: human:*` |
+| `human_review` | enum | ✅ | `required`/`optional`；须与 `dal` 一致（A/B→required），机器复查（`ATOM-DAL-MATCH`） |
+| `status_history` | list | ✅ | 四级晋升链 `{level, at, by}`；非 `draft` 必填，链尾 = 当前 `status`，`by` 前缀须与该级执行者匹配（`machine:`/`redteam:`/`human:`）（`ATOM-STATUS-TRANSITION`） |
 | `claim` | str | ✅ | 单句、可证伪 |
 | `claim_boundary` | obj | ✅ | `standard[]`/`compilers[]`/`opt[]`/`platform[]` |
 | `relations[]` | list | ✅ | `{type, target}`，type ∈ 11 种关系 |
@@ -118,7 +127,7 @@ pedagogy:                  # ⑤ 教学封装
 | `prerequisites_readable` | bool | ✅ | 前置原子是否已锻造。**机器可查**：`relations[]` 中 `type: prerequisite` 的 target 是否都已存在于 `atoms/`；声明与实算不一致门禁会报（`ATOM-PREREQ-READABLE`） |
 | `pedagogy` | obj | ✅ | `motivation`/`misconceptions[]`/`socratic[]`/`predict_first`；**`misconceptions[]` 引用 `misconceptions/MIS-*.md` 的 ID**（G5 起新原子强制，引用的 ID 必须存在 → `ATOM-MISCONCEPTION-REF`）。兼容旧内联 `misconception[]`：每项须标 `level: surface\|deep`，`deep` 类必带 `refutations[]` ≥2（依据：surface 一次纠正即可；deep 是结构性误解，须 ≥2 个独立反例才可能纠偏）。概念混淆/边界误判/工具误用只作**内容组织参考**，不强制为字段 |
 
-**硬约束**（门禁点）：`status: verified` ⟹ `evidence[]` 非空 ∧ `first_hand == true` ∧ `superiority` 非空。这三条是 S2"声明-证据绑定"的最小落地。
+**硬约束**（门禁点）：`status` 属已验证三级（machine/red-team/human-verified，含别名 `verified`）⟹ `evidence[]` 非空 ∧ `first_hand == true` ∧ `superiority` 非空。这三条是 S2"声明-证据绑定"的最小落地。**G6 新增两条**：人级必须链上含非人级前驱（`ATOM-STATUS-TRANSITION`）；DAL A/B 必须人审签署、DAL C/D/E 必须人签豁免（`ATOM-DAL-MATCH`）。
 
 ### 3.1 统计口径（同一名字有三个数时以本节为准）
 
@@ -173,5 +182,7 @@ verdict: confirm | refute | partial
 - 若原子文件没有 frontmatter 而只有散文 → 机器无法绑定证据，**不合格**。
 - 若 `evidence/` 与 `atoms/` 合并成一个文件里的字段 → 违背 L2"证据与断言多对多分离"，**不合格**。
 - 若 `status: verified` 但 `evidence[]` 为空 → S2 失效，**不合格**。
+- 若 `status` 为人级但 `status_history` 里没有任何 machine/red-team 级 → **未经机器验证即人签**，不合格（G6 §2）。
+- 若 `dal: C` 但 `dal_reviewed_by` 非 `human:*` → Writer 自定分级**绕过人审**（放权变权力反转），不合格（G6 §3）。
 - 若 `sources/` 里的文件被修改而无新快照 → L0"不可变"失效，**不合格**。
 - 若 mkdocs 未 exclude 新目录导致站点构建扫进原子草稿 → 发布污染，**不合格**（G5 执行时验证）。

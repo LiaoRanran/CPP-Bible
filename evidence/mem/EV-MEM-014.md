@@ -12,11 +12,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_shared_cycle.cpp
+fixture: Examples/atoms/_atom_shared_cycle.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_shared_cycle.cpp -o Examples/_atom_shared_cycle.asm
-  g++ -std=c++23 -O2 Examples/_atom_shared_cycle.cpp -o build/_replay_scyc.exe && ./build/_replay_scyc.exe
-artifact: Examples/_atom_shared_cycle.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_shared_cycle.cpp -o Examples/atoms/_atom_shared_cycle.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_shared_cycle.cpp -o build/_replay_scyc.exe && ./build/_replay_scyc.exe
+artifact: Examples/atoms/_atom_shared_cycle.asm
 artifact_sha256: 343c5003d45ea7635712c27ef9bb0b685ac3889f9feb0212026b3e52b77a7656
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 expected_sanitizer: [leak]   # 本卡演示循环引用泄漏：sanitizer 命中类型为 leak 时计入 confirm（反向证 claim），不计 refute；其余类型仍 refute

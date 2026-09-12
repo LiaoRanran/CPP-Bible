@@ -12,11 +12,11 @@ matrix:
   std: [c++23]
   opt: [-O2]
   arch: [x86-64]
-fixture: Examples/_atom_new_layer.cpp
+fixture: Examples/atoms/_atom_new_layer.cpp
 command: |
-  g++ -std=c++23 -O2 -S -masm=intel Examples/_atom_new_layer.cpp -o Examples/_atom_new_layer.asm
-  g++ -std=c++23 -O2 Examples/_atom_new_layer.cpp -o build/_replay_nlay.exe && ./build/_replay_nlay.exe
-artifact: Examples/_atom_new_layer.asm
+  g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_new_layer.cpp -o Examples/atoms/_atom_new_layer.asm
+  g++ -std=c++23 -O2 Examples/atoms/_atom_new_layer.cpp -o build/_replay_nlay.exe && ./build/_replay_nlay.exe
+artifact: Examples/atoms/_atom_new_layer.asm
 artifact_sha256: 094311a8f172880928aa1bab97fc4c988cc7fa1254a35a74cbc2c0215d258b45
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:
