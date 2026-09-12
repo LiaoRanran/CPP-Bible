@@ -147,6 +147,22 @@ def test_golden_accept_leaves_audit(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     assert "口径变更" in state["accepted"][0]["reason"]
 
 
+def test_golden_accept_syncs_baseline_and_is_machine_recorded(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """369 任务7：accept 必须（a）把当期测量写入基线（不再重复报同一恶化），
+    （b）`worse`/`metrics_after`/`commit`/`dirty` 全部机器填写（不让人手输）。"""
+    _gold(tmp_path, monkeypatch, METRICS)                     # warn_findings = 1
+    monkeypatch.setattr(gl, "measure", lambda: dict(METRICS, warn_findings=3))
+    assert gl.cmd_check("口径变更：新增 2 条 warn 级规则") == 0
+    state = json.loads(gl.STATE.read_text(encoding="utf-8"))
+    assert state["metrics"]["warn_findings"] == 3, "接受后基线必须同步至当期测量"
+    rec = state["accepted"][0]
+    assert rec["worse"] == ["warn_findings: 1 → 3"], "worse 必须与当期测量同源自动生成"
+    assert rec["metrics_after"]["warn_findings"] == 3, "metrics_after 必须机器勾稽"
+    assert "commit" in rec and isinstance(rec["dirty"], bool), "provenance 必须机器填写"
+    assert gl.cmd_check(None) == 0, "基线已同步，不应重复报同一恶化"
+
+
 # ── S5 债务台账 ────────────────────────────────────────────────────────────
 def _debt(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, tickets: list[dict]) -> None:
     p = tmp_path / "debt_ledger.json"

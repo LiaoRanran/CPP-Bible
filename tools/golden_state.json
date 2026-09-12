@@ -1,7 +1,7 @@
 {
  "schema": "cppbible-golden-lock/1.0",
  "updated": "2026-09-12",
- "commit": "",
+ "commit": "4f87c0d",
  "metrics": {
   "block_findings": 0,
   "warn_findings": 8,
@@ -128,5 +128,6 @@
     "warn_findings: 10 → 15"
    ]
   }
- ]
+ ],
+ "dirty": true
 }

@@ -19,6 +19,11 @@
 语义：
     * 恶化 → 红；改善（数量↑ / 命中↓）→ 提示 `sync` 更新基线。
     * 口径/阈值变更**不得静默**：`check --accept "理由"` 显式接受并写入快照审计字段。
+    * **接受即同步基线**（2026-09-12，369 任务7）：accept 时把**当期测量**写入 `metrics`
+      （否则"接受了但基线仍旧"，下一轮 check 会重复报同一条恶化、台账膨胀）。
+    * **provenance 机器填写**（369 任务7）：`commit` = `git rev-parse --short HEAD`，
+      `dirty` = 工作树是否非空——sync/accept 常在未提交改动之后发生，单记 commit 会记错
+      "哪份工作树"；两条审计字段一律机器写，不让人手输。
 
 用法：
     python tools/golden_lock.py sync                    # 达标时固化快照
@@ -136,12 +141,37 @@ def _save(state: dict[str, Any]) -> None:
     STATE.write_bytes(payload.encode("utf-8"))
 
 
+def _git_provenance() -> tuple[str, bool]:
+    """返回 (HEAD 短哈希, 工作树是否脏)——机器填写，不让人手输（369 任务7）。
+
+    `dirty=True` 表示该快照对应"HEAD + 尚未提交的改动"（sync/accept 常发生在改完规则
+    但还没 commit 时，单记 commit 会把"哪份工作树"记错）。
+    """
+    import subprocess
+    commit, dirty = "", False
+    try:
+        r = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=str(ROOT),
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=10, check=False)
+        if r.returncode == 0:
+            commit = (r.stdout or "").strip()
+        d = subprocess.run(["git", "status", "--porcelain"], cwd=str(ROOT),
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=10, check=False)
+        dirty = bool((d.stdout or "").strip())
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return commit, dirty
+
+
 def cmd_sync() -> int:
     state = _load()
+    commit, dirty = _git_provenance()
     state.update({"schema": SCHEMA, "updated": _dt.date.today().isoformat(),
-                  "metrics": measure()})
+                  "commit": commit, "dirty": dirty, "metrics": measure()})
     _save(state)
-    print(f"[golden] 快照已固化：{state['metrics']}（{STATE.name}）")
+    print(f"[golden] 快照已固化：{state['metrics']}"
+          f"（commit={commit or '?'} dirty={dirty}）")
     return 0
 
 
@@ -167,11 +197,21 @@ def cmd_check(accept: str | None) -> int:
         print(f"  BETTER {i}")
     if worse:
         if accept:
+            commit, dirty = _git_provenance()
             state.setdefault("accepted", []).append(
                 {"ts": _dt.datetime.now().isoformat(timespec="seconds"),
-                 "reason": accept, "worse": worse})
+                 "reason": accept,
+                 "worse": worse,            # 机器自动生成：与当期测量同源（非人手输）
+                 "metrics_after": now,      # 机器勾稽：接受后的基线快照，可与 metrics 对账
+                 "commit": commit, "dirty": dirty})
+            # 接受即同步基线：否则"接受了但基线仍旧"，下一轮 check 重复报同一条恶化
+            state["metrics"] = now
+            state["updated"] = _dt.date.today().isoformat()
+            state["commit"] = commit
+            state["dirty"] = dirty
             _save(state)
-            print(f"[golden] 已显式接受并留痕（{len(state['accepted'])} 条审计记录）")
+            print(f"[golden] 已显式接受并留痕（{len(state['accepted'])} 条审计记录）；"
+                  f"基线已同步至当期测量（commit={commit or '?'} dirty={dirty}）")
             return 0
         print("[golden] ✗ 指标恶化——修复，或 `check --accept \"理由\"` 显式留痕")
         return 1
