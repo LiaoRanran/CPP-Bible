@@ -848,6 +848,50 @@ def check_evidence_matrix_backed() -> list[Finding]:
     return out
 
 
+_OUT_KEY_RE = re.compile(r"^[A-Za-z_][\w\-.]*\s*=")
+
+
+def check_evidence_out_undeclared_key() -> list[Finding]:
+    """373-B3 窄化（`EV-OUT-UNDECLARED-KEY`）：`.out` 里的 `key=value` 行，其 key **必须**
+    在 `actual.run_match_keys` 中声明。
+
+    为何：未声明的读数行是**门禁视野外**的自由区——S3 硬编码检查、恒真观测检查都不扫它，
+    `expected` 也约束不到它 ⇒ 写什么都通过。373 独立渗透的编造载荷（`fabricated_leak=64`）
+    正是这一形态：往 `.out` 里加一行，卡散文再引用它，全库零告警。
+
+    **只抓结构化读数行**（`^\\w[\\w-]*=`）：散文行、注释行（`#`/`//`）不判——
+    判"散文里的数字是不是观测"需要实验语义，机器不硬判（由红队/人审承担）。
+
+    实测口径（2026-09-13，56 张卡）：命中 6 张，且**全部**是"卡内全无提及"的未声明键
+    ⇒ 与编造键**结构上不可区分**，故本规则只做 **warn**（强制声明完整性，不阻断）；
+    升级 block 需先把存量卡的 `run_match_keys` 补齐（改证据卡，本批铁律禁止）。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        actual = _meta(p).get("actual") or {}
+        if not isinstance(actual, dict) or not actual.get("run_match_file"):
+            continue
+        f = ROOT / str(actual["run_match_file"])
+        if not f.is_file():
+            continue
+        keys = {str(k).strip() for k in (actual.get("run_match_keys") or [])}
+        miss: list[str] = []
+        for ln in f.read_text(encoding="utf-8", errors="replace").split("\n"):
+            s = ln.strip()
+            if not s or s.startswith(("#", "//")):
+                continue
+            if _OUT_KEY_RE.match(s):
+                k = s.split("=", 1)[0].strip()
+                if k not in keys:
+                    miss.append(k)
+        if miss:
+            out.append(Finding("EV-OUT-UNDECLARED-KEY", "warn", _rel(p),
+                               f".out 含未声明读数键 {sorted(set(miss))}"
+                               "（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）",
+                               "把该键补进 run_match_keys 并声明期望值，或从 .out 移除"))
+    return out
+
+
 _ZERO_DIAG_RE = re.compile(
     r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
 
@@ -1195,6 +1239,8 @@ def _register_all() -> None:
          check_evidence_matrix_backed),
         ("EV-ZERO-DIAG-WERROR", "零诊断类判据须 -Werror（W3）", "evidence",
          check_evidence_zero_diag_werror),
+        ("EV-OUT-UNDECLARED-KEY", ".out 读数键须在 run_match_keys 声明（B3 窄化）",
+         "evidence", check_evidence_out_undeclared_key),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn",
@@ -1203,7 +1249,9 @@ def _register_all() -> None:
            "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn",
            # 2026-09-12（W3）：零诊断类判据缺 -Werror —— 判据可判定性问题，warn 级
            # （不阻断存量，但在门禁可见；漏登记会默认 block，与 Finding 实际级别不符）
-           "EV-ZERO-DIAG-WERROR": "warn"}
+           "EV-ZERO-DIAG-WERROR": "warn",
+           # 2026-09-13（373-B3 窄化）：未声明读数键与"编造键"结构上不可区分 ⇒ 只 warn
+           "EV-OUT-UNDECLARED-KEY": "warn"}
     for rid, title, scope, fn in fact:
         register(Rule(rid, title, "fact", "programmatic", sev.get(rid, "block"), scope,
                       check=fn))

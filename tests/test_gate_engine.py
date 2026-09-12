@@ -298,6 +298,31 @@ def test_s3_run_match_file_hardcoded_blocks(sandbox: Path):
     assert "x.out" in hits[0].message, "命中须标注来源（run_match_file 出处）"
 
 
+def test_out_undeclared_key_warns(sandbox: Path):
+    """阳性（373-B3 窄化）：.out 出现未声明的 `key=value` 行 → warn。
+
+    未声明读数 = 门禁视野外的自由区：S3/恒真观测都不扫它、expected 也约束不到，
+    独立渗透的编造载荷（`fabricated_leak=64`）正是这一形态。
+    """
+    of = sandbox / "evidence" / "x.out"
+    of.write_text("total=100000\nfabricated_leak=64\n", encoding="utf-8")
+    _write_ev(sandbox, actual=f"\n  run_match_file: {of.as_posix()}\n"
+                              "  run_match_keys: [total]")
+    hits = ge.check_evidence_out_undeclared_key()
+    assert hits and hits[0].rule_id == "EV-OUT-UNDECLARED-KEY"
+    assert "fabricated_leak" in hits[0].message
+    assert hits[0].severity == "warn", "与编造键结构上不可区分 ⇒ 只 warn，不阻断存量"
+
+
+def test_out_declared_keys_pass(sandbox: Path):
+    """阴性：键全部声明，且注释行/散文行不判 → 放行（不得恒红）。"""
+    of = sandbox / "evidence" / "x.out"
+    of.write_text("# 注释行\n这是散文行没有等号\ntotal=100000\n", encoding="utf-8")
+    _write_ev(sandbox, actual=f"\n  run_match_file: {of.as_posix()}\n"
+                              "  run_match_keys: [total]")
+    assert ge.check_evidence_out_undeclared_key() == []
+
+
 def test_missing_falsification_blocks(sandbox: Path):
     _write_ev(sandbox, falsification="")
     hits = ge.check_evidence_falsification()

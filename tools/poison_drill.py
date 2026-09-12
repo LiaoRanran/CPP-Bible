@@ -404,6 +404,35 @@ def drill() -> int:
                         f"拦截者 {', '.join(who) or '（漏网！）'}"
                         + ("" if ok else f" · 期望 {', '.join(want)}")))
 
+    # ── P14 .out 未声明读数键（373-B3 窄化，阴阳配对）──────────────────────────
+    # 373 独立渗透 B3：往 `.out` 加一行 `fabricated_leak=64`，卡散文再引用它 ⇒
+    # 该读数不在 `run_match_keys` 中 ⇒ 门禁视野外（S3/恒真观测都不扫、expected 约束不到），
+    # 全库零告警。修复后：未声明的**结构化读数行** → `EV-OUT-UNDECLARED-KEY`。
+    # 阴例：键已声明（含注释行/散文行）必须放行，否则规则恒红即失效。
+    with sandbox() as tmp:
+        of = tmp / "x.out"
+
+        def _uk(name: str, keys: str, content: str) -> set[str]:
+            of.write_text(content, encoding="utf-8")
+            _write(ge.EVIDENCE / "mem" / f"{name}.md", {
+                "id": name, "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+                "command": "echo hi", "fixture": "Examples/x.cpp", "artifact": "a.asm",
+                "artifact_sha256": "0" * 64,
+                "actual": f"\n  run_match_file: {of.as_posix()}\n"
+                          f"  run_match_keys: [{keys}]",
+                "kind": "run", "verdict": "confirm", "falsification": "对照输出 1",
+            })
+            return {f.rule_id for f in ge.check_evidence_out_undeclared_key()}
+
+        who = _uk("EV-MEM-UK", "total", "total=100000\nfabricated_leak=64\n")
+        ok = "EV-OUT-UNDECLARED-KEY" in who
+        results.append(("P14 .out 未声明读数键（373-B3 编造载荷）", ok,
+                        f"拦截者 {', '.join(sorted(who)) or '（漏网！）'}"))
+        who2 = _uk("EV-MEM-UKOK", "total", "total=100000\n# 注释行\n散文行没有等号\n")
+        ok2 = not who2
+        results.append(("P14-阴 声明完整的 .out 必须放行", ok2,
+                        f"误报 {', '.join(sorted(who2)) or '无'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
