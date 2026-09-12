@@ -372,6 +372,35 @@ def test_assert_prose_skipped(sandbox: Path):
     assert ge.check_evidence_assert_symbol_mapped() == []
 
 
+def test_artifact_producer_missing_on_new_card_blocks(sandbox: Path):
+    """阳性（373-N4）：名单外的卡缺 `artifact_producer` → block。
+
+    这一条不能做成"缺字段就放过"——否则攻击者只要不写字段就能绕过整条规则。
+    """
+    _write_ev(sandbox, id="EV-MEM-NEWPROD")
+    hits = ge.check_evidence_artifact_producer()
+    assert hits and hits[0].severity == "block"
+
+
+def test_artifact_producer_non_compiler_blocks(sandbox: Path):
+    """阳性（373-N4 借工件）：`cp`/脚本复制他人工件 ≠ 亲自编译 → block。"""
+    _write_ev(sandbox, artifact_producer="cp Examples/atoms/other.asm a.asm")
+    hits = ge.check_evidence_artifact_producer()
+    assert hits and hits[0].severity == "block"
+
+
+def test_artifact_producer_compiler_passes(sandbox: Path):
+    """阴性：声明编译器命令 → 放行（含带路径/带 .exe 的写法）。"""
+    _write_ev(sandbox, artifact_producer="C:/Qt/Tools/mingw1530_64/bin/g++.exe -S x.cpp -o a.asm")
+    assert ge.check_evidence_artifact_producer() == []
+
+
+def test_artifact_producer_exempt_existing_card_passes(sandbox: Path):
+    """阴性：迁移名单内的存量卡缺字段 → 放行（名单 = 可审计的迁移积压）。"""
+    _write_ev(sandbox, id="EV-MEM-001")
+    assert ge.check_evidence_artifact_producer() == []
+
+
 def test_missing_falsification_blocks(sandbox: Path):
     _write_ev(sandbox, falsification="")
     hits = ge.check_evidence_falsification()

@@ -999,6 +999,65 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
     return out
 
 
+_ARTIFACT_PRODUCER_EXEMPT = ROOT / "tools" / "artifact_producer_exempt.txt"
+# 编译器白名单：只有编译器能"凭空产出"一个可复算的工件。
+_COMPILER_PROGS = frozenset({
+    "g++", "gcc", "clang++", "clang", "c++", "cc", "cl", "clang-cl",
+    "x86_64-w64-mingw32-g++", "x86_64-w64-mingw32-gcc",
+})
+
+
+def _producer_exempt_ids() -> set[str]:
+    """迁移期豁免名单（行解析，零依赖）。**名单本身就是迁移积压清单**（可审计）。"""
+    if not _ARTIFACT_PRODUCER_EXEMPT.is_file():
+        return set()
+    return {ln.strip() for ln in _ARTIFACT_PRODUCER_EXEMPT.read_text(
+        encoding="utf-8").split("\n") if ln.strip() and not ln.startswith("#")}
+
+
+def check_evidence_artifact_producer() -> list[Finding]:
+    """373-N4 窄化（`EV-ARTIFACT-PRODUCER`）：工件由谁产出，必须由卡**显式声明**。
+
+    为何：N4 的借工件逃逸是——卡**不自己编译**，而是 `cp other.asm mine.asm`（或用脚本复制）
+    一份别人的工件，于是 `artifact_sha256` 与真实编译产物逐字一致、replay 全绿，而这
+    张卡**从未跑过自己的实验**。旧判据（命令行文本里出现过 artifact 路径即可）对
+    `cp` / `python` 一律放行。
+
+    判据：卡须声明 `artifact_producer: <command 片段>`，该片段的 `argv[0]` 必须 ∈
+    编译器白名单。**不做推断**——蓝图原文的"自动判定哪一段产出 artifact"实测误伤 11/56
+    （同一命令多段 `-o`），已否决；显式化优于推断。
+
+    迁移期（裁决 §2.3）：存量 56 张卡按 id 列在 `tools/artifact_producer_exempt.txt`，
+    缺字段**不阻断**，名单即迁移积压（补一张删一行）；**名单外的卡（= 新卡）缺字段即 block**。
+    这一步不能省：若"缺字段"一律豁免，攻击者只要**不写这个字段**就能绕过本规则——
+    故豁免必须**按 id 枚举**且**可见**（不是"永久宽限"）。
+    """
+    exempt = _producer_exempt_ids()
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        eid = str(meta.get("id") or p.stem)
+        prod = str(meta.get("artifact_producer") or "").strip()
+        if not prod:
+            if eid not in exempt:
+                out.append(Finding("EV-ARTIFACT-PRODUCER", "block", _rel(p),
+                                   "缺 artifact_producer：未声明工件由哪段命令产出"
+                                   "（借/复制他人工件也能让 sha 全绿）",
+                                   "补 `artifact_producer: <产出该工件的编译命令片段>`"))
+            continue                      # 名单内 = 迁移期豁免（名单本身即可审计的积压）
+        # 只取 argv[0] 的**程序名**：容忍带引号的完整路径（`"C:/.../g++.exe"`）与 `.exe` 后缀
+        argv = prod.split()
+        prog = argv[0].strip("\"'").replace("\\", "/").rsplit("/", 1)[-1] if argv else ""
+        if prog.endswith(".exe"):
+            prog = prog[:-4]
+        if prog.lower() not in _COMPILER_PROGS:
+            out.append(Finding("EV-ARTIFACT-PRODUCER", "block", _rel(p),
+                               f"artifact_producer 的 argv[0]={prog or '空'} 不是编译器"
+                               "（复制/脚本产出 ≠ 亲自编译）",
+                               f"须为编译器：{'/'.join(sorted(_COMPILER_PROGS))}"))
+    return out
+
+
 _ZERO_DIAG_RE = re.compile(
     r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
 
@@ -1350,6 +1409,8 @@ def _register_all() -> None:
          "evidence", check_evidence_out_undeclared_key),
         ("EV-ASSERT-SYMBOL-MAPPED", "断言文本须可定位（夹具/工件/symbol_map，B2 窄化）",
          "evidence", check_evidence_assert_symbol_mapped),
+        ("EV-ARTIFACT-PRODUCER", "工件产出命令须显式声明且为编译器（N4 窄化）",
+         "evidence", check_evidence_artifact_producer),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn",

@@ -475,6 +475,40 @@ def drill() -> int:
         results.append(("P15-阴 symbol_map 显式声明必须放行", not sev4,
                         f"误报 {sev4 or '无'}"))
 
+    # ── P16 工件产出命令须显式声明（373-N4 窄化，阴阳各二）─────────────────────
+    # 373 独立渗透 N4-R5：卡**不自己编译**，`cp other.asm mine.asm` 借一份别人的工件
+    # ⇒ sha 与真实编译产物逐字一致、replay 全绿，而这张卡从未跑过自己的实验。
+    # 阳例①：**新卡缺字段也必须拦**——否则攻击者不写这个字段就绕过了（豁免按 id 枚举的原因）。
+    # 阴例②：迁移名单内的存量卡缺字段 → 放行（名单 = 可审计的迁移积压）。
+    with sandbox() as tmp:
+
+        def _prod(name: str, producer: str | None) -> list[str]:
+            fields = {
+                "id": name, "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+                "command": "g++ -S x.cpp -o a.asm", "fixture": "Examples/x.cpp",
+                "artifact": "a.asm", "artifact_sha256": "0" * 64,
+                "actual": "{run_case: A}", "kind": "run", "verdict": "confirm",
+                "falsification": "对照输出 1",
+            }
+            if producer is not None:
+                fields["artifact_producer"] = producer
+            _write(ge.EVIDENCE / "mem" / f"{name}.md", fields)
+            return sorted({f.severity for f in ge.check_evidence_artifact_producer()
+                           if name in f.target})
+
+        sev = _prod("EV-MEM-NEWPROD", None)                     # 新卡缺字段
+        who = {f.rule_id for f in ge.check_evidence_artifact_producer()}
+        ok = "EV-ARTIFACT-PRODUCER" in who and "block" in sev
+        results.append(("P16 新卡缺 artifact_producer（不写字段即绕过）", ok,
+                        f"级别 {sev or '（漏网！）'}"))
+        sev2 = _prod("EV-MEM-COPYPROD", "cp Examples/atoms/other.asm a.asm")
+        results.append(("P16 借工件（cp 复制，非编译产出）", "block" in sev2,
+                        f"级别 {sev2 or '（漏网！）'}"))
+        sev3 = _prod("EV-MEM-OKPROD", "g++ -S x.cpp -o a.asm")
+        results.append(("P16-阴 编译器产出声明必须放行", not sev3, f"误报 {sev3 or '无'}"))
+        sev4 = _prod("EV-MEM-001", None)                        # 迁移名单内的存量卡
+        results.append(("P16-阴 迁移名单内存量卡缺字段放行", not sev4, f"误报 {sev4 or '无'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -500,6 +534,9 @@ def drill() -> int:
             "id": "EV-MEM-CLEAN", "serves": "[ATOM-MEM-CLEAN-001]", "hypothesis": "h",
             "command": command, "fixture": fx.as_posix(), "artifact": asm.as_posix(),
             "artifact_sha256": hashlib.sha256(asm.read_bytes()).hexdigest(),
+            # 373-N4：阴性对照代表**完全合规**的卡 ⇒ 必须声明产出命令（新卡强制项）
+            "artifact_producer": f'"{gpp_posix}" -std=c++17 -O2 -S "{fx.as_posix()}" '
+                                 f'-o "{asm.as_posix()}"',
             "actual": "{run_case: A | B}", "kind": "run", "verdict": "confirm",
             "falsification": "对照输出 1",
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
