@@ -1,0 +1,77 @@
+<html style="margin:0;padding:0;">
+<div style="width:100%;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;background:#F7F7F5;padding:20px;color:#1A1B1C;">
+<div style="font-size:16px;font-weight:600;margin-bottom:4px;">279 外部思想调研第二轮：六缺口 × 外部实践 × 吸收动作</div>
+<div style="font-size:12px;color:#5F6670;margin-bottom:16px;">278 内部红利审计的六个缺口格子，带着它们定向找外部最强实践，不泛扫</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:10px;">
+
+<!-- 缺口1 -->
+<div style="flex:1 1 300px;min-width:280px;background:#fff;border:1px solid #E4E3DD;border-radius:6px;padding:12px;">
+<div style="font-size:13px;font-weight:600;color:#4F6B9A;margin-bottom:6px;">缺口1 · I5 横向差分</div>
+<div style="font-size:11px;color:#5F6670;margin-bottom:8px;">.asm 只做纵向 replay，缺跨编译器差分</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>外部：</b>Souper / Alive2 / LPO（LLM提议+SMT判定）</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>吸收：</b>oracle-free 差分，不引入 SMT，写 asm_diff_matrix.py</div>
+<div style="font-size:11px;"><b>优先级：</b><span style="color:#9A6A2F;font-weight:600;">P1</span></div>
+</div>
+
+<!-- 缺口2 -->
+<div style="flex:1 1 300px;min-width:280px;background:#fff;border:1px solid #E4E3DD;border-radius:6px;padding:12px;">
+<div style="font-size:13px;font-weight:600;color:#A14E50;margin-bottom:6px;">缺口2 · I4 毒样例自动化</div>
+<div style="font-size:11px;color:#5F6670;margin-bottom:8px;">P4–P7 只 4 类，第五批又暴露 4 类新模式</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>外部：</b>PyRIT 分阶段升级 / failure taxonomy 带频率 / process mining</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>吸收：</b>P8–P11 毒样例（第五批真实案例）+ 红队分阶段早停</div>
+<div style="font-size:11px;"><b>优先级：</b><span style="color:#A14E50;font-weight:600;">P0</span></div>
+</div>
+
+<!-- 缺口3 -->
+<div style="flex:1 1 300px;min-width:280px;background:#fff;border:1px solid #E4E3DD;border-radius:6px;padding:12px;">
+<div style="font-size:13px;font-weight:600;color:#35705A;margin-bottom:6px;">缺口3 · fringe / 知识图谱</div>
+<div style="font-size:11px;color:#5F6670;margin-bottom:8px;">knowledge_graph.json 0 引用，fringe 未建</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>外部：</b>KST/ALEKS outer fringe / Vanderbilt 用 LLM 跑 QUERY 算法</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>吸收：</b>fringe.py 复用现有 DAG + prerequisite 边 LLM 采样构建</div>
+<div style="font-size:11px;"><b>优先级：</b><span style="color:#A14E50;font-weight:600;">P0</span></div>
+</div>
+
+<!-- 缺口4 -->
+<div style="flex:1 1 300px;min-width:280px;background:#fff;border:1px solid #E4E3DD;border-radius:6px;padding:12px;">
+<div style="font-size:13px;font-weight:600;color:#4F6B9A;margin-bottom:6px;">缺口4 · I2 工具治理</div>
+<div style="font-size:11px;color:#5F6670;margin-bottom:8px;">90 个 py，CI 只调 36，~54 身份不明</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>外部：</b>Bazel 三态 release / monorepo 废弃通知头部</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>吸收：</b>工具普查四分类 + frontmatter status 标注 + 僵尸归档</div>
+<div style="font-size:11px;"><b>优先级：</b><span style="color:#9A6A2F;font-weight:600;">P1</span></div>
+</div>
+
+<!-- 缺口5 -->
+<div style="flex:1 1 300px;min-width:280px;background:#fff;border:1px solid #E4E3DD;border-radius:6px;padding:12px;">
+<div style="font-size:13px;font-weight:600;color:#A14E50;margin-bottom:6px;">缺口5 · candidates 创造力管理</div>
+<div style="font-size:11px;color:#5F6670;margin-bottom:8px;">FORGE 候选仓未建，检验闸缺负向判定</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>外部：</b>Google X kill criteria（默认 kill）/ Amazon PRFAQ / stage-gate</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>吸收：</b>candidates/ + kill_criteria + press_release，默认 kill</div>
+<div style="font-size:11px;"><b>优先级：</b><span style="color:#A14E50;font-weight:600;">P0</span></div>
+</div>
+
+<!-- 缺口6 -->
+<div style="flex:1 1 300px;min-width:280px;background:#fff;border:1px solid #E4E3DD;border-radius:6px;padding:12px;">
+<div style="font-size:13px;font-weight:600;color:#4F6B9A;margin-bottom:6px;">缺口6 · error budget 深度</div>
+<div style="font-size:11px;color:#5F6670;margin-bottom:8px;">debt_ledger 有负债率，缺燃烧速率</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>外部：</b>SRE burn rate / 多窗口多燃烧率 MWMBR / slo-burn</div>
+<div style="font-size:11px;margin-bottom:4px;"><b>吸收：</b>debt_burn_rate + 双窗口 AND-Gate（快烧冻结/慢烧告警）</div>
+<div style="font-size:11px;"><b>优先级：</b><span style="color:#9A6A2F;font-weight:600;">P1</span></div>
+</div>
+
+</div>
+
+<div style="margin-top:16px;padding:10px;background:#fff;border:1px solid #E4E3DD;border-radius:6px;">
+<div style="font-size:12px;font-weight:600;margin-bottom:6px;">三个范式级迁移（本轮最有价值）</div>
+<div style="font-size:11px;line-height:1.6;">
+① <b>Souper/LPO「LLM 提议 + SMT 判定」</b>——宪法公理一在编译器领域有工业级实现，.asm 差分可 oracle-free<br>
+② <b>Google X「默认 kill」</b>——candidates 检验闸从正向「通过才进」改为负向「不满足 kill_criteria 就杀」，防沉没成本<br>
+③ <b>SRE「燃烧速率」</b>——debt_ledger 从静态负债率升级为动态燃烧速率，慢烧和快烧区别对待
+</div>
+</div>
+
+<div style="margin-top:10px;font-size:11px;color:#5F6670;">
+调研饱和：架构/方法论已覆盖 7/13 方向，剩余 6 个中「形式化方法」「Agent self-healing」最相关，建议下一轮优先。技术调研 65 轮已接近饱和。
+</div>
+</div>
+</html>
