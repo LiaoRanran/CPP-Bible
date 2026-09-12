@@ -378,6 +378,38 @@ def test_zero_diag_rule_declared_warn():
     assert r.severity == "warn", r
 
 
+# ── A3：.out 两处盲区（P7 锚不得自证 / P6 视野纳入 .out）────────────────────
+def test_matrix_anchor_not_self_proving(sandbox: Path):
+    """P7 留痕锚必须出现在 **actual 段之外**（声明 ≠ 留痕，A3①）。"""
+    base = {
+        "actual": "\n  run_match_file: Examples/atoms/_x.out\n  run_match_keys:\n    - k",
+        "matrix": "\n  compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]\n"
+                  "  std: [c++17]\n  opt: [-O2]",
+    }
+    p = _write_ev(sandbox, **base)
+    assert any(h.rule_id == "EV-MATRIX-UNBACKED" for h in ge.check_evidence_matrix_backed()), \
+        "锚只出现在 actual 段 = 自证，必须报"
+    with p.open("a", encoding="utf-8") as fh:      # 正文补**真实留痕锚**（.out 路径）
+        fh.write("\n## 复算留痕\nWSL（GCC 13.3）留痕：`Examples/atoms/_x_wsl.out` 逐字贴于下\n")
+    assert ge.check_evidence_matrix_backed() == [], "正文有留痕锚应放行"
+
+
+def test_trivial_observation_scans_out_file(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """P6 视野纳入 `run_match_file` 指向的 `.out`（A3②）。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    out = sandbox / "Examples" / "atoms" / "_x.out"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("k=1\n", encoding="utf-8")
+    _write_ev(sandbox, **{
+        "actual": "\n  run_match_file: Examples/atoms/_x.out\n  run_match_keys:\n    - k",
+    })
+    assert ge.check_evidence_trivial_observation() == [], "普通读数不该报"
+    out.write_text("k=not null=1\n", encoding="utf-8")
+    hits = ge.check_evidence_trivial_observation()
+    assert hits and hits[0].rule_id == "EV-TRIVIAL-OBSERVATION", \
+        ".out 里的恒真型读数必须在视野内（此前是盲区）"
+
+
 # ── 误报回归锁：「待补」是合法留痕 ─────────────────────────────────────────
 def test_daibu_is_not_placeholder(sandbox: Path):
     p = sandbox / "evidence" / "mem" / "EV-MEM-001.md"

@@ -708,21 +708,64 @@ def check_evidence_falsification_quantified() -> list[Finding]:
     return out
 
 
+def _raw_without_actual(raw: str) -> str:
+    """剥掉「声明型字段」的取值段，供「留痕锚不得自证」检查（A3①）。
+
+    剥离两类（都不是"留痕"，不能充当外部锚）：
+      - `actual:` 段（含缩进续行）—— `run_match_file: …x.out` 命中 `.out 路径` 锚，
+        使 P7 对所有 run_match_file 形态的卡**结构上恒命中**（声明即留痕）；
+      - `artifact_sha256:` 行 —— 64 位十六进制若全为数字会命中「10+ 位数字」锚
+        （该锚本意是 CI run 号/时间戳），同属自证。
+        **2026-09-12 由 P12 毒样例首跑暴露**：只剥 actual 时毒卡仍靠 sha 的全零被放行。
+
+    （顶层键与 `---` 保留；被剥字段的缩进续行丢弃。）
+    """
+    lines = raw.split("\n")
+    out: list[str] = []
+    skipping = False
+    for ln in lines:
+        if re.match(r"^(actual:|artifact_sha256:)", ln):
+            skipping = True
+            continue
+        if skipping:
+            if re.match(r"^\S", ln) or ln.startswith("---"):
+                skipping = False
+            else:
+                continue
+        out.append(ln)
+    return "\n".join(out)
+
+
 def check_evidence_trivial_observation() -> list[Finding]:
     """P6 恒真观测：`actual` 里出现「同型自比 / 存在性」观测——对 claim 的关键变量零响应。
 
     第三批实例：SHARED-002 初版 `use_count after join=1`（join 后任何实现都读到 1，
     对"计数原子/非原子"零判别力）。此类读数只能当烟测，不能承担证伪主证责任。
+
+    **视野（2026-09-12，A3② 扩展）**：`actual.run_match_file` 形态的卡，真实观测量在
+    留痕 `.out` 里——本规则现将其**一并纳入扫描范围**（此前只看 `actual:` 文本与夹具
+    字面量，`.out` 在视野外）。
+
+    **视野边界（诚实声明）**：`.out` 的 `key=value` **数值同值性**（如 8 个读数同为 42）
+    **不在此判**——同值既可能是恒真伪证、也可能是**合法对照/不同档位同结论**（后者正是
+    实验结论本身），判定它需要实验语义，机器不硬判；该层由**红队盲读 + 卡内显式声明**
+    承担（实例：EV-LANG-001 的 8 个 42 已在卡内声明为活性对照）。
     """
     import re as _re
     out: list[Finding] = []
     for p in _cards(EVIDENCE, "EV-*.md"):
         raw = p.read_text(encoding="utf-8", errors="replace")
         seg = raw.split("actual:", 1)[1].split("\nverdict", 1)[0] if "actual:" in raw else ""
+        # A3②：run_match_file 形态 —— 把 .out 内容也纳入视野
+        actual = _meta(p).get("actual") or {}
+        if isinstance(actual, dict) and actual.get("run_match_file"):
+            f = ROOT / str(actual["run_match_file"])
+            if f.is_file():
+                seg += "\n" + f.read_text(encoding="utf-8", errors="replace")
         hit = [pat for pat in _TRIVIAL_OBS_PATTERNS if _re.search(pat, seg)]
         if hit:
             out.append(Finding("EV-TRIVIAL-OBSERVATION", "warn", _rel(p),
-                               f"actual 含疑似恒真观测：{hit[:3]}（同型自比/存在性判断，"
+                               f"actual/.out 含疑似恒真观测：{hit[:3]}（同型自比/存在性判断，"
                                "对关键变量无响应）",
                                "降级为烟测并在卡内声明，补一条对关键变量有响应的对照读数"))
     return out
@@ -754,7 +797,10 @@ def check_evidence_matrix_backed() -> list[Finding]:
             continue
         comps = [c.strip().strip("'") for c in m.group(1).split(',') if c.strip()]
         if len(comps) > 1:
-            has_anchor = any(pat.search(raw) for pat in _trace_anchors)
+            # A3①（2026-09-12）：锚必须出现在 **actual 段之外**——actual 里的
+            # `run_match_file: …x.out` 是"声明"不是"留痕"，否则本规则对 run_match_file
+            # 形态的卡结构上恒命中（永久失效）。
+            has_anchor = any(pat.search(_raw_without_actual(raw)) for pat in _trace_anchors)
             if not has_anchor:
                 out.append(Finding("EV-MATRIX-UNBACKED", "warn", _rel(p),
                                    f"matrix 声明 {len(comps)} 个编译器，卡内无可核对的外部留痕锚"

@@ -344,6 +344,27 @@ def drill() -> int:
         results.append(("P11 零诊断判据缺 -Werror", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P12 留痕锚自证：锚只出现在 actual 段（A3①）─────────────────────────────
+    # 371 报告 A3①：P7 原对**整卡**搜索留痕锚，而 `actual.run_match_file` 自带 `.out`
+    # 路径 ⇒ 对所有 run_match_file 形态的卡**结构上恒命中**（声明即留痕，规则永久失效）。
+    # 本样例验证剥离 actual 段后："仅 actual 提到 .out" 必报。
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-MB.md", {
+            "id": "EV-MEM-MB", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "g++ -c x.cpp", "fixture": "x.cpp", "artifact": "a.asm",
+            "artifact_sha256": "0" * 64,
+            "actual": "\n  run_match_file: Examples/atoms/_self_proving.out\n"
+                      "  run_match_keys:\n    - k1",          # ← 毒点：锚仅在此处
+            "kind": "run", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            "matrix": "\n  compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]\n"
+                      "  std: [c++17]\n  opt: [-O2]",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_matrix_backed()})
+        ok = "EV-MATRIX-UNBACKED" in who
+        results.append(("P12 留痕锚自证（锚仅在 actual 段）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
