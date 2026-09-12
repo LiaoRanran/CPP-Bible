@@ -217,6 +217,32 @@ def check_atom_id_format() -> list[Finding]:
     return out
 
 
+def check_atom_id_unique() -> list[Finding]:
+    """原子身份唯一：文件 stem 必须等于 frontmatter.id，且 id 全库唯一。
+
+    为什么是 block（369 任务3，P1-5）：下游多处按 id 建 dict（证据绑定 / 关系解析 /
+    status 迁移 / 去重），id 重复时**后者静默覆盖前者**——复制一张卡不改 id 即产生
+    "双份 verified"，而其余规则各自只看单卡，谁都不报。
+    """
+    out: list[Finding] = []
+    owner: dict[str, Path] = {}
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        aid = str(_meta(p).get("id") or "").strip()
+        if not aid:
+            continue        # 缺 id 由 ATOM-FM-REQUIRED / ATOM-ID-FORMAT 承担
+        if p.stem != aid:
+            out.append(Finding("ATOM-ID-UNIQUE", "block", _rel(p),
+                               f"文件名 stem（{p.stem}）≠ frontmatter.id（{aid}）",
+                               "改名文件与 id 对齐——ID 是身份，两者必须同源"))
+        if aid in owner:
+            out.append(Finding("ATOM-ID-UNIQUE", "block", _rel(p),
+                               f"ID 与 {_rel(owner[aid])} 重复（{aid}）",
+                               "改 id 或合并——id 重复会让 dict-by-id 的下游静默覆盖"))
+        else:
+            owner[aid] = p
+    return out
+
+
 def check_verified_bound() -> list[Finding]:
     """G1_layout 硬约束：status 属已验证三级 ⟹ evidence 非空 ∧ first_hand ∧ superiority。"""
     out: list[Finding] = []
@@ -973,6 +999,8 @@ def _register_all() -> None:
     fact = [
         ("ATOM-FM-REQUIRED", "原子卡必填字段完整", "atom", check_atom_frontmatter),
         ("ATOM-ID-FORMAT", "原子 ID 格式/域/目录一致", "atom", check_atom_id_format),
+        ("ATOM-ID-UNIQUE", "原子身份唯一（stem==id 且 id 全库唯一）", "atom",
+         check_atom_id_unique),
         ("ATOM-VERIFIED-BOUND", "verified ⟹ 证据+一手+superiority", "atom",
          check_verified_bound),
         ("ATOM-NO-UNVERIFIED", "新原子禁未验证状态", "atom", check_no_unverified_status),

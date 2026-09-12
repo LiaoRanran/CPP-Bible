@@ -233,6 +233,18 @@ def test_dag_acyclic_passes(sandbox: Path):
 
 
 # ── ID 格式与目录一致 ─────────────────────────────────────────────────────
+def test_atom_id_unique_pair(sandbox: Path):
+    """身份唯一：stem≠id / id 重复 → block；对齐且唯一 → 放行（369 任务3，P1-5）。"""
+    _write_atom(sandbox, "ATOM-MEM-RAII-001.md", "mem", id="ATOM-MEM-RAII-001")
+    assert ge.check_atom_id_unique() == [], "stem==id 且唯一应放行"
+
+    _write_atom(sandbox, "ATOM-ZZ-TMP-001.md", "mem", id="ATOM-MEM-RAII-001")
+    hits = ge.check_atom_id_unique()
+    assert all(h.severity == "block" for h in hits)
+    assert any("stem" in h.message for h in hits), "stem≠id 必须拦"
+    assert any("重复" in h.message for h in hits), "id 撞车必须拦"
+
+
 def test_bad_id_and_wrong_dir_block(sandbox: Path):
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "stl")                    # 目录与域不符
     hits = ge.check_atom_id_format()

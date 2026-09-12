@@ -258,6 +258,26 @@ def drill() -> int:
         results.append(("P7 无留痕矩阵（多编译器声明无工件支撑）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P8 身份漂移：stem≠id / id 重复（复制卡不改 id 会产生双份 verified）─────
+    # 369 任务3（P1-5）：下游按 id 建 dict，重复时静默覆盖——其余规则各自看单卡，
+    # 谁都不报；本样例同时验证两个毒点（stem≠id 与 id 撞车）都被同一规则拦下。
+    with sandbox() as tmp:
+        base = {
+            "title": "t", "domain": "MEM", "type": "mechanism", "status": "draft",
+            "claim": "c", "claim_boundary": "b", "relations": "[]", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p",
+        }
+        _write(ge.ATOMS / "mem" / "ATOM-ZZ-TMP-001.md",
+               {"id": "ATOM-MEM-RAII-001", **base})          # ← 毒点1：stem≠id
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-RAII-001.md",
+               {"id": "ATOM-MEM-RAII-001", **base})          # ← 毒点2：同 id 第二份
+        who = sorted({f.rule_id for f in ge.check_atom_id_unique()})
+        ok = "ATOM-ID-UNIQUE" in who and len(who) == 1
+        results.append(("P8 身份漂移（stem≠id / id 重复）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
