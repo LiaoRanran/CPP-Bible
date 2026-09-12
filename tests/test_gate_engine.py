@@ -401,6 +401,60 @@ def test_artifact_producer_exempt_existing_card_passes(sandbox: Path):
     assert ge.check_evidence_artifact_producer() == []
 
 
+def test_evidence_id_duplicate_blocks(sandbox: Path):
+    """阳性（373-N2）：同 id 的两张卡 → block（按 id 取 verdict 的下游会静默覆盖）。"""
+    _write_ev(sandbox, id="EV-MEM-DUP")
+    (sandbox / "evidence" / "mem" / "EV-MEM-DUP2.md").write_text(
+        (sandbox / "evidence" / "mem" / "EV-MEM-001.md").read_text(encoding="utf-8"),
+        encoding="utf-8")
+    hits = ge.check_evidence_id_unique()
+    assert any("重复" in h.message for h in hits)
+    assert all(h.severity == "block" for h in hits)
+
+
+def test_evidence_id_unique_passes(sandbox: Path):
+    """阴性：stem==id 且唯一 → 放行。"""
+    _write_ev(sandbox, id="EV-MEM-001")
+    assert ge.check_evidence_id_unique() == []
+
+
+def test_relations_mapping_form_is_normalized(sandbox: Path):
+    """373-N1：mapping 写法 `- prerequisite: X` 归一后必须参与判据（此前静默跳过）。"""
+    _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001",
+                relations="\n  - prerequisite: ATOM-MEM-002")
+    _write_atom(sandbox, "ATOM-MEM-002.md", "mem", id="ATOM-MEM-002",
+                relations="\n  - prerequisite: ATOM-MEM-001")      # 环
+    hits = ge.check_relations_dag()
+    assert hits and "环" in hits[0].message, "归一后环必须可见（此前三条规则都跳过）"
+
+
+def test_relations_mapping_form_existing_target_passes(sandbox: Path):
+    """阴性：mapping 写法指向已存在目标 → 放行（归一不得制造误报）。"""
+    _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001",
+                relations="\n  - prerequisite: ATOM-MEM-002")
+    _write_atom(sandbox, "ATOM-MEM-002.md", "mem", id="ATOM-MEM-002", relations="[]")
+    assert ge.check_relations_dag() == []
+    assert ge.check_relations_target_exists() == []
+
+
+def test_matrix_command_is_not_a_trace_anchor(sandbox: Path):
+    """373-N3：编译命令文本不再算留痕（旧锚 `g++ … -o` 让声明结构上恒绿）。"""
+    _write_ev(sandbox, command="g++ -O2 x.cpp -o x.exe",
+              falsification="对照输出 1",
+              matrix="\n  compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]\n"
+                     "  std: [c++17]\n  opt: [-O2]")
+    hits = ge.check_evidence_matrix_backed()
+    assert hits and hits[0].rule_id == "EV-MATRIX-UNBACKED"
+
+
+def test_matrix_two_traces_passes(sandbox: Path):
+    """阴性：两处可核对留痕（双平台 .out）→ 放行。"""
+    _write_ev(sandbox, falsification="对照见 Examples/atoms/a.out 与 build/b.out 两处 1",
+              matrix="\n  compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]\n"
+                     "  std: [c++17]\n  opt: [-O2]")
+    assert ge.check_evidence_matrix_backed() == []
+
+
 def test_missing_falsification_blocks(sandbox: Path):
     _write_ev(sandbox, falsification="")
     hits = ge.check_evidence_falsification()
@@ -492,9 +546,14 @@ def test_matrix_anchor_not_self_proving(sandbox: Path):
     p = _write_ev(sandbox, **base)
     assert any(h.rule_id == "EV-MATRIX-UNBACKED" for h in ge.check_evidence_matrix_backed()), \
         "锚只出现在 actual 段 = 自证，必须报"
-    with p.open("a", encoding="utf-8") as fh:      # 正文补**真实留痕锚**（.out 路径）
-        fh.write("\n## 复算留痕\nWSL（GCC 13.3）留痕：`Examples/atoms/_x_wsl.out` 逐字贴于下\n")
-    assert ge.check_evidence_matrix_backed() == [], "正文有留痕锚应放行"
+    with p.open("a", encoding="utf-8") as fh:
+        # 373-N3：单一留痕撑不起"多编译器矩阵" ⇒ 只补一处**仍须报**
+        fh.write("\n## 复算留痕\nWSL（GCC 13.3）留痕：`Examples/atoms/_x_wsl.out`\n")
+    assert any(h.rule_id == "EV-MATRIX-UNBACKED" for h in ge.check_evidence_matrix_backed()), \
+        "373-N3：只一处留痕不足以支撑多平台声明"
+    with p.open("a", encoding="utf-8") as fh:      # 补第二处（双平台各一份）⇒ 放行
+        fh.write("MinGW（GCC 15.3）留痕：`Examples/atoms/_x_mingw.out`\n")
+    assert ge.check_evidence_matrix_backed() == [], "两处可核对留痕应放行（门禁不得恒红）"
 
 
 def test_trivial_observation_scans_out_file(sandbox: Path, monkeypatch: pytest.MonkeyPatch):

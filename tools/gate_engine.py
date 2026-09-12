@@ -279,6 +279,35 @@ def check_atom_id_unique() -> list[Finding]:
     return out
 
 
+def check_evidence_id_unique() -> list[Finding]:
+    """证据身份唯一（373-N2）：文件 stem 必须等于 frontmatter.id，且 id 全库唯一。
+
+    与 `ATOM-ID-UNIQUE` 同构、同理为 block：下游按 id 建 dict（S2 只绑 verdict=confirm
+    的证据、原子 evidence[] 引用、去重），id 重复时**后者静默覆盖前者**——373 独立渗透
+    N2 的载荷正是"同 id 的双卡"：一张 confirm、一张 refute，门禁按 id 取到前者即放行。
+
+    实测（2026-09-13，56 张卡）：**0 命中** ⇒ 直接 block，无迁移期。
+    """
+    out: list[Finding] = []
+    owner: dict[str, Path] = {}
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        eid = str(_meta(p).get("id") or "").strip()
+        if not eid:
+            continue        # 缺 id 由 EV-FM-REQUIRED 承担
+        if p.stem != eid:
+            out.append(Finding("EV-ID-UNIQUE", "block", _rel(p),
+                               f"文件名 stem（{p.stem}）≠ frontmatter.id（{eid}）",
+                               "改名文件与 id 对齐——ID 是身份，两者必须同源"))
+        if eid in owner:
+            out.append(Finding("EV-ID-UNIQUE", "block", _rel(p),
+                               f"ID 与 {_rel(owner[eid])} 重复（{eid}）"
+                               "（同 id 双卡会让按 id 取 verdict 的下游静默覆盖）",
+                               "改 id 或合并——禁止同 id 双卡"))
+        else:
+            owner[eid] = p
+    return out
+
+
 def check_verified_bound() -> list[Finding]:
     """G1_layout 硬约束：status 属已验证三级 ⟹ evidence 非空 ∧ first_hand ∧ superiority。"""
     out: list[Finding] = []
@@ -439,11 +468,35 @@ def check_dal_match() -> list[Finding]:
     return out
 
 
+def _relations_norm(meta: dict[str, Any]) -> list[dict[str, Any]]:
+    """`relations` 双写法归一（373-N1）：mapping-form → dict-form。
+
+    历史写法 `- prerequisite: ATOM-X` 解析后是 `{'prerequisite': 'ATOM-X'}`——**没有**
+    `type`/`target` 键 ⇒ 三条下游规则（REL-TARGET / REL-DAG / PREREQ-READABLE）各自
+    `rel.get("target")` 拿到空串 ⇒ **静默跳过**（既不计边也不查环，还不报错）。
+    373 独立渗透 N1 实测：CONC 两颗原子正是此写法，其 prerequisite 关系完全在视野外。
+
+    归一**只改解析、不改判据** ⇒ 误伤面只可能来自"此前被静默跳过的卡"（真命中）。
+    实测（2026-09-13，27 颗原子）：2 颗用 mapping-form，归一后目标存在、无环 ⇒ **0 命中**。
+    """
+    out: list[dict[str, Any]] = []
+    for rel in _as_list(meta.get("relations")):
+        if not isinstance(rel, dict):
+            continue
+        if rel.get("type") or rel.get("target"):
+            out.append(rel)
+            continue
+        for k, v in rel.items():
+            if str(k) in DAG_REL:
+                out.append({"type": str(k), "target": str(v)})
+    return out
+
+
 def check_relations_target_exists() -> list[Finding]:
     ids = {str(_meta(p).get("id") or p.stem) for p in _cards(ATOMS, "ATOM-*.md")}
     out: list[Finding] = []
     for p in _cards(ATOMS, "ATOM-*.md"):
-        for rel in _as_list(_meta(p).get("relations")):
+        for rel in _relations_norm(_meta(p)):
             if isinstance(rel, dict):
                 tgt = str(rel.get("target") or "")
                 if tgt and tgt not in ids:
@@ -461,7 +514,7 @@ def check_relations_dag() -> list[Finding]:
         aid = str(_meta(p).get("id") or p.stem)
         owner[aid] = p
         edges = []
-        for rel in _as_list(_meta(p).get("relations")):
+        for rel in _relations_norm(_meta(p)):          # 373-N1：归一后再取边
             if isinstance(rel, dict) and str(rel.get("type")) in DAG_REL:
                 edges.append(str(rel.get("target") or ""))
         graph[aid] = [e for e in edges if e]
@@ -653,7 +706,7 @@ def check_prereq_readable() -> list[Finding]:
         declared = meta.get("prerequisites_readable")
         if declared is None:
             continue
-        rels = [r for r in _as_list(meta.get("relations")) if isinstance(r, dict)]
+        rels = _relations_norm(meta)                   # 373-N1：归一后再算前置
         prereqs = [str(r.get("target")) for r in rels if str(r.get("type")) == "prerequisite"]
         actual = all(t in existing for t in prereqs) if prereqs else True
         want = declared if isinstance(declared, bool) else str(declared).lower() == "true"
@@ -818,17 +871,17 @@ def check_evidence_matrix_backed() -> list[Finding]:
     """
     import re as _re
     out: list[Finding] = []
-    _trace_anchors = [
-        _re.compile(r"Examples/[^\s\])]+\.out"),
-        _re.compile(r"build/[^\s\])]+\.out"),
-        _re.compile(r"run\s*#\d+"),
-        _re.compile(r"\b\d{10,}\b"),
-        _re.compile(r"::notice::"),
-        _re.compile(r"g\+\+\s+[^\n]*-o\s+"),
-        _re.compile(r"clang\+\+\s+[^\n]*-o\s+"),
-        _re.compile(r"标准条文"),
-        _re.compile(r"M2.*永久边界"),
-    ]
+    # 373-N3（2026-09-13）：留痕锚**不得自证**，且须撑得起"多编译器矩阵"的声明。
+    #   · 删掉 `g++ … -o` / `clang++ … -o` 两个**命令锚**：任何 g++ 命令都能命中它，
+    #     等于"写了编译命令就算留痕"——373 独立渗透 N3 实测：锚自满足，规则恒绿。
+    #   · 改为要求**两处可核对留痕**（双平台 .out / 双 CI run / 各一处 / ::notice:: + 其一）；
+    #     单一留痕只能证明"跑过一次"，撑不起多平台声明。
+    #   · `标准条文 / M2 永久边界` 保留为**等效留痕**（无编译器可用时的声明形态）。
+    _out_re = _re.compile(r"(?:Examples|build)/[^\s\])]+\.out")
+    _run_re = _re.compile(r"run\s*#(\d+)")
+    _run_no_re = _re.compile(r"\d{10,}")     # CI run 号裸写形态（如 `run 34595609458`）
+    _notice_re = _re.compile(r"::notice::")
+    _law_re = _re.compile(r"标准条文|M2.*永久边界")
     for p in _cards(EVIDENCE, "EV-*.md"):
         raw = p.read_text(encoding="utf-8", errors="replace")
         m = _re.search(r"compiler:\s*\[([^\]]*)\]", raw)
@@ -839,12 +892,21 @@ def check_evidence_matrix_backed() -> list[Finding]:
             # A3①（2026-09-12）：锚必须出现在 **actual 段之外**——actual 里的
             # `run_match_file: …x.out` 是"声明"不是"留痕"，否则本规则对 run_match_file
             # 形态的卡结构上恒命中（永久失效）。
-            has_anchor = any(pat.search(_raw_without_actual(raw)) for pat in _trace_anchors)
-            if not has_anchor:
+            body = _raw_without_actual(raw)
+            outs = set(_out_re.findall(body))
+            runs = set(_run_re.findall(body)) | set(_run_no_re.findall(body))
+            has_notice = bool(_notice_re.search(body))
+            has_law = bool(_law_re.search(body))
+            backed = (len(outs) + len(runs) >= 2          # 双平台 .out / 双 run / 各一处
+                      or (has_notice and (outs or runs))
+                      or has_law)                          # 无编译器可用时的声明形态
+            if not backed:
+                n = len(outs) + len(runs)
                 out.append(Finding("EV-MATRIX-UNBACKED", "warn", _rel(p),
-                                   f"matrix 声明 {len(comps)} 个编译器，卡内无可核对的外部留痕锚"
-                                   f"（{', '.join(comps)}）",
-                                   "补可核对锚：.out 路径 / CI run 号 / ::notice:: / 完整编译器命令行 / 标准条文代替声明"))
+                                   f"matrix 声明 {len(comps)} 个编译器，但可核对留痕只有 {n} 处"
+                                   f"（{', '.join(comps)}）——单一留痕撑不起多平台声明",
+                                   "补两处可核对留痕：双平台 .out（各一份）/ 两个 CI run 号 / "
+                                   "::notice:: + 其一；无编译器可用时写明标准条文代替声明"))
     return out
 
 
@@ -1373,6 +1435,8 @@ def _register_all() -> None:
         ("ATOM-SUPERIORITY-WORDS", "superiority 禁词表", "atom",
          check_superiority_banned_words),
         ("EV-FM-REQUIRED", "证据卡必填字段完整", "evidence", check_evidence_frontmatter),
+        ("EV-ID-UNIQUE", "证据身份唯一（stem==id 且 id 全库唯一，N2）", "evidence",
+         check_evidence_id_unique),
         ("EV-FALSIFICATION", "证伪对照存在（非恒真测试）", "evidence",
          check_evidence_falsification),
         ("EV-MATRIX", "版本矩阵字段完整", "evidence", check_evidence_matrix),

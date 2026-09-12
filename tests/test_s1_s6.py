@@ -107,10 +107,15 @@ def test_p7_matrix_needs_backing_note(tmp_path: Path, monkeypatch: pytest.Monkey
         BASE, hypothesis="Clang 列为外部复跑留痕（仓内无工件）", matrix=matrix))
     assert {f.rule_id for f in ge.check_evidence_matrix_backed()} == {"EV-MATRIX-UNBACKED"}, \
         "光写关键词不算留痕锚"
-    # 给出可核对锚（CI run 号）⇒ 不报（门禁不得恒红）
+    # 373-N3：单一可核对锚（一个 CI run 号）**仍须报**——一处留痕撑不起多平台声明
     _poison_card(ev, "EV-MEM-T4.md", dict(
         BASE, hypothesis="Clang 列为外部复跑留痕（CI run 34595609458，仓内无工件）", matrix=matrix))
-    assert not ge.check_evidence_matrix_backed(), "写明可核对锚后不该再报"
+    assert {f.rule_id for f in ge.check_evidence_matrix_backed()} == {"EV-MATRIX-UNBACKED"}, \
+        "373-N3：单 run 号不足以支撑多编译器矩阵"
+    # 两个 CI run 号（双平台各一次）⇒ 不报（门禁不得恒红）
+    _poison_card(ev, "EV-MEM-T4.md", dict(
+        BASE, hypothesis="Clang 复跑 run 34595609458；GCC 复跑 run 34595609459", matrix=matrix))
+    assert not ge.check_evidence_matrix_backed(), "两处可核对留痕后不该再报"
 
 
 # ── S4 黄金锁 ──────────────────────────────────────────────────────────────

@@ -509,6 +509,97 @@ def drill() -> int:
         sev4 = _prod("EV-MEM-001", None)                        # 迁移名单内的存量卡
         results.append(("P16-阴 迁移名单内存量卡缺字段放行", not sev4, f"误报 {sev4 or '无'}"))
 
+    # ── P17 证据 id 唯一（373-N2）─────────────────────────────────────────────
+    # 373 独立渗透 N2：同 id 的两张卡（一张 confirm、一张 refute）⇒ 按 id 建 dict 的下游
+    # **后者覆盖前者**，门禁取到 confirm 那张即放行。
+    with sandbox() as tmp:
+        base = {
+            "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h", "command": "echo hi",
+            "fixture": "Examples/x.cpp", "artifact": "a.asm", "artifact_sha256": "0" * 64,
+            "actual": "{run_case: A}", "kind": "run", "verdict": "confirm",
+            "falsification": "对照输出 1",
+        }
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-DUP1.md", {**base, "id": "EV-MEM-DUP"})
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-DUP2.md", {**base, "id": "EV-MEM-DUP"})
+        who = {f.rule_id for f in ge.check_evidence_id_unique()}
+        dup = [f for f in ge.check_evidence_id_unique() if "重复" in f.message]
+        ok = "EV-ID-UNIQUE" in who and bool(dup)
+        results.append(("P17 证据 id 重复（373-N2 同 id 双卡）", ok,
+                        f"拦截者 {', '.join(sorted(who)) or '（漏网！）'}"
+                        f" · 重复判定 {len(dup)} 条"))
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-UNIQ.md", {**base, "id": "EV-MEM-UNIQ"})
+        results.append(("P17-阴 唯一且 stem==id 必须放行",
+                        ge.check_evidence_id_unique() == [], "不得误伤"))
+
+    # ── P18 relations 双写法归一（373-N1）──────────────────────────────────────
+    # 373 独立渗透 N1：mapping 写法 `- prerequisite: X` 没有 type/target 键 ⇒
+    # REL-TARGET / REL-DAG / PREREQ-READABLE 三条**静默跳过**（不报错、不计边、不查环）。
+    # 归一本应让"环"立刻可见——修复前这两颗原子的环是隐形的。
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-001.md", {
+            "id": "ATOM-MEM-001", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "draft", "claim": "c", "claim_boundary": "b",
+            "relations": "\n  - prerequisite: ATOM-MEM-002",     # ← mapping-form
+            "evidence": "[]", "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "s", "depth": "d", "pedagogy": "p",
+        })
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-002.md", {
+            "id": "ATOM-MEM-002", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "draft", "claim": "c", "claim_boundary": "b",
+            "relations": "\n  - prerequisite: ATOM-MEM-001",     # ← 环
+            "evidence": "[]", "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "s", "depth": "d", "pedagogy": "p",
+        })
+        who = {f.rule_id for f in ge.check_relations_dag()}
+        ok = "ATOM-REL-DAG" in who
+        results.append(("P18 mapping-form 环必须可见（373-N1）", ok,
+                        f"拦截者 {', '.join(sorted(who)) or '（漏网！）'}"))
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-001.md", {
+            "id": "ATOM-MEM-001", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "draft", "claim": "c", "claim_boundary": "b",
+            "relations": "\n  - prerequisite: ATOM-MEM-002",
+            "evidence": "[]", "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "s", "depth": "d", "pedagogy": "p",
+        })
+        _write(ge.ATOMS / "mem" / "ATOM-MEM-002.md", {
+            "id": "ATOM-MEM-002", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "draft", "claim": "c", "claim_boundary": "b", "relations": "[]",
+            "evidence": "[]", "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "s", "depth": "d", "pedagogy": "p",
+        })
+        res = [f.rule_id for f in ge.check_relations_dag() + ge.check_relations_target_exists()]
+        results.append(("P18-阴 mapping-form 指向已存在目标必须放行", not res,
+                        f"误报 {', '.join(res) or '无'}"))
+
+    # ── P19 P7 留痕锚去自证（373-N3）──────────────────────────────────────────
+    # 373 独立渗透 N3：旧锚含 `g++ … -o`（命令文本）⇒ 任何卡写了编译命令就算"留痕"，
+    # 多编译器矩阵声明**结构上恒绿**。修复后：须两处可核对留痕（双平台 .out / 双 run / 各一）。
+    with sandbox() as tmp:
+
+        def _mx(name: str, falsification: str) -> list[str]:
+            _write(ge.EVIDENCE / "mem" / f"{name}.md", {
+                "id": name, "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+                "command": "g++ -O2 x.cpp -o x.exe && g++ -O2 -S x.cpp -o x.asm",
+                "fixture": "Examples/x.cpp", "artifact": "x.asm",
+                "artifact_sha256": "0" * 64,
+                "actual": "{run_case: A}", "kind": "run", "verdict": "confirm",
+                "falsification": falsification,
+                "matrix": "\n  compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]\n"
+                          "  std: [c++17]\n  opt: [-O2]",
+            })
+            return sorted({f.rule_id for f in ge.check_evidence_matrix_backed()
+                           if name in f.target})
+
+        who = _mx("EV-MEM-MX1", "对照输出 1（命令本身不算留痕）")
+        ok = "EV-MATRIX-UNBACKED" in who
+        results.append(("P19 命令自证不再算留痕（373-N3）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+        who2 = _mx("EV-MEM-MX2", "对照见 Examples/atoms/a.out 与 build/b.out 两处 1")
+        results.append(("P19-阴 两处可核对留痕必须放行", not who2,
+                        f"误报 {', '.join(who2) or '无'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
