@@ -1,3 +1,7 @@
+# 临时/调试目录（下划线开头惯例，不入库）
+_asm_demo/
+_emp_bench/
+
 # 发布管线构建产物（可由 tools/ 重生成，不入库）
 build/
 site_out/
