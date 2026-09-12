@@ -157,13 +157,13 @@ jobs:
       # 依赖这里，否则无权限者无法复核 Clang 侧是否真的跑了。
       run: |
         echo "== GCC =="
-        g++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_gcc && /tmp/gz_gcc > /tmp/gz_gcc.txt 2>&1
+        g++ -std=c++17 -O2 Examples/atoms/_atom_eval_order.cpp -o /tmp/gz_gcc && /tmp/gz_gcc > /tmp/gz_gcc.txt 2>&1
         cat /tmp/gz_gcc.txt
         echo "::notice::Gray-zone GCC 求值顺序 = $(tr '\n' '/' < /tmp/gz_gcc.txt) [$(g++ --version | head -1)]"
         echo "== Clang =="
         if command -v clang++ >/dev/null 2>&1; then
           clang++ --version | head -1
-          clang++ -std=c++17 -O2 Examples/_atom_eval_order.cpp -o /tmp/gz_clang && /tmp/gz_clang > /tmp/gz_clang.txt 2>&1
+          clang++ -std=c++17 -O2 Examples/atoms/_atom_eval_order.cpp -o /tmp/gz_clang && /tmp/gz_clang > /tmp/gz_clang.txt 2>&1
           cat /tmp/gz_clang.txt
           echo "::notice::Gray-zone Clang 求值顺序 = $(tr '\n' '/' < /tmp/gz_clang.txt) [$(clang++ --version | head -1)]"
         else
@@ -173,11 +173,11 @@ jobs:
         # 演化类夹具（样板 C）：auto_ptr 已从标准移除，钉 -std=c++14；Clang 侧失败不阻塞
         # （降级为"标准条文代替 + 部分达成"），但必须留下 warning 以便后续补实测。
         echo "== Evolution: auto_ptr =="
-        g++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/_atom_auto_ptr.cpp -o /tmp/ev_gcc && /tmp/ev_gcc > /tmp/ev_gcc.txt 2>&1
+        g++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/atoms/_atom_auto_ptr.cpp -o /tmp/ev_gcc && /tmp/ev_gcc > /tmp/ev_gcc.txt 2>&1
         cat /tmp/ev_gcc.txt
         echo "::notice::Evolution GCC auto_ptr = $(tr '\n' '/' < /tmp/ev_gcc.txt) [$(g++ --version | head -1)]"
         if command -v clang++ >/dev/null 2>&1; then
-          if clang++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/_atom_auto_ptr.cpp -o /tmp/ev_clang > /tmp/ev_clang.txt 2>&1; then
+          if clang++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/atoms/_atom_auto_ptr.cpp -o /tmp/ev_clang > /tmp/ev_clang.txt 2>&1; then
             /tmp/ev_clang > /tmp/ev_clang_run.txt 2>&1
             cat /tmp/ev_clang_run.txt
             echo "::notice::Evolution Clang auto_ptr = $(tr '\n' '/' < /tmp/ev_clang_run.txt) [$(clang++ --version | head -1)]"
@@ -188,17 +188,17 @@ jobs:
         # G5 首个原子（ATOM-MEM-RVREF-001）：具名右值引用是左值 + return 隐式移动的版本边界。
         # 两只夹具都是纯语言行为（无平台 API），Clang 侧预期与 GCC 逐字一致（M2 §2 双编译器边界）。
         echo "== Pitfall: named-rvalue-ref =="
-        g++ -std=c++17 -O2 Examples/_atom_named_rvalue.cpp -o /tmp/rv_gcc && /tmp/rv_gcc > /tmp/rv_gcc.txt 2>&1
+        g++ -std=c++17 -O2 Examples/atoms/_atom_named_rvalue.cpp -o /tmp/rv_gcc && /tmp/rv_gcc > /tmp/rv_gcc.txt 2>&1
         cat /tmp/rv_gcc.txt
         echo "::notice::RVREF GCC 具名右值引用 = $(tr '\n' '/' < /tmp/rv_gcc.txt) [$(g++ --version | head -1)]"
-        g++ -std=c++17 -O2 Examples/_atom_rvref_return.cpp -o /tmp/rvr_gcc && /tmp/rvr_gcc > /tmp/rvr_gcc.txt 2>&1
+        g++ -std=c++17 -O2 Examples/atoms/_atom_rvref_return.cpp -o /tmp/rvr_gcc && /tmp/rvr_gcc > /tmp/rvr_gcc.txt 2>&1
         cat /tmp/rvr_gcc.txt
         echo "::notice::RVREF-RET GCC return 边界 = $(tr '\n' '/' < /tmp/rvr_gcc.txt) [$(g++ --version | head -1)]"
         if command -v clang++ >/dev/null 2>&1; then
-          clang++ -std=c++17 -O2 Examples/_atom_named_rvalue.cpp -o /tmp/rv_clang && /tmp/rv_clang > /tmp/rv_clang.txt 2>&1
+          clang++ -std=c++17 -O2 Examples/atoms/_atom_named_rvalue.cpp -o /tmp/rv_clang && /tmp/rv_clang > /tmp/rv_clang.txt 2>&1
           cat /tmp/rv_clang.txt
           echo "::notice::RVREF Clang 具名右值引用 = $(tr '\n' '/' < /tmp/rv_clang.txt) [$(clang++ --version | head -1)]"
-          clang++ -std=c++17 -O2 Examples/_atom_rvref_return.cpp -o /tmp/rvr_clang && /tmp/rvr_clang > /tmp/rvr_clang.txt 2>&1
+          clang++ -std=c++17 -O2 Examples/atoms/_atom_rvref_return.cpp -o /tmp/rvr_clang && /tmp/rvr_clang > /tmp/rvr_clang.txt 2>&1
           cat /tmp/rvr_clang.txt
           echo "::notice::RVREF-RET Clang return 边界 = $(tr '\n' '/' < /tmp/rvr_clang.txt) [$(clang++ --version | head -1)]"
         else
