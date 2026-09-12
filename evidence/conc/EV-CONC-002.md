@@ -1,6 +1,6 @@
 ---
 id: EV-CONC-002
-serves: [ATOM-CONC-001]
+serves: [ATOM-CONC-FENCE-001]
 kind: asm
 hypothesis: >-
   `atomic_signal_fence` 与 `atomic_thread_fence` 在**指令层**完全不同、在**位置层**同样敏感：

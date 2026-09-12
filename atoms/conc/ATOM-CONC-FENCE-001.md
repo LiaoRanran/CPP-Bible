@@ -1,20 +1,53 @@
 ---
-id: ATOM-CONC-001
+id: ATOM-CONC-FENCE-001
+title: 内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型
 domain: conc
 type: mechanism
 status: verified
-dal: A
-claim: "任何内存屏障（含零指令的 atomic_signal_fence）只要落在循环体内，就能阻止编译器消除该循环；但屏障不提供数据竞争安全——屏障≠原子类型。"
 verified_by: human:liaoranran
 verified_at: 2026-09-12
-relations:
-  prereq: []
-  contrasts: []
-  serves: [EV-CONC-001, EV-CONC-002]
-misconceptions: [MIS-CONC-001]
+dal: A
+human_review: required
 status_history:
   - {level: draft, at: "2026-09-12", by: machine:writer}
+  - {level: machine-verified, at: "2026-09-12", by: machine:gate}
   - {level: verified, at: "2026-09-12", by: human:liaoranran}
+audience: intermediate
+cognitive_load: medium
+prerequisites_readable: true
+claim: >-
+  任何内存屏障（含零指令的 atomic_signal_fence）只要落在循环体内，就能阻止编译器消除该循环；
+  但屏障不提供数据竞争安全——屏障≠原子类型。
+claim_boundary:
+  standard: [C++11, C++14, C++17, C++20, C++23]
+  compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]
+  opt: [-O2]
+  platform: [x86-64]
+relations: []
+evidence:
+  - EV-CONC-001
+  - EV-CONC-002
+sources:
+  - {kind: iso, ref: "ISO/IEC 14882:2023 [intro.progress]（允许假定无副作用且不终止的循环不发生，故循环体内无同步操作时整段可被删除）", independent: true}
+  - {kind: cppreference, ref: "std::atomic_signal_fence / std::atomic_thread_fence（fence 仅约束内存顺序，不为普通访问提供原子性与 happens-before）", independent: true}
+first_hand: true
+superiority: >-
+  C++ 内存模型教材常把"加个 fence 就能同步"当成默认解法，却讲不清 fence 与原子类型的边界。
+  本原子用一组同源对照把三件事拆开讲清：① 消除层——屏障落在循环体内才保住循环（零指令的
+  signal_fence 也保得住），挪到体外则与无屏障同形被消除；② 指令层——signal_fence 零机器指令、
+  thread_fence 才产 lock，但 lock 锁的是栈地址而非标志；③ 同步层——屏障既不给原子性也不建
+  happens-before。三张对照交叉指向同一个 artifact，避免"讲了顺序忘了原子性"的半截理解。
+depth:
+  layer: compile-time
+pedagogy:
+  motivation: "读者常以为自旋等待加个 fence 就够了，结果用普通 int 做标志仍是数据竞争（UB）。"
+  misconception:
+    - {level: surface, text: "误以为屏障（fence）能替代原子类型提供同步：给普通 int 标志加个 atomic_thread_fence 即可当线程间就绪标志用", refutations: [EV-CONC-001, EV-CONC-002]}
+    - {level: deep, text: "误以为屏障完全拦不住编译器消除（早期'屏障拦不住消除'说法方向说反）：实测零指令的 signal_fence 只要落在循环体内就能保住循环", refutations: [EV-CONC-001, EV-CONC-002]}
+  socratic: "如果屏障真能阻止消除，它保住的是哪个循环？把 thread_fence 的 lock 指令地址打出来，它锁的是哪个变量？"
+  predict_first: "先预测：把 atomic_signal_fence 放进空循环体，循环会被消除还是保留？把 thread_fence 生成的 lock 操作数打印出来，它锁的是标志本身吗？"
+  misconceptions: [MIS-CONC-001]
+misconceptions: [MIS-CONC-001]
 ---
 
 # ATOM-CONC-001 · 屏障≠原子类型（屏障位置决定消除）

@@ -1,6 +1,6 @@
 ---
 id: EV-CONC-001
-serves: [ATOM-CONC-001]
+serves: [ATOM-CONC-FENCE-001]
 kind: asm
 hypothesis: >-
   `while (!b) {}`（b 为非原子非 volatile 全局 `int`）在 `-O2` 下是否被整段消除，
