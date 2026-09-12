@@ -1,0 +1,11 @@
+nproc=32
+single_thread_baseline=1
+single_result=200000
+mutex_fastpath_exists=1
+mutex_result=800000
+atomic_rmw_exists=1
+atomic_result=800000
+cas_retry_observed=1
+cas_result=800000
+cas_high_contention_tested=1
+atomic_fetch_ns=636900
