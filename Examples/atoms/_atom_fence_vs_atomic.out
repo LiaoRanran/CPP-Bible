@@ -1,0 +1,3 @@
+spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10
+spin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3
+functions_present=7|spin_volatile_engaged=1
