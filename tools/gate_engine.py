@@ -703,25 +703,37 @@ def check_evidence_trivial_observation() -> list[Finding]:
 
 
 def check_evidence_matrix_backed() -> list[Finding]:
-    """P7 无留痕矩阵：`matrix.compiler` 声明了多个编译器，但只有一个工件、且卡内无外部留痕说明。
+    """P7 无留痕矩阵：matrix.compiler 声明多个编译器，但卡内无可核对的外部留痕锚。
 
-    诚实的多编译器声明必须写清"哪个有工件、哪个是外部复跑/标准条文"。第三批实例：
-    EV-MEM-037 引用了 gcc-14 的三档标定数字，但仓内无该工件——卡内已如实标注
-    "外部复跑留痕"，本规则正是把这种标注变成**强制项**。
+    v2 收紧（2026-09-12）：旧版用松散关键词匹配，写一句"已留痕"即可自证通过。
+    新版要求可核对锚：.out 路径 / CI run 号 / ::notice:: / 完整编译器命令行 / 标准条文声明。
     """
     import re as _re
     out: list[Finding] = []
+    _trace_anchors = [
+        _re.compile(r"Examples/[^\s\])]+\.out"),
+        _re.compile(r"build/[^\s\])]+\.out"),
+        _re.compile(r"run\s*#\d+"),
+        _re.compile(r"\b\d{10,}\b"),
+        _re.compile(r"::notice::"),
+        _re.compile(r"g\+\+\s+[^\n]*-o\s+"),
+        _re.compile(r"clang\+\+\s+[^\n]*-o\s+"),
+        _re.compile(r"标准条文"),
+        _re.compile(r"M2.*永久边界"),
+    ]
     for p in _cards(EVIDENCE, "EV-*.md"):
         raw = p.read_text(encoding="utf-8", errors="replace")
         m = _re.search(r"compiler:\s*\[([^\]]*)\]", raw)
         if not m:
             continue
-        comps = [c.strip().strip('"\'') for c in m.group(1).split(",") if c.strip()]
-        if len(comps) > 1 and not any(k in raw for k in ("外部", "留痕", "待 CI", "CI 回填")):
-            out.append(Finding("EV-MATRIX-UNBACKED", "warn", _rel(p),
-                               f"matrix 声明 {len(comps)} 个编译器，但卡内无外部留痕说明"
-                               f"（{', '.join(comps)}）",
-                               "注明哪个编译器有仓内工件、哪个为外部复跑/标准条文边界"))
+        comps = [c.strip().strip("'") for c in m.group(1).split(',') if c.strip()]
+        if len(comps) > 1:
+            has_anchor = any(pat.search(raw) for pat in _trace_anchors)
+            if not has_anchor:
+                out.append(Finding("EV-MATRIX-UNBACKED", "warn", _rel(p),
+                                   f"matrix 声明 {len(comps)} 个编译器，卡内无可核对的外部留痕锚"
+                                   f"（{', '.join(comps)}）",
+                                   "补可核对锚：.out 路径 / CI run 号 / ::notice:: / 完整编译器命令行 / 标准条文代替声明"))
     return out
 
 

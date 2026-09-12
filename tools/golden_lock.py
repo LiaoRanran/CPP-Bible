@@ -14,6 +14,7 @@
     machine_verified machine-verified 级（↓ = 降级 → 红）
     dal_gap          DAL A/B 却非人级验证的原子数（↑ = 越权放行 → 红）
     replay_confirm   证据卡机器复算通过数（↓ = 证据失效 → 红）
+    replay_infra_error 证据卡复算的环境层故障数（↑ = 环境恶化/有人在借 infra 逃逸 → 红）
 
 语义：
     * 恶化 → 红；改善（数量↑ / 命中↓）→ 提示 `sync` 更新基线。
@@ -56,6 +57,10 @@ WORSE: dict[str, bool] = {
     "machine_verified": False,
     # DAL A/B 却非人级验证 = 硬约束破口，上升即恶化（放权不得从这条缝漏出去）
     "dal_gap": True,
+    # G6 §4.1：infra_error 不污染 replay_confirm（否则环境抖动会拉低基线、掩盖真实退化），
+    # 但它**必须被单独盯住**——否则"把夹具写坏 ⇒ 落到 infra ⇒ confirm 不降"就是新的逃生舱。
+    # 故拆成两列：confirm 下降是恶化，infra 上升也是恶化，中间没有缝。
+    "replay_infra_error": True,
 }
 
 
@@ -96,11 +101,13 @@ def measure() -> dict[str, int]:
         if tier != "human" and _dal(p) in ("A", "B"):
             dal_gap += 1
 
-    confirm = 0
+    confirm = infra = 0
     for p in evids:
         verdict, _ = replay.replay_card(p, do_sanitizer=False)
         if verdict == "confirm":
             confirm += 1
+        elif verdict.startswith("infra_error:"):
+            infra += 1
 
     return {
         "block_findings": sum(1 for f in findings if f.severity == "block"),
@@ -113,6 +120,7 @@ def measure() -> dict[str, int]:
         "machine_verified": tiers["machine"],
         "dal_gap": dal_gap,
         "replay_confirm": confirm,
+        "replay_infra_error": infra,
     }
 
 

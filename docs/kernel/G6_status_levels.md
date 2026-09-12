@@ -106,7 +106,27 @@ DAL C 不豁免它们，只是不再需要人审签字。
 **要求**：replay 的判定分三类而非两类——`confirm` / `refute`（内容层）/
 `infra_error`（夹具缺失、工具链找不到、编译环境不可用、工作区正被其它进程修改）。
 `infra_error` 必须**阻断晋升并提示重试**，且**不得污染 golden_lock 的 `replay_confirm` 计数**
-（否则基线会被 infra 抖动拉低，掩盖真实退化）。当前实现尚未分流，登记为 G6 落地后的第一顺位技术债。
+（否则基线会被 infra 抖动拉低，掩盖真实退化）。
+
+**落地（2026-09-12，`tools/atom_evidence_replay.py`）**——判定原则 = **"修复方式是改环境还是改卡"**：
+
+| verdict | 触发条件（实测事实） | 层 |
+|---|---|---|
+| `infra_error:compiler_missing` | 前置检查：`resolve_gpp()` 未解析到 / 路径不存在 / 无执行权；或编译器调用返回 rc=127 | 环境 |
+| `infra_error:compile_timeout` | 命令被 600s 超时杀掉（"环境慢"与"代码死循环"无法区分，取环境侧） | 环境 |
+| `refute:compile_error` | 编译器**确实执行过**并返回非 0（源码被拒） | 内容 |
+| `refute:unsupported_shell` | 卡的命令用了管道/重定向/通配/变量（工具不猜） | 内容 |
+
+- 分流依据 = **首个失败**（后续失败多为其级联）+ "我调用的是谁 / 它有没有真的跑起来"这一
+  **稳定事实**——刻意**不解析编译器 stderr 文本**（`cc1plus:` 之类措辞随版本漂移，判据会静默失效）。
+- 两类失败**都 exit 1**（fail-closed）：`infra_error` 是"另行归因"，不是放行通道。
+- 反逃生舱：`golden_lock` 拆成两列——`replay_confirm`（↓ 即红，口径不变，infra **不**污染它）
+  + `replay_infra_error`（**↑ 即红**）。只盯 confirm 会留下"把夹具写坏 ⇒ 落到 infra ⇒
+  基线不降"的缝，两列同时盯才闭合。
+- 回归锁：`tests/test_atom_evidence_replay.py::test_command_failure_classification_is_pure`
+  （纯函数覆盖四种分流）与 `::test_compiler_missing_is_infra_error`（monkeypatch 掉编译器解析）。
+- 出口码细分（0 全绿 / 2 仅环境故障 / 3 混合）**刻意未做**：当前所有调用方（`cppbible.py`、
+  CI、`prepush_check.py`）只判 `!= 0`，多一套码值是无消费者的复杂度；需要"自动重试"时再引入。
 
 ## 5. 反作弊约束（三条铁律）
 

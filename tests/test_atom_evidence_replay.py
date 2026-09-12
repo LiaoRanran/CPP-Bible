@@ -1,11 +1,12 @@
-"""锁定证据卡复算契约（G3 首项）与三类 refute —— 把"毒样例"固化为回归。
+"""锁定证据卡复算契约（G3 首项）与各类 refute / infra_error —— 把"毒样例"固化为回归。
 
 覆盖：
-  1. 解析器能读真实卡的全部形态（block scalar / 嵌套映射 / flow 序列 / 尾注释 / 折叠续行）
-  2. `refute:missing_field`（缺 artifact / artifact_sha256 / actual.run_*）
-  3. `refute:sha256_mismatch` —— 首版验收标准：旧工件 hash 喂进去必须被拦
-  4. `refute:run_mismatch` —— 输出与 `run_*` 不逐字一致
-  5. `confirm` —— 一致时放行（阴性对照：门禁不能恒红）
+ 1. 解析器能读真实卡的全部形态（block scalar / 嵌套映射 / flow 序列 / 尾注释 / 折叠续行）
+ 2. `refute:missing_field`（缺 artifact / artifact_sha256 / actual.run_*）
+ 3. `refute:sha256_mismatch` —— 首版验收标准：旧工件 hash 喂进去必须被拦
+ 4. `refute:run_mismatch` —— 输出与 `run_*` 不逐字一致
+ 5. `confirm` —— 一致时放行（阴性对照：门禁不能恒红）
+ 6. `infra_error:compiler_missing` —— 环境故障与内容证伪分流（G6 §4.1 放权前必修）
 """
 from __future__ import annotations
 
@@ -161,6 +162,48 @@ def test_check_artifact_assert_kinds(tmp_path: Path):
     assert not rp.check_artifact_assert({}, art)[0], "缺断言必须判失败"
 
 
+def test_check_artifact_assert_symbol_scope(tmp_path: Path):
+    """区间断言：`contains_in`/`absent_in` 只看 `symbol` 的函数体（ATOM-CONC-001 需求）。
+
+    动机：全局 `absent` 无法表达"**某个函数体内**没有 X"——同一 TU 里其它函数（置位用的
+    setter、同组对照函数）会提到同一个符号，全局计数必然被污染；用"枚举寄存器拼写"顶替
+    会引入**静默漏判**（编译器换了寄存器拼写即自动通过）。故按函数区间判定，符号缺失
+    一律判失败（不静默通过）。
+    """
+    art = tmp_path / "b.asm"
+    art.write_text(
+        ".globl\t_Z3foov\n"
+        "_Z3foov:\n"
+        ".LFB0:\n"
+        "\tmov\teax, DWORD PTR g_x[rip]\n"
+        "\tret\n"
+        "\t.seh_endproc\n"
+        "\t.p2align 4\n"
+        ".globl\t_Z3barv\n"
+        "_Z3barv:\n"
+        ".LFB1:\n"
+        "\tmov\teax, DWORD PTR g_y[rip]\n"
+        "\tret\n"
+        "\t.seh_endproc\n",
+        encoding="utf-8")
+    ok, lines = rp.check_artifact_assert({"artifact_assert": [
+        {"kind": "contains_in", "symbol": "_Z3foov", "text": "g_x[rip]"},
+        {"kind": "absent_in", "symbol": "_Z3barv", "text": "g_x"},
+        {"kind": "absent_in", "symbol": "_Z3foov", "text": "g_y"},
+    ]}, art)
+    assert ok and len(lines) == 3, lines
+    # 区间不能退化成全局：本函数内出现的符号，absent_in 必须失败
+    assert not rp.check_artifact_assert(
+        {"artifact_assert": [{"kind": "absent_in", "symbol": "_Z3foov", "text": "g_x"}]}, art)[0]
+    # 区间不能越界到下一个函数：g_y 属于 bar，在 foo 区间内必须判 absent
+    assert not rp.check_artifact_assert(
+        {"artifact_assert": [{"kind": "contains_in", "symbol": "_Z3foov", "text": "g_y"}]}, art)[0]
+    # 符号不存在 → 判失败（不静默通过）
+    ok3, l3 = rp.check_artifact_assert(
+        {"artifact_assert": [{"kind": "absent_in", "symbol": "_Z9missingv", "text": "g_x"}]}, art)
+    assert not ok3 and "找不到符号区间" in l3[0], l3
+
+
 @needs_gpp
 def test_cross_compiler_falls_back_to_artifact_assert(tmp_path: Path):
     """身份不匹配时 sha 不比字节，改判结构断言并通过（CI 实际走的就是这条路）。"""
@@ -203,7 +246,7 @@ def test_artifact_restored_after_replay():
     `endbr64` / `__printf_chk@PLT`），而卡里的 sha256 仍是 MinGW 的 → 仓库工件与卡不同代。
     校验工具是只读角色，跑完必须还原。这个测试就是那次事故的回归锁。
     """
-    art = rp.ROOT / "Examples/_atom_move_alloc.asm"
+    art = rp.ROOT / "Examples/atoms/_atom_move_alloc.asm"
     before = art.read_bytes()
     rp.replay_card(REAL_CARD, do_sanitizer=False)
     assert art.read_bytes() == before, "复算改写了仓库工件（异构环境会静默污染）"
@@ -239,7 +282,11 @@ def test_bare_compiler_name_is_pinned_to_resolved_path():
 
 
 def test_missing_executable_does_not_crash(tmp_path: Path):
-    """缺陷 2 的回归锁：编译失败后执行不存在的 exe → rc=127 且不抛异常。"""
+    """缺陷 2 的回归锁：编译失败后执行不存在的 exe → rc=127 且不抛异常。
+
+    分流口径（G6 §4.1）：g++ **跑起来了**才拒绝源码 ⇒ 内容层 `refute:compile_error`；
+    紧随其后的 rc=127（exe 不存在）是它的级联，不得把整卡改判成环境故障。
+    """
     fx = tmp_path / "broken.cpp"
     fx.write_text("int main(){ this is not c++ }\n", encoding="utf-8")
     exe = (tmp_path / "nope.exe").as_posix()
@@ -256,7 +303,7 @@ def test_missing_executable_does_not_crash(tmp_path: Path):
         '  run_case: "A"\n'
         "---\n", encoding="utf-8")
     verdict, log = rp.replay_card(card, do_sanitizer=False)
-    assert verdict == "refute:compile_failed", log
+    assert verdict == "refute:compile_error", log
     assert any("可执行文件不存在" in ln or "rc=127" in ln for ln in log), log
 
 
@@ -276,8 +323,62 @@ def test_and_and_short_circuits_after_failure(tmp_path: Path):
         '  run_case: "A"\n'
         "---\n", encoding="utf-8")
     verdict, log = rp.replay_card(card, do_sanitizer=False)
-    assert verdict == "refute:compile_failed", log
+    assert verdict == "refute:compile_error", log
     assert len([ln for ln in log if "rc=" in ln]) == 1, "&& 短路后不应再执行第二段"
+
+
+# ── 8b. 三分类分流（G6 §4.1 放权前必修）：环境故障 ≠ 内容证伪 ────────────────
+def test_command_failure_classification_is_pure():
+    """分流是纯函数：只吃"哪个程序 / 退出码"，不解析编译器 stderr（文本随版本漂移）。"""
+    # 编译器**没启动起来**（rc=127 + 编译器名）⇒ 环境层，须 fail-closed 但仍分列计数
+    assert rp.classify_command_failure(
+        [("g++ x.cpp", 127, "可执行文件不存在或不可执行：C:/x/g++.exe", "C:/x/g++.exe")]
+    ) == "infra_error:compiler_missing"
+    # 编译器跑起来了但拒绝源码（rc=1）⇒ 内容层
+    assert rp.classify_command_failure(
+        [("g++ x.cpp", 1, "error: expected ';'", "C:/x/g++.exe")]
+    ) == "refute:compile_error"
+    # 卡的命令写法不支持（管道等，工具不猜）⇒ 内容层
+    assert rp.classify_command_failure(
+        [("g++ x.cpp | tee l", 127, "含不支持的 shell 特性", "")]
+    ) == "refute:unsupported_shell"
+    # 超时被杀 ⇒ 环境层（无法区分"环境慢"与"代码死循环"，取环境侧，仍 exit 1）
+    assert rp.classify_command_failure(
+        [("g++ x.cpp", 124, "命令超时（600s）：g++", "g++")]
+    ) == "infra_error:compile_timeout"
+    # 全部成功 ⇒ confirm；只有**首个**失败参与判定（后续是级联）
+    assert rp.classify_command_failure([("g++ x.cpp", 0, "", "g++")]) == "confirm"
+    assert rp.classify_command_failure(
+        [("g++ x.cpp", 1, "error", "g++"), ('"x.exe"', 127, "不存在", "x.exe")]
+    ) == "refute:compile_error"
+
+
+@needs_gpp
+def test_compiler_missing_is_infra_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """工具链找不到 ⇒ `infra_error:compiler_missing`（不是 refute，也不是静默放行）。
+
+    回归锁的意义：夹具/工具链缺失曾一次性把 48 张卡判成"内容被证伪"（G6 §4.1 实例）。
+    同时锁住**不得恒红**：同一张卡在编译器可用时必须是别的判决（见上面的 refute/confirm 用例）。
+    """
+    import toolchain
+
+    monkeypatch.setattr(toolchain, "resolve_gpp", lambda *a, **k: str(tmp_path / "no_such_g++.exe"))
+    fx = tmp_path / "ok.cpp"
+    fx.write_text("int main(){return 0;}\n", encoding="utf-8")
+    card = tmp_path / "EV-T-005.md"
+    card.write_text(
+        "---\n"
+        "id: EV-T-005\n"
+        "command: |\n"
+        f"  g++ -std=c++17 -S {fx.as_posix()} -o {fx.as_posix()}.s\n"
+        f"artifact: {fx.as_posix()}.s\n"
+        f"artifact_sha256: {'0' * 64}\n"
+        "actual:\n"
+        '  run_case: "A"\n'
+        "---\n", encoding="utf-8")
+    verdict, log = rp.replay_card(card, do_sanitizer=False)
+    assert verdict == "infra_error:compiler_missing", log
+    assert any("编译器不可用" in ln for ln in log), log
 
 
 # ── 9. sanitizer 预期内豁免（2026-09-11 gcc-14 CI 红修复的回归锁）───────────────

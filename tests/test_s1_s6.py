@@ -92,16 +92,25 @@ def test_p6_trivial_observation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
 
 
 def test_p7_matrix_needs_backing_note(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """P7：声明多编译器却无留痕说明 ⇒ 命中；写明"外部复跑留痕" ⇒ 不报。"""
+    """P7：声明多编译器却无可核对留痕锚 ⇒ 命中。
+
+    v2 收紧（2026-09-12）：旧口径只做关键词匹配，写一句"外部复跑留痕"即可自证通过；
+    新口径要求**可核对锚**（.out 路径 / CI run 号 / ::notice:: / 完整编译器命令行 / 标准条文）。
+    """
     import gate_engine as ge
     ev = _poison_arena(tmp_path, monkeypatch)
-    _poison_card(ev, "EV-MEM-T4.md",
-                 dict(BASE, matrix="\n  compiler: [GCC 15.3.0, Clang 19.1.0]\n  std: [c++17]"))
+    matrix = "\n  compiler: [GCC 15.3.0, Clang 19.1.0]\n  std: [c++17]"
+    _poison_card(ev, "EV-MEM-T4.md", dict(BASE, matrix=matrix))
     assert {f.rule_id for f in ge.check_evidence_matrix_backed()} == {"EV-MATRIX-UNBACKED"}
+    # 关键词自证（旧口径会放行）：v2 必须仍命中，否则"写明留痕"又成逃生舱
     _poison_card(ev, "EV-MEM-T4.md", dict(
-        BASE, hypothesis="Clang 列为外部复跑留痕（仓内无工件）",
-        matrix="\n  compiler: [GCC 15.3.0, Clang 19.1.0]\n  std: [c++17]"))
-    assert not ge.check_evidence_matrix_backed(), "写明外部留痕后不该再报"
+        BASE, hypothesis="Clang 列为外部复跑留痕（仓内无工件）", matrix=matrix))
+    assert {f.rule_id for f in ge.check_evidence_matrix_backed()} == {"EV-MATRIX-UNBACKED"}, \
+        "光写关键词不算留痕锚"
+    # 给出可核对锚（CI run 号）⇒ 不报（门禁不得恒红）
+    _poison_card(ev, "EV-MEM-T4.md", dict(
+        BASE, hypothesis="Clang 列为外部复跑留痕（CI run 34595609458，仓内无工件）", matrix=matrix))
+    assert not ge.check_evidence_matrix_backed(), "写明可核对锚后不该再报"
 
 
 # ── S4 黄金锁 ──────────────────────────────────────────────────────────────

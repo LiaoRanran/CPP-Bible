@@ -6,20 +6,31 @@
     （多行 shell，逐行执行）——命令不硬编码在工具里。
     必填：`command` / `artifact` / `artifact_sha256` / `actual.run_*`；缺任一 → `refute:missing_field`。
 
-四项校验（任一不过即 refute，退出码 1）：
-    1. compile_rc    —— 每条命令退出码 0
+四项校验（内容层任一不过即 refute，退出码 1）：
+    1. compile_rc    —— 每条命令退出码 0（失败按 G6 §4.1 分流，见下）
     2. run_match     —— 运行输出与卡的 `run_*` 逐字匹配（**精确**，允许行序归一化；
                         多组 `run_*` 值不一致时须用 `expected_key` 指明，否则判 ambiguous）
     3. artifact_sha  —— **删旧工件 → 重跑生成命令 → sha256 必须等于卡的 `artifact_sha256`**
-                        （"工件必须与断言同代"的机器化核心：重生成不一致 = 工件过期或卡写错）
+                       （"工件必须与断言同代"的机器化核心：重生成不一致 = 工件过期或卡写错）
     4. sanitizer     —— ASan+UBSan 复编运行无新增报错；工具链不支持则 skip（不算 refute）。
                         卡可声明 `expected_sanitizer`（如 `[leak]`）：命中的报错类型**全部**在
                         声明内时计入 confirm（演示卡的反向证据），声明外类型仍 refute。
 
+三分类（2026-09-12，G6 `docs/kernel/G6_status_levels.md` §4.1 放权前必修）：
+    confirm / refute（内容层）/ infra_error（环境层）。判定原则 = **"修复方式是改环境还是改卡"**：
+    * `infra_error:compiler_missing`  编译器程序本身不可启动（未安装 / 路径失效 / 无执行权）
+    * `infra_error:compile_timeout`   命令被 600s 超时杀掉（环境/人力，不判内容）
+    * `refute:compile_error`          编译器**跑起来了**但拒绝源码 = 卡（夹具）内容问题
+    * `refute:unsupported_shell`      卡的命令用了管道/重定向/通配/变量（工具不猜）
+    两类失败**都 exit 1**（fail-closed：infra 不是逃生舱），但 `golden_lock` 分列计数——
+    `replay_infra_error` 单独盯着，避免"把夹具写坏 → 落到 infra → 基线不下降"。
+    分流依据是**首个失败**（后续失败多为其级联），且用"编译器是否真的执行过"这一实测事实，
+    不解析编译器 stderr 文本（文本随版本漂移，判据会静默失效）。
+
 用法：
     python tools/atom_evidence_replay.py                 # 扫描 evidence/**/EV-*.md
     python tools/atom_evidence_replay.py --card <path>   # 单卡
-    python tools/atom_evidence_replay.py --check         # 任一 refute 即 exit 1（门禁用）
+    python tools/atom_evidence_replay.py --check         # 任一非 confirm 即 exit 1（门禁用）
     python tools/atom_evidence_replay.py --no-sanitizer  # 跳过 sanitizer 校验
     python tools/atom_evidence_replay.py --keep-tmp      # 保留临时目录（排查用）
 """
@@ -311,12 +322,16 @@ def _pin_compiler(argv: list[str]) -> list[str]:
     return argv
 
 
-def run_commands(lines: Sequence[str], cwd: Path, env: dict) -> tuple[list[tuple[str, int, str]], str]:
+def run_commands(lines: Sequence[str], cwd: Path,
+                 env: dict) -> tuple[list[tuple[str, int, str, str]], str]:
     """逐行执行命令（`&&` 拆段、不经 shell、裸编译器名钉完整路径）。
 
-    返回 ([(cmd, rc, stderr)], 合并 stdout)。`&&` 语义保留：同段内前一条失败即短路。
+    返回 ([(cmd, rc, stderr, prog)], 合并 stdout)。`prog` = 该段**实际执行**的 argv[0]
+    （钉完完整路径之后），只用于失败分流——"编译器没启动起来"与"编译器拒绝了源码"是
+    两种处置路径（G6 §4.1），而 `rc` 单独一个整数说不清是哪一种。不支持的写法记 `prog=""`。
+    `&&` 语义保留：同段内前一条失败即短路。
     """
-    results: list[tuple[str, int, str]] = []
+    results: list[tuple[str, int, str, str]] = []
     stdout_parts: list[str] = []
     for raw in lines:
         cmd = raw.strip()
@@ -324,7 +339,7 @@ def run_commands(lines: Sequence[str], cwd: Path, env: dict) -> tuple[list[tuple
             continue
         argv_list = _split_argv(cmd)
         if argv_list is None:
-            results.append((cmd, 127, "含不支持的 shell 特性（管道/重定向/通配/变量）"))
+            results.append((cmd, 127, "含不支持的 shell 特性（管道/重定向/通配/变量）", ""))
             continue
         failed = False
         for argv in argv_list:
@@ -339,11 +354,50 @@ def run_commands(lines: Sequence[str], cwd: Path, env: dict) -> tuple[list[tuple
                 rc, err, out = 127, f"可执行文件不存在或不可执行：{argv[0]}", ""
             except subprocess.TimeoutExpired:
                 rc, err, out = 124, f"命令超时（600s）：{argv[0]}", ""
-            results.append((cmd, rc, err))
+            results.append((cmd, rc, err, argv[0]))
             if out:
                 stdout_parts.append(out)
             failed = rc != 0
     return results, "\n".join(stdout_parts)
+
+
+_COMPILER_BASENAMES = frozenset({
+    "g++", "gcc", "c++", "cc", "g++.exe", "gcc.exe", "c++.exe", "cc.exe",
+    "clang++", "clang", "clang++.exe", "clang.exe",
+})
+
+
+def _is_compiler_prog(prog: str) -> bool:
+    """该命令是否是一次**编译器调用**（决定失败算环境还是内容）。
+
+    判据 = basename 在黑名单里。刻意不解析 stderr（`cc1plus:` / `No such file or directory`
+    这类文本随编译器版本与语言漂移），只用"我调用的是谁"这一稳定事实。
+    """
+    return Path(prog).name.lower() in _COMPILER_BASENAMES if prog else False
+
+
+def classify_command_failure(results: Sequence[tuple[str, int, str, str]]) -> str:
+    """把**首个失败**命令分成 `infra_error:<r>` / `refute:<r>`（纯函数，便于单测锁定）。
+
+    取首个失败而非全部：后续失败通常是它的级联（编译没过 → exe 不存在）。
+    判据顺序（先环境后内容，宁可判内容也不误放行）：
+      * `prog == ""`            → 卡的命令写法不支持（管道等）→ 内容
+      * 编译器调用 且 rc==127   → 编译器程序根本没启动起来 → 环境（工具链找不到）
+      * rc==124                 → 超时被杀（无法区分"环境慢"与"代码死循环"，取环境侧，
+                                   但**仍 exit 1**，不放行）
+      * 其余（编译器跑起来了、返回非 0）→ 源码被拒 = 卡的内容问题 → refute:compile_error
+    """
+    bad = [r for r in results if r[1] != 0]
+    if not bad:
+        return "confirm"
+    _cmd, rc, _err, prog = bad[0]
+    if not prog:
+        return "refute:unsupported_shell"
+    if rc == 127 and _is_compiler_prog(prog):
+        return "infra_error:compiler_missing"
+    if rc == 124:
+        return "infra_error:compile_timeout"
+    return "refute:compile_error"
 
 
 def _sha256(p: Path) -> str:
@@ -393,6 +447,27 @@ def _current_toolchain_id() -> str:
         return ""
 
 
+_SYMBOL_BODY_STOP = re.compile(
+    r"(?m)^(?:[^\s.][^\s:]*:\s*$|\.cfi_endproc|\.seh_endproc)")
+
+
+def _symbol_body(text: str, symbol: str) -> str | None:
+    """切出 `<symbol>:` 到函数末尾之间的正文（供 contains_in / absent_in 限定区间）。
+
+    停止条件（任一命中）：
+      - 下一个"列 0 的函数标签"（`_Z10spin_plainv:`、`foo:`）；局部标签 `.L8:` 带前导点，不算
+      - `.cfi_endproc`（ELF）/ `.seh_endproc`（MinGW）——函数收尾伪指令
+
+    文本在调用方已把 `\\t` 归一成空格，这里只做切分。符号找不到返回 None（调用方判失败）。
+    """
+    m = re.search(rf"(?m)^{re.escape(symbol)}:\s*$", text)
+    if not m:
+        return None
+    rest = text[m.end():]
+    stop = _SYMBOL_BODY_STOP.search(rest)
+    return rest[: stop.start()] if stop else rest
+
+
 def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, list[str]]:
     """跨编译器可移植的**结构断言**（编译产物内容级，不依赖字节哈希）。
 
@@ -410,6 +485,16 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
                         ⚠️ 调用点数量随编译器的内联决策变化（实测同一夹具 GCC 15.3 = 3 次、
                         GCC 13.1 = 4 次），**只在单一编译器平台的卡上使用**；跨编译器卡请改用
                         符号存在性断言，把"次数"语义交给运行层 run_match（跨平台稳定）。
+      - `contains_in`   `{kind: contains_in, symbol: "_Z10spin_plainv", text: "g_b"}`  必须出现
+                        且**只在 `symbol` 的函数体区间内**计数
+      - `absent_in`     `{kind: absent_in,  symbol: "_Z10spin_plainv", text: "g_b"}`  不得出现
+                        且**只判 `symbol` 的函数体区间**
+                        —— 为何需要：`contains/absent` 是**全工件**语义，"**某个函数体内**没有 X"
+                        无法用全局断言表达（同一 TU 里其它函数引用同一符号会污染计数，实测
+                        ATOM-CONC-001 的 setter/其它 spin 都会提到同一个标志）。区间边界 =
+                        `<symbol>:` 起，至下一个"列 0 的函数标签"或 `.cfi_endproc`/`.seh_endproc`
+                        止；Itanium 名字修饰（`_Z...`）在 MinGW / GCC-14 / riscv64 三平台一致，
+                        故该断言形态可跨平台。**符号缺失判失败（不静默通过）**。
 
     文本比较前做**空白归一**（`\t` → 空格，含卡里字面写的 `\t`）：不同平台/编译器的汇编用
     不同空白分隔（`call\tmalloc` vs `call malloc`），归一后断言才可比。
@@ -451,6 +536,19 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
             hit = (got > 0) if kind == "contains" else (got == 0)
             verb = "出现" if kind == "contains" else "不得出现"
             lines.append(f"    {'✅' if hit else '❌'} {kind} {lit!r} {verb}（实得 {got} 次）")
+        elif kind in ("contains_in", "absent_in"):
+            sym = str(r.get("symbol") or "")
+            lit = _norm(str(r.get("text") or ""))
+            body = _symbol_body(text, sym)
+            if body is None:
+                hit = False
+                lines.append(f"    ❌ {kind} 在工件里找不到符号区间 {sym!r}（不猜，判失败）")
+            else:
+                got = body.count(lit)
+                hit = (got > 0) if kind == "contains_in" else (got == 0)
+                verb = "出现" if kind == "contains_in" else "不得出现"
+                lines.append(f"    {'✅' if hit else '❌'} {kind} {sym} 区间内 {lit!r}"
+                             f" {verb}（实得 {got} 次）")
         else:
             hit = False
             lines.append(f"    ❌ 未知断言 kind：{kind!r}（不猜，判失败）")
@@ -561,7 +659,14 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
 
 def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
                 restore_artifact: bool = True) -> tuple[str, list[str]]:
-    """执行四项校验。返回 (verdict, 日志行)。verdict ∈ confirm / refute:<reason>。
+    """执行四项校验。返回 (verdict, 日志行)。verdict ∈ confirm / refute:<reason> / infra_error:<reason>。
+
+    三分类（2026-09-12，G6 §4.1 放权前必修）：
+      - confirm：内容校验全部通过
+      - refute：卡的内容被证伪（compile_error / run_mismatch / sha256_mismatch /
+        artifact_assert_failed / sanitizer_reported / …）
+      - infra_error：环境层故障（compiler_missing / compile_timeout），非内容问题；仍
+        fail-closed（exit 1），但单独计数、不计入内容恶化——防止"删掉夹具即放行"成为逃生舱。
 
     `restore_artifact`（默认 True）：校验结束后把仓库里的 `artifact` 还原成本次运行前的字节。
     为什么需要（2026-09-10 踩坑）：校验流程是「删旧工件 → 重生成 → 比 sha256」，这在**同一编译器
@@ -587,8 +692,10 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             missing.append(k)
     actual = meta.get("actual") or {}
     run_keys = [k for k in (actual if isinstance(actual, dict) else {}) if k.startswith("run")]
-    if not run_keys:
-        missing.append("actual.run_*")
+    # 新形态（302 三层分离）：actual.run_match_file + run_match_keys 替代 actual.run_*
+    has_run_match = bool(run_keys) or (isinstance(actual, dict) and actual.get("run_match_file"))
+    if not has_run_match:
+        missing.append("actual.run_* 或 actual.run_match_file")
     if missing:
         return "refute:missing_field", log + [f"  ❌ 缺字段：{', '.join(missing)}"]
 
@@ -598,6 +705,17 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     cmd_lines = str(meta["command"]).split("\n")
 
     env = _compiler_env()
+    # ⓪ 前置：工具链可用性。**先查再跑**——"编译器根本没装/路径失效"是环境故障，须在启动
+    #    任何命令之前就能判出（G6 §4.1），而不是靠事后解析编译器 stderr 反推。
+    try:
+        from toolchain import resolve_gpp
+        gpp = resolve_gpp()
+    except Exception as exc:                                # pragma: no cover
+        gpp = ""
+        log.append(f"  ⚠️ 解析 g++ 失败：{exc}")
+    if not gpp or not Path(gpp).is_file() or not os.access(gpp, os.X_OK):
+        log.append(f"  ⚠️ 编译器不可用：{gpp or '（未解析到）'} → 环境故障，不计入内容恶化")
+        return "infra_error:compiler_missing", log
     (ROOT / "build").mkdir(exist_ok=True)      # 卡命令产物约定写 build/（仓库源只读）
     tmp = Path(tempfile.mkdtemp(prefix="replay_"))
     original = art_path.read_bytes() if art_path.exists() else None   # 校验前快照（见 docstring）
@@ -614,32 +732,76 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         art_path.unlink(missing_ok=True)
 
         results, stdout_all = run_commands(cmd_lines, ROOT, env)
-        bad = [(c, rc, err) for c, rc, err in results if rc != 0]
+        bad = [r for r in results if r[1] != 0]
         if bad:
             log.append(f"  ❌ compile_rc：{len(bad)}/{len(results)} 条命令失败")
-            for c, rc, err in bad[:3]:
+            for c, rc, err, prog in bad[:3]:
                 log.append(f"      rc={rc} {c[:80]} :: {err[:160]}")
-            return "refute:compile_failed", log
+            verdict = classify_command_failure(results)     # 环境故障 vs 内容证伪分流
+            log.append(f"  → {verdict}（首个失败程序：{bad[0][3] or '（命令写法不支持）'}）")
+            return verdict, log
         log.append(f"  ✅ compile_rc    {len(results)} 条命令全部退出码 0")
 
-        # ③ run_match：输出行集合 vs 卡里 run_* 片段集合（行序归一化）
+        # ③ run_match：两种形态（302 三层分离，向后兼容）
+        #   旧形态：actual.run_* = 超长字符串（逐行比对）
+        #   新形态：actual.run_match_file = .out 路径 + actual.run_match_keys = [key1, key2]
         got = [ln.strip() for ln in stdout_all.split("\n") if ln.strip()]
-        variants = {tuple(sorted(p.strip() for p in str(v).split("|") if p.strip()))
-                    for v in (actual[k] for k in run_keys)}
-        if len(variants) > 1:
-            key = meta.get("expected_key")
-            if not key or key not in actual:
-                log.append(f"  ❌ run_match    多组 run_* 值不一致（{len(variants)} 种），"
-                           f"卡须用 expected_key 指明 command 对应哪组")
-                return "refute:ambiguous_expected", log
-            variants = {tuple(sorted(p.strip() for p in str(actual[key]).split("|") if p.strip()))}
-        want = next(iter(variants))
-        if tuple(sorted(got)) != want:
-            log.append("  ❌ run_match    输出与卡不符（精确比对，行序已归一化）")
-            log.append(f"      期望 {len(want)} 行：{list(want)}")
-            log.append(f"      实际 {len(got)} 行：{got}")
-            return "refute:run_mismatch", log
-        log.append(f"  ✅ run_match    输出 {len(got)} 行与 run_* 逐字一致（行序归一化）")
+        if isinstance(actual, dict) and actual.get("run_match_file"):
+            # 新形态：从 .out 提取指定 key，与重跑输出比对
+            out_rel = str(actual["run_match_file"])
+            out_path = ROOT / out_rel
+            if not out_path.is_file():
+                log.append(f"  ❌ run_match    run_match_file 不存在：{out_rel}")
+                return "refute:run_match_file_missing", log
+            want_keys = actual.get("run_match_keys") or []
+            if not want_keys:
+                log.append("  ❌ run_match    run_match_keys 为空")
+                return "refute:run_match_keys_empty", log
+            # 从重跑输出提取 key=value
+            got_kv = {}
+            for ln in got:
+                if "=" in ln:
+                    k, _, v = ln.partition("=")
+                    got_kv[k.strip()] = v.strip()
+            # 从 .out 提取 key=value
+            out_text = out_path.read_text(encoding="utf-8", errors="replace")
+            out_kv = {}
+            for ln in out_text.split("\n"):
+                ln = ln.strip()
+                if "=" in ln and not ln.startswith("#"):
+                    k, _, v = ln.partition("=")
+                    out_kv[k.strip()] = v.strip()
+            # 逐 key 比对
+            mismatches = []
+            for k in want_keys:
+                gv = got_kv.get(k, "<缺失>")
+                ov = out_kv.get(k, "<缺失>")
+                if gv != ov:
+                    mismatches.append(f"{k}: 重跑={gv} .out={ov}")
+            if mismatches:
+                log.append(f"  ❌ run_match    {len(mismatches)}/{len(want_keys)} 个 key 与 .out 不符")
+                for m in mismatches[:5]:
+                    log.append(f"      {m}")
+                return "refute:run_mismatch", log
+            log.append(f"  ✅ run_match    {len(want_keys)} 个 key 与 .out 逐字一致（run_match_file 模式）")
+        else:
+            # 旧形态：逐行比对
+            variants = {tuple(sorted(p.strip() for p in str(v).split("|") if p.strip()))
+                        for v in (actual[k] for k in run_keys)}
+            if len(variants) > 1:
+                key = meta.get("expected_key")
+                if not key or key not in actual:
+                    log.append(f"  ❌ run_match    多组 run_* 值不一致（{len(variants)} 种），"
+                               f"卡须用 expected_key 指明 command 对应哪组")
+                    return "refute:ambiguous_expected", log
+                variants = {tuple(sorted(p.strip() for p in str(actual[key]).split("|") if p.strip()))}
+            want = next(iter(variants))
+            if tuple(sorted(got)) != want:
+                log.append("  ❌ run_match    输出与卡不符（精确比对，行序已归一化）")
+                log.append(f"      期望 {len(want)} 行：{list(want)}")
+                log.append(f"      实际 {len(got)} 行：{got}")
+                return "refute:run_mismatch", log
+            log.append(f"  ✅ run_match    输出 {len(got)} 行与 run_* 逐字一致（行序归一化）")
 
         # ④ artifact_sha：重生成后的工件必须与卡同代
         # 分流（2026-09-10 CI 红因修复）：sha 只在**同一编译器（含平台）**下可复算——
@@ -696,7 +858,7 @@ def find_cards() -> list[Path]:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="证据卡机器复算（confirm / refute）")
+    ap = argparse.ArgumentParser(description="证据卡机器复算（confirm / refute / infra_error）")
     ap.add_argument("--card", action="append", default=[], help="指定证据卡（可多次）")
     ap.add_argument("--check", action="store_true", help="任一 refute 即 exit 1")
     ap.add_argument("--no-sanitizer", action="store_true", help="跳过 sanitizer 校验")
@@ -710,18 +872,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("[replay] 未找到证据卡（evidence/**/EV-*.md）")
         return 0
 
-    n_ok = n_bad = 0
+    n_ok = n_refute = n_infra = 0
     for card in cards:
         verdict, log = replay_card(card, do_sanitizer=not a.no_sanitizer,
                                    keep_tmp=a.keep_tmp,
                                    restore_artifact=not a.no_restore)
-        ok = verdict == "confirm"
-        n_ok += ok
-        n_bad += not ok
+        if verdict == "confirm":
+            n_ok += 1
+        elif verdict.startswith("infra_error:"):
+            n_infra += 1
+        else:
+            n_refute += 1
         print("\n".join(log))
         print(f"  → {verdict}\n")
-    print(f"[replay] confirm={n_ok} refute={n_bad} 共 {len(cards)} 张卡")
-    return 1 if (a.check and n_bad) else 0
+    print(f"[replay] confirm={n_ok} refute={n_refute} infra_error={n_infra} 共 {len(cards)} 张卡")
+    # fail-closed：refute 或 infra_error 任一 > 0 都 exit 1（infra_error 不是逃生舱）
+    return 1 if (a.check and (n_refute or n_infra)) else 0
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
  "commit": "",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 9,
+  "warn_findings": 8,
   "atoms_total": 23,
   "evidence_total": 48,
   "verified_atoms": 23,
@@ -12,7 +12,8 @@
   "red_team_verified": 3,
   "machine_verified": 0,
   "dal_gap": 0,
-  "replay_confirm": 48
+  "replay_confirm": 48,
+  "replay_infra_error": 0
  },
  "accepted": [
   {
