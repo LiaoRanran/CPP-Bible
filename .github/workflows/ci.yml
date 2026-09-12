@@ -114,6 +114,26 @@ jobs:
         fi
       continue-on-error: false
 
+    - name: Worktree Cleanliness (受控目录被工具改写即红 · 369 P1-3)
+      # 为什么：replay 会重编译夹具并可能改写 Examples/*.asm（正常应自动 restore）；
+      # restore 失败或工具异常会留下"被改写的工件"而无人察觉——下一次 replay 即以它为基准，
+      # 形成慢性漂移。故在 replay 步**之后**立刻校验受控目录的清洁性。
+      # 路径白名单：仅 Examples/atoms/ atoms/ evidence/ + tools/golden_state.json；
+      # build/ 等 ignore 产物、References/ 等文档目录不在其列（避免误伤）。
+      # 为何用 Examples/atoms/ 而非整个 Examples/（369 实测对任务书字面的收窄）：Examples/ 根下
+      # 是 Book 章节示例（实测 437 个 .cpp 有历史行尾漂移：工作树 CRLF vs 索引 LF，非本批产物；
+      # Windows git 因 stat 缓存不可见、WSL git 可见）——全目录检查会让 WSL 本地预检恒红，
+      # 使门禁沦为"狼来了"。而 replay 等工具**只写 Examples/atoms/**，收窄不损失判别力。
+      run: |
+        dirty="$(git status --porcelain -- Examples/atoms/ atoms/ evidence/ tools/golden_state.json)"
+        if [ -n "$dirty" ]; then
+          echo "::error::受控目录工作树不干净——工具改写了受控文件而未被提交或还原"
+          printf '%s\n' "$dirty"
+          exit 1
+        fi
+        echo "OK: 受控目录工作树干净（Examples/ atoms/ evidence/ tools/golden_state.json）"
+      continue-on-error: false
+
     - name: Gate Engine (M4 规则引擎：事实门禁 block + 双清单收敛)
       # 规则全集见 docs/kernel/M4_gate_engine.md；block 级违规即红，warn 记债不红，
       # advice（教学/文学）只建议不改文。规则可实现按 ADR-0004 挂在 cmd_check 上。

@@ -11,6 +11,11 @@ CI 里「快」校验（quality / consistency / metrics / compile_gate / audit /
 不该进库。`_probe*`/`_tu_*` 等刻意开发草稿（.gitignore 已明确忽略）豁免；已跟踪的
 改动由各自门禁管，不在此拦截。
 
+工作树清洁规则（369 P1-3，与 CI Worktree Cleanliness 步同款）：受控目录
+`Examples/atoms/` `atoms/` `evidence/` `tools/golden_state.json` 出现**任何**未提交
+改动（含 ` M` 与 `??`）即阻断——replay 重编译可能改写 `Examples/atoms/*.asm`，被改写
+而无人察觉会形成慢性漂移（下次 replay 以改写后工件为基准）。先提交或还原再 push。
+
 用法
 ====
   python tools/prepush_check.py              # 快校验 + 卫生（默认）
@@ -98,6 +103,34 @@ def _hygiene() -> tuple[bool, str]:
     return True, "无未提交根级编译产物"
 
 
+# 为何用 Examples/atoms/ 而非整个 Examples/（369 实测对任务书字面的收窄）：
+# Examples/ 根下是 Book 章节示例（实测 437 个 .cpp 有历史行尾漂移：工作树 CRLF vs 索引 LF，
+# 非本批产物；Windows git 因 stat 缓存不可见、WSL git 可见）——全目录检查会让 WSL 本地
+# 预检恒红；而 replay 等工具只写 Examples/atoms/，收窄不损失判别力。
+CORE_DIRTY_PATHS = ("Examples/atoms/", "atoms/", "evidence/", "tools/golden_state.json")
+
+
+def _worktree_core_clean() -> tuple[bool, str]:
+    """受控目录（Examples/ atoms/ evidence/ golden_state）不得有未提交改动。
+
+    为什么（369 P1-3）：replay 会重编译夹具并可能改写 `Examples/*.asm`（默认自动
+    restore，但失败时静默）；被改写而无人察觉时，下一次 replay 会以"被改写后的工件"
+    为基准，形成慢性漂移。CI 侧同款检查见 ci.yml 的 Worktree Cleanliness 步（replay 后）。
+    """
+    try:
+        r = subprocess.run(["git", "status", "--porcelain", "--", *CORE_DIRTY_PATHS],
+                           cwd=str(ROOT), capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=15, check=False)
+    except (OSError, subprocess.SubprocessError) as e:
+        return False, f"git 失败: {e}"
+    dirty = [ln.strip() for ln in r.stdout.splitlines() if ln.strip()]
+    if dirty:
+        sample = "; ".join(d[:48] for d in dirty[:4])
+        more = f" …共 {len(dirty)} 项" if len(dirty) > 4 else ""
+        return False, f"受控目录有未提交改动：{sample}{more}（先提交或还原）"
+    return True, "受控目录干净（Examples/ atoms/ evidence/ golden_state.json）"
+
+
 def _install_hook() -> int:
     hook_dir = ROOT / ".git" / "hooks"
     hook = hook_dir / "pre-push"
@@ -160,6 +193,10 @@ def main() -> int:
         ok, summary = _hygiene()
         print(f"  [{'✅' if ok else '✗'}] hygiene: {summary}")
         if not ok:
+            fails += 1
+        ok_wt, summary_wt = _worktree_core_clean()
+        print(f"  [{'✅' if ok_wt else '✗'}] worktree: {summary_wt}")
+        if not ok_wt:
             fails += 1
 
     print()
