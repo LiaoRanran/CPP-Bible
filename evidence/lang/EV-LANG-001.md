@@ -74,8 +74,10 @@ actual:
     - stO0b_sa
     - stO0b_sb
 artifact_assert:
-  - {kind: contains_in, symbol: "_Z10tu_a_valuev", scope: file}
-  - {kind: contains_in, symbol: "_Z11tu_a_stablev", scope: file}
+  - {kind: contains_in, symbol: "_Z10tu_a_valuev", text: "movl $1, %eax"}
+  - {kind: absent_in, symbol: "_Z10tu_a_valuev", text: "call"}
+  - {kind: contains_in, symbol: "_Z11tu_a_stablev", text: "movl $42, %eax"}
+  - {kind: call_count, symbols: ["_Z10tu_a_valuev", "_Z11tu_a_stablev"], max: 0}
 falsification: |
   若以下任一发生，判 refute：
   1. 「零诊断」由 `-Werror` 承担：三条 `-Wall -Wextra -Werror` 编译**任一 rc≠0**（即编译器发出警告或
@@ -138,12 +140,23 @@ expected: |
 `_atom_inline_odr_main.asm` 的 `main` 对四个包装函数各有一条 `call`（跨 TU 调用未内联），是"观测点不在
 同一 TU"的结构证据。
 
-> **本卡唯一机器断言的判别力声明（诚实披露）**：`artifact_assert` 的两条 `contains_in` 锚的是
-> **外部链接包装函数的符号存在性**——它们在**任何**档位、无论内联与否都会发射，属"工件与夹具同代"的
-> **最低锚**，**不对"内联是否发生"具备判别力**。该判别力由 §2 的运行读数（E1–E4）与 §3 正文的
-> `movl $1`/`movl $2` 留痕承担。这是 `contains_in` 只能锚符号名的能力边界（见 §7 S2），
-> **不试图用 `call_count` 替代**：项目既有教训（`EV-MEM-001`）显示调用点数量随编译器版本漂移，
-> 换用会把本卡变成跨编译器脆弱断言。
+> **本卡机器断言的判别力声明（2026-09-12 W2 修复后重写）**：`artifact_assert` 四条——
+> ① `contains_in … "movl $1, %eax"`：TU A 中 `odr_fn()` 被常量折叠并**内联**进 `tu_a_value` 的
+> 直接工件证据（若内联未发生，函数体内是 `call` 而非立即数 → refute）；② `absent_in … "call"`：
+> 同一函数区间的否定证据——**内联与否是质变**，不随指令选择/寄存器分配漂移，跨编译器稳健；
+> ③ 活性对照 `stable_fn` 的 `movl $42, %eax`；④ `call_count … max: 0`：本 TU 是这两个包装函数的
+> **定义方**，不应出现对它们的调用点。
+>
+> 关于 ④ **不违反原段落对 `call_count` 的顾虑**：漂移的是**精确次数**（实测 3 vs 4），而 `max: 0`
+> 锚的是**"有无调用"的质变**——内联成立时任何编译器都产生 0 个调用点，故阈值形态跨编译器稳健
+> （此即 W2 对断言引擎的扩展：`min`/`max` 区间语义，见 `tools/atom_evidence_replay.py`）。
+> ①–④ 均两平台实测成立（MinGW GCC 15.3 / WSL GCC 13.3）。
+>
+> **修复背景（诚实记录）**：本卡原有两条 `{contains_in, symbol: …, scope: file}` —— `scope` 是引擎
+> **从未支持**的键（被静默忽略）且缺 `text`，而空 `text` 的 `str.count("")` 恒为 `len+1 > 0`，
+> 故两条断言实际退化为**恒真断言**（零校验，比无断言更隐蔽）。引擎已补参数完备性检查
+> （缺参/未知键一律判失败，见 `_ASSERT_ALLOWED_KEYS`），断言随之改为上述真实锚。
+> 同批修复另 5 张卡（CONC-003/004/005/006、LANG-002）的同型失效断言。
 
 ## §4 机制判别对照：内部链接孪生（本轮红队要求补做的强对照）
 

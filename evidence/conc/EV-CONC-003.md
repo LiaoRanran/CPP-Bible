@@ -41,10 +41,10 @@ actual:
     - atomic_result
     - cas_result
 artifact_assert:
-  - {kind: contains_in, symbol: "_Z12bench_singlev", scope: file}
-  - {kind: contains_in, symbol: "_Z11bench_mutexv", scope: file}
-  - {kind: contains_in, symbol: "_Z18bench_atomic_fetchv", scope: file}
-  - {kind: contains_in, symbol: "_Z16bench_atomic_casv", scope: file}
+  - {kind: contains, text: "_Z12bench_singlev"}
+  - {kind: contains, text: "_Z11bench_mutexv"}
+  - {kind: contains, text: "_Z18bench_atomic_fetchv"}
+  - {kind: contains, text: "_Z16bench_atomic_casv"}
 falsification: |
   若以下任一发生，判 refute：
   1. 任一 bench_* 函数符号在 -O2 工件中消失（被内联/消除）→ 实验路径未真实编译进工件；

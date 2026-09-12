@@ -50,7 +50,7 @@ actual:
     - o2b_tu_a
     - o2b_tu_b
 artifact_assert:
-  - {kind: contains_in, symbol: "_Z10tu_a_valuev", scope: file}
+  - {kind: contains, text: "_Z10tu_a_valuev"}
 falsification: |
   若以下任一发生，判 refute：
   1. `-O0` 两链接顺序输出相同（ab_tu_a == ba_tu_a）→「未内联时链接器取其一」被否；

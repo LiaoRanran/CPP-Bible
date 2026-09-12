@@ -40,8 +40,8 @@ actual:
     - atomic_result
     - cas_result
 artifact_assert:
-  - {kind: contains_in, symbol: "_Z18bench_atomic_fetchv", scope: file}
-  - {kind: contains_in, symbol: "_Z16bench_atomic_casv", scope: file}
+  - {kind: contains, text: "_Z18bench_atomic_fetchv"}
+  - {kind: contains, text: "_Z16bench_atomic_casv"}
 falsification: |
   若原子 RMW 函数体不含 lock 前缀指令（编译器将同步语义优化掉）→ 判 refute：
   1. bench_atomic_fetch 体内无 `lock addl`；

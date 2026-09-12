@@ -38,9 +38,9 @@ actual:
     - safe_ops_total
     - safe_final
 artifact_assert:
-  - {kind: contains_in, symbol: "_Z12bench_singlev", scope: file}
-  - {kind: contains_in, symbol: "_Z10bench_racev", scope: file}
-  - {kind: contains_in, symbol: "_Z10bench_safev", scope: file}
+  - {kind: contains, text: "_Z12bench_singlev"}
+  - {kind: contains, text: "_Z10bench_racev"}
+  - {kind: contains, text: "_Z10bench_safev"}
 falsification: |
   若以下任一发生，判 refute：
   1. 同一份夹具在 -fsanitize=thread（setarch -R）下 race 版本不报 data race —— 说明"竞争"不构成可检 data race；

@@ -38,9 +38,9 @@ actual:
     - safe_ops_total
     - safe_final
 artifact_assert:
-  - {kind: contains_in, symbol: "_Z12bench_singlev", scope: file}
-  - {kind: contains_in, symbol: "_Z10bench_racev", scope: file}
-  - {kind: contains_in, symbol: "_Z10bench_safev", scope: file}
+  - {kind: contains, text: "_Z12bench_singlev"}
+  - {kind: contains, text: "_Z10bench_racev"}
+  - {kind: contains, text: "_Z10bench_safev"}
 falsification: |
   若以下任一发生，判 refute：
   1. 任一 bench_* 函数符号在 -O2 工件中消失（被内联/消除）→ 实验路径未真实编译进工件；
