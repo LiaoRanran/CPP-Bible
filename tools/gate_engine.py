@@ -892,6 +892,113 @@ def check_evidence_out_undeclared_key() -> list[Finding]:
     return out
 
 
+# 373-B2 窄化（2026-09-13）：**无判别力的通用符号**——几乎出现在任何工件里，
+# 拿它当断言等于没有断言（373 独立渗透 B2-R1 的载荷正是 `contains "main"`）。
+UNIVERSAL_SYMBOLS = frozenset({
+    "main", "call", "ret", "retq", "nop", "endbr64", "pushq", "popq", "movq", "movl",
+    "lea", "jmp", "je", "jne", "cmp", "test", "add", "sub", "xor", "leave",
+})
+_IDENT_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]{2,}")
+_CJK_RE = re.compile(r"[一-鿿]")
+
+
+def _assert_targets(rule: dict) -> tuple[bool, list[str]]:
+    """一条 `artifact_assert` 的目标文本 → (是否 any-of 形态, 文本列表)。
+
+    与 `atom_evidence_replay.check_artifact_assert` 同构（同一套 kind 语义）：
+    `contains_any`/`call_count` 是**任一候选命中即成立**，故只要有一个可映射即算有出处。
+    """
+    kind = str(rule.get("kind") or "")
+    if kind in ("contains", "absent"):
+        return False, [str(rule.get("text") or "")]
+    if kind in ("contains_any", "absent_any"):
+        return True, [str(t) for t in (rule.get("texts") or [])]
+    if kind == "call_count":
+        syms = [str(s) for s in (rule.get("symbols") or [])]
+        return True, syms or ([str(rule["symbol"])] if rule.get("symbol") else [])
+    if kind in ("contains_in", "absent_in"):
+        return False, [str(rule.get("symbol") or "")]
+    return False, []
+
+
+def _assert_haystack(meta: dict) -> str:
+    """断言的可映射空间 = 夹具源码 ∪ 全部工件文本（`artifact` + `artifacts[]`）。"""
+    parts: list[str] = []
+
+    def _add(rel: object) -> None:
+        f = ROOT / str(rel or "")
+        if f.is_file():
+            parts.append(f.read_text(encoding="utf-8", errors="replace"))
+        elif f.is_dir():
+            for x in sorted(f.rglob("*")):
+                if x.is_file():
+                    parts.append(x.read_text(encoding="utf-8", errors="replace"))
+    _add(meta.get("fixture") or "")
+    _add(meta.get("artifact") or "")
+    for e in (meta.get("artifacts") or []):
+        _add(e if isinstance(e, str) else (e.get("path") or e.get("file") or ""))
+    return "\n".join(parts)
+
+
+def check_evidence_assert_symbol_mapped() -> list[Finding]:
+    """373-B2 窄化（`EV-ASSERT-SYMBOL-MAPPED`）：断言文本必须**可定位到真实出处**。
+
+    为何：B2 的两类逃逸都出在"断言对象"上——
+      - **通用符号**（`main`/`call`/`ret`）：任何工件里都有 ⇒ 断言**恒真**，零判别力；
+      - **拼错/平台专属符号**：任何工件里都没有 ⇒ 断言永不成立或被绕过，读者却以为有校验。
+
+    判据：断言文本须命中 ∈ {夹具源码 ∪ 本卡全部工件文本 ∪ 卡内显式 `symbol_map`}。
+    **不做模糊匹配**（`spin_plain` → `_Z10spin_plainv` 的映射不可靠，裁决 §2.2 明令禁止）：
+    需要跨形态对应时由卡内**显式声明** `symbol_map: {spin_plain: _Z10spin_plainv}`。
+
+    分级（实测 56 卡后的取舍）：
+      - 通用符号不可映射 → **block**（零判别力载荷，一律拦）；
+      - 其它符号不可映射 → **warn**（可能是平台拼写差异，非必然伪造）；
+      - 纯散文断言（含中文且无 ASCII 标识符）→ **跳过**，由红队/人审承担（裁决 §2.2）。
+
+    实测（2026-09-13，56 卡）：命中 1 张（EV-MEM-017 断言 `_Znwm`，而 MinGW 工件里
+    operator new 实为 `_Znwy`——size_t 在 LLP64 下是 unsigned long long）。这是**真缺陷**：
+    该卡在 Windows 侧走 sha 比对、断言从未被评估，故双平台 confirm 掩盖了它。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        rules = meta.get("artifact_assert")
+        rules = [r for r in rules if isinstance(r, dict)] if isinstance(rules, list) else []
+        if not rules:
+            continue
+        hay = _assert_haystack(meta)
+        sm = meta.get("symbol_map") or {}
+        sm_space = set(sm) | {str(v) for v in sm.values()} if isinstance(sm, dict) else set()
+        bad_universal: list[str] = []
+        bad_other: list[str] = []
+        for r in rules:
+            any_of, texts = _assert_targets(r)
+            texts = [t for t in texts if t]
+            if not texts or all(_CJK_RE.search(t) and not _IDENT_RE.search(t) for t in texts):
+                continue                                   # 散文断言：交人审
+            mapped = [t for t in texts if t in hay or t in sm_space]
+            if any_of and mapped:
+                continue
+            if not any_of and len(mapped) == len(texts):
+                continue
+            miss = [t for t in texts if t not in hay and t not in sm_space]
+            for t in miss:
+                (bad_universal if t in UNIVERSAL_SYMBOLS else bad_other).append(t)
+        if bad_universal:
+            out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "block", _rel(p),
+                               f"断言锚定无判别力的通用符号 {sorted(set(bad_universal))}"
+                               "（不在夹具源码、无 symbol_map ⇒ 恒真断言）",
+                               "改锚有判别力的符号（调用点/本机 mangled 名），"
+                               "并用 symbol_map 显式声明夹具名 → 工件符号名"))
+        elif bad_other:
+            out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "warn", _rel(p),
+                               f"断言文本在夹具/工件中均无出处：{sorted(set(bad_other))}"
+                               "（疑似拼错或平台专属拼写，读者会以为有校验）",
+                               "核对工件实测拼写；跨形态对应请显式声明 symbol_map"))
+    return out
+
+
 _ZERO_DIAG_RE = re.compile(
     r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
 
@@ -1241,6 +1348,8 @@ def _register_all() -> None:
          check_evidence_zero_diag_werror),
         ("EV-OUT-UNDECLARED-KEY", ".out 读数键须在 run_match_keys 声明（B3 窄化）",
          "evidence", check_evidence_out_undeclared_key),
+        ("EV-ASSERT-SYMBOL-MAPPED", "断言文本须可定位（夹具/工件/symbol_map，B2 窄化）",
+         "evidence", check_evidence_assert_symbol_mapped),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn",
@@ -1251,7 +1360,10 @@ def _register_all() -> None:
            # （不阻断存量，但在门禁可见；漏登记会默认 block，与 Finding 实际级别不符）
            "EV-ZERO-DIAG-WERROR": "warn",
            # 2026-09-13（373-B3 窄化）：未声明读数键与"编造键"结构上不可区分 ⇒ 只 warn
-           "EV-OUT-UNDECLARED-KEY": "warn"}
+           "EV-OUT-UNDECLARED-KEY": "warn",
+           # （EV-ASSERT-SYMBOL-MAPPED 规则级登记为 block：通用符号载荷一律拦；
+           #   单条 Finding 对"疑似拼写差异"降为 warn，故混合级别是刻意的）
+           }
     for rid, title, scope, fn in fact:
         register(Rule(rid, title, "fact", "programmatic", sev.get(rid, "block"), scope,
                       check=fn))

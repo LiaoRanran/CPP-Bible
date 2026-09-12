@@ -323,6 +323,55 @@ def test_out_declared_keys_pass(sandbox: Path):
     assert ge.check_evidence_out_undeclared_key() == []
 
 
+def _write_ev_with_artifact(sandbox: Path, fx_text: str, art_text: str,
+                            asserts: str, **over: str) -> None:
+    """写一张带真实夹具/工件文件的证据卡（断言映射检查需要读文件内容）。"""
+    fx = sandbox / "fx.cpp"
+    fx.write_text(fx_text, encoding="utf-8")
+    art = sandbox / "a.asm"
+    art.write_text(art_text, encoding="utf-8")
+    _write_ev(sandbox, fixture=fx.as_posix(), artifact=art.as_posix(),
+              artifact_assert="\n" + asserts, **over)
+
+
+def test_assert_universal_symbol_blocks(sandbox: Path):
+    """阳性（373-B2）：断言锚定 `main` 这类无判别力符号 → block（恒真载荷）。"""
+    _write_ev_with_artifact(sandbox, "void f(){}\n", "f:\n\tret\n",
+                            '  - {kind: contains, text: "main"}')
+    hits = ge.check_evidence_assert_symbol_mapped()
+    assert hits and hits[0].severity == "block", "通用符号断言必须拦（零判别力）"
+
+
+def test_assert_symbol_without_source_warns(sandbox: Path):
+    """阳性（373-B2）：符号在夹具/工件中均无出处 → warn（拼错或平台专属拼写）。"""
+    _write_ev_with_artifact(sandbox, "void f(){}\n", "f:\n\tret\n",
+                            '  - {kind: contains, text: "_Znotexist"}')
+    hits = ge.check_evidence_assert_symbol_mapped()
+    assert hits and hits[0].severity == "warn", "无出处的符号名必须可见（不阻断，但别装作有校验）"
+
+
+def test_assert_symbol_mapped_passes(sandbox: Path):
+    """阴性：符号在工件里有出处 → 放行。"""
+    _write_ev_with_artifact(sandbox, "void f(){}\n", "_Znwy:\n\tret\n",
+                            '  - {kind: contains, text: "_Znwy"}')
+    assert ge.check_evidence_assert_symbol_mapped() == []
+
+
+def test_assert_symbol_map_declared_passes(sandbox: Path):
+    """阴性：卡内**显式** symbol_map 声明夹具名→工件符号 → 放行（工具不做模糊匹配）。"""
+    _write_ev_with_artifact(sandbox, "void spin_plain(){ }\n", "spin_other:\n\tret\n",
+                            '  - {kind: contains, text: "_Z10spin_plainv"}',
+                            symbol_map="\n  spin_plain: _Z10spin_plainv")
+    assert ge.check_evidence_assert_symbol_mapped() == []
+
+
+def test_assert_prose_skipped(sandbox: Path):
+    """阴性：纯散文断言不由本规则拦（裁决 §2.2 交红队/人审），不得误报。"""
+    _write_ev_with_artifact(sandbox, "void f(){}\n", "f:\n\tret\n",
+                            '  - {kind: contains, text: "空壳工件"}')
+    assert ge.check_evidence_assert_symbol_mapped() == []
+
+
 def test_missing_falsification_blocks(sandbox: Path):
     _write_ev(sandbox, falsification="")
     hits = ge.check_evidence_falsification()

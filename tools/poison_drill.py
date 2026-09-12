@@ -433,6 +433,48 @@ def drill() -> int:
         results.append(("P14-阴 声明完整的 .out 必须放行", ok2,
                         f"误报 {', '.join(sorted(who2)) or '无'}"))
 
+    # ── P15 断言文本须可定位（373-B2 窄化，阴阳各二）───────────────────────────
+    # 373 独立渗透 B2-R1：断言 `contains "main"` —— 任何工件里都有 main ⇒ **恒真断言**，
+    # 读者以为有校验、实际零判别力。裁决 §2.2 的映射判据把它挡在"夹具/工件/symbol_map"
+    # 三处之外；拼错/平台专属拼写（无出处）同样不许蒙混。
+    # 阴例①：符号在工件里有出处 → 放行。阴例②：卡内**显式** symbol_map 声明 → 放行
+    # （工具**不做**"spin_plain → _Z10spin_plainv"的模糊匹配，只认显式声明）。
+    with sandbox() as tmp:
+        fx = tmp / "_fx.cpp"
+        fx.write_text("void spin_plain(){ }\n", encoding="utf-8")
+        art = tmp / "_art.asm"
+        art.write_text("spin_other:\n\tret\n", encoding="utf-8")
+
+        def _sev(name: str, asserts: str, extra: str = "") -> list[str]:
+            _write(ge.EVIDENCE / "mem" / f"{name}.md", {
+                "id": name, "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+                "command": "g++ -S x.cpp -o a.asm", "fixture": fx.as_posix(),
+                "artifact": art.as_posix(), "artifact_sha256": "0" * 64,
+                "artifact_assert": "\n" + asserts + extra,
+                "actual": "{run_case: A}", "kind": "run", "verdict": "confirm",
+                "falsification": "对照输出 1",
+            })
+            return sorted({f.severity for f in ge.check_evidence_assert_symbol_mapped()
+                           if name in f.target})
+
+        sev = _sev("EV-MEM-ASM1", '  - {kind: contains, text: "main"}')
+        who = {f.rule_id for f in ge.check_evidence_assert_symbol_mapped()}
+        ok = "EV-ASSERT-SYMBOL-MAPPED" in who and "block" in sev
+        results.append(("P15 通用符号断言（373-B2 恒真载荷）", ok,
+                        f"级别 {sev or '（漏网！）'}"))
+        sev2 = _sev("EV-MEM-ASM2", '  - {kind: contains, text: "_Znotexist"}')
+        results.append(("P15 断言符号无出处（拼错/平台专属拼写）", "warn" in sev2,
+                        f"级别 {sev2 or '（漏网！）'}"))
+        art.write_text("_Znwy:\n\tret\n", encoding="utf-8")
+        sev3 = _sev("EV-MEM-ASM3", '  - {kind: contains, text: "_Znwy"}')
+        results.append(("P15-阴 工件内有出处的断言必须放行", not sev3,
+                        f"误报 {sev3 or '无'}"))
+        art.write_text("spin_other:\n\tret\n", encoding="utf-8")
+        sev4 = _sev("EV-MEM-ASM4", '  - {kind: contains, text: "_Z10spin_plainv"}',
+                    "\nsymbol_map:\n  spin_plain: _Z10spin_plainv")
+        results.append(("P15-阴 symbol_map 显式声明必须放行", not sev4,
+                        f"误报 {sev4 or '无'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
