@@ -12,10 +12,16 @@ audience: intermediate            # 知道 malloc/new 与容器，但选型时�
 cognitive_load: medium            # 需同时持有"三种策略的元数据成本"与"各自的释放模式前提"
 prerequisites_readable: true
 depth: runtime
-pedagogy: >-
-  先用一句话把三者串起来（元数据换灵活性），再用同一 workload 的三个量化读数让读者自己看出
-  差异从哪来；最后用"释放模式两问"落成选型判据，并显式写下 arena 零碎片的前提
-  ——避免把"某个模式下的性质"读成"分配器的属性"。
+pedagogy:
+  # 373 §4：折叠字符串 → 结构化（PED-MOTIVATION/SOCRATIC/PREDICT-FIRST 此前对折叠块静默跳过）
+  # 文本一字未改，仅按原句语义归入三字段
+  motivation: >-
+    先用一句话把三者串起来（元数据换灵活性）
+  socratic: >-
+    再用同一 workload 的三个量化读数让读者自己看出差异从哪来
+  predict_first: >-
+    最后用"释放模式两问"落成选型判据，并显式写下 arena 零碎片的前提
+    ——避免把"某个模式下的性质"读成"分配器的属性"。
 claim: >-
   三种小对象分配策略的元数据开销与**是否支持单块释放**绑定，可用统一口径
   （struct_bytes + bookkeeping_bytes）量化：同一 workload（1000 次 24 B 分配，-O2）下，

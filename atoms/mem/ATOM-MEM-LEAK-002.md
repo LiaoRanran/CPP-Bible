@@ -12,10 +12,14 @@ audience: intermediate            # 会用 shared_ptr/sanitizer，但把"工具�
 cognitive_load: medium            # 需同时持有"三层信号分级"与"工具报告的环境依赖"
 prerequisites_readable: true
 depth: runtime
-pedagogy: >-
-  先立起一个"工具没报"的具体场景（真闭环 + LSan 零报告），让读者亲历信号与结论之间的缝隙；
-  再给三层信号分级（零依赖观测 / 可复算结构读数 / 工具报告），最后落成一句可操作的自检问句：
-  "如果真泄漏了，我这个信号会不会变？"
+pedagogy:
+  # 373 §4：折叠字符串 → 结构化（PED 三条规则此前对折叠块静默跳过）；文本一字未改
+  motivation: >-
+    先立起一个"工具没报"的具体场景（真闭环 + LSan 零报告），让读者亲历信号与结论之间的缝隙
+  socratic: >-
+    再给三层信号分级（零依赖观测 / 可复算结构读数 / 工具报告）
+  predict_first: >-
+    最后落成一句可操作的自检问句："如果真泄漏了，我这个信号会不会变？"
 claim: >-
   泄漏检测工具的**报告与否高度依赖被测代码的具体形态**，因此不能直接等价于泄漏有无：
   同一份循环引用夹具、同一编译器与档位（WSL/Linux `-O1 -g -fsanitize=address,undefined`），
