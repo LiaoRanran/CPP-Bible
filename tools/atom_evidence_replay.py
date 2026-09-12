@@ -99,11 +99,28 @@ def _strip_comment(s: str) -> str:
 
 
 def _split_flow(inner: str) -> list[str]:
-    """按顶层逗号切分 flow 内容（不切 `{}`/`[]` 内部）。"""
+    """按顶层逗号切分 flow 内容（不切 `{}`/`[]` 内部，**也不切引号内的逗号**）。
+
+    2026-09-12（W2 实跑暴露的真 bug）：旧版只跟踪括号深度、不跟踪引号 ——
+    `{kind: contains_in, symbol: X, text: "movl $1, %eax"}` 会在引号内的逗号处被切断，
+    得到 `text: "movl $1`（残缺 + 带引号），断言文本静默错误；而该错误**只在跨编译器
+    路径暴露**（同编译器走 sha256、断言根本不执行），本机全绿、CI 红。汇编文本几乎必然
+    含逗号（`movl $1, %eax`、`call foo, bar` 形式），故引号感知是断言可用的前提。
+    """
     out: list[str] = []
     depth = 0
+    quote = ""
     cur: list[str] = []
     for ch in inner:
+        if quote:
+            cur.append(ch)
+            if ch == quote:
+                quote = ""
+            continue
+        if ch in "\"'":
+            quote = ch
+            cur.append(ch)
+            continue
         if ch in "[{":
             depth += 1
         elif ch in "]}":
@@ -447,6 +464,18 @@ def _current_toolchain_id() -> str:
         return ""
 
 
+# 各断言种类允许的键（2026-09-12，W2）：出现表外键 → 判失败。
+# 为什么：写出无效参数而引擎静默忽略，会让作者误以为断言在生效——实测来源是
+# EV-LANG-001 的 `scope: file`（引擎从未支持该键，两条断言实际退化为恒真）。
+_ASSERT_ALLOWED_KEYS: dict[str, set[str]] = {
+    "call_count": {"kind", "symbols", "symbol", "count", "min", "max"},
+    "contains_any": {"kind", "texts"},
+    "contains": {"kind", "text"},
+    "absent": {"kind", "text"},
+    "contains_in": {"kind", "symbol", "text"},
+    "absent_in": {"kind", "symbol", "text"},
+}
+
 _SYMBOL_BODY_STOP = re.compile(
     r"(?m)^(?:[^\s.][^\s:]*:\s*$|\s*\.(?:cfi|seh)_endproc\s*$)")
 
@@ -483,10 +512,14 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
       - `contains_any`  `{kind: contains_any, texts: ["call\tmalloc", "call\t_Znwm"]}`
                        任候出现即可——**跨平台/跨版本首选形态**（符号名与拼写差异都吸收掉）
       - `absent`        `{kind: absent, text: "call _Znwm"}`            必须不出现（反例路径）
-      - `call_count`    `{kind: call_count, symbols: ["malloc"], count: 3}`  调用计数
-                        ⚠️ 调用点数量随编译器的内联决策变化（实测同一夹具 GCC 15.3 = 3 次、
-                        GCC 13.1 = 4 次），**只在单一编译器平台的卡上使用**；跨编译器卡请改用
+      - `call_count`    `{kind: call_count, symbols: ["malloc"], count: 3}`  调用计数（**精确值**）
+                        ⚠️ 精确次数随编译器的内联决策变化（实测同一夹具 GCC 15.3=3 / 13.1=4），
+                        **只在单一编译器平台的卡上使用**；跨编译器卡请改用阈值形态或
                         符号存在性断言，把"次数"语义交给运行层 run_match（跨平台稳定）。
+                        **阈值形态（2026-09-12 W2）**：`{..., max: 0}` / `{..., min: 1}` /
+                        `{..., min: 1, max: 4}` —— 只锚"有无调用 / 量级区间"这类**质变**
+                        （内联与否在任何编译器下都是质变，不随指令选择漂移）。内联证据
+                        首选 `max: 0`（调用点必须消失），其否定用 `min: 1`。
       - `contains_in`   `{kind: contains_in, symbol: "_Z10spin_plainv", text: "g_b"}`  必须出现
                         且**只在 `symbol` 的函数体区间内**计数
       - `absent_in`     `{kind: absent_in,  symbol: "_Z10spin_plainv", text: "g_b"}`  不得出现
@@ -500,6 +533,13 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
 
     文本比较前做**空白归一**（`\t` → 空格，含卡里字面写的 `\t`）：不同平台/编译器的汇编用
     不同空白分隔（`call\tmalloc` vs `call malloc`），归一后断言才可比。
+
+    **参数完备性（2026-09-12，W2 fail-closed）**：缺 `text` / `symbols` 等必填参数、或出现
+    表外键（`_ASSERT_ALLOWED_KEYS`）→ 判失败。两条理由均为实测：① 空 `text` 的
+    `str.count("")` 恒为 `len+1 > 0` ⇒ `contains*` 退化为**恒真断言**（比没有断言更危险：
+    看起来有校验，实际全放行）、`absent*` 退化为**恒假**；② 写出无效参数而引擎静默忽略
+    （EV-LANG-001 曾有的 `scope: file`）会让作者误以为断言在生效。
+    **断言是安全设施——"写得让引擎看不懂"必须红，不许猜、不许放行。**
     """
     rules = meta.get("artifact_assert")
     rules = [r for r in rules if isinstance(r, dict)] if isinstance(rules, list) else []
@@ -514,43 +554,80 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
     ok = True
     for r in rules:
         kind = str(r.get("kind") or "")
-        if kind == "call_count":
+        allowed = _ASSERT_ALLOWED_KEYS.get(kind)
+        unknown = sorted(set(r) - allowed) if allowed else []
+        if unknown:
+            # 2026-09-12（W2）：写出无效参数而引擎静默忽略，会让作者误以为断言在生效
+            # ——实测 EV-LANG-001 的 `scope: file`（引擎从未支持该键）即此误解来源。
+            hit = False
+            lines.append(f"    ❌ {kind} 含未知参数 {unknown}（不猜，判失败）")
+        elif kind == "call_count":
             syms = [str(s) for s in (r.get("symbols") or [])] or \
                    ([str(r["symbol"])] if r.get("symbol") else [])
-            want = int(r.get("count") or 0)
-            # 多符号**求和**：同一逻辑在不同平台走不同入口（MinGW 的 operator new 是
-            # `jmp malloc` 跳板 → `call malloc`；Linux 是弱符号 → `call _Znwm@PLT`），
-            # 而"分配入口被调用几次"这一语义跨平台一致。
-            got = sum(1 for ln in text.split("\n")
-                      if any(re.search(rf"\bcall\s+{re.escape(s)}\b", ln) for s in syms))
-            hit = got == want
-            lines.append(f"    {'✅' if hit else '❌'} call_count {'/'.join(syms)}"
-                         f" 期望 {want} 实得 {got}")
+            lo, hi = r.get("min"), r.get("max")
+            if not syms:
+                hit = False
+                lines.append("    ❌ call_count 缺 symbols/symbol（不猜，判失败）")
+            else:
+                # 多符号**求和**：同一逻辑在不同平台走不同入口（MinGW 的 operator new 是
+                # `jmp malloc` 跳板 → `call malloc`；Linux 是弱符号 → `call _Znwm@PLT`），
+                # 而"分配入口被调用几次"这一语义跨平台一致。
+                got = sum(1 for ln in text.split("\n")
+                          if any(re.search(rf"\bcall\s+{re.escape(s)}\b", ln) for s in syms))
+                if lo is not None or hi is not None:
+                    # 阈值形态（2026-09-12，W2）：内联与否这类"质变"证据只锚有无/量级区间，
+                    # 不锚随编译器决策漂移的精确次数（实测同一夹具 GCC 15.3=3 / 13.1=4）。
+                    lo_i = int(lo) if lo is not None else None
+                    hi_i = int(hi) if hi is not None else None
+                    hit = (lo_i is None or got >= lo_i) and (hi_i is None or got <= hi_i)
+                    bnd = f"[{lo_i if lo_i is not None else '*'}..{hi_i if hi_i is not None else '*'}]"
+                    lines.append(f"    {'✅' if hit else '❌'} call_count {'/'.join(syms)}"
+                                 f" 期望 ∈ {bnd} 实得 {got}")
+                else:
+                    want = int(r.get("count") or 0)
+                    hit = got == want
+                    lines.append(f"    {'✅' if hit else '❌'} call_count {'/'.join(syms)}"
+                                 f" 期望 {want} 实得 {got}")
         elif kind == "contains_any":
             texts = [str(t) for t in (r.get("texts") or [])]
-            seen = {t: text.count(_norm(t)) for t in texts}
-            hit = any(n > 0 for n in seen.values())
-            detail = ", ".join(f"{t!r}:{n}" for t, n in seen.items())
-            lines.append(f"    {'✅' if hit else '❌'} contains_any 任一出现（{detail}）")
+            if not texts:
+                hit = False
+                lines.append("    ❌ contains_any 缺 texts（不猜，判失败）")
+            else:
+                seen = {t: text.count(_norm(t)) for t in texts}
+                hit = any(n > 0 for n in seen.values())
+                detail = ", ".join(f"{t!r}:{n}" for t, n in seen.items())
+                lines.append(f"    {'✅' if hit else '❌'} contains_any 任一出现（{detail}）")
         elif kind in ("contains", "absent"):
             lit = str(r.get("text") or "")
-            got = text.count(_norm(lit))
-            hit = (got > 0) if kind == "contains" else (got == 0)
-            verb = "出现" if kind == "contains" else "不得出现"
-            lines.append(f"    {'✅' if hit else '❌'} {kind} {lit!r} {verb}（实得 {got} 次）")
+            if not lit:
+                # 空串的 str.count 恒为 len+1 > 0 ⇒ contains 恒真 / absent 恒假（2026-09-12 实测）：
+                # 恒真断言比没有断言更危险（看起来有校验，实际什么都放行）。
+                hit = False
+                lines.append(f"    ❌ {kind} 缺 text（空串计数恒真/恒假，不猜，判失败）")
+            else:
+                got = text.count(_norm(lit))
+                hit = (got > 0) if kind == "contains" else (got == 0)
+                verb = "出现" if kind == "contains" else "不得出现"
+                lines.append(f"    {'✅' if hit else '❌'} {kind} {lit!r} {verb}（实得 {got} 次）")
         elif kind in ("contains_in", "absent_in"):
             sym = str(r.get("symbol") or "")
             lit = _norm(str(r.get("text") or ""))
-            body = _symbol_body(text, sym)
-            if body is None:
+            if not sym or not lit:
+                miss = "/".join(n for n, v in (("symbol", sym), ("text", lit)) if not v)
                 hit = False
-                lines.append(f"    ❌ {kind} 在工件里找不到符号区间 {sym!r}（不猜，判失败）")
+                lines.append(f"    ❌ {kind} 缺 {miss}（不猜，判失败；空 text 会使断言恒真/恒假）")
             else:
-                got = body.count(lit)
-                hit = (got > 0) if kind == "contains_in" else (got == 0)
-                verb = "出现" if kind == "contains_in" else "不得出现"
-                lines.append(f"    {'✅' if hit else '❌'} {kind} {sym} 区间内 {lit!r}"
-                             f" {verb}（实得 {got} 次）")
+                body = _symbol_body(text, sym)
+                if body is None:
+                    hit = False
+                    lines.append(f"    ❌ {kind} 在工件里找不到符号区间 {sym!r}（不猜，判失败）")
+                else:
+                    got = body.count(lit)
+                    hit = (got > 0) if kind == "contains_in" else (got == 0)
+                    verb = "出现" if kind == "contains_in" else "不得出现"
+                    lines.append(f"    {'✅' if hit else '❌'} {kind} {sym} 区间内 {lit!r}"
+                                 f" {verb}（实得 {got} 次）")
         else:
             hit = False
             lines.append(f"    ❌ 未知断言 kind：{kind!r}（不猜，判失败）")

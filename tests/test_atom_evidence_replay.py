@@ -464,3 +464,90 @@ def test_unexpected_sanitizer_still_refutes():
     # 未声明（None）→ 任何命中都算未预期；干净输出 → ok（门禁不得恒红）
     assert rp.classify_sanitizer(LEAK_BLOB)[0] == "reported"
     assert rp.classify_sanitizer("clean run\n")[0] == "ok"
+
+
+# ── 10. 断言引擎完备性（2026-09-12，W2）───────────────────────────────────────
+# 背景：EV-LANG-001 等 6 张卡曾写 `{kind: contains_in, symbol: X, scope: file}` —— `scope` 非引擎
+# 支持的键（被静默忽略）且缺 `text`，而空串的 `str.count("")` 恒为 len+1 > 0 ⇒ 断言退化为
+# **恒真**（零校验）。本节把「写得让引擎看不懂必须红」固化为回归。
+def _probe_asm(tmp_path: Path, body: str) -> Path:
+    p = tmp_path / "probe.asm"
+    p.write_text(body, encoding="utf-8")
+    return p
+
+
+def _run_assert(art: Path, *rules: dict) -> tuple[bool, list[str]]:
+    return rp.check_artifact_assert({"artifact_assert": list(rules)}, art)
+
+
+def test_assert_missing_required_params_rejected(tmp_path: Path):
+    """缺 text / symbols / 空串 → 判失败（恒真/恒假断言比无断言更危险）。"""
+    art = _probe_asm(tmp_path, "_Z1fv:\n\tcall\t_Z1gv\n\tret\n")
+    for rule in (
+        {"kind": "contains"},                                    # 缺 text
+        {"kind": "absent", "text": ""},                          # 空 text
+        {"kind": "contains_in", "symbol": "_Z1fv"},              # 缺 text
+        {"kind": "contains_any", "texts": []},                   # 空 texts
+        {"kind": "call_count"},                                  # 缺 symbols
+    ):
+        ok, log = _run_assert(art, rule)
+        assert not ok, f"{rule} 应判失败（不猜）"
+        assert any("❌" in ln for ln in log), log
+
+
+def test_assert_unknown_key_rejected(tmp_path: Path):
+    """未知参数（如历史误用的 scope: file）→ 判失败（静默忽略曾让作者误以为断言生效）。"""
+    art = _probe_asm(tmp_path, "_Z1fv:\n\tret\n")
+    ok, log = _run_assert(art, {"kind": "contains_in", "symbol": "_Z1fv", "scope": "file"})
+    assert not ok and any("未知参数" in ln for ln in log), log
+
+
+def test_call_count_threshold_forms(tmp_path: Path):
+    """call_count 阈值形态：count/min/max/区间（跨编译器质变锚，不锚漂移的精确次数）。"""
+    art = _probe_asm(tmp_path, "main:\n\tcall\t_Z1fv\n\tcall\t_Z1fv\n\tret\n")
+    assert _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "count": 2})[0]
+    assert not _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "count": 3})[0]
+    assert _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "min": 1})[0]
+    assert not _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "min": 3})[0]
+    assert _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "max": 2})[0]
+    assert not _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "max": 1})[0]
+    assert _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "min": 1, "max": 5})[0]
+    assert not _run_assert(art, {"kind": "call_count", "symbols": ["_Z1fv"], "min": 1, "max": 1})[0]
+
+
+def test_contains_in_scoped_to_symbol_body(tmp_path: Path):
+    """区间断言真的限定在函数体内（W2 判别力的基础；内联证据靠它表达）。"""
+    art = _probe_asm(tmp_path, "_Z1fv:\n\tcall\t_Z1gv\n\tret\n_Z1hv:\n\tret\n")
+    assert _run_assert(art, {"kind": "contains_in", "symbol": "_Z1fv", "text": "call _Z1gv"})[0]
+    assert not _run_assert(art, {"kind": "contains_in", "symbol": "_Z1hv", "text": "call _Z1gv"})[0]
+    assert _run_assert(art, {"kind": "absent_in", "symbol": "_Z1hv", "text": "call"})[0]
+    assert not _run_assert(art, {"kind": "absent_in", "symbol": "_Z1fv", "text": "call"})[0]
+
+
+def test_parse_flow_map_quoted_comma():
+    """引号内的逗号不得切断值（W2 实跑暴露：`movl $1, %eax` 曾被截成 `\"movl $1`）。
+
+    该 bug 只在跨编译器路径暴露（同编译器走 sha，断言不执行）——本机绿、CI 红，
+    故以解析器级回归锁死。
+    """
+    meta = rp.parse_frontmatter(
+        "---\n"
+        "id: EV-T\n"
+        "artifact_assert:\n"
+        '  - {kind: contains_in, symbol: "_Z1fv", text: "movl $1, %eax"}\n'
+        "---\n")
+    rule = meta["artifact_assert"][0]
+    assert rule["text"] == "movl $1, %eax", rule
+    assert rule["symbol"] == "_Z1fv", rule
+    # 反向锁：引号内的逗号保留，顶层逗号仍要正确切分（不得粘连下一键）
+    assert len(rule) == 3, rule
+    # 单引号同款；引号内的括号/冒号也不得干扰深度
+    meta2 = rp.parse_frontmatter(
+        "---\n"
+        "id: EV-T2\n"
+        "artifact_assert:\n"
+        "  - {kind: contains_in, symbol: 'x', text: 'call foo(x), bar'}\n"
+        "---\n")
+    rule2 = meta2["artifact_assert"][0]
+    assert rule2["text"] == "call foo(x), bar", rule2
+    assert rule2["symbol"] == "x", rule2
