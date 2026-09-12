@@ -886,6 +886,36 @@ def _pedagogy_gap(field_name: str, rule_id: str, message: str) -> Callable[[], l
     return _check
 
 
+def _misconception_gap() -> list[Finding]:
+    """PED-MISCONCEPTION：误解清单**存在性**检查（兼容三种合法写法）。
+
+    2026-09-12 实测（26 颗原子，369 任务2，P1-4）：
+      * `pedagogy.misconception`（单数） → 3 颗（CONC 三颗）
+      * `pedagogy.misconceptions`（复数）→ 22 颗
+      * 顶层 `misconceptions`（无缩进）  → 4 颗（其 pedagogy 为折叠字符串，无子字段）
+    规则语义是"清单必须存在"，不限定写在哪一层；三处皆空才报。
+
+    已知盲区（**不在此处扩权**，列入 369 报告"待裁决"项）：pedagogy 为折叠字符串
+    （`pedagogy: >-`）的 4 颗原子，PED-MOTIVATION/SOCRATIC/PREDICT-FIRST 三规则因
+    `isinstance(ped, dict)` 为假而静默跳过——结构异常需另行裁决，本规则不代判。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        ped = meta.get("pedagogy") or {}
+        found: list = []
+        if isinstance(ped, dict):
+            found += _as_list(ped.get("misconception"))
+            found += _as_list(ped.get("misconceptions"))
+        found += _as_list(meta.get("misconceptions"))
+        if not found:
+            out.append(Finding("PED-MISCONCEPTION", "advice", _rel(p),
+                               "缺 misconception 清单（pedagogy 与顶层字段均为空）",
+                               "至少一处非空：pedagogy.misconception / "
+                               "pedagogy.misconceptions / 顶层 misconceptions"))
+    return out
+
+
 # ── META：双清单一致性（ADR-0004）──────────────────────────────────────────
 def _cmd_check_quality_gates() -> list[str] | None:
     """AST 解析 cppbible.py 的 quality 元组 → ['tools/x.py --flag', ...]。"""
@@ -1002,8 +1032,7 @@ def _register_all() -> None:
                   basis="Merrill 首要教学原理：以问题/需求激活先备经验"))
     register(Rule("PED-MISCONCEPTION", "学习者常见误解清单", "pedagogy",
                   "programmatic", "advice", "atom",
-                  check=_pedagogy_gap("misconception", "PED-MISCONCEPTION",
-                                      "缺 misconception 清单"),
+                  check=_misconception_gap,
                   basis="认知冲突/反驳性文本（refutation text）：先显化误解再纠正"))
     register(Rule("PED-SOCRATIC", "苏格拉底提问链", "pedagogy",
                   "programmatic", "advice", "atom",

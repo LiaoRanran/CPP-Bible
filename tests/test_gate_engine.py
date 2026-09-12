@@ -100,6 +100,37 @@ def test_misconception_ref_must_exist(sandbox: Path):
     assert ge.check_misconception_ref() == []
 
 
+# ── PED-MISCONCEPTION：三种合法写法兼容（369 任务2，P1-4）────────────────
+def test_ped_misconception_singular_not_reported(sandbox: Path):
+    """单数写法（历史形态，CONC 三颗）：不该报。"""
+    _write_atom(sandbox, "ATOM-MEM-T1.md", "mem",
+                pedagogy="\n  misconception:\n    - {level: surface, text: t, refutations: [EV-X]}")
+    assert ge._misconception_gap() == [], "pedagogy.misconception 非空不该报"
+
+
+def test_ped_misconception_plural_not_reported(sandbox: Path):
+    """复数写法（**阴性毒样例**：26 颗原子中 22 颗用此形态）：不该报。"""
+    _write_atom(sandbox, "ATOM-MEM-T2.md", "mem",
+                pedagogy="\n  misconceptions: [MIS-MEM-001]")
+    assert ge._misconception_gap() == [], "pedagogy.misconceptions 非空不该报"
+
+
+def test_ped_misconception_top_level_not_reported(sandbox: Path):
+    """顶层写法（4 颗折叠字符串 pedagogy 的原子）：不该报。"""
+    _write_atom(sandbox, "ATOM-MEM-T3.md", "mem",
+                pedagogy="一段教学散文（折叠字符串，无子字段）",
+                misconceptions="[MIS-MEM-001]")
+    assert ge._misconception_gap() == [], "顶层 misconceptions 非空不该报"
+
+
+def test_ped_misconception_missing_reported(sandbox: Path):
+    """三处皆空（阳性）：必须报，且 severity=advice（不阻断）。"""
+    _write_atom(sandbox, "ATOM-MEM-T4.md", "mem", pedagogy="\n  motivation: m")
+    hits = ge._misconception_gap()
+    assert hits and hits[0].rule_id == "PED-MISCONCEPTION"
+    assert hits[0].severity == "advice"
+
+
 def test_audience_required_and_beginner_needs_analogy(sandbox: Path):
     """认知适切：audience / cognitive_load 必须合法声明；beginner 正文须有类比/直觉段。"""
     # 缺失 → 记债（warn）：G5 迁移期渐进标注，未标注不该阻断最小合规原子
