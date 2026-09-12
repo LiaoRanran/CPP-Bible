@@ -843,10 +843,46 @@ def check_s2_evidence_verdict() -> list[Finding]:
     return out
 
 
+def _s3_expected_segments(actual: dict) -> list[tuple[str, str]]:
+    """产出"待检期望片段"及其来源标签——覆盖两种 actual 形态（369 任务8，P1-12）。
+
+    ① literal 形态：`actual: {key: value}` → 取 value 的 `|` 分隔段；
+    ② 文件形态：`actual: {run_match_file: path, run_match_keys: [...]}` → 读留痕 `.out`，
+       按 `key=value` 取 **value 段**（含 `|` 分隔）——**不拿 key 名比对**（key 合法地
+       出现在 printf 格式串 `"x=%d\\n"` 里，拿 key 比对会全库误报）；且只查本卡声明的
+       keys（`.out` 里其余行不是本卡证据，不越界判卡）。
+    """
+    segs: list[tuple[str, str]] = []
+    for k, v in actual.items():
+        if k in ("run_match_file", "run_match_keys"):
+            continue
+        for t in (x.strip() for x in str(v).split("|")):
+            if t:
+                segs.append((t, f"actual.{k}"))
+    mf = actual.get("run_match_file")
+    if mf:
+        of = ROOT / str(mf)
+        if of.is_file():
+            keys = {str(x) for x in _as_list(actual.get("run_match_keys"))}
+            for ln in of.read_text(encoding="utf-8", errors="replace").split("\n"):
+                if not ln.strip():
+                    continue
+                key, _, val = ln.partition("=")
+                if keys and key.strip() not in keys:
+                    continue
+                for t in (x.strip() for x in val.split("|")):
+                    if t:
+                        segs.append((t, f"{Path(str(mf)).name}:{key.strip()}"))
+    return segs
+
+
 def check_s3_hardcoded_expected() -> list[Finding]:
     """S3 伪证据检测：期望输出**硬编码进夹具字符串字面量**（打印常量冒充观测）→ 作弊级阻断。
 
-    只查字符串字面量：`//@ 注释`与 printf 的 %ld 格式串都不含"带实测数字"的片段，不误报。
+    两种实际形态都查（369 任务8，P1-12）：direct literal（`actual: {k: v}`）与
+    `run_match_file + run_match_keys`（CONC 域 6 张卡）——后者此前完全免检，
+    夹具里 `printf("total=100000\\n")` 再把输出抄进 `.out` 即可绕过。
+    只查字符串字面量：`//@ 注释`与 printf 的 %d 格式串都不含"带实测数字"的片段，不误报。
     """
     out: list[Finding] = []
     for p in _cards(EVIDENCE, "EV-*.md"):
@@ -860,13 +896,13 @@ def check_s3_hardcoded_expected() -> list[Finding]:
             continue
         src = fx.read_text(encoding="utf-8", errors="replace")
         literals = [m.group(1) for m in re.finditer(r'"([^"\n]*)"', src)]
-        for v in actual.values():
-            for seg in (t.strip() for t in str(v).split("|")):
-                if len(seg) >= 6 and any(seg in lit for lit in literals):
-                    out.append(Finding("S3-EXPECTED-HARDCODED", "block", _rel(p),
-                                       f"期望片段被硬编码进夹具字面量：{seg[:40]!r}",
-                                       "观测必须来自运行时（计数器/输出），打印常量=伪证据"))
-                    break
+        for seg, where in _s3_expected_segments(actual):
+            if len(seg) >= 6 and any(seg in lit for lit in literals):
+                out.append(Finding("S3-EXPECTED-HARDCODED", "block", _rel(p),
+                                   f"期望片段被硬编码进夹具字面量：{seg[:40]!r}"
+                                   f"（来源 {where}）",
+                                   "观测必须来自运行时（计数器/输出），打印常量=伪证据"))
+                break
     return out
 
 

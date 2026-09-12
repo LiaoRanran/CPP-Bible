@@ -270,6 +270,34 @@ def _write_ev(base: Path, **over: str) -> Path:
     return p
 
 
+def test_s3_run_match_file_clean_passes(sandbox: Path):
+    """阴样例（369 任务8，P1-12）：期望值只在 .out、夹具用格式串+变量 → 不得误报。"""
+    d = sandbox / "evidence"
+    of = d / "x.out"
+    of.write_text("total=100000\n", encoding="utf-8")
+    fx = d / "_fx_clean.cpp"
+    fx.write_text('#include <cstdio>\nint main(){ std::printf("total=%d\\n", 100000); }\n',
+                  encoding="utf-8")
+    _write_ev(sandbox, fixture=fx.as_posix(),
+              actual=f"\n  run_match_file: {of.as_posix()}\n  run_match_keys: [total]")
+    assert ge.check_s3_hardcoded_expected() == [], "格式串+变量不应误报（合法格式串豁免）"
+
+
+def test_s3_run_match_file_hardcoded_blocks(sandbox: Path):
+    """阳性（369 任务8，P1-12）：期望值硬编码进夹具字面量（.out 只是抄回来）→ block。"""
+    d = sandbox / "evidence"
+    of = d / "x.out"
+    of.write_text("total=100000\n", encoding="utf-8")
+    fx = d / "_fx_poison.cpp"
+    fx.write_text('#include <cstdio>\nint main(){ std::printf("total=100000\\n"); }\n',
+                  encoding="utf-8")
+    _write_ev(sandbox, fixture=fx.as_posix(),
+              actual=f"\n  run_match_file: {of.as_posix()}\n  run_match_keys: [total]")
+    hits = ge.check_s3_hardcoded_expected()
+    assert hits and hits[0].severity == "block"
+    assert "x.out" in hits[0].message, "命中须标注来源（run_match_file 出处）"
+
+
 def test_missing_falsification_blocks(sandbox: Path):
     _write_ev(sandbox, falsification="")
     hits = ge.check_evidence_falsification()
