@@ -448,7 +448,7 @@ def _current_toolchain_id() -> str:
 
 
 _SYMBOL_BODY_STOP = re.compile(
-    r"(?m)^(?:[^\s.][^\s:]*:\s*$|\.cfi_endproc|\.seh_endproc)")
+    r"(?m)^(?:[^\s.][^\s:]*:\s*$|\s*\.(?:cfi|seh)_endproc\s*$)")
 
 
 def _symbol_body(text: str, symbol: str) -> str | None:
@@ -456,7 +456,9 @@ def _symbol_body(text: str, symbol: str) -> str | None:
 
     停止条件（任一命中）：
       - 下一个"列 0 的函数标签"（`_Z10spin_plainv:`、`foo:`）；局部标签 `.L8:` 带前导点，不算
-      - `.cfi_endproc`（ELF）/ `.seh_endproc`（MinGW）——函数收尾伪指令
+      - `.cfi_endproc`（ELF）/ `.seh_endproc`（MinGW）——函数收尾伪指令（真实工件里**带前导制表符**，
+        故停止条件须允许行首空白；2026-09-12 修正：原正则只认列 0 ⇒ 该分支从未命中，区间会一直
+        吃到下一个函数的函数头，使下一个函数的**符号名**落进本函数区间）
 
     文本在调用方已把 `\\t` 归一成空格，这里只做切分。符号找不到返回 None（调用方判失败）。
     """

@@ -5,14 +5,14 @@
  "metrics": {
   "block_findings": 0,
   "warn_findings": 8,
-  "atoms_total": 23,
-  "evidence_total": 48,
-  "verified_atoms": 23,
-  "human_verified": 20,
+  "atoms_total": 24,
+  "evidence_total": 50,
+  "verified_atoms": 24,
+  "human_verified": 21,
   "red_team_verified": 3,
   "machine_verified": 0,
   "dal_gap": 0,
-  "replay_confirm": 48,
+  "replay_confirm": 50,
   "replay_infra_error": 0
  },
  "accepted": [

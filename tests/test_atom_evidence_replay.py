@@ -204,6 +204,41 @@ def test_check_artifact_assert_symbol_scope(tmp_path: Path):
     assert not ok3 and "找不到符号区间" in l3[0], l3
 
 
+def test_symbol_scope_stops_at_endproc_not_next_function(tmp_path: Path):
+    """区间必须在 `.seh_endproc`/`.cfi_endproc` 处切断（2026-09-12 修）。
+
+    原停止条件只认**列 0** 的收尾伪指令，而真实工件里它是 `\\t.seh_endproc`（带前导制表符），
+    空白归一成空格后该分支**从未命中** ⇒ 区间一路吃到下一个函数的函数头。后果不是"多切几行"：
+    下一个函数的**符号名会落进本函数区间**——实测 `_Z17spin_signal_fencev` 的区间里含
+    `_Z15spin_with_fencev`，于是任何含 `fence` 字样的 `contains_in` 断言都在**函数名**上恒真，
+    判别力归零。故此处用真实 MinGW 版式锁死边界。
+    """
+    art = tmp_path / "c.asm"
+    art.write_text(
+        ".globl\t_Z3foov\n"
+        "_Z3foov:\n"
+        ".LFB0:\n"
+        "\tmov\teax, DWORD PTR g_x[rip]\n"
+        "\tret\n"
+        "\t.seh_endproc\n"
+        "\t.p2align 4\n"
+        "\t.globl\t_Z3barv\n"
+        "\t.def\t_Z3barv; .scl 2; .type 32; .endef\n"
+        "\t.seh_proc\t_Z3barv\n"
+        "_Z3barv:\n"
+        ".LFB1:\n"
+        "\tmov\teax, DWORD PTR g_y[rip]\n"
+        "\tret\n"
+        "\t.seh_endproc\n",
+        encoding="utf-8")
+    ok, lines = rp.check_artifact_assert({"artifact_assert": [
+        {"kind": "contains_in", "symbol": "_Z3foov", "text": "g_x[rip]"},
+        {"kind": "absent_in", "symbol": "_Z3foov", "text": "_Z3barv"},
+        {"kind": "absent_in", "symbol": "_Z3foov", "text": "g_y"},
+    ]}, art)
+    assert ok and len(lines) == 3, lines
+
+
 @needs_gpp
 def test_cross_compiler_falls_back_to_artifact_assert(tmp_path: Path):
     """身份不匹配时 sha 不比字节，改判结构断言并通过（CI 实际走的就是这条路）。"""
