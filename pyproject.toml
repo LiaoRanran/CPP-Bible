@@ -89,6 +89,8 @@ quality_gates = [
     # 原子内核（G1-G3）新增门禁；与 tools/cppbible.py:cmd_check 的 quality 元组一一对应
     # （一致性由 tools/gate_engine.py --manifest-check 校验，ADR-0004 收敛双清单）
     "tools/atom_coverage_map.py --check --check-doc",
+    # 373 §5（2026-09-13）收编：Book ↔ 原子双向同步（与 cppbible.py quality 元组对齐）
+    "tools/book_atom_sync.py --check",
     "tools/atom_evidence_replay.py --check",
     "tools/gate_engine.py --check",
     "tools/golden_lock.py check",

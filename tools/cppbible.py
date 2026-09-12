@@ -237,6 +237,8 @@ def cmd_check(args: argparse.Namespace) -> int:
             ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
             ("S10 Verify", [PYTHON_EXE, "tools/s10_verify_mark.py", "--check"]),
             ("Book Link Integrity", [PYTHON_EXE, "tools/fix_book_links.py", "--check"]),
+            # 373 §5（2026-09-13）收编：Book ↔ 原子双向同步（孤立脚本入库并登记双清单）
+            ("Book-Atom Sync", [PYTHON_EXE, "tools/book_atom_sync.py", "--check"]),
         ]
     elif stage == "compile":
         gates = [
