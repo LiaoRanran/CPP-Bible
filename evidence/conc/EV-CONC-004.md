@@ -32,7 +32,6 @@ matrix:
 actual:
   run_match_file: Examples/atoms/_atom_lock_cost.out
   run_match_keys:
-    - nproc
     - mutex_fastpath_exists
     - atomic_rmw_exists
     - cas_retry_observed
@@ -88,6 +87,7 @@ CONC-002 的 claim 核心是「锁/原子操作的代价分层，且无锁不一
 
 `.out` 含 `-DBENCH_FULL` 性能样本（如 `atomic_fetch_ns≈649500`，同机双平台各一轮）。
 **性能数字只留痕、不进 `actual`、不进 `run_match_keys`**——跨运行波动 2x+ 属正常（PERF-003 教训）。
+另：`nproc` 属同类环境量（CI runner 与开发机核数不同），同样不进 keys。
 
 - 方向结论（正文陈述，非自动断言）：共享/同步路径比单线程基线慢，且 CAS 在高竞争下退化最严重。
 - **诚实披露**：当前 `.out` 为单轮样本；327 要求的「完整 7 轮逐样本 + min/max + 比值」扩样待增强

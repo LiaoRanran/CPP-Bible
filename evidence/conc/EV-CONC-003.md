@@ -32,7 +32,6 @@ matrix:
 actual:
   run_match_file: Examples/atoms/_atom_lock_cost.out
   run_match_keys:
-    - nproc
     - single_thread_baseline
     - mutex_fastpath_exists
     - atomic_rmw_exists
@@ -55,7 +54,7 @@ falsification: |
   4. 任一 `*_result` 计数与 `kIters×kThreads`（或单线程 `kIters`）不符 → 运行时未真正执行累加。
 expected: |
   contains_in 四条全中（四种同步路径均编译进工件）；
-  run_match 五个方向量 key 与留痕 .out 逐字一致（nproc 同机稳定，其余恒为 1）；
+  run_match 五个方向量 key 与留痕 .out 逐字一致（**nproc 为环境量、跨机必异，不进 keys**；其余恒为 1）；
   cas_retry_observed=1（多线程竞争下 CAS 重试被观测）。
 ---
 
@@ -90,7 +89,7 @@ CONC-002 的 claim 方向是「锁与原子操作的代价分层，且**无锁�
 
 | 方向量 | MinGW 15.3 | WSL g++13.3 |
 |---|---|---|
-| `nproc` | 32 | 32 |
+| `nproc`（环境量，**不参与逐字比对**） | 32 | 32 |
 | `single_thread_baseline` | 1 | 1 |
 | `mutex_fastpath_exists` | 1 | 1 |
 | `atomic_rmw_exists` | 1 | 1 |
@@ -102,7 +101,8 @@ CONC-002 的 claim 方向是「锁与原子操作的代价分层，且**无锁�
 
 - **CAS 高竞争退化**：`cas_retry_observed=1` 证明多线程竞争下 CAS 重试被观测（反例对照成立）。
 - **核数兜底**：`nproc < kThreads(4)` 时输出 `insufficient_cores=1`（CAS 退化实验无法成立，合法翻转）；
-  32 核机器输出 `cas_high_contention_tested=1`。该翻转**不进 `run_match_keys`**（避免跨机 refute），
+  32 核机器输出 `cas_high_contention_tested=1`。该翻转**不进 `run_match_keys`**（避免跨机 refute）；
+  **`nproc` 亦然**——它是环境量（CI runner 与开发机核数不同），同样不进 keys，仅在 `.out` 留痕，
   仅在正文诚实描述方向，符合「性能数据锚方向不锚倍数」。
 
 ## §5 修订记录
