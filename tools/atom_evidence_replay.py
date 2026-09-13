@@ -38,6 +38,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import hashlib
 import os
 import re
@@ -1020,6 +1021,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--keep-tmp", action="store_true", help="保留临时目录")
     ap.add_argument("--no-restore", action="store_true",
                     help="校验后不还原仓库工件（默认还原：校验不应改写被校验对象）")
+    ap.add_argument("--json", nargs="?", const=True, default=False,
+                    help="结构化 JSON 输出到 stdout")
     a = ap.parse_args(argv)
 
     cards = [Path(c) if Path(c).is_absolute() else ROOT / c for c in a.card] or find_cards()
@@ -1028,10 +1031,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     n_ok = n_refute = n_infra = 0
+    verdicts: list[tuple[Path, str]] = []
     for card in cards:
         verdict, log = replay_card(card, do_sanitizer=not a.no_sanitizer,
                                    keep_tmp=a.keep_tmp,
                                    restore_artifact=not a.no_restore)
+        verdicts.append((card, verdict))
         if verdict == "confirm":
             n_ok += 1
         elif verdict.startswith("infra_error:"):
@@ -1041,6 +1046,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("\n".join(log))
         print(f"  → {verdict}\n")
     print(f"[replay] confirm={n_ok} refute={n_refute} infra_error={n_infra} 共 {len(cards)} 张卡")
+
+    real_out = sys.stdout
+    if a.json:
+        sys.stdout = sys.stderr            # 普通报告走 stderr，stdout 只留 JSON
+        import datetime as _dt
+        findings = [
+            {"rule": "replay",
+             "severity": ("infra" if v.startswith("infra_error:") else "block"),
+             "file": c.name, "message": v}
+            for c, v in verdicts if v != "confirm"
+        ]
+        payload = {
+            "tool": "atom_evidence_replay", "version": "v6.1",
+            "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+            "status": "fail" if (a.check and (n_refute or n_infra)) else "pass",
+            "summary": {"confirm": n_ok, "refute": n_refute, "infra_error": n_infra},
+            "findings": findings,
+            "infra_errors": [c.name for c, v in verdicts
+                             if v.startswith("infra_error:")],
+        }
+        real_out.write(json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
+
     # fail-closed：refute 或 infra_error 任一 > 0 都 exit 1（infra_error 不是逃生舱）
     return 1 if (a.check and (n_refute or n_infra)) else 0
 

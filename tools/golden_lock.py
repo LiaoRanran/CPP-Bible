@@ -164,7 +164,10 @@ def _git_provenance() -> tuple[str, bool]:
     return commit, dirty
 
 
-def cmd_sync() -> int:
+def cmd_sync(json_flag: bool = False) -> int:
+    real_out = sys.stdout
+    if json_flag:
+        sys.stdout = sys.stderr
     state = _load()
     commit, dirty = _git_provenance()
     state.update({"schema": SCHEMA, "updated": _dt.date.today().isoformat(),
@@ -172,14 +175,31 @@ def cmd_sync() -> int:
     _save(state)
     print(f"[golden] 快照已固化：{state['metrics']}"
           f"（commit={commit or '?'} dirty={dirty}）")
+    if json_flag:
+        real_out.write(json.dumps({
+            "tool": "golden_lock", "version": "v6.1",
+            "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+            "status": "pass", "summary": dict(state["metrics"]),
+            "findings": [], "infra_errors": [], "accepted": False,
+        }, ensure_ascii=False, indent=1) + "\n")
     return 0
 
 
-def cmd_check(accept: str | None) -> int:
+def cmd_check(accept: str | None, json_flag: bool = False) -> int:
+    real_out = sys.stdout
+    if json_flag:
+        sys.stdout = sys.stderr
     state = _load()
     base = state.get("metrics") or {}
     if not base:
         print("[golden] 无基线——先跑 `sync` 固化当前达标状态")
+        if json_flag:
+            real_out.write(json.dumps({
+                "tool": "golden_lock", "version": "v6.1",
+                "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+                "status": "fail", "summary": {}, "findings": [],
+                "infra_errors": [], "accepted": False,
+            }, ensure_ascii=False, indent=1) + "\n")
         return 2
     now = measure()
     worse: list[str] = []
@@ -195,6 +215,17 @@ def cmd_check(accept: str | None) -> int:
         print(f"  WORSE {w}")
     for i in improved:
         print(f"  BETTER {i}")
+
+    def _emit(status: str, accepted: bool) -> None:
+        findings = [{"rule": "golden_lock", "severity": "block",
+                     "file": w.split(":")[0], "message": w} for w in worse]
+        real_out.write(json.dumps({
+            "tool": "golden_lock", "version": "v6.1",
+            "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+            "status": status, "summary": dict(now), "findings": findings,
+            "infra_errors": [], "accepted": accepted,
+        }, ensure_ascii=False, indent=1) + "\n")
+
     if worse:
         if accept:
             commit, dirty = _git_provenance()
@@ -212,12 +243,18 @@ def cmd_check(accept: str | None) -> int:
             _save(state)
             print(f"[golden] 已显式接受并留痕（{len(state['accepted'])} 条审计记录）；"
                   f"基线已同步至当期测量（commit={commit or '?'} dirty={dirty}）")
+            if json_flag:
+                _emit("fail", True)
             return 0
         print("[golden] ✗ 指标恶化——修复，或 `check --accept \"理由\"` 显式留痕")
+        if json_flag:
+            _emit("fail", False)
         return 1
     if improved:
         print("[golden] 有改善：跑 `sync` 更新基线（把进步锁进黄金快照）")
     print("[golden] ✅ 无恶化")
+    if json_flag:
+        _emit("pass", False)
     return 0
 
 
@@ -230,11 +267,15 @@ def cmd_show() -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="S4 黄金非回归锁")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("sync", help="固化当前状态为快照").set_defaults(fn=lambda _a: cmd_sync())
-    p_ck = sub.add_parser("check", help="比对快照，恶化即 exit 1")
+    _pj = argparse.ArgumentParser(add_help=False)
+    _pj.add_argument("--json", nargs="?", const=True, default=False,
+                     help="结构化 JSON 输出到 stdout")
+    sub.add_parser("sync", parents=[_pj], help="固化当前状态为快照").set_defaults(
+        fn=lambda a: cmd_sync(getattr(a, "json", False)))
+    p_ck = sub.add_parser("check", parents=[_pj], help="比对快照，恶化即 exit 1")
     p_ck.add_argument("--accept", help="显式接受恶化（必须给理由，审计留痕）")
-    p_ck.set_defaults(fn=lambda a: cmd_check(a.accept))
-    sub.add_parser("show", help="查看快照").set_defaults(fn=lambda _a: cmd_show())
+    p_ck.set_defaults(fn=lambda a: cmd_check(a.accept, getattr(a, "json", False)))
+    sub.add_parser("show", parents=[_pj], help="查看快照").set_defaults(fn=lambda _a: cmd_show())
     a = ap.parse_args(argv)
     return int(a.fn(a))
 

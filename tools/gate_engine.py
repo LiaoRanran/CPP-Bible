@@ -1618,7 +1618,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--list", action="store_true", help="列出规则全集")
     ap.add_argument("--run", action="store_true", help="执行并打印工单")
     ap.add_argument("--advice", action="store_true", help="附带教学/文学建议（只建议不改文）")
-    ap.add_argument("--json", dest="json_path", help="工单落盘（JSON）")
+    ap.add_argument("--json", nargs="?", const=True, default=False,
+                    help="结构化 JSON 输出到 stdout（亦可附路径落盘，兼容旧用法）")
     ap.add_argument("--check", action="store_true", help="任一 block 违规即 exit 1")
     ap.add_argument("--manifest-check", action="store_true", help="仅校验双清单一致性")
     ap.add_argument("--gates", action="store_true", help="导出 cmd_check 元组")
@@ -1644,14 +1645,34 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     findings = run(include_advice=a.advice or not a.check)
     # 门禁语义：--check 只按 block 计红；报告始终打印 warn/advice
+    block = sum(1 for f in findings if f.severity == "block")
+    warn = sum(1 for f in findings if f.severity == "warn")
+    advice = sum(1 for f in findings if f.severity == "advice")
+    real_out = sys.stdout
+    if a.json:
+        sys.stdout = sys.stderr          # 普通报告走 stderr，stdout 只留 JSON
     print(report(findings, len(RULES)))
-    if a.json_path:
-        Path(a.json_path).write_text(json.dumps(
-            {"findings": [f.__dict__ for f in findings],
-             "rules": len(RULES)}, ensure_ascii=False, indent=1), encoding="utf-8")
-        print(f"[gate] 工单 → {a.json_path}")
+    if a.json:
+        import datetime as _dt
+        payload = {
+            "tool": "gate_engine", "version": "v6.1",
+            "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+            "status": "fail" if block else "pass",
+            "summary": {"rules": len(RULES), "block": block,
+                        "warn": warn, "advice": advice},
+            "findings": [{"rule": f.rule_id, "severity": f.severity,
+                          "file": f.target, "message": f.message}
+                         for f in findings],
+            "infra_errors": [],
+        }
+        if isinstance(a.json, str):       # 兼容旧用法：落盘路径
+            Path(a.json).write_text(
+                json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
+            print(f"[gate] 工单 → {a.json}", file=real_out)
+        else:                             # 新用法：stdout 只输出 JSON
+            real_out.write(json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
     if a.check:
-        return 1 if any(f.severity == "block" for f in findings) else 0
+        return 1 if block else 0
     return 0
 
 

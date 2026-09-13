@@ -720,13 +720,17 @@ def drill() -> int:
                     detail += f"\n         {ln.strip()[:88]}"
         results.append(("阴性对照（干净原子+干净卡）", ok, detail))
 
+    failures = []
     for name, ok, detail in results:
         print(f"[poison] {name}: {detail} {'✅' if ok else '❌'}")
+        if not ok:
+            failures.append({"rule": "poison", "severity": "block",
+                             "file": name, "message": detail})
     passed = sum(1 for _, ok, _ in results if ok)
     print(f"\n[poison] {passed}/{len(results)} —— "
           + ("制衡层有效（全部拦截 + 阴性放行）" if passed == len(results)
              else "制衡层有漏网，先修制衡！"))
-    return 0 if passed == len(results) else 1
+    return passed, len(results), failures
 
 
 _EXEMPT_LINE = re.compile(
@@ -769,6 +773,14 @@ def rule_coverage() -> tuple[int, int, list[str]]:
 
 
 if __name__ == "__main__":
+    import argparse as _ap, json as _json, datetime as _dt
+    _p = _ap.ArgumentParser(description="门禁毒样例钻探（对抗回归）")
+    _p.add_argument("--json", nargs="?", const=True, default=False,
+                   help="结构化 JSON 输出到 stdout")
+    _a = _p.parse_args()
+    real_out = sys.stdout
+    if _a.json:
+        sys.stdout = sys.stderr          # 普通报告走 stderr，stdout 只留 JSON
     covered, total, uncovered = rule_coverage()
     print(f"[poison] RULE-COVERAGE: {covered}/{total} 注册规则被毒样例覆盖"
           f"（另登记豁免 {len(load_exemptions())} 条）")
@@ -776,5 +788,15 @@ if __name__ == "__main__":
         print(f"[poison] 未覆盖且未豁免（{len(uncovered)}）: {', '.join(uncovered)}")
         print("[poison] 二选一：补毒样例，或在 tools/poison_exemptions.yaml 登记"
               "（规则 ID + 原因 + 日期）——本项为硬门禁（CI 红）")
-    raise SystemExit(drill() or (1 if uncovered else 0))
+    passed, total_d, failures = drill()
+    if _a.json:
+        payload = {
+            "tool": "poison_drill", "version": "v6.1",
+            "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+            "status": "pass" if passed == total_d else "fail",
+            "summary": {"passed": passed, "total": total_d},
+            "findings": failures, "infra_errors": [],
+        }
+        real_out.write(_json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
+    raise SystemExit(0 if passed == total_d else 1 or (1 if uncovered else 0))
 
