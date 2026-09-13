@@ -64,6 +64,40 @@ def test_replay_card_returns_infra_when_busy(lock: Path, tmp_path: Path,
         replay._release_replay_lock()
 
 
+def test_zombie_lock_taken_over_immediately(lock: Path):
+    """472 P0-1（N1）：锁内 pid 已死 ⇒ **立即**接管（不阻塞到 wait_timeout）。
+
+    修前：只按 mtime 判陈旧，僵尸锁会阻塞 600s → 整条 replay 不可用（实测 5.0s/600s）。
+    """
+    lock.write_text("999999\n", encoding="utf-8")       # 不存在的 pid
+    t0 = time.time()
+    replay._acquire_replay_lock(wait_timeout=90, stale_after=3600)
+    took = time.time() - t0
+    try:
+        assert took < 3.0, f"僵尸锁未立即接管（耗时 {took:.1f}s）"
+    finally:
+        replay._release_replay_lock()
+
+
+def test_live_lock_not_stolen_by_pid_probe(lock: Path):
+    """阴性：pid 探活不得误伤活锁（当前进程持有 → 二次取锁仍须超时）。"""
+    replay._acquire_replay_lock(wait_timeout=60, stale_after=3600)
+    try:
+        assert replay._read_lock_pid() == os.getpid()
+        assert replay._pid_alive(os.getpid())
+        with pytest.raises(TimeoutError):
+            replay._acquire_replay_lock(wait_timeout=1, stale_after=3600)
+        assert lock.is_file(), "活锁不得被抢"
+    finally:
+        replay._release_replay_lock()
+
+
+def test_lock_constants_shrunk():
+    """472 P0-1：stale 3600→300、wait 600→120（僵尸锁最多影响 5 分钟）。"""
+    assert replay._LOCK_STALE_SEC == 300.0
+    assert replay._LOCK_WAIT_SEC == 120.0
+
+
 def test_lock_serializes_processes(lock: Path, tmp_path: Path):
     """真并发：两进程各取锁——第二个必须等第一个释放（判据=获锁时刻间隔）。"""
     import subprocess

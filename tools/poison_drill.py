@@ -954,6 +954,46 @@ def drill() -> int:
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
         outp.unlink(missing_ok=True)
 
+    # ── P45 僵尸锁必须被立即接管（472 P0-1 / N1）───────────────────────────
+    # 逃逸面：锁内 pid 已死（进程被杀）时，只按 mtime 判陈旧的实现会阻塞到
+    # wait_timeout 才失败 ⇒ 整条 replay 长时间不可用（实测 600s）。
+    _tmpd = Path(tempfile.mkdtemp(prefix="p45_"))
+    _orig_lock = replay._REPLAY_LOCK
+    replay._REPLAY_LOCK = _tmpd / ".replay_lock"
+    try:
+        replay._REPLAY_LOCK.write_text("999999\n", encoding="utf-8")   # 不存在 pid
+        _t0 = time.time()
+        try:
+            replay._acquire_replay_lock(wait_timeout=5, stale_after=300)
+            _took = time.time() - _t0
+            _ok45 = _took < 3.0            # 应立即接管（pid 已死）
+            replay._release_replay_lock()
+        except TimeoutError:
+            _took = time.time() - _t0
+            _ok45 = False                  # 阻塞到超时 = 僵尸锁未被接管
+        results.append(("P45 僵尸锁(pid已死)须立即接管", _ok45,
+                        f"耗时 {_took:.1f}s（>3s 即仍逃逸）"))
+    finally:
+        replay._REPLAY_LOCK = _orig_lock
+        shutil.rmtree(_tmpd, ignore_errors=True)
+
+    # ── P46 阴性：活锁不得被抢（互斥必须成立）──────────────────────────────
+    _tmpd2 = Path(tempfile.mkdtemp(prefix="p46_"))
+    replay._REPLAY_LOCK = _tmpd2 / ".replay_lock"
+    try:
+        replay._acquire_replay_lock(wait_timeout=5, stale_after=300)
+        _raised = False
+        try:
+            replay._acquire_replay_lock(wait_timeout=1, stale_after=3600)
+        except TimeoutError:
+            _raised = True
+        results.append(("P46 活锁(当前pid)不得被接管", _raised,
+                        "活锁时二次取锁须超时而非抢锁"))
+        replay._release_replay_lock()
+    finally:
+        replay._REPLAY_LOCK = _orig_lock
+        shutil.rmtree(_tmpd2, ignore_errors=True)
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1028,9 +1068,9 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P29 ", "A7"), ("P30 ", "A7"), ("P32 ", "A1"), ("P33 ", "A4"), ("P34 ", "A4"),
     ("P35 ", "A3"), ("P36 ", "A6"), ("P37 ", "A6"), ("P38 ", "A4"),
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
-    ("P43 ", "A6"), ("P44 ", "A5"),
+    ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
 ]
-ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 11)]
+ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
 
 def attack_type_stats(results: list[tuple[str, bool, str]]) -> dict[str, int]:

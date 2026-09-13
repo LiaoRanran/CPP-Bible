@@ -44,6 +44,8 @@ import os
 import re
 import shlex
 import shutil
+import atexit
+import signal
 import subprocess
 import sys
 import tempfile
@@ -810,8 +812,10 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
 
 # ── 470 P0-G1（452 E09）：并发隔离锁 ────────────────────────────────────────
 _REPLAY_LOCK = ROOT / "build" / ".replay_lock"
-_LOCK_WAIT_SEC = 600.0      # 等待上限（超时 → infra_error:replay_busy）
-_LOCK_STALE_SEC = 3600.0    # 锁龄超此秒数视为陈旧（进程被杀不永久锁死）
+_LOCK_WAIT_SEC = 120.0      # 等待上限（超时 → infra_error:replay_busy；472 P0-1：600→120）
+_LOCK_STALE_SEC = 300.0     # 锁龄超此秒数视为陈旧（472 P0-1：3600→300）
+# 锁粒度说明：replay 是**每卡取放锁**（非全程持锁），单卡最长 ~10s（含重编译），
+# 故 stale=300 远大于单卡耗时、又远小于原 3600 —— 僵尸锁最多影响 5 分钟。
 
 
 def _acquire_replay_lock(wait_timeout: float | None = None,
@@ -832,10 +836,16 @@ def _acquire_replay_lock(wait_timeout: float | None = None,
     while True:
         try:
             fd = os.open(str(_REPLAY_LOCK), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            os.write(fd, str(os.getpid()).encode())
+            os.write(fd, f"{os.getpid()}\n{time.time()}\n".encode())
             os.close(fd)
             return
         except FileExistsError:
+            # 472 P0-1（N1）：先做 pid 存活检测——僵尸锁（持锁进程已死）立即接管，
+            # 不必等 stale。这是防 DoS 的**主保险**（atexit 无法覆盖 SIGKILL/崩溃）。
+            _pid = _read_lock_pid()
+            if _pid is not None and not _pid_alive(_pid):
+                _REPLAY_LOCK.unlink(missing_ok=True)
+                continue
             try:
                 age = time.time() - _REPLAY_LOCK.stat().st_mtime
             except FileNotFoundError:
@@ -848,8 +858,75 @@ def _acquire_replay_lock(wait_timeout: float | None = None,
             time.sleep(0.5)
 
 
+def _read_lock_pid() -> int | None:
+    """读锁内记录的 pid（锁文件为空/旧格式 → None，退化为 mtime 判定）。"""
+    try:
+        first = _REPLAY_LOCK.read_text(encoding="utf-8", errors="replace").split("\n")[0]
+        return int(first.strip())
+    except (FileNotFoundError, ValueError):
+        return None
+
+
+def _pid_alive(pid: int) -> bool:
+    """进程存活检测（跨平台）。
+
+    ⚠️ Windows 上**绝不能**用 `os.kill(pid, 0)` 探活：CPython 文档明确，Windows
+    除 `CTRL_C_EVENT`/`CTRL_BREAK_EVENT` 外，任何 sig 都会走 `TerminateProcess`
+    **无条件终止**目标进程——用它"探活"等于杀掉正持有锁的活进程（472 评审发现
+    的致命坑，原工单把 os.kill 作为默认路径）。故 Windows 走 `OpenProcess` +
+    `GetExitCodeProcess`（STILL_ACTIVE = 259）。
+    """
+    if pid <= 0:
+        return False
+    if os.name == "nt":
+        try:
+            import ctypes
+            k32 = ctypes.windll.kernel32
+            h = k32.OpenProcess(0x1000, False, pid)      # PROCESS_QUERY_LIMITED_INFORMATION
+            if not h:
+                return False
+            code = ctypes.c_ulong()
+            ok = k32.GetExitCodeProcess(h, ctypes.byref(code))
+            k32.CloseHandle(h)
+            return bool(ok) and code.value == 259        # STILL_ACTIVE
+        except Exception:
+            return False                                 # 探测失败按"已死"处理（防死锁优先）
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True                                      # 存在但无权限 → 视为存活
+
+
 def _release_replay_lock() -> None:
     _REPLAY_LOCK.unlink(missing_ok=True)
+
+
+def _install_lock_cleanup() -> None:
+    """正常退出 / Ctrl+C / SIGTERM 时释放锁，缩小僵尸锁窗口。
+
+    覆盖不到的场景：SIGKILL、解释器崩溃、`os._exit`——所以 pid 存活检测才是主
+    保险，本钩子只是"尽量干净地退出"（472 P0-1）。
+    """
+    atexit.register(_release_replay_lock)
+    for name in ("SIGTERM", "SIGINT"):
+        sig = getattr(signal, name, None)
+        if sig is None:
+            continue
+        try:
+            signal.signal(sig, _on_terminate)
+        except (ValueError, OSError):
+            pass                                         # 非主线程等场景忽略
+
+
+def _on_terminate(signum, frame) -> None:
+    _release_replay_lock()
+    raise SystemExit(1)
+
+
+_install_lock_cleanup()
 
 
 _RECOMPILE_TIMEOUT = 300
