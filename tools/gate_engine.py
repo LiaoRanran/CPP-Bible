@@ -1166,6 +1166,68 @@ def check_frontmatter_hardening() -> list[Finding]:
     return out
 
 
+# ── 470 P0-B（452 E05）：cat 式证据扫描（EXPERIMENTAL，只记录不参与门禁）────
+_READ_OPEN_RE = re.compile(
+    r'(?:std::)?ifstream\s+(\w+)\s*\(\s*"([^"]+)"'
+    r'|fopen\s*\(\s*"([^"]+)"'
+    r'|read_to_string\s*\(\s*"([^"]+)"')
+_GETLINE_RE = re.compile(r"getline\s*\(\s*(\w+)\s*,\s*(\w+)")
+_ECHO_OUT_RE = re.compile(r"\b(?:printf|fprintf|puts|fputs|cout)\b")
+
+
+def check_fixture_no_echo_data(cards: list[Path] | None = None) -> list[tuple[str, str, int, str]]:
+    """470 P0-B（452 E05）：cat 式证据——夹具读**仓库内**数据文件原样打印（零计算）。
+
+    渐进发布（470 铁律 12）：**experimental** —— 只返回命中清单（调用方决定
+    打印/写日志），**不注册进 RULES**、不产生 Finding、不参与门禁。观察一批次
+    命中情况后再决定升 warn（升格前需列命中卡交人裁决）。
+
+    判据（方案 A，保守正则）：读语句（ifstream/fopen/read_to_string）打开**仓库内
+    存在的相对路径文件**；≤8 行窗口内 getline 中转或直接输出该文件/行变量
+    （printf/cout 等）。读入后经算术/函数计算再输出（阴性样例）不命中。
+
+    返回 [(卡名, 源文件, 行号, 证据行)]。
+    """
+    hits: list[tuple[str, str, int, str]] = []
+    for p in (cards or _cards(EVIDENCE, "EV-*.md")):
+        meta = _meta(p)
+        srcs: list[str] = []
+        fx = str(meta.get("fixture") or "")
+        if fx and fx.endswith((".cpp", ".cc", ".cxx", ".c")):
+            srcs.append(fx)
+        for m in re.finditer(r"[^\s\"']+\.(?:cpp|cxx|cc|c)\b", str(meta.get("command") or "")):
+            if m.group(0) not in srcs:
+                srcs.append(m.group(0))
+        for rel in srcs:
+            f = ROOT / rel
+            if not f.is_file():
+                continue
+            lines = f.read_text(encoding="utf-8", errors="replace").split("\n")
+            for i, ln in enumerate(lines):
+                m = _READ_OPEN_RE.search(ln)
+                if not m:
+                    continue
+                path = next((g for g in m.groups()[1::2] if g), "")  # 路径组
+                if not path or ":" in path or path.startswith(("/", "\\")):
+                    continue                       # 只关心仓库内相对路径
+                if not (ROOT / path).exists():
+                    continue
+                fvars = {g for g in m.groups() if g and g != path}
+                window = lines[i:i + 9]
+                lvars: set[str] = set()
+                for wl in window:
+                    gm = _GETLINE_RE.search(wl)
+                    if gm and gm.group(1) in fvars:
+                        lvars.add(gm.group(2))
+                for wl in window:
+                    if _ECHO_OUT_RE.search(wl) and any(
+                            re.search(rf"\b{re.escape(v)}\b", wl)
+                            for v in (fvars | lvars)):
+                        hits.append((p.name, rel, i + 1, wl.strip()[:90]))
+                        break
+    return hits
+
+
 def check_evidence_out_stale_mtime() -> list[Finding]:
     """414 P1-7（F06）：`.out` 必须比夹具新。`.out` 可手写伪造（replay 只比对内容），
     真跑出来的 `.out` 一定晚于夹具最后修改。启发式（可被 touch 绕过），拦低级伪造。
@@ -1992,7 +2054,22 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--check", action="store_true", help="任一 block 违规即 exit 1")
     ap.add_argument("--manifest-check", action="store_true", help="仅校验双清单一致性")
     ap.add_argument("--gates", action="store_true", help="导出 cmd_check 元组")
+    ap.add_argument("--exp-scan", action="store_true",
+                    help="experimental 扫描（P0-B cat 式证据，只记录不参与门禁）")
     a = ap.parse_args(argv)
+
+    if a.exp_scan:
+        hits = check_fixture_no_echo_data()
+        print(f"[exp] EV-FIXTURE-NO-ECHO-DATA（P0-B experimental，不影响门禁）："
+              f"{len(hits)} 处命中")
+        for card, fpath, lno, snip in hits:
+            print(f"[exp]   {card}:{fpath}:{lno}  {snip}")
+        log = ROOT / "build" / "exp_fixture_echo.log"
+        log.parent.mkdir(exist_ok=True)
+        log.write_text("\n".join(f"{c}:{f}:{l}  {s}" for c, f, l, s in hits) + "\n",
+                       encoding="utf-8")
+        print(f"[exp] 命中已写入 {log.relative_to(ROOT).as_posix()}")
+        return 0
 
     if a.gates:
         auto = [r for r in RULES if r.automated and r.quadrant == "programmatic"]
