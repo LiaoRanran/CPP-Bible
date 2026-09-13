@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-MEM-UNIQUE-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 15480,
+   "windows": 4,
+   "tokens_est": 5160
+  }
+ },
+ "domain": "mem",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 15480,
+  "commits": 4
+ },
+ "total_chars": 15480,
+ "total_tokens_est": 5160,
+ "total_windows": 4,
+ "total_duration_min": 0,
+ "cpva": 5160
+}

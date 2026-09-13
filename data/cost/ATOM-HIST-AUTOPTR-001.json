@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-HIST-AUTOPTR-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 21280,
+   "windows": 4,
+   "tokens_est": 7093
+  }
+ },
+ "domain": "hist",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 21280,
+  "commits": 4
+ },
+ "total_chars": 21280,
+ "total_tokens_est": 7093,
+ "total_windows": 4,
+ "total_duration_min": 0,
+ "cpva": 7093
+}

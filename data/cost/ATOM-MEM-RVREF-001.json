@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-MEM-RVREF-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 41600,
+   "windows": 5,
+   "tokens_est": 13867
+  }
+ },
+ "domain": "mem",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 41600,
+  "commits": 5
+ },
+ "total_chars": 41600,
+ "total_tokens_est": 13867,
+ "total_windows": 5,
+ "total_duration_min": 0,
+ "cpva": 13867
+}

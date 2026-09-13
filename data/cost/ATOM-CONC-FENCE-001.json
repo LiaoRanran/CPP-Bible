@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-CONC-FENCE-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 11560,
+   "windows": 3,
+   "tokens_est": 3853
+  }
+ },
+ "domain": "conc",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 11560,
+  "commits": 3
+ },
+ "total_chars": 11560,
+ "total_tokens_est": 3853,
+ "total_windows": 3,
+ "total_duration_min": 0,
+ "cpva": 3853
+}

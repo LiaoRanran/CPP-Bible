@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-CONC-RACE-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 14760,
+   "windows": 2,
+   "tokens_est": 4920
+  }
+ },
+ "domain": "conc",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 14760,
+  "commits": 2
+ },
+ "total_chars": 14760,
+ "total_tokens_est": 4920,
+ "total_windows": 2,
+ "total_duration_min": 0,
+ "cpva": 4920
+}

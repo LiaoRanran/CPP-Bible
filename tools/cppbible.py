@@ -517,6 +517,36 @@ def cmd_impact(args: argparse.Namespace) -> int:
     return r.returncode
 
 
+def cmd_cost(args: argparse.Namespace) -> int:
+    """成本追踪（421）：report/cpva，只记录只读，不改生产逻辑。"""
+    cmd = [PYTHON_EXE, "tools/cost_tracker.py", args.sub]
+    if getattr(args, "atom", None):
+        cmd += ["--atom", args.atom]
+    if args.json:
+        cmd.append("--json")
+    r = run(cmd, check=False)
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
+def cmd_flashcards(args: argparse.Namespace) -> int:
+    """闪卡导出（423）：只读 atoms/misconceptions，输出 data/flashcards/。"""
+    cmd = [PYTHON_EXE, "tools/flashcard_export.py", args.sub]
+    if args.sub == "export":
+        cmd += ["--format", args.format]
+    if args.json:
+        cmd.append("--json")
+    r = run(cmd, check=False)
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
 def cmd_compile(args: argparse.Namespace) -> int:
     """Incremental/full compile of chapters (produces compile_report.json).
 
@@ -586,6 +616,16 @@ def build_parser() -> argparse.ArgumentParser:
     impact.add_argument("atom_id", help="目标原子 id")
     impact.add_argument("--json", action="store_true")
 
+    cost = sub.add_parser("cost", help="成本追踪（421：CPVA 基线）")
+    cost.add_argument("sub", choices=["report", "cpva"])
+    cost.add_argument("--atom", default=None)
+    cost.add_argument("--json", action="store_true")
+
+    fc = sub.add_parser("flashcards", help="闪卡导出（423：原子+误解→Anki CSV）")
+    fc.add_argument("sub", choices=["export", "stats"])
+    fc.add_argument("--format", choices=["anki", "markdown", "both"], default="both")
+    fc.add_argument("--json", action="store_true")
+
     return parser
 
 
@@ -615,6 +655,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cmd_compile_changed(args)
     if args.command == "impact":
         return cmd_impact(args)
+    if args.command == "cost":
+        return cmd_cost(args)
+    if args.command == "flashcards":
+        return cmd_flashcards(args)
 
     parser.print_help()
     return 0

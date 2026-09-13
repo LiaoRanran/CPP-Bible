@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-MEM-PERF-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 16040,
+   "windows": 4,
+   "tokens_est": 5347
+  }
+ },
+ "domain": "mem",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 16040,
+  "commits": 4
+ },
+ "total_chars": 16040,
+ "total_tokens_est": 5347,
+ "total_windows": 4,
+ "total_duration_min": 0,
+ "cpva": 5347
+}

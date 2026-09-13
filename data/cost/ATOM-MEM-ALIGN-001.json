@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-MEM-ALIGN-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 15120,
+   "windows": 4,
+   "tokens_est": 5040
+  }
+ },
+ "domain": "mem",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 15120,
+  "commits": 4
+ },
+ "total_chars": 15120,
+ "total_tokens_est": 5040,
+ "total_windows": 4,
+ "total_duration_min": 0,
+ "cpva": 5040
+}

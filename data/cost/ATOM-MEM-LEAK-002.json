@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-MEM-LEAK-002",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 5400,
+   "windows": 2,
+   "tokens_est": 1800
+  }
+ },
+ "domain": "mem",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 5400,
+  "commits": 2
+ },
+ "total_chars": 5400,
+ "total_tokens_est": 1800,
+ "total_windows": 2,
+ "total_duration_min": 0,
+ "cpva": 1800
+}

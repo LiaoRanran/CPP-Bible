@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-LANG-INLINE-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 6000,
+   "windows": 1,
+   "tokens_est": 2000
+  }
+ },
+ "domain": "lang",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 6000,
+  "commits": 1
+ },
+ "total_chars": 6000,
+ "total_tokens_est": 2000,
+ "total_windows": 1,
+ "total_duration_min": 0,
+ "cpva": 2000
+}

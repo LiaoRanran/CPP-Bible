@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-MEM-RAII-001",
+ "created_at": "2026-09-13",
+ "stages": {
+  "fixture": {
+   "chars": 15760,
+   "windows": 4,
+   "tokens_est": 5253
+  }
+ },
+ "domain": "mem",
+ "backfill": {
+  "method": "git_log_numstat",
+  "chars": 15760,
+  "commits": 4
+ },
+ "total_chars": 15760,
+ "total_tokens_est": 5253,
+ "total_windows": 4,
+ "total_duration_min": 0,
+ "cpva": 5253
+}
