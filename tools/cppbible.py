@@ -494,6 +494,27 @@ def _compile_extra_args(args: argparse.Namespace, *, changed: bool) -> list:
     return extra
 
 
+def cmd_impact(args: argparse.Namespace) -> int:
+    """上游/下游依赖遍历（425，415 L2 最小闭环）：改一颗原子前先看谁依赖它。
+
+    依赖 = prerequisite/specializes/realizes；contrasts/see_also 等为引用、不构成依赖。
+    零风险：只读 relations。实现单点在 tools/impact_analysis.py。
+    """
+    cmd = [PYTHON_EXE, "tools/impact_analysis.py", args.direction, args.atom_id]
+    if args.json:
+        cmd.append("--json")
+    try:
+        r = run(cmd, check=False)
+    except FileNotFoundError:
+        print("  ❌ tools/impact_analysis.py 不可用")
+        return 1
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
 def cmd_compile(args: argparse.Namespace) -> int:
     """Incremental/full compile of chapters (produces compile_report.json).
 
@@ -558,6 +579,11 @@ def build_parser() -> argparse.ArgumentParser:
     compile_changed.add_argument("--base", default=None)
     compile_changed.add_argument("--parallel", action="store_true")
 
+    impact = sub.add_parser("impact", help="上游/下游依赖遍历（425：改原子前先看谁依赖它）")
+    impact.add_argument("direction", choices=["upstream", "downstream"])
+    impact.add_argument("atom_id", help="目标原子 id")
+    impact.add_argument("--json", action="store_true")
+
     return parser
 
 
@@ -585,6 +611,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cmd_compile(args)
     if args.command == "compile-changed":
         return cmd_compile_changed(args)
+    if args.command == "impact":
+        return cmd_impact(args)
 
     parser.print_help()
     return 0
