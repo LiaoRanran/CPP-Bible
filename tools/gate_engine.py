@@ -1664,28 +1664,47 @@ _ZERO_DIAG_RE = re.compile(
     r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
 
 
+_DIAG_SUPPRESS_RE = re.compile(
+    r"#pragma\s+(?:GCC|clang)\s+diagnostic\s+ignored"
+    r"|#pragma\s+warning\s*\(\s*disable"
+    r"|-fno-diagnostics-show-option")
+
+
 def check_evidence_zero_diag_werror() -> list[Finding]:
-    """P11 零诊断类判据须 `-Werror`（371 报告 W3，红队发现）。
+    """P11 零诊断类判据须 `-Werror`（371 W3）+ 470 P0-F 扩面（452 E10）。
 
     为何：replay 的 `compile_rc` **只看退出码**，而**警告不影响 rc** ⇒ "无警告/零诊断"
-    这类 `falsification` 在不加 `-Werror` 时**不可机器判定**（判据形同虚设：编译器发了
-    警告也照样 confirm）。补 `-Werror` 后警告即 rc≠0，判据才真正落地。
-
-    实测口径（2026-09-12 全库排查）：falsification 含此类措辞者仅 1 张（EV-LANG-001），
-    且已带 `-Werror` —— 本规则为**防回归**（该体裁洞此前是隐性的：判据写得漂亮，
-    机器却看不见）。
+    这类判据在不加 `-Werror` 时**不可机器判定**。470 P0-F 补两个存活变种：
+      * **字段位移**（H16a）：措辞挪到 `expected`/`hypothesis`，旧版只扫
+        `falsification` ⇒ 漏检。扫描面扩到全部叙事字段。
+      * **pragma 消音**（H16b）：夹具 `#pragma GCC diagnostic ignored` 让 -Werror
+        失效——判据从"编译器没说话"退化为"作者让编译器闭嘴"⇒ warn。
+    实测（2026-09-13，56 卡）：扩面后字段面仅 EV-LANG-001 命中（已带 -Werror，不报）；
+    -Werror 卡 + 消音 pragma 0 条 ⇒ 扩面零新增 warn。
     """
     out: list[Finding] = []
     for p in _cards(EVIDENCE, "EV-*.md"):
         meta = _meta(p)
-        hits = sorted(set(_ZERO_DIAG_RE.findall(str(meta.get("falsification") or ""))))
-        if not hits:
-            continue
-        if "-Werror" not in str(meta.get("command") or ""):
+        fields = " ".join(str(meta.get(k) or "") for k in
+                          ("falsification", "expected", "hypothesis", "claim_boundary"))
+        hits = sorted(set(_ZERO_DIAG_RE.findall(fields)))
+        has_werror = "-Werror" in str(meta.get("command") or "")
+        if hits and not has_werror:
             out.append(Finding("EV-ZERO-DIAG-WERROR", "warn", _rel(p),
-                               f"falsification 含零诊断措辞 {hits}，但 command 无 -Werror"
+                               f"零诊断措辞 {hits}（falsification/expected/hypothesis/"
+                               f"claim_boundary 任一），但 command 无 -Werror"
                                f"——警告不影响 rc，该判据不可机器判定",
                                "command 补 -Werror；或把判据改写为可观测读数（rc/输出）"))
+        if has_werror:
+            fx = ROOT / str(meta.get("fixture") or "")
+            if fx.is_file():
+                m = _DIAG_SUPPRESS_RE.search(
+                    fx.read_text(encoding="utf-8", errors="replace"))
+                if m:
+                    out.append(Finding("EV-ZERO-DIAG-WERROR", "warn", _rel(p),
+                                       f"夹具含消音 pragma（{m.group(0)!r}）而卡声明 -Werror"
+                                       "——判据从『编译器没说话』退化为『作者让编译器闭嘴』",
+                                       "移除消音 pragma；若消音是受控变量须显式声明"))
     return out
 
 
