@@ -1041,11 +1041,11 @@ def drill() -> int:
             "superiority": "s", "depth": "d", "pedagogy": "p",
             "relations": "\n  - some_future_relation: ATOM-U2",
         })
-        _who56 = sorted({f.rule_id for f in ge.check_relations_unknown_type()})
-        # RULE-COVERAGE 只认源码里的 `"RULE_ID" in who` 字面量模式，勿改成变量
-        ok = "ATOM-REL-UNKNOWN" in _who56
+        # RULE-COVERAGE 的正则只认 `"RULE_ID" in who`（变量名必须恰好是 who）
+        who = sorted({f.rule_id for f in ge.check_relations_unknown_type()})
+        ok = "ATOM-REL-UNKNOWN" in who
         results.append(("P56 未知 relations 类型须可见（不静默丢弃）", ok,
-                        f"拦截者 {', '.join(_who56) or '（漏网！）'}"))
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
