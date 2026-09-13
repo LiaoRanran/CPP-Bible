@@ -60,9 +60,13 @@ CONFLICT_REL = {"contradicts", "conflicts_with"}   # 415 D1：冲突型关系（
 # 470 P0-D / 452 E11（H14）：冲突关系同义词——旧版只归一 CONFLICT_REL 两种拼写，
 # contradiction/conflicts/cancels/opposes 会静默丢弃（两颗真矛盾原子可共存）。
 CONFLICT_SYNONYMS = {"contradiction": "contradicts", "conflicts": "conflicts_with",
-                     "cancels": "contradicts", "opposes": "contradicts"}
+                     "cancels": "contradicts", "opposes": "contradicts",
+                     "refutes": "contradicts", "denies": "contradicts"}  # 472 P1-4（N3）
+# 已知关系类型白名单：`ATOM-REL-UNKNOWN` 对表外类型 warn（472 P1-4）。
+# `evolved_to`/`misconceived_as` 由该规则**实测发现**后补入（存量合法语义，非冲突类，
+# 不参与 DAG 排序与冲突检测——仅作引用/演化链语义）。新增类型须由人裁决后再入表。
 REL_TYPES_KNOWN = (DAG_REL | CONFLICT_REL | set(CONFLICT_SYNONYMS)
-                   | {"contrasts", "see_also"})
+                   | {"contrasts", "see_also", "evolved_to", "misconceived_as"})
 BANNED_SUPERIORITY = ("讲解更详细", "更通俗易懂", "更全面", "更加深入", "帮助读者理解", "结合实际")
 # 注意：「待补/待補」**不在**占位符之列 —— 在本项目它是**合法的缺口留痕**
 # （证据卡 `## 待补`、M2「待确认」都是显式记账，不是未填内容），误报会逼人删掉真信息。
@@ -555,6 +559,42 @@ def check_relations_dag() -> list[Finding]:
     for n in list(graph):
         if color.get(n, 0) == 0:
             dfs(n, [])
+    return out
+
+
+def check_relations_unknown_type() -> list[Finding]:
+    """472 P1-4（N3 根治）：未知关系类型 → warn（结束"同义词枚举"范式）。
+
+    同义词表永远列不全（`refutes`/`denies` 之后还有下一个）——根治办法是让**表外
+    类型可见**：任何不在 `REL_TYPES_KNOWN` 白名单内的 relations 类型都会被 warn，
+    使"静默丢弃"变成"显式债务"。新增类型须先加入白名单并明确其语义（由人裁决）。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        unknown: list[str] = []
+        # ⚠️ 不能走 `_relations_norm`：它只保留 DAG_REL∪CONFLICT_REL∪同义词的键，
+        # **未知类型会被静默丢弃**——正是本规则要发现的对象。这里直接扫原始 relations。
+        for rel in _as_list(_meta(p).get("relations")):
+            if not isinstance(rel, dict):
+                continue
+            t = ""
+            if rel.get("type") or rel.get("target"):
+                t = str(rel.get("type") or "")
+            else:
+                for k in rel:
+                    if str(k) in ("type", "target"):
+                        continue
+                    t = CONFLICT_SYNONYMS.get(str(k), str(k))   # 同义词先归一
+                    break
+            if t and t not in REL_TYPES_KNOWN:
+                unknown.append(t)
+        if unknown:
+            out.append(Finding("ATOM-REL-UNKNOWN", "warn", _rel(p),
+                               f"relations 含未知类型 {sorted(set(unknown))}"
+                               "（不在已知白名单 ⇒ 不参与任何关系判定，等同静默丢弃）",
+                               "改用已知类型（prerequisite/specializes/realizes/"
+                               "evolved_from/contradicts/conflicts_with/contrasts/see_also），"
+                               "或先登记新类型语义再入白名单"))
     return out
 
 
@@ -2044,6 +2084,8 @@ def _register_all() -> None:
          "repo", check_frontmatter_hardening),
         ("EV-ENV-DEPENDENT-KEY", "环境量读数键（470 P0-E：声明为断言=block/仅留痕=advice）",
          "evidence", check_env_dependent_key),
+        ("ATOM-REL-UNKNOWN", "未知 relations 类型（472 P1-4：结束同义词枚举，表外即债务）",
+         "atom", check_relations_unknown_type),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
          check_evidence_out_stale_mtime),
     ]
@@ -2060,6 +2102,8 @@ def _register_all() -> None:
            "EV-ZERO-DIAG-WERROR": "warn",
            # 2026-09-13（373-B3 窄化）：未声明读数键与"编造键"结构上不可区分 ⇒ 只 warn
            "EV-OUT-UNDECLARED-KEY": "warn",
+           # 472 P1-4：未知关系类型是债务可见化，不阻断存量（新类型入白名单由人裁决）
+           "ATOM-REL-UNKNOWN": "warn",
            # （EV-ASSERT-SYMBOL-MAPPED 规则级登记为 block：通用符号载荷一律拦；
            #   单条 Finding 对"疑似拼写差异"降为 warn，故混合级别是刻意的）
            }

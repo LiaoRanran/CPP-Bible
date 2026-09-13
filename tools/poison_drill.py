@@ -1011,6 +1011,42 @@ def drill() -> int:
     finally:
         shutil.rmtree(_tmpd3, ignore_errors=True)
 
+    # ── P55 refutes 同义词归一后须参与冲突检测（472 P1-4 / N3）────────────────
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-P.md", {
+            "id": "ATOM-P", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "draft", "claim": "c", "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]", "first_hand": "false",
+            "superiority": "s", "depth": "d", "pedagogy": "p",
+            "relations": "\n  - prerequisite: ATOM-Q",
+        })
+        _write(ge.ATOMS / "mem" / "ATOM-Q.md", {
+            "id": "ATOM-Q", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "draft", "claim": "c", "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]", "first_hand": "false",
+            "superiority": "s", "depth": "d", "pedagogy": "p",
+            "relations": "\n  - refutes: ATOM-P",
+        })
+        _who55 = sorted({f.rule_id for f in ge.check_atom_rel_conflict()})
+        ok = "ATOM-REL-CONFLICT" in _who55
+        results.append(("P55 refutes 同义词归一时须检出矛盾", ok,
+                        f"拦截者 {', '.join(_who55) or '（漏网！）'}"))
+
+    # ── P56 未知关系类型必须可见（结束同义词枚举）─────────────────────────────
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-U1.md", {
+            "id": "ATOM-U1", "title": "t", "domain": "MEM", "type": "mechanism",
+            "status": "draft", "claim": "c", "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]", "first_hand": "false",
+            "superiority": "s", "depth": "d", "pedagogy": "p",
+            "relations": "\n  - some_future_relation: ATOM-U2",
+        })
+        _who56 = sorted({f.rule_id for f in ge.check_relations_unknown_type()})
+        # RULE-COVERAGE 只认源码里的 `"RULE_ID" in who` 字面量模式，勿改成变量
+        ok = "ATOM-REL-UNKNOWN" in _who56
+        results.append(("P56 未知 relations 类型须可见（不静默丢弃）", ok,
+                        f"拦截者 {', '.join(_who56) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1086,7 +1122,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P35 ", "A3"), ("P36 ", "A6"), ("P37 ", "A6"), ("P38 ", "A4"),
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
-    ("P51 ", "A10"), ("P52 ", "A10"),
+    ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
