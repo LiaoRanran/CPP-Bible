@@ -935,6 +935,25 @@ def drill() -> int:
         results.append(("P43 缩进走私（E07 缩进 verdict 提升顶层键）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P44 环境量进断言键（470 P0-E / 452 E06）：nproc 声明为比对目标 ────────
+    with sandbox() as tmp:
+        outp = ROOT / "build" / "_poison_out_e06.out"
+        outp.parent.mkdir(exist_ok=True)
+        outp.write_text("nproc=32\nresult=7\n", encoding="utf-8")
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-ENVKEY.md", {
+            "id": "EV-MEM-ENVKEY", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "g++ fx.cpp -o a.exe && ./a.exe", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            "actual": "\n  run_match_file: build/_poison_out_e06.out\n"
+                      "  run_match_keys: [nproc, result]",
+        })
+        who = sorted({f.rule_id for f in ge.check_env_dependent_key()
+                      if f.severity == "block"})
+        ok = "EV-ENV-DEPENDENT-KEY" in who
+        results.append(("P44 环境量进断言键（nproc 声明为比对目标，A5）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+        outp.unlink(missing_ok=True)
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1009,7 +1028,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P29 ", "A7"), ("P30 ", "A7"), ("P32 ", "A1"), ("P33 ", "A4"), ("P34 ", "A4"),
     ("P35 ", "A3"), ("P36 ", "A6"), ("P37 ", "A6"), ("P38 ", "A4"),
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
-    ("P43 ", "A6"),
+    ("P43 ", "A6"), ("P44 ", "A5"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 11)]
 

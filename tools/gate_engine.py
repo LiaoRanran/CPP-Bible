@@ -1228,6 +1228,67 @@ def check_fixture_no_echo_data(cards: list[Path] | None = None) -> list[tuple[st
     return hits
 
 
+# ── 470 P0-E（452 E06）：环境依赖读数键（不可复现断言面）────────────────────
+_ENV_KEY_EXACT = frozenset({
+    "nproc", "date", "time", "user", "username", "host", "hostname", "whoami",
+    "uname", "pid", "tmpdir", "temp_dir", "cpu_count", "hw_concurrency",
+})
+_ENV_KEY_PREFIX = ("nproc", "hardware_concurrency", "__DATE__", "__TIME__",
+                   "__TIMESTAMP__", "sysconf", "getenv", "processor_")
+
+
+def _is_env_key(k: str) -> bool:
+    kl = k.strip().lower()
+    return kl in _ENV_KEY_EXACT or any(kl.startswith(p) for p in _ENV_KEY_PREFIX)
+
+
+def check_env_dependent_key() -> list[Finding]:
+    """470 P0-E（452 E06）：环境量读数键——机器/时钟相关读数不可复现。
+
+    分级（按存量实测面定级，见 worklog P0-E 摘要）：
+      * 环境量键被**声明进 `run_match_keys`** → **block**：比对目标依赖机器/时钟
+        ⇒ CI 异核、次日重跑必红（E06 载荷 `keys: [nproc, date, user]` 即此形态；
+        存量 0 命中——实测无卡把环境量声明为断言）。
+      * 环境量键**仅出现在 .out、未声明** → **advice**：记录性输出带环境量是隐患
+        但未被断言（存量 2 张：EV-CONC-003/004 的 `nproc=32`），不进债桶不阻断。
+    只认精确词与强前缀：`timestamp`/`elapsed`/`random` 等弱词不匹配（bench 卡正常
+    记录时间戳会误伤，见实测）。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        actual = meta.get("actual") or {}
+        if not isinstance(actual, dict):
+            continue
+        keys = {str(k).strip() for k in (actual.get("run_match_keys") or [])}
+        bad = sorted(k for k in keys if _is_env_key(k))
+        if bad:
+            out.append(Finding("EV-ENV-DEPENDENT-KEY", "block", _rel(p),
+                               f"run_match_keys 含环境量键 {bad}"
+                               "（机器/时钟相关读数不可复现——CI 异核/次日必红）",
+                               "把环境量从比对目标移除；需要跨环境复现的结论改用"
+                               "与机器无关的读数"))
+            continue
+        rf = str(actual.get("run_match_file") or "")
+        f = ROOT / rf if rf else None
+        if not f or not f.is_file():
+            continue
+        undecl = []
+        for ln in f.read_text(encoding="utf-8", errors="replace").split("\n"):
+            s = ln.strip()
+            if not s or s.startswith(("#", "//")) or "=" not in s:
+                continue
+            k = s.split("=", 1)[0].strip()
+            if _is_env_key(k):
+                undecl.append(k)
+        if undecl:
+            out.append(Finding("EV-ENV-DEPENDENT-KEY", "advice", _rel(p),
+                               f".out 含环境量读数键 {sorted(set(undecl))}（未声明为断言）"
+                               "——留痕即隐患，换机器后该行失去可比性",
+                               "从 .out 移除环境量行，或明确它只作参考不作断言"))
+    return out
+
+
 def check_evidence_out_stale_mtime() -> list[Finding]:
     """414 P1-7（F06）：`.out` 必须比夹具新。`.out` 可手写伪造（replay 只比对内容），
     真跑出来的 `.out` 一定晚于夹具最后修改。启发式（可被 touch 绕过），拦低级伪造。
@@ -1962,6 +2023,8 @@ def _register_all() -> None:
          check_frontmatter_duplicate_key),
         ("EV-FM-YAML-HARDENING", "frontmatter 解析硬化（470 P0-D：走私/重复键/语法/一致性）",
          "repo", check_frontmatter_hardening),
+        ("EV-ENV-DEPENDENT-KEY", "环境量读数键（470 P0-E：声明为断言=block/仅留痕=advice）",
+         "evidence", check_env_dependent_key),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
          check_evidence_out_stale_mtime),
     ]
