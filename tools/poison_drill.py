@@ -1047,6 +1047,27 @@ def drill() -> int:
         results.append(("P56 未知 relations 类型须可见（不静默丢弃）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P57 cat 式证据须被拦（472 P1-2：experimental→warn）───────────────────
+    with sandbox() as tmp:
+        _fx = ROOT / "_adv_v80" / "probes" / "p57.cpp"
+        _fx.parent.mkdir(parents=True, exist_ok=True)
+        _fx.write_text(
+            '#include <cstdio>\n#include <fstream>\n#include <string>\n'
+            'int main(){ std::ifstream f("_adv_v80/probes/expected_data.txt");\n'
+            '  std::string l;\n'
+            '  while (std::getline(f, l)) std::printf("%s\\n", l.c_str()); }\n',
+            encoding="utf-8")
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-CAT.md", {
+            "id": "EV-MEM-CAT", "serves": "[]", "hypothesis": "h", "kind": "run",
+            "command": "g++ _adv_v80/probes/p57.cpp -o build/_p57.exe && ./build/_p57.exe",
+            "fixture": "_adv_v80/probes/p57.cpp", "artifact": "a.asm",
+            "artifact_sha256": "0" * 64, "verdict": "confirm", "falsification": "f",
+        })
+        who = sorted({f.rule_id for f in ge.check_fixture_no_echo_findings()})
+        ok = "EV-FIXTURE-NO-ECHO-DATA" in who
+        results.append(("P57 cat 式证据须被拦（升 warn 后）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1123,6 +1144,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
+    ("P57 ", "A2"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

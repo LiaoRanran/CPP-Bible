@@ -1329,6 +1329,22 @@ def check_env_dependent_key() -> list[Finding]:
     return out
 
 
+def check_fixture_no_echo_findings() -> list[Finding]:
+    """472 P1-2（452 E05）：cat 式证据由 experimental 升为 **warn**（默认参与门禁）。
+
+    升格依据：experimental 零输出 ⇒ 卡照样 confirm 直推 verified（v5 复测实证）。
+    存量实测 56 卡 **0 命中**（阴性对照：读入后计算再输出不命中），故升 warn 零误伤。
+    """
+    out: list[Finding] = []
+    for card, fpath, lno, snip in check_fixture_no_echo_data():
+        out.append(Finding(
+            "EV-FIXTURE-NO-ECHO-DATA", "warn", card,
+            f"疑似 cat 式证据：{fpath}:{lno} {snip}"
+            "（夹具读仓库内数据文件原样打印 ⇒ 只证「输出==文件」，不证任何机制）",
+            "让夹具真正计算；确需读基线数据时把计算过程显式留在夹具内"))
+    return out
+
+
 def check_evidence_out_stale_mtime() -> list[Finding]:
     """414 P1-7（F06）：`.out` 必须比夹具新。`.out` 可手写伪造（replay 只比对内容），
     真跑出来的 `.out` 一定晚于夹具最后修改。启发式（可被 touch 绕过），拦低级伪造。
@@ -2086,6 +2102,8 @@ def _register_all() -> None:
          "evidence", check_env_dependent_key),
         ("ATOM-REL-UNKNOWN", "未知 relations 类型（472 P1-4：结束同义词枚举，表外即债务）",
          "atom", check_relations_unknown_type),
+        ("EV-FIXTURE-NO-ECHO-DATA", "cat 式证据（472 P1-2：experimental→warn，读文件原样打印）",
+         "evidence", check_fixture_no_echo_findings),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
          check_evidence_out_stale_mtime),
     ]
@@ -2104,6 +2122,8 @@ def _register_all() -> None:
            "EV-OUT-UNDECLARED-KEY": "warn",
            # 472 P1-4：未知关系类型是债务可见化，不阻断存量（新类型入白名单由人裁决）
            "ATOM-REL-UNKNOWN": "warn",
+           # 472 P1-2：cat 式证据（存量实测 0 命中，升 warn 不误伤）
+           "EV-FIXTURE-NO-ECHO-DATA": "warn",
            # （EV-ASSERT-SYMBOL-MAPPED 规则级登记为 block：通用符号载荷一律拦；
            #   单条 Finding 对"疑似拼写差异"降为 warn，故混合级别是刻意的）
            }
