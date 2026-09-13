@@ -44,8 +44,13 @@ def test_anki_csv_format():
 
 
 def test_all_atoms_exported():
+    """全量模式（include_draft）下每颗原子恰好 1 张 claim 卡。
+
+    默认模式只导出非 draft 原子（472 P1-3 / 452 E16），见 tests/test_p13_flashcard.py。
+    """
     ids = {str(m["id"]) for m in _atoms()}
-    cards = {c["id"] for c in fe.build_cards() if c["type"] == "atom_claim"}
+    cards = {c["id"] for c in fe.build_cards(include_draft=True)
+             if c["type"] == "atom_claim"}
     assert cards == ids, "每颗原子恰好 1 张 claim 卡"
 
 
