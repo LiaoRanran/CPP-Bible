@@ -9,6 +9,8 @@
 """
 from __future__ import annotations
 
+import os
+import time
 from pathlib import Path
 
 import pytest
@@ -865,7 +867,8 @@ def test_status_history_and_dal_signoff_require_real_name(sandbox: Path):
 
 
 # ── 414 P0-2（F01）：MSVC 卡免检链 ──────────────────────────────────────────
-def _write_ev(base: Path, name: str, **over: str) -> Path:
+# 注意：勿与上方既有 _write_ev(base, **over) 同名——模块级后定义会覆盖前者。
+def _write_card(base: Path, name: str, **over: str) -> Path:
     d = base / "evidence" / "mem"
     d.mkdir(parents=True, exist_ok=True)
     fields = {
@@ -885,23 +888,23 @@ def test_cl_card_confirm_is_blocked(sandbox: Path):
     replay 对 cl 卡只能给 infra_error（MSVC 永久边界，从未复算），卡面宣称
     confirm 即「不可验证的卡被当成已验证」，一次 accept 永久挂账。
     """
-    _write_ev(sandbox, "EV-MEM-CL1.md")
+    _write_card(sandbox, "EV-MEM-CL1.md")
     who = {f.rule_id for f in ge.check_evidence_msvc_no_verify()}
     assert "EV-MSCV-NO-VERIFY" in who, "cl 卡标 confirm 必须拦"
 
 
 def test_cl_card_non_confirm_passes(sandbox: Path):
     """F01 阴性：cl 卡不宣称 confirm（unverified/refute）→ 放行。"""
-    _write_ev(sandbox, "EV-MEM-CL2.md", verdict="unverified")
-    _write_ev(sandbox, "EV-MEM-CL3.md", verdict="refute",
+    _write_card(sandbox, "EV-MEM-CL2.md", verdict="unverified")
+    _write_card(sandbox, "EV-MEM-CL3.md", verdict="refute",
               id="EV-MEM-CL3", command="cl /c fx.cpp")
     assert ge.check_evidence_msvc_no_verify() == [], "不宣称已复算的 cl 卡不得拦"
 
 
 def test_gcc_card_confirm_not_flagged(sandbox: Path):
     """F01 误伤回归：g++ 卡（可复算）标 confirm → 放行。"""
-    _write_ev(sandbox, "EV-MEM-GCC.md", command="g++ -std=c++17 -c fx.cpp")
-    _write_ev(sandbox, "EV-MEM-GCC2.md", id="EV-MEM-GCC2",
+    _write_card(sandbox, "EV-MEM-GCC.md", command="g++ -std=c++17 -c fx.cpp")
+    _write_card(sandbox, "EV-MEM-GCC2.md", id="EV-MEM-GCC2",
               command="C:/Qt/Tools/mingw1530_64/bin/g++.exe -S fx.cpp -o fx.asm")
     assert ge.check_evidence_msvc_no_verify() == [], "g++ 卡不得误拦"
 
@@ -911,7 +914,7 @@ _PROD = "g++ -std=c++17 -O2 -S fx.cpp -o fx.asm"
 
 
 def _temporal_ev(sandbox: Path, name: str, tail: str) -> Path:
-    return _write_ev(sandbox, name, command=_PROD + tail,
+    return _write_card(sandbox, name, command=_PROD + tail,
                      artifact_producer=_PROD, artifact="fx.asm")
 
 
@@ -939,7 +942,7 @@ def test_temporal_cp_and_redirect_blocked(sandbox: Path):
 
 def test_temporal_pre_compile_overwrite_passes(sandbox: Path):
     """F02 阴性：覆写在编译**前**（会被编译覆盖）→ 放行。"""
-    _write_ev(sandbox, "EV-MEM-T5.md", command="cp other.asm fx.asm && " + _PROD,
+    _write_card(sandbox, "EV-MEM-T5.md", command="cp other.asm fx.asm && " + _PROD,
               artifact_producer=_PROD, artifact="fx.asm")
     blocks = [f for f in ge.check_evidence_artifact_producer() if f.severity == "block"]
     assert not blocks, "编译前的覆写会被编译覆盖，不得拦"
@@ -950,3 +953,99 @@ def test_temporal_post_read_passes(sandbox: Path):
     _temporal_ev(sandbox, "EV-MEM-T6.md", " && type fx.asm")
     _temporal_ev(sandbox, "EV-MEM-T7.md", " && grep foo fx.asm")
     assert ge.check_evidence_artifact_producer() == [], "编译后读取不得拦/不得 warn"
+
+
+# ── 414 P1-4~7：F03 contains_in text / F04 全角键 / F06 陈旧 mtime / F09 重复键 ──
+def test_contains_in_text_empty_or_cjk_blocked(sandbox: Path):
+    """F03：contains_in/absent_in 的 text=空 / 纯中文 → block（结构性无判别力）。
+
+    注：414 原案「通用助记符一律 block」实测误伤存量 4 处（区间语义下
+    `absent_in je` 是强断言、`contains_in je` 是活性对照），收窄为空/纯中文
+    block + contains_in 通用助记符 advice。
+    """
+    _write_card(sandbox, "EV-MEM-F3B.md",
+              artifact_assert="\n  - {kind: absent_in, symbol: asm, text: 纯中文断言}")
+    _write_card(sandbox, "EV-MEM-F3C.md", id="EV-MEM-F3C",
+              artifact_assert='\n  - {kind: contains_in, symbol: asm, text: ""}')
+    hits = [f for f in ge.check_evidence_assert_symbol_mapped() if f.severity == "block"]
+    assert len(hits) >= 2, "text 空/纯中文必须 block"
+
+
+def test_contains_in_text_generic_mnemonic_advice(sandbox: Path):
+    """F03：contains_in 的 text=通用助记符 → advice（弱断言不阻断）。
+
+    载荷用 `ret`（在 UNIVERSAL_SYMBOLS 中；`mov` 不在集合里，只有 movq/movl）。"""
+    _write_card(sandbox, "EV-MEM-F3A.md",
+              artifact_assert="\n  - {kind: contains_in, symbol: asm, text: ret}")
+    hits = [f for f in ge.check_evidence_assert_symbol_mapped()
+            if f.severity == "advice"]
+    assert hits, "contains_in+通用助记符须至少给 advice"
+
+
+def test_contains_in_text_specific_passes(sandbox: Path):
+    """F03 阴性：text 有判别力（工件可定位的字面文本）→ 不因 F03 拦。"""
+    _write_card(sandbox, "EV-MEM-F3D.md",
+              artifact_assert="\n  - {kind: contains_in, symbol: asm, text: vmovaps xmm0}")
+    hits = [f for f in ge.check_evidence_assert_symbol_mapped()
+            if f.severity in ("block", "advice") and "text=" in f.message]
+    assert not hits, "有判别力 text 不得拦/不得建议"
+
+
+def test_out_key_unicode_detected(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """F04：全角键（`ｎｐｒｏｃ=`）也计入未声明读数键。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "fx.out").write_text("ｎｐｒｏｃ=1\n", encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-F4A.md",
+              actual="\n  run_match_file: fx.out\n  run_match_keys: []")
+    hits = ge.check_evidence_out_undeclared_key()
+    assert hits and "ｎｐｒｏｃ" in hits[0].message, "全角键必须计入"
+
+
+def test_out_key_ascii_declared_passes(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """F04 阴性：ASCII 已声明键 → 不 warn（误伤回归）。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "fx2.out").write_text("threads=4\n", encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-F4B.md",
+              actual="\n  run_match_file: fx2.out\n  run_match_keys: [threads]")
+    assert ge.check_evidence_out_undeclared_key() == [], "已声明键不得 warn"
+
+
+def test_out_stale_mtime_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """F06：.out 明显旧于夹具（>5s 宽容差）→ warn。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "_fx.cpp").write_text("int main(){return 0;}\n", encoding="utf-8")
+    outp = sandbox / "fx.out"
+    outp.write_text("x=1\n", encoding="utf-8")
+    past = time.time() - 600
+    os.utime(outp, (past, past))
+    _write_card(sandbox, "EV-MEM-F6A.md", fixture="_fx.cpp",
+              actual="\n  run_match_file: fx.out\n  run_match_keys: []")
+    hits = ge.check_evidence_out_stale_mtime()
+    assert hits and hits[0].severity == "advice", ".out 旧于夹具须 advice（启发式不进债桶）"
+
+
+def test_out_fresh_mtime_passes(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """F06 阴性：.out 晚于夹具 → 放行。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "_fx.cpp").write_text("int main(){return 0;}\n", encoding="utf-8")
+    (sandbox / "fx.out").write_text("x=1\n", encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-F6B.md", fixture="_fx.cpp",
+              actual="\n  run_match_file: fx.out\n  run_match_keys: []")
+    assert ge.check_evidence_out_stale_mtime() == [], "新鲜的 .out 不得 warn"
+
+
+def test_fm_duplicate_key_blocked(sandbox: Path):
+    """F09：双 verdict（refute+confirm）after-wins 遮蔽 → block。"""
+    d = sandbox / "evidence" / "mem"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "EV-MEM-F9A.md").write_text(
+        "---\nid: EV-MEM-F9A\nverdict: refute\nverdict: confirm\n"
+        "hypothesis: h\nfalsification: f\n---\n", encoding="utf-8")
+    who = [f.rule_id for f in ge.check_frontmatter_duplicate_key()]
+    assert "EV-FM-DUP-KEY" in who, "重复 verdict 键必须拦"
+
+
+def test_fm_unique_keys_pass(sandbox: Path):
+    """F09 阴性：键唯一 → 放行。"""
+    _write_card(sandbox, "EV-MEM-F9B.md")
+    assert ge.check_frontmatter_duplicate_key() == [], "唯一键不得拦"

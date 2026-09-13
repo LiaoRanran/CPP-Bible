@@ -968,7 +968,9 @@ def check_evidence_matrix_backed() -> list[Finding]:
     return out
 
 
-_OUT_KEY_RE = re.compile(r"^[A-Za-z_][\w\-.]*\s*=")
+# F04（414 P1-6）：键提取升级为 Unicode——中文/全角键（`ｎｐｒｏｃ=`、`硬件并发数=`）
+# 曾因 `^[A-Za-z_]` 起手排除而漏网（.out 键声明完整性对非 ASCII 同样适用）。
+_OUT_KEY_RE = re.compile(r"^[\w\u4e00-\u9fff\uff00-\uffef][\w\u4e00-\u9fff\uff00-\uffef\-.]*\s*=")
 
 
 def check_evidence_out_undeclared_key() -> list[Finding]:
@@ -1009,6 +1011,68 @@ def check_evidence_out_undeclared_key() -> list[Finding]:
                                f".out 含未声明读数键 {sorted(set(miss))}"
                                "（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）",
                                "把该键补进 run_match_keys 并声明期望值，或从 .out 移除"))
+    return out
+
+
+# ── F09/F06（414 P1-5/P1-7）─────────────────────────────────────────────────
+_FM_KEY_RE = re.compile(r"^([A-Za-z][\w-]*)\s*:")
+
+
+def check_frontmatter_duplicate_key() -> list[Finding]:
+    """414 P1-5（F09）：frontmatter 重复键。零依赖解析器 after-wins **静默覆盖**——
+    两个 `verdict:`（第一份 refute、第二份 confirm）时 gate 只见后者，S2 被遮蔽。
+
+    不改解析器（改 loader 影响全库解析路径），做**文本级**检查：frontmatter 内
+    顶层键出现 >1 次 → block（覆盖原子卡与证据卡，两类都要防遮蔽）。
+    """
+    out: list[Finding] = []
+    for base, pat in ((ATOMS, "ATOM-*.md"), (EVIDENCE, "EV-*.md")):
+        for p in _cards(base, pat):
+            raw = p.read_text(encoding="utf-8", errors="replace")
+            if not raw.startswith("---"):
+                continue
+            fm = raw.split("\n---", 1)[0]
+            seen: dict[str, int] = {}
+            for ln in fm.split("\n"):
+                m = _FM_KEY_RE.match(ln)
+                if m:
+                    seen[m.group(1)] = seen.get(m.group(1), 0) + 1
+            dups = sorted(k for k, n in seen.items() if n > 1)
+            if dups:
+                out.append(Finding(
+                    "EV-FM-DUP-KEY", "block", _rel(p),
+                    f"frontmatter 重复键 {dups}（解析器 after-wins 静默覆盖——"
+                    "双 verdict 可让 refute 被 confirm 遮蔽、绕过 S2）",
+                    "每个顶层键只写一次；要修改直接覆盖旧行"))
+    return out
+
+
+def check_evidence_out_stale_mtime() -> list[Finding]:
+    """414 P1-7（F06）：`.out` 必须比夹具新。`.out` 可手写伪造（replay 只比对内容），
+    真跑出来的 `.out` 一定晚于夹具最后修改。启发式（可被 touch 绕过），拦低级伪造。
+
+    宽容差 5s：git 全新 checkout 会把全部文件 mtime 拉齐到检出时刻，若不设宽容差
+    会对存量制造大量伪命中；只拦「.out 明显早于夹具」的真陈旧痕。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        actual = meta.get("actual") or {}
+        rf = str(actual.get("run_match_file") or "") if isinstance(actual, dict) else ""
+        fx = str(meta.get("fixture") or "")
+        if not rf or not fx:
+            continue
+        f_out, f_fx = ROOT / rf, ROOT / fx
+        if not (f_out.is_file() and f_fx.is_file()):
+            continue
+        if f_out.stat().st_mtime < f_fx.stat().st_mtime - 5:
+            # advice 而非 warn：414 自认启发式（可 touch 绕过），且存量夹具存在
+            # 「.out 生成后又碰过 .cpp」（replay 仍 confirm ⇒ 非语义陈旧）的良性情痕，
+            # warn 会造新增债——只建议重跑，不进债桶。
+            out.append(Finding("EV-OUT-STALE-MTIME", "advice", _rel(p),
+                               f".out（{rf}）比夹具（{fx}）旧——疑似不是当前源码的"
+                               "真实产出（手写/陈旧留痕）",
+                               "重跑 command 重新生成 .out，或修正 run_match_file"))
     return out
 
 
@@ -1137,6 +1201,29 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
                     if t in UNIVERSAL_SYMBOLS or (t not in hay and t not in sm_space)]
             for t in miss:
                 (bad_universal if t in UNIVERSAL_SYMBOLS else bad_other).append(t)
+        # F03（414 P1-4）：contains_in/absent_in 的 `text` 才是被检索的字面文本，
+        # 旧版 `_assert_targets` 只回传 `symbol`（范围选择器）⇒ text 完全不受约束。
+        # 414 原案「通用助记符一律 block」实测误伤存量 4 处：contains_in/absent_in 是
+        # **符号区间**语义——`absent_in f "je"`（证循环消除）是强断言、`contains_in "je"`
+        # 是存量活性对照，区间内助记符并非恒有，与攻击载荷（contains "mov"）结构上
+        # 不可区分（373 教训：不可区分 ⇒ 不硬拦）。收窄为：
+        #   * 空 text / 纯中文 text → block（asm 工件区间内恒无，结构性无判别力，存量 0 命中）；
+        #   * contains_in + 通用助记符 → advice（近乎恒真的弱断言，质量债不阻断）。
+        for r in rules:
+            kind = str(r.get("kind") or "")
+            if kind not in ("contains_in", "absent_in"):
+                continue
+            t = str(r.get("text") or "")
+            if not t or (_CJK_RE.search(t) and not _IDENT_RE.search(t)):
+                out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "block", _rel(p),
+                                   f"contains_in/absent_in 的 text={t!r} 无判别力"
+                                   "（空/纯中文——asm 工件中恒无，断言形同虚设）",
+                                   "text 改为本卡工件中可定位的有判别力字面文本"))
+            elif kind == "contains_in" and t in UNIVERSAL_SYMBOLS:
+                out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "advice", _rel(p),
+                                   f"contains_in 的 text={t!r} 是通用助记符"
+                                   "（符号区间内近乎恒有 ⇒ 弱断言，判别力存疑）",
+                                   "改锚有判别力的字面文本（特定立即数/寻址形态）"))
         if bad_universal:
             out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "block", _rel(p),
                                f"断言锚定无判别力的通用符号 {sorted(set(bad_universal))}"
@@ -1690,9 +1777,16 @@ def _register_all() -> None:
          "evidence", check_evidence_artifact_producer),
         ("EV-MSCV-NO-VERIFY", "含 MSVC(cl) 的卡禁止标 confirm（414 F01 免检链）", "evidence",
          check_evidence_msvc_no_verify),
+        ("EV-FM-DUP-KEY", "frontmatter 重复键（after-wins 遮蔽，414 F09）", "repo",
+         check_frontmatter_duplicate_key),
+        ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
+         check_evidence_out_stale_mtime),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn",
+           # 414 F06：规则级 warn（保证常跑），Finding 级 advice（启发式可 touch 绕过、
+           #   存量有良性情痕 ⇒ 不进债桶）——混合级别同 EV-ASSERT 先例
+           "EV-OUT-STALE-MTIME": "warn",
            # S6 P4–P7（2026-09-11 第四批）：判别力类问题，warn 级——不阻断但在门禁可见
            "EV-SELF-SATISFIED-ASSERT": "warn", "EV-FALSIFICATION-QUANT": "warn",
            "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn",

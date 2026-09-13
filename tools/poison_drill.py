@@ -24,11 +24,13 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
@@ -781,6 +783,70 @@ def drill() -> int:
         ok = "EV-ARTIFACT-PRODUCER" in who
         results.append(("P34 编译后powershell覆写（时序约束）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P35 contains_in 无判别力 text（414 P1-4 F03）：通用助记符恒有 ⇒ 恒真 ──
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-CINTEXT.md", {
+            "id": "EV-MEM-CINTEXT", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "g++ -S fx.cpp", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            "artifact_assert": "\n  - {kind: contains_in, symbol: asm, text: ret}",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_assert_symbol_mapped()})
+        ok = "EV-ASSERT-SYMBOL-MAPPED" in who
+        results.append(("P35 contains_in text=通用助记符（F03）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P36 重复 YAML 键（414 P1-5 F09）：双 verdict after-wins 遮蔽 S2 ───────
+    with sandbox() as tmp:
+        card = ge.EVIDENCE / "mem" / "EV-MEM-DUPKEY.md"
+        card.parent.mkdir(parents=True, exist_ok=True)
+        card.write_text(
+            "---\nid: EV-MEM-DUPKEY\nverdict: refute\nverdict: confirm\n"
+            "hypothesis: h\nfalsification: 对照输出 1\n---\n", encoding="utf-8")
+        who = sorted({f.rule_id for f in ge.check_frontmatter_duplicate_key()})
+        ok = "EV-FM-DUP-KEY" in who
+        results.append(("P36 重复 verdict 键（F09 after-wins 遮蔽）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P37 全角 .out 键（414 P1-6 F04）：非 ASCII 键漏网 → 未声明键 warn ─────
+    with sandbox() as tmp:
+        outp = ROOT / "build" / "_poison_out_f04.out"
+        outp.parent.mkdir(exist_ok=True)
+        outp.write_text("ｎｐｒｏｃ=1\n", encoding="utf-8")
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-UNIKEY.md", {
+            "id": "EV-MEM-UNIKEY", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "g++ -S fx.cpp", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            "actual": "\n  run_match_file: build/_poison_out_f04.out\n  run_match_keys: []",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_out_undeclared_key()})
+        ok = "EV-OUT-UNDECLARED-KEY" in who
+        results.append(("P37 全角键 .out 未声明（F04）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+        outp.unlink(missing_ok=True)
+
+    # ── P38 .out 陈旧留痕（414 P1-7 F06）：.out 比 .cpp 旧 → warn ─────────────
+    with sandbox() as tmp:
+        outp = ROOT / "build" / "_poison_out_f06.out"
+        fxp = ROOT / "build" / "_poison_fx_f06.cpp"
+        outp.parent.mkdir(exist_ok=True)
+        fxp.write_text("int main(){return 0;}\n", encoding="utf-8")
+        outp.write_text("x=1\n", encoding="utf-8")
+        past = time.time() - 600
+        os.utime(outp, (past, past))
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-STALE.md", {
+            "id": "EV-MEM-STALE", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "g++ -S fx.cpp", "fixture": "build/_poison_fx_f06.cpp",
+            "verdict": "confirm", "falsification": "对照输出 1",
+            "actual": "\n  run_match_file: build/_poison_out_f06.out\n  run_match_keys: []",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_out_stale_mtime()})
+        ok = "EV-OUT-STALE-MTIME" in who
+        results.append(("P38 .out 比夹具旧（F06 陈旧留痕）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+        outp.unlink(missing_ok=True)
+        fxp.unlink(missing_ok=True)
 
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
