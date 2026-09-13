@@ -221,4 +221,5 @@ def test_add_rejects_agent_owner(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
                          or __import__("shutil").which("g++")),
                     reason="本机无 g++")
 def test_poison_drill_all_caught_and_negative_passes():
-    assert pd.drill() == 0, "毒样例必须全部拦截且阴性对照放行（G3 验收门自证）"
+    passed, total, failures = pd.drill()
+    assert passed == total and not failures, "毒样例必须全部拦截且阴性对照放行（G3 验收门自证）"

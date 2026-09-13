@@ -477,6 +477,66 @@ def test_relations_mapping_form_existing_target_passes(sandbox: Path):
     assert ge.check_relations_target_exists() == []
 
 
+# ── 415 D1：relations 矛盾检测（ATOM-REL-CONFLICT）──────────────────────────────
+class TestAtomRelConflict:
+    def test_prerequisite_contradicts_blocks(self, sandbox: Path):
+        """阳例：A.prereq=B 且 B.contradicts=A → block。"""
+        _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001",
+                    relations="\n  - prerequisite: ATOM-MEM-002")
+        _write_atom(sandbox, "ATOM-MEM-002.md", "mem", id="ATOM-MEM-002",
+                    relations="\n  - contradicts: ATOM-MEM-001")
+        hits = ge.check_atom_rel_conflict()
+        assert any(h.rule_id == "ATOM-REL-CONFLICT" for h in hits), hits
+
+    def test_self_contradicts_blocks(self, sandbox: Path):
+        """阳例：A.contradicts=A → block（自相矛盾）。"""
+        _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001",
+                    relations="\n  - contradicts: ATOM-MEM-001")
+        hits = ge.check_atom_rel_conflict()
+        assert any(h.rule_id == "ATOM-REL-CONFLICT" for h in hits), hits
+
+    def test_contrasts_not_conflict(self, sandbox: Path):
+        """阴例：contrasts 不是矛盾关系 → 不 block。"""
+        _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001",
+                    relations="\n  - prerequisite: ATOM-MEM-002\n  - contrasts: ATOM-MEM-003")
+        _write_atom(sandbox, "ATOM-MEM-002.md", "mem", id="ATOM-MEM-002",
+                    relations="\n  - contrasts: ATOM-MEM-001")
+        assert ge.check_atom_rel_conflict() == []
+
+    def test_dict_form_contradicts_blocks(self, sandbox: Path):
+        """阳例：dict 写法 {type: contradicts, target: X} 也必须被检。"""
+        _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001",
+                    relations="\n  - {type: prerequisite, target: ATOM-MEM-002}")
+        _write_atom(sandbox, "ATOM-MEM-002.md", "mem", id="ATOM-MEM-002",
+                    relations="\n  - {type: contradicts, target: ATOM-MEM-001}")
+        assert ge.check_atom_rel_conflict() != []
+
+
+# ── 414 P1-8（F07）：纯标量 relations 不得静默丢弃 ──────────────────────────────
+def test_relations_scalar_warns(sandbox: Path):
+    """阳例：relations: [PERF-001]（纯标量）必须 warn，不能静默跳过。"""
+    _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001",
+                relations="[PERF-001]")
+    hits = ge.check_relations_target_exists()
+    assert any(h.rule_id == "ATOM-REL-TARGET" and "纯标量" in h.message for h in hits), hits
+
+
+def test_relations_empty_no_scalar_warn(sandbox: Path):
+    """阴例：标准空 relations `[]` 不得误报标量 warn。"""
+    _write_atom(sandbox, "ATOM-MEM-001.md", "mem", id="ATOM-MEM-001", relations="[]")
+    hits = ge.check_relations_target_exists()
+    assert not any("纯标量" in h.message for h in hits), hits
+
+
+# ── 414 P0-1（F08）：poison exit 逻辑不得对未覆盖规则放行 ──────────────────────
+def test_poison_exit_code():
+    """全过且无未覆盖 → 0；否则 → 1（修复前 1 or x 恒 1 且忽略 uncovered）。"""
+    import poison_drill as pd
+    assert pd.gate_exit_code(5, 5, []) == 0
+    assert pd.gate_exit_code(5, 4, []) == 1
+    assert pd.gate_exit_code(5, 5, ["SOME-RULE"]) == 1
+
+
 def test_matrix_command_is_not_a_trace_anchor(sandbox: Path):
     """373-N3：编译命令文本不再算留痕（旧锚 `g++ … -o` 让声明结构上恒绿）。"""
     _write_ev(sandbox, command="g++ -O2 x.cpp -o x.exe",

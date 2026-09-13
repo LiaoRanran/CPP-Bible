@@ -56,6 +56,7 @@ EV_KINDS = {"run", "asm", "layout", "abi", "symbol", "bench", "sanitizer", "godb
 ATOM_TYPES = {"concept", "mechanism", "rule", "idiom", "anti_pattern", "pitfall",
               "contrast", "evolution", "decision", "experiment"}
 DAG_REL = {"prerequisite", "specializes", "realizes", "evolved_from"}
+CONFLICT_REL = {"contradicts", "conflicts_with"}   # 415 D1：冲突型关系（与 DAG_REL 并列，不参与 DAG 排序）
 BANNED_SUPERIORITY = ("讲解更详细", "更通俗易懂", "更全面", "更加深入", "帮助读者理解", "结合实际")
 # 注意：「待补/待補」**不在**占位符之列 —— 在本项目它是**合法的缺口留痕**
 # （证据卡 `## 待补`、M2「待确认」都是显式记账，不是未填内容），误报会逼人删掉真信息。
@@ -487,7 +488,7 @@ def _relations_norm(meta: dict[str, Any]) -> list[dict[str, Any]]:
             out.append(rel)
             continue
         for k, v in rel.items():
-            if str(k) in DAG_REL:
+            if str(k) in DAG_REL or str(k) in CONFLICT_REL:
                 out.append({"type": str(k), "target": str(v)})
     return out
 
@@ -496,7 +497,15 @@ def check_relations_target_exists() -> list[Finding]:
     ids = {str(_meta(p).get("id") or p.stem) for p in _cards(ATOMS, "ATOM-*.md")}
     out: list[Finding] = []
     for p in _cards(ATOMS, "ATOM-*.md"):
-        for rel in _relations_norm(_meta(p)):
+        meta = _meta(p)
+        # 414 P1-8（F07）：纯标量 relations（如 `relations: [PERF-001]`）不经 DAG 校验，
+        # 被 _relations_norm 静默丢弃 ⇒ 这里显式 warn，让其进入视野（不 block，存量可能合法）。
+        for rel in _as_list(meta.get("relations")):
+            if isinstance(rel, str):
+                out.append(Finding("ATOM-REL-TARGET", "warn", _rel(p),
+                                   f"纯标量 relations 不经 DAG 校验，建议改为 {{type, target}} 结构：{rel!r}",
+                                   "改为 dict 形式关系声明（如 - {type: prerequisite, target: X}）"))
+        for rel in _relations_norm(meta):
             if isinstance(rel, dict):
                 tgt = str(rel.get("target") or "")
                 if tgt and tgt not in ids:
@@ -537,6 +546,55 @@ def check_relations_dag() -> list[Finding]:
     for n in list(graph):
         if color.get(n, 0) == 0:
             dfs(n, [])
+    return out
+
+
+def check_atom_rel_conflict() -> list[Finding]:
+    """415 D1：relations 矛盾检测（零 LLM，纯图遍历）。
+
+    支持型关系（DAG_REL）与冲突型关系（CONFLICT_REL）互相校验：
+      * A 支持/依赖 B，而 B 声明 contradictions A → 直接矛盾（block）
+      * A 同时支持 B 又声明 contradictions B → 自身关系矛盾（block）
+      * A 在自身 conflicts 中 → 自相矛盾（block）
+    严守 L1 机械边界：只认关系**类型对立**，绝不读 claim 文本（语义层归红队/L2）。
+    """
+    support: dict[str, dict[str, str]] = {}
+    conflict: dict[str, dict[str, str]] = {}
+    owner: dict[str, Path] = {}
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        aid = str(_meta(p).get("id") or p.stem)
+        owner[aid] = p
+        support[aid] = {}
+        conflict[aid] = {}
+        for rel in _relations_norm(_meta(p)):
+            if not isinstance(rel, dict):
+                continue
+            t = str(rel.get("type") or "")
+            g = str(rel.get("target") or "")
+            if not g:
+                continue
+            if t in DAG_REL:
+                support[aid][g] = t
+            elif t in CONFLICT_REL:
+                conflict[aid][g] = t
+    out: list[Finding] = []
+    for a, supports in support.items():
+        for b, st in supports.items():                 # a 支持/依赖 b
+            if a in conflict.get(b, {}):                # b 反过来声明与 a 矛盾
+                out.append(Finding(
+                    "ATOM-REL-CONFLICT", "block", _rel(owner.get(a, ROOT / "atoms")),
+                    f"{a} {st} {b}，但 {b} 声明 contradicts {a}（关系自相矛盾）",
+                    "拆分原子或修正其中一条 relations"))
+            if b in conflict.get(a, {}):                # a 自己既支持 b 又声明与 b 矛盾
+                out.append(Finding(
+                    "ATOM-REL-CONFLICT", "block", _rel(owner.get(a, ROOT / "atoms")),
+                    f"{a} 同时 {st} 且 contradicts {b}（自身关系矛盾）",
+                    "删除其中一条 relations"))
+    for a, confs in conflict.items():                  # 自相矛盾（A 声明 contradicts 自身）
+        if a in confs:
+            out.append(Finding(
+                "ATOM-REL-CONFLICT", "block", _rel(owner.get(a, ROOT / "atoms")),
+                f"{a} 自相矛盾（contradicts 自身）", "移除自引用"))
     return out
 
 
@@ -1493,6 +1551,8 @@ def _register_all() -> None:
         ("ATOM-DAL-MATCH", "DAL 分级与人审要求一致", "atom", check_dal_match),
         ("ATOM-REL-TARGET", "关系目标存在", "atom", check_relations_target_exists),
         ("ATOM-REL-DAG", "学习路径 DAG 无环", "atom", check_relations_dag),
+        ("ATOM-REL-CONFLICT", "relations 矛盾检测：A 支持/依赖 B 且 B 声明 contradicts A（415 D1）",
+         "atom", check_atom_rel_conflict),
         ("ATOM-SUPERIORITY-WORDS", "superiority 禁词表", "atom",
          check_superiority_banned_words),
         ("EV-FM-REQUIRED", "证据卡必填字段完整", "evidence", check_evidence_frontmatter),

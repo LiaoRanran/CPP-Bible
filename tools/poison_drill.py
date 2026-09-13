@@ -675,6 +675,72 @@ def drill() -> int:
                     fx_text="void spin_plain(){}\n")
         results.append(("P21-阴 工件真实代码里有出处须放行", not sev3, f"误报 {sev3 or '无'}"))
 
+    # ── P29 relations 矛盾（415 D1）：A 依赖 B 且 B 声明 contradicts A ──────────
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-TEST-CONFLICT-001.md", {
+            "id": "ATOM-TEST-CONFLICT-001", "title": "t", "domain": "MEM",
+            "type": "mechanism", "status": "draft", "claim": "c",
+            "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p",
+            "relations": "\n  - prerequisite: ATOM-TEST-CONFLICT-002",
+        })
+        _write(ge.ATOMS / "mem" / "ATOM-TEST-CONFLICT-002.md", {
+            "id": "ATOM-TEST-CONFLICT-002", "title": "t", "domain": "MEM",
+            "type": "mechanism", "status": "draft", "claim": "c",
+            "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p",
+            "relations": "\n  - contradicts: ATOM-TEST-CONFLICT-001",
+        })
+        who = sorted({f.rule_id for f in ge.check_atom_rel_conflict()})
+        ok = "ATOM-REL-CONFLICT" in who
+        results.append(("P29 relations 矛盾（A 依赖 B 且 B contradicts A）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P30 自相矛盾（415 D1）：A 声明 contradicts 自身 ────────────────────────
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-TEST-SELFCONFLICT-001.md", {
+            "id": "ATOM-TEST-SELFCONFLICT-001", "title": "t", "domain": "MEM",
+            "type": "mechanism", "status": "draft", "claim": "c",
+            "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p",
+            "relations": "\n  - contradicts: ATOM-TEST-SELFCONFLICT-001",
+        })
+        who = sorted({f.rule_id for f in ge.check_atom_rel_conflict()})
+        ok = "ATOM-REL-CONFLICT" in who
+        results.append(("P30 自相矛盾（A contradicts 自身）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P31-阴 合法对比（415 D1）：contrasts 不是矛盾关系，不得 block ──────────
+    with sandbox() as tmp:
+        _write(ge.ATOMS / "mem" / "ATOM-TEST-LEGAL-001.md", {
+            "id": "ATOM-TEST-LEGAL-001", "title": "t", "domain": "MEM",
+            "type": "mechanism", "status": "draft", "claim": "c",
+            "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p",
+            "relations": "\n  - prerequisite: ATOM-TEST-LEGAL-002\n  - contrasts: ATOM-TEST-LEGAL-003",
+        })
+        _write(ge.ATOMS / "mem" / "ATOM-TEST-LEGAL-002.md", {
+            "id": "ATOM-TEST-LEGAL-002", "title": "t", "domain": "MEM",
+            "type": "mechanism", "status": "draft", "claim": "c",
+            "claim_boundary": "b", "evidence": "[]",
+            "sources": "[{kind: iso, ref: X, independent: true}]",
+            "first_hand": "false", "superiority": "真实增量", "depth": "asm",
+            "pedagogy": "p",
+            "relations": "\n  - contrasts: ATOM-TEST-LEGAL-001",
+        })
+        who = sorted({f.rule_id for f in ge.check_atom_rel_conflict()})
+        ok = "ATOM-REL-CONFLICT" not in who
+        results.append(("P31-阴 合法对比（contrasts 非矛盾）必须放行", ok,
+                        f"误报 {', '.join(who) or '无'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -772,6 +838,17 @@ def rule_coverage() -> tuple[int, int, list[str]]:
     return len(covered), len(all_rules), uncovered
 
 
+def gate_exit_code(passed: int, total_d: int, uncovered: list[str]) -> int:
+    """414 P0-1：全过且无未覆盖规则 → 0，否则 1。
+
+    修复前 `0 if passed == total_d else 1 or (1 if uncovered else 0)`：
+    `1 or x` 恒为 1（短路），且 passed==total 时忽略 uncovered ⇒ 未覆盖规则时 CI 不红。
+    """
+    all_passed = (passed == total_d)
+    no_uncovered = (len(uncovered) == 0)
+    return 0 if (all_passed and no_uncovered) else 1
+
+
 if __name__ == "__main__":
     import argparse as _ap, json as _json, datetime as _dt
     _p = _ap.ArgumentParser(description="门禁毒样例钻探（对抗回归）")
@@ -798,5 +875,5 @@ if __name__ == "__main__":
             "findings": failures, "infra_errors": [],
         }
         real_out.write(_json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
-    raise SystemExit(0 if passed == total_d else 1 or (1 if uncovered else 0))
+    raise SystemExit(gate_exit_code(passed, total_d, uncovered))
 
