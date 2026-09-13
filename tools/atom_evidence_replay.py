@@ -767,6 +767,95 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
     return classify_sanitizer(blob, meta.get("expected_sanitizer"))
 
 
+_RECOMPILE_TIMEOUT = 300
+
+
+_RECOMPILE_PROGS = ("g++", "gcc", "clang++", "clang", "c++", "cc")
+
+
+def _token_is_compiler(tok: str) -> bool:
+    """token 是否为编译器程序名（含 `x86_64-w64-mingw32-g++` 与 `.exe` 后缀）。
+
+    不用正则词边界：`g\\+\\+\\b` 的 `\\b` 在 `+` 后不成立（`+`/空格都是非单词字符），
+    曾导致识别只是侥幸命中 `-std=c++23` 里的 `c++`——无 `-std` 的命令行就会漏。
+    """
+    n = tok.strip("\"'").replace("\\", "/").rsplit("/", 1)[-1].lower()
+    n = n.removesuffix(".exe")
+    return n in _RECOMPILE_PROGS or n.endswith("-g++") or n.endswith("-gcc")
+
+
+def _artifact_compile_lines(cmd: str, art: str) -> list[str]:
+    """提取**产出该 artifact** 的编译行：`-o` 目标须等于 artifact 路径（或其 basename），
+    且该段含编译器调用（token 级判定，见 `_token_is_compiler`）。
+
+    452 E01 的根因是"最终字节可被后置段改写"——独立重编译必须只取真产出该工件的
+    编译行；取"最后一条编译行"会拿错产物（实测 EV-CONC-001 最后一行产出 exe、
+    EV-LANG-001 最后一行产出另一 TU 的 asm）。
+    """
+    out: list[str] = []
+    art_norm = art.replace("\\", "/")
+    base = art_norm.rsplit("/", 1)[-1]
+    for seg in re.split(r"&&|\n", str(cmd)):
+        seg = seg.strip()
+        if not seg:
+            continue
+        m = re.search(r"-o\s+(\S+)", seg)
+        if not m:
+            continue
+        tgt = m.group(1).strip("\"'").replace("\\", "/")
+        if not (tgt == art_norm or tgt.endswith("/" + base) or tgt == base):
+            continue
+        if not any(_token_is_compiler(t) for t in seg.split()):
+            continue
+        out.append(seg)
+    return out
+
+
+def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, str]:
+    """P0-A（452 E01 根因修复）：临时目录独立重编译，比对 sha。
+
+    返回 (status, detail)：
+      * ok          —— 重编译 sha == 卡值（工件未被篡改）
+      * tampered    —— 不一致（编译后覆写 ⇒ refute:artifact_tampered）
+      * unavailable —— command 无产出该 artifact 的直接编译行（构建脚本边界，
+                       fail-closed：infra_error:recompile_unavailable，不静默放行）
+      * infra       —— 重编译进程失败/超时（环境故障，非内容判决）
+
+    关键实现点（470 §P0-A）：
+      * **CCACHE_DISABLE=1**：ccache 命中会让"重编译"返回缓存工件、比对恒真；
+      * 临时目录隔离（不碰正式工件；顺带满足 E09 并发面）；
+      * 原命令**逐字**执行、只把 `-o` 目标替换为临时路径——实验实测（conc/lang/hist
+        三域）此方式 sha 稳定且命中卡值，无需注入确定性 flag。
+    """
+    lines = _artifact_compile_lines(cmd, art_rel)
+    if not lines:
+        return "unavailable", "command 中无产出该 artifact 的直接编译行（构建脚本？）"
+    tmpdir = Path(tempfile.mkdtemp(prefix="recompile_"))
+    try:
+        env = dict(_compiler_env(), CCACHE_DISABLE="1")
+        last_out: Path | None = None
+        for ln in lines:
+            out_name = tmpdir / Path(art_rel).name
+            new_ln = re.sub(r"-o\s+\S+", f'-o "{out_name.as_posix()}"', ln, count=1)
+            r = subprocess.run(new_ln, shell=True, cwd=str(ROOT), capture_output=True,
+                               text=True, errors="replace",
+                               timeout=_RECOMPILE_TIMEOUT, env=env)
+            if r.returncode != 0:
+                return "infra", f"重编译失败 rc={r.returncode}：{(r.stderr or '')[:160]}"
+            last_out = out_name
+        assert last_out is not None
+        if not last_out.is_file():
+            return "infra", "重编译未产出文件"
+        got = _sha256(last_out)
+        if got != want_sha:
+            return "tampered", f"独立重编译 sha {got[:16]}… ≠ 卡值 {want_sha[:16]}…"
+        return "ok", f"{got[:16]}… == 卡值（独立重编译复现）"
+    except subprocess.TimeoutExpired:
+        return "infra", "重编译超时"
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+
 def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
                 restore_artifact: bool = True) -> tuple[str, list[str]]:
     """执行四项校验。返回 (verdict, 日志行)。verdict ∈ confirm / refute:<reason> / infra_error:<reason>。
@@ -950,6 +1039,22 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         cur_id = _current_toolchain_id()
         if got_sha == want_sha:
             log.append(f"  ✅ artifact_sha  {got_sha[:16]}… == 卡值（归属 {owner or '未声明'}）")
+            # ④b P0-A（452 E01）：重编译不变量——字节匹配只证"最终盘上字节对"，
+            # 证不了"字节是本次编译行产出的"（后置段/helper 脚本可覆写）。独立重编译
+            # 复现卡值才算闭环；不一致 ⇒ 工件被篡改（refute）；构建脚本卡 fail-closed。
+            rc_status, rc_detail = _recompile_invariant(
+                str(meta.get("command") or ""), art_rel, want_sha)
+            if rc_status == "tampered":
+                log.append(f"  ❌ recompile  {rc_detail}")
+                log.append("      → 编译后存在对 artifact 的写入（重编译不变量被破坏）")
+                return "refute:artifact_tampered", log
+            if rc_status == "unavailable":
+                log.append(f"  ⚠️  recompile  {rc_detail}")
+                return "infra_error:recompile_unavailable", log
+            if rc_status == "infra":
+                log.append(f"  ⚠️  recompile  {rc_detail}")
+                return "infra_error:recompile_failed", log
+            log.append(f"  ✅ recompile  {rc_detail}")
         elif owner and cur_id and owner != cur_id:
             log.append(f"  ⏭ artifact_sha  编译器不匹配，改判结构断言"
                        f"（本地 {cur_id} vs 卡归属 {owner}）")
