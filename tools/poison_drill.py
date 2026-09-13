@@ -848,6 +848,78 @@ def drill() -> int:
         outp.unlink(missing_ok=True)
         fxp.unlink(missing_ok=True)
 
+    # ── P39 注释伪造符号出处（424 A8）：出处空间剥注释后无此符号 → 无出处 ─────
+    with sandbox() as tmp:
+        fx = ROOT / "build" / "_poison_fx_a8.cpp"
+        asm = ROOT / "build" / "_poison_fx_a8.asm"
+        fx.parent.mkdir(exist_ok=True)
+        # 毒点：符号只出现在**注释**里——出处空间若不剥注释，断言就有假出处
+        fx.write_text("// 出处伪造注释：_Z10fake_symv\nint main(){return 0;}\n",
+                      encoding="utf-8")
+        subprocess.run([resolve_gpp(), "-std=c++17", "-S", str(fx), "-o", str(asm)],
+                       capture_output=True, text=True, errors="replace", timeout=300)
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-A8COMM.md", {
+            "id": "EV-MEM-A8COMM", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "fixture": fx.as_posix(), "artifact": asm.as_posix(),
+            "command": f'"{gpp_posix}" -std=c++17 -S "{fx.as_posix()}" -o "{asm.as_posix()}"',
+            "artifact_sha256": hashlib.sha256(asm.read_bytes()).hexdigest(),
+            "verdict": "confirm", "falsification": "对照输出 1",
+            "artifact_assert": "\n  - {kind: contains, text: _Z10fake_symv}",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_assert_symbol_mapped()})
+        ok = "EV-ASSERT-SYMBOL-MAPPED" in who
+        results.append(("P39 注释伪造符号出处（A8 间接注入）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+        asm.unlink(missing_ok=True)
+        fx.unlink(missing_ok=True)
+
+    # ── P40 工具冒充（424 A10 供应链）：producer 声明 clang++，实际 command 用 g++ ─
+    with sandbox() as tmp:
+        prod = "clang++ -std=c++17 -S fx.cpp -o fx.asm"
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-A10IMPO.md", {
+            "id": "EV-MEM-A10IMPO", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm",
+            "command": "g++ -std=c++17 -S fx.cpp -o fx.asm",
+            "artifact_producer": prod, "artifact": "fx.asm",
+            "verdict": "confirm", "falsification": "对照输出 1",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        ok = "EV-ARTIFACT-PRODUCER" in who
+        results.append(("P40 工具冒充（producer 声明≠实际编译器，A10）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P41 非编译器产出工件（424 A10 供应链）：argv[0] 不在编译器白名单 ───────
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-A10GEN.md", {
+            "id": "EV-MEM-A10GEN", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm",
+            "command": "python gen_asm.py -o fx.asm",
+            "artifact_producer": "python gen_asm.py -o fx.asm", "artifact": "fx.asm",
+            "verdict": "confirm", "falsification": "对照输出 1",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        ok = "EV-ARTIFACT-PRODUCER" in who
+        results.append(("P41 非编译器产出工件（生成脚本冒充编译，A10）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P42 环境值进读数键（424 A5 环境依赖）：nproc 类键未声明 → warn ─────────
+    with sandbox() as tmp:
+        outp = ROOT / "build" / "_poison_out_a5.out"
+        outp.parent.mkdir(exist_ok=True)
+        # 毒点：环境相关读数（nproc）进了 .out——换机器即碎，且不在 run_match_keys
+        outp.write_text("nproc_used=16\n", encoding="utf-8")
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-A5ENV.md", {
+            "id": "EV-MEM-A5ENV", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "g++ -O2 fx.cpp -o fx.exe && ./fx.exe", "verdict": "confirm",
+            "falsification": "对照输出 1",
+            "actual": "\n  run_match_file: build/_poison_out_a5.out\n  run_match_keys: []",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_out_undeclared_key()})
+        ok = "EV-OUT-UNDECLARED-KEY" in who
+        results.append(("P42 环境值进读数键（nproc 未声明，A5）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+        outp.unlink(missing_ok=True)
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -903,7 +975,39 @@ def drill() -> int:
     print(f"\n[poison] {passed}/{len(results)} —— "
           + ("制衡层有效（全部拦截 + 阴性放行）" if passed == len(results)
              else "制衡层有漏网，先修制衡！"))
+    stats = attack_type_stats(results)
+    uncovered = [a for a in ALL_ATTACK_TYPES if stats.get(a, 0) == 0]
+    print(f"[poison] 攻击面分类（424 A1-A10）：{stats}")
+    print(f"[poison] 零覆盖攻击面：{uncovered or '无'}"
+          + ("" if not uncovered else " —— 攻击者可从这些面无样本预警地打进来"))
     return passed, len(results), failures
+
+
+# ── 424：攻击面分类（A1-A10，409 口径）──────────────────────────────────────
+# 毒样例名前缀 → 主攻击类（阴性对照不分类）。P21 两条异类，具体前缀优先匹配。
+ATTACK_TYPES: list[tuple[str, str]] = [
+    ("P1 ", "A1"), ("P2 ", "A2"), ("P3 ", "A3"), ("P4 ", "A3"), ("P5 ", "A3"),
+    ("P6 ", "A3"), ("P7 ", "A1"), ("P8 ", "A1"), ("P9 ", "A1"), ("P10 ", "A3"),
+    ("P11 ", "A9"), ("P12 ", "A3"), ("P13 ", "A1"), ("P14 ", "A1"),
+    ("P15 ", "A3"), ("P16 ", "A2"), ("P17 ", "A1"), ("P18 ", "A7"), ("P19 ", "A3"),
+    ("P20 ", "A2"), ("P21 注释伪造", "A8"), ("P21 ", "A3"),
+    ("P29 ", "A7"), ("P30 ", "A7"), ("P32 ", "A1"), ("P33 ", "A4"), ("P34 ", "A4"),
+    ("P35 ", "A3"), ("P36 ", "A6"), ("P37 ", "A6"), ("P38 ", "A4"),
+    ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
+]
+ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 11)]
+
+
+def attack_type_stats(results: list[tuple[str, bool, str]]) -> dict[str, int]:
+    """按 A1-A10 统计攻击载荷覆盖（阴性对照排除——它们验证「不误伤」）。"""
+    by: dict[str, int] = {}
+    for name, _ok, _detail in results:
+        head = name.split(" ")[0]
+        if name.startswith("阴性") or "-阴" in head:
+            continue
+        t = next((t for pfx, t in ATTACK_TYPES if name.startswith(pfx)), "A?")
+        by[t] = by.get(t, 0) + 1
+    return dict(sorted(by.items()))
 
 
 _EXEMPT_LINE = re.compile(
@@ -961,7 +1065,18 @@ if __name__ == "__main__":
     _p = _ap.ArgumentParser(description="门禁毒样例钻探（对抗回归）")
     _p.add_argument("--json", nargs="?", const=True, default=False,
                    help="结构化 JSON 输出到 stdout")
+    _p.add_argument("--by-type", action="store_true",
+                    help="只输出 A1-A10 攻击面分类统计（424），不跑钻探")
     _a = _p.parse_args()
+    if _a.by_type:
+        by: dict[str, int] = {}
+        for _pfx, t in ATTACK_TYPES:
+            by[t] = by.get(t, 0) + 1
+        unc = [a for a in ALL_ATTACK_TYPES if by.get(a, 0) == 0]
+        print(f"[poison] 攻击面分类统计（载荷条数）：{dict(sorted(by.items()))}")
+        print(f"[poison] 零覆盖攻击面：{unc or '无'}"
+              + ("" if unc else " —— A1-A10 全部有样本预警"))
+        raise SystemExit(0)
     real_out = sys.stdout
     if _a.json:
         sys.stdout = sys.stderr          # 普通报告走 stderr，stdout 只留 JSON
