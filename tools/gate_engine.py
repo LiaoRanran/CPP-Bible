@@ -1151,6 +1151,45 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
     return out
 
 
+# ── F01（414 P0-2）：MSVC 卡免检链 ──────────────────────────────────────────
+_MSVC_PROGS = frozenset({"cl", "cl.exe", "clang-cl", "clang-cl.exe"})
+
+
+def _command_uses_msvc(cmd: str) -> bool:
+    """卡命令是否调用 MSVC（`cl`/`cl.exe`/`clang-cl`）。与 replay 同名判定同构：
+    逐 token 取文件名部分比对（大小写不敏感），覆盖 `cl /c`、`C:/.../cl.exe` 等写法。"""
+    for line in str(cmd).replace("&&", "\n").split("\n"):
+        for tok in line.split():
+            name = tok.strip("\"'").replace("\\", "/").rsplit("/", 1)[-1].lower()
+            if name in _MSVC_PROGS:
+                return True
+    return False
+
+
+def check_evidence_msvc_no_verify() -> list[Finding]:
+    """414 P0-2（F01）：含 MSVC(cl) 的卡 replay 只能给 `infra_error:msvc_unavailable`
+    （MSVC 为永久边界，重编译校验不尝试 cl）——即**从未被复算**。卡面却标
+    `verdict: confirm` ⇒ 不可验证的卡被当成已验证；gate S2 只认卡面 confirm，
+    `--accept` 一次即永久挂账（免检链闭合）。
+
+    判据：command 含 cl/cl.exe/clang-cl 且 verdict == confirm → block。
+    允许 verdict: refute/unverified/infra_error（不宣称已复算即可）。
+    实测（2026-09-13，56 卡）：存量 0 张含 cl ⇒ 0 误伤，直接 block。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        if not _command_uses_msvc(str(meta.get("command") or "")):
+            continue
+        if str(meta.get("verdict") or "") == "confirm":
+            out.append(Finding(
+                "EV-MSCV-NO-VERIFY", "block", _rel(p),
+                "含 MSVC(cl) 的卡无法被 replay 复算（infra_error:msvc_unavailable），"
+                "禁止标 verdict:confirm",
+                "verdict 改为 unverified/infra_error；MSVC 卡不得充当 verified 原子的证据"))
+    return out
+
+
 _ARTIFACT_PRODUCER_EXEMPT = ROOT / "tools" / "artifact_producer_exempt.txt"
 # 编译器白名单：只有编译器能"凭空产出"一个可复算的工件。
 _COMPILER_PROGS = frozenset({
@@ -1596,6 +1635,8 @@ def _register_all() -> None:
          "evidence", check_evidence_assert_symbol_mapped),
         ("EV-ARTIFACT-PRODUCER", "工件产出命令须显式声明、为编译器、且与 command 逐字一致（N4 窄化+373绕过3d）",
          "evidence", check_evidence_artifact_producer),
+        ("EV-MSCV-NO-VERIFY", "含 MSVC(cl) 的卡禁止标 confirm（414 F01 免检链）", "evidence",
+         check_evidence_msvc_no_verify),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn",

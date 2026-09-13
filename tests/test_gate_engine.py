@@ -862,3 +862,45 @@ def test_status_history_and_dal_signoff_require_real_name(sandbox: Path):
                    status="machine-verified", verified_by="machine:gate",
                    dal_reviewed_by="human:liaoranran")
     assert ge.check_dal_match() == [], "人签实名后 C 级仍须放行"
+
+
+# ── 414 P0-2（F01）：MSVC 卡免检链 ──────────────────────────────────────────
+def _write_ev(base: Path, name: str, **over: str) -> Path:
+    d = base / "evidence" / "mem"
+    d.mkdir(parents=True, exist_ok=True)
+    fields = {
+        "id": "EV-MEM-TEST", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+        "command": "cl /std:c++17 /c fx.cpp", "verdict": "confirm",
+    }
+    fields.update(over)
+    p = d / name
+    p.write_text("---\n" + "".join(_kv(k, v) for k, v in fields.items()) + "---\n",
+                 encoding="utf-8")
+    return p
+
+
+def test_cl_card_confirm_is_blocked(sandbox: Path):
+    """F01 正例：含 cl 的卡标 verdict:confirm → EV-MSCV-NO-VERIFY block。
+
+    replay 对 cl 卡只能给 infra_error（MSVC 永久边界，从未复算），卡面宣称
+    confirm 即「不可验证的卡被当成已验证」，一次 accept 永久挂账。
+    """
+    _write_ev(sandbox, "EV-MEM-CL1.md")
+    who = {f.rule_id for f in ge.check_evidence_msvc_no_verify()}
+    assert "EV-MSCV-NO-VERIFY" in who, "cl 卡标 confirm 必须拦"
+
+
+def test_cl_card_non_confirm_passes(sandbox: Path):
+    """F01 阴性：cl 卡不宣称 confirm（unverified/refute）→ 放行。"""
+    _write_ev(sandbox, "EV-MEM-CL2.md", verdict="unverified")
+    _write_ev(sandbox, "EV-MEM-CL3.md", verdict="refute",
+              id="EV-MEM-CL3", command="cl /c fx.cpp")
+    assert ge.check_evidence_msvc_no_verify() == [], "不宣称已复算的 cl 卡不得拦"
+
+
+def test_gcc_card_confirm_not_flagged(sandbox: Path):
+    """F01 误伤回归：g++ 卡（可复算）标 confirm → 放行。"""
+    _write_ev(sandbox, "EV-MEM-GCC.md", command="g++ -std=c++17 -c fx.cpp")
+    _write_ev(sandbox, "EV-MEM-GCC2.md", id="EV-MEM-GCC2",
+              command="C:/Qt/Tools/mingw1530_64/bin/g++.exe -S fx.cpp -o fx.asm")
+    assert ge.check_evidence_msvc_no_verify() == [], "g++ 卡不得误拦"

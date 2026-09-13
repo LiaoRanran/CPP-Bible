@@ -741,6 +741,19 @@ def drill() -> int:
         results.append(("P31-阴 合法对比（contrasts 非矛盾）必须放行", ok,
                         f"误报 {', '.join(who) or '无'}"))
 
+    # ── P32 cl 卡标 confirm（414 P0-2 F01）：MSVC 卡不可复算，禁止宣称已验证 ──
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-CLFAKE.md", {
+            "id": "EV-MEM-CLFAKE", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": "cl /std:c++17 /c fx.cpp",        # ← 毒点：MSVC 卡
+            "verdict": "confirm",                        # ← 毒点：不可复算却宣称已验证
+            "falsification": "对照输出 1",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_msvc_no_verify()})
+        ok = "EV-MSCV-NO-VERIFY" in who
+        results.append(("P32 cl卡标confirm（不可复算卡宣称已验证）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
