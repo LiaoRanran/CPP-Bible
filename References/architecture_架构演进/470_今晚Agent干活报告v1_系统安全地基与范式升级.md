@@ -141,6 +141,12 @@ git log --oneline -20
 - `tools/poison_drill.py`（毒样例执行、退出码、RULE-COVERAGE）
 - `tools/writer_selfcheck.py`（苦力新建的 7 项自检）
 
+**代码导航指引（用 Grep 快速定位，不要盲目 Read 全文件）**：
+- `gate_engine.py`：搜 `RULES` 或 `register` 找规则注册表；搜 `def check_` 看规则函数签名（统一返回 `(block, warn, advice)` 三元组）；搜 `denylist` 或 `GENERIC_SYMBOLS` 找恒真符号表；搜 `_relations_norm` 找关系归一化；搜 `CONFLICT_REL` 找冲突关系定义；搜 `principal_ok` 找签收校验。
+- `atom_evidence_replay.py`：搜 `def run_commands` 或 `def _run` 找编译执行入口；搜 `def _classify` 或 `infra_error` 找三分类判决；搜 `contains_in` 或 `absent_in` 找符号区间断言（含区间切分函数）；搜 `run_match` 找逐字/键比对；搜 `_command_uses_msvc` 找 MSVC 分流。
+- `poison_drill.py`：搜 `gate_exit_code` 找退出码逻辑（苦力已修 F08）；搜 `RULE_COVERAGE` 或 `uncovered` 找覆盖率统计；毒样例格式看 `tests/poison/` 下现有 YAML。
+- 新增规则后必须在 `tools/cppbible.py` 的 `cmd_check` 元组中登记（META-MANIFEST 双清单一致），否则会 warn。
+
 **环境已就绪（不用再装）**：pytest 9.1.1、pyyaml 6.0.3、ruff、mypy、Windows ccache 4.14（`C:\tools\ccache`）、WSL ccache 4.9.1、MSYS2 clang++/clang-tidy 22.1.8（`C:\msys64\mingw64\bin`）。编译器：MinGW GCC 15.3（Qt）/13.1、WSL g++ 13.3/14.2、clang++ 22.1.8。
 
 ---
@@ -162,11 +168,30 @@ git log --oneline -20
 
 **苦力修的一笔真债**：`_atom_lock_cost.asm` 曾是异编译器遗留陈旧产物，已重生成核 sha。这正是 P0-A 要防的问题的一个人工修复实例。
 
+**⚠️ 升级前必须先验证（不要凭本文判断直接重做）**：
+本文说"苦力的 F02 拦不住 E01""苦力的 F03 拦不住 E03"——这些是基于 452 对抗报告的推断。**你开工后第一件事是用 `_adv_v70/probes/` 里的真实探针，分别 against 苦力的 F02/F03 实现实跑一次**，确认：
+- E01 探针在苦力的 F02 规则下是否真的 gate block=0 + replay confirm？如果苦力的时序检查其实拦住了，P0-A 的优先级可降。
+- E03 探针（`.cfi_startproc`）在苦力的 F03 收窄后是否真的放行？`.cfi_startproc` 不在苦力的 denylist（只拦空/纯中文），所以应该放行——确认这一点后再做 P0-C。
+验证结果写进 worklog。**不要因为本文说"要升级"就跳过验证直接重做——如果苦力的方案意外有效，重做就是浪费。**
+
 ---
 
 ## 三、今晚必做：P0 安全地基（按优先级）
 
 **每条修复必须**：配毒样例（poison，续号，先 `poison_drill.py --list` 看最大编号）+ pytest 正反例（正例=攻击被拦，反例=合法卡放行）+ 存量零误伤（gate block=0 不新增）+ 独立 commit。
+
+**P0 任务间依赖关系（按此顺序执行，避免返工）**：
+```
+P0-A（重编译不变量）───┐
+P0-D（切 safe_load）───┼──→ P0-H（探针沉淀，依赖前面都修完才能验证"修复后被拦"）
+P0-B/E/F/G（规则级）───┘
+P0-C（判别力）独立，可与 A/D 并行
+P0-G2（并发隔离）与 P0-A 的临时目录有重叠，A 做完后 G2 只需补主编译路径
+```
+- **先做 P0-A 和 P0-D**（两个范式级，风险最高、最可能需要回滚），再做规则级 B/E/F/G。
+- **P0-H 最后做**：毒样例要验证"修复后被拦"，必须等对应修复落地。
+- **P0-D 若决定不硬切**（兼容性差异太大），则 P0-B/E/F 的规则实现仍用自定义解析器，不需要等 D。
+- **P0-C 完全独立**，可随时插入。
 
 ### P0-A【最高】replay 重编译不变量（452 E01 的根本修复）
 
@@ -174,12 +199,14 @@ git log --oneline -20
 
 **根本修复**：replay 执行完 command 后，在**临时目录**用 command 中的编译命令（剥离后置非编译段）重新编译一次，计算新工件 sha256，与卡内 `artifact_sha256` 比对。不一致 → `refute:artifact_tampered`。
 
-**关键实现要点（三轮复盘发现的坑，必须处理）**：
-1. **编译确定性**：GCC 产物可能含时间戳/路径，相同源码两次编译 sha 可能不同。重编译时加 `-frandom-seed=<确定性值，如夹具名>` 和 `-ffile-prefix-map=<构建目录>=.` 消除非确定性。**先做实验验证**：对 3 个现有夹具连续编译两次，确认加 flag 后 sha 稳定；若仍不稳定，改用"结构化比对"（提取关键符号/指令序列比对）而非全文件 sha。
-2. **临时目录隔离**：重编译输出到 `tempfile.mkdtemp()`，不覆盖原工件（同时解决 452 E09 并发问题，见 P0-G）。
-3. **三分类**：重编译本身失败（编译器缺失/超时）→ `infra_error`，不判内容 refute。
-4. **多 TU 夹具**（如 INLINE-001 有 3 个 .asm）：逐产物比对，或比对卡内锚定的那个主产物。
-5. **跨编译器路径**：Windows 走 sha 强校验、Linux 走 artifact_assert。重编译不变量应在**两条路径都生效**——Windows 侧 sha 比对是重灾区（断言从未被评估），重编译能顺带激活 Windows 侧的断言检查。
+**关键实现要点（四轮复盘发现的坑，必须处理）**：
+1. **编译确定性**：GCC 产物可能含时间戳/路径，相同源码两次编译 sha 可能不同。重编译时在原编译命令基础上**追加** `-frandom-seed=<确定性值，如夹具 basename>` 和 `-ffile-prefix-map=<构建目录>=.`（**不修改卡内 command**，只在 replay 重编译时注入）。clang 同样支持这两个 flag。**先做实验验证**：对 3 个现有夹具连续编译两次，确认加 flag 后 sha 稳定；若仍不稳定，改用"结构化比对"（提取关键符号/指令序列比对）而非全文件 sha，并在 worklog 记录哪些夹具不稳定。
+2. **⚠️ ccache 陷阱（最易踩）**：环境已装 ccache（Win `C:\tools\ccache`、WSL `/usr/bin/ccache`），重编译时若 ccache 命中缓存，"重编译"直接返回缓存工件，**sha 对比退化为"缓存 vs 缓存"恒真，完全失去检测意义**。重编译必须设 `CCACHE_DISABLE=1`（或 `CCACHE_RECACHE=1` + `CCACHE_DIR` 指向临时空目录）。WSL 侧通过环境变量传入，Windows 侧同理。**这一条是 P0-A 能否生效的前提。**
+3. **临时目录隔离**：重编译输出到 `tempfile.mkdtemp()`，不覆盖原工件（同时解决 452 E09 并发问题，见 P0-G2）。
+4. **三分类**：重编译本身失败（编译器缺失/超时/链接错）→ `infra_error`，不判内容 refute。
+5. **多 TU 夹具**（如 INLINE-001 有 3 个 .asm）：逐产物比对，或比对卡内锚定的那个主产物；多产物时卡内 `artifact_sha256` 只锚一个，其余产物在 `actual` 中留痕。
+6. **跨编译器路径**：Windows 走 sha 强校验、Linux 走 artifact_assert。重编译不变量应在**两条路径都生效**——Windows 侧 sha 比对是重灾区（断言从未被评估），重编译能顺带激活 Windows 侧的断言检查。
+7. **回滚条件**：若加确定性 flag 后仍有 >3 张存量卡重编译 sha 不一致且无法用结构化比对解释，**停止 P0-A**，保留现有 sha 校验，把"重编译不变量"降级为 warn（仅告警不 refute），写进 worklog 交人裁决。不要为了让 P0-A 通过而放宽存量卡的 sha。
 
 **验收**：
 - 构造 E01 探针（helper 脚本编译后覆写）→ replay 重编译 sha 不一致 → refute:artifact_tampered
@@ -191,9 +218,15 @@ git log --oneline -20
 
 **问题**：夹具 open 随库数据文件原样打印，输出逐字相等但零计算，run_match confirm。
 
-**修复**：新增 gate 规则 `EV-FIXTURE-NO-ECHO-DATA`（先 warn 观察，不直接 block）：扫描夹具源码，若存在"打开仓库内数据文件（ifstream/fopen/open with r）且读入值未经运算直接流向 stdout 的 run 标签"→ warn。
+**修复**：新增 gate 规则 `EV-FIXTURE-NO-ECHO-DATA`（先 warn 观察，不直接 block）。
 
-**边界**：合法夹具也可能读文件（演示文件格式）。判据聚焦"读入值是否经过计算"——静态分析数据流（读入变量 → 是否参与算术/函数调用 → 再输出）。静态分析做不到完美时，退化为"读文件+直接 cout 同一变量"模式匹配，warn 即可。
+**实现方案（务实，不做不可能的 C++ 数据流分析）**：
+- 不要用 Python ast 做 C++ 数据流分析（ast 是 Python 的，解析不了 C++）。
+- **方案 A（推荐，先做）**：正则模式匹配——扫描夹具源码中 `ifstream|fopen|open(.*O_RDONLY|std::ifstream` 打开仓库内相对路径文件，且读入变量在 ≤3 行内直接出现在 `cout|printf|fprintf` 中（中间无算术/函数调用）。匹配到 → warn。
+- **方案 B（有余力）**：用 clang-tidy 的 `readability-identifier-naming` 或自定义 matcher 做更精确的数据流，但 clang-tidy 集成成本高，先不做。
+- 方案 A 的误报率会较高（合法夹具也可能读文件后直接打印），所以**只 warn 不 block**，且列出所有命中的存量卡交人裁决。
+
+**边界**：合法夹具也可能读文件（演示文件格式）。判据聚焦"读入值是否经过计算"——方案 A 的"≤3 行内直接输出"是保守近似，会漏掉"读入后经函数间接输出"的情况，但作为 warn 级检测足够。
 
 **验收**：E05 探针 warn；存量 56 卡若有同类，列出来交人裁决。
 
@@ -201,13 +234,19 @@ git log --oneline -20
 
 **问题**：contains_in/absent_in 的 text 若在每个函数符号区间都出现（如 `.cfi_startproc`/`mov`/`ret`），对"该函数有没有某行为"零判别力。苦力的 denylist 收窄是打地鼠。
 
-**根本修复**：评估 contains_in/absent_in 断言时，统计 text 在工件**各函数符号区间**的出现分布：
-- 复用 replay 已有的符号区间切分逻辑（contains_in/absent_in 已支持区间语义）。
-- **阈值不要拍脑袋**（复盘教训）：设 text 出现的函数区间数为 `k`，工件总函数区间数为 `N`。
+**根本修复**：评估 contains_in/absent_in 断言时，统计 text 在工件**各函数符号区间**的出现分布。**必须区分两种断言的语义**：
+
+- **contains_in**（断言"符号在某区间内存在"）：若符号在太多函数区间都出现，说明它是"背景噪音"，无法证明"该函数有某行为"。这才是"无判别力"。
+  - 设 text 出现的函数区间数为 `k`，工件总函数区间数为 `N`。
   - `k/N ≥ 0.8` 且 `N ≥ 3` → block（新卡）/ warn（存量）："断言符号在 80%+ 函数区间出现，无判别力"。
-  - `N < 3`（工件太小）→ 不判 block，降 advice（小工件统计无意义）。
-  - 通用符号（main/call/ret 等，见苦力的 denylist）维持苦力的处理。
-- **同时保留苦力的 denylist 收窄**作为快速路径（空/纯中文直接 block），判别力统计作为深度路径。
+  - `N < 3`（工件太小）→ 不判 block，降 advice。
+  - 额外考量**出现次数分布**：若符号在 ≤2 个函数区间但每个区间出现 >50 次（如循环内的 `mov`），也可能是背景噪音——标记为 advice（不 block，因为可能是真的高频操作），提示红队人工判断。
+- **absent_in**（断言"符号在某区间内不存在"）：判别力统计**不适用**。若符号在其他函数区间出现但在目标区间不出现，这是强断言（证明"这个函数没有某行为"）。absent_in 的问题是"目标区间是否正确"（符号区间切分是否准确），不是"出现频率"。对 absent_in 只做苦力的 denylist 收窄（空/纯中文 block），不做频率统计。
+
+- **通用符号**（main/call/ret 等，见苦力的 denylist）维持苦力的处理，作为快速路径。
+- **同时保留苦力的 denylist 收窄**作为快速路径（空/纯中文直接 block），判别力统计作为 contains_in 的深度路径。
+
+**实现提示**：先 Read `atom_evidence_replay.py` 中 contains_in/absent_in 的现有实现，确认符号区间切分函数名和调用方式，再在评估 contains_in 时插入频率统计。不要改 absent_in 的逻辑。
 
 **验收**：
 - E03 探针（contains `.cfi_startproc`，在所有函数区间出现）→ block
@@ -224,7 +263,21 @@ git log --oneline -20
 **实施步骤（谨慎，兼容性优先）**：
 1. 先写一个**兼容性测试脚本**（不改动现有解析器）：用 safe_load 解析全量 evidence/（56 张）+ atoms/（28 颗），把结果与现有自定义解析器的结果逐字段 diff。
 2. 分类差异：①完全一致 → 安全切换；②safe_load 报错（依赖自定义解析宽容行为，如未加引号中文冒号）→ 列出具体卡，批量修正卡格式；③语义差异（重复键 after-wins 行为不同）→ 加重复键检测。
-3. **重复键检测**：safe_load 默认 after-wins 不报错。用 `yaml.add_constructor` 或自定义 loader 检测同一映射内重复键（含 flow-map），发现即报错（E07/H8 根本消除）。
+3. **重复键检测（具体做法）**：pyyaml 的 `safe_load` 默认 after-wins 不报错。标准做法是子类化 `yaml.SafeLoader` 并重写 `construct_mapping`，在加载时检查 `deep=True` 下的重复键：
+   ```python
+   class UniqueKeyLoader(yaml.SafeLoader):
+       def construct_mapping(self, node, deep=False):
+           mapping = super().construct_mapping(node, deep=deep)
+           seen = set()
+           for key_node, _ in node.value:
+               key = self.construct_object(key_node, deep=deep)
+               if key in seen:
+                   raise yaml.constructor.ConstructorError(
+                       None, None, f"duplicate key: {key}", key_node.start_mark)
+               seen.add(key)
+           return mapping
+   ```
+   用 `yaml.load(stream, Loader=UniqueKeyLoader)` 替代 `yaml.safe_load`。这同时覆盖 block-style 和 flow-style 重复键（E07/H8 根本消除）。注意：pyyaml 6.x 的 `construct_mapping` 签名可能略有不同，先 Read 已装的 pyyaml 版本（6.0.3）确认。
 4. 切换后，苦力的 F04/F06/F09 自定义解析补丁若被 safe_load 覆盖，保留毒样例、删除冗余补丁代码。
 5. H14 冲突同义词：在解析后的规范化阶段（`_relations_norm`），把 `contradiction/conflicts/cancels/opposes/conflicts_with` 归一到 CONFLICT_REL；未知关系键 warn。
 
@@ -363,6 +416,7 @@ git log --oneline -20
 8. **插入大段代码后立即 `gate_engine.py --check`** 验证文件可加载（历史教训：replace 破坏过缩进/循环）。
 9. **安全停止**：任何 P0 任务若发现"修复会破坏 >5 张存量卡且无法快速修正"，**停止该任务**，把现象、受影响卡、可选方案写进 worklog，继续下一个任务，不要硬改。
 10. **同仓并行**：可能有其他会话在入库。提交前 `git diff --cached --stat` 复核，避免把并行会话的改动误带入你的 commit（苦力遇到过 55b53ae 误删事件）。
+11. **fail-closed 设计原则（第四轮复盘教训）**：错误代价不对称——假阴性（坏卡流入 verified）的代价远高于假阳性（好卡被拦）。新增规则时，**不确定就 block/warn，不要为了"少误伤"而放宽到静默放行**。warn 不是"没事"，是"需要人看一眼"——如果一条规则的 warn 永远没人处理，它就等于不存在。每条新规则必须有明确的"处理期限"或"已知接受"标注，禁止 warn 无限累积。
 
 ---
 
@@ -371,12 +425,14 @@ git log --oneline -20
 写 `_worklog_470.md`，包含：
 1. 每个 P0/P1/P2 项的状态（完成/部分/未做）、commit hash、实测门禁数字。
 2. 新增规则名与毒样例编号、pytest 新增用例数。
-3. **P0-A 编译确定性实验结果**（加 flag 前后两次编译 sha 是否稳定）——这是后续 replay 不变量的基础，必须有结论。
-4. **P0-D 存量兼容性测试结果**（safe_load vs 自定义解析器的 diff 分类统计）。
-5. 所有"与文档不符"的发现（苦力报告说 430/414/424 的基线数字系统性失真，以你实测为准）。
-6. 未完成项的下一步精确命令。
-7. 最终再跑一遍第一节全套门禁，贴最终基线。
-8. 列所有本地 commit（`git log --oneline` 从开工点到收工），注明**未 push**、ahead 数交用户。
-9. 若 P0 有未闭合项，明确写"当前系统仍存在哪些可复现逃逸"，**不得用"基本完成"掩盖**。
+3. **P0-A 编译确定性实验结果**（加 flag 前后两次编译 sha 是否稳定；ccache 是否禁用；哪些夹具仍不稳定）——这是后续 replay 不变量的基础，必须有结论。
+4. **P0-D 存量兼容性测试结果**（safe_load vs 自定义解析器的 diff 分类统计；是否决定硬切）。
+5. **苦力方案验证结果**：E01 探针 against 苦力 F02 的实跑结果（是否真拦不住）、E03 探针 against 苦力 F03 的实跑结果。如果苦力的方案意外有效，说明本文的"升级"判断有误，记录下来。
+6. **每个 P0 的回滚条件是否触发**：P0-A 是否因 >3 张卡不稳定而降级为 warn？P0-D 是否因兼容性差异 >10 张而不硬切？触发了回滚的任务，写明原因和替代方案。
+7. 所有"与文档不符"的发现（苦力报告说 430/414/424 的基线数字系统性失真，以你实测为准）。
+8. 未完成项的下一步精确命令。
+9. 最终再跑一遍第一节全套门禁，贴最终基线。
+10. 列所有本地 commit（`git log --oneline` 从开工点到收工），注明**未 push**、ahead 数交用户。
+11. 若 P0 有未闭合项，明确写"当前系统仍存在哪些可复现逃逸"，**不得用"基本完成"掩盖**。
 
 **优先级纪律**：P0-A（重编译不变量）和 P0-D（切 safe_load）是本晚最高价值——前者是运行时防御范式，后者一次性消除整个解析器攻击面。P0-C（判别力）次之。P0-B/E/F/G/H 是规则级，相对独立。安全地基闭合前不要转去做 ccache/闪卡等增量功能。
