@@ -82,3 +82,8 @@ tools/.compile_cache.json
 
 # 外部参考范式手册（本机参考，未随仓库推送）
 docs/references/external/
+
+# 独立对抗沙箱（不入库）
+_adv_v61/
+_adv_v70/
+_bypass_test/
