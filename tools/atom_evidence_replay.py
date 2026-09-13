@@ -904,6 +904,49 @@ def _release_replay_lock() -> None:
     _REPLAY_LOCK.unlink(missing_ok=True)
 
 
+# ── 472 P0-4（452 E13/N4）：工件快照落盘 + 幂等还原 ─────────────────────────
+def _bak_path(art: Path) -> Path:
+    return art.with_name(art.name + ".bak")
+
+
+def _snapshot_artifact(art: Path) -> Path | None:
+    """重生成前把工件**落盘**备份。
+
+    为何不用内存快照：进程被杀（Ctrl+C 之外还有 OOM/SIGKILL/崩溃）时 `finally`
+    不执行，内存 original 随之丢失 ⇒ 工件永久丢失（实测 EV-MEM-027 的
+    `_atom_alloc_arena.asm` 被清空 = 452 E13 的真实复现）。
+    """
+    if not art.is_file():
+        return None
+    bak = _bak_path(art)
+    try:
+        shutil.copy2(art, bak)
+        return bak
+    except OSError:
+        return None
+
+
+def _restore_artifact(art: Path, bak: Path | None) -> bool:
+    """从备份还原（幂等）：仅当工件缺失或为空时重建，正常工件不动。"""
+    if bak is None or not bak.is_file():
+        return False
+    try:
+        if not art.is_file() or art.stat().st_size == 0:
+            shutil.copy2(bak, art)
+            return True
+    except OSError:
+        return False
+    return False
+
+
+def _drop_snapshot(bak: Path | None) -> None:
+    if bak and bak.is_file():
+        try:
+            bak.unlink()
+        except OSError:
+            pass
+
+
 def _install_lock_cleanup() -> None:
     """正常退出 / Ctrl+C / SIGTERM 时释放锁，缩小僵尸锁窗口。
 
@@ -1103,6 +1146,14 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     except TimeoutError as exc:
         shutil.rmtree(tmp, ignore_errors=True)
         return "infra_error:replay_busy", log + [f"  ⚠️ {exc}"]
+    # 472 P0-4：先尝试恢复上次中断残留的备份（幂等自愈），再对本次做落盘快照。
+    if restore_artifact:
+        _stale_bak = _bak_path(art_path)
+        if _stale_bak.is_file():
+            if _restore_artifact(art_path, _stale_bak):
+                log.append(f"  ♻️ 恢复上次中断的工件备份：{_stale_bak.name}")
+            _drop_snapshot(_stale_bak)
+    _bak = _snapshot_artifact(art_path) if restore_artifact else None
     original = art_path.read_bytes() if art_path.exists() else None   # 校验前快照（见 docstring）
     original_extra = [(p, p.read_bytes() if p.exists() else None) for p, _ in extra_arts]
     try:
@@ -1275,9 +1326,15 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         if restore_artifact:
             if original is not None:
                 art_path.write_bytes(original)     # 还原：校验工具不改写被校验对象（见 docstring）
+            # 472 P0-4：内存还原之外的**落盘兜底**——若本次写回未生效/工件仍为空，
+            # 用 .bak 重建（防进程二次中断导致工件为空）
+            if _bak is not None and (not art_path.is_file()
+                                     or art_path.stat().st_size == 0):
+                _restore_artifact(art_path, _bak)
             for _p, _b in original_extra:          # 副产物同款还原（W1：只读契约覆盖多产物）
                 if _b is not None:
                     _p.write_bytes(_b)
+            _drop_snapshot(_bak)                   # 正常路径：清掉备份不留残
         _release_replay_lock()                     # 470 P0-G1：释放并发锁
         if not keep_tmp:
             shutil.rmtree(tmp, ignore_errors=True)

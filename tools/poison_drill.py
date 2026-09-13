@@ -994,6 +994,23 @@ def drill() -> int:
         replay._REPLAY_LOCK = _orig_lock
         shutil.rmtree(_tmpd2, ignore_errors=True)
 
+    # ── P51 工件快照：中断后须能幂等还原（472 P0-4 / N4）─────────────────────
+    _tmpd3 = Path(tempfile.mkdtemp(prefix="p51_"))
+    try:
+        _art = _tmpd3 / "a.asm"
+        _art.write_text("ORIGINAL-BYTES", encoding="utf-8")
+        _bak = replay._snapshot_artifact(_art)
+        _art.unlink()                                  # 模拟进程被杀：工件丢失
+        _ok51 = (not _art.is_file()) and replay._restore_artifact(_art, _bak) \
+            and _art.read_text(encoding="utf-8") == "ORIGINAL-BYTES"
+        results.append(("P51 工件快照须能幂等还原（中断不丢工件）", _ok51,
+                        f"还原后={_art.read_text(encoding='utf-8') if _art.is_file() else '丢失'}"))
+        replay._drop_snapshot(_bak)
+        results.append(("P52 阴性·正常路径不留 .bak 残留", not _bak.exists(),
+                        f"bak 存在={_bak.exists()}"))
+    finally:
+        shutil.rmtree(_tmpd3, ignore_errors=True)
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1069,6 +1086,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P35 ", "A3"), ("P36 ", "A6"), ("P37 ", "A6"), ("P38 ", "A4"),
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
+    ("P51 ", "A10"), ("P52 ", "A10"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
