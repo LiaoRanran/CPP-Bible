@@ -46,7 +46,7 @@ pedagogy:
   misconception:
     - {level: surface, text: "误以为数据竞争只是结果偶尔算错，不是 bug", refutations: [EV-CONC-005]}
     - {level: deep, text: "误以为没被 TSan 报就是没有数据竞争（忽略漏报边界）", refutations: [EV-CONC-005, EV-CONC-006]}
-  socratic: "x86-64 上 int 读写天然对齐不会崩，那数据竞争"有害"在哪一层？为什么 TSan 能报而程序不崩？"
+  socratic: "x86-64 上 int 读写天然对齐不会崩，那数据竞争\"有害\"在哪一层？为什么 TSan 能报而程序不崩？"
   predict_first: "先预测：把同一份无同步竞争代码交给 TSan，它会指向哪个变量、哪两行？换成 std::atomic 后再跑，报告会变吗？"
   misconceptions: [MIS-CONC-003]
 misconceptions: [MIS-CONC-003]

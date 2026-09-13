@@ -43,8 +43,8 @@ relations: []
 evidence: []
 controlled_vars:
   - 自变量三元组: ①定义同一性（固定为「不同」：TU A = `return 1;` / TU B = `return 2;`）②链接顺序（a b / b a）③优化档（-O0 / -O2）
-  - 活性对照: `stable_fn`（两 TU 定义 token 序列相同）→ 在全部 4 组中恒 42（噪声下限，见 §2 读数分级）
-  - 机制判别对照: **内部链接孪生**（`static inline`，其余构造同实验组）→ 若顺序依赖确由「外部链接弱符号合并」造成，孪生必须在两顺序下读数相同（§4 实测）
+  - 活性对照: '`stable_fn`（两 TU 定义 token 序列相同）→ 在全部 4 组中恒 42（噪声下限，见 §2 读数分级）'
+  - 机制判别对照: '**内部链接孪生**（`static inline`，其余构造同实验组）→ 若顺序依赖确由「外部链接弱符号合并」造成，孪生必须在两顺序下读数相同（§4 实测）'
 matrix:
   compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]
   stdlib: [libstdc++]

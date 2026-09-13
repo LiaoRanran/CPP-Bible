@@ -920,6 +920,21 @@ def drill() -> int:
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
         outp.unlink(missing_ok=True)
 
+    # ── P43 缩进走私（470 P0-D / 452 E07）：缩进 verdict 被提升为顶层键 ────────
+    with sandbox() as tmp:
+        card = ge.EVIDENCE / "mem" / "EV-MEM-SMUG.md"
+        card.parent.mkdir(parents=True, exist_ok=True)
+        card.write_text(
+            "---\nid: EV-MEM-SMUG\nstatus: draft\nfixture: f.cpp &x\n"
+            "  verdict: confirm\nhypothesis: h\ncommand: g++ -S f.cpp -o f.asm\n"
+            "artifact: f.asm\nartifact_sha256: " + "0" * 64 + "\n---\n",
+            encoding="utf-8")
+        who = sorted({f.rule_id for f in ge.check_frontmatter_hardening()
+                      if f.severity == "block"})
+        ok = "EV-FM-YAML-HARDENING" in who
+        results.append(("P43 缩进走私（E07 缩进 verdict 提升顶层键）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -994,6 +1009,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P29 ", "A7"), ("P30 ", "A7"), ("P32 ", "A1"), ("P33 ", "A4"), ("P34 ", "A4"),
     ("P35 ", "A3"), ("P36 ", "A6"), ("P37 ", "A6"), ("P38 ", "A4"),
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
+    ("P43 ", "A6"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 11)]
 

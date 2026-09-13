@@ -59,9 +59,9 @@ pedagogy:
   misconceptions: [MIS-MEM-005]        # 全局误解库（4 条反例：函数体 / mem-init-list / lambda / 退化）
   socratic:
     - "值类别是变量类型的属性，还是表达式的属性？"
-    - "`std::move(x)` 这个表达式有名字，那它是左值还是 xvalue？（答案见正文"为什么"节）"
+    - "`std::move(x)` 这个表达式有名字，那它是左值还是 xvalue？（答案见正文\"为什么\"节）"
     - "对没有移动构造的类型写 std::move，编译器会报错吗？（提示：试过才知道）"
-  predict_first: `void f(Probe&& x) { Probe y = x; }` 触发拷贝还是移动？（先预测，再看 EV-MEM-004）
+  predict_first: '`void f(Probe&& x) { Probe y = x; }` 触发拷贝还是移动？（先预测，再看 EV-MEM-004）'
 ---
 
 ## 论断

@@ -57,6 +57,12 @@ ATOM_TYPES = {"concept", "mechanism", "rule", "idiom", "anti_pattern", "pitfall"
               "contrast", "evolution", "decision", "experiment"}
 DAG_REL = {"prerequisite", "specializes", "realizes", "evolved_from"}
 CONFLICT_REL = {"contradicts", "conflicts_with"}   # 415 D1：冲突型关系（与 DAG_REL 并列，不参与 DAG 排序）
+# 470 P0-D / 452 E11（H14）：冲突关系同义词——旧版只归一 CONFLICT_REL 两种拼写，
+# contradiction/conflicts/cancels/opposes 会静默丢弃（两颗真矛盾原子可共存）。
+CONFLICT_SYNONYMS = {"contradiction": "contradicts", "conflicts": "conflicts_with",
+                     "cancels": "contradicts", "opposes": "contradicts"}
+REL_TYPES_KNOWN = (DAG_REL | CONFLICT_REL | set(CONFLICT_SYNONYMS)
+                   | {"contrasts", "see_also"})
 BANNED_SUPERIORITY = ("讲解更详细", "更通俗易懂", "更全面", "更加深入", "帮助读者理解", "结合实际")
 # 注意：「待补/待補」**不在**占位符之列 —— 在本项目它是**合法的缺口留痕**
 # （证据卡 `## 待补`、M2「待确认」都是显式记账，不是未填内容），误报会逼人删掉真信息。
@@ -488,8 +494,11 @@ def _relations_norm(meta: dict[str, Any]) -> list[dict[str, Any]]:
             out.append(rel)
             continue
         for k, v in rel.items():
-            if str(k) in DAG_REL or str(k) in CONFLICT_REL:
-                out.append({"type": str(k), "target": str(v)})
+            key = str(k)
+            if key in CONFLICT_SYNONYMS:            # H14/E11：同义词归一到冲突型
+                key = CONFLICT_SYNONYMS[key]
+            if key in DAG_REL or key in CONFLICT_REL:
+                out.append({"type": key, "target": str(v)})
     return out
 
 
@@ -1044,6 +1053,116 @@ def check_frontmatter_duplicate_key() -> list[Finding]:
                     f"frontmatter 重复键 {dups}（解析器 after-wins 静默覆盖——"
                     "双 verdict 可让 refute 被 confirm 遮蔽、绕过 S2）",
                     "每个顶层键只写一次；要修改直接覆盖旧行"))
+    return out
+
+
+# ── 470 P0-D（452 E07/H8/H18）：frontmatter 解析硬化（safe_load 外层校验）────
+_INDENT_KEY_RE = re.compile(r"^(\s+)([A-Za-z_][\w-]*)\s*:")
+_SCALAR_KEY_RE = re.compile(r"^([A-Za-z_][\w-]*)\s*:\s+\S")
+
+
+def _frontmatter_raw(p: Path) -> str:
+    raw = p.read_text(encoding="utf-8", errors="replace")
+    if not raw.startswith("---"):
+        return ""
+    end = raw.find("\n---", 3)
+    return raw[3:end] if end > 0 else ""
+
+
+def _line_is_scalar_key(ln: str) -> bool:
+    """该行是否为「键: 标量值」（非空值、非纯注释、非 block scalar 起始）。"""
+    if not _SCALAR_KEY_RE.match(ln):
+        return False
+    val = ln.split(":", 1)[1].strip()
+    if not val or val.startswith("#"):          # 空值 / 纯注释 = 块起始（合法）
+        return False
+    return not val.startswith(("|", ">"))       # block scalar 起始（|、>-、|+ …）
+
+
+def _indent_smuggle_lines(fm: str) -> list[str]:
+    """缩进走私检测（452 E07）：标量值行之后出现更深缩进的 `key:` 行。
+
+    合法 YAML 中缩进的 `key:` 只能来自块起始（上一键无值/纯注释）、列表项（`- `）
+    或 block scalar（`|`/`>`）内部。若上一行是「键: 标量值」再出现缩进键行
+    ⇒ 结构项会被提升为顶层键（走私）。
+    """
+    hits: list[str] = []
+    prev_scalar = False
+    for ln in fm.split("\n"):
+        if _INDENT_KEY_RE.match(ln):
+            if prev_scalar:
+                hits.append(ln.strip()[:60])
+            prev_scalar = False
+            continue
+        prev_scalar = _line_is_scalar_key(ln)
+    return hits
+
+
+def check_frontmatter_hardening() -> list[Finding]:
+    """470 P0-D：frontmatter 解析硬化——safe_load 外层校验，不换解析权威。
+
+    兼容性实测（2026-09-13）：83 份中 79 份与 safe_load 有差异（尾换行、列表项
+    str/dict 类型），3 份 safe_load 直接报错 ⇒ 按 470 风险控制**不硬切**，改为
+    外层校验四信号：
+      ① indent-smuggle（block）标量值后出现缩进键行（E07）；
+      ② dup-key（block）唯一键加载器检出重复键（flow/嵌套均覆盖，E08/H8）；
+      ③ invalid（warn）safe_load 语法错误（存量 3 份交人裁决）；
+      ④ parse-diverge（block）safe 成功但关键字段与自定义解析不一致。
+    无 pyyaml 环境跳过（保持零依赖可用）。
+    """
+    try:
+        import yaml
+    except ImportError:                                   # pragma: no cover
+        return []
+    from yaml.constructor import ConstructorError
+
+    class _UniqueKeyLoader(yaml.SafeLoader):
+        def construct_mapping(self, node, deep=False):
+            mapping = super().construct_mapping(node, deep=deep)
+            seen: set = set()
+            for key_node, _v in node.value:
+                k = self.construct_object(key_node, deep=deep)
+                if k in seen:
+                    raise ConstructorError(None, None, f"duplicate key: {k}",
+                                           key_node.start_mark)
+                seen.add(k)
+            return mapping
+
+    out: list[Finding] = []
+    for base, pat in ((ATOMS, "ATOM-*.md"), (EVIDENCE, "EV-*.md")):
+        for p in _cards(base, pat):
+            fm = _frontmatter_raw(p)
+            if not fm:
+                continue
+            for ln in _indent_smuggle_lines(fm):
+                out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                                   f"[indent-smuggle] 标量值后出现缩进键行：{ln!r}"
+                                   "（缩进项会被提升为顶层键——结构走私）",
+                                   "键值对不得跟随在标量值之后（检查缩进）"))
+            try:
+                safe = yaml.load(fm, Loader=_UniqueKeyLoader) or {}
+            except ConstructorError as e:
+                out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                                   f"[dup-key] 重复键：{str(e)[:100]}",
+                                   "删除重复键（after-wins 会静默遮蔽）"))
+                continue
+            except yaml.YAMLError as e:
+                out.append(Finding("EV-FM-YAML-HARDENING", "warn", _rel(p),
+                                   f"[invalid] YAML 语法非法：{str(e).splitlines()[0][:88]}",
+                                   "修正 frontmatter 语法（safe_load 须可解析）"))
+                continue
+            if not isinstance(safe, dict):
+                continue
+            meta = _meta(p)
+            for k in ("id", "verdict", "status", "artifact_sha256"):
+                a, b = meta.get(k), safe.get(k)
+                if a is None or b is None:
+                    continue
+                if str(a).strip() != str(b).strip():
+                    out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                                       f"[parse-diverge] {k} 两解析器不一致："
+                                       f"自定义={str(a)[:36]!r} safe={str(b)[:36]!r}",
+                                       "存在同构变换（缩进/重复键/锚点）——修正 frontmatter"))
     return out
 
 
@@ -1779,6 +1898,8 @@ def _register_all() -> None:
          check_evidence_msvc_no_verify),
         ("EV-FM-DUP-KEY", "frontmatter 重复键（after-wins 遮蔽，414 F09）", "repo",
          check_frontmatter_duplicate_key),
+        ("EV-FM-YAML-HARDENING", "frontmatter 解析硬化（470 P0-D：走私/重复键/语法/一致性）",
+         "repo", check_frontmatter_hardening),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
          check_evidence_out_stale_mtime),
     ]
