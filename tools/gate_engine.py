@@ -983,18 +983,42 @@ def _assert_targets(rule: dict) -> tuple[bool, list[str]]:
     return False, []
 
 
+def _strip_comments(text: str, is_asm: bool) -> str:
+    """删注释，使"出处空间"不含伪造锚点（373 绕过测试 2c：夹具注释里写一句符号名即可给
+    任意符号发通行证——`absent "_Znwm"` 配 `/* _Znwm */` 就能让断言恒真）。
+
+    - C/C++/asm 通用：删 `/* ... */` 块注释；
+    - 行注释：源文件 `//`，汇编 `;`（asm 注释符）。`.out` 等非源码文本不剥 `;`，避免误删内容。
+    """
+    text = re.sub(r"/\*.*?\*/", " ", text, flags=re.S)
+    out: list[str] = []
+    for ln in text.split("\n"):
+        ln = ln.split(";", 1)[0] if is_asm else ln.split("//", 1)[0]
+        out.append(ln)
+    return "\n".join(out)
+
+
 def _assert_haystack(meta: dict) -> str:
-    """断言的可映射空间 = 夹具源码 ∪ 全部工件文本（`artifact` + `artifacts[]`）。"""
+    """断言的可映射空间 = 夹具源码 ∪ 全部工件文本（`artifact` + `artifacts[]`），已剥注释。
+
+    剥注释的原因：出处空间若含注释行，"在夹具里出现过符号名"就成了免费通行证——任何符号
+    只要在注释里提一句就能被判定"有出处"。373 绕过测试 2c 正是此手法的实例。
+    """
     parts: list[str] = []
 
     def _add(rel: object) -> None:
         f = ROOT / str(rel or "")
+        if not f.is_file() and not f.is_dir():
+            return
+        is_asm = f.suffix.lower() in (".asm", ".s", ".S")
         if f.is_file():
-            parts.append(f.read_text(encoding="utf-8", errors="replace"))
+            parts.append(_strip_comments(f.read_text(encoding="utf-8", errors="replace"), is_asm))
         elif f.is_dir():
             for x in sorted(f.rglob("*")):
                 if x.is_file():
-                    parts.append(x.read_text(encoding="utf-8", errors="replace"))
+                    parts.append(_strip_comments(
+                        x.read_text(encoding="utf-8", errors="replace"),
+                        x.suffix.lower() in (".asm", ".s", ".S")))
     _add(meta.get("fixture") or "")
     _add(meta.get("artifact") or "")
     for e in (meta.get("artifacts") or []):
@@ -1039,12 +1063,20 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
             texts = [t for t in texts if t]
             if not texts or all(_CJK_RE.search(t) and not _IDENT_RE.search(t) for t in texts):
                 continue                                   # 散文断言：交人审
-            mapped = [t for t in texts if t in hay or t in sm_space]
+            # 通用符号（main/call/ret…）**无论在哪都视为无出处**——任何工件里都有它，
+            # 拿它当断言等于没有断言（零判别力）。即便它出现在夹具/工件/ symbol_map 里，
+            # 也不算"可映射"，强制走 block（373 绕过测试 2a/2b 的载荷正是 `contains "main"`）。
+            mapped = [t for t in texts
+                      if t not in UNIVERSAL_SYMBOLS and (t in hay or t in sm_space)]
             if any_of and mapped:
                 continue
             if not any_of and len(mapped) == len(texts):
                 continue
-            miss = [t for t in texts if t not in hay and t not in sm_space]
+            # 通用符号**始终视为无出处**（无论是否出现在工件里）：它要么进 miss（被 block），
+            # 要么因 any_of 另有真实出处而被 mapped 兜住（放行）。普通符号则只在"既不在工件、
+            # 也不在 symbol_map"时才算无出处。
+            miss = [t for t in texts
+                    if t in UNIVERSAL_SYMBOLS or (t not in hay and t not in sm_space)]
             for t in miss:
                 (bad_universal if t in UNIVERSAL_SYMBOLS else bad_other).append(t)
         if bad_universal:
@@ -1085,6 +1117,11 @@ def check_evidence_artifact_producer() -> list[Finding]:
     张卡**从未跑过自己的实验**。旧判据（命令行文本里出现过 artifact 路径即可）对
     `cp` / `python` 一律放行。
 
+    373 绕过测试 3d 更深一层的漏洞：即便要求"声明编译器"，**只查声明文本**仍可被绕过——
+    写 `artifact_producer: g++ -S x.cpp -o a.asm` 但实际 `command: cp other.asm a.asm`，
+    两张都全绿（sha 一致）。故新增**声明-实现一致性**硬约束：producer 段须逐字出现在
+    command 且 `-o` 目标 == artifact（见下方实现）。
+
     判据：卡须声明 `artifact_producer: <command 片段>`，该片段的 `argv[0]` 必须 ∈
     编译器白名单。**不做推断**——蓝图原文的"自动判定哪一段产出 artifact"实测误伤 11/56
     （同一命令多段 `-o`），已否决；显式化优于推断。
@@ -1116,6 +1153,31 @@ def check_evidence_artifact_producer() -> list[Finding]:
                                f"artifact_producer 的 argv[0]={prog or '空'} 不是编译器"
                                "（复制/脚本产出 ≠ 亲自编译）",
                                f"须为编译器：{'/'.join(sorted(_COMPILER_PROGS))}"))
+            continue
+        # 声明—实现一致性（373 绕过测试 3d：本批最核心漏洞）。仅查声明文本时，攻击者写一份
+        # 漂亮声明、实际 `command: cp other.asm mine.asm` 即可全绿（replay 重算 sha 也一致，
+        # 因为 cp 的就是真工件）。两条硬约束：
+        #  ① `artifact_producer` 段必须**逐字出现在 command** 中（声明不是装饰）；
+        #  ② 其 `-o` 目标必须 == `artifact` 路径（编译产物确为该工件）。
+        cmd = str(meta.get("command") or "")
+        art = str(meta.get("artifact") or "").strip()
+        if prod not in cmd:
+            out.append(Finding("EV-ARTIFACT-PRODUCER", "block", _rel(p),
+                               "artifact_producer 段未逐字出现在 command 中"
+                               "（声明-实现脱钩：实际命令可能不是该编译命令）",
+                               "把 artifact_producer 指向的编译命令原样写入 command，"
+                               "或令 command 含该段"))
+            continue
+        m = re.search(r"(?<![\w-])-o\s+(\S+)", prod)
+        if not m:
+            out.append(Finding("EV-ARTIFACT-PRODUCER", "block", _rel(p),
+                               "artifact_producer 缺少 -o <artifact>（无法证明产物即该工件）",
+                               "令 artifact_producer 含 `-o <artifact 路径>`"))
+        elif m.group(1).strip('"\'') != art:
+            out.append(Finding("EV-ARTIFACT-PRODUCER", "block", _rel(p),
+                               f"artifact_producer 的 -o 目标 {m.group(1)!r} 不等于 artifact {art!r}"
+                               "（编译产物并非该 artifact）",
+                               "令 artifact_producer 的 -o 目标 == artifact 路径"))
     return out
 
 
@@ -1472,7 +1534,7 @@ def _register_all() -> None:
          "evidence", check_evidence_out_undeclared_key),
         ("EV-ASSERT-SYMBOL-MAPPED", "断言文本须可定位（夹具/工件/symbol_map，B2 窄化）",
          "evidence", check_evidence_assert_symbol_mapped),
-        ("EV-ARTIFACT-PRODUCER", "工件产出命令须显式声明且为编译器（N4 窄化）",
+        ("EV-ARTIFACT-PRODUCER", "工件产出命令须显式声明、为编译器、且与 command 逐字一致（N4 窄化+373绕过3d）",
          "evidence", check_evidence_artifact_producer),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
