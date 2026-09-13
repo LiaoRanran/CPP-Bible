@@ -3,7 +3,7 @@
 > **投喂对象**：ds v4.1 flash CodeBuddy（强模型）。
 > **本文性质**：这是今晚的完整工作指南，整合了 452 第四轮对抗结果、苦力 430 成果、四轮架构复盘、六份调研库深度消化（466/468/461/462/383/389/305/372）。**以本文为准；469 v2.1 作为背景参考，冲突时信本文。**
 > **前置阅读（按序）**：本文 → 468（架构总纲，理解系统定位）→ `_adv_v70/REPORT.md`（第四轮对抗完整报告）→ 苦力 430 成果（git log eab076d..c8e38d7）。
-> **版本**：v2.2（十二轮打磨 + 两轮深度内卷批判：v1 初始 → v1.1 系统全貌 → v1.2 五维模型 → v1.3 九漏洞 → v1.4 执行协议 → v1.5 466消化 → v1.6 468消化 → v1.7 461消化 → v1.8 462/383/389消化 → v1.9 内卷修正 → v2.0 305/372消化 → v2.1 内卷批判20项修9项 → v2.2 执行路径模拟批判修7项）。执行中若本文被外部修改，以你开工时 Read 的版本为准，不要中途换版本。
+> **版本**：v2.3（十三轮打磨 + 三轮深度内卷批判：v1 初始 → v1.1 系统全貌 → v1.2 五维模型 → v1.3 九漏洞 → v1.4 执行协议 → v1.5 466消化 → v1.6 468消化 → v1.7 461消化 → v1.8 462/383/389消化 → v1.9 内卷修正 → v2.0 305/372消化 → v2.1 内卷批判20项修9项 → v2.2 执行路径模拟修7项 → v2.3 对抗视角+偷懒预防修8项）。执行中若本文被外部修改，以你开工时 Read 的版本为准，不要中途换版本。
 
 ---
 
@@ -247,6 +247,7 @@ git diff HEAD~1 --stat                       # 确认只改了该任务该改的
 
 1. 选 E01/E03/E07 三个阻断级探针，分别在当前代码上实跑一次（gate + replay）。
 2. 记录每个探针的当前状态：仍能逃逸 / 已被苦力修复 / 无法复现（环境变化）。
+3. **如果首选的 3 个探针中有 ≥2 个无法复现**，换 E05/E10/E12 备选探针重跑，不要因为"探针复现不了"就跳过整个前置验证。探针验证的目的是确认"苦力的修复到底有没有拦住 452 的攻击"，这个信息对 P0 优先级判断至关重要。
 3. **已被苦力修复的探针**：对应的 P0 任务优先级降低，只需确认苦力的修复覆盖了该攻击面，然后把探针转化为毒样例（P0-H）即可，不需要重做根本修复。
 4. **无法复现的探针**：标注原因（如探针依赖的夹具路径已变），在 P0-H 中跳过，不要花时间修探针。
 
@@ -308,10 +309,12 @@ P0-G2（并发隔离）与 P0-A 的临时目录有重叠，A 做完后 G2 只需
 
 **根本修复**：replay 执行完 command 后，在**临时目录**用 command 中的编译命令（剥离后置非编译段）重新编译一次，计算新工件 sha256，与卡内 `artifact_sha256` 比对。不一致 → `refute:artifact_tampered`。
 
-**"剥离后置非编译段"的具体做法**：command 可能是多行（编译 + 运行 + 反汇编）。重编译只需要**产生工件的那一行/几行**——即含 `g++|clang++|gcc` 且含 `-o <工件名>` 的行。用正则提取所有含编译器调用 + `-o` 的行，按原顺序在临时目录执行。不含 `-o` 的行（如运行程序、objdump 反汇编）不参与重编译。多 TU 时提取所有编译行 + 链接行（含 `-o` 的最后一行）。如果 command 是单行用 `&&` 连接，先按 `&&` 拆分再筛选。
+**"剥离后置非编译段"的具体做法**：command 可能是多行（编译 + 运行 + 反汇编）。重编译只需要**产生工件的那一行/几行**——即含 `g++|clang++|gcc|cc` 且含 `-o <工件名>` 的行。用正则提取所有含编译器调用 + `-o` 的行，按原顺序在临时目录执行。不含 `-o` 的行（如运行程序、objdump 反汇编）不参与重编译。多 TU 时提取所有编译行 + 链接行（含 `-o` 的最后一行）。如果 command 是单行用 `&&` 连接，先按 `&&` 拆分再筛选。
+
+**构建脚本边界（已知限制，必须处理）**：如果 command 调用的是构建脚本（如 `python build.py`、`make`、`cmake --build`），正则提取不到直接编译器调用，重编译无法执行。此时**不要跳过校验直接 confirm**——标记 `infra_error:recompile_unavailable`（fail-closed，非零退出），并在卡内 warn"该卡使用构建脚本，无法执行重编译不变量校验，需人审确认工件未被篡改"。当前 56 张卡的 command 都是直接编译器调用，没有构建脚本——如果存量卡中有例外，列出交人裁决。新卡的 command 规范应禁止使用构建脚本（或要求脚本内容可审计）。
 
 **关键实现要点（四轮复盘发现的坑，必须处理）**：
-1. **编译确定性**：GCC 产物可能含时间戳/路径，相同源码两次编译 sha 可能不同。重编译时在原编译命令基础上**追加** `-frandom-seed=<确定性值，如夹具 basename>` 和 `-ffile-prefix-map=<构建目录>=.`（**不修改卡内 command**，只在 replay 重编译时注入）。clang 同样支持这两个 flag。**先做实验验证**：对 3 个现有夹具连续编译两次，确认加 flag 后 sha 稳定；若仍不稳定，改用"结构化比对"（提取关键符号/指令序列比对）而非全文件 sha，并在 worklog 记录哪些夹具不稳定。
+1. **编译确定性**：GCC 产物可能含时间戳/路径，相同源码两次编译 sha 可能不同。重编译时在原编译命令基础上**追加** `-frandom-seed=<确定性值，如夹具 basename>` 和 `-ffile-prefix-map=<构建目录>=.`（**不修改卡内 command**，只在 replay 重编译时注入）。clang 同样支持这两个 flag。**先做实验验证**：对**至少 3 个不同域的夹具**（如 mem/conc/lang 各选一个，不能只测同域）连续编译两次，确认加 flag 后 sha 稳定；若仍不稳定，改用"结构化比对"（提取关键符号/指令序列比对）而非全文件 sha，并在 worklog 记录哪些夹具不稳定。**不能只测 1 个夹具就说"稳定"**——不同域的夹具可能有不同的非确定性来源（如 CONC 域的原子操作、MEM 域的内联函数）。
 2. **⚠️ ccache 陷阱（最易踩）**：环境已装 ccache（Win `C:\tools\ccache`、WSL `/usr/bin/ccache`），重编译时若 ccache 命中缓存，"重编译"直接返回缓存工件，**sha 对比退化为"缓存 vs 缓存"恒真，完全失去检测意义**。重编译必须设 `CCACHE_DISABLE=1`（或 `CCACHE_RECACHE=1` + `CCACHE_DIR` 指向临时空目录）。WSL 侧通过环境变量传入，Windows 侧同理。**这一条是 P0-A 能否生效的前提。**
 3. **临时目录隔离**：重编译输出到 `tempfile.mkdtemp()`，不覆盖原工件（同时解决 452 E09 并发问题，见 P0-G2）。
 4. **三分类**：重编译本身失败（编译器缺失/超时/链接错）→ `infra_error`，不判内容 refute。
@@ -339,7 +342,7 @@ P0-G2（并发隔离）与 P0-A 的临时目录有重叠，A 做完后 G2 只需
 
 **实现方案（务实，不做不可能的 C++ 数据流分析）**：
 - 不要用 Python ast 做 C++ 数据流分析（ast 是 Python 的，解析不了 C++）。
-- **方案 A（推荐，先做）**：正则模式匹配——扫描夹具源码中 `ifstream|fopen|open(.*O_RDONLY|std::ifstream` 打开仓库内相对路径文件，且读入变量在 ≤3 行内直接出现在 `cout|printf|fprintf` 中（中间无算术/函数调用）。匹配到 → warn。**多 TU 夹具**（如 INLINE-001 有 4 个 .cpp）：扫描 command 中涉及的**所有** .cpp 文件，不是只扫主文件——cat 式证据可能藏在任何一个 TU 中。
+- **方案 A（推荐，先做）**：正则模式匹配——扫描夹具源码中 `ifstream|fopen|open(.*O_RDONLY|std::ifstream|mmap|read_to_string|ReadFile` 打开仓库内相对路径文件，且读入变量在 ≤3 行内直接出现在 `cout|printf|fprintf` 中（中间无算术/函数调用）。匹配到 → warn。**多 TU 夹具**（如 INLINE-001 有 4 个 .cpp）：扫描 command 中涉及的**所有** .cpp 文件，不是只扫主文件——cat 式证据可能藏在任何一个 TU 中。
 - **方案 B（有余力）**：用 clang-tidy 的 `readability-identifier-naming` 或自定义 matcher 做更精确的数据流，但 clang-tidy 集成成本高，先不做。
 - 方案 A 的误报率会较高（合法夹具也可能读文件后直接打印），所以**只 warn 不 block**，且列出所有命中的存量卡交人裁决。
 
@@ -395,7 +398,7 @@ P0-G2（并发隔离）与 P0-A 的临时目录有重叠，A 做完后 G2 只需
            return mapping
    ```
    用 `yaml.load(stream, Loader=UniqueKeyLoader)` 替代 `yaml.safe_load`。这同时覆盖 block-style 和 flow-style 重复键（E07/H8 根本消除）。注意：pyyaml 6.x 的 `construct_mapping` 签名可能略有不同，先 Read 已装的 pyyaml 版本（6.0.3）确认。
-4. 切换后，苦力的 F04/F06/F09 自定义解析补丁若被 safe_load 覆盖，保留毒样例、删除冗余补丁代码。
+4. 切换后，苦力的 F04/F06/F09 自定义解析补丁若被 safe_load 覆盖，保留毒样例、删除冗余补丁代码。**⚠️ 例外：F04 的 Unicode 同形字符检测（全角键 `ｖｅｒｄｉｃｔ`、零宽字符、同形字母替换）safe_load 本身不做——这个补丁不能删，必须移植到 safe_load 后的规范化阶段（在 `_relations_norm` 或 frontmatter 加载后加一步 NFKC 归一化 + 同形字符检测）。删除 F04 而不移植 = 回归 452 E04。** 切换前先 Read 苦力 F04 的具体实现，确认哪些是 safe_load 已覆盖的（重复键）、哪些是需要移植的（Unicode 同形）。
 5. H14 冲突同义词：在解析后的规范化阶段（`_relations_norm`），把 `contradiction/conflicts/cancels/opposes/conflicts_with` 归一到 CONFLICT_REL；未知关系键 warn。
 
 **风险控制**：如果存量卡兼容性差异 >10 张且修正成本高，**不要硬切**——保留自定义解析器但在其外层包一层 safe_load 校验（safe_load 能解析就用 safe_load，不能就 warn 并回退），把结果写进 worklog 交人裁决。
@@ -406,7 +409,7 @@ P0-G2（并发隔离）与 P0-A 的临时目录有重叠，A 做完后 G2 只需
 
 **问题**：d8ff94d 修了存量卡但没立规则，nproc/hardware_concurrency/时间戳/PID 进 keys 会本机绿 CI 红。
 
-**修复**：gate 规则 `EV-OUT-NO-ENV-KEY`（block 新卡，存量 warn）：run_match_keys / actual run 标签值若来自 `hardware_concurrency`、`file_size`（非确定文件）、`__DATE__/__TIME__/__FILE__`、`getenv`、PID、`chrono now/clock`、`nproc`、`uname` → block。
+**修复**：gate 规则 `EV-OUT-NO-ENV-KEY`（block 新卡，存量 warn）：run_match_keys / actual run 标签值若来自 `hardware_concurrency`、`file_size`（非确定文件）、`__DATE__/__TIME__/__FILE__`、`getenv`、PID、`chrono now/clock`、`nproc`、`uname`、`sysconf`、`/proc/cpuinfo`、`/proc/meminfo`、`rand|random|mt19937`（随机数非确定性）→ block。
 
 **注意**：`hardware_concurrency` 走 sysconf 不受 taskset 影响（已实证），不能用"CI 钉核数"绕过。CONC-002 的 nproc 兜底（insufficient_cores）是**合法范式**（打印核数用于守卫，不作为逐字 key），用它做反例毒样例。
 
@@ -414,7 +417,7 @@ P0-G2（并发隔离）与 P0-A 的临时目录有重叠，A 做完后 G2 只需
 
 ### P0-F【中】零诊断判据字段面 + pragma 消音（452 E10/H16）
 
-**修复**：①"零诊断/无警告/zero warning"声明扫描面从 falsification 扩到 expected/hypothesis/actual 全文；②检测夹具用 `#pragma GCC diagnostic ignored` / `-w` / `-isystem` 压制本应作为证据的警告；③零诊断证据必须配套 `-Werror` 可复现编译命令，否则降 warn。
+**修复**：①"零诊断/无警告/zero warning"声明扫描面从 falsification 扩到 expected/hypothesis/actual 全文；②检测夹具用 `#pragma GCC diagnostic ignored` / `-w` / `-isystem` / `__attribute__((optimize("w0")))` / `-fno-diagnostics-show-option` 压制本应作为证据的警告；③零诊断证据必须配套 `-Werror` 可复现编译命令，否则降 warn。
 
 **验收**：H16/H16B 探针 block/warn；真用 -Werror 的 INLINE-001 不误伤。
 
@@ -572,7 +575,7 @@ P0-G2（并发隔离）与 P0-A 的临时目录有重叠，A 做完后 G2 只需
 8. 所有"与文档不符"的发现（苦力报告说 430/414/424 的基线数字系统性失真，以你实测为准）。
 9. **未完成 P0 的处置**：明确列出每个未完成 P0 的状态（做到哪一步、卡在哪、剩余工作量估算），并给出建议：①留给下一轮好模型继续（需传递什么上下文）②降级为 P1（原因）③需要人审裁决（具体问题）。**不要硬撑着做半成品**——宁可标记"未完成"也不要提交一个"看起来做完了但没验证"的修复。
 10. 未完成项的下一步精确命令。
-11. 最终再跑一遍第一节全套门禁，贴最终基线。
+11. 最终再跑一遍第一节全套门禁，贴最终基线。**必须是所有 commit 之后的 fresh run**，不能用中间某个 P0 跑完后的门禁结果冒充——最后一个 commit 可能改变了门禁数字。如果 P0-A 开启了重编译导致全量 replay 耗时 >10min，可以用 `--fast` 跳过重编译只跑 gate/poison/pytest，但必须在 worklog 注明"收工门禁为 fast 模式，全量 replay 最后一次通过是在 commit X"。
 12. 列所有本地 commit（`git log --oneline` 从开工点到收工），注明**未 push**、ahead 数交用户。
 13. 若 P0 有未闭合项，明确写"当前系统仍存在哪些可复现逃逸"，**不得用"基本完成"掩盖**。
 
