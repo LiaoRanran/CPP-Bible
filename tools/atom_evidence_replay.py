@@ -393,6 +393,28 @@ def _is_compiler_prog(prog: str) -> bool:
     return Path(prog).name.lower() in _COMPILER_BASENAMES if prog else False
 
 
+def _command_uses_msvc(cmd_lines: Sequence[str]) -> bool:
+    """命令是否调用 MSVC（`cl`/`cl.exe`/`clang-cl`）。MSVC 是永久边界，重编译校验**不尝试 cl**：
+
+    本机/CI 只有 MinGW + WSL(gcc)，从未配 MSVC；且跨平台汇编语义差异大，replay 不重跑 cl。
+    遇到含 cl 的卡直接跳过并标记（infra_error，不计入内容恶化），避免
+    "cl 不在 PATH → FileNotFoundError → refute:compile_error" 把环境缺失误判成内容证伪
+    （373 三分类要求：编译器缺失须走 `infra_error:compiler_missing` 一类，而非退化成报错）。
+    编译器白名单**不**加 cl（只识别、不尝试）。
+    """
+    for raw in cmd_lines:
+        cmd = raw.strip()
+        if not cmd or cmd.startswith("#"):
+            continue
+        argv_list = _split_argv(cmd)
+        if argv_list is None:
+            continue
+        for argv in argv_list:
+            if argv and Path(argv[0]).name.lower() in ("cl", "cl.exe", "clang-cl", "clang-cl.exe"):
+                return True
+    return False
+
+
 def classify_command_failure(results: Sequence[tuple[str, int, str, str]]) -> str:
     """把**首个失败**命令分成 `infra_error:<r>` / `refute:<r>`（纯函数，便于单测锁定）。
 
@@ -800,6 +822,14 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         if isinstance(_it, dict) and _it.get("path") and _it.get("sha256"):
             extra_arts.append((ROOT / str(_it["path"]), str(_it["sha256"]).strip().lower()))
     cmd_lines = str(meta["command"]).split("\n")
+
+    # MSVC 是永久边界：本机/CI 均无 cl，且跨平台汇编语义差异大，重编译校验**不尝试 cl**。
+    # 含 cl 的卡直接跳过并标记（infra_error，不计入内容恶化），避免 "cl 不在 PATH →
+    # FileNotFoundError → refute:compile_error" 把环境缺失误判成内容证伪（373 三分类要求
+    # 编译器缺失须走 infra_error，而非退化成报错）。编译器白名单**不**加 cl。
+    if _command_uses_msvc(cmd_lines):
+        log.append("  ⏭ MSVC/cl 卡：重编译校验跳过（MSVC 为永久边界，不计入内容恶化）")
+        return "infra_error:msvc_unavailable", log
 
     env = _compiler_env()
     # ⓪ 前置：工具链可用性。**先查再跑**——"编译器根本没装/路径失效"是环境故障，须在启动
