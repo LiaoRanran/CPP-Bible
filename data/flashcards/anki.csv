@@ -1,0 +1,495 @@
+"Front","Back","Tags","Deck"
+"【conc】ATOM-CONC-FENCE-001
+以下论断是否成立？依据是什么？
+任何内存屏障（含零指令的 atomic_signal_fence）只要落在循环体内，就能阻止编译器消除该循环； 但屏障不提供数据竞争安全——屏障≠原子类型。","论断：任何内存屏障（含零指令的 atomic_signal_fence）只要落在循环体内，就能阻止编译器消除该循环； 但屏障不提供数据竞争安全——屏障≠原子类型。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)', 'GCC 13.3.0 (WSL)'], 'opt': ['-O2'], 'platform': ['x86-64']}
+关键证据：
+  - EV-CONC-001: confirm
+  - EV-CONC-002: confirm
+常见误解：
+  - 误以为屏障（fence）能替代原子类型提供同步：给普通 int 标志加个 atomic_thread_fence 即可当线程间就绪标志用
+  - 误以为屏障完全拦不住编译器消除（早期'屏障拦不住消除'说法方向说反）：实测零指令的 signal_fence 只要落在循环体内就能保住循环
+  - MIS-CONC-001","conc atom ATOM-CONC-FENCE-001 verified","CPP-Bible::conc"
+"【conc】ATOM-CONC-LOCK-001
+以下论断是否成立？依据是什么？
+高竞争下 CAS 的原子 RMW 代价可能超过 mutex；但该结论依赖核数与竞争度，≤2 核环境可能反向—— 锁与无锁各有适用域，无绝对最优。","论断：高竞争下 CAS 的原子 RMW 代价可能超过 mutex；但该结论依赖核数与竞争度，≤2 核环境可能反向—— 锁与无锁各有适用域，无绝对最优。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)', 'GCC 13.3.0 (WSL)'], 'opt': ['-O2'], 'platform': ['x86-64']}
+关键证据：
+  - EV-CONC-003: confirm
+  - EV-CONC-004: confirm
+常见误解：
+  - 误以为 atomic 是零代价、无锁一定比 mutex 快
+  - 误以为 CAS 无锁就一定优于 mutex：高竞争下 CAS 重试风暴使其代价反超 mutex
+  - MIS-CONC-002","conc atom ATOM-CONC-LOCK-001 verified","CPP-Bible::conc"
+"【conc】ATOM-CONC-RACE-001
+以下论断是否成立？依据是什么？
+数据竞争（无同步的并发冲突访问，且至少一方为写）是 C++ 未定义行为，不是""结果偶尔算错""—— 编译器可据此做激进优化，行为完全不可预测。TSan 能检测数据竞争，但""没被 TSan 报 ≠ 没有数据竞争""： 其漏报边界（插桩盲区 / 必须全量插桩 / 时序偶发）使工具沉默不能当作安全证明。","论断：数据竞争（无同步的并发冲突访问，且至少一方为写）是 C++ 未定义行为，不是""结果偶尔算错""—— 编译器可据此做激进优化，行为完全不可预测。TSan 能检测数据竞争，但""没被 TSan 报 ≠ 没有数据竞争""： 其漏报边界（插桩盲区 / 必须全量插桩 / 时序偶发）使工具沉默不能当作安全证明。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)', 'GCC 13.3.0 (WSL)'], 'opt': ['-O2'], 'platform': ['x86-64']}
+关键证据：
+  - EV-CONC-005: confirm
+  - EV-CONC-006: confirm
+常见误解：
+  - 误以为数据竞争只是结果偶尔算错，不是 bug
+  - 误以为没被 TSan 报就是没有数据竞争（忽略漏报边界）
+  - MIS-CONC-003","conc atom ATOM-CONC-RACE-001 verified","CPP-Bible::conc"
+"【HIST】ATOM-HIST-AUTOPTR-001
+以下论断是否成立？依据是什么？
+std::auto_ptr 的""拷贝构造""签名是 auto_ptr(auto_ptr&)（非 const 左值引用）：它**不满足** CopyConstructible，却能从非 const 对象""拷贝""，且拷贝后**源被清空**（转移所有权）。 这是 C++98 缺少移动语义时的工程妥协——用拷贝的语法表达转移的语义，因而与容器 ""拷贝后两对象等价""的隐含约定从根上冲突。C++11 用移动语义（unique_ptr）给出正确表达后， auto_ptr 被弃用（C++11 deprecated → C++17 从标准移除）。","论断：std::auto_ptr 的""拷贝构造""签名是 auto_ptr(auto_ptr&)（非 const 左值引用）：它**不满足** CopyConstructible，却能从非 const 对象""拷贝""，且拷贝后**源被清空**（转移所有权）。 这是 C++98 缺少移动语义时的工程妥协——用拷贝的语法表达转移的语义，因而与容器 ""拷贝后两对象等价""的隐含约定从根上冲突。C++11 用移动语义（unique_ptr）给出正确表达后， auto_ptr 被弃用（C++11 deprecated → C++17 从标准移除）。
+边界：{'standard': ['C++98', 'C++11', 'C++14', 'C++17', 'C++23'], 'compilers': ['GCC 15.3.0', 'GCC 13.3.0', 'Clang 18.1.3'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64', 'x86-64 Linux']}
+关键证据：
+  - EV-HIST-001: confirm
+  - EV-MEM-003: confirm","HIST atom ATOM-HIST-AUTOPTR-001 verified","CPP-Bible::hist"
+"【LANG】ATOM-LANG-INLINE-001
+以下论断是否成立？依据是什么？
+`inline` 函数（及变量）的定义可以出现在**多个翻译单元**，但各定义必须由**相同的 token 序列**构成 （[basic.def.odr]/16.4）；违反属 ill-formed, **no diagnostic required**——实测 GCC 家族**零诊断**， 且**当两个定义的可观测结果不同时**，其可观测行为由**链接顺序**与**优化档**共同决定：-O0（未内联）下链接器只保留同名符号的一个定义 （取先遇到的），行为随链接顺序改变；-O2（内联发生）下各 TU 内联「自己看到的定义」，行为与链接顺序 无关、两个值并列出现。","论断：`inline` 函数（及变量）的定义可以出现在**多个翻译单元**，但各定义必须由**相同的 token 序列**构成 （[basic.def.odr]/16.4）；违反属 ill-formed, **no diagnostic required**——实测 GCC 家族**零诊断**， 且**当两个定义的可观测结果不同时**，其可观测行为由**链接顺序**与**优化档**共同决定：-O0（未内联）下链接器只保留同名符号的一个定义 （取先遇到的），行为随链接顺序改变；-O2（内联发生）下各 TU 内联「自己看到的定义」，行为与链接顺序 无关、两个值并列出现。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 13.3.0 (Linux)'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64', 'x86-64 Linux'], 'n_a': '①实测限 GCC 家族两版本两平台；Clang/MSVC 未实测（按标准同为 IFNDR，但""取其一 vs 各用各""的 具体映射未验证）。②""token 序列相同""不等于""语义相同""：空白与注释不属于 token，除此之外 任何差异（含宏展开后的 token 差异）都越界。③本卡不覆盖模板/类定义的多 TU 情形（同一条款的 其他分支）。④`1/1` 与 `1/2` 是**实现映射**，不是标准保证的行为。'}
+关键证据：
+  - EV-LANG-001: confirm
+  - EV-LANG-002: confirm
+常见误解：
+  - MIS-LANG-001","LANG atom ATOM-LANG-INLINE-001 draft","CPP-Bible::lang"
+"【MEM】ATOM-MEM-ALIGN-001
+以下论断是否成立？依据是什么？
+每个类型有对齐要求；结构体成员按自身对齐排列，编译器在成员间/末尾插入 padding，使每个成员与整体满足对齐， sizeof 包含 padding（故通常 > 各成员大小之和）。alignas 可提升对齐、alignof 查询对齐；搬运结构体用 按字节 memcpy（安全），用 reinterpret_cast 强转指针对齐/类型双关是未定义行为。","论断：每个类型有对齐要求；结构体成员按自身对齐排列，编译器在成员间/末尾插入 padding，使每个成员与整体满足对齐， sizeof 包含 padding（故通常 > 各成员大小之和）。alignas 可提升对齐、alignof 查询对齐；搬运结构体用 按字节 memcpy（安全），用 reinterpret_cast 强转指针对齐/类型双关是未定义行为。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-019: confirm
+  - EV-MEM-020: confirm","MEM atom ATOM-MEM-ALIGN-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-ALLOC-001
+以下论断是否成立？依据是什么？
+allocator 是 STL 容器的内存**策略**抽象：容器只经 allocator_traits 要内存，不直接调 new/delete。 C++17 后 std::allocator 只剩 allocate/deallocate 纯分配层（construct/destroy 移除、统一走 traits）， 分配与对象构造是两个独立动作。策略可整体替换：自定义 arena 分配器接入 vector 后 16 次 push_back 零堆分配；std::pmr（C++17）把策略变成运行时多态——monotonic_buffer_resource 用栈缓冲伺候全部 分配、全程不触碰上游。","论断：allocator 是 STL 容器的内存**策略**抽象：容器只经 allocator_traits 要内存，不直接调 new/delete。 C++17 后 std::allocator 只剩 allocate/deallocate 纯分配层（construct/destroy 移除、统一走 traits）， 分配与对象构造是两个独立动作。策略可整体替换：自定义 arena 分配器接入 vector 后 16 次 push_back 零堆分配；std::pmr（C++17）把策略变成运行时多态——monotonic_buffer_resource 用栈缓冲伺候全部 分配、全程不触碰上游。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-026: confirm
+  - EV-MEM-027: confirm
+  - EV-MEM-028: confirm","MEM atom ATOM-MEM-ALLOC-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-ALLOC-002
+以下论断是否成立？依据是什么？
+三种小对象分配策略的元数据开销与**是否支持单块释放**绑定，可用统一口径 （struct_bytes + bookkeeping_bytes）量化：同一 workload（1000 次 24 B 分配，-O2）下， arena 元数据 total 32 B（struct 32 + bookkeeping 0，**前提：仅批量申请 + 整体释放—— 夹具 `release_all()` 只支持整体重置，中途释放单块会产生不可复用空洞**）； bitmap total 181 B（struct 56 + bookkeeping 125 B = 1 bit/块，且随块数线性增长： n=8000 时 1056 B）；pool total 8056 B（struct 56 + bookkeeping 8000 B = 8 B/块 free-list 指针，n=8000 时 64056 B）——排序为 arena << bitmap << pool， 与""pool 元数据最省""的直觉相反；内部碎片：arena 0、pool 8000 B （定长块 32 B => 8 B x 1000）、bitmap 0（位图不占用户区）。","论断：三种小对象分配策略的元数据开销与**是否支持单块释放**绑定，可用统一口径 （struct_bytes + bookkeeping_bytes）量化：同一 workload（1000 次 24 B 分配，-O2）下， arena 元数据 total 32 B（struct 32 + bookkeeping 0，**前提：仅批量申请 + 整体释放—— 夹具 `release_all()` 只支持整体重置，中途释放单块会产生不可复用空洞**）； bitmap total 181 B（struct 56 + bookkeeping 125 B = 1 bit/块，且随块数线性增长： n=8000 时 1056 B）；pool total 8056 B（struct 56 + bookkeeping 8000 B = 8 B/块 free-list 指针，n=8000 时 64056 B）——排序为 arena << bitmap << pool， 与""pool 元数据最省""的直觉相反；内部碎片：arena 0、pool 8000 B （定长块 32 B => 8 B x 1000）、bitmap 0（位图不占用户区）。
+边界：{'standard': ['C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)'], 'opt': ['-O2'], 'platform': ['x86-64']}
+关键证据：
+  - EV-MEM-040: confirm
+  - EV-MEM-041: confirm
+常见误解：
+  - MIS-MEM-030","MEM atom ATOM-MEM-ALLOC-002 red-team-verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-LEAK-001
+以下论断是否成立？依据是什么？
+内存泄漏的机器检测信号分三层且强度不同——进程退出码与 stderr **不携带**泄漏信号（泄漏进程照常 `return 0`、无任何错误输出），夹具内 volatile 析构计数与控制块 `use_count()` 是**不依赖 sanitizer 环境**的确定信号，而 ASan/LSan 的判定**对优化档与对象存活位置高度敏感**（同一泄漏：`-O0` 极简环报 80 B/2 次分配、同档树形不报、`noinline` 隔离后 `-O2` 树形报 224 B/4 次分配、而 `-O2` 极简环不报） ——因此""ASan 没报""不能推出""没泄漏""。","论断：内存泄漏的机器检测信号分三层且强度不同——进程退出码与 stderr **不携带**泄漏信号（泄漏进程照常 `return 0`、无任何错误输出），夹具内 volatile 析构计数与控制块 `use_count()` 是**不依赖 sanitizer 环境**的确定信号，而 ASan/LSan 的判定**对优化档与对象存活位置高度敏感**（同一泄漏：`-O0` 极简环报 80 B/2 次分配、同档树形不报、`noinline` 隔离后 `-O2` 树形报 224 B/4 次分配、而 `-O2` 极简环不报） ——因此""ASan 没报""不能推出""没泄漏""。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'sanitizer_env': ['WSL Ubuntu g++-14.2', '-std=c++23', '-fsanitize=address', 'undefined', 'ASAN_OPTIONS 默认'], 'opt': ['-O0', '-O1', '-O2'], 'platform': ['x86-64 MinGW-w64（运行层）; x86-64 Linux（sanitizer 层）']}
+关键证据：
+  - EV-MEM-036: confirm
+  - EV-MEM-037: confirm","MEM atom ATOM-MEM-LEAK-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-LEAK-002
+以下论断是否成立？依据是什么？
+泄漏检测工具的**报告与否高度依赖被测代码的具体形态**，因此不能直接等价于泄漏有无： 同一份循环引用夹具、同一编译器与档位（WSL/Linux `-O1 -g -fsanitize=address,undefined`）， **改前**（无构造计数）LeakSanitizer **零报告**（stderr 0 字节），**改后**（仅给 `Node` 加一个 与泄漏无关的 `volatile` 构造计数）LSan **报告** `64 byte(s) leaked in 2 allocation(s)` （stderr 1258 字节）——唯一变量是一个与泄漏无关的计数器，且报告数值自洽（64 B = 2 × 32 B） ⇒ 判定泄漏应先用零依赖观测（构造/析构计数、存活对象数）定性，工具报告只作补充证据。","论断：泄漏检测工具的**报告与否高度依赖被测代码的具体形态**，因此不能直接等价于泄漏有无： 同一份循环引用夹具、同一编译器与档位（WSL/Linux `-O1 -g -fsanitize=address,undefined`）， **改前**（无构造计数）LeakSanitizer **零报告**（stderr 0 字节），**改后**（仅给 `Node` 加一个 与泄漏无关的 `volatile` 构造计数）LSan **报告** `64 byte(s) leaked in 2 allocation(s)` （stderr 1258 字节）——唯一变量是一个与泄漏无关的计数器，且报告数值自洽（64 B = 2 × 32 B） ⇒ 判定泄漏应先用零依赖观测（构造/析构计数、存活对象数）定性，工具报告只作补充证据。
+边界：{'standard': ['C++11', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)'], 'opt': ['-O1（sanitizer 观测档）', '-O2（零依赖判据档）'], 'platform': ['x86-64']}
+关键证据：
+  - EV-MEM-042: confirm
+  - EV-MEM-043: confirm
+常见误解：
+  - MIS-MEM-031","MEM atom ATOM-MEM-LEAK-002 red-team-verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-MOVE-002
+以下论断是否成立？依据是什么？
+std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载； 移动构造的收益来自**掏空源对象**，因此源对象没有可掏空的间接资源时，移动退化为拷贝。","论断：std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载； 移动构造的收益来自**掏空源对象**，因此源对象没有可掏空的间接资源时，移动退化为拷贝。
+边界：{'standard': ['C++11', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0', 'GCC 13.1.0', 'GCC 8.1.0', 'GCC 13.3.0'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64', 'x86-64 Linux']}
+关键证据：
+  - EV-MEM-001: confirm
+  - EV-MEM-002: confirm","MEM atom ATOM-MEM-MOVE-002 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-NEW-001
+以下论断是否成立？依据是什么？
+new 表达式分两层：先 operator new 分配、再调用构造；delete 表达式也分两层：先调用析构、再 operator delete 释放。 两层各自独立发生一次。new[]/delete[] 针对数组，必须配对（混用是 UB）；new(std::nothrow) 在分配失败时返回 nullptr 而非抛异常；内置类型用 new 不初始化。裸 new 易漏 delete 而泄漏——优先容器/智能指针。","论断：new 表达式分两层：先 operator new 分配、再调用构造；delete 表达式也分两层：先调用析构、再 operator delete 释放。 两层各自独立发生一次。new[]/delete[] 针对数组，必须配对（混用是 UB）；new(std::nothrow) 在分配失败时返回 nullptr 而非抛异常；内置类型用 new 不初始化。裸 new 易漏 delete 而泄漏——优先容器/智能指针。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-017: confirm
+  - EV-MEM-018: confirm","MEM atom ATOM-MEM-NEW-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-PERF-001
+以下论断是否成立？依据是什么？
+移动构造的收益来自""掏空源对象""：对持堆指针的类型只偷指针（sizeof(void*)=8 字节）并置空源、0 分配； 对无动态资源的纯值类型，移动 = 拷贝（同样搬全部字节、源不被掏空），std::move 无性能收益。","论断：移动构造的收益来自""掏空源对象""：对持堆指针的类型只偷指针（sizeof(void*)=8 字节）并置空源、0 分配； 对无动态资源的纯值类型，移动 = 拷贝（同样搬全部字节、源不被掏空），std::move 无性能收益。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-008: confirm
+  - EV-MEM-001: confirm
+  - EV-MEM-002: confirm","MEM atom ATOM-MEM-PERF-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-PERF-002
+以下论断是否成立？依据是什么？
+SSO（Small String Optimization）：短于阈值的字符串存在 string 对象内部缓冲，零堆分配；达到阈值 才落堆——本机 libstdc++（GCC 15.3.0）阈值 15 字符、sizeof=32，len≤15 构造/拷贝 allocs=0（赋值 走同一实现路径），len=16 首次落堆。SSO 是实现内建（标准不要求），三实现参数不保证一致 （libstdc++ 32/15、libc++ 24/22、MSVC 32/15——libc++ 与另两家不同），阈值不可移植。历史： C++11 禁 COW 后 libstdc++ 才全面转向 SSO。","论断：SSO（Small String Optimization）：短于阈值的字符串存在 string 对象内部缓冲，零堆分配；达到阈值 才落堆——本机 libstdc++（GCC 15.3.0）阈值 15 字符、sizeof=32，len≤15 构造/拷贝 allocs=0（赋值 走同一实现路径），len=16 首次落堆。SSO 是实现内建（标准不要求），三实现参数不保证一致 （libstdc++ 32/15、libc++ 24/22、MSVC 32/15——libc++ 与另两家不同），阈值不可移植。历史： C++11 禁 COW 后 libstdc++ 才全面转向 SSO。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-029: confirm
+  - EV-MEM-030: confirm
+  - EV-MEM-031: confirm","MEM atom ATOM-MEM-PERF-002 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-PERF-003
+以下论断是否成立？依据是什么？
+小对象分配的开销由**实现参数**与**策略语义**共同决定，两者都必须现场测量： ① SSO 阈值不是语言保证——同一判据、**同一条 g++-14 驱动**下 libstdc++ 实测 `sizeof=32`/容量 15、 libc++-18 实测 `sizeof=24`/容量 22（唯一变量 = 标准库实现；两者都完全符合 [string]）； ② 小对象分配策略**连""谁更快""都是平台相关的**：同一夹具、同一工作量在 MinGW/libstdc++ 上 单调缓冲与池都胜过全局 new（约 4.4× 与 2.0×），而在 Linux/glibc 上**三者全部翻转**—— 全局 new 最快，两种资源反慢（约 1.9× 与 1.37×）。故""池分配器更快""不是可移植结论； 可移植的是因果链（释放是否回收）与""必须实测""这条方法论； ③ 因此 PERF 类证据必须区分**断言锚**（真正跨环境稳定：迭代常量 + 观测通路活性） 与**留痕**（时序数据与对比结论：供人复算，不作断言）——这条纪律由本批**两次真实失败**逼出。","论断：小对象分配的开销由**实现参数**与**策略语义**共同决定，两者都必须现场测量： ① SSO 阈值不是语言保证——同一判据、**同一条 g++-14 驱动**下 libstdc++ 实测 `sizeof=32`/容量 15、 libc++-18 实测 `sizeof=24`/容量 22（唯一变量 = 标准库实现；两者都完全符合 [string]）； ② 小对象分配策略**连""谁更快""都是平台相关的**：同一夹具、同一工作量在 MinGW/libstdc++ 上 单调缓冲与池都胜过全局 new（约 4.4× 与 2.0×），而在 Linux/glibc 上**三者全部翻转**—— 全局 new 最快，两种资源反慢（约 1.9× 与 1.37×）。故""池分配器更快""不是可移植结论； 可移植的是因果链（释放是否回收）与""必须实测""这条方法论； ③ 因此 PERF 类证据必须区分**断言锚**（真正跨环境稳定：迭代常量 + 观测通路活性） 与**留痕**（时序数据与对比结论：供人复算，不作断言）——这条纪律由本批**两次真实失败**逼出。
+边界：{'standard': ['C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)', 'Clang 18.1.3 + libc++-18 (WSL，外部留痕)'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64']}
+关键证据：
+  - EV-MEM-038: confirm
+  - EV-MEM-039: confirm
+常见误解：
+  - MIS-MEM-028
+  - MIS-MEM-029","MEM atom ATOM-MEM-PERF-003 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-PERF-004
+以下论断是否成立？依据是什么？
+多线程各自读写**逻辑独立**的变量时仍可能因共享缓存行（false sharing）付出约一个数量级的性能代价 ——本机实测 4 线程各累加 1e7 次：相邻布局中位数 562500600 ns vs `alignas` 隔离后 29824800 ns （**18.86×**，Linux 同夹具 18.54×，方向一致）；该结构前提可用地址**确定性判定** （`tight_same_line=1` / `padded_same_line=0`，不依赖计时），而 padding 的代价是空间 （`padded_sizeof=128`）⇒ 存在最优对齐粒度，""padding 一定值得""同样是过度概括。","论断：多线程各自读写**逻辑独立**的变量时仍可能因共享缓存行（false sharing）付出约一个数量级的性能代价 ——本机实测 4 线程各累加 1e7 次：相邻布局中位数 562500600 ns vs `alignas` 隔离后 29824800 ns （**18.86×**，Linux 同夹具 18.54×，方向一致）；该结构前提可用地址**确定性判定** （`tight_same_line=1` / `padded_same_line=0`，不依赖计时），而 padding 的代价是空间 （`padded_sizeof=128`）⇒ 存在最优对齐粒度，""padding 一定值得""同样是过度概括。
+边界：{'standard': ['C++11', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)'], 'opt': ['-O2'], 'platform': ['x86-64，缓存行 64 字节']}
+关键证据：
+  - EV-MEM-044: confirm
+  - EV-MEM-045: confirm
+常见误解：
+  - MIS-MEM-032","MEM atom ATOM-MEM-PERF-004 red-team-verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-RAII-001
+以下论断是否成立？依据是什么？
+RAII 的核心是""资源生命周期绑定到对象生命周期""：构造时获取资源、析构时释放。栈展开时（即使函数 因异常提前返回）作用域内对象的析构按构造逆序自动调用，因此 RAII 管理的资源在异常路径也不泄漏； 裸 new/delete 在异常路径跳过 delete 则泄漏。lock_guard、unique_ptr、vector 都是 RAII。","论断：RAII 的核心是""资源生命周期绑定到对象生命周期""：构造时获取资源、析构时释放。栈展开时（即使函数 因异常提前返回）作用域内对象的析构按构造逆序自动调用，因此 RAII 管理的资源在异常路径也不泄漏； 裸 new/delete 在异常路径跳过 delete 则泄漏。lock_guard、unique_ptr、vector 都是 RAII。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-009: confirm
+  - EV-MEM-010: confirm","MEM atom ATOM-MEM-RAII-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-RAII-002
+以下论断是否成立？依据是什么？
+特殊成员函数要不要写，判据是""成员形状""而非记忆口诀：成员全是 RAII 类型（unique_ptr/vector/string） 时一个都不写（Rule of Zero）——编译器隐式生成的特殊成员函数语义全部正确（可拷贝成员拷贝隐式生成 且语义正确、不可拷贝成员如 unique_ptr 的拷贝被删除，移动/析构正确生成；实测 allocs=dtors=frees=1）； 管理裸资源时三件套（析构/拷贝构造/拷贝赋值，Rule of Three）或五件套（+ 移动构造/移动赋值，Rule of Five）必须齐写——只写析构会得到隐式浅拷贝，同一资源两次析构，析构真释放即 double free； 写移动构造必须标 noexcept，否则 vector 扩容搬迁退化为逐个拷贝。 （Rule of Zero 的隐式语义按成员形状各得其所：可拷贝 RAII 成员的拷贝**隐式生成且语义正确**， 不可拷贝成员如 unique_ptr 的拷贝被**删除**——不是一律""删除拷贝""。）","论断：特殊成员函数要不要写，判据是""成员形状""而非记忆口诀：成员全是 RAII 类型（unique_ptr/vector/string） 时一个都不写（Rule of Zero）——编译器隐式生成的特殊成员函数语义全部正确（可拷贝成员拷贝隐式生成 且语义正确、不可拷贝成员如 unique_ptr 的拷贝被删除，移动/析构正确生成；实测 allocs=dtors=frees=1）； 管理裸资源时三件套（析构/拷贝构造/拷贝赋值，Rule of Three）或五件套（+ 移动构造/移动赋值，Rule of Five）必须齐写——只写析构会得到隐式浅拷贝，同一资源两次析构，析构真释放即 double free； 写移动构造必须标 noexcept，否则 vector 扩容搬迁退化为逐个拷贝。 （Rule of Zero 的隐式语义按成员形状各得其所：可拷贝 RAII 成员的拷贝**隐式生成且语义正确**， 不可拷贝成员如 unique_ptr 的拷贝被**删除**——不是一律""删除拷贝""。）
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-023: confirm
+  - EV-MEM-024: confirm
+  - EV-MEM-025: confirm","MEM atom ATOM-MEM-RAII-002 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-RVREF-001
+以下论断是否成立？依据是什么？
+函数形参声明为 `T&&` 时，形参名在函数体内是**左值**：`T y = x;` 触发拷贝构造； 只有 `T y = std::move(x);` 把 x 变成 xvalue，才会选中移动构造；而对**无移动构造**的类型， 即使写了 `std::move(x)` 也**静默退化**成拷贝。（C++11–C++23 全档实测，十一档一致； **例外**：`return x;` 路径随版本变化——C++17 及更早是拷贝，C++20 起已隐式移动，见 EV-MEM-005。）","论断：函数形参声明为 `T&&` 时，形参名在函数体内是**左值**：`T y = x;` 触发拷贝构造； 只有 `T y = std::move(x);` 把 x 变成 xvalue，才会选中移动构造；而对**无移动构造**的类型， 即使写了 `std::move(x)` 也**静默退化**成拷贝。（C++11–C++23 全档实测，十一档一致； **例外**：`return x;` 路径随版本变化——C++17 及更早是拷贝，C++20 起已隐式移动，见 EV-MEM-005。）
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0', 'GCC 13.1.0'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-004: confirm
+  - EV-MEM-005: confirm","MEM atom ATOM-MEM-RVREF-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-SHARED-001
+以下论断是否成立？依据是什么？
+std::shared_ptr<T> 用引用计数实现共享所有权：拷贝 +1、析构 -1，计数归零才释放资源（析构恰好一次）。 控制块（RAII）管理计数与资源。但它不能自动处理循环引用——两个对象互相 shared_ptr 持有，彼此计数 为 2，离开作用域后各减到 1 仍互指，计数永不归零 => 泄漏；循环必须用 weak_ptr 打破。","论断：std::shared_ptr<T> 用引用计数实现共享所有权：拷贝 +1、析构 -1，计数归零才释放资源（析构恰好一次）。 控制块（RAII）管理计数与资源。但它不能自动处理循环引用——两个对象互相 shared_ptr 持有，彼此计数 为 2，离开作用域后各减到 1 仍互指，计数永不归零 => 泄漏；循环必须用 weak_ptr 打破。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-013: confirm
+  - EV-MEM-014: confirm","MEM atom ATOM-MEM-SHARED-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-SHARED-002
+以下论断是否成立？依据是什么？
+shared_ptr 的控制块引用计数用 LOCK 前缀的原子 RMW 修改，因此**各线程持有各自副本**时的并发 拷贝/销毁是安全的；但**被指对象**与**同一个 shared_ptr 实例**都不受这层保护（并发读写同一实例 需外部同步，C++20 起可用 std::atomic<std::shared_ptr<T>>；use_count() 在并发下只是近似值）。 unique_ptr 的所有权转移是纯指针搬运、不含原子 RMW，代价是**不可拷贝**——要共享必须显式改用 shared_ptr，于是""要不要付原子代价""成了编译期可判的选择，而不是运行期祈祷。","论断：shared_ptr 的控制块引用计数用 LOCK 前缀的原子 RMW 修改，因此**各线程持有各自副本**时的并发 拷贝/销毁是安全的；但**被指对象**与**同一个 shared_ptr 实例**都不受这层保护（并发读写同一实例 需外部同步，C++20 起可用 std::atomic<std::shared_ptr<T>>；use_count() 在并发下只是近似值）。 unique_ptr 的所有权转移是纯指针搬运、不含原子 RMW，代价是**不可拷贝**——要共享必须显式改用 shared_ptr，于是""要不要付原子代价""成了编译期可判的选择，而不是运行期祈祷。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'stdlib': ['libstdc++'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-034: confirm
+  - EV-MEM-035: confirm","MEM atom ATOM-MEM-SHARED-002 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-UNIQUE-001
+以下论断是否成立？依据是什么？
+std::unique_ptr<T> 是唯一所有权智能指针：移动转移所有权（源被置空、目标获得对象），拷贝构造被删除 （不可共享），析构恰好 delete 一次（无双释放）。它是零开销抽象——sizeof 等于裸指针（x86-64 下 8 字节）， 所有权语义只体现在编译期（拷贝删除 + 移动转移），不在运行时加字段。禁用裸 new；需要共享才升级到 shared_ptr。","论断：std::unique_ptr<T> 是唯一所有权智能指针：移动转移所有权（源被置空、目标获得对象），拷贝构造被删除 （不可共享），析构恰好 delete 一次（无双释放）。它是零开销抽象——sizeof 等于裸指针（x86-64 下 8 字节）， 所有权语义只体现在编译期（拷贝删除 + 移动转移），不在运行时加字段。禁用裸 new；需要共享才升级到 shared_ptr。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-011: confirm
+  - EV-MEM-012: confirm","MEM atom ATOM-MEM-UNIQUE-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-UNIQUE-002
+以下论断是否成立？依据是什么？
+unique_ptr 的删除器是**类型的一部分**（`unique_ptr<T, D>` 的 D 进类型系统），因此删除器会影响 对象大小与类型：libstdc++ 下，空**且非 final** 的删除器被空基类优化吸收（sizeof == 裸指针 8 字节）， 而空但 final 的删除器与有状态删除器都必须存储（16 字节）——这是**实现边界**而非语言保证 （final 反例实测 16，见 EV-MEM-032）。数组特化 `unique_ptr<T[]>` 是独立特化：只提供 operator[]、 不提供 operator* 与 operator->，且在默认删除器下走 delete[]。与之对照，shared_ptr 的删除器被 **类型擦除**——语言层面不存在 `shared_ptr<T, D>`，删除器只能经构造函数按值注入并被控制块持有， 对象大小恒为两个指针、与删除器类型无关；代价是控制块自身的堆分配（裸指针构造 2 次分配、 make_shared 合并为 1 次，见 EV-MEM-033）。","论断：unique_ptr 的删除器是**类型的一部分**（`unique_ptr<T, D>` 的 D 进类型系统），因此删除器会影响 对象大小与类型：libstdc++ 下，空**且非 final** 的删除器被空基类优化吸收（sizeof == 裸指针 8 字节）， 而空但 final 的删除器与有状态删除器都必须存储（16 字节）——这是**实现边界**而非语言保证 （final 反例实测 16，见 EV-MEM-032）。数组特化 `unique_ptr<T[]>` 是独立特化：只提供 operator[]、 不提供 operator* 与 operator->，且在默认删除器下走 delete[]。与之对照，shared_ptr 的删除器被 **类型擦除**——语言层面不存在 `shared_ptr<T, D>`，删除器只能经构造函数按值注入并被控制块持有， 对象大小恒为两个指针、与删除器类型无关；代价是控制块自身的堆分配（裸指针构造 2 次分配、 make_shared 合并为 1 次，见 EV-MEM-033）。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'stdlib': ['libstdc++'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-032: confirm
+  - EV-MEM-033: confirm","MEM atom ATOM-MEM-UNIQUE-002 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-VALUE-001
+以下论断是否成立？依据是什么？
+C++11 起每个表达式属于两个正交维度（glvalue 有身份 / rvalue 可移动）的交叉：lvalue = glvalue∧¬rvalue， xvalue = glvalue∧rvalue，prvalue = ¬glvalue∧rvalue。std::move(x) 把 lvalue 转为 xvalue（decltype 得 T&&， 不是 prvalue 的 T）；临时对象/字面量是 prvalue；具名右值引用在表达式体内是左值（decltype 得 T&）。","论断：C++11 起每个表达式属于两个正交维度（glvalue 有身份 / rvalue 可移动）的交叉：lvalue = glvalue∧¬rvalue， xvalue = glvalue∧rvalue，prvalue = ¬glvalue∧rvalue。std::move(x) 把 lvalue 转为 xvalue（decltype 得 T&&， 不是 prvalue 的 T）；临时对象/字面量是 prvalue；具名右值引用在表达式体内是左值（decltype 得 T&）。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-006: confirm
+  - EV-MEM-007: confirm","MEM atom ATOM-MEM-VALUE-001 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-VALUE-002
+以下论断是否成立？依据是什么？
+引用折叠只有 4 条规则：T& &→T&、T& &&→T&、T&& &→T&、T&& &&→T&&（唯一保持右值引用的是 ""右值引用的右值引用""），且折叠只对经模板形参/typedef 引入的引用生效（直写 T& & 语法非法）。 T&& 仅在推导语境下是万能引用：传左值推 T=int&（折叠回左值引用）、传右值推 T=int；auto&& 同理、 const T&& 不是万能引用。std::forward<T>(x) 按推导出的 T 恢复实参值类别；转发链里省略 forward 时 形参按左值处理，右值实参退化为拷贝。","论断：引用折叠只有 4 条规则：T& &→T&、T& &&→T&、T&& &→T&、T&& &&→T&&（唯一保持右值引用的是 ""右值引用的右值引用""），且折叠只对经模板形参/typedef 引入的引用生效（直写 T& & 语法非法）。 T&& 仅在推导语境下是万能引用：传左值推 T=int&（折叠回左值引用）、传右值推 T=int；auto&& 同理、 const T&& 不是万能引用。std::forward<T>(x) 按推导出的 T 恢复实参值类别；转发链里省略 forward 时 形参按左值处理，右值实参退化为拷贝。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-021: confirm
+  - EV-MEM-022: confirm","MEM atom ATOM-MEM-VALUE-002 verified","CPP-Bible::mem"
+"【MEM】ATOM-MEM-WEAK-001
+以下论断是否成立？依据是什么？
+std::weak_ptr 是非拥有观察者：指向 shared_ptr 管理的对象但不增加引用计数；.lock() 临时提升为 shared_ptr（对象活着则成功、计数 +1），对象已销毁则 .lock() 返回空（expired）。它用来在""需要旁观共享对象 但不延长其寿命""的场景（尤其子->父反向引用）打破 shared_ptr 的循环引用，避免泄漏。","论断：std::weak_ptr 是非拥有观察者：指向 shared_ptr 管理的对象但不增加引用计数；.lock() 临时提升为 shared_ptr（对象活着则成功、计数 +1），对象已销毁则 .lock() 返回空（expired）。它用来在""需要旁观共享对象 但不延长其寿命""的场景（尤其子->父反向引用）打破 shared_ptr 的循环引用，避免泄漏。
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++20', 'C++23'], 'compilers': ['GCC 15.3.0'], 'opt': ['-O2'], 'platform': ['x86-64 MinGW-w64']}
+关键证据：
+  - EV-MEM-015: confirm
+  - EV-MEM-016: confirm","MEM atom ATOM-MEM-WEAK-001 verified","CPP-Bible::mem"
+"【UB】ATOM-UB-GRAY-001
+以下论断是否成立？依据是什么？
+`f(g(), h())` 的实参求值顺序是**未指定**（unspecified）：两种顺序都合法、程序不会崩，但不可依赖； **未测序（unsequenced）的同一标量修改**（如 `i = i++ + ++i`）与**通过不兼容类型指针访问对象** （严格别名）属于**未定义行为**，标准不再要求任何行为，优化器可据此删除你的访问。 （版本边界：函数实参 `f(i++, i++)` 自 **C++17 起是 _indeterminately sequenced_** → **unspecified**； C++11/14 下才是 UB。）","论断：`f(g(), h())` 的实参求值顺序是**未指定**（unspecified）：两种顺序都合法、程序不会崩，但不可依赖； **未测序（unsequenced）的同一标量修改**（如 `i = i++ + ++i`）与**通过不兼容类型指针访问对象** （严格别名）属于**未定义行为**，标准不再要求任何行为，优化器可据此删除你的访问。 （版本边界：函数实参 `f(i++, i++)` 自 **C++17 起是 _indeterminately sequenced_** → **unspecified**； C++11/14 下才是 UB。）
+边界：{'standard': ['C++11', 'C++14', 'C++17', 'C++23'], 'compilers': ['GCC 15.3.0', 'GCC 13.1.0', 'GCC 8.1.0', 'Clang (CI ubuntu-latest runner 默认)'], 'opt': ['-O0', '-O2'], 'platform': ['x86-64 MinGW-w64', 'x86-64 Linux']}
+关键证据：
+  - EV-UB-001: confirm
+  - EV-UB-002: confirm","UB atom ATOM-UB-GRAY-001 verified","CPP-Bible::ub"
+"【误解】MIS-CONC-001 volatile 可以用于线程间同步 / 当数据就绪标志
+触发说法：volatile bool ready 就能当标志位","为什么错：volatile 只保证不被优化掉、不重排到同一线程内的 volatile 访问之外；**不**提供原子性、不提供跨线程 happens-before
+反例 1：线程同步要用 std::atomic 配内存序（默认 seq_cst）
+关联原子：ATOM-UB-GRAY-001","CONC misconception MIS-CONC-001 deep","CPP-Bible::conc"
+"【误解】MIS-CONC-002 memory_order_relaxed 可以当数据已就绪的标志位用
+触发说法：用 relaxed 的 flag 表示数据写完了","为什么错：relaxed 只保证原子性，不建立同步关系 → 读线程可能看到 flag 为真却读到未初始化的数据
+反例 1：发布-订阅要用 release/acquire 配对（或 seq_cst）","CONC misconception MIS-CONC-002 deep","CPP-Bible::conc"
+"【误解】MIS-CONC-003 没被 TSan 报就是没有数据竞争 / 数据竞争只是偶尔算错
+触发说法：没被 TSan 报就是安全的","为什么错：TSan 只分析被 -fsanitize=thread 插桩的 TU；第三方库/内联汇编/未插桩 TU 内的竞争它看不到（漏报），故「没被报 ≠ 没有」
+反例 1：数据竞争是 C++ 标准明文的未定义行为，不是「答案偶尔错」：编译器可据此做激进优化（寄存器缓存、删除看似冗余的读），行为完全不可预测
+反例 2：C++ 的 volatile 不建立线程间 happens-before，不能防数据竞争——TSan 对 volatile 竞争照样报；防竞争靠 atomic/mutex/barrier
+关联原子：ATOM-CONC-RACE-001","CONC misconception MIS-CONC-003 deep","CPP-Bible::conc"
+"【误解】MIS-CONC-004 std::async 默认就会起新线程并行执行
+触发说法：async 就是异步，肯定开线程","为什么错：默认策略是 async|deferred，实现可二选一 → 可能完全在调用线程串行执行
+反例 1：需要真并行必须显式传 std::launch::async","CONC misconception MIS-CONC-004 deep","CPP-Bible::conc"
+"【误解】MIS-CONC-005 无锁一定比 mutex 快
+触发说法：lock-free 更高级，肯定更快","为什么错：低中竞争 + 短临界区下 mutex（用户态自旋 + futex）常更快；无锁的收益在高竞争且临界区极短时才显现
+反例 1：必须基准测试；无锁还带来 ABA、内存回收等额外复杂度","CONC misconception MIS-CONC-005 deep","CPP-Bible::conc"
+"【误解】MIS-CONC-006 compare_exchange 失败后 expected 变量保持不变
+触发说法：CAS 失败了我还能用原来的 expected","为什么错：compare_exchange_weak/strong 失败时会把**实际值**写入 expected（按引用传参）→ 原值被覆盖","CONC misconception MIS-CONC-006 surface","CPP-Bible::conc"
+"【误解】MIS-CONC-007 原子操作省略内存序参数时默认是 relaxed
+触发说法：不写内存序就是最松的","为什么错：默认（以及 ++/--/赋值等运算符重载）是 **memory_order_seq_cst**，即最强顺序一致","CONC misconception MIS-CONC-007 surface","CPP-Bible::conc"
+"【误解】MIS-CONC-008 线程对象既不 join 也不 detach，只是警告一下
+触发说法：忘了 join 顶多资源泄漏","为什么错：可汇合（joinable）的 thread 析构时调用 std::terminate → 程序直接终止","CONC misconception MIS-CONC-008 surface","CPP-Bible::conc"
+"【误解】MIS-CONC-009 stop_token 能主动把线程停下来
+触发说法：request_stop() 之后线程就会停","为什么错：停止是**协作**的：request_stop 只置位，线程须主动检查 stop_requested() 并返回
+反例 1：线程从不检查 → jthread 析构时 join 永久阻塞；阻塞系统调用须用 stop_callback 唤醒","CONC misconception MIS-CONC-009 deep","CPP-Bible::conc"
+"【误解】MIS-CONC-010 函数内 static 变量初始化线程安全，所以读写也线程安全
+触发说法：局部 static 初始化有守卫，多线程访问也安全","为什么错：标准只保证**初始化**不发生数据竞争（magic static）；初始化之后的并发读写仍需自行同步
+反例 1：同理 thread_local 在线程池复用线程时不会自动重置，须在任务入口手动重置","CONC misconception MIS-CONC-010 deep","CPP-Bible::conc"
+"【误解】MIS-HIST-001 auto_ptr 和 unique_ptr 差不多，只是名字旧一点
+触发说法：auto_ptr 就是老版本的 unique_ptr","为什么错：两者对拷贝的处置相反：auto_ptr 允许拷贝（且静默转移+清空源），unique_ptr 拷贝构造 = delete（编译期拒绝）
+关联原子：ATOM-HIST-AUTOPTR-001","HIST misconception MIS-HIST-001 surface","CPP-Bible::hist"
+"【误解】MIS-HIST-002 auto_ptr 反正被移除了，C++17 里编译不过
+触发说法：C++17 起 auto_ptr 就没了，肯定编译失败","为什么错：实测 GCC 15.3 的 libstdc++ 在 -std=c++14/17/23 三档**均仍提供** auto_ptr（<backward/auto_ptr.h>）
+反例 1：libc++ / MSVC 才是真移除 → 构成可移植性陷阱（在 GCC 上看着还能用，换工具链即断）
+关联原子：ATOM-HIST-AUTOPTR-001","HIST misconception MIS-HIST-002 surface","CPP-Bible::hist"
+"【误解】MIS-HIST-003 auto_ptr 被移除是因为它有 bug / 实现得不好
+触发说法：auto_ptr 有缺陷所以被弃用","为什么错：拷贝构造签名 auto_ptr(auto_ptr&) 不满足 CopyConstructible 却仍能从非 const 对象拷贝——这是 C++98 **没有移动语义**时表达所有权的合理工程妥协，不是实现失误
+反例 1：C++11 引入移动语义后，同一需求有了正确语法（std::move + = delete），auto_ptr 才被 unique_ptr 取代
+关联原子：ATOM-HIST-AUTOPTR-001","HIST misconception MIS-HIST-003 deep","CPP-Bible::hist"
+"【误解】MIS-LANG-001 以为 inline 函数各 TU 写成不同实现也没关系（编译器/链接器会发现并报错）
+触发说法：inline 就是「每个 TU 私有一份」，各写各的实现没关系","为什么错：ODR 要求同一实体的多个定义「consist of the same sequence of tokens」（[basic.def.odr]/16.4）；违反属 IFNDR——**无须诊断**：实测 -Wall -Wextra 编译两个不同定义的 TU，零警告零错误（EV-LANG-001 D1 行）
+反例 1：行为不是「确定的」：-O0 下链接器取先遇到的 weak 定义，仅交换两个 .o 的链接顺序，同一程序的输出就从 tu_a=1,tu_b=1 变成 tu_a=2,tu_b=2（EV-LANG-001 E1/E2）
+反例 2：「固定链接顺序」也兜不住：换到 -O2，两个 TU 各自内联自己看到的定义，形态变成「各用各的」（1/2）且与顺序无关——同一 UB 的第二种合法表现（EV-LANG-002 §1）
+关联原子：ATOM-LANG-INLINE-001","LANG misconception MIS-LANG-001 deep","CPP-Bible::lang"
+"【误解】MIS-MEM-001 std::move 会移动对象
+触发说法：std::move(x) 之后 x 就被搬空了","为什么错：std::move 只是 static_cast<T&&>(x)，本身不生成任何指令 [expr.static.cast]
+反例 1：移动是否发生取决于重载决议是否选中移动构造；源对象仅保证有效但未指定 [lib.types.movedfrom]
+关联原子：ATOM-MEM-MOVE-002","MEM misconception MIS-MEM-001 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-002 移动后源对象为空，可以当空容器用
+触发说法：移动完 size() 一定是 0","为什么错：标准只说源对象处于有效但未指定状态，清空是实现细节而非保证 [lib.types.movedfrom]
+反例 1：std::string 的小字符串优化（SSO）下移动后源可能仍保留内容；实测需 volatile 读回才观测得到
+关联原子：ATOM-MEM-MOVE-002","MEM misconception MIS-MEM-002 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-003 return std::move(local) 能加速返回
+触发说法：返回局部变量时加 move 是帮编译器一把","为什么错：返回局部对象时编译器本就允许 NRVO / 隐式移动，加 std::move 反而阻断 NRVO
+反例 1：对返回值而言 std::move 把 lvalue 转 xvalue，使 NRVO 不再适用——是减效不是增效
+关联原子：ATOM-MEM-MOVE-002","MEM misconception MIS-MEM-003 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-004 对 const 对象 std::move 也能省掉拷贝
+触发说法：const T 也能 move，反正只是转换","为什么错：std::move(const T&) 得到 const T&&，无法绑定 T&& 移动构造 → 静默退化为拷贝构造
+关联原子：ATOM-MEM-MOVE-002","MEM misconception MIS-MEM-004 surface","CPP-Bible::mem"
+"【误解】MIS-MEM-005 函数里拿到 T&& 具名参数后直接用它就会自动移动
+触发说法：void f(T&& x) { T y = x; } 里发生的是移动","为什么错：函数体场景：具名右值引用是左值（[basic.lval] Note 3 原文：named rvalue references are treated as lvalues），`T y = x;` 触发拷贝构造；要移动须再写 std::move(x)
+反例 1：构造函数 mem-initializer-list 同样中招：`A(Probe&& x) : m(x) {}` 是拷贝，必须写成 `m(std::move(x))`——这比函数体场景更常被漏
+反例 2：lambda 场景：`[x]` 是拷贝捕获，且**非 mutable 的 lambda 体内** `std::move(x)` 得到的是 `const T&&`，仍退化拷贝；要移动须用 init-capture `[x = std::move(x)]`（或 `mutable` lambda——但捕获本身仍是一次拷贝，init-capture 的优势是连捕获那次也省掉）
+关联原子：ATOM-MEM-MOVE-002 ATOM-MEM-RVREF-001","MEM misconception MIS-MEM-005 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-006 用同一个裸指针构造两个 shared_ptr 也能正常共享引用计数
+触发说法：shared_ptr<int> a(p); shared_ptr<int> b(p); 两个一起管","为什么错：两个独立控制块各自计数 → 双重释放（double free），不是共享
+反例 1：正确做法是 shared_ptr<int> b = a;（共享控制块）或用 enable_shared_from_this","MEM misconception MIS-MEM-006 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-007 在构造函数里调用 shared_from_this() 没问题
+触发说法：构造函数里就能拿到自己的 shared_ptr","为什么错：构造期间对象尚未被任何 shared_ptr 持有 → 抛 bad_weak_ptr（或未定义，取决于实现）
+反例 1：标准用法：构造函数私有化 + 工厂函数返回 shared_ptr，构造完成后才用 shared_from_this","MEM misconception MIS-MEM-007 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-008 new/delete 与 new[]/delete[] 可以混用
+触发说法：delete 一个 new[] 出来的数组只是少调几个析构","为什么错：混用是未定义行为：new[] 会在块头存元素个数，delete 按单对象布局释放 → 堆损坏","MEM misconception MIS-MEM-008 surface","CPP-Bible::mem"
+"【误解】MIS-MEM-009 析构函数里抛异常只是传播出去而已
+触发说法：析构里抛异常和别处一样往外传","为什么错：析构函数默认 noexcept；栈展开期间析构抛异常 → std::terminate，程序直接终止
+反例 1：这决定了 RAII 类必须把可能失败的操作（关闭连接/刷盘）做成显式方法而非只放析构","MEM misconception MIS-MEM-009 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-010 Rule of Five 只是理论，含裸指针成员的类写个析构就够了
+触发说法：有裸指针就写析构，别的用编译器生成的","为什么错：只写析构而拷贝仍为编译器生成的逐成员拷贝 → 浅拷贝，两个对象析构同一指针 → double free
+反例 1： Rule of Five：析构/拷贝构造/拷贝赋值/移动构造/移动赋值要么全自定义要么全 default，五缺一即埋雷","MEM misconception MIS-MEM-010 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-011 unique_ptr 可以像普通对象一样按值传参
+触发说法：函数签名直接写 unique_ptr<T> 收值","为什么错：unique_ptr 不可拷贝，按值传参必须 std::move；调用点忘了 move 就是编译错误（这是优点）
+反例 1：只读场景应传 T& 或 T*，不涉及所有权就别传智能指针
+关联原子：ATOM-HIST-AUTOPTR-001","MEM misconception MIS-MEM-011 surface","CPP-Bible::mem"
+"【误解】MIS-MEM-012 移动一定比拷贝快，所以到处加 std::move 准没错
+触发说法：move 肯定比拷贝便宜，无脑加就行","为什么错：移动的收益来自**避免深拷贝**（掏空源对象）；对纯值类型（int、小 POD、无堆资源的聚合）移动与拷贝生成的代码完全相同——实测纯值组必搬 32 字节 SIMD，指针组只搬 8 字节，前者 move 无收益
+反例 1：无收益却加了 move 会额外引入'源对象处于有效但未指定状态'的语义负担，且用在返回值上会阻断 NRVO（见 MIS-MEM-003）
+关联原子：ATOM-MEM-MOVE-002","MEM misconception MIS-MEM-012 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-013 裸资源管理靠""记得释放""：认为 new 后自己 delete 就能管好资源
+触发说法：new 完记得 delete 就行","为什么错：RAII 把释放绑到析构，由语言在作用域结束（含异常栈展开）保证调用；靠人'记得'在异常/提前 return 路径会漏删 → 泄漏 [except.ctor]
+反例 1：实测：裸路径在 leak_path 后 g_live 留 1（未释放），同场景 RAII 对象析构后 g_live 归 0（见 ATOM-MEM-RAII-001 / EV-MEM-009）
+关联原子：ATOM-MEM-RAII-001","MEM misconception MIS-MEM-013 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-014 delete 放在函数尾就够：没意识到异常/提前 return 会跳过 delete
+触发说法：在函数最后 delete 就安全了","为什么错：函数在 new 与尾部 delete 之间抛异常或提前 return，尾部 delete 不可达 → 泄漏；只有析构（RAII）在栈展开时必然调用 [except.ctor]
+反例 1：实测：safe_path 抛异常后 RAII 析构仍调用（g_live 归 0），裸路径 g_live 留 1（见 ATOM-MEM-RAII-001 / EV-MEM-009）
+关联原子：ATOM-MEM-RAII-001","MEM misconception MIS-MEM-014 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-015 结构体成员紧密排列、sizeof 等于各成员之和；指针强转可读字段
+触发说法：struct 成员一个接一个排，sizeof 就是各成员相加","为什么错：成员按自身对齐排列，编译器插 padding，sizeof 含 padding：实测 Padded{char a; int b} 的 sizeof=8 而非 5，int 偏移 4 而非 1 [basic.align]/[class.mem]（见 ATOM-MEM-ALIGN-001 / EV-MEM-019）
+反例 1：reinterpret_cast 强转指针对齐/类型双关是 UB（未对齐访问 + [strict.aliasing]），轻则读错值重则崩溃；按字节搬运用 memcpy/std::bit_cast（安全，见 ATOM-MEM-ALIGN-001 / EV-MEM-020 roundtrip=7）
+关联原子：ATOM-MEM-ALIGN-001","MEM misconception MIS-MEM-015 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-016 智能指针都自动安全：以为 shared_ptr 管了就绝不泄漏（忽略循环引用）
+触发说法：用了 shared_ptr 就再也不会内存泄漏","为什么错：shared_ptr 只在**非循环**的所有权图里自动释放；成环时引用计数永不为 0 → 泄漏（实测 EV-MEM-014 循环引用 destroyed count=0）
+反例 1：打破循环须用 weak_ptr 旁观（不增计数）；把'自动管理'等同于'绝不泄漏'是误解 [smartptr.weakptr]（见 ATOM-MEM-SHARED-001 / ATOM-MEM-WEAK-001）
+关联原子：ATOM-MEM-SHARED-001 ATOM-MEM-WEAK-001","MEM misconception MIS-MEM-016 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-017 std::forward 只是个 cast，写不写都行（忽略省略 forward 的运行时代价）
+触发说法：std::forward 和 std::move 差不多，就是个类型转换","为什么错：实测 EV-MEM-022：转发链省略 forward 后，右值实参 copies=1 moves=0——形参是具名变量、函数体内按左值处理（[basic.lval] Note 3），每次转发多付一次拷贝
+反例 1：std::forward<T>(x) 按**推导出的 T** 恢复实参值类别（[temp.deduct.call] 特判 + 引用折叠）：右值转回右值、左值保持左值；它是'按 T 恢复类别'的 cast，不是无差别 cast，省略后类别信息丢失不可恢复（见 ATOM-MEM-VALUE-002 / EV-MEM-021）
+关联原子：ATOM-MEM-VALUE-002 ATOM-MEM-MOVE-002","MEM misconception MIS-MEM-017 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-018 T&& 就是右值引用（混淆推导语境下的万能引用）
+触发说法：T&& 就是右值引用，模板参数和普通声明没区别","为什么错：实测 EV-MEM-021：推导语境的模板 T&& 传**左值**时推 T=int&，T&& 经引用折叠成 int&（左值引用）；只有传右值才推 T=int、T&& 才是右值引用——T&& 是否为右值引用取决于实参，不是写死的
+反例 1：T&& 只有在**推导语境**（[temp.deduct.call] 特判）下才是万能引用：auto&& 同理、const T&& 不是（无左值特判，实测只接右值 T=int）；非推导语境下的 T&&（如 std::move 的返回类型）就是普通右值引用（见 ATOM-MEM-VALUE-002 / EV-MEM-021）
+关联原子：ATOM-MEM-VALUE-002 ATOM-MEM-VALUE-001","MEM misconception MIS-MEM-018 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-019 写了析构函数就够了（违反 Rule of 3/5：漏写拷贝/移动）
+触发说法：类里有指针就要写析构函数，写完析构就安全了","为什么错：实测 EV-MEM-024：只写析构、不写拷贝构造 → 隐式浅拷贝（allocs=1 same_ptr=1），同一块资源被析构两次（dtor_runs=2）；析构真释放时即 double free（WSL ASan 实报 attempting double-free in ~Buggy）
+反例 1：隐式拷贝/移动的生成规则由'用户声明了什么'驱动（[class.copy.ctor]）：声明析构函数 → 隐式拷贝仍生成但已废弃语义（浅拷贝）；正确的做法是三件套（析构/拷贝构造/拷贝赋值）或五件套（+ 移动）齐写，或直接 Rule of Zero 用 RAII 成员（见 ATOM-MEM-RAII-002 / EV-MEM-023 对照组）
+关联原子：ATOM-MEM-RAII-002 ATOM-MEM-MOVE-002","MEM misconception MIS-MEM-019 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-020 Rule of Zero 是什么都不写（误解为不管理资源）
+触发说法：Rule of Zero 就是类的特殊成员函数什么都不用管","为什么错：Rule of Zero 的前提是**成员都是 RAII 类型**（unique_ptr/vector/string 等）：实测 EV-MEM-023，成员形状驱动隐式规则——unique_ptr 成员让移动隐式生成、拷贝被删、析构正确（allocs=1 dtors=1 frees=1）；正确性来自成员类型组合，不是'不写'本身
+反例 1：成员含裸资源（raw pointer/文件句柄）时'什么都不写'恰是 MIS-MEM-019 的 double-free 灾难：Rule of Zero 的完整表述是'不需要自定义任何一个特殊成员函数（因为成员是 RAII 类型），就一个都别写'——判据是成员形状，前提不满足就回退 Rule of Three/Five（见 ATOM-MEM-RAII-002）
+关联原子：ATOM-MEM-RAII-002 ATOM-MEM-UNIQUE-001","MEM misconception MIS-MEM-020 surface","CPP-Bible::mem"
+"【误解】MIS-MEM-021 allocator 就是 new/delete 的包装（低估它作为内存策略抽象的地位）
+触发说法：allocator 没什么用，就是帮你调 new/delete 的东西","为什么错：实测 EV-MEM-027/028：把自定义 arena 策略（或 pmr 的 monotonic_buffer_resource）注入容器，16 次 push_back 零堆分配（heap_new=0 / upstream_allocs=0）——new/delete 包装做不到这一点，策略（从哪块内存、怎么回收）是 allocator 的本体，不是包装细节
+反例 1：接口事实：C++17 起 std::allocator 只保留 allocate/deallocate 纯分配层（construct/destroy 移除为标准条文；EV-MEM-026 实测的是 allocate 零构造、构造/析构经 allocator_traits 显式走）——容器由此解耦'内存策略'与'对象生命周期'，内存池/共享内存/对齐内存/pmr 运行时多态（EV-MEM-028）都建立在这之上（见 ATOM-MEM-ALLOC-001）
+关联原子：ATOM-MEM-ALLOC-001 ATOM-MEM-NEW-001","MEM misconception MIS-MEM-021 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-022 std::string 总是分配堆内存（不知道 SSO）
+触发说法：每次构造 string 都要 new 一块内存","为什么错：实测 EV-MEM-029：len≤15 的字符串构造零堆分配（SSO：短串存对象内部 32 字节缓冲），len=16 才首次落堆（本机 libstdc++ 阈值 15）
+反例 1：实测 EV-MEM-030：短字符串拷贝 allocs=0（只搬对象内缓冲；赋值走同一实现路径），长字符串同操作 allocs=1——'总是分配'与'总是慢'一起被推翻（见 ATOM-MEM-PERF-002）
+关联原子：ATOM-MEM-PERF-002 ATOM-MEM-NEW-001","MEM misconception MIS-MEM-022 surface","CPP-Bible::mem"
+"【误解】MIS-MEM-023 SSO 阈值所有编译器都一样（实现差异不可移植）
+触发说法：短字符串的优化阈值是 C++ 标准规定的","为什么错：本机实测 EV-MEM-029/031：libstdc++（GCC 15.3.0）SSO 容量 15（sizeof=32）；而 libc++（Clang）为 22 字符（sizeof=24）、MSVC 为 15 字符（sizeof=32）——三实现布局不同（union 设计各异），阈值是实现细节，标准只保证 string 语义、根本不要求 SSO 存在
+反例 1：写死阈值的代码不可移植且脆弱：阈值随实现/版本可变（标准不承诺），依赖'15 字符内零分配'的性能假设必须实测目标平台（EV-MEM-029 的扫描方法可直接搬用；见 ATOM-MEM-PERF-002 / EV-MEM-031 三实现布局对比）
+关联原子：ATOM-MEM-PERF-002 ATOM-MEM-ALLOC-001","MEM misconception MIS-MEM-023 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-024 unique_ptr 与 shared_ptr 的差别只是'独占 vs 共享'（删除器机制相同）
+触发说法：两个智能指针就是独占和共享的区别，删除器用法差不多","为什么错：语言层面：`std::shared_ptr<T, D>` **不存在**——实测 GCC 15.3.0 与 14.2 均报 `error: wrong number of template arguments (2, should be 1)`；而 `std::unique_ptr<T, D>` 合法。删除器对 unique_ptr 是**类型参数**，对 shared_ptr 只能经构造函数按值注入并被类型擦除进控制块
+反例 1：量化（EV-MEM-032 / EV-MEM-033，同 TU 同 -O2）：unique_ptr 的 sizeof 随删除器变化（普通空删除器 8 / 空但 final 16 / 有状态 16），shared_ptr 恒 16（三种删除器完全一样）。汇编层：删除器出现在 unique_ptr 的 mangled 类型名 `unique_ptrIi12StatelessDelE` 中（MinGW 7 次 / gcc-13、14 各 12 次），而 shared_ptr 的类名里没有删除器——删除器在控制块类型 `_Sp_counted_deleterIPi6TagDel...` 里
+反例 2：运行期代价可数（EV-MEM-033）：`shared_ptr<T>(new T)` 触发 **2 次堆分配**（对象 + 控制块），`make_shared<T>` 合并为 1 次，unique_ptr 对照恒为 1 次（只有对象本身）；且同一静态类型 `shared_ptr<int>` 的变量可先后持有 tag=11 / tag=22 两份不同删除器——类型系统看不见删除器
+关联原子：ATOM-MEM-UNIQUE-002 ATOM-MEM-UNIQUE-001 ATOM-MEM-SHARED-001","MEM misconception MIS-MEM-024 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-025 unique_ptr<T[]> 只是 unique_ptr<T> 的语法糖
+触发说法：数组版本就是把类型写成 T[]，没别的区别","为什么错：接口不同：实测 EV-MEM-032 编译期 trait——`unique_ptr<int[]>` 有 operator[]（subscript=1）但**没有** operator* 与 operator->（deref=0 arrow=0）；对象特化恰好相反。这不是风格差异，是两套不同的接口约束
+反例 1：释放路径不同：`unique_ptr<int[]>` 走 delete[]（operator delete[] 计数=1），而 `unique_ptr<int>` 路径的 delete[] 增量为 0——两者调用的释放函数根本不是同一个
+反例 2：配对律：`new int[8]` 必须配 delete[]；用 `unique_ptr<int>` 接 `new int[]` 会让析构走 delete，属 UB（数组 Cookie 与元素析构都不会被正确处理）
+关联原子：ATOM-MEM-UNIQUE-002 ATOM-MEM-NEW-001","MEM misconception MIS-MEM-025 surface","CPP-Bible::mem"
+"【误解】MIS-MEM-026 shared_ptr 是线程安全的（所以怎么用都安全）
+触发说法：shared_ptr 引用计数是原子的，所以 shared_ptr 线程安全","为什么错：边界一（可实测）：控制块引用计数原子 ⇒ **各持副本**并发拷贝/销毁安全——实测 EV-MEM-034：4 线程 × 2000 次拷贝后 use_count 收敛回 1，且引用计数路径在工件里带 lock 前缀原子 RMW；但**同一个 shared_ptr 实例**的并发读写不原子（一线程读、另一线程写/重置同一实例即数据竞争），需外部同步或改用 C++20 的 std::atomic<std::shared_ptr<T>>
+反例 1：边界二：**被指对象本身**不原子——shared_ptr 只保护控制块计数，对象内部状态仍需自己的同步；把 shared_ptr 传进多个线程并不等于对象访问被串行化
+反例 2：边界三：`use_count()` 在并发下只是近似值（libstdc++ 实现为一次无锁 32 位读），不能当同步原语——不能在并发路径上用 `use_count()==1` 判'是否唯一持有'
+关联原子：ATOM-MEM-SHARED-002 ATOM-MEM-SHARED-001 ATOM-MEM-WEAK-001","MEM misconception MIS-MEM-026 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-027 ASan 没报 = 没泄漏（把 sanitizer 的静默当成安全证明）
+触发说法：跑了一遍 ASan，没报错，所以没有内存泄漏","为什么错：退出码与 stderr 根本不携带泄漏信号：泄漏进程照常 `return 0`、stderr 干净（实测 EV-MEM-037 的缺陷侧 `destroyed after scope=0` 而进程正常退出）——把'没看到报错'当结论，等于用一个不携带信号的通道下判断
+反例 1：ASan/LSan 的判定对优化档与对象存活位置高度敏感（实测三档 × 两结构 5 个数据点）：极简两节点环在 `-O0` 报 80 B/2 次分配、`-O2` 不报；树形结构（含 vector + 导航边）在 `-O0`/`-O1` 不报、加 `__attribute__((noinline))` 隔离构树后 `-O2` 报 224 B/4 次分配。同一份泄漏代码、不同档位的结论可以完全相反
+反例 2：不依赖 sanitizer 的确定信号是存在的：夹具内 volatile 析构计数（destroyed=0 vs 3）与控制块 `use_count()`（= 局部持有 1 + 强边数）、`weak_ptr::expired()` 都能在没有任何 sanitizer 的环境下判定泄漏与否（实测 EV-MEM-036/037，MinGW 侧 sanitizer 本就 skip）
+关联原子：ATOM-MEM-LEAK-001 ATOM-MEM-WEAK-001 ATOM-MEM-SHARED-001","MEM misconception MIS-MEM-027 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-028 sizeof(std::string) 到处都是 32 字节（把某一实现的布局当语言事实）
+触发说法：std::string 就是 32 字节，指针 8 + 大小 8 + SSO 缓冲 16","为什么错：实测同一份夹具（判据 = 数据指针是否落在对象自身字节范围内）：libstdc++（GCC 15.3.0 MinGW + GCC 14.2.0 WSL）`sizeof_string=32`，libc++（libc++-18，WSL）`sizeof_string=24` —— 差 8 字节，而两者都**完全符合** [string] 的要求
+反例 1：标准只约束可观察行为，不约束对象布局：[string] 未规定 sizeof、未规定 SSO 是否存在、更未规定其容量；32 这个数字来自 libstdc++ 把 `size + capacity + 16 字节缓冲` 打包成 3 个 8 字节字的**实现选择**，不是 [string] 的条文
+反例 2：推论随之崩塌：被 32 掩盖的两件事——(a) 布局跨 ABI 不兼容（把 GCC 编出的 string 交给 Clang/libc++ 编的代码析构，是按错误布局解释内存）；(b) SSO 容量跟着变（libstdc++ 15 vs libc++ 22，见 MIS-MEM-029）
+关联原子：ATOM-MEM-PERF-003 ATOM-MEM-PERF-002 ATOM-MEM-ALLOC-001","MEM misconception MIS-MEM-028 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-029 性能结论不标平台/编译器/标准库版本，或基准不控制变量（三变量同变）
+触发说法：\""XX 比 YY 快 3 倍\""——不说是哪台机器、哪个编译器、哪个标准库版本","为什么错：**平台翻转是实测的**：同一夹具、同一工作量，MinGW 15.3.0/libstdc++ 上 `monotonic < pool < global`（两资源快 4.4× 与 2.0×），Linux/glibc 上 `global < pool < monotonic`（两资源反而慢 1.9× 与 1.37×）——同一句\""池更快\""在两平台上一直一假（EV-MEM-039 双平台对照）
+反例 1：**变量不唯一会被红队当场拆掉**：本卡初版的 `controlled_vars` 声称\""唯一变量 = 标准库\""，但 libstdc++ 列取自 MinGW、libc++ 列取自 WSL + `g++-14` ⇒ 标准库/驱动/平台三者同变，因果无法归因；补\""同一条 `g++-14` 驱动分别跑两标准库\""的对照后，唯一变量才真正只剩标准库（EV-MEM-038 同驱动对照表）
+反例 2：**顺序效应会伪装成策略优势**：策略测量顺序固定（global→monotonic→pool）时，冷启动与频率爬坡被算进第一个策略——实测 global 首轮 771200 ns、后续落到 47–49 万，若只取首轮就会把\""谁先跑\""读成\""谁更慢\""（EV-MEM-039 逐轮样本）
+关联原子：ATOM-MEM-PERF-003 ATOM-MEM-PERF-001","MEM misconception MIS-MEM-029 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-030 arena/bump 分配器没有碎片（把一种使用模式下的性质当无条件结论）
+触发说法：arena 分配器没有碎片，最省内存","为什么错：**零内部碎片只在""批量申请 + 整体释放""下成立**：本批夹具的 `Arena` 只有 `release_all()`（重置 bump 偏移），**没有单块释放接口**；实测峰值 24000 B（= 24×1000）、元数据仅 8 B、内部碎片 0 —— 这组读数的前提正是\""只能整体重置\""。一旦中途释放单块，bump 指针无法回退，被跳过的空隙**不可复用**——这就是碎片
+反例 1：**代价可量化、且与替代方案对称**：同一 workload 下 pool 峰值 32000 B（内部碎片 8000 B = 8 B × 1000）；arena 省下的这 8000 B 是**用丧失单块释放能力换来的**（元数据 8 B 对 32 B，因为它不需要 free-list）——\""谁更省\""取决于释放模式，而不是分配器名字
+反例 2：**外部碎片维度未度量**：即便在整体释放模式下，若先后申请大小差异大且顺序交错，bump 的\""顺序推进\""会迫使峰值逼近所有同时存活对象之和（这正是 arena 在长生命周期场景下内存占用高的原因）
+关联原子：ATOM-MEM-ALLOC-002 ATOM-MEM-ALLOC-001","MEM misconception MIS-MEM-030 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-031 ASan/LSan 没报泄漏就是没有泄漏（把一次工具运行的静默当安全证明）
+触发说法：跑了一遍 ASan，没报错，所以没有内存泄漏","为什么错：**本批实测：真泄漏 + 零报告**——`_atom_leak_detection.cpp` 的 `cycle` 是 shared_ptr 强引用闭环：零依赖信号证明它确实泄漏（`cycle_dtor_count=0`、`cycle_is_leak=1`），而在 WSL/Linux 用 `-O1 -g -fsanitize=address,undefined` 运行，stderr **没有任何 LeakSanitizer 报告**（无 `ERROR: LeakSanitizer`、无 `SUMMARY: ... leaked`）
+反例 1：**且不能归因于""简单内联""**：同一夹具的 `run_cycle()`/`run_scoped()`/`run_owned()` **本就带 `__attribute__((noinline))`**（构环函数被隔离在独立函数里）⇒ 最直接的内联解释已被排除，说明\""没报\""的成因不止一种
+反例 2：**同族证据（LEAK-001）已证\""报与不报可完全相反\""**：极简两节点环 `-O0` 报 80 B/2 次分配、`-O2` 不报；树形夹具 `-O0`/`-O1` 不报、加 `noinline` 隔离后 `-O2` 报 224 B/4 次分配——同一份泄漏代码、不同档位结论相反
+关联原子：ATOM-MEM-LEAK-002 ATOM-MEM-LEAK-001 ATOM-MEM-WEAK-001 ATOM-MEM-SHARED-001","MEM misconception MIS-MEM-031 deep","CPP-Bible::mem"
+"【误解】MIS-MEM-032 各线程写各自的变量就没有竞争（忽略缓存行这一层）
+触发说法：每个线程写自己的变量，没有共享数据，不用加锁也没有性能问题","为什么错：**无数据竞争 ≠ 无性能代价**：4 线程各累加 1e7 次到**逻辑完全独立**的计数器，相邻布局中位数 562500600 ns、`alignas` 隔离后 29824800 ns ⇒ **慢 18.86 倍**（Linux 同夹具 18538‰，方向一致）——没有任何数据竞争，缓存行却在 4 个核之间弹跳
+反例 1：**这是地址算得出来的结构性事实，不是理论可能**：相邻布局偏移 8 字节、缓存行 64 字节 ⇒ `tight_same_line=1`；POD 结构体的相邻成员同样命中（`pod_same_line=1`）——最常见的真实场景（两个统计字段写在同一个 struct 里）正是伪共享的温床
+反例 2：**消除只在布局层**：`alignas(hardware_destructive_interference_size)` 隔离后 `padded_same_line=0`、性能回到 padded 侧；但代价是空间——`padded_sizeof=128` 相对 8 字节有效载荷放大 **16×**（相对相邻结构的 16 字节则是 8×），所以反方向""padding 一定值得""同样是过度概括——存在最优对齐粒度
+关联原子：ATOM-MEM-PERF-004 ATOM-MEM-PERF-003","MEM misconception MIS-MEM-032 deep","CPP-Bible::mem"
+"【误解】MIS-PERF-001 std::endl 和 \n 是一样的，只是写法不同
+触发说法：endl 就是换行的标准写法","为什么错：std::endl 除了写 \n 还强制 flush → 每次都触发系统调用；热路径吞吐差距可达量级","PERF misconception MIS-PERF-001 surface","CPP-Bible::perf"
+"【误解】MIS-PERF-002 for (auto x : vec) 不会拷贝元素
+触发说法：auto 自动推导，不会拷贝","为什么错：按值 auto x 会拷贝每个元素；只读应写 const auto&（-Wrange-loop-construct 可告警）","PERF misconception MIS-PERF-002 surface","CPP-Bible::perf"
+"【误解】MIS-PERF-003 Debug / -O0 下测出来的性能能代表发布版
+触发说法：我本地跑了一下，性能就是这样","为什么错：-O0 不做内联/向量化/常量传播，瓶颈分布与发布版完全不同；结论不可迁移
+反例 1：此外短函数计时需考虑时钟自身开销（~25ns）与冷启动页错误，须预热 + 多次采样","PERF misconception MIS-PERF-003 deep","CPP-Bible::perf"
+"【误解】MIS-PERF-004 无分支代码（cmov / 位运算）总是比 if 快
+触发说法：用 cmov 消除分支一定更快","为什么错：分支高度可预测时，cmov 因引入数据依赖（必须等两个输入都算完）反而更慢
+反例 1：[[likely]] 也只改代码布局、不消除分支；是否值得取决于分支预测命中率","PERF misconception MIS-PERF-004 deep","CPP-Bible::perf"
+"【误解】MIS-PERF-005 到处贴 [[likely]] 总能提速
+触发说法：把热分支标上 likely 就快了","为什么错：[[likely]] 只调整布局与预测提示，不消除分支；数据分布均匀时会误导预测器甚至变慢
+反例 1：真正去分支要改写为无分支算法，而后者也可能更慢（见 MIS-PERF-004）","PERF misconception MIS-PERF-005 deep","CPP-Bible::perf"
+"【误解】MIS-PERF-006 多插 __builtin_prefetch 一定更快
+触发说法：预取多加无害","为什么错：预取距离错了（太早被淘汰 / 太晚来不及）纯属浪费指令带宽，甚至挤占缓存","PERF misconception MIS-PERF-006 surface","CPP-Bible::perf"
+"【误解】MIS-PERF-007 SoA 永远比 AoS 快
+触发说法：结构体拆成数组一定更快","为什么错：若每次访问都要用到对象的**全部**字段，AoS 的局部性反而更好（一次 cache line 拿全一个对象）
+反例 1：SoA 的收益只在'热循环只访问少数字段'时成立；须以 profile 数据为准","PERF misconception MIS-PERF-007 deep","CPP-Bible::perf"
+"【误解】MIS-PERF-008 编译器能自动向量化任何循环
+触发说法：开 -O3 就会自动 SIMD","为什么错：自动向量化要求无循环携带依赖、连续访存、可判定的别名；任一不满足即退化为标量
+反例 1：验证手段是 -fopt-info-vec，而不是假设","PERF misconception MIS-PERF-008 surface","CPP-Bible::perf"
+"【误解】MIS-STL-001 只有 erase（删除）才会让迭代器失效，插入不会
+触发说法：我只是 push_back，原来的迭代器还能用","为什么错：vector 插入可能触发重分配 → **全部**迭代器/引用/指针失效；不重分配时插入点之后的也失效
+反例 1：各容器失效规则不同（list 插入不失效，deque 插入使全部失效），须逐容器查","STL misconception MIS-STL-001 deep","CPP-Bible::stl"
+"【误解】MIS-STL-002 vector<bool> 的 operator[] 返回 bool&
+触发说法：auto& b = vb[0]; 拿到的是 bool 的引用","为什么错：vector<bool> 是位压缩特化，operator[] 返回代理对象（proxy reference），不是 bool&
+反例 1：后果：不能取址、不能绑 bool&、不能喂给 span<bool>；需要真 bool 用 vector<char> 或 deque<bool>","STL misconception MIS-STL-002 deep","CPP-Bible::stl"
+"【误解】MIS-STL-003 用 map::operator[] 做只读存在性判断不会改动容器
+触发说法：if (m[k]) 只是看看有没有","为什么错：operator[] 对不存在的键会**插入**该键并值初始化 → 容器被改动、size 变化
+反例 1：只读查询用 find() / contains()（C++20）","STL misconception MIS-STL-003 deep","CPP-Bible::stl"
+"【误解】MIS-STL-004 clear() 会释放 vector 占用的内存
+触发说法：clear 之后内存就还了","为什么错：clear() 只析构元素，capacity() 不变——内存仍被容器持有；释放在 shrink_to_fit() 或换用空 vector 交换","STL misconception MIS-STL-004 surface","CPP-Bible::stl"
+"【误解】MIS-STL-005 reserve(n) 之后 capacity() 恰好等于 n
+触发说法：reserve(100) 后 capacity 就是 100","为什么错：标准只保证 capacity() **至少** n，实现可给更大（如按 2 的幂向上取整）","STL misconception MIS-STL-005 surface","CPP-Bible::stl"
+"【误解】MIS-STL-006 set/multiset 的比较器写成 <= 也没问题
+触发说法：用 <= 当比较器，反正能排","为什么错：比较器必须满足**严格弱序**（irreflexive：comp(a,a) 必须为 false）；<= 违反该条 → UB","STL misconception MIS-STL-006 surface","CPP-Bible::stl"
+"【误解】MIS-STL-007 std::string 的拷贝是写时复制（COW），很便宜
+触发说法：string 拷贝不复制字符，反正 COW","为什么错：C++11 起禁止 COW（要求迭代器和引用在拷贝后仍有效且 operator[] 返回可写引用）→ 拷贝必深拷贝
+反例 1：SSO 让**短字符串**拷贝便宜，长字符串拷贝是真实开销；该用 move/引用时别依赖 COW","STL misconception MIS-STL-007 deep","CPP-Bible::stl"
+"【误解】MIS-STL-008 std::sort 是稳定排序
+触发说法：sort 会保持相等元素的原顺序","为什么错：std::sort **不**保证稳定性（实现多为 introsort）；需要保持原序用 std::stable_sort","STL misconception MIS-STL-008 surface","CPP-Bible::stl"
+"【误解】MIS-STL-009 对未排序区间用 lower_bound 只是结果不准，不算 UB
+触发说法：二分查不到就返回 end，不会崩","为什么错：对不满足分区谓词的区间做二分，其比较序列无定义 → 迭代器可能越界解引用 → UB
+反例 1：降序区间配默认 less 同理：不是'结果不准'，是 UB","STL misconception MIS-STL-009 deep","CPP-Bible::stl"
+"【误解】MIS-STL-010 span / string_view 拥有数据，可以返回函数内新建的数据
+触发说法：返回 string_view 比返回 string 轻量，直接这么写","为什么错：span/string_view 是**非拥有**视图，只借用；返回指向局部缓冲的视图即悬垂 → UB
+反例 1：底层容器扩容后，先前取的 span 也会失效（vector 重分配）","STL misconception MIS-STL-010 deep","CPP-Bible::stl"
+"【误解】MIS-UB-001 UB 会在运行时报错，我测过没崩就说明安全
+触发说法：这一段我跑了很多次都没问题","为什么错：UB 的典型表现恰恰是**在 -O2 下看起来正常**：优化器以 UB 不可能发生为前提做推导，可删掉别的正确代码
+反例 1：没有报错不等于没有 UB；判定依据是标准条文而非运行结果
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-001 deep","CPP-Bible::ub"
+"【误解】MIS-UB-002 有符号整数溢出会像无符号一样回绕
+触发说法：int 加到最大就变成负数，循环自然退出","为什么错：有符号溢出是 UB，无符号才是定义好的模运算——两者规则不同，不能类推
+反例 1：实测后果：GCC -O2 依此把 for (int i=0; i>=0; ++i) 编译成无条件 jmp 死循环
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-002 deep","CPP-Bible::ub"
+"【误解】MIS-UB-003 前面加 if (p != nullptr) 就能防住后面的空指针解引用
+触发说法：先判空再解引用就安全了","为什么错：解引用空指针已是 UB；优化器据此反推 p 非空，可能把后续判空检查整段删掉
+反例 1：实测汇编可见删掉检查后只剩 movl %eax,0 + ud2——保护被优化器移除
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-003 deep","CPP-Bible::ub"
+"【误解】MIS-UB-004 数组越界只影响那一处访问，是局部的小错
+触发说法：越界读一个元素顶多拿到垃圾值","为什么错：UB 会去相关：优化器可由一次越界推导出别处条件恒真/恒假，删掉原本正确的边界检查
+反例 1：后果不局限于越界点，可能改变整个函数的行为
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-004 deep","CPP-Bible::ub"
+"【误解】MIS-UB-005 把临时对象绑定到引用，生命周期就一定被延长
+触发说法：const T& r = f(); 临时对象活到 r 作用域结束","为什么错：生命周期延长只适用于**直接绑定到引用变量**这一条路径；例外见标准 [class.temporary]
+反例 1：绑定到结构体成员引用、数组元素、函数返回引用、initializer_list 元素均**不**延长","UB misconception MIS-UB-005 deep","CPP-Bible::ub"
+"【误解】MIS-UB-006 for (int x : make()) 遍历临时容器是安全的
+触发说法：范围 for 会帮我把临时容器留住","为什么错：C++17 起范围 for 的临时对象不再被延长到循环结束（init-statement 之后的临时在循环外即销毁）
+反例 1：结果是迭代器悬垂 → UB；应写成 for (auto&& c = make(); int x : c)","UB misconception MIS-UB-006 deep","CPP-Bible::ub"
+"【误解】MIS-UB-007 读未初始化的变量只是拿到一个垃圾值，不算 UB
+触发说法：未初始化的 int 读出来是个随机数而已","为什么错：读取不确定值是 UB（陷阱表示亦在此列），优化器可假设它取任意值并据此删分支
+反例 1：结构体 padding 读取同理：即使用 memset 比较也会因 padding 不确定而失败","UB misconception MIS-UB-007 deep","CPP-Bible::ub"
+"【误解】MIS-UB-008 reinterpret_cast 做类型双关读是常规操作
+触发说法：强转指针再解引用就能重新解释位模式","为什么错：reinterpret_cast 的类型双关读违反严格别名规则 [basic.lval] → UB；优化器可重排读写顺序
+反例 1：正确做法是 std::bit_cast（C++20）或 memcpy（两者都是定义良好的位重解释）
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-008 deep","CPP-Bible::ub"
+"【误解】MIS-UB-009 static_cast 做多态向下转型是安全的（编译过了就对）
+触发说法：Base* 转 Derived* 编译通过就说明类型对","为什么错：static_cast 向下转型不做运行时检查；对象实际不是该派生类型时，访问派生成员即 UB
+反例 1：需运行时安全用 dynamic_cast（失败返回 nullptr / 抛 bad_cast）","UB misconception MIS-UB-009 deep","CPP-Bible::ub"
+"【误解】MIS-UB-010 const_cast 去掉 const 后写入也没关系
+触发说法：我只是改一下，反正拿到的是非 const 指针","为什么错：若原对象**本身**是 const（可能在 .rodata），写入是 UB，实测 SIGSEGV
+反例 1：只有原对象非 const、仅经由 const 引用/指针访问时，去除 const 后写入才合法","UB misconception MIS-UB-010 deep","CPP-Bible::ub"
+"【误解】MIS-UB-011 依赖跨 TU 全局变量的初始化顺序是可靠的
+触发说法：另一个 cpp 里的全局对象在我用之前肯定初始化好了","为什么错：跨翻译单元的**动态初始化顺序未指定**（静态初始化顺序问题，SIOF）
+反例 1：后果随链接顺序偶发；解法是函数内 static（首次调用时初始化）或显式初始化函数","UB misconception MIS-UB-011 deep","CPP-Bible::ub"
+"【误解】MIS-UB-012 函数实参的求值顺序是确定的，可以依赖它
+触发说法：f(g(), h()) 一定先算 g 再算 h","为什么错：实参初始化是**不确定顺序**（indeterminately sequenced），只保证不重叠、不保证先后
+反例 1：实测 GCC 输出 h/g（右→左）、Clang 输出 g/h（左→右）——连编译器之间都相反
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-012 deep","CPP-Bible::ub"
+"【误解】MIS-UB-013 f(i++, i++) 在所有标准版本都是未定义行为
+触发说法：同一表达式改两次 i 就是 UB，C++17 也一样","为什么错：C++17（P0145R3）把**函数实参初始化**从 unsequenced 改为 indeterminately sequenced → 该式在 C++17 起是 unspecified
+反例 1：而运算符操作数仍为 unsequenced，故 i = i++ + ++i 在**所有版本**都是 UB——必须用版本区分
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-013 deep","CPP-Bible::ub"
+"【误解】MIS-UB-014 函数参数的求值顺序是未定义行为
+触发说法：f(g(), h()) 里顺序不确定，所以是 UB","为什么错：C++17（P0145R3）把实参初始化从 unsequenced 改为 **indeterminately sequenced**（[expr.call]）：不保证先后，但**绝不允许重叠** → 是 unspecified，不是 UB
+反例 1：判据是副作用的**测序关系**：unsequenced（可重叠）→ UB；indeterminately sequenced（不重叠）→ unspecified。把两者混为一谈会让读者对合法代码产生不必要的恐慌
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-014 deep","CPP-Bible::ub"
+"【误解】MIS-UB-015 多个编译器/版本结果一致，说明标准规定了顺序
+触发说法：GCC 和 Clang 都一样，所以行为是确定的","为什么错：实测 GCC 输出 h/g（右→左）、Clang 输出 g/h（左→右）——**两个编译器选了相反顺序**，这恰恰证明顺序未被规定，而不是被规定
+反例 1：可移植性依赖的是标准给出的**合法结果集合**，不是抽样一致；实现一致随时可能随版本变化（本项目的取样一致只是当前实现的巧合）
+关联原子：ATOM-UB-GRAY-001","UB misconception MIS-UB-015 deep","CPP-Bible::ub"
