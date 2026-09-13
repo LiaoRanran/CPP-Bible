@@ -1206,6 +1206,46 @@ def _producer_exempt_ids() -> set[str]:
         encoding="utf-8").split("\n") if ln.strip() and not ln.startswith("#")}
 
 
+# ── F02（414 P0-3）：编译后覆写——时序约束（426 框架第一应用）─────────────────
+_POST_WRITE_VERBS = re.compile(
+    r"(?<![\w-])(?:cp|copy|mv|move|Copy-Item|Move-Item|Set-Content|Add-Content|"
+    r"Out-File|tee|dd|shutil\.copy|shutil\.move|shutil\.copyfile)\b", re.I)
+_POST_OPEN_WRITE = re.compile(r"open\s*\([^)]*['\"]w[b+]?", re.I)
+_POST_READ_PROGS = re.compile(
+    r"^\s*[\"']?(?:type|cat|head|tail|grep|findstr|more|less|wc|rg|Get-Content)\b", re.I)
+
+
+def _post_compile_writes(cmd: str, prod: str, art: str) -> tuple[list[str], list[str]]:
+    """F02：producer（编译行）之后的命令段里，artifact 路径是否被「写」。
+
+    返回 (block 段, warn 段)。判据是**语义**（写动词/重定向/写模式 open）而非工具
+    黑名单——cp/mv/python/powershell 列不全；编译前覆写会被编译覆盖故不拦（只看
+    producer 段之后的段）；路径命中但语义不明（如 type 读）不拦，保守 warn。
+    """
+    blocks: list[str] = []
+    warns: list[str] = []
+    art = art.strip()
+    if not art:
+        return [], []
+    base = art.replace("\\", "/").rsplit("/", 1)[-1]
+    segs = [s.strip() for s in re.split(r"&&|;|\n", cmd)]
+    idx = next((i for i, s in enumerate(segs) if prod in s), -1)
+    if idx < 0:
+        return [], []          # producer 不在 command 中——上游已有专项 block
+    for seg in segs[idx + 1:]:
+        if not seg:
+            continue
+        hit = art if art in seg else (base if base and base in seg else "")
+        if not hit:
+            continue
+        if _POST_WRITE_VERBS.search(seg) or _POST_OPEN_WRITE.search(seg) or re.search(
+                r">\s*['\"]?" + re.escape(hit), seg):
+            blocks.append(seg)
+        elif not _POST_READ_PROGS.match(seg):
+            warns.append(seg)  # 语义不明：可能是读，保守 warn
+    return blocks, warns
+
+
 def check_evidence_artifact_producer() -> list[Finding]:
     """373-N4 窄化（`EV-ARTIFACT-PRODUCER`）：工件由谁产出，必须由卡**显式声明**。
 
@@ -1275,6 +1315,19 @@ def check_evidence_artifact_producer() -> list[Finding]:
                                f"artifact_producer 的 -o 目标 {m.group(1)!r} 不等于 artifact {art!r}"
                                "（编译产物并非该 artifact）",
                                "令 artifact_producer 的 -o 目标 == artifact 路径"))
+        # F02 时序约束（414 P0-3）：编译行之后任何对 artifact 的写操作都使 sha 比对
+        # 失效——工件可能已被换成他卡产物。不用工具黑名单（列不全），用「artifact 路径
+        # 出现在写位置」的语义判据；语义不明只 warn（保守）。
+        for seg in _post_compile_writes(cmd, prod, art)[0]:
+            out.append(Finding("EV-ARTIFACT-PRODUCER", "block", _rel(p),
+                               f"编译行之后存在对 artifact 的写操作：{seg[:88]!r}"
+                               "（编译后覆写 ⇒ sha 比对的可信前提被破坏）",
+                               "command 中编译行之后不得再触碰 artifact 路径"))
+        for seg in _post_compile_writes(cmd, prod, art)[1]:
+            out.append(Finding("EV-ARTIFACT-PRODUCER", "warn", _rel(p),
+                               f"编译行之后 artifact 被再次引用、语义不明：{seg[:88]!r}"
+                               "（若为读取请改用显式读程序；无法排除覆写）",
+                               "移除编译行之后对 artifact 的引用，或改用明确的读操作"))
     return out
 
 

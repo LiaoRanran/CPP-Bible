@@ -754,6 +754,34 @@ def drill() -> int:
         results.append(("P32 cl卡标confirm（不可复算卡宣称已验证）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P33 编译后覆写（414 P0-3 F02）：python 在编译行之后改写工件 ───────────
+    with sandbox() as tmp:
+        prod = f'"{gpp_posix}" -std=c++17 -O2 -S fx.cpp -o fx.asm'
+        cmd = prod + " && python -c \"shutil.copy('other.asm', 'fx.asm')\""
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-POSTPY.md", {
+            "id": "EV-MEM-POSTPY", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": cmd, "artifact_producer": prod, "artifact": "fx.asm",
+            "verdict": "confirm", "falsification": "对照输出 1",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        ok = "EV-ARTIFACT-PRODUCER" in who
+        results.append(("P33 编译后python覆写（时序约束）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P34 编译后覆写·powershell（414 P0-3 F02）：Copy-Item 换工件 ───────────
+    with sandbox() as tmp:
+        prod = f'"{gpp_posix}" -std=c++17 -O2 -S fx.cpp -o fx.asm'
+        cmd = prod + " && powershell -Command Copy-Item other.asm fx.asm"
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-POSTPS.md", {
+            "id": "EV-MEM-POSTPS", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "command": cmd, "artifact_producer": prod, "artifact": "fx.asm",
+            "verdict": "confirm", "falsification": "对照输出 1",
+        })
+        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        ok = "EV-ARTIFACT-PRODUCER" in who
+        results.append(("P34 编译后powershell覆写（时序约束）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"

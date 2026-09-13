@@ -904,3 +904,49 @@ def test_gcc_card_confirm_not_flagged(sandbox: Path):
     _write_ev(sandbox, "EV-MEM-GCC2.md", id="EV-MEM-GCC2",
               command="C:/Qt/Tools/mingw1530_64/bin/g++.exe -S fx.cpp -o fx.asm")
     assert ge.check_evidence_msvc_no_verify() == [], "g++ 卡不得误拦"
+
+
+# ── 414 P0-3（F02）：编译后覆写时序约束 ────────────────────────────────────
+_PROD = "g++ -std=c++17 -O2 -S fx.cpp -o fx.asm"
+
+
+def _temporal_ev(sandbox: Path, name: str, tail: str) -> Path:
+    return _write_ev(sandbox, name, command=_PROD + tail,
+                     artifact_producer=_PROD, artifact="fx.asm")
+
+
+def test_temporal_python_overwrite_blocked(sandbox: Path):
+    """F02 正例：编译后 python 改写工件（402 F02 攻击载荷）→ block。"""
+    _temporal_ev(sandbox, "EV-MEM-T1.md",
+                 " && python -c \"shutil.copy('other.asm', 'fx.asm')\"")
+    hits = [f for f in ge.check_evidence_artifact_producer() if f.severity == "block"]
+    assert hits, "编译后 python 覆写必须 block"
+
+
+def test_temporal_powershell_overwrite_blocked(sandbox: Path):
+    _temporal_ev(sandbox, "EV-MEM-T2.md",
+                 " && powershell -Command Copy-Item other.asm fx.asm")
+    hits = [f for f in ge.check_evidence_artifact_producer() if f.severity == "block"]
+    assert hits, "编译后 powershell Copy-Item 覆写必须 block"
+
+
+def test_temporal_cp_and_redirect_blocked(sandbox: Path):
+    _temporal_ev(sandbox, "EV-MEM-T3.md", " && cp other.asm fx.asm")
+    _temporal_ev(sandbox, "EV-MEM-T4.md", " && echo staged > fx.asm")
+    hits = [f for f in ge.check_evidence_artifact_producer() if f.severity == "block"]
+    assert len(hits) >= 2, "cp 与 > 重定向覆写都必须 block"
+
+
+def test_temporal_pre_compile_overwrite_passes(sandbox: Path):
+    """F02 阴性：覆写在编译**前**（会被编译覆盖）→ 放行。"""
+    _write_ev(sandbox, "EV-MEM-T5.md", command="cp other.asm fx.asm && " + _PROD,
+              artifact_producer=_PROD, artifact="fx.asm")
+    blocks = [f for f in ge.check_evidence_artifact_producer() if f.severity == "block"]
+    assert not blocks, "编译前的覆写会被编译覆盖，不得拦"
+
+
+def test_temporal_post_read_passes(sandbox: Path):
+    """F02 阴性：编译后显式读程序（type/grep）→ 不拦也不 warn。"""
+    _temporal_ev(sandbox, "EV-MEM-T6.md", " && type fx.asm")
+    _temporal_ev(sandbox, "EV-MEM-T7.md", " && grep foo fx.asm")
+    assert ge.check_evidence_artifact_producer() == [], "编译后读取不得拦/不得 warn"
