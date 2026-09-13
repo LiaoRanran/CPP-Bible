@@ -47,6 +47,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -807,6 +808,50 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
     return classify_sanitizer(blob, meta.get("expected_sanitizer"))
 
 
+# ── 470 P0-G1（452 E09）：并发隔离锁 ────────────────────────────────────────
+_REPLAY_LOCK = ROOT / "build" / ".replay_lock"
+_LOCK_WAIT_SEC = 600.0      # 等待上限（超时 → infra_error:replay_busy）
+_LOCK_STALE_SEC = 3600.0    # 锁龄超此秒数视为陈旧（进程被杀不永久锁死）
+
+
+def _acquire_replay_lock(wait_timeout: float | None = None,
+                         stale_after: float | None = None) -> None:
+    """并发隔离：独占锁文件（O_CREAT|O_EXCL）保证同机 replay 串行。
+
+    实测（E09）：两进程并发同卡 6/6 轮至少一进程假失败（compile_error/崩溃）。
+    拿不到锁时轮询等待；锁文件 mtime 超 `stale_after` 视为陈旧并接管；等待超
+    `wait_timeout` 抛 TimeoutError（fail-closed，不静默并发）。
+
+    参数分离的原因：若"陈旧判定"与"等待上限"共用同一数值，短等待会把**活锁**
+    误判为陈旧并接管——正好破坏互斥（测试暴露）。
+    """
+    wait_timeout = _LOCK_WAIT_SEC if wait_timeout is None else wait_timeout
+    stale_after = _LOCK_STALE_SEC if stale_after is None else stale_after
+    _REPLAY_LOCK.parent.mkdir(exist_ok=True)
+    t0 = time.time()
+    while True:
+        try:
+            fd = os.open(str(_REPLAY_LOCK), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, str(os.getpid()).encode())
+            os.close(fd)
+            return
+        except FileExistsError:
+            try:
+                age = time.time() - _REPLAY_LOCK.stat().st_mtime
+            except FileNotFoundError:
+                continue                              # 恰好被释放：立即重试
+            if age > stale_after:
+                _REPLAY_LOCK.unlink(missing_ok=True)  # 陈旧锁接管
+                continue
+            if time.time() - t0 > wait_timeout:
+                raise TimeoutError(f"replay 锁被占用超时：{_REPLAY_LOCK}")
+            time.sleep(0.5)
+
+
+def _release_replay_lock() -> None:
+    _REPLAY_LOCK.unlink(missing_ok=True)
+
+
 _RECOMPILE_TIMEOUT = 300
 
 
@@ -975,6 +1020,12 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         return "infra_error:compiler_missing", log
     (ROOT / "build").mkdir(exist_ok=True)      # 卡命令产物约定写 build/（仓库源只读）
     tmp = Path(tempfile.mkdtemp(prefix="replay_"))
+    # 470 P0-G1（452 E09）：并发隔离——进入有副作用流程（删工件/覆写/还原）前取锁
+    try:
+        _acquire_replay_lock()
+    except TimeoutError as exc:
+        shutil.rmtree(tmp, ignore_errors=True)
+        return "infra_error:replay_busy", log + [f"  ⚠️ {exc}"]
     original = art_path.read_bytes() if art_path.exists() else None   # 校验前快照（见 docstring）
     original_extra = [(p, p.read_bytes() if p.exists() else None) for p, _ in extra_arts]
     try:
@@ -1150,6 +1201,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             for _p, _b in original_extra:          # 副产物同款还原（W1：只读契约覆盖多产物）
                 if _b is not None:
                     _p.write_bytes(_b)
+        _release_replay_lock()                     # 470 P0-G1：释放并发锁
         if not keep_tmp:
             shutil.rmtree(tmp, ignore_errors=True)
 
