@@ -530,6 +530,33 @@ def _symbol_body(text: str, symbol: str) -> str | None:
     return rest[: stop.start()] if stop else rest
 
 
+_FUNC_HEAD_RE = re.compile(r"(?m)^([_A-Za-z][^\s:]*):\s*$")
+
+
+def _function_ranges(text: str) -> list[tuple[str, str]]:
+    """枚举工件的函数区间 [(符号名, 区间正文)]（与 `_symbol_body` 同语义）。
+
+    函数头 = 列 0 的 `name:`（排除 `.L*` 局部标签/伪指令）；区间止于下一个函数头
+    或 `.cfi_endproc`/`.seh_endproc`。
+    """
+    heads = [m for m in _FUNC_HEAD_RE.finditer(text) if not m.group(1).startswith(".")]
+    out: list[tuple[str, str]] = []
+    for i, m in enumerate(heads):
+        start = m.end()
+        stop = _SYMBOL_BODY_STOP.search(text, start)
+        nxt = heads[i + 1].start() if i + 1 < len(heads) else len(text)
+        end = min(stop.start() if stop else nxt, nxt)
+        out.append((m.group(1), text[start:end]))
+    return out
+
+
+def _discriminative_span(text: str, lit: str) -> tuple[int, int]:
+    """470 P0-C：lit 出现的函数区间数 k / 总区间数 N（判别力统计）。"""
+    ranges = _function_ranges(text)
+    k = sum(1 for _n, body in ranges if body.count(lit) > 0)
+    return k, len(ranges)
+
+
 def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, list[str]]:
     """跨编译器可移植的**结构断言**（编译产物内容级，不依赖字节哈希）。
 
@@ -659,6 +686,19 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
                     verb = "出现" if kind == "contains_in" else "不得出现"
                     lines.append(f"    {'✅' if hit else '❌'} {kind} {sym} 区间内 {lit!r}"
                                  f" {verb}（实得 {got} 次）")
+                    # 470 P0-C（452 E03）：contains_in 的判别力统计——若 text 在**所有**
+                    # 函数区间（N≥2）都出现，或 ≥80%（N≥3），它是背景噪音，无法证明
+                    # "目标函数有该行为"（`.cfi_startproc`/`mov` 恒真载荷）。absent_in
+                    # 不做此统计：缺席恰是强断言（证"该函数没有某行为"）。
+                    # 实测（2026-09-13，存量全部 contains_in 断言）：k/N 最高 3/23 ⇒ 零误伤面；
+                    # 且同编译器卡走 sha 路径不评估断言，本地误伤面天然为零。
+                    if kind == "contains_in" and hit:
+                        k, n = _discriminative_span(text, lit)
+                        if (n >= 2 and k == n) or (n >= 3 and k / n >= 0.8):
+                            hit = False
+                            lines.append(
+                                f"    ❌ contains_in 判别力不足：{lit!r} 在 {k}/{n} 个函数区间"
+                                f"均出现（背景噪音，任何函数都有它 ⇒ 恒真断言）")
         else:
             hit = False
             lines.append(f"    ❌ 未知断言 kind：{kind!r}（不猜，判失败）")
