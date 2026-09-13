@@ -1068,6 +1068,22 @@ def drill() -> int:
         results.append(("P57 cat 式证据须被拦（升 warn 后）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P47/P48 恒真断言（472 P0-2 / N2）：函数级探针（不真编译，避免与 replay 抢锁）──
+    with sandbox() as tmp:
+        _art = tmp / "a.asm"
+        _art.write_text('\t.text\n\t.file\t"a.cpp"\nmain:\n\tret\n', encoding="utf-8")
+        _ok47, _l47 = replay.check_artifact_assert(
+            {"artifact_assert": [{"kind": "contains_any", "texts": [".file", ".text"]}]},
+            _art)
+        ok = (not _ok47) and any("判别力不足" in l for l in _l47)
+        results.append(("P47 contains_any 全样板须判无判别力", ok,
+                        "命中候选全为工件样板（.file/.text）⇒ 断言零信息"))
+        _ok48, _l48 = replay.check_artifact_assert(
+            {"artifact_assert": [{"kind": "contains_any", "texts": ["ret", ".file"]}]},
+            _art)
+        results.append(("P48 阴性·命中含非样板须放行", _ok48,
+                        "命中候选含 ret（非伪指令）⇒ 按原语义放行"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1144,7 +1160,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
-    ("P57 ", "A2"),
+    ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

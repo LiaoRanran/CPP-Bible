@@ -553,6 +553,20 @@ def _function_ranges(text: str) -> list[tuple[str, str]]:
     return out
 
 
+def _is_boilerplate_text(t: str) -> bool:
+    """472 P0-2（N2）：工件样板判据——作断言候选时**零判别力**。
+
+    为何不用"出现次数 / 行占比"判判别力：判别力 ≠ 稀有度——`call malloc` 出现 20 次
+    仍是高判别力证据，而 `.file` 出现 1 次就恒真（v5 复测 N2：跨编译器卡用
+    `contains_any ['.file']` 即 confirm）。故用**结构**判据：以 `.` 开头的汇编伪指令
+    （`.file`/`.text`/`.section`/`.p2align`/`.cfi_*`/`.seh_*`/`.globl`/`.ident`/
+    `.type`/`.size`/`.align`…）是编译器产物自带背景，不证明任何 claim 机制。
+    """
+    # 注意：`_norm` 是 check_artifact_assert 内的局部函数，模块级不可见 ⇒ 内联归一
+    s = str(t).replace("\\t", " ").replace("\t", " ").strip()
+    return (not s) or s.startswith(".")
+
+
 def _discriminative_span(text: str, lit: str) -> tuple[int, int]:
     """470 P0-C：lit 出现的函数区间数 k / 总区间数 N（判别力统计）。"""
     ranges = _function_ranges(text)
@@ -656,9 +670,20 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
                 lines.append("    ❌ contains_any 缺 texts（不猜，判失败）")
             else:
                 seen = {t: text.count(_norm(t)) for t in texts}
-                hit = any(n > 0 for n in seen.values())
-                detail = ", ".join(f"{t!r}:{n}" for t, n in seen.items())
-                lines.append(f"    {'✅' if hit else '❌'} contains_any 任一出现（{detail}）")
+                got_any = any(n > 0 for n in seen.values())
+                # 472 P0-2（N2）：contains_any 的候选若**全部**是工件样板（.file/.text…），
+                # 命中也零信息（任何产物都恒有）⇒ 判失败；至少一个非样板候选即按原语义。
+                # 判据看**实际命中的候选**（不是全部候选）：否则攻击者加一个"永不命中的
+                # 非样板候选"（如 zzz_absent）就能规避 —— 靠什么命中，就用什么判判别力。
+                hit_texts = [t for t, n in seen.items() if n > 0]
+                if hit_texts and all(_is_boilerplate_text(t) for t in hit_texts):
+                    hit = False
+                    lines.append(f"    ❌ contains_any 判别力不足：命中的候选 {hit_texts}"
+                                 f" 全为工件样板（任何编译产物都恒有 ⇒ 断言零信息）")
+                else:
+                    hit = got_any
+                    detail = ", ".join(f"{t!r}:{n}" for t, n in seen.items())
+                    lines.append(f"    {'✅' if hit else '❌'} contains_any 任一出现（{detail}）")
         elif kind in ("contains", "absent"):
             lit = str(r.get("text") or "")
             if not lit:
@@ -669,8 +694,15 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
             else:
                 got = text.count(_norm(lit))
                 hit = (got > 0) if kind == "contains" else (got == 0)
-                verb = "出现" if kind == "contains" else "不得出现"
-                lines.append(f"    {'✅' if hit else '❌'} {kind} {lit!r} {verb}（实得 {got} 次）")
+                # 472 P0-2（N2）：contains 用样板文本 ⇒ 恒真（任何产物都有）⇒ 判无判别力
+                if kind == "contains" and got > 0 and _is_boilerplate_text(lit):
+                    hit = False
+                    lines.append(f"    ❌ contains 判别力不足：{lit!r} 是工件样板"
+                                 f"（任何编译产物都恒有 ⇒ 断言零信息）")
+                else:
+                    verb = "出现" if kind == "contains" else "不得出现"
+                    lines.append(f"    {'✅' if hit else '❌'} {kind} {lit!r} {verb}"
+                                 f"（实得 {got} 次）")
         elif kind in ("contains_in", "absent_in"):
             sym = str(r.get("symbol") or "")
             lit = _norm(str(r.get("text") or ""))
