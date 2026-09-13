@@ -16,6 +16,108 @@
 
 ---
 
+## 〇·五、系统全貌（首次接手的模型必读，建立心智模型）
+
+### 1. 一句话理解「阙疑」
+
+阙疑是一套**机器可核验的知识生产/验证系统**：模型生产"原子知识卡"，每张卡的结论必须由**可复现的实验工件**（编译产物、运行输出、反汇编）支撑，经过多层机器门禁 + 独立红队对抗 + 人审签署，才能成为 verified 知识。核心信念是"多闻阙疑"——**主动暴露不确定性，宁可判 refute/infra_error 也不放过无证据的断言**。C++ 库（CPP Bible）是第一个压力测试域，系统本身追求领域无关。
+
+### 2. 知识资产四层（当前实测数量）
+
+| 资产 | 目录 | 数量 | 含义 |
+|---|---|---|---|
+| 原子 atom | `atoms/{domain}/` | 27 颗（mem 21 / conc 3 / lang 1 / ub 1 / hist 1） | 最小可验证知识点，frontmatter 含 claim/DAL/status/relations/serves/pedagogy |
+| 证据卡 evidence | `evidence/{domain}/` | 56 张（mem 45 / conc 6 / lang 2 / ub 2 / hist 1） | 一张原子由多张证据卡支撑，含 fixture/command/artifact_sha256/actual/expected/falsification/matrix |
+| 误解 misconception | `misconceptions/` | 80 条（扁平 `MIS-{DOMAIN}-NNN.md`） | 常见错误认知，含 ≥3 反例，原子通过 pedagogy.misconception 引用 |
+| 夹具 fixture | `Examples/atoms/_atom_*.cpp` | 56 个 | 可编译运行的最小实验程序，产出 .asm（反汇编）/.out（运行输出）作为工件 |
+
+ID 格式：原子 `ATOM-{DOMAIN}-{TOPIC}-{NNN}`（如 ATOM-CONC-FENCE-001），证据 `EV-{DOMAIN}-NNN`，误解 `MIS-{DOMAIN}-NNN`。原子状态四级（G6）：`draft → rule（机器验证）→ verified（人签）→ archived`；DAL A-E 是**失效后果严重度**（不是证据强度），A/B 强制人审。
+
+### 3. 目录结构（只列关键）
+
+```
+CPP-Bible/
+├── atoms/ evidence/ misconceptions/ goldens/   # 知识资产（goldens 放待原子化草稿）
+├── Examples/atoms/                              # 夹具 .cpp + 工件 .asm/.out
+├── tools/                                       # 全部机器门禁与工具（91 个 .py，核心见下）
+├── tests/                                       # pytest（15 个 test_*.py）
+├── tests/poison/                                # 毒样例（攻击夹具，应被 gate 拦截）
+├── Scripts/                                     # 一键脚本（door_check/repo_status/push_attempt）
+├── docs/kernel/                                 # 生效规范（G1/G6/M1-M5/S1-S6/tool_assumptions）
+├── References/architecture_架构演进/            # 架构演进文档 300-470（多数是调研档，生效规范少）
+├── toolchain.toml                               # 编译器/工具链路径（g++/clang/ccache）
+├── Book/                                        # C++ 教程正文（测试场的传统内容，437 个示例有行尾漂移，勿 renormalize）
+└── _adv_v70/ _adv_v61/ _bypass_test/            # 对抗/绕过测试产物（不入库，.gitignore）
+```
+
+### 4. 核心工具与职责分层
+
+| 层 | 工具 | 职责 |
+|---|---|---|
+| **统一入口** | `cppbible.py` | CLI 总入口：`check --stage fast/quality/compile`、`impact`、`cost`、`flashcards`、`env`、`preflight` |
+| **L4 结构门禁** | `gate_engine.py` | 47 条规则，解析原子/证据卡 frontmatter，block/warn/advice 三级；含 DAG、冲突关系、签收校验、MSVC 免检 |
+| **L3 运行时验证** | `atom_evidence_replay.py` | 执行 command 编译运行夹具，比对 .out 逐字/键、校验 artifact_sha256、artifact_assert 符号区间断言、sanitizer；三分类 confirm/refute/infra_error |
+| **对抗演练** | `poison_drill.py` | 50 个毒样例（已知攻击）应被拦 + 阴性样例应放行；RULE-COVERAGE 统计规则覆盖率 + 豁免台账 |
+| **基线锁** | `golden_lock.py` | 锁定 atoms/evidence/replay_confirm/replay_infra_error 等计数，恶化即红；`sync/check/show`，**认可权唯人** |
+| **L1 自检** | `writer_selfcheck.py` | Writer 产出后零 token 自检 7 项（WC-01..07），接入 quality 门禁 |
+| **效率/转化** | `cost_tracker.py` `flashcard_export.py` `impact_analysis.py` | CPVA 成本基线（5765 tok/颗机器侧）、Anki 闪卡导出、上下游依赖遍历 |
+| **其他** | `consistency_check.py` `gen_metrics.py` `gray_zone_scan.py` `debt_ledger.py` `toolchain.py` | 一致性评分、指标生成、灰色地带（unspecified vs UB）扫描、技术债台账、工具链解析 |
+
+一键脚本：`python Scripts/repo_status.py`（开工快照）、`python Scripts/door_check.py [--fast]`（收工门禁汇总）、`python Scripts/push_attempt.py [--push]`（推送诊断，默认 dry-run）。WSL 全量预检：`ci_local_precheck.py`（31-32 步，含 TSan 需 `setarch -R`）。
+
+### 5. 验证金字塔（门禁分层，从下到上）
+
+```
+L6 长期回归   毒样例防退化 + 对抗探针沉淀（P0-H 要补）+ CI 双编译器矩阵
+L5 人审       human: 签收（DAL A/B 强制；当前是字符串，P0-G 要绑 git author）
+L4 结构门禁   gate_engine 47 条规则（frontmatter/关系/DAL/状态/签收格式）
+L3 运行时     replay 编译运行 + sha 校验 + 符号断言 + sanitizer（P0-A 要加重编译不变量）
+L2 红队       独立子 agent 两段式盲读（先只读夹具+工件不读卡，再对照卡）
+L1 自检       writer_selfcheck 7 项（零 token，错误左移）
+```
+
+### 6. 一颗原子的完整生命周期（MCC 六步 + 三权分立）
+
+```
+选题(知识图谱空白) → 预言冻结(实验前 commit 预言矩阵，git 时间戳为证)
+  → Writer 生产夹具+工件+证据卡+误解+草稿（L1 自检）
+  → 独立红队两段式盲读（Writer 与红队必须是不同 agent 实例，不给草稿全文）
+  → Gatekeeper 跑 L3/L4 门禁（replay/gate/poison/pytest/golden）
+  → 原子化入 atoms/（人签 verified）→ golden_lock sync 基线 → 教学转化(闪卡/Book)
+```
+三权分立：**Writer 写卡 / 红队攻卡 / Gatekeeper 判卡**，三者不可是同一实例。每个环节的产物切分写死，禁止既当运动员又当裁判。
+
+### 7. 角色分工（多模型协作）
+
+| 角色 | 模型 | 职责 | 权限 |
+|---|---|---|---|
+| 人（监工/目标设定者） | 用户 | 定方向、做不可逆决策、push、golden 认可、人审签署 | 唯一 push/golden sync 权 |
+| 架构师 | 本助手（豆包） | 调研、消化、架构规划、写投喂提示词、复盘 | 只写文档，不改系统代码 |
+| 苦力 | 便宜/白嫖模型（如 Qwen flash） | 按提示词干机械杂活、跑门禁、写工具 | 不 push、不 golden、独立 commit |
+| 好模型 | ds v4.1 flash CodeBuddy（**今晚的你**） | 范式级修复、系统落地、复杂调试 | 不 push、不 golden、独立 commit |
+| 对抗模型 | Seed-Evolving / Trae（异模型族最佳） | 独立红队/渗透，产出可复现探针 | 只在 _adv_*/ 沙箱，零污染正式目录 |
+
+### 8. 当前基线（2026-09-13，以你实跑为准）
+
+gate 47 规则（block=0 / warn≈32，warn 多为新规则暴露的存量真债）· poison 50/50 · replay confirm=56（双平台）· pytest 121+ · atoms 27 / evidence 56 / misconceptions 80 / 夹具 56。本地大量 commit ahead origin 未 push（SSH 数据通道在本机被墙 exit 141，push 由用户换网络执行）。
+
+### 9. 环境与编译器矩阵
+
+- Windows：MinGW GCC 15.3（Qt，toolchain prefer）/ 13.1、clang++ 22.1.8（MSYS2，`C:\msys64\mingw64\bin`）、ccache 4.14（`C:\tools\ccache`）。MinGW **无 TSan/LSan 完整支持**。
+- WSL：g++ 13.3/14.2、ccache 4.9.1、riscv64-unknown-elf-g++ 13.2（bare-metal，用 `__atomic_*` 无 `<atomic>` 头）。TSan 须 `setarch -R <cmd>` 前缀，否则 FATAL memory mapping。
+- MSVC `cl.exe`：**永久边界**，replay 遇 cl 走 `infra_error:msvc_unavailable`，不尝试编译。
+- 跨平台关键事实：`hardware_concurrency()` 走 sysconf 不受 taskset 影响；Windows 走 sha 强校验会跳过 artifact_assert（断言必须在 Linux 工件实测）；sanitizer 类型归并（[thread]/[address]/[leak]）不按子串匹配。
+
+### 10. 关键规范文档地图
+
+- **生效规范**（违反会 block）：`docs/kernel/G1_layout.md`+`G1_knowledge_map.md`（布局/知识图谱）、`G6_status_levels.md`（四级状态+DAL+签收 principal）、`M1_ontology.md`/`M2_empirical.md`（本体论/实证规范）、`S1_S6_controls.md`（管控）、`tool_assumptions.md`（15 条工具假设）、`non_compressible_facts.md`（不可压缩事实）。
+- **架构总纲**：`References/.../468_*.md`（知识生命周期×验证金字塔×能力梯度三维模型）。
+- **今晚任务书**：本文 470；469 v2.1 是其前身（含 P0 修复细节，可交叉参考）。
+- **对抗报告**：`_adv_v70/REPORT.md`（第四轮，15 探针 14 绕过）；历史收编记录在 `docs/kernel/373_*.md`。
+- **注意**：References 下约 170 份文档绝大多数是调研历史档，**不具约束力**；数字可能过时，一切以实跑和 `docs/kernel/` 生效规范为准。
+
+---
+
 ## 一、开工第一步：建立你自己的实测基线
 
 **铁律：不采信本文或任何文档的数字，全部实跑。** 开工前把输出贴进 `_worklog_470.md`：
