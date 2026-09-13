@@ -89,11 +89,21 @@ def misconception_card(meta: dict[str, Any]) -> dict[str, str]:
             "tags": f"{meta.get('domain')} misconception {mid} {meta.get('level')}"}
 
 
-def build_cards() -> list[dict[str, str]]:
+DRAFT_STATUS = "draft"
+
+
+def build_cards(include_draft: bool = False) -> list[dict[str, str]]:
+    """构建闪卡；默认**只导出非 draft 原子**（472 P1-3 / 452 E16）。
+
+    为什么用「非 draft」而不是「== verified」：实测 27 颗原子中只有 23 颗是
+    `verified`，另 3 颗是 `red-team-verified`（已验证链上的中间态，属已验证内容）——
+    按 `== verified` 过滤会误伤这 3 颗。真正该拦的是未验证草稿（draft）。
+    """
     verdicts = {str(ge._meta(p).get("id") or p.stem): str(ge._meta(p).get("verdict") or "")
                 for p in ge._cards(ge.EVIDENCE, "EV-*.md")}
-    cards = [atom_claim_card(ge._meta(p), verdicts)
-             for p in ge._cards(ge.ATOMS, "ATOM-*.md")]
+    atoms = [p for p in ge._cards(ge.ATOMS, "ATOM-*.md")
+             if include_draft or str(ge._meta(p).get("status") or "") != DRAFT_STATUS]
+    cards = [atom_claim_card(ge._meta(p), verdicts) for p in atoms]
     cards += [misconception_card(ge._meta(p))
               for p in ge._cards(ge.MISCONCEPTIONS, "MIS-*.md")]
     return cards
@@ -123,8 +133,8 @@ def _display(p: Path) -> str:
         return p.as_posix()
 
 
-def export(outdir: Path, fmt: str = "both") -> dict[str, Any]:
-    cards = build_cards()
+def export(outdir: Path, fmt: str = "both", include_draft: bool = False) -> dict[str, Any]:
+    cards = build_cards(include_draft=include_draft)
     outdir.mkdir(parents=True, exist_ok=True)
     outputs: list[str] = []
     if fmt in ("anki", "both"):
@@ -158,13 +168,15 @@ def main(argv: list[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     ex = sub.add_parser("export")
     ex.add_argument("--format", choices=["anki", "markdown", "both"], default="both")
+    ex.add_argument("--include-draft", action="store_true",
+                    help="连 draft 原子一起导出（默认只导出已验证内容）")
     ex.add_argument("--outdir", default=str(OUT_DEFAULT.relative_to(ge.ROOT)))
     sub.add_parser("stats")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
 
     if a.cmd == "export":
-        data = export(ge.ROOT / a.outdir, a.format)
+        data = export(ge.ROOT / a.outdir, a.format, include_draft=a.include_draft)
     else:  # stats
         cards = build_cards()
         data = {"tool": "flashcard_export", "version": VERSION,
