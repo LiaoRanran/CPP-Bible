@@ -36,6 +36,8 @@ pdf = [
 ]
 # 本地开发与 lint
 dev = [
+    "pytest>=7.0",
+    "pyyaml>=6.0",
     "ruff>=0.5.0",
     "mypy>=1.10.0",
 ]
