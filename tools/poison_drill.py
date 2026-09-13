@@ -600,6 +600,81 @@ def drill() -> int:
         results.append(("P19-阴 两处可核对留痕必须放行", not who2,
                         f"误报 {', '.join(who2) or '无'}"))
 
+    # ── P20 声明-实现脱钩（373 绕过测试 3d，最核心）：producer 须逐字在 command 且 -o==artifact ──
+    # 373 绕过测试 3d：仅查"声明文本"时，写 `artifact_producer: g++ -S x.cpp -o a.asm` 却让
+    # `command: cp other.asm a.asm`，sha 与真编译产物一致、replay 全绿——卡从未跑自己的实验。
+    # 修复后新增**声明-实现一致性**硬约束：producer 段须逐字出现在 command，且 -o 目标==artifact。
+    with sandbox() as tmp:
+        def _dec(name: str, producer: str, command: str) -> list[str]:
+            _write(ge.EVIDENCE / "mem" / f"{name}.md", {
+                "id": name, "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+                "command": command, "fixture": "Examples/x.cpp", "artifact": "a.asm",
+                "artifact_sha256": "0" * 64, "actual": "{run_case: A}", "kind": "run",
+                "verdict": "confirm", "falsification": "对照输出 1",
+                "artifact_producer": producer,
+            })
+            return sorted({f.severity for f in ge.check_evidence_artifact_producer()
+                           if name in f.target})
+
+        # 阳例①：声明编译、实际 command 是 cp 借工件 → 段不在 command 中 → block
+        sev = _dec("EV-MEM-DECOUPLE1", "g++ -S x.cpp -o a.asm",
+                   "cp Examples/atoms/other.asm a.asm")
+        who = {f.rule_id for f in ge.check_evidence_artifact_producer()}
+        ok = "EV-ARTIFACT-PRODUCER" in who and "block" in sev
+        results.append(("P20 声明-实现脱钩（producer 不在 command，cp 借工件）", ok,
+                        f"级别 {sev or '（漏网！）'}"))
+        # 阳例②：段在 command 中但 -o 目标≠artifact（编译产物非本工件）→ block
+        sev2 = _dec("EV-MEM-DECOUPLE2", "g++ -S x.cpp -o b.asm", "g++ -S x.cpp -o b.asm")
+        results.append(("P20 -o 目标≠artifact（编译产物非本工件）", "block" in sev2,
+                        f"级别 {sev2 or '（漏网！）'}"))
+        # 阴例：段逐字在 command 且 -o==artifact → 放行（声明与实现一致）
+        sev3 = _dec("EV-MEM-DECOUPLE3", "g++ -S x.cpp -o a.asm", "g++ -S x.cpp -o a.asm")
+        results.append(("P20-阴 声明与 command 一致且 -o==artifact 必须放行", not sev3,
+                        f"误报 {sev3 or '无'}"))
+
+    # ── P21 通用符号无论在哪都 block + 出处排除注释（373 绕过测试 2a/2b/2c）────────────
+    # 373 绕过测试：2a `contains "main"`（任何工件都有 main ⇒ 恒真）；2b `contains_any ["main","call"]`
+    # （any-of 只要一个通用符号即过）；2c `absent "_Znwm"` 配夹具注释 `/* _Znwm */`（注释伪造出处）。
+    with sandbox() as tmp:
+        fx = tmp / "_fx.cpp"
+        art = tmp / "_art.asm"
+        art.write_text("main:\n\tcall foo\n\tret\n", encoding="utf-8")   # 工件里真有 main:
+
+        def _asv(name: str, asserts: str, fx_text: str = "", extra: str = "") -> list[str]:
+            if fx_text:
+                fx.write_text(fx_text, encoding="utf-8")
+            _write(ge.EVIDENCE / "mem" / f"{name}.md", {
+                "id": name, "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+                "command": "g++ -S x.cpp -o a.asm", "fixture": fx.as_posix(),
+                "artifact": art.as_posix(), "artifact_sha256": "0" * 64,
+                "artifact_assert": "\n" + asserts + extra,
+                "actual": "{run_case: A}", "kind": "run", "verdict": "confirm",
+                "falsification": "对照输出 1",
+            })
+            return sorted({f.severity for f in ge.check_evidence_assert_symbol_mapped()
+                           if name in f.target})
+
+        # 阳例①：通用符号 `main` 即便在工件里也 block（零判别力，恒真断言）
+        sev = _asv("EV-MEM-UNIV1", '  - {kind: contains, text: "main"}')
+        who = {f.rule_id for f in ge.check_evidence_assert_symbol_mapped()}
+        ok = "EV-ASSERT-SYMBOL-MAPPED" in who and "block" in sev
+        results.append(("P21 通用符号无论在哪都 block（工件含 main 仍拦）", ok,
+                        f"级别 {sev or '（漏网！）'}"))
+        # 阳例②：注释伪造出处 —— `absent "_Znwm"` 配夹具注释 `// _Znwm`
+        #          剥注释后符号无出处 → 不再被"注释里有"蒙混放行
+        sev2 = _asv("EV-MEM-COMM1", '  - {kind: absent, text: "_Znwm"}',
+                    fx_text="// _Znwm\nint main(){ return 0; }\n")
+        who2 = {f.rule_id for f in ge.check_evidence_assert_symbol_mapped()
+                if "EV-MEM-COMM1" in f.target}
+        ok2 = "EV-ASSERT-SYMBOL-MAPPED" in who2
+        results.append(("P21 注释伪造出处（absent 配注释）必须被拦", ok2,
+                        f"级别 {sev2 or '（漏网！）'}"))
+        # 阴例：符号在工件真实代码里有出处 → 放行
+        art.write_text("_Znwy:\n\tret\n", encoding="utf-8")
+        sev3 = _asv("EV-MEM-UNIV3", '  - {kind: contains, text: "_Znwy"}',
+                    fx_text="void spin_plain(){}\n")
+        results.append(("P21-阴 工件真实代码里有出处须放行", not sev3, f"误报 {sev3 or '无'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"

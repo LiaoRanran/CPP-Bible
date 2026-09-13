@@ -372,6 +372,22 @@ def test_assert_prose_skipped(sandbox: Path):
     assert ge.check_evidence_assert_symbol_mapped() == []
 
 
+def test_assert_universal_symbol_blocks_even_if_in_artifact(sandbox: Path):
+    """阳性（373 绕过测试 2a/2b 深化）：通用符号即便在工件里出现也 block（零判别力）。"""
+    _write_ev_with_artifact(sandbox, "int main(){}\n", "main:\n\tcall foo\n\tret\n",
+                            '  - {kind: contains, text: "main"}')
+    hits = ge.check_evidence_assert_symbol_mapped()
+    assert hits and hits[0].severity == "block", "main 在工件里也须拦（恒真断言）"
+
+
+def test_assert_symbol_in_comment_not_treated_as_source(sandbox: Path):
+    """阳性（373 绕过测试 2c）：夹具注释里出现符号名不能算"有出处"（absent 不再被蒙混）。"""
+    _write_ev_with_artifact(sandbox, "// _Znwm\nint main(){}\n", "other:\n\tret\n",
+                            '  - {kind: absent, text: "_Znwm"}')
+    hits = ge.check_evidence_assert_symbol_mapped()
+    assert any(h.rule_id == "EV-ASSERT-SYMBOL-MAPPED" for h in hits), "注释伪造出处须被拦"
+
+
 def test_artifact_producer_missing_on_new_card_blocks(sandbox: Path):
     """阳性（373-N4）：名单外的卡缺 `artifact_producer` → block。
 
@@ -390,14 +406,38 @@ def test_artifact_producer_non_compiler_blocks(sandbox: Path):
 
 
 def test_artifact_producer_compiler_passes(sandbox: Path):
-    """阴性：声明编译器命令 → 放行（含带路径/带 .exe 的写法）。"""
-    _write_ev(sandbox, artifact_producer="C:/Qt/Tools/mingw1530_64/bin/g++.exe -S x.cpp -o a.asm")
+    """阴性：声明编译器命令且其段逐字在 command 中、-o==artifact → 放行（含带路径/带 .exe）。"""
+    prod = "C:/Qt/Tools/mingw1530_64/bin/g++.exe -S x.cpp -o a.asm"
+    _write_ev(sandbox, command=prod, artifact_producer=prod)
     assert ge.check_evidence_artifact_producer() == []
 
 
 def test_artifact_producer_exempt_existing_card_passes(sandbox: Path):
     """阴性：迁移名单内的存量卡缺字段 → 放行（名单 = 可审计的迁移积压）。"""
     _write_ev(sandbox, id="EV-MEM-001")
+    assert ge.check_evidence_artifact_producer() == []
+
+
+def test_artifact_producer_decoupled_from_command_blocks(sandbox: Path):
+    """阳性（373 绕过测试 3d）：producer 声明编译、command 实际 cp 借工件 → block。"""
+    _write_ev(sandbox, command="cp Examples/atoms/other.asm a.asm",
+              artifact_producer="g++ -S x.cpp -o a.asm")
+    hits = ge.check_evidence_artifact_producer()
+    assert any(h.severity == "block" for h in hits), "producer 不在 command 须拦"
+
+
+def test_artifact_producer_o_target_mismatch_blocks(sandbox: Path):
+    """阳性（373 绕过测试 3d）：producer 在 command 但 -o 目标≠artifact → block。"""
+    prod = "g++ -S x.cpp -o b.asm"          # -o b.asm ≠ 卡 artifact a.asm
+    _write_ev(sandbox, command=prod, artifact_producer=prod)
+    hits = ge.check_evidence_artifact_producer()
+    assert any(h.severity == "block" for h in hits), "-o 目标须 == artifact"
+
+
+def test_artifact_producer_consistent_passes(sandbox: Path):
+    """阴性：producer 逐字在 command 且 -o==artifact → 不报（含带路径/带 .exe）。"""
+    prod = "C:/Qt/Tools/mingw1530_64/bin/g++.exe -S x.cpp -o a.asm"
+    _write_ev(sandbox, command=prod, artifact_producer=prod)
     assert ge.check_evidence_artifact_producer() == []
 
 
