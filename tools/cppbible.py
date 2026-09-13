@@ -239,6 +239,8 @@ def cmd_check(args: argparse.Namespace) -> int:
             ("Book Link Integrity", [PYTHON_EXE, "tools/fix_book_links.py", "--check"]),
             # 373 §5（2026-09-13）收编：Book ↔ 原子双向同步（孤立脚本入库并登记双清单）
             ("Book-Atom Sync", [PYTHON_EXE, "tools/book_atom_sync.py", "--check"]),
+            # 413 Writer 自检层（420）：提交红队前拦 E1/E2 机械错误（存量 0 fail 基线）
+            ("Writer Selfcheck", [PYTHON_EXE, "tools/writer_selfcheck.py", "--all"]),
         ]
     elif stage == "compile":
         gates = [

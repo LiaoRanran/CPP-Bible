@@ -85,6 +85,7 @@ quality_gates = [
     "tools/sweep_fences.py --check",
     "tools/whitespace_fix.py --check",
     "tools/s10_verify_mark.py --check",
+    "tools/writer_selfcheck.py --all",
     "tools/fix_book_links.py --check",
     # 原子内核（G1-G3）新增门禁；与 tools/cppbible.py:cmd_check 的 quality 元组一一对应
     # （一致性由 tools/gate_engine.py --manifest-check 校验，ADR-0004 收敛双清单）
