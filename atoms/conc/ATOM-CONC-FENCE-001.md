@@ -18,6 +18,28 @@ prerequisites_readable: true
 claim: >-
   任何内存屏障（含零指令的 atomic_signal_fence）只要落在循环体内，就能阻止编译器消除该循环；
   但屏障不提供数据竞争安全——屏障≠原子类型。
+# 526 批次E：把上面一句自然语言 claim 拆成两条**原子命题**，机器据此分流验证强度——
+#   observation（直接观测，replay confirm 即可全自动）vs inference（推断，须人签或独立标准源）。
+# 概念名沿用原子层现有写法「内存屏障(fence)」（Book/ 层的口语「栅栏」是同概念的另一种写法，
+#   本批不改；概念名统一是回填期的事，记在 _worklog_526.md §概念名体检）。
+claim_structured:
+  - id: prop-1
+    subject: 内存屏障(fence)
+    predicate: 落在循环体内时
+    object: 阻止编译器消除该循环
+    claim_type: observation
+    statement: 屏障落在循环体内（含零机器指令的 atomic_signal_fence）即阻止编译器删除该循环；移到体外则与无屏障同形、整段被消除。
+    evidence: [EV-CONC-001, EV-CONC-002]
+    extracted_by: writer
+  - id: prop-2
+    subject: 内存屏障(fence)
+    predicate: 不提供
+    object: 数据竞争原子性/不建立happens-before
+    claim_type: inference
+    statement: 屏障≠原子类型——屏障只约束内存顺序，不为普通 int 提供原子性、不建立跨线程 happens-before，故普通 int 做标志加多少屏障仍是数据竞争（UB）。
+    evidence: [EV-CONC-002]
+    external_basis: "ISO/IEC 14882:2023 [atomics.order] / cppreference atomic_thread_fence（fence 仅为原子访问定义语义）"
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]
