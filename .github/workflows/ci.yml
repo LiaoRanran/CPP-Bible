@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30   # 防止门禁挂死占满 runner（quality 正常 <5min）
     strategy:
+      fail-fast: false   # 508 任务2：matrix 任一组合失败不取消其它组合
       matrix:
         python-version: ['3.11']
 
@@ -95,24 +96,9 @@ jobs:
       run: python3 tools/atom_coverage_map.py --check --check-doc
       continue-on-error: false
 
-    - name: Evidence Replay (证据卡机器复算：工件同代 / 输出逐字 / sanitizer)
-      # 契约见 docs/kernel/M2_empirical.md §1：任一 refute 即 exit 1。
-      # 核心校验 artifact_sha：重生成工件后必须与卡同代——"工件过期"由此从人工发现变机器拦截。
-      # 跨编译器分流（2026-09-10 修 CI 红因）：sha 只在**同一编译器（含平台）**下可复算，本步在
-      # Ubuntu 系统 g++ 上跑，与卡归属的 MinGW GCC 15.3 字节天然不同 → 工具自动改判
-      # `artifact_assert[]` 结构断言（断言缺失/不满足仍红），故本步在 CI 是**真实校验**而非跳过。
-      # 失败时的可读性：本仓库 job 日志下载需 admin 权限（实测 API 403），step summary 只有 UI
-      # 可见（API 读不到）。故把失败日志再输出为 **error 注解**——注解经 check-runs API 的
-      # /annotations 端点可公开读取，无 admin 也能定位红因（2026-09-10 #550/#551 两次盲查的教训）。
-      run: |
-        python3 tools/atom_evidence_replay.py --check 2>&1 | tee /tmp/replay.log
-        rc="${PIPESTATUS[0]}"
-        if [ "$rc" != "0" ]; then
-          cat /tmp/replay.log >> "$GITHUB_STEP_SUMMARY"
-          while IFS= read -r ln; do printf '::error::%s\n' "$ln"; done < <(head -n 30 /tmp/replay.log)
-          exit 1
-        fi
-      continue-on-error: false
+    # 508 任务2：Evidence Replay 已**迁出**为独立并行 job `replay`（见文件下方 jobs）。
+    # 迁出原因：它是 quality job 里最重的一步之一，且与其余 35 步无数据依赖——并行后
+    # quality 的 wall 直接减掉这一步；失败可读性的 error 注解机制原样保留在 replay job 内。
 
     - name: Worktree Cleanliness (受控目录被工具改写即红 · 369 P1-3)
       # 为什么：replay 会重编译夹具并可能改写 Examples/*.asm（正常应自动 restore）；
@@ -134,20 +120,9 @@ jobs:
         echo "OK: 受控目录工作树干净（Examples/ atoms/ evidence/ tools/golden_state.json）"
       continue-on-error: false
 
-    - name: Gate Engine (M4 规则引擎：事实门禁 block + 双清单收敛)
-      # 规则全集见 docs/kernel/M4_gate_engine.md；block 级违规即红，warn 记债不红，
-      # advice（教学/文学）只建议不改文。规则可实现按 ADR-0004 挂在 cmd_check 上。
-      run: python3 tools/gate_engine.py --check
-      continue-on-error: false
-
-    - name: S1-S6 Controls (黄金锁 / 债务台账 / 毒样例演练)
-      # S4 黄金锁：质量指标恶化即红（改善提示 sync）；S5 债务台账：豁免到期/负债率超限即红；
-      # S6 毒样例演练：注入假论断/过期工件/缺反例，制衡层必须全部拦截（阴性对照必须放行）。
-      run: |
-        python3 tools/golden_lock.py check
-        python3 tools/debt_ledger.py check
-        python3 tools/poison_drill.py
-      continue-on-error: false
+    # 508 任务2：Gate Engine + S1-S6 Controls（黄金锁/债务台账/毒样例）已**迁出**为
+    # 独立并行 job `gate`（见文件下方 jobs）。迁出的是"卡层/规则层"门禁，与 quality
+    # 其余步骤（文档/结构/引用层）无数据依赖。
 
     - name: Cross-check Matrix (求值顺序 unspecified + auto_ptr 演化：GCC/Clang 对照留痕)
       # 只留痕、不判"顺序"红绿：unspecified 的两种求值顺序都合法，机器不能断言"必须右→左"。
@@ -206,22 +181,9 @@ jobs:
         fi
       continue-on-error: false
 
-    - name: Pytest (工具链回归测试)
-      # 工具链的单元测试：锁定真实发生过的回归（git() 非 UTF-8 崩溃、
-      # patch_blocks stale-span、triage 路径分隔符、run_expected PATH 注入、
-      # gen_metrics 行尾伪 diff、star_h2 分类）。新增工具请补对应测试。
-      # 失败时的可读性：与 Evidence Replay 步同法——job 日志下载需 admin（实测 API 403），
-      # 故把失败摘要输出为 **error 注解**（经 check-runs /annotations 端点可公开读取）。
-      run: |
-        python3 -m pip install --quiet pytest
-        python3 -m pytest tests/ -q 2>&1 | tee /tmp/pytest.log
-        rc="${PIPESTATUS[0]}"
-        if [ "$rc" != "0" ]; then
-          cat /tmp/pytest.log >> "$GITHUB_STEP_SUMMARY"
-          while IFS= read -r ln; do printf '::error::%s\n' "$ln"; done < <(tail -n 40 /tmp/pytest.log)
-          exit 1
-        fi
-      continue-on-error: false
+    # 508 任务2：Pytest 已**迁出**为独立并行 job `pytest`（见文件下方 jobs），
+    # 且改走 xdist 并行（`-n 16 --maxfail=1`）。迁出后 quality job 不再安装 pytest，
+    # 节省它的 setup 时间；pytest 的失败注解机制原样保留在新 job 内。
 
     - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)
       # 纯 Python 零依赖，秒级扫描全书标题/表格/正文里 fenced code 之外的
@@ -404,8 +366,100 @@ jobs:
       run: python3 tools/fix_book_links.py --check
       continue-on-error: false
 
+  # ── 508 任务2：三路并行 job（彼此无依赖，也不依赖 quality；无 matrix ⇒ 不涉 fail-fast）──
+  # 拆分依据：原 quality job 有 36 步串行（实测正常 <5min，但重步"Evidence Replay / Gate+S1-S6 /
+  # Pytest"占了其中大部分 wall，且与其余 34 步**无数据依赖**）。提取为独立 job 后四者可并行。
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Pytest (xdist 并行 · 工具链回归测试)
+      # 工具链的单元测试：锁定真实发生过的回归（git() 非 UTF-8 崩溃、patch_blocks stale-span、
+      # triage 路径分隔符、run_expected PATH 注入、gen_metrics 行尾伪 diff、star_h2 分类）。
+      # 新增工具请补对应测试。
+      # 508 任务1/2：走 pytest-xdist（CI 钉 `-n 16`，与本地 pyproject addopts 的 `-n auto` 口径一致）。
+      # 本机实测 366 点 wall 227s → 147.9s。CI 钉 16 而非 auto：runner 通常 2-4 核，且
+      # replay/gate job 会同时抢 CPU。
+      # 失败可读性：job 日志下载需 admin（实测 API 403），故把失败摘要输出为 **error 注解**
+      # （经 check-runs /annotations 端点可公开读取）。
+      run: |
+        python3 -m pip install --quiet pytest pytest-xdist pyyaml
+        python3 -m pytest tests/ -q -n 16 --maxfail=1 2>&1 | tee /tmp/pytest.log
+        rc="${PIPESTATUS[0]}"
+        if [ "$rc" != "0" ]; then
+          cat /tmp/pytest.log >> "$GITHUB_STEP_SUMMARY"
+          while IFS= read -r ln; do printf '::error::%s\n' "$ln"; done < <(tail -n 40 /tmp/pytest.log)
+          exit 1
+        fi
+      continue-on-error: false
+
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0   # 增量/变更判定需要完整 git 历史与 origin/<base> 引用
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Evidence Replay (证据卡机器复算：工件同代 / 输出逐字 / sanitizer)
+      # 契约见 docs/kernel/M2_empirical.md §1：任一 refute 即 exit 1。
+      # 核心校验 artifact_sha：重生成工件后必须与卡同代——"工件过期"由此从人工发现变机器拦截。
+      # 跨编译器分流（2026-09-10 修 CI 红因）：sha 只在**同一编译器（含平台）**下可复算，本步在
+      # Ubuntu 系统 g++ 上跑，与卡归属的 MinGW GCC 15.3 字节天然不同 → 工具自动改判
+      # `artifact_assert[]` 结构断言（断言缺失/不满足仍红），故本步在 CI 是**真实校验**而非跳过。
+      # 失败时的可读性：本仓库 job 日志下载需 admin 权限（实测 API 403）→ 把失败日志再输出为
+      # **error 注解**（check-runs /annotations 端点可公开读取，无 admin 也能定位红因）。
+      run: |
+        python3 tools/atom_evidence_replay.py --check --incremental 2>&1 | tee /tmp/replay.log
+        rc="${PIPESTATUS[0]}"
+        if [ "$rc" != "0" ]; then
+          cat /tmp/replay.log >> "$GITHUB_STEP_SUMMARY"
+          while IFS= read -r ln; do printf '::error::%s\n' "$ln"; done < <(head -n 30 /tmp/replay.log)
+          exit 1
+        fi
+      continue-on-error: false
+
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Gate Engine (M4 规则引擎：事实门禁 block + 双清单收敛)
+      # 规则全集见 docs/kernel/M4_gate_engine.md；block 级违规即红，warn 记债不红，
+      # advice（教学/文学）只建议不改文。规则可实现按 ADR-0004 挂在 cmd_check 上。
+      run: python3 tools/gate_engine.py --check
+      continue-on-error: false
+
+    - name: S1-S6 Controls (黄金锁 / 债务台账 / 毒样例演练)
+      # S4 黄金锁：质量指标恶化即红（改善提示 sync）；S5 债务台账：豁免到期/负债率超限即红；
+      # S6 毒样例演练：注入假论断/过期工件/缺反例，制衡层必须全部拦截（阴性对照必须放行）。
+      run: |
+        python3 tools/golden_lock.py check
+        python3 tools/debt_ledger.py check
+        python3 tools/poison_drill.py
+      continue-on-error: false
+
   compile:
-    needs: quality
+    # 508 任务2：compile/publish-check 的下游依赖从「仅 quality」扩为「四个并行门禁 job」——
+    # 保证任一门禁（含新拆出的 pytest/replay/gate）失败时，编译与 deploy 链路照样被拦住
+    # （原链路 quality→compile→site/pdf/epub→deploy 的"任一硬门禁失败即不部署"语义不变）。
+    needs: [quality, pytest, replay, gate]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -574,7 +628,7 @@ jobs:
 
   # ---- 发布门禁：链接/资产自检（左移，~15s 捕获「复报错」类断链）----
   publish-check:
-    needs: quality
+    needs: [quality, pytest, replay, gate]   # 508 任务2：同 compile，见上方注释
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
