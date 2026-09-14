@@ -20,6 +20,33 @@ claim: >-
   只有 `T y = std::move(x);` 把 x 变成 xvalue，才会选中移动构造；而对**无移动构造**的类型，
   即使写了 `std::move(x)` 也**静默退化**成拷贝。（C++11–C++23 全档实测，十一档一致；
   **例外**：`return x;` 路径随版本变化——C++17 及更早是拷贝，C++20 起已隐式移动，见 EV-MEM-005。）
+# 528 任务1：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: 命名右值引用形参在函数体内
+    predicate: 在十一档（C++11–C++23）实测一致
+    object: 直接用（as_is）copy=1 move=0；std::move 后 copy=0 move=1；无移动构造的 CopyOnly 即使 std::move 仍 copy=1
+    claim_type: observation
+    statement: 形参声明为 T&& 时，形参名在函数体内表现为左值：十一档组合读数一致——原样使用（as_is）copy=1、move=0；std::move(x) 后 copy=0、move=1；而对无移动构造的 CopyOnly，即使写了 std::move(x) 仍是 copy=1（静默退化为拷贝）。
+    evidence: [EV-MEM-004]
+    extracted_by: writer
+  - id: prop-2
+    subject: return 语句的隐式移动
+    predicate: 随标准版本变化（实测）
+    object: C++11/14/17 下 ret_plain copy=1 move=0；C++20/23 下 ret_plain copy=0 move=1
+    claim_type: observation
+    statement: 例外路径（return x;）随版本变化：cxx11、cxx14、cxx17 下 ret_plain 为 copy=1 / move=0；cxx20 与 cxx23 下（含 -O0）为 copy=0 / move=1 ⇒ C++20 起该路径已隐式移动。
+    evidence: [EV-MEM-005]
+    extracted_by: writer
+  - id: prop-3
+    subject: 值类别
+    predicate: 是表达式的属性，因此
+    object: 与变量声明类型无关（命名右值引用是左值，须 std::move 才会选中移动构造）
+    claim_type: inference
+    statement: 值类别是表达式的属性、与变量的声明类型无关——命名的右值引用是左值，所以只有把 x 转成 xvalue（std::move）才会选中移动构造；对没有移动构造的类型则静默退化为拷贝。这条语义依据标准对值类别与 id-expression 的规定，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [basic.lval] Note 3（named rvalue references are treated as lvalues）；[expr.prim.id.unqual]/12（命名变量/形参的 id-expression 是 lvalue）；cppreference Value categories"
+    evidence: [EV-MEM-004, EV-MEM-005]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]   # 全部实测（EV-MEM-004 九档 / EV-MEM-005 五档）
   compilers: [GCC 15.3.0, GCC 13.1.0]              # Clang 列经 ci.yml Cross-check 步 notice 回填（本机无 Clang）

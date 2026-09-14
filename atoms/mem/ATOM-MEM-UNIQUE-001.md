@@ -20,6 +20,33 @@ claim: >-
   std::unique_ptr<T> 是唯一所有权智能指针：移动转移所有权（源被置空、目标获得对象），拷贝构造被删除
   （不可共享），析构恰好 delete 一次（无双释放）。它是零开销抽象——sizeof 等于裸指针（x86-64 下 8 字节），
   所有权语义只体现在编译期（拷贝删除 + 移动转移），不在运行时加字段。禁用裸 new；需要共享才升级到 shared_ptr。
+# 528 任务1：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: unique_ptr 的大小
+    predicate: 实测等于
+    object: 裸指针（sizeof(unique_ptr<Big>)=8、sizeof(Big*)=8、equal=1）
+    claim_type: observation
+    statement: 零开销的第一个证据：实测 sizeof(unique_ptr<Big>)=8、sizeof(Big*)=8、equal=1（两者相等，没有额外字段）。
+    evidence: [EV-MEM-011]
+    extracted_by: writer
+  - id: prop-2
+    subject: 移动转移与析构次数
+    predicate: 实测
+    object: 移动后源为空（a empty=1）、目标可用（b->v=7）、box destroyed count=1（恰好析构一次）
+    claim_type: observation
+    statement: 所有权转移与释放：移动后源被置空（a empty=1）、目标持有对象（b->v=7），且 box destroyed count=1（恰好析构一次，无双释放）。
+    evidence: [EV-MEM-012]
+    extracted_by: writer
+  - id: prop-3
+    subject: unique_ptr 的所有权语义
+    predicate: 体现在编译期（拷贝构造被删除、移动转移），因此
+    object: 运行时零开销；不可共享，需要共享才升级到 shared_ptr
+    claim_type: inference
+    statement: unique_ptr 是唯一所有权智能指针——移动转移所有权、拷贝构造与拷贝赋值被删除（不可共享）、析构恰好 delete 一次（无双释放）；这些语义只在编译期生效，故运行时无额外字段（与 prop-1 的 sizeof 实测相互印证）。这条依据标准对唯一所有权与析构调用 deleter 的规定，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [unique.ownership]（唯一所有权；拷贝被删除，移动转移）；[unique.single]（析构调用 deleter 释放资源）；cppreference std::unique_ptr（零开销）"
+    evidence: [EV-MEM-011, EV-MEM-012]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

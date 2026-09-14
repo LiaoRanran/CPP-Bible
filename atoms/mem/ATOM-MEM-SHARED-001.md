@@ -20,6 +20,33 @@ claim: >-
   std::shared_ptr<T> 用引用计数实现共享所有权：拷贝 +1、析构 -1，计数归零才释放资源（析构恰好一次）。
   控制块（RAII）管理计数与资源。但它不能自动处理循环引用——两个对象互相 shared_ptr 持有，彼此计数
   为 2，离开作用域后各减到 1 仍互指，计数永不归零 => 泄漏；循环必须用 weak_ptr 打破。
+# 528 任务1：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: shared_ptr 的引用计数与析构
+    predicate: 实测
+    object: make 后 use_count=1、copy 后=2、作用域内=3、离开作用域后=2、box destroyed count=1
+    claim_type: observation
+    statement: 共享所有权的计数与释放：make 后 use_count=1、拷贝后=2、作用域内=3、离开作用域后=2，且 box destroyed count=1（计数归零时恰好析构一次）。
+    evidence: [EV-MEM-013]
+    extracted_by: writer
+  - id: prop-2
+    subject: 互相持有的循环引用
+    predicate: 实测
+    object: a use_count=2、b use_count=2、nodes destroyed count=0（计数永不归零）
+    claim_type: observation
+    statement: 两个对象互相用 shared_ptr 持有时：a 与 b 的 use_count 均为 2，离开作用域后 nodes destroyed count=0（一个都没析构 ⇒ 计数永不归零而泄漏）。
+    evidence: [EV-MEM-014]
+    extracted_by: writer
+  - id: prop-3
+    subject: 循环引用的破法
+    predicate: 必须用
+    object: weak_ptr 打破（shared_ptr 自身不处理环）
+    claim_type: inference
+    statement: shared_ptr 以引用计数实现共享所有权（拷贝加一、析构减一、归零释放），但它**不能**自动处理循环引用——环上的对象彼此把对方计数抬到 2，离开作用域后各减到 1 仍互指 ⇒ 必须用 weak_ptr 打破。这条依据标准对共享所有权与引用计数的规定，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [util.smartptr.shared]（共享所有权、引用计数、归零释放）；[util.smartptr.shared.const]（拷贝 +1、析构 -1）；cppreference std::shared_ptr / std::weak_ptr"
+    evidence: [EV-MEM-013, EV-MEM-014]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]
