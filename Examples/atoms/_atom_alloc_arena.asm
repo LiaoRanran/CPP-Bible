@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_alloc_arena.cpp"
 	.intel_syntax noprefix
 	.text

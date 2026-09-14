@@ -19,6 +19,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_sso_size.cpp -o Examples/atoms/_atom_sso_size.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_sso_size.cpp -o build/_replay_sso_size.exe && ./build/_replay_sso_size.exe
 artifact: Examples/atoms/_atom_sso_size.asm
+artifact_version: 1
 artifact_sha256: 77f1164c3dc0340e09a55718e51adb7dcd9dc8b6a01e03bcbfd4e9670febf7ae
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

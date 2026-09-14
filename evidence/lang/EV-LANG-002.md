@@ -26,6 +26,7 @@ command: |
   g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_b.cpp -o Examples/atoms/_atom_inline_odr_b.asm
   g++ -O2 -std=c++23 -S Examples/atoms/_atom_inline_odr_main.cpp -o Examples/atoms/_atom_inline_odr_main.asm
 artifact: Examples/atoms/_atom_inline_odr_a.asm
+artifact_version: 1
 artifact_sha256: 63c7e3b73ea9646cbad081ba6b8c0a5ad6e5b77f780aebf944ffd65ba15fbc9f
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 serves: [ATOM-LANG-INLINE-001]

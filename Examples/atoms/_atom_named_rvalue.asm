@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_named_rvalue.cpp"
 	.intel_syntax noprefix
 	.text

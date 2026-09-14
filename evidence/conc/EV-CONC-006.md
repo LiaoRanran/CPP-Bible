@@ -15,6 +15,7 @@ command: |
   g++ -O2 -std=c++23 -pthread -DBENCH_FULL Examples/atoms/_atom_data_race.cpp -o build/_replay_data_race.exe && ./build/_replay_data_race.exe
   g++ -O2 -std=c++23 -pthread -DBENCH_FULL -S Examples/atoms/_atom_data_race.cpp -o Examples/atoms/_atom_data_race.asm
 artifact: Examples/atoms/_atom_data_race.asm
+artifact_version: 1
 artifact_sha256: 5c5549aebfb148a053498f173aaa09757a92e180f54e956dc853c4761d2405bc
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 serves: [ATOM-CONC-RACE-001]

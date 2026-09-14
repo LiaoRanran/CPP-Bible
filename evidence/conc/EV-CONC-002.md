@@ -33,6 +33,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_fence_vs_atomic.cpp -o Examples/atoms/_atom_fence_vs_atomic.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_fence_vs_atomic.cpp -o build/_replay_fence_vs_atomic.exe && ./build/_replay_fence_vs_atomic.exe
 artifact: Examples/atoms/_atom_fence_vs_atomic.asm
+artifact_version: 1
 artifact_sha256: 8dd19bc6bf2facc23d1d09aef6ed4b856d0f33e98c36174b96d2893172319cb3
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

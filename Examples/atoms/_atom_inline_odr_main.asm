@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_inline_odr_main.cpp"
 	.text
 	.section .rdata,"dr"

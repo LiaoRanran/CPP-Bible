@@ -17,6 +17,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_perf_move.cpp -o Examples/atoms/_atom_perf_move.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_perf_move.cpp -o build/_replay_perf.exe && ./build/_replay_perf.exe
 artifact: Examples/atoms/_atom_perf_move.asm
+artifact_version: 1
 artifact_sha256: fb588ba4ce07f41f348d528247706c04818548975c9f2dec6e9528e227576f78
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

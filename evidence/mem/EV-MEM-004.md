@@ -21,6 +21,7 @@ command: |          # 产物 exe 必须写 build/（防根级 exe 泄漏被 pre-
   g++ -std=c++17 -O2 Examples/atoms/_atom_named_rvalue.cpp -o build/_atom_named_rvalue.exe && ./build/_atom_named_rvalue.exe
   g++ -std=c++17 -O2 -S -masm=intel Examples/atoms/_atom_named_rvalue.cpp -o Examples/atoms/_atom_named_rvalue.asm
 artifact: Examples/atoms/_atom_named_rvalue.asm
+artifact_version: 1
 artifact_sha256: f9804693137251177c83dea01bab17886ca0ef5f9e88889b07c4c85267f38ab4
 # 2026-09-11 四改：加第三组对照（CopyOnly，无移动构造类型）→ 工件重生成、哈希同步换。
 artifact_compiler: GCC 15.3.0 (MinGW-w64)

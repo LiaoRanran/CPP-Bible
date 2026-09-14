@@ -19,6 +19,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_sso_cost.cpp -o Examples/atoms/_atom_sso_cost.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_sso_cost.cpp -o build/_replay_sso_cost.exe && ./build/_replay_sso_cost.exe
 artifact: Examples/atoms/_atom_sso_cost.asm
+artifact_version: 1
 artifact_sha256: 06579f60872a4111e9ff4a9531e30e1925a54507bafa7e09e329f7cfa754d77e
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

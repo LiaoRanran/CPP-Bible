@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_raii.cpp"
 	.intel_syntax noprefix
 	.text

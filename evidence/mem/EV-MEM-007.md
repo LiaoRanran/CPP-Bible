@@ -18,6 +18,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_value_xvalue.cpp -o Examples/atoms/_atom_value_xvalue.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_value_xvalue.cpp -o build/_replay_xv.exe && ./build/_replay_xv.exe
 artifact: Examples/atoms/_atom_value_xvalue.asm
+artifact_version: 1
 artifact_sha256: 988f921283b0be3977df0ca79baed518ca5d55c9e0b1db5e7b40856b74fa7006
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

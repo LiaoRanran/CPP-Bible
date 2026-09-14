@@ -21,6 +21,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_leak_tree_bug.cpp -o Examples/atoms/_atom_leak_tree_bug.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_leak_tree_bug.cpp -o build/_replay_leak_bug.exe && ./build/_replay_leak_bug.exe
 artifact: Examples/atoms/_atom_leak_tree_bug.asm
+artifact_version: 1
 artifact_sha256: e5a31cca38b9b908028db444fe00e83b06762451f2fadcf287ad82d1ba197db6
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

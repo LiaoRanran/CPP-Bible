@@ -18,6 +18,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_unique_noatomic.cpp -o Examples/atoms/_atom_unique_noatomic.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_unique_noatomic.cpp -o build/_replay_unique_noatomic.exe && ./build/_replay_unique_noatomic.exe
 artifact: Examples/atoms/_atom_unique_noatomic.asm
+artifact_version: 1
 artifact_sha256: 94e96313b81f7d8180adf56c6177f0338c49e4804c73cf9face96478a8ce82ed
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

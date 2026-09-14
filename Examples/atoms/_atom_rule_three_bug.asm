@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_rule_three_bug.cpp"
 	.intel_syntax noprefix
 	.text

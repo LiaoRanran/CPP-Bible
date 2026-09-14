@@ -22,6 +22,7 @@ command: |          # POSIX 语义；产物必须写 build/（仓库源只读）
   g++ -std=c++23 -O2 Examples/atoms/_atom_strict_alias.cpp -o build/_replay_alias.exe && ./build/_replay_alias.exe
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_strict_alias.cpp -o Examples/atoms/_atom_strict_alias.asm
 artifact: Examples/atoms/_atom_strict_alias.asm
+artifact_version: 1
 artifact_sha256: 900a3e43f70ed68bcdf621d907a39996f62ec289fe4e453c910aa435c027575e
 # 2026-09-10 两次重生成：7bbf2506… 是"汇点仍为 32 位"的版本、8de76a9e… 是"宽度已改但提升时机错"
 # 的版本，见下"踩坑"①②③（三次自身 UB 都留痕，最终版才与断言同代）。

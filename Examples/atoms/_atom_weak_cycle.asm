@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_weak_cycle.cpp"
 	.intel_syntax noprefix
 	.text

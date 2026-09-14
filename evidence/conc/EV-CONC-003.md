@@ -14,6 +14,7 @@ command: |
   g++ -O2 -std=c++23 -pthread -DBENCH_FULL Examples/atoms/_atom_lock_cost.cpp -o build/_replay_lock_cost.exe && ./build/_replay_lock_cost.exe
   g++ -O2 -std=c++23 -pthread -DBENCH_FULL -S Examples/atoms/_atom_lock_cost.cpp -o Examples/atoms/_atom_lock_cost.asm
 artifact: Examples/atoms/_atom_lock_cost.asm
+artifact_version: 1
 artifact_sha256: d84c75168df0fda9b032de38efae31f7f51c8cda7eeb187154c53eeba95698f8
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 serves: [ATOM-CONC-LOCK-001]

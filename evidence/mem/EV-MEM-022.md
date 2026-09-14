@@ -18,6 +18,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_fwd_count.cpp -o Examples/atoms/_atom_fwd_count.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_fwd_count.cpp -o build/_replay_fwd_o2.exe && ./build/_replay_fwd_o2.exe
 artifact: Examples/atoms/_atom_fwd_count.asm
+artifact_version: 1
 artifact_sha256: 0df0508167b3f71db6ff8279218a6d76155f42ae865ae4009a88cddac4b092f4
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

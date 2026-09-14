@@ -19,6 +19,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_alloc_pmr.cpp -o Examples/atoms/_atom_alloc_pmr.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_alloc_pmr.cpp -o build/_replay_alloc_pmr.exe && ./build/_replay_alloc_pmr.exe
 artifact: Examples/atoms/_atom_alloc_pmr.asm
+artifact_version: 1
 artifact_sha256: 1a9fc2e41d821784582ff71d626a1bb59ac93fcbd5977be089a2302e3d8a6f42
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

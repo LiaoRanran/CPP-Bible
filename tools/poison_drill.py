@@ -1145,6 +1145,42 @@ def drill() -> int:
     _reason_case("P59-阴 人级签署有理由须放行", "ATOM-MEM-HASREASON",
                  {"verified_reason": "红队 R 报告 + replay confirm 双证据"}, False)
 
+    # ── P60 工件-卡版本漂移（498 任务 2.3/2.4 / 490 版本管理）─────────────────
+    # 三态：①卡 version=2 而工件注解=1 → 必须 **block**（版本漂移）；
+    #       ②两者一致 → 放行；③卡有 artifact 但缺 artifact_version → warn（迁移期）。
+    # 实现要点：本规则读 `ROOT / artifact`，故样例须同时把 `ge.ROOT` 指向沙箱，
+    # 否则会读到真实仓库工件（破坏沙箱隔离）。
+    def _ver_case(name: str, card_ver: str | None, asm_ver: str | None,
+                  want: list[str]) -> None:
+        with sandbox() as tmp:
+            art_rel = "Examples/atoms/_probe_v60.asm"
+            asm = tmp / art_rel
+            asm.parent.mkdir(parents=True, exist_ok=True)
+            head = f"; artifact_version: {asm_ver}\n" if asm_ver else ""
+            asm.write_text(head + '\t.file\t"_probe_v60.cpp"\n', encoding="utf-8")
+            fields = {
+                "id": "EV-MEM-V60", "serves": "[]", "hypothesis": "h", "kind": "asm",
+                "command": "g++ -S x.cpp -o x.asm", "artifact": art_rel,
+                "artifact_sha256": "0" * 64, "verdict": "confirm", "falsification": "f",
+            }
+            if card_ver is not None:
+                fields["artifact_version"] = card_ver
+            _write(ge.EVIDENCE / "mem" / "EV-MEM-V60.md", fields)
+            _orig_root = ge.ROOT
+            ge.ROOT = tmp                       # 让 ROOT/artifact 落在沙箱内
+            try:
+                fs = ge.check_artifact_version_match()
+                who = sorted({f.rule_id for f in fs})
+                lvls = sorted({f.severity for f in fs})
+                ok = ("EV-ARTIFACT-VERSION-MATCH" in who if want else not who) and lvls == want
+                results.append((name, ok, f"级别 {lvls or '（未命中）'}"))
+            finally:
+                ge.ROOT = _orig_root
+
+    _ver_case("P60 版本漂移（卡 2 ≠ 工件 1，须 block）", "2", "1", ["block"])
+    _ver_case("P60-阴 版本一致（1 == 1）须放行", "1", "1", [])
+    _ver_case("P60-阴2 卡缺 artifact_version 须 warn", None, "1", ["warn"])
+
     # ── P47/P48 恒真断言（472 P0-2 / N2）：函数级探针（不真编译，避免与 replay 抢锁）──
     with sandbox() as tmp:
         _art = tmp / "a.asm"
@@ -1250,7 +1286,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
     ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
-    ("P58 ", "A1"), ("P59 ", "A1"),
+    ("P58 ", "A1"), ("P59 ", "A1"), ("P60 ", "A4"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

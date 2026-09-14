@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_inline_odr_b.cpp"
 	.text
 	.p2align 4

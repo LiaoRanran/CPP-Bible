@@ -26,6 +26,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_sso_portable.cpp -o Examples/atoms/_atom_sso_portable.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_sso_portable.cpp -o build/_replay_sso_portable.exe && ./build/_replay_sso_portable.exe
 artifact: Examples/atoms/_atom_sso_portable.asm
+artifact_version: 1
 artifact_sha256: d6bf1d9febd2021bcd61eafdc672dcf0001e560b0cea2e99cec6c9124f4222fd
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

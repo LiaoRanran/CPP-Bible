@@ -28,6 +28,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_leak_detection.cpp -o Examples/atoms/_atom_leak_detection.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_leak_detection.cpp -o build/_replay_leak_detection.exe && ./build/_replay_leak_detection.exe
 artifact: Examples/atoms/_atom_leak_detection.asm
+artifact_version: 1
 artifact_sha256: ed44b0c6e06d2fcfdd88336417838e19eaf67ffb24e2f229d67e4a94a7f7b512
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

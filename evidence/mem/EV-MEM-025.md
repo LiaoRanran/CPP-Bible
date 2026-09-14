@@ -18,6 +18,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_rule_five_noexcept.cpp -o Examples/atoms/_atom_rule_five_noexcept.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_rule_five_noexcept.cpp -o build/_replay_rfn.exe && ./build/_replay_rfn.exe
 artifact: Examples/atoms/_atom_rule_five_noexcept.asm
+artifact_version: 1
 artifact_sha256: 4e6266ec32b5874fbc4d788a97ed787c646d96645a91c6845183e72c34a07232
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

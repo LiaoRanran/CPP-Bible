@@ -19,6 +19,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_rule_three_bug.cpp -o Examples/atoms/_atom_rule_three_bug.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_rule_three_bug.cpp -o build/_replay_rtb.exe && ./build/_replay_rtb.exe
 artifact: Examples/atoms/_atom_rule_three_bug.asm
+artifact_version: 1
 artifact_sha256: 09892f2e6ae5f048fac1d72826aca895858550adc528803c177bd3f1782d2582
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 expected_sanitizer: [leak]   # 观测型析构只计数不释放（有意设计，见 drill_note）：ASan 下必然命中 LeakSanitizer，属 claim 的预期内反向证据

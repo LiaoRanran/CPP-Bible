@@ -30,6 +30,7 @@ command: |
   g++ -std=c++23 -O2 -pthread -S -masm=intel Examples/atoms/_atom_false_sharing_perf.cpp -o Examples/atoms/_atom_false_sharing_perf.asm
   g++ -std=c++23 -O2 -pthread Examples/atoms/_atom_false_sharing_perf.cpp -o build/_replay_false_sharing_perf.exe && ./build/_replay_false_sharing_perf.exe
 artifact: Examples/atoms/_atom_false_sharing_perf.asm
+artifact_version: 1
 artifact_sha256: 590f3e721a564ee0c5cd69fe70364e39cf354b41a50bd1452ca07127bb1a046e
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

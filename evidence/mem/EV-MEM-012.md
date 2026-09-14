@@ -17,6 +17,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_unique_move.cpp -o Examples/atoms/_atom_unique_move.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_unique_move.cpp -o build/_replay_umv.exe && ./build/_replay_umv.exe
 artifact: Examples/atoms/_atom_unique_move.asm
+artifact_version: 1
 artifact_sha256: 23a91759d786ca662ccdb8cbb9f43aded5424541b41e8c5f6d87c9099b710c63
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

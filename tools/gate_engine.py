@@ -1960,6 +1960,61 @@ def check_verify_reason() -> list[Finding]:
     return out
 
 
+# ── 498 任务 2.3 / 490 版本管理：工件-卡版本绑定 ──────────────────────────────
+_ASM_VERSION = re.compile(r"^\s*;?\s*artifact_version:\s*(\d+)", re.M)
+
+
+def check_artifact_version_match() -> list[Finding]:
+    """EV-ARTIFACT-VERSION-MATCH：卡的 `artifact_version` 必须与工件首行注释一致。
+
+    为什么需要（490 §三）：sha256 只能证"重生成产物 == 卡值"，证不了"人检视的那份冻结
+    工件是哪一版"。版本号是**人可读的变更闸门**——改夹具/工件必须递增版本并同步两侧，
+    否则"卡与工件不同代"这件事没有任何机器信号。
+
+    级别（逐字按 498 §2.3 的迁移期设计）：
+      * 卡有 artifact 但缺 `artifact_version` ⇒ **warn**（迁移期不 block）；
+      * 工件缺首行 `; artifact_version:` 注释 ⇒ **warn**；
+      * 两者都有但不相等 ⇒ **block**（真正的版本漂移，必须人处理）。
+
+    **与 sha 的分工（2026-09-14 实测，勿混）**：replay 的 artifact 校验是「删旧工件 →
+    重跑生成命令 → 比卡值 sha256」⇒ 手工加进 `.asm` 的首行注释**不在重生成产物里**。
+    故本规则**只比版本号、不读 sha**：若把卡值同步成"带注释文件"的 sha，全库必然
+    `refute:sha256_mismatch`（实测 EV-CONC-001 期望 3d6f55e6… vs 实际 8dd19bc6…）。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        art = str(meta.get("artifact") or "").strip()
+        if not art:
+            continue                       # 纯 run_match 形态的卡不适用
+        card_ver = str(meta.get("artifact_version") or "").strip()
+        asm = ROOT / art
+        if not asm.is_file():
+            # 工件缺失由 replay 负责判（refute:artifact_absent），此处**不重复报**：
+            # 实测（498）replay 运行期间工件处于「删除 → 重生成 → 还原」中间态，
+            # 此时并行跑 gate 会读到"文件不存在"而瞬时误报——避免并发窗口假信号。
+            continue
+        head = asm.read_bytes()[:200].decode("utf-8", errors="replace")
+        m = _ASM_VERSION.search(head)
+        asm_ver = m.group(1) if m else ""
+        if not card_ver:
+            out.append(Finding(
+                "EV-ARTIFACT-VERSION-MATCH", "warn", _rel(p),
+                f"卡有 artifact（{art}）但缺 artifact_version（迁移期警告）",
+                "补 `artifact_version: <n>`，与工件首行 `; artifact_version: n` 一致"))
+        elif not asm_ver:
+            out.append(Finding(
+                "EV-ARTIFACT-VERSION-MATCH", "warn", _rel(p),
+                f"工件 {art} 缺首行 `; artifact_version:` 注释（迁移期警告）",
+                "跑 `python tools/artifact_version_stamp.py --apply`"))
+        elif card_ver != asm_ver:
+            out.append(Finding(
+                "EV-ARTIFACT-VERSION-MATCH", "block", _rel(p),
+                f"版本漂移：卡 artifact_version={card_ver} ≠ 工件注解={asm_ver}（{art}）",
+                "改夹具/工件后必须递增版本号并同步卡与工件（490 §三）"))
+    return out
+
+
 def check_s2_evidence_verdict() -> list[Finding]:
     """S2 声明-证据绑定：已验证原子引用的证据必须 verdict=confirm（作者自述无效）。"""
     verdicts = {str(_meta(p).get("id") or p.stem): str(_meta(p).get("verdict") or "")
@@ -2214,6 +2269,10 @@ def _register_all() -> None:
          "atom", check_git_author_binding),
         ("ATOM-VERIFY-REASON", "人级签署须写理由（494 任务 5 / 491 决策日志）", "atom",
          check_verify_reason),
+        # 498 任务 2.3：规则级登记 block，但 Finding 分级——缺字段/缺注释=warn（迁移期），
+        # 版本不一致=block（混合级别是刻意的，同 EV-ASSERT-SYMBOL-MAPPED 的先例）
+        ("EV-ARTIFACT-VERSION-MATCH", "工件-卡版本绑定（498 任务 2 / 490 版本管理）",
+         "evidence", check_artifact_version_match),
         ("S2-EVIDENCE-VERDICT", "verified 只绑 verdict=confirm 的证据", "atom",
          check_s2_evidence_verdict),
         ("S3-EXPECTED-HARDCODED", "期望硬编码进夹具=伪证据", "evidence",

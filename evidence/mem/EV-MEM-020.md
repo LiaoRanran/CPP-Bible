@@ -17,6 +17,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_align_ctrl.cpp -o Examples/atoms/_atom_align_ctrl.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_align_ctrl.cpp -o build/_replay_actl.exe && ./build/_replay_actl.exe
 artifact: Examples/atoms/_atom_align_ctrl.asm
+artifact_version: 1
 artifact_sha256: 0e3ffb202d91ab23212ab2897ba8d16f149b1895d459c90e2a3ae14120bdbdde
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

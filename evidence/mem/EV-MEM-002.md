@@ -22,6 +22,7 @@ command: |          # POSIX 语义；产物必须写 build/（仓库源只读）
   g++ -std=c++23 -O2 Examples/atoms/_atom_move_no_gain.cpp -o build/_replay_nogain.exe && ./build/_replay_nogain.exe
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_move_no_gain.cpp -o Examples/atoms/_atom_move_no_gain.asm
 artifact: Examples/atoms/_atom_move_no_gain.asm
+artifact_version: 1
 artifact_sha256: d9f5a254fb21d2f2a05c74fedfbceb28be68aa8ea3361a0792ee4259d66639ff
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:            # 跨编译器可移植的结构断言（身份不匹配时的替代校验）

@@ -20,6 +20,7 @@ command: |
   g++ -std=c++23 -O2 -pthread -S -masm=intel Examples/atoms/_atom_shared_atomic.cpp -o Examples/atoms/_atom_shared_atomic.asm
   g++ -std=c++23 -O2 -pthread Examples/atoms/_atom_shared_atomic.cpp -o build/_replay_shared_atomic.exe && ./build/_replay_shared_atomic.exe
 artifact: Examples/atoms/_atom_shared_atomic.asm
+artifact_version: 1
 artifact_sha256: 2f8097b8b0b7e21636c419f19934225093440bbdf57a7396311e41d70d72a97f
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

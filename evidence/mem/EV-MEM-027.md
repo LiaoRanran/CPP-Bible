@@ -19,6 +19,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_alloc_arena.cpp -o Examples/atoms/_atom_alloc_arena.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_alloc_arena.cpp -o build/_replay_alloc_arena.exe && ./build/_replay_alloc_arena.exe
 artifact: Examples/atoms/_atom_alloc_arena.asm
+artifact_version: 1
 artifact_sha256: e7e7d630dfb8afba4e19e6699bcb87e0c8a86747552bdf42c0c8b5fb6d08cdf3
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

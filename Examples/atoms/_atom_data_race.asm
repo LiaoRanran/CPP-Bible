@@ -1,3 +1,4 @@
+; artifact_version: 1
 	.file	"_atom_data_race.cpp"
 	.text
 	.section	.text$_ZNSt6thread24_M_thread_deps_never_runEv,"x"

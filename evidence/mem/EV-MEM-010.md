@@ -17,6 +17,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_raii_order.cpp -o Examples/atoms/_atom_raii_order.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_raii_order.cpp -o build/_replay_raii_order.exe && ./build/_replay_raii_order.exe
 artifact: Examples/atoms/_atom_raii_order.asm
+artifact_version: 1
 artifact_sha256: fcd2b8d90bfa27074fb944c0faf8a56a347f09561d531fbeeb0ab8c6b4a862fa
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

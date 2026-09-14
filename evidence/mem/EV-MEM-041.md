@@ -22,6 +22,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_alloc_strategies.cpp -o Examples/atoms/_atom_alloc_strategies.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_alloc_strategies.cpp -o build/_replay_alloc_strategies.exe && ./build/_replay_alloc_strategies.exe
 artifact: Examples/atoms/_atom_alloc_strategies.asm
+artifact_version: 1
 artifact_sha256: 4f482fdcdb7ec335d833422dec2a9b2cce85d0e7a45b9550c1e176308c415510
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

@@ -21,6 +21,7 @@ command: |
   g++ -std=c++23 -O2 -S -masm=intel Examples/atoms/_atom_false_sharing.cpp -o Examples/atoms/_atom_false_sharing.asm
   g++ -std=c++23 -O2 Examples/atoms/_atom_false_sharing.cpp -o build/_replay_false_sharing.exe && ./build/_replay_false_sharing.exe
 artifact: Examples/atoms/_atom_false_sharing.asm
+artifact_version: 1
 artifact_sha256: 9a97596f1792a72502bcd84a3d13f203d142e55118309d40ead1ac777d860f80
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
 artifact_assert:

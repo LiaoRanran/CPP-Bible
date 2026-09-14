@@ -20,6 +20,7 @@ command: |          # POSIX 语义；产物必须写 build/（仓库源只读）
   g++ -std=c++14 -Wno-deprecated-declarations -O2 Examples/atoms/_atom_auto_ptr.cpp -o build/_replay_autoptr.exe && ./build/_replay_autoptr.exe
   g++ -std=c++14 -Wno-deprecated-declarations -O2 -S -masm=intel Examples/atoms/_atom_auto_ptr.cpp -o Examples/atoms/_atom_auto_ptr.asm
 artifact: Examples/atoms/_atom_auto_ptr.asm
+artifact_version: 1
 artifact_sha256: b4f993189459e84031d2a6b37f5bf04da88c140c637cb2c37fb7357f6dfdd691
 # 2026-09-10 重生成：旧值 76440eef… 是"尚未加 unique_ptr 移动对照"的版本（见 actual 第三行）。
 artifact_compiler: GCC 15.3.0 (MinGW-w64)
