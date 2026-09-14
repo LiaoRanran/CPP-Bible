@@ -22,6 +22,41 @@ claim: >-
   分配与对象构造是两个独立动作。策略可整体替换：自定义 arena 分配器接入 vector 后 16 次 push_back
   零堆分配；std::pmr（C++17）把策略变成运行时多态——monotonic_buffer_resource 用栈缓冲伺候全部
   分配、全程不触碰上游。
+# 527 批次F 任务E：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: allocator 的分配与构造
+    predicate: 实测为两个独立动作
+    object: allocate 路径 allocs=1 / ctors=0；construct 路径 ctors=2；deallocate 路径 frees=1
+    claim_type: observation
+    statement: 分配与对象构造是两个独立动作：实测 allocate 路径 allocs=1 而 ctors=0（只分配不构造），separate construct 路径 ctors=2、destroy 路径 dtors=2、deallocate 路径 frees=1 ⇒ C++17 后 std::allocator 只剩纯分配层，构造/析构统一走 allocator_traits。
+    evidence: [EV-MEM-026]
+    extracted_by: writer
+  - id: prop-2
+    subject: 自定义 arena 分配器
+    predicate: 接入 vector 后
+    object: calls=5 / bytes=124 / heap_new=0 零堆分配（对照 std::allocator heap_new=5）
+    claim_type: observation
+    statement: 策略可整体替换：自定义 arena 分配器接入 vector 后，16 次 push_back 期间 calls=5、bytes=124、heap_new=0；std::allocator 对照路径 heap_new=5（增长式重分配）。
+    evidence: [EV-MEM-027]
+    extracted_by: writer
+  - id: prop-3
+    subject: std::pmr::monotonic_buffer_resource
+    predicate: 用栈缓冲伺候全部分配时
+    object: upstream_allocs=0（全程不触碰上游）；delegating 对照 res_calls=5 / bytes=124
+    claim_type: observation
+    statement: std::pmr（C++17）把分配策略变成运行时多态：monotonic_buffer_resource 用栈缓冲伺候全部分配，实测 upstream_allocs=0（零堆、全程不触碰上游），而 delegating 路径 res_calls=5、bytes=124（走增长路径、堆支撑）。
+    evidence: [EV-MEM-028]
+    extracted_by: writer
+  - id: prop-4
+    subject: allocator
+    predicate: 在 STL 中的定位是
+    object: 内存策略抽象（容器只经 allocator_traits 要内存，不直接 new/delete）
+    claim_type: inference
+    statement: 把 allocator 定位为"内存策略抽象"（容器只经 allocator_traits 要内存、不直接调 new/delete）——这条定位依赖标准对分配器要求与有状态分配器契约的规定，属解释性表述，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [allocator.requirements]/[allocator.members]（分配器要求与有状态分配器契约）"
+    evidence: [EV-MEM-026]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]   # 机器实测仅 c++23 单档（三卡注明）；两层分离/traits
                                                   # 收口与 pmr 自 C++17 起才成立（C++11/14 下

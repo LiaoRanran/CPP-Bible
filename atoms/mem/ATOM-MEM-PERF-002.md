@@ -22,6 +22,25 @@ claim: >-
   走同一实现路径），len=16 首次落堆。SSO 是实现内建（标准不要求），三实现参数不保证一致
   （libstdc++ 32/15、libc++ 24/22、MSVC 32/15——libc++ 与另两家不同），阈值不可移植。历史：
   C++11 禁 COW 后 libstdc++ 才全面转向 SSO。
+# 527 批次F 任务E：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: SSO 阈值（libstdc++）
+    predicate: 实测为零堆上限
+    object: max_zero_alloc_len=15 / first_heap_len=16（len≤15 时 allocs=0，len=16 起 allocs=1）
+    claim_type: observation
+    statement: 本机 libstdc++（GCC 15.3.0）上 SSO 阈值为 15 字符：实测 len=0/14/15 时 allocs=0，len=16 起 allocs=1，且 max_zero_alloc_len=15、first_heap_len=16。
+    evidence: [EV-MEM-029]
+    extracted_by: writer
+  - id: prop-2
+    subject: SSO
+    predicate: 是
+    object: 实现内建（标准不要求），阈值不可移植
+    claim_type: inference
+    statement: SSO 是实现内建、标准并不要求它，且各实现参数不保证一致（libstdc++ 32/15、libc++ 24/22、MSVC 32/15）——故"阈值不可移植"这一结论依赖标准条文与实现文档，不能由本机单一实现的读数推出。
+    external_basis: "ISO/IEC 14882:2023 [string.requirements]（basic_string 语义不要求 SSO）；cppreference std::basic_string（SSO 为实现惯例、各实现容量差异）"
+    evidence: [EV-MEM-029]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]
