@@ -78,6 +78,8 @@ Thumbs.db
 /data/traces/
 /data/logs/
 /data/knowledge_graph.db*   # 508 任务5：知识图谱是派生物（knowledge_graph.py build 可重建）
+/data/metrics.jsonl         # 508 任务6：度量是时间序列（运行时数据，不入库）
+/data/backups/              # 508 任务7：备份是本地安全网（不入库）
 
 # 审计/软门禁临时输出（dangling_ref_linter / prereq_topo_check 等）
 outputs/
