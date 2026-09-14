@@ -140,6 +140,59 @@ def _infer_type(rel: str | None) -> str:
     return _stub_type(str(rel or ""))
 
 
+CONCEPT_ALIASES = ROOT / "tools" / "concept_aliases.txt"
+
+
+def load_concept_aliases(path: Path | None = None) -> dict[str, str]:
+    """读概念别名表 → {别名(归一化键) : 规范名}。
+
+    格式：`规范名 <- 别名1, 别名2`；`#` 注释；空行忽略。缺文件返回 {}（不报错——
+    别名表是**可选**增强，没它图谱照常建，只是不做归一）。
+    """
+    p = path or CONCEPT_ALIASES
+    try:
+        lines = p.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return {}
+    out: dict[str, str] = {}
+    for ln in lines:
+        body = ln.split("#")[0].strip()
+        if not body or "<-" not in body:
+            continue
+        canon, _, aliases = body.partition("<-")
+        canon = canon.strip()
+        if not canon:
+            continue
+        for a in aliases.split(","):
+            key = a.strip()
+            if key:
+                out[_alias_key(key)] = canon
+    return out
+
+
+def _alias_key(name: str) -> str:
+    """别名匹配键：去首尾空白 + casefold（中文无影响，英文大小写不敏感）。
+
+    **只用于整串匹配**：子串改写会制造胡说（`锁` 是 `自旋锁` 的子串，
+    `fence` 嵌在 `atomic_signal_fence` 里）——概念名是命题级短语，只该整串认。
+    """
+    return name.strip().casefold()
+
+
+def _canon_concept(name: str, aliases: dict[str, str]) -> tuple[str, bool]:
+    """概念名归一：命中别名 → 规范名。返回 (名称, 是否发生改写)。
+
+    未命中也要 `strip()`：概念名是**键**，带首尾空白会分裂成两个节点
+    （`" 栅栏 "` 与 `"栅栏"` 不是同一概念）——调用点虽已 strip，但这是单点职责，
+    不能靠调用方记得。
+    """
+    name = name.strip()
+    canon = aliases.get(_alias_key(name))
+    if canon and canon != name:
+        return canon, True
+    return name, False
+
+
 def build(conn: sqlite3.Connection, *, verbose: bool = True) -> dict:
     """重建图（幂等）：DROP → 建表 → 扫卡 → 插节点/边。返回统计。"""
     conn.executescript("DROP TABLE IF EXISTS edges; DROP TABLE IF EXISTS nodes;"
@@ -252,6 +305,8 @@ def build(conn: sqlite3.Connection, *, verbose: bool = True) -> dict:
     # 只如实反映"目前有多少命题可推理"。
     concepts: dict[str, list[int | set]] = {}   # name -> [props, as_subj, as_obj, atoms]
     cedges: list[tuple] = []
+    aliases = load_concept_aliases()            # 527：概念名归一（Book/ 口语 → 规范名）
+    alias_hits = 0
     for p in ge._cards(ge.ATOMS, "ATOM-*.md"):
         m = _meta(p)
         aid = str(m.get("id") or p.stem)
@@ -260,6 +315,11 @@ def build(conn: sqlite3.Connection, *, verbose: bool = True) -> dict:
             obj = str(pr.get("object") or "").strip()
             if not subj or not obj:
                 continue                        # 三元组不完整 ⇒ 不进概念层（gate 已单独判）
+            # 命题里若写了别名（如 Book/ 口语"栅栏"），先归一到规范名再入图——
+            # 否则同一概念会分裂成两个节点，矛盾检测/覆盖度统计全乱。
+            subj, hit_s = _canon_concept(subj, aliases)
+            obj, hit_o = _canon_concept(obj, aliases)
+            alias_hits += int(hit_s) + int(hit_o)
             pid = str(pr.get("id") or f"prop-{len(cedges) + 1}")
             for name, is_subj in ((subj, True), (obj, False)):
                 slot = concepts.setdefault(name, [0, 0, 0, set()])
@@ -278,12 +338,15 @@ def build(conn: sqlite3.Connection, *, verbose: bool = True) -> dict:
     conn.commit()
     out = {"nodes": len(nodes), "edges": len({(a, b, c) for a, b, c in edges}),
            "unknown_relations": unknown_rel,
-           "concepts": len(concepts), "concept_edges": len(cedges)}
+           "concepts": len(concepts), "concept_edges": len(cedges),
+           "aliases": len(aliases), "alias_hits": alias_hits}
     if verbose:
         print(f"[kg] built {DB.relative_to(ROOT).as_posix()}: "
               f"{out['nodes']} nodes / {out['edges']} edges"
               f" · 概念 {out['concepts']} / 命题边 {out['concept_edges']}"
-              + (f"（未知关系名 {unknown_rel} 条已归 REFERENCES）" if unknown_rel else ""))
+              + (f"（未知关系名 {unknown_rel} 条已归 REFERENCES）" if unknown_rel else "")
+              + (f"｜别名归一 {alias_hits} 处（表 {len(aliases)} 条）"
+                 if aliases else "｜无别名表"))
     return out
 
 
@@ -383,10 +446,13 @@ def concepts(conn: sqlite3.Connection, name: str | None = None) -> dict:
     _need(conn)
     try:
         if name:
+            # 527：查询也走别名（`concepts 栅栏` 应命中规范名「内存屏障(fence)」）——
+            # 526 的原始痛点正是"用户按口语查，图谱按规范名存，于是查不到"。
+            canon, aliased = _canon_concept(name, load_concept_aliases())
             rows = conn.execute(
                 "SELECT src, dst, atom, prop, predicate, claim_type, statement "
                 "FROM concept_edges WHERE src = ? OR dst = ? "
-                "ORDER BY atom, prop", (name, name)).fetchall()
+                "ORDER BY atom, prop", (canon, canon)).fetchall()
             props = [{"subject": s, "predicate": p, "object": d, "atom": a,
                       "prop": pid, "claim_type": ct, "statement": st}
                      for s, d, a, pid, p, ct, st in rows]
@@ -394,8 +460,9 @@ def concepts(conn: sqlite3.Connection, name: str | None = None) -> dict:
             for it in props:
                 kinds[it["claim_type"]] = kinds.get(it["claim_type"], 0) + 1
             info = conn.execute("SELECT props, as_subject, as_object, atoms "
-                                "FROM concepts WHERE name = ?", (name,)).fetchone()
-            return {"concept": name, "found": info is not None,
+                                "FROM concepts WHERE name = ?", (canon,)).fetchone()
+            return {"concept": canon, "query": name, "aliased": aliased,
+                    "found": info is not None,
                     "props": len(props), "claim_types": kinds,
                     "atoms": (info[3].split(",") if info else []),
                     "items": props}
@@ -459,7 +526,9 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         if out.get("concept"):
             print(f"[kg] 概念「{out['concept']}」出现在 {out['props']} 条命题"
-                  f"（{out['claim_types'] or '—'}）涉及原子 {','.join(out['atoms'])}：")
+                  f"（{out['claim_types'] or '—'}）涉及原子 {','.join(out['atoms'])}："
+                  + (f"　[别名解析：{out['query']} → {out['concept']}]"
+                     if out.get("aliased") else ""))
             for it in out["items"]:
                 print(f"   [{it['claim_type'] or '?':<11}] {it['atom']}:{it['prop']}  "
                       f"{it['subject']} —{it['predicate']}→ {it['object']}")

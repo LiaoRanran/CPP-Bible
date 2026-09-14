@@ -140,8 +140,59 @@ def test_concepts_query_lists_props_and_unknown_is_explicit(sandbox: Path,
     lst = kg.concepts(conn)
     assert lst["concepts"] == 3
     assert lst["items"][0]["props"] == 2, "按命题数降序，内存屏障(fence) 应排首位"
-    miss = kg.concepts(conn, "栅栏")               # Book/ 层的口语写法，概念层没有
+    # 526 时"按口语名查不到"是痛点；527 接上别名表后**同一条查询应当查得到**
+    # （栅栏 → 内存屏障(fence)），并有 aliased 标记说明发生了别名解析
+    hit = kg.concepts(conn, "栅栏")
+    assert hit["found"] is True and hit["aliased"] is True, hit
+    assert hit["concept"] == "内存屏障(fence)" and hit["props"] == 2
+    # 真正不存在的概念仍须显式说没有（别把"别名解析"变成"什么都能查到"）
+    miss = kg.concepts(conn, "这个概念不存在")
     assert miss["found"] is False and miss["props"] == 0
+
+
+_ALIAS_PROP = ("\n  - id: prop-1\n    subject: 栅栏\n    predicate: 落在循环体内时\n"
+               "    object: 阻止编译器消除该循环\n    claim_type: observation\n"
+               "    statement: st1\n    extracted_by: writer")
+
+
+def test_alias_table_normalizes_proposition_subject(sandbox: Path, tmp_path: Path,
+                                                   monkeypatch):
+    """527 任务C：命题里若写 Book/ 口语别名，入图前须归一到规范名（否则同概念两个节点）。"""
+    tbl = tmp_path / "aliases.txt"
+    tbl.write_text("# 测试表\n内存屏障(fence) <- 栅栏, memory fence\n"
+                   "互斥量(mutex) <- 互斥锁\n", encoding="utf-8")
+    monkeypatch.setattr(kg, "CONCEPT_ALIASES", tbl)
+    db = tmp_path / "kga.db"
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-AL.md",
+           {"id": "ATOM-MEM-AL", "title": "t", "status": "draft",
+            "claim_structured": _ALIAS_PROP})
+    conn = kg.connect(db)
+    out = kg.build(conn, verbose=False)
+    assert out["aliases"] == 3 and out["alias_hits"] == 1, out   # 仅 subject 命中
+    names = {r["name"] for r in kg.concepts(conn)["items"]}
+    assert "内存屏障(fence)" in names and "栅栏" not in names, names
+    # 查询侧也走别名：按口语名查得到规范名下的命题
+    hit = kg.concepts(conn, "栅栏")
+    assert hit["found"] and hit["aliased"] and hit["concept"] == "内存屏障(fence)", hit
+    assert hit["props"] == 1
+    # 别名表缺失时不得报错（可选增强，不是硬依赖）
+    monkeypatch.setattr(kg, "CONCEPT_ALIASES", tmp_path / "nope.txt")
+    assert kg.load_concept_aliases() == {}
+    assert kg.build(conn, verbose=False)["alias_hits"] == 0
+
+
+def test_alias_matching_is_exact_not_substring(sandbox: Path, tmp_path: Path,
+                                              monkeypatch):
+    """527 任务C（边界）：别名**整串**匹配，不做子串替换（`自旋锁`≠`锁`，`signal_fence`≠`fence`）。"""
+    tbl = tmp_path / "aliases2.txt"
+    tbl.write_text("互斥量(mutex) <- 锁\n内存屏障(fence) <- fence\n", encoding="utf-8")
+    monkeypatch.setattr(kg, "CONCEPT_ALIASES", tbl)
+    al = kg.load_concept_aliases()
+    assert kg._canon_concept("锁", al) == ("互斥量(mutex)", True)
+    assert kg._canon_concept("自旋锁", al) == ("自旋锁", False)
+    assert kg._canon_concept("atomic_signal_fence", al) == ("atomic_signal_fence", False)
+    assert kg._canon_concept("FENCE", al) == ("内存屏障(fence)", True)   # ASCII 大小写不敏感
+    assert kg._canon_concept(" 栅栏 ", al) == ("栅栏", False)             # 不在本表
 
 
 def test_real_repo_graph(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
