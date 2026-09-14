@@ -1123,6 +1123,48 @@ def test_decl_key_parsing_variants():
     assert ge._decl_key("  spaced_key = 7 ") == "spaced_key"
 
 
+# ── 500 任务 3：EV-ARTIFACT-FILE-EXISTS（artifact 不存在 ⇒ block，闭合 M8）──────
+def test_artifact_missing_file_blocks(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务3（阳性）：artifact 指向不存在的文件 ⇒ block（499 第一轮 M8 载荷）。
+
+    修复前该形态只有 warn（EV-ARTIFACT-VERSION-MATCH 的"台账未登记"），卡可直推 verified。
+    """
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    _write_card(sandbox, "EV-MEM-A1.md", id="EV-MEM-A1",
+                artifact="Examples/atoms/_nonexistent_500.asm")
+    hits = ge.check_artifact_file_exists()
+    assert len(hits) == 1 and hits[0].severity == "block", hits
+    assert "_nonexistent_500.asm" in hits[0].message
+
+
+def test_artifact_existing_file_passes(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务3（阴性）：artifact 指向存在文件 ⇒ 放行。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "fx500.asm").write_text("nop\n", encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-A2.md", id="EV-MEM-A2", artifact="fx500.asm")
+    assert ge.check_artifact_file_exists() == []
+
+
+def test_artifact_field_absent_skipped(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务3（边界1）：无 artifact 字段（纯 run_match 形态）⇒ 跳过，不 block 不 warn。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    _write_card(sandbox, "EV-MEM-A3.md", id="EV-MEM-A3",
+                actual="\n  run_match_file: fx.out\n  run_match_keys: [k]")
+    assert ge.check_artifact_file_exists() == [], "无工件字段必须跳过"
+
+
+def test_artifacts_array_missing_one_blocks(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务3（边界2）：artifacts[] 中有一个指向不存在文件 ⇒ block。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "ok500.asm").write_text("nop\n", encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-A4.md", id="EV-MEM-A4", artifact="ok500.asm",
+                artifacts="\n  - {path: ok500.asm}\n  - {path: bad500.asm}")
+    hits = ge.check_artifact_file_exists()
+    assert len(hits) == 1 and hits[0].severity == "block", hits
+    assert "bad500.asm" in hits[0].message
+
+
 def test_out_stale_mtime_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
     """F06：.out 明显旧于夹具（>5s 宽容差）→ warn。"""
     monkeypatch.setattr(ge, "ROOT", sandbox)

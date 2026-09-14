@@ -1786,6 +1786,45 @@ _ZERO_DIAG_RE = re.compile(
     r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
 
 
+def check_artifact_file_exists() -> list[Finding]:
+    """500 任务3（`EV-ARTIFACT-FILE-EXISTS`）：卡声明的 `artifact:` / `artifacts[]` 指向的文件
+    必须真实存在（相对 ROOT）。
+
+    为何：499 第一轮机械变异 M8 实证——把 `artifact:` 改成不存在的路径后，gate 只给
+    **WARN**（来自 `EV-ARTIFACT-VERSION-MATCH` 的"台账未登记"）而不 block，卡照样可直推
+    verified。语义上"工件文件不存在"意味着卡面声称的证据载体**根本不存在**：replay 无对象
+    可复算、`artifact_sha256` 无锚、读者以为有工件可查 ⇒ 与编造证据同构，故 **block**。
+
+    范围（与 500 提示词 3.3 情况 B 一致）：
+      - 查 `artifact:`（单字符串）与 `artifacts[]` 每个元素的 `path`/`file` 字段；
+      - 空 artifact 且无 artifacts[] ⇒ 跳过（纯 run_match 形态的卡没有工件）；
+      - **不查** `Examples/atoms/artifact_versions.json` 台账（旁路元数据；台账路径经卡字段
+        间接覆盖，台账自身完整性另由 `EV-ARTIFACT-VERSION-MATCH` 负责）。
+
+    存量预检（2026-09-14，56 卡）：56 张全有 `artifact:`（2 张另有 `artifacts[]`），
+    **缺失路径 0**；台账 51 条路径全部存在 ⇒ 零误伤。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        rels: list[str] = []
+        ar = meta.get("artifact")
+        if ar and str(ar).strip():
+            rels.append(str(ar).strip())
+        for e in (meta.get("artifacts") or []):
+            rel = e if isinstance(e, str) else (e.get("path") or e.get("file") or "")
+            if str(rel).strip():
+                rels.append(str(rel).strip())
+        miss = [r for r in rels if not (ROOT / r).is_file()]
+        if miss:
+            out.append(Finding(
+                "EV-ARTIFACT-FILE-EXISTS", "block", _rel(p),
+                f"卡声明的工件文件不存在：{sorted(set(miss))}"
+                "（工件不存在 ⇒ 证据载体缺失，replay 无对象可复算、sha 无锚）",
+                "改正 artifact / artifacts[] 路径，或先产出该工件再提交卡"))
+    return out
+
+
 _DIAG_SUPPRESS_RE = re.compile(
     r"#pragma\s+(?:GCC|clang)\s+diagnostic\s+ignored"
     r"|#pragma\s+warning\s*\(\s*disable"
@@ -2368,6 +2407,9 @@ def _register_all() -> None:
          "evidence", check_evidence_assert_symbol_mapped),
         ("EV-ARTIFACT-PRODUCER", "工件产出命令须显式声明、为编译器、且与 command 逐字一致（N4 窄化+373绕过3d）",
          "evidence", check_evidence_artifact_producer),
+        ("EV-ARTIFACT-FILE-EXISTS",
+         "卡声明的 artifact / artifacts[] 文件必须存在（500 任务3：M8 闭合）",
+         "evidence", check_artifact_file_exists),
         ("EV-MSCV-NO-VERIFY", "含 MSVC(cl) 的卡禁止标 confirm（414 F01 免检链）", "evidence",
          check_evidence_msvc_no_verify),
         ("EV-FM-DUP-KEY", "frontmatter 重复键（after-wins 遮蔽，414 F09）", "repo",
