@@ -1,3 +1,10 @@
+---
+id: 387
+title: 可观测性与Agent调试 知道Agent在干什么哪里慢哪里错
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 387 可观测性与 Agent 调试：知道 Agent 在干什么、哪里慢、哪里错
 
 > 日期：2026-09-13。监工完成。374-386 之后的架构升级轮，聚焦**可观测性**——我们只有门禁结果，没有 Agent 内部的可观测性（每步 token、耗时、错误、决策路径）。

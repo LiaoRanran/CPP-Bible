@@ -1,3 +1,10 @@
+---
+id: 429
+title: 架构设计 错误模式库+Writer自检自动转化管道
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 429 架构设计：错误模式库 + Writer 自检自动转化管道
 
 > 日期：2026-09-13。来源：422 反面教训系统化的原则二。当前流程：红队发现 E1/E2 → 人写进自检层 → 下次拦住。问题：人工转化慢，可能遗漏。本文设计 writer_checks.yaml 错误模式库 + 半自动化转化管道。

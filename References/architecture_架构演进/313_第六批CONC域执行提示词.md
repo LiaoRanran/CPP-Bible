@@ -1,3 +1,10 @@
+---
+id: 313
+title: 第六批CONC域执行提示词
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 第六批 CONC 域首批原子生产 — 执行提示词
 
 > 投喂给执行 Agent。先完整读取 312 提示词，再按本提示词的执行顺序推进。

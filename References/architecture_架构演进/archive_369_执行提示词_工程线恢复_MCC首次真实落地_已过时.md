@@ -1,3 +1,10 @@
+---
+id: archive-369
+title: 执行提示词 工程线恢复 MCC首次真实落地 已过时
+status: archived
+type: architecture-note
+created_at: 2026-09-12
+---
 # 369_执行提示词_工程线恢复_MCC首次真实落地（晚上CodeBuddy ds v4.1 flash）
 
 > 投喂对象：CodeBuddy Agent（ds v4.1 flash）。自包含任务书，不依赖对话上下文。

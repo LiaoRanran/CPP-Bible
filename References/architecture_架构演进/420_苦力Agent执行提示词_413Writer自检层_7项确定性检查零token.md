@@ -1,3 +1,10 @@
+---
+id: 420
+title: 苦力Agent执行提示词 413Writer自检层 7项确定性检查零token
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 420 苦力Agent执行提示词：413 Writer 自检层（7 项确定性检查，零 token）
 
 > 投喂对象：苦力Agent。前置条件：无（可与 414 并行）。任务：实现 Writer 自检层，在卡/原子提交前拦住 E1/E2 机械错误，不让它们进入红队。

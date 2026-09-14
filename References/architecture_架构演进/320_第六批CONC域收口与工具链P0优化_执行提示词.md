@@ -1,3 +1,10 @@
+---
+id: 320
+title: 第六批CONC域收口与工具链P0优化 执行提示词
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 320_第六批CONC域收口与工具链P0优化_执行提示词
 
 > 2026-09-12 · 投喂给执行 Agent · 三线并行 · 每条线有独立验收标准

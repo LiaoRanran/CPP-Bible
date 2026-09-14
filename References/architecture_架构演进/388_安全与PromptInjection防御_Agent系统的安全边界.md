@@ -1,3 +1,10 @@
+---
+id: 388
+title: 安全与PromptInjection防御 Agent系统的安全边界
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 388 安全与 Prompt Injection 防御：Agent 系统的安全边界
 
 > 日期：2026-09-13。监工完成。聚焦**安全**——OWASP 2025 LLM Top 10 把提示注入列为首位风险，过度授权第 2。我们的 Agent 读夹具源码、跑编译、写文件，存在间接注入面。

@@ -1,3 +1,10 @@
+---
+id: 343
+title: 第六批CONC域收口与CONC-003生产 执行提示词
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 343_第六批CONC域收口与CONC-003生产_执行提示词
 
 > 2026-09-12 · 投喂Agent执行 · 线B收口 + 线B新生产

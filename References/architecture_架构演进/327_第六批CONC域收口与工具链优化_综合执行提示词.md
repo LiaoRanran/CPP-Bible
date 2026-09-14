@@ -1,3 +1,10 @@
+---
+id: 327
+title: 第六批CONC域收口与工具链优化 综合执行提示词
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 327_第六批CONC域收口与工具链优化_综合执行提示词
 
 > 2026-09-12 · 三线并行 · 覆盖 CONC-002/003 生产 + ccache 优化 + 工具提交 + 文档入库

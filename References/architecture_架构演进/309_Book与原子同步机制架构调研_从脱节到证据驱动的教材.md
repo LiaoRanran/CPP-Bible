@@ -1,3 +1,10 @@
+---
+id: 309
+title: Book与原子同步机制架构调研 从脱节到证据驱动的教材
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 309_Book与原子同步机制架构调研_从脱节到证据驱动的教材
 
 > 2026-09-12 · 当前 Book 151 个文件、23 颗原子，但 Book 引用原子 0 处、原子引用 Book 仅 2 处——完全脱节。

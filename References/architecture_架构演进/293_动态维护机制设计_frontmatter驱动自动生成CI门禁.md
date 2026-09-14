@@ -1,3 +1,10 @@
+---
+id: 293
+title: 动态维护机制设计 frontmatter驱动自动生成CI门禁
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 动态维护机制设计：让分类清洗从「一次性快照」变成「自更新系统」
 
 > 2026-09-12 · 第 293 份。289–292 是静态快照，项目发展就会过时。本文设计动态维护机制：frontmatter 驱动 + 自动生成索引 + CI 门禁，让分类自更新。

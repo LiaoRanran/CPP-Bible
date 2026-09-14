@@ -1,3 +1,10 @@
+---
+id: 272
+title: 执行层架构 脚手架SCAFFOLD Agent上下限宪章
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 执行层架构：脚手架 SCAFFOLD —— 干活的 Agent 上下限宪章
 
 > 2026-09-12。第五轮架构，也是把方向从「知识怎么验证」转向「**干活的 Agent 怎么被托举和约束**」的一轮。

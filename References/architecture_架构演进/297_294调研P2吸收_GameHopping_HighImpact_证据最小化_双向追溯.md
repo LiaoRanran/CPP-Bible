@@ -1,3 +1,10 @@
+---
+id: 297
+title: 294调研P2吸收 GameHopping HighImpact 证据最小化 双向追溯
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 294 P2 吸收落地：Game Hopping 对照实验 · High-Impact 分析 · 证据最小化 · 双向可追溯
 
 > 2026-09-12 · 第 297 份。294 跨领域调研的 P2 动作 8/9/10/11 落地规格。

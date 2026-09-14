@@ -1,3 +1,10 @@
+---
+id: archive-365B
+title: 独立红队Agent 投喂提示词
+status: archived
+type: architecture-note
+created_at: 2026-09-12
+---
 # 365B_独立红队Agent_投喂提示词（干净会话·盲读对抗版）
 
 > 用途：用户另开一个**全新、独立、最好是不同模型**的 Agent 会话，把下面分隔线内全文一次性粘贴。

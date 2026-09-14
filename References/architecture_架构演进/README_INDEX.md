@@ -1,3 +1,10 @@
+---
+id: README_INDEX
+title: README INDEX
+status: active
+type: architecture-note
+created_at: 2026-09-14
+---
 # 架构演进文档索引
 
 > 自动生成，仅作检索用。共 105 份。

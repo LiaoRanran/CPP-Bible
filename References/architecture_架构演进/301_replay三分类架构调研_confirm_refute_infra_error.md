@@ -1,3 +1,10 @@
+---
+id: 301
+title: replay三分类架构调研 confirm refute infra error
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 301_replay三分类架构调研_confirm_refute_infra_error
 
 > 2026-09-12 · G6 §4.1 放权前必修项 · 本文是设计调研，不是实现

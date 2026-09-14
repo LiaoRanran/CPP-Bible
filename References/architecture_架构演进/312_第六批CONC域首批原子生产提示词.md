@@ -1,3 +1,10 @@
+---
+id: 312
+title: 第六批CONC域首批原子生产提示词
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 第六批 CONC 域首批原子生产提示词（v3.2 压缩版）
 
 > 投喂给执行 Agent。原版 v3.1 经三平台实测修正；本版压缩：背景外移、负面约束改写正面、

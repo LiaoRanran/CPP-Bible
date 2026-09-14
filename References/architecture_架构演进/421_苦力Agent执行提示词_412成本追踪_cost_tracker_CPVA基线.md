@@ -1,3 +1,10 @@
+---
+id: 421
+title: 苦力Agent执行提示词 412成本追踪 cost tracker CPVA基线
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 421 苦力Agent执行提示词：412 成本追踪（cost_tracker.py，先测量再优化）
 
 > 投喂对象：苦力Agent。前置条件：无（可与 414/420 并行）。任务：实现成本追踪工具，记录每颗原子的 token 消耗，建立 CPVA（Cost Per Verified Atom）基线。零风险——只记录，不改动生产逻辑。

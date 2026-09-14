@@ -1,3 +1,10 @@
+---
+id: archive-312
+title: backup pre compress
+status: archived
+type: architecture-note
+created_at: 2026-09-12
+---
 # 第六批 CONC 域首批原子生产提示词（v3.1 实测修正版）
 
 > 投喂给执行 Agent。本版经过独立审查（实测 GCC 15.3 MinGW x86-64 + WSL g++-14/13 + riscv64-unknown-elf-g++ 13.2），所有 claim 均以本地产物可证伪为前提。

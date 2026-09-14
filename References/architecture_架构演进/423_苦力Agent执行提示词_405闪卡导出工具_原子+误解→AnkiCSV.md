@@ -1,3 +1,10 @@
+---
+id: 423
+title: 苦力Agent执行提示词 405闪卡导出工具 原子+误解→AnkiCSV
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 423 苦力Agent执行提示词：405 闪卡导出工具（原子+误解 → Anki CSV）
 
 > 投喂对象：苦力Agent。前置条件：无（可与 414/420/421 并行）。任务：把 27 颗 verified 原子 + 80 条误解导出为 Anki 闪卡，让阙疑的知识第一次被学习者消费。零风险——只读不写生产文件。

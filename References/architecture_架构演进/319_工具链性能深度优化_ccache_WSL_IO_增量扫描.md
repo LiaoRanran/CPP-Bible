@@ -1,3 +1,10 @@
+---
+id: 319
+title: 工具链性能深度优化 ccache WSL IO 增量扫描
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 319_工具链性能深度优化_ccache_WSL_IO_增量扫描
 
 > 2026-09-12 · 聚焦工具链本身的性能瓶颈 · 每个优化项都有实测数据支撑

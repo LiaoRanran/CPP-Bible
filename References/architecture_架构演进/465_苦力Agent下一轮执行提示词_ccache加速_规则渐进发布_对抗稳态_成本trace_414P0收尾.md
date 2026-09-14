@@ -1,3 +1,10 @@
+---
+id: 465
+title: 苦力Agent下一轮执行提示词 ccache加速 规则渐进发布 对抗稳态 成本trace 414P0收尾
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 465 · 苦力 Agent 下一轮执行提示词
 
 > 投喂对象：苦力 Agent（便宜模型，确定性杂活）

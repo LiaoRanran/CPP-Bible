@@ -1,3 +1,10 @@
+---
+id: 463
+title: 十轮调研整合 优化报告 覆盖率 CI缓存 文档即代码 知识图谱 Agent评估 幻觉检测 语义检索 AgentUX 上下文管理
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 463 十轮调研整合：优化报告/覆盖率/CI缓存/文档即代码/知识图谱/Agent评估/幻觉检测/语义检索/AgentUX/上下文管理
 
 > 日期：2026-09-13。十个新方向的调研整合。严格执行453证据标准。

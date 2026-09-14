@@ -1,3 +1,10 @@
+---
+id: 495
+title: 阙疑知识图谱推理与跨域迁移 从静态relations到可推理知识系统
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 415 阙疑知识图谱推理与跨域迁移：从静态 relations 到可推理的知识系统
 
 > 日期：2026-09-13。外部调研：CCCE 双向影响分析（知识图谱遍历+自适应决策门控）、CASCADEKG 级联更新（γ^k 多跳加权）、GraphOracle 关系依赖图（RDG）、传递闭包（A→B+B→C⇒A→C）、跨域 ICL 示例吸收阈值、ANALOGYKB 百万级类比库、IsoSci 同构跨域基准（91.3% 推理增益是知识依赖的）、Echo 五维分解（结构/属性/过程/功能/交互）、DOCER 过时引用检测、文档腐烂三类型（引用漂移/概念陈旧/结构衰变）。

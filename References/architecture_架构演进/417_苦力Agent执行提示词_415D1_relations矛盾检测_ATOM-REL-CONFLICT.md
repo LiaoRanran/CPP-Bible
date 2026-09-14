@@ -1,3 +1,10 @@
+---
+id: 417
+title: 苦力Agent执行提示词 415D1 relations矛盾检测 ATOM-REL-CONFLICT
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 417 苦力Agent执行提示词：415 D1 relations 矛盾检测（ATOM-REL-CONFLICT）
 
 > 投喂对象：苦力Agent（纯白嫖模型）。前置条件：414 修复批已完成（尤其 P1-8 F07 relations 纯标量已修）。任务：实现 relations 矛盾检测，让 relations 从"静态声明"变成"互相校验"。

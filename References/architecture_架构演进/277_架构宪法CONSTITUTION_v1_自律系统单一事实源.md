@@ -1,3 +1,10 @@
+---
+id: 277
+title: 架构宪法CONSTITUTION v1 自律系统单一事实源
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 架构宪法 CONSTITUTION v1.0 —— CPP-Bible 自律系统唯一当前生效架构
 
 > 2026-09-12 · 第 277 份。

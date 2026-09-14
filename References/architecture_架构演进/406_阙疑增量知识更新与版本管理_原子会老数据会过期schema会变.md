@@ -1,3 +1,10 @@
+---
+id: 406
+title: 阙疑增量知识更新与版本管理 原子会老数据会过期schema会变
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 406 阙疑增量知识更新与版本管理：原子会老，数据会过期，schema 会变
 
 > 日期：2026-09-13。外部调研：知识库版本管理（SemVer 适配、双时态建模、废弃先于删除、不可变时间点快照）、实证数据新鲜度（SWE-bench-Live 依赖漂移、Prompt CI/CD 不可变 bundle、API 漂移保真度崩落）、知识图谱 schema 演化（数据库迁移式变更、多标签软过渡、加性自由/破坏性双写）。

@@ -1,3 +1,10 @@
+---
+id: 303
+title: Writer阶段预防机制架构调研 把红队拦截前置到自检
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 303_Writer阶段预防机制架构调研_把红队拦截前置到自检
 
 > 2026-09-12 · 解决"吞吐下降"：红队抓出的问题本应在 Writer 阶段避免，而不是事后修复

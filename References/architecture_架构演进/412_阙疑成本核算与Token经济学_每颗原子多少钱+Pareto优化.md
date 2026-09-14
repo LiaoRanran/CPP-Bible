@@ -1,3 +1,10 @@
+---
+id: 412
+title: 阙疑成本核算与Token经济学 每颗原子多少钱+Pareto优化
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 412 阙疑成本核算与 Token 经济学：每颗原子多少钱 + 如何 Pareto 优化
 
 > 日期：2026-09-13。外部调研：任务级成本（Cost Per Task）、Token Efficiency Ratio (TER)、成本归因六维度、模型路由 Pareto 优化（删被支配模型）、连续批处理 2-3x 吞吐、投机解码 2-3 token/验证、Shopify Gisting 6000→1500 token、自动前缀缓存。

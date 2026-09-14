@@ -1,3 +1,10 @@
+---
+id: 415
+title: 知识冲突L1结构检查设计 relations矛盾+serves悬空+误解悬空
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 415 知识冲突 L1 结构检查设计：relations 矛盾 + serves 悬空 + 误解悬空
 
 > 日期：2026-09-13。衔接：404 §四（知识冲突 L1/L2/L3，当前 L1 几乎空白）、409 §二（攻击面 A7 符号映射缺失 / A9 规则逃逸）、413 §二（E4 内容错误需人审，E1/E2 机械）、414 P1-8（F07：relations 纯标量静默丢弃）。

@@ -1,3 +1,10 @@
+---
+id: 470
+title: 今晚Agent干活报告v1 系统安全地基与范式升级
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 470 · 今晚 Agent 干活报告 v2.7（系统安全地基与范式升级）
 
 > **投喂对象**：ds v4.1 flash CodeBuddy（强模型）。

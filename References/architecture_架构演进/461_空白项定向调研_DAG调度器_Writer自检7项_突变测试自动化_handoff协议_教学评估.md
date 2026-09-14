@@ -1,3 +1,10 @@
+---
+id: 461
+title: 空白项定向调研 DAG调度器 Writer自检7项 突变测试自动化 handoff协议 教学评估
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 461 空白项定向调研：DAG调度器、Writer自检7项、突变测试自动化、handoff协议、教学评估
 
 > 日期：2026-09-13。针对460识别的5个后续空白做定向调研。严格执行453证据标准。

@@ -1,3 +1,10 @@
+---
+id: 407
+title: 阙疑提示词压缩与Token成本优化 五层压缩与缓存联合优化
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 407 阙疑提示词压缩与 Token 成本优化：五层压缩 + 缓存联合优化
 
 > 日期：2026-09-13。外部调研：LLMLingua（20× 压缩、LongLLMLingua 4× 压缩反升 21.4%）、Selective Context（自信息剪枝）、Shopify Gisting（主旨词元）、即时加载（JIT Section Loading）、前缀缓存（90% 折扣、命中率 7%→74%）、Cache-Aware Prompt Compression（压缩与缓存的冲突）。

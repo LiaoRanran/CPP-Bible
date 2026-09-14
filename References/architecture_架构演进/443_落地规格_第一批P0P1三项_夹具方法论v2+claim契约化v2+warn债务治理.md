@@ -1,3 +1,10 @@
+---
+id: 443
+title: 落地规格 第一批P0P1三项 夹具方法论v2+claim契约化v2+warn债务治理
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 443 落地规格：第一批 P0/P1 三项（夹具方法论 v2.0 + claim 契约化 v2.0 + warn 债务治理）
 
 > 日期：2026-09-13。基于 442 的依赖排序，第一批 3 项无依赖的 P0/P1 落地规格。本文档是"苦力 Agent 照着做就能完成"的级别，不是架构设计。每项包含：目标、schema 定义、gate 规则、存量处理、验证标准。

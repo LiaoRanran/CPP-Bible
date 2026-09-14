@@ -1,3 +1,10 @@
+---
+id: 273
+title: 压力测试协议 GAUNTLET严考 把架构逼出真问题
+status: active
+type: architecture-note
+created_at: 2026-09-12
+---
 # 压力测试协议：GAUNTLET 严考 —— 把架构逼出真问题
 
 > 2026-09-12。第六轮，但不是架构文档——是**测试协议**。用户指令：「还是太粗糙，我们还得上压力」。

@@ -1,3 +1,10 @@
+---
+id: 430
+title: 苦力Agent大任务包 v7.0工具层全量落地 8子任务串行
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 430 苦力Agent大任务包：v7.0 工具层全量落地（8 子任务串行）
 
 > 投喂对象：苦力Agent。任务：按依赖顺序完成 v7.0 工具层剩余 8 个子任务。每个子任务独立 commit、验证全绿、不 push。前置：417（relations 矛盾检测）已完成，414 的 F07/F08 已完成。

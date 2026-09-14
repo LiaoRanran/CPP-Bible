@@ -1,3 +1,10 @@
+---
+id: 394
+title: 脚手架提升与外置数据库 从Bash脚本到MCP标准从扁平文件到向量加图混合
+status: active
+type: architecture-note
+created_at: 2026-09-13
+---
 # 394 脚手架提升与外置数据库：从 Bash 脚本到 MCP 标准，从扁平文件到向量+图混合
 
 > 日期：2026-09-13。聚焦**脚手架提升**（Agent CLI/工具链/MCP）和**外置数据库**（向量+图混合替代扁平文件）。
