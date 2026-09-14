@@ -1,4 +1,8 @@
-"""470 P0-B 回归锁（452 E05 cat 式证据，experimental 扫描：只记录不参与门禁）。"""
+"""470 P0-B → 472 P1-2 回归锁（452 E05 cat 式证据）。
+
+状态迁移：470 落地为 **experimental**（零 Finding、门禁零影响）→ 472 P1-2 **升 warn**
+（依据：v5 复测实证 exp 零输出时卡照样 confirm 直推 verified；存量 56 卡 0 命中，升格零误伤）。
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -63,10 +67,15 @@ def test_external_path_not_scanned(sb: Path):
     assert ge.check_fixture_no_echo_data([_card(sb, "EV-EXT", "ext.cpp")]) == []
 
 
-def test_not_registered_in_gate_rules(sb: Path):
-    """experimental：不得注册进规则集、不产生 Finding（门禁零影响）。"""
-    ids = {r.id for r in ge.RULES}
-    assert "EV-FIXTURE-NO-ECHO-DATA" not in ids
+def test_promoted_to_warn_rule(sb: Path):
+    """472 P1-2 升格：experimental → 注册为 **warn**（可见化，但不阻断卡）。
+
+    旧断言（`not in ids`）是 470 experimental 阶段的锁，升格后必须同步——
+    否则「升了格但测试仍锁未注册」会让套件长红，掩盖真实回归。
+    """
+    rule = next((r for r in ge.RULES if r.id == "EV-FIXTURE-NO-ECHO-DATA"), None)
+    assert rule is not None, "升格后必须注册进 RULES（--exp-scan 仅留作手工排查）"
+    assert rule.severity == "warn", f"升格只到 warn（存量不可阻断）：{rule.severity}"
     (sb / "cat2.cpp").write_text(
         "#include <cstdio>\n#include <fstream>\n#include <string>\n"
         "int main(){ std::ifstream f(\"data.txt\"); std::string line;\n"
@@ -74,4 +83,6 @@ def test_not_registered_in_gate_rules(sb: Path):
         encoding="utf-8")
     _card(sb, "EV-ECHO2", "cat2.cpp")
     findings = ge.run(include_advice=False)
-    assert all(f.rule_id != "EV-FIXTURE-NO-ECHO-DATA" for f in findings)
+    hits = [f for f in findings if f.rule_id == "EV-FIXTURE-NO-ECHO-DATA"]
+    assert hits, "cat 式证据必须产出 Finding（否则等于没升格，P1-2 失效）"
+    assert all(f.severity == "warn" for f in hits), "命中不得升 block（存量 0 命中，先观察）"
