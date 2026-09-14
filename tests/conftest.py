@@ -43,11 +43,22 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers", "slow: 调用编译器（g++/cl）/ 跑 replay / 跑 poison 的测试")
     config.addinivalue_line(
         "markers", "fast: 纯字符串 / 数据结构 / 规则判断，不调用编译器")
+    config.addinivalue_line(
+        "markers", "serial: 必须串行执行（共享文件锁/端口/固定路径）——"
+                   "xdist 下会被归入同一 worker（xdist_group=serial）")
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list) -> None:
-    """按模块归类打标（不删除、不改写任何测试；标记只影响 -m 过滤）。"""
+    """按模块归类打标（不删除、不改写任何测试；标记只影响 -m 过滤）。
+
+    508 任务1：`serial` 标记的测试统一归入 xdist 组 `serial`（配合 `--dist loadgroup`
+    可保证它们落在同一 worker、彼此串行）。**当前没有任何测试需要它**——508 实测
+    `-n auto` 366 点全绿，说明仓库测试本身并行安全；此处只预留机制，供未来出现
+    "共享文件锁 / 固定端口 / 固定临时路径"类隔离问题时就地打标（无需改测试逻辑）。
+    """
     for item in items:
         mod = Path(str(item.fspath)).name
         item.add_marker(pytest.mark.slow if mod in SLOW_MODULES
                         else pytest.mark.fast)
+        if item.get_closest_marker("serial"):
+            item.add_marker(pytest.mark.xdist_group("serial"))

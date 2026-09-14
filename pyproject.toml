@@ -117,4 +117,9 @@ warn_unused_configs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["tools"]   # 与 tests/conftest.py 的 sys.path 注入等效（pytest>=7）
-addopts = "-q"
+# 508 任务1：pytest-xdist 并行。实测 366 点全绿，wall 227s → 153.8s（−32%）；
+# 剩余耗时下限是 test_json_output.py::test_golden_lock_json（单进程内跑全库 replay
+# 复算，~125s，无法再切分）。`-n auto` 按核数自适应（本机 32 核 → 32 worker）。
+# `--dist loadgroup` 让 `xdist_group("serial")` 真正生效（见 tests/conftest.py 的
+# serial 机制）；无组的测试退化为默认 load 调度，无额外代价。
+addopts = "-q -n auto --dist loadgroup"
