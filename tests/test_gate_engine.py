@@ -1268,6 +1268,84 @@ def test_inference_prop_is_not_rule2_business(sandbox: Path):
     assert ge.check_observation_needs_artifact() == []
 
 
+# ── 526 批次E 规则3：INFERENCE-NOT-MACHINE-VERIFIED（核心放权闸）─────────────
+_INF_PROP = ("\n  - id: prop-2\n    subject: s\n    predicate: p\n    object: o\n"
+             "    claim_type: inference\n    statement: st\n"
+             "    external_basis: ISO/IEC 14882:2023\n    extracted_by: writer")
+# 无 external_basis 变体：block 路径必须用它——否则基准与 sources 同时含 `14882`
+# 会走"已登记 ⇒ 降级 warn"分支，测试看似通过实则没覆盖 block（本批实测踩到）。
+_INF_PROP_NB = _INF_PROP.replace("    external_basis: ISO/IEC 14882:2023\n", "")
+_INDEP_SRC = ("[{kind: iso, ref: 'ISO/IEC 14882:2023 [atomics.order]',"
+              " independent: true}]")
+_MACHINE_HIST = "\n  - {level: verified, at: '2026-09-14', by: machine:gate}"
+
+
+def test_inference_machine_only_verified_blocks(sandbox: Path):
+    """526 规则3（阳性）：verified + inference 命题 + 只有机器签署 ⇒ block。"""
+    _write_atom(sandbox, "ATOM-MEM-INFV-001.md", "mem", id="ATOM-MEM-INFV-001",
+                status="verified", sources=_INDEP_SRC,
+                claim_structured=_INF_PROP_NB, status_history=_MACHINE_HIST)
+    hits = ge.check_inference_not_machine_verified()
+    assert len(hits) == 1 and hits[0].severity == "block", hits
+    assert "prop-2" in hits[0].message
+    # 有基准但**未登记**（sources 里没有该标识）⇒ 同属"未背书"，仍 block
+    _write_atom(sandbox, "ATOM-MEM-INFV-007.md", "mem", id="ATOM-MEM-INFV-007",
+                status="verified",
+                sources="[{kind: mail, ref: 'someone said so', independent: true}]",
+                claim_structured=_INF_PROP, status_history=_MACHINE_HIST)
+    h7 = [f for f in ge.check_inference_not_machine_verified()
+          if "ATOM-MEM-INFV-007" in f.target]
+    assert h7 and h7[0].severity == "block", h7
+
+
+def test_inference_with_human_signoff_passes(sandbox: Path):
+    """526 规则3（阴性1）：status_history 有在册人级签署 ⇒ 放行。"""
+    _write_atom(sandbox, "ATOM-MEM-INFV-002.md", "mem", id="ATOM-MEM-INFV-002",
+                status="verified", sources=_INDEP_SRC, claim_structured=_INF_PROP,
+                status_history="\n  - {level: verified, at: '2026-09-14',"
+                               " by: human:liaoranran}")
+    assert ge.check_inference_not_machine_verified() == []
+
+
+def test_inference_registered_basis_downgrades_to_warn(sandbox: Path):
+    """526 规则3（阴性2）：无签署但 external_basis 已登记为独立来源 ⇒ 降级 warn。"""
+    _write_atom(sandbox, "ATOM-MEM-INFV-003.md", "mem", id="ATOM-MEM-INFV-003",
+                status="verified", sources=_INDEP_SRC, claim_structured=_INF_PROP,
+                status_history=_MACHINE_HIST)
+    hits = ge.check_inference_not_machine_verified()
+    assert len(hits) == 1 and hits[0].severity == "warn", hits
+    # 反向：来源存在但 **independent 非 true** ⇒ 不算独立佐证 ⇒ 仍 block
+    _write_atom(sandbox, "ATOM-MEM-INFV-004.md", "mem", id="ATOM-MEM-INFV-004",
+                status="verified",
+                sources="[{kind: blog, ref: 'ISO/IEC 14882:2023 x',"
+                        " independent: false}]",
+                claim_structured=_INF_PROP, status_history=_MACHINE_HIST)
+    h2 = [f for f in ge.check_inference_not_machine_verified()
+          if "ATOM-MEM-INFV-004" in f.target]
+    assert h2 and h2[0].severity == "block", h2
+
+
+def test_inference_empty_name_signoff_still_blocks(sandbox: Path):
+    """526 规则3（边界·P13 形态）：`by: human:`（无实名）不算签署 ⇒ 仍 block。
+
+    这条钉住的是"复用 principal_ok 单点"这个实现选择：若改成 naive 的
+    `startswith("human:")`，本测试立刻变红（空名签收会放行）。
+    """
+    _write_atom(sandbox, "ATOM-MEM-INFV-005.md", "mem", id="ATOM-MEM-INFV-005",
+                status="verified", sources=_INDEP_SRC,
+                claim_structured=_INF_PROP_NB,
+                status_history="\n  - {level: verified, at: '2026-09-14', by: human:}")
+    hits = ge.check_inference_not_machine_verified()
+    assert hits and hits[0].severity == "block", hits
+
+
+def test_draft_inference_is_not_this_rule_business(sandbox: Path):
+    """526 规则3（边界）：draft 卡的 inference 命题不由本规则管（闸门只拦"晋升"）。"""
+    _write_atom(sandbox, "ATOM-MEM-INFV-006.md", "mem", id="ATOM-MEM-INFV-006",
+                status="draft", sources=_INDEP_SRC, claim_structured=_INF_PROP)
+    assert ge.check_inference_not_machine_verified() == []
+
+
 def test_out_stale_mtime_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
     """F06：.out 明显旧于夹具（>5s 宽容差）→ warn。"""
     monkeypatch.setattr(ge, "ROOT", sandbox)

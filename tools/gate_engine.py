@@ -1957,6 +1957,97 @@ def check_observation_needs_artifact() -> list[Finding]:
     return out
 
 
+_BASIS_TOKEN_RE = re.compile(r"\d{5,}|[A-Za-z][A-Za-z0-9_]{5,}")
+
+
+def _has_human_signoff(meta: dict) -> bool:
+    """卡上是否已有**合法**的人级签署（`status_history` 里某条 by 通过人级判定）。
+
+    刻意复用 `principal_ok` 这个单点，而不是写 `startswith("human:")`：
+    后者会把 `human:`（空名）、`human:随便谁`（非在册）当成有效签署——
+    那正是 P13「空名签收」漏洞的形态（373-P0-B9 已确立单点判定）。
+    """
+    for e in _as_list(meta.get("status_history")):
+        if isinstance(e, dict) and principal_ok(str(e.get("by") or ""), ("human:",))[0]:
+            return True
+    return False
+
+
+def _basis_registered(meta: dict, basis: str) -> bool:
+    """`external_basis` 是否已登记在 `sources`（且该来源 `independent: true`）里。
+
+    匹配口径：取基准里的**标准标识 token**（≥5 位数字如 `14882`，或 ≥6 字符英文标识
+    如 `cppreference` / `atomic_thread_fence` / 提交哈希），只要有一个出现在某个
+    independent 来源的 `ref` 里即算登记。
+
+    为何不做精确串比：基准的写法天然碎片化（基准写 "ISO/IEC 14882:2023 [atomics.order]"
+    而来源 ref 写 "[intro.progress]"），精确比会把**已登记**的判成未登记 ⇒ 逼人重写措辞。
+    为何不把 4 位数字当 token：`2023` 这类年份会与任何引用了 2023 年标准的来源撞车，
+    那会让"未登记却降级"成为常态（闸门失效）。宁可要求至少一个更强的标识。
+    """
+    toks = set(_BASIS_TOKEN_RE.findall(basis or ""))
+    if not toks:
+        return False
+    for s in _as_list(meta.get("sources")):
+        if not isinstance(s, dict):
+            continue
+        if str(s.get("independent")).strip().lower() not in ("true", "yes", "1"):
+            continue
+        ref = str(s.get("ref") or "")
+        if any(t in ref for t in toks):
+            return True
+    return False
+
+
+def check_inference_not_machine_verified() -> list[Finding]:
+    """`INFERENCE-NOT-MACHINE-VERIFIED`（526 规则3，**block**：核心放权闸）。
+
+    为何：inference 是"推断"，它的成立依赖人的判断或外部标准的背书——机器复算再绿
+    也**不能**把它推上 verified（机器只能证明"编译产物确实如此"，证明不了"这层解释对"）。
+    526 §八 的 L3 含义正在这里：放权粒度从"整张卡"细化到"逐条命题"——observation 可以
+    全自动，inference 必须有人或独立标准源背书。
+
+    判据：原子 status=verified，且卡上有 inference 命题，但 `status_history` 里
+    **没有合法的人级签署** ⇒ block。注意判据作用在**卡级签署**上（G6 的 verified 是卡级
+    状态，命题级签署尚无载体）；一条 inference 命题有合法人签即整卡放行——这是当前
+    数据模型的边界，不是漏洞的豁免（记入 worklog 待下一批细化到命题级）。
+
+    **降级为 warn** 的唯一通道：该 inference 命题带 `external_basis`，且该基准已登记在
+    `sources` 的 `independent: true` 来源里（标准源视同独立佐证）。
+    `extracted_by` 与本规则无关（它只记录抽取者，不构成背书）。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        infs = [pr for pr in _claim_props(meta)
+                if str(pr.get("claim_type") or "").strip() == "inference"]
+        if not infs or str(meta.get("status") or "").strip() not in VERIFIED_STATUSES:
+            continue
+        if _has_human_signoff(meta):
+            continue
+        for pr in infs:
+            pid = str(pr.get("id") or "?")
+            basis = str(pr.get("external_basis") or "").strip()
+            if basis and _basis_registered(meta, basis):
+                out.append(Finding(
+                    "INFERENCE-NOT-MACHINE-VERIFIED", "warn", _rel(p),
+                    f"命题 {pid}（inference）无合法人级签署，但 external_basis 已登记为"
+                    f"独立来源 ⇒ 降级 warn（标准源视同独立佐证）",
+                    "若要彻底消警：补 human:<在册实名> 签署，或确认该标准源足以背书"))
+            else:
+                why = ("external_basis 缺失" if not basis
+                       else f"external_basis「{basis[:60]}」未登记在 sources(independent: true)")
+                out.append(Finding(
+                    "INFERENCE-NOT-MACHINE-VERIFIED", "block", _rel(p),
+                    f"命题 {pid}（inference）所在卡为 verified，却无合法人级签署"
+                    f"（{why}）",
+                    "inference 不能由机器（哪怕 replay 全绿）独自晋升 verified："
+                    "补 status_history 的 human:<在册实名> 签署，或把该基准登记进 "
+                    "sources（kind/ref + independent: true）后按 warn 观察；"
+                    "若这条其实是可直接观测的，改 claim_type=observation 并挂工件断言"))
+    return out
+
+
 def check_artifact_file_exists() -> list[Finding]:
     """500 任务3（`EV-ARTIFACT-FILE-EXISTS`）：卡声明的 `artifact:` / `artifacts[]` 指向的文件
     必须真实存在（相对 ROOT）。
@@ -2597,6 +2688,9 @@ def _register_all() -> None:
         ("OBSERVATION-NEEDS-ARTIFACT",
          "observation 命题须有工件断言支撑（526 规则2：零容忍）",
          "atom", check_observation_needs_artifact),
+        ("INFERENCE-NOT-MACHINE-VERIFIED",
+         "inference 命题不得由机器独自晋升（526 规则3：核心放权闸）",
+         "atom", check_inference_not_machine_verified),
         ("EV-FIXTURE-NO-ECHO-DATA", "cat 式证据（472 P1-2：experimental→warn，读文件原样打印）",
          "evidence", check_fixture_no_echo_findings),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",

@@ -1352,6 +1352,62 @@ def drill() -> int:
     results.append(("P64-阴2 observation 未声明 evidence 须 block", ok,
                     f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # P65（526 规则3 INFERENCE-NOT-MACHINE-VERIFIED）：推断类结论不得由机器独自晋升
+    _inf_prop = ("\n  - id: prop-2\n    subject: s\n    predicate: p\n    object: o\n"
+                 "    claim_type: inference\n    statement: st\n"
+                 "    external_basis: ISO/IEC 14882:2023\n    extracted_by: writer")
+    # **无 external_basis** 变体：P65 与 P65-阴3 用它——否则基准与 sources 同时含
+    # `14882` 会走"已登记⇒降级 warn"分支，positive 样例就测不到 block 路径了
+    # （本批实测踩到：只断言规则 id 会让"命中降级路径"假通过）。
+    _inf_prop_nb = _inf_prop.replace("    external_basis: ISO/IEC 14882:2023\n", "")
+    _v_base = dict(_a_base, status="verified",
+                   sources="[{kind: iso, ref: 'ISO/IEC 14882:2023 [atomics.order]',"
+                           " independent: true}]")
+    _hist_machine = ("\n  - {level: verified, at: '2026-09-14', by: machine:gate}")
+    who = _atom_who(
+        [("ATOM-MEM-P65.md", dict(_v_base, id="ATOM-MEM-P65",
+                                  claim_structured=_inf_prop_nb,
+                                  status_history=_hist_machine))],
+        ge.check_inference_not_machine_verified)
+    ok = "INFERENCE-NOT-MACHINE-VERIFIED" in who
+    results.append(("P65 inference 机器独自晋升 verified 须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+    # P65-阴1：external_basis 已登记为独立来源 ⇒ 降级 warn（不是 block）
+    with sandbox() as tmp:
+        _orig_root = ge.ROOT
+        ge.ROOT = tmp
+        try:
+            _write(tmp / "atoms" / "mem" / "ATOM-MEM-P65N.md",
+                   dict(_v_base, id="ATOM-MEM-P65N", claim_structured=_inf_prop,
+                        status_history="\n  - {level: verified, at: '2026-09-14',"
+                                       " by: machine:gate}"))
+            _fs = ge.check_inference_not_machine_verified()
+        finally:
+            ge.ROOT = _orig_root
+    ok = bool(_fs) and all(f.severity == "warn" for f in _fs)
+    results.append(("P65-阴1 basis 已登记独立来源 ⇒ 降级 warn", ok,
+                    f"严重度 {[f.severity for f in _fs] or '（无命中）'}"))
+    # P65-阴2：有人级签署（在册实名）⇒ 放行
+    _hist_human = ("\n  - {level: verified, at: '2026-09-14', by: human:liaoranran}")
+    who = _atom_who(
+        [("ATOM-MEM-P65H.md", dict(_v_base, id="ATOM-MEM-P65H",
+                                   claim_structured=_inf_prop,
+                                   status_history=_hist_human))],
+        ge.check_inference_not_machine_verified)
+    ok = not who
+    results.append(("P65-阴2 有在册人签须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+    # P65-阴3：**空名签收**（`by: human:`，P13 形态）不得算有效签署 ⇒ 仍须 block
+    who = _atom_who(
+        [("ATOM-MEM-P65E.md", dict(_v_base, id="ATOM-MEM-P65E",
+                                   claim_structured=_inf_prop_nb,
+                                   status_history="\n  - {level: verified,"
+                                                  " at: '2026-09-14', by: human:}"))],
+        ge.check_inference_not_machine_verified)
+    ok = "INFERENCE-NOT-MACHINE-VERIFIED" in who
+    results.append(("P65-阴3 空名签收（human: 无实名）不算签署须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
