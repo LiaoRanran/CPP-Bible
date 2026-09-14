@@ -51,7 +51,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Callable, Sequence
 
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "evidence"
@@ -1429,6 +1429,99 @@ def find_cards() -> list[Path]:
     return sorted(p for p in EVIDENCE.rglob("EV-*.md"))
 
 
+# ── 498 任务 5 / P0-1：增量 replay ──────────────────────────────────────────
+# 动机：全量约 5 分钟（每卡真编译 + P0-A 独立重编译），而日常改动通常只碰少数几张卡。
+# 设计：以「卡 + fixture + artifact」三者内容的 sha256 为指纹，指纹未变且上次 confirm 的卡
+# 直接 skip。**不动 replay_card() 的校验逻辑**（只过滤选卡），锁与三分类语义保持不变。
+MANIFEST = ROOT / "build" / "replay_manifest.json"
+
+
+def _manifest_key(card: Path) -> str:
+    try:
+        return card.relative_to(ROOT).as_posix()
+    except ValueError:                      # 卡在仓库外（--card 指临时路径）
+        return card.as_posix()
+
+
+def card_fingerprint(card: Path, calc_root: Path | None = None) -> str:
+    """指纹 = sha256(卡内容 ‖ fixture 内容 ‖ artifact 内容)。
+
+    任一指明文件缺失 ⇒ 返回 `"MISSING"`（**强制重跑**）：不能因为"读不到夹具"就沿用旧结论。
+    """
+    root = calc_root or ROOT
+    try:
+        raw = card.read_bytes()
+    except OSError:
+        return "MISSING"
+    h = hashlib.sha256()
+    h.update(raw)
+    meta = parse_frontmatter(raw.decode("utf-8", errors="replace"))
+    for key in ("fixture", "artifact"):
+        rel = str(meta.get(key) or "").strip()
+        if not rel:
+            continue
+        f = root / rel
+        if not f.is_file():
+            return "MISSING"
+        h.update(f.read_bytes())
+    return h.hexdigest()
+
+
+def select_incremental(cards: list[Path], manifest: dict,
+                       calc: Callable[[Path], str] | None = None
+                       ) -> tuple[list[Path], list[Path]]:
+    """纯函数：返回 (to_run, to_skip)。
+
+    规则（498 §任务5 step3，逐条）：
+      * manifest 无记录（新卡）⇒ 跑；
+      * 指纹变了（卡/夹具/工件任一改动）⇒ 跑；
+      * 指纹相同且上次 verdict == confirm ⇒ skip；
+      * 指纹相同但上次非 confirm ⇒ 跑（失败卡每次重试，不静默沿用失败）；
+      * 指纹 == `MISSING` ⇒ 跑。
+    """
+    fn = calc or card_fingerprint
+    to_run: list[Path] = []
+    to_skip: list[Path] = []
+    for c in cards:
+        rec = manifest.get(_manifest_key(c)) or {}
+        fp = fn(c)
+        if (fp != "MISSING" and rec.get("fingerprint") == fp
+                and rec.get("verdict") == "confirm"):
+            to_skip.append(c)
+        else:
+            to_run.append(c)
+    return to_run, to_skip
+
+
+def load_manifest() -> dict:
+    if not MANIFEST.is_file():
+        return {}
+    try:
+        data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}                       # 损坏 ⇒ 当作无 manifest（全量跑，宁可多跑不可漏跑）
+
+
+def update_manifest(manifest: dict, verdicts: list[tuple[Path, str]]) -> dict:
+    """把本次跑过的卡写入 manifest；skip 的保留原记录；被删的卡移除。"""
+    alive = {k: v for k, v in manifest.items() if (ROOT / k).is_file()}
+    for card, verdict in verdicts:
+        alive[_manifest_key(card)] = {
+            "fingerprint": card_fingerprint(card),
+            "verdict": verdict,
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        }
+    return alive
+
+
+def save_manifest(manifest: dict) -> Path:
+    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+    MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n",
+                        encoding="utf-8")
+    return MANIFEST
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="证据卡机器复算（confirm / refute / infra_error）")
     ap.add_argument("--card", action="append", default=[], help="指定证据卡（可多次）")
@@ -1441,6 +1534,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     help="结构化 JSON 输出到 stdout")
     ap.add_argument("--no-ccache", action="store_true",
                     help="禁用 ccache 前缀（479 任务 3；默认启用，不可用时自动回退）")
+    ap.add_argument("--incremental", action="store_true",
+                    help="只重跑指纹变化的卡（498 P0-1；清单 build/replay_manifest.json）")
+    ap.add_argument("--rebuild-manifest", action="store_true",
+                    help="忽略现有清单，全量跑并重建（498 P0-1）")
     a = ap.parse_args(argv)
     global CCACHE_ENABLED
     CCACHE_ENABLED = not a.no_ccache
@@ -1449,6 +1546,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     if not cards:
         print("[replay] 未找到证据卡（evidence/**/EV-*.md）")
         return 0
+
+    full_scan = not a.card                  # 单卡模式（--card）不维护清单，避免收窄
+    n_skip = 0
+    if a.incremental:
+        cards, skipped = select_incremental(cards, {} if a.rebuild_manifest
+                                            else load_manifest())
+        n_skip = len(skipped)
+        for c in skipped:
+            print(f"SKIP {_manifest_key(c)}")
+        if not cards:
+            print(f"[replay] 增量模式：{n_skip} 张卡全部命中缓存（无变化，未跑编译）")
+            return 0
 
     n_ok = n_refute = n_infra = 0
     verdicts: list[tuple[Path, str]] = []
@@ -1466,6 +1575,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("\n".join(log))
         print(f"  → {verdict}\n")
     print(f"[replay] confirm={n_ok} refute={n_refute} infra_error={n_infra} 共 {len(cards)} 张卡")
+    if n_skip:
+        print(f"[replay] {len(verdicts)} run / {n_skip} skip / {n_refute} refute（增量模式）")
+    if full_scan:
+        # 498 §任务5 step4：全量扫描跑完就更新清单（首次全量即建基准；--rebuild 时整表重建）
+        save_manifest(update_manifest({} if a.rebuild_manifest else load_manifest(),
+                                      verdicts))
+        print(f"[replay] 清单已更新：{MANIFEST.relative_to(ROOT).as_posix()}"
+              f"（本次实跑 {len(verdicts)} 张）")
 
     real_out = sys.stdout
     if a.json:
