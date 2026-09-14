@@ -27,6 +27,7 @@ import argparse
 import ast
 import json
 import re
+import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -1826,6 +1827,91 @@ def check_s1_human_signoff() -> list[Finding]:
     return out
 
 
+# ── 479 任务 4 / 472 待裁决项 1：E12 签收 × git 作者绑定（观察期 warn）──────────
+_GIT_AUTHOR_CACHE: dict[str, tuple[str, str] | None] = {}
+
+
+def _git_author_for(path: Path) -> tuple[str, str] | None:
+    """该文件最后一次 git 提交的 (作者名, 邮箱)；git 不可用/无记录 → None。
+
+    *只读观察*：CI 浅克隆、无 git、路径未入库等情形一律 None ⇒ 调用方跳过，**不报警**
+    （gate 不应因环境差异改变结论）。单文件一次调用、结果缓存（27 个原子约 1.5s）。
+    """
+    key = str(path)
+    if key in _GIT_AUTHOR_CACHE:
+        return _GIT_AUTHOR_CACHE[key]
+    out: tuple[str, str] | None = None
+    try:
+        r = subprocess.run(
+            ["git", "log", "-1", "--format=%an%x1f%ae", "--", str(path)],
+            cwd=str(ROOT), capture_output=True, text=True, errors="replace", timeout=10)
+        if r.returncode == 0 and r.stdout.strip():
+            name, _, mail = r.stdout.strip().partition("\x1f")
+            out = (name.strip(), mail.strip())
+    except (OSError, subprocess.SubprocessError):
+        out = None
+    _GIT_AUTHOR_CACHE[key] = out
+    return out
+
+
+def _author_matches(principal: str, author: tuple[str, str]) -> bool:
+    """宽松匹配：签收名 vs git 作者名/邮箱（大小写与分隔符不敏感，包含即通过）。
+
+    宽松的理由：本规则是观察期的「是否同一人」提示，不是身份认证；精确匹配会被
+    `LiaoRanran` / `liaoranran` / `liaoranran@…` 这类形式差异淹掉，逼出假警。
+    """
+    def _norm(s: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", s.lower())
+
+    p = _norm(principal)
+    if not p:
+        return True                    # 空名由 S1-AUTHOR-SELF-VERIFY / principal_ok 管
+    return p in _norm(author[0]) or p in _norm(author[1])
+
+
+def check_git_author_binding() -> list[Finding]:
+    """S1-GIT-AUTHOR-BINDING（479 任务 4）：人级签收须与 git 作者一致 → warn。
+
+    问题（v5 报告 E12，472 待裁决项 1）：`human:liaoranran` 自签**零 block 零 warn**——
+    签收机制只验「名字在册」，不验「签字者与产出者是否同一人」，任何人抄上在册名即生效。
+
+    本规则做**可机器核实的下限**：人级签收（`status_history[*].by: human:*` 或
+    `verified_by: human:*`）必须与该文件最后一次 git 提交的作者匹配 ⇒ 否则 warn。
+
+    为什么停在 warn（不 block），三条硬理由：
+      ① 「甲写卡、乙复核」在协作下是合法流程，git 作者不足以证伪签收；
+      ② 存量文件的最后 git 作者会被改写/迁移/合并改变，block 会砸历史（非本代罪）；
+      ③ 479 明确定档为**观察期**。
+    升 block 的前置：观察期实测零误伤 + 「签收必须本人」写进 G6 规范。
+    """
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        principals: list[str] = []
+        for h in _as_list(meta.get("status_history")):
+            if isinstance(h, dict):
+                by = str(h.get("by") or "").strip()
+                if by.lower().startswith("human:"):
+                    principals.append(by.split(":", 1)[1].strip())
+        vb = str(meta.get("verified_by") or "").strip()
+        if vb.lower().startswith("human:"):
+            principals.append(vb.split(":", 1)[1].strip())
+        principals = sorted({x for x in principals if x})
+        if not principals:
+            continue
+        author = _git_author_for(p)
+        if author is None:
+            continue                       # git 不可用 → 跳过（不报警，见 docstring）
+        mismatch = [x for x in principals if not _author_matches(x, author)]
+        if mismatch:
+            out.append(Finding(
+                "S1-GIT-AUTHOR-BINDING", "warn", _rel(p),
+                f"人级签收 {mismatch} 与该文件 git 作者 {author[0]} <{author[1]}> 不匹配"
+                f"（观察期：只提示不阻断）",
+                "确认签收人与产出者同一人；若为代签，在卡内留痕代签人与理由"))
+    return out
+
+
 def check_s2_evidence_verdict() -> list[Finding]:
     """S2 声明-证据绑定：已验证原子引用的证据必须 verdict=confirm（作者自述无效）。"""
     verdicts = {str(_meta(p).get("id") or p.stem): str(_meta(p).get("verdict") or "")
@@ -2076,6 +2162,8 @@ def _register_all() -> None:
         ("META-MANIFEST", "双清单一致（ADR-0004）", "repo", check_manifest_consistency),
         ("S1-AUTHOR-SELF-VERIFY", "verified 须人工签收（Agent 无权定 golden）", "atom",
          check_s1_human_signoff),
+        ("S1-GIT-AUTHOR-BINDING", "人级签收须与 git 作者一致（479 任务 4，观察期 warn）",
+         "atom", check_git_author_binding),
         ("S2-EVIDENCE-VERDICT", "verified 只绑 verdict=confirm 的证据", "atom",
          check_s2_evidence_verdict),
         ("S3-EXPECTED-HARDCODED", "期望硬编码进夹具=伪证据", "evidence",
@@ -2133,6 +2221,9 @@ def _register_all() -> None:
            "ATOM-REL-UNKNOWN": "warn",
            # 472 P1-2：cat 式证据（存量实测 0 命中，升 warn 不误伤）
            "EV-FIXTURE-NO-ECHO-DATA": "warn",
+           # 479 任务 4：E12 签收 × git 作者绑定——观察期只 warn（协作代签/历史迁移都会命中，
+           # 升 block 的前置是「观察期零误伤 + 签收必须本人写进 G6 规范」）
+           "S1-GIT-AUTHOR-BINDING": "warn",
            # （EV-ASSERT-SYMBOL-MAPPED 规则级登记为 block：通用符号载荷一律拦；
            #   单条 Finding 对"疑似拼写差异"降为 warn，故混合级别是刻意的）
            }

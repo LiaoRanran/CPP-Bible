@@ -1072,6 +1072,49 @@ def drill() -> int:
         results.append(("P57 cat 式证据须被拦（升 warn 后）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
+    # ── P58 签收者与 git 作者不符（479 任务 4 / v5-E12，观察期 warn）──────────
+    # v5 报告 E12：`human:liaoranran` 自签零 block 零 warn —— 签收机制只验「名字在册」，
+    # 不验「签字者与产出者同一人」。本样例把"签收名 ≠ 该文件 git 作者"造成可判情形
+    # （注入 git 作者提供者，避免依赖真实仓库历史），断言命中且**级别为 warn**（不阻断）。
+    def _git_bind_case(name: str, card_id: str, author: tuple[str, str],
+                       want_hit: bool) -> None:
+        with sandbox():
+            _write(ge.ATOMS / "mem" / f"{card_id}.md", {
+                "id": card_id, "title": "t", "domain": "MEM",
+                "type": "mechanism", "status": "human-verified", "claim": "c",
+                "claim_boundary": "b", "relations": "[]", "evidence": "[EV-MEM-X]",
+                "sources": "[{kind: iso, ref: X, independent: true}]",
+                "first_hand": "true", "superiority": "真实增量", "depth": "asm",
+                "pedagogy": "p", "dal": "B", "human_review": "required",
+                "status_history": (
+                    "\n  - {level: draft, at: legacy, by: writer:agent}"
+                    "\n  - {level: machine-verified, at: 2026-09-12, by: machine:gate}"
+                    "\n  - {level: human-verified, at: 2026-09-13, by: human:liaoranran}"),
+                "verified_by": "human:liaoranran",
+            })
+            _orig = ge._git_author_for
+            ge._git_author_for = lambda _p: author          # 注入：绕开真实 git 历史
+            ge._GIT_AUTHOR_CACHE.clear()
+            try:
+                fs = ge.check_git_author_binding()
+                who = sorted({f.rule_id for f in fs})
+                lvl = {f.rule_id: f.severity for f in fs}
+                hit = "S1-GIT-AUTHOR-BINDING" in who
+                ok = (hit == want_hit) and (not hit or lvl["S1-GIT-AUTHOR-BINDING"] == "warn")
+                results.append((name, ok,
+                                f"拦截者 {', '.join(who) or '（未命中）'}"
+                                f" · 级别 {lvl.get('S1-GIT-AUTHOR-BINDING', '—')}"
+                                f" · 作者 {author[0]}"))
+            finally:
+                ge._git_author_for = _orig
+                ge._GIT_AUTHOR_CACHE.clear()
+
+    _git_bind_case("P58 签收与 git 作者不符（须 warn，观察期）",
+                   "ATOM-MEM-GITAUTH", ("someone-else", "other@example.com"), True)
+    # 阴性：同一人（含大小写/邮箱形式差异）必须放行——宽松匹配是设计的一部分
+    _git_bind_case("P58-阴 签收与 git 作者一致须放行（宽松匹配）",
+                   "ATOM-MEM-GITAUTHOK", ("LiaoRanran", "1026708211@qq.com"), False)
+
     # ── P47/P48 恒真断言（472 P0-2 / N2）：函数级探针（不真编译，避免与 replay 抢锁）──
     with sandbox() as tmp:
         _art = tmp / "a.asm"
@@ -1177,6 +1220,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
     ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
+    ("P58 ", "A1"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
