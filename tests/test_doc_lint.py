@@ -96,11 +96,17 @@ def test_test_file_reference_accepted(tmp_path: Path):
 
 # ── 退出码 ────────────────────────────────────────────────────────────────
 def test_exit_codes_follow_findings(monkeypatch, tmp_path: Path):
-    """验收：无失真 → 0；有失真 → 1；--observe → 恒 0（CI 渐进接入）。"""
+    """验收：无失真 → 0；有失真 → 1；--observe → 恒 0（CI 渐进接入）。
+
+    注意：必须用**动态实测值**构造"干净文档"——写死数字的测试会在每次规则/毒样例
+    增减时变红（本轮真实踩坑：任务 4 加规则 + P58 后 50→51、61→63，测试即失败）。
+    """
+    a = dl.collect_actuals()
     clean = tmp_path / "clean"
     clean.mkdir()
-    (clean / "a.md").write_text("当前 50 条规则、27 颗原子、56 张卡、61 个毒样例。\n",
-                                encoding="utf-8")
+    (clean / "a.md").write_text(
+        f"当前 {a['rules']} 条规则、{a['atoms']} 颗原子、{a['evidence']} 张卡、"
+        f"{a['poison']} 个毒样例。\n", encoding="utf-8")
     assert dl.main(["--dir", str(clean)]) == 0
     (clean / "a.md").write_text("门禁共 21 条规则。\n", encoding="utf-8")
     assert dl.main(["--dir", str(clean)]) == 1
