@@ -609,16 +609,17 @@ def test_ub_atom_requires_gray_zone(sandbox: Path):
 
 # ── 零诊断类判据须 -Werror（W3）────────────────────────────────────────────
 def test_zero_diag_requires_werror(sandbox: Path):
-    """falsification 写"无警告/零诊断"但 command 无 -Werror → warn（判据不可机器判定）。
+    """falsification 写"无警告/零诊断"但 command 无 -Werror → block（472 P1-1 升格）。
 
     371 报告 W3：replay 的 compile_rc 只看退出码、警告不影响 rc，故此体裁的判据
     不补 -Werror 就是"写得漂亮但机器看不见"。本回归锁三态：缺 → 报；有 → 放行；
     普通判据（无零诊断措辞）→ 不误报。
+    472 P1-1：级别 warn → block（不可复算判据不得放行；存量 0 命中，零误伤）。
     """
     _write_ev(sandbox, falsification="若编译产生任何警告（非零诊断）→ 判 refute")
     hits = ge.check_evidence_zero_diag_werror()
     assert len(hits) == 1, hits
-    assert hits[0].rule_id == "EV-ZERO-DIAG-WERROR" and hits[0].severity == "warn"
+    assert hits[0].rule_id == "EV-ZERO-DIAG-WERROR" and hits[0].severity == "block"
 
     _write_ev(sandbox, command="g++ -Wall -Wextra -Werror -c x.cpp",
               falsification="若编译产生任何警告（非零诊断）→ 判 refute")
@@ -631,10 +632,10 @@ def test_zero_diag_requires_werror(sandbox: Path):
     assert len(ge.check_evidence_zero_diag_werror()) == 1, "英文措辞同受约束"
 
 
-def test_zero_diag_rule_declared_warn():
-    """规则声明级别与 Finding 实际级别必须一致（sev 字典漏登记会默认 block）。"""
+def test_zero_diag_rule_declared_block():
+    """规则声明级别与 Finding 实际级别必须一致（472 P1-1 升 block 后）。"""
     r = next(x for x in ge.RULES if x.id == "EV-ZERO-DIAG-WERROR")
-    assert r.severity == "warn", r
+    assert r.severity == "block", r
 
 
 # ── A3：.out 两处盲区（P7 锚不得自证 / P6 视野纳入 .out）────────────────────

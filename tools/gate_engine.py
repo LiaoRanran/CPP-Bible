@@ -1734,9 +1734,13 @@ def check_evidence_zero_diag_werror() -> list[Finding]:
       * **字段位移**（H16a）：措辞挪到 `expected`/`hypothesis`，旧版只扫
         `falsification` ⇒ 漏检。扫描面扩到全部叙事字段。
       * **pragma 消音**（H16b）：夹具 `#pragma GCC diagnostic ignored` 让 -Werror
-        失效——判据从"编译器没说话"退化为"作者让编译器闭嘴"⇒ warn。
+        失效——判据从"编译器没说话"退化为"作者让编译器闭嘴"。
     实测（2026-09-13，56 卡）：扩面后字段面仅 EV-LANG-001 命中（已带 -Werror，不报）；
-    -Werror 卡 + 消音 pragma 0 条 ⇒ 扩面零新增 warn。
+    -Werror 卡 + 消音 pragma 0 条 ⇒ 扩面零新增命中。
+
+    **级别（472 P1-1）**：warn → **block**。warn 级只是"可见化"，卡照样 confirm 直推
+    verified（v5 E10a/b 实证）；而"零诊断但无 -Werror"的判据**不可机器判定**，属不可复算
+    判据，放行即等于门禁假阳性。存量 0 命中 ⇒ 零误伤；回退方式见 `_register_all` 注册表注释。
     """
     out: list[Finding] = []
     for p in _cards(EVIDENCE, "EV-*.md"):
@@ -1746,7 +1750,7 @@ def check_evidence_zero_diag_werror() -> list[Finding]:
         hits = sorted(set(_ZERO_DIAG_RE.findall(fields)))
         has_werror = "-Werror" in str(meta.get("command") or "")
         if hits and not has_werror:
-            out.append(Finding("EV-ZERO-DIAG-WERROR", "warn", _rel(p),
+            out.append(Finding("EV-ZERO-DIAG-WERROR", "block", _rel(p),
                                f"零诊断措辞 {hits}（falsification/expected/hypothesis/"
                                f"claim_boundary 任一），但 command 无 -Werror"
                                f"——警告不影响 rc，该判据不可机器判定",
@@ -1757,7 +1761,7 @@ def check_evidence_zero_diag_werror() -> list[Finding]:
                 m = _DIAG_SUPPRESS_RE.search(
                     fx.read_text(encoding="utf-8", errors="replace"))
                 if m:
-                    out.append(Finding("EV-ZERO-DIAG-WERROR", "warn", _rel(p),
+                    out.append(Finding("EV-ZERO-DIAG-WERROR", "block", _rel(p),
                                        f"夹具含消音 pragma（{m.group(0)!r}）而卡声明 -Werror"
                                        "——判据从『编译器没说话』退化为『作者让编译器闭嘴』",
                                        "移除消音 pragma；若消音是受控变量须显式声明"))
@@ -2115,9 +2119,14 @@ def _register_all() -> None:
            # S6 P4–P7（2026-09-11 第四批）：判别力类问题，warn 级——不阻断但在门禁可见
            "EV-SELF-SATISFIED-ASSERT": "warn", "EV-FALSIFICATION-QUANT": "warn",
            "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn",
-           # 2026-09-12（W3）：零诊断类判据缺 -Werror —— 判据可判定性问题，warn 级
-           # （不阻断存量，但在门禁可见；漏登记会默认 block，与 Finding 实际级别不符）
-           "EV-ZERO-DIAG-WERROR": "warn",
+           # 2026-09-12（W3）：零诊断类判据缺 -Werror —— 判据可判定性问题。
+           # 472 P1-1 由 warn **升 block**，依据（v5 复测 + 实测）：
+           #   ① warn 级只"可见化"，卡照样 confirm 直推 verified（E10a/b 两变种实证）；
+           #   ② "零诊断"措辞缺 -Werror ⇒ 判据**不可机器判定**（compile_rc 不看警告），
+           #      与 P11 毒样例语义一致 —— 不可复算的判据不该放行；
+           #   ③ 存量 56 卡实测 **0 命中**（全库仅 EV-LANG-001 提及且已带 -Werror）⇒ 升格零误伤。
+           # 回退：本行与两处 Finding 的 "block" 改回 "warn" 即可（无任何存量卡依赖）。
+           "EV-ZERO-DIAG-WERROR": "block",
            # 2026-09-13（373-B3 窄化）：未声明读数键与"编造键"结构上不可区分 ⇒ 只 warn
            "EV-OUT-UNDECLARED-KEY": "warn",
            # 472 P1-4：未知关系类型是债务可见化，不阻断存量（新类型入白名单由人裁决）

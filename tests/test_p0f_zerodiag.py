@@ -1,4 +1,9 @@
-"""470 P0-F 回归锁（452 E10）：零诊断字段位移 + 夹具 pragma 消音。"""
+"""470 P0-F → 472 P1-1 回归锁（452 E10）：零诊断字段位移 + 夹具 pragma 消音。
+
+472 P1-1：本规则由 warn **升 block**（"零诊断"措辞缺 -Werror ⇒ 判据不可机器判定 ⇒
+不可复算判据不得放行；存量 56 卡 0 命中，升格零误伤）。旧断言 `severity == "warn"`
+已同步——否则升格后套件长红，反而掩盖真实回归。
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -27,21 +32,22 @@ def sb(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return tmp_path
 
 
-def test_field_displacement_warned(sb: Path):
-    """H16a：措辞在 expected（旧版只扫 falsification）→ 检出。"""
+def test_field_displacement_blocked(sb: Path):
+    """H16a：措辞在 expected（旧版只扫 falsification）→ 检出且 **block**（472 P1-1）。"""
     _card(sb, "EV-Z1", expected="判据：零诊断（编译无警告）", command="g++ -Wall fx.cpp")
     hits = ge.check_evidence_zero_diag_werror()
-    assert hits and hits[0].severity == "warn"
+    assert hits and hits[0].severity == "block"
 
 
-def test_pragma_suppression_warned(sb: Path):
-    """H16b：夹具 pragma 消音 + 卡声明 -Werror → 检出。"""
+def test_pragma_suppression_blocked(sb: Path):
+    """H16b：夹具 pragma 消音 + 卡声明 -Werror → 检出且 **block**（472 P1-1）。"""
     (sb / "fx.cpp").write_text(
         '#pragma GCC diagnostic ignored "-Wunused-variable"\nint main(){return 0;}\n',
         encoding="utf-8")
     _card(sb, "EV-Z2", command="g++ -Wall -Werror -c fx.cpp")
     hits = ge.check_evidence_zero_diag_werror()
     assert hits and "pragma" in hits[0].message
+    assert hits[0].severity == "block", "消音 pragma 使判据退化 ⇒ 不可复算 ⇒ block"
 
 
 def test_werror_clean_fixture_passes(sb: Path):
