@@ -420,7 +420,19 @@ jobs:
       # 失败时的可读性：本仓库 job 日志下载需 admin 权限（实测 API 403）→ 把失败日志再输出为
       # **error 注解**（check-runs /annotations 端点可公开读取，无 admin 也能定位红因）。
       run: |
-        python3 tools/atom_evidence_replay.py --check --incremental 2>&1 | tee /tmp/replay.log
+        # 508 任务3：**默认增量**，`tools/` 有变更时回退**全量**（--rebuild-manifest）。
+        # 依据：498 的增量指纹 = sha256(卡‖fixture‖artifact)，**不含 tools/ 代码本身**——
+        # 若改了 replay/规则工具却仍走增量，旧清单的"已确认"结论就不再可信（换了裁判却没重赛）。
+        # 基准取 origin/<base>：PR 用 base 分支，push 无 base_ref 则回退 master。
+        base="origin/${GITHUB_BASE_REF:-master}"
+        git fetch --no-tags --quiet origin "$base" 2>/dev/null || true
+        if git diff --name-only "$base"...HEAD 2>/dev/null | grep -q '^tools/'; then
+          echo "::notice::tools/ 有变更 ⇒ 全量 replay（--rebuild-manifest）"
+          python3 tools/atom_evidence_replay.py --check --rebuild-manifest 2>&1 | tee /tmp/replay.log
+        else
+          echo "::notice::tools/ 无变更 ⇒ 增量 replay（--incremental）"
+          python3 tools/atom_evidence_replay.py --check --incremental 2>&1 | tee /tmp/replay.log
+        fi
         rc="${PIPESTATUS[0]}"
         if [ "$rc" != "0" ]; then
           cat /tmp/replay.log >> "$GITHUB_STEP_SUMMARY"
