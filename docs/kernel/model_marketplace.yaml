@@ -1,0 +1,100 @@
+# 模型能力档案（model marketplace）
+#
+# 来源：References/architecture_架构演进/492_多模型协作完整方案_*.md §2.1（494 任务 3）
+# 用途：任务路由的依据（492 §2.3 三级难度：机械 / 语义 / 创造）。
+#
+# ⚠️ 数据纪律（494 铁律 4）：
+#   * `success_rate` 一律 `unknown`——**禁止编造数字**。492 §2.1 里的 0.85/0.60/0.15 等
+#     是文档作者的**示意值**，不是实测。真实值由 492 §7 第二阶段第 8 项「能力回溯」
+#     （记录每个模型的实际任务成功率）回填。
+#   * `cost_per_1k_tok` 为**相对值**（以 cheap_agent = 0.01 为基准），同样来自 492 §2.1。
+schema: 1
+generated_at: "2026-09-14"
+source: "492_多模型协作完整方案 §2.1"
+
+models:
+
+  cheap_agent:
+    alias: 苦力
+    model_family: qwen-hy4p           # 模型族（同族共享盲区——独立验证须换族）
+    cost_per_1k_tok: 0.01             # 相对值（基准）
+    speed: fast
+    request_limit: 500                # 单次会话请求上限
+    strengths:
+      - 机械任务（改字段、补测试、跑门禁、按明确规格落地）
+      - 格式调整、文件整理、编号改名
+      - 简单代码修改（照抄既有模式）
+    weaknesses:
+      - 架构设计、新工具开发
+      - 复杂 claim 改写
+      - 跨文件重构
+    success_rate:                     # 三级难度（492 §2.3）；无实测数据 ⇒ unknown
+      mechanical: unknown
+      semantic: unknown
+      creative: unknown
+    known_blind_spots:
+      - "relations 字段处理（402/414 反复出盲区）"
+      - "YAML 解析边界（缩进走私）"
+      - "管道缓冲/长任务输出（会把慢任务误判卡死——479 实录）"
+
+  strong_agent:
+    alias: 好模型
+    model_family: ds-v4.1-flash
+    cost_per_1k_tok: 0.1              # 10× 苦力
+    speed: medium
+    request_limit: 1000
+    strengths:
+      - 架构设计、范式突破
+      - 新工具开发
+      - 复杂 claim 改写
+      - 跨文件重构
+    weaknesses:
+      - 成本高（不适合纯机械任务）
+      - 速度中等
+    success_rate:
+      mechanical: unknown
+      semantic: unknown
+      creative: unknown
+    known_blind_spots:
+      - "把 warn/可见化当成『已拦住』（v5 渗透实证：拦截率严格口径 3/14——472/479 反复纠偏）"
+      - "文档与磁盘冲突时凭记忆写代码（472/479 的开工前置『先 Read 磁盘』由此而来）"
+
+  adversarial_agent:
+    alias: 对抗模型
+    model_family: seed-evolving
+    cost_per_1k_tok: 0.05
+    speed: slow
+    request_limit: 2000
+    strengths:
+      - 红队、对抗测试
+      - 找漏洞、逃逸路径
+      - 独立验证
+    weaknesses:
+      - 不适合生产（只产对抗报告与探针）
+      - 速度慢
+    success_rate:
+      mechanical: unknown
+      semantic: unknown
+      creative: unknown
+    known_blind_spots:
+      - "无（对抗模型的『盲区』应表现为逃逸率——由 adversarial_regression.py 持续度量）"
+    independence_requirement: "必须与建设者不同模型族（独立验证的前提）"
+
+  architect_agent:
+    alias: 架构师
+    model_family: doubao
+    cost_per_1k_tok: 0.08
+    speed: medium
+    request_limit: unlimited
+    strengths:
+      - 调研消化、架构规划
+      - 代码级深度分析
+      - 跨领域联系
+    weaknesses:
+      - 不直接改代码（只出方案 → 落地由 cheap/strong agent 执行）
+    success_rate:
+      mechanical: unknown
+      semantic: unknown
+      creative: unknown
+    known_blind_spots:
+      - "文档数字与代码实测易漂移（474 的 42 规则假设 vs 实际 43；479 的 476『<30s』vs 实测 244.5s）——引用前须以磁盘/实跑为准"
