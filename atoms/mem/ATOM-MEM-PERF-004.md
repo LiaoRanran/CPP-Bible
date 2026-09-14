@@ -26,6 +26,35 @@ claim: >-
   （**18.86×**，Linux 同夹具 18.54×，方向一致）；该结构前提可用地址**确定性判定**
   （`tight_same_line=1` / `padded_same_line=0`，不依赖计时），而 padding 的代价是空间
   （`padded_sizeof=128`）⇒ 存在最优对齐粒度，"padding 一定值得"同样是过度概括。
+# 527 批次F 任务D：claim 拆原子命题。注意 prop-2 的**口径边界**：断言只锚方向
+#   （sharing_is_slower=1）与活性对照，**不锚倍数**——倍数来自逐轮表（EV-MEM-045 行 60），
+#   属人读得到的观测而非 machine key。故 prop-3（"padding 一定值得"是过度概括）走 inference。
+claim_structured:
+  - id: prop-1
+    subject: 伪共享的结构前提
+    predicate: 可用地址确定性判定（不依赖计时）
+    object: tight_same_line=1 / padded_same_line=0；padded_sizeof=128
+    claim_type: observation
+    statement: 相邻布局两计数器落在同一缓存行（tight_offset_bytes=8、tight_same_line=1），alignas 隔离后落在不同行（padded_offset_bytes=64、padded_same_line=0），且隔离的结构代价是空间（padded_sizeof=128）——这三项读数由地址计算得出，与计时无关。
+    evidence: [EV-MEM-044, EV-MEM-045]
+    extracted_by: writer
+  - id: prop-2
+    subject: 伪共享性能代价
+    predicate: 方向为共享更慢（读数锚方向而非倍数）
+    object: sharing_is_slower=1 / counters_all_advanced=1（4 线程各 1e7 次、7 轮）
+    claim_type: observation
+    statement: 4 线程各累加 1e7 次、7 轮下共享缓存行明显更慢：sharing_is_slower=1 且 counters_all_advanced=1（活性对照成立），逐轮中位数 562500600 ns vs 29824800 ns = 18.86×（Linux 同夹具 18.54×，方向一致）；**断言只锚方向与活性对照，不锚倍数**（倍数取 EV-MEM-045 逐轮表）。
+    evidence: [EV-MEM-044, EV-MEM-045]
+    extracted_by: writer
+  - id: prop-3
+    subject: padding
+    predicate: 不必然值得
+    object: 存在最优对齐粒度（"padding 一定值得"是过度概括）
+    claim_type: inference
+    statement: 既然隔离的收益是"消掉行竞争"、代价是空间（padded_sizeof=128），则存在最优对齐粒度——"padding 一定值得"与"padding 无用"同为过度概括；该结论依赖标准对硬件干扰尺寸只是**提示值**（实现可给回退值）的定性，不单由本卡读数决定。
+    external_basis: "ISO/IEC 14882:2017 起 [hardware.interference]（hardware_destructive_interference_size 为提示值）/ cppreference 同名条目"
+    evidence: [EV-MEM-044, EV-MEM-045]
+    extracted_by: writer
 status_history:
   - {level: draft, at: 2026-09-12, by: writer:g5_batch5}
   - {level: red-team-verified, at: 2026-09-12, by: redteam:g5_batch5}

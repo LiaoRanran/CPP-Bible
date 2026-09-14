@@ -27,6 +27,34 @@ claim: >-
   与泄漏无关的 `volatile` 构造计数）LSan **报告** `64 byte(s) leaked in 2 allocation(s)`
   （stderr 1258 字节）——唯一变量是一个与泄漏无关的计数器，且报告数值自洽（64 B = 2 × 32 B）
   ⇒ 判定泄漏应先用零依赖观测（构造/析构计数、存活对象数）定性，工具报告只作补充证据。
+# 527 批次F 任务D：claim 拆原子命题。prop-3 是 inference——它是**方法论建议**
+#   （超出本卡读数本身），以 LSan/ASan 文档的可达性判据定义为准。
+claim_structured:
+  - id: prop-1
+    subject: 零依赖观测
+    predicate: 在循环引用夹具上显示
+    object: cycle_allocated=2 / cycle_destroyed=0 / cycle_live_objects=2
+    claim_type: observation
+    statement: 循环引用夹具上的零依赖观测（构造/析构计数、存活对象数）读出：cycle_allocated=2、cycle_destroyed=0、cycle_live_objects=2，而作用域对象 scoped_dtor_count=1、scoped_is_clean=1 ⇒ 闭环对象不可达但不析构，不经任何工具即可定性。
+    evidence: [EV-MEM-042, EV-MEM-043]
+    extracted_by: writer
+  - id: prop-2
+    subject: LeakSanitizer 报告
+    predicate: 随与泄漏无关的构造计数而变
+    object: stderr 0 字节（零报告）→ 1258 字节（64 byte(s) leaked in 2 allocation(s)）
+    claim_type: observation
+    statement: "同一循环引用夹具、同一编译器与档位（-O1 -g -fsanitize=address,undefined）下，仅给 Node 加一个与泄漏无关的 volatile 构造计数，LSan 即由零报告（stderr 0 字节）变为报告 `SUMMARY: AddressSanitizer: 64 byte(s) leaked in 2 allocation(s)`（stderr 1258 字节），且 64 B = 2 × 32 B 自洽（读数为 EV-MEM-043 的改前/改后表）。"
+    evidence: [EV-MEM-042, EV-MEM-043]
+    extracted_by: writer
+  - id: prop-3
+    subject: 泄漏判定
+    predicate: 应先于工具报告使用
+    object: 零依赖观测（定性与定量），工具报告仅作补充证据
+    claim_type: inference
+    statement: 工具报告只反映"可达性"这一特定判据（受优化档、存活位置与运行环境影响），故判定泄漏应先用零依赖观测定性、工具报告仅作补充证据；这条方法论建议超出本卡读数本身，其成立依据是 LSan/ASan 文档对判据的定义。
+    external_basis: "AddressSanitizer/LeakSanitizer 文档（可达性判据：只报告不可达对象；受优化与存活位置影响）"
+    evidence: [EV-MEM-042, EV-MEM-043]
+    extracted_by: writer
 status_history:
   - {level: draft, at: 2026-09-12, by: writer:g5_batch5}
   - {level: red-team-verified, at: 2026-09-12, by: redteam:g5_batch5}

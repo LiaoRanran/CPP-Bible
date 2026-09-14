@@ -32,6 +32,34 @@ claim: >-
   free-list 指针，n=8000 时 64056 B）——排序为 arena << bitmap << pool，
   与"pool 元数据最省"的直觉相反；内部碎片：arena 0、pool 8000 B
   （定长块 32 B => 8 B x 1000）、bitmap 0（位图不占用户区）。
+# 527 批次F 任务D：claim 拆原子命题（observation=可机验 / inference=须人签或独立标准源）。
+# prop-3 是 inference：它依赖标准对"单调缓冲 vs 池资源"回收语义的区分，不单由本卡读数决定。
+claim_structured:
+  - id: prop-1
+    subject: 分配器元数据开销
+    predicate: 可用统一口径测得
+    object: arena 32B / bitmap 181B / pool 8056B（struct+bookkeeping 分项）
+    claim_type: observation
+    statement: 同一 workload（1000 次 24B 分配、-O2）下三种小对象策略的元数据可用统一口径（struct_bytes + bookkeeping_bytes）读出：arena 32B（32+0）、bitmap 181B（56+125，1 bit/块）、pool 8056B（56+8000，8B/块 free-list 指针）。
+    evidence: [EV-MEM-040, EV-MEM-041]
+    extracted_by: writer
+  - id: prop-2
+    subject: bitmap/pool 元数据
+    predicate: 随块数线性增长
+    object: 块数 1000→8000 时 pool 8056B→64056B、bitmap 181B→1056B
+    claim_type: observation
+    statement: bitmap 的 bookkeeping 是 1 bit/块、pool 是 8B/块指针，故元数据随块数线性增长：块数由 1000 增到 8000 时 pool 由 8056B 增至 64056B、bitmap 由 181B 增至 1056B（读数为 EV-MEM-040 的 n1/n2 两组键）。
+    evidence: [EV-MEM-040, EV-MEM-041]
+    extracted_by: writer
+  - id: prop-3
+    subject: 元数据开销
+    predicate: 与「是否支持单块释放」绑定
+    object: arena 的 bookkeeping=0 以整体释放为代价
+    claim_type: inference
+    statement: 元数据开销排序（arena ≪ bitmap ≪ pool）与"是否支持单块释放"绑定——arena 的 bookkeeping=0 是用"仅批量申请、只支持整体重置"换来的（夹具 release_all() 中途释放单块会产生不可复用空洞），故"元数据更少"不等于"策略更好"；这层权衡的解释依赖标准对单调缓冲与池资源回收语义的区分，不单由本卡读数决定。
+    external_basis: "ISO/IEC 14882:2023 [mem.res.monotonic.buffer] / [mem.res.pool]（单调缓冲与池资源的回收语义差异）"
+    evidence: [EV-MEM-040, EV-MEM-041]
+    extracted_by: writer
 status_history:
   - {level: draft, at: 2026-09-12, by: writer:g5_batch5}
   - {level: red-team-verified, at: 2026-09-12, by: redteam:g5_batch5}
