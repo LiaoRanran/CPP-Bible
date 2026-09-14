@@ -1,10 +1,10 @@
 {
  "schema": "cppbible-golden-lock/1.0",
- "updated": "2026-09-13",
- "commit": "3f72548",
+ "updated": "2026-09-14",
+ "commit": "1cd675a",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 32,
+  "warn_findings": 54,
   "atoms_total": 27,
   "evidence_total": 56,
   "verified_atoms": 26,
@@ -148,6 +148,28 @@
     "replay_infra_error": 0
    },
    "commit": "3f72548",
+   "dirty": true
+  },
+  {
+   "ts": "2026-09-14T23:54:11",
+   "reason": "批次E claim_structured STAGING 对存量20卡warn，基线32→54",
+   "worse": [
+    "warn_findings: 32 → 54"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 54,
+    "atoms_total": 27,
+    "evidence_total": 56,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "1cd675a",
    "dirty": true
   }
  ],
