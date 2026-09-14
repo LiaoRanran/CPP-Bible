@@ -245,6 +245,8 @@ def cmd_check(args: argparse.Namespace) -> int:
             # 注：`_adv_v*/` 是 untracked 沙箱 ⇒ CI/新克隆上无探针，工具自动空转 exit 0；
             # 本地（有沙箱）才有判定价值。skip ≠ pass：由工具自行计数并打印。
             ("Adversarial Regression", [PYTHON_EXE, "tools/adversarial_regression.py"]),
+            # 498 任务 3：核心工具完整性（5 个工具 sha256 基准；缺基准 exit 2 不静默放行）
+            ("Tool Integrity", [PYTHON_EXE, "tools/tool_integrity.py"]),
         ]
     elif stage == "compile":
         gates = [
@@ -558,6 +560,34 @@ def cmd_task(args: argparse.Namespace) -> int:
     return r.returncode
 
 
+def cmd_trace(args: argparse.Namespace) -> int:
+    """结构化操作日志（498 任务 4 / 497）：转发给 tools/trace_logger.py（实现单点）。"""
+    cmd = [PYTHON_EXE, "tools/trace_logger.py", args.sub]
+    if args.sub == "log":
+        for flag, val in (("--actor", args.actor), ("--action", args.action),
+                          ("--target", args.target), ("--result", args.result),
+                          ("--details", args.details)):
+            if val is not None:
+                cmd += [flag, val]
+    else:                                  # read
+        if args.date:
+            cmd += ["--date", args.date]
+        if args.action:
+            cmd += ["--action", args.action]
+        if args.fail_only:
+            cmd.append("--fail-only")
+    try:
+        r = run(cmd, check=False)
+    except FileNotFoundError:
+        print("  ❌ tools/trace_logger.py 不可用")
+        return 1
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
 def cmd_cost(args: argparse.Namespace) -> int:
     """成本追踪（421）：report/cpva，只记录只读，不改生产逻辑。"""
     cmd = [PYTHON_EXE, "tools/cost_tracker.py", args.sub]
@@ -682,6 +712,16 @@ def build_parser() -> argparse.ArgumentParser:
     task.add_argument("--done", action="store_true")
     task.add_argument("--needs-continue", dest="needs_continue", action="store_true")
 
+    trace = sub.add_parser("trace", help="结构化操作日志（498/497：写入/读取 trace JSONL）")
+    trace.add_argument("sub", choices=["log", "read"])
+    trace.add_argument("--actor", default=None)
+    trace.add_argument("--action", default=None)
+    trace.add_argument("--target", default=None)
+    trace.add_argument("--result", default=None)
+    trace.add_argument("--details", default=None, help="JSON 对象字符串（仅 log）")
+    trace.add_argument("--date", default=None, help="仅 read：YYYY-MM-DD")
+    trace.add_argument("--fail-only", dest="fail_only", action="store_true")
+
     return parser
 
 
@@ -717,6 +757,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cmd_flashcards(args)
     if args.command == "task":
         return cmd_task(args)
+    if args.command == "trace":
+        return cmd_trace(args)
 
     parser.print_help()
     return 0
