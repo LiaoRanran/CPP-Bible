@@ -300,10 +300,17 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
     # **不猜、不编**（铁律 #4）。
     pl = ROOT / "data" / "pytest_last.txt"
     if pl.is_file():
-        m = re.search(r"\bin ([\d.]+)s\b",
-                      pl.read_text(encoding="utf-8", errors="replace"))
+        text = pl.read_text(encoding="utf-8", errors="replace")
+        # 优先认**显式标记** `[pytest-wall] total=NN.Ns`：两阶段跑法（fast -n16 + slow -n0）
+        # 会产生两条 pytest 汇总行，若只按 `in Xs` 近似匹配会错取到 phase1 的值。
+        # 其次才退回近似匹配（单次全量跑的场景）。
+        m = (re.search(r"\[pytest-wall\]\s*total=([\d.]+)s", text)
+             or re.search(r"\bin ([\d.]+)s\b", text))
         if m:
             metrics["pytest_wall_seconds"] = float(m.group(1))
+            notes.setdefault("pytest_wall_seconds",
+                             "来源 data/pytest_last.txt"
+                             + ("（显式标记）" if "[pytest-wall]" in text else "（近似匹配 `in Xs`）"))
         else:
             notes["pytest_wall_seconds"] = "data/pytest_last.txt 中未匹配到 `in Xs` 汇总"
     else:
