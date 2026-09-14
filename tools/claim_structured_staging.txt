@@ -1,0 +1,41 @@
+# 526 批次E STAGING 名单：claim_structured 迁移期豁免
+#
+# 语义（gate_engine.check_atom_claim_structured）：
+#   * 卡在名单里 且 无 claim_structured  → **warn**（存量，人逐批回填）
+#   * 卡不在名单里 且 无 claim_structured → **block**（新卡必须命题化）
+#   * 卡有合法 claim_structured（名单内外一样） → 放行
+#
+# 名单为什么“不用维护”：回填是**加法**——人给某张卡补上 claim_structured 后，
+# 上面第一条不再触发，该卡自然退出 STAGING。**不需要**把它从本文件里删掉
+# （留着还能回答“哪些卡是本批之前就有的”这个历史问题）。
+# 反之，新锻造的原子卡若被误加进本文件，就等于给自己开了永久免检——**别这么干**。
+#
+# 冻结时点：2026-09-14（526 批次E Step 2），当时全库 27 张原子卡。
+# 格式：一行一个 id，# 起始为注释。
+ATOM-CONC-FENCE-001
+ATOM-CONC-LOCK-001
+ATOM-CONC-RACE-001
+ATOM-HIST-AUTOPTR-001
+ATOM-LANG-INLINE-001
+ATOM-MEM-ALIGN-001
+ATOM-MEM-ALLOC-001
+ATOM-MEM-ALLOC-002
+ATOM-MEM-LEAK-001
+ATOM-MEM-LEAK-002
+ATOM-MEM-MOVE-002
+ATOM-MEM-NEW-001
+ATOM-MEM-PERF-001
+ATOM-MEM-PERF-002
+ATOM-MEM-PERF-003
+ATOM-MEM-PERF-004
+ATOM-MEM-RAII-001
+ATOM-MEM-RAII-002
+ATOM-MEM-RVREF-001
+ATOM-MEM-SHARED-001
+ATOM-MEM-SHARED-002
+ATOM-MEM-UNIQUE-001
+ATOM-MEM-UNIQUE-002
+ATOM-MEM-VALUE-001
+ATOM-MEM-VALUE-002
+ATOM-MEM-WEAK-001
+ATOM-UB-GRAY-001

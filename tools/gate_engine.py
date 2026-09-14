@@ -1787,6 +1787,112 @@ _ZERO_DIAG_RE = re.compile(
     r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
 
 
+# ── 526 批次E：claim 结构化（命题级知识 / L3 智能层点火）────────────────────
+# 为什么（526 §一）：claim 是 ≤50 字自然语言时，机器无法判断"两个 claim 是否矛盾""这条能不能
+# 全自动验"。把 claim 拆成**原子命题**（subject,predicate,object + claim_type）后，验证强度
+# 可以按命题类型分流：
+#   observation（直接观测）→ replay confirm 即可全自动；
+#   inference（推断）→ 必须人签或独立标准源背书，机器**不许**直推 verified。
+# 三条规则各管一段：本规则管**有没有**（结构性），另两条管**类型是否配得上**（语义性）。
+_CLAIM_STAGING = ROOT / "tools" / "claim_structured_staging.txt"
+_CLAIM_TYPES = frozenset({"observation", "inference"})
+_CLAIM_PROP_REQUIRED = ("id", "subject", "predicate", "object", "claim_type",
+                        "statement")
+
+
+def _claim_staging() -> frozenset[str]:
+    """STAGING 名单：本批只 warn 的历史原子（人逐批回填 claim_structured）。
+
+    为何用名单而不是"按 status 判新老"：`status=draft` 的老卡会被误 block，
+    而 `status=verified` 的新卡（理论上不该有，但一旦出现）会被误放行。
+    名单是**显式**的，回填后卡自带 claim_structured 即自动不再命中——名单无需维护。
+    """
+    try:
+        lines = _CLAIM_STAGING.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return frozenset()
+    return frozenset(s for s in (ln.split("#")[0].strip() for ln in lines) if s)
+
+
+def _claim_props(meta: dict) -> list[dict]:
+    """取 `claim_structured` 的命题列表；不是列表/空 → []（判据只认映射条目）。"""
+    cs = meta.get("claim_structured")
+    return [p for p in cs if isinstance(p, dict)] if isinstance(cs, list) else []
+
+
+def _claim_extracted_by(meta: dict, prop: dict) -> str:
+    """命题的抽取来源：命题级优先，缺则回退卡级顶层（526 §二 的两种写法都收）。
+
+    526 原文只在字段约束里写"末尾保留 extracted_by: writer"，既可读作"每条命题末尾"
+    也可读作"列表末尾（卡级）"。判据**两级都收**，宁松勿错杀——但必须有，
+    因为它是"将来模型自动抽取写 model"的进化接口（铁律 6：不许删这个字段）。
+    """
+    return str(prop.get("extracted_by") or meta.get("extracted_by") or "").strip()
+
+
+def check_atom_claim_structured() -> list[Finding]:
+    """`ATOM-CLAIM-STRUCTURED`（526 规则1）：新原子卡必须有 claim_structured；存量只 warn。
+
+    结构校验（任一不满足 → block）：
+      - 命题条目的必填字段：id/subject/predicate/object/claim_type/statement；
+      - `claim_type` 只能是 observation / inference（526 写错即 block）；
+      - `extracted_by` 命题级或卡级至少有一处（进化接口，不许缺）；
+      - 同一张卡内 `id` 不得重复（重复 = 两条命题不可区分，机器分流会串）。
+
+    存量策略（STAGING）：`tools/claim_structured_staging.txt` 里的 27 张历史卡
+    本批**只 warn 不 block**，人逐批回填；回填完成的卡自动不再命中（名单不用改）。
+    """
+    out: list[Finding] = []
+    staging = _claim_staging()
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        aid = str(meta.get("id") or p.stem)
+        cs = meta.get("claim_structured")
+        if not isinstance(cs, list) or not cs:
+            if aid in staging:
+                out.append(Finding(
+                    "ATOM-CLAIM-STRUCTURED", "warn", _rel(p),
+                    "存量卡尚无 claim_structured（STAGING：本批只 warn，人逐批回填）",
+                    "照 atoms/conc/ATOM-CONC-FENCE-001.md 的粒度把 claim 拆成原子命题；"
+                    "回填后本警告自动消失"))
+            else:
+                out.append(Finding(
+                    "ATOM-CLAIM-STRUCTURED", "block", _rel(p),
+                    "新原子卡必须有 claim_structured（命题级 claim：subject/predicate/object"
+                    " + claim_type）",
+                    "按 atoms/conc/ATOM-CONC-FENCE-001.md 的 claim_structured 写法拆命题；"
+                    "observation=可机验、inference=需人签或独立标准源"))
+            continue
+        issues: list[str] = []
+        seen: list[str] = []
+        for k, prop in enumerate(cs, 1):
+            if not isinstance(prop, dict):
+                issues.append(f"第 {k} 条命题不是映射（{type(prop).__name__}）")
+                continue
+            miss = [f for f in _CLAIM_PROP_REQUIRED
+                    if not str(prop.get(f) or "").strip()]
+            if miss:
+                issues.append(f"第 {k} 条命题缺字段 {miss}")
+            ctype = str(prop.get("claim_type") or "").strip()
+            if ctype and ctype not in _CLAIM_TYPES:
+                issues.append(f"第 {k} 条 claim_type 非法「{ctype}」"
+                              f"（只允许 {'/'.join(sorted(_CLAIM_TYPES))}）")
+            if not _claim_extracted_by(meta, prop):
+                issues.append(f"第 {k} 条命题缺 extracted_by（进化接口字段，不许缺）")
+            pid = str(prop.get("id") or "").strip()
+            if pid:
+                if pid in seen:
+                    issues.append(f"命题 id 重复：{pid}（同一卡内 id 必须唯一）")
+                seen.append(pid)
+        if issues:
+            out.append(Finding(
+                "ATOM-CLAIM-STRUCTURED", "block", _rel(p),
+                "claim_structured 不合法：" + "；".join(issues),
+                "按 526 §二 的 schema 修正（claim_type 只 observation/inference；"
+                "每条带 id/subject/predicate/object/statement/extracted_by）"))
+    return out
+
+
 def check_artifact_file_exists() -> list[Finding]:
     """500 任务3（`EV-ARTIFACT-FILE-EXISTS`）：卡声明的 `artifact:` / `artifacts[]` 指向的文件
     必须真实存在（相对 ROOT）。
@@ -2421,6 +2527,9 @@ def _register_all() -> None:
          "evidence", check_env_dependent_key),
         ("ATOM-REL-UNKNOWN", "未知 relations 类型（472 P1-4：结束同义词枚举，表外即债务）",
          "atom", check_relations_unknown_type),
+        ("ATOM-CLAIM-STRUCTURED",
+         "新卡必须有命题化 claim_structured（526 规则1；存量 STAGING 只 warn）",
+         "atom", check_atom_claim_structured),
         ("EV-FIXTURE-NO-ECHO-DATA", "cat 式证据（472 P1-2：experimental→warn，读文件原样打印）",
          "evidence", check_fixture_no_echo_findings),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",

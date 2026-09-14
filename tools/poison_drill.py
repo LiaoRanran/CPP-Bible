@@ -1258,6 +1258,66 @@ def drill() -> int:
     results.append(("P62-阴 artifact 存在须放行", ok,
                     f"拦截者 {', '.join(who) or '（无）'}"))
 
+    # ── P63–P65（526 批次E）：claim 结构化三条规则 ─────────────────────────────
+    # 526 的三条规则作用在 **atoms/**，而上面的 `_static_who` 只往 evidence/ 写卡
+    # ⇒ 需要原子版探针。覆盖判定同上：RULE-COVERAGE 正则只认源码里字面量
+    # `"RULE-ID" in who`（变量名须恰为 who），故勿改成参数化比较。
+    def _atom_who(cards: list[tuple[str, dict]], fn) -> list[str]:
+        with sandbox() as tmp:
+            orig_root = ge.ROOT
+            ge.ROOT = tmp
+            try:
+                for fname, fields in cards:
+                    _write(tmp / "atoms" / "mem" / fname, fields)
+                return sorted({f.rule_id for f in fn()})
+            finally:
+                ge.ROOT = orig_root
+
+    _a_base = {"domain": "mem", "type": "mechanism", "status": "draft",
+               "title": "t", "claim": "c",
+               "sources": "[{kind: iso, ref: 'ISO/IEC 14882:2023'}]"}
+    # P63（526 规则1 ATOM-CLAIM-STRUCTURED）：结构合规性
+    who = _atom_who([("ATOM-MEM-P63.md", dict(_a_base, id="ATOM-MEM-P63"))],
+                    ge.check_atom_claim_structured)
+    ok = "ATOM-CLAIM-STRUCTURED" in who
+    results.append(("P63 新卡无 claim_structured 须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+    # P63-阴1：STAGING 存量卡只 warn 不 block（样本 id 从名单实时取，名单空了就跳过）
+    _staged = sorted(ge._claim_staging())
+    if _staged:
+        with sandbox() as tmp:
+            _orig_root = ge.ROOT
+            ge.ROOT = tmp
+            try:
+                _write(tmp / "atoms" / "mem" / f"{_staged[0]}.md",
+                       dict(_a_base, id=_staged[0]))
+                _fs = ge.check_atom_claim_structured()
+            finally:
+                ge.ROOT = _orig_root
+        ok = bool(_fs) and all(f.severity == "warn" for f in _fs)
+        results.append((f"P63-阴1 STAGING 存量卡（{_staged[0]}）只 warn 不 block", ok,
+                        f"严重度 {[f.severity for f in _fs] or '（无命中）'}"))
+    # P63-阴2：结构合规的命题化卡必须放行
+    _good = ("\n  - {id: prop-1, subject: s, predicate: p, object: o,"
+             " claim_type: observation, statement: st, extracted_by: writer}")
+    who = _atom_who(
+        [("ATOM-MEM-P63N.md", dict(_a_base, id="ATOM-MEM-P63N",
+                                   claim_structured=_good))],
+        ge.check_atom_claim_structured)
+    ok = not who
+    results.append(("P63-阴2 合规 claim_structured 须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+    # P63-阴3：claim_type 写错（non-observation/inference）→ block
+    _bad_type = ("\n  - {id: prop-1, subject: s, predicate: p, object: o,"
+                 " claim_type: opinion, statement: st, extracted_by: writer}")
+    who = _atom_who(
+        [("ATOM-MEM-P63B.md", dict(_a_base, id="ATOM-MEM-P63B",
+                                   claim_structured=_bad_type))],
+        ge.check_atom_claim_structured)
+    ok = "ATOM-CLAIM-STRUCTURED" in who
+    results.append(("P63-阴3 claim_type 非法须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1278,6 +1338,15 @@ def drill() -> int:
             "sources": "[{kind: iso, ref: X, independent: true}]",
             "first_hand": "false", "superiority": "真实增量", "depth": "asm",
             "pedagogy": "p",
+            # 526-E：阴性对照代表**完全合规**的卡 ⇒ 新增强制项也要满足（同 373-N4 注释的理路）。
+            # 这里用 inference + external_basis（draft 期不触发 INFERENCE-NOT-MACHINE-VERIFIED，
+            # 那条只在 status=verified 时判"有没有人签"）；用 block 风格写，避免 flow map 里
+            # 的 `:` `/` 把值拆错。
+            "claim_structured":
+                "\n  - id: prop-1\n    subject: clean\n    predicate: is\n"
+                "    object: compliant\n    claim_type: inference\n    statement: st\n"
+                "    external_basis: ISO/IEC 14882:2023\n"
+                "    evidence: [EV-MEM-CLEAN]\n    extracted_by: writer",
         })
         _write(ge.EVIDENCE / "mem" / "EV-MEM-CLEAN.md", {
             "id": "EV-MEM-CLEAN", "serves": "[ATOM-MEM-CLEAN-001]", "hypothesis": "h",
@@ -1349,6 +1418,10 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
     ("P58 ", "A1"), ("P59 ", "A1"), ("P60 ", "A4"),
     ("P61 ", "A2"), ("P62 ", "A2"),      # 500 任务2/3：假读数键 / 工件文件不存在
+    # 526 批次E：claim 结构化三条规则
+    ("P63 ", "A1"),   # 命题结构缺失/claim_type 写错 —— 记录层（claim 即卡的记录层身份）
+    ("P64 ", "A2"),   # observation 无工件支撑 —— 声明-实现脱钩（自称观测却无载体）
+    ("P65 ", "A1"),   # inference 无签发却 verified —— 记录层伪造（机器直推）
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

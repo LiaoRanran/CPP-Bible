@@ -689,7 +689,10 @@ def test_daibu_is_not_placeholder(sandbox: Path):
 # ── severity 语义：advice 永不阻断 ────────────────────────────────────────
 def test_advice_rules_never_block(sandbox: Path):
     """教学/文学规则命中时 severity=advice，不得影响 --check 的红绿。"""
-    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem")        # 无 pedagogy 子字段
+    # 526 批次E 规则1 落地后，「最小合法原子」多了一项 claim_structured（新卡强制）
+    # ⇒ 本测试的干净卡必须带上它，否则失败原因会与本测试的本意（advice 语义）无关。
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",   # 无 pedagogy 子字段
+                claim_structured=_PROP_OK)
     hits = ge.run(include_advice=True)
     assert all(h.severity != "block" for h in hits if h.rule_id.startswith("PED-"))
     assert not any(h.severity == "block" for h in ge.run(include_advice=False))
@@ -1163,6 +1166,62 @@ def test_artifacts_array_missing_one_blocks(
     hits = ge.check_artifact_file_exists()
     assert len(hits) == 1 and hits[0].severity == "block", hits
     assert "bad500.asm" in hits[0].message
+
+
+# ── 526 批次E 规则1：ATOM-CLAIM-STRUCTURED（命题级 claim，新卡强制/存量 STAGING）──
+_PROP_OK = ("\n  - id: prop-1\n    subject: s\n    predicate: p\n    object: o\n"
+            "    claim_type: observation\n    statement: st\n"
+            "    evidence: [EV-MEM-X]\n    extracted_by: writer")
+_PROP_OK2 = ("\n  - id: prop-2\n    subject: s\n    predicate: p2\n    object: o2\n"
+             "    claim_type: inference\n    statement: st2\n"
+             "    external_basis: ISO/IEC 14882:2023\n    extracted_by: writer")
+
+
+def test_claim_structured_new_card_blocks(sandbox: Path):
+    """526 规则1（阳性）：新卡（不在 STAGING）无 claim_structured ⇒ block。"""
+    _write_atom(sandbox, "ATOM-MEM-NEWP-001.md", "mem", id="ATOM-MEM-NEWP-001")
+    hits = [f for f in ge.check_atom_claim_structured()
+            if "ATOM-MEM-NEWP-001" in f.target]
+    assert len(hits) == 1 and hits[0].severity == "block", hits
+
+
+def test_claim_structured_staging_card_only_warns(sandbox: Path):
+    """526 规则1（边界·存量零误伤）：STAGING 名单里的卡 ⇒ 只 warn，不得 block。"""
+    _write_atom(sandbox, "ATOM-MEM-WEAK-001.md", "mem", id="ATOM-MEM-WEAK-001")
+    hits = [f for f in ge.check_atom_claim_structured()
+            if "ATOM-MEM-WEAK-001" in f.target]
+    assert len(hits) == 1 and hits[0].severity == "warn", hits
+
+
+def test_claim_structured_bad_type_and_dup_id_block(sandbox: Path):
+    """526 规则1（阳性）：claim_type 写错 / 命题 id 重复 ⇒ block（§二 硬约束）。"""
+    _write_atom(sandbox, "ATOM-MEM-BADT-001.md", "mem", id="ATOM-MEM-BADT-001",
+                claim_structured="\n  - id: prop-1\n    subject: s\n    predicate: p\n"
+                                 "    object: o\n    claim_type: opinion\n"
+                                 "    statement: st\n    extracted_by: writer")
+    h1 = [f for f in ge.check_atom_claim_structured()
+          if "ATOM-MEM-BADT-001" in f.target]
+    assert h1 and h1[0].severity == "block" and "claim_type 非法" in h1[0].message
+    _write_atom(sandbox, "ATOM-MEM-DUP-001.md", "mem", id="ATOM-MEM-DUP-001",
+                claim_structured=_PROP_OK + _PROP_OK.replace("prop-1", "prop-1"))
+    h2 = [f for f in ge.check_atom_claim_structured()
+          if "ATOM-MEM-DUP-001" in f.target]
+    assert h2 and h2[0].severity == "block" and "重复" in h2[0].message
+
+
+def test_claim_structured_valid_passes_and_card_level_extracted_by(
+        sandbox: Path):
+    """526 规则1（阴性）：合规命题放行；`extracted_by` 卡级回退也被接受（两级都收）。"""
+    _write_atom(sandbox, "ATOM-MEM-OKC-001.md", "mem", id="ATOM-MEM-OKC-001",
+                claim_structured=_PROP_OK + _PROP_OK2)
+    assert [f for f in ge.check_atom_claim_structured()
+            if "ATOM-MEM-OKC-001" in f.target] == []
+    # 卡级 extracted_by + 命题里不写 ⇒ 仍合规（526 原文"末尾保留"的两种读法都收）
+    _write_atom(sandbox, "ATOM-MEM-OKC-002.md", "mem", id="ATOM-MEM-OKC-002",
+                extracted_by="writer",
+                claim_structured=_PROP_OK.replace("\n    extracted_by: writer", ""))
+    assert [f for f in ge.check_atom_claim_structured()
+            if "ATOM-MEM-OKC-002" in f.target] == []
 
 
 def test_out_stale_mtime_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
