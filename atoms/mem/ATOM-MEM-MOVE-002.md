@@ -15,7 +15,7 @@ status_history:                   # 四级晋升链（G6 §2），链尾须等�
 # ---- 认知适切（G5 新增字段）----
 audience: intermediate         # 默认读者：懂 C++ 基础、但尚未建立值类别/重载决议概念的进阶者
 cognitive_load: high           # 需同时持有"类型转换 / 重载决议 / 汇编层搬运量"三条线索
-prerequisites_readable: false  # 前置 ATOM-MEM-VALUE-001 尚未锻造（relations 已登记意图）
+prerequisites_readable: true   # 前置 ATOM-MEM-VALUE-001 已锻造（500 任务7 复核：该卡已存在，原注释失实）
 claim: >-
   std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载；
   移动构造的收益来自**掏空源对象**，因此源对象没有可掏空的间接资源时，移动退化为拷贝。
