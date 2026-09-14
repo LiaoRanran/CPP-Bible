@@ -3,7 +3,7 @@ id: ATOM-MEM-PERF-002
 title: SSO：std::string 为什么短字符串不分配堆内存
 domain: MEM
 type: pitfall
-status: verified               # 唯人可置 verified（S1 三权分立）
+status: verified
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

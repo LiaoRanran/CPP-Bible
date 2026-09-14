@@ -6,7 +6,7 @@ type: pitfall
 audience: intermediate         # 默认读者：知道 std::move、但没系统建立值类别概念的进阶者
 cognitive_load: medium
 prerequisites_readable: true   # 前置 ATOM-MEM-MOVE-002 已锻造（relations 目标存在，机器可查）
-status: verified               # 人审通过（2026-09-11，监工验收放行）
+status: verified
 verified_by: human:liaoranran
 verified_at: 2026-09-11
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

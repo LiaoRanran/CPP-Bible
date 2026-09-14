@@ -5,7 +5,7 @@ domain: UB
 type: contrast
 gray_zone: ub                  # 五类单值归属（M2 §7）：本原子域在 UB 侧、主体是"识别真 UB"
                                # （正文以"unspecified vs UB"对照展开，对照的另一侧见 claim）
-status: verified               # 唯人可置 verified（S1 三权分立）
+status: verified
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期（第 2 轮人审通过）
 dal: A                            # 失效后果分级（G6 §3）：A=UB/并发致程序崩溃或数据错误；须人审

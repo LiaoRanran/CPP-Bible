@@ -3,7 +3,7 @@ id: ATOM-MEM-RAII-001
 title: 资源要绑在对象生命周期上：构造获取、析构释放，异常也安全
 domain: MEM
 type: mechanism
-status: verified               # 唯人可置 verified（S1 三权分立）
+status: verified
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

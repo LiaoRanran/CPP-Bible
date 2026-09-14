@@ -3,7 +3,7 @@ id: ATOM-MEM-PERF-003
 title: 小对象分配的真实开销：SSO 阈值不可移植 + 分配策略必须基准测量
 domain: MEM
 type: experiment                  # 性能量化实验（M1_ontology 10 类；仓内合法类型集不含 'perf'，故取 experiment）
-status: verified                  # 人审通过（2026-09-12）
+status: verified
 verified_by: human:liaoranran     # 人审签署（S1 三权分立：唯人可置 verified）
 verified_at: 2026-09-12           # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

@@ -3,7 +3,7 @@ id: ATOM-HIST-AUTOPTR-001
 title: 别看 auto_ptr 的名字像智能指针：它的"拷贝"是转移，而 C++98 只能这么表达
 domain: HIST
 type: evolution
-status: verified               # 唯人可置 verified（S1 三权分立）
+status: verified
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期（人审通过，授予 5 分）
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

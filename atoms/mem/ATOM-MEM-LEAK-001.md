@@ -3,7 +3,7 @@ id: ATOM-MEM-LEAK-001
 title: 内存泄漏的检测信号分层：为什么"ASan 没报"不等于"没泄漏"
 domain: MEM
 type: contrast                 # 三档 × 两结构的检测结论对照（M1_ontology §2 的 10 类之内；原写的 "tool" 不在枚举内，入库时被 ATOM-ID-FORMAT 拦下）
-status: verified               # 唯人可置 verified（S1 三权分立）
+status: verified
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

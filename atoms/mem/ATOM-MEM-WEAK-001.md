@@ -3,7 +3,7 @@ id: ATOM-MEM-WEAK-001
 title: std::weak_ptr 是非拥有观察者；用 weak_ptr 打破 shared_ptr 的循环引用
 domain: MEM
 type: mechanism
-status: verified               # 唯人可置 verified（S1 三权分立）
+status: verified
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

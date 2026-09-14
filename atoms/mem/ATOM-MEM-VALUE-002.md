@@ -3,7 +3,7 @@ id: ATOM-MEM-VALUE-002
 title: 引用折叠与完美转发：为什么 std::forward 不能省
 domain: MEM
 type: mechanism
-status: verified               # 唯人可置 verified（S1 三权分立）
+status: verified
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审
