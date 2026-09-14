@@ -19,6 +19,25 @@ prerequisites_readable: true   # 前置 ATOM-MEM-MOVE-002 已锻造（relations 
 claim: >-
   移动构造的收益来自"掏空源对象"：对持堆指针的类型只偷指针（sizeof(void*)=8 字节）并置空源、0 分配；
   对无动态资源的纯值类型，移动 = 拷贝（同样搬全部字节、源不被掏空），std::move 无性能收益。
+# 528 任务1：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: 移动与拷贝的实测差异
+    predicate: 取决于类型是否持有动态资源
+    object: Value32 sizeof=32 时 move_eq_copy_bytes、源未被掏空（value move source intact=1）；持堆类型 heap copy_allocs=1 / move_allocs=0
+    claim_type: observation
+    statement: 实测（-O0/-O2 一致）：无动态资源的 Value32（sizeof=32）移动与拷贝搬运字节数相同且源保持完好（value move source intact=1）；持堆类型则拷贝分配=1、移动分配=0（只偷指针并置空源）。
+    evidence: [EV-MEM-008]
+    extracted_by: writer
+  - id: prop-2
+    subject: std::move 的性能收益
+    predicate: 只来自
+    object: 掏空源对象（无可掏空资源时移动退化为拷贝，无收益）
+    claim_type: inference
+    statement: 移动构造的收益来自"掏空源对象"，语义由类型自定义而非语言强制 ⇒ 对无动态资源的纯值类型，移动等于拷贝、std::move 没有性能收益。这条依据标准对"移动后源有效但未指定"与 MoveConstructible 的规定，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [lib.types.movedfrom]（移动后源有效但未指定）；cppreference std::move / MoveConstructible（移动构造语义由类型自定义，非语言强制）"
+    evidence: [EV-MEM-008, EV-MEM-001]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]
