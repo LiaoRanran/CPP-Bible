@@ -1425,6 +1425,46 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             shutil.rmtree(tmp, ignore_errors=True)
 
 
+# ── 508 任务4：可观测性接入（旁路，**不改 replay_card 的函数体**）──────────────
+# 为何用包装而非函数内插桩：原函数有 20+ 个 return 点（refute/infra_error 各分支），
+# 逐点插桩既易漏、又会用 diff 掩盖真实逻辑；包装器在**唯一出入口**取 verdict + duration，
+# 语义等价。日志缺失/写失败不影响校验（_obs 为 None 即 no-op）。
+try:
+    import observability as _obs                       # noqa: E402
+except Exception:                                      # noqa: BLE001
+    _obs = None                                        # type: ignore[assignment]
+
+
+def _obs_log(level: str, message: str, *,
+             duration_ms: float | None = None) -> None:
+    if _obs is None:
+        return
+    _obs.log(level, "atom_evidence_replay", message, duration_ms=duration_ms)
+
+
+_replay_card_impl = replay_card
+
+
+def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
+                restore_artifact: bool = True) -> tuple[str, list[str]]:
+    """`replay_card` 的观测包装（508 任务4）：行为逐字等同原实现，只多两条日志。
+
+    签名与原函数完全一致（位置参数 path + 三个关键字参数），调用方无须改动。
+    """
+    t0 = time.perf_counter()
+    try:
+        verdict, log = _replay_card_impl(path, do_sanitizer=do_sanitizer,
+                                         keep_tmp=keep_tmp,
+                                         restore_artifact=restore_artifact)
+    except Exception as exc:                           # noqa: BLE001
+        _obs_log("ERROR", f"replay raised {path.name}: {type(exc).__name__}: {exc}")
+        raise                                          # 与原版一致：异常不被吞
+    dt = (time.perf_counter() - t0) * 1000.0
+    _obs_log("WARN" if str(verdict).startswith(("refute", "infra_error")) else "INFO",
+             f"replay {path.name}: {verdict}", duration_ms=dt)
+    return verdict, log
+
+
 def find_cards() -> list[Path]:
     return sorted(p for p in EVIDENCE.rglob("EV-*.md"))
 

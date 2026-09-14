@@ -34,43 +34,51 @@ YML = ROOT / ".github" / "workflows" / "ci.yml"
 SKIP_HINT = ("pip install", "apt-get", "sudo ", "command -v c++filt")
 
 
-def parse_steps() -> list[tuple[str, list[str]]]:
-    """从 ci.yml 抽出 `quality` job 的 (步骤名, 命令行列表)。
+# 508 任务2：CI 的「快节奏门禁」已从单一 quality job 拆为 4 个并行 job。
+# 本工具的价值是"push 前本地复跑 CI 快门禁、一次暴露全部失败"（见上方 docstring），
+# 故覆盖集合必须随之扩为 4 个 job 的并集——否则 replay/gate/pytest 的失败又变成
+# "本地全绿、push 后才知道"，正好是本工具存在的理由。
+JOBS = ("quality", "pytest", "replay", "gate")
+
+
+def parse_steps(jobs: tuple[str, ...] = JOBS) -> list[tuple[str, list[str]]]:
+    """从 ci.yml 抽出**快门禁 job 组**的 (步骤名, 命令行列表)，按 job 顺序拼接。
 
     只做够用的子集解析（不引 yaml 依赖）：`- name:` 分段，段内 `run: |` 取缩进块，
-    `run: <单行>` 取整行。
+    `run: <单行>` 取整行。找不到任一 job 即视为结构变了并报错退出（fail-loud）。
     """
     text = YML.read_text(encoding="utf-8")
-    m = re.search(r"\n  quality:\n(.*?)(?=\n  [a-z][a-z0-9-]*:\n)", text, re.S)
-    if not m:
-        sys.exit("[ci-local] 未找到 quality job（ci.yml 结构变了？）")
-    lines = m.group(1).split("\n")
     out: list[tuple[str, list[str]]] = []
-    i = 0
-    while i < len(lines):
-        name_m = re.match(r"\s*- name: (.+)$", lines[i])
-        if not name_m:
-            i += 1
-            continue
-        name = name_m.group(1).strip()
-        cmds: list[str] = []
-        j = i + 1
-        while j < len(lines) and not re.match(r"\s*- name: ", lines[j]):
-            run_m = re.match(r"^(\s*)run: ?(.*)$", lines[j])
-            if run_m:
-                ind, rest = len(run_m.group(1)), run_m.group(2).strip()
-                if rest in ("|", ">"):
-                    k = j + 1
-                    while k < len(lines) and (not lines[k].strip()
-                                              or len(lines[k]) - len(lines[k].lstrip()) > ind):
-                        cmds.append(lines[k].strip())
-                        k += 1
-                    j = k - 1
-                elif rest:
-                    cmds.append(rest)
-            j += 1
-        out.append((name, cmds))
-        i = j
+    for job in jobs:
+        m = re.search(rf"\n  {re.escape(job)}:\n(.*?)(?=\n  [a-z][a-z0-9-]*:\n)", text, re.S)
+        if not m:
+            sys.exit(f"[ci-local] 未找到 job {job!r}（ci.yml 结构变了？）")
+        lines = m.group(1).split("\n")
+        i = 0
+        while i < len(lines):
+            name_m = re.match(r"\s*- name: (.+)$", lines[i])
+            if not name_m:
+                i += 1
+                continue
+            name = name_m.group(1).strip()
+            cmds: list[str] = []
+            j = i + 1
+            while j < len(lines) and not re.match(r"\s*- name: ", lines[j]):
+                run_m = re.match(r"^(\s*)run: ?(.*)$", lines[j])
+                if run_m:
+                    ind, rest = len(run_m.group(1)), run_m.group(2).strip()
+                    if rest in ("|", ">"):
+                        k = j + 1
+                        while k < len(lines) and (not lines[k].strip()
+                                                  or len(lines[k]) - len(lines[k].lstrip()) > ind):
+                            cmds.append(lines[k].strip())
+                            k += 1
+                        j = k - 1
+                    elif rest:
+                        cmds.append(rest)
+                j += 1
+            out.append((name, cmds))
+            i = j
     return out
 
 

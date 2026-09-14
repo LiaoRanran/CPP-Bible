@@ -198,6 +198,17 @@ def cmd_check(args: argparse.Namespace) -> int:
     stage = args.stage or "fast"
     print(f"\n[cppbible] running check --stage={stage}\n")
 
+    # 508 任务4：可观测性入口——建 trace_id 并写一条**上下文面**日志（工具版本 / git HEAD /
+    # 参数）。各 gate 是子进程，会继承 `TRACE_ID` 环境变量，故一次
+    # `check --stage quality` 的全部 gate 日志可用同一 trace_id 串成一条链。
+    # 观测失败不得影响门禁（日志是旁路）。
+    try:
+        import observability as _obs
+        _obs.context_snapshot("cppbible", ["check", "--stage", stage])
+        print(f"[cppbible] trace_id={_obs.trace_id()}  日志: {_obs.log_file().name}")
+    except Exception:                                  # noqa: BLE001
+        pass
+
     if stage == "fast":
         gates = [
             ("Preflight", [PYTHON_EXE, "tools/preflight_check.py"]),

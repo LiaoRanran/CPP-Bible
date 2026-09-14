@@ -29,6 +29,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Sequence
@@ -2493,6 +2494,23 @@ _register_all()
 
 
 # ── 执行与报告 ────────────────────────────────────────────────────────────
+# 508 任务4：可观测性接入（**旁路，只加日志，不改任何检查逻辑**）。
+# 三条纪律：① 日志缺失/写失败不得影响门禁（_obs 为 None 即 no-op，log() 自身吞 IO 异常）；
+# ② 检查抛异常时**先记 ERROR 再原样 raise**（与原版行为逐字一致：原版不捕获异常）；
+# ③ 记 start/end 两条 + duration_ms，便于 log_query 聚合"哪条规则最慢"。
+try:
+    import observability as _obs                       # noqa: E402
+except Exception:                                      # noqa: BLE001
+    _obs = None                                        # type: ignore[assignment]
+
+
+def _obs_log(level: str, message: str, *,
+             duration_ms: float | None = None) -> None:
+    if _obs is None:
+        return
+    _obs.log(level, "gate_engine", message, duration_ms=duration_ms)
+
+
 def run(include_advice: bool = False) -> list[Finding]:
     out: list[Finding] = []
     for r in RULES:
@@ -2500,7 +2518,16 @@ def run(include_advice: bool = False) -> list[Finding]:
             continue
         if r.severity == "advice" and not include_advice:
             continue
-        out.extend(r.check() if r.check else [])
+        _obs_log("INFO", f"check start {r.id}")
+        t0 = time.perf_counter()
+        try:
+            hits = r.check() if r.check else []
+        except Exception as exc:                       # noqa: BLE001
+            _obs_log("ERROR", f"check raised {r.id}: {type(exc).__name__}: {exc}")
+            raise
+        out.extend(hits)
+        _obs_log("INFO", f"check end {r.id}: {len(hits)} finding(s)",
+                 duration_ms=(time.perf_counter() - t0) * 1000.0)
     return out
 
 
