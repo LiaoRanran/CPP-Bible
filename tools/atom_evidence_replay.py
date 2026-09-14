@@ -343,6 +343,50 @@ def _pin_compiler(argv: list[str]) -> list[str]:
     return argv
 
 
+# ── ccache 前缀（479 任务 3 / 465 任务 A / 476 第一波 1.1）────────────────────
+# 目的：把「全量 replay 每卡二次编译」的重复编译成本压下来（热缓存命中即抄产物）。
+# 纪律：① 只对**编译器调用**加前缀（运行 exe 的段不加）；② `_recompile_invariant`
+# 继续 `CCACHE_DISABLE=1`——重编译不变量若命中缓存会变成恒真比对（470 P0-A 已定）；
+# ③ 不可用/被 `--no-ccache` 关闭 ⇒ 静默回退到裸编译器（加速是优化，不是校验前提）。
+CCACHE_ENABLED = True
+_CCACHE: str | None = None          # None=未解析；""=不可用；其余=可执行文件路径
+
+
+def _resolve_ccache() -> str:
+    """解析 ccache 可执行文件（环境变量 → PATH → 本机已知安装位），缓存结果。
+
+    不硬编码单一路径：`CPPBIBLE_CCACHE` 可覆盖；`C:\\tools\\ccache\\ccache.exe` 仅作
+    已知安装位的兜底（479 实测本机位置）；WSL 侧由 PATH（`/usr/bin/ccache`）命中。
+    """
+    global _CCACHE
+    if _CCACHE is not None:
+        return _CCACHE
+    cands: list[str] = []
+    env = os.environ.get("CPPBIBLE_CCACHE")
+    if env:
+        cands.append(env)
+    which = shutil.which("ccache") or shutil.which("ccache.exe")
+    if which:
+        cands.append(which)
+    cands.append(r"C:\tools\ccache\ccache.exe")
+    for c in cands:
+        if c and Path(c).is_file():
+            _CCACHE = c
+            return c
+    _CCACHE = ""
+    return ""
+
+
+def _wrap_ccache(argv: list[str]) -> list[str]:
+    """编译器调用前插 ccache 前缀；非编译器调用/不可用/已关闭 ⇒ 原样返回。"""
+    if not CCACHE_ENABLED or not argv:
+        return argv
+    if Path(argv[0]).name.lower() not in _COMPILER_BASENAMES:
+        return argv
+    cc = _resolve_ccache()
+    return [cc, *argv] if cc else argv
+
+
 def run_commands(lines: Sequence[str], cwd: Path,
                  env: dict) -> tuple[list[tuple[str, int, str, str]], str]:
     """逐行执行命令（`&&` 拆段、不经 shell、裸编译器名钉完整路径）。
@@ -367,6 +411,8 @@ def run_commands(lines: Sequence[str], cwd: Path,
             if failed:                                      # `&&` 短路
                 break
             argv = _pin_compiler(argv)
+            real_prog = argv[0]                             # 真实编译器（ccache 前缀不算）
+            argv = _wrap_ccache(argv)                       # 479 任务 3：可回退的加速前缀
             try:
                 r = subprocess.run(argv, cwd=str(cwd), capture_output=True, text=True,
                                    errors="replace", timeout=600, env=env)
@@ -375,7 +421,7 @@ def run_commands(lines: Sequence[str], cwd: Path,
                 rc, err, out = 127, f"可执行文件不存在或不可执行：{argv[0]}", ""
             except subprocess.TimeoutExpired:
                 rc, err, out = 124, f"命令超时（600s）：{argv[0]}", ""
-            results.append((cmd, rc, err, argv[0]))
+            results.append((cmd, rc, err, real_prog))
             if out:
                 stdout_parts.append(out)
             failed = rc != 0
@@ -742,7 +788,12 @@ def check_artifact_assert(meta: dict[str, Any], art_path: Path) -> tuple[bool, l
 
 
 def _compiler_env() -> dict:
-    """把编译器目录注入 PATH（MinGW 的 exe/sanitizer 运行期依赖同目录 DLL）。"""
+    """把编译器目录注入 PATH（MinGW 的 exe/sanitizer 运行期依赖同目录 DLL）。
+
+    479 任务 3：ccache 启用时把缓存目录钉到 `build/.ccache`（已在 `.gitignore` 的
+    `build/` 之内）——不依赖用户级默认缓存目录（`%LOCALAPPDATA%\\ccache` 在多用户/CI
+    下权限与体积都不可控）。`setdefault`：调用方显式传 `CCACHE_DIR` 时不覆盖。
+    """
     env = dict(os.environ)
     try:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -752,6 +803,8 @@ def _compiler_env() -> dict:
             env["PATH"] = bindir + os.pathsep + env.get("PATH", "")
     except Exception:                                   # pragma: no cover
         pass
+    if CCACHE_ENABLED and _resolve_ccache():
+        env.setdefault("CCACHE_DIR", str(ROOT / "build" / ".ccache"))
     return env
 
 
@@ -1386,7 +1439,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                     help="校验后不还原仓库工件（默认还原：校验不应改写被校验对象）")
     ap.add_argument("--json", nargs="?", const=True, default=False,
                     help="结构化 JSON 输出到 stdout")
+    ap.add_argument("--no-ccache", action="store_true",
+                    help="禁用 ccache 前缀（479 任务 3；默认启用，不可用时自动回退）")
     a = ap.parse_args(argv)
+    global CCACHE_ENABLED
+    CCACHE_ENABLED = not a.no_ccache
 
     cards = [Path(c) if Path(c).is_absolute() else ROOT / c for c in a.card] or find_cards()
     if not cards:
