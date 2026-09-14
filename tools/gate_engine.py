@@ -1207,15 +1207,35 @@ def check_frontmatter_hardening() -> list[Finding]:
       ② dup-key（block）唯一键加载器检出重复键（flow/嵌套均覆盖，E08/H8）；
       ③ invalid（warn）safe_load 语法错误（存量 3 份交人裁决）；
       ④ parse-diverge（block）safe 成功但关键字段与自定义解析不一致。
-    无 pyyaml 环境跳过（保持零依赖可用）。
-    """
-    try:
-        import yaml
-    except ImportError:                                   # pragma: no cover
-        return []
-    from yaml.constructor import ConstructorError
 
-    class _UniqueKeyLoader(yaml.SafeLoader):
+    **依赖降级纪律（527 任务A 修）**：
+      * 信号①（缩进走私）是**纯 Python 检测、不需要 pyyaml** ⇒ 无论有无 pyyaml 都跑；
+      * 信号②③④ 需要 pyyaml；缺它时**不静默跳过**，而是留一条 warn 让"检查没跑"可见
+        （"跳过＝永久免检"是 368 P1-2 已确立的反模式；508 的"台账不存在＝永久免检"同源）。
+    修前的真实故障：整函数被 `try: import yaml / except ImportError: return []` 罩住，
+    于是"没装 pyyaml 的解释器"连信号①一起丢 ⇒ 527 实测 `cppbible check --stage quality`
+    在使用无 pyyaml 解释器时 Poison Drill 报 P43 漏网（82/83），而用 .venv 单跑则 83/83。
+    """
+    yaml_mod = None
+    _ctor_error: type[Exception] = Exception
+    try:
+        import yaml as yaml_mod
+        from yaml.constructor import ConstructorError as _ctor_error
+    except ImportError:
+        yaml_mod = None
+    out: list[Finding] = []
+    if yaml_mod is None:
+        # 缺依赖 ⇒ 可见化（warn，不是 block）：pyyaml 只是可选依赖，把它当内容问题拦红
+        # 会让"环境故障"伪装成"内容缺陷"；但静默跳过会让"检查没跑"伪装成"检查通过"。
+        out.append(Finding(
+            "EV-FM-YAML-HARDENING", "warn", ".",
+            f"跳过 YAML 硬化的 ②/③/④ 信号：当前解释器缺 pyyaml"
+            f"（{sys.executable}）——重复键/语法错误/解析分歧将不被检出"
+            f"（缩进走私①仍生效）",
+            "在该环境安装 pyyaml（pyproject 的 dev 依赖），"
+            "或用装了 pyyaml 的解释器跑门禁"))
+
+    class _UniqueKeyLoader(yaml_mod.SafeLoader if yaml_mod else object):
         def construct_mapping(self, node, deep=False):
             mapping = super().construct_mapping(node, deep=deep)
             seen: set = set()
@@ -1227,7 +1247,6 @@ def check_frontmatter_hardening() -> list[Finding]:
                 seen.add(k)
             return mapping
 
-    out: list[Finding] = []
     for base, pat in ((ATOMS, "ATOM-*.md"), (EVIDENCE, "EV-*.md")):
         for p in _cards(base, pat):
             fm = _frontmatter_raw(p)
@@ -1238,14 +1257,16 @@ def check_frontmatter_hardening() -> list[Finding]:
                                    f"[indent-smuggle] 标量值后出现缩进键行：{ln!r}"
                                    "（缩进项会被提升为顶层键——结构走私）",
                                    "键值对不得跟随在标量值之后（检查缩进）"))
+            if yaml_mod is None:
+                continue                       # ②③④ 需 pyyaml；已在上方留 warn 可见化
             try:
-                safe = yaml.load(fm, Loader=_UniqueKeyLoader) or {}
-            except ConstructorError as e:
+                safe = yaml_mod.load(fm, Loader=_UniqueKeyLoader) or {}
+            except _ctor_error as e:
                 out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
                                    f"[dup-key] 重复键：{str(e)[:100]}",
                                    "删除重复键（after-wins 会静默遮蔽）"))
                 continue
-            except yaml.YAMLError as e:
+            except yaml_mod.YAMLError as e:
                 out.append(Finding("EV-FM-YAML-HARDENING", "warn", _rel(p),
                                    f"[invalid] YAML 语法非法：{str(e).splitlines()[0][:88]}",
                                    "修正 frontmatter 语法（safe_load 须可解析）"))

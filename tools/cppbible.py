@@ -281,6 +281,14 @@ def cmd_check(args: argparse.Namespace) -> int:
             passed += 1
         except subprocess.CalledProcessError as e:
             print(f"  ❌ {name} FAIL")
+            # 527 任务A：先打**失败摘要**（含 ❌/FAIL/Traceback 的行），再打尾部。
+            # 只打尾部 800 字符时，像 poison 那样 80+ 行的输出会把真正失败的那行
+            # （在输出中段）截掉——527 定位"quality 里 Poison FAIL、单跑却绿"时，
+            # 恰恰卡在这里只能靠另写复现脚本才拿到证据。
+            for stream in (e.stdout, e.stderr):
+                digest = _fail_digest(stream)
+                if digest:
+                    print(digest)
             if e.stdout:
                 print(e.stdout[-800:])
             if e.stderr:
@@ -306,6 +314,29 @@ def cmd_check(args: argparse.Namespace) -> int:
     print(f"  Result: {passed} passed / {failed} failed")
     print("────────────────────────────────────────")
     return 1 if failed else 0
+
+
+_FAIL_MARKERS = ("❌", "FAIL", "Traceback", "error:", "Error:", "infra_error",
+                 "漏网", "未覆盖", "✗")
+
+
+def _fail_digest(text: str, limit: int = 12) -> str:
+    """从失败步骤的输出里挑出**信号行**（含 ❌/FAIL/Traceback 等），供 CI 一眼定位。
+
+    527 任务A 的教训：只打印输出尾部时，中段的失败行会被截掉，于是"哪个样例失败、
+    为什么失败"在日志里根本看不到——根因排查被迫另写复现脚本。
+    """
+    if not text:
+        return ""
+    rows: list[str] = []
+    for ln in text.splitlines():
+        s = ln.rstrip()
+        if any(m in s for m in _FAIL_MARKERS):
+            rows.append("      " + s.strip()[:200])
+        if len(rows) >= limit:
+            rows.append("      …（更多信号行已省略）")
+            break
+    return "  ── 失败摘要 ──\n" + "\n".join(rows) if rows else ""
 
 
 def cmd_build(args: argparse.Namespace) -> int:

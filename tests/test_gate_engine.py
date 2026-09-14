@@ -1346,6 +1346,49 @@ def test_draft_inference_is_not_this_rule_business(sandbox: Path):
     assert ge.check_inference_not_machine_verified() == []
 
 
+# ── 527 任务A：YAML 硬化的依赖降级纪律（不许静默跳过）────────────────────────
+_SMUG = ("---\nid: EV-MEM-SMUG527\nstatus: draft\nfixture: f.cpp &x\n"
+         "  verdict: confirm\nhypothesis: h\ncommand: g++ -S f.cpp -o f.asm\n"
+         "artifact: f.asm\nartifact_sha256: " + "0" * 64 + "\n---\n")
+
+
+def _write_smug(sandbox: Path) -> None:
+    p = sandbox / "evidence" / "mem" / "EV-MEM-SMUG527.md"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(_SMUG, encoding="utf-8")
+
+
+def test_yaml_hardening_indent_signal_survives_without_pyyaml(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """527 任务A 回归锁：**缺 pyyaml 时信号①（缩进走私）仍须拦**，且②③④降级必须可见。
+
+    修前整函数被 `try: import yaml / except ImportError: return []` 罩住 ⇒ 没装 pyyaml
+    的解释器连**不需要 pyyaml** 的信号①也一起丢。527 实测：`cppbible check --stage quality`
+    用无 pyyaml 的解释器（workbuddy python）跑时，poison 的 P43 漏网 → 82/83 → quality FAIL，
+    而用 .venv（有 PyYAML 6.0.3）单跑则 83/83 —— 这就是"单跑绿、quality 红"矛盾的根因。
+    """
+    import sys
+    _write_smug(sandbox)
+    with monkeypatch.context() as m:
+        m.setitem(sys.modules, "yaml", None)      # 模拟"该解释器没装 pyyaml"
+        hits = ge.check_frontmatter_hardening()
+        blocks = [f for f in hits if f.severity == "block"]
+        assert any("[indent-smuggle]" in f.message for f in blocks), hits
+        warns = [f for f in hits if f.severity == "warn"]
+        assert warns and "缺 pyyaml" in warns[0].message, \
+            "缺依赖时必须留可见 warn——静默跳过会让'检查没跑'伪装成'检查通过'"
+    # 恢复后（有 pyyaml 的环境）：① 恒跑，且不得再出现降级 warn
+    hits2 = ge.check_frontmatter_hardening()
+    assert any("[indent-smuggle]" in f.message for f in hits2), hits2
+    try:
+        import yaml  # noqa: F401
+        has_yaml = True
+    except ImportError:
+        has_yaml = False
+    if has_yaml:
+        assert not any("缺 pyyaml" in f.message for f in hits2), hits2
+
+
 def test_out_stale_mtime_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
     """F06：.out 明显旧于夹具（>5s 宽容差）→ warn。"""
     monkeypatch.setattr(ge, "ROOT", sandbox)
