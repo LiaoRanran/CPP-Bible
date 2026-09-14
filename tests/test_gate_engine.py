@@ -992,6 +992,62 @@ def test_contains_in_text_specific_passes(sandbox: Path):
     assert not hits, "有判别力 text 不得拦/不得建议"
 
 
+# ── 500 任务 1：_assert_haystack 空路径守卫（整仓 rglob 性能 + 假阴性双修）──────
+def test_haystack_empty_fields_do_not_scan_repo(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务1（阳性）：空 fixture/artifact 不得把**仓库根**当 haystack。
+
+    修复前 `_add("")` ⇒ `ROOT / ""` = 仓库根（`is_dir()` 真）⇒ 落入 rglob 分支，
+    把整仓 28588 个文件全文读入：①单测白烧 42–80s（3 张卡合计 174.7s）；
+    ②haystack 退化为整仓 ⇒ **任何**符号都"找得到出处"⇒ 下述断言（其 text 在仓库
+    别处存在、但本卡夹具/工件中并无）被静默放行（假阴性）。修复后 haystack 为空。
+    """
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    # 载荷刻意选用「真实存在于仓库别处」（gate 源码里就有这个规则 ID）但不在本卡
+    # 夹具/工件中的字符串：修复前会被整仓 haystack 兜住而静默通过。
+    _write_card(sandbox, "EV-MEM-H1.md", id="EV-MEM-H1",
+                artifact_assert="\n  - {kind: contains, text: EV-ASSERT-SYMBOL-MAPPED}")
+    p = sandbox / "evidence" / "mem" / "EV-MEM-H1.md"
+    assert ge._assert_haystack(ge._meta(p)) == "", \
+        "空 fixture/artifact 的 haystack 必须是空串（不得退化为整仓）"
+    warns = [h for h in ge.check_evidence_assert_symbol_mapped()
+             if h.severity == "warn"]
+    assert any("EV-ASSERT-SYMBOL-MAPPED" in h.message for h in warns), \
+        "无出处断言必须 warn（修复前因整仓 haystack 假阴性放行）"
+
+
+def test_haystack_fixture_symbol_is_mappable(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务1（阴性）：有 fixture 且符号能在其中定位 ⇒ 不命中（正常搜索不受影响）。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "fx500.cpp").write_text("int zzz_fixture_symbol_500 = 1;\n",
+                                       encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-H2.md", id="EV-MEM-H2", fixture="fx500.cpp",
+                artifact_assert="\n  - {kind: contains, text: zzz_fixture_symbol_500}")
+    p = sandbox / "evidence" / "mem" / "EV-MEM-H2.md"
+    assert "zzz_fixture_symbol_500" in ge._assert_haystack(ge._meta(p)), \
+        "有 fixture 时应正常读入其文本（守卫不得误伤正常路径）"
+    warns = [h for h in ge.check_evidence_assert_symbol_mapped()
+             if h.severity == "warn" and "zzz_fixture_symbol_500" in h.message]
+    assert not warns, "符号可在 fixture 中定位 ⇒ 不得 warn"
+
+
+def test_haystack_both_empty_all_asserts_warn(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务1（边界）：fixture 与 artifact 双空 ⇒ haystack 为空，所有断言都 warn。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    toks = ("alpha_tok_500", "beta_tok_500")
+    for i, txt in enumerate(toks, start=1):
+        _write_card(sandbox, f"EV-MEM-H3{i}.md", id=f"EV-MEM-H3{i}",
+                    artifact_assert=f"\n  - {{kind: contains, text: {txt}}}")
+        p = sandbox / "evidence" / "mem" / f"EV-MEM-H3{i}.md"
+        assert ge._assert_haystack(ge._meta(p)) == "", "双空 ⇒ haystack 必须为空串"
+    warns = [h.message for h in ge.check_evidence_assert_symbol_mapped()
+             if h.severity == "warn"]
+    for txt in toks:
+        assert any(txt in m for m in warns), f"双空卡的断言 {txt} 必须 warn"
+
+
 def test_out_key_unicode_detected(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
     """F04：全角键（`ｎｐｒｏｃ=`）也计入未声明读数键。"""
     monkeypatch.setattr(ge, "ROOT", sandbox)

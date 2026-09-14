@@ -1428,7 +1428,15 @@ def _assert_haystack(meta: dict) -> str:
     parts: list[str] = []
 
     def _add(rel: object) -> None:
-        f = ROOT / str(rel or "")
+        # 500 任务 1：空值守卫。`ROOT / str(rel or "")` 在 rel 为空串时等于 **仓库根目录**
+        #   （`Path(root) / "" == root` 且 is_dir() 为真）⇒ 落入下面的 rglob 分支，
+        #   把整仓 28588 个文件全文读入：①性能（3 个 contains_in 测试白烧 174.7s）；
+        #   ②正确性：haystack 退化为「整个仓库」⇒ 任何符号都能"找到出处"，
+        #   `EV-ASSERT-SYMBOL-MAPPED` 对这类卡恒不命中（假阴性）。
+        #   空 rel 的语义应是「该字段未声明」，而不是「整个仓库」。
+        if not rel:
+            return
+        f = ROOT / str(rel)
         if not f.is_file() and not f.is_dir():
             return
         is_asm = f.suffix.lower() in (".asm", ".s", ".S")
