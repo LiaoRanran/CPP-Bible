@@ -1893,6 +1893,70 @@ def check_atom_claim_structured() -> list[Finding]:
     return out
 
 
+def _ev_index() -> dict[str, dict]:
+    """证据 id → 卡 frontmatter（一次扫描，供命题级规则复用，避免 N×M 次读盘）。"""
+    idx: dict[str, dict] = {}
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        m = _meta(p)
+        idx[str(m.get("id") or p.stem)] = m
+    return idx
+
+
+def _has_artifact_assertion(meta: dict) -> bool:
+    """证据卡是否带**机器可复算的工件断言**（526 规则2 的"闭环前提"）。
+
+    口径取 526 §二 原文「无 artifact_assert / run_match」⇒ 二者有其一即算有：
+      * `artifact_assert` 非空（对工件下符号/文本断言），或
+      * `actual.run_match_file` 非空（读数留痕文件，replay 按 .out 键比对）。
+    **不**把 `actual.run_match_keys` 单独存在算进来：没有留痕文件时它无载体
+    （500 规则 EV-RUN-KEY-DECLARED-EXISTS 已确立"无文件的卡其 .out 由 command 运行时产生"）。
+    """
+    if _as_list(meta.get("artifact_assert")):
+        return True
+    actual = meta.get("actual")
+    return bool(isinstance(actual, dict)
+                and str(actual.get("run_match_file") or "").strip())
+
+
+def check_observation_needs_artifact() -> list[Finding]:
+    """`OBSERVATION-NEEDS-ARTIFACT`（526 规则2，block / 零容忍）：observation 必须机器闭环。
+
+    为何：526 把 claim_type 定为**验证强度分流阀**——observation 的卖点是"直接观测，
+    replay confirm 即可全自动"。那么它就必须拿得出**可复算的工件断言**；拿不出还自称
+    观测，就是自证（520 漏洞1 的变种：结论没有任何独立载体，却因"观测"名义跳过人审）。
+    语义上此时它其实是 inference（该去补 `external_basis` 或人签），故判据直接 block
+    并给出"改标 inference"的修法。
+
+    判据：命题 `evidence` 里**至少一张**卡要带工件断言（见 `_has_artifact_assertion`）。
+    引用不存在的卡也算"无支撑"（消息里区分"卡不存在"与"卡存在但无工件断言"）。
+    """
+    out: list[Finding] = []
+    idx = _ev_index()
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        for prop in _claim_props(meta):
+            if str(prop.get("claim_type") or "").strip() != "observation":
+                continue
+            refs = [str(r).strip() for r in _as_list(prop.get("evidence"))
+                    if str(r).strip()]
+            if refs and any(_has_artifact_assertion(idx.get(r) or {}) for r in refs):
+                continue
+            pid = str(prop.get("id") or "?")
+            if not refs:
+                why = "命题未声明 evidence"
+            else:
+                ghost = [r for r in refs if r not in idx]
+                why = (f"引用的证据卡均无工件断言（artifact_assert / run_match_file）"
+                       + (f"；其中不存在的卡：{ghost}" if ghost else ""))
+            out.append(Finding(
+                "OBSERVATION-NEEDS-ARTIFACT", "block", _rel(p),
+                f"命题 {pid}（observation）缺机器闭环支撑：{why}",
+                "observation 自称「直接观测」就必须有可复算的工件断言——挂一张带 "
+                "artifact_assert 或 run_match_file 的证据卡；"
+                "拿不出来说明它其实是 inference（改 claim_type 并补 external_basis / 人签）"))
+    return out
+
+
 def check_artifact_file_exists() -> list[Finding]:
     """500 任务3（`EV-ARTIFACT-FILE-EXISTS`）：卡声明的 `artifact:` / `artifacts[]` 指向的文件
     必须真实存在（相对 ROOT）。
@@ -2530,6 +2594,9 @@ def _register_all() -> None:
         ("ATOM-CLAIM-STRUCTURED",
          "新卡必须有命题化 claim_structured（526 规则1；存量 STAGING 只 warn）",
          "atom", check_atom_claim_structured),
+        ("OBSERVATION-NEEDS-ARTIFACT",
+         "observation 命题须有工件断言支撑（526 规则2：零容忍）",
+         "atom", check_observation_needs_artifact),
         ("EV-FIXTURE-NO-ECHO-DATA", "cat 式证据（472 P1-2：experimental→warn，读文件原样打印）",
          "evidence", check_fixture_no_echo_findings),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",

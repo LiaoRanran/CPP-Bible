@@ -1262,11 +1262,15 @@ def drill() -> int:
     # 526 的三条规则作用在 **atoms/**，而上面的 `_static_who` 只往 evidence/ 写卡
     # ⇒ 需要原子版探针。覆盖判定同上：RULE-COVERAGE 正则只认源码里字面量
     # `"RULE-ID" in who`（变量名须恰为 who），故勿改成参数化比较。
-    def _atom_who(cards: list[tuple[str, dict]], fn) -> list[str]:
+    def _atom_who(cards: list[tuple[str, dict]], fn,
+                  ev: list[tuple[str, dict]] | None = None) -> list[str]:
+        """原子卡探针（规则1-3 作用在 atoms/）；`ev` 供命题级规则挂证据卡。"""
         with sandbox() as tmp:
             orig_root = ge.ROOT
             ge.ROOT = tmp
             try:
+                for fname, fields in (ev or []):
+                    _write(tmp / "evidence" / "mem" / fname, fields)
                 for fname, fields in cards:
                     _write(tmp / "atoms" / "mem" / fname, fields)
                 return sorted({f.rule_id for f in fn()})
@@ -1316,6 +1320,36 @@ def drill() -> int:
         ge.check_atom_claim_structured)
     ok = "ATOM-CLAIM-STRUCTURED" in who
     results.append(("P63-阴3 claim_type 非法须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # P64（526 规则2 OBSERVATION-NEEDS-ARTIFACT）：observation 自称"直接观测"却拿不出工件
+    _obs_prop = ("\n  - id: prop-1\n    subject: s\n    predicate: p\n    object: o\n"
+                 "    claim_type: observation\n    statement: st\n"
+                 "    evidence: [EV-MEM-P64E]\n    extracted_by: writer")
+    _p64_atom = [("ATOM-MEM-P64.md",
+                  dict(_a_base, id="ATOM-MEM-P64", claim_structured=_obs_prop))]
+    _p64_ev = {"id": "EV-MEM-P64E", "serves": "[ATOM-MEM-P64]", "hypothesis": "h",
+               "command": "g++ -std=c++17 -c fx.cpp", "verdict": "confirm"}
+    who = _atom_who(_p64_atom, ge.check_observation_needs_artifact,
+                    ev=[("EV-MEM-P64E.md", dict(_p64_ev))])       # 卡在，但无工件断言
+    ok = "OBSERVATION-NEEDS-ARTIFACT" in who
+    results.append(("P64 observation 无工件断言须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+    who = _atom_who(
+        _p64_atom, ge.check_observation_needs_artifact,
+        ev=[("EV-MEM-P64E.md", dict(
+            _p64_ev, artifact_assert="\n  - {kind: contains, text: zz_p64}"))])
+    ok = not who
+    results.append(("P64-阴 observation 有工件断言须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+    # P64-阴2：根本没挂 evidence 的 observation 同样无支撑 ⇒ 必须拦
+    who = _atom_who(
+        [("ATOM-MEM-P64B.md", dict(
+            _a_base, id="ATOM-MEM-P64B",
+            claim_structured=_obs_prop.replace("    evidence: [EV-MEM-P64E]\n", "")))],
+        ge.check_observation_needs_artifact)
+    ok = "OBSERVATION-NEEDS-ARTIFACT" in who
+    results.append(("P64-阴2 observation 未声明 evidence 须 block", ok,
                     f"拦截者 {', '.join(who) or '（漏网！）'}"))
 
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────

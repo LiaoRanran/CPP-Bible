@@ -689,10 +689,13 @@ def test_daibu_is_not_placeholder(sandbox: Path):
 # ── severity 语义：advice 永不阻断 ────────────────────────────────────────
 def test_advice_rules_never_block(sandbox: Path):
     """教学/文学规则命中时 severity=advice，不得影响 --check 的红绿。"""
-    # 526 批次E 规则1 落地后，「最小合法原子」多了一项 claim_structured（新卡强制）
+    # 526 批次E 落地后，「最小合法原子」多了一项 claim_structured（新卡强制）
     # ⇒ 本测试的干净卡必须带上它，否则失败原因会与本测试的本意（advice 语义）无关。
+    # 用 **inference** 命题（而非 observation）：observation 会被规则2 要求"证据卡带工件
+    # 断言"，而本测试的沙箱里没有证据卡；inference 在 draft 期也不触发规则3
+    # （那条只在 status=verified 时判"有没有人签"）。
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",   # 无 pedagogy 子字段
-                claim_structured=_PROP_OK)
+                claim_structured=_PROP_OK2)
     hits = ge.run(include_advice=True)
     assert all(h.severity != "block" for h in hits if h.rule_id.startswith("PED-"))
     assert not any(h.severity == "block" for h in ge.run(include_advice=False))
@@ -1222,6 +1225,47 @@ def test_claim_structured_valid_passes_and_card_level_extracted_by(
                 claim_structured=_PROP_OK.replace("\n    extracted_by: writer", ""))
     assert [f for f in ge.check_atom_claim_structured()
             if "ATOM-MEM-OKC-002" in f.target] == []
+
+
+# ── 526 批次E 规则2：OBSERVATION-NEEDS-ARTIFACT（observation 必须机器闭环）──────
+_OBS_PROP = ("\n  - id: prop-1\n    subject: s\n    predicate: p\n    object: o\n"
+             "    claim_type: observation\n    statement: st\n"
+             "    evidence: [EV-MEM-OBS1]\n    extracted_by: writer")
+
+
+def test_observation_without_artifact_blocks(sandbox: Path):
+    """526 规则2（阳性）：observation 的证据卡无工件断言 ⇒ block（自证/无载体）。"""
+    _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                claim_structured=_OBS_PROP)
+    _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1")
+    hits = ge.check_observation_needs_artifact()
+    assert len(hits) == 1 and hits[0].severity == "block", hits
+    assert "prop-1" in hits[0].message
+
+
+def test_observation_with_artifact_assert_passes(sandbox: Path):
+    """526 规则2（阴性1）：证据卡带 artifact_assert ⇒ 放行。"""
+    _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                claim_structured=_OBS_PROP)
+    _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1",
+                artifact_assert="\n  - {kind: contains, text: zz_obs}")
+    assert ge.check_observation_needs_artifact() == []
+
+
+def test_observation_with_run_match_file_passes(sandbox: Path):
+    """526 规则2（阴性2）：证据卡带 actual.run_match_file（读数留痕）也算闭环。"""
+    _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                claim_structured=_OBS_PROP)
+    _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1",
+                actual="\n  run_match_file: x.out\n  run_match_keys: [k]")
+    assert ge.check_observation_needs_artifact() == []
+
+
+def test_inference_prop_is_not_rule2_business(sandbox: Path):
+    """526 规则2（边界）：inference 命题无工件**不该**由本规则拦（那是规则3 的域）。"""
+    _write_atom(sandbox, "ATOM-MEM-INF1.md", "mem", id="ATOM-MEM-INF1",
+                claim_structured=_OBS_PROP.replace("observation", "inference"))
+    assert ge.check_observation_needs_artifact() == []
 
 
 def test_out_stale_mtime_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
