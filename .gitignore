@@ -77,6 +77,7 @@ Thumbs.db
 # 结构化操作日志（498 任务 4 / 497：trace JSONL，运行时数据不入库）
 /data/traces/
 /data/logs/
+/data/knowledge_graph.db*   # 508 任务5：知识图谱是派生物（knowledge_graph.py build 可重建）
 
 # 审计/软门禁临时输出（dangling_ref_linter / prereq_topo_check 等）
 outputs/
