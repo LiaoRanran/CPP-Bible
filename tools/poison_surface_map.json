@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-14T16:09:54",
- "source_commit": "e23a0b1",
+ "generated_at": "2026-09-14T20:09:55",
+ "source_commit": "e2a07aa",
  "drill": {
-  "passed": 68,
-  "total": 68
+  "passed": 72,
+  "total": 72
  },
  "attack_types": {
   "A1": {
@@ -15,7 +15,7 @@
   },
   "A2": {
    "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
-   "count": 6
+   "count": 8
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
@@ -60,8 +60,8 @@
   "uncovered": []
  },
  "rule_coverage": {
-  "covered": 27,
-  "total": 53,
+  "covered": 30,
+  "total": 55,
   "exempt": 27
  },
  "payloads": [
@@ -324,6 +324,16 @@
    "name": "P48 阴性·命中含非样板须放行",
    "pass": true,
    "type": "A3"
+  },
+  {
+   "name": "P61 run_match_keys 假键（.out 无此键）须 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P62 artifact 指向不存在文件须 block",
+   "pass": true,
+   "type": "A2"
   }
  ],
  "negative_controls": [
@@ -399,6 +409,16 @@
   },
   {
    "name": "P60-阴2 卡缺 artifact_version 须 warn",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P61-阴 声明键全在 .out 中须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P62-阴 artifact 存在须放行",
    "pass": true,
    "type": null
   },

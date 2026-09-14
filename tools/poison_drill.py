@@ -1199,6 +1199,65 @@ def drill() -> int:
         results.append(("P48 阴性·命中含非样板须放行", _ok48,
                         "命中候选含 ret（非伪指令）⇒ 按原语义放行"))
 
+    # ── P61/P62（500 任务2/3）：run_match_keys 假键 / artifact 文件不存在 ──────────
+    # 两条新规均为**纯静态**判据（不真编译，避免与 replay 抢锁）：
+    #   P61 ⇒ EV-RUN-KEY-DECLARED-EXISTS：声明了 .out 中不存在的键（499 M5 逃逸形态）
+    #   P62 ⇒ EV-ARTIFACT-FILE-EXISTS：artifact 指向不存在的文件（499 M8 逃逸形态）
+    # 样例必须**同时 patch `ge.ROOT`**：两条判据都用 `ROOT / <rel>` 解析相对路径，
+    # 而 `sandbox()` 只 patch ATOMS/EVIDENCE（与 P60 patch `_ARTIFACT_LEDGER` 同理）。
+    # 覆盖判定：RULE-COVERAGE 正则只认源码里**字面量** `"RULE-ID" in who`（变量名须恰为
+    # who，见 P56 处注释），故 helper 回传 who，由调用处用字面量判别——勿改为参数化比较，
+    # 否则规则会被算成"未覆盖"→ CI 红。
+    def _static_who(cards: list[tuple[str, dict]], files: dict[str, str],
+                    fn) -> list[str]:
+        with sandbox() as tmp:
+            orig_root = ge.ROOT
+            ge.ROOT = tmp
+            try:
+                for rel, content in files.items():
+                    fp = tmp / rel
+                    fp.parent.mkdir(parents=True, exist_ok=True)
+                    fp.write_text(content, encoding="utf-8")
+                for fname, fields in cards:
+                    _write(tmp / "evidence" / "mem" / fname, fields)
+                return sorted({f.rule_id for f in fn()})
+            finally:
+                ge.ROOT = orig_root
+
+    _p_base = {"id": "EV-MEM-P61", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+               "command": "g++ -std=c++17 -c fx.cpp", "verdict": "confirm"}
+    who = _static_who(
+        [("EV-MEM-P61.md", dict(
+            _p_base,
+            actual="\n  run_match_file: fx61.out\n"
+                   "  run_match_keys: [real_key, FAKE_KEY=1]"))],
+        {"fx61.out": "real_key=1\n"}, ge.check_run_key_declared_exists)
+    ok = "EV-RUN-KEY-DECLARED-EXISTS" in who
+    results.append(("P61 run_match_keys 假键（.out 无此键）须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+    who = _static_who(
+        [("EV-MEM-P61N.md", dict(
+            _p_base, id="EV-MEM-P61N",
+            actual="\n  run_match_file: fx61.out\n  run_match_keys: [real_key]"))],
+        {"fx61.out": "real_key=1\n"}, ge.check_run_key_declared_exists)
+    ok = not who
+    results.append(("P61-阴 声明键全在 .out 中须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+    who = _static_who(
+        [("EV-MEM-P62.md", dict(
+            _p_base, id="EV-MEM-P62",
+            artifact="Examples/atoms/_nonexistent_p62.asm"))],
+        {}, ge.check_artifact_file_exists)
+    ok = "EV-ARTIFACT-FILE-EXISTS" in who
+    results.append(("P62 artifact 指向不存在文件须 block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+    who = _static_who(
+        [("EV-MEM-P62N.md", dict(_p_base, id="EV-MEM-P62N", artifact="fx62.asm"))],
+        {"fx62.asm": "nop\n"}, ge.check_artifact_file_exists)
+    ok = not who
+    results.append(("P62-阴 artifact 存在须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1289,6 +1348,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
     ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
     ("P58 ", "A1"), ("P59 ", "A1"), ("P60 ", "A4"),
+    ("P61 ", "A2"), ("P62 ", "A2"),      # 500 任务2/3：假读数键 / 工件文件不存在
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
