@@ -38,27 +38,40 @@ SLOW_MODULES = frozenset({
 })
 
 
+# 508：除 SLOW_MODULES 外，**读真实仓库可变状态**的模块也必须同组——replay 的校验流程是
+# 「删旧工件 → 重生成 → 比 sha → 还原」，期间 `Examples/atoms/*.asm` 会**瞬时不存在/内容不同**；
+# 若另一个 worker 恰在此时读它（如 writer_selfcheck 的 WC-01「磁盘 sha == 卡值」、
+# gate 的 `EV-ARTIFACT-FILE-EXISTS` 存在性），就会假红。串行组 wall 由
+# `test_golden_lock_json`（~125s）主导，把这些模块并进去**不增加 wall**。
+SERIAL_EXTRA = frozenset({
+    "test_gate_engine.py",       # 真实仓库规则扫描（读工件存在性/内容）
+    "test_writer_selfcheck.py",  # WC-01 磁盘 sha == 卡值（对瞬时改写最敏感）
+    "test_artifact_version.py",  # 工件版本台账 + 工件事存在性
+})
+
+
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
         "markers", "slow: 调用编译器（g++/cl）/ 跑 replay / 跑 poison 的测试")
     config.addinivalue_line(
         "markers", "fast: 纯字符串 / 数据结构 / 规则判断，不调用编译器")
     config.addinivalue_line(
-        "markers", "serial: 必须串行执行（共享文件锁/端口/固定路径）——"
-                   "xdist 下会被归入同一 worker（xdist_group=serial）")
+        "markers", "serial: 必须串行执行（共享文件锁/端口/固定路径）。"
+                   "**当前无测试使用**——508 实测 xdist 的 loadgroup 分组在本版本不生效，"
+                   "改由 `-m slow` 切分两阶段（见 pyproject 的 addopts 注释）实现同样的隔离；"
+                   "保留本标记供未来按测试粒度标注时使用（届时用 `-m serial -n0` 单独跑）")
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list) -> None:
     """按模块归类打标（不删除、不改写任何测试；标记只影响 -m 过滤）。
 
-    508 任务1：`serial` 标记的测试统一归入 xdist 组 `serial`（配合 `--dist loadgroup`
-    可保证它们落在同一 worker、彼此串行）。**当前没有任何测试需要它**——508 实测
-    `-n auto` 366 点全绿，说明仓库测试本身并行安全；此处只预留机制，供未来出现
-    "共享文件锁 / 固定端口 / 固定临时路径"类隔离问题时就地打标（无需改测试逻辑）。
+    508 任务1 的落点是**按模块切 slow/fast 两组**（配合 pyproject 注释里的两阶段命令：
+    `pytest -m "not slow" -n auto` 跑纯逻辑，`pytest -m slow -n0` 跑共享真实仓库状态的）。
+    这条切分是**不依赖 xdist 分组**的——508 实测 `--dist loadgroup` + `xdist_group` 在
+    xdist 3.8 下不生效（同组测试仍散在多个 worker，并发跑 replay 会撞全局锁报
+    `replay 锁被占用超时`），故放弃分组、改用标记切分。
     """
     for item in items:
         mod = Path(str(item.fspath)).name
-        item.add_marker(pytest.mark.slow if mod in SLOW_MODULES
-                        else pytest.mark.fast)
-        if item.get_closest_marker("serial"):
-            item.add_marker(pytest.mark.xdist_group("serial"))
+        slow = mod in SLOW_MODULES or mod in SERIAL_EXTRA
+        item.add_marker(pytest.mark.slow if slow else pytest.mark.fast)

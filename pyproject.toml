@@ -118,9 +118,20 @@ warn_unused_configs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["tools"]   # 与 tests/conftest.py 的 sys.path 注入等效（pytest>=7）
-# 508 任务1：pytest-xdist 并行。实测 366 点全绿，wall 227s → 153.8s（−32%）；
-# 剩余耗时下限是 test_json_output.py::test_golden_lock_json（单进程内跑全库 replay
-# 复算，~125s，无法再切分）。`-n auto` 按核数自适应（本机 32 核 → 32 worker）。
-# `--dist loadgroup` 让 `xdist_group("serial")` 真正生效（见 tests/conftest.py 的
-# serial 机制）；无组的测试退化为默认 load 调度，无额外代价。
-addopts = "-q -n auto --dist loadgroup"
+# 508 任务1 复盘：**默认保持串行**，并行走"两阶段"命令（理由见下）。
+#
+# 为什么不在 addopts 里放 `-n auto`（实测结论）：
+#   1. 本套测试有 ~14 个模块共享**真实仓库可变状态**——replay 的全局锁
+#      （`build/.replay_lock`）与校验期间"删旧工件→重生成→比 sha→还原"对
+#      `Examples/atoms/*.asm` 的瞬时改写。32 路并发下实测报
+#      `⚠️ replay 锁被占用超时`（infra_error:replay_busy）⇒ 假红。
+#   2. 尝试用 xdist 官方 `--dist loadgroup` + `xdist_group("serial")` 把它们钉进同一
+#      worker：**实测无效**（同组测试仍散在 gw0/gw1/gw2/gw3）。分组依赖调度器能看到
+#      item 上的 marker，而本版本（xdist 3.8）经 controller 侧调度时读不到。
+#   3. 因此把"并行"改为**按标记切分两阶段**执行（不依赖分组，构造上安全）：
+#         pytest -m "not slow" -n auto     # 纯逻辑，并行安全（~10s）
+#         pytest -m slow -n0               # 共享锁/工件，串行（~140s）
+#      总 wall ≈ 150s，与"全量 -n auto"持平（下限由 test_golden_lock_json ~125s 决定），
+#      但不再有锁竞争假红。CI 的 pytest job 用的就是这两条命令。
+# 串行全量想临时改并行：`pytest -n auto -m "not slow"` 只跑纯逻辑部分。
+addopts = "-q"

@@ -391,8 +391,15 @@ jobs:
       # （经 check-runs /annotations 端点可公开读取）。
       run: |
         python3 -m pip install --quiet pytest pytest-xdist pyyaml
-        python3 -m pytest tests/ -q -n 16 --maxfail=1 2>&1 | tee /tmp/pytest.log
-        rc="${PIPESTATUS[0]}"
+        rc=0
+        # 两阶段（508 实测结论）：纯逻辑并行、共享真实仓库状态的串行。
+        # 为何不直接 `-n 16` 全量：~14 个模块共享 replay 全局锁与 Examples/atoms 工件，
+        # 并发会报 `replay 锁被占用超时`；xdist 的 `--dist loadgroup` 分组实测无效
+        # （同组测试仍散在多 worker），故改用"按 marker 切分"这一不依赖分组的方案。
+        python3 -m pytest tests/ -q -m "not slow" -n 16 --maxfail=1 2>&1 | tee /tmp/pytest.log
+        [ "${PIPESTATUS[0]}" = "0" ] || rc=1
+        python3 -m pytest tests/ -q -m slow -n0 2>&1 | tee -a /tmp/pytest.log
+        [ "${PIPESTATUS[0]}" = "0" ] || rc=1
         if [ "$rc" != "0" ]; then
           cat /tmp/pytest.log >> "$GITHUB_STEP_SUMMARY"
           while IFS= read -r ln; do printf '::error::%s\n' "$ln"; done < <(tail -n 40 /tmp/pytest.log)
