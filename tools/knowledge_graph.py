@@ -476,10 +476,86 @@ def concepts(conn: sqlite3.Connection, name: str | None = None) -> dict:
         sys.exit("[kg] 概念层不存在，先重跑：python tools/knowledge_graph.py build")
 
 
+# ── 528 任务2：概念冲突候选（L1 结构检测，**不判对错**）──────────────────────
+# 语义上"两条命题是否真矛盾"是人的判断（或红队/LLM 的事）。本工具只做**结构候选**：
+#   ① 同一 subject 下两条命题的 object 极性相反（显式反义词对，非模糊子串）；
+#   ② 两条命题所在原子之间存在 CONTRADICTS 边（卡面 relations 已声明的矛盾）。
+# 输出里带上"命中的词"，让人一眼看出为什么被列为候选——候选≠结论。
+_POLARITY = (
+    (("阻止", "禁止", "不提供", "不会", "不能", "不可", "不保证", "未定义", "不建立"),
+     ("允许", "提供", "会", "能", "可", "保证", "定义", "建立")),
+)
+
+
+def _polarity_hit(a: str, b: str) -> tuple[str, str] | None:
+    """两条 object 的极性是否相反（返回 (a 侧命中词, b 侧命中词)，否则 None）。"""
+    for neg, pos in _POLARITY:
+        na = next((w for w in neg if w in a), None)
+        pb = next((w for w in pos if w in b), None)
+        if na and pb and a != b:
+            return (na, pb)
+        nb = next((w for w in neg if w in b), None)
+        pa = next((w for w in pos if w in a), None)
+        if nb and pa and a != b:
+            return (pa, nb)
+    return None
+
+
+def conflicts(conn: sqlite3.Connection) -> dict:
+    """候选矛盾命题对（**只报候选**，不做语义裁决，也不进门禁）。"""
+    _need(conn)
+    try:
+        rows = conn.execute(
+            "SELECT src, dst, atom, prop, predicate, claim_type, statement "
+            "FROM concept_edges ORDER BY src, atom, prop").fetchall()
+        contra = {(a, b) for a, b, t in conn.execute(
+            "SELECT src, dst, type FROM edges WHERE type='CONTRADICTS'").fetchall()}
+    except sqlite3.OperationalError:
+        sys.exit("[kg] 概念层不存在，先跑：python tools/knowledge_graph.py build")
+
+    def _d(r) -> dict:
+        return {"subject": r[0], "object": r[1], "atom": r[2], "prop": r[3],
+                "predicate": r[4], "claim_type": r[5], "statement": r[6]}
+
+    by_atom: dict[str, list[dict]] = {}
+    for r in rows:
+        by_atom.setdefault(r[2], []).append(_d(r))
+    atoms = sorted(by_atom)
+    out: list[dict] = []
+    for i, a1 in enumerate(atoms):
+        for a2 in atoms[i + 1:]:
+            # ① 同 subject 且 object 极性相反（**精确**信号，逐命题对给出）
+            pol: list[dict] = []
+            for pa in by_atom[a1]:
+                for pb in by_atom[a2]:
+                    if pa["subject"] != pb["subject"]:
+                        continue
+                    hit = _polarity_hit(pa["object"], pb["object"])
+                    if hit:
+                        pol.append({"tokens": list(hit), "a": pa, "b": pb})
+            # ② 两原子间存在 CONTRADICTS 边（**声明**信号；注意 526 的 REL_MAP 把
+            #    contrasts（对比）与 contradicts（矛盾）都归为 CONTRADICTS ⇒ 这类候选
+            #    里大半是"对照"而非"逻辑矛盾"，必须人工筛，故按**原子对**给一组而不是
+            #    按命题做笛卡尔积（否则一次报上百条，没人看得完）。
+            if (a1, a2) in contra or (a2, a1) in contra:
+                out.append({"kind": "contradiction_edge",
+                            "reason": "两原子之间存在 CONTRADICTS 边（含 contrasts 对比，须人工筛）",
+                            "a_atom": a1, "b_atom": a2,
+                            "a_props": by_atom[a1], "b_props": by_atom[a2],
+                            "polarity_pairs": pol})
+            elif pol:
+                out.append({"kind": "polarity",
+                            "reason": "同 subject 且 object 极性相反",
+                            "a_atom": a1, "b_atom": a2,
+                            "a_props": by_atom[a1], "b_props": by_atom[a2],
+                            "polarity_pairs": pol})
+    return {"candidates": len(out), "items": out}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="知识图谱 L1（508 任务5 + 526 概念层）")
     ap.add_argument("cmd", choices=("build", "stats", "deps", "impact", "chain", "orphans",
-                                    "concepts"))
+                                    "concepts", "conflicts"))
     ap.add_argument("arg", nargs="?", default=None,
                     help="deps/impact/chain 的目标；concepts 的概念名（省略=列全部）")
     ap.add_argument("--db", default=None, help="覆盖数据库路径（测试用）")
@@ -499,6 +575,8 @@ def main(argv: list[str] | None = None) -> int:
         out = chain(conn, a.arg or "")
     elif a.cmd == "concepts":
         out = concepts(conn, a.arg)
+    elif a.cmd == "conflicts":
+        out = conflicts(conn)
     else:
         out = impact(conn, a.arg or "")
     if a.json:
@@ -538,6 +616,15 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"   {it['props']:>3} 条  {it['name']}"
                       f"（主 {it['as_subject']} / 宾 {it['as_object']}）"
                       f"  原子 {','.join(it['atoms'])}")
+    elif a.cmd == "conflicts":
+        print(f"[kg] 候选矛盾 {out['candidates']} 组（**只报候选，语义裁决归人/红队**）：")
+        for it in out["items"]:
+            print(f"   — {it['a_atom']} × {it['b_atom']}：{it['reason']}")
+            for pr in it["polarity_pairs"]:
+                print(f"       命中词 {pr['tokens']}：{pr['a']['prop']}「{pr['a']['object'][:40]}」"
+                      f" ↔ {pr['b']['prop']}「{pr['b']['object'][:40]}」")
+            if not it["polarity_pairs"]:
+                print("       （无极性相反对，仅凭声明的 CONTRADICTS 边 → 多半是对照，需人工筛）")
     elif a.cmd == "deps":
         print(f"[kg] {out['atom']} 直接依赖 {len(out['deps'])}：")
         for d in out["deps"]:

@@ -195,6 +195,52 @@ def test_alias_matching_is_exact_not_substring(sandbox: Path, tmp_path: Path,
     assert kg._canon_concept(" 栅栏 ", al) == ("栅栏", False)             # 不在本表
 
 
+def _prop(subject: str, predicate: str, obj: str, ctype: str = "observation") -> str:
+    return (f"\n  - id: prop-1\n    subject: {subject}\n    predicate: {predicate}\n"
+            f"    object: {obj}\n    claim_type: {ctype}\n    statement: st\n"
+            f"    extracted_by: writer")
+
+
+def test_conflicts_detects_opposite_polarity(sandbox: Path, tmp_path: Path):
+    """528 任务2：同 subject 且 object 极性相反的两条命题须被列为候选。"""
+    db = tmp_path / "kgconf1.db"
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-X1.md",
+           {"id": "ATOM-MEM-X1", "title": "t", "status": "draft",
+            "claim_structured": _prop("内存屏障(fence)", "在循环体内", "阻止编译器消除该循环")})
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-X2.md",
+           {"id": "ATOM-MEM-X2", "title": "t", "status": "draft",
+            "claim_structured": _prop("内存屏障(fence)", "对普通 int", "提供原子性")})
+    conn = kg.connect(db)
+    kg.build(conn, verbose=False)
+    out = kg.conflicts(conn)
+    assert out["candidates"] == 1, out
+    it = out["items"][0]
+    assert it["kind"] == "polarity" and it["polarity_pairs"], it
+    assert {it["a_atom"], it["b_atom"]} == {"ATOM-MEM-X1", "ATOM-MEM-X2"}
+
+
+def test_conflicts_no_false_positive_on_neutral_props(sandbox: Path, tmp_path: Path):
+    """528 任务2（阴性）：同 subject 但 object 无极性相反 ⇒ 不得误报。"""
+    db = tmp_path / "kgconf2.db"
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-Y1.md",
+           {"id": "ATOM-MEM-Y1", "title": "t", "status": "draft",
+            "claim_structured": _prop("sizeof", "在 x86-64 下", "8 字节")})
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-Y2.md",
+           {"id": "ATOM-MEM-Y2", "title": "t", "status": "draft",
+            "claim_structured": _prop("sizeof", "在 32 位下", "4 字节")})
+    conn = kg.connect(db)
+    kg.build(conn, verbose=False)
+    assert kg.conflicts(conn) == {"candidates": 0, "items": []}
+
+
+def test_conflicts_empty_graph_does_not_crash(sandbox: Path, tmp_path: Path):
+    """528 任务2（边界）：空图（无任何命题）不崩、候选 0。"""
+    db = tmp_path / "kgconf3.db"
+    conn = kg.connect(db)
+    kg.build(conn, verbose=False)
+    assert kg.conflicts(conn)["candidates"] == 0
+
+
 def test_real_repo_graph(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     """真实仓库建图（只读）：卡节点 ≥ 160，且每条边的两端都在 nodes 里（外键完整性）。"""
     conn = kg.connect(tmp_path / "real.db")
