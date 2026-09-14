@@ -72,6 +72,8 @@ Thumbs.db
 
 # 本地 Agent / 工具状态（非内容，不入版本库）
 .workbuddy/
+# 任务状态文件（494 任务 7 / 492 §4：断点续跑的运行时状态，不入库）
+/data/tasks/
 
 # 审计/软门禁临时输出（dangling_ref_linter / prereq_topo_check 等）
 outputs/

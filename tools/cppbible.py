@@ -517,6 +517,43 @@ def cmd_impact(args: argparse.Namespace) -> int:
     return r.returncode
 
 
+def cmd_task(args: argparse.Namespace) -> int:
+    """任务状态文件（494 任务 7 / 492 §4）：断点续跑——把参数透传给 tools/task_state.py。
+
+    实现单点在 task_state.py；本命令只做转发（与 impact/cost/flashcards 同款）。
+    状态写在 data/tasks/（已 gitignore）：运行时状态不入库。
+    """
+    cmd = [PYTHON_EXE, "tools/task_state.py", args.sub]
+    if args.sub in ("update", "continue-prompt", "show"):
+        if not args.task_id:
+            print("  ❌ update/continue-prompt/show 需要 task_id")
+            return 1
+        cmd.append(args.task_id)
+    for flag, val in (("--type", args.type), ("--desc", args.desc),
+                      ("--total", args.total), ("--assigned-to", args.assigned_to),
+                      ("--step", args.step), ("--summary", args.summary),
+                      ("--request-count", args.request_count),
+                      ("--pending", args.pending)):
+        if val is not None:
+            cmd += [flag, str(val)]
+    for art in args.artifact or []:
+        cmd += ["--artifact", art]
+    if args.done:
+        cmd.append("--done")
+    if getattr(args, "needs_continue", False):
+        cmd.append("--needs-continue")
+    try:
+        r = run(cmd, check=False)
+    except FileNotFoundError:
+        print("  ❌ tools/task_state.py 不可用")
+        return 1
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
 def cmd_cost(args: argparse.Namespace) -> int:
     """成本追踪（421）：report/cpva，只记录只读，不改生产逻辑。"""
     cmd = [PYTHON_EXE, "tools/cost_tracker.py", args.sub]
@@ -626,6 +663,21 @@ def build_parser() -> argparse.ArgumentParser:
     fc.add_argument("--format", choices=["anki", "markdown", "both"], default="both")
     fc.add_argument("--json", action="store_true")
 
+    task = sub.add_parser("task", help="任务状态文件（494/492 §4：断点续跑）")
+    task.add_argument("sub", choices=["create", "update", "continue-prompt", "show"])
+    task.add_argument("task_id", nargs="?", default=None, help="update/continue-prompt/show 用")
+    task.add_argument("--type", default=None)
+    task.add_argument("--desc", default=None)
+    task.add_argument("--total", type=int, default=None)
+    task.add_argument("--assigned-to", default=None)
+    task.add_argument("--step", default=None, help="形如 3/8")
+    task.add_argument("--summary", default=None)
+    task.add_argument("--artifact", action="append", default=[])
+    task.add_argument("--request-count", type=int, default=None)
+    task.add_argument("--pending", default=None)
+    task.add_argument("--done", action="store_true")
+    task.add_argument("--needs-continue", dest="needs_continue", action="store_true")
+
     return parser
 
 
@@ -659,6 +711,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cmd_cost(args)
     if args.command == "flashcards":
         return cmd_flashcards(args)
+    if args.command == "task":
+        return cmd_task(args)
 
     parser.print_help()
     return 0
