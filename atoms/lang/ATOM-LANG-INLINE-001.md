@@ -17,6 +17,34 @@ claim: >-
   且**当两个定义的可观测结果不同时**，其可观测行为由**链接顺序**与**优化档**共同决定：-O0（未内联）下链接器只保留同名符号的一个定义
   （取先遇到的），行为随链接顺序改变；-O2（内联发生）下各 TU 内联「自己看到的定义」，行为与链接顺序
   无关、两个值并列出现。
+# 528 任务1：claim 拆原子命题。注意本卡 status=draft（无人签）——规则3 只在 verified 时判，
+# 故 inference 命题在此卡不会触发"机器独自晋升"闸；人签后再复核一次更稳妥。
+claim_structured:
+  - id: prop-1
+    subject: inline 定义违反 ODR 时的可观测行为
+    predicate: 实测随链接顺序与优化档共同决定
+    object: -O0 下 ab_tu_a=ab_tu_b=1、ba_tu_a=ba_tu_b=2（随顺序）；-O2 下 o2_tu_a=1 / o2_tu_b=2（与顺序无关）
+    claim_type: observation
+    statement: 两个 TU 给出不同定义的 inline 函数，其可观测行为由链接顺序与优化档共同决定：-O0（未内联）链接顺序 a→b 时 ab_tu_a=1、ab_tu_b=1，顺序 b→a 时 ba_tu_a=2、ba_tu_b=2；-O2（发生内联）时 o2_tu_a=1、o2_tu_b=2，换顺序仍为 1/2（各 TU 内联自己看到的定义）。
+    evidence: [EV-LANG-001, EV-LANG-002]
+    extracted_by: writer
+  - id: prop-2
+    subject: token 序列一致的定义
+    predicate: 实测始终
+    object: 行为稳定（stable 组四种组合下恒为 42，不随顺序与优化档变化）
+    claim_type: observation
+    statement: 当各 TU 的定义由相同 token 序列构成时行为稳定：stable 组在 ab/ba/o2/o2b 四种链接与优化组合下 stable_a 与 stable_b 恒为 42。
+    evidence: [EV-LANG-001, EV-LANG-002]
+    extracted_by: writer
+  - id: prop-3
+    subject: 违反 ODR 的程序
+    predicate: 属于
+    object: ill-formed, no diagnostic required（实测 GCC 家族零诊断）
+    claim_type: inference
+    statement: 各定义须由相同的 token 序列构成（[basic.def.odr]/16.4），违反属 ill-formed 且 **no diagnostic required**——实测 GCC 家族零诊断这一事实本身既不能证明合规也不能证明违规，判据来自标准对 ODR 与"行为如同单一定义"的规定。
+    external_basis: "ISO/IEC 14882 [basic.def.odr]/16.4（所有定义须由相同 token 序列构成）；/18（含多定义的实体行为如同 single entity with a single definition）；cppreference ODR（违反为 ill-formed, no diagnostic）"
+    evidence: [EV-LANG-001, EV-LANG-002]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (Linux)]

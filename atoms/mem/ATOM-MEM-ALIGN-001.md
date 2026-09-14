@@ -20,6 +20,33 @@ claim: >-
   每个类型有对齐要求；结构体成员按自身对齐排列，编译器在成员间/末尾插入 padding，使每个成员与整体满足对齐，
   sizeof 包含 padding（故通常 > 各成员大小之和）。alignas 可提升对齐、alignof 查询对齐；搬运结构体用
   按字节 memcpy（安全），用 reinterpret_cast 强转指针对齐/类型双关是未定义行为。
+# 528 任务1：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: 结构体的 padding
+    predicate: 实测为
+    object: sizeof(Padded)=8（大于成员大小之和）、offsetof a=0 / b=4、padding bytes=3
+    claim_type: observation
+    statement: 编译器在成员间与末尾插入 padding 使每个成员与整体满足对齐：实测 sizeof(Padded)=8、offsetof a=0、offsetof b=4，显式计入的 padding bytes=3。
+    evidence: [EV-MEM-019]
+    extracted_by: writer
+  - id: prop-2
+    subject: alignas 与按字节搬运
+    predicate: 实测为
+    object: alignof(Aligned)=16 / sizeof(Aligned)=16 / memcpy roundtrip x=7
+    claim_type: observation
+    statement: 对齐可控且按字节搬运保真：实测 alignof(Aligned)=16、sizeof(Aligned)=16，且 memcpy 往返后 x=7（值不变）。
+    evidence: [EV-MEM-020]
+    extracted_by: writer
+  - id: prop-3
+    subject: reinterpret_cast 强转指针做类型双关
+    predicate: 是
+    object: 未定义行为（strict aliasing 与对齐要求）
+    claim_type: inference
+    statement: 用 reinterpret_cast 强转指针做类型双关（以及不对齐访问）属未定义行为——这条定性依据标准对对齐与对象表示的规定、以及 cppreference 对 strict aliasing 的说明，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [basic.align]（对齐要求、alignas/alignof）；cppreference Object layout / Data structure alignment（padding、alignas、strict aliasing）"
+    evidence: [EV-MEM-019, EV-MEM-020]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

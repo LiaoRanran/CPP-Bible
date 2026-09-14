@@ -19,6 +19,25 @@ prerequisites_readable: true
 claim: >-
   高竞争下 CAS 的原子 RMW 代价可能超过 mutex；但该结论依赖核数与竞争度，≤2 核环境可能反向——
   锁与无锁各有适用域，无绝对最优。
+# 528 任务1：claim 拆原子命题（observation 绑留痕读数 / inference 挂标准或文档基准）。
+claim_structured:
+  - id: prop-1
+    subject: 同步手段的实测结果
+    predicate: 在 nproc=32 机器上四路对照读出
+    object: single_result=200000；mutex/atomic/cas_result=800000；cas_retry_observed=1；atomic_fetch_ns=636900
+    claim_type: observation
+    statement: 同夹具四路对照的机器读数（EV-CONC-003/004 共享 `Examples/atoms/_atom_lock_cost.out`）：nproc=32、single_thread_baseline=1 时单线程 single_result=200000，mutex、atomic fetch_add、CAS 三路 result 均为 800000，且 cas_retry_observed=1（CAS 路径发生重试）、atomic_fetch_ns=636900。
+    evidence: [EV-CONC-003, EV-CONC-004]
+    extracted_by: writer
+  - id: prop-2
+    subject: 锁与无锁的优劣
+    predicate: 依赖核数与竞争度，无绝对最优
+    object: 高竞争下 CAS 的原子 RMW 代价可能超过 mutex，≤2 核环境可能反向
+    claim_type: inference
+    statement: 高竞争下 CAS 的原子 RMW 代价可能超过 mutex，但该结论依赖核数与竞争度（≤2 核环境可能反向）⇒ 锁与无锁各有适用域、无绝对最优。这条权衡依赖标准对同步语义的规定（标准**未规定**相对代价）与 cppreference 对 RMW 编译为 lock 前缀指令、lock-free 为非保证属性的说明，不由单次实测单独证明。
+    external_basis: "ISO/IEC 14882:2023 [atomics.order] / [thread.mutex]（同步语义定义，未规定相对代价）；cppreference std::atomic（RMW 在 x86-64 编译为带 lock 前缀指令，lock-free 为非保证属性）"
+    evidence: [EV-CONC-003, EV-CONC-004]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]
