@@ -1067,6 +1067,62 @@ def test_out_key_ascii_declared_passes(sandbox: Path, monkeypatch: pytest.Monkey
     assert ge.check_evidence_out_undeclared_key() == [], "已声明键不得 warn"
 
 
+# ── 500 任务 2：EV-RUN-KEY-DECLARED-EXISTS（run_match_keys 反向校验，闭合 M5）──
+def test_run_key_declared_fake_key_blocks(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务2（阳性）：声明了 `.out` 中不存在的键 ⇒ block（499 第一轮 M5 载荷）。
+
+    修复前该形态 0 命中放行（EV-OUT-UNDECLARED-KEY 只做单向检查）。
+    """
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "fxk.out").write_text("real_key=1\nscenario=o2\n", encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-K1.md", id="EV-MEM-K1",
+                actual="\n  run_match_file: fxk.out\n"
+                       "  run_match_keys: [real_key, FAKE_KEY=1]")
+    hits = ge.check_run_key_declared_exists()
+    assert len(hits) == 1 and hits[0].severity == "block", hits
+    assert "FAKE_KEY" in hits[0].message
+
+
+def test_run_key_declared_all_present_passes(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务2（阴性）：所有声明键都在 `.out` 中 ⇒ 放行。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    (sandbox / "fxk2.out").write_text("alpha=1\nbeta=2\n", encoding="utf-8")
+    _write_card(sandbox, "EV-MEM-K2.md", id="EV-MEM-K2",
+                actual="\n  run_match_file: fxk2.out\n  run_match_keys: [alpha, beta]")
+    assert ge.check_run_key_declared_exists() == []
+
+
+def test_run_key_declared_without_file_skipped(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务2（边界1）：无 run_match_file 的卡跳过（.out 由 command 运行时产生）。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    _write_card(sandbox, "EV-MEM-K3.md", id="EV-MEM-K3",
+                actual="\n  run_match_keys: [NO_SUCH_KEY=1]")
+    assert ge.check_run_key_declared_exists() == [], "无留痕文件的卡必须跳过"
+
+
+def test_run_key_declared_missing_out_blocks(
+        sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """500 任务2（边界2）：`.out` 文件不存在 ⇒ block（留痕丢失比键缺失更严重）。"""
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    _write_card(sandbox, "EV-MEM-K4.md", id="EV-MEM-K4",
+                actual="\n  run_match_file: no_such_500.out\n  run_match_keys: [alpha]")
+    hits = ge.check_run_key_declared_exists()
+    assert len(hits) == 1 and hits[0].severity == "block", hits
+    assert "no_such_500.out" in hits[0].message
+
+
+def test_decl_key_parsing_variants():
+    """500 任务2（边界3）：键名解析——按**第一个** `=` 或 `:` 取左侧；无分隔符则整串。"""
+    assert ge._decl_key("FAKE_KEY=1") == "FAKE_KEY"
+    assert ge._decl_key("gamma: 3") == "gamma"
+    assert ge._decl_key("plain_key") == "plain_key"
+    assert ge._decl_key("a=b:c") == "a", "取最先出现的分隔符"
+    assert ge._decl_key("  spaced_key = 7 ") == "spaced_key"
+
+
 def test_out_stale_mtime_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
     """F06：.out 明显旧于夹具（>5s 宽容差）→ warn。"""
     monkeypatch.setattr(ge, "ROOT", sandbox)

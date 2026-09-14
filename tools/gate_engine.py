@@ -1064,6 +1064,63 @@ def check_evidence_out_undeclared_key() -> list[Finding]:
     return out
 
 
+def _decl_key(s: object) -> str:
+    """`run_match_keys` 元素的键名：按**第一个** `=` 或 `:` 分割取左侧，无分隔符则整串。"""
+    t = str(s).strip()
+    idx = [i for i in (t.find("="), t.find(":")) if i != -1]
+    return t[:min(idx)].strip() if idx else t
+
+
+def check_run_key_declared_exists() -> list[Finding]:
+    """500 任务2（`EV-RUN-KEY-DECLARED-EXISTS`）：`actual.run_match_keys` 里**声明的每个键**
+    必须真的在 `actual.run_match_file` 指向的 `.out` 中存在。
+
+    为何：`EV-OUT-UNDECLARED-KEY`（373-B3）只做**单向**检查——`.out` 里出现的键必须在卡里
+    声明——**不查反向**。于是 Writer 可以写**假键**：499 第一轮机械变异 M5 实证，在
+    `EV-MEM-040` / `EV-UB-001` 的 `run_match_keys` 里加 `FAKE_KEY=1` 后 **0 命中放行**，
+    卡照样直推 verified。语义上"声明了不存在的键" = 卡面声称的校验对象**没有任何载体**，
+    与"编造观测"同构（S3 类不可复算断言），故本规则 **block**。
+
+    范围（刻意收窄，避免误伤）：
+      - 仅对有 `run_match_file` 的卡生效——`.out` 是静态留痕文件，gate 静态可读；
+      - **跳过**没有 `run_match_file` 的卡（哪怕它有 run_match_keys）：其 `.out` 由 command
+        运行时产生，静态检查时可能尚未生成，判"缺键"会误伤；
+      - `run_match_keys` 为空/缺失 ⇒ 无可校验对象，跳过；
+      - `.out` 文件不存在 ⇒ **block**（留痕丢失比键缺失更严重：声明的读数连载体都没有）。
+
+    存量预检（2026-09-14，56 卡）：8 张有 `run_match_file`，**0 张**存在"声明的键不在 .out"
+    ⇒ 零误伤。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        actual = _meta(p).get("actual") or {}
+        if not isinstance(actual, dict):
+            continue
+        rmf = actual.get("run_match_file")
+        if not rmf:
+            continue                      # 无留痕文件 ⇒ .out 由 command 运行时产生，跳过
+        keys = [k for k in (actual.get("run_match_keys") or []) if str(k).strip()]
+        if not keys:
+            continue
+        f = ROOT / str(rmf)
+        if not f.is_file():
+            out.append(Finding(
+                "EV-RUN-KEY-DECLARED-EXISTS", "block", _rel(p),
+                f"run_match_file 指向的留痕文件不存在：{rmf}"
+                "（留痕丢失 ⇒ 声明的读数无任何载体）",
+                f"恢复或重生成 {rmf}；若该卡不再需要读数校验，移除 actual.run_match_file"))
+            continue
+        text = f.read_text(encoding="utf-8", errors="replace")
+        miss = [str(k) for k in keys if _decl_key(k) and _decl_key(k) not in text]
+        if miss:
+            out.append(Finding(
+                "EV-RUN-KEY-DECLARED-EXISTS", "block", _rel(p),
+                f"run_match_keys 声明的键在 {rmf} 中不存在：{sorted(set(miss))}"
+                "（声明了不存在的键 ⇒ 卡面声称的校验对象无载体，等同编造观测）",
+                "核对 .out 实际读数键名并改正；确无该读数则从 run_match_keys 移除"))
+    return out
+
+
 # ── F09/F06（414 P1-5/P1-7）─────────────────────────────────────────────────
 _FM_KEY_RE = re.compile(r"^([A-Za-z][\w-]*)\s*:")
 
@@ -2304,6 +2361,9 @@ def _register_all() -> None:
          check_evidence_zero_diag_werror),
         ("EV-OUT-UNDECLARED-KEY", ".out 读数键须在 run_match_keys 声明（B3 窄化）",
          "evidence", check_evidence_out_undeclared_key),
+        ("EV-RUN-KEY-DECLARED-EXISTS",
+         "run_match_keys 声明的键必须真在 .out 中存在（500 任务2：M5 反向校验闭合）",
+         "evidence", check_run_key_declared_exists),
         ("EV-ASSERT-SYMBOL-MAPPED", "断言文本须可定位（夹具/工件/symbol_map，B2 窄化）",
          "evidence", check_evidence_assert_symbol_mapped),
         ("EV-ARTIFACT-PRODUCER", "工件产出命令须显式声明、为编译器、且与 command 逐字一致（N4 窄化+373绕过3d）",
