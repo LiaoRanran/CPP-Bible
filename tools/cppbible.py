@@ -241,6 +241,10 @@ def cmd_check(args: argparse.Namespace) -> int:
             ("Book-Atom Sync", [PYTHON_EXE, "tools/book_atom_sync.py", "--check"]),
             # 413 Writer 自检层（420）：提交红队前拦 E1/E2 机械错误（存量 0 fail 基线）
             ("Writer Selfcheck", [PYTHON_EXE, "tools/writer_selfcheck.py", "--all"]),
+            # 494 任务 6：对抗回归看板（实跑最新轮探针 + 转述其自述判定 + 校验回归锁映射）。
+            # 注：`_adv_v*/` 是 untracked 沙箱 ⇒ CI/新克隆上无探针，工具自动空转 exit 0；
+            # 本地（有沙箱）才有判定价值。skip ≠ pass：由工具自行计数并打印。
+            ("Adversarial Regression", [PYTHON_EXE, "tools/adversarial_regression.py"]),
         ]
     elif stage == "compile":
         gates = [

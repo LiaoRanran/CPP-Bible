@@ -99,6 +99,8 @@ quality_gates = [
     "tools/golden_lock.py check",
     "tools/debt_ledger.py check",
     "tools/poison_drill.py",
+    # 494 任务 6：对抗回归看板（本地沙箱探针实跑；CI 无 _adv_*/ 时自动空转 exit 0）
+    "tools/adversarial_regression.py",
 ]
 
 [tool.ruff]
