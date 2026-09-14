@@ -66,6 +66,31 @@ CREATE INDEX IF NOT EXISTS idx_edges_src ON edges(src);
 CREATE INDEX IF NOT EXISTS idx_edges_dst ON edges(dst);
 CREATE INDEX IF NOT EXISTS idx_edges_type ON edges(type);
 CREATE INDEX IF NOT EXISTS idx_nodes_type ON nodes(type);
+-- 526 批次E：概念层（命题级）。与 nodes/edges 分开存是刻意的——
+--   nodes 的 id 是"身份"（ATOM-/EV-/RULE- 等），带 path/status；概念名是自然语言短语
+--   （如"内存屏障(fence)"），没有 path/status。混进 nodes 会让 orphans 把概念全判成孤立，
+--   也会污染 deps/impact 的遍历语义。概念层只服务"哪些命题在谈什么"这类问题。
+CREATE TABLE IF NOT EXISTS concepts (
+    name TEXT PRIMARY KEY,
+    props INTEGER NOT NULL DEFAULT 0,      -- 出现的命题条数
+    as_subject INTEGER NOT NULL DEFAULT 0,
+    as_object INTEGER NOT NULL DEFAULT 0,
+    atoms TEXT NOT NULL DEFAULT ''         -- 涉及原子 id（逗号分隔，供人眼速览）
+);
+CREATE TABLE IF NOT EXISTS concept_edges (
+    src TEXT NOT NULL,                     -- subject 概念
+    dst TEXT NOT NULL,                     -- object 概念
+    atom TEXT NOT NULL,                    -- 命题所在原子（必须能回溯到卡）
+    prop TEXT NOT NULL,                    -- 命题 id（prop-1…）
+    predicate TEXT,
+    claim_type TEXT,
+    statement TEXT,
+    PRIMARY KEY (src, dst, atom, prop),
+    FOREIGN KEY (atom) REFERENCES nodes(id)
+);
+CREATE INDEX IF NOT EXISTS idx_ce_src ON concept_edges(src);
+CREATE INDEX IF NOT EXISTS idx_ce_dst ON concept_edges(dst);
+CREATE INDEX IF NOT EXISTS idx_ce_atom ON concept_edges(atom);
 """
 
 # 关系名 → 边类型（大小写/同义词归一）。表外取值归 REFERENCES 并在 build 时计数留痕
@@ -117,7 +142,9 @@ def _infer_type(rel: str | None) -> str:
 
 def build(conn: sqlite3.Connection, *, verbose: bool = True) -> dict:
     """重建图（幂等）：DROP → 建表 → 扫卡 → 插节点/边。返回统计。"""
-    conn.executescript("DROP TABLE IF EXISTS edges; DROP TABLE IF EXISTS nodes;")
+    conn.executescript("DROP TABLE IF EXISTS edges; DROP TABLE IF EXISTS nodes;"
+                       "DROP TABLE IF EXISTS concept_edges;"
+                       "DROP TABLE IF EXISTS concepts;")
     conn.executescript(SCHEMA)
     nodes: dict[str, tuple] = {}
 
@@ -218,12 +245,44 @@ def build(conn: sqlite3.Connection, *, verbose: bool = True) -> dict:
     conn.executemany("INSERT OR REPLACE INTO nodes VALUES (?,?,?,?,?)",
                      list(nodes.values()))
     conn.executemany("INSERT OR IGNORE INTO edges VALUES (?,?,?)", edges)
+
+    # ── 概念层（526 批次E）：命题级 subject→object ──────────────────────────
+    # 只有**带 claim_structured 的原子**才进概念层。缺字段的卡不是"错"，而是"还没拆"
+    # （gate 的 ATOM-CLAIM-STRUCTURED 在 warn 它们）——图谱不该替门禁判合规，
+    # 只如实反映"目前有多少命题可推理"。
+    concepts: dict[str, list[int | set]] = {}   # name -> [props, as_subj, as_obj, atoms]
+    cedges: list[tuple] = []
+    for p in ge._cards(ge.ATOMS, "ATOM-*.md"):
+        m = _meta(p)
+        aid = str(m.get("id") or p.stem)
+        for pr in ge._claim_props(m):
+            subj = str(pr.get("subject") or "").strip()
+            obj = str(pr.get("object") or "").strip()
+            if not subj or not obj:
+                continue                        # 三元组不完整 ⇒ 不进概念层（gate 已单独判）
+            pid = str(pr.get("id") or f"prop-{len(cedges) + 1}")
+            for name, is_subj in ((subj, True), (obj, False)):
+                slot = concepts.setdefault(name, [0, 0, 0, set()])
+                slot[0] += 1
+                slot[1 if is_subj else 2] += 1
+                slot[3].add(aid)
+            cedges.append((subj, obj, aid, pid,
+                           str(pr.get("predicate") or "").strip(),
+                           str(pr.get("claim_type") or "").strip(),
+                           str(pr.get("statement") or "").strip()))
+    conn.executemany("INSERT OR REPLACE INTO concepts VALUES (?,?,?,?,?)",
+                     [(n, v[0], v[1], v[2], ",".join(sorted(v[3])))
+                      for n, v in concepts.items()])
+    conn.executemany("INSERT OR REPLACE INTO concept_edges VALUES (?,?,?,?,?,?,?)",
+                     cedges)
     conn.commit()
     out = {"nodes": len(nodes), "edges": len({(a, b, c) for a, b, c in edges}),
-           "unknown_relations": unknown_rel}
+           "unknown_relations": unknown_rel,
+           "concepts": len(concepts), "concept_edges": len(cedges)}
     if verbose:
         print(f"[kg] built {DB.relative_to(ROOT).as_posix()}: "
               f"{out['nodes']} nodes / {out['edges']} edges"
+              f" · 概念 {out['concepts']} / 命题边 {out['concept_edges']}"
               + (f"（未知关系名 {unknown_rel} 条已归 REFERENCES）" if unknown_rel else ""))
     return out
 
@@ -248,7 +307,14 @@ def stats(conn: sqlite3.Connection) -> dict:
     # 单列出来便于与"知识库规模"口径对照（否则总数会因工件/规则而虚高）。
     card_nodes = sum(v for k, v in by_type.items()
                      if k in ("ATOM", "EVIDENCE", "MISCONCEPTION"))
+    # 526：概念层规模（表可能尚不存在——旧库未重建时不报错，返回 0）
+    try:
+        cn = conn.execute("SELECT COUNT(*) FROM concepts").fetchone()[0]
+        ce = conn.execute("SELECT COUNT(*) FROM concept_edges").fetchone()[0]
+    except sqlite3.OperationalError:
+        cn = ce = 0
     return {"nodes": n, "edges": e, "card_nodes": card_nodes,
+            "concepts": cn, "concept_edges": ce,
             "nodes_by_type": by_type, "edges_by_type": by_edge, "dangling": dangling}
 
 
@@ -307,10 +373,48 @@ def orphans(conn: sqlite3.Connection) -> list[dict]:
     return [{"id": i, "type": t, "status": s} for i, t, s in rows]
 
 
+def concepts(conn: sqlite3.Connection, name: str | None = None) -> dict:
+    """概念查询（526 批次E）：无参 → 概念清单；带名 → **该概念出现在哪些命题**。
+
+    概念来自命题的 subject/object（只有带 `claim_structured` 的原子会进概念层）。
+    返回的每条命题都带 `atom`——**概念不能脱离卡存在**，任何命题结论都要能回到原子卡
+    找它的证据与命题类型（observation/inference），这是本图谱不做"纯概念库"的底线。
+    """
+    _need(conn)
+    try:
+        if name:
+            rows = conn.execute(
+                "SELECT src, dst, atom, prop, predicate, claim_type, statement "
+                "FROM concept_edges WHERE src = ? OR dst = ? "
+                "ORDER BY atom, prop", (name, name)).fetchall()
+            props = [{"subject": s, "predicate": p, "object": d, "atom": a,
+                      "prop": pid, "claim_type": ct, "statement": st}
+                     for s, d, a, pid, p, ct, st in rows]
+            kinds: dict[str, int] = {}
+            for it in props:
+                kinds[it["claim_type"]] = kinds.get(it["claim_type"], 0) + 1
+            info = conn.execute("SELECT props, as_subject, as_object, atoms "
+                                "FROM concepts WHERE name = ?", (name,)).fetchone()
+            return {"concept": name, "found": info is not None,
+                    "props": len(props), "claim_types": kinds,
+                    "atoms": (info[3].split(",") if info else []),
+                    "items": props}
+        rows = conn.execute("SELECT name, props, as_subject, as_object, atoms "
+                            "FROM concepts ORDER BY props DESC, name").fetchall()
+        return {"concepts": len(rows),
+                "items": [{"name": n, "props": p, "as_subject": s, "as_object": o,
+                           "atoms": a.split(",") if a else []}
+                          for n, p, s, o, a in rows]}
+    except sqlite3.OperationalError:
+        sys.exit("[kg] 概念层不存在，先重跑：python tools/knowledge_graph.py build")
+
+
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="知识图谱 L1（508 任务5）")
-    ap.add_argument("cmd", choices=("build", "stats", "deps", "impact", "chain", "orphans"))
-    ap.add_argument("arg", nargs="?", default=None, help="deps/impact/chain 的目标")
+    ap = argparse.ArgumentParser(description="知识图谱 L1（508 任务5 + 526 概念层）")
+    ap.add_argument("cmd", choices=("build", "stats", "deps", "impact", "chain", "orphans",
+                                    "concepts"))
+    ap.add_argument("arg", nargs="?", default=None,
+                    help="deps/impact/chain 的目标；concepts 的概念名（省略=列全部）")
     ap.add_argument("--db", default=None, help="覆盖数据库路径（测试用）")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
@@ -326,6 +430,8 @@ def main(argv: list[str] | None = None) -> int:
         out = deps(conn, a.arg or "")
     elif a.cmd == "chain":
         out = chain(conn, a.arg or "")
+    elif a.cmd == "concepts":
+        out = concepts(conn, a.arg)
     else:
         out = impact(conn, a.arg or "")
     if a.json:
@@ -335,7 +441,8 @@ def main(argv: list[str] | None = None) -> int:
               + (f"（未知关系名 {out['unknown_relations']} 条已归 REFERENCES）"
                  if out.get("unknown_relations") else ""))
     elif a.cmd == "stats":
-        print(f"[kg] 节点 {out['nodes']}（其中卡节点 {out['card_nodes']}）· 边 {out['edges']}")
+        print(f"[kg] 节点 {out['nodes']}（其中卡节点 {out['card_nodes']}）· 边 {out['edges']}"
+              f" · 概念 {out.get('concepts', 0)} / 命题边 {out.get('concept_edges', 0)}")
         print("     节点分布：" + "、".join(f"{k}={v}" for k, v in out["nodes_by_type"].items()))
         print("     边分布：  " + "、".join(f"{k}={v}" for k, v in out["edges_by_type"].items())
               or "     （无边）")
@@ -345,6 +452,23 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[kg] 孤立节点 {out['orphans']}")
         for it in out["items"]:
             print(f"   {it['type']:<14} {it['id']}")
+    elif a.cmd == "concepts":
+        if out.get("concept") and not out.get("found"):
+            print(f"[kg] 概念库里没有「{out['concept']}」"
+                  "（先 build；概念名须与卡上 subject/object 逐字一致）")
+            return 1
+        if out.get("concept"):
+            print(f"[kg] 概念「{out['concept']}」出现在 {out['props']} 条命题"
+                  f"（{out['claim_types'] or '—'}）涉及原子 {','.join(out['atoms'])}：")
+            for it in out["items"]:
+                print(f"   [{it['claim_type'] or '?':<11}] {it['atom']}:{it['prop']}  "
+                      f"{it['subject']} —{it['predicate']}→ {it['object']}")
+        else:
+            print(f"[kg] 概念 {out['concepts']} 个（按命题数降序）：")
+            for it in out["items"]:
+                print(f"   {it['props']:>3} 条  {it['name']}"
+                      f"（主 {it['as_subject']} / 宾 {it['as_object']}）"
+                      f"  原子 {','.join(it['atoms'])}")
     elif a.cmd == "deps":
         print(f"[kg] {out['atom']} 直接依赖 {len(out['deps'])}：")
         for d in out["deps"]:

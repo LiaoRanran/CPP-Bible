@@ -95,6 +95,55 @@ def test_impact_maps_artifact_path_to_atoms(sandbox: Path, tmp_path: Path):
     assert kg.impact(conn, "Examples/atoms/_nope.asm")["found"] is False
 
 
+_PROPS = ("\n  - id: prop-1\n    subject: 内存屏障(fence)\n    predicate: 落在循环体内时\n"
+          "    object: 阻止编译器消除该循环\n    claim_type: observation\n"
+          "    statement: st1\n    extracted_by: writer\n"
+          "  - id: prop-2\n    subject: 内存屏障(fence)\n    predicate: 不提供\n"
+          "    object: 原子性\n    claim_type: inference\n    statement: st2\n"
+          "    extracted_by: writer")
+
+
+def test_concept_layer_built_from_claim_structured(sandbox: Path, tmp_path: Path):
+    """526 Step4：命题的 subject/object 进概念层；**无 claim_structured 的卡不进**。"""
+    db = tmp_path / "kgc.db"
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-C.md",
+           {"id": "ATOM-MEM-C", "title": "t", "status": "draft",
+            "claim_structured": _PROPS})
+    # 一张没有命题的卡：不该给概念层贡献任何东西（图谱只反映"可推理的命题"）
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-BARE.md",
+           {"id": "ATOM-MEM-BARE", "title": "t2", "status": "draft"})
+    conn = kg.connect(db)
+    out = kg.build(conn, verbose=False)
+    # 3 个概念 = {内存屏障(fence), 阻止编译器消除该循环, 原子性}；2 条命题边
+    assert out["concepts"] == 3, out
+    assert out["concept_edges"] == 2, out
+    st = kg.stats(conn)
+    assert st["concepts"] == 3 and st["concept_edges"] == 2
+    again = kg.build(conn, verbose=False)          # 幂等
+    assert again["concepts"] == 3 and again["concept_edges"] == 2
+
+
+def test_concepts_query_lists_props_and_unknown_is_explicit(sandbox: Path,
+                                                            tmp_path: Path):
+    """526 Step4：`concepts <名>` 回该概念出现在哪些命题；查不到必须**显式**说没有。"""
+    db = tmp_path / "kgc2.db"
+    _write(sandbox / "atoms" / "mem" / "ATOM-MEM-C.md",
+           {"id": "ATOM-MEM-C", "title": "t", "status": "draft",
+            "claim_structured": _PROPS})
+    conn = kg.connect(db)
+    kg.build(conn, verbose=False)
+    out = kg.concepts(conn, "内存屏障(fence)")
+    assert out["found"] is True and out["props"] == 2, out
+    assert out["claim_types"] == {"observation": 1, "inference": 1}
+    assert {i["atom"] for i in out["items"]} == {"ATOM-MEM-C"}
+    assert all(i["prop"].startswith("prop-") for i in out["items"])
+    lst = kg.concepts(conn)
+    assert lst["concepts"] == 3
+    assert lst["items"][0]["props"] == 2, "按命题数降序，内存屏障(fence) 应排首位"
+    miss = kg.concepts(conn, "栅栏")               # Book/ 层的口语写法，概念层没有
+    assert miss["found"] is False and miss["props"] == 0
+
+
 def test_real_repo_graph(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     """真实仓库建图（只读）：卡节点 ≥ 160，且每条边的两端都在 nodes 里（外键完整性）。"""
     conn = kg.connect(tmp_path / "real.db")
