@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_unique_deleter.cpp"
 	.intel_syntax noprefix
 	.text

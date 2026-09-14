@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_shared_deleter_erase.cpp"
 	.intel_syntax noprefix
 	.text

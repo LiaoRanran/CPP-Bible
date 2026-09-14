@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_sso_cost.cpp"
 	.intel_syntax noprefix
 	.text

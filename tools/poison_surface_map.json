@@ -2,8 +2,8 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-14T15:30:54",
- "source_commit": "e5d51d7",
+ "generated_at": "2026-09-14T16:09:54",
+ "source_commit": "e23a0b1",
  "drill": {
   "passed": 68,
   "total": 68
@@ -311,7 +311,7 @@
    "type": "A1"
   },
   {
-   "name": "P60 版本漂移（卡 2 ≠ 工件 1，须 block）",
+   "name": "P60 版本漂移（卡 2 ≠ 台账 1，须 block）",
    "pass": true,
    "type": "A4"
   },

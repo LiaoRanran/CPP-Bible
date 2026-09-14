@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_leak_tree_bug.cpp"
 	.intel_syntax noprefix
 	.text

@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_move_no_gain.cpp"
 	.intel_syntax noprefix
 	.text

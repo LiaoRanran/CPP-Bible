@@ -1145,19 +1145,21 @@ def drill() -> int:
     _reason_case("P59-阴 人级签署有理由须放行", "ATOM-MEM-HASREASON",
                  {"verified_reason": "红队 R 报告 + replay confirm 双证据"}, False)
 
-    # ── P60 工件-卡版本漂移（498 任务 2.3/2.4 / 490 版本管理）─────────────────
-    # 三态：①卡 version=2 而工件注解=1 → 必须 **block**（版本漂移）；
+    # ── P60 工件-卡版本漂移（498 任务 2.3/2.4 / 490 版本管理，**台账方案**）────
+    # 三态：①卡 version=2 而台账登记=1 → 必须 **block**（版本漂移）；
     #       ②两者一致 → 放行；③卡有 artifact 但缺 artifact_version → warn（迁移期）。
-    # 实现要点：本规则读 `ROOT / artifact`，故样例须同时把 `ge.ROOT` 指向沙箱，
-    # 否则会读到真实仓库工件（破坏沙箱隔离）。
-    def _ver_case(name: str, card_ver: str | None, asm_ver: str | None,
+    # 实现要点：版本号存在旁路台账 `Examples/atoms/artifact_versions.json`
+    # （**不改工件字节**——replay 的重生成契约与 writer_selfcheck WC-01 的磁盘契约束死了
+    #  .asm 字节，首版"给 .asm 插注释"实测导致 WC-01 全库 fail，见 gate_engine 块注释），
+    # 故样例须 monkeypatch `ge._ARTIFACT_LEDGER` 指向沙箱台账，否则会读真实台账。
+    def _ver_case(name: str, card_ver: str | None, led_ver: str | None,
                   want: list[str]) -> None:
         with sandbox() as tmp:
             art_rel = "Examples/atoms/_probe_v60.asm"
-            asm = tmp / art_rel
-            asm.parent.mkdir(parents=True, exist_ok=True)
-            head = f"; artifact_version: {asm_ver}\n" if asm_ver else ""
-            asm.write_text(head + '\t.file\t"_probe_v60.cpp"\n', encoding="utf-8")
+            led = tmp / "Examples" / "atoms" / "artifact_versions.json"
+            if led_ver is not None:
+                led.parent.mkdir(parents=True, exist_ok=True)
+                led.write_text(json.dumps({art_rel: int(led_ver)}), encoding="utf-8")
             fields = {
                 "id": "EV-MEM-V60", "serves": "[]", "hypothesis": "h", "kind": "asm",
                 "command": "g++ -S x.cpp -o x.asm", "artifact": art_rel,
@@ -1166,8 +1168,8 @@ def drill() -> int:
             if card_ver is not None:
                 fields["artifact_version"] = card_ver
             _write(ge.EVIDENCE / "mem" / "EV-MEM-V60.md", fields)
-            _orig_root = ge.ROOT
-            ge.ROOT = tmp                       # 让 ROOT/artifact 落在沙箱内
+            _orig_led = ge._ARTIFACT_LEDGER
+            ge._ARTIFACT_LEDGER = led
             try:
                 fs = ge.check_artifact_version_match()
                 who = sorted({f.rule_id for f in fs})
@@ -1175,9 +1177,9 @@ def drill() -> int:
                 ok = ("EV-ARTIFACT-VERSION-MATCH" in who if want else not who) and lvls == want
                 results.append((name, ok, f"级别 {lvls or '（未命中）'}"))
             finally:
-                ge.ROOT = _orig_root
+                ge._ARTIFACT_LEDGER = _orig_led
 
-    _ver_case("P60 版本漂移（卡 2 ≠ 工件 1，须 block）", "2", "1", ["block"])
+    _ver_case("P60 版本漂移（卡 2 ≠ 台账 1，须 block）", "2", "1", ["block"])
     _ver_case("P60-阴 版本一致（1 == 1）须放行", "1", "1", [])
     _ver_case("P60-阴2 卡缺 artifact_version 须 warn", None, "1", ["warn"])
 

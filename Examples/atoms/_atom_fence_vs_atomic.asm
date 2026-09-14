@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_fence_vs_atomic.cpp"
 	.intel_syntax noprefix
 	.text

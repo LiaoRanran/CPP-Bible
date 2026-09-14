@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_allocator_bench.cpp"
 	.intel_syntax noprefix
 	.text

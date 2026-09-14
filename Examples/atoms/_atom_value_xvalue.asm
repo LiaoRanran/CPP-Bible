@@ -1,4 +1,3 @@
-; artifact_version: 1
 	.file	"_atom_value_xvalue.cpp"
 	.intel_syntax noprefix
 	.text

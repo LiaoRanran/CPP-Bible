@@ -1960,27 +1960,42 @@ def check_verify_reason() -> list[Finding]:
     return out
 
 
-# ── 498 任务 2.3 / 490 版本管理：工件-卡版本绑定 ──────────────────────────────
-_ASM_VERSION = re.compile(r"^\s*;?\s*artifact_version:\s*(\d+)", re.M)
+# ── 498 任务 2.3 / 490 版本管理：工件-卡版本绑定（**台账方案**）──────────────
+# ⚠️ 为什么不读 `.asm` 首行注释（本轮实测教训，勿回退）：
+#   工件字节受**两处硬契约**约束——
+#     ① replay：`删旧工件 → 重跑生成命令 → 比卡值 sha256`（改字节 ⇒ 卡值必须跟着改）；
+#     ② writer_selfcheck `WC-01`：`磁盘工件 sha256 == 卡值`（改字节而不改卡值 ⇒ 全库 fail）。
+#   两条同时成立 ⇒ **工件字节不可改**。首版按 498 §2.1 给 51 个 .asm 插注释，实测
+#   WC-01 全库 fail（56/56）；若反向同步卡值 ⇒ replay 全库 refute:sha256_mismatch
+#   （实测 EV-CONC-001 期望 3d6f55e6… vs 实际 8dd19bc6…）。⇒ 版本号改走**旁路台账**：
+#     Examples/atoms/artifact_versions.json   {"Examples/atoms/_x.asm": 1, ...}
+_ARTIFACT_LEDGER = ROOT / "Examples" / "atoms" / "artifact_versions.json"
+
+
+def _artifact_ledger() -> dict:
+    """读版本台账；缺失/损坏 → `{}`（调用方按「未登记」处理并 warn，不静默放行）。"""
+    if not _ARTIFACT_LEDGER.is_file():
+        return {}
+    try:
+        d = json.loads(_ARTIFACT_LEDGER.read_text(encoding="utf-8"))
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
 
 
 def check_artifact_version_match() -> list[Finding]:
-    """EV-ARTIFACT-VERSION-MATCH：卡的 `artifact_version` 必须与工件首行注释一致。
+    """EV-ARTIFACT-VERSION-MATCH：卡的 `artifact_version` 必须与**台账登记**一致。
 
-    为什么需要（490 §三）：sha256 只能证"重生成产物 == 卡值"，证不了"人检视的那份冻结
+    为什么需要（490 §三）：sha256 只证"重生成产物 == 卡值"，证不了"人检视的那份冻结
     工件是哪一版"。版本号是**人可读的变更闸门**——改夹具/工件必须递增版本并同步两侧，
-    否则"卡与工件不同代"这件事没有任何机器信号。
+    否则"卡与工件不同代"这件事没有任何机器信号（台账即该闸门的载体，见上方块注释）。
 
     级别（逐字按 498 §2.3 的迁移期设计）：
       * 卡有 artifact 但缺 `artifact_version` ⇒ **warn**（迁移期不 block）；
-      * 工件缺首行 `; artifact_version:` 注释 ⇒ **warn**；
+      * 台账未登记该工件 ⇒ **warn**（提示跑迁移脚本）；
       * 两者都有但不相等 ⇒ **block**（真正的版本漂移，必须人处理）。
-
-    **与 sha 的分工（2026-09-14 实测，勿混）**：replay 的 artifact 校验是「删旧工件 →
-    重跑生成命令 → 比卡值 sha256」⇒ 手工加进 `.asm` 的首行注释**不在重生成产物里**。
-    故本规则**只比版本号、不读 sha**：若把卡值同步成"带注释文件"的 sha，全库必然
-    `refute:sha256_mismatch`（实测 EV-CONC-001 期望 3d6f55e6… vs 实际 8dd19bc6…）。
     """
+    ledger = _artifact_ledger()
     out: list[Finding] = []
     for p in _cards(EVIDENCE, "EV-*.md"):
         meta = _meta(p)
@@ -1988,30 +2003,22 @@ def check_artifact_version_match() -> list[Finding]:
         if not art:
             continue                       # 纯 run_match 形态的卡不适用
         card_ver = str(meta.get("artifact_version") or "").strip()
-        asm = ROOT / art
-        if not asm.is_file():
-            # 工件缺失由 replay 负责判（refute:artifact_absent），此处**不重复报**：
-            # 实测（498）replay 运行期间工件处于「删除 → 重生成 → 还原」中间态，
-            # 此时并行跑 gate 会读到"文件不存在"而瞬时误报——避免并发窗口假信号。
-            continue
-        head = asm.read_bytes()[:200].decode("utf-8", errors="replace")
-        m = _ASM_VERSION.search(head)
-        asm_ver = m.group(1) if m else ""
+        led_ver = str(ledger.get(art, "")).strip()
         if not card_ver:
             out.append(Finding(
                 "EV-ARTIFACT-VERSION-MATCH", "warn", _rel(p),
                 f"卡有 artifact（{art}）但缺 artifact_version（迁移期警告）",
-                "补 `artifact_version: <n>`，与工件首行 `; artifact_version: n` 一致"))
-        elif not asm_ver:
+                "补 `artifact_version: <n>`（与台账登记一致）"))
+        elif not led_ver:
             out.append(Finding(
                 "EV-ARTIFACT-VERSION-MATCH", "warn", _rel(p),
-                f"工件 {art} 缺首行 `; artifact_version:` 注释（迁移期警告）",
-                "跑 `python tools/artifact_version_stamp.py --apply`"))
-        elif card_ver != asm_ver:
+                f"工件 {art} 未登记进版本台账（迁移期警告）",
+                "跑 `python tools/artifact_version_stamp.py --target ledger --apply`"))
+        elif card_ver != led_ver:
             out.append(Finding(
                 "EV-ARTIFACT-VERSION-MATCH", "block", _rel(p),
-                f"版本漂移：卡 artifact_version={card_ver} ≠ 工件注解={asm_ver}（{art}）",
-                "改夹具/工件后必须递增版本号并同步卡与工件（490 §三）"))
+                f"版本漂移：卡 artifact_version={card_ver} ≠ 台账登记={led_ver}（{art}）",
+                "改夹具/工件后必须递增版本号并同步卡与台账（490 §三）"))
     return out
 
 
