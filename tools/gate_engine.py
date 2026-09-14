@@ -1912,6 +1912,54 @@ def check_git_author_binding() -> list[Finding]:
     return out
 
 
+# ── 494 任务 5 / 491 决策日志：人级签署必须写理由 ───────────────────────────
+_VERIFY_REASON_EXEMPT = ROOT / "tools" / "verify_reason_exempt.txt"
+
+
+def _verify_reason_exempt_ids() -> set[str]:
+    """迁移期豁免名单（行解析，零依赖）。**名单本身就是迁移积压清单**（补一颗删一行）。"""
+    if not _VERIFY_REASON_EXEMPT.is_file():
+        return set()
+    return {ln.strip() for ln in _VERIFY_REASON_EXEMPT.read_text(
+        encoding="utf-8", errors="replace").split("\n")
+        if ln.strip() and not ln.startswith("#")}
+
+
+def check_verify_reason() -> list[Finding]:
+    """ATOM-VERIFY-REASON（494 任务 5，来源 491 决策日志/认知偏差防护）。
+
+    问题：27 颗原子（23 颗 verified）**0 颗有 `verified_reason`** —— 人审签署只签名不写理由，
+    决策不可回溯。「认可权唯人」是铁律，但人也会犯错（491 §一），而签个字放行正是
+    确认偏误/权威偏误最大的落点：事后无法回答「当时凭什么签的」。
+
+    判据：status ∈ {verified, human-verified} 且 `verified_reason` 为空的原子 ⇒ warn；
+    迁移期存量按 id 列在 `tools/verify_reason_exempt.txt`（新卡不豁免——否则"不写字段"即绕过）。
+
+    级别 **warn**（不 block）的两条理由：①存量 23 颗全缺，block 会恒红（479 的 E10 教训：
+    升格前先量存量面，零误伤才升）；②**理由内容需人判断**——铁律 4：苦力只建机制不填内容，
+    规则不得逼人编造理由（470 P0-D 同款纪律："要求机器无法核实的历史 = 生产假记录"）。
+    """
+    exempt = _verify_reason_exempt_ids()
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        st = str(meta.get("status") or "").strip().lower()
+        if st not in ("verified", "human-verified"):
+            continue
+        reason = str(meta.get("verified_reason") or "").strip()
+        if reason:
+            continue
+        aid = str(meta.get("id") or p.stem)
+        if aid in exempt:
+            continue                      # 名单内 = 迁移期存量（补一颗删一行）
+        out.append(Finding(
+            "ATOM-VERIFY-REASON", "warn", _rel(p),
+            f"人级签署缺 verified_reason（status={st}）：签字未留理由 ⇒ 决策不可回溯",
+            "补 `verified_reason: …`（引用红队/replay 证据与关键判断，不能只签名）；"
+            "决策前过一遍 docs/kernel/cognitive_bias_checklist.md"))
+    return out
+
+
 def check_s2_evidence_verdict() -> list[Finding]:
     """S2 声明-证据绑定：已验证原子引用的证据必须 verdict=confirm（作者自述无效）。"""
     verdicts = {str(_meta(p).get("id") or p.stem): str(_meta(p).get("verdict") or "")
@@ -2164,6 +2212,8 @@ def _register_all() -> None:
          check_s1_human_signoff),
         ("S1-GIT-AUTHOR-BINDING", "人级签收须与 git 作者一致（479 任务 4，观察期 warn）",
          "atom", check_git_author_binding),
+        ("ATOM-VERIFY-REASON", "人级签署须写理由（494 任务 5 / 491 决策日志）", "atom",
+         check_verify_reason),
         ("S2-EVIDENCE-VERDICT", "verified 只绑 verdict=confirm 的证据", "atom",
          check_s2_evidence_verdict),
         ("S3-EXPECTED-HARDCODED", "期望硬编码进夹具=伪证据", "evidence",
@@ -2224,6 +2274,9 @@ def _register_all() -> None:
            # 479 任务 4：E12 签收 × git 作者绑定——观察期只 warn（协作代签/历史迁移都会命中，
            # 升 block 的前置是「观察期零误伤 + 签收必须本人写进 G6 规范」）
            "S1-GIT-AUTHOR-BINDING": "warn",
+           # 494 任务 5：人级签署须写理由——存量 23 颗全缺（名单豁免）⇒ 只 warn；
+           # 理由内容需人判断（铁律 4：苦力只建机制不填内容），且不得逼人编造理由
+           "ATOM-VERIFY-REASON": "warn",
            # （EV-ASSERT-SYMBOL-MAPPED 规则级登记为 block：通用符号载荷一律拦；
            #   单条 Finding 对"疑似拼写差异"降为 warn，故混合级别是刻意的）
            }

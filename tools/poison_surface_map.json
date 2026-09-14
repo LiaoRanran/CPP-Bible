@@ -2,16 +2,16 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-14T11:40:54",
- "source_commit": "50dfe29",
+ "generated_at": "2026-09-14T13:11:29",
+ "source_commit": "6dd44e1",
  "drill": {
-  "passed": 63,
-  "total": 63
+  "passed": 65,
+  "total": 65
  },
  "attack_types": {
   "A1": {
    "label": "记录层伪造：状态/身份/绑定不实（无证据 verified、留痕不足、id 漂移、空名签收）",
-   "count": 9
+   "count": 10
   },
   "A2": {
    "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
@@ -60,8 +60,8 @@
   "uncovered": []
  },
  "rule_coverage": {
-  "covered": 25,
-  "total": 51,
+  "covered": 26,
+  "total": 52,
   "exempt": 27
  },
  "payloads": [
@@ -306,6 +306,11 @@
    "type": "A1"
   },
   {
+   "name": "P59 人级签署无理由（须命中 warn）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
    "name": "P47 contains_any 全样板须判无判别力",
    "pass": true,
    "type": "A3"
@@ -374,6 +379,11 @@
   },
   {
    "name": "P58-阴 签收与 git 作者一致须放行（宽松匹配）",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P59-阴 人级签署有理由须放行",
    "pass": true,
    "type": null
   },

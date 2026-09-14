@@ -1115,6 +1115,36 @@ def drill() -> int:
     _git_bind_case("P58-阴 签收与 git 作者一致须放行（宽松匹配）",
                    "ATOM-MEM-GITAUTHOK", ("LiaoRanran", "1026708211@qq.com"), False)
 
+    # ── P59 人级签署无理由（494 任务 5 / 491 决策日志，观察期 warn）──────────
+    # 问题：27 颗原子 0 颗有 verified_reason —— 签署只签名不写理由，事后无法回答
+    # 「当时凭什么签的」（491：确认偏误/权威偏误的最大落点）。
+    # 阳：豁免名单外的 verified 无 reason → 须命中且级别 warn（存量 23 颗走名单豁免）；
+    # 阴：有 reason → 放行。
+    def _reason_case(name: str, card_id: str, extra: dict, want_hit: bool) -> None:
+        with sandbox():
+            fields = {
+                "id": card_id, "title": "t", "domain": "MEM", "type": "mechanism",
+                "status": "verified", "claim": "c", "claim_boundary": "b",
+                "relations": "[]", "evidence": "[EV-MEM-X]",
+                "sources": "[{kind: iso, ref: X, independent: true}]",
+                "first_hand": "true", "superiority": "真实增量", "depth": "asm",
+                "pedagogy": "p",
+            }
+            fields.update(extra)
+            _write(ge.ATOMS / "mem" / f"{card_id}.md", fields)
+            fs = ge.check_verify_reason()
+            who = sorted({f.rule_id for f in fs})
+            lvl = {f.rule_id: f.severity for f in fs}
+            hit = "ATOM-VERIFY-REASON" in who
+            ok = (hit == want_hit) and (not hit or lvl["ATOM-VERIFY-REASON"] == "warn")
+            results.append((name, ok,
+                            f"拦截者 {', '.join(who) or '（未命中）'}"
+                            f" · 级别 {lvl.get('ATOM-VERIFY-REASON', '—')}"))
+
+    _reason_case("P59 人级签署无理由（须命中 warn）", "ATOM-MEM-NOREASON", {}, True)
+    _reason_case("P59-阴 人级签署有理由须放行", "ATOM-MEM-HASREASON",
+                 {"verified_reason": "红队 R 报告 + replay confirm 双证据"}, False)
+
     # ── P47/P48 恒真断言（472 P0-2 / N2）：函数级探针（不真编译，避免与 replay 抢锁）──
     with sandbox() as tmp:
         _art = tmp / "a.asm"
@@ -1220,7 +1250,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
     ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
-    ("P58 ", "A1"),
+    ("P58 ", "A1"), ("P59 ", "A1"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
