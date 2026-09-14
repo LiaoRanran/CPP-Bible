@@ -22,6 +22,33 @@ claim: >-
   T&& 仅在推导语境下是万能引用：传左值推 T=int&（折叠回左值引用）、传右值推 T=int；auto&& 同理、
   const T&& 不是万能引用。std::forward<T>(x) 按推导出的 T 恢复实参值类别；转发链里省略 forward 时
   形参按左值处理，右值实参退化为拷贝。
+# 528 任务1：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: 引用折叠的四条规则
+    predicate: 实测（经模板形参引入）
+    object: T& &⇒int&、T& &&⇒int&、T&& &⇒int&、T&& &&⇒int&&（唯一保持右值引用）；auto&& 传左值⇒int&、传右值⇒int&&
+    claim_type: observation
+    statement: 四条折叠规则的实测：T& &⇒int&、T& &&⇒int&、T&& &⇒int&、T&& &&⇒int&&（唯一保持右值引用的是"右值引用的右值引用"）；auto&& 传左值推导为 int&、传右值推导为 int&&。
+    evidence: [EV-MEM-021]
+    extracted_by: writer
+  - id: prop-2
+    subject: 转发链里有无 std::forward
+    predicate: 实测（-O0/-O2 一致）
+    object: forward 右值 copies=0 moves=1；forward 左值 copies=1 moves=0；省略 forward 的右值 copies=1 moves=0（退化为拷贝）
+    claim_type: observation
+    statement: 转发链对照：forward 右值实参时 copies=0、moves=1；forward 左值实参时 copies=1、moves=0；而省略 forward 时右值实参退化为拷贝（copies=1、moves=0）。
+    evidence: [EV-MEM-022]
+    extracted_by: writer
+  - id: prop-3
+    subject: 万能引用（转发引用）
+    predicate: 仅在推导语境成立，因此
+    object: T&& 传左值时推 T=int& 并折叠回左值引用；const T&& 不是万能引用
+    claim_type: inference
+    statement: T&& 只有在**推导语境**（模板形参或 auto&&）下才是万能引用：传左值时特判推 T 为左值引用、经折叠回左值引用；const T&& 不是万能引用。std::forward<T>(x) 按推导出的 T 恢复实参值类别，故转发链里省略 forward 会把右值实参降级为拷贝。这条依据标准对引用折叠与推导特判的规定，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [dcl.ref]（引用折叠规则）；[temp.deduct.call]（P 为 T&& 且实参为左值时推 T 为左值引用的特判）；cppreference Forwarding references / std::forward"
+    evidence: [EV-MEM-021, EV-MEM-022]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]   # 机器实测仅 c++23 单档（EV-MEM-021/022 卡内注明）；
                                                   # 夹具仅用 C++11 起即有特性，跨档可编译，折叠/推导

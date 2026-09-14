@@ -20,6 +20,33 @@ claim: >-
   std::weak_ptr 是非拥有观察者：指向 shared_ptr 管理的对象但不增加引用计数；.lock() 临时提升为
   shared_ptr（对象活着则成功、计数 +1），对象已销毁则 .lock() 返回空（expired）。它用来在"需要旁观共享对象
   但不延长其寿命"的场景（尤其子->父反向引用）打破 shared_ptr 的循环引用，避免泄漏。
+# 528 任务1：claim 拆原子命题。
+claim_structured:
+  - id: prop-1
+    subject: weak_ptr 与 lock() 提升
+    predicate: 实测
+    object: 有 weak 时 use_count=1（不增计数）、expired before=0、lock 后 use_count=2 且 locked bool=1、lock 作用域后回到 1、reset 后 expired=1、box destroyed count=1
+    claim_type: observation
+    statement: 非拥有观察者的实测：持有 weak 时 use_count 仍为 1（不增加强引用）、expired before=0；.lock() 后 use_count=2 且 locked bool=1，lock 作用域结束后回到 1；reset 后 weak expired=1，且 box destroyed count=1（对象仍只析构一次）。
+    evidence: [EV-MEM-015]
+    extracted_by: writer
+  - id: prop-2
+    subject: 用 weak 打破环后的析构数
+    predicate: 实测
+    object: a use_count=1、b use_count=2、nodes destroyed count=2（对比成环时的 0）
+    claim_type: observation
+    statement: 把反向引用改为 weak 后：a use_count=1、b use_count=2，nodes destroyed count=2（两个节点全部析构）——与互相强持有时的 destroyed count=0 构成唯一变量对照。
+    evidence: [EV-MEM-016]
+    extracted_by: writer
+  - id: prop-3
+    subject: weak_ptr 的语义
+    predicate: 是
+    object: 非拥有观察者（不增加强引用计数），lock() 提升为 shared_ptr、对象已销毁则返回空
+    claim_type: inference
+    statement: weak_ptr 指向 shared_ptr 管理的对象但不增加引用计数，.lock() 可临时提升为 shared_ptr（对象存活则成功、计数 +1，已销毁则返回空即 expired）——因此它适用于"需要旁观共享对象但不延长其寿命"的场景（尤其子到父的反向引用）来打破环。这条依据标准对 weak_ptr 语义的规定，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [util.smartptr.weak]（非拥有观察者；lock 提升、expired 查询）；[util.smartptr.weak.const]（不增加强引用计数）；cppreference std::weak_ptr（打破 shared_ptr 循环引用）"
+    evidence: [EV-MEM-015, EV-MEM-016]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

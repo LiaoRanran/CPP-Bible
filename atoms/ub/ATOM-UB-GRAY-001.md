@@ -24,6 +24,25 @@ claim: >-
   （严格别名）属于**未定义行为**，标准不再要求任何行为，优化器可据此删除你的访问。
   （版本边界：函数实参 `f(i++, i++)` 自 **C++17 起是 _indeterminately sequenced_** → **unspecified**；
   C++11/14 下才是 UB。）
+# 528 任务1：claim 拆原子命题。prop-2 是本卡最易讲错的版本边界，走 inference（依标准条文）。
+claim_structured:
+  - id: prop-1
+    subject: 函数实参的求值顺序
+    predicate: 实测为未指定（unspecified）
+    object: GCC 15.3/13.1 × -O0/-O2（cxx17）四组下均得 h 先于 g，f(1,2)；但标准不保证该顺序
+    claim_type: observation
+    statement: f(g(), h()) 的实参求值顺序实测：四组组合（GCC 15.3.0 与 GCC 13.1.0、-O0 与 -O2、c++17）输出均为 h 先于 g、最终 f(1,2)——实测顺序一致**不代表可依赖**，标准只规定其为未指定/不确定序。
+    evidence: [EV-UB-001]
+    extracted_by: writer
+  - id: prop-2
+    subject: 未测序修改与严格别名
+    predicate: 属于
+    object: 未定义行为（优化器可据此删除访问）；而实参 f(i++, i++) 自 C++17 起是 indeterminately sequenced ⇒ 只是 unspecified（C++11/14 下才是 UB）
+    claim_type: inference
+    statement: 未测序的同一标量修改（如 i = i++ + ++i）与通过不兼容类型指针访问对象（严格别名）属**未定义行为**——标准不再要求任何行为，优化器可据此删除访问；而函数实参 f(i++, i++) 自 C++17 起是 indeterminately sequenced ⇒ 只是 unspecified（C++11/14 下才是 UB）。这条版本边界依据标准对调用实参求值顺序、未测序与严格别名的规定，不由本卡读数单独证明。
+    external_basis: "ISO/IEC 14882:2023 [expr.call]（函数参数初始化是 indeterminately sequenced）；[intro.execution]（未测序的标量修改为 UB）；[basic.lval]（严格别名）；cppreference Undefined behavior / Order of evaluation"
+    evidence: [EV-UB-001]
+    extracted_by: writer
 claim_boundary:
   standard: [C++11, C++14, C++17, C++23]
   compilers: [GCC 15.3.0, GCC 13.1.0, GCC 8.1.0, Clang (CI ubuntu-latest runner 默认)]
