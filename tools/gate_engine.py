@@ -1242,8 +1242,8 @@ def check_frontmatter_hardening() -> list[Finding]:
             for key_node, _v in node.value:
                 k = self.construct_object(key_node, deep=deep)
                 if k in seen:
-                    raise ConstructorError(None, None, f"duplicate key: {k}",
-                                           key_node.start_mark)
+                    raise _ctor_error(None, None, f"duplicate key: {k}",
+                                      key_node.start_mark)
                 seen.add(k)
             return mapping
 
