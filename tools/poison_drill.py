@@ -24,6 +24,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import re
 import shutil
@@ -341,10 +342,13 @@ def drill() -> int:
             "falsification": "若编译产生任何警告（非零诊断）→ 判 refute",
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_zero_diag_werror()})
-        ok = "EV-ZERO-DIAG-WERROR" in who
-        results.append(("P11 零诊断判据缺 -Werror", ok,
-                        f"拦截者 {', '.join(who) or '（漏网！）'}"))
+        _fs = ge.check_evidence_zero_diag_werror()
+        who = sorted({f.rule_id for f in _fs})
+        _lvl = {f.rule_id: f.severity for f in _fs}
+        ok = "EV-ZERO-DIAG-WERROR" in who and _lvl.get("EV-ZERO-DIAG-WERROR") == "block"
+        results.append(("P11 零诊断判据缺 -Werror（须 block，472 P1-1）", ok,
+                        f"拦截者 {', '.join(who) or '（漏网！）'}"
+                        f" · 级别 {_lvl.get('EV-ZERO-DIAG-WERROR', '—')}"))
 
     # ── P12 留痕锚自证：锚只出现在 actual 段（A3①）─────────────────────────────
     # 371 报告 A3①：P7 原对**整卡**搜索留痕锚，而 `actual.run_match_file` 自带 `.out`
@@ -1129,6 +1133,8 @@ def drill() -> int:
                     detail += f"\n         {ln.strip()[:88]}"
         results.append(("阴性对照（干净原子+干净卡）", ok, detail))
 
+    _LAST_RESULTS.clear()
+    _LAST_RESULTS.extend(results)
     failures = []
     for name, ok, detail in results:
         print(f"[poison] {name}: {detail} {'✅' if ok else '❌'}")
@@ -1141,14 +1147,24 @@ def drill() -> int:
              else "制衡层有漏网，先修制衡！"))
     stats = attack_type_stats(results)
     uncovered = [a for a in ALL_ATTACK_TYPES if stats.get(a, 0) == 0]
-    print(f"[poison] 攻击面分类（424 A1-A10）：{stats}")
+    unknown = unknown_attack_types(stats)
+    print(f"[poison] 攻击面分类（424 A1-A{len(ALL_ATTACK_TYPES)}，实测载荷）：{stats}")
+    if unknown:
+        print(f"[poison] ⚠ 未登记攻击面 {unknown} —— 在 ATTACK_TYPES 补映射，"
+              "否则「零覆盖」判定不可信")
     print(f"[poison] 零覆盖攻击面：{uncovered or '无'}"
           + ("" if not uncovered else " —— 攻击者可从这些面无样本预警地打进来"))
     return passed, len(results), failures
 
 
-# ── 424：攻击面分类（A1-A10，409 口径）──────────────────────────────────────
+# ── 424：攻击面分类（A1-A11，409 分类学 + 472 扩面）────────────────────────
 # 毒样例名前缀 → 主攻击类（阴性对照不分类）。P21 两条异类，具体前缀优先匹配。
+#
+# **口径声明（472 实测发现，勿默认本表==409 原表）**：本表并非 409 分类表的逐字落地——
+# A8（间接注入）/A9（规则逃逸）与 409 一致，但 A1/A2/A3/A4/A6/A7/A10 的语义相对 409
+# 发生迁移（例：409 `A4=注释伪造`、`A10=门禁假阳性`；本表 `A4=时序穿链`、`A10=供应链与工件完整性`）。
+# A11 为 472 新增（并发/可用性）——409 原文授权「全新攻击面则更新分类学（A11…）」。
+# 下表的 LABELS 由成员样例**归纳**，仅作人类可读；是否回改为 409 原义属人裁决（见 _worklog_472.md）。
 ATTACK_TYPES: list[tuple[str, str]] = [
     ("P1 ", "A1"), ("P2 ", "A2"), ("P3 ", "A3"), ("P4 ", "A3"), ("P5 ", "A3"),
     ("P6 ", "A3"), ("P7 ", "A1"), ("P8 ", "A1"), ("P9 ", "A1"), ("P10 ", "A3"),
@@ -1164,9 +1180,32 @@ ATTACK_TYPES: list[tuple[str, str]] = [
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
+# 每类的人类可读标签（由成员样例归纳，非 409 原表逐字；见 ATTACK_TYPES 上方口径声明）。
+ATTACK_TYPE_LABELS: dict[str, str] = {
+    "A1": "记录层伪造：状态/身份/绑定不实（无证据 verified、留痕不足、id 漂移、空名签收）",
+    "A2": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
+    "A3": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
+    "A4": "时序穿链：编译后覆写、留痕比夹具旧",
+    "A5": "环境量污染：机器/时钟量进入读数键或断言键",
+    "A6": "解析走私：缩进/重复键/全角键绕过 YAML 语义",
+    "A7": "关系图失配：环、矛盾、未知关系类型",
+    "A8": "间接注入：注释/知识库内容伪造出处",
+    "A9": "编译器配置逃逸：零诊断判据未配 -Werror",
+    "A10": "供应链与工件完整性：工具冒充、非编译器产出、快照幂等",
+    "A11": "并发与可用性：僵尸锁 DoS、活锁误接管",
+}
+assert set(ATTACK_TYPE_LABELS) == set(ALL_ATTACK_TYPES), "标签表与攻击面清单不同源"
+
+# 最近一次 drill 的实测载荷明细（424 台账用；保持 drill() 三元组返回契约不变）。
+_LAST_RESULTS: list[tuple[str, bool, str]] = []
+
 
 def attack_type_stats(results: list[tuple[str, bool, str]]) -> dict[str, int]:
-    """按 A1-A10 统计攻击载荷覆盖（阴性对照排除——它们验证「不误伤」）。"""
+    """按 A1-A11 统计攻击载荷覆盖（**实测口径**：同前缀多载荷各计一条）。
+
+    阴性对照排除——它们验证「不误伤」，不计入攻击面覆盖。
+    未登记前缀 → `A?`（会出现在返回值里，供调用方 fail-loud，勿静默丢弃）。
+    """
     by: dict[str, int] = {}
     for name, _ok, _detail in results:
         head = name.split(" ")[0]
@@ -1175,6 +1214,11 @@ def attack_type_stats(results: list[tuple[str, bool, str]]) -> dict[str, int]:
         t = next((t for pfx, t in ATTACK_TYPES if name.startswith(pfx)), "A?")
         by[t] = by.get(t, 0) + 1
     return dict(sorted(by.items()))
+
+
+def unknown_attack_types(stats: dict[str, int]) -> list[str]:
+    """未登记攻击面（含 `A?`）—— 非空即覆盖面不可信，调用方须红。"""
+    return sorted(t for t in stats if t not in ALL_ATTACK_TYPES)
 
 
 _EXEMPT_LINE = re.compile(
@@ -1227,23 +1271,108 @@ def gate_exit_code(passed: int, total_d: int, uncovered: list[str]) -> int:
     return 0 if (all_passed and no_uncovered) else 1
 
 
+# ── 424 产物：攻击面台账 `tools/poison_surface_map.json` ─────────────────────
+# 设计取舍：**只有显式 `--write-surface-map` 才落盘**（主流程/CI 不自动写）。
+# 理由：台账含 generated_at/source_commit，自动写会让每次门禁运行都把工作区搞脏
+# （违「门禁只读仓」惯例）；而 `--by-type` 读台账，保证「查得快」与「数据真」两者兼得——
+# 数据源单点化为**实测 results**，杜绝静态前缀表与实测各说各话（472 修）。
+SURFACE_MAP = ROOT / "tools" / "poison_surface_map.json"
+
+
+def build_surface_map(passed: int, total_d: int,
+                      results: list[tuple[str, bool, str]],
+                      rule_cov: tuple[int, int, list[str]]) -> dict:
+    """把一次**实测**钻探固化为攻击面台账（逐条载荷 + 分类计数 + 覆盖率 + 规则覆盖）。"""
+    covered_rules, total_rules, _ = rule_cov
+    payloads = []
+    negatives = []
+    for name, ok, _detail in results:
+        head = name.split(" ")[0]
+        neg = name.startswith("阴性") or "-阴" in head
+        entry = {"name": name, "pass": bool(ok)}
+        if neg:
+            entry["type"] = None
+            negatives.append(entry)
+        else:
+            entry["type"] = next(
+                (t for pfx, t in ATTACK_TYPES if name.startswith(pfx)), "A?")
+            payloads.append(entry)
+    stats = attack_type_stats(results)
+    uncovered = [a for a in ALL_ATTACK_TYPES if stats.get(a, 0) == 0]
+    try:
+        src = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,
+                             capture_output=True, text=True, timeout=10)
+        commit = src.stdout.strip() or "unknown"
+    except Exception:                                   # git 不可用不该阻断台账生成
+        commit = "unknown"
+    return {
+        "schema": 1, "tool": "poison_drill.py", "task": "424",
+        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "source_commit": commit,
+        "drill": {"passed": passed, "total": total_d},
+        "attack_types": {a: {"label": ATTACK_TYPE_LABELS[a], "count": stats.get(a, 0)}
+                         for a in ALL_ATTACK_TYPES},
+        "coverage": {"covered": len(ALL_ATTACK_TYPES) - len(uncovered),
+                     "total": len(ALL_ATTACK_TYPES), "uncovered": uncovered},
+        "rule_coverage": {"covered": covered_rules, "total": total_rules,
+                          "exempt": len(load_exemptions())},
+        "payloads": payloads,
+        "negative_controls": negatives,
+        "note": ("A1-A11 = 代码实际口径（标签由成员样例归纳），非 409 原表逐字；"
+                 "A11 为 472 新增（并发/可用性）。口径差异与裁决见 _worklog_472.md。"),
+    }
+
+
+def write_surface_map(payload: dict) -> Path:
+    SURFACE_MAP.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
+                           encoding="utf-8")
+    return SURFACE_MAP
+
+
+def load_surface_map() -> dict | None:
+    """读台账；缺失/损坏 → None（调用方须 fail-loud，不得静默当「无覆盖问题」）。"""
+    if not SURFACE_MAP.is_file():
+        return None
+    try:
+        return json.loads(SURFACE_MAP.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
 if __name__ == "__main__":
-    import argparse as _ap, json as _json, datetime as _dt
+    import argparse as _ap, datetime as _dt
     _p = _ap.ArgumentParser(description="门禁毒样例钻探（对抗回归）")
     _p.add_argument("--json", nargs="?", const=True, default=False,
                    help="结构化 JSON 输出到 stdout")
     _p.add_argument("--by-type", action="store_true",
-                    help="只输出 A1-A10 攻击面分类统计（424），不跑钻探")
+                    help="读 tools/poison_surface_map.json 打印攻击面覆盖（424，不跑钻探）")
+    _p.add_argument("--write-surface-map", action="store_true",
+                    help="跑完整钻探并把**实测**结果写成攻击面台账（424 产物，入库）")
     _a = _p.parse_args()
     if _a.by_type:
-        by: dict[str, int] = {}
-        for _pfx, t in ATTACK_TYPES:
-            by[t] = by.get(t, 0) + 1
-        unc = [a for a in ALL_ATTACK_TYPES if by.get(a, 0) == 0]
-        print(f"[poison] 攻击面分类统计（载荷条数）：{dict(sorted(by.items()))}")
-        print(f"[poison] 零覆盖攻击面：{unc or '无'}"
-              + ("" if unc else " —— A1-A10 全部有样本预警"))
-        raise SystemExit(0)
+        _m = load_surface_map()
+        if _m is None:
+            print("[poison] 攻击面台账不存在/损坏：先跑 "
+                  "`python tools/poison_drill.py --write-surface-map`"
+                  "（不可用静态前缀表冒充实测数字）", file=sys.stderr)
+            raise SystemExit(1)
+        _at = _m.get("attack_types", {})
+        _cov = _m.get("coverage", {})
+        _rc = _m.get("rule_coverage", {})
+        print(f"[poison] 攻击面覆盖 A1-A{len(ALL_ATTACK_TYPES)}"
+              f"（实测口径 · 采集 {_m.get('generated_at', '?')}"
+              f" @ {_m.get('source_commit', '?')}）")
+        for _a11 in ALL_ATTACK_TYPES:
+            _info = _at.get(_a11, {})
+            _n = _info.get("count", 0)
+            print(f"  {_a11:>3} {_n:>2} 条 {'✅' if _n else '❌ 零覆盖'}"
+                  f"  {_info.get('label', '')}")
+        _unc = _cov.get("uncovered") or []
+        print(f"[poison] 覆盖率 {_cov.get('covered', 0)}/{_cov.get('total', len(ALL_ATTACK_TYPES))}"
+              + (f" · 零覆盖 {_unc}" if _unc else " · 零覆盖：无"))
+        print(f"[poison] RULE-COVERAGE（台账快照）：{_rc.get('covered', '?')}/{_rc.get('total', '?')}"
+              f" + 豁免 {_rc.get('exempt', '?')}")
+        raise SystemExit(0 if not _unc else 1)
     real_out = sys.stdout
     if _a.json:
         sys.stdout = sys.stderr          # 普通报告走 stderr，stdout 只留 JSON
@@ -1255,14 +1384,26 @@ if __name__ == "__main__":
         print("[poison] 二选一：补毒样例，或在 tools/poison_exemptions.yaml 登记"
               "（规则 ID + 原因 + 日期）——本项为硬门禁（CI 红）")
     passed, total_d, failures = drill()
+    surface = build_surface_map(passed, total_d, _LAST_RESULTS,
+                                (covered, total, uncovered))
+    if _a.write_surface_map:
+        _path = write_surface_map(surface)
+        print(f"[poison] 攻击面台账已落盘：{_path.relative_to(ROOT).as_posix()}"
+              f"（{surface['coverage']['covered']}/{surface['coverage']['total']} 覆盖）")
     if _a.json:
         payload = {
             "tool": "poison_drill", "version": "v6.1",
             "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
             "status": "pass" if passed == total_d else "fail",
             "summary": {"passed": passed, "total": total_d},
+            "attack_surface": {
+                "counts": {a: surface["attack_types"][a]["count"]
+                           for a in ALL_ATTACK_TYPES},
+                "coverage": surface["coverage"],
+                "unknown": unknown_attack_types(attack_type_stats(_LAST_RESULTS)),
+            },
             "findings": failures, "infra_errors": [],
         }
-        real_out.write(_json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
+        real_out.write(json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
     raise SystemExit(gate_exit_code(passed, total_d, uncovered))
 

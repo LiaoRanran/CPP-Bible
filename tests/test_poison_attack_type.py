@@ -1,4 +1,4 @@
-"""424 攻击面分类回归锁：A1-A10 全映射、A4/A8/A10 盲区补齐、新毒样例直验。"""
+"""424 攻击面分类回归锁：A1-A11 全映射、A4/A8/A10 盲区补齐、新毒样例直验、台账防过期。"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -97,3 +97,99 @@ def test_p39_comment_injection_detected(tmp_path: Path, monkeypatch: pytest.Monk
         hits = ge.check_evidence_assert_symbol_mapped()
         assert any("_Z10fake_symv" in f.message for f in hits), \
             "注释伪造出处必须被检出（出处空间剥注释）"
+
+
+# ── 424 台账 `tools/poison_surface_map.json` 回归锁（472 收尾）──────────────
+# 背景：修前 `--by-type` 用**静态前缀表**计数（46 条），与实测 results（49 条）各说各话，
+# 且 A11 已入表而文案/产物仍写 A1-A10。现口径单点化为「实测 results → 台账 → --by-type」。
+
+
+def _static_prefix_counts() -> dict[str, int]:
+    """静态前缀登记数（每前缀 1 条）——仅作「有无覆盖」与下界的对照，不作载荷数。"""
+    by: dict[str, int] = {}
+    for _pfx, t in pd.ATTACK_TYPES:
+        by[t] = by.get(t, 0) + 1
+    return by
+
+
+def test_surface_map_schema_and_labels():
+    """入库台账结构合法：类别集合 == A1-A11、每类带 label、覆盖率自洽。"""
+    m = pd.load_surface_map()
+    assert m is not None, ("tools/poison_surface_map.json 缺失或损坏——"
+                           "跑 `python tools/poison_drill.py --write-surface-map`")
+    assert m["schema"] == 1
+    assert set(m["attack_types"]) == set(pd.ALL_ATTACK_TYPES)
+    for a, info in m["attack_types"].items():
+        assert info.get("label"), f"{a} 缺可读标签"
+        assert info.get("count", -1) >= 0, f"{a} 计数非法"
+    cov = m["coverage"]
+    assert cov["total"] == len(pd.ALL_ATTACK_TYPES)
+    assert cov["covered"] + len(cov["uncovered"]) == cov["total"]
+    assert cov["uncovered"] == [], f"入库台账存在零覆盖攻击面：{cov['uncovered']}"
+
+
+def test_surface_map_not_stale():
+    """台账不得过期：每类「有无覆盖」须与静态登记表一致，且计数不低于静态下界。"""
+    m = pd.load_surface_map()
+    assert m is not None
+    static = _static_prefix_counts()
+    for a in pd.ALL_ATTACK_TYPES:
+        got = m["attack_types"][a]["count"]
+        assert (got > 0) == (static.get(a, 0) > 0), (
+            f"{a} 台账计数 {got} 与静态登记 {static.get(a, 0)} 覆盖性不一致——"
+            "增删毒样例后须重跑 --write-surface-map（否则 --by-type 会撒谎）")
+        assert got >= static.get(a, 0), (
+            f"{a} 台账计数 {got} 低于静态登记 {static.get(a, 0)}（同前缀多载荷只多不少）")
+
+
+def test_surface_map_payload_types_valid():
+    """逐条载荷类型必须落在 A1-A11（阴性对照 type=None），且全部为已拦截状态。"""
+    m = pd.load_surface_map()
+    assert m is not None
+    assert m["payloads"], "台账无载荷明细"
+    for p in m["payloads"]:
+        assert p["type"] in pd.ALL_ATTACK_TYPES, f"未登记类型：{p}"
+        assert p["pass"], f"台账里存在未拦截载荷（先修制衡）：{p}"
+    for p in m["negative_controls"]:
+        assert p["type"] is None, "阴性对照不得计入攻击面"
+    assert sum(x["count"] for x in m["attack_types"].values()) == len(m["payloads"])
+
+
+def test_build_surface_map_matches_measured_stats():
+    """口径单点化：台账计数 == attack_type_stats 实测计数（不是静态前缀表）。"""
+    fake = [("P1 x", True, ""), ("P16 a", True, ""), ("P16 b", True, ""),
+            ("P14-阴 y", True, ""), ("阴性对照（z）", True, "")]
+    m = pd.build_surface_map(3, 5, fake, (1, 2, []))
+    assert m["attack_types"]["A1"]["count"] == 1, "P1 应计 1 条"
+    assert m["attack_types"]["A2"]["count"] == 2, "P16 同前缀两条各计一条（静态表只有 1）"
+    assert len(m["negative_controls"]) == 2 and len(m["payloads"]) == 3
+    cov = m["coverage"]
+    assert cov["covered"] == len(pd.ALL_ATTACK_TYPES) - len(cov["uncovered"])
+
+
+def test_surface_map_roundtrip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """写→读 往返一致；缺失/损坏 → None（fail-loud 的上游，不得静默放行）。"""
+    target = tmp_path / "map.json"
+    monkeypatch.setattr(pd, "SURFACE_MAP", target)
+    m = pd.build_surface_map(1, 1, [("P1 x", True, "")], (0, 1, []))
+    pd.write_surface_map(m)
+    assert pd.load_surface_map() == m
+    target.write_text("{ 坏 json", encoding="utf-8")
+    assert pd.load_surface_map() is None, "损坏台账必须返回 None 而非空 dict"
+    monkeypatch.setattr(pd, "SURFACE_MAP", tmp_path / "nope.json")
+    assert pd.load_surface_map() is None
+
+
+def test_unknown_attack_type_visible():
+    """未登记前缀 → `A?` 可见（不静默丢弃），unknown_attack_types 能报出。"""
+    stats = pd.attack_type_stats([("P999 新攻击面", True, "")])
+    assert stats == {"A?": 1}
+    assert pd.unknown_attack_types(stats) == ["A?"]
+
+
+def test_surface_map_has_unregistered_visibility():
+    """台账生成路径同样保留 `A?`（新增攻击面必须显形，不能算进已覆盖类）。"""
+    m = pd.build_surface_map(1, 1, [("P999 新攻击面", True, "")], (0, 1, []))
+    unknown = pd.unknown_attack_types(
+        {p["type"]: 1 for p in m["payloads"]})
+    assert unknown == ["A?"], "未登记载荷未在台账中显形"
