@@ -287,6 +287,21 @@ def cmd_check(args: argparse.Namespace) -> int:
                 print(e.stderr[-800:])
             failed += 1
 
+    # 508 任务7：quality 的**最后一步**自动备份关键数据（质量基线 / 度量序列 / 知识图谱 /
+    # 工件台账）。放在最后是刻意的：此刻基线类文件刚被上面的步骤读/写过，快照最贴近
+    # "这次门禁看到的状态"。**失败绝不影响门禁结论**（备份是安全网，不是判据）——
+    # 只打印一行提示，不改 return 码。
+    if stage == "quality":
+        try:
+            import backup as _bk
+            d = _bk.snapshot()
+            import json as _json
+            m = _json.loads((d / _bk.MANIFEST).read_text(encoding="utf-8"))
+            print(f"\n[cppbible] 已备份 {len(m['files'])} 个关键数据文件 → "
+                  f"{d.relative_to(ROOT).as_posix()}")
+        except Exception as exc:                       # noqa: BLE001
+            print(f"\n[cppbible] ⚠️ 备份跳过（不影响门禁）：{type(exc).__name__}: {exc}")
+
     print("\n────────────────────────────────────────")
     print(f"  Result: {passed} passed / {failed} failed")
     print("────────────────────────────────────────")
