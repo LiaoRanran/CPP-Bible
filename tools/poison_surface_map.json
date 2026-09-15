@@ -2,16 +2,16 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-15T10:58:15",
- "source_commit": "1c8b1be",
+ "generated_at": "2026-09-15T13:24:37",
+ "source_commit": "9942d8c",
  "drill": {
-  "passed": 86,
-  "total": 86
+  "passed": 90,
+  "total": 90
  },
  "attack_types": {
   "A1": {
    "label": "记录层伪造：状态/身份/绑定不实（无证据 verified、留痕不足、id 漂移、空名签收）",
-   "count": 13
+   "count": 15
   },
   "A2": {
    "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
@@ -60,8 +60,8 @@
   "uncovered": []
  },
  "rule_coverage": {
-  "covered": 33,
-  "total": 58,
+  "covered": 35,
+  "total": 60,
   "exempt": 27
  },
  "payloads": [
@@ -354,6 +354,16 @@
    "name": "P66 inference 命题级无签+卡级无人签+无基准 ⇒ block",
    "pass": true,
    "type": "A1"
+  },
+  {
+   "name": "P67 object 是句子非概念须 warn",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P68 只挂 run_match 卡的 observation 须 warn（缺活性对照）",
+   "pass": true,
+   "type": "A1"
   }
  ],
  "negative_controls": [
@@ -489,6 +499,16 @@
   },
   {
    "name": "P66-阴2 命题级 signed_by 在册实名 ⇒ 放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P67-阴 object=规范概念须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P68-阴 有活性对照（特有符号+量化证伪）须放行",
    "pass": true,
    "type": null
   },

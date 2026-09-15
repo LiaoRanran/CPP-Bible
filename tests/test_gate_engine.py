@@ -1296,6 +1296,42 @@ def test_inference_prop_is_not_rule2_business(sandbox: Path):
     assert ge.check_observation_needs_artifact() == []
 
 
+# ── 530 任务4：OBSERVATION-LIVENESS（自标观测须有活性对照）──────────────────
+def test_observation_liveness_dead_observation_warns(sandbox: Path):
+    """530 任务4（阳性）：observation 只挂 run_match 卡（无量化证伪/无特有符号/无读数键）
+    ⇒ 三条活性条件全不满足，warn（**须断言 severity=warn**，护栏2：防"降级分支"假通过）。"""
+    _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                claim_structured=_OBS_PROP)
+    _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1",
+                actual="\n  run_match_file: x.out")
+    hits = ge.check_observation_liveness()
+    assert len(hits) == 1 and hits[0].severity == "warn", hits
+    assert hits[0].rule_id == "OBSERVATION-LIVENESS"
+    assert "prop-1" in hits[0].message
+
+
+def test_observation_liveness_live_observation_passes(sandbox: Path):
+    """530 任务4（阴性）：证据卡锚**夹具特有符号**（symbol_map 显式声明）+ 量化证伪取值
+    ⇒ 活性条件成立，放行（复现验收 §1 正例形态 FENCE-001）。"""
+    _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                claim_structured=_OBS_PROP)
+    _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1",
+                artifact_assert='\n  - {kind: contains, text: "spin_plain"}',
+                symbol_map="\n  spin_plain: _Z10spin_plainv",
+                falsification="对照取值 3 vs 0",
+                actual="\n  run_match_file: x.out")
+    assert ge.check_observation_liveness() == []
+
+
+def test_observation_liveness_skips_when_no_artifact_assertion(sandbox: Path):
+    """530 任务4（边界）：证据卡连工件断言都没有时归 OBSERVATION-NEEDS-ARTIFACT（block）
+    管辖，本条不得重复报警（否则同一条缺陷两条规则各报一次）。"""
+    _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                claim_structured=_OBS_PROP)
+    _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1")
+    assert ge.check_observation_liveness() == []
+
+
 # ── 526 批次E 规则3：INFERENCE-NOT-MACHINE-VERIFIED（核心放权闸）─────────────
 _INF_PROP = ("\n  - id: prop-2\n    subject: s\n    predicate: p\n    object: o\n"
              "    claim_type: inference\n    statement: st\n"

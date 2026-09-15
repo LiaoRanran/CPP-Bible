@@ -2084,6 +2084,108 @@ def check_observation_needs_artifact() -> list[Finding]:
     return out
 
 
+# ── 530 任务4：OBSERVATION-LIVENESS 的三条"活性条件"（判定单点，供规则与测试复用）──
+def _falsification_quantified(text: str) -> bool:
+    """活性条件①：`falsification` 含量化对照取值。
+
+    **复用 EV-FALSIFICATION-QUANT 的量化判定**（该规则判"有字段但无数字"，本处取反用）：
+    真对照必须给出两个可复核的取值（如 3 vs 0），而不是纯「若…则应…」的假设句。
+    """
+    return bool(str(text or "").strip()) and bool(re.search(r"\d", str(text)))
+
+
+def _has_fixture_specific_assert_symbol(meta: dict) -> bool:
+    """活性条件②：工件断言里存在**非通用且可定位**的符号（夹具特有符号）。
+
+    **复用 EV-ASSERT-SYMBOL-MAPPED 的出处判定**（同一套 `_assert_targets` / `_assert_haystack`
+    / `symbol_map` / `_is_universal_symbol`）：通用符号（main/call/ret、`.`-伪指令、裸寄存器）
+    在任何工件里恒现 ⇒ 恒真断言，不构成活性对照；只有"夹具特有且能在夹具/工件/symbol_map
+    里定位到"的符号才说明这条观测锚定了本夹具的独特行为。
+    """
+    rules = meta.get("artifact_assert")
+    rules = [r for r in rules if isinstance(r, dict)] if isinstance(rules, list) else []
+    if not rules:
+        return False
+    hay = _assert_haystack(meta)
+    sm = meta.get("symbol_map") or {}
+    sm_space = (set(sm) | {str(v) for v in sm.values()}) if isinstance(sm, dict) else set()
+    for r in rules:
+        for t in _assert_targets(r)[1]:
+            t = str(t).strip()
+            if not t or (_CJK_RE.search(t) and not _IDENT_RE.search(t)):
+                continue                       # 散文断言：无判别力，不构成活性对照
+            if _is_universal_symbol(t):
+                continue                       # 通用符号恒真 ⇒ 零判别力
+            if t in hay or t in sm_space:
+                return True
+    return False
+
+
+def _has_non_env_run_key(meta: dict) -> bool:
+    """活性条件③：run_match 读数键里存在**非环境量**键。
+
+    **复用 EV-ENV-DEPENDENT-KEY 的键表**（`_is_env_key`）：读 `nproc`/`date`/`user` 之类
+    环境量只是"这台机器当时如此"，与命题无关；读到程序自身算出的量才算真观测。
+
+    只认**已声明**的 `run_match_keys`：留痕文件里的键若未声明，那本就是
+    `EV-OUT-UNDECLARED-KEY` 的辖区（未声明的读数不构成断言）；若此处回落认它，
+    伪造者只要往 `.out` 多写一行非环境量键，就能把「死的观测」洗成「活观测」。
+    实测（2026-09-15，50 条 observation 命题）：回落分支与只看声明键**零差异**。
+    """
+    actual = meta.get("actual")
+    if not isinstance(actual, dict):
+        return False
+    keys = [str(k).strip() for k in (actual.get("run_match_keys") or []) if str(k).strip()]
+    return any(not _is_env_key(k) for k in keys)
+
+
+def check_observation_liveness() -> list[Finding]:
+    """`OBSERVATION-LIVENESS`（530 任务4，**warn 观察期**）：自标观测还须是「活的观测」。
+
+    为何（批判 B.3，沙箱实证 0 block）：`OBSERVATION-NEEDS-ARTIFACT` 只问"有没有工件断言"，
+    不问"这条命题是不是真观测"——于是**把推断自标成 observation + 随便挂一张会打印数据的
+    卡**，就能走 machine-verified 全自动通道。工件断言在这里只证明"程序打印了某个值"，
+    不证明"打印的这个值能区分命题真假"。
+
+    **铁线**：不靠 LLM/正则猜命题语义（那是红队/未来 LLM 层），只加**机器可执行的活性结构**
+    条件。observation 命题的证据卡除"有工件断言"外，须至少满足其一（判定单点见上三个
+    `_has_*` / `_falsification_quantified`，均复用既有规则口径，不另写一套）：
+      ① `falsification` 含量化对照取值；
+      ② 工件断言锚定**夹具特有非通用符号**（可定位）；
+      ③ run_match 读数键含**非环境量**键。
+    三条皆不满足 ⇒ warn「observation 缺活性对照，只能证明程序打印了某值，建议改标 inference
+    或补对照」——warn 观察期先暴露存量债务，不做批量改卡（改卡交人）。
+
+    不重复报警：命题无证据卡、或证据卡均无工件断言时，那是 `OBSERVATION-NEEDS-ARTIFACT`
+    （block）的辖区，本条直接跳过。
+    """
+    out: list[Finding] = []
+    idx = _ev_index()
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        meta = _meta(p)
+        for prop in _claim_props(meta):
+            if str(prop.get("claim_type") or "").strip() != "observation":
+                continue
+            refs = [str(r).strip() for r in _as_list(prop.get("evidence"))
+                    if str(r).strip()]
+            cards = [idx[r] for r in refs if r in idx]
+            if not cards or not any(_has_artifact_assertion(c) for c in cards):
+                continue                          # 交由 OBSERVATION-NEEDS-ARTIFACT 处置
+            if any(_falsification_quantified(c.get("falsification"))
+                   or _has_fixture_specific_assert_symbol(c)
+                   or _has_non_env_run_key(c) for c in cards):
+                continue                          # 至少一条活性条件成立 ⇒ 放行
+            pid = str(prop.get("id") or "?")
+            out.append(Finding(
+                "OBSERVATION-LIVENESS", "warn", _rel(p),
+                f"命题 {pid}（observation）缺活性对照：工件断言只能证明「程序打印了某值」，"
+                "三条活性条件（量化证伪取值 / 夹具特有符号断言 / 非环境量读数键）一条不满足",
+                "改标 inference（补 external_basis 或命题级人签），或补一条活性对照："
+                "① falsification 写量化取值（如 3 vs 0）；② 断言锚夹具特有符号（非 "
+                "main/call 类通用符号）；③ run_match 读数键改用程序自身算出的非环境量"))
+    return out
+
+
 _BASIS_TOKEN_RE = re.compile(r"\d{5,}|[A-Za-z][A-Za-z0-9_]{5,}")
 
 
@@ -2841,6 +2943,9 @@ def _register_all() -> None:
         ("ATOM-CLAIM-CONCEPT-NORMALIZED",
          "claim 命题 object 须归一化规范概念（图谱可连通，530 任务3）",
          "atom", check_claim_concept_normalized),
+        ("OBSERVATION-LIVENESS",
+         "observation 命题须有活性对照（530 任务4：堵「自标观测即全自动」，warn 观察期）",
+         "atom", check_observation_liveness),
         ("EV-FIXTURE-NO-ECHO-DATA", "cat 式证据（472 P1-2：experimental→warn，读文件原样打印）",
          "evidence", check_fixture_no_echo_findings),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
@@ -2855,6 +2960,9 @@ def _register_all() -> None:
            "EV-SELF-SATISFIED-ASSERT": "warn", "EV-FALSIFICATION-QUANT": "warn",
            "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn",
            "ATOM-CLAIM-CONCEPT-NORMALIZED": "warn",
+          # 530 任务4：活性判据只做机器可执行的结构检查，语义真伪交红队/未来 LLM 层
+          #   ⇒ 观察期 warn（存量债务先可见化，不做批量改卡）
+          "OBSERVATION-LIVENESS": "warn",
            # 2026-09-12（W3）：零诊断类判据缺 -Werror —— 判据可判定性问题。
            # 472 P1-1 由 warn **升 block**，依据（v5 复测 + 实测）：
            #   ① warn 级只"可见化"，卡照样 confirm 直推 verified（E10a/b 两变种实证）；

@@ -1478,6 +1478,61 @@ def drill() -> int:
     results.append(("P67-阴 object=规范概念须放行", ok,
                     f"拦截者 {', '.join(who) or '（无）'}"))
 
+    # ── P68（530 任务4 OBSERVATION-LIVENESS）：自标观测须有活性对照 ─────────────
+    # 批判 B.3（沙箱实证 0 block）：`OBSERVATION-NEEDS-ARTIFACT` 只问「有没有工件断言」，
+    # 不问「这条命题是不是真观测」⇒ 把推断自标 observation + 只挂一张 run_match 卡，
+    # 就能走 machine-verified 全自动通道（工件只证明「程序打印了某值」）。
+    # 三条活性条件（量化证伪取值 / 夹具特有符号断言 / 非环境量读数键）全不满足 ⇒ warn。
+    # 覆盖判定同上：RULE-COVERAGE 只认字面量 `"RULE-ID" in who`，勿参数化。
+    def _t4_findings(cards: list[tuple[str, dict]], ev: list[tuple[str, dict]]):
+        with sandbox() as tmp:
+            orig_root = ge.ROOT
+            ge.ROOT = tmp
+            try:
+                for fname, fields in ev:
+                    _write(tmp / "evidence" / "mem" / fname, fields)
+                for fname, fields in cards:
+                    _write(tmp / "atoms" / "mem" / fname, fields)
+                return ge.check_observation_liveness()
+            finally:
+                ge.ROOT = orig_root
+
+    _t4_dead = ("\n  - {id: prop-1, subject: s, predicate: p, object: o,"
+                " claim_type: observation, statement: st,"
+                " evidence: [EV-MEM-P68], extracted_by: writer}")
+    _t4_dead_ev = {"id": "EV-MEM-P68", "serves": "[ATOM-MEM-P68]", "hypothesis": "h",
+                   "command": "g++ -std=c++17 -c fx.cpp", "verdict": "confirm",
+                   # 只挂 run_match：无 artifact_assert、无 falsification、无读数键
+                   "actual": "\n  run_match_file: p68.out"}
+    _fs = _t4_findings(
+        [("ATOM-MEM-P68.md", dict(_a_base, id="ATOM-MEM-P68",
+                                  claim_structured=_t4_dead))],
+        [("EV-MEM-P68.md", _t4_dead_ev)])
+    who = sorted({f.rule_id for f in _fs})
+    ok = "OBSERVATION-LIVENESS" in who and all(f.severity == "warn" for f in _fs)
+    results.append(("P68 只挂 run_match 卡的 observation 须 warn（缺活性对照）", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}；"
+                    f"严重度 {[f.severity for f in _fs] or '（无命中）'}"))
+    # P68-阴：三条活性条件满足其一即放行——此处锚**夹具特有符号**（symbol_map 显式声明，
+    # 非通用符号），复现验收 §1 的正例形态（FENCE-001：有量化对照 + 特有符号）。
+    _t4_live = ("\n  - {id: prop-1, subject: s, predicate: p, object: o,"
+                " claim_type: observation, statement: st,"
+                " evidence: [EV-MEM-P68N], extracted_by: writer}")
+    who = _atom_who(
+        [("ATOM-MEM-P68N.md", dict(_a_base, id="ATOM-MEM-P68N",
+                                   claim_structured=_t4_live))],
+        ge.check_observation_liveness,
+        ev=[("EV-MEM-P68N.md", {
+            "id": "EV-MEM-P68N", "serves": "[ATOM-MEM-P68N]", "hypothesis": "h",
+            "command": "g++ -std=c++17 -c fx.cpp", "verdict": "confirm",
+            "artifact_assert": '\n  - {kind: contains, text: "spin_plain"}',
+            "symbol_map": "\n  spin_plain: _Z10spin_plainv",
+            "falsification": "对照取值 3 vs 0",
+            "actual": "\n  run_match_file: p68n.out"})])
+    ok = not who
+    results.append(("P68-阴 有活性对照（特有符号+量化证伪）须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1584,6 +1639,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P65 ", "A1"),   # inference 无签发却 verified —— 记录层伪造（机器直推）
     ("P66 ", "A1"),   # 528 任务3 命题级签署精确化：inference 无命题级人签却 verified —— 同 P65 家族
     ("P67 ", "A1"),   # 530 任务3 claim object 未归一化规范概念：记录层/claim 连通性（同 P63 家族）
+    ("P68 ", "A1"),   # 530 任务4 自标 observation 缺活性对照：借"观测"名义跳过人审（记录层伪造）
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
