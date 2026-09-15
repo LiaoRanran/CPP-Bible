@@ -166,8 +166,10 @@ def mut_m4(text: str) -> list[tuple[str, str]]:
             ("注入通用符号 ret", f'{ind}- {{kind: contains_in, symbol: call, text: "ret"}}'),
             ("注入 ABI 帧符号 .p2align",
              f'{ind}- {{kind: contains_in, symbol: main, text: ".p2align"}}'),
-            ("注入 contains_any: ['.file']",
-             f'{ind}- {{kind: contains_any, symbol: main, text: ".file"}}')):
+            # 543 P0：`contains_any` 读的是**复数 `texts`（列表）**，不是单数 `text`——
+            # 写错字段会让 `_assert_targets` 取空 ⇒ gate 跳过 ⇒ 造出**假逃逸**（542 的教训）。
+            ("注入 contains_any: ['.file']（合法形态）",
+             f'{ind}- {{kind: contains_any, symbol: main, texts: [".file"]}}')):
         out.append((tag, text[:m.end()] + "\n" + line + text[m.end():]))
     return out
 
@@ -228,13 +230,51 @@ MUTATORS = {"M1": mut_m1, "M2": mut_m2, "M3": mut_m3, "M4": mut_m4,
 
 
 # ── 判决（B2：三分类，定义写死；不许把 n_a 当 blocked）────────────────────────
+# 543 P1：kind → 取值字段的映射（与 `gate_engine._assert_targets` 对齐；监工实测口径）。
+# 字段名写错的条目会让 `_assert_targets` 取空 ⇒ gate 侧 `if not texts: continue` 跳过
+# ⇒ 判成"逃逸"，实为**畸形变体**（542 的 M4 `.file` 单数 text 就是这么栽的）。
+KIND_FIELD: dict[str, str] = {
+    "contains": "text", "absent": "text",
+    "contains_any": "texts", "absent_any": "texts",
+    "contains_in": "symbol", "absent_in": "symbol",
+    "call_count": "symbols",
+}
+
+
+def _malformed_asserts(meta: dict[str, Any]) -> list[str]:
+    """变体合法性自检：返回字段不合规（按 kind 取不到 targets）的条目描述；空 = 合法。"""
+    bad: list[str] = []
+    for r in meta.get("artifact_assert") or []:
+        if not isinstance(r, dict):
+            bad.append(f"条目非对象：{r!r}")
+            continue
+        kind = str(r.get("kind") or "")
+        need = KIND_FIELD.get(kind)
+        if need is None:
+            bad.append(f"未知 kind：{kind!r}")
+            continue
+        val = r.get(need)
+        if isinstance(val, list):
+            ok = bool(val)
+        else:
+            ok = bool(str(val or "").strip())
+        if not ok:
+            bad.append(f"{kind} 缺 {need}（字段名写错 ⇒ targets 取空 ⇒ 假逃逸）")
+    return bad
+
+
 def classify(card: str, op: str, baseline: set[tuple[str, str, str]],
              variant_text: str, sandbox_card: Path, tmp: Path) -> dict[str, Any]:
     """跑一次变异体的判决。返回 {verdict, new_block, new_warn, detail}。"""
     try:
-        replay.parse_frontmatter(variant_text)
+        meta = replay.parse_frontmatter(variant_text)
     except ValueError as exc:
         return {"verdict": "n_a", "why": f"变异文本 YAML 解析失败：{exc}"}
+    mal = _malformed_asserts(meta)
+    if mal:
+        # **不算守住也不算逃逸**：畸形变体不进拦截率分母/分子（543 P1 的核心纪律）
+        return {"verdict": "n_a", "malformed": True,
+                "why": "畸形变体（artifact_assert 字段不合规）：" + "；".join(mal)}
     sandbox_card.write_text(variant_text, encoding="utf-8")
     try:
         new = _snapshot() - baseline
@@ -302,6 +342,7 @@ def run_fuzz(cards: list[Path], ops: list[str], limit: int) -> dict[str, Any]:
                                 **r})
     counts = {k: sum(1 for r in per if r["verdict"] == k)
               for k in ("blocked", "escaped", "n_a")}
+    counts["malformed"] = sum(1 for r in per if r.get("malformed"))    # n_a 里单列一类（543 P1）
     strict = sum(1 for r in per if r["verdict"] == "blocked" and r.get("kind") == "strict")
     treated = counts["blocked"]
     denom = counts["blocked"] + counts["escaped"] or 1
@@ -338,7 +379,7 @@ def main(argv: list[str] | None = None) -> int:
     out.write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"[mutation] 卡 {len(rep['cards'])} 张 · 算子 {len(ops)} 类 · 变体 {rep['variants']} 个")
     print(f"[mutation] blocked={rep['blocked']}（严格 {rep['strict_blocked']}） "
-          f"escaped={rep['escaped']} n_a={rep['n_a']}")
+          f"escaped={rep['escaped']} n_a={rep['n_a']}（其中 malformed={rep['malformed']}）")
     print(f"[mutation] 严格拦截率 {rep['strict_rate']:.1%} · 含 warn 处置率 {rep['treated_rate']:.1%}")
     for r in rep["escaped_list"]:
         print(f"[mutation] ✗ ESCAPED {r['card']} · {r['op']} · {r['point']}")
