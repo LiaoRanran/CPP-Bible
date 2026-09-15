@@ -35,6 +35,7 @@ SLOW_MODULES = frozenset({
     "test_recompile_invariant.py",    # 重编译不变量（真编译）
     "test_s1_s6.py",                  # poison_drill + golden_lock
     "test_toolchain_regressions.py",  # 真实 g++ 解析
+    "test_mutation_fuzz.py",          # 539：沙箱内跑整轮门禁 + M1/M7 真跑 replay
 })
 
 
