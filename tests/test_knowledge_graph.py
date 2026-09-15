@@ -230,7 +230,9 @@ def test_conflicts_no_false_positive_on_neutral_props(sandbox: Path, tmp_path: P
             "claim_structured": _prop("sizeof", "在 32 位下", "4 字节")})
     conn = kg.connect(db)
     kg.build(conn, verbose=False)
-    assert kg.conflicts(conn) == {"candidates": 0, "items": []}
+    out = kg.conflicts(conn)
+    # 530 任务3：conflicts() 返回合同已扩展（新增 contrast_pairs / browse 键）
+    assert out["candidates"] == 0 and out["items"] == [] and out["contrast_pairs"] == 0, out
 
 
 def test_conflicts_empty_graph_does_not_crash(sandbox: Path, tmp_path: Path):
@@ -252,3 +254,78 @@ def test_real_repo_graph(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
         "LEFT JOIN nodes n2 ON e.dst = n2.id WHERE n1.id IS NULL OR n2.id IS NULL"
     ).fetchone()[0]
     assert orphan == 0, "存在端点不在 nodes 表的边（悬空目标未被补为 stub 节点）"
+
+
+def test_conflicts_splits_contrasts_from_contradicts(sandbox: Path, tmp_path: Path, monkeypatch):
+    """530 任务3：contrasts（对照）只进 contrast_pairs、不进冲突候选；
+    contradicts（矛盾）进冲突候选。二者须分离，否则对照噪声淹没真矛盾。"""
+    monkeypatch.setattr(kg, "ROOT", tmp_path)
+    monkeypatch.setattr(ge, "ROOT", tmp_path)
+    db = tmp_path / "kg_split.db"
+    _write(sandbox / "atoms" / "mem" / "ATOM-KG-A.md",
+           {"id": "ATOM-KG-A", "title": "t", "status": "draft",
+            "relations": "\n  - {type: contrasts, target: ATOM-KG-B}",
+            "claim_structured": _prop("subjAlpha", "p", "objA"), "evidence": "[]",
+            "sources": "[]", "first_hand": "false", "depth": "d"})
+    _write(sandbox / "atoms" / "mem" / "ATOM-KG-B.md",
+           {"id": "ATOM-KG-B", "title": "t", "status": "draft", "relations": "[]",
+            "claim_structured": _prop("subjBeta", "p", "objB"),
+            "evidence": "[]", "sources": "[]", "first_hand": "false", "depth": "d"})
+    _write(sandbox / "atoms" / "mem" / "ATOM-KG-C.md",
+           {"id": "ATOM-KG-C", "title": "t", "status": "draft",
+            "relations": "\n  - {type: contradicts, target: ATOM-KG-D}",
+            "claim_structured": _prop("subjGamma", "p", "objC"), "evidence": "[]",
+            "sources": "[]", "first_hand": "false", "depth": "d"})
+    _write(sandbox / "atoms" / "mem" / "ATOM-KG-D.md",
+           {"id": "ATOM-KG-D", "title": "t", "status": "draft", "relations": "[]",
+            "claim_structured": _prop("subjDelta", "p", "objD"),
+            "evidence": "[]", "sources": "[]", "first_hand": "false", "depth": "d"})
+    conn = kg.connect(db)
+    kg.build(conn, verbose=False)
+    out = kg.conflicts(conn)
+    assert out["candidates"] == 1, f"矛盾候选应为 1（C×D），实际 {out}"
+    assert out["items"][0]["a_atom"] in ("ATOM-KG-C", "ATOM-KG-D")
+    assert out["contrast_pairs"] == 1, f"对照对应为 1（A×B），实际 {out}"
+    assert "browse" in out, "conflicts 返回须含 browse 字段"
+
+
+def test_concept_islands_lists_single_atom_concepts(sandbox: Path, tmp_path: Path, monkeypatch):
+    """530 任务3：concept-islands 只列只出现在 1 颗原子的概念；跨原子概念不算孤岛。"""
+    monkeypatch.setattr(kg, "ROOT", tmp_path)
+    monkeypatch.setattr(ge, "ROOT", tmp_path)
+    db = tmp_path / "kg_island.db"
+    # A、B 共用同一对概念 ⇒ 它们跨原子（非孤岛）；C 独有概念 ⇒ 孤岛。
+    _write(sandbox / "atoms" / "mem" / "ATOM-ISO-A.md",
+           {"id": "ATOM-ISO-A", "title": "t", "status": "draft",
+            "claim_structured": _prop("共享概念", "p", "共享对象")})
+    _write(sandbox / "atoms" / "mem" / "ATOM-ISO-B.md",
+           {"id": "ATOM-ISO-B", "title": "t", "status": "draft",
+            "claim_structured": _prop("共享概念", "p", "共享对象")})
+    _write(sandbox / "atoms" / "mem" / "ATOM-ISO-C.md",
+           {"id": "ATOM-ISO-C", "title": "t", "status": "draft",
+            "claim_structured": _prop("孤岛概念", "p", "孤岛对象")})
+    conn = kg.connect(db)
+    kg.build(conn, verbose=False)
+    isl = kg.concept_islands(conn)
+    assert "孤岛概念" in isl["items"] and "孤岛对象" in isl["items"], isl
+    assert "共享概念" not in isl["items"] and "共享对象" not in isl["items"], isl
+    assert isl["islands"] == 2, isl
+
+
+def test_stats_exposes_connectivity_metrics(sandbox: Path, tmp_path: Path, monkeypatch):
+    """530 任务3：stats 须暴露 concepts_multi_atom 与 max_component（连通度可观测）。"""
+    monkeypatch.setattr(kg, "ROOT", tmp_path)
+    monkeypatch.setattr(ge, "ROOT", tmp_path)
+    db = tmp_path / "kg_conn.db"
+    _write(sandbox / "atoms" / "mem" / "ATOM-CN-A.md",
+           {"id": "ATOM-CN-A", "title": "t", "status": "draft",
+            "claim_structured": _prop("连通概念X", "p", "连通对象Y")})
+    _write(sandbox / "atoms" / "mem" / "ATOM-CN-B.md",
+           {"id": "ATOM-CN-B", "title": "t", "status": "draft",
+            "claim_structured": _prop("连通概念X", "p", "连通对象Y")})
+    conn = kg.connect(db)
+    kg.build(conn, verbose=False)
+    st = kg.stats(conn)
+    assert "concepts_multi_atom" in st and "max_component" in st, st
+    assert st["concepts_multi_atom"] >= 2, st   # 连通概念X / 连通对象Y 跨 2 原子
+    assert st["max_component"] >= 1, st

@@ -101,7 +101,10 @@ REL_MAP = {
     "specializes": "SPECIALIZES", "subtype": "SPECIALIZES",
     "realizes": "REALIZES", "implements": "REALIZES",
     "evolved_from": "EVOLVED_FROM", "successor_of": "EVOLVED_FROM",
-    "contrasts": "CONTRADICTS", "contradicts": "CONTRADICTS",
+    # 530 任务3：contrasts（对照）与 contradicts（矛盾）拆成两类边。
+    #   CONTRASTS = 对照（同一主题的不同写法/取舍，非逻辑矛盾，只进浏览清单不报警）；
+    #   CONTRADICTS = 矛盾/推翻（refutes/misconceived_as 仍归此，进冲突候选）。
+    "contrasts": "CONTRASTS", "contradicts": "CONTRADICTS",
     "refutes": "CONTRADICTS", "misconceived_as": "CONTRADICTS",
     "see_also": "REFERENCES", "references": "REFERENCES", "related": "REFERENCES",
 }
@@ -374,10 +377,40 @@ def stats(conn: sqlite3.Connection) -> dict:
     try:
         cn = conn.execute("SELECT COUNT(*) FROM concepts").fetchone()[0]
         ce = conn.execute("SELECT COUNT(*) FROM concept_edges").fetchone()[0]
+        # 530 任务3：跨原子概念数（出现在 ≥2 颗原子的概念）；首跑预期≈0。
+        # concepts.atoms 是逗号分隔的原子 id。
+        cma = 0
+        for (atoms_csv,) in conn.execute("SELECT atoms FROM concepts WHERE atoms <> ''"):
+            if len([x for x in atoms_csv.split(",") if x]) >= 2:
+                cma += 1
+        # 最大连通分量（概念节点经 concept_edges 无向连通，union-find）。
+        comp = -1
+        rows_ce = conn.execute("SELECT src, dst FROM concept_edges").fetchall()
+        parent: dict[str, str] = {}
+        if rows_ce:
+            def _find(x: str) -> str:
+                parent.setdefault(x, x)
+                while parent[x] != x:
+                    parent[x] = parent[parent[x]]
+                    x = parent[x]
+                return x
+
+            def _union(a: str, b: str) -> None:
+                ra, rb = _find(a), _find(b)
+                if ra != rb:
+                    parent[ra] = rb
+            for s, d in rows_ce:
+                _union(s, d)
+            sizes: dict[str, int] = {}
+            for node in parent:
+                sizes[_find(node)] = sizes.get(_find(node), 0) + 1
+            comp = max(sizes.values()) if sizes else -1
     except sqlite3.OperationalError:
-        cn = ce = 0
+        cn = ce = cma = 0
+        comp = -1
     return {"nodes": n, "edges": e, "card_nodes": card_nodes,
-            "concepts": cn, "concept_edges": ce,
+            "concepts": cn, "concept_edges": ce, "concepts_multi_atom": cma,
+            "max_component": comp,
             "nodes_by_type": by_type, "edges_by_type": by_edge, "dangling": dangling}
 
 
@@ -502,7 +535,11 @@ def _polarity_hit(a: str, b: str) -> tuple[str, str] | None:
 
 
 def conflicts(conn: sqlite3.Connection) -> dict:
-    """候选矛盾命题对（**只报候选**，不做语义裁决，也不进门禁）。"""
+    """候选矛盾命题对（**只报候选**，不做语义裁决，也不进门禁）。
+
+    530 任务3：CONTRADICTS（矛盾/推翻）边进冲突候选；CONTRASTS（对照）边只进
+    `contrast_pairs` 浏览清单、不报警（对照≠矛盾，误报噪声大，交人眼速览）。
+    """
     _need(conn)
     try:
         rows = conn.execute(
@@ -510,6 +547,8 @@ def conflicts(conn: sqlite3.Connection) -> dict:
             "FROM concept_edges ORDER BY src, atom, prop").fetchall()
         contra = {(a, b) for a, b, t in conn.execute(
             "SELECT src, dst, type FROM edges WHERE type='CONTRADICTS'").fetchall()}
+        contrast_pairs = {(a, b) for a, b, t in conn.execute(
+            "SELECT src, dst, type FROM edges WHERE type='CONTRASTS'").fetchall()}
     except sqlite3.OperationalError:
         sys.exit("[kg] 概念层不存在，先跑：python tools/knowledge_graph.py build")
 
@@ -522,6 +561,7 @@ def conflicts(conn: sqlite3.Connection) -> dict:
         by_atom.setdefault(r[2], []).append(_d(r))
     atoms = sorted(by_atom)
     out: list[dict] = []
+    browse: list[dict] = []
     for i, a1 in enumerate(atoms):
         for a2 in atoms[i + 1:]:
             # ① 同 subject 且 object 极性相反（**精确**信号，逐命题对给出）
@@ -533,29 +573,43 @@ def conflicts(conn: sqlite3.Connection) -> dict:
                     hit = _polarity_hit(pa["object"], pb["object"])
                     if hit:
                         pol.append({"tokens": list(hit), "a": pa, "b": pb})
-            # ② 两原子间存在 CONTRADICTS 边（**声明**信号；注意 526 的 REL_MAP 把
-            #    contrasts（对比）与 contradicts（矛盾）都归为 CONTRADICTS ⇒ 这类候选
-            #    里大半是"对照"而非"逻辑矛盾"，必须人工筛，故按**原子对**给一组而不是
-            #    按命题做笛卡尔积（否则一次报上百条，没人看得完）。
+            # ② 两原子间存在 CONTRADICTS 边（逻辑矛盾声明，须人工裁决）
             if (a1, a2) in contra or (a2, a1) in contra:
                 out.append({"kind": "contradiction_edge",
-                            "reason": "两原子之间存在 CONTRADICTS 边（含 contrasts 对比，须人工筛）",
+                            "reason": "两原子之间存在 CONTRADICTS 边（矛盾/推翻声明，须人工裁决）",
                             "a_atom": a1, "b_atom": a2,
                             "a_props": by_atom[a1], "b_props": by_atom[a2],
                             "polarity_pairs": pol})
+            # ②' 两原子间仅存在 CONTRASTS 边（对照，非矛盾）→ 只进浏览清单，不报警
+            elif (a1, a2) in contrast_pairs or (a2, a1) in contrast_pairs:
+                browse.append({"a_atom": a1, "b_atom": a2,
+                               "a_props": by_atom[a1], "b_props": by_atom[a2]})
             elif pol:
                 out.append({"kind": "polarity",
                             "reason": "同 subject 且 object 极性相反",
                             "a_atom": a1, "b_atom": a2,
                             "a_props": by_atom[a1], "b_props": by_atom[a2],
                             "polarity_pairs": pol})
-    return {"candidates": len(out), "items": out}
+    return {"candidates": len(out), "contrast_pairs": len(browse),
+            "items": out, "browse": browse}
+
+
+def concept_islands(conn: sqlite3.Connection) -> dict:
+    """只出现在 1 颗原子里的概念（回填/合并 backlog），只读、不修改任何文件。
+
+    530 任务3：让"标签袋"变"图"后的清理入口——这些概念无法跨原子连通，是孤岛。
+    """
+    _need(conn)
+    rows = conn.execute("SELECT name, atoms FROM concepts WHERE atoms <> ''").fetchall()
+    islands = [r[0] for r in rows if len([x for x in r[1].split(",") if x]) == 1]
+    islands.sort()
+    return {"islands": len(islands), "items": islands}
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="知识图谱 L1（508 任务5 + 526 概念层）")
     ap.add_argument("cmd", choices=("build", "stats", "deps", "impact", "chain", "orphans",
-                                    "concepts", "conflicts"))
+                                    "concepts", "conflicts", "concept-islands"))
     ap.add_argument("arg", nargs="?", default=None,
                     help="deps/impact/chain 的目标；concepts 的概念名（省略=列全部）")
     ap.add_argument("--db", default=None, help="覆盖数据库路径（测试用）")
@@ -577,6 +631,8 @@ def main(argv: list[str] | None = None) -> int:
         out = concepts(conn, a.arg)
     elif a.cmd == "conflicts":
         out = conflicts(conn)
+    elif a.cmd == "concept-islands":
+        out = concept_islands(conn)
     else:
         out = impact(conn, a.arg or "")
     if a.json:
@@ -591,6 +647,8 @@ def main(argv: list[str] | None = None) -> int:
         print("     节点分布：" + "、".join(f"{k}={v}" for k, v in out["nodes_by_type"].items()))
         print("     边分布：  " + "、".join(f"{k}={v}" for k, v in out["edges_by_type"].items())
               or "     （无边）")
+        print(f"     概念连通：跨原子概念 {out.get('concepts_multi_atom', 0)} / "
+              f"最大连通分量 {out.get('max_component', -1)}")
         if out["dangling"]:
             print(f"     悬空目标 {len(out['dangling'])}：{', '.join(out['dangling'][:8])}")
     elif a.cmd == "orphans":
@@ -618,13 +676,21 @@ def main(argv: list[str] | None = None) -> int:
                       f"  原子 {','.join(it['atoms'])}")
     elif a.cmd == "conflicts":
         print(f"[kg] 候选矛盾 {out['candidates']} 组（**只报候选，语义裁决归人/红队**）：")
+        if out.get("contrast_pairs"):
+            print(f"   （另 {out['contrast_pairs']} 组 CONTRASTS 对照对仅入浏览清单、不报警）")
         for it in out["items"]:
             print(f"   — {it['a_atom']} × {it['b_atom']}：{it['reason']}")
             for pr in it["polarity_pairs"]:
                 print(f"       命中词 {pr['tokens']}：{pr['a']['prop']}「{pr['a']['object'][:40]}」"
                       f" ↔ {pr['b']['prop']}「{pr['b']['object'][:40]}」")
             if not it["polarity_pairs"]:
-                print("       （无极性相反对，仅凭声明的 CONTRADICTS 边 → 多半是对照，需人工筛）")
+                print("       （无极性相反对，仅凭声明的 CONTRADICTS 边 → 矛盾须人工裁决）")
+    elif a.cmd == "concept-islands":
+        print(f"[kg] 概念孤岛 {out['islands']} 个（只出现在 1 颗原子，回填/合并 backlog）：")
+        for name in out["items"][:60]:
+            print(f"   · {name}")
+        if out["islands"] > 60:
+            print(f"   …（其余 {out['islands'] - 60} 个省略）")
     elif a.cmd == "deps":
         print(f"[kg] {out['atom']} 直接依赖 {len(out['deps'])}：")
         for d in out["deps"]:

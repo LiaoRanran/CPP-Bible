@@ -1946,6 +1946,80 @@ def check_atom_claim_structured() -> list[Finding]:
     return out
 
 
+# ── 530 任务3：object 须归一化为规范概念（让标签袋变图）────────────────────────
+# 规范概念集 =『在 kg concepts 表中作过 subject 的概念』∪ concept_aliases.txt 规范名
+#   ∪ 可枚举观测值白名单(true/false/数值/编译器版本)。object 只当过 object、从没当过
+#   subject（即没人"定义"过它）⇒ 多半是一句无法连通的话，warn 提示。
+# 注意：不能用"全部 concepts"当规范集——build 把每个 subject/object 都写进 concepts，
+# 那样会成恒真判据（任何 object 都在表里）。故只认 as_subject>=1 的名字。
+_CONCEPT_NORM_CACHE: frozenset | None = None
+
+
+def _concept_normalized_set() -> frozenset:
+    global _CONCEPT_NORM_CACHE
+    if _CONCEPT_NORM_CACHE is not None:
+        return _CONCEPT_NORM_CACHE
+    norm: set[str] = set()
+    # ① 别名表规范名（左侧）
+    ca = ROOT / "tools" / "concept_aliases.txt"
+    if ca.is_file():
+        for ln in ca.read_text(encoding="utf-8", errors="replace").split("\n"):
+            ln = ln.split("#", 1)[0].strip()
+            if "<-" in ln:
+                norm.add(ln.split("<-", 1)[0].strip())
+    # ② kg concepts 中作过 subject 的概念
+    db = ROOT / "data" / "knowledge_graph.db"
+    if db.is_file():
+        try:
+            import sqlite3 as _sq
+            c = _sq.connect(str(db))
+            for (name,) in c.execute("SELECT name FROM concepts WHERE as_subject >= 1"):
+                norm.add(str(name))
+            c.close()
+        except Exception:
+            pass
+    _CONCEPT_NORM_CACHE = frozenset(norm)
+    return _CONCEPT_NORM_CACHE
+
+
+def _is_normalized_concept(obj: str, norm: frozenset) -> bool:
+    o = obj.strip()
+    if not o or o in norm:
+        return True
+    low = o.lower()
+    if low in ("true", "false"):
+        return True
+    if re.fullmatch(r"\d+(\.\d+)*", o):                 # 数值
+        return True
+    if re.fullmatch(r"c\+\+\d+", low):                  # 标准 c++17
+        return True
+    if re.search(r"\d", o) and re.search(r"(gcc|clang|msvc|iso/iec)", low):  # 编译器版本/标准
+        return True
+    return False
+
+
+def check_claim_concept_normalized() -> list[Finding]:
+    """`ATOM-CLAIM-CONCEPT-NORMALIZED`（530 任务3）：claim 命题 object 须属规范概念集。
+
+    若 object 不在规范概念集 ⇒ warn「object 是句子不是概念，无法与图谱连通」。
+    本批**只统计命中数进 worklog，不批量改卡**（护栏 5：零新增 block）。
+    """
+    norm = _concept_normalized_set()
+    out: list[Finding] = []
+    for p in _cards(ATOMS, "ATOM-*.md"):
+        m = _meta(p)
+        for pr in _claim_props(m):
+            obj = str(pr.get("object") or "").strip()
+            if _is_normalized_concept(obj, norm):
+                continue
+            out.append(Finding(
+                "ATOM-CLAIM-CONCEPT-NORMALIZED", "warn", _rel(p),
+                f"命题 {pr.get('id')} 的 object={obj!r} 不在规范概念集"
+                "（无法与图谱连通，建议改概念短语而非句子）",
+                "将 object 改为规范概念名（见 tools/concept_aliases.txt / kg concepts 表）"))
+    return out
+
+
 def _ev_index() -> dict[str, dict]:
     """证据 id → 卡 frontmatter（一次扫描，供命题级规则复用，避免 N×M 次读盘）。"""
     idx: dict[str, dict] = {}
@@ -2764,6 +2838,9 @@ def _register_all() -> None:
         ("INFERENCE-NOT-MACHINE-VERIFIED",
          "inference 命题不得由机器独自晋升（526 规则3：核心放权闸）",
          "atom", check_inference_not_machine_verified),
+        ("ATOM-CLAIM-CONCEPT-NORMALIZED",
+         "claim 命题 object 须归一化规范概念（图谱可连通，530 任务3）",
+         "atom", check_claim_concept_normalized),
         ("EV-FIXTURE-NO-ECHO-DATA", "cat 式证据（472 P1-2：experimental→warn，读文件原样打印）",
          "evidence", check_fixture_no_echo_findings),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
@@ -2777,6 +2854,7 @@ def _register_all() -> None:
            # S6 P4–P7（2026-09-11 第四批）：判别力类问题，warn 级——不阻断但在门禁可见
            "EV-SELF-SATISFIED-ASSERT": "warn", "EV-FALSIFICATION-QUANT": "warn",
            "EV-TRIVIAL-OBSERVATION": "warn", "EV-MATRIX-UNBACKED": "warn",
+           "ATOM-CLAIM-CONCEPT-NORMALIZED": "warn",
            # 2026-09-12（W3）：零诊断类判据缺 -Werror —— 判据可判定性问题。
            # 472 P1-1 由 warn **升 block**，依据（v5 复测 + 实测）：
            #   ① warn 级只"可见化"，卡照样 confirm 直推 verified（E10a/b 两变种实证）；

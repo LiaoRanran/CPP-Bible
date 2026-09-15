@@ -1452,6 +1452,32 @@ def drill() -> int:
     results.append(("P66-阴2 命题级 signed_by 在册实名 ⇒ 放行", ok,
                     f"拦截者 {', '.join(who) or '（无）'}"))
 
+    # ── P67（530 任务3 ATOM-CLAIM-CONCEPT-NORMALIZED）：object 须归一化规范概念 ──
+    # 530 任务3：命题 object 不是规范概念（没在 kg 作过 subject、不在别名表、不是可枚举
+    # 观测值）⇒ warn「object 是句子不是概念，无法连通」。让"标签袋"变"图"前先暴露债务。
+    _cn_bad = ("\n  - {id: prop-1, subject: s, predicate: p,"
+               " object: \"the program crashes deterministically when run\","
+               " claim_type: observation, statement: st, extracted_by: writer}")
+    who = _atom_who(
+        [("ATOM-MEM-P67.md", dict(_a_base, id="ATOM-MEM-P67",
+                                  claim_structured=_cn_bad))],
+        ge.check_claim_concept_normalized)
+    ok = "ATOM-CLAIM-CONCEPT-NORMALIZED" in who
+    results.append(("P67 object 是句子非概念须 warn", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+    # P67-阴：object=可枚举观测值白名单（true/false/数值/编译器版本，无需外部规范表）
+    # ⇒ 放行。注意：沙箱 ROOT=tmp，tools/concept_aliases.txt 与 kg db 均不存在，规范集为空，
+    # 故阴性须走白名单分支而非依赖别名表。
+    _cn_good = ("\n  - {id: prop-1, subject: s, predicate: p, object: true,"
+                " claim_type: observation, statement: st, extracted_by: writer}")
+    who = _atom_who(
+        [("ATOM-MEM-P67N.md", dict(_a_base, id="ATOM-MEM-P67N",
+                                   claim_structured=_cn_good))],
+        ge.check_claim_concept_normalized)
+    ok = not who
+    results.append(("P67-阴 object=规范概念须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1478,7 +1504,7 @@ def drill() -> int:
             # 的 `:` `/` 把值拆错。
             "claim_structured":
                 "\n  - id: prop-1\n    subject: clean\n    predicate: is\n"
-                "    object: compliant\n    claim_type: inference\n    statement: st\n"
+                "    object: 内存屏障(fence)\n    claim_type: inference\n    statement: st\n"
                 "    external_basis: ISO/IEC 14882:2023\n"
                 "    evidence: [EV-MEM-CLEAN]\n    extracted_by: writer",
         })
@@ -1557,6 +1583,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P64 ", "A2"),   # observation 无工件支撑 —— 声明-实现脱钩（自称观测却无载体）
     ("P65 ", "A1"),   # inference 无签发却 verified —— 记录层伪造（机器直推）
     ("P66 ", "A1"),   # 528 任务3 命题级签署精确化：inference 无命题级人签却 verified —— 同 P65 家族
+    ("P67 ", "A1"),   # 530 任务3 claim object 未归一化规范概念：记录层/claim 连通性（同 P63 家族）
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
