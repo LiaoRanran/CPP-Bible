@@ -10,12 +10,33 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import subprocess
+import sys
 import threading
 from pathlib import Path
 
 import pytest
 
 import task_queue as tq
+
+# d976170 的 tasks 表原样（14 列；534 规格 §1.1 写"15 列"，实测 PRAGMA 为 14 —— 以磁盘为准）。
+LEGACY_DDL = """
+CREATE TABLE tasks(
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL,
+  payload_ref TEXT NOT NULL,
+  status TEXT NOT NULL,
+  priority INTEGER NOT NULL DEFAULT 100,
+  deps TEXT NOT NULL DEFAULT '[]',
+  claimed_by TEXT, claimed_at TEXT, heartbeat_at TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0, result_ref TEXT, error TEXT,
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+CREATE INDEX idx_tasks_pick ON tasks(status, priority, created_at);
+"""
+LEGACY_COLS = {"id", "type", "payload_ref", "status", "priority", "deps", "claimed_by",
+               "claimed_at", "heartbeat_at", "attempts", "result_ref", "error",
+               "created_at", "updated_at"}
 
 
 @pytest.fixture()
@@ -190,3 +211,94 @@ def test_cli_contract(q: Path, capsys: pytest.CaptureFixture):
     tq.list_tasks()
     assert tq.main(["list", "--status", "failed"]) == 0
     assert "0 条" in capsys.readouterr().out
+
+
+# ── 535 C1：冷启动建库竞态 + user_version 版本门迁移 ──────────────────────────
+# 为什么值得单独锁：d976170 的 _connect 把 journal_mode 排在 busy_timeout 之前，且增量列
+# 逐条 ALTER 各自自动提交——两个进程对**不存在的库**同时冷启动时，后到者会读到"加列中途"
+# 的中间态并补同一列 ⇒ duplicate column name。沙箱实测 6/8 轮失败，修后 12/12 零失败。
+# 该缺陷只在"多会话首次建库"的瞬间出现，日常稳态（库已存在）永远看不到。
+
+
+def _columns(db: Path) -> set[str]:
+    conn = sqlite3.connect(str(db), timeout=10.0)
+    try:
+        return {r[1] for r in conn.execute("PRAGMA table_info(tasks)")}
+    finally:
+        conn.close()
+
+
+def _scalar(db: Path, sql: str):
+    conn = sqlite3.connect(str(db), timeout=10.0)
+    try:
+        return conn.execute(sql).fetchone()[0]
+    finally:
+        conn.close()
+
+
+def test_cold_start_two_processes_12_rounds(tmp_path: Path):
+    """双进程同时对不存在的库首次 enqueue：12 轮必须零失败（旧版 6/8 失败）。"""
+    script = Path(tq.__file__).resolve()
+    for rnd in range(12):
+        db = tmp_path / f"cold{rnd}" / "queue.db"
+        procs = [
+            subprocess.Popen(
+                [sys.executable, str(script), "--db", str(db), "enqueue",
+                 "--type", "redteam", "--payload-ref", f"cold/{rnd}/p{i}"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                text=True, encoding="utf-8", errors="replace")
+            for i in range(2)
+        ]
+        outs = [p.communicate(timeout=180) for p in procs]
+        for i, (p, (o, e)) in enumerate(zip(procs, outs)):
+            assert p.returncode == 0, f"第 {rnd} 轮进程{i} 冷启动失败：\n{o}\n{e}"
+        assert _scalar(db, "PRAGMA user_version") == tq.SCHEMA_VERSION, "版本门未落"
+        assert str(_scalar(db, "PRAGMA journal_mode")).lower() == "wal", "WAL 未生效"
+        assert len(tq.list_tasks(db_path=db)) == 2, f"第 {rnd} 轮应有两行"
+
+
+def test_legacy_db_upgrades_in_place(tmp_path: Path):
+    """d976170 建的旧库原地升级：存量行保留、新列拿默认值、版本门升到 1 且幂等。"""
+    db = tmp_path / "legacy.db"
+    conn = sqlite3.connect(str(db))
+    try:
+        conn.executescript(LEGACY_DDL)
+        conn.execute(
+            "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
+            "created_at,updated_at) VALUES('old-1','redteam','docs/old.md','queued',"
+            "100,'[]',0,'2026-01-01T00:00:00','2026-01-01T00:00:00')")
+        conn.commit()
+    finally:
+        conn.close()
+    assert _columns(db) == LEGACY_COLS, "前置：旧库不应有增量列"
+    assert tq.migrate(db) == 0, "首迁：迁移前版本应为 0"
+    assert tq.migrate(db) == tq.SCHEMA_VERSION, "再迁：已是当前版本（幂等，不再改列）"
+    assert _columns(db) == LEGACY_COLS | set(tq.NEW_COLS), "增量列应齐"
+    old = _get(db, "old-1")
+    assert old["status"] == "queued" and old["attempts"] == 0, "存量行不得被改"
+    assert old["touch_set"] == "[]" and old["budget_calls"] == 500, "新列须有默认值"
+    assert tq.list_tasks(db_path=db)[0]["id"] == "old-1", "迁移后仍可读"
+
+
+def test_downgrade_roundtrip(tmp_path: Path, capsys: pytest.CaptureFixture):
+    """回退脚本可与迁移成对使用（SQLite≥3.35 逐列 DROP COLUMN），且回退后能再升回来。"""
+    db = tmp_path / "rt.db"
+    tq.enqueue("redteam", "docs/rt.md", db_path=db)
+    assert _columns(db) == LEGACY_COLS | set(tq.NEW_COLS)
+    # 无 --yes ⇒ 拒绝（exit 2），库分毫不动
+    assert tq.main(["downgrade", "--db", str(db)]) == 2
+    assert _columns(db) == LEGACY_COLS | set(tq.NEW_COLS)
+    r = tq.downgrade(db)
+    assert set(r["dropped_columns"]) == set(tq.NEW_COLS)
+    assert _columns(db) == LEGACY_COLS
+    assert _scalar(db, "PRAGMA user_version") == 0
+    conn = sqlite3.connect(str(db))
+    try:
+        assert conn.execute(
+            "SELECT name FROM sqlite_master WHERE name='events'").fetchall() == []
+    finally:
+        conn.close()
+    assert tq.migrate(db) == 0, "回退后可再升级"
+    assert _columns(db) == LEGACY_COLS | set(tq.NEW_COLS)
+    assert tq.list_tasks(db_path=db)[0]["id"] == tq.make_id("redteam", "docs/rt.md")
+    capsys.readouterr()

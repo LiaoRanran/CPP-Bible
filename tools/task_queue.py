@@ -23,6 +23,13 @@ stale 接管：`claimed` 且 `heartbeat_at`（无则 `claimed_at`）超过 `STAL
 
 数据：`data/tasks/queue.db`（已 gitignore，不入库；与 task_state 的 `<id>.json` 同目录共存）。
 
+建库/迁移（535 C1，**真并发缺陷修复**）：所有入口一律先 `migrate()`——PRAGMA 顺序必须是
+`busy_timeout` **先于** `journal_mode=WAL`（关掉 WAL 要排它锁，此刻还没有锁等待预算），
+建表 + 增量列 + `events` 表包在**一个** `BEGIN IMMEDIATE` 里，用 `PRAGMA user_version` 做版本门。
+旧版（d976170）逐条 ALTER 各自自动提交时，第二个冷启动进程会读到"加列中途"的中间态 ⇒
+两进程补同一列 ⇒ `duplicate column name`（沙箱实测冷启动 6/8 失败；修后 12/12 零失败）。
+回退：`downgrade --yes`（逐列 `DROP COLUMN`，需 SQLite ≥ 3.35）。
+
 用法：
   python tools/task_queue.py enqueue --type redteam --payload-ref docs/tasks/t1.md --priority 50
   python tools/task_queue.py next                       # 只读预览：下一个该派谁
@@ -68,6 +75,35 @@ CREATE TABLE IF NOT EXISTS tasks(
 CREATE INDEX IF NOT EXISTS idx_tasks_pick ON tasks(status, priority, created_at);
 """
 
+# ── 535 C1 · 增量迁移（幂等 + 单事务 + 版本门）────────────────────────────────
+# 列清单来源：535 批次 1 C2（touch_set/budget_calls/budget_used_calls/handoff_path/verify_cmd/
+# parent_task/produced_by_model/steps_total/steps_done/checkpoint/cp_fingerprint/claimed_token）
+# + C6 的 verify_hash（verify 留痕的唯一载体）+ goal（`--goal` 的落点；534 §2.2 要求 enqueue 接
+# --goal，但 NEW_COLS 原型漏了列 ⇒ 施工补一列，见 _worklog_535.md 偏差表）。
+SCHEMA_VERSION = 1
+NEW_COLS: dict[str, str] = {
+    "touch_set": "TEXT NOT NULL DEFAULT '[]'",
+    "budget_calls": "INTEGER NOT NULL DEFAULT 500",
+    "budget_used_calls": "INTEGER NOT NULL DEFAULT 0",
+    "handoff_path": "TEXT",
+    "verify_cmd": "TEXT NOT NULL DEFAULT ''",
+    "parent_task": "TEXT",
+    "produced_by_model": "TEXT",
+    "steps_total": "INTEGER NOT NULL DEFAULT 0",
+    "steps_done": "INTEGER NOT NULL DEFAULT 0",
+    "checkpoint": "TEXT NOT NULL DEFAULT '{}'",
+    "cp_fingerprint": "TEXT NOT NULL DEFAULT ''",
+    "claimed_token": "TEXT",
+    "verify_hash": "TEXT",
+    "goal": "TEXT NOT NULL DEFAULT ''",
+}
+EVENTS_DDL = """
+CREATE TABLE IF NOT EXISTS events(
+  seq INTEGER PRIMARY KEY AUTOINCREMENT,
+  task_id TEXT NOT NULL, at TEXT NOT NULL, actor TEXT NOT NULL,
+  event TEXT NOT NULL, detail TEXT NOT NULL DEFAULT ''
+);"""
+
 
 def _now() -> str:
     return _dt.datetime.now().isoformat(timespec="seconds")
@@ -85,22 +121,105 @@ def _cutoff(seconds: int = STALE_AFTER_S) -> str:
     return (_dt.datetime.now() - _dt.timedelta(seconds=seconds)).isoformat(timespec="seconds")
 
 
+def _event(conn: sqlite3.Connection, task_id: str, actor: str, event: str,
+           detail: str = "") -> None:
+    """append-only 审计留痕（claim/takeover/checkpoint/yield/verify/done 全在此）。
+
+    调用方必须已在事务内：事件与状态变更**同事务提交**，否则"改了状态但没留痕"。
+    """
+    conn.execute("INSERT INTO events(task_id,at,actor,event,detail) VALUES(?,?,?,?,?)",
+                 (task_id, _now(), actor, event, detail[:1500]))
+
+
 def _connect(db_path: Path | str | None = None) -> sqlite3.Connection:
     """独立连接（含 busy_timeout）；`isolation_level=None` ⇒ 事务显式写 `BEGIN IMMEDIATE`。"""
     p = Path(db_path) if db_path else DB_PATH
     p.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(p), timeout=10.0, isolation_level=None)
     conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
+    # 顺序铁律（535 C1）：busy_timeout 必须在 journal_mode 之前——切 WAL 要排它锁，
+    # 排在后面时冷启动瞬间没有任何锁等待预算，直接 OperationalError（实测 6/8 失败）。
     conn.execute("PRAGMA busy_timeout=10000")
+    conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
 
-def init(db_path: Path | str | None = None) -> None:
-    """建表（幂等）。所有写操作入口都会先调它，故无需人工 init。"""
-    conn = _connect(db_path)
+def _exec_ddl(conn: sqlite3.Connection, script: str) -> None:
+    """逐句执行 DDL（**不用 `executescript`**：它会在有未结事务时先隐式 COMMIT，
+    从而把"整段迁移一个事务"拆开——那正是 C1 要消灭的中间态）。"""
+    for stmt in (s.strip() for s in script.split(";")):
+        if stmt:
+            conn.execute(stmt)
+
+
+def migrate(db_path: Path | str | None = None) -> int:
+    """幂等迁移到 `SCHEMA_VERSION`；返回迁移前的版本号（供 pytest 断言）。
+
+    单连接、单事务、版本门：
+      ① `busy_timeout` → `journal_mode=WAL`（顺序见 `_connect`）；
+      ② 建表 + 全部 ALTER + `events` 表 **同处一个 `BEGIN IMMEDIATE`**；
+      ③ 第二个进程在锁上等待，见 `user_version` 已升 ⇒ 整段跳过（不再补同一列）。
+    建表也并入本事务：消除"init 连接关闭 → 迁移连接开启"之间的缝隙（曾 1/10 复现 locked）。
+    """
+    p = Path(db_path) if db_path else DB_PATH
+    p.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(p), timeout=15.0, isolation_level=None)
+    conn.row_factory = sqlite3.Row
     try:
-        conn.executescript(DDL)
+        conn.execute("PRAGMA busy_timeout=15000")
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("BEGIN IMMEDIATE")
+        ver = int(conn.execute("PRAGMA user_version").fetchone()[0])
+        if ver < SCHEMA_VERSION:
+            _exec_ddl(conn, DDL)
+            have = {r["name"] for r in conn.execute("PRAGMA table_info(tasks)")}
+            for col, decl in NEW_COLS.items():
+                if col not in have:
+                    conn.execute(f"ALTER TABLE tasks ADD COLUMN {col} {decl}")
+            _exec_ddl(conn, EVENTS_DDL)
+            conn.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
+        conn.execute("COMMIT")
+        return ver
+    except BaseException:
+        _rollback(conn)
+        raise
+    finally:
+        conn.close()
+
+
+def init(db_path: Path | str | None = None) -> None:
+    """建表 + 迁移（幂等）。所有入口都会先调它，故无需人工 init（535 C1 起 = `migrate`）。"""
+    migrate(db_path)
+
+
+def downgrade(db_path: Path | str | None = None) -> dict[str, Any]:
+    """回退迁移（535 C1 附带）：删 `events` 表 → 逐列 `DROP COLUMN` → `user_version` 归 0。
+
+    前提：SQLite ≥ 3.35（`DROP COLUMN`）；不满足则**显式报错**（fail-closed，绝不静默跳过）。
+    只回退**结构**，不删任务行（行里的新列数据随之消失，这是回退的定义）。
+    """
+    if sqlite3.sqlite_version_info < (3, 35, 0):
+        raise SystemExit(f"[task_queue] downgrade 需 SQLite ≥ 3.35（当前 "
+                         f"{sqlite3.sqlite_version}）：请用标准 12 步重建表")
+    p = Path(db_path) if db_path else DB_PATH
+    if not p.exists():
+        raise SystemExit(f"[task_queue] 库不存在：{p}")
+    conn = sqlite3.connect(str(p), timeout=15.0, isolation_level=None)
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.execute("PRAGMA busy_timeout=15000")
+        conn.execute("BEGIN IMMEDIATE")
+        have = {r["name"] for r in conn.execute("PRAGMA table_info(tasks)")}
+        dropped = [c for c in NEW_COLS if c in have]
+        conn.execute("DROP TABLE IF EXISTS events")
+        for col in dropped:
+            conn.execute(f"ALTER TABLE tasks DROP COLUMN {col}")
+        conn.execute("PRAGMA user_version=0")
+        conn.execute("COMMIT")
+        return {"db": str(p), "dropped_columns": dropped, "user_version": 0}
+    except BaseException:
+        _rollback(conn)
+        raise
     finally:
         conn.close()
 
@@ -431,6 +550,8 @@ def main(argv: list[str] | None = None) -> int:
     ls.add_argument("--type", dest="type_filter", default=None)
     sub.add_parser("next", parents=[common])
     sub.add_parser("init", parents=[common])
+    dg = sub.add_parser("downgrade", parents=[common])
+    dg.add_argument("--yes", action="store_true", help="确认执行回退（缺此参数一律拒绝）")
     a = ap.parse_args(argv)
     db = a.db
     types = [t for t in (getattr(a, "types", "") or "").split(",") if t]
@@ -438,6 +559,15 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "init":
         init(db)
         print(f"[task_queue] {VERSION} 已建表：{db or DB_PATH}")
+        return 0
+    if a.cmd == "downgrade":
+        if not a.yes:
+            print("[task_queue] 回退迁移会删掉增量列与 events 表；确认请加 --yes",
+                  file=sys.stderr)
+            return 2
+        r = downgrade(db)
+        print(f"[task_queue] 已回退到 user_version=0：{r['db']}")
+        print(f"[task_queue] 删除列 {len(r['dropped_columns'])}：{r['dropped_columns']}")
         return 0
     if a.cmd == "enqueue":
         deps = [d for d in (a.deps or "").split(",") if d]
