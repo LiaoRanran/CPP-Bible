@@ -60,6 +60,7 @@ import os
 import secrets
 import socket
 import sqlite3
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -933,6 +934,152 @@ def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None
         conn.close()
 
 
+# 535 C6 · type → verify_cmd 绑定表（534 §4.3；`--verify-cmd` 可覆盖）。
+# 理由：worker **不得自证**——"干完了"必须由可重跑的命令说话。`{py}` 用运行本工具的解释器，
+# `{payload}` 用任务的 payload_ref。research/custom 无机器判决 ⇒ 空（强制 --result-ref 转人审）。
+DEFAULT_VERIFY_CMDS: dict[str, str] = {
+    "atom_produce": '"{py}" tools/atom_evidence_replay.py --card {payload} --no-sanitizer',
+    "redteam": '"{py}" tools/poison_drill.py',
+    "replay_batch": '"{py}" tools/atom_evidence_replay.py --check --no-sanitizer',
+    "tool_change": '"{py}" -m pytest tests/ -m fast -q',
+    "doc": '"{py}" tools/doc_frontmatter.py',
+    "research": "",
+    "reverify_model": '"{py}" tools/atom_evidence_replay.py --check --no-sanitizer',
+    "custom": "",
+}
+
+
+def default_verify_cmd(task_type: str, payload_ref: str) -> str:
+    """按 type 取默认门禁命令（表里没有的 type ⇒ 空字符串 = 必须 --result-ref）。"""
+    tpl = DEFAULT_VERIFY_CMDS.get(task_type, "")
+    return tpl.format(py=sys.executable, payload=payload_ref) if tpl else ""
+
+
+def _touch_audit(row: sqlite3.Row | dict[str, Any],
+                 root: Path | str | None = None) -> tuple[list[str], str]:
+    """完成后审计（535 C6）：`git status --porcelain -uall` 的真实改动 − 声明集 − 系统豁免。
+
+    系统豁免：`data/tasks/**`（队列库/worker token/handoff/logs 全在这里，属调度装置自身，
+    不是业务改动——534 §4.1 实测教训：worker 自己的运行日志会污染审计）。
+    返回 `(undeclared, audit_note)`：**审计没跑成要显形**（`audit_note` 非空），
+    不许把"没观测到"当成"已核对"（fail-closed 的信息面）。
+    """
+    base = Path(root) if root else ANCHOR_ROOT
+    declared = {str(x).replace("\\", "/") for x in _jload(row["touch_set"], [])}
+    hp = row["handoff_path"] if "handoff_path" in row.keys() else None
+    if hp:
+        declared.add(str(hp).replace("\\", "/"))
+    try:
+        # `-c core.quotepath=false`：否则 git 把非 ASCII 路径写成八进制转义（本仓中文文件名常见，
+        # 实测会输出 References/architecture_/346/236/... 这种不可读形态，审计等于白做）。
+        p = subprocess.run(["git", "-c", "core.quotepath=false",
+                            "status", "--porcelain", "-uall"], cwd=str(base),
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=30)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return [], f"touch 审计未执行（{type(exc).__name__}: {exc}）——未观测到是否有未声明改动"
+    if p.returncode != 0:
+        return [], (f"touch 审计未执行（git status rc={p.returncode}："
+                    f"{(p.stderr or '').strip()[:120]}）——未观测到是否有未声明改动")
+    changed: set[str] = set()
+    for ln in p.stdout.splitlines():
+        if not ln.strip():
+            continue
+        f = ln[3:].strip()
+        if " -> " in f:                     # rename/copy：取目标侧
+            f = f.split(" -> ")[-1].strip()
+        changed.add(f.replace("\\", "/").strip('"'))
+    undeclared = sorted(f for f in changed
+                        if f not in declared and not f.startswith("data/tasks/"))
+    return undeclared, ""
+
+
+def complete(task_id: str, worker: str, *, result_ref: str | None = None,
+             timeout: int = 900, db_path: Path | str | None = None) -> dict[str, Any]:
+    """完成验证闭环（535 C6）：**worker 不得自证**——先跑门禁命令，过了才 done。
+
+    - rc=0 ⇒ `done`，`verify_hash = sha256(stdout+stderr)[:16]@<耗时>s rc=0`（可追溯的"非否认"轻量替代）；
+    - rc≠0 ⇒ `attempts+1`、error 记尾部 300 字，超 `MAX_ATTEMPTS` ⇒ `blocked`，否则回 `queued`（释放所有权）；
+    - 无 verify_cmd ⇒ 必须 `--result-ref`，`verify_hash=HUMAN_REVIEW_REQUIRED`（研究/文档类转人审，不许裸 done）；
+    - 收尾审计：`git status -uall` 里**没在 touch_set 声明却真被改了**的文件要显形
+      （沙箱实测真抓出过 worker 的运行日志 ⇒ 不是理论顾虑）。
+    父回卷与 `done` 同一实现（`_rollup_parent`），两条收尾路径不分叉。
+    """
+    if not worker:
+        raise SystemExit("[task_queue] --worker 必填")
+    init(db_path)
+    conn = _connect(db_path)
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute("SELECT * FROM tasks WHERE id=?", (task_id,)).fetchone()
+        if row is None:
+            _rollback(conn)
+            raise SystemExit(f"[task_queue] 无此任务：{task_id}")
+        _authorize(row, worker, "complete", db_path)   # 先认人
+        now = _now()
+        verify = row["verify_cmd"] or default_verify_cmd(row["type"], row["payload_ref"])
+        if not verify:
+            if not result_ref:
+                _reject(f"{task_id}（type={row['type']}）无 verify_cmd：complete 必须给 "
+                        f"--result-ref（转人审，不许 worker 自证）", 2)
+            vhash = "HUMAN_REVIEW_REQUIRED"
+            dt = 0.0
+        else:
+            t0 = time.perf_counter()
+            try:
+                pr = subprocess.run(verify, shell=True, cwd=str(ANCHOR_ROOT),
+                                    capture_output=True, text=True, encoding="utf-8",
+                                    errors="replace", timeout=timeout)
+            except subprocess.TimeoutExpired:
+                pr = None
+                dt = time.perf_counter() - t0
+                out_txt = f"verify 超时（>{timeout}s）：{verify}"
+                rc = -1
+            else:
+                dt = time.perf_counter() - t0
+                rc = pr.returncode
+                out_txt = (pr.stdout or "") + (pr.stderr or "")
+            vhash = (hashlib.sha256(out_txt.encode("utf-8", "replace")).hexdigest()[:16]
+                     + f"@{dt:.2f}s rc={rc}")
+            if rc != 0:
+                att = int(row["attempts"]) + 1
+                conn.execute("UPDATE tasks SET attempts=?,error=?,updated_at=? WHERE id=?",
+                             (att, f"verify rc={rc}: {out_txt[-300:]}", now, task_id))
+                _event(conn, task_id, worker, "verify_failed",
+                       f"{vhash} cmd={verify[:200]}")
+                if att > MAX_ATTEMPTS:
+                    _block(conn, task_id, f"verify 反复失败 attempts={att}>{MAX_ATTEMPTS}", now)
+                    _event(conn, task_id, worker, "blocked", "verify 失败超上限")
+                    conn.execute("COMMIT")
+                    return {"id": task_id, "status": "blocked", "attempts": att,
+                            "verify_hash": vhash, "verify_cmd": verify}
+                conn.execute(
+                    "UPDATE tasks SET status='queued',claimed_by=NULL,claimed_token=NULL,"
+                    "heartbeat_at=NULL,updated_at=? WHERE id=?", (now, task_id))
+                _event(conn, task_id, worker, "requeue", f"verify 失败回 queued attempts={att}")
+                conn.execute("COMMIT")
+                return {"id": task_id, "status": "queued", "attempts": att,
+                        "verify_hash": vhash, "verify_cmd": verify}
+        undeclared, audit_note = _touch_audit(row)
+        conn.execute(
+            "UPDATE tasks SET status='done',result_ref=?,verify_hash=?,updated_at=?,"
+            "heartbeat_at=? WHERE id=?",
+            (result_ref or row["result_ref"], vhash, now, now, task_id))
+        _event(conn, task_id, worker, "done",
+               f"verify={vhash} undeclared={undeclared}"
+               + (f" audit_note={audit_note}" if audit_note else ""))
+        rolled = _rollup_parent(conn, row, worker, now)
+        conn.execute("COMMIT")
+        return {"id": task_id, "status": "done", "verify_hash": vhash, "verify_cmd": verify,
+                "undeclared_touch": undeclared, "audit_note": audit_note,
+                "parent_rolled_up": rolled}
+    except BaseException:
+        _rollback(conn)
+        raise
+    finally:
+        conn.close()
+
+
 def _rollup_parent(conn: sqlite3.Connection, row: sqlite3.Row | dict[str, Any],
                    actor: str, now: str) -> str | None:
     """父回卷（534 §3.4）：最后一个子任务 complete 时，父（yielded）的所有子任务全 done
@@ -1097,6 +1244,22 @@ def _row_line(d: dict[str, Any]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """CLI 入口：**把业务拒绝统一收敛成返回码**（0 成功 / 1 既有拒绝 / 2 fail-closed 门）。
+
+    库函数仍以 `SystemExit` 表达拒绝（调用方一眼看到"这不是正常返回"）；CLI 层兜住它，
+    免得调用方（脚本/pytest）拿到异常而不是退出码。
+    """
+    try:
+        return _main(argv)
+    except SystemExit as exc:
+        code = exc.code
+        if isinstance(code, str) and code:
+            print(code, file=sys.stderr)
+            return 1
+        return int(code) if isinstance(code, int) else (0 if code is None else 1)
+
+
+def _main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="L2 调度最小骨架（530 T7）")
     # `--json`/`--db` 同时挂主解析器与各子命令（T6 同款坑：只有主解析器时
     # 放在子命令之后会 unrecognized arguments）。子命令侧 default=SUPPRESS，
@@ -1145,6 +1308,12 @@ def main(argv: list[str] | None = None) -> int:
                     help="交接物路径（默认 data/tasks/<id>.handoff.json；须含 steps_remaining）")
     yl.add_argument("--force", action="store_true",
                     help="预算还足时人签放行（**不解** handoff 质量闸门）")
+
+    cp = sub.add_parser("complete", parents=[common])
+    cp.add_argument("id")
+    cp.add_argument("--worker", required=True)
+    cp.add_argument("--result-ref", default=None, help="结果引用（无 verify_cmd 时必填 ⇒ 转人审）")
+    cp.add_argument("--timeout", type=int, default=900, help="verify_cmd 超时秒数（默认 900）")
 
     for name in ("heartbeat", "done", "fail", "blocked"):
         p = sub.add_parser(name, parents=[common])
@@ -1232,6 +1401,22 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[task_queue] {r['yielded']} 已让出（{r['status']}）⇒ 子任务 "
                   f"{r['children']}（每子预算 {r['budget_per_child']}）")
         return 0
+    if a.cmd == "complete":
+        r = complete(a.id, a.worker, result_ref=a.result_ref, timeout=a.timeout, db_path=db)
+        if a.json:
+            print(json.dumps(r, ensure_ascii=False))
+        else:
+            print(f"[task_queue] {r['id']} → {r['status']}（verify {r['verify_hash']}）")
+            if r.get("verify_cmd"):
+                print(f"[task_queue] verify_cmd：{r['verify_cmd']}")
+            if r["status"] == "done" and r.get("undeclared_touch"):
+                print(f"[task_queue] ⚠ 未在 touch_set 声明却被改动：{r['undeclared_touch']}"
+                      f"（已在 done 事件留痕）", file=sys.stderr)
+            if r.get("audit_note"):
+                print(f"[task_queue] ⚠ {r['audit_note']}", file=sys.stderr)
+            if r.get("parent_rolled_up"):
+                print(f"[task_queue] 父任务 {r['parent_rolled_up']} 全部子任务完成 ⇒ 自动 done")
+        return 0
     if a.cmd == "next":
         r = next_task(types, db)
         if a.json:
@@ -1249,6 +1434,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[task_queue] 等文件锁：{r['blocked_by_touch']}", file=sys.stderr)
         return 0
     if a.cmd in ("heartbeat", "done", "fail", "blocked"):
+        if a.cmd == "done":
+            print("[task_queue] 提示：done 是 worker 自证路径（d976170 遗留，保留兼容）；"
+                  "正式收尾请用 complete（先跑 verify_cmd，过了才 done）", file=sys.stderr)
         row = _worker_update(a.id, a.worker, a.cmd,
                             result_ref=getattr(a, "result_ref", None),
                             error=getattr(a, "error", None) or getattr(a, "reason", None),

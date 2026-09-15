@@ -697,3 +697,128 @@ def test_c5_legacy_row_without_token_still_works(q: Path):
     _expire(q, tid)
     assert tq.claim("bob")["claimed"]["claimed_token"]
     assert _get(q, tid)["claimed_token"], "新认领必须带 token"
+
+
+# ── 535 C6：complete 验证闭环（worker 不得自证）+ touch 收尾审计 ──────────────
+
+
+@pytest.fixture()
+def gitrepo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """临时 git 仓库当锚根：touch 收尾审计必须跑在真 git 根里（不碰真实仓库）。"""
+    root = tmp_path / "anchor"
+    root.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=str(root), check=True,
+                   capture_output=True, text=True)
+    monkeypatch.setattr(tq, "ANCHOR_ROOT", root)
+    monkeypatch.setattr(tq, "DB_PATH", tmp_path / "queue.db")
+    return root
+
+
+def test_c6_complete_runs_verify_and_audits_touch(q: Path, gitrepo: Path):
+    """rc=0 ⇒ done + verify_hash 留痕；未声明却被改的文件必须显形（沙箱真抓出过运行日志）。"""
+    (gitrepo / "work").mkdir()
+    (gitrepo / "work" / "a.txt").write_text("declared\n", encoding="utf-8")
+    (gitrepo / "journal.log").write_text("worker log\n", encoding="utf-8")   # 未声明
+    (gitrepo / "未声明.log").write_text("中文名\n", encoding="utf-8")        # 未声明（非 ASCII）
+    (gitrepo / "data" / "tasks").mkdir(parents=True)
+    (gitrepo / "data" / "tasks" / "x.log").write_text("queue runtime\n", encoding="utf-8")
+    tid = tq.enqueue("atom_produce", "docs/c6.md", touch=["work/a.txt"],
+                     verify_cmd="echo verify-ok")["id"]
+    tq.claim("alice")
+    r = tq.complete(tid, "alice")
+    assert r["status"] == "done" and "rc=0" in r["verify_hash"]
+    assert r["verify_cmd"] == "echo verify-ok"
+    # 未声明改动要显形；data/tasks 豁免；非 ASCII 路径须是**可读**形态（git 默认八进制转义）
+    assert r["undeclared_touch"] == ["journal.log", "未声明.log"], r["undeclared_touch"]
+    assert r["audit_note"] == ""
+    row = _get(q, tid)
+    assert row["status"] == "done" and row["verify_hash"] == r["verify_hash"]
+    assert "journal.log" in [e["detail"] for e in _events(q, tid) if e["event"] == "done"][0]
+
+
+def test_c6_complete_failed_verify_requeues_then_blocks(q: Path):
+    """verify rc≠0 ⇒ 回 queued（attempts+1，释放所有权）；超限 ⇒ blocked（不许无限重试）。"""
+    tid = tq.enqueue("replay_batch", "docs/c6b.md", verify_cmd="exit /b 3")["id"]
+    tq.claim("w1")
+    r1 = tq.complete(tid, "w1")
+    assert r1["status"] == "queued" and r1["attempts"] == 2
+    assert "rc=3" in r1["verify_hash"]
+    row = _get(q, tid)
+    assert row["claimed_by"] is None and row["claimed_token"] is None, "回 queued 要释放所有权"
+    assert "verify rc=3" in row["error"]
+    assert tq.claim("w2")["claimed"]["id"] == tid
+    r2 = tq.complete(tid, "w2")
+    assert r2["status"] == "blocked" and r2["attempts"] == 4
+    assert str(tq.MAX_ATTEMPTS) in _get(q, tid)["error"]
+    ev = [e["event"] for e in _events(q, tid)]
+    assert ev.count("verify_failed") == 2 and "requeue" in ev and "blocked" in ev
+
+
+def test_c6_no_verify_needs_result_ref(q: Path, sb: Path, capsys: pytest.CaptureFixture):
+    """无 verify_cmd 的 type（research/custom）⇒ 必须 --result-ref 转人审，不许裸 done。"""
+    tid = tq.enqueue("research", "docs/c6c.md")["id"]
+    tq.claim("alice")
+    with pytest.raises(SystemExit) as e:
+        tq.complete(tid, "alice")
+    assert e.value.code == 2 and "result-ref" in capsys.readouterr().err
+    assert _get(q, tid)["status"] == "claimed", "被拒不得改状态"
+    r = tq.complete(tid, "alice", result_ref="data/tasks/c6c.out")
+    assert r["status"] == "done" and r["verify_hash"] == "HUMAN_REVIEW_REQUIRED"
+    assert _get(q, tid)["result_ref"] == "data/tasks/c6c.out"
+
+
+def test_c6_type_default_verify_cmd(q: Path, sb: Path, monkeypatch: pytest.MonkeyPatch):
+    """type → verify_cmd 绑定表：表里没有的 type 为空；有默认可直接跑（--verify-cmd 可覆盖）。"""
+    assert "--card atoms/x.md" in tq.default_verify_cmd("atom_produce", "atoms/x.md")
+    assert tq.default_verify_cmd("research", "docs/x.md") == ""
+    assert tq.default_verify_cmd("no-such-type", "docs/x.md") == ""
+    monkeypatch.setitem(tq.DEFAULT_VERIFY_CMDS, "custom", "echo custom-ok")
+    tid = tq.enqueue("custom", "docs/c6d.md")["id"]
+    tq.claim("alice")
+    r = tq.complete(tid, "alice")
+    assert r["status"] == "done" and r["verify_cmd"] == "echo custom-ok", "须走 type 默认表"
+
+
+def test_c6_audit_unavailable_is_visible(q: Path, sb: Path):
+    """审计跑不成（非 git 根）⇒ 显形 audit_note，绝不静默当作"已核对无问题"。"""
+    tid = tq.enqueue("doc", "docs/c6e.md", verify_cmd="echo ok")["id"]
+    tq.claim("alice")
+    r = tq.complete(tid, "alice")
+    assert r["status"] == "done"
+    assert "未观测到是否有未声明改动" in r["audit_note"]
+    detail = [e["detail"] for e in _events(q, tid) if e["event"] == "done"][0]
+    assert "audit_note=" in detail
+
+
+def test_c6_cli_full_chain(q: Path, sb: Path, capsys: pytest.CaptureFixture):
+    """CLI 接线全链（argparse 漏挂参数会在这里现形）：enqueue→claim→checkpoint→complete→yield。"""
+    assert tq.main(["enqueue", "--type", "custom", "--payload-ref", "docs/cli.md",
+                    "--touch", "work/a.txt", "--steps", "2", "--goal", "CLI 全链",
+                    "--verify-cmd", "echo cli-ok"]) == 0
+    capsys.readouterr()
+    assert tq.main(["claim", "--worker", "alice", "--json"]) == 0
+    tid = json.loads(capsys.readouterr().out)["claimed"]["id"]
+    assert tq.main(["checkpoint", tid, "--worker", "alice", "--used", "10",
+                    "--handoff", str(_handoff(sb, tid)), "--json"]) == 0
+    capsys.readouterr()
+    assert tq.main(["complete", tid, "--worker", "alice", "--json"]) == 0
+    done = json.loads(capsys.readouterr().out)
+    assert done["status"] == "done" and "rc=0" in done["verify_hash"]
+    assert tq.main(["list", "--status", "done", "--json"]) == 0
+    assert json.loads(capsys.readouterr().out)["count"] == 1
+    # yield 的接线：预算 100 用满 ⇒ 可直接让出
+    t2 = tq.enqueue("custom", "docs/cli2.md", budget=100, verify_cmd="echo cli-ok")["id"]
+    tq.claim("bob")
+    assert tq.main(["yield", t2, "--worker", "bob", "--handoff",
+                    str(_handoff(sb, t2, budget_used=100))]) == 0
+    assert "已让出" in capsys.readouterr().out
+    assert _get(q, t2)["status"] == "yielded"
+    # 软 takeover 的接线：rc=2 + 提示怎么接管（p1 确保 carol 领到的是 t3 而不是子任务）
+    t3 = tq.enqueue("custom", "docs/cli3.md", priority=1)["id"]
+    assert tq.claim("carol")["claimed"]["id"] == t3
+    assert tq.main(["claim", "--worker", "dave", "--takeover", t3]) == 2
+    assert "疑似仍在跑" in capsys.readouterr().err
+    # 自引用（fail-closed）在 CLI 层同样得到 rc=2 而不是异常
+    assert tq.main(["enqueue", "--type", "custom", "--payload-ref", "docs/cli4.md",
+                    "--id", "SELF4", "--deps", "SELF4"]) == 2
+    assert "自引用" in capsys.readouterr().err
