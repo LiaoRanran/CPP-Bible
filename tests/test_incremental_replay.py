@@ -79,6 +79,64 @@ def test_card_fingerprint_sensitive_to_fixture(tmp_path: Path, monkeypatch: pyte
     assert rp.card_fingerprint(card, calc_root=tmp_path) == "MISSING", "工件缺失 ⇒ MISSING"
 
 
+def test_card_fingerprint_sensitive_to_out_530(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """530 任务1：.out 读数（actual.run_match_file）须进指纹。
+
+    - 改 .out 一行内容前后指纹必须不同；
+    - 删掉 .out ⇒ 指纹变 "MISSING"（强制重跑，与 fixture/artifact 同语义）；
+    - 不带 run_match_file 的卡，指纹不受本次改动影响（旧形态逐字节一致）。
+    """
+    (tmp_path / "evidence").mkdir()
+    out = tmp_path / "r.out"
+    out.write_text("A=1\nB=2\n", encoding="utf-8")
+    # 旧形态：无 run_match_file，只有 fixture/artifact
+    card_old = tmp_path / "evidence" / "EV-OLD.md"
+    fixt = tmp_path / "fx.cpp"
+    art = tmp_path / "a.asm"
+    fixt.write_text("int main(){}\n", encoding="utf-8")
+    art.write_text("\tret\n", encoding="utf-8")
+    card_old.write_text("---\nid: EV-OLD\nfixture: fx.cpp\nartifact: a.asm\n---\n",
+                        encoding="utf-8")
+    fp_old = rp.card_fingerprint(card_old, calc_root=tmp_path)
+    assert fp_old == rp.card_fingerprint(card_old, calc_root=tmp_path), "旧形态指纹稳定"
+    # 新形态：带 run_match_file
+    card_new = tmp_path / "evidence" / "EV-NEW.md"
+    card_new.write_text(
+        "---\nid: EV-NEW\nfixture: fx.cpp\nartifact: a.asm\n"
+        "actual:\n  run_match_file: r.out\n---\n", encoding="utf-8")
+    fp1 = rp.card_fingerprint(card_new, calc_root=tmp_path)
+    assert fp1 == rp.card_fingerprint(card_new, calc_root=tmp_path), "新形态同 .out 指纹稳定"
+    assert fp1 != fp_old, "带 run_match_file 的卡指纹必须与旧形态不同（.out 已纳入）"
+    # 改 .out 一行
+    out.write_text("A=99\nB=2\n", encoding="utf-8")
+    assert rp.card_fingerprint(card_new, calc_root=tmp_path) != fp1, "改 .out 必须改变指纹"
+    # 删 .out
+    out.unlink()
+    assert rp.card_fingerprint(card_new, calc_root=tmp_path) == "MISSING", "缺 .out ⇒ MISSING"
+
+
+def test_card_fingerprint_ignores_undeclared_out_530(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """530 任务1：未声明 run_match_file 的卡 ⇒ .out 不参与指纹（旧行为逐字节一致）。
+
+    旧形态（actual 为标量 run_* 或缺失）下 .out 从不进 hash；本改动只在新声明
+    run_match_file 时才读取。故无 run_match_file 的卡，即便仓库里存在同名 .out，
+    其内容变动也不应改变指纹。
+    """
+    (tmp_path / "evidence").mkdir()
+    out = tmp_path / "r.out"
+    out.write_text("A=1\n", encoding="utf-8")
+    card = tmp_path / "evidence" / "EV-S.md"
+    fixt = tmp_path / "fx.cpp"
+    art = tmp_path / "a.asm"
+    fixt.write_text("int main(){}\n", encoding="utf-8")
+    art.write_text("\tret\n", encoding="utf-8")
+    card.write_text("---\nid: EV-S\nfixture: fx.cpp\nartifact: a.asm\n---\n", encoding="utf-8")
+    fp1 = rp.card_fingerprint(card, calc_root=tmp_path)
+    assert fp1 == rp.card_fingerprint(card, calc_root=tmp_path), "无 run_match_file 卡指纹稳定"
+    out.write_text("A=999\n", encoding="utf-8")  # 改未声明的 .out
+    assert rp.card_fingerprint(card, calc_root=tmp_path) == fp1, "未声明 run_match_file ⇒ .out 不参与指纹"
+
+
 def test_update_manifest_keeps_skip_drops_deleted(tmp_path: Path,
                                                   monkeypatch: pytest.MonkeyPatch):
     """清单更新：本次实跑卡被记录；未跑的（skip）保留；文件已删的卡被移除。"""

@@ -1504,6 +1504,16 @@ def card_fingerprint(card: Path, calc_root: Path | None = None) -> str:
         if not f.is_file():
             return "MISSING"
         h.update(f.read_bytes())
+    # 530 任务1：.out 读数（新形态 actual.run_match_file）原不在指纹内，改 .out 后
+    # --incremental 会沿用旧结论（批判 B.8）。现状嵌套 dict，缺字段/旧标量形态一律保持原行为。
+    actual = meta.get("actual")
+    if isinstance(actual, dict):
+        out_rel = str(actual.get("run_match_file") or "").strip()
+        if out_rel:
+            f = root / out_rel
+            if not f.is_file():
+                return "MISSING"
+            h.update(f.read_bytes())
     return h.hexdigest()
 
 
