@@ -46,6 +46,20 @@ artifact_assert:
   - {kind: absent_in, symbol: "_Z18spin_fence_outsidev", text: "je"}       # 同上：无循环回边
   - {kind: absent_in, symbol: "_Z19writer_signal_fencev", text: "lock"}    # 写入侧零指令（活性对照）
   - {kind: contains_in, symbol: "_Z19writer_thread_fencev", text: "lock"}  # 写入侧 +1
+# V-iso 阴面（535 批次2 B0 样板，533 §2.1 格式；缺省=整段缺失时行为与现状逐字一致）：
+# 把机制**删掉**的同构夹具 + 断言它在阴面上必须翻转（不翻转=该卡没有判别力）。
+# 本卡的真阴面在 artifact 通道翻转（s_sf_b 2→0、je 1→0），run 通道**零翻转**（卡自身边界，见
+# falsification）——故阴面只锚符号区间读数、永不锚 sha（沙箱实测：同编译器同参下仅`.file`基名一行差异）。
+negative_controls:
+  - id: nc1
+    variant: v1
+    mutation: delete_mechanism
+    fixture: Examples/atoms/_atom_fence_vs_atomic.nc1.cpp
+    anchor: spin_signal_fence
+    remove: "__atomic_signal_fence(__ATOMIC_SEQ_CST);"
+    retain: ["while (!s_sf_b)", "return s_sf_a;"]
+    probe: {channel: artifact, symbol: _Z17spin_signal_fencev, text: "s_sf_b", op: becomes_absent}
+    note: "删循环体内零指令屏障→整循环被消除（实测 s_sf_b 2→0、je 1→0）；同文本在另外两个函数里仍在，故必须定点删除"
 actual:
   run_match_file: Examples/atoms/_atom_fence_vs_atomic.out
   run_match_keys: [spin_plain_ret, spin_fence_outside_ret, functions_present]
