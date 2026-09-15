@@ -382,6 +382,34 @@ def test_assert_universal_symbol_blocks_even_if_in_artifact(sandbox: Path):
     assert hits and hits[0].severity == "block", "main 在工件里也须拦（恒真断言）"
 
 
+def test_assert_pseudo_instruction_contains_blocks(sandbox: Path):
+    """530 任务2 阳性（批判 B.4 / 521 漏洞7 半修）：裸 `.`-前缀 ABI 伪指令当**全局**
+    `contains` 断言 = 恒真 ⇒ block。
+
+    载荷 `.seh_endproc` 不以字母开头，旧 `_IDENT_RE` 不提取成 token，旧代码只把字符串
+    加进 `UNIVERSAL_SYMBOLS` 不生效；现经 `_is_universal_symbol` 的前缀判定拦截。
+    """
+    _write_ev_with_artifact(sandbox, "int main(){}\n",
+                            ".seh_proc main\nmain:\n\tcall foo\n\tret\n\t.seh_endproc\n",
+                            '  - {kind: contains, text: ".seh_endproc"}')
+    hits = ge.check_evidence_assert_symbol_mapped()
+    assert any(h.rule_id == "EV-ASSERT-SYMBOL-MAPPED" and h.severity == "block"
+               for h in hits), "裸 .-伪指令全局 contains 必须 block（恒真断言）"
+
+
+def test_assert_pseudo_instruction_in_region_with_real_symbol_passes(sandbox: Path):
+    """530 任务2 阴性（正例）：区间 `contains_in` 配真实符号 + `.`-伪指令 text ⇒ 不 block（放行）。
+
+    沿用 contains_in 既有口径：`.`-伪指令视为弱断言（advice，非阻断）；本例只验「无 block」，
+    证明"同伪指令在夹具特有函数体区间配真符号"不被误拦。
+    """
+    _write_card(sandbox, "EV-MEM-T2R.md",
+                artifact_assert="\n  - {kind: contains_in, symbol: realfunc, "
+                                "text: \".seh_endproc\"}")
+    hits = [h for h in ge.check_evidence_assert_symbol_mapped() if h.severity == "block"]
+    assert not hits, f"区间配真符号的 .-伪指令断言不得 block（放行），实际 {hits}"
+
+
 def test_assert_symbol_in_comment_not_treated_as_source(sandbox: Path):
     """阳性（373 绕过测试 2c）：夹具注释里出现符号名不能算"有出处"（absent 不再被蒙混）。"""
     _write_ev_with_artifact(sandbox, "// _Znwm\nint main(){}\n", "other:\n\tret\n",

@@ -1456,12 +1456,44 @@ def check_evidence_out_stale_mtime() -> list[Finding]:
 
 # 373-B2 窄化（2026-09-13）：**无判别力的通用符号**——几乎出现在任何工件里，
 # 拿它当断言等于没有断言（373 独立渗透 B2-R1 的载荷正是 `contains "main"`）。
+# 530 任务2 扩充：`.`-前缀 ABI 帧/汇编伪指令（.seh_* / .cfi_* / .file / .section …
+# 在任何 gcc -S 产物里恒出现，拿它们当 `contains` 断言 = 恒真（521 漏洞7 半修，批判 B.4）。
+# 这些串不以字母开头，`_IDENT_RE` 不会提取成 token，故除枚举外另用 `_PSEUDO_RE`
+# 纯前缀判定（见 `_is_universal_symbol`）。
 UNIVERSAL_SYMBOLS = frozenset({
     "main", "call", "ret", "retq", "nop", "endbr64", "pushq", "popq", "movq", "movl",
     "lea", "jmp", "je", "jne", "cmp", "test", "add", "sub", "xor", "leave",
+    # 530 任务2：裸 `.`-伪指令（全库 Examples/atoms/*.asm grep 实证恒现项）
+    ".file", ".section", ".text", ".data", ".bss", ".align", ".p2align", ".quad",
+    ".long", ".byte", ".ascii", ".space", ".globl", ".ident", ".intel_syntax",
+    ".set", ".lcomm", ".comm", ".scl", ".type", ".size", ".def",
+    ".seh_proc", ".seh_endproc", ".seh_endprologue", ".seh_stackalloc",
+    ".seh_pushreg", ".seh_savereg", ".seh_savexmm", ".seh_handler",
+    ".seh_handlerdata",
+    ".cfi_startproc", ".cfi_endproc", ".cfi_def_cfa", ".cfi_def_cfa_offset",
+    ".cfi_offset", ".cfi_adjust_cfa_offset", ".cfi_personality", ".cfi_lsda",
+    ".cfi_remember_state", ".cfi_restore_state",
 })
 _IDENT_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]{2,}")
 _CJK_RE = re.compile(r"[一-鿿]")
+# 530 任务2：裸 `.`-前缀伪指令 / 裸 `%`-寄存器（ABI 恒现，无判别力）。用 fullmatch 仅命中
+# 裸 token；嵌入形态（如 `movl $1, %eax` 里的 `%eax`、`.refptr._ZSt4cout` 这类真实符号）
+# 不匹配，避免误伤存量 contains_in 判别断言（护栏 5：零新增 block）。
+_PSEUDO_RE = re.compile(r"\.[A-Za-z][A-Za-z0-9_]*")
+_REG_RE = re.compile(r"%[a-z0-9]{2,}")
+
+
+def _is_universal_symbol(t: str) -> bool:
+    """断言目标是否是无判别力的通用符号（零判别力 ⇒ 恒真断言）。
+
+    覆盖三类：① 枚举的助记符/伪指令；② 裸 `.`-前缀伪指令（_IDENT_RE 不提取的漏网项）；
+    ③ 裸 `%`-寄存器。嵌入形态（如上）一律不命中。
+    """
+    if not t:
+        return False
+    return (t in UNIVERSAL_SYMBOLS
+            or bool(_PSEUDO_RE.fullmatch(t))
+            or bool(_REG_RE.fullmatch(t)))
 
 
 def _assert_targets(rule: dict) -> tuple[bool, list[str]]:
@@ -1575,7 +1607,7 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
             # 拿它当断言等于没有断言（零判别力）。即便它出现在夹具/工件/ symbol_map 里，
             # 也不算"可映射"，强制走 block（373 绕过测试 2a/2b 的载荷正是 `contains "main"`）。
             mapped = [t for t in texts
-                      if t not in UNIVERSAL_SYMBOLS and (t in hay or t in sm_space)]
+                      if not _is_universal_symbol(t) and (t in hay or t in sm_space)]
             if any_of and mapped:
                 continue
             if not any_of and len(mapped) == len(texts):
@@ -1584,9 +1616,9 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
             # 要么因 any_of 另有真实出处而被 mapped 兜住（放行）。普通符号则只在"既不在工件、
             # 也不在 symbol_map"时才算无出处。
             miss = [t for t in texts
-                    if t in UNIVERSAL_SYMBOLS or (t not in hay and t not in sm_space)]
+                    if _is_universal_symbol(t) or (t not in hay and t not in sm_space)]
             for t in miss:
-                (bad_universal if t in UNIVERSAL_SYMBOLS else bad_other).append(t)
+                (bad_universal if _is_universal_symbol(t) else bad_other).append(t)
         # F03（414 P1-4）：contains_in/absent_in 的 `text` 才是被检索的字面文本，
         # 旧版 `_assert_targets` 只回传 `symbol`（范围选择器）⇒ text 完全不受约束。
         # 414 原案「通用助记符一律 block」实测误伤存量 4 处：contains_in/absent_in 是
@@ -1605,9 +1637,9 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
                                    f"contains_in/absent_in 的 text={t!r} 无判别力"
                                    "（空/纯中文——asm 工件中恒无，断言形同虚设）",
                                    "text 改为本卡工件中可定位的有判别力字面文本"))
-            elif kind == "contains_in" and t in UNIVERSAL_SYMBOLS:
+            elif kind == "contains_in" and _is_universal_symbol(t):
                 out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "advice", _rel(p),
-                                   f"contains_in 的 text={t!r} 是通用助记符"
+                                   f"contains_in 的 text={t!r} 是通用助记符/伪指令"
                                    "（符号区间内近乎恒有 ⇒ 弱断言，判别力存疑）",
                                    "改锚有判别力的字面文本（特定立即数/寻址形态）"))
         if bad_universal:
