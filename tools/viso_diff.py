@@ -339,8 +339,11 @@ def validate_nc_schema(nc: dict[str, Any], *, fixture_exists: Callable[[str], bo
         if fixture_exists is not None and not fixture_exists(posix):
             errs.append(f"{tag}: fixture 不存在：{fixture!r}（negative_control_missing）")
         stem = posix.rsplit("/", 1)[-1].rsplit(".", 1)[0]
-        if nid and not stem.endswith(f".nc{nid}"):
-            warns.append(f"{tag}: 命名规约建议 `阳夹具主干名.nc{tag}<后缀>`（当前 {posix!r}）；"
+        # 规约 = 阳夹具主干名 + `.nc<id>` + 后缀（533 §2.1）；id 本身常写成 `nc1`，
+        # 此时期望后缀是 `.nc1` 而不是 `.ncnc1`（避免自指式的假告警）。
+        suffix = f".{nid}" if nid.startswith("nc") else f".nc{nid}"
+        if nid and not stem.endswith(suffix):
+            warns.append(f"{tag}: 命名规约建议 `阳夹具主干名{suffix}<后缀>`（当前 {posix!r}）；"
                          f"v1 只告警，收集一批后再谈升 block")
 
     anchor = str(nc.get("anchor") or "")

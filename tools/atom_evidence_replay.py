@@ -53,6 +53,9 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))    # 同目录工具互 import
+import viso_diff                                              # noqa: E402  535 V-iso 判据
+
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "evidence"
 SANITIZER_SIGNS = ("ERROR: AddressSanitizer", "runtime error:", "LeakSanitizer",
@@ -1101,6 +1104,219 @@ def _artifact_compile_lines(cmd: str, art: str) -> list[str]:
     return out
 
 
+# ── 535 批次2 · V-iso：阴面判决（533 §2.3；判据本体在 tools/viso_diff.py）────────
+# 位置：`replay_card` 的 ④b 之后、⑤ sanitizer 之前（阳面先被证明成立，阴面才有意义）。
+# 三分类纪律：阴面装置是**卡 frontmatter 声明的一部分**，坏了修卡 ⇒ 全部失败归 `refute`，
+# 不开第四分类、不走 infra——**唯一例外**是编译器连启动都失败/超时（环境故障，与阳面共用
+# 同一次工具链可用性判定）。
+# v1 边界（533 §2.1）：只认 `variant: v1` + `mutation: delete_mechanism` + artifact / run_key
+# 两通道；`run_rc` 显式拒收（崩溃冒充无法绑定机制）；阴面**永不锚 sha**（实测同编译器同参下
+# 产物仍差一行 `.file` 基名）。
+
+
+def _nc_o_target(line: str) -> str:
+    """该命令行 `-o` 的目标（无则空串）。"""
+    m = re.search(r"-o\s+(\S+)", line)
+    return m.group(1).strip("\"'") if m else ""
+
+
+def _nc_path(p: Path) -> str:
+    """命令行里出现的路径一律用 posix 形态：`run_commands` 走 shlex（POSIX 规则），
+    Windows 反斜杠会被当转义吃掉（实测 `-o C:\\Users\\…` 写出到 `C:Users…` 的怪文件 ⇒
+    产物找不到）。"""
+    return str(p).replace("\\", "/")
+
+
+def _nc_rewrite(line: str, yang_rel: str, yin_rel: str, new_out: str) -> str | None:
+    """把编译行的源换成阴夹具、产出改指 tempdir；阳夹具路径串不在该行 ⇒ None（不许瞎猜）。"""
+    if not yang_rel or yang_rel not in line:
+        return None
+    old = _nc_o_target(line)
+    if not old:
+        return None
+    return line.replace(old, new_out).replace(yang_rel, yin_rel)
+
+
+def _nc_body_count(asm_text: str, symbol: str, text: str) -> int | None:
+    """符号区间内 text 的出现次数；**符号缺失 ⇒ None**（fail-closed，不当 0 混过）。"""
+    body = _symbol_body(asm_text, symbol)
+    return None if body is None else body.count(text)
+
+
+def _nc_declared_keys(meta: dict[str, Any]) -> set[str]:
+    """卡上声明的 run 键：新形态 `actual.run_match_keys` ∪ 旧形态 `actual.run_*` 里可解析的键。"""
+    actual = meta.get("actual") or {}
+    keys: set[str] = set()
+    if isinstance(actual, dict):
+        for k in actual.get("run_match_keys") or []:
+            keys.add(str(k).strip())
+        for k, v in actual.items():
+            if k.startswith("run") and isinstance(v, str):
+                for ln in v.split("|"):
+                    if "=" in ln:
+                        keys.add(ln.partition("=")[0].strip())
+    return {k for k in keys if k}
+
+
+def _nc_flip_ok(op: str, yang_val: Any, yin_val: Any) -> tuple[bool, bool]:
+    """(是否翻转, 是否**反向**移动)。`op` 语义见 533 §2.1；读数 None ⇒ fail-closed 当不翻转。
+
+    「读数是 0（或没变）」与「读数朝**反方向**跑了」要分开：前者是 `negative_control_passed`
+    （阴面上断言**依然成立**——V-iso 的核心判决），后者是 `negative_control_wrong_direction`
+    （便于排障；统计上同属 passed 桶，见 533 §2.3）。
+    """
+    if yang_val is None or yin_val is None:
+        return False, False
+    if op == "becomes_absent":
+        return (yin_val == 0 and yang_val > 0), (yin_val > yang_val)
+    if op == "becomes_present":
+        return (yang_val == 0 and yin_val > 0), False
+    if op == "changes":
+        return (yin_val != yang_val), False
+    if op == "decreases":
+        return (yin_val < yang_val), (yin_val > yang_val)
+    if op == "increases":
+        return (yin_val > yang_val), (yin_val < yang_val)
+    return False, False
+
+
+def check_negative_controls(meta: dict[str, Any], *, workdir: Path, env: dict,
+                            art_path: Path,
+                            yang_stdout: str = "") -> tuple[str, list[str]]:
+    """逐条阴面判定。返回 `(verdict, log)`；**verdict 为空串 = 全部通过**（或整段无字段）。"""
+    ncs = meta.get("negative_controls")
+    log: list[str] = []
+    if not ncs:
+        return "", log                       # 字段缺失 ⇒ 行为与现状**逐字一致**
+    if not isinstance(ncs, list):
+        log.append("  ❌ negative_control  negative_controls 必须是列表（block 式 YAML，见 533 §2.1）")
+        return "refute:negative_control_bad_schema", log
+    yang_rel = str(meta.get("fixture") or "").replace("\\", "/")
+    yang_path = ROOT / yang_rel if yang_rel else None
+    if not yang_rel or yang_path is None or not yang_path.is_file():
+        log.append(f"  ❌ negative_control  卡上 fixture 不可读：{yang_rel or '（缺字段）'}")
+        return "refute:negative_control_bad_schema", log
+    yang_text = yang_path.read_text(encoding="utf-8", errors="replace")
+    cmd = str(meta.get("command") or "")
+    art_rel = str(meta.get("artifact") or "")
+    declared = _nc_declared_keys(meta)
+    yang_asm = art_path.read_text(encoding="utf-8", errors="replace") if art_path.is_file() else ""
+
+    for nc in ncs:
+        if not isinstance(nc, dict):
+            log.append("  ❌ negative_control  条目必须是 block map（533 §2.1 书写格式约束）")
+            return "refute:negative_control_bad_schema", log
+        nid = str(nc.get("id") or "?")
+        yin_rel = str(nc.get("fixture") or "").replace("\\", "/")
+        yin_path = ROOT / yin_rel
+        if not yin_rel or not yin_path.is_file():
+            log.append(f"  ❌ negative_control {nid}  阴夹具不存在：{yin_rel or '（缺 fixture）'}")
+            return "refute:negative_control_missing", log
+        anchor = str(nc.get("anchor") or "")
+        scan = viso_diff.find_func_defs(yang_text, anchor) if anchor else None
+        sv = viso_diff.validate_nc_schema(
+            nc, fixture_exists=lambda p: (ROOT / p).is_file(),
+            anchor_def_count=scan.count if scan is not None else None,
+            declared_run_keys=declared, is_boilerplate=_is_boilerplate_text,
+            yang_fixture=yang_rel)
+        for w in sv.warnings:
+            log.append(f"  ⚠️  negative_control {w}")
+        if not sv.ok:
+            log.append(f"  ❌ negative_control {nid}  schema 不合规（fail-closed，见 533 §2.1）")
+            for e in sv.errors:
+                log.append(f"      {e}")
+            return "refute:negative_control_bad_schema", log
+        probe = nc["probe"]
+        channel = str(probe.get("channel"))
+        yin_text = yin_path.read_text(encoding="utf-8", errors="replace")
+        dv = viso_diff.judge_min_diff(
+            yang_text, yin_text, anchor=anchor, remove_text=str(nc["remove"]),
+            retain=[str(t) for t in nc["retain"]],
+            probe_symbol=str(probe.get("symbol")) if channel == "artifact" else None)
+        if not dv.ok:
+            log.append(f"  ❌ negative_control {nid}  与阳夹具的差异不合 v1 形态判据")
+            for r in dv.reasons:
+                log.append(f"      {r}")
+            return "refute:negative_control_diff", log
+        # 阴面只在 tempdir 编译运行：不锚 sha、不跑 sanitizer、不碰正式文件
+        if channel == "artifact":
+            cands = _artifact_compile_lines(cmd, art_rel)
+            asm_out = _nc_path(workdir / f"nc_{nid}.s")
+            line = next((_nc_rewrite(c, yang_rel, yin_rel, asm_out)
+                         for c in cands if _nc_rewrite(c, yang_rel, yin_rel, asm_out)), None)
+            if line is None:
+                log.append(f"  ❌ negative_control {nid}  提取不到产出 {art_rel} 的编译行"
+                           f"（或该行不含阳夹具路径）")
+                return "refute:negative_control_command_missing", log
+            results, _ = run_commands([line], cwd=ROOT, env=env)
+            rc, err, prog = results[-1][1], results[-1][2], results[-1][3]
+            if rc == 124:
+                log.append(f"  ⚠️  negative_control {nid}  阴面编译超时（环境故障）")
+                return "infra_error:compile_timeout", log
+            if rc == 127:
+                log.append(f"  ⚠️  negative_control {nid}  编译器未启动：{err}")
+                return "infra_error:compiler_missing", log
+            if rc != 0:
+                # 同一次 replay 里阳面已 rc=0（走到这里就证明过）⇒ 编译器健康是**实测证据**，
+                # 不解析 stderr 文本：阴面写坏是内容问题（533 §2.3 的分界）。
+                log.append(f"  ❌ negative_control {nid}  阴面编译 rc={rc}（阳面同次 rc=0 ⇒ "
+                           f"编译器健康，夹具写坏）prog={prog}")
+                log.append(f"      {err[:300]}")
+                return "refute:negative_control_broken", log
+            yin_asm = (workdir / f"nc_{nid}.s").read_text(encoding="utf-8", errors="replace")
+            sym, text = str(probe["symbol"]), str(probe["text"])
+            yang_n = _nc_body_count(yang_asm, sym, text)
+            yin_n = _nc_body_count(yin_asm, sym, text)
+            ok, wrong_dir = _nc_flip_ok(str(probe.get("op")), yang_n, yin_n)
+            reading = f"{sym} ∋ {text!r}: 阳={yang_n} 阴={yin_n}"
+        else:
+            exe_lines = [seg.strip() for seg in re.split(r"&&|\n", cmd)
+                         if _nc_o_target(seg).lower().endswith(".exe")]
+            exe_out = _nc_path(workdir / f"nc_{nid}.exe")
+            line = next((_nc_rewrite(c, yang_rel, yin_rel, exe_out)
+                         for c in exe_lines if _nc_rewrite(c, yang_rel, yin_rel, exe_out)), None)
+            if line is None:
+                log.append(f"  ❌ negative_control {nid}  提取不到产出 exe 的编译行"
+                           f"（或该行不含阳夹具路径）")
+                return "refute:negative_control_command_missing", log
+            results, yin_out = run_commands([line], cwd=ROOT, env=env)
+            rc, err = results[-1][1], results[-1][2]
+            if rc == 124:
+                log.append(f"  ⚠️  negative_control {nid}  阴面编译/运行超时（环境故障）")
+                return "infra_error:compile_timeout", log
+            if rc != 0:
+                log.append(f"  ❌ negative_control {nid}  阴面编译/运行 rc={rc}"
+                           f"（阳面同次 rc=0 ⇒ 编译器健康，夹具写坏）")
+                log.append(f"      {err[:300]}")
+                return "refute:negative_control_broken", log
+            key = str(probe["key"])
+
+            def _kv(blob: str, k: str) -> str | None:
+                for ln in blob.split("\n"):
+                    if "=" in ln and ln.partition("=")[0].strip() == k:
+                        return ln.partition("=")[2].strip()
+                return None
+
+            yang_v, yin_v = (_kv(yang_stdout or "", key) or "").strip(), (_kv(yin_out, key) or "").strip()
+            op = str(probe.get("op"))
+            if op == "becomes_absent":
+                ok = bool(yang_v) and not yin_v
+                wrong_dir = bool(yin_v)
+            else:
+                ok = bool(yang_v) and yang_v != yin_v
+                wrong_dir = False
+            reading = f"run 键 {key}: 阳={yang_v[:40]!r} 阴={yin_v[:40]!r}"
+        if ok:
+            log.append(f"  ✅ negative_control {nid} flip verified（{channel} {reading}）")
+            continue
+        if wrong_dir:
+            log.append(f"  ❌ negative_control {nid} 读数方向与 op={probe.get('op')} 不符（{reading}）")
+            return "refute:negative_control_wrong_direction", log
+        log.append(f"  ❌ negative_control {nid} 阴面上断言**依然成立** ⇒ 该卡无判别力（{reading}）")
+        return "refute:negative_control_passed", log
+    return "", log
+
+
 def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, str]:
     """P0-A（452 E01 根因修复）：临时目录独立重编译，比对 sha。
 
@@ -1397,6 +1613,14 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
                 log.append(f"  ⏭ artifacts  {len(extra_arts)} 个副产物跨编译器不校验字节"
                            f"（无结构断言机制；残留风险见 371 报告 W1）")
 
+        # ④c V-iso 阴性判决（535 批次2 / 533 §2.3）：字段缺失 ⇒ 整段跳过，行为与现状逐字一致
+        nc_verdict, nc_log = check_negative_controls(meta, workdir=tmp, env=env,
+                                                     art_path=art_path,
+                                                     yang_stdout=stdout_all)
+        log.extend(nc_log)
+        if nc_verdict:
+            return nc_verdict, log
+
         # ⑤ sanitizer
         if do_sanitizer:
             st, why = check_sanitizer(meta, tmp, env)
@@ -1511,6 +1735,18 @@ def card_fingerprint(card: Path, calc_root: Path | None = None) -> str:
         out_rel = str(actual.get("run_match_file") or "").strip()
         if out_rel:
             f = root / out_rel
+            if not f.is_file():
+                return "MISSING"
+            h.update(f.read_bytes())
+    # 535 批次2：阴夹具字节进指纹——否则阴面被改后 `--incremental` 会沿用旧 confirm
+    #（533 §2.3「增量指纹（必做）」，缺文件同样 MISSING ⇒ 强制重跑）。
+    ncs = meta.get("negative_controls")
+    if isinstance(ncs, list):
+        for nc in ncs:
+            rel = str(nc.get("fixture") or "").strip() if isinstance(nc, dict) else ""
+            if not rel:
+                continue
+            f = root / rel
             if not f.is_file():
                 return "MISSING"
             h.update(f.read_bytes())
