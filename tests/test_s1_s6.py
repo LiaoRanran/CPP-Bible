@@ -121,7 +121,8 @@ def test_p7_matrix_needs_backing_note(tmp_path: Path, monkeypatch: pytest.Monkey
 # ── S4 黄金锁 ──────────────────────────────────────────────────────────────
 def _gold(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, measure: dict) -> None:
     monkeypatch.setattr(gl, "STATE", tmp_path / "golden_state.json")
-    monkeypatch.setattr(gl, "measure", lambda: dict(measure))
+    # 530 任务5：cmd_check 复用同一批 findings 调 measure(findings)，替身须收参
+    monkeypatch.setattr(gl, "measure", lambda findings=None: dict(measure))
     assert gl.cmd_sync() == 0
 
 
@@ -132,21 +133,22 @@ def test_golden_no_drift_passes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
 
 def test_golden_block_increase_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     _gold(tmp_path, monkeypatch, METRICS)
-    monkeypatch.setattr(gl, "measure", lambda: dict(METRICS, block_findings=2))
+    monkeypatch.setattr(gl, "measure", lambda findings=None: dict(METRICS, block_findings=2))
     assert gl.cmd_check(None) == 1, "block 0→2 必须红"
 
 
 def test_golden_verified_drop_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     base = dict(METRICS, verified_atoms=1)
     _gold(tmp_path, monkeypatch, base)
-    monkeypatch.setattr(gl, "measure", lambda: dict(METRICS))     # verified 1→0
+    monkeypatch.setattr(gl, "measure", lambda findings=None: dict(METRICS))   # verified 1→0
     assert gl.cmd_check(None) == 1, "verified 数下降必须红"
 
 
 def test_golden_accept_leaves_audit(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     _gold(tmp_path, monkeypatch, METRICS)
-    monkeypatch.setattr(gl, "measure", lambda: dict(METRICS, warn_findings=3))
-    rc = gl.cmd_check("口径变更：新增 2 条 warn 级规则")
+    monkeypatch.setattr(gl, "measure", lambda findings=None: dict(METRICS, warn_findings=3))
+    # 530 任务5：accept 必须同时给 --classify（无分类不得接受，见该批任务5）
+    rc = gl.cmd_check("口径变更：新增 2 条 warn 级规则", "INFERENCE-NOT-MACHINE-VERIFIED=legacy")
     state = json.loads(gl.STATE.read_text(encoding="utf-8"))
     assert rc == 0 and len(state["accepted"]) == 1
     assert "口径变更" in state["accepted"][0]["reason"]
@@ -157,8 +159,9 @@ def test_golden_accept_syncs_baseline_and_is_machine_recorded(
     """369 任务7：accept 必须（a）把当期测量写入基线（不再重复报同一恶化），
     （b）`worse`/`metrics_after`/`commit`/`dirty` 全部机器填写（不让人手输）。"""
     _gold(tmp_path, monkeypatch, METRICS)                     # warn_findings = 1
-    monkeypatch.setattr(gl, "measure", lambda: dict(METRICS, warn_findings=3))
-    assert gl.cmd_check("口径变更：新增 2 条 warn 级规则") == 0
+    monkeypatch.setattr(gl, "measure", lambda findings=None: dict(METRICS, warn_findings=3))
+    assert gl.cmd_check("口径变更：新增 2 条 warn 级规则",
+                        "ATOM-CLAIM-CONCEPT-NORMALIZED=legacy") == 0
     state = json.loads(gl.STATE.read_text(encoding="utf-8"))
     assert state["metrics"]["warn_findings"] == 3, "接受后基线必须同步至当期测量"
     rec = state["accepted"][0]

@@ -40,9 +40,9 @@
 |---|---|
 | 谁 | Gatekeeper 自动固化与比对 |
 | 环节 | 达标时 `sync` 固化快照 → 每次 CI/prepush `check` |
-| 手段 | 指标全部机器复算：block_findings / warn_findings / atoms_total / evidence_total / verified_atoms / replay_confirm（ADR-0005 快照-漂移底座）+ **G6 四级分列** human_verified / red_team_verified / machine_verified / dal_gap |
+| 手段 | 指标全部机器复算：block_findings / warn_findings / atoms_total / evidence_total / verified_atoms / replay_confirm（ADR-0005 快照-漂移底座）+ **G6 四级分列** human_verified / red_team_verified / machine_verified / dal_gap + **warn 四桶**（real / false_positive / legacy / accepted，530 任务5） |
 | 自动判定 | block/warn/dal_gap 上升、原子/证据/各级 verified/复算通过数下降 → **恶化即红**（只盯总数会被"人级掉 1 / 红队级涨 1"置换掩盖）；改善提示 `sync` 把进步锁进快照 |
-| 处置 | **阻断**；口径/阈值变更不得静默——`check --accept "理由"` 显式接受并写入快照 `accepted[]` 审计字段 |
+| 处置 | **阻断**；口径/阈值变更不得静默——`check --accept "理由" --classify "规则ID=real\|false_positive\|legacy\|accepted[,...]"`：**无 `--classify` 拒绝执行（exit 非 0）**，分类逐条写入 `accepted[]` 并合并进快照 `warn_classify`；`check` / 只读 `buckets` 按桶复算 warn 归属（未分类单独可见，不并入任何桶——分类是**人审**动作，Agent 不得代签） |
 
 ## S5 豁免 = 带息债务（`tools/debt_ledger.py`）
 

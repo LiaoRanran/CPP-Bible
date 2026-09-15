@@ -24,11 +24,21 @@
     * **provenance 机器填写**（369 任务7）：`commit` = `git rev-parse --short HEAD`，
       `dirty` = 工作树是否非空——sync/accept 常在未提交改动之后发生，单记 commit 会记错
       "哪份工作树"；两条审计字段一律机器写，不让人手输。
+    * **warn 会计制度：停止"整体 accept"**（2026-09-15，530 任务5）：`--accept` 必须同时给
+      `--classify 规则ID=real|false_positive|legacy|accepted[,...]`，**无分类一律 exit 非 0**。
+      四桶语义：
+        real            真债——规则对、内容真有问题，须修内容（挂债台账）
+        false_positive  误报——规则口径过宽，须修规则
+        legacy          历史遗留——口径迁移期名单，约定清零期限
+        accepted        已接受——明确认可为长期现状（如命题签署回填的中间态）
+      每个 warn 规则只准落一桶；分类结果存 `warn_classify`，`check`/`buckets` 按桶复算。
 
 用法：
     python tools/golden_lock.py sync                    # 达标时固化快照
     python tools/golden_lock.py check                   # 比对（CI / prepush 用）
-    python tools/golden_lock.py check --accept "理由"    # 显式接受恶化（留痕）
+    python tools/golden_lock.py check --accept "理由" \
+        --classify "RID=real,OTHER=legacy"              # 显式接受恶化（必须分类，留痕）
+    python tools/golden_lock.py buckets                 # 四桶只读盘点
     python tools/golden_lock.py show
 """
 
@@ -68,13 +78,87 @@ WORSE: dict[str, bool] = {
     "replay_infra_error": True,
 }
 
+# warn 归属四桶（530 任务5）。顺序 = 输出顺序，也是"该修谁"的优先级：真债在最前。
+CLASSES: tuple[str, ...] = ("real", "false_positive", "legacy", "accepted")
+# 未分类不是合法的"桶"，而是**尚未做人审**的显式状态——它必须在输出里可见，
+# 否则"未分类"会被静默塞进某一桶，等于变相整体 accept。
+UNCLASSIFIED = "unclassified"
 
-def measure() -> dict[str, int]:
-    """全部指标现场复算（不读任何手工数字）。"""
+
+def _parse_classify(spec: str | None) -> dict[str, str]:
+    """解析 `--classify A=real,B=legacy`。任何一项非法 → ValueError（调用方转 exit 非 0）。
+
+    拒不接受"空分类"：`--classify` 存在但解析出 0 条 = 没分类，与不给参数同罪。
+    """
+    out: dict[str, str] = {}
+    for item in (spec or "").split(","):
+        item = item.strip()
+        if not item:
+            continue
+        rid, sep, cls = item.partition("=")
+        if not sep:
+            raise ValueError(f"分类项缺 `=`：{item!r}"
+                             f"（格式 规则ID={'|'.join(CLASSES)}）")
+        rid, cls = rid.strip(), cls.strip()
+        if not rid:
+            raise ValueError(f"分类项缺规则 ID：{item!r}")
+        if cls not in CLASSES:
+            raise ValueError(f"未知分类 {cls!r}（合法：{'|'.join(CLASSES)}）")
+        out[rid] = cls
+    if not out:
+        raise ValueError("--classify 未解析出任何分类（形如 -classify RID=real）")
+    return out
+
+
+def warn_buckets(findings: Sequence[Any] | None = None) -> dict[str, dict[str, int]]:
+    """把当前 warn 命中**按规则**分进四桶（+ 未分类），供 `check`/`buckets` 复算。
+
+    分类表来自快照的 `warn_classify`（旧快照无此键 → 全落未分类，不崩）。
+    """
+    import gate_engine as ge
+
+    if findings is None:
+        findings = ge.run(include_advice=False)
+    by_rule: dict[str, int] = {}
+    for f in findings:
+        if getattr(f, "severity", "") == "warn":
+            rid = str(getattr(f, "rule_id", "?"))
+            by_rule[rid] = by_rule.get(rid, 0) + 1
+    cmap = _load().get("warn_classify")
+    cmap = cmap if isinstance(cmap, dict) else {}
+    out: dict[str, dict[str, int]] = {c: {} for c in (*CLASSES, UNCLASSIFIED)}
+    for rid in sorted(by_rule):
+        cls = str(cmap.get(rid) or "")
+        out[cls if cls in CLASSES else UNCLASSIFIED][rid] = by_rule[rid]
+    return out
+
+
+def _bucket_n(buckets: dict[str, dict[str, int]], key: str) -> int:
+    return sum(buckets.get(key, {}).values())
+
+
+def _print_buckets(buckets: dict[str, dict[str, int]]) -> None:
+    """四桶只读盘点（人可复核：桶 → 规则(条数)）。"""
+    print("[golden] warn 四桶："
+          + " · ".join(f"{c} {_bucket_n(buckets, c)}" for c in CLASSES)
+          + f" · 未分类 {_bucket_n(buckets, UNCLASSIFIED)}")
+    for key in (*CLASSES, UNCLASSIFIED):
+        rows = buckets.get(key) or {}
+        if rows:
+            detail = "、".join(f"{rid}({n})" for rid, n in sorted(rows.items()))
+            print(f"  {key}: {detail}")
+
+
+def measure(findings: Sequence[Any] | None = None) -> dict[str, int]:
+    """全部指标现场复算（不读任何手工数字）。
+
+    `findings` 可由调用方传入（避免 `check` 里为了分桶把 gate 跑第二遍）。
+    """
     import gate_engine as ge
     import atom_evidence_replay as replay
 
-    findings = ge.run(include_advice=False)
+    if findings is None:
+        findings = ge.run(include_advice=False)
     atoms_root, evid_root = Path(ge.ATOMS), Path(ge.EVIDENCE)
     atoms = sorted(atoms_root.rglob("ATOM-*.md")) if atoms_root.exists() else []
     evids = sorted(evid_root.rglob("EV-*.md")) if evid_root.exists() else []
@@ -185,10 +269,25 @@ def cmd_sync(json_flag: bool = False) -> int:
     return 0
 
 
-def cmd_check(accept: str | None, json_flag: bool = False) -> int:
+def cmd_check(accept: str | None, classify: str | None = None,
+              json_flag: bool = False) -> int:
     real_out = sys.stdout
     if json_flag:
         sys.stdout = sys.stderr
+    # 停止"整体 accept"（530 任务5）：先验分类，再谈接受——不合规就别浪费一次全量测量。
+    if accept and not classify:
+        print("[golden] ✗ --accept 必须同时给 --classify（已停止整体 accept）：\n"
+              "        --classify 规则ID=real|false_positive|legacy|accepted[,...]\n"
+              "        四桶：real=真债须修内容 / false_positive=规则过宽须修规则 / "
+              "legacy=口径迁移期名单 / accepted=明确认可的长期现状")
+        return 2
+    cls_map: dict[str, str] = {}
+    if classify:
+        try:
+            cls_map = _parse_classify(classify)
+        except ValueError as exc:
+            print(f"[golden] ✗ --classify 非法：{exc}")
+            return 2
     state = _load()
     base = state.get("metrics") or {}
     if not base:
@@ -201,7 +300,11 @@ def cmd_check(accept: str | None, json_flag: bool = False) -> int:
                 "infra_errors": [], "accepted": False,
             }, ensure_ascii=False, indent=1) + "\n")
         return 2
-    now = measure()
+    import gate_engine as ge
+
+    findings = ge.run(include_advice=False)   # 只跑一次：测指标与分桶共用同一批命中
+    now = measure(findings)
+    buckets = warn_buckets(findings)
     worse: list[str] = []
     improved: list[str] = []
     for key, up_is_worse in WORSE.items():
@@ -215,14 +318,18 @@ def cmd_check(accept: str | None, json_flag: bool = False) -> int:
         print(f"  WORSE {w}")
     for i in improved:
         print(f"  BETTER {i}")
+    _print_buckets(buckets)   # 530 任务5：warn 归属四桶（只读、可与 accept 的 classify 对账）
 
     def _emit(status: str, accepted: bool) -> None:
         findings = [{"rule": "golden_lock", "severity": "block",
                      "file": w.split(":")[0], "message": w} for w in worse]
+        summary = dict(now)
+        summary.update({f"warn_{c}": _bucket_n(buckets, c) for c in CLASSES})
+        summary[f"warn_{UNCLASSIFIED}"] = _bucket_n(buckets, UNCLASSIFIED)
         real_out.write(json.dumps({
             "tool": "golden_lock", "version": "v6.1",
             "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
-            "status": status, "summary": dict(now), "findings": findings,
+            "status": status, "summary": summary, "findings": findings,
             "infra_errors": [], "accepted": accepted,
         }, ensure_ascii=False, indent=1) + "\n")
 
@@ -232,9 +339,15 @@ def cmd_check(accept: str | None, json_flag: bool = False) -> int:
             state.setdefault("accepted", []).append(
                 {"ts": _dt.datetime.now().isoformat(timespec="seconds"),
                  "reason": accept,
+                 "classify": dict(cls_map),  # 逐规则分类（530 任务5：停止整体 accept）
                  "worse": worse,            # 机器自动生成：与当期测量同源（非人手输）
                  "metrics_after": now,      # 机器勾稽：接受后的基线快照，可与 metrics 对账
                  "commit": commit, "dirty": dirty})
+            # 分类表随接受合并进快照：下轮 `check`/`buckets` 才能按桶复算同一批 warn
+            cmap = state.get("warn_classify")
+            merged = dict(cmap) if isinstance(cmap, dict) else {}
+            merged.update(cls_map)
+            state["warn_classify"] = merged
             # 接受即同步基线：否则"接受了但基线仍旧"，下一轮 check 重复报同一条恶化
             state["metrics"] = now
             state["updated"] = _dt.date.today().isoformat()
@@ -242,11 +355,13 @@ def cmd_check(accept: str | None, json_flag: bool = False) -> int:
             state["dirty"] = dirty
             _save(state)
             print(f"[golden] 已显式接受并留痕（{len(state['accepted'])} 条审计记录）；"
+                  f"分类 {cls_map}；"
                   f"基线已同步至当期测量（commit={commit or '?'} dirty={dirty}）")
             if json_flag:
                 _emit("fail", True)
             return 0
-        print("[golden] ✗ 指标恶化——修复，或 `check --accept \"理由\"` 显式留痕")
+        print("[golden] ✗ 指标恶化——修复，或 "
+              "`check --accept \"理由\" --classify \"RID=real,...\"` 显式留痕")
         if json_flag:
             _emit("fail", False)
         return 1
@@ -256,6 +371,38 @@ def cmd_check(accept: str | None, json_flag: bool = False) -> int:
     if json_flag:
         _emit("pass", False)
     return 0
+
+
+def cmd_buckets(json_flag: bool = False) -> int:
+    """四桶只读盘点（530 任务5）：warn 归属 real/false_positive/legacy/accepted + 未分类。
+
+    永远 exit 0——这是**盘点**不是门禁（门禁仍是 `check`）。`--json` 时四桶以
+    `warn_<桶>` 形式进 summary，明细进 findings。
+    """
+    real_out = sys.stdout
+    if json_flag:
+        sys.stdout = sys.stderr
+    buckets = warn_buckets()
+    _print_buckets(buckets)
+    n_un = _bucket_n(buckets, UNCLASSIFIED)
+    if n_un:
+        print("[golden] ⚠ 未分类 warn 不计入任何桶——分类是**人审**动作（agent 不得代签），"
+              "`check --accept` 时逐规则给 --classify")
+    if json_flag:
+        summary = {f"warn_{c}": _bucket_n(buckets, c) for c in CLASSES}
+        summary[f"warn_{UNCLASSIFIED}"] = n_un
+        findings = [{"rule": rid, "severity": cls, "file": "",
+                     "message": f"{rid}: {n} 条 warn → {cls}"}
+                    for cls in (*CLASSES, UNCLASSIFIED)
+                    for rid, n in sorted((buckets.get(cls) or {}).items())]
+        real_out.write(json.dumps({
+            "tool": "golden_lock", "version": "v6.1",
+            "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+            "status": "pass", "summary": summary, "findings": findings,
+            "infra_errors": [], "accepted": False,
+        }, ensure_ascii=False, indent=1) + "\n")
+    return 0
+
 
 
 def cmd_show() -> int:
@@ -273,8 +420,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     sub.add_parser("sync", parents=[_pj], help="固化当前状态为快照").set_defaults(
         fn=lambda a: cmd_sync(getattr(a, "json", False)))
     p_ck = sub.add_parser("check", parents=[_pj], help="比对快照，恶化即 exit 1")
-    p_ck.add_argument("--accept", help="显式接受恶化（必须给理由，审计留痕）")
-    p_ck.set_defaults(fn=lambda a: cmd_check(a.accept, getattr(a, "json", False)))
+    p_ck.add_argument("--accept", help="显式接受恶化（必须给理由；且必须同时给 --classify）")
+    p_ck.add_argument("--classify",
+                      help="强制逐规则分类：规则ID=real|false_positive|legacy|accepted[,...]"
+                           "（无分类拒绝 accept，530 任务5）")
+    p_ck.set_defaults(
+        fn=lambda a: cmd_check(a.accept, a.classify, getattr(a, "json", False)))
+    sub.add_parser("buckets", parents=[_pj],
+                   help="四桶只读盘点 warn 归属（real/false_positive/legacy/accepted）"
+                   ).set_defaults(fn=lambda a: cmd_buckets(getattr(a, "json", False)))
     sub.add_parser("show", parents=[_pj], help="查看快照").set_defaults(fn=lambda _a: cmd_show())
     a = ap.parse_args(argv)
     return int(a.fn(a))
