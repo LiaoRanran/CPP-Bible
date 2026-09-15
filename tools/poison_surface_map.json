@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-15T13:24:37",
- "source_commit": "9942d8c",
+ "generated_at": "2026-09-16T01:48:40",
+ "source_commit": "31bb219",
  "drill": {
-  "passed": 90,
-  "total": 90
+  "passed": 92,
+  "total": 92
  },
  "attack_types": {
   "A1": {
@@ -15,7 +15,7 @@
   },
   "A2": {
    "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
-   "count": 9
+   "count": 10
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
@@ -60,8 +60,8 @@
   "uncovered": []
  },
  "rule_coverage": {
-  "covered": 35,
-  "total": 60,
+  "covered": 36,
+  "total": 61,
   "exempt": 27
  },
  "payloads": [
@@ -364,6 +364,11 @@
    "name": "P68 只挂 run_match 卡的 observation 须 warn（缺活性对照）",
    "pass": true,
    "type": "A1"
+  },
+  {
+   "name": "P69 卡内路径非 posix 规范/大小写与磁盘不符 ⇒ warn",
+   "pass": true,
+   "type": "A2"
   }
  ],
  "negative_controls": [
@@ -509,6 +514,11 @@
   },
   {
    "name": "P68-阴 有活性对照（特有符号+量化证伪）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P69-阴 规范 posix 写法（大小写逐字一致）须放行",
    "pass": true,
    "type": null
   },

@@ -1533,6 +1533,43 @@ def drill() -> int:
     results.append(("P68-阴 有活性对照（特有符号+量化证伪）须放行", ok,
                     f"拦截者 {', '.join(who) or '（无）'}"))
 
+    # ── P69（548 Part 2 CARD-PATH-NOT-CANONICAL）：卡内路径写法的跨平台异体 ────
+    # M2 实测：把 `Examples/atoms/x.cpp` 改成 ①全大写 ②`./` 前缀 ③反斜杠分隔符，
+    # Windows 上**三条都照常打开**（NTFS 大小写不敏感 + 两种分隔符 + `./` 等价）⇒ 门禁一条
+    # 都不报 ⇒ 全量 207 条逃逸；同一张卡到 Linux CI 就是 No such file（声明-实现脱钩 A2）。
+    # 规则只 warn（形态约定不是事实缺陷，且存量 83 卡实测 0 命中）。
+    def _p69_findings(fx_rel: str) -> list:
+        with sandbox() as tmp:
+            orig_root = ge.ROOT
+            ge.ROOT = tmp
+            try:
+                (tmp / "Examples" / "atoms").mkdir(parents=True, exist_ok=True)
+                (tmp / "Examples" / "atoms" / "p69.cpp").write_text(
+                    "int main(){}\n", encoding="utf-8")
+                _write(tmp / "evidence" / "mem" / "EV-MEM-P69.md",
+                       {"id": "EV-MEM-P69", "serves": "[ATOM-MEM-P69]",
+                        "hypothesis": "h", "command": "g++ -std=c++17 -c fx.cpp",
+                        "verdict": "confirm", "fixture": fx_rel,
+                        "artifact": "a.asm", "artifact_sha256": "0" * 64,
+                        "actual": "{run_case: A}", "kind": "run",
+                        "falsification": "对照 B 输出 1"})
+                return ge.check_card_path_canonical()
+            finally:
+                ge.ROOT = orig_root
+
+    _fs = _p69_findings("EXAMPLES/ATOMS/P69.CPP")
+    who = sorted({f.rule_id for f in _fs})
+    ok = "CARD-PATH-NOT-CANONICAL" in who and all(f.severity == "warn" for f in _fs)
+    results.append(("P69 卡内路径非 posix 规范/大小写与磁盘不符 ⇒ warn", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}；"
+                    f"严重度 {[f.severity for f in _fs] or '（无命中）'}"))
+    # P69-阴：与磁盘逐字一致的 posix 规范写法 ⇒ 放行（零误伤）
+    _fs = _p69_findings("Examples/atoms/p69.cpp")
+    who = sorted({f.rule_id for f in _fs})
+    ok = not who
+    results.append(("P69-阴 规范 posix 写法（大小写逐字一致）须放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
+
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
         fx = ge.EVIDENCE / "_fx.cpp"
@@ -1640,6 +1677,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P66 ", "A1"),   # 528 任务3 命题级签署精确化：inference 无命题级人签却 verified —— 同 P65 家族
     ("P67 ", "A1"),   # 530 任务3 claim object 未归一化规范概念：记录层/claim 连通性（同 P63 家族）
     ("P68 ", "A1"),   # 530 任务4 自标 observation 缺活性对照：借"观测"名义跳过人审（记录层伪造）
+    ("P69 ", "A2"),   # 548 Part 2 路径写法跨平台异体：声明的路径与磁盘/CI 解析脱钩
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

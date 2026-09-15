@@ -272,6 +272,34 @@ def _write_ev(base: Path, **over: str) -> Path:
     return p
 
 
+# ── 548 Part 2：卡内路径写法（M2 跨平台路径异体 ⇒ warn）───────────────────────
+def test_548_path_not_canonical_warns(sandbox: Path, monkeypatch: pytest.MonkeyPatch):
+    """三条 M2 异体写法（全大写 / 加 `./` / 反斜杠）⇒ **warn**；规范写法 ⇒ 零命中。
+
+    Windows 上三种写法都打得开（NTFS 大小写不敏感 + 两种分隔符 + `./` 等价）⇒ 门禁永远
+    不报；Linux CI 直接找不到文件。只 warn 不 block（形态约定不是事实缺陷）。
+    """
+    monkeypatch.setattr(ge, "ROOT", sandbox)
+    fx = sandbox / "Examples" / "atoms" / "p69.cpp"
+    fx.parent.mkdir(parents=True, exist_ok=True)
+    fx.write_text("int main(){}\n", encoding="utf-8")
+    good = "Examples/atoms/p69.cpp"
+    _write_ev(sandbox, fixture=good)
+    assert ge.check_card_path_canonical() == [], "规范写法须零命中（存量零误伤的前提）"
+    for bad in ("EXAMPLES/ATOMS/P69.CPP", "./Examples/atoms/p69.cpp",
+                "Examples\\atoms\\p69.cpp"):
+        _write_ev(sandbox, fixture=bad)
+        hits = ge.check_card_path_canonical()
+        assert len(hits) == 1 and hits[0].severity == "warn", f"{bad} ⇒ {hits}"
+        assert hits[0].rule_id == "CARD-PATH-NOT-CANONICAL" and bad in hits[0].message
+
+
+def test_548_path_rule_zero_hits_on_real_repo():
+    """硬约束：新规则对**真实仓库**存量零命中（否则就是新增债，不是收口）。"""
+    hits = ge.check_card_path_canonical()
+    assert hits == [], f"存量误伤 {len(hits)} 条：{[h.target + ' ' + h.message for h in hits][:5]}"
+
+
 def test_s3_run_match_file_clean_passes(sandbox: Path):
     """阴样例（369 任务8，P1-12）：期望值只在 .out、夹具用格式串+变量 → 不得误报。"""
     d = sandbox / "evidence"

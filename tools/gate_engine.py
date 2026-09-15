@@ -1521,6 +1521,81 @@ def check_evidence_out_stale_mtime() -> list[Finding]:
     return out
 
 
+# ── 548 Part 2：卡内路径写法（M2 跨平台路径异体 ⇒ **warn，不 block**）───────────
+# 由来（全量 mutation 实测）：M2 把 `Examples/atoms/x.cpp` 改成 ①全大写 ②加 `./`
+# ③正斜杠换反斜杠 —— 三种写法在 **Windows 上全部照常打开**（NTFS 大小写不敏感、
+# 两种分隔符都收、`./` 等价）⇒ 门禁一条都不报 ⇒ **207 条全逃逸**；同一个卡到 Linux CI
+# 就是 `No such file or directory`。这是"声明-实现脱钩"里最便宜的一类：不改事实、只改写法。
+#
+# 为什么只 warn（541 的教训：别为它硬上 block）：
+#   ① 路径写法是**形态约定**，不是事实缺陷（文件确实存在、内容确实对）；
+#   ② 存量 83 张卡实测 **0 命中**（口径见下）⇒ warn 零新增债，block 也无收益只增风险；
+#   ③ 真"文件不存在"由 EV-ARTIFACT-FILE-EXISTS 管，本规则不抢它的判定。
+_PATH_FIELDS = ("fixture", "artifact", "run_match_file", "artifacts")
+
+
+def _path_form_issues(rel: str) -> list[str]:
+    """非 posix 规范的写法（Windows 能开、Linux CI 不一定能开）。"""
+    issues: list[str] = []
+    if "\\" in rel:
+        issues.append("含反斜杠分隔符")
+    if any(seg in (".", "..") for seg in rel.replace("\\", "/").split("/")):
+        issues.append("含 ./ 或 .. 段")
+    return issues
+
+
+def _path_case_mismatch(rel: str) -> str:
+    """沿盘逐级比对大小写，返回**首个**不一致段描述；路径不存在/不可列 ⇒ 空串（不判）。
+
+    大小写敏感的才是 Linux：Windows 上 `EXAMPLES/ATOMS/X.CPP` 打得开，CI 上打不开。
+    盘上没有的路径交给 `EV-ARTIFACT-FILE-EXISTS`，本规则不重复判（避免双份命中）。
+    """
+    cur = ROOT
+    for seg in rel.replace("\\", "/").split("/"):
+        if seg in ("", "."):
+            continue
+        if seg == "..":
+            cur = cur.parent
+            continue
+        try:
+            names = [c.name for c in cur.iterdir()]
+        except OSError:
+            return ""
+        hit = next((n for n in names if n.lower() == seg.lower()), None)
+        if hit is None:
+            return ""                      # 盘上无此段 ⇒ 不是"写法"问题
+        if hit != seg:
+            return f"{seg} → 盘上是 {hit}"
+        cur = cur / hit
+    return ""
+
+
+def check_card_path_canonical() -> list[Finding]:
+    """卡内声明的路径须 **posix 规范 + 大小写与磁盘逐字一致**（warn，548 Part 2）。"""
+    out: list[Finding] = []
+    for base, pat in ((EVIDENCE, "EV-*.md"), (ATOMS, "ATOM-*.md")):
+        for p in _cards(base, pat):
+            meta = _meta(p)
+            for field in _PATH_FIELDS:
+                v = meta.get(field)
+                vals = v if isinstance(v, list) else [v]
+                for raw in vals:
+                    rel = str(raw or "").strip()
+                    if not rel or "://" in rel or rel.startswith(("/", "~")):
+                        continue                       # 绝对/URL 路径不在本规则口径内
+                    issues = _path_form_issues(rel)
+                    cm = _path_case_mismatch(rel)
+                    if cm:
+                        issues.append(f"大小写与磁盘不符（{cm}）")
+                    if issues:
+                        out.append(Finding(
+                            "CARD-PATH-NOT-CANONICAL", "warn", _rel(p),
+                            f"`{field}` 路径写法不可移植：{rel}（{'; '.join(issues)}）"
+                            " —— Windows 能打开，Linux CI 会找不到",
+                            "改成 posix 规范写法：正斜杠、无 ./ 与 ..、大小写与磁盘逐字一致"))
+    return out
+
+
 # 373-B2 窄化（2026-09-13）：**无判别力的通用符号**——几乎出现在任何工件里，
 # 拿它当断言等于没有断言（373 独立渗透 B2-R1 的载荷正是 `contains "main"`）。
 # 530 任务2 扩充：`.`-前缀 ABI 帧/汇编伪指令（.seh_* / .cfi_* / .file / .section …
@@ -3017,6 +3092,9 @@ def _register_all() -> None:
          "evidence", check_fixture_no_echo_findings),
         ("EV-OUT-STALE-MTIME", ".out 须比夹具新（414 F06 陈旧留痕）", "evidence",
          check_evidence_out_stale_mtime),
+        ("CARD-PATH-NOT-CANONICAL",
+         "卡内路径须 posix 规范且大小写与磁盘一致（548 Part 2：M2 跨平台路径异体，warn）",
+         "repo", check_card_path_canonical),
     ]
     sev = {"ATOM-REL-TARGET": "warn", "EV-SERVES-EXIST": "warn",
            "META-MANIFEST": "warn",
@@ -3050,6 +3128,9 @@ def _register_all() -> None:
            # 494 任务 5：人级签署须写理由——存量 23 颗全缺（名单豁免）⇒ 只 warn；
            # 理由内容需人判断（铁律 4：苦力只建机制不填内容），且不得逼人编造理由
            "ATOM-VERIFY-REASON": "warn",
+           # 548 Part 2：路径写法是形态约定不是事实缺陷；存量实测 0 命中 ⇒ warn 零新增债，
+           # 升 block 无收益（541 已实测：形态类规则直接升格会撞存量）。
+           "CARD-PATH-NOT-CANONICAL": "warn",
            # （EV-ASSERT-SYMBOL-MAPPED 规则级登记为 block：通用符号载荷一律拦；
            #   单条 Finding 对"疑似拼写差异"降为 warn，故混合级别是刻意的）
            }
