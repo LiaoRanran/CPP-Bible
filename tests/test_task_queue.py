@@ -894,3 +894,31 @@ def test_c7_claim_returns_resume_plan(q: Path, sb: Path, capsys: pytest.CaptureF
     assert rp["l1_verify"][0]["status"] == "no_digest", "没记哈希 ⇒ 自己重新度量，别当已核对"
     assert rp["l3_human"][0]["fact"] == "人签放行"
     assert rp["blocked"] is False
+
+
+# ── 537 T4：touch 审计的沙箱正式豁免（告警疲劳治理；白名单，不是黑名单）──────
+
+
+def test_t4_sandbox_paths_exempt_formal_dirs_still_caught(q: Path, gitrepo: Path):
+    """沙箱顶层目录不报；**正式目录里的未声明文件仍必须被抓**（豁免只看第一段）。"""
+    for rel in ("_arch_v3/probe/x.py", "_adv_critique/y.md", "_worklog_530.md",
+                "_t528k/case/atoms/A.md", "_po528base.txt", "_rp528.out"):
+        f = gitrepo / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("sandbox\n", encoding="utf-8")
+    for rel in ("tools/stray.py", "atoms/mem/ATOM-MEM-STRAY.md", "data/tasks/x.log"):
+        f = gitrepo / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("formal\n", encoding="utf-8")
+    tid = tq.enqueue("doc", "docs/t4.md", verify_cmd="echo ok")["id"]
+    tq.claim("alice")
+    r = tq.complete(tid, "alice")
+    assert r["status"] == "done" and r["audit_note"] == ""
+    assert r["undeclared_touch"] == ["atoms/mem/ATOM-MEM-STRAY.md", "tools/stray.py"], \
+        r["undeclared_touch"]
+    assert "_arch_v3/probe/x.py" not in r["undeclared_touch"], "沙箱顶层目录须豁免"
+    assert not any(u.startswith("data/tasks/") for u in r["undeclared_touch"]), "队列自身豁免"
+    # 白名单是集中的、可审的（新增前缀必须显式加一行，不许隐式规则）
+    assert tq.SANDBOX_GLOBS == ("_arch_*", "_adv_*", "_worklog_*", "_t*", "_po*", "_rp*")
+    assert tq._is_sandbox_path("_arch_v3/a/b.md") and not tq._is_sandbox_path("tools/a.md")
+    assert not tq._is_sandbox_path("atoms/_t_x.md"), "正式目录内不因文件名像沙箱而豁免"

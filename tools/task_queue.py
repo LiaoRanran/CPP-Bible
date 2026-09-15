@@ -57,6 +57,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import fnmatch
 import hashlib
 import json
 import os
@@ -1028,6 +1029,18 @@ DEFAULT_VERIFY_CMDS: dict[str, str] = {
 }
 
 
+# 537 T4：沙箱/临时顶层目录的**显式白名单**（告警疲劳治理，只豁免这些前缀）。
+# 纪律：只看路径**第一段** ⇒ 正式目录（tools/tests/atoms/evidence/Book/Examples…）内的一切
+# **永不豁免**；新增前缀必须在这里显式加一行（不许用"包含 _ 就算沙箱"这类糊规则藏污）。
+SANDBOX_GLOBS = ("_arch_*", "_adv_*", "_worklog_*", "_t*", "_po*", "_rp*")
+
+
+def _is_sandbox_path(rel: str) -> bool:
+    """该相对路径是否落在沙箱顶层目录白名单内（只看第一段）。"""
+    seg = str(rel).replace("\\", "/").split("/", 1)[0]
+    return any(fnmatch.fnmatch(seg, g) for g in SANDBOX_GLOBS)
+
+
 def default_verify_cmd(task_type: str, payload_ref: str) -> str:
     """按 type 取默认门禁命令（表里没有的 type ⇒ 空字符串 = 必须 --result-ref）。"""
     tpl = DEFAULT_VERIFY_CMDS.get(task_type, "")
@@ -1036,10 +1049,13 @@ def default_verify_cmd(task_type: str, payload_ref: str) -> str:
 
 def _touch_audit(row: sqlite3.Row | dict[str, Any],
                  root: Path | str | None = None) -> tuple[list[str], str]:
-    """完成后审计（535 C6）：`git status --porcelain -uall` 的真实改动 − 声明集 − 系统豁免。
+    """完成后审计（535 C6 + 537 T4）：`git status --porcelain -uall` 的真实改动 − 声明集 − 豁免。
 
-    系统豁免：`data/tasks/**`（队列库/worker token/handoff/logs 全在这里，属调度装置自身，
-    不是业务改动——534 §4.1 实测教训：worker 自己的运行日志会污染审计）。
+    豁免只有两类（**都是白名单，不是黑名单**）：
+      ① `data/tasks/**`：队列装置自身（queue.db/-wal/-shm、workers/*.token、handoff、logs）；
+      ② `SANDBOX_GLOBS` 命中的**顶层沙箱目录**（`_arch_*`/`_adv_*`/`_worklog_*`/`_t*`/`_po*`/`_rp*`）：
+         本机临时/探针产物，实测在真实仓库里会造成数百条告警疲劳（537 T4）。**只看顶层段**，
+         故正式目录（tools/tests/atoms/evidence/Book/Examples…）里的一切**一律不豁免**。
     返回 `(undeclared, audit_note)`：**审计没跑成要显形**（`audit_note` 非空），
     不许把"没观测到"当成"已核对"（fail-closed 的信息面）。
     """
@@ -1069,7 +1085,9 @@ def _touch_audit(row: sqlite3.Row | dict[str, Any],
             f = f.split(" -> ")[-1].strip()
         changed.add(f.replace("\\", "/").strip('"'))
     undeclared = sorted(f for f in changed
-                        if f not in declared and not f.startswith("data/tasks/"))
+                        if f not in declared
+                        and not f.startswith("data/tasks/")
+                        and not _is_sandbox_path(f))
     return undeclared, ""
 
 
