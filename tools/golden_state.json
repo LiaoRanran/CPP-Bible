@@ -1,10 +1,10 @@
 {
  "schema": "cppbible-golden-lock/1.0",
- "updated": "2026-09-14",
- "commit": "1cd675a",
+ "updated": "2026-09-15",
+ "commit": "1b0232d",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 54,
+  "warn_findings": 59,
   "atoms_total": 27,
   "evidence_total": 56,
   "verified_atoms": 26,
@@ -170,6 +170,28 @@
     "replay_infra_error": 0
    },
    "commit": "1cd675a",
+   "dirty": true
+  },
+  {
+   "ts": "2026-09-15T11:18:22",
+   "reason": "528收工：warn 54->59全为预期漂移（任务1回填关系/证据债+任务3命题级精度债），非内容退化",
+   "worse": [
+    "warn_findings: 54 → 59"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 59,
+    "atoms_total": 27,
+    "evidence_total": 56,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "1b0232d",
    "dirty": true
   }
  ],
