@@ -730,7 +730,9 @@ def test_c6_complete_runs_verify_and_audits_touch(q: Path, gitrepo: Path):
     tid = tq.enqueue("atom_produce", "docs/c6.md", touch=["work/a.txt"],
                      verify_cmd="echo verify-ok")["id"]
     tq.claim("alice")
-    r = tq.complete(tid, "alice")
+    # 546 T-A7：verify 是 enqueue 自带的（custom）⇒ 自证不裸 done，须异方确认（本例关注
+    # verify_hash 与收尾审计，故直接给 --second-party；自证路径见 T-A7 回归锁）
+    r = tq.complete(tid, "alice", second_party="bob")
     assert r["status"] == "done" and "rc=0" in r["verify_hash"]
     assert r["verify_cmd"] == "echo verify-ok"
     # 未声明改动要显形；data/tasks 豁免；非 ASCII 路径须是**可读**形态（git 默认八进制转义）
@@ -788,7 +790,7 @@ def test_c6_audit_unavailable_is_visible(q: Path, sb: Path):
     """审计跑不成（非 git 根）⇒ 显形 audit_note，绝不静默当作"已核对无问题"。"""
     tid = tq.enqueue("doc", "docs/c6e.md", verify_cmd="echo ok")["id"]
     tq.claim("alice")
-    r = tq.complete(tid, "alice")
+    r = tq.complete(tid, "alice", second_party="bob")   # 546 T-A7：custom verify ⇒ 异方确认
     assert r["status"] == "done"
     assert "未观测到是否有未声明改动" in r["audit_note"]
     detail = [e["detail"] for e in _events(q, tid) if e["event"] == "done"][0]
@@ -806,7 +808,9 @@ def test_c6_cli_full_chain(q: Path, sb: Path, capsys: pytest.CaptureFixture):
     assert tq.main(["checkpoint", tid, "--worker", "alice", "--used", "10",
                     "--handoff", str(_handoff(sb, tid)), "--json"]) == 0
     capsys.readouterr()
-    assert tq.main(["complete", tid, "--worker", "alice", "--json"]) == 0
+    # 546 T-A7：--verify-cmd 自带 ⇒ 须异方确认（CLI 接线一并锁住）
+    assert tq.main(["complete", tid, "--worker", "alice", "--second-party", "bob",
+                    "--json"]) == 0
     done = json.loads(capsys.readouterr().out)
     assert done["status"] == "done" and "rc=0" in done["verify_hash"]
     assert tq.main(["list", "--status", "done", "--json"]) == 0
@@ -917,7 +921,7 @@ def test_t4_sandbox_paths_exempt_formal_dirs_still_caught(q: Path, gitrepo: Path
         f.write_text("formal\n", encoding="utf-8")
     tid = tq.enqueue("doc", "docs/t4.md", verify_cmd="echo ok")["id"]
     tq.claim("alice")
-    r = tq.complete(tid, "alice")
+    r = tq.complete(tid, "alice", second_party="bob")   # 546 T-A7：custom verify ⇒ 异方确认
     assert r["status"] == "done" and r["audit_note"] == ""
     assert r["undeclared_touch"] == ["atoms/mem/ATOM-MEM-STRAY.md", "tools/stray.py"], \
         r["undeclared_touch"]
@@ -989,6 +993,91 @@ def test_t0_regression_existing_touch_lock_still_works(q: Path):
 
 
 # ── 546 T-A5：yield 深度上界 + 累计预算账（把 545 异族探针 A5 转成回归锁）─────
+
+
+# ── 546 T-A7：verify 来源 + 自证不许裸 done（把 545 异族探针 A7 转成回归锁）───
+
+
+def test_a7_custom_verify_self_certified_goes_needs_review(q: Path, capsys):
+    """探针 A7 原形态：`--verify-cmd "echo attacker-pass"` 自带考卷 + 同一人收尾 ⇒ **不许 done**。
+
+    修前：complete 跑 rc=0 ⇒ 直接 done（自己给自己出考卷、自己判卷、自己签收）。
+    修后：转 `needs_review`，`verify_hash` 前缀 `SELF_VERIFIED`。
+    """
+    tid = tq.enqueue("custom", "docs/a7.md", task_id="A7",
+                     verify_cmd="echo attacker-pass")["id"]
+    assert _get(q, tid)["verify_source"] == "custom", "自带 verify_cmd 须标 custom"
+    tq.claim("A")
+    r = tq.complete(tid, "A")
+    assert r["status"] == "needs_review", "自证不得裸 done"
+    assert r["verify_hash"].startswith("SELF_VERIFIED")
+    assert _get(q, tid)["status"] == "needs_review"
+    assert [e["event"] for e in _events(q, tid)] == ["enqueue", "claim", "needs_review"]
+    # 无凭据再来一次 ⇒ 仍被拒（不给"多试几次就放行"的口子）
+    with pytest.raises(SystemExit) as e:
+        tq.complete(tid, "A")
+    assert e.value.code == 2 and "second-party" in capsys.readouterr().err
+    # 自证者本人当第二方 ⇒ 拒（自己复核自己 = 没复核）
+    with pytest.raises(SystemExit) as e2:
+        tq.complete(tid, "A", second_party="A")
+    assert e2.value.code == 2 and "本人" in capsys.readouterr().err
+
+
+def test_a7_second_party_or_human_signoff_completes(q: Path):
+    """异方 `--second-party`（≠ 自证者）或人签 `--force --reason` ⇒ done，两条都留痕。"""
+    tid = tq.enqueue("custom", "docs/a7b.md", task_id="A7B", verify_cmd="echo ok")["id"]
+    tq.claim("alice")
+    assert tq.complete(tid, "alice")["status"] == "needs_review"
+    r = tq.complete(tid, "alice", second_party="bob")
+    assert r["status"] == "done" and "2nd=bob" in r["verify_hash"]
+    assert _get(q, tid)["verify_hash"] == r["verify_hash"]
+    ev = [e["event"] for e in _events(q, tid)]
+    assert ev == ["enqueue", "claim", "needs_review", "done", "second_party_confirm"]
+
+    t2 = tq.enqueue("custom", "docs/a7c.md", task_id="A7C", verify_cmd="echo ok")["id"]
+    tq.claim("carol")
+    r2 = tq.complete(t2, "carol", force=True, reason="人已复核产物与日志")
+    assert r2["status"] == "done" and "human=人已复核产物与日志" in r2["verify_hash"]
+    assert "human_signoff_done" in [e["event"] for e in _events(q, t2)]
+    # 人签不给原因 ⇒ 拒（不许无痕放行）
+    t3 = tq.enqueue("custom", "docs/a7d.md", task_id="A7D", verify_cmd="echo ok")["id"]
+    tq.claim("dave")
+    with pytest.raises(SystemExit):
+        tq.complete(t3, "dave", force=True)
+    assert _get(q, t3)["status"] == "claimed"
+
+
+def test_a7_default_verify_still_done_and_source_recorded(q: Path,
+                                                          monkeypatch: pytest.MonkeyPatch):
+    """type 默认表的 verify（`default` 来源）维持现状直接 done；来源标记三种取值都落库。"""
+    monkeypatch.setitem(tq.DEFAULT_VERIFY_CMDS, "custom", "echo default-ok")
+    d = tq.enqueue("custom", "docs/a7e.md", task_id="A7E")["id"]          # 走默认表
+    c = tq.enqueue("custom", "docs/a7f.md", task_id="A7F", verify_cmd="echo x")["id"]
+    n = tq.enqueue("research", "docs/a7g.md", task_id="A7G")["id"]        # 无 verify ⇒ 空
+    assert (_get(q, d)["verify_source"], _get(q, c)["verify_source"],
+            _get(q, n)["verify_source"]) == ("default", "custom", "")
+    tq.claim("alice")
+    assert tq.complete(d, "alice")["status"] == "done", "type 默认表不是自证 ⇒ 直 done"
+    assert "second_party_confirm" not in [e["event"] for e in _events(q, d)]
+    # 无 verify + --result-ref ⇒ 仍是 HUMAN_REVIEW_REQUIRED（C6 不回归）
+    tq.claim("bob")                       # 领到 A7F（custom，非本例目标）
+    assert tq.claim("carol")["claimed"]["id"] == n
+    rn = tq.complete(n, "carol", result_ref="data/tasks/a7g.out")
+    assert rn["status"] == "done" and rn["verify_hash"] == "HUMAN_REVIEW_REQUIRED"
+
+
+def test_a7_child_inherits_verify_source(q: Path, sb: Path):
+    """yield 切出的子任务继承父的 verify_cmd **与来源**（custom 不许靠切子任务洗白）。"""
+    tid = tq.enqueue("custom", "docs/a7h.md", task_id="A7H", budget=150,
+                     verify_cmd="echo inherited")["id"]
+    tq.claim("alice")
+    hp = _handoff(sb, tid, budget_used=100)
+    tq.checkpoint(tid, "alice", hp, used=100)
+    kid = tq.yield_task(tid, "alice", hp)["children"][0]
+    krow = _get(q, kid)
+    assert (krow["verify_cmd"], krow["verify_source"]) == ("echo inherited", "custom")
+    tq.claim("bob")
+    assert tq.complete(kid, "bob")["status"] == "needs_review", "子任务同样不许自证裸 done"
 
 
 # ── 546 T-A3：未来心跳 clamp + 年龄用 UTC（把 545 异族探针 A3 转成回归锁）──────

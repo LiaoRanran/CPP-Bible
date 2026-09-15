@@ -95,7 +95,10 @@ LEASE_GRACE_S = 120      # 心跳新鲜宽限：此窗口内裸 claim/takeover �
 # 546 T-A3：心跳"未来"的容差（> now + 30s ⇒ 不采信）。容差只为吞掉秒级截断/写盘延迟，
 # 不是给"时钟快一点"留口子——正常写心跳一律用**本机** `_now()`，跨机时钟偏移进不到库里。
 HEARTBEAT_FUTURE_TOLERANCE_S = 30
-STATUSES = ("queued", "claimed", "done", "failed", "blocked", "yielded")
+STATUSES = ("queued", "claimed", "done", "failed", "blocked", "yielded", "needs_review")
+# 546 T-A7：verify 来源（`tasks.verify_source`）
+VERIFY_DEFAULT = "default"   # type 默认表（534 §4.3）⇒ 不是 worker 自己出的考卷 ⇒ 可直 done
+VERIFY_CUSTOM = "custom"     # enqueue 时 --verify-cmd 自带 ⇒ **必须异方/人签**（否则自证）
 TRUST_LEVELS = ("L1", "L2", "L3")   # handoff verified_facts 的信任三级（见 validate_handoff）
 
 # 表结构由 530 T7 规格钉定（勿加列：加列会让"结果引用/原因"这类字段出现多份真源）
@@ -119,8 +122,9 @@ CREATE INDEX IF NOT EXISTS idx_tasks_pick ON tasks(status, priority, created_at)
 # parent_task/produced_by_model/steps_total/steps_done/checkpoint/cp_fingerprint/claimed_token）
 # + C6 的 verify_hash（verify 留痕的唯一载体）+ goal（`--goal` 的落点；534 §2.2 要求 enqueue 接
 # --goal，但 NEW_COLS 原型漏了列 ⇒ 施工补一列，见 _worklog_535.md 偏差表）。
-# 546 T-A5 升到 2（+depth）：老库 user_version=1 < 2 ⇒ 迁移段整段重跑，**只补缺失列**（幂等）。
-SCHEMA_VERSION = 2
+# 546 T-A5 升到 2（+depth）、T-A7 升到 3（+verify_source）：老库 user_version < 当前 ⇒
+# 迁移段整段重跑，**只补缺失列**（幂等；老库存量行拿 DEFAULT，数据不丢）。
+SCHEMA_VERSION = 3
 NEW_COLS: dict[str, str] = {
     "touch_set": "TEXT NOT NULL DEFAULT '[]'",
     "budget_calls": "INTEGER NOT NULL DEFAULT 500",
@@ -139,6 +143,10 @@ NEW_COLS: dict[str, str] = {
     # 546 T-A5（SCHEMA_VERSION=2）：yield 层级。根任务 0，yield 出的子任务 = 父 depth+1。
     # 老库存量行一律 0（视作根任务），不丢数据；深度闸只对**新 yield** 生效。
     "depth": "INTEGER NOT NULL DEFAULT 0",
+    # 546 T-A7（SCHEMA_VERSION=3）：verify 命令的**来源**——`default`（type 默认表）/
+    # `custom`（enqueue 时 --verify-cmd 自带）/ 空（无 verify，走 --result-ref 人审）。
+    # 自证判定的依据：自定义考卷 + 无人复核 ⇒ 不许裸 done（见 complete）。
+    "verify_source": "TEXT NOT NULL DEFAULT ''",
 }
 EVENTS_DDL = """
 CREATE TABLE IF NOT EXISTS events(
@@ -820,19 +828,23 @@ def enqueue(task_type: str, payload_ref: str, priority: int = 100,
         now = _now()
         touch_set = sorted({_touch_store(t) for t in (touch or []) if str(t).strip()})
         depth_n = _resolve_depth(conn, parent, depth)
+        # 546 T-A7：verify 来源。`--verify-cmd` 自带 ⇒ `custom`（**自带考卷**，收尾须异方/人签）；
+        # 走 type 默认表 ⇒ `default`（534 §4.3 的机器判决，不是 worker 自己出的题）。
+        vsrc = (VERIFY_CUSTOM if str(verify_cmd).strip()
+                else (VERIFY_DEFAULT if default_verify_cmd(task_type, payload_ref) else ""))
         conn.execute(
             "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
             "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"
-            "produced_by_model,steps_total,goal,depth) "
-            "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?)",
+            "produced_by_model,steps_total,goal,depth,verify_source) "
+            "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?,?)",
             (tid, task_type, payload_ref, int(priority),
              json.dumps(deps, ensure_ascii=False), now, now,
              json.dumps(touch_set, ensure_ascii=False), verify_cmd, int(budget),
-             parent, model, int(steps), goal, depth_n))
+             parent, model, int(steps), goal, depth_n, vsrc))
         _event(conn, tid, worker, "enqueue",
                f"deps={deps} touch={touch_set} steps={int(steps)} "
                f"budget={int(budget)} verify_cmd={verify_cmd!r} parent={parent} "
-               f"depth={depth_n}")
+               f"depth={depth_n} verify_source={vsrc or '-'}")
         conn.execute("COMMIT")
         return {"id": tid, "created": True, "deps_missing": missing, "touch_set": touch_set}
     except BaseException:
@@ -979,17 +991,21 @@ def worker_secret(db_path: Path | str | None, worker: str, *, register: bool) ->
 
 
 def _authorize(row: sqlite3.Row | dict[str, Any], worker: str, action: str,
-               db_path: Path | str | None = None) -> None:
+               db_path: Path | str | None = None, *,
+               status: str = "claimed") -> None:
     """工作命令的**唯一授权点**：状态必须 claimed + 必须是认领者本人 + 必须持有 token。
 
     d976170 只比 `claimed_by` 字符串——知道名字就能冒充（534 §6.1 E12）；C5 在此单点
     叠加 token possession，不在别处再写一遍。**兼容残留**：d976170 时代认领的行
     `claimed_token` 为 NULL（升级前认领的任务），无从核对 ⇒ 放行（只认名字），
     代价是那批在飞任务保留旧弱授权；新认领一律带 token。诚实边界见 `worker_secret`。
+
+    `status`：546 T-A7 起 `needs_review` 的**二次确认**（异方/人签）也走本单点（同一把锁：
+    名字 + token），只把"必须是 claimed"换成"必须是 needs_review"。
     """
-    if row["status"] != "claimed":
+    if row["status"] != status:
         raise SystemExit(
-            f"[task_queue] {row['id']} 当前状态 {row['status']}，非 claimed ⇒ 拒绝 {action}")
+            f"[task_queue] {row['id']} 当前状态 {row['status']}，非 {status} ⇒ 拒绝 {action}")
     if row["claimed_by"] != worker:
         raise SystemExit(
             f"[task_queue] 拒绝 {action}：{row['id']} 由 {row['claimed_by']!r} 认领，非 {worker!r}")
@@ -1201,13 +1217,14 @@ def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None
             conn.execute(
                 "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
                 "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"
-                "produced_by_model,steps_total,goal,handoff_path,depth) "
-                "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?,?)",
+                "produced_by_model,steps_total,goal,handoff_path,depth,verify_source) "
+                "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (cid, row["type"], row["payload_ref"], row["priority"],
                  json.dumps(cdeps, ensure_ascii=False), now, now,
                  json.dumps(g.get("touch") or parent_touch, ensure_ascii=False),
                  row["verify_cmd"], per, task_id, row["produced_by_model"],
-                 len(g["steps"]), ch["goal"], _rel_store(chp), child_depth))
+                 len(g["steps"]), ch["goal"], _rel_store(chp), child_depth,
+                 row["verify_source"] if "verify_source" in row.keys() else ""))
             _event(conn, cid, worker, "enqueue_child",
                    f"parent={task_id} budget={per} steps={len(g['steps'])} "
                    f"depth={child_depth} deps={cdeps}")
@@ -1320,15 +1337,23 @@ def _touch_audit(row: sqlite3.Row | dict[str, Any],
 
 
 def complete(task_id: str, worker: str, *, result_ref: str | None = None,
-             timeout: int = 900, db_path: Path | str | None = None) -> dict[str, Any]:
-    """完成验证闭环（535 C6）：**worker 不得自证**——先跑门禁命令，过了才 done。
+             timeout: int = 900, db_path: Path | str | None = None,
+             second_party: str | None = None, force: bool = False,
+             reason: str = "") -> dict[str, Any]:
+    """完成验证闭环（535 C6 + 546 T-A7）：**worker 不得自证**——先跑门禁命令，过了才 done。
 
-    - rc=0 ⇒ `done`，`verify_hash = sha256(stdout+stderr)[:16]@<耗时>s rc=0`（可追溯的"非否认"轻量替代）；
+    - rc=0 且 verify 来源是 **type 默认表** ⇒ `done`，`verify_hash = sha256(...)[:16]@<耗时>s rc=0`；
+    - rc=0 但 verify 来源是 **custom**（入队时 `--verify-cmd` 自带，等于自己给自己出考卷）
+      ⇒ **不裸 done**：转 `needs_review`、`verify_hash` 前缀 `SELF_VERIFIED`，须
+      **异方 `--second-party <名>`**（≠ 自证者）或**人签 `--force --reason`** 才 done（546 T-A7）；
     - rc≠0 ⇒ `attempts+1`、error 记尾部 300 字，超 `MAX_ATTEMPTS` ⇒ `blocked`，否则回 `queued`（释放所有权）；
     - 无 verify_cmd ⇒ 必须 `--result-ref`，`verify_hash=HUMAN_REVIEW_REQUIRED`（研究/文档类转人审，不许裸 done）；
     - 收尾审计：`git status -uall` 里**没在 touch_set 声明却真被改了**的文件要显形
       （沙箱实测真抓出过 worker 的运行日志 ⇒ 不是理论顾虑）。
     父回卷与 `done` 同一实现（`_rollup_parent`），两条收尾路径不分叉。
+
+    诚实边界：`--second-party` 目前是**声明式**（名字进事件留痕），未做第二方 token 双因子
+    ——本机单人场景的信任边界仍是文件系统权限（与 `worker_secret` 同一条边界）。
     """
     if not worker:
         raise SystemExit("[task_queue] --worker 必填")
@@ -1340,6 +1365,43 @@ def complete(task_id: str, worker: str, *, result_ref: str | None = None,
         if row is None:
             _rollback(conn)
             raise SystemExit(f"[task_queue] 无此任务：{task_id}")
+        now = _now()
+        # 546 T-A7：异方/人签的**凭据**（两种收尾都要用：①首次 complete 就带着来 ②needs_review 后再来）
+        sp = (second_party or "").strip()
+        if sp and sp == row["claimed_by"]:
+            _rollback(conn)
+            _reject(f"--second-party {sp} 就是收尾者本人：异方确认不成立"
+                    f"（自己复核自己 = 没复核）", 2)
+        if force and not (reason or "").strip():
+            _rollback(conn)
+            _reject("--force 人签 done 必须给 --reason（不许无痕放行，与 takeover 同纪律）", 2)
+        confirmed = (f"2nd={sp}" if sp
+                     else (f"human={reason.strip()[:80]}" if force else ""))
+        # 546 T-A7：`needs_review` 的二次收尾（异方确认 / 人签）——先认人（同一把锁：名字+token）
+        if row["status"] == "needs_review":
+            _authorize(row, worker, "needs_review 确认", db_path, status="needs_review")
+            if not confirmed:
+                _rollback(conn)
+                _reject(f"{task_id} 已在 needs_review：verify 是入队时自带的（custom），"
+                        f"由收尾者 {row['claimed_by']} 自证，不许裸 done ⇒ 须异方 "
+                        f"--second-party <名>（≠ {row['claimed_by']}）或人签 "
+                        f"--force --reason <原因>", 2)
+            vhash2 = f"{row['verify_hash'] or ''} {confirmed}"
+            undeclared, audit_note = _touch_audit(row)
+            conn.execute(
+                "UPDATE tasks SET status='done',verify_hash=?,updated_at=? WHERE id=?",
+                (vhash2, now, task_id))
+            _event(conn, task_id, worker, "done", f"verify={vhash2} undeclared={undeclared}")
+            _event(conn, task_id, worker,
+                   "second_party_confirm" if sp else "human_signoff_done",
+                   f"by={sp or '人签'} reason={reason.strip()[:120]} "
+                   f"undeclared={undeclared}")
+            rolled = _rollup_parent(conn, row, worker, now)
+            conn.execute("COMMIT")
+            return {"id": task_id, "status": "done", "verify_hash": vhash2,
+                    "verify_cmd": row["verify_cmd"], "confirm": sp or "human_signoff",
+                    "undeclared_touch": undeclared, "audit_note": audit_note,
+                    "parent_rolled_up": rolled}
         _authorize(row, worker, "complete", db_path)   # 先认人
         now = _now()
         verify = row["verify_cmd"] or default_verify_cmd(row["type"], row["payload_ref"])
@@ -1349,6 +1411,7 @@ def complete(task_id: str, worker: str, *, result_ref: str | None = None,
                         f"--result-ref（转人审，不许 worker 自证）", 2)
             vhash = "HUMAN_REVIEW_REQUIRED"
             dt = 0.0
+            rc = 0
         else:
             t0 = time.perf_counter()
             try:
@@ -1386,6 +1449,26 @@ def complete(task_id: str, worker: str, *, result_ref: str | None = None,
                 return {"id": task_id, "status": "queued", "attempts": att,
                         "verify_hash": vhash, "verify_cmd": verify}
         undeclared, audit_note = _touch_audit(row)
+        # 546 T-A7：verify 来源是 **custom**（入队时自带的考卷）⇒ 不许裸 done。
+        # 为什么不看"入队者 == 收尾者"：库里 `produced_by_model` 常为空（enqueue 的 --model 可省略），
+        # 身份无从比对 ⇒ 按 fail-closed 一律转 needs_review，由**异方/人签**补上复核这一环。
+        vsrc = (row["verify_source"] if "verify_source" in row.keys() else "") or ""
+        if rc == 0 and vsrc == VERIFY_CUSTOM and not confirmed:
+            svhash = f"SELF_VERIFIED {vhash}"
+            conn.execute(
+                "UPDATE tasks SET status='needs_review',result_ref=?,verify_hash=?,"
+                "updated_at=? WHERE id=?",
+                (result_ref or row["result_ref"], svhash, now, task_id))
+            _event(conn, task_id, worker, "needs_review",
+                   f"{svhash} cmd={verify[:160]} 自定义 verify 由 {row['claimed_by']} 自证"
+                   f"（produced_by_model={row['produced_by_model']}）"
+                   f"⇒ 须 --second-party <异方> 或 --force --reason <原因> 才 done")
+            conn.execute("COMMIT")
+            return {"id": task_id, "status": "needs_review", "verify_hash": svhash,
+                    "verify_cmd": verify, "verify_source": vsrc,
+                    "undeclared_touch": undeclared, "audit_note": audit_note}
+        if confirmed and vsrc == VERIFY_CUSTOM:      # 首次收尾就带着异方/人签来 ⇒ 直接 done
+            vhash = f"{vhash} {confirmed}"
         conn.execute(
             "UPDATE tasks SET status='done',result_ref=?,verify_hash=?,updated_at=?,"
             "heartbeat_at=? WHERE id=?",
@@ -1394,11 +1477,17 @@ def complete(task_id: str, worker: str, *, result_ref: str | None = None,
         _event(conn, task_id, worker, "done",
                f"verify={vhash} undeclared={undeclared}"
                + (f" audit_note={audit_note}" if audit_note else ""))
+        if confirmed and vsrc == VERIFY_CUSTOM:
+            _event(conn, task_id, worker,
+                   "second_party_confirm" if sp else "human_signoff_done",
+                   f"by={sp or '人签'} reason={reason.strip()[:120]}")
         rolled = _rollup_parent(conn, row, worker, now)
         conn.execute("COMMIT")
         return {"id": task_id, "status": "done", "verify_hash": vhash, "verify_cmd": verify,
                 "undeclared_touch": undeclared, "audit_note": audit_note,
-                "parent_rolled_up": rolled}
+                "parent_rolled_up": rolled,
+                "confirm": (sp or "human_signoff") if (confirmed and vsrc == VERIFY_CUSTOM)
+                           else None}
     except BaseException:
         _rollback(conn)
         raise
@@ -1649,6 +1738,11 @@ def _main(argv: list[str] | None = None) -> int:
     cp.add_argument("--worker", required=True)
     cp.add_argument("--result-ref", default=None, help="结果引用（无 verify_cmd 时必填 ⇒ 转人审）")
     cp.add_argument("--timeout", type=int, default=900, help="verify_cmd 超时秒数（默认 900）")
+    cp.add_argument("--second-party", dest="second_party", default=None,
+                    help="异方确认者（≠ 收尾者）：自定义 verify 转 needs_review 后由它确认才 done")
+    cp.add_argument("--force", action="store_true",
+                    help="人签放行 needs_review（必须配 --reason）")
+    cp.add_argument("--reason", default="", help="人签原因（留痕进 events）")
 
     for name in ("heartbeat", "done", "fail", "blocked"):
         p = sub.add_parser(name, parents=[common])
@@ -1746,13 +1840,18 @@ def _main(argv: list[str] | None = None) -> int:
                   f"{r['children']}（每子预算 {r['budget_per_child']}）")
         return 0
     if a.cmd == "complete":
-        r = complete(a.id, a.worker, result_ref=a.result_ref, timeout=a.timeout, db_path=db)
+        r = complete(a.id, a.worker, result_ref=a.result_ref, timeout=a.timeout, db_path=db,
+                     second_party=a.second_party, force=a.force, reason=a.reason)
         if a.json:
             print(json.dumps(r, ensure_ascii=False))
         else:
             print(f"[task_queue] {r['id']} → {r['status']}（verify {r['verify_hash']}）")
             if r.get("verify_cmd"):
                 print(f"[task_queue] verify_cmd：{r['verify_cmd']}")
+            if r["status"] == "needs_review":
+                print(f"[task_queue] ⚠ verify 是入队时自带的（custom）且由 {a.worker} 自证 ⇒ "
+                      f"转 needs_review：须 --second-party <异方> 或 --force --reason <原因>"
+                      f" 才 done", file=sys.stderr)
             if r["status"] == "done" and r.get("undeclared_touch"):
                 print(f"[task_queue] ⚠ 未在 touch_set 声明却被改动：{r['undeclared_touch']}"
                       f"（已在 done 事件留痕）", file=sys.stderr)
