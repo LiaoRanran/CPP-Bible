@@ -987,6 +987,71 @@ def test_t0_regression_existing_touch_lock_still_works(q: Path):
         {"id": tb, "blocked_by": [{"task": ta, "files": [tq._touch_store("work/shared.txt")]}]}]
 
 
+# ── 546 T-A5：yield 深度上界 + 累计预算账（把 545 异族探针 A5 转成回归锁）─────
+
+
+def test_a5_depth_cap_blocks_endless_yield(q: Path, sb: Path,
+                                           capsys: pytest.CaptureFixture):
+    """异族探针 A5 主形态：P→c1→c1.c1… 无 --force 只能到 MAX_YIELD_DEPTH 级。
+
+    修前：每级子任务都拿**全新**预算（下限 80 < YIELD_BUDGET_LEFT 100）⇒ 每级都能无签再让出，
+    实测 5 级仍可继续（层级与总调用预算双无上界）。修后：depth 上界是硬闸，人签才放行。
+    """
+    tid = tq.enqueue("custom", "docs/a5.md", task_id="P", budget=500)["id"]
+    tq.claim("w0")
+    h0 = _handoff(sb, tid, budget_used=450)      # left = 500-450 = 50 < 100 ⇒ 可让出
+    tq.checkpoint(tid, "w0", h0, used=450)
+    cur = tq.yield_task(tid, "w0", h0)["children"][0]
+    assert _get(q, cur)["depth"] == 1, "根任务直接切出的子任务 depth=1"
+    for i in range(1, tq.MAX_YIELD_DEPTH):       # 补到 depth=MAX_YIELD_DEPTH
+        tq.claim(f"w{i}")
+        nxt = tq.yield_task(cur, f"w{i}", _handoff(sb, cur, budget_used=0))["children"][0]
+        assert _get(q, nxt)["depth"] == i + 1
+        cur = nxt
+    # 第 MAX_YIELD_DEPTH+1 级：无 force ⇒ 拒（exit 2），状态与子树都不被动
+    tq.claim("wX")
+    hx = _handoff(sb, cur, budget_used=0)
+    with pytest.raises(SystemExit) as e:
+        tq.yield_task(cur, "wX", hx)
+    assert e.value.code == 2 and "深度" in capsys.readouterr().err
+    assert _get(q, cur)["status"] == "claimed" and _get(q, f"{cur}.c1") == {}
+    # 人签 --force ⇒ 放行（口子留在人手里）+ 事件留痕（谁放的、放到第几级）
+    r = tq.yield_task(cur, "wX", hx, force=True)
+    assert r["child_depth"] == tq.MAX_YIELD_DEPTH + 1
+    assert _get(q, r["children"][0])["depth"] == tq.MAX_YIELD_DEPTH + 1
+    assert any(e2["event"] == "yield_depth_override" for e2 in _events(q, cur))
+
+
+def test_a5_cumulative_budget_pool_caps_total(q: Path, sb: Path,
+                                              capsys: pytest.CaptureFixture):
+    """累计账：本次下发 + 子树已发 > **根任务预算** ⇒ 无 force 拒（旧行为是每级凭空发 80）。
+
+    父**剩余**池被下限（MIN_CHILD_BUDGET）突破是 534 §6.5 闸门② 的既有语义（C3 回归锁：
+    budget=150/used=100 ⇒ 子 80），故不在此拒；改为两件事：①累计池=根预算（真·上界）；
+    ②破了父剩余要在 yield 事件里显形（overdraw=…）。
+    """
+    tid = tq.enqueue("custom", "docs/a5b.md", task_id="B", budget=150)["id"]
+    tq.claim("w0")
+    h0 = _handoff(sb, tid, budget_used=100)
+    tq.checkpoint(tid, "w0", h0, used=100)       # left=50 ⇒ 子预算按下限 80
+    c1 = tq.yield_task(tid, "w0", h0)["children"][0]
+    assert _get(q, c1)["budget_calls"] == tq.MIN_CHILD_BUDGET, "下限语义不得被破坏（C3 契约）"
+    det = [e2["detail"] for e2 in _events(q, tid) if e2["event"] == "yield"][0]
+    assert "overdraw=80>50" in det, "破了父剩余须显形（不许静默）"
+    # 第二级：再发 80 ⇒ 累计 160 > 根预算 150 ⇒ 拒
+    tq.claim("w1")
+    h1 = _handoff(sb, c1, budget_used=0)
+    with pytest.raises(SystemExit) as e:
+        tq.yield_task(c1, "w1", h1)
+    assert e.value.code == 2 and "累计池" in capsys.readouterr().err
+    assert _get(q, c1)["status"] == "claimed" and _get(q, f"{c1}.c1") == {}
+    # 人签放行：累计数字进 yield 事件（事后可审"总共发出去多少"）
+    r = tq.yield_task(c1, "w1", h1, force=True)
+    assert (r["issued_total"], r["root_budget"]) == (160, 150)
+    det2 = [e2["detail"] for e2 in _events(q, c1) if e2["event"] == "yield"][0]
+    assert "issued=160/root=150" in det2
+
+
 def test_t0_storage_posix_compare_folded_539_a1(q: Path):
     """539 A1：**存的是纯 posix（跨平台一致），比的时候才折叠平台差异**。
 

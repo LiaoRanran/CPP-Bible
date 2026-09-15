@@ -83,6 +83,10 @@ MAX_ATTEMPTS = 3         # attempts > 此值 ⇒ 自动 blocked（防无限重�
 YIELD_BUDGET_LEFT = 100  # 预算剩余 ≥ 此值 ⇒ **不许逃**（yield 需 --force 才放行）
 MAX_CHILDREN = 4         # 单次 yield 最多切几个子任务（防碎片）
 MIN_CHILD_BUDGET = 80    # 每个子任务的预算下限（防"切到没法干活"）
+# 546 T-A5：yield **深度**上界（子任务 depth = 父 depth+1，> 此值须人签 --force）。
+# 洞的原形：每级子任务都拿全新预算（下限 80 < YIELD_BUDGET_LEFT 100）⇒ 每级都能"无 force"再让出
+# ⇒ 层级与总调用预算**都无上界**（实测 P→c1→c1.c1… 5 级仍可继续）。深度是本洞的**主闸**。
+MAX_YIELD_DEPTH = 3
 LEASE_GRACE_S = 120      # 心跳新鲜宽限：此窗口内裸 claim/takeover 都拿不到活（见 C5）
 STATUSES = ("queued", "claimed", "done", "failed", "blocked", "yielded")
 TRUST_LEVELS = ("L1", "L2", "L3")   # handoff verified_facts 的信任三级（见 validate_handoff）
@@ -108,7 +112,8 @@ CREATE INDEX IF NOT EXISTS idx_tasks_pick ON tasks(status, priority, created_at)
 # parent_task/produced_by_model/steps_total/steps_done/checkpoint/cp_fingerprint/claimed_token）
 # + C6 的 verify_hash（verify 留痕的唯一载体）+ goal（`--goal` 的落点；534 §2.2 要求 enqueue 接
 # --goal，但 NEW_COLS 原型漏了列 ⇒ 施工补一列，见 _worklog_535.md 偏差表）。
-SCHEMA_VERSION = 1
+# 546 T-A5 升到 2（+depth）：老库 user_version=1 < 2 ⇒ 迁移段整段重跑，**只补缺失列**（幂等）。
+SCHEMA_VERSION = 2
 NEW_COLS: dict[str, str] = {
     "touch_set": "TEXT NOT NULL DEFAULT '[]'",
     "budget_calls": "INTEGER NOT NULL DEFAULT 500",
@@ -124,6 +129,9 @@ NEW_COLS: dict[str, str] = {
     "claimed_token": "TEXT",
     "verify_hash": "TEXT",
     "goal": "TEXT NOT NULL DEFAULT ''",
+    # 546 T-A5（SCHEMA_VERSION=2）：yield 层级。根任务 0，yield 出的子任务 = 父 depth+1。
+    # 老库存量行一律 0（视作根任务），不丢数据；深度闸只对**新 yield** 生效。
+    "depth": "INTEGER NOT NULL DEFAULT 0",
 }
 EVENTS_DDL = """
 CREATE TABLE IF NOT EXISTS events(
@@ -665,17 +673,34 @@ def cp_fingerprint(h: dict[str, Any]) -> str:
 # ── 写操作（皆 `BEGIN IMMEDIATE` 原子） ──────────────────────────────────────
 
 
+def _resolve_depth(conn: sqlite3.Connection, parent: str | None,
+                   depth: int | None) -> int:
+    """入队时 `depth` 的落点（546 T-A5）：显式给了就用；否则由父行推导；无父 ⇒ 0（根任务）。
+
+    手写入队（给 `--parent`）也走同一本账 ⇒ 不许靠"不填 depth"把自己伪装成根任务。
+    """
+    if depth is not None:
+        return max(0, int(depth))
+    if not parent:
+        return 0
+    r = conn.execute("SELECT depth FROM tasks WHERE id=?", (parent,)).fetchone()
+    return (max(0, int(r["depth"] or 0)) + 1) if r else 0
+
+
 def enqueue(task_type: str, payload_ref: str, priority: int = 100,
             deps: list[str] | None = None, task_id: str | None = None,
             db_path: Path | str | None = None, *, touch: list[str] | None = None,
             verify_cmd: str = "", budget: int = 500, parent: str | None = None,
             model: str | None = None, steps: int = 0, goal: str = "",
-            worker: str = "enqueuer") -> dict[str, Any]:
+            depth: int | None = None, worker: str = "enqueuer") -> dict[str, Any]:
     """入队（幂等）。已存在 ⇒ {"created": False}，不报错（可安全重跑）。
 
     535 C2 扩参：`touch`（写冲突锁的声明集，posix 相对路径）、`verify_cmd`（complete 门禁）、
     `budget/steps/goal/parent/model`（预算与交接物语境）。deps 引用不存在的任务仍只**提示**
     （d976170 契约：任务照建，只是 claim 不到）；但**自引用与成环一律拒**（fail-closed）。
+
+    546 T-A5：`depth` 省略时 = 0（根任务）；给了 `parent` 则由父行推导 `父depth+1`
+    （手写 `--parent` 时也走同一本账，不给"冒充根任务"留口子）。
     """
     if not task_type or not payload_ref:
         raise SystemExit("[task_queue] --type 与 --payload-ref 必填")
@@ -698,18 +723,20 @@ def enqueue(task_type: str, payload_ref: str, priority: int = 100,
             _reject(f"deps 成环：沿依赖链可回到 {tid}（入队即拒）", 2)
         now = _now()
         touch_set = sorted({_touch_store(t) for t in (touch or []) if str(t).strip()})
+        depth_n = _resolve_depth(conn, parent, depth)
         conn.execute(
             "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
             "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"
-            "produced_by_model,steps_total,goal) "
-            "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?)",
+            "produced_by_model,steps_total,goal,depth) "
+            "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?)",
             (tid, task_type, payload_ref, int(priority),
              json.dumps(deps, ensure_ascii=False), now, now,
              json.dumps(touch_set, ensure_ascii=False), verify_cmd, int(budget),
-             parent, model, int(steps), goal))
+             parent, model, int(steps), goal, depth_n))
         _event(conn, tid, worker, "enqueue",
                f"deps={deps} touch={touch_set} steps={int(steps)} "
-               f"budget={int(budget)} verify_cmd={verify_cmd!r} parent={parent}")
+               f"budget={int(budget)} verify_cmd={verify_cmd!r} parent={parent} "
+               f"depth={depth_n}")
         conn.execute("COMMIT")
         return {"id": tid, "created": True, "deps_missing": missing, "touch_set": touch_set}
     except BaseException:
@@ -949,15 +976,56 @@ def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None
         conn.close()
 
 
+def _root_of(conn: sqlite3.Connection, row: sqlite3.Row | dict[str, Any]
+             ) -> tuple[str, int]:
+    """沿 `parent_task` 上溯到根，返回 `(根 id, 根 budget_calls)`（546 T-A5 累计账的池子）。
+
+    环/断链防护：最多上溯 `MAX_YIELD_DEPTH + 8` 跳，且 `id` 不重复入栈（防御性，现约束下
+    父链由 yield 单向构造，理论上无环）。
+    """
+    cur, hops = row, 0
+    seen = {str(row["id"])}
+    while cur["parent_task"] and hops < MAX_YIELD_DEPTH + 8:
+        pr = conn.execute("SELECT id,parent_task,budget_calls,depth FROM tasks "
+                          "WHERE id=?", (cur["parent_task"],)).fetchone()
+        if pr is None or pr["id"] in seen:
+            break
+        seen.add(pr["id"])
+        cur, hops = pr, hops + 1
+    return str(cur["id"]), int(cur["budget_calls"] or 0)
+
+
+def _subtree_issued(conn: sqlite3.Connection, root_id: str) -> int:
+    """整棵子树**已下发**的预算之和（546 T-A5 累计账的已用额度）。
+
+    口径：所有后代行 `budget_calls` 求和（宽/深两个方向都算进去）。
+    """
+    total, frontier, seen = 0, [root_id], set()
+    while frontier:
+        cur = frontier.pop()
+        if cur in seen:
+            continue
+        seen.add(cur)
+        for r in conn.execute("SELECT id,budget_calls FROM tasks WHERE parent_task=?",
+                              (cur,)):
+            total += int(r["budget_calls"] or 0)
+            frontier.append(r["id"])
+    return total
+
+
 def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None, *,
                force: bool = False, db_path: Path | str | None = None) -> dict[str, Any]:
     """到顶让出（535 C3）：交接物 fail-closed 校验 → 父转 `yielded` → 残步骤切子任务。
 
-    三道量化闸门（534 §6.5）：
+    量化闸门（534 §6.5 + 546 T-A5）：
       ① 预算剩余 ≥ `YIELD_BUDGET_LEFT` ⇒ **不许逃**（`--force` 是人给自己留的口子）；
       ② 单次切分 ≤ `MAX_CHILDREN` 个、空组拒绝（防碎片）、每子预算 ≥ `MIN_CHILD_BUDGET`；
-      ③ 父回卷：全部子任务 done ⇒ 父自动 done（见 `_rollup_parent`）。
-    **`--force` 只解预算闸门，不解 handoff 质量闸门**——"缺 next_action / 无锚点"一律拒让出。
+      ③ **深度上界**（546 T-A5）：子任务 `depth = 父 depth+1 > MAX_YIELD_DEPTH` ⇒
+         未 `--force` 一律拒（每级都能无签再让出 = 层级与总预算双无上界，实测 5 级仍可续）；
+      ④ **累计预算账**（546 T-A5）：本次下发 + 子树已下发 > **根任务 budget_calls** ⇒
+         未 `--force` 一律拒（"每级凭空发 80"的账本终结在此）。
+      ⑤ 父回卷：全部子任务 done ⇒ 父自动 done（见 `_rollup_parent`）。
+    **`--force` 只解预算/深度闸门，不解 handoff 质量闸门**——"缺 next_action / 无锚点"一律拒让出。
     """
     hp = Path(handoff_path) if handoff_path else handoff_path_for(task_id, db_path)
     init(db_path)
@@ -988,6 +1056,22 @@ def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None
             _rollback(conn)
             _reject("切出空子任务（碎片防护）：每个子任务至少要带一步", 2)
         per = max(MIN_CHILD_BUDGET, left // len(groups))
+        # ── 546 T-A5 闸门③④：深度上界 + 累计预算账（先算再落子，两闸都在同一事务内）──
+        parent_depth = int(row["depth"] or 0)
+        child_depth = parent_depth + 1
+        if child_depth > MAX_YIELD_DEPTH and not force:
+            _rollback(conn)
+            _reject(f"yield 深度 {child_depth} > 上界 {MAX_YIELD_DEPTH}"
+                    f"（父 {task_id} depth={parent_depth}）：不许靠层层让出无限续命"
+                    f"（确有需要请人签 --force，事件里留痕）", 2)
+        root_id, root_budget = _root_of(conn, row)
+        issued = _subtree_issued(conn, root_id)
+        if issued + per * len(groups) > root_budget and not force:
+            _rollback(conn)
+            _reject(f"子预算超出累计池：本次 {per}×{len(groups)} + 子树已发 {issued} > "
+                    f"根任务 {root_id} 预算 {root_budget}（旧行为是每级凭空发 "
+                    f"{MIN_CHILD_BUDGET} ⇒ 总调用预算无上界）；确有需要请人签 --force", 2)
+        overdraw = per * len(groups) > left      # 破了父**剩余**池（下限语义放行，但留痕）
         parent_touch = _jload(row["touch_set"], [])
         child_ids: list[str] = []
         prev: str | None = None
@@ -1019,15 +1103,16 @@ def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None
             conn.execute(
                 "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
                 "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"
-                "produced_by_model,steps_total,goal,handoff_path) "
-                "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?)",
+                "produced_by_model,steps_total,goal,handoff_path,depth) "
+                "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?,?)",
                 (cid, row["type"], row["payload_ref"], row["priority"],
                  json.dumps(cdeps, ensure_ascii=False), now, now,
                  json.dumps(g.get("touch") or parent_touch, ensure_ascii=False),
                  row["verify_cmd"], per, task_id, row["produced_by_model"],
-                 len(g["steps"]), ch["goal"], _rel_store(chp)))
+                 len(g["steps"]), ch["goal"], _rel_store(chp), child_depth))
             _event(conn, cid, worker, "enqueue_child",
-                   f"parent={task_id} budget={per} steps={len(g['steps'])} deps={cdeps}")
+                   f"parent={task_id} budget={per} steps={len(g['steps'])} "
+                   f"depth={child_depth} deps={cdeps}")
             child_ids.append(cid)
             prev = cid
         conn.execute(
@@ -1037,10 +1122,21 @@ def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None
             (_rel_store(hp), json.dumps(h, ensure_ascii=False), cp_fingerprint(h),
              len(h.get("steps_done") or []), used, now, task_id))
         _event(conn, task_id, worker, "yield",
-               f"children={child_ids} used={used} left={left} force={force}")
+               f"children={child_ids} used={used} left={left} force={force} "
+               f"depth={child_depth} issued={issued + per * len(groups)}"
+               f"/root={root_budget}({root_id})"
+               + (f" overdraw={per * len(groups)}>{left}"
+                  f"（子预算合计破父剩余，MIN_CHILD_BUDGET 下限优先；累计池仍受根预算约束）"
+                  if overdraw else ""))
+        if child_depth > MAX_YIELD_DEPTH:
+            _event(conn, task_id, worker, "yield_depth_override",
+                   f"人签 --force 放行 depth={child_depth} > {MAX_YIELD_DEPTH}"
+                   f"（超出深度上界，责任在人）")
         conn.execute("COMMIT")
         return {"yielded": task_id, "children": child_ids, "budget_per_child": per,
-                "budget_left": left, "status": "yielded"}
+                "budget_left": left, "status": "yielded", "child_depth": child_depth,
+                "issued_total": issued + per * len(groups), "root_budget": root_budget,
+                "budget_overdraw": overdraw}
     except BaseException:
         _rollback(conn)
         raise
