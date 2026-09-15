@@ -623,3 +623,77 @@ def test_c4_touch_preview_reports_blocked_candidate(q: Path):
     r2 = tq.next_task()
     assert r2["blocked_by_touch"] == []
     assert r2["next"]["id"] == ta and r2["next"]["would_take_over"] is True
+
+
+# ── 535 C5：租约语义 + 人工 takeover + token possession（E12 冒名）────────────
+
+
+def test_c5_lease_blocks_bare_claim_and_soft_takeover(q: Path,
+                                                      capsys: pytest.CaptureFixture):
+    """租约内裸 claim 抢不到；软 takeover 被拒（rc=2 并提示）；只有 --force --reason 可接管。"""
+    tid = tq.enqueue("atom_produce", "docs/lease.md")["id"]
+    assert tq.claim("alice")["claimed"]["id"] == tid
+    assert tq.claim("bob")["claimed"] is None, "租约内裸 claim 不得顶掉正在干的活"
+    with pytest.raises(SystemExit) as e:
+        tq.claim("bob", takeover=tid)
+    assert e.value.code == 2 and "疑似仍在跑" in capsys.readouterr().err
+    assert _get(q, tid)["claimed_by"] == "alice", "软拒后持有者不得变"
+    # force 但不给原因 ⇒ 拒（不许无痕顶掉别人）
+    with pytest.raises(SystemExit) as e2:
+        tq.claim("bob", takeover=tid, force=True)
+    assert e2.value.code == 2 and "--reason" in capsys.readouterr().err
+    assert _get(q, tid)["claimed_by"] == "alice"
+    # 人担责接管：留痕 + attempts 保留累加 + 原主失权
+    r = tq.claim("bob", takeover=tid, force=True, reason="A 会话到顶被 kill")
+    assert r["claimed"]["id"] == tid and r["claimed"]["claimed_by"] == "bob"
+    assert r["claimed"]["attempts"] == 2, "接管须保留并累加 attempts"
+    ev = [e["event"] for e in _events(q, tid)]
+    assert ev[:3] == ["enqueue", "claim", "manual_takeover"] and "claim" == ev[3]
+    detail = [e["detail"] for e in _events(q, tid) if e["event"] == "manual_takeover"][0]
+    assert "from=alice" in detail and "A 会话到顶被 kill" in detail, "接管原因须留痕"
+    with pytest.raises(SystemExit):
+        tq.heartbeat(tid, "alice")
+    assert tq.heartbeat(tid, "bob")["status"] == "claimed"
+    # 接管目标非 claimed / 不存在 ⇒ 拒绝
+    with pytest.raises(SystemExit):
+        tq.claim("carol", takeover="no-such-task")
+    tq.done(tid, "bob")
+    with pytest.raises(SystemExit) as e3:
+        tq.claim("carol", takeover=tid, force=True, reason="x")
+    assert e3.value.code == 2 and "仅 claimed 可接管" in capsys.readouterr().err
+
+
+def test_c5_token_possession_blocks_impersonation(q: Path, capsys: pytest.CaptureFixture):
+    """知道名字 ≠ 有所有权：token 文件缺失/被换 ⇒ 工作命令一律拒（E12 冒名拦截）。"""
+    tid = tq.enqueue("atom_produce", "docs/tok.md")["id"]
+    tq.claim("alice")
+    tok = tq.workers_dir() / "alice.token"
+    assert tok.is_file() and json.loads(tok.read_text(encoding="utf-8"))["id"] == "alice"
+    assert tq.heartbeat(tid, "alice")["status"] == "claimed", "本人持 token ⇒ 放行"
+    # ① 删掉 token 文件（换机/换用户只剩名字）⇒ 拒
+    tok.unlink()
+    with pytest.raises(SystemExit) as e:
+        tq.heartbeat(tid, "alice")
+    assert e.value.code == 2 and "未注册" in capsys.readouterr().err
+    # ② token 文件被换成别的 secret ⇒ 拒
+    tok.write_text(json.dumps({"id": "alice", "secret": "0" * 32}), encoding="utf-8")
+    with pytest.raises(SystemExit) as e2:
+        tq.checkpoint(tid, "alice")
+    assert e2.value.code == 2 and "未持有" in capsys.readouterr().err
+    # ③ 恢复原 secret ⇒ 放行（拒绝不是永久性的，别把人锁死）
+    tok.write_text(json.dumps({"id": "alice", "secret": _get(q, tid)["claimed_token"]}),
+                   encoding="utf-8")
+    assert tq.heartbeat(tid, "alice")["status"] == "claimed"
+
+
+def test_c5_legacy_row_without_token_still_works(q: Path):
+    """升级前认领的行 claimed_token 为 NULL ⇒ 只认名字放行（诚实残留，不因升级把在飞任务锁死）。"""
+    tid = tq.enqueue("atom_produce", "docs/legacy.md")["id"]
+    tq.claim("alice")
+    _sql(q, "UPDATE tasks SET claimed_token=NULL WHERE id=?", (tid,))
+    (tq.workers_dir() / "alice.token").unlink()
+    assert tq.heartbeat(tid, "alice")["status"] == "claimed"
+    # 但下一次认领会重新落 token ⇒ 从此具备双因子
+    _expire(q, tid)
+    assert tq.claim("bob")["claimed"]["claimed_token"]
+    assert _get(q, tid)["claimed_token"], "新认领必须带 token"

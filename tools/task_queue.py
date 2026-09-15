@@ -36,7 +36,9 @@ stale 接管：`claimed` 且 `heartbeat_at`（无则 `claimed_at`）超过 `STAL
       --touch Examples/atoms/x.cpp --verify-cmd "replay --card atoms/x.md" --steps 4 --goal "..."
   python tools/task_queue.py next                       # 只读预览：下一个该派谁
   python tools/task_queue.py claim --worker liaoranran --types redteam
+  python tools/task_queue.py claim --worker b --takeover <id> --force --reason "旧会话被 kill"
   python tools/task_queue.py checkpoint <id> --worker liaoranran --handoff data/tasks/<id>.handoff.json
+  python tools/task_queue.py yield <id> --worker liaoranran --handoff data/tasks/<id>.handoff.json
   python tools/task_queue.py heartbeat <id> --worker liaoranran
   python tools/task_queue.py done <id> --worker liaoranran --result-ref data/tasks/t1.out
   python tools/task_queue.py fail <id> --worker liaoranran --error "编译失败：见日志"
@@ -54,8 +56,12 @@ import argparse
 import datetime as _dt
 import hashlib
 import json
+import os
+import secrets
+import socket
 import sqlite3
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -324,9 +330,10 @@ def _sweep_stale(conn: sqlite3.Connection, now: str) -> list[str]:
         if att > MAX_ATTEMPTS:
             _block(conn, tid, f"stale 接管时 attempts={att} > {MAX_ATTEMPTS}（防无限重试）", now)
         else:
+            # 回收即交还 token（tasks 行不再持有所有权 ⇒ 不留旧 secret）
             conn.execute(
-                "UPDATE tasks SET status='queued', claimed_by=NULL, heartbeat_at=NULL, "
-                "updated_at=? WHERE id=?", (now, tid))
+                "UPDATE tasks SET status='queued', claimed_by=NULL, claimed_token=NULL, "
+                "heartbeat_at=NULL, updated_at=? WHERE id=?", (now, tid))
         moved.append(tid)
     return moved
 
@@ -351,7 +358,8 @@ def _conflicts(touch: list[str], claimed: dict[str, set[str]]) -> list[dict[str,
 
 
 def _pick(conn: sqlite3.Connection, types: list[str] | None, now: str,
-          claimed_touch: dict[str, set[str]] | None = None
+          claimed_touch: dict[str, set[str]] | None = None,
+          only: str | None = None
           ) -> tuple[sqlite3.Row | None, list[dict[str, Any]]]:
     """挑一个可领任务（**只读**，不改状态，除 attempts 超限就地判 blocked 外）。
 
@@ -374,6 +382,8 @@ def _pick(conn: sqlite3.Connection, types: list[str] | None, now: str,
             continue
         ok, _pending = _deps_done(conn, row["deps"])
         if not ok:
+            continue
+        if only and row["id"] != only:
             continue
         conf = _conflicts(_jload(row["touch_set"], []), claimed_touch or {})
         if conf:
@@ -597,10 +607,18 @@ def enqueue(task_type: str, payload_ref: str, priority: int = 100,
 
 
 def claim(worker: str, types: list[str] | None = None,
-          db_path: Path | str | None = None) -> dict[str, Any]:
+          db_path: Path | str | None = None, *, takeover: str | None = None,
+          force: bool = False, reason: str = "") -> dict[str, Any]:
     """原子领走一个任务：deps 全 done 的最高优先级 queued。
 
-    返回 {"claimed": <任务 dict 或 None>, "taken_over": [回收的 id]}。
+    返回 `{"claimed": <任务 dict 或 None>, "taken_over": [回收的 id],
+    "blocked_by_touch": [...]}`；`claimed` 里附 handoff 全文与 next_action。
+
+    **租约语义（535 C5）**：任务已被 claim 且心跳在 `LEASE_GRACE_S`(120s) 内时，
+    裸 claim **抢不到**（它只挑 queued 行）——否则新会话一进来就顶掉别人正在干的活。
+    接管只有两条路：①心跳过期走既有 stale 回收（机器判定死亡，600s）；
+    ②人显式 `--takeover <id> --force --reason <原因>`（人担责，events 记 manual_takeover）。
+    心跳新鲜又没 force ⇒ 软拒绝（exit 2 + 提示）；force 无 reason ⇒ 拒绝（不许无痕接管）。
     """
     if not worker:
         raise SystemExit("[task_queue] --worker 必填")
@@ -609,17 +627,51 @@ def claim(worker: str, types: list[str] | None = None,
     try:
         conn.execute("BEGIN IMMEDIATE")
         now = _now()
-        moved = _sweep_stale(conn, now)
+        moved: list[str] = []
+        target_id: str | None = None
+        if takeover:
+            tr = conn.execute("SELECT * FROM tasks WHERE id=?", (takeover,)).fetchone()
+            if tr is None:
+                _rollback(conn)
+                raise SystemExit(f"[task_queue] 接管目标不存在：{takeover}")
+            if tr["status"] != "claimed":
+                _rollback(conn)
+                _reject(f"接管目标 {takeover} 状态={tr['status']}（仅 claimed 可接管）", 2)
+            age = _age_s(tr["heartbeat_at"] or tr["claimed_at"])
+            if (age is None or age < LEASE_GRACE_S) and not force:
+                _rollback(conn)
+                shown = "未知" if age is None else f"{int(age)}s 前"
+                _reject(f"{takeover} 心跳 {shown}（租约 {LEASE_GRACE_S}s 内），疑似仍在跑；"
+                        f"人确认旧会话已死后用 --takeover {takeover} --force "
+                        f"--reason <原因> 接管", 2)
+            if force and not reason.strip():
+                _rollback(conn)
+                _reject("--force 接管必须给 --reason（人担责留痕，不许无痕顶掉在跑的会话）", 2)
+            conn.execute(
+                "UPDATE tasks SET status='queued',claimed_by=NULL,claimed_token=NULL,"
+                "heartbeat_at=NULL,updated_at=? WHERE id=?", (now, takeover))
+            _event(conn, takeover, worker, "manual_takeover",
+                   f"from={tr['claimed_by']} age={'?' if age is None else int(age)}s "
+                   f"force={force} reason={reason}")
+            target_id = takeover
+        else:
+            moved = _sweep_stale(conn, now)
         # 快照须在 stale 回收**之后**取：被回收的任务已不持有文件锁
-        row, blocked_touch = _pick(conn, types, now, _claimed_touch(conn))
+        row, blocked_touch = _pick(conn, types, now, _claimed_touch(conn), only=target_id)
         if row is None:
             conn.execute("COMMIT")
             return {"claimed": None, "taken_over": moved, "blocked_by_touch": blocked_touch}
-        # 显式 `AND status='queued'`：即便事务语义有变，也不可能重复认领同一行
-        conn.execute(
-            "UPDATE tasks SET status='claimed', claimed_by=?, claimed_at=?, heartbeat_at=?, "
-            "attempts=attempts+1, updated_at=? WHERE id=? AND status='queued'",
-            (worker, now, now, now, row["id"]))
+        # 显式 `AND status='queued'`（双保险）：即便事务语义有变，也不可能重复认领同一行
+        # token possession（E12）：认领即落盘 128-bit secret，行里存副本；
+        # heartbeat/checkpoint/yield/complete 三处都要"名字对 + token 对"。
+        secret = worker_secret(db_path, worker, register=True)
+        cur = conn.execute(
+            "UPDATE tasks SET status='claimed',claimed_by=?,claimed_token=?,claimed_at=?,"
+            "heartbeat_at=?,attempts=attempts+1,updated_at=? WHERE id=? AND status='queued'",
+            (worker, secret, now, now, now, row["id"]))
+        if cur.rowcount != 1:
+            _rollback(conn)
+            _reject(f"认领竞争失败：{row['id']} 已被别的会话领走（重跑一次即可）", 2)
         _event(conn, row["id"], worker, "claim", f"attempt={int(row['attempts'] or 0) + 1}")
         out = _as_row_dict(
             conn.execute("SELECT * FROM tasks WHERE id=?", (row["id"],)).fetchone())
@@ -652,11 +704,48 @@ def _with_handoff(row: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
-def _authorize(row: sqlite3.Row | dict[str, Any], worker: str, action: str) -> None:
-    """工作命令的**唯一授权点**：状态必须 claimed，且必须是认领者本人。
+def workers_dir(db_path: Path | str | None = None) -> Path:
+    """worker token 目录（`data/tasks/workers/`，随队列库同目录、已 gitignore）。"""
+    d = (Path(db_path) if db_path else DB_PATH).parent / "workers"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
 
-    d976170 只比 `claimed_by` 字符串——知道名字就能冒充（534 §6.1 E12）；C5 在此
-    单点叠加 worker token possession（claim 时落盘 128-bit secret），不在别处再写一遍。
+
+def worker_secret(db_path: Path | str | None, worker: str, *, register: bool) -> str:
+    """worker 的 128-bit secret（文件 possession = 所有权的第二因子，534 §6.1 E12）。
+
+    - 已注册：读文件里的 secret；
+    - 未注册且 `register=False`：**拒绝**（fail-closed——名前缀对不上就说明不是本人）；
+    - 未注册且 `register=True`：首次 claim 时生成并落盘（含 host/pid/创建时间，便于人审）。
+    诚实边界：同一 Windows 用户能读该文件就能冒充——本机单人场景**文件系统权限即信任
+    边界**；跨用户/CI 场景须升级为 OS keyring/签名（本批不做）。
+    """
+    if not worker or any(c in worker for c in ("/", "\\", ":")):
+        _reject(f"worker 名非法（不得为空或含路径分隔符）：{worker!r}", 1)
+    p = workers_dir(db_path) / f"{worker}.token"
+    if p.is_file():
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            return str(data["secret"])
+        except (json.JSONDecodeError, KeyError, OSError, TypeError) as exc:
+            _reject(f"worker token 文件损坏：{p}（{exc}）；人工检查或删除后重新 claim", 2)
+    if not register:
+        _reject(f"worker {worker!r} 未注册（缺 workers/{worker}.token）⇒ 疑似冒名，拒绝", 2)
+    secret = secrets.token_hex(16)
+    p.write_text(json.dumps({"id": worker, "secret": secret, "host": socket.gethostname(),
+                             "pid": os.getpid(), "at": _now()},
+                            ensure_ascii=False, indent=1), encoding="utf-8")
+    return secret
+
+
+def _authorize(row: sqlite3.Row | dict[str, Any], worker: str, action: str,
+               db_path: Path | str | None = None) -> None:
+    """工作命令的**唯一授权点**：状态必须 claimed + 必须是认领者本人 + 必须持有 token。
+
+    d976170 只比 `claimed_by` 字符串——知道名字就能冒充（534 §6.1 E12）；C5 在此单点
+    叠加 token possession，不在别处再写一遍。**兼容残留**：d976170 时代认领的行
+    `claimed_token` 为 NULL（升级前认领的任务），无从核对 ⇒ 放行（只认名字），
+    代价是那批在飞任务保留旧弱授权；新认领一律带 token。诚实边界见 `worker_secret`。
     """
     if row["status"] != "claimed":
         raise SystemExit(
@@ -664,6 +753,22 @@ def _authorize(row: sqlite3.Row | dict[str, Any], worker: str, action: str) -> N
     if row["claimed_by"] != worker:
         raise SystemExit(
             f"[task_queue] 拒绝 {action}：{row['id']} 由 {row['claimed_by']!r} 认领，非 {worker!r}")
+    tok = row["claimed_token"] if "claimed_token" in row.keys() else None
+    if tok:
+        disk = worker_secret(db_path, worker, register=False)
+        if disk != tok:
+            _reject(f"拒绝 {action}：{worker!r} 未持有 {row['id']} 的 token"
+                    f"（知道名字不等于有所有权，E12 冒名拦截）", 2)
+
+
+def _age_s(ts: str | None) -> float | None:
+    """心跳时间戳距现在的秒数（本地 ISO 秒级字符串，与写入方同口径；解析失败 ⇒ None）。"""
+    if not ts:
+        return None
+    try:
+        return time.time() - time.mktime(time.strptime(str(ts), "%Y-%m-%dT%H:%M:%S"))
+    except ValueError:
+        return None
 
 
 def _read_handoff_file(hp: Path) -> dict[str, Any]:
@@ -691,11 +796,6 @@ def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None
     if not worker:
         raise SystemExit("[task_queue] --worker 必填")
     hp = Path(handoff_path) if handoff_path else handoff_path_for(task_id, db_path)
-    h = _read_handoff_file(hp)
-    errs = validate_handoff(h)
-    if errs and not force:
-        _reject("checkpoint 质量不过（fail-closed，逐条修或人签 --force）：\n  - "
-                + "\n  - ".join(errs), 2)
     init(db_path)
     conn = _connect(db_path)
     try:
@@ -704,7 +804,13 @@ def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None
         if row is None:
             _rollback(conn)
             raise SystemExit(f"[task_queue] 无此任务：{task_id}")
-        _authorize(row, worker, "checkpoint")
+        # 先认人（状态+本人+token），再看交接物：非本人连"质量哪里不过"都不该看到
+        _authorize(row, worker, "checkpoint", db_path)
+        h = _read_handoff_file(hp)
+        errs = validate_handoff(h)
+        if errs and not force:
+            _reject("checkpoint 质量不过（fail-closed，逐条修或人签 --force）：\n  - "
+                    + "\n  - ".join(errs), 2)
         fp = cp_fingerprint(h)
         steps_done = len(h.get("steps_done") or [])
         used_n = int(used if used is not None else (h.get("budget_used") or 0))
@@ -739,10 +845,6 @@ def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None
     **`--force` 只解预算闸门，不解 handoff 质量闸门**——"缺 next_action / 无锚点"一律拒让出。
     """
     hp = Path(handoff_path) if handoff_path else handoff_path_for(task_id, db_path)
-    h = _read_handoff_file(hp)
-    errs = validate_handoff(h, for_yield=True)
-    if errs:
-        _reject("yield 被拒（fail-closed，让出前必须交代清楚）：\n  - " + "\n  - ".join(errs), 2)
     init(db_path)
     conn = _connect(db_path)
     try:
@@ -751,7 +853,12 @@ def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None
         if row is None:
             _rollback(conn)
             raise SystemExit(f"[task_queue] 无此任务：{task_id}")
-        _authorize(row, worker, "yield")
+        _authorize(row, worker, "yield", db_path)      # 先认人，再看交接物
+        h = _read_handoff_file(hp)
+        errs = validate_handoff(h, for_yield=True)
+        if errs:
+            _reject("yield 被拒（fail-closed，让出前必须交代清楚）：\n  - "
+                    + "\n  - ".join(errs), 2)
         now = _now()
         used = int(h.get("budget_used") or 0)
         left = max(0, int(row["budget_calls"]) - used)
@@ -892,9 +999,9 @@ def next_task(types: list[str] | None = None,
 def _worker_update(task_id: str, worker: str, action: str,
                    result_ref: str | None = None, error: str | None = None,
                    db_path: Path | str | None = None) -> dict[str, Any]:
-    """heartbeat/done/fail/blocked 的**公共入口**：只允许 claim 者本人，且必为 claimed 态。
+    """heartbeat/done/fail/blocked 的**公共入口**：授权一律走 `_authorize` 单点。
 
-    非 claim 者一律 `SystemExit`（exit 1）——这是"谁干的谁签收"的单点，别在别处再写一遍。
+    （状态=claimed + 认领者本人 + token possession；非 claim 者一律 SystemExit。）
     """
     if not worker:
         raise SystemExit("[task_queue] --worker 必填")
@@ -906,15 +1013,7 @@ def _worker_update(task_id: str, worker: str, action: str,
         if row is None:
             _rollback(conn)
             raise SystemExit(f"[task_queue] 无此任务：{task_id}")
-        if row["status"] != "claimed":
-            cur = row["status"]
-            _rollback(conn)
-            raise SystemExit(f"[task_queue] {task_id} 当前状态 {cur}，非 claimed ⇒ 拒绝 {action}")
-        if row["claimed_by"] != worker:
-            owner = row["claimed_by"]
-            _rollback(conn)
-            raise SystemExit(
-                f"[task_queue] 拒绝 {action}：{task_id} 由 {owner!r} 认领，非 {worker!r}")
+        _authorize(row, worker, action, db_path)   # 拒绝由外层 except 统一回滚
         now = _now()
         rolled: str | None = None
         if action == "heartbeat":
@@ -1026,6 +1125,10 @@ def main(argv: list[str] | None = None) -> int:
     cl = sub.add_parser("claim", parents=[common])
     cl.add_argument("--worker", required=True)
     cl.add_argument("--types", default="")
+    cl.add_argument("--takeover", default=None,
+                    help="人工接管指定任务 id（心跳新鲜时须 --force --reason）")
+    cl.add_argument("--force", action="store_true", help="人担责强制接管（必须配 --reason）")
+    cl.add_argument("--reason", default="", help="接管原因（留痕进 events.manual_takeover）")
 
     ck = sub.add_parser("checkpoint", parents=[common])
     ck.add_argument("id")
@@ -1093,7 +1196,7 @@ def main(argv: list[str] | None = None) -> int:
                   f"（该任务在它们 done 前 claim 不到）", file=sys.stderr)
         return 0
     if a.cmd == "claim":
-        r = claim(a.worker, types, db)
+        r = claim(a.worker, types, db, takeover=a.takeover, force=a.force, reason=a.reason)
         if a.json:
             print(json.dumps(r, ensure_ascii=False))
         elif r["claimed"]:
