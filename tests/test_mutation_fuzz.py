@@ -85,8 +85,10 @@ def test_malformed_variant_falls_into_n_a_not_escaped(card_text: str,
         {"kind": "contains", "text": "s_sf_b"}]}) == []
     # ② classify 侧：畸形变体**在解析后立即返回 n_a(malformed)**，不跑门禁、不进拦截率
     lines = card_text.splitlines()              # splitlines 吃掉 CRLF，避免平台/换行差异
-    idx = max(i for i, ln in enumerate(lines) if ln.strip() == "---")
-    lines.insert(idx, '  - {kind: contains_any, symbol: main, text: ".file"}')
+    # 必须插在 `artifact_assert:` **块头之后**：插到 frontmatter 末尾会被最后那个 block
+    # scalar（`falsification: >-`）吞掉，parse 后根本不在 artifact_assert 里（实测踩过）。
+    i = next(i for i, ln in enumerate(lines) if ln.strip() == "artifact_assert:")
+    lines.insert(i + 1, '  - {kind: contains_any, symbol: main, text: ".file"}')
     bad = "\n".join(lines)
     assert bad != card_text, "注入未生效（卡的收尾 --- 形态变了？）"
     r = mf.classify("X", "M4", set(), bad, CARD, mf.ROOT)   # workdir 在此分支不被使用
