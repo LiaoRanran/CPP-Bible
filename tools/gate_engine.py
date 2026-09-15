@@ -2028,14 +2028,17 @@ def check_inference_not_machine_verified() -> list[Finding]:
     526 §八 的 L3 含义正在这里：放权粒度从"整张卡"细化到"逐条命题"——observation 可以
     全自动，inference 必须有人或独立标准源背书。
 
-    判据：原子 status=verified，且卡上有 inference 命题，但 `status_history` 里
-    **没有合法的人级签署** ⇒ block。注意判据作用在**卡级签署**上（G6 的 verified 是卡级
-    状态，命题级签署尚无载体）；一条 inference 命题有合法人签即整卡放行——这是当前
-    数据模型的边界，不是漏洞的豁免（记入 worklog 待下一批细化到命题级）。
+    判据（**528 任务3：从卡级精确到命题级**）：原子 status=verified 时，卡上**每条**
+    inference 命题各自满足其一，否则报**该命题 id**（不再笼统报卡）：
+      ① 命题自带 `signed_by: human:<在册实名>`（走 `principal_ok` 单点校验）；
+      ② 无命题级签署但**卡级** `status_history` 有人签 ⇒ 视为已签（存量兼容），
+         另给一条 **warn** 建议"精确到命题"——不破坏现状，但把精度债留在明面上；
+      ③ 以上皆无，则看 `external_basis` 是否已登记在 `sources(independent: true)`
+         ⇒ 已登记降级 warn，否则 **block**。
 
-    **降级为 warn** 的唯一通道：该 inference 命题带 `external_basis`，且该基准已登记在
-    `sources` 的 `independent: true` 来源里（标准源视同独立佐证）。
-    `extracted_by` 与本规则无关（它只记录抽取者，不构成背书）。
+    为何要细化：卡级签署只能说明"有人复核过这张卡"，说不出"具体哪条推断被谁背书"。
+    一条卡里可以既有可复算的 observation，也有依赖标准解释的 inference——放权闸必须
+    能逐条问。`extracted_by` 与本规则无关（它只记录抽取者，不构成背书）。
     """
     out: list[Finding] = []
     for p in _cards(ATOMS, "ATOM-*.md"):
@@ -2044,12 +2047,29 @@ def check_inference_not_machine_verified() -> list[Finding]:
                 if str(pr.get("claim_type") or "").strip() == "inference"]
         if not infs or str(meta.get("status") or "").strip() not in VERIFIED_STATUSES:
             continue
-        if _has_human_signoff(meta):
-            continue
+        card_signed = _has_human_signoff(meta)
         for pr in infs:
             pid = str(pr.get("id") or "?")
+            sb = str(pr.get("signed_by") or "").strip()
+            if sb:                                  # ① 命题级签署
+                ok, why = principal_ok(sb, ("human:",))
+                if ok:
+                    continue
+                out.append(Finding(
+                    "INFERENCE-NOT-MACHINE-VERIFIED", "block", _rel(p),
+                    f"命题 {pid}（inference）的 signed_by 无效：{why}（当前：{sb}）",
+                    "命题级签署须写 human:<在册实名>（空名/非在册名不构成背书）"))
+                continue
+            if card_signed:                         # ② 卡级签署兜底（存量兼容）
+                out.append(Finding(
+                    "INFERENCE-NOT-MACHINE-VERIFIED", "warn", _rel(p),
+                    f"命题 {pid}（inference）依赖**卡级**人签（本卡 status_history 有人签）"
+                    f"⇒ 视为已签，但建议精确到命题",
+                    "给该命题补 `signed_by: human:<在册实名>`，"
+                    "让「谁为这条推断背书」可逐条追溯"))
+                continue
             basis = str(pr.get("external_basis") or "").strip()
-            if basis and _basis_registered(meta, basis):
+            if basis and _basis_registered(meta, basis):   # ③ 独立标准源
                 out.append(Finding(
                     "INFERENCE-NOT-MACHINE-VERIFIED", "warn", _rel(p),
                     f"命题 {pid}（inference）无合法人级签署，但 external_basis 已登记为"

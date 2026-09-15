@@ -1387,16 +1387,22 @@ def drill() -> int:
     ok = bool(_fs) and all(f.severity == "warn" for f in _fs)
     results.append(("P65-阴1 basis 已登记独立来源 ⇒ 降级 warn", ok,
                     f"严重度 {[f.severity for f in _fs] or '（无命中）'}"))
-    # P65-阴2：有人级签署（在册实名）⇒ 放行
-    _hist_human = ("\n  - {level: verified, at: '2026-09-14', by: human:liaoranran}")
-    who = _atom_who(
-        [("ATOM-MEM-P65H.md", dict(_v_base, id="ATOM-MEM-P65H",
-                                   claim_structured=_inf_prop,
-                                   status_history=_hist_human))],
-        ge.check_inference_not_machine_verified)
-    ok = not who
-    results.append(("P65-阴2 有在册人签须放行", ok,
-                    f"拦截者 {', '.join(who) or '（无）'}"))
+    # P65-阴2：卡级人签（无命题级 signed_by）⇒ warn「建议精确到命题」，不 block（528 任务3 新语义）
+    #   旧规则：卡级人签即整卡放行；新规则：放行粒度细化到命题，卡级人签只兜底 warn。
+    with sandbox() as tmp:
+        _or = ge.ROOT
+        ge.ROOT = tmp
+        try:
+            _write(tmp / "atoms" / "mem" / "ATOM-MEM-P65H.md", dict(
+                _v_base, id="ATOM-MEM-P65H", claim_structured=_inf_prop,
+                status_history="\n  - {level: verified, at: '2026-09-14',"
+                               " by: human:liaoranran}"))
+            _fs65 = ge.check_inference_not_machine_verified()
+        finally:
+            ge.ROOT = _or
+    ok = bool(_fs65) and all(f.severity == "warn" for f in _fs65)
+    results.append(("P65-阴2 卡级人签无命题级签署 ⇒ warn（建议精确化，不 block）", ok,
+                    f"严重度 {[f.severity for f in _fs65] or '（无命中）'}"))
     # P65-阴3：**空名签收**（`by: human:`，P13 形态）不得算有效签署 ⇒ 仍须 block
     who = _atom_who(
         [("ATOM-MEM-P65E.md", dict(_v_base, id="ATOM-MEM-P65E",
@@ -1407,6 +1413,44 @@ def drill() -> int:
     ok = "INFERENCE-NOT-MACHINE-VERIFIED" in who
     results.append(("P65-阴3 空名签收（human: 无实名）不算签署须 block", ok,
                     f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P66（528 任务3）：命题级签署精确化（规则3 从卡级到命题级）────────────────
+    _inf66 = ("\n  - id: prop-9\n    subject: s\n    predicate: p\n    object: o\n"
+              "    claim_type: inference\n    statement: st\n    extracted_by: writer")
+    _v66 = dict(_a_base, status="verified")
+    _hist_machine = ("\n  - {level: verified, at: '2026-09-14', by: machine:gate}")
+    # P66：命题级无签 + 卡级无人签 + 无 external_basis ⇒ block（且报**命题 id**）
+    who = _atom_who(
+        [("ATOM-MEM-P66.md", dict(_v66, id="ATOM-MEM-P66", claim_structured=_inf66,
+                                  status_history=_hist_machine))],
+        ge.check_inference_not_machine_verified)
+    ok = "INFERENCE-NOT-MACHINE-VERIFIED" in who
+    results.append(("P66 inference 命题级无签+卡级无人签+无基准 ⇒ block", ok,
+                    f"拦截者 {', '.join(who) or '（漏网！）'}"))
+    # P66-阴1：卡级有人签、命题级没签 ⇒ 视为已签（warn 建议精确化），**不是 block**
+    with sandbox() as tmp:
+        _or = ge.ROOT
+        ge.ROOT = tmp
+        try:
+            _write(tmp / "atoms" / "mem" / "ATOM-MEM-P66N.md", dict(
+                _v66, id="ATOM-MEM-P66N", claim_structured=_inf66,
+                status_history="\n  - {level: verified, at: '2026-09-14',"
+                               " by: human:liaoranran}"))
+            _fs66 = ge.check_inference_not_machine_verified()
+        finally:
+            ge.ROOT = _or
+    ok = bool(_fs66) and all(f.severity == "warn" for f in _fs66)
+    results.append(("P66-阴1 卡级有签命题级无签 ⇒ warn（建议精确化，不 block）", ok,
+                    f"严重度 {[f.severity for f in _fs66] or '（无命中）'}"))
+    # P66-阴2：命题级签了（在册实名）⇒ 放行
+    who = _atom_who(
+        [("ATOM-MEM-P66H.md", dict(_v66, id="ATOM-MEM-P66H", status_history=_hist_machine,
+                                   claim_structured=_inf66 +
+                                   "\n    signed_by: human:liaoranran"))],
+        ge.check_inference_not_machine_verified)
+    ok = not who
+    results.append(("P66-阴2 命题级 signed_by 在册实名 ⇒ 放行", ok,
+                    f"拦截者 {', '.join(who) or '（无）'}"))
 
     # ── 阴性对照：干净原子 + 干净证据卡必须放行（门禁不得恒红）───────────────
     with sandbox() as tmp:
@@ -1512,6 +1556,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P63 ", "A1"),   # 命题结构缺失/claim_type 写错 —— 记录层（claim 即卡的记录层身份）
     ("P64 ", "A2"),   # observation 无工件支撑 —— 声明-实现脱钩（自称观测却无载体）
     ("P65 ", "A1"),   # inference 无签发却 verified —— 记录层伪造（机器直推）
+    ("P66 ", "A1"),   # 528 任务3 命题级签署精确化：inference 无命题级人签却 verified —— 同 P65 家族
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

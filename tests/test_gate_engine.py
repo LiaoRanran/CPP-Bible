@@ -1299,12 +1299,15 @@ def test_inference_machine_only_verified_blocks(sandbox: Path):
 
 
 def test_inference_with_human_signoff_passes(sandbox: Path):
-    """526 规则3（阴性1）：status_history 有在册人级签署 ⇒ 放行。"""
+    """528 任务3 修订：526 阴性1「status_history 有在册人级签署 ⇒ 放行」——
+    放行粒度已细化到命题：卡级人签不再整卡静默放行，而是给 warn「建议精确到命题」
+    （不 block，存量兼容）。故此处断言「无 block」而非空列表。"""
     _write_atom(sandbox, "ATOM-MEM-INFV-002.md", "mem", id="ATOM-MEM-INFV-002",
                 status="verified", sources=_INDEP_SRC, claim_structured=_INF_PROP,
                 status_history="\n  - {level: verified, at: '2026-09-14',"
                                " by: human:liaoranran}")
-    assert ge.check_inference_not_machine_verified() == []
+    hits = ge.check_inference_not_machine_verified()
+    assert hits and all(f.severity == "warn" for f in hits), hits
 
 
 def test_inference_registered_basis_downgrades_to_warn(sandbox: Path):
@@ -1356,6 +1359,53 @@ def _write_smug(sandbox: Path) -> None:
     p = sandbox / "evidence" / "mem" / "EV-MEM-SMUG527.md"
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(_SMUG, encoding="utf-8")
+
+
+# ── 528 任务3：规则3 从卡级精确到命题级 ─────────────────────────────────────
+_INF528 = ("\n  - id: prop-9\n    subject: s\n    predicate: p\n    object: o\n"
+           "    claim_type: inference\n    statement: st\n    extracted_by: writer")
+_HIST_MACHINE = "\n  - {level: verified, at: '2026-09-14', by: machine:gate}"
+
+
+def _write_inf(sandbox: Path, aid: str, **over: str) -> None:
+    _write_atom(sandbox, f"{aid}.md", "mem", id=aid, status="verified",
+                status_history=over.pop("status_history", _HIST_MACHINE),
+                claim_structured=over.pop("claim_structured", _INF528), **over)
+
+
+def test_inference_prop_without_signature_blocks_and_names_prop(
+        sandbox: Path):
+    """528 任务3：命题级无签 + 卡级无人签 + 无基准 ⇒ block，且报**命题 id**（不是笼统报卡）。"""
+    _write_inf(sandbox, "ATOM-MEM-INF528A")
+    hits = [h for h in ge.check_inference_not_machine_verified()
+            if "ATOM-MEM-INF528A" in h.target and h.severity == "block"]
+    assert len(hits) == 1, hits
+    assert "prop-9" in hits[0].message, "必须点名是哪条命题缺签"
+
+
+def test_inference_card_level_signoff_warns_but_not_block(sandbox: Path):
+    """528 任务3（存量兼容）：卡级有人签、命题级没签 ⇒ warn 建议精确化，**不是 block**。"""
+    _write_inf(sandbox, "ATOM-MEM-INF528B",
+               status_history="\n  - {level: verified, at: '2026-09-14',"
+                              " by: human:liaoranran}")
+    hits = [h for h in ge.check_inference_not_machine_verified()
+            if "ATOM-MEM-INF528B" in h.target]
+    assert len(hits) == 1 and hits[0].severity == "warn", hits
+    assert "prop-9" in hits[0].message and "精确到命题" in hits[0].message
+
+
+def test_inference_prop_level_signed_by_passes(sandbox: Path):
+    """528 任务3：命题级 `signed_by: human:<在册>` ⇒ 放行（即便卡级只有机器签）。"""
+    _write_inf(sandbox, "ATOM-MEM-INF528C",
+               claim_structured=_INF528 + "\n    signed_by: human:liaoranran")
+    assert [h for h in ge.check_inference_not_machine_verified()
+            if "ATOM-MEM-INF528C" in h.target] == []
+    # 反向：命题级签了但**空名/非在册** ⇒ 仍 block（走 principal_ok 单点）
+    _write_inf(sandbox, "ATOM-MEM-INF528D",
+               claim_structured=_INF528 + "\n    signed_by: human:")
+    bad = [h for h in ge.check_inference_not_machine_verified()
+           if "ATOM-MEM-INF528D" in h.target]
+    assert bad and bad[0].severity == "block", bad
 
 
 def test_yaml_hardening_indent_signal_survives_without_pyyaml(
