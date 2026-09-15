@@ -24,10 +24,13 @@ stale 接管：`claimed` 且 `heartbeat_at`（无则 `claimed_at`）超过 `STAL
 数据：`data/tasks/queue.db`（已 gitignore，不入库；与 task_state 的 `<id>.json` 同目录共存）。
 
 建库/迁移（535 C1，**真并发缺陷修复**）：所有入口一律先 `migrate()`——PRAGMA 顺序必须是
-`busy_timeout` **先于** `journal_mode=WAL`（关掉 WAL 要排它锁，此刻还没有锁等待预算），
-建表 + 增量列 + `events` 表包在**一个** `BEGIN IMMEDIATE` 里，用 `PRAGMA user_version` 做版本门。
+`busy_timeout` **先于** `journal_mode=WAL`（切 WAL 要排它锁），建表 + 增量列 + `events` 表包在
+**一个** `BEGIN IMMEDIATE` 里，用 `PRAGMA user_version` 做版本门。
 旧版（d976170）逐条 ALTER 各自自动提交时，第二个冷启动进程会读到"加列中途"的中间态 ⇒
-两进程补同一列 ⇒ `duplicate column name`（沙箱实测冷启动 6/8 失败；修后 12/12 零失败）。
+两进程补同一列 ⇒ `duplicate column name`（沙箱实测冷启动 6/8 失败）。
+**实测加码（534 归因不完整）**：光调 PRAGMA 顺序不够——`PRAGMA journal_mode` 的模式切换路径
+**不走 busy handler**，busy_timeout 对它无效，仍会偶发 `database is locked`；故 `_set_wal()`
+显式退避重试（已是 WAL 则直接返回）。修后冷启动并发 pytest 12/12 稳定零失败。
 回退：`downgrade --yes`（逐列 `DROP COLUMN`，需 SQLite ≥ 3.35）。
 
 用法：
@@ -154,16 +157,39 @@ def _event(conn: sqlite3.Connection, task_id: str, actor: str, event: str,
                  (task_id, _now(), actor, event, detail[:1500]))
 
 
+def _set_wal(conn: sqlite3.Connection, retries: int = 10) -> None:
+    """切 WAL（幂等 + **显式重试**）。调用前必须先设 busy_timeout。
+
+    为什么必须自己重试（535 C1 实测挖到的更深一层坑）：`PRAGMA journal_mode=WAL` 需要排它锁，
+    而 SQLite 在**模式切换**这条路径上**不调用 busy handler**（切换要原子完成、不能半路重试）
+    ⇒ busy_timeout 对它**完全无效**。把 busy_timeout 排到前面（534/沙箱的归因）是必要的，
+    但**不充分**：两个进程同时冷启动建库时仍会直接 `database is locked`（在全量 pytest 里
+    实测偶发命中，12 轮里出现 1 次）。故这里显式退避重试；已是 WAL 的连接直接返回（不切换）。
+    """
+    try:
+        if str(conn.execute("PRAGMA journal_mode").fetchone()[0]).lower() == "wal":
+            return
+    except sqlite3.Error:
+        pass
+    for i in range(retries):
+        try:
+            conn.execute("PRAGMA journal_mode=WAL")
+            return
+        except sqlite3.OperationalError:
+            if i == retries - 1:
+                raise
+            time.sleep(0.05 * (i + 1))
+
+
 def _connect(db_path: Path | str | None = None) -> sqlite3.Connection:
     """独立连接（含 busy_timeout）；`isolation_level=None` ⇒ 事务显式写 `BEGIN IMMEDIATE`。"""
     p = Path(db_path) if db_path else DB_PATH
     p.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(p), timeout=10.0, isolation_level=None)
     conn.row_factory = sqlite3.Row
-    # 顺序铁律（535 C1）：busy_timeout 必须在 journal_mode 之前——切 WAL 要排它锁，
-    # 排在后面时冷启动瞬间没有任何锁等待预算，直接 OperationalError（实测 6/8 失败）。
+    # 顺序：busy_timeout 先于 journal_mode（切 WAL 要排它锁，先有锁等待预算；见 _set_wal）
     conn.execute("PRAGMA busy_timeout=10000")
-    conn.execute("PRAGMA journal_mode=WAL")
+    _set_wal(conn)
     return conn
 
 
@@ -190,7 +216,7 @@ def migrate(db_path: Path | str | None = None) -> int:
     conn.row_factory = sqlite3.Row
     try:
         conn.execute("PRAGMA busy_timeout=15000")
-        conn.execute("PRAGMA journal_mode=WAL")
+        _set_wal(conn)
         conn.execute("BEGIN IMMEDIATE")
         ver = int(conn.execute("PRAGMA user_version").fetchone()[0])
         if ver < SCHEMA_VERSION:
