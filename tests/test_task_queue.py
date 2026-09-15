@@ -364,7 +364,7 @@ def test_c2_enqueue_ext_params(q: Path):
     row = _get(q, r["id"])
     # 538 T0：入库形态改为 `_norm_touch`（os.path.normcase 平台相关）——断言写成"归一形态"
     # 而非写死分隔符方向，跨平台都成立；关键是**去重**：`a\b.txt` 与 `c.txt` 只留两条。
-    assert json.loads(row["touch_set"]) == [tq._norm_touch("a\\b.txt"), "c.txt"]
+    assert json.loads(row["touch_set"]) == [tq._touch_store("a\\b.txt"), "c.txt"]
     assert (row["verify_cmd"], row["budget_calls"], row["parent_task"], row["goal"]) == \
         ("echo ok", 200, "P", "让 replay 单卡 confirm")
     assert (row["produced_by_model"], row["steps_total"], row["steps_done"]) == ("m1", 3, 0)
@@ -567,7 +567,7 @@ def test_c3_yield_groups_cap_and_fragments(q: Path, sb: Path,
     kids = [_get(q, c) for c in r["children"]]
     assert json.loads(kids[1]["deps"]) == [r["children"][0]], "组间须自动串 deps"
     assert json.loads(kids[2]["deps"]) == [r["children"][1]]
-    assert json.loads(kids[0]["touch_set"]) == [tq._norm_touch("work/shared.txt")], \
+    assert json.loads(kids[0]["touch_set"]) == [tq._touch_store("work/shared.txt")], \
         "touch_set 须继承（538 T0 后为归一形态）"
     assert tq.claim("bob")["claimed"]["id"] == r["children"][0], "只有第一组可领"
     assert tq.claim("carol")["claimed"] is None, "后组等前组 done"
@@ -598,12 +598,12 @@ def test_c4_touch_blocks_dispatch_and_reports_waiter(q: Path):
     r = tq.claim("B")
     assert r["claimed"]["id"] == tc, "TB 优先级最高但被文件锁跳过 ⇒ 领不冲突的 TC"
     assert r["blocked_by_touch"] == [
-        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._norm_touch("work/shared.txt")]}]}]
+        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._touch_store("work/shared.txt")]}]}]
     # 预览同口径：next 也报"谁被挡、在等谁"（此刻 TB 是唯一候选，且被 TA 挡着）
     rn = tq.next_task()
     assert rn["next"] is None
     assert rn["blocked_by_touch"] == [
-        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._norm_touch("work/shared.txt")]}]}]
+        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._touch_store("work/shared.txt")]}]}]
     # B 干完 TA ⇒ 文件锁释放 ⇒ TB 可领
     tq.done(ta, "A", result_ref="out/ta.txt")
     assert tq.claim("B")["claimed"]["id"] == tb
@@ -960,7 +960,8 @@ def test_t0_case_and_backslash_variants_blocked_on_windows(q: Path):
     assert r["claimed"] is None
     assert len(r["blocked_by_touch"]) == len(variants)
     # 入库即归一：库里存的应是归一后的同一条串（历史库读回也有双保险）
-    assert json.loads(_get(q, ta)["touch_set"]) == [tq._norm_touch("tools/task_queue.py")]
+    # 539 A1：库中 canonical 形态是**纯 posix**（不再被 normcase 弄成反斜杠）
+    assert json.loads(_get(q, ta)["touch_set"]) == ["tools/task_queue.py"]
 
 
 @pytest.mark.skipif(_WIN, reason="仅在大小写敏感平台成立（Linux/macOS）")
@@ -983,4 +984,23 @@ def test_t0_regression_existing_touch_lock_still_works(q: Path):
     r = tq.claim("B")
     assert r["claimed"]["id"] == tc, "同写法冲突须跳过并领不冲突的那个"
     assert r["blocked_by_touch"] == [
-        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._norm_touch("work/shared.txt")]}]}]
+        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._touch_store("work/shared.txt")]}]}]
+
+
+def test_t0_storage_posix_compare_folded_539_a1(q: Path):
+    """539 A1：**存的是纯 posix（跨平台一致），比的时候才折叠平台差异**。
+
+    538 的 `_norm_touch` 直接把 normcase 结果入库 ⇒ Windows 库里出现反斜杠、与审计侧
+    （git 输出恒 posix）两套形态。A1 拆成 `_touch_store`（入库）+ `_norm_touch`（比较键）。
+    """
+    r = tq.enqueue("atom_produce", "docs/a1.md",
+                   touch=["tools\\task_queue.py", "./tools/task_queue.py", "docs/./a.md"])
+    stored = json.loads(_get(q, r["id"])["touch_set"])
+    assert stored == ["docs/a.md", "tools/task_queue.py"], stored
+    assert all("\\" not in s for s in stored), "库中不得出现反斜杠形态"
+    assert tq._touch_store("./docs/./a.md") == "docs/a.md", "`./` 归一（平台无关）"
+    if os.name == "nt":
+        assert tq._touch_store("a\\b.txt") == "a/b.txt", "Windows：反斜杠入库前转 posix"
+        assert tq._norm_touch("A/B.TXT") == tq._norm_touch("a\\b.txt"), "比较键折叠大小写与分隔符"
+    else:
+        assert tq._norm_touch("A/B.txt") != tq._norm_touch("a/b.txt"), "posix 保持大小写敏感"

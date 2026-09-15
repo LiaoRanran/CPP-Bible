@@ -367,38 +367,53 @@ def _sweep_stale(conn: sqlite3.Connection, now: str) -> list[str]:
     return moved
 
 
-def _norm_touch(p: Any) -> str:
-    """touch 路径归一化（538 T0 · E1 P0 修复）：**同一物理文件的不同写法必须落到同一个串**。
+def _touch_store(p: Any) -> str:
+    """touch 路径的**入库 canonical 形态**（538 T0 + 539 A1）：纯 posix 斜杠、无大小写折叠。
 
-    为什么必须归一（已实证 4/4 逃逸）：只做 `\\\\`→`/` 时，`tools/task_queue.py` /
-    `TOOLS/TASK_QUEUE.PY` / `Tools/Task_Queue.py` / `./tools/task_queue.py` /
-    `tools/./task_queue.py` 是**五个不同集合元素** ⇒ 文件写锁被绕过，两个 worker 并发改同一文件。
-
-    - `PurePath(...).as_posix()`：吃掉 `./` 与前/中段 `./`（并统一为 posix 分隔符）；
-    - `os.path.normcase`：**平台相关**——Windows 上转小写（NTFS 大小写不敏感），
-      Linux 上原样返回（保持大小写敏感语义）。**不许写死 `.lower()`**：那会在 Linux 上
-      把两个真实不同的文件错误合并成一个锁（假冲突）。
+    `PurePath(...).as_posix()` 吃掉 `./` 与前/中段 `./`，并把分隔符统一成 `/`（**入库只此一种
+    形态**，审计侧 `git status` 输出也是 posix ⇒ 两侧可逐字比对）。
+    **不在这里做 `normcase`**：那会让 Windows 入库值变成反斜杠（539 A1 裁决：库里统一 posix）。
     """
-    return os.path.normcase(PurePath(str(p).strip()).as_posix())
+    return PurePath(str(p).strip()).as_posix()
+
+
+def _norm_touch(p: Any) -> str:
+    """touch 路径的**比较键**（只在比较时用，平台相关）：入库形态再叠 `os.path.normcase`。
+
+    为什么必须归一比较（538 T0 实证 4/4 逃逸）：只做 `\\\\`→`/` 时，`tools/task_queue.py` /
+    `TOOLS/TASK_QUEUE.PY` / `Tools/Task_Queue.py` / `./tools/task_queue.py` /
+    `tools/./task_queue.py` 是**五个不同集合元素** ⇒ 文件写锁被绕过，两 worker 并发改同一文件。
+
+    - `os.path.normcase`：Windows 上转小写 + 统一反斜杠（NTFS 大小写不敏感），
+      Linux 上原样返回（保持大小写敏感语义）。**不许写死 `.lower()`**——那会在 Linux 上
+      把两个真实不同的文件错误合并成一把锁（假冲突）。
+    - 历史库里的旧值（未归一/含反斜杠）经 `_touch_store` + `normcase` 也会折叠到同一键。
+    """
+    return os.path.normcase(_touch_store(p))
 
 
 def _claimed_touch(conn: sqlite3.Connection) -> dict[str, set[str]]:
     """在飞任务的写集合快照：`{task_id: {file,...}}`（只在 `claimed` 态持有文件锁）。
 
-    读回时再归一一次（双保险）：历史库里可能已存着 538 之前的未归一键。
+    返回**库里存的形态**（posix；历史行可能是旧形态）；折叠大小写交给比较侧 `_conflicts`，
+    这样报告给人看的是入库形态，而不是被 normcase 弄成反斜杠的平台形态。
     """
-    return {r["id"]: {_norm_touch(x) for x in _jload(r["touch_set"], [])}
+    return {r["id"]: set(_jload(r["touch_set"], []))
             for r in conn.execute("SELECT id,touch_set FROM tasks WHERE status='claimed'")}
 
 
 def _conflicts(touch: list[str], claimed: dict[str, set[str]]) -> list[dict[str, Any]]:
-    """候选的 touch_set 与在飞任务相交 ⇒ `[{"task": 占用者, "files": [相交文件]}]`。"""
-    want = {_norm_touch(t) for t in touch}
+    """候选的 touch_set 与在飞任务相交 ⇒ `[{"task": 占用者, "files": [相交文件]}]`。
+
+    比较用归一键（`_norm_touch`，平台折叠大小写），**报告用入库形态**（人可读、跨平台一致）。
+    """
+    want = {_touch_store(t) for t in touch if str(t).strip()}
     if not want:
         return []
+    want_keys = {_norm_touch(t) for t in want}
     out = []
     for tid, files in claimed.items():
-        inter = sorted(files & want)
+        inter = sorted(f for f in files if _norm_touch(f) in want_keys)
         if inter:
             out.append({"task": tid, "files": inter})
     return out
@@ -682,7 +697,7 @@ def enqueue(task_type: str, payload_ref: str, priority: int = 100,
             _rollback(conn)
             _reject(f"deps 成环：沿依赖链可回到 {tid}（入队即拒）", 2)
         now = _now()
-        touch_set = sorted({_norm_touch(t) for t in (touch or []) if str(t).strip()})
+        touch_set = sorted({_touch_store(t) for t in (touch or []) if str(t).strip()})
         conn.execute(
             "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
             "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"
@@ -1079,7 +1094,7 @@ def _touch_audit(row: sqlite3.Row | dict[str, Any],
     不许把"没观测到"当成"已核对"（fail-closed 的信息面）。
     """
     base = Path(root) if root else ANCHOR_ROOT
-    declared = {str(x).replace("\\", "/") for x in _jload(row["touch_set"], [])}
+    declared = {_touch_store(x) for x in _jload(row["touch_set"], [])}
     hp = row["handoff_path"] if "handoff_path" in row.keys() else None
     if hp:
         declared.add(str(hp).replace("\\", "/"))
