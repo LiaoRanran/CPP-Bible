@@ -140,7 +140,12 @@ def _install_hook() -> int:
         "# 本地 pre-push 门禁（R6）：复用 CI 快校验 + 仓库卫生\n"
         "while read -r _line; do :; done   # 排空 stdin，避免 git 报错\n"
         'cd "$(git rev-parse --show-toplevel)" || exit 0\n'
-        'PY=$(command -v python 2>/dev/null || command -v python3 2>/dev/null || true)\n'
+        # 优先仓库 .venv（依赖齐全 PyYAML/pytest/replay），避免 PATH 裸 python
+        # 缺核心依赖时门禁静默失效（workbuddy 3.13.12 无 PyYAML 坑）。
+        'PY=""\n'
+        '[ -x ".venv/Scripts/python.exe" ] && PY=".venv/Scripts/python.exe"\n'
+        '[ -z "$PY" ] && [ -x ".venv/bin/python" ] && PY=".venv/bin/python"\n'
+        '[ -z "$PY" ] && PY=$(command -v python 2>/dev/null || command -v python3 2>/dev/null || true)\n'
         'if [ -z "$PY" ]; then\n'
         '  echo "[prepush] 未找到 python，跳过本地门禁（推送仍进行）"\n'
         "  exit 0\n"
