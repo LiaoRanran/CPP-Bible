@@ -1563,6 +1563,13 @@ def save_manifest(manifest: dict) -> Path:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    # ⚠️ 并行化护栏（528 任务4，只读分析结论）：本工具**刻意串行**，不提供 `--jobs`。
+    #   不安全的三处根因：① 卡命令产物约定写共享 `build/`（见 replay_card 注释），并发编译会撞
+    #      中间文件名；② `_snapshot_artifact`/`_restore_artifact` 落到共享 `EVIDENCE/<domain>/`，
+    #      并发会竞态（472 P0-4 的"中断自愈还原"假设单写者）；③ 全局 `_REPLAY_LOCK`（每卡取放）
+    #      使进程内并行**恒为零加速**——worker 互相等同一把锁，最终仍串行。
+    #   性能需求已由 498 增量模式满足（全量 245s → 全 skip 0.3s / 单卡 2.3s），故不引入 `--jobs`。
+    #   未来若确要并行：每 worker 独立 `build_<pid>/` + 按工件路径分锁 + 快照用临时文件原子改名。
     ap = argparse.ArgumentParser(description="证据卡机器复算（confirm / refute / infra_error）")
     ap.add_argument("--card", action="append", default=[], help="指定证据卡（可多次）")
     ap.add_argument("--check", action="store_true", help="任一 refute 即 exit 1")

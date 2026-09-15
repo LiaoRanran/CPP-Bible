@@ -24,7 +24,10 @@ classifiers = [
 ]
 
 dependencies = [
-    # 核心仅依赖标准库；以下为建设站点/发布所需
+    # 核心门禁（gate_engine / 原子内核）运行时依赖标准库 + PyYAML；
+    # 528 任务5 显式化：此前 yaml 仅在 dev extras，核心安装跑 gate_engine 会 ImportError。
+    "pyyaml>=6.0",
+    # 以下为建设站点/发布所需
     "mkdocs-material>=9.5.0",
     "mkdocs-mermaid2-plugin>=1.1.0",
 ]
@@ -38,7 +41,6 @@ pdf = [
 dev = [
     "pytest>=7.0",
     "pytest-xdist>=3.0",   # 508 任务1：并行跑测试（pyproject addopts 里已启用 -n auto）
-    "pyyaml>=6.0",
     "ruff>=0.5.0",
     "mypy>=1.10.0",
 ]

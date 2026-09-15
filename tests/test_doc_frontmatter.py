@@ -76,3 +76,24 @@ def test_existing_frontmatter_skipped(tmp_path: Path):
     added, skipped = df.process(tmp_path, apply=True)
     assert (added, skipped) == (0, 1)
     assert doc.read_bytes().decode("utf-8").count("id: 430") == 1
+
+
+def test_rendered_frontmatter_is_valid_yaml(tmp_path: Path):
+    """硬化回归（528 任务5）：注入的 frontmatter 必须能被 yaml.safe_load 解析为映射。
+
+    498 只校验了「内容零改动 / 幂等」，未校验注入体本身是合法 YAML——若某字段值含
+    `:`/`#` 等特殊字符，`render` 的 `k: v` 拼接可能产出歧义 YAML，下游文档生命周期工具
+    消费时会炸。本测试补上这层校验。
+    """
+    import yaml
+
+    doc = tmp_path / "412_valid_yaml.md"
+    doc.write_text("# 标题\n正文\n", encoding="utf-8")
+    df.process(tmp_path, apply=True)
+    raw = doc.read_bytes().decode("utf-8")
+    fm_block = raw.split("---", 2)[1]          # 第一对 `---` 之间的内容
+    parsed = yaml.safe_load(fm_block)
+    assert isinstance(parsed, dict), f"frontmatter 必须是映射，实际：{parsed!r}"
+    for k in ("id", "title", "status", "type", "created_at"):
+        assert k in parsed, f"缺字段 {k}"
+    assert parsed["type"] == "architecture-note"
