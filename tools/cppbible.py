@@ -660,6 +660,26 @@ def cmd_cost(args: argparse.Namespace) -> int:
     return r.returncode
 
 
+def cmd_mutation(args: argparse.Namespace) -> int:
+    """自动变异器（539 Part B / 548 Part 0）：对真实卡批量变异，找毒样例没覆盖的新逃逸。
+
+    escaped 是本工具的**产物**不是红灯 ⇒ 默认恒 0；要当红灯用请显式 `--fail-on-escaped`。
+    """
+    cmd = [PYTHON_EXE, "tools/mutation_fuzz.py",
+           "--cards", "all" if args.all else args.cards,
+           "--operators", args.operators,
+           "--limit", str(args.limit),
+           "--report", args.report or args.out or "data/mutation/last.json"]
+    if args.fail_on_escaped:
+        cmd.append("--fail-on-escaped")
+    r = run(cmd, check=False)
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
 def cmd_flashcards(args: argparse.Namespace) -> int:
     """闪卡导出（423）：只读 atoms/misconceptions，输出 data/flashcards/。"""
     cmd = [PYTHON_EXE, "tools/flashcard_export.py", args.sub]
@@ -749,6 +769,16 @@ def build_parser() -> argparse.ArgumentParser:
     cost.add_argument("--atom", default=None)
     cost.add_argument("--json", action="store_true")
 
+    mut = sub.add_parser("mutation", help="自动变异器（539/548）：找毒样例没覆盖的新逃逸")
+    mut.add_argument("--all", action="store_true", help="全量：所有证据卡 + 原子卡（= --cards all）")
+    mut.add_argument("--cards", default="all", help="卡选择：all 或相对仓库根的 glob")
+    mut.add_argument("--operators", default="M1,M2,M3,M4,M5,M6,M7", help="逗号分隔的算子")
+    mut.add_argument("--limit", type=int, default=5, help="最多处理多少张卡")
+    mut.add_argument("--report", default=None, help="JSON 报告落盘路径")
+    mut.add_argument("--out", default=None, help="--report 的别名（二者都给时以 --report 为准）")
+    mut.add_argument("--fail-on-escaped", action="store_true",
+                     help="有 escaped 即 exit 1（默认恒 0：escaped 是产物不是红灯）")
+
     fc = sub.add_parser("flashcards", help="闪卡导出（423：原子+误解→Anki CSV）")
     fc.add_argument("sub", choices=["export", "stats"])
     fc.add_argument("--format", choices=["anki", "markdown", "both"], default="both")
@@ -810,6 +840,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cmd_impact(args)
     if args.command == "cost":
         return cmd_cost(args)
+    if args.command == "mutation":
+        return cmd_mutation(args)
     if args.command == "flashcards":
         return cmd_flashcards(args)
     if args.command == "task":

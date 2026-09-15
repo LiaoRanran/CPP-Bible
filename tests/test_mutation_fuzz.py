@@ -119,6 +119,110 @@ def test_operators_are_pure_and_idempotent(card_text: str):
     assert CARD.read_bytes() == before, "算子不得改动 ROOT 下的原卡（原卡只读）"
 
 
+# ── 548 Part 0：性能改造的回归锁（**结论不许变**，只许变快）────────────────────
+
+
+FROZEN_CONCLUSIONS = [
+    # (op, 变异点, verdict, kind, 门禁规则 id 集合) —— 改前（无缓存 / 逐变体还原）实跑冻结；
+    # 只挑 M3/M4：Part 2 的 M2 路径 warn 会**故意**改变 M2 的结论，不混进这条性能对账锁。
+    ("M3", "contains_in → contains（区间断言降级为全文存在性）", "escaped", None, []),
+    ("M3", "absent_in → absent（区间断言降级为全文不存在）", "escaped", None, []),
+    ("M4", "注入通用符号 main", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
+    ("M4", "注入通用符号 ret", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
+    ("M4", "注入 ABI 帧符号 .p2align", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
+    ("M4", "注入 contains_any: ['.file']（合法形态）", "blocked", "strict",
+     ["EV-ASSERT-SYMBOL-MAPPED"]),
+]
+
+
+def test_548_perf_conclusions_unchanged():
+    """548 Part 0 硬约束：提速前/后**逐变体结论一致**（冻结基线，对账口径含规则 id）。
+
+    提速手段（frontmatter 解析缓存 / 按卡批 / 门禁已拦则跳过 replay）都不得改判决；
+    一旦这里红，说明"省下的时间"是拿漏判换的。
+    """
+    rep = mf.run_fuzz([CARD], ["M3", "M4"], 1)
+    got = [(r["op"], r["point"], r["verdict"], r.get("kind"),
+            sorted({x.split(":")[0] for x in (r.get("new_block") or [])}))
+           for r in rep["results"]]
+    assert got == FROZEN_CONCLUSIONS, got
+    # 按卡批的**可观测**证据：基线 1 次 + 每个进门禁的变体 1 次，一次不多一次不少
+    assert rep["ge_runs"] == 1 + len(rep["results"]), rep["ge_runs"]
+    assert rep["elapsed_s"] > 0 and rep["cards"] == ["evidence/conc/EV-CONC-001.md"]
+
+
+def test_548_diff_is_not_card_scoped(monkeypatch: pytest.MonkeyPatch):
+    """跨卡规则不许被"按卡裁剪"漏掉：diff 必须是**全量**（别的卡上的新命中也要算）。"""
+    with mf.sandbox() as tmp:
+        sb = mf._rel_in_sandbox(CARD, tmp)
+        baseline = mf._snapshot()
+        foreign = {("EV-ID-UNIQUE", "block", "evidence/other/EV-OTHER-999.md")}
+        monkeypatch.setattr(mf, "_snapshot", lambda: baseline | foreign)
+        r = mf.classify(CARD.stem, "M6", baseline, CARD.read_text(encoding="utf-8"), sb, tmp)
+        assert r["verdict"] == "blocked" and r["kind"] == "strict", r
+        assert any(x.startswith("EV-ID-UNIQUE:") for x in r["new_block"]), r
+
+
+def test_548_replay_runs_only_when_it_can_change_verdict(monkeypatch: pytest.MonkeyPatch):
+    """replay 只在"它可能改变结论"时跑：门禁已严格拦截 ⇒ 跳过；否则**必须**跑（543 P0）。"""
+    with mf.sandbox() as tmp:
+        sb = mf._rel_in_sandbox(CARD, tmp)
+        baseline = mf._snapshot()
+        calls: list[Path] = []
+
+        def _fake_replay(card: Path, do_sanitizer: bool = True):
+            calls.append(card)
+            return ("confirm", [])
+
+        monkeypatch.setattr(mf.replay, "replay_card", _fake_replay)
+        blocked_diff = {("R-BLOCK", "block", "evidence/conc/EV-CONC-001.md")}
+        monkeypatch.setattr(mf, "_snapshot", lambda: baseline | blocked_diff)
+        r1 = mf.classify(CARD.stem, "M1", baseline, CARD.read_text(encoding="utf-8"), sb, tmp)
+        assert r1["verdict"] == "blocked" and r1["kind"] == "strict"
+        assert r1.get("replay_skipped") and calls == [], "门禁已拦 ⇒ 不该再跑 replay"
+        # 门禁没拦 ⇒ replay 必须跑（只看 gate 会把"删必需字段"误判成逃逸）
+        monkeypatch.setattr(mf, "_snapshot", lambda: baseline)
+        r2 = mf.classify(CARD.stem, "M1", baseline, CARD.read_text(encoding="utf-8"), sb, tmp)
+        assert len(calls) == 1 and r2["verdict"] == "escaped", (calls, r2)
+
+
+def test_548_meta_cache_is_transparent(card_text: str, tmp_path: Path):
+    """frontmatter 缓存必须**透明**：命中值 == 现解析值；改盘即失效（不许拿旧值判决）。"""
+    import gate_engine as ge
+
+    p = tmp_path / "ATOM-MEM-CACHE-001.md"
+    p.write_text(card_text, encoding="utf-8")
+    first = ge._meta(p)
+    assert first == ge.replay.parse_frontmatter(card_text), "缓存值必须等于现解析值"
+    assert ge._meta(p) == first, "同内容重复读应稳定"
+    # 改盘（内容不同）⇒ 必须失效；否则门禁会拿旧 frontmatter 判决
+    p.write_text(card_text.replace("\nid:", "\nid2:", 1), encoding="utf-8")
+    assert "id2" in ge._meta(p), "改盘后仍返回旧值 = 缓存失效机制坏了"
+    n = ge.clear_meta_cache()
+    assert n >= 0 and ge._meta(p) == ge.replay.parse_frontmatter(p.read_text(encoding="utf-8"))
+
+
+def test_548_gate_findings_stable_across_warm_cache():
+    """温缓存下的第二次全库扫描必须与第一次**逐字一致**（缓存若被规则改写会立刻现形）。"""
+    import gate_engine as ge
+
+    key = lambda fs: {(f.rule_id, f.severity, f.target, f.message) for f in fs}  # noqa: E731
+    cold = key(ge.run(include_advice=False))
+    warm = key(ge.run(include_advice=False))
+    assert cold == warm and len(cold) > 50, f"冷/温不一致：{len(cold)} vs {len(warm)}"
+
+
+def test_548_cppbible_mutation_subcommand(tmp_path: Path):
+    """`cppbible mutation` 接线（--cards/--operators/--limit/--out 透传）。"""
+    import cppbible
+
+    out = tmp_path / "mut.json"
+    rc = cppbible.main(["mutation", "--cards", "evidence/conc/EV-CONC-001.md",
+                        "--operators", "M3", "--limit", "1", "--out", str(out)])
+    assert rc == 0, rc
+    assert out.is_file() and json.loads(out.read_text(encoding="utf-8"))["variants"] >= 2
+
+
 def test_report_shape_and_rates():
     """报告口径：三分类与两个率分开给（严格只认 block/refute；含 warn 处置率另算）。"""
     body = mf.run_fuzz.__doc__ or ""

@@ -31,6 +31,7 @@ import re
 import shutil
 import sys
 import tempfile
+import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
@@ -87,7 +88,12 @@ def _findings_key(f: ge.Finding) -> tuple[str, str, str]:
 
 
 def _snapshot() -> set[tuple[str, str, str]]:
+    STATS["ge_runs"] += 1
     return {_findings_key(f) for f in ge.run(include_advice=False)}
+
+
+# 548 Part 0 · 跑法观测（只计数，不影响判决）：对账"按卡批"到底省了多少次全库扫描 / replay
+STATS: dict[str, int] = {"ge_runs": 0, "replay_runs": 0, "replay_skipped": 0}
 
 
 # ── 七类变异算子（B1：纯函数，输入卡文本 → 返回 [(变异点, 变异后文本)]；绝不改原卡）──
@@ -285,7 +291,15 @@ def classify(card: str, op: str, baseline: set[tuple[str, str, str]],
     new_block = sorted({f"{r}:{t}" for r, s, t in new if s == "block"})
     new_warn = sorted({f"{r}:{t}" for r, s, t in new if s == "warn"})
     detail: dict[str, Any] = {"new_block": new_block, "new_warn": new_warn}
-    if op in REPLAY_OPS:
+    if op in REPLAY_OPS and new_block:
+        # 548 Part 0：门禁已经**严格**拦截 ⇒ replay 只可能再往 new_block 里加一条（同 verdict）
+        # ⇒ 跳过这次真编译（M1/M7 的 replay 是全量里第二贵的动作，1.3s/次）。
+        # 注意：`new_warn` -only 或"门禁没命中"时**必须照跑**——543 P0 的教训就是
+        # "只看 gate 会把删必需字段判成逃逸"。
+        STATS["replay_skipped"] += 1
+        detail["replay_skipped"] = "gate 已严格拦截，replay 不改变结论（为提速跳过）"
+    elif op in REPLAY_OPS:
+        STATS["replay_runs"] += 1
         try:
             verdict, _log = replay.replay_card(sandbox_card, do_sanitizer=False)
         except Exception as exc:                   # noqa: BLE001
@@ -311,46 +325,72 @@ def pick_cards(spec: str) -> list[Path]:
     return sorted(p for p in ROOT.glob(spec) if p.is_file())
 
 
-def run_fuzz(cards: list[Path], ops: list[str], limit: int) -> dict[str, Any]:
-    """主循环（drill 范式）：逐卡逐算子逐变体判决；返回报告 dict。"""
+def run_fuzz(cards: list[Path], ops: list[str], limit: int,
+             progress: bool = False) -> dict[str, Any]:
+    """主循环（drill 范式 + 548 Part 0 按卡批）：**卡维外层**，一张卡的全部变体共用一次全库基线。
+
+    548 Part 0 的三条跑法约定（红线：不许为提速牺牲跨卡规则）：
+     ① **按卡批**：外层是卡，一张卡的全部算子/变体连着跑；基线全库扫描（`_snapshot`）只在
+        进沙箱时做 **1 次**，整轮所有卡共用；每张卡跑完统一还原沙箱副本（进下一张卡前不留残迹）。
+     ② **跨卡规则不裁剪**：每个变体仍是**全库** `ge.run()`，diff 也是全量
+        （`new - baseline`，不过滤 `target == 本卡`）——跨卡规则（EV-ID-UNIQUE / serves /
+        relations / concepts…）的命中可能落在**别的卡**上，按卡裁剪会把它们漏掉。
+     ③ **replay 按卡批省**：M1/M7 需要真跑 replay，但"门禁已严格拦截"的变体跳过（结论不变），
+        见 `classify` 里的说明。
+    提速的主杠杆不在这里，而在 `gate_engine` 的 frontmatter 解析缓存（见 548 §1）；本函数只
+    负责**不浪费**扫描次数，并把 `ge_runs`/`replay_runs` 记进报告，便于事后核对。
+    """
+    t0 = time.perf_counter()
+    for k in STATS:
+        STATS[k] = 0
     selected = cards[:limit]
     per: list[dict[str, Any]] = []
     with sandbox() as tmp:
-        baseline = _snapshot()
-        for card in selected:
+        baseline = _snapshot()          # 全库基线：所有卡共用这 **1 次**
+        for ci, card in enumerate(selected, 1):
             text = card.read_text(encoding="utf-8")
             sb_card = _rel_in_sandbox(card, tmp)
+            rel = card.relative_to(ROOT).as_posix()
+            if progress:                # 全量轮要能看出"跑到哪了 / 还活着"（不是静默 10 分钟）
+                print(f"[mutation] ({ci}/{len(selected)}) {rel}", file=sys.stderr, flush=True)
             for op in ops:
                 variants = MUTATORS[op](text)
                 if not variants:
-                    per.append({"card": card.relative_to(ROOT).as_posix(), "op": op,
-                                "point": "-", "verdict": "n_a",
+                    per.append({"card": rel, "op": op, "point": "-", "verdict": "n_a",
                                 "why": "该卡本就没有被变异的字段（不适用）"})
                     continue
                 for point, vtext in variants:
                     if vtext == text:
-                        per.append({"card": card.relative_to(ROOT).as_posix(), "op": op,
-                                    "point": point, "verdict": "n_a", "why": "变异为空操作"})
+                        per.append({"card": rel, "op": op, "point": point,
+                                    "verdict": "n_a", "why": "变异为空操作"})
                         continue
                     r = classify(card.stem, op, baseline, vtext, sb_card, tmp)
-                    sb_card.write_text(text, encoding="utf-8")     # 还原沙箱副本再进下一个变体
-                    per.append({"card": card.relative_to(ROOT).as_posix(), "op": op,
-                                "point": point,
+                    per.append({"card": rel, "op": op, "point": point,
                                 "reproduce": (f".venv\\Scripts\\python.exe tools/mutation_fuzz.py "
-                                              f"--cards {card.relative_to(ROOT).as_posix()} "
-                                              f"--operators {op} --limit 1"),
+                                              f"--cards {rel} --operators {op} --limit 1"),
                                 **r})
+            sb_card.write_text(text, encoding="utf-8")   # 本卡跑完**统一**还原（进下一张卡前）
     counts = {k: sum(1 for r in per if r["verdict"] == k)
               for k in ("blocked", "escaped", "n_a")}
     counts["malformed"] = sum(1 for r in per if r.get("malformed"))    # n_a 里单列一类（543 P1）
     strict = sum(1 for r in per if r["verdict"] == "blocked" and r.get("kind") == "strict")
     treated = counts["blocked"]
     denom = counts["blocked"] + counts["escaped"] or 1
+    by_op: dict[str, dict[str, int]] = {}
+    by_card: dict[str, dict[str, int]] = {}
+    for r in per:
+        for bucket, key in ((by_op, r["op"]), (by_card, r["card"])):
+            d = bucket.setdefault(key, {"blocked": 0, "escaped": 0, "n_a": 0})
+            d[r["verdict"]] += 1
     return {"cards": [c.relative_to(ROOT).as_posix() for c in selected],
             "operators": ops, "variants": len(per), **counts,
             "strict_blocked": strict,
             "strict_rate": round(strict / denom, 4),
             "treated_rate": round(treated / denom, 4),
+            "by_operator": by_op, "by_card": by_card,
+            "elapsed_s": round(time.perf_counter() - t0, 2),
+            "ge_runs": STATS["ge_runs"], "replay_runs": STATS["replay_runs"],
+            "replay_skipped": STATS["replay_skipped"],
             "escaped_list": [r for r in per if r["verdict"] == "escaped"],
             "results": per}
 
@@ -363,6 +403,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--report", default="data/mutation/last.json", help="JSON 报告落盘路径")
     ap.add_argument("--fail-on-escaped", action="store_true",
                     help="有 escaped 即 exit 1（默认恒 0：escaped 是本工具的**产物**，不是红灯）")
+    ap.add_argument("--progress", action="store_true",
+                    help="逐卡打印进度到 stderr（全量轮用：不许静默跑十分钟）")
     a = ap.parse_args(argv)
     ops = [o for o in a.operators.split(",") if o]
     bad = [o for o in ops if o not in MUTATORS]
@@ -373,7 +415,7 @@ def main(argv: list[str] | None = None) -> int:
     if not cards:
         print(f"[mutation] --cards {a.cards} 未匹配到任何卡", file=sys.stderr)
         return 2
-    rep = run_fuzz(cards, ops, a.limit)
+    rep = run_fuzz(cards, ops, a.limit, progress=a.progress)
     out = ROOT / a.report
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -381,9 +423,15 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[mutation] blocked={rep['blocked']}（严格 {rep['strict_blocked']}） "
           f"escaped={rep['escaped']} n_a={rep['n_a']}（其中 malformed={rep['malformed']}）")
     print(f"[mutation] 严格拦截率 {rep['strict_rate']:.1%} · 含 warn 处置率 {rep['treated_rate']:.1%}")
+    print(f"[mutation] 全库扫描 ge.run={rep['ge_runs']} 次 · replay={rep['replay_runs']} 次"
+          f"（门禁已拦而跳过 {rep['replay_skipped']} 次）· 耗时 {rep['elapsed_s']}s")
     for r in rep["escaped_list"]:
         print(f"[mutation] ✗ ESCAPED {r['card']} · {r['op']} · {r['point']}")
-    print(f"[mutation] 报告：{out.relative_to(ROOT).as_posix()}")
+    try:                       # 548：--report/--out 可以是仓库外的绝对路径（cppbible 透传时会）
+        shown = out.relative_to(ROOT).as_posix()
+    except ValueError:
+        shown = str(out)
+    print(f"[mutation] 报告：{shown}")
     return 1 if (a.fail_on_escaped and rep["escaped"]) else 0
 
 

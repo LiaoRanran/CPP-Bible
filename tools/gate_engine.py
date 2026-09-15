@@ -189,11 +189,46 @@ def _cards(root: Path, pattern: str) -> list[Path]:
     return sorted(p for p in root.rglob(pattern) if not p.name.startswith("README"))
 
 
+# 548 Part 0 · frontmatter 解析缓存（**纯性能**，不改任何判决）
+# 实测（cProfile，全库一次 `run()`）：`_meta` 被调用 **2475 次**（56 张卡被同一批规则反复解析），
+# 吃掉 run() 约 2/3 的时间 ⇒ 每个变体一次全库扫描 ≈2.7s，全量 mutation（956 变体）≈43 分钟。
+# 缓存键 = (路径, mtime_ns, size)：改盘即失效，不存在"改了内容还命中旧值"的窗口
+# （同尺寸同 mtime_ns 的改写在同一纳秒内发生才可构造，实测不可达）。
+# 只读契约：缓存返回**同一个 dict 对象**，调用方**不得改写**（现有规则全部只读，见回归锁）。
+_META_CACHE: dict[tuple[Any, ...], dict[str, Any]] = {}
+META_CACHE_MAX = 4096
+
+
+def clear_meta_cache() -> int:
+    """清空本模块的**盘上内容缓存**（frontmatter 解析 + 硬化命中）；返回清掉的条目总数。
+
+    两个缓存都以 `(path, mtime_ns, size)` 为键，正常改盘自动失效；本函数只给"进程内改盘但
+    mtime 未变"这类极端场景（或测试）留一个显式口子。
+    """
+    n = len(_META_CACHE) + len(_FM_CACHE)
+    _META_CACHE.clear()
+    _FM_CACHE.clear()
+    return n
+
+
 def _meta(p: Path) -> dict[str, Any]:
+    key: tuple[Any, ...] | None = None
     try:
-        return replay.parse_frontmatter(p.read_text(encoding="utf-8", errors="replace"))
+        st = p.stat()
+        key = (str(p), st.st_mtime_ns, st.st_size)
+    except OSError:
+        key = None                       # 盘上取不到状态 ⇒ 不缓存，走原路径（异常语义不变）
+    if key is not None and key in _META_CACHE:
+        return _META_CACHE[key]
+    try:
+        val = replay.parse_frontmatter(p.read_text(encoding="utf-8", errors="replace"))
     except ValueError:
-        return {}
+        val = {}
+    if key is not None:
+        if len(_META_CACHE) >= META_CACHE_MAX:
+            _META_CACHE.pop(next(iter(_META_CACHE)), None)
+        _META_CACHE[key] = val
+    return val
 
 
 def _rel(p: Path) -> str:
@@ -1249,40 +1284,72 @@ def check_frontmatter_hardening() -> list[Finding]:
 
     for base, pat in ((ATOMS, "ATOM-*.md"), (EVIDENCE, "EV-*.md")):
         for p in _cards(base, pat):
-            fm = _frontmatter_raw(p)
-            if not fm:
-                continue
-            for ln in _indent_smuggle_lines(fm):
-                out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
-                                   f"[indent-smuggle] 标量值后出现缩进键行：{ln!r}"
-                                   "（缩进项会被提升为顶层键——结构走私）",
-                                   "键值对不得跟随在标量值之后（检查缩进）"))
-            if yaml_mod is None:
-                continue                       # ②③④ 需 pyyaml；已在上方留 warn 可见化
-            try:
-                safe = yaml_mod.load(fm, Loader=_UniqueKeyLoader) or {}
-            except _ctor_error as e:
-                out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
-                                   f"[dup-key] 重复键：{str(e)[:100]}",
-                                   "删除重复键（after-wins 会静默遮蔽）"))
-                continue
-            except yaml_mod.YAMLError as e:
-                out.append(Finding("EV-FM-YAML-HARDENING", "warn", _rel(p),
-                                   f"[invalid] YAML 语法非法：{str(e).splitlines()[0][:88]}",
-                                   "修正 frontmatter 语法（safe_load 须可解析）"))
-                continue
-            if not isinstance(safe, dict):
-                continue
-            meta = _meta(p)
-            for k in ("id", "verdict", "status", "artifact_sha256"):
-                a, b = meta.get(k), safe.get(k)
-                if a is None or b is None:
-                    continue
-                if str(a).strip() != str(b).strip():
-                    out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
-                                       f"[parse-diverge] {k} 两解析器不一致："
-                                       f"自定义={str(a)[:36]!r} safe={str(b)[:36]!r}",
-                                       "存在同构变换（缩进/重复键/锚点）——修正 frontmatter"))
+            out.extend(_fm_hardening_hits(p, yaml_mod, _ctor_error, _UniqueKeyLoader))
+    return out
+
+
+# 548 Part 0：单卡硬化命中缓存（键同 `_META_CACHE`；实测 safe_load 占温跑 ~1.3s/83 卡）
+_FM_CACHE: dict[tuple[Any, ...], tuple[Finding, ...]] = {}
+FM_CACHE_MAX = 4096
+
+
+def _fm_hardening_hits(p: Path, yaml_mod: Any, ctor_error: type[Exception],
+                       loader: Any) -> list[Finding]:
+    """单卡的四信号命中（**带缓存**）；真正干活的是 `_fm_hardening_uncached`。"""
+    key: tuple[Any, ...] | None = None
+    try:
+        st = p.stat()
+        key = (str(p), st.st_mtime_ns, st.st_size)
+    except OSError:
+        key = None
+    if key is not None and key in _FM_CACHE:
+        return list(_FM_CACHE[key])
+    hits = _fm_hardening_uncached(p, yaml_mod, ctor_error, loader)
+    if key is not None:
+        if len(_FM_CACHE) >= FM_CACHE_MAX:
+            _FM_CACHE.pop(next(iter(_FM_CACHE)), None)
+        _FM_CACHE[key] = tuple(hits)
+    return hits
+
+
+def _fm_hardening_uncached(p: Path, yaml_mod: Any, ctor_error: type[Exception],
+                           loader: Any) -> list[Finding]:
+    """单卡硬化四信号（原 `check_frontmatter_hardening` 内层循环体，**逻辑一字未改**）。"""
+    out: list[Finding] = []
+    fm = _frontmatter_raw(p)
+    if not fm:
+        return out
+    for ln in _indent_smuggle_lines(fm):
+        out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                           f"[indent-smuggle] 标量值后出现缩进键行：{ln!r}"
+                           "（缩进项会被提升为顶层键——结构走私）",
+                           "键值对不得跟随在标量值之后（检查缩进）"))
+    if yaml_mod is None:
+        return out                         # ②③④ 需 pyyaml；已在上方留 warn 可见化
+    try:
+        safe = yaml_mod.load(fm, Loader=loader) or {}
+    except ctor_error as e:
+        out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                           f"[dup-key] 重复键：{str(e)[:100]}",
+                           "删除重复键（after-wins 会静默遮蔽）"))
+        return out
+    except yaml_mod.YAMLError as e:
+        out.append(Finding("EV-FM-YAML-HARDENING", "warn", _rel(p),
+                           f"[invalid] YAML 语法非法：{str(e).splitlines()[0][:88]}",
+                           "修正 frontmatter 语法（safe_load 须可解析）"))
+        return out
+    if not isinstance(safe, dict):
+        return out
+    meta = _meta(p)
+    for k in ("id", "verdict", "status", "artifact_sha256"):
+        a, b = meta.get(k), safe.get(k)
+        if a is None or b is None:
+            continue
+        if str(a).strip() != str(b).strip():
+            out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                               f"[parse-diverge] {k} 两解析器不一致："
+                               f"自定义={str(a)[:36]!r} safe={str(b)[:36]!r}",
+                               "存在同构变换（缩进/重复键/锚点）——修正 frontmatter"))
     return out
 
 
