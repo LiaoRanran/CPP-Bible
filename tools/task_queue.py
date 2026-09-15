@@ -68,6 +68,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from pathlib import PurePath
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -366,15 +367,33 @@ def _sweep_stale(conn: sqlite3.Connection, now: str) -> list[str]:
     return moved
 
 
+def _norm_touch(p: Any) -> str:
+    """touch 路径归一化（538 T0 · E1 P0 修复）：**同一物理文件的不同写法必须落到同一个串**。
+
+    为什么必须归一（已实证 4/4 逃逸）：只做 `\\\\`→`/` 时，`tools/task_queue.py` /
+    `TOOLS/TASK_QUEUE.PY` / `Tools/Task_Queue.py` / `./tools/task_queue.py` /
+    `tools/./task_queue.py` 是**五个不同集合元素** ⇒ 文件写锁被绕过，两个 worker 并发改同一文件。
+
+    - `PurePath(...).as_posix()`：吃掉 `./` 与前/中段 `./`（并统一为 posix 分隔符）；
+    - `os.path.normcase`：**平台相关**——Windows 上转小写（NTFS 大小写不敏感），
+      Linux 上原样返回（保持大小写敏感语义）。**不许写死 `.lower()`**：那会在 Linux 上
+      把两个真实不同的文件错误合并成一个锁（假冲突）。
+    """
+    return os.path.normcase(PurePath(str(p).strip()).as_posix())
+
+
 def _claimed_touch(conn: sqlite3.Connection) -> dict[str, set[str]]:
-    """在飞任务的写集合快照：`{task_id: {file,...}}`（只在 `claimed` 态持有文件锁）。"""
-    return {r["id"]: set(_jload(r["touch_set"], []))
+    """在飞任务的写集合快照：`{task_id: {file,...}}`（只在 `claimed` 态持有文件锁）。
+
+    读回时再归一一次（双保险）：历史库里可能已存着 538 之前的未归一键。
+    """
+    return {r["id"]: {_norm_touch(x) for x in _jload(r["touch_set"], [])}
             for r in conn.execute("SELECT id,touch_set FROM tasks WHERE status='claimed'")}
 
 
 def _conflicts(touch: list[str], claimed: dict[str, set[str]]) -> list[dict[str, Any]]:
     """候选的 touch_set 与在飞任务相交 ⇒ `[{"task": 占用者, "files": [相交文件]}]`。"""
-    want = {str(t).replace("\\", "/") for t in touch}
+    want = {_norm_touch(t) for t in touch}
     if not want:
         return []
     out = []
@@ -663,7 +682,7 @@ def enqueue(task_type: str, payload_ref: str, priority: int = 100,
             _rollback(conn)
             _reject(f"deps 成环：沿依赖链可回到 {tid}（入队即拒）", 2)
         now = _now()
-        touch_set = sorted({str(t).replace("\\", "/") for t in (touch or []) if str(t).strip()})
+        touch_set = sorted({_norm_touch(t) for t in (touch or []) if str(t).strip()})
         conn.execute(
             "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
             "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"

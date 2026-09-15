@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -361,7 +362,9 @@ def test_c2_enqueue_ext_params(q: Path):
                    touch=["a\\b.txt", "c.txt", "c.txt"], verify_cmd="echo ok",
                    budget=200, parent="P", model="m1", steps=3, goal="让 replay 单卡 confirm")
     row = _get(q, r["id"])
-    assert json.loads(row["touch_set"]) == ["a/b.txt", "c.txt"], "反斜杠须归一为 posix 并去重"
+    # 538 T0：入库形态改为 `_norm_touch`（os.path.normcase 平台相关）——断言写成"归一形态"
+    # 而非写死分隔符方向，跨平台都成立；关键是**去重**：`a\b.txt` 与 `c.txt` 只留两条。
+    assert json.loads(row["touch_set"]) == [tq._norm_touch("a\\b.txt"), "c.txt"]
     assert (row["verify_cmd"], row["budget_calls"], row["parent_task"], row["goal"]) == \
         ("echo ok", 200, "P", "让 replay 单卡 confirm")
     assert (row["produced_by_model"], row["steps_total"], row["steps_done"]) == ("m1", 3, 0)
@@ -564,7 +567,8 @@ def test_c3_yield_groups_cap_and_fragments(q: Path, sb: Path,
     kids = [_get(q, c) for c in r["children"]]
     assert json.loads(kids[1]["deps"]) == [r["children"][0]], "组间须自动串 deps"
     assert json.loads(kids[2]["deps"]) == [r["children"][1]]
-    assert json.loads(kids[0]["touch_set"]) == ["work/shared.txt"], "touch_set 须继承"
+    assert json.loads(kids[0]["touch_set"]) == [tq._norm_touch("work/shared.txt")], \
+        "touch_set 须继承（538 T0 后为归一形态）"
     assert tq.claim("bob")["claimed"]["id"] == r["children"][0], "只有第一组可领"
     assert tq.claim("carol")["claimed"] is None, "后组等前组 done"
     # 空组 = 碎片，拒绝
@@ -594,12 +598,12 @@ def test_c4_touch_blocks_dispatch_and_reports_waiter(q: Path):
     r = tq.claim("B")
     assert r["claimed"]["id"] == tc, "TB 优先级最高但被文件锁跳过 ⇒ 领不冲突的 TC"
     assert r["blocked_by_touch"] == [
-        {"id": tb, "blocked_by": [{"task": ta, "files": ["work/shared.txt"]}]}]
+        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._norm_touch("work/shared.txt")]}]}]
     # 预览同口径：next 也报"谁被挡、在等谁"（此刻 TB 是唯一候选，且被 TA 挡着）
     rn = tq.next_task()
     assert rn["next"] is None
     assert rn["blocked_by_touch"] == [
-        {"id": tb, "blocked_by": [{"task": ta, "files": ["work/shared.txt"]}]}]
+        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._norm_touch("work/shared.txt")]}]}]
     # B 干完 TA ⇒ 文件锁释放 ⇒ TB 可领
     tq.done(ta, "A", result_ref="out/ta.txt")
     assert tq.claim("B")["claimed"]["id"] == tb
@@ -922,3 +926,61 @@ def test_t4_sandbox_paths_exempt_formal_dirs_still_caught(q: Path, gitrepo: Path
     assert tq.SANDBOX_GLOBS == ("_arch_*", "_adv_*", "_worklog_*", "_t*", "_po*", "_rp*")
     assert tq._is_sandbox_path("_arch_v3/a/b.md") and not tq._is_sandbox_path("tools/a.md")
     assert not tq._is_sandbox_path("atoms/_t_x.md"), "正式目录内不因文件名像沙箱而豁免"
+
+
+# ── 538 T0：touch 路径归一化（E1 P0 逃逸修复：同一物理文件不同写法绕过文件锁）──
+# 修前实测：wB 用 4 种大小写/`.` 变体声明同一文件，4/4 全部逃逸（_adv_v90/probe_touch_case.py）。
+
+_WIN = os.name == "nt"
+
+
+def test_t0_dot_variants_collide_on_all_platforms(q: Path):
+    """`./x` 与 `a/./x` 解析后是同一路径（PurePath 平台无关）⇒ 任一平台都必须撞锁。"""
+    ta = tq.enqueue("atom_produce", "docs/t0a.md", touch=["tools/task_queue.py"],
+                    priority=1)["id"]
+    tq.enqueue("atom_produce", "docs/t0b.md", touch=["./tools/task_queue.py"], priority=2)
+    tq.enqueue("atom_produce", "docs/t0c.md", touch=["tools/./task_queue.py"], priority=3)
+    assert tq.claim("wA")["claimed"]["id"] == ta
+    r = tq.claim("wB")
+    assert r["claimed"] is None, "同一物理文件的 ./ 变体必须被挡住"
+    assert len(r["blocked_by_touch"]) == 2
+    assert {b["blocked_by"][0]["task"] for b in r["blocked_by_touch"]} == {ta}
+
+
+@pytest.mark.skipif(not _WIN, reason="Windows 文件系统大小写不敏感；Linux 保持大小写敏感语义")
+def test_t0_case_and_backslash_variants_blocked_on_windows(q: Path):
+    """Windows：大小写变体与 `\\` 变体声明的是**同一物理文件** ⇒ 必须全部撞锁（修前 4/4 逃逸）。"""
+    ta = tq.enqueue("atom_produce", "docs/t0d.md", touch=["tools/task_queue.py"],
+                    priority=1)["id"]
+    variants = ("TOOLS/TASK_QUEUE.PY", "Tools/Task_Queue.py", "tools\\task_queue.py")
+    for i, v in enumerate(variants):
+        tq.enqueue("atom_produce", f"docs/t0e{i}.md", touch=[v], priority=2)
+    assert tq.claim("wA")["claimed"]["id"] == ta
+    r = tq.claim("wB")
+    assert r["claimed"] is None
+    assert len(r["blocked_by_touch"]) == len(variants)
+    # 入库即归一：库里存的应是归一后的同一条串（历史库读回也有双保险）
+    assert json.loads(_get(q, ta)["touch_set"]) == [tq._norm_touch("tools/task_queue.py")]
+
+
+@pytest.mark.skipif(_WIN, reason="仅在大小写敏感平台成立（Linux/macOS）")
+def test_t0_case_sensitive_semantics_preserved_on_posix(q: Path):
+    """Linux 大小写敏感：仅大小写不同的两个**真实不同**文件**不许**被合并成一把锁。"""
+    assert tq._norm_touch("Tools/A.py") != tq._norm_touch("tools/a.py")
+    assert tq._norm_touch("tools\\a.py") == "tools\\a.py", "posix 下反斜杠是文件名字符，不是分隔符"
+    tq.enqueue("atom_produce", "docs/t0f.md", touch=["Tools/A.py"], priority=1)
+    tq.enqueue("atom_produce", "docs/t0g.md", touch=["tools/a.py"], priority=2)
+    assert tq.claim("wA") is not None
+    assert tq.claim("wB")["claimed"] is not None, "不同文件不得假冲突"
+
+
+def test_t0_regression_existing_touch_lock_still_works(q: Path):
+    """回归：原有 touch 锁行为不变（同写法正常挡、不相交不挡、无 touch 不挡）。"""
+    ta = tq.enqueue("atom_produce", "docs/t0h.md", touch=["work/shared.txt"], priority=1)["id"]
+    tb = tq.enqueue("atom_produce", "docs/t0i.md", touch=["work/shared.txt"], priority=9)["id"]
+    tc = tq.enqueue("atom_produce", "docs/t0j.md", touch=["work/other.txt"], priority=50)["id"]
+    assert tq.claim("A")["claimed"]["id"] == ta
+    r = tq.claim("B")
+    assert r["claimed"]["id"] == tc, "同写法冲突须跳过并领不冲突的那个"
+    assert r["blocked_by_touch"] == [
+        {"id": tb, "blocked_by": [{"task": ta, "files": [tq._norm_touch("work/shared.txt")]}]}]
