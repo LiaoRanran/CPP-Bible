@@ -331,12 +331,36 @@ def _sweep_stale(conn: sqlite3.Connection, now: str) -> list[str]:
     return moved
 
 
-def _pick(conn: sqlite3.Connection, types: list[str] | None,
-          now: str) -> sqlite3.Row | None:
+def _claimed_touch(conn: sqlite3.Connection) -> dict[str, set[str]]:
+    """在飞任务的写集合快照：`{task_id: {file,...}}`（只在 `claimed` 态持有文件锁）。"""
+    return {r["id"]: set(_jload(r["touch_set"], []))
+            for r in conn.execute("SELECT id,touch_set FROM tasks WHERE status='claimed'")}
+
+
+def _conflicts(touch: list[str], claimed: dict[str, set[str]]) -> list[dict[str, Any]]:
+    """候选的 touch_set 与在飞任务相交 ⇒ `[{"task": 占用者, "files": [相交文件]}]`。"""
+    want = {str(t).replace("\\", "/") for t in touch}
+    if not want:
+        return []
+    out = []
+    for tid, files in claimed.items():
+        inter = sorted(files & want)
+        if inter:
+            out.append({"task": tid, "files": inter})
+    return out
+
+
+def _pick(conn: sqlite3.Connection, types: list[str] | None, now: str,
+          claimed_touch: dict[str, set[str]] | None = None
+          ) -> tuple[sqlite3.Row | None, list[dict[str, Any]]]:
     """挑一个可领任务（**只读**，不改状态，除 attempts 超限就地判 blocked 外）。
 
     顺序：deps 全 done 的最高优先级 queued（priority 小者先）。
+    535 C4：候选 touch_set 与任一**在飞**任务相交 ⇒ 跳过它继续看下一个，并记下
+    "在等谁、等哪个文件"（把 55b53ae/527 那类"两人同改同一批文件互不知"的事故
+    从事后清理变成**派发时可见拒绝**）。返回 (选中行 | None, 被 touch 挡下的候选清单)。
     """
+    blocked_touch: list[dict[str, Any]] = []
     sql = "SELECT * FROM tasks WHERE status='queued'"
     args: list[Any] = []
     if types:
@@ -349,9 +373,14 @@ def _pick(conn: sqlite3.Connection, types: list[str] | None,
                    f"attempts={row['attempts']} > {MAX_ATTEMPTS}（防无限重试）", now)
             continue
         ok, _pending = _deps_done(conn, row["deps"])
-        if ok:
-            return row
-    return None
+        if not ok:
+            continue
+        conf = _conflicts(_jload(row["touch_set"], []), claimed_touch or {})
+        if conf:
+            blocked_touch.append({"id": row["id"], "blocked_by": conf})
+            continue
+        return row, blocked_touch
+    return None, blocked_touch
 
 
 def _reject(msg: str, code: int = 1) -> None:
@@ -581,10 +610,11 @@ def claim(worker: str, types: list[str] | None = None,
         conn.execute("BEGIN IMMEDIATE")
         now = _now()
         moved = _sweep_stale(conn, now)
-        row = _pick(conn, types, now)
+        # 快照须在 stale 回收**之后**取：被回收的任务已不持有文件锁
+        row, blocked_touch = _pick(conn, types, now, _claimed_touch(conn))
         if row is None:
             conn.execute("COMMIT")
-            return {"claimed": None, "taken_over": moved}
+            return {"claimed": None, "taken_over": moved, "blocked_by_touch": blocked_touch}
         # 显式 `AND status='queued'`：即便事务语义有变，也不可能重复认领同一行
         conn.execute(
             "UPDATE tasks SET status='claimed', claimed_by=?, claimed_at=?, heartbeat_at=?, "
@@ -595,7 +625,8 @@ def claim(worker: str, types: list[str] | None = None,
             conn.execute("SELECT * FROM tasks WHERE id=?", (row["id"],)).fetchone())
         conn.execute("COMMIT")
         # 冷启动一条命令接上（535 C2）：认领即交出 handoff 全文 + next_action
-        return {"claimed": _with_handoff(out), "taken_over": moved}
+        return {"claimed": _with_handoff(out), "taken_over": moved,
+                "blocked_by_touch": blocked_touch}
     except BaseException:
         _rollback(conn)
         raise
@@ -830,6 +861,11 @@ def next_task(types: list[str] | None = None,
             args += types
         sql += " ORDER BY priority ASC, created_at ASC, id ASC"
         pending_deps: list[dict[str, Any]] = []
+        # C4：预览也要显示"谁被 touch 挡下、在等谁"——否则人看到的 next 与 claim 结果不一致。
+        # stale 的在飞任务即将被回收，不算持锁者（与 claim 里 sweep 后取快照同口径）。
+        claimed_touch = {tid: files for tid, files in _claimed_touch(conn).items()
+                         if tid not in stale}
+        blocked_touch: list[dict[str, Any]] = []
         for row in conn.execute(sql, args).fetchall():
             if row["status"] == "claimed" and row["id"] not in stale:
                 continue
@@ -839,11 +875,16 @@ def next_task(types: list[str] | None = None,
             if not ok:
                 pending_deps.append({"id": row["id"], "pending": pending})
                 continue
+            others = {k: v for k, v in claimed_touch.items() if k != row["id"]}
+            conf = _conflicts(_jload(row["touch_set"], []), others)
+            if conf:
+                blocked_touch.append({"id": row["id"], "blocked_by": conf})
+                continue
             out = _as_row_dict(row)
             out["would_take_over"] = row["id"] in stale
-            return {"next": out}
+            return {"next": out, "blocked_by_touch": blocked_touch}
         return {"next": None, "stale_claimed": sorted(stale),
-                "blocked_by_deps": pending_deps}
+                "blocked_by_deps": pending_deps, "blocked_by_touch": blocked_touch}
     finally:
         conn.close()
 
@@ -1073,6 +1114,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[task_queue] 无可领任务（{a.worker}）")
         if r["taken_over"]:
             print(f"[task_queue] 回收 stale：{r['taken_over']}", file=sys.stderr)
+        if r.get("blocked_by_touch"):
+            print(f"[task_queue] ⚠ 被文件锁跳过：{r['blocked_by_touch']}", file=sys.stderr)
         return 0
     if a.cmd == "checkpoint":
         r = checkpoint(a.id, a.worker, a.handoff, used=a.used, force=a.force, db_path=db)
@@ -1099,6 +1142,8 @@ def main(argv: list[str] | None = None) -> int:
             print("[task_queue] 无可派任务")
         if r.get("blocked_by_deps"):
             print(f"[task_queue] 等依赖：{r['blocked_by_deps']}", file=sys.stderr)
+        if r.get("blocked_by_touch"):
+            print(f"[task_queue] 等文件锁：{r['blocked_by_touch']}", file=sys.stderr)
         return 0
     if a.cmd in ("heartbeat", "done", "fail", "blocked"):
         row = _worker_update(a.id, a.worker, a.cmd,

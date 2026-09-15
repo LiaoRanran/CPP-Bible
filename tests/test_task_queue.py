@@ -580,3 +580,46 @@ def test_c3_yield_groups_cap_and_fragments(q: Path, sb: Path,
         tq.yield_task(tid2, "dave", _handoff(sb, tid2, budget_used=100))
     assert e2.value.code == 2 and "子任务已存在" in capsys.readouterr().err
     assert _get(q, tid2)["status"] == "claimed"
+
+
+# ── 535 C4：touch_set 文件锁（派发时预防；把"两人同改一批文件互不知"变可见）────
+
+
+def test_c4_touch_blocks_dispatch_and_reports_waiter(q: Path):
+    """A 持 shared 时：B 跳过共 touch 的 TB、领走不冲突的 TC，并拿到"TB 在等 TA"点名。"""
+    ta = tq.enqueue("atom_produce", "docs/ta.md", touch=["work/shared.txt"], priority=1)["id"]
+    tb = tq.enqueue("atom_produce", "docs/tb.md", touch=["work/shared.txt"], priority=30)["id"]
+    tc = tq.enqueue("atom_produce", "docs/tc.md", touch=["work/other.txt"], priority=50)["id"]
+    assert tq.claim("A")["claimed"]["id"] == ta
+    r = tq.claim("B")
+    assert r["claimed"]["id"] == tc, "TB 优先级最高但被文件锁跳过 ⇒ 领不冲突的 TC"
+    assert r["blocked_by_touch"] == [
+        {"id": tb, "blocked_by": [{"task": ta, "files": ["work/shared.txt"]}]}]
+    # 预览同口径：next 也报"谁被挡、在等谁"（此刻 TB 是唯一候选，且被 TA 挡着）
+    rn = tq.next_task()
+    assert rn["next"] is None
+    assert rn["blocked_by_touch"] == [
+        {"id": tb, "blocked_by": [{"task": ta, "files": ["work/shared.txt"]}]}]
+    # B 干完 TA ⇒ 文件锁释放 ⇒ TB 可领
+    tq.done(ta, "A", result_ref="out/ta.txt")
+    assert tq.claim("B")["claimed"]["id"] == tb
+    # 不相交的文件不挡（精确到文件，不是目录粒度）
+    te = tq.enqueue("atom_produce", "docs/te.md", touch=["work/third.txt"], priority=1)["id"]
+    assert tq.claim("C")["claimed"]["id"] == te, "另一文件仍可并行"
+
+
+def test_c4_touch_preview_reports_blocked_candidate(q: Path):
+    """只读预览不得改状态，但必须显示"等文件锁"（否则人看到的 next 与 claim 结果不一致）。"""
+    ta = tq.enqueue("atom_produce", "docs/pa.md", touch=["x.txt"], priority=1)["id"]
+    tb = tq.enqueue("atom_produce", "docs/pb.md", touch=["x.txt"], priority=2)["id"]
+    tq.claim("A")
+    before = {tid: _get(q, tid) for tid in (ta, tb)}
+    r = tq.next_task()
+    assert r["next"] is None and r["blocked_by_touch"] == [
+        {"id": tb, "blocked_by": [{"task": ta, "files": ["x.txt"]}]}]
+    assert {tid: _get(q, tid) for tid in (ta, tb)} == before, "next 仍须只读"
+    # stale 的持锁者不算持锁者（与 claim 里 sweep 后取快照同口径）：TA 变可接管候选，TB 不再被挡
+    _expire(q, ta)
+    r2 = tq.next_task()
+    assert r2["blocked_by_touch"] == []
+    assert r2["next"]["id"] == ta and r2["next"]["would_take_over"] is True
