@@ -8,6 +8,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
 import subprocess
@@ -302,3 +303,188 @@ def test_downgrade_roundtrip(tmp_path: Path, capsys: pytest.CaptureFixture):
     assert _columns(db) == LEGACY_COLS | set(tq.NEW_COLS)
     assert tq.list_tasks(db_path=db)[0]["id"] == tq.make_id("redteam", "docs/rt.md")
     capsys.readouterr()
+
+
+# ── 535 C2：enqueue 扩参 + 环检测 + handoff 交接物（fail-closed）──────────────
+
+
+@pytest.fixture()
+def sb(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """C2+ 沙箱：库与**锚根**都指到 tmp（相对路径产物、verify 工作目录、git 审计都在此）。"""
+    monkeypatch.setattr(tq, "DB_PATH", tmp_path / "queue.db")
+    monkeypatch.setattr(tq, "ANCHOR_ROOT", tmp_path)
+    return tmp_path
+
+
+def _events(db: Path, task_id: str) -> list[dict]:
+    conn = sqlite3.connect(str(db), timeout=10.0)
+    conn.row_factory = sqlite3.Row
+    try:
+        return [dict(r) for r in conn.execute(
+            "SELECT * FROM events WHERE task_id=? ORDER BY seq", (task_id,))]
+    finally:
+        conn.close()
+
+
+def _handoff(root: Path, task_id: str, **over) -> Path:
+    """写一份**合格**的 tq-handoff/v1（steps_done 的产物哈希按盘上真值算）。"""
+    work = root / "work"
+    work.mkdir(parents=True, exist_ok=True)
+    out = work / "step1.txt"
+    out.write_text("step1 done\n", encoding="utf-8")
+    h: dict = {
+        "schema": "tq-handoff/v1",
+        "task_id": task_id,
+        "goal": "让 step1-3 全部落盘且 verify 通过",
+        "steps_done": [{"n": 1, "title": "写 step1",
+                        "outputs": [{"path": "work/step1.txt",
+                                     "sha256": hashlib.sha256(out.read_bytes()).hexdigest()}]}],
+        "steps_remaining": [{"n": 2, "title": "写 step2", "action": "写 work/step2.txt",
+                             "touch": ["work/step2.txt"]}],
+        "verified_facts": [{"fact": "step1 产物字节一致", "trust": "L1",
+                            "anchor": "work/step1.txt"}],
+        "tried_and_failed": [],
+        "next_action": "继续 step 2：写 work/step2.txt 后立即 checkpoint",
+        "touched_files": ["work/step1.txt"],
+        "budget_used": 42,
+        "open_questions": [],
+    }
+    h.update(over)
+    p = root / f"{task_id}.handoff.json"
+    p.write_text(json.dumps(h, ensure_ascii=False), encoding="utf-8")
+    return p
+
+
+def test_c2_enqueue_ext_params(q: Path):
+    """扩参全部落到各自的列（touch 归一并去重）；既有列不受影响。"""
+    r = tq.enqueue("atom_produce", "docs/x.md", priority=5,
+                   touch=["a\\b.txt", "c.txt", "c.txt"], verify_cmd="echo ok",
+                   budget=200, parent="P", model="m1", steps=3, goal="让 replay 单卡 confirm")
+    row = _get(q, r["id"])
+    assert json.loads(row["touch_set"]) == ["a/b.txt", "c.txt"], "反斜杠须归一为 posix 并去重"
+    assert (row["verify_cmd"], row["budget_calls"], row["parent_task"], row["goal"]) == \
+        ("echo ok", 200, "P", "让 replay 单卡 confirm")
+    assert (row["produced_by_model"], row["steps_total"], row["steps_done"]) == ("m1", 3, 0)
+    assert row["checkpoint"] == "{}" and row["claimed_token"] is None, "新列须是空初值"
+    assert [e["event"] for e in _events(q, r["id"])] == ["enqueue"]
+
+
+def test_c2_self_ref_and_cycle_rejected(q: Path, capsys: pytest.CaptureFixture):
+    """自引用/成环 ⇒ exit 2 且**不入队**（fail-closed）；缺依赖的老契约保持不变。"""
+    with pytest.raises(SystemExit) as e1:
+        tq.enqueue("redteam", "docs/self.md", task_id="SELF", deps=["SELF"])
+    assert e1.value.code == 2 and "自引用" in capsys.readouterr().err
+    assert tq.list_tasks() == []
+    # 依赖"尚不存在"的老契约：照建 + 可见提示（不是拒绝）
+    a = tq.enqueue("redteam", "docs/cyc-a.md", deps=["B"])
+    assert a["deps_missing"] == ["B"] and a["created"] is True
+    # 再建 B 并让它依赖 a ⇒ 环（a→B→a），必须在入队事务内拒绝
+    with pytest.raises(SystemExit) as e2:
+        tq.enqueue("redteam", "docs/cyc-b.md", task_id="B", deps=[a["id"]])
+    assert e2.value.code == 2 and "成环" in capsys.readouterr().err
+    assert _get(q, "B") == {}, "被拒的任务不得留下半行"
+
+
+@pytest.mark.parametrize("key,needle,extra", [
+    ("next_action", "next_action", {"next_action": "x"}),
+    ("goal", "goal", {"goal": "   "}),
+    ("verified_facts", "verified_facts", {"verified_facts": []}),
+    ("anchor", "无锚点或锚点不存在", {"verified_facts": [
+        {"fact": "f", "trust": "L1", "anchor": "work/nope.txt"}]}),
+    ("l2_file_anchor", "L2 判决必须用 cmd:", {"verified_facts": [
+        {"fact": "f", "trust": "L2", "anchor": "work/step1.txt"}]}),
+    ("trust", "trust", {"verified_facts": [
+        {"fact": "f", "trust": "L9", "anchor": "work/step1.txt"}]}),
+    ("outputs_missing", "产物不存在", {"steps_done": [
+        {"n": 1, "title": "t", "outputs": [{"path": "work/ghost.txt"}]}]}),
+    ("outputs_hash", "哈希不符", {"steps_done": [
+        {"n": 1, "title": "t", "outputs": [
+            {"path": "work/step1.txt", "sha256": "0" * 64}]}]}),
+    ("budget", "budget_used", {"budget_used": -1}),
+    ("empty_remaining", "steps_remaining 为空", {"steps_remaining": []}),
+])
+def test_c2_validate_handoff_negative(sb: Path, key: str, needle: str, extra: dict):
+    """每条机器判据各有一个反例（fail-closed 的牙齿）；正例见下一个用例。"""
+    h = json.loads(_handoff(sb, "TV").read_text(encoding="utf-8"))
+    h.update(extra)
+    errs = tq.validate_handoff(h, for_yield=(key == "empty_remaining"))
+    assert any(needle in e for e in errs), f"{key} 未被拦下：{errs}"
+
+
+def test_c2_validate_handoff_positive(sb: Path):
+    """合格交接物零错误；yield 形态（remaining 非空）同样零错误；L2 用 cmd: 锚放行。"""
+    h = json.loads(_handoff(sb, "TOK").read_text(encoding="utf-8"))
+    assert tq.validate_handoff(h) == []
+    assert tq.validate_handoff(h, for_yield=True) == []
+    h["verified_facts"].append({"fact": "单卡 replay confirm", "trust": "L2",
+                                "anchor": "cmd:python tools/atom_evidence_replay.py --card x"})
+    h["verified_facts"].append({"fact": "红队未推翻", "trust": "L3", "anchor": "git:abc1234"})
+    assert tq.validate_handoff(h) == []
+
+
+def test_c2_checkpoint_writes_and_audits(q: Path, sb: Path):
+    """checkpoint 落盘：checkpoint/指纹/steps_done/handoff_path/budget_used + 心跳续租 + 事件。"""
+    tid = tq.enqueue("atom_produce", "docs/cp.md", steps=3)["id"]
+    tq.claim("alice")
+    hp = _handoff(sb, tid)
+    before = _get(q, tid)
+    r = tq.checkpoint(tid, "alice", hp, used=42)
+    h = json.loads(hp.read_text(encoding="utf-8"))
+    assert r["steps_done"] == 1 and r["fingerprint"] == tq.cp_fingerprint(h)
+    row = _get(q, tid)
+    assert json.loads(row["checkpoint"])["goal"] == h["goal"], "交接物全文须入 checkpoint 列"
+    assert (row["steps_done"], row["budget_used_calls"]) == (1, 42)
+    assert row["handoff_path"].endswith(f"{tid}.handoff.json")
+    assert row["cp_fingerprint"] == r["fingerprint"]
+    assert row["heartbeat_at"] >= before["heartbeat_at"], "checkpoint 须续心跳（长步骤不误判 stale）"
+    assert [e["event"] for e in _events(q, tid)] == ["enqueue", "claim", "checkpoint"]
+
+
+def test_c2_checkpoint_fail_closed(q: Path, sb: Path, capsys: pytest.CaptureFixture):
+    """质量不过 ⇒ exit 2 且**不落盘**；--force 是人签放行（留痕），不是静默通过。"""
+    tid = tq.enqueue("atom_produce", "docs/cp2.md")["id"]
+    tq.claim("alice")
+    hp = _handoff(sb, tid, next_action="x")
+    with pytest.raises(SystemExit) as e:
+        tq.checkpoint(tid, "alice", hp)
+    assert e.value.code == 2 and "next_action" in capsys.readouterr().err
+    assert _get(q, tid)["checkpoint"] == "{}", "被拒的交接物不得进库"
+    r = tq.checkpoint(tid, "alice", hp, force=True)
+    assert r["forced"] is True and r["errors"], "人签放行必须把'质量不过'写进返回体与事件"
+    assert any("forced=True" in e["detail"] for e in _events(q, tid))
+    # 缺文件 ⇒ 明确拒绝（不是静默跳过）
+    with pytest.raises(SystemExit) as e2:
+        tq.checkpoint(tid, "alice", sb / "nope.json")
+    assert e2.value.code == 1
+
+
+def test_c2_checkpoint_default_path_and_ownership(q: Path, sb: Path):
+    """省略 --handoff 时用规范落点 data/tasks/<id>.handoff.json；非本人/非 claimed 一律拒。"""
+    tid = tq.enqueue("atom_produce", "docs/cp3.md")["id"]
+    tq.claim("alice")
+    canonical = tq.handoff_path_for(tid)
+    canonical.write_text(_handoff(sb, tid).read_text(encoding="utf-8"), encoding="utf-8")
+    assert tq.checkpoint(tid, "alice")["steps_done"] == 1, "默认落点须生效"
+    with pytest.raises(SystemExit):
+        tq.checkpoint(tid, "bob")
+    tq.done(tid, "alice")
+    with pytest.raises(SystemExit) as e:
+        tq.checkpoint(tid, "alice")
+    assert "非 claimed" in str(e.value.code), "终态后连本人也不得再 checkpoint"
+
+
+def test_c2_claim_hands_off(q: Path, sb: Path):
+    """冷启动一条命令接上：claim 返回 handoff 全文 + next_action（stale 接管场景实测）。"""
+    tid = tq.enqueue("atom_produce", "docs/ho.md")["id"]
+    tq.claim("alice")
+    tq.checkpoint(tid, "alice", _handoff(sb, tid))
+    _expire(q, tid)                       # A 掉线 ⇒ B 接管
+    got = tq.claim("bob")["claimed"]
+    assert got["id"] == tid and got["handoff"]["next_action"].startswith("继续 step 2")
+    assert got["steps_remaining"][0]["n"] == 2
+    # 交接物被删 ⇒ 显形（不静默当新任务）
+    tq.handoff_path_for(tid).unlink(missing_ok=True)
+    _sql(q, "UPDATE tasks SET handoff_path='data/tasks/ghost.handoff.json' WHERE id=?", (tid,))
+    _expire(q, tid)
+    got2 = tq.claim("carol")["claimed"]
+    assert got2["handoff"] is None and "不可读" in got2["handoff_error"]

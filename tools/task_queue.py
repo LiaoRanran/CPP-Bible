@@ -32,13 +32,21 @@ stale 接管：`claimed` 且 `heartbeat_at`（无则 `claimed_at`）超过 `STAL
 
 用法：
   python tools/task_queue.py enqueue --type redteam --payload-ref docs/tasks/t1.md --priority 50
+  python tools/task_queue.py enqueue --type atom_produce --payload-ref atoms/x.md \
+      --touch Examples/atoms/x.cpp --verify-cmd "replay --card atoms/x.md" --steps 4 --goal "..."
   python tools/task_queue.py next                       # 只读预览：下一个该派谁
   python tools/task_queue.py claim --worker liaoranran --types redteam
+  python tools/task_queue.py checkpoint <id> --worker liaoranran --handoff data/tasks/<id>.handoff.json
   python tools/task_queue.py heartbeat <id> --worker liaoranran
   python tools/task_queue.py done <id> --worker liaoranran --result-ref data/tasks/t1.out
   python tools/task_queue.py fail <id> --worker liaoranran --error "编译失败：见日志"
   python tools/task_queue.py blocked <id> --worker liaoranran --reason "缺 g++ 15.3"
   python tools/task_queue.py list [--status queued] [--json]
+
+退出码（**两类分开**，脚本可只对后者特判）：
+  0 = 成功；1 = d976170 既有拒绝路径（状态/所有权/参数/无此任务）；
+  **2 = 新增 fail-closed 门**：deps 环、handoff 质量不过、complete 缺 verify_cmd 又缺
+  result-ref、心跳新鲜时的软 takeover（见 535 C2/C5/C6）。
 """
 from __future__ import annotations
 
@@ -53,11 +61,15 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "tasks" / "queue.db"
+# 锚根：handoff 里的相对路径、verify_cmd 的工作目录、touch 审计的 git 根。
+# 独立全局量（不直接用 ROOT）是为了让 pytest 能把它指到 tmp 沙箱，不碰真实仓库。
+ANCHOR_ROOT = ROOT
 
 VERSION = "v1.0"
 STALE_AFTER_S = 600      # heartbeat 超此秒数 ⇒ 视为 worker 已死，可被接管
 MAX_ATTEMPTS = 3         # attempts > 此值 ⇒ 自动 blocked（防无限重试）
-STATUSES = ("queued", "claimed", "done", "failed", "blocked")
+STATUSES = ("queued", "claimed", "done", "failed", "blocked", "yielded")
+TRUST_LEVELS = ("L1", "L2", "L3")   # handoff verified_facts 的信任三级（见 validate_handoff）
 
 # 表结构由 530 T7 规格钉定（勿加列：加列会让"结果引用/原因"这类字段出现多份真源）
 DDL = """
@@ -255,6 +267,35 @@ def _deps_done(conn: sqlite3.Connection, deps_json: str) -> tuple[bool, list[str
     return (not pending), pending
 
 
+def _jload(s: str | None, default: Any) -> Any:
+    """容错 JSON 读（供 deps/touch_set/checkpoint 这类列使用；坏值 ⇒ default）。"""
+    try:
+        return json.loads(s) if s else default
+    except json.JSONDecodeError:
+        return default
+
+
+def _has_cycle(conn: sqlite3.Connection, tid: str, deps: list[str]) -> bool:
+    """新边 `tid → deps` 是否成环：沿依赖链找回到 tid 的路径（DFS）。
+
+    诚实边界（534 §2.4）：在"deps 仅 enqueue 时声明 + 新节点只指出新边"的约束下，当前
+    构造不出环；本检测的价值在①自引用笔误（另有前置拦截）②未来若开"加边/改 deps"命令。
+    不夸口它挡得住现约束下不存在的环。
+    """
+    stack, seen = list(deps), set()
+    while stack:
+        cur = stack.pop()
+        if cur == tid:
+            return True
+        if cur in seen:
+            continue
+        seen.add(cur)
+        r = conn.execute("SELECT deps FROM tasks WHERE id=?", (cur,)).fetchone()
+        if r:
+            stack.extend(_jload(r["deps"], []))
+    return False
+
+
 def _stale_ids(conn: sqlite3.Connection) -> list[str]:
     return [r["id"] for r in conn.execute(
         "SELECT id FROM tasks WHERE status='claimed' "
@@ -309,18 +350,184 @@ def _pick(conn: sqlite3.Connection, types: list[str] | None,
     return None
 
 
+def _reject(msg: str, code: int = 1) -> None:
+    """拒绝并给出可见原因。code=1 沿用 d976170 的既有语义（状态/所有权/参数），
+    code=2 = **新增 fail-closed 门**（deps 环、handoff 质量、软 takeover、
+    complete 缺 verify_cmd 又缺 result-ref）——两类分开，脚本可只对后者做特判。
+    """
+    print(f"[task_queue] {msg}", file=sys.stderr)
+    raise SystemExit(code)
+
+
+# ── handoff 交接物（535 C2：结构化、机器可校验、fail-closed）──────────────────
+# 断点续跑最可能"看似接上、其实接错"的一步是**信任继承**：盘上哈希只能证明"与上一会话
+# 记录的哈希逐字一致"（挡损坏/偷换），证明不了"内容是对的"。因此信任不整体开关，
+# 按 verified_facts 的 trust 三级判（见 validate_handoff 的 C7 段）。
+
+
+def handoff_path_for(task_id: str, db_path: Path | str | None = None) -> Path:
+    """handoff 的**规范落点**（534 §3.1）：`data/tasks/<id>.handoff.json`。
+
+    worker 直接把交接物写到这儿，`checkpoint --handoff` 可省略；也可用 `--handoff`
+    指定别处（会按锚根相对路径记进 `handoff_path` 列）。
+    """
+    p = Path(db_path) if db_path else DB_PATH
+    return p.parent / f"{task_id}.handoff.json"
+
+
+def _rel_store(path: Path, root: Path | str | None = None) -> str:
+    """handoff 路径入列：在锚根内 ⇒ 相对 posix（可随仓库搬移）；否则绝对。"""
+    base = Path(root) if root else ANCHOR_ROOT
+    try:
+        return path.resolve().relative_to(Path(base).resolve()).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def _load_handoff(rel: str | None) -> dict[str, Any] | None:
+    """读回 handed-off 交接物；路径不存在/坏 JSON ⇒ None（不抛：claim 输出不该因它崩）。"""
+    if not rel:
+        return None
+    p = Path(rel)
+    if not p.is_absolute():
+        p = ANCHOR_ROOT / rel
+    if not p.is_file():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _anchor_ok(anchor: str, root: Path) -> bool:
+    """锚点可解析：`cmd:`/`git:` 只要有实质内容；文件锚点必须在盘。
+
+    文件锚点支持 `path` 与 `path:line`（`:line` 只是人读定位，不进盘上判定）。
+    """
+    if anchor.startswith(("cmd:", "git:")):
+        return len(anchor.strip()) > 6
+    if not anchor or anchor.startswith(":"):
+        return False
+    return (root / anchor.split(":", 1)[0]).is_file()
+
+
+def validate_handoff(h: dict[str, Any], *, for_yield: bool = False,
+                     root: Path | str | None = None) -> list[str]:
+    """handoff v1 机器校验（**纯函数**：只看传入 dict + 磁盘产物，不碰 DB/全局状态，
+    gate 可原样 import 复用）。返回错误列表，空 = 通过（fail-closed：不过即拒）。
+
+    字段判据（534 §3.1）：
+      goal            非空
+      next_action     长度 ≥ 4（"继续"这类不算具体动作）
+      steps_done[]    每项有 title；outputs.path 必须在盘；给了 sha256 必须逐字相等
+                      （防产物被偷换 / 半成品冒认——半成品文件在但哈希对不上）
+      verified_facts[]≥1 条；trust ∈ L1/L2/L3；anchor 必填且可解析；**L2 必须 cmd: 锚**
+      budget_used     非负整数
+      steps_remaining for_yield=True 时必填非空（空 remaining 应走 complete 而非 yield）
+
+    —— C7 三级信任判据（信任不整体开关，按事实分级）——
+      L1 物证（编译产物/测试结果）：文件锚点 + 可选 sha256 ⇒ **可继承**，但新会话必须
+         **独立重算**盘上哈希核对（只防损坏/偷换，不证明内容正确）。
+      L2 判决（verdict/规则结论）：必须 `cmd:` 锚点 ⇒ **一律重跑**，不继承声明。
+      L3 裁决（人签/红队/外部事实/标准条文）：无机器锚点 ⇒ **永不自动继承**，
+         续跑方须进 open_questions 交人/红队重判，不得作为跳过步骤的理由。
+    """
+    base = Path(root) if root else ANCHOR_ROOT
+    errs: list[str] = []
+    if not str(h.get("goal") or "").strip():
+        errs.append("goal 为空（完成判据必须写在交接物里）")
+    na = str(h.get("next_action") or "").strip()
+    if len(na) < 4:
+        errs.append("next_action 缺失或不像具体动作（续跑方据此开工）")
+    sd = h.get("steps_done")
+    if not isinstance(sd, list):
+        errs.append("steps_done 必须是列表")
+    else:
+        for i, st in enumerate(sd):
+            if not isinstance(st, dict) or not str(st.get("title") or "").strip():
+                errs.append(f"steps_done[{i}] 缺 title")
+                continue
+            outs = st.get("outputs") or []
+            if not isinstance(outs, list):
+                errs.append(f"steps_done[{i}].outputs 必须是列表")
+                continue
+            for o in outs:
+                if not isinstance(o, dict) or not o.get("path"):
+                    errs.append(f"steps_done[{i}] 产物项缺 path")
+                    continue
+                f = base / str(o["path"])
+                if not f.is_file():
+                    errs.append(f"steps_done[{i}] 产物不存在：{o['path']}")
+                elif o.get("sha256") and \
+                        hashlib.sha256(f.read_bytes()).hexdigest() != str(o["sha256"]):
+                    errs.append(f"steps_done[{i}] 产物哈希不符：{o['path']}（防偷换/半成品）")
+    vf = h.get("verified_facts")
+    if not isinstance(vf, list) or not vf:
+        errs.append("verified_facts 为空（至少一条带锚点结论）")
+    else:
+        for i, fct in enumerate(vf):
+            if not isinstance(fct, dict):
+                errs.append(f"verified_facts[{i}] 必须是对象")
+                continue
+            trust = fct.get("trust")
+            if trust not in TRUST_LEVELS:
+                errs.append(f"verified_facts[{i}] 缺 trust∈{{L1,L2,L3}}")
+            a = str(fct.get("anchor") or "").strip()
+            if not a or not _anchor_ok(a, base):
+                errs.append(f"verified_facts[{i}] 无锚点或锚点不存在：{a[:60]}")
+            elif trust == "L2" and not a.startswith("cmd:"):
+                errs.append(f"verified_facts[{i}] L2 判决必须用 cmd: 锚点（可重跑，不许继承）")
+    bu = h.get("budget_used")
+    if not isinstance(bu, int) or isinstance(bu, bool) or bu < 0:
+        errs.append("budget_used 必须是非负整数")
+    if for_yield:
+        sr = h.get("steps_remaining")
+        if not isinstance(sr, list) or not sr:
+            errs.append("yield 时 steps_remaining 为空（无剩余应走 complete）")
+    return errs
+
+
+def cp_fingerprint(h: dict[str, Any]) -> str:
+    """进度指纹：done 步的 (n + 产物 path/sha256) + remaining 条数 ⇒ 16 hex。
+
+    用途：① fake-progress 检测（心跳指纹不推进 = 假活）；② 续跑方一眼看出
+    "交接物自上次 checkpoint 后有没有动过"。
+    """
+    x = hashlib.sha256()
+    for st in h.get("steps_done") or []:
+        if not isinstance(st, dict):
+            continue
+        x.update(str(st.get("n")).encode())
+        for o in st.get("outputs") or []:
+            if isinstance(o, dict):
+                x.update(str(o.get("path")).encode())
+                x.update(str(o.get("sha256")).encode())
+    x.update(str(len(h.get("steps_remaining") or [])).encode())
+    return x.hexdigest()[:16]
+
+
 # ── 写操作（皆 `BEGIN IMMEDIATE` 原子） ──────────────────────────────────────
 
 
 def enqueue(task_type: str, payload_ref: str, priority: int = 100,
             deps: list[str] | None = None, task_id: str | None = None,
-            db_path: Path | str | None = None) -> dict[str, Any]:
-    """入队（幂等）。已存在 ⇒ {"created": False}，不报错（可安全重跑）。"""
+            db_path: Path | str | None = None, *, touch: list[str] | None = None,
+            verify_cmd: str = "", budget: int = 500, parent: str | None = None,
+            model: str | None = None, steps: int = 0, goal: str = "",
+            worker: str = "enqueuer") -> dict[str, Any]:
+    """入队（幂等）。已存在 ⇒ {"created": False}，不报错（可安全重跑）。
+
+    535 C2 扩参：`touch`（写冲突锁的声明集，posix 相对路径）、`verify_cmd`（complete 门禁）、
+    `budget/steps/goal/parent/model`（预算与交接物语境）。deps 引用不存在的任务仍只**提示**
+    （d976170 契约：任务照建，只是 claim 不到）；但**自引用与成环一律拒**（fail-closed）。
+    """
     if not task_type or not payload_ref:
         raise SystemExit("[task_queue] --type 与 --payload-ref 必填")
     init(db_path)
     tid = task_id or make_id(task_type, payload_ref)
     deps = list(deps or [])
+    if tid in deps:
+        _reject(f"deps 自引用：{tid} 依赖自身（永不可 claim，入队即拒）", 2)
     conn = _connect(db_path)
     try:
         conn.execute("BEGIN IMMEDIATE")
@@ -330,14 +537,25 @@ def enqueue(task_type: str, payload_ref: str, priority: int = 100,
         # 依赖不存在 ⇒ 可见提示（不静默：缺依赖的任务会永远 claim 不到）
         missing = [d for d in deps if not conn.execute(
             "SELECT 1 FROM tasks WHERE id=?", (d,)).fetchone()]
+        if _has_cycle(conn, tid, deps):
+            _rollback(conn)
+            _reject(f"deps 成环：沿依赖链可回到 {tid}（入队即拒）", 2)
         now = _now()
+        touch_set = sorted({str(t).replace("\\", "/") for t in (touch or []) if str(t).strip()})
         conn.execute(
             "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
-            "created_at,updated_at) VALUES(?,?,?,'queued',?,?,0,?,?)",
+            "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"
+            "produced_by_model,steps_total,goal) "
+            "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?)",
             (tid, task_type, payload_ref, int(priority),
-             json.dumps(deps, ensure_ascii=False), now, now))
+             json.dumps(deps, ensure_ascii=False), now, now,
+             json.dumps(touch_set, ensure_ascii=False), verify_cmd, int(budget),
+             parent, model, int(steps), goal))
+        _event(conn, tid, worker, "enqueue",
+               f"deps={deps} touch={touch_set} steps={int(steps)} "
+               f"budget={int(budget)} verify_cmd={verify_cmd!r} parent={parent}")
         conn.execute("COMMIT")
-        return {"id": tid, "created": True, "deps_missing": missing}
+        return {"id": tid, "created": True, "deps_missing": missing, "touch_set": touch_set}
     except BaseException:
         _rollback(conn)
         raise
@@ -368,10 +586,100 @@ def claim(worker: str, types: list[str] | None = None,
             "UPDATE tasks SET status='claimed', claimed_by=?, claimed_at=?, heartbeat_at=?, "
             "attempts=attempts+1, updated_at=? WHERE id=? AND status='queued'",
             (worker, now, now, now, row["id"]))
+        _event(conn, row["id"], worker, "claim", f"attempt={int(row['attempts'] or 0) + 1}")
         out = _as_row_dict(
             conn.execute("SELECT * FROM tasks WHERE id=?", (row["id"],)).fetchone())
         conn.execute("COMMIT")
-        return {"claimed": out, "taken_over": moved}
+        # 冷启动一条命令接上（535 C2）：认领即交出 handoff 全文 + next_action
+        return {"claimed": _with_handoff(out), "taken_over": moved}
+    except BaseException:
+        _rollback(conn)
+        raise
+    finally:
+        conn.close()
+
+
+def _with_handoff(row: dict[str, Any]) -> dict[str, Any]:
+    """在任务 dict 上挂 handoff（`handoff`=全文；`next_action`/`steps_remaining` 摘要）。
+
+    交接物不在盘/坏 JSON ⇒ handoff=None 且 `handoff_error` 显形（**不静默**：续跑方
+    必须知道"有人声称交接过但文件没了"，而不是以为这是全新任务）。
+    """
+    if not row.get("handoff_path"):
+        return row
+    h = _load_handoff(row["handoff_path"])
+    row["handoff"] = h
+    if h is None:
+        row["handoff_error"] = f"handoff_path={row['handoff_path']} 不可读（缺文件/坏 JSON）"
+    else:
+        row["next_action"] = h.get("next_action")
+        row["steps_remaining"] = h.get("steps_remaining")
+    return row
+
+
+def _authorize(row: sqlite3.Row | dict[str, Any], worker: str, action: str) -> None:
+    """工作命令的**唯一授权点**：状态必须 claimed，且必须是认领者本人。
+
+    d976170 只比 `claimed_by` 字符串——知道名字就能冒充（534 §6.1 E12）；C5 在此
+    单点叠加 worker token possession（claim 时落盘 128-bit secret），不在别处再写一遍。
+    """
+    if row["status"] != "claimed":
+        raise SystemExit(
+            f"[task_queue] {row['id']} 当前状态 {row['status']}，非 claimed ⇒ 拒绝 {action}")
+    if row["claimed_by"] != worker:
+        raise SystemExit(
+            f"[task_queue] 拒绝 {action}：{row['id']} 由 {row['claimed_by']!r} 认领，非 {worker!r}")
+
+
+def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None, *,
+               used: int | None = None, force: bool = False,
+               db_path: Path | str | None = None) -> dict[str, Any]:
+    """关键步骤落盘（535 C2）：校验交接物 → 写 checkpoint/指纹/steps_done/心跳。
+
+    落盘点判据（534 §3.2）：**"这一步若丢了，新会话需要重跑一条命令才能恢复"就值得
+    checkpoint**；读取/思考类动作不落盘。任意时刻被杀最多丢一步（checkpoint 各自独立提交）。
+    fail-closed：handoff 质量不过 ⇒ 拒绝落盘（`--force` 是人给自己的口子，事件里留痕）。
+    """
+    if not worker:
+        raise SystemExit("[task_queue] --worker 必填")
+    hp = Path(handoff_path) if handoff_path else handoff_path_for(task_id, db_path)
+    if not hp.is_file():
+        _reject(f"handoff 文件不存在：{hp}（先写交接物再 checkpoint）", 1)
+    try:
+        h = json.loads(hp.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        _reject(f"handoff 不是合法 JSON：{hp}（{exc}）", 1)
+    if not isinstance(h, dict):
+        _reject(f"handoff 顶层必须是对象：{hp}", 1)
+    errs = validate_handoff(h)
+    if errs and not force:
+        _reject("checkpoint 质量不过（fail-closed，逐条修或人签 --force）：\n  - "
+                + "\n  - ".join(errs), 2)
+    init(db_path)
+    conn = _connect(db_path)
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute("SELECT * FROM tasks WHERE id=?", (task_id,)).fetchone()
+        if row is None:
+            _rollback(conn)
+            raise SystemExit(f"[task_queue] 无此任务：{task_id}")
+        _authorize(row, worker, "checkpoint")
+        fp = cp_fingerprint(h)
+        steps_done = len(h.get("steps_done") or [])
+        used_n = int(used if used is not None else (h.get("budget_used") or 0))
+        now = _now()
+        conn.execute(
+            "UPDATE tasks SET checkpoint=?,cp_fingerprint=?,steps_done=?,handoff_path=?,"
+            "budget_used_calls=?,heartbeat_at=?,updated_at=? WHERE id=?",
+            (json.dumps(h, ensure_ascii=False), fp, steps_done, _rel_store(hp),
+             used_n, now, now, task_id))
+        _event(conn, task_id, worker, "checkpoint",
+               f"steps_done={steps_done} fp={fp} used={used_n} forced={bool(errs)}"
+               + (f" errors={errs}" if errs else ""))
+        conn.execute("COMMIT")
+        return {"id": task_id, "steps_done": steps_done, "fingerprint": fp,
+                "budget_used": used_n, "handoff_path": _rel_store(hp),
+                "forced": bool(errs), "errors": errs}
     except BaseException:
         _rollback(conn)
         raise
@@ -531,10 +839,25 @@ def main(argv: list[str] | None = None) -> int:
     en.add_argument("--priority", type=int, default=100)
     en.add_argument("--deps", default="")
     en.add_argument("--id", default=None)
+    en.add_argument("--touch", default="", help="写冲突锁声明集（posix 相对路径，逗号分隔）")
+    en.add_argument("--verify-cmd", default="", help="complete 门禁命令（空则按 type 默认表）")
+    en.add_argument("--budget", type=int, default=500, help="调用预算（yield 的门槛依据）")
+    en.add_argument("--parent", default=None, help="父任务 id（子任务回指）")
+    en.add_argument("--model", default=None, help="产出模型（produced_by_model，溯源用）")
+    en.add_argument("--steps", type=int, default=0, help="计划总步数（steps_total）")
+    en.add_argument("--goal", default="", help="一句话可验证目标")
 
     cl = sub.add_parser("claim", parents=[common])
     cl.add_argument("--worker", required=True)
     cl.add_argument("--types", default="")
+
+    ck = sub.add_parser("checkpoint", parents=[common])
+    ck.add_argument("id")
+    ck.add_argument("--worker", required=True)
+    ck.add_argument("--handoff", default=None,
+                    help="交接物路径（默认 data/tasks/<id>.handoff.json）")
+    ck.add_argument("--used", type=int, default=None, help="已用调用数（写进 budget_used_calls）")
+    ck.add_argument("--force", action="store_true", help="人签放行质量不过的交接物（留痕）")
 
     for name in ("heartbeat", "done", "fail", "blocked"):
         p = sub.add_parser(name, parents=[common])
@@ -571,7 +894,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if a.cmd == "enqueue":
         deps = [d for d in (a.deps or "").split(",") if d]
-        r = enqueue(a.type, a.payload_ref, a.priority, deps, a.id, db)
+        r = enqueue(a.type, a.payload_ref, a.priority, deps, a.id, db,
+                    touch=[t for t in (a.touch or "").split(",") if t],
+                    verify_cmd=a.verify_cmd, budget=a.budget, parent=a.parent,
+                    model=a.model, steps=a.steps, goal=a.goal)
         if a.json:
             print(json.dumps(r, ensure_ascii=False))
         elif r["created"]:
@@ -590,10 +916,24 @@ def main(argv: list[str] | None = None) -> int:
             c = r["claimed"]
             print(f"[task_queue] {a.worker} 领到 {c['id']}（{c['type']}，"
                   f"attempts={c['attempts']}）payload={c['payload_ref']}")
+            # 冷启动：把交接物直接摊在眼前（新会话零上下文接上）
+            if c.get("handoff"):
+                print(f"[task_queue] 交接物 {c['handoff_path']}："
+                      f"goal={c['handoff'].get('goal')}")
+                print(f"[task_queue] next_action：{c['handoff'].get('next_action')}")
+                print(f"[task_queue] steps_done={c.get('steps_done')} "
+                      f"cp_fingerprint={c.get('cp_fingerprint')} "
+                      f"budget_used={c.get('budget_used_calls')}")
+            elif c.get("handoff_error"):
+                print(f"[task_queue] ⚠ {c['handoff_error']}", file=sys.stderr)
         else:
             print(f"[task_queue] 无可领任务（{a.worker}）")
         if r["taken_over"]:
             print(f"[task_queue] 回收 stale：{r['taken_over']}", file=sys.stderr)
+        return 0
+    if a.cmd == "checkpoint":
+        r = checkpoint(a.id, a.worker, a.handoff, used=a.used, force=a.force, db_path=db)
+        print(json.dumps(r, ensure_ascii=False))
         return 0
     if a.cmd == "next":
         r = next_task(types, db)
