@@ -488,3 +488,95 @@ def test_c2_claim_hands_off(q: Path, sb: Path):
     _expire(q, tid)
     got2 = tq.claim("carol")["claimed"]
     assert got2["handoff"] is None and "不可读" in got2["handoff_error"]
+
+
+# ── 535 C3：yield 让出（切子任务 + 父回卷），三道量化闸门 ─────────────────────
+
+
+def test_c3_yield_splits_child_and_rolls_up(q: Path, sb: Path):
+    """主场景（534 S4 同构）：父 yield → 子承接剩余步骤 → 子 done ⇒ 父自动 done。"""
+    tid = tq.enqueue("atom_produce", "docs/y.md", budget=150, steps=3)["id"]
+    tq.claim("alice")
+    hp = _handoff(sb, tid, budget_used=100, steps_remaining=[
+        {"n": 2, "title": "写 step2", "action": "写 work/step2.txt"},
+        {"n": 3, "title": "写 step3", "action": "写 work/step3.txt"}])
+    tq.checkpoint(tid, "alice", hp, used=100)          # left = 150-100 = 50 < 100 ⇒ 可让出
+    r = tq.yield_task(tid, "alice", hp)
+    assert r["status"] == "yielded" and r["children"] == [f"{tid}.c1"]
+    assert r["budget_left"] == 50
+    assert r["budget_per_child"] == tq.MIN_CHILD_BUDGET, "子预算下限须生效（防切到没法干活）"
+    parent = _get(q, tid)
+    assert parent["status"] == "yielded" and parent["claimed_by"] is None
+    assert parent["checkpoint"] != "{}" and parent["steps_done"] == 1, "让出要**保留** checkpoint"
+    child = _get(q, f"{tid}.c1")
+    assert (child["status"], child["parent_task"]) == ("queued", tid)
+    assert (child["budget_calls"], child["steps_total"]) == (tq.MIN_CHILD_BUDGET, 2)
+    ch = json.loads((sb / f"{tid}.c1.handoff.json").read_text(encoding="utf-8"))
+    assert [s["n"] for s in ch["steps_remaining"]] == [2, 3], "子任务携带全部剩余步骤"
+    assert ch["steps_done"] == [], "子任务不许冒认父已做的步骤"
+    assert ch["verified_facts"], "父的已验事实是续跑方的信任基线，须整段继承"
+    assert [e["event"] for e in _events(q, tid)] == ["enqueue", "claim", "checkpoint", "yield"]
+    # 子任务领走 → 做完 ⇒ 父自动回卷
+    assert tq.claim("bob")["claimed"]["id"] == f"{tid}.c1"
+    out = tq.done(f"{tid}.c1", "bob", result_ref="out/y.txt")
+    assert out["parent_rolled_up"] == tid and _get(q, tid)["status"] == "done"
+    assert any(e["event"] == "done_rollup" for e in _events(q, tid))
+
+
+def test_c3_yield_budget_gate(q: Path, sb: Path, capsys: pytest.CaptureFixture):
+    """预算还足 ⇒ 不许逃（exit 2）；人签 --force 才放行（534 §6.5 闸门①）。"""
+    tid = tq.enqueue("atom_produce", "docs/y2.md", budget=500)["id"]
+    tq.claim("alice")
+    hp = _handoff(sb, tid, budget_used=0)
+    with pytest.raises(SystemExit) as e:
+        tq.yield_task(tid, "alice", hp)
+    assert e.value.code == 2 and "不许让出" in capsys.readouterr().err
+    assert _get(q, tid)["status"] == "claimed", "被拒后状态不得变化"
+    r = tq.yield_task(tid, "alice", hp, force=True)
+    assert r["children"] and r["budget_left"] == 500
+
+
+def test_c3_yield_fail_closed(q: Path, sb: Path, capsys: pytest.CaptureFixture):
+    """handoff 质量闸门是**硬门**：--force 只解预算，不解"缺 next_action / 无锚点"。"""
+    tid = tq.enqueue("atom_produce", "docs/y3.md", budget=100)["id"]
+    tq.claim("alice")
+    with pytest.raises(SystemExit) as e:
+        tq.yield_task(tid, "alice", _handoff(sb, tid, budget_used=100, next_action="x"),
+                      force=True)
+    assert e.value.code == 2 and "next_action" in capsys.readouterr().err
+    assert _get(q, tid)["status"] == "claimed"
+    # remaining 为空 ⇒ 该走 complete，不是 yield
+    with pytest.raises(SystemExit) as e2:
+        tq.yield_task(tid, "alice", _handoff(sb, tid, budget_used=100, steps_remaining=[]))
+    assert e2.value.code == 2 and "steps_remaining" in capsys.readouterr().err
+    assert _get(q, tid)["status"] == "claimed"
+
+
+def test_c3_yield_groups_cap_and_fragments(q: Path, sb: Path,
+                                           capsys: pytest.CaptureFixture):
+    """分组闸门：≤MAX_CHILDREN、组间串 deps、touch 继承、空组拒绝、重复切分拒绝。"""
+    tid = tq.enqueue("atom_produce", "docs/y4.md", budget=400, touch=["work/shared.txt"])["id"]
+    tq.claim("alice")
+    hp = _handoff(sb, tid, budget_used=350, step_groups=[
+        {"steps": [{"n": n, "title": f"step{n}"}]} for n in (2, 3, 4, 5, 6)])
+    r = tq.yield_task(tid, "alice", hp)
+    assert len(r["children"]) == tq.MAX_CHILDREN, "单次切分须封顶（防碎片）"
+    kids = [_get(q, c) for c in r["children"]]
+    assert json.loads(kids[1]["deps"]) == [r["children"][0]], "组间须自动串 deps"
+    assert json.loads(kids[2]["deps"]) == [r["children"][1]]
+    assert json.loads(kids[0]["touch_set"]) == ["work/shared.txt"], "touch_set 须继承"
+    assert tq.claim("bob")["claimed"]["id"] == r["children"][0], "只有第一组可领"
+    assert tq.claim("carol")["claimed"] is None, "后组等前组 done"
+    # 空组 = 碎片，拒绝
+    tid2 = tq.enqueue("atom_produce", "docs/y5.md", budget=100)["id"]
+    tq.claim("dave")
+    with pytest.raises(SystemExit) as e:
+        tq.yield_task(tid2, "dave", _handoff(sb, tid2, budget_used=100,
+                                             step_groups=[{"steps": []}]))
+    assert e.value.code == 2 and "空子任务" in capsys.readouterr().err
+    # 子任务已存在（重跑过 yield）⇒ 拒绝，不覆盖
+    tq.enqueue("atom_produce", "docs/y6.md", task_id=f"{tid2}.c1")
+    with pytest.raises(SystemExit) as e2:
+        tq.yield_task(tid2, "dave", _handoff(sb, tid2, budget_used=100))
+    assert e2.value.code == 2 and "子任务已存在" in capsys.readouterr().err
+    assert _get(q, tid2)["status"] == "claimed"

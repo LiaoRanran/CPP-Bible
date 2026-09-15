@@ -68,6 +68,10 @@ ANCHOR_ROOT = ROOT
 VERSION = "v1.0"
 STALE_AFTER_S = 600      # heartbeat 超此秒数 ⇒ 视为 worker 已死，可被接管
 MAX_ATTEMPTS = 3         # attempts > 此值 ⇒ 自动 blocked（防无限重试）
+YIELD_BUDGET_LEFT = 100  # 预算剩余 ≥ 此值 ⇒ **不许逃**（yield 需 --force 才放行）
+MAX_CHILDREN = 4         # 单次 yield 最多切几个子任务（防碎片）
+MIN_CHILD_BUDGET = 80    # 每个子任务的预算下限（防"切到没法干活"）
+LEASE_GRACE_S = 120      # 心跳新鲜宽限：此窗口内裸 claim/takeover 都拿不到活（见 C5）
 STATUSES = ("queued", "claimed", "done", "failed", "blocked", "yielded")
 TRUST_LEVELS = ("L1", "L2", "L3")   # handoff verified_facts 的信任三级（见 validate_handoff）
 
@@ -631,6 +635,19 @@ def _authorize(row: sqlite3.Row | dict[str, Any], worker: str, action: str) -> N
             f"[task_queue] 拒绝 {action}：{row['id']} 由 {row['claimed_by']!r} 认领，非 {worker!r}")
 
 
+def _read_handoff_file(hp: Path) -> dict[str, Any]:
+    """读交接物文件（缺文件/坏 JSON/非对象 ⇒ 明确拒绝，绝不静默当空交接物）。"""
+    if not hp.is_file():
+        _reject(f"handoff 文件不存在：{hp}（先写交接物再 checkpoint/yield）", 1)
+    try:
+        h = json.loads(hp.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        _reject(f"handoff 不是合法 JSON：{hp}（{exc}）", 1)
+    if not isinstance(h, dict):
+        _reject(f"handoff 顶层必须是对象：{hp}", 1)
+    return h
+
+
 def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None, *,
                used: int | None = None, force: bool = False,
                db_path: Path | str | None = None) -> dict[str, Any]:
@@ -643,14 +660,7 @@ def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None
     if not worker:
         raise SystemExit("[task_queue] --worker 必填")
     hp = Path(handoff_path) if handoff_path else handoff_path_for(task_id, db_path)
-    if not hp.is_file():
-        _reject(f"handoff 文件不存在：{hp}（先写交接物再 checkpoint）", 1)
-    try:
-        h = json.loads(hp.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        _reject(f"handoff 不是合法 JSON：{hp}（{exc}）", 1)
-    if not isinstance(h, dict):
-        _reject(f"handoff 顶层必须是对象：{hp}", 1)
+    h = _read_handoff_file(hp)
     errs = validate_handoff(h)
     if errs and not force:
         _reject("checkpoint 质量不过（fail-closed，逐条修或人签 --force）：\n  - "
@@ -685,6 +695,125 @@ def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None
         raise
     finally:
         conn.close()
+
+
+def yield_task(task_id: str, worker: str, handoff_path: Path | str | None = None, *,
+               force: bool = False, db_path: Path | str | None = None) -> dict[str, Any]:
+    """到顶让出（535 C3）：交接物 fail-closed 校验 → 父转 `yielded` → 残步骤切子任务。
+
+    三道量化闸门（534 §6.5）：
+      ① 预算剩余 ≥ `YIELD_BUDGET_LEFT` ⇒ **不许逃**（`--force` 是人给自己留的口子）；
+      ② 单次切分 ≤ `MAX_CHILDREN` 个、空组拒绝（防碎片）、每子预算 ≥ `MIN_CHILD_BUDGET`；
+      ③ 父回卷：全部子任务 done ⇒ 父自动 done（见 `_rollup_parent`）。
+    **`--force` 只解预算闸门，不解 handoff 质量闸门**——"缺 next_action / 无锚点"一律拒让出。
+    """
+    hp = Path(handoff_path) if handoff_path else handoff_path_for(task_id, db_path)
+    h = _read_handoff_file(hp)
+    errs = validate_handoff(h, for_yield=True)
+    if errs:
+        _reject("yield 被拒（fail-closed，让出前必须交代清楚）：\n  - " + "\n  - ".join(errs), 2)
+    init(db_path)
+    conn = _connect(db_path)
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute("SELECT * FROM tasks WHERE id=?", (task_id,)).fetchone()
+        if row is None:
+            _rollback(conn)
+            raise SystemExit(f"[task_queue] 无此任务：{task_id}")
+        _authorize(row, worker, "yield")
+        now = _now()
+        used = int(h.get("budget_used") or 0)
+        left = max(0, int(row["budget_calls"]) - used)
+        if left >= YIELD_BUDGET_LEFT and not force:
+            _rollback(conn)
+            _reject(f"预算尚余 {left} ≥ {YIELD_BUDGET_LEFT}：不许让出（确有需要请人签 --force）", 2)
+        remaining = list(h["steps_remaining"])
+        groups = h.get("step_groups")
+        groups = (groups[:MAX_CHILDREN] if isinstance(groups, list) and groups
+                  else [{"steps": remaining}])
+        if any(not (isinstance(g, dict) and g.get("steps")) for g in groups):
+            _rollback(conn)
+            _reject("切出空子任务（碎片防护）：每个子任务至少要带一步", 2)
+        per = max(MIN_CHILD_BUDGET, left // len(groups))
+        parent_touch = _jload(row["touch_set"], [])
+        child_ids: list[str] = []
+        prev: str | None = None
+        for i, g in enumerate(groups, 1):
+            cid = f"{task_id}.c{i}"
+            if conn.execute("SELECT 1 FROM tasks WHERE id=?", (cid,)).fetchone():
+                _rollback(conn)
+                _reject(f"子任务已存在：{cid}（防重复切分；人工清理后再 yield）", 2)
+            cdeps = [d for d in (g.get("deps") or [])]
+            if prev:
+                cdeps.append(prev)          # 组间自动串行（后组等前组）
+            ch = {
+                "schema": h.get("schema") or "tq-handoff/v1",
+                "task_id": cid,
+                "goal": f"[续] {h.get('goal', '')}",
+                # 父的**已验事实**整段继承（它是续跑方的信任基线：L1 可继承、L2 必重跑、L3 走人），
+                # 但 steps_done 归零——子任务自己没做过那些步，不许冒认（"产物未被枚举一律重做"）。
+                "verified_facts": h.get("verified_facts") or [],
+                "tried_and_failed": h.get("tried_and_failed") or [],
+                "open_questions": h.get("open_questions") or [],
+                "steps_done": [],
+                "steps_remaining": g["steps"],
+                "next_action": f"领到后从 step {g['steps'][0].get('n')} 继续，逐步 checkpoint",
+                "touched_files": [],
+                "budget_used": 0,
+            }
+            chp = handoff_path_for(cid, db_path)
+            chp.write_text(json.dumps(ch, ensure_ascii=False, indent=1), encoding="utf-8")
+            conn.execute(
+                "INSERT INTO tasks(id,type,payload_ref,status,priority,deps,attempts,"
+                "created_at,updated_at,touch_set,verify_cmd,budget_calls,parent_task,"
+                "produced_by_model,steps_total,goal,handoff_path) "
+                "VALUES(?,?,?,'queued',?,?,0,?,?,?,?,?,?,?,?,?,?)",
+                (cid, row["type"], row["payload_ref"], row["priority"],
+                 json.dumps(cdeps, ensure_ascii=False), now, now,
+                 json.dumps(g.get("touch") or parent_touch, ensure_ascii=False),
+                 row["verify_cmd"], per, task_id, row["produced_by_model"],
+                 len(g["steps"]), ch["goal"], _rel_store(chp)))
+            _event(conn, cid, worker, "enqueue_child",
+                   f"parent={task_id} budget={per} steps={len(g['steps'])} deps={cdeps}")
+            child_ids.append(cid)
+            prev = cid
+        conn.execute(
+            "UPDATE tasks SET status='yielded',handoff_path=?,checkpoint=?,cp_fingerprint=?,"
+            "steps_done=?,claimed_by=NULL,claimed_token=NULL,heartbeat_at=NULL,"
+            "budget_used_calls=?,updated_at=? WHERE id=?",
+            (_rel_store(hp), json.dumps(h, ensure_ascii=False), cp_fingerprint(h),
+             len(h.get("steps_done") or []), used, now, task_id))
+        _event(conn, task_id, worker, "yield",
+               f"children={child_ids} used={used} left={left} force={force}")
+        conn.execute("COMMIT")
+        return {"yielded": task_id, "children": child_ids, "budget_per_child": per,
+                "budget_left": left, "status": "yielded"}
+    except BaseException:
+        _rollback(conn)
+        raise
+    finally:
+        conn.close()
+
+
+def _rollup_parent(conn: sqlite3.Connection, row: sqlite3.Row | dict[str, Any],
+                   actor: str, now: str) -> str | None:
+    """父回卷（534 §3.4）：最后一个子任务 complete 时，父（yielded）的所有子任务全 done
+    ⇒ 父自动 done。返回被回卷的父 id（没有则 None）。
+    """
+    parent = row["parent_task"]
+    if not parent:
+        return None
+    pr = conn.execute("SELECT id,status FROM tasks WHERE id=?", (parent,)).fetchone()
+    if pr is None or pr["status"] != "yielded":
+        return None
+    open_n = conn.execute(
+        "SELECT COUNT(*) FROM tasks WHERE parent_task=? AND status!='done'", (parent,)
+    ).fetchone()[0]
+    if open_n == 0:
+        conn.execute("UPDATE tasks SET status='done',updated_at=? WHERE id=?", (now, parent))
+        _event(conn, parent, actor, "done_rollup", f"via child {row['id']}")
+        return parent
+    return None
 
 
 def next_task(types: list[str] | None = None,
@@ -746,12 +875,16 @@ def _worker_update(task_id: str, worker: str, action: str,
             raise SystemExit(
                 f"[task_queue] 拒绝 {action}：{task_id} 由 {owner!r} 认领，非 {worker!r}")
         now = _now()
+        rolled: str | None = None
         if action == "heartbeat":
             conn.execute("UPDATE tasks SET heartbeat_at=?, updated_at=? WHERE id=?",
                          (now, now, task_id))
         elif action == "done":
             conn.execute("UPDATE tasks SET status='done', result_ref=?, heartbeat_at=?, "
                          "updated_at=? WHERE id=?", (result_ref, now, now, task_id))
+            # `done` 保留（d976170 契约），升级方向是 `complete`（C6：worker 不得自证）；
+            # 父回卷两条路径都要做（yield 切出的子任务可能被 done 收尾）。
+            rolled = _rollup_parent(conn, row, worker, now)
         elif action == "fail":
             conn.execute("UPDATE tasks SET status='failed', error=?, updated_at=? WHERE id=?",
                          (error, now, task_id))
@@ -764,6 +897,8 @@ def _worker_update(task_id: str, worker: str, action: str,
             raise SystemExit(f"[task_queue] 未知 action：{action}")
         out = _as_row_dict(
             conn.execute("SELECT * FROM tasks WHERE id=?", (task_id,)).fetchone())
+        if action == "done" and rolled:
+            out["parent_rolled_up"] = rolled
         conn.execute("COMMIT")
         return out
     except BaseException:
@@ -859,6 +994,14 @@ def main(argv: list[str] | None = None) -> int:
     ck.add_argument("--used", type=int, default=None, help="已用调用数（写进 budget_used_calls）")
     ck.add_argument("--force", action="store_true", help="人签放行质量不过的交接物（留痕）")
 
+    yl = sub.add_parser("yield", parents=[common])
+    yl.add_argument("id")
+    yl.add_argument("--worker", required=True)
+    yl.add_argument("--handoff", default=None,
+                    help="交接物路径（默认 data/tasks/<id>.handoff.json；须含 steps_remaining）")
+    yl.add_argument("--force", action="store_true",
+                    help="预算还足时人签放行（**不解** handoff 质量闸门）")
+
     for name in ("heartbeat", "done", "fail", "blocked"):
         p = sub.add_parser(name, parents=[common])
         p.add_argument("id")
@@ -934,6 +1077,14 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "checkpoint":
         r = checkpoint(a.id, a.worker, a.handoff, used=a.used, force=a.force, db_path=db)
         print(json.dumps(r, ensure_ascii=False))
+        return 0
+    if a.cmd == "yield":
+        r = yield_task(a.id, a.worker, a.handoff, force=a.force, db_path=db)
+        if a.json:
+            print(json.dumps(r, ensure_ascii=False))
+        else:
+            print(f"[task_queue] {r['yielded']} 已让出（{r['status']}）⇒ 子任务 "
+                  f"{r['children']}（每子预算 {r['budget_per_child']}）")
         return 0
     if a.cmd == "next":
         r = next_task(types, db)
