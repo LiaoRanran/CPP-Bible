@@ -822,3 +822,75 @@ def test_c6_cli_full_chain(q: Path, sb: Path, capsys: pytest.CaptureFixture):
     assert tq.main(["enqueue", "--type", "custom", "--payload-ref", "docs/cli4.md",
                     "--id", "SELF4", "--deps", "SELF4"]) == 2
     assert "自引用" in capsys.readouterr().err
+
+
+# ── 535 C7：三级信任判据（L1 可继承但要独立验哈希 / L2 必重跑 / L3 永不继承）──
+
+
+def test_c7_resume_plan_classifies_by_trust(sb: Path):
+    """一份交接物里三级事实各归其位；L1 哈希对不上 ⇒ blocked（不得按继承继续）。"""
+    work = sb / "work"
+    work.mkdir(parents=True, exist_ok=True)
+    good, bad = work / "good.txt", work / "bad.txt"
+    good.write_text("ok\n", encoding="utf-8")
+    bad.write_text("tampered\n", encoding="utf-8")
+    h = {
+        "goal": "g", "next_action": "继续 step 2 并 checkpoint", "budget_used": 1,
+        "verified_facts": [
+            {"fact": "产物字节一致", "trust": "L1", "anchor": "work/good.txt",
+             "sha256": hashlib.sha256(good.read_bytes()).hexdigest()},
+            {"fact": "产物被偷换", "trust": "L1", "anchor": "work/bad.txt",
+             "sha256": hashlib.sha256(b"original\n").hexdigest()},
+            {"fact": "没记哈希的物证", "trust": "L1", "anchor": "work/good.txt"},
+            {"fact": "单卡 replay confirm", "trust": "L2",
+             "anchor": "cmd:python tools/atom_evidence_replay.py --card x --no-sanitizer"},
+            {"fact": "红队未推翻", "trust": "L3", "anchor": "git:abc1234"},
+        ],
+    }
+    rp = tq.resume_plan(h)
+    assert [x["status"] for x in rp["l1_verify"]] == ["match", "mismatch", "no_digest"]
+    assert rp["l2_rerun"][0]["cmd"].startswith("python tools/atom_evidence_replay.py")
+    assert rp["l3_human"][0]["anchor"] == "git:abc1234", "L3 只能走人，不得混进 L1/L2"
+    assert rp["blocked"] is True, "有 L1 对不上 ⇒ 必须人工介入"
+    assert len(rp["l1_verify"]) + len(rp["l2_rerun"]) + len(rp["l3_human"]) == 5
+    # 干净交接物（只有能继承的 L1 + 可重跑的 L2）⇒ 不 blocked
+    clean = dict(h, verified_facts=[h["verified_facts"][0], h["verified_facts"][3]])
+    assert tq.resume_plan(clean)["blocked"] is False
+
+
+def test_c7_validate_rejects_l1_hash_mismatch(sb: Path):
+    """L1 记了哈希但盘上不符 ⇒ 交接物直接拒收（不许把被偷换的物证带进交接链）。"""
+    h = json.loads(_handoff(sb, "T7").read_text(encoding="utf-8"))
+    h["verified_facts"][0].update({"trust": "L1", "anchor": "work/step1.txt",
+                                   "sha256": "0" * 64})
+    errs = tq.validate_handoff(h)
+    assert any("L1 物证哈希不符" in e for e in errs), errs
+
+
+def test_c7_claim_returns_resume_plan(q: Path, sb: Path, capsys: pytest.CaptureFixture):
+    """冷启动方拿到的不只是 handoff，还有"该重算什么"的机器清单（claim 输出实测）。"""
+    tid = tq.enqueue("atom_produce", "docs/c7.md")["id"]
+    tq.claim("alice")
+    hp = _handoff(sb, tid)
+    h = json.loads(hp.read_text(encoding="utf-8"))
+    h["verified_facts"] = [
+        {"fact": "产物字节一致", "trust": "L1", "anchor": "work/step1.txt"},
+        {"fact": "单卡 replay confirm", "trust": "L2",
+         "anchor": "cmd:python tools/atom_evidence_replay.py --card x"},
+        {"fact": "人签放行", "trust": "L3", "anchor": "git:deadbee"},
+    ]
+    hp.write_text(json.dumps(h, ensure_ascii=False), encoding="utf-8")
+    tq.checkpoint(tid, "alice", hp)
+    # CLI 冷启动路径：接管后输出里直接给出"该重算什么"的摘要
+    assert tq.main(["claim", "--worker", "bob", "--takeover", tid, "--force",
+                    "--reason", "A 到顶"]) == 0
+    out = capsys.readouterr().out
+    assert "续跑计划" in out and "L2 必重跑 1" in out and "L3 走人 1" in out
+    # 库路径：认领返回体带结构化清单（新会话可按它逐条动作）
+    _expire(q, tid)
+    got = tq.claim("carol")["claimed"]
+    rp = got["resume_plan"]
+    assert (len(rp["l1_verify"]), len(rp["l2_rerun"]), len(rp["l3_human"])) == (1, 1, 1)
+    assert rp["l1_verify"][0]["status"] == "no_digest", "没记哈希 ⇒ 自己重新度量，别当已核对"
+    assert rp["l3_human"][0]["fact"] == "人签放行"
+    assert rp["blocked"] is False

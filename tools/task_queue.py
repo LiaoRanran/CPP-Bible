@@ -521,6 +521,11 @@ def validate_handoff(h: dict[str, Any], *, for_yield: bool = False,
                 errs.append(f"verified_facts[{i}] 无锚点或锚点不存在：{a[:60]}")
             elif trust == "L2" and not a.startswith("cmd:"):
                 errs.append(f"verified_facts[{i}] L2 判决必须用 cmd: 锚点（可重跑，不许继承）")
+            elif trust == "L1" and fct.get("sha256") and not a.startswith(("cmd:", "git:")):
+                fp = base / a.split(":", 1)[0]
+                if fp.is_file() and \
+                        hashlib.sha256(fp.read_bytes()).hexdigest() != str(fct["sha256"]):
+                    errs.append(f"verified_facts[{i}] L1 物证哈希不符：{a[:60]}（防偷换/半成品）")
     bu = h.get("budget_used")
     if not isinstance(bu, int) or isinstance(bu, bool) or bu < 0:
         errs.append("budget_used 必须是非负整数")
@@ -529,6 +534,52 @@ def validate_handoff(h: dict[str, Any], *, for_yield: bool = False,
         if not isinstance(sr, list) or not sr:
             errs.append("yield 时 steps_remaining 为空（无剩余应走 complete）")
     return errs
+
+
+def resume_plan(h: dict[str, Any], *, root: Path | str | None = None) -> dict[str, Any]:
+    """续跑计划（535 C7）：把"哪些能继承、哪些必须重算、哪些只能走人"算成机器清单。
+
+    **信任不是整体开关**——盘上哈希只能证明"与上一会话记录的哈希逐字一致"（挡损坏/偷换），
+    证明不了"内容是对的"；所以按事实分级：
+
+      L1 物证（编译产物/测试结果）：**可继承**，但新会话必须**独立重算**盘上哈希核对
+         （`status`: match / mismatch / no_digest〔没记哈希⇒自己重新度量〕/ no_file）；
+      L2 判决（verdict/规则结论）：**一律重跑** `cmd:` 锚点里的命令，不信声明；
+      L3 裁决（人签/红队/外部事实）：**永不自动继承** ⇒ 进 l3_human + open_questions 交人。
+    `blocked=True`（有 L1 物证对不上）⇒ 不得按"继承"继续，须人工介入。
+    """
+    base = Path(root) if root else ANCHOR_ROOT
+    l1: list[dict[str, Any]] = []
+    l2: list[dict[str, Any]] = []
+    l3: list[dict[str, Any]] = []
+    for i, fct in enumerate(h.get("verified_facts") or []):
+        if not isinstance(fct, dict):
+            continue
+        trust, anchor = fct.get("trust"), str(fct.get("anchor") or "")
+        item: dict[str, Any] = {"i": i, "fact": fct.get("fact"), "anchor": anchor}
+        if trust == "L1":
+            if anchor.startswith(("cmd:", "git:")):
+                item["status"] = "no_file"
+            else:
+                fp = base / anchor.split(":", 1)[0]
+                if not fp.is_file():
+                    item["status"] = "no_file"
+                elif fct.get("sha256"):
+                    item["status"] = ("match" if hashlib.sha256(fp.read_bytes()).hexdigest()
+                                      == str(fct["sha256"]) else "mismatch")
+                else:
+                    item["status"] = "no_digest"
+            l1.append(item)
+        elif trust == "L2":
+            item["cmd"] = anchor[4:].strip() if anchor.startswith("cmd:") else ""
+            l2.append(item)
+        elif trust == "L3":
+            l3.append(item)
+    bad = [x for x in l1 if x["status"] in ("mismatch", "no_file")]
+    return {"l1_verify": l1, "l2_rerun": l2, "l3_human": l3,
+            "open_questions": list(h.get("open_questions") or []),
+            "blocked": bool(bad),
+            "note": "L1 可继承但须新会话独立重算哈希；L2 一律重跑；L3 永不自动继承（走人/红队）"}
 
 
 def cp_fingerprint(h: dict[str, Any]) -> str:
@@ -702,6 +753,8 @@ def _with_handoff(row: dict[str, Any]) -> dict[str, Any]:
     else:
         row["next_action"] = h.get("next_action")
         row["steps_remaining"] = h.get("steps_remaining")
+        # C7：认领即把"哪些可继承/必须重跑/只能走人"摆给新会话，不让它凭感觉续跑
+        row["resume_plan"] = resume_plan(h)
     return row
 
 
@@ -1380,6 +1433,12 @@ def _main(argv: list[str] | None = None) -> int:
                 print(f"[task_queue] steps_done={c.get('steps_done')} "
                       f"cp_fingerprint={c.get('cp_fingerprint')} "
                       f"budget_used={c.get('budget_used_calls')}")
+                rp = c.get("resume_plan")
+                if rp:
+                    l1_bad = [x for x in rp["l1_verify"] if x["status"] != "match"]
+                    print(f"[task_queue] 续跑计划：L1 待独立核对 {len(l1_bad)}/{len(rp['l1_verify'])}"
+                          f" · L2 必重跑 {len(rp['l2_rerun'])} · L3 走人 {len(rp['l3_human'])}"
+                          + ("  ⚠ 有 L1 物证对不上 ⇒ 须人工介入" if rp["blocked"] else ""))
             elif c.get("handoff_error"):
                 print(f"[task_queue] ⚠ {c['handoff_error']}", file=sys.stderr)
         else:
