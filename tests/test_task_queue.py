@@ -8,6 +8,7 @@
 """
 from __future__ import annotations
 
+import datetime as dt
 import hashlib
 import json
 import os
@@ -988,6 +989,74 @@ def test_t0_regression_existing_touch_lock_still_works(q: Path):
 
 
 # ── 546 T-A5：yield 深度上界 + 累计预算账（把 545 异族探针 A5 转成回归锁）─────
+
+
+# ── 546 T-A3：未来心跳 clamp + 年龄用 UTC（把 545 异族探针 A3 转成回归锁）──────
+
+
+def _future_iso(hours: int = 1) -> str:
+    """`now + hours` 的 UTC ISO 秒（与库里口径一致；探针原写的是本地裸 ISO）。"""
+    return (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=hours)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def test_a3_future_heartbeat_is_clamped_at_write(q: Path):
+    """写端：传入 now+1h 的心跳 ⇒ 一律 clamp 到 now，并留 `heartbeat_clamped` 事件。
+
+    修前 `heartbeat_at` 可以被写成未来值 ⇒ `_sweep_stale` 的"早于 now-600s"永不命中
+    ⇒ 任务恒 claimed，他人 claim/next 都拿不到（除人 --force）。
+    """
+    tid = tq.enqueue("custom", "docs/a3.md", task_id="A3")["id"]
+    tq.claim("alice")
+    fut = _future_iso(1)
+    tq.heartbeat(tid, "alice", at=fut)
+    row = _get(q, tid)
+    assert row["heartbeat_at"] != fut and row["heartbeat_at"].endswith("Z"), row["heartbeat_at"]
+    assert abs(tq._age_s(row["heartbeat_at"])) < 30, "clamp 后年龄≈0（不是未来）"
+    ev = [e["detail"] for e in _events(q, tid) if e["event"] == "heartbeat_clamped"]
+    assert ev and f"given={fut}" in ev[0] and "clamped_to=" in ev[0]
+
+
+def test_a3_future_heartbeat_in_db_is_swept(q: Path):
+    """读端（探针原形态：直接改库写未来心跳）⇒ 不采信 ⇒ 他人**当场**可接管，占坑拿不到租约。"""
+    tid = tq.enqueue("custom", "docs/a3b.md", task_id="A3B")["id"]
+    tq.claim("alice")
+    _sql(q, "UPDATE tasks SET heartbeat_at=? WHERE id=?", (_future_iso(1), tid))
+    assert tq.next_task()["next"]["id"] == tid, "未来心跳须被视作可接管候选"
+    r = tq.claim("bob")
+    assert r["claimed"] and r["claimed"]["id"] == tid, "他人必须能接管（旧行为：拿不到）"
+    assert r["claimed"]["claimed_by"] == "bob"
+    assert any(e["event"] == "heartbeat_clamped" for e in _events(q, tid)), "回收要留痕"
+
+
+def test_a3_normal_heartbeat_unchanged(q: Path):
+    """正常心跳（now / now-700s）不回归：不 clamp、新鲜时不被接管、过期后可接管。"""
+    tid = tq.enqueue("custom", "docs/a3c.md", task_id="A3C")["id"]
+    tq.claim("alice")
+    old = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=700)
+           ).strftime("%Y-%m-%dT%H:%M:%SZ")
+    tq.heartbeat(tid, "alice", at=old)             # 过去值：原样存（不挪时间）
+    row = _get(q, tid)
+    assert row["heartbeat_at"].endswith("Z") and 690 < tq._age_s(row["heartbeat_at"]) < 720
+    assert not [e for e in _events(q, tid) if e["event"] == "heartbeat_clamped"], "过去值不 clamp"
+    assert tq.claim("bob")["claimed"]["id"] == tid, "过期 700s > STALE_AFTER_S ⇒ 可接管"
+    # 新鲜心跳仍受租约保护（不许借"未来不采信"把正常在跑的活抢走）
+    tid2 = tq.enqueue("custom", "docs/a3d.md", task_id="A3D")["id"]
+    assert tq.claim("carol")["claimed"]["id"] == tid2
+    assert tq.claim("dave")["claimed"] is None, "租约内裸 claim 仍抢不到（C5 不回归）"
+
+
+def test_a3_age_is_timezone_independent():
+    """`_age_s` 不再靠 `time.mktime`（本机时区）：`…Z` 与 `+08:00` 两种写法同一时刻同一年龄。"""
+    now_utc = dt.datetime.now(dt.timezone.utc)
+    z = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    plus8 = now_utc.astimezone(dt.timezone(dt.timedelta(hours=8))).isoformat(timespec="seconds")
+    minus5 = now_utc.astimezone(dt.timezone(-dt.timedelta(hours=5))).isoformat(timespec="seconds")
+    for s in (z, plus8, minus5):
+        assert abs(tq._age_s(s)) < 5, f"{s} 的年龄应与机器时区无关"
+    assert tq._age_s(_future_iso(1)) < -3500, "未来心跳算出负年龄（线索不被夹掉）"
+    assert tq._is_future_ts(_future_iso(1)) and not tq._is_future_ts(z)
+    assert tq._age_s("不是时间") is None and tq._age_s("") is None
 
 
 def test_a5_depth_cap_blocks_endless_yield(q: Path, sb: Path,

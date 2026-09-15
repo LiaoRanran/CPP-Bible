@@ -21,6 +21,10 @@ stale 接管：`claimed` 且 `heartbeat_at`（无则 `claimed_at`）超过 `STAL
 ⇒ 下次 claim 时回收：`attempts <= MAX_ATTEMPTS` 回 `queued`（**attempts 保留**），
 `attempts > MAX_ATTEMPTS`(3) 直接 `blocked`（防无限重试）。
 
+时间戳口径（546 T-A3，修"未来心跳永久占坑"）：库里一律 **UTC ISO 秒（`…Z`）**；
+心跳写端（`_hb_write`）把 `> now+30s` 的值 clamp 到 now 并留 `heartbeat_clamped`；
+读端（`_stale_ids`）若见到未来心跳 ⇒ **不采信** ⇒ 立即可接管（写未来心跳换不到任何租约）。
+
 数据：`data/tasks/queue.db`（已 gitignore，不入库；与 task_state 的 `<id>.json` 同目录共存）。
 
 建库/迁移（535 C1，**真并发缺陷修复**）：所有入口一律先 `migrate()`——PRAGMA 顺序必须是
@@ -88,6 +92,9 @@ MIN_CHILD_BUDGET = 80    # 每个子任务的预算下限（防"切到没法干�
 # ⇒ 层级与总调用预算**都无上界**（实测 P→c1→c1.c1… 5 级仍可继续）。深度是本洞的**主闸**。
 MAX_YIELD_DEPTH = 3
 LEASE_GRACE_S = 120      # 心跳新鲜宽限：此窗口内裸 claim/takeover 都拿不到活（见 C5）
+# 546 T-A3：心跳"未来"的容差（> now + 30s ⇒ 不采信）。容差只为吞掉秒级截断/写盘延迟，
+# 不是给"时钟快一点"留口子——正常写心跳一律用**本机** `_now()`，跨机时钟偏移进不到库里。
+HEARTBEAT_FUTURE_TOLERANCE_S = 30
 STATUSES = ("queued", "claimed", "done", "failed", "blocked", "yielded")
 TRUST_LEVELS = ("L1", "L2", "L3")   # handoff verified_facts 的信任三级（见 validate_handoff）
 
@@ -141,8 +148,71 @@ CREATE TABLE IF NOT EXISTS events(
 );"""
 
 
+def _fmt_utc(epoch: float) -> str:
+    """epoch 秒 → **UTC ISO 秒**（`Z` 后缀）：库里所有时间戳的**唯一口径**（546 T-A3）。
+
+    为什么必须是 UTC 而不是本地 ISO（洞 A3 的根因之一）：`_age_s` 原用 `time.mktime(strptime(...))`
+    ⇒ 同一个字符串在 UTC+8 与 UTC-5 的机器上算出**相差 13 小时**的年龄；且 `_stale_ids` 用的是
+    **字符串比较**（`heartbeat_at < now-600s`），本地值与 UTC 值混在一个库里时比较直接失真。
+    """
+    return _dt.datetime.fromtimestamp(epoch, _dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _now() -> str:
-    return _dt.datetime.now().isoformat(timespec="seconds")
+    return _fmt_utc(time.time())
+
+
+def _parse_ts(ts: str | None) -> float | None:
+    """时间戳 → epoch 秒（546 T-A3：**不再用 `time.mktime`**，那等于按本机时区解释库里的值）。
+
+    口径：①`…Z` / 带 utcoffset ⇒ 按各自偏移解析（与机器时区无关）；②裸 ISO（无时区）⇒ 视为
+    d976170→545 的**存量本地值**，按本机本地时区解释（与旧 `mktime` 行为一致，老数据不漂移）。
+    解析失败 ⇒ None（fail-closed：年龄未知，交给调用方判）。
+    """
+    if not ts:
+        return None
+    s = str(ts).strip()
+    if not s:
+        return None
+    try:
+        return _dt.datetime.fromisoformat(s[:-1] + "+00:00" if s.endswith("Z") else s
+                                          ).timestamp()
+    except ValueError:
+        pass
+    try:
+        return time.mktime(time.strptime(s[:19], "%Y-%m-%dT%H:%M:%S"))
+    except ValueError:
+        return None
+
+
+def _is_future_ts(ts: str | None, tolerance: int = HEARTBEAT_FUTURE_TOLERANCE_S) -> bool:
+    """该时间戳是否"在未来"（超出容差）⇒ **不采信**（正常写路径不可能写出未来心跳）。"""
+    t = _parse_ts(ts)
+    return t is not None and t > time.time() + tolerance
+
+
+def _hb_write(conn: sqlite3.Connection, task_id: str, actor: str,
+              ts: str | None = None) -> str:
+    """写 `heartbeat_at` 的**唯一口径**（546 T-A3）：UTC ISO 秒 + 未来心跳 clamp。
+
+    - `ts` 为空 ⇒ 写 `now`（绝大多数路径；写方永远是**本机**时钟，不存在跨机偏移）；
+    - `ts` 超过 `now + HEARTBEAT_FUTURE_TOLERANCE_S`(30s) ⇒ **clamp 到 now** 并留
+      `heartbeat_clamped` 事件——未来心跳是"永久占坑"的载体（stale 永不命中 ⇒ 除人 --force
+      无人能接管），写端一律不许留；
+    - 过去/此刻的 `ts` ⇒ 折算成 UTC 口径原样存（不挪时间，只换写法）。
+    """
+    if not ts:
+        return _now()
+    t = _parse_ts(ts)
+    if t is None:
+        return _now()
+    if t > time.time() + HEARTBEAT_FUTURE_TOLERANCE_S:
+        val = _now()
+        _event(conn, task_id, actor, "heartbeat_clamped",
+               f"given={ts} ⇒ clamped_to={val}"
+               f"（未来心跳 > now+{HEARTBEAT_FUTURE_TOLERANCE_S}s 不采信）")
+        return val
+    return _fmt_utc(t)
 
 
 def _rollback(conn: sqlite3.Connection) -> None:
@@ -154,7 +224,8 @@ def _rollback(conn: sqlite3.Connection) -> None:
 
 
 def _cutoff(seconds: int = STALE_AFTER_S) -> str:
-    return (_dt.datetime.now() - _dt.timedelta(seconds=seconds)).isoformat(timespec="seconds")
+    """`now - seconds` 的**UTC** ISO 秒（与 `_now()` 同口径，可直接做字符串比较）。"""
+    return _fmt_utc(time.time() - seconds)
 
 
 def _event(conn: sqlite3.Connection, task_id: str, actor: str, event: str,
@@ -344,9 +415,29 @@ def _has_cycle(conn: sqlite3.Connection, tid: str, deps: list[str]) -> bool:
 
 
 def _stale_ids(conn: sqlite3.Connection) -> list[str]:
-    return [r["id"] for r in conn.execute(
-        "SELECT id FROM tasks WHERE status='claimed' "
-        "AND COALESCE(heartbeat_at, claimed_at) < ?", (_cutoff(),))]
+    """stale 判定（546 T-A3：**UTC 口径** + **未来心跳不采信**）。
+
+      - `heartbeat_at` 在 `now + HEARTBEAT_FUTURE_TOLERANCE_S` 之后 ⇒ **不采信**（写端 clamp 过，
+        正常路径不可能产生；只会来自直接改库或搬库）⇒ **立即可接管**。这是"永久占坑"的正解：
+        写未来心跳**换不到任何租约**，反而当场丢活（旧行为：白拿 1h+ 独占）。
+      - 其余：按 `_parse_ts`（UTC/aware 优先，裸值按本地兼容）算真实年龄 > `STALE_AFTER_S`。
+
+    不再用字符串比较（`heartbeat_at < cutoff`）：那条写法的隐含前提是"库里全是同一时区的本地值"，
+    而异族探针 A3 正是用未来值把它打成"永不 stale"。
+    """
+    out: list[str] = []
+    now_s = time.time()
+    for r in conn.execute("SELECT id,claimed_at,heartbeat_at FROM tasks "
+                          "WHERE status='claimed'"):
+        if _is_future_ts(r["heartbeat_at"]):
+            out.append(r["id"])
+            continue
+        t = _parse_ts(r["heartbeat_at"])
+        if t is None:
+            t = _parse_ts(r["claimed_at"])
+        if t is not None and now_s - t > STALE_AFTER_S:
+            out.append(r["id"])
+    return out
 
 
 def _block(conn: sqlite3.Connection, tid: str, why: str, now: str) -> None:
@@ -362,7 +453,12 @@ def _sweep_stale(conn: sqlite3.Connection, now: str) -> list[str]:
     """
     moved: list[str] = []
     for tid in _stale_ids(conn):
-        row = conn.execute("SELECT attempts FROM tasks WHERE id=?", (tid,)).fetchone()
+        row = conn.execute("SELECT attempts,heartbeat_at FROM tasks WHERE id=?",
+                           (tid,)).fetchone()
+        if _is_future_ts(row["heartbeat_at"]):
+            _event(conn, tid, "sweeper", "heartbeat_clamped",
+                   f"future={row['heartbeat_at']} ⇒ 不采信并按 stale 回收"
+                   f"（未来心跳=永久占坑；回收后心跳口径归位）")
         att = int(row["attempts"] or 0)
         if att > MAX_ATTEMPTS:
             _block(conn, tid, f"stale 接管时 attempts={att} > {MAX_ATTEMPTS}（防无限重试）", now)
@@ -778,7 +874,8 @@ def claim(worker: str, types: list[str] | None = None,
                 _rollback(conn)
                 _reject(f"接管目标 {takeover} 状态={tr['status']}（仅 claimed 可接管）", 2)
             age = _age_s(tr["heartbeat_at"] or tr["claimed_at"])
-            if (age is None or age < LEASE_GRACE_S) and not force:
+            fut = _is_future_ts(tr["heartbeat_at"])
+            if not fut and (age is None or age < LEASE_GRACE_S) and not force:
                 _rollback(conn)
                 shown = "未知" if age is None else f"{int(age)}s 前"
                 _reject(f"{takeover} 心跳 {shown}（租约 {LEASE_GRACE_S}s 内），疑似仍在跑；"
@@ -792,7 +889,7 @@ def claim(worker: str, types: list[str] | None = None,
                 "heartbeat_at=NULL,updated_at=? WHERE id=?", (now, takeover))
             _event(conn, takeover, worker, "manual_takeover",
                    f"from={tr['claimed_by']} age={'?' if age is None else int(age)}s "
-                   f"force={force} reason={reason}")
+                   f"force={force} future_hb={fut} reason={reason}")
             target_id = takeover
         else:
             moved = _sweep_stale(conn, now)
@@ -805,10 +902,11 @@ def claim(worker: str, types: list[str] | None = None,
         # token possession（E12）：认领即落盘 128-bit secret，行里存副本；
         # heartbeat/checkpoint/yield/complete 三处都要"名字对 + token 对"。
         secret = worker_secret(db_path, worker, register=True)
+        hb = _hb_write(conn, row["id"], worker)      # 546 T-A3：心跳统一口径（UTC，禁未来值）
         cur = conn.execute(
             "UPDATE tasks SET status='claimed',claimed_by=?,claimed_token=?,claimed_at=?,"
             "heartbeat_at=?,attempts=attempts+1,updated_at=? WHERE id=? AND status='queued'",
-            (worker, secret, now, now, now, row["id"]))
+            (worker, secret, now, hb, now, row["id"]))
         if cur.rowcount != 1:
             _rollback(conn)
             _reject(f"认领竞争失败：{row['id']} 已被别的会话领走（重跑一次即可）", 2)
@@ -904,13 +1002,13 @@ def _authorize(row: sqlite3.Row | dict[str, Any], worker: str, action: str,
 
 
 def _age_s(ts: str | None) -> float | None:
-    """心跳时间戳距现在的秒数（本地 ISO 秒级字符串，与写入方同口径；解析失败 ⇒ None）。"""
-    if not ts:
-        return None
-    try:
-        return time.time() - time.mktime(time.strptime(str(ts), "%Y-%m-%dT%H:%M:%S"))
-    except ValueError:
-        return None
+    """心跳时间戳距现在的秒数（546 T-A3：**UTC/aware 口径**，不再 `mktime` 本地时区；坏值 ⇒ None）。
+
+    未来心跳会算出**负值**——**不在这里夹到 0**：那会把"时钟超前/被改库"这条线索抹掉；
+    采信与否由调用方用 `_is_future_ts` 判（见 `_stale_ids` 与 `claim` 的 takeover 分支）。
+    """
+    t = _parse_ts(ts)
+    return None if t is None else time.time() - t
 
 
 def _read_handoff_file(hp: Path) -> dict[str, Any]:
@@ -961,7 +1059,7 @@ def checkpoint(task_id: str, worker: str, handoff_path: Path | str | None = None
             "UPDATE tasks SET checkpoint=?,cp_fingerprint=?,steps_done=?,handoff_path=?,"
             "budget_used_calls=?,heartbeat_at=?,updated_at=? WHERE id=?",
             (json.dumps(h, ensure_ascii=False), fp, steps_done, _rel_store(hp),
-             used_n, now, now, task_id))
+             used_n, _hb_write(conn, task_id, worker), now, task_id))
         _event(conn, task_id, worker, "checkpoint",
                f"steps_done={steps_done} fp={fp} used={used_n} forced={bool(errs)}"
                + (f" errors={errs}" if errs else ""))
@@ -1291,7 +1389,8 @@ def complete(task_id: str, worker: str, *, result_ref: str | None = None,
         conn.execute(
             "UPDATE tasks SET status='done',result_ref=?,verify_hash=?,updated_at=?,"
             "heartbeat_at=? WHERE id=?",
-            (result_ref or row["result_ref"], vhash, now, now, task_id))
+            (result_ref or row["result_ref"], vhash, now,
+             _hb_write(conn, task_id, worker), task_id))
         _event(conn, task_id, worker, "done",
                f"verify={vhash} undeclared={undeclared}"
                + (f" audit_note={audit_note}" if audit_note else ""))
@@ -1372,6 +1471,7 @@ def next_task(types: list[str] | None = None,
 
 def _worker_update(task_id: str, worker: str, action: str,
                    result_ref: str | None = None, error: str | None = None,
+                   at: str | None = None,
                    db_path: Path | str | None = None) -> dict[str, Any]:
     """heartbeat/done/fail/blocked 的**公共入口**：授权一律走 `_authorize` 单点。
 
@@ -1391,11 +1491,13 @@ def _worker_update(task_id: str, worker: str, action: str,
         now = _now()
         rolled: str | None = None
         if action == "heartbeat":
+            # 546 T-A3：`at` 是外部传入的心跳时刻（可带时区），超容差一律 clamp 并留痕
             conn.execute("UPDATE tasks SET heartbeat_at=?, updated_at=? WHERE id=?",
-                         (now, now, task_id))
+                         (_hb_write(conn, task_id, worker, at), now, task_id))
         elif action == "done":
             conn.execute("UPDATE tasks SET status='done', result_ref=?, heartbeat_at=?, "
-                         "updated_at=? WHERE id=?", (result_ref, now, now, task_id))
+                         "updated_at=? WHERE id=?",
+                         (result_ref, _hb_write(conn, task_id, worker), now, task_id))
             # `done` 保留（d976170 契约），升级方向是 `complete`（C6：worker 不得自证）；
             # 父回卷两条路径都要做（yield 切出的子任务可能被 done 收尾）。
             rolled = _rollup_parent(conn, row, worker, now)
@@ -1422,8 +1524,14 @@ def _worker_update(task_id: str, worker: str, action: str,
         conn.close()
 
 
-def heartbeat(task_id: str, worker: str, db_path: Path | str | None = None) -> dict[str, Any]:
-    return _worker_update(task_id, worker, "heartbeat", db_path=db_path)
+def heartbeat(task_id: str, worker: str, at: str | None = None,
+              db_path: Path | str | None = None) -> dict[str, Any]:
+    """心跳续租。`at`（可选）= 外部时钟给的时刻：`> now+30s` 一律 clamp 到 now 并留痕。
+
+    546 T-A3：所有心跳写路径只认**本机** `_now()`（跨机时钟偏移进不到库里）；`at` 是给
+    "由外部系统代传心跳"留的口子，先把未来值挡在写端，读端（`_stale_ids`）再判一次不采信。
+    """
+    return _worker_update(task_id, worker, "heartbeat", at=at, db_path=db_path)
 
 
 def done(task_id: str, worker: str, result_ref: str | None = None,
@@ -1548,6 +1656,9 @@ def _main(argv: list[str] | None = None) -> int:
         p.add_argument("--worker", required=True)
         if name == "done":
             p.add_argument("--result-ref", default=None)
+        elif name == "heartbeat":
+            p.add_argument("--at", default=None,
+                           help="外部时钟给的心跳时刻（> now+30s 一律 clamp 到 now，546 T-A3）")
         elif name in ("fail", "blocked"):
             p.add_argument("--error" if name == "fail" else "--reason", default=None)
 
@@ -1673,7 +1784,7 @@ def _main(argv: list[str] | None = None) -> int:
         row = _worker_update(a.id, a.worker, a.cmd,
                             result_ref=getattr(a, "result_ref", None),
                             error=getattr(a, "error", None) or getattr(a, "reason", None),
-                            db_path=db)
+                            at=getattr(a, "at", None), db_path=db)
         print(json.dumps({k: row[k] for k in ("id", "status", "claimed_by", "attempts",
                                               "result_ref", "error", "updated_at")},
                          ensure_ascii=False))
