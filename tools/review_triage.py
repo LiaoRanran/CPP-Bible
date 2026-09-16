@@ -27,7 +27,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-os.environ.setdefault("CPPBIBLE_OBS", "0")      # 纯读：别写 data/logs
 
 import gate_engine as ge                        # noqa: E402  (path 注入后导入)
 
@@ -131,8 +130,20 @@ def matrix_kind(target: str) -> tuple[str, str]:
 
 
 def collect_findings() -> list:
-    """gate 全量非 block 信号（warn + advice）——只读一次。"""
-    return [f for f in ge.run(include_advice=True) if f.severity in ("warn", "advice")]
+    """gate 全量非 block 信号（warn + advice）——只读一次。
+
+    `CPPBIBLE_OBS=0` 只在本调用期间生效并**原样还原**（不在 import 期改环境，
+    否则会污染同进程的其它测试，实测会让 test_observability 假红）。
+    """
+    old = os.environ.get("CPPBIBLE_OBS")
+    os.environ["CPPBIBLE_OBS"] = "0"
+    try:
+        return [f for f in ge.run(include_advice=True) if f.severity in ("warn", "advice")]
+    finally:
+        if old is None:
+            os.environ.pop("CPPBIBLE_OBS", None)
+        else:
+            os.environ["CPPBIBLE_OBS"] = old
 
 
 def _exempt_rules() -> set[str]:
