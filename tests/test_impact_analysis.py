@@ -77,3 +77,80 @@ def test_json_report_format():
     assert data["tool"] == "impact_analysis" and data["direction"] == "upstream"
     assert {"deps", "refs", "summary", "version", "timestamp"} <= set(data)
     assert isinstance(data["summary"]["deps"], int)
+
+
+# ── 558 Part C（557 D 停点）：多跳传递闭包 + 环检测 ─────────────────────────────
+
+
+def test_558_chain_multihop_no_duplicates(sb: Path):
+    """链式 A→B→C：闭包出 B(1 跳) 与 A(2 跳)，且同一原子**不重复**出现。"""
+    _atom(sb, "ATOM-A", "\n  - prerequisite: ATOM-B")
+    _atom(sb, "ATOM-B", "\n  - prerequisite: ATOM-C")
+    _atom(sb, "ATOM-C", "[]")
+    got = ia.upstream_closure("ATOM-C")
+    assert [(d["atom"], d["depth"]) for d in got] == [("ATOM-B", 1), ("ATOM-A", 2)], got
+    assert len({d["atom"] for d in got}) == len(got), "同一原子不得重复计数"
+    got2 = ia.downstream_closure("ATOM-A")
+    assert [(d["atom"], d["depth"]) for d in got2] == [("ATOM-B", 1), ("ATOM-C", 2)], got2
+
+
+def test_558_diamond_counts_sink_once(sb: Path):
+    """菱形 A→B→D、A→C→D：汇点 D 只算一次（最短跳数），不因两条路径重复计数。"""
+    _atom(sb, "ATOM-A", "\n  - prerequisite: ATOM-B\n  - prerequisite: ATOM-C")
+    _atom(sb, "ATOM-B", "\n  - prerequisite: ATOM-D")
+    _atom(sb, "ATOM-C", "\n  - prerequisite: ATOM-D")
+    _atom(sb, "ATOM-D", "[]")
+    got = ia.upstream_closure("ATOM-D")
+    assert [(d["atom"], d["depth"]) for d in got] == \
+        [("ATOM-B", 1), ("ATOM-C", 1), ("ATOM-A", 2)], got
+    assert len(got) == len({d["atom"] for d in got}), "菱形依赖不得重复计数"
+
+
+def test_558_depth_caps_hops(sb: Path):
+    """`depth` 封顶：depth=1 只出直接邻居；`None` = 不限跳数。"""
+    _atom(sb, "ATOM-A", "\n  - prerequisite: ATOM-B")
+    _atom(sb, "ATOM-B", "\n  - prerequisite: ATOM-C")
+    _atom(sb, "ATOM-C", "[]")
+    assert [d["atom"] for d in ia.upstream_closure("ATOM-C", depth=1)] == ["ATOM-B"]
+    assert [d["atom"] for d in ia.upstream_closure("ATOM-C", depth=None)] == \
+        ["ATOM-B", "ATOM-A"]
+
+
+def test_558_self_loop_raises(sb: Path):
+    """自环（A prerequisite A）⇒ 显式 `CycleError`（不无限递归、不静默截断）。"""
+    _atom(sb, "ATOM-A", "\n  - prerequisite: ATOM-A")
+    with pytest.raises(ia.CycleError) as ei:
+        ia.upstream_closure("ATOM-A")
+    assert ei.value.cycle[0] == ei.value.cycle[-1] == "ATOM-A", ei.value.cycle
+    with pytest.raises(ia.CycleError):
+        ia.downstream_closure("ATOM-A")
+
+
+def test_558_cycle_raises_with_path(sb: Path):
+    """成环 A→B→A ⇒ `CycleError`，cycle 首尾同节点（把环路显式打出来给人看）。"""
+    _atom(sb, "ATOM-A", "\n  - specializes: ATOM-B")
+    _atom(sb, "ATOM-B", "\n  - realizes: ATOM-A")
+    with pytest.raises(ia.CycleError) as ei:
+        ia.downstream_closure("ATOM-A")
+    cyc = ei.value.cycle
+    assert cyc[0] == cyc[-1] and len(cyc) >= 3, cyc
+    assert set(cyc) == {"ATOM-A", "ATOM-B"}, cyc
+
+
+def test_558_missing_target_fail_loud(sb: Path):
+    """缺目标节点 ⇒ fail-loud（`SystemExit`），三种 depth 都不许静默给空影响面。"""
+    _atom(sb, "ATOM-A", "[]")
+    for d in (1, 2, 0):
+        with pytest.raises(SystemExit):
+            ia.report("upstream", "ATOM-NOPE", depth=d)
+
+
+def test_558_report_multihop_schema(sb: Path):
+    """多跳条目带 depth/via/path；`depth=1`（原口径）**不得**多出字段（向后兼容）。"""
+    _atom(sb, "ATOM-A", "\n  - prerequisite: ATOM-B")
+    _atom(sb, "ATOM-B", "[]")
+    one = ia.report("upstream", "ATOM-B")
+    assert set(one["deps"][0]) == {"atom", "rel_type", "path"}, "depth=1 输出不得加字段"
+    multi = ia.report("upstream", "ATOM-B", depth=2)
+    assert set(multi["deps"][0]) == {"atom", "rel_type", "path", "depth", "via"}
+    assert multi["deps"][0]["via"] == "ATOM-B" and multi["summary"]["max_depth"] == 2
