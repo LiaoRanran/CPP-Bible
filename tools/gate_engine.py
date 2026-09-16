@@ -1587,8 +1587,8 @@ def check_card_path_canonical() -> list[Finding]:
     for base, pat in ((EVIDENCE, "EV-*.md"), (ATOMS, "ATOM-*.md")):
         for p in _cards(base, pat):
             meta = _meta(p)
-            for field in _PATH_FIELDS:
-                v = meta.get(field)
+            for fname in _PATH_FIELDS:          # 勿用 `field`：会遮蔽 dataclasses.field（ruff F402）
+                v = meta.get(fname)
                 vals = v if isinstance(v, list) else [v]
                 for raw in vals:
                     rel = str(raw or "").strip()
@@ -1601,7 +1601,7 @@ def check_card_path_canonical() -> list[Finding]:
                     if issues:
                         out.append(Finding(
                             "CARD-PATH-NOT-CANONICAL", "warn", _rel(p),
-                            f"`{field}` 路径写法不可移植：{rel}（{'; '.join(issues)}）"
+                            f"`{fname}` 路径写法不可移植：{rel}（{'; '.join(issues)}）"
                             " —— Windows 能打开，Linux CI 会找不到",
                             "改成 posix 规范写法：正斜杠、无 ./ 与 ..、大小写与磁盘逐字一致"))
     return out
