@@ -998,6 +998,103 @@ def drill() -> int:
                         f"{ok and '拦下' or '漏网'}",
                         ok, f"拦截者 {', '.join(blockers) or '（无！）'}"))
 
+    # ── N1–N7（558 Part A / 533 §2.5）：V-iso **真编译**毒载荷（557 B1 停点）──────
+    #  判决在 replay 路径（`atom_evidence_replay.check_negative_controls`）——**不是** gate
+    #  规则 ⇒ N1–N7 **不会**增加 RULE-COVERAGE 分子（仍 36/61），此点已在 557 D6 澄清；
+    #  拦截效果由**双指标**另立计数器自证：
+    #      trap_block_rate —— N1–N6 六类"假阴面/走形式阴面"被机器拦下的比例（应 100%）
+    #      clean_pass_rate —— N7 两类**干净卡**不误伤的比例（应 100%）
+    #  夹具与阴面编译全在 tempdir（临时重定向 `replay.ROOT`），绝不碰正式文件；
+    #  阴面走**真实 g++**（同一次 replay 里阳面 rc=0 ⇒ 编译器健康是实测证据）。
+    _nc_fill = "\n".join(f"static int fill_{i}(int x) {{ return x + {i}; }}"
+                         for i in range(60))
+    _nc_mech = '__asm__ volatile("mfence" ::: "memory");'
+    _nc_decl = "int base = s_nc;"
+    _nc_yang = ("static int s_nc = 0;\n\n" + _nc_fill + "\n\n"
+                "int nc_anchor() {\n"
+                f"    {_nc_decl}\n    {_nc_mech}\n    return base + s_nc;\n}}\n")
+    _nc_good = _nc_yang.replace(f"    {_nc_mech}\n", "", 1)
+    _nc_asm = "\t.globl\t_Z9nc_anchorv\n_Z9nc_anchorv:\n\tmfence\n\tret\n"
+
+    def _nc_verdict(tmp_path: Path, yin_text: str | None, remove: str, *,
+                    write: bool = True, with_ncs: bool = True) -> str:
+        """tempdir 里写阴夹具 → 跑 replay 真编译 nc 判决，返回 verdict（空串 = 全过）。"""
+        yinp = tmp_path / "f.nc1.cpp"
+        if write:
+            yinp.write_text(yin_text or _nc_good, encoding="utf-8")
+        elif yinp.exists():
+            yinp.unlink()
+        prev_root = replay.ROOT
+        replay.ROOT = tmp_path              # 夹具/编译只在 tempdir ⇒ 受控目录零污染
+        try:
+            meta = {"fixture": "f.cpp", "artifact": "f.asm",
+                    "command": "g++ -std=c++17 -O2 -S f.cpp -o f.asm",
+                    "actual": {"run_match_keys": ["k"]}}
+            if with_ncs:
+                meta["negative_controls"] = [{
+                    "id": "nc1", "variant": "v1", "mutation": "delete_mechanism",
+                    "fixture": "f.nc1.cpp", "anchor": "nc_anchor",
+                    "remove": remove, "retain": ["return base + s_nc;"],
+                    "probe": {"channel": "artifact", "symbol": "_Z9nc_anchorv",
+                              "text": "mfence", "op": "becomes_absent"}}]
+            verdict, _log = replay.check_negative_controls(
+                meta, workdir=tmp_path, env=dict(os.environ), art_path=tmp_path / "f.asm")
+        finally:
+            replay.ROOT = prev_root
+        return verdict
+
+    _trap_hits: list[bool] = []
+    _clean_hits: list[bool] = []
+    with sandbox() as tmp:
+        (tmp / "f.cpp").write_text(_nc_yang, encoding="utf-8")
+        (tmp / "f.asm").write_text(_nc_asm, encoding="utf-8")
+        _impostor = "\n".join(f"int other_{i}(int a) {{ return a * {i + 2}; }}"
+                              for i in range(80)) + "\n"
+        for _nm, _yin, _rm, _wr, _want in (
+            ("N1 阳过阴也过（逐字复制+加注释）须 refute",
+             _nc_yang + "// 看起来改了\n", _nc_mech, True,
+             "refute:negative_control_diff"),
+            ("N2 冒名阴面（整个换成别的程序）须 refute",
+             _impostor, _nc_mech, True, "refute:negative_control_diff"),
+            ("N3 阴面写坏（anchor 内删声明行 ⇒ 真编译 rc≠0）须 refute",
+             _nc_yang.replace(f"    {_nc_decl}\n", "", 1), _nc_decl, True,
+             "refute:negative_control_broken"),
+            ("N4 形式阴面（删 anchor 外的行）须 refute",
+             _nc_yang.replace("static int fill_0(int x) { return x + 0; }\n", "", 1),
+             _nc_mech, True, "refute:negative_control_diff"),
+            ("N5 阴面缺失（阴夹具文件不存在）须 refute",
+             None, _nc_mech, False, "refute:negative_control_missing"),
+            ("N6 连主体删除（anchor 内删机制+返回 ⇒ retain 缺）须 refute",
+             _nc_yang.replace(f"    {_nc_mech}\n    return base + s_nc;\n", "", 1),
+             _nc_mech, True, "refute:negative_control_diff"),
+        ):
+            _v = _nc_verdict(tmp, _yin, _rm, write=_wr)
+            _ok = _v == _want
+            _trap_hits.append(_ok)
+            results.append((_nm, _ok, f"verdict={_v or '（无）'}（期望 {_want}）"))
+        # N7：两类干净卡不得误伤（无字段的存量形态 / 合规 nc1 的 B0 形态）
+        for _nm, _yin, _ncs in (
+            ("N7-阴 干净卡（无 negative_controls 字段）须放行", None, False),
+            ("N7-阴 合法真阴面（合规 nc1 ⇒ flip verified）须放行", _nc_good, True),
+        ):
+            _v = _nc_verdict(tmp, _yin, _nc_mech, write=True, with_ncs=_ncs)
+            _ok = _v == ""
+            _clean_hits.append(_ok)
+            results.append((_nm, _ok, f"verdict={_v or '（无）'}（期望：放行）"))
+    _trap_rate = 100.0 * sum(_trap_hits) / len(_trap_hits) if _trap_hits else 0.0
+    _clean_rate = 100.0 * sum(_clean_hits) / len(_clean_hits) if _clean_hits else 0.0
+    _LAST_VISO.clear()
+    _LAST_VISO.update({
+        "trap_block_rate": round(_trap_rate, 1),
+        "trap_blocked": sum(_trap_hits), "trap_total": len(_trap_hits),
+        "clean_pass_rate": round(_clean_rate, 1),
+        "clean_passed": sum(_clean_hits), "clean_total": len(_clean_hits),
+    })
+    print(f"[poison] V-iso 双指标（N1–N6 假阴面 / N7 干净卡）："
+          f"trap_block_rate={_trap_rate:.0f}% ({sum(_trap_hits)}/{len(_trap_hits)}) · "
+          f"clean_pass_rate={_clean_rate:.0f}% ({sum(_clean_hits)}/{len(_clean_hits)})"
+          "（nc 判决在 replay 路径 ⇒ 不进 RULE-COVERAGE 分子，见 557 D6）")
+
     # ── P44 环境量进断言键（470 P0-E / 452 E06）：nproc 声明为比对目标 ────────
     with sandbox() as tmp:
         outp = ROOT / "build" / "_poison_out_e06.out"
@@ -1739,6 +1836,12 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P67 ", "A1"),   # 530 任务3 claim object 未归一化规范概念：记录层/claim 连通性（同 P63 家族）
     ("P68 ", "A1"),   # 530 任务4 自标 observation 缺活性对照：借"观测"名义跳过人审（记录层伪造）
     ("P69 ", "A2"),   # 548 Part 2 路径写法跨平台异体：声明的路径与磁盘/CI 解析脱钩
+    # 558 Part A：V-iso 真编译毒载荷 N1–N6 攻击的是「阴面**判别力**」本身 ——
+    # 假阴面/走形式阴面与真阴面不可区分 ⇒ A1（记录层伪造：宣称有判别力却零判别力）；
+    # 冒名（N2）/缺失（N5）属"声明-实现脱钩" ⇒ A2。N7 两类干净卡是**阴性对照**，按惯例
+    # 不计入攻击面（名字含 `-阴`，见 attack_type_stats 的排除口径）。
+    ("N1 ", "A1"), ("N2 ", "A2"), ("N3 ", "A1"),
+    ("N4 ", "A1"), ("N5 ", "A2"), ("N6 ", "A1"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
@@ -1760,6 +1863,11 @@ assert set(ATTACK_TYPE_LABELS) == set(ALL_ATTACK_TYPES), "标签表与攻击面�
 
 # 最近一次 drill 的实测载荷明细（424 台账用；保持 drill() 三元组返回契约不变）。
 _LAST_RESULTS: list[tuple[str, bool, str]] = []
+
+# 最近一次 drill 的 V-iso（nc 真编译毒载荷 N1–N7）**双指标**（558 Part A）。
+# nc 判决走 replay 路径、不是 gate 规则 ⇒ 拦截效果进不了 RULE-COVERAGE 分子，只能靠
+# 这两个计数器自证（诚实口径，见 557 D6）。
+_LAST_VISO: dict = {}
 
 
 def attack_type_stats(results: list[tuple[str, bool, str]]) -> dict[str, int]:
@@ -1880,6 +1988,8 @@ def build_surface_map(passed: int, total_d: int,
                           "exempt": len(load_exemptions())},
         "payloads": payloads,
         "negative_controls": negatives,
+        # 558 Part A：V-iso nc 真编译毒载荷的双指标（不进 RULE-COVERAGE 分子，另立计数器）。
+        "viso_dual_metrics": dict(_LAST_VISO),
         "note": ("A1-A11 = 代码实际口径（标签由成员样例归纳），非 409 原表逐字；"
                  "A11 为 472 新增（并发/可用性）。口径差异与裁决见 _worklog_472.md。"),
     }
@@ -1965,6 +2075,7 @@ if __name__ == "__main__":
                 "unknown": unknown_attack_types(attack_type_stats(_LAST_RESULTS)),
             },
             "findings": failures, "infra_errors": [],
+            "viso_dual_metrics": dict(_LAST_VISO),
         }
         real_out.write(json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
     raise SystemExit(gate_exit_code(passed, total_d, uncovered))

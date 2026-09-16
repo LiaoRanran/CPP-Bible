@@ -2,20 +2,20 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-16T21:57:36",
- "source_commit": "5e2ab73",
+ "generated_at": "2026-09-16T23:19:23",
+ "source_commit": "9092f82",
  "drill": {
-  "passed": 97,
-  "total": 97
+  "passed": 105,
+  "total": 105
  },
  "attack_types": {
   "A1": {
    "label": "记录层伪造：状态/身份/绑定不实（无证据 verified、留痕不足、id 漂移、空名签收）",
-   "count": 15
+   "count": 19
   },
   "A2": {
    "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
-   "count": 11
+   "count": 13
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
@@ -286,6 +286,36 @@
    "type": "A6"
   },
   {
+   "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "N2 冒名阴面（整个换成别的程序）须 refute",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "N3 阴面写坏（anchor 内删声明行 ⇒ 真编译 rc≠0）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "N4 形式阴面（删 anchor 外的行）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "N5 阴面缺失（阴夹具文件不存在）须 refute",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "N6 连主体删除（anchor 内删机制+返回 ⇒ retain 缺）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
    "name": "P44 环境量进断言键（nproc 声明为比对目标，A5）",
    "pass": true,
    "type": "A5"
@@ -453,6 +483,16 @@
    "type": null
   },
   {
+   "name": "N7-阴 干净卡（无 negative_controls 字段）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "N7-阴 合法真阴面（合规 nc1 ⇒ flip verified）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
    "name": "P58-阴 签收与 git 作者一致须放行（宽松匹配）",
    "pass": true,
    "type": null
@@ -553,5 +593,13 @@
    "type": null
   }
  ],
+ "viso_dual_metrics": {
+  "trap_block_rate": 100.0,
+  "trap_blocked": 6,
+  "trap_total": 6,
+  "clean_pass_rate": 100.0,
+  "clean_passed": 2,
+  "clean_total": 2
+ },
  "note": "A1-A11 = 代码实际口径（标签由成员样例归纳），非 409 原表逐字；A11 为 472 新增（并发/可用性）。口径差异与裁决见 _worklog_472.md。"
 }
