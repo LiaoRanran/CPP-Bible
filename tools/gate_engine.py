@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import os
 import re
 import subprocess
 import sys
@@ -1544,35 +1545,45 @@ def _path_form_issues(rel: str) -> list[str]:
     return issues
 
 
-def _path_case_mismatch(rel: str) -> str:
+def _path_case_mismatch(rel: str, listings: dict[str, list[str]]) -> str:
     """沿盘逐级比对大小写，返回**首个**不一致段描述；路径不存在/不可列 ⇒ 空串（不判）。
 
     大小写敏感的才是 Linux：Windows 上 `EXAMPLES/ATOMS/X.CPP` 打得开，CI 上打不开。
     盘上没有的路径交给 `EV-ARTIFACT-FILE-EXISTS`，本规则不重复判（避免双份命中）。
+
+    `listings` = 本次调用内共享的「目录 → 目录项名」缓存（**单次调用内有效，不做跨调用
+    缓存** ⇒ 不存在"目录变了还拿旧列表"的窗口）。为什么需要它（548 Part 2 自查）：
+    ① `Path.iterdir()` 给每个目录项构造 Path 对象，对 ROOT（含 .venv/build 数百项）
+       实测把一次全库扫描从 0.5s 拖到 2.6s；② 即便换成 `os.listdir`，83 张卡逐张从
+       ROOT 走一遍仍是 ~0.6s/次 ⇒ 同目录只列一次。
     """
-    cur = ROOT
+    cur = str(ROOT)
     for seg in rel.replace("\\", "/").split("/"):
         if seg in ("", "."):
             continue
         if seg == "..":
-            cur = cur.parent
+            cur = os.path.dirname(cur) or cur
             continue
-        try:
-            names = [c.name for c in cur.iterdir()]
-        except OSError:
-            return ""
+        names = listings.get(cur)
+        if names is None:
+            try:
+                names = os.listdir(cur)
+            except OSError:
+                return ""
+            listings[cur] = names
         hit = next((n for n in names if n.lower() == seg.lower()), None)
         if hit is None:
             return ""                      # 盘上无此段 ⇒ 不是"写法"问题
         if hit != seg:
             return f"{seg} → 盘上是 {hit}"
-        cur = cur / hit
+        cur = os.path.join(cur, hit)
     return ""
 
 
 def check_card_path_canonical() -> list[Finding]:
     """卡内声明的路径须 **posix 规范 + 大小写与磁盘逐字一致**（warn，548 Part 2）。"""
     out: list[Finding] = []
+    listings: dict[str, list[str]] = {}      # 单次调用内共享的目录列表缓存（见 _path_case_mismatch）
     for base, pat in ((EVIDENCE, "EV-*.md"), (ATOMS, "ATOM-*.md")):
         for p in _cards(base, pat):
             meta = _meta(p)
@@ -1584,7 +1595,7 @@ def check_card_path_canonical() -> list[Finding]:
                     if not rel or "://" in rel or rel.startswith(("/", "~")):
                         continue                       # 绝对/URL 路径不在本规则口径内
                     issues = _path_form_issues(rel)
-                    cm = _path_case_mismatch(rel)
+                    cm = _path_case_mismatch(rel, listings)
                     if cm:
                         issues.append(f"大小写与磁盘不符（{cm}）")
                     if issues:
