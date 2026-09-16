@@ -68,7 +68,12 @@ def test_triage_reconciles_and_is_deterministic():
     assert json.dumps(r1, sort_keys=True, ensure_ascii=False) == \
         json.dumps(r2, sort_keys=True, ensure_ascii=False), "分桶必须确定性"
     assert sum(r1["counts"].values()) == len(fs), "四桶之和须等于输入总数"
-    assert r1["counts"]["B1"] == 2 and r1["counts"]["B3"] == 2 and r1["counts"]["B4"] == 2
+    # 558 Part 0 复核对（对着人审 accept 的 golden_state 逐条核）：557 人审 accept 后
+    # `warn_classify` 已把 ATOM-CLAIM-CONCEPT-NORMALIZED / INFERENCE-NOT-MACHINE-VERIFIED
+    # 落 **legacy**（人审结果，本批只复用不重签）⇒ 这两条"迁移债"按口径**归桶④（已登记
+    # 豁免）**，B1 因此归零；EV-OUT-UNDECLARED-KEY 是 real ⇒ 仍 B3。
+    # 这不是分桶逻辑变化：`test_bucket1_migration_rules` 仍用**空 exempt 集**验 B1 本身。
+    assert r1["counts"] == {"B1": 0, "B2": 0, "B3": 2, "B4": 4}, r1["counts"]
     assert r1["totals"]["warn"] == 5 and r1["totals"]["advice"] == 1
 
 

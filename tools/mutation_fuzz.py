@@ -125,10 +125,58 @@ def mut_m1(text: str) -> list[tuple[str, str]]:
     return out
 
 
-def mut_m2(text: str) -> list[tuple[str, str]]:
-    """M2 路径变形：对卡内**第一个带 `/` 的文件路径**做三种写法变形（同一物理文件的不同写法）。"""
-    for m in re.finditer(
-            r"[A-Za-z0-9_][A-Za-z0-9_./-]*\.(?:cpp|cc|cxx|py|asm|out|md|json)", text):
+# 558 Part B1/B2（548 建议）：**门禁真读的字段**——M2/M3 只在这些字段内做变形。
+# 依据：gate_engine 里真正被解析的键（命令 / 工件路径 / 夹具 / 声明产出者 / nc 阴夹具 /
+# 断言规则本身）。改它们才可能改变判决；落在 claim / 正文 / 注释里的"路径""contains_in"
+# 门禁从不读，在那里变异 = **无效提问**（把门禁根本没看的地方算成逃逸，虚增逃逸率
+# —— 543 P2 的逐逃逸定性正是为此）。实测：M3 的首个 `contains_in` 在 CONC-003/004/005
+# 落在正文，修前被记成 3 条"逃逸"。
+GATE_READ_KEYS = ("command", "artifact", "artifact_producer", "fixture", "fixtures",
+                  "run_match_file", "artifacts", "negative_controls", "artifact_assert")
+_PATHP = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_./-]*\.(?:cpp|cc|cxx|py|asm|out|md|json)")
+
+
+def _gate_read_spans(text: str) -> list[tuple[int, int]]:
+    """卡内**门禁读取字段**的值区间（顶格键 → 下一个顶格键；仅在 frontmatter 内）。
+
+    只认顶格 `key:` 开头的键，故缩进的列表项 / 块标量（`command: |` 的多行体）都自动留在
+    所属键的区间内；`- item` 这类顶格列表项不当作新键（不会截断区间）。
+    """
+    spans: list[tuple[int, int]] = []
+    pos = 0
+    started = False
+    cur: tuple[int, str] | None = None
+    for ln in text.split("\n"):
+        if ln.strip() == "---":
+            if started and cur is not None:
+                spans.append((cur[0], pos))
+                cur = None
+            started = not started
+            pos += len(ln) + 1
+            continue
+        if started:
+            m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):", ln)
+            if m:
+                if cur is not None:
+                    spans.append((cur[0], pos))
+                cur = (pos, m.group(1)) if m.group(1) in GATE_READ_KEYS else None
+        pos += len(ln) + 1
+    if started and cur is not None:
+        spans.append((cur[0], pos))
+    return spans
+
+
+def mut_m2(text: str) -> list[tuple[str, str | None]]:
+    """M2 路径变形：对**门禁读取字段内**第一个带 `/` 的路径做三种写法变形。
+
+    558 Part B2 收口：只认 `GATE_PATH_KEYS` 区间内的路径。若门禁读取面里没有可变形路径，
+    返回**单例 out_of_scope**（`vtext=None`）⇒ 由 `run_fuzz` 计 `n_a(out_of_scope)`，
+    **不再**去注释/正文里挑路径造出与门禁无关的"逃逸"。
+    """
+    spans = _gate_read_spans(text)
+    for m in _PATHP.finditer(text):
+        if not any(s <= m.start() < e for s, e in spans):
+            continue                       # 门禁不读的字段 / 正文 / 注释 ⇒ 不在提问面内
         p = m.group(0)
         if "/" not in p or p.startswith("./"):
             continue
@@ -139,25 +187,42 @@ def mut_m2(text: str) -> list[tuple[str, str]]:
                 out.append((f"{tag}（{p} → {newp}）",
                             text[:m.start()] + newp + text[m.end():]))
         return out
-    return []
+    return [("M2 门禁读取面内无可变形路径（变异点会落在门禁不读的注释/正文）", None)]
 
 
-def mut_m3(text: str) -> list[tuple[str, str]]:
-    """M3 断言弱化：区间断言降级成全文存在性；去掉 -Werror；量化读数降成纯存在性。"""
+def mut_m3(text: str) -> list[tuple[str, str | None]]:
+    """M3 断言弱化：区间断言降级成全文存在性；去掉 -Werror；量化读数降成纯存在性。
+
+    558 Part B1/B2：**只在门禁真读字段内**找可弱化点（`GATE_READ_KEYS`）。修前取全文第一个
+    `contains_in`，实测 CONC-003/004/005 的首个出现落在**正文**（"contains_in 三条全中…"），
+    弱化正文门禁从不读 ⇒ 记成 3 条**假逃逸**。门禁读取面内无可弱化点 ⇒ out_of_scope 单例。
+    """
+    spans = _gate_read_spans(text)
+
+    def _in_gate(idx: int) -> bool:
+        return any(s <= idx < e for s, e in spans)
+
     out: list[tuple[str, str]] = []
-    if "contains_in" in text:
-        out.append(("contains_in → contains（区间断言降级为全文存在性）",
-                    text.replace("contains_in", "contains", 1)))
-    if "absent_in" in text:
-        out.append(("absent_in → absent（区间断言降级为全文不存在）",
-                    text.replace("absent_in", "absent", 1)))
-    if "-Werror" in text:
+    for old, new, tag in (
+            ("contains_in", "contains",
+             "contains_in → contains（区间断言降级为全文存在性）"),
+            ("absent_in", "absent",
+             "absent_in → absent（区间断言降级为全文不存在）")):
+        for m in re.finditer(re.escape(old), text):
+            if _in_gate(m.start()):
+                out.append((tag, text[:m.start()] + new + text[m.end():]))
+                break
+    m = re.search(r"-Werror", text)
+    if m and _in_gate(m.start()):
         out.append(("-Werror 被删（编译告警不再算失败）", text.replace("-Werror", "", 1)))
-    m = re.search(r"(?m)^\s*(?:- )?\{?kind:\s*\w+.*?(?:count|min|max|\d+).*$", text)
-    if m and "count:" in m.group(0):
-        out.append(("量化断言降级（count: N → 纯存在性）",
-                    text.replace(m.group(0), re.sub(r"count:\s*\d+", "", m.group(0)), 1)))
-    return out
+    for m in re.finditer(r"(?m)^\s*(?:- )?\{?kind:\s*\w+.*?count:\s*\d+.*$", text):
+        if _in_gate(m.start()):
+            out.append(("量化断言降级（count: N → 纯存在性）",
+                        text.replace(m.group(0),
+                                     re.sub(r"count:\s*\d+", "", m.group(0)), 1)))
+            break
+    return out or [("M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+                    None)]
 
 
 def mut_m4(text: str) -> list[tuple[str, str]]:
@@ -360,6 +425,12 @@ def run_fuzz(cards: list[Path], ops: list[str], limit: int,
                                 "why": "该卡本就没有被变异的字段（不适用）"})
                     continue
                 for point, vtext in variants:
+                    if vtext is None:
+                        # 558 Part B2：算子自判"该提问超出面"（M2 在门禁读取面内找不到路径）
+                        per.append({"card": rel, "op": op, "point": point,
+                                    "verdict": "n_a", "out_of_scope": True,
+                                    "why": f"out_of_scope：{point}"})
+                        continue
                     if vtext == text:
                         per.append({"card": rel, "op": op, "point": point,
                                     "verdict": "n_a", "why": "变异为空操作"})
@@ -373,6 +444,9 @@ def run_fuzz(cards: list[Path], ops: list[str], limit: int,
     counts = {k: sum(1 for r in per if r["verdict"] == k)
               for k in ("blocked", "escaped", "n_a")}
     counts["malformed"] = sum(1 for r in per if r.get("malformed"))    # n_a 里单列一类（543 P1）
+    # 558 Part B2：n_a 里再单列"变异点落在**门禁读取面之外**"（M2 out_of_scope）——
+    # 这类提问与门禁无关，混进 escaped 会虚增逃逸率（543 P2 逐逃逸定性的教训）。
+    counts["out_of_scope"] = sum(1 for r in per if r.get("out_of_scope"))
     strict = sum(1 for r in per if r["verdict"] == "blocked" and r.get("kind") == "strict")
     treated = counts["blocked"]
     denom = counts["blocked"] + counts["escaped"] or 1

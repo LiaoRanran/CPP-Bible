@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-16T23:19:23",
- "source_commit": "9092f82",
+ "generated_at": "2026-09-17T00:30:42",
+ "source_commit": "7597e86",
  "drill": {
-  "passed": 105,
-  "total": 105
+  "passed": 107,
+  "total": 107
  },
  "attack_types": {
   "A1": {
@@ -19,7 +19,7 @@
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
-   "count": 13
+   "count": 14
   },
   "A4": {
    "label": "时序穿链：编译后覆写、留痕比夹具旧",
@@ -286,6 +286,11 @@
    "type": "A6"
   },
   {
+   "name": "P70 M3 区间锚定丢失（contains 残留 symbol）须 warn 不 block",
+   "pass": true,
+   "type": "A3"
+  },
+  {
    "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
    "pass": true,
    "type": "A1"
@@ -479,6 +484,11 @@
   },
   {
    "name": "P31-阴 合法对比（contrasts 非矛盾）必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P70-阴 合法全文散文 contains（无 symbol）须放行",
    "pass": true,
    "type": null
   },

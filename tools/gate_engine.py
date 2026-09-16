@@ -1836,6 +1836,34 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
                                    f"contains_in 的 text={t!r} 是通用助记符/伪指令"
                                    "（符号区间内近乎恒有 ⇒ 弱断言，判别力存疑）",
                                    "改锚有判别力的字面文本（特定立即数/寻址形态）"))
+        # 558 Part B1（543 P3 的窄情形收口）：**区间锚定丢失**的真洞 ——
+        #   M3 把 `contains_in{symbol: <区间>, text: <标签>}` 降级成 `contains{text: <标签>}`
+        #   后，标签在**全文**有出处 ⇒ 主路径放行，而"必须在 symbol 指定函数区间内"的约束
+        #   **已丢失**（实测修前 EV-CONC-001 两条 M3 变体全 escaped）。
+        #   降级变体会**残留 symbol 字段**（`contains`/`absent`/`*_any` 根本不读它）⇒ 以此为指纹，
+        #   只出 **warn**：
+        #     * "空/纯中文 text → block"分支**仍只对 contains_in/absent_in**（541 试验 1：放开到
+        #       contains/contains_any 会让存量散文/空文本判 block，实测 block 0→38 误伤）；
+        #     * 存量实测（2026-09-16，56 卡 118 条）：「全文 kind 残留 symbol」命中 **0** ⇒
+        #       本 warn **零新增存量命中**；对照「全文 kind + 空 text」39 条（故绝不能 block）。
+        #   单点互斥：该条已被 block 路径（通用符号 → bad_universal）命中时不再补 warn，
+        #   杜绝 541 试验 2 的"同一条目 block+warn 双命中"打散既有测试。
+        for r in rules:
+            kind = str(r.get("kind") or "")
+            if kind not in ("contains", "absent", "contains_any", "absent_any"):
+                continue
+            sym = str(r.get("symbol") or "")
+            if not sym:
+                continue
+            _, tx = _assert_targets(r)
+            tx = [t for t in tx if t]
+            if tx and all(_is_universal_symbol(t) for t in tx):
+                continue                       # 已归 block 路径单点负责（互斥收口）
+            out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "warn", _rel(p),
+                               f"{kind} 仍带 symbol={sym!r} ⇒ **区间锚定已丢失**"
+                               "（断言退化为全文存在性：工件里凡出现过该文本即成立）",
+                               "要么改回 contains_in/absent_in 锚定符号区间，"
+                               "要么删掉 symbol 字段、承认这是全文断言"))
         if bad_universal:
             out.append(Finding("EV-ASSERT-SYMBOL-MAPPED", "block", _rel(p),
                                f"断言锚定无判别力的通用符号 {sorted(set(bad_universal))}"

@@ -115,7 +115,9 @@ def test_operators_are_pure_and_idempotent(card_text: str):
         a, b = fn(card_text), fn(card_text)
         assert a == b, f"{op} 两次输出不一致（非纯函数）"
         for point, vtext in a:
-            assert isinstance(vtext, str) and vtext != card_text, f"{op}/{point} 是空操作变体"
+            # 558 Part B：`None` = 算子自判 out_of_scope（门禁读取面内无变异点，见 mut_m2/mut_m3）
+            assert vtext is None or (isinstance(vtext, str) and vtext != card_text), \
+                f"{op}/{point} 是空操作变体"
     assert CARD.read_bytes() == before, "算子不得改动 ROOT 下的原卡（原卡只读）"
 
 
@@ -123,10 +125,16 @@ def test_operators_are_pure_and_idempotent(card_text: str):
 
 
 FROZEN_CONCLUSIONS = [
-    # (op, 变异点, verdict, kind, 门禁规则 id 集合) —— 改前（无缓存 / 逐变体还原）实跑冻结；
-    # 只挑 M3/M4：Part 2 的 M2 路径 warn 会**故意**改变 M2 的结论，不混进这条性能对账锁。
-    ("M3", "contains_in → contains（区间断言降级为全文存在性）", "escaped", None, []),
-    ("M3", "absent_in → absent（区间断言降级为全文不存在）", "escaped", None, []),
+    # (op, 变异点, verdict, kind, 门禁规则 id 集合) —— 冻结基线，对账口径含规则 id。
+    # ⚠️ 558 Part B1 **有意**改了 M3 两条的结论（escaped → blocked/warn_only）：这正是本批的
+    #   收口目标——`contains_in{symbol:区间,text}` 被降级成 `contains{text}` 后区间锚定丢失，
+    #   修前主路径放行（真逃逸），修后由"全文 kind 残留 symbol"指纹出 warn（见 gate_engine
+    #   该处注释与 poison P70/P70-阴）。故此处按**实测重核**后重新冻结，不是改测试凑数。
+    #   只挑 M3/M4：M2 的路径口径由 558 Part B2 改动（门禁读取面），不混进这条性能对账锁。
+    ("M3", "contains_in → contains（区间断言降级为全文存在性）", "blocked", "warn_only",
+     ["EV-ASSERT-SYMBOL-MAPPED"]),
+    ("M3", "absent_in → absent（区间断言降级为全文不存在）", "blocked", "warn_only",
+     ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M4", "注入通用符号 main", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M4", "注入通用符号 ret", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M4", "注入 ABI 帧符号 .p2align", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
@@ -143,12 +151,56 @@ def test_548_perf_conclusions_unchanged():
     """
     rep = mf.run_fuzz([CARD], ["M3", "M4"], 1)
     got = [(r["op"], r["point"], r["verdict"], r.get("kind"),
-            sorted({x.split(":")[0] for x in (r.get("new_block") or [])}))
+            sorted({x.split(":")[0] for x in (r.get("new_block") or [])
+                    + (r.get("new_warn") or [])}))
            for r in rep["results"]]
     assert got == FROZEN_CONCLUSIONS, got
     # 按卡批的**可观测**证据：基线 1 次 + 每个进门禁的变体 1 次，一次不多一次不少
     assert rep["ge_runs"] == 1 + len(rep["results"]), rep["ge_runs"]
     assert rep["elapsed_s"] > 0 and rep["cards"] == ["evidence/conc/EV-CONC-001.md"]
+
+
+# ── 558 Part B1/B2：门禁读取面纪律（假逃逸 → n_a(out_of_scope)）─────────────────
+
+
+def test_558_gate_read_spans_only_frontmatter_keys():
+    """`_gate_read_spans` 只认 frontmatter 里的门禁键，且**不含**正文/非门禁键。"""
+    text = ("---\n"
+            "id: EV-X\n"
+            "claim: 正文式说明，提到 Examples/atoms/f.cpp 但门禁不读其实这里不算\n"
+            "artifact_assert:\n  - {kind: contains, text: \"_Z1fv\"}\n"
+            "---\n"
+            "正文：contains_in 与 Examples/atoms/f.cpp。\n")
+    spans = mf._gate_read_spans(text)
+    covered = {k: False for k in ("claim", "artifact_assert", "body")}
+    for key, needle in (("claim", "claim: 正文式说明"),
+                        ("artifact_assert", "kind: contains"),
+                        ("body", "正文：contains_in")):
+        idx = text.index(needle)
+        covered[key] = any(s <= idx < e for s, e in spans)
+    assert covered == {"claim": False, "artifact_assert": True, "body": False}, covered
+
+
+def test_558_out_of_scope_when_only_prose_mentions():
+    """正文里的 `contains_in` / 路径**不是**门禁读取面 ⇒ 算子须报 out_of_scope（`None`）。
+
+    修前 M3 取全文第一个 `contains_in`——实测 CONC-003/004/005 的首个出现落在 `expected:`
+    正文，弱化正文门禁从不读 ⇒ 被记成 3 条**假逃逸**（虚增逃逸率）。同一张卡把 `_in` 放进
+    `artifact_assert` 后立即变成在面内的真提问。
+    """
+    prose = ("---\n"
+             "id: EV-PROSE-001\n"
+             "command: g++ -S f.cpp -o f.asm\n"
+             'artifact_assert:\n  - {kind: contains, text: "_Z1fv"}\n'
+             "---\n"
+             "正文：contains_in 三条全中；夹具 Examples/atoms/f.cpp 见正文。\n")
+    m3 = mf.mut_m3(prose)
+    assert len(m3) == 1 and m3[0][1] is None, m3          # 门禁面内无可弱化点
+    m2 = mf.mut_m2(prose)
+    assert len(m2) == 1 and m2[0][1] is None, m2          # 门禁面内无可变形路径
+    inscope = prose.replace('{kind: contains, text: "_Z1fv"}',
+                            '{kind: contains_in, symbol: "_Z1fv", text: "mov"}')
+    assert any(v is not None for _p, v in mf.mut_m3(inscope)), mf.mut_m3(inscope)
 
 
 def test_548_diff_is_not_card_scoped(monkeypatch: pytest.MonkeyPatch):

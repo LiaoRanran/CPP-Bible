@@ -998,6 +998,32 @@ def drill() -> int:
                         f"{ok and '拦下' or '漏网'}",
                         ok, f"拦截者 {', '.join(blockers) or '（无！）'}"))
 
+    # ── P70/P70-阴（558 Part B1）：M3 区间锚定丢失须 **warn**（不是 block）；合法全文散文不误伤 ──
+    #  真洞（543 P3 / 557 C 停点）：M3 把 `contains_in{symbol: 区间, text: 标签}` 降级成
+    #  `contains{text: 标签}` 后，"必须在符号区间内"的约束丢失而主路径放行（修前实测
+    #  EV-CONC-001 两条 M3 变体全 escaped）。降级形态**残留 symbol 字段** ⇒ 以此为指纹出 warn。
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-M3DEG.md", {
+            "id": "EV-MEM-M3DEG", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "artifact_assert": "\n  - {kind: contains, symbol: _Z10spin_plainv, text: s_p_b}"})
+        _fs = [f for f in ge.check_evidence_assert_symbol_mapped()
+               if str(f.target).endswith("EV-MEM-M3DEG.md")]
+        _warns = [f for f in _fs if f.severity == "warn"]
+        _blocks = [f for f in _fs if f.severity == "block"]
+        ok = (any("区间锚定已丢失" in f.message for f in _warns) and not _blocks)
+        results.append(("P70 M3 区间锚定丢失（contains 残留 symbol）须 warn 不 block",
+                        ok, f"命中 severity={[f.severity for f in _fs] or '（漏网！）'}"))
+        # 反例：合法全文散文断言（无 symbol，交人审）⇒ 零 Finding（护栏 5：零新增存量）
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-M3OK.md", {
+            "id": "EV-MEM-M3OK", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "artifact_assert": "\n  - {kind: contains, text: 内存屏障}"})
+        _fs2 = [f for f in ge.check_evidence_assert_symbol_mapped()
+                if str(f.target).endswith("EV-MEM-M3OK.md")]
+        results.append(("P70-阴 合法全文散文 contains（无 symbol）须放行", not _fs2,
+                        f"命中 {[f'{f.rule_id}/{f.severity}' for f in _fs2] or '（无）'}"))
+
     # ── N1–N7（558 Part A / 533 §2.5）：V-iso **真编译**毒载荷（557 B1 停点）──────
     #  判决在 replay 路径（`atom_evidence_replay.check_negative_controls`）——**不是** gate
     #  规则 ⇒ N1–N7 **不会**增加 RULE-COVERAGE 分子（仍 36/61），此点已在 557 D6 澄清；
@@ -1842,6 +1868,9 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     # 不计入攻击面（名字含 `-阴`，见 attack_type_stats 的排除口径）。
     ("N1 ", "A1"), ("N2 ", "A2"), ("N3 ", "A1"),
     ("N4 ", "A1"), ("N5 ", "A2"), ("N6 ", "A1"),
+    # 558 Part B1：M3 区间锚定丢失（断言从"符号区间内"退化为"全文存在性"）⇒ A3 断言无判别力。
+    # P70-阴 是阴性对照（名字含 -阴 ⇒ 不计入攻击面）。
+    ("P70 ", "A3"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
