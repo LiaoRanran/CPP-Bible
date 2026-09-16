@@ -48,10 +48,16 @@ _K2 = st.integers(min_value=0, max_value=2)
 
 
 def _pick(data, seq):
-    """从（可能为空的）序列里选一个；空 ⇒ None。固定整数策略取模，保证策略对象稳定。"""
+    """从（可能为空的）序列里选一个；空 ⇒ None。
+
+    **始终先抽 `_IDX`**：抽不抽不能取决于外部状态（否则同一 choice 前缀在不同 run 里
+    产生的 draw 序列长度/类型不同 ⇒ hypothesis 报 FlakyStrategyDefinition，实测
+    "first: integer, second: boolean"）。外部状态只决定"这个索引用不用得上"。
+    """
+    idx = data.draw(_IDX)
     if not seq:
         return None
-    return seq[data.draw(_IDX) % len(seq)]
+    return seq[idx % len(seq)]
 
 
 # ── 共享辅助 ────────────────────────────────────────────────────────────────
@@ -244,35 +250,42 @@ class TQMachine(RuleBasedStateMachine):
 
     @rule(data=st.data())
     def enqueue_task(self, data):
+        # 所有 draw **无条件、按固定顺序**执行（顺序/类型不随外部状态变）；
+        # 外部状态（self.known / with_touch 之后的取值）只决定用哪几个值。
         ptype = data.draw(st.sampled_from(TYPES))
         priority = data.draw(st.integers(0, 200))
         budget = data.draw(st.integers(50, 1000))
         verify = data.draw(st.sampled_from(VERIFY))
         with_touch = data.draw(st.booleans())
-        touch = [data.draw(st.sampled_from(TOUCH_VARIANTS))] if with_touch else None
-        deps = []
-        if self.known:
-            pool = sorted(self.known)
-            for _ in range(data.draw(_K2)):        # 0..2 个依赖（变长池用固定策略取模）
-                cand = pool[data.draw(_IDX) % len(pool)]
-                if cand not in deps:
-                    deps.append(cand)
+        touch_variant = data.draw(st.sampled_from(TOUCH_VARIANTS))
+        k = data.draw(_K2)                              # 依赖候选数 0..2
+        dep_idxs = [data.draw(_IDX) for _ in range(k)]
+        pool = sorted(self.known)
+        touch = [touch_variant] if with_touch else None
+        deps = [pool[i % len(pool)] for i in dep_idxs] if pool else []
+        deps = list(dict.fromkeys(deps))                # 去重
         # 注：随机机器里 enqueue **不**带 parent——深度/预算账只由 yield 产生，
         # 这两个不变量（A5）按 spec 仅约束 yield 续命，避免 enqueue(parent) 的设计
         # 边界制造假阳性。enqueue(parent) 行为另行确定性覆盖。
         tid = tq.enqueue(ptype, self._new_payload(), priority=priority,
-                         deps=list(deps or []), db_path=self.db,
-                         touch=list(touch) if touch else None, verify_cmd=verify,
+                         deps=deps, db_path=self.db,
+                         touch=touch, verify_cmd=verify,
                          budget=budget, worker="enqueuer")["id"]
         self.known.add(tid)
 
     @rule(data=st.data())
     def claim_task(self, data):
-        # 模式 A：抢已被他人持有的任务（无 takeover/force 必须被拒）⇒ 无双领
-        if self.claimed and data.draw(st.booleans()):
-            tid, owner = _pick(data, list(self.claimed.items()))
+        # 所有 draw 无条件（结构固定）；外部状态 self.claimed 只决定走 A 还是 B。
+        takeover = data.draw(st.booleans())
+        t_idx = data.draw(_IDX)
+        o_idx = data.draw(_IDX)
+        worker = data.draw(st.sampled_from(WORKERS))
+        items = list(self.claimed.items())
+        if takeover and items:
+            # 模式 A：抢已被他人持有的任务（无 takeover/force 必须被拒）⇒ 无双领
+            tid, owner = items[t_idx % len(items)]
             cands = [w for w in WORKERS if w != owner]
-            other = cands[data.draw(_IDX) % len(cands)]
+            other = cands[o_idx % len(cands)]
             try:
                 res = tq.claim(other, db_path=self.db, takeover=tid,
                                force=False, reason="")
@@ -288,8 +301,7 @@ class TQMachine(RuleBasedStateMachine):
                     f"无双领被破坏：{other} 抢到了 {owner} 持有的 {tid}"
                 assert self.claimed.get(tid) == owner, "被抢方仍应持有"
             return
-        # 模式 B：随便派个 worker 去领（claim 自己挑最高优先级 queued）
-        worker = data.draw(st.sampled_from(WORKERS))
+        # 模式 B：派个 worker 去领（claim 自己挑最高优先级 queued）
         res = tq.claim(worker, db_path=self.db)
         if res.get("claimed"):
             # 记**实际领到**的 id（claim 按优先级挑，未必是某个特定候选）
@@ -298,10 +310,10 @@ class TQMachine(RuleBasedStateMachine):
     @rule(data=st.data())
     def heartbeat_task(self, data):
         pick = _pick(data, list(self.claimed.items()))
+        future = data.draw(st.booleans())
         if pick is None:
             return
         tid, owner = pick
-        future = data.draw(st.booleans())
         at = tq._fmt_utc(time.time() + 3600) if future else None
         try:
             tq.heartbeat(tid, owner, at=at, db_path=self.db)
@@ -349,10 +361,10 @@ class TQMachine(RuleBasedStateMachine):
     @rule(data=st.data())
     def terminal_task(self, data):
         pick = _pick(data, list(self.claimed.items()))
+        action = data.draw(st.sampled_from(["done", "fail", "blocked"]))  # 始终抽
         if pick is None:
             return
         tid, owner = pick
-        action = data.draw(st.sampled_from(["done", "fail", "blocked"]))
         if action == "done":
             tq.done(tid, owner, db_path=self.db)
         elif action == "fail":
