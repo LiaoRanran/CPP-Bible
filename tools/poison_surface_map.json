@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-16T17:49:28",
- "source_commit": "f118866",
+ "generated_at": "2026-09-16T21:57:36",
+ "source_commit": "5e2ab73",
  "drill": {
-  "passed": 96,
-  "total": 96
+  "passed": 97,
+  "total": 97
  },
  "attack_types": {
   "A1": {
@@ -31,7 +31,7 @@
   },
   "A6": {
    "label": "解析走私：缩进/重复键/全角键绕过 YAML 语义",
-   "count": 6
+   "count": 7
   },
   "A7": {
    "label": "关系图失配：环、矛盾、未知关系类型",
@@ -277,6 +277,11 @@
   },
   {
    "name": "P43e 非块式 negative_controls（nc-map）须 [nc-form] 拦下",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43f 门禁键 YAML1.1 隐式类型陷阱须 [type-diverge] 拦下",
    "pass": true,
    "type": "A6"
   },

@@ -34,8 +34,11 @@ DIVERGE_KEYS = ("id", "verdict", "status", "artifact_sha256")
 # 556：nc 形态硬化族从"只堵 flow"升级为"白名单块式序列" ⇒ nc-flow / nc-map / nc-scalar
 # 三个子信号（统一带 [nc-form] 前缀）都算已知 block 信号。
 KNOWN_BLOCK_TAGS = ("[indent-smuggle]", "[nc-flow]", "[nc-map]", "[nc-scalar]",
-                    "[nc-form]", "[dup-key]", "[parse-diverge]")
+                    "[nc-form]", "[dup-key]", "[parse-diverge]", "[type-diverge]")
 ALL_TAGS = KNOWN_BLOCK_TAGS + ("[invalid]",)
+# 557 B2：门禁真正关心的键（硬化层覆盖的键集合）。非此集合的键的分歧对门禁无影响。
+HARDENED_KEYS = ("id", "verdict", "status", "artifact_sha256",
+                 "serves", "command", "relations", "negative_controls")
 
 FLOW_NC = ("negative_controls: [{id: nc1, variant: v1, mutation: fence, fixture: a.cpp, "
            "anchor: f, remove: x, retain: [y], "
@@ -136,7 +139,8 @@ def _parse_three(fm: str, bay: Path):
 
 
 # ── Hypothesis 生成器：多态/畸形 frontmatter（裸 fm 文本，不含 ---）──────────
-_GATE_KEYS = st.sampled_from(["id", "verdict", "status", "artifact_sha256", "negative_controls"])
+_GATE_KEYS = st.sampled_from(["id", "verdict", "status", "artifact_sha256", "negative_controls",
+                              "serves", "command", "relations"])   # 557 B2：并入门禁关心键
 _SCALAR = st.sampled_from([
     "EV-HYP-1", "confirm", "refute", "draft", "machine-verified", "0" * 8,
     '"quoted: colon"', "'single'", "3", "true", "no", "null", "~", "[]", "{}",
@@ -222,6 +226,17 @@ def test_no_gray_state_between_parsers(fmbay: Path, fm: str):
     if dup_key:
         assert "[dup-key]" in tags, f"重复键未被 [dup-key] 拦下；fm={fm!r}"
 
+    # P6（557 B2）：门禁关心键上「自定义=非空字符串 且 safe=隐式标量(bool/int/float) **且 str 不等**」
+    #   = YAML 1.1 的**语义**类型分歧 ⇒ 必被硬化层 block（id/verdict/status/artifact_sha256 走
+    #   parse-diverge；serves/command/relations 走 type-diverge；negative_controls 走 nc-form）。
+    #   `id: 3`（str() 相等）不算分歧（gate 自身按 str().strip() 比较，判决自洽）⇒ 不要求 block。
+    if isinstance(safe, dict):
+        for k in HARDENED_KEYS:
+            av, bv = custom.get(k), safe.get(k)
+            if (isinstance(av, str) and av.strip() and isinstance(bv, (bool, int, float))
+                    and str(av).strip() != str(bv).strip()):
+                assert blocked, f"{k} 的 YAML 1.1 语义类型分歧未被硬化层拦；fm={fm!r}"
+
 
 # ── 确定性回归（shrink 出的反例不可读 ⇒ 关键几格另钉死）─────────────────────
 def test_flow_nc_is_gray_state_caught_by_hardening(fmbay: Path):
@@ -246,27 +261,33 @@ def test_unclosed_frontmatter_raises_value_error():
         rp.parse_frontmatter("---\nid: EV-X\n")
 
 
-# ── 已知分歧登记（556 §问题1-3）：本批**不**扩大硬化改动面 ────────────────────
-# YAML 1.1 陷阱词会让自定义解析器（纯字符串子集）与 PyYAML（safe_load）对同一标量给出不同
-# 类型/字面：前导零（`00000000`→int 0）、布尔陷阱（`yes/no/on/off/y/n`）、其它隐式类型
-# （`~`/八进制/时间戳）。对**门禁关心的键**，这类分歧已闭合：
-#   - DIVERGE_KEYS（id/verdict/status/artifact_sha256）⇒ gate 的 [parse-diverge] block；
+# ── YAML 1.1 陷阱：门禁键已硬化（557 B2）+ 非门禁键已证无害 ────────────────────
+# 陷阱词让自定义子集解析器（纯字符串）与 PyYAML（safe_load，YAML 1.1 隐式类型）对同一标量给出
+# 不同类型：前导零（00000000→int 0）、布尔（yes/no/on/off→bool）、0x1F→int、1_000→int、
+# .inf→float、12:30→秒数。**门禁关心键（HARDENED_KEYS）的分歧已闭合**：
+#   - id/verdict/status/artifact_sha256 ⇒ gate [parse-diverge] block；
+#   - serves/command/relations ⇒ 557 B2 补齐的 [type-diverge] block；
 #   - negative_controls ⇒ 556 补齐的 [nc-form] block。
-# 但**其余键**（如 hypothesis/自定义字段）的同类分歧目前**无硬化信号**，属已知未覆盖面——
-# 是否扩到其他键的硬化**另开任务**（556 §问题1-3 明示不在本批扩大改动面）。
+# 其余键（如 hypothesis）的分歧**门禁不读** ⇒ 对门禁无影响（见下确定性用例，已证无害）。
 _KNOWN_YAML11_TRAPS = ("前导零（00000000 → int 0）", "布尔陷阱（yes/no/on/off/y/n）",
-                       "其它 YAML 1.1 隐式类型（~ / 八进制 / 时间戳）")
+                       "其它 YAML 1.1 隐式类型（0x1F / 1_000 / .inf / 12:30）")
 
 
-@pytest.mark.xfail(strict=False,
-                   reason="556 §问题1-3 已知未覆盖：非门禁键的 YAML 1.1 陷阱分歧暂无硬化信号")
-def test_non_gate_key_yaml11_trap_should_block(fmbay: Path):
-    """登记未覆盖面（**非修复**）：`hypothesis: 00000000` 自定义='00000000' vs safe=0 分歧，
-    理想应被硬化层拦，现状该键不在 gate 关心集合、亦非 nc ⇒ 沉默。
+def test_non_gate_key_yaml11_trap_is_harmless(fmbay: Path):
+    """556 xfail **转正**（557 B2）：非门禁键（hypothesis）的陷阱分歧经实测**对门禁无影响**。
 
-    标 xfail 记录；未来若扩硬化到其他键，本用例自然 XPASS（strict=False 不红），届时转正式断言。
+    硬化层只覆盖 HARDENED_KEYS；`hypothesis` 不在此集合、门禁亦不读它 ⇒ 该分歧不构成灰色态、
+    无需硬化。**已证安全**（确定性通过，不留永久 xfail 黑洞）。
     """
     fm = "id: EV-X\nhypothesis: 00000000"
     custom, safe, *_rest, blocked, _tags = _parse_three(fm, fmbay)
-    assert str(custom.get("hypothesis")).strip() != str(safe.get("hypothesis")).strip(), "应分歧"
-    assert blocked, "理想：非门禁键分歧也应被硬化层拦（现状未覆盖）"
+    assert str(custom.get("hypothesis")).strip() != str(safe.get("hypothesis")).strip(), "分歧确存在"
+    assert not blocked, "非门禁键，硬化层按设计不拦（无害）"
+    assert "hypothesis" not in HARDENED_KEYS, "hypothesis 不在门禁关心键集合"
+
+
+def test_gate_key_type_diverge_blocked(fmbay: Path):
+    """557 B2 决定性回归：门禁键 serves/command/relations 上的 YAML 1.1 隐式类型陷阱必 block。"""
+    for key in ("serves", "command", "relations"):
+        _c, _s, _d, hits, blk, tags = _parse_three(f"id: EV-X\n{key}: 00000000", fmbay)
+        assert blk and "[type-diverge]" in tags, (key, [f.message for f in hits])

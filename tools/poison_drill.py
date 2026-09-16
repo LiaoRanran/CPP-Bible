@@ -986,6 +986,17 @@ def drill() -> int:
             results.append((f"{_nm} 非块式 negative_controls（{_kind}）须 [nc-form] "
                             f"{ok and '拦下' or '漏网'}",
                             ok, f"拦截者 {', '.join(blockers) or '（无！）'}"))
+    # ── P43f（557 B2）：门禁关心键的 YAML 1.1 隐式类型陷阱（`command: 00000000`）⇒ [type-diverge] block ──
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-TYPEDIV.md", {
+            "id": "EV-MEM-TYPEDIV", "hypothesis": "h", "command": "00000000",
+            "verdict": "confirm", "fixture": "f.cpp", "artifact": "f.asm"})
+        hits = [f for f in ge.check_frontmatter_hardening() if f.severity == "block"]
+        ok = any("[type-diverge]" in f.message for f in hits)
+        blockers = sorted({f.rule_id for f in hits})
+        results.append((f"P43f 门禁键 YAML1.1 隐式类型陷阱须 [type-diverge] "
+                        f"{ok and '拦下' or '漏网'}",
+                        ok, f"拦截者 {', '.join(blockers) or '（无！）'}"))
 
     # ── P44 环境量进断言键（470 P0-E / 452 E06）：nproc 声明为比对目标 ────────
     with sandbox() as tmp:
@@ -1715,7 +1726,7 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
     # 547 B5 / 556：nc 形态硬化族（P43b/d/e 走 YAML 硬化 → A6；P43c 借品阴面属"借用" → A2）
-    ("P43b ", "A6"), ("P43c ", "A2"), ("P43d ", "A6"), ("P43e ", "A6"),
+    ("P43b ", "A6"), ("P43c ", "A2"), ("P43d ", "A6"), ("P43e ", "A6"), ("P43f ", "A6"),
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
     ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
     ("P58 ", "A1"), ("P59 ", "A1"), ("P60 ", "A4"),

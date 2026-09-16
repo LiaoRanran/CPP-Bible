@@ -1377,6 +1377,21 @@ def _fm_hardening_uncached(p: Path, yaml_mod: Any, ctor_error: type[Exception],
                                f"[parse-diverge] {k} 两解析器不一致："
                                f"自定义={str(a)[:36]!r} safe={str(b)[:36]!r}",
                                "存在同构变换（缩进/重复键/锚点）——修正 frontmatter"))
+    # 557 B1/B2：YAML 1.1 隐式类型陷阱（`00000000`→int / `yes|no|on|off`→bool / `0x1F`→int /
+    #   `1_000`→int / `.inf`→float / `12:30`→秒数）——自定义子集解析器只当**字符串**，
+    #   safe_load 却给出隐式标量 ⇒ 类型分歧而硬化层原样放行。id/verdict/status/artifact_sha256
+    #   已由上面的 parse-diverge 覆盖；此处补**门禁真正关心的其余键**（serves/command/relations）。
+    #   只对「自定义=非空字符串 且 safe=隐式标量(bool/int/float)」出 block ⇒ 对正常的
+    #   list/dict/空值/普通字符串零误伤（实测 83 卡零新增命中）。
+    for k in ("serves", "command", "relations"):
+        a, b = meta.get(k), safe.get(k)
+        if (isinstance(a, str) and a.strip() and isinstance(b, (bool, int, float))
+                and str(a).strip() != str(b).strip()):    # 仅**语义分歧**（str 不等）才拦
+            out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                               f"[type-diverge] {k} 类型分歧：自定义解析为字符串 "
+                               f"{a.strip()[:36]!r}，safe_load 解析为 {type(b).__name__} "
+                               f"{str(b)[:24]!r}（YAML 1.1 隐式类型陷阱）",
+                               "给值加引号显式声明字符串，或改用门禁期望的形态"))
     return out
 
 
