@@ -42,6 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay  # noqa: E402
 import gate_engine as ge               # noqa: E402
+import viso_diff as vd                 # noqa: E402
 from toolchain import resolve_gpp      # noqa: E402
 
 
@@ -938,6 +939,37 @@ def drill() -> int:
         ok = "EV-FM-YAML-HARDENING" in who
         results.append(("P43 缩进走私（E07 缩进 verdict 提升顶层键）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
+
+    # ── P43b（547 B5）：flow 式 negative_controls ⇒ 硬化层 [nc-flow] block ──────
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-NCFLOW.md", {
+            "id": "EV-MEM-NCFLOW", "serves": "[ATOM-MEM-MOVE-001]",
+            "hypothesis": "h", "command": "g++ -S f.cpp -o f.asm",
+            "verdict": "confirm",
+            "negative_controls": "[{id: nc1, variant: v1, mutation: fence, "
+                                 "fixture: a.cpp, anchor: f, remove: x, "
+                                 "retain: [y], probe: {channel: artifact, "
+                                 "symbol: s, op: becomes_absent, text: t}}]"})
+        hits = [f for f in ge.check_frontmatter_hardening() if f.severity == "block"]
+        ok = any("nc-flow" in f.message for f in hits)
+        blockers = sorted({f.rule_id for f in hits})
+        results.append((f"P43b flow 式 negative_controls 须 [nc-flow] {ok and '拦下' or '漏网'}",
+                         ok, f"拦截者 {', '.join(blockers) or '（无！）'}"))
+    # ── P43c（547 B3）：借来的阴面 fixture 须被 schema 升 block 拒 ─────────────
+    nc_borrowed = {"id": "nc1", "variant": "v1", "mutation": "delete_mechanism",
+                   "fixture": "Examples/atoms/_atom_align_ctrl.cpp",
+                   "anchor": "spin_signal_fence",
+                   "remove": "__atomic_signal_fence(__ATOMIC_SEQ_CST);",
+                   "retain": ["while (!s_sf_b)", "return s_sf_a;"],
+                   "probe": {"channel": "artifact", "symbol": "_Z17spin_signal_fencev",
+                             "text": "s_sf_b", "op": "becomes_absent"}}
+    sv = vd.validate_nc_schema(
+        nc_borrowed, fixture_exists=lambda p: True, anchor_def_count=1,
+        declared_run_keys=set(),
+        yang_fixture="Examples/atoms/_atom_fence_vs_atomic.cpp")
+    ok = not sv.ok and any("未锚定" in e for e in sv.errors)
+    results.append(("P43c 借品阴面未锚阳夹具须 block", ok,
+                    f"errs={sv.errors or '（漏网！）'}"))
 
     # ── P44 环境量进断言键（470 P0-E / 452 E06）：nproc 声明为比对目标 ────────
     with sandbox() as tmp:

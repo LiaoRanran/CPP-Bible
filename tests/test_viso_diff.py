@@ -277,12 +277,31 @@ def _schema(nc: dict, **kw) -> vd.SchemaVerdict:
 
 
 def test_schema_positive_and_naming_warning():
+    # 无阳夹具上下文（纯 schema 单测）：命名规约不符只 warn（fallback，不拦）
     v = _schema(dict(_GOOD_NC))
     assert v.ok, v.errors
     assert v.warnings == [] or "命名规约" in v.warnings[0]
-    # 命名规约不符只 warn（v1 观察期），不拦
     v2 = _schema(dict(_GOOD_NC, fixture="Examples/atoms/whatever.cpp"))
     assert v2.ok and any("命名规约" in w for w in v2.warnings)
+    # 有阳夹具上下文（真实 replay 路径）：命名不符（未锚定）升 block（547 B3）
+    v3 = _schema(dict(_GOOD_NC, fixture="Examples/atoms/whatever.cpp"),
+                 yang_fixture="Examples/atoms/x.cpp")
+    assert not v3.ok and any("未锚定" in e for e in v3.errors), v3.errors
+
+
+def test_schema_yin_fixture_anchored_to_yang():
+    """547 B3：阴面 fixture 必须锚定本卡阳夹具（stem == 阳夹具主干名 + nc_id后缀），否则 block。
+
+    防借别卡/别优化级产物冒充翻转证据；内容 diff 仍由 replay 的 judge_min_diff 兜底。
+    """
+    yang = "Examples/atoms/x.cpp"                       # 与 _GOOD_NC.fixture 同源
+    v = _schema(dict(_GOOD_NC), yang_fixture=yang)      # x.nc1.cpp 锚 x.cpp ⇒ 须通过
+    assert v.ok, v.errors
+    # 借来的别卡产物 / 命名"像"但不锚本卡阳夹具 ⇒ 升 block
+    for bad in ("Examples/atoms/_atom_align_ctrl.cpp", "Examples/atoms/y.nc1.cpp",
+                "Examples/atoms/whatever.nc1.cpp"):
+        v2 = _schema(dict(_GOOD_NC, fixture=bad), yang_fixture=yang)
+        assert not v2.ok and any("未锚定" in e for e in v2.errors), v2.errors
 
 
 @pytest.mark.parametrize("key,value,needle", [

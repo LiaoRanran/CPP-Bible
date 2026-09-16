@@ -1325,6 +1325,16 @@ def _fm_hardening_uncached(p: Path, yaml_mod: Any, ctor_error: type[Exception],
                            f"[indent-smuggle] 标量值后出现缩进键行：{ln!r}"
                            "（缩进项会被提升为顶层键——结构走私）",
                            "键值对不得跟随在标量值之后（检查缩进）"))
+    # 547 B5：flow 式 `negative_controls: [...]` 会让硬化层与 replay 判决不一致——replay
+    # 路径（check_negative_controls）要求 block 列表/block map，但硬化层四信号（缩进走私/
+    # 重复键/语法/parse-diverge）对 flow 式 nc 无一触发 ⇒ 门禁给虚假干净。基于 frontmatter
+    # 原文正则，在 `yaml_mod is None` 早退之前也跑（无 pyyaml 环境同样拦）。
+    for ln in fm.splitlines():
+        if re.match(r"^\s*negative_controls\s*:\s*\[", ln):
+            out.append(Finding("EV-FM-YAML-HARDENING", "block", _rel(p),
+                               "[nc-flow] negative_controls 必须用 block 式（533 §2.1）："
+                               "flow 式会让硬化层与 replay 判决不一致",
+                               "改为 block 式逐行写法"))
     if yaml_mod is None:
         return out                         # ②③④ 需 pyyaml；已在上方留 warn 可见化
     try:

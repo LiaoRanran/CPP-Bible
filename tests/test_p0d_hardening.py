@@ -33,6 +33,27 @@ def test_indent_smuggle_blocked(sb: Path):
     assert any("indent-smuggle" in f.message for f in hits)
 
 
+def test_nc_flow_rejected(sb: Path):
+    """547 B5：[nc-flow] flow 式 negative_controls 必须被硬化层 block（与 replay 判决一致）。"""
+    _write(sb, "evidence/mem", "EV-NCFLOW.md",
+           "---\nid: EV-NCFLOW\nstatus: draft\n"
+           "negative_controls: [{id: nc1, variant: v1, mutation: fence, "
+           "fixture: a.cpp, anchor: f, remove: x, retain: [y], "
+           "probe: {channel: artifact, symbol: s, op: becomes_absent, text: t}}]\n---\n")
+    hits = [f for f in ge.check_frontmatter_hardening() if f.severity == "block"]
+    assert any("nc-flow" in f.message for f in hits)
+
+
+def test_nc_block_style_not_flagged(sb: Path):
+    """阴性：block 式 negative_controls 不得触发 [nc-flow]（存量 nc 卡零误伤）。"""
+    _write(sb, "evidence/mem", "EV-NCBLOCK.md",
+           "---\nid: EV-NCBLOCK\nstatus: draft\n"
+           "negative_controls:\n  - id: nc1\n    variant: v1\n    fixture: a.nc1.cpp\n---\n")
+    hits = [f for f in ge.check_frontmatter_hardening()
+            if f.severity == "block" and "nc-flow" in f.message]
+    assert hits == [], f"block 式 nc 误伤：{hits}"
+
+
 def test_flow_dup_key_blocked(sb: Path):
     """E08：flow-map 内重复键 → dup-key block（唯一键加载器）。"""
     _write(sb, "evidence/mem", "EV-D.md",

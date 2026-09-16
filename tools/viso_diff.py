@@ -339,12 +339,21 @@ def validate_nc_schema(nc: dict[str, Any], *, fixture_exists: Callable[[str], bo
         if fixture_exists is not None and not fixture_exists(posix):
             errs.append(f"{tag}: fixture 不存在：{fixture!r}（negative_control_missing）")
         stem = posix.rsplit("/", 1)[-1].rsplit(".", 1)[0]
-        # 规约 = 阳夹具主干名 + `.nc<id>` + 后缀（533 §2.1）；id 本身常写成 `nc1`，
-        # 此时期望后缀是 `.nc1` 而不是 `.ncnc1`（避免自指式的假告警）。
+        # 身份锚（547 B3 / 533 §2.1）：阴面 fixture 必须与本卡阳夹具同源——
+        # stem 必须等于 `阳夹具主干名 + nc_id后缀`，防借别卡/别优化级产物冒充翻转证据。
+        # 有 yang_fixture 时升 block（fail-closed，第一道身份门不能开着）；
+        # 无上下文（纯 schema 单测，调用方没传阳夹具）时退化为命名规约告警，不误伤。
         suffix = f".{nid}" if nid.startswith("nc") else f".nc{nid}"
-        if nid and not stem.endswith(suffix):
-            warns.append(f"{tag}: 命名规约建议 `阳夹具主干名{suffix}<后缀>`（当前 {posix!r}）；"
-                         f"v1 只告警，收集一批后再谈升 block")
+        if yang_fixture:
+            yang_stem = yang_fixture.replace("\\", "/").rsplit("/", 1)[-1].rsplit(".", 1)[0]
+            expected = f"{yang_stem}{suffix}"
+            if nid and stem != expected:
+                errs.append(f"{tag}: 阴面 fixture 未锚定本卡阳夹具：{posix!r} "
+                            f"期望 `{expected}<后缀>`"
+                            f"（身份绑定，防借别卡产物冒充翻转证据）")
+        else:
+            if nid and not stem.endswith(suffix):
+                warns.append(f"{tag}: 命名规约建议 `阳夹具主干名{suffix}<后缀>`（当前 {posix!r}）")
 
     anchor = str(nc.get("anchor") or "")
     if not _ANCHOR_RE.match(anchor):
