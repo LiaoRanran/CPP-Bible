@@ -970,6 +970,22 @@ def drill() -> int:
     ok = not sv.ok and any("未锚定" in e for e in sv.errors)
     results.append(("P43c 借品阴面未锚阳夹具须 block", ok,
                     f"errs={sv.errors or '（漏网！）'}"))
+    # ── P43d/P43e（556）：nc 非块式形态（裸标量 / inline map）⇒ 硬化层 [nc-form] block ──
+    #  547 B5 只堵了 flow `[...]`；556 升级为白名单形态判定：凡非块式（标量/map/flow）皆拦。
+    #  这两条正是 556 问题1 shrink 出的稳定反例（`negative_controls: 00000000`）。
+    for _nm, _ncval, _kind in (("P43d", "00000000", "nc-scalar"),
+                               ("P43e", "{id: nc1}", "nc-map")):
+        with sandbox() as tmp:
+            _write(ge.EVIDENCE / "mem" / f"EV-MEM-{_nm}.md", {
+                "id": f"EV-MEM-{_nm}", "serves": "[ATOM-MEM-MOVE-001]",
+                "hypothesis": "h", "command": "g++ -S f.cpp -o f.asm",
+                "verdict": "confirm", "negative_controls": _ncval})
+            hits = [f for f in ge.check_frontmatter_hardening() if f.severity == "block"]
+            ok = any(f"[{_kind}]" in f.message for f in hits)
+            blockers = sorted({f.rule_id for f in hits})
+            results.append((f"{_nm} 非块式 negative_controls（{_kind}）须 [nc-form] "
+                            f"{ok and '拦下' or '漏网'}",
+                            ok, f"拦截者 {', '.join(blockers) or '（无！）'}"))
 
     # ── P44 环境量进断言键（470 P0-E / 452 E06）：nproc 声明为比对目标 ────────
     with sandbox() as tmp:
@@ -1698,6 +1714,8 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P35 ", "A3"), ("P36 ", "A6"), ("P37 ", "A6"), ("P38 ", "A4"),
     ("P39 ", "A8"), ("P40 ", "A10"), ("P41 ", "A10"), ("P42 ", "A5"),
     ("P43 ", "A6"), ("P44 ", "A5"), ("P45 ", "A11"), ("P46 ", "A11"),
+    # 547 B5 / 556：nc 形态硬化族（P43b/d/e 走 YAML 硬化 → A6；P43c 借品阴面属"借用" → A2）
+    ("P43b ", "A6"), ("P43c ", "A2"), ("P43d ", "A6"), ("P43e ", "A6"),
     ("P51 ", "A10"), ("P52 ", "A10"), ("P55 ", "A7"), ("P56 ", "A7"),
     ("P57 ", "A2"), ("P47 ", "A3"), ("P48 ", "A3"),
     ("P58 ", "A1"), ("P59 ", "A1"), ("P60 ", "A4"),

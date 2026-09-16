@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-16T01:48:40",
- "source_commit": "31bb219",
+ "generated_at": "2026-09-16T17:49:28",
+ "source_commit": "f118866",
  "drill": {
-  "passed": 92,
-  "total": 92
+  "passed": 96,
+  "total": 96
  },
  "attack_types": {
   "A1": {
@@ -15,7 +15,7 @@
   },
   "A2": {
    "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
-   "count": 10
+   "count": 11
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
@@ -31,7 +31,7 @@
   },
   "A6": {
    "label": "解析走私：缩进/重复键/全角键绕过 YAML 语义",
-   "count": 3
+   "count": 6
   },
   "A7": {
    "label": "关系图失配：环、矛盾、未知关系类型",
@@ -257,6 +257,26 @@
   },
   {
    "name": "P43 缩进走私（E07 缩进 verdict 提升顶层键）",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43b flow 式 negative_controls 须 [nc-flow] 拦下",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43c 借品阴面未锚阳夹具须 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P43d 非块式 negative_controls（nc-scalar）须 [nc-form] 拦下",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43e 非块式 negative_controls（nc-map）须 [nc-form] 拦下",
    "pass": true,
    "type": "A6"
   },

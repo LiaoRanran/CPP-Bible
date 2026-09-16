@@ -31,7 +31,10 @@ from yaml.constructor import ConstructorError
 # ── 三解析器口径常量 ───────────────────────────────────────────────────────
 # gate parse-diverge 实际比对键（gate_engine L1355）；negative_controls 不在其中 ⇒ 这正是 B5 根因。
 DIVERGE_KEYS = ("id", "verdict", "status", "artifact_sha256")
-KNOWN_BLOCK_TAGS = ("[indent-smuggle]", "[nc-flow]", "[dup-key]", "[parse-diverge]")
+# 556：nc 形态硬化族从"只堵 flow"升级为"白名单块式序列" ⇒ nc-flow / nc-map / nc-scalar
+# 三个子信号（统一带 [nc-form] 前缀）都算已知 block 信号。
+KNOWN_BLOCK_TAGS = ("[indent-smuggle]", "[nc-flow]", "[nc-map]", "[nc-scalar]",
+                    "[nc-form]", "[dup-key]", "[parse-diverge]")
 ALL_TAGS = KNOWN_BLOCK_TAGS + ("[invalid]",)
 
 FLOW_NC = ("negative_controls: [{id: nc1, variant: v1, mutation: fence, fixture: a.cpp, "
@@ -197,9 +200,17 @@ def test_no_gray_state_between_parsers(fmbay: Path, fm: str):
             f"两解析器对 negative_controls 分歧但硬化层放行（灰色态）："
             f"custom={_shape(a_nc)!r} safe={_shape(b_nc)!r}；fm={fm!r}")
 
-    # P3 553 决定性保证：flow 式 nc 必落 [nc-flow]
-    if any(re.match(r"^\s*negative_controls\s*:\s*\[", ln) for ln in fm.splitlines()):
-        assert "[nc-flow]" in tags, f"flow 式 nc 未被 [nc-flow] 拦下；fm={fm!r}"
+    # P3（547 B5 + 556）决定性保证：nc 的一切非块式形态（flow/map/标量）必落对应 [nc-*] 信号
+    for ln in fm.splitlines():
+        m = re.match(r"^\s*negative_controls\s*:\s*(.*)$", ln)
+        if not m:
+            continue
+        val = m.group(1).strip()
+        if not val or val.startswith("#"):
+            continue                       # 键行无值 / 仅注释 = 合法块式起点
+        want = ("[nc-flow]" if val.startswith("[")
+                else "[nc-map]" if val.startswith("{") else "[nc-scalar]")
+        assert want in tags, f"nc 非块式形态未落 {want}；fm={fm!r}"
 
     # P4：block 必须"有理有据"（落已知信号，防无关规则偶然 block 掩盖真分歧）
     if blocked:
@@ -233,3 +244,29 @@ def test_unclosed_frontmatter_raises_value_error():
     """诚实记录：未闭合 frontmatter ⇒ 自定义解析器抛 ValueError（gate 语义 = 无 metadata）。"""
     with pytest.raises(ValueError):
         rp.parse_frontmatter("---\nid: EV-X\n")
+
+
+# ── 已知分歧登记（556 §问题1-3）：本批**不**扩大硬化改动面 ────────────────────
+# YAML 1.1 陷阱词会让自定义解析器（纯字符串子集）与 PyYAML（safe_load）对同一标量给出不同
+# 类型/字面：前导零（`00000000`→int 0）、布尔陷阱（`yes/no/on/off/y/n`）、其它隐式类型
+# （`~`/八进制/时间戳）。对**门禁关心的键**，这类分歧已闭合：
+#   - DIVERGE_KEYS（id/verdict/status/artifact_sha256）⇒ gate 的 [parse-diverge] block；
+#   - negative_controls ⇒ 556 补齐的 [nc-form] block。
+# 但**其余键**（如 hypothesis/自定义字段）的同类分歧目前**无硬化信号**，属已知未覆盖面——
+# 是否扩到其他键的硬化**另开任务**（556 §问题1-3 明示不在本批扩大改动面）。
+_KNOWN_YAML11_TRAPS = ("前导零（00000000 → int 0）", "布尔陷阱（yes/no/on/off/y/n）",
+                       "其它 YAML 1.1 隐式类型（~ / 八进制 / 时间戳）")
+
+
+@pytest.mark.xfail(strict=False,
+                   reason="556 §问题1-3 已知未覆盖：非门禁键的 YAML 1.1 陷阱分歧暂无硬化信号")
+def test_non_gate_key_yaml11_trap_should_block(fmbay: Path):
+    """登记未覆盖面（**非修复**）：`hypothesis: 00000000` 自定义='00000000' vs safe=0 分歧，
+    理想应被硬化层拦，现状该键不在 gate 关心集合、亦非 nc ⇒ 沉默。
+
+    标 xfail 记录；未来若扩硬化到其他键，本用例自然 XPASS（strict=False 不红），届时转正式断言。
+    """
+    fm = "id: EV-X\nhypothesis: 00000000"
+    custom, safe, *_rest, blocked, _tags = _parse_three(fm, fmbay)
+    assert str(custom.get("hypothesis")).strip() != str(safe.get("hypothesis")).strip(), "应分歧"
+    assert blocked, "理想：非门禁键分歧也应被硬化层拦（现状未覆盖）"
