@@ -43,6 +43,9 @@ dev = [
     "pytest-xdist>=3.0",   # 508 任务1：并行跑测试（pyproject addopts 里已启用 -n auto）
     "ruff>=0.5.0",
     "mypy>=1.10.0",
+    # 554 批次 T：工业级测试库（纯 Python wheel、无编译、无系统库）
+    "hypothesis>=6.100",   # T1 stateful 自动攻击 task_queue / T3 parser 差分生成器
+    "syrupy>=4.7",         # T2 结构化输出快照锁（零依赖 pytest 快照插件）
 ]
 # CI 额外（PageFind 通过 pip 安装二进制扩展）
 ci = [
