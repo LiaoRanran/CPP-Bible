@@ -1,10 +1,10 @@
 {
  "schema": "cppbible-golden-lock/1.0",
- "updated": "2026-09-15",
- "commit": "1b0232d",
+ "updated": "2026-09-16",
+ "commit": "aa6cdb6",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 59,
+  "warn_findings": 136,
   "atoms_total": 27,
   "evidence_total": 56,
   "verified_atoms": 26,
@@ -193,7 +193,49 @@
    },
    "commit": "1b0232d",
    "dirty": true
+  },
+  {
+   "ts": "2026-09-16T22:24:38",
+   "reason": "557人审：warn59->136分类留痕（迁移债105 legacy+MATRIX保守accepted16+真信号real12+关系/serves legacy3）；MATRIX 7条(b)真缺支撑仍在gate warn可见",
+   "classify": {
+    "ATOM-CLAIM-CONCEPT-NORMALIZED": "legacy",
+    "INFERENCE-NOT-MACHINE-VERIFIED": "legacy",
+    "EV-MATRIX-UNBACKED": "accepted",
+    "EV-OUT-UNDECLARED-KEY": "real",
+    "EV-FALSIFICATION-QUANT": "real",
+    "EV-ASSERT-SYMBOL-MAPPED": "real",
+    "ATOM-REL-TARGET": "legacy",
+    "EV-SERVES-EXIST": "legacy"
+   },
+   "worse": [
+    "warn_findings: 59 → 136"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 136,
+    "atoms_total": 27,
+    "evidence_total": 56,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "aa6cdb6",
+   "dirty": true
   }
  ],
- "dirty": true
+ "dirty": true,
+ "warn_classify": {
+  "ATOM-CLAIM-CONCEPT-NORMALIZED": "legacy",
+  "INFERENCE-NOT-MACHINE-VERIFIED": "legacy",
+  "EV-MATRIX-UNBACKED": "accepted",
+  "EV-OUT-UNDECLARED-KEY": "real",
+  "EV-FALSIFICATION-QUANT": "real",
+  "EV-ASSERT-SYMBOL-MAPPED": "real",
+  "ATOM-REL-TARGET": "legacy",
+  "EV-SERVES-EXIST": "legacy"
+ }
 }
