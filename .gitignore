@@ -85,6 +85,8 @@ Thumbs.db
 /data/backups/
 # 508 任务6：pytest 墙钟落盘（metrics_collector 的 pytest_wall_seconds 来源）
 /data/pytest_last.txt
+# 557 Part A：人审分桶报告（运行时派生物，含全量 Finding 明细的大 JSON，不入库）
+/data/review/
 
 # 审计/软门禁临时输出（dangling_ref_linter / prereq_topo_check 等）
 outputs/
