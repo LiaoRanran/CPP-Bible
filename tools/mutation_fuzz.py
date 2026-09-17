@@ -391,6 +391,60 @@ def pick_cards(spec: str) -> list[Path]:
     return sorted(p for p in ROOT.glob(spec) if p.is_file())
 
 
+def _controlled_dirty() -> list[str]:
+    """受控目录（`evidence/` `atoms/`）相对 HEAD 的**残留**文件（569 任务 3 退出自检）。
+
+    为什么需要：变异是"写卡→跑门禁→还原"，一旦进程被打断/异常，残留就可能悄悄留在受控目录里
+    （567 实测 `EV-CONC-001.md` 有 3 行 M4 注入残留）。护栏用 `git diff --name-only`（只看文件名，
+    不读内容 ⇒ 无编码坑）；git 不可用/超时 ⇒ 返回 `[]`（自检是护栏，不该把正常路径变成红灯）。
+    """
+    try:
+        r = subprocess.run(["git", "diff", "--name-only", "--", "evidence/", "atoms/"],
+                           cwd=str(ROOT), capture_output=True, text=True, timeout=20)
+    except Exception:                      # noqa: BLE001
+        return []
+    if r.returncode != 0:
+        return []
+    return [ln.strip() for ln in (r.stdout or "").splitlines() if ln.strip()]
+
+
+def _exit_selfcheck(inflight: bool = False) -> None:
+    """跑完（含异常路径）校验受控目录零差异；有残留 ⇒ **fail-loud**。
+
+    `inflight=True`（已有异常在传播）时**只报不抛**——不能用一个护栏异常把真正的错因盖掉。
+    """
+    dirty = _controlled_dirty()
+    if not dirty:
+        return
+    msg = (f"[mutation] ❌ 退出自检：受控目录有未还原残留 {len(dirty)} 个：\n"
+           + "".join(f"    {d}\n" for d in dirty)
+           + "    修法：先 `git diff -- evidence/ atoms/` 看差异；确认是变异残留就逐文件还原"
+             "（`git diff --quiet -- evidence/ atoms/` 必须 exit 0）")
+    print(msg, file=sys.stderr)
+    if not inflight:
+        raise SystemExit(1)
+
+
+def _selfcheck_on_exit(fn):
+    """569 任务 3：给跑变异的函数套一层"退出即自检受控目录零差异"（含异常路径）。
+
+    为什么用**装饰器**而不是把主体包进 `try/finally`：主体一行都不重排（无重缩进风险），
+    且手动转存 `__name__`/`__doc__`/`__wrapped__` —— 文档字符串契约（"三分类/drill"那段）
+    与 `inspect.getsource` 都保持不变（有既有测试锁这条契约）。
+    """
+    def _inner(*a, **k):
+        try:
+            return fn(*a, **k)
+        finally:
+            _exit_selfcheck(inflight=sys.exc_info()[0] is not None)
+
+    _inner.__name__ = getattr(fn, "__name__", "_inner")
+    _inner.__doc__ = getattr(fn, "__doc__", None)
+    _inner.__wrapped__ = fn
+    return _inner
+
+
+@_selfcheck_on_exit
 def run_fuzz(cards: list[Path], ops: list[str], limit: int,
              progress: bool = False) -> dict[str, Any]:
     """主循环（drill 范式 + 548 Part 0 按卡批）：**卡维外层**，一张卡的全部变体共用一次全库基线。

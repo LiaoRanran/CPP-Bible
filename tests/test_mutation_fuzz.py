@@ -242,6 +242,45 @@ def test_568_run_fuzz_restores_card_on_exception(tmp_path, monkeypatch):
     assert card.read_text(encoding="utf-8") == before, "真实卡必须零改动"
 
 
+# ── 569 任务 3：退出自检（受控目录零残留）───────────────────────────────────────
+
+
+def test_569_exit_selfcheck_loud_when_controlled_dirty(monkeypatch, capsys):
+    """有残留 ⇒ fail-loud（exit 1 + 逐文件列出）；干净 ⇒ 静默。"""
+    monkeypatch.setattr(mf, "_controlled_dirty",
+                        lambda: ["evidence/conc/EV-CONC-001.md"])
+    with pytest.raises(SystemExit) as ei:
+        mf._exit_selfcheck()
+    assert ei.value.code == 1
+    err = capsys.readouterr().err
+    assert "受控目录" in err and "EV-CONC-001.md" in err, err
+    monkeypatch.setattr(mf, "_controlled_dirty", lambda: [])
+    mf._exit_selfcheck()                     # 干净 ⇒ 静默通过
+    assert capsys.readouterr().err == ""
+
+
+def test_569_exit_selfcheck_does_not_mask_inflight_error(monkeypatch, capsys):
+    """已在传播异常时**只报不抛**——护栏不得把真正的错因盖掉。"""
+    monkeypatch.setattr(mf, "_controlled_dirty", lambda: ["atoms/x/ATOM-X.md"])
+    mf._exit_selfcheck(inflight=True)        # 不抛
+    assert "ATOM-X.md" in capsys.readouterr().err
+
+
+def test_569_exit_selfcheck_reports_dirty_on_exception_path(monkeypatch, capsys):
+    """异常路径也走自检：替身 classify 抛错 + 受控目录"脏" ⇒ 原异常照抛，且**残留被报出**。"""
+    monkeypatch.setattr(mf, "_controlled_dirty", lambda: ["evidence/conc/EV-CONC-001.md"])
+    monkeypatch.setattr(mf, "classify", lambda *_a, **_k: (_ for _ in ()).throw(
+        RuntimeError("boom")))
+    with pytest.raises(RuntimeError):
+        mf.run_fuzz([mf.ROOT / "evidence/conc/EV-CONC-001.md"], ["M3"], 1)
+    assert "EV-CONC-001.md" in capsys.readouterr().err
+
+
+def test_569_real_controlled_dirs_are_clean():
+    """本仓当前必须零残留（护栏的活体基线）。"""
+    assert mf._controlled_dirty() == []
+
+
 def test_548_diff_is_not_card_scoped(monkeypatch: pytest.MonkeyPatch):
     """跨卡规则不许被"按卡裁剪"漏掉：diff 必须是**全量**（别的卡上的新命中也要算）。"""
     with mf.sandbox() as tmp:
