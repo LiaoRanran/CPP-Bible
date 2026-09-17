@@ -331,6 +331,45 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
     return snap
 
 
+# ── 574 任务 D：信任放权门（**只写不读**；默认不放权）──────────────────────────────
+ORACLE_REGISTRY = ROOT / "data" / "oracle_registry.json"
+# 放权开关：全部 **OFF**（本任务不实现任何"机器自动接受"；模型变强那天才谈）。
+DELEGATION_SWITCHES = {"G-iso": False, "oracle_auto_accept": False, "llm_as_judge": False}
+
+
+def oracle_report(cards: list[dict] | None = None) -> dict:
+    """**报告层**只读统计：把卡/命题的 `verified_by_oracle` 与 registry 版本比对 ⇒ 标 `stale`。
+
+    硬不变量（574 任务 D 的核心）：本函数**只做统计**，绝不能被 gate / replay / poison 的
+    **判决路径**调用——"被决策读了"就是偷偷放权。判决逻辑一律不许读 `verified_by_oracle`
+    （有 pytest 锁：给卡填任意 verified_by_oracle，block/warn/confirm 逐字不变）。
+    缺字段 ⇒ 记 `missing_field`（正常状态，不是缺陷）。
+    """
+    reg: dict = {}
+    try:
+        reg = json.loads(ORACLE_REGISTRY.read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError):
+        reg = {}
+    cur = (reg.get("oracles") if isinstance(reg, dict) else None) or {}
+    out: dict = {"registry": ORACLE_REGISTRY.name, "current_oracles": sorted(cur),
+                 "delegation_switches": dict(DELEGATION_SWITCHES),
+                 "entries": [], "stale": [], "missing_field": 0}
+    for c in (cards or []):
+        vo = c.get("verified_by_oracle") if isinstance(c, dict) else None
+        if not vo:
+            out["missing_field"] += 1
+            continue
+        name = str(vo.get("oracle") if isinstance(vo, dict) else vo)
+        ver = str(vo.get("version") or "") if isinstance(vo, dict) else ""
+        want_ver = str((cur.get(name) or {}).get("version") or "")
+        entry = {"card": c.get("id") or c.get("card") or "?", "verified_by_oracle": vo,
+                 "stale": bool(name not in cur or (want_ver and ver and ver != want_ver))}
+        out["entries"].append(entry)
+        if entry["stale"]:
+            out["stale"].append(entry)
+    return out
+
+
 # ── 573 任务 A-2：overturned 事件通道（只追加；**系统绝不自动产生推翻**）────────────
 OVERTURNED_FILE = ROOT / "data" / "overturned_events.jsonl"
 

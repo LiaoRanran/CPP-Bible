@@ -1,0 +1,26 @@
+{
+ "note": "574 任务 D：当前认可的验证者（oracle）版本。卡/命题 frontmatter 的 verified_by_oracle 是**可选记录字段**，与这里的版本不一致 ⇒ 报告层标 stale（黄）；**判决层一律不读它**（只写不读是硬不变量）。",
+ "updated": "2026-09-17",
+ "oracles": {
+  "gcc": {
+   "version": "15.3.0",
+   "scope": "编译期产物（asm/.o/exe）与编译告警级别"
+  },
+  "gate_engine": {
+   "version": "M4-2026.09.17",
+   "scope": "门禁规则的命中集合（block/warn/advice）"
+  },
+  "atom_evidence_replay": {
+   "version": "2026.09.17",
+   "scope": "证据卡复算（compile/run/sha256/assert）"
+  }
+ },
+ "delegation": {
+  "policy": "默认**不放权**：本文件只用于报告层比对，任何判决（gate/replay/poison）都不得因它改变结果。",
+  "switches": {
+   "G-iso": false,
+   "oracle_auto_accept": false,
+   "llm_as_judge": false
+  }
+ }
+}
