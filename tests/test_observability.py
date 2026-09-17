@@ -144,7 +144,7 @@ def test_query_filters(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys):
     def run(*args: str) -> list[dict]:
         capsys.readouterr()
         assert lq.main(["--date", day, "--json", *args]) == 0
-        return [json.loads(l) for l in capsys.readouterr().out.splitlines() if l.strip()]
+        return [json.loads(ln) for ln in capsys.readouterr().out.splitlines() if ln.strip()]
 
     assert len(run()) == 3
     assert [r["trace_id"] for r in run("--trace-id", "batch-A")] == ["batch-A"] * 2

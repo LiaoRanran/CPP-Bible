@@ -1372,7 +1372,7 @@ def drill() -> int:
         _ok47, _l47 = replay.check_artifact_assert(
             {"artifact_assert": [{"kind": "contains_any", "texts": [".file", ".text"]}]},
             _art)
-        ok = (not _ok47) and any("判别力不足" in l for l in _l47)
+        ok = (not _ok47) and any("判别力不足" in ln for ln in _l47)
         results.append(("P47 contains_any 全样板须判无判别力", ok,
                         "命中候选全为工件样板（.file/.text）⇒ 断言零信息"))
         _ok48, _l48 = replay.check_artifact_assert(
@@ -2041,7 +2041,8 @@ def load_surface_map() -> dict | None:
 
 
 if __name__ == "__main__":
-    import argparse as _ap, datetime as _dt
+    import argparse as _ap
+    import datetime as _dt
     import tool_integrity as _ti
     # 567 任务 2：判定入口强制自检（在**任何钻探/编译之前**）——核心被改且未重钉就拒绝运行
     _ti.enforce("poison_drill.py")

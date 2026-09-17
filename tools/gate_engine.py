@@ -2296,7 +2296,7 @@ def check_observation_needs_artifact() -> list[Finding]:
                 why = "命题未声明 evidence"
             else:
                 ghost = [r for r in refs if r not in idx]
-                why = (f"引用的证据卡均无工件断言（artifact_assert / run_match_file）"
+                why = ("引用的证据卡均无工件断言（artifact_assert / run_match_file）"
                        + (f"；其中不存在的卡：{ghost}" if ghost else ""))
             out.append(Finding(
                 "OBSERVATION-NEEDS-ARTIFACT", "block", _rel(p),
@@ -3329,7 +3329,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"[exp]   {card}:{fpath}:{lno}  {snip}")
         log = ROOT / "build" / "exp_fixture_echo.log"
         log.parent.mkdir(exist_ok=True)
-        log.write_text("\n".join(f"{c}:{f}:{l}  {s}" for c, f, l, s in hits) + "\n",
+        log.write_text("\n".join(f"{c}:{f}:{ln}  {s}" for c, f, ln, s in hits) + "\n",
                        encoding="utf-8")
         print(f"[exp] 命中已写入 {log.relative_to(ROOT).as_posix()}")
         return 0

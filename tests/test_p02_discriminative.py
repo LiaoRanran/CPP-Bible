@@ -8,7 +8,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 import atom_evidence_replay as replay  # noqa: E402
@@ -41,14 +40,14 @@ def test_boilerplate_only_candidates_refused():
     """阳性：候选全是样板（.file/.text）→ 命中也判无判别力。"""
     ok, lines = _call({"kind": "contains_any", "texts": [".file", ".text"]})
     assert not ok, "\n".join(lines)
-    assert any("判别力不足" in l for l in lines)
+    assert any("判别力不足" in ln for ln in lines)
 
 
 def test_never_hitting_candidate_does_not_excuse():
     """攻击者加"永不命中的非样板候选"不得规避：仍看**实际命中**的候选。"""
     ok, lines = _call({"kind": "contains_any", "texts": ["zzz_absent", ".file"]})
     assert not ok, "靠样板命中即应判无判别力"
-    assert any("判别力不足" in l for l in lines)
+    assert any("判别力不足" in ln for ln in lines)
 
 
 def test_real_hit_candidate_passes():
@@ -61,7 +60,7 @@ def test_contains_boilerplate_refused():
     """contains 单文本为样板 → 判无判别力。"""
     ok, lines = _call({"kind": "contains", "text": ".text"})
     assert not ok
-    assert any("判别力不足" in l for l in lines)
+    assert any("判别力不足" in ln for ln in lines)
 
 
 def test_contains_real_symbol_passes():

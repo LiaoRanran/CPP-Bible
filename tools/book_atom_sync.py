@@ -149,19 +149,19 @@ def cmd_report() -> int:
     for dom, cnt in sorted(by_domain.items()):
         print(f"  {dom}: {cnt}")
 
-    print(f"\n## 原子 → Book 引用")
+    print("\n## 原子 → Book 引用")
     has_ref = [a for a in atoms if a["has_book_ref"]]
     print(f"  有 Book 引用: {len(has_ref)}/{len(atoms)}")
     for a in has_ref:
         print(f"    {a['id']}: {', '.join(a['book_refs'])}")
 
-    print(f"\n## Book → 原子引用")
+    print("\n## Book → 原子引用")
     has_atom = [c for c in chapters if c["atom_tags"]]
     print(f"  有 <atom> 标签: {len(has_atom)}/{len(chapters)} 章")
     for c in has_atom:
         print(f"    {c['path']}: {', '.join(c['atom_tags'])}")
 
-    print(f"\n## 证据关键词但无 <atom> 的章节")
+    print("\n## 证据关键词但无 <atom> 的章节")
     no_atom = [c for c in chapters if c["evidence_without_atom"] > 0]
     for c in sorted(no_atom, key=lambda x: -x["evidence_without_atom"]):
         print(f"  {c['path']}: {c['evidence_without_atom']} 段")

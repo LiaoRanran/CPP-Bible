@@ -14,8 +14,8 @@ import trace_logger as tl
 
 
 def test_log_writes_jsonl_with_fields(tmp_path: Path):
-    ev = tl.log_event("writer", "compile", "fx.cpp", "pass",
-                      {"opt": "-O2"}, base=tmp_path)
+    tl.log_event("writer", "compile", "fx.cpp", "pass",
+                 {"opt": "-O2"}, base=tmp_path)      # 568 任务4：去未用赋值（调用本身有写日志副作用，保留）
     p = tl.trace_file(base=tmp_path)          # 避免手拼日期（跨日边界更稳）
     assert p.is_file()
     line = p.read_text(encoding="utf-8").strip()
