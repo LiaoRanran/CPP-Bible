@@ -82,6 +82,8 @@ Thumbs.db
 /data/logs/
 # 508 任务5：知识图谱是派生物（knowledge_graph.py build 可重建）
 /data/knowledge_graph.db*
+# 565 Part 3：命题状态图也是派生物（prop_graph.py build 可重建；与 knowledge_graph 分库）
+/data/propositions.db*
 # 508 任务6：度量是时间序列（运行时数据，不入库）
 /data/metrics.jsonl
 # 508 任务7：备份是本地安全网（不入库）
