@@ -64,21 +64,27 @@ def test_curves_declare_single_timepoint():
 def test_curves_escape_rate_matches_stat_bounds():
     """逃逸率块必须与 Part 1 原语逐值一致（双侧区间；分母是**可判** 956）。"""
     c = mc.collect_curves()["mutation_escape_rate"]
-    assert c["judged"] == 956 and c["n_a"] == 232
-    assert c["numerator"] == 227 and c["denominator"] == 956
-    lo, hi = sb.cp_interval(227, 956)
-    assert abs(c["point"] - 227 / 956) < 1e-6
+    # 573 任务 A：数据源升到 v2（571 修 GATE_READ_KEYS 后）⇒ 可判 969 / n_a 212（v1 是 956/232）。
+    assert c["judged"] == 969 and c["n_a"] == 212
+    assert c["numerator"] == 61 and c["denominator"] == 969      # 573：v2 的 61/969
+    lo, hi = sb.cp_interval(61, 969)
+    assert abs(c["point"] - 61 / 969) < 1e-6
     assert abs(c["cp_low"] - lo) < 1e-6 and abs(c["cp_high"] - hi) < 1e-6
     # 与单侧口径**不同**（防拿单侧当区间用来"更漂亮"）
-    assert sb.cp_upper_one_sided(227, 956) != pytest.approx(hi, abs=1e-9)
+    assert sb.cp_upper_one_sided(61, 969) != pytest.approx(hi, abs=1e-9)
 
 
 def test_curves_placeholders_are_honest():
     """事件字段 0 是**真值**；生存时间是 **None**（缺数据）——不许把两者混为一谈。"""
     c = mc.collect_curves()
     assert c["overturned_by_stronger_verifier"] == 0
-    assert "真值" in c["overturned_note"]
-    assert c["escape_survival_batches"] is None, "缺数据必须是 None，不是 0"
+    # 573 任务 A：overturned 不再是"恒 0 占位"，而是**事件流的真读数**（仍保持诚实口径：
+    # 系统绝不自动产生推翻，写入只接人/异族的显式动作）。
+    assert "绝不自动产生推翻" in c["overturned_note"]
+    # 573：survival 有第一批真数据了（M3 的 52 条，571→572 = 1 批）；其余仍必须 None 不填 0。
+    s = c["escape_survival_batches"]
+    assert isinstance(s, dict) and s["M3"]["batches"] == 1
+    assert s["M2"] is None and s["others"] is None, "其余缺数据必须是 None，不是 0"
     assert "None" in c["escape_survival_note"]
 
 
@@ -91,4 +97,4 @@ def test_collect_snapshot_carries_curves(tmp_path: Path, monkeypatch: pytest.Mon
     p = tmp_path / "m.jsonl"
     mc.append(snap, p)
     again = json.loads(p.read_text(encoding="utf-8").splitlines()[-1])
-    assert again["curves"]["mutation_escape_rate"]["denominator"] == 956
+    assert again["curves"]["mutation_escape_rate"]["denominator"] == 969   # 573：v2 口径

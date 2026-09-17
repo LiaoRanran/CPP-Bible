@@ -13,7 +13,7 @@ import pytest
 import gate_engine as ge
 import metrics_collector as mc
 
-CARD = "ATOM-MEM-MOVE-001"
+CARD = "ATOM-LANG-INLINE-001"      # 573：必须用**真实存在**的卡（核验要解析到文件）
 
 
 @pytest.fixture(autouse=True)
