@@ -115,6 +115,12 @@ quality_gates = [
 line-length = 120
 target-version = "py311"
 
+[tool.ruff.lint]
+# 570 任务 2：**钉死规则集**。此前没配 `select` ⇒ 告警数随 ruff 版本漂移：
+#   本机 ruff==0.16.5 不配 select 时报 914 项，而经典默认集（E4/E7/E9/F）报 22 项（568 已清零）。
+#   钉死这四组，让"存量债"有一个**可复现**的口径；其余规则（I/SIM/UP/...）要清另开一批分批做。
+select = ["E4", "E7", "E9", "F"]
+
 [tool.mypy]
 python_version = "3.11"
 warn_return_any = true
