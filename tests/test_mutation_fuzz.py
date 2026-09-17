@@ -276,6 +276,38 @@ def test_569_exit_selfcheck_reports_dirty_on_exception_path(monkeypatch, capsys)
     assert "EV-CONC-001.md" in capsys.readouterr().err
 
 
+def test_570_dirty_probe_runs_git_for_real(monkeypatch):
+    """自检的**真实现**必须真的调 git 并解析 stdout（570：此前 `subprocess` 未导入，
+    被裸 `except Exception` 吞成"永远空 ⇒ 永远绿"，靠 ruff 的 F821 才抓到）。"""
+    class _R:
+        returncode = 0
+        stdout = "evidence/conc/EV-X.md\natoms/mem/ATOM-Y.md\n"
+
+    seen = {}
+
+    def _fake_run(argv, **kw):
+        seen["argv"] = argv
+        return _R()
+
+    monkeypatch.setattr(mf.subprocess, "run", _fake_run)
+    assert mf._controlled_dirty() == ["evidence/conc/EV-X.md", "atoms/mem/ATOM-Y.md"]
+    assert seen["argv"][:2] == ["git", "diff"], seen["argv"]
+    # 非 0 返回码（例如不在 git 仓库里）⇒ 不抢戏
+    _R.returncode = 128
+    assert mf._controlled_dirty() == []
+    # 环境类故障（git 不在 PATH）⇒ 容错；**代码错误**（NameError 等）⇒ 必须冒出来
+    def _boom(*_a, **_k):
+        raise FileNotFoundError("git")
+    monkeypatch.setattr(mf.subprocess, "run", _boom)
+    assert mf._controlled_dirty() == []
+
+    def _typo(*_a, **_k):
+        raise NameError("subprocess")
+    monkeypatch.setattr(mf.subprocess, "run", _typo)
+    with pytest.raises(NameError):
+        mf._controlled_dirty()
+
+
 def test_569_real_controlled_dirs_are_clean():
     """本仓当前必须零残留（护栏的活体基线）。"""
     assert mf._controlled_dirty() == []

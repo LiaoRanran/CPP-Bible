@@ -29,6 +29,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -401,7 +402,10 @@ def _controlled_dirty() -> list[str]:
     try:
         r = subprocess.run(["git", "diff", "--name-only", "--", "evidence/", "atoms/"],
                            cwd=str(ROOT), capture_output=True, text=True, timeout=20)
-    except Exception:                      # noqa: BLE001
+    except (OSError, subprocess.SubprocessError):
+        # 只吞**环境类**故障（git 不在 PATH / 超时）。**不能**用裸 `except Exception`：
+        # 570 实测——那样会把 `NameError: subprocess` 这种**代码错误**也吞掉，
+        # 让自检静默空转成"永远绿"（正是 567 立规矩要防的"没查成却像查过"）。
         return []
     if r.returncode != 0:
         return []
