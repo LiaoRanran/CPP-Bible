@@ -25,6 +25,24 @@
 - **严格拦截率** = 严格 blocked（block/refute）÷ (blocked + escaped) = **64.33%**；
 - **含 warn 处置率** = blocked（含 warn_only）÷ (blocked + escaped) = **76.26%**。
 
+### 1.1 四口径**写死**（565 Part 2；与 `full_baseline_v1.json` 勾稽，禁止重新生成基线）
+
+| 口径 | 分子/分母 | 值 | 说明 |
+|---|---|---|---|
+| 可判分母 | `variants − n_a − malformed` = 1188 − 232 − 0 | **956** | **n_a / malformed 永不进拦截率分母** |
+| 严格拦截率 | `strict_blocked / 956` | **615/956 = 64.33%** | warn_only 114 条**永不入严格分子** |
+| 含 warn 处置率 | `blocked / 956` | **729/956 = 76.26%** | 与上一行的差就是那 114 条 warn_only |
+| 全分母率 | `blocked / variants` = 729/1188 | **61.36%** | **正名 `treated_all`，不得叫 strict**（把 n_a 当分母会把它与严格率混为一谈） |
+
+**报告口径纪律**（`tools/mutation_fuzz.py` 报告层已按此实现，`proportion()` 统一出口）：
+- 比率一律带"分子/分母 + 点估计 + C-P **双侧** 95% 区间"（`stat_bounds.cp_interval`）；
+- "零失效上界"这类陈述才用**单侧** `stat_bounds.cp_upper_one_sided`（本报告无此类陈述）；
+- 可判样本 n=0 ⇒ 报 `insufficient evidence`，**不算率、不填 0**（0 与"不可判"含义相反）；
+- 每个算子单列"可判样本数 + n_a"，并按需要显形：**活雷**（逃逸 == 可判）/ **样本不足**
+  （可判 < 59 = 零失效压到 ≤5%@95% 所需样本量）。
+
+上表四个数与基线 JSON 逐值勾稽（`tests/test_mutation_fuzz_report.py` 直接从该 JSON 派生重算）。
+
 ## 2. 总量
 
 | 指标 | 数 |

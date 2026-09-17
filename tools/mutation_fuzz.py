@@ -41,6 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay   # noqa: E402
 import gate_engine as ge                # noqa: E402
+import stat_bounds                      # noqa: E402  565 Part 2：口径块（纯标准库统计原语）
 
 # 需要额外跑 replay 的算子：M1 动的是 replay 的**裁决输入**（sha/必需字段），M7 动 sha/读数。
 # 只跑 gate 会把"删了 artifact_sha256"判成 escaped —— 那是**制造假逃逸**，比漏报更坏。
@@ -456,17 +457,85 @@ def run_fuzz(cards: list[Path], ops: list[str], limit: int,
         for bucket, key in ((by_op, r["op"]), (by_card, r["card"])):
             d = bucket.setdefault(key, {"blocked": 0, "escaped": 0, "n_a": 0})
             d[r["verdict"]] += 1
+    # 565 Part 2：口径块（**只加不删**——既有 strict_rate/treated_rate 逐字保留，
+    # 免得打散 548 的对账锁与 T2 快照；新增的是"带分子分母 + 区间"的自洽口径）
+    judged = counts["blocked"] + counts["escaped"]        # 可判分母（n_a/malformed 永不进）
+    rates = {"judged": judged, "n_a": counts["n_a"], "malformed": counts["malformed"],
+             "strict": _rate_block(strict, judged),
+             "treated": _rate_block(treated, judged),
+             "escape": _rate_block(counts["escaped"], judged),
+             # 全分母率**正名**为 treated_all（不得叫 strict —— 565 口径纪律）
+             "treated_all": _rate_block(treated, len(per))}
+    op_rates, op_flags = _op_rates(per)
     return {"cards": [c.relative_to(ROOT).as_posix() for c in selected],
             "operators": ops, "variants": len(per), **counts,
             "strict_blocked": strict,
             "strict_rate": round(strict / denom, 4),
             "treated_rate": round(treated / denom, 4),
+            "rates": rates, "by_operator_rates": op_rates, "rate_flags": op_flags,
             "by_operator": by_op, "by_card": by_card,
             "elapsed_s": round(time.perf_counter() - t0, 2),
             "ge_runs": STATS["ge_runs"], "replay_runs": STATS["replay_runs"],
             "replay_skipped": STATS["replay_skipped"],
             "escaped_list": [r for r in per if r["verdict"] == "escaped"],
             "results": per}
+
+
+# ── 565 Part 2：报告口径层（**只影响呈现，不动任何判决/分类**）─────────────────
+# 为什么必须做：563 N9 误报的教训是"同名不同义的率会直接误导决策"——平均分/裸比率看不出
+# "M2 207/207 全逃逸"这种活雷，也看不出"M5 可判样本是 0（根本不该给率）"。
+# 口径纪律（565b 监工确认）：
+#   * 拦截率/处置率/逃逸率这类 k/n 一律用**双侧** `stat_bounds.cp_interval`（经 proportion()）；
+#   * "零失效上界"这类陈述才用**单侧** `cp_upper_one_sided`（本文件当前无此类陈述）；
+#   * **比率禁止无分母单独出现**；n_a / malformed **永不进分母**；
+#   * 可判样本 n=0 ⇒ `insufficient evidence`，**不算率、不填 0**。
+_SAMPLE_TARGET_59 = 59        # n_for_upper_bound_zero(0.05, 0.95)：零失效压到 ≤5% 所需样本量
+
+
+def _rate_block(k: int, n: int, conf: float = 0.95) -> dict[str, Any]:
+    """比率块：分子/分母/点估计/C-P 双侧区间；**n=0 ⇒ 明说 insufficient evidence**。"""
+    if n <= 0:
+        return {"numerator": k, "denominator": 0, "point": None, "cp_low": None,
+                "cp_high": None, "conf": conf,
+                "note": "insufficient evidence（可判样本 n=0：不算率、不填 0）"}
+    blk = stat_bounds.proportion(k, n, conf)
+    return {kk: (round(vv, 6) if isinstance(vv, float) else vv) for kk, vv in blk.items()}
+
+
+def _rate_line(label: str, blk: dict[str, Any]) -> str:
+    """人读行：`标签 分子/分母 = 点估计 · C-P 95% 区间 [lo, hi]`（n=0 走 note）。"""
+    if blk["denominator"] <= 0:
+        return f"{label} {blk['numerator']}/0 —— {blk['note']}"
+    return (f"{label} {blk['numerator']}/{blk['denominator']} = {blk['point']:.2%}"
+            f" · C-P {blk['conf']:.0%} 区间 [{blk['cp_low']:.2%}, {blk['cp_high']:.2%}]")
+
+
+def _op_rates(per: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str]]:
+    """分算子口径块 + 需要显形的标注（活雷 / 样本不足 / 不可判）。"""
+    out: dict[str, Any] = {}
+    flags: list[str] = []
+    for op in sorted({r["op"] for r in per}):
+        rows = [r for r in per if r["op"] == op]
+        blocked = sum(1 for r in rows if r["verdict"] == "blocked")
+        escaped = sum(1 for r in rows if r["verdict"] == "escaped")
+        strict_op = sum(1 for r in rows
+                        if r["verdict"] == "blocked" and r.get("kind") == "strict")
+        n_a_op = sum(1 for r in rows if r["verdict"] == "n_a")
+        judged = blocked + escaped                       # 可判样本（n_a 永不进）
+        out[op] = {"judged": judged, "n_a": n_a_op,
+                   "strict": _rate_block(strict_op, judged),
+                   "treated": _rate_block(blocked, judged),
+                   "escape": _rate_block(escaped, judged)}
+        if judged == 0:
+            flags.append(f"{op}：可判样本 n=0 ⇒ insufficient evidence（不算率、不填 0）")
+        elif escaped == judged:
+            e = out[op]["escape"]
+            flags.append(f"{op}：**活雷** —— 逃逸 {escaped}/{judged}"
+                         f"（区间 [{e['cp_low']:.2%}, {e['cp_high']:.2%}]）")
+        elif judged < _SAMPLE_TARGET_59:
+            flags.append(f"{op}：可判样本仅 {judged} < {_SAMPLE_TARGET_59} ⇒ 样本不足；"
+                         f"要宣称'逃逸率≤5%@95%'需补样至 n≥{_SAMPLE_TARGET_59}")
+    return out, flags
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -497,6 +566,30 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[mutation] blocked={rep['blocked']}（严格 {rep['strict_blocked']}） "
           f"escaped={rep['escaped']} n_a={rep['n_a']}（其中 malformed={rep['malformed']}）")
     print(f"[mutation] 严格拦截率 {rep['strict_rate']:.1%} · 含 warn 处置率 {rep['treated_rate']:.1%}")
+    # 565 Part 2：口径自洽层（分子/分母 + 点估计 + C-P 双侧 95% 区间；**只用双侧**）
+    _r = rep.get("rates") or {}
+    if _r:
+        print(f"[mutation] 可判分母 = {_r['judged']}"
+              f"（变体 {rep['variants']} − n_a {_r['n_a']} − malformed {_r['malformed']}）"
+              "；n_a/malformed **永不进拦截率分母**")
+        print(f"[mutation] {_rate_line('严格拦截率', _r['strict'])}")
+        print(f"[mutation] {_rate_line('含 warn 处置率', _r['treated'])}")
+        print(f"[mutation] {_rate_line('逃逸率    ', _r['escape'])}")
+        print(f"[mutation] {_rate_line('全分母率 treated_all', _r['treated_all'])}"
+              "（**全分母率只叫 treated_all，不得叫 strict**）")
+        print("[mutation] 分算子（可判 = blocked + escaped；n_a 单列）：")
+        for _op, _d in (rep.get("by_operator_rates") or {}).items():
+            if _d["judged"] == 0:
+                print(f"[mutation]   {_op}  可判 0（n_a {_d['n_a']}）· "
+                      "insufficient evidence（不算率、不填 0）")
+                continue
+            print(f"[mutation]   {_op}  可判 {_d['judged']}（n_a {_d['n_a']}）· "
+                  f"严格 {_d['strict']['numerator']}/{_d['judged']} = "
+                  f"{_d['strict']['point']:.2%} · 逃逸 {_d['escape']['numerator']}/"
+                  f"{_d['judged']} = {_d['escape']['point']:.2%} · "
+                  f"C-P95 [{_d['escape']['cp_low']:.2%}, {_d['escape']['cp_high']:.2%}]")
+        for _f in (rep.get("rate_flags") or []):
+            print(f"[mutation] ⚠ {_f}")
     print(f"[mutation] 全库扫描 ge.run={rep['ge_runs']} 次 · replay={rep['replay_runs']} 次"
           f"（门禁已拦而跳过 {rep['replay_skipped']} 次）· 耗时 {rep['elapsed_s']}s")
     for r in rep["escaped_list"]:
