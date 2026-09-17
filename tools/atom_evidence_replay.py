@@ -55,6 +55,7 @@ from typing import Any, Callable, Sequence
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))    # 同目录工具互 import
 import viso_diff                                              # noqa: E402  535 V-iso 判据
+import tool_integrity                                         # noqa: E402  567 任务 2：入口强制自检
 
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "evidence"
@@ -1853,6 +1854,8 @@ def save_manifest(manifest: dict) -> Path:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    # 567 任务 2：先自证判定核心未被静默改动（在**任何读卡/编译之前**）；不过 ⇒ exit 1 拒绝运行。
+    tool_integrity.enforce("atom_evidence_replay.py")
     # ⚠️ 并行化护栏（528 任务4，只读分析结论）：本工具**刻意串行**，不提供 `--jobs`。
     #   不安全的三处根因：① 卡命令产物约定写共享 `build/`（见 replay_card 注释），并发编译会撞
     #      中间文件名；② `_snapshot_artifact`/`_restore_artifact` 落到共享 `EVIDENCE/<domain>/`，

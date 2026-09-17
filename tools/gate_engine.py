@@ -39,6 +39,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay  # noqa: E402  复用 frontmatter 解析（单一实现）
+import tool_integrity                 # noqa: E402  567 任务 2：判定核心完整性（入口强制自检）
 
 ATOMS = ROOT / "atoms"
 EVIDENCE = ROOT / "evidence"
@@ -3304,6 +3305,9 @@ def report(findings: Sequence[Finding], total_rules: int) -> str:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    # 567 任务 2：**跑任何规则/读任何库之前**先自证判定核心没被静默改动（564 PoC#1/#2 的根）。
+    #   不过 ⇒ fail-loud exit 1（"判定核心被改动且未重钉，拒绝运行"）；通过才往下。
+    tool_integrity.enforce("gate_engine.py")
     ap = argparse.ArgumentParser(description="门禁引擎 M4（统一 Rule 接口 + 工单）")
     ap.add_argument("--list", action="store_true", help="列出规则全集")
     ap.add_argument("--run", action="store_true", help="执行并打印工单")

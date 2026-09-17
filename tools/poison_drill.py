@@ -2042,6 +2042,9 @@ def load_surface_map() -> dict | None:
 
 if __name__ == "__main__":
     import argparse as _ap, datetime as _dt
+    import tool_integrity as _ti
+    # 567 任务 2：判定入口强制自检（在**任何钻探/编译之前**）——核心被改且未重钉就拒绝运行
+    _ti.enforce("poison_drill.py")
     _p = _ap.ArgumentParser(description="门禁毒样例钻探（对抗回归）")
     _p.add_argument("--json", nargs="?", const=True, default=False,
                    help="结构化 JSON 输出到 stdout")
