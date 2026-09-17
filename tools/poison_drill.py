@@ -1014,6 +1014,18 @@ def drill() -> int:
         ok = (any("区间锚定已丢失" in f.message for f in _warns) and not _blocks)
         results.append(("P70 M3 区间锚定丢失（contains 残留 symbol）须 warn 不 block",
                         ok, f"命中 severity={[f.severity for f in _fs] or '（漏网！）'}"))
+        # P70b（569 任务 2）：M3 的**另一半** —— `absent_in → absent` 降级同样须被同一 warn 抓住
+        #   （T0 实测：`absent_in` 降级 3 变体，全被 558 B1 的 warn 收口；这里把它变成常驻毒载荷）。
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-M3DEG2.md", {
+            "id": "EV-MEM-M3DEG2", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "artifact_assert": "\n  - {kind: absent, symbol: _Z10spin_plainv, text: s_p_b}"})
+        _fs70b = [f for f in ge.check_evidence_assert_symbol_mapped()
+                  if str(f.target).endswith("EV-MEM-M3DEG2.md")]
+        ok = (any("区间锚定已丢失" in f.message for f in _fs70b)
+              and not [f for f in _fs70b if f.severity == "block"])
+        results.append(("P70b M3 另一子情形：absent_in→absent（absent 残留 symbol）须 warn",
+                        ok, f"命中 severity={[f.severity for f in _fs70b] or '（漏网！）'}"))
         # 反例：合法全文散文断言（无 symbol，交人审）⇒ 零 Finding（护栏 5：零新增存量）
         _write(ge.EVIDENCE / "mem" / "EV-MEM-M3OK.md", {
             "id": "EV-MEM-M3OK", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
@@ -1871,6 +1883,8 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     # 558 Part B1：M3 区间锚定丢失（断言从"符号区间内"退化为"全文存在性"）⇒ A3 断言无判别力。
     # P70-阴 是阴性对照（名字含 -阴 ⇒ 不计入攻击面）。
     ("P70 ", "A3"),
+    # 569 任务 2：P70b = M3 的另一子情形（absent 侧），同属 A3（断言无判别力）。
+    ("P70b ", "A3"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
