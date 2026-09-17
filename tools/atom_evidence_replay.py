@@ -1127,14 +1127,39 @@ def _nc_path(p: Path) -> str:
     return str(p).replace("\\", "/")
 
 
+def _nc_join(argv: list[str]) -> str:
+    """把 argv 拼回命令行：`&&` 原样（它是 `_split_commands` 的分段符，**不能**加引号），
+    其余 token 按需加引号（`shlex.quote` 只对含空格/反斜杠等不安全字符的 token 加）。
+
+    拼回的命令行仍要过一遍 `_split_commands`（shlex posix）⇒ 必须**可逆**：
+    含空格的路径不加引号会被拆成两个 token，含反斜杠的路径不引号会被吃掉分隔符。
+    """
+    return " ".join(a if a == "&&" else shlex.quote(a) for a in argv)
+
+
 def _nc_rewrite(line: str, yang_rel: str, yin_rel: str, new_out: str) -> str | None:
-    """把编译行的源换成阴夹具、产出改指 tempdir；阳夹具路径串不在该行 ⇒ None（不许瞎猜）。"""
+    """把编译行的源换成阴夹具、产出改指 tempdir；阳夹具路径串不在该行 ⇒ None（不许瞎猜）。
+
+    559 Part A：改成**参数级**改写（shlex 分词 → 定位 `-o` 的**下一个参数** → 换掉 → 重新拼行），
+    不再用 `line.replace(old, new_out)` 的字符串替换。旧写法的两个实测缺陷：
+      * `new_out` 含空格时被拆成两个 token（`…/has` + `space/nc_nc1.s`）⇒ 产物写到错地方、rc≠0；
+      * 目标含反斜杠时被 shlex 吃掉分隔符（`C:\\Users\\…` → `C:Users…`）⇒ 变成**盘符相对路径**
+        ⇒ 产物落到 CWD。558 交人的仓库根残留 `UsersASUS…replay_…nc_nc1.s` 正是此机制。
+    简单命令行（无需引号的 token）拼回后**逐字不变**。
+    """
     if not yang_rel or yang_rel not in line:
         return None
-    old = _nc_o_target(line)
-    if not old:
+    try:
+        argv = shlex.split(line, posix=True)
+    except ValueError:
         return None
-    return line.replace(old, new_out).replace(yang_rel, yin_rel)
+    if "-o" not in argv:
+        return None
+    i = argv.index("-o")
+    if i + 1 >= len(argv):
+        return None
+    argv[i + 1] = new_out
+    return _nc_join([a.replace(yang_rel, yin_rel) for a in argv])
 
 
 def _nc_body_count(asm_text: str, symbol: str, text: str) -> int | None:

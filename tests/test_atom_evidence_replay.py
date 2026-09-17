@@ -11,6 +11,8 @@
 from __future__ import annotations
 
 import hashlib
+import os
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
@@ -50,6 +52,45 @@ def test_parse_frontmatter_real_card_shapes():
     run_keys = [k for k in meta["actual"] if k.startswith("run")]
     assert len(run_keys) == 6, "6 组矩阵实测"
     assert str(meta["hypothesis"]).startswith("对含堆缓冲的类型")  # 折叠 scalar（>-）
+
+
+# ── 559 Part A：阴面 `-o` 目标改写必须**参数级**（含空格/反斜杠不得被拆/被吃）──────
+
+
+def test_559_nc_rewrite_no_space_unchanged():
+    """对照：路径无空格时改写结果**逐字**只换两处（`-o` 的下一个参数 + 阳→阴夹具）。"""
+    line = "g++ -std=c++17 -O2 -S Examples/atoms/_x.cpp -o build/_x.asm"
+    got = rp._nc_rewrite(line, "Examples/atoms/_x.cpp", "Examples/atoms/_x.nc1.cpp",
+                         "C:/t/nc1.s")
+    assert got == "g++ -std=c++17 -O2 -S Examples/atoms/_x.nc1.cpp -o C:/t/nc1.s", got
+
+
+@needs_gpp
+def test_559_nc_rewrite_spaced_out_dir(tmp_path: Path):
+    """正例：输出目录**含空格**时产物必须落在该目录，且不写出错位 `.s`。
+
+    修前机制（558 交人的仓库根残留）：`line.replace(old, new_out)` 是字符串替换 ——
+    含空格的 `new_out` 被 `_split_commands` 的 shlex 拆成两个 token（写到 `…/has`）；
+    含反斜杠时被吃掉分隔符（`C:\\Users\\…` → `C:Users…`）⇒ **盘符相对路径** ⇒ 落到 CWD。
+    """
+    spaced = tmp_path / "has space"
+    spaced.mkdir()
+    yang, yin = tmp_path / "f.cpp", tmp_path / "f.nc1.cpp"
+    yang.write_text("int f(){ return 1; }\n", encoding="utf-8")
+    yin.write_text("int f(){ return 0; }\n", encoding="utf-8")
+    src = tmp_path / "f.asm"
+    line = (f'"{_compiler()}" -std=c++17 -O2 -S "{yang.as_posix()}" '
+            f'-o "{src.as_posix()}"')
+    out = spaced / "nc_nc1.s"
+    rw = rp._nc_rewrite(line, yang.as_posix(), yin.as_posix(), rp._nc_path(out))
+    assert rw is not None, "本行含阳夹具路径 ⇒ 必须能改写"
+    argv = shlex.split(rw, posix=True)               # 参数级不变式：-o 的下一个 token 恰是目标
+    assert argv[argv.index("-o") + 1] == rp._nc_path(out), argv
+    res, _ = rp.run_commands([rw], cwd=tmp_path, env=dict(os.environ))
+    assert res[-1][1] == 0, res
+    assert out.is_file(), "产物必须落在含空格的输出目录里"
+    assert not list(tmp_path.glob("*.s")), "不得在 tmp_path 顶层写出错位产物"
+    assert not list(Path.cwd().glob("*.s")), "CWD（仓库根）不得出现 *.s 残留"
 
 
 def test_parse_frontmatter_rejects_non_card():
