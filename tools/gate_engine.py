@@ -2776,12 +2776,30 @@ def check_git_author_binding() -> list[Finding]:
         vb = str(meta.get("verified_by") or "").strip()
         if vb.lower().startswith("human:"):
             principals.append(vb.split(":", 1)[1].strip())
+        # 571 任务 4：**命题级** `signed_by`（`claim_structured[*].signed_by`，可选）纳入同一绑定核查。
+        #   语义与卡级完全一致（人级署名须与该文件 git 作者匹配；缺省不给命题签名 ⇒ 仍由卡级兜底）。
+        #   严重度同为 **warn**（501/479 的观察期口径 + 571 硬纪律"warn 起步"）：升级 block 的前置
+        #   与卡级相同（观察期零误伤 + "签收必须本人"写进规范）。存量实测 0 条命题签 ⇒ 零误伤。
+        prop_principals: list[str] = []
+        for cs in _as_list(meta.get("claim_structured")):
+            if isinstance(cs, dict):
+                sb = str(cs.get("signed_by") or "").strip()
+                if sb.lower().startswith("human:"):
+                    prop_principals.append(sb.split(":", 1)[1].strip())
+        prop_principals = sorted({x for x in prop_principals if x})
         principals = sorted({x for x in principals if x})
-        if not principals:
+        if not principals and not prop_principals:
             continue
         author = _git_author_for(p)
         if author is None:
             continue                       # git 不可用 → 跳过（不报警，见 docstring）
+        pmis = [x for x in prop_principals if not _author_matches(x, author)]
+        if pmis:
+            out.append(Finding(
+                "S1-GIT-AUTHOR-BINDING", "warn", _rel(p),
+                f"命题级 signed_by {pmis} 与该文件 git 作者 {author[0]} <{author[1]}> 不匹配"
+                f"（同卡级：观察期只提示不阻断；缺省不签的命题仍由卡级 verified_by 兜底）",
+                "要么改由本人签署、要么删掉该命题级署名（回到卡级兜底）"))
         mismatch = [x for x in principals if not _author_matches(x, author)]
         if mismatch:
             out.append(Finding(
