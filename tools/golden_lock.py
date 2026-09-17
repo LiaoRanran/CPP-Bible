@@ -149,6 +149,32 @@ def _print_buckets(buckets: dict[str, dict[str, int]]) -> None:
             print(f"  {key}: {detail}")
 
 
+# ── 568 任务 2（T2a 侦察后）：复用 replay 已落盘的增量结论，不再整权重放真编译 ────────
+# 病：`measure()` 逐卡直调 `replay.replay_card()`，而 replay 的 CLI 有 498 增量 manifest
+# （指纹 = sha256(卡 ‖ 夹具 ‖ 工件)，未变且上次 confirm ⇒ skip）⇒ golden 把 replay 刚做过的
+# 真编译**整权重放**（560 实测：replay 126.9s + golden 131s，纯重复）。
+# 治：把"该跑 / 该复用"的判定**原样交给 replay 自己的纯函数** `select_incremental`——
+#   不自造规则、不看时间戳：只有"内容指纹一致且上次 verdict 就是 confirm"才复用；
+#   其余（无记录 / 指纹变了 / 上次非 confirm / 指纹 MISSING / manifest 缺失或损坏）**一律真编译**。
+# 独立性边界（诚实声明，见 _worklog_568.md）：复用后 golden 对**未变内容**不再独立重编译，
+#   这与 498 给 replay CLI 的既有语义一致；输入一变指纹就变 ⇒ 必然回到真编译。
+#   要审计/对照时用 `golden_lock.py check --no-reuse` 强制逐卡真编译（两态三数逐字一致，有回归锁）。
+REUSE_REPLAY_MANIFEST = True
+
+
+def _select_replay(cards: list[Any], replay_mod: Any) -> tuple[list[Any], list[Any]]:
+    """返回 (真编译列表, 复用列表)。任何"拿不准"都回退真编译（fail-closed）。"""
+    if not REUSE_REPLAY_MANIFEST:
+        return list(cards), []
+    try:
+        manifest = replay_mod.load_manifest()   # 用 replay 自己的读法（缺失/损坏 ⇒ {} ⇒ 全量）
+    except Exception:                      # noqa: BLE001 读不动 ⇒ 全量真编译
+        return list(cards), []
+    if not manifest:
+        return list(cards), []
+    return replay_mod.select_incremental(list(cards), manifest)
+
+
 def measure(findings: Sequence[Any] | None = None) -> dict[str, int]:
     """全部指标现场复算（不读任何手工数字）。
 
@@ -191,12 +217,18 @@ def measure(findings: Sequence[Any] | None = None) -> dict[str, int]:
             dal_gap += 1
 
     confirm = infra = 0
-    for p in evids:
+    to_run, reused = _select_replay(evids, replay)      # 568 任务 2：能复用就不重编译
+    if reused:
+        import sys as _sys
+        print(f"[golden] 复用 replay 增量结论 {len(reused)}/{len(evids)} 卡"
+              f"（指纹未变且上次 confirm）；其余 {len(to_run)} 卡真编译", file=_sys.stderr)
+    for p in to_run:
         verdict, _ = replay.replay_card(p, do_sanitizer=False)
         if verdict == "confirm":
             confirm += 1
         elif verdict.startswith("infra_error:"):
             infra += 1
+    confirm += len(reused)      # 复用项按定义**只能是** confirm（select_incremental 的规则）
 
     return {
         "block_findings": sum(1 for f in findings if f.severity == "block"),
@@ -417,6 +449,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     _pj = argparse.ArgumentParser(add_help=False)
     _pj.add_argument("--json", nargs="?", const=True, default=False,
                      help="结构化 JSON 输出到 stdout")
+    _pj.add_argument("--no-reuse", action="store_true",
+                     help="568：不复用 replay 增量 manifest，强制逐卡真编译（审计/对照用）")
     sub.add_parser("sync", parents=[_pj], help="固化当前状态为快照").set_defaults(
         fn=lambda a: cmd_sync(getattr(a, "json", False)))
     p_ck = sub.add_parser("check", parents=[_pj], help="比对快照，恶化即 exit 1")
@@ -431,6 +465,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                    ).set_defaults(fn=lambda a: cmd_buckets(getattr(a, "json", False)))
     sub.add_parser("show", parents=[_pj], help="查看快照").set_defaults(fn=lambda _a: cmd_show())
     a = ap.parse_args(argv)
+    if getattr(a, "no_reuse", False):           # 568 任务 2：审计/对照开关（全局，一次一进程）
+        global REUSE_REPLAY_MANIFEST
+        REUSE_REPLAY_MANIFEST = False
     return int(a.fn(a))
 
 
