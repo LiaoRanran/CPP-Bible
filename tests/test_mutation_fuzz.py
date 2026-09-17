@@ -135,6 +135,11 @@ FROZEN_CONCLUSIONS = [
      ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M3", "absent_in → absent（区间断言降级为全文不存在）", "blocked", "warn_only",
      ["EV-ASSERT-SYMBOL-MAPPED"]),
+    # 571 任务 1 **有意**新增的第三条 M3 变体（删一条 run_match_keys 声明）：本卡是 flow 式内联
+    #   列表写法 ⇒ 命中并产出该变体；它被既有 B3 规则拦下（读数键少声明）⇒ blocked/warn_only。
+    #   这是"扩可判面"的**预期**后果（不是回归），按实测重新冻结。
+    ("M3", "删掉一条 run_match_keys 声明（弱化：少声明读数键 spin_plain_ret）", "blocked",
+     "warn_only", ["EV-OUT-UNDECLARED-KEY"]),
     ("M4", "注入通用符号 main", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M4", "注入通用符号 ret", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M4", "注入 ABI 帧符号 .p2align", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
@@ -200,7 +205,11 @@ def test_558_out_of_scope_when_only_prose_mentions():
              "---\n"
              "正文：contains_in 三条全中；夹具 Examples/atoms/f.cpp 见正文。\n")
     m3 = mf.mut_m3(prose)
-    assert len(m3) == 1 and m3[0][1] is None, m3          # 门禁面内无可弱化点
+    # 571 起 M3 还认得"删掉一条断言条目"这类弱化点——本夹具里那条 `artifact_assert` **确实**是
+    #   可弱化点 ⇒ 原断言（整表必须只剩 out_of_scope 单例）已不再成立。本用例的原意是"**正文里的** 
+    #   `contains_in` 不算可弱化点"，故改为只锁这一点（新变体不算违规）。
+    assert all("contains_in → contains" not in p for p, _v in m3), m3
+    assert all(v is not None for _p, v in m3), m3
     m2 = mf.mut_m2(prose)
     assert len(m2) == 1 and m2[0][1] is None, m2          # 门禁面内无可变形路径
     inscope = prose.replace('{kind: contains, text: "_Z1fv"}',
