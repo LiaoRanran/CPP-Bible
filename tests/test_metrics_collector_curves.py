@@ -67,8 +67,8 @@ def test_curves_escape_rate_matches_stat_bounds():
     # 573 升 v2 → **574 升 v3**（572 收 M3、574 修 M5 尺子后）⇒ 可判 997 / n_a 186。
     assert c["judged"] == 997 and c["n_a"] == 186
     assert c["numerator"] == 38 and c["denominator"] == 997      # 574：v3 的 38/997      # 573：v2 的 61/969
-    lo, hi = sb.cp_interval(61, 969)
-    assert abs(c["point"] - 61 / 969) < 1e-6
+    lo, hi = sb.cp_interval(38, 997)
+    assert abs(c["point"] - 38 / 997) < 1e-6
     assert abs(c["cp_low"] - lo) < 1e-6 and abs(c["cp_high"] - hi) < 1e-6
     # 与单侧口径**不同**（防拿单侧当区间用来"更漂亮"）
     assert sb.cp_upper_one_sided(61, 969) != pytest.approx(hi, abs=1e-9)
