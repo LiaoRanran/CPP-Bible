@@ -19,12 +19,12 @@ def _git_author(monkeypatch):
     monkeypatch.setattr(ge, "_git_author_for", lambda _p: ("LiaoRanran", "liao@example.com"))
 
 
-def test_573_escape_rate_uses_v2(tmp_path, monkeypatch):
-    """逃逸率必须读 **v2**（571 修 GATE_READ_KEYS 后），且 C-P 用 stat_bounds 重算一致。"""
+def test_574_escape_rate_uses_v3(tmp_path, monkeypatch):
+    """逃逸率必须读 **v3**（574 修 M5 尺子 + 572 收 M3 后），且 C-P 用 stat_bounds 重算一致。"""
     from stat_bounds import proportion
     c = mc.collect_curves()
     r = c["mutation_escape_rate"]
-    assert r["source"].endswith("full_baseline_v2.json"), r
+    assert r["source"].endswith("full_baseline_v3.json"), r
     d = json.load(open(r["source"], encoding="utf-8"))
     judged = d["blocked"] + d["escaped"]
     exp = proportion(d["escaped"], judged)

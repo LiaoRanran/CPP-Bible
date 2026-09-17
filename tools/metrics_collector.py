@@ -421,8 +421,8 @@ def collect_curves() -> dict:
                  "note": "三曲线字段 565 Part 4b；补齐第二个时点前，这里只作机制占位"}
     from stat_bounds import proportion  # 565 Part 1 原语（局部导入：与 toolchain 同风格）
 
-    # 573 任务 A-1：数据源升到 **v2**（571 修 GATE_READ_KEYS 之后；M2/M3 逃逸均 0）。
-    #   v1（尺子修前、含 M2 的 207 条假逃逸）**保留为历史时点**，不覆盖——否则历史曲线会被改写。
+    # 573 升 v2 → **574 升 v3**（572 收 M3、574 修 M5 尺子后的全量基线）。
+    #   v1/v2 **保留为历史时点**，不覆盖——否则历史曲线会被改写。
     def _rate(path: Path, tag: str) -> dict:
         try:
             d = json.loads(path.read_text(encoding="utf-8"))
@@ -438,12 +438,18 @@ def collect_curves() -> dict:
             return {"source": str(path), "tag": tag,
                     "error": f"基线不可用：{type(exc).__name__}: {exc}"}
 
+    v3 = ROOT / "data" / "mutation" / "full_baseline_v3.json"
     v2 = ROOT / "data" / "mutation" / "full_baseline_v2.json"
     v1 = ROOT / "data" / "mutation" / "full_baseline_v1.json"
-    out["mutation_escape_rate"] = (_rate(v2, "v2（573 起当前口径）") if v2.is_file()
-                                   else {"error": "缺 data/mutation/full_baseline_v2.json"})
-    out["mutation_escape_rate_history"] = (
-        [_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）")] if v1.is_file() else [])
+    out["mutation_escape_rate"] = (_rate(v3, "v3（574 起当前口径：572 收 M3 + 574 修 M5 尺子）")
+                                   if v3.is_file()
+                                   else {"error": "缺 data/mutation/full_baseline_v3.json"})
+    hist = []
+    if v1.is_file():
+        hist.append(_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）"))
+    if v2.is_file():
+        hist.append(_rate(v2, "v2（571 修尺子后、含 M3 的 52 条真洞，仅历史）"))
+    out["mutation_escape_rate_history"] = hist
 
     # 573 任务 A-2：overturned 从"恒 0 占位"变成**真读数**（读只追加事件流；写入见 log_overturned）。
     ev = read_overturned_events()

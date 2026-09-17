@@ -302,14 +302,80 @@ def mut_m4(text: str) -> list[tuple[str, str]]:
     return out
 
 
-def mut_m5(text: str) -> list[tuple[str, str]]:
-    """M5 claim 自标：把推断/机制类 claim 改成 observation（测活性/工件断言闸是否拦）。"""
+# 574：M5 尺子 bug 的两个指纹（块定位 + 命题 id 回溯）
+_CLAIM_BLOCK_RE = re.compile(r"(?m)^([ \t]*)claim_structured\s*:\s*(?:#.*)?$")
+_CLAIM_TYPE_RE = re.compile(r"^([ \t]*)claim_type\s*:\s*(\w+)\s*$")
+_PROP_ID_RE = re.compile(r"^([ \t]*)-[ \t]*(?:prop-id|id)\s*:\s*(\S+)\s*$")
+
+
+def _claim_structured_span(text: str) -> tuple[int, int] | None:
+    """`claim_structured:` 块的 (起, 止) 字符区间；块内缩进 > 键行缩进，或空行后遇同级键即止。"""
+    m = _CLAIM_BLOCK_RE.search(text)
+    if not m:
+        return None
+    base = len(m.group(1))
+    ls = text.split("\n")
+    start = m.start()
+    # 找到该键所在的字符偏移对应的行，向后扫描到块结束
+    pos, idx = 0, 0
+    for i, ln in enumerate(ls):
+        if pos == m.start():
+            idx = i
+            break
+        pos += len(ln) + 1
+    end = pos
+    for ln in ls[idx + 1:]:
+        if ln.strip() and (len(ln) - len(ln.lstrip())) <= base and not ln.lstrip().startswith("#"):
+            break                      # 回到同级（或更浅）的非注释行 ⇒ 块结束
+        end += len(ln) + 1
+    return (start, min(end, len(text)))
+
+
+def mut_m5(text: str) -> list[tuple[str, str | None]]:
+    """M5 claim 自标：把 `claim_structured` 块里**每个** inference 命题**各自**改成 observation。
+
+    574 修尺子（旧实现的 bug）：旧代码 `re.search(r"^(\\s*)claim_type:...")` 只取**全文第一个**
+    `claim_type:` —— 而原子卡的命题写在 `claim_structured:` 列表里，且 **prop-1 几乎总是
+    observation** ⇒ 第一个命中就是 observation ⇒ `!= "observation"` 不成立 ⇒ **永远返回空** ⇒
+    29 条 inference 命题一条都改不到（v2 实测 M5 = 0/0/83 全 n_a，把"没问到"记成了"不适用"）。
+
+    现在：① 先定位 `claim_structured:` 块（**只改块内**，卡面顶层的 claim_type 不动）；
+    ② 块内每一行 `claim_type: inference` 各出一个独立变体（只改该行的值，其余逐字不动）；
+    ③ 变体描述带命题 id（回溯最近的 `- id:` / `- prop-id:`）；
+    ④ 纯函数、幂等、不碰原卡（与其他算子同范式）；块内无 inference ⇒ out_of_scope 单例。
+    """
     out: list[tuple[str, str]] = []
-    m = re.search(r"(?m)^(\s*)claim_type:\s*(\w+)\s*$", text)
-    if m and m.group(2) != "observation":
-        out.append((f"claim_type: {m.group(2)} → observation（自标绕过）",
-                    text[:m.start(2)] + "observation" + text[m.end(2):]))
-    return out
+    span = _claim_structured_span(text)
+    if span is None:
+        return []
+    s, e = span
+    ls = text.split("\n")
+    # 逐行扫描块内，记录字符偏移
+    off, lines = 0, []
+    for ln in ls:
+        lines.append((off, ln))
+        off += len(ln) + 1
+    for i, (o, ln) in enumerate(lines):
+        if not (s <= o < e):
+            continue
+        m = _CLAIM_TYPE_RE.match(ln)
+        if not m or m.group(2) == "observation":
+            continue
+        # 回溯最近的命题 id 行（同一块内）
+        pid = "?"
+        for j in range(i - 1, -1, -1):
+            po, pln = lines[j]
+            if not (s <= po < e):
+                break
+            pm = _PROP_ID_RE.match(pln)
+            if pm:
+                pid = pm.group(2)
+                break
+        new_ln = f"{m.group(1)}claim_type: observation"
+        vtext = text[:o] + new_ln + text[o + len(ln):]
+        out.append((f"[命题 {pid}] claim_type: {m.group(2)} → observation（自标绕过）", vtext))
+    return out or [("M5 claim_structured 块内无 inference 命题（全是 observation ⇒ 无自标可测）",
+                    None)]
 
 
 def mut_m6(text: str) -> list[tuple[str, str]]:

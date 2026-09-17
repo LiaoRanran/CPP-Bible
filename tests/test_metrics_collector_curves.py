@@ -64,9 +64,9 @@ def test_curves_declare_single_timepoint():
 def test_curves_escape_rate_matches_stat_bounds():
     """逃逸率块必须与 Part 1 原语逐值一致（双侧区间；分母是**可判** 956）。"""
     c = mc.collect_curves()["mutation_escape_rate"]
-    # 573 任务 A：数据源升到 v2（571 修 GATE_READ_KEYS 后）⇒ 可判 969 / n_a 212（v1 是 956/232）。
-    assert c["judged"] == 969 and c["n_a"] == 212
-    assert c["numerator"] == 61 and c["denominator"] == 969      # 573：v2 的 61/969
+    # 573 升 v2 → **574 升 v3**（572 收 M3、574 修 M5 尺子后）⇒ 可判 997 / n_a 186。
+    assert c["judged"] == 997 and c["n_a"] == 186
+    assert c["numerator"] == 38 and c["denominator"] == 997      # 574：v3 的 38/997      # 573：v2 的 61/969
     lo, hi = sb.cp_interval(61, 969)
     assert abs(c["point"] - 61 / 969) < 1e-6
     assert abs(c["cp_low"] - lo) < 1e-6 and abs(c["cp_high"] - hi) < 1e-6
@@ -97,4 +97,4 @@ def test_collect_snapshot_carries_curves(tmp_path: Path, monkeypatch: pytest.Mon
     p = tmp_path / "m.jsonl"
     mc.append(snap, p)
     again = json.loads(p.read_text(encoding="utf-8").splitlines()[-1])
-    assert again["curves"]["mutation_escape_rate"]["denominator"] == 969   # 573：v2 口径
+    assert again["curves"]["mutation_escape_rate"]["denominator"] == 997   # 574：v3 口径
