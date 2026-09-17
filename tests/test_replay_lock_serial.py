@@ -30,6 +30,10 @@ SENSITIVE = (
     # 外层持锁会把它逼成 `infra_error:replay_busy`（每卡等 120s）⇒ 反而变慢/变红。
     ("test_json_output", "test_gate_engine_json"),
     ("test_writer_selfcheck", "test_stock_zero_false_positive"),
+    # 559 实测补入：它跑**全库门禁**（逐变体 `ge.run()`），误跑法下冻结集合会多出
+    # `EV-ARTIFACT-FILE-EXISTS`（并发 replay 的工件瞬时态）⇒ 假红；只用 M3/M4（不跑 replay）
+    # ⇒ 持锁不自锁。
+    ("test_mutation_fuzz", "test_548_perf_conclusions_unchanged"),
 )
 
 

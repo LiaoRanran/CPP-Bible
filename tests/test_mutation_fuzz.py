@@ -143,11 +143,16 @@ FROZEN_CONCLUSIONS = [
 ]
 
 
-def test_548_perf_conclusions_unchanged():
+def test_548_perf_conclusions_unchanged(replay_serial):
     """548 Part 0 硬约束：提速前/后**逐变体结论一致**（冻结基线，对账口径含规则 id）。
 
     提速手段（frontmatter 解析缓存 / 按卡批 / 门禁已拦则跳过 replay）都不得改判决；
     一旦这里红，说明"省下的时间"是拿漏判换的。
+
+    559 Part B：本用例跑**全库门禁**（逐变体 `ge.run()`）⇒ 读真实工件状态，会与并发 replay 的
+    "删旧工件→重生成→还原"窗口相撞——实测误跑法（`pytest -n auto`）下冻结集合里多出
+    `EV-ARTIFACT-FILE-EXISTS`（工件瞬时不存在）⇒ 假红。故与 replay 同锁串行。
+    本用例只用 M3/M4（`REPLAY_OPS = {M1, M7}`）⇒ 自己**不跑 replay**，持锁不会自锁。
     """
     rep = mf.run_fuzz([CARD], ["M3", "M4"], 1)
     got = [(r["op"], r["point"], r["verdict"], r.get("kind"),
