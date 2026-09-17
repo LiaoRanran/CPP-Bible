@@ -11,7 +11,10 @@
 - `@invariant` 每步后查库断言系统铁律（无双领 / 深度上界 / 预算账 / 未来心跳 clamp / deps 门）；
 - 三洞 + 重试封顶 / deps / touch 归一另有**确定性回归**（spec 要求显式锁修复序列）。
 
-标 fast：每用例独立临时库、无共享状态、不编译、不碰 replay 锁/asm 工件。
+标 **slow**（568 任务 1 改）：554 时按"临时库/无共享状态"标了 fast，但监工实测
+`TestTQ::runTest` 一个用例 **65.69s**（hypothesis stateful 要 shrink/枚举）——它本该 nightly 跑，
+挂在 fast 里把日常串行从 ~40s 抬到 ~106s。**只挪分组、不删用例、不 skip**：
+`pytest -m "not slow" -n0` 不再收它；`pytest -m slow -n0` 照收照跑。
 `complete` 不进随机机器（它跑 `git status` 审计真实仓库），只在确定性场景里用。
 """
 import json
@@ -25,6 +28,8 @@ import task_queue as tq
 from hypothesis import HealthCheck, settings
 from hypothesis import strategies as st
 from hypothesis.stateful import RuleBasedStateMachine, initialize, invariant, rule
+
+pytestmark = pytest.mark.slow      # 568 任务 1：整文件归 nightly（-m slow），fast 不再收
 
 WORKERS = ["wA", "wB", "wC"]
 TYPES = ["research", "doc", "atom_produce", "redteam", "custom", "tool_change"]
