@@ -7,9 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 import atom_evidence_replay as replay
-
 
 ASM_UNIVERSAL = """\
 \t.text

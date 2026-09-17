@@ -43,13 +43,13 @@ CLI
 幂等：重复运行不改变仓库任何文件，结果稳定。
 """
 
-import os
-import sys
+import argparse
 import glob
 import json
+import os
 import shutil
-import argparse
 import subprocess
+import sys
 import tempfile
 
 ROOT = os.getcwd()

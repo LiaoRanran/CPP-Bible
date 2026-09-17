@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay  # noqa: E402
-import gate_engine as ge               # noqa: E402
+import gate_engine as ge  # noqa: E402
 
 METRICS_JSON = ROOT / "build/metrics.json"
 BANNED = ("讲解更详细", "更通俗易懂", "更全面", "更加深入", "帮助读者理解", "结合实际")

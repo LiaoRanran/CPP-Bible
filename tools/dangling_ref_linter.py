@@ -27,8 +27,8 @@ import argparse
 import json
 import re
 import sys
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent

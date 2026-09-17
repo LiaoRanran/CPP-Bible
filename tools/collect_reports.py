@@ -16,14 +16,14 @@ collect_reports.py — 门禁/审计报告归集器（T4）。
 """
 
 from __future__ import annotations
-from typing import Any
 
 import argparse
+import glob
 import json
 import os
 import shutil
 import sys
-import glob
+from typing import Any
 
 # 显式列举的门禁/审计产物（相对 root）
 EXPLICIT_SOURCES = [

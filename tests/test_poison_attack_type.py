@@ -3,10 +3,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
 import poison_drill as pd
+import pytest
 
 
 def _fake_results() -> list[tuple[str, bool, str]]:
@@ -53,7 +52,7 @@ def test_negative_controls_excluded():
 
 def test_p40_impersonated_producer_blocked():
     """P40 直验：producer 声明 clang++、command 实际 g++ → block。"""
-    from poison_drill import sandbox, _write
+    from poison_drill import _write, sandbox
     with sandbox():
         _write(ge.EVIDENCE / "mem" / "EV-MEM-A10IMPO.md", {
             "id": "EV-MEM-A10IMPO", "serves": "[]", "hypothesis": "h", "kind": "asm",
@@ -67,7 +66,7 @@ def test_p40_impersonated_producer_blocked():
 
 def test_p41_non_compiler_producer_blocked():
     """P41 直验：非编译器 argv[0]（生成脚本）产出工件 → block。"""
-    from poison_drill import sandbox, _write
+    from poison_drill import _write, sandbox
     with sandbox():
         _write(ge.EVIDENCE / "mem" / "EV-MEM-A10GEN.md", {
             "id": "EV-MEM-A10GEN", "serves": "[]", "hypothesis": "h", "kind": "asm",

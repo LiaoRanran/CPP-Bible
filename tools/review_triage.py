@@ -28,7 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import gate_engine as ge                        # noqa: E402  (path 注入后导入)
+import gate_engine as ge  # noqa: E402  (path 注入后导入)
 
 REVIEW_DIR = ROOT / "data" / "review"
 GOLDEN_STATE = ROOT / "tools" / "golden_state.json"

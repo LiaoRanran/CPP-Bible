@@ -15,9 +15,8 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
 import mutation_fuzz as mf
+import pytest
 
 BASELINE = mf.ROOT / "data" / "mutation" / "full_baseline_v1.json"
 

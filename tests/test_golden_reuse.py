@@ -18,8 +18,8 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-import atom_evidence_replay as replay   # noqa: E402
-import golden_lock as gl                # noqa: E402
+import atom_evidence_replay as replay  # noqa: E402
+import golden_lock as gl  # noqa: E402
 
 CARD = ROOT / "evidence" / "conc" / "EV-CONC-001.md"
 

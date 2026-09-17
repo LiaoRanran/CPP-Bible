@@ -25,7 +25,7 @@ from typing import Sequence
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from comment_blocks import iter_md_files, parse, is_pure_comment  # noqa: E402
+from comment_blocks import is_pure_comment, iter_md_files, parse  # noqa: E402
 
 ROOT = HERE.parent
 

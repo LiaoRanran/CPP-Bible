@@ -7,10 +7,10 @@ Usage: python3 tools/fast_compile.py [N] [--full]
   --full: 编译所有cpp块（默认每个文件仅前3块）
 """
 import os
-import sys
-import subprocess
-import tempfile
 import shutil
+import subprocess
+import sys
+import tempfile
 from concurrent.futures import ProcessPoolExecutor
 
 GCC = shutil.which('g++') or shutil.which('g++.exe') or 'g++'

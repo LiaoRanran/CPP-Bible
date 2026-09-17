@@ -11,7 +11,6 @@ import sys
 from pathlib import Path
 
 import pytest
-
 import tool_integrity as ti
 
 NAMES = ("a_tool.py", "b_tool.py")

@@ -12,10 +12,9 @@
 import json
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
 import golden_lock as gl
+import pytest
 
 
 @pytest.fixture()

@@ -1,8 +1,8 @@
 """472 P1-3（452 E16）回归锁：闪卡默认不含 draft 原子。"""
 from __future__ import annotations
 
-import gate_engine as ge
 import flashcard_export as fe
+import gate_engine as ge
 
 
 def test_draft_atom_excluded_by_default():

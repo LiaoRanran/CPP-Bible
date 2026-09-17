@@ -71,8 +71,7 @@ import sqlite3
 import subprocess
 import sys
 import time
-from pathlib import Path
-from pathlib import PurePath
+from pathlib import Path, PurePath
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent

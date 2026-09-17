@@ -8,7 +8,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 import atom_evidence_replay as replay  # noqa: E402
 

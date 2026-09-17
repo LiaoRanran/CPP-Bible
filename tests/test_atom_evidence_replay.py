@@ -17,9 +17,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-import pytest
-
 import atom_evidence_replay as rp
+import pytest
 
 REAL_CARD = rp.ROOT / "evidence/mem/EV-MEM-001.md"
 

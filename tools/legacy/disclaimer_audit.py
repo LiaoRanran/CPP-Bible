@@ -33,9 +33,9 @@ P2 治理目标（degraded disclaimer → specific）
   python3 tools/disclaimer_audit.py --json          # 同时写 build/disclaimer_audit.json
   python3 tools/disclaimer_audit.py --porcelain     # 仅 `chapter|line|matched|text` 便于 grep
 """
-import re
-import json
 import argparse
+import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

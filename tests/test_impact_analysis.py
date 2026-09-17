@@ -5,10 +5,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
 import impact_analysis as ia
+import pytest
 
 
 def _atom(base: Path, aid: str, relations: str) -> None:

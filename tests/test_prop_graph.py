@@ -16,9 +16,8 @@ import sqlite3
 import subprocess
 from pathlib import Path
 
-import pytest
-
 import prop_graph as pg
+import pytest
 
 REPO = pg.ROOT
 

@@ -18,9 +18,8 @@ import datetime as dt
 import json
 from pathlib import Path
 
-import pytest
-
 import metrics_collector as mc
+import pytest
 import stat_bounds as sb
 
 REPO = mc.ROOT

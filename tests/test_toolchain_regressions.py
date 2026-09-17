@@ -1,9 +1,9 @@
 """锁定工具链层的真实回归（每一条都对应一次线上/本地事故）。"""
 from pathlib import Path
 
+import compile_triage as ct
 import metrics_snapshot as ms
 import run_expected as re_
-import compile_triage as ct
 
 
 # 1) metrics_snapshot.git() 缺 errors="replace"

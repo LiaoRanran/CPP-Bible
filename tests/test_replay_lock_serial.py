@@ -20,9 +20,8 @@ import os
 import time
 from pathlib import Path
 
-import pytest
-
 import atom_evidence_replay as replay
+import pytest
 
 SENSITIVE = (
     # 只列**自身不跑 replay** 的读敏感用例：挂 replay_serial 期间会独占 `build/.replay_lock`，

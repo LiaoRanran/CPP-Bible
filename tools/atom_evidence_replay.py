@@ -38,13 +38,13 @@
 from __future__ import annotations
 
 import argparse
-import json
+import atexit
 import hashlib
+import json
 import os
 import re
 import shlex
 import shutil
-import atexit
 import signal
 import subprocess
 import sys
@@ -54,8 +54,8 @@ from pathlib import Path
 from typing import Any, Callable, Sequence
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))    # 同目录工具互 import
-import viso_diff                                              # noqa: E402  535 V-iso 判据
-import tool_integrity                                         # noqa: E402  567 任务 2：入口强制自检
+import tool_integrity  # noqa: E402  567 任务 2：入口强制自检
+import viso_diff  # noqa: E402  535 V-iso 判据
 
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "evidence"
@@ -1699,7 +1699,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
 # 逐点插桩既易漏、又会用 diff 掩盖真实逻辑；包装器在**唯一出入口**取 verdict + duration，
 # 语义等价。日志缺失/写失败不影响校验（_obs 为 None 即 no-op）。
 try:
-    import observability as _obs                       # noqa: E402
+    import observability as _obs  # noqa: E402
 except Exception:                                      # noqa: BLE001
     _obs = None                                        # type: ignore[assignment]
 

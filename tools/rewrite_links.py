@@ -32,6 +32,7 @@ MkDocs 站点与 pandoc PDF 中都**不会**渲染为可点击链接，且相对
   python tools/rewrite_links.py --mode pdf    # 生成 build/pdf/combined_src/
 """
 from __future__ import annotations
+
 import argparse
 import json
 import posixpath

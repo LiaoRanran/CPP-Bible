@@ -23,6 +23,7 @@
 真相由人工审读判断（对齐项目纯读侧门禁的一贯风格）。
 """
 from __future__ import annotations
+
 import argparse
 import re
 import sys

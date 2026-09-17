@@ -32,6 +32,7 @@ section-aware 状态机：从 `## 维度补齐` / `## 维度批量补齐` 头开
   python tools/clean_dimension_junk.py Book/.../chXX.md --apply
 """
 from __future__ import annotations
+
 import argparse
 import glob
 import pathlib

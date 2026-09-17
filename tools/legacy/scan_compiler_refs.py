@@ -19,9 +19,9 @@ scan_compiler_refs.py — P0-2.1 编译器对比提及扫描器
 本脚本是 P0-2.2/2.3 的前置——先知道"对比集中在哪些章、哪类语义"，再建表。
 """
 
+import json
 import os
 import re
-import json
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

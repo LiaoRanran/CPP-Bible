@@ -41,9 +41,9 @@ EXEMPTIONS = ROOT / "tools" / "poison_exemptions.yaml"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay  # noqa: E402
-import gate_engine as ge               # noqa: E402
-import viso_diff as vd                 # noqa: E402
-from toolchain import resolve_gpp      # noqa: E402
+import gate_engine as ge  # noqa: E402
+import viso_diff as vd  # noqa: E402
+from toolchain import resolve_gpp  # noqa: E402
 
 
 def _write(path: Path, fields: dict[str, object]) -> None:
@@ -2157,6 +2157,7 @@ def load_surface_map() -> dict | None:
 if __name__ == "__main__":
     import argparse as _ap
     import datetime as _dt
+
     import tool_integrity as _ti
     # 567 任务 2：判定入口强制自检（在**任何钻探/编译之前**）——核心被改且未重钉就拒绝运行
     _ti.enforce("poison_drill.py")

@@ -18,11 +18,12 @@
 退出码：0 = 全通过；非 0 = 有块失败。
 """
 from __future__ import annotations
+
 import os
 import re
 import shutil
-import sys
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 

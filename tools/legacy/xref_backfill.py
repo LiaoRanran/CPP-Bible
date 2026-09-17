@@ -19,11 +19,11 @@ xref_backfill.py — 交叉引用回填生成器 (Phase 2 / Xref)
   python tools/xref_backfill.py Book/partXX/chYY.md [..]   # 指定章
   python tools/xref_backfill.py --list-low      # 列出引用<3的章
 """
-import re
-import sys
-import json
-import shutil
 import argparse
+import json
+import re
+import shutil
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

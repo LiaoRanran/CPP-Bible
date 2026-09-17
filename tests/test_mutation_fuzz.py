@@ -11,9 +11,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 import mutation_fuzz as mf
+import pytest
 
 CARD = mf.ROOT / "evidence" / "conc" / "EV-CONC-001.md"
 

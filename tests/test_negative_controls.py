@@ -10,9 +10,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import pytest
-
 import atom_evidence_replay as rp
+import pytest
 
 YANG = """static int s_sf_a = 0;
 static int s_sf_b = 0;

@@ -347,7 +347,7 @@ def collect_curves() -> dict:
     out: dict = {"timepoints": 1,
                  "monotone_convergence": "不可声称（只有 1 个时点，勿据单点画趋势）",
                  "note": "三曲线字段 565 Part 4b；补齐第二个时点前，这里只作机制占位"}
-    from stat_bounds import proportion          # 565 Part 1 原语（局部导入：与 toolchain 同风格）
+    from stat_bounds import proportion  # 565 Part 1 原语（局部导入：与 toolchain 同风格）
 
     bl = ROOT / "data" / "mutation" / "full_baseline_v1.json"
     if bl.is_file():

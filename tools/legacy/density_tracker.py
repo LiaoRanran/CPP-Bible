@@ -5,12 +5,12 @@ Saves audit snapshots to .workbuddy/density_history.json and shows trends.
 Usage: python3 tools/density_tracker.py            # save snapshot + show trend
        python3 tools/density_tracker.py --history  # show history only (no save)"""
 
+import json
 import os
 import re
 import sys
-import json
-from datetime import datetime
 from collections import Counter
+from datetime import datetime
 
 HISTORY_FILE = '.workbuddy/density_history.json'
 

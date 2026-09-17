@@ -8,10 +8,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
 import knowledge_graph as kg
+import pytest
 
 
 def _write(path: Path, fields: dict[str, object]) -> None:

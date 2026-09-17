@@ -40,8 +40,8 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import gate_engine as ge  # noqa: E402
 import atom_evidence_replay as replay  # noqa: E402
+import gate_engine as ge  # noqa: E402
 
 VERSION = "v7.0"
 _BOUNDLESS_LOOP = re.compile(r"while\s*\(\s*(?:1|true|TRUE)\s*\)|for\s*\(\s*;\s*;\s*\)")

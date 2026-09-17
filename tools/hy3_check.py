@@ -12,12 +12,12 @@ Hy3 接手后第一条命令。6 项检查，纯读取，不改任何文件。
     alias hc='python3 tools/hy3_check.py'
 """
 
+import os
 import pathlib
 import re
 import shutil
 import subprocess
 import sys
-import os
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -26,7 +26,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 _TOOLS_DIR = str(ROOT / "tools")
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
-from toolchain import resolve_gpp as _resolve_gpp, resolve_python as _resolve_python  # noqa: E402
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+from toolchain import resolve_python as _resolve_python
 from utf8_console import ensure_utf8  # noqa: E402
 
 PYTHON = _resolve_python()

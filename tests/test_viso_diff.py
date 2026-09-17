@@ -15,7 +15,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 import viso_diff as vd
 
 # ── 合成夹具（量级对齐真实卡夹具，否则 2% 比率判据没有意义）──────────────────

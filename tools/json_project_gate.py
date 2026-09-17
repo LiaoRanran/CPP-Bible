@@ -17,11 +17,11 @@ CI 立即变红 BLOCK。
 退出码：0 = 全部通过；1 = 存在失败；2 = 环境错误（找不到 g++）。
 """
 
-import os
-import sys
-import shutil
 import argparse
+import os
+import shutil
 import subprocess
+import sys
 import tempfile
 
 _TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))

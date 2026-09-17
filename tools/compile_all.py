@@ -52,12 +52,12 @@ v4 changes (2026-09-09, R2 管线加固):
     完全一致（供 compile_gate 增量比对用）。缓存文件 tools/.compile_cache.json 不入库。
 """
 
+import json
 import os
 import re
-import sys
 import subprocess
+import sys
 import tempfile
-import json
 from concurrent.futures import ProcessPoolExecutor
 
 # --- GCC resolution (hardened) -------------------------------------------

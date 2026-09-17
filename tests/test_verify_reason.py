@@ -12,9 +12,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
+import pytest
 
 EXEMPT_ID = "ATOM-MEM-RVREF-001"          # 存量名单内的一颗（勿改成非名单 id）
 

@@ -48,10 +48,10 @@ x86_64-w64-mingw32 或 aarch64-linux-gnu）：
   python3 tools/terminology_normalize.py --fix      # 落盘：应用全部归一
 """
 
+import argparse
 import os
 import re
 import sys
-import argparse
 
 ROOT = os.getcwd()
 BOOK = os.path.join(ROOT, 'Book')

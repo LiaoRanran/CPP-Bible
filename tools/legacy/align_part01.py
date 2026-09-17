@@ -9,8 +9,8 @@ align_part01.py — 将 part01 历史章节对齐到 v3 约定（机械部分）
   python tools/align_part01.py --root <CPP-Bible> --apply
 """
 import argparse
-import re
 import pathlib
+import re
 import shutil
 
 LABELS = ['标准', '实现', '平台', '经验']

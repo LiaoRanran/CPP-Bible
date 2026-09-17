@@ -18,10 +18,10 @@ Usage:
   python3 tools/deduplication_audit.py --json               # JSON 文件 + stdout
   python3 tools/deduplication_audit.py --all --per-part     # 全章 + part 汇总
 """
+import json
 import os
 import re
 import sys
-import json
 from collections import defaultdict
 from pathlib import Path
 

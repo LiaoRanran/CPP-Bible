@@ -8,9 +8,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import atom_evidence_replay as rp
+import pytest
 
 
 def _run(cards, manifest, fp_of):

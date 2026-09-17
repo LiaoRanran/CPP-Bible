@@ -40,9 +40,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import gate_engine as ge               # noqa: E402
-import impact_analysis as imp          # noqa: E402
 import atom_evidence_replay as replay  # noqa: E402
+import gate_engine as ge  # noqa: E402
+import impact_analysis as imp  # noqa: E402
 
 DB = ROOT / "data" / "knowledge_graph.db"
 

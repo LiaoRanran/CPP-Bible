@@ -11,9 +11,9 @@ Phase E 攻击目标：L0/L1 章应升级到 L2/L3。
 Usage:
   python3 tools/industrial_precision.py [--markdown] [--json] [--per-chapter N]
 """
+import json
 import re
 import sys
-import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

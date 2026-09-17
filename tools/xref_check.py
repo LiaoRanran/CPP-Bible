@@ -23,11 +23,11 @@ CPP-Bible 交叉引用门禁 (xref_check.py)
   python3 tools/xref_check.py --json out.json # 附带写 JSON 报告
   python3 tools/xref_check.py --allow-orphans # 孤儿/孤岛仅 WARN（默认即 WARN）
 """
+import argparse
+import json
 import os
 import re
 import sys
-import json
-import argparse
 
 from utf8_console import ensure_utf8
 

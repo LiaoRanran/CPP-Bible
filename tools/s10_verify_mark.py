@@ -36,12 +36,12 @@ CLI
   python3 tools/s10_verify_mark.py --json        # 机器可读
 """
 
+import argparse
+import json
 import os
 import re
-import sys
-import json
-import argparse
 import subprocess
+import sys
 
 ROOT = os.getcwd()
 BOOK = os.path.join(ROOT, "Book")

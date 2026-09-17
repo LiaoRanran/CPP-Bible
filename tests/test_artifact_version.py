@@ -14,9 +14,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
+import pytest
 
 
 @pytest.fixture()

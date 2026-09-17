@@ -26,6 +26,7 @@ import os
 import re
 import sys
 
+
 # 显示宽度：CJK/全角按 2，其余按 1
 def display_width(s: str) -> int:
     w = 0

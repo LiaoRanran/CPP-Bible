@@ -39,7 +39,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay  # noqa: E402  复用 frontmatter 解析（单一实现）
-import tool_integrity                 # noqa: E402  567 任务 2：判定核心完整性（入口强制自检）
+import tool_integrity  # noqa: E402  567 任务 2：判定核心完整性（入口强制自检）
 
 ATOMS = ROOT / "atoms"
 EVIDENCE = ROOT / "evidence"
@@ -48,6 +48,7 @@ CPPBIBLE = ROOT / "tools/cppbible.py"
 
 # 16 域（唯一来源：知识地图工具），用于校验原子 ID 中段与目录归属
 from atom_coverage_map import DOMAIN_OF_PREFIX  # noqa: E402
+
 DOMAINS = {v for v in DOMAIN_OF_PREFIX.values()}
 
 ATOM_REQUIRED = ("id", "title", "domain", "type", "status", "claim", "claim_boundary",
@@ -3420,7 +3421,7 @@ _register_all()
 # ② 检查抛异常时**先记 ERROR 再原样 raise**（与原版行为逐字一致：原版不捕获异常）；
 # ③ 记 start/end 两条 + duration_ms，便于 log_query 聚合"哪条规则最慢"。
 try:
-    import observability as _obs                       # noqa: E402
+    import observability as _obs  # noqa: E402
 except Exception:                                      # noqa: BLE001
     _obs = None                                        # type: ignore[assignment]
 

@@ -23,11 +23,11 @@ d5_source_integrity.py — D5 性能附录「基准源码见库根」引用完�
   python3 tools/d5_source_integrity.py --fix      # 落盘：链接可修复的孤儿
 """
 
+import argparse
 import os
 import re
-import sys
-import argparse
 import subprocess
+import sys
 
 ROOT = os.getcwd()
 BOOK = os.path.join(ROOT, 'Book')

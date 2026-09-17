@@ -19,11 +19,11 @@ verify_compiler_features.py — P0-2.4 编译器特性支持度探针
 数据（在矩阵表中明确标注 "doc" 来源），不在本脚本本地验证范围内。
 """
 
+import json
 import os
 import re
-import sys
-import json
 import subprocess
+import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -21,13 +21,13 @@ CLI：--check（CRASH 即 exit 1）/ --timeout N（每基准秒，默认 30）/ 
 退出码：0=无 CRASH；1=存在 CRASH；2=环境错误。幂等、零仓库副作用。
 """
 
-import os
-import sys
-import json
-import glob
-import shutil
 import argparse
+import glob
+import json
+import os
+import shutil
 import subprocess
+import sys
 import tempfile
 
 ROOT = os.getcwd()

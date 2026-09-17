@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 import trace_logger as tl
 
 

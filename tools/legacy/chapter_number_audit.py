@@ -10,6 +10,7 @@
 退出码：0 = 全部一致；非 0 = 存在不一致（供 CI / 门禁使用）。
 """
 from __future__ import annotations
+
 import re
 import sys
 from pathlib import Path

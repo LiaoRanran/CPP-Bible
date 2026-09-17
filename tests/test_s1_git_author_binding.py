@@ -10,9 +10,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
+import pytest
 
 HIST = ("\n  - {level: draft, at: legacy, by: writer:agent}"
         "\n  - {level: machine-verified, at: 2026-09-12, by: machine:gate}"

@@ -13,10 +13,9 @@ import json
 import os
 from pathlib import Path
 
-import pytest
-
 import log_query as lq
 import observability as obs
+import pytest
 
 
 @pytest.fixture()

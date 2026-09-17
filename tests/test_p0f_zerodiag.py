@@ -8,9 +8,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
+import pytest
 
 
 def _card(tmp: Path, cid: str, *, expected: str = "", command: str,

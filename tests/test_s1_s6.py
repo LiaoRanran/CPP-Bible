@@ -10,11 +10,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 import debt_ledger as dl
 import golden_lock as gl
 import poison_drill as pd
+import pytest
 
 METRICS = {"block_findings": 0, "warn_findings": 1, "atoms_total": 0,
            "evidence_total": 1, "verified_atoms": 0, "replay_confirm": 1}
@@ -33,7 +32,7 @@ def _poison_arena(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 
 def _poison_card(ev: Path, name: str, fields: dict) -> Path:
-    import gate_engine as ge                                   # noqa: F401
+    import gate_engine as ge  # noqa: F401
     p = ev / "mem" / name
     body = ""
     for k, v in fields.items():

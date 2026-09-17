@@ -7,11 +7,11 @@ Usage:
   python3 tools/learning_path.py --format dot     # Graphviz源
   python3 tools/learning_path.py --format stats   # 统计
 """
+import json
 import os
 import re
 import sys
-import json
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 
 # 交叉引用模式: ⟶ Book/partXX/chYY_name.md
 XREF_RE = re.compile(r'⟶\s*Book/([\w/]+)\.md')

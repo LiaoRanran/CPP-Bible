@@ -3,9 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
+import pytest
 
 
 def _write(base: Path, sub: str, name: str, body: str) -> Path:

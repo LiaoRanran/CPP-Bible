@@ -40,9 +40,9 @@ from typing import Any, Iterator
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import atom_evidence_replay as replay   # noqa: E402
-import gate_engine as ge                # noqa: E402
-import stat_bounds                      # noqa: E402  565 Part 2：口径块（纯标准库统计原语）
+import atom_evidence_replay as replay  # noqa: E402
+import gate_engine as ge  # noqa: E402
+import stat_bounds  # noqa: E402  565 Part 2：口径块（纯标准库统计原语）
 
 # 需要额外跑 replay 的算子：M1 动的是 replay 的**裁决输入**（sha/必需字段），M7 动 sha/读数。
 # 只跑 gate 会把"删了 artifact_sha256"判成 escaped —— 那是**制造假逃逸**，比漏报更坏。

@@ -19,7 +19,6 @@ import threading
 from pathlib import Path
 
 import pytest
-
 import task_queue as tq
 
 # d976170 的 tasks 表原样（14 列；534 规格 §1.1 写"15 列"，实测 PRAGMA 为 14 —— 以磁盘为准）。

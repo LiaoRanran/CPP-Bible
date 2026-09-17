@@ -27,13 +27,13 @@
 """
 
 from __future__ import annotations
-from typing import Any
 
 import argparse
 import json
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 # ── 配置 ──────────────────────────────────────────────
 EXPECTED_ELEMENTS = [f"{i}" for i in range(1, 21)]  # "1".."20" 匹配 ①②..⑳

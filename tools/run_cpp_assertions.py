@@ -51,18 +51,19 @@ CI 适配说明
 执行触发 SIGILL) 而崩溃, 归 WARN 而非 FAIL —— 属环境限制, 不应阻断门禁。
 """
 from __future__ import annotations
-import re
-import sys
+
 import glob
+import pathlib
+import re
 import signal
 import subprocess
+import sys
 import tempfile
-import pathlib
 from concurrent.futures import ProcessPoolExecutor
 
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from chapter_compile_check import sanitize, PRELUDE, GPP, CPP_FENCE, FENCE_END  # noqa: E402
+from chapter_compile_check import CPP_FENCE, FENCE_END, GPP, PRELUDE, sanitize  # noqa: E402
 
 ROOT = HERE.parent
 COMPILE_TIMEOUT = 30

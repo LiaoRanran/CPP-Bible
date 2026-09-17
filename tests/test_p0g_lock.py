@@ -5,9 +5,8 @@ import os
 import time
 from pathlib import Path
 
-import pytest
-
 import atom_evidence_replay as replay
+import pytest
 
 
 @pytest.fixture()

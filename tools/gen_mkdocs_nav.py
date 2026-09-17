@@ -13,13 +13,14 @@
 nav 路径相对 docs_dir(=docs)，与重写后的目录结构一致。
 """
 from __future__ import annotations
+
 import json
 import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from rewrite_links import build_chapter_index, ROOT  # noqa: E402
+from rewrite_links import ROOT, build_chapter_index  # noqa: E402
 
 SITE_DIR = ROOT / "build" / "site"
 DOCS_DIR = SITE_DIR / "docs"

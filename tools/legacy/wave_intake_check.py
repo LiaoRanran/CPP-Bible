@@ -37,13 +37,13 @@ ch42 unused param 警告、GCC 版本不一致等）。教训写进 MEMORY.md：
   python3 tools/wave_intake_check.py Book/partXX/chNN.md _bench_d5_nn.cpp
   python3 tools/wave_intake_check.py --auto --no-compile   # 只做围栏/LF/BOM
 """
+import argparse
+import json
 import re
-import sys
 import shutil
 import subprocess
-import argparse
+import sys
 import tempfile
-import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

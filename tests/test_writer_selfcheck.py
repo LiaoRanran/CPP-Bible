@@ -6,9 +6,8 @@ import os
 import time
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
+import pytest
 import writer_selfcheck as ws
 
 

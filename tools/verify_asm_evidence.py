@@ -23,11 +23,11 @@ verify_asm_evidence.py — 汇编证据「符号真实性」守卫
 
 CI 用法：python3 tools/verify_asm_evidence.py --root Book --examples Examples
 """
-import re
+import argparse
 import json
 import pathlib
+import re
 import sys
-import argparse
 
 from utf8_console import ensure_utf8
 

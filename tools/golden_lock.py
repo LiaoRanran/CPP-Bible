@@ -180,8 +180,8 @@ def measure(findings: Sequence[Any] | None = None) -> dict[str, int]:
 
     `findings` 可由调用方传入（避免 `check` 里为了分桶把 gate 跑第二遍）。
     """
-    import gate_engine as ge
     import atom_evidence_replay as replay
+    import gate_engine as ge
 
     if findings is None:
         findings = ge.run(include_advice=False)

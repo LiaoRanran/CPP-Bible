@@ -3,9 +3,9 @@
 # 用法: python tools/scan_prose_backslash.py [--fix]
 #   无参数: 仅报告
 #   --fix  : 把含转义序列的文本片段改为行内代码（保守：只处理整段中文引号内/行内的代码片段）
+import pathlib
 import re
 import sys
-import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 BOOK = ROOT / "Book"

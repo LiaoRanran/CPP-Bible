@@ -22,10 +22,10 @@ label_specificity_harden.py — §1 立场分层标签「具体化」收口工�
   python3 tools/label_specificity_harden.py --apply    # 落盘
 """
 
+import argparse
 import os
 import re
 import sys
-import argparse
 
 HIGH_RISK_FILES = [
     "Book/part09_concurrency/ch107_atomic.md",

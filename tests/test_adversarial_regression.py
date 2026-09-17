@@ -6,9 +6,8 @@
 """
 from __future__ import annotations
 
-import pytest
-
 import adversarial_regression as ar
+import pytest
 
 
 def test_parse_output_classifies():

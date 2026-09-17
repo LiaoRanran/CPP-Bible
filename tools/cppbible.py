@@ -36,7 +36,6 @@ from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
 from toolchain import resolve_python as _resolve_python  # noqa: E402
 from utf8_console import ensure_utf8  # noqa: E402
 
-
 # ---------------------------------------------------------------------------
 # 路径与配置发现
 # ---------------------------------------------------------------------------

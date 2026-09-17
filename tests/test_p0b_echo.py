@@ -7,10 +7,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import gate_engine as ge
-
+import pytest
 
 CARD_TMPL = (
     "---\nid: {cid}\nserves: []\nhypothesis: h\nkind: run\n"

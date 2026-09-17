@@ -10,9 +10,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 import atom_evidence_replay as rp
+import pytest
 
 GXX = r"C:\Qt\Tools\mingw1530_64\bin\g++.exe"
 

@@ -28,6 +28,7 @@ tools/rewrite_links.py 在构建期另行处理，不受影响（PDF 合并单�
 只在命中的链接文本上做替换——绝不因文本模式读写而整体改写行尾/编码。
 """
 from __future__ import annotations
+
 import argparse
 import re
 import sys

@@ -28,10 +28,10 @@ CFI/AT&T/SysV），故汇编证据的"真实性"只能在本地（Windows + MinG
   工件"的符号一致性检查（跨平台），本工具补充"工件 vs 源码重编"的真实性检查
   （MinGW-only）。
 """
-import sys
-import json
 import argparse
+import json
 import subprocess
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent

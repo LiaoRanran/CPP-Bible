@@ -26,11 +26,11 @@
 所有产物都是 GCC 15.3.0 真实生成的机器码，非手写编造；与 asm_prepush_guard 的
 证据库同源（MinGW SEH），可在本地复现。
 """
+import argparse
 import os
 import re
-import sys
 import subprocess
-import argparse
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
