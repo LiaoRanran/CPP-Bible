@@ -74,7 +74,7 @@ _DEFAULTS: dict[str, dict[str, list[str]]] = {
 
 _SECTION_RE = re.compile(r"^\[([A-Za-z0-9_]+)\]\s*$")
 _STR_RE = re.compile(r"^([A-Za-z0-9_]+)\s*=\s*[\"']([^\"']*)[\"']\s*$")
-_LIST_RE = re.compile(r"^([A-Za-z0-9_]+)\s*=\s*\[(.*?)\]", re.S)
+_LIST_RE = re.compile(r"^([A-Za-z0-9_]+)\s*=\s*\[(.*?)\]", re.DOTALL)
 _STR_ITEM_RE = re.compile(r"[\"']([^\"']*)[\"']")
 
 

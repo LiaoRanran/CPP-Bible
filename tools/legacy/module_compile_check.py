@@ -38,10 +38,10 @@ import tempfile
 GCC = shutil.which('g++') or 'g++'
 MODULE_FLAGS = ['-std=c++23', '-fmodules-ts']
 
-CPP_FENCE = re.compile(r'```cpp\n(.*?)\n```', re.S)
-RE_EXPORT_MODULE = re.compile(r'^\s*export\s+module\s+(\w+)', re.M)
-RE_MODULE = re.compile(r'^\s*module\s+(\w+)', re.M)
-RE_IMPORT = re.compile(r'^\s*import\s+(\w+)', re.M)
+CPP_FENCE = re.compile(r'```cpp\n(.*?)\n```', re.DOTALL)
+RE_EXPORT_MODULE = re.compile(r'^\s*export\s+module\s+(\w+)', re.MULTILINE)
+RE_MODULE = re.compile(r'^\s*module\s+(\w+)', re.MULTILINE)
+RE_IMPORT = re.compile(r'^\s*import\s+(\w+)', re.MULTILINE)
 
 
 def find_modules_in_chapter(path):

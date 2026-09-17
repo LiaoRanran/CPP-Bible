@@ -47,8 +47,8 @@ def snapshot():
                 continue
             path = r+'/'+ff
             text = open(path, encoding='utf-8').read()
-            dim = sum(min(sum(1 for kw in kws if re.search(kw, text, re.I)), 3) for kws in DIMENSIONS.values())
-            depth = sum(min(len(re.findall(p, text, re.I)), 5) for p in DEPTH.values())
+            dim = sum(min(sum(1 for kw in kws if re.search(kw, text, re.IGNORECASE)), 3) for kws in DIMENSIONS.values())
+            depth = sum(min(len(re.findall(p, text, re.IGNORECASE)), 5) for p in DEPTH.values())
             chapters[ff] = int(dim * 0.6 + depth * 0.4 * 0.6)
 
     snap = {

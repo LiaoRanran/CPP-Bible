@@ -35,7 +35,7 @@ ASM_DIR = ROOT / "Examples" / "atoms"
 LEDGER = ASM_DIR / "artifact_versions.json"
 EVIDENCE = ROOT / "evidence"
 VERSION = 1
-_CARD_STAMP = re.compile(rb"^artifact_version:\s*(\d+)", re.M)
+_CARD_STAMP = re.compile(rb"^artifact_version:\s*(\d+)", re.MULTILINE)
 
 
 def _eol(raw: bytes) -> bytes:
@@ -86,7 +86,7 @@ def stamp_card(path: Path, apply: bool) -> str:
         return "skip"
     eol = _eol(raw)
     line = f"artifact_version: {VERSION}".encode() + eol
-    m = re.search(rb"^artifact:[^\r\n]*" + re.escape(eol), raw, re.M)
+    m = re.search(rb"^artifact:[^\r\n]*" + re.escape(eol), raw, re.MULTILINE)
     if m:
         new = raw[:m.end()] + line + raw[m.end():]
     else:

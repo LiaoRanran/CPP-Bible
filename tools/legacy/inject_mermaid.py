@@ -189,7 +189,7 @@ def main():
     args = ap.parse_args()
     root = find_book_root(args.root)
 
-    mre = re.compile(r"^```mermaid", re.M)
+    mre = re.compile(r"^```mermaid", re.MULTILINE)
     for rel, intro, mermaid in TARGETS:
         p = root / rel
         has = p.exists() and mre.search(p.read_text(encoding="utf-8", errors="ignore") or "")

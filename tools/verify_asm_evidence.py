@@ -35,7 +35,7 @@ from utf8_console import ensure_utf8
 MANGLE = re.compile(r"_Z[0-9A-Za-z_]{3,}")
 # 标准库符号（libstdc++ 等）不会出现在用户 .asm 中，属预期，不判 DRIFT
 LIB_RE = re.compile(r"_Z(?:St|NS|NSt)")
-ASM_BLOCK = re.compile(r"```asm\n(.*?)```", re.S)
+ASM_BLOCK = re.compile(r"```asm\n(.*?)```", re.DOTALL)
 REF_RE = re.compile(r"Examples/([A-Za-z0-9_]+\.asm)")
 
 

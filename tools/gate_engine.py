@@ -75,7 +75,7 @@ REL_TYPES_KNOWN = (DAG_REL | CONFLICT_REL | set(CONFLICT_SYNONYMS)
 BANNED_SUPERIORITY = ("讲解更详细", "更通俗易懂", "更全面", "更加深入", "帮助读者理解", "结合实际")
 # 注意：「待补/待補」**不在**占位符之列 —— 在本项目它是**合法的缺口留痕**
 # （证据卡 `## 待补`、M2「待确认」都是显式记账，不是未填内容），误报会逼人删掉真信息。
-PLACEHOLDER_RE = re.compile(r"(TODO|TBD|FIXME|XXX|占位|placeholder)", re.I)
+PLACEHOLDER_RE = re.compile(r"(TODO|TBD|FIXME|XXX|占位|placeholder)", re.IGNORECASE)
 
 # ── G5 新增：全局误解库 + 认知适切维度 ──────────────────────────────────────
 MISCONCEPTIONS = ROOT / "misconceptions"
@@ -1718,7 +1718,7 @@ def _strip_comments(text: str, is_asm: bool) -> str:
     - C/C++/asm 通用：删 `/* ... */` 块注释；
     - 行注释：源文件 `//`，汇编 `;`（asm 注释符）。`.out` 等非源码文本不剥 `;`，避免误删内容。
     """
-    text = re.sub(r"/\*.*?\*/", " ", text, flags=re.S)
+    text = re.sub(r"/\*.*?\*/", " ", text, flags=re.DOTALL)
     out: list[str] = []
     for ln in text.split("\n"):
         ln = ln.split(";", 1)[0] if is_asm else ln.split("//", 1)[0]
@@ -1949,10 +1949,10 @@ def _producer_exempt_ids() -> set[str]:
 # ── F02（414 P0-3）：编译后覆写——时序约束（426 框架第一应用）─────────────────
 _POST_WRITE_VERBS = re.compile(
     r"(?<![\w-])(?:cp|copy|mv|move|Copy-Item|Move-Item|Set-Content|Add-Content|"
-    r"Out-File|tee|dd|shutil\.copy|shutil\.move|shutil\.copyfile)\b", re.I)
-_POST_OPEN_WRITE = re.compile(r"open\s*\([^)]*['\"]w[b+]?", re.I)
+    r"Out-File|tee|dd|shutil\.copy|shutil\.move|shutil\.copyfile)\b", re.IGNORECASE)
+_POST_OPEN_WRITE = re.compile(r"open\s*\([^)]*['\"]w[b+]?", re.IGNORECASE)
 _POST_READ_PROGS = re.compile(
-    r"^\s*[\"']?(?:type|cat|head|tail|grep|findstr|more|less|wc|rg|Get-Content)\b", re.I)
+    r"^\s*[\"']?(?:type|cat|head|tail|grep|findstr|more|less|wc|rg|Get-Content)\b", re.IGNORECASE)
 
 
 def _post_compile_writes(cmd: str, prod: str, art: str) -> tuple[list[str], list[str]]:
@@ -2072,7 +2072,7 @@ def check_evidence_artifact_producer() -> list[Finding]:
 
 
 _ZERO_DIAG_RE = re.compile(
-    r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.I)
+    r"零诊断|无诊断|无警告|无警示|no\s+warning|zero\s+diagnostic|warning-free", re.IGNORECASE)
 
 
 # ── 526 批次E：claim 结构化（命题级知识 / L3 智能层点火）────────────────────
@@ -3212,7 +3212,7 @@ def check_manifest_consistency() -> list[Finding]:
                         "未能解析 quality 元组（AST 结构变了？）", "检查 cmd_check 实现")]
     declared: list[str] = []
     text = PYPROJECT.read_text(encoding="utf-8")
-    m = re.search(r"quality_gates\s*=\s*\[(.*?)\]", text, re.S)
+    m = re.search(r"quality_gates\s*=\s*\[(.*?)\]", text, re.DOTALL)
     if m:
         declared = re.findall(r'"([^"]+)"', m.group(1))
     out: list[Finding] = []

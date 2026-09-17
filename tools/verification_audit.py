@@ -47,14 +47,14 @@ RISK_KEYWORDS = {
     "concurrency": re.compile(
         r"atomic|memory_order|lock[_ -]?free|data race|std::mutex|std::thread|"
         r"happens[_ -]?before|acquire|release|seq_cst|hazard|RCU|\bABA\b|"
-        r"并发|原子|内存序|无锁|数据竞争", re.I),
-    "memory_model": re.compile(r"memory model|内存模型|consume|relaxed", re.I),
+        r"并发|原子|内存序|无锁|数据竞争", re.IGNORECASE),
+    "memory_model": re.compile(r"memory model|内存模型|consume|relaxed", re.IGNORECASE),
     "perf": re.compile(
         r"benchmark|基准|cache|SIMD|分支预测|false sharing|伪共享|throughput|"
-        r"latency|吞吐|延迟|cache line", re.I),
-    "asm": re.compile(r"反汇编|assembly|disassembly|汇编|call \[|寄存器|`-O2`|vtable 布局", re.I),
-    "abi": re.compile(r"名称修饰|mangling|调用约定|对象布局|vtable|RTTI|abi", re.I),
-    "optimization": re.compile(r"内联|inline|devirtual|常量传播|循环展开|`-O[0-9]`|优化", re.I),
+        r"latency|吞吐|延迟|cache line", re.IGNORECASE),
+    "asm": re.compile(r"反汇编|assembly|disassembly|汇编|call \[|寄存器|`-O2`|vtable 布局", re.IGNORECASE),
+    "abi": re.compile(r"名称修饰|mangling|调用约定|对象布局|vtable|RTTI|abi", re.IGNORECASE),
+    "optimization": re.compile(r"内联|inline|devirtual|常量传播|循环展开|`-O[0-9]`|优化", re.IGNORECASE),
 }
 
 

@@ -78,7 +78,7 @@ ERR_PATTERNS = [
     (re.compile(r"'(\w+)' in namespace 'std' does not name a type"), lambda m: 'std::' + m.group(1)),
 ]
 
-CPP_FENCE = re.compile(r'(```cpp\n)(.*?)(\n```)', re.S)
+CPP_FENCE = re.compile(r'(```cpp\n)(.*?)(\n```)', re.DOTALL)
 
 
 def header_for(symbol):

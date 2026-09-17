@@ -21,11 +21,11 @@ BOOK = ROOT / 'Book'
 
 # GitHub URL patterns by precision level
 L3_LINE_RE = re.compile(
-    r'https?://(?:www\.)?github\.com/[\w.-]+/[\w.-]+/blob/[^/]+/[^)#\s]+#L\d+', re.I)
+    r'https?://(?:www\.)?github\.com/[\w.-]+/[\w.-]+/blob/[^/]+/[^)#\s]+#L\d+', re.IGNORECASE)
 L2_FILE_RE = re.compile(
-    r'https?://(?:www\.)?github\.com/[\w.-]+/[\w.-]+/blob/[^/\s)#]+/[^)#\s]+', re.I)
+    r'https?://(?:www\.)?github\.com/[\w.-]+/[\w.-]+/blob/[^/\s)#]+/[^)#\s]+', re.IGNORECASE)
 L1_REPO_RE = re.compile(
-    r'https?://(?:www\.)?github\.com/[\w.-]+/[\w.-]+(?:[/?#)][^\s)]*)?', re.I)
+    r'https?://(?:www\.)?github\.com/[\w.-]+/[\w.-]+(?:[/?#)][^\s)]*)?', re.IGNORECASE)
 
 # Non-GitHub industrial domain references
 DOMAIN_L3_RE = re.compile(
@@ -35,7 +35,7 @@ DOMAIN_L3_RE = re.compile(
     r'oneapi\.io|openmp\.org|nvidia\.com/cuda|amd\.com/rocm|'
     r'grpc\.io|protobuf\.dev|clickhouse\.com|redis\.io|'
     r'qt\.io|eigen\.tuxfamily\.org|tensorflow\.org|pytorch\.org)'
-    r'/[^\s)]*', re.I)
+    r'/[^\s)]*', re.IGNORECASE)
 
 # Key industrial projects (domain-level recognition)
 INDUSTRIAL_PROJECTS = [

@@ -96,15 +96,15 @@ def detect_type(lines):
         s = ln.strip()
         if not s or s.startswith("%%") or s.startswith("//"):
             continue
-        if re.match(r"^(flowchart|graph)\b", s, re.I):
+        if re.match(r"^(flowchart|graph)\b", s, re.IGNORECASE):
             return "flowchart"
-        if re.match(r"^classDiagram\b", s, re.I):
+        if re.match(r"^classDiagram\b", s, re.IGNORECASE):
             return "classDiagram"
-        if re.match(r"^sequenceDiagram\b", s, re.I):
+        if re.match(r"^sequenceDiagram\b", s, re.IGNORECASE):
             return "sequenceDiagram"
-        if re.match(r"^stateDiagram(-v2)?\b", s, re.I):
+        if re.match(r"^stateDiagram(-v2)?\b", s, re.IGNORECASE):
             return "stateDiagram"
-        if re.match(r"^timeline\b", s, re.I):
+        if re.match(r"^timeline\b", s, re.IGNORECASE):
             return "timeline"
         # first meaningful token
         return "UNKNOWN:" + (s.split()[0] if s.split() else "?")
@@ -143,20 +143,20 @@ def check_flowchart(lines, errors):
         if s.startswith("%%") or s.startswith("//"):
             continue
         # direction header
-        if re.match(r"^(flowchart|graph)\b", s, re.I):
-            if not re.match(r"^(flowchart|graph)\s+(TB|TD|BT|LR|RL|NW|NE|SW|SE)\b", s, re.I):
+        if re.match(r"^(flowchart|graph)\b", s, re.IGNORECASE):
+            if not re.match(r"^(flowchart|graph)\s+(TB|TD|BT|LR|RL|NW|NE|SW|SE)\b", s, re.IGNORECASE):
                 errors.append((idx, "FLOW_HEADER",
                                f"invalid flowchart/graph header: {s!r} "
                                f"(need a direction token TB/TD/BT/LR/RL)"))
             # also check trailing junk like 'flowchart TD A-->B' (header must be its own line)
-            rest = re.sub(r"^(flowchart|graph)\s+\w+\s*", "", s, flags=re.I).strip()
+            rest = re.sub(r"^(flowchart|graph)\s+\w+\s*", "", s, flags=re.IGNORECASE).strip()
             if rest:
                 errors.append((idx, "FLOW_HEADER_INLINE",
                                f"graph header line carries extra content {rest!r}; "
                                f"put edges on their own lines"))
             continue
         # subgraph
-        if re.match(r"^subgraph\b", s, re.I):
+        if re.match(r"^subgraph\b", s, re.IGNORECASE):
             if re.match(r"^subgraph\s+\w+\s*\[.*\]$", s) or \
                re.match(r"^subgraph\s+\w+\s*$", s) or \
                re.match(r"^subgraph\s+\[.*\]$", s):
@@ -174,7 +174,7 @@ def check_flowchart(lines, errors):
                 errors.append((idx, "END_ORPHAN", "stray `end` with no open subgraph"))
             continue
         # classDef / class / style / click / linkStyle / direction
-        if re.match(r"^(classDef|class\s|style\s|click\s|linkStyle|direction|default\s)", s, re.I):
+        if re.match(r"^(classDef|class\s|style\s|click\s|linkStyle|direction|default\s)", s, re.IGNORECASE):
             continue
         # relation/edge line: contains an arrow somewhere
         if FLOWCHART_ARROW.search(s):
@@ -240,10 +240,10 @@ def check_classdiagram(lines, errors):
         s = line.strip()
         if not s or s.startswith("%%"):
             continue
-        if re.match(r"^classDiagram\b", s, re.I):
+        if re.match(r"^classDiagram\b", s, re.IGNORECASE):
             continue
         # directives
-        if re.match(r"^(direction|class\s|relation\s|hide|show|namespace|title|note\s|style\s|link\s|callback\s)", s, re.I):
+        if re.match(r"^(direction|class\s|relation\s|hide|show|namespace|title|note\s|style\s|link\s|callback\s)", s, re.IGNORECASE):
             continue
         # class / abstract class / class Name { ... } or class Name
         if re.match(r"^(class|abstract\s+class|interface|enum|annotation)\b", s):
@@ -285,11 +285,11 @@ def check_sequence(lines, errors):
         s = line.strip()
         if not s or s.startswith("%%"):
             continue
-        if re.match(r"^sequenceDiagram\b", s, re.I):
+        if re.match(r"^sequenceDiagram\b", s, re.IGNORECASE):
             continue
-        if re.match(r"^(participant|actor|box|title|autonumber|Note\s|legend|end|opt|alt|else|loop|par|break|critical|group|rect|activate|deactivate|create|destroy|return)\b", s, re.I):
-            kw = re.match(r"^(opt|alt|else|loop|par|break|critical|group|box|rect)\b", s, re.I)
-            if kw and re.match(r"^(opt|alt|else|loop|par|break|critical|group)\b", s, re.I):
+        if re.match(r"^(participant|actor|box|title|autonumber|Note\s|legend|end|opt|alt|else|loop|par|break|critical|group|rect|activate|deactivate|create|destroy|return)\b", s, re.IGNORECASE):
+            kw = re.match(r"^(opt|alt|else|loop|par|break|critical|group|box|rect)\b", s, re.IGNORECASE)
+            if kw and re.match(r"^(opt|alt|else|loop|par|break|critical|group)\b", s, re.IGNORECASE):
                 block_stack.append((kw.group(1), idx))
             elif s == "end":
                 if block_stack:
@@ -314,7 +314,7 @@ def check_state(lines, errors):
         s = line.strip()
         if not s or s.startswith("%%"):
             continue
-        if re.match(r"^stateDiagram(-v2)?\b", s, re.I):
+        if re.match(r"^stateDiagram(-v2)?\b", s, re.IGNORECASE):
             continue
         # valid stateDiagram line forms:
         if re.match(r"^\[\*\]\s*$", s):                       # initial pseudo-state alone
@@ -325,7 +325,7 @@ def check_state(lines, errors):
         if re.match(r".+\s*-->\s*\[\*\](\s*:.*)?\s*$", s):    # final transition (opt label)
             _check_bracket_balance(idx, s, errors)
             continue
-        if re.match(r"^(state|note|title|direction|classDef|class\s|style\s)\b", s, re.I):
+        if re.match(r"^(state|note|title|direction|classDef|class\s|style\s)\b", s, re.IGNORECASE):
             continue
         if re.match(r"^\w+\s*(:.*)?$", s):                   # "StateName" or "StateName : desc"
             continue
@@ -341,11 +341,11 @@ def check_timeline(lines, errors):
         s = line.strip()
         if not s or s.startswith("%%"):
             continue
-        if re.match(r"^timeline\b", s, re.I):
+        if re.match(r"^timeline\b", s, re.IGNORECASE):
             continue
-        if re.match(r"^title\b", s, re.I):
+        if re.match(r"^title\b", s, re.IGNORECASE):
             continue
-        if re.match(r"^section\b", s, re.I):
+        if re.match(r"^section\b", s, re.IGNORECASE):
             continue
         # entry:  "label : text" or "label : event1 : event2"
         if re.match(r"^[^:]+:.*$", s):

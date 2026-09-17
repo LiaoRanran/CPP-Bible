@@ -52,7 +52,7 @@ def flags_for(name):
 def detect_format(stored):
     if "file format" in stored or "Disassembly of section" in stored:
         return "OBJDUMP"
-    if re.search(r'^\s*\.(text|globl|p2align|seh_|file)\b', stored, re.M):
+    if re.search(r'^\s*\.(text|globl|p2align|seh_|file)\b', stored, re.MULTILINE):
         return "GPP_S"
     return "OTHER"
 
@@ -63,7 +63,7 @@ def detect_version(stored):
 
 
 def seh_procs(text):
-    return re.findall(r'^\s*\.seh_proc\s+(\S+)', text, re.M)
+    return re.findall(r'^\s*\.seh_proc\s+(\S+)', text, re.MULTILINE)
 
 
 def is_user_sym(raw):
@@ -113,7 +113,7 @@ def main():
         ver = detect_version(stored)
         if a.only != "all" and ver != a.only:
             continue
-        mfile = re.search(r'^\s*\.file\s+"([^"]+)"', stored, re.M)
+        mfile = re.search(r'^\s*\.file\s+"([^"]+)"', stored, re.MULTILINE)
         if not mfile:
             results.append({"name": name, "ver": ver, "action": "SKIP_NO_SOURCE"})
             continue

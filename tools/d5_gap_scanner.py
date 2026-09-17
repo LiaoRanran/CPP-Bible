@@ -92,7 +92,7 @@ D5_EXEMPT_STEMS = {
 # 标题行 `##/###/#### D5...`，兼容「附录 D5」与无「附录」前缀的变体
 # （如 `## D5 真实性能基准：...`、`## D5 性能附录：...`）。
 # 历史口径仅匹配正文「附录 D5」字面量，漏判 6 个标题变体章（113 vs 119）。
-D5_HEADING_RE = re.compile(r"^#{2,4}\s*(?:附录\s*)?D5\b", re.M)
+D5_HEADING_RE = re.compile(r"^#{2,4}\s*(?:附录\s*)?D5\b", re.MULTILINE)
 
 
 def find_d5_chapters():

@@ -60,7 +60,7 @@ STAR_RE = re.compile(r"★+")
 # 均已有 `## 自测练习（Exercises）` 下的 `### 练习 N` 真实练习题——旧正则把它们
 # 全数漏计，导致 exercise_zero_chapters/median 严重失真（实测 62/1 实为 0/3）。
 # 现改为统计真实练习题标题 `### 练习`（三模式安全、与 verify_exercises.py 编译节一致）。
-EXERCISE_RE = re.compile(r"^###\s*练习", re.M)
+EXERCISE_RE = re.compile(r"^###\s*练习", re.MULTILINE)
 
 # 教学脚手架 / 文学性 关键词（用于进度看板）
 #
@@ -189,7 +189,7 @@ def scan_chapters() -> dict:
 
         # —— 标题（用于脚手架税）——
         hs = [h.strip() for h in re.findall(r"^(?:#{2,4})\s+(.+?)\s*$",
-                                            text, re.M)]
+                                            text, re.MULTILINE)]
         per_file_headings[p.name] = hs
 
         # —— 各类标记（多写法 + 章覆盖）——
@@ -210,9 +210,9 @@ def scan_chapters() -> dict:
 
         # D5 覆盖权威口径：与 d5_gap_scanner.D5_HEADING_RE 完全一致
         # （标题行 `##/###/#### D5...`，兼容「附录 D5」前缀变体，2026-08-30 收口）
-        if re.search(r"^#{2,4}\s*(?:附录\s*)?D5\b", text, re.M):
+        if re.search(r"^#{2,4}\s*(?:附录\s*)?D5\b", text, re.MULTILINE):
             d5_chapters += 1
-        admonitions += len(re.findall(r"^(?:!!!|\?\?\?)\s", text, re.M))
+        admonitions += len(re.findall(r"^(?:!!!|\?\?\?)\s", text, re.MULTILINE))
 
         n_ex = len(EXERCISE_RE.findall(text))
         m_num = CH_NUM_RE.match(p.name)
@@ -346,14 +346,14 @@ def scan_env() -> dict:
         txt = mk.read_text(encoding="utf-8", errors="replace")
         blk = re.search(r"features:\s*\n((?:\s+- .*\n)+)", txt)
         if blk:
-            feats = len(re.findall(r"^\s+-\s+\S", blk.group(1), re.M))
+            feats = len(re.findall(r"^\s+-\s+\S", blk.group(1), re.MULTILINE))
 
     # CHANGELOG 落后提交数
     lag = None
     cl = ROOT / "CHANGELOG.md"
     if cl.is_file():
         m = re.search(r"^##\s*\[[^\]]+\]\s*-\s*(\d{4}-\d{2}-\d{2})",
-                      cl.read_text(encoding="utf-8", errors="replace"), re.M)
+                      cl.read_text(encoding="utf-8", errors="replace"), re.MULTILINE)
         if m:
             out = git("log", "--oneline", f"--since={m.group(1)}")
             lag = len([x for x in out.split("\n") if x.strip()])

@@ -40,7 +40,7 @@ CLICHES = [
     "小结", "总结", "展望", "习题", "复习", "学完本章",
 ]
 
-HEAD_RE = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$", flags=re.M)
+HEAD_RE = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$", flags=re.MULTILINE)
 
 
 def chapter_hits(md: Path) -> list[str]:

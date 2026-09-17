@@ -50,7 +50,7 @@ def parse_steps(jobs: tuple[str, ...] = JOBS) -> list[tuple[str, list[str]]]:
     text = YML.read_text(encoding="utf-8")
     out: list[tuple[str, list[str]]] = []
     for job in jobs:
-        m = re.search(rf"\n  {re.escape(job)}:\n(.*?)(?=\n  [a-z][a-z0-9-]*:\n)", text, re.S)
+        m = re.search(rf"\n  {re.escape(job)}:\n(.*?)(?=\n  [a-z][a-z0-9-]*:\n)", text, re.DOTALL)
         if not m:
             sys.exit(f"[ci-local] 未找到 job {job!r}（ci.yml 结构变了？）")
         lines = m.group(1).split("\n")

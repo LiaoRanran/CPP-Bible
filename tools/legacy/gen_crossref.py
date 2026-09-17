@@ -36,7 +36,7 @@ from pathlib import Path
 # ---- 正则 ----
 ARROW_RE = re.compile(r"(?:⟶|→)\s*`?(Book/[^\s\)\]>。，；：、》）(（`]+)")
 BACKTICK_RE = re.compile(r"`(Book/[A-Za-z0-9_/.\-]+\.md)`")
-META_LINE_RE = re.compile(r"^\s*>\s*.*?(前置[:：]).*?(后续[:：]).*?$", re.S)
+META_LINE_RE = re.compile(r"^\s*>\s*.*?(前置[:：]).*?(后续[:：]).*?$", re.DOTALL)
 PRE_SEG_RE = re.compile(r"前置[:：]\s*([^｜|]+)")
 POST_SEG_RE = re.compile(r"后续[:：]\s*([^｜|]+)")
 CHCODE_RE = re.compile(r"ch(\d+)")
@@ -44,7 +44,7 @@ CHRANGE_RE = re.compile(r"ch(\d+)\s*[–\-]\s*ch(\d+)")
 H1_RE = re.compile(r"^#\s+(.+?)\s*$")
 LEAD_CH_RE = re.compile(r"^第\d+章[　\s]*")  # 去掉 H1 前缀"第01章　"
 
-CHAPTER_FILE_RE = re.compile(r"ch\d+_.*\.md$", re.I)
+CHAPTER_FILE_RE = re.compile(r"ch\d+_.*\.md$", re.IGNORECASE)
 
 
 def find_book_root(explicit=None):

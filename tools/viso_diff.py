@@ -61,7 +61,7 @@ def norm_nl(text: str) -> str:
 def strip_comments(text: str) -> str:
     """剥注释但**保持行数**（块注释退化成同数量的空行）：花括号配对要在原行号坐标系里做。"""
     text = re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"), norm_nl(text),
-                  flags=re.S)
+                  flags=re.DOTALL)
     return "\n".join(re.sub(r"//.*$", "", ln) for ln in text.split("\n"))
 
 

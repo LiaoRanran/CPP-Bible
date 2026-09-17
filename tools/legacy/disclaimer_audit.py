@@ -59,7 +59,7 @@ PATTERNS = [
     (r'用途.*?(自负|自行)', '用途自负'),
 ]
 
-COMPILED = [(re.compile(p, re.I), label) for p, label in PATTERNS]
+COMPILED = [(re.compile(p, re.IGNORECASE), label) for p, label in PATTERNS]
 
 # 跳过区域：代码块（``` ... ```）内的命中通常是示例代码里的字符串，不是声明。
 FENCE_RE = re.compile(r'^\s*```')

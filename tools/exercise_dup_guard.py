@@ -51,9 +51,9 @@ MIN_LEN = 100  # 归一化后最小长度，低于此视为平凡块不参与比
 
 
 def _norm(src: str) -> str:
-    s = re.sub(r"/\*.*?\*/", "", src, flags=re.S)   # 块注释
+    s = re.sub(r"/\*.*?\*/", "", src, flags=re.DOTALL)   # 块注释
     s = re.sub(r"//[^\n]*", "", s)                  # 行注释
-    s = re.sub(r"^\s*#.*$", "", s, flags=re.M)      # 预处理行
+    s = re.sub(r"^\s*#.*$", "", s, flags=re.MULTILINE)      # 预处理行
     s = re.sub(r"\s+", " ", s).strip()
     return s
 
@@ -61,7 +61,7 @@ def _norm(src: str) -> str:
 def _section_bounds(text: str):
     """返回 (start_idx, end_idx) 文本区间：第一个练习小节的起始，到其所在
     `## ` 级别的下一个同级/更高一级标题之前（或文件尾）。"""
-    heads = list(re.finditer(r"^(#{1,6})\s.*$", text, re.M))
+    heads = list(re.finditer(r"^(#{1,6})\s.*$", text, re.MULTILINE))
     if not heads:
         return None
     # 先按主关键词（自测练习/Exercises）锚定，回退到次关键词
@@ -93,7 +93,7 @@ def extract_exercise_cpp(md_path: str):
     if bounds is None:
         return []
     sec = text[bounds[0]:bounds[1]]
-    blocks = re.findall(r"```cpp[^\n]*\n(.*?)```", sec, re.S)  # 跳过围栏信息串行
+    blocks = re.findall(r"```cpp[^\n]*\n(.*?)```", sec, re.DOTALL)  # 跳过围栏信息串行
     out = []
     for b in blocks:
         n = _norm(b)

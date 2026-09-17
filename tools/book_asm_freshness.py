@@ -72,7 +72,7 @@ PAREN_RE = re.compile(
 )
 # 工件噪声头：objdump 的 "ch47_vs_51_dispatch_test.o:     file format pe-x86-64"
 #           与 "Disassembly of section .text:"
-NOISE_RE = re.compile(r"(?:file format|Disassembly of section)", re.I)
+NOISE_RE = re.compile(r"(?:file format|Disassembly of section)", re.IGNORECASE)
 
 LIB_PREFIXES = (
     "__", "_ZSt", "_Zda", "_Zn", "_Zdl", "_Zna", "_GLOBAL__", ".text._",
@@ -213,9 +213,9 @@ def main():
     checked = 0        # 真·绑定围栏所在小节数（已实际比对）
     oos = 0            # 示意性/out-of-scope 围栏数（无就近工件引用）
     illustrative = 0   # 教学标号(全章源码无对应函数)移出范围数
-    FENCE_RE = re.compile(r"```asm\n(.*?)```", re.S)
+    FENCE_RE = re.compile(r"```asm\n(.*?)```", re.DOTALL)
     REF_RE = re.compile(r"_asm_demo/([A-Za-z0-9_.\-]+)\.(?:cpp|s|o)")
-    HEAD_RE = re.compile(r"^(#{1,6})\s", re.M)
+    HEAD_RE = re.compile(r"^(#{1,6})\s", re.MULTILINE)
     SRC_FUNC_RE = re.compile(r"\b([A-Za-z_]\w*)\s*\(")
     SRC_STOP = set(LIB_NAMES) | {"if","for","while","switch","return","sizeof","decltype",
         "catch","template","typename","operator","std","void","int","char","bool","auto",

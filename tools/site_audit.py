@@ -73,7 +73,7 @@ def audit(site: Path) -> int:
         text = p.read_text(encoding="utf-8", errors="replace")
         # 剔除内联 SVG（Mermaid 图）：图内文本可含任意字面 `href="x"`，
         # 非真实资源引用（实测 ch61 mermaid 标签文本误报）。
-        text = re.sub(r"<svg\b.*?</svg>", "", text, flags=re.S)
+        text = re.sub(r"<svg\b.*?</svg>", "", text, flags=re.DOTALL)
         base = p.parent.resolve()  # 相对链接以当前 html 所在目录为基准（绝对化，避免 cwd 歧义）
         for m in ASSET_RE.finditer(text):
             res = m.group(1).split("#")[0].split("?")[0]

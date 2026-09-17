@@ -70,9 +70,9 @@ TILDE_RE = re.compile(r'~\d+\s*(ns|us|ms|cycles|s|μs|MB|KB|GB)')
 INDUSTRY_RE = re.compile(
     r'(github\.com|llvm\.org|boost\.org|chromium|abseil|leveldb|rocksdb'
     r'|clickhouse|redis|qt\.io|unreal|fmtlib|spdlog|protobuf|grpc|tbb'
-    r'|oneAPI|cuda|openmp|dotnet|webkit|v8|node\.js)', re.I)
+    r'|oneAPI|cuda|openmp|dotnet|webkit|v8|node\.js)', re.IGNORECASE)
 PITFALL_RE = re.compile(r'(陷阱|注意|误区|踩坑|常见错误|切勿|不要|避免|危险|警告)')
-ASM_RE = re.compile(r'(汇编|mov\b|lea\b|call\b|ret\b|x86|ARM|RISC-V|AVX|SSE|NEON|objdump|Compiler Explorer|godbolt)', re.I)
+ASM_RE = re.compile(r'(汇编|mov\b|lea\b|call\b|ret\b|x86|ARM|RISC-V|AVX|SSE|NEON|objdump|Compiler Explorer|godbolt)', re.IGNORECASE)
 
 
 def collect() -> dict[str, ChapterStats]:

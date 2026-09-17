@@ -696,7 +696,7 @@ def verify_bank():
     fail = 0
     for topic, qs in QUESTION_BANK.items():
         for stars, prompt, ans in qs:
-            for m in re.finditer(r"```cpp\n(.*?)```", ans, re.S):
+            for m in re.finditer(r"```cpp\n(.*?)```", ans, re.DOTALL):
                 code = m.group(1)
                 # 去掉示意注释行（以 // 且仅说明、非代码）——保留所有，让编译器判
                 total += 1

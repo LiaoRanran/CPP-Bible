@@ -37,8 +37,8 @@ CALL_RE = (r'\b(call|callq|jmp|jmpq|je|jne|jg|jl|jge|jle|ja|jb|jae|jbe|'
 
 # 模块源识别（C++20 模块）：接口单元 `export module X;` / 消费者 `import X;`（命名模块，
 # 排除 `import <header>` / `import "header"` 头单元）。
-MODULE_IFACE_RE = re.compile(r'^\s*export\s+module\b', re.M)
-MODULE_IMPORT_RE = re.compile(r'^\s*import\s+(?![<"])', re.M)
+MODULE_IFACE_RE = re.compile(r'^\s*export\s+module\b', re.MULTILINE)
+MODULE_IMPORT_RE = re.compile(r'^\s*import\s+(?![<"])', re.MULTILINE)
 
 
 def build_module_bmis(GPP, EX, std="c++23", opt=None):
@@ -97,7 +97,7 @@ def flags_for(name):
 def detect_format(stored):
     if "file format" in stored or "Disassembly of section" in stored:
         return "OBJDUMP"
-    if re.search(r'^\s*\.(text|globl|p2align|seh_|file)\b', stored, re.M):
+    if re.search(r'^\s*\.(text|globl|p2align|seh_|file)\b', stored, re.MULTILINE):
         return "GPP_S"
     return "OTHER"
 
@@ -171,7 +171,7 @@ def main():
         if a.only != "all" and ver.lower() != a.only.lower():
             continue
         # 源文件来自 .file 指令
-        mfile = re.search(r'^\s*\.file\s+"([^"]+)"', stored, re.M)
+        mfile = re.search(r'^\s*\.file\s+"([^"]+)"', stored, re.MULTILINE)
         if not mfile:
             results.append({"name": name, "ver": ver, "status": "NO_SOURCE"})
             continue

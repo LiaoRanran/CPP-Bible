@@ -103,7 +103,7 @@ def infer_lang(body):
         return "asm"
     # 纯文本信号：Q&A/面试/提案历程/选型速查/ASCII 图等
     if re.search(r"^(?:Q:|A:|面试|提案|N\d{4}|反模式\d|速查|选择|演进|演化|标准化|"
-                 r"[│┌└├┐┘┤┼─0-9→*>#\-\+].{0,12})", text_cue, re.M):
+                 r"[│┌└├┐┘┤┼─0-9→*>#\-\+].{0,12})", text_cue, re.MULTILINE):
         return "text"
     has_code = any((";" in ln) or ("{" in ln) or ("}" in ln) for ln in body)
     if has_code:

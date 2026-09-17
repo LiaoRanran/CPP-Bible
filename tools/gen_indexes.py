@@ -228,7 +228,7 @@ def gen_glossary(parts):
     for term, kw in GLOSSARY_TERMS:
         if _norm_term(term) in covered:
             continue
-        pat = re.compile(kw, re.I)
+        pat = re.compile(kw, re.IGNORECASE)
         hits = [(ch, title, rel) for ch, title, rel, hay in idx if pat.search(hay)]
         if not hits:
             continue

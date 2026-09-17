@@ -128,7 +128,7 @@ IMPL_TOKENS = {
     'redis':      (r'\bredis\b', 'Redis'),
     'clickhouse': (r'\bclickhouse\b', 'ClickHouse'),
 }
-IMPL_RX = {k: re.compile(v, re.I) for k, (v, _) in IMPL_TOKENS.items()}
+IMPL_RX = {k: re.compile(v, re.IGNORECASE) for k, (v, _) in IMPL_TOKENS.items()}
 
 PLAT_TOKENS = {
     'x86-64':  r'x86[-_ ]?64',
@@ -136,7 +136,7 @@ PLAT_TOKENS = {
     'Windows': r'\bwindows\b',
     'Linux':   r'\blinux\b',
 }
-PLAT_RX = {k: re.compile(v, re.I) for k, v in PLAT_TOKENS.items()}
+PLAT_RX = {k: re.compile(v, re.IGNORECASE) for k, v in PLAT_TOKENS.items()}
 
 # 仅自动补全这两个标签
 APPLY_TAGS = {

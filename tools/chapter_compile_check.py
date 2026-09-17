@@ -182,7 +182,7 @@ CXX23_LIB_RE = re.compile(
 # 出现在全局翻译单元顶层，包进 namespace 会 "module does not name a type" 误报失败。
 # 模块示例由外部支持 Modules 的工具链单独编译实证，属本门禁作用域之外，跳过。
 MODULE_RE = re.compile(
-    r"^\s*(export\s+module|module|import)\s+\S", re.M)
+    r"^\s*(export\s+module|module|import)\s+\S", re.MULTILINE)
 # 第三方 fmt 库示例（如 ch12/ch13 的 `#include <fmt/...>` 或 `fmt::format`）。
 # <fmt/> 不在本 MinGW 工具链且 harness 默认剥离块内 #include（含 <fmt/>），导致
 # `fmt::` 未声明。该库属外部框架示例，超出本门禁作用域，跳过（不计为失败）。
@@ -225,7 +225,7 @@ EXTERNAL_SDK_RE = re.compile(
 # 开启 `namespace std { ... }`（向 std 加全特化/扩展，如 is_error_code_enum 特化）：
 # 特化须位于全局作用域，门禁的 namespace 包裹使块内 `namespace std` 变成 `chk::std`
 # 误报；在全局作用域本可编译，与 STD_TEMPLATE_SPEC_RE 同理，跳过（教学示例）。
-STD_NS_OPEN_RE = re.compile(r"^\s*namespace\s+std\s*\{", re.M)
+STD_NS_OPEN_RE = re.compile(r"^\s*namespace\s+std\s*\{", re.MULTILINE)
 # 第三方生态命名空间引用（boost::/absl::/spdlog::/rocksdb::/leveldb::/folly::/
 # llvm::/clang::/glog::/gflags:: 等）：对应库不在本 MinGW 工具链，示例须装库才能编译，
 # 属"第三方生态源码章"的库代码展示，超出本门禁作用域，跳过（与 Qt/gtest 同理）。
@@ -402,7 +402,7 @@ def check_file(path: pathlib.Path, tmpdir: pathlib.Path):
         # 块内自建顶层 namespace 并回指 ::X（如 `::geo::dim`，示范"全局限定名绕过内层
         # 隐藏"）：门禁把块包进 chk_ 命名空间后，顶层 `namespace X` 变成 chk::X，`::X`
         # 全局限定查找落空 → 误报。此类代码在真实全局作用域本可编译，跳过（教学示例）。
-        own_ns = set(re.findall(r"^namespace\s+([A-Za-z_]\w*)\s*\{", code, re.M))
+        own_ns = set(re.findall(r"^namespace\s+([A-Za-z_]\w*)\s*\{", code, re.MULTILINE))
         back_ref_ns = next((n for n in own_ns
                             if re.search("::" + re.escape(n) + r"\b", code)), None)
         if back_ref_ns is not None:
