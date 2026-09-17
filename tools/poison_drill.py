@@ -1132,6 +1132,67 @@ def drill() -> int:
         results.append(("P73-阴 any-of 候选全有真实出处须放行", not _fs73b,
                         f"命中 {[f'{f.rule_id}/{f.severity}' for f in _fs73b] or '（无）'}"))
 
+    # ── P74/P75/P76（575）：命题级活性锚（堵 M5 活雷）─────────────────────────────
+    #   活雷：既有三条 _has_* 问的是"**引用卡**有没有活性条件"，不问"这个对照证不证伪得了
+    #   **这条命题**" ⇒ inference 改标 observation 后蹭同卡别的命题的锚即被放行
+    #   （574 v3 实测 M5 29/29）。收口：observation 命题须在命题级显式指认 `liveness` 锚。
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-LIVE.md", {
+            "id": "EV-MEM-LIVE", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "falsification": "对照读数 3 vs 0（量化）",
+            "symbol_map": {"spin_plain": "_Z10spin_plainv"},   # 沙箱无真工件 ⇒ 用 symbol_map 定位
+            "actual": {"run_match_keys": ["spin_plain_ret"]},
+            "artifact_assert": "\n  - {kind: contains, text: \"spin_plain\"}"})
+
+        def _atom(tag: str, prop_block: str) -> Path:
+            p = tmp / "atoms" / "mem" / f"ATOM-MEM-LIVE{tag}.md"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(
+                "---\n"
+                f"id: ATOM-MEM-LIVE{tag}\ndomain: mem\ntitle: t\ntype: atom\nstatus: draft\n"
+                "claim: c\nclaim_boundary: b\n"
+                "claim_structured:\n"
+                "  - prop-id: prop-1\n"
+                "    claim_type: observation\n"
+                "    statement: s\n"
+                "    evidence: [EV-MEM-LIVE]\n"
+                f"{prop_block}"
+                "    extracted_by: writer\n"
+                "---\n正文\n", encoding="utf-8")
+            return p
+
+        def _liveness(tag: str, block: str):
+            p = _atom(tag, block)
+            return [f for f in ge.check_observation_liveness()
+                    if str(f.target).endswith(p.name)]
+
+        # P74（+）：observation 命题**没有**命题级锚 ⇒ 必须 warn（这正是 M5 活雷的形状）
+        fs = _liveness("A", "")
+        _who = {f"{f.rule_id}/{f.severity}" for f in fs}
+        ok = any("OBSERVATION-LIVENESS" in who for who in _who) and \
+            all(f.severity == "warn" for f in fs)
+        results.append(("P74 observation 命题缺命题级活性锚（蹭卡级工件）须 warn",
+                        ok, f"命中 {sorted(_who) or '（漏网！）'}"))
+        # P74-阴（−）：真 observation 命题锚了**真实且非通用**的夹具符号 ⇒ 放行
+        fs = _liveness("B", "    liveness:\n      kind: fixture_symbol\n"
+                            "      symbol: spin_plain\n")
+        results.append(("P74-阴 命题锚了真实的夹具特有符号须放行", not fs,
+                        f"命中 {[f'{f.rule_id}/{f.severity}' for f in fs] or '（无）'}"))
+        # P75（+）：锚了个**通用符号**（.file）⇒ warn（假锚也要被看见）
+        fs = _liveness("C", "    liveness:\n      kind: fixture_symbol\n      symbol: .file\n")
+        ok = bool(fs) and all(f.severity == "warn" for f in fs) and \
+            any("通用符号" in f.message for f in fs)
+        results.append(("P75 锚通用符号（.file）须 warn", ok,
+                        f"命中 {[f.severity for f in fs] or '（漏网！）'}"))
+        # P76（+）：锚了个引用卡里**根本不存在**的符号 ⇒ warn
+        fs = _liveness("D", "    liveness:\n      kind: fixture_symbol\n"
+                            "      symbol: no_such_symbol_xyz\n")
+        ok = bool(fs) and all(f.severity == "warn" for f in fs) and \
+            any("不在本命题引用卡" in f.message for f in fs)
+        results.append(("P76 锚不存在的符号须 warn", ok,
+                        f"命中 {[f.severity for f in fs] or '（漏网！）'}"))
+
     # ── N1–N7（558 Part A / 533 §2.5）：V-iso **真编译**毒载荷（557 B1 停点）──────
     #  判决在 replay 路径（`atom_evidence_replay.check_negative_controls`）——**不是** gate
     #  规则 ⇒ N1–N7 **不会**增加 RULE-COVERAGE 分子（仍 36/61），此点已在 557 D6 澄清；
@@ -1807,6 +1868,8 @@ def drill() -> int:
     # 非通用符号），复现验收 §1 的正例形态（FENCE-001：有量化对照 + 特有符号）。
     _t4_live = ("\n  - {id: prop-1, subject: s, predicate: p, object: o,"
                 " claim_type: observation, statement: st,"
+                # 575：新语义——除卡级活性外，observation 命题还须在**命题级**指认自己的证伪锚
+                " liveness: {kind: fixture_symbol, symbol: spin_plain},"
                 " evidence: [EV-MEM-P68N], extracted_by: writer}")
     who = _atom_who(
         [("ATOM-MEM-P68N.md", dict(_a_base, id="ATOM-MEM-P68N",
@@ -1985,6 +2048,8 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P71 ", "A3"),
     # 572：P72 = 断言数低于人审基线（悄悄删项）；P73 = any-of 混入通用候选（断言被拉向平凡）。
     ("P72 ", "A3"), ("P73 ", "A3"),
+    # 575：P74/P75/P76 = 命题级活性锚（缺锚 / 锚通用符号 / 锚不存在）——堵 M5 活雷。
+    ("P74 ", "A3"), ("P75 ", "A3"), ("P76 ", "A3"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

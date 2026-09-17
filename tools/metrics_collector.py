@@ -477,13 +477,17 @@ def collect_curves() -> dict:
             return {"source": str(path), "tag": tag,
                     "error": f"基线不可用：{type(exc).__name__}: {exc}"}
 
+    # 574 升 v3 → **575 升 v4**（命题级活性锚覆盖 M5 活雷后的全量基线）。
+    v4 = ROOT / "data" / "mutation" / "full_baseline_v4.json"
     v3 = ROOT / "data" / "mutation" / "full_baseline_v3.json"
     v2 = ROOT / "data" / "mutation" / "full_baseline_v2.json"
     v1 = ROOT / "data" / "mutation" / "full_baseline_v1.json"
-    out["mutation_escape_rate"] = (_rate(v3, "v3（574 起当前口径：572 收 M3 + 574 修 M5 尺子）")
-                                   if v3.is_file()
-                                   else {"error": "缺 data/mutation/full_baseline_v3.json"})
+    out["mutation_escape_rate"] = (
+        _rate(v4, "v4（575 起当前口径：命题级活性锚覆盖 M5 活雷；M5 由沉默逃逸变为 warn 可见）")
+        if v4.is_file() else {"error": "缺 data/mutation/full_baseline_v4.json"})
     hist = []
+    if v3.is_file():
+        hist.append(_rate(v3, "v3（574 修 M5 尺子后、M5 活雷未收，仅历史）"))
     if v1.is_file():
         hist.append(_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）"))
     if v2.is_file():

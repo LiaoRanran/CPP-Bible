@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-17T22:33:21",
- "source_commit": "403bb16",
+ "generated_at": "2026-09-18T00:28:02",
+ "source_commit": "dd5d29d",
  "drill": {
-  "passed": 114,
-  "total": 114
+  "passed": 118,
+  "total": 118
  },
  "attack_types": {
   "A1": {
@@ -311,6 +311,21 @@
    "type": "A3"
   },
   {
+   "name": "P74 observation 命题缺命题级活性锚（蹭卡级工件）须 warn",
+   "pass": true,
+   "type": "A?"
+  },
+  {
+   "name": "P75 锚通用符号（.file）须 warn",
+   "pass": true,
+   "type": "A?"
+  },
+  {
+   "name": "P76 锚不存在的符号须 warn",
+   "pass": true,
+   "type": "A?"
+  },
+  {
    "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
    "pass": true,
    "type": "A1"
@@ -524,6 +539,11 @@
   },
   {
    "name": "P73-阴 any-of 候选全有真实出处须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P74-阴 命题锚了真实的夹具特有符号须放行",
    "pass": true,
    "type": null
   },

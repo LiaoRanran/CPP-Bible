@@ -2374,6 +2374,40 @@ def _has_non_env_run_key(meta: dict) -> bool:
     return any(not _is_env_key(k) for k in keys)
 
 
+def _prop_liveness_ok(prop: dict, cards: list[dict]) -> tuple[bool, str]:
+    """575 任务 1：命题级活性锚（`claim_structured[*].liveness`，可选）机检 —— 只做**可机检**判断。
+
+    为什么需要：既有三条 `_has_*` 问的是"**引用卡**有没有活性条件"，不问"这个对照证不证伪
+    得了**这条命题**" ⇒ 把 inference 改标 observation 后，它会蹭同主题证据卡上**为别的命题
+    服务的**夹具符号 ⇒ 574 v3 实测 M5 = 29/29 全放行（活雷）。
+
+    形态（最小可机检，不猜语义）：
+      * `{kind: fixture_symbol, symbol: <符号>}` —— 该符号须 ①真实出现在**本命题引用卡**的
+        工件断言目标里 ②非通用符号 ③非散文 ⇒ 否则 warn（"锚了个假锚/通用锚"也必须被看见）。
+    缺字段 ⇒ False（未指认锚）；kind 不是 fixture_symbol ⇒ False（本批只认这一形态，
+    其余形态在 worklog 写明：quantified / run_key 的命题级指认需要更细的取值串/键名口径）。
+    """
+    lv = prop.get("liveness")
+    if not isinstance(lv, dict) or not lv:
+        return False, "缺 `liveness` 字段"
+    kind = str(lv.get("kind") or "").strip()
+    if kind != "fixture_symbol":
+        return False, f"`liveness.kind={kind!r}` 本批不认（当前只机检 fixture_symbol）"
+    sym = str(lv.get("symbol") or "").strip()
+    if not sym:
+        return False, "`liveness.symbol` 为空"
+    if _is_universal_symbol(sym):
+        return False, f"锚的符号 {sym!r} 是通用符号（恒真 ⇒ 不构成证伪锚）"
+    if _CJK_RE.search(sym) and not _IDENT_RE.search(sym):
+        return False, f"锚的符号 {sym!r} 是散文（不可定位）"
+    for c in cards:
+        aa = c.get("artifact_assert")
+        for r in (aa if isinstance(aa, list) else []):
+            if isinstance(r, dict) and sym in {str(t).strip() for t in _assert_targets(r)[1]}:
+                return True, ""
+    return False, f"锚的符号 {sym!r} 不在本命题引用卡的工件断言里（锚不存在）"
+
+
 def check_observation_liveness() -> list[Finding]:
     """`OBSERVATION-LIVENESS`（530 任务4，**warn 观察期**）：自标观测还须是「活的观测」。
 
@@ -2404,13 +2438,30 @@ def check_observation_liveness() -> list[Finding]:
             refs = [str(r).strip() for r in _as_list(prop.get("evidence"))
                     if str(r).strip()]
             cards = [idx[r] for r in refs if r in idx]
+            pid = str(prop.get("id") or "?")
+            # 575 任务 1：**命题级锚检查必须放在最前**（先于任何"引用卡"相关的跳过/放行判断）。
+            #   v4 首跑踩到：M5 变异体是"inference 命题改标 observation"，而这些命题**没有
+            #   evidence 引用**（靠 external_basis）⇒ 若把锚检查放在 `if not cards: continue`
+            #   之后就会被整条跳过 ⇒ 29 条照旧逃逸（活雷没堵上）。伪装成 observation 后指认不出
+            #   自己的证伪锚 —— 这正是它该被看见的理由，与有没有引用卡无关。
+            #   只 warn、不 block、不新增规则 id（挂既有 OBSERVATION-LIVENESS）。
+            ok, why = _prop_liveness_ok(prop, cards)
+            if not ok:
+                out.append(Finding(
+                    "OBSERVATION-LIVENESS", "warn", _rel(p),
+                    f"命题 {pid}（observation）未在**命题级**指认证伪锚：{why}"
+                    f"——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件",
+                    "在命题项内补 `liveness: {kind: fixture_symbol, symbol: <夹具特有符号>}`；"
+                    "该符号须真实出现在本命题引用卡的工件断言中且非通用符号。"
+                    "若本命题无法被单一工件读数证伪 ⇒ 改标 inference 并补 external_basis"))
+                continue                          # 单点：不再叠其它活性告警
             if not cards or not any(_has_artifact_assertion(c) for c in cards):
                 continue                          # 交由 OBSERVATION-NEEDS-ARTIFACT 处置
             if any(_falsification_quantified(c.get("falsification"))
                    or _has_fixture_specific_assert_symbol(c)
                    or _has_non_env_run_key(c) for c in cards):
-                continue                          # 至少一条活性条件成立 ⇒ 放行
-            pid = str(prop.get("id") or "?")
+                continue                          # 卡级活性成立 ⇒ 放行（现状口径）
+           
             out.append(Finding(
                 "OBSERVATION-LIVENESS", "warn", _rel(p),
                 f"命题 {pid}（observation）缺活性对照：工件断言只能证明「程序打印了某值」，"

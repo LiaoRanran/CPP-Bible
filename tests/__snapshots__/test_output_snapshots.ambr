@@ -4,7 +4,7 @@
     'advice': 5,
     'block': 0,
     'rules': 63,
-    'warn': 136,
+    'warn': 186,
   })
 # ---
 # name: test_kg_stats_counts
