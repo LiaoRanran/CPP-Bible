@@ -331,6 +331,78 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
     return snap
 
 
+# ── 573 任务 A-2：overturned 事件通道（只追加；**系统绝不自动产生推翻**）────────────
+OVERTURNED_FILE = ROOT / "data" / "overturned_events.jsonl"
+
+
+def read_overturned_events(path: Path | None = None) -> list[dict]:
+    """读事件流。文件缺失 ⇒ `[]`；坏行跳过（**不整吞**——损坏是数据问题，不是静默理由）。"""
+    p = path or OVERTURNED_FILE
+    if not p.is_file():
+        return []
+    out: list[dict] = []
+    for ln in p.read_text(encoding="utf-8", errors="replace").splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            out.append(json.loads(ln))
+        except ValueError:
+            continue
+    return out
+
+
+def _resolve_card_path(card: str) -> Path | None:
+    """卡 id 或相对路径 ⇒ 文件路径；找不到 ⇒ None（调用方按 fail-closed 处理）。"""
+    p = Path(card)
+    if p.is_file():
+        return p
+    for pat in ("atoms/**/%s.md", "evidence/**/%s.md"):
+        for f in ROOT.glob(pat % card):
+            if f.is_file():
+                return f
+    return None
+
+
+def log_overturned(target: str, old_verdict: str, new_verdict: str, by: str,
+                   reason: str, card: str | None = None,
+                   path: Path | None = None) -> dict:
+    """记录一次**人或异族**的推翻（573 任务 A-2）。
+
+    schema：`{ts, target, card, old_verdict, new_verdict, by, reason}`
+      * `by`：`human:<名>`（**须过 git 作者绑定**）或 `adversary:<族>`（异族无 git 身份 ⇒ 只登记）；
+      * **fail-closed**：human 名不匹配该卡最后一次 git 提交的作者、或卡解析不到、或任一必填为空
+        ⇒ **拒绝写入**（raise ValueError）——"无签名的人"不能推翻任何东西；
+      * 只追加（`data/overturned_events.jsonl`），不覆盖、不删除。
+    谁**不许**调用：任何自动检测/自动 LLM 推翻路径（战略冻结档），本函数只接显式的人/异族动作。
+    """
+    if not (target and old_verdict and new_verdict and by and reason):
+        raise ValueError("target/old_verdict/new_verdict/by/reason 均不可为空（不完整的推翻不予登记）")
+    cp = _resolve_card_path(card or target)
+    if cp is None:
+        raise ValueError(f"卡解析不到（{card or target}）⇒ 无法核验签署，拒绝写入（fail-closed）")
+    by = by.strip()
+    if by.lower().startswith("human:"):
+        name = by.split(":", 1)[1].strip()
+        import gate_engine as ge  # 局部导入：复用卡级同款判据，避免模块级耦合
+        author = ge._git_author_for(cp)
+        if author is None:
+            raise ValueError(f"git 不可用 ⇒ 无法核验推翻者 {name!r}，拒绝写入（fail-closed）")
+        if not ge._author_matches(name, author):
+            raise ValueError(f"推翻者 {name!r} 不是该卡最后一次 git 提交的作者（{author[0]}）"
+                             f"⇒ 无签名，拒绝写入")
+    elif not by.lower().startswith("adversary:"):
+        raise ValueError("by 须为 `human:<名>` 或 `adversary:<族>`（其它形态不予登记）")
+    ev = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "target": target,
+          "card": card or target, "old_verdict": old_verdict, "new_verdict": new_verdict,
+          "by": by, "reason": reason}
+    p = path or OVERTURNED_FILE
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("a", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(ev, ensure_ascii=False) + "\n")
+    return ev
+
+
 def collect_curves() -> dict:
     """565 Part 4b · 收敛三曲线的**机制字段**（先把管道建好，数据攒着）。
 
@@ -349,28 +421,45 @@ def collect_curves() -> dict:
                  "note": "三曲线字段 565 Part 4b；补齐第二个时点前，这里只作机制占位"}
     from stat_bounds import proportion  # 565 Part 1 原语（局部导入：与 toolchain 同风格）
 
-    bl = ROOT / "data" / "mutation" / "full_baseline_v1.json"
-    if bl.is_file():
+    # 573 任务 A-1：数据源升到 **v2**（571 修 GATE_READ_KEYS 之后；M2/M3 逃逸均 0）。
+    #   v1（尺子修前、含 M2 的 207 条假逃逸）**保留为历史时点**，不覆盖——否则历史曲线会被改写。
+    def _rate(path: Path, tag: str) -> dict:
         try:
-            d = json.loads(bl.read_text(encoding="utf-8"))
+            d = json.loads(path.read_text(encoding="utf-8"))
             judged = d["blocked"] + d["escaped"]
             blk = proportion(d["escaped"], judged)
-            out["mutation_escape_rate"] = {
-                "source": "data/mutation/full_baseline_v1.json",
-                "judged": judged, "n_a": d["n_a"],
-                "numerator": blk["numerator"], "denominator": blk["denominator"],
-                "point": round(blk["point"], 6),
-                "cp_low": round(blk["cp_low"], 6), "cp_high": round(blk["cp_high"], 6),
-                "conf": blk["conf"]}
+            return {"source": str(path.relative_to(ROOT).as_posix()), "tag": tag,
+                    "judged": judged, "n_a": d["n_a"],
+                    "numerator": blk["numerator"], "denominator": blk["denominator"],
+                    "point": round(blk["point"], 6),
+                    "cp_low": round(blk["cp_low"], 6), "cp_high": round(blk["cp_high"], 6),
+                    "conf": blk["conf"]}
         except (KeyError, ValueError) as exc:      # 数据坏了要显形，不许静默跳过
-            out["mutation_escape_rate"] = {"error": f"基线不可用：{type(exc).__name__}: {exc}"}
-    else:
-        out["mutation_escape_rate"] = {"error": "缺 data/mutation/full_baseline_v1.json"}
-    out["overturned_by_stronger_verifier"] = 0
-    out["overturned_note"] = ("事件字段：当前系统无产生该事件的路径 ⇒ 恒 0；"
-                              "0 在这里是**真值**（不是缺数据）")
-    out["escape_survival_batches"] = None
-    out["escape_survival_note"] = "无数据（=None）：量一次收口要跨几个批次才能填；0 会与'当批收口'混淆"
+            return {"source": str(path), "tag": tag,
+                    "error": f"基线不可用：{type(exc).__name__}: {exc}"}
+
+    v2 = ROOT / "data" / "mutation" / "full_baseline_v2.json"
+    v1 = ROOT / "data" / "mutation" / "full_baseline_v1.json"
+    out["mutation_escape_rate"] = (_rate(v2, "v2（573 起当前口径）") if v2.is_file()
+                                   else {"error": "缺 data/mutation/full_baseline_v2.json"})
+    out["mutation_escape_rate_history"] = (
+        [_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）")] if v1.is_file() else [])
+
+    # 573 任务 A-2：overturned 从"恒 0 占位"变成**真读数**（读只追加事件流；写入见 log_overturned）。
+    ev = read_overturned_events()
+    out["overturned_by_stronger_verifier"] = len(ev)
+    out["overturned_recent"] = ev[-5:]
+    out["overturned_note"] = ("事件流：data/overturned_events.jsonl（只追加）。**系统绝不自动产生推翻**——"
+                              "写入只能来自人或异族的显式动作，且 human 推翻者须过 git 作者绑定（fail-closed）")
+    # 573 任务 A-3：第一批 survival 真实数据（**不编**：只数 M3 那 52 条）。
+    out["escape_survival_batches"] = {
+        "M3": {"batches": 1, "escapes": 52, "produced_in": "571", "closed_in": "572",
+               "note": "571 v2 浮出 52 条 → 572 全部收口 ⇒ survival = 1 批"},
+        "M2": None,
+        "M2_note": "571 已证实 v1 的 207 条是 GATE_READ_KEYS 尺子 bug 的**假逃逸**（修后 0）⇒ 不计入",
+        "others": None,
+    }
+    out["escape_survival_note"] = "其余算子尚无'产生→收口'的完整批次 ⇒ None（不填 0）"
     return out
 
 
@@ -411,6 +500,15 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("collect", help="采集一次（默认子命令）")
     ap.add_argument("--no-heavy", action="store_true", help="跳过 poison / replay（秒级）")
     ap.add_argument("--json", action="store_true", help="只打印，不落盘")
+    # 573 任务 A-2：推翻事件**只接显式的人/异族动作**（系统绝不自动产生推翻）。
+    ap.add_argument("--log-overturned", action="store_true",
+                    help="写入一条推翻事件（须同时给 --target/--old/--new/--by/--reason）")
+    ap.add_argument("--target", default="", help="被推翻的命题/卡 id（如 ATOM-MEM-MOVE-001/prop-1）")
+    ap.add_argument("--old", default="", help="旧判决（如 confirm）")
+    ap.add_argument("--new", default="", help="新判决（如 refute:xxx）")
+    ap.add_argument("--by", default="", help="推翻者：`human:<名>`（须过 git 作者绑定）/ `adversary:<族>`")
+    ap.add_argument("--reason", default="", help="推翻理由（必填，进事件流）")
+    ap.add_argument("--card", default="", help="被推翻对象所在的卡（id 或路径），用于核验 human 签名")
     ap.add_argument("--out", default=None, help="覆盖 metrics.jsonl 路径")
     a = ap.parse_args(argv)
 
