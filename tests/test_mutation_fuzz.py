@@ -208,6 +208,40 @@ def test_558_out_of_scope_when_only_prose_mentions():
     assert any(v is not None for _p, v in mf.mut_m3(inscope)), mf.mut_m3(inscope)
 
 
+# ── 568 任务 3：run_fuzz 的"写变体→跑→还原"必须异常安全（567 抓到的隐患）────────
+
+
+def test_568_run_fuzz_restores_card_on_exception(tmp_path, monkeypatch):
+    """任何异常/中断都必须还原（finally）—— EV-CONC-001 的 3 行 M4 注入残留就是这么来的。
+
+    做法：把 `sandbox()` 换成指向**已知目录**的替身、把 `classify` 换成"先污染副本再抛错"的
+    替身 ⇒ `run_fuzz` 必抛；随后断言 ①沙箱副本已还原成原卡文本 ②**真实卡零改动**。
+    """
+    import contextlib
+
+    card = mf.ROOT / "evidence/conc/EV-CONC-001.md"
+    before = card.read_text(encoding="utf-8")
+    fake = tmp_path / "sb"
+    (fake / "evidence/conc").mkdir(parents=True)
+    sb_card = fake / "evidence/conc/EV-CONC-001.md"
+
+    @contextlib.contextmanager
+    def _fake_sandbox():
+        yield fake
+
+    def _boom(*_a, **_k):
+        sb_card.write_text("# 变异残留\n", encoding="utf-8")     # 模拟"变体已写进副本"
+        raise RuntimeError("模拟门禁步骤炸了")
+
+    monkeypatch.setattr(mf, "sandbox", _fake_sandbox)
+    monkeypatch.setattr(mf, "classify", _boom)
+    monkeypatch.setattr(mf, "_rel_in_sandbox", lambda _card, _tmp: sb_card)
+    with pytest.raises(RuntimeError):
+        mf.run_fuzz([card], ["M3"], 1)
+    assert sb_card.read_text(encoding="utf-8") == before, "异常后沙箱副本必须已还原成原卡文本"
+    assert card.read_text(encoding="utf-8") == before, "真实卡必须零改动"
+
+
 def test_548_diff_is_not_card_scoped(monkeypatch: pytest.MonkeyPatch):
     """跨卡规则不许被"按卡裁剪"漏掉：diff 必须是**全量**（别的卡上的新命中也要算）。"""
     with mf.sandbox() as tmp:

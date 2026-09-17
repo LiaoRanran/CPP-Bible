@@ -419,29 +419,34 @@ def run_fuzz(cards: list[Path], ops: list[str], limit: int,
             rel = card.relative_to(ROOT).as_posix()
             if progress:                # 全量轮要能看出"跑到哪了 / 还活着"（不是静默 10 分钟）
                 print(f"[mutation] ({ci}/{len(selected)}) {rel}", file=sys.stderr, flush=True)
-            for op in ops:
-                variants = MUTATORS[op](text)
-                if not variants:
-                    per.append({"card": rel, "op": op, "point": "-", "verdict": "n_a",
-                                "why": "该卡本就没有被变异的字段（不适用）"})
-                    continue
-                for point, vtext in variants:
-                    if vtext is None:
-                        # 558 Part B2：算子自判"该提问超出面"（M2 在门禁读取面内找不到路径）
-                        per.append({"card": rel, "op": op, "point": point,
-                                    "verdict": "n_a", "out_of_scope": True,
-                                    "why": f"out_of_scope：{point}"})
+            try:
+                for op in ops:
+                    variants = MUTATORS[op](text)
+                    if not variants:
+                        per.append({"card": rel, "op": op, "point": "-", "verdict": "n_a",
+                                    "why": "该卡本就没有被变异的字段（不适用）"})
                         continue
-                    if vtext == text:
+                    for point, vtext in variants:
+                        if vtext is None:
+                            # 558 Part B2：算子自判"该提问超出面"（M2 在门禁读取面内找不到路径）
+                            per.append({"card": rel, "op": op, "point": point,
+                                        "verdict": "n_a", "out_of_scope": True,
+                                        "why": f"out_of_scope：{point}"})
+                            continue
+                        if vtext == text:
+                            per.append({"card": rel, "op": op, "point": point,
+                                        "verdict": "n_a", "why": "变异为空操作"})
+                            continue
+                        r = classify(card.stem, op, baseline, vtext, sb_card, tmp)
                         per.append({"card": rel, "op": op, "point": point,
-                                    "verdict": "n_a", "why": "变异为空操作"})
-                        continue
-                    r = classify(card.stem, op, baseline, vtext, sb_card, tmp)
-                    per.append({"card": rel, "op": op, "point": point,
-                                "reproduce": (f".venv\\Scripts\\python.exe tools/mutation_fuzz.py "
-                                              f"--cards {rel} --operators {op} --limit 1"),
-                                **r})
-            sb_card.write_text(text, encoding="utf-8")   # 本卡跑完**统一**还原（进下一张卡前）
+                                    "reproduce": (f".venv\\Scripts\\python.exe tools/mutation_fuzz.py "
+                                                  f"--cards {rel} --operators {op} --limit 1"),
+                                    **r})
+            finally:
+                # 568 任务 3（567 抓到的隐患）：还原进 **finally** —— 任何异常 / KeyboardInterrupt /
+                # 提前 return 都必须把沙箱副本还原成原卡文本，绝不把变异留到下一张卡
+                # （EV-CONC-001.md 的 3 行 M4 注入残留就是这么来的）。
+                sb_card.write_text(text, encoding="utf-8")
     counts = {k: sum(1 for r in per if r["verdict"] == k)
               for k in ("blocked", "escaped", "n_a")}
     counts["malformed"] = sum(1 for r in per if r.get("malformed"))    # n_a 里单列一类（543 P1）
