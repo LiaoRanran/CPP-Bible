@@ -1026,6 +1026,38 @@ def drill() -> int:
               and not [f for f in _fs70b if f.severity == "block"])
         results.append(("P70b M3 另一子情形：absent_in→absent（absent 残留 symbol）须 warn",
                         ok, f"命中 severity={[f.severity for f in _fs70b] or '（漏网！）'}"))
+
+    # ── P71/P71-阴（570）：判据性 -Werror 被删（声明↔flag 绑定）须 warn ──────────────
+    #  真洞（569 T0 唯一逃逸）：卡在**判据声明**里写「判据必须带 -Werror」，而命令里带诊断开关
+    #  的编译行被删掉一条的 -Werror ⇒ 判据被弱化，但 P11 只看"整卡有没有 -Werror"（还剩就仍算有）
+    #  ⇒ 无规则命中。570 的窄形状：只在**声明里提到 -Werror** 的卡上，逐**诊断编译行**绑定。
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "lang" / "EV-LANG-WERR.md", {
+            "id": "EV-LANG-WERR", "serves": "[ATOM-LANG-INLINE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "falsification": "「零诊断」由 -Werror 承担：三条诊断编译任一 rc≠0 即 refute；"
+                             "判据必须带 -Werror",
+            "command": ("g++ -O2 -Wall -Wextra -Werror -c a.cpp -o a.o\n"
+                        "g++ -O2 -Wall -Wextra -c b.cpp -o b.o"),
+            "artifact_assert": "\n  - {kind: contains, text: \"_Z1fv\"}"})
+        _fs71 = [f for f in ge.check_evidence_werror_decl_binding()
+                 if str(f.target).endswith("EV-LANG-WERR.md")]
+        _who71 = {f"{f.rule_id}/{f.severity}" for f in _fs71}
+        ok = (any("EV-WERROR-DECL-BIND" in who for who in _who71)
+              and all(f.severity == "warn" for f in _fs71))
+        results.append(("P71 判据性 -Werror 被删（声明↔flag 绑定）须 warn 不 block",
+                        ok, f"命中 {sorted(_who71) or '（漏网！）'}"))
+        # P71-阴（阴性对照，名字含 -阴 ⇒ 不计入攻击面）：声明没提 -Werror ⇒ 装饰性，不算违例。
+        _write(ge.EVIDENCE / "lang" / "EV-LANG-WERROK.md", {
+            "id": "EV-LANG-WERROK", "serves": "[ATOM-LANG-INLINE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "falsification": "工件里必须出现该符号（判据不涉及诊断级别）",
+            "command": "g++ -O2 -Wall -Wextra -c a.cpp -o a.o",
+            "artifact_assert": "\n  - {kind: contains, text: \"_Z1fv\"}"})
+        _fs71b = [f for f in ge.check_evidence_werror_decl_binding()
+                  if str(f.target).endswith("EV-LANG-WERROK.md")]
+        results.append(("P71-阴 装饰性 -Wall 无 -Werror（声明未声称该判据）须放行", not _fs71b,
+                        f"命中 {[f'{f.rule_id}/{f.severity}' for f in _fs71b] or '（无）'}"))
         # 反例：合法全文散文断言（无 symbol，交人审）⇒ 零 Finding（护栏 5：零新增存量）
         _write(ge.EVIDENCE / "mem" / "EV-MEM-M3OK.md", {
             "id": "EV-MEM-M3OK", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
@@ -1885,6 +1917,8 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P70 ", "A3"),
     # 569 任务 2：P70b = M3 的另一子情形（absent 侧），同属 A3（断言无判别力）。
     ("P70b ", "A3"),
+    # 570：P71 = 判据性 -Werror 被删（声明与 flag 脱钩 ⇒ 判据成空话），同属 A3。
+    ("P71 ", "A3"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

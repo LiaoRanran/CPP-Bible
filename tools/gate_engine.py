@@ -2607,6 +2607,48 @@ def check_evidence_zero_diag_werror() -> list[Finding]:
     return out
 
 
+# 570：判据性 -Werror 的绑定检查用的两个指纹（只认字面开关，不做语义猜测）
+_WERROR_RE = re.compile(r"-Werror\b")
+_WARN_FLAG_RE = re.compile(r"-W(?:all|extra)\b")
+
+
+def check_evidence_werror_decl_binding() -> list[Finding]:
+    """P71 声明↔flag 绑定（570，warn）：**判据性** `-Werror` 必须落到每一条诊断编译行上。
+
+    为什么（569 唯一的真逃逸）：`EV-LANG-001` 的 `falsification` 明写「『零诊断』由 `-Werror`
+    承担……判据必须带 `-Werror`」，而 M3 只删掉**三条诊断编译里的一条**的 `-Werror`
+    ⇒ 判据被弱化却无规则命中（P11 只看"卡里有没有 -Werror"，还剩两条就仍算有）。
+
+    形状（先量后写的窄形状，2026-09-17 全库 56 卡实测）：
+      * **只在证据声明里出现 `-Werror` 的卡上生效**——这正是"判据性 vs 装饰性"的判别：
+        装饰性 `-Werror` 只出现在 `command` 里，不会写进判据声明。全库仅 `EV-LANG-001` 命中；
+      * 该卡 `command` 里**每一条带诊断开关（`-Wall`/`-Wextra`）的编译行**都必须带 `-Werror`；
+      * 出 **warn 不 block**（541 的教训：判别力类问题从 warn 起步）；
+      * 与 P11 **单点互斥**：卡已被 P11（零诊断措辞 + 无 `-Werror` ⇒ block）命中时，本规则不再补 warn；
+      * **存量命中 0**（EV-LANG-001 三条诊断编译行都带 `-Werror`）⇒ 零误伤。
+    """
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        decl = " ".join(str(meta.get(k) or "") for k in
+                        ("falsification", "expected", "hypothesis", "claim_boundary"))
+        if not _WERROR_RE.search(decl):         # 判据声明没提 -Werror ⇒ 装饰性，不管
+            continue
+        cmd = str(meta.get("command") or "")
+        if _ZERO_DIAG_RE.search(decl) and "-Werror" not in cmd:
+            continue                            # P11 已 block 同一张卡 ⇒ 单点互斥，不叠 warn
+        bad = [ln.strip() for ln in cmd.splitlines()
+               if _WARN_FLAG_RE.search(ln) and not _WERROR_RE.search(ln)]
+        if not bad:
+            continue
+        out.append(Finding("EV-WERROR-DECL-BIND", "warn", _rel(p),
+                           f"判据声明声称 warning/error 级判据（提到 -Werror），但有 {len(bad)} 条带"
+                           f"诊断开关（-Wall/-Wextra）的编译行没带 -Werror ⇒ 该判据可能是空话"
+                           f"（首条：{bad[0][:72]}）",
+                           "给这些编译行补 -Werror；或从判据声明里删掉 -Werror（承认它不是判据要素）"))
+    return out
+
+
 def check_evidence_matrix() -> list[Finding]:
     """版本矩阵：matrix 必须写清 compiler/std/opt（M2 §2 两档与选取规则）。"""
     out: list[Finding] = []
@@ -3132,6 +3174,8 @@ def _register_all() -> None:
          check_evidence_matrix_backed),
         ("EV-ZERO-DIAG-WERROR", "零诊断类判据须 -Werror（W3）", "evidence",
          check_evidence_zero_diag_werror),
+        ("EV-WERROR-DECL-BIND", "判据性 -Werror 须落到每条诊断编译行（570，warn）", "evidence",
+         check_evidence_werror_decl_binding),
         ("EV-OUT-UNDECLARED-KEY", ".out 读数键须在 run_match_keys 声明（B3 窄化）",
          "evidence", check_evidence_out_undeclared_key),
         ("EV-RUN-KEY-DECLARED-EXISTS",

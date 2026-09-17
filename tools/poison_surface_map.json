@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-17T00:30:42",
- "source_commit": "7597e86",
+ "generated_at": "2026-09-17T21:13:05",
+ "source_commit": "51d8634",
  "drill": {
-  "passed": 107,
-  "total": 107
+  "passed": 110,
+  "total": 110
  },
  "attack_types": {
   "A1": {
@@ -19,7 +19,7 @@
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
-   "count": 14
+   "count": 16
   },
   "A4": {
    "label": "时序穿链：编译后覆写、留痕比夹具旧",
@@ -60,8 +60,8 @@
   "uncovered": []
  },
  "rule_coverage": {
-  "covered": 36,
-  "total": 61,
+  "covered": 37,
+  "total": 62,
   "exempt": 27
  },
  "payloads": [
@@ -291,6 +291,16 @@
    "type": "A3"
   },
   {
+   "name": "P70b M3 另一子情形：absent_in→absent（absent 残留 symbol）须 warn",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P71 判据性 -Werror 被删（声明↔flag 绑定）须 warn 不 block",
+   "pass": true,
+   "type": "A3"
+  },
+  {
    "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
    "pass": true,
    "type": "A1"
@@ -484,6 +494,11 @@
   },
   {
    "name": "P31-阴 合法对比（contrasts 非矛盾）必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P71-阴 装饰性 -Wall 无 -Werror（声明未声称该判据）须放行",
    "pass": true,
    "type": null
   },
