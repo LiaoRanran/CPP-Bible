@@ -61,6 +61,9 @@ _book_asm_freshness.json
 *.egg-info/
 dist/
 .pytest_cache/
+# 559 Part C：pytest 临时基目录移入仓内（pyproject 的 addopts `--basetemp=.pytest_tmp`）。
+# 放仓内是为了绕开系统 %TEMP% 的 safe-delete 批量闸（实测收尾删 1053 个文件被拦 ⇒ 卡很久）。
+.pytest_tmp/
 .mypy_cache/
 .ruff_cache/
 

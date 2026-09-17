@@ -139,4 +139,13 @@ pythonpath = ["tools"]   # 与 tests/conftest.py 的 sys.path 注入等效（pyt
 #      总 wall ≈ 150s，与"全量 -n auto"持平（下限由 test_golden_lock_json ~125s 决定），
 #      但不再有锁竞争假红。CI 的 pytest job 用的就是这两条命令。
 # 串行全量想临时改并行：`pytest -n auto -m "not slow"` 只跑纯逻辑部分。
+#
+# 559 Part C · 临时目录移入仓内（`.pytest_tmp/`，已进 .gitignore）：
+#   实现**不在 addopts**，而在 `tests/conftest.py::pytest_configure`——每次运行给一个
+#   **全新子目录**（`run-<pid>-<ts>`）。为什么不写 `--basetemp=.pytest_tmp`（提示词原处方）：
+#   `--basetemp` 指固定目录时 pytest 每次启动会 rmtree 掉它，第二次运行必撞本环境的删除
+#   拦截层（实测 fixture 整片 ERROR），详见 conftest 那段注释里的实测记录。
+#   `tmp_path_retention_policy`（pytest 7+ 的 ini 名，本机 pytest 9.1.1 实测存在）设 none：
+#   万一有人显式传 --basetemp 走回编号目录模式，也不留一堆历史会话 tmp（默认 all 会累积）。
+tmp_path_retention_policy = "none"
 addopts = "-q"

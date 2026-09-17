@@ -312,9 +312,19 @@ def test_downgrade_roundtrip(tmp_path: Path, capsys: pytest.CaptureFixture):
 
 @pytest.fixture()
 def sb(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """C2+ 沙箱：库与**锚根**都指到 tmp（相对路径产物、verify 工作目录、git 审计都在此）。"""
+    """C2+ 沙箱：库与**锚根**都指到 tmp（相对路径产物、verify 工作目录、git 审计都在此）。
+
+    559 Part C：pytest 临时目录已移进**仓内**（`--basetemp=.pytest_tmp`，见 pyproject）⇒
+    沙箱落在 git 工作树里，`git status` 会**成功**（本 fixture 想要的"审计看不到真仓库"
+    这一语义被环境变化破坏，`test_c6_audit_unavailable_is_visible` 因此红）。
+    这里用 `GIT_CEILING_DIRECTORIES` 把语义**显式钉死**：git 从 tmp 向上找仓库时到
+    `tmp_path.parent` 为止（该目录不再被搜索）⇒ 沙箱内确定"not a git repository"。
+    实测：ceiling=父目录 + cwd=子目录 ⇒ rc=128 ✓（ceiling 不能设成 tmp 自身——CWD 始终被搜索）。
+    注意：`gitrepo` fixture 在 `tmp_path/anchor` 里 `git init`，`.git` 就在 cwd ⇒ 不受影响。
+    """
     monkeypatch.setattr(tq, "DB_PATH", tmp_path / "queue.db")
     monkeypatch.setattr(tq, "ANCHOR_ROOT", tmp_path)
+    monkeypatch.setenv("GIT_CEILING_DIRECTORIES", str(tmp_path.parent))
     return tmp_path
 
 
