@@ -139,7 +139,7 @@ FROZEN_CONCLUSIONS = [
     #   列表写法 ⇒ 命中并产出该变体；它被既有 B3 规则拦下（读数键少声明）⇒ blocked/warn_only。
     #   这是"扩可判面"的**预期**后果（不是回归），按实测重新冻结。
     ("M3", "删掉一条 run_match_keys 声明（弱化：少声明读数键 spin_plain_ret）", "blocked",
-     "warn_only", ["EV-OUT-UNDECLARED-KEY"]),
+     "warn_only", ["EV-ASSERT-COUNT-BELOW-BASELINE", "EV-OUT-UNDECLARED-KEY"]),
     ("M4", "注入通用符号 main", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M4", "注入通用符号 ret", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
     ("M4", "注入 ABI 帧符号 .p2align", "blocked", "strict", ["EV-ASSERT-SYMBOL-MAPPED"]),
