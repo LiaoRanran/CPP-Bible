@@ -13,10 +13,10 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-import atom_evidence_replay as replay   # noqa: E402
-import gate_engine as ge                # noqa: E402
-import metrics_collector as mc          # noqa: E402
-import mutation_fuzz as mf              # noqa: E402
+import atom_evidence_replay as replay  # noqa: E402
+import gate_engine as ge  # noqa: E402
+import metrics_collector as mc  # noqa: E402
+import mutation_fuzz as mf  # noqa: E402
 
 ORACLE_BLOCK = ("verified_by_oracle:\n"
                 "  oracle: gcc\n"
