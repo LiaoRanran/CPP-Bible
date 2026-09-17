@@ -115,8 +115,13 @@ def test_wc07_unbounded_loop(sb: Path):
     assert c["WC-07"]["status"] == "pass", "有 break 的循环放行"
 
 
-def test_stock_zero_false_positive():
-    """存量 56 卡 0 fail（warn/skip 允许）——420 铁律。"""
+def test_stock_zero_false_positive(replay_serial):
+    """存量 56 卡 0 fail（warn/skip 允许）——420 铁律。
+
+    559 B：本用例是**唯一**直接读真实仓库工件的 WC 用例（其余走 `sb` 沙箱），
+    故与 replay 同锁串行——否则并发 replay 的"删→重生成→还原"窗口里，
+    WC-01「磁盘 sha == 卡值」会假红（558 `-n auto` 误跑法实测）。
+    """
     n_fail = 0
     for p in ge._cards(ge.EVIDENCE, "EV-*.md"):
         n_fail += sum(1 for c in ws.check_card(p) if c["status"] == "fail")

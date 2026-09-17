@@ -3,7 +3,9 @@
 本仓库 80+ 个工具脚本此前**零单元测试**（工具正确性仅靠 CI 跑通间接验证）。
 本目录的测试专门锁定**真实发生过的回归**，详见各文件的 docstring。
 """
+import os
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -51,7 +53,58 @@ SERIAL_EXTRA = frozenset({
 })
 
 
+# ── 559 Part B：读真实仓库状态的测试，与 replay 用**同一把锁**串行 ─────────────
+# 为什么需要：replay 校验一卡是「删旧工件 → 重生成 → 比 sha → 还原」，期间
+# `Examples/atoms/*.asm` **瞬时**不存在/内容不同。若另一个 worker 恰在此时读它
+# （golden_lock 的门禁扫描、writer_selfcheck 的 WC-01「磁盘 sha == 卡值」）就会假红
+# —— 558 验收里"错误地对 slow 用 `-n auto`"正是这么红的（559 实测探针 3/3 复现非 pass）。
+# 为什么用**同一把**锁：508 已证 `--dist loadgroup` + `xdist_group` 在本版 xdist **不生效**
+# （调度器读不到 marker），所以只能靠"真互斥"：本 fixture 直接复刻 `replay_card` 的取锁
+# 逻辑（`build/.replay_lock`）⇒ 持锁期间任何 replay 都被挡在改写动作之前，读到的状态是稳的。
+# 拿不到锁（确有 replay 在跑）⇒ **带因 skip**（绝不让测试假失败）；权威两阶段跑法
+# （`-m slow -n0`）里锁是空的，故这两例正常执行、不会被 skip。
+_REPLAY_LOCK_WAIT = 5.0
+
+
+@pytest.fixture()
+def replay_serial():
+    """把"读真实仓库工件状态"的断言包在 replay 的同一把锁里（任意 `-n` 跑法都不假红）。"""
+    import atom_evidence_replay as replay
+
+    try:
+        replay._acquire_replay_lock(wait_timeout=_REPLAY_LOCK_WAIT)
+    except TimeoutError as exc:
+        pytest.skip(f"replay 正在改写工件（共享 build/.replay_lock 被占）：{exc}")
+    try:
+        yield
+    finally:
+        replay._release_replay_lock()
+
+
 def pytest_configure(config: pytest.Config) -> None:
+    # ── 559 Part C：把 pytest 临时目录移进仓内（`.pytest_tmp/`，已 .gitignore）──────
+    # 病（实测）：默认 tmp 在系统 `%TEMP%\pytest-of-<user>\`，会话收尾要把整批
+    # `tmp_path` 一次 rmtree 掉；本环境有一层删除拦截（safe-delete），单次操作子树
+    # >500 文件就报 `[SAFE_DELETE_BULK_CONFIRM_REQUIRED]`（实测 count=1053）⇒ 会话收尾
+    # 被截断（卡很久、连 pytest 汇总行都打不出来）。
+    #
+    # 为什么不是 `--basetemp=.pytest_tmp`（提示词的处方，实测**不可用**）：
+    #   `--basetemp` 指向固定目录时，pytest 每次启动都会先 **rmtree 掉已存在的 basetemp**
+    #   ⇒ 第二次运行必然撞拦截层：实测 `_safe_shutil_rmtree('\\\\?\\C:\\…\\.pytest_tmp')`
+    #   抛错误 → 凡是使用 `tmp_path` 的用例整片 fixture ERROR（比原来更坏）。
+    #   拦截层的旁路条件是"路径在 **OS 临时目录**下"或"执行上下文已失效"，**仓内路径不旁路**；
+    #   且 pytest 传的是 `\\?\` 扩展长度路径，连 `%TEMP%` 那条旁路也比对不上。
+    #
+    # 故改为：**每次运行给一个全新子目录**（`run-<pid>-<ts>`）。
+    #   * 目录不存在 ⇒ pytest 的 `rm_rf` 直接返回，**不触发任何删除** ⇒ 不碰拦截层；
+    #   * 不用 `pytest-of-<user>` 编号目录 ⇒ 不再有 `garbage-*` 批量回收；
+    #   * 结果：连跑任意轮都无 safe-delete 输出，`git status` 也不出现（已 gitignore）。
+    # 代价：`.pytest_tmp/run-*` 会按运行次数堆积（可随时手工清；本环境删除会被拦截层拦，
+    #   故留给人工/CI 清理，不影响测试判定）。
+    if not config.option.basetemp:
+        _repo = Path(__file__).resolve().parent.parent
+        config.option.basetemp = str(
+            _repo / ".pytest_tmp" / f"run-{os.getpid()}-{int(time.time())}")
     config.addinivalue_line(
         "markers", "slow: 调用编译器（g++/cl）/ 跑 replay / 跑 poison 的测试")
     config.addinivalue_line(

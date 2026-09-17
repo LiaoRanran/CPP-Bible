@@ -931,19 +931,35 @@ def _acquire_replay_lock(wait_timeout: float | None = None,
             # 472 P0-1（N1）：先做 pid 存活检测——僵尸锁（持锁进程已死）立即接管，
             # 不必等 stale。这是防 DoS 的**主保险**（atexit 无法覆盖 SIGKILL/崩溃）。
             _pid = _read_lock_pid()
-            if _pid is not None and not _pid_alive(_pid):
-                _REPLAY_LOCK.unlink(missing_ok=True)
-                continue
+            if _pid is not None and not _pid_alive(_pid) and _try_unlink_lock():
+                continue                              # 僵尸锁接管成功
             try:
                 age = time.time() - _REPLAY_LOCK.stat().st_mtime
             except FileNotFoundError:
                 continue                              # 恰好被释放：立即重试
-            if age > stale_after:
-                _REPLAY_LOCK.unlink(missing_ok=True)  # 陈旧锁接管
+            if age > stale_after and _try_unlink_lock():   # 陈旧锁接管（删不掉则不 continue，
+                continue                                   #   落回等待/超时，不无限空转）
                 continue
             if time.time() - t0 > wait_timeout:
                 raise TimeoutError(f"replay 锁被占用超时：{_REPLAY_LOCK}")
             time.sleep(0.5)
+
+
+def _try_unlink_lock() -> bool:
+    """删除锁文件；**失败不抛**——返回是否删成功。
+
+    为什么必须容忍失败（559 Part B 实测）：本环境有一层 safe-delete 拦截（把删除改道成
+    trash 操作），并发下 trash 会报 `OSError: Some operations were aborted`。而
+    `_release_replay_lock()` 原先**裸 unlink** ⇒ 一次释放失败就让整个 `replay_card` 崩掉
+    （实测：`golden_lock check` 因此崩、stdout 无 JSON ⇒ `test_golden_lock_json` 假红）。
+    释放/接管失败**不影响正确性**：残留锁会由「pid 存活检测 + mtime 陈旧接管」兜底自愈。
+    返回 bool 的用处：调用方据此决定"继续抢锁"还是"落回等待"，避免删除失败时无限空转。
+    """
+    try:
+        _REPLAY_LOCK.unlink(missing_ok=True)
+        return True
+    except OSError:
+        return False
 
 
 def _read_lock_pid() -> int | None:
@@ -989,7 +1005,10 @@ def _pid_alive(pid: int) -> bool:
 
 
 def _release_replay_lock() -> None:
-    _REPLAY_LOCK.unlink(missing_ok=True)
+    """释放并发锁。**绝不抛**（559 Part B）：删除失败（safe-delete 拦截层/权限/占用）只是
+    留个残留锁，交给 pid 存活检测与陈旧接管自愈；而让异常冒出去会把整个 `replay_card` 崩掉
+    ——释放路径不该反噬正常路径。"""
+    _try_unlink_lock()
 
 
 # ── 472 P0-4（452 E13/N4）：工件快照落盘 + 幂等还原 ─────────────────────────

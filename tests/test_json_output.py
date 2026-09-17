@@ -38,7 +38,7 @@ def _check_schema(data, tool):
     assert isinstance(data["infra_errors"], list)
 
 
-def test_gate_engine_json():
+def test_gate_engine_json(replay_serial):            # 559 B：与 replay 同锁（读工件状态）
     p = _run(["tools/gate_engine.py", "--check", "--json"])
     data = _parse_json_only(p)
     _check_schema(data, "gate_engine")
@@ -65,6 +65,11 @@ def test_poison_drill_json():
 
 
 def test_golden_lock_json():
+    """559 B 说明：本用例**不**挂 `replay_serial` —— `golden_lock check` 自己会调
+    `replay_card` 复算（每卡取放同一把锁），若外层再持锁会把它逼成
+    `infra_error:replay_busy`（每卡等 120s）。它防的是"释放锁路径崩溃"那个真 bug
+    （`_release_replay_lock` 已改为绝不抛，见 atom_evidence_replay）。
+    """
     p = _run(["tools/golden_lock.py", "check", "--json"])
     data = _parse_json_only(p)
     _check_schema(data, "golden_lock")
