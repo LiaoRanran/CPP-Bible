@@ -134,7 +134,13 @@ def mut_m1(text: str) -> list[tuple[str, str]]:
 # —— 543 P2 的逐逃逸定性正是为此）。实测：M3 的首个 `contains_in` 在 CONC-003/004/005
 # 落在正文，修前被记成 3 条"逃逸"。
 GATE_READ_KEYS = ("command", "artifact", "artifact_producer", "fixture", "fixtures",
-                  "run_match_file", "artifacts", "negative_controls", "artifact_assert")
+                  "run_match_file", "artifacts", "negative_controls", "artifact_assert",
+                  # 571 任务 1（真 bug 修复）：漏了 `actual` —— 门禁/复算**真读** `actual.run_match_keys`
+                  #   （B3 EV-OUT-UNDECLARED-KEY）与 `actual.run_match_file`（replay），而这两个键是
+                  #   **嵌套在 `actual:` 下**的 ⇒ 只列顶层键名永远匹配不到 ⇒ 整块 `actual` 被当成
+                  #   "门禁不读"，实测 83 卡里 0 卡命中 `run_match_keys`、M3 的 80 条 n_a(out_of_scope)
+                  #   相当一部分由此而来（把"没问"记成了"不适用"）。
+                  "actual")
 _PATHP = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_./-]*\.(?:cpp|cc|cxx|py|asm|out|md|json)")
 
 
@@ -223,8 +229,57 @@ def mut_m3(text: str) -> list[tuple[str, str | None]]:
                         text.replace(m.group(0),
                                      re.sub(r"count:\s*\d+", "", m.group(0)), 1)))
             break
-    return out or [("M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
-                    None)]
+    # ── 571 任务 1（L3 补样）：把 M3 的可判面从"只有 `_in`/`-Werror`/`count:`"扩到**最常见形状** ──
+    #   为什么：570 实测 M3 可判样本只有 7（<59）⇒ 无法宣称"错误率有上界"。逐卡量形状后确认
+    #   绝大多数卡的读取面里只有**普通断言条目**（flow 式 `{kind: contains, text: …}`），
+    #   旧 M3 对它们无变体可产 ⇒ 全落 n_a(out_of_scope)。两条新变体都是**可证的弱化**：
+    #     (a) 删掉一条断言条目 —— 卡少查一项（自带保证被削弱）；
+    #     (b) 给 `contains` 断言追加一个**样板候选**（`.file` 这类恒真文本）—— 断言可被平凡输出满足。
+    #   仍只在门禁读取面内动刀（558 B2 纪律）；带 `symbol:` 的条目留给 `_in` 路径，不互相抢。
+    for _m in re.finditer(r"(?m)^[ \t]*-[ \t]*\{[^\n}]*\}[ \t]*(?=\n)", text):
+        if _in_gate(_m.start()):
+            out.append(("删掉一条 flow 式断言条目（弱化：卡少查一项）",
+                        text[:_m.start()] + text[_m.end() + 1:]))
+            break
+    for _m in re.finditer(r"\{[^\n}]*kind:[ \t]*contains[ \t]*,[^\n}]*\}", text):
+        _seg = _m.group(0)
+        if not _in_gate(_m.start()) or "contains_any" in _seg or "symbol:" in _seg:
+            continue
+        _t = re.search(r"text:[ \t]*([^,}\n]+)", _seg)
+        if not _t:
+            continue
+        _new = _seg.replace("kind: contains", "kind: contains_any").replace(
+            _t.group(0), f"texts: [{_t.group(1).strip()}, \".file\"]")
+        out.append(("contains 追加样板候选（弱化：恒真文本即可满足）",
+                    text[:_m.start()] + _new + text[_m.end():]))
+        break
+    #   (c) 删掉一条 `run_match_keys` 声明 —— 读数键少声明一个；这条有**既有规则**看着
+    #       （B3 `EV-OUT-UNDECLARED-KEY`：.out 读数键须在 run_match_keys 声明）⇒ 预期 blocked。
+    if re.search(r"(?m)^\s*run_match_keys\s*:", text):
+        # 571 实测两种写法都要覆盖：① flow 式内联列表 `run_match_keys: [a, b, c]`（EV-CONC-001
+        #   就是这种，没有 `- item` 行 ⇒ 只找列表项会全部漏掉）；② 块式 `- "a"`。
+        _mf = re.search(r"(?m)^([ \t]*)run_match_keys:[ \t]*\[([^\]]*)\]", text)
+        if _mf and _in_gate(_mf.start()):
+            _items = [x.strip() for x in _mf.group(2).split(",") if x.strip()]
+            if len(_items) > 1:
+                _new = _mf.group(0).replace(_mf.group(2), ", ".join(_items[1:]))
+                out.append((f"删掉一条 run_match_keys 声明（弱化：少声明读数键 {_items[0]}）",
+                            text[:_mf.start()] + _new + text[_mf.end():]))
+        # 注意：列表项常带引号（`- "ab_tu_a"`）——571 实测漏了引号导致本变体对块式卡也不触发。
+        for _m in re.finditer(r"(?m)^([ \t]*)-[ \t]*[\"']?([A-Za-z_][\w]*)[\"']?[ \t]*(?=\n)",
+                              text):
+            # 只删"缩进深于 run_match_keys 行"的列表项，且必须落在门禁读取面内
+            _k = re.search(r"(?m)^([ \t]*)run_match_keys\s*:", text)
+            # 只取"`run_match_keys:` 之后"的列表项：YAML 里序列项与键**同缩进**也合法（实测
+            # EV-CONC-001 就是这种写法），故不按缩进比较，改按位置（面内判定仍由 `_in_gate` 兜）。
+            if not _k or _m.start() < _k.end():
+                continue
+            if _in_gate(_m.start()):
+                out.append((f"删掉一条 run_match_keys 声明（弱化：少声明一个读数键 {_m.group(2)}）",
+                            text[:_m.start()] + text[_m.end() + 1:]))
+                break
+    return out or [("M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys"
+                    " 的字面量都在正文/注释）", None)]
 
 
 def mut_m4(text: str) -> list[tuple[str, str]]:
