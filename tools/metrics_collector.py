@@ -327,8 +327,52 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
     snap = {"timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
             "metrics": {k: metrics.get(k) for k in ALL_METRICS},
             "notes": notes}
+    snap["curves"] = collect_curves()          # 565 Part 4b：三曲线机制字段（1 个时点）
     snap["alerts"] = evaluate_alerts(snap["metrics"])
     return snap
+
+
+def collect_curves() -> dict:
+    """565 Part 4b · 收敛三曲线的**机制字段**（先把管道建好，数据攒着）。
+
+    ⚠️ **只有 1 个时点 ⇒ 不得声称"单调收敛"**（写进返回值里，报告/文档照抄）：
+    趋势类结论需要 ≥2 个时点的同口径数据，现在一个都没有。
+
+    ① `mutation_escape_rate`：逃逸率 + **双侧** C-P95 区间（接 565 Part 2 的口径块；
+       数据源 = 已提交的 `data/mutation/full_baseline_v1.json`，**不重新生成基线**）。
+    ② `overturned_by_stronger_verifier`：被更强验证者推翻的命题/卡数。**事件字段**——
+       当前系统里没有产生该事件的路径 ⇒ 预期恒 0；先建字段是为了将来能累积而不是事后补。
+    ③ `escape_survival_batches`：逃逸从产生到被收口跨了几个批次。**当前无数据 ⇒ None**，
+       不许填 0（0 = "当批就被收口"，与"还没量过"含义相反）。
+    """
+    out: dict = {"timepoints": 1,
+                 "monotone_convergence": "不可声称（只有 1 个时点，勿据单点画趋势）",
+                 "note": "三曲线字段 565 Part 4b；补齐第二个时点前，这里只作机制占位"}
+    from stat_bounds import proportion          # 565 Part 1 原语（局部导入：与 toolchain 同风格）
+
+    bl = ROOT / "data" / "mutation" / "full_baseline_v1.json"
+    if bl.is_file():
+        try:
+            d = json.loads(bl.read_text(encoding="utf-8"))
+            judged = d["blocked"] + d["escaped"]
+            blk = proportion(d["escaped"], judged)
+            out["mutation_escape_rate"] = {
+                "source": "data/mutation/full_baseline_v1.json",
+                "judged": judged, "n_a": d["n_a"],
+                "numerator": blk["numerator"], "denominator": blk["denominator"],
+                "point": round(blk["point"], 6),
+                "cp_low": round(blk["cp_low"], 6), "cp_high": round(blk["cp_high"], 6),
+                "conf": blk["conf"]}
+        except (KeyError, ValueError) as exc:      # 数据坏了要显形，不许静默跳过
+            out["mutation_escape_rate"] = {"error": f"基线不可用：{type(exc).__name__}: {exc}"}
+    else:
+        out["mutation_escape_rate"] = {"error": "缺 data/mutation/full_baseline_v1.json"}
+    out["overturned_by_stronger_verifier"] = 0
+    out["overturned_note"] = ("事件字段：当前系统无产生该事件的路径 ⇒ 恒 0；"
+                              "0 在这里是**真值**（不是缺数据）")
+    out["escape_survival_batches"] = None
+    out["escape_survival_note"] = "无数据（=None）：量一次收口要跨几个批次才能填；0 会与'当批收口'混淆"
+    return out
 
 
 def append(snap: dict, path: Path | None = None) -> Path:
