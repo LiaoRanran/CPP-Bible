@@ -1,0 +1,230 @@
+{
+ "cards": {
+  "EV-CONC-001": {
+   "artifact_assert": 12,
+   "run_match_keys": 3
+  },
+  "EV-CONC-002": {
+   "artifact_assert": 9,
+   "run_match_keys": 2
+  },
+  "EV-CONC-003": {
+   "artifact_assert": 4,
+   "run_match_keys": 8
+  },
+  "EV-CONC-004": {
+   "artifact_assert": 2,
+   "run_match_keys": 7
+  },
+  "EV-CONC-005": {
+   "artifact_assert": 3,
+   "run_match_keys": 4
+  },
+  "EV-CONC-006": {
+   "artifact_assert": 3,
+   "run_match_keys": 4
+  },
+  "EV-HIST-001": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-LANG-001": {
+   "artifact_assert": 4,
+   "run_match_keys": 20
+  },
+  "EV-LANG-002": {
+   "artifact_assert": 1,
+   "run_match_keys": 8
+  },
+  "EV-MEM-001": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-002": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-003": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-004": {
+   "artifact_assert": 3,
+   "run_match_keys": 0
+  },
+  "EV-MEM-005": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-006": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-007": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-008": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-009": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-010": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-011": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-012": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-013": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-014": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-015": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-016": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-017": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-018": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-019": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-020": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-021": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-022": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-023": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-024": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-025": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-026": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-027": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-028": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-029": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-030": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-031": {
+   "artifact_assert": 1,
+   "run_match_keys": 0
+  },
+  "EV-MEM-032": {
+   "artifact_assert": 3,
+   "run_match_keys": 0
+  },
+  "EV-MEM-033": {
+   "artifact_assert": 3,
+   "run_match_keys": 0
+  },
+  "EV-MEM-034": {
+   "artifact_assert": 3,
+   "run_match_keys": 0
+  },
+  "EV-MEM-035": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-036": {
+   "artifact_assert": 3,
+   "run_match_keys": 0
+  },
+  "EV-MEM-037": {
+   "artifact_assert": 3,
+   "run_match_keys": 0
+  },
+  "EV-MEM-038": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-039": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-040": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-041": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-042": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-043": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-044": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-MEM-045": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-UB-001": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  },
+  "EV-UB-002": {
+   "artifact_assert": 2,
+   "run_match_keys": 0
+  }
+ },
+ "note": "人审断言计数基线（只增不减；gate_engine 用它与当前计数比对）",
+ "updated": "2026-09-17"
+}

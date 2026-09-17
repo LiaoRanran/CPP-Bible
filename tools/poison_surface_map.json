@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-17T21:13:05",
- "source_commit": "51d8634",
+ "generated_at": "2026-09-17T22:33:21",
+ "source_commit": "403bb16",
  "drill": {
-  "passed": 110,
-  "total": 110
+  "passed": 114,
+  "total": 114
  },
  "attack_types": {
   "A1": {
@@ -19,7 +19,7 @@
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
-   "count": 16
+   "count": 18
   },
   "A4": {
    "label": "时序穿链：编译后覆写、留痕比夹具旧",
@@ -60,8 +60,8 @@
   "uncovered": []
  },
  "rule_coverage": {
-  "covered": 37,
-  "total": 62,
+  "covered": 38,
+  "total": 63,
   "exempt": 27
  },
  "payloads": [
@@ -301,6 +301,16 @@
    "type": "A3"
   },
   {
+   "name": "P72 断言数少于人审基线（悄悄删项）须 warn 不 block",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P73 any-of 混入通用候选（追加样板）须 warn 不 block",
+   "pass": true,
+   "type": "A3"
+  },
+  {
    "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
    "pass": true,
    "type": "A1"
@@ -504,6 +514,16 @@
   },
   {
    "name": "P70-阴 合法全文散文 contains（无 symbol）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P72-阴 计数等于人审基线（未减项）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P73-阴 any-of 候选全有真实出处须放行",
    "pass": true,
    "type": null
   },

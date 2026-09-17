@@ -1068,6 +1068,70 @@ def drill() -> int:
         results.append(("P70-阴 合法全文散文 contains（无 symbol）须放行", not _fs2,
                         f"命中 {[f'{f.rule_id}/{f.severity}' for f in _fs2] or '（无）'}"))
 
+    # ── P72/P73（572）：断言数低于人审基线 / any-of 混入通用候选 ──────────────────
+    #   真洞（571 v2 的 52 条里两类）：(a) 删条目/删键后**存量断言照样成立** ⇒ 门禁看不见
+    #   "卡被悄悄减了"（正解是人审计数基线，不是黑名单）；(b) 往 any-of 里**追加**一个通用候选
+    #   ⇒ 此前 `mapped` 非空就放行，这一步完全无感。
+    with sandbox() as tmp:
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-CNTBASE.md", {
+            "id": "EV-MEM-CNTBASE", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "artifact_assert": ("\n  - {kind: contains, text: \"_Z1fv\"}"
+                                "\n  - {kind: contains, text: \"_Z1gv\"}")})
+        _bl = tmp / "assert_count_baseline.json"
+        _bl.write_text(json.dumps({"cards": {"EV-MEM-CNTBASE": {"artifact_assert": 3,
+                                                               "run_match_keys": 0}}}),
+                       encoding="utf-8")
+        _orig_bl = ge.ASSERT_BASELINE
+        try:
+            ge.ASSERT_BASELINE = _bl
+            _fs72 = [f for f in ge.check_evidence_assert_count_baseline()
+                     if str(f.target).endswith("EV-MEM-CNTBASE.md")]
+        finally:
+            ge.ASSERT_BASELINE = _orig_bl
+        _who72 = {f"{f.rule_id}/{f.severity}" for f in _fs72}
+        ok = (any("EV-ASSERT-COUNT-BELOW-BASELINE" in who for who in _who72)
+              and all(f.severity == "warn" for f in _fs72))
+        results.append(("P72 断言数少于人审基线（悄悄删项）须 warn 不 block",
+                        ok, f"命中 {sorted(_who72) or '（漏网！）'}"))
+        # P72-阴：计数 == 基线 ⇒ 放行（补强 > 基线也不算违例）
+        _bl.write_text(json.dumps({"cards": {"EV-MEM-CNTBASE": {"artifact_assert": 2,
+                                                               "run_match_keys": 0}}}),
+                       encoding="utf-8")
+        try:
+            ge.ASSERT_BASELINE = _bl
+            _fs72b = [f for f in ge.check_evidence_assert_count_baseline()
+                      if str(f.target).endswith("EV-MEM-CNTBASE.md")]
+        finally:
+            ge.ASSERT_BASELINE = _orig_bl
+        results.append(("P72-阴 计数等于人审基线（未减项）须放行", not _fs72b,
+                        f"命中 {[f'{f.rule_id}/{f.severity}' for f in _fs72b] or '（无）'}"))
+        # P73：any-of 里**追加**一个通用候选（.file）⇒ 单点接进判别力规则 ⇒ warn
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-ANYOF.md", {
+            "id": "EV-MEM-ANYOF", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            # 卡内 symbol_map 给具体候选一个**真实出处**（沙箱里没有真工件可读）⇒ 才会走
+            # "any_of 且有 mapped" 这条分支，从而考到"混入通用候选 ⇒ warn"这一步。
+            "symbol_map": {"_Z1fv": "_Z1fv"},
+            "artifact_assert": ("\n  - {kind: contains_any, texts: [\"_Z1fv\", \".file\"]}")})
+        _fs73 = [f for f in ge.check_evidence_assert_symbol_mapped()
+                 if str(f.target).endswith("EV-MEM-ANYOF.md")]
+        _who73 = {f"{f.rule_id}/{f.severity}" for f in _fs73}
+        ok = (any("EV-ASSERT-SYMBOL-MAPPED" in who for who in _who73)
+              and all(f.severity == "warn" for f in _fs73))
+        results.append(("P73 any-of 混入通用候选（追加样板）须 warn 不 block",
+                        ok, f"命中 {sorted(_who73) or '（漏网！）'}"))
+        # P73-阴：any-of 全是真实出处候选 ⇒ 放行
+        _write(ge.EVIDENCE / "mem" / "EV-MEM-ANYOFOK.md", {
+            "id": "EV-MEM-ANYOFOK", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+            "kind": "asm", "verdict": "confirm",
+            "symbol_map": {"_Z1fv": "_Z1fv", "_Z1gv": "_Z1gv"},
+            "artifact_assert": ("\n  - {kind: contains_any, texts: [\"_Z1fv\", \"_Z1gv\"]}")})
+        _fs73b = [f for f in ge.check_evidence_assert_symbol_mapped()
+                  if str(f.target).endswith("EV-MEM-ANYOFOK.md")]
+        results.append(("P73-阴 any-of 候选全有真实出处须放行", not _fs73b,
+                        f"命中 {[f'{f.rule_id}/{f.severity}' for f in _fs73b] or '（无）'}"))
+
     # ── N1–N7（558 Part A / 533 §2.5）：V-iso **真编译**毒载荷（557 B1 停点）──────
     #  判决在 replay 路径（`atom_evidence_replay.check_negative_controls`）——**不是** gate
     #  规则 ⇒ N1–N7 **不会**增加 RULE-COVERAGE 分子（仍 36/61），此点已在 557 D6 澄清；
@@ -1919,6 +1983,8 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P70b ", "A3"),
     # 570：P71 = 判据性 -Werror 被删（声明与 flag 脱钩 ⇒ 判据成空话），同属 A3。
     ("P71 ", "A3"),
+    # 572：P72 = 断言数低于人审基线（悄悄删项）；P73 = any-of 混入通用候选（断言被拉向平凡）。
+    ("P72 ", "A3"), ("P73 ", "A3"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 

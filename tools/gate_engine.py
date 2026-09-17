@@ -1804,6 +1804,17 @@ def check_evidence_assert_symbol_mapped() -> list[Finding]:
             mapped = [t for t in texts
                       if not _is_universal_symbol(t) and (t in hay or t in sm_space)]
             if any_of and mapped:
+                # 572 任务 2（(b) 恒真样板收口）：**单点接进本规则**（不新造规则、**warn 不 block**）。
+                #   此前 `mapped` 非空就 `continue` ⇒ "在泛匹配断言里**追加**一个通用候选
+                #   （`.file`/`.text`）把断言拉向平凡"这一步**完全无感**（571 实测 35 条逃逸全此形状）。
+                #   通用候选本就不参与 `mapped`（373：通用符号无论在哪都视为无出处），这里显式点出来。
+                _uni = sorted({t for t in texts if _is_universal_symbol(t)})
+                if _uni:
+                    out.append(Finding(
+                        "EV-ASSERT-SYMBOL-MAPPED", "warn", _rel(p),
+                        f"any-of 断言里混入通用候选 {_uni}（另有真实出处候选 {mapped[:2]}）"
+                        f"——任何工件里都有它 ⇒ 该候选恒真，把整条断言拉向平凡",
+                        "删掉通用候选；若它是受控的活性对照，请单列一条并注明用途"))
                 continue
             if not any_of and len(mapped) == len(texts):
                 continue
@@ -2649,6 +2660,94 @@ def check_evidence_werror_decl_binding() -> list[Finding]:
     return out
 
 
+# ── 572 任务 1：人审断言计数基线（堵 (a) 类"悄悄删项"）───────────────────────────
+ASSERT_BASELINE = ROOT / "tools" / "assert_count_baseline.json"
+
+
+def _assert_count_baseline() -> dict:
+    """读人审基线；文件缺失/损坏 ⇒ `{}` ⇒ **不报警**（环境容错，同 S1 的"git 不可用不报警"）。"""
+    try:
+        data = json.loads(ASSERT_BASELINE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    cards = data.get("cards") if isinstance(data, dict) else None
+    return cards if isinstance(cards, dict) else {}
+
+
+def check_evidence_assert_count_baseline() -> list[Finding]:
+    """572 任务 1（`EV-ASSERT-COUNT-BELOW-BASELINE`，warn）：断言/键数**少于人审基线**。
+
+    为什么（571 v2 定性出的 (a) 类 17 条）：删掉一条 `artifact_assert` 条目、或删掉一个
+    `run_match_keys` 声明之后，**剩下的断言照样成立、复算照样 confirm** ⇒ 门禁看不见
+    "断言被偷偷减了"。根因不是"缺第 N 个黑名单符号"，而是**门禁不知道这张卡本该有几条断言**
+    ⇒ 正解是与人审基线比**计数**。
+
+    形状（先量后定，572 实测）：
+      * 基线 = 人审过的 56 张 EV 卡当前的 `(artifact_assert 条数, run_match_keys 键数)`，
+        由 `gate_engine.py --update-assert-baseline` 生成/**只增不减**地上调；
+      * 当前计数 **<** 基线 ⇒ warn（文案点明"可能被悄悄删项"）；
+      * 当前 **>** 基线（补强）不算违例——卡可以加断言；
+      * 基线缺该卡 ⇒ 不报（新卡还没进人审基线）；基线文件缺失/损坏 ⇒ 全不报。
+    存量：基线就取自当前人审卡 ⇒ 当前计数不可能 < 基线 ⇒ **零误伤**（一次实跑见 worklog）。
+    """
+    base = _assert_count_baseline()
+    if not base:
+        return []
+    out: list[Finding] = []
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        want = base.get(p.stem)
+        if not isinstance(want, dict):
+            continue
+        meta = _meta(p)
+        aa = meta.get("artifact_assert")
+        actual = meta.get("actual") or {}
+        keys = (actual.get("run_match_keys") if isinstance(actual, dict) else None) or []
+        cur = {"artifact_assert": len(aa) if isinstance(aa, list) else 0,
+               "run_match_keys": len(keys) if isinstance(keys, list) else 0}
+        dropped = [k for k in ("artifact_assert", "run_match_keys")
+                   if cur[k] < int(want.get(k) or 0)]
+        if not dropped:
+            continue
+        detail = "、".join(f"{k} {cur[k]} < 基线 {want.get(k)}" for k in dropped)
+        out.append(Finding(
+            "EV-ASSERT-COUNT-BELOW-BASELINE", "warn", _rel(p),
+            f"断言/键数少于人审基线（{detail}）——现有断言仍成立，但**卡被悄悄删项**时"
+            f"复算与门禁都看不出来",
+            "若是有意精简，请用 `gate_engine.py --update-assert-baseline` 显式下调并说明；"
+            "否则补回被删的断言/键"))
+    return out
+
+
+def _update_assert_baseline() -> int:
+    """刷新**人审断言计数基线**（572）：按当前人审卡取数，且**只增不减**（取 max）。
+
+    为什么只增不减：下调基线 = 承认"这张卡可以少查几项"，那必须是人审的显式决定
+    （改基线文件会进 git diff、留下痕迹），不能被一次自动重算抹平。
+    """
+    old = _assert_count_baseline()
+    cards: dict[str, dict[str, int]] = {}
+    for p in _cards(EVIDENCE, "EV-*.md"):
+        meta = _meta(p)
+        aa = meta.get("artifact_assert")
+        actual = meta.get("actual") or {}
+        keys = (actual.get("run_match_keys") if isinstance(actual, dict) else None) or []
+        prev = old.get(p.stem) or {}
+        cards[p.stem] = {
+            "artifact_assert": max(len(aa) if isinstance(aa, list) else 0,
+                                   int(prev.get("artifact_assert") or 0)),
+            "run_match_keys": max(len(keys) if isinstance(keys, list) else 0,
+                                  int(prev.get("run_match_keys") or 0)),
+        }
+    ASSERT_BASELINE.write_text(json.dumps(
+        {"note": "人审断言计数基线（只增不减；gate_engine 用它与当前计数比对）",
+         "updated": time.strftime("%Y-%m-%d"), "cards": cards},
+        ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"[gate] 断言计数基线已更新：{ASSERT_BASELINE.relative_to(ROOT).as_posix()}"
+          f"（{len(cards)} 卡 · 断言 {sum(v['artifact_assert'] for v in cards.values())} 条 · "
+          f"键 {sum(v['run_match_keys'] for v in cards.values())} 个）")
+    return 0
+
+
 def check_evidence_matrix() -> list[Finding]:
     """版本矩阵：matrix 必须写清 compiler/std/opt（M2 §2 两档与选取规则）。"""
     out: list[Finding] = []
@@ -3194,6 +3293,8 @@ def _register_all() -> None:
          check_evidence_zero_diag_werror),
         ("EV-WERROR-DECL-BIND", "判据性 -Werror 须落到每条诊断编译行（570，warn）", "evidence",
          check_evidence_werror_decl_binding),
+        ("EV-ASSERT-COUNT-BELOW-BASELINE", "断言/键数少于人审基线（572，warn）", "evidence",
+         check_evidence_assert_count_baseline),
         ("EV-OUT-UNDECLARED-KEY", ".out 读数键须在 run_match_keys 声明（B3 窄化）",
          "evidence", check_evidence_out_undeclared_key),
         ("EV-RUN-KEY-DECLARED-EXISTS",
@@ -3372,6 +3473,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     tool_integrity.enforce("gate_engine.py")
     ap = argparse.ArgumentParser(description="门禁引擎 M4（统一 Rule 接口 + 工单）")
     ap.add_argument("--list", action="store_true", help="列出规则全集")
+    ap.add_argument("--update-assert-baseline", action="store_true",
+                    help="572：按当前人审卡刷新断言计数基线（**只增不减**，见 check_evidence_assert_count_baseline）")
     ap.add_argument("--run", action="store_true", help="执行并打印工单")
     ap.add_argument("--advice", action="store_true", help="附带教学/文学建议（只建议不改文）")
     ap.add_argument("--json", nargs="?", const=True, default=False,
@@ -3403,6 +3506,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"# 当前覆盖 programmatic 规则 {len(auto)} 条："
               + ", ".join(r.id for r in auto))
         return 0
+    if a.update_assert_baseline:
+        return _update_assert_baseline()
     if a.list:
         print(f"{'ID':30} {'KIND':10} {'QUADRANT':13} {'SEVERITY':9} AUTO TITLE")
         for r in RULES:

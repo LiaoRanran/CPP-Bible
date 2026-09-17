@@ -3,7 +3,7 @@
   dict({
     'advice': 5,
     'block': 0,
-    'rules': 62,
+    'rules': 63,
     'warn': 136,
   })
 # ---
@@ -25,14 +25,14 @@
       'USES': 56,
     }),
     'max_component': 3,
-    'nodes': 327,
+    'nodes': 328,
     'nodes_by_type': dict({
       'ARTIFACT': 51,
       'ATOM': 30,
       'EVIDENCE': 56,
       'FIXTURE': 49,
       'MISCONCEPTION': 79,
-      'RULE': 62,
+      'RULE': 63,
     }),
   })
 # ---
@@ -74,8 +74,8 @@
       'A10',
       'A11',
     ]),
-    'covered': 37,
-    'total': 62,
+    'covered': 38,
+    'total': 63,
     'uncovered': list([
     ]),
   })
@@ -87,7 +87,7 @@
       'A10': 4,
       'A11': 2,
       'A2': 13,
-      'A3': 16,
+      'A3': 18,
       'A4': 4,
       'A5': 2,
       'A6': 7,
@@ -102,13 +102,13 @@
       ]),
     }),
     'drill': dict({
-      'passed': 110,
-      'total': 110,
+      'passed': 114,
+      'total': 114,
     }),
     'rule_coverage': dict({
-      'covered': 37,
+      'covered': 38,
       'exempt': 27,
-      'total': 62,
+      'total': 63,
     }),
   })
 # ---
