@@ -512,6 +512,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", default=None, help="覆盖 metrics.jsonl 路径")
     a = ap.parse_args(argv)
 
+    if a.log_overturned:
+        # 573 任务 A-2：只接**显式**的人/异族推翻动作（系统绝不自动产生推翻）。
+        try:
+            ev = log_overturned(a.target, a.old, a.new, a.by, a.reason,
+                                card=a.card or None)
+        except ValueError as exc:                        # fail-closed：不合规就拒绝写入
+            print(f"[metrics] ❌ 拒绝写入推翻事件：{exc}", file=sys.stderr)
+            return 2
+        print(f"[metrics] 推翻事件已追加 {OVERTURNED_FILE.relative_to(ROOT).as_posix()}："
+              f"{ev['target']} {ev['old_verdict']} → {ev['new_verdict']}（by {ev['by']}）")
+        return 0
+
     if a.cmd == "history":
         rows = read_history(Path(a.out) if a.out else None)[-a.last:]
         if not rows:
