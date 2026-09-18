@@ -100,14 +100,25 @@
 **commit**：`tools/poison_exemptions.yaml` + `tools/poison_drill.py` + `tools/.tool_checksums`（--update 重钉）+ `tools/poison_surface_map.json`（--write-surface-map 落盘，含 exemption_lock）+ `tests/test_poison_exemptions_581.py` + `tests/conftest.py`（两新测试模块加入 SLOW_MODULES 串行）。
 
 ## 任务 3：重钉 + 测试 + 自证门
-**施工点（待执行）：**
-1. 每改完一个 CORE_TOOLS 任务，跑 `python tools/tool_integrity.py --update` 重钉 `.tool_checksums`，同 commit。
-2. 全量自测：`python -m tools.poison_drill`（RULE-COVERAGE 37/63、118/118）、`python tools/tool_integrity.py --check` exit 0、`pytest tests/test_poison_coverage_581.py -q` 通过。
-3. 验收门（任务书）：覆盖率不可伪造（hole A/B 封死）、豁免有见证/机器可核（legacy 诚实单列）、不降判决可信度。**不 push、不 golden accept。**
+**状态：✅ 已验证（commit 见下）**
+
+### 验收结果（2026-09-18，`.venv`）
+1. 重钉：任务 1/2 改完 `poison_drill.py` 均同 commit 跑 `tool_integrity.py --update` 重钉 `.tool_checksums`（CORE_TOOLS 守卫生效）。终验 `tool_integrity --check` → **OK（5 个核心工具与基准一致）**。
+2. 实跑自测：`python -m tools.poison_drill` → **RULE-COVERAGE 38/63、118/118 制衡层有效、零覆盖攻击面无、未覆盖且未豁免无、EXIT=0**；表观 103.2% / 诚实 60.3%，27 legacy 单列、20 不可核验点名。
+3. 回归锁：`pytest tests/test_poison_coverage_581.py tests/test_poison_exemptions_581.py -q` → **12 passed**；既有 `test_output_snapshots.py`（5 快照）、`test_poison_attack_type.py` 无回归（surface_map 新增顶层键 `exemption_lock`，未动 `rule_coverage` 子字典 ⇒ 快照零破坏）。
+4. 验收门（任务书）：**覆盖率不可伪造**（hole A 行为级 collected、hole B 新豁免无签名 fail-closed）；**豁免有见证/机器可核**（27 全 legacy、reason 背书 7/12/8 机器核验、unverifiable 点名不删）；**不降判决可信度**（gate 判决与 118/118 拦截不变）。
+
+### 严守纪律
+- 未改任何卡、未碰 580 的 `--jobs` 与 mutation 判决、未 golden accept、未 push。
+- 27 条存量豁免全部标 `legacy`，**严禁编造 redteam_seen**（无一条填 true/arch_vX 见证）。
+- 覆盖率掉就如实掉（诚实 60.3%），未补假载荷、未替豁免签字。
+- 未跑完整 mutation/replay 测试套件（其与 581 无关、且 580 重构未完工处于预存 RED，并含 `git checkout` 冲掉未提交编辑的破坏性副作用，按 memory 纪律规避）。
+
+**commit**：仅 `_worklog_581.md`（Task 3 验收记录；代码/测试/重钉已随任务 1/2 提交）。
 
 ---
 ## 当前进度
 - ✅ 第 0 步：基线实测 + PoC-2 复现 + covered 对账 + 27 豁免三桶（7/12/8）→ 本 worklog。
 - ✅ **任务 1（hole A）**：行为级 covered 落地，实测 RULE-COVERAGE **38/63**、118/118、EXIT=0；回归锁 `tests/test_poison_coverage_581.py` 3 passed；已一任务一 commit（poison_drill.py + .tool_checksums + 测试）。
 - ✅ **任务 2（hole B）**：豁免二人锁 + legacy 单列 + 机器核原因落地，实测表观 103.2% / 诚实 60.3%（legacy 不计入）、20 条不可核验背书点名；机器核验复现三桶 7/12/8；回归锁 `tests/test_poison_exemptions_581.py` 9 passed；已一任务一 commit。
-- ⏳ 任务 3：重钉 + 全量自测 + 验收门 → 待执行。
+- ✅ **任务 3（重钉+自测+验收门）**：tool_integrity --check OK；poison_drill 38/63、118/118、EXIT=0；两 581 测试 12 passed；验收门全达成；未 push/未 golden accept/未改卡/未碰 580。
