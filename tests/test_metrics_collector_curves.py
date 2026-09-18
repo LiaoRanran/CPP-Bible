@@ -62,17 +62,18 @@ def test_curves_declare_single_timepoint():
 
 
 def test_curves_escape_rate_matches_stat_bounds():
-    """逃逸率块必须与 Part 1 原语逐值一致（双侧区间；分母是**可判** 998）。"""
+    """逃逸率块必须与 Part 1 原语逐值一致（双侧区间；分母是**可判** 1155）。"""
     c = mc.collect_curves()["mutation_escape_rate"]
-    # v3(997) → v4(998) → **578 升 v5**：diff 键并入文案后 M5 的 29 条由"沉默逃逸"变"warn 可见"
-    # ⇒ 逃逸 38 → **9**（可判 998 / n_a 185）。数字按重跑实测，不照抄旧账。
-    assert c["judged"] == 998 and c["n_a"] == 185
-    assert c["numerator"] == 9 and c["denominator"] == 998      # 578：v5 的 9/998
-    lo, hi = sb.cp_interval(9, 998)
-    assert abs(c["point"] - 9 / 998) < 1e-6
+    # 586 任务2：M6 的 8 条 matrix 块式→flow 等价变体从 escaped 剔除、单列 equivalent_invalid，
+    # 全量 escaped 由 9 降为 1（仅余 M1 真实逃逸）；M6 新增 matrix 删键值层变异使可判分母升到 1155。
+    # 数字按重跑实测，不照抄旧账。
+    assert c["judged"] == 1155 and c["n_a"] == 185
+    assert c["numerator"] == 1 and c["denominator"] == 1155      # 586：v5 的 1/1155（诚实口径）
+    lo, hi = sb.cp_interval(1, 1155)
+    assert abs(c["point"] - 1 / 1155) < 1e-6
     assert abs(c["cp_low"] - lo) < 1e-6 and abs(c["cp_high"] - hi) < 1e-6
     # 与单侧口径**不同**（防拿单侧当区间用来"更漂亮"）
-    assert sb.cp_upper_one_sided(9, 998) != pytest.approx(hi, abs=1e-9)
+    assert sb.cp_upper_one_sided(1, 1155) != pytest.approx(hi, abs=1e-9)
 
 
 def test_curves_placeholders_are_honest():
@@ -98,4 +99,4 @@ def test_collect_snapshot_carries_curves(tmp_path: Path, monkeypatch: pytest.Mon
     p = tmp_path / "m.jsonl"
     mc.append(snap, p)
     again = json.loads(p.read_text(encoding="utf-8").splitlines()[-1])
-    assert again["curves"]["mutation_escape_rate"]["denominator"] == 998   # 578：v5 口径
+    assert again["curves"]["mutation_escape_rate"]["denominator"] == 1155   # 586：v5 口径

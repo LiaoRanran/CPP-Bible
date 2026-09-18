@@ -93,50 +93,51 @@
     "M6",
     "M7"
   ],
-  "variants": 1183,
-  "blocked": 989,
-  "escaped": 9,
+  "variants": 1348,
+  "blocked": 1154,
+  "escaped": 1,
   "n_a": 185,
   "malformed": 0,
   "out_of_scope": 69,
   "equivalent": 8,
-  "strict_blocked": 619,
-  "strict_rate": 0.6202,
-  "treated_rate": 0.991,
+  "equivalent_invalid": 8,
+  "strict_blocked": 784,
+  "strict_rate": 0.6788,
+  "treated_rate": 0.9991,
   "rates": {
-    "judged": 998,
+    "judged": 1155,
     "n_a": 185,
     "malformed": 0,
     "strict": {
-      "numerator": 619,
-      "denominator": 998,
-      "point": 0.62024,
-      "cp_low": 0.58931,
-      "cp_high": 0.650459,
+      "numerator": 784,
+      "denominator": 1155,
+      "point": 0.678788,
+      "cp_low": 0.650996,
+      "cp_high": 0.705666,
       "conf": 0.95
     },
     "treated": {
-      "numerator": 989,
-      "denominator": 998,
-      "point": 0.990982,
-      "cp_low": 0.98295,
-      "cp_high": 0.995868,
+      "numerator": 1154,
+      "denominator": 1155,
+      "point": 0.999134,
+      "cp_low": 0.995186,
+      "cp_high": 0.999978,
       "conf": 0.95
     },
     "escape": {
-      "numerator": 9,
-      "denominator": 998,
-      "point": 0.009018,
-      "cp_low": 0.004132,
-      "cp_high": 0.01705,
+      "numerator": 1,
+      "denominator": 1155,
+      "point": 0.000866,
+      "cp_low": 2.2e-05,
+      "cp_high": 0.004814,
       "conf": 0.95
     },
     "treated_all": {
-      "numerator": 989,
-      "denominator": 1183,
-      "point": 0.83601,
-      "cp_low": 0.813659,
-      "cp_high": 0.856676,
+      "numerator": 1154,
+      "denominator": 1348,
+      "point": 0.856083,
+      "cp_low": 0.836199,
+      "cp_high": 0.8744,
       "conf": 0.95
     }
   },
@@ -144,6 +145,7 @@
     "M1": {
       "judged": 65,
       "n_a": 27,
+      "equivalent_invalid": 0,
       "strict": {
         "numerator": 64,
         "denominator": 65,
@@ -172,6 +174,7 @@
     "M2": {
       "judged": 168,
       "n_a": 27,
+      "equivalent_invalid": 0,
       "strict": {
         "numerator": 0,
         "denominator": 168,
@@ -200,6 +203,7 @@
     "M3": {
       "judged": 65,
       "n_a": 42,
+      "equivalent_invalid": 0,
       "strict": {
         "numerator": 5,
         "denominator": 65,
@@ -228,6 +232,7 @@
     "M4": {
       "judged": 200,
       "n_a": 33,
+      "equivalent_invalid": 0,
       "strict": {
         "numerator": 200,
         "denominator": 200,
@@ -256,6 +261,7 @@
     "M5": {
       "judged": 29,
       "n_a": 56,
+      "equivalent_invalid": 0,
       "strict": {
         "numerator": 0,
         "denominator": 29,
@@ -282,36 +288,38 @@
       }
     },
     "M6": {
-      "judged": 332,
+      "judged": 489,
       "n_a": 0,
+      "equivalent_invalid": 8,
       "strict": {
-        "numerator": 211,
-        "denominator": 332,
-        "point": 0.635542,
-        "cp_low": 0.581239,
-        "cp_high": 0.687403,
+        "numerator": 376,
+        "denominator": 489,
+        "point": 0.768916,
+        "cp_low": 0.728967,
+        "cp_high": 0.805578,
         "conf": 0.95
       },
       "treated": {
-        "numerator": 324,
-        "denominator": 332,
-        "point": 0.975904,
-        "cp_low": 0.953074,
-        "cp_high": 0.989541,
+        "numerator": 489,
+        "denominator": 489,
+        "point": 1.0,
+        "cp_low": 0.992485,
+        "cp_high": 1.0,
         "conf": 0.95
       },
       "escape": {
-        "numerator": 8,
-        "denominator": 332,
-        "point": 0.024096,
-        "cp_low": 0.010459,
-        "cp_high": 0.046926,
+        "numerator": 0,
+        "denominator": 489,
+        "point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.007515,
         "conf": 0.95
       }
     },
     "M7": {
       "judged": 139,
       "n_a": 0,
+      "equivalent_invalid": 0,
       "strict": {
         "numerator": 139,
         "denominator": 139,
@@ -345,458 +353,548 @@
     "M1": {
       "blocked": 64,
       "escaped": 1,
-      "n_a": 27
+      "n_a": 27,
+      "equivalent_invalid": 0
     },
     "M2": {
       "blocked": 168,
       "escaped": 0,
-      "n_a": 27
+      "n_a": 27,
+      "equivalent_invalid": 0
     },
     "M3": {
       "blocked": 65,
       "escaped": 0,
-      "n_a": 42
+      "n_a": 42,
+      "equivalent_invalid": 0
     },
     "M4": {
       "blocked": 200,
       "escaped": 0,
-      "n_a": 33
+      "n_a": 33,
+      "equivalent_invalid": 0
     },
     "M5": {
       "blocked": 29,
       "escaped": 0,
-      "n_a": 56
+      "n_a": 56,
+      "equivalent_invalid": 0
     },
     "M6": {
-      "blocked": 324,
-      "escaped": 8,
-      "n_a": 0
+      "blocked": 489,
+      "escaped": 0,
+      "n_a": 0,
+      "equivalent_invalid": 8
     },
     "M7": {
       "blocked": 139,
       "escaped": 0,
-      "n_a": 0
+      "n_a": 0,
+      "equivalent_invalid": 0
     }
   },
   "by_card": {
     "evidence/conc/EV-CONC-001.md": {
-      "blocked": 18,
+      "blocked": 21,
       "escaped": 1,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/conc/EV-CONC-002.md": {
-      "blocked": 18,
+      "blocked": 21,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/conc/EV-CONC-003.md": {
-      "blocked": 18,
+      "blocked": 21,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/conc/EV-CONC-004.md": {
-      "blocked": 18,
+      "blocked": 21,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/conc/EV-CONC-005.md": {
-      "blocked": 18,
+      "blocked": 21,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/conc/EV-CONC-006.md": {
-      "blocked": 18,
+      "blocked": 21,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/hist/EV-HIST-001.md": {
-      "blocked": 11,
-      "escaped": 1,
-      "n_a": 2
+      "blocked": 14,
+      "escaped": 0,
+      "n_a": 2,
+      "equivalent_invalid": 1
     },
     "evidence/lang/EV-LANG-001.md": {
-      "blocked": 20,
+      "blocked": 23,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/lang/EV-LANG-002.md": {
-      "blocked": 18,
+      "blocked": 21,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-001.md": {
-      "blocked": 11,
+      "blocked": 14,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-002.md": {
-      "blocked": 11,
+      "blocked": 14,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-003.md": {
-      "blocked": 16,
+      "blocked": 19,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-004.md": {
       "blocked": 11,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-005.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-006.md": {
-      "blocked": 16,
+      "blocked": 19,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-007.md": {
-      "blocked": 16,
+      "blocked": 19,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-008.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-009.md": {
-      "blocked": 16,
+      "blocked": 19,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-010.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-011.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-012.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-013.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-014.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-015.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-016.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-017.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-018.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-019.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-020.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-021.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-022.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-023.md": {
-      "blocked": 16,
+      "blocked": 19,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-024.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-025.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-026.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-027.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-028.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-029.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-030.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-031.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-032.md": {
-      "blocked": 13,
-      "escaped": 1,
-      "n_a": 2
+      "blocked": 16,
+      "escaped": 0,
+      "n_a": 2,
+      "equivalent_invalid": 1
     },
     "evidence/mem/EV-MEM-033.md": {
-      "blocked": 13,
-      "escaped": 1,
-      "n_a": 2
+      "blocked": 16,
+      "escaped": 0,
+      "n_a": 2,
+      "equivalent_invalid": 1
     },
     "evidence/mem/EV-MEM-034.md": {
-      "blocked": 13,
-      "escaped": 1,
-      "n_a": 2
+      "blocked": 16,
+      "escaped": 0,
+      "n_a": 2,
+      "equivalent_invalid": 1
     },
     "evidence/mem/EV-MEM-035.md": {
-      "blocked": 13,
-      "escaped": 1,
-      "n_a": 2
+      "blocked": 16,
+      "escaped": 0,
+      "n_a": 2,
+      "equivalent_invalid": 1
     },
     "evidence/mem/EV-MEM-036.md": {
-      "blocked": 14,
-      "escaped": 1,
-      "n_a": 1
+      "blocked": 17,
+      "escaped": 0,
+      "n_a": 1,
+      "equivalent_invalid": 1
     },
     "evidence/mem/EV-MEM-037.md": {
-      "blocked": 14,
-      "escaped": 1,
-      "n_a": 1
+      "blocked": 17,
+      "escaped": 0,
+      "n_a": 1,
+      "equivalent_invalid": 1
     },
     "evidence/mem/EV-MEM-038.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-039.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-040.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-041.md": {
-      "blocked": 15,
+      "blocked": 18,
       "escaped": 0,
-      "n_a": 1
+      "n_a": 1,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-042.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-043.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-044.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/mem/EV-MEM-045.md": {
-      "blocked": 14,
+      "blocked": 17,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/ub/EV-UB-001.md": {
-      "blocked": 11,
+      "blocked": 14,
       "escaped": 0,
-      "n_a": 2
+      "n_a": 2,
+      "equivalent_invalid": 0
     },
     "evidence/ub/EV-UB-002.md": {
-      "blocked": 10,
-      "escaped": 1,
-      "n_a": 2
+      "blocked": 13,
+      "escaped": 0,
+      "n_a": 2,
+      "equivalent_invalid": 1
     },
     "atoms/conc/ATOM-CONC-FENCE-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/conc/ATOM-CONC-LOCK-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/conc/ATOM-CONC-RACE-001.md": {
       "blocked": 7,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/hist/ATOM-HIST-AUTOPTR-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/lang/ATOM-LANG-INLINE-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-ALIGN-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-ALLOC-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-ALLOC-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-LEAK-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-LEAK-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-MOVE-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-NEW-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-PERF-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-PERF-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-PERF-003.md": {
       "blocked": 7,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-PERF-004.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-RAII-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-RAII-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-RVREF-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-SHARED-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-SHARED-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-UNIQUE-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-UNIQUE-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-VALUE-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-VALUE-002.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/mem/ATOM-MEM-WEAK-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     },
     "atoms/ub/ATOM-UB-GRAY-001.md": {
       "blocked": 6,
       "escaped": 0,
-      "n_a": 4
+      "n_a": 4,
+      "equivalent_invalid": 0
     }
   },
-  "elapsed_s": 209.03,
-  "ge_runs": 999,
+  "elapsed_s": 235.39,
+  "ge_runs": 1164,
   "replay_runs": 65,
   "replay_skipped": 139,
   "escaped_list": [
@@ -810,86 +908,6 @@
       "new_warn": [],
       "replay": "confirm",
       "equivalent": false
-    },
-    {
-      "card": "evidence/hist/EV-HIST-001.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
-    },
-    {
-      "card": "evidence/mem/EV-MEM-032.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
-    },
-    {
-      "card": "evidence/mem/EV-MEM-033.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
-    },
-    {
-      "card": "evidence/mem/EV-MEM-034.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
-    },
-    {
-      "card": "evidence/mem/EV-MEM-035.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
-    },
-    {
-      "card": "evidence/mem/EV-MEM-036.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
-    },
-    {
-      "card": "evidence/mem/EV-MEM-037.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
-    },
-    {
-      "card": "evidence/ub/EV-UB-002.md",
-      "op": "M6",
-      "point": "块式 → flow 写法（matrix）",
-      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
-      "verdict": "escaped",
-      "new_block": [],
-      "new_warn": [],
-      "equivalent": true
     }
   ],
   "equivalent_keys": [
@@ -901,6 +919,48 @@
     "evidence/mem/EV-MEM-036.md · M6 · 块式 → flow 写法（matrix）",
     "evidence/mem/EV-MEM-037.md · M6 · 块式 → flow 写法（matrix）",
     "evidence/ub/EV-UB-002.md · M6 · 块式 → flow 写法（matrix）"
+  ],
+  "equivalent_invalid_list": [
+    {
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    },
+    {
+      "card": "evidence/mem/EV-MEM-032.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    },
+    {
+      "card": "evidence/mem/EV-MEM-033.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    },
+    {
+      "card": "evidence/mem/EV-MEM-034.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    },
+    {
+      "card": "evidence/mem/EV-MEM-035.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    },
+    {
+      "card": "evidence/mem/EV-MEM-036.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    },
+    {
+      "card": "evidence/mem/EV-MEM-037.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    },
+    {
+      "card": "evidence/ub/EV-UB-002.md",
+      "op": "M6",
+      "point": "块式 → flow 写法（matrix）"
+    }
   ],
   "jobs": 4,
   "parallel": true,
@@ -1136,6 +1196,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-001.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-001.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -1392,6 +1491,45 @@
     },
     {
       "card": "evidence/conc/EV-CONC-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-002.md",
       "op": "M7",
       "point": "sha256 改一位（8dd19bc6… → 0dd19bc6…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M7 --limit 1",
@@ -1638,6 +1776,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-003.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-003.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-003.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-003.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-003.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-003.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-003.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -1892,6 +2069,45 @@
     },
     {
       "card": "evidence/conc/EV-CONC-004.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-004.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-004.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-004.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-004.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-004.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-004.md",
       "op": "M7",
       "point": "sha256 改一位（d84c7516… → 084c7516…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M7 --limit 1",
@@ -2138,6 +2354,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-005.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-005.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-005.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-005.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-005.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-005.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-005.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -2392,6 +2647,45 @@
     },
     {
       "card": "evidence/conc/EV-CONC-006.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-006.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-006.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-006.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-006.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/conc/EV-CONC-006.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-006.md",
       "op": "M7",
       "point": "sha256 改一位（5c5549ae… → 0c5549ae…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M7 --limit 1",
@@ -2566,6 +2860,45 @@
       "new_block": [],
       "new_warn": [],
       "equivalent": true
+    },
+    {
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/hist/EV-HIST-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++14, c++17, c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/hist/EV-HIST-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/hist/EV-HIST-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
     },
     {
       "card": "evidence/hist/EV-HIST-001.md",
@@ -2846,6 +3179,45 @@
     },
     {
       "card": "evidence/lang/EV-LANG-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/lang/EV-LANG-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/lang/EV-LANG-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/lang/EV-LANG-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-001.md",
       "op": "M7",
       "point": "sha256 改一位（63c7e3b7… → 03c7e3b7…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M7 --limit 1",
@@ -3095,6 +3467,45 @@
     },
     {
       "card": "evidence/lang/EV-LANG-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/lang/EV-LANG-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/lang/EV-LANG-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/lang/EV-LANG-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-002.md",
       "op": "M7",
       "point": "sha256 改一位（63c7e3b7… → 03c7e3b7…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M7 --limit 1",
@@ -3257,6 +3668,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-001.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0, GCC 13.1.0, GCC 8.1.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23, c++17]        # 8.1.0 不支持 c++23，其两档改用 c++17（见 M2 §2 夹具↔std 绑定））",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-001.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -3426,6 +3876,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-002.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-002.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -3652,6 +4141,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-003.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-003.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-003.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-003.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++14]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-003.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-003.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-003.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -4033,6 +4561,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-005.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-005.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-005.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++11, c++14, c++17, c++20, c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-005.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-005.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-005.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-005.md",
       "op": "M7",
       "point": "sha256 改一位（2a834e60… → 0a834e60…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M7 --limit 1",
@@ -4254,6 +4821,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-006.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-006.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-006.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-006.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-006.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-006.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-006.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -4485,6 +5091,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-007.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-007.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-007.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-007.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-007.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-007.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-007.md",
       "op": "M7",
       "point": "sha256 改一位（988f9212… → 088f9212…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M7 --limit 1",
@@ -4689,6 +5334,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-008.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-008.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-008.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-008.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-008.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-008.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-008.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -4920,6 +5604,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-009.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-009.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-009.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-009.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-009.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-009.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-009.md",
       "op": "M7",
       "point": "sha256 改一位（7bba13b0… → 0bba13b0…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M7 --limit 1",
@@ -5124,6 +5847,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-010.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-010.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-010.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-010.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-010.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-010.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-010.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -5340,6 +6102,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-011.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-011.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-011.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-011.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-011.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-011.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-011.md",
       "op": "M7",
       "point": "sha256 改一位（e10ca794… → 010ca794…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M7 --limit 1",
@@ -5548,6 +6349,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-012.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-012.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-012.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-012.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-012.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-012.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-012.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -5764,6 +6604,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-013.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-013.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-013.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-013.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-013.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-013.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-013.md",
       "op": "M7",
       "point": "sha256 改一位（32362395… → 02362395…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M7 --limit 1",
@@ -5972,6 +6851,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-014.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-014.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-014.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-014.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-014.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-014.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-014.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -6188,6 +7106,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-015.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-015.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-015.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-015.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-015.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-015.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-015.md",
       "op": "M7",
       "point": "sha256 改一位（cf0453eb… → 0f0453eb…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M7 --limit 1",
@@ -6396,6 +7353,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-016.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-016.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-016.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-016.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-016.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-016.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-016.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -6612,6 +7608,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-017.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-017.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-017.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-017.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-017.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-017.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-017.md",
       "op": "M7",
       "point": "sha256 改一位（094311a8… → 194311a8…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M7 --limit 1",
@@ -6816,6 +7851,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-018.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-018.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-018.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-018.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-018.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-018.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-018.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -7032,6 +8106,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-019.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-019.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-019.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-019.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-019.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-019.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-019.md",
       "op": "M7",
       "point": "sha256 改一位（e35737bd… → 035737bd…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M7 --limit 1",
@@ -7240,6 +8353,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-020.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-020.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-020.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-020.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-020.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-020.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-020.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -7456,6 +8608,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-021.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-021.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-021.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-021.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-021.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-021.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-021.md",
       "op": "M7",
       "point": "sha256 改一位（59fc71f4… → 09fc71f4…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M7 --limit 1",
@@ -7660,6 +8851,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-022.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-022.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-022.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-022.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-022.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-022.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-022.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -7889,6 +9119,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-023.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-023.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-023.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-023.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-023.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-023.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-023.md",
       "op": "M7",
       "point": "sha256 改一位（6016c553… → 0016c553…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M7 --limit 1",
@@ -8093,6 +9362,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-024.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-024.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-024.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-024.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-024.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-024.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-024.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -8309,6 +9617,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-025.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-025.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-025.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-025.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-025.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-025.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-025.md",
       "op": "M7",
       "point": "sha256 改一位（4e6266ec… → 0e6266ec…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M7 --limit 1",
@@ -8517,6 +9864,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-026.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-026.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-026.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-026.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-026.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-026.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-026.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -8733,6 +10119,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-027.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-027.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-027.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-027.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-027.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-027.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-027.md",
       "op": "M7",
       "point": "sha256 改一位（e7e7d630… → 07e7d630…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M7 --limit 1",
@@ -8941,6 +10366,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-028.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-028.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-028.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-028.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-028.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-028.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-028.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -9157,6 +10621,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-029.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-029.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-029.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-029.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-029.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-029.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-029.md",
       "op": "M7",
       "point": "sha256 改一位（75130ec6… → 05130ec6…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M7 --limit 1",
@@ -9365,6 +10868,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-030.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-030.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-030.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-030.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-030.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-030.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-030.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -9580,6 +11122,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-031.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-031.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-031.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-031.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-031.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-031.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-031.md",
       "op": "M7",
       "point": "sha256 改一位（77f1164c… → 07f1164c…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M7 --limit 1",
@@ -9779,6 +11360,45 @@
       "new_block": [],
       "new_warn": [],
       "equivalent": true
+    },
+    {
+      "card": "evidence/mem/EV-MEM-032.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-032.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-032.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-032.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-032.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-032.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
     },
     {
       "card": "evidence/mem/EV-MEM-032.md",
@@ -9985,6 +11605,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-033.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-033.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-033.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-033.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-033.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-033.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-033.md",
       "op": "M7",
       "point": "sha256 改一位（a26740cd… → 026740cd…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M7 --limit 1",
@@ -10188,6 +11847,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-034.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-034.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-034.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-034.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-034.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-034.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-034.md",
       "op": "M7",
       "point": "sha256 改一位（2f8097b8… → 0f8097b8…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M7 --limit 1",
@@ -10388,6 +12086,45 @@
       "new_block": [],
       "new_warn": [],
       "equivalent": true
+    },
+    {
+      "card": "evidence/mem/EV-MEM-035.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-035.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-035.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-035.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-035.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-035.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
     },
     {
       "card": "evidence/mem/EV-MEM-035.md",
@@ -10597,6 +12334,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-036.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-036.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-036.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-036.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-036.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-036.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-036.md",
       "op": "M7",
       "point": "sha256 改一位（0fd4a1ac… → 1fd4a1ac…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M7 --limit 1",
@@ -10801,6 +12577,45 @@
       "new_block": [],
       "new_warn": [],
       "equivalent": true
+    },
+    {
+      "card": "evidence/mem/EV-MEM-037.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-037.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-037.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-037.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-037.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-037.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
     },
     {
       "card": "evidence/mem/EV-MEM-037.md",
@@ -11012,6 +12827,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-038.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL —— 同驱动跑 libstdc++ 与 libc++ 各一次)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-038.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-038.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++17, c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-038.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-038.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-038.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-038.md",
       "op": "M7",
       "point": "sha256 改一位（d6bf1d9f… → 06bf1d9f…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M7 --limit 1",
@@ -11216,6 +13070,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-039.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-039.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-039.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-039.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-039.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-039.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-039.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -11431,6 +13324,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-040.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-040.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-040.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-040.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-040.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-040.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-040.md",
       "op": "M7",
       "point": "sha256 改一位（4f482fdc… → 0f482fdc…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M7 --limit 1",
@@ -11642,6 +13574,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-041.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-041.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-041.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-041.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-041.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-041.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-041.md",
       "op": "M7",
       "point": "sha256 改一位（4f482fdc… → 0f482fdc…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M7 --limit 1",
@@ -11845,6 +13816,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-042.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-042.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-042.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-042.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-042.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-042.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2（本卡）/ -O1（同夹具在 EV-MEM-043 的 sanitizer 观测）]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-042.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -12056,6 +14066,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-043.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-043.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-043.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-043.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-043.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O1（sanitizer 观测档）, -O2（零依赖判据档）]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-043.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-043.md",
       "op": "M7",
       "point": "sha256 改一位（ed44b0c6… → 0d44b0c6…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M7 --limit 1",
@@ -12259,6 +14308,45 @@
       "new_warn": [
         "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-044.md"
       ],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-044.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-044.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-044.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-044.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-044.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-044.md"
+      ],
+      "new_warn": [],
       "equivalent": false
     },
     {
@@ -12470,6 +14558,45 @@
     },
     {
       "card": "evidence/mem/EV-MEM-045.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-045.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-045.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-045.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-045.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/mem/EV-MEM-045.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-045.md",
       "op": "M7",
       "point": "sha256 改一位（590f3e72… → 090f3e72…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M7 --limit 1",
@@ -12637,6 +14764,45 @@
     },
     {
       "card": "evidence/ub/EV-UB-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0, GCC 13.1.0, GCC 8.1.0, Clang (ubuntu-latest runner 默认)]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/ub/EV-UB-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/ub/EV-UB-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++17]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/ub/EV-UB-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/ub/EV-UB-001.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/ub/EV-UB-001.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/ub/EV-UB-001.md",
       "op": "M7",
       "point": "sha256 改一位（7122e45d… → 0122e45d…）",
       "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M7 --limit 1",
@@ -12797,6 +14963,45 @@
       "new_block": [],
       "new_warn": [],
       "equivalent": true
+    },
+    {
+      "card": "evidence/ub/EV-UB-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 compiler: [GCC 15.3.0]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/ub/EV-UB-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/ub/EV-UB-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 std: [c++23]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/ub/EV-UB-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
+    },
+    {
+      "card": "evidence/ub/EV-UB-002.md",
+      "op": "M6",
+      "point": "matrix 删键（移除 opt: [-O0, -O2]）",
+      "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+      "verdict": "blocked",
+      "kind": "strict",
+      "new_block": [
+        "EV-MATRIX:evidence/ub/EV-UB-002.md"
+      ],
+      "new_warn": [],
+      "equivalent": false
     },
     {
       "card": "evidence/ub/EV-UB-002.md",
@@ -16203,5 +18408,5 @@
   ],
   "parallel_baseline_scans": 4,
   "root_fingerprint_ok": true,
-  "note": "v5 strict 口径经 579 工件层根隔离修正：旧落盘 630 系跑批期间真实工件删-建瞬态幻影 strict，隔离后多次独立复跑稳定 619；escaped=9 不受影响。本文件以 583 jobs4 隔离跑 _583_eq.json 为准转正，三总数 989/9/185/1183 逐字不变，replay 65/139。"
+  "note": "v5 经两处修正（均非放水）：(1) strict 口径经 579 工件层根隔离修正：旧落盘 630 系跑批期间真实工件删-建瞬态幻影 strict，隔离后多次独立复跑稳定 619（escaped 不受影响）。(2) 586 任务2：M6 的 8 条 matrix 块式→flow 重排经 583 双解析器证为等价无效变异（canon(P1)==canon(P2)），已从 escaped/可判分母剔除、单列 equivalent_invalid=8，全量 escaped 由 9 降为 1（仅余 M1 真实逃逸）；并新增 matrix 删键值层变异（EV-MATRIX 缺键可检测，165 个变体全 blocked），M6 提供真实覆盖。三总数现为 1154/1/185/1348（variants 1183→1348 因 M6 增删键变体；blocked 989→1154 同因）。"
 }

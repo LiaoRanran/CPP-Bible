@@ -396,8 +396,39 @@ def mut_m5(text: str) -> list[tuple[str, str | None]]:
                     None)]
 
 
+def _mut_matrix_values(text: str) -> list[tuple[str, str]]:
+    """586 任务2：对 `matrix:` 块做**值层**变异（删键）——与保留的等价 block→flow 互补。
+
+    删掉 compiler/std/opt 之一 ⇒ 触发 `check_evidence_matrix`（EV-MATRIX, block：matrix 缺键）
+    ⇒ 可检测，提供真实覆盖（"挪到值层"的落地形态）。
+
+    ⚠️ 实测"非法值替换"（compiler/std/opt 改成不存在值）会**逃逸**——`check_evidence_matrix`
+    只校验键**存在性**不校验取值合法性（真实覆盖缺口，已记入 worklog 交人项），本批不引入以免
+    向基线灌入 165 个真实逃逸（属越界，须监工裁决是否新增值校验规则）。
+    """
+    out: list[tuple[str, str]] = []
+    m = re.search(r"(?m)^(matrix:)\s*\n((?:  [^\n]+\n)+)", text)
+    if not m:
+        return out
+    block = m.group(2)
+    for ln in block.split("\n"):
+        s = ln.strip()
+        if not s or ":" not in s:
+            continue
+        k, _, v = s.partition(":")
+        k = k.strip()
+        if k not in ("compiler", "std", "opt"):
+            continue
+        new_block = block.replace(ln + "\n", "", 1)
+        out.append((f"matrix 删键（移除 {k}: {v.strip()}）",
+                    text[:m.start(2)] + new_block + text[m.end(2):]))
+    return out
+
+
 def mut_m6(text: str) -> list[tuple[str, str]]:
-    """M6 YAML 变形：重复键 / 缩进提升 / 全角键名 / flow 写法（E07 缩进走私族复刻）。"""
+    """M6 YAML 变形：重复键 / 缩进提升 / 全角键名（键层攻击，仍有效）+
+    586 任务2 新增 matrix 值层删键（EV-MATRIX 可检测）+ 保留"块式→flow"（583 已证等价，
+    由报告层单列 `equivalent_invalid` 不进可判分母，作等价判据的生产触发与回归锁）。"""
     out: list[tuple[str, str]] = []
     m = re.search(r"(?m)^id:\s*(\S+)\s*$", text)
     if m:
@@ -417,6 +448,8 @@ def mut_m6(text: str) -> list[tuple[str, str]]:
         out.append((f"块式 → flow 写法（{m4.group(2)}）",
                     text[:m4.start()] + f"{m4.group(1)}{m4.group(2)}: {{{', '.join(items)}}}\n"
                     + text[m4.end():]))
+    # 586 任务2：matrix 值层变异（删键，EV-MATRIX 可检测）——与上面的等价 block→flow 互补
+    out.extend(_mut_matrix_values(text))
     return out
 
 
@@ -771,24 +804,33 @@ def _report(selected: list[Path], ops: list[str], per: list[dict[str, Any]],
             stats: dict[str, int], elapsed: float, *,
             jobs: int = 1, parallel: bool = False) -> dict[str, Any]:
     """由 per 记录 + STATS 读数构造报告（**单一真源**：串行与并行共用；580 抽取时一字未改口径）。"""
-    counts = {k: sum(1 for r in per if r["verdict"] == k)
+    # 586 任务2：等价变异体（equivalent=True）是"只读 frontmatter 视角下不可能改变判决"的
+    # 纯格式重排（典型：matrix 块式→flow）；它们被 classify 判为 escaped 但**非真逃逸**。
+    # 必须从可判分母 / escaped_list 剔除，单列 equivalent_invalid，否则虚增逃逸率（度量诚实化债）。
+    judge = [r for r in per if not r.get("equivalent")]   # 可判（去掉等价无效变异）
+    counts = {k: sum(1 for r in judge if r["verdict"] == k)
               for k in ("blocked", "escaped", "n_a")}
-    counts["malformed"] = sum(1 for r in per if r.get("malformed"))    # n_a 里单列一类（543 P1）
+    counts["malformed"] = sum(1 for r in judge if r.get("malformed"))    # n_a 里单列一类（543 P1）
     # 558 Part B2：n_a 里再单列"变异点落在**门禁读取面之外**"（M2 out_of_scope）——
     # 这类提问与门禁无关，混进 escaped 会虚增逃逸率（543 P2 逐逃逸定性的教训）。
-    counts["out_of_scope"] = sum(1 for r in per if r.get("out_of_scope"))
-    # 583 N5：等价变异体（规范化双解析器视角相同 ⇒ 不可能改变任何只读 frontmatter 的规则结论）。
-    #   与 out_of_scope/malformed 同列：**只作细类计数，不进拦截率分子分母**。
+    counts["out_of_scope"] = sum(1 for r in judge if r.get("out_of_scope"))
+    # 583 N5：等价变异体；586 任务2：单列 equivalent_invalid（**不进** blocked/escaped/分母，
+    # 只作细类计数 + 单列清单；与 out_of_scope/malformed 同列）。
     counts["equivalent"] = sum(1 for r in per if r.get("equivalent"))
-    strict = sum(1 for r in per if r["verdict"] == "blocked" and r.get("kind") == "strict")
+    counts["equivalent_invalid"] = counts["equivalent"]
+    strict = sum(1 for r in judge if r["verdict"] == "blocked" and r.get("kind") == "strict")
     treated = counts["blocked"]
     denom = counts["blocked"] + counts["escaped"] or 1
     by_op: dict[str, dict[str, int]] = {}
     by_card: dict[str, dict[str, int]] = {}
     for r in per:
         for bucket, key in ((by_op, r["op"]), (by_card, r["card"])):
-            d = bucket.setdefault(key, {"blocked": 0, "escaped": 0, "n_a": 0})
-            d[r["verdict"]] += 1
+            d = bucket.setdefault(key, {"blocked": 0, "escaped": 0, "n_a": 0,
+                                        "equivalent_invalid": 0})
+            if r.get("equivalent"):
+                d["equivalent_invalid"] += 1
+            else:
+                d[r["verdict"]] += 1
     # 565 Part 2：口径块（**只加不删**——既有 strict_rate/treated_rate 逐字保留，
     # 免得打散 548 的对账锁与 T2 快照；新增的是"带分子分母 + 区间"的自洽口径）
     judged = counts["blocked"] + counts["escaped"]        # 可判分母（n_a/malformed 永不进）
@@ -809,10 +851,13 @@ def _report(selected: list[Path], ops: list[str], per: list[dict[str, Any]],
             "elapsed_s": round(elapsed, 2),
             "ge_runs": stats["ge_runs"], "replay_runs": stats["replay_runs"],
             "replay_skipped": stats["replay_skipped"],
-            "escaped_list": [r for r in per if r["verdict"] == "escaped"],
-            # 583 任务 1（N5）：等价变异体清单（**只加字段**；判决/分母零改）
+            "escaped_list": [r for r in judge if r["verdict"] == "escaped"],
+            # 583 任务 1（N5）：等价变异体清单（判决/分母零改）
             "equivalent_keys": [f"{r['card']} · {r['op']} · {r['point']}"
                                 for r in per if r.get("equivalent")],
+            # 586 任务2：等价无效变异清单（已从 escaped/分母剔除，单列；不再算进 blocked/escaped）
+            "equivalent_invalid_list": [{"card": r["card"], "op": r["op"], "point": r["point"]}
+                                        for r in per if r.get("equivalent")],
             # 580 任务 2：只**新增**字段（既有字段一字未改）
             "jobs": jobs, "parallel": bool(parallel),
             "results": per}
@@ -1037,14 +1082,17 @@ def _op_rates(per: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str]]:
     out: dict[str, Any] = {}
     flags: list[str] = []
     for op in sorted({r["op"] for r in per}):
-        rows = [r for r in per if r["op"] == op]
+        # 586 任务2：等价无效变异不进分算子口径（与全局一致），单列 equivalent_invalid。
+        rows = [r for r in per if r["op"] == op and not r.get("equivalent")]
         blocked = sum(1 for r in rows if r["verdict"] == "blocked")
         escaped = sum(1 for r in rows if r["verdict"] == "escaped")
         strict_op = sum(1 for r in rows
                         if r["verdict"] == "blocked" and r.get("kind") == "strict")
         n_a_op = sum(1 for r in rows if r["verdict"] == "n_a")
+        eq_inv_op = sum(1 for r in per if r["op"] == op and r.get("equivalent"))
         judged = blocked + escaped                       # 可判样本（n_a 永不进）
         out[op] = {"judged": judged, "n_a": n_a_op,
+                   "equivalent_invalid": eq_inv_op,
                    "strict": _rate_block(strict_op, judged),
                    "treated": _rate_block(blocked, judged),
                    "escape": _rate_block(escaped, judged)}

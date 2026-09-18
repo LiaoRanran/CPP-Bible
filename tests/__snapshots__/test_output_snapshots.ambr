@@ -42,11 +42,13 @@
     'by_operator': dict({
       'M4': dict({
         'blocked': 4,
+        'equivalent_invalid': 0,
         'escaped': 0,
         'n_a': 0,
       }),
       'M5': dict({
         'blocked': 0,
+        'equivalent_invalid': 0,
         'escaped': 0,
         'n_a': 1,
       }),

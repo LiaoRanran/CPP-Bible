@@ -128,19 +128,24 @@ def test_583_equivalent_records_are_escaped_with_no_new_findings():
     assert ok and bad == [], bad
 
 
-def test_583_equivalent_flag_does_not_change_verdicts(monkeypatch):
-    """**最强"只加不改"证据（A/B 同输入）**：把 `equivalent_variant` 打桩成恒 False 再跑同一输入，
-    与打开判据时的 5 字段**逐条相等**、三总数相等 ⇒ 本字段对判决**零影响**（不靠跨批次比旧产物）。"""
+def test_583_equivalent_flag_does_not_change_blocked_set(monkeypatch):
+    """586：equivalent 字段**只**把等价变体从 `escaped` 挪到 `equivalent_invalid`（不进可判分母），
+    **不影响**任何变体的 blocked 判定。A/B 同输入：开/关 `equivalent_variant`，blocked 与 n_a 相等，
+    `equivalent_invalid` 与 `escaped` 互补（开：escaped=0、equivalent_invalid=N；关：escaped=N、equivalent_invalid=0）。
+    判决 5 字段逐条一致。"""
     cards = [_CARD, ROOT / "evidence/ub/EV-UB-002.md"]
     on = mf._run_jobs(cards, ["M6"], len(cards), jobs=1)
     monkeypatch.setattr(mf, "equivalent_variant", lambda *a, **k: False)
     off = mf._run_jobs(cards, ["M6"], len(cards), jobs=1)
     assert _order_of(on) == _order_of(off)
     assert mf._variant_index(on) == mf._variant_index(off), "开关 equivalent 不得改变任何判决字段"
-    assert (on["blocked"], on["escaped"], on["n_a"]) == \
-           (off["blocked"], off["escaped"], off["n_a"])
+    # blocked / n_a 不受 equivalent 影响（真实拦截集合不变）
+    assert (on["blocked"], on["n_a"]) == (off["blocked"], off["n_a"])
+    eqn = sum(1 for r in on["results"] if r["equivalent"])
+    assert eqn > 0, "打开时应有等价变体（否则本 A/B 无意义）"
+    assert on["equivalent_invalid"] == eqn and on["escaped"] == 0
+    assert off["equivalent_invalid"] == 0 and off["escaped"] == eqn
     assert all(r["equivalent"] is False for r in off["results"])
-    assert sum(1 for r in on["results"] if r["equivalent"]) > 0, "打开时应有等价变体（否则本 A/B 无意义）"
 
 
 def _order_of(rep: dict) -> list[tuple[str, str, str]]:
@@ -171,7 +176,9 @@ def test_583_variant_index_carries_no_equivalent_field():
     assert idx, "索引不应为空"
     for key, val in idx.items():
         assert len(val) == 5, (key, val)                    # 仍是 5 字段，未被 equivalent 污染
-    assert rep["blocked"] + rep["escaped"] + rep["n_a"] == rep["variants"]
+    # 586：四分类总和 = 变体数（equivalent 不进 blocked/escaped，单列 equivalent_invalid）
+    assert (rep["blocked"] + rep["escaped"] + rep["n_a"]
+            + rep["equivalent_invalid"] == rep["variants"])
     # 等价记录必须是 escaped 且无新 finding（保守性：宁可漏标，不许错标）
     for r in rep["results"]:
         if r.get("equivalent"):
