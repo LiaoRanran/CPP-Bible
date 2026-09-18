@@ -2,8 +2,8 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-18T00:28:02",
- "source_commit": "dd5d29d",
+ "generated_at": "2026-09-18T09:29:09",
+ "source_commit": "a10c6e0",
  "drill": {
   "passed": 118,
   "total": 118
@@ -19,7 +19,7 @@
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
-   "count": 18
+   "count": 21
   },
   "A4": {
    "label": "时序穿链：编译后覆写、留痕比夹具旧",
@@ -313,17 +313,17 @@
   {
    "name": "P74 observation 命题缺命题级活性锚（蹭卡级工件）须 warn",
    "pass": true,
-   "type": "A?"
+   "type": "A3"
   },
   {
    "name": "P75 锚通用符号（.file）须 warn",
    "pass": true,
-   "type": "A?"
+   "type": "A3"
   },
   {
    "name": "P76 锚不存在的符号须 warn",
    "pass": true,
-   "type": "A?"
+   "type": "A3"
   },
   {
    "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
