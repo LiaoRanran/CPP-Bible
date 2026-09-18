@@ -52,6 +52,13 @@ SERIAL_EXTRA = frozenset({
     "test_gate_engine.py",       # 真实仓库规则扫描（读工件存在性/内容）
     "test_writer_selfcheck.py",  # WC-01 磁盘 sha == 卡值（对瞬时改写最敏感）
     "test_artifact_version.py",  # 工件版本台账 + 工件事存在性
+    # 583 任务 0：**断言"真实仓全树指纹/manifest 字节不变"** 的两个模块。
+    #   病：它们读 `Examples/atoms/evidence` 全树指纹，而 `-n auto` 全套里**别的 worker 的
+    #   合法写盘**（replay 删-重建工件；writer_selfcheck/artifact_version 修工件）会让指纹变
+    #   ⇒ 假红（实测：全套红、单模块并行/串行/静默树全套均绿）。
+    #   挂 `replay_serial` 只挡 replay 一家 ⇒ 挡不住其余写者，故按本仓既有机制整模块串行。
+    "test_mutation_isolation_579.py",   # 579：跑批对真实仓零副作用（Examples 指纹 + manifest 字节）
+    "test_mutation_parallel_580.py",    # 580：并行跑批后真实根指纹/真实锁不动
 })
 
 
