@@ -45,8 +45,14 @@ def test_580_jobs_value_parsing():
     assert mf._jobs_value("auto", 1) == 1, "卡数不足时不许起多余 worker"
 
 
-def test_580_jobs1_equals_jobsN_everywhere():
-    """(a)(c)(d)(f) 主验收：jobs=1/2/4 的逐变体索引、结果顺序、三计数、真实根指纹全一致。"""
+def test_580_jobs1_equals_jobsN_everywhere(replay_serial):
+    """(a)(c)(d)(f) 主验收：jobs=1/2/4 的逐变体索引、结果顺序、三计数、真实根指纹全一致。
+
+    583 任务 0 补 `replay_serial`：本用例断言 `root_fingerprint_ok is True`，而该指纹覆盖
+    **真实仓全树**（Examples/atoms/evidence）⇒ 在 `-n auto` 全套里会被**别的 worker 的合法 replay**
+    （删-重建真实工件）干扰成假红（实测：全套红、单文件并行与串行均绿，且红点正是这一条断言）。
+    与 579 的 `test_579_*` 同因同治：与 replay 共用同一把锁串行。
+    """
     cards = _tiny_cards(2)
     base = mf._run_jobs(cards, ["M6"], len(cards), jobs=1)
     idx1, order1 = mf._variant_index(base), _order(base)
