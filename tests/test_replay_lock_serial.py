@@ -41,7 +41,7 @@ def test_replay_serial_fixture_contract():
     反例：锁已被占（本进程 pid，存活 ⇒ 不会被当僵尸接管）⇒ `_acquire_replay_lock` 超时
     ⇒ fixture 据此 **skip**（带因跳过，不是假失败）。
     """
-    lock = replay._REPLAY_LOCK
+    lock = replay._replay_lock_path()      # 580：锁路径 = 函数（跟随跑批根；默认仍是真实 ROOT）
     if lock.exists():
         pytest.skip("锁被占（有 replay 在跑）⇒ 本用例不适用")
     replay._acquire_replay_lock(wait_timeout=0.6)
@@ -76,7 +76,7 @@ def test_try_unlink_lock_tolerates_oserror(monkeypatch: pytest.MonkeyPatch,
         def unlink(self, missing_ok: bool = False) -> None:
             raise OSError("[safe-delete] 操作失败：Some operations were aborted")
 
-    monkeypatch.setattr(replay, "_REPLAY_LOCK", _Boom())
+    monkeypatch.setattr(replay, "_replay_lock_path", lambda: _Boom())
     assert replay._try_unlink_lock() is False, "删不掉必须返回 False，不是抛异常"
     replay._release_replay_lock()                     # 绝不抛（残留锁交给 pid/陈旧接管自愈）
 
@@ -86,7 +86,7 @@ def test_try_unlink_lock_removes_real_file(monkeypatch: pytest.MonkeyPatch,
     """正例：正常文件能删掉并返回 True（不是把"删不了"当常态）。"""
     f = tmp_path / ".replay_lock"
     f.write_text("x", encoding="utf-8")
-    monkeypatch.setattr(replay, "_REPLAY_LOCK", f)
+    monkeypatch.setattr(replay, "_replay_lock_path", lambda: f)
     assert replay._try_unlink_lock() is True
     assert not f.exists()
 

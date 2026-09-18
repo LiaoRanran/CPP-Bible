@@ -1313,10 +1313,10 @@ def drill() -> int:
     # 逃逸面：锁内 pid 已死（进程被杀）时，只按 mtime 判陈旧的实现会阻塞到
     # wait_timeout 才失败 ⇒ 整条 replay 长时间不可用（实测 600s）。
     _tmpd = Path(tempfile.mkdtemp(prefix="p45_"))
-    _orig_lock = replay._REPLAY_LOCK
-    replay._REPLAY_LOCK = _tmpd / ".replay_lock"
+    _orig_lock = replay._replay_lock_path          # 580：锁路径已是**函数**（跟随跑批根）
+    replay._replay_lock_path = lambda: _tmpd / ".replay_lock"
     try:
-        replay._REPLAY_LOCK.write_text("999999\n", encoding="utf-8")   # 不存在 pid
+        replay._replay_lock_path().write_text("999999\n", encoding="utf-8")   # 不存在 pid
         _t0 = time.time()
         try:
             replay._acquire_replay_lock(wait_timeout=5, stale_after=300)
@@ -1329,12 +1329,12 @@ def drill() -> int:
         results.append(("P45 僵尸锁(pid已死)须立即接管", _ok45,
                         f"耗时 {_took:.1f}s（>3s 即仍逃逸）"))
     finally:
-        replay._REPLAY_LOCK = _orig_lock
+        replay._replay_lock_path = _orig_lock
         shutil.rmtree(_tmpd, ignore_errors=True)
 
     # ── P46 阴性：活锁不得被抢（互斥必须成立）──────────────────────────────
     _tmpd2 = Path(tempfile.mkdtemp(prefix="p46_"))
-    replay._REPLAY_LOCK = _tmpd2 / ".replay_lock"
+    replay._replay_lock_path = lambda: _tmpd2 / ".replay_lock"
     try:
         replay._acquire_replay_lock(wait_timeout=5, stale_after=300)
         _raised = False
@@ -1346,7 +1346,7 @@ def drill() -> int:
                         "活锁时二次取锁须超时而非抢锁"))
         replay._release_replay_lock()
     finally:
-        replay._REPLAY_LOCK = _orig_lock
+        replay._replay_lock_path = _orig_lock
         shutil.rmtree(_tmpd2, ignore_errors=True)
 
     # ── P51 工件快照：中断后须能幂等还原（472 P0-4 / N4）─────────────────────

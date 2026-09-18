@@ -936,7 +936,13 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
 
 
 # ── 470 P0-G1（452 E09）：并发隔离锁 ────────────────────────────────────────
-_REPLAY_LOCK = ROOT / "build" / ".replay_lock"
+# 580 任务 1：锁路径**跟随跑批根**（`run_root()`）。为何必要：进程池并行时每个 worker 有各自
+#   的 `batch_root(tmp)`，若锁仍写死真实 `ROOT/build/.replay_lock`，**所有 worker 抢同一把全局锁**
+#   ⇒ 并行被串行化（加速比 ≈1）且 120s 等待易超时假红。
+#   无 `batch_root` 时 `run_root()` 就是真实 ROOT ⇒ **路径与改造前逐字节相同**（零行为漂移）。
+def _replay_lock_path() -> Path:
+    """当前并发锁路径：跑批期 = 跑批根内的一把（每 worker 独立），否则 = 真实 `ROOT/build/.replay_lock`。"""
+    return run_root() / "build" / ".replay_lock"
 _LOCK_WAIT_SEC = 120.0      # 等待上限（超时 → infra_error:replay_busy；472 P0-1：600→120）
 _LOCK_STALE_SEC = 300.0     # 锁龄超此秒数视为陈旧（472 P0-1：3600→300）
 # 锁粒度说明：replay 是**每卡取放锁**（非全程持锁），单卡最长 ~10s（含重编译），
@@ -956,11 +962,12 @@ def _acquire_replay_lock(wait_timeout: float | None = None,
     """
     wait_timeout = _LOCK_WAIT_SEC if wait_timeout is None else wait_timeout
     stale_after = _LOCK_STALE_SEC if stale_after is None else stale_after
-    _REPLAY_LOCK.parent.mkdir(exist_ok=True)
+    lock = _replay_lock_path()          # 580：进入循环前取一次（acquire 循环里不重复求值）
+    lock.parent.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
     while True:
         try:
-            fd = os.open(str(_REPLAY_LOCK), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
             os.write(fd, f"{os.getpid()}\n{time.time()}\n".encode())
             os.close(fd)
             return
@@ -971,14 +978,14 @@ def _acquire_replay_lock(wait_timeout: float | None = None,
             if _pid is not None and not _pid_alive(_pid) and _try_unlink_lock():
                 continue                              # 僵尸锁接管成功
             try:
-                age = time.time() - _REPLAY_LOCK.stat().st_mtime
+                age = time.time() - lock.stat().st_mtime
             except FileNotFoundError:
                 continue                              # 恰好被释放：立即重试
             if age > stale_after and _try_unlink_lock():   # 陈旧锁接管（删不掉则不 continue，
                 continue                                   #   落回等待/超时，不无限空转）
                 continue
             if time.time() - t0 > wait_timeout:
-                raise TimeoutError(f"replay 锁被占用超时：{_REPLAY_LOCK}")
+                raise TimeoutError(f"replay 锁被占用超时：{lock}")
             time.sleep(0.5)
 
 
@@ -993,7 +1000,7 @@ def _try_unlink_lock() -> bool:
     返回 bool 的用处：调用方据此决定"继续抢锁"还是"落回等待"，避免删除失败时无限空转。
     """
     try:
-        _REPLAY_LOCK.unlink(missing_ok=True)
+        _replay_lock_path().unlink(missing_ok=True)     # 580：跟随跑批根（各 worker 各删各的）
         return True
     except OSError:
         return False
@@ -1002,7 +1009,8 @@ def _try_unlink_lock() -> bool:
 def _read_lock_pid() -> int | None:
     """读锁内记录的 pid（锁文件为空/旧格式 → None，退化为 mtime 判定）。"""
     try:
-        first = _REPLAY_LOCK.read_text(encoding="utf-8", errors="replace").split("\n")[0]
+        first = _replay_lock_path().read_text(encoding="utf-8",
+                                              errors="replace").split("\n")[0]
         return int(first.strip())
     except (FileNotFoundError, ValueError):
         return None

@@ -11,8 +11,12 @@ import pytest
 
 @pytest.fixture()
 def lock(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """580：锁路径由模块常量改为**函数** `_replay_lock_path()`（跟随跑批根）⇒ 替身随之改法。
+
+    行为契约不变：仍然是"把锁指到 tmp 里的一把"，用例断言一字未改。
+    """
     p = tmp_path / ".replay_lock"
-    monkeypatch.setattr(replay, "_REPLAY_LOCK", p)
+    monkeypatch.setattr(replay, "_replay_lock_path", lambda: p)
     return p
 
 
@@ -106,7 +110,7 @@ def test_lock_serializes_processes(lock: Path, tmp_path: Path):
         "sys.path.insert(0, r'%s')\n"
         "import atom_evidence_replay as replay\n"
         "from pathlib import Path\n"
-        "replay._REPLAY_LOCK = Path(r'%s')\n"
+        "replay._replay_lock_path = lambda: Path(r'%s')\n"     # 580：锁路径函数替身
         "replay._acquire_replay_lock(wait_timeout=30, stale_after=3600)\n"
         "print(time.time(), flush=True)\n"
         "time.sleep(1.5)\n"
