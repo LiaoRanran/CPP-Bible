@@ -2,8 +2,8 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-18T18:02:12",
- "source_commit": "e651e2a",
+ "generated_at": "2026-09-18T22:11:24",
+ "source_commit": "08ca446",
  "drill": {
   "passed": 118,
   "total": 118
@@ -66,7 +66,35 @@
  },
  "exemption_lock": {
   "behavioral_covered": 38,
-  "signed_exempt": [],
+  "signed_exempt": [
+   "ATOM-AUDIENCE",
+   "ATOM-DAL-MATCH",
+   "ATOM-FM-REQUIRED",
+   "ATOM-GRAY-ZONE",
+   "ATOM-ID-FORMAT",
+   "ATOM-MISCONCEPTION-LEVELS",
+   "ATOM-MISCONCEPTION-REF",
+   "ATOM-NO-UNVERIFIED",
+   "ATOM-PREREQ-READABLE",
+   "ATOM-REL-DAG",
+   "ATOM-REL-TARGET",
+   "ATOM-STATUS-TRANSITION",
+   "ATOM-STATUS-VALUE",
+   "ATOM-SUPERIORITY-WORDS",
+   "DOC-ZERO-PLACEHOLDER",
+   "EV-FM-REQUIRED",
+   "EV-MATRIX",
+   "EV-SERVES-EXIST",
+   "HUMAN-GOLDEN-REVIEW",
+   "HYBRID-TEACHING-DEPTH",
+   "LLM-SUPERIORITY-QUALITY",
+   "META-MANIFEST",
+   "MIS-LIBRARY",
+   "PED-MISCONCEPTION",
+   "PED-MOTIVATION",
+   "PED-PREDICT-FIRST",
+   "PED-SOCRATIC"
+  ],
   "legacy_exempt": [
    "ATOM-AUDIENCE",
    "ATOM-DAL-MATCH",
@@ -96,30 +124,9 @@
    "PED-PREDICT-FIRST",
    "PED-SOCRATIC"
   ],
-  "unverifiable": [
-   "ATOM-DAL-MATCH",
-   "ATOM-GRAY-ZONE",
-   "ATOM-ID-FORMAT",
-   "ATOM-MISCONCEPTION-REF",
-   "ATOM-NO-UNVERIFIED",
-   "ATOM-PREREQ-READABLE",
-   "ATOM-REL-TARGET",
-   "ATOM-STATUS-TRANSITION",
-   "ATOM-SUPERIORITY-WORDS",
-   "DOC-ZERO-PLACEHOLDER",
-   "EV-FM-REQUIRED",
-   "EV-SERVES-EXIST",
-   "HUMAN-GOLDEN-REVIEW",
-   "HYBRID-TEACHING-DEPTH",
-   "LLM-SUPERIORITY-QUALITY",
-   "META-MANIFEST",
-   "PED-MISCONCEPTION",
-   "PED-MOTIVATION",
-   "PED-PREDICT-FIRST",
-   "PED-SOCRATIC"
-  ],
-  "apparent_rule_coverage": 1.0317460317460319,
-  "honest_rule_coverage": 0.6031746031746031
+  "unverifiable": [],
+  "apparent_rule_coverage": 1.0,
+  "honest_rule_coverage": 1.0
  },
  "payloads": [
   {

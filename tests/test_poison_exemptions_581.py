@@ -113,12 +113,13 @@ def test_coverage_report_two_rates_computable():
     assert rep["apparent_rule_coverage"] >= rep["honest_rule_coverage"], \
         "表观口径（含 legacy）应 ≥ 诚实口径（legacy 不计入）"
     assert rep["legacy_exempt"] and len(rep["legacy_exempt"]) == 27
-    # 机器核验结果与 _worklog_581.md 0.3 三桶吻合：backed7 / missing12 / weak8
+    # 586 任务3 后：20 条"背书不可核验"债已用真实 pytest 兜底全部清偿 ⇒
+    # 全部 27 条豁免均 reason_verified=="backed"；missing/weak 归零（unverifiable=0）。
     ex = pd.load_exemptions()
     buckets = [d["reason_verified"] for d in ex.values()]
-    assert buckets.count("backed") == 7
-    assert buckets.count("missing-test") == 12
-    assert buckets.count("weak-test") == 8
+    assert buckets.count("backed") == 27
+    assert buckets.count("missing-test") == 0
+    assert buckets.count("weak-test") == 0
 
 
 # ---------- 端到端：fail-closed 反映在 uncovered（走一次钻探） ----------

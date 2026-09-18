@@ -18,16 +18,16 @@ exemptions:
   # ── 字段/枚举/结构类：pytest 单测已有正反例；端到端路径与 P1-P10 同（无新增判别面）──
   - {id: ATOM-FM-REQUIRED, reason: "必填字段存在性；pytest test_atom_missing_field_triggers 正反例已覆盖；端到端路径与 P1 同为 frontmatter 解析", date: 2026-09-12, redteam_seen: legacy}
   - {id: ATOM-ID-FORMAT, reason: "ID 格式/域/目录一致；pytest test_bad_id_and_wrong_dir_block 已覆盖；端到端无新增判别面", date: 2026-09-12, redteam_seen: legacy}
-  - {id: ATOM-NO-UNVERIFIED, reason: "新卡禁未验证状态；pytest 已覆盖（status 取值对）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: ATOM-NO-UNVERIFIED, reason: "新卡禁未验证状态；pytest test_no_unverified_status_blocks 正例触发+反例放行已覆盖", date: 2026-09-12, redteam_seen: legacy}
   - {id: ATOM-STATUS-VALUE, reason: "枚举外取值必须显式拦；pytest test_status_value_pair 已覆盖", date: 2026-09-12, redteam_seen: legacy}
   - {id: ATOM-STATUS-TRANSITION, reason: "status_history 跃迁链；pytest test_status_transition_pair 四段正反例已覆盖", date: 2026-09-12, redteam_seen: legacy}
   - {id: ATOM-DAL-MATCH, reason: "DAL 与人审要求一致性；pytest test_dal_match_pair 已覆盖", date: 2026-09-12, redteam_seen: legacy}
-  - {id: ATOM-REL-TARGET, reason: "关系目标存在性（warn 级）；pytest 已覆盖", date: 2026-09-12, redteam_seen: legacy}
+  - {id: ATOM-REL-TARGET, reason: "关系目标存在性（warn 级）；pytest test_relations_scalar_warns 已覆盖（纯标量+目标不存在两正例）", date: 2026-09-12, redteam_seen: legacy}
   - {id: ATOM-REL-DAG, reason: "学习路径 DAG 无环；pytest test_dag_cycle_blocks 已覆盖", date: 2026-09-12, redteam_seen: legacy}
-  - {id: ATOM-SUPERIORITY-WORDS, reason: "superiority 禁词表；pytest 已覆盖", date: 2026-09-12, redteam_seen: legacy}
-  - {id: EV-FM-REQUIRED, reason: "证据卡必填字段完整性；pytest 已覆盖", date: 2026-09-12, redteam_seen: legacy}
+  - {id: ATOM-SUPERIORITY-WORDS, reason: "superiority 零信息增量禁词表；pytest test_superiority_banned_words_blocks 正例触发+反例放行已覆盖", date: 2026-09-12, redteam_seen: legacy}
+  - {id: EV-FM-REQUIRED, reason: "证据卡必填字段完整性；pytest test_evidence_required_fields_blocks 已覆盖", date: 2026-09-12, redteam_seen: legacy}
   - {id: EV-MATRIX, reason: "版本矩阵字段完整性；pytest test_matrix_missing_keys_blocks 已覆盖", date: 2026-09-12, redteam_seen: legacy}
-  - {id: EV-SERVES-EXIST, reason: "证据服务的原子存在（warn 级）；pytest 已覆盖", date: 2026-09-12, redteam_seen: legacy}
+  - {id: EV-SERVES-EXIST, reason: "证据服务的原子存在（warn 级）；pytest test_evidence_serves_exist_warns 已覆盖（warn 不阻断）", date: 2026-09-12, redteam_seen: legacy}
   # ── G5 教学/误解资产类：pytest 单测已覆盖；端到端毒样例需引入误解库夹具（重复建设）──
   - {id: ATOM-GRAY-ZONE, reason: "UB 域灰色地带标注；pytest test_ub_atom_requires_gray_zone 已覆盖", date: 2026-09-12, redteam_seen: legacy}
   - {id: ATOM-MISCONCEPTION-LEVELS, reason: "误解分层与 deep 反例；pytest test_misconception_levels_blocks_and_passes 已覆盖", date: 2026-09-12, redteam_seen: legacy}
@@ -36,14 +36,14 @@ exemptions:
   - {id: ATOM-AUDIENCE, reason: "认知适切与 beginner 类比段；pytest test_audience_required_and_beginner_needs_analogy 已覆盖", date: 2026-09-12, redteam_seen: legacy}
   - {id: ATOM-PREREQ-READABLE, reason: "前置可读声明与实算一致；pytest test_prereq_readable_declaration_must_match_reality 已覆盖", date: 2026-09-12, redteam_seen: legacy}
   # ── advice 级（只建议不阻断）：与 drill「拦截=✅」判据语义相反；当前 covered 正则只认拦截者──
-  - {id: PED-MISCONCEPTION, reason: "advice 级；drill 判据是拦截而 advice 永不阻断；pytest 369 任务2 已补 4 条正反例（单数/复数/顶层/全空）", date: 2026-09-12, redteam_seen: legacy}
-  - {id: PED-MOTIVATION, reason: "advice 级非阻断；与 drill 判据相反；pytest 覆盖缺项报警", date: 2026-09-12, redteam_seen: legacy}
-  - {id: PED-SOCRATIC, reason: "advice 级非阻断；与 drill 判据相反；pytest 覆盖缺项报警", date: 2026-09-12, redteam_seen: legacy}
-  - {id: PED-PREDICT-FIRST, reason: "advice 级非阻断；与 drill 判据相反；pytest 覆盖缺项报警", date: 2026-09-12, redteam_seen: legacy}
+  - {id: PED-MISCONCEPTION, reason: "advice 级；drill 判据是拦截而 advice 永不阻断；pytest test_ped_misconception_missing_reported 等已补 4 条正反例（单数/复数/顶层/全空）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: PED-MOTIVATION, reason: "advice 级非阻断；与 drill 判据相反；pytest test_pedagogy_field_gaps_advice 缺项报警+齐全放行已覆盖", date: 2026-09-12, redteam_seen: legacy}
+  - {id: PED-SOCRATIC, reason: "advice 级非阻断；与 drill 判据相反；pytest test_pedagogy_field_gaps_advice 缺项报警+齐全放行已覆盖", date: 2026-09-12, redteam_seen: legacy}
+  - {id: PED-PREDICT-FIRST, reason: "advice 级非阻断；与 drill 判据相反；pytest test_pedagogy_field_gaps_advice 缺项报警+齐全放行已覆盖", date: 2026-09-12, redteam_seen: legacy}
   # ── 仓库级元检查：不适合真编译毒样例（原文注释同口径）────────────────────────
   - {id: DOC-ZERO-PLACEHOLDER, reason: "占位符扫描为文本级检查；不适合真编译毒样例；pytest test_daibu_is_not_placeholder 已锁误报边界", date: 2026-09-12, redteam_seen: legacy}
   - {id: META-MANIFEST, reason: "双清单一致性为仓库级元检查；不适合毒样例；pytest test_manifest_has_no_drift_in_repo 已锁", date: 2026-09-12, redteam_seen: legacy}
   # ── 非程序化象限（llm/hybrid/human）：无 check 函数、机器无从触发──────────────
-  - {id: LLM-SUPERIORITY-QUALITY, reason: "llm 象限无 check 函数；机器无从触发（进人工队列）", date: 2026-09-12, redteam_seen: legacy}
-  - {id: HYBRID-TEACHING-DEPTH, reason: "hybrid 象限无 check 函数；机器只做初筛", date: 2026-09-12, redteam_seen: legacy}
-  - {id: HUMAN-GOLDEN-REVIEW, reason: "human 象限无 check 函数；认可权唯人（规程 0.1）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: LLM-SUPERIORITY-QUALITY, reason: "llm 象限无 check 函数、机器无从触发（进人工队列）；pytest test_human_quadrant_rules_not_machine_triggered 已确认 quadrant=llm 且无 check（人审价值判断、无机械正反例）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: HYBRID-TEACHING-DEPTH, reason: "hybrid 象限无 check 函数、机器只做初筛；pytest test_human_quadrant_rules_not_machine_triggered 已确认 quadrant=hybrid 且无 check（人审价值判断、无机械正反例）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: HUMAN-GOLDEN-REVIEW, reason: "human 象限无 check 函数、机器无从触发（认可权唯人，规程 0.1）；pytest test_human_quadrant_rules_not_machine_triggered 已确认 quadrant=human 且无 check（人审价值判断、无机械正反例）", date: 2026-09-12, redteam_seen: legacy}

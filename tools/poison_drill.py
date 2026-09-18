@@ -2256,29 +2256,40 @@ def rule_coverage() -> tuple[int, int, list[str]]:
 def coverage_report() -> dict:
     """581 hole B：算**表观/诚实**两个覆盖率，并单列 legacy / unverifiable（防"只报好看的那个"）。
 
-    - 表观覆盖率 = (behavioral_covered + signed_exempt + legacy_exempt) / 规则总数（旧口径延续，
-      把 legacy 也算作"已覆盖"——含与 covered 重叠的冗余豁免，故可 ≥100%，这正是要暴露的虚高）；
-    - 诚实覆盖率 = (behavioral_covered + signed_exempt) / 规则总数（legacy 不计入已覆盖，只单列说明）。
+    - 表观覆盖率 = (behavioral_covered ∪ 全部豁免) / 规则总数（旧口径延续：把 legacy 也算作"已覆盖"，
+      含与 covered 重叠的冗余豁免，故可 ≥100%，这正是要暴露的虚高）；
+    - 诚实覆盖率 = (behavioral_covered ∪ **背书豁免**) / 规则总数。背书豁免 = `reason_verified=="backed"`
+      （机器核验 reason 点名的 pytest 真实触发并断言该 rule_id）——586 任务3 起，凡经此核验的豁免
+      **计入**诚实口径（去重：drill 已行为级覆盖的规则不重复计）；redteam_seen=legacy 仅作历史签名透明单列，
+      不再把"有签核但无 pytest 兜底"的豁免算作已覆盖（那才是 581 hole B 要堵的"替异族签字"）。
     数字以实跑为准：覆盖率掉就如实掉，不补假载荷、不替豁免签字。
     """
     cov = behavioral_covered()
     total = len({r.id for r in ge.RULES})
     exempt = load_exemptions()
-    signed = {i: d for i, d in exempt.items() if d["redteam_seen"] != "legacy"}
-    legacy = {i: d for i, d in exempt.items() if d["redteam_seen"] == "legacy"}
-    unverifiable = {i: d for i, d in exempt.items()
+    exempt_ids = set(exempt)
+    # 586 任务3：背书豁免（机器核验有 pytest 兜底）→ 计入诚实口径；去重避免与 drill 覆盖重复计。
+    backed = {i for i, d in exempt.items() if d["reason_verified"] == "backed"}
+    signed = backed - cov
+    legacy = {i for i, d in exempt.items() if d["redteam_seen"] == "legacy"}   # 透明单列（历史签名）
+    unverifiable = {i for i, d in exempt.items()
                     if d["reason_verified"] in ("missing-test", "weak-test")}
     covered_n = len(cov)
     signed_n = len(signed)
     legacy_n = len(legacy)
-    apparent = (covered_n + signed_n + legacy_n) / total if total else 0.0
-    honest = (covered_n + signed_n) / total if total else 0.0
+    honest_covered = len(cov | backed)
+    apparent_covered = len(cov | exempt_ids)
+    honest = honest_covered / total if total else 0.0
+    apparent = apparent_covered / total if total else 0.0
     return {
         "total": total,
         "behavioral_covered": covered_n,
         "signed_exempt": sorted(signed),
+        "backed_exempt": sorted(backed),
         "legacy_exempt": sorted(legacy),
         "unverifiable": sorted(unverifiable),
+        "honest_covered": honest_covered,
+        "apparent_covered": apparent_covered,
         "apparent_rule_coverage": apparent,
         "honest_rule_coverage": honest,
     }
@@ -2331,14 +2342,20 @@ def build_surface_map(passed: int, total_d: int,
         commit = "unknown"
     # 581 hole B：豁免二人锁 / legacy 单列 / reason 背书机器核验（新增顶层键，不动 rule_coverage 子字典
     # 以兼容既有快照；详见 _worklog_581.md）。
+    # 586 任务3：背书豁免（reason_verified==backed，机器核验有 pytest 兜底）计入诚实口径；
+    # 与 coverage_report 同口径：去重避免与 drill 行为级覆盖重复计。
+    # redteam_seen=legacy 仅作历史签名透明单列，不再把"有签核但无 pytest 兜底"算作已覆盖。
+    _cov_set = behavioral_covered()
     exempt = load_exemptions()
-    signed = sorted(i for i, d in exempt.items() if d["redteam_seen"] != "legacy")
+    exempt_ids = set(exempt)
+    backed = {i for i, d in exempt.items() if d["reason_verified"] == "backed"}
+    signed = sorted(backed)
     legacy = sorted(i for i, d in exempt.items() if d["redteam_seen"] == "legacy")
     unverifiable = sorted(i for i, d in exempt.items()
                           if d["reason_verified"] in ("missing-test", "weak-test"))
     _tr = total_rules if total_rules else 0
-    _apparent = (covered_rules + len(signed) + len(legacy)) / _tr if _tr else 0.0
-    _honest = (covered_rules + len(signed)) / _tr if _tr else 0.0
+    _apparent = len(_cov_set | exempt_ids) / _tr if _tr else 0.0   # 表观：含全部豁免（历史虚高暴露）
+    _honest = len(_cov_set | backed) / _tr if _tr else 0.0        # 诚实：含背书豁免（去重）
     return {
         "schema": 1, "tool": "poison_drill.py", "task": "424",
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -2430,12 +2447,11 @@ if __name__ == "__main__":
     rep = coverage_report()
     print(f"[poison] RULE-COVERAGE: {covered}/{total} 注册规则被毒样例覆盖"
           f"（另登记豁免 {len(load_exemptions())} 条）")
-    # 581 hole B：表观/诚实双口径，防"只报好看的那个"
-    print(f"[poison] 表观覆盖率(含 legacy 豁免): {rep['apparent_rule_coverage']*100:.1f}% "
-          f"= {rep['behavioral_covered']} 行为覆盖 + {len(rep['signed_exempt'])} 签核豁免 "
-          f"+ {len(rep['legacy_exempt'])} legacy 豁免 / {rep['total']}")
-    print(f"[poison] 诚实覆盖率(legacy 不计入已覆盖): {rep['honest_rule_coverage']*100:.1f}% "
-          f"= {rep['behavioral_covered']} 行为覆盖 + {len(rep['signed_exempt'])} 签核豁免 / {rep['total']}")
+    # 581 hole B：表观/诚实双口径，防"只报好看的那个"（均按去重并集计，不重复累加）
+    print(f"[poison] 表观覆盖率(含全部豁免, 去重): {rep['apparent_rule_coverage']*100:.1f}% "
+          f"= {rep['apparent_covered']} 规则（行为覆盖∪全部豁免） / {rep['total']}")
+    print(f"[poison] 诚实覆盖率(仅背书豁免, 去重): {rep['honest_rule_coverage']*100:.1f}% "
+          f"= {rep['honest_covered']} 规则（行为覆盖∪背书豁免） / {rep['total']}")
     if rep["legacy_exempt"]:
         print(f"[poison] legacy 豁免(单列、不计入诚实口径, {len(rep['legacy_exempt'])}): "
               f"{', '.join(rep['legacy_exempt'])}")

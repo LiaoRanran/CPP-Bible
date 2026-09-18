@@ -95,6 +95,7 @@ def test_misconception_ref_must_exist(sandbox: Path):
                 pedagogy="\n  misconceptions: [MIS-MEM-001, MIS-MEM-999]")
     hits = ge.check_misconception_ref()
     assert len(hits) == 1 and "MIS-MEM-999" in hits[0].message
+    assert hits[0].rule_id == "ATOM-MISCONCEPTION-REF"
 
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
                 pedagogy="\n  misconceptions: [MIS-MEM-001]")
@@ -166,6 +167,7 @@ def test_prereq_readable_declaration_must_match_reality(sandbox: Path):
                 relations="\n  - {type: prerequisite, target: ATOM-MEM-VALUE-001}")
     hits = ge.check_prereq_readable()
     assert len(hits) == 1 and "与实算不符" in hits[0].message, "声明可读但前置未锻造须报"
+    assert hits[0].rule_id == "ATOM-PREREQ-READABLE"
 
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
                 prerequisites_readable="false",
@@ -250,6 +252,7 @@ def test_bad_id_and_wrong_dir_block(sandbox: Path):
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "stl")                    # 目录与域不符
     hits = ge.check_atom_id_format()
     assert any("不一致" in h.message for h in hits)
+    assert any(h.rule_id == "ATOM-ID-FORMAT" for h in hits)
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", id="ATOM-FOO-BAR-001")
     assert any("不在 16 域内" in h.message for h in ge.check_atom_id_format())
 
@@ -656,7 +659,9 @@ def test_misconception_levels_blocks_and_passes(sandbox: Path):
 def test_ub_atom_requires_gray_zone(sandbox: Path):
     _write_atom(sandbox, "ATOM-UB-ALIAS-001.md", "ub", id="ATOM-UB-ALIAS-001",
                 domain="UB", type="pitfall")
-    assert any("gray_zone" in h.message for h in ge.check_atom_gray_zone())
+    hits = ge.check_atom_gray_zone()
+    assert any("gray_zone" in h.message for h in hits)
+    assert any(h.rule_id == "ATOM-GRAY-ZONE" for h in hits)
     _write_atom(sandbox, "ATOM-UB-ALIAS-001.md", "ub", id="ATOM-UB-ALIAS-001",
                 domain="UB", type="pitfall", gray_zone="ub")
     assert ge.check_atom_gray_zone() == []
@@ -738,7 +743,8 @@ def test_daibu_is_not_placeholder(sandbox: Path):
                  encoding="utf-8")
     assert ge.check_zero_placeholder() == []
     p.write_text("---\nid: EV-MEM-001\n---\nTODO: 补命令\n", encoding="utf-8")
-    assert len(ge.check_zero_placeholder()) == 1
+    hits = ge.check_zero_placeholder()
+    assert len(hits) == 1 and hits[0].rule_id == "DOC-ZERO-PLACEHOLDER"
 
 
 # ── severity 语义：advice 永不阻断 ────────────────────────────────────────
@@ -777,6 +783,8 @@ def test_duplicate_rule_registration_rejected():
 def test_manifest_has_no_drift_in_repo():
     assert ge.check_manifest_consistency() == [], \
         "pyproject:quality_gates 与 cppbible cmd_check 必须一一对应（ADR-0004）"
+    assert any(r.id == "META-MANIFEST" for r in ge.RULES), \
+        "META-MANIFEST 规则须注册（repo 级元一致性，pytest 已锁无漂移）"
 
 
 # ── G6：四级状态 + DAL（「放权」体系的三条反作弊锁，解锁前必须先上锁）───────
@@ -824,7 +832,9 @@ def test_status_transition_pair(sandbox: Path):
     assert ge.check_status_transition() == [], "草稿不要求晋升历史"
 
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="machine-verified")
-    assert any("无 status_history" in h.message for h in ge.check_status_transition())
+    trans = ge.check_status_transition()
+    assert any("无 status_history" in h.message for h in trans)
+    assert any(h.rule_id == "ATOM-STATUS-TRANSITION" for h in trans)
 
     _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="human-verified",
                 status_history="\n  - {level: draft, at: legacy, by: writer:agent}"
@@ -848,7 +858,9 @@ def test_status_transition_pair(sandbox: Path):
 def test_dal_match_pair(sandbox: Path):
     """DAL：已入库必填；A/B 须人级 + human_review；C/D/E 免人审但**须人签豁免**。"""
     _verified_atom(sandbox, dal="")
-    assert any("缺合法 dal" in h.message for h in ge.check_dal_match())
+    dal = ge.check_dal_match()
+    assert any("缺合法 dal" in h.message for h in dal)
+    assert any(h.rule_id == "ATOM-DAL-MATCH" for h in dal)
 
     _verified_atom(sandbox, human_review="optional")
     assert any("human_review: required" in h.message for h in ge.check_dal_match())
@@ -1594,3 +1606,68 @@ def test_fm_unique_keys_pass(sandbox: Path):
     """F09 阴性：键唯一 → 放行。"""
     _write_card(sandbox, "EV-MEM-F9B.md")
     assert ge.check_frontmatter_duplicate_key() == [], "唯一键不得拦"
+
+
+# ── 586 任务3：清偿"背书不可核验"债（正例触发 + 反例不触发，逐条绑定 rule_id）──
+def test_no_unverified_status_blocks(sandbox: Path):
+    """ATOM-NO-UNVERIFIED：新原子禁 unverified/needs 状态（DRQ-4 红线）。"""
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="unverified")
+    assert any(h.rule_id == "ATOM-NO-UNVERIFIED"
+               for h in ge.check_no_unverified_status()), "未验证状态必须拦"
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", status="verified")
+    assert ge.check_no_unverified_status() == [], "已验证状态必须放行"
+
+
+def test_superiority_banned_words_blocks(sandbox: Path):
+    """ATOM-SUPERIORITY-WORDS：零信息增量的 superiority 表述 → block。"""
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", superiority="讲解更详细")
+    assert any(h.rule_id == "ATOM-SUPERIORITY-WORDS"
+               for h in ge.check_superiority_banned_words()), "superiority 禁词必须拦"
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", superiority="给出可验证增量")
+    assert ge.check_superiority_banned_words() == [], "无禁词必须放行"
+
+
+def test_evidence_required_fields_blocks(sandbox: Path):
+    """EV-FM-REQUIRED：证据卡缺必填字段（fixture/artifact/actual.run_*）→ block。"""
+    _write_card(sandbox, "EV-MEM-REQ.md")          # 无 fixture/artifact/actual
+    assert any(h.rule_id == "EV-FM-REQUIRED"
+               for h in ge.check_evidence_frontmatter()), "证据卡缺必填字段必须拦"
+
+
+def test_evidence_serves_exist_warns(sandbox: Path):
+    """EV-SERVES-EXIST：证据服务的原子未锻造 → warn（不阻断）。"""
+    _write_card(sandbox, "EV-MEM-SERVE.md", serves="[ATOM-NOPE-999]")
+    assert any(h.rule_id == "EV-SERVES-EXIST"
+               for h in ge.check_evidence_serves_exist()), "服务不存在原子必须 warn"
+    _write_atom(sandbox, "ATOM-NOPE-999.md", "mem", id="ATOM-NOPE-999")
+    assert ge.check_evidence_serves_exist() == [], "目标已锻造须放行"
+
+
+def test_pedagogy_field_gaps_advice(sandbox: Path):
+    """PED-MOTIVATION / PED-PREDICT-FIRST / PED-SOCRATIC：缺项须 advice（不阻断）。"""
+    gaps = (("motivation", "PED-MOTIVATION"),
+            ("predict_first", "PED-PREDICT-FIRST"),
+            ("socratic", "PED-SOCRATIC"))
+    for field, rid in gaps:
+        other = {f: f[0] for f, _ in gaps if f != field}   # 除本字段外都填
+        ped = "\n  " + "\n  ".join(f"{k}: {v}" for k, v in other.items())
+        _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem", pedagogy=ped)
+        assert any(h.rule_id == rid
+                   for h in ge._pedagogy_gap(field, rid, f"缺 {field}")()), \
+            f"{rid} 缺项须 advice"
+    # 三项齐全 → 全放行
+    _write_atom(sandbox, "ATOM-MEM-MOVE-001.md", "mem",
+                pedagogy="\n  motivation: m\n  predict_first: pf\n  socratic: q")
+    for field, rid in gaps:
+        assert ge._pedagogy_gap(field, rid, "x")() == [], f"{rid} 齐全须放行"
+
+
+def test_human_quadrant_rules_not_machine_triggered():
+    """586 任务3：人审象限（human/hybrid/llm）规则机器不触发，只进人工队列——
+    其'背书'是对'设计上无 check'的确认，而非伪称有测试（与 drill 判据相反）。"""
+    for rid, quad in (("HUMAN-GOLDEN-REVIEW", "human"),
+                      ("HYBRID-TEACHING-DEPTH", "hybrid"),
+                      ("LLM-SUPERIORITY-QUALITY", "llm")):
+        r = next(x for x in ge.RULES if x.id == rid)
+        assert r.quadrant == quad, f"{rid} 象限须为 {quad}（人审，无机械正反例）"
+        assert r.check is None and not r.automated, f"{rid} 须无程序化 check（机器无从触发）"
