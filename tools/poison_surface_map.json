@@ -2,11 +2,11 @@
  "schema": 1,
  "tool": "poison_drill.py",
  "task": "424",
- "generated_at": "2026-09-18T22:11:24",
- "source_commit": "08ca446",
+ "generated_at": "2026-09-19T00:06:10",
+ "source_commit": "ad4de8c",
  "drill": {
-  "passed": 118,
-  "total": 118
+  "passed": 124,
+  "total": 124
  },
  "attack_types": {
   "A1": {
@@ -15,7 +15,7 @@
   },
   "A2": {
    "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
-   "count": 13
+   "count": 16
   },
   "A3": {
    "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
@@ -60,13 +60,36 @@
   "uncovered": []
  },
  "rule_coverage": {
-  "covered": 38,
+  "covered": 39,
   "total": 63,
   "exempt": 27
  },
  "exemption_lock": {
-  "behavioral_covered": 38,
+  "behavioral_covered": 39,
   "signed_exempt": [
+   "ATOM-AUDIENCE",
+   "ATOM-FM-REQUIRED",
+   "ATOM-GRAY-ZONE",
+   "ATOM-ID-FORMAT",
+   "ATOM-MISCONCEPTION-LEVELS",
+   "ATOM-MISCONCEPTION-REF",
+   "ATOM-NO-UNVERIFIED",
+   "ATOM-PREREQ-READABLE",
+   "ATOM-REL-DAG",
+   "ATOM-REL-TARGET",
+   "ATOM-STATUS-VALUE",
+   "ATOM-SUPERIORITY-WORDS",
+   "DOC-ZERO-PLACEHOLDER",
+   "EV-FM-REQUIRED",
+   "EV-SERVES-EXIST",
+   "META-MANIFEST",
+   "MIS-LIBRARY",
+   "PED-MISCONCEPTION",
+   "PED-MOTIVATION",
+   "PED-PREDICT-FIRST",
+   "PED-SOCRATIC"
+  ],
+  "backed_exempt": [
    "ATOM-AUDIENCE",
    "ATOM-DAL-MATCH",
    "ATOM-FM-REQUIRED",
@@ -85,15 +108,17 @@
    "EV-FM-REQUIRED",
    "EV-MATRIX",
    "EV-SERVES-EXIST",
-   "HUMAN-GOLDEN-REVIEW",
-   "HYBRID-TEACHING-DEPTH",
-   "LLM-SUPERIORITY-QUALITY",
    "META-MANIFEST",
    "MIS-LIBRARY",
    "PED-MISCONCEPTION",
    "PED-MOTIVATION",
    "PED-PREDICT-FIRST",
    "PED-SOCRATIC"
+  ],
+  "machine_untriggerable": [
+   "HUMAN-GOLDEN-REVIEW",
+   "HYBRID-TEACHING-DEPTH",
+   "LLM-SUPERIORITY-QUALITY"
   ],
   "legacy_exempt": [
    "ATOM-AUDIENCE",
@@ -126,7 +151,7 @@
   ],
   "unverifiable": [],
   "apparent_rule_coverage": 1.0,
-  "honest_rule_coverage": 1.0
+  "honest_rule_coverage": 0.9523809523809523
  },
  "payloads": [
   {
@@ -390,6 +415,21 @@
    "type": "A3"
   },
   {
+   "name": "P77 matrix.std 非法值（c++99）须 warn 不 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P78 matrix.opt 非法值（-O9）须 warn 不 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P79 matrix.compiler 非法值（totally-not-a-compiler xyz）须 warn 不 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
    "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
    "pass": true,
    "type": "A1"
@@ -608,6 +648,21 @@
   },
   {
    "name": "P74-阴 命题锚了真实的夹具特有符号须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P77-阴 matrix 取值全合法（同构对照）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P78-阴 matrix 取值全合法（同构对照）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P79-阴 matrix 取值全合法（同构对照）须放行",
    "pass": true,
    "type": null
   },

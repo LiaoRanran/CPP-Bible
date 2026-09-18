@@ -634,6 +634,56 @@ def test_matrix_missing_keys_blocks(sandbox: Path):
     assert ge.check_evidence_matrix() == []
 
 
+# ── 587 任务2：matrix **取值**校验（warn 起步，缺键 block 与值非法 warn 不混淆）──
+def test_matrix_illegal_values_warn_per_key(sandbox: Path):
+    """四键各一个非法值 ⇒ 各自 warn（不 block），且文案点名子类型。"""
+    bad = {"std": ("c++99", "[c++17]"), "opt": ("-O9", "[-O2]"),
+           "arch": ("z80-nonexistent", "[x86-64]"),
+           "compiler": ("totally-not-a-compiler xyz", "[GCC 15.3.0]")}
+    for key, (bad_v, good_v) in bad.items():
+        mx = {"compiler": "[GCC 15.3.0]", "std": "[c++17]",
+              "opt": "[-O2]", "arch": "[x86-64]"}
+        mx[key] = f"[{bad_v}]"
+        _write_ev(sandbox, matrix="\n" + "\n".join(f"  {k}: {v}" for k, v in mx.items()))
+        hits = ge.check_evidence_matrix()
+        assert len(hits) == 1 and hits[0].rule_id == "EV-MATRIX", f"{key} 应命中一次"
+        assert hits[0].severity == "warn", f"{key} 须 warn 起步（不得 block）"
+        assert f"matrix.{key} 含非法值" in hits[0].message, hits[0].message
+        # 阴性：换回合法值 ⇒ 放行
+        mx[key] = good_v
+        _write_ev(sandbox, matrix="\n" + "\n".join(f"  {k}: {v}" for k, v in mx.items()))
+        assert ge.check_evidence_matrix() == [], f"{key} 合法值须放行"
+
+
+def test_matrix_stock_real_values_all_pass(sandbox: Path):
+    """存量真实取值（取自 data/matrix_value_inventory.md）**全部**放行——零误伤的机器锁。
+
+    含全角括号注释、`/` 并列、CI runner 默认（有族名无版本）三类易误伤形态。
+    """
+    stock = {
+        "compiler": ["GCC 15.3.0", "GCC 15.3.0 (MinGW-w64)", "GCC 13.3.0 (WSL)",
+                     "GCC 14.2.0 (WSL —— 同驱动跑 libstdc++ 与 libc++ 各一次)",
+                     "GCC 13.1.0", "GCC 8.1.0", "Clang (ubuntu-latest runner 默认)"],
+        "std": ["c++11", "c++14", "c++17", "c++20", "c++23"],
+        "opt": ["-O0", "-O2", "-O1（sanitizer 观测档）", "-O2（零依赖判据档）",
+                "-O2（本卡）/ -O1（同夹具在 EV-MEM-043 的 sanitizer 观测）"],
+        "arch": ["x86-64"],
+    }
+    for key, vals in stock.items():
+        mx = {"compiler": "[GCC 15.3.0]", "std": "[c++17]",
+              "opt": "[-O2]", "arch": "[x86-64]"}
+        mx[key] = "[" + ", ".join(vals) + "]"
+        _write_ev(sandbox, matrix="\n" + "\n".join(f"  {k}: {v}" for k, v in mx.items()))
+        assert ge.check_evidence_matrix() == [], f"{key} 存量真实取值不得命中"
+
+
+def test_matrix_non_list_value_warns(sandbox: Path):
+    """键存在但不是列表（标量）⇒ warn 提示应写成 flow 列表；且不是 block。"""
+    _write_ev(sandbox, matrix="\n  compiler: GCC 15.3.0\n  std: [c++17]\n  opt: [-O2]")
+    hits = ge.check_evidence_matrix()
+    assert len(hits) == 1 and hits[0].severity == "warn" and "应为非空列表" in hits[0].message
+
+
 def test_misconception_levels_blocks_and_passes(sandbox: Path):
     """误解分层：非结构化项 / 层非法 / deep 反例不足 → block；合规 → 放行。
 

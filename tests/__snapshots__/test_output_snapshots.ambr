@@ -76,7 +76,7 @@
       'A10',
       'A11',
     ]),
-    'covered': 38,
+    'covered': 39,
     'total': 63,
     'uncovered': list([
     ]),

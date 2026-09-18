@@ -109,7 +109,9 @@ def test_reason_missing_test_is_unverifiable_pointed(tmp_path):
 def test_coverage_report_two_rates_computable():
     rep = pd.coverage_report()
     assert rep["total"] == 63
-    assert rep["behavioral_covered"] == 38
+    # 587 任务3：新增 P77/P78/P79（matrix 非法值）毒载荷 ⇒ EV-MATRIX 由"仅豁免"升为
+    # **行为级覆盖**，行为覆盖 38 → 39（非回归，是新增毒样例带来的真实增量）。
+    assert rep["behavioral_covered"] == 39
     assert rep["apparent_rule_coverage"] >= rep["honest_rule_coverage"], \
         "表观口径（含 legacy）应 ≥ 诚实口径（legacy 不计入）"
     assert rep["legacy_exempt"] and len(rep["legacy_exempt"]) == 27

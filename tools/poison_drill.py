@@ -1233,6 +1233,43 @@ def drill() -> int:
         results.append(("P76 锚不存在的符号须 warn", ok,
                         f"命中 {[f.severity for f in fs] or '（漏网！）'}"))
 
+    # ── P77/P78/P79（587）：matrix **取值**非法（std / opt / compiler）────────────
+    #   真洞（587 任务1 实测：220 个非法值变体 **204 全逃逸**）：`check_evidence_matrix`
+    #   原本只校验键**存在性**——把 std 改成 c++99、opt 改成 -O9、compiler 改成垃圾字符串，
+    #   键还在 ⇒ 门禁放行 ⇒ 卡的"编译档位声明"可以被悄悄弱化/伪造而无人察觉。
+    #   587 任务2 收口：逐元素值校验，**warn 起步**（缺键仍 block，二者语义不混淆）；
+    #   每组配一张**同构且取值全合法**的阴性对照，防白名单过宽误伤真实写法。
+    with sandbox() as tmp:
+        def _mx(name: str, compiler: str, std: str, opt: str) -> list:
+            """写一张只含 matrix 的沙箱证据卡，返回它自己的 EV-MATRIX 命中。"""
+            _write(ge.EVIDENCE / "mem" / f"EV-MEM-{name}.md", {
+                "id": f"EV-MEM-{name}", "serves": "[ATOM-MEM-MOVE-001]", "hypothesis": "h",
+                "kind": "asm", "verdict": "confirm",
+                "matrix": (f"\n  compiler: [{compiler}]"
+                           f"\n  std: [{std}]"
+                           f"\n  opt: [{opt}]"
+                           "\n  arch: [x86-64]")})
+            return [f for f in ge.check_evidence_matrix()
+                    if str(f.target).endswith(f"EV-MEM-{name}.md")]
+
+        # 合法取值全部取自 `data/matrix_value_inventory.md` 的存量真实分布
+        _LG = {"compiler": "GCC 15.3.0", "std": "c++17", "opt": "-O2"}
+        for _pid, _key, _bad in (("P77", "std", "c++99"),
+                                 ("P78", "opt", "-O9"),
+                                 ("P79", "compiler", "totally-not-a-compiler xyz")):
+            _vals = dict(_LG, **{_key: _bad})
+            fs = _mx(f"MX{_pid}", _vals["compiler"], _vals["std"], _vals["opt"])
+            _who = {f"{f.rule_id}/{f.severity}" for f in fs}
+            _CUR_WHO = {f.rule_id for f in fs}      # 581 hole A：裸 rule_id 供行为级覆盖收集
+            ok = (any("EV-MATRIX" in who for who in _who)
+                  and all(f.severity == "warn" for f in fs)     # warn 起步：不得 block
+                  and any(f"matrix.{_key} 含非法值" in f.message for f in fs))
+            results.append((f"{_pid} matrix.{_key} 非法值（{_bad}）须 warn 不 block",
+                            ok, f"命中 {sorted(_who) or '（漏网！）'}"))
+            fs_ok = _mx(f"MX{_pid}NEG", _LG["compiler"], _LG["std"], _LG["opt"])
+            results.append((f"{_pid}-阴 matrix 取值全合法（同构对照）须放行", not fs_ok,
+                            f"命中 {[f'{f.rule_id}/{f.severity}' for f in fs_ok] or '（无）'}"))
+
     # ── N1–N7（558 Part A / 533 §2.5）：V-iso **真编译**毒载荷（557 B1 停点）──────
     #  判决在 replay 路径（`atom_evidence_replay.check_negative_controls`）——**不是** gate
     #  规则 ⇒ N1–N7 **不会**增加 RULE-COVERAGE 分子（仍 36/61），此点已在 557 D6 澄清；
@@ -2090,6 +2127,9 @@ ATTACK_TYPES: list[tuple[str, str]] = [
     ("P72 ", "A3"), ("P73 ", "A3"),
     # 575：P74/P75/P76 = 命题级活性锚（缺锚 / 锚通用符号 / 锚不存在）——堵 M5 活雷。
     ("P74 ", "A3"), ("P75 ", "A3"), ("P76 ", "A3"),
+    # 587：P77/P78/P79 = matrix 声明的档位/编译器被换成不存在的值（std c++99 / opt -O9 /
+    # compiler 垃圾串）⇒ **声明的编译环境与任何真实可跑环境脱钩** ⇒ A2（声明-实现脱钩）。
+    ("P77 ", "A2"), ("P78 ", "A2"), ("P79 ", "A2"),
 ]
 ALL_ATTACK_TYPES = [f"A{i}" for i in range(1, 12)]   # A11 = 并发/可用性（472 新增）
 
