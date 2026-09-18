@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-import atom_evidence_replay as replay   # noqa: E402
-import mutation_fuzz as mf              # noqa: E402
+import atom_evidence_replay as replay  # noqa: E402
+import mutation_fuzz as mf  # noqa: E402
 
 
 def _tiny_cards(n: int = 2) -> list[Path]:
@@ -94,8 +94,11 @@ def test_580_worker_failure_is_fail_loud():
     assert "worker 失败" in msg and "EV-NOPE-999.md" in msg, msg
 
 
-def test_580_parallel_leaves_real_root_and_lock_untouched():
-    """(f) 跑完并行后：真实 `build/.replay_lock` 不存在；真实根指纹与跑前相同。"""
+def test_580_parallel_leaves_real_root_and_lock_untouched(replay_serial):
+    """(f) 跑完并行后：真实 `build/.replay_lock` 不存在；真实根指纹与跑前相同。
+
+    本用例比对**真实根全树指纹** ⇒ 与 replay 共用同一把锁串行（`-n auto` 下防假红）。
+    """
     cards = _tiny_cards(1)
     fp0 = mf._real_root_fingerprint()
     rep = mf._run_jobs(cards, ["M6"], 1, jobs=2)

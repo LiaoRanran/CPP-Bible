@@ -18,15 +18,13 @@ import json
 import sys
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-import atom_evidence_replay as replay   # noqa: E402
-import gate_engine as ge                # noqa: E402
-import mutation_fuzz as mf              # noqa: E402
+import atom_evidence_replay as replay  # noqa: E402
+import gate_engine as ge  # noqa: E402
+import mutation_fuzz as mf  # noqa: E402
 
 
 def _tree_fingerprint(base: Path) -> str:
@@ -60,8 +58,12 @@ def test_579_sandbox_activates_batch_root_and_copies_artifacts():
     assert replay.run_root() == replay.ROOT, "退出沙箱必须还原跑批根"
 
 
-def test_579_artifact_io_happens_in_sandbox_not_real_repo():
-    """工件层读**必须**落在沙箱：计数器探针证明 replay 走的是 tmp 里的工件。"""
+def test_579_artifact_io_happens_in_sandbox_not_real_repo(replay_serial):
+    """工件层读**必须**落在沙箱：计数器探针证明 replay 走的是 tmp 里的工件。
+
+    580 补：本用例比对**真实 Examples 全树指纹** ⇒ 必须与 replay 共用同一把锁串行
+    （否则别的 worker 的合法 replay 改写会被当成"跑批污染了真实仓" ⇒ `-n auto` 下假红）。
+    """
     card = _evidence_card()
     real_art = replay.run_root() / str(replay.parse_frontmatter(
         card.read_text(encoding="utf-8")).get("artifact"))
@@ -75,8 +77,11 @@ def test_579_artifact_io_happens_in_sandbox_not_real_repo():
         "跑批动了真实 Examples/ ⇒ 工件层没进沙箱（578b 的非确定性根源）"
 
 
-def test_579_run_fuzz_leaves_real_repo_untouched(tmp_path: Path):
-    """整跑一遍 `run_fuzz`（含 M1 工件算子）后：真实 Examples/ 与真实 manifest 字节不变。"""
+def test_579_run_fuzz_leaves_real_repo_untouched(tmp_path: Path, replay_serial):
+    """整跑一遍 `run_fuzz`（含 M1 工件算子）后：真实 Examples/ 与真实 manifest 字节不变。
+
+    580 补 `replay_serial`：本用例读**真实仓全树指纹** ⇒ 必须与 replay 串行（`-n auto` 下防假红）。
+    """
     card = _evidence_card()
     art_before = _tree_fingerprint(ROOT / "Examples")
     mf_path = ROOT / "build" / "replay_manifest.json"
@@ -91,10 +96,11 @@ def test_579_run_fuzz_leaves_real_repo_untouched(tmp_path: Path):
 
 
 # ── ② 脏态下的确定性（旧代码必红）────────────────────────────────────────────
-def test_579_dirty_manifest_does_not_change_verdicts(tmp_path: Path, monkeypatch):
+def test_579_dirty_manifest_does_not_change_verdicts(tmp_path: Path, monkeypatch, replay_serial):
     """预置**异源 manifest + build 残留**：同一输入两次跑必须逐变体一致。
 
     旧代码（跑批继承真实 manifest / 在真实工件上删建）会因继承状态而抖 ⇒ 本用例红。
+    580 补 `replay_serial`：本用例会**写真实 manifest** ⇒ 必须独占（不与其他读工件的 worker 撞）。
     """
     card = _evidence_card("EV-MEM-034.md")
     cards2 = [card, _evidence_card("EV-MEM-029.md")]

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-import gate_engine as ge   # noqa: E402
+import gate_engine as ge  # noqa: E402
 
 
 def test_579_invalidate_meta_after_same_size_rewrite(tmp_path: Path):

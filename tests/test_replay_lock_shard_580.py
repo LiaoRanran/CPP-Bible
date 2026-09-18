@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-import atom_evidence_replay as replay   # noqa: E402
+import atom_evidence_replay as replay  # noqa: E402
 
 
 def test_580_default_lock_path_is_byte_identical_to_before():
