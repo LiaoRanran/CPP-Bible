@@ -2445,6 +2445,19 @@ def check_observation_liveness() -> list[Finding]:
             #   之后就会被整条跳过 ⇒ 29 条照旧逃逸（活雷没堵上）。伪装成 observation 后指认不出
             #   自己的证伪锚 —— 这正是它该被看见的理由，与有没有引用卡无关。
             #   只 warn、不 block、不新增规则 id（挂既有 OBSERVATION-LIVENESS）。
+            #
+            # 578 任务 2.2：**530 的"不重复报警"推迟判断必须在锚检查之前**。
+            #   575 把锚检查无条件前置后，下面这条 `cards and not any(...)` 成了**死代码**：
+            #   锚要能通过，符号就必须出现在某张引用卡的 `artifact_assert` 里 ⇒ 该卡
+            #   `_has_artifact_assertion()` 必为真 ⇒ 推迟分支永远不触发；于是"证据卡连工件断言
+            #   都没有"的卡会被本条 warn，而它本该**只**由 `OBSERVATION-NEEDS-ARTIFACT`（block）报
+            #   （530 原文：否则同一条缺陷两条规则各报一次）。实测存量 50 条 observation 命题
+            #   全部有工件断言 ⇒ 本次调整**不改命中数**（gate 仍 63/191）。
+            #   注意与 M5 活雷的区别：M5 变异体**没有任何 evidence 引用**（`cards` 为空）——
+            #   那种形状没有别的规则兜底，所以锚检查仍必须覆盖它（见下面的 `cards and ...` 写法：
+            #   `cards` 为空时不推迟，直接落到锚检查）。
+            if cards and not any(_has_artifact_assertion(c) for c in cards):
+                continue                          # 交由 OBSERVATION-NEEDS-ARTIFACT 处置
             ok, why = _prop_liveness_ok(prop, cards)
             if not ok:
                 out.append(Finding(
@@ -2455,8 +2468,6 @@ def check_observation_liveness() -> list[Finding]:
                     "该符号须真实出现在本命题引用卡的工件断言中且非通用符号。"
                     "若本命题无法被单一工件读数证伪 ⇒ 改标 inference 并补 external_basis"))
                 continue                          # 单点：不再叠其它活性告警
-            if not cards or not any(_has_artifact_assertion(c) for c in cards):
-                continue                          # 交由 OBSERVATION-NEEDS-ARTIFACT 处置
             if any(_falsification_quantified(c.get("falsification"))
                    or _has_fixture_specific_assert_symbol(c)
                    or _has_non_env_run_key(c) for c in cards):

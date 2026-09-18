@@ -1324,6 +1324,14 @@ def test_inference_prop_is_not_rule2_business(sandbox: Path):
 
 
 # ── 530 任务4：OBSERVATION-LIVENESS（自标观测须有活性对照）──────────────────
+# 578 任务 2.1/2.2：575 起 observation 命题还须在**命题级**指认证伪锚（`liveness`）⇒ 凡是要
+# 走到"卡级三条件"或"交 needs-artifact"分支的夹具，都必须带合法锚。此处**新开**一个带锚常量，
+# 不改共享的 `_OBS_PROP`（它还被 526 规则2 的 4 例 + 530 的"死观测须 warn"用着，改它会缩小覆盖）。
+_OBS_PROP_LIVE = _OBS_PROP.replace(
+    "    extracted_by: writer",
+    "    liveness: {kind: fixture_symbol, symbol: spin_plain}\n    extracted_by: writer")
+
+
 def test_observation_liveness_dead_observation_warns(sandbox: Path):
     """530 任务4（阳性）：observation 只挂 run_match 卡（无量化证伪/无特有符号/无读数键）
     ⇒ 三条活性条件全不满足，warn（**须断言 severity=warn**，护栏2：防"降级分支"假通过）。"""
@@ -1339,9 +1347,12 @@ def test_observation_liveness_dead_observation_warns(sandbox: Path):
 
 def test_observation_liveness_live_observation_passes(sandbox: Path):
     """530 任务4（阴性）：证据卡锚**夹具特有符号**（symbol_map 显式声明）+ 量化证伪取值
-    ⇒ 活性条件成立，放行（复现验收 §1 正例形态 FENCE-001）。"""
+    ⇒ 活性条件成立，放行（复现验收 §1 正例形态 FENCE-001）。
+
+    578 任务 2.1：命题还须带命题级 `liveness` 锚（575 起），故夹具用 `_OBS_PROP_LIVE`。
+    """
     _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
-                claim_structured=_OBS_PROP)
+                claim_structured=_OBS_PROP_LIVE)
     _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1",
                 artifact_assert='\n  - {kind: contains, text: "spin_plain"}',
                 symbol_map="\n  spin_plain: _Z10spin_plainv",
@@ -1352,10 +1363,24 @@ def test_observation_liveness_live_observation_passes(sandbox: Path):
 
 def test_observation_liveness_skips_when_no_artifact_assertion(sandbox: Path):
     """530 任务4（边界）：证据卡连工件断言都没有时归 OBSERVATION-NEEDS-ARTIFACT（block）
-    管辖，本条不得重复报警（否则同一条缺陷两条规则各报一次）。"""
+    管辖，本条不得重复报警（否则同一条缺陷两条规则各报一次）。
+
+    578 任务 2.2：575 把命题级锚检查**无条件前置**后，这条推迟分支成了**死代码**
+    （锚要能过，符号就得出现在某张引用卡的 `artifact_assert` 里 ⇒ `_has_artifact_assertion()`
+    必为真 ⇒ 推迟永不触发），于是本例会先吃到一条 warn 而红。578 把推迟判断提回锚检查之前
+    （条件写成 `cards and not any(...)`，`cards` 为空时仍走锚检查 ⇒ M5 活雷形状不受影响）。
+    夹具按提示词要求用**带合法锚**的命题：这样"锚合法 + 无工件断言 ⇒ 仍不重复报"这件事
+    被真正测到，而不是靠"没有锚所以不报"蒙对。
+    """
     _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
-                claim_structured=_OBS_PROP)
+                claim_structured=_OBS_PROP_LIVE)
     _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1")
+    assert ge.check_observation_liveness() == []
+    # 反证（可证伪）：这条夹具确实落进推迟分支，而不是靠"锚没通过"侥幸放行 ——
+    # 引用卡若补上含该符号的工件断言，命题就会走到"卡级三条件"路径且同样放行。
+    _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1",
+                artifact_assert='\n  - {kind: contains, text: "spin_plain"}',
+                symbol_map="\n  spin_plain: _Z10spin_plainv")
     assert ge.check_observation_liveness() == []
 
 
