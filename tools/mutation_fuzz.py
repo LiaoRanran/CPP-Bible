@@ -589,6 +589,135 @@ def _selfcheck_on_exit(fn):
     return _inner
 
 
+# ── 583 任务 1（N5）：规范化等价变异体（**报告层字段，判决路径一行不改**）──────────────
+# 规格：`_arch_v9/05_攻击生成系统化.md` §四。判据（全部满足才算等价）：
+#   equivalent ⟺ P1 视角相同 ∧ P2 视角相同 ∧ 缩进信号相同 ∧ **正文逐字不变** ∧ op ∉ REPLAY_OPS
+#   语义：`equivalent=True` ⇒ "该变体在任何**只读 frontmatter** 的规则下，都不可能产生与原文不同的
+#   finding"（这是**保守**主张：任一视角存疑即判 False）。
+# 为何必须双解析器：单解析器相等会把**解析器走私**洗成等价——例：全角键名 `ｉｄ`、重复键、
+#   缩进提升，在仓内自写子集解析器（P1）与 PyYAML 硬化 loader（P2）下分叉（见 556/557 的
+#   `[parse-diverge]`/`[type-diverge]`）。只看一个解析器=自己给自己发免检单。
+# 为何要"正文逐字不变"：M6 的"块式→flow"正则可能命中**正文**行 ⇒ 正文变了就不是"只读 frontmatter"
+#   能覆盖的问题（另有规则读正文/工件），必须保守判不等价。
+# 为何 M1/M7 排除：它们的判决还走 replay 读**工件与命令**，frontmatter 相等**不足以**判等价
+#   （需要 TCE 式产物比对，属冻结项 W2）。
+# 为何不做跨类型归一：`1` vs `true`、`"00000000"` vs `0` 是 556/557 的**真实走私信号**，归一会洗掉它们。
+_FM_OPEN = "---"
+
+
+def _frontmatter_text(text: str) -> str | None:
+    """取 frontmatter 原文（与 `replay.parse_frontmatter` 同一约定：`---` 起始、`\\n---` 结束）。"""
+    if not text.startswith(_FM_OPEN):
+        return None
+    end = text.find("\n---", 3)
+    if end < 0:
+        return None
+    return text[3:end].strip("\n")
+
+
+def _body_text(text: str) -> str:
+    """frontmatter 之后的正文（含结束标记行）；用作"正文逐字不变"这道保守闸。"""
+    if not text.startswith(_FM_OPEN):
+        return text
+    end = text.find("\n---", 3)
+    return text if end < 0 else text[end:]
+
+
+def _canon(obj: Any) -> str:
+    """P1/P2 视角的规范化序列化：**键按字典序**；**不做跨类型归一**（类型名进串）。"""
+    if isinstance(obj, dict):
+        return "{" + ",".join(f"{_canon(str(k))}:{_canon(obj[k])}"
+                              for k in sorted(obj, key=str)) + "}"
+    if isinstance(obj, (list, tuple)):
+        return "[" + ",".join(_canon(v) for v in obj) + "]"
+    if isinstance(obj, bool) or obj is None:
+        return f"{type(obj).__name__}:{obj!r}"
+    if isinstance(obj, (int, float)):
+        return f"{type(obj).__name__}:{obj!r}"
+    return f"{type(obj).__name__}:{json.dumps(obj, ensure_ascii=False, default=str)}"
+
+
+def _p2_view(text: str) -> str:
+    """P2 = gate 的硬化解析视角（PyYAML + `_UniqueKeyLoader` 语义：重复键即抛）。
+
+    ⚠️ 那个 loader 是 `gate_engine.check_frontmatter_hardening()` 的**内嵌类**（模块外取不到），
+    故此处按**同一语义**实现最小 loader；并配一条**漂移护栏测试**：拿 gate 的**真实入口**
+    （`check_frontmatter_hardening()`，指向临时沙箱）交叉核对——对同一批形态，本视图的分叉判定
+    与 gate 的硬化信号必须一致。gate 若改语义，该护栏会红（不许静默漂移）。
+    """
+    fm = _frontmatter_text(text)
+    if fm is None:
+        return "<no-frontmatter>"
+    try:
+        import yaml
+        from yaml.constructor import ConstructorError
+    except ImportError:
+        return "<no-pyyaml>"                 # 与 gate 一样"可见化"；此处保守：两侧都返回同串，
+
+    class _StrictLoader(yaml.SafeLoader):   # 会让"缺 pyyaml"的两侧相等（不因此判等价，见下）
+        def construct_mapping(self, node, deep=False):
+            mapping = super().construct_mapping(node, deep=deep)
+            seen: set = set()
+            for key_node, _v in node.value:
+                k = self.construct_object(key_node, deep=deep)
+                if k in seen:
+                    raise ConstructorError(None, None, f"duplicate key: {k}",
+                                           key_node.start_mark)
+                seen.add(k)
+            return mapping
+
+    try:
+        loaded = yaml.load(fm, Loader=_StrictLoader)
+    except Exception as exc:                 # noqa: BLE001  解析失败本身是**可区分**的视角
+        return f"<error:{type(exc).__name__}>"
+    return _canon(loaded if loaded is not None else {})
+
+
+def equivalent_variant(op: str, orig_text: str, variant_text: str) -> bool:
+    """583 N5 判据本体（保守：任一视角存疑即 False）。"""
+    if op in REPLAY_OPS:
+        return False                         # 硬边界：M1/M7 还读工件/命令（需 TCE，冻结）
+    if variant_text == orig_text:
+        return False                         # 空操作另有 n_a 分类，不重复标记
+    if _body_text(orig_text) != _body_text(variant_text):
+        return False                         # 正文被改 ⇒ 有规则读正文 ⇒ 保守判不等价
+    if _frontmatter_text(orig_text) is None or _frontmatter_text(variant_text) is None:
+        return False                         # 无 frontmatter ⇒ 不可判
+    try:
+        p1_o = _canon(replay.parse_frontmatter(orig_text))
+        p1_v = _canon(replay.parse_frontmatter(variant_text))
+    except ValueError:
+        return False                         # 任一侧 P1 解析失败 ⇒ 不可判（保守）
+    if p1_o != p1_v:
+        return False
+    p2_o, p2_v = _p2_view(orig_text), _p2_view(variant_text)
+    if p2_o != p2_v or p2_o.startswith(("<no-pyyaml>", "<error:", "<no-frontmatter>")):
+        return False                         # 视角分叉，或"环境缺 pyyaml/dog 解析失败"⇒ 不可判
+    fm_o = _frontmatter_text(orig_text) or ""
+    fm_v = _frontmatter_text(variant_text) or ""
+    if ge._indent_smuggle_lines(fm_o) != ge._indent_smuggle_lines(fm_v):
+        return False                         # 硬化信号①（缩进走私）不经解析 ⇒ 单独比一次
+    return True
+
+
+def selfcheck_equivalent(rep: dict[str, Any]) -> tuple[bool, list[str]]:
+    """583 任务 1：等价变异体的**保守性自证**（防"把真逃逸洗成等价"）。
+
+    判据：`equivalent=True` ⇒ 该变体不可能产生新 finding ⇒ `classify` 的语义下 verdict 必为
+    `escaped`（`new_block` 空 ∧ `new_warn` 空）。任一 `equivalent` 变体带 new_block/new_warn
+    或 verdict != escaped ⇒ **判据假阳性** ⇒ 列清单 fail-loud（宁可漏标，不许错标）。
+    """
+    bad: list[str] = []
+    for r in rep.get("results") or []:
+        if not r.get("equivalent"):
+            continue
+        if r.get("verdict") != "escaped" or r.get("new_block") or r.get("new_warn"):
+            bad.append(f"{r['card']} · {r['op']} · {r['point']}"
+                       f"（verdict={r.get('verdict')} new_block={r.get('new_block')}"
+                       f" new_warn={r.get('new_warn')}）")
+    return (not bad), bad
+
+
 def _card_variants(card: Path, ops: list[str], baseline: set[tuple[str, str, str, str]],
                    tmp: Path) -> list[dict[str, Any]]:
     """**单张卡**的全部算子/变体（卡内串行，卡末 `finally` 还原沙箱副本）；返回该卡的 per 记录。
@@ -606,24 +735,30 @@ def _card_variants(card: Path, ops: list[str], baseline: set[tuple[str, str, str
             variants = MUTATORS[op](text)
             if not variants:
                 per.append({"card": rel, "op": op, "point": "-", "verdict": "n_a",
-                            "why": "该卡本就没有被变异的字段（不适用）"})
+                            "why": "该卡本就没有被变异的字段（不适用）",
+                            "equivalent": False})       # 583：无变体文本 ⇒ 不可判等价（保守）
                 continue
             for point, vtext in variants:
                 if vtext is None:
                     # 558 Part B2：算子自判"该提问超出面"（M2 在门禁读取面内找不到路径）
                     per.append({"card": rel, "op": op, "point": point,
                                 "verdict": "n_a", "out_of_scope": True,
-                                "why": f"out_of_scope：{point}"})
+                                "why": f"out_of_scope：{point}",
+                                "equivalent": False})    # 583：无变体文本 ⇒ 不可判等价（保守）
                     continue
                 if vtext == text:
                     per.append({"card": rel, "op": op, "point": point,
-                                "verdict": "n_a", "why": "变异为空操作"})
+                                "verdict": "n_a", "why": "变异为空操作",
+                                "equivalent": False})    # 583：空操作另有分类，不重复标记
                     continue
                 r = classify(card.stem, op, baseline, vtext, sb_card, tmp)
                 per.append({"card": rel, "op": op, "point": point,
                             "reproduce": (f".venv\\Scripts\\python.exe tools/mutation_fuzz.py "
                                           f"--cards {rel} --operators {op} --limit 1"),
-                            **r})
+                            **r,
+                            # 583 N5：报告层字段（**不进** `_variant_index` 的 5 字段、
+                            # 不进拦截率分子分母；只在 n_a 细类里单列计数）
+                            "equivalent": equivalent_variant(op, text, vtext)})
     finally:
         # 568 任务 3（567 抓到的隐患）：还原进 **finally** —— 任何异常 / KeyboardInterrupt /
         # 提前 return 都必须把沙箱副本还原成原卡文本，绝不把变异留到下一张卡
@@ -642,6 +777,9 @@ def _report(selected: list[Path], ops: list[str], per: list[dict[str, Any]],
     # 558 Part B2：n_a 里再单列"变异点落在**门禁读取面之外**"（M2 out_of_scope）——
     # 这类提问与门禁无关，混进 escaped 会虚增逃逸率（543 P2 逐逃逸定性的教训）。
     counts["out_of_scope"] = sum(1 for r in per if r.get("out_of_scope"))
+    # 583 N5：等价变异体（规范化双解析器视角相同 ⇒ 不可能改变任何只读 frontmatter 的规则结论）。
+    #   与 out_of_scope/malformed 同列：**只作细类计数，不进拦截率分子分母**。
+    counts["equivalent"] = sum(1 for r in per if r.get("equivalent"))
     strict = sum(1 for r in per if r["verdict"] == "blocked" and r.get("kind") == "strict")
     treated = counts["blocked"]
     denom = counts["blocked"] + counts["escaped"] or 1
@@ -672,6 +810,9 @@ def _report(selected: list[Path], ops: list[str], per: list[dict[str, Any]],
             "ge_runs": stats["ge_runs"], "replay_runs": stats["replay_runs"],
             "replay_skipped": stats["replay_skipped"],
             "escaped_list": [r for r in per if r["verdict"] == "escaped"],
+            # 583 任务 1（N5）：等价变异体清单（**只加字段**；判决/分母零改）
+            "equivalent_keys": [f"{r['card']} · {r['op']} · {r['point']}"
+                                for r in per if r.get("equivalent")],
             # 580 任务 2：只**新增**字段（既有字段一字未改）
             "jobs": jobs, "parallel": bool(parallel),
             "results": per}
@@ -978,6 +1119,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--jobs", default="1",
                     help="580：卡间进程并行度。`1`（默认）= 今天的串行路径；`auto` = "
                          "min(4, cpu_count-1, 卡数)；N>=2 = 进程池（每 worker 一个 sandbox 根）")
+    ap.add_argument("--selfcheck-equivalent", action="store_true",
+                    help="583：等价变异体判据的**保守性自证**——凡标 equivalent 的变体，其 "
+                         "new_block/new_warn 必须为空（否则判据假阳性 ⇒ exit 2）。"
+                         "--selfcheck-determinism 亦会带上本检查")
     a = ap.parse_args(argv)
     ops = [o for o in a.operators.split(",") if o]
     bad = [o for o in ops if o not in MUTATORS]
@@ -1035,6 +1180,19 @@ def main(argv: list[str] | None = None) -> int:
     if rep.get("root_fingerprint_ok") is False:      # 580 任务 3.2：输入冻结哨兵
         print(f"[mutation] ❌ {rep.get('invalid')}", file=sys.stderr)
         return 2
+    # 583 任务 1（N5）：等价变异体计数 + 保守性自证（默认只打印计数；自检按开关/随确定性自检跑）
+    _eq = int(rep.get("equivalent") or 0)
+    print(f"[mutation] 等价变异体（规范化双解析器视角相同，**不进分母**）= {_eq}"
+          f" / {rep['variants']}（其中 n_a {rep['n_a']}）")
+    if a.selfcheck_equivalent or a.selfcheck_determinism:
+        _okq, _badq = selfcheck_equivalent(rep)
+        if not _okq:
+            print(f"[mutation] ❌ 等价判据假阳性：{len(_badq)} 条标了 equivalent 却有新 finding"
+                  "（判据把真逃逸洗成了等价 ⇒ 必须修判据，不许改 verdict）", file=sys.stderr)
+            for _b in _badq[:10]:
+                print(f"[mutation]   假阳性：{_b}", file=sys.stderr)
+            return 2
+        print("[mutation] ✓ 等价判据保守性自证：所有 equivalent 变体的 new_block/new_warn 均为空")
     if a.selfcheck_determinism:          # 579 任务 2：自证"同输入同输出"
         ok, diffs = selfcheck_determinism(cards, ops, a.limit, rep, progress=a.progress, jobs=jobs)
         if not ok:
