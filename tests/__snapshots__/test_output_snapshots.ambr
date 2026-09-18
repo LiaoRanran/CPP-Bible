@@ -88,7 +88,7 @@
       'A1': 19,
       'A10': 4,
       'A11': 2,
-      'A2': 13,
+      'A2': 16,
       'A3': 21,
       'A4': 4,
       'A5': 2,
@@ -104,11 +104,11 @@
       ]),
     }),
     'drill': dict({
-      'passed': 118,
-      'total': 118,
+      'passed': 124,
+      'total': 124,
     }),
     'rule_coverage': dict({
-      'covered': 38,
+      'covered': 39,
       'exempt': 27,
       'total': 63,
     }),
