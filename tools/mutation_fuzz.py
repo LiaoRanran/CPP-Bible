@@ -396,15 +396,46 @@ def mut_m5(text: str) -> list[tuple[str, str | None]]:
                     None)]
 
 
+# 587 任务1：非法值替换的「垃圾值」——逐键取自任务书 1.1（不存在标准/优化级/三元组/编译器）。
+# 目的：证明 `check_evidence_matrix` 只看键存在性时这些**全逃逸**；任务 2 加值校验后应全部被 warn 拦。
+_ILLEGAL_MATRIX_VALUE = {
+    "std": "c++99",                          # 不存在的标准年份
+    "opt": "-O9",                            # 不存在的优化级
+    "arch": "z80-nonexistent",               # 不存在的架构三元组
+    "compiler": "totally-not-a-compiler xyz",  # 无族名、无版本
+}
+
+
+def _illegal_value_line(ln: str, bad: str) -> str | None:
+    """把 flow 列表 `  std: [c++11, c++17]` 的**第一个元素**换成非法值，结构与其余元素逐字不动。
+
+    只处理 flow 列表形态（`[...]`）；块式嵌套形态返回 None（不造变体，避免改缩进结构）。
+    逗号切分**跳过括号内的逗号**（半角/全角），保证 `Clang (ubuntu-latest runner 默认)` 这类值不被切坏。
+    """
+    i, j = ln.find("["), ln.rfind("]")
+    if i < 0 or j <= i:
+        return None
+    head, content, tail = ln[:i + 1], ln[i + 1:j], ln[j:]
+    depth, cut = 0, None
+    for idx, ch in enumerate(content):
+        if ch in "(（":
+            depth += 1
+        elif ch in ")）":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            cut = idx
+            break
+    rest = content[cut:] if cut is not None else ""      # 含逗号，保留其余元素逐字
+    return head + bad + rest + tail
+
+
 def _mut_matrix_values(text: str) -> list[tuple[str, str]]:
-    """586 任务2：对 `matrix:` 块做**值层**变异（删键）——与保留的等价 block→flow 互补。
+    """586 任务2 删键 + **587 任务1 非法值替换**：对 `matrix:` 块做**值层**变异。
 
-    删掉 compiler/std/opt 之一 ⇒ 触发 `check_evidence_matrix`（EV-MATRIX, block：matrix 缺键）
-    ⇒ 可检测，提供真实覆盖（"挪到值层"的落地形态）。
-
-    ⚠️ 实测"非法值替换"（compiler/std/opt 改成不存在值）会**逃逸**——`check_evidence_matrix`
-    只校验键**存在性**不校验取值合法性（真实覆盖缺口，已记入 worklog 交人项），本批不引入以免
-    向基线灌入 165 个真实逃逸（属越界，须监工裁决是否新增值校验规则）。
+    - 删键（compiler/std/opt，586 已有）：触发 `check_evidence_matrix`（EV-MATRIX block：matrix 缺键）；
+    - 非法值替换（compiler/std/opt/arch，587 新增）：只换列表内**第一个元素**，键与列表结构不变、
+      正文逐字不动 ⇒ 键还在、值变垃圾。586 实测这类变异**全逃逸**（门禁只校验键存在性），
+      本批先量出逐键逃逸数（任务 1.2），任务 2 加值校验后应归零（任务 2.3）。
     """
     out: list[tuple[str, str]] = []
     m = re.search(r"(?m)^(matrix:)\s*\n((?:  [^\n]+\n)+)", text)
@@ -417,17 +448,26 @@ def _mut_matrix_values(text: str) -> list[tuple[str, str]]:
             continue
         k, _, v = s.partition(":")
         k = k.strip()
-        if k not in ("compiler", "std", "opt"):
+        if k not in ("compiler", "std", "opt", "arch"):
             continue
-        new_block = block.replace(ln + "\n", "", 1)
-        out.append((f"matrix 删键（移除 {k}: {v.strip()}）",
-                    text[:m.start(2)] + new_block + text[m.end(2):]))
+        # 删键：仅原三键（arch 缺键门禁不拦，删它只会造无意义变体）
+        if k in ("compiler", "std", "opt"):
+            new_block = block.replace(ln + "\n", "", 1)
+            out.append((f"matrix 删键（移除 {k}: {v.strip()}）",
+                        text[:m.start(2)] + new_block + text[m.end(2):]))
+        # 587 任务1：非法值替换（四键）
+        bad_ln = _illegal_value_line(ln, _ILLEGAL_MATRIX_VALUE[k])
+        if bad_ln is not None and bad_ln != ln:
+            out.append((f"matrix 非法值（{k}: {v.strip()} → 首元素 {_ILLEGAL_MATRIX_VALUE[k]}）",
+                        text[:m.start(2)] + block.replace(ln + "\n", bad_ln + "\n", 1)
+                        + text[m.end(2):]))
     return out
 
 
 def mut_m6(text: str) -> list[tuple[str, str]]:
     """M6 YAML 变形：重复键 / 缩进提升 / 全角键名（键层攻击，仍有效）+
-    586 任务2 新增 matrix 值层删键（EV-MATRIX 可检测）+ 保留"块式→flow"（583 已证等价，
+    586 任务2 新增 matrix 值层**删键**（EV-MATRIX 可检测）+ 587 任务1 新增 matrix **非法值替换**
+    （586 实测全逃逸，587 任务2 加值校验后应收口）+ 保留"块式→flow"（583 已证等价，
     由报告层单列 `equivalent_invalid` 不进可判分母，作等价判据的生产触发与回归锁）。"""
     out: list[tuple[str, str]] = []
     m = re.search(r"(?m)^id:\s*(\S+)\s*$", text)
