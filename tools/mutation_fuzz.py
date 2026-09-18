@@ -68,17 +68,25 @@ def sandbox() -> Iterator[Path]:
     只放一张卡会让那些规则全变成假命中。复制两棵树是纯文本量级（56 卡），毫秒级。
     """
     tmp = Path(tempfile.mkdtemp(prefix="mutfuzz_"))
-    for name in ("atoms", "evidence"):
+    # 579 任务 1：**工件层也要进沙箱**。只复制卡文本不够——实测全部 124 条 artifact/fixture
+    #   路径都落在 `Examples/` 下，而 replay 会在**工件**上 unlink→重编译→还原、写 `build/`、
+    #   读写 `manifest`；若这些仍打在真实仓库，紧随其后的 M6 全库扫描就会读到"某张卡的真实工件
+    #   正处于删-建窗口"这一非常态 ⇒ finding 随机多出/消失（578b 实测 989/9/185 ↔ 991/7/185）。
+    for name in ("atoms", "evidence", "Examples"):
         src = ROOT / name
         if src.is_dir():
             shutil.copytree(src, tmp / name)
+    (tmp / "build").mkdir(exist_ok=True)     # 空 build：卡命令产物 / manifest 全部落这里
     orig_a, orig_e = ge.ATOMS, ge.EVIDENCE
     ge.ATOMS, ge.EVIDENCE = tmp / "atoms", tmp / "evidence"
-    try:
-        yield tmp
-    finally:
-        ge.ATOMS, ge.EVIDENCE = orig_a, orig_e
-        shutil.rmtree(tmp, ignore_errors=True)
+    # 跑批根 = tmp：`replay.run_root()` / gate 的工件规则全部改读 tmp（真实 ROOT 零副作用）。
+    # 卡文本与工件同一个根内自洽 ⇒ 任何规则都读不到真实仓库的瞬态。
+    with replay.batch_root(tmp):
+        try:
+            yield tmp
+        finally:
+            ge.ATOMS, ge.EVIDENCE = orig_a, orig_e
+            shutil.rmtree(tmp, ignore_errors=True)
 
 
 def _rel_in_sandbox(card: Path, tmp: Path) -> Path:
@@ -730,6 +738,38 @@ def _op_rates(per: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str]]:
     return out, flags
 
 
+# ── 579 任务 2：确定性自检（把"同一输入两次跑必须一致"变成机器判据）───────────────
+# 为何必须自证：这类非确定性**只能靠重跑发现**——578 若不是"重跑一次核对提交产物"就完全看不见
+# （测试全绿、单次跑也自洽）。子集至少覆盖"动工件层"的 M1/M7（真实工件被删建的源头）与
+# "跨卡 finding"的 M6（034 幻影 finding 的观察面）。
+_SELFCHECK_OPS = ("M1", "M6", "M7")
+_SELFCHECK_FIELDS = ("verdict", "kind", "why", "new_block", "new_warn")
+
+
+def _variant_index(rep: dict[str, Any]) -> dict[tuple[str, str, str], tuple[str, ...]]:
+    """逐变体可比值索引。键 = (卡, 算子, 变异点)；值 = 判决相关字段的规范化快照。
+
+    579 起 `gate_engine._rel()` 跟随跑批根 ⇒ finding 的 target 是**仓内相对形**，
+    不含沙箱临时目录名 ⇒ 两次跑可直接逐字比对（此前必须手工归一化临时路径）。
+    """
+    out: dict[tuple[str, str, str], tuple[str, ...]] = {}
+    for r in rep["results"]:
+        out[(r["card"], r["op"], r["point"])] = tuple(
+            json.dumps(r.get(f), ensure_ascii=False, sort_keys=True) for f in _SELFCHECK_FIELDS)
+    return out
+
+
+def selfcheck_determinism(cards: list[Path], ops: list[str], limit: int, first: dict[str, Any],
+                          progress: bool = False) -> tuple[bool, list[str]]:
+    """对关键子集**重跑一次**并逐变体比对；返回 (是否一致, 抖动清单)。"""
+    sub_ops = [o for o in ops if o in _SELFCHECK_OPS] or list(ops[:1])
+    second = run_fuzz(cards, sub_ops, limit, progress=progress)
+    a, b = _variant_index(first), _variant_index(second)
+    diffs = [f"{k[0]} · {k[1]} · {k[2]}（{a[k]} ≠ {b[k]}）"
+             for k in sorted(set(a) & set(b)) if a[k] != b[k]]
+    return (not diffs), diffs
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="539 · 自动变异器（L3 第一块）：找毒样例没覆盖的新逃逸")
     ap.add_argument("--cards", default="all", help="all | 相对 ROOT 的 glob（默认 all）")
@@ -740,6 +780,9 @@ def main(argv: list[str] | None = None) -> int:
                     help="有 escaped 即 exit 1（默认恒 0：escaped 是本工具的**产物**，不是红灯）")
     ap.add_argument("--progress", action="store_true",
                     help="逐卡打印进度到 stderr（全量轮用：不许静默跑十分钟）")
+    ap.add_argument("--selfcheck-determinism", action="store_true",
+                    help="579：跑完立即对关键子集（M1/M6/M7）重跑一次并逐变体比对；"
+                         "不一致 ⇒ fail-loud exit 2（非确定性未被容忍）")
     a = ap.parse_args(argv)
     ops = [o for o in a.operators.split(",") if o]
     bad = [o for o in ops if o not in MUTATORS]
@@ -791,6 +834,16 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError:
         shown = str(out)
     print(f"[mutation] 报告：{shown}")
+    if a.selfcheck_determinism:          # 579 任务 2：自证"同输入同输出"
+        ok, diffs = selfcheck_determinism(cards, ops, a.limit, rep, progress=a.progress)
+        if not ok:
+            print(f"[mutation] ❌ 确定性自检不过：{len(diffs)} 个变体两次跑不一致"
+                  "（尺子会抖 ⇒ 逃逸率不可复现）", file=sys.stderr)
+            for d in diffs[:10]:
+                print(f"[mutation]   抖动：{d}", file=sys.stderr)
+            return 2
+        print("[mutation] ✓ 确定性自检：关键子集两次跑逐变体一致"
+              f"（{len(_variant_index(rep))} 变体 / 子集算子 {[o for o in ops if o in _SELFCHECK_OPS]}）")
     return 1 if (a.fail_on_escaped and rep["escaped"]) else 0
 
 

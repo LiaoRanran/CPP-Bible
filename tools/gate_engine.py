@@ -195,11 +195,32 @@ def _cards(root: Path, pattern: str) -> list[Path]:
 # 548 Part 0 · frontmatter 解析缓存（**纯性能**，不改任何判决）
 # 实测（cProfile，全库一次 `run()`）：`_meta` 被调用 **2475 次**（56 张卡被同一批规则反复解析），
 # 吃掉 run() 约 2/3 的时间 ⇒ 每个变体一次全库扫描 ≈2.7s，全量 mutation（956 变体）≈43 分钟。
-# 缓存键 = (路径, mtime_ns, size)：改盘即失效，不存在"改了内容还命中旧值"的窗口
-# （同尺寸同 mtime_ns 的改写在同一纳秒内发生才可构造，实测不可达）。
+# 缓存键 = (路径, mtime_ns, size)。**579 收紧：原文"不存在'改了内容还命中旧值'的窗口"过强**——
+#   实测（本机 NTFS）：同尺寸改写若落在同一次时钟 tick 内，键会相撞 ⇒ 会吐旧内容：
+#   两次写入间隔 0ms 时 200 次里 132 次相撞（也见 9/12），间隔 ≥0.5ms 起 0/12。
+#   ⇒ 窗口是**亚毫秒级**，工具内"写盘→读盘"的间隔（中间还有一次全库规则扫描）远大于它，
+#     现存流程不受影响；但**进程内改盘的写入方不要依赖"mtime 一定变"**，改完请显式调用
+#     `invalidate_meta(path)`（见下），把失效交给显式契约而不是时钟精度。
 # 只读契约：缓存返回**同一个 dict 对象**，调用方**不得改写**（现有规则全部只读，见回归锁）。
 _META_CACHE: dict[tuple[Any, ...], dict[str, Any]] = {}
 META_CACHE_MAX = 4096
+
+
+def invalidate_meta(path: Path | str) -> int:
+    """摘掉 `path` 的两个缓存条目（O(n) 扫描，n ≤ 4096）；返回摘掉的条数。
+
+    579 任务 4：进程内改盘（跑批写变异体、测试写夹具）后**显式失效**用。
+    为何需要：键含 `mtime_ns`，而同尺寸改写若落在同一次时钟 tick 内会**相撞**（579 实测
+    间隔 0ms 时 132/200 相撞）⇒ 只靠"改盘即失效"在亚毫秒尺度上不成立。
+    与 `clear_meta_cache()` 的区别：本函数**只**清该路径，不牺牲其它卡的缓存收益。
+    """
+    want = str(Path(path))
+    n = 0
+    for cache in (_META_CACHE, _FM_CACHE):
+        for k in [k for k in cache if str(k[0]) == want]:
+            cache.pop(k, None)
+            n += 1
+    return n
 
 
 def clear_meta_cache() -> int:
@@ -235,8 +256,10 @@ def _meta(p: Path) -> dict[str, Any]:
 
 
 def _rel(p: Path) -> str:
+    """展示路径：**跟随跑批根**解析（579）——跑批期给出仓内相对形（`evidence/...`），
+    不再打印沙箱临时绝对路径 ⇒ 同一输入的两次跑报告**字符串级可比、可复现**。"""
     try:
-        return p.relative_to(ROOT).as_posix()
+        return p.relative_to(replay.run_root()).as_posix()
     except ValueError:
         return str(p)
 
@@ -910,7 +933,7 @@ def check_evidence_self_satisfied_assert() -> list[Finding]:
     for p in _cards(EVIDENCE, "EV-*.md"):
         meta = _meta(p)
         fixture = str(meta.get("fixture") or "")
-        fx = ROOT / fixture if fixture else None
+        fx = replay.run_root() / fixture if fixture else None
         if fx is None or not fx.is_file():
             continue
         code = "\n".join(ln for ln in fx.read_text(encoding="utf-8", errors="replace").split("\n")
@@ -998,7 +1021,7 @@ def check_evidence_trivial_observation() -> list[Finding]:
         # A3②：run_match_file 形态 —— 把 .out 内容也纳入视野
         actual = _meta(p).get("actual") or {}
         if isinstance(actual, dict) and actual.get("run_match_file"):
-            f = ROOT / str(actual["run_match_file"])
+            f = replay.run_root() / str(actual["run_match_file"])
             if f.is_file():
                 seg += "\n" + f.read_text(encoding="utf-8", errors="replace")
         hit = [pat for pat in _TRIVIAL_OBS_PATTERNS if _re.search(pat, seg)]
@@ -1082,7 +1105,7 @@ def check_evidence_out_undeclared_key() -> list[Finding]:
         actual = _meta(p).get("actual") or {}
         if not isinstance(actual, dict) or not actual.get("run_match_file"):
             continue
-        f = ROOT / str(actual["run_match_file"])
+        f = replay.run_root() / str(actual["run_match_file"])
         if not f.is_file():
             continue
         keys = {str(k).strip() for k in (actual.get("run_match_keys") or [])}
@@ -1141,7 +1164,7 @@ def check_run_key_declared_exists() -> list[Finding]:
         keys = [k for k in (actual.get("run_match_keys") or []) if str(k).strip()]
         if not keys:
             continue
-        f = ROOT / str(rmf)
+        f = replay.run_root() / str(rmf)
         if not f.is_file():
             out.append(Finding(
                 "EV-RUN-KEY-DECLARED-EXISTS", "block", _rel(p),
@@ -1430,7 +1453,7 @@ def check_fixture_no_echo_data(cards: list[Path] | None = None) -> list[tuple[st
             if m.group(0) not in srcs:
                 srcs.append(m.group(0))
         for rel in srcs:
-            f = ROOT / rel
+            f = replay.run_root() / rel
             if not f.is_file():
                 continue
             lines = f.read_text(encoding="utf-8", errors="replace").split("\n")
@@ -1441,7 +1464,7 @@ def check_fixture_no_echo_data(cards: list[Path] | None = None) -> list[tuple[st
                 path = next((g for g in m.groups()[1::2] if g), "")  # 路径组
                 if not path or ":" in path or path.startswith(("/", "\\")):
                     continue                       # 只关心仓库内相对路径
-                if not (ROOT / path).exists():
+                if not (replay.run_root() / path).exists():
                     continue
                 fvars = {g for g in m.groups() if g and g != path}
                 window = lines[i:i + 9]
@@ -1501,7 +1524,7 @@ def check_env_dependent_key() -> list[Finding]:
                                "与机器无关的读数"))
             continue
         rf = str(actual.get("run_match_file") or "")
-        f = ROOT / rf if rf else None
+        f = replay.run_root() / rf if rf else None
         if not f or not f.is_file():
             continue
         undecl = []
@@ -1551,7 +1574,7 @@ def check_evidence_out_stale_mtime() -> list[Finding]:
         fx = str(meta.get("fixture") or "")
         if not rf or not fx:
             continue
-        f_out, f_fx = ROOT / rf, ROOT / fx
+        f_out, f_fx = replay.run_root() / rf, replay.run_root() / fx
         if not (f_out.is_file() and f_fx.is_file()):
             continue
         if f_out.stat().st_mtime < f_fx.stat().st_mtime - 5:
@@ -1743,7 +1766,7 @@ def _assert_haystack(meta: dict) -> str:
         #   空 rel 的语义应是「该字段未声明」，而不是「整个仓库」。
         if not rel:
             return
-        f = ROOT / str(rel)
+        f = replay.run_root() / str(rel)
         if not f.is_file() and not f.is_dir():
             return
         is_asm = f.suffix.lower() in (".asm", ".s", ".S")
@@ -2623,7 +2646,7 @@ def check_artifact_file_exists() -> list[Finding]:
             rel = e if isinstance(e, str) else (e.get("path") or e.get("file") or "")
             if str(rel).strip():
                 rels.append(str(rel).strip())
-        miss = [r for r in rels if not (ROOT / r).is_file()]
+        miss = [r for r in rels if not (replay.run_root() / r).is_file()]
         if miss:
             out.append(Finding(
                 "EV-ARTIFACT-FILE-EXISTS", "block", _rel(p),
@@ -2669,7 +2692,7 @@ def check_evidence_zero_diag_werror() -> list[Finding]:
                                f"——警告不影响 rc，该判据不可机器判定",
                                "command 补 -Werror；或把判据改写为可观测读数（rc/输出）"))
         if has_werror:
-            fx = ROOT / str(meta.get("fixture") or "")
+            fx = replay.run_root() / str(meta.get("fixture") or "")
             if fx.is_file():
                 m = _DIAG_SUPPRESS_RE.search(
                     fx.read_text(encoding="utf-8", errors="replace"))
@@ -3122,7 +3145,7 @@ def _s3_expected_segments(actual: dict) -> list[tuple[str, str]]:
                 segs.append((t, f"actual.{k}"))
     mf = actual.get("run_match_file")
     if mf:
-        of = ROOT / str(mf)
+        of = replay.run_root() / str(mf)
         if of.is_file():
             keys = {str(x) for x in _as_list(actual.get("run_match_keys"))}
             for ln in of.read_text(encoding="utf-8", errors="replace").split("\n"):
@@ -3152,7 +3175,7 @@ def check_s3_hardcoded_expected() -> list[Finding]:
         actual = meta.get("actual")
         if not fixture or not isinstance(actual, dict):
             continue
-        fx = ROOT / str(fixture)
+        fx = replay.run_root() / str(fixture)
         if not fx.is_file():
             continue
         src = fx.read_text(encoding="utf-8", errors="replace")

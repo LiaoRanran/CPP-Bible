@@ -50,6 +50,8 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
@@ -59,6 +61,40 @@ import viso_diff  # noqa: E402  535 V-iso 判据
 
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "evidence"
+
+# ── 579 任务 1：**跑批根**（工件层根重定向）─────────────────────────────────────
+# 病（578b 抓到、579 监工读码钉死）：`mutation_fuzz.sandbox()` 只把**卡文本目录**
+#   （`ge.ATOMS`/`ge.EVIDENCE`）指向 tempdir，而**工件层**（`Examples/` 下的 artifact/fixture、
+#   `build/`、`replay_manifest.json`）仍全部打在真实仓库上。于是 M1/M7 变体的 replay 在**真实工件**
+#   上 unlink→重编译→还原（见 `art_path.unlink` / `_restore_artifact`）、写真实 `build/`；
+#   紧随其后的 M6 变体做全库 gate 扫描时（跨卡规则）就读到这些工件的**非常态** ⇒
+#   `EV-ARTIFACT-FILE-EXISTS` / `EV-ASSERT-SYMBOL-MAPPED` 的 finding 随机多出/消失 ⇒
+#   同一输入两次跑出不同逃逸数（实测 989/9/185 ↔ 991/7/185）。
+# 治：显式"跑批根"。**默认 = 真实 ROOT** ⇒ 所有现存 CLI / 测试行为逐字不变（存量零误伤的硬前提）；
+#   跑批时由 `mutation_fuzz.sandbox()` 用 `batch_root()` 把根指到 tempdir，工件与卡文本同根自洽。
+# 为何用 contextvar 而不是全局 monkeypatch：并发/嵌套调用时各自隔离，退出自动还原（try/finally）。
+_RUN_ROOT: ContextVar[Path | None] = ContextVar("cppbible_run_root", default=None)
+
+
+def run_root() -> Path:
+    """当前**工件层根**：跑批期 = 沙箱 tempdir，其余情况 = 真实 `ROOT`（默认，行为不变）。"""
+    return _RUN_ROOT.get() or ROOT
+
+
+@contextmanager
+def batch_root(path: Path | str):
+    """把工件层根临时切到 `path`（跑批用）；退出时无条件还原。"""
+    p = Path(path)
+    token = _RUN_ROOT.set(p)
+    try:
+        yield p
+    finally:
+        _RUN_ROOT.reset(token)
+
+
+def manifest_path() -> Path:
+    """增量 manifest 路径（跟随跑批根）——跑批不读不写真实 `build/replay_manifest.json`。"""
+    return run_root() / "build" / "replay_manifest.json"
 SANITIZER_SIGNS = ("ERROR: AddressSanitizer", "runtime error:", "LeakSanitizer",
                    "ERROR: ThreadSanitizer", "SUMMARY: AddressSanitizer")
 
@@ -868,7 +904,7 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
     命中了声明外的类型，一律 `reported` → refute（豁免不是逃生舱）。
     """
     fixture = meta.get("fixture")
-    if not fixture or not (ROOT / str(fixture)).is_file():
+    if not fixture or not (run_root() / str(fixture)).is_file():
         return "skipped", f"fixture 不存在：{fixture}"
     matrix = meta.get("matrix") or {}
     stds = matrix.get("std") if isinstance(matrix, dict) else None
@@ -880,7 +916,7 @@ def check_sanitizer(meta: dict[str, Any], workdir: Path, env: dict) -> tuple[str
         return "skipped", "无法解析 g++"
     exe = workdir / "san.exe"
     c = subprocess.run([gpp, f"-std={std}", "-O1", "-g",
-                        "-fsanitize=address,undefined", str(ROOT / str(fixture)), "-o", str(exe)],
+                        "-fsanitize=address,undefined", str(run_root() / str(fixture)), "-o", str(exe)],
                        capture_output=True, text=True, errors="replace", timeout=300, env=env)
     if c.returncode != 0:
         return "skipped", f"工具链不支持 ASan/UBSan：{(c.stderr or '').strip()[:120]}"
@@ -1237,7 +1273,7 @@ def check_negative_controls(meta: dict[str, Any], *, workdir: Path, env: dict,
         log.append("  ❌ negative_control  negative_controls 必须是列表（block 式 YAML，见 533 §2.1）")
         return "refute:negative_control_bad_schema", log
     yang_rel = str(meta.get("fixture") or "").replace("\\", "/")
-    yang_path = ROOT / yang_rel if yang_rel else None
+    yang_path = run_root() / yang_rel if yang_rel else None
     if not yang_rel or yang_path is None or not yang_path.is_file():
         log.append(f"  ❌ negative_control  卡上 fixture 不可读：{yang_rel or '（缺字段）'}")
         return "refute:negative_control_bad_schema", log
@@ -1253,14 +1289,14 @@ def check_negative_controls(meta: dict[str, Any], *, workdir: Path, env: dict,
             return "refute:negative_control_bad_schema", log
         nid = str(nc.get("id") or "?")
         yin_rel = str(nc.get("fixture") or "").replace("\\", "/")
-        yin_path = ROOT / yin_rel
+        yin_path = run_root() / yin_rel
         if not yin_rel or not yin_path.is_file():
             log.append(f"  ❌ negative_control {nid}  阴夹具不存在：{yin_rel or '（缺 fixture）'}")
             return "refute:negative_control_missing", log
         anchor = str(nc.get("anchor") or "")
         scan = viso_diff.find_func_defs(yang_text, anchor) if anchor else None
         sv = viso_diff.validate_nc_schema(
-            nc, fixture_exists=lambda p: (ROOT / p).is_file(),
+            nc, fixture_exists=lambda p: (run_root() / p).is_file(),
             anchor_def_count=scan.count if scan is not None else None,
             declared_run_keys=declared, is_boilerplate=_is_boilerplate_text,
             yang_fixture=yang_rel)
@@ -1293,7 +1329,7 @@ def check_negative_controls(meta: dict[str, Any], *, workdir: Path, env: dict,
                 log.append(f"  ❌ negative_control {nid}  提取不到产出 {art_rel} 的编译行"
                            f"（或该行不含阳夹具路径）")
                 return "refute:negative_control_command_missing", log
-            results, _ = run_commands([line], cwd=ROOT, env=env)
+            results, _ = run_commands([line], cwd=run_root(), env=env)
             rc, err, prog = results[-1][1], results[-1][2], results[-1][3]
             if rc == 124:
                 log.append(f"  ⚠️  negative_control {nid}  阴面编译超时（环境故障）")
@@ -1324,7 +1360,7 @@ def check_negative_controls(meta: dict[str, Any], *, workdir: Path, env: dict,
                 log.append(f"  ❌ negative_control {nid}  提取不到产出 exe 的编译行"
                            f"（或该行不含阳夹具路径）")
                 return "refute:negative_control_command_missing", log
-            results, yin_out = run_commands([line], cwd=ROOT, env=env)
+            results, yin_out = run_commands([line], cwd=run_root(), env=env)
             rc, err = results[-1][1], results[-1][2]
             if rc == 124:
                 log.append(f"  ⚠️  negative_control {nid}  阴面编译/运行超时（环境故障）")
@@ -1388,7 +1424,7 @@ def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, st
         for ln in lines:
             out_name = tmpdir / Path(art_rel).name
             new_ln = re.sub(r"-o\s+\S+", f'-o "{out_name.as_posix()}"', ln, count=1)
-            r = subprocess.run(new_ln, shell=True, cwd=str(ROOT), capture_output=True,
+            r = subprocess.run(new_ln, shell=True, cwd=str(run_root()), capture_output=True,
                                text=True, errors="replace",
                                timeout=_RECOMPILE_TIMEOUT, env=env)
             if r.returncode != 0:
@@ -1426,7 +1462,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     校验工具是只读角色，不该改写被校验对象；要留调试痕迹时用 `--no-restore`。
     """
     try:                                   # 卡可能不在仓库内（--card 指向临时路径）
-        shown = path.relative_to(ROOT).as_posix()
+        shown = path.relative_to(run_root()).as_posix()
     except ValueError:
         shown = str(path)
     log: list[str] = [f"[replay] {shown}"]
@@ -1450,7 +1486,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         return "refute:missing_field", log + [f"  ❌ 缺字段：{', '.join(missing)}"]
 
     art_rel = str(meta["artifact"])
-    art_path = ROOT / art_rel
+    art_path = run_root() / art_rel          # 579：工件层跟随跑批根（默认仍是真实 ROOT）
     want_sha = str(meta["artifact_sha256"]).strip().lower()
     # 多产物登记（2026-09-12，W1）：可选 `artifacts: [{path: …, sha256: …}, …]` ——
     # 同一 `command` 产出的其它工件。多 TU 场景一次构建产 a/b/main 三个 .asm，主字段
@@ -1461,7 +1497,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     extra_arts: list[tuple[Path, str]] = []
     for _it in (meta.get("artifacts") or []):
         if isinstance(_it, dict) and _it.get("path") and _it.get("sha256"):
-            extra_arts.append((ROOT / str(_it["path"]), str(_it["sha256"]).strip().lower()))
+            extra_arts.append((run_root() / str(_it["path"]), str(_it["sha256"]).strip().lower()))
     cmd_lines = str(meta["command"]).split("\n")
 
     # MSVC 是永久边界：本机/CI 均无 cl，且跨平台汇编语义差异大，重编译校验**不尝试 cl**。
@@ -1484,7 +1520,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     if not gpp or not Path(gpp).is_file() or not os.access(gpp, os.X_OK):
         log.append(f"  ⚠️ 编译器不可用：{gpp or '（未解析到）'} → 环境故障，不计入内容恶化")
         return "infra_error:compiler_missing", log
-    (ROOT / "build").mkdir(exist_ok=True)      # 卡命令产物约定写 build/（仓库源只读）
+    (run_root() / "build").mkdir(exist_ok=True)   # 卡命令产物约定写 build/（仓库源只读；579 跟随跑批根）
     tmp = Path(tempfile.mkdtemp(prefix="replay_"))
     # 470 P0-G1（452 E09）：并发隔离——进入有副作用流程（删工件/覆写/还原）前取锁
     try:
@@ -1516,7 +1552,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         for _p, _ in extra_arts:
             _p.unlink(missing_ok=True)        # 副产物同样先删：重生成才算数（W1）
 
-        results, stdout_all = run_commands(cmd_lines, ROOT, env)
+        results, stdout_all = run_commands(cmd_lines, run_root(), env)
         bad = [r for r in results if r[1] != 0]
         if bad:
             log.append(f"  ❌ compile_rc：{len(bad)}/{len(results)} 条命令失败")
@@ -1534,7 +1570,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         if isinstance(actual, dict) and actual.get("run_match_file"):
             # 新形态：从 .out 提取指定 key，与重跑输出比对
             out_rel = str(actual["run_match_file"])
-            out_path = ROOT / out_rel
+            out_path = run_root() / out_rel
             if not out_path.is_file():
                 log.append(f"  ❌ run_match    run_match_file 不存在：{out_rel}")
                 return "refute:run_match_file_missing", log
@@ -1742,12 +1778,18 @@ def find_cards() -> list[Path]:
 # 动机：全量约 5 分钟（每卡真编译 + P0-A 独立重编译），而日常改动通常只碰少数几张卡。
 # 设计：以「卡 + fixture + artifact」三者内容的 sha256 为指纹，指纹未变且上次 confirm 的卡
 # 直接 skip。**不动 replay_card() 的校验逻辑**（只过滤选卡），锁与三分类语义保持不变。
-MANIFEST = ROOT / "build" / "replay_manifest.json"
+MANIFEST = ROOT / "build" / "replay_manifest.json"   # 仅作 CLI/展示常量；
+# 579：**读写一律走 `manifest_path()`**（跑批期落到跑批根内 ⇒ 不读不写真实仓库的 manifest）。
+
+
+def _manifest_read_path() -> Path:
+    """manifest 的真实读写路径（跟随跑批根）。"""
+    return manifest_path()
 
 
 def _manifest_key(card: Path) -> str:
     try:
-        return card.relative_to(ROOT).as_posix()
+        return card.relative_to(run_root()).as_posix()   # 579：键跟随跑批根（跑批期是仓内相对形）
     except ValueError:                      # 卡在仓库外（--card 指临时路径）
         return card.as_posix()
 
@@ -1757,7 +1799,7 @@ def card_fingerprint(card: Path, calc_root: Path | None = None) -> str:
 
     任一指明文件缺失 ⇒ 返回 `"MISSING"`（**强制重跑**）：不能因为"读不到夹具"就沿用旧结论。
     """
-    root = calc_root or ROOT
+    root = calc_root or run_root()      # 579：默认跟随跑批根（调用方仍可显式指定）
     try:
         raw = card.read_bytes()
     except OSError:
@@ -1825,10 +1867,11 @@ def select_incremental(cards: list[Path], manifest: dict,
 
 
 def load_manifest() -> dict:
-    if not MANIFEST.is_file():
+    p = manifest_path()                  # 579：跟随跑批根（跑批不读真实仓的 manifest）
+    if not p.is_file():
         return {}
     try:
-        data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        data = json.loads(p.read_text(encoding="utf-8"))
         return data if isinstance(data, dict) else {}
     except (OSError, ValueError):
         return {}                       # 损坏 ⇒ 当作无 manifest（全量跑，宁可多跑不可漏跑）
@@ -1836,7 +1879,7 @@ def load_manifest() -> dict:
 
 def update_manifest(manifest: dict, verdicts: list[tuple[Path, str]]) -> dict:
     """把本次跑过的卡写入 manifest；skip 的保留原记录；被删的卡移除。"""
-    alive = {k: v for k, v in manifest.items() if (ROOT / k).is_file()}
+    alive = {k: v for k, v in manifest.items() if (run_root() / k).is_file()}
     for card, verdict in verdicts:
         alive[_manifest_key(card)] = {
             "fingerprint": card_fingerprint(card),
@@ -1847,10 +1890,11 @@ def update_manifest(manifest: dict, verdicts: list[tuple[Path, str]]) -> dict:
 
 
 def save_manifest(manifest: dict) -> Path:
-    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
-    MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n",
-                        encoding="utf-8")
-    return MANIFEST
+    p = manifest_path()                  # 579：跟随跑批根（默认=真实 ROOT/build）
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n",
+                 encoding="utf-8")
+    return p
 
 
 def main(argv: Sequence[str] | None = None) -> int:
