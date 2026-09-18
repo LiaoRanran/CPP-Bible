@@ -72,12 +72,32 @@
 **commit**：`tools/poison_drill.py` + `tools/.tool_checksums`（--update 重钉）+ `tests/test_poison_coverage_581.py`。
 
 ## 任务 2（hole B）：豁免二人锁 + legacy 单列 + 机器核原因
-**施工点（待执行）：**
-1. `poison_exemptions.yaml` 结构升级（保持 `_EXEMPT_LINE` 零依赖解析兼容）：每条加字段 `redteam_seen`（红队真见过该攻击面，bool），存量 27 条**全部标 `redteam_seen: legacy`**（严守"严禁编造 redteam_seen"；legacy 表示历史存量、未见证）。
-2. `load_exemptions()` 解析 `redteam_seen`；返回结构可带该字段。`rule_coverage()` 在 uncovered 计算外，另输出"豁免中 redteam_seen=legacy 条数"（仅统计，不阻断）。
-3. 机器核原因：沿用 0.3 脚本逻辑落 `reason_verified` 字段（backed/missing-test/weak-test），写入 `poison_surface_map.json`（build_surface_map 增加 `exemptions` 段：{id, legacy, reason_verified, cited_tests}）。
-4. 新增报告：`print_coverage_report()`（或扩 `--by-type`）输出两张表：① 规则覆盖率（行为级 covered / 63）② 27 豁免逐条核验（id · legacy · reason_verified · 测试名）。诚实显示"覆盖率掉就掉"——若某豁免被移除且无人补载荷，covered 自然下降，不补假载荷。
-**commit**：`poison_exemptions.yaml` + `poison_drill.py`（load_exemptions/build_surface_map 扩展）+ `.tool_checksums`。
+**状态：✅ 已落码并验证（commit 见下）**
+
+### 落地要点
+1. `poison_exemptions.yaml`：27 条全部加 `redteam_seen: legacy`（脚本精确替换 `date: ...}` → `date: ..., redteam_seen: legacy}`，验证 27 条命中，无替签）。
+2. `load_exemptions()`：
+   - `_EXEMPT_LINE` 正则加可选组 `(?:,\s*redteam_seen:\s*(\S+))?`；返回 `dict[id, dict]`（date/reason/redteam_seen/reason_verified）。
+   - **fail-closed**：`date > 2026-09-18` 且缺 `redteam_seen` ⇒ 该条**排除出豁免台账**（规则回到 uncovered，不静默放行）。
+   - 存量（date<=2026-09-18）无签名 ⇒ 归 `legacy`（单列、诚实口径不计入，不静默删除）。
+3. `verify_exemption_reason(rule_id, reason)`（新增，581 把"豁免≠免检"变机器闸）：
+   - 从 reason 抽 `test_*` 名 → 在 `tests/` 找 `def test_*` → 是否存在且文件源码含 `rule_id` 字符串；
+   - 返回 `backed` / `missing-test`（测试不存在或没点名任何 test） / `weak-test`（测试在但未断言该 rule_id）。
+4. `coverage_report()`（新增）：算**表观/诚实**双口径 + `legacy_exempt` / `unverifiable` 单列（防只报好看的那个）。
+5. `build_surface_map`：**新增顶层键 `exemption_lock`**（含 behavioral_covered / signed_exempt / legacy_exempt / unverifiable / apparent / honest），**不动 `rule_coverage` 子字典** ⇒ 既有 syrupy 快照零破坏（task 3 也据此不更新快照）。
+6. `__main__`：打印表观/诚实双口径、27 条 legacy 单列、20 条 unverifiable 点名（含桶别）；JSON 输出加 `exemption_lock`。
+
+### 实测验收（2026-09-18，`.venv`）
+- `python -m tools.poison_drill` → RULE-COVERAGE **38/63**（27 豁免）；
+  **表观覆盖率 103.2%**（38 行为 + 0 签核 + 27 legacy / 63，含与 covered 重叠的冗余豁免 ATOM-REL-DAG，故 >100% 即要暴露的虚高）；
+  **诚实覆盖率 60.3%**（38 行为 + 0 签核 / 63，legacy 不计入已覆盖）；
+  **20 条背书不可核验被点名**（weak-test 8 + missing-test 12）。
+- **机器核验独立复现 0.3 三桶结果**（非硬编码）：backed=7 / missing-test=12 / weak-test=8（合计 27）。
+- `pytest tests/test_poison_exemptions_581.py -q` → **9 passed**：反例1（新豁免无签名→仍 uncovered，fail-closed）、反例2（reason 点名不存在测试→unverifiable 点名）、正例（带合法 redteam_seen→移出 uncovered）、27 全 legacy 锁、双口径可算、三桶计数吻合。
+- 既有快照/相关测试全过：`test_output_snapshots.py`（5 快照）、`test_poison_attack_type.py`、`test_poison_coverage_581.py` 无回归；`tool_integrity --check` OK。
+- 注：`test_golden_lock_json` 失败与本任务无关（golden_lock 工具，任务书要求"不 golden accept"，属预存状态，未触碰）。
+
+**commit**：`tools/poison_exemptions.yaml` + `tools/poison_drill.py` + `tools/.tool_checksums`（--update 重钉）+ `tools/poison_surface_map.json`（--write-surface-map 落盘，含 exemption_lock）+ `tests/test_poison_exemptions_581.py` + `tests/conftest.py`（两新测试模块加入 SLOW_MODULES 串行）。
 
 ## 任务 3：重钉 + 测试 + 自证门
 **施工点（待执行）：**
@@ -89,5 +109,5 @@
 ## 当前进度
 - ✅ 第 0 步：基线实测 + PoC-2 复现 + covered 对账 + 27 豁免三桶（7/12/8）→ 本 worklog。
 - ✅ **任务 1（hole A）**：行为级 covered 落地，实测 RULE-COVERAGE **38/63**、118/118、EXIT=0；回归锁 `tests/test_poison_coverage_581.py` 3 passed；已一任务一 commit（poison_drill.py + .tool_checksums + 测试）。
-- ⏳ 任务 2（hole B）：豁免二人锁 + legacy 单列 + 机器核原因 → 待执行。
+- ✅ **任务 2（hole B）**：豁免二人锁 + legacy 单列 + 机器核原因落地，实测表观 103.2% / 诚实 60.3%（legacy 不计入）、20 条不可核验背书点名；机器核验复现三桶 7/12/8；回归锁 `tests/test_poison_exemptions_581.py` 9 passed；已一任务一 commit。
 - ⏳ 任务 3：重钉 + 全量自测 + 验收门 → 待执行。

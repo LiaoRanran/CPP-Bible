@@ -34,6 +34,8 @@ SLOW_MODULES = frozenset({
     "test_p0g_lock.py",               # replay 并发锁
     "test_patch_blocks.py",           # compile_all
     "test_poison_attack_type.py",     # poison_drill
+    "test_poison_coverage_581.py",    # 581 hole A：跑 poison_drill 钻探（行为级 covered）
+    "test_poison_exemptions_581.py",  # 581 hole B：含一次钻探做 fail-closed 端到端验证
     "test_recompile_invariant.py",    # 重编译不变量（真编译）
     "test_s1_s6.py",                  # poison_drill + golden_lock
     "test_toolchain_regressions.py",  # 真实 g++ 解析

@@ -2141,25 +2141,81 @@ def unknown_attack_types(stats: dict[str, int]) -> list[str]:
 
 _EXEMPT_LINE = re.compile(
     r'^\s*-\s*\{\s*id:\s*([A-Z][A-Z0-9-]+)\s*,\s*reason:\s*"?(.*?)"?\s*,\s*'
-    r'date:\s*(\d{4}-\d{2}-\d{2})\s*\}\s*$')
+    r'date:\s*(\d{4}-\d{2}-\d{2})'
+    r'(?:\s*,\s*redteam_seen:\s*(\S+))?'   # 581 hole B：可选，存量无则为 legacy
+    r'\s*\}\s*$')
 
 
-def load_exemptions() -> dict[str, str]:
-    """S6 毒样例豁免台账 `tools/poison_exemptions.yaml` → {规则 ID: "日期 · 原因"}。
+def verify_exemption_reason(rule_id: str, reason: str) -> str:
+    """581 hole B：机器核验豁免 reason 里声称的 pytest 背书（把"豁免≠免检"文字纪律变机器闸）。
 
-    **零依赖解析**（不引 PyYAML，与 gate_engine 复用 replay 解析器的零依赖口径一致）：
-    台账只允许单行 flow 映射 `- {id: X, reason: "...", date: YYYY-MM-DD}`。
+    返回 `'backed'` | `'missing-test'` | `'weak-test'`：
+      - backed：reason 点名的测试函数存在，且其所在文件源码确实出现该 rule_id 字符串；
+      - missing-test：reason 点名的测试函数不存在（或根本没点名任何 `test_*`）；
+      - weak-test：测试存在但源码未断言该 rule_id（背书不成立，最该先补）。
+    只点名、不自动删豁免（删豁免改分母属口径动作，交人裁决）。口径沿用 _worklog_581.md 0.3。
+    """
+    tests_dir = ROOT / "tests"
+    cited = list(dict.fromkeys(re.findall(r'test_[A-Za-z0-9_]+', reason)))
+    if not cited:
+        return "missing-test"
+    found_any = False
+    asserted_any = False
+    for tname in cited:
+        for tf in tests_dir.rglob("test_*.py"):
+            try:
+                src = tf.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            if re.search(rf'def\s+{re.escape(tname)}\s*\(', src):
+                found_any = True
+                if rule_id in src:
+                    asserted_any = True
+                    break
+        if asserted_any:
+            break
+    if not found_any:
+        return "missing-test"
+    return "backed" if asserted_any else "weak-test"
+
+
+# 581 hole B：新增豁免（晚于本批合入日）必须带合法 redteam_seen，否则视为无效（fail-closed）。
+_LOCK_EFFECTIVE_DATE = "2026-09-18"
+
+
+def load_exemptions() -> dict[str, dict]:
+    """581 hole B：S6 毒样例豁免台账 `tools/poison_exemptions.yaml` → {规则 ID: 豁免明细}。
+
+    明细含 `date` / `reason` / `redteam_seen` / `reason_verified`。
+    - `redteam_seen`：存量（date<=合入日）无签名 → 归 `legacy`（不立即 CI 红，但单列、诚实口径）；
+      新豁免（date>合入日）必须带合法 `redteam_seen`，否则 fail-closed 视为无效、规则回到 uncovered。
+    - `reason_verified`：机器核验 reason 里的 pytest 背书（backed / missing-test / weak-test）。
+
+    **零依赖解析**（不引 PyYAML）：台账只允许单行 flow 映射
+    `- {id: X, reason: "...", date: YYYY-MM-DD, redteam_seen: legacy}`。
 
     fail-closed：台账缺失/解析不到 → 返回空 dict —— 未覆盖规则**一律算欠账**，
     不因台账丢失而静默放行（368 P1-2 的反面：旧实现只打印、永不红）。
     """
     if not EXEMPTIONS.is_file():
         return {}
-    out: dict[str, str] = {}
+    out: dict[str, dict] = {}
     for ln in EXEMPTIONS.read_text(encoding="utf-8", errors="replace").split("\n"):
         m = _EXEMPT_LINE.match(ln)
-        if m:
-            out[m.group(1)] = f"{m.group(3)} · {m.group(2).strip()}"
+        if not m:
+            continue
+        rid, reason, date, rseen = m.groups()
+        # 581 hole B：新豁免（晚于合入日）缺 redteam_seen ⇒ 无效，移回 uncovered（fail-closed）
+        if date > _LOCK_EFFECTIVE_DATE and not rseen:
+            continue
+        if not rseen:                      # 存量无签名 ⇒ 归 legacy（严禁替异族签字）
+            rseen = "legacy"
+        out[rid] = {
+            "date": date,
+            "reason": reason.strip(),
+            "redteam_seen": rseen,
+            "reason_verified": verify_exemption_reason(rid, reason),
+        }
     return out
 
 
@@ -2195,6 +2251,37 @@ def rule_coverage() -> tuple[int, int, list[str]]:
         print(f"[poison] ⚠ 覆盖率自检：源码存在死文本声明(非规则ID) {ghosts} "
               f"——已被行为级口径忽略；请删除这些注释/字符串避免误导")
     return len(cov), len(all_rules), uncovered
+
+
+def coverage_report() -> dict:
+    """581 hole B：算**表观/诚实**两个覆盖率，并单列 legacy / unverifiable（防"只报好看的那个"）。
+
+    - 表观覆盖率 = (behavioral_covered + signed_exempt + legacy_exempt) / 规则总数（旧口径延续，
+      把 legacy 也算作"已覆盖"——含与 covered 重叠的冗余豁免，故可 ≥100%，这正是要暴露的虚高）；
+    - 诚实覆盖率 = (behavioral_covered + signed_exempt) / 规则总数（legacy 不计入已覆盖，只单列说明）。
+    数字以实跑为准：覆盖率掉就如实掉，不补假载荷、不替豁免签字。
+    """
+    cov = behavioral_covered()
+    total = len({r.id for r in ge.RULES})
+    exempt = load_exemptions()
+    signed = {i: d for i, d in exempt.items() if d["redteam_seen"] != "legacy"}
+    legacy = {i: d for i, d in exempt.items() if d["redteam_seen"] == "legacy"}
+    unverifiable = {i: d for i, d in exempt.items()
+                    if d["reason_verified"] in ("missing-test", "weak-test")}
+    covered_n = len(cov)
+    signed_n = len(signed)
+    legacy_n = len(legacy)
+    apparent = (covered_n + signed_n + legacy_n) / total if total else 0.0
+    honest = (covered_n + signed_n) / total if total else 0.0
+    return {
+        "total": total,
+        "behavioral_covered": covered_n,
+        "signed_exempt": sorted(signed),
+        "legacy_exempt": sorted(legacy),
+        "unverifiable": sorted(unverifiable),
+        "apparent_rule_coverage": apparent,
+        "honest_rule_coverage": honest,
+    }
 
 
 def gate_exit_code(passed: int, total_d: int, uncovered: list[str]) -> int:
@@ -2242,6 +2329,16 @@ def build_surface_map(passed: int, total_d: int,
         commit = src.stdout.strip() or "unknown"
     except Exception:                                   # git 不可用不该阻断台账生成
         commit = "unknown"
+    # 581 hole B：豁免二人锁 / legacy 单列 / reason 背书机器核验（新增顶层键，不动 rule_coverage 子字典
+    # 以兼容既有快照；详见 _worklog_581.md）。
+    exempt = load_exemptions()
+    signed = sorted(i for i, d in exempt.items() if d["redteam_seen"] != "legacy")
+    legacy = sorted(i for i, d in exempt.items() if d["redteam_seen"] == "legacy")
+    unverifiable = sorted(i for i, d in exempt.items()
+                          if d["reason_verified"] in ("missing-test", "weak-test"))
+    _tr = total_rules if total_rules else 0
+    _apparent = (covered_rules + len(signed) + len(legacy)) / _tr if _tr else 0.0
+    _honest = (covered_rules + len(signed)) / _tr if _tr else 0.0
     return {
         "schema": 1, "tool": "poison_drill.py", "task": "424",
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -2253,6 +2350,15 @@ def build_surface_map(passed: int, total_d: int,
                      "total": len(ALL_ATTACK_TYPES), "uncovered": uncovered},
         "rule_coverage": {"covered": covered_rules, "total": total_rules,
                           "exempt": len(load_exemptions())},
+        # 581 hole B：豁免二人锁 / legacy 单列 / reason 背书核验（新增顶层键，不破坏既有快照）。
+        "exemption_lock": {
+            "behavioral_covered": covered_rules,
+            "signed_exempt": signed,
+            "legacy_exempt": legacy,
+            "unverifiable": unverifiable,
+            "apparent_rule_coverage": _apparent,
+            "honest_rule_coverage": _honest,
+        },
         "payloads": payloads,
         "negative_controls": negatives,
         # 558 Part A：V-iso nc 真编译毒载荷的双指标（不进 RULE-COVERAGE 分子，另立计数器）。
@@ -2321,8 +2427,22 @@ if __name__ == "__main__":
     if _a.json:
         sys.stdout = sys.stderr          # 普通报告走 stderr，stdout 只留 JSON
     covered, total, uncovered = rule_coverage()
+    rep = coverage_report()
     print(f"[poison] RULE-COVERAGE: {covered}/{total} 注册规则被毒样例覆盖"
           f"（另登记豁免 {len(load_exemptions())} 条）")
+    # 581 hole B：表观/诚实双口径，防"只报好看的那个"
+    print(f"[poison] 表观覆盖率(含 legacy 豁免): {rep['apparent_rule_coverage']*100:.1f}% "
+          f"= {rep['behavioral_covered']} 行为覆盖 + {len(rep['signed_exempt'])} 签核豁免 "
+          f"+ {len(rep['legacy_exempt'])} legacy 豁免 / {rep['total']}")
+    print(f"[poison] 诚实覆盖率(legacy 不计入已覆盖): {rep['honest_rule_coverage']*100:.1f}% "
+          f"= {rep['behavioral_covered']} 行为覆盖 + {len(rep['signed_exempt'])} 签核豁免 / {rep['total']}")
+    if rep["legacy_exempt"]:
+        print(f"[poison] legacy 豁免(单列、不计入诚实口径, {len(rep['legacy_exempt'])}): "
+              f"{', '.join(rep['legacy_exempt'])}")
+    if rep["unverifiable"]:
+        ex = load_exemptions()
+        _uv = [f"{i}:{ex[i]['reason_verified']}" for i in rep["unverifiable"]]
+        print(f"[poison] 背书不可核验(点名不删, {len(rep['unverifiable'])}): {', '.join(_uv)}")
     if uncovered:
         print(f"[poison] 未覆盖且未豁免（{len(uncovered)}）: {', '.join(uncovered)}")
         print("[poison] 二选一：补毒样例，或在 tools/poison_exemptions.yaml 登记"
@@ -2348,6 +2468,7 @@ if __name__ == "__main__":
             },
             "findings": failures, "infra_errors": [],
             "viso_dual_metrics": dict(_LAST_VISO),
+            "exemption_lock": rep,
         }
         real_out.write(json.dumps(payload, ensure_ascii=False, indent=1) + "\n")
     raise SystemExit(gate_exit_code(passed, total_d, uncovered))
