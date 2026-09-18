@@ -26,13 +26,17 @@
 from __future__ import annotations
 
 import argparse
+import atexit
+import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
@@ -585,63 +589,53 @@ def _selfcheck_on_exit(fn):
     return _inner
 
 
-@_selfcheck_on_exit
-def run_fuzz(cards: list[Path], ops: list[str], limit: int,
-             progress: bool = False) -> dict[str, Any]:
-    """主循环（drill 范式 + 548 Part 0 按卡批）：**卡维外层**，一张卡的全部变体共用一次全库基线。
+def _card_variants(card: Path, ops: list[str], baseline: set[tuple[str, str, str, str]],
+                   tmp: Path) -> list[dict[str, Any]]:
+    """**单张卡**的全部算子/变体（卡内串行，卡末 `finally` 还原沙箱副本）；返回该卡的 per 记录。
 
-    548 Part 0 的三条跑法约定（红线：不许为提速牺牲跨卡规则）：
-     ① **按卡批**：外层是卡，一张卡的全部算子/变体连着跑；基线全库扫描（`_snapshot`）只在
-        进沙箱时做 **1 次**，整轮所有卡共用；每张卡跑完统一还原沙箱副本（进下一张卡前不留残迹）。
-     ② **跨卡规则不裁剪**：每个变体仍是**全库** `ge.run()`，diff 也是全量
-        （`new - baseline`，不过滤 `target == 本卡`）——跨卡规则（EV-ID-UNIQUE / serves /
-        relations / concepts…）的命中可能落在**别的卡**上，按卡裁剪会把它们漏掉。
-     ③ **replay 按卡批省**：M1/M7 需要真跑 replay，但"门禁已严格拦截"的变体跳过（结论不变），
-        见 `classify` 里的说明。
-    提速的主杠杆不在这里，而在 `gate_engine` 的 frontmatter 解析缓存（见 548 §1）；本函数只
-    负责**不浪费**扫描次数，并把 `ge_runs`/`replay_runs` 记进报告，便于事后核对。
+    580 任务 2：这是从 `run_fuzz` **原样抽出的**逐卡主体（一句判决逻辑都没改），
+    串行路径与进程池 worker **共用同一份** ⇒ "并行不改判决"由构造保证，而不是靠两处代码同步。
+    调用方负责沙箱与 `baseline`（worker 内进程生命周期内复用一次）。
     """
-    t0 = time.perf_counter()
-    for k in STATS:
-        STATS[k] = 0
-    selected = cards[:limit]
+    text = card.read_text(encoding="utf-8")
+    sb_card = _rel_in_sandbox(card, tmp)
+    rel = card.relative_to(ROOT).as_posix()
     per: list[dict[str, Any]] = []
-    with sandbox() as tmp:
-        baseline = _snapshot()          # 全库基线：所有卡共用这 **1 次**
-        for ci, card in enumerate(selected, 1):
-            text = card.read_text(encoding="utf-8")
-            sb_card = _rel_in_sandbox(card, tmp)
-            rel = card.relative_to(ROOT).as_posix()
-            if progress:                # 全量轮要能看出"跑到哪了 / 还活着"（不是静默 10 分钟）
-                print(f"[mutation] ({ci}/{len(selected)}) {rel}", file=sys.stderr, flush=True)
-            try:
-                for op in ops:
-                    variants = MUTATORS[op](text)
-                    if not variants:
-                        per.append({"card": rel, "op": op, "point": "-", "verdict": "n_a",
-                                    "why": "该卡本就没有被变异的字段（不适用）"})
-                        continue
-                    for point, vtext in variants:
-                        if vtext is None:
-                            # 558 Part B2：算子自判"该提问超出面"（M2 在门禁读取面内找不到路径）
-                            per.append({"card": rel, "op": op, "point": point,
-                                        "verdict": "n_a", "out_of_scope": True,
-                                        "why": f"out_of_scope：{point}"})
-                            continue
-                        if vtext == text:
-                            per.append({"card": rel, "op": op, "point": point,
-                                        "verdict": "n_a", "why": "变异为空操作"})
-                            continue
-                        r = classify(card.stem, op, baseline, vtext, sb_card, tmp)
-                        per.append({"card": rel, "op": op, "point": point,
-                                    "reproduce": (f".venv\\Scripts\\python.exe tools/mutation_fuzz.py "
-                                                  f"--cards {rel} --operators {op} --limit 1"),
-                                    **r})
-            finally:
-                # 568 任务 3（567 抓到的隐患）：还原进 **finally** —— 任何异常 / KeyboardInterrupt /
-                # 提前 return 都必须把沙箱副本还原成原卡文本，绝不把变异留到下一张卡
-                # （EV-CONC-001.md 的 3 行 M4 注入残留就是这么来的）。
-                sb_card.write_text(text, encoding="utf-8")
+    try:
+        for op in ops:
+            variants = MUTATORS[op](text)
+            if not variants:
+                per.append({"card": rel, "op": op, "point": "-", "verdict": "n_a",
+                            "why": "该卡本就没有被变异的字段（不适用）"})
+                continue
+            for point, vtext in variants:
+                if vtext is None:
+                    # 558 Part B2：算子自判"该提问超出面"（M2 在门禁读取面内找不到路径）
+                    per.append({"card": rel, "op": op, "point": point,
+                                "verdict": "n_a", "out_of_scope": True,
+                                "why": f"out_of_scope：{point}"})
+                    continue
+                if vtext == text:
+                    per.append({"card": rel, "op": op, "point": point,
+                                "verdict": "n_a", "why": "变异为空操作"})
+                    continue
+                r = classify(card.stem, op, baseline, vtext, sb_card, tmp)
+                per.append({"card": rel, "op": op, "point": point,
+                            "reproduce": (f".venv\\Scripts\\python.exe tools/mutation_fuzz.py "
+                                          f"--cards {rel} --operators {op} --limit 1"),
+                            **r})
+    finally:
+        # 568 任务 3（567 抓到的隐患）：还原进 **finally** —— 任何异常 / KeyboardInterrupt /
+        # 提前 return 都必须把沙箱副本还原成原卡文本，绝不把变异留到下一张卡
+        # （EV-CONC-001.md 的 3 行 M4 注入残留就是这么来的）。
+        sb_card.write_text(text, encoding="utf-8")
+    return per
+
+
+def _report(selected: list[Path], ops: list[str], per: list[dict[str, Any]],
+            stats: dict[str, int], elapsed: float, *,
+            jobs: int = 1, parallel: bool = False) -> dict[str, Any]:
+    """由 per 记录 + STATS 读数构造报告（**单一真源**：串行与并行共用；580 抽取时一字未改口径）。"""
     counts = {k: sum(1 for r in per if r["verdict"] == k)
               for k in ("blocked", "escaped", "n_a")}
     counts["malformed"] = sum(1 for r in per if r.get("malformed"))    # n_a 里单列一类（543 P1）
@@ -674,11 +668,198 @@ def run_fuzz(cards: list[Path], ops: list[str], limit: int,
             "treated_rate": round(treated / denom, 4),
             "rates": rates, "by_operator_rates": op_rates, "rate_flags": op_flags,
             "by_operator": by_op, "by_card": by_card,
-            "elapsed_s": round(time.perf_counter() - t0, 2),
-            "ge_runs": STATS["ge_runs"], "replay_runs": STATS["replay_runs"],
-            "replay_skipped": STATS["replay_skipped"],
+            "elapsed_s": round(elapsed, 2),
+            "ge_runs": stats["ge_runs"], "replay_runs": stats["replay_runs"],
+            "replay_skipped": stats["replay_skipped"],
             "escaped_list": [r for r in per if r["verdict"] == "escaped"],
+            # 580 任务 2：只**新增**字段（既有字段一字未改）
+            "jobs": jobs, "parallel": bool(parallel),
             "results": per}
+
+
+def _real_root_fingerprint() -> str:
+    """真实根指纹：`Examples + atoms + evidence` 全树（排序后 路径 + 内容 sha256）。
+
+    580 任务 3 的"输入冻结"双保险：进程池启动前/收尾后各算一次，不一致 ⇒ 根隔离回归
+    （579 本应保证零副作用，这道是抓回归的哨兵）。口径与监工 579 验收用的一致。
+    """
+    h = hashlib.sha256()
+    for name in ("Examples", "atoms", "evidence"):
+        base = ROOT / name
+        if not base.is_dir():
+            continue
+        for p in sorted(base.rglob("*")):
+            if p.is_file():
+                h.update(p.relative_to(ROOT).as_posix().encode())
+                h.update(hashlib.sha256(p.read_bytes()).digest())
+    return h.hexdigest()
+
+
+# ── 580 任务 2：卡间**进程**并行（`--jobs N>=2`；默认 OFF = 上面的串行路径）────────────
+# 为什么进程池 + 每 worker 一个根：卡间共享一个 sandbox 根时，worker A 改卡 X 的全库 `ge.run()`
+# 会读到 worker B 正在变异的卡 Y（跨卡污染，重现 548 之前的 bug），且 ge.run 持 GIL、模块全局
+# STATS/缓存会竞态。每 worker 独占 `mutworker_*` 根（卡文本 + 工件同根自洽）后，卡间天然隔离。
+_MUT_WORKER: dict[str, Any] = {}
+
+
+def _worker_init(ops: list[str]) -> None:
+    """worker 进程初始化：**一次性**建好本进程独占的 sandbox 根 + batch_root + 全库 baseline。"""
+    tmp = Path(tempfile.mkdtemp(prefix="mutworker_"))
+    for name in ("atoms", "evidence", "Examples"):
+        src = ROOT / name
+        if src.is_dir():
+            shutil.copytree(src, tmp / name)
+    (tmp / "build").mkdir(exist_ok=True)
+    ge.ATOMS, ge.EVIDENCE = tmp / "atoms", tmp / "evidence"
+    cm = replay.batch_root(tmp)
+    cm.__enter__()              # 手工进入：worker 生命周期内持续生效（退出时在 _worker_cleanup 还原）
+    baseline = _snapshot()      # 本 worker 的全库基线（**在计数清零之前**：见下）
+    for k in STATS:
+        STATS[k] = 0            # 计数清零放在基线之后 ⇒ 增量只含**变体扫描**，可与串行口径对齐
+    _MUT_WORKER.update({"tmp": tmp, "ops": list(ops), "cm": cm, "baseline": baseline,
+                        "pid": os.getpid()})
+    atexit.register(_worker_cleanup)
+
+
+def _worker_cleanup() -> None:
+    """worker 退出：还原跑批根与卡目录、删掉自己的 tmp 根（不在真实 build/ 留残片）。
+
+    真 worker 是进程退出，不还原也无害；但**测试会在本进程直接调 `_worker_init`**（验证
+    "异根/异锁"），故这里把所有副作用都还原干净（可重复调用、幂等）。
+    """
+    w = _MUT_WORKER
+    if not w:
+        return
+    try:
+        w["cm"].__exit__(None, None, None)
+    except Exception:                       # noqa: BLE001 退出路径不反噬
+        pass
+    ge.ATOMS, ge.EVIDENCE = ROOT / "atoms", ROOT / "evidence"
+    shutil.rmtree(w.get("tmp"), ignore_errors=True)
+    _MUT_WORKER.clear()
+
+
+def _worker_card(card_str: str) -> tuple[str, list[dict[str, Any]], dict[str, int], int]:
+    """worker 内跑一张卡：返回 (卡 rel, 该卡全部变体的 per 记录, 本卡的 STATS 增量, worker pid)。
+
+    判决逻辑 = 与串行**同一份** `_card_variants`（不复制、不改一字）。
+    本卡增量只含**变体扫描**（基线已在 init 时计过并被清零）⇒ 与串行的"变体计数"同口径。
+    """
+    w = _MUT_WORKER
+    card = Path(card_str)
+    before = dict(STATS)
+    per = _card_variants(card, w["ops"], w["baseline"], w["tmp"])
+    delta = {k: STATS[k] - before[k] for k in STATS}
+    return card.relative_to(ROOT).as_posix(), per, delta, int(w["pid"])
+
+
+@_selfcheck_on_exit
+def run_fuzz_parallel(cards: list[Path], ops: list[str], limit: int, jobs: int,
+                      progress: bool = False) -> dict[str, Any]:
+    """进程池并行跑批（卡维并行；卡内仍串行 + 卡末还原）。结果**按串行顺序重排**后交 `_report`。
+
+    确定性纪律：完成顺序是不确定的，故主进程收齐后按 `selected` 顺序、卡内按 worker 返回的
+    原始顺序拼接 ⇒ `results`/`by_operator`/`by_card`/counts 与 `--jobs 1` 逐条相等。
+    """
+    t0 = time.perf_counter()
+    selected = cards[:limit]
+    fp_before = _real_root_fingerprint()
+    got: dict[str, tuple[list[dict[str, Any]], dict[str, int]]] = {}
+    worker_pids: set[int] = set()
+    with ProcessPoolExecutor(max_workers=jobs, initializer=_worker_init,
+                             initargs=(list(ops),)) as ex:
+        futs = {ex.submit(_worker_card, str(c)): c for c in selected}
+        done = 0
+        for fut in as_completed(futs):
+            card = futs[fut]
+            try:
+                rel, per, delta, pid = fut.result()
+                worker_pids.add(pid)
+            except Exception as exc:        # noqa: BLE001  丢卡会改变分母 ⇒ fail-loud
+                raise SystemExit(f"[mutation] ❌ worker 失败：卡 "
+                                 f"{card.relative_to(ROOT).as_posix()} · "
+                                 f"{type(exc).__name__}: {exc}") from exc
+            got[rel] = (per, delta)
+            done += 1
+            if progress:
+                print(f"[mutation] ({done}/{len(selected)}) {rel}", file=sys.stderr, flush=True)
+    per_all: list[dict[str, Any]] = []
+    stats = {k: 0 for k in STATS}
+    for c in selected:                      # **按串行顺序**重排（确定性）
+        rel = c.relative_to(ROOT).as_posix()
+        if rel not in got:
+            raise SystemExit(f"[mutation] ❌ 卡 {rel} 无结果（worker 静默丢卡 ⇒ 分母会变）")
+        per, delta = got[rel]
+        per_all.extend(per)
+        for k in stats:
+            stats[k] += delta[k]
+    # 计数口径（与串行**同口径**，供对账）：`ge_runs` 记**逻辑**全库扫描数 = 1 次基线 + 每变体 1 次。
+    # 每个 worker 实际各自 materialize 了一次基线（并行必需：不跨进程传大 set），真实次数记在
+    # `parallel_baseline_scans`，**不**混进 ge_runs —— 否则 jobs1 与 jobsN 的三计数永远无法相等。
+    stats["ge_runs"] += 1
+    rep = _report(selected, ops, per_all, stats, time.perf_counter() - t0,
+                  jobs=jobs, parallel=True)
+    rep["parallel_baseline_scans"] = len(worker_pids)
+    fp_after = _real_root_fingerprint()
+    rep["root_fingerprint_ok"] = (fp_before == fp_after)
+    if fp_before != fp_after:               # 任务 3.2：输入冻结哨兵
+        rep["invalid"] = "真实根（Examples/atoms/evidence）跑批前后指纹不一致 ⇒ 结果标记 invalid"
+    return rep
+
+
+def _jobs_value(spec: str | int, n_cards: int) -> int:
+    """`--jobs` 取值：`auto` = min(4, cpu_count-1, 卡数)（默认 1 = 串行）。"""
+    if isinstance(spec, int):
+        return max(1, spec)
+    if str(spec).strip().lower() == "auto":
+        return max(1, min(4, (os.cpu_count() or 2) - 1, n_cards))
+    try:
+        return max(1, int(str(spec).strip()))
+    except ValueError:
+        return 1
+
+
+def _run_jobs(cards: list[Path], ops: list[str], limit: int, jobs: int = 1,
+              progress: bool = False) -> dict[str, Any]:
+    """分派：`jobs<=1` 走**今天的串行路径**（逐字节等价），否则走进程池。"""
+    selected = cards[:limit]
+    if jobs <= 1:
+        return run_fuzz(cards, ops, limit, progress=progress)
+    return run_fuzz_parallel(selected, ops, len(selected), jobs, progress=progress)
+
+
+@_selfcheck_on_exit
+def run_fuzz(cards: list[Path], ops: list[str], limit: int,
+             progress: bool = False) -> dict[str, Any]:
+    """主循环（drill 范式 + 548 Part 0 按卡批）：**卡维外层**，一张卡的全部变体共用一次全库基线。
+
+    548 Part 0 的三条跑法约定（红线：不许为提速牺牲跨卡规则）：
+     ① **按卡批**：外层是卡，一张卡的全部算子/变体连着跑；基线全库扫描（`_snapshot`）只在
+        进沙箱时做 **1 次**，整轮所有卡共用；每张卡跑完统一还原沙箱副本（进下一张卡前不留残迹）。
+     ② **跨卡规则不裁剪**：每个变体仍是**全库** `ge.run()`，diff 也是全量
+        （`new - baseline`，不过滤 `target == 本卡`）——跨卡规则（EV-ID-UNIQUE / serves /
+        relations / concepts…）的命中可能落在**别的卡**上，按卡裁剪会把它们漏掉。
+     ③ **replay 按卡批省**：M1/M7 需要真跑 replay，但"门禁已严格拦截"的变体跳过（结论不变），
+        见 `classify` 里的说明。
+    提速的主杠杆不在这里，而在 `gate_engine` 的 frontmatter 解析缓存（见 548 §1）；本函数只
+    负责**不浪费**扫描次数，并把 `ge_runs`/`replay_runs` 记进报告，便于事后核对。
+    """
+    t0 = time.perf_counter()
+    for k in STATS:
+        STATS[k] = 0
+    selected = cards[:limit]
+    per: list[dict[str, Any]] = []
+    with sandbox() as tmp:
+        baseline = _snapshot()          # 全库基线：所有卡共用这 **1 次**
+        for ci, card in enumerate(selected, 1):
+            rel = card.relative_to(ROOT).as_posix()
+            if progress:                # 全量轮要能看出"跑到哪了 / 还活着"（不是静默 10 分钟）
+                print(f"[mutation] ({ci}/{len(selected)}) {rel}", file=sys.stderr, flush=True)
+            # 580 任务 2：逐卡主体已原样抽到 `_card_variants`（判决逻辑一字未动），
+            # 串行路径与进程池 worker 共用同一份 ⇒ 并行不改判决由构造保证。
+            per.extend(_card_variants(card, ops, baseline, tmp))
+    return _report(selected, ops, per, dict(STATS), time.perf_counter() - t0,
+                   jobs=1, parallel=False)
 
 
 # ── 565 Part 2：报告口径层（**只影响呈现，不动任何判决/分类**）─────────────────
@@ -760,13 +941,24 @@ def _variant_index(rep: dict[str, Any]) -> dict[tuple[str, str, str], tuple[str,
 
 
 def selfcheck_determinism(cards: list[Path], ops: list[str], limit: int, first: dict[str, Any],
-                          progress: bool = False) -> tuple[bool, list[str]]:
-    """对关键子集**重跑一次**并逐变体比对；返回 (是否一致, 抖动清单)。"""
+                          progress: bool = False, jobs: int = 1) -> tuple[bool, list[str]]:
+    """对关键子集**重跑一次**并逐变体比对；返回 (是否一致, 抖动清单)。
+
+    580 任务 3：`jobs > 1` 时**再**用 `jobs=1` 跑一遍同一子集 —— 跨 jobs 对账
+    （判决一致性硬门：并行不许改动任何一条判决，任何分歧即列出变体清单）。
+    """
     sub_ops = [o for o in ops if o in _SELFCHECK_OPS] or list(ops[:1])
-    second = run_fuzz(cards, sub_ops, limit, progress=progress)
-    a, b = _variant_index(first), _variant_index(second)
-    diffs = [f"{k[0]} · {k[1]} · {k[2]}（{a[k]} ≠ {b[k]}）"
-             for k in sorted(set(a) & set(b)) if a[k] != b[k]]
+    a = _variant_index(first)
+    diffs: list[str] = []
+    rounds: list[tuple[str, int]] = [(f"jobs{jobs}", jobs)]
+    if jobs > 1:
+        rounds.append(("jobs1（串行对账）", 1))
+    for tag, jn in rounds:
+        other = _run_jobs(cards, sub_ops, limit, jobs=jn, progress=progress)
+        b = _variant_index(other)
+        for k in sorted(set(a) & set(b)):
+            if a[k] != b[k]:
+                diffs.append(f"[{tag}] {k[0]} · {k[1]} · {k[2]}（{a[k]} ≠ {b[k]}）")
     return (not diffs), diffs
 
 
@@ -783,6 +975,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--selfcheck-determinism", action="store_true",
                     help="579：跑完立即对关键子集（M1/M6/M7）重跑一次并逐变体比对；"
                          "不一致 ⇒ fail-loud exit 2（非确定性未被容忍）")
+    ap.add_argument("--jobs", default="1",
+                    help="580：卡间进程并行度。`1`（默认）= 今天的串行路径；`auto` = "
+                         "min(4, cpu_count-1, 卡数)；N>=2 = 进程池（每 worker 一个 sandbox 根）")
     a = ap.parse_args(argv)
     ops = [o for o in a.operators.split(",") if o]
     bad = [o for o in ops if o not in MUTATORS]
@@ -793,7 +988,8 @@ def main(argv: list[str] | None = None) -> int:
     if not cards:
         print(f"[mutation] --cards {a.cards} 未匹配到任何卡", file=sys.stderr)
         return 2
-    rep = run_fuzz(cards, ops, a.limit, progress=a.progress)
+    jobs = _jobs_value(a.jobs, min(len(cards), a.limit))
+    rep = _run_jobs(cards, ops, a.limit, jobs, progress=a.progress)
     out = ROOT / a.report
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -834,8 +1030,13 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError:
         shown = str(out)
     print(f"[mutation] 报告：{shown}")
+    print(f"[mutation] 并行：jobs={jobs}（{'进程池' if jobs > 1 else '串行路径'}）"
+          f" · 卡 {len(rep['cards'])} 张 · variants={rep['variants']}")
+    if rep.get("root_fingerprint_ok") is False:      # 580 任务 3.2：输入冻结哨兵
+        print(f"[mutation] ❌ {rep.get('invalid')}", file=sys.stderr)
+        return 2
     if a.selfcheck_determinism:          # 579 任务 2：自证"同输入同输出"
-        ok, diffs = selfcheck_determinism(cards, ops, a.limit, rep, progress=a.progress)
+        ok, diffs = selfcheck_determinism(cards, ops, a.limit, rep, progress=a.progress, jobs=jobs)
         if not ok:
             print(f"[mutation] ❌ 确定性自检不过：{len(diffs)} 个变体两次跑不一致"
                   "（尺子会抖 ⇒ 逃逸率不可复现）", file=sys.stderr)
