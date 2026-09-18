@@ -2846,8 +2846,66 @@ def _update_assert_baseline() -> int:
     return 0
 
 
+# ── 587 任务0.2：matrix **取值**合法口径（由 `data/matrix_value_inventory.md` 真实分布反推）──
+# 只拦"纯垃圾/无族名/无版本/不存在档位"，不做精确白名单；存量 56 卡空跑 **0 命中**（任务 0.3 自证）。
+_MX_VALUE_KEYS = ("compiler", "std", "opt", "arch")
+_RE_MX_STD = re.compile(r"^(gnu|c)\+\+(98|03|11|14|17|20|23|26)$")
+_RE_MX_OPT = re.compile(r"^-O([0-3sgz]|fast)$")
+_RE_MX_FAMILY = re.compile(r"(gcc|g\+\+|clang|clang\+\+|msvc)", re.I)
+_RE_MX_VERSION = re.compile(r"\d+(?:\.\d+)*")
+# 存量注释既有半角 `(...)` 也有全角 `（...）`；且存在 `/` 并列（`-O2（本卡）/ -O1（…）`）
+_RE_MX_COMMENT = re.compile(r"\([^)]*\)|（[^）]*）")
+# arch：本批**只对存量真实出现过的形态开口**（台账实测仅 x86-64）
+_MX_ARCH_KNOWN = {"x86-64"}
+
+
+def _mx_parts(val: str) -> list[str]:
+    """剥掉半角/全角括号注释 → 按 `/` 拆段（注释内容一律放行，不参与校验）。"""
+    return [x.strip() for x in _RE_MX_COMMENT.sub("", val).split("/") if x.strip()]
+
+
+def _matrix_value_issue(key: str, el: object) -> str | None:
+    """逐元素校验 matrix 取值：返回 None = 合法，否则返回原因（587 任务2，warn 起步）。"""
+    if not isinstance(el, str):
+        return f"非字符串（{type(el).__name__}）"
+    val = el.strip()
+    if not val:
+        return "空值"
+    parts = _mx_parts(val)
+    if not parts:                                  # 整段都是注释 ⇒ 没有真实取值
+        return "括号内注释之外无实际取值"
+    if key == "std":
+        bad = [x for x in parts if not _RE_MX_STD.match(x)]
+        return None if not bad else f"非已知标准档位 {bad[0]}"
+    if key == "opt":
+        bad = [x for x in parts if not _RE_MX_OPT.match(x)]
+        return None if not bad else f"非已知优化级 {bad[0]}"
+    if key == "arch":
+        bad = [x for x in parts if x not in _MX_ARCH_KNOWN]
+        return None if not bad else f"非存量已知架构 {bad[0]}"
+    if key == "compiler":
+        # 带括号注释 ⇒ 只要求注释外的核心含族名关键词（EV-UB-001 的
+        # `Clang (ubuntu-latest runner 默认)` 有族名无版本，按任务书 0.2 放行）；
+        # 不带注释 ⇒ 族名关键词 **且** 至少一段版本数字。
+        if "(" in val or "（" in val:
+            core = _RE_MX_COMMENT.sub(" ", val)
+            return None if _RE_MX_FAMILY.search(core) else "无编译器族关键词"
+        if not _RE_MX_FAMILY.search(val):
+            return "无编译器族关键词"
+        if not _RE_MX_VERSION.search(val):
+            return "无版本数字"
+        return None
+    return None
+
+
 def check_evidence_matrix() -> list[Finding]:
-    """版本矩阵：matrix 必须写清 compiler/std/opt（M2 §2 两档与选取规则）。"""
+    """版本矩阵：matrix 必须写清 compiler/std/opt（M2 §2 两档与选取规则）+ **取值合法**（587）。
+
+    两级、语义不混淆：
+    - **缺键 = block**（不变）：compiler/std/opt 缺一 ⇒ 证据不可跨版本复算；
+    - **值非法 = warn**（587 新增，起步不 block）：键还在但值被换成不存在的档位/垃圾
+      ⇒ 疑似被弱化或伪造，交人判断（升级 block 交监工裁决，本批观察期 warn）。
+    """
     out: list[Finding] = []
     for p in _cards(EVIDENCE, "EV-*.md"):
         mx = _meta(p).get("matrix")
@@ -2861,6 +2919,24 @@ def check_evidence_matrix() -> list[Finding]:
             out.append(Finding("EV-MATRIX", "block", _rel(p),
                                f"matrix 缺 {'/'.join(miss)}",
                                "补齐后证据才可跨版本复算"))
+        # 587 任务2：值校验（warn，逐元素；缺键已 block 的键仍照常校验其剩余值）
+        for k in _MX_VALUE_KEYS:
+            if k not in mx:
+                continue                      # arch 缺键不拦（语义不变），无值则不校验
+            v = mx[k]
+            if not isinstance(v, list) or not v:
+                out.append(Finding("EV-MATRIX", "warn", _rel(p),
+                                   f"matrix.{k} 应为非空列表（当前 {type(v).__name__}）",
+                                   "按 M2 §1 写成 flow 列表，如 `[c++23]`"))
+                continue
+            bad = [(el, _matrix_value_issue(k, el)) for el in v]
+            bad = [(el, why) for el, why in bad if why]
+            if bad:
+                shown = "、".join(f"{el}（{why}）" for el, why in bad[:3])
+                out.append(Finding("EV-MATRIX", "warn", _rel(p),
+                                   f"matrix.{k} 含非法值: {shown}（疑似被弱化/伪造）",
+                                   "按 `data/matrix_value_inventory.md` 的真实口径填写；"
+                                   "确需新档位的先补台账再写卡"))
     return out
 
 
