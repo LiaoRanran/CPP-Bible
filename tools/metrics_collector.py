@@ -486,7 +486,11 @@ def collect_curves() -> dict:
     v1 = ROOT / "data" / "mutation" / "full_baseline_v1.json"
     out["mutation_escape_rate"] = (
         _rate(v5, "v5（578 起当前口径：diff 键并入文案 ⇒ 同卡同规则的第二条告警不再被吞；"
-                  "M5 活雷由「沉默逃逸」变为「warn 可见」）")
+                  "M5 活雷由「沉默逃逸」变为「warn 可见」）"
+                  "【579 方差声明：该点估计含**运行间方差**（实测 ≥2/998，继承跑批残留状态时"
+                  "曾得 991/7）；下方 C-P 区间只覆盖**抽样误差**，不覆盖跑批非确定性。"
+                  "579 已把工件层根隔离进沙箱并加 `--selfcheck-determinism`，"
+                  "待自检稳定 N 轮后再撤此声明】")
         if v5.is_file() else {"error": "缺 data/mutation/full_baseline_v5.json"})
     hist = []
     if v1.is_file():
