@@ -107,3 +107,6 @@ docs/references/external/
 _adv_v61/
 _adv_v70/
 _bypass_test/
+
+# local secrets (never commit)
+.env
