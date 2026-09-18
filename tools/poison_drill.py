@@ -46,6 +46,37 @@ import viso_diff as vd  # noqa: E402
 from toolchain import resolve_gpp  # noqa: E402
 
 
+# ── 581：行为级覆盖率（hole A 修复）─────────────────────────────────────────
+# 旧 rule_coverage 只从源码文本 grep `"X" in who`，会被注释/字符串污染（已见 RULE-ID 幽灵，
+# 见 _worklog_581.md）。改为：drill() 运行时把每个通过载荷的 who（真实 gate 命中规则 ID 集合）
+# 收集进 _LAST_BEHAVIORAL_COVERED；rule_coverage 只用这个运行时集合。
+_CUR_WHO: set = set()                  # 当前载荷算出的 who（由 who= 赋值处同步）
+_LAST_BEHAVIORAL_COVERED: set | None = None
+_LAST_DRILL = None
+
+
+class _CovList(list):
+    """drill() 的结果列表；每次 append 时把当前 who 收进行为级覆盖集合（仅在 ok 时）。"""
+
+    def append(self, item):
+        global _LAST_BEHAVIORAL_COVERED
+        _name, ok, _detail = item
+        if ok and _CUR_WHO:
+            _LAST_BEHAVIORAL_COVERED |= set(_CUR_WHO)
+        super().append(item)
+
+
+def _mk_who(iterable):
+    """构造 who（sorted 列表）并同步把规则 ID 集合写入 _CUR_WHO（行为级覆盖收集用）。
+
+    581 hole A 修复：集中在此把 _CUR_WHO 维护为 set，避免 `who = _mk_who(...)` 把
+    _CUR_WHO 变成 list 导致后续 `|= set` 类型错误。
+    """
+    global _CUR_WHO
+    _CUR_WHO = set(iterable)
+    return sorted(iterable)
+
+
 def _write(path: Path, fields: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     body = ""
@@ -75,8 +106,11 @@ def sandbox() -> Iterator[Path]:
 
 
 def drill() -> int:
+    global _CUR_WHO, _LAST_BEHAVIORAL_COVERED, _LAST_DRILL
+    _CUR_WHO = set()
+    _LAST_BEHAVIORAL_COVERED = set()
     gpp_posix = Path(resolve_gpp()).as_posix()
-    results: list[tuple[str, bool, str]] = []
+    results = _CovList()
 
     # ── P1 假论断：verified 但证据空、无人工签收 ─────────────────────────────
     with sandbox() as tmp:
@@ -88,7 +122,7 @@ def drill() -> int:
             "first_hand": "true", "superiority": "真实增量", "depth": "asm",
             "pedagogy": "p",
         })
-        who = sorted({f.rule_id for f in ge.check_verified_bound()}
+        who = _mk_who({f.rule_id for f in ge.check_verified_bound()}
                      | {f.rule_id for f in ge.check_s1_human_signoff()})
         ok = ("ATOM-VERIFIED-BOUND" in who) and ("S1-AUTHOR-SELF-VERIFY" in who)
         results.append(("P1 假论断（verified 无证据+无人工签收）", ok,
@@ -143,7 +177,7 @@ def drill() -> int:
             "falsification": "",                                     # ← 毒点
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({h.rule_id for h in ge.check_evidence_falsification()})
+        who = _mk_who({h.rule_id for h in ge.check_evidence_falsification()})
         ok = "EV-FALSIFICATION" in who
         results.append(("P3 缺反例（无证伪对照）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"
@@ -180,7 +214,7 @@ def drill() -> int:
             "artifact_assert": '\n  - {kind: contains_any, texts: ["_ZdaPvy", "_ZdaPv"]}',
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_self_satisfied_assert()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_self_satisfied_assert()})
         ok = "EV-SELF-SATISFIED-ASSERT" in who
         results.append(("P4 自证断言（断言被夹具自身定义满足）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"
@@ -206,7 +240,7 @@ def drill() -> int:
             "falsification": "若结论不成立，则对照组的输出会与实验组不同",
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_falsification_quantified()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_falsification_quantified()})
         ok = "EV-FALSIFICATION-QUANT" in who
         results.append(("P5 伪证伪（无量化对照值，不可复核）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -233,7 +267,7 @@ def drill() -> int:
             "falsification": "对照输出 1",
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_trivial_observation()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_trivial_observation()})
         ok = "EV-TRIVIAL-OBSERVATION" in who
         results.append(("P6 恒真观测（存在性判断无判别力）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -259,7 +293,7 @@ def drill() -> int:
             "matrix": "\n  compiler: [GCC 15.3.0, Clang 19.1.0, MSVC 19.4]"
                       "\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_matrix_backed()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_matrix_backed()})
         ok = "EV-MATRIX-UNBACKED" in who
         results.append(("P7 无留痕矩阵（多编译器声明无工件支撑）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -279,7 +313,7 @@ def drill() -> int:
                {"id": "ATOM-MEM-RAII-001", **base})          # ← 毒点1：stem≠id
         _write(ge.ATOMS / "mem" / "ATOM-MEM-RAII-001.md",
                {"id": "ATOM-MEM-RAII-001", **base})          # ← 毒点2：同 id 第二份
-        who = sorted({f.rule_id for f in ge.check_atom_id_unique()})
+        who = _mk_who({f.rule_id for f in ge.check_atom_id_unique()})
         ok = "ATOM-ID-UNIQUE" in who and len(who) == 1
         results.append(("P8 身份漂移（stem≠id / id 重复）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -303,7 +337,7 @@ def drill() -> int:
             "falsification": "对照输出 1",
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_s2_evidence_verdict()})
+        who = _mk_who({f.rule_id for f in ge.check_s2_evidence_verdict()})
         ok = "S2-EVIDENCE-VERDICT" in who
         results.append(("P9 证据失配（verified 绑 refute 证据）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -325,7 +359,7 @@ def drill() -> int:
             "falsification": "对照输出 1",
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_s3_hardcoded_expected()})
+        who = _mk_who({f.rule_id for f in ge.check_s3_hardcoded_expected()})
         ok = "S3-EXPECTED-HARDCODED" in who
         results.append(("P10 伪证据（期望值硬编码进夹具字面量）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -344,7 +378,7 @@ def drill() -> int:
             "matrix": "\n  compiler: [GCC 15.3.0]\n  std: [c++17]\n  opt: [-O2]",
         })
         _fs = ge.check_evidence_zero_diag_werror()
-        who = sorted({f.rule_id for f in _fs})
+        who = _mk_who({f.rule_id for f in _fs})
         _lvl = {f.rule_id: f.severity for f in _fs}
         ok = "EV-ZERO-DIAG-WERROR" in who and _lvl.get("EV-ZERO-DIAG-WERROR") == "block"
         results.append(("P11 零诊断判据缺 -Werror（须 block，472 P1-1）", ok,
@@ -367,7 +401,7 @@ def drill() -> int:
             "matrix": "\n  compiler: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)]\n"
                       "  std: [c++17]\n  opt: [-O2]",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_matrix_backed()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_matrix_backed()})
         ok = "EV-MATRIX-UNBACKED" in who
         results.append(("P12 留痕锚自证（锚仅在 actual 段）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -402,7 +436,7 @@ def drill() -> int:
             "verified_by": "machine:gate",
             "dal_reviewed_by": "human:",                            # ← 毒点（空名）
         })
-        who = sorted({f.rule_id for f in ge.check_s1_human_signoff()}
+        who = _mk_who({f.rule_id for f in ge.check_s1_human_signoff()}
                      | {f.rule_id for f in ge.check_status_transition()}
                      | {f.rule_id for f in ge.check_dal_match()})
         want = ["ATOM-DAL-MATCH", "ATOM-STATUS-TRANSITION", "S1-AUTHOR-SELF-VERIFY"]
@@ -528,7 +562,8 @@ def drill() -> int:
         }
         _write(ge.EVIDENCE / "mem" / "EV-MEM-DUP1.md", {**base, "id": "EV-MEM-DUP"})
         _write(ge.EVIDENCE / "mem" / "EV-MEM-DUP2.md", {**base, "id": "EV-MEM-DUP"})
-        who = {f.rule_id for f in ge.check_evidence_id_unique()}
+        # 581 hole A：走 _mk_who 把规则 ID 集合同步进全局 _CUR_WHO，供行为级覆盖收集。
+        who = _mk_who({f.rule_id for f in ge.check_evidence_id_unique()})
         dup = [f for f in ge.check_evidence_id_unique() if "重复" in f.message]
         ok = "EV-ID-UNIQUE" in who and bool(dup)
         results.append(("P17 证据 id 重复（373-N2 同 id 双卡）", ok,
@@ -702,7 +737,7 @@ def drill() -> int:
             "pedagogy": "p",
             "relations": "\n  - contradicts: ATOM-TEST-CONFLICT-001",
         })
-        who = sorted({f.rule_id for f in ge.check_atom_rel_conflict()})
+        who = _mk_who({f.rule_id for f in ge.check_atom_rel_conflict()})
         ok = "ATOM-REL-CONFLICT" in who
         results.append(("P29 relations 矛盾（A 依赖 B 且 B contradicts A）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -718,7 +753,7 @@ def drill() -> int:
             "pedagogy": "p",
             "relations": "\n  - contradicts: ATOM-TEST-SELFCONFLICT-001",
         })
-        who = sorted({f.rule_id for f in ge.check_atom_rel_conflict()})
+        who = _mk_who({f.rule_id for f in ge.check_atom_rel_conflict()})
         ok = "ATOM-REL-CONFLICT" in who
         results.append(("P30 自相矛盾（A contradicts 自身）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -743,7 +778,7 @@ def drill() -> int:
             "pedagogy": "p",
             "relations": "\n  - contrasts: ATOM-TEST-LEGAL-001",
         })
-        who = sorted({f.rule_id for f in ge.check_atom_rel_conflict()})
+        who = _mk_who({f.rule_id for f in ge.check_atom_rel_conflict()})
         ok = "ATOM-REL-CONFLICT" not in who
         results.append(("P31-阴 合法对比（contrasts 非矛盾）必须放行", ok,
                         f"误报 {', '.join(who) or '无'}"))
@@ -756,7 +791,7 @@ def drill() -> int:
             "verdict": "confirm",                        # ← 毒点：不可复算却宣称已验证
             "falsification": "对照输出 1",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_msvc_no_verify()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_msvc_no_verify()})
         ok = "EV-MSCV-NO-VERIFY" in who
         results.append(("P32 cl卡标confirm（不可复算卡宣称已验证）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -770,7 +805,7 @@ def drill() -> int:
             "command": cmd, "artifact_producer": prod, "artifact": "fx.asm",
             "verdict": "confirm", "falsification": "对照输出 1",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_artifact_producer()})
         ok = "EV-ARTIFACT-PRODUCER" in who
         results.append(("P33 编译后python覆写（时序约束）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -784,7 +819,7 @@ def drill() -> int:
             "command": cmd, "artifact_producer": prod, "artifact": "fx.asm",
             "verdict": "confirm", "falsification": "对照输出 1",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_artifact_producer()})
         ok = "EV-ARTIFACT-PRODUCER" in who
         results.append(("P34 编译后powershell覆写（时序约束）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -797,7 +832,7 @@ def drill() -> int:
             "falsification": "对照输出 1",
             "artifact_assert": "\n  - {kind: contains_in, symbol: asm, text: ret}",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_assert_symbol_mapped()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_assert_symbol_mapped()})
         ok = "EV-ASSERT-SYMBOL-MAPPED" in who
         results.append(("P35 contains_in text=通用助记符（F03）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -809,7 +844,7 @@ def drill() -> int:
         card.write_text(
             "---\nid: EV-MEM-DUPKEY\nverdict: refute\nverdict: confirm\n"
             "hypothesis: h\nfalsification: 对照输出 1\n---\n", encoding="utf-8")
-        who = sorted({f.rule_id for f in ge.check_frontmatter_duplicate_key()})
+        who = _mk_who({f.rule_id for f in ge.check_frontmatter_duplicate_key()})
         ok = "EV-FM-DUP-KEY" in who
         results.append(("P36 重复 verdict 键（F09 after-wins 遮蔽）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -825,7 +860,7 @@ def drill() -> int:
             "falsification": "对照输出 1",
             "actual": "\n  run_match_file: build/_poison_out_f04.out\n  run_match_keys: []",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_out_undeclared_key()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_out_undeclared_key()})
         ok = "EV-OUT-UNDECLARED-KEY" in who
         results.append(("P37 全角键 .out 未声明（F04）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -846,7 +881,7 @@ def drill() -> int:
             "verdict": "confirm", "falsification": "对照输出 1",
             "actual": "\n  run_match_file: build/_poison_out_f06.out\n  run_match_keys: []",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_out_stale_mtime()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_out_stale_mtime()})
         ok = "EV-OUT-STALE-MTIME" in who
         results.append(("P38 .out 比夹具旧（F06 陈旧留痕）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -871,7 +906,7 @@ def drill() -> int:
             "verdict": "confirm", "falsification": "对照输出 1",
             "artifact_assert": "\n  - {kind: contains, text: _Z10fake_symv}",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_assert_symbol_mapped()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_assert_symbol_mapped()})
         ok = "EV-ASSERT-SYMBOL-MAPPED" in who
         results.append(("P39 注释伪造符号出处（A8 间接注入）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -888,7 +923,7 @@ def drill() -> int:
             "artifact_producer": prod, "artifact": "fx.asm",
             "verdict": "confirm", "falsification": "对照输出 1",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_artifact_producer()})
         ok = "EV-ARTIFACT-PRODUCER" in who
         results.append(("P40 工具冒充（producer 声明≠实际编译器，A10）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -902,7 +937,7 @@ def drill() -> int:
             "artifact_producer": "python gen_asm.py -o fx.asm", "artifact": "fx.asm",
             "verdict": "confirm", "falsification": "对照输出 1",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_artifact_producer()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_artifact_producer()})
         ok = "EV-ARTIFACT-PRODUCER" in who
         results.append(("P41 非编译器产出工件（生成脚本冒充编译，A10）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -919,7 +954,7 @@ def drill() -> int:
             "falsification": "对照输出 1",
             "actual": "\n  run_match_file: build/_poison_out_a5.out\n  run_match_keys: []",
         })
-        who = sorted({f.rule_id for f in ge.check_evidence_out_undeclared_key()})
+        who = _mk_who({f.rule_id for f in ge.check_evidence_out_undeclared_key()})
         ok = "EV-OUT-UNDECLARED-KEY" in who
         results.append(("P42 环境值进读数键（nproc 未声明，A5）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -934,7 +969,7 @@ def drill() -> int:
             "  verdict: confirm\nhypothesis: h\ncommand: g++ -S f.cpp -o f.asm\n"
             "artifact: f.asm\nartifact_sha256: " + "0" * 64 + "\n---\n",
             encoding="utf-8")
-        who = sorted({f.rule_id for f in ge.check_frontmatter_hardening()
+        who = _mk_who({f.rule_id for f in ge.check_frontmatter_hardening()
                       if f.severity == "block"})
         ok = "EV-FM-YAML-HARDENING" in who
         results.append(("P43 缩进走私（E07 缩进 verdict 提升顶层键）", ok,
@@ -1043,6 +1078,9 @@ def drill() -> int:
         _fs71 = [f for f in ge.check_evidence_werror_decl_binding()
                  if str(f.target).endswith("EV-LANG-WERR.md")]
         _who71 = {f"{f.rule_id}/{f.severity}" for f in _fs71}
+        # 581 hole A：本探针用 _who71 局部变量（带 severity 后缀），行为级覆盖需裸 rule_id，
+        # 故显式把命中规则写入全局 _CUR_WHO（drill 已声明 global）。
+        _CUR_WHO = {f.rule_id for f in _fs71}
         ok = (any("EV-WERROR-DECL-BIND" in who for who in _who71)
               and all(f.severity == "warn" for f in _fs71))
         results.append(("P71 判据性 -Werror 被删（声明↔flag 绑定）须 warn 不 block",
@@ -1090,6 +1128,8 @@ def drill() -> int:
         finally:
             ge.ASSERT_BASELINE = _orig_bl
         _who72 = {f"{f.rule_id}/{f.severity}" for f in _fs72}
+        # 581 hole A：同 P71，把裸 rule_id 写入全局 _CUR_WHO 供行为级覆盖收集。
+        _CUR_WHO = {f.rule_id for f in _fs72}
         ok = (any("EV-ASSERT-COUNT-BELOW-BASELINE" in who for who in _who72)
               and all(f.severity == "warn" for f in _fs72))
         results.append(("P72 断言数少于人审基线（悄悄删项）须 warn 不 block",
@@ -1302,7 +1342,7 @@ def drill() -> int:
             "actual": "\n  run_match_file: build/_poison_out_e06.out\n"
                       "  run_match_keys: [nproc, result]",
         })
-        who = sorted({f.rule_id for f in ge.check_env_dependent_key()
+        who = _mk_who({f.rule_id for f in ge.check_env_dependent_key()
                       if f.severity == "block"})
         ok = "EV-ENV-DEPENDENT-KEY" in who
         results.append(("P44 环境量进断言键（nproc 声明为比对目标，A5）", ok,
@@ -1397,7 +1437,7 @@ def drill() -> int:
             "relations": "\n  - some_future_relation: ATOM-U2",
         })
         # RULE-COVERAGE 的正则只认 `"RULE_ID" in who`（变量名必须恰好是 who）
-        who = sorted({f.rule_id for f in ge.check_relations_unknown_type()})
+        who = _mk_who({f.rule_id for f in ge.check_relations_unknown_type()})
         ok = "ATOM-REL-UNKNOWN" in who
         results.append(("P56 未知 relations 类型须可见（不静默丢弃）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -1418,7 +1458,7 @@ def drill() -> int:
             "fixture": "_adv_v80/probes/p57.cpp", "artifact": "a.asm",
             "artifact_sha256": "0" * 64, "verdict": "confirm", "falsification": "f",
         })
-        who = sorted({f.rule_id for f in ge.check_fixture_no_echo_findings()})
+        who = _mk_who({f.rule_id for f in ge.check_fixture_no_echo_findings()})
         ok = "EV-FIXTURE-NO-ECHO-DATA" in who
         results.append(("P57 cat 式证据须被拦（升 warn 后）", ok,
                         f"拦截者 {', '.join(who) or '（漏网！）'}"))
@@ -1448,7 +1488,7 @@ def drill() -> int:
             ge._GIT_AUTHOR_CACHE.clear()
             try:
                 fs = ge.check_git_author_binding()
-                who = sorted({f.rule_id for f in fs})
+                who = _mk_who({f.rule_id for f in fs})
                 lvl = {f.rule_id: f.severity for f in fs}
                 hit = "S1-GIT-AUTHOR-BINDING" in who
                 ok = (hit == want_hit) and (not hit or lvl["S1-GIT-AUTHOR-BINDING"] == "warn")
@@ -1484,7 +1524,7 @@ def drill() -> int:
             fields.update(extra)
             _write(ge.ATOMS / "mem" / f"{card_id}.md", fields)
             fs = ge.check_verify_reason()
-            who = sorted({f.rule_id for f in fs})
+            who = _mk_who({f.rule_id for f in fs})
             lvl = {f.rule_id: f.severity for f in fs}
             hit = "ATOM-VERIFY-REASON" in who
             ok = (hit == want_hit) and (not hit or lvl["ATOM-VERIFY-REASON"] == "warn")
@@ -1523,7 +1563,7 @@ def drill() -> int:
             ge._ARTIFACT_LEDGER = led
             try:
                 fs = ge.check_artifact_version_match()
-                who = sorted({f.rule_id for f in fs})
+                who = _mk_who({f.rule_id for f in fs})
                 lvls = sorted({f.severity for f in fs})
                 ok = ("EV-ARTIFACT-VERSION-MATCH" in who if want else not who) and lvls == want
                 results.append((name, ok, f"级别 {lvls or '（未命中）'}"))
@@ -1556,9 +1596,9 @@ def drill() -> int:
     #   P62 ⇒ EV-ARTIFACT-FILE-EXISTS：artifact 指向不存在的文件（499 M8 逃逸形态）
     # 样例必须**同时 patch `ge.ROOT`**：两条判据都用 `ROOT / <rel>` 解析相对路径，
     # 而 `sandbox()` 只 patch ATOMS/EVIDENCE（与 P60 patch `_ARTIFACT_LEDGER` 同理）。
-    # 覆盖判定：RULE-COVERAGE 正则只认源码里**字面量** `"RULE-ID" in who`（变量名须恰为
-    # who，见 P56 处注释），故 helper 回传 who，由调用处用字面量判别——勿改为参数化比较，
-    # 否则规则会被算成"未覆盖"→ CI 红。
+    # 覆盖判定（581 改）：covered 已改为**运行时行为级**（drill 收集各通过载荷的 who 实含规则 ID），
+    # 不再依赖源码文本 grep `"X" in who`——旧口径会被注释/字符串污染（已见 RULE-ID 幽灵）。
+    # helper 仍回传 who，调用处用字面量 `"X" in who` 判 ok（这是运行时真实命中，安全）。
     def _static_who(cards: list[tuple[str, dict]], files: dict[str, str],
                     fn) -> list[str]:
         with sandbox() as tmp:
@@ -1571,7 +1611,7 @@ def drill() -> int:
                     fp.write_text(content, encoding="utf-8")
                 for fname, fields in cards:
                     _write(tmp / "evidence" / "mem" / fname, fields)
-                return sorted({f.rule_id for f in fn()})
+                globals()['_CUR_WHO'] = set(_r := sorted({f.rule_id for f in fn()})); return _r
             finally:
                 ge.ROOT = orig_root
 
@@ -1611,8 +1651,7 @@ def drill() -> int:
 
     # ── P63–P65（526 批次E）：claim 结构化三条规则 ─────────────────────────────
     # 526 的三条规则作用在 **atoms/**，而上面的 `_static_who` 只往 evidence/ 写卡
-    # ⇒ 需要原子版探针。覆盖判定同上：RULE-COVERAGE 正则只认源码里字面量
-    # `"RULE-ID" in who`（变量名须恰为 who），故勿改成参数化比较。
+    # ⇒ 需要原子版探针。覆盖判定（581 改）：covered 已改运行时行为级，源码文本只作幽灵自检。
     def _atom_who(cards: list[tuple[str, dict]], fn,
                   ev: list[tuple[str, dict]] | None = None) -> list[str]:
         """原子卡探针（规则1-3 作用在 atoms/）；`ev` 供命题级规则挂证据卡。"""
@@ -1624,7 +1663,7 @@ def drill() -> int:
                     _write(tmp / "evidence" / "mem" / fname, fields)
                 for fname, fields in cards:
                     _write(tmp / "atoms" / "mem" / fname, fields)
-                return sorted({f.rule_id for f in fn()})
+                globals()['_CUR_WHO'] = set(_r := sorted({f.rule_id for f in fn()})); return _r
             finally:
                 ge.ROOT = orig_root
 
@@ -1834,7 +1873,7 @@ def drill() -> int:
     # 不问「这条命题是不是真观测」⇒ 把推断自标 observation + 只挂一张 run_match 卡，
     # 就能走 machine-verified 全自动通道（工件只证明「程序打印了某值」）。
     # 三条活性条件（量化证伪取值 / 夹具特有符号断言 / 非环境量读数键）全不满足 ⇒ warn。
-    # 覆盖判定同上：RULE-COVERAGE 只认字面量 `"RULE-ID" in who`，勿参数化。
+    # 覆盖判定（581 改）：covered 已改运行时行为级；源码文本 `"X" in who` 不再计入，只作幽灵自检。
     def _t4_findings(cards: list[tuple[str, dict]], ev: list[tuple[str, dict]]):
         with sandbox() as tmp:
             orig_root = ge.ROOT
@@ -1859,7 +1898,7 @@ def drill() -> int:
         [("ATOM-MEM-P68.md", dict(_a_base, id="ATOM-MEM-P68",
                                   claim_structured=_t4_dead))],
         [("EV-MEM-P68.md", _t4_dead_ev)])
-    who = sorted({f.rule_id for f in _fs})
+    who = _mk_who({f.rule_id for f in _fs})
     ok = "OBSERVATION-LIVENESS" in who and all(f.severity == "warn" for f in _fs)
     results.append(("P68 只挂 run_match 卡的 observation 须 warn（缺活性对照）", ok,
                     f"拦截者 {', '.join(who) or '（漏网！）'}；"
@@ -1911,14 +1950,14 @@ def drill() -> int:
                 ge.ROOT = orig_root
 
     _fs = _p69_findings("EXAMPLES/ATOMS/P69.CPP")
-    who = sorted({f.rule_id for f in _fs})
+    who = _mk_who({f.rule_id for f in _fs})
     ok = "CARD-PATH-NOT-CANONICAL" in who and all(f.severity == "warn" for f in _fs)
     results.append(("P69 卡内路径非 posix 规范/大小写与磁盘不符 ⇒ warn", ok,
                     f"拦截者 {', '.join(who) or '（漏网！）'}；"
                     f"严重度 {[f.severity for f in _fs] or '（无命中）'}"))
     # P69-阴：与磁盘逐字一致的 posix 规范写法 ⇒ 放行（零误伤）
     _fs = _p69_findings("Examples/atoms/p69.cpp")
-    who = sorted({f.rule_id for f in _fs})
+    who = _mk_who({f.rule_id for f in _fs})
     ok = not who
     results.append(("P69-阴 规范 posix 写法（大小写逐字一致）须放行", ok,
                     f"拦截者 {', '.join(who) or '（无）'}"))
@@ -1998,6 +2037,7 @@ def drill() -> int:
               "否则「零覆盖」判定不可信")
     print(f"[poison] 零覆盖攻击面：{uncovered or '无'}"
           + ("" if not uncovered else " —— 攻击者可从这些面无样本预警地打进来"))
+    _LAST_DRILL = (passed, len(results), failures)
     return passed, len(results), failures
 
 
@@ -2123,19 +2163,38 @@ def load_exemptions() -> dict[str, str]:
     return out
 
 
+def behavioral_covered() -> set:
+    """运行时行为级覆盖：drill() 各**通过**载荷的 who 并集（真实 gate 命中规则 ID）。
+
+    缓存于模块全局 _LAST_BEHAVIORAL_COVERED；未跑过 drill 则先跑一次填充。
+    这是 581 hole A 修复的核心——不再从源码文本 grep `"X" in who`（会被注释/字符串污染）。
+    """
+    global _LAST_BEHAVIORAL_COVERED, _LAST_DRILL
+    if _LAST_BEHAVIORAL_COVERED is None:
+        _LAST_DRILL = drill()
+    return _LAST_BEHAVIORAL_COVERED
+
+
 def rule_coverage() -> tuple[int, int, list[str]]:
     """RULE-COVERAGE: 已覆盖 / **注册规则数**（分母单点化为 `gate_engine.RULES`）。
 
-    旧口径（368 P1-2）：分母取 gate 源码 `Finding("...")` 正则去重数，与注册规则数
-    互不认账（实测 32 vs 37），且未覆盖只打印、不影响退出码——台账不存在＝永久免检。
-    新口径：分母取注册规则；未覆盖且未登记豁免 → 返回非空，`__main__` 据此 exit 1。
+    581 hole A 修复：covered 改用**行为级**集合（drill 运行时 who 实含且 payload 通过的规则 ID），
+    不再从源码文本 grep `"X" in who`——后者会被注释/字符串污染（已见 RULE-ID 幽灵，见 _worklog_581.md）。
+    分母取注册规则；未覆盖且未登记豁免 → 返回非空，`__main__` 据此 exit 1。
+    附幽灵自检：源码里 `"X" in who` 但非注册规则的死文本会被检出并告警（不计入分子）。
     """
+    cov = behavioral_covered()
     all_rules = {r.id for r in ge.RULES}
-    drill_src = Path(__file__).read_text(encoding="utf-8")
-    covered = set(re.findall(r'"([A-Z][A-Z0-9-]+)" in who', drill_src))
     exempt = set(load_exemptions())
-    uncovered = sorted(all_rules - covered - exempt)
-    return len(covered), len(all_rules), uncovered
+    uncovered = sorted(all_rules - cov - exempt)
+    # 幽灵自检：源码里 "X" in who 但非注册规则的死文本（防注释/字符串再污染 covered）。
+    src = Path(__file__).read_text(encoding="utf-8")
+    text_claimed = set(re.findall(r'"([A-Z][A-Z0-9-]+)" in who', src))
+    ghosts = sorted(text_claimed - all_rules)
+    if ghosts:
+        print(f"[poison] ⚠ 覆盖率自检：源码存在死文本声明(非规则ID) {ghosts} "
+              f"——已被行为级口径忽略；请删除这些注释/字符串避免误导")
+    return len(cov), len(all_rules), uncovered
 
 
 def gate_exit_code(passed: int, total_d: int, uncovered: list[str]) -> int:
@@ -2268,7 +2327,7 @@ if __name__ == "__main__":
         print(f"[poison] 未覆盖且未豁免（{len(uncovered)}）: {', '.join(uncovered)}")
         print("[poison] 二选一：补毒样例，或在 tools/poison_exemptions.yaml 登记"
               "（规则 ID + 原因 + 日期）——本项为硬门禁（CI 红）")
-    passed, total_d, failures = drill()
+    passed, total_d, failures = _LAST_DRILL if _LAST_DRILL is not None else drill()
     surface = build_surface_map(passed, total_d, _LAST_RESULTS,
                                 (covered, total, uncovered))
     if _a.write_surface_map:

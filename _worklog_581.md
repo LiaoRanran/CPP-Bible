@@ -47,19 +47,29 @@
 ---
 
 ## 任务 1（hole A）：covered 从"源码文本 grep"改为"运行时行为收集"
-**施工点（待执行，未落码）：**
-1. `drill()` 内：新增模块全局 `_LAST_BEHAVIORAL_COVERED: set | None = None`；drill 开头置 `set()`；每个载荷算完 `ok` 后，若 `ok` 则 `_LAST_BEHAVIORAL_COVERED |= set(who)`（只收运行时 who 实含且通过的规则 ID）。
-2. 新增 `behavioral_covered() -> set`：若 `_LAST_BEHAVIORAL_COVERED is None` 则跑一次 `drill()` 填充后返回；否则直接返回（避免 `__main__` 双跑）。
-3. 改写 `rule_coverage()`：`cov = behavioral_covered()`；`uncovered = sorted(all_rules - cov - set(load_exemptions()))`；返回 `(len(cov), len(all_rules), uncovered)`。
-4. **ghost 自检**：`rule_coverage()` 内扫源码 `"([A-Z][A-Z0-9-]+)" in who` 得 `text_claimed`，`ghosts = text_claimed - {r.id for r in RULES}`；非空则 `print` 警告（防评论/字符串再污染，对应 hole A 的"自检"要求）。
-5. 改掉误导注释：1559/1615/1837 三处"RULE-COVERAGE 正则只认字面量 'RULE-ID' in who、勿参数化" → 改为"覆盖以运行时 who 实含为准；静态文本仅作 ghost 自检，不再计入分子"。`rule_coverage` docstring（2126）同步更新。
-6. `__main__`（2264）改：`covered, total, uncovered = rule_coverage()` 保持调用顺序即可（rule_coverage 内部跑 drill 填 `_LAST_BEHAVIORAL_COVERED`，随后 2271 的 `drill()` 不再双跑——见下）。⚠ 当前 `__main__` 先 `rule_coverage()` 后 `drill()`；改造后 `rule_coverage()` 已跑 drill，故把 2271 的 `passed,total_d,failures = drill()` 改为读取已填充的全局（或直接复用），**避免钻探跑两遍**。具体：让 `rule_coverage()` 返回前顺带把 `drill()` 的结果存到全局 `_LAST_DRILL`，`__main__` 取 `_LAST_DRILL` 而非再调 `drill()`。
-7. 新增回归锁 `tests/test_poison_coverage_581.py`：
-   - (a) `drill()` 后断言 `behavioral_covered() ⊆ RULES`（无 ghost 进分子）；`len(behavioral_covered()) == len(behavioral_covered() & RULES)`。
-   - (b) 源码 `"X" in who` 但非 RULES 的死文本 == 0（ghost 自检红）。
-   - (c) 注入 1 行注释文本，`behavioral_covered()` 不应涨（防回归 hole A）——实现：复制源码注入 `# ok = "FAKE-GHOST-581" in who` 到临时模块并 import，断言 covered 不变。
-8. 验收：重跑 `python -m tools.poison_drill` → RULE-COVERAGE 应显示 **37/63**（幽灵消失）；`python tools/tool_integrity.py --check` exit 0；新 pytest 通过。
-**commit**：`poison_drill.py` + `tools/.tool_checksums`（--update 重钉）+ `tests/test_poison_coverage_581.py`。
+**状态：✅ 已落码并验证（commit 见下）**
+
+### 落地要点
+1. `drill()`：新增模块全局 `_CUR_WHO`（set）/ `_LAST_BEHAVIORAL_COVERED` / `_LAST_DRILL`；drill 开头置空；新增 `_CovList(list)`，每次 `append` 时若 `ok` 则 `_LAST_BEHAVIORAL_COVERED |= set(_CUR_WHO)`（只收运行时 who 实含且通过的规则 ID）。
+2. 新增 `_mk_who(iterable)`：集中把 `_CUR_WHO` 维护为 set 并返回 `sorted`（修掉早期 `_CUR_WHO` 变 list 导致 `|= set` 类型错误的坑）；所有 `who = _mk_who(...)` 调用（~37 处）与 `_static_who`/`_atom_who` helper（`globals()['_CUR_WHO'] = set(...)`）统一写 `_CUR_WHO`。
+3. 新增 `behavioral_covered()`：`_LAST_BEHAVIORAL_COVERED is None` 则跑 `drill()` 填充分享给 `__main__`，避免双跑；`rule_coverage()` 改用 `behavioral_covered()` 作分子。
+4. **ghost 自检**：`rule_coverage()` 扫源码 `"([A-Z][A-Z0-9-]+)" in who`，`ghosts = text_claimed - 注册规则`；非空则 `print` 警告（不计入分子）。
+5. `__main__`：`rule_coverage()` 内部已跑 drill 并把 `(passed,total,failures)` 存 `_LAST_DRILL`，`__main__` 直接取 `_LAST_DRILL` 不重跑。
+
+### ⚠ 实现中发现的真实 bug（行为级收集漏洞，非规则漏打）
+3 个探针计算 `who` 时**未走 `_mk_who`、也未写 `_CUR_WHO`**，导致 `results.append` 时 `_CUR_WHO` 是上一层残留值 → 这 3 条真实命中的规则被漏收（drill 实测 118/118 全过，证明它们合法覆盖）：
+- **P17**：`who = {f.rule_id for f in ge.check_evidence_id_unique()}` → 改 `who = _mk_who(...)`；
+- **P71**：`_who71 = {f"{rule_id}/{sev}"...}` → append 前置 `_CUR_WHO = {f.rule_id for f in _fs71}`；
+- **P72**：`_who72 = {...}` → append 前置 `_CUR_WHO = {f.rule_id for f in _fs72}`。
+修前行为级 = 35（比文本 37 还低）；修后 = **38**（详见下）。
+
+### 实测验收（2026-09-18，`.venv`）
+- `python -m tools.poison_drill` → **RULE-COVERAGE 38/63**；`118/118 制衡层有效`；`零覆盖攻击面：无`；`未覆盖且未豁免：无`；**EXIT=0**.
+- 比文本 grep 的 37 更准：行为级**多抓到 2 条文本漏计的真实覆盖** `ATOM-DAL-MATCH`、`ATOM-STATUS-TRANSITION`（其 `who` 检查走 `ok = not who`/其它模式，文本正则没抓到）。仅 `ATOM-REL-DAG` 仍是"文本有但行为级无"——但它已在豁免台账（冗余豁免，见 0.4），不影响门禁。
+- `tool_integrity --check` exit 0（改完已 `--update` 重钉 `.tool_checksums`）。
+- `pytest tests/test_poison_coverage_581.py -v` → **3 passed (13.31s)**：(a) behavioral ⊆ RULES；(b) 源码死文本 ghost == 0；(c) 注入 `# ok="FAKE-GHOST-581" in who` 后 covered 不涨、FAKE-GHOST-581 不进分子（临时模块 ROOT 钉回仓库根以隔离路径错位假失败）。
+
+**commit**：`tools/poison_drill.py` + `tools/.tool_checksums`（--update 重钉）+ `tests/test_poison_coverage_581.py`。
 
 ## 任务 2（hole B）：豁免二人锁 + legacy 单列 + 机器核原因
 **施工点（待执行）：**
@@ -77,5 +87,7 @@
 
 ---
 ## 当前进度
-- ✅ 第 0 步：基线实测 + PoC-2 复现 + covered 对账（37 真实/1 幽灵）+ 27 豁免三桶（7/12/8）→ 本 worklog。
-- ⏳ 任务 1/2/3：施工点已在上文逐条列清，待一任务一 commit 执行。
+- ✅ 第 0 步：基线实测 + PoC-2 复现 + covered 对账 + 27 豁免三桶（7/12/8）→ 本 worklog。
+- ✅ **任务 1（hole A）**：行为级 covered 落地，实测 RULE-COVERAGE **38/63**、118/118、EXIT=0；回归锁 `tests/test_poison_coverage_581.py` 3 passed；已一任务一 commit（poison_drill.py + .tool_checksums + 测试）。
+- ⏳ 任务 2（hole B）：豁免二人锁 + legacy 单列 + 机器核原因 → 待执行。
+- ⏳ 任务 3：重钉 + 全量自测 + 验收门 → 待执行。
