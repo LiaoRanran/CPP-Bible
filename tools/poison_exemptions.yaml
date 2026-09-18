@@ -44,6 +44,6 @@ exemptions:
   - {id: DOC-ZERO-PLACEHOLDER, reason: "占位符扫描为文本级检查；不适合真编译毒样例；pytest test_daibu_is_not_placeholder 已锁误报边界", date: 2026-09-12, redteam_seen: legacy}
   - {id: META-MANIFEST, reason: "双清单一致性为仓库级元检查；不适合毒样例；pytest test_manifest_has_no_drift_in_repo 已锁", date: 2026-09-12, redteam_seen: legacy}
   # ── 非程序化象限（llm/hybrid/human）：无 check 函数、机器无从触发──────────────
-  - {id: LLM-SUPERIORITY-QUALITY, reason: "llm 象限无 check 函数、机器无从触发（进人工队列）；pytest test_human_quadrant_rules_not_machine_triggered 已确认 quadrant=llm 且无 check（人审价值判断、无机械正反例）", date: 2026-09-12, redteam_seen: legacy}
-  - {id: HYBRID-TEACHING-DEPTH, reason: "hybrid 象限无 check 函数、机器只做初筛；pytest test_human_quadrant_rules_not_machine_triggered 已确认 quadrant=hybrid 且无 check（人审价值判断、无机械正反例）", date: 2026-09-12, redteam_seen: legacy}
-  - {id: HUMAN-GOLDEN-REVIEW, reason: "human 象限无 check 函数、机器无从触发（认可权唯人，规程 0.1）；pytest test_human_quadrant_rules_not_machine_triggered 已确认 quadrant=human 且无 check（人审价值判断、无机械正反例）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: LLM-SUPERIORITY-QUALITY, reason: "人审价值判断、无机械正反例（llm 象限无 check 函数、机器无从触发，进人工队列）；586 任务3 声明单列为机器不可触发、不计入诚实口径；pytest test_human_quadrant_rules_not_machine_triggered 只锁'象限=llm 且无 check'这一设计事实（不构成 pytest 背书）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: HYBRID-TEACHING-DEPTH, reason: "人审价值判断、无机械正反例（hybrid 象限无 check 函数、机器只做初筛）；586 任务3 声明单列为机器不可触发、不计入诚实口径；pytest test_human_quadrant_rules_not_machine_triggered 只锁'象限=hybrid 且无 check'这一设计事实（不构成 pytest 背书）", date: 2026-09-12, redteam_seen: legacy}
+  - {id: HUMAN-GOLDEN-REVIEW, reason: "人审价值判断、无机械正反例（human 象限无 check 函数、机器无从触发，认可权唯人，规程 0.1）；586 任务3 声明单列为机器不可触发、不计入诚实口径；pytest test_human_quadrant_rules_not_machine_triggered 只锁'象限=human 且无 check'这一设计事实（不构成 pytest 背书）", date: 2026-09-12, redteam_seen: legacy}

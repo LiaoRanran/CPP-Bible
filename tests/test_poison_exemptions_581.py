@@ -15,9 +15,9 @@
 """
 from __future__ import annotations
 
-import pytest
-
+import gate_engine as ge
 import poison_drill as pd
+import pytest
 
 REAL_EXEMPTIONS = pd.EXEMPTIONS
 
@@ -113,13 +113,33 @@ def test_coverage_report_two_rates_computable():
     assert rep["apparent_rule_coverage"] >= rep["honest_rule_coverage"], \
         "表观口径（含 legacy）应 ≥ 诚实口径（legacy 不计入）"
     assert rep["legacy_exempt"] and len(rep["legacy_exempt"]) == 27
-    # 586 任务3 后：20 条"背书不可核验"债已用真实 pytest 兜底全部清偿 ⇒
-    # 全部 27 条豁免均 reason_verified=="backed"；missing/weak 归零（unverifiable=0）。
+    # 586 任务3 后：20 条"背书不可核验"债已清偿（12 missing + 8 weak 全部补到真测试/降级声明）⇒
+    # missing/weak 归零（unverifiable=0）；其中人审象限（无 check 函数）3 条机器原理上无从触发，
+    # 归 machine-untriggerable 单列、**不计入**诚实分子（防"声明当背书"虚高），其余 24 条 backed。
     ex = pd.load_exemptions()
     buckets = [d["reason_verified"] for d in ex.values()]
-    assert buckets.count("backed") == 27
+    assert buckets.count("backed") == 24
+    assert buckets.count("machine-untriggerable") == 3
     assert buckets.count("missing-test") == 0
     assert buckets.count("weak-test") == 0
+    assert rep["machine_untriggerable"] == sorted(
+        i for i, d in ex.items() if d["reason_verified"] == "machine-untriggerable")
+    # 诚实分子 = 行为覆盖 ∪ 背书豁免（不含 machine-untriggerable）
+    assert rep["honest_covered"] == len(set(rep["backed_exempt"]) | pd.behavioral_covered())
+
+
+# ---------- 586 任务3：无 check 的人审象限规则不得伪称"pytest 背书" ----------
+
+def test_verify_exemption_reason_machine_untriggerable():
+    # 反例 3：规则在 gate_engine.RULES 里没有 check 函数（人审象限）⇒ 即便 reason 点名了
+    # 真实存在的测试并断言了该 rule_id，也只归 machine-untriggerable，不算 backed。
+    no_check = [r.id for r in ge.RULES if getattr(r, "check", None) is None]
+    assert no_check, "应存在无 check 函数的人审象限规则"
+    rid = no_check[0]
+    # 用一条真实存在的、源码里确实出现该 rule_id 的测试名（正例对照用的 test 名称取自本仓）
+    reason = "pytest test_human_quadrant_rules_not_machine_triggered 已确认"
+    assert pd.verify_exemption_reason(rid, reason) == "machine-untriggerable", \
+        "无 check 的规则不得被算作 pytest 背书（那会把人审声明伪装成机械覆盖）"
 
 
 # ---------- 端到端：fail-closed 反映在 uncovered（走一次钻探） ----------

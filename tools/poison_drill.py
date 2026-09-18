@@ -2149,10 +2149,16 @@ _EXEMPT_LINE = re.compile(
 def verify_exemption_reason(rule_id: str, reason: str) -> str:
     """581 hole B：机器核验豁免 reason 里声称的 pytest 背书（把"豁免≠免检"文字纪律变机器闸）。
 
-    返回 `'backed'` | `'missing-test'` | `'weak-test'`：
-      - backed：reason 点名的测试函数存在，且其所在文件源码确实出现该 rule_id 字符串；
+    返回 `'backed'` | `'missing-test'` | `'weak-test'` | `'machine-untriggerable'`：
+      - backed：reason 点名的测试函数存在，且其所在文件源码确实出现该 rule_id 字符串，
+        **且该规则有程序化 check**（机器在原理上可触发）；
       - missing-test：reason 点名的测试函数不存在（或根本没点名任何 `test_*`）；
-      - weak-test：测试存在但源码未断言该 rule_id（背书不成立，最该先补）。
+      - weak-test：测试存在但源码未断言该 rule_id（背书不成立，最该先补）；
+      - machine-untriggerable（586 任务3 新增）：规则在 `gate_engine.RULES` 里**没有 check 函数**
+        （人审象限 human/hybrid/llm，价值判断类）—— 机器原理上无从触发，故无论 reason 点名了什么
+        测试都**不算**"pytest 兜底背书"，只能作为"人审价值判断、无机械正反例"声明单列。
+        这样 586 任务3 的口径才是诚实的：既不把无 check 的规则伪装成已背书（虚高），
+        也不把它算进 missing/weak 欠账（无机械正反例可补，逼补必然产出凑数测试）。
     只点名、不自动删豁免（删豁免改分母属口径动作，交人裁决）。口径沿用 _worklog_581.md 0.3。
     """
     tests_dir = ROOT / "tests"
@@ -2176,7 +2182,13 @@ def verify_exemption_reason(rule_id: str, reason: str) -> str:
             break
     if not found_any:
         return "missing-test"
-    return "backed" if asserted_any else "weak-test"
+    if not asserted_any:
+        return "weak-test"
+    # 586 任务3：无 check 函数（人审象限）⇒ 机器无从触发，不算 pytest 背书（防诚实口径虚高）。
+    rule = next((r for r in ge.RULES if r.id == rule_id), None)
+    if rule is not None and getattr(rule, "check", None) is None:
+        return "machine-untriggerable"
+    return "backed"
 
 
 # 581 hole B：新增豁免（晚于本批合入日）必须带合法 redteam_seen，否则视为无效（fail-closed）。
@@ -2259,9 +2271,11 @@ def coverage_report() -> dict:
     - 表观覆盖率 = (behavioral_covered ∪ 全部豁免) / 规则总数（旧口径延续：把 legacy 也算作"已覆盖"，
       含与 covered 重叠的冗余豁免，故可 ≥100%，这正是要暴露的虚高）；
     - 诚实覆盖率 = (behavioral_covered ∪ **背书豁免**) / 规则总数。背书豁免 = `reason_verified=="backed"`
-      （机器核验 reason 点名的 pytest 真实触发并断言该 rule_id）——586 任务3 起，凡经此核验的豁免
-      **计入**诚实口径（去重：drill 已行为级覆盖的规则不重复计）；redteam_seen=legacy 仅作历史签名透明单列，
-      不再把"有签核但无 pytest 兜底"的豁免算作已覆盖（那才是 581 hole B 要堵的"替异族签字"）。
+      （机器核验 reason 点名的 pytest 真实触发并断言该 rule_id，**且规则有程序化 check**）——
+      586 任务3 起凡经此核验的豁免**计入**诚实口径（去重：drill 已行为级覆盖的规则不重复计）；
+      redteam_seen=legacy 仅作历史签名透明单列，不再把"有签核但无 pytest 兜底"算作已覆盖
+      （那才是 581 hole B 要堵的"替异族签字"）；`machine-untriggerable`（无 check 的人审象限规则）
+      **单列且不计入诚实分子**——机器原理上无从触发，算进去就是把声明当背书（586 任务3 明令禁止凑数测试）。
     数字以实跑为准：覆盖率掉就如实掉，不补假载荷、不替豁免签字。
     """
     cov = behavioral_covered()
@@ -2272,11 +2286,11 @@ def coverage_report() -> dict:
     backed = {i for i, d in exempt.items() if d["reason_verified"] == "backed"}
     signed = backed - cov
     legacy = {i for i, d in exempt.items() if d["redteam_seen"] == "legacy"}   # 透明单列（历史签名）
+    machine_unt = {i for i, d in exempt.items()
+                   if d["reason_verified"] == "machine-untriggerable"}         # 人审象限，单列
     unverifiable = {i for i, d in exempt.items()
                     if d["reason_verified"] in ("missing-test", "weak-test")}
     covered_n = len(cov)
-    signed_n = len(signed)
-    legacy_n = len(legacy)
     honest_covered = len(cov | backed)
     apparent_covered = len(cov | exempt_ids)
     honest = honest_covered / total if total else 0.0
@@ -2286,6 +2300,7 @@ def coverage_report() -> dict:
         "behavioral_covered": covered_n,
         "signed_exempt": sorted(signed),
         "backed_exempt": sorted(backed),
+        "machine_untriggerable": sorted(machine_unt),
         "legacy_exempt": sorted(legacy),
         "unverifiable": sorted(unverifiable),
         "honest_covered": honest_covered,
@@ -2349,8 +2364,10 @@ def build_surface_map(passed: int, total_d: int,
     exempt = load_exemptions()
     exempt_ids = set(exempt)
     backed = {i for i, d in exempt.items() if d["reason_verified"] == "backed"}
-    signed = sorted(backed)
+    signed = sorted(backed - _cov_set)      # 与 coverage_report 同口径：去重，不重复累加
     legacy = sorted(i for i, d in exempt.items() if d["redteam_seen"] == "legacy")
+    machine_unt = sorted(i for i, d in exempt.items()
+                         if d["reason_verified"] == "machine-untriggerable")
     unverifiable = sorted(i for i, d in exempt.items()
                           if d["reason_verified"] in ("missing-test", "weak-test"))
     _tr = total_rules if total_rules else 0
@@ -2371,6 +2388,8 @@ def build_surface_map(passed: int, total_d: int,
         "exemption_lock": {
             "behavioral_covered": covered_rules,
             "signed_exempt": signed,
+            "backed_exempt": sorted(backed),
+            "machine_untriggerable": machine_unt,
             "legacy_exempt": legacy,
             "unverifiable": unverifiable,
             "apparent_rule_coverage": _apparent,
@@ -2452,6 +2471,9 @@ if __name__ == "__main__":
           f"= {rep['apparent_covered']} 规则（行为覆盖∪全部豁免） / {rep['total']}")
     print(f"[poison] 诚实覆盖率(仅背书豁免, 去重): {rep['honest_rule_coverage']*100:.1f}% "
           f"= {rep['honest_covered']} 规则（行为覆盖∪背书豁免） / {rep['total']}")
+    if rep["machine_untriggerable"]:
+        print(f"[poison] 机器不可触发(人审象限/无 check, 声明单列、不计入诚实口径, "
+              f"{len(rep['machine_untriggerable'])}): {', '.join(rep['machine_untriggerable'])}")
     if rep["legacy_exempt"]:
         print(f"[poison] legacy 豁免(单列、不计入诚实口径, {len(rep['legacy_exempt'])}): "
               f"{', '.join(rep['legacy_exempt'])}")
