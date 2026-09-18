@@ -477,21 +477,26 @@ def collect_curves() -> dict:
             return {"source": str(path), "tag": tag,
                     "error": f"基线不可用：{type(exc).__name__}: {exc}"}
 
-    # 574 升 v3 → **575 升 v4**（命题级活性锚覆盖 M5 活雷后的全量基线）。
+    # 574 升 v3 → 575 升 v4 → **578 升 v5**（_findings_key 并入文案 ⇒ M5 活雷在报告口径翻盘）。
+    #   v1–v4 **保留为历史时点**，不覆盖——否则历史曲线会被改写。
+    v5 = ROOT / "data" / "mutation" / "full_baseline_v5.json"
     v4 = ROOT / "data" / "mutation" / "full_baseline_v4.json"
     v3 = ROOT / "data" / "mutation" / "full_baseline_v3.json"
     v2 = ROOT / "data" / "mutation" / "full_baseline_v2.json"
     v1 = ROOT / "data" / "mutation" / "full_baseline_v1.json"
     out["mutation_escape_rate"] = (
-        _rate(v4, "v4（575 起当前口径：命题级活性锚覆盖 M5 活雷；M5 由沉默逃逸变为 warn 可见）")
-        if v4.is_file() else {"error": "缺 data/mutation/full_baseline_v4.json"})
+        _rate(v5, "v5（578 起当前口径：diff 键并入文案 ⇒ 同卡同规则的第二条告警不再被吞；"
+                  "M5 活雷由「沉默逃逸」变为「warn 可见」）")
+        if v5.is_file() else {"error": "缺 data/mutation/full_baseline_v5.json"})
     hist = []
-    if v3.is_file():
-        hist.append(_rate(v3, "v3（574 修 M5 尺子后、M5 活雷未收，仅历史）"))
     if v1.is_file():
         hist.append(_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）"))
     if v2.is_file():
         hist.append(_rate(v2, "v2（571 修尺子后、含 M3 的 52 条真洞，仅历史）"))
+    if v3.is_file():
+        hist.append(_rate(v3, "v3（574 修 M5 尺子后、M5 活雷未收，仅历史）"))
+    if v4.is_file():
+        hist.append(_rate(v4, "v4（575 命题级活性锚：M5 规则已拦但被 diff 键吞掉，仅历史）"))
     out["mutation_escape_rate_history"] = hist
 
     # 573 任务 A-2：overturned 从"恒 0 占位"变成**真读数**（读只追加事件流；写入见 log_overturned）。

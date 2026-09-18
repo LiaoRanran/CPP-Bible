@@ -85,11 +85,17 @@ def _rel_in_sandbox(card: Path, tmp: Path) -> Path:
     return tmp / card.relative_to(ROOT)
 
 
-def _findings_key(f: ge.Finding) -> tuple[str, str, str]:
-    return (f.rule_id, f.severity, f.target)
+def _findings_key(f: ge.Finding) -> tuple[str, str, str, str]:
+    # 578 任务 1（575 定位、578 采用）：键并入**文案** ⇒ 四元组。
+    #   旧键 = (规则 id, 严重度, 目标) 的病：同一张卡上**第二条**同规则告警会被"基线里已有该
+    #   (规则, 目标)"吞掉 ⇒ 新告警在报告里完全看不见。M5 活雷正是此形态（变异给 prop-2 新增
+    #   一条 OBSERVATION-LIVENESS warn，而 prop-1 的同类告警已在基线里 ⇒ 判成 escaped）。
+    #   同步改动的解包点：`classify()` 里的 new_block/new_warn，以及两条自造假 new 集的 548 用例
+    #   （它们原先按 3 元组构造 ⇒ 必须一起升 4 元组，否则 ValueError）。
+    return (f.rule_id, f.severity, str(f.target), f.message)
 
 
-def _snapshot() -> set[tuple[str, str, str]]:
+def _snapshot() -> set[tuple[str, str, str, str]]:
     STATS["ge_runs"] += 1
     return {_findings_key(f) for f in ge.run(include_advice=False)}
 
@@ -476,8 +482,10 @@ def classify(card: str, op: str, baseline: set[tuple[str, str, str]],
         return {"verdict": "n_a", "why": f"gate 执行失败：{type(exc).__name__}: {exc}"}
     finally:
         pass
-    new_block = sorted({f"{r}:{t}" for r, s, t in new if s == "block"})
-    new_warn = sorted({f"{r}:{t}" for r, s, t in new if s == "warn"})
+    # 578 任务 1：`_findings_key` 已是 4 元组（含文案）⇒ 用 `*_` 兼容解包（键里第 4 位只用于
+    #   集合去重，报告仍只打 `规则:目标`，免得同一卡同一规则的多条告警把输出刷爆）。
+    new_block = sorted({f"{r}:{t}" for r, s, t, *_ in new if s == "block"})
+    new_warn = sorted({f"{r}:{t}" for r, s, t, *_ in new if s == "warn"})
     detail: dict[str, Any] = {"new_block": new_block, "new_warn": new_warn}
     if op in REPLAY_OPS and new_block:
         # 548 Part 0：门禁已经**严格**拦截 ⇒ replay 只可能再往 new_block 里加一条（同 verdict）

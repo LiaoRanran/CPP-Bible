@@ -326,7 +326,8 @@ def test_548_diff_is_not_card_scoped(monkeypatch: pytest.MonkeyPatch):
     with mf.sandbox() as tmp:
         sb = mf._rel_in_sandbox(CARD, tmp)
         baseline = mf._snapshot()
-        foreign = {("EV-ID-UNIQUE", "block", "evidence/other/EV-OTHER-999.md")}
+        # 578 任务 1：`_findings_key` 升 4 元组 ⇒ 自造假 new 集同步升（末位是文案，仅参与去重）
+        foreign = {("EV-ID-UNIQUE", "block", "evidence/other/EV-OTHER-999.md", "别卡上的新命中")}
         monkeypatch.setattr(mf, "_snapshot", lambda: baseline | foreign)
         r = mf.classify(CARD.stem, "M6", baseline, CARD.read_text(encoding="utf-8"), sb, tmp)
         assert r["verdict"] == "blocked" and r["kind"] == "strict", r
@@ -345,7 +346,8 @@ def test_548_replay_runs_only_when_it_can_change_verdict(monkeypatch: pytest.Mon
             return ("confirm", [])
 
         monkeypatch.setattr(mf.replay, "replay_card", _fake_replay)
-        blocked_diff = {("R-BLOCK", "block", "evidence/conc/EV-CONC-001.md")}
+        # 578 任务 1：同上，升 4 元组（语义不变：门禁已严格拦截 ⇒ 跳过 replay）
+        blocked_diff = {("R-BLOCK", "block", "evidence/conc/EV-CONC-001.md", "假 block 命中")}
         monkeypatch.setattr(mf, "_snapshot", lambda: baseline | blocked_diff)
         r1 = mf.classify(CARD.stem, "M1", baseline, CARD.read_text(encoding="utf-8"), sb, tmp)
         assert r1["verdict"] == "blocked" and r1["kind"] == "strict"
