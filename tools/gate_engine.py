@@ -2851,7 +2851,7 @@ def _update_assert_baseline() -> int:
 _MX_VALUE_KEYS = ("compiler", "std", "opt", "arch")
 _RE_MX_STD = re.compile(r"^(gnu|c)\+\+(98|03|11|14|17|20|23|26)$")
 _RE_MX_OPT = re.compile(r"^-O([0-3sgz]|fast)$")
-_RE_MX_FAMILY = re.compile(r"(gcc|g\+\+|clang|clang\+\+|msvc)", re.I)
+_RE_MX_FAMILY = re.compile(r"(gcc|g\+\+|clang|clang\+\+|msvc)", re.IGNORECASE)
 _RE_MX_VERSION = re.compile(r"\d+(?:\.\d+)*")
 # 存量注释既有半角 `(...)` 也有全角 `（...）`；且存在 `/` 并列（`-O2（本卡）/ -O1（…）`）
 _RE_MX_COMMENT = re.compile(r"\([^)]*\)|（[^）]*）")
