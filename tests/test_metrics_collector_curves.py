@@ -10,7 +10,7 @@
 4b 的三曲线字段（**只有 1 个时点**）：
   * `mutation_escape_rate`：逃逸率带**双侧** C-P95 区间，且必须与 Part 1 原语逐值一致；
   * `overturned_by_stronger_verifier`：事件字段，当前**真值就是 0**（不是缺数据）；
-  * `escape_survival_batches`：**None**（缺数据），**不许填 0**（0 与"当批就收口"混淆）。
+  * `escape_survival_batches`：0 = 「真值 = 非真逃逸」、None = 「缺数据」，两者不许混读。
 """
 from __future__ import annotations
 
@@ -85,10 +85,13 @@ def test_curves_placeholders_are_honest():
     # 573 任务 A：overturned 不再是"恒 0 占位"，而是**事件流的真读数**（仍保持诚实口径：
     # 系统绝不自动产生推翻，写入只接人/异族的显式动作）。
     assert "绝不自动产生推翻" in c["overturned_note"]
-    # 573：survival 有第一批真数据了（M3 的 52 条，571→572 = 1 批）；其余仍必须 None 不填 0。
+    # 573：survival 有第一批真数据了（M3 的 52 条，571→572 = 1 批）。
+    # 592 任务1.4【非回归】：M2 由 None 改为 0 批 —— M2 的 207 条已被 571 证伪为尺子 bug 的**假逃逸**，
+    #   "非真逃逸"是**真值 0**（不是缺数据）；`others` 仍必须 None（缺数据不许填 0）。
     s = c["escape_survival_batches"]
     assert isinstance(s, dict) and s["M3"]["batches"] == 1
-    assert s["M2"] is None and s["others"] is None, "其余缺数据必须是 None，不是 0"
+    assert s["M2"]["batches"] == 0 and "假逃逸" in s["M2"]["note"]
+    assert s["others"] is None, "其余缺数据必须是 None，不是 0"
     assert "None" in c["escape_survival_note"]
 
 

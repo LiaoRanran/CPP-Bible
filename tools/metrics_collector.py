@@ -449,32 +449,45 @@ def collect_curves() -> dict:
     趋势类结论需要 ≥2 个时点的同口径数据，现在一个都没有。
 
     ① `mutation_escape_rate`：逃逸率 + **双侧** C-P95 区间（接 565 Part 2 的口径块；
-       数据源 = 已提交的 `data/mutation/full_baseline_v1.json`，**不重新生成基线**）。
+      数据源 = 已提交的 **`data/mutation/full_baseline_v7.json`**（591 冻结），**不重新生成基线**；
+      592 任务1 起随块带 `baseline_version`/`frozen_at_commit`（从基线文件自身读）。
     ② `overturned_by_stronger_verifier`：被更强验证者推翻的命题/卡数。**事件字段**——
-       当前系统里没有产生该事件的路径 ⇒ 预期恒 0；先建字段是为了将来能累积而不是事后补。
-    ③ `escape_survival_batches`：逃逸从产生到被收口跨了几个批次。**当前无数据 ⇒ None**，
-       不许填 0（0 = "当批就被收口"，与"还没量过"含义相反）。
+      读数来自只追加事件流 `data/overturned_events.jsonl`；**系统绝不自动产生推翻**。
+      592 任务1.3 起另带 `overturned_channel_initialized`：文件不存在 ⇒ 计数 0 是"没有通道"
+      而非"没有推翻"（两者含义相反，必须显式区分）。
+    ③ `escape_survival_batches`：逃逸从产生到被收口跨了几个批次。
+      **0 = 真值（非真逃逸，不计入）**、**None = 缺数据** —— 不许混读（573 立的口径）。
     """
     out: dict = {"timepoints": 1,
-                 "monotone_convergence": "不可声称（只有 1 个时点，勿据单点画趋势）",
+                 "monotone_convergence": "不可声称（尺子变更史 v1→v7，非同一量时间序列；仅 1 个含曲线时点）",
                  "note": "三曲线字段 565 Part 4b；补齐第二个时点前，这里只作机制占位"}
     from stat_bounds import proportion  # 565 Part 1 原语（局部导入：与 toolchain 同风格）
 
     # 573 升 v2 → **574 升 v3**（572 收 M3、574 修 M5 尺子后的全量基线）。
     #   v1/v2 **保留为历史时点**，不覆盖——否则历史曲线会被改写。
-    def _rate(path: Path, tag: str) -> dict:
+    def _rate(path: Path, tag: str, version: str = "") -> dict:
         try:
             d = json.loads(path.read_text(encoding="utf-8"))
             judged = d["blocked"] + d["escaped"]
             blk = proportion(d["escaped"], judged)
+            # 592 任务1：`baseline_version`/`frozen_at_commit` **从基线文件自身读**（v7 冻结时写入的
+            #   `frozen_at_commit`），不在这里再抄一遍常量——否则基线重冻结后这里会静默脱节（正是
+            #   "度量不诚实"的老病：报告层数字与真实基线各说各话）。
             return {"source": str(path.relative_to(ROOT).as_posix()), "tag": tag,
+                    "baseline_version": version or None,
+                    "frozen_at_commit": d.get("frozen_at_commit"),
                     "judged": judged, "n_a": d["n_a"],
                     "numerator": blk["numerator"], "denominator": blk["denominator"],
                     "point": round(blk["point"], 6),
                     "cp_low": round(blk["cp_low"], 6), "cp_high": round(blk["cp_high"], 6),
+                    # 592 任务1：上面三个是**展示值**（6 位小数，报告口径）；`*_raw` 是全精度原值，
+                    #   供下游复算/对账。逃逸率 ~1e-3 时 6 位小数只剩 2 位有效数字，
+                    #   任何 1e-9 级复算都必须在 `*_raw` 上做（别拿展示值当计算输入）。
+                    "point_raw": blk["point"],
+                    "cp_low_raw": blk["cp_low"], "cp_high_raw": blk["cp_high"],
                     "conf": blk["conf"]}
         except (KeyError, ValueError) as exc:      # 数据坏了要显形，不许静默跳过
-            return {"source": str(path), "tag": tag,
+            return {"source": str(path), "tag": tag, "baseline_version": version or None,
                     "error": f"基线不可用：{type(exc).__name__}: {exc}"}
 
     # 574 升 v3 → 575 升 v4 → 578 升 v5 → **591 升 v7**（信任根扩边 v7 冻结：589 T2 注释净化
@@ -488,38 +501,50 @@ def collect_curves() -> dict:
     v1 = ROOT / "data" / "mutation" / "full_baseline_v1.json"
     out["mutation_escape_rate"] = (
         _rate(v7, "v7（591 起当前口径：589 T2 注释净化 un-mask 27 条真实 fixture 路径变异 ⇒ "
-                  "M2 可判 141→168；唯一 escaped=1 = M1 / EV-CONC-001 冻结 TCE）")
+                  "M2 可判 141→168；唯一 escaped=1 = M1 / EV-CONC-001 冻结 TCE）", version="v7")
         if v7.is_file() else {"error": "缺 data/mutation/full_baseline_v7.json"})
     hist = []
     if v1.is_file():
-        hist.append(_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）"))
+        hist.append(_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）", version="v1"))
     if v2.is_file():
-        hist.append(_rate(v2, "v2（571 修尺子后、含 M3 的 52 条真洞，仅历史）"))
+        hist.append(_rate(v2, "v2（571 修尺子后、含 M3 的 52 条真洞，仅历史）", version="v2"))
     if v3.is_file():
-        hist.append(_rate(v3, "v3（574 修 M5 尺子后、M5 活雷未收，仅历史）"))
+        hist.append(_rate(v3, "v3（574 修 M5 尺子后、M5 活雷未收，仅历史）", version="v3"))
     if v4.is_file():
-        hist.append(_rate(v4, "v4（575 命题级活性锚：M5 规则已拦但被 diff 键吞掉，仅历史）"))
+        hist.append(_rate(v4, "v4（575 命题级活性锚：M5 规则已拦但被 diff 键吞掉，仅历史）", version="v4"))
     if v5.is_file():
-        hist.append(_rate(v5, "v5（578 _findings_key 并入文案后；587 起 1/1375，仅历史）"))
+        hist.append(_rate(v5, "v5（578 _findings_key 并入文案后；587 起 1/1375，仅历史）", version="v5"))
     if v6.is_file():
-        hist.append(_rate(v6, "v6（588 发现器补全后；1/1379，被 v7 取代）"))
+        hist.append(_rate(v6, "v6（588 发现器补全后；1/1379，被 v7 取代）", version="v6"))
     out["mutation_escape_rate_history"] = hist
 
     # 573 任务 A-2：overturned 从"恒 0 占位"变成**真读数**（读只追加事件流；写入见 log_overturned）。
     ev = read_overturned_events()
     out["overturned_by_stronger_verifier"] = len(ev)
     out["overturned_recent"] = ev[-5:]
+    # 592 任务1.3：通道**是否已初始化**要显式标出来——文件缺失时计数 0 是"没有通道"而非"没有推翻"，
+    #   两者含义相反（同 survival 的 None/0 之辨）。592 任务2 建了空文件后本字段转 True。
+    out["overturned_channel_initialized"] = OVERTURNED_FILE.is_file()
     out["overturned_note"] = ("事件流：data/overturned_events.jsonl（只追加）。**系统绝不自动产生推翻**——"
                               "写入只能来自人或异族的显式动作，且 human 推翻者须过 git 作者绑定（fail-closed）")
-    # 573 任务 A-3：第一批 survival 真实数据（**不编**：只数 M3 那 52 条）。
+    # 573 任务 A-3 起 survival 真实数据（**不编**）；592 任务1.4 补齐 M5/M6/M2 的显式条目。
+    #   口径：0 = "真值 = 不是真逃逸，不计入"；None = "缺数据" —— 两者不许混（573 立的口径）。
     out["escape_survival_batches"] = {
         "M3": {"batches": 1, "escapes": 52, "produced_in": "571", "closed_in": "572",
                "note": "571 v2 浮出 52 条 → 572 全部收口 ⇒ survival = 1 批"},
-        "M2": None,
-        "M2_note": "571 已证实 v1 的 207 条是 GATE_READ_KEYS 尺子 bug 的**假逃逸**（修后 0）⇒ 不计入",
+        "M5": {"batches": 1, "escapes": 29, "produced_in": "574", "closed_in": "575",
+               "measurement_visible_closed_in": "578",
+               "note": "574 v3 浮出 29 条 M5 活雷 → 575 命题级活性锚规则已拦（1 批）；"
+                       "但 v4/v5 台账里该批差异曾被 _findings_key 吞掉，"
+                       "**度量可见**的收口落在 578（v5）——两个批次都记，别只留好看的那个"},
+        "M2": {"batches": 0, "escapes": 0,
+               "note": "571 已证实 v1 的 207 条是 GATE_READ_KEYS 尺子 bug 的**假逃逸**（修后 0）⇒ 不计入 survival"},
+        "M6": {"batches": 0, "escapes": 0,
+               "note": "8 条 matrix 块式→flow 等价变异体（583 已定性，非真逃逸）⇒ 不计入 survival"},
         "others": None,
     }
-    out["escape_survival_note"] = "其余算子尚无'产生→收口'的完整批次 ⇒ None（不填 0）"
+    out["escape_survival_note"] = ("其余算子尚无'产生→收口'的完整批次 ⇒ None（不填 0）；"
+                                   "M2/M6 的 0 是「真值 = 非逃逸」、与 None（缺数据）含义相反，别混读")
     return out
 
 

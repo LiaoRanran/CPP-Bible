@@ -91,8 +91,13 @@ def test_573_curves_count_events(tmp_path, monkeypatch):
 
 
 def test_573_survival_only_counts_m3():
-    """survival 只数 M3 那 52 条（571→572）；M2 是尺子 bug 的假逃逸 ⇒ null，其余 null。"""
+    """survival 只数 M3 那 52 条（571→572）；M2 是尺子 bug 的假逃逸 ⇒ 0 批，其余 null。
+
+    592 任务1.4【非回归】：M2 由 `None` 改为 `{"batches": 0, ...}` —— 假逃逸是**真值 0**（非缺数据），
+    与 `others=None`（缺数据）必须区分；M6 同理（8 条等价变异体，583 定性）。
+    """
     s = mc.collect_curves()["escape_survival_batches"]
     assert s["M3"]["batches"] == 1 and s["M3"]["escapes"] == 52
     assert s["M3"]["produced_in"] == "571" and s["M3"]["closed_in"] == "572"
-    assert s["M2"] is None and s["others"] is None
+    assert s["M2"]["batches"] == 0 and s["M6"]["batches"] == 0
+    assert s["others"] is None
