@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 import mutation_shape_audit as audit
+import mutation_fuzz as mf
 from mutation_fuzz import _mut_matrix_values
 
 N = "\n"
@@ -131,3 +132,33 @@ def test_m6_matrix_crlf_eq_lf():
     cr = {(p, v.replace("\r\n", "\n").replace("\r", "\n"))
           for p, v in _mut_matrix_values(_CLEAN_MATRIX_CARD.replace("\n", "\r\n"))}
     assert lf == cr, "matrix 变体在 CRLF 下与 LF 不一致"
+
+
+# ── 588 任务 2.2 · GATE_READ_KEYS 补 matrix 零判决影响（deterministic 锁）──────────
+def test_gateradkeys_matrix_no_effect_on_m2m3_output():
+    """补 matrix 到 GATE_READ_KEYS 不得改变 mut_m2/mut_m3 产出的变体集：读取面诚实化零判决影响。
+
+    注：全量 `--jobs 4` 跑偶发的 27 条 M2 判决抖动，已定位为 ge.run 盘缓存 + 并行池基线陈旧态
+    的预存在非确定性假象（与 matrix 无关，见 _worklog_588.md）；本测试在单进程下锁死
+    「mut_m2/mut_m3 产出」这一 GATE_READ_KEYS 直接控制的量，证明零影响。
+    """
+    saved = mf.GATE_READ_KEYS
+    try:
+        cards = audit._all_card_texts()
+        without = tuple(x for x in saved if x != "matrix")
+        with_matrix = tuple(saved) + ("matrix",)
+        mismatches = []
+        for rel, t in cards:
+            mf.GATE_READ_KEYS = without
+            p2 = {p for p, _ in mf.mut_m2(t)}
+            p3 = {p for p, _ in mf.mut_m3(t)}
+            mf.GATE_READ_KEYS = with_matrix
+            p2m = {p for p, _ in mf.mut_m2(t)}
+            p3m = {p for p, _ in mf.mut_m3(t)}
+            if p2 != p2m:
+                mismatches.append(f"{rel} M2")
+            if p3 != p3m:
+                mismatches.append(f"{rel} M3")
+        assert not mismatches, f"GATE_READ_KEYS 补 matrix 改变了产出：{mismatches}"
+    finally:
+        mf.GATE_READ_KEYS = saved

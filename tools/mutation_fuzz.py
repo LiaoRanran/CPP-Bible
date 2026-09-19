@@ -158,7 +158,15 @@ GATE_READ_KEYS = ("command", "artifact", "artifact_producer", "fixture", "fixtur
                   #   **嵌套在 `actual:` 下**的 ⇒ 只列顶层键名永远匹配不到 ⇒ 整块 `actual` 被当成
                   #   "门禁不读"，实测 83 卡里 0 卡命中 `run_match_keys`、M3 的 80 条 n_a(out_of_scope)
                   #   相当一部分由此而来（把"没问"记成了"不适用"）。
-                  "actual")
+                  "actual",
+                  # 588 任务 2（读取面诚实化）：`check_evidence_matrix`（`gate_engine` 约 2901 行，
+                  #   `ge._meta(p).get("matrix")`）**真读** matrix 块（编译器名/标准/优化级/arch）。
+                  #   此前漏列 ⇒ matrix 区域被当成"门禁不读"，与 571 的 actual 同类「把没问记成不适用」的
+                  #   尺子不诚实。matrix 取值里无路径后缀、也无 contains_in/-Werror/count 等 M2/M3 目标，
+                  #   故补列后（单进程、即 classify 同款 `new=_snapshot()-baseline` 逻辑）逐变体零判决影响
+                  #   —— 全量 `--jobs 4` 跑偶发的 27 条 M2 判决抖动，已定位为 ge.run 盘缓存 + 并行池陈旧态
+                  #   假象（非 matrix 效应，见 _worklog_588.md；invalidate_meta 在单进程已生效，并行池交人）。
+                  "matrix")
 _PATHP = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_./-]*\.(?:cpp|cc|cxx|py|asm|out|md|json)")
 
 
@@ -568,6 +576,9 @@ def classify(card: str, op: str, baseline: set[tuple[str, str, str]],
         return {"verdict": "n_a", "malformed": True,
                 "why": "畸形变体（artifact_assert 字段不合规）：" + "；".join(mal)}
     sandbox_card.write_text(variant_text, encoding="utf-8")
+    ge.invalidate_meta(sandbox_card)          # 579：进程内改盘后显式失效 gate 盘缓存，
+    # 否则等长同 tick 改写（如 M2 路径转大写）会撞 (path,mtime_ns,size) 键 ⇒ 全库 ge.run()
+    # 基线被污染、verdict 非确定性（588 任务 2 实测：补 matrix 前后 M2 判决抖动即此因）
     try:
         new = _snapshot() - baseline
     except Exception as exc:                       # noqa: BLE001  门禁自身崩了 = 不适用
@@ -844,6 +855,7 @@ def _card_variants(card: Path, ops: list[str], baseline: set[tuple[str, str, str
         # 提前 return 都必须把沙箱副本还原成原卡文本，绝不把变异留到下一张卡
         # （EV-CONC-001.md 的 3 行 M4 注入残留就是这么来的）。
         sb_card.write_text(text, encoding="utf-8")
+        ge.invalidate_meta(sb_card)          # 还原后同样显式失效（见 classify 内同款注释）
     return per
 
 
