@@ -27,8 +27,13 @@ grounded 不动点（任务书 596 任务2.3）：
 
 用法：
     python tools/weighted_af_solver.py solve [--edges PATH] [--out PATH]
+                                             [--include-human-reviewed|--no-human-reviewed]
     python tools/weighted_af_solver.py stats [--json]
     python tools/weighted_af_solver.py --check        # 与 594 实证对账（失败 exit 2）
+
+596 任务4 集成：`--include-human-reviewed`（**默认开启**）会把 `data/human_attack_edge_annotations.jsonl`
+的人审结果应用到攻击图上（approve 升一级 / reject 剔除 / modify 指定档）。一旦人审真的介入，
+594 的"未审候选图"基线（IN=79/OUT=42/UNDEC=0）**不再是权威**，`--check` 自动退化为只查结构不变量。
 """
 from __future__ import annotations
 
@@ -41,10 +46,12 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import attack_edge_generator as aeg  # noqa: E402
+import attack_edge_review as aer  # noqa: E402
 import prop_graph as pg  # noqa: E402
 
-VERSION = "1.0"
+VERSION = "1.1"
 DEFAULT_EDGES = aeg.DEFAULT_OUT
+DEFAULT_ANNOTATIONS = aer.DEFAULT_ANN
 DEFAULT_OUT = ROOT / "data" / "grounded_labels_w2.json"
 #: 命题 id 在**本批数据文件**里的写法（与 attack_edge_generator 一致：`卡id::prop-N`）。
 PROP_SEP = aeg.PROP_SEP
@@ -253,12 +260,14 @@ def stats(doc: dict) -> dict:
             "edges": doc["edges"]}
 
 
-def check(doc: dict) -> list[str]:
+def check(doc: dict, *, expect_594: bool = True) -> list[str]:
+    """校验标注文档。`expect_594=False` ⇒ 只查结构不变量（人审介入后 594 基线不再适用）。"""
     problems: list[str] = []
     s = doc["summary"]
-    for k, want in W2_EXPECTED.items():
-        if s.get(k) != want:
-            problems.append(f"与 594 实证不符：{k} = {s.get(k)}（期望 {want}）")
+    if expect_594:
+        for k, want in W2_EXPECTED.items():
+            if s.get(k) != want:
+                problems.append(f"与 594 实证不符：{k} = {s.get(k)}（期望 {want}）")
     if doc["rounds"] >= MAX_ROUNDS:
         problems.append(f"轮数 {doc['rounds']} 已达上限 {MAX_ROUNDS}（未真正收敛）")
     unlabeled = [k for k, v in doc["nodes"].items() if v["label"] not in ("IN", "OUT", "UNDEC")]
@@ -284,13 +293,22 @@ def main(argv: list[str] | None = None) -> int:
     for name in ("solve", "stats"):
         sp = sub.add_parser(name)
         sp.add_argument("--edges", default=str(DEFAULT_EDGES))
+        sp.add_argument("--annotations", default=str(DEFAULT_ANNOTATIONS))
         sp.add_argument("--out", default=str(DEFAULT_OUT))
         sp.add_argument("--json", action="store_true")
+        sp.add_argument("--include-human-reviewed", dest="human", action="store_true", default=True,
+                        help="启用**已审**攻击边：approve 升一级 / reject 剔除 / modify 指定档（默认开）")
+        sp.add_argument("--no-human-reviewed", dest="human", action="store_false",
+                        help="只用原始候选边（忽略人审标注）")
     ap.add_argument("--check", action="store_true", help="与 594 实证对账（失败 exit 2）")
     ap.add_argument("--out", default=str(DEFAULT_OUT))
     ap.add_argument("--edges", default=str(DEFAULT_EDGES))
+    ap.add_argument("--annotations", default=str(DEFAULT_ANNOTATIONS))
+    ap.add_argument("--include-human-reviewed", dest="human", action="store_true", default=True)
+    ap.add_argument("--no-human-reviewed", dest="human", action="store_false")
     a = ap.parse_args(argv)
 
+    anns = aer.load_annotations(a.annotations)
     if a.check:
         p = Path(a.out)
         if not p.is_file():
@@ -306,20 +324,28 @@ def main(argv: list[str] | None = None) -> int:
         if missing:
             print(f"[w2] ❌ 标注文件结构不完整（缺 {missing}）⇒ 拒绝判绿", file=sys.stderr)
             return 2
-        problems = check(doc)
+        # 人审一旦介入（有标注且启用），594 的"未审候选图"基线就不再是权威 ⇒ 只查结构不变量
+        expect_594 = not (a.human and anns)
+        problems = check(doc, expect_594=expect_594)
         if problems:
             print(f"[w2] ❌ 对账失败（{len(problems)} 项）：", file=sys.stderr)
             for x in problems[:10]:
                 print(f"  - {x}", file=sys.stderr)
             return 2
-        print(f"[w2] ✓ 与 594 实证一致：IN={doc['summary']['IN']} / OUT={doc['summary']['OUT']} / "
-              f"UNDEC={doc['summary']['UNDEC']}（{doc['rounds']} 轮收敛）")
+        tail = "（人审已介入 ⇒ 只查结构不变量，594 基线不再适用）" if not expect_594 else ""
+        print(f"[w2] ✓ IN={doc['summary']['IN']} / OUT={doc['summary']['OUT']} / "
+              f"UNDEC={doc['summary']['UNDEC']}（{doc['rounds']} 轮收敛）{tail}")
         return 0
 
     edges = load_edges(a.edges)
     if not edges:
         print(f"[w2] ❌ 候选边为空：{a.edges}（先跑 attack_edge_generator.py generate）", file=sys.stderr)
         return 2
+    if a.human and anns:
+        eff = aer.effective_edges(edges, anns)
+        print(f"[w2] 人审标注生效：{len(anns)} 条历史 · 边 {len(edges)} ⇒ {len(eff)}"
+              f"（剔除 {len(edges) - len(eff)} 条被拒边；approve 已升一级 / modify 已改档）")
+        edges = eff
     doc = solve(edges)
     if a.cmd == "stats":
         st = stats(doc)
