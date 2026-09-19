@@ -45,6 +45,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+# 592 任务2：推翻事件通道的**唯一实现**在 tools/overturned_events.py（本模块只做委托，
+#   避免"同一套 fail-closed 规则两份实现"——两份迟早会分叉，而分歧点在"谁能推翻"上最危险）。
+import overturned_events as oe  # noqa: E402
+
 METRICS_FILE = ROOT / "data" / "metrics.jsonl"
 PYTHON = sys.executable
 
@@ -375,38 +379,18 @@ OVERTURNED_FILE = ROOT / "data" / "overturned_events.jsonl"
 
 
 def read_overturned_events(path: Path | None = None) -> list[dict]:
-    """读事件流。文件缺失 ⇒ `[]`；坏行跳过（**不整吞**——损坏是数据问题，不是静默理由）。"""
-    p = path or OVERTURNED_FILE
-    if not p.is_file():
-        return []
-    out: list[dict] = []
-    for ln in p.read_text(encoding="utf-8", errors="replace").splitlines():
-        ln = ln.strip()
-        if not ln:
-            continue
-        try:
-            out.append(json.loads(ln))
-        except ValueError:
-            continue
-    return out
+    """读事件流（**单一实现**：592 任务2 起收敛到 `tools/overturned_events.py`）。
 
-
-def _resolve_card_path(card: str) -> Path | None:
-    """卡 id 或相对路径 ⇒ 文件路径；找不到 ⇒ None（调用方按 fail-closed 处理）。"""
-    p = Path(card)
-    if p.is_file():
-        return p
-    for pat in ("atoms/**/%s.md", "evidence/**/%s.md"):
-        for f in ROOT.glob(pat % card):
-            if f.is_file():
-                return f
-    return None
+    文件缺失 ⇒ `[]`；坏行 ⇒ **fail-loud**（事件流是审计证据，静默跳过坏行等于篡改证据链；
+    573 首版的"坏行 continue"已在 592 任务2 改为显形——旧的静默口子不该留两份实现）。
+    """
+    return oe.read_events(path or OVERTURNED_FILE)
 
 
 def log_overturned(target: str, old_verdict: str, new_verdict: str, by: str,
                    reason: str, card: str | None = None,
                    path: Path | None = None) -> dict:
-    """记录一次**人或异族**的推翻（573 任务 A-2）。
+    """记录一次**人或异族**的推翻（573 任务 A-2；592 任务2 实现收敛到 overturned_events）。
 
     schema：`{ts, target, card, old_verdict, new_verdict, by, reason}`
       * `by`：`human:<名>`（**须过 git 作者绑定**）或 `adversary:<族>`（异族无 git 身份 ⇒ 只登记）；
@@ -415,31 +399,8 @@ def log_overturned(target: str, old_verdict: str, new_verdict: str, by: str,
       * 只追加（`data/overturned_events.jsonl`），不覆盖、不删除。
     谁**不许**调用：任何自动检测/自动 LLM 推翻路径（战略冻结档），本函数只接显式的人/异族动作。
     """
-    if not (target and old_verdict and new_verdict and by and reason):
-        raise ValueError("target/old_verdict/new_verdict/by/reason 均不可为空（不完整的推翻不予登记）")
-    cp = _resolve_card_path(card or target)
-    if cp is None:
-        raise ValueError(f"卡解析不到（{card or target}）⇒ 无法核验签署，拒绝写入（fail-closed）")
-    by = by.strip()
-    if by.lower().startswith("human:"):
-        name = by.split(":", 1)[1].strip()
-        import gate_engine as ge  # 局部导入：复用卡级同款判据，避免模块级耦合
-        author = ge._git_author_for(cp)
-        if author is None:
-            raise ValueError(f"git 不可用 ⇒ 无法核验推翻者 {name!r}，拒绝写入（fail-closed）")
-        if not ge._author_matches(name, author):
-            raise ValueError(f"推翻者 {name!r} 不是该卡最后一次 git 提交的作者（{author[0]}）"
-                             f"⇒ 无签名，拒绝写入")
-    elif not by.lower().startswith("adversary:"):
-        raise ValueError("by 须为 `human:<名>` 或 `adversary:<族>`（其它形态不予登记）")
-    ev = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "target": target,
-          "card": card or target, "old_verdict": old_verdict, "new_verdict": new_verdict,
-          "by": by, "reason": reason}
-    p = path or OVERTURNED_FILE
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with p.open("a", encoding="utf-8", newline="\n") as f:
-        f.write(json.dumps(ev, ensure_ascii=False) + "\n")
-    return ev
+    return oe.append(oe.make_event(target, old_verdict, new_verdict, by, reason, card=card),
+                     path=path or OVERTURNED_FILE)
 
 
 def collect_curves() -> dict:
