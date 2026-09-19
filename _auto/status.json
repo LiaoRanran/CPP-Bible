@@ -1,19 +1,20 @@
 {
-  "state": "running",
+  "state": "awaiting_review",
   "current_batch": 608,
-  "last_completed_batch": 607,
+  "last_completed_batch": 608,
   "last_reviewed_batch": 607,
   "last_prompt_batch": 607,
   "worker_model": "CodeBuddy/DeepSeek-V4-Flash",
   "worker_credits_remaining": null,
   "consecutive_errors": 0,
   "paused": false,
-  "updated_at": "2026-09-20T00:10:00+08:00",
+  "updated_at": "2026-09-20T01:30:00+08:00",
   "history": [
     {"batch": 603, "status": "completed", "model": "CodeBuddy/glm-4-flash", "commits": ["1c9e5b4","d54c65a","ae5f903","1eaba2c"]},
     {"batch": 604, "status": "completed", "model": "MainAgent (cron)", "commits": ["7fe40cb","e9744bb","13138c9"], "theme": "human review efficiency tool"},
     {"batch": 605, "status": "completed", "model": "MainAgent (continuous)", "commits": ["e769992","d1ae7b2","358aa59","92cd25c"], "theme": "replay invariants (shallow I1/I4)"},
     {"batch": 606, "status": "completed", "model": "MainAgent (continuous)", "commits": ["75b5cf6","dcc0ae3","72e516f"], "theme": "replay invariants I3 + metrics"},
-    {"batch": 607, "status": "completed+reviewed", "model": "CodeBuddy/DeepSeek-V4-Flash", "commits": ["79b61e3","ca23346","41a2768","f53b247"], "theme": "governance manifest + liveness audit", "review": "integrity/gate/poison pass; replay env-blocked (stuck process, non-code regression, 607未碰replay)"}
+    {"batch": 607, "status": "completed+reviewed", "model": "CodeBuddy/DeepSeek-V4-Flash", "commits": ["79b61e3","ca23346","41a2768","f53b247"], "theme": "governance manifest + liveness audit", "review": "integrity/gate/poison pass; replay env-blocked (stuck process, non-code regression, 607未碰replay)"},
+    {"batch": 608, "status": "completed", "model": "CodeBuddy/DeepSeek-V4-Flash", "commits": ["0b6f3eb","0f70f1a","6487cf4","a164484","3e60821","a8e5791","2f241a0","7db8fd3","7d5f136","973bb71","5b17313","e2043dd","9a56e2e","7c94823","29f29c7"], "theme": "human review queue + build reproducibility deepening + metrics new indicators + slow perf profile", "note": "并行化债会话 608 期间提交约 26 个文档台账 commit；已修复其误删的 596 人审通道空文件(7c94823) 与 A3 脆弱断言(29f29c7)"}
   ]
 }
