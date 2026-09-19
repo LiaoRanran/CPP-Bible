@@ -73,6 +73,7 @@ SERIAL_EXTRA = frozenset({
     #   注：`test_replay_invariants_603.py` 早在 SLOW_MODULES 里，605/606 属同族漏挂。
     "test_replay_invariants_605.py",     # 607：断言真实 `Examples/` 工件指纹稳定（读真实仓）
     "test_replay_invariants_606.py",     # 607：断言真实锁不存在 + 真实 metrics 的 run_checks 全真
+    "test_replay_invariants_608.py",     # 608：I1/I4 真跑 replay_card + T7 改 Examples/ 工件（读真实仓）
 })
 
 
