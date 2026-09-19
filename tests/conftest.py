@@ -63,6 +63,16 @@ SERIAL_EXTRA = frozenset({
     "test_mutation_isolation_579.py",   # 579：跑批对真实仓零副作用（Examples 指纹 + manifest 字节）
     "test_mutation_parallel_580.py",    # 580：并行跑批后真实根指纹/真实锁不动
     "test_replay_lock_serial.py",        # 592：整模块操作全局 build/.replay_lock，并发下与 replay 抢锁假红
+    # 607 收工门禁暴露：605/606 的 replay 不变量检查**读真实仓可变状态**（`build/.replay_lock`
+    #   是否存在、`Examples/` 工件指纹、真实 metrics 的 run_checks 结果）。`-n auto` 跑法下，
+    #   别的 worker 合法地持锁（挂了 `replay_serial` 的 **fast** 用例，如
+    #   `test_output_snapshots::test_kg_stats_counts`）⇒ `test_lock_no_stale_in_real_repo`
+    #   把"别人正持锁"误判成"锁泄漏"、`test_metrics_invariants_all_true` 读到
+    #   `lock_consistency=False`（实测：全套 `-n auto` 红、这两例 `-n0` 绿）。
+    #   与 592/583 同因同治：整模块移入串行组（`-m slow -n0` 仍完整执行，覆盖率不减）。
+    #   注：`test_replay_invariants_603.py` 早在 SLOW_MODULES 里，605/606 属同族漏挂。
+    "test_replay_invariants_605.py",     # 607：断言真实 `Examples/` 工件指纹稳定（读真实仓）
+    "test_replay_invariants_606.py",     # 607：断言真实锁不存在 + 真实 metrics 的 run_checks 全真
 })
 
 

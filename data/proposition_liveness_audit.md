@@ -1,6 +1,6 @@
 # 命题活性锚审计（607 任务 2 · 只读）
 
-> 生成时间：2026-09-19T20:10:29 ｜ 扫描面：`atoms` ｜ 命令：`python tools/proposition_liveness_audit.py --check`
+> 生成时间：2026-09-19T20:19:21 ｜ 扫描面：`atoms` ｜ 命令：`python tools/proposition_liveness_audit.py --check`
 >
 > **本报告是人审清单，不是自动判决**：工具只按 gate `OBSERVATION-LIVENESS` 的判据（observation 命题须有 `liveness.kind=fixture_symbol` 且 `symbol` 非空）列清单，**不自动补字段**、**不改任何卡**、不做语义判断。
 

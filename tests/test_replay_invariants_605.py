@@ -6,8 +6,8 @@
   * check_artifact_restore pass（Examples/ 指纹稳定）
   * check_build_reproducibility pass（1 张卡，复用 replay._recompile_invariant）
   * check_sandbox_isolation pass（临时目录不泄漏）
-  * run_checks 全部 pass
-  * CLI --list 输出 3 个不变量
+  * run_checks 全部 pass（检查项集合 = `INVARIANTS`，条数不写死：606 加了 lock_consistency）
+  * CLI --list 输出全部不变量（同上，不写死条数）
   * CLI --check exit 0
   * CLI --check --invariant artifact_restore 只跑一个
   * CLI --json 输出合法 JSON 且 all_passed=true
@@ -72,7 +72,9 @@ def test_check_sandbox_isolation_pass():
 
 def test_run_checks_all_pass():
     results = ri.run_checks()
-    assert len(results) == 3
+    # 不写死条数：606 给 `INVARIANTS` 追加了 `lock_consistency`（I3），605 的 `== 3` 断言就此过期
+    # （607 收工门禁暴露）。改为按名字比对默认集合 ⇒ 今后再加检查项不会再假红。
+    assert {r["name"] for r in results} == set(ri.INVARIANTS), results
     assert all(r["passed"] for r in results)
 
 
@@ -119,4 +121,4 @@ def test_cli_json_valid():
     assert proc.returncode == 0
     data = json.loads(proc.stdout)
     assert data["all_passed"] is True
-    assert len(data["results"]) == 3
+    assert {r["name"] for r in data["results"]} == set(ri.INVARIANTS), data["results"]
